@@ -36,7 +36,7 @@ inline std::ostream& operator<<(std::ostream& os, const MaaMsg& type)
 }
 
 // 内部使用的回调
-class MaaInstance;
-using MaaInstCallback = std::function<void(MaaMsg msg, const json::value& details, MaaInstance* inst)>;
+class InstanceMgr;
+using MaaInstCallback = std::function<void(MaaMsg msg, const json::value& details, InstanceMgr* inst)>;
 
 MAA_NS_END

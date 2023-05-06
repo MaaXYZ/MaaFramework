@@ -33,10 +33,14 @@
     <ClInclude Include="Common\MaaConf.h" />
     <ClInclude Include="Common\MaaMsg.h" />
     <ClInclude Include="Common\MaaTypes.h" />
-    <ClInclude Include="Instance\MaaInstance.h" />
+    <ClInclude Include="Controller\ControllerMgr.h" />
+    <ClInclude Include="Instance\InstanceMgr.h" />
+    <ClInclude Include="Resource\ResourceMgr.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="Instance\MaaInstance.cpp" />
+    <ClCompile Include="Controller\ControllerMgr.cpp" />
+    <ClCompile Include="Instance\InstanceMgr.cpp" />
+    <ClCompile Include="Resource\ResourceMgr.cpp" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>16.0</VCProjectVersion>

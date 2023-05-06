@@ -56,7 +56,7 @@ public:
     virtual ~MaaResourceAPI() = default;
 
     virtual MaaResourceAPI* create_ex(const std::filesystem::path& path, MaaResourceCallback callback,
-                                      void* custom_arg) = 0;
+                                      void* callback_arg) = 0;
     virtual void destroy(MaaResourceAPI** handle_ptr) = 0;
 
     virtual bool set_option(ResourceOptionKey key, const std::string& value) = 0;
@@ -73,8 +73,9 @@ struct MaaControllerAPI
 public:
     virtual ~MaaControllerAPI() = default;
 
-    virtual MaaControllerAPI* create_ex(const std::filesystem::path& path, MaaControllerCallback callback,
-                                        void* custom_arg) = 0;
+    virtual MaaControllerAPI* create_ex(const std::filesystem::path& adb_path, const std::string& address,
+                                        const json::value& config_json, MaaControllerCallback callback,
+                                        void* callback_arg) = 0;
     virtual void destroy(MaaControllerAPI** handle_ptr) = 0;
 
     virtual bool set_option(ControllerOptionKey key, const std::string& value) = 0;
@@ -95,7 +96,7 @@ public:
     virtual ~MaaInstanceAPI() = default;
 
     virtual MaaInstanceAPI* create_ex(const std::filesystem::path& user_path, MaaInstanceCallback callback,
-                                      void* custom_arg) = 0;
+                                      void* callback_arg) = 0;
     virtual void destroy(MaaInstanceAPI** handle_ptr) = 0;
 
     virtual bool bind_resource(MaaResourceAPI* resource) = 0;

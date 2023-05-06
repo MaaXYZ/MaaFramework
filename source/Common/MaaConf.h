@@ -60,11 +60,11 @@
     {
 #define MAA_NS_END }
 
-#define MAA_DATA_NS MAA_NS::data_ns
-#define MAA_DATA_NS_BEGIN \
-    namespace MAA_DATA_NS \
+#define MAA_RES_NS MAA_NS::res_ns
+#define MAA_RES_NS_BEGIN \
+    namespace MAA_RES_NS \
     {
-#define MAA_DATA_NS_END }
+#define MAA_RES_NS_END }
 
 #define MAA_CTRL_NS MAA_NS::ctrl_ns
 #define MAA_CTRL_NS_BEGIN \
