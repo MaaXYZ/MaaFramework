@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Resource">
+      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
+    </Filter>
+    <Filter Include="Include">
+      <UniqueIdentifier>{c3ebc635-47cc-4750-b219-bc7f664ffb75}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source">
+      <UniqueIdentifier>{ea22369f-0c0f-48f7-9356-850065862963}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\Common">
+      <UniqueIdentifier>{9e63ad3d-d995-4cd5-acce-f0d75eb58ef1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\Instance">
+      <UniqueIdentifier>{f4ccf9b4-449c-4060-b567-330712d3135f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\Data">
+      <UniqueIdentifier>{2df709e0-7475-4cd4-87bd-f0675f898f63}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\Controller">
+      <UniqueIdentifier>{6e391dc1-ad59-4ae3-925b-b5f5980927be}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\Vision">
+      <UniqueIdentifier>{dac8190f-d88e-4f99-953b-1530a18d6c50}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\Task">
+      <UniqueIdentifier>{5727ed05-c3dc-4c47-9dde-7f10a450b08c}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\include\MaaAPI.h">
+      <Filter>Include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\MaaPort.h">
+      <Filter>Include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\MaaDef.h">
+      <Filter>Include</Filter>
+    </ClInclude>
+    <ClInclude Include="Common\MaaTypes.h">
+      <Filter>Source\Common</Filter>
+    </ClInclude>
+    <ClInclude Include="Common\MaaMsg.h">
+      <Filter>Source\Common</Filter>
+    </ClInclude>
+    <ClInclude Include="Common\MaaConf.h">
+      <Filter>Source\Common</Filter>
+    </ClInclude>
+    <ClInclude Include="Instance\MaaInstance.h">
+      <Filter>Source\Instance</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="Instance\MaaInstance.cpp">
+      <Filter>Source\Instance</Filter>
+    </ClCompile>
+  </ItemGroup>
+</Project>

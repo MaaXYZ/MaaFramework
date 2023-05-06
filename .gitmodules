@@ -1,0 +1,3 @@
+[submodule "MaaDeps"]
+	path = MaaDeps
+	url = https://github.com/MaaAssistantArknights/MaaDeps.git
