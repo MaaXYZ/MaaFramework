@@ -139,7 +139,7 @@ def main():
             url = asset['browser_download_url']
             print("downloading from", url)
             local_file = download_dir / sanitize_filename(asset["name"])
-            # urllib.request.urlretrieve(url, local_file, reporthook=ProgressHook())
+            urllib.request.urlretrieve(url, local_file, reporthook=ProgressHook())
             print("extracting", asset["name"])
             shutil.unpack_archive(local_file, maadeps_dir)
     else:
