@@ -1,7 +1,7 @@
 #pragma once
 
-#include "Common/AsstConf.h"
+#include "Common/MaaConf.h"
 
-ASST_SUPPRESS_CV_WARNINGS_START
+MAA_SUPPRESS_CV_WARNINGS_START
 #include <cpr/cpr.h>
-ASST_SUPPRESS_CV_WARNINGS_END
+MAA_SUPPRESS_CV_WARNINGS_END

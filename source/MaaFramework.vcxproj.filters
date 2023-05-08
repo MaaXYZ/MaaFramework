@@ -88,6 +88,24 @@
     <ClInclude Include="Utils\Platform\SafeWindows.h">
       <Filter>源文件\Utils\Platform</Filter>
     </ClInclude>
+    <ClInclude Include="Utils\Demangle.hpp">
+      <Filter>源文件\Utils</Filter>
+    </ClInclude>
+    <ClInclude Include="Utils\File.hpp">
+      <Filter>源文件\Utils</Filter>
+    </ClInclude>
+    <ClInclude Include="Utils\ImageIo.hpp">
+      <Filter>源文件\Utils</Filter>
+    </ClInclude>
+    <ClInclude Include="Utils\NoWarningCVMat.h">
+      <Filter>源文件\Utils</Filter>
+    </ClInclude>
+    <ClInclude Include="Utils\NoWarningCPR.h">
+      <Filter>源文件\Utils</Filter>
+    </ClInclude>
+    <ClInclude Include="Utils\NoWarningCV.h">
+      <Filter>源文件\Utils</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Controller\ControllerMgr.cpp">

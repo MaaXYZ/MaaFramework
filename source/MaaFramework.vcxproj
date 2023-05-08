@@ -36,6 +36,12 @@
     <ClInclude Include="Controller\ControllerMgr.h" />
     <ClInclude Include="Instance\InstanceMgr.h" />
     <ClInclude Include="Resource\ResourceMgr.h" />
+    <ClInclude Include="Utils\Demangle.hpp" />
+    <ClInclude Include="Utils\File.hpp" />
+    <ClInclude Include="Utils\ImageIo.hpp" />
+    <ClInclude Include="Utils\NoWarningCPR.h" />
+    <ClInclude Include="Utils\NoWarningCV.h" />
+    <ClInclude Include="Utils\NoWarningCVMat.h" />
     <ClInclude Include="Utils\Platform.hpp" />
     <ClInclude Include="Utils\Platform\Platform.h" />
     <ClInclude Include="Utils\Platform\PlatformPosix.h" />
@@ -178,7 +184,7 @@
       <AdditionalOptions>/utf-8 /MP $(ExternalCompilerOptions) %(AdditionalOptions)</AdditionalOptions>
       <TreatWarningAsError>true</TreatWarningAsError>
       <WarningVersion>19.35.32217</WarningVersion>
-      <AdditionalIncludeDirectories>$(ProjectDir)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -276,7 +282,7 @@
       <AdditionalOptions>/utf-8 /MP $(ExternalCompilerOptions) %(AdditionalOptions)</AdditionalOptions>
       <TreatWarningAsError>true</TreatWarningAsError>
       <WarningVersion>19.35.32217</WarningVersion>
-      <AdditionalIncludeDirectories>$(ProjectDir)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -328,7 +334,7 @@
       <TreatWarningAsError>true</TreatWarningAsError>
       <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
       <DisableSpecificWarnings>4127</DisableSpecificWarnings>
-      <AdditionalIncludeDirectories>$(ProjectDir)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
