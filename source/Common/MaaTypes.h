@@ -50,16 +50,14 @@ enum class InstanceOptionKey
     Invalid = 0,
 };
 
+MAA_NS_END
+
 struct MaaResourceAPI
 {
 public:
     virtual ~MaaResourceAPI() = default;
 
-    virtual MaaResourceAPI* create_ex(const std::filesystem::path& path, MaaResourceCallback callback,
-                                      void* callback_arg) = 0;
-    virtual void destroy(MaaResourceAPI** handle_ptr) = 0;
-
-    virtual bool set_option(ResourceOptionKey key, const std::string& value) = 0;
+    virtual bool set_option(MAA_NS::ResourceOptionKey key, const std::string& value) = 0;
 
     virtual bool incremental_load(const std::filesystem::path& path) = 0;
     virtual bool loading() const = 0;
@@ -73,17 +71,14 @@ struct MaaControllerAPI
 public:
     virtual ~MaaControllerAPI() = default;
 
-    virtual MaaControllerAPI* create_ex(const std::filesystem::path& adb_path, const std::string& address,
-                                        const json::value& config_json, MaaControllerCallback callback,
-                                        void* callback_arg) = 0;
-    virtual void destroy(MaaControllerAPI** handle_ptr) = 0;
-
-    virtual bool set_option(ControllerOptionKey key, const std::string& value) = 0;
+    virtual bool set_option(MAA_NS::ControllerOptionKey key, const std::string& value) = 0;
 
     virtual bool connecting() const = 0;
     virtual bool connected() const = 0;
 
     virtual MaaCtrlId click(int x, int y) = 0;
+    virtual MaaCtrlId swipe(const std::vector<int>& x_steps, const std::vector<int>& y_steps,
+                            const std::vector<int>& step_delay) = 0;
     virtual MaaCtrlId screencap() = 0;
     virtual std::vector<unsigned char> get_image() const = 0;
 
@@ -95,15 +90,11 @@ struct MaaInstanceAPI
 public:
     virtual ~MaaInstanceAPI() = default;
 
-    virtual MaaInstanceAPI* create_ex(const std::filesystem::path& user_path, MaaInstanceCallback callback,
-                                      void* callback_arg) = 0;
-    virtual void destroy(MaaInstanceAPI** handle_ptr) = 0;
-
     virtual bool bind_resource(MaaResourceAPI* resource) = 0;
     virtual bool bind_controller(MaaControllerAPI* controller) = 0;
     virtual bool inited() const = 0;
 
-    virtual bool set_option(InstanceOptionKey key, const std::string& value) = 0;
+    virtual bool set_option(MAA_NS::InstanceOptionKey key, const std::string& value) = 0;
 
     virtual MaaTaskId append_task(const std::string& type, const std::string& param) = 0;
     virtual bool set_task_param(MaaTaskId task_id, const std::string& param) = 0;
@@ -116,5 +107,3 @@ public:
     virtual std::string get_resource_hash() const = 0;
     virtual std::string get_controller_uuid() const = 0;
 };
-
-MAA_NS_END

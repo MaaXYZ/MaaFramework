@@ -29,6 +29,12 @@
     <Filter Include="头文件">
       <UniqueIdentifier>{c3ebc635-47cc-4750-b219-bc7f664ffb75}</UniqueIdentifier>
     </Filter>
+    <Filter Include="源文件\Utils">
+      <UniqueIdentifier>{4a70ba3f-91ed-42d2-92dd-892f2d97929c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="源文件\Utils\Platform">
+      <UniqueIdentifier>{9349568b-d1d8-40ea-b55a-a240e5fe89f8}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\include\MaaAPI.h">
@@ -58,6 +64,30 @@
     <ClInclude Include="Resource\ResourceMgr.h">
       <Filter>源文件\Resource</Filter>
     </ClInclude>
+    <ClInclude Include="Utils\Platform.hpp">
+      <Filter>源文件\Utils</Filter>
+    </ClInclude>
+    <ClInclude Include="Utils\Platform\Platform.h">
+      <Filter>源文件\Utils\Platform</Filter>
+    </ClInclude>
+    <ClInclude Include="Utils\Platform\PlatformPosix.h">
+      <Filter>源文件\Utils\Platform</Filter>
+    </ClInclude>
+    <ClInclude Include="Utils\Platform\PlatformWin32.h">
+      <Filter>源文件\Utils\Platform</Filter>
+    </ClInclude>
+    <ClInclude Include="Utils\Ranges.hpp">
+      <Filter>源文件\Utils</Filter>
+    </ClInclude>
+    <ClInclude Include="Utils\StringMisc.hpp">
+      <Filter>源文件\Utils</Filter>
+    </ClInclude>
+    <ClInclude Include="Utils\Time.hpp">
+      <Filter>源文件\Utils</Filter>
+    </ClInclude>
+    <ClInclude Include="Utils\Platform\SafeWindows.h">
+      <Filter>源文件\Utils\Platform</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Controller\ControllerMgr.cpp">
@@ -68,6 +98,15 @@
     </ClCompile>
     <ClCompile Include="Resource\ResourceMgr.cpp">
       <Filter>源文件\Resource</Filter>
+    </ClCompile>
+    <ClCompile Include="MaaAPI.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="Utils\Platform\PlatformPosix.cpp">
+      <Filter>源文件\Utils\Platform</Filter>
+    </ClCompile>
+    <ClCompile Include="Utils\Platform\PlatformWin32.cpp">
+      <Filter>源文件\Utils\Platform</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

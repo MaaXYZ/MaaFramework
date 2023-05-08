@@ -8,11 +8,8 @@ MAA_NS_BEGIN
 class InstanceMgr : public MaaInstanceAPI
 {
 public:
+    InstanceMgr(MaaInstanceCallback callback, void* callback_arg);
     virtual ~InstanceMgr() override;
-
-    virtual MaaInstanceAPI* create_ex(const std::filesystem::path& user_path, MaaInstanceCallback callback,
-                                      void* callback_arg) override;
-    virtual void destroy(MaaInstanceAPI** handle_ptr) override;
 
     virtual bool bind_resource(MaaResourceAPI* resource) override;
     virtual bool bind_controller(MaaControllerAPI* controller) override;
@@ -32,10 +29,6 @@ public:
     virtual std::string get_controller_uuid() const override;
 
 protected:
-    InstanceMgr(const std::filesystem::path& user_path, MaaInstanceCallback callback, void* callback_arg);
-
-protected:
-    std::filesystem::path user_path_;
     MaaInstanceCallback callback_ = nullptr;
     void* callback_arg_ = nullptr;
 

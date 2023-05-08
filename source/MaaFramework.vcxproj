@@ -36,11 +36,22 @@
     <ClInclude Include="Controller\ControllerMgr.h" />
     <ClInclude Include="Instance\InstanceMgr.h" />
     <ClInclude Include="Resource\ResourceMgr.h" />
+    <ClInclude Include="Utils\Platform.hpp" />
+    <ClInclude Include="Utils\Platform\Platform.h" />
+    <ClInclude Include="Utils\Platform\PlatformPosix.h" />
+    <ClInclude Include="Utils\Platform\PlatformWin32.h" />
+    <ClInclude Include="Utils\Platform\SafeWindows.h" />
+    <ClInclude Include="Utils\Ranges.hpp" />
+    <ClInclude Include="Utils\StringMisc.hpp" />
+    <ClInclude Include="Utils\Time.hpp" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Controller\ControllerMgr.cpp" />
     <ClCompile Include="Instance\InstanceMgr.cpp" />
+    <ClCompile Include="MaaAPI.cpp" />
     <ClCompile Include="Resource\ResourceMgr.cpp" />
+    <ClCompile Include="Utils\Platform\PlatformPosix.cpp" />
+    <ClCompile Include="Utils\Platform\PlatformWin32.cpp" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>16.0</VCProjectVersion>

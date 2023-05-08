@@ -9,14 +9,15 @@ extern "C"
 #endif
     /* Resource */
 
-    MaaResourceHandle MAAAPI MaaResourceCreate(const char* path);
-    MaaResourceHandle MAAAPI MaaResourceCreateEx(const char* path, MaaResourceCallback callback, void* custom_arg);
+    MaaResourceHandle MAAAPI MaaResourceCreate(const char* path, const char* user_path);
+    MaaResourceHandle MAAAPI MaaResourceCreateEx(const char* path, const char* user_path, MaaResourceCallback callback,
+                                                 void* custom_arg);
     void MAAAPI MaaResourceDestroy(MaaResourceHandle* res);
-    MaaBool MAAAPI MaaResourceIncrementalLoad(const char* path);
-    MaaBool MAAAPI MaaResourceSetOption(MaaResourceHandle ctrl, MaaResourceOptionKey key, const char* value);
+    MaaBool MAAAPI MaaResourceIncrementalLoad(MaaResourceHandle res, const char* path);
+    MaaBool MAAAPI MaaResourceSetOption(MaaResourceHandle res, MaaResourceOptionKey key, const char* value);
     MaaBool MAAAPI MaaResourceLoading(MaaResourceHandle res);
     MaaBool MAAAPI MaaResourceLoaded(MaaResourceHandle res);
-    MaaSize MAAAPI MaaGetHash(MaaResourceHandle handle, char* buff, MaaSize buff_size);
+    MaaSize MAAAPI MaaResourceGetHash(MaaResourceHandle res, char* buff, MaaSize buff_size);
 
     /* Controller */
 
@@ -28,38 +29,39 @@ extern "C"
     MaaBool MAAAPI MaaControllerConnecting(MaaControllerHandle ctrl);
     MaaBool MAAAPI MaaControllerConnected(MaaControllerHandle ctrl);
 
-    MaaCtrlId MAAAPI MaaClick(MaaControllerHandle ctrl, int32_t x, int32_t y, MaaBool block);
-    MaaCtrlId MAAAPI MaaScreencap(MaaControllerHandle ctrl, MaaBool block);
-    MaaSize MAAAPI MaaGetImage(MaaControllerHandle handle, void* buff, MaaSize buff_size);
-    MaaSize MAAAPI MaaGetUUID(MaaControllerHandle handle, char* buff, MaaSize buff_size);
+    MaaCtrlId MAAAPI MaaControllerClick(MaaControllerHandle ctrl, int32_t x, int32_t y);
+    MaaCtrlId MAAAPI MaaControllerSwipe(MaaControllerHandle ctrl, int32_t* x_steps_buff, int32_t* y_steps_buff,
+                                        int32_t* step_delay_buff, MaaSize buff_size);
+    MaaCtrlId MAAAPI MaaControllerScreencap(MaaControllerHandle ctrl);
+    MaaSize MAAAPI MaaControllerGetImage(MaaControllerHandle ctrl, void* buff, MaaSize buff_size);
+    MaaSize MAAAPI MaaControllerGetUUID(MaaControllerHandle ctrl, char* buff, MaaSize buff_size);
 
     /* Instance */
 
-    MaaInstanceHandle MAAAPI MaaInstanceCreate(const char* user_path);
-    MaaInstanceHandle MAAAPI MaaInstanceCreateEx(const char* user_path, MaaInstanceCallback callback, void* custom_arg);
-    void MAAAPI MaaInstanceDestroy(MaaInstanceHandle* inst);
-    MaaBool MAAAPI MaaInstanceSetOption(MaaInstanceHandle inst, MaaInstanceOptionKey key, const char* value);
+    MaaInstanceHandle MAAAPI MaaCreate();
+    MaaInstanceHandle MAAAPI MaaCreateEx(MaaInstanceCallback callback, void* custom_arg);
+    void MAAAPI MaaDestroy(MaaInstanceHandle* inst);
+    MaaBool MAAAPI MaaSetOption(MaaInstanceHandle inst, MaaInstanceOptionKey key, const char* value);
 
     MaaBool MAAAPI MaaBindResource(MaaInstanceHandle inst, MaaResourceHandle res);
     MaaBool MAAAPI MaaBindController(MaaInstanceHandle inst, MaaControllerHandle ctrl);
-    MaaBool MAAAPI MaaInstanceInited(MaaInstanceHandle ctrl);
+    MaaBool MAAAPI MaaInited(MaaInstanceHandle inst);
 
-    MaaTaskId MAAAPI MaaAppendTask(MaaInstanceHandle handle, const char* type, const char* param);
-    MaaBool MAAAPI MaaSetTaskParam(MaaInstanceHandle handle, MaaTaskId id, const char* param);
+    MaaTaskId MAAAPI MaaAppendTask(MaaInstanceHandle inst, const char* type, const char* param);
+    MaaBool MAAAPI MaaSetTaskParam(MaaInstanceHandle inst, MaaTaskId id, const char* param);
 
-    MaaBool MAAAPI MaaStart(MaaInstanceHandle handle);
-    MaaBool MAAAPI MaaStop(MaaInstanceHandle handle);
-    MaaBool MAAAPI MaaRunning(MaaInstanceHandle handle);
+    MaaBool MAAAPI MaaStart(MaaInstanceHandle inst);
+    MaaBool MAAAPI MaaStop(MaaInstanceHandle inst);
+    MaaBool MAAAPI MaaRunning(MaaInstanceHandle inst);
 
-    MaaSize MAAAPI MaaGetResourceHash(MaaInstanceHandle handle, char* buff, MaaSize buff_size);
-    MaaSize MAAAPI MaaGetControllerUUID(MaaInstanceHandle handle, char* buff, MaaSize buff_size);
-    MaaSize MAAAPI MaaGetTasksList(MaaInstanceHandle handle, MaaTaskId* buff, MaaSize buff_size);
+    MaaSize MAAAPI MaaGetResourceHash(MaaInstanceHandle inst, char* buff, MaaSize buff_size);
+    MaaSize MAAAPI MaaGetControllerUUID(MaaInstanceHandle inst, char* buff, MaaSize buff_size);
+    MaaSize MAAAPI MaaGetTaskList(MaaInstanceHandle inst, MaaTaskId* buff, MaaSize buff_size);
 
     /* Utils */
 
     MAAAPI_PORT const char* MAA_CALL MaaVersion();
-    MaaBool MAAAPI MaaSetStaticOption(MaaStaticOptionKey key, const char* value);
-    MaaSize MAAAPI MaaGetNullSize();
+    // MaaBool MAAAPI MaaSetStaticOption(MaaStaticOptionKey key, const char* value);
 
 #ifdef __cplusplus
 }

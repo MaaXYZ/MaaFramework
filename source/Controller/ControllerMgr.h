@@ -9,15 +9,19 @@ class ControllerMgr : public MaaControllerAPI
 {
 public:
     struct Config
-    {};
+    {
+        Config() = default;
+        Config(const std::string& config_json)
+        {
+            // TODO
+        }
+    };
 
 public:
-    virtual ~ControllerMgr();
+    ControllerMgr(const std::filesystem::path& adb_path, const std::string& address, const std::string& config_json,
+                  MaaControllerCallback callback, void* callback_arg);
 
-    virtual MaaControllerAPI* create_ex(const std::filesystem::path& adb_path, const std::string& address,
-                                        const json::value& config_json, MaaControllerCallback callback,
-                                        void* callback_arg) override;
-    virtual void destroy(MaaControllerAPI** handle_ptr) override;
+    virtual ~ControllerMgr() override;
 
     virtual bool set_option(ControllerOptionKey key, const std::string& value) override;
 
@@ -25,14 +29,12 @@ public:
     virtual bool connected() const override;
 
     virtual MaaCtrlId click(int x, int y) override;
+    virtual MaaCtrlId swipe(const std::vector<int>& x_steps, const std::vector<int>& y_steps,
+                            const std::vector<int>& step_delay) override;
     virtual MaaCtrlId screencap() override;
     virtual std::vector<unsigned char> get_image() const override;
 
     virtual std::string get_uuid() const override;
-
-protected:
-    ControllerMgr(const std::filesystem::path& adb_path, const std::string& address, const Config& config,
-                  MaaControllerCallback callback, void* callback_arg);
 
 protected:
     std::filesystem::path adb_path_;
