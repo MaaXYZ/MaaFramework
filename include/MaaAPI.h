@@ -7,13 +7,15 @@
 extern "C"
 {
 #endif
+    MaaBool MAAAPI MaaSetGlobalOption(const char* key, const char* value);
+
     /* Resource */
 
     MaaResourceHandle MAAAPI MaaResourceCreate(const char* path, const char* user_path, MaaResourceCallback callback,
                                                void* callback_arg);
     void MAAAPI MaaResourceDestroy(MaaResourceHandle* res);
     MaaBool MAAAPI MaaResourceIncrementalLoad(MaaResourceHandle res, const char* path);
-    MaaBool MAAAPI MaaResourceSetOption(MaaResourceHandle res, MaaResourceOptionKey key, const char* value);
+    MaaBool MAAAPI MaaResourceSetOption(MaaResourceHandle res, const char* key, const char* value);
     MaaBool MAAAPI MaaResourceLoading(MaaResourceHandle res);
     MaaBool MAAAPI MaaResourceLoaded(MaaResourceHandle res);
     MaaSize MAAAPI MaaResourceGetHash(MaaResourceHandle res, char* buff, MaaSize buff_size);
@@ -36,7 +38,7 @@ extern "C"
 
     void MAAAPI MaaControllerDestroy(MaaControllerHandle* ctrl);
 
-    MaaBool MAAAPI MaaControllerSetOption(MaaControllerHandle ctrl, MaaControllerOptionKey key, const char* value);
+    MaaBool MAAAPI MaaControllerSetOption(MaaControllerHandle ctrl, const char* key, const char* value);
     MaaBool MAAAPI MaaControllerConnecting(MaaControllerHandle ctrl);
     MaaBool MAAAPI MaaControllerConnected(MaaControllerHandle ctrl);
 
@@ -51,7 +53,7 @@ extern "C"
 
     MaaInstanceHandle MAAAPI MaaCreate(MaaInstanceCallback callback, void* callback_arg);
     void MAAAPI MaaDestroy(MaaInstanceHandle* inst);
-    MaaBool MAAAPI MaaSetOption(MaaInstanceHandle inst, MaaInstanceOptionKey key, const char* value);
+    MaaBool MAAAPI MaaSetOption(MaaInstanceHandle inst, const char* key, const char* value);
 
     MaaBool MAAAPI MaaBindResource(MaaInstanceHandle inst, MaaResourceHandle res);
     MaaBool MAAAPI MaaBindController(MaaInstanceHandle inst, MaaControllerHandle ctrl);

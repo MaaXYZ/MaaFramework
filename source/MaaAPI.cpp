@@ -7,20 +7,31 @@
 #include "Controller/MinitouchController.h"
 #include "Controller/PlayToolsController.h"
 #include "Instance/InstanceMgr.h"
+#include "Option/GlobalOption.h"
 #include "Resource/ResourceMgr.h"
+#include "Utils/Logger.hpp"
 #include "Utils/Platform.hpp"
 
 static constexpr MaaSize NullSize = static_cast<MaaSize>(-1);
 static constexpr MaaId InvalidId = 0;
 
+MaaBool MAAAPI MaaSetGlobalOption(const char* key, const char* value)
+{
+    return MAA_NS::GlabalOption::get_instance().set_option(key, value);
+}
+
 MaaResourceHandle MaaResourceCreate(const char* path, const char* user_path, MaaResourceCallback callback,
                                     void* callback_arg)
 {
+    Log.info(MAA_FUNCTION, VAR(path), VAR(user_path), VAR_VOIDP(callback), VAR_VOIDP(callback_arg));
+
     return new MAA_RES_NS::ResourceMgr(MAA_NS::path(path), MAA_NS::path(user_path), callback, callback_arg);
 }
 
 void MaaResourceDestroy(MaaResourceHandle* res)
 {
+    Log.info(MAA_FUNCTION, VAR_VOIDP(res));
+
     if (res == nullptr || *res == nullptr) {
         return;
     }
@@ -30,22 +41,27 @@ void MaaResourceDestroy(MaaResourceHandle* res)
 
 MaaBool MaaResourceIncrementalLoad(MaaResourceHandle res, const char* path)
 {
+    Log.info(MAA_FUNCTION, VAR_VOIDP(res), VAR(path));
+
     if (!res) {
         return false;
     }
     return res->incremental_load(MAA_NS::path(path));
 }
 
-MaaBool MaaResourceSetOption(MaaResourceHandle res, MaaResourceOptionKey key, const char* value)
+MaaBool MaaResourceSetOption(MaaResourceHandle res, const char* key, const char* value)
 {
+    Log.info(MAA_FUNCTION, VAR_VOIDP(res), VAR(key), VAR(value));
+
     if (!res) {
         return false;
     }
-    return res->set_option(static_cast<MAA_NS::ResourceOptionKey>(key), value);
+    return res->set_option(key, value);
 }
 
 MaaBool MaaResourceLoading(MaaResourceHandle res)
 {
+    Log.info(MAA_FUNCTION, VAR_VOIDP(res));
     if (!res) {
         return false;
     }
@@ -54,6 +70,7 @@ MaaBool MaaResourceLoading(MaaResourceHandle res)
 
 MaaBool MaaResourceLoaded(MaaResourceHandle res)
 {
+    Log.info(MAA_FUNCTION, VAR_VOIDP(res));
     if (!res) {
         return false;
     }
@@ -62,6 +79,7 @@ MaaBool MaaResourceLoaded(MaaResourceHandle res)
 
 MaaSize MaaResourceGetHash(MaaResourceHandle res, char* buff, MaaSize buff_size)
 {
+    Log.info(MAA_FUNCTION, VAR_VOIDP(res), VAR_VOIDP(buff), VAR(buff_size));
     if (!res || !buff) {
         return NullSize;
     }
@@ -77,6 +95,7 @@ MaaSize MaaResourceGetHash(MaaResourceHandle res, char* buff, MaaSize buff_size)
 MaaControllerHandle MaaAdbControllerCreate(const char* adb_path, const char* address, const char* config_json,
                                            MaaControllerCallback callback, void* callback_arg)
 {
+    Log.info(MAA_FUNCTION, VAR(adb_path), VAR(address), VAR(config_json), VAR_VOIDP(callback), VAR_VOIDP(callback_arg));
     auto config_opt = MAA_CTRL_NS::AdbConfig::parse(config_json);
     if (!config_opt) {
         return nullptr;
@@ -88,6 +107,7 @@ MaaControllerHandle MaaAdbControllerCreate(const char* adb_path, const char* add
 MaaControllerHandle MaaMinitouchControllerCreate(const char* adb_path, const char* address, const char* config_json,
                                                  MaaControllerCallback callback, void* callback_arg)
 {
+    Log.info(MAA_FUNCTION, VAR(adb_path), VAR(address), VAR(config_json), VAR_VOIDP(callback), VAR_VOIDP(callback_arg));
     auto config_opt = MAA_CTRL_NS::MinitouchConfig::parse(config_json);
     if (!config_opt) {
         return nullptr;
@@ -99,6 +119,7 @@ MaaControllerHandle MaaMinitouchControllerCreate(const char* adb_path, const cha
 MaaControllerHandle MaaMaatouchControllerCreate(const char* adb_path, const char* address, const char* config_json,
                                                 MaaControllerCallback callback, void* callback_arg)
 {
+    Log.info(MAA_FUNCTION, VAR(adb_path), VAR(address), VAR(config_json), VAR_VOIDP(callback), VAR_VOIDP(callback_arg));
     auto config_opt = MAA_CTRL_NS::MaatouchConfig::parse(config_json);
     if (!config_opt) {
         return nullptr;
@@ -110,6 +131,8 @@ MaaControllerHandle MaaMaatouchControllerCreate(const char* adb_path, const char
 MaaControllerHandle MaaPlayToolsControllerCreate(const char* config_json, MaaControllerCallback callback,
                                                  void* callback_arg)
 {
+    Log.info(MAA_FUNCTION, VAR(config_json), VAR_VOIDP(callback), VAR_VOIDP(callback_arg));
+
 #ifdef __APPLE__
 
     auto config_opt = MAA_CTRL_NS::PlayToolsControllerConfig::parse(config_json);
@@ -128,6 +151,7 @@ MaaControllerHandle MaaPlayToolsControllerCreate(const char* config_json, MaaCon
 
 void MaaControllerDestroy(MaaControllerHandle* ctrl)
 {
+    Log.info(MAA_FUNCTION, VAR_VOIDP(ctrl));
     if (ctrl == nullptr || *ctrl == nullptr) {
         return;
     }
@@ -135,16 +159,18 @@ void MaaControllerDestroy(MaaControllerHandle* ctrl)
     *ctrl = nullptr;
 }
 
-MaaBool MaaControllerSetOption(MaaControllerHandle ctrl, MaaControllerOptionKey key, const char* value)
+MaaBool MaaControllerSetOption(MaaControllerHandle ctrl, const char* key, const char* value)
 {
+    Log.info(MAA_FUNCTION, VAR_VOIDP(ctrl), VAR(key), VAR(value));
     if (!ctrl) {
         return false;
     }
-    return ctrl->set_option(static_cast<MAA_NS::ControllerOptionKey>(key), value);
+    return ctrl->set_option(key, value);
 }
 
 MaaBool MaaControllerConnecting(MaaControllerHandle ctrl)
 {
+    Log.info(MAA_FUNCTION, VAR_VOIDP(ctrl));
     if (!ctrl) {
         return false;
     }
@@ -153,6 +179,7 @@ MaaBool MaaControllerConnecting(MaaControllerHandle ctrl)
 
 MaaBool MaaControllerConnected(MaaControllerHandle ctrl)
 {
+    Log.info(MAA_FUNCTION, VAR_VOIDP(ctrl));
     if (!ctrl) {
         return false;
     }
@@ -161,6 +188,7 @@ MaaBool MaaControllerConnected(MaaControllerHandle ctrl)
 
 MaaCtrlId MaaControllerClick(MaaControllerHandle ctrl, int32_t x, int32_t y)
 {
+    Log.info(MAA_FUNCTION, VAR_VOIDP(ctrl), VAR(x), VAR(y));
     if (!ctrl) {
         return InvalidId;
     }
@@ -170,6 +198,8 @@ MaaCtrlId MaaControllerClick(MaaControllerHandle ctrl, int32_t x, int32_t y)
 MaaCtrlId MaaControllerSwipe(MaaControllerHandle ctrl, int32_t* x_steps_buff, int32_t* y_steps_buff,
                              int32_t* step_delay_buff, MaaSize buff_size)
 {
+    Log.info(MAA_FUNCTION, VAR_VOIDP(ctrl), VAR_VOIDP(x_steps_buff), VAR_VOIDP(y_steps_buff),
+             VAR_VOIDP(step_delay_buff), VAR(buff_size));
     if (!ctrl || !x_steps_buff || !y_steps_buff || !step_delay_buff || buff_size < 2) {
         return InvalidId;
     }
@@ -181,6 +211,7 @@ MaaCtrlId MaaControllerSwipe(MaaControllerHandle ctrl, int32_t* x_steps_buff, in
 
 MaaCtrlId MaaControllerScreencap(MaaControllerHandle ctrl)
 {
+    Log.info(MAA_FUNCTION, VAR_VOIDP(ctrl));
     if (!ctrl) {
         return InvalidId;
     }
@@ -189,6 +220,7 @@ MaaCtrlId MaaControllerScreencap(MaaControllerHandle ctrl)
 
 MaaSize MaaControllerGetImage(MaaControllerHandle ctrl, void* buff, MaaSize buff_size)
 {
+    Log.info(MAA_FUNCTION, VAR_VOIDP(ctrl), VAR_VOIDP(buff), VAR(buff_size));
     if (!ctrl || !buff) {
         return NullSize;
     }
@@ -203,6 +235,7 @@ MaaSize MaaControllerGetImage(MaaControllerHandle ctrl, void* buff, MaaSize buff
 
 MaaSize MaaControllerGetUUID(MaaControllerHandle ctrl, char* buff, MaaSize buff_size)
 {
+    Log.info(MAA_FUNCTION, VAR_VOIDP(ctrl), VAR_VOIDP(buff), VAR(buff_size));
     if (!ctrl || !buff) {
         return NullSize;
     }
@@ -217,11 +250,13 @@ MaaSize MaaControllerGetUUID(MaaControllerHandle ctrl, char* buff, MaaSize buff_
 
 MaaInstanceHandle MaaCreate(MaaInstanceCallback callback, void* callback_arg)
 {
+    Log.info(MAA_FUNCTION, VAR_VOIDP(callback), VAR_VOIDP(callback_arg));
     return new MAA_NS::InstanceMgr(callback, callback_arg);
 }
 
 void MaaDestroy(MaaInstanceHandle* inst)
 {
+    Log.info(MAA_FUNCTION, VAR_VOIDP(inst));
     if (inst == nullptr || *inst == nullptr) {
         return;
     }
@@ -229,16 +264,18 @@ void MaaDestroy(MaaInstanceHandle* inst)
     *inst = nullptr;
 }
 
-MaaBool MaaSetOption(MaaInstanceHandle inst, MaaInstanceOptionKey key, const char* value)
+MaaBool MaaSetOption(MaaInstanceHandle inst, const char* key, const char* value)
 {
+    Log.info(MAA_FUNCTION, VAR_VOIDP(inst), VAR(key), VAR(value));
     if (!inst) {
         return false;
     }
-    return inst->set_option(static_cast<MAA_NS::InstanceOptionKey>(key), value);
+    return inst->set_option(key, value);
 }
 
 MaaBool MaaBindResource(MaaInstanceHandle inst, MaaResourceHandle res)
 {
+    Log.info(MAA_FUNCTION, VAR_VOIDP(inst), VAR_VOIDP(res));
     if (!inst || !res) {
         return false;
     }
@@ -247,6 +284,7 @@ MaaBool MaaBindResource(MaaInstanceHandle inst, MaaResourceHandle res)
 
 MaaBool MaaBindController(MaaInstanceHandle inst, MaaControllerHandle ctrl)
 {
+    Log.info(MAA_FUNCTION, VAR_VOIDP(inst), VAR_VOIDP(ctrl));
     if (!inst || !ctrl) {
         return false;
     }
@@ -255,6 +293,7 @@ MaaBool MaaBindController(MaaInstanceHandle inst, MaaControllerHandle ctrl)
 
 MaaBool MaaInited(MaaInstanceHandle inst)
 {
+    Log.info(MAA_FUNCTION, VAR_VOIDP(inst));
     if (!inst) {
         return false;
     }
@@ -263,6 +302,7 @@ MaaBool MaaInited(MaaInstanceHandle inst)
 
 MaaTaskId MaaAppendTask(MaaInstanceHandle inst, const char* type, const char* param)
 {
+    Log.info(MAA_FUNCTION, VAR_VOIDP(inst), VAR(type), VAR(param));
     if (!inst) {
         return InvalidId;
     }
@@ -271,6 +311,7 @@ MaaTaskId MaaAppendTask(MaaInstanceHandle inst, const char* type, const char* pa
 
 MaaBool MaaSetTaskParam(MaaInstanceHandle inst, MaaTaskId id, const char* param)
 {
+    Log.info(MAA_FUNCTION, VAR_VOIDP(inst), VAR(id), VAR(param));
     if (!inst) {
         return false;
     }
@@ -279,6 +320,7 @@ MaaBool MaaSetTaskParam(MaaInstanceHandle inst, MaaTaskId id, const char* param)
 
 MaaBool MaaStart(MaaInstanceHandle inst)
 {
+    Log.info(MAA_FUNCTION, VAR_VOIDP(inst));
     if (!inst) {
         return false;
     }
@@ -287,6 +329,7 @@ MaaBool MaaStart(MaaInstanceHandle inst)
 
 MaaBool MaaStop(MaaInstanceHandle inst)
 {
+    Log.info(MAA_FUNCTION, VAR_VOIDP(inst));
     if (!inst) {
         return false;
     }
@@ -295,6 +338,7 @@ MaaBool MaaStop(MaaInstanceHandle inst)
 
 MaaBool MaaRunning(MaaInstanceHandle inst)
 {
+    Log.info(MAA_FUNCTION, VAR_VOIDP(inst));
     if (!inst) {
         return false;
     }
@@ -303,6 +347,7 @@ MaaBool MaaRunning(MaaInstanceHandle inst)
 
 MaaSize MaaGetResourceHash(MaaInstanceHandle inst, char* buff, MaaSize buff_size)
 {
+    Log.info(MAA_FUNCTION, VAR_VOIDP(inst), VAR_VOIDP(buff), VAR(buff_size));
     if (!inst || !buff) {
         return NullSize;
     }
@@ -317,6 +362,7 @@ MaaSize MaaGetResourceHash(MaaInstanceHandle inst, char* buff, MaaSize buff_size
 
 MaaSize MaaGetControllerUUID(MaaInstanceHandle inst, char* buff, MaaSize buff_size)
 {
+    Log.info(MAA_FUNCTION, VAR_VOIDP(inst), VAR_VOIDP(buff), VAR(buff_size));
     if (!inst || !buff) {
         return NullSize;
     }
@@ -331,6 +377,7 @@ MaaSize MaaGetControllerUUID(MaaInstanceHandle inst, char* buff, MaaSize buff_si
 
 MaaSize MaaGetTaskList(MaaInstanceHandle inst, MaaTaskId* buff, MaaSize buff_size)
 {
+    Log.info(MAA_FUNCTION, VAR_VOIDP(inst), VAR_VOIDP(buff), VAR(buff_size));
     if (!inst || !buff) {
         return NullSize;
     }

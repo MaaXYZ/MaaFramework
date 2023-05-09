@@ -8,7 +8,7 @@ ControllerMgr::ControllerMgr(MaaControllerCallback callback, void* callback_arg)
 
 ControllerMgr::~ControllerMgr() {}
 
-bool ControllerMgr::set_option(ControllerOptionKey key, const std::string& value)
+bool ControllerMgr::set_option(std::string_view key, std::string_view value)
 {
     return false;
 }

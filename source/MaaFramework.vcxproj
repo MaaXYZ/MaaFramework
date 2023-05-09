@@ -30,6 +30,8 @@
     <ClInclude Include="..\include\MaaAPI.h" />
     <ClInclude Include="..\include\MaaPort.h" />
     <ClInclude Include="..\include\MaaDef.h" />
+    <ClInclude Include="Option\GlobalOption.h" />
+    <ClInclude Include="Common\MaaOptions.h" />
     <ClInclude Include="Controller\AdbController.h" />
     <ClInclude Include="Common\MaaConf.h" />
     <ClInclude Include="Common\MaaMsg.h" />
@@ -43,6 +45,8 @@
     <ClInclude Include="Utils\Demangle.hpp" />
     <ClInclude Include="Utils\File.hpp" />
     <ClInclude Include="Utils\ImageIo.hpp" />
+    <ClInclude Include="Utils\Locale.hpp" />
+    <ClInclude Include="Utils\Logger.hpp" />
     <ClInclude Include="Utils\NoWarningCPR.h" />
     <ClInclude Include="Utils\NoWarningCV.h" />
     <ClInclude Include="Utils\NoWarningCVMat.h" />
@@ -52,6 +56,7 @@
     <ClInclude Include="Utils\Platform\PlatformWin32.h" />
     <ClInclude Include="Utils\Platform\SafeWindows.h" />
     <ClInclude Include="Utils\Ranges.hpp" />
+    <ClInclude Include="Utils\SingletonHolder.hpp" />
     <ClInclude Include="Utils\StringMisc.hpp" />
     <ClInclude Include="Utils\Time.hpp" />
   </ItemGroup>
@@ -63,6 +68,7 @@
     <ClCompile Include="Controller\MinitouchController.cpp" />
     <ClCompile Include="Controller\MaatouchController.cpp" />
     <ClCompile Include="Controller\PlayToolsController.cpp" />
+    <ClCompile Include="Option\GlobalOption.cpp" />
     <ClCompile Include="Resource\ResourceMgr.cpp" />
     <ClCompile Include="Utils\Platform\PlatformPosix.cpp" />
     <ClCompile Include="Utils\Platform\PlatformWin32.cpp" />

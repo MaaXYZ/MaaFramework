@@ -15,9 +15,9 @@ public:
     virtual bool bind_controller(MaaControllerAPI* controller) override;
     virtual bool inited() const override;
 
-    virtual bool set_option(InstanceOptionKey key, const std::string& value) override;
+    virtual bool set_option(std::string_view key, std::string_view value) override;
 
-    virtual MaaTaskId append_task(const std::string& type, const std::string& param) override;
+    virtual MaaTaskId append_task(std::string_view type, const std::string& param) override;
     virtual bool set_task_param(MaaTaskId task_id, const std::string& param) override;
     virtual std::vector<MaaTaskId> get_task_list() const override;
 

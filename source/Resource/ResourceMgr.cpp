@@ -9,7 +9,7 @@ ResourceMgr::ResourceMgr(const std::filesystem::path& path, const std::filesyste
 
 ResourceMgr::~ResourceMgr() {}
 
-bool ResourceMgr::set_option(ResourceOptionKey key, const std::string& value)
+bool ResourceMgr::set_option(std::string_view key, std::string_view value)
 {
     return false;
 }

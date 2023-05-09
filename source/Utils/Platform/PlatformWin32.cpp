@@ -80,7 +80,7 @@ std::string path_to_ansi_string(const std::filesystem::path& path)
     }
 }
 
-os_string to_osstring(const std::string_view& utf8_str)
+os_string to_osstring(std::string_view utf8_str)
 {
     int len = MultiByteToWideChar(CP_UTF8, 0, utf8_str.data(), (int)utf8_str.size(), nullptr, 0);
     os_string result(len, 0);

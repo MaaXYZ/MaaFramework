@@ -12,7 +12,7 @@ public:
                 void* callback_arg);
     virtual ~ResourceMgr() override;
 
-    virtual bool set_option(ResourceOptionKey key, const std::string& value) override;
+    virtual bool set_option(std::string_view key, std::string_view value) override;
 
     virtual bool incremental_load(const std::filesystem::path& path) override;
     virtual bool loading() const override;

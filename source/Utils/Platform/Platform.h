@@ -36,11 +36,11 @@ inline std::filesystem::path path(const os_string_view& os_str)
 #ifdef _WIN32
 std::string path_to_crt_string(const std::filesystem::path&);
 std::string path_to_ansi_string(const std::filesystem::path&);
-os_string to_osstring(const std::string_view& utf8_str);
+os_string to_osstring(std::string_view utf8_str);
 std::string from_osstring(const os_string_view&);
 
 // Allow construct a path from utf8-string in win32; string_view ver.
-inline std::filesystem::path path(const std::string_view& utf8_str)
+inline std::filesystem::path path(std::string_view utf8_str)
 {
     return std::filesystem::path(to_osstring(utf8_str));
 }
@@ -50,19 +50,19 @@ inline std::string path_to_utf8_string(const std::filesystem::path& path)
     return from_osstring(path.native());
 }
 
-inline std::string path_to_crt_string(const std::string_view& utf8_path)
+inline std::string path_to_crt_string(std::string_view utf8_path)
 {
     return path_to_crt_string(path(utf8_path));
 }
 
-inline std::string path_to_ansi_string(const std::string_view& utf8_path)
+inline std::string path_to_ansi_string(std::string_view utf8_path)
 {
     return path_to_crt_string(path(utf8_path));
 }
 
 #else
 
-inline os_string_view to_osstring(const std::string_view& utf8_str)
+inline os_string_view to_osstring(std::string_view utf8_str)
 {
     return utf8_str;
 }

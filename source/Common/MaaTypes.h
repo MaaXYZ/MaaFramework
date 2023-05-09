@@ -13,41 +13,12 @@
 #define MAA_VERSION "DEBUG_VERSION"
 #endif
 
-MAA_NS_BEGIN
-
-static constexpr double DoubleDiff = 1e-12;
-static constexpr std::string_view UploadDataSource = "MAA";
-
-enum class StaticOptionKey
-{
-    Invalid = 0,
-};
-
-enum class ResourceOptionKey
-{
-    Invalid = 0,
-};
-
-enum class ControllerOptionKey
-{
-    Invalid = 0,
-    AdbLiteEnabled = 2,
-    KillAdbOnExit = 3,
-};
-
-enum class InstanceOptionKey
-{
-    Invalid = 0,
-};
-
-MAA_NS_END
-
 struct MaaResourceAPI
 {
 public:
     virtual ~MaaResourceAPI() = default;
 
-    virtual bool set_option(MAA_NS::ResourceOptionKey key, const std::string& value) = 0;
+    virtual bool set_option(std::string_view key, std::string_view value) = 0;
 
     virtual bool incremental_load(const std::filesystem::path& path) = 0;
     virtual bool loading() const = 0;
@@ -61,7 +32,7 @@ struct MaaControllerAPI
 public:
     virtual ~MaaControllerAPI() = default;
 
-    virtual bool set_option(MAA_NS::ControllerOptionKey key, const std::string& value) = 0;
+    virtual bool set_option(std::string_view key, std::string_view value) = 0;
 
     virtual bool connecting() const = 0;
     virtual bool connected() const = 0;
@@ -84,9 +55,9 @@ public:
     virtual bool bind_controller(MaaControllerAPI* controller) = 0;
     virtual bool inited() const = 0;
 
-    virtual bool set_option(MAA_NS::InstanceOptionKey key, const std::string& value) = 0;
+    virtual bool set_option(std::string_view key, std::string_view value) = 0;
 
-    virtual MaaTaskId append_task(const std::string& type, const std::string& param) = 0;
+    virtual MaaTaskId append_task(std::string_view type, const std::string& param) = 0;
     virtual bool set_task_param(MaaTaskId task_id, const std::string& param) = 0;
     virtual std::vector<MaaTaskId> get_task_list() const = 0;
 

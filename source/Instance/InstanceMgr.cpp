@@ -23,12 +23,12 @@ bool InstanceMgr::inited() const
     return false;
 }
 
-bool InstanceMgr::set_option(InstanceOptionKey key, const std::string& value)
+bool InstanceMgr::set_option(std::string_view key, std::string_view value)
 {
     return false;
 }
 
-MaaTaskId InstanceMgr::append_task(const std::string& type, const std::string& param)
+MaaTaskId InstanceMgr::append_task(std::string_view type, const std::string& param)
 {
     return MaaTaskId();
 }

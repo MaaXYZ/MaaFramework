@@ -18,7 +18,7 @@ public:
 
     virtual ~ControllerMgr() override;
 
-    virtual bool set_option(ControllerOptionKey key, const std::string& value) override;
+    virtual bool set_option(std::string_view key, std::string_view value) override;
 
     virtual bool connecting() const override;
     virtual bool connected() const override;
