@@ -106,6 +106,16 @@
     <ClInclude Include="Utils\NoWarningCV.h">
       <Filter>源文件\Utils</Filter>
     </ClInclude>
+    <ClInclude Include="Controller\AdbController.h">
+      <Filter>源文件\Controller</Filter>
+    </ClInclude>
+    <ClInclude Include="Controller\MaatouchController.h">
+      <Filter>源文件\Controller</Filter>
+    </ClInclude>
+    <ClInclude Include="Controller\MinitouchController.h">
+      <Filter>源文件\Controller</Filter>
+    </ClInclude>
+    <ClInclude Include="Controller\MacPlayToolsController.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Controller\ControllerMgr.cpp">
@@ -126,5 +136,15 @@
     <ClCompile Include="Utils\Platform\PlatformWin32.cpp">
       <Filter>源文件\Utils\Platform</Filter>
     </ClCompile>
+    <ClCompile Include="Controller\AdbController.cpp">
+      <Filter>源文件\Controller</Filter>
+    </ClCompile>
+    <ClCompile Include="Controller\MaatouchController.cpp">
+      <Filter>源文件\Controller</Filter>
+    </ClCompile>
+    <ClCompile Include="Controller\MinitouchController.cpp">
+      <Filter>源文件\Controller</Filter>
+    </ClCompile>
+    <ClCompile Include="Controller\MacPlayToolsController.cpp" />
   </ItemGroup>
 </Project>

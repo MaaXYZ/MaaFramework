@@ -24,7 +24,7 @@ typedef MaaOptionKey MaaResourceOptionKey;
 typedef MaaOptionKey MaaControllerOptionKey;
 typedef MaaOptionKey MaaInstanceOptionKey;
 
-typedef void(MAA_CALL* MaaApiCallback)(MaaMsgId msg, const char* details_json, void* custom_arg);
+typedef void(MAA_CALL* MaaApiCallback)(MaaMsgId msg, const char* details_json, void* callback_arg);
 typedef MaaApiCallback MaaResourceCallback;
 typedef MaaApiCallback MaaControllerCallback;
 typedef MaaApiCallback MaaInstanceCallback;

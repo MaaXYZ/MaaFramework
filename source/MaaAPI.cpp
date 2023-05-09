@@ -2,7 +2,10 @@
 
 #include <meojson/json.hpp>
 
-#include "Controller/ControllerMgr.h"
+#include "Controller/AdbController.h"
+#include "Controller/MaatouchController.h"
+#include "Controller/MacPlayToolsController.h"
+#include "Controller/MinitouchController.h"
 #include "Instance/InstanceMgr.h"
 #include "Resource/ResourceMgr.h"
 #include "Utils/Platform.hpp"
@@ -10,15 +13,10 @@
 static constexpr MaaSize NullSize = static_cast<MaaSize>(-1);
 static constexpr MaaId InvalidId = 0;
 
-MaaResourceHandle MaaResourceCreate(const char* path, const char* user_path)
+MaaResourceHandle MaaResourceCreate(const char* path, const char* user_path, MaaResourceCallback callback,
+                                      void* callback_arg)
 {
-    return MaaResourceCreateEx(path, user_path, nullptr, nullptr);
-}
-
-MaaResourceHandle MaaResourceCreateEx(const char* path, const char* user_path, MaaResourceCallback callback,
-                                      void* custom_arg)
-{
-    return new MAA_RES_NS::ResourceMgr(MAA_NS::path(path), MAA_NS::path(user_path), callback, custom_arg);
+    return new MAA_RES_NS::ResourceMgr(MAA_NS::path(path), MAA_NS::path(user_path), callback, callback_arg);
 }
 
 void MaaResourceDestroy(MaaResourceHandle* res)
@@ -76,15 +74,48 @@ MaaSize MaaResourceGetHash(MaaResourceHandle res, char* buff, MaaSize buff_size)
     return size;
 }
 
-MaaControllerHandle MaaControllerCreate(const char* adb_path, const char* address, const char* config_json)
+MaaControllerHandle MaaAdbControllerCreate(const char* adb_path, const char* address, const char* config_json,
+                                             MaaControllerCallback callback, void* callback_arg)
 {
-    return MaaControllerCreateEx(adb_path, address, config_json, nullptr, nullptr);
+    auto config_opt = MAA_CTRL_NS::AdbConfig::parse(config_json);
+    if (!config_opt) {
+        return nullptr;
+    }
+
+    return new MAA_CTRL_NS::AdbController(adb_path, address, *config_opt, callback, callback_arg);
 }
 
-MaaControllerHandle MaaControllerCreateEx(const char* adb_path, const char* address, const char* config_json,
-                                          MaaControllerCallback callback, void* custom_arg)
+MaaControllerHandle MaaMinitouchControllerCreate(const char* adb_path, const char* address, const char* config_json,
+                                                   MaaControllerCallback callback, void* callback_arg)
 {
-    return new MAA_CTRL_NS::ControllerMgr(MAA_NS::path(adb_path), address, config_json, callback, custom_arg);
+    auto config_opt = MAA_CTRL_NS::MinitouchConfig::parse(config_json);
+    if (!config_opt) {
+        return nullptr;
+    }
+
+    return new MAA_CTRL_NS::MinitouchController(adb_path, address, *config_opt, callback, callback_arg);
+}
+
+MaaControllerHandle MaaMaatouchControllerCreate(const char* adb_path, const char* address, const char* config_json,
+                                                  MaaControllerCallback callback, void* callback_arg)
+{
+    auto config_opt = MAA_CTRL_NS::MaatouchConfig::parse(config_json);
+    if (!config_opt) {
+        return nullptr;
+    }
+
+    return new MAA_CTRL_NS::MaatouchController(adb_path, address, *config_opt, callback, callback_arg);
+}
+
+MaaControllerHandle MaaMacPlayToolsControllerCreate(const char* config_json, MaaControllerCallback callback,
+                                                      void* callback_arg)
+{
+    auto config_opt = MAA_CTRL_NS::MacPlayToolsControllerConfig::parse(config_json);
+    if (!config_opt) {
+        return nullptr;
+    }
+
+    return new MAA_CTRL_NS::MacPlayToolsController(*config_opt, callback, callback_arg);
 }
 
 void MaaControllerDestroy(MaaControllerHandle* ctrl)
@@ -176,14 +207,9 @@ MaaSize MaaControllerGetUUID(MaaControllerHandle ctrl, char* buff, MaaSize buff_
     return size;
 }
 
-MaaInstanceHandle MaaCreate()
+MaaInstanceHandle MaaCreate(MaaInstanceCallback callback, void* callback_arg)
 {
-    return MaaCreateEx(nullptr, nullptr);
-}
-
-MaaInstanceHandle MaaCreateEx(MaaInstanceCallback callback, void* custom_arg)
-{
-    return new MAA_NS::InstanceMgr(callback, custom_arg);
+    return new MAA_NS::InstanceMgr(callback, callback_arg);
 }
 
 void MaaDestroy(MaaInstanceHandle* inst)

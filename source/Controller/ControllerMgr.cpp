@@ -2,9 +2,8 @@
 
 MAA_CTRL_NS_BEGIN
 
-ControllerMgr::ControllerMgr(const std::filesystem::path& adb_path, const std::string& address,
-                             const std::string& config_json, MaaControllerCallback callback, void* callback_arg)
-    : adb_path_(adb_path), address_(address), config_(config_json), callback_(callback), callback_arg_(callback_arg)
+ControllerMgr::ControllerMgr(MaaControllerCallback callback, void* callback_arg)
+    : callback_(callback), callback_arg_(callback_arg)
 {}
 
 ControllerMgr::~ControllerMgr() {}
@@ -22,22 +21,6 @@ bool ControllerMgr::connecting() const
 bool ControllerMgr::connected() const
 {
     return false;
-}
-
-MaaCtrlId ControllerMgr::click(int x, int y)
-{
-    return MaaCtrlId();
-}
-
-MaaCtrlId ControllerMgr::swipe(const std::vector<int>& x_steps, const std::vector<int>& y_steps,
-                               const std::vector<int>& step_delay)
-{
-    return MaaCtrlId();
-}
-
-MaaCtrlId ControllerMgr::screencap()
-{
-    return MaaCtrlId();
 }
 
 std::vector<unsigned char> ControllerMgr::get_image() const

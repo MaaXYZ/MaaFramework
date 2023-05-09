@@ -31,18 +31,8 @@ enum class ResourceOptionKey
 enum class ControllerOptionKey
 {
     Invalid = 0,
-    ControlMode = 1,
     AdbLiteEnabled = 2,
     KillAdbOnExit = 3,
-};
-
-enum class ControlModeValue
-{
-    Invalid = 0,
-    Adb = 1,
-    Minitouch = 2,
-    Maatouch = 3,
-    MacPlayTools = 4,
 };
 
 enum class InstanceOptionKey
