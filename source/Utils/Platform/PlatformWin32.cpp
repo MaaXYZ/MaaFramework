@@ -80,19 +80,19 @@ std::string path_to_ansi_string(const std::filesystem::path& path)
     }
 }
 
-os_string to_osstring(const std::string& utf8_str)
+os_string to_osstring(const std::string_view& utf8_str)
 {
-    int len = MultiByteToWideChar(CP_UTF8, 0, utf8_str.c_str(), (int)utf8_str.size(), nullptr, 0);
+    int len = MultiByteToWideChar(CP_UTF8, 0, utf8_str.data(), (int)utf8_str.size(), nullptr, 0);
     os_string result(len, 0);
-    MultiByteToWideChar(CP_UTF8, 0, utf8_str.c_str(), (int)utf8_str.size(), result.data(), len);
+    MultiByteToWideChar(CP_UTF8, 0, utf8_str.data(), (int)utf8_str.size(), result.data(), len);
     return result;
 }
 
-std::string from_osstring(const os_string& os_str)
+std::string from_osstring(const os_string_view& os_str)
 {
-    int len = WideCharToMultiByte(CP_UTF8, 0, os_str.c_str(), (int)os_str.size(), nullptr, 0, nullptr, nullptr);
+    int len = WideCharToMultiByte(CP_UTF8, 0, os_str.data(), (int)os_str.size(), nullptr, 0, nullptr, nullptr);
     std::string result(len, 0);
-    WideCharToMultiByte(CP_UTF8, 0, os_str.c_str(), (int)os_str.size(), result.data(), len, nullptr, nullptr);
+    WideCharToMultiByte(CP_UTF8, 0, os_str.data(), (int)os_str.size(), result.data(), len, nullptr, nullptr);
     return result;
 }
 
