@@ -178,14 +178,14 @@ jobs:
         run: |
           [[ ${{ matrix.arch }} = "arm64" ]] && triplet="arm64-osx" || triplet="x64-osx"
           python3 maadeps-download.py ${triplet}
-      - name: Configure MaaCore
+      - name: Configure MaaFramework
         run: |
           cmake -B build -GNinja -DCMAKE_BUILD_TYPE=Release -DCMAKE_OSX_ARCHITECTURES='${{ matrix.arch }}' -DMAA_VERSION='${{ needs.meta.outputs.tag }}'
-      - name: Build MaaCore
+      - name: Build MaaFramework
         run: |
           cmake --build build
           cmake --install build --prefix install
       - uses: actions/upload-artifact@v3
         with:
-          name: MAACore-macos-${{ matrix.arch }}
+          name: MaaFramework-macos-${{ matrix.arch }}
           path: 'install/*.dylib'
