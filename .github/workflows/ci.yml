@@ -151,16 +151,10 @@ jobs:
           mkdir -p install
           cmake --install build --prefix install
 
-      - name: tar files
-        run: |
-          mkdir -p release
-          cd install
-          tar czvf $GITHUB_WORKSPACE/release/MAA-${{ needs.meta.outputs.tag }}-linux-${{ matrix.arch }}.tar.gz .
-
       - uses: actions/upload-artifact@v3
         with:
           name: MAA-linux-${{ matrix.arch }}
-          path: 'release/*.tar.gz'
+          path: 'install'
 
   macOS:
     needs: meta
