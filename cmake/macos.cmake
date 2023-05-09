@@ -1,8 +1,8 @@
 if (BUILD_XCFRAMEWORK)
-    add_custom_command(OUTPUT MaaCore.xcframework
-        COMMAND rm -rf MaaCore.xcframework
-        COMMAND xcodebuild -create-xcframework -library libMaaCore.dylib -headers ${PROJECT_SOURCE_DIR}/include -output MaaCore.xcframework
-        DEPENDS MaaCore
+    add_custom_command(OUTPUT MaaFramework.xcframework
+        COMMAND rm -rf MaaFramework.xcframework
+        COMMAND xcodebuild -create-xcframework -library libMaaFramework.dylib -headers ${PROJECT_SOURCE_DIR}/include -output MaaFramework.xcframework
+        DEPENDS MaaFramework
     )
 
     add_custom_command(OUTPUT OpenCV.xcframework
@@ -21,10 +21,10 @@ if (BUILD_XCFRAMEWORK)
     )
 
     add_custom_target(MaaXCFramework ALL
-        DEPENDS MaaCore MaaCore.xcframework OpenCV.xcframework ONNXRuntime.xcframework MaaDerpLearning.xcframework
+        DEPENDS MaaFramework MaaFramework.xcframework OpenCV.xcframework ONNXRuntime.xcframework MaaDerpLearning.xcframework
     )
 endif (BUILD_XCFRAMEWORK)
 
-target_compile_options(MaaCore PRIVATE
+target_compile_options(MaaFramework PRIVATE
     -Wno-deprecated-declarations
     -Wno-gnu-zero-variadic-macro-arguments)

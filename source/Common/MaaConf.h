@@ -87,3 +87,6 @@
 #ifndef NOMINMAX
 #define NOMINMAX
 #endif
+
+// FIXME: remove this
+#pragma warning(disable : 4100)

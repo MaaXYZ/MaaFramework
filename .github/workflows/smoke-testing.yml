@@ -1,0 +1,56 @@
+name: test
+
+on:
+  push:
+    paths:
+      - '.github/workflows/smoke-testing.yml'
+      - '3rdparty/include/**'
+      - 'include/**'
+      - 'source/**'
+      - 'sample/**'
+      - 'cmake/**'
+      - 'CMakeLists.txt'
+      - '*.sln'
+      - 'resource/**'
+      - 'MaaDeps/**'
+  pull_request:
+    paths:
+      - '.github/workflows/smoke-testing.yml'
+      - '3rdparty/include/**'
+      - 'include/**'
+      - 'source/**'
+      - 'sample/**'
+      - 'cmake/**'
+      - 'CMakeLists.txt'
+      - '*.sln'
+      - 'resource/**'
+      - 'MaaDeps/**'
+  workflow_dispatch:
+
+jobs:
+  smoke-testing:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v3
+      
+      - name: Bootstrap MaaDeps
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          python3 maadeps-download.py x64-windows
+          
+      - name: Add msbuild to PATH
+        uses: microsoft/setup-msbuild@v1
+      - name: Build MaaSample
+        run: |
+          MSBUILD MAA.sln /t:rebuild /p:Configuration="Debug" /p:Platform="x64" /m
+
+      - name: Run Testing
+        run: |
+          .\x64\Debug\Sample.exe
+
+      - name: Upload Logs
+        uses: actions/upload-artifact@v3
+        with:
+          name: log
+          path: .\x64\Debug\debug
