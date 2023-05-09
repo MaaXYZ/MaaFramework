@@ -24,9 +24,8 @@
 
 MAA_PLATFORM_NS_BEGIN
 
-// TODO: 也许应该从os_string计算出os_string_view, 但是我不清楚怎么算
 using os_string = std::filesystem::path::string_type;
-using os_string_view = std::basic_string_view<std::filesystem::path::value_type>;
+using os_string_view = std::basic_string_view<os_string::value_type>;
 
 inline std::filesystem::path path(const os_string_view& os_str)
 {
