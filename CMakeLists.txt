@@ -41,7 +41,7 @@ endif ()
 add_library(header_only_libraries INTERFACE)
 target_include_directories(header_only_libraries INTERFACE 3rdparty/include)
 
-file(GLOB_RECURSE maa_src src/*.cpp)
+file(GLOB_RECURSE maa_src source/*.cpp)
 
 add_library(MaaFramework SHARED ${maa_src})
 
@@ -49,7 +49,7 @@ if (WIN32)
     #注意：相比VS版本缺少了 -D_CONSOLE -D_WINDLL 两项
     target_compile_definitions(MaaFramework PRIVATE ASST_DLL_EXPORTS _UNICODE UNICODE)
 endif ()
-target_include_directories(MaaFramework PUBLIC include PRIVATE src)
+target_include_directories(MaaFramework PUBLIC include PRIVATE source)
 set(MaaFramework_PUBLIC_HEADERS include/MaaAPI.h)
 target_sources(MaaFramework PUBLIC ${MaaFramework_PUBLIC_HEADERS})
 set_target_properties(MaaFramework PROPERTIES
@@ -63,12 +63,12 @@ if(UNIX)
 endif()
 
 if (BUILD_TEST)
-    add_executable(test sample/cpp/main.cpp)
-    set_target_properties(test PROPERTIES
+    add_executable(sample sample/cpp/main.cpp)
+    set_target_properties(sample PROPERTIES
         CXX_STANDARD 20
         CXX_STANDARD_REQUIRED ON
     )
-    target_link_libraries(test MaaFramework)
+    target_link_libraries(sample MaaFramework)
 endif (BUILD_TEST)
 
 find_package(OpenCV REQUIRED COMPONENTS core imgproc imgcodecs videoio)
@@ -105,7 +105,7 @@ if(INSTALL_THIRD_LIBS AND USE_MAADEPS)
 endif()
 
 if (INSTALL_PYTHON)
-    install(DIRECTORY src/Python DESTINATION .)
+    install(DIRECTORY sample/python DESTINATION .)
 endif (INSTALL_PYTHON)
 if (INSTALL_RESOURCE)
     install(DIRECTORY resource DESTINATION .)
