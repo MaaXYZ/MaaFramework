@@ -114,7 +114,7 @@ constexpr from_reference_wrapper_t<T> convert_reference_wrapper(T&& x)
 
 class toansi_ostream
 {
-    std::reference_wrapper<std::ostream> m_ofs;
+    std::reference_wrapper<std::ostream> ofs_;
 
 public:
     toansi_ostream(toansi_ostream&&) = default;
@@ -122,26 +122,26 @@ public:
     toansi_ostream& operator=(toansi_ostream&&) = default;
     toansi_ostream& operator=(const toansi_ostream&) = default;
 
-    toansi_ostream(std::ostream& stream) : m_ofs(stream) {}
+    toansi_ostream(std::ostream& stream) : ofs_(stream) {}
 
-    toansi_ostream(std::reference_wrapper<std::ostream> stream) : m_ofs(stream) {}
+    toansi_ostream(std::reference_wrapper<std::ostream> stream) : ofs_(stream) {}
 
     template <typename T>
     requires has_stream_insertion_operator<std::ostream, T>
     toansi_ostream& operator<<(T&& v)
     {
         if constexpr (std::convertible_to<T, std::string_view>) {
-            m_ofs.get() << utf8_to_ansi(std::forward<T>(v));
+            ofs_.get() << utf8_to_ansi(std::forward<T>(v));
         }
         else {
-            m_ofs.get() << std::forward<T>(v);
+            ofs_.get() << std::forward<T>(v);
         }
         return *this;
     }
 
     toansi_ostream& operator<<(std::ostream& (*pf)(std::ostream&))
     {
-        m_ofs.get() << pf;
+        ofs_.get() << pf;
         return *this;
     }
 };
@@ -149,7 +149,7 @@ public:
 template <typename... Args>
 class ostreams
 {
-    std::tuple<Args...> m_ofss;
+    std::tuple<Args...> ofs_s;
 
 public:
     ostreams(ostreams&&) = default;
@@ -157,13 +157,13 @@ public:
     ostreams& operator=(ostreams&&) = default;
     ostreams& operator=(const ostreams&) = default;
 
-    ostreams(Args&&... args) : m_ofss(std::forward<Args>(args)...) {}
+    ostreams(Args&&... args) : ofs_s(std::forward<Args>(args)...) {}
 
     template <typename T>
     requires has_stream_insertion_operator<std::ostream, T>
     ostreams& operator<<(T&& x)
     {
-        streams_put(m_ofss, x, std::index_sequence_for<Args...> {});
+        streams_put(ofs_s, x, std::index_sequence_for<Args...> {});
         return *this;
     }
     template <typename Tuple, typename T, size_t... Is>
@@ -174,7 +174,7 @@ public:
 
     ostreams& operator<<(std::ostream& (*pf)(std::ostream&))
     {
-        streams_put(m_ofss, pf, std::index_sequence_for<Args...> {});
+        streams_put(ofs_s, pf, std::index_sequence_for<Args...> {});
         return *this;
     }
     template <typename Tuple, size_t... Is>
@@ -248,20 +248,20 @@ public:
             else {
                 // 如果是 level，则不输出 separator
                 if constexpr (!std::same_as<Logger::level, remove_cvref_t<T>>) {
-                    stream_put(m_ofs, m_sep.str);
+                    stream_put(ofs_, m_sep.str);
                 }
-                stream_put(m_ofs, std::forward<T>(arg));
+                stream_put(ofs_, std::forward<T>(arg));
             }
             return *this;
         }
 
         template <typename _stream_t = stream_t>
-        LogStream(std::mutex& mtx, _stream_t&& ofs, Logger::level lv) : m_trace_lock(mtx), m_ofs(ofs)
+        LogStream(std::mutex& mtx, _stream_t&& ofs, Logger::level lv) : m_trace_lock(mtx), ofs_(ofs)
         {
             *this << lv;
         }
         template <typename _stream_t = stream_t, typename... Args>
-        LogStream(std::mutex& mtx, _stream_t&& ofs, Logger::level lv, Args&&... buff) : m_trace_lock(mtx), m_ofs(ofs)
+        LogStream(std::mutex& mtx, _stream_t&& ofs, Logger::level lv, Args&&... buff) : m_trace_lock(mtx), ofs_(ofs)
         {
             ((*this << lv) << ... << std::forward<Args>(buff));
         }
@@ -270,7 +270,7 @@ public:
         LogStream& operator=(LogStream&&) = delete;
         LogStream& operator=(const LogStream&) = delete;
 
-        ~LogStream() { m_ofs << std::endl; }
+        ~LogStream() { ofs_ << std::endl; }
 
     private:
         template <typename Stream, typename T>
@@ -328,7 +328,7 @@ public:
 
         separator m_sep = separator::space;
         std::unique_lock<std::mutex> m_trace_lock;
-        stream_t m_ofs;
+        stream_t ofs_;
     };
 
     // template <typename stream_t>
@@ -346,34 +346,24 @@ public:
 public:
     virtual ~Logger() override { flush(); }
 
-    // static bool set_directory(const std::filesystem::path& dir)
-    // {
-    //     if (!std::filesystem::exists(dir) || !std::filesystem::is_directory(dir)) {
-    //         return false;
-    //     }
-    //     m_directory = dir;
-
-    //     return true;
-    // }
-
     template <typename T>
     auto operator<<(T&& arg)
     {
-        if (!m_ofs || !m_ofs.is_open()) {
-            m_ofs = std::ofstream(m_log_path, std::ios::out | std::ios::app);
+        if (!ofs_ || !ofs_.is_open()) {
+            ofs_ = std::ofstream(log_path_, std::ios::out | std::ios::app);
         }
         if constexpr (std::same_as<level, remove_cvref_t<T>>) {
 #ifdef MAA_DEBUG
-            return LogStream(m_trace_mutex, ostreams { toansi_ostream(std::cout), m_ofs }, arg);
+            return LogStream(trace_mutex_, ostreams { toansi_ostream(std::cout), ofs_ }, arg);
 #else
-            return LogStream(m_trace_mutex, m_ofs, arg);
+            return LogStream(trace_mutex_, ofs_, arg);
 #endif
         }
         else {
 #ifdef MAA_DEBUG
-            return LogStream(m_trace_mutex, ostreams { toansi_ostream(std::cout), m_ofs }, level::trace, arg);
+            return LogStream(trace_mutex_, ostreams { toansi_ostream(std::cout), ofs_ }, level::trace, arg);
 #else
-            return LogStream(m_trace_mutex, m_ofs, level::trace, arg);
+            return LogStream(trace_mutex_, ofs_, level::trace, arg);
 #endif
         }
     }
@@ -413,32 +403,37 @@ public:
 
     void flush()
     {
-        std::unique_lock<std::mutex> m_trace_lock(m_trace_mutex);
-        if (m_ofs.is_open()) {
-            m_ofs.close();
+        std::unique_lock<std::mutex> m_trace_lock(trace_mutex_);
+        if (ofs_.is_open()) {
+            ofs_.close();
         }
     }
 
 private:
     friend class SingletonHolder<Logger>;
 
-    Logger() : m_directory(MAA_NS::GlabalOption::get_instance().log_dir())
+    Logger()
     {
-        std::filesystem::create_directories(m_log_path.parent_path());
+        std::filesystem::create_directories(log_path_.parent_path());
         check_filesize_and_remove();
         log_init_info();
     }
 
     void check_filesize_and_remove() const
     {
+        if (std::filesystem::exists(log_path_)) {
+            return;
+        }
+
         constexpr uintmax_t MaxLogSize = 4ULL * 1024 * 1024;
+        const uintmax_t log_size = std::filesystem::file_size(log_path_);
+        if (log_size < MaxLogSize) {
+            return;
+        }
+
+        const std::filesystem::path bak_path = log_path_.parent_path() / "maa_framework.bak.log";
         try {
-            if (std::filesystem::exists(m_log_path)) {
-                const uintmax_t log_size = std::filesystem::file_size(m_log_path);
-                if (log_size >= MaxLogSize) {
-                    std::filesystem::rename(m_log_path, m_log_bak_path);
-                }
-            }
+            std::filesystem::rename(log_path_, bak_path);
         }
         catch (...) {
         }
@@ -447,19 +442,17 @@ private:
     void log_init_info()
     {
         trace("-----------------------------");
-        trace("MaaCore Process Start");
+        trace("MAA Process Start");
         trace("Version", MAA_VERSION);
         trace("Built at", __DATE__, __TIME__);
-        trace("Log Dir", m_directory);
+        trace("Log Dir", log_path_);
         trace("-----------------------------");
     }
 
-    std::filesystem::path m_directory;
-
-    std::filesystem::path m_log_path = m_directory / "debug" / "maa_framework.log";
-    std::filesystem::path m_log_bak_path = m_directory / "debug" / "maa_framework.bak.log";
-    std::mutex m_trace_mutex;
-    std::ofstream m_ofs;
+    const std::filesystem::path log_path_ =
+        MAA_NS::GlabalOption::get_instance().log_dir() / "debug" / "maa_framework.log";
+    std::mutex trace_mutex_;
+    std::ofstream ofs_;
 };
 
 inline constexpr Logger::separator Logger::separator::none;
