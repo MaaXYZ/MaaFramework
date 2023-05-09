@@ -143,15 +143,18 @@ namespace json
         value& operator=(const value& rhs);
         value& operator=(value&&) noexcept;
 
+        bool operator==(const value& rhs) const;
+        bool operator!=(const value& rhs) const { return !(*this == rhs); }
+
         const value& operator[](size_t pos) const;
         value& operator[](size_t pos);
         value& operator[](const std::string& key);
         value& operator[](std::string&& key);
 
-        value operator|(const object& rhs) &;
-        value operator|(object&& rhs) &;
-        value operator|(const object& rhs) &&;
-        value operator|(object&& rhs) &&;
+        value operator|(const object& rhs)&;
+        value operator|(object&& rhs)&;
+        value operator|(const object& rhs)&&;
+        value operator|(object&& rhs)&&;
 
         value& operator|=(const object& rhs);
         value& operator|=(object&& rhs);
@@ -164,10 +167,10 @@ namespace json
         // value& operator&=(const object& rhs);
         // value& operator&=(object&& rhs);
 
-        value operator+(const array& rhs) &;
-        value operator+(array&& rhs) &;
-        value operator+(const array& rhs) &&;
-        value operator+(array&& rhs) &&;
+        value operator+(const array& rhs)&;
+        value operator+(array&& rhs)&;
+        value operator+(const array& rhs)&&;
+        value operator+(array&& rhs)&&;
 
         value& operator+=(const array& rhs);
         value& operator+=(array&& rhs);
@@ -230,7 +233,7 @@ namespace json
         explicit array(const value& val);
         explicit array(value&& val);
         template <typename ArrayType,
-                  typename EnableT = std::enable_if_t<std::is_constructible_v<value, typename ArrayType::value_type>>>
+            typename EnableT = std::enable_if_t<std::is_constructible_v<value, typename ArrayType::value_type>>>
         array(ArrayType arr);
 
         ~array() noexcept = default;
@@ -283,16 +286,19 @@ namespace json
         const value& operator[](size_t pos) const;
         value& operator[](size_t pos);
 
-        array operator+(const array& rhs) &;
-        array operator+(array&& rhs) &;
-        array operator+(const array& rhs) &&;
-        array operator+(array&& rhs) &&;
+        array operator+(const array& rhs)&;
+        array operator+(array&& rhs)&;
+        array operator+(const array& rhs)&&;
+        array operator+(array&& rhs)&&;
 
         array& operator+=(const array& rhs);
         array& operator+=(array&& rhs);
 
         array& operator=(const array&) = default;
         array& operator=(array&&) noexcept = default;
+
+        bool operator==(const array& rhs) const;
+        bool operator!=(const array& rhs) const { return !(*this == rhs); }
 
         // const raw_array &raw_data() const;
 
@@ -323,8 +329,8 @@ namespace json
         explicit object(const value& val);
         explicit object(value&& val);
         template <typename MapType, typename EnableT = std::enable_if_t<
-                                        std::is_constructible_v<value_type, typename MapType::value_type>>>
-        object(MapType map);
+            std::is_constructible_v<value_type, typename MapType::value_type>>>
+            object(MapType map);
 
         ~object() = default;
 
@@ -371,10 +377,10 @@ namespace json
         value& operator[](const std::string& key);
         value& operator[](std::string&& key);
 
-        object operator|(const object& rhs) &;
-        object operator|(object&& rhs) &;
-        object operator|(const object& rhs) &&;
-        object operator|(object&& rhs) &&;
+        object operator|(const object& rhs)&;
+        object operator|(object&& rhs)&;
+        object operator|(const object& rhs)&&;
+        object operator|(object&& rhs)&&;
 
         object& operator|=(const object& rhs);
         object& operator|=(object&& rhs);
@@ -389,6 +395,9 @@ namespace json
 
         object& operator=(const object&) = default;
         object& operator=(object&&) = default;
+
+        bool operator==(const object& rhs) const;
+        bool operator!=(const object& rhs) const { return !(*this == rhs); }
 
         // const raw_object &raw_data() const;
 
@@ -586,15 +595,15 @@ namespace json
     {
         if constexpr (std::is_constructible<std::string, FirstKey>::value) {
             return is_object() ? as_object()
-                                     .get(std::forward<FirstKey>(first))
-                                     .get_aux(std::forward<T>(default_value), std::forward<RestKeys>(rest)...)
-                               : default_value;
+                .get(std::forward<FirstKey>(first))
+                .get_aux(std::forward<T>(default_value), std::forward<RestKeys>(rest)...)
+                : default_value;
         }
         else if constexpr (std::is_integral<typename std::remove_reference<FirstKey>::type>::value) {
             return is_array() ? as_array()
-                                    .get(std::forward<FirstKey>(first))
-                                    .get_aux(std::forward<T>(default_value), std::forward<RestKeys>(rest)...)
-                              : default_value;
+                .get(std::forward<FirstKey>(first))
+                .get_aux(std::forward<T>(default_value), std::forward<RestKeys>(rest)...)
+                : default_value;
         }
         else {
             static_assert(!sizeof(FirstKey), "Parameter must be integral or std::string constructible");
@@ -606,11 +615,11 @@ namespace json
     {
         if constexpr (std::is_constructible<std::string, UniqueKey>::value) {
             return is_object() ? as_object().get(std::forward<UniqueKey>(first), std::forward<T>(default_value))
-                               : default_value;
+                : default_value;
         }
         else if constexpr (std::is_integral<typename std::remove_reference<UniqueKey>::type>::value) {
             return is_array() ? as_array().get(std::forward<UniqueKey>(first), std::forward<T>(default_value))
-                              : default_value;
+                : default_value;
         }
         else {
             static_assert(!sizeof(UniqueKey), "Parameter must be integral or std::string constructible");
@@ -873,6 +882,26 @@ namespace json
 
     MEOJSON_INLINE value& value::operator=(value&& rhs) noexcept = default;
 
+    MEOJSON_INLINE bool value::operator==(const value& rhs) const
+    {
+        if (_type != rhs._type) return false;
+
+        switch (_type) {
+        case value_type::Null:
+            return rhs.is_null();
+        case value_type::Boolean:
+        case value_type::Number:
+        case value_type::String:
+            return _raw_data == rhs._raw_data;
+        case value_type::Array:
+            return as_array() == rhs.as_array();
+        case value_type::Object:
+            return as_object() == rhs.as_object();
+        default:
+            throw exception("Unknown Value Type");
+        }
+    }
+
     MEOJSON_INLINE const value& value::operator[](size_t pos) const
     {
         // Array not support to create by operator[]
@@ -905,22 +934,22 @@ namespace json
         return as_object()[std::move(key)];
     }
 
-    MEOJSON_INLINE value value::operator|(const object& rhs) &
+    MEOJSON_INLINE value value::operator|(const object& rhs)&
     {
         return as_object() | rhs;
     }
 
-    MEOJSON_INLINE value value::operator|(object&& rhs) &
+    MEOJSON_INLINE value value::operator|(object&& rhs)&
     {
         return as_object() | std::move(rhs);
     }
 
-    MEOJSON_INLINE value value::operator|(const object& rhs) &&
+    MEOJSON_INLINE value value::operator|(const object& rhs)&&
     {
         return std::move(as_object()) | rhs;
     }
 
-    MEOJSON_INLINE value value::operator|(object&& rhs) &&
+    MEOJSON_INLINE value value::operator|(object&& rhs)&&
     {
         return std::move(as_object()) | std::move(rhs);
     }
@@ -969,22 +998,22 @@ namespace json
     //     return *this;
     // }
 
-    MEOJSON_INLINE value value::operator+(const array& rhs) &
+    MEOJSON_INLINE value value::operator+(const array& rhs)&
     {
         return as_array() + rhs;
     }
 
-    MEOJSON_INLINE value value::operator+(array&& rhs) &
+    MEOJSON_INLINE value value::operator+(array&& rhs)&
     {
         return as_array() + std::move(rhs);
     }
 
-    MEOJSON_INLINE value value::operator+(const array& rhs) &&
+    MEOJSON_INLINE value value::operator+(const array& rhs)&&
     {
         return std::move(as_array()) + rhs;
     }
 
-    MEOJSON_INLINE value value::operator+(array&& rhs) &&
+    MEOJSON_INLINE value value::operator+(array&& rhs)&&
     {
         return std::move(as_array()) + std::move(rhs);
     }
@@ -1048,13 +1077,13 @@ namespace json
     }
 
     MEOJSON_INLINE
-    array::array(std::initializer_list<value_type> init_list) : _array_data(init_list)
+        array::array(std::initializer_list<value_type> init_list) : _array_data(init_list)
     {
         ;
     }
 
     MEOJSON_INLINE
-    array::array(raw_array::size_type size) : _array_data(size)
+        array::array(raw_array::size_type size) : _array_data(size)
     {
         ;
     }
@@ -1389,14 +1418,14 @@ namespace json
         return _array_data[pos];
     }
 
-    MEOJSON_INLINE array array::operator+(const array& rhs) &
+    MEOJSON_INLINE array array::operator+(const array& rhs)&
     {
         array temp = *this;
         temp._array_data.insert(_array_data.end(), rhs.begin(), rhs.end());
         return temp;
     }
 
-    MEOJSON_INLINE array array::operator+(array&& rhs) &
+    MEOJSON_INLINE array array::operator+(array&& rhs)&
     {
         array temp = *this;
         temp._array_data.insert(_array_data.end(), std::make_move_iterator(rhs.begin()),
@@ -1404,13 +1433,13 @@ namespace json
         return temp;
     }
 
-    MEOJSON_INLINE array array::operator+(const array& rhs) &&
+    MEOJSON_INLINE array array::operator+(const array& rhs)&&
     {
         _array_data.insert(_array_data.end(), rhs.begin(), rhs.end());
         return std::move(*this);
     }
 
-    MEOJSON_INLINE array array::operator+(array&& rhs) &&
+    MEOJSON_INLINE array array::operator+(array&& rhs)&&
     {
         _array_data.insert(_array_data.end(), std::make_move_iterator(rhs.begin()), std::make_move_iterator(rhs.end()));
         return std::move(*this);
@@ -1426,6 +1455,11 @@ namespace json
     {
         _array_data.insert(_array_data.end(), std::make_move_iterator(rhs.begin()), std::make_move_iterator(rhs.end()));
         return *this;
+    }
+
+    MEOJSON_INLINE bool array::operator==(const array& rhs) const
+    {
+        return _array_data == rhs._array_data;
     }
 
     // const raw_array &array::raw_data() const
@@ -1469,7 +1503,7 @@ namespace json
     }
 
     MEOJSON_INLINE
-    object::object(std::initializer_list<raw_object::value_type> init_list)
+        object::object(std::initializer_list<raw_object::value_type> init_list)
     {
         _object_data.reserve(init_list.size());
         for (const auto& [key, val] : init_list) {
@@ -1530,7 +1564,7 @@ namespace json
         std::string str = "{";
         auto append_kv = [&](const std::string& key, const value& val) {
             str += "\n" + shift + "\"" + unescape_string(key) +
-                   "\": " + val.format(ordered, shift_str, basic_shift_count + 1) + ",";
+                "\": " + val.format(ordered, shift_str, basic_shift_count + 1) + ",";
         };
 
         if (ordered) {
@@ -1800,14 +1834,14 @@ namespace json
         return _object_data[std::move(key)];
     }
 
-    MEOJSON_INLINE object object::operator|(const object& rhs) &
+    MEOJSON_INLINE object object::operator|(const object& rhs)&
     {
         object temp = *this;
         temp._object_data.insert(rhs.begin(), rhs.end());
         return temp;
     }
 
-    MEOJSON_INLINE object object::operator|(object&& rhs) &
+    MEOJSON_INLINE object object::operator|(object&& rhs)&
     {
         object temp = *this;
         // temp._object_data.merge(std::move(rhs._object_data));
@@ -1815,13 +1849,13 @@ namespace json
         return temp;
     }
 
-    MEOJSON_INLINE object object::operator|(const object& rhs) &&
+    MEOJSON_INLINE object object::operator|(const object& rhs)&&
     {
         _object_data.insert(rhs.begin(), rhs.end());
         return std::move(*this);
     }
 
-    MEOJSON_INLINE object object::operator|(object&& rhs) &&
+    MEOJSON_INLINE object object::operator|(object&& rhs)&&
     {
         //_object_data.merge(std::move(rhs._object_data));
         _object_data.insert(std::make_move_iterator(rhs.begin()), std::make_move_iterator(rhs.end()));
@@ -1896,6 +1930,11 @@ namespace json
     //     return *this;
     // }
 
+    MEOJSON_INLINE bool object::operator==(const object& rhs) const
+    {
+        return _object_data == rhs._object_data;
+    }
+
     // const raw_object &object::raw_data() const
     // {
     //     return _object_data;
@@ -1918,15 +1957,19 @@ namespace json
     // *************************
     // *     parser declare    *
     // *************************
+    template <typename StringT, typename StringIterT = StringT::const_iterator>
     class parser
     {
     public:
         ~parser() noexcept = default;
 
         static std::optional<value> parse(const std::string& content);
+        static std::optional<value> parse(const std::wstring& content);
+        static std::optional<value> parse(std::string_view content);
+        static std::optional<value> parse(std::wstring_view content);
 
     private:
-        parser(const std::string::const_iterator& cbegin, const std::string::const_iterator& cend) noexcept
+        parser(StringIterT cbegin, StringIterT cend) noexcept
             : _cur(cbegin), _end(cend)
         {
             ;
@@ -1950,8 +1993,8 @@ namespace json
         bool skip_digit();
 
     private:
-        std::string::const_iterator _cur;
-        std::string::const_iterator _end;
+        StringIterT _cur;
+        StringIterT _end;
     };
 
     // *************************
@@ -1965,7 +2008,22 @@ namespace json
 
     MEOJSON_INLINE std::optional<value> parse(const std::string& content)
     {
-        return parser::parse(content);
+        return parser<std::string>::parse(content);
+    }
+
+    MEOJSON_INLINE std::optional<value> parse(const std::wstring& content)
+    {
+        return parser<std::wstring>::parse(content);
+    }
+
+    MEOJSON_INLINE std::optional<value> parse(std::string_view content)
+    {
+        return parser<std::string_view>::parse(content);
+    }
+
+    MEOJSON_INLINE std::optional<value> parse(std::wstring_view content)
+    {
+        return parser<std::wstring_view>::parse(content);
     }
 
     MEOJSON_INLINE std::ostream& operator<<(std::ostream& out, const value& val)
@@ -2025,12 +2083,20 @@ namespace json
     // *      parser impl      *
     // *************************
 
-    MEOJSON_INLINE std::optional<value> parser::parse(const std::string& content)
+    template<>
+    MEOJSON_INLINE std::optional<value> parser<std::string>::parse(const std::string& content)
     {
         return parser(content.cbegin(), content.cend()).parse();
     }
 
-    MEOJSON_INLINE std::optional<value> parser::parse()
+    template<>
+    MEOJSON_INLINE std::optional<value> parser<std::string_view>::parse(std::string_view content)
+    {
+        return parser(content.cbegin(), content.cend()).parse();
+    }
+
+    template<typename StringT, typename StringIterT>
+    MEOJSON_INLINE std::optional<value> parser<StringT, StringIterT>::parse()
     {
         if (!skip_whitespace()) {
             return std::nullopt;
@@ -2061,7 +2127,8 @@ namespace json
         return result_value;
     }
 
-    MEOJSON_INLINE value parser::parse_value()
+    template<typename StringT, typename StringIterT>
+    MEOJSON_INLINE value parser<StringT, StringIterT>::parse_value()
     {
         switch (*_cur) {
         case 'n':
@@ -2092,7 +2159,8 @@ namespace json
         }
     }
 
-    MEOJSON_INLINE value parser::parse_null()
+    template<typename StringT, typename StringIterT>
+    MEOJSON_INLINE value parser<StringT, StringIterT>::parse_null()
     {
         static constexpr std::string_view null_string = "null";
 
@@ -2108,7 +2176,8 @@ namespace json
         return value();
     }
 
-    MEOJSON_INLINE value parser::parse_boolean()
+    template<typename StringT, typename StringIterT>
+    MEOJSON_INLINE value parser<StringT, StringIterT>::parse_boolean()
     {
         static constexpr std::string_view true_string = "true";
         static constexpr std::string_view false_string = "false";
@@ -2139,7 +2208,8 @@ namespace json
         }
     }
 
-    MEOJSON_INLINE value parser::parse_number()
+    template<typename StringT, typename StringIterT>
+    MEOJSON_INLINE value parser<StringT, StringIterT>::parse_number()
     {
         const auto first = _cur;
         if (*_cur == '-') {
@@ -2177,7 +2247,8 @@ namespace json
         return value(value::value_type::Number, std::string(first, _cur));
     }
 
-    MEOJSON_INLINE value parser::parse_string()
+    template<typename StringT, typename StringIterT>
+    MEOJSON_INLINE value parser<StringT, StringIterT>::parse_string()
     {
         auto string_opt = parse_stdstring();
         if (!string_opt) {
@@ -2186,7 +2257,8 @@ namespace json
         return value(value::value_type::String, std::move(string_opt).value());
     }
 
-    MEOJSON_INLINE value parser::parse_array()
+    template<typename StringT, typename StringIterT>
+    MEOJSON_INLINE value parser<StringT, StringIterT>::parse_array()
     {
         if (*_cur == '[') {
             ++_cur;
@@ -2237,7 +2309,8 @@ namespace json
         return array(std::move(result));
     }
 
-    MEOJSON_INLINE value parser::parse_object()
+    template<typename StringT, typename StringIterT>
+    MEOJSON_INLINE value parser<StringT, StringIterT>::parse_object()
     {
         if (*_cur == '{') {
             ++_cur;
@@ -2302,7 +2375,8 @@ namespace json
         return object(std::move(result));
     }
 
-    MEOJSON_INLINE std::optional<std::string> parser::parse_stdstring()
+    template<typename StringT, typename StringIterT>
+    MEOJSON_INLINE std::optional<std::string> parser<StringT, StringIterT>::parse_stdstring()
     {
         if (*_cur == '"') {
             ++_cur;
@@ -2360,7 +2434,8 @@ namespace json
         return std::string(first, last);
     }
 
-    MEOJSON_INLINE bool parser::skip_whitespace() noexcept
+    template<typename StringT, typename StringIterT>
+    MEOJSON_INLINE bool parser<StringT, StringIterT>::skip_whitespace() noexcept
     {
         while (_cur != _end) {
             switch (*_cur) {
@@ -2379,7 +2454,8 @@ namespace json
         return false;
     }
 
-    MEOJSON_INLINE bool parser::skip_digit()
+    template<typename StringT, typename StringIterT>
+    MEOJSON_INLINE bool parser<StringT, StringIterT>::skip_digit()
     {
         // At least one digit
         if (_cur != _end && std::isdigit(*_cur)) {
