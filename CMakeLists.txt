@@ -43,32 +43,32 @@ target_include_directories(header_only_libraries INTERFACE 3rdparty/include)
 
 file(GLOB_RECURSE maa_src src/*.cpp)
 
-add_library(MaaCore SHARED ${maa_src})
+add_library(MaaFramework SHARED ${maa_src})
 
 if (WIN32)
     #注意：相比VS版本缺少了 -D_CONSOLE -D_WINDLL 两项
-    target_compile_definitions(MaaCore PRIVATE ASST_DLL_EXPORTS _UNICODE UNICODE)
+    target_compile_definitions(MaaFramework PRIVATE ASST_DLL_EXPORTS _UNICODE UNICODE)
 endif ()
-target_include_directories(MaaCore PUBLIC include PRIVATE src)
-set(MaaCore_PUBLIC_HEADERS include/AsstCaller.h include/AsstPort.h)
-target_sources(MaaCore PUBLIC ${MaaCore_PUBLIC_HEADERS})
-set_target_properties(MaaCore PROPERTIES
+target_include_directories(MaaFramework PUBLIC include PRIVATE src)
+set(MaaFramework_PUBLIC_HEADERS include/MaaAPI.h)
+target_sources(MaaFramework PUBLIC ${MaaFramework_PUBLIC_HEADERS})
+set_target_properties(MaaFramework PROPERTIES
     CXX_STANDARD 20
     CXX_STANDARD_REQUIRED ON
-    PUBLIC_HEADER "${MaaCore_PUBLIC_HEADERS}"
+    PUBLIC_HEADER "${MaaFramework_PUBLIC_HEADERS}"
 )
 
 if(UNIX)
-    set_target_properties(MaaCore PROPERTIES INSTALL_RPATH "$ORIGIN/")
+    set_target_properties(MaaFramework PROPERTIES INSTALL_RPATH "$ORIGIN/")
 endif()
 
 if (BUILD_TEST)
-    add_executable(test src/Sample/main.cpp)
+    add_executable(test sample/cpp/main.cpp)
     set_target_properties(test PROPERTIES
         CXX_STANDARD 20
         CXX_STANDARD_REQUIRED ON
     )
-    target_link_libraries(test MaaCore)
+    target_link_libraries(test MaaFramework)
 endif (BUILD_TEST)
 
 find_package(OpenCV REQUIRED COMPONENTS core imgproc imgcodecs videoio)
@@ -78,26 +78,26 @@ find_package(asio REQUIRED)
 find_package(ONNXRuntime)
 find_package(cpr CONFIG REQUIRED)
 
-target_link_libraries(MaaCore ${OpenCV_LIBS} MaaDerpLearning asio::asio ZLIB::ZLIB ONNXRuntime::ONNXRuntime cpr::cpr header_only_libraries)
+target_link_libraries(MaaFramework ${OpenCV_LIBS} MaaDerpLearning asio::asio ZLIB::ZLIB ONNXRuntime::ONNXRuntime cpr::cpr header_only_libraries)
 
 if(WIN32)
-    target_link_libraries(MaaCore ws2_32)
+    target_link_libraries(MaaFramework ws2_32)
 endif()
 
 if (CMAKE_CXX_COMPILER_ID MATCHES ".*Clang")
     find_package(range-v3 REQUIRED)
-    target_link_libraries(MaaCore range-v3::range-v3)
+    target_link_libraries(MaaFramework range-v3::range-v3)
 endif ()
 
 if(INSTALL_DEVEL)
-    set(MaaCore_install_extra_args PUBLIC_HEADER DESTINATION devel/include ARCHIVE DESTINATION devel/lib)
+    set(MaaFramework_install_extra_args PUBLIC_HEADER DESTINATION devel/include ARCHIVE DESTINATION devel/lib)
 endif()
 
-install(TARGETS MaaCore
+install(TARGETS MaaFramework
     RUNTIME DESTINATION .
     LIBRARY DESTINATION .
     PUBLIC_HEADER DESTINATION .
-    ${MaaCore_install_extra_args}
+    ${MaaFramework_install_extra_args}
 )
 
 if(INSTALL_THIRD_LIBS AND USE_MAADEPS)
@@ -136,7 +136,7 @@ if (NOT DEFINED MAA_VERSION AND GIT_FOUND)
     endif ()
 endif ()
 if (NOT MAA_VERSION)
-    set(MAA_VERSION "DEBUG VERSION")
+    set(MAA_VERSION "DEBUG_VERSION")
 endif ()
 message(STATUS "MAA_VERSION=${MAA_VERSION}")
 add_compile_definitions(MAA_VERSION="${MAA_VERSION}")

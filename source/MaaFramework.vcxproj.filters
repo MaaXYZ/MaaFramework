@@ -35,6 +35,9 @@
     <Filter Include="源文件\Utils\Platform">
       <UniqueIdentifier>{9349568b-d1d8-40ea-b55a-a240e5fe89f8}</UniqueIdentifier>
     </Filter>
+    <Filter Include="源文件\Option">
+      <UniqueIdentifier>{9e58b788-5688-48de-92ef-06fb6f24c4c4}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\include\MaaAPI.h">
@@ -115,7 +118,24 @@
     <ClInclude Include="Controller\MinitouchController.h">
       <Filter>源文件\Controller</Filter>
     </ClInclude>
-    <ClInclude Include="Controller\MacPlayToolsController.h" />
+    <ClInclude Include="Common\MaaOptions.h">
+      <Filter>源文件\Common</Filter>
+    </ClInclude>
+    <ClInclude Include="Option\GlobalOption.h">
+      <Filter>源文件\Option</Filter>
+    </ClInclude>
+    <ClInclude Include="Utils\Locale.hpp">
+      <Filter>源文件\Utils</Filter>
+    </ClInclude>
+    <ClInclude Include="Utils\Logger.hpp">
+      <Filter>源文件\Utils</Filter>
+    </ClInclude>
+    <ClInclude Include="Controller\PlayToolsController.h">
+      <Filter>源文件\Controller</Filter>
+    </ClInclude>
+    <ClInclude Include="Utils\SingletonHolder.hpp">
+      <Filter>源文件\Utils</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Controller\ControllerMgr.cpp">
@@ -145,6 +165,11 @@
     <ClCompile Include="Controller\MinitouchController.cpp">
       <Filter>源文件\Controller</Filter>
     </ClCompile>
-    <ClCompile Include="Controller\MacPlayToolsController.cpp" />
+    <ClCompile Include="Option\GlobalOption.cpp">
+      <Filter>源文件\Option</Filter>
+    </ClCompile>
+    <ClCompile Include="Controller\PlayToolsController.cpp">
+      <Filter>源文件\Controller</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>
