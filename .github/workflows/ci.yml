@@ -2,8 +2,6 @@ name: ci
 
 on:
   push:
-    tags:
-      - 'v*'
     paths:
       - '.github/workflows/ci.yml'
       - '3rdparty/include/**'
@@ -92,14 +90,6 @@ jobs:
 
     steps:
       - uses: actions/checkout@v3
-
-      - name: Cache .nuke/temp, ~/.nuget/packages
-        uses: actions/cache@v3
-        with:
-          path: |
-            .nuke/temp
-            ~/.nuget/packages
-          key: ${{ runner.os }}-${{ matrix.msbuild_target }}-${{ hashFiles('**/global.json', '**/*.csproj') }}
 
       - name: Bootstrap MaaDeps
         env:
