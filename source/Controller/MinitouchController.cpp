@@ -4,7 +4,7 @@ MAA_CTRL_NS_BEGIN
 
 std::optional<MinitouchConfig> MinitouchConfig::parse(const std::string& config_json)
 {
-    return std::optional<MinitouchConfig>();
+    return MinitouchConfig();
 }
 
 MinitouchController::MinitouchController(const std::filesystem::path& adb_path, const std::string& address,

@@ -4,7 +4,7 @@ MAA_CTRL_NS_BEGIN
 
 std::optional<AdbConfig> AdbConfig::parse(const std::string& config_json)
 {
-    return std::optional<AdbConfig>();
+    return AdbConfig();
 }
 
 AdbController::AdbController(const std::filesystem::path& adb_path, const std::string& address, const AdbConfig& config,

@@ -62,6 +62,7 @@ MaaBool MaaResourceSetOption(MaaResourceHandle res, const char* key, const char*
 MaaBool MaaResourceLoading(MaaResourceHandle res)
 {
     Log.info(MAA_FUNCTION, VAR_VOIDP(res));
+
     if (!res) {
         return false;
     }
@@ -71,6 +72,7 @@ MaaBool MaaResourceLoading(MaaResourceHandle res)
 MaaBool MaaResourceLoaded(MaaResourceHandle res)
 {
     Log.info(MAA_FUNCTION, VAR_VOIDP(res));
+
     if (!res) {
         return false;
     }
@@ -80,6 +82,7 @@ MaaBool MaaResourceLoaded(MaaResourceHandle res)
 MaaSize MaaResourceGetHash(MaaResourceHandle res, char* buff, MaaSize buff_size)
 {
     Log.info(MAA_FUNCTION, VAR_VOIDP(res), VAR_VOIDP(buff), VAR(buff_size));
+
     if (!res || !buff) {
         return NullSize;
     }
@@ -96,6 +99,7 @@ MaaControllerHandle MaaAdbControllerCreate(const char* adb_path, const char* add
                                            MaaControllerCallback callback, void* callback_arg)
 {
     Log.info(MAA_FUNCTION, VAR(adb_path), VAR(address), VAR(config_json), VAR_VOIDP(callback), VAR_VOIDP(callback_arg));
+
     auto config_opt = MAA_CTRL_NS::AdbConfig::parse(config_json);
     if (!config_opt) {
         return nullptr;
@@ -108,6 +112,7 @@ MaaControllerHandle MaaMinitouchControllerCreate(const char* adb_path, const cha
                                                  MaaControllerCallback callback, void* callback_arg)
 {
     Log.info(MAA_FUNCTION, VAR(adb_path), VAR(address), VAR(config_json), VAR_VOIDP(callback), VAR_VOIDP(callback_arg));
+
     auto config_opt = MAA_CTRL_NS::MinitouchConfig::parse(config_json);
     if (!config_opt) {
         return nullptr;
@@ -120,6 +125,7 @@ MaaControllerHandle MaaMaatouchControllerCreate(const char* adb_path, const char
                                                 MaaControllerCallback callback, void* callback_arg)
 {
     Log.info(MAA_FUNCTION, VAR(adb_path), VAR(address), VAR(config_json), VAR_VOIDP(callback), VAR_VOIDP(callback_arg));
+
     auto config_opt = MAA_CTRL_NS::MaatouchConfig::parse(config_json);
     if (!config_opt) {
         return nullptr;
@@ -152,6 +158,7 @@ MaaControllerHandle MaaPlayToolsControllerCreate(const char* config_json, MaaCon
 void MaaControllerDestroy(MaaControllerHandle* ctrl)
 {
     Log.info(MAA_FUNCTION, VAR_VOIDP(ctrl));
+
     if (ctrl == nullptr || *ctrl == nullptr) {
         return;
     }
@@ -162,6 +169,7 @@ void MaaControllerDestroy(MaaControllerHandle* ctrl)
 MaaBool MaaControllerSetOption(MaaControllerHandle ctrl, const char* key, const char* value)
 {
     Log.info(MAA_FUNCTION, VAR_VOIDP(ctrl), VAR(key), VAR(value));
+
     if (!ctrl) {
         return false;
     }
@@ -171,6 +179,7 @@ MaaBool MaaControllerSetOption(MaaControllerHandle ctrl, const char* key, const 
 MaaBool MaaControllerConnecting(MaaControllerHandle ctrl)
 {
     Log.info(MAA_FUNCTION, VAR_VOIDP(ctrl));
+
     if (!ctrl) {
         return false;
     }
@@ -180,6 +189,7 @@ MaaBool MaaControllerConnecting(MaaControllerHandle ctrl)
 MaaBool MaaControllerConnected(MaaControllerHandle ctrl)
 {
     Log.info(MAA_FUNCTION, VAR_VOIDP(ctrl));
+
     if (!ctrl) {
         return false;
     }
@@ -189,6 +199,7 @@ MaaBool MaaControllerConnected(MaaControllerHandle ctrl)
 MaaCtrlId MaaControllerClick(MaaControllerHandle ctrl, int32_t x, int32_t y)
 {
     Log.info(MAA_FUNCTION, VAR_VOIDP(ctrl), VAR(x), VAR(y));
+
     if (!ctrl) {
         return InvalidId;
     }
@@ -200,6 +211,7 @@ MaaCtrlId MaaControllerSwipe(MaaControllerHandle ctrl, int32_t* x_steps_buff, in
 {
     Log.info(MAA_FUNCTION, VAR_VOIDP(ctrl), VAR_VOIDP(x_steps_buff), VAR_VOIDP(y_steps_buff),
              VAR_VOIDP(step_delay_buff), VAR(buff_size));
+
     if (!ctrl || !x_steps_buff || !y_steps_buff || !step_delay_buff || buff_size < 2) {
         return InvalidId;
     }
@@ -212,6 +224,7 @@ MaaCtrlId MaaControllerSwipe(MaaControllerHandle ctrl, int32_t* x_steps_buff, in
 MaaCtrlId MaaControllerScreencap(MaaControllerHandle ctrl)
 {
     Log.info(MAA_FUNCTION, VAR_VOIDP(ctrl));
+
     if (!ctrl) {
         return InvalidId;
     }
@@ -221,6 +234,7 @@ MaaCtrlId MaaControllerScreencap(MaaControllerHandle ctrl)
 MaaSize MaaControllerGetImage(MaaControllerHandle ctrl, void* buff, MaaSize buff_size)
 {
     Log.info(MAA_FUNCTION, VAR_VOIDP(ctrl), VAR_VOIDP(buff), VAR(buff_size));
+
     if (!ctrl || !buff) {
         return NullSize;
     }
@@ -236,6 +250,7 @@ MaaSize MaaControllerGetImage(MaaControllerHandle ctrl, void* buff, MaaSize buff
 MaaSize MaaControllerGetUUID(MaaControllerHandle ctrl, char* buff, MaaSize buff_size)
 {
     Log.info(MAA_FUNCTION, VAR_VOIDP(ctrl), VAR_VOIDP(buff), VAR(buff_size));
+
     if (!ctrl || !buff) {
         return NullSize;
     }
@@ -251,12 +266,14 @@ MaaSize MaaControllerGetUUID(MaaControllerHandle ctrl, char* buff, MaaSize buff_
 MaaInstanceHandle MaaCreate(MaaInstanceCallback callback, void* callback_arg)
 {
     Log.info(MAA_FUNCTION, VAR_VOIDP(callback), VAR_VOIDP(callback_arg));
+
     return new MAA_NS::InstanceMgr(callback, callback_arg);
 }
 
 void MaaDestroy(MaaInstanceHandle* inst)
 {
     Log.info(MAA_FUNCTION, VAR_VOIDP(inst));
+
     if (inst == nullptr || *inst == nullptr) {
         return;
     }
@@ -267,6 +284,7 @@ void MaaDestroy(MaaInstanceHandle* inst)
 MaaBool MaaSetOption(MaaInstanceHandle inst, const char* key, const char* value)
 {
     Log.info(MAA_FUNCTION, VAR_VOIDP(inst), VAR(key), VAR(value));
+
     if (!inst) {
         return false;
     }
@@ -276,6 +294,7 @@ MaaBool MaaSetOption(MaaInstanceHandle inst, const char* key, const char* value)
 MaaBool MaaBindResource(MaaInstanceHandle inst, MaaResourceHandle res)
 {
     Log.info(MAA_FUNCTION, VAR_VOIDP(inst), VAR_VOIDP(res));
+
     if (!inst || !res) {
         return false;
     }
@@ -285,6 +304,7 @@ MaaBool MaaBindResource(MaaInstanceHandle inst, MaaResourceHandle res)
 MaaBool MaaBindController(MaaInstanceHandle inst, MaaControllerHandle ctrl)
 {
     Log.info(MAA_FUNCTION, VAR_VOIDP(inst), VAR_VOIDP(ctrl));
+
     if (!inst || !ctrl) {
         return false;
     }
@@ -303,6 +323,7 @@ MaaBool MaaInited(MaaInstanceHandle inst)
 MaaTaskId MaaAppendTask(MaaInstanceHandle inst, const char* type, const char* param)
 {
     Log.info(MAA_FUNCTION, VAR_VOIDP(inst), VAR(type), VAR(param));
+
     if (!inst) {
         return InvalidId;
     }
@@ -312,6 +333,7 @@ MaaTaskId MaaAppendTask(MaaInstanceHandle inst, const char* type, const char* pa
 MaaBool MaaSetTaskParam(MaaInstanceHandle inst, MaaTaskId id, const char* param)
 {
     Log.info(MAA_FUNCTION, VAR_VOIDP(inst), VAR(id), VAR(param));
+
     if (!inst) {
         return false;
     }
@@ -321,6 +343,7 @@ MaaBool MaaSetTaskParam(MaaInstanceHandle inst, MaaTaskId id, const char* param)
 MaaBool MaaStart(MaaInstanceHandle inst)
 {
     Log.info(MAA_FUNCTION, VAR_VOIDP(inst));
+
     if (!inst) {
         return false;
     }
@@ -330,6 +353,7 @@ MaaBool MaaStart(MaaInstanceHandle inst)
 MaaBool MaaStop(MaaInstanceHandle inst)
 {
     Log.info(MAA_FUNCTION, VAR_VOIDP(inst));
+
     if (!inst) {
         return false;
     }
@@ -339,6 +363,7 @@ MaaBool MaaStop(MaaInstanceHandle inst)
 MaaBool MaaRunning(MaaInstanceHandle inst)
 {
     Log.info(MAA_FUNCTION, VAR_VOIDP(inst));
+
     if (!inst) {
         return false;
     }
@@ -348,6 +373,7 @@ MaaBool MaaRunning(MaaInstanceHandle inst)
 MaaSize MaaGetResourceHash(MaaInstanceHandle inst, char* buff, MaaSize buff_size)
 {
     Log.info(MAA_FUNCTION, VAR_VOIDP(inst), VAR_VOIDP(buff), VAR(buff_size));
+
     if (!inst || !buff) {
         return NullSize;
     }
@@ -363,6 +389,7 @@ MaaSize MaaGetResourceHash(MaaInstanceHandle inst, char* buff, MaaSize buff_size
 MaaSize MaaGetControllerUUID(MaaInstanceHandle inst, char* buff, MaaSize buff_size)
 {
     Log.info(MAA_FUNCTION, VAR_VOIDP(inst), VAR_VOIDP(buff), VAR(buff_size));
+
     if (!inst || !buff) {
         return NullSize;
     }
@@ -378,6 +405,7 @@ MaaSize MaaGetControllerUUID(MaaInstanceHandle inst, char* buff, MaaSize buff_si
 MaaSize MaaGetTaskList(MaaInstanceHandle inst, MaaTaskId* buff, MaaSize buff_size)
 {
     Log.info(MAA_FUNCTION, VAR_VOIDP(inst), VAR_VOIDP(buff), VAR(buff_size));
+
     if (!inst || !buff) {
         return NullSize;
     }

@@ -4,7 +4,7 @@ MAA_CTRL_NS_BEGIN
 
 std::optional<MaatouchConfig> MaatouchConfig::parse(const std::string& config_json)
 {
-    return std::optional<MaatouchConfig>();
+    return MaatouchConfig();
 }
 
 MaatouchController::MaatouchController(const std::filesystem::path& adb_path, const std::string& address,

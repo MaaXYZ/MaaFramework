@@ -421,7 +421,7 @@ private:
 
     void check_filesize_and_remove() const
     {
-        if (std::filesystem::exists(log_path_)) {
+        if (!std::filesystem::exists(log_path_)) {
             return;
         }
 
