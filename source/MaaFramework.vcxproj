@@ -30,6 +30,9 @@
     <ClInclude Include="..\include\MaaAPI.h" />
     <ClInclude Include="..\include\MaaPort.h" />
     <ClInclude Include="..\include\MaaDef.h" />
+    <ClInclude Include="Controller\Platform\AdbLiteIO.h" />
+    <ClInclude Include="Controller\Platform\PlatformIO.h" />
+    <ClInclude Include="Controller\Platform\Win32IO.h" />
     <ClInclude Include="Option\GlobalOption.h" />
     <ClInclude Include="Common\MaaOptions.h" />
     <ClInclude Include="Controller\AdbController.h" />
@@ -42,6 +45,7 @@
     <ClInclude Include="Controller\MaatouchController.h" />
     <ClInclude Include="Controller\PlayToolsController.h" />
     <ClInclude Include="Resource\ResourceMgr.h" />
+    <ClInclude Include="Utils\AsyncRunner.hpp" />
     <ClInclude Include="Utils\Demangle.hpp" />
     <ClInclude Include="Utils\File.hpp" />
     <ClInclude Include="Utils\ImageIo.hpp" />
@@ -63,6 +67,8 @@
   <ItemGroup>
     <ClCompile Include="Controller\AdbController.cpp" />
     <ClCompile Include="Controller\ControllerMgr.cpp" />
+    <ClCompile Include="Controller\Platform\PlatformFactory.h" />
+    <ClCompile Include="Controller\Platform\Win32IO.cpp" />
     <ClCompile Include="Instance\InstanceMgr.cpp" />
     <ClCompile Include="MaaAPI.cpp" />
     <ClCompile Include="Controller\MinitouchController.cpp" />
@@ -70,6 +76,7 @@
     <ClCompile Include="Controller\PlayToolsController.cpp" />
     <ClCompile Include="Option\GlobalOption.cpp" />
     <ClCompile Include="Resource\ResourceMgr.cpp" />
+    <ClCompile Include="Utils\AsyncRunner.cpp" />
     <ClCompile Include="Utils\Platform\PlatformPosix.cpp" />
     <ClCompile Include="Utils\Platform\PlatformWin32.cpp" />
   </ItemGroup>

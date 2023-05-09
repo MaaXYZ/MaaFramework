@@ -38,6 +38,9 @@
     <Filter Include="源文件\Option">
       <UniqueIdentifier>{9e58b788-5688-48de-92ef-06fb6f24c4c4}</UniqueIdentifier>
     </Filter>
+    <Filter Include="源文件\Controller\Platform">
+      <UniqueIdentifier>{01203b96-9d02-4850-86fc-e2877c547815}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\include\MaaAPI.h">
@@ -136,6 +139,16 @@
     <ClInclude Include="Utils\SingletonHolder.hpp">
       <Filter>源文件\Utils</Filter>
     </ClInclude>
+    <ClInclude Include="Controller\Platform\Win32IO.h">
+      <Filter>源文件\Controller\Platform</Filter>
+    </ClInclude>
+    <ClInclude Include="Controller\Platform\PlatformIO.h">
+      <Filter>源文件\Controller\Platform</Filter>
+    </ClInclude>
+    <ClInclude Include="Controller\Platform\AdbLiteIO.h" />
+    <ClInclude Include="Utils\AsyncRunner.hpp">
+      <Filter>源文件\Utils</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Controller\ControllerMgr.cpp">
@@ -170,6 +183,13 @@
     </ClCompile>
     <ClCompile Include="Controller\PlayToolsController.cpp">
       <Filter>源文件\Controller</Filter>
+    </ClCompile>
+    <ClCompile Include="Controller\Platform\Win32IO.cpp">
+      <Filter>源文件\Controller\Platform</Filter>
+    </ClCompile>
+    <ClCompile Include="Controller\Platform\PlatformFactory.h" />
+    <ClCompile Include="Utils\AsyncRunner.cpp">
+      <Filter>源文件\Utils</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

@@ -96,6 +96,35 @@ std::string from_osstring(const os_string_view& os_str)
     return result;
 }
 
+namespace win32 {
+
+bool CreateOverlappablePipe(HANDLE* read, HANDLE* write, SECURITY_ATTRIBUTES* secattr_read,
+                            SECURITY_ATTRIBUTES* secattr_write, DWORD bufsize, bool overlapped_read,
+                            bool overlapped_write)
+{
+    static std::atomic<size_t> pipeid {};
+    auto pipename = std::format(L"\\\\.\\pipe\\maa-pipe-{}-{}", GetCurrentProcessId(), pipeid++);
+    DWORD read_flag = PIPE_ACCESS_INBOUND;
+    if (overlapped_read) read_flag |= FILE_FLAG_OVERLAPPED;
+    DWORD write_flag = GENERIC_WRITE;
+    if (overlapped_write) write_flag |= FILE_FLAG_OVERLAPPED;
+    auto pipe_read =
+        CreateNamedPipeW(pipename.c_str(), read_flag, PIPE_TYPE_BYTE | PIPE_WAIT, 1, bufsize, bufsize, 0, secattr_read);
+    if (pipe_read == INVALID_HANDLE_VALUE) return false;
+    auto pipe_write =
+        CreateFileW(pipename.c_str(), write_flag, 0, secattr_write, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, nullptr);
+    if (pipe_write == INVALID_HANDLE_VALUE) {
+        CloseHandle(pipe_read);
+        return false;
+    }
+
+    *read = pipe_read;
+    *write = pipe_write;
+    return true;
+}
+
+}
+
 MAA_PLATFORM_NS_END
 
 #endif
