@@ -24,8 +24,7 @@ namespace path_literals
 {
 inline std::filesystem::path operator"" _p(const char* utf8_str, size_t len)
 {
-    // 日后再优化（
-    return path(std::string(std::string_view(utf8_str, len)));
+    return path(std::string_view(utf8_str, len));
 }
 }
 
