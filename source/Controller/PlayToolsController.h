@@ -3,16 +3,16 @@
 
 MAA_CTRL_NS_BEGIN
 
-struct MacPlayToolsControllerConfig
+struct PlayToolsControllerConfig
 {
-    static std::optional<MacPlayToolsControllerConfig> parse(const std::string& config_json);
+    static std::optional<PlayToolsControllerConfig> parse(const std::string& config_json);
 };
 
-class MacPlayToolsController : public ControllerMgr
+class PlayToolsController : public ControllerMgr
 {
 public:
-    MacPlayToolsController(const MacPlayToolsControllerConfig& config, MaaControllerCallback callback, void* callback_arg);
-    virtual ~MacPlayToolsController() override;
+    PlayToolsController(const PlayToolsControllerConfig& config, MaaControllerCallback callback, void* callback_arg);
+    virtual ~PlayToolsController() override;
 
     virtual MaaCtrlId click(int x, int y) override;
     virtual MaaCtrlId swipe(const std::vector<int>& x_steps, const std::vector<int>& y_steps,
@@ -22,7 +22,7 @@ public:
 protected:
     // std::filesystem::path adb_path_;
     // std::string address_;
-    MacPlayToolsControllerConfig playtools_config_;
+    PlayToolsControllerConfig playtools_config_;
 };
 
 MAA_CTRL_NS_END

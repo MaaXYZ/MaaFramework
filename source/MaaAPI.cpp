@@ -4,8 +4,8 @@
 
 #include "Controller/AdbController.h"
 #include "Controller/MaatouchController.h"
-#include "Controller/MacPlayToolsController.h"
 #include "Controller/MinitouchController.h"
+#include "Controller/PlayToolsController.h"
 #include "Instance/InstanceMgr.h"
 #include "Resource/ResourceMgr.h"
 #include "Utils/Platform.hpp"
@@ -14,7 +14,7 @@ static constexpr MaaSize NullSize = static_cast<MaaSize>(-1);
 static constexpr MaaId InvalidId = 0;
 
 MaaResourceHandle MaaResourceCreate(const char* path, const char* user_path, MaaResourceCallback callback,
-                                      void* callback_arg)
+                                    void* callback_arg)
 {
     return new MAA_RES_NS::ResourceMgr(MAA_NS::path(path), MAA_NS::path(user_path), callback, callback_arg);
 }
@@ -75,7 +75,7 @@ MaaSize MaaResourceGetHash(MaaResourceHandle res, char* buff, MaaSize buff_size)
 }
 
 MaaControllerHandle MaaAdbControllerCreate(const char* adb_path, const char* address, const char* config_json,
-                                             MaaControllerCallback callback, void* callback_arg)
+                                           MaaControllerCallback callback, void* callback_arg)
 {
     auto config_opt = MAA_CTRL_NS::AdbConfig::parse(config_json);
     if (!config_opt) {
@@ -86,7 +86,7 @@ MaaControllerHandle MaaAdbControllerCreate(const char* adb_path, const char* add
 }
 
 MaaControllerHandle MaaMinitouchControllerCreate(const char* adb_path, const char* address, const char* config_json,
-                                                   MaaControllerCallback callback, void* callback_arg)
+                                                 MaaControllerCallback callback, void* callback_arg)
 {
     auto config_opt = MAA_CTRL_NS::MinitouchConfig::parse(config_json);
     if (!config_opt) {
@@ -97,7 +97,7 @@ MaaControllerHandle MaaMinitouchControllerCreate(const char* adb_path, const cha
 }
 
 MaaControllerHandle MaaMaatouchControllerCreate(const char* adb_path, const char* address, const char* config_json,
-                                                  MaaControllerCallback callback, void* callback_arg)
+                                                MaaControllerCallback callback, void* callback_arg)
 {
     auto config_opt = MAA_CTRL_NS::MaatouchConfig::parse(config_json);
     if (!config_opt) {
@@ -107,15 +107,23 @@ MaaControllerHandle MaaMaatouchControllerCreate(const char* adb_path, const char
     return new MAA_CTRL_NS::MaatouchController(adb_path, address, *config_opt, callback, callback_arg);
 }
 
-MaaControllerHandle MaaMacPlayToolsControllerCreate(const char* config_json, MaaControllerCallback callback,
-                                                      void* callback_arg)
+MaaControllerHandle MaaPlayToolsControllerCreate(const char* config_json, MaaControllerCallback callback,
+                                                 void* callback_arg)
 {
-    auto config_opt = MAA_CTRL_NS::MacPlayToolsControllerConfig::parse(config_json);
+#ifdef __APPLE__
+
+    auto config_opt = MAA_CTRL_NS::PlayToolsControllerConfig::parse(config_json);
     if (!config_opt) {
         return nullptr;
     }
 
-    return new MAA_CTRL_NS::MacPlayToolsController(*config_opt, callback, callback_arg);
+    return new MAA_CTRL_NS::PlayToolsController(*config_opt, callback, callback_arg);
+
+#else
+
+    return nullptr;
+
+#endif
 }
 
 void MaaControllerDestroy(MaaControllerHandle* ctrl)

@@ -10,7 +10,7 @@ extern "C"
     /* Resource */
 
     MaaResourceHandle MAAAPI MaaResourceCreate(const char* path, const char* user_path, MaaResourceCallback callback,
-                                                 void* callback_arg);
+                                               void* callback_arg);
     void MAAAPI MaaResourceDestroy(MaaResourceHandle* res);
     MaaBool MAAAPI MaaResourceIncrementalLoad(MaaResourceHandle res, const char* path);
     MaaBool MAAAPI MaaResourceSetOption(MaaResourceHandle res, MaaResourceOptionKey key, const char* value);
@@ -21,18 +21,18 @@ extern "C"
     /* Controller */
 
     MaaControllerHandle MAAAPI MaaAdbControllerCreate(const char* adb_path, const char* address,
-                                                        const char* config_json, MaaControllerCallback callback,
-                                                        void* callback_arg);
+                                                      const char* config_json, MaaControllerCallback callback,
+                                                      void* callback_arg);
     MaaControllerHandle MAAAPI MaaMinitouchControllerCreate(const char* adb_path, const char* address,
-                                                              const char* config_json, MaaControllerCallback callback,
-                                                              void* callback_arg);
+                                                            const char* config_json, MaaControllerCallback callback,
+                                                            void* callback_arg);
     MaaControllerHandle MAAAPI MaaMaatouchControllerCreate(const char* adb_path, const char* address,
-                                                             const char* config_json, MaaControllerCallback callback,
-                                                             void* callback_arg);
+                                                           const char* config_json, MaaControllerCallback callback,
+                                                           void* callback_arg);
 
     // FIXME: 不知道要什么参数，等 hg 佬改改测测（
-    MaaControllerHandle MAAAPI MaaMacPlayToolsControllerCreate(const char* config_json, MaaControllerCallback callback,
-                                                             void* callback_arg);
+    MaaControllerHandle MAAAPI MaaPlayToolsControllerCreate(const char* config_json, MaaControllerCallback callback,
+                                                            void* callback_arg);
 
     void MAAAPI MaaControllerDestroy(MaaControllerHandle* ctrl);
 
