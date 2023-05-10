@@ -38,6 +38,9 @@ std::string path_to_ansi_string(const std::filesystem::path&);
 os_string to_osstring(std::string_view utf8_str);
 std::string from_osstring(const os_string_view&);
 
+os_string args_to_cmd(const std::vector<os_string_view>& args);
+std::vector<os_string> cmd_to_args(const os_string& cmd);
+
 // Allow construct a path from utf8-string in win32; string_view ver.
 inline std::filesystem::path path(std::string_view utf8_str)
 {

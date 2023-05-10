@@ -96,7 +96,102 @@ std::string from_osstring(const os_string_view& os_str)
     return result;
 }
 
-namespace win32 {
+// 转义参考:
+// https://ipvb.gitee.io/windows/2019/07/21/CmdlineReEscape/
+// https://github.com/microsoft/terminal/pull/1815
+
+inline os_string escape_one(os_string_view arg)
+{
+    if (arg.empty()) {
+        return os_string(2, '"');
+    }
+
+    bool space = false;
+    auto len = arg.size();
+
+    for (auto ch : arg) {
+        switch (ch) {
+        case '"':
+        case '\\':
+            len++;
+            break;
+        case ' ':
+        case '\t':
+            space = true;
+            break;
+        }
+    }
+
+    if (space) {
+        len += 2;
+    }
+
+    if (len == arg.size()) {
+        return os_string(arg);
+    }
+
+    os_string buf;
+    buf.reserve(len);
+
+    if (space) {
+        buf.push_back('"');
+    }
+
+    int slash = 0;
+
+    for (auto ch : arg) {
+        switch (ch) {
+        case '\\':
+            slash++;
+            buf.push_back('\\');
+            break;
+        case '"':
+            buf.append(os_string(slash + 1, '\\'));
+            buf.push_back('"');
+            break;
+        default:
+            slash = 0;
+            buf.push_back(ch);
+        }
+    }
+    if (space) {
+        buf.append(os_string(slash, '\\'));
+        buf.push_back('"');
+    }
+    return buf;
+}
+
+os_string args_to_cmd(const std::vector<os_string_view>& args) {
+    if (args.size() == 0) {
+        return os_string {};
+    }
+
+    os_string res = escape_one(args[0]);
+    for (int i = 1; i < args.size(); i++) {
+        res.push_back(' ');
+        res.append(escape_one(args[i]));
+    }
+    return res;
+}
+
+std::vector<os_string> cmd_to_args(const os_string& cmd)
+{
+    int argc;
+    std::vector<os_string> res;
+
+    auto result = CommandLineToArgvW(cmd.c_str(), &argc);
+
+    for (int i = 0; i < argc; i++) {
+        res.emplace_back(result[i]);
+    }
+
+    LocalFree(result);
+
+    return res;
+}
+
+namespace win32
+{
 
 bool CreateOverlappablePipe(HANDLE* read, HANDLE* write, SECURITY_ATTRIBUTES* secattr_read,
                             SECURITY_ATTRIBUTES* secattr_write, DWORD bufsize, bool overlapped_read,
