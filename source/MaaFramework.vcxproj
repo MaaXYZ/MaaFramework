@@ -76,7 +76,6 @@
     <ClCompile Include="Controller\PlayToolsController.cpp" />
     <ClCompile Include="Option\GlobalOption.cpp" />
     <ClCompile Include="Resource\ResourceMgr.cpp" />
-    <ClCompile Include="Utils\AsyncRunner.cpp" />
     <ClCompile Include="Utils\Platform\PlatformPosix.cpp" />
     <ClCompile Include="Utils\Platform\PlatformWin32.cpp" />
   </ItemGroup>

@@ -189,9 +189,6 @@
     <ClCompile Include="Controller\Platform\Win32IO.cpp">
       <Filter>源文件\Controller\Platform</Filter>
     </ClCompile>
-    <ClCompile Include="Utils\AsyncRunner.cpp">
-      <Filter>源文件\Utils</Filter>
-    </ClCompile>
     <ClCompile Include="Controller\Platform\PlatformFactory.h">
       <Filter>源文件\Controller\Platform</Filter>
     </ClCompile>
