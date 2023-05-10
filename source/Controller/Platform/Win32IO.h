@@ -13,6 +13,7 @@ MAA_CTRL_NS_BEGIN
 
 class Win32IO : public PlatformIO
 {
+public:
     Win32IO(IPlatformRelatedInstanceInfo* infoProvider);
     Win32IO(const Win32IO&) = delete;
     Win32IO(Win32IO&&) = delete;

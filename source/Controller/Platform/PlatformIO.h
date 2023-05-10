@@ -1,11 +1,11 @@
 #pragma once
 
+#include "Common/MaaConf.h"
+
 #include <chrono>
 #include <memory>
 #include <optional>
 #include <string>
-
-#include "Common/MaaConf.h"
 
 MAA_CTRL_NS_BEGIN
 

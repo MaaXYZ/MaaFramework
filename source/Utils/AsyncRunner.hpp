@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Common/MaaConf.h"
+#include "Logger.hpp"
 
 #include <condition_variable>
 #include <functional>
@@ -10,11 +11,7 @@
 
 MAA_NS_BEGIN
 
-using AsyncCallId = int;
-
-extern std::atomic<AsyncCallId> __call_id;
-
-template<typename Item>
+template<typename Item, typename AsyncCallId = int64_t>
 class AsyncRunner
 {
     AsyncRunner(std::function<void(AsyncCallId id, Item item)> process);
@@ -42,17 +39,19 @@ private:
     std::condition_variable compl_cond_;
 
     bool exit_ = false;
+    AsyncCallId call_id_ = 0;
 };
 
 
-template <typename Item>
-inline AsyncRunner<Item>::AsyncRunner(std::function<void(AsyncCallId id, Item item)> process) : process_(process)
+template <typename Item, typename AsyncCallId>
+inline AsyncRunner<Item, AsyncCallId>::AsyncRunner(std::function<void(AsyncCallId id, Item item)> process)
+    : process_(process)
 {
-    thread_ = std::thread(&Assistant::run, this);
+    thread_ = std::thread(&AsyncRunner<Item>::run, this);
 }
 
-template <typename Item>
-inline AsyncRunner<Item>::~AsyncRunner()
+template <typename Item, typename AsyncCallId>
+inline AsyncRunner<Item, AsyncCallId>::~AsyncRunner()
 {
     LogTraceFunction;
 
@@ -68,8 +67,8 @@ inline AsyncRunner<Item>::~AsyncRunner()
     }
 }
 
-template <typename Item>
-inline void AsyncRunner<Item>::run()
+template <typename Item, typename AsyncCallId>
+inline void AsyncRunner<Item, AsyncCallId>::run()
 {
     LogTraceFunction;
 
@@ -93,27 +92,28 @@ inline void AsyncRunner<Item>::run()
     }
 }
 
-template <typename Item>
-inline AsyncCallId AsyncRunner<Item>::call(Item item, bool block)
+template <typename Item, typename AsyncCallId>
+inline AsyncCallId AsyncRunner<Item, AsyncCallId>::call(Item item, bool block)
 {
     LogTraceFunction;
 
     AsyncCallId id = 0;
     {
         std::unique_lock<std::mutex> lock(mutex_);
-        id = ++__call_id;
+        id = ++call_id_;
         queue_.emplace(id, std::move(item));
         cond_.notify_one();
     }
+
     if (block) {
-        
+        wait(id);
     }
 
     return id;
 }
 
-template <typename Item>
-inline bool AsyncRunner<Item>::wait(AsyncCallId id)
+template <typename Item, typename AsyncCallId>
+inline bool AsyncRunner<Item, AsyncCallId>::wait(AsyncCallId id)
 {
     while (!exit_) {
         std::unique_lock<std::mutex> lock(compl_mutex_);

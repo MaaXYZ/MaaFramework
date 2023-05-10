@@ -1,11 +1,6 @@
 #pragma once
 
 #include "AdbLiteIO.h"
-#ifdef _WIN32
-#include "Win32IO.h"
-#else
-#include "PosixIO.h"
-#endif
 
 MAA_CTRL_NS_BEGIN
 
