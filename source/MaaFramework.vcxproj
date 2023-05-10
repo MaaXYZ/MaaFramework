@@ -30,6 +30,7 @@
     <ClInclude Include="..\include\MaaAPI.h" />
     <ClInclude Include="..\include\MaaPort.h" />
     <ClInclude Include="..\include\MaaDef.h" />
+    <ClInclude Include="Utils\ArgV.hpp" />
     <ClInclude Include="Controller\Platform\AdbLiteIO.h" />
     <ClInclude Include="Controller\Platform\PlatformIO.h" />
     <ClInclude Include="Controller\Platform\Win32IO.h" />

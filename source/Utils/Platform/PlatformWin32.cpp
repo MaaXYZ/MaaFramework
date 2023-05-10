@@ -161,7 +161,7 @@ inline os_string escape_one(os_string_view arg)
     return buf;
 }
 
-os_string args_to_cmd(const std::vector<os_string_view>& args) {
+os_string args_to_cmd(const std::vector<os_string>& args) {
     if (args.size() == 0) {
         return os_string {};
     }

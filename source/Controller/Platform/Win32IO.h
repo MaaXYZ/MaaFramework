@@ -23,16 +23,16 @@ public:
     Win32IO& operator=(const Win32IO&) = delete;
     Win32IO& operator=(Win32IO&&) = delete;
 
-    virtual std::optional<int> call_command(const std::string& cmd, bool recv_by_socket, std::string& pipe_data,
+    virtual std::optional<int> call_command(const ArgVInst& cmd, bool recv_by_socket, std::string& pipe_data,
                                             std::string& sock_data, int64_t timeout,
                                             std::chrono::steady_clock::time_point start_time) override;
 
     virtual std::optional<unsigned short> init_socket(const std::string& local_address) override;
     virtual void close_socket() noexcept override;
 
-    virtual std::shared_ptr<IOHandler> interactive_shell(const std::string& cmd) override;
+    virtual std::shared_ptr<IOHandler> interactive_shell(const ArgVInst& cmd) override;
 
-    virtual void release_adb(const std::string& adb_release, int64_t timeout = 20000);
+    virtual void release_adb(const ArgVInst& adb_release, int64_t timeout = 20000);
 
     MAA_AUTO_DEDUCED_ZERO_INIT_START
     WSADATA m_wsa_data {};

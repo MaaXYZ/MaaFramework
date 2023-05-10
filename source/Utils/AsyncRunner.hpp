@@ -14,6 +14,7 @@ MAA_NS_BEGIN
 template<typename Item, typename AsyncCallId = int64_t>
 class AsyncRunner
 {
+public:
     AsyncRunner(std::function<void(AsyncCallId id, Item item)> process);
     AsyncRunner(const AsyncRunner&) = delete;
     AsyncRunner(AsyncRunner&&) = delete;
@@ -86,7 +87,7 @@ inline void AsyncRunner<Item, AsyncCallId>::run()
         
         process_(id, std::move(item));
 
-        std::unique_lock<std::mutex> lock(compl_mutex_);
+        std::unique_lock<std::mutex> lock2(compl_mutex_);
         compl_id_ = id;
         compl_cond_.notify_all();
     }

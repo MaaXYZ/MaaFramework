@@ -22,7 +22,7 @@ Win32IO::~Win32IO()
     }
 }
 
-std::optional<int> Win32IO::call_command(const std::string& cmd, bool recv_by_socket, std::string& pipe_data,
+std::optional<int> Win32IO::call_command(const ArgVInst& cmd, bool recv_by_socket, std::string& pipe_data,
                                                std::string& sock_data, int64_t timeout,
                                                std::chrono::steady_clock::time_point start_time)
 {
@@ -50,7 +50,7 @@ std::optional<int> Win32IO::call_command(const std::string& cmd, bool recv_by_so
     PROCESS_INFORMATION process_info = { nullptr }; // 进程信息结构体
     MAA_AUTO_DEDUCED_ZERO_INIT_END
 
-    auto cmdline_osstr = to_osstring(cmd);
+    auto cmdline_osstr = cmd.getCommandLine();
     BOOL create_ret =
         CreateProcessW(nullptr, cmdline_osstr.data(), nullptr, nullptr, TRUE, 0, nullptr, nullptr, &si, &process_info);
     if (!create_ret) {
@@ -278,7 +278,7 @@ void Win32IO::close_socket() noexcept
     }
 }
 
-std::shared_ptr<IOHandler> Win32IO::interactive_shell(const std::string& cmd)
+std::shared_ptr<IOHandler> Win32IO::interactive_shell(const ArgVInst& cmd)
 {
     constexpr int PipeReadBuffSize = 4096ULL;
     constexpr int PipeWriteBuffSize = 64 * 1024ULL;
@@ -308,7 +308,7 @@ std::shared_ptr<IOHandler> Win32IO::interactive_shell(const std::string& cmd)
     si.hStdOutput = pipe_child_write;
     si.hStdError = pipe_child_write;
 
-    auto cmd_osstr = to_osstring(cmd);
+    auto cmd_osstr = cmd.getCommandLine();
     BOOL create_ret =
         CreateProcessW(NULL, cmd_osstr.data(), nullptr, nullptr, TRUE, 0, nullptr, nullptr, &si, &m_process_info);
     CloseHandle(pipe_child_write);
@@ -329,7 +329,7 @@ std::shared_ptr<IOHandler> Win32IO::interactive_shell(const std::string& cmd)
     return std::make_shared<IOHandlerWin32>(pipe_parent_read, pipe_parent_write, m_process_info);
 }
 
-void Win32IO::release_adb(const std::string& adb_release, int64_t timeout)
+void Win32IO::release_adb(const ArgVInst& adb_release, int64_t timeout)
 {
     std::string pipe_data;
     std::string sock_data;
