@@ -23,11 +23,12 @@ public:
     AsyncRunner& operator=(const AsyncRunner&) = delete;
     AsyncRunner& operator=(AsyncRunner&&) = delete;
 
-    void run();
     AsyncCallId call(Item item, bool block = false);
     bool wait(AsyncCallId id);
 
 private:
+    void run();
+
     std::function<void(AsyncCallId id, Item item)> process_;
 
     std::queue<std::pair<AsyncCallId, Item>> queue_;

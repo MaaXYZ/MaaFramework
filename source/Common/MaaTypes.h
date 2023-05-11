@@ -38,8 +38,7 @@ public:
     virtual bool connected() const = 0;
 
     virtual MaaCtrlId click(int x, int y) = 0;
-    virtual MaaCtrlId swipe(const std::vector<int>& x_steps, const std::vector<int>& y_steps,
-                            const std::vector<int>& step_delay) = 0;
+    virtual MaaCtrlId swipe(std::vector<int> x_steps, std::vector<int> y_steps, std::vector<int> step_delay) = 0;
     virtual MaaCtrlId screencap() = 0;
     virtual std::vector<unsigned char> get_image() const = 0;
 

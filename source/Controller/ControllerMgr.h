@@ -15,10 +15,9 @@ MAA_CTRL_NS_BEGIN
 class ControllerMgr : public MaaControllerAPI
 {
 public:
-    virtual MaaCtrlId click(int x, int y) override = 0;
-    virtual MaaCtrlId swipe(const std::vector<int>& x_steps, const std::vector<int>& y_steps,
-                            const std::vector<int>& step_delay) override = 0;
-    virtual MaaCtrlId screencap() override = 0;
+    MaaCtrlId click(int x, int y) override final;
+    MaaCtrlId swipe(std::vector<int> x_steps, std::vector<int> y_steps, std::vector<int> step_delay) override final;
+    MaaCtrlId screencap() override final;
 
 public:
     ControllerMgr(MaaControllerCallback callback, void* callback_arg);
@@ -34,11 +33,15 @@ public:
     virtual std::string get_uuid() const override;
 
 protected:
+    // /* 子类构造中调用该函数来启动连接 */
+    // 得搞个工厂
+    MaaCtrlId connect(std::string adb_path, std::string address, std::string config);
+
     virtual bool do_connect(const std::string& adb_path, const std::string& address, const std::string& config) = 0;
     virtual bool do_click(int x, int y) = 0;
     virtual bool do_swipe(const std::vector<int>& x_steps, const std::vector<int>& y_steps,
                             const std::vector<int>& step_delay) = 0;
-    virtual bool do_screencap() = 0;
+    virtual bool do_screencap(cv::Mat& mat) = 0;
 
     MaaControllerCallback callback_ = nullptr;
     void* callback_arg_ = nullptr;
@@ -49,6 +52,7 @@ protected:
         {
             Connect,
             Click,
+            Swipe,
             Screencap
         };
 
@@ -63,17 +67,23 @@ protected:
             int x = 0;
             int y = 0;
         };
+        struct SwipeParams
+        {
+            std::vector<int> x_steps;
+            std::vector<int> y_steps;
+            std::vector<int> step_delay;
+        };
         struct ScreencapParams
         {};
 
         Type type;
-        std::variant<ConnectParams, ClickParams, ScreencapParams> param;
+        std::variant<ConnectParams, ClickParams, SwipeParams, ScreencapParams> param;
     };
 
     AsyncRunner<CallItem, MaaCtrlId>* runner_;
 
 private:
-    void runnerDispatcher(MaaCtrlId id, CallItem item);
+    bool runnerDispatcher(MaaCtrlId id, CallItem item);
 
     std::mutex cache_image_mutex_;
     cv::Mat cache_image_;

@@ -14,20 +14,25 @@ MaatouchController::MaatouchController(const std::filesystem::path& adb_path, co
 
 MaatouchController::~MaatouchController() {}
 
-MaaCtrlId MaatouchController::click(int x, int y)
+bool MaatouchController::do_connect(const std::string& adb_path, const std::string& address, const std::string& config)
 {
-    return MaaCtrlId();
+    return false;
 }
 
-MaaCtrlId MaatouchController::swipe(const std::vector<int>& x_steps, const std::vector<int>& y_steps,
-                                    const std::vector<int>& step_delay)
+bool MaatouchController::do_click(int x, int y)
 {
-    return MaaCtrlId();
+    return false;
 }
 
-MaaCtrlId MaatouchController::screencap()
+bool MaatouchController::do_swipe(const std::vector<int>& x_steps, const std::vector<int>& y_steps,
+                             const std::vector<int>& step_delay)
 {
-    return MaaCtrlId();
+    return false;
+}
+
+bool MaatouchController::do_screencap(cv::Mat& mat)
+{
+    return false;
 }
 
 MAA_CTRL_NS_END
