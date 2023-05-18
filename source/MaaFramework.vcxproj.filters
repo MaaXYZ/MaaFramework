@@ -136,6 +136,9 @@
     <ClInclude Include="Utils\SingletonHolder.hpp">
       <Filter>源文件\Utils</Filter>
     </ClInclude>
+    <ClInclude Include="Task\PipelineTypes.h" />
+    <ClInclude Include="Resource\PipelineConfig.h" />
+    <ClInclude Include="Resource\AbstractResource.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Controller\ControllerMgr.cpp">
@@ -171,5 +174,6 @@
     <ClCompile Include="Controller\PlayToolsController.cpp">
       <Filter>源文件\Controller</Filter>
     </ClCompile>
+    <ClCompile Include="Resource\PipelineConfig.cpp" />
   </ItemGroup>
 </Project>

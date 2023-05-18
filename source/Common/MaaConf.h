@@ -54,31 +54,31 @@
 #define MAA_AUTO_DEDUCED_ZERO_INIT_END
 #endif
 
-#define MAA_NS maa_ns
+#define MAA_NS MaaNS
 #define MAA_NS_BEGIN \
     namespace MAA_NS \
     {
 #define MAA_NS_END }
 
-#define MAA_RES_NS MAA_NS::res_ns
+#define MAA_RES_NS MAA_NS::ResourceNS
 #define MAA_RES_NS_BEGIN \
     namespace MAA_RES_NS \
     {
 #define MAA_RES_NS_END }
 
-#define MAA_CTRL_NS MAA_NS::ctrl_ns
+#define MAA_CTRL_NS MAA_NS::ControllerNS
 #define MAA_CTRL_NS_BEGIN \
     namespace MAA_CTRL_NS \
     {
 #define MAA_CTRL_NS_END }
 
-#define MAA_VISION_NS MAA_NS::vision_ns
+#define MAA_VISION_NS MAA_NS::VisionNS
 #define MAA_VISION_NS_BEGIN \
     namespace MAA_VISION_NS \
     {
 #define MAA_VISION_NS_END }
 
-#define MAA_TASK_NS MAA_NS::task_ns
+#define MAA_TASK_NS MAA_NS::TaskNS
 #define MAA_TASK_NS_BEGIN \
     namespace MAA_TASK_NS \
     {

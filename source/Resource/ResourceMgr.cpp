@@ -11,7 +11,10 @@ ResourceMgr::~ResourceMgr() {}
 
 bool ResourceMgr::set_option(std::string_view key, std::string_view value)
 {
-    return false;
+    std::ignore = key;
+    std::ignore = value;
+
+    return true;
 }
 
 bool ResourceMgr::incremental_load(const std::filesystem::path& path)
