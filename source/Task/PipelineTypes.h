@@ -17,7 +17,7 @@
 
 MAA_PIPELINE_TASK_NS_BEGIN
 
-namespace Vision
+namespace Recognition
 {
 enum class Type
 {
@@ -50,7 +50,7 @@ struct FreezesWaitParams
     double threshold = 0.0;
     int wait_time = 0;
 };
-} // namespace Vision
+} // namespace Recognition
 
 namespace Action
 {
@@ -100,8 +100,8 @@ struct Data
     std::vector<std::string> base;
     bool main_mission = false;
 
-    Vision::Type vision_type = Vision::Type::Invalid;
-    std::variant<Vision::TemplateMatchParams, Vision::OcrParams, Vision::FreezesWaitParams> vision_params;
+    Recognition::Type recognition_type = Recognition::Type::Invalid;
+    std::variant<Recognition::TemplateMatchParams, Recognition::OcrParams, Recognition::FreezesWaitParams> recognition_params;
 
     cv::Rect roi {};
     bool cache = false;
