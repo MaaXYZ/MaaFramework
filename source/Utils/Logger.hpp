@@ -68,6 +68,8 @@ public:
         {
             stream_props();
         }
+        LogStream(const LogStream&) = delete;
+        LogStream(LogStream&&) = default;
         ~LogStream() { stream_endl(); }
 
         template <typename T>
@@ -228,15 +230,23 @@ inline constexpr Logger::separator Logger::separator::tab("\t");
 inline constexpr Logger::separator Logger::separator::newline("\n");
 inline constexpr Logger::separator Logger::separator::comma(",");
 
-class ScopeLogger
+class ScopeEnterHelper
 {
 public:
-    ScopeLogger(std::string_view flag) : flag_(flag) { Logger::get_instance().info(flag_) << "| Enter"; }
-    ScopeLogger(std::string_view flag, std::string_view args) : flag_(flag)
-    {
-        Logger::get_instance().info(flag_) << args << "| Enter";
-    }
-    ~ScopeLogger()
+    ScopeEnterHelper(std::string_view flag) : stream_(Logger::get_instance().info(flag)) {}
+    ~ScopeEnterHelper() { stream_ << "| Enter"; }
+
+    Logger::LogStream<std::ofstream>& operator()() { return stream_; }
+
+private:
+    Logger::LogStream<std::ofstream> stream_;
+};
+
+class ScopeLeaveHelper
+{
+public:
+    ScopeLeaveHelper(std::string_view flag) : flag_(flag) {}
+    ~ScopeLeaveHelper()
     {
         auto duration =
             std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::steady_clock::now() - start_);
@@ -269,9 +279,9 @@ inline constexpr std::string_view maa_pertty_func(std::string_view func)
 #define _CatVarNameWithLine(Var) _Cat(Var, __LINE__)
 #define ScopeHeplerName _CatVarNameWithLine(log_scope_)
 
-#define LogFunc                                    \
-    MAA_NS::ScopeLogger ScopeHeplerName(LOG_FLAG); \
-    ScopeHeplerName
+#define LogFunc                                         \
+    MAA_NS::ScopeLeaveHelper ScopeHeplerName(LOG_FLAG); \
+    MAA_NS::ScopeEnterHelper(LOG_FLAG)()
 
 #define VAR(x) MAA_NS::Logger::separator::none << "[" << #x << "=" << (x) << "] " << MAA_NS::Logger::separator::space
 #define VAR_VOIDP(x) \
