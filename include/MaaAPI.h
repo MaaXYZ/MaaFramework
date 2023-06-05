@@ -62,8 +62,8 @@ extern "C"
     MaaTaskId MAAAPI MaaAppendTask(MaaInstanceHandle inst, const char* type, const char* param);
     MaaBool MAAAPI MaaSetTaskParam(MaaInstanceHandle inst, MaaTaskId id, const char* param);
 
-    MaaBool MAAAPI MaaStart(MaaInstanceHandle inst);
-    MaaBool MAAAPI MaaStop(MaaInstanceHandle inst);
+    // MaaBool MAAAPI MaaStart(MaaInstanceHandle inst);
+    void MAAAPI MaaStop(MaaInstanceHandle inst);
     MaaBool MAAAPI MaaRunning(MaaInstanceHandle inst);
 
     MaaSize MAAAPI MaaGetResourceHash(MaaInstanceHandle inst, char* buff, MaaSize buff_size);

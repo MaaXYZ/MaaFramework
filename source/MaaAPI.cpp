@@ -13,7 +13,6 @@
 #include "Utils/Platform.hpp"
 
 static constexpr MaaSize NullSize = static_cast<MaaSize>(-1);
-static constexpr MaaId InvalidId = 0;
 
 MaaBool MAAAPI MaaSetGlobalOption(const char* key, const char* value)
 {
@@ -61,7 +60,7 @@ MaaBool MaaResourceSetOption(MaaResourceHandle res, const char* key, const char*
 
 MaaBool MaaResourceLoading(MaaResourceHandle res)
 {
-    LogFunc << VAR_VOIDP(res);
+    // LogFunc << VAR_VOIDP(res);
 
     if (!res) {
         return false;
@@ -178,7 +177,7 @@ MaaBool MaaControllerSetOption(MaaControllerHandle ctrl, const char* key, const 
 
 MaaBool MaaControllerConnecting(MaaControllerHandle ctrl)
 {
-    LogFunc << VAR_VOIDP(ctrl);
+    // LogFunc << VAR_VOIDP(ctrl);
 
     if (!ctrl) {
         return false;
@@ -201,7 +200,7 @@ MaaCtrlId MaaControllerClick(MaaControllerHandle ctrl, int32_t x, int32_t y)
     LogFunc << VAR_VOIDP(ctrl) << VAR(x) << VAR(y);
 
     if (!ctrl) {
-        return InvalidId;
+        return MaaInvalidId;
     }
     return ctrl->click(x, y);
 }
@@ -213,7 +212,7 @@ MaaCtrlId MaaControllerSwipe(MaaControllerHandle ctrl, int32_t* x_steps_buff, in
             << VAR(buff_size);
 
     if (!ctrl || !x_steps_buff || !y_steps_buff || !step_delay_buff || buff_size < 2) {
-        return InvalidId;
+        return MaaInvalidId;
     }
     std::vector<int32_t> x_steps(x_steps_buff, x_steps_buff + buff_size);
     std::vector<int32_t> y_steps(y_steps_buff, y_steps_buff + buff_size);
@@ -226,7 +225,7 @@ MaaCtrlId MaaControllerScreencap(MaaControllerHandle ctrl)
     LogFunc << VAR_VOIDP(ctrl);
 
     if (!ctrl) {
-        return InvalidId;
+        return MaaInvalidId;
     }
     return ctrl->screencap();
 }
@@ -325,7 +324,7 @@ MaaTaskId MaaAppendTask(MaaInstanceHandle inst, const char* type, const char* pa
     LogFunc << VAR_VOIDP(inst) << VAR(type) << VAR(param);
 
     if (!inst) {
-        return InvalidId;
+        return MaaInvalidId;
     }
     return inst->append_task(type, param);
 }
@@ -340,29 +339,20 @@ MaaBool MaaSetTaskParam(MaaInstanceHandle inst, MaaTaskId id, const char* param)
     return inst->set_task_param(id, param);
 }
 
-MaaBool MaaStart(MaaInstanceHandle inst)
+void MaaStop(MaaInstanceHandle inst)
 {
     LogFunc << VAR_VOIDP(inst);
 
     if (!inst) {
-        return false;
+        return;
     }
-    return inst->start();
-}
 
-MaaBool MaaStop(MaaInstanceHandle inst)
-{
-    LogFunc << VAR_VOIDP(inst);
-
-    if (!inst) {
-        return false;
-    }
-    return inst->stop();
+    inst->stop();
 }
 
 MaaBool MaaRunning(MaaInstanceHandle inst)
 {
-    LogFunc << VAR_VOIDP(inst);
+    // LogFunc << VAR_VOIDP(inst);
 
     if (!inst) {
         return false;

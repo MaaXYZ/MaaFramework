@@ -299,20 +299,17 @@ inline constexpr std::string_view pertty_file(std::string_view file)
     return file.substr(pos + 1, file.size());
 }
 
-inline constexpr std::string_view pertty_func(std::string_view func)
-{
-    size_t end = func.find('(');
-    size_t beg = func.rfind(' ', end);
-    return func.substr(beg + 1, end - beg - 1);
-}
-
 #define STRINGIZE(x) STRINGIZE2(x)
 #define STRINGIZE2(x) #x
 #define LINE_STRING STRINGIZE(__LINE__)
 
 #define MAA_FILE MAA_NS::pertty_file(__FILE__)
 #define MAA_LINE std::string_view("L" LINE_STRING)
-#define MAA_FUNCTION MAA_NS::pertty_func(std::source_location::current().function_name())
+#ifdef _MSC_VER
+#define MAA_FUNCTION std::string_view(__FUNCTION__)
+#else
+#define MAA_FUNCTION std::string_view(__PRETTY_FUNCTION__)
+#endif
 #define LOG_ARGS MAA_FILE, MAA_LINE, MAA_FUNCTION
 
 #define LogDebug MAA_NS::Logger::get_instance().debug(LOG_ARGS)

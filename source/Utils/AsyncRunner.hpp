@@ -30,6 +30,9 @@ public:
     Id append(Item item, bool block = false);
     bool wait(Id id);
 
+    void clear();
+    bool running() const;
+
 private:
     void working();
 
@@ -39,13 +42,14 @@ private:
     std::mutex mutex_;
     std::condition_variable cond_;
     std::thread thread_;
+    std::atomic_bool running_ = false;
 
     Id compl_id_ = 0;
     std::mutex compl_mutex_;
     std::condition_variable compl_cond_;
 
     std::atomic_bool exit_ = false;
-    inline static Id global_id_ = 0;
+    inline static Id cross_inst_id_ = 0;
 };
 
 template <typename Item>
@@ -68,6 +72,11 @@ inline AsyncRunner<Item>::~AsyncRunner()
         cond_.notify_all();
     }
 
+    {
+        std::unique_lock<std::mutex> lock(compl_mutex_);
+        compl_cond_.notify_all();
+    }
+
     if (thread_.joinable()) {
         thread_.join();
     }
@@ -82,9 +91,12 @@ inline void AsyncRunner<Item>::working()
         std::unique_lock<std::mutex> lock(mutex_);
 
         if (queue_.empty()) {
+            running_ = false;
             cond_.wait(lock);
             continue;
         }
+
+        running_ = true;
 
         auto [id, item] = std::move(queue_.front());
         queue_.pop();
@@ -92,7 +104,7 @@ inline void AsyncRunner<Item>::working()
 
         process_(id, std::move(item));
 
-        std::unique_lock<std::mutex> lock2(compl_mutex_);
+        std::unique_lock<std::mutex> compl_lock(compl_mutex_);
         compl_id_ = id;
         compl_cond_.notify_all();
     }
@@ -103,10 +115,10 @@ inline AsyncRunner<Item>::Id AsyncRunner<Item>::append(Item item, bool block)
 {
     LogFunc;
 
-    Id id = 0;
+    Id id = MaaInvalidId;
     {
         std::unique_lock<std::mutex> lock(mutex_);
-        id = ++global_id_;
+        id = ++cross_inst_id_;
         queue_.emplace(id, std::move(item));
         cond_.notify_one();
     }
@@ -128,9 +140,34 @@ inline bool AsyncRunner<Item>::wait(Id id)
         if (id <= compl_id_) {
             return true;
         }
+
         compl_cond_.wait(lock);
     }
     return false;
+}
+
+template <typename Item>
+inline void AsyncRunner<Item>::clear()
+{
+    LogFunc;
+
+    {
+        std::unique_lock<std::mutex> lock(mutex_);
+        queue_ = {};
+        cond_.notify_all();
+    }
+
+    {
+        std::unique_lock<std::mutex> lock(compl_mutex_);
+        compl_id_ = cross_inst_id_;
+        compl_cond_.notify_all();
+    }
+}
+
+template <typename Item>
+inline bool AsyncRunner<Item>::running() const
+{
+    return running_;
 }
 
 MAA_NS_END

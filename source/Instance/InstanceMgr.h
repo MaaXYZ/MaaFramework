@@ -19,12 +19,11 @@ public:
 
     virtual bool set_option(std::string_view key, std::string_view value) override;
 
-    virtual MaaTaskId append_task(std::string_view type, const std::string& param) override;
-    virtual bool set_task_param(MaaTaskId task_id, const std::string& param) override;
+    virtual MaaTaskId append_task(std::string_view type, std::string_view param) override;
+    virtual bool set_task_param(MaaTaskId task_id, std::string_view param) override;
     virtual std::vector<MaaTaskId> get_task_list() const override;
 
-    virtual bool start() override;
-    virtual bool stop() override;
+    virtual void stop() override;
     virtual bool running() const override;
 
     virtual std::string get_resource_hash() const override;
@@ -39,8 +38,8 @@ protected:
         json::value details;
     };
 
-    void run_task(AsyncRunner<TaskPtr>::Id id, TaskPtr task_ptr);
-    void notify(AsyncRunner<NotifyData>::Id id, NotifyData cb_data);
+    void run_task(typename AsyncRunner<TaskPtr>::Id id, TaskPtr task_ptr);
+    void notify(typename AsyncRunner<NotifyData>::Id id, NotifyData cb_data);
 
 protected:
     MaaInstanceCallback callback_ = nullptr;
@@ -51,6 +50,8 @@ protected:
 
     std::unique_ptr<AsyncRunner<TaskPtr>> task_runner_ = nullptr;
     std::unique_ptr<AsyncRunner<NotifyData>> notify_runner_ = nullptr;
+
+    std::map<typename AsyncRunner<TaskPtr>::Id, TaskPtr> task_map_;
 };
 
 MAA_NS_END

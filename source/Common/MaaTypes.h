@@ -13,6 +13,8 @@
 #define MAA_VERSION "DEBUG_VERSION"
 #endif
 
+inline static constexpr MaaId MaaInvalidId = 0;
+
 struct MaaResourceAPI
 {
 public:
@@ -57,12 +59,11 @@ public:
 
     virtual bool set_option(std::string_view key, std::string_view value) = 0;
 
-    virtual MaaTaskId append_task(std::string_view type, const std::string& param) = 0;
-    virtual bool set_task_param(MaaTaskId task_id, const std::string& param) = 0;
+    virtual MaaTaskId append_task(std::string_view type, std::string_view param) = 0;
+    virtual bool set_task_param(MaaTaskId task_id, std::string_view param) = 0;
     virtual std::vector<MaaTaskId> get_task_list() const = 0;
 
-    virtual bool start() = 0;
-    virtual bool stop() = 0;
+    virtual void stop() = 0;
     virtual bool running() const = 0;
 
     virtual std::string get_resource_hash() const = 0;

@@ -10,8 +10,9 @@ public:
     virtual ~PipelineTask() override = default;
 
     virtual bool run() override;
+    virtual bool set_param(const json::value& param) override;
 
-    virtual std::string_view info() const override { return "PipelineTask"; }
+    virtual std::string_view type() const override { return "PipelineTask"; }
 
 protected:
 };
