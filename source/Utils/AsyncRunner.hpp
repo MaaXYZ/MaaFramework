@@ -11,7 +11,7 @@
 
 MAA_NS_BEGIN
 
-template<typename Item, typename AsyncCallId = int64_t>
+template <typename Item, typename AsyncCallId = int64_t>
 class AsyncRunner
 {
 public:
@@ -40,22 +40,23 @@ private:
     std::mutex compl_mutex_;
     std::condition_variable compl_cond_;
 
-    bool exit_ = false;
+    std::atomic_bool exit_ = false;
     AsyncCallId call_id_ = 0;
 };
-
 
 template <typename Item, typename AsyncCallId>
 inline AsyncRunner<Item, AsyncCallId>::AsyncRunner(std::function<void(AsyncCallId id, Item item)> process)
     : process_(process)
 {
+    LogFunc << VAR_VOIDP(process_);
+
     thread_ = std::thread(&AsyncRunner<Item>::run, this);
 }
 
 template <typename Item, typename AsyncCallId>
 inline AsyncRunner<Item, AsyncCallId>::~AsyncRunner()
 {
-    LogTraceFunction;
+    LogFunc;
 
     exit_ = true;
 
@@ -72,7 +73,7 @@ inline AsyncRunner<Item, AsyncCallId>::~AsyncRunner()
 template <typename Item, typename AsyncCallId>
 inline void AsyncRunner<Item, AsyncCallId>::run()
 {
-    LogTraceFunction;
+    LogFunc;
 
     while (!exit_) {
         std::unique_lock<std::mutex> lock(mutex_);
@@ -85,7 +86,7 @@ inline void AsyncRunner<Item, AsyncCallId>::run()
         auto [id, item] = std::move(queue_.front());
         queue_.pop();
         lock.unlock();
-        
+
         process_(id, std::move(item));
 
         std::unique_lock<std::mutex> lock2(compl_mutex_);
@@ -97,7 +98,7 @@ inline void AsyncRunner<Item, AsyncCallId>::run()
 template <typename Item, typename AsyncCallId>
 inline AsyncCallId AsyncRunner<Item, AsyncCallId>::call(Item item, bool block)
 {
-    LogTraceFunction;
+    LogFunc << VAR(item) << VAR(block);
 
     AsyncCallId id = 0;
     {
@@ -117,6 +118,8 @@ inline AsyncCallId AsyncRunner<Item, AsyncCallId>::call(Item item, bool block)
 template <typename Item, typename AsyncCallId>
 inline bool AsyncRunner<Item, AsyncCallId>::wait(AsyncCallId id)
 {
+    LogFunc << VAR(id);
+
     while (!exit_) {
         std::unique_lock<std::mutex> lock(compl_mutex_);
         if (id <= compl_id_) {
