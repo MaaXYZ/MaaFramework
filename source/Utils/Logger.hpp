@@ -10,13 +10,13 @@
 #include <tuple>
 #include <type_traits>
 
+#include "Base/SingletonHolder.hpp"
 #include "Common/MaaConf.h"
 #include "Common/MaaTypes.h"
 #include "Locale.hpp"
 #include "Option/GlobalOption.h"
 #include "Platform.hpp"
 #include "Ranges.hpp"
-#include "SingletonHolder.hpp"
 #include "Time.hpp"
 
 #if defined(__APPLE__) || defined(__linux__)

@@ -18,7 +18,7 @@ int main([[maybe_unused]] int argc, char** argv)
     MaaBindResource(inst, res);
     MaaBindController(inst, ctrl);
 
-    MaaAppendTask(inst, "", "{}");
+    MaaPostTask(inst, "", "{}");
 
     while (MaaRunning(inst)) {
         std::this_thread::yield();

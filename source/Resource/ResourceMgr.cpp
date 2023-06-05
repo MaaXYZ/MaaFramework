@@ -4,7 +4,7 @@ MAA_RES_NS_BEGIN
 
 ResourceMgr::ResourceMgr(const std::filesystem::path& path, const std::filesystem::path& user_path,
                          MaaResourceCallback callback, void* callback_arg)
-    : path_(path), user_path_(user_path), callback_(callback), callback_arg_(callback_arg)
+    : AsyncCallback(callback, callback_arg), path_(path), user_path_(user_path)
 {}
 
 ResourceMgr::~ResourceMgr() {}

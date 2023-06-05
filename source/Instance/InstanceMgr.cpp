@@ -5,15 +5,12 @@
 
 MAA_NS_BEGIN
 
-InstanceMgr::InstanceMgr(MaaInstanceCallback callback, void* callback_arg)
-    : callback_(callback), callback_arg_(callback_arg)
+InstanceMgr::InstanceMgr(MaaInstanceCallback callback, void* callback_arg) : AsyncCallback(callback, callback_arg)
 {
     LogFunc << VAR_VOIDP(callback) << VAR_VOIDP(callback_arg);
 
     task_runner_ = std::make_unique<AsyncRunner<TaskPtr>>(
         std::bind(&InstanceMgr::run_task, this, std::placeholders::_1, std::placeholders::_2));
-    notify_runner_ = std::make_unique<AsyncRunner<NotifyData>>(
-        std::bind(&InstanceMgr::notify, this, std::placeholders::_1, std::placeholders::_2));
 }
 
 InstanceMgr::~InstanceMgr()
@@ -67,7 +64,7 @@ bool InstanceMgr::set_option(std::string_view key, std::string_view value)
     return false;
 }
 
-MaaTaskId InstanceMgr::append_task(std::string_view type, std::string_view param)
+MaaTaskId InstanceMgr::post_task(std::string_view type, std::string_view param)
 {
     LogFunc << VAR(type) << VAR(param);
 
@@ -86,8 +83,8 @@ MaaTaskId InstanceMgr::append_task(std::string_view type, std::string_view param
         return MaaInvalidId;
     }
 
-    auto id = task_runner_->append(task_ptr);
-    LogInfo << "Append task:" << task_ptr->type() << VAR(id);
+    auto id = task_runner_->post(task_ptr);
+    LogInfo << "Post task:" << task_ptr->type() << VAR(id);
     task_map_.emplace(id, task_ptr);
 
     return id;
@@ -162,20 +159,11 @@ void InstanceMgr::run_task(typename AsyncRunner<TaskPtr>::Id id, TaskPtr task_pt
         { "hash", get_resource_hash() },
     };
 
-    notify_runner_->append({ .msg = MaaMsg::TaskStarted, .details = details });
+    notify(MaaMsg::TaskStarted, details);
     bool ret = task_ptr->run();
-    notify_runner_->append({ .msg = ret ? MaaMsg::TaskCompleted : MaaMsg::TaskFailed, .details = details });
+    notify(ret ? MaaMsg::TaskCompleted : MaaMsg::TaskFailed, details);
 
     task_map_.erase(id);
-}
-
-void InstanceMgr::notify(typename AsyncRunner<NotifyData>::Id id, NotifyData cb_data)
-{
-    LogFunc << VAR_VOIDP(callback_) << VAR_VOIDP(callback_arg_) << VAR(id) << VAR(cb_data.msg) << VAR(cb_data.details);
-
-    if (callback_) {
-        callback_(static_cast<MaaMsgId>(id), cb_data.details.to_string().c_str(), callback_arg_);
-    }
 }
 
 MAA_NS_END

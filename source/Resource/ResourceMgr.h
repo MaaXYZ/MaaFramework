@@ -1,11 +1,12 @@
 #pragma once
 
+#include "Base/AsyncCallback.hpp"
 #include "Common/MaaMsg.h"
 #include "Common/MaaTypes.h"
 
 MAA_RES_NS_BEGIN
 
-class ResourceMgr : public MaaResourceAPI
+class ResourceMgr : public MaaResourceAPI, public AsyncCallback<MaaResourceCallback, void*>
 {
 public:
     ResourceMgr(const std::filesystem::path& path, const std::filesystem::path& user_path, MaaResourceCallback callback,
@@ -23,8 +24,6 @@ public:
 protected:
     std::filesystem::path path_;
     std::filesystem::path user_path_;
-    MaaResourceCallback callback_ = nullptr;
-    void* callback_arg_ = nullptr;
 };
 
 MAA_RES_NS_END

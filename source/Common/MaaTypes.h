@@ -59,7 +59,7 @@ public:
 
     virtual bool set_option(std::string_view key, std::string_view value) = 0;
 
-    virtual MaaTaskId append_task(std::string_view type, std::string_view param) = 0;
+    virtual MaaTaskId post_task(std::string_view type, std::string_view param) = 0;
     virtual bool set_task_param(MaaTaskId task_id, std::string_view param) = 0;
     virtual std::vector<MaaTaskId> get_task_list() const = 0;
 

@@ -3,8 +3,8 @@
 #include <filesystem>
 #include <string_view>
 
+#include "Base/SingletonHolder.hpp"
 #include "Common/MaaConf.h"
-#include "Utils/SingletonHolder.hpp"
 
 MAA_NS_BEGIN
 

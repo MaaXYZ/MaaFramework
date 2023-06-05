@@ -38,6 +38,9 @@
     <Filter Include="源文件\Option">
       <UniqueIdentifier>{9e58b788-5688-48de-92ef-06fb6f24c4c4}</UniqueIdentifier>
     </Filter>
+    <Filter Include="源文件\Base">
+      <UniqueIdentifier>{12797767-44fd-4da8-a4cd-bdc75190adf4}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\include\MaaAPI.h">
@@ -133,15 +136,30 @@
     <ClInclude Include="Controller\PlayToolsController.h">
       <Filter>源文件\Controller</Filter>
     </ClInclude>
-    <ClInclude Include="Utils\SingletonHolder.hpp">
-      <Filter>源文件\Utils</Filter>
+    <ClInclude Include="Task\PipelineTask.h">
+      <Filter>源文件\Task</Filter>
     </ClInclude>
-    <ClInclude Include="Task\PipelineTypes.h" />
-    <ClInclude Include="Resource\PipelineConfig.h" />
-    <ClInclude Include="Resource\AbstractResource.h" />
-    <ClInclude Include="Utils\AsyncRunner.hpp" />
-    <ClInclude Include="Task\AbstractTask.h" />
-    <ClInclude Include="Task\PipelineTask.h" />
+    <ClInclude Include="Task\PipelineTypes.h">
+      <Filter>源文件\Task</Filter>
+    </ClInclude>
+    <ClInclude Include="Resource\PipelineConfig.h">
+      <Filter>源文件\Resource</Filter>
+    </ClInclude>
+    <ClInclude Include="Resource\AbstractResource.h">
+      <Filter>源文件\Resource</Filter>
+    </ClInclude>
+    <ClInclude Include="Task\AbstractTask.h">
+      <Filter>源文件\Task</Filter>
+    </ClInclude>
+    <ClInclude Include="Base\AsyncCallback.hpp">
+      <Filter>源文件\Base</Filter>
+    </ClInclude>
+    <ClInclude Include="Base\AsyncRunner.hpp">
+      <Filter>源文件\Base</Filter>
+    </ClInclude>
+    <ClInclude Include="Base\SingletonHolder.hpp">
+      <Filter>源文件\Base</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Controller\ControllerMgr.cpp">
@@ -177,7 +195,11 @@
     <ClCompile Include="Controller\PlayToolsController.cpp">
       <Filter>源文件\Controller</Filter>
     </ClCompile>
-    <ClCompile Include="Resource\PipelineConfig.cpp" />
-    <ClCompile Include="Task\PipelineTask.cpp" />
+    <ClCompile Include="Task\PipelineTask.cpp">
+      <Filter>源文件\Task</Filter>
+    </ClCompile>
+    <ClCompile Include="Resource\PipelineConfig.cpp">
+      <Filter>源文件\Resource</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>

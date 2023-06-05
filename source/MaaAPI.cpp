@@ -319,14 +319,14 @@ MaaBool MaaInited(MaaInstanceHandle inst)
     return inst->inited();
 }
 
-MaaTaskId MaaAppendTask(MaaInstanceHandle inst, const char* type, const char* param)
+MaaTaskId MaaPostTask(MaaInstanceHandle inst, const char* type, const char* param)
 {
     LogFunc << VAR_VOIDP(inst) << VAR(type) << VAR(param);
 
     if (!inst) {
         return MaaInvalidId;
     }
-    return inst->append_task(type, param);
+    return inst->post_task(type, param);
 }
 
 MaaBool MaaSetTaskParam(MaaInstanceHandle inst, MaaTaskId id, const char* param)

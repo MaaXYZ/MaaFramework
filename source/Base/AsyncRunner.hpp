@@ -1,7 +1,7 @@
 #pragma once
 
 #include "Common/MaaConf.h"
-#include "Logger.hpp"
+#include "Utils/Logger.hpp"
 
 #include <condition_variable>
 #include <functional>
@@ -27,7 +27,7 @@ public:
     AsyncRunner& operator=(const AsyncRunner&) = delete;
     AsyncRunner& operator=(AsyncRunner&&) = delete;
 
-    Id append(Item item, bool block = false);
+    Id post(Item item, bool block = false);
     bool wait(Id id);
 
     void clear();
@@ -111,7 +111,7 @@ inline void AsyncRunner<Item>::working()
 }
 
 template <typename Item>
-inline AsyncRunner<Item>::Id AsyncRunner<Item>::append(Item item, bool block)
+inline AsyncRunner<Item>::Id AsyncRunner<Item>::post(Item item, bool block)
 {
     LogFunc;
 

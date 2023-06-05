@@ -59,7 +59,7 @@ extern "C"
     MaaBool MAAAPI MaaBindController(MaaInstanceHandle inst, MaaControllerHandle ctrl);
     MaaBool MAAAPI MaaInited(MaaInstanceHandle inst);
 
-    MaaTaskId MAAAPI MaaAppendTask(MaaInstanceHandle inst, const char* type, const char* param);
+    MaaTaskId MAAAPI MaaPostTask(MaaInstanceHandle inst, const char* type, const char* param);
     MaaBool MAAAPI MaaSetTaskParam(MaaInstanceHandle inst, MaaTaskId id, const char* param);
 
     // MaaBool MAAAPI MaaStart(MaaInstanceHandle inst);
