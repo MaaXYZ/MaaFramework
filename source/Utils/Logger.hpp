@@ -7,6 +7,7 @@
 #include <mutex>
 #include <source_location>
 #include <thread>
+#include <tuple>
 #include <type_traits>
 
 #include "Common/MaaConf.h"
@@ -63,10 +64,10 @@ public:
     class LogStream
     {
     public:
-        LogStream(std::mutex& m, stream_t& s, level lv, std::string_view flag)
-            : lock_(m), stream_(s), lv_(lv), flag_(flag)
+        template <typename... args_t>
+        LogStream(std::mutex& m, stream_t& s, level lv, args_t&&... args) : lock_(m), stream_(s)
         {
-            stream_props();
+            stream_props(lv, std::forward<args_t>(args)...);
         }
         LogStream(const LogStream&) = delete;
         LogStream(LogStream&&) = default;
@@ -115,7 +116,8 @@ public:
             stream_ << std::endl;
         }
 
-        void stream_props()
+        template <typename... args_t>
+        void stream_props(level lv, args_t&&... args)
         {
 #ifdef _WIN32
             int pid = _getpid();
@@ -124,29 +126,54 @@ public:
 #endif
             auto tid = static_cast<unsigned short>(std::hash<std::thread::id> {}(std::this_thread::get_id()));
 
-            std::string props = std::format("[{}][{}][Px{}][Tx{}][{}]", get_format_time(), lv_.str, pid, tid, flag_);
+            std::string props = std::format("[{}][{}][Px{}][Tx{}]", get_format_time(), lv.str, pid, tid);
+            for (auto&& arg : { args... }) {
+                props += std::format("[{}]", arg);
+            }
             stream(props);
         }
 
     private:
         std::unique_lock<std::mutex> lock_;
         stream_t& stream_;
-        level lv_;
-        std::string_view flag_;
         separator sep_ = separator::space;
     };
 
 public:
     virtual ~Logger() override { flush(); }
 
-    auto debug(std::string_view flag = {}) { return stream(level::debug, flag); }
-    auto trace(std::string_view flag = {}) { return stream(level::trace, flag); }
-    auto info(std::string_view flag = {}) { return stream(level::info, flag); }
-    auto warn(std::string_view flag = {}) { return stream(level::warn, flag); }
-    auto error(std::string_view flag = {}) { return stream(level::error, flag); }
+    template <typename... args_t>
+    auto debug(args_t&&... args)
+    {
+        return stream(level::debug, std::forward<args_t>(args)...);
+    }
+    template <typename... args_t>
+    auto trace(args_t&&... args)
+    {
+        return stream(level::trace, std::forward<args_t>(args)...);
+    }
+    template <typename... args_t>
+    auto info(args_t&&... args)
+    {
+        return stream(level::info, std::forward<args_t>(args)...);
+    }
+    template <typename... args_t>
+    auto warn(args_t&&... args)
+    {
+        return stream(level::warn, std::forward<args_t>(args)...);
+    }
+    template <typename... args_t>
+    auto error(args_t&&... args)
+    {
+        return stream(level::error, std::forward<args_t>(args)...);
+    }
 
 private:
-    LogStream<std::ofstream> stream(level lv, std::string_view flag) { return LogStream(trace_mutex_, ofs_, lv, flag); }
+    template <typename... args_t>
+    LogStream<std::ofstream> stream(level lv, args_t&&... args)
+    {
+        return LogStream(trace_mutex_, ofs_, lv, std::forward<args_t>(args)...);
+    }
 
     void flush()
     {
@@ -203,9 +230,9 @@ private:
     {
         internal_trace() << "-----------------------------";
         internal_trace() << "MAA Process Start";
-        internal_trace() << "Version", MAA_VERSION;
+        internal_trace() << "Version" << MAA_VERSION;
         internal_trace() << "Built at" << __DATE__ << __TIME__;
-        internal_trace() << "Log Dir" << log_path_;
+        internal_trace() << "Log Path" << log_path_;
         internal_trace() << "-----------------------------";
     }
 
@@ -230,11 +257,15 @@ inline constexpr Logger::separator Logger::separator::tab("\t");
 inline constexpr Logger::separator Logger::separator::newline("\n");
 inline constexpr Logger::separator Logger::separator::comma(",");
 
+namespace LogUtils
+{
 class ScopeEnterHelper
 {
 public:
-    ScopeEnterHelper(std::string_view flag) : stream_(Logger::get_instance().info(flag)) {}
-    ~ScopeEnterHelper() { stream_ << "| Enter"; }
+    template <typename... args_t>
+    ScopeEnterHelper(args_t&&... args) : stream_(Logger::get_instance().trace(std::forward<args_t>(args)...))
+    {}
+    ~ScopeEnterHelper() { stream_ << "| enter"; }
 
     Logger::LogStream<std::ofstream>& operator()() { return stream_; }
 
@@ -242,46 +273,62 @@ private:
     Logger::LogStream<std::ofstream> stream_;
 };
 
+template <typename... args_t>
 class ScopeLeaveHelper
 {
 public:
-    ScopeLeaveHelper(std::string_view flag) : flag_(flag) {}
+    ScopeLeaveHelper(args_t&&... args) : args_(std::forward<args_t>(args)...) {}
     ~ScopeLeaveHelper()
     {
         auto duration =
             std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::steady_clock::now() - start_);
-        Logger::get_instance().info(flag_) << "| Leave," << duration;
+        std::apply([](auto&&... args) { return Logger::get_instance().trace(std::forward<decltype(args)>(args)...); },
+                   std::move(args_))
+            << "| leave," << duration;
     }
 
 private:
-    std::string_view flag_;
+    std::tuple<args_t...> args_;
     std::chrono::time_point<std::chrono::steady_clock> start_ = std::chrono::steady_clock::now();
 };
+}
 
-inline constexpr std::string_view maa_pertty_func(std::string_view func)
+inline constexpr std::string_view pertty_file(std::string_view file)
+{
+    size_t pos = file.find_last_of(std::filesystem::path::preferred_separator);
+    return file.substr(pos + 1, file.size());
+}
+
+inline constexpr std::string_view pertty_func(std::string_view func)
 {
     size_t end = func.find('(');
     size_t beg = func.rfind(' ', end);
     return func.substr(beg + 1, end - beg - 1);
 }
 
-#define MAA_FUNCTION MAA_NS::maa_pertty_func(std::source_location::current().function_name())
-#define LOG_FLAG MAA_FUNCTION
+#define STRINGIZE(x) STRINGIZE2(x)
+#define STRINGIZE2(x) #x
+#define LINE_STRING STRINGIZE(__LINE__)
 
-#define LogDebug MAA_NS::Logger::get_instance().debug(LOG_FLAG)
-#define LogTrace MAA_NS::Logger::get_instance().trace(LOG_FLAG)
-#define LogInfo MAA_NS::Logger::get_instance().info(LOG_FLAG)
-#define LogWarn MAA_NS::Logger::get_instance().warn(LOG_FLAG)
-#define LogError MAA_NS::Logger::get_instance().error(LOG_FLAG)
+#define MAA_FILE MAA_NS::pertty_file(__FILE__)
+#define MAA_LINE std::string_view("L" LINE_STRING)
+#define MAA_FUNCTION MAA_NS::pertty_func(std::source_location::current().function_name())
+#define LOG_ARGS MAA_FILE, MAA_LINE, MAA_FUNCTION
+
+#define LogDebug MAA_NS::Logger::get_instance().debug(LOG_ARGS)
+#define LogTrace MAA_NS::Logger::get_instance().trace(LOG_ARGS)
+#define LogInfo MAA_NS::Logger::get_instance().info(LOG_ARGS)
+#define LogWarn MAA_NS::Logger::get_instance().warn(LOG_ARGS)
+#define LogError MAA_NS::Logger::get_instance().error(LOG_ARGS)
 
 #define _Cat_(a, b) a##b
 #define _Cat(a, b) _Cat_(a, b)
 #define _CatVarNameWithLine(Var) _Cat(Var, __LINE__)
-#define ScopeHeplerName _CatVarNameWithLine(log_scope_)
+#define LogScopeHeplerName _CatVarNameWithLine(log_scope_)
 
-#define LogFunc                                         \
-    MAA_NS::ScopeLeaveHelper ScopeHeplerName(LOG_FLAG); \
-    MAA_NS::ScopeEnterHelper(LOG_FLAG)()
+#define LogFunc                                                      \
+    MAA_NS::LogUtils::ScopeLeaveHelper LogScopeHeplerName(LOG_ARGS); \
+    MAA_NS::LogUtils::ScopeEnterHelper(LOG_ARGS)()
 
 #define VAR(x) MAA_NS::Logger::separator::none << "[" << #x << "=" << (x) << "] " << MAA_NS::Logger::separator::space
 #define VAR_VOIDP(x) \
