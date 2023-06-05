@@ -29,25 +29,25 @@ enum class Type
     FreezesWait,
 };
 
-struct TemplateMatchParams
+struct TemplMatchingParams
 {
     std::vector<std::string> templ_names;
     std::vector<double> thresholds;
+    int method = 0;
     bool green_mask = false;
 };
 
 struct OcrParams
 {
     std::vector<std::string> text;
-    bool full_match = false;
 
     std::unordered_map<std::string, std::string> replace;
-    bool replace_full = false;
 };
 
-struct FreezesWaitParams
+struct FreezesWaitingParams
 {
     double threshold = 0.0;
+    int method = 0;
     int wait_time = 0;
 };
 } // namespace Recognition
@@ -94,6 +94,11 @@ enum class NextMode
     Foreach,
 };
 
+enum class NotifyType
+{
+    Invalid = 0,
+};
+
 struct Data
 {
     std::string name;
@@ -101,7 +106,7 @@ struct Data
     bool main_mission = false;
 
     Recognition::Type recognition_type = Recognition::Type::Invalid;
-    std::variant<Recognition::TemplateMatchParams, Recognition::OcrParams, Recognition::FreezesWaitParams> recognition_params;
+    std::variant<Recognition::TemplMatchingParams, Recognition::OcrParams, Recognition::FreezesWaitingParams> recognition_params;
 
     cv::Rect roi {};
     bool cache = false;
@@ -121,6 +126,9 @@ struct Data
 
     int pre_delay = 0;
     int post_delay = 0;
+
+    NotifyType notify_type = NotifyType::Invalid;
+    std::string notify_value;
 };
 
 MAA_PIPELINE_TASK_NS_END

@@ -139,6 +139,9 @@
     <ClInclude Include="Task\PipelineTypes.h" />
     <ClInclude Include="Resource\PipelineConfig.h" />
     <ClInclude Include="Resource\AbstractResource.h" />
+    <ClInclude Include="Utils\AsyncRunner.hpp" />
+    <ClInclude Include="Task\AbstractTask.h" />
+    <ClInclude Include="Task\PipelineTask.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Controller\ControllerMgr.cpp">
@@ -175,5 +178,6 @@
       <Filter>源文件\Controller</Filter>
     </ClCompile>
     <ClCompile Include="Resource\PipelineConfig.cpp" />
+    <ClCompile Include="Task\PipelineTask.cpp" />
   </ItemGroup>
 </Project>

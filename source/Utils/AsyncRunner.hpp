@@ -11,11 +11,15 @@
 
 MAA_NS_BEGIN
 
-template <typename Item, typename AsyncCallId = int64_t>
+template <typename Item>
 class AsyncRunner
 {
 public:
-    AsyncRunner(std::function<void(AsyncCallId id, Item item)> process);
+    using Id = int64_t;
+    using ProcessFunc = std::function<void(Id id, Item item)>;
+
+public:
+    AsyncRunner(ProcessFunc run_task);
     AsyncRunner(const AsyncRunner&) = delete;
     AsyncRunner(AsyncRunner&&) = delete;
     virtual ~AsyncRunner();
@@ -23,38 +27,37 @@ public:
     AsyncRunner& operator=(const AsyncRunner&) = delete;
     AsyncRunner& operator=(AsyncRunner&&) = delete;
 
-    AsyncCallId call(Item item, bool block = false);
-    bool wait(AsyncCallId id);
+    Id append(Item item, bool block = false);
+    bool wait(Id id);
 
 private:
-    void run();
+    void working();
 
-    std::function<void(AsyncCallId id, Item item)> process_;
+    ProcessFunc process_;
 
-    std::queue<std::pair<AsyncCallId, Item>> queue_;
+    std::queue<std::pair<Id, Item>> queue_;
     std::mutex mutex_;
     std::condition_variable cond_;
     std::thread thread_;
 
-    AsyncCallId compl_id_ = 0;
+    Id compl_id_ = 0;
     std::mutex compl_mutex_;
     std::condition_variable compl_cond_;
 
     std::atomic_bool exit_ = false;
-    AsyncCallId call_id_ = 0;
+    inline static Id global_id_ = 0;
 };
 
-template <typename Item, typename AsyncCallId>
-inline AsyncRunner<Item, AsyncCallId>::AsyncRunner(std::function<void(AsyncCallId id, Item item)> process)
-    : process_(process)
+template <typename Item>
+inline AsyncRunner<Item>::AsyncRunner(ProcessFunc run_task) : process_(run_task)
 {
-    LogFunc << VAR_VOIDP(process_);
+    LogFunc;
 
-    thread_ = std::thread(&AsyncRunner<Item>::run, this);
+    thread_ = std::thread(&AsyncRunner<Item>::working, this);
 }
 
-template <typename Item, typename AsyncCallId>
-inline AsyncRunner<Item, AsyncCallId>::~AsyncRunner()
+template <typename Item>
+inline AsyncRunner<Item>::~AsyncRunner()
 {
     LogFunc;
 
@@ -70,8 +73,8 @@ inline AsyncRunner<Item, AsyncCallId>::~AsyncRunner()
     }
 }
 
-template <typename Item, typename AsyncCallId>
-inline void AsyncRunner<Item, AsyncCallId>::run()
+template <typename Item>
+inline void AsyncRunner<Item>::working()
 {
     LogFunc;
 
@@ -95,15 +98,15 @@ inline void AsyncRunner<Item, AsyncCallId>::run()
     }
 }
 
-template <typename Item, typename AsyncCallId>
-inline AsyncCallId AsyncRunner<Item, AsyncCallId>::call(Item item, bool block)
+template <typename Item>
+inline AsyncRunner<Item>::Id AsyncRunner<Item>::append(Item item, bool block)
 {
-    LogFunc << VAR(item) << VAR(block);
+    LogFunc;
 
-    AsyncCallId id = 0;
+    Id id = 0;
     {
         std::unique_lock<std::mutex> lock(mutex_);
-        id = ++call_id_;
+        id = ++global_id_;
         queue_.emplace(id, std::move(item));
         cond_.notify_one();
     }
@@ -115,8 +118,8 @@ inline AsyncCallId AsyncRunner<Item, AsyncCallId>::call(Item item, bool block)
     return id;
 }
 
-template <typename Item, typename AsyncCallId>
-inline bool AsyncRunner<Item, AsyncCallId>::wait(AsyncCallId id)
+template <typename Item>
+inline bool AsyncRunner<Item>::wait(Id id)
 {
     LogFunc << VAR(id);
 

@@ -2,6 +2,8 @@
 
 #include "Common/MaaMsg.h"
 #include "Common/MaaTypes.h"
+#include "Task/AbstractTask.h"
+#include "Utils/AsyncRunner.hpp"
 
 MAA_NS_BEGIN
 
@@ -29,11 +31,26 @@ public:
     virtual std::string get_controller_uuid() const override;
 
 protected:
+    using TaskPtr = std::shared_ptr<TaskNS::AbstractTask>;
+
+    struct NotifyData
+    {
+        MaaMsg msg = MaaMsg::InvalidMsg;
+        json::value details;
+    };
+
+    void run_task(AsyncRunner<TaskPtr>::Id id, TaskPtr task_ptr);
+    void notify(AsyncRunner<NotifyData>::Id id, NotifyData cb_data);
+
+protected:
     MaaInstanceCallback callback_ = nullptr;
     void* callback_arg_ = nullptr;
 
     MaaResourceAPI* resource_ = nullptr;
     MaaControllerAPI* controller_ = nullptr;
+
+    std::unique_ptr<AsyncRunner<TaskPtr>> task_runner_ = nullptr;
+    std::unique_ptr<AsyncRunner<NotifyData>> notify_runner_ = nullptr;
 };
 
 MAA_NS_END

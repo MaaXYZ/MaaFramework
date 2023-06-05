@@ -17,7 +17,12 @@ enum class MaaMsg : int64_t
     ControllerMsg = 20000,
     InstanceMsg = 30000,
 
-    TaskMsg = 100000,
+    /*  TaskMsg = 100000,    */
+    TaskStarted = 110000,
+    TaskCompleted = 120000,
+    TaskFailed = 130000,
+    TaskStopped = 140000,
+
     PipelineMsg = 1000000,
 };
 
@@ -29,7 +34,13 @@ inline std::ostream& operator<<(std::ostream& os, const MaaMsg& type)
         { MaaMsg::ResourceMsg, "ResourceMsg" },
         { MaaMsg::ControllerMsg, "ControllerMsg" },
         { MaaMsg::InstanceMsg, "InstanceMsg" },
-        { MaaMsg::TaskMsg, "TaskMsg" },
+
+        //{ MaaMsg::TaskMsg, "TaskMsg" },
+        { MaaMsg::TaskStarted, "TaskStarted" },
+        { MaaMsg::TaskCompleted, "TaskCompleted" },
+        { MaaMsg::TaskFailed, "TaskFailed" },
+        { MaaMsg::TaskStopped, "TaskStopped" },
+
         { MaaMsg::PipelineMsg, "PipelineMsg" },
     };
     return os << _type_name.at(type);

@@ -44,7 +44,10 @@
     <ClInclude Include="Resource\AbstractResource.h" />
     <ClInclude Include="Resource\PipelineConfig.h" />
     <ClInclude Include="Resource\ResourceMgr.h" />
+    <ClInclude Include="Task\AbstractTask.h" />
+    <ClInclude Include="Task\PipelineTask.h" />
     <ClInclude Include="Task\PipelineTypes.h" />
+    <ClInclude Include="Utils\AsyncRunner.hpp" />
     <ClInclude Include="Utils\Demangle.hpp" />
     <ClInclude Include="Utils\File.hpp" />
     <ClInclude Include="Utils\ImageIo.hpp" />
@@ -74,6 +77,7 @@
     <ClCompile Include="Option\GlobalOption.cpp" />
     <ClCompile Include="Resource\PipelineConfig.cpp" />
     <ClCompile Include="Resource\ResourceMgr.cpp" />
+    <ClCompile Include="Task\PipelineTask.cpp" />
     <ClCompile Include="Utils\Platform\PlatformPosix.cpp" />
     <ClCompile Include="Utils\Platform\PlatformWin32.cpp" />
   </ItemGroup>
