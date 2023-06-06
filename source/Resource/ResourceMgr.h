@@ -6,7 +6,7 @@
 
 MAA_RES_NS_BEGIN
 
-class ResourceMgr : public MaaResourceAPI, public AsyncCallback<MaaResourceCallback, void*>
+class ResourceMgr : public MaaResourceAPI
 {
 public:
     ResourceMgr(const std::filesystem::path& path, const std::filesystem::path& user_path, MaaResourceCallback callback,
@@ -21,9 +21,10 @@ public:
 
     virtual std::string get_hash() const override;
 
-protected:
+private:
     std::filesystem::path path_;
     std::filesystem::path user_path_;
+    AsyncCallback<MaaResourceCallback, void*> notifier;
 };
 
 MAA_RES_NS_END

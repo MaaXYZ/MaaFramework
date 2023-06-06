@@ -20,14 +20,13 @@ private:
     };
 
 public:
-    virtual ~AsyncCallback() = default;
-
-protected:
     AsyncCallback(Callback callback, CallbackArg callback_arg) : callback_(callback), callback_arg_(callback_arg)
     {
         notify_runner_ = std::make_unique<AsyncRunner<NotifyData>>(std::bind(
             &AsyncCallback<Callback, CallbackArg>::callback, this, std::placeholders::_1, std::placeholders::_2));
     }
+
+    virtual ~AsyncCallback() = default;
 
     void notify(MaaMsg msg, json::value details = json::value())
     {

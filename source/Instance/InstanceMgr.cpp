@@ -5,7 +5,7 @@
 
 MAA_NS_BEGIN
 
-InstanceMgr::InstanceMgr(MaaInstanceCallback callback, void* callback_arg) : AsyncCallback(callback, callback_arg)
+InstanceMgr::InstanceMgr(MaaInstanceCallback callback, void* callback_arg) : notifier(callback, callback_arg)
 {
     LogFunc << VAR_VOIDP(callback) << VAR_VOIDP(callback_arg);
 
@@ -159,9 +159,11 @@ void InstanceMgr::run_task(typename AsyncRunner<TaskPtr>::Id id, TaskPtr task_pt
         { "hash", get_resource_hash() },
     };
 
-    notify(MaaMsg::TaskStarted, details);
+    notifier.notify(MaaMsg::TaskStarted, details);
+
     bool ret = task_ptr->run();
-    notify(ret ? MaaMsg::TaskCompleted : MaaMsg::TaskFailed, details);
+
+    notifier.notify(ret ? MaaMsg::TaskCompleted : MaaMsg::TaskFailed, details);
 
     task_map_.erase(id);
 }

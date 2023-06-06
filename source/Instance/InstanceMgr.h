@@ -8,7 +8,7 @@
 
 MAA_NS_BEGIN
 
-class InstanceMgr : public MaaInstanceAPI, public AsyncCallback<MaaInstanceCallback, void*>
+class InstanceMgr : public MaaInstanceAPI
 {
 public:
     InstanceMgr(MaaInstanceCallback callback, void* callback_arg);
@@ -30,20 +30,18 @@ public:
     virtual std::string get_resource_hash() const override;
     virtual std::string get_controller_uuid() const override;
 
-protected:
+private:
     using TaskPtr = std::shared_ptr<TaskNS::AbstractTask>;
 
     void run_task(typename AsyncRunner<TaskPtr>::Id id, TaskPtr task_ptr);
 
-protected:
-    MaaInstanceCallback callback_ = nullptr;
-    void* callback_arg_ = nullptr;
+private:
+    AsyncCallback<MaaInstanceCallback, void*> notifier;
 
     MaaResourceAPI* resource_ = nullptr;
     MaaControllerAPI* controller_ = nullptr;
 
     std::unique_ptr<AsyncRunner<TaskPtr>> task_runner_ = nullptr;
-
     std::map<typename AsyncRunner<TaskPtr>::Id, TaskPtr> task_map_;
 };
 
