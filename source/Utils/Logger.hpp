@@ -209,7 +209,7 @@ public:
 
     void start_logging(std::filesystem::path dir)
     {
-        log_path_ = std::move(dir) / "debug" / "maa.log";
+        log_path_ = std::move(dir) / "maa.log";
         reinit();
     }
 
