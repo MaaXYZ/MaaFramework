@@ -85,14 +85,14 @@ private:
     cv::Point rand_point(const cv::Rect& r);
 
 private:
-    std::unique_ptr<AsyncRunner<Action>> action_runner_ = nullptr;
-    AsyncCallback<MaaControllerCallback, void*> notifier;
-
     std::minstd_rand rand_engine_;
 
     bool connected_ = false;
     std::mutex image_mutex_;
     cv::Mat image_;
+
+    std::unique_ptr<AsyncRunner<Action>> action_runner_ = nullptr;
+    AsyncCallback<MaaControllerCallback, void*> notifier;
 };
 
 MAA_CTRL_NS_END

@@ -38,14 +38,13 @@ private:
     bool run_task(typename AsyncRunner<TaskPtr>::Id id, TaskPtr task_ptr);
 
 private:
-    AsyncCallback<MaaInstanceCallback, void*> notifier;
-
     MaaResourceAPI* resource_ = nullptr;
     MaaControllerAPI* controller_ = nullptr;
+    std::mutex task_mutex_;
+    std::map<typename AsyncRunner<TaskPtr>::Id, TaskPtr> task_map_;
 
     std::unique_ptr<AsyncRunner<TaskPtr>> task_runner_ = nullptr;
-    std::map<typename AsyncRunner<TaskPtr>::Id, TaskPtr> task_map_;
-    std::mutex task_mutex_;
+    AsyncCallback<MaaInstanceCallback, void*> notifier;
 };
 
 MAA_NS_END

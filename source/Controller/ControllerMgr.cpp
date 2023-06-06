@@ -3,7 +3,7 @@
 MAA_CTRL_NS_BEGIN
 
 ControllerMgr::ControllerMgr(MaaControllerCallback callback, void* callback_arg)
-    : notifier(callback, callback_arg), rand_engine_(std::random_device {}())
+    : rand_engine_(std::random_device {}()), notifier(callback, callback_arg)
 {
     action_runner_ = std::make_unique<AsyncRunner<Action>>(
         std::bind(&ControllerMgr::run_action, this, std::placeholders::_1, std::placeholders::_2));

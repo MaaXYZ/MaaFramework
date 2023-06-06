@@ -43,7 +43,6 @@ private:
     std::queue<std::pair<Id, Item>> queue_;
     std::mutex mutex_;
     std::condition_variable cond_;
-    std::thread thread_;
     std::atomic_bool running_ = false;
 
     mutable std::shared_mutex status_mutex_;
@@ -55,6 +54,8 @@ private:
 
     std::atomic_bool exit_ = false;
     inline static Id cross_inst_id_ = 0;
+
+    std::thread thread_;
 };
 
 template <typename Item>
