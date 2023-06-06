@@ -106,7 +106,7 @@ jobs:
       - uses: actions/upload-artifact@v3
         with:
           name: MAA-win-${{ matrix.lowercase_target }}
-          path: x64/Release
+          path: ${{ matrix.msbuild_target }}/Release
 
   # ubuntu:
   #   needs: meta
