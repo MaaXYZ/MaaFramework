@@ -28,11 +28,11 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\include\MaaAPI.h" />
+    <ClInclude Include="..\include\MaaParam.h" />
     <ClInclude Include="..\include\MaaPort.h" />
     <ClInclude Include="..\include\MaaDef.h" />
     <ClInclude Include="Base\AsyncCallback.hpp" />
     <ClInclude Include="Option\GlobalOption.h" />
-    <ClInclude Include="Common\MaaOptions.h" />
     <ClInclude Include="Controller\AdbController.h" />
     <ClInclude Include="Common\MaaConf.h" />
     <ClInclude Include="Common\MaaMsg.h" />

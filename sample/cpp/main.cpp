@@ -1,4 +1,5 @@
 #include "MaaAPI.h"
+#include "MaaParam.h"
 
 #include <filesystem>
 #include <iostream>
@@ -9,6 +10,8 @@
 int main([[maybe_unused]] int argc, char** argv)
 {
     const auto cur_path = std::filesystem::path(argv[0]).parent_path();
+
+    MaaSetGlobalOption(MaaGlobalOption_Logging, cur_path.string().c_str());
 
     auto res = MaaResourceCreate((cur_path / "resource").string().c_str(), (cur_path / "cache").string().c_str(),
                                  nullptr, nullptr);

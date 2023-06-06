@@ -18,12 +18,8 @@ public:
 
     bool set_option(std::string_view key, std::string_view value);
 
-    const std::filesystem::path& log_dir() const { return log_dir_; }
-
 protected:
     GlabalOption() = default;
-
-    std::filesystem::path log_dir_;
 };
 
 MAA_NS_END

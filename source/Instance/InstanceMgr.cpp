@@ -66,7 +66,7 @@ bool InstanceMgr::set_option(std::string_view key, std::string_view value)
 
 MaaTaskId InstanceMgr::post_task(std::string_view type, std::string_view param)
 {
-    LogFunc << VAR(type) << VAR(param);
+    LogInfo << VAR(type) << VAR(param);
 
     auto param_opt = json::parse(param);
     if (!param_opt) {
@@ -84,7 +84,7 @@ MaaTaskId InstanceMgr::post_task(std::string_view type, std::string_view param)
     }
 
     auto id = task_runner_->post(task_ptr);
-    LogInfo << "Post task:" << task_ptr->type() << VAR(id);
+    LogTrace << task_ptr->type() << VAR(id);
     task_map_.emplace(id, task_ptr);
 
     return id;
@@ -92,7 +92,7 @@ MaaTaskId InstanceMgr::post_task(std::string_view type, std::string_view param)
 
 bool InstanceMgr::set_task_param(MaaTaskId task_id, std::string_view param)
 {
-    LogFunc << VAR(task_id) << VAR(param);
+    LogInfo << VAR(task_id) << VAR(param);
 
     auto iter = task_map_.find(task_id);
     if (iter == task_map_.end()) {
@@ -114,7 +114,7 @@ bool InstanceMgr::set_task_param(MaaTaskId task_id, std::string_view param)
 
     bool ret = task_ptr->set_param(*param_opt);
 
-    LogInfo << "Set task param:" << task_ptr->type() << VAR(ret);
+    LogTrace << task_ptr->type() << VAR(ret);
     return ret;
 }
 

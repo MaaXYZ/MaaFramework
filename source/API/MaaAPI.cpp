@@ -16,6 +16,8 @@ static constexpr MaaSize NullSize = static_cast<MaaSize>(-1);
 
 MaaBool MAAAPI MaaSetGlobalOption(const char* key, const char* value)
 {
+    LogFunc << VAR(key) << VAR(value);
+
     return MAA_NS::GlabalOption::get_instance().set_option(key, value);
 }
 

@@ -120,9 +120,6 @@
     <ClInclude Include="Controller\MinitouchController.h">
       <Filter>Source\Controller</Filter>
     </ClInclude>
-    <ClInclude Include="Common\MaaOptions.h">
-      <Filter>Source\Common</Filter>
-    </ClInclude>
     <ClInclude Include="Option\GlobalOption.h">
       <Filter>Source\Option</Filter>
     </ClInclude>
@@ -158,6 +155,9 @@
     </ClInclude>
     <ClInclude Include="Base\SingletonHolder.hpp">
       <Filter>Source\Base</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\MaaParam.h">
+      <Filter>Include</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

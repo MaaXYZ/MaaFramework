@@ -14,7 +14,6 @@
 #include "Common/MaaConf.h"
 #include "Common/MaaTypes.h"
 #include "Locale.hpp"
-#include "Option/GlobalOption.h"
 #include "Platform.hpp"
 #include "Ranges.hpp"
 #include "Time.hpp"
@@ -208,6 +207,12 @@ public:
         return stream(level::error, std::forward<args_t>(args)...);
     }
 
+    void start_logging(std::filesystem::path dir)
+    {
+        log_path_ = std::move(dir) / "debug" / "maa.log";
+        reinit();
+    }
+
 private:
     template <typename... args_t>
     LogStream<std::ofstream> stream(level lv, args_t&&... args)
@@ -222,14 +227,16 @@ private:
         internal_trace() << "-----------------------------";
 
         rotate();
-        init();
+        open();
     }
 
 private:
-    Logger()
+    Logger() = default;
+
+    void reinit()
     {
         rotate();
-        init();
+        open();
         log_start();
     }
 
@@ -258,12 +265,15 @@ private:
         }
     }
 
-    void init()
+    void open()
     {
         std::filesystem::create_directories(log_path_.parent_path());
-        if (!ofs_.is_open()) {
-            ofs_.open(log_path_, std::ios::out | std::ios::app);
+
+        std::unique_lock<std::mutex> m_trace_lock(trace_mutex_);
+        if (ofs_.is_open()) {
+            ofs_.close();
         }
+        ofs_.open(log_path_, std::ios::out | std::ios::app);
     }
 
     void log_start()
@@ -279,8 +289,7 @@ private:
     LogStream<std::ofstream> internal_trace() { return trace("Logger"); }
 
 private:
-    const std::filesystem::path log_path_ =
-        MAA_NS::GlabalOption::get_instance().log_dir() / "debug" / "maa.log";
+    std::filesystem::path log_path_;
     std::ofstream ofs_;
     std::mutex trace_mutex_;
 };

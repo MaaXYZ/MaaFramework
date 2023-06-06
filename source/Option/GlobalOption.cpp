@@ -1,18 +1,20 @@
 #include "GlobalOption.h"
 
-#include "Common/MaaOptions.h"
+#include "MaaParam.h"
 #include "Utils/Platform.hpp"
+#include "Utils/Logger.hpp"
 
 MAA_NS_BEGIN
 
 bool GlabalOption::set_option(std::string_view key, std::string_view value)
 {
-    using namespace option::global;
+    LogInfo << VAR(key) << VAR(value);
 
-    if (key == LogDir) {
-        log_dir_ = path(value);
+    if (key == MaaGlobalOption_Logging) {
+        Logger::get_instance().start_logging(path(value));
     }
     else {
+        LogError << "Unknown key" << VAR(key) << VAR(value);
         return false;
     }
 
