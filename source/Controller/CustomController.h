@@ -17,7 +17,7 @@ protected:
     virtual cv::Mat _screencap() override;
 
 private:
-    MaaCustomControllerHandle handle_;
+    MaaCustomControllerHandle handle_ = nullptr;
 };
 
 MAA_CTRL_NS_END

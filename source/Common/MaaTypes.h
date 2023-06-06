@@ -13,8 +13,6 @@
 #define MAA_VERSION "DEBUG_VERSION"
 #endif
 
-inline static constexpr MaaId MaaInvalidId = 0;
-
 struct MaaResourceAPI
 {
 public:
@@ -22,9 +20,9 @@ public:
 
     virtual bool set_option(std::string_view key, std::string_view value) = 0;
 
-    virtual bool incremental_load(const std::filesystem::path& path) = 0;
-    virtual bool loading() const = 0;
-    virtual bool loaded() const = 0;
+    virtual MaaResId post_load(const std::filesystem::path& path) = 0;
+    virtual MaaStatus status(MaaResId res_id) const = 0;
+    virtual MaaBool loaded() const = 0;
 
     virtual std::string get_hash() const = 0;
 };
@@ -36,14 +34,16 @@ public:
 
     virtual bool set_option(std::string_view key, std::string_view value) = 0;
 
-    virtual bool connecting() const = 0;
-    virtual bool connected() const = 0;
-
+    virtual MaaCtrlId post_connect() = 0;
     virtual MaaCtrlId post_click(int x, int y) = 0;
     virtual MaaCtrlId post_swipe(const std::vector<int>& x_steps, const std::vector<int>& y_steps,
-                            const std::vector<int>& step_delay) = 0;
+                                 const std::vector<int>& step_delay) = 0;
     virtual MaaCtrlId post_screencap() = 0;
-    virtual std::vector<unsigned char> get_image() const = 0;
+
+    virtual MaaStatus status(MaaCtrlId ctrl_id) const = 0;
+    virtual MaaBool connected() const = 0;
+
+    virtual std::vector<uint8_t> get_image() const = 0;
 
     virtual std::string get_uuid() const = 0;
 };
@@ -61,10 +61,11 @@ public:
 
     virtual MaaTaskId post_task(std::string_view type, std::string_view param) = 0;
     virtual bool set_task_param(MaaTaskId task_id, std::string_view param) = 0;
-    virtual std::vector<MaaTaskId> get_task_list() const = 0;
+
+    virtual MaaStatus status(MaaTaskId task_id) const = 0;
+    virtual MaaBool all_finished() const = 0;
 
     virtual void stop() = 0;
-    virtual bool running() const = 0;
 
     virtual std::string get_resource_hash() const = 0;
     virtual std::string get_controller_uuid() const = 0;

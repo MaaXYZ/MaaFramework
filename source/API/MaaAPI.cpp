@@ -7,26 +7,24 @@
 #include "Controller/MaatouchController.h"
 #include "Controller/MinitouchController.h"
 #include "Instance/InstanceMgr.h"
+#include "MaaAPI.h"
 #include "Option/GlobalOption.h"
 #include "Resource/ResourceMgr.h"
 #include "Utils/Logger.hpp"
 #include "Utils/Platform.hpp"
 
-static constexpr MaaSize NullSize = static_cast<MaaSize>(-1);
-
-MaaBool MAAAPI MaaSetGlobalOption(MaaString key, MaaString value)
+MaaBool MaaSetGlobalOption(MaaString key, MaaString value)
 {
     LogFunc << VAR(key) << VAR(value);
 
     return MAA_NS::GlabalOption::get_instance().set_option(key, value);
 }
 
-MaaResourceHandle MaaResourceCreate(MaaString path, MaaString user_path, MaaResourceCallback callback,
-                                    void* callback_arg)
+MaaResourceHandle MaaResourceCreate(MaaString user_path, MaaResourceCallback callback, void* callback_arg)
 {
-    LogFunc << VAR(path) << VAR(user_path) << VAR_VOIDP(callback) << VAR_VOIDP(callback_arg);
+    LogFunc << VAR(user_path) << VAR_VOIDP(callback) << VAR_VOIDP(callback_arg);
 
-    return new MAA_RES_NS::ResourceMgr(MAA_NS::path(path), MAA_NS::path(user_path), callback, callback_arg);
+    return new MAA_RES_NS::ResourceMgr(MAA_NS::path(user_path), callback, callback_arg);
 }
 
 void MaaResourceDestroy(MaaResourceHandle* res)
@@ -40,14 +38,34 @@ void MaaResourceDestroy(MaaResourceHandle* res)
     *res = nullptr;
 }
 
-MaaBool MaaResourceIncrementalLoad(MaaResourceHandle res, MaaString path)
+MaaResId MaaResourcePostLoad(MaaResourceHandle res, MaaString path)
 {
     LogFunc << VAR_VOIDP(res) << VAR(path);
 
     if (!res) {
+        return MaaInvalidId;
+    }
+    return res->post_load(MAA_NS::path(path));
+}
+
+MaaStatus MaaResourceStatus(MaaResourceHandle res, MaaResId id)
+{
+    // LogFunc << VAR_VOIDP(res) << VAR(id);
+
+    if (!res) {
+        return MaaStatus_Invalid;
+    }
+    return res->status(id);
+}
+
+MaaBool MaaResourceLoaded(MaaResourceHandle res)
+{
+    // LogFunc << VAR_VOIDP(res);
+
+    if (!res) {
         return false;
     }
-    return res->incremental_load(MAA_NS::path(path));
+    return res->loaded();
 }
 
 MaaBool MaaResourceSetOption(MaaResourceHandle res, MaaString key, MaaString value)
@@ -60,79 +78,44 @@ MaaBool MaaResourceSetOption(MaaResourceHandle res, MaaString key, MaaString val
     return res->set_option(key, value);
 }
 
-MaaBool MaaResourceLoading(MaaResourceHandle res)
-{
-    // LogFunc << VAR_VOIDP(res);
-
-    if (!res) {
-        return false;
-    }
-    return res->loading();
-}
-
-MaaBool MaaResourceLoaded(MaaResourceHandle res)
-{
-    LogFunc << VAR_VOIDP(res);
-
-    if (!res) {
-        return false;
-    }
-    return res->loaded();
-}
-
 MaaSize MaaResourceGetHash(MaaResourceHandle res, char* buff, MaaSize buff_size)
 {
     LogFunc << VAR_VOIDP(res) << VAR_VOIDP(buff) << VAR(buff_size);
 
     if (!res || !buff) {
-        return NullSize;
+        return MaaNullSize;
     }
     auto hash = res->get_hash();
     size_t size = hash.size();
     if (size >= buff_size) {
-        return NullSize;
+        return MaaNullSize;
     }
     memcpy(buff, hash.c_str(), size);
     return size;
 }
 
-MaaControllerHandle MaaAdbControllerCreate(MaaString adb_path, MaaString address, MaaString config_json,
-                                           MaaControllerCallback callback, void* callback_arg)
+MaaControllerHandle MaaAdbControllerCreate(MaaString adb_path, MaaString address, MaaControllerCallback callback,
+                                           void* callback_arg)
 {
-    LogFunc << VAR(adb_path) << VAR(address) << VAR(config_json) << VAR_VOIDP(callback) << VAR_VOIDP(callback_arg);
+    LogFunc << VAR(adb_path) << VAR(address) << VAR_VOIDP(callback) << VAR_VOIDP(callback_arg);
 
-    auto config_opt = MAA_CTRL_NS::AdbConfig::parse(config_json);
-    if (!config_opt) {
-        return nullptr;
-    }
-
-    return new MAA_CTRL_NS::AdbController(adb_path, address, *config_opt, callback, callback_arg);
+    return new MAA_CTRL_NS::AdbController(adb_path, address, callback, callback_arg);
 }
 
-MaaControllerHandle MaaMinitouchControllerCreate(MaaString adb_path, MaaString address, MaaString config_json,
-                                                 MaaControllerCallback callback, void* callback_arg)
+MaaControllerHandle MaaMinitouchControllerCreate(MaaString adb_path, MaaString address, MaaControllerCallback callback,
+                                                 void* callback_arg)
 {
-    LogFunc << VAR(adb_path) << VAR(address) << VAR(config_json) << VAR_VOIDP(callback) << VAR_VOIDP(callback_arg);
+    LogFunc << VAR(adb_path) << VAR(address) << VAR_VOIDP(callback) << VAR_VOIDP(callback_arg);
 
-    auto config_opt = MAA_CTRL_NS::MinitouchConfig::parse(config_json);
-    if (!config_opt) {
-        return nullptr;
-    }
-
-    return new MAA_CTRL_NS::MinitouchController(adb_path, address, *config_opt, callback, callback_arg);
+    return new MAA_CTRL_NS::MinitouchController(adb_path, address, callback, callback_arg);
 }
 
-MaaControllerHandle MaaMaatouchControllerCreate(MaaString adb_path, MaaString address, MaaString config_json,
-                                                MaaControllerCallback callback, void* callback_arg)
+MaaControllerHandle MaaMaatouchControllerCreate(MaaString adb_path, MaaString address, MaaControllerCallback callback,
+                                                void* callback_arg)
 {
-    LogFunc << VAR(adb_path) << VAR(address) << VAR(config_json) << VAR_VOIDP(callback) << VAR_VOIDP(callback_arg);
+    LogFunc << VAR(adb_path) << VAR(address) << VAR_VOIDP(callback) << VAR_VOIDP(callback_arg);
 
-    auto config_opt = MAA_CTRL_NS::MaatouchConfig::parse(config_json);
-    if (!config_opt) {
-        return nullptr;
-    }
-
-    return new MAA_CTRL_NS::MaatouchController(adb_path, address, *config_opt, callback, callback_arg);
+    return new MAA_CTRL_NS::MaatouchController(adb_path, address, callback, callback_arg);
 }
 
 MaaControllerHandle MaaCustomControllerCreate(MaaCustomControllerHandle handle, MaaControllerCallback callback,
@@ -168,24 +151,13 @@ MaaBool MaaControllerSetOption(MaaControllerHandle ctrl, MaaString key, MaaStrin
     return ctrl->set_option(key, value);
 }
 
-MaaBool MaaControllerConnecting(MaaControllerHandle ctrl)
-{
-    // LogFunc << VAR_VOIDP(ctrl);
-
-    if (!ctrl) {
-        return false;
-    }
-    return ctrl->connecting();
-}
-
-MaaBool MaaControllerConnected(MaaControllerHandle ctrl)
+MaaCtrlId MaaControllerPostConnect(MaaControllerHandle ctrl)
 {
     LogFunc << VAR_VOIDP(ctrl);
-
     if (!ctrl) {
         return false;
     }
-    return ctrl->connected();
+    return ctrl->post_connect();
 }
 
 MaaCtrlId MaaControllerPostClick(MaaControllerHandle ctrl, int32_t x, int32_t y)
@@ -223,17 +195,36 @@ MaaCtrlId MaaControllerPostScreencap(MaaControllerHandle ctrl)
     return ctrl->post_screencap();
 }
 
+MaaStatus MaaControllerStatus(MaaControllerHandle ctrl, MaaCtrlId id)
+{
+    // LogFunc << VAR_VOIDP(ctrl) << VAR(id);
+
+    if (!ctrl) {
+        return MaaStatus_Invalid;
+    }
+    return ctrl->status(id);
+}
+
+MaaBool MAAAPI MaaControllerConnected(MaaControllerHandle ctrl)
+{
+    LogFunc << VAR_VOIDP(ctrl);
+    if (!ctrl) {
+        return false;
+    }
+    return ctrl->connected();
+}
+
 MaaSize MaaControllerGetImage(MaaControllerHandle ctrl, void* buff, MaaSize buff_size)
 {
     LogFunc << VAR_VOIDP(ctrl) << VAR_VOIDP(buff) << VAR(buff_size);
 
     if (!ctrl || !buff) {
-        return NullSize;
+        return MaaNullSize;
     }
     auto image = ctrl->get_image();
     size_t size = image.size();
     if (size >= buff_size) {
-        return NullSize;
+        return MaaNullSize;
     }
     memcpy(buff, image.data(), size);
     return size;
@@ -244,12 +235,12 @@ MaaSize MaaControllerGetUUID(MaaControllerHandle ctrl, char* buff, MaaSize buff_
     LogFunc << VAR_VOIDP(ctrl) << VAR_VOIDP(buff) << VAR(buff_size);
 
     if (!ctrl || !buff) {
-        return NullSize;
+        return MaaNullSize;
     }
     auto uuid = ctrl->get_uuid();
     size_t size = uuid.size();
     if (size >= buff_size) {
-        return NullSize;
+        return MaaNullSize;
     }
     memcpy(buff, uuid.c_str(), size);
     return size;
@@ -332,6 +323,25 @@ MaaBool MaaSetTaskParam(MaaInstanceHandle inst, MaaTaskId id, MaaString param)
     return inst->set_task_param(id, param);
 }
 
+MaaStatus MaaTaskStatus(MaaInstanceHandle inst, MaaTaskId id)
+{
+    // LogFunc << VAR_VOIDP(inst) << VAR(id);
+
+    if (!inst) {
+        return MaaStatus_Invalid;
+    }
+    return inst->status(id);
+}
+
+MaaBool MAAAPI MaaTaskAllFinished(MaaInstanceHandle inst)
+{
+    // LogFunc << VAR_VOIDP(inst) << VAR(id);
+    if (!inst) {
+        return false;
+    }
+    return inst->all_finished();
+}
+
 void MaaStop(MaaInstanceHandle inst)
 {
     LogFunc << VAR_VOIDP(inst);
@@ -343,27 +353,17 @@ void MaaStop(MaaInstanceHandle inst)
     inst->stop();
 }
 
-MaaBool MaaRunning(MaaInstanceHandle inst)
-{
-    // LogFunc << VAR_VOIDP(inst);
-
-    if (!inst) {
-        return false;
-    }
-    return inst->running();
-}
-
 MaaSize MaaGetResourceHash(MaaInstanceHandle inst, char* buff, MaaSize buff_size)
 {
     LogFunc << VAR_VOIDP(inst) << VAR_VOIDP(buff) << VAR(buff_size);
 
     if (!inst || !buff) {
-        return NullSize;
+        return MaaNullSize;
     }
     auto hash = inst->get_resource_hash();
     size_t size = hash.size();
     if (size >= buff_size) {
-        return NullSize;
+        return MaaNullSize;
     }
     memcpy(buff, hash.c_str(), size);
     return size;
@@ -374,30 +374,14 @@ MaaSize MaaGetControllerUUID(MaaInstanceHandle inst, char* buff, MaaSize buff_si
     LogFunc << VAR_VOIDP(inst) << VAR_VOIDP(buff) << VAR(buff_size);
 
     if (!inst || !buff) {
-        return NullSize;
+        return MaaNullSize;
     }
     auto uuid = inst->get_controller_uuid();
     size_t size = uuid.size();
     if (size >= buff_size) {
-        return NullSize;
+        return MaaNullSize;
     }
     memcpy(buff, uuid.c_str(), size);
-    return size;
-}
-
-MaaSize MaaGetTaskList(MaaInstanceHandle inst, MaaTaskId* buff, MaaSize buff_size)
-{
-    LogFunc << VAR_VOIDP(inst) << VAR_VOIDP(buff) << VAR(buff_size);
-
-    if (!inst || !buff) {
-        return NullSize;
-    }
-    auto tasks = inst->get_task_list();
-    size_t size = tasks.size();
-    if (size >= buff_size) {
-        return NullSize;
-    }
-    memcpy(buff, tasks.data(), size * sizeof(MaaTaskId));
     return size;
 }
 

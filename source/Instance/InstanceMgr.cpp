@@ -85,7 +85,10 @@ MaaTaskId InstanceMgr::post_task(std::string_view type, std::string_view param)
 
     auto id = task_runner_->post(task_ptr);
     LogTrace << task_ptr->type() << VAR(id);
+
+    std::unique_lock<std::mutex> lock(task_mutex_);
     task_map_.emplace(id, task_ptr);
+    lock.unlock();
 
     return id;
 }
@@ -94,9 +97,18 @@ bool InstanceMgr::set_task_param(MaaTaskId task_id, std::string_view param)
 {
     LogInfo << VAR(task_id) << VAR(param);
 
+    std::unique_lock<std::mutex> lock(task_mutex_);
     auto iter = task_map_.find(task_id);
     if (iter == task_map_.end()) {
         LogError << "Invalid task id:" << task_id;
+        return false;
+    }
+
+    auto task_ptr = iter->second;
+    lock.unlock();
+
+    if (!task_ptr) {
+        LogError << "Invalid task ptr:" << task_id;
         return false;
     }
 
@@ -106,36 +118,31 @@ bool InstanceMgr::set_task_param(MaaTaskId task_id, std::string_view param)
         return false;
     }
 
-    auto& task_ptr = iter->second;
-    if (!task_ptr) {
-        LogError << "Invalid task ptr:" << task_id;
-        return false;
-    }
-
     bool ret = task_ptr->set_param(*param_opt);
 
     LogTrace << task_ptr->type() << VAR(ret);
     return ret;
 }
 
-std::vector<MaaTaskId> InstanceMgr::get_task_list() const
+MaaStatus InstanceMgr::status(MaaTaskId task_id) const
 {
-    std::vector<MaaTaskId> result;
-    ranges::transform(task_map_ | views::keys, std::back_inserter(result), [](auto id) { return id; });
-    return result;
+    return task_runner_->status(task_id);
+}
+
+MaaBool InstanceMgr::all_finished() const
+{
+    return !task_runner_->running();
 }
 
 void InstanceMgr::stop()
 {
     LogFunc;
 
+    std::unique_lock<std::mutex> lock(task_mutex_);
     task_map_.clear();
-    task_runner_->clear();
-}
+    lock.unlock();
 
-bool InstanceMgr::running() const
-{
-    return task_runner_->running();
+    task_runner_->clear();
 }
 
 std::string InstanceMgr::get_resource_hash() const
@@ -148,7 +155,7 @@ std::string InstanceMgr::get_controller_uuid() const
     return controller_ ? controller_->get_uuid() : std::string();
 }
 
-void InstanceMgr::run_task(typename AsyncRunner<TaskPtr>::Id id, TaskPtr task_ptr)
+bool InstanceMgr::run_task(typename AsyncRunner<TaskPtr>::Id id, TaskPtr task_ptr)
 {
     LogFunc << VAR(id) << VAR(task_ptr);
 
@@ -165,7 +172,10 @@ void InstanceMgr::run_task(typename AsyncRunner<TaskPtr>::Id id, TaskPtr task_pt
 
     notifier.notify(ret ? MaaMsg::TaskCompleted : MaaMsg::TaskFailed, details);
 
+    std::unique_lock<std::mutex> lock(task_mutex_);
     task_map_.erase(id);
+
+    return ret;
 }
 
 MAA_NS_END

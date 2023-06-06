@@ -6,6 +6,8 @@
 #include "Common/MaaTypes.h"
 #include "Task/AbstractTask.h"
 
+#include <mutex>
+
 MAA_NS_BEGIN
 
 class InstanceMgr : public MaaInstanceAPI
@@ -22,10 +24,10 @@ public:
 
     virtual MaaTaskId post_task(std::string_view type, std::string_view param) override;
     virtual bool set_task_param(MaaTaskId task_id, std::string_view param) override;
-    virtual std::vector<MaaTaskId> get_task_list() const override;
+    virtual MaaStatus status(MaaTaskId task_id) const override;
+    virtual MaaBool all_finished() const override;
 
     virtual void stop() override;
-    virtual bool running() const override;
 
     virtual std::string get_resource_hash() const override;
     virtual std::string get_controller_uuid() const override;
@@ -33,7 +35,7 @@ public:
 private:
     using TaskPtr = std::shared_ptr<TaskNS::AbstractTask>;
 
-    void run_task(typename AsyncRunner<TaskPtr>::Id id, TaskPtr task_ptr);
+    bool run_task(typename AsyncRunner<TaskPtr>::Id id, TaskPtr task_ptr);
 
 private:
     AsyncCallback<MaaInstanceCallback, void*> notifier;
@@ -43,6 +45,7 @@ private:
 
     std::unique_ptr<AsyncRunner<TaskPtr>> task_runner_ = nullptr;
     std::map<typename AsyncRunner<TaskPtr>::Id, TaskPtr> task_map_;
+    std::mutex task_mutex_;
 };
 
 MAA_NS_END

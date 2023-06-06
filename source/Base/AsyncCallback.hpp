@@ -35,14 +35,17 @@ public:
     }
 
 private:
-    void callback(typename AsyncRunner<NotifyData>::Id id, NotifyData cb_data)
+    bool callback(typename AsyncRunner<NotifyData>::Id id, NotifyData cb_data)
     {
         LogFunc << VAR_VOIDP(callback_) << VAR_VOIDP(callback_arg_) << VAR(id) << VAR(cb_data.msg)
                 << VAR(cb_data.details);
 
-        if (callback_) {
-            callback_(static_cast<MaaMsgId>(id), cb_data.details.to_string().c_str(), callback_arg_);
+        if (!callback_) {
+            return false;
         }
+
+        callback_(static_cast<MaaMsgId>(id), cb_data.details.to_string().c_str(), callback_arg_);
+        return true;
     }
 
 private:

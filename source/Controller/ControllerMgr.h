@@ -7,6 +7,8 @@
 #include "Utils/NoWarningCVMat.h"
 
 #include <memory>
+#include <mutex>
+#include <random>
 #include <variant>
 
 MAA_CTRL_NS_BEGIN
@@ -26,7 +28,9 @@ struct SwipeParams
     };
     std::vector<Step> steps;
 };
+
 using Params = std::variant<ClickParams, SwipeParams>;
+
 struct Action
 {
     enum class Type
@@ -40,6 +44,8 @@ struct Action
     Params params;
 };
 
+std::ostream& operator<<(std::ostream& os, const Action& action);
+
 class ControllerMgr : public MaaControllerAPI
 {
 public:
@@ -49,15 +55,16 @@ public:
 
     virtual bool set_option(std::string_view key, std::string_view value) override;
 
-    virtual bool connecting() const override;
-    virtual bool connected() const override;
-
+    virtual MaaCtrlId post_connect() override;
     virtual MaaCtrlId post_click(int x, int y) override;
     virtual MaaCtrlId post_swipe(const std::vector<int>& x_steps, const std::vector<int>& y_steps,
                                  const std::vector<int>& step_delay) override;
     virtual MaaCtrlId post_screencap() override;
 
-    virtual std::vector<unsigned char> get_image() const override;
+    virtual MaaStatus status(MaaCtrlId ctrl_id) const override;
+    virtual MaaBool connected() const override;
+
+    virtual std::vector<uint8_t> get_image() const override;
     virtual std::string get_uuid() const override;
 
 public:
@@ -74,11 +81,18 @@ protected:
     virtual cv::Mat _screencap() = 0;
 
 private:
-    void run_action(typename AsyncRunner<Action>::Id id, Action action);
+    bool run_action(typename AsyncRunner<Action>::Id id, Action action);
+    cv::Point rand_point(const cv::Rect& r);
 
 private:
     std::unique_ptr<AsyncRunner<Action>> action_runner_ = nullptr;
     AsyncCallback<MaaControllerCallback, void*> notifier;
+
+    std::minstd_rand rand_engine_;
+
+    bool connected_ = false;
+    std::mutex image_mutex_;
+    cv::Mat image_;
 };
 
 MAA_CTRL_NS_END

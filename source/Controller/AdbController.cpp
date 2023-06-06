@@ -2,14 +2,9 @@
 
 MAA_CTRL_NS_BEGIN
 
-std::optional<AdbConfig> AdbConfig::parse(const std::string& config_json)
-{
-    return AdbConfig();
-}
-
-AdbController::AdbController(const std::filesystem::path& adb_path, const std::string& address, const AdbConfig& config,
+AdbController::AdbController(const std::filesystem::path& adb_path, const std::string& address,
                              MaaControllerCallback callback, void* callback_arg)
-    : ControllerMgr(callback, callback_arg), adb_path_(adb_path), address_(address), adb_config_(config)
+    : ControllerMgr(callback, callback_arg), adb_path_(adb_path), address_(address)
 {}
 
 AdbController::~AdbController() {}

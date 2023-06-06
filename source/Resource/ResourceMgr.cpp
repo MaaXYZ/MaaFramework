@@ -2,34 +2,30 @@
 
 MAA_RES_NS_BEGIN
 
-ResourceMgr::ResourceMgr(const std::filesystem::path& path, const std::filesystem::path& user_path,
-                         MaaResourceCallback callback, void* callback_arg)
-    : path_(path), user_path_(user_path), notifier(callback, callback_arg)
+ResourceMgr::ResourceMgr(const std::filesystem::path& user_path, MaaResourceCallback callback, void* callback_arg)
+    : user_path_(user_path), notifier(callback, callback_arg)
 {}
 
 ResourceMgr::~ResourceMgr() {}
 
 bool ResourceMgr::set_option(std::string_view key, std::string_view value)
 {
-    std::ignore = key;
-    std::ignore = value;
-
     return true;
 }
 
-bool ResourceMgr::incremental_load(const std::filesystem::path& path)
+MaaResId ResourceMgr::post_load(const std::filesystem::path& path)
 {
-    return false;
+    return MaaResId();
 }
 
-bool ResourceMgr::loading() const
+MaaStatus ResourceMgr::status(MaaResId res_id) const
 {
-    return false;
+    return MaaStatus();
 }
 
-bool ResourceMgr::loaded() const
+MaaBool ResourceMgr::loaded() const
 {
-    return false;
+    return MaaBool();
 }
 
 std::string ResourceMgr::get_hash() const

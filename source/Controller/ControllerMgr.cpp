@@ -2,7 +2,8 @@
 
 MAA_CTRL_NS_BEGIN
 
-ControllerMgr::ControllerMgr(MaaControllerCallback callback, void* callback_arg) : notifier(callback, callback_arg)
+ControllerMgr::ControllerMgr(MaaControllerCallback callback, void* callback_arg)
+    : notifier(callback, callback_arg), rand_engine_(std::random_device {}())
 {
     action_runner_ = std::make_unique<AsyncRunner<Action>>(
         std::bind(&ControllerMgr::run_action, this, std::placeholders::_1, std::placeholders::_2));
@@ -15,14 +16,9 @@ bool ControllerMgr::set_option(std::string_view key, std::string_view value)
     return false;
 }
 
-bool ControllerMgr::connecting() const
+MaaCtrlId ControllerMgr::post_connect()
 {
-    return false;
-}
-
-bool ControllerMgr::connected() const
-{
-    return false;
+    return MaaCtrlId();
 }
 
 MaaCtrlId ControllerMgr::post_click(int x, int y)
@@ -52,9 +48,19 @@ MaaCtrlId ControllerMgr::post_screencap()
     return action_runner_->post({ .type = Action::Type::screencap });
 }
 
-std::vector<unsigned char> ControllerMgr::get_image() const
+MaaStatus ControllerMgr::status(MaaCtrlId ctrl_id) const
 {
-    return std::vector<unsigned char>();
+    return MaaStatus();
+}
+
+MaaBool ControllerMgr::connected() const
+{
+    return MaaBool();
+}
+
+std::vector<uint8_t> ControllerMgr::get_image() const
+{
+    return std::vector<uint8_t>();
 }
 
 std::string ControllerMgr::get_uuid() const
@@ -64,46 +70,94 @@ std::string ControllerMgr::get_uuid() const
 
 void ControllerMgr::click(const cv::Rect& r)
 {
-    // TODO: invoke _click
+    click(rand_point(r));
 }
 
 void ControllerMgr::click(const cv::Point& p)
 {
-    // TODO: invoke _click
+    ClickParams params { .x = p.x, .y = p.y };
+    action_runner_->post({ .type = Action::Type::click, .params = std::move(params) }, true);
 }
 
 void ControllerMgr::swipe(const cv::Rect& r1, const cv::Rect& r2, int duration)
 {
-    // TODO: invoke _swipe
+    // TODO: post swipe
 }
 
 void ControllerMgr::swipe(const cv::Point& p1, const cv::Point& p2, int duration)
 {
-    // TODO: invoke _swipe
+    // TODO: post swipe
 }
 
 cv::Mat ControllerMgr::screencap()
 {
-    // TODO: invoke _screencap
-    return cv::Mat();
+    std::unique_lock<std::mutex> lock(image_mutex_);
+    action_runner_->post({ .type = Action::Type::screencap }, true);
+    return image_;
 }
 
-void ControllerMgr::run_action(typename AsyncRunner<Action>::Id id, Action action)
+bool ControllerMgr::run_action(typename AsyncRunner<Action>::Id id, Action action)
+{
+    LogFunc << VAR(id) << VAR(action);
+
+    switch (action.type) {
+    case Action::Type::connect:
+        connected_ = _connect();
+        return connected_;
+    case Action::Type::click:
+        _click(std::get<ClickParams>(action.params));
+        return true;
+    case Action::Type::swipe:
+        _swipe(std::get<SwipeParams>(action.params));
+        return true;
+    case Action::Type::screencap:
+        image_ = _screencap();
+        return !image_.empty();
+    }
+
+    return false;
+}
+
+cv::Point ControllerMgr::rand_point(const cv::Rect& r)
+{
+    int x = 0, y = 0;
+
+    if (r.width == 0) {
+        x = r.x;
+    }
+    else {
+        int x_rand = std::poisson_distribution<int>(r.width / 2.)(rand_engine_);
+        x = x_rand + r.x;
+    }
+
+    if (r.height == 0) {
+        y = r.y;
+    }
+    else {
+        int y_rand = std::poisson_distribution<int>(r.height / 2.)(rand_engine_);
+        y = y_rand + r.y;
+    }
+
+    return { x, y };
+}
+
+inline std::ostream& operator<<(std::ostream& os, const Action& action)
 {
     switch (action.type) {
     case Action::Type::connect:
-        _connect();
+        os << "connect";
         break;
     case Action::Type::click:
-        _click(std::get<ClickParams>(action.params));
+        os << "click";
         break;
     case Action::Type::swipe:
-        _swipe(std::get<SwipeParams>(action.params));
+        os << "swipe";
         break;
     case Action::Type::screencap:
-        _screencap();
+        os << "screencap";
         break;
     }
+    return os;
 }
 
 MAA_CTRL_NS_END
