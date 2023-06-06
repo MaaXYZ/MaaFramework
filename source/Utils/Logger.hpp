@@ -250,7 +250,7 @@ private:
             return;
         }
 
-        const std::filesystem::path bak_path = log_path_.parent_path() / "maa_framework.bak.log";
+        const std::filesystem::path bak_path = log_path_.parent_path() / "maa.bak.log";
         try {
             std::filesystem::rename(log_path_, bak_path);
         }
@@ -280,7 +280,7 @@ private:
 
 private:
     const std::filesystem::path log_path_ =
-        MAA_NS::GlabalOption::get_instance().log_dir() / "debug" / "maa_framework.log";
+        MAA_NS::GlabalOption::get_instance().log_dir() / "debug" / "maa.log";
     std::ofstream ofs_;
     std::mutex trace_mutex_;
 };
