@@ -33,17 +33,13 @@ class Logger : public SingletonHolder<Logger>
     friend class SingletonHolder<Logger>;
 
 public:
-    struct level
+    enum class level
     {
-        constexpr explicit level(std::string_view s) noexcept : str(s) {}
-
-        static const level debug;
-        static const level trace;
-        static const level info;
-        static const level warn;
-        static const level error;
-
-        std::string_view str;
+        debug,
+        trace,
+        info,
+        warn,
+        error,
     };
 
     struct separator
@@ -111,7 +107,7 @@ public:
         void stream_endl()
         {
 #ifdef MAA_DEBUG
-            std::cout << std::endl;
+            std::cout << "\033[0m" << std::endl;
 #endif
             stream_ << std::endl;
         }
@@ -119,6 +115,10 @@ public:
         template <typename... args_t>
         void stream_props(level lv, args_t&&... args)
         {
+#ifdef MAA_DEBUG
+            print_color(lv);
+#endif
+
 #ifdef _WIN32
             int pid = _getpid();
 #else
@@ -126,11 +126,51 @@ public:
 #endif
             auto tid = static_cast<unsigned short>(std::hash<std::thread::id> {}(std::this_thread::get_id()));
 
-            std::string props = std::format("[{}][{}][Px{}][Tx{}]", get_format_time(), lv.str, pid, tid);
+            std::string props = std::format("[{}][{}][Px{}][Tx{}]", get_format_time(), level_str(lv), pid, tid);
             for (auto&& arg : { args... }) {
                 props += std::format("[{}]", arg);
             }
             stream(props);
+        }
+
+#ifdef MAA_DEBUG
+        void print_color(level lv)
+        {
+            std::string_view color;
+
+            switch (lv) {
+            case level::debug:
+            case level::trace:
+                break;
+            case level::info:
+                color = "\033[32m";
+                break;
+            case level::warn:
+                color = "\033[33m";
+                break;
+            case level::error:
+                color = "\033[31m";
+                break;
+            }
+            std::cout << color;
+        }
+#endif
+
+        constexpr std::string_view level_str(level lv)
+        {
+            switch (lv) {
+            case level::debug:
+                return "DBG";
+            case level::trace:
+                return "TRC";
+            case level::info:
+                return "INF";
+            case level::warn:
+                return "WRN";
+            case level::error:
+                return "ERR";
+            }
+            return "NoLV";
         }
 
     private:
@@ -244,12 +284,6 @@ private:
     std::ofstream ofs_;
     std::mutex trace_mutex_;
 };
-
-inline constexpr Logger::level Logger::level::debug("DBG");
-inline constexpr Logger::level Logger::level::trace("TRC");
-inline constexpr Logger::level Logger::level::info("INF");
-inline constexpr Logger::level Logger::level::warn("WRN");
-inline constexpr Logger::level Logger::level::error("ERR");
 
 inline constexpr Logger::separator Logger::separator::none("");
 inline constexpr Logger::separator Logger::separator::space(" ");
