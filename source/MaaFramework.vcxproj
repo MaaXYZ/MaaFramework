@@ -71,7 +71,7 @@
     <ClCompile Include="Controller\AdbController.cpp" />
     <ClCompile Include="Controller\ControllerMgr.cpp" />
     <ClCompile Include="Instance\InstanceMgr.cpp" />
-    <ClCompile Include="MaaAPI.cpp" />
+    <ClCompile Include="API\MaaAPI.cpp" />
     <ClCompile Include="Controller\MinitouchController.cpp" />
     <ClCompile Include="Controller\MaatouchController.cpp" />
     <ClCompile Include="Controller\PlayToolsController.cpp" />

@@ -1,205 +1,204 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-    <Filter Include="源文件">
-      <UniqueIdentifier>{ea22369f-0c0f-48f7-9356-850065862963}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="源文件\Common">
-      <UniqueIdentifier>{9e63ad3d-d995-4cd5-acce-f0d75eb58ef1}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="源文件\Instance">
-      <UniqueIdentifier>{f4ccf9b4-449c-4060-b567-330712d3135f}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="源文件\Resource">
-      <UniqueIdentifier>{2df709e0-7475-4cd4-87bd-f0675f898f63}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="源文件\Controller">
-      <UniqueIdentifier>{6e391dc1-ad59-4ae3-925b-b5f5980927be}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="源文件\Vision">
-      <UniqueIdentifier>{dac8190f-d88e-4f99-953b-1530a18d6c50}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="源文件\Task">
-      <UniqueIdentifier>{5727ed05-c3dc-4c47-9dde-7f10a450b08c}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="资源文件">
-      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
-      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
-    </Filter>
-    <Filter Include="头文件">
+    <Filter Include="Include">
       <UniqueIdentifier>{c3ebc635-47cc-4750-b219-bc7f664ffb75}</UniqueIdentifier>
     </Filter>
-    <Filter Include="源文件\Utils">
+    <Filter Include="Source">
+      <UniqueIdentifier>{ea22369f-0c0f-48f7-9356-850065862963}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\Common">
+      <UniqueIdentifier>{9e63ad3d-d995-4cd5-acce-f0d75eb58ef1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\Instance">
+      <UniqueIdentifier>{f4ccf9b4-449c-4060-b567-330712d3135f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\Resource">
+      <UniqueIdentifier>{2df709e0-7475-4cd4-87bd-f0675f898f63}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\Controller">
+      <UniqueIdentifier>{6e391dc1-ad59-4ae3-925b-b5f5980927be}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\Vision">
+      <UniqueIdentifier>{dac8190f-d88e-4f99-953b-1530a18d6c50}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\Task">
+      <UniqueIdentifier>{5727ed05-c3dc-4c47-9dde-7f10a450b08c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\Utils">
       <UniqueIdentifier>{4a70ba3f-91ed-42d2-92dd-892f2d97929c}</UniqueIdentifier>
     </Filter>
-    <Filter Include="源文件\Utils\Platform">
+    <Filter Include="Source\Utils\Platform">
       <UniqueIdentifier>{9349568b-d1d8-40ea-b55a-a240e5fe89f8}</UniqueIdentifier>
     </Filter>
-    <Filter Include="源文件\Option">
+    <Filter Include="Source\Option">
       <UniqueIdentifier>{9e58b788-5688-48de-92ef-06fb6f24c4c4}</UniqueIdentifier>
     </Filter>
-    <Filter Include="源文件\Base">
+    <Filter Include="Source\Base">
       <UniqueIdentifier>{12797767-44fd-4da8-a4cd-bdc75190adf4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\API">
+      <UniqueIdentifier>{5d5c3d80-dbca-4b8c-a8dc-41fba1acc500}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\include\MaaAPI.h">
-      <Filter>头文件</Filter>
+      <Filter>Include</Filter>
     </ClInclude>
     <ClInclude Include="..\include\MaaPort.h">
-      <Filter>头文件</Filter>
+      <Filter>Include</Filter>
     </ClInclude>
     <ClInclude Include="..\include\MaaDef.h">
-      <Filter>头文件</Filter>
+      <Filter>Include</Filter>
     </ClInclude>
     <ClInclude Include="Common\MaaTypes.h">
-      <Filter>源文件\Common</Filter>
+      <Filter>Source\Common</Filter>
     </ClInclude>
     <ClInclude Include="Common\MaaMsg.h">
-      <Filter>源文件\Common</Filter>
+      <Filter>Source\Common</Filter>
     </ClInclude>
     <ClInclude Include="Common\MaaConf.h">
-      <Filter>源文件\Common</Filter>
+      <Filter>Source\Common</Filter>
     </ClInclude>
     <ClInclude Include="Controller\ControllerMgr.h">
-      <Filter>源文件\Controller</Filter>
+      <Filter>Source\Controller</Filter>
     </ClInclude>
     <ClInclude Include="Instance\InstanceMgr.h">
-      <Filter>源文件\Instance</Filter>
+      <Filter>Source\Instance</Filter>
     </ClInclude>
     <ClInclude Include="Resource\ResourceMgr.h">
-      <Filter>源文件\Resource</Filter>
+      <Filter>Source\Resource</Filter>
     </ClInclude>
     <ClInclude Include="Utils\Platform.hpp">
-      <Filter>源文件\Utils</Filter>
+      <Filter>Source\Utils</Filter>
     </ClInclude>
     <ClInclude Include="Utils\Platform\Platform.h">
-      <Filter>源文件\Utils\Platform</Filter>
+      <Filter>Source\Utils\Platform</Filter>
     </ClInclude>
     <ClInclude Include="Utils\Platform\PlatformPosix.h">
-      <Filter>源文件\Utils\Platform</Filter>
+      <Filter>Source\Utils\Platform</Filter>
     </ClInclude>
     <ClInclude Include="Utils\Platform\PlatformWin32.h">
-      <Filter>源文件\Utils\Platform</Filter>
+      <Filter>Source\Utils\Platform</Filter>
     </ClInclude>
     <ClInclude Include="Utils\Ranges.hpp">
-      <Filter>源文件\Utils</Filter>
+      <Filter>Source\Utils</Filter>
     </ClInclude>
     <ClInclude Include="Utils\StringMisc.hpp">
-      <Filter>源文件\Utils</Filter>
+      <Filter>Source\Utils</Filter>
     </ClInclude>
     <ClInclude Include="Utils\Time.hpp">
-      <Filter>源文件\Utils</Filter>
+      <Filter>Source\Utils</Filter>
     </ClInclude>
     <ClInclude Include="Utils\Platform\SafeWindows.h">
-      <Filter>源文件\Utils\Platform</Filter>
+      <Filter>Source\Utils\Platform</Filter>
     </ClInclude>
     <ClInclude Include="Utils\Demangle.hpp">
-      <Filter>源文件\Utils</Filter>
+      <Filter>Source\Utils</Filter>
     </ClInclude>
     <ClInclude Include="Utils\File.hpp">
-      <Filter>源文件\Utils</Filter>
+      <Filter>Source\Utils</Filter>
     </ClInclude>
     <ClInclude Include="Utils\ImageIo.hpp">
-      <Filter>源文件\Utils</Filter>
+      <Filter>Source\Utils</Filter>
     </ClInclude>
     <ClInclude Include="Utils\NoWarningCVMat.h">
-      <Filter>源文件\Utils</Filter>
+      <Filter>Source\Utils</Filter>
     </ClInclude>
     <ClInclude Include="Utils\NoWarningCPR.h">
-      <Filter>源文件\Utils</Filter>
+      <Filter>Source\Utils</Filter>
     </ClInclude>
     <ClInclude Include="Utils\NoWarningCV.h">
-      <Filter>源文件\Utils</Filter>
+      <Filter>Source\Utils</Filter>
     </ClInclude>
     <ClInclude Include="Controller\AdbController.h">
-      <Filter>源文件\Controller</Filter>
+      <Filter>Source\Controller</Filter>
     </ClInclude>
     <ClInclude Include="Controller\MaatouchController.h">
-      <Filter>源文件\Controller</Filter>
+      <Filter>Source\Controller</Filter>
     </ClInclude>
     <ClInclude Include="Controller\MinitouchController.h">
-      <Filter>源文件\Controller</Filter>
+      <Filter>Source\Controller</Filter>
     </ClInclude>
     <ClInclude Include="Common\MaaOptions.h">
-      <Filter>源文件\Common</Filter>
+      <Filter>Source\Common</Filter>
     </ClInclude>
     <ClInclude Include="Option\GlobalOption.h">
-      <Filter>源文件\Option</Filter>
+      <Filter>Source\Option</Filter>
     </ClInclude>
     <ClInclude Include="Utils\Locale.hpp">
-      <Filter>源文件\Utils</Filter>
+      <Filter>Source\Utils</Filter>
     </ClInclude>
     <ClInclude Include="Utils\Logger.hpp">
-      <Filter>源文件\Utils</Filter>
+      <Filter>Source\Utils</Filter>
     </ClInclude>
     <ClInclude Include="Controller\PlayToolsController.h">
-      <Filter>源文件\Controller</Filter>
+      <Filter>Source\Controller</Filter>
     </ClInclude>
     <ClInclude Include="Task\PipelineTask.h">
-      <Filter>源文件\Task</Filter>
+      <Filter>Source\Task</Filter>
     </ClInclude>
     <ClInclude Include="Task\PipelineTypes.h">
-      <Filter>源文件\Task</Filter>
+      <Filter>Source\Task</Filter>
     </ClInclude>
     <ClInclude Include="Resource\PipelineConfig.h">
-      <Filter>源文件\Resource</Filter>
+      <Filter>Source\Resource</Filter>
     </ClInclude>
     <ClInclude Include="Resource\AbstractResource.h">
-      <Filter>源文件\Resource</Filter>
+      <Filter>Source\Resource</Filter>
     </ClInclude>
     <ClInclude Include="Task\AbstractTask.h">
-      <Filter>源文件\Task</Filter>
+      <Filter>Source\Task</Filter>
     </ClInclude>
     <ClInclude Include="Base\AsyncCallback.hpp">
-      <Filter>源文件\Base</Filter>
+      <Filter>Source\Base</Filter>
     </ClInclude>
     <ClInclude Include="Base\AsyncRunner.hpp">
-      <Filter>源文件\Base</Filter>
+      <Filter>Source\Base</Filter>
     </ClInclude>
     <ClInclude Include="Base\SingletonHolder.hpp">
-      <Filter>源文件\Base</Filter>
+      <Filter>Source\Base</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Controller\ControllerMgr.cpp">
-      <Filter>源文件\Controller</Filter>
+      <Filter>Source\Controller</Filter>
     </ClCompile>
     <ClCompile Include="Instance\InstanceMgr.cpp">
-      <Filter>源文件\Instance</Filter>
+      <Filter>Source\Instance</Filter>
     </ClCompile>
     <ClCompile Include="Resource\ResourceMgr.cpp">
-      <Filter>源文件\Resource</Filter>
-    </ClCompile>
-    <ClCompile Include="MaaAPI.cpp">
-      <Filter>源文件</Filter>
+      <Filter>Source\Resource</Filter>
     </ClCompile>
     <ClCompile Include="Utils\Platform\PlatformPosix.cpp">
-      <Filter>源文件\Utils\Platform</Filter>
+      <Filter>Source\Utils\Platform</Filter>
     </ClCompile>
     <ClCompile Include="Utils\Platform\PlatformWin32.cpp">
-      <Filter>源文件\Utils\Platform</Filter>
+      <Filter>Source\Utils\Platform</Filter>
     </ClCompile>
     <ClCompile Include="Controller\AdbController.cpp">
-      <Filter>源文件\Controller</Filter>
+      <Filter>Source\Controller</Filter>
     </ClCompile>
     <ClCompile Include="Controller\MaatouchController.cpp">
-      <Filter>源文件\Controller</Filter>
+      <Filter>Source\Controller</Filter>
     </ClCompile>
     <ClCompile Include="Controller\MinitouchController.cpp">
-      <Filter>源文件\Controller</Filter>
+      <Filter>Source\Controller</Filter>
     </ClCompile>
     <ClCompile Include="Option\GlobalOption.cpp">
-      <Filter>源文件\Option</Filter>
+      <Filter>Source\Option</Filter>
     </ClCompile>
     <ClCompile Include="Controller\PlayToolsController.cpp">
-      <Filter>源文件\Controller</Filter>
+      <Filter>Source\Controller</Filter>
     </ClCompile>
     <ClCompile Include="Task\PipelineTask.cpp">
-      <Filter>源文件\Task</Filter>
+      <Filter>Source\Task</Filter>
     </ClCompile>
     <ClCompile Include="Resource\PipelineConfig.cpp">
-      <Filter>源文件\Resource</Filter>
+      <Filter>Source\Resource</Filter>
+    </ClCompile>
+    <ClCompile Include="API\MaaAPI.cpp">
+      <Filter>Source\API</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>
