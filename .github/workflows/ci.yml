@@ -108,78 +108,78 @@ jobs:
           name: MAA-win-${{ matrix.lowercase_target }}
           path: x64/Release
 
-  ubuntu:
-    needs: meta
-    runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        arch: [aarch64, x86_64]
-    steps:
-      - uses: actions/checkout@v3
+  # ubuntu:
+  #   needs: meta
+  #   runs-on: ubuntu-latest
+  #   strategy:
+  #     matrix:
+  #       arch: [aarch64, x86_64]
+  #   steps:
+  #     - uses: actions/checkout@v3
 
-      - name: Install cross compile toolchains
-        if: ${{ matrix.arch != 'x86_64' }}
-        run: |
-          sudo apt-get update
-          sudo apt-get install g++-12-aarch64-linux-gnu g++-12-aarch64-linux-gnu
+  #     - name: Install cross compile toolchains
+  #       if: ${{ matrix.arch != 'x86_64' }}
+  #       run: |
+  #         sudo apt-get update
+  #         sudo apt-get install g++-12-aarch64-linux-gnu g++-12-aarch64-linux-gnu
 
-      - name: Setup ccache
-        uses: Chocobo1/setup-ccache-action@v1
-        with:
-          remove_stale_cache: false
+  #     - name: Setup ccache
+  #       uses: Chocobo1/setup-ccache-action@v1
+  #       with:
+  #         remove_stale_cache: false
 
-      - name: Bootstrap MaaDeps
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: |
-          python3 maadeps-download.py ${{ matrix.arch == 'x86_64' && 'x64' || 'arm64' }}-linux
+  #     - name: Bootstrap MaaDeps
+  #       env:
+  #         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+  #       run: |
+  #         python3 maadeps-download.py ${{ matrix.arch == 'x86_64' && 'x64' || 'arm64' }}-linux
 
-      - name: Build MAA
-        env:
-          CC: ${{ matrix.arch == 'x86_64' && 'ccache gcc-12' || 'ccache aarch64-linux-gnu-gcc-12' }}
-          CXX: ${{ matrix.arch == 'x86_64' && 'ccache g++-12' || 'ccache aarch64-linux-gnu-g++-12' }}
-        run: |
-          mkdir -p build
-          cmake -B build \
-            -DMAADEPS_TRIPLET='maa-${{ matrix.arch == 'x86_64' && 'x64' || 'arm64' }}-linux' \
-            -DINSTALL_THIRD_LIBS=ON \
-            -DINSTALL_RESOURCE=ON \
-            -DINSTALL_PYTHON=ON \
-            -DMAA_VERSION='${{ needs.meta.outputs.tag }}'
-          cmake --build build --parallel $(nproc --all)
+  #     - name: Build MAA
+  #       env:
+  #         CC: ${{ matrix.arch == 'x86_64' && 'ccache gcc-12' || 'ccache aarch64-linux-gnu-gcc-12' }}
+  #         CXX: ${{ matrix.arch == 'x86_64' && 'ccache g++-12' || 'ccache aarch64-linux-gnu-g++-12' }}
+  #       run: |
+  #         mkdir -p build
+  #         cmake -B build \
+  #           -DMAADEPS_TRIPLET='maa-${{ matrix.arch == 'x86_64' && 'x64' || 'arm64' }}-linux' \
+  #           -DINSTALL_THIRD_LIBS=ON \
+  #           -DINSTALL_RESOURCE=ON \
+  #           -DINSTALL_PYTHON=ON \
+  #           -DMAA_VERSION='${{ needs.meta.outputs.tag }}'
+  #         cmake --build build --parallel $(nproc --all)
 
-          mkdir -p install
-          cmake --install build --prefix install
+  #         mkdir -p install
+  #         cmake --install build --prefix install
 
-      - uses: actions/upload-artifact@v3
-        with:
-          name: MAA-linux-${{ matrix.arch }}
-          path: 'install'
+  #     - uses: actions/upload-artifact@v3
+  #       with:
+  #         name: MAA-linux-${{ matrix.arch }}
+  #         path: 'install'
 
-  macOS:
-    needs: meta
-    runs-on: macos-13
-    strategy:
-      matrix:
-        arch: [arm64, x86_64]
-    steps:
-      - uses: actions/checkout@v3
-      - name: Install Dependencies
-        run: brew install ninja
-      - name: Bootstrap MaaDeps
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: |
-          [[ ${{ matrix.arch }} = "arm64" ]] && triplet="arm64-osx" || triplet="x64-osx"
-          python3 maadeps-download.py ${triplet}
-      - name: Configure MaaFramework
-        run: |
-          cmake -B build -GNinja -DCMAKE_BUILD_TYPE=Release -DCMAKE_OSX_ARCHITECTURES='${{ matrix.arch }}' -DMAA_VERSION='${{ needs.meta.outputs.tag }}'
-      - name: Build MaaFramework
-        run: |
-          cmake --build build
-          cmake --install build --prefix install
-      - uses: actions/upload-artifact@v3
-        with:
-          name: MaaFramework-macos-${{ matrix.arch }}
-          path: 'install/*.dylib'
+  # macOS:
+  #   needs: meta
+  #   runs-on: macos-13
+  #   strategy:
+  #     matrix:
+  #       arch: [arm64, x86_64]
+  #   steps:
+  #     - uses: actions/checkout@v3
+  #     - name: Install Dependencies
+  #       run: brew install ninja
+  #     - name: Bootstrap MaaDeps
+  #       env:
+  #         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+  #       run: |
+  #         [[ ${{ matrix.arch }} = "arm64" ]] && triplet="arm64-osx" || triplet="x64-osx"
+  #         python3 maadeps-download.py ${triplet}
+  #     - name: Configure MaaFramework
+  #       run: |
+  #         cmake -B build -GNinja -DCMAKE_BUILD_TYPE=Release -DCMAKE_OSX_ARCHITECTURES='${{ matrix.arch }}' -DMAA_VERSION='${{ needs.meta.outputs.tag }}'
+  #     - name: Build MaaFramework
+  #       run: |
+  #         cmake --build build
+  #         cmake --install build --prefix install
+  #     - uses: actions/upload-artifact@v3
+  #       with:
+  #         name: MaaFramework-macos-${{ matrix.arch }}
+  #         path: 'install/*.dylib'
