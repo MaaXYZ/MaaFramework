@@ -15,20 +15,8 @@ MinitouchController::MinitouchController(const std::filesystem::path& adb_path, 
 
 MinitouchController::~MinitouchController() {}
 
-MaaCtrlId MinitouchController::click(int x, int y)
-{
-    return MaaCtrlId();
-}
+void MinitouchController::_click(ClickParams param) {}
 
-MaaCtrlId MinitouchController::swipe(const std::vector<int>& x_steps, const std::vector<int>& y_steps,
-                                     const std::vector<int>& step_delay)
-{
-    return MaaCtrlId();
-}
-
-MaaCtrlId MinitouchController::screencap()
-{
-    return MaaCtrlId();
-}
+void MinitouchController::_swipe(SwipeParams param) {}
 
 MAA_CTRL_NS_END

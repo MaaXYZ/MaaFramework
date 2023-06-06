@@ -39,10 +39,10 @@ public:
     virtual bool connecting() const = 0;
     virtual bool connected() const = 0;
 
-    virtual MaaCtrlId click(int x, int y) = 0;
-    virtual MaaCtrlId swipe(const std::vector<int>& x_steps, const std::vector<int>& y_steps,
+    virtual MaaCtrlId post_click(int x, int y) = 0;
+    virtual MaaCtrlId post_swipe(const std::vector<int>& x_steps, const std::vector<int>& y_steps,
                             const std::vector<int>& step_delay) = 0;
-    virtual MaaCtrlId screencap() = 0;
+    virtual MaaCtrlId post_screencap() = 0;
     virtual std::vector<unsigned char> get_image() const = 0;
 
     virtual std::string get_uuid() const = 0;

@@ -3,9 +3,9 @@
 #include <meojson/json.hpp>
 
 #include "Controller/AdbController.h"
+#include "Controller/CustomController.h"
 #include "Controller/MaatouchController.h"
 #include "Controller/MinitouchController.h"
-#include "Controller/PlayToolsController.h"
 #include "Instance/InstanceMgr.h"
 #include "Option/GlobalOption.h"
 #include "Resource/ResourceMgr.h"
@@ -14,14 +14,14 @@
 
 static constexpr MaaSize NullSize = static_cast<MaaSize>(-1);
 
-MaaBool MAAAPI MaaSetGlobalOption(const char* key, const char* value)
+MaaBool MAAAPI MaaSetGlobalOption(MaaString key, MaaString value)
 {
     LogFunc << VAR(key) << VAR(value);
 
     return MAA_NS::GlabalOption::get_instance().set_option(key, value);
 }
 
-MaaResourceHandle MaaResourceCreate(const char* path, const char* user_path, MaaResourceCallback callback,
+MaaResourceHandle MaaResourceCreate(MaaString path, MaaString user_path, MaaResourceCallback callback,
                                     void* callback_arg)
 {
     LogFunc << VAR(path) << VAR(user_path) << VAR_VOIDP(callback) << VAR_VOIDP(callback_arg);
@@ -40,7 +40,7 @@ void MaaResourceDestroy(MaaResourceHandle* res)
     *res = nullptr;
 }
 
-MaaBool MaaResourceIncrementalLoad(MaaResourceHandle res, const char* path)
+MaaBool MaaResourceIncrementalLoad(MaaResourceHandle res, MaaString path)
 {
     LogFunc << VAR_VOIDP(res) << VAR(path);
 
@@ -50,7 +50,7 @@ MaaBool MaaResourceIncrementalLoad(MaaResourceHandle res, const char* path)
     return res->incremental_load(MAA_NS::path(path));
 }
 
-MaaBool MaaResourceSetOption(MaaResourceHandle res, const char* key, const char* value)
+MaaBool MaaResourceSetOption(MaaResourceHandle res, MaaString key, MaaString value)
 {
     LogFunc << VAR_VOIDP(res) << VAR(key) << VAR(value);
 
@@ -96,7 +96,7 @@ MaaSize MaaResourceGetHash(MaaResourceHandle res, char* buff, MaaSize buff_size)
     return size;
 }
 
-MaaControllerHandle MaaAdbControllerCreate(const char* adb_path, const char* address, const char* config_json,
+MaaControllerHandle MaaAdbControllerCreate(MaaString adb_path, MaaString address, MaaString config_json,
                                            MaaControllerCallback callback, void* callback_arg)
 {
     LogFunc << VAR(adb_path) << VAR(address) << VAR(config_json) << VAR_VOIDP(callback) << VAR_VOIDP(callback_arg);
@@ -109,7 +109,7 @@ MaaControllerHandle MaaAdbControllerCreate(const char* adb_path, const char* add
     return new MAA_CTRL_NS::AdbController(adb_path, address, *config_opt, callback, callback_arg);
 }
 
-MaaControllerHandle MaaMinitouchControllerCreate(const char* adb_path, const char* address, const char* config_json,
+MaaControllerHandle MaaMinitouchControllerCreate(MaaString adb_path, MaaString address, MaaString config_json,
                                                  MaaControllerCallback callback, void* callback_arg)
 {
     LogFunc << VAR(adb_path) << VAR(address) << VAR(config_json) << VAR_VOIDP(callback) << VAR_VOIDP(callback_arg);
@@ -122,7 +122,7 @@ MaaControllerHandle MaaMinitouchControllerCreate(const char* adb_path, const cha
     return new MAA_CTRL_NS::MinitouchController(adb_path, address, *config_opt, callback, callback_arg);
 }
 
-MaaControllerHandle MaaMaatouchControllerCreate(const char* adb_path, const char* address, const char* config_json,
+MaaControllerHandle MaaMaatouchControllerCreate(MaaString adb_path, MaaString address, MaaString config_json,
                                                 MaaControllerCallback callback, void* callback_arg)
 {
     LogFunc << VAR(adb_path) << VAR(address) << VAR(config_json) << VAR_VOIDP(callback) << VAR_VOIDP(callback_arg);
@@ -135,25 +135,16 @@ MaaControllerHandle MaaMaatouchControllerCreate(const char* adb_path, const char
     return new MAA_CTRL_NS::MaatouchController(adb_path, address, *config_opt, callback, callback_arg);
 }
 
-MaaControllerHandle MaaPlayToolsControllerCreate(const char* config_json, MaaControllerCallback callback,
-                                                 void* callback_arg)
+MaaControllerHandle MaaCustomControllerCreate(MaaCustomControllerHandle handle, MaaControllerCallback callback,
+                                              void* callback_arg)
 {
-    LogFunc << VAR(config_json) << VAR_VOIDP(callback) << VAR_VOIDP(callback_arg);
+    LogFunc << VAR(handle) << VAR_VOIDP(callback) << VAR_VOIDP(callback_arg);
 
-#ifdef __APPLE__
-
-    auto config_opt = MAA_CTRL_NS::PlayToolsControllerConfig::parse(config_json);
-    if (!config_opt) {
+    if (!handle) {
         return nullptr;
     }
 
-    return new MAA_CTRL_NS::PlayToolsController(*config_opt, callback, callback_arg);
-
-#else
-
-    return nullptr;
-
-#endif
+    return new MAA_CTRL_NS::CustomController(handle, callback, callback_arg);
 }
 
 void MaaControllerDestroy(MaaControllerHandle* ctrl)
@@ -167,7 +158,7 @@ void MaaControllerDestroy(MaaControllerHandle* ctrl)
     *ctrl = nullptr;
 }
 
-MaaBool MaaControllerSetOption(MaaControllerHandle ctrl, const char* key, const char* value)
+MaaBool MaaControllerSetOption(MaaControllerHandle ctrl, MaaString key, MaaString value)
 {
     LogFunc << VAR_VOIDP(ctrl) << VAR(key) << VAR(value);
 
@@ -197,18 +188,18 @@ MaaBool MaaControllerConnected(MaaControllerHandle ctrl)
     return ctrl->connected();
 }
 
-MaaCtrlId MaaControllerClick(MaaControllerHandle ctrl, int32_t x, int32_t y)
+MaaCtrlId MaaControllerPostClick(MaaControllerHandle ctrl, int32_t x, int32_t y)
 {
     LogFunc << VAR_VOIDP(ctrl) << VAR(x) << VAR(y);
 
     if (!ctrl) {
         return MaaInvalidId;
     }
-    return ctrl->click(x, y);
+    return ctrl->post_click(x, y);
 }
 
-MaaCtrlId MaaControllerSwipe(MaaControllerHandle ctrl, int32_t* x_steps_buff, int32_t* y_steps_buff,
-                             int32_t* step_delay_buff, MaaSize buff_size)
+MaaCtrlId MaaControllerPostSwipe(MaaControllerHandle ctrl, int32_t* x_steps_buff, int32_t* y_steps_buff,
+                                 int32_t* step_delay_buff, MaaSize buff_size)
 {
     LogFunc << VAR_VOIDP(ctrl) << VAR_VOIDP(x_steps_buff) << VAR_VOIDP(y_steps_buff) << VAR_VOIDP(step_delay_buff)
             << VAR(buff_size);
@@ -219,17 +210,17 @@ MaaCtrlId MaaControllerSwipe(MaaControllerHandle ctrl, int32_t* x_steps_buff, in
     std::vector<int32_t> x_steps(x_steps_buff, x_steps_buff + buff_size);
     std::vector<int32_t> y_steps(y_steps_buff, y_steps_buff + buff_size);
     std::vector<int32_t> step_delay(step_delay_buff, step_delay_buff + buff_size);
-    return ctrl->swipe(x_steps, y_steps, step_delay);
+    return ctrl->post_swipe(x_steps, y_steps, step_delay);
 }
 
-MaaCtrlId MaaControllerScreencap(MaaControllerHandle ctrl)
+MaaCtrlId MaaControllerPostScreencap(MaaControllerHandle ctrl)
 {
     LogFunc << VAR_VOIDP(ctrl);
 
     if (!ctrl) {
         return MaaInvalidId;
     }
-    return ctrl->screencap();
+    return ctrl->post_screencap();
 }
 
 MaaSize MaaControllerGetImage(MaaControllerHandle ctrl, void* buff, MaaSize buff_size)
@@ -282,7 +273,7 @@ void MaaDestroy(MaaInstanceHandle* inst)
     *inst = nullptr;
 }
 
-MaaBool MaaSetOption(MaaInstanceHandle inst, const char* key, const char* value)
+MaaBool MaaSetOption(MaaInstanceHandle inst, MaaString key, MaaString value)
 {
     LogFunc << VAR_VOIDP(inst) << VAR(key) << VAR(value);
 
@@ -321,7 +312,7 @@ MaaBool MaaInited(MaaInstanceHandle inst)
     return inst->inited();
 }
 
-MaaTaskId MaaPostTask(MaaInstanceHandle inst, const char* type, const char* param)
+MaaTaskId MaaPostTask(MaaInstanceHandle inst, MaaString type, MaaString param)
 {
     LogFunc << VAR_VOIDP(inst) << VAR(type) << VAR(param);
 
@@ -331,7 +322,7 @@ MaaTaskId MaaPostTask(MaaInstanceHandle inst, const char* type, const char* para
     return inst->post_task(type, param);
 }
 
-MaaBool MaaSetTaskParam(MaaInstanceHandle inst, MaaTaskId id, const char* param)
+MaaBool MaaSetTaskParam(MaaInstanceHandle inst, MaaTaskId id, MaaString param)
 {
     LogFunc << VAR_VOIDP(inst) << VAR(id) << VAR(param);
 
@@ -410,7 +401,7 @@ MaaSize MaaGetTaskList(MaaInstanceHandle inst, MaaTaskId* buff, MaaSize buff_siz
     return size;
 }
 
-const char* MaaVersion()
+MaaString MaaVersion()
 {
     return MAA_VERSION;
 }

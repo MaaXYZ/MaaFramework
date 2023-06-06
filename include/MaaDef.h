@@ -12,6 +12,7 @@ typedef struct MaaInstanceAPI* MaaInstanceHandle;
 
 typedef uint8_t MaaBool;
 typedef uint64_t MaaSize;
+typedef const char* MaaString;
 
 typedef int64_t MaaId;
 typedef MaaId MaaMsgId;
@@ -22,3 +23,6 @@ typedef void(MAA_CALL* MaaApiCallback)(MaaMsgId msg, const char* details_json, v
 typedef MaaApiCallback MaaResourceCallback;
 typedef MaaApiCallback MaaControllerCallback;
 typedef MaaApiCallback MaaInstanceCallback;
+
+struct MaaCustomControllerAPI;
+typedef MaaCustomControllerAPI* MaaCustomControllerHandle;

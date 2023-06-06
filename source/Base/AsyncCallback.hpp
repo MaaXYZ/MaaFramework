@@ -31,7 +31,7 @@ public:
     void notify(MaaMsg msg, json::value details = json::value())
     {
         LogTrace << VAR(notify_runner_) << VAR(msg) << VAR(details);
-        notify_runner_->post({ .msg = msg, .details = details });
+        notify_runner_->post({ .msg = msg, .details = std::move(details) });
     }
 
 private:

@@ -15,10 +15,9 @@ public:
                         const MinitouchConfig& config, MaaControllerCallback callback, void* callback_arg);
     virtual ~MinitouchController() override;
 
-    virtual MaaCtrlId click(int x, int y) override;
-    virtual MaaCtrlId swipe(const std::vector<int>& x_steps, const std::vector<int>& y_steps,
-                            const std::vector<int>& step_delay) override;
-    virtual MaaCtrlId screencap() override;
+protected:
+    virtual void _click(ClickParams param) override;
+    virtual void _swipe(SwipeParams param) override;
 
 protected:
     MinitouchConfig minitouch_config_;

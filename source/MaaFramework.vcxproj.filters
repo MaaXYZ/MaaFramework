@@ -129,9 +129,6 @@
     <ClInclude Include="Utils\Logger.hpp">
       <Filter>Source\Utils</Filter>
     </ClInclude>
-    <ClInclude Include="Controller\PlayToolsController.h">
-      <Filter>Source\Controller</Filter>
-    </ClInclude>
     <ClInclude Include="Task\PipelineTask.h">
       <Filter>Source\Task</Filter>
     </ClInclude>
@@ -159,6 +156,10 @@
     <ClInclude Include="..\include\MaaParam.h">
       <Filter>Include</Filter>
     </ClInclude>
+    <ClInclude Include="..\include\MaaCustomController.h">
+      <Filter>Include</Filter>
+    </ClInclude>
+    <ClInclude Include="Controller\CustomController.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Controller\ControllerMgr.cpp">
@@ -188,9 +189,6 @@
     <ClCompile Include="Option\GlobalOption.cpp">
       <Filter>Source\Option</Filter>
     </ClCompile>
-    <ClCompile Include="Controller\PlayToolsController.cpp">
-      <Filter>Source\Controller</Filter>
-    </ClCompile>
     <ClCompile Include="Task\PipelineTask.cpp">
       <Filter>Source\Task</Filter>
     </ClCompile>
@@ -200,5 +198,6 @@
     <ClCompile Include="API\MaaAPI.cpp">
       <Filter>Source\API</Filter>
     </ClCompile>
+    <ClCompile Include="Controller\CustomController.cpp" />
   </ItemGroup>
 </Project>

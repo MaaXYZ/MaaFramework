@@ -1,5 +1,6 @@
 #include "MaaAPI.h"
 #include "MaaParam.h"
+#include "MaaCustomController.h"
 
 #include <filesystem>
 #include <iostream>
@@ -18,6 +19,9 @@ int main([[maybe_unused]] int argc, char** argv)
     auto ctrl = MaaAdbControllerCreate("adb.exe", "127.0.0.1:5555", "{}", nullptr, nullptr);
     auto inst = MaaCreate(nullptr, nullptr);
 
+    MaaCustomControllerAPI my_ctrl;
+    auto ctrl2 = MaaCustomControllerCreate(&my_ctrl, nullptr, nullptr);
+
     MaaBindResource(inst, res);
     MaaBindController(inst, ctrl);
 
@@ -30,6 +34,7 @@ int main([[maybe_unused]] int argc, char** argv)
     MaaDestroy(&inst);
     MaaResourceDestroy(&res);
     MaaControllerDestroy(&ctrl);
+    MaaControllerDestroy(&ctrl2);
 
     return 0;
 }

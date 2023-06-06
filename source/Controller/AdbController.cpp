@@ -14,20 +14,18 @@ AdbController::AdbController(const std::filesystem::path& adb_path, const std::s
 
 AdbController::~AdbController() {}
 
-MaaCtrlId AdbController::click(int x, int y)
+bool AdbController::_connect()
 {
-    return MaaCtrlId();
+    return false;
 }
 
-MaaCtrlId AdbController::swipe(const std::vector<int>& x_steps, const std::vector<int>& y_steps,
-                               const std::vector<int>& step_delay)
-{
-    return MaaCtrlId();
-}
+void AdbController::_click(ClickParams param) {}
 
-MaaCtrlId AdbController::screencap()
+void AdbController::_swipe(SwipeParams param) {}
+
+cv::Mat AdbController::_screencap()
 {
-    return MaaCtrlId();
+    return cv::Mat();
 }
 
 MAA_CTRL_NS_END
