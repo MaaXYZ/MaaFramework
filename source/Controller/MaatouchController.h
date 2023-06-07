@@ -1,9 +1,9 @@
 #pragma once
-#include "MinitouchController.h"
+#include "AdbController.h"
 
 MAA_CTRL_NS_BEGIN
 
-class MaatouchController : public MinitouchController
+class MaatouchController : public AdbController
 {
 public:
     MaatouchController(const std::filesystem::path& adb_path, const std::string& address,
