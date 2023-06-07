@@ -25,3 +25,13 @@
 ## 目标期望
 
 如果适配新游戏，Framework 一行不改，Common 只进行配置文件相关修改
+
+## How to build
+
+1. Download pre-built third-party libraries.
+  
+  ```bash
+  python maadeps-download.py
+  ```
+
+2. Build with MAA.sln or cmake.
