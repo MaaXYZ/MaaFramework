@@ -55,7 +55,7 @@ public:
 
     virtual bool set_option(std::string_view key, std::string_view value) override;
 
-    virtual MaaCtrlId post_connect() override;
+    virtual MaaCtrlId post_connection() override;
     virtual MaaCtrlId post_click(int x, int y) override;
     virtual MaaCtrlId post_swipe(const std::vector<int>& x_steps, const std::vector<int>& y_steps,
                                  const std::vector<int>& step_delay) override;

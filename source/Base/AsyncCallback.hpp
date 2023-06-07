@@ -26,11 +26,27 @@ public:
             &AsyncCallback<Callback, CallbackArg>::callback, this, std::placeholders::_1, std::placeholders::_2));
     }
 
-    virtual ~AsyncCallback() = default;
+    virtual ~AsyncCallback()
+    {
+        LogFunc;
+        release();
+    }
+
+    void release()
+    {
+        LogFunc;
+
+        if (notify_runner_) {
+            notify_runner_->release();
+        }
+    }
 
     void notify(MaaMsg msg, json::value details = json::value())
     {
         LogTrace << VAR(notify_runner_) << VAR(msg) << VAR(details);
+        if (!notify_runner_) {
+            return;
+        }
         notify_runner_->post({ .msg = msg, .details = std::move(details) });
     }
 

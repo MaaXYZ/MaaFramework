@@ -14,7 +14,7 @@ public:
 
     virtual bool set_option(std::string_view key, std::string_view value) override;
 
-    virtual MaaResId post_load(const std::filesystem::path& path) override;
+    virtual MaaResId post_resource(const std::filesystem::path& path) override;
 
     virtual MaaStatus status(MaaResId res_id) const override;
     virtual MaaBool loaded() const override;

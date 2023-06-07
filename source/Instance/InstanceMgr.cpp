@@ -16,6 +16,12 @@ InstanceMgr::InstanceMgr(MaaInstanceCallback callback, void* callback_arg) : not
 InstanceMgr::~InstanceMgr()
 {
     LogFunc;
+
+    if (task_runner_) {
+        task_runner_->release();
+    }
+
+    notifier.release();
 }
 
 bool InstanceMgr::bind_resource(MaaResourceAPI* resource)

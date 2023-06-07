@@ -24,6 +24,7 @@ public:
     AsyncRunner(const AsyncRunner&) = delete;
     AsyncRunner(AsyncRunner&&) = delete;
     virtual ~AsyncRunner();
+    void release();
 
     AsyncRunner& operator=(const AsyncRunner&) = delete;
     AsyncRunner& operator=(AsyncRunner&&) = delete;
@@ -68,6 +69,14 @@ inline AsyncRunner<Item>::AsyncRunner(ProcessFunc run_task) : process_(run_task)
 
 template <typename Item>
 inline AsyncRunner<Item>::~AsyncRunner()
+{
+    LogFunc;
+
+    release();
+}
+
+template <typename Item>
+inline void AsyncRunner<Item>::release()
 {
     LogFunc;
 

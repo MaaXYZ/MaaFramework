@@ -6,14 +6,19 @@ ResourceMgr::ResourceMgr(const std::filesystem::path& user_path, MaaResourceCall
     : user_path_(user_path), notifier(callback, callback_arg)
 {}
 
-ResourceMgr::~ResourceMgr() {}
+ResourceMgr::~ResourceMgr()
+{
+    LogFunc;
+
+    notifier.release();
+}
 
 bool ResourceMgr::set_option(std::string_view key, std::string_view value)
 {
     return true;
 }
 
-MaaResId ResourceMgr::post_load(const std::filesystem::path& path)
+MaaResId ResourceMgr::post_resource(const std::filesystem::path& path)
 {
     return MaaResId();
 }

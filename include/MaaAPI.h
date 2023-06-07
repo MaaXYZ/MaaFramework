@@ -14,7 +14,7 @@ extern "C"
     MaaResourceHandle MAAAPI MaaResourceCreate(MaaString user_path, MaaResourceCallback callback, void* callback_arg);
     void MAAAPI MaaResourceDestroy(MaaResourceHandle* res);
 
-    MaaResId MAAAPI MaaResourcePostLoad(MaaResourceHandle res, MaaString path);
+    MaaResId MAAAPI MaaResourcePostResource(MaaResourceHandle res, MaaString path);
     MaaStatus MAAAPI MaaResourceStatus(MaaResourceHandle res, MaaResId id);
     MaaBool MAAAPI MaaResourceLoaded(MaaResourceHandle res);
 
@@ -37,7 +37,7 @@ extern "C"
 
     MaaBool MAAAPI MaaControllerSetOption(MaaControllerHandle ctrl, MaaString key, MaaString value);
 
-    MaaCtrlId MAAAPI MaaControllerPostConnect(MaaControllerHandle ctrl);
+    MaaCtrlId MAAAPI MaaControllerPostConnection(MaaControllerHandle ctrl);
     MaaCtrlId MAAAPI MaaControllerPostClick(MaaControllerHandle ctrl, int32_t x, int32_t y);
     MaaCtrlId MAAAPI MaaControllerPostSwipe(MaaControllerHandle ctrl, int32_t* x_steps_buff, int32_t* y_steps_buff,
                                             int32_t* step_delay_buff, MaaSize buff_size);

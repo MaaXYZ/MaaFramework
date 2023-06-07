@@ -15,10 +15,10 @@ int main([[maybe_unused]] int argc, char** argv)
     MaaSetGlobalOption(MaaGlobalOption_Logging, (cur_path / "debug").string().c_str());
 
     auto res_handle = MaaResourceCreate((cur_path / "cache").string().c_str(), nullptr, nullptr);
-    auto load_id = MaaResourcePostLoad(res_handle, (cur_path / "resource").string().c_str());
+    auto load_id = MaaResourcePostResource(res_handle, (cur_path / "resource").string().c_str());
 
     auto ctrl_handle = MaaAdbControllerCreate("adb.exe", "127.0.0.1:5555", nullptr, nullptr);
-    auto connect_id = MaaControllerPostConnect(ctrl_handle);
+    auto connect_id = MaaControllerPostConnection(ctrl_handle);
 
     while (MaaResourceStatus(res_handle, load_id) == MaaStatus_Running) {
         std::this_thread::yield();

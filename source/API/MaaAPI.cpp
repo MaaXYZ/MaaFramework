@@ -38,14 +38,14 @@ void MaaResourceDestroy(MaaResourceHandle* res)
     *res = nullptr;
 }
 
-MaaResId MaaResourcePostLoad(MaaResourceHandle res, MaaString path)
+MaaResId MaaResourcePostResource(MaaResourceHandle res, MaaString path)
 {
     LogFunc << VAR_VOIDP(res) << VAR(path);
 
     if (!res) {
         return MaaInvalidId;
     }
-    return res->post_load(MAA_NS::path(path));
+    return res->post_resource(MAA_NS::path(path));
 }
 
 MaaStatus MaaResourceStatus(MaaResourceHandle res, MaaResId id)
@@ -151,13 +151,13 @@ MaaBool MaaControllerSetOption(MaaControllerHandle ctrl, MaaString key, MaaStrin
     return ctrl->set_option(key, value);
 }
 
-MaaCtrlId MaaControllerPostConnect(MaaControllerHandle ctrl)
+MaaCtrlId MaaControllerPostConnection(MaaControllerHandle ctrl)
 {
     LogFunc << VAR_VOIDP(ctrl);
     if (!ctrl) {
         return false;
     }
-    return ctrl->post_connect();
+    return ctrl->post_connection();
 }
 
 MaaCtrlId MaaControllerPostClick(MaaControllerHandle ctrl, int32_t x, int32_t y)

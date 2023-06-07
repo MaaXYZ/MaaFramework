@@ -9,14 +9,23 @@ ControllerMgr::ControllerMgr(MaaControllerCallback callback, void* callback_arg)
         std::bind(&ControllerMgr::run_action, this, std::placeholders::_1, std::placeholders::_2));
 }
 
-ControllerMgr::~ControllerMgr() {}
+ControllerMgr::~ControllerMgr()
+{
+    LogFunc;
+
+    if (action_runner_) {
+        action_runner_->release();
+    }
+
+    notifier.release();
+}
 
 bool ControllerMgr::set_option(std::string_view key, std::string_view value)
 {
     return false;
 }
 
-MaaCtrlId ControllerMgr::post_connect()
+MaaCtrlId ControllerMgr::post_connection()
 {
     return MaaCtrlId();
 }
