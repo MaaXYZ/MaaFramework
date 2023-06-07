@@ -2,12 +2,13 @@
 
 #include <type_traits>
 
+#include "Base/NonCopyable.hpp"
 #include "Common/MaaConf.h"
 
 MAA_NS_BEGIN
 
 template <typename T>
-class SingletonHolder
+class SingletonHolder : public NonCopyable
 {
 public:
     static T& get_instance()
@@ -16,13 +17,6 @@ public:
         return unique_instance;
     }
     virtual ~SingletonHolder() = default;
-
-public:
-    SingletonHolder(const SingletonHolder&) = delete;
-    SingletonHolder(SingletonHolder&&) = delete;
-
-    SingletonHolder& operator=(const SingletonHolder&) = delete;
-    SingletonHolder& operator=(SingletonHolder&&) = delete;
 
 protected:
     SingletonHolder() = default;

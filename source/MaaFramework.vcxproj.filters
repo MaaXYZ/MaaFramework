@@ -138,9 +138,6 @@
     <ClInclude Include="Resource\PipelineConfig.h">
       <Filter>Source\Resource</Filter>
     </ClInclude>
-    <ClInclude Include="Resource\AbstractResource.h">
-      <Filter>Source\Resource</Filter>
-    </ClInclude>
     <ClInclude Include="Task\AbstractTask.h">
       <Filter>Source\Task</Filter>
     </ClInclude>
@@ -159,7 +156,10 @@
     <ClInclude Include="..\include\MaaCustomController.h">
       <Filter>Include</Filter>
     </ClInclude>
-    <ClInclude Include="Controller\CustomController.h" />
+    <ClInclude Include="Controller\CustomController.h">
+      <Filter>Source\Controller</Filter>
+    </ClInclude>
+    <ClInclude Include="Base\NonCopyable.hpp" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Controller\ControllerMgr.cpp">
@@ -198,6 +198,8 @@
     <ClCompile Include="API\MaaAPI.cpp">
       <Filter>Source\API</Filter>
     </ClCompile>
-    <ClCompile Include="Controller\CustomController.cpp" />
+    <ClCompile Include="Controller\CustomController.cpp">
+      <Filter>Source\Controller</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>

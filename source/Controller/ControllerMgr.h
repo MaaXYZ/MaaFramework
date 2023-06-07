@@ -57,8 +57,8 @@ public:
 
     virtual MaaCtrlId post_connection() override;
     virtual MaaCtrlId post_click(int x, int y) override;
-    virtual MaaCtrlId post_swipe(const std::vector<int>& x_steps, const std::vector<int>& y_steps,
-                                 const std::vector<int>& step_delay) override;
+    virtual MaaCtrlId post_swipe(std::vector<int> x_steps, std::vector<int> y_steps,
+                                 std::vector<int> step_delay) override;
     virtual MaaCtrlId post_screencap() override;
 
     virtual MaaStatus status(MaaCtrlId ctrl_id) const override;

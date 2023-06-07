@@ -20,7 +20,7 @@ public:
 
     virtual bool set_option(std::string_view key, std::string_view value) = 0;
 
-    virtual MaaResId post_resource(const std::filesystem::path& path) = 0;
+    virtual MaaResId post_resource(std::filesystem::path path) = 0;
     virtual MaaStatus status(MaaResId res_id) const = 0;
     virtual MaaBool loaded() const = 0;
 
@@ -36,8 +36,7 @@ public:
 
     virtual MaaCtrlId post_connection() = 0;
     virtual MaaCtrlId post_click(int x, int y) = 0;
-    virtual MaaCtrlId post_swipe(const std::vector<int>& x_steps, const std::vector<int>& y_steps,
-                                 const std::vector<int>& step_delay) = 0;
+    virtual MaaCtrlId post_swipe(std::vector<int> x_steps, std::vector<int> y_steps, std::vector<int> step_delay) = 0;
     virtual MaaCtrlId post_screencap() = 0;
 
     virtual MaaStatus status(MaaCtrlId ctrl_id) const = 0;

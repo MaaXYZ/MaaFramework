@@ -14,6 +14,11 @@ enum class MaaMsg : int64_t
 {
     InvalidMsg = 0,
     ResourceMsg = 10000,
+
+    ResourceStartLoading = 11000,
+    ResourceLoadingCompleted = 12000,
+    ResourceLoadingError = 13000,
+
     ControllerMsg = 20000,
     InstanceMsg = 30000,
 
@@ -31,8 +36,17 @@ inline std::ostream& operator<<(std::ostream& os, const MaaMsg& type)
     static const std::unordered_map<MaaMsg, std::string> _type_name = {
         /* Global Msg */
         { MaaMsg::InvalidMsg, "InvalidMsg" },
+
+        /* Resrouce Msg */
         { MaaMsg::ResourceMsg, "ResourceMsg" },
+        { MaaMsg::ResourceStartLoading, "ResourceStartLoading" },
+        { MaaMsg::ResourceLoadingCompleted, "ResourceLoadingCompleted" },
+        { MaaMsg::ResourceLoadingError, "ResourceLoadingError" },
+
+        /* Controller Msg */
         { MaaMsg::ControllerMsg, "ControllerMsg" },
+
+        /* Instance Msg */
         { MaaMsg::InstanceMsg, "InstanceMsg" },
 
         //{ MaaMsg::TaskMsg, "TaskMsg" },

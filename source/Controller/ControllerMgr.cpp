@@ -36,8 +36,7 @@ MaaCtrlId ControllerMgr::post_click(int x, int y)
     return action_runner_->post({ .type = Action::Type::click, .params = std::move(params) });
 }
 
-MaaCtrlId ControllerMgr::post_swipe(const std::vector<int>& x_steps, const std::vector<int>& y_steps,
-                                    const std::vector<int>& step_delay)
+MaaCtrlId ControllerMgr::post_swipe(std::vector<int> x_steps, std::vector<int> y_steps, std::vector<int> step_delay)
 {
     SwipeParams params;
     for (size_t i = 0; i != x_steps.size(); ++i) {

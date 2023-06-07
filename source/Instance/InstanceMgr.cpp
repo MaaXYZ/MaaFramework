@@ -1,8 +1,8 @@
 #include "InstanceMgr.h"
 
+#include "MaaParam.h"
 #include "Task/PipelineTask.h"
 #include "Utils/Logger.hpp"
-#include "MaaParam.h"
 
 MAA_NS_BEGIN
 
@@ -83,7 +83,7 @@ MaaTaskId InstanceMgr::post_task(std::string_view type, std::string_view param)
         LogError << "Unknown task type:" << type;
         return MaaInvalidId;
     }
-    
+
     auto param_opt = json::parse(param);
     if (!param_opt) {
         LogError << "Invalid param:" << param;
@@ -96,6 +96,10 @@ MaaTaskId InstanceMgr::post_task(std::string_view type, std::string_view param)
         return MaaInvalidId;
     }
 
+    if (!task_runner_) {
+        LogError << "task_runner is nullptr";
+        return MaaInvalidId;
+    }
     auto id = task_runner_->post(task_ptr);
     LogTrace << task_ptr->type() << VAR(id);
 
@@ -139,11 +143,19 @@ bool InstanceMgr::set_task_param(MaaTaskId task_id, std::string_view param)
 
 MaaStatus InstanceMgr::status(MaaTaskId task_id) const
 {
+    if (!task_runner_) {
+        LogError << "task_runner is nullptr";
+        return MaaStatus_Invalid;
+    }
     return task_runner_->status(task_id);
 }
 
 MaaBool InstanceMgr::all_finished() const
 {
+    if (!task_runner_) {
+        LogError << "task_runner is nullptr";
+        return false;
+    }
     return !task_runner_->running();
 }
 
@@ -155,7 +167,9 @@ void InstanceMgr::stop()
     task_map_.clear();
     lock.unlock();
 
-    task_runner_->clear();
+    if (task_runner_) {
+        task_runner_->clear();
+    }
 }
 
 std::string InstanceMgr::get_resource_hash() const
@@ -174,14 +188,16 @@ bool InstanceMgr::run_task(typename AsyncRunner<TaskPtr>::Id id, TaskPtr task_pt
 
     const json::value details = {
         { "id", id },
-        { "task", std::string(task_ptr->type()) },
+        { "type", std::string(task_ptr->type()) },
         { "uuid", get_controller_uuid() },
         { "hash", get_resource_hash() },
     };
 
     notifier.notify(MaaMsg::TaskStarted, details);
 
+    LogInfo << "task start:" << VAR(details);
     bool ret = task_ptr->run();
+    LogInfo << "task end:" << VAR(details) << VAR(ret);
 
     notifier.notify(ret ? MaaMsg::TaskCompleted : MaaMsg::TaskFailed, details);
 

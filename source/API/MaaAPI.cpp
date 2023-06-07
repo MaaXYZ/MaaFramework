@@ -179,10 +179,12 @@ MaaCtrlId MaaControllerPostSwipe(MaaControllerHandle ctrl, int32_t* x_steps_buff
     if (!ctrl || !x_steps_buff || !y_steps_buff || !step_delay_buff || buff_size < 2) {
         return MaaInvalidId;
     }
+
     std::vector<int32_t> x_steps(x_steps_buff, x_steps_buff + buff_size);
     std::vector<int32_t> y_steps(y_steps_buff, y_steps_buff + buff_size);
     std::vector<int32_t> step_delay(step_delay_buff, step_delay_buff + buff_size);
-    return ctrl->post_swipe(x_steps, y_steps, step_delay);
+
+    return ctrl->post_swipe(std::move(x_steps), std::move(y_steps), std::move(step_delay));
 }
 
 MaaCtrlId MaaControllerPostScreencap(MaaControllerHandle ctrl)

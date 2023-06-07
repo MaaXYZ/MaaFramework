@@ -33,6 +33,7 @@
     <ClInclude Include="..\include\MaaPort.h" />
     <ClInclude Include="..\include\MaaDef.h" />
     <ClInclude Include="Base\AsyncCallback.hpp" />
+    <ClInclude Include="Base\NonCopyable.hpp" />
     <ClInclude Include="Controller\CustomController.h" />
     <ClInclude Include="Option\GlobalOption.h" />
     <ClInclude Include="Controller\AdbController.h" />
@@ -43,7 +44,6 @@
     <ClInclude Include="Instance\InstanceMgr.h" />
     <ClInclude Include="Controller\MinitouchController.h" />
     <ClInclude Include="Controller\MaatouchController.h" />
-    <ClInclude Include="Resource\AbstractResource.h" />
     <ClInclude Include="Resource\PipelineConfig.h" />
     <ClInclude Include="Resource\ResourceMgr.h" />
     <ClInclude Include="Task\AbstractTask.h" />

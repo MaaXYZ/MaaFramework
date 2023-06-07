@@ -370,8 +370,8 @@ inline constexpr std::string_view pertty_file(std::string_view file)
     MAA_NS::LogUtils::ScopeLeaveHelper LogScopeHeplerName(LOG_ARGS); \
     MAA_NS::LogUtils::ScopeEnterHelper(LOG_ARGS)()
 
-#define VAR(x) MAA_NS::Logger::separator::none << "[" << #x << "=" << (x) << "] " << MAA_NS::Logger::separator::space
+#define VAR(x) MAA_NS::Logger::separator::none << "[" << #x << "=" << x << "] " << MAA_NS::Logger::separator::space
 #define VAR_VOIDP(x) \
-    MAA_NS::Logger::separator::none << "[" << #x << "=" << (void*)(x) << "] " << MAA_NS::Logger::separator::space
+    MAA_NS::Logger::separator::none << "[" << #x << "=" << (void*)x << "] " << MAA_NS::Logger::separator::space
 
 MAA_NS_END

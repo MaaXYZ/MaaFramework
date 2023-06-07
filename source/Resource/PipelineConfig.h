@@ -1,17 +1,16 @@
 #pragma once
 
-#include "AbstractResource.h"
+#include "Common/MaaConf.h"
+#include "Base/NonCopyable.hpp"
+
+#include <filesystem>
 
 MAA_RES_NS_BEGIN
 
-class PipelineConfig : public AbstractResource
+class PipelineConfig : public NonCopyable
 {
 public:
-    using AbstractResource::AbstractResource;
-    virtual ~PipelineConfig() override = default;
-
-public:
-    virtual bool load(const std::filesystem::path& path) override;
+    bool load(const std::filesystem::path& path);
 };
 
 MAA_RES_NS_END

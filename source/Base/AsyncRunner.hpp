@@ -2,6 +2,7 @@
 
 #include "Common/MaaConf.h"
 #include "Utils/Logger.hpp"
+#include "Common/MaaConf.h"
 
 #include <condition_variable>
 #include <functional>
@@ -13,7 +14,7 @@
 MAA_NS_BEGIN
 
 template <typename Item>
-class AsyncRunner
+class AsyncRunner : public NonCopyable
 {
 public:
     using Id = int64_t;
@@ -21,17 +22,12 @@ public:
 
 public:
     AsyncRunner(ProcessFunc run_task);
-    AsyncRunner(const AsyncRunner&) = delete;
-    AsyncRunner(AsyncRunner&&) = delete;
     virtual ~AsyncRunner();
     void release();
 
-    AsyncRunner& operator=(const AsyncRunner&) = delete;
-    AsyncRunner& operator=(AsyncRunner&&) = delete;
-
     Id post(Item item, bool block = false);
     bool wait(Id id);
-    MaaStatusEnum status(Id id) const;
+    MaaStatus status(Id id) const;
 
     void clear();
     bool running() const;
@@ -47,7 +43,7 @@ private:
     std::atomic_bool running_ = false;
 
     mutable std::shared_mutex status_mutex_;
-    std::map<Id, MaaStatusEnum> status_map_;
+    std::map<Id, MaaStatus> status_map_;
 
     Id compl_id_ = 0;
     std::mutex compl_mutex_;
@@ -118,13 +114,13 @@ inline void AsyncRunner<Item>::working()
         lock.unlock();
 
         std::unique_lock<std::shared_mutex> status_lock(status_mutex_);
-        status_map_[id] = MaaStatusEnum::MaaStatus_Running;
+        status_map_[id] = MaaStatus_Running;
         status_lock.unlock();
 
         bool ret = process_(id, std::move(item));
 
         status_lock.lock();
-        status_map_[id] = ret ? MaaStatusEnum::MaaStatus_Success : MaaStatusEnum::MaaStatus_Failed;
+        status_map_[id] = ret ? MaaStatus_Success : MaaStatus_Failed;
         status_lock.unlock();
 
         std::unique_lock<std::mutex> compl_lock(compl_mutex_);
@@ -146,7 +142,7 @@ inline AsyncRunner<Item>::Id AsyncRunner<Item>::post(Item item, bool block)
 
         {
             std::unique_lock<std::shared_mutex> status_lock(status_mutex_);
-            status_map_.emplace(id, MaaStatusEnum::MaaStatus_Pending);
+            status_map_.emplace(id, MaaStatus_Pending);
         }
 
         cond_.notify_one();
@@ -176,13 +172,13 @@ inline bool AsyncRunner<Item>::wait(Id id)
 }
 
 template <typename Item>
-inline MaaStatusEnum AsyncRunner<Item>::status(Id id) const
+inline MaaStatus AsyncRunner<Item>::status(Id id) const
 {
     std::shared_lock<std::shared_mutex> lock(status_mutex_);
 
     auto iter = status_map_.find(id);
     if (iter == status_map_.end()) {
-        return MaaStatusEnum::MaaStatus_Invalid;
+        return MaaStatus_Invalid;
     }
     return iter->second;
 }

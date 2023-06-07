@@ -10,7 +10,7 @@ MAA_NS_BEGIN
 
 template <typename Callback, typename CallbackArg = void*>
 requires std::is_constructible_v<MaaApiCallback, Callback>
-class AsyncCallback
+class AsyncCallback : public NonCopyable
 {
 private:
     struct NotifyData
