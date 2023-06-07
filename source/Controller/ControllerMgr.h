@@ -62,6 +62,7 @@ public:
     virtual MaaCtrlId post_screencap() override;
 
     virtual MaaStatus status(MaaCtrlId ctrl_id) const override;
+    virtual MaaStatus wait(MaaCtrlId ctrl_id) const override;
     virtual MaaBool connected() const override;
 
     virtual std::vector<uint8_t> get_image() const override;
@@ -82,10 +83,10 @@ protected:
 
 private:
     bool run_action(typename AsyncRunner<Action>::Id id, Action action);
-    cv::Point rand_point(const cv::Rect& r);
+    static cv::Point rand_point(const cv::Rect& r);
 
 private:
-    std::minstd_rand rand_engine_;
+    static std::minstd_rand rand_engine_;
 
     bool connected_ = false;
     std::mutex image_mutex_;

@@ -21,6 +21,7 @@ public:
     virtual MaaResId post_resource(std::filesystem::path path) override;
 
     virtual MaaStatus status(MaaResId res_id) const override;
+    virtual MaaStatus wait(MaaResId res_id) const override;
     virtual MaaBool loaded() const override;
 
     virtual std::string get_hash() const override;

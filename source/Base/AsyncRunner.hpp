@@ -2,7 +2,6 @@
 
 #include "Common/MaaConf.h"
 #include "Utils/Logger.hpp"
-#include "Common/MaaConf.h"
 
 #include <condition_variable>
 #include <functional>
@@ -26,7 +25,7 @@ public:
     void release();
 
     Id post(Item item, bool block = false);
-    bool wait(Id id);
+    void wait(Id id) const;
     MaaStatus status(Id id) const;
 
     void clear();
@@ -46,8 +45,8 @@ private:
     std::map<Id, MaaStatus> status_map_;
 
     Id compl_id_ = 0;
-    std::mutex compl_mutex_;
-    std::condition_variable compl_cond_;
+    mutable std::mutex compl_mutex_;
+    mutable std::condition_variable compl_cond_;
 
     std::atomic_bool exit_ = false;
     inline static Id cross_inst_id_ = 0;
@@ -156,19 +155,18 @@ inline AsyncRunner<Item>::Id AsyncRunner<Item>::post(Item item, bool block)
 }
 
 template <typename Item>
-inline bool AsyncRunner<Item>::wait(Id id)
+inline void AsyncRunner<Item>::wait(Id id) const
 {
     LogFunc << VAR(id);
 
     while (!exit_) {
         std::unique_lock<std::mutex> lock(compl_mutex_);
         if (id <= compl_id_) {
-            return true;
+            return;
         }
 
         compl_cond_.wait(lock);
     }
-    return false;
 }
 
 template <typename Item>

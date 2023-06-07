@@ -2,9 +2,12 @@
 
 MAA_CTRL_NS_BEGIN
 
-ControllerMgr::ControllerMgr(MaaControllerCallback callback, void* callback_arg)
-    : rand_engine_(std::random_device {}()), notifier(callback, callback_arg)
+std::minstd_rand ControllerMgr::rand_engine_(std::random_device {}());
+
+ControllerMgr::ControllerMgr(MaaControllerCallback callback, void* callback_arg) : notifier(callback, callback_arg)
 {
+    LogFunc << VAR_VOIDP(callback) << VAR_VOIDP(callback_arg);
+
     action_runner_ = std::make_unique<AsyncRunner<Action>>(
         std::bind(&ControllerMgr::run_action, this, std::placeholders::_1, std::placeholders::_2));
 }
@@ -27,7 +30,7 @@ bool ControllerMgr::set_option(std::string_view key, std::string_view value)
 
 MaaCtrlId ControllerMgr::post_connection()
 {
-    return MaaCtrlId();
+    return action_runner_->post({ .type = Action::Type::connect });
 }
 
 MaaCtrlId ControllerMgr::post_click(int x, int y)
@@ -58,7 +61,21 @@ MaaCtrlId ControllerMgr::post_screencap()
 
 MaaStatus ControllerMgr::status(MaaCtrlId ctrl_id) const
 {
-    return MaaStatus();
+    if (!action_runner_) {
+        LogError << "action_runner_ is nullptr";
+        return MaaStatus_Invalid;
+    }
+    return action_runner_->status(ctrl_id);
+}
+
+MaaStatus ControllerMgr::wait(MaaCtrlId ctrl_id) const
+{
+    if (!action_runner_) {
+        LogError << "action_runner_ is nullptr";
+        return MaaStatus_Invalid;
+    }
+    action_runner_->wait(ctrl_id);
+    return action_runner_->status(ctrl_id);
 }
 
 MaaBool ControllerMgr::connected() const
@@ -89,7 +106,7 @@ void ControllerMgr::click(const cv::Point& p)
 
 void ControllerMgr::swipe(const cv::Rect& r1, const cv::Rect& r2, int duration)
 {
-    // TODO: post swipe
+    swipe(rand_point(r1), rand_point(r2), duration);
 }
 
 void ControllerMgr::swipe(const cv::Point& p1, const cv::Point& p2, int duration)

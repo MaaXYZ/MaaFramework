@@ -25,6 +25,7 @@ public:
     virtual MaaTaskId post_task(std::string_view type, std::string_view param) override;
     virtual bool set_task_param(MaaTaskId task_id, std::string_view param) override;
     virtual MaaStatus status(MaaTaskId task_id) const override;
+    virtual MaaStatus wait(MaaTaskId task_id) const override;
     virtual MaaBool all_finished() const override;
 
     virtual void stop() override;

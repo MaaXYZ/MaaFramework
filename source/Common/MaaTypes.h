@@ -22,6 +22,7 @@ public:
 
     virtual MaaResId post_resource(std::filesystem::path path) = 0;
     virtual MaaStatus status(MaaResId res_id) const = 0;
+    virtual MaaStatus wait(MaaResId res_id) const = 0;
     virtual MaaBool loaded() const = 0;
 
     virtual std::string get_hash() const = 0;
@@ -40,6 +41,7 @@ public:
     virtual MaaCtrlId post_screencap() = 0;
 
     virtual MaaStatus status(MaaCtrlId ctrl_id) const = 0;
+    virtual MaaStatus wait(MaaCtrlId ctrl_id) const = 0;
     virtual MaaBool connected() const = 0;
 
     virtual std::vector<uint8_t> get_image() const = 0;
@@ -62,6 +64,7 @@ public:
     virtual bool set_task_param(MaaTaskId task_id, std::string_view param) = 0;
 
     virtual MaaStatus status(MaaTaskId task_id) const = 0;
+    virtual MaaStatus wait(MaaTaskId task_id) const = 0;
     virtual MaaBool all_finished() const = 0;
 
     virtual void stop() = 0;

@@ -53,6 +53,16 @@ MaaStatus ResourceMgr::status(MaaResId res_id) const
     return res_loader_->status(res_id);
 }
 
+MaaStatus ResourceMgr::wait(MaaResId res_id) const
+{
+    if (!res_loader_) {
+        LogError << "res_loader_ is nullptr";
+        return false;
+    }
+    res_loader_->wait(res_id);
+    return res_loader_->status(res_id);
+}
+
 MaaBool ResourceMgr::loaded() const
 {
     return loaded_;
@@ -90,12 +100,8 @@ bool ResourceMgr::load(const std::filesystem::path& path)
 
     bool ret = false;
     if (auto pipeline_path = path / "pipeline"; std::filesystem::exists(pipeline_path)) {
-        if (is_base) {
+        if (is_base || !pipeline_cfg_) {
             pipeline_cfg_ = std::make_shared<PipelineConfig>();
-        }
-        if (!pipeline_cfg_) {
-            LogError << "pipeline_cfg_ is nullptr, is the base resource not loaded?";
-            return false;
         }
         ret = pipeline_cfg_->load(pipeline_path);
     }

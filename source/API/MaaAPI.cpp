@@ -7,7 +7,6 @@
 #include "Controller/MaatouchController.h"
 #include "Controller/MinitouchController.h"
 #include "Instance/InstanceMgr.h"
-#include "MaaAPI.h"
 #include "Option/GlobalOption.h"
 #include "Resource/ResourceMgr.h"
 #include "Utils/Logger.hpp"
@@ -56,6 +55,16 @@ MaaStatus MaaResourceStatus(MaaResourceHandle res, MaaResId id)
         return MaaStatus_Invalid;
     }
     return res->status(id);
+}
+
+MaaStatus MaaResourceWait(MaaResourceHandle res, MaaResId id)
+{
+    // LogFunc << VAR_VOIDP(res) << VAR(id);
+
+    if (!res) {
+        return MaaStatus_Invalid;
+    }
+    return res->wait(id);
 }
 
 MaaBool MaaResourceLoaded(MaaResourceHandle res)
@@ -207,7 +216,17 @@ MaaStatus MaaControllerStatus(MaaControllerHandle ctrl, MaaCtrlId id)
     return ctrl->status(id);
 }
 
-MaaBool MAAAPI MaaControllerConnected(MaaControllerHandle ctrl)
+MaaStatus MaaControllerWait(MaaControllerHandle ctrl, MaaCtrlId id)
+{
+    // LogFunc << VAR_VOIDP(ctrl) << VAR(id);
+
+    if (!ctrl) {
+        return MaaStatus_Invalid;
+    }
+    return ctrl->wait(id);
+}
+
+MaaBool MaaControllerConnected(MaaControllerHandle ctrl)
 {
     LogFunc << VAR_VOIDP(ctrl);
     if (!ctrl) {
@@ -335,7 +354,17 @@ MaaStatus MaaTaskStatus(MaaInstanceHandle inst, MaaTaskId id)
     return inst->status(id);
 }
 
-MaaBool MAAAPI MaaTaskAllFinished(MaaInstanceHandle inst)
+MaaStatus MaaTaskWait(MaaInstanceHandle inst, MaaTaskId id)
+{
+    // LogFunc << VAR_VOIDP(inst) << VAR(id);
+
+    if (!inst) {
+        return MaaStatus_Invalid;
+    }
+    return inst->wait(id);
+}
+
+MaaBool MaaTaskAllFinished(MaaInstanceHandle inst)
 {
     // LogFunc << VAR_VOIDP(inst) << VAR(id);
     if (!inst) {

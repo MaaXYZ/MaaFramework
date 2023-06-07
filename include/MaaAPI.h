@@ -16,6 +16,7 @@ extern "C"
 
     MaaResId MAAAPI MaaResourcePostResource(MaaResourceHandle res, MaaString path);
     MaaStatus MAAAPI MaaResourceStatus(MaaResourceHandle res, MaaResId id);
+    MaaStatus MAAAPI MaaResourceWait(MaaResourceHandle res, MaaResId id);
     MaaBool MAAAPI MaaResourceLoaded(MaaResourceHandle res);
 
     MaaBool MAAAPI MaaResourceSetOption(MaaResourceHandle res, MaaString key, MaaString value);
@@ -44,6 +45,7 @@ extern "C"
     MaaCtrlId MAAAPI MaaControllerPostScreencap(MaaControllerHandle ctrl);
 
     MaaStatus MAAAPI MaaControllerStatus(MaaControllerHandle ctrl, MaaCtrlId id);
+    MaaStatus MAAAPI MaaControllerWait(MaaControllerHandle ctrl, MaaCtrlId id);
     MaaBool MAAAPI MaaControllerConnected(MaaControllerHandle ctrl);
 
     MaaSize MAAAPI MaaControllerGetImage(MaaControllerHandle ctrl, void* buff, MaaSize buff_size);
@@ -63,6 +65,7 @@ extern "C"
     MaaBool MAAAPI MaaSetTaskParam(MaaInstanceHandle inst, MaaTaskId id, MaaString param);
 
     MaaStatus MAAAPI MaaTaskStatus(MaaInstanceHandle inst, MaaTaskId id);
+    MaaStatus MAAAPI MaaTaskWait(MaaInstanceHandle inst, MaaTaskId id);
     MaaBool MAAAPI MaaTaskAllFinished(MaaInstanceHandle inst);
 
     void MAAAPI MaaStop(MaaInstanceHandle inst);
