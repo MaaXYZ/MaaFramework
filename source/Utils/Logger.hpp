@@ -242,7 +242,7 @@ private:
 
     void rotate()
     {
-        if (!std::filesystem::exists(log_path_)) {
+        if (log_path_.empty() || !std::filesystem::exists(log_path_)) {
             return;
         }
 
@@ -267,6 +267,10 @@ private:
 
     void open()
     {
+        if (log_path_.empty()) {
+            return;
+        }
+
         std::filesystem::create_directories(log_path_.parent_path());
 
         std::unique_lock<std::mutex> m_trace_lock(trace_mutex_);
