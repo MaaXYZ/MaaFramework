@@ -2,6 +2,7 @@
 
 #include "Task/PipelineTask.h"
 #include "Utils/Logger.hpp"
+#include "MaaParam.h"
 
 MAA_NS_BEGIN
 
@@ -74,17 +75,23 @@ MaaTaskId InstanceMgr::post_task(std::string_view type, std::string_view param)
 {
     LogInfo << VAR(type) << VAR(param);
 
+    TaskPtr task_ptr = nullptr;
+    if (type == MaaTaskType_Pipeline) {
+        task_ptr = std::make_shared<TaskNS::PipelineTask>();
+    }
+    else {
+        LogError << "Unknown task type:" << type;
+        return MaaInvalidId;
+    }
+    
     auto param_opt = json::parse(param);
     if (!param_opt) {
         LogError << "Invalid param:" << param;
         return MaaInvalidId;
     }
 
-    // TODO: check task type
-
-    TaskPtr task_ptr = std::make_shared<TaskNS::PipelineTask>();
-    bool ret = task_ptr->set_param(*param_opt);
-    if (!ret) {
+    bool param_ret = task_ptr->set_param(*param_opt);
+    if (!param_ret) {
         LogError << "Set task param failed:" << param;
         return MaaInvalidId;
     }
