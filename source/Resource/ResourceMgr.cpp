@@ -1,5 +1,6 @@
 #include "ResourceMgr.h"
 
+#include "Resource/AdbConfig.h"
 #include "Resource/PipelineConfig.h"
 #include "Utils/Logger.hpp"
 
@@ -25,7 +26,7 @@ ResourceMgr::~ResourceMgr()
     notifier.release();
 }
 
-bool ResourceMgr::set_option(MaaResOption key, std::string_view value)
+bool ResourceMgr::set_option(MaaResOption key, const std::string& value)
 {
     return false;
 }
@@ -98,13 +99,17 @@ bool ResourceMgr::load(const std::filesystem::path& path)
     json::value props = json::open(path / "properties.json").value_or(json::value());
     bool is_base = props.get("is_base", false);
 
-    bool ret = false;
-    if (auto pipeline_path = path / "pipeline"; std::filesystem::exists(pipeline_path)) {
-        if (is_base || !pipeline_cfg_) {
-            pipeline_cfg_ = std::make_shared<PipelineConfig>();
+    auto load_cfg = [&](const std::filesystem::path& cfg_path, auto& cfg) {
+        if (std::filesystem::exists(cfg_path)) {
+            if (is_base || !cfg) {
+                cfg = std::make_shared<std::remove_reference_t<decltype(*cfg)>>();
+            }
+            return cfg->load(cfg_path, is_base);
         }
-        ret = pipeline_cfg_->load(pipeline_path);
-    }
+        return !is_base;
+    };
+
+    bool ret = load_cfg(path / "controller" / "adb.json", adb_cfg_) && load_cfg(path / "pipeline", pipeline_cfg_);
 
     LogInfo << VAR(path) << VAR(ret);
 

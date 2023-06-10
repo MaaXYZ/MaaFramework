@@ -1,5 +1,6 @@
 #include "InstanceMgr.h"
 
+#include "Controller/ControllerMgr.h"
 #include "Task/PipelineTask.h"
 #include "Utils/Logger.hpp"
 
@@ -26,7 +27,7 @@ InstanceMgr::~InstanceMgr()
 
 bool InstanceMgr::bind_resource(MaaResourceAPI* resource)
 {
-    LogFunc << VAR_VOIDP(resource);
+    LogInfo << VAR_VOIDP(this) << VAR_VOIDP(resource);
 
     if (!resource) {
         LogError << "Invalid resource";
@@ -38,13 +39,17 @@ bool InstanceMgr::bind_resource(MaaResourceAPI* resource)
         return false;
     }
 
+    if (resource_) {
+        LogWarn << "Resource already binded" << VAR_VOIDP(resource_);
+    }
+
     resource_ = resource;
     return true;
 }
 
 bool InstanceMgr::bind_controller(MaaControllerAPI* controller)
 {
-    LogFunc << VAR_VOIDP(controller);
+    LogInfo << VAR_VOIDP(this) << VAR_VOIDP(controller);
 
     if (!controller) {
         LogError << "Invalid controller";
@@ -56,6 +61,17 @@ bool InstanceMgr::bind_controller(MaaControllerAPI* controller)
         return false;
     }
 
+    if (controller_) {
+        LogWarn << "Controller already binded" << VAR_VOIDP(controller_);
+    }
+
+    if (auto* ctrl_mgr = dynamic_cast<MAA_CTRL_NS::ControllerMgr*>(controller_)) {
+        ctrl_mgr->bind_inst(this);
+    }
+    else {
+        LogWarn << "Controller is not ControllerMgr";
+    }
+
     controller_ = controller;
     return true;
 }
@@ -65,7 +81,7 @@ bool InstanceMgr::inited() const
     return resource_ && controller_ && resource_->loaded() && controller_->connected();
 }
 
-bool InstanceMgr::set_option(MaaInstOption key, std::string_view value)
+bool InstanceMgr::set_option(MaaInstOption key, const std::string& value)
 {
     return false;
 }

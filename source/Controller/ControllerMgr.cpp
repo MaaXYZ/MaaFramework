@@ -1,5 +1,7 @@
 #include "ControllerMgr.h"
 
+#include "Resource/ResourceMgr.h"
+
 MAA_CTRL_NS_BEGIN
 
 std::minstd_rand ControllerMgr::rand_engine_(std::random_device {}());
@@ -23,7 +25,7 @@ ControllerMgr::~ControllerMgr()
     notifier.release();
 }
 
-bool ControllerMgr::set_option(MaaCtrlOption key, std::string_view value)
+bool ControllerMgr::set_option(MaaCtrlOption key, const std::string& value)
 {
     return false;
 }
@@ -93,6 +95,17 @@ std::string ControllerMgr::get_uuid() const
     return std::string();
 }
 
+void ControllerMgr::bind_inst(InstanceInternalAPI* inst)
+{
+    LogInfo << VAR_VOIDP(this) << VAR_VOIDP(inst);
+
+    if (inst_) {
+        LogWarn << "Intance already binded" << VAR_VOIDP(inst_);
+    }
+
+    inst_ = inst;
+}
+
 void ControllerMgr::click(const cv::Rect& r)
 {
     click(rand_point(r));
@@ -119,6 +132,11 @@ cv::Mat ControllerMgr::screencap()
     std::unique_lock<std::mutex> lock(image_mutex_);
     action_runner_->post({ .type = Action::Type::screencap }, true);
     return image_;
+}
+
+MAA_RES_NS::ResourceMgr* ControllerMgr::resource() const
+{
+    return inst_ ? dynamic_cast<MAA_RES_NS::ResourceMgr*>(inst_->resource()) : nullptr;
 }
 
 bool ControllerMgr::run_action(typename AsyncRunner<Action>::Id id, Action action)

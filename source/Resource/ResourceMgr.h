@@ -9,6 +9,7 @@
 MAA_RES_NS_BEGIN
 
 class PipelineConfig;
+class AdbConfig;
 
 class ResourceMgr : public MaaResourceAPI
 {
@@ -16,7 +17,7 @@ public:
     ResourceMgr(const std::filesystem::path& user_path, MaaResourceCallback callback, void* callback_arg);
     virtual ~ResourceMgr() override;
 
-    virtual bool set_option(MaaResOption key, std::string_view value) override;
+    virtual bool set_option(MaaResOption key, const std::string& value) override;
 
     virtual MaaResId post_resource(std::filesystem::path path) override;
 
@@ -26,11 +27,16 @@ public:
 
     virtual std::string get_hash() const override;
 
+public:
+    const auto& adb_cfg() const { return adb_cfg_; }
+    const auto& pipeline_cfg() const { return pipeline_cfg_; }
+
 private:
     bool run_load(typename AsyncRunner<std::filesystem::path>::Id id, std::filesystem::path path);
     bool load(const std::filesystem::path& path);
 
 private:
+    std::shared_ptr<AdbConfig> adb_cfg_ = nullptr;
     std::shared_ptr<PipelineConfig> pipeline_cfg_ = nullptr;
 
 private:

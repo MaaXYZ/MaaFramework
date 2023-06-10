@@ -22,7 +22,7 @@ public: // from MaaInstanceAPI
     virtual bool bind_controller(MaaControllerAPI* controller) override;
     virtual bool inited() const override;
 
-    virtual bool set_option(MaaInstOption key, std::string_view value) override;
+    virtual bool set_option(MaaInstOption key, const std::string& value) override;
 
     virtual MaaTaskId post_task(MaaTaskType type, std::string_view param) override;
     virtual bool set_task_param(MaaTaskId task_id, std::string_view param) override;

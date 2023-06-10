@@ -6,7 +6,7 @@ MAA_CTRL_NS_BEGIN
 class MinitouchController : public AdbController
 {
 public:
-    MinitouchController(const std::filesystem::path& adb_path, const std::string& address,
+    MinitouchController(const std::string& adb_path, const std::string& address,
                         MaaControllerCallback callback, void* callback_arg);
     virtual ~MinitouchController() override;
 

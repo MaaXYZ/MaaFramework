@@ -3,13 +3,17 @@
 #include "Base/AsyncCallback.hpp"
 #include "Common/MaaMsg.h"
 #include "Common/MaaTypes.h"
-
+#include "Instance/InstanceInternalAPI.hpp"
 #include "Utils/NoWarningCVMat.h"
 
 #include <memory>
 #include <mutex>
 #include <random>
 #include <variant>
+
+MAA_RES_NS_BEGIN
+class ResourceMgr;
+MAA_RES_NS_END
 
 MAA_CTRL_NS_BEGIN
 
@@ -53,7 +57,7 @@ public:
 
     virtual ~ControllerMgr() override;
 
-    virtual bool set_option(MaaCtrlOption key, std::string_view value) override;
+    virtual bool set_option(MaaCtrlOption key, const std::string& value) override;
 
     virtual MaaCtrlId post_connection() override;
     virtual MaaCtrlId post_click(int x, int y) override;
@@ -69,6 +73,9 @@ public:
     virtual std::string get_uuid() const override;
 
 public:
+    void bind_inst(InstanceInternalAPI* inst);
+
+public:
     void click(const cv::Rect& r);
     void click(const cv::Point& p);
     void swipe(const cv::Rect& r1, const cv::Rect& r2, int duration);
@@ -81,9 +88,17 @@ protected:
     virtual void _swipe(SwipeParams param) = 0;
     virtual cv::Mat _screencap() = 0;
 
+protected:
+    MAA_RES_NS::ResourceMgr* resource() const;
+
+    AsyncCallback<MaaControllerCallback, void*> notifier;
+
 private:
     bool run_action(typename AsyncRunner<Action>::Id id, Action action);
     static cv::Point rand_point(const cv::Rect& r);
+
+private:
+    InstanceInternalAPI* inst_ = nullptr;
 
 private:
     static std::minstd_rand rand_engine_;
@@ -93,7 +108,6 @@ private:
     cv::Mat image_;
 
     std::unique_ptr<AsyncRunner<Action>> action_runner_ = nullptr;
-    AsyncCallback<MaaControllerCallback, void*> notifier;
 };
 
 MAA_CTRL_NS_END

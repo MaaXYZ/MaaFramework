@@ -5,7 +5,7 @@
 
 MAA_NS_BEGIN
 
-bool GlobalOptionMgr::set_option(MaaGlobalOption key, std::string_view value)
+bool GlobalOptionMgr::set_option(MaaGlobalOption key, const std::string& value)
 {
     LogInfo << VAR(key) << VAR(value);
 

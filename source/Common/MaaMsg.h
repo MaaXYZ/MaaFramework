@@ -13,13 +13,16 @@ MAA_NS_BEGIN
 enum class MaaMsg : int64_t
 {
     InvalidMsg = 0,
-    ResourceMsg = 10000,
+    // ResourceMsg = 10000,
 
     ResourceStartLoading = 11000,
     ResourceLoadingCompleted = 12000,
     ResourceLoadingError = 13000,
 
-    ControllerMsg = 20000,
+    // ControllerMsg = 20000,
+    Connected = 21000,
+    ConnectFailed = 21001,
+
     InstanceMsg = 30000,
 
     /*  TaskMsg = 100000,    */
@@ -38,16 +41,16 @@ inline std::ostream& operator<<(std::ostream& os, const MaaMsg& type)
         { MaaMsg::InvalidMsg, "InvalidMsg" },
 
         /* Resrouce Msg */
-        { MaaMsg::ResourceMsg, "ResourceMsg" },
         { MaaMsg::ResourceStartLoading, "ResourceStartLoading" },
         { MaaMsg::ResourceLoadingCompleted, "ResourceLoadingCompleted" },
         { MaaMsg::ResourceLoadingError, "ResourceLoadingError" },
 
         /* Controller Msg */
-        { MaaMsg::ControllerMsg, "ControllerMsg" },
+        { MaaMsg::ResourceLoadingError, "ResourceLoadingError" },
 
         /* Instance Msg */
-        { MaaMsg::InstanceMsg, "InstanceMsg" },
+        { MaaMsg::Connected, "Connected" },
+        { MaaMsg::ConnectFailed, "ConnectFailed" },
 
         //{ MaaMsg::TaskMsg, "TaskMsg" },
         { MaaMsg::TaskStarted, "TaskStarted" },

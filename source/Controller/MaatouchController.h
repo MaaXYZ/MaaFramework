@@ -6,7 +6,7 @@ MAA_CTRL_NS_BEGIN
 class MaatouchController : public AdbController
 {
 public:
-    MaatouchController(const std::filesystem::path& adb_path, const std::string& address,
+    MaatouchController(const std::string& adb_path, const std::string& address,
                        MaaControllerCallback callback, void* callback_arg);
     virtual ~MaatouchController() override;
 

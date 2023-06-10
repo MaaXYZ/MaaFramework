@@ -30,8 +30,8 @@ concept IsSomeKindOfString = std::same_as<CharT, char> || std::same_as<CharT, wc
 
 template <typename StringT>
 requires IsSomeKindOfString<StringT>
-inline constexpr void string_replace_all_in_place(StringT& str, string_detail::sv_type<StringT> from,
-                                                  string_detail::sv_type<StringT> to)
+inline constexpr void string_replace_all_(StringT& str, string_detail::sv_type<StringT> from,
+                                          string_detail::sv_type<StringT> to)
 {
     for (size_t pos(0);; pos += to.length()) {
         if ((pos = str.find(from, pos)) == StringT::npos) return;
@@ -41,18 +41,18 @@ inline constexpr void string_replace_all_in_place(StringT& str, string_detail::s
 
 template <typename StringT>
 requires IsSomeKindOfString<StringT>
-inline constexpr void string_replace_all_in_place(StringT& str, const string_detail::sv_pair<StringT>& replace_pair)
+inline constexpr void string_replace_all_(StringT& str, const string_detail::sv_pair<StringT>& replace_pair)
 {
-    string_replace_all_in_place(str, replace_pair.first, replace_pair.second);
+    string_replace_all_(str, replace_pair.first, replace_pair.second);
 }
 
 template <typename StringT>
 requires IsSomeKindOfString<StringT>
-inline constexpr void string_replace_all_in_place(StringT& str,
-                                                  std::initializer_list<string_detail::sv_pair<StringT>> replace_pairs)
+inline constexpr void string_replace_all_(StringT& str,
+                                          std::initializer_list<string_detail::sv_pair<StringT>> replace_pairs)
 {
     for (auto&& [from, to] : replace_pairs) {
-        string_replace_all_in_place(str, from, to);
+        string_replace_all_(str, from, to);
     }
 }
 
@@ -92,7 +92,7 @@ requires IsSomeKindOfString<StringT>
                                                        string_detail::sv_type<StringT> to)
 {
     std::decay_t<StringT> result = std::forward<StringT>(src);
-    string_replace_all_in_place(result, from, to);
+    string_replace_all_(result, from, to);
     return result;
 }
 
@@ -102,7 +102,7 @@ requires IsSomeKindOfString<StringT>
                                                        const string_detail::sv_pair<StringT>& replace_pair)
 {
     std::decay_t<StringT> result = std::forward<StringT>(src);
-    string_replace_all_in_place(result, replace_pair);
+    string_replace_all_(result, replace_pair);
     return result;
 }
 
@@ -113,7 +113,7 @@ requires IsSomeKindOfString<StringT>
 {
     std::decay_t<StringT> result = std::forward<StringT>(str);
     for (auto&& [from, to] : replace_pairs) {
-        string_replace_all_in_place(result, from, to);
+        string_replace_all_(result, from, to);
     }
     return result;
 }
@@ -121,7 +121,7 @@ requires IsSomeKindOfString<StringT>
 template <typename StringT, typename CharT = ranges::range_value_t<StringT>,
           typename Pred = decltype([](CharT c) -> bool { return c != ' '; })>
 requires IsSomeKindOfString<StringT>
-inline void string_trim(StringT& str, Pred not_space = Pred {})
+inline void string_trim_(StringT& str, Pred not_space = Pred {})
 {
     str.erase(ranges::find_if(str | views::reverse, not_space).base(), str.end());
     str.erase(str.begin(), ranges::find_if(str, not_space));
@@ -129,14 +129,14 @@ inline void string_trim(StringT& str, Pred not_space = Pred {})
 
 template <typename StringT, typename CharT = ranges::range_value_t<StringT>>
 requires IsSomeKindOfString<StringT>
-inline void tolowers(StringT& str)
+inline void tolowers_(StringT& str)
 {
     ranges::for_each(str, [](CharT& ch) -> void { ch = static_cast<CharT>(std::tolower(ch)); });
 }
 
 template <typename StringT, typename CharT = ranges::range_value_t<StringT>>
 requires IsSomeKindOfString<StringT>
-inline void touppers(StringT& str)
+inline void touppers_(StringT& str)
 {
     ranges::for_each(str, [](CharT& ch) -> void { ch = static_cast<CharT>(std::toupper(ch)); });
 }

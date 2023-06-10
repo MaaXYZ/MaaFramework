@@ -31,14 +31,17 @@
     <Filter Include="Source\Utils\Platform">
       <UniqueIdentifier>{9349568b-d1d8-40ea-b55a-a240e5fe89f8}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Source\Option">
-      <UniqueIdentifier>{9e58b788-5688-48de-92ef-06fb6f24c4c4}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Source\Base">
       <UniqueIdentifier>{12797767-44fd-4da8-a4cd-bdc75190adf4}</UniqueIdentifier>
     </Filter>
     <Filter Include="Source\API">
       <UniqueIdentifier>{5d5c3d80-dbca-4b8c-a8dc-41fba1acc500}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\GlobalOption">
+      <UniqueIdentifier>{fe669fc4-8884-469a-b9f6-7c84f37bfb26}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\Controller\Platform">
+      <UniqueIdentifier>{4655f327-d19a-47ad-bfa7-fff686529122}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -50,9 +53,6 @@
     </ClInclude>
     <ClInclude Include="..\include\MaaDef.h">
       <Filter>Include</Filter>
-    </ClInclude>
-    <ClInclude Include="Common\MaaTypes.h">
-      <Filter>Source\Common</Filter>
     </ClInclude>
     <ClInclude Include="Common\MaaMsg.h">
       <Filter>Source\Common</Filter>
@@ -120,9 +120,6 @@
     <ClInclude Include="Controller\MinitouchController.h">
       <Filter>Source\Controller</Filter>
     </ClInclude>
-    <ClInclude Include="Option\GlobalOptionMgr.h">
-      <Filter>Source\Option</Filter>
-    </ClInclude>
     <ClInclude Include="Utils\Locale.hpp">
       <Filter>Source\Utils</Filter>
     </ClInclude>
@@ -156,7 +153,22 @@
     <ClInclude Include="Controller\CustomController.h">
       <Filter>Source\Controller</Filter>
     </ClInclude>
-    <ClInclude Include="Base\NonCopyable.hpp" />
+    <ClInclude Include="Option\GlobalOptionMgr.h">
+      <Filter>Source\GlobalOption</Filter>
+    </ClInclude>
+    <ClInclude Include="Base\NonCopyable.hpp">
+      <Filter>Source\Base</Filter>
+    </ClInclude>
+    <ClInclude Include="Controller\Platform\PlatformIO.h">
+      <Filter>Source\Controller\Platform</Filter>
+    </ClInclude>
+    <ClInclude Include="Controller\Platform\Win32IO.h">
+      <Filter>Source\Controller\Platform</Filter>
+    </ClInclude>
+    <ClInclude Include="Instance\InstanceInternalAPI.hpp" />
+    <ClInclude Include="Common\MaaTypes.h" />
+    <ClInclude Include="Controller\Platform\PlatformFactory.h" />
+    <ClInclude Include="Resource\AdbConfig.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Controller\ControllerMgr.cpp">
@@ -183,9 +195,6 @@
     <ClCompile Include="Controller\MinitouchController.cpp">
       <Filter>Source\Controller</Filter>
     </ClCompile>
-    <ClCompile Include="Option\GlobalOptionMgr.cpp">
-      <Filter>Source\Option</Filter>
-    </ClCompile>
     <ClCompile Include="Task\PipelineTask.cpp">
       <Filter>Source\Task</Filter>
     </ClCompile>
@@ -198,5 +207,12 @@
     <ClCompile Include="Controller\CustomController.cpp">
       <Filter>Source\Controller</Filter>
     </ClCompile>
+    <ClCompile Include="Option\GlobalOptionMgr.cpp">
+      <Filter>Source\GlobalOption</Filter>
+    </ClCompile>
+    <ClCompile Include="Controller\Platform\Win32IO.cpp">
+      <Filter>Source\Controller\Platform</Filter>
+    </ClCompile>
+    <ClCompile Include="Resource\AdbConfig.cpp" />
   </ItemGroup>
 </Project>

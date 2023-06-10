@@ -17,7 +17,7 @@ public:
 public:
     virtual ~GlobalOptionMgr() = default;
 
-    bool set_option(MaaGlobalOption key, std::string_view value);
+    bool set_option(MaaGlobalOption key, const std::string& value);
 
 protected:
     GlobalOptionMgr() = default;

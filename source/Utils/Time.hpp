@@ -43,7 +43,7 @@ inline std::string get_format_time()
 inline std::string get_time_filestem()
 {
     std::string stem = get_format_time();
-    string_replace_all_in_place(stem, { { ":", "-" }, { " ", "_" }, { ".", "-" } });
+    string_replace_all_(stem, { { ":", "-" }, { " ", "_" }, { ".", "-" } });
     return stem;
 }
 
