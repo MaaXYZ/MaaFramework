@@ -1,7 +1,7 @@
 #pragma once
 
 #if !defined(MAA_USE_RANGES_STL) && !defined(MAA_USE_RANGES_RANGE_V3) && !defined(MAA_USE_RANGES_BOOST)
-#ifdef __clang__
+#if defined(__clang__) && __clang_major__ < 15
 #define MAA_USE_RANGES_RANGE_V3
 #else
 #define MAA_USE_RANGES_STL
@@ -92,5 +92,7 @@
 #define MAA_VERSION "DEBUG_VERSION"
 #endif
 
-// FIXME: remove this
-#pragma warning(disable : 4100)
+#if defined(_MSC_VER)
+    // FIXME: remove this
+    #pragma warning(disable : 4100)
+#endif
