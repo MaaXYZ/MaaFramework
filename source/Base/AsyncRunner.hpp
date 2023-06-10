@@ -57,7 +57,7 @@ private:
 template <typename Item>
 inline AsyncRunner<Item>::AsyncRunner(ProcessFunc run_task) : process_(run_task)
 {
-    LogFunc;
+    // LogFunc;
 
     thread_ = std::thread(&AsyncRunner<Item>::working, this);
 }
@@ -65,7 +65,7 @@ inline AsyncRunner<Item>::AsyncRunner(ProcessFunc run_task) : process_(run_task)
 template <typename Item>
 inline AsyncRunner<Item>::~AsyncRunner()
 {
-    LogFunc;
+    // LogFunc;
 
     release();
 }
@@ -73,7 +73,7 @@ inline AsyncRunner<Item>::~AsyncRunner()
 template <typename Item>
 inline void AsyncRunner<Item>::release()
 {
-    LogFunc;
+    // LogFunc;
 
     exit_ = true;
 
@@ -95,7 +95,7 @@ inline void AsyncRunner<Item>::release()
 template <typename Item>
 inline void AsyncRunner<Item>::working()
 {
-    LogFunc;
+    // LogFunc;
 
     while (!exit_) {
         std::unique_lock<std::mutex> lock(mutex_);
@@ -131,7 +131,7 @@ inline void AsyncRunner<Item>::working()
 template <typename Item>
 inline AsyncRunner<Item>::Id AsyncRunner<Item>::post(Item item, bool block)
 {
-    LogFunc;
+    // LogFunc;
 
     Id id = MaaInvalidId;
     {
@@ -157,7 +157,7 @@ inline AsyncRunner<Item>::Id AsyncRunner<Item>::post(Item item, bool block)
 template <typename Item>
 inline void AsyncRunner<Item>::wait(Id id) const
 {
-    LogFunc << VAR(id);
+    // LogFunc << VAR(id);
 
     while (!exit_) {
         std::unique_lock<std::mutex> lock(compl_mutex_);
@@ -184,7 +184,7 @@ inline MaaStatus AsyncRunner<Item>::status(Id id) const
 template <typename Item>
 inline void AsyncRunner<Item>::clear()
 {
-    LogFunc;
+    // LogFunc;
 
     {
         std::unique_lock<std::mutex> lock(mutex_);

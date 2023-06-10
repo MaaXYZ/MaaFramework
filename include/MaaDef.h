@@ -34,6 +34,41 @@ typedef MaaId MaaResId;
 typedef MaaId MaaTaskId;
 #define MaaInvalidId ((MaaId)0)
 
+typedef int32_t MaaOption;
+typedef MaaOption MaaGlobalOption;
+enum MaaGlobalOptionEnum
+{
+    MaaGlobalOption_Invalid = 0,
+    MaaGlobalOption_Logging = 1,
+};
+
+typedef MaaOption MaaResOption;
+enum MaaResOptionEnum
+{
+    MaaResOption_Invalid = 0,
+};
+
+typedef MaaOption MaaCtrlOption;
+enum MaaCtrlOptionEnum
+{
+    MaaCtrlOption_Invalid = 0,
+};
+
+typedef MaaOption MaaInstOption;
+enum MaaInstOptionEnum
+{
+    MaaInstOption_Invalid = 0,
+};
+
+typedef int32_t MaaTaskType;
+enum MaaTaskTypeEnum
+{
+    MaaTaskType_Invalid = 0,
+    MaaTaskType_Pipeline = 1,
+};
+
+#define MaaTaskParam_Empty "{}"
+
 typedef void(MAA_CALL* MaaApiCallback)(MaaMsgId msg, const char* details_json, void* callback_arg);
 typedef MaaApiCallback MaaResourceCallback;
 typedef MaaApiCallback MaaControllerCallback;

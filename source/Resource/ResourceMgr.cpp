@@ -25,7 +25,7 @@ ResourceMgr::~ResourceMgr()
     notifier.release();
 }
 
-bool ResourceMgr::set_option(std::string_view key, std::string_view value)
+bool ResourceMgr::set_option(MaaResOption key, std::string_view value)
 {
     return false;
 }

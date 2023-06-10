@@ -23,7 +23,7 @@ ControllerMgr::~ControllerMgr()
     notifier.release();
 }
 
-bool ControllerMgr::set_option(std::string_view key, std::string_view value)
+bool ControllerMgr::set_option(MaaCtrlOption key, std::string_view value)
 {
     return false;
 }

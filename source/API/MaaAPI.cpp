@@ -7,16 +7,16 @@
 #include "Controller/MaatouchController.h"
 #include "Controller/MinitouchController.h"
 #include "Instance/InstanceMgr.h"
-#include "Option/GlobalOption.h"
+#include "Option/GlobalOptionMgr.h"
 #include "Resource/ResourceMgr.h"
 #include "Utils/Logger.hpp"
 #include "Utils/Platform.hpp"
 
-MaaBool MaaSetGlobalOption(MaaString key, MaaString value)
+MaaBool MaaSetGlobalOption(MaaGlobalOption key, MaaString value)
 {
     LogFunc << VAR(key) << VAR(value);
 
-    return MAA_NS::GlabalOption::get_instance().set_option(key, value);
+    return MAA_NS::GlobalOptionMgr::get_instance().set_option(key, value);
 }
 
 MaaResourceHandle MaaResourceCreate(MaaString user_path, MaaResourceCallback callback, void* callback_arg)
@@ -77,7 +77,7 @@ MaaBool MaaResourceLoaded(MaaResourceHandle res)
     return res->loaded();
 }
 
-MaaBool MaaResourceSetOption(MaaResourceHandle res, MaaString key, MaaString value)
+MaaBool MaaResourceSetOption(MaaResourceHandle res, MaaResOption key, MaaString value)
 {
     LogFunc << VAR_VOIDP(res) << VAR(key) << VAR(value);
 
@@ -150,7 +150,7 @@ void MaaControllerDestroy(MaaControllerHandle* ctrl)
     *ctrl = nullptr;
 }
 
-MaaBool MaaControllerSetOption(MaaControllerHandle ctrl, MaaString key, MaaString value)
+MaaBool MaaControllerSetOption(MaaControllerHandle ctrl, MaaCtrlOption key, MaaString value)
 {
     LogFunc << VAR_VOIDP(ctrl) << VAR(key) << VAR(value);
 
@@ -285,7 +285,7 @@ void MaaDestroy(MaaInstanceHandle* inst)
     *inst = nullptr;
 }
 
-MaaBool MaaSetOption(MaaInstanceHandle inst, MaaString key, MaaString value)
+MaaBool MaaSetOption(MaaInstanceHandle inst, MaaInstOption key, MaaString value)
 {
     LogFunc << VAR_VOIDP(inst) << VAR(key) << VAR(value);
 
@@ -324,7 +324,7 @@ MaaBool MaaInited(MaaInstanceHandle inst)
     return inst->inited();
 }
 
-MaaTaskId MaaPostTask(MaaInstanceHandle inst, MaaString type, MaaString param)
+MaaTaskId MaaPostTask(MaaInstanceHandle inst, MaaTaskType type, MaaString param)
 {
     LogFunc << VAR_VOIDP(inst) << VAR(type) << VAR(param);
 

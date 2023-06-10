@@ -7,7 +7,7 @@
 extern "C"
 {
 #endif
-    MaaBool MAAAPI MaaSetGlobalOption(MaaString key, MaaString value);
+    MaaBool MAAAPI MaaSetGlobalOption(MaaGlobalOption key, MaaString value);
 
     /* Resource */
 
@@ -19,7 +19,7 @@ extern "C"
     MaaStatus MAAAPI MaaResourceWait(MaaResourceHandle res, MaaResId id);
     MaaBool MAAAPI MaaResourceLoaded(MaaResourceHandle res);
 
-    MaaBool MAAAPI MaaResourceSetOption(MaaResourceHandle res, MaaString key, MaaString value);
+    MaaBool MAAAPI MaaResourceSetOption(MaaResourceHandle res, MaaResOption key, MaaString value);
     MaaSize MAAAPI MaaResourceGetHash(MaaResourceHandle res, char* buff, MaaSize buff_size);
 
     /* Controller */
@@ -36,7 +36,7 @@ extern "C"
 
     void MAAAPI MaaControllerDestroy(MaaControllerHandle* ctrl);
 
-    MaaBool MAAAPI MaaControllerSetOption(MaaControllerHandle ctrl, MaaString key, MaaString value);
+    MaaBool MAAAPI MaaControllerSetOption(MaaControllerHandle ctrl, MaaCtrlOption key, MaaString value);
 
     MaaCtrlId MAAAPI MaaControllerPostConnection(MaaControllerHandle ctrl);
     MaaCtrlId MAAAPI MaaControllerPostClick(MaaControllerHandle ctrl, int32_t x, int32_t y);
@@ -55,13 +55,13 @@ extern "C"
 
     MaaInstanceHandle MAAAPI MaaCreate(MaaInstanceCallback callback, void* callback_arg);
     void MAAAPI MaaDestroy(MaaInstanceHandle* inst);
-    MaaBool MAAAPI MaaSetOption(MaaInstanceHandle inst, MaaString key, MaaString value);
+    MaaBool MAAAPI MaaSetOption(MaaInstanceHandle inst, MaaInstOption key, MaaString value);
 
     MaaBool MAAAPI MaaBindResource(MaaInstanceHandle inst, MaaResourceHandle res);
     MaaBool MAAAPI MaaBindController(MaaInstanceHandle inst, MaaControllerHandle ctrl);
     MaaBool MAAAPI MaaInited(MaaInstanceHandle inst);
 
-    MaaTaskId MAAAPI MaaPostTask(MaaInstanceHandle inst, MaaString type, MaaString param);
+    MaaTaskId MAAAPI MaaPostTask(MaaInstanceHandle inst, MaaTaskType type, MaaString param);
     MaaBool MAAAPI MaaSetTaskParam(MaaInstanceHandle inst, MaaTaskId id, MaaString param);
 
     MaaStatus MAAAPI MaaTaskStatus(MaaInstanceHandle inst, MaaTaskId id);

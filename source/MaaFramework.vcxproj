@@ -29,13 +29,12 @@
   <ItemGroup>
     <ClInclude Include="..\include\MaaAPI.h" />
     <ClInclude Include="..\include\MaaCustomController.h" />
-    <ClInclude Include="..\include\MaaParam.h" />
     <ClInclude Include="..\include\MaaPort.h" />
     <ClInclude Include="..\include\MaaDef.h" />
     <ClInclude Include="Base\AsyncCallback.hpp" />
     <ClInclude Include="Base\NonCopyable.hpp" />
     <ClInclude Include="Controller\CustomController.h" />
-    <ClInclude Include="Option\GlobalOption.h" />
+    <ClInclude Include="Option\GlobalOptionMgr.h" />
     <ClInclude Include="Controller\AdbController.h" />
     <ClInclude Include="Common\MaaConf.h" />
     <ClInclude Include="Common\MaaMsg.h" />
@@ -76,7 +75,7 @@
     <ClCompile Include="API\MaaAPI.cpp" />
     <ClCompile Include="Controller\MinitouchController.cpp" />
     <ClCompile Include="Controller\MaatouchController.cpp" />
-    <ClCompile Include="Option\GlobalOption.cpp" />
+    <ClCompile Include="Option\GlobalOptionMgr.cpp" />
     <ClCompile Include="Resource\PipelineConfig.cpp" />
     <ClCompile Include="Resource\ResourceMgr.cpp" />
     <ClCompile Include="Task\PipelineTask.cpp" />

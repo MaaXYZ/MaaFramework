@@ -1,6 +1,5 @@
 #include "InstanceMgr.h"
 
-#include "MaaParam.h"
 #include "Task/PipelineTask.h"
 #include "Utils/Logger.hpp"
 
@@ -66,20 +65,21 @@ bool InstanceMgr::inited() const
     return resource_ && controller_ && resource_->loaded() && controller_->connected();
 }
 
-bool InstanceMgr::set_option(std::string_view key, std::string_view value)
+bool InstanceMgr::set_option(MaaInstOption key, std::string_view value)
 {
     return false;
 }
 
-MaaTaskId InstanceMgr::post_task(std::string_view type, std::string_view param)
+MaaTaskId InstanceMgr::post_task(MaaTaskType type, std::string_view param)
 {
     LogInfo << VAR(type) << VAR(param);
 
     TaskPtr task_ptr = nullptr;
-    if (type == MaaTaskType_Pipeline) {
+    switch (type) {
+    case MaaTaskType_Pipeline:
         task_ptr = std::make_shared<TaskNS::PipelineTask>();
-    }
-    else {
+        break;
+    default:
         LogError << "Unknown task type:" << type;
         return MaaInvalidId;
     }

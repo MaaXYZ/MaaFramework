@@ -20,9 +20,9 @@ public:
     virtual bool bind_controller(MaaControllerAPI* controller) override;
     virtual bool inited() const override;
 
-    virtual bool set_option(std::string_view key, std::string_view value) override;
+    virtual bool set_option(MaaInstOption key, std::string_view value) override;
 
-    virtual MaaTaskId post_task(std::string_view type, std::string_view param) override;
+    virtual MaaTaskId post_task(MaaTaskType type, std::string_view param) override;
     virtual bool set_task_param(MaaTaskId task_id, std::string_view param) override;
     virtual MaaStatus status(MaaTaskId task_id) const override;
     virtual MaaStatus wait(MaaTaskId task_id) const override;

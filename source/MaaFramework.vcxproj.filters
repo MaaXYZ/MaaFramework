@@ -120,7 +120,7 @@
     <ClInclude Include="Controller\MinitouchController.h">
       <Filter>Source\Controller</Filter>
     </ClInclude>
-    <ClInclude Include="Option\GlobalOption.h">
+    <ClInclude Include="Option\GlobalOptionMgr.h">
       <Filter>Source\Option</Filter>
     </ClInclude>
     <ClInclude Include="Utils\Locale.hpp">
@@ -149,9 +149,6 @@
     </ClInclude>
     <ClInclude Include="Base\SingletonHolder.hpp">
       <Filter>Source\Base</Filter>
-    </ClInclude>
-    <ClInclude Include="..\include\MaaParam.h">
-      <Filter>Include</Filter>
     </ClInclude>
     <ClInclude Include="..\include\MaaCustomController.h">
       <Filter>Include</Filter>
@@ -186,7 +183,7 @@
     <ClCompile Include="Controller\MinitouchController.cpp">
       <Filter>Source\Controller</Filter>
     </ClCompile>
-    <ClCompile Include="Option\GlobalOption.cpp">
+    <ClCompile Include="Option\GlobalOptionMgr.cpp">
       <Filter>Source\Option</Filter>
     </ClCompile>
     <ClCompile Include="Task\PipelineTask.cpp">

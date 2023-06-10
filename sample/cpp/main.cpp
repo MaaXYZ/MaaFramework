@@ -1,6 +1,4 @@
 #include "MaaAPI.h"
-#include "MaaCustomController.h"
-#include "MaaParam.h"
 
 #include <filesystem>
 #include <iostream>

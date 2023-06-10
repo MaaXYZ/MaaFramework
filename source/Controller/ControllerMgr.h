@@ -53,7 +53,7 @@ public:
 
     virtual ~ControllerMgr() override;
 
-    virtual bool set_option(std::string_view key, std::string_view value) override;
+    virtual bool set_option(MaaCtrlOption key, std::string_view value) override;
 
     virtual MaaCtrlId post_connection() override;
     virtual MaaCtrlId post_click(int x, int y) override;

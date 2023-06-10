@@ -16,7 +16,7 @@ public:
     ResourceMgr(const std::filesystem::path& user_path, MaaResourceCallback callback, void* callback_arg);
     virtual ~ResourceMgr() override;
 
-    virtual bool set_option(std::string_view key, std::string_view value) override;
+    virtual bool set_option(MaaResOption key, std::string_view value) override;
 
     virtual MaaResId post_resource(std::filesystem::path path) override;
 
