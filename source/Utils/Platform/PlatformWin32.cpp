@@ -161,6 +161,20 @@ inline os_string escape_one(os_string_view arg)
     return buf;
 }
 
+os_string args_to_cmd(const std::vector<os_string>& args)
+{
+    if (args.size() == 0) {
+        return os_string {};
+    }
+
+    os_string res = escape_one(args[0]);
+    for (int i = 1; i < args.size(); i++) {
+        res.push_back(' ');
+        res.append(escape_one(args[i]));
+    }
+    return res;
+}
+
 os_string args_to_cmd(const std::vector<os_string_view>& args)
 {
     if (args.size() == 0) {

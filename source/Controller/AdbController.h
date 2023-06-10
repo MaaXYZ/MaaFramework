@@ -21,7 +21,7 @@ protected:
 
 protected:
     std::shared_ptr<MAA_RES_NS::AdbConfig> adb_cfg() const;
-    std::optional<std::string> command(const std::string& cmd, bool recv_by_socket = false, int64_t timeout = 20000);
+    std::optional<std::string> command(const std::vector<std::string>& cmd, bool recv_by_socket = false, int64_t timeout = 20000);
 
 protected:
     std::string adb_path_;

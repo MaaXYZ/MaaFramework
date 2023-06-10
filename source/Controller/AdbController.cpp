@@ -30,11 +30,13 @@ bool AdbController::_connect()
         return false;
     }
 
-    const auto& raw_cmd = cfg->data().connect;
-    std::string cmd = string_replace_all(raw_cmd, {
-                                                      { "{ADB}", adb_path_ },
-                                                      { "{ADB_SERIAL}", address_ },
-                                                  });
+    auto cmd = cfg->data().connect;
+    for (auto& s : cmd) {
+        s = string_replace_all(s, {
+                                      { "{ADB}", adb_path_ },
+                                      { "{ADB_SERIAL}", address_ },
+                                  });
+    }
 
     std::string pipe_data;
     std::string sock_data;
@@ -66,7 +68,7 @@ std::shared_ptr<MAA_RES_NS::AdbConfig> AdbController::adb_cfg() const
     return res->adb_cfg();
 }
 
-std::optional<std::string> AdbController::command(const std::string& cmd, bool recv_by_socket, int64_t timeout)
+std::optional<std::string> AdbController::command(const std::vector<std::string>& cmd, bool recv_by_socket, int64_t timeout)
 {
     auto start_time = std::chrono::steady_clock::now();
 
