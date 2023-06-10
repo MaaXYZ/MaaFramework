@@ -98,8 +98,6 @@ std::string from_osstring(const os_string_view& os_str)
 
 MAA_PLATFORM_NS_END
 
-#endif
-
 MAA_WIN32_NS_BEGIN
 
 bool CreateOverlappablePipe(HANDLE* read, HANDLE* write, SECURITY_ATTRIBUTES* secattr_read,
@@ -128,3 +126,4 @@ bool CreateOverlappablePipe(HANDLE* read, HANDLE* write, SECURITY_ATTRIBUTES* se
 }
 
 MAA_WIN32_NS_END
+#endif
