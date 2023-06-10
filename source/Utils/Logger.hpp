@@ -87,6 +87,12 @@ public:
             if constexpr (has_stream_insertion_operator<T>) {
                 return std::forward<T>(value);
             }
+            else if constexpr (std::is_constructible_v<json::array, T>) {
+                return json::array(std::forward<T>(value));
+            }
+            else if constexpr (std::is_constructible_v<json::object, T>) {
+                return json::object(std::forward<T>(value));
+            }
             else {
                 static_assert(!sizeof(T), "Unsupported type");
             }
@@ -100,7 +106,7 @@ public:
 #ifdef MAA_DEBUG
             std::cout << content << sep_.str;
 #endif
-            stream_ << std::forward<T>(content) << sep_.str;
+            stream_ << std::forward<decltype(content)>(content) << sep_.str;
         }
 
         void stream_endl()

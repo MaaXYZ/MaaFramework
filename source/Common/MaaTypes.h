@@ -9,11 +9,13 @@
 #include <string_view>
 #include <vector>
 
-#ifndef MAA_VERSION
-#define MAA_VERSION "DEBUG_VERSION"
-#endif
+struct MaaInstanceSink
+{
+public:
+    virtual void on_stop() {}
+};
 
-struct MaaResourceAPI
+struct MaaResourceAPI : public MaaInstanceSink
 {
 public:
     virtual ~MaaResourceAPI() = default;
@@ -28,7 +30,7 @@ public:
     virtual std::string get_hash() const = 0;
 };
 
-struct MaaControllerAPI
+struct MaaControllerAPI : public MaaInstanceSink
 {
 public:
     virtual ~MaaControllerAPI() = default;

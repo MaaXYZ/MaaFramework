@@ -4,18 +4,20 @@
 #include "Base/AsyncRunner.hpp"
 #include "Common/MaaMsg.h"
 #include "Common/MaaTypes.h"
+#include "InstanceInternalAPI.hpp"
 #include "Task/AbstractTask.h"
 
 #include <mutex>
 
 MAA_NS_BEGIN
 
-class InstanceMgr : public MaaInstanceAPI
+class InstanceMgr : public MaaInstanceAPI, public InstanceInternalAPI
 {
 public:
     InstanceMgr(MaaInstanceCallback callback, void* callback_arg);
     virtual ~InstanceMgr() override;
 
+public: // from MaaInstanceAPI
     virtual bool bind_resource(MaaResourceAPI* resource) override;
     virtual bool bind_controller(MaaControllerAPI* controller) override;
     virtual bool inited() const override;
@@ -32,6 +34,11 @@ public:
 
     virtual std::string get_resource_hash() const override;
     virtual std::string get_controller_uuid() const override;
+
+public: // from InstanceInternalAPI
+    virtual MaaResourceAPI* resource() override;
+    virtual MaaControllerAPI* controller() override;
+    // TODO: status
 
 private:
     using TaskPtr = std::shared_ptr<TaskNS::AbstractTask>;

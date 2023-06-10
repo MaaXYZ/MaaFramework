@@ -173,6 +173,13 @@ void InstanceMgr::stop()
 {
     LogFunc;
 
+    if (resource_) {
+        resource_->on_stop();
+    }
+    if (controller_) {
+        controller_->on_stop();
+    }
+
     std::unique_lock<std::mutex> lock(task_mutex_);
     task_map_.clear();
     lock.unlock();
@@ -190,6 +197,16 @@ std::string InstanceMgr::get_resource_hash() const
 std::string InstanceMgr::get_controller_uuid() const
 {
     return controller_ ? controller_->get_uuid() : std::string();
+}
+
+MaaResourceAPI* InstanceMgr::resource()
+{
+    return resource_;
+}
+
+MaaControllerAPI* InstanceMgr::controller()
+{
+    return controller_;
 }
 
 bool InstanceMgr::run_task(typename AsyncRunner<TaskPtr>::Id id, TaskPtr task_ptr)

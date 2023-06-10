@@ -103,10 +103,11 @@ struct Data
 {
     std::string name;
     std::vector<std::string> base;
-    bool main_mission = false;
+    bool checkpoint = false;
 
     Recognition::Type recognition_type = Recognition::Type::Invalid;
-    std::variant<Recognition::TemplMatchingParams, Recognition::OcrParams, Recognition::FreezesWaitingParams> recognition_params;
+    std::variant<Recognition::TemplMatchingParams, Recognition::OcrParams, Recognition::FreezesWaitingParams>
+        recognition_params;
 
     cv::Rect roi {};
     bool cache = false;

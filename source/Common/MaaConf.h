@@ -88,5 +88,9 @@
 #define NOMINMAX
 #endif
 
+#ifndef MAA_VERSION
+#define MAA_VERSION "DEBUG_VERSION"
+#endif
+
 // FIXME: remove this
 #pragma warning(disable : 4100)

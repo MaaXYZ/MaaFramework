@@ -26,16 +26,10 @@ public:
             &AsyncCallback<Callback, CallbackArg>::callback, this, std::placeholders::_1, std::placeholders::_2));
     }
 
-    virtual ~AsyncCallback()
-    {
-        LogFunc;
-        release();
-    }
+    virtual ~AsyncCallback() { release(); }
 
     void release()
     {
-        LogFunc;
-
         if (notify_runner_) {
             notify_runner_->release();
         }
@@ -53,8 +47,8 @@ public:
 private:
     bool callback(typename AsyncRunner<NotifyData>::Id id, NotifyData cb_data)
     {
-        LogFunc << VAR_VOIDP(callback_) << VAR_VOIDP(callback_arg_) << VAR(id) << VAR(cb_data.msg)
-                << VAR(cb_data.details);
+        // LogFunc << VAR_VOIDP(callback_) << VAR_VOIDP(callback_arg_) << VAR(id) << VAR(cb_data.msg)
+        //         << VAR(cb_data.details);
 
         if (!callback_) {
             return false;
