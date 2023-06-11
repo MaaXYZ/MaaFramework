@@ -52,4 +52,63 @@ private:
     Argv kill_server_argv_;
 };
 
+class DeviceInfo : public UnitHelper
+{
+public:
+    using UnitHelper::UnitHelper;
+
+private:
+    Argv uuid_argv_;
+    Argv resolution_argv_;
+    Argv orientation_argv_;
+};
+
+class Activity : public UnitHelper
+{
+public:
+    using UnitHelper::UnitHelper;
+
+private:
+    Argv start_app_argv_;
+    Argv stop_app_argv_;
+};
+
+class TapInput : public UnitHelper
+{
+public:
+    using UnitHelper::UnitHelper;
+
+private:
+    Argv click_argv_;
+    Argv swipe_argv_;
+    Argv press_key_argv_;
+};
+
+class ScreenShot : public UnitHelper
+{
+public:
+    using UnitHelper::UnitHelper;
+
+private:
+    Argv screencap_raw_by_netcat_argv_;
+    Argv netcat_address_argv_;
+    Argv screencap_raw_with_gzip_argv_;
+    Argv screencap_encode_argv_;
+    Argv screencap_encode_to_file_argv_;
+    Argv pull_file_argv_;
+};
+
+class InvokeApp : public UnitHelper
+{
+public:
+    using UnitHelper::UnitHelper;
+
+private:
+    Argv abilist_argv_;
+    Argv push_bin_argv_;
+    Argv chmod_bin_argv_;
+    Argv invoke_bin_argv_;
+    Argv invoke_app_argv_;
+};
+
 MAA_CTRL_UNIT_NS_END
