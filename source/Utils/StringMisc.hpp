@@ -28,6 +28,9 @@ using sv_pair = std::pair<sv_type<StringT>, sv_type<StringT>>;
 template <typename StringT, typename CharT = ranges::range_value_t<StringT>>
 concept IsSomeKindOfString = std::same_as<CharT, char> || std::same_as<CharT, wchar_t>;
 
+template <typename StringArrayT, typename StringT = ranges::range_value_t<StringArrayT>>
+concept IsSomeKindOfStringArray = IsSomeKindOfString<StringT>;
+
 template <typename StringT>
 requires IsSomeKindOfString<StringT>
 inline constexpr void string_replace_all_(StringT& str, string_detail::sv_type<StringT> from,

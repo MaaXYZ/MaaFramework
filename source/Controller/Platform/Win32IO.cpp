@@ -21,7 +21,8 @@ Win32IO::~Win32IO()
     }
 }
 
-int Win32IO::call_command(const std::string& cmd, bool recv_by_socket, std::string& pipe_data, std::string& sock_data,
+int Win32IO::call_command(const std::vector<std::string>& cmd, bool recv_by_socket, std::string& pipe_data,
+                          std::string& sock_data,
                           int64_t timeout)
 {
     using namespace std::chrono;
@@ -48,7 +49,9 @@ int Win32IO::call_command(const std::string& cmd, bool recv_by_socket, std::stri
     si.hStdError = pipe_child_write;
     PROCESS_INFORMATION process_info = { nullptr }; // 进程信息结构体
 
-    auto cmdline_osstr = to_osstring(cmd);
+    std::vector<os_string> ocmd;
+    std::transform(cmd.begin(), cmd.end(), std::back_insert_iterator(ocmd), to_osstring);
+    auto cmdline_osstr = args_to_cmd(ocmd);
     BOOL create_ret =
         CreateProcessW(nullptr, cmdline_osstr.data(), nullptr, nullptr, TRUE, 0, nullptr, nullptr, &si, &process_info);
     if (!create_ret) {

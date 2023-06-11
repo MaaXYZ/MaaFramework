@@ -9,6 +9,9 @@ using os_string = MAA_PLATFORM_NS::os_string;
 
 #ifdef _WIN32
 static_assert(std::same_as<os_string, std::wstring>);
+
+using MAA_PLATFORM_NS::args_to_cmd;
+using MAA_PLATFORM_NS::cmd_to_args;
 #else
 static_assert(std::same_as<os_string, std::string>);
 #endif

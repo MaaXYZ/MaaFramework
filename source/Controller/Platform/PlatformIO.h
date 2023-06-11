@@ -16,7 +16,7 @@ class PlatformIO
 public:
     virtual ~PlatformIO() = default;
 
-    virtual int call_command(const std::string& cmd, bool recv_by_socket, std::string& pipe_data,
+    virtual int call_command(const std::vector<std::string>& cmd, bool recv_by_socket, std::string& pipe_data,
                              std::string& sock_data, int64_t timeout) = 0;
 
     virtual std::optional<unsigned short> create_socket(const std::string& local_address) = 0;

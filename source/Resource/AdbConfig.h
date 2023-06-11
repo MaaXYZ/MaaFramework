@@ -11,31 +11,31 @@ class AdbConfig : public NonCopyable
 {
     struct Data
     {
-        std::string connect;
-        std::string kill_server;
-        std::string uuid;
-        std::string resolution;
+        std::vector<std::string> connect;
+        std::vector<std::string> kill_server;
+        std::vector<std::string> uuid;
+        std::vector<std::string> resolution;
 
-        std::string start_app;
-        std::string stop_app;
+        std::vector<std::string> start_app;
+        std::vector<std::string> stop_app;
 
-        std::string click;
-        std::string swipe;
-        std::string press_key;
+        std::vector<std::string> click;
+        std::vector<std::string> swipe;
+        std::vector<std::string> press_key;
 
-        std::string screencap_raw_by_netcat;
-        std::string netcat_address;
-        std::string screencap_raw_with_gzip;
-        std::string screencap_encode;
-        std::string screencap_encode_to_file;
-        std::string pull_file;
+        std::vector<std::string> screencap_raw_by_netcat;
+        std::vector<std::string> netcat_address;
+        std::vector<std::string> screencap_raw_with_gzip;
+        std::vector<std::string> screencap_encode;
+        std::vector<std::string> screencap_encode_to_file;
+        std::vector<std::string> pull_file;
 
-        std::string abilist;
-        std::string orientation;
-        std::string push_bin;
-        std::string chmod_bin;
-        std::string invoke_bin;
-        std::string invoke_app;
+        std::vector<std::string> abilist;
+        std::vector<std::string> orientation;
+        std::vector<std::string> push_bin;
+        std::vector<std::string> chmod_bin;
+        std::vector<std::string> invoke_bin;
+        std::vector<std::string> invoke_app;
     };
 
 public:
