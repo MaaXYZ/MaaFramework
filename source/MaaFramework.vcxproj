@@ -37,6 +37,7 @@
     <ClInclude Include="Controller\CustomController.h" />
     <ClInclude Include="Controller\Platform\PlatformFactory.h" />
     <ClInclude Include="Controller\Platform\PlatformIO.h" />
+    <ClInclude Include="Controller\Platform\PosixIO.h" />
     <ClInclude Include="Controller\Platform\Win32IO.h" />
     <ClInclude Include="Instance\InstanceInternalAPI.hpp" />
     <ClInclude Include="Option\GlobalOptionMgr.h" />
@@ -76,6 +77,7 @@
     <ClCompile Include="Controller\AdbController.cpp" />
     <ClCompile Include="Controller\ControllerMgr.cpp" />
     <ClCompile Include="Controller\CustomController.cpp" />
+    <ClCompile Include="Controller\Platform\PosixIO.cpp" />
     <ClCompile Include="Controller\Platform\Win32IO.cpp" />
     <ClCompile Include="Instance\InstanceMgr.cpp" />
     <ClCompile Include="API\MaaAPI.cpp" />
