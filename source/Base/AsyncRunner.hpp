@@ -129,7 +129,7 @@ inline void AsyncRunner<Item>::working()
 }
 
 template <typename Item>
-inline AsyncRunner<Item>::Id AsyncRunner<Item>::post(Item item, bool block)
+inline typename AsyncRunner<Item>::Id AsyncRunner<Item>::post(Item item, bool block)
 {
     // LogFunc;
 
