@@ -80,8 +80,11 @@ int PosixIO::call_command(const std::vector<std::string>& cmd, bool recv_by_sock
         for (size_t i = 0; i < cmd.size(); i++) {
             argv[i] = const_cast<char*>(cmd[i].c_str());
         }
-        argv[cmd.size() + 1] = NULL;
-        exit_ret = execv(cmd[0].c_str(), argv);
+        argv[cmd.size()] = NULL;
+        exit_ret = execvp(cmd[0].c_str(), argv);
+        auto err = errno;
+        FILE* temp = fopen("123", "w");
+        fprintf(temp, "fuck off! %d\n", err);
         ::exit(exit_ret);
     }
     else if (m_child > 0) {

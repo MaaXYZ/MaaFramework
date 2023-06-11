@@ -79,7 +79,7 @@ bool Connection::connect()
         return false;
     }
 
-    if (cmd_ret->find("error") == std::string::npos || cmd_ret->find("cannot") == std::string::npos) {
+    if (cmd_ret->find("error") != std::string::npos || cmd_ret->find("cannot") != std::string::npos) {
         return false;
     }
 

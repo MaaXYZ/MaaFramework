@@ -7,7 +7,7 @@ endif ()
 
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_LIST_DIR}/cmake")
 
-option(BUILD_TEST "build a demo" OFF)
+option(BUILD_TEST "build a demo" ON)
 option(BUILD_XCFRAMEWORK "build xcframework for macOS app" OFF)
 option(BUILD_UNIVERSAL "build both arm64 and x86_64 on macOS" OFF)
 option(INSTALL_PYTHON "install python ffi" OFF)
@@ -73,6 +73,27 @@ if (BUILD_TEST)
     )
     target_link_libraries(sample MaaFramework)
     target_include_directories(sample PUBLIC ${MaaFramework_INCLUDE})
+
+    include(FetchContent)
+        FetchContent_Declare(
+        googletest
+        URL https://github.com/google/googletest/archive/b796f7d44681514f58a683a3a71ff17c94edb0c1.zip
+    )
+    # For Windows: Prevent overriding the parent project's compiler/linker settings
+    set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
+    FetchContent_MakeAvailable(googletest)
+    
+    file(GLOB_RECURSE maa_test_src test/*.cpp)
+    add_executable(MaaTest ${maa_test_src})
+    set_target_properties(MaaTest PROPERTIES
+        CXX_STANDARD 20
+        CXX_STANDARD_REQUIRED ON
+    )
+    target_link_libraries(MaaTest MaaFramework)
+    target_include_directories(MaaTest PUBLIC ${MaaFramework_INCLUDE} "source")
+    target_link_libraries(MaaTest GTest::gtest_main)
+    include(GoogleTest)
+    gtest_discover_tests(MaaTest)
 endif (BUILD_TEST)
 
 find_package(OpenCV REQUIRED COMPONENTS core imgproc imgcodecs videoio)
