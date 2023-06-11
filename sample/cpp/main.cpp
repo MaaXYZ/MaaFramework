@@ -1,39 +1,40 @@
 #include "MaaAPI.h"
 
 #include <filesystem>
-#include <iostream>
-#include <stdio.h>
+#include <fstream>
 #include <string>
 #include <thread>
 
+std::string read_adb_argv(const std::filesystem::path& cur_dir);
 bool demo_polling(const std::filesystem::path& cur_dir);
 bool demo_waiting(const std::filesystem::path& cur_dir);
 
-#ifdef _WIN32
-const char* adb = "adb.exe";
-#else
-const char* adb = "adb";
-#endif
-
-std::string adbAddress;
+std::string adb = "adb";
+std::string adb_address = "127.0.0.1";
 
 int main([[maybe_unused]] int argc, char** argv)
 {
-    if (argc > 1) {
-        adbAddress = argv[1];
-    }
-    else {
-        adbAddress = "127.0.0.1:5555";
+    if (argc == 3) {
+        adb = argv[1];
+        adb_address = argv[2];
     }
 
     const auto cur_dir = std::filesystem::path(argv[0]).parent_path();
 
     MaaSetGlobalOption(MaaGlobalOption_Logging, (cur_dir / "debug").string().c_str());
 
-    demo_polling(cur_dir);
+    // demo_polling(cur_dir);
     demo_waiting(cur_dir);
 
     return 0;
+}
+
+std::string read_adb_argv(const std::filesystem::path& cur_dir)
+{
+    std::ifstream ifs(cur_dir / "adb_argv.json", std::ios::in);
+    std::stringstream buffer;
+    buffer << ifs.rdbuf();
+    return buffer.str();
 }
 
 bool demo_polling(const std::filesystem::path& cur_dir)
@@ -41,7 +42,9 @@ bool demo_polling(const std::filesystem::path& cur_dir)
     auto resource_handle = MaaResourceCreate((cur_dir / "cache").string().c_str(), nullptr, nullptr);
     auto resource_id = MaaResourcePostResource(resource_handle, (cur_dir / "resource").string().c_str());
 
-    auto controller_handle = MaaAdbControllerCreate(adb, adbAddress.c_str(), nullptr, nullptr);
+    std::string adb_argv = read_adb_argv(cur_dir);
+    auto controller_handle =
+        MaaAdbControllerCreate(adb.c_str(), adb_address.c_str(), adb_argv.c_str(), nullptr, nullptr);
     auto connection_id = MaaControllerPostConnection(controller_handle);
 
     for (auto status = MaaResourceStatus(resource_handle, resource_id);
@@ -85,7 +88,9 @@ bool demo_waiting(const std::filesystem::path& cur_dir)
 {
     auto maa_handle = MaaCreate(nullptr, nullptr);
     auto resource_handle = MaaResourceCreate((cur_dir / "cache").string().c_str(), nullptr, nullptr);
-    auto controller_handle = MaaAdbControllerCreate(adb, adbAddress.c_str(), nullptr, nullptr);
+    std::string adb_argv = read_adb_argv(cur_dir);
+    auto controller_handle =
+        MaaAdbControllerCreate(adb.c_str(), adb_address.c_str(), adb_argv.c_str(), nullptr, nullptr);
 
     MaaBindResource(maa_handle, resource_handle);
     MaaBindController(maa_handle, controller_handle);

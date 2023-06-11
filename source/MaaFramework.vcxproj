@@ -39,6 +39,7 @@
     <ClInclude Include="Controller\Platform\PlatformIO.h" />
     <ClInclude Include="Controller\Platform\PosixIO.h" />
     <ClInclude Include="Controller\Platform\Win32IO.h" />
+    <ClInclude Include="Controller\Unit\Unit.h" />
     <ClInclude Include="Instance\InstanceInternalAPI.hpp" />
     <ClInclude Include="Option\GlobalOptionMgr.h" />
     <ClInclude Include="Controller\AdbController.h" />
@@ -48,7 +49,6 @@
     <ClInclude Include="Instance\InstanceMgr.h" />
     <ClInclude Include="Controller\MinitouchController.h" />
     <ClInclude Include="Controller\MaatouchController.h" />
-    <ClInclude Include="Resource\AdbConfig.h" />
     <ClInclude Include="Resource\PipelineConfig.h" />
     <ClInclude Include="Resource\ResourceMgr.h" />
     <ClInclude Include="Task\AbstractTask.h" />
@@ -79,12 +79,12 @@
     <ClCompile Include="Controller\CustomController.cpp" />
     <ClCompile Include="Controller\Platform\PosixIO.cpp" />
     <ClCompile Include="Controller\Platform\Win32IO.cpp" />
+    <ClCompile Include="Controller\Unit\Unit.cpp" />
     <ClCompile Include="Instance\InstanceMgr.cpp" />
     <ClCompile Include="API\MaaAPI.cpp" />
     <ClCompile Include="Controller\MinitouchController.cpp" />
     <ClCompile Include="Controller\MaatouchController.cpp" />
     <ClCompile Include="Option\GlobalOptionMgr.cpp" />
-    <ClCompile Include="Resource\AdbConfig.cpp" />
     <ClCompile Include="Resource\PipelineConfig.cpp" />
     <ClCompile Include="Resource\ResourceMgr.cpp" />
     <ClCompile Include="Task\PipelineTask.cpp" />

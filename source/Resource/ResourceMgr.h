@@ -9,7 +9,7 @@
 MAA_RES_NS_BEGIN
 
 class PipelineConfig;
-class AdbConfig;
+class Config;
 
 class ResourceMgr : public MaaResourceAPI
 {
@@ -36,7 +36,7 @@ private:
     bool load(const std::filesystem::path& path);
 
 private:
-    std::shared_ptr<AdbConfig> adb_cfg_ = nullptr;
+    std::shared_ptr<Config> adb_cfg_ = nullptr;
     std::shared_ptr<PipelineConfig> pipeline_cfg_ = nullptr;
 
 private:

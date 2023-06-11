@@ -103,28 +103,46 @@ MaaSize MaaResourceGetHash(MaaResourceHandle res, char* buff, MaaSize buff_size)
     return size;
 }
 
-MaaControllerHandle MaaAdbControllerCreate(MaaString adb_path, MaaString address, MaaControllerCallback callback,
-                                           void* callback_arg)
+MaaControllerHandle MaaAdbControllerCreate(MaaString adb_path, MaaString address, MaaJsonString config,
+                                           MaaControllerCallback callback, void* callback_arg)
 {
     LogFunc << VAR(adb_path) << VAR(address) << VAR_VOIDP(callback) << VAR_VOIDP(callback_arg);
 
-    return new MAA_CTRL_NS::AdbController(adb_path, address, callback, callback_arg);
+    auto parsed = json::parse(std::string_view(config));
+    if (!parsed) {
+        LogError << "Invalid config:" << config;
+        return nullptr;
+    }
+
+    return new MAA_CTRL_NS::AdbController(adb_path, address, *parsed, callback, callback_arg);
 }
 
-MaaControllerHandle MaaMinitouchControllerCreate(MaaString adb_path, MaaString address, MaaControllerCallback callback,
-                                                 void* callback_arg)
+MaaControllerHandle MaaMinitouchControllerCreate(MaaString adb_path, MaaString address, MaaJsonString config,
+                                                 MaaControllerCallback callback, void* callback_arg)
 {
     LogFunc << VAR(adb_path) << VAR(address) << VAR_VOIDP(callback) << VAR_VOIDP(callback_arg);
 
-    return new MAA_CTRL_NS::MinitouchController(adb_path, address, callback, callback_arg);
+    auto parsed = json::parse(std::string_view(config));
+    if (!parsed) {
+        LogError << "Invalid config:" << config;
+        return nullptr;
+    }
+
+    return new MAA_CTRL_NS::MinitouchController(adb_path, address, *parsed, callback, callback_arg);
 }
 
-MaaControllerHandle MaaMaatouchControllerCreate(MaaString adb_path, MaaString address, MaaControllerCallback callback,
-                                                void* callback_arg)
+MaaControllerHandle MaaMaatouchControllerCreate(MaaString adb_path, MaaString address, MaaJsonString config,
+                                                MaaControllerCallback callback, void* callback_arg)
 {
     LogFunc << VAR(adb_path) << VAR(address) << VAR_VOIDP(callback) << VAR_VOIDP(callback_arg);
 
-    return new MAA_CTRL_NS::MaatouchController(adb_path, address, callback, callback_arg);
+    auto parsed = json::parse(std::string_view(config));
+    if (!parsed) {
+        LogError << "Invalid config:" << config;
+        return nullptr;
+    }
+
+    return new MAA_CTRL_NS::MaatouchController(adb_path, address, config, callback, callback_arg);
 }
 
 MaaControllerHandle MaaCustomControllerCreate(MaaCustomControllerHandle handle, MaaControllerCallback callback,
@@ -324,7 +342,7 @@ MaaBool MaaInited(MaaInstanceHandle inst)
     return inst->inited();
 }
 
-MaaTaskId MaaPostTask(MaaInstanceHandle inst, MaaTaskType type, MaaString param)
+MaaTaskId MaaPostTask(MaaInstanceHandle inst, MaaTaskType type, MaaJsonString param)
 {
     LogFunc << VAR_VOIDP(inst) << VAR(type) << VAR(param);
 
@@ -334,7 +352,7 @@ MaaTaskId MaaPostTask(MaaInstanceHandle inst, MaaTaskType type, MaaString param)
     return inst->post_task(type, param);
 }
 
-MaaBool MaaSetTaskParam(MaaInstanceHandle inst, MaaTaskId id, MaaString param)
+MaaBool MaaSetTaskParam(MaaInstanceHandle inst, MaaTaskId id, MaaJsonString param)
 {
     LogFunc << VAR_VOIDP(inst) << VAR(id) << VAR(param);
 

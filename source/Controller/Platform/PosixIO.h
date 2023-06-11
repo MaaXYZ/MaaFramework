@@ -1,7 +1,7 @@
 #pragma once
+#ifndef _WIN32
 
 #include "Base/NonCopyable.hpp"
-#ifndef _WIN32
 
 #include <netinet/in.h>
 

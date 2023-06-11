@@ -65,7 +65,7 @@ bool InstanceMgr::bind_controller(MaaControllerAPI* controller)
         LogWarn << "Controller already binded" << VAR_VOIDP(controller_);
     }
 
-    if (auto* ctrl_mgr = dynamic_cast<MAA_CTRL_NS::ControllerMgr*>(controller_)) {
+    if (auto* ctrl_mgr = dynamic_cast<MAA_CTRL_NS::ControllerMgr*>(controller)) {
         ctrl_mgr->bind_inst(this);
     }
     else {

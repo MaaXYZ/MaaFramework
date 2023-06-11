@@ -11,4 +11,7 @@
       <Filter>Source</Filter>
     </ClCompile>
   </ItemGroup>
+  <ItemGroup>
+    <None Include="config\adb_argv.json" />
+  </ItemGroup>
 </Project>

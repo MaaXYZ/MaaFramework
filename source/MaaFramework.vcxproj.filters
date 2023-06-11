@@ -165,9 +165,6 @@
     <ClInclude Include="Controller\Platform\Win32IO.h">
       <Filter>Source\Controller\Platform</Filter>
     </ClInclude>
-    <ClInclude Include="Resource\AdbConfig.h">
-      <Filter>Source\Resource</Filter>
-    </ClInclude>
     <ClInclude Include="Instance\InstanceInternalAPI.hpp">
       <Filter>Source\Instance</Filter>
     </ClInclude>
@@ -180,6 +177,7 @@
     <ClInclude Include="Controller\Platform\PosixIO.h">
       <Filter>Source\Controller\Platform</Filter>
     </ClInclude>
+    <ClInclude Include="Controller\Unit\Unit.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Controller\ControllerMgr.cpp">
@@ -224,11 +222,9 @@
     <ClCompile Include="Controller\Platform\Win32IO.cpp">
       <Filter>Source\Controller\Platform</Filter>
     </ClCompile>
-    <ClCompile Include="Resource\AdbConfig.cpp">
-      <Filter>Source\Resource</Filter>
-    </ClCompile>
     <ClCompile Include="Controller\Platform\PosixIO.cpp">
       <Filter>Source\Controller\Platform</Filter>
     </ClCompile>
+    <ClCompile Include="Controller\Unit\Unit.cpp" />
   </ItemGroup>
 </Project>

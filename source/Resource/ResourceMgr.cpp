@@ -1,6 +1,5 @@
 #include "ResourceMgr.h"
 
-#include "Resource/AdbConfig.h"
 #include "Resource/PipelineConfig.h"
 #include "Utils/Logger.hpp"
 
@@ -106,10 +105,11 @@ bool ResourceMgr::load(const std::filesystem::path& path)
             }
             return cfg->load(cfg_path, is_base);
         }
+
         return !is_base;
     };
 
-    bool ret = load_cfg(path / "controller" / "adb.json", adb_cfg_) && load_cfg(path / "pipeline", pipeline_cfg_);
+    bool ret = load_cfg(path / "pipeline", pipeline_cfg_);
 
     LogInfo << VAR(path) << VAR(ret);
 

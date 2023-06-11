@@ -15,6 +15,7 @@ typedef uint64_t MaaSize;
 #define MaaNullSize ((MaaSize)-1);
 
 typedef const char* MaaString;
+typedef MaaString MaaJsonString;
 
 typedef int32_t MaaStatus;
 enum MaaStatusEnum

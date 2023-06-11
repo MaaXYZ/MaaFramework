@@ -82,7 +82,14 @@ MaaStatus ControllerMgr::wait(MaaCtrlId ctrl_id) const
 
 MaaBool ControllerMgr::connected() const
 {
-    return MaaBool();
+    // FIXME: remove this
+#ifdef MAA_DEBUG
+    return true;
+#else
+
+    return false;
+
+#endif
 }
 
 std::vector<uint8_t> ControllerMgr::get_image() const

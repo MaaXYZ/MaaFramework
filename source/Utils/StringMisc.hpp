@@ -5,6 +5,7 @@
 #include <initializer_list>
 #include <iterator>
 #include <locale>
+#include <map>
 #include <memory>
 #include <string>
 #include <string_view>
@@ -40,13 +41,6 @@ inline constexpr void string_replace_all_(StringT& str, string_detail::sv_type<S
         if ((pos = str.find(from, pos)) == StringT::npos) return;
         str.replace(pos, from.length(), to);
     }
-}
-
-template <typename StringT>
-requires IsSomeKindOfString<StringT>
-inline constexpr void string_replace_all_(StringT& str, const string_detail::sv_pair<StringT>& replace_pair)
-{
-    string_replace_all_(str, replace_pair.first, replace_pair.second);
 }
 
 template <typename StringT>
@@ -91,21 +85,11 @@ inline auto make_string_view(It beg, End end)
 
 template <typename StringT>
 requires IsSomeKindOfString<StringT>
-[[nodiscard]] inline constexpr auto string_replace_all(StringT&& src, string_detail::sv_type<StringT> from,
+[[nodiscard]] inline constexpr auto string_replace_all(StringT&& str, string_detail::sv_type<StringT> from,
                                                        string_detail::sv_type<StringT> to)
 {
-    std::decay_t<StringT> result = std::forward<StringT>(src);
+    std::decay_t<StringT> result = std::forward<StringT>(str);
     string_replace_all_(result, from, to);
-    return result;
-}
-
-template <typename StringT>
-requires IsSomeKindOfString<StringT>
-[[nodiscard]] inline constexpr auto string_replace_all(StringT&& src,
-                                                       const string_detail::sv_pair<StringT>& replace_pair)
-{
-    std::decay_t<StringT> result = std::forward<StringT>(src);
-    string_replace_all_(result, replace_pair);
     return result;
 }
 
@@ -115,7 +99,17 @@ requires IsSomeKindOfString<StringT>
     StringT&& str, std::initializer_list<string_detail::sv_pair<StringT>> replace_pairs)
 {
     std::decay_t<StringT> result = std::forward<StringT>(str);
-    for (auto&& [from, to] : replace_pairs) {
+    string_replace_all_(result, replace_pairs);
+    return result;
+}
+
+template <typename StringT>
+requires IsSomeKindOfString<StringT>
+[[nodiscard]] inline constexpr auto string_replace_all(const StringT& str,
+                                                       const std::map<StringT, StringT>& replace_map)
+{
+    StringT result = str;
+    for (const auto& [from, to] : replace_map) {
         string_replace_all_(result, from, to);
     }
     return result;

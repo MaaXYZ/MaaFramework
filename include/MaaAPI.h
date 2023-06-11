@@ -24,11 +24,11 @@ extern "C"
 
     /* Controller */
 
-    MaaControllerHandle MAAAPI MaaAdbControllerCreate(MaaString adb_path, MaaString address,
+    MaaControllerHandle MAAAPI MaaAdbControllerCreate(MaaString adb_path, MaaString address, MaaJsonString config,
                                                       MaaControllerCallback callback, void* callback_arg);
-    MaaControllerHandle MAAAPI MaaMinitouchControllerCreate(MaaString adb_path, MaaString address,
+    MaaControllerHandle MAAAPI MaaMinitouchControllerCreate(MaaString adb_path, MaaString address, MaaJsonString config,
                                                             MaaControllerCallback callback, void* callback_arg);
-    MaaControllerHandle MAAAPI MaaMaatouchControllerCreate(MaaString adb_path, MaaString address,
+    MaaControllerHandle MAAAPI MaaMaatouchControllerCreate(MaaString adb_path, MaaString address, MaaJsonString config,
                                                            MaaControllerCallback callback, void* callback_arg);
 
     MaaControllerHandle MAAAPI MaaCustomControllerCreate(MaaCustomControllerHandle handle,
@@ -61,8 +61,8 @@ extern "C"
     MaaBool MAAAPI MaaBindController(MaaInstanceHandle inst, MaaControllerHandle ctrl);
     MaaBool MAAAPI MaaInited(MaaInstanceHandle inst);
 
-    MaaTaskId MAAAPI MaaPostTask(MaaInstanceHandle inst, MaaTaskType type, MaaString param);
-    MaaBool MAAAPI MaaSetTaskParam(MaaInstanceHandle inst, MaaTaskId id, MaaString param);
+    MaaTaskId MAAAPI MaaPostTask(MaaInstanceHandle inst, MaaTaskType type, MaaJsonString param);
+    MaaBool MAAAPI MaaSetTaskParam(MaaInstanceHandle inst, MaaTaskId id, MaaJsonString param);
 
     MaaStatus MAAAPI MaaTaskStatus(MaaInstanceHandle inst, MaaTaskId id);
     MaaStatus MAAAPI MaaTaskWait(MaaInstanceHandle inst, MaaTaskId id);
