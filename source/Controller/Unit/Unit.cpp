@@ -45,10 +45,10 @@ std::optional<std::string> UnitHelper::command(const std::vector<std::string>& c
 
     LogInfo << VAR(cmd) << VAR(ret) << VAR(pipe_data.size()) << VAR(sock_data.size()) << VAR(duration);
     if (!pipe_data.empty() && pipe_data.size() < 4096) {
-        LogTrace << "stdout output:" << Logger::separator::newline << pipe_data;
+        LogTrace << Logger::separator::newline << "stdout output:" << pipe_data;
     }
     if (recv_by_socket && !sock_data.empty() && sock_data.size() < 4096) {
-        LogTrace << "socket output:" << Logger::separator::newline << sock_data;
+        LogTrace << Logger::separator::newline << "socket output:" << sock_data;
     }
 
     if (ret != 0) {
@@ -75,7 +75,15 @@ bool Connection::connect()
 
     auto cmd_ret = command(argv, false, 60LL * 1000);
 
-    return cmd_ret ? cmd_ret->find("error") == std::string::npos : false;
+    if (!cmd_ret) {
+        return false;
+    }
+
+    if (cmd_ret->find("error") == std::string::npos || cmd_ret->find("cannot") == std::string::npos) {
+        return false;
+    }
+
+    return true;
 }
 
 bool Connection::kill_server()
