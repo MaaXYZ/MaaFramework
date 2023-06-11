@@ -43,7 +43,7 @@ endif ()
 add_library(header_only_libraries INTERFACE)
 target_include_directories(header_only_libraries INTERFACE 3rdparty/include)
 
-file(GLOB_RECURSE maa_src source/*.cpp)
+file(GLOB_RECURSE maa_src source/*.cpp source/*.h source/*.hpp)
 
 add_library(MaaFramework SHARED ${maa_src})
 
@@ -53,6 +53,7 @@ if (WIN32)
 endif ()
 target_include_directories(MaaFramework PUBLIC include PRIVATE source)
 set(MaaFramework_PUBLIC_HEADERS include/MaaAPI.h)
+set(MaaFramework_INCLUDE include)
 target_sources(MaaFramework PUBLIC ${MaaFramework_PUBLIC_HEADERS})
 set_target_properties(MaaFramework PROPERTIES
     CXX_STANDARD 20
@@ -71,6 +72,7 @@ if (BUILD_TEST)
         CXX_STANDARD_REQUIRED ON
     )
     target_link_libraries(sample MaaFramework)
+    target_include_directories(sample PUBLIC ${MaaFramework_INCLUDE})
 endif (BUILD_TEST)
 
 find_package(OpenCV REQUIRED COMPONENTS core imgproc imgcodecs videoio)
