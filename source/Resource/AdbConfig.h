@@ -4,6 +4,7 @@
 #include "Common/MaaConf.h"
 
 #include <filesystem>
+#include <vector>
 
 MAA_RES_NS_BEGIN
 

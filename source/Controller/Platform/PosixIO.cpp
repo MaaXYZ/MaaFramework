@@ -47,10 +47,12 @@ PosixIO::~PosixIO()
     ::close(m_pipe_out[PIPE_WRITE]);
 }
 
-int PosixIO::call_command(const std::string& cmd, bool recv_by_socket, std::string& pipe_data, std::string& sock_data,
-                          int64_t timeout)
+int PosixIO::call_command(const std::vector<std::string>& cmd, bool recv_by_socket, std::string& pipe_data,
+                          std::string& sock_data, int64_t timeout)
 {
     using namespace std::chrono;
+
+    auto start_time = std::chrono::steady_clock::now();
 
     MAA_PLATFORM_NS::single_page_buffer<char> pipe_buffer;
     MAA_PLATFORM_NS::single_page_buffer<char> sock_buffer;
@@ -74,7 +76,12 @@ int PosixIO::call_command(const std::string& cmd, bool recv_by_socket, std::stri
         // close(m_pipe_out[PIPE_READ]);
         // close(m_pipe_out[PIPE_WRITE]);
 
-        exit_ret = execlp("sh", "sh", "-c", cmd.c_str(), nullptr);
+        char** argv = new char*[cmd.size() + 1];
+        for (size_t i = 0; i < cmd.size(); i++) {
+            argv[i] = const_cast<char*>(cmd[i].c_str());
+        }
+        argv[cmd.size() + 1] = NULL;
+        exit_ret = execv(cmd[0].c_str(), argv);
         ::exit(exit_ret);
     }
     else if (m_child > 0) {
