@@ -1,14 +1,19 @@
 #pragma once
 
+#include <cstdlib>
+#include <cstring>
 #include <filesystem>
 #include <fstream>
-#include <sstream>
+#include <locale>
+#include <memory>
 #include <string>
 #include <string_view>
-
 #ifdef _WIN32
 #include "Platform/SafeWindows.h"
+#elif defined(__linux__)
+#include <iconv.h>
 #endif
+
 #include "Common/MaaConf.h"
 
 MAA_NS_BEGIN
@@ -38,9 +43,32 @@ inline std::string ansi_to_utf8(std::string_view ansi_str)
     str = nullptr;
 
     return strTemp;
-#else // Don't fucking use gbk in linux!
-    // ASST_STATIC_ASSERT_FALSE("Workaround for windows, not implemented in other OS yet.", _);
-    return std::string(ansi_str);
+#elif defined(__linux__) // Don't fucking use gbk in linux!
+    iconv_t conv = ::iconv_open("utf-8", "gbk");
+    if (conv == (iconv_t)-1) {
+        // error
+        return std::string(ansi_str);
+    }
+
+    const char* src_str = ansi_str.data();
+    size_t src_len = ::strlen(src_str) + 1;
+    size_t dst_len = src_len * 2; // ensure sufficient space
+
+    std::unique_ptr<char[], std::default_delete<char[]>> utf8 = std::make_unique<char[]>(dst_len);
+    char* dst = utf8.get();
+
+    char* in_buf = const_cast<char*>(src_str);
+    char* out_buf = dst;
+    auto res = ::iconv(conv, &in_buf, &src_len, &out_buf, &dst_len);
+    if (res == (decltype(res))-1) {
+        // error
+        ::iconv_close(conv);
+        return std::string(ansi_str);
+    }
+
+    ::iconv_close(conv);
+
+    return dst;
 #endif
 }
 
@@ -69,9 +97,32 @@ inline std::string utf8_to_ansi(std::string_view utf8_str)
     sz_ansi = nullptr;
 
     return strTemp;
-#else // Don't fucking use gbk in linux!
-    // ASST_STATIC_ASSERT_FALSE("Workaround for windows, not implemented in other OS yet.", _);
-    return std::string(utf8_str);
+#elif defined(__linux__) // Don't fucking use gbk in linux!
+    iconv_t conv = ::iconv_open("gbk", "utf-8");
+    if (conv == (iconv_t)-1) {
+        // error
+        return std::string(utf8_str);
+    }
+
+    const char* src_str = utf8_str.data();
+    size_t src_len = ::strlen(src_str) + 1;
+    size_t dst_len = src_len * 2;
+
+    std::unique_ptr<char[], std::default_delete<char[]>> ansi = std::make_unique<char[]>(dst_len);
+    char* dst = ansi.get();
+
+    char* in_buf = const_cast<char*>(src_str);
+    char* out_buf = dst;
+    auto res = ::iconv(conv, &in_buf, &src_len, &out_buf, &dst_len);
+    if (res == (decltype(res))-1) {
+        // error
+        ::iconv_close(conv);
+        return std::string(utf8_str);
+    }
+
+    ::iconv_close(conv);
+
+    return dst;
 #endif
 }
 
@@ -106,8 +157,7 @@ inline std::string utf8_to_unicode_escape(std::string_view utf8_str)
     wstr = nullptr;
 
     return unicode_escape_str;
-#else
-    // ASST_STATIC_ASSERT_FALSE("Workaround for windows, not implemented in other OS yet.", _);
+#elif defined(__linux__)
     return std::string(utf8_str);
 #endif
 }
