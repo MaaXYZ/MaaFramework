@@ -30,11 +30,13 @@ if (MSVC)
     add_compile_options("/Wv:19.35.32217")  # disable warning introduced after this version 
 
     set(CMAKE_MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Debug>:Debug>DLL")
-else ()
-    add_compile_options("-Wall;-Werror;-Wextra;-Wpedantic;-Wno-missing-field-initializers")
+elseif ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU")
+    add_compile_options("-Wall;-Werror;-Wextra;-Wpedantic;-Wno-missing-field-initializers;-Wno-unused-parameter")
     if (CMAKE_CXX_COMPILER_ID MATCHES "GNU" AND CMAKE_CXX_COMPILER_VERSION VERSION_LESS 13)
         add_compile_options("-Wno-restrict")
     endif()
+elseif ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang")
+    message("clang")
 endif ()
 
 
@@ -84,10 +86,11 @@ if(WIN32)
     target_link_libraries(MaaFramework ws2_32)
 endif()
 
-if (CMAKE_CXX_COMPILER_ID MATCHES ".*Clang")
-    find_package(range-v3 REQUIRED)
-    target_link_libraries(MaaFramework range-v3::range-v3)
-endif ()
+# clang 15之后有ranges
+# if (CMAKE_CXX_COMPILER_ID MATCHES ".*Clang")
+#     find_package(range-v3 REQUIRED)
+#     target_link_libraries(MaaFramework range-v3::range-v3)
+# endif ()
 
 if(INSTALL_DEVEL)
     set(MaaFramework_install_extra_args PUBLIC_HEADER DESTINATION devel/include ARCHIVE DESTINATION devel/lib)

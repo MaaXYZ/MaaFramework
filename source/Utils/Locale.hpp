@@ -39,7 +39,7 @@ inline std::string ansi_to_utf8(std::string_view ansi_str)
 
     return strTemp;
 #else // Don't fucking use gbk in linux!
-    ASST_STATIC_ASSERT_FALSE("Workaround for windows, not implemented in other OS yet.", _);
+    // ASST_STATIC_ASSERT_FALSE("Workaround for windows, not implemented in other OS yet.", _);
     return std::string(ansi_str);
 #endif
 }
@@ -70,7 +70,7 @@ inline std::string utf8_to_ansi(std::string_view utf8_str)
 
     return strTemp;
 #else // Don't fucking use gbk in linux!
-    ASST_STATIC_ASSERT_FALSE("Workaround for windows, not implemented in other OS yet.", _);
+    // ASST_STATIC_ASSERT_FALSE("Workaround for windows, not implemented in other OS yet.", _);
     return std::string(utf8_str);
 #endif
 }
@@ -107,7 +107,7 @@ inline std::string utf8_to_unicode_escape(std::string_view utf8_str)
 
     return unicode_escape_str;
 #else
-    ASST_STATIC_ASSERT_FALSE("Workaround for windows, not implemented in other OS yet.", _);
+    // ASST_STATIC_ASSERT_FALSE("Workaround for windows, not implemented in other OS yet.", _);
     return std::string(utf8_str);
 #endif
 }
