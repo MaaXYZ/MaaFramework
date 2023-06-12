@@ -43,6 +43,11 @@ bool UnitHelper::parse_argv(const std::string& key, const json::value& config, A
 
 std::optional<std::string> UnitHelper::command(Argv::value cmd, bool recv_by_socket, int64_t timeout)
 {
+    for (const auto& c : cmd) {
+        std::cout << c << ' ';
+    }
+    std::cout << std::endl;
+
     auto start_time = std::chrono::steady_clock::now();
 
     std::string pipe_data;
@@ -169,7 +174,27 @@ bool DeviceInfo::orientation(int& ori)
 
 bool Activity::parse(const json::value& config)
 {
-    return false;
+    return parse_argv("StartApp", config, start_app_argv_) && parse_argv("StopApp", config, stop_app_argv_);
+}
+
+bool Activity::start(const std::string& intent)
+{
+    LogFunc;
+
+    merge_replacement({ { "{INTENT}", intent } }, true);
+    auto cmd_ret = command(start_app_argv_.gen(argv_replace_));
+
+    return true;
+}
+
+bool Activity::stop(const std::string& intent)
+{
+    LogFunc;
+
+    merge_replacement({ { "{INTENT}", intent } }, true);
+    auto cmd_ret = command(stop_app_argv_.gen(argv_replace_));
+
+    return true;
 }
 
 bool TapInput::parse(const json::value& config)

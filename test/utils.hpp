@@ -20,7 +20,9 @@ inline std::string read_adb_argv(const std::filesystem::path& cur_dir)
     return buffer.str();
 }
 
-inline MaaNS::ArgvWrapper<std::vector<std::string>>::replacement parse_argc(int argc, char* argv[])
+using argv_t = char**;
+
+inline MaaNS::ArgvWrapper<std::vector<std::string>>::replacement parse_argc(int argc, argv_t& argv)
 {
     std::string adb = "adb";
     std::string adb_address = "127.0.0.1:5555";
@@ -35,11 +37,19 @@ inline MaaNS::ArgvWrapper<std::vector<std::string>>::replacement parse_argc(int 
         adb_address = eadb_address;
     }
 
-    if (argc > 1) {
-        adb = argv[1];
-    }
-    if (argc > 2) {
-        adb_address = argv[2];
+    while (argc > 1) {
+        const std::string arg = argv[1];
+        if (arg.starts_with("--adb=")) {
+            adb = arg.substr(6);
+        }
+        else if (arg.starts_with("--serial=")) {
+            adb_address = arg.substr(9);
+        }
+        else {
+            break;
+        }
+        argc--;
+        argv++;
     }
 
     return { { "{ADB}", adb }, { "{ADB_SERIAL}", adb_address } };
