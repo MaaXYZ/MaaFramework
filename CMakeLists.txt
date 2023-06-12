@@ -50,7 +50,7 @@ add_library(MaaFramework SHARED ${maa_src})
 
 if (WIN32)
     #注意：相比VS版本缺少了 -D_CONSOLE -D_WINDLL 两项
-    target_compile_definitions(MaaFramework PRIVATE ASST_DLL_EXPORTS _UNICODE UNICODE)
+    target_compile_definitions(MaaFramework PRIVATE MAA_DLL_EXPORTS _UNICODE UNICODE)
 endif ()
 target_include_directories(MaaFramework PUBLIC include PRIVATE source)
 set(MaaFramework_PUBLIC_HEADERS include/MaaAPI.h)
@@ -100,11 +100,11 @@ endif (BUILD_TEST)
 find_package(OpenCV REQUIRED COMPONENTS core imgproc imgcodecs videoio)
 find_package(ZLIB REQUIRED)
 find_package(MaaDerpLearning REQUIRED)
-find_package(asio REQUIRED)
-find_package(ONNXRuntime)
-find_package(cpr CONFIG REQUIRED)
+# find_package(asio REQUIRED)
+# find_package(ONNXRuntime)
+# find_package(cpr CONFIG REQUIRED)
 
-target_link_libraries(MaaFramework ${OpenCV_LIBS} MaaDerpLearning asio::asio ZLIB::ZLIB ONNXRuntime::ONNXRuntime cpr::cpr header_only_libraries)
+target_link_libraries(MaaFramework ${OpenCV_LIBS} MaaDerpLearning  ZLIB::ZLIB header_only_libraries) #asio::asio ONNXRuntime::ONNXRuntime cpr::cpr
 
 if(WIN32)
     target_link_libraries(MaaFramework ws2_32)
