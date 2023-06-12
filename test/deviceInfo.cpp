@@ -1,42 +1,27 @@
-#include "Controller/Platform/PlatformFactory.h"
-#include "Controller/Unit/ControlUnit.h"
-#include "MaaAPI.h"
-#include <filesystem>
-#include <iostream>
+#include "utils.hpp"
 
-std::string read_adb_argv(const std::filesystem::path& cur_dir)
-{
-    std::ifstream ifs(cur_dir / "adb_argv.json", std::ios::in);
-    if (!ifs.is_open()) {
-        std::cerr << "Failed to open adb_argv.json\n"
-                  << "Please copy sample/cpp/config/adb_argv.json to " << cur_dir << std::endl;
-        exit(1);
-    }
-
-    std::stringstream buffer;
-    buffer << ifs.rdbuf();
-    return buffer.str();
-}
-
-int main()
+int main(int argc, char* argv[])
 {
     using namespace MaaNS::ControllerNS;
 
+    auto repl = parse_argc(argc, argv);
     auto cfg = json::parse(read_adb_argv(std::filesystem::current_path().parent_path() / "test" / "config"));
+    auto io = PlatformFactory::create();
     MaaSetGlobalOption(MaaGlobalOption_Logging, (std::filesystem::current_path() / "debug").string().c_str());
 
-    auto platformIO = PlatformFactory::create();
     auto connect = new Unit::Connection();
-    connect->set_io(platformIO);
+    connect->set_io(io);
 
     connect->parse(cfg.value());
-    connect->set_replacement({ { "{ADB}", "adb" }, { "{ADB_SERIAL}", "127.0.0.1:16384" } });
+    connect->set_replacement(repl);
+
+    std::cout << connect->connect() << std::endl;
 
     auto device = new Unit::DeviceInfo();
-    device->set_io(platformIO);
+    device->set_io(io);
 
     device->parse(cfg.value());
-    device->set_replacement({ { "{ADB}", "adb" }, { "{ADB_SERIAL}", "127.0.0.1:16384" } });
+    device->set_replacement(repl);
 
     std::string uuid;
     std::cout << device->uuid(uuid) << std::endl;
@@ -49,6 +34,4 @@ int main()
     int ori;
     std::cout << device->orientation(ori) << std::endl;
     std::cout << "orientation: " << ori << std::endl;
-
-    // EXPECT_TRUE(connect->kill_server());
 }
