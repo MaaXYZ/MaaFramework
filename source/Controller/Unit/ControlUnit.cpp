@@ -15,9 +15,9 @@ void UnitHelper::set_replacement(Argv::replacement argv_replace)
     argv_replace_ = std::move(argv_replace);
 }
 
-void UnitHelper::merge_replacement(Argv::replacement argv_replace, bool override)
+void UnitHelper::merge_replacement(Argv::replacement argv_replace, bool _override)
 {
-    if (override) {
+    if (_override) {
         argv_replace.merge(argv_replace_);
         argv_replace_ = std::move(argv_replace);
     }
