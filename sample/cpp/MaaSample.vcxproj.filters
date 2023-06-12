@@ -5,6 +5,9 @@
       <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
       <Extensions>cpp;c;cc;cxx;c++;cppm;ixx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
     </Filter>
+    <Filter Include="Config">
+      <UniqueIdentifier>{230b11c3-4119-4677-9107-b711970a9bea}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -12,6 +15,8 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <None Include="config\adb_argv.json" />
+    <None Include="config\adb_argv.json">
+      <Filter>Config</Filter>
+    </None>
   </ItemGroup>
 </Project>

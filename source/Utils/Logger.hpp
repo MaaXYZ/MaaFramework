@@ -88,10 +88,10 @@ public:
                 return std::forward<T>(value);
             }
             else if constexpr (std::is_constructible_v<json::array, T>) {
-                return json::array(std::forward<T>(value));
+                return json::array(std::forward<T>(value)).to_string();
             }
             else if constexpr (std::is_constructible_v<json::object, T>) {
-                return json::object(std::forward<T>(value));
+                return json::object(std::forward<T>(value)).to_string();
             }
             else {
                 static_assert(!sizeof(T), "Unsupported type");

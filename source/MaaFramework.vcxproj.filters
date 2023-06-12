@@ -43,6 +43,9 @@
     <Filter Include="Source\Controller\Platform\GlobalOption">
       <UniqueIdentifier>{fe669fc4-8884-469a-b9f6-7c84f37bfb26}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source\Controller\Unit">
+      <UniqueIdentifier>{eeeb8595-d01a-4a8b-9c5f-4d1378a8a99e}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\include\MaaAPI.h">
@@ -180,7 +183,9 @@
     <ClInclude Include="Controller\Platform\PosixIO.h">
       <Filter>Source\Controller\Platform</Filter>
     </ClInclude>
-    <ClInclude Include="Controller\Unit\Unit.h" />
+    <ClInclude Include="Controller\Unit\Unit.h">
+      <Filter>Source\Controller\Unit</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Controller\ControllerMgr.cpp">
@@ -228,6 +233,8 @@
     <ClCompile Include="Controller\Platform\PosixIO.cpp">
       <Filter>Source\Controller\Platform</Filter>
     </ClCompile>
-    <ClCompile Include="Controller\Unit\Unit.cpp" />
+    <ClCompile Include="Controller\Unit\Unit.cpp">
+      <Filter>Source\Controller\Unit</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>

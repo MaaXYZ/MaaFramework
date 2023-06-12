@@ -6,7 +6,7 @@
 #include <string>
 #include <thread>
 
-std::string read_adb_argv(const std::filesystem::path& cur_dir);
+std::string read_adb_config(const std::filesystem::path& cur_dir);
 bool demo_polling(const std::filesystem::path& cur_dir);
 bool demo_waiting(const std::filesystem::path& cur_dir);
 
@@ -22,7 +22,7 @@ int main([[maybe_unused]] int argc, char** argv)
     }
 
     const auto cur_dir = std::filesystem::path(argv[0]).parent_path();
-    adb_config = read_adb_argv(cur_dir);
+    adb_config = read_adb_config(cur_dir);
 
     MaaSetGlobalOption(MaaGlobalOption_Logging, (cur_dir / "debug").string().c_str());
 
@@ -30,20 +30,6 @@ int main([[maybe_unused]] int argc, char** argv)
     demo_waiting(cur_dir);
 
     return 0;
-}
-
-std::string read_adb_argv(const std::filesystem::path& cur_dir)
-{
-    std::ifstream ifs(cur_dir / "adb_argv.json", std::ios::in);
-    if (!ifs.is_open()) {
-        std::cerr << "Failed to open adb_argv.json\n"
-                  << "Please copy sample/cpp/config/adb_argv.json to " << cur_dir << std::endl;
-        exit(1);
-    }
-
-    std::stringstream buffer;
-    buffer << ifs.rdbuf();
-    return buffer.str();
 }
 
 bool demo_polling(const std::filesystem::path& cur_dir)
@@ -125,4 +111,18 @@ bool demo_waiting(const std::filesystem::path& cur_dir)
     destroy();
 
     return true;
+}
+
+std::string read_adb_config(const std::filesystem::path& cur_dir)
+{
+    std::ifstream ifs(cur_dir / "adb_argv.json", std::ios::in);
+    if (!ifs.is_open()) {
+        std::cerr << "Failed to open adb_argv.json\n"
+                  << "Please copy sample/cpp/config/adb_argv.json to " << cur_dir << std::endl;
+        exit(1);
+    }
+
+    std::stringstream buffer;
+    buffer << ifs.rdbuf();
+    return buffer.str();
 }
