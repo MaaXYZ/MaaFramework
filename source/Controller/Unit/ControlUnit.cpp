@@ -15,9 +15,9 @@ void UnitHelper::set_replacement(Argv::replacement argv_replace)
     argv_replace_ = std::move(argv_replace);
 }
 
-void UnitHelper::merge_replacement(Argv::replacement argv_replace, bool override)
+void UnitHelper::merge_replacement(Argv::replacement argv_replace, bool _override)
 {
-    if (override) {
+    if (_override) {
         argv_replace.merge(argv_replace_);
         argv_replace_ = std::move(argv_replace);
     }
@@ -30,6 +30,7 @@ bool UnitHelper::parse_argv(const std::string& key, const json::value& config, A
 {
     auto opt = config.find<json::value>(key);
     if (!opt) {
+        LogError << "Cannot find key" << VAR(key);
         return false;
     }
 
@@ -43,10 +44,10 @@ bool UnitHelper::parse_argv(const std::string& key, const json::value& config, A
 
 std::optional<std::string> UnitHelper::command(Argv::value cmd, bool recv_by_socket, int64_t timeout)
 {
-    for (const auto& c : cmd) {
-        std::cout << c << ' ';
+    if (!io_ptr_) {
+        LogError << "io_ptr is nullptr";
+        return std::nullopt;
     }
-    std::cout << std::endl;
 
     auto start_time = std::chrono::steady_clock::now();
 

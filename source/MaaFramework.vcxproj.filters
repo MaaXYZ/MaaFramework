@@ -40,11 +40,11 @@
     <Filter Include="Source\Controller\Platform">
       <UniqueIdentifier>{4655f327-d19a-47ad-bfa7-fff686529122}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Source\Controller\Platform\GlobalOption">
-      <UniqueIdentifier>{fe669fc4-8884-469a-b9f6-7c84f37bfb26}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Source\Controller\Unit">
       <UniqueIdentifier>{eeeb8595-d01a-4a8b-9c5f-4d1378a8a99e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\GlobalOption">
+      <UniqueIdentifier>{fe669fc4-8884-469a-b9f6-7c84f37bfb26}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -160,7 +160,7 @@
       <Filter>Source\Controller</Filter>
     </ClInclude>
     <ClInclude Include="Option\GlobalOptionMgr.h">
-      <Filter>Source\Controller\Platform\GlobalOption</Filter>
+      <Filter>Source\GlobalOption</Filter>
     </ClInclude>
     <ClInclude Include="Base\NonCopyable.hpp">
       <Filter>Source\Base</Filter>
@@ -177,14 +177,14 @@
     <ClInclude Include="Common\MaaTypes.h">
       <Filter>Source\Common</Filter>
     </ClInclude>
-    <ClInclude Include="Controller\Platform\PlatformFactory.h">
-      <Filter>Source\Controller</Filter>
-    </ClInclude>
     <ClInclude Include="Controller\Platform\PosixIO.h">
       <Filter>Source\Controller\Platform</Filter>
     </ClInclude>
     <ClInclude Include="Controller\Unit\ControlUnit.h">
       <Filter>Source\Controller\Unit</Filter>
+    </ClInclude>
+    <ClInclude Include="Controller\Platform\PlatformFactory.h">
+      <Filter>Source\Controller\Platform</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -225,7 +225,7 @@
       <Filter>Source\Controller</Filter>
     </ClCompile>
     <ClCompile Include="Option\GlobalOptionMgr.cpp">
-      <Filter>Source\Controller\Platform\GlobalOption</Filter>
+      <Filter>Source\GlobalOption</Filter>
     </ClCompile>
     <ClCompile Include="Controller\Platform\Win32IO.cpp">
       <Filter>Source\Controller\Platform</Filter>

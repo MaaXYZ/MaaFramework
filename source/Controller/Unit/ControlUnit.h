@@ -22,7 +22,7 @@ public:
 public:
     void set_io(std::shared_ptr<PlatformIO> io_ptr);
     void set_replacement(Argv::replacement argv_replace);
-    void merge_replacement(Argv::replacement argv_replace, bool override = false);
+    void merge_replacement(Argv::replacement argv_replace, bool _override = false);
 
 protected:
     static bool parse_argv(const std::string& key, const json::value& config, /*out*/ Argv& argv);
@@ -30,7 +30,7 @@ protected:
     std::optional<std::string> command(Argv::value cmd, bool recv_by_socket = false, int64_t timeout = 20000);
 
 protected:
-    std::shared_ptr<PlatformIO> io_ptr_;
+    std::shared_ptr<PlatformIO> io_ptr_ = nullptr;
     Argv::replacement argv_replace_;
 };
 
