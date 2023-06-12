@@ -69,6 +69,8 @@ inline std::string ansi_to_utf8(std::string_view ansi_str)
     ::iconv_close(conv);
 
     return dst;
+#else
+    return std::string(ansi_str);
 #endif
 }
 
@@ -123,6 +125,8 @@ inline std::string utf8_to_ansi(std::string_view utf8_str)
     ::iconv_close(conv);
 
     return dst;
+#else
+    return std::string(utf8_str);
 #endif
 }
 
@@ -158,31 +162,19 @@ inline std::string utf8_to_unicode_escape(std::string_view utf8_str)
 
     return unicode_escape_str;
 #elif defined(__linux__)
-    const wchar_t* pchr = nullptr;
-#if __cplusplus < 201703L
-    using convert_t = std::codecvt_utf8<wchar_t>;
-    std::wstring_convert<convert_t, wchar_t> strconverter;
-    std::wstring wstr(strconverter.from_bytes(utf8_str.data()));
-
-    pchr = wstr.data();
-#else
     auto locale = setlocale(LC_ALL, "");
 
     const char* from = utf8_str.data();
     size_t len = strlen(from) + 1;
 
-    std::unique_ptr<wchar_t[], std::default_delete<wchar_t[]>> to =
-      std::make_unique<wchar_t[]>(len);
+    std::unique_ptr<wchar_t[], std::default_delete<wchar_t[]>> to = std::make_unique<wchar_t[]>(len);
     mbstowcs(to.get(), from, len);
 
-    pchr = to.get();
-
     setlocale(LC_ALL, locale);
-#endif
 
     std::string unicode_escape_str = {};
     constinit static char hexcode[] = "0123456789abcdef";
-    for (; *pchr; ++pchr) {
+    for (const wchar_t* pchr = to.get(); *pchr; ++pchr) {
         const wchar_t& chr = *pchr;
         if (chr > 255) {
             unicode_escape_str += "\\u";
@@ -197,6 +189,8 @@ inline std::string utf8_to_unicode_escape(std::string_view utf8_str)
     }
 
     return unicode_escape_str;
+#else
+    return std::string(utf8_str);
 #endif
 }
 
