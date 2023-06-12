@@ -30,6 +30,7 @@ bool UnitHelper::parse_argv(const std::string& key, const json::value& config, A
 {
     auto opt = config.find<json::value>(key);
     if (!opt) {
+        LogError << "Cannot find key" << VAR(key);
         return false;
     }
 
@@ -43,6 +44,11 @@ bool UnitHelper::parse_argv(const std::string& key, const json::value& config, A
 
 std::optional<std::string> UnitHelper::command(Argv::value cmd, bool recv_by_socket, int64_t timeout)
 {
+    if (!io_ptr_) {
+        LogError << "io_ptr is nullptr";
+        return std::nullopt;
+    }
+
     auto start_time = std::chrono::steady_clock::now();
 
     std::string pipe_data;

@@ -36,7 +36,7 @@ bool ArgvWrapper<Argv>::parse(const json::value& value)
     }
 
     const auto& arr = value.as_array();
-    if (std::any_of(arr.begin(), arr.end(), [](const json::value& val) { return !val.is_string(); })) {
+    if (ranges::any_of(arr, [](const json::value& val) { return !val.is_string(); })) {
         return false;
     }
 
