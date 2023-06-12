@@ -5,8 +5,7 @@
 
 #include "Controller/Platform/PlatformIO.h"
 
-#include <meojson/json.hpp>
-#include <unordered_map>
+#include "Utils/ArgvWrapper.hpp"
 
 #define MAA_CTRL_UNIT_NS MAA_CTRL_NS::Unit
 #define MAA_CTRL_UNIT_NS_BEGIN \
@@ -19,21 +18,21 @@ MAA_CTRL_UNIT_NS_BEGIN
 class UnitHelper : NonCopyable
 {
 public:
-    using Argv = std::vector<std::string>;
+    using Argv = ArgvWrapper<std::vector<std::string>>;
 
 public:
     UnitHelper(std::shared_ptr<PlatformIO> io_ptr);
 
-    void set_replacement(std::map<std::string, std::string> argv_replace);
+    void set_replacement(Argv::replacement argv_replace);
 
 protected:
     static bool parse_argv(const std::string& key, const json::value& config, /*out*/ Argv& argv);
 
-    std::optional<std::string> command(const Argv& cmd, bool recv_by_socket = false, int64_t timeout = 20000);
+    std::optional<std::string> command(Argv::value cmd, bool recv_by_socket = false, int64_t timeout = 20000);
 
 protected:
     std::shared_ptr<PlatformIO> io_ptr_;
-    std::map<std::string, std::string> argv_replace_;
+    Argv::replacement argv_replace_;
 };
 
 class Connection : public UnitHelper

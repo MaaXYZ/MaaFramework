@@ -93,6 +93,9 @@
     <ClInclude Include="Utils\Platform\SafeWindows.h">
       <Filter>Source\Utils\Platform</Filter>
     </ClInclude>
+    <ClInclude Include="Utils\ArgvWrapper.hpp">
+      <Filter>Source\Utils</Filter>
+    </ClInclude>
     <ClInclude Include="Utils\Demangle.hpp">
       <Filter>Source\Utils</Filter>
     </ClInclude>

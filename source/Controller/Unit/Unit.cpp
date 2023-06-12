@@ -15,24 +15,19 @@ void UnitHelper::set_replacement(std::map<std::string, std::string> argv_replace
 bool UnitHelper::parse_argv(const std::string& key, const json::value& config, Argv& argv)
 {
     auto opt = config.find<json::value>(key);
-    if (!opt || !opt->is_array()) {
+    if (!opt) {
         return false;
     }
 
-    const auto& arr = opt->as_array();
-    if (std::any_of(arr.begin(), arr.end(), [](const json::value& val) { return !val.is_string(); })) {
+    if (!argv.parse(*opt)) {
         LogError << "Parse config failed:" << VAR(key);
         return false;
     }
 
-    argv.clear();
-    argv.reserve(arr.size());
-    ranges::transform(arr, std::back_inserter(argv), [](const json::value& val) { return val.as_string(); });
     return true;
 }
 
-std::optional<std::string> UnitHelper::command(const std::vector<std::string>& cmd, bool recv_by_socket,
-                                               int64_t timeout)
+std::optional<std::string> UnitHelper::command(Argv::value cmd, bool recv_by_socket, int64_t timeout)
 {
     auto start_time = std::chrono::steady_clock::now();
 
@@ -68,12 +63,7 @@ bool Connection::connect()
 {
     LogFunc;
 
-    auto argv = connect_argv_;
-    for (auto& s : argv) {
-        s = string_replace_all(s, argv_replace_);
-    }
-
-    auto cmd_ret = command(argv, false, 60LL * 1000);
+    auto cmd_ret = command(connect_argv_.gen(argv_replace_), false, 60LL * 1000);
 
     if (!cmd_ret) {
         return false;
@@ -90,12 +80,7 @@ bool Connection::kill_server()
 {
     LogFunc;
 
-    auto argv = kill_server_argv_;
-    for (auto& s : argv) {
-        s = string_replace_all(s, argv_replace_);
-    }
-
-    return command(argv, false, 60LL * 1000).has_value();
+    return command(kill_server_argv_.gen(argv_replace_), false, 60LL * 1000).has_value();
 }
 
 MAA_CTRL_UNIT_NS_END
