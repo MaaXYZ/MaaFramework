@@ -1,13 +1,16 @@
-#include "Unit.h"
+#include "ControlUnit.h"
 
 #include "Utils/Logger.hpp"
 #include "Utils/StringMisc.hpp"
 
 MAA_CTRL_UNIT_NS_BEGIN
 
-UnitHelper::UnitHelper(std::shared_ptr<PlatformIO> io_ptr) : io_ptr_(io_ptr) {}
+void UnitHelper::set_io(std::shared_ptr<PlatformIO> io_ptr)
+{
+    io_ptr_ = std::move(io_ptr);
+}
 
-void UnitHelper::set_replacement(std::map<std::string, std::string> argv_replace)
+void UnitHelper::set_replacement(Argv::replacement argv_replace)
 {
     argv_replace_ = std::move(argv_replace);
 }
@@ -151,6 +154,26 @@ bool DeviceInfo::orientation(int& ori)
     ori = o;
 
     return true;
+}
+
+bool Activity::parse(const json::value& config)
+{
+    return false;
+}
+
+bool TapInput::parse(const json::value& config)
+{
+    return false;
+}
+
+bool Screencap::parse(const json::value& config)
+{
+    return false;
+}
+
+bool InvokeApp::parse(const json::value& config)
+{
+    return false;
 }
 
 MAA_CTRL_UNIT_NS_END

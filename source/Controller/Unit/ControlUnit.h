@@ -4,7 +4,6 @@
 #include "Common/MaaConf.h"
 
 #include "Controller/Platform/PlatformIO.h"
-
 #include "Utils/ArgvWrapper.hpp"
 
 #define MAA_CTRL_UNIT_NS MAA_CTRL_NS::Unit
@@ -15,14 +14,13 @@
 
 MAA_CTRL_UNIT_NS_BEGIN
 
-class UnitHelper : NonCopyable
+class UnitHelper
 {
 public:
     using Argv = ArgvWrapper<std::vector<std::string>>;
 
 public:
-    UnitHelper(std::shared_ptr<PlatformIO> io_ptr);
-
+    void set_io(std::shared_ptr<PlatformIO> io_ptr);
     void set_replacement(Argv::replacement argv_replace);
 
 protected:
@@ -38,9 +36,6 @@ protected:
 class Connection : public UnitHelper
 {
 public:
-    using UnitHelper::UnitHelper;
-
-public:
     bool parse(const json::value& config);
 
     bool connect();
@@ -54,7 +49,7 @@ private:
 class DeviceInfo : public UnitHelper
 {
 public:
-    using UnitHelper::UnitHelper;
+    bool parse(const json::value& config);
 
 public:
     bool parse(const json::value& config);
@@ -72,7 +67,7 @@ private:
 class Activity : public UnitHelper
 {
 public:
-    using UnitHelper::UnitHelper;
+    bool parse(const json::value& config);
 
 private:
     Argv start_app_argv_;
@@ -82,7 +77,7 @@ private:
 class TapInput : public UnitHelper
 {
 public:
-    using UnitHelper::UnitHelper;
+    bool parse(const json::value& config);
 
 private:
     Argv click_argv_;
@@ -90,10 +85,10 @@ private:
     Argv press_key_argv_;
 };
 
-class ScreenShot : public UnitHelper
+class Screencap : public UnitHelper
 {
 public:
-    using UnitHelper::UnitHelper;
+    bool parse(const json::value& config);
 
 private:
     Argv screencap_raw_by_netcat_argv_;
@@ -102,12 +97,30 @@ private:
     Argv screencap_encode_argv_;
     Argv screencap_encode_to_file_argv_;
     Argv pull_file_argv_;
+
+private:
+    enum class EndOfLine
+    {
+        UnknownYet,
+        CRLF,
+        LF,
+        CR
+    } end_of_line = EndOfLine::UnknownYet;
+
+    enum class Method
+    {
+        UnknownYet,
+        RawByNetcat,
+        RawWithGzip,
+        Encode,
+        EncodeToFileAndPull,
+    } method = Method::UnknownYet;
 };
 
 class InvokeApp : public UnitHelper
 {
 public:
-    using UnitHelper::UnitHelper;
+    bool parse(const json::value& config);
 
 private:
     Argv abilist_argv_;
