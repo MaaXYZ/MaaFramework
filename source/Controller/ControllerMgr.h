@@ -32,6 +32,7 @@ struct SwipeParams
     };
     std::vector<Step> steps;
 };
+std::ostream& operator<<(std::ostream& os, const SwipeParams::Step& step);
 
 using Params = std::variant<ClickParams, SwipeParams>;
 

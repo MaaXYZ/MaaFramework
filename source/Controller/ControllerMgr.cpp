@@ -191,6 +191,13 @@ cv::Point ControllerMgr::rand_point(const cv::Rect& r)
     return { x, y };
 }
 
+std::ostream& operator<<(std::ostream& os, const SwipeParams::Step& step)
+{
+#define VAR_STEP(x) #x << ":" << x
+    os << VAR_STEP(step.x) << VAR_STEP(step.y) << VAR_STEP(step.delay);
+#undef VAR_STEP
+}
+
 inline std::ostream& operator<<(std::ostream& os, const Action& action)
 {
     switch (action.type) {
