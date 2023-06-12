@@ -15,6 +15,17 @@ void UnitHelper::set_replacement(Argv::replacement argv_replace)
     argv_replace_ = std::move(argv_replace);
 }
 
+void UnitHelper::merge_replacement(Argv::replacement argv_replace, bool override)
+{
+    if (override) {
+        argv_replace.merge(argv_replace_);
+        argv_replace_ = std::move(argv_replace);
+    }
+    else {
+        argv_replace_.merge(argv_replace);
+    }
+}
+
 bool UnitHelper::parse_argv(const std::string& key, const json::value& config, Argv& argv)
 {
     auto opt = config.find<json::value>(key);
