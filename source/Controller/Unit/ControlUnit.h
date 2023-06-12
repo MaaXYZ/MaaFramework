@@ -22,7 +22,7 @@ public:
 public:
     void set_io(std::shared_ptr<PlatformIO> io_ptr);
     void set_replacement(Argv::replacement argv_replace);
-    void merge_replacement(Argv::replacement argv_replace, bool _override = false);
+    void merge_replacement(Argv::replacement argv_replace, bool _override = true);
 
 protected:
     static bool parse_argv(const std::string& key, const json::value& config, /*out*/ Argv& argv);
@@ -50,11 +50,16 @@ private:
 class DeviceInfo : public UnitHelper
 {
 public:
+    struct Resolution
+    {
+        int width, height;
+    };
+
     bool parse(const json::value& config);
 
-    bool uuid(std::string& uuid);
-    bool resolution(int& width, int& height); // width is always greater than height
-    bool orientation(int& ori);               // 0 ~ 3
+    std::optional<std::string> uuid();
+    std::optional<Resolution> resolution();
+    std::optional<int> orientation();
 
 private:
     Argv uuid_argv_;
@@ -79,6 +84,10 @@ class TapInput : public UnitHelper
 {
 public:
     bool parse(const json::value& config);
+
+    bool click(int x, int y);
+    bool swipe(int x1, int y1, int x2, int y2, int duration);
+    bool press_key(int key);
 
 private:
     Argv click_argv_;

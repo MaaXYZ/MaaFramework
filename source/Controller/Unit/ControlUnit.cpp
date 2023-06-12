@@ -49,6 +49,8 @@ std::optional<std::string> UnitHelper::command(Argv::value cmd, bool recv_by_soc
         return std::nullopt;
     }
 
+    LogInfo << cmd;
+
     auto start_time = std::chrono::steady_clock::now();
 
     std::string pipe_data;
@@ -109,68 +111,65 @@ bool DeviceInfo::parse(const json::value& config)
            parse_argv("Orientation", config, orientation_argv_);
 }
 
-bool DeviceInfo::uuid(std::string& uuid)
+std::optional<std::string> DeviceInfo::uuid()
 {
     LogFunc;
 
     auto cmd_ret = command(uuid_argv_.gen(argv_replace_));
 
     if (!cmd_ret.has_value()) {
-        return false;
+        return std::nullopt;
     }
 
     auto uuid_str = cmd_ret.value();
     std::erase_if(uuid_str, [](char c) { return !std::isdigit(c) && !std::isalpha(c); });
-    uuid = std::move(uuid_str);
-
-    return true;
+    return uuid_str;
 }
 
-bool DeviceInfo::resolution(int& width, int& height)
+std::optional<DeviceInfo::Resolution> DeviceInfo::resolution()
 {
     LogFunc;
 
     auto cmd_ret = command(resolution_argv_.gen(argv_replace_));
 
     if (!cmd_ret.has_value()) {
-        return false;
+        return std::nullopt;
     }
 
     std::istringstream iss(cmd_ret.value());
     int s1, s2;
     iss >> s1 >> s2;
 
-    width = std::max(s1, s2);
-    height = std::min(s1, s2);
+    Resolution res;
+    res.width = std::max(s1, s2);
+    res.height = std::min(s1, s2);
 
-    return true;
+    return res;
 }
 
-bool DeviceInfo::orientation(int& ori)
+std::optional<int> DeviceInfo::orientation()
 {
     LogFunc;
 
     auto cmd_ret = command(orientation_argv_.gen(argv_replace_));
 
     if (!cmd_ret.has_value()) {
-        return false;
+        return std::nullopt;
     }
 
     const auto& s = cmd_ret.value();
 
     if (s.empty()) {
-        return false;
+        return std::nullopt;
     }
 
-    auto o = s.front() - '0';
+    auto ori = s.front() - '0';
 
-    if (!(o >= 0 && o <= 3)) {
-        return false;
+    if (!(ori >= 0 && ori <= 3)) {
+        return std::nullopt;
     }
 
-    ori = o;
-
-    return true;
+    return ori;
 }
 
 bool Activity::parse(const json::value& config)
@@ -182,7 +181,7 @@ bool Activity::start(const std::string& intent)
 {
     LogFunc;
 
-    merge_replacement({ { "{INTENT}", intent } }, true);
+    merge_replacement({ { "{INTENT}", intent } });
     auto cmd_ret = command(start_app_argv_.gen(argv_replace_));
 
     return true;
@@ -192,7 +191,7 @@ bool Activity::stop(const std::string& intent)
 {
     LogFunc;
 
-    merge_replacement({ { "{INTENT}", intent } }, true);
+    merge_replacement({ { "{INTENT}", intent } });
     auto cmd_ret = command(stop_app_argv_.gen(argv_replace_));
 
     return true;
@@ -200,7 +199,42 @@ bool Activity::stop(const std::string& intent)
 
 bool TapInput::parse(const json::value& config)
 {
-    return false;
+    return parse_argv("Click", config, click_argv_) && parse_argv("Swipe", config, swipe_argv_) &&
+           parse_argv("PressKey", config, press_key_argv_);
+}
+
+bool TapInput::click(int x, int y)
+{
+    LogFunc;
+
+    merge_replacement({ { "{X}", std::to_string(x) }, { "{Y}", std::to_string(y) } });
+    auto cmd_ret = command(click_argv_.gen(argv_replace_));
+
+    return true;
+}
+
+bool TapInput::swipe(int x1, int y1, int x2, int y2, int duration)
+{
+    LogFunc;
+
+    merge_replacement({ { "{X1}", std::to_string(x1) },
+                        { "{Y1}", std::to_string(y1) },
+                        { "{X2}", std::to_string(x2) },
+                        { "{Y2}", std::to_string(y2) },
+                        { "{DURATION}", std::to_string(duration) } });
+    auto cmd_ret = command(swipe_argv_.gen(argv_replace_));
+
+    return true;
+}
+
+bool TapInput::press_key(int key)
+{
+    LogFunc;
+
+    merge_replacement({ { "{KEY}", std::to_string(key) } });
+    auto cmd_ret = command(press_key_argv_.gen(argv_replace_));
+
+    return true;
 }
 
 bool Screencap::parse(const json::value& config)
