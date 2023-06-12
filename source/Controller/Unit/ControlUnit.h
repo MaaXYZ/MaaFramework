@@ -51,9 +51,6 @@ class DeviceInfo : public UnitHelper
 public:
     bool parse(const json::value& config);
 
-public:
-    bool parse(const json::value& config);
-
     bool uuid(std::string& uuid);
     bool resolution(int& width, int& height); // width is always greater than height
     bool orientation(int& ori);               // 0 ~ 3

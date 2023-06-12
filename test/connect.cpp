@@ -1,5 +1,5 @@
 #include "Controller/Platform/PlatformFactory.h"
-#include "Controller/Unit/Unit.h"
+#include "Controller/Unit/ControlUnit.h"
 #include "MaaAPI.h"
 #include <filesystem>
 #include <iostream>
@@ -26,7 +26,8 @@ int main()
     MaaSetGlobalOption(MaaGlobalOption_Logging, (std::filesystem::current_path() / "debug").string().c_str());
 
     auto platformIO = PlatformFactory::create();
-    auto connect = new Unit::Connection(platformIO);
+    auto connect = new Unit::Connection();
+    connect->set_io(platformIO);
 
     connect->parse(cfg.value());
     connect->set_replacement({ { "{ADB}", "adb" }, { "{ADB_SERIAL}", "127.0.0.1:16384" } });
