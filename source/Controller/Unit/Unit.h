@@ -61,7 +61,7 @@ public:
 
     bool uuid(std::string& uuid);
     bool resolution(int& width, int& height); // width is always greater than height
-    bool orientation(int& ori);               // 1 ~ 4
+    bool orientation(int& ori);               // 0 ~ 3
 
 private:
     Argv uuid_argv_;

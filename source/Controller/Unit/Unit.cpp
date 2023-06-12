@@ -144,7 +144,7 @@ bool DeviceInfo::orientation(int& ori)
 
     auto o = s.front() - '0';
 
-    if (!(o >= 1 && o <= 4)) {
+    if (!(o >= 0 && o <= 3)) {
         return false;
     }
 

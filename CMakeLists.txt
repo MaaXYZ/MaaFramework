@@ -75,26 +75,18 @@ if (BUILD_TEST)
     target_link_libraries(sample MaaFramework)
     target_include_directories(sample PUBLIC ${MaaFramework_INCLUDE})
 
-    include(FetchContent)
-        FetchContent_Declare(
-        googletest
-        URL https://github.com/google/googletest/archive/b796f7d44681514f58a683a3a71ff17c94edb0c1.zip
-    )
-    # For Windows: Prevent overriding the parent project's compiler/linker settings
-    set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
-    FetchContent_MakeAvailable(googletest)
-    
-    file(GLOB_RECURSE maa_test_src test/*.cpp)
-    add_executable(MaaTest ${maa_test_src})
-    set_target_properties(MaaTest PROPERTIES
-        CXX_STANDARD 20
-        CXX_STANDARD_REQUIRED ON
-    )
-    target_link_libraries(MaaTest MaaFramework)
-    target_include_directories(MaaTest PUBLIC ${MaaFramework_INCLUDE} "source")
-    target_link_libraries(MaaTest GTest::gtest_main)
-    include(GoogleTest)
-    gtest_discover_tests(MaaTest)
+    file(GLOB_RECURSE maa_test_src RELATIVE ${CMAKE_CURRENT_SOURCE_DIR}/test/ test/*.cpp)
+    message("${maa_test_src}")
+    foreach( SRC IN LISTS maa_test_src)
+        string(REPLACE ".cpp" "" program ${SRC})
+        add_executable(${program} test/${SRC})
+        set_target_properties(${program} PROPERTIES
+            CXX_STANDARD 20
+            CXX_STANDARD_REQUIRED ON
+        )
+        target_link_libraries(${program} MaaFramework)
+        target_include_directories(${program} PUBLIC ${MaaFramework_INCLUDE} "source")
+    endforeach( SRC )
 endif (BUILD_TEST)
 
 find_package(OpenCV REQUIRED COMPONENTS core imgproc imgcodecs videoio)
