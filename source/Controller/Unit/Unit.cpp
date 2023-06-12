@@ -83,4 +83,74 @@ bool Connection::kill_server()
     return command(kill_server_argv_.gen(argv_replace_), false, 60LL * 1000).has_value();
 }
 
+bool DeviceInfo::parse(const json::value& config)
+{
+    return parse_argv("Uuid", config, uuid_argv_) && parse_argv("Resolution", config, resolution_argv_) &&
+           parse_argv("Orientation", config, orientation_argv_);
+}
+
+bool DeviceInfo::uuid(std::string& uuid)
+{
+    LogFunc;
+
+    auto cmd_ret = command(uuid_argv_.gen(argv_replace_));
+
+    if (!cmd_ret.has_value()) {
+        return false;
+    }
+
+    auto uuid_str = cmd_ret.value();
+    std::erase_if(uuid_str, [](char c) { return !std::isdigit(c) && !std::isalpha(c); });
+    uuid = std::move(uuid_str);
+
+    return true;
+}
+
+bool DeviceInfo::resolution(int& width, int& height)
+{
+    LogFunc;
+
+    auto cmd_ret = command(resolution_argv_.gen(argv_replace_));
+
+    if (!cmd_ret.has_value()) {
+        return false;
+    }
+
+    std::istringstream iss(cmd_ret.value());
+    int s1, s2;
+    iss >> s1 >> s2;
+
+    width = std::max(s1, s2);
+    height = std::min(s1, s2);
+
+    return true;
+}
+
+bool DeviceInfo::orientation(int& ori)
+{
+    LogFunc;
+
+    auto cmd_ret = command(orientation_argv_.gen(argv_replace_));
+
+    if (!cmd_ret.has_value()) {
+        return false;
+    }
+
+    const auto& s = cmd_ret.value();
+
+    if (s.empty()) {
+        return false;
+    }
+
+    auto o = s.front() - '0';
+
+    if (!(o >= 1 && o <= 4)) {
+        return false;
+    }
+
+    ori = o;
+
+    return true;
+}
+
 MAA_CTRL_UNIT_NS_END

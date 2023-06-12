@@ -56,6 +56,13 @@ class DeviceInfo : public UnitHelper
 public:
     using UnitHelper::UnitHelper;
 
+public:
+    bool parse(const json::value& config);
+
+    bool uuid(std::string& uuid);
+    bool resolution(int& width, int& height); // width is always greater than height
+    bool orientation(int& ori);               // 1 ~ 4
+
 private:
     Argv uuid_argv_;
     Argv resolution_argv_;
