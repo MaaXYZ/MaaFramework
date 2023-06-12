@@ -132,6 +132,8 @@ class InvokeApp : public UnitHelper
 public:
     bool parse(const json::value& config);
 
+    std::optional<std::vector<std::string>> abilist();
+
 private:
     Argv abilist_argv_;
     Argv push_bin_argv_;

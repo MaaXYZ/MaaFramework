@@ -13,6 +13,14 @@ std::ostream& operator<<(std::ostream& os, const MaaNS::ControllerNS::Unit::Devi
 }
 
 template <typename T>
+std::ostream& operator<<(std::ostream& os, const std::vector<T>& v)
+{
+    os << "[";
+    std::copy(v.begin(), v.end(), std::ostream_iterator<T>(os, ", "));
+    return os << "]";
+}
+
+template <typename T>
 std::ostream& operator<<(std::ostream& os, const std::optional<T>& v)
 {
     if (v.has_value()) {
@@ -23,12 +31,12 @@ std::ostream& operator<<(std::ostream& os, const std::optional<T>& v)
     }
 }
 
-inline std::string read_adb_argv(const std::filesystem::path& cur_dir)
+inline std::string read_adb_argv(const std::string& cur_dir)
 {
-    std::ifstream ifs(cur_dir / "adb_argv.json", std::ios::in);
+    std::ifstream ifs(std::filesystem::path(cur_dir) / "adb_argv.json", std::ios::in);
     if (!ifs.is_open()) {
         std::cerr << "Failed to open adb_argv.json\n"
-                  << "Please copy sample/cpp/config/adb_argv.json to " << cur_dir << std::endl;
+                  << "Please copy adb_argv.json to " << cur_dir << std::endl;
         exit(1);
     }
 
@@ -49,7 +57,7 @@ std::map<std::string_view, std::string> intents = {
 
 int main(int argc, char* argv[])
 {
-    cxxopts::Options options("Maa busy box", "Maa utility tool for test purpose.");
+    cxxopts::Options options(argv[0], "Maa utility tool for test purpose.");
 
     std::string adb = "adb";
     std::string adb_address = "127.0.0.1:5555";
@@ -71,8 +79,9 @@ int main(int argc, char* argv[])
     options.add_options()
         ("a,adb", "adb path, $MAA_ADB", cxxopts::value<std::string>()->default_value(adb))
         ("s,serial", "adb address, $MAA_ADB_SERIAL", cxxopts::value<std::string>()->default_value(adb_address))
-        ("c,client", "client, $MAA_CLIENT", cxxopts::value<std::string>()->default_value(client))
-        ("h,help", "print help message", cxxopts::value<bool>())
+        ("c,config", "config directory", cxxopts::value<std::string>()->default_value((std::filesystem::current_path() / "config").string()))
+        ("t,client", "client, $MAA_CLIENT", cxxopts::value<std::string>()->default_value(client))
+        ("h,help", "print usage", cxxopts::value<bool>())
         
         ("command", "command", cxxopts::value<std::string>()->default_value("help"))
         ("subcommand", "sub command", cxxopts::value<std::string>()->default_value("help"))
@@ -81,6 +90,8 @@ int main(int argc, char* argv[])
     // clang-format on
 
     options.parse_positional({ "command", "subcommand", "params" });
+
+    options.positional_help("[COMMAND] [SUBCOMMAND]");
 
     auto result = options.parse(argc, argv);
 
@@ -93,7 +104,7 @@ int main(int argc, char* argv[])
 
     using namespace MaaNS::ControllerNS;
 
-    auto config = json::parse(read_adb_argv(std::filesystem::current_path().parent_path() / "test" / "config"));
+    auto config = json::parse(read_adb_argv(result["config"].as<std::string>()));
     auto io = PlatformFactory::create();
     MaaSetGlobalOption(MaaGlobalOption_Logging, (std::filesystem::current_path() / "debug").string().c_str());
 
@@ -178,6 +189,23 @@ int main(int argc, char* argv[])
 
             int key = atoi(params[0].c_str());
             std::cout << "return: " << std::boolalpha << tap->press_key(key) << std::endl;
+        }
+    }
+    else if (cmd == "invoke_app") {
+
+        auto inv = new Unit::InvokeApp();
+        inv->set_io(io);
+        inv->parse(config.value());
+        inv->set_replacement(adbRepl);
+
+        auto scmd = result["subcommand"].as<std::string>();
+        // auto params = result["params"].as<std::vector<std::string>>();
+
+        if (scmd == "help") {
+            std::cout << "Usage: " << argv[0] << " invoke_app [abilist]" << std::endl;
+        }
+        else if (scmd == "abilist") {
+            std::cout << inv->abilist() << std::endl;
         }
     }
 }

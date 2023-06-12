@@ -184,7 +184,7 @@ bool Activity::start(const std::string& intent)
     merge_replacement({ { "{INTENT}", intent } });
     auto cmd_ret = command(start_app_argv_.gen(argv_replace_));
 
-    return true;
+    return cmd_ret.has_value() && cmd_ret.value().empty();
 }
 
 bool Activity::stop(const std::string& intent)
@@ -194,7 +194,7 @@ bool Activity::stop(const std::string& intent)
     merge_replacement({ { "{INTENT}", intent } });
     auto cmd_ret = command(stop_app_argv_.gen(argv_replace_));
 
-    return true;
+    return cmd_ret.has_value() && cmd_ret.value().empty();
 }
 
 bool TapInput::parse(const json::value& config)
@@ -210,7 +210,7 @@ bool TapInput::click(int x, int y)
     merge_replacement({ { "{X}", std::to_string(x) }, { "{Y}", std::to_string(y) } });
     auto cmd_ret = command(click_argv_.gen(argv_replace_));
 
-    return true;
+    return cmd_ret.has_value() && cmd_ret.value().empty();
 }
 
 bool TapInput::swipe(int x1, int y1, int x2, int y2, int duration)
@@ -224,7 +224,7 @@ bool TapInput::swipe(int x1, int y1, int x2, int y2, int duration)
                         { "{DURATION}", std::to_string(duration) } });
     auto cmd_ret = command(swipe_argv_.gen(argv_replace_));
 
-    return true;
+    return cmd_ret.has_value() && cmd_ret.value().empty();
 }
 
 bool TapInput::press_key(int key)
@@ -234,7 +234,7 @@ bool TapInput::press_key(int key)
     merge_replacement({ { "{KEY}", std::to_string(key) } });
     auto cmd_ret = command(press_key_argv_.gen(argv_replace_));
 
-    return true;
+    return cmd_ret.has_value() && cmd_ret.value().empty();
 }
 
 bool Screencap::parse(const json::value& config)
@@ -244,7 +244,37 @@ bool Screencap::parse(const json::value& config)
 
 bool InvokeApp::parse(const json::value& config)
 {
-    return false;
+    return parse_argv("Abilist", config, abilist_argv_) && parse_argv("PushBin", config, push_bin_argv_) &&
+           parse_argv("ChmodBin", config, chmod_bin_argv_) && parse_argv("InvokeBin", config, invoke_bin_argv_) &&
+           parse_argv("InvokeApp", config, invoke_app_argv_);
+}
+
+std::optional<std::vector<std::string>> InvokeApp::abilist()
+{
+    LogFunc;
+
+    auto cmd_ret = command(abilist_argv_.gen(argv_replace_));
+
+    if (!cmd_ret.has_value()) {
+        return std::nullopt;
+    }
+
+    auto abils = cmd_ret.value();
+    while (abils.back() == '\n' || abils.back() == '\r') {
+        abils.pop_back();
+    }
+    std::vector<std::string> res;
+
+    while (abils.length() > 0) {
+        auto pos = abils.find(',');
+        res.push_back(abils.substr(0, pos));
+        abils = abils.substr(pos + 1);
+        if (pos == std::string::npos) {
+            break;
+        }
+    }
+
+    return res;
 }
 
 MAA_CTRL_UNIT_NS_END
