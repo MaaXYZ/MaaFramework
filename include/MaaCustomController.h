@@ -9,12 +9,12 @@ extern "C"
 #endif
     struct MAAAPI_PORT MaaCustomControllerAPI
     {
-        MaaBool (*set_option)(MaaString key, MaaString value);
+        MaaBool (*set_option)(MaaCtrlOption key, MaaString value);
 
         MaaBool (*connect)(void);
         MaaBool (*click)(int32_t x, int32_t y);
         MaaBool (*swipe)(int32_t* x_steps_buff, int32_t* y_steps_buff, int32_t* step_delay_buff, MaaSize buff_size);
-        MaaBool (*press_key)(int32_t key);
+        MaaBool (*press_key)(int32_t keycode);
 
         MaaBool (*app_start)(MaaString package_name);
         // if activity is empty, kill current app
