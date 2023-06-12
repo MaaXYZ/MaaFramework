@@ -15,7 +15,7 @@ bool CustomController::_connect()
 
     if (!handle_ || !handle_->connect) {
         LogError << "handle_ or handle_->connect is nullptr";
-        return;
+        return false;
     }
 
     return handle_->connect();
@@ -64,19 +64,29 @@ cv::Mat CustomController::_screencap()
 
     if (!handle_ || !handle_->get_image) {
         LogError << "handle_ or handle_->get_image is nullptr";
-        return;
+        return {};
     }
 
     MaaSize size = handle_->get_image(nullptr, 0);
+    if (size == 0 || size == MaaNullSize) {
+        LogError << "error size" << VAR(size);
+        return {};
+    }
 
     auto buffer = std::make_unique<uchar[]>(size);
     MaaSize written = handle_->get_image(buffer.get(), size);
     if (written != size) {
         LogError << "written != size" << VAR(written) << VAR(size);
+        return {};
     }
 
     std::vector vec_buf(buffer.get(), buffer.get() + written);
-    return cv::imdecode(vec_buf, cv::IMREAD_COLOR);
+    cv::Mat res = cv::imdecode(vec_buf, cv::IMREAD_COLOR);
+    if (res.empty()) {
+        LogError << "image is empty!" << VAR(written) << VAR(size);
+        return {};
+    }
+    return res;
 }
 
 MAA_CTRL_NS_END

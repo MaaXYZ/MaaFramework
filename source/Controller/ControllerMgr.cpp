@@ -196,6 +196,8 @@ std::ostream& operator<<(std::ostream& os, const SwipeParams::Step& step)
 #define VAR_STEP(x) #x << ":" << x
     os << VAR_STEP(step.x) << VAR_STEP(step.y) << VAR_STEP(step.delay);
 #undef VAR_STEP
+
+    return os;
 }
 
 inline std::ostream& operator<<(std::ostream& os, const Action& action)
