@@ -8,22 +8,36 @@
 
 MAA_CTRL_NS_BEGIN
 
-AdbController::AdbController(const std::string& adb_path, const std::string& address, const json::value& config,
+void AdbController::ControlUnit::set_io(const std::shared_ptr<PlatformIO>& io_ptr)
+{
+    connection.set_io(io_ptr);
+    device_info.set_io(io_ptr);
+    activity.set_io(io_ptr);
+    tap_input.set_io(io_ptr);
+    screencap.set_io(io_ptr);
+}
+
+bool AdbController::ControlUnit::parse(const json::value& config)
+{
+    return connection.parse(config) && device_info.parse(config) && activity.parse(config) && tap_input.parse(config) &&
+           screencap.parse(config);
+}
+
+AdbController::AdbController(std::string adb_path, std::string address, ControlUnit control_unit,
                              MaaControllerCallback callback, void* callback_arg)
-    : ControllerMgr(callback, callback_arg), adb_path_(adb_path), address_(address)
+    : ControllerMgr(callback, callback_arg), adb_path_(std::move(adb_path)), address_(std::move(address)),
+      control_unit_(std::move(control_unit))
 {
     platform_io_ = PlatformFactory::create();
-    support_socket_ = platform_io_->support_socket_;
+    control_unit_.set_io(platform_io_);
+}
 
-    if (!support_socket_) {
-        LogError << "AdbController not support socket";
-    }
+std::optional<AdbController::ControlUnit> AdbController::parse_config(const json::value& config)
+{
+    ControlUnit result;
+    bool ret = result.parse(config);
 
-    connection_unit_ = std::make_shared<MAA_CTRL_UNIT_NS::Connection>(platform_io_);
-    if (!connection_unit_->parse(config)) {
-        LogError << "AdbController connection_unit_ parse config failed";
-        throw std::runtime_error("AdbController connection_unit_ parse config failed");
-    }
+    return ret ? std::make_optional(result) : std::nullopt;
 }
 
 AdbController::~AdbController() {}
@@ -34,9 +48,9 @@ bool AdbController::_connect()
         { "{ADB}", adb_path_ },
         { "{ADB_SERIAL}", address_ },
     };
-    connection_unit_->set_replacement(replacement);
+    control_unit_.connection.set_replacement(replacement);
 
-    return connection_unit_->connect();
+    return control_unit_.connection.connect();
 }
 
 void AdbController::_click(ClickParams param) {}

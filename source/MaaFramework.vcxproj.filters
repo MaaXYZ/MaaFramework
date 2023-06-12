@@ -183,7 +183,7 @@
     <ClInclude Include="Controller\Platform\PosixIO.h">
       <Filter>Source\Controller\Platform</Filter>
     </ClInclude>
-    <ClInclude Include="Controller\Unit\Unit.h">
+    <ClInclude Include="Controller\Unit\ControlUnit.h">
       <Filter>Source\Controller\Unit</Filter>
     </ClInclude>
   </ItemGroup>
@@ -233,7 +233,7 @@
     <ClCompile Include="Controller\Platform\PosixIO.cpp">
       <Filter>Source\Controller\Platform</Filter>
     </ClCompile>
-    <ClCompile Include="Controller\Unit\Unit.cpp">
+    <ClCompile Include="Controller\Unit\ControlUnit.cpp">
       <Filter>Source\Controller\Unit</Filter>
     </ClCompile>
   </ItemGroup>

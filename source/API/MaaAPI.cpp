@@ -108,13 +108,19 @@ MaaControllerHandle MaaAdbControllerCreate(MaaString adb_path, MaaString address
 {
     LogFunc << VAR(adb_path) << VAR(address) << VAR_VOIDP(callback) << VAR_VOIDP(callback_arg);
 
-    auto parsed = json::parse(std::string_view(config));
-    if (!parsed) {
-        LogError << "Invalid config:" << config;
+    auto json_opt = json::parse(std::string_view(config));
+    if (!json_opt) {
+        LogError << "Parse json failed, invalid config:" << config;
         return nullptr;
     }
 
-    return new MAA_CTRL_NS::AdbController(adb_path, address, *parsed, callback, callback_arg);
+    auto unit_opt = MAA_CTRL_NS::AdbController::parse_config(*json_opt);
+    if (!unit_opt) {
+        LogError << "Parse config failed, invalid config:" << *json_opt;
+        return nullptr;
+    }
+
+    return new MAA_CTRL_NS::AdbController(adb_path, address, std::move(*unit_opt), callback, callback_arg);
 }
 
 MaaControllerHandle MaaMinitouchControllerCreate(MaaString adb_path, MaaString address, MaaJsonString config,

@@ -39,7 +39,7 @@
     <ClInclude Include="Controller\Platform\PlatformIO.h" />
     <ClInclude Include="Controller\Platform\PosixIO.h" />
     <ClInclude Include="Controller\Platform\Win32IO.h" />
-    <ClInclude Include="Controller\Unit\Unit.h" />
+    <ClInclude Include="Controller\Unit\ControlUnit.h" />
     <ClInclude Include="Instance\InstanceInternalAPI.hpp" />
     <ClInclude Include="Option\GlobalOptionMgr.h" />
     <ClInclude Include="Controller\AdbController.h" />
@@ -80,7 +80,7 @@
     <ClCompile Include="Controller\CustomController.cpp" />
     <ClCompile Include="Controller\Platform\PosixIO.cpp" />
     <ClCompile Include="Controller\Platform\Win32IO.cpp" />
-    <ClCompile Include="Controller\Unit\Unit.cpp" />
+    <ClCompile Include="Controller\Unit\ControlUnit.cpp" />
     <ClCompile Include="Instance\InstanceMgr.cpp" />
     <ClCompile Include="API\MaaAPI.cpp" />
     <ClCompile Include="Controller\MinitouchController.cpp" />
