@@ -82,9 +82,7 @@ int PosixIO::call_command(const std::vector<std::string>& cmd, bool recv_by_sock
         }
         argv[cmd.size()] = NULL;
         exit_ret = execvp(cmd[0].c_str(), argv);
-        auto err = errno;
-        FILE* temp = fopen("123", "w");
-        fprintf(temp, "fuck off! %d\n", err);
+        LogError << "fork failed" << strerror(errno);
         ::exit(exit_ret);
     }
     else if (m_child > 0) {

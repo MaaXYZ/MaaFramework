@@ -37,7 +37,7 @@ std::optional<AdbController::ControlUnit> AdbController::parse_config(const json
     ControlUnit result;
     bool ret = result.parse(config);
 
-    return ret ? std::make_optional(result) : std::nullopt;
+    return ret ? std::make_optional(std::move(result)) : std::nullopt;
 }
 
 AdbController::~AdbController() {}
