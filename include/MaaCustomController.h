@@ -20,9 +20,9 @@ extern "C"
         // if activity is empty, kill current app
         MaaBool (*app_stop)(MaaString package_name);
 
-        // if buff is null, screencap and return image size; else return write size
+        // if buff is null, screencap and return image size; else return written size
         MaaSize (*get_image)(uchar* buff, MaaSize buff_size);
-        // if buff is null, return uuid string size; else return write size
+        // if buff is null, return uuid string size; else return written size
         MaaSize (*get_uuid)(char* buff, MaaSize buff_size);
     };
 
