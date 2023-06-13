@@ -5,6 +5,7 @@
 
 #include "Controller/Platform/PlatformIO.h"
 #include "Utils/ArgvWrapper.hpp"
+#include "Utils/NoWarningCVMat.h"
 
 #define MAA_CTRL_UNIT_NS MAA_CTRL_NS::Unit
 #define MAA_CTRL_UNIT_NS_BEGIN \
@@ -100,7 +101,15 @@ class Screencap : public UnitHelper
 public:
     bool parse(const json::value& config);
 
+    bool init(int w, int h);
+    void deinit();
+
+    std::optional<cv::Mat> screencap_raw_by_netcat();
+    std::optional<std::string> netcat_address();
+
 private:
+    std::optional<cv::Mat> decode(const std::string& buffer);
+
     Argv screencap_raw_by_netcat_argv_;
     Argv netcat_address_argv_;
     Argv screencap_raw_with_gzip_argv_;
@@ -109,6 +118,10 @@ private:
     Argv pull_file_argv_;
 
 private:
+    int width, height;
+    std::string address;
+    uint16_t port;
+
     enum class EndOfLine
     {
         UnknownYet,

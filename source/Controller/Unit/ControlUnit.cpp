@@ -1,6 +1,7 @@
 #include "ControlUnit.h"
 
 #include "Utils/Logger.hpp"
+#include "Utils/NoWarningCV.h"
 #include "Utils/StringMisc.hpp"
 
 MAA_CTRL_UNIT_NS_BEGIN
@@ -239,7 +240,135 @@ bool TapInput::press_key(int key)
 
 bool Screencap::parse(const json::value& config)
 {
-    return false;
+    return parse_argv("ScreencapRawByNetcat", config, screencap_raw_by_netcat_argv_) &&
+           parse_argv("NetcatAddress", config, netcat_address_argv_) &&
+           parse_argv("ScreencapRawWithGzip", config, screencap_raw_with_gzip_argv_) &&
+           parse_argv("ScreencapEncode", config, screencap_encode_argv_) &&
+           parse_argv("ScreencapEncodeToFile", config, screencap_encode_to_file_argv_) &&
+           parse_argv("PullFile", config, pull_file_argv_);
+}
+
+bool Screencap::init(int w, int h)
+{
+    LogFunc;
+
+    if (!io_ptr_) {
+        LogError << "io_ptr is nullptr";
+        return false;
+    }
+
+    width = w;
+    height = h;
+
+    auto addr = netcat_address();
+    if (!addr.has_value()) {
+        return false;
+    }
+    address = addr.value();
+
+    auto prt = io_ptr_->create_socket(address);
+    if (!prt.has_value()) {
+        return false;
+    }
+    port = prt.value();
+
+    return true;
+}
+
+void Screencap::deinit()
+{
+    if (!io_ptr_) {
+        return;
+    }
+
+    if (port) {
+        io_ptr_->close_socket();
+    }
+
+    width = 0;
+    height = 0;
+    address = "";
+    port = 0;
+    end_of_line = Screencap::EndOfLine::UnknownYet;
+    method = Screencap::Method::UnknownYet;
+}
+
+std::optional<cv::Mat> Screencap::decode(const std::string& buffer)
+{
+    if (buffer.size() < 8) {
+        return std::nullopt;
+    }
+
+    auto data = static_cast<const uint8_t*>(static_cast<const void*>(buffer.c_str()));
+    uint32_t im_width, im_height;
+    memcpy(&im_width, data, 4);
+    memcpy(&im_height, data + 4, 4);
+
+    if (int(im_width) != width || int(im_height) != height) {
+        LogError << "screencap size image" << im_width << im_height << "don't match" << width << height;
+        return std::nullopt;
+    }
+
+    auto size = 4ull * im_width * im_height;
+
+    if (buffer.size() < size) {
+        return std::nullopt;
+    }
+
+    auto hdrSize = buffer.size() - size;
+    auto im_data = data + hdrSize;
+
+    cv::Mat temp(height, width, CV_8UC4, const_cast<uint8_t*>(im_data));
+    if (temp.empty()) {
+        return std::nullopt;
+    }
+
+    const auto& br = *(temp.end<cv::Vec4b>() - 1);
+    if (br[3] != 255) { // only check alpha
+        return std::nullopt;
+    }
+    cv::cvtColor(temp, temp, cv::COLOR_RGBA2BGR);
+    return temp.clone(); // temp只是引用data, 需要clone确保数据拥有所有权
+}
+
+std::optional<cv::Mat> Screencap::screencap_raw_by_netcat()
+{
+    LogFunc;
+
+    if (!io_ptr_) {
+        LogError << "io_ptr is nullptr";
+        return std::nullopt;
+    }
+
+    merge_replacement({ { "{NC_ADDRESS}", address }, { "{NC_PORT}", std::to_string(port) } });
+    auto cmd_ret = command(screencap_raw_by_netcat_argv_.gen(argv_replace_), true);
+
+    if (!cmd_ret.has_value()) {
+        return std::nullopt;
+    }
+
+    return decode(cmd_ret.value());
+}
+
+std::optional<std::string> Screencap::netcat_address()
+{
+    LogFunc;
+
+    auto cmd_ret = command(netcat_address_argv_.gen(argv_replace_));
+
+    if (!cmd_ret.has_value()) {
+        return std::nullopt;
+    }
+
+    auto ip = cmd_ret.value();
+    auto idx = ip.find(' ');
+
+    if (idx != std::string::npos) {
+        return ip.substr(0, idx);
+    }
+    else {
+        return std::nullopt;
+    }
 }
 
 bool InvokeApp::parse(const json::value& config)

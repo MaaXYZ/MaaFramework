@@ -2,6 +2,7 @@
 #include "Controller/Unit/ControlUnit.h"
 #include "MaaAPI.h"
 #include "Utils/ArgvWrapper.hpp"
+#include "Utils/NoWarningCV.h"
 #include "cxxopts.hpp"
 #include <cstdlib>
 #include <filesystem>
@@ -191,8 +192,40 @@ int main(int argc, char* argv[])
             std::cout << "return: " << std::boolalpha << tap->press_key(key) << std::endl;
         }
     }
-    else if (cmd == "invoke_app") {
+    else if (cmd == "screencap") {
+        auto device = new Unit::DeviceInfo();
+        device->set_io(io);
+        device->parse(config.value());
+        device->set_replacement(adbRepl);
 
+        auto res = device->resolution();
+
+        auto scp = new Unit::Screencap();
+        scp->set_io(io);
+        scp->parse(config.value());
+        scp->set_replacement(adbRepl);
+
+        scp->init(res.value().width, res.value().height);
+
+        auto scmd = result["subcommand"].as<std::string>();
+        // auto params = result["params"].as<std::vector<std::string>>();
+
+        if (scmd == "help") {
+            std::cout << "Usage: " << argv[0] << " screencap [raw_by_netcat | netcat_address]" << std::endl;
+        }
+        else if (scmd == "raw_by_netcat") {
+            auto mat = scp->screencap_raw_by_netcat();
+            if (mat.has_value()) {
+                cv::imwrite("temp.png", mat.value());
+                std::cout << "image saved to temp.png" << std::endl;
+            }
+        }
+        else if (scmd == "netcat_address") {
+            std::cout << scp->netcat_address() << std::endl;
+        }
+        scp->deinit();
+    }
+    else if (cmd == "invoke_app") {
         auto inv = new Unit::InvokeApp();
         inv->set_io(io);
         inv->parse(config.value());

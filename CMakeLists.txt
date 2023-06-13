@@ -74,19 +74,6 @@ if (BUILD_TEST)
     )
     target_link_libraries(sample MaaFramework)
     target_include_directories(sample PUBLIC ${MaaFramework_INCLUDE})
-
-    file(GLOB_RECURSE maa_test_src RELATIVE ${CMAKE_CURRENT_SOURCE_DIR}/test/ test/*.cpp)
-    message("${maa_test_src}")
-    foreach( SRC IN LISTS maa_test_src)
-        string(REPLACE ".cpp" "" program ${SRC})
-        add_executable(${program} test/${SRC})
-        set_target_properties(${program} PROPERTIES
-            CXX_STANDARD 20
-            CXX_STANDARD_REQUIRED ON
-        )
-        target_link_libraries(${program} MaaFramework)
-        target_include_directories(${program} PUBLIC ${MaaFramework_INCLUDE} "source")
-    endforeach( SRC )
 endif (BUILD_TEST)
 
 find_package(OpenCV REQUIRED COMPONENTS core imgproc imgcodecs videoio)
@@ -95,6 +82,15 @@ find_package(MaaDerpLearning REQUIRED)
 # find_package(asio REQUIRED)
 # find_package(ONNXRuntime)
 # find_package(cpr CONFIG REQUIRED)
+
+file(GLOB_RECURSE maabusybox_src busybox/*.cpp busybox/*.hpp)
+add_executable(maabusybox ${maabusybox_src})
+set_target_properties(maabusybox PROPERTIES
+    CXX_STANDARD 20
+    CXX_STANDARD_REQUIRED ON
+)
+target_link_libraries(maabusybox MaaFramework ${OpenCV_LIBS})
+target_include_directories(maabusybox PUBLIC ${MaaFramework_INCLUDE} "source")
 
 target_link_libraries(MaaFramework ${OpenCV_LIBS} MaaDerpLearning  ZLIB::ZLIB header_only_libraries) #asio::asio ONNXRuntime::ONNXRuntime cpr::cpr
 
