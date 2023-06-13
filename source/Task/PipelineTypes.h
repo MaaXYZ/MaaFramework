@@ -90,13 +90,8 @@ struct SwipeSelfParams
 enum class NextMode
 {
     Invalid = 0,
-    FindFirst,
+    Find,
     Foreach,
-};
-
-enum class NotifyType
-{
-    Invalid = 0,
 };
 
 struct Data
@@ -111,7 +106,8 @@ struct Data
 
     cv::Rect roi {};
     bool cache = false;
-    int retry_times = INT_MAX;
+    uint times = UINT_MAX;
+    uint timeout = UINT_MAX;
 
     std::vector<std::string> next;
     NextMode next_mode = NextMode::Invalid;
@@ -119,8 +115,8 @@ struct Data
     std::vector<std::string> overflow_next;
     NextMode overflow_next_mode = NextMode::Invalid;
 
-    std::vector<std::string> error_next;
-    NextMode error_next_mode = NextMode::Invalid;
+    std::vector<std::string> timeout_next;
+    NextMode timeout_next_mode = NextMode::Invalid;
 
     Action::Type action_type = Action::Type::Invalid;
     std::variant<Action::ClickParams, Action::ClickRegionParams, Action::SwipeRegionParams> action_params;
@@ -128,8 +124,7 @@ struct Data
     int pre_delay = 0;
     int post_delay = 0;
 
-    NotifyType notify_type = NotifyType::Invalid;
-    std::string notify_value;
+    bool notify = false;
 };
 
 MAA_PIPELINE_TASK_NS_END
