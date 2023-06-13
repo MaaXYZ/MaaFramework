@@ -57,7 +57,7 @@ int PosixIO::call_command(const std::vector<std::string>& cmd, bool recv_by_sock
     MAA_PLATFORM_NS::single_page_buffer<char> pipe_buffer;
     MAA_PLATFORM_NS::single_page_buffer<char> sock_buffer;
 
-    auto check_timeout = [&]() -> bool {
+    auto check_timeout = [&](const auto& start_time) -> bool {
         return timeout && timeout < duration_cast<milliseconds>(steady_clock::now() - start_time).count();
     };
 
@@ -115,7 +115,7 @@ int PosixIO::call_command(const std::vector<std::string>& cmd, bool recv_by_sock
                     pipe_data.insert(pipe_data.end(), pipe_buffer.get(), pipe_buffer.get() + read_num);
                     read_num = ::read(m_pipe_out[PIPE_READ], pipe_buffer.get(), pipe_buffer.size());
                 }
-            } while (::waitpid(m_child, &exit_ret, WNOHANG) == 0 && !check_timeout());
+            } while (::waitpid(m_child, &exit_ret, WNOHANG) == 0 && !check_timeout(start_time));
         }
         ::waitpid(m_child, &exit_ret, 0); // if ::waitpid(m_child, &exit_ret, WNOHANG) == 0, repeat it will cause
         // ECHILD, so not check the return value
