@@ -105,10 +105,19 @@ public:
     void deinit();
 
     std::optional<cv::Mat> screencap_raw_by_netcat();
+    std::optional<cv::Mat> screencap_raw_with_gzip();
+    std::optional<cv::Mat> screencap_encode();
+    std::optional<cv::Mat> screencap_encode_to_file(const std::string& file);
+    // pull() ?
     std::optional<std::string> netcat_address();
 
 private:
+    std::optional<cv::Mat> process(std::string& buffer,
+                                   std::optional<cv::Mat> (Screencap::*decoder)(const std::string& buffer));
     std::optional<cv::Mat> decode(const std::string& buffer);
+    std::optional<cv::Mat> decodeGzip(const std::string& buffer);
+    std::optional<cv::Mat> decodePng(const std::string& buffer);
+    bool clean_cr(std::string& buffer);
 
     Argv screencap_raw_by_netcat_argv_;
     Argv netcat_address_argv_;
@@ -117,7 +126,6 @@ private:
     Argv screencap_encode_to_file_argv_;
     Argv pull_file_argv_;
 
-private:
     int width, height;
     std::string address;
     uint16_t port;

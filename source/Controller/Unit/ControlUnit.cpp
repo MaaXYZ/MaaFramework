@@ -4,6 +4,15 @@
 #include "Utils/NoWarningCV.h"
 #include "Utils/StringMisc.hpp"
 
+// #ifdef _MSC_VER
+// #pragma warning(push)
+// #pragma warning(disable : 4068)
+// #endif
+// #include <gzip/decompress.hpp>
+// #ifdef _MSC_VER
+// #pragma warning(pop)
+// #endif
+
 MAA_CTRL_UNIT_NS_BEGIN
 
 void UnitHelper::set_io(std::shared_ptr<PlatformIO> io_ptr)
@@ -289,8 +298,61 @@ void Screencap::deinit()
     height = 0;
     address = "";
     port = 0;
-    end_of_line = Screencap::EndOfLine::UnknownYet;
-    method = Screencap::Method::UnknownYet;
+    end_of_line = EndOfLine::UnknownYet;
+    method = Method::UnknownYet;
+}
+
+std::optional<cv::Mat> Screencap::process(std::string& buffer,
+                                          std::optional<cv::Mat> (Screencap::*decoder)(const std::string& buffer))
+{
+    bool tried_clean = false;
+
+    if (end_of_line == EndOfLine::CRLF) {
+        tried_clean = true;
+        if (!clean_cr(buffer)) {
+            LogInfo << "end_of_line is set to CRLF but no `\\r\\n` found, set it to LF";
+            end_of_line = EndOfLine::LF;
+        }
+    }
+
+    auto res = (this->*decoder)(buffer);
+
+    if (res.has_value()) {
+        if (end_of_line == EndOfLine::UnknownYet) {
+            LogInfo << "end_of_line is LF";
+            end_of_line = EndOfLine::LF;
+        }
+        return res;
+    }
+
+    LogInfo << "data is not empty, but image is empty";
+    if (tried_clean) {
+        LogError << "skip retry decoding and decode failed!";
+        return std::nullopt;
+    }
+
+    LogInfo << "try to cvt lf";
+    if (!clean_cr(buffer)) {
+        LogError << "no `\\r\\n` found, skip retry decode";
+        return std::nullopt;
+    }
+
+    res = (this->*decoder)(buffer);
+
+    if (!res.has_value()) {
+        LogError << "convert lf and retry decode failed!";
+        return std::nullopt;
+    }
+
+    if (end_of_line == EndOfLine::UnknownYet) {
+        LogInfo << "end_of_line is CRLF";
+    }
+    else {
+        LogInfo << "end_of_line is changed to CRLF";
+    }
+    end_of_line = EndOfLine::CRLF;
+
+    return res;
 }
 
 std::optional<cv::Mat> Screencap::decode(const std::string& buffer)
@@ -331,6 +393,56 @@ std::optional<cv::Mat> Screencap::decode(const std::string& buffer)
     return temp.clone(); // temp只是引用data, 需要clone确保数据拥有所有权
 }
 
+std::optional<cv::Mat> Screencap::decodeGzip(const std::string& buffer)
+{
+    // Hey, where is the fucking gzip-hpp package?
+    return std::nullopt;
+}
+
+std::optional<cv::Mat> Screencap::decodePng(const std::string& buffer)
+{
+    cv::Mat temp = cv::imdecode({ buffer.data(), int(buffer.size()) }, cv::IMREAD_COLOR);
+    if (temp.empty()) {
+        return std::nullopt;
+    }
+
+    return temp.clone();
+}
+
+bool Screencap::clean_cr(std::string& buffer)
+{
+    if (buffer.size() < 2) {
+        return false;
+    }
+
+    auto check = [](std::string::iterator it) { return *it == '\r' && *(it + 1) == '\n'; };
+
+    auto scan = buffer.end();
+    for (auto it = buffer.begin(); it != buffer.end() - 1; ++it) {
+        if (check(it)) {
+            scan = it;
+            break;
+        }
+    }
+    if (scan == buffer.end()) {
+        return false;
+    }
+
+    // TODO: 应该可以优化为若干次copy+find, 效率应该会好一点, 但是没必要
+    auto last = buffer.end() - 1;
+    auto ptr = scan;
+    while (++scan != last) {
+        if (!check(scan)) {
+            *ptr = *scan;
+            ++ptr;
+        }
+    }
+    *ptr = *last;
+    ++ptr;
+    buffer.erase(ptr, buffer.end());
+    return true;
+}
+
 std::optional<cv::Mat> Screencap::screencap_raw_by_netcat()
 {
     LogFunc;
@@ -347,7 +459,59 @@ std::optional<cv::Mat> Screencap::screencap_raw_by_netcat()
         return std::nullopt;
     }
 
-    return decode(cmd_ret.value());
+    return process(cmd_ret.value(), &Screencap::decode);
+}
+
+std::optional<cv::Mat> Screencap::screencap_raw_with_gzip()
+{
+    LogFunc;
+
+    if (!io_ptr_) {
+        LogError << "io_ptr is nullptr";
+        return std::nullopt;
+    }
+
+    auto cmd_ret = command(screencap_raw_with_gzip_argv_.gen(argv_replace_));
+
+    if (!cmd_ret.has_value()) {
+        return std::nullopt;
+    }
+
+    return process(cmd_ret.value(), &Screencap::decodeGzip);
+}
+
+std::optional<cv::Mat> Screencap::screencap_encode()
+{
+    LogFunc;
+
+    if (!io_ptr_) {
+        LogError << "io_ptr is nullptr";
+        return std::nullopt;
+    }
+
+    auto cmd_ret = command(screencap_encode_argv_.gen(argv_replace_));
+
+    if (!cmd_ret.has_value()) {
+        return std::nullopt;
+    }
+
+    return process(cmd_ret.value(), &Screencap::decodePng);
+}
+
+std::optional<cv::Mat> Screencap::screencap_encode_to_file(const std::string& file)
+{
+    LogFunc;
+
+    if (!io_ptr_) {
+        LogError << "io_ptr is nullptr";
+        return std::nullopt;
+    }
+
+    merge_replacement({ { "{TEMP_FILE}", file } });
+    auto cmd_ret = command(screencap_encode_to_file_argv_.gen(argv_replace_));
+
+    // TODO: pull file?
+    return std::nullopt;
 }
 
 std::optional<std::string> Screencap::netcat_address()
