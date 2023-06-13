@@ -297,8 +297,8 @@ int main(int argc, char* argv[])
         else if (scmd == "push") {
             std::cout << "push as " << invtp << std::endl;
             std::cout << "return: " << std::boolalpha << inv->push(params[0]) << std::endl;
-            std::ofstream f(".invokeapp");
-            f << inv->get_tempname();
+            std::ofstream fo(".invokeapp");
+            fo << inv->get_tempname();
         }
         else if (scmd == "chmod") {
             std::cout << "chmod of " << invtp << std::endl;

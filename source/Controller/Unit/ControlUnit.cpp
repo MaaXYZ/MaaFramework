@@ -23,10 +23,6 @@ std::string temp_name()
     tmpnam(p);
 #ifdef _WIN32
     auto pos = std::string(p).find_last_of("\\/");
-    if (pos == std::string::npos) {
-        io_ptr_->close_socket();
-        return false;
-    }
     LogInfo << p << pos << (p + pos + 1);
     return p + pos + 1;
 #else
