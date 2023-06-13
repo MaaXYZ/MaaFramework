@@ -104,16 +104,12 @@ public:
             auto&& content = to_stream(std::forward<T>(value));
 
 #ifdef MAA_DEBUG
-#ifdef _WIN32
             if constexpr (std::is_constructible_v<std::string_view, std::decay_t<decltype(content)>>) {
-                std::cout << utf8_to_ansi(content) << sep_.str;
+                std::cout << utf8_to_stdout(content) << sep_.str;
             }
             else {
                 std::cout << content << sep_.str;
             }
-#else
-            std::cout << content << sep_.str;
-#endif
 #endif
             stream_ << std::forward<decltype(content)>(content) << sep_.str;
         }

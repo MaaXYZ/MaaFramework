@@ -43,7 +43,7 @@ inline std::string ansi_to_utf8(std::string_view ansi_str)
     str = nullptr;
 
     return strTemp;
-#elif defined(__linux__) // Don't fucking use gbk in linux!
+#elif defined(__linux__)
     iconv_t conv = ::iconv_open("utf-8", "gbk");
     if (conv == (iconv_t)-1) {
         // error
@@ -99,7 +99,7 @@ inline std::string utf8_to_ansi(std::string_view utf8_str)
     sz_ansi = nullptr;
 
     return strTemp;
-#elif defined(__linux__) // Don't fucking use gbk in linux!
+#elif defined(__linux__)
     iconv_t conv = ::iconv_open("gbk", "utf-8");
     if (conv == (iconv_t)-1) {
         // error
@@ -189,6 +189,15 @@ inline std::string utf8_to_unicode_escape(std::string_view utf8_str)
     }
 
     return unicode_escape_str;
+#else
+    return std::string(utf8_str);
+#endif
+}
+
+inline std::string utf8_to_stdout(std::string_view utf8_str)
+{
+#ifdef _WIN32
+    return utf8_to_ansi(utf8_str);
 #else
     return std::string(utf8_str);
 #endif
