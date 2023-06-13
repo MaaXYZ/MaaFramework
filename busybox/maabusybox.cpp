@@ -210,14 +210,55 @@ int main(int argc, char* argv[])
         auto scmd = result["subcommand"].as<std::string>();
         // auto params = result["params"].as<std::vector<std::string>>();
 
+        auto now = std::chrono::steady_clock::now();
+
         if (scmd == "help") {
-            std::cout << "Usage: " << argv[0] << " screencap [raw_by_netcat | netcat_address]" << std::endl;
+            std::cout << "Usage: " << argv[0]
+                      << " screencap [raw_by_netcat | raw_with_gzip | encode | encode_to_file | netcat_address]"
+                      << std::endl;
         }
         else if (scmd == "raw_by_netcat") {
             auto mat = scp->screencap_raw_by_netcat();
             if (mat.has_value()) {
                 cv::imwrite("temp.png", mat.value());
                 std::cout << "image saved to temp.png" << std::endl;
+
+                auto dur =
+                    std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::steady_clock::now() - now);
+                std::cout << "time cost: " << dur << std::endl;
+            }
+        }
+        else if (scmd == "raw_with_gzip") {
+            auto mat = scp->screencap_raw_with_gzip();
+            if (mat.has_value()) {
+                cv::imwrite("temp.png", mat.value());
+                std::cout << "image saved to temp.png" << std::endl;
+
+                auto dur =
+                    std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::steady_clock::now() - now);
+                std::cout << "time cost: " << dur << std::endl;
+            }
+        }
+        else if (scmd == "encode") {
+            auto mat = scp->screencap_encode();
+            if (mat.has_value()) {
+                cv::imwrite("temp.png", mat.value());
+                std::cout << "image saved to temp.png" << std::endl;
+
+                auto dur =
+                    std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::steady_clock::now() - now);
+                std::cout << "time cost: " << dur << std::endl;
+            }
+        }
+        else if (scmd == "encode_to_file") {
+            auto mat = scp->screencap_encode_to_file();
+            if (mat.has_value()) {
+                cv::imwrite("temp.png", mat.value());
+                std::cout << "image saved to temp.png" << std::endl;
+
+                auto dur =
+                    std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::steady_clock::now() - now);
+                std::cout << "time cost: " << dur << std::endl;
             }
         }
         else if (scmd == "netcat_address") {

@@ -107,7 +107,7 @@ public:
     std::optional<cv::Mat> screencap_raw_by_netcat();
     std::optional<cv::Mat> screencap_raw_with_gzip();
     std::optional<cv::Mat> screencap_encode();
-    std::optional<cv::Mat> screencap_encode_to_file(const std::string& file);
+    std::optional<cv::Mat> screencap_encode_to_file();
     // pull() ?
     std::optional<std::string> netcat_address();
 
@@ -125,6 +125,8 @@ private:
     Argv screencap_encode_argv_;
     Argv screencap_encode_to_file_argv_;
     Argv pull_file_argv_;
+
+    std::string tempname;
 
     int width, height;
     std::string address;

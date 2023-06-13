@@ -281,6 +281,10 @@ bool Screencap::init(int w, int h)
     }
     port = prt.value();
 
+    char p[L_tmpnam];
+    tmpnam(p);
+    tempname = p + sizeof(P_tmpdir);
+
     return true;
 }
 
@@ -498,7 +502,7 @@ std::optional<cv::Mat> Screencap::screencap_encode()
     return process(cmd_ret.value(), &Screencap::decodePng);
 }
 
-std::optional<cv::Mat> Screencap::screencap_encode_to_file(const std::string& file)
+std::optional<cv::Mat> Screencap::screencap_encode_to_file()
 {
     LogFunc;
 
@@ -507,11 +511,36 @@ std::optional<cv::Mat> Screencap::screencap_encode_to_file(const std::string& fi
         return std::nullopt;
     }
 
-    merge_replacement({ { "{TEMP_FILE}", file } });
+    auto tempfile = (std::filesystem::path(P_tmpdir) / tempname).string();
+    merge_replacement({ { "{TEMP_FILE}", tempname }, { "{DST_PATH}", tempfile } });
     auto cmd_ret = command(screencap_encode_to_file_argv_.gen(argv_replace_));
 
-    // TODO: pull file?
-    return std::nullopt;
+    if (!cmd_ret.has_value()) {
+        return std::nullopt;
+    }
+
+    cmd_ret = command(pull_file_argv_.gen(argv_replace_));
+
+    if (!cmd_ret.has_value()) {
+        return std::nullopt;
+    }
+
+    std::ifstream f(tempfile, std::ios_base::in | std::ios_base::binary);
+    if (!f.is_open()) {
+        return std::nullopt;
+    }
+
+    f.seekg(0, std::ios_base::end);
+    size_t l = f.tellg();
+    char* buf = new char[l + 1];
+    f.seekg(0, std::ios_base::beg);
+    f.read(buf, l);
+    buf[l] = 0;
+    f.close();
+
+    std::string img(buf, l);
+
+    return process(img, &Screencap::decodePng);
 }
 
 std::optional<std::string> Screencap::netcat_address()
