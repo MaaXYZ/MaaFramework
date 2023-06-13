@@ -1,3 +1,5 @@
+#define _CRT_SECURE_NO_WARNINGS
+
 #include "Controller/Platform/PlatformFactory.h"
 #include "Controller/Unit/ControlUnit.h"
 #include "MaaAPI.h"

@@ -1,3 +1,5 @@
+#define _CRT_SECURE_NO_WARNINGS
+
 #include "ControlUnit.h"
 
 #include "Utils/Logger.hpp"
@@ -283,7 +285,16 @@ bool Screencap::init(int w, int h)
 
     char p[L_tmpnam];
     tmpnam(p);
+#ifdef _WIN32
+    auto pos = std::string(p).find_last_of("\\/");
+    if (pos == std::string::npos) {
+        io_ptr_->close_socket();
+        return false;
+    }
+    tempname = p + pos + 1;
+#else
     tempname = p + sizeof(P_tmpdir);
+#endif
 
     return true;
 }
@@ -511,7 +522,12 @@ std::optional<cv::Mat> Screencap::screencap_encode_to_file()
         return std::nullopt;
     }
 
+#ifdef _WIN32
+    auto tempfile = (std::filesystem::temp_directory_path() / tempname).string();
+#else
     auto tempfile = (std::filesystem::path(P_tmpdir) / tempname).string();
+#endif
+
     merge_replacement({ { "{TEMP_FILE}", tempname }, { "{DST_PATH}", tempfile } });
     auto cmd_ret = command(screencap_encode_to_file_argv_.gen(argv_replace_));
 
