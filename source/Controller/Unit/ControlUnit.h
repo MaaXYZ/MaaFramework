@@ -101,15 +101,16 @@ class Screencap : public UnitHelper
 public:
     bool parse(const json::value& config);
 
-    bool init(int w, int h);
+    bool init(int w, int h, const std::string& force_temp = "");
     void deinit();
 
     std::optional<cv::Mat> screencap_raw_by_netcat();
     std::optional<cv::Mat> screencap_raw_with_gzip();
     std::optional<cv::Mat> screencap_encode();
     std::optional<cv::Mat> screencap_encode_to_file();
-    // pull() ?
     std::optional<std::string> netcat_address();
+
+    std::string get_tempname() const { return tempname; }
 
 private:
     std::optional<cv::Mat> process(std::string& buffer,
@@ -155,7 +156,15 @@ class InvokeApp : public UnitHelper
 public:
     bool parse(const json::value& config);
 
+    bool init(const std::string& force_temp = "");
+
     std::optional<std::vector<std::string>> abilist();
+    bool push(const std::string& path);
+    bool chmod();
+    std::shared_ptr<IOHandler> invoke_bin(const std::string& extra);
+    std::shared_ptr<IOHandler> invoke_app(const std::string& package);
+
+    std::string get_tempname() const { return tempname; }
 
 private:
     Argv abilist_argv_;
@@ -163,6 +172,8 @@ private:
     Argv chmod_bin_argv_;
     Argv invoke_bin_argv_;
     Argv invoke_app_argv_;
+
+    std::string tempname;
 };
 
 MAA_CTRL_UNIT_NS_END

@@ -17,6 +17,33 @@
 
 MAA_CTRL_UNIT_NS_BEGIN
 
+std::string temp_name()
+{
+    char p[L_tmpnam];
+    tmpnam(p);
+#ifdef _WIN32
+    auto pos = std::string(p).find_last_of("\\/");
+    if (pos == std::string::npos) {
+        io_ptr_->close_socket();
+        return false;
+    }
+    LogInfo << p << pos << (p + pos + 1);
+    return p + pos + 1;
+#else
+    return p + sizeof(P_tmpdir);
+#endif
+}
+
+std::filesystem::path temp_file(const std::string& name)
+{
+#ifdef _WIN32
+    return std::filesystem::temp_directory_path() / name;
+#else
+    // 虽然可以就用上面那个, 但是不确定这是否是同一个, 保险起见还是用现有的marcro
+    return std::filesystem::path(P_tmpdir) / name;
+#endif
+}
+
 void UnitHelper::set_io(std::shared_ptr<PlatformIO> io_ptr)
 {
     io_ptr_ = std::move(io_ptr);
@@ -196,7 +223,7 @@ bool Activity::start(const std::string& intent)
     merge_replacement({ { "{INTENT}", intent } });
     auto cmd_ret = command(start_app_argv_.gen(argv_replace_));
 
-    return cmd_ret.has_value() && cmd_ret.value().empty();
+    return cmd_ret.has_value();
 }
 
 bool Activity::stop(const std::string& intent)
@@ -206,7 +233,7 @@ bool Activity::stop(const std::string& intent)
     merge_replacement({ { "{INTENT}", intent } });
     auto cmd_ret = command(stop_app_argv_.gen(argv_replace_));
 
-    return cmd_ret.has_value() && cmd_ret.value().empty();
+    return cmd_ret.has_value();
 }
 
 bool TapInput::parse(const json::value& config)
@@ -259,23 +286,11 @@ bool Screencap::parse(const json::value& config)
            parse_argv("PullFile", config, pull_file_argv_);
 }
 
-bool Screencap::init(int w, int h)
+bool Screencap::init(int w, int h, const std::string& force_temp)
 {
     LogFunc;
 
-    char p[L_tmpnam];
-    tmpnam(p);
-#ifdef _WIN32
-    auto pos = std::string(p).find_last_of("\\/");
-    if (pos == std::string::npos) {
-        io_ptr_->close_socket();
-        return false;
-    }
-    LogInfo << p << pos << (p + pos + 1);
-    tempname = p + pos + 1;
-#else
-    tempname = p + sizeof(P_tmpdir);
-#endif
+    tempname = force_temp.empty() ? temp_name() : force_temp;
 
     if (!io_ptr_) {
         LogError << "io_ptr is nullptr";
@@ -530,13 +545,9 @@ std::optional<cv::Mat> Screencap::screencap_encode_to_file()
         return std::nullopt;
     }
 
-#ifdef _WIN32
-    auto tempfile = (std::filesystem::temp_directory_path() / tempname).string();
-#else
-    auto tempfile = (std::filesystem::path(P_tmpdir) / tempname).string();
-#endif
+    auto tempfile = temp_file(tempname);
 
-    merge_replacement({ { "{TEMP_FILE}", tempname }, { "{DST_PATH}", tempfile } });
+    merge_replacement({ { "{TEMP_FILE}", tempname }, { "{DST_PATH}", tempfile.string() } });
     auto cmd_ret = command(screencap_encode_to_file_argv_.gen(argv_replace_));
 
     if (!cmd_ret.has_value()) {
@@ -595,6 +606,14 @@ bool InvokeApp::parse(const json::value& config)
            parse_argv("InvokeApp", config, invoke_app_argv_);
 }
 
+bool InvokeApp::init(const std::string& force_temp)
+{
+    LogFunc;
+
+    tempname = force_temp.empty() ? temp_name() : force_temp;
+    return true;
+}
+
 std::optional<std::vector<std::string>> InvokeApp::abilist()
 {
     LogFunc;
@@ -621,6 +640,76 @@ std::optional<std::vector<std::string>> InvokeApp::abilist()
     }
 
     return res;
+}
+
+bool InvokeApp::push(const std::string& path)
+{
+    LogFunc;
+
+    if (!io_ptr_) {
+        LogError << "io_ptr is nullptr";
+        return false;
+    }
+
+    merge_replacement({ { "{BIN_PATH}", path }, { "{BIN_WORKING_FILE}", tempname } });
+    auto cmd_ret = command(push_bin_argv_.gen(argv_replace_));
+
+    if (!cmd_ret.has_value()) {
+        return false;
+    }
+
+    return true;
+}
+
+bool InvokeApp::chmod()
+{
+    LogFunc;
+
+    if (!io_ptr_) {
+        LogError << "io_ptr is nullptr";
+        return false;
+    }
+
+    merge_replacement({ { "{BIN_WORKING_FILE}", tempname } });
+    auto cmd_ret = command(chmod_bin_argv_.gen(argv_replace_));
+
+    if (!cmd_ret.has_value()) {
+        return false;
+    }
+
+    return true;
+}
+
+std::shared_ptr<IOHandler> InvokeApp::invoke_bin(const std::string& extra)
+{
+    LogFunc;
+
+    if (!io_ptr_) {
+        LogError << "io_ptr is nullptr";
+        return nullptr;
+    }
+
+    merge_replacement({ { "{BIN_WORKING_FILE}", tempname }, { "{BIN_EXTRA_PARAMS}", extra } });
+    LogInfo << invoke_bin_argv_.gen(argv_replace_);
+    auto cmd_ret = io_ptr_->interactive_shell(invoke_bin_argv_.gen(argv_replace_));
+
+    return cmd_ret;
+}
+
+std::shared_ptr<IOHandler> InvokeApp::invoke_app(const std::string& package)
+{
+    LogFunc;
+
+    if (!io_ptr_) {
+        LogError << "io_ptr is nullptr";
+        return nullptr;
+    }
+
+    merge_replacement({ { "{APP_WORKING_FILE}", tempname }, { "{PACKAGE_NAME}", package } });
+    LogInfo << invoke_app_argv_.gen(argv_replace_);
+    auto cmd_ret = io_ptr_->interactive_shell(invoke_app_argv_.gen(argv_replace_));
+
+    return cmd_ret;
 }
 
 MAA_CTRL_UNIT_NS_END

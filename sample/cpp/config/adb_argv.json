@@ -134,7 +134,7 @@
         "-s",
         "{ADB_SERIAL}",
         "shell",
-        "\"/data/local/tmp/{BIN_WORKING_FILE}\" -i"
+        "\"/data/local/tmp/{BIN_WORKING_FILE}\" {BIN_EXTRA_PARAMS}"
     ],
     "InvokeApp": [
         "{ADB}",

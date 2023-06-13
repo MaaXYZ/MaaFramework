@@ -22,8 +22,7 @@ Win32IO::~Win32IO()
 }
 
 int Win32IO::call_command(const std::vector<std::string>& cmd, bool recv_by_socket, std::string& pipe_data,
-                          std::string& sock_data,
-                          int64_t timeout)
+                          std::string& sock_data, int64_t timeout)
 {
     using namespace std::chrono;
 
@@ -279,7 +278,7 @@ void Win32IO::close_socket() noexcept
     }
 }
 
-std::shared_ptr<IOHandler> Win32IO::interactive_shell(const std::string& cmd)
+std::shared_ptr<IOHandler> Win32IO::interactive_shell(const std::vector<std::string>& cmd)
 {
     constexpr int PipeReadBuffSize = 4096ULL;
     constexpr int PipeWriteBuffSize = 64 * 1024ULL;
@@ -309,7 +308,9 @@ std::shared_ptr<IOHandler> Win32IO::interactive_shell(const std::string& cmd)
     si.hStdOutput = pipe_child_write;
     si.hStdError = pipe_child_write;
 
-    auto cmd_osstr = to_osstring(cmd);
+    std::vector<os_string> ocmd;
+    std::transform(cmd.begin(), cmd.end(), std::back_insert_iterator(ocmd), to_osstring);
+    auto cmd_osstr = args_to_cmd(ocmd);
     BOOL create_ret =
         CreateProcessW(NULL, cmd_osstr.data(), nullptr, nullptr, TRUE, 0, nullptr, nullptr, &si, &m_process_info);
     CloseHandle(pipe_child_write);

@@ -22,7 +22,7 @@ public:
     virtual std::optional<unsigned short> create_socket(const std::string& local_address) = 0;
     virtual void close_socket() noexcept = 0;
 
-    virtual std::shared_ptr<IOHandler> interactive_shell(const std::string& cmd) = 0;
+    virtual std::shared_ptr<IOHandler> interactive_shell(const std::vector<std::string>& cmd) = 0;
 
     bool support_socket_ = false;
 };

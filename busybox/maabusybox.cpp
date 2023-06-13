@@ -88,7 +88,7 @@ int main(int argc, char* argv[])
         
         ("command", "command", cxxopts::value<std::string>()->default_value("help"))
         ("subcommand", "sub command", cxxopts::value<std::string>()->default_value("help"))
-        ("params", "rest params", cxxopts::value<std::vector<std::string>>())
+        ("params", "rest params", cxxopts::value<std::vector<std::string>>()->default_value(""))
         ;
     // clang-format on
 
@@ -274,14 +274,70 @@ int main(int argc, char* argv[])
         inv->parse(config.value());
         inv->set_replacement(adbRepl);
 
+        std::ifstream f(".invokeapp");
+        std::string invtp = "";
+        if (f.is_open()) {
+            f >> invtp;
+            f.close();
+        }
+
+        inv->init(invtp);
+
+        invtp = inv->get_tempname();
+
         auto scmd = result["subcommand"].as<std::string>();
-        // auto params = result["params"].as<std::vector<std::string>>();
+        auto params = result["params"].as<std::vector<std::string>>();
 
         if (scmd == "help") {
-            std::cout << "Usage: " << argv[0] << " invoke_app [abilist]" << std::endl;
+            std::cout << "Usage: " << argv[0] << " invoke_app [abilist | push | chmod | invoke_bin]" << std::endl;
         }
         else if (scmd == "abilist") {
             std::cout << inv->abilist() << std::endl;
+        }
+        else if (scmd == "push") {
+            std::cout << "push as " << invtp << std::endl;
+            std::cout << "return: " << std::boolalpha << inv->push(params[0]) << std::endl;
+            std::ofstream f(".invokeapp");
+            f << inv->get_tempname();
+        }
+        else if (scmd == "chmod") {
+            std::cout << "chmod of " << invtp << std::endl;
+            std::cout << "return: " << std::boolalpha << inv->chmod() << std::endl;
+        }
+        else if (scmd == "invoke_bin") {
+            while (params.size() > 0 && params[0].empty()) {
+                params.erase(params.begin());
+            }
+            std::cout << "params: " << params << std::endl;
+            auto h = inv->invoke_bin(params.size() > 0 ? params[0] : "");
+            while (true) {
+                std::cout << "reading info..." << std::endl;
+                auto str = h->read(2);
+                if (str.empty()) {
+#ifdef _WIN32
+                    Sleep(2000);
+#else
+                    sleep(2);
+#endif
+                    continue;
+                }
+                auto pos = str.find('^');
+                if (pos == std::string::npos) {
+                    continue;
+                }
+                auto rpos = str.find('\n', pos);
+                if (rpos == std::string::npos) {
+                    continue;
+                }
+                auto info = str.substr(pos + 1, rpos - pos - 1);
+                std::cout << "minitouch info: " << info << std::endl;
+                break;
+            }
+            while (true) {
+                std::string row;
+                std::getline(std::cin, row);
+                h->write(row + '\n');
+            }
         }
     }
 }

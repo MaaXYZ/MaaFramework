@@ -16,13 +16,13 @@ public:
     PosixIO();
     virtual ~PosixIO();
 
-    int call_command(const std::vector<std::string>& cmd, bool recv_by_socket, std::string& pipe_data, std::string& sock_data,
-                     int64_t timeout) override;
+    int call_command(const std::vector<std::string>& cmd, bool recv_by_socket, std::string& pipe_data,
+                     std::string& sock_data, int64_t timeout) override;
 
     std::optional<unsigned short> create_socket(const std::string& local_address) override;
     void close_socket() noexcept override;
 
-    std::shared_ptr<IOHandler> interactive_shell(const std::string& cmd) override;
+    std::shared_ptr<IOHandler> interactive_shell(const std::vector<std::string>& cmd) override;
 
     int m_server_sock = -1;
     sockaddr_in m_server_sock_addr {};

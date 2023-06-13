@@ -170,7 +170,7 @@ void PosixIO::close_socket() noexcept
     }
 }
 
-std::shared_ptr<IOHandler> PosixIO::interactive_shell(const std::string& cmd)
+std::shared_ptr<IOHandler> PosixIO::interactive_shell(const std::vector<std::string>& cmd)
 {
     int pipe_to_child[2];
     int pipe_from_child[2];
@@ -196,6 +196,7 @@ std::shared_ptr<IOHandler> PosixIO::interactive_shell(const std::string& cmd)
         if (::dup2(pipe_to_child[0], STDIN_FILENO) < 0 || ::close(pipe_to_child[1]) < 0 ||
             ::close(pipe_from_child[0]) < 0 || ::dup2(pipe_from_child[1], STDOUT_FILENO) < 0 ||
             ::dup2(pipe_from_child[1], STDERR_FILENO) < 0) {
+            LogError << "pipe failed" << strerror(errno);
             ::exit(-1);
         }
 
@@ -209,8 +210,14 @@ std::shared_ptr<IOHandler> PosixIO::interactive_shell(const std::string& cmd)
         ::prctl(PR_SET_PDEATHSIG, SIGTERM);
 #endif
 
-        ::execlp("/bin/sh", "sh", "-c", cmd.c_str(), nullptr);
-        exit(-1);
+        char** argv = new char*[cmd.size() + 1];
+        for (size_t i = 0; i < cmd.size(); i++) {
+            argv[i] = const_cast<char*>(cmd[i].c_str());
+        }
+        argv[cmd.size()] = NULL;
+        auto exit_ret = execvp(cmd[0].c_str(), argv);
+        LogError << "fork failed" << strerror(errno);
+        ::exit(exit_ret);
     }
 
     if (::close(pipe_to_child[0]) < 0 || ::close(pipe_from_child[1]) < 0) {
