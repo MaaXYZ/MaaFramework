@@ -263,6 +263,20 @@ bool Screencap::init(int w, int h)
 {
     LogFunc;
 
+    char p[L_tmpnam];
+    tmpnam(p);
+#ifdef _WIN32
+    auto pos = std::string(p).find_last_of("\\/");
+    if (pos == std::string::npos) {
+        io_ptr_->close_socket();
+        return false;
+    }
+    LogInfo << p << pos << (p + pos + 1);
+    tempname = p + pos + 1;
+#else
+    tempname = p + sizeof(P_tmpdir);
+#endif
+
     if (!io_ptr_) {
         LogError << "io_ptr is nullptr";
         return false;
@@ -277,24 +291,18 @@ bool Screencap::init(int w, int h)
     }
     address = addr.value();
 
-    auto prt = io_ptr_->create_socket(address);
+    auto serial_host = argv_replace_["{ADB_SERIAL}"];
+    auto shp = serial_host.find(':');
+    std::string local = "127.0.0.1";
+    if (shp != std::string::npos) {
+        local = serial_host.substr(0, shp);
+    }
+
+    auto prt = io_ptr_->create_socket(local);
     if (!prt.has_value()) {
         return false;
     }
     port = prt.value();
-
-    char p[L_tmpnam];
-    tmpnam(p);
-#ifdef _WIN32
-    auto pos = std::string(p).find_last_of("\\/");
-    if (pos == std::string::npos) {
-        io_ptr_->close_socket();
-        return false;
-    }
-    tempname = p + pos + 1;
-#else
-    tempname = p + sizeof(P_tmpdir);
-#endif
 
     return true;
 }
