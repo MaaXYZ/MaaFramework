@@ -4,14 +4,14 @@
 #include "Utils/NoWarningCV.h"
 #include "Utils/StringMisc.hpp"
 
-// #ifdef _MSC_VER
-// #pragma warning(push)
-// #pragma warning(disable : 4068)
-// #endif
-// #include <gzip/decompress.hpp>
-// #ifdef _MSC_VER
-// #pragma warning(pop)
-// #endif
+#ifdef _MSC_VER
+#pragma warning(push)
+#pragma warning(disable : 4068)
+#endif
+#include <gzip/decompress.hpp>
+#ifdef _MSC_VER
+#pragma warning(pop)
+#endif
 
 MAA_CTRL_UNIT_NS_BEGIN
 
@@ -395,8 +395,8 @@ std::optional<cv::Mat> Screencap::decode(const std::string& buffer)
 
 std::optional<cv::Mat> Screencap::decodeGzip(const std::string& buffer)
 {
-    // Hey, where is the fucking gzip-hpp package?
-    return std::nullopt;
+    auto buf = gzip::decompress(buffer.c_str(), buffer.size());
+    return decode(buf);
 }
 
 std::optional<cv::Mat> Screencap::decodePng(const std::string& buffer)
