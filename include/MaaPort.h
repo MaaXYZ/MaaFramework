@@ -28,6 +28,8 @@
 
 #ifdef MAA_DLL_EXPORTS // defined if we are building the DLL (instead of using it)
 #define MAAAPI_PORT MAA_DLL_EXPORT
+#elif defined (MAA_STATIC_LINK)
+#define MAAAPI_PORT
 #else
 #define MAAAPI_PORT MAA_DLL_IMPORT
 #endif // MAA_DLL_EXPORTS

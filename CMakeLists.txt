@@ -83,14 +83,20 @@ find_package(MaaDerpLearning REQUIRED)
 # find_package(ONNXRuntime)
 # find_package(cpr CONFIG REQUIRED)
 
-file(GLOB_RECURSE maabusybox_src busybox/*.cpp busybox/*.hpp)
+file(GLOB_RECURSE maabusybox_src busybox/*.cpp busybox/*.hpp ${maa_src})
 add_executable(maabusybox ${maabusybox_src})
 set_target_properties(maabusybox PROPERTIES
     CXX_STANDARD 20
     CXX_STANDARD_REQUIRED ON
 )
+target_compile_definitions(maabusybox PRIVATE MAA_STATIC_LINK)
+if (WIN32)
+    target_link_libraries(maabusybox ws2_32)
+    target_compile_definitions(maabusybox PRIVATE _UNICODE UNICODE)
+endif ()
 target_link_libraries(maabusybox MaaFramework ${OpenCV_LIBS})
 target_include_directories(maabusybox PUBLIC ${MaaFramework_INCLUDE} "source")
+target_link_libraries(MaaFramework ${OpenCV_LIBS} MaaDerpLearning  ZLIB::ZLIB header_only_libraries)
 
 target_link_libraries(MaaFramework ${OpenCV_LIBS} MaaDerpLearning  ZLIB::ZLIB header_only_libraries) #asio::asio ONNXRuntime::ONNXRuntime cpr::cpr
 
