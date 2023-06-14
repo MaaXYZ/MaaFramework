@@ -89,16 +89,15 @@ set_target_properties(maabusybox PROPERTIES
     CXX_STANDARD 20
     CXX_STANDARD_REQUIRED ON
 )
-target_compile_definitions(maabusybox PRIVATE MAA_STATIC_LINK)
+target_compile_definitions(maabusybox PRIVATE MAA_STATIC_LINK MAA_DEBUG)
 if (WIN32)
     target_link_libraries(maabusybox ws2_32)
     target_compile_definitions(maabusybox PRIVATE _UNICODE UNICODE)
 endif ()
-target_link_libraries(maabusybox MaaFramework ${OpenCV_LIBS})
+target_link_libraries(maabusybox MaaFramework ${OpenCV_LIBS} ZLIB::ZLIB header_only_libraries)
 target_include_directories(maabusybox PUBLIC ${MaaFramework_INCLUDE} "source")
-target_link_libraries(MaaFramework ${OpenCV_LIBS} MaaDerpLearning  ZLIB::ZLIB header_only_libraries)
 
-target_link_libraries(MaaFramework ${OpenCV_LIBS} MaaDerpLearning  ZLIB::ZLIB header_only_libraries) #asio::asio ONNXRuntime::ONNXRuntime cpr::cpr
+target_link_libraries(MaaFramework ${OpenCV_LIBS} MaaDerpLearning ZLIB::ZLIB header_only_libraries) #asio::asio ONNXRuntime::ONNXRuntime cpr::cpr
 
 if(WIN32)
     target_link_libraries(MaaFramework ws2_32)

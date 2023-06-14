@@ -192,7 +192,7 @@ public:
 #ifdef MAA_DEBUG
     std::string get_tempname() const { return tempname_; }
 #endif
-    
+
 private:
     Argv abilist_argv_;
     Argv push_bin_argv_;

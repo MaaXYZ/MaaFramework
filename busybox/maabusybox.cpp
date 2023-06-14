@@ -1,5 +1,9 @@
 #define _CRT_SECURE_NO_WARNINGS
 
+#if !defined(MAA_STATIC_LINK) || !defined(MAA_DEBUG)
+#error "maa busybox must be compiled with MAA_STATIC_LINK and MAA_DEBUG "
+#endif
+
 #include "Controller/Platform/PlatformFactory.h"
 #include "Controller/Unit/ControlUnit.h"
 #include "MaaAPI.h"
@@ -220,7 +224,7 @@ int main(int argc, char* argv[])
                       << std::endl;
         }
         else if (scmd == "test") {
-            std::cout << std::boolalpha << "return: " << scp->test_screencap(true) << std::endl;
+            std::cout << std::boolalpha << "return: " << scp->speed_test() << std::endl;
         }
         else if (scmd == "raw_by_netcat") {
             auto mat = scp->screencap_raw_by_netcat();
@@ -267,7 +271,7 @@ int main(int argc, char* argv[])
             }
         }
         else if (scmd == "netcat_address") {
-            std::cout << scp->netcat_address() << std::endl;
+            std::cout << scp->request_netcat_address() << std::endl;
         }
         scp->deinit();
     }

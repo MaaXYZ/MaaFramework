@@ -20,12 +20,13 @@ MAA_CTRL_UNIT_NS_BEGIN
 std::string temp_name()
 {
     char p[L_tmpnam] = { 0 };
-    tmpnam(p);
 #ifdef _WIN32
+    tmpnam(p);
     auto pos = std::string(p).find_last_of("\\/");
     LogInfo << p << pos << (p + pos + 1);
     return p + pos + 1;
 #else
+    auto _ret __attribute__((unused)) = tmpnam(p);
     return p + sizeof(P_tmpdir);
 #endif
 }
