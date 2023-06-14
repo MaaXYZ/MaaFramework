@@ -24,6 +24,13 @@
 
 MAA_NS_BEGIN
 
+#ifdef __GNUC__
+std::ostream& operator<<(std::ostream& os, const std::chrono::milliseconds& ms)
+{
+    return os << ms;
+}
+#endif
+
 template <typename T>
 concept has_stream_insertion_operator = requires { std::declval<std::ostream&>() << std::declval<T>(); };
 
@@ -339,7 +346,7 @@ public:
     ~ScopeLeaveHelper()
     {
         auto duration =
-            std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::steady_clock::now() - start_).count();
+            std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::steady_clock::now() - start_);
         std::apply([](auto&&... args) { return Logger::get_instance().trace(std::forward<decltype(args)>(args)...); },
                    std::move(args_))
             << "| leave," << duration << "ms";
