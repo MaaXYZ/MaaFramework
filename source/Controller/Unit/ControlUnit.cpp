@@ -2,10 +2,10 @@
 
 #include "ControlUnit.h"
 
+#include "Utils/ImageIo.hpp"
 #include "Utils/Logger.hpp"
 #include "Utils/NoWarningCV.h"
 #include "Utils/StringMisc.hpp"
-#include "Utils/ImageIo.hpp"
 
 #ifdef _MSC_VER
 #pragma warning(push)
@@ -95,7 +95,7 @@ std::optional<std::string> UnitBase::command(Argv::value cmd, bool recv_by_socke
     int ret = io_ptr_->call_command(cmd, recv_by_socket, pipe_data, sock_data, timeout);
 
     auto duration =
-        std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::steady_clock::now() - start_time).count();
+        std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::steady_clock::now() - start_time);
 
     LogInfo << VAR(cmd) << VAR(ret) << VAR(pipe_data.size()) << VAR(sock_data.size()) << VAR(duration);
     if (!pipe_data.empty() && pipe_data.size() < 4096) {
@@ -580,7 +580,7 @@ bool ScreencapEncodeToFileAndPull::parse(const json::value& config)
 bool ScreencapEncodeToFileAndPull::init(int w, int h, const std::string& force_temp)
 {
     set_wh(w, h);
-    
+
     tempname_ = force_temp.empty() ? temp_name() : force_temp;
 
     return true;
@@ -686,7 +686,6 @@ bool Screencap::speed_test()
     };
 
     {
-        end_of_line_ = EndOfLine::UnknownYet;
         auto now = std::chrono::steady_clock::now();
         if (screencap_raw_by_netcat_uint_.screencap()) {
             check(Method::RawByNetcat, now);
@@ -694,7 +693,6 @@ bool Screencap::speed_test()
     }
 
     {
-        end_of_line_ = EndOfLine::UnknownYet;
         auto now = std::chrono::steady_clock::now();
         if (screencap_raw_with_gzip_unit_.screencap()) {
             check(Method::RawWithGzip, now);
@@ -702,7 +700,6 @@ bool Screencap::speed_test()
     }
 
     {
-        end_of_line_ = EndOfLine::UnknownYet;
         auto now = std::chrono::steady_clock::now();
         if (screencap_encode_unit_.screencap()) {
             check(Method::Encode, now);
@@ -710,14 +707,11 @@ bool Screencap::speed_test()
     }
 
     {
-        end_of_line_ = EndOfLine::UnknownYet;
         auto now = std::chrono::steady_clock::now();
         if (screencap_encode_to_file_unit_.screencap()) {
             check(Method::EncodeToFileAndPull, now);
         }
     }
-
-    end_of_line_ = EndOfLine::UnknownYet;
 
     if (method_ == Method::UnknownYet) {
         LogError << "cannot find any method to screencap!";
