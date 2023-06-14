@@ -62,7 +62,7 @@
         "-s",
         "{ADB_SERIAL}",
         "exec-out",
-        "screencap | nc -w 3 {NC_ADDRESS} {NC_PORT}"
+        "screencap | nc -w 3 {NETCAT_ADDRESS} {NETCAT_PORT}"
     ],
     "NetcatAddress": [
         "{ADB}",
