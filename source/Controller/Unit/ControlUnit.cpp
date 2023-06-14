@@ -427,13 +427,13 @@ std::optional<cv::Mat> Screencap::decode(const std::string& buffer)
     return temp.clone(); // temp只是引用data, 需要clone确保数据拥有所有权
 }
 
-std::optional<cv::Mat> Screencap::decodeGzip(const std::string& buffer)
+std::optional<cv::Mat> Screencap::decode_gzip(const std::string& buffer)
 {
     auto buf = gzip::decompress(buffer.c_str(), buffer.size());
     return decode(buf);
 }
 
-std::optional<cv::Mat> Screencap::decodePng(const std::string& buffer)
+std::optional<cv::Mat> Screencap::decode_png(const std::string& buffer)
 {
     cv::Mat temp = cv::imdecode({ buffer.data(), int(buffer.size()) }, cv::IMREAD_COLOR);
     if (temp.empty()) {
@@ -511,7 +511,7 @@ std::optional<cv::Mat> Screencap::screencap_raw_with_gzip()
         return std::nullopt;
     }
 
-    return process(cmd_ret.value(), &Screencap::decodeGzip);
+    return process(cmd_ret.value(), &Screencap::decode_gzip);
 }
 
 std::optional<cv::Mat> Screencap::screencap_encode()
@@ -529,7 +529,7 @@ std::optional<cv::Mat> Screencap::screencap_encode()
         return std::nullopt;
     }
 
-    return process(cmd_ret.value(), &Screencap::decodePng);
+    return process(cmd_ret.value(), &Screencap::decode_png);
 }
 
 std::optional<cv::Mat> Screencap::screencap_encode_to_file()
@@ -571,7 +571,7 @@ std::optional<cv::Mat> Screencap::screencap_encode_to_file()
 
     std::string img(buf, l);
 
-    return process(img, &Screencap::decodePng);
+    return process(img, &Screencap::decode_png);
 }
 
 std::optional<std::string> Screencap::netcat_address()

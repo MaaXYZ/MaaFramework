@@ -118,8 +118,8 @@ private:
     std::optional<cv::Mat> process(std::string& buffer,
                                    std::optional<cv::Mat> (Screencap::*decoder)(const std::string& buffer));
     std::optional<cv::Mat> decode(const std::string& buffer);
-    std::optional<cv::Mat> decodeGzip(const std::string& buffer);
-    std::optional<cv::Mat> decodePng(const std::string& buffer);
+    std::optional<cv::Mat> decode_gzip(const std::string& buffer);
+    std::optional<cv::Mat> decode_png(const std::string& buffer);
     bool clean_cr(std::string& buffer);
 
     Argv screencap_raw_by_netcat_argv_;
