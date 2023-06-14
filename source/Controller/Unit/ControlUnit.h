@@ -134,7 +134,7 @@ private:
     } end_of_line_ = EndOfLine::UnknownYet;
 };
 
-class ScreencpRawByNetcat : public ScreencapBase
+class ScreencapRawByNetcat : public ScreencapBase
 {
 public:
     bool parse(const json::value& config);
@@ -226,7 +226,7 @@ public:
 private:
     bool speed_test();
 
-    ScreencpRawByNetcat screencap_raw_by_netcat_uint_;
+    ScreencapRawByNetcat screencap_raw_by_netcat_uint_;
     ScreencapRawWithGzip screencap_raw_with_gzip_unit_;
     ScreencapEncode screencap_encode_unit_;
     ScreencapEncodeToFileAndPull screencap_encode_to_file_unit_;

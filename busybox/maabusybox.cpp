@@ -115,7 +115,7 @@ int main(int argc, char* argv[])
     auto io = PlatformFactory::create();
     MaaSetGlobalOption(MaaGlobalOption_Logging, (std::filesystem::current_path() / "debug").string().c_str());
 
-    Unit::UnitHelper::Argv::replacement adbRepl = { { "{ADB}", adb }, { "{ADB_SERIAL}", adb_address } };
+    Unit::UnitBase::Argv::replacement adbRepl = { { "{ADB}", adb }, { "{ADB_SERIAL}", adb_address } };
 
     if (cmd == "connect") {
         auto connect = new Unit::Connection();
@@ -206,28 +206,24 @@ int main(int argc, char* argv[])
 
         auto res = device->request_resolution();
 
-        auto scp = new Unit::Screencap();
-        scp->set_io(io);
-        scp->parse(config.value());
-        scp->set_replacement(adbRepl);
-
-        scp->init(res.value().width, res.value().height);
-
         auto scmd = result["subcommand"].as<std::string>();
         // auto params = result["params"].as<std::vector<std::string>>();
 
         auto now = std::chrono::steady_clock::now();
 
         if (scmd == "help") {
-            std::cout << "Usage: " << argv[0]
-                      << " screencap [test | raw_by_netcat | raw_with_gzip | encode | encode_to_file | netcat_address]"
+            std::cout << "Usage: " << argv[0] << " screencap [raw_by_netcat | raw_with_gzip | encode | encode_to_file]"
                       << std::endl;
         }
-        else if (scmd == "test") {
-            std::cout << std::boolalpha << "return: " << scp->speed_test() << std::endl;
-        }
         else if (scmd == "raw_by_netcat") {
-            auto mat = scp->screencap_raw_by_netcat();
+            auto scp = new Unit::ScreencapRawByNetcat();
+            scp->set_io(io);
+            scp->parse(config.value());
+            scp->set_replacement(adbRepl);
+
+            scp->init(res.value().width, res.value().height);
+
+            auto mat = scp->screencap();
             if (mat.has_value()) {
                 cv::imwrite("temp.png", mat.value());
                 std::cout << "image saved to temp.png" << std::endl;
@@ -238,7 +234,14 @@ int main(int argc, char* argv[])
             }
         }
         else if (scmd == "raw_with_gzip") {
-            auto mat = scp->screencap_raw_with_gzip();
+            auto scp = new Unit::ScreencapRawWithGzip();
+            scp->set_io(io);
+            scp->parse(config.value());
+            scp->set_replacement(adbRepl);
+
+            scp->init(res.value().width, res.value().height);
+
+            auto mat = scp->screencap();
             if (mat.has_value()) {
                 cv::imwrite("temp.png", mat.value());
                 std::cout << "image saved to temp.png" << std::endl;
@@ -249,7 +252,14 @@ int main(int argc, char* argv[])
             }
         }
         else if (scmd == "encode") {
-            auto mat = scp->screencap_encode();
+            auto scp = new Unit::ScreencapEncode();
+            scp->set_io(io);
+            scp->parse(config.value());
+            scp->set_replacement(adbRepl);
+
+            scp->init(res.value().width, res.value().height);
+
+            auto mat = scp->screencap();
             if (mat.has_value()) {
                 cv::imwrite("temp.png", mat.value());
                 std::cout << "image saved to temp.png" << std::endl;
@@ -260,7 +270,14 @@ int main(int argc, char* argv[])
             }
         }
         else if (scmd == "encode_to_file") {
-            auto mat = scp->screencap_encode_to_file();
+            auto scp = new Unit::ScreencapEncodeToFileAndPull();
+            scp->set_io(io);
+            scp->parse(config.value());
+            scp->set_replacement(adbRepl);
+
+            scp->init(res.value().width, res.value().height);
+
+            auto mat = scp->screencap();
             if (mat.has_value()) {
                 cv::imwrite("temp.png", mat.value());
                 std::cout << "image saved to temp.png" << std::endl;
@@ -270,10 +287,6 @@ int main(int argc, char* argv[])
                 std::cout << "time cost: " << dur << std::endl;
             }
         }
-        else if (scmd == "netcat_address") {
-            std::cout << scp->request_netcat_address() << std::endl;
-        }
-        scp->deinit();
     }
     else if (cmd == "invoke_app") {
         auto inv = new Unit::InvokeApp();

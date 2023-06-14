@@ -25,9 +25,9 @@
 MAA_NS_BEGIN
 
 #ifdef __GNUC__
-std::ostream& operator<<(std::ostream& os, const std::chrono::milliseconds& ms)
+inline std::ostream& operator<<(std::ostream& os, const std::chrono::milliseconds& ms)
 {
-    return os << ms;
+    return os << ms.count() << "ms";
 }
 #endif
 

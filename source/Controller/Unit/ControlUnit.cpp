@@ -426,13 +426,13 @@ bool ScreencapBase::clean_cr(std::string& buffer)
     return true;
 }
 
-bool ScreencpRawByNetcat::parse(const json::value& config)
+bool ScreencapRawByNetcat::parse(const json::value& config)
 {
     return parse_argv("ScreencapRawByNetcat", config, screencap_raw_by_netcat_argv_) &&
            parse_argv("NetcatAddress", config, netcat_address_argv_);
 }
 
-bool ScreencpRawByNetcat::init(int w, int h)
+bool ScreencapRawByNetcat::init(int w, int h)
 {
     set_wh(w, h);
 
@@ -463,7 +463,7 @@ bool ScreencpRawByNetcat::init(int w, int h)
     return true;
 }
 
-void ScreencpRawByNetcat::deinit()
+void ScreencapRawByNetcat::deinit()
 {
     if (netcat_port_ && io_ptr_) {
         io_ptr_->close_socket();
@@ -473,7 +473,7 @@ void ScreencpRawByNetcat::deinit()
     netcat_port_ = 0;
 }
 
-std::optional<cv::Mat> ScreencpRawByNetcat::screencap()
+std::optional<cv::Mat> ScreencapRawByNetcat::screencap()
 {
     LogFunc;
 
@@ -492,7 +492,7 @@ std::optional<cv::Mat> ScreencpRawByNetcat::screencap()
     return process_data(cmd_ret.value(), std::bind(&ScreencapBase::decode_raw, this, std::placeholders::_1));
 }
 
-std::optional<std::string> ScreencpRawByNetcat::request_netcat_address()
+std::optional<std::string> ScreencapRawByNetcat::request_netcat_address()
 {
     LogFunc;
 
@@ -623,15 +623,15 @@ bool Screencap::init(int w, int h, const std::string& force_temp)
 {
     LogFunc;
 
-    screencap_raw_by_netcat_uint_.init(w, h);
-    screencap_raw_with_gzip_unit_.init(w, h);
-    screencap_encode_unit_.init(w, h);
-    screencap_encode_to_file_unit_.init(w, h, force_temp);
-
     screencap_raw_by_netcat_uint_.set_io(io_ptr_);
     screencap_raw_with_gzip_unit_.set_io(io_ptr_);
     screencap_encode_unit_.set_io(io_ptr_);
     screencap_encode_to_file_unit_.set_io(io_ptr_);
+
+    screencap_raw_by_netcat_uint_.init(w, h);
+    screencap_raw_with_gzip_unit_.init(w, h);
+    screencap_encode_unit_.init(w, h);
+    screencap_encode_to_file_unit_.init(w, h, force_temp);
 
     screencap_raw_by_netcat_uint_.set_replacement(argv_replace_);
     screencap_raw_with_gzip_unit_.set_replacement(argv_replace_);
