@@ -5,6 +5,7 @@
 #include "Utils/Logger.hpp"
 #include "Utils/NoWarningCV.h"
 #include "Utils/StringMisc.hpp"
+#include "Utils/ImageIo.hpp"
 
 #ifdef _MSC_VER
 #pragma warning(push)
@@ -609,19 +610,7 @@ std::optional<cv::Mat> ScreencapEncodeToFileAndPull::screencap()
         return std::nullopt;
     }
 
-    std::ifstream f(dst_path, std::ios_base::in | std::ios_base::binary);
-    if (!f.is_open()) {
-        return std::nullopt;
-    }
-
-    f.seekg(0, std::ios_base::end);
-    size_t l = f.tellg();
-    std::string buf(l, '\0');
-    f.seekg(0, std::ios_base::beg);
-    f.read(buf.data(), l);
-    f.close();
-
-    return process_data(buf, std::bind(&ScreencapBase::decode_png, this, std::placeholders::_1));
+    return imread(dst_path);
 }
 
 bool Screencap::parse(const json::value& config)
