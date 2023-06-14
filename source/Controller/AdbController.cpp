@@ -50,7 +50,29 @@ bool AdbController::_connect()
     };
     control_unit_.connection.set_replacement(replacement);
 
-    return control_unit_.connection.connect();
+    bool connected = control_unit_.connection.connect();
+    if (!connected) {
+        LogError << "failed to connect";
+        return false;
+    }
+
+    control_unit_.device_info.set_replacement(replacement);
+    if (!control_unit_.device_info.request_uuid()) {
+        LogError << "failed to request_uuid";
+        return false;
+    }
+    if (!control_unit_.device_info.request_resolution()) {
+        LogError << "failed to request_resolution";
+        return false;
+    }
+
+    auto [w, h] = control_unit_.device_info.get_resolution();
+    if (!control_unit_.screencap.init(w, h)) {
+        LogError << "falied to init screencap";
+        return false;
+    }
+
+    return true;
 }
 
 void AdbController::_click(ClickParams param) {}
