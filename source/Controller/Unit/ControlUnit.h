@@ -110,6 +110,8 @@ public:
     std::optional<cv::Mat> screencap_encode_to_file();
     std::optional<std::string> netcat_address();
 
+    bool test_screencap(bool force = true);
+
     std::string get_tempname() const { return tempname; }
 
 private:

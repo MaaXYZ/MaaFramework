@@ -143,7 +143,7 @@ bool Connection::kill_server()
 bool DeviceInfo::parse(const json::value& config)
 {
     return parse_argv("Uuid", config, uuid_argv_) && parse_argv("Resolution", config, resolution_argv_) &&
-        parse_argv("Orientation", config, orientation_argv_);
+           parse_argv("Orientation", config, orientation_argv_);
 }
 
 std::optional<std::string> DeviceInfo::uuid()
@@ -235,7 +235,7 @@ bool Activity::stop(const std::string& intent)
 bool TapInput::parse(const json::value& config)
 {
     return parse_argv("Click", config, click_argv_) && parse_argv("Swipe", config, swipe_argv_) &&
-        parse_argv("PressKey", config, press_key_argv_);
+           parse_argv("PressKey", config, press_key_argv_);
 }
 
 bool TapInput::click(int x, int y)
@@ -275,11 +275,11 @@ bool TapInput::press_key(int key)
 bool Screencap::parse(const json::value& config)
 {
     return parse_argv("ScreencapRawByNetcat", config, screencap_raw_by_netcat_argv_) &&
-        parse_argv("NetcatAddress", config, netcat_address_argv_) &&
-        parse_argv("ScreencapRawWithGzip", config, screencap_raw_with_gzip_argv_) &&
-        parse_argv("ScreencapEncode", config, screencap_encode_argv_) &&
-        parse_argv("ScreencapEncodeToFile", config, screencap_encode_to_file_argv_) &&
-        parse_argv("PullFile", config, pull_file_argv_);
+           parse_argv("NetcatAddress", config, netcat_address_argv_) &&
+           parse_argv("ScreencapRawWithGzip", config, screencap_raw_with_gzip_argv_) &&
+           parse_argv("ScreencapEncode", config, screencap_encode_argv_) &&
+           parse_argv("ScreencapEncodeToFile", config, screencap_encode_to_file_argv_) &&
+           parse_argv("PullFile", config, pull_file_argv_);
 }
 
 bool Screencap::init(int w, int h, const std::string& force_temp)
@@ -337,7 +337,7 @@ void Screencap::deinit()
 }
 
 std::optional<cv::Mat> Screencap::process(std::string& buffer,
-                                          std::optional<cv::Mat>(Screencap::* decoder)(const std::string& buffer))
+                                          std::optional<cv::Mat> (Screencap::*decoder)(const std::string& buffer))
 {
     bool tried_clean = false;
 
@@ -595,11 +595,85 @@ std::optional<std::string> Screencap::netcat_address()
     }
 }
 
+bool Screencap::test_screencap(bool force)
+{
+    LogFunc;
+
+    if (method != Method::UnknownYet && !force) {
+        return true;
+    }
+
+    method = Method::UnknownYet;
+    std::optional<std::chrono::milliseconds> cost = std::nullopt;
+
+    auto check = [this, &cost](Method m, std::chrono::milliseconds c) {
+        if (!cost.has_value()) {
+            method = m;
+            cost = c;
+        }
+        else {
+            auto pc = cost.value();
+            if (c < pc) {
+                method = m;
+                cost = c;
+            }
+        }
+    };
+
+    {
+        auto now = std::chrono::steady_clock::now();
+        auto img = screencap_raw_by_netcat();
+        if (img.has_value()) {
+            auto dur = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::steady_clock::now() - now);
+            LogInfo << "method raw_by_netcat cost" << dur;
+            check(Method::RawByNetcat, dur);
+        }
+    }
+
+    {
+        auto now = std::chrono::steady_clock::now();
+        auto img = screencap_raw_with_gzip();
+        if (img.has_value()) {
+            auto dur = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::steady_clock::now() - now);
+            LogInfo << "method raw_with_gzip cost" << dur;
+
+            check(Method::RawWithGzip, dur);
+        }
+    }
+
+    {
+        auto now = std::chrono::steady_clock::now();
+        auto img = screencap_encode();
+        if (img.has_value()) {
+            auto dur = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::steady_clock::now() - now);
+            LogInfo << "method encode cost" << dur;
+            check(Method::Encode, dur);
+        }
+    }
+
+    {
+        auto now = std::chrono::steady_clock::now();
+        auto img = screencap_encode_to_file();
+        if (img.has_value()) {
+            auto dur = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::steady_clock::now() - now);
+            LogInfo << "method encode_to_file cost" << dur;
+            check(Method::EncodeToFileAndPull, dur);
+        }
+    }
+
+    if (method == Method::UnknownYet) {
+        LogError << "cannot find any method to screencap!";
+        return false;
+    }
+
+    return true;
+}
+
 bool InvokeApp::parse(const json::value& config)
 {
     return parse_argv("Abilist", config, abilist_argv_) && parse_argv("PushBin", config, push_bin_argv_) &&
-        parse_argv("ChmodBin", config, chmod_bin_argv_) && parse_argv("InvokeBin", config, invoke_bin_argv_) &&
-        parse_argv("InvokeApp", config, invoke_app_argv_);
+           parse_argv("ChmodBin", config, chmod_bin_argv_) && parse_argv("InvokeBin", config, invoke_bin_argv_) &&
+           parse_argv("InvokeApp", config, invoke_app_argv_);
 }
 
 bool InvokeApp::init(const std::string& force_temp)

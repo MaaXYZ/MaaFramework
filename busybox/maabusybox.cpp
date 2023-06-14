@@ -216,8 +216,11 @@ int main(int argc, char* argv[])
 
         if (scmd == "help") {
             std::cout << "Usage: " << argv[0]
-                      << " screencap [raw_by_netcat | raw_with_gzip | encode | encode_to_file | netcat_address]"
+                      << " screencap [test | raw_by_netcat | raw_with_gzip | encode | encode_to_file | netcat_address]"
                       << std::endl;
+        }
+        else if (scmd == "test") {
+            std::cout << std::boolalpha << "return: " << scp->test_screencap(true) << std::endl;
         }
         else if (scmd == "raw_by_netcat") {
             auto mat = scp->screencap_raw_by_netcat();
