@@ -15,7 +15,7 @@
 
 MAA_CTRL_UNIT_NS_BEGIN
 
-class UnitHelper
+class UnitBase
 {
 public:
     using Argv = ArgvWrapper<std::vector<std::string>>;
@@ -35,7 +35,7 @@ protected:
     Argv::replacement argv_replace_;
 };
 
-class Connection : public UnitHelper
+class Connection : public UnitBase
 {
 public:
     bool parse(const json::value& config);
@@ -48,7 +48,7 @@ private:
     Argv kill_server_argv_;
 };
 
-class DeviceInfo : public UnitHelper
+class DeviceInfo : public UnitBase
 {
 public:
     struct Resolution
@@ -79,7 +79,7 @@ private:
     int orientation_;
 };
 
-class Activity : public UnitHelper
+class Activity : public UnitBase
 {
 public:
     bool parse(const json::value& config);
@@ -92,7 +92,7 @@ private:
     Argv stop_app_argv_;
 };
 
-class TapInput : public UnitHelper
+class TapInput : public UnitBase
 {
 public:
     bool parse(const json::value& config);
@@ -107,7 +107,103 @@ private:
     Argv press_key_argv_;
 };
 
-class Screencap : public UnitHelper
+class ScreencapBase : public UnitBase
+{
+public:
+    void set_wh(int w, int h);
+    // int get_w() const { return width_; }
+    // int get_h() const { return height_; }
+
+    std::optional<cv::Mat> process_data(std::string& buffer,
+                                        std::function<std::optional<cv::Mat>(const std::string& buffer)> decoder);
+    std::optional<cv::Mat> decode_raw(const std::string& buffer);
+    std::optional<cv::Mat> decode_gzip(const std::string& buffer);
+    std::optional<cv::Mat> decode_png(const std::string& buffer);
+    static bool clean_cr(std::string& buffer);
+
+private:
+    int width_ = 0;
+    int height_ = 0;
+
+    enum class EndOfLine
+    {
+        UnknownYet,
+        CRLF,
+        LF,
+        CR
+    } end_of_line_ = EndOfLine::UnknownYet;
+};
+
+class ScreencpRawByNetcat : public ScreencapBase
+{
+public:
+    bool parse(const json::value& config);
+
+    bool init(int w, int h);
+    void deinit();
+
+    std::optional<cv::Mat> screencap();
+
+private:
+    std::optional<std::string> request_netcat_address();
+
+    Argv screencap_raw_by_netcat_argv_;
+    Argv netcat_address_argv_;
+
+    std::string netcat_address_;
+    uint16_t netcat_port_ = 0;
+};
+
+class ScreencapRawWithGzip : public ScreencapBase
+{
+public:
+    bool parse(const json::value& config);
+
+    bool init(int w, int h);
+    void deinit() {}
+
+    std::optional<cv::Mat> screencap();
+
+private:
+    Argv screencap_raw_with_gzip_argv_;
+};
+
+class ScreencapEncode : public ScreencapBase
+{
+public:
+    bool parse(const json::value& config);
+
+    bool init(int w, int h);
+    void deinit() {}
+
+    std::optional<cv::Mat> screencap();
+
+private:
+    Argv screencap_encode_argv_;
+};
+
+class ScreencapEncodeToFileAndPull : public ScreencapBase
+{
+public:
+    bool parse(const json::value& config);
+
+    bool init(int w, int h, const std::string& force_temp = "");
+    void deinit() {}
+
+    std::optional<cv::Mat> screencap();
+
+#ifdef MAA_DEBUG
+    const std::string& get_tempname() const { return tempname_; }
+#endif
+
+private:
+    Argv screencap_encode_to_file_argv_;
+    Argv pull_file_argv_;
+
+    std::string tempname_;
+};
+
+class Screencap : public UnitBase
 {
 public:
     enum class Method
@@ -127,56 +223,20 @@ public:
 
     std::optional<cv::Mat> screencap();
 
-#ifdef MAA_DEBUG
-    const std::string& get_tempname() const { return tempname_; }
-#endif
-
-private:
-    std::optional<cv::Mat> screencap_raw_by_netcat();
-    std::optional<cv::Mat> screencap_raw_with_gzip();
-    std::optional<cv::Mat> screencap_encode();
-    std::optional<cv::Mat> screencap_encode_to_file();
-
 private:
     bool speed_test();
-    std::optional<cv::Mat> process_data(std::string& buffer,
-                                        std::function<std::optional<cv::Mat>(const std::string& buffer)> decoder);
-    std::optional<cv::Mat> decode_raw(const std::string& buffer);
-    std::optional<cv::Mat> decode_gzip(const std::string& buffer);
-    std::optional<cv::Mat> decode_png(const std::string& buffer);
-    std::optional<std::string> request_netcat_address();
-    bool clean_cr(std::string& buffer);
 
-private:
-    Argv screencap_raw_by_netcat_argv_;
-    Argv netcat_address_argv_;
-    Argv screencap_raw_with_gzip_argv_;
-    Argv screencap_encode_argv_;
-    Argv screencap_encode_to_file_argv_;
-    Argv pull_file_argv_;
-
-private:
-    std::string tempname_;
-
-    int width_ = 0;
-    int height_ = 0;
-    std::string netcat_address_;
-    uint16_t netcat_port_ = 0;
-
-    enum class EndOfLine
-    {
-        UnknownYet,
-        CRLF,
-        LF,
-        CR
-    } end_of_line_ = EndOfLine::UnknownYet;
+    ScreencpRawByNetcat screencap_raw_by_netcat_uint_;
+    ScreencapRawWithGzip screencap_raw_with_gzip_unit_;
+    ScreencapEncode screencap_encode_unit_;
+    ScreencapEncodeToFileAndPull screencap_encode_to_file_unit_;
 
     Method method_ = Method::UnknownYet;
 };
 
 std::ostream& operator<<(std::ostream& os, Screencap::Method m);
 
-class InvokeApp : public UnitHelper
+class InvokeApp : public UnitBase
 {
 public:
     bool parse(const json::value& config);

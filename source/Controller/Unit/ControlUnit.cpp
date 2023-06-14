@@ -41,17 +41,17 @@ std::filesystem::path temp_path(const std::string& name)
 #endif
 }
 
-void UnitHelper::set_io(std::shared_ptr<PlatformIO> io_ptr)
+void UnitBase::set_io(std::shared_ptr<PlatformIO> io_ptr)
 {
     io_ptr_ = std::move(io_ptr);
 }
 
-void UnitHelper::set_replacement(Argv::replacement argv_replace)
+void UnitBase::set_replacement(Argv::replacement argv_replace)
 {
     argv_replace_ = std::move(argv_replace);
 }
 
-void UnitHelper::merge_replacement(Argv::replacement argv_replace, bool _override)
+void UnitBase::merge_replacement(Argv::replacement argv_replace, bool _override)
 {
     if (_override) {
         argv_replace.merge(argv_replace_);
@@ -62,7 +62,7 @@ void UnitHelper::merge_replacement(Argv::replacement argv_replace, bool _overrid
     }
 }
 
-bool UnitHelper::parse_argv(const std::string& key, const json::value& config, Argv& argv)
+bool UnitBase::parse_argv(const std::string& key, const json::value& config, Argv& argv)
 {
     auto opt = config.find<json::value>(key);
     if (!opt) {
@@ -78,7 +78,7 @@ bool UnitHelper::parse_argv(const std::string& key, const json::value& config, A
     return true;
 }
 
-std::optional<std::string> UnitHelper::command(Argv::value cmd, bool recv_by_socket, int64_t timeout)
+std::optional<std::string> UnitBase::command(Argv::value cmd, bool recv_by_socket, int64_t timeout)
 {
     if (!io_ptr_) {
         LogError << "io_ptr is nullptr";
@@ -277,86 +277,14 @@ bool TapInput::press_key(int key)
     return cmd_ret.has_value() && cmd_ret.value().empty();
 }
 
-bool Screencap::parse(const json::value& config)
+void ScreencapBase::set_wh(int w, int h)
 {
-    return parse_argv("ScreencapRawByNetcat", config, screencap_raw_by_netcat_argv_) &&
-           parse_argv("NetcatAddress", config, netcat_address_argv_) &&
-           parse_argv("ScreencapRawWithGzip", config, screencap_raw_with_gzip_argv_) &&
-           parse_argv("ScreencapEncode", config, screencap_encode_argv_) &&
-           parse_argv("ScreencapEncodeToFile", config, screencap_encode_to_file_argv_) &&
-           parse_argv("PullFile", config, pull_file_argv_);
-}
-
-bool Screencap::init(int w, int h, const std::string& force_temp)
-{
-    LogFunc;
-
-    tempname_ = force_temp.empty() ? temp_name() : force_temp;
-
-    if (!io_ptr_) {
-        LogError << "io_ptr is nullptr";
-        return false;
-    }
-
     width_ = w;
     height_ = h;
-
-    auto addr = request_netcat_address();
-    if (!addr) {
-        return false;
-    }
-    netcat_address_ = addr.value();
-
-    auto serial_host = argv_replace_["{ADB_SERIAL}"];
-    auto shp = serial_host.find(':');
-    std::string local = "127.0.0.1";
-    if (shp != std::string::npos) {
-        local = serial_host.substr(0, shp);
-    }
-
-    auto prt = io_ptr_->create_socket(local);
-    if (!prt) {
-        return false;
-    }
-    netcat_port_ = prt.value();
-
-    return speed_test();
 }
 
-void Screencap::deinit()
-{
-    if (netcat_port_ && io_ptr_) {
-        io_ptr_->close_socket();
-    }
-
-    width_ = 0;
-    height_ = 0;
-    netcat_address_.clear();
-    netcat_port_ = 0;
-    end_of_line_ = EndOfLine::UnknownYet;
-    method_ = Method::UnknownYet;
-}
-
-std::optional<cv::Mat> Screencap::screencap()
-{
-    switch (method_) {
-    case Method::UnknownYet:
-        LogError << "Unknown screencap method";
-        return std::nullopt;
-    case Method::RawByNetcat:
-        return screencap_raw_by_netcat();
-    case Method::RawWithGzip:
-        return screencap_raw_with_gzip();
-    case Method::Encode:
-        return screencap_encode();
-    case Method::EncodeToFileAndPull:
-        return screencap_encode_to_file();
-    }
-    return std::nullopt;
-}
-
-std::optional<cv::Mat> Screencap::process_data(std::string& buffer,
-                                               std::function<std::optional<cv::Mat>(const std::string& buffer)> decoder)
+std::optional<cv::Mat> ScreencapBase::process_data(
+    std::string& buffer, std::function<std::optional<cv::Mat>(const std::string& buffer)> decoder)
 {
     bool tried_clean = false;
 
@@ -408,7 +336,7 @@ std::optional<cv::Mat> Screencap::process_data(std::string& buffer,
     return res;
 }
 
-std::optional<cv::Mat> Screencap::decode_raw(const std::string& buffer)
+std::optional<cv::Mat> ScreencapBase::decode_raw(const std::string& buffer)
 {
     if (buffer.size() < 8) {
         return std::nullopt;
@@ -431,8 +359,8 @@ std::optional<cv::Mat> Screencap::decode_raw(const std::string& buffer)
         return std::nullopt;
     }
 
-    auto hdrSize = buffer.size() - size;
-    auto im_data = data + hdrSize;
+    auto header_size = buffer.size() - size;
+    auto im_data = data + header_size;
 
     cv::Mat temp(height_, width_, CV_8UC4, const_cast<uint8_t*>(im_data));
     if (temp.empty()) {
@@ -447,13 +375,13 @@ std::optional<cv::Mat> Screencap::decode_raw(const std::string& buffer)
     return temp.clone(); // temp只是引用data, 需要clone确保数据拥有所有权
 }
 
-std::optional<cv::Mat> Screencap::decode_gzip(const std::string& buffer)
+std::optional<cv::Mat> ScreencapBase::decode_gzip(const std::string& buffer)
 {
     auto buf = gzip::decompress(buffer.c_str(), buffer.size());
     return decode_raw(buf);
 }
 
-std::optional<cv::Mat> Screencap::decode_png(const std::string& buffer)
+std::optional<cv::Mat> ScreencapBase::decode_png(const std::string& buffer)
 {
     cv::Mat temp = cv::imdecode({ buffer.data(), int(buffer.size()) }, cv::IMREAD_COLOR);
     if (temp.empty()) {
@@ -463,7 +391,7 @@ std::optional<cv::Mat> Screencap::decode_png(const std::string& buffer)
     return temp.clone();
 }
 
-bool Screencap::clean_cr(std::string& buffer)
+bool ScreencapBase::clean_cr(std::string& buffer)
 {
     if (buffer.size() < 2) {
         return false;
@@ -497,7 +425,54 @@ bool Screencap::clean_cr(std::string& buffer)
     return true;
 }
 
-std::optional<cv::Mat> Screencap::screencap_raw_by_netcat()
+bool ScreencpRawByNetcat::parse(const json::value& config)
+{
+    return parse_argv("ScreencapRawByNetcat", config, screencap_raw_by_netcat_argv_) &&
+           parse_argv("NetcatAddress", config, netcat_address_argv_);
+}
+
+bool ScreencpRawByNetcat::init(int w, int h)
+{
+    set_wh(w, h);
+
+    if (!io_ptr_) {
+        LogError << "io_ptr is nullptr";
+        return false;
+    }
+
+    auto addr = request_netcat_address();
+    if (!addr) {
+        return false;
+    }
+    netcat_address_ = addr.value();
+
+    auto serial_host = argv_replace_["{ADB_SERIAL}"];
+    auto shp = serial_host.find(':');
+    std::string local = "127.0.0.1";
+    if (shp != std::string::npos) {
+        local = serial_host.substr(0, shp);
+    }
+
+    auto prt = io_ptr_->create_socket(local);
+    if (!prt) {
+        return false;
+    }
+    netcat_port_ = prt.value();
+
+    return true;
+}
+
+void ScreencpRawByNetcat::deinit()
+{
+    if (netcat_port_ && io_ptr_) {
+        io_ptr_->close_socket();
+    }
+
+    netcat_address_.clear();
+    netcat_port_ = 0;
+}
+
+std::optional<cv::Mat> ScreencpRawByNetcat::screencap()
 {
     LogFunc;
 
@@ -513,10 +488,42 @@ std::optional<cv::Mat> Screencap::screencap_raw_by_netcat()
         return std::nullopt;
     }
 
-    return process_data(cmd_ret.value(), std::bind(&Screencap::decode_raw, this, std::placeholders::_1));
+    return process_data(cmd_ret.value(), std::bind(&ScreencapBase::decode_raw, this, std::placeholders::_1));
 }
 
-std::optional<cv::Mat> Screencap::screencap_raw_with_gzip()
+std::optional<std::string> ScreencpRawByNetcat::request_netcat_address()
+{
+    LogFunc;
+
+    auto cmd_ret = command(netcat_address_argv_.gen(argv_replace_));
+
+    if (!cmd_ret) {
+        return std::nullopt;
+    }
+
+    auto ip = cmd_ret.value();
+    auto idx = ip.find(' ');
+
+    if (idx != std::string::npos) {
+        return ip.substr(0, idx);
+    }
+    else {
+        return std::nullopt;
+    }
+}
+
+bool ScreencapRawWithGzip::parse(const json::value& config)
+{
+    return parse_argv("ScreencapRawWithGzip", config, screencap_raw_with_gzip_argv_);
+}
+
+bool ScreencapRawWithGzip::init(int w, int h)
+{
+    set_wh(w, h);
+    return true;
+}
+
+std::optional<cv::Mat> ScreencapRawWithGzip::screencap()
 {
     LogFunc;
 
@@ -531,10 +538,21 @@ std::optional<cv::Mat> Screencap::screencap_raw_with_gzip()
         return std::nullopt;
     }
 
-    return process_data(cmd_ret.value(), std::bind(&Screencap::decode_gzip, this, std::placeholders::_1));
+    return process_data(cmd_ret.value(), std::bind(&ScreencapBase::decode_gzip, this, std::placeholders::_1));
 }
 
-std::optional<cv::Mat> Screencap::screencap_encode()
+bool ScreencapEncode::parse(const json::value& config)
+{
+    return parse_argv("ScreencapEncode", config, screencap_encode_argv_);
+}
+
+bool ScreencapEncode::init(int w, int h)
+{
+    set_wh(w, h);
+    return true;
+}
+
+std::optional<cv::Mat> ScreencapEncode::screencap()
 {
     LogFunc;
 
@@ -549,10 +567,25 @@ std::optional<cv::Mat> Screencap::screencap_encode()
         return std::nullopt;
     }
 
-    return process_data(cmd_ret.value(), std::bind(&Screencap::decode_png, this, std::placeholders::_1));
+    return process_data(cmd_ret.value(), std::bind(&ScreencapBase::decode_png, this, std::placeholders::_1));
 }
 
-std::optional<cv::Mat> Screencap::screencap_encode_to_file()
+bool ScreencapEncodeToFileAndPull::parse(const json::value& config)
+{
+    return parse_argv("ScreencapEncodeToFile", config, screencap_encode_to_file_argv_) &&
+           parse_argv("PullFile", config, pull_file_argv_);
+}
+
+bool ScreencapEncodeToFileAndPull::init(int w, int h, const std::string& force_temp)
+{
+    set_wh(w, h);
+    
+    tempname_ = force_temp.empty() ? temp_name() : force_temp;
+
+    return true;
+}
+
+std::optional<cv::Mat> ScreencapEncodeToFileAndPull::screencap()
 {
     LogFunc;
 
@@ -588,28 +621,63 @@ std::optional<cv::Mat> Screencap::screencap_encode_to_file()
     f.read(buf.data(), l);
     f.close();
 
-    return process_data(buf, std::bind(&Screencap::decode_png, this, std::placeholders::_1));
+    return process_data(buf, std::bind(&ScreencapBase::decode_png, this, std::placeholders::_1));
 }
 
-std::optional<std::string> Screencap::request_netcat_address()
+bool Screencap::parse(const json::value& config)
+{
+    return screencap_raw_by_netcat_uint_.parse(config) || screencap_raw_with_gzip_unit_.parse(config) ||
+           screencap_encode_unit_.parse(config) || screencap_encode_to_file_unit_.parse(config);
+}
+
+bool Screencap::init(int w, int h, const std::string& force_temp)
 {
     LogFunc;
 
-    auto cmd_ret = command(netcat_address_argv_.gen(argv_replace_));
+    screencap_raw_by_netcat_uint_.init(w, h);
+    screencap_raw_with_gzip_unit_.init(w, h);
+    screencap_encode_unit_.init(w, h);
+    screencap_encode_to_file_unit_.init(w, h, force_temp);
 
-    if (!cmd_ret) {
+    screencap_raw_by_netcat_uint_.set_io(io_ptr_);
+    screencap_raw_with_gzip_unit_.set_io(io_ptr_);
+    screencap_encode_unit_.set_io(io_ptr_);
+    screencap_encode_to_file_unit_.set_io(io_ptr_);
+
+    screencap_raw_by_netcat_uint_.set_replacement(argv_replace_);
+    screencap_raw_with_gzip_unit_.set_replacement(argv_replace_);
+    screencap_encode_unit_.set_replacement(argv_replace_);
+    screencap_encode_to_file_unit_.set_replacement(argv_replace_);
+
+    return speed_test();
+}
+
+void Screencap::deinit()
+{
+    screencap_raw_by_netcat_uint_.deinit();
+    screencap_raw_with_gzip_unit_.deinit();
+    screencap_encode_unit_.deinit();
+    screencap_encode_to_file_unit_.deinit();
+
+    method_ = Method::UnknownYet;
+}
+
+std::optional<cv::Mat> Screencap::screencap()
+{
+    switch (method_) {
+    case Method::UnknownYet:
+        LogError << "Unknown screencap method";
         return std::nullopt;
+    case Method::RawByNetcat:
+        return screencap_raw_by_netcat_uint_.screencap();
+    case Method::RawWithGzip:
+        return screencap_raw_with_gzip_unit_.screencap();
+    case Method::Encode:
+        return screencap_encode_unit_.screencap();
+    case Method::EncodeToFileAndPull:
+        return screencap_encode_to_file_unit_.screencap();
     }
-
-    auto ip = cmd_ret.value();
-    auto idx = ip.find(' ');
-
-    if (idx != std::string::npos) {
-        return ip.substr(0, idx);
-    }
-    else {
-        return std::nullopt;
-    }
+    return std::nullopt;
 }
 
 bool Screencap::speed_test()
@@ -631,7 +699,7 @@ bool Screencap::speed_test()
     {
         end_of_line_ = EndOfLine::UnknownYet;
         auto now = std::chrono::steady_clock::now();
-        if (auto img = screencap_raw_by_netcat()) {
+        if (screencap_raw_by_netcat_uint_.screencap()) {
             check(Method::RawByNetcat, now);
         }
     }
@@ -639,7 +707,7 @@ bool Screencap::speed_test()
     {
         end_of_line_ = EndOfLine::UnknownYet;
         auto now = std::chrono::steady_clock::now();
-        if (auto img = screencap_raw_with_gzip()) {
+        if (screencap_raw_with_gzip_unit_.screencap()) {
             check(Method::RawWithGzip, now);
         }
     }
@@ -647,7 +715,7 @@ bool Screencap::speed_test()
     {
         end_of_line_ = EndOfLine::UnknownYet;
         auto now = std::chrono::steady_clock::now();
-        if (auto img = screencap_encode()) {
+        if (screencap_encode_unit_.screencap()) {
             check(Method::Encode, now);
         }
     }
@@ -655,7 +723,7 @@ bool Screencap::speed_test()
     {
         end_of_line_ = EndOfLine::UnknownYet;
         auto now = std::chrono::steady_clock::now();
-        if (auto img = screencap_encode_to_file()) {
+        if (screencap_encode_to_file_unit_.screencap()) {
             check(Method::EncodeToFileAndPull, now);
         }
     }
