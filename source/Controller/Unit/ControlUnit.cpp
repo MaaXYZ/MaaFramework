@@ -628,6 +628,7 @@ bool Screencap::speed_test()
     };
 
     {
+        end_of_line_ = EndOfLine::UnknownYet;
         auto now = std::chrono::steady_clock::now();
         if (auto img = screencap_raw_by_netcat()) {
             check(Method::RawByNetcat, now);
@@ -635,6 +636,7 @@ bool Screencap::speed_test()
     }
 
     {
+        end_of_line_ = EndOfLine::UnknownYet;
         auto now = std::chrono::steady_clock::now();
         if (auto img = screencap_raw_with_gzip()) {
             check(Method::RawWithGzip, now);
@@ -642,6 +644,7 @@ bool Screencap::speed_test()
     }
 
     {
+        end_of_line_ = EndOfLine::UnknownYet;
         auto now = std::chrono::steady_clock::now();
         if (auto img = screencap_encode()) {
             check(Method::Encode, now);
@@ -649,11 +652,14 @@ bool Screencap::speed_test()
     }
 
     {
+        end_of_line_ = EndOfLine::UnknownYet;
         auto now = std::chrono::steady_clock::now();
         if (auto img = screencap_encode_to_file()) {
             check(Method::EncodeToFileAndPull, now);
         }
     }
+
+    end_of_line_ = EndOfLine::UnknownYet;
 
     if (method_ == Method::UnknownYet) {
         LogError << "cannot find any method to screencap!";
