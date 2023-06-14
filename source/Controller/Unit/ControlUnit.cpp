@@ -938,7 +938,11 @@ bool MinitouchInput::init(int swidth, int sheight, std::function<std::string(con
         auto info = str.substr(pos + 1, rpos - pos - 1);
         LogInfo << "minitouch info:" << info;
 
-        int contact, x, y, pressure;
+        int contact = 0;
+        int x = 0;
+        int y = 0;
+        int pressure = 0;
+
         std::istringstream ins(info);
         if (!ins >> contact >> x >> y >> pressure) {
             return false;
@@ -952,8 +956,17 @@ bool MinitouchInput::init(int swidth, int sheight, std::function<std::string(con
     }
 }
 
-bool MinitouchInput::click(int x, int y) {}
-bool MinitouchInput::swipe(int x1, int y1, int x2, int y2, int duration) {}
-bool MinitouchInput::press_key(int key) {}
+bool MinitouchInput::click(int x, int y)
+{
+    return false;
+}
+bool MinitouchInput::swipe(int x1, int y1, int x2, int y2, int duration)
+{
+    return false;
+}
+bool MinitouchInput::press_key(int key)
+{
+    return false;
+}
 
 MAA_CTRL_UNIT_NS_END
