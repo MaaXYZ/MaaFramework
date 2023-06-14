@@ -7,6 +7,8 @@
 #include "Utils/NoWarningCV.h"
 #include "Utils/StringMisc.hpp"
 
+#include <format>
+
 #ifdef _MSC_VER
 #pragma warning(push)
 #pragma warning(disable : 4068)
@@ -938,12 +940,14 @@ bool MinitouchInput::init(int swidth, int sheight, std::function<std::string(con
         auto info = str.substr(pos + 1, rpos - pos - 1);
         LogInfo << "minitouch info:" << info;
 
-        int contact, x, y, pressure;
+        int contact = 0, x = 0, y = 0, pressure = 0;
         std::istringstream ins(info);
         if (!ins >> contact >> x >> y >> pressure) {
             return false;
         }
 
+        width = swidth;
+        height = sheight;
         xscale = double(x) / swidth;
         yscale = double(y) / sheight;
         press = pressure;
@@ -952,8 +956,45 @@ bool MinitouchInput::init(int swidth, int sheight, std::function<std::string(con
     }
 }
 
-bool MinitouchInput::click(int x, int y) {}
-bool MinitouchInput::swipe(int x1, int y1, int x2, int y2, int duration) {}
+bool MinitouchInput::click(int x, int y)
+{
+    if (!shell_handler_) {
+        return false;
+    }
+
+    if (x < 0 || x >= width || y < 0 || y >= height) {
+        LogError << "click point out of range";
+        x = std::clamp(x, 0, width - 1);
+        y = std::clamp(y, 0, height - 1);
+    }
+
+    bool res = shell_handler_->write(std::format("d {} {} {} {}\nc\n", 0, x, y, press)) &&
+               shell_handler_->write(std::format("u\nc\n"));
+
+    if (!res) {
+        return false;
+    }
+
+    // sleep?
+    return true;
+}
+
+bool MinitouchInput::swipe(int x1, int y1, int x2, int y2, int duration)
+{
+    if (!shell_handler_) {
+        return false;
+    }
+
+    if (x1 < 0 || x1 >= width || y1 < 0 || y1 >= height) {
+        LogError << "click point out of range";
+        x1 = std::clamp(x1, 0, width - 1);
+        y1 = std::clamp(y1, 0, height - 1);
+    }
+
+    // 看不懂到底在干吗了
+    // 开摆
+}
+
 bool MinitouchInput::press_key(int key) {}
 
 MAA_CTRL_UNIT_NS_END

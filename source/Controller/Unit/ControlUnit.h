@@ -280,6 +280,7 @@ public:
 private:
     std::shared_ptr<InvokeApp> invoke_app_;
     std::shared_ptr<IOHandler> shell_handler_;
+    int width, height;
     double xscale, yscale, press;
 };
 
