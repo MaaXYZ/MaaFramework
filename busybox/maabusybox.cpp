@@ -288,28 +288,7 @@ int main(int argc, char* argv[])
         auto scmd = result["subcommand"].as<std::string>();
         auto params = result["params"].as<std::vector<std::string>>();
 
-        if (scmd == "help") {
-            std::cout << "Usage: " << argv[0] << " invoke_app [abilist | push | chmod | invoke_bin]" << std::endl;
-        }
-        else if (scmd == "abilist") {
-            std::cout << inv->abilist() << std::endl;
-        }
-        else if (scmd == "push") {
-            std::cout << "push as " << invtp << std::endl;
-            std::cout << "return: " << std::boolalpha << inv->push(params[0]) << std::endl;
-            std::ofstream fo(".invokeapp");
-            fo << inv->get_tempname();
-        }
-        else if (scmd == "chmod") {
-            std::cout << "chmod of " << invtp << std::endl;
-            std::cout << "return: " << std::boolalpha << inv->chmod() << std::endl;
-        }
-        else if (scmd == "invoke_bin") {
-            while (params.size() > 0 && params[0].empty()) {
-                params.erase(params.begin());
-            }
-            std::cout << "params: " << params << std::endl;
-            auto h = inv->invoke_bin(params.size() > 0 ? params[0] : "");
+        auto trackMinitouch = [](std::shared_ptr<MaaNS::ControllerNS::IOHandler> h) {
             while (true) {
                 std::cout << "reading info..." << std::endl;
                 auto str = h->read(2);
@@ -338,6 +317,45 @@ int main(int argc, char* argv[])
                 std::getline(std::cin, row);
                 h->write(row + '\n');
             }
+        };
+
+        if (scmd == "help") {
+            std::cout << "Usage: " << argv[0] << " invoke_app [abilist | push | chmod | invoke_bin]" << std::endl;
+        }
+        else if (scmd == "abilist") {
+            std::cout << inv->abilist() << std::endl;
+        }
+        else if (scmd == "push") {
+            if (params.size() < 1) {
+                std::cout << "Usage: " << argv[0] << " invoke_app push [file]" << std::endl;
+                return 0;
+            }
+
+            std::cout << "push as " << invtp << std::endl;
+            std::cout << "return: " << std::boolalpha << inv->push(params[0]) << std::endl;
+            std::ofstream fo(".invokeapp");
+            fo << inv->get_tempname();
+        }
+        else if (scmd == "chmod") {
+            std::cout << "chmod of " << invtp << std::endl;
+            std::cout << "return: " << std::boolalpha << inv->chmod() << std::endl;
+        }
+        else if (scmd == "invoke_bin") {
+            while (params.size() > 0 && params[0].empty()) {
+                params.erase(params.begin());
+            }
+            std::cout << "params: " << params << std::endl;
+            auto h = inv->invoke_bin(params.size() > 0 ? params[0] : "");
+            trackMinitouch(h);
+        }
+        else if (scmd == "invoke_app") {
+            if (params.size() < 1) {
+                std::cout << "Usage: " << argv[0] << " invoke_app invoke_app [package]" << std::endl;
+                return 0;
+            }
+
+            auto h = inv->invoke_app(params[0]);
+            trackMinitouch(h);
         }
     }
 }
