@@ -858,4 +858,102 @@ std::shared_ptr<IOHandler> InvokeApp::invoke_app(const std::string& package)
     return cmd_ret;
 }
 
+bool MinitouchInput::parse(const json::value& config)
+{
+    return invoke_app_->parse(config);
+}
+
+static const std::string_view archList[] = { "x86_64", "x86", "arm64-v8a", "armeabi-v7a", "armeabi" };
+constexpr size_t archCount = sizeof(archList) / sizeof(archList[0]);
+
+bool MinitouchInput::init(int swidth, int sheight, std::function<std::string(const std::string&)> path_of_bin,
+                          const std::string& force_temp)
+{
+    LogFunc;
+
+    if (!io_ptr_) {
+        LogError << "io_ptr is nullptr";
+        return false;
+    }
+
+    if (!invoke_app_->init(force_temp)) {
+        return false;
+    }
+
+    auto archs = invoke_app_->abilist();
+
+    if (!archs) {
+        return false;
+    }
+
+    std::string targetArch {};
+    for (const auto& arch : archs.value()) {
+        auto it = std::find(archList, archList + archCount, arch);
+        if (it != archList + archCount) {
+            targetArch = arch;
+            break;
+        }
+    }
+    if (targetArch.empty()) {
+        return false;
+    }
+
+    auto bin = path_of_bin(targetArch);
+
+    if (!invoke_app_->push(bin)) {
+        return false;
+    }
+
+    if (!invoke_app_->chmod()) {
+        return false;
+    }
+
+    shell_handler_ = invoke_app_->invoke_bin("-i");
+
+    if (!shell_handler_) {
+        return false;
+    }
+
+    // TODO: timeout?
+    std::string prev {};
+    while (true) {
+        auto str = prev + shell_handler_->read(5);
+        if (str.empty()) {
+#ifdef _WIN32
+            Sleep(2000);
+#else
+            sleep(2);
+#endif
+            continue;
+        }
+        auto pos = str.find('^');
+        if (pos == std::string::npos) {
+            continue;
+        }
+        auto rpos = str.find('\n', pos);
+        if (rpos == std::string::npos) {
+            prev = str; // 也许还得再读点?
+            continue;
+        }
+        auto info = str.substr(pos + 1, rpos - pos - 1);
+        LogInfo << "minitouch info:" << info;
+
+        int contact, x, y, pressure;
+        std::istringstream ins(info);
+        if (!ins >> contact >> x >> y >> pressure) {
+            return false;
+        }
+
+        xscale = double(x) / swidth;
+        yscale = double(y) / sheight;
+        press = pressure;
+
+        return true;
+    }
+}
+
+bool MinitouchInput::click(int x, int y) {}
+bool MinitouchInput::swipe(int x1, int y1, int x2, int y2, int duration) {}
+bool MinitouchInput::press_key(int key) {}
+
 MAA_CTRL_UNIT_NS_END

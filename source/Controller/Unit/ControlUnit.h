@@ -263,4 +263,24 @@ private:
     std::string tempname_;
 };
 
+class MinitouchInput : public UnitBase
+{
+public:
+    MinitouchInput() : invoke_app_(new InvokeApp) {}
+
+    bool parse(const json::value& config);
+
+    bool init(int swidth, int sheight, std::function<std::string(const std::string&)> path_of_bin,
+              const std::string& force_temp = "");
+
+    bool click(int x, int y);
+    bool swipe(int x1, int y1, int x2, int y2, int duration);
+    bool press_key(int key);
+
+private:
+    std::shared_ptr<InvokeApp> invoke_app_;
+    std::shared_ptr<IOHandler> shell_handler_;
+    double xscale, yscale, press;
+};
+
 MAA_CTRL_UNIT_NS_END
