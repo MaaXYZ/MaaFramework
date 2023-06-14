@@ -135,13 +135,13 @@
     <ClInclude Include="Task\PipelineTask.h">
       <Filter>Source\Task</Filter>
     </ClInclude>
-    <ClInclude Include="Task\PipelineTypes.h">
+    <ClInclude Include="Resource\PipelineTypes.h">
       <Filter>Source\Task</Filter>
     </ClInclude>
     <ClInclude Include="Resource\PipelineConfig.h">
       <Filter>Source\Resource</Filter>
     </ClInclude>
-    <ClInclude Include="Task\AbstractTask.h">
+    <ClInclude Include="Task\TaskBase.h">
       <Filter>Source\Task</Filter>
     </ClInclude>
     <ClInclude Include="Base\AsyncCallback.hpp">

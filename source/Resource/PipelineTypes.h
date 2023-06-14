@@ -9,13 +9,13 @@
 #include <variant>
 #include <vector>
 
-#define MAA_PIPELINE_TASK_NS MAA_TASK_NS::Pipeline
-#define MAA_PIPELINE_TASK_NS_BEGIN \
-    namespace MAA_PIPELINE_TASK_NS \
+#define MAA_PIPELINE_RES_NS MAA_RES_NS::Pipeline
+#define MAA_PIPELINE_RES_NS_BEGIN \
+    namespace MAA_PIPELINE_RES_NS \
     {
-#define MAA_PIPELINE_TASK_NS_END }
+#define MAA_PIPELINE_RES_NS_END }
 
-MAA_PIPELINE_TASK_NS_BEGIN
+MAA_PIPELINE_RES_NS_BEGIN
 
 namespace Recognition
 {
@@ -50,6 +50,9 @@ struct FreezesWaitingParams
     int method = 0;
     int wait_time = 0;
 };
+
+using Params =
+    std::variant<Recognition::TemplMatchingParams, Recognition::OcrParams, Recognition::FreezesWaitingParams>;
 } // namespace Recognition
 
 namespace Action
@@ -85,6 +88,8 @@ struct SwipeSelfParams
 {
     // TODO
 };
+
+using Params = std::variant<Action::ClickParams, Action::ClickRegionParams, Action::SwipeRegionParams>;
 } // namespace Action
 
 enum class NextMode
@@ -101,8 +106,7 @@ struct Data
     bool checkpoint = false;
 
     Recognition::Type recognition_type = Recognition::Type::Invalid;
-    std::variant<Recognition::TemplMatchingParams, Recognition::OcrParams, Recognition::FreezesWaitingParams>
-        recognition_params;
+    Recognition::Params recognition_params;
 
     cv::Rect roi {};
     bool cache = false;
@@ -119,7 +123,7 @@ struct Data
     NextMode timeout_next_mode = NextMode::Invalid;
 
     Action::Type action_type = Action::Type::Invalid;
-    std::variant<Action::ClickParams, Action::ClickRegionParams, Action::SwipeRegionParams> action_params;
+    Action::Params action_params;
 
     int pre_delay = 0;
     int post_delay = 0;
@@ -127,4 +131,4 @@ struct Data
     bool notify = false;
 };
 
-MAA_PIPELINE_TASK_NS_END
+MAA_PIPELINE_RES_NS_END
