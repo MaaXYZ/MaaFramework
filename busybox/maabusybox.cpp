@@ -127,9 +127,9 @@ int main(int argc, char* argv[])
         device->parse(config.value());
         device->set_replacement(adbRepl);
 
-        std::cout << "uuid: " << device->uuid() << std::endl;
-        std::cout << "resolution: " << device->resolution() << std::endl;
-        std::cout << "orientation: " << device->orientation() << std::endl;
+        std::cout << "uuid: " << device->request_uuid() << std::endl;
+        std::cout << "resolution: " << device->request_resolution() << std::endl;
+        std::cout << "orientation: " << device->request_orientation() << std::endl;
     }
     else if (cmd == "activity") {
         auto activity = new Unit::Activity();
@@ -200,7 +200,7 @@ int main(int argc, char* argv[])
         device->parse(config.value());
         device->set_replacement(adbRepl);
 
-        auto res = device->resolution();
+        auto res = device->request_resolution();
 
         auto scp = new Unit::Screencap();
         scp->set_io(io);
