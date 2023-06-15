@@ -981,18 +981,23 @@ bool MinitouchInput::click(int x, int y)
 
 bool MinitouchInput::swipe(const std::vector<Step>& steps)
 {
-    if (!shell_handler_) {
+    if (!shell_handler_ || steps.size() < 2) {
         return false;
     }
 
     // 检查第一个点的位置?
+    auto first = steps[0];
+    if (!shell_handler_->write(std::format("d {} {} {} {}\nc\n", 0, first.x, first.y, press))) {
+        return false;
+    }
 
-    for (const auto& step : steps) {
-        auto res = shell_handler_->write(std::format("d {} {} {} {}\nc\n", 0, step.x, step.y, press));
+    for (auto it = steps.begin() + 1; it != steps.end(); it++) {
+        const auto& step = *it;
+        std::this_thread::sleep_for(std::chrono::milliseconds(step.delay));
+        auto res = shell_handler_->write(std::format("m {} {} {} {}\nc\n", 0, step.x, step.y, press));
         if (!res) {
             return false;
         }
-        std::this_thread::sleep_for(std::chrono::milliseconds(step.delay));
     }
 
     return shell_handler_->write("u\nc\n");
