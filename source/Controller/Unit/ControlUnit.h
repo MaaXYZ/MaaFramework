@@ -284,6 +284,8 @@ public:
     bool press_key(int key);
 
 private:
+    void scalePoint(int& x, int& y);
+
     std::shared_ptr<InvokeApp> invoke_app_;
     std::shared_ptr<IOHandler> shell_handler_;
     int width, height;

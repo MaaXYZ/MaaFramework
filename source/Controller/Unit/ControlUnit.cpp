@@ -968,6 +968,8 @@ bool MinitouchInput::click(int x, int y)
         y = std::clamp(y, 0, height - 1);
     }
 
+    scalePoint(x, y);
+
     bool res = shell_handler_->write(std::format("d {} {} {} {}\nc\n", 0, x, y, press)) &&
                shell_handler_->write(std::format("u\nc\n"));
 
@@ -986,18 +988,23 @@ bool MinitouchInput::swipe(const std::vector<Step>& steps)
     }
 
     // 检查第一个点的位置?
-    auto first = steps[0];
-    if (!shell_handler_->write(std::format("d {} {} {} {}\nc\n", 0, first.x, first.y, press))) {
-        return false;
+    {
+        auto first = steps[0];
+        int x = first.x, y = first.y;
+        scalePoint(x, y);
+        if (!shell_handler_->write(std::format("d {} {} {} {}\nc\n", 0, x, y, press))) {
+            return false;
+        }
+        std::this_thread::sleep_for(std::chrono::milliseconds(first.delay));
     }
 
     for (auto it = steps.begin() + 1; it != steps.end(); it++) {
-        const auto& step = *it;
-        std::this_thread::sleep_for(std::chrono::milliseconds(step.delay));
-        auto res = shell_handler_->write(std::format("m {} {} {} {}\nc\n", 0, step.x, step.y, press));
+        int x = it->x, y = it->y;
+        auto res = shell_handler_->write(std::format("m {} {} {} {}\nc\n", 0, x, y, press));
         if (!res) {
             return false;
         }
+        std::this_thread::sleep_for(std::chrono::milliseconds(it->delay));
     }
 
     return shell_handler_->write("u\nc\n");
@@ -1018,6 +1025,12 @@ bool MinitouchInput::press_key(int key)
 
     // sleep?
     return true;
+}
+
+void MinitouchInput::scalePoint(int& x, int& y)
+{
+    x = round(x * xscale);
+    y = round(y * yscale);
 }
 
 MAA_CTRL_UNIT_NS_END
