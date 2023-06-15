@@ -921,11 +921,7 @@ bool MinitouchInput::init(int swidth, int sheight, std::function<std::string(con
     while (true) {
         auto str = prev + shell_handler_->read(5);
         if (str.empty()) {
-#ifdef _WIN32
-            Sleep(2000);
-#else
-            sleep(2);
-#endif
+            std::this_thread::sleep_for(std::chrono::milliseconds(2000));
             continue;
         }
         auto pos = str.find('^');
@@ -983,20 +979,23 @@ bool MinitouchInput::click(int x, int y)
     return true;
 }
 
-bool MinitouchInput::swipe(int x1, int y1, int x2, int y2, int duration)
+bool MinitouchInput::swipe(const std::vector<Step>& steps)
 {
     if (!shell_handler_) {
         return false;
     }
 
-    if (x1 < 0 || x1 >= width || y1 < 0 || y1 >= height) {
-        LogError << "click point out of range";
-        x1 = std::clamp(x1, 0, width - 1);
-        y1 = std::clamp(y1, 0, height - 1);
+    // 检查第一个点的位置?
+
+    for (const auto& step : steps) {
+        auto res = shell_handler_->write(std::format("d {} {} {} {}\nc\n", 0, step.x, step.y, press));
+        if (!res) {
+            return false;
+        }
+        std::this_thread::sleep_for(std::chrono::milliseconds(step.delay));
     }
 
-    // 看不懂到底在干吗了
-    // 开摆
+    return shell_handler_->write("u\nc\n");
 }
 
 bool MinitouchInput::press_key(int key)

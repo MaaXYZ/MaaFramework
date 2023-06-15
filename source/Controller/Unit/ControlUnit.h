@@ -266,6 +266,12 @@ private:
 class MinitouchInput : public UnitBase
 {
 public:
+    struct Step
+    {
+        int x, y;
+        int delay;
+    };
+
     MinitouchInput() : invoke_app_(new InvokeApp) {}
 
     bool parse(const json::value& config);
@@ -274,7 +280,7 @@ public:
               const std::string& force_temp = "");
 
     bool click(int x, int y);
-    bool swipe(int x1, int y1, int x2, int y2, int duration);
+    bool swipe(const std::vector<Step>& steps);
     bool press_key(int key);
 
 private:

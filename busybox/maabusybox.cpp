@@ -13,6 +13,7 @@
 #include <cstdlib>
 #include <filesystem>
 #include <iostream>
+#include <thread>
 
 std::ostream& operator<<(std::ostream& os, const MaaNS::ControllerNS::Unit::DeviceInfo::Resolution& res)
 {
@@ -313,11 +314,7 @@ int main(int argc, char* argv[])
                 std::cout << "reading info..." << std::endl;
                 auto str = h->read(2);
                 if (str.empty()) {
-#ifdef _WIN32
-                    Sleep(2000);
-#else
-                    sleep(2);
-#endif
+                    std::this_thread::sleep_for(std::chrono::milliseconds(2000));
                     continue;
                 }
                 auto pos = str.find('^');
