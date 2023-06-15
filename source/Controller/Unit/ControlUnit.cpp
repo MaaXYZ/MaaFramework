@@ -1005,7 +1005,19 @@ bool MinitouchInput::swipe(const std::vector<Step>& steps)
 
 bool MinitouchInput::press_key(int key)
 {
-    return false;
+    if (!shell_handler_) {
+        return false;
+    }
+
+    bool res = shell_handler_->write(std::format("k {} d\nc\n", key)) &&
+               shell_handler_->write(std::format("k {} u\nc\n", key));
+
+    if (!res) {
+        return false;
+    }
+
+    // sleep?
+    return true;
 }
 
 MAA_CTRL_UNIT_NS_END
