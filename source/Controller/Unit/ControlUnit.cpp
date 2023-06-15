@@ -940,7 +940,11 @@ bool MinitouchInput::init(int swidth, int sheight, std::function<std::string(con
         auto info = str.substr(pos + 1, rpos - pos - 1);
         LogInfo << "minitouch info:" << info;
 
-        int contact = 0, x = 0, y = 0, pressure = 0;
+        int contact = 0;
+        int x = 0;
+        int y = 0;
+        int pressure = 0;
+
         std::istringstream ins(info);
         if (!ins >> contact >> x >> y >> pressure) {
             return false;
@@ -995,6 +999,9 @@ bool MinitouchInput::swipe(int x1, int y1, int x2, int y2, int duration)
     // 开摆
 }
 
-bool MinitouchInput::press_key(int key) {}
+bool MinitouchInput::press_key(int key)
+{
+    return false;
+}
 
 MAA_CTRL_UNIT_NS_END

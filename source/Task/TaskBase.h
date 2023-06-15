@@ -8,10 +8,10 @@
 
 MAA_TASK_NS_BEGIN
 
-class AbstractTask
+class TaskBase
 {
 public:
-    virtual ~AbstractTask() = default;
+    virtual ~TaskBase() = default;
 
     virtual bool run() = 0;
     virtual bool set_param(const json::value& param) = 0;

@@ -1,10 +1,10 @@
 #pragma once
 
-#include "AbstractTask.h"
+#include "TaskBase.h"
 
 MAA_TASK_NS_BEGIN
 
-class PipelineTask : public AbstractTask
+class PipelineTask : public TaskBase
 {
 public:
     virtual ~PipelineTask() override = default;
@@ -14,7 +14,10 @@ public:
 
     virtual std::string_view type() const override { return "PipelineTask"; }
 
-protected:
+private:
+    std::string begin_task_;
+    std::string connecting_task_;
+    std::string disconnected_task_;
 };
 
 MAA_TASK_NS_END

@@ -5,7 +5,7 @@
 #include "Common/MaaMsg.h"
 #include "Common/MaaTypes.h"
 #include "InstanceInternalAPI.hpp"
-#include "Task/AbstractTask.h"
+#include "Task/TaskBase.h"
 
 #include <mutex>
 
@@ -41,7 +41,7 @@ public: // from InstanceInternalAPI
     // TODO: status
 
 private:
-    using TaskPtr = std::shared_ptr<TaskNS::AbstractTask>;
+    using TaskPtr = std::shared_ptr<TaskNS::TaskBase>;
 
     bool run_task(typename AsyncRunner<TaskPtr>::Id id, TaskPtr task_ptr);
 
