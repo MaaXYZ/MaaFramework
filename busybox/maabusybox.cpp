@@ -64,6 +64,28 @@ std::map<std::string_view, std::string> intents = {
     { "txwy", "tw.txwy.and.arknights/com.u8.sdk.U8UnityContext" }
 };
 
+template <typename SCP>
+double test_screencap(SCP* scp)
+{
+    std::chrono::milliseconds sum(0);
+    for (int i = 0; i < 10; i++) {
+        auto now = std::chrono::steady_clock::now();
+        auto mat = scp->screencap();
+        if (mat.has_value()) {
+            auto file = std::format("temp-{}.png", i);
+            cv::imwrite(file, mat.value());
+            std::cout << "image saved to " << file << std::endl;
+
+            auto dur = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::steady_clock::now() - now);
+            std::cout << "time cost: " << dur << std::endl;
+            sum += dur;
+        }
+    }
+    double cost = sum.count() / 10.0;
+    std::cout << "average time cost: " << cost << "ms" << std::endl;
+    return cost;
+}
+
 int main(int argc, char* argv[])
 {
     cxxopts::Options options(argv[0], "Maa utility tool for test purpose.");
@@ -212,11 +234,29 @@ int main(int argc, char* argv[])
         auto params = result["params"].as<std::vector<std::string>>();
 
         if (scmd == "help") {
-            std::cout << "Usage: " << argv[0]
-                      << " screencap [raw_by_netcat | raw_with_gzip | encode | encode_to_file | minicap_direct]"
-                      << std::endl;
+            std::cout
+                << "Usage: " << argv[0]
+                << " screencap [profile | raw_by_netcat | raw_with_gzip | encode | encode_to_file | minicap_direct]"
+                << std::endl;
+            return 0;
         }
-        else if (scmd == "raw_by_netcat") {
+
+        bool profile = false;
+        std::map<std::string, double> cost;
+
+        if (scmd == "profile") {
+            if (params.size() < 2) {
+                std::cout << "Usage: " << argv[0]
+                          << " screencap profile [minicap_binary_pattern] [minicap_library_pattern]" << std::endl;
+                std::cout << "\tExample: ./maabusybox screencap profile minicap/{ARCH}/bin/minicap "
+                             "minicap/{ARCH}/lib/android-{SDK}/minicap.so"
+                          << std::endl;
+                return 0;
+            }
+
+            profile = true;
+        }
+        if (profile || scmd == "raw_by_netcat") {
             auto scp = new Unit::ScreencapRawByNetcat();
             scp->set_io(io);
             scp->parse(config.value());
@@ -224,24 +264,9 @@ int main(int argc, char* argv[])
 
             scp->init(res.value().width, res.value().height);
 
-            std::chrono::milliseconds sum(0);
-            for (int i = 0; i < 10; i++) {
-                auto now = std::chrono::steady_clock::now();
-                auto mat = scp->screencap();
-                if (mat.has_value()) {
-                    auto file = std::format("temp-{}.png", i);
-                    cv::imwrite(file, mat.value());
-                    std::cout << "image saved to " << file << std::endl;
-
-                    auto dur =
-                        std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::steady_clock::now() - now);
-                    std::cout << "time cost: " << dur << std::endl;
-                    sum += dur;
-                }
-            }
-            std::cout << "average time cost: " << sum.count() / 10.0 << "ms" << std::endl;
+            cost["raw_by_netcat"] = test_screencap(scp);
         }
-        else if (scmd == "raw_with_gzip") {
+        if (profile || scmd == "raw_with_gzip") {
             auto scp = new Unit::ScreencapRawWithGzip();
             scp->set_io(io);
             scp->parse(config.value());
@@ -249,24 +274,9 @@ int main(int argc, char* argv[])
 
             scp->init(res.value().width, res.value().height);
 
-            std::chrono::milliseconds sum(0);
-            for (int i = 0; i < 10; i++) {
-                auto now = std::chrono::steady_clock::now();
-                auto mat = scp->screencap();
-                if (mat.has_value()) {
-                    auto file = std::format("temp-{}.png", i);
-                    cv::imwrite(file, mat.value());
-                    std::cout << "image saved to " << file << std::endl;
-
-                    auto dur =
-                        std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::steady_clock::now() - now);
-                    std::cout << "time cost: " << dur << std::endl;
-                    sum += dur;
-                }
-            }
-            std::cout << "average time cost: " << sum.count() / 10.0 << "ms" << std::endl;
+            cost["raw_with_gzip"] = test_screencap(scp);
         }
-        else if (scmd == "encode") {
+        if (profile || scmd == "encode") {
             auto scp = new Unit::ScreencapEncode();
             scp->set_io(io);
             scp->parse(config.value());
@@ -274,24 +284,9 @@ int main(int argc, char* argv[])
 
             scp->init(res.value().width, res.value().height);
 
-            std::chrono::milliseconds sum(0);
-            for (int i = 0; i < 10; i++) {
-                auto now = std::chrono::steady_clock::now();
-                auto mat = scp->screencap();
-                if (mat.has_value()) {
-                    auto file = std::format("temp-{}.png", i);
-                    cv::imwrite(file, mat.value());
-                    std::cout << "image saved to " << file << std::endl;
-
-                    auto dur =
-                        std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::steady_clock::now() - now);
-                    std::cout << "time cost: " << dur << std::endl;
-                    sum += dur;
-                }
-            }
-            std::cout << "average time cost: " << sum.count() / 10.0 << "ms" << std::endl;
+            cost["encode"] = test_screencap(scp);
         }
-        else if (scmd == "encode_to_file") {
+        if (profile || scmd == "encode_to_file") {
             auto scp = new Unit::ScreencapEncodeToFileAndPull();
             scp->set_io(io);
             scp->parse(config.value());
@@ -299,24 +294,9 @@ int main(int argc, char* argv[])
 
             scp->init(res.value().width, res.value().height);
 
-            std::chrono::milliseconds sum(0);
-            for (int i = 0; i < 10; i++) {
-                auto now = std::chrono::steady_clock::now();
-                auto mat = scp->screencap();
-                if (mat.has_value()) {
-                    auto file = std::format("temp-{}.png", i);
-                    cv::imwrite(file, mat.value());
-                    std::cout << "image saved to " << file << std::endl;
-
-                    auto dur =
-                        std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::steady_clock::now() - now);
-                    std::cout << "time cost: " << dur << std::endl;
-                    sum += dur;
-                }
-            }
-            std::cout << "average time cost: " << sum.count() / 10.0 << "ms" << std::endl;
+            cost["encode_to_file"] = test_screencap(scp);
         }
-        else if (scmd == "minicap_direct") {
+        if (profile || scmd == "minicap_direct") {
             if (params.size() < 2) {
                 std::cout << "Usage: " << argv[0] << " screencap minicap_direct [binary_pattern] [library_pattern]"
                           << std::endl;
@@ -338,24 +318,9 @@ int main(int argc, char* argv[])
                                                      { { "{ARCH}", arch }, { "{SDK}", std::to_string(sdk) } });
                 });
 
-            std::chrono::milliseconds sum(0);
-            for (int i = 0; i < 10; i++) {
-                auto now = std::chrono::steady_clock::now();
-                auto mat = scp->screencap();
-                if (mat.has_value()) {
-                    auto file = std::format("temp-{}.png", i);
-                    cv::imwrite(file, mat.value());
-                    std::cout << "image saved to " << file << std::endl;
-
-                    auto dur =
-                        std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::steady_clock::now() - now);
-                    std::cout << "time cost: " << dur << std::endl;
-                    sum += dur;
-                }
-            }
-            std::cout << "average time cost: " << sum.count() / 10.0 << "ms" << std::endl;
+            cost["minicap_direct"] = test_screencap(scp);
         }
-        else if (scmd == "minicap_stream") {
+        if (profile || scmd == "minicap_stream") {
             if (params.size() < 2) {
                 std::cout << "Usage: " << argv[0] << " screencap minicap_direct [binary_pattern] [library_pattern]"
                           << std::endl;
@@ -377,22 +342,15 @@ int main(int argc, char* argv[])
                                                      { { "{ARCH}", arch }, { "{SDK}", std::to_string(sdk) } });
                 });
 
-            std::chrono::milliseconds sum(0);
-            for (int i = 0; i < 10; i++) {
-                auto now = std::chrono::steady_clock::now();
-                auto mat = scp->screencap();
-                if (mat.has_value()) {
-                    auto file = std::format("temp-{}.png", i);
-                    cv::imwrite(file, mat.value());
-                    std::cout << "image saved to " << file << std::endl;
+            cost["minicap_stream"] = test_screencap(scp);
+        }
 
-                    auto dur =
-                        std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::steady_clock::now() - now);
-                    std::cout << "time cost: " << dur << std::endl;
-                    sum += dur;
-                }
+        if (profile) {
+            std::cout << "\n\nResult: " << std::endl;
+            for (const auto& pr : cost) {
+                std::cout << pr.first << ": " << pr.second << "ms" << std::endl;
             }
-            std::cout << "average time cost: " << sum.count() / 10.0 << "ms" << std::endl;
+            std::cout << "\n" << std::endl;
         }
     }
     else if (cmd == "invoke_app") {
