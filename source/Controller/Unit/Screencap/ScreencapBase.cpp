@@ -129,9 +129,17 @@ std::optional<cv::Mat> ScreencapBase::decode_png(const std::string& buffer)
 }
 
 // 是直接就能实现的吧?
-std::optional<cv::Mat> ScreencapBase::decode_jpg(const std::string& buffer)
+std::optional<cv::Mat> ScreencapBase::decode_minicap_jpg(const std::string& buffer)
 {
-    cv::Mat temp = cv::imdecode({ buffer.data(), int(buffer.size()) }, cv::IMREAD_COLOR);
+    auto pos = buffer.find("\n\xff\xd8"); // FFD8是JPG文件头
+
+    if (pos == std::string::npos) {
+        return std::nullopt;
+    }
+
+    auto data = buffer.substr(pos + 1);
+
+    cv::Mat temp = cv::imdecode({ data.data(), int(data.size()) }, cv::IMREAD_COLOR);
     if (temp.empty()) {
         return std::nullopt;
     }

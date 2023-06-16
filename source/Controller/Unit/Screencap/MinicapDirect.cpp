@@ -87,15 +87,6 @@ std::optional<cv::Mat> MinicapDirect::screencap()
         return std::nullopt;
     }
 
-    const auto& buffer = res.value();
-    auto pos = buffer.find("\n\xff\xd8"); // FFD8是JPG文件头
-
-    if (pos == std::string::npos) {
-        return std::nullopt;
-    }
-
-    auto data = buffer.substr(pos + 1);
-
-    return process_data(data, std::bind(&ScreencapBase::decode_jpg, this, std::placeholders::_1));
+    return process_data(res.value(), std::bind(&ScreencapBase::decode_minicap_jpg, this, std::placeholders::_1));
 }
 MAA_CTRL_UNIT_NS_END
