@@ -72,6 +72,12 @@
     {
 #define MAA_CTRL_NS_END }
 
+#define MAA_CTRL_UNIT_NS MAA_CTRL_NS::Unit
+#define MAA_CTRL_UNIT_NS_BEGIN \
+    namespace MAA_CTRL_UNIT_NS \
+    {
+#define MAA_CTRL_UNIT_NS_END }
+
 #define MAA_VISION_NS MAA_NS::VisionNS
 #define MAA_VISION_NS_BEGIN \
     namespace MAA_VISION_NS \
@@ -93,6 +99,6 @@
 #endif
 
 #if defined(_MSC_VER)
-    // FIXME: remove this
-    #pragma warning(disable : 4100)
+// FIXME: remove this
+#pragma warning(disable : 4100)
 #endif
