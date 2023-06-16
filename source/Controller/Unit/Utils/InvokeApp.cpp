@@ -7,9 +7,9 @@ MAA_CTRL_UNIT_NS_BEGIN
 
 bool InvokeApp::parse(const json::value& config)
 {
-    return parse_argv("Abilist", config, abilist_argv_) && parse_argv("PushBin", config, push_bin_argv_) &&
-           parse_argv("ChmodBin", config, chmod_bin_argv_) && parse_argv("InvokeBin", config, invoke_bin_argv_) &&
-           parse_argv("InvokeApp", config, invoke_app_argv_);
+    return parse_argv("Abilist", config, abilist_argv_) && parse_argv("SDK", config, sdk_argv_) &&
+           parse_argv("PushBin", config, push_bin_argv_) && parse_argv("ChmodBin", config, chmod_bin_argv_) &&
+           parse_argv("InvokeBin", config, invoke_bin_argv_) && parse_argv("InvokeApp", config, invoke_app_argv_);
 }
 
 bool InvokeApp::init(const std::string& force_temp)
@@ -31,9 +31,6 @@ std::optional<std::vector<std::string>> InvokeApp::abilist()
     }
 
     auto abils = cmd_ret.value();
-    while (abils.back() == '\n' || abils.back() == '\r') {
-        abils.pop_back();
-    }
     std::vector<std::string> res;
 
     while (abils.length() > 0) {
@@ -46,6 +43,19 @@ std::optional<std::vector<std::string>> InvokeApp::abilist()
     }
 
     return res;
+}
+
+std::optional<int> InvokeApp::sdk()
+{
+    LogFunc;
+
+    auto cmd_ret = command(sdk_argv_.gen(argv_replace_));
+
+    if (!cmd_ret) {
+        return std::nullopt;
+    }
+
+    return atoi(cmd_ret.value().c_str());
 }
 
 bool InvokeApp::push(const std::string& path)
@@ -84,6 +94,15 @@ bool InvokeApp::chmod()
     }
 
     return true;
+}
+
+std::optional<std::string> InvokeApp::invoke_bin_stdout(const std::string& extra)
+{
+    LogFunc;
+
+    merge_replacement({ { "{BIN_WORKING_FILE}", tempname_ }, { "{BIN_EXTRA_PARAMS}", extra } });
+    LogInfo << invoke_bin_argv_.gen(argv_replace_);
+    return command(invoke_bin_argv_.gen(argv_replace_));
 }
 
 std::shared_ptr<IOHandler> InvokeApp::invoke_bin(const std::string& extra)

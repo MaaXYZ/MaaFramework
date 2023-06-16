@@ -105,7 +105,14 @@
         "-s",
         "{ADB_SERIAL}",
         "shell",
-        "getprop ro.product.cpu.abilist"
+        "getprop ro.product.cpu.abilist | tr -d '\n\r'"
+    ],
+    "SDK": [
+        "{ADB}",
+        "-s",
+        "{ADB_SERIAL}",
+        "shell",
+        "getprop ro.build.version.sdk | tr -d '\n\r'"
     ],
     "Orientation": [
         "{ADB}",
@@ -133,8 +140,8 @@
         "{ADB}",
         "-s",
         "{ADB_SERIAL}",
-        "shell",
-        "\"/data/local/tmp/{BIN_WORKING_FILE}\" {BIN_EXTRA_PARAMS}"
+        "exec-out",
+        "export LD_LIBRARY_PATH=/data/local/tmp/; \"/data/local/tmp/{BIN_WORKING_FILE}\" {BIN_EXTRA_PARAMS}"
     ],
     "InvokeApp": [
         "{ADB}",

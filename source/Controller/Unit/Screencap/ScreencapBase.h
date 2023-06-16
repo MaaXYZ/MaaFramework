@@ -18,12 +18,14 @@ public:
     std::optional<cv::Mat> decode_raw(const std::string& buffer);
     std::optional<cv::Mat> decode_gzip(const std::string& buffer);
     std::optional<cv::Mat> decode_png(const std::string& buffer);
+    std::optional<cv::Mat> decode_jpg(const std::string& buffer);
     static bool clean_cr(std::string& buffer);
 
-private:
+protected:
     int width_ = 0;
     int height_ = 0;
 
+private:
     enum class EndOfLine
     {
         UnknownYet,

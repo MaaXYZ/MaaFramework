@@ -6,11 +6,17 @@ MAA_CTRL_UNIT_NS_BEGIN
 
 void UnitBase::set_io(std::shared_ptr<PlatformIO> io_ptr)
 {
-    io_ptr_ = std::move(io_ptr);
+    for (auto child : children_) {
+        child->set_io(io_ptr);
+    }
+    io_ptr_ = io_ptr;
 }
 
 void UnitBase::set_replacement(Argv::replacement argv_replace)
 {
+    for (auto child : children_) {
+        child->argv_replace_ = argv_replace;
+    }
     argv_replace_ = std::move(argv_replace);
 }
 

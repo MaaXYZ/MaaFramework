@@ -15,7 +15,7 @@ public:
         int delay;
     };
 
-    MinitouchInput() : invoke_app_(new InvokeApp) {}
+    MinitouchInput() : invoke_app_(new InvokeApp) { children_.push_back(invoke_app_.get()); }
 
     bool parse(const json::value& config);
 

@@ -2,6 +2,7 @@
 
 #include "Encode.h"
 #include "EncodeToFile.h"
+#include "MinicapDirect.h"
 #include "RawByNetcat.h"
 #include "RawWithGzip.h"
 
