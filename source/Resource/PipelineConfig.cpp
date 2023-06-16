@@ -115,6 +115,9 @@ bool PipelineConfig::parse_task(const std::string& name, const json::value& obje
     case Recognition::Type::FreezesWait:
         rec_param_parsed = parse_freezes_wait_params(object, data.recognition_params);
         break;
+    default:
+        rec_param_parsed = false;
+        break;
     }
     if (!rec_param_parsed) {
         LogError << "parse_recognition_params failed" << VAR(rec_type_name);
