@@ -57,12 +57,13 @@
         "shell",
         "input keyevent {KEY}"
     ],
-    "ScreencapRawByNetcat": [
+    "ForwardSocket": [
         "{ADB}",
         "-s",
         "{ADB_SERIAL}",
-        "exec-out",
-        "screencap | nc -w 3 {NETCAT_ADDRESS} {NETCAT_PORT}"
+        "forward",
+        "tcp:{FOWARD_PORT}",
+        "localabstract:{LOCAL_SOCKET}"
     ],
     "NetcatAddress": [
         "{ADB}",
@@ -70,6 +71,13 @@
         "{ADB_SERIAL}",
         "shell",
         "cat /proc/net/arp | grep : "
+    ],
+    "ScreencapRawByNetcat": [
+        "{ADB}",
+        "-s",
+        "{ADB_SERIAL}",
+        "exec-out",
+        "screencap | nc -w 3 {NETCAT_ADDRESS} {NETCAT_PORT}"
     ],
     "ScreencapRawWithGzip": [
         "{ADB}",

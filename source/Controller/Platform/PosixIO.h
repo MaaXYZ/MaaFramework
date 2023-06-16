@@ -22,6 +22,7 @@ public:
     std::optional<unsigned short> create_socket(const std::string& local_address) override;
     void close_socket() noexcept override;
 
+    std::shared_ptr<IOHandler> tcp(const std::string& target, unsigned short port) override;
     std::shared_ptr<IOHandler> interactive_shell(const std::vector<std::string>& cmd) override;
 
     int m_server_sock = -1;
@@ -47,6 +48,7 @@ public:
 
     virtual bool write(std::string_view data) override;
     virtual std::string read(unsigned timeout_sec) override;
+    virtual std::string read(unsigned timeout_sec, size_t expect) override;
 
 private:
     int m_read_fd = -1;

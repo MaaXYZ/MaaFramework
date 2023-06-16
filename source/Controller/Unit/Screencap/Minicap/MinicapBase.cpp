@@ -1,4 +1,4 @@
-#include "MinicapDirect.h"
+#include "MinicapBase.h"
 
 #include "Utils/Logger.hpp"
 #include "Utils/NoWarningCV.h"
@@ -7,7 +7,7 @@
 
 MAA_CTRL_UNIT_NS_BEGIN
 
-bool MinicapDirect::parse(const json::value& config)
+bool MinicapBase::parse(const json::value& config)
 {
     return binary_->parse(config) && library_->parse(config);
 }
@@ -18,8 +18,8 @@ static const std::string_view archList[] = { /* "x86_64", */ "x86", /* "arm64-v8
 static const int sdkList[] = { 14, 15, 16, 17, 18, 19, 21, 22, 23, 24, 25, 26, 27, 28, 29, 31 };
 constexpr size_t archCount = sizeof(archList) / sizeof(archList[0]);
 
-bool MinicapDirect::init(int w, int h, std::function<std::string(const std::string&)> path_of_bin,
-                         std::function<std::string(const std::string&, int)> path_of_lib, const std::string& force_temp)
+bool MinicapBase::init(int w, int h, std::function<std::string(const std::string&)> path_of_bin,
+                       std::function<std::string(const std::string&, int)> path_of_lib, const std::string& force_temp)
 {
     LogFunc;
 
@@ -79,14 +79,4 @@ bool MinicapDirect::init(int w, int h, std::function<std::string(const std::stri
     return true;
 }
 
-std::optional<cv::Mat> MinicapDirect::screencap()
-{
-    auto res = binary_->invoke_bin_stdout(std::format("-P {}x{}@{}x{}/{} -s", width_, height_, width_, height_, 0));
-
-    if (!res) {
-        return std::nullopt;
-    }
-
-    return process_data(res.value(), std::bind(&ScreencapBase::decode_minicap_jpg, this, std::placeholders::_1));
-}
 MAA_CTRL_UNIT_NS_END

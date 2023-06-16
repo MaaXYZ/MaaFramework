@@ -22,6 +22,7 @@ public:
     virtual std::optional<unsigned short> create_socket(const std::string& local_address) override;
     virtual void close_socket() noexcept override;
 
+    virtual std::shared_ptr<IOHandler> tcp(const std::string& target, unsigned short port) override;
     virtual std::shared_ptr<IOHandler> interactive_shell(const std::vector<std::string>& cmd) override;
 
     WSADATA wsa_data_ {};
@@ -58,6 +59,7 @@ public:
 
     virtual bool write(std::string_view data) override;
     virtual std::string read(unsigned timeout_sec) override;
+    virtual std::string read(unsigned timeout_sec, size_t expect) override;
 
 private:
     HANDLE m_read = INVALID_HANDLE_VALUE;

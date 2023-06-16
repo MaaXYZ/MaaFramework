@@ -2,6 +2,7 @@
 
 #include "PosixIO.h"
 
+#include <arpa/inet.h>
 #include <fcntl.h>
 #include <signal.h>
 #include <sys/errno.h>
@@ -170,6 +171,28 @@ void PosixIO::close_socket() noexcept
     }
 }
 
+std::shared_ptr<IOHandler> PosixIO::tcp(const std::string& target, unsigned short port)
+{
+    int sock = ::socket(AF_INET, SOCK_STREAM, 0);
+    if (sock < 0) {
+        return nullptr;
+    }
+
+    sockaddr_in addr;
+    memset(&addr, 0, sizeof(addr));
+
+    addr.sin_family = AF_INET;
+    addr.sin_addr.s_addr = inet_addr(target.c_str());
+    addr.sin_port = htons(port);
+    int ret = ::connect(sock, (sockaddr*)&addr, sizeof(addr));
+
+    if (ret < 0) {
+        return nullptr;
+    }
+
+    return std::make_shared<IOHandlerPosix>(sock, sock, 0);
+}
+
 std::shared_ptr<IOHandler> PosixIO::interactive_shell(const std::vector<std::string>& cmd)
 {
     int pipe_to_child[2];
@@ -247,7 +270,7 @@ std::shared_ptr<IOHandler> PosixIO::interactive_shell(const std::vector<std::str
 IOHandlerPosix::~IOHandlerPosix()
 {
     if (m_write_fd != -1) ::close(m_write_fd);
-    if (m_read_fd != -1) ::close(m_read_fd);
+    if (m_read_fd != -1 && m_read_fd != m_write_fd) ::close(m_read_fd);
     if (m_process > 0) ::kill(m_process, SIGTERM);
 }
 
@@ -285,6 +308,37 @@ std::string IOHandlerPosix::read(unsigned timeout_sec)
         }
         else {
             break;
+        }
+    }
+    return ret_str;
+}
+
+std::string IOHandlerPosix::read(unsigned timeout_sec, size_t expect)
+{
+    if (m_process < 0 || m_read_fd < 0) return {};
+    std::string ret_str;
+    constexpr size_t PipeReadBuffSize = 4096ULL;
+
+    auto check_timeout = [&](const auto& start_time) -> bool {
+        using namespace std::chrono_literals;
+        return std::chrono::steady_clock::now() - start_time < timeout_sec * 1s;
+    };
+
+    auto start_time = std::chrono::steady_clock::now();
+
+    while (ret_str.size() < expect) {
+        char buf_from_child[PipeReadBuffSize];
+
+        if (!check_timeout(start_time)) {
+            break;
+        }
+
+        ssize_t ret_read = ::read(m_read_fd, buf_from_child, std::min(PipeReadBuffSize, expect - ret_str.size()));
+        if (ret_read > 0) {
+            ret_str.insert(ret_str.end(), buf_from_child, buf_from_child + ret_read);
+        }
+        else {
+            // break;
         }
     }
     return ret_str;

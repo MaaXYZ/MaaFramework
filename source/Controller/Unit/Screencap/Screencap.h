@@ -2,7 +2,8 @@
 
 #include "Encode.h"
 #include "EncodeToFile.h"
-#include "MinicapDirect.h"
+#include "Minicap/MinicapDirect.h"
+#include "Minicap/MinicapStream.h"
 #include "RawByNetcat.h"
 #include "RawWithGzip.h"
 
