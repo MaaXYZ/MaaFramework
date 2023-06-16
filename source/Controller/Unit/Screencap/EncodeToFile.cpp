@@ -1,6 +1,7 @@
 #include "EncodeToFile.h"
 
 #include "../utils.h"
+#include "Utils/ImageIo.hpp"
 #include "Utils/Logger.hpp"
 #include "Utils/NoWarningCV.h"
 
@@ -45,7 +46,7 @@ std::optional<cv::Mat> ScreencapEncodeToFileAndPull::screencap()
         return std::nullopt;
     }
 
-    return cv::imread(dst_path);
+    return imread(dst_path);
 }
 
 MAA_CTRL_UNIT_NS_END

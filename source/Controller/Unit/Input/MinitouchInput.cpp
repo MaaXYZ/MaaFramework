@@ -176,8 +176,8 @@ bool MinitouchInput::press_key(int key)
 
 void MinitouchInput::scalePoint(int& x, int& y)
 {
-    x = round(x * xscale);
-    y = round(y * yscale);
+    x = static_cast<int>(round(x * xscale));
+    y = static_cast<int>(round(y * yscale));
 }
 
 MAA_CTRL_UNIT_NS_END

@@ -180,12 +180,24 @@
     <ClInclude Include="Controller\Platform\PosixIO.h">
       <Filter>Source\Controller\Platform</Filter>
     </ClInclude>
-    <ClInclude Include="Controller\Unit\ControlUnit.h">
-      <Filter>Source\Controller\Unit</Filter>
-    </ClInclude>
     <ClInclude Include="Controller\Platform\PlatformFactory.h">
       <Filter>Source\Controller\Platform</Filter>
     </ClInclude>
+    <ClInclude Include="Controller\Unit\UnitBase.h" />
+    <ClInclude Include="Controller\Unit\utils.h" />
+    <ClInclude Include="Controller\Unit\General\Activity.h" />
+    <ClInclude Include="Controller\Unit\General\Connection.h" />
+    <ClInclude Include="Controller\Unit\General\DeviceInfo.h" />
+    <ClInclude Include="Controller\Unit\Input\MinitouchInput.h" />
+    <ClInclude Include="Controller\Unit\Input\TapInput.h" />
+    <ClInclude Include="Controller\Unit\Screencap\Encode.h" />
+    <ClInclude Include="Controller\Unit\Screencap\EncodeToFile.h" />
+    <ClInclude Include="Controller\Unit\Screencap\RawByNetcat.h" />
+    <ClInclude Include="Controller\Unit\Screencap\RawWithGzip.h" />
+    <ClInclude Include="Controller\Unit\Screencap\Screencap.h" />
+    <ClInclude Include="Controller\Unit\Screencap\ScreencapBase.h" />
+    <ClInclude Include="Controller\Unit\Utils\InvokeApp.h" />
+    <ClInclude Include="Controller\Unit\ControlUnit.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Controller\ControllerMgr.cpp">
@@ -233,8 +245,19 @@
     <ClCompile Include="Controller\Platform\PosixIO.cpp">
       <Filter>Source\Controller\Platform</Filter>
     </ClCompile>
-    <ClCompile Include="Controller\Unit\ControlUnit.cpp">
-      <Filter>Source\Controller\Unit</Filter>
-    </ClCompile>
+    <ClCompile Include="Controller\Unit\UnitBase.cpp" />
+    <ClCompile Include="Controller\Unit\utils.cpp" />
+    <ClCompile Include="Controller\Unit\General\Activity.cpp" />
+    <ClCompile Include="Controller\Unit\General\Connection.cpp" />
+    <ClCompile Include="Controller\Unit\General\DeviceInfo.cpp" />
+    <ClCompile Include="Controller\Unit\Input\MinitouchInput.cpp" />
+    <ClCompile Include="Controller\Unit\Input\TapInput.cpp" />
+    <ClCompile Include="Controller\Unit\Screencap\Encode.cpp" />
+    <ClCompile Include="Controller\Unit\Screencap\EncodeToFile.cpp" />
+    <ClCompile Include="Controller\Unit\Screencap\RawByNetcat.cpp" />
+    <ClCompile Include="Controller\Unit\Screencap\RawWithGzip.cpp" />
+    <ClCompile Include="Controller\Unit\Screencap\Screencap.cpp" />
+    <ClCompile Include="Controller\Unit\Screencap\ScreencapBase.cpp" />
+    <ClCompile Include="Controller\Unit\Utils\InvokeApp.cpp" />
   </ItemGroup>
 </Project>
