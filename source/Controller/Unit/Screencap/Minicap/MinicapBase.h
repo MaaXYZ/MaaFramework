@@ -9,10 +9,10 @@ MAA_CTRL_UNIT_NS_BEGIN
 class MinicapBase : public ScreencapBase
 {
 public:
-    MinicapBase() : binary_(new InvokeApp), library_(new InvokeApp)
+    MinicapBase()
     {
-        children_.push_back(binary_.get());
-        children_.push_back(library_.get());
+        children_.emplace_back(binary_);
+        children_.emplace_back(library_);
     }
 
     bool parse(const json::value& config);
@@ -22,7 +22,8 @@ public:
     void deinit() {}
 
 protected:
-    std::shared_ptr<InvokeApp> binary_, library_;
+    std::shared_ptr<InvokeApp> binary_ = nullptr;
+    std::shared_ptr<InvokeApp> library_ = nullptr;
 };
 
 MAA_CTRL_UNIT_NS_END

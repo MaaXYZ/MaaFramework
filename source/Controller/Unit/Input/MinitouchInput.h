@@ -15,7 +15,7 @@ public:
         int delay;
     };
 
-    MinitouchInput() : invoke_app_(new InvokeApp) { children_.push_back(invoke_app_.get()); }
+    MinitouchInput() { children_.emplace_back(invoke_app_); }
 
     bool parse(const json::value& config);
 
@@ -27,12 +27,15 @@ public:
     bool press_key(int key);
 
 private:
-    void scalePoint(int& x, int& y);
+    void scale_point(int& x, int& y);
 
-    std::shared_ptr<InvokeApp> invoke_app_;
-    std::shared_ptr<IOHandler> shell_handler_;
-    int width, height;
-    double xscale, yscale, press;
+    std::shared_ptr<InvokeApp> invoke_app_ = std::make_shared<InvokeApp>();
+    std::shared_ptr<IOHandler> shell_handler_ = nullptr;
+    int width_ = 0;
+    int height_ = 0;
+    double xscale_ = 0;
+    double yscale_ = 0;
+    int press_ = 0;
 };
 
 MAA_CTRL_UNIT_NS_END

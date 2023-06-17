@@ -132,12 +132,6 @@
     <ClInclude Include="Controller\AdbController.h">
       <Filter>Source\Controller</Filter>
     </ClInclude>
-    <ClInclude Include="Controller\MaatouchController.h">
-      <Filter>Source\Controller</Filter>
-    </ClInclude>
-    <ClInclude Include="Controller\MinitouchController.h">
-      <Filter>Source\Controller</Filter>
-    </ClInclude>
     <ClInclude Include="Utils\Locale.hpp">
       <Filter>Source\Utils</Filter>
     </ClInclude>
@@ -258,12 +252,6 @@
       <Filter>Source\Utils\Platform</Filter>
     </ClCompile>
     <ClCompile Include="Controller\AdbController.cpp">
-      <Filter>Source\Controller</Filter>
-    </ClCompile>
-    <ClCompile Include="Controller\MaatouchController.cpp">
-      <Filter>Source\Controller</Filter>
-    </ClCompile>
-    <ClCompile Include="Controller\MinitouchController.cpp">
       <Filter>Source\Controller</Filter>
     </ClCompile>
     <ClCompile Include="Task\PipelineTask.cpp">

@@ -4,8 +4,6 @@
 
 #include "Controller/AdbController.h"
 #include "Controller/CustomController.h"
-#include "Controller/MaatouchController.h"
-#include "Controller/MinitouchController.h"
 #include "Instance/InstanceMgr.h"
 #include "Option/GlobalOptionMgr.h"
 #include "Resource/ResourceMgr.h"
@@ -121,34 +119,6 @@ MaaControllerHandle MaaAdbControllerCreate(MaaString adb_path, MaaString address
     }
 
     return new MAA_CTRL_NS::AdbController(adb_path, address, std::move(*unit_opt), callback, callback_arg);
-}
-
-MaaControllerHandle MaaMinitouchControllerCreate(MaaString adb_path, MaaString address, MaaJsonString config,
-                                                 MaaControllerCallback callback, void* callback_arg)
-{
-    LogFunc << VAR(adb_path) << VAR(address) << VAR_VOIDP(callback) << VAR_VOIDP(callback_arg);
-
-    auto parsed = json::parse(std::string_view(config));
-    if (!parsed) {
-        LogError << "Invalid config:" << config;
-        return nullptr;
-    }
-
-    return new MAA_CTRL_NS::MinitouchController(adb_path, address, *parsed, callback, callback_arg);
-}
-
-MaaControllerHandle MaaMaatouchControllerCreate(MaaString adb_path, MaaString address, MaaJsonString config,
-                                                MaaControllerCallback callback, void* callback_arg)
-{
-    LogFunc << VAR(adb_path) << VAR(address) << VAR_VOIDP(callback) << VAR_VOIDP(callback_arg);
-
-    auto parsed = json::parse(std::string_view(config));
-    if (!parsed) {
-        LogError << "Invalid config:" << config;
-        return nullptr;
-    }
-
-    return new MAA_CTRL_NS::MaatouchController(adb_path, address, config, callback, callback_arg);
 }
 
 MaaControllerHandle MaaCustomControllerCreate(MaaCustomControllerHandle handle, MaaControllerCallback callback,

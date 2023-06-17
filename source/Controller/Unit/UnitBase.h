@@ -24,7 +24,7 @@ protected:
 
 protected:
     std::shared_ptr<PlatformIO> io_ptr_ = nullptr;
-    std::vector<UnitBase*> children_;
+    std::vector<std::shared_ptr<UnitBase>> children_;
     Argv::replacement argv_replace_;
 };
 

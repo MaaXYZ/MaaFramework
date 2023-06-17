@@ -2,8 +2,10 @@
 
 #include "Utils/Logger.hpp"
 
+#include <array>
 #include <cmath>
 #include <format>
+#include <ranges>
 
 MAA_CTRL_UNIT_NS_BEGIN
 
@@ -12,8 +14,8 @@ bool MinitouchInput::parse(const json::value& config)
     return invoke_app_->parse(config);
 }
 
-static const std::string_view archList[] = { "x86_64", "x86", "arm64-v8a", "armeabi-v7a", "armeabi" };
-constexpr size_t archCount = sizeof(archList) / sizeof(archList[0]);
+// ordered
+static constexpr std::array<std::string_view, 5> kArchList = { "x86_64", "x86", "arm64-v8a", "armeabi-v7a", "armeabi" };
 
 bool MinitouchInput::init(int swidth, int sheight, std::function<std::string(const std::string&)> path_of_bin,
                           const std::string& force_temp)
@@ -35,19 +37,12 @@ bool MinitouchInput::init(int swidth, int sheight, std::function<std::string(con
         return false;
     }
 
-    std::string targetArch {};
-    for (const auto& arch : archs.value()) {
-        auto it = std::find(archList, archList + archCount, arch);
-        if (it != archList + archCount) {
-            targetArch = arch;
-            break;
-        }
-    }
-    if (targetArch.empty()) {
+    auto arch_iter = ranges::find_first_of(*archs, kArchList);
+    if (arch_iter == archs->end()) {
         return false;
     }
-
-    auto bin = path_of_bin(targetArch);
+    std::string target_arch = *arch_iter;
+    auto bin = path_of_bin(target_arch);
 
     if (!invoke_app_->push(bin)) {
         return false;
@@ -57,7 +52,8 @@ bool MinitouchInput::init(int swidth, int sheight, std::function<std::string(con
         return false;
     }
 
-    shell_handler_ = invoke_app_->invoke_bin("-i");
+    constexpr std::string_view kMinitouchArgs = "-i";
+    shell_handler_ = invoke_app_->invoke_bin(std::string(kMinitouchArgs));
 
     if (!shell_handler_) {
         return false;
@@ -93,11 +89,11 @@ bool MinitouchInput::init(int swidth, int sheight, std::function<std::string(con
             return false;
         }
 
-        width = swidth;
-        height = sheight;
-        xscale = double(x) / swidth;
-        yscale = double(y) / sheight;
-        press = pressure;
+        width_ = swidth;
+        height_ = sheight;
+        xscale_ = double(x) / swidth;
+        yscale_ = double(y) / sheight;
+        press_ = pressure;
 
         return true;
     }
@@ -109,15 +105,15 @@ bool MinitouchInput::click(int x, int y)
         return false;
     }
 
-    if (x < 0 || x >= width || y < 0 || y >= height) {
+    if (x < 0 || x >= width_ || y < 0 || y >= height_) {
         LogError << "click point out of range";
-        x = std::clamp(x, 0, width - 1);
-        y = std::clamp(y, 0, height - 1);
+        x = std::clamp(x, 0, width_ - 1);
+        y = std::clamp(y, 0, height_ - 1);
     }
 
-    scalePoint(x, y);
+    scale_point(x, y);
 
-    bool res = shell_handler_->write(std::format("d {} {} {} {}\nc\n", 0, x, y, press)) &&
+    bool res = shell_handler_->write(std::format("d {} {} {} {}\nc\n", 0, x, y, press_)) &&
                shell_handler_->write(std::format("u\nc\n"));
 
     if (!res) {
@@ -138,8 +134,8 @@ bool MinitouchInput::swipe(const std::vector<Step>& steps)
     {
         auto first = steps[0];
         int x = first.x, y = first.y;
-        scalePoint(x, y);
-        if (!shell_handler_->write(std::format("d {} {} {} {}\nc\n", 0, x, y, press))) {
+        scale_point(x, y);
+        if (!shell_handler_->write(std::format("d {} {} {} {}\nc\n", 0, x, y, press_))) {
             return false;
         }
         std::this_thread::sleep_for(std::chrono::milliseconds(first.delay));
@@ -147,7 +143,7 @@ bool MinitouchInput::swipe(const std::vector<Step>& steps)
 
     for (auto it = steps.begin() + 1; it != steps.end(); it++) {
         int x = it->x, y = it->y;
-        auto res = shell_handler_->write(std::format("m {} {} {} {}\nc\n", 0, x, y, press));
+        auto res = shell_handler_->write(std::format("m {} {} {} {}\nc\n", 0, x, y, press_));
         if (!res) {
             return false;
         }
@@ -174,10 +170,10 @@ bool MinitouchInput::press_key(int key)
     return true;
 }
 
-void MinitouchInput::scalePoint(int& x, int& y)
+void MinitouchInput::scale_point(int& x, int& y)
 {
-    x = static_cast<int>(round(x * xscale));
-    y = static_cast<int>(round(y * yscale));
+    x = static_cast<int>(round(x * xscale_));
+    y = static_cast<int>(round(y * yscale_));
 }
 
 MAA_CTRL_UNIT_NS_END

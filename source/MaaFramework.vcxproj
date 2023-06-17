@@ -61,8 +61,6 @@
     <ClInclude Include="Common\MaaMsg.h" />
     <ClInclude Include="Controller\ControllerMgr.h" />
     <ClInclude Include="Instance\InstanceMgr.h" />
-    <ClInclude Include="Controller\MinitouchController.h" />
-    <ClInclude Include="Controller\MaatouchController.h" />
     <ClInclude Include="Resource\PipelineConfig.h" />
     <ClInclude Include="Resource\ResourceMgr.h" />
     <ClInclude Include="Task\TaskBase.h" />
@@ -110,8 +108,6 @@
     <ClCompile Include="Controller\Unit\Utils\InvokeApp.cpp" />
     <ClCompile Include="Instance\InstanceMgr.cpp" />
     <ClCompile Include="API\MaaAPI.cpp" />
-    <ClCompile Include="Controller\MinitouchController.cpp" />
-    <ClCompile Include="Controller\MaatouchController.cpp" />
     <ClCompile Include="Option\GlobalOptionMgr.cpp" />
     <ClCompile Include="Resource\PipelineConfig.cpp" />
     <ClCompile Include="Resource\ResourceMgr.cpp" />

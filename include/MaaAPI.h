@@ -26,11 +26,6 @@ extern "C"
 
     MaaControllerHandle MAAAPI MaaAdbControllerCreate(MaaString adb_path, MaaString address, MaaJsonString config,
                                                       MaaControllerCallback callback, void* callback_arg);
-    MaaControllerHandle MAAAPI MaaMinitouchControllerCreate(MaaString adb_path, MaaString address, MaaJsonString config,
-                                                            MaaControllerCallback callback, void* callback_arg);
-    MaaControllerHandle MAAAPI MaaMaatouchControllerCreate(MaaString adb_path, MaaString address, MaaJsonString config,
-                                                           MaaControllerCallback callback, void* callback_arg);
-
     MaaControllerHandle MAAAPI MaaCustomControllerCreate(MaaCustomControllerHandle handle,
                                                          MaaControllerCallback callback, void* callback_arg);
 
