@@ -46,6 +46,18 @@
     <Filter Include="Source\GlobalOption">
       <UniqueIdentifier>{fe669fc4-8884-469a-b9f6-7c84f37bfb26}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source\Controller\Unit\General">
+      <UniqueIdentifier>{8f861cca-2c0f-406f-8656-830269c9d58b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\Controller\Unit\Input">
+      <UniqueIdentifier>{46480169-5d0d-40c4-b2df-29632c39418f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\Controller\Unit\Utils">
+      <UniqueIdentifier>{1234fca8-b590-4de4-abfd-87bdf10d7f64}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\Controller\Unit\Screencap">
+      <UniqueIdentifier>{c6d65def-099d-4396-8423-70bf40e2b341}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\include\MaaAPI.h">
@@ -183,21 +195,51 @@
     <ClInclude Include="Controller\Platform\PlatformFactory.h">
       <Filter>Source\Controller\Platform</Filter>
     </ClInclude>
-    <ClInclude Include="Controller\Unit\UnitBase.h" />
-    <ClInclude Include="Controller\Unit\utils.h" />
-    <ClInclude Include="Controller\Unit\General\Activity.h" />
-    <ClInclude Include="Controller\Unit\General\Connection.h" />
-    <ClInclude Include="Controller\Unit\General\DeviceInfo.h" />
-    <ClInclude Include="Controller\Unit\Input\MinitouchInput.h" />
-    <ClInclude Include="Controller\Unit\Input\TapInput.h" />
-    <ClInclude Include="Controller\Unit\Screencap\Encode.h" />
-    <ClInclude Include="Controller\Unit\Screencap\EncodeToFile.h" />
-    <ClInclude Include="Controller\Unit\Screencap\RawByNetcat.h" />
-    <ClInclude Include="Controller\Unit\Screencap\RawWithGzip.h" />
-    <ClInclude Include="Controller\Unit\Screencap\Screencap.h" />
-    <ClInclude Include="Controller\Unit\Screencap\ScreencapBase.h" />
-    <ClInclude Include="Controller\Unit\Utils\InvokeApp.h" />
-    <ClInclude Include="Controller\Unit\ControlUnit.h" />
+    <ClInclude Include="Controller\Unit\General\Activity.h">
+      <Filter>Source\Controller\Unit\General</Filter>
+    </ClInclude>
+    <ClInclude Include="Controller\Unit\General\Connection.h">
+      <Filter>Source\Controller\Unit\General</Filter>
+    </ClInclude>
+    <ClInclude Include="Controller\Unit\Input\MinitouchInput.h">
+      <Filter>Source\Controller\Unit\Input</Filter>
+    </ClInclude>
+    <ClInclude Include="Controller\Unit\Input\TapInput.h">
+      <Filter>Source\Controller\Unit\Input</Filter>
+    </ClInclude>
+    <ClInclude Include="Controller\Unit\Utils\InvokeApp.h">
+      <Filter>Source\Controller\Unit\Utils</Filter>
+    </ClInclude>
+    <ClInclude Include="Controller\Unit\Screencap\Encode.h">
+      <Filter>Source\Controller\Unit\Screencap</Filter>
+    </ClInclude>
+    <ClInclude Include="Controller\Unit\Screencap\EncodeToFile.h">
+      <Filter>Source\Controller\Unit\Screencap</Filter>
+    </ClInclude>
+    <ClInclude Include="Controller\Unit\Screencap\RawByNetcat.h">
+      <Filter>Source\Controller\Unit\Screencap</Filter>
+    </ClInclude>
+    <ClInclude Include="Controller\Unit\Screencap\RawWithGzip.h">
+      <Filter>Source\Controller\Unit\Screencap</Filter>
+    </ClInclude>
+    <ClInclude Include="Controller\Unit\Screencap\Screencap.h">
+      <Filter>Source\Controller\Unit\Screencap</Filter>
+    </ClInclude>
+    <ClInclude Include="Controller\Unit\Screencap\ScreencapBase.h">
+      <Filter>Source\Controller\Unit\Screencap</Filter>
+    </ClInclude>
+    <ClInclude Include="Controller\Unit\General\DeviceInfo.h">
+      <Filter>Source\Controller\Unit\General</Filter>
+    </ClInclude>
+    <ClInclude Include="Controller\Unit\ControlUnit.h">
+      <Filter>Source\Controller\Unit</Filter>
+    </ClInclude>
+    <ClInclude Include="Controller\Unit\UnitBase.h">
+      <Filter>Source\Controller\Unit</Filter>
+    </ClInclude>
+    <ClInclude Include="Controller\Unit\Utils.h">
+      <Filter>Source\Controller\Unit</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Controller\ControllerMgr.cpp">
@@ -245,19 +287,47 @@
     <ClCompile Include="Controller\Platform\PosixIO.cpp">
       <Filter>Source\Controller\Platform</Filter>
     </ClCompile>
-    <ClCompile Include="Controller\Unit\UnitBase.cpp" />
-    <ClCompile Include="Controller\Unit\utils.cpp" />
-    <ClCompile Include="Controller\Unit\General\Activity.cpp" />
-    <ClCompile Include="Controller\Unit\General\Connection.cpp" />
-    <ClCompile Include="Controller\Unit\General\DeviceInfo.cpp" />
-    <ClCompile Include="Controller\Unit\Input\MinitouchInput.cpp" />
-    <ClCompile Include="Controller\Unit\Input\TapInput.cpp" />
-    <ClCompile Include="Controller\Unit\Screencap\Encode.cpp" />
-    <ClCompile Include="Controller\Unit\Screencap\EncodeToFile.cpp" />
-    <ClCompile Include="Controller\Unit\Screencap\RawByNetcat.cpp" />
-    <ClCompile Include="Controller\Unit\Screencap\RawWithGzip.cpp" />
-    <ClCompile Include="Controller\Unit\Screencap\Screencap.cpp" />
-    <ClCompile Include="Controller\Unit\Screencap\ScreencapBase.cpp" />
-    <ClCompile Include="Controller\Unit\Utils\InvokeApp.cpp" />
+    <ClCompile Include="Controller\Unit\General\Activity.cpp">
+      <Filter>Source\Controller\Unit\General</Filter>
+    </ClCompile>
+    <ClCompile Include="Controller\Unit\General\Connection.cpp">
+      <Filter>Source\Controller\Unit\General</Filter>
+    </ClCompile>
+    <ClCompile Include="Controller\Unit\Input\MinitouchInput.cpp">
+      <Filter>Source\Controller\Unit\Input</Filter>
+    </ClCompile>
+    <ClCompile Include="Controller\Unit\Input\TapInput.cpp">
+      <Filter>Source\Controller\Unit\Input</Filter>
+    </ClCompile>
+    <ClCompile Include="Controller\Unit\Utils\InvokeApp.cpp">
+      <Filter>Source\Controller\Unit\Utils</Filter>
+    </ClCompile>
+    <ClCompile Include="Controller\Unit\Screencap\Encode.cpp">
+      <Filter>Source\Controller\Unit\Screencap</Filter>
+    </ClCompile>
+    <ClCompile Include="Controller\Unit\Screencap\EncodeToFile.cpp">
+      <Filter>Source\Controller\Unit\Screencap</Filter>
+    </ClCompile>
+    <ClCompile Include="Controller\Unit\Screencap\RawByNetcat.cpp">
+      <Filter>Source\Controller\Unit\Screencap</Filter>
+    </ClCompile>
+    <ClCompile Include="Controller\Unit\Screencap\RawWithGzip.cpp">
+      <Filter>Source\Controller\Unit\Screencap</Filter>
+    </ClCompile>
+    <ClCompile Include="Controller\Unit\Screencap\Screencap.cpp">
+      <Filter>Source\Controller\Unit\Screencap</Filter>
+    </ClCompile>
+    <ClCompile Include="Controller\Unit\Screencap\ScreencapBase.cpp">
+      <Filter>Source\Controller\Unit\Screencap</Filter>
+    </ClCompile>
+    <ClCompile Include="Controller\Unit\General\DeviceInfo.cpp">
+      <Filter>Source\Controller\Unit\General</Filter>
+    </ClCompile>
+    <ClCompile Include="Controller\Unit\UnitBase.cpp">
+      <Filter>Source\Controller\Unit</Filter>
+    </ClCompile>
+    <ClCompile Include="Controller\Unit\Utils.cpp">
+      <Filter>Source\Controller\Unit</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>
