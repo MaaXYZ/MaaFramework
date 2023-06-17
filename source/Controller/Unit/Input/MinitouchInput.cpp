@@ -1,11 +1,11 @@
 #include "MinitouchInput.h"
 
 #include "Utils/Logger.hpp"
+#include "Utils/Ranges.hpp"
 
 #include <array>
 #include <cmath>
 #include <format>
-#include <ranges>
 
 MAA_CTRL_UNIT_NS_BEGIN
 
@@ -41,7 +41,7 @@ bool MinitouchInput::init(int swidth, int sheight, std::function<std::string(con
     if (arch_iter == archs->end()) {
         return false;
     }
-    std::string target_arch = *arch_iter;
+    const std::string& target_arch = *arch_iter;
     auto bin = path_of_bin(target_arch);
 
     if (!invoke_app_->push(bin)) {

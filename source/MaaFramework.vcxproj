@@ -47,6 +47,10 @@
     <ClInclude Include="Controller\Unit\Input\TapInput.h" />
     <ClInclude Include="Controller\Unit\Screencap\Encode.h" />
     <ClInclude Include="Controller\Unit\Screencap\EncodeToFile.h" />
+    <ClInclude Include="Controller\Unit\Screencap\Minicap\Minicap.h" />
+    <ClInclude Include="Controller\Unit\Screencap\Minicap\MinicapBase.h" />
+    <ClInclude Include="Controller\Unit\Screencap\Minicap\MinicapDirect.h" />
+    <ClInclude Include="Controller\Unit\Screencap\Minicap\MinicapStream.h" />
     <ClInclude Include="Controller\Unit\Screencap\RawByNetcat.h" />
     <ClInclude Include="Controller\Unit\Screencap\RawWithGzip.h" />
     <ClInclude Include="Controller\Unit\Screencap\Screencap.h" />
@@ -99,6 +103,9 @@
     <ClCompile Include="Controller\Unit\Input\TapInput.cpp" />
     <ClCompile Include="Controller\Unit\Screencap\Encode.cpp" />
     <ClCompile Include="Controller\Unit\Screencap\EncodeToFile.cpp" />
+    <ClCompile Include="Controller\Unit\Screencap\Minicap\MinicapBase.cpp" />
+    <ClCompile Include="Controller\Unit\Screencap\Minicap\MinicapDirect.cpp" />
+    <ClCompile Include="Controller\Unit\Screencap\Minicap\MinicapStream.cpp" />
     <ClCompile Include="Controller\Unit\Screencap\RawByNetcat.cpp" />
     <ClCompile Include="Controller\Unit\Screencap\RawWithGzip.cpp" />
     <ClCompile Include="Controller\Unit\Screencap\Screencap.cpp" />

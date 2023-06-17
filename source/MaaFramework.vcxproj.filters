@@ -58,6 +58,9 @@
     <Filter Include="Source\Controller\Unit\Screencap">
       <UniqueIdentifier>{c6d65def-099d-4396-8423-70bf40e2b341}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source\Controller\Unit\Screencap\Minicap">
+      <UniqueIdentifier>{15ab5d5b-71cd-46f1-bccc-419152e0b070}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\include\MaaAPI.h">
@@ -234,6 +237,18 @@
     <ClInclude Include="Controller\Unit\Utils.h">
       <Filter>Source\Controller\Unit</Filter>
     </ClInclude>
+    <ClInclude Include="Controller\Unit\Screencap\Minicap\Minicap.h">
+      <Filter>Source\Controller\Unit\Screencap\Minicap</Filter>
+    </ClInclude>
+    <ClInclude Include="Controller\Unit\Screencap\Minicap\MinicapBase.h">
+      <Filter>Source\Controller\Unit\Screencap\Minicap</Filter>
+    </ClInclude>
+    <ClInclude Include="Controller\Unit\Screencap\Minicap\MinicapDirect.h">
+      <Filter>Source\Controller\Unit\Screencap\Minicap</Filter>
+    </ClInclude>
+    <ClInclude Include="Controller\Unit\Screencap\Minicap\MinicapStream.h">
+      <Filter>Source\Controller\Unit\Screencap\Minicap</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Controller\ControllerMgr.cpp">
@@ -316,6 +331,15 @@
     </ClCompile>
     <ClCompile Include="Controller\Unit\Utils.cpp">
       <Filter>Source\Controller\Unit</Filter>
+    </ClCompile>
+    <ClCompile Include="Controller\Unit\Screencap\Minicap\MinicapBase.cpp">
+      <Filter>Source\Controller\Unit\Screencap\Minicap</Filter>
+    </ClCompile>
+    <ClCompile Include="Controller\Unit\Screencap\Minicap\MinicapDirect.cpp">
+      <Filter>Source\Controller\Unit\Screencap\Minicap</Filter>
+    </ClCompile>
+    <ClCompile Include="Controller\Unit\Screencap\Minicap\MinicapStream.cpp">
+      <Filter>Source\Controller\Unit\Screencap\Minicap</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

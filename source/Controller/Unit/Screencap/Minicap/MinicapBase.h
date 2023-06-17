@@ -22,8 +22,8 @@ public:
     void deinit() {}
 
 protected:
-    std::shared_ptr<InvokeApp> binary_ = nullptr;
-    std::shared_ptr<InvokeApp> library_ = nullptr;
+    std::shared_ptr<InvokeApp> binary_ = std::make_shared<InvokeApp>();
+    std::shared_ptr<InvokeApp> library_ = std::make_shared<InvokeApp>();
 };
 
 MAA_CTRL_UNIT_NS_END

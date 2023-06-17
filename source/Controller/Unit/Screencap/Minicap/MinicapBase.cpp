@@ -2,7 +2,9 @@
 
 #include "Utils/Logger.hpp"
 #include "Utils/NoWarningCV.h"
+#include "Utils/Ranges.hpp"
 
+#include <array>
 #include <format>
 
 MAA_CTRL_UNIT_NS_BEGIN
@@ -14,9 +16,9 @@ bool MinicapBase::parse(const json::value& config)
 
 // x86_64的prebuilt里面的library是32位的, 用不了
 // arm64-v8会卡住, 不知道原因
-static const std::string_view archList[] = { /* "x86_64", */ "x86", /* "arm64-v8a", */ "armeabi-v7a", "armeabi" };
-static const int sdkList[] = { 14, 15, 16, 17, 18, 19, 21, 22, 23, 24, 25, 26, 27, 28, 29, 31 };
-constexpr size_t archCount = sizeof(archList) / sizeof(archList[0]);
+static constexpr std::array<std::string_view, 3> kArchList = { /* "x86_64", */ "x86", /* "arm64-v8a", */ "armeabi-v7a",
+                                                               "armeabi" };
+static constexpr std::array<int, 16> sdkList = { 14, 15, 16, 17, 18, 19, 21, 22, 23, 24, 25, 26, 27, 28, 29, 31 };
 
 bool MinicapBase::init(int w, int h, std::function<std::string(const std::string&)> path_of_bin,
                        std::function<std::string(const std::string&, int)> path_of_lib, const std::string& force_temp)
@@ -39,17 +41,11 @@ bool MinicapBase::init(int w, int h, std::function<std::string(const std::string
         return false;
     }
 
-    std::string targetArch {};
-    for (const auto& arch : archs.value()) {
-        auto it = std::find(archList, archList + archCount, arch);
-        if (it != archList + archCount) {
-            targetArch = arch;
-            break;
-        }
-    }
-    if (targetArch.empty()) {
+    auto arch_iter = ranges::find_first_of(*archs, kArchList);
+    if (arch_iter == archs->end()) {
         return false;
     }
+    const std::string& target_arch = *arch_iter;
 
     int fit_sdk = -1;
     for (auto s : sdkList) {
@@ -64,8 +60,8 @@ bool MinicapBase::init(int w, int h, std::function<std::string(const std::string
         return false;
     }
 
-    auto bin = path_of_bin(targetArch);
-    auto lib = path_of_lib(targetArch, fit_sdk);
+    auto bin = path_of_bin(target_arch);
+    auto lib = path_of_lib(target_arch, fit_sdk);
 
     if (!binary_->push(bin) || !library_->push(lib)) {
         return false;
