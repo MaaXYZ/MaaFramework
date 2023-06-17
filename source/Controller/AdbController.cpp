@@ -65,8 +65,9 @@ bool AdbController::_connect()
         LogError << "failed to request_resolution";
         return false;
     }
-
     auto [w, h] = control_unit_.device_info.get_resolution();
+
+    control_unit_.screencap.set_replacement(replacement);
     if (!control_unit_.screencap.init(w, h)) {
         LogError << "falied to init screencap";
         return false;

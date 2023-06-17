@@ -7,8 +7,11 @@ MAA_CTRL_UNIT_NS_BEGIN
 
 bool Screencap::parse(const json::value& config)
 {
-    return screencap_raw_by_netcat_uint_.parse(config) || screencap_raw_with_gzip_unit_.parse(config) ||
-           screencap_encode_unit_.parse(config) || screencap_encode_to_file_unit_.parse(config);
+    bool ret = screencap_raw_by_netcat_uint_.parse(config);
+    ret |= screencap_raw_with_gzip_unit_.parse(config);
+    ret |= screencap_encode_unit_.parse(config);
+    ret |= screencap_encode_to_file_unit_.parse(config);
+    return ret;
 }
 
 bool Screencap::init(int w, int h, const std::string& force_temp)
@@ -20,15 +23,15 @@ bool Screencap::init(int w, int h, const std::string& force_temp)
     screencap_encode_unit_.set_io(io_ptr_);
     screencap_encode_to_file_unit_.set_io(io_ptr_);
 
-    screencap_raw_by_netcat_uint_.init(w, h);
-    screencap_raw_with_gzip_unit_.init(w, h);
-    screencap_encode_unit_.init(w, h);
-    screencap_encode_to_file_unit_.init(w, h, force_temp);
-
     screencap_raw_by_netcat_uint_.set_replacement(argv_replace_);
     screencap_raw_with_gzip_unit_.set_replacement(argv_replace_);
     screencap_encode_unit_.set_replacement(argv_replace_);
     screencap_encode_to_file_unit_.set_replacement(argv_replace_);
+
+    screencap_raw_by_netcat_uint_.init(w, h);
+    screencap_raw_with_gzip_unit_.init(w, h);
+    screencap_encode_unit_.init(w, h);
+    screencap_encode_to_file_unit_.init(w, h, force_temp);
 
     return speed_test();
 }
