@@ -25,24 +25,21 @@ public:
     std::shared_ptr<IOHandler> tcp(const std::string& target, unsigned short port) override;
     std::shared_ptr<IOHandler> interactive_shell(const std::vector<std::string>& cmd) override;
 
-    int m_server_sock = -1;
-    sockaddr_in m_server_sock_addr {};
+    int server_sock_ = -1;
+    sockaddr_in server_sock_addr_ {};
     static constexpr int PIPE_READ = 0;
     static constexpr int PIPE_WRITE = 1;
-    int m_pipe_in[2] = { 0 };
-    int m_pipe_out[2] = { 0 };
-    int m_child = 0;
+    int pipe_in_[2] = { 0 };
+    int pipe_out_[2] = { 0 };
+    int child_ = 0;
 };
 
 class IOHandlerPosix : public IOHandler, NonCopyable
 {
 public:
     IOHandlerPosix(int read_fd, int write_fd, ::pid_t process)
-    {
-        m_read_fd = read_fd;
-        m_write_fd = write_fd;
-        m_process = process;
-    }
+        : read_fd_(read_fd), write_fd_(write_fd), process_(process)
+    {}
 
     virtual ~IOHandlerPosix();
 
@@ -51,9 +48,9 @@ public:
     virtual std::string read(unsigned timeout_sec, size_t expect) override;
 
 private:
-    int m_read_fd = -1;
-    int m_write_fd = -1;
-    ::pid_t m_process = -1;
+    int read_fd_ = -1;
+    int write_fd_ = -1;
+    ::pid_t process_ = -1;
 };
 
 MAA_CTRL_NS_END

@@ -26,9 +26,9 @@ PosixIO::PosixIO()
 {
     support_socket_ = true;
 
-    int pipe_in_ret = ::pipe(m_pipe_in);
-    int pipe_out_ret = ::pipe(m_pipe_out);
-    ::fcntl(m_pipe_out[PIPE_READ], F_SETFL, O_NONBLOCK);
+    int pipe_in_ret = ::pipe(pipe_in_);
+    int pipe_out_ret = ::pipe(pipe_out_);
+    ::fcntl(pipe_out_[PIPE_READ], F_SETFL, O_NONBLOCK);
 
     if (pipe_in_ret < 0 || pipe_out_ret < 0) {
         auto err = strerror(errno);
@@ -37,15 +37,15 @@ PosixIO::PosixIO()
 }
 PosixIO::~PosixIO()
 {
-    if (m_server_sock >= 0) {
-        ::close(m_server_sock);
-        m_server_sock = -1;
+    if (server_sock_ >= 0) {
+        ::close(server_sock_);
+        server_sock_ = -1;
     }
 
-    ::close(m_pipe_in[PIPE_READ]);
-    ::close(m_pipe_in[PIPE_WRITE]);
-    ::close(m_pipe_out[PIPE_READ]);
-    ::close(m_pipe_out[PIPE_WRITE]);
+    ::close(pipe_in_[PIPE_READ]);
+    ::close(pipe_in_[PIPE_WRITE]);
+    ::close(pipe_out_[PIPE_READ]);
+    ::close(pipe_out_[PIPE_WRITE]);
 }
 
 int PosixIO::call_command(const std::vector<std::string>& cmd, bool recv_by_socket, std::string& pipe_data,
@@ -63,19 +63,19 @@ int PosixIO::call_command(const std::vector<std::string>& cmd, bool recv_by_sock
     };
 
     int exit_ret = 0;
-    m_child = ::fork();
-    if (m_child == 0) {
+    child_ = ::fork();
+    if (child_ == 0) {
         // child process
 
-        ::dup2(m_pipe_in[PIPE_READ], STDIN_FILENO);
-        ::dup2(m_pipe_out[PIPE_WRITE], STDOUT_FILENO);
-        ::dup2(m_pipe_out[PIPE_WRITE], STDERR_FILENO);
+        ::dup2(pipe_in_[PIPE_READ], STDIN_FILENO);
+        ::dup2(pipe_out_[PIPE_WRITE], STDOUT_FILENO);
+        ::dup2(pipe_out_[PIPE_WRITE], STDERR_FILENO);
 
         // all these are for use by parent only
-        // close(m_pipe_in[PIPE_READ]);
-        // close(m_pipe_in[PIPE_WRITE]);
-        // close(m_pipe_out[PIPE_READ]);
-        // close(m_pipe_out[PIPE_WRITE]);
+        // close(pipe_in_[PIPE_READ]);
+        // close(pipe_in_[PIPE_WRITE]);
+        // close(pipe_out_[PIPE_READ]);
+        // close(pipe_out_[PIPE_WRITE]);
 
         char** argv = new char*[cmd.size() + 1];
         for (size_t i = 0; i < cmd.size(); i++) {
@@ -86,18 +86,18 @@ int PosixIO::call_command(const std::vector<std::string>& cmd, bool recv_by_sock
         LogError << "fork failed" << strerror(errno);
         ::exit(exit_ret);
     }
-    else if (m_child > 0) {
+    else if (child_ > 0) {
         // parent process
         if (recv_by_socket) {
             sockaddr addr {};
             socklen_t len = sizeof(addr);
             sock_buffer = MAA_PLATFORM_NS::single_page_buffer<char>();
 
-            int client_socket = ::accept(m_server_sock, &addr, &len);
+            int client_socket = ::accept(server_sock_, &addr, &len);
             if (client_socket < 0) {
                 LogError << "accept failed:" << strerror(errno);
-                ::kill(m_child, SIGKILL);
-                ::waitpid(m_child, &exit_ret, 0);
+                ::kill(child_, SIGKILL);
+                ::waitpid(child_, &exit_ret, 0);
                 return -1;
             }
 
@@ -111,19 +111,19 @@ int PosixIO::call_command(const std::vector<std::string>& cmd, bool recv_by_sock
         }
         else {
             do {
-                ssize_t read_num = ::read(m_pipe_out[PIPE_READ], pipe_buffer.get(), pipe_buffer.size());
+                ssize_t read_num = ::read(pipe_out_[PIPE_READ], pipe_buffer.get(), pipe_buffer.size());
                 while (read_num > 0) {
                     pipe_data.insert(pipe_data.end(), pipe_buffer.get(), pipe_buffer.get() + read_num);
-                    read_num = ::read(m_pipe_out[PIPE_READ], pipe_buffer.get(), pipe_buffer.size());
+                    read_num = ::read(pipe_out_[PIPE_READ], pipe_buffer.get(), pipe_buffer.size());
                 }
-            } while (::waitpid(m_child, &exit_ret, WNOHANG) == 0 && !check_timeout(start_time));
+            } while (::waitpid(child_, &exit_ret, WNOHANG) == 0 && !check_timeout(start_time));
         }
-        ::waitpid(m_child, &exit_ret, 0); // if ::waitpid(m_child, &exit_ret, WNOHANG) == 0, repeat it will cause
+        ::waitpid(child_, &exit_ret, 0); // if ::waitpid(child_, &exit_ret, WNOHANG) == 0, repeat it will cause
         // ECHILD, so not check the return value
     }
     else {
         // failed to create child process
-        LogError << "Call `" << VAR(cmd) << "` create process failed, child:" << VAR(m_child);
+        LogError << "Call `" << VAR(cmd) << "` create process failed, child:" << VAR(child_);
         return -1;
     }
 
@@ -132,24 +132,24 @@ int PosixIO::call_command(const std::vector<std::string>& cmd, bool recv_by_sock
 
 std::optional<unsigned short> PosixIO::create_socket(const std::string& local_address)
 {
-    m_server_sock = ::socket(AF_INET, SOCK_STREAM, 0);
-    if (m_server_sock < 0) {
+    server_sock_ = ::socket(AF_INET, SOCK_STREAM, 0);
+    if (server_sock_ < 0) {
         return std::nullopt;
     }
 
-    m_server_sock_addr.sin_family = AF_INET;
-    m_server_sock_addr.sin_addr.s_addr = INADDR_ANY;
+    server_sock_addr_.sin_family = AF_INET;
+    server_sock_addr_.sin_addr.s_addr = INADDR_ANY;
 
     bool server_start = false;
     uint16_t port_result = 0;
 
-    m_server_sock_addr.sin_port = htons(0);
-    int bind_ret = ::bind(m_server_sock, reinterpret_cast<sockaddr*>(&m_server_sock_addr), sizeof(::sockaddr_in));
-    socklen_t addrlen = sizeof(m_server_sock_addr);
-    int getname_ret = ::getsockname(m_server_sock, reinterpret_cast<sockaddr*>(&m_server_sock_addr), &addrlen);
-    int listen_ret = ::listen(m_server_sock, 3);
+    server_sock_addr_.sin_port = htons(0);
+    int bind_ret = ::bind(server_sock_, reinterpret_cast<sockaddr*>(&server_sock_addr_), sizeof(::sockaddr_in));
+    socklen_t addrlen = sizeof(server_sock_addr_);
+    int getname_ret = ::getsockname(server_sock_, reinterpret_cast<sockaddr*>(&server_sock_addr_), &addrlen);
+    int listen_ret = ::listen(server_sock_, 3);
     struct timeval timeout = { 6, 0 };
-    int timeout_ret = ::setsockopt(m_server_sock, SOL_SOCKET, SO_RCVTIMEO, (char*)&timeout, sizeof(struct timeval));
+    int timeout_ret = ::setsockopt(server_sock_, SOL_SOCKET, SO_RCVTIMEO, (char*)&timeout, sizeof(struct timeval));
     server_start = bind_ret == 0 && getname_ret == 0 && listen_ret == 0 && timeout_ret == 0;
 
     if (!server_start) {
@@ -157,7 +157,7 @@ std::optional<unsigned short> PosixIO::create_socket(const std::string& local_ad
         return std::nullopt;
     }
 
-    port_result = ntohs(m_server_sock_addr.sin_port);
+    port_result = ntohs(server_sock_addr_.sin_port);
 
     LogInfo << "command server start" << VAR(local_address) << VAR(port_result);
     return port_result;
@@ -165,9 +165,9 @@ std::optional<unsigned short> PosixIO::create_socket(const std::string& local_ad
 
 void PosixIO::close_socket() noexcept
 {
-    if (m_server_sock >= 0) {
-        ::close(m_server_sock);
-        m_server_sock = -1;
+    if (server_sock_ >= 0) {
+        ::close(server_sock_);
+        server_sock_ = -1;
     }
 }
 
@@ -269,22 +269,22 @@ std::shared_ptr<IOHandler> PosixIO::interactive_shell(const std::vector<std::str
 
 IOHandlerPosix::~IOHandlerPosix()
 {
-    if (m_write_fd != -1) ::close(m_write_fd);
-    if (m_read_fd != -1 && m_read_fd != m_write_fd) ::close(m_read_fd);
-    if (m_process > 0) ::kill(m_process, SIGTERM);
+    if (write_fd_ != -1) ::close(write_fd_);
+    if (read_fd_ != -1 && read_fd_ != write_fd_) ::close(read_fd_);
+    if (process_ > 0) ::kill(process_, SIGTERM);
 }
 
 bool IOHandlerPosix::write(std::string_view data)
 {
-    if (m_process < 0 || m_write_fd < 0) return false;
-    if (::write(m_write_fd, data.data(), data.length()) >= 0) return true;
+    if (process_ < 0 || write_fd_ < 0) return false;
+    if (::write(write_fd_, data.data(), data.length()) >= 0) return true;
     LogError << "Failed to write to IOHandlerPosix, err" << strerror(errno);
     return false;
 }
 
 std::string IOHandlerPosix::read(unsigned timeout_sec)
 {
-    if (m_process < 0 || m_read_fd < 0) return {};
+    if (process_ < 0 || read_fd_ < 0) return {};
     std::string ret_str;
     constexpr int PipeReadBuffSize = 4096ULL;
 
@@ -302,7 +302,7 @@ std::string IOHandlerPosix::read(unsigned timeout_sec)
             break;
         }
 
-        ssize_t ret_read = ::read(m_read_fd, buf_from_child, PipeReadBuffSize);
+        ssize_t ret_read = ::read(read_fd_, buf_from_child, PipeReadBuffSize);
         if (ret_read > 0) {
             ret_str.insert(ret_str.end(), buf_from_child, buf_from_child + ret_read);
         }
@@ -315,7 +315,7 @@ std::string IOHandlerPosix::read(unsigned timeout_sec)
 
 std::string IOHandlerPosix::read(unsigned timeout_sec, size_t expect)
 {
-    if (m_process < 0 || m_read_fd < 0) return {};
+    if (process_ < 0 || read_fd_ < 0) return {};
     std::string ret_str;
     constexpr size_t PipeReadBuffSize = 4096ULL;
 
@@ -333,7 +333,7 @@ std::string IOHandlerPosix::read(unsigned timeout_sec, size_t expect)
             break;
         }
 
-        ssize_t ret_read = ::read(m_read_fd, buf_from_child, std::min(PipeReadBuffSize, expect - ret_str.size()));
+        ssize_t ret_read = ::read(read_fd_, buf_from_child, std::min(PipeReadBuffSize, expect - ret_str.size()));
         if (ret_read > 0) {
             ret_str.insert(ret_str.end(), buf_from_child, buf_from_child + ret_read);
         }

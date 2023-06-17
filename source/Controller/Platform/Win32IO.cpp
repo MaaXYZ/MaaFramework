@@ -10,14 +10,15 @@ MAA_CTRL_NS_BEGIN
 
 Win32IO::Win32IO()
 {
+    // 现在暂时没用上这个 bool，但是还是要利用下 WsaHelper 的构造完成 WSAStartup
     support_socket_ = WsaHelper::get_instance()();
 }
 
 Win32IO::~Win32IO()
 {
-    if (m_server_sock != INVALID_SOCKET) {
-        ::closesocket(m_server_sock);
-        m_server_sock = INVALID_SOCKET;
+    if (server_sock_ != INVALID_SOCKET) {
+        ::closesocket(server_sock_);
+        server_sock_ = INVALID_SOCKET;
     }
 }
 
@@ -80,9 +81,9 @@ int Win32IO::call_command(const std::vector<std::string>& cmd, bool recv_by_sock
         sockov.hEvent = CreateEventW(nullptr, TRUE, FALSE, nullptr);
         client_socket = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
         DWORD dummy;
-        if (!m_server_accept_ex(m_server_sock, client_socket, sock_buffer.get(),
-                                (DWORD)sock_buffer.size() - ((sizeof(sockaddr_in) + 16) * 2), sizeof(sockaddr_in) + 16,
-                                sizeof(sockaddr_in) + 16, &dummy, &sockov)) {
+        if (!server_accept_ex_(server_sock_, client_socket, sock_buffer.get(),
+                               (DWORD)sock_buffer.size() - ((sizeof(sockaddr_in) + 16) * 2), sizeof(sockaddr_in) + 16,
+                               sizeof(sockaddr_in) + 16, &dummy, &sockov)) {
             DWORD err = WSAGetLastError();
             if (err == ERROR_IO_PENDING) {
                 accept_pending = true;
@@ -169,7 +170,7 @@ int Win32IO::call_command(const std::vector<std::string>& cmd, bool recv_by_sock
             if (accept_pending) {
                 // AcceptEx, client_socker is connected and first chunk of data is received
                 DWORD len = 0;
-                if (GetOverlappedResult(reinterpret_cast<HANDLE>(m_server_sock), &sockov, &len, FALSE)) {
+                if (GetOverlappedResult(reinterpret_cast<HANDLE>(server_sock_), &sockov, &len, FALSE)) {
                     accept_pending = false;
                     if (recv_by_socket) sock_data.insert(sock_data.end(), sock_buffer.get(), sock_buffer.get() + len);
 
@@ -229,34 +230,34 @@ std::optional<unsigned short> Win32IO::create_socket(const std::string& local_ad
 {
     LogFunc << VAR(local_address);
 
-    if (m_server_sock == INVALID_SOCKET) {
-        m_server_sock = ::socket(PF_INET, SOCK_STREAM, IPPROTO_TCP);
-        if (m_server_sock == INVALID_SOCKET) {
+    if (server_sock_ == INVALID_SOCKET) {
+        server_sock_ = ::socket(PF_INET, SOCK_STREAM, IPPROTO_TCP);
+        if (server_sock_ == INVALID_SOCKET) {
             return std::nullopt;
         }
     }
 
     DWORD dummy = 0;
     GUID guid_accept_ex = WSAID_ACCEPTEX;
-    int err = WSAIoctl(m_server_sock, SIO_GET_EXTENSION_FUNCTION_POINTER, &guid_accept_ex, sizeof(guid_accept_ex),
-                       &m_server_accept_ex, sizeof(m_server_accept_ex), &dummy, NULL, NULL);
+    int err = WSAIoctl(server_sock_, SIO_GET_EXTENSION_FUNCTION_POINTER, &guid_accept_ex, sizeof(guid_accept_ex),
+                       &server_accept_ex_, sizeof(server_accept_ex_), &dummy, NULL, NULL);
     if (err == SOCKET_ERROR) {
         err = WSAGetLastError();
         LogError << "failed to resolve AcceptEx" << VAR(err);
-        ::closesocket(m_server_sock);
+        ::closesocket(server_sock_);
         return std::nullopt;
     }
-    m_server_sock_addr.sin_family = PF_INET;
-    ::inet_pton(AF_INET, local_address.c_str(), &m_server_sock_addr.sin_addr);
+    server_sock_addr_.sin_family = PF_INET;
+    ::inet_pton(AF_INET, local_address.c_str(), &server_sock_addr_.sin_addr);
 
     bool server_start = false;
     uint16_t port_result = 0;
 
-    m_server_sock_addr.sin_port = ::htons(0);
-    int bind_ret = ::bind(m_server_sock, reinterpret_cast<SOCKADDR*>(&m_server_sock_addr), sizeof(SOCKADDR));
-    int addrlen = sizeof(m_server_sock_addr);
-    int getname_ret = ::getsockname(m_server_sock, reinterpret_cast<sockaddr*>(&m_server_sock_addr), &addrlen);
-    int listen_ret = ::listen(m_server_sock, 3);
+    server_sock_addr_.sin_port = ::htons(0);
+    int bind_ret = ::bind(server_sock_, reinterpret_cast<SOCKADDR*>(&server_sock_addr_), sizeof(SOCKADDR));
+    int addrlen = sizeof(server_sock_addr_);
+    int getname_ret = ::getsockname(server_sock_, reinterpret_cast<sockaddr*>(&server_sock_addr_), &addrlen);
+    int listen_ret = ::listen(server_sock_, 3);
     server_start = bind_ret == 0 && getname_ret == 0 && listen_ret == 0;
 
     if (!server_start) {
@@ -264,7 +265,7 @@ std::optional<unsigned short> Win32IO::create_socket(const std::string& local_ad
         return std::nullopt;
     }
 
-    port_result = ::ntohs(m_server_sock_addr.sin_port);
+    port_result = ::ntohs(server_sock_addr_.sin_port);
 
     LogInfo << "command server start" << VAR(local_address) << VAR(port_result);
     return port_result;
@@ -272,10 +273,26 @@ std::optional<unsigned short> Win32IO::create_socket(const std::string& local_ad
 
 void Win32IO::close_socket() noexcept
 {
-    if (m_server_sock != INVALID_SOCKET) {
-        ::closesocket(m_server_sock);
-        m_server_sock = INVALID_SOCKET;
+    if (server_sock_ != INVALID_SOCKET) {
+        ::closesocket(server_sock_);
+        server_sock_ = INVALID_SOCKET;
     }
+}
+
+std::shared_ptr<IOHandler> Win32IO::tcp(const std::string& target, unsigned short port)
+{
+    SOCKET sock = socket(PF_INET, SOCK_STREAM, IPPROTO_TCP);
+
+    struct sockaddr_in sock_addr = {};
+    sock_addr.sin_family = PF_INET;
+    inet_pton(AF_INET, target.c_str(), &sock_addr.sin_addr);
+    sock_addr.sin_port = htons(port);
+    auto ret = connect(sock, (SOCKADDR*)&sock_addr, sizeof(SOCKADDR));
+    if (ret < 0) {
+        LogError << "failed to connect" << VAR(target) << VAR(port);
+        return nullptr;
+    }
+    return std::make_shared<SocketIOHandlerWin32>(sock);
 }
 
 std::shared_ptr<IOHandler> Win32IO::interactive_shell(const std::vector<std::string>& cmd)
@@ -288,7 +305,7 @@ std::shared_ptr<IOHandler> Win32IO::interactive_shell(const std::vector<std::str
         .lpSecurityDescriptor = nullptr,
         .bInheritHandle = TRUE,
     };
-    PROCESS_INFORMATION m_process_info = { INVALID_HANDLE_VALUE, INVALID_HANDLE_VALUE, 0, 0 };
+    PROCESS_INFORMATION process_info_ = { INVALID_HANDLE_VALUE, INVALID_HANDLE_VALUE, 0, 0 };
     HANDLE pipe_parent_read = INVALID_HANDLE_VALUE, pipe_child_write = INVALID_HANDLE_VALUE;
     HANDLE pipe_child_read = INVALID_HANDLE_VALUE, pipe_parent_write = INVALID_HANDLE_VALUE;
     if (!MAA_WIN32_NS::CreateOverlappablePipe(&pipe_parent_read, &pipe_child_write, nullptr, &sa_attr_inherit,
@@ -312,7 +329,7 @@ std::shared_ptr<IOHandler> Win32IO::interactive_shell(const std::vector<std::str
     std::transform(cmd.begin(), cmd.end(), std::back_insert_iterator(ocmd), to_osstring);
     auto cmd_osstr = args_to_cmd(ocmd);
     BOOL create_ret =
-        CreateProcessW(NULL, cmd_osstr.data(), nullptr, nullptr, TRUE, 0, nullptr, nullptr, &si, &m_process_info);
+        CreateProcessW(NULL, cmd_osstr.data(), nullptr, nullptr, TRUE, 0, nullptr, nullptr, &si, &process_info_);
     CloseHandle(pipe_child_write);
     CloseHandle(pipe_child_read);
     pipe_child_write = INVALID_HANDLE_VALUE;
@@ -321,37 +338,37 @@ std::shared_ptr<IOHandler> Win32IO::interactive_shell(const std::vector<std::str
     if (!create_ret) {
         DWORD err = GetLastError();
         LogError << "Failed to create process for minitouch" << VAR(create_ret) << VAR(err);
-        CloseHandle(m_process_info.hProcess);
-        CloseHandle(m_process_info.hThread);
+        CloseHandle(process_info_.hProcess);
+        CloseHandle(process_info_.hThread);
         CloseHandle(pipe_parent_read);
         CloseHandle(pipe_parent_write);
         return nullptr;
     }
 
-    return std::make_shared<IOHandlerWin32>(pipe_parent_read, pipe_parent_write, m_process_info);
+    return std::make_shared<PipeIOHandlerWin32>(pipe_parent_read, pipe_parent_write, process_info_);
 }
 
-IOHandlerWin32::~IOHandlerWin32()
+PipeIOHandlerWin32::~PipeIOHandlerWin32()
 {
-    if (m_process_info.hProcess != INVALID_HANDLE_VALUE) {
-        CloseHandle(m_process_info.hProcess);
-        m_process_info.hProcess = INVALID_HANDLE_VALUE;
+    if (process_info_.hProcess != INVALID_HANDLE_VALUE) {
+        CloseHandle(process_info_.hProcess);
+        process_info_.hProcess = INVALID_HANDLE_VALUE;
     }
-    if (m_process_info.hThread != INVALID_HANDLE_VALUE) {
-        CloseHandle(m_process_info.hThread);
-        m_process_info.hThread = INVALID_HANDLE_VALUE;
+    if (process_info_.hThread != INVALID_HANDLE_VALUE) {
+        CloseHandle(process_info_.hThread);
+        process_info_.hThread = INVALID_HANDLE_VALUE;
     }
-    if (m_read != INVALID_HANDLE_VALUE) {
-        CloseHandle(m_read);
-        m_read = INVALID_HANDLE_VALUE;
+    if (read_ != INVALID_HANDLE_VALUE) {
+        CloseHandle(read_);
+        read_ = INVALID_HANDLE_VALUE;
     }
-    if (m_write != INVALID_HANDLE_VALUE) {
-        CloseHandle(m_write);
-        m_write = INVALID_HANDLE_VALUE;
+    if (write_ != INVALID_HANDLE_VALUE) {
+        CloseHandle(write_);
+        write_ = INVALID_HANDLE_VALUE;
     }
 }
 
-std::string IOHandlerWin32::read(unsigned timeout_sec)
+std::string PipeIOHandlerWin32::read(unsigned timeout_sec)
 {
     auto check_timeout = [&](const auto& start_time) -> bool {
         using namespace std::chrono_literals;
@@ -362,16 +379,16 @@ std::string IOHandlerWin32::read(unsigned timeout_sec)
 
     auto pipe_buffer = std::make_unique<char[]>(PipeBufferSize);
     OVERLAPPED pipeov { .hEvent = CreateEventW(nullptr, TRUE, FALSE, nullptr) };
-    std::ignore = ReadFile(m_read, pipe_buffer.get(), PipeBufferSize, nullptr, &pipeov);
+    std::ignore = ReadFile(read_, pipe_buffer.get(), PipeBufferSize, nullptr, &pipeov);
 
     while (true) {
         if (!check_timeout(start_time)) {
-            CancelIoEx(m_read, &pipeov);
+            CancelIoEx(read_, &pipeov);
             LogError << "read timeout";
             break;
         }
         DWORD len = 0;
-        if (GetOverlappedResult(m_read, &pipeov, &len, FALSE)) {
+        if (GetOverlappedResult(read_, &pipeov, &len, FALSE)) {
             break;
         }
     }
@@ -379,14 +396,19 @@ std::string IOHandlerWin32::read(unsigned timeout_sec)
     return pipe_buffer.get();
 }
 
-bool IOHandlerWin32::write(std::string_view data)
+std::string PipeIOHandlerWin32::read(unsigned timeout_sec, size_t expect)
 {
-    if (m_write == INVALID_HANDLE_VALUE) {
+    return std::string();
+}
+
+bool PipeIOHandlerWin32::write(std::string_view data)
+{
+    if (write_ == INVALID_HANDLE_VALUE) {
         LogError << "IOHandler write handle invalid";
         return false;
     }
     DWORD written = 0;
-    if (!WriteFile(m_write, data.data(), static_cast<DWORD>(data.size() * sizeof(std::string::value_type)), &written,
+    if (!WriteFile(write_, data.data(), static_cast<DWORD>(data.size() * sizeof(std::string::value_type)), &written,
                    NULL)) {
         auto err = GetLastError();
         LogError << "Failed to write to minitouch" << VAR(err);
@@ -394,6 +416,29 @@ bool IOHandlerWin32::write(std::string_view data)
     }
 
     return data.size() == written;
+}
+
+SocketIOHandlerWin32::~SocketIOHandlerWin32()
+{
+    if (socket_ != INVALID_SOCKET) {
+        closesocket(socket_);
+        socket_ = INVALID_SOCKET;
+    }
+}
+
+bool SocketIOHandlerWin32::write(std::string_view data)
+{
+    return false;
+}
+
+std::string SocketIOHandlerWin32::read(unsigned timeout_sec)
+{
+    return std::string();
+}
+
+std::string SocketIOHandlerWin32::read(unsigned timeout_sec, size_t expect)
+{
+    return std::string();
 }
 
 MAA_CTRL_NS_END
