@@ -52,7 +52,7 @@
     <ClInclude Include="Controller\Unit\Screencap\Screencap.h" />
     <ClInclude Include="Controller\Unit\Screencap\ScreencapBase.h" />
     <ClInclude Include="Controller\Unit\UnitBase.h" />
-    <ClInclude Include="Controller\Unit\utils.h" />
+    <ClInclude Include="Controller\Unit\Utils.h" />
     <ClInclude Include="Controller\Unit\Utils\InvokeApp.h" />
     <ClInclude Include="Instance\InstanceInternalAPI.hpp" />
     <ClInclude Include="Option\GlobalOptionMgr.h" />
@@ -106,7 +106,7 @@
     <ClCompile Include="Controller\Unit\Screencap\Screencap.cpp" />
     <ClCompile Include="Controller\Unit\Screencap\ScreencapBase.cpp" />
     <ClCompile Include="Controller\Unit\UnitBase.cpp" />
-    <ClCompile Include="Controller\Unit\utils.cpp" />
+    <ClCompile Include="Controller\Unit\Utils.cpp" />
     <ClCompile Include="Controller\Unit\Utils\InvokeApp.cpp" />
     <ClCompile Include="Instance\InstanceMgr.cpp" />
     <ClCompile Include="API\MaaAPI.cpp" />
