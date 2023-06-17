@@ -110,7 +110,7 @@ int main(int argc, char* argv[])
     options.add_options()
         ("a,adb", "adb path, $MAA_ADB", cxxopts::value<std::string>()->default_value(adb))
         ("s,serial", "adb address, $MAA_ADB_SERIAL", cxxopts::value<std::string>()->default_value(adb_address))
-        ("c,config", "config directory", cxxopts::value<std::string>()->default_value((std::filesystem::current_path() / "config").string()))
+        ("c,config", "config directory", cxxopts::value<std::string>()->default_value((std::filesystem::current_path()).string()))
         ("t,client", "client, $MAA_CLIENT", cxxopts::value<std::string>()->default_value(client))
         ("h,help", "print usage", cxxopts::value<bool>())
         
@@ -231,7 +231,7 @@ int main(int argc, char* argv[])
         auto res = device->request_resolution();
 
         auto scmd = result["subcommand"].as<std::string>();
-        auto params = result["params"].as<std::vector<std::string>>();
+        // auto params = result["params"].as<std::vector<std::string>>();
 
         if (scmd == "help") {
             std::cout
@@ -245,15 +245,6 @@ int main(int argc, char* argv[])
         std::map<std::string, double> cost;
 
         if (scmd == "profile") {
-            if (params.size() < 2) {
-                std::cout << "Usage: " << argv[0]
-                          << " screencap profile [minicap_binary_pattern] [minicap_library_pattern]" << std::endl;
-                std::cout << "\tExample: ./maabusybox screencap profile minicap/{ARCH}/bin/minicap "
-                             "minicap/{ARCH}/lib/android-{SDK}/minicap.so"
-                          << std::endl;
-                return 0;
-            }
-
             profile = true;
         }
         if (profile || scmd == "raw_by_netcat") {
@@ -297,12 +288,6 @@ int main(int argc, char* argv[])
             cost["encode_to_file"] = test_screencap(scp);
         }
         if (profile || scmd == "minicap_direct") {
-            if (params.size() < 2) {
-                std::cout << "Usage: " << argv[0] << " screencap minicap_direct [binary_pattern] [library_pattern]"
-                          << std::endl;
-                return 0;
-            }
-
             auto scp = new Unit::MinicapDirect();
             scp->set_io(io);
             scp->parse(config.value());
@@ -310,23 +295,14 @@ int main(int argc, char* argv[])
 
             scp->init(
                 res.value().width, res.value().height,
-                [&params](const std::string& arch) {
-                    return MaaNS::string_replace_all(params[0], { { "{ARCH}", arch } });
-                },
-                [&params](const std::string& arch, int sdk) {
-                    return MaaNS::string_replace_all(params[1],
-                                                     { { "{ARCH}", arch }, { "{SDK}", std::to_string(sdk) } });
+                [](const std::string& arch) { return std::format("prebuilt/minicap/{}/bin/minicap", arch); },
+                [](const std::string& arch, int sdk) {
+                    return std::format("prebuilt/minicap/{}/lib/android-{}/minicap.so", arch, sdk);
                 });
 
             cost["minicap_direct"] = test_screencap(scp);
         }
         if (profile || scmd == "minicap_stream") {
-            if (params.size() < 2) {
-                std::cout << "Usage: " << argv[0] << " screencap minicap_direct [binary_pattern] [library_pattern]"
-                          << std::endl;
-                return 0;
-            }
-
             auto scp = new Unit::MinicapStream();
             scp->set_io(io);
             scp->parse(config.value());
@@ -334,12 +310,9 @@ int main(int argc, char* argv[])
 
             scp->init(
                 res.value().width, res.value().height,
-                [&params](const std::string& arch) {
-                    return MaaNS::string_replace_all(params[0], { { "{ARCH}", arch } });
-                },
-                [&params](const std::string& arch, int sdk) {
-                    return MaaNS::string_replace_all(params[1],
-                                                     { { "{ARCH}", arch }, { "{SDK}", std::to_string(sdk) } });
+                [](const std::string& arch) { return std::format("prebuilt/minicap/{}/bin/minicap", arch); },
+                [](const std::string& arch, int sdk) {
+                    return std::format("prebuilt/minicap/{}/lib/android-{}/minicap.so", arch, sdk);
                 });
 
             cost["minicap_stream"] = test_screencap(scp);

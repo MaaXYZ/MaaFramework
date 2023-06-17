@@ -1,6 +1,6 @@
 #include "EncodeToFile.h"
 
-#include "../utils.h"
+#include "../Utils.h"
 #include "Utils/ImageIo.hpp"
 #include "Utils/Logger.hpp"
 #include "Utils/NoWarningCV.h"

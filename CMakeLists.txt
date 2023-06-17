@@ -40,7 +40,6 @@ elseif ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang")
     message("clang")
 endif ()
 
-
 add_library(header_only_libraries INTERFACE)
 target_include_directories(header_only_libraries INTERFACE 3rdparty/include)
 
@@ -83,6 +82,14 @@ find_package(MaaDerpLearning REQUIRED)
 # find_package(ONNXRuntime)
 # find_package(cpr CONFIG REQUIRED)
 
+target_link_libraries(MaaFramework ${OpenCV_LIBS} MaaDerpLearning ZLIB::ZLIB header_only_libraries) #asio::asio ONNXRuntime::ONNXRuntime cpr::cpr
+
+if(WIN32)
+    target_link_libraries(MaaFramework ws2_32)
+endif()
+
+### busybox
+
 file(GLOB_RECURSE maabusybox_src busybox/*.cpp busybox/*.hpp ${maa_src})
 add_executable(maabusybox ${maabusybox_src})
 set_target_properties(maabusybox PROPERTIES
@@ -96,12 +103,14 @@ if (WIN32)
 endif ()
 target_link_libraries(maabusybox MaaFramework ${OpenCV_LIBS} ZLIB::ZLIB header_only_libraries)
 target_include_directories(maabusybox PUBLIC ${MaaFramework_INCLUDE} "source")
+add_custom_command(OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/adb_argv.json ${CMAKE_CURRENT_BINARY_DIR}/prebuilt
+    COMMAND ${CMAKE_COMMAND} -E copy ${CMAKE_CURRENT_SOURCE_DIR}/sample/cpp/config/adb_argv.json ${CMAKE_CURRENT_BINARY_DIR}/adb_argv.json
+    COMMAND ${CMAKE_COMMAND} -E create_symlink ${CMAKE_CURRENT_SOURCE_DIR}/MaaAgentBinary ${CMAKE_CURRENT_BINARY_DIR}/prebuilt
+)
+add_custom_target(maabusybox_res ALL DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/adb_argv.json ${CMAKE_CURRENT_BINARY_DIR}/prebuilt)
+add_dependencies(maabusybox maabusybox_res)
 
-target_link_libraries(MaaFramework ${OpenCV_LIBS} MaaDerpLearning ZLIB::ZLIB header_only_libraries) #asio::asio ONNXRuntime::ONNXRuntime cpr::cpr
-
-if(WIN32)
-    target_link_libraries(MaaFramework ws2_32)
-endif()
+###
 
 # clang 15之后有ranges
 # if (CMAKE_CXX_COMPILER_ID MATCHES ".*Clang")
