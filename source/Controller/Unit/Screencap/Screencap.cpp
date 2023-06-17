@@ -77,7 +77,8 @@ bool Screencap::speed_test()
             method_ = method;
             cost = duration;
         }
-        LogInfo << VAR(method) << VAR(duration);
+        auto ms = std::chrono::duration_cast<std::chrono::milliseconds>(duration);
+        LogInfo << VAR(method) << VAR(ms);
     };
 
     {
