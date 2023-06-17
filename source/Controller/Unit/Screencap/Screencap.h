@@ -19,9 +19,13 @@ public:
         RawWithGzip,
         Encode,
         EncodeToFileAndPull,
+        MinicapDirect,
+        MinicapStream,
     };
 
 public:
+    Screencap();
+
     bool parse(const json::value& config);
 
     bool init(int w, int h, const std::string& force_temp = "");
@@ -32,10 +36,14 @@ public:
 private:
     bool speed_test();
 
-    ScreencapRawByNetcat screencap_raw_by_netcat_uint_;
-    ScreencapRawWithGzip screencap_raw_with_gzip_unit_;
-    ScreencapEncode screencap_encode_unit_;
-    ScreencapEncodeToFileAndPull screencap_encode_to_file_unit_;
+    std::shared_ptr<ScreencapRawByNetcat> raw_by_netcat_uint_ = std::make_shared<ScreencapRawByNetcat>();
+    std::shared_ptr<ScreencapRawWithGzip> raw_with_gzip_unit_ = std::make_shared<ScreencapRawWithGzip>();
+    std::shared_ptr<ScreencapEncode> encode_unit_ = std::make_shared<ScreencapEncode>();
+    std::shared_ptr<ScreencapEncodeToFileAndPull> encode_to_file_unit_ =
+        std::make_shared<ScreencapEncodeToFileAndPull>();
+    // TODO: minicap
+    // std::shared_ptr<MinicapDirect> minicap_direct_unit_ = std::make_shared<MinicapDirect>();
+    // std::shared_ptr<MinicapStream> minicap_stream_unit_ = std::make_shared<MinicapStream>();
 
     Method method_ = Method::UnknownYet;
 };

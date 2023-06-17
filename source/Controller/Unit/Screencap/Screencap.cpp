@@ -5,12 +5,20 @@
 
 MAA_CTRL_UNIT_NS_BEGIN
 
+Screencap::Screencap()
+{
+    children_.emplace_back(raw_by_netcat_uint_);
+    children_.emplace_back(raw_with_gzip_unit_);
+    children_.emplace_back(encode_unit_);
+    children_.emplace_back(encode_to_file_unit_);
+}
+
 bool Screencap::parse(const json::value& config)
 {
-    bool ret = screencap_raw_by_netcat_uint_.parse(config);
-    ret |= screencap_raw_with_gzip_unit_.parse(config);
-    ret |= screencap_encode_unit_.parse(config);
-    ret |= screencap_encode_to_file_unit_.parse(config);
+    bool ret = raw_by_netcat_uint_->parse(config);
+    ret |= raw_with_gzip_unit_->parse(config);
+    ret |= encode_unit_->parse(config);
+    ret |= encode_to_file_unit_->parse(config);
     return ret;
 }
 
@@ -18,30 +26,20 @@ bool Screencap::init(int w, int h, const std::string& force_temp)
 {
     LogFunc;
 
-    screencap_raw_by_netcat_uint_.set_io(io_ptr_);
-    screencap_raw_with_gzip_unit_.set_io(io_ptr_);
-    screencap_encode_unit_.set_io(io_ptr_);
-    screencap_encode_to_file_unit_.set_io(io_ptr_);
-
-    screencap_raw_by_netcat_uint_.set_replacement(argv_replace_);
-    screencap_raw_with_gzip_unit_.set_replacement(argv_replace_);
-    screencap_encode_unit_.set_replacement(argv_replace_);
-    screencap_encode_to_file_unit_.set_replacement(argv_replace_);
-
-    screencap_raw_by_netcat_uint_.init(w, h);
-    screencap_raw_with_gzip_unit_.init(w, h);
-    screencap_encode_unit_.init(w, h);
-    screencap_encode_to_file_unit_.init(w, h, force_temp);
+    raw_by_netcat_uint_->init(w, h);
+    raw_with_gzip_unit_->init(w, h);
+    encode_unit_->init(w, h);
+    encode_to_file_unit_->init(w, h, force_temp);
 
     return speed_test();
 }
 
 void Screencap::deinit()
 {
-    screencap_raw_by_netcat_uint_.deinit();
-    screencap_raw_with_gzip_unit_.deinit();
-    screencap_encode_unit_.deinit();
-    screencap_encode_to_file_unit_.deinit();
+    raw_by_netcat_uint_->deinit();
+    raw_with_gzip_unit_->deinit();
+    encode_unit_->deinit();
+    encode_to_file_unit_->deinit();
 
     method_ = Method::UnknownYet;
 }
@@ -53,13 +51,13 @@ std::optional<cv::Mat> Screencap::screencap()
         LogError << "Unknown screencap method";
         return std::nullopt;
     case Method::RawByNetcat:
-        return screencap_raw_by_netcat_uint_.screencap();
+        return raw_by_netcat_uint_->screencap();
     case Method::RawWithGzip:
-        return screencap_raw_with_gzip_unit_.screencap();
+        return raw_with_gzip_unit_->screencap();
     case Method::Encode:
-        return screencap_encode_unit_.screencap();
+        return encode_unit_->screencap();
     case Method::EncodeToFileAndPull:
-        return screencap_encode_to_file_unit_.screencap();
+        return encode_to_file_unit_->screencap();
     }
     return std::nullopt;
 }
@@ -83,28 +81,28 @@ bool Screencap::speed_test()
 
     {
         auto now = std::chrono::steady_clock::now();
-        if (screencap_raw_by_netcat_uint_.screencap()) {
+        if (raw_by_netcat_uint_->screencap()) {
             check(Method::RawByNetcat, now);
         }
     }
 
     {
         auto now = std::chrono::steady_clock::now();
-        if (screencap_raw_with_gzip_unit_.screencap()) {
+        if (raw_with_gzip_unit_->screencap()) {
             check(Method::RawWithGzip, now);
         }
     }
 
     {
         auto now = std::chrono::steady_clock::now();
-        if (screencap_encode_unit_.screencap()) {
+        if (encode_unit_->screencap()) {
             check(Method::Encode, now);
         }
     }
 
     {
         auto now = std::chrono::steady_clock::now();
-        if (screencap_encode_to_file_unit_.screencap()) {
+        if (encode_to_file_unit_->screencap()) {
             check(Method::EncodeToFileAndPull, now);
         }
     }
@@ -136,6 +134,12 @@ std::ostream& operator<<(std::ostream& os, Screencap::Method m)
         break;
     case Screencap::Method::EncodeToFileAndPull:
         os << "EncodeToFileAndPull";
+        break;
+    case Screencap::Method::MinicapDirect:
+        os << "MinicapDirect";
+        break;
+    case Screencap::Method::MinicapStream:
+        os << "MinicapStream";
         break;
     }
     return os;
