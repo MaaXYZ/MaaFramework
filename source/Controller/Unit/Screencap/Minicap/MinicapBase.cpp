@@ -18,7 +18,7 @@ bool MinicapBase::parse(const json::value& config)
 // arm64-v8会卡住, 不知道原因
 static constexpr std::array<std::string_view, 3> kArchList = { /* "x86_64", */ "x86", /* "arm64-v8a", */ "armeabi-v7a",
                                                                "armeabi" };
-static constexpr std::array<int, 16> sdkList = { 14, 15, 16, 17, 18, 19, 21, 22, 23, 24, 25, 26, 27, 28, 29, 31 };
+static constexpr std::array<int, 16> kSdkList = { 14, 15, 16, 17, 18, 19, 21, 22, 23, 24, 25, 26, 27, 28, 29, 31 };
 
 bool MinicapBase::init(int w, int h, std::function<std::string(const std::string&)> path_of_bin,
                        std::function<std::string(const std::string&, int)> path_of_lib, const std::string& force_temp)
@@ -47,18 +47,11 @@ bool MinicapBase::init(int w, int h, std::function<std::string(const std::string
     }
     const std::string& target_arch = *arch_iter;
 
-    int fit_sdk = -1;
-    for (auto s : sdkList) {
-        if (s <= sdk.value()) {
-            fit_sdk = s;
-        }
-        else {
-            break;
-        }
-    }
-    if (fit_sdk == -1) {
+    auto sdk_iter = ranges::find_if(kSdkList, [sdk](int s) { return s <= sdk.value(); });
+    if (sdk_iter == kSdkList.end()) {
         return false;
     }
+    int fit_sdk = *sdk_iter;
 
     auto bin = path_of_bin(target_arch);
     auto lib = path_of_lib(target_arch, fit_sdk);

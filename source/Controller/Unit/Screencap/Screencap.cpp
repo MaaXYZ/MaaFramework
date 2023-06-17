@@ -58,6 +58,9 @@ std::optional<cv::Mat> Screencap::screencap()
         return encode_unit_->screencap();
     case Method::EncodeToFileAndPull:
         return encode_to_file_unit_->screencap();
+    default:
+        LogInfo << "Not support:" << method_;
+        break;
     }
     return std::nullopt;
 }
