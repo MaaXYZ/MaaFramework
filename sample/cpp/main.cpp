@@ -11,7 +11,7 @@ bool demo_polling(const std::filesystem::path& cur_dir);
 bool demo_waiting(const std::filesystem::path& cur_dir);
 
 std::string adb = "adb";
-std::string adb_address = "127.0.0.1";
+std::string adb_address = "127.0.0.1:5555";
 std::string adb_config;
 
 int main([[maybe_unused]] int argc, char** argv)
