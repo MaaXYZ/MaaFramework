@@ -1,3 +1,6 @@
 [submodule "MaaDeps"]
 	path = MaaDeps
 	url = https://github.com/MaaAssistantArknights/MaaDeps.git
+[submodule "MaaAgentBinary"]
+	path = MaaAgentBinary
+	url = https://github.com/MaaAssistantArknights/MaaAgentBinary.git
