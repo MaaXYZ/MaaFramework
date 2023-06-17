@@ -65,23 +65,24 @@ std::map<std::string_view, std::string> intents = {
 };
 
 template <typename SCP>
-double test_screencap(SCP* scp)
+double test_screencap(SCP* scp, int count = 10)
 {
     std::chrono::milliseconds sum(0);
-    for (int i = 0; i < 10; i++) {
+    for (int i = 0; i < count; i++) {
         auto now = std::chrono::steady_clock::now();
         auto mat = scp->screencap();
         if (mat.has_value()) {
+            auto dur = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::steady_clock::now() - now);
+
             auto file = std::format("temp-{}.png", i);
             cv::imwrite(file, mat.value());
             std::cout << "image saved to " << file << std::endl;
 
-            auto dur = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::steady_clock::now() - now);
             std::cout << "time cost: " << dur << std::endl;
             sum += dur;
         }
     }
-    double cost = sum.count() / 10.0;
+    double cost = sum.count() / double(count);
     std::cout << "average time cost: " << cost << "ms" << std::endl;
     return cost;
 }
@@ -141,29 +142,27 @@ int main(int argc, char* argv[])
 
     Unit::UnitBase::Argv::replacement adbRepl = { { "{ADB}", adb }, { "{ADB_SERIAL}", adb_address } };
 
+    auto initUnit = [io, &config, &adbRepl]<typename Unit>(Unit* unit) -> Unit* {
+        unit->set_io(io);
+        unit->parse(config.value());
+        unit->set_replacement(adbRepl);
+        return unit;
+    };
+
     if (cmd == "connect") {
-        auto connect = new Unit::Connection();
-        connect->set_io(io);
-        connect->parse(config.value());
-        connect->set_replacement(adbRepl);
+        auto connect = initUnit(new Unit::Connection);
 
         std::cout << "return: " << std::boolalpha << connect->connect() << std::endl;
     }
     else if (cmd == "device_info") {
-        auto device = new Unit::DeviceInfo();
-        device->set_io(io);
-        device->parse(config.value());
-        device->set_replacement(adbRepl);
+        auto device = initUnit(new Unit::DeviceInfo);
 
         std::cout << "uuid: " << device->request_uuid() << std::endl;
         std::cout << "resolution: " << device->request_resolution() << std::endl;
         std::cout << "orientation: " << device->request_orientation() << std::endl;
     }
     else if (cmd == "activity") {
-        auto activity = new Unit::Activity();
-        activity->set_io(io);
-        activity->parse(config.value());
-        activity->set_replacement(adbRepl);
+        auto activity = initUnit(new Unit::Activity);
 
         auto scmd = result["subcommand"].as<std::string>();
 
@@ -178,10 +177,7 @@ int main(int argc, char* argv[])
         }
     }
     else if (cmd == "tap_input") {
-        auto tap = new Unit::TapInput();
-        tap->set_io(io);
-        tap->parse(config.value());
-        tap->set_replacement(adbRepl);
+        auto tap = initUnit(new Unit::TapInput);
 
         auto scmd = result["subcommand"].as<std::string>();
         auto params = result["params"].as<std::vector<std::string>>();
@@ -223,10 +219,7 @@ int main(int argc, char* argv[])
         }
     }
     else if (cmd == "screencap") {
-        auto device = new Unit::DeviceInfo();
-        device->set_io(io);
-        device->parse(config.value());
-        device->set_replacement(adbRepl);
+        auto device = initUnit(new Unit::DeviceInfo);
 
         auto res = device->request_resolution();
 
@@ -234,88 +227,55 @@ int main(int argc, char* argv[])
         // auto params = result["params"].as<std::vector<std::string>>();
 
         if (scmd == "help") {
-            std::cout
-                << "Usage: " << argv[0]
-                << " screencap [profile | raw_by_netcat | raw_with_gzip | encode | encode_to_file | minicap_direct]"
-                << std::endl;
+            std::cout << "Usage: " << argv[0]
+                      << " screencap [profile | raw_by_netcat | raw_with_gzip | encode | encode_to_file | "
+                         "minicap_direct | minicap_strean]"
+                      << std::endl;
             return 0;
         }
 
         bool profile = false;
         std::map<std::string, double> cost;
 
+        auto doTest = [&initUnit, &res, profile, &cost]<typename SCP>(SCP* scp, const std::string& name,
+                                                                      auto&&... args) {
+            scp = initUnit(scp);
+
+            scp->init(res.value().width, res.value().height, std::forward<decltype(args)>(args)...);
+
+            cost[name] = test_screencap(scp);
+        };
+
         if (scmd == "profile") {
             profile = true;
         }
         if (profile || scmd == "raw_by_netcat") {
-            auto scp = new Unit::ScreencapRawByNetcat();
-            scp->set_io(io);
-            scp->parse(config.value());
-            scp->set_replacement(adbRepl);
-
-            scp->init(res.value().width, res.value().height);
-
-            cost["raw_by_netcat"] = test_screencap(scp);
+            doTest(new Unit::ScreencapRawByNetcat(), "raw_by_netcat");
         }
         if (profile || scmd == "raw_with_gzip") {
-            auto scp = new Unit::ScreencapRawWithGzip();
-            scp->set_io(io);
-            scp->parse(config.value());
-            scp->set_replacement(adbRepl);
-
-            scp->init(res.value().width, res.value().height);
-
-            cost["raw_with_gzip"] = test_screencap(scp);
+            doTest(new Unit::ScreencapRawWithGzip(), "raw_with_gzip");
         }
         if (profile || scmd == "encode") {
-            auto scp = new Unit::ScreencapEncode();
-            scp->set_io(io);
-            scp->parse(config.value());
-            scp->set_replacement(adbRepl);
-
-            scp->init(res.value().width, res.value().height);
-
-            cost["encode"] = test_screencap(scp);
+            doTest(new Unit::ScreencapEncode(), "encode");
         }
         if (profile || scmd == "encode_to_file") {
-            auto scp = new Unit::ScreencapEncodeToFileAndPull();
-            scp->set_io(io);
-            scp->parse(config.value());
-            scp->set_replacement(adbRepl);
-
-            scp->init(res.value().width, res.value().height);
-
-            cost["encode_to_file"] = test_screencap(scp);
+            doTest(new Unit::ScreencapEncodeToFileAndPull(), "encode_to_file");
         }
         if (profile || scmd == "minicap_direct") {
-            auto scp = new Unit::MinicapDirect();
-            scp->set_io(io);
-            scp->parse(config.value());
-            scp->set_replacement(adbRepl);
-
-            scp->init(
-                res.value().width, res.value().height,
+            doTest(
+                new Unit::MinicapDirect(), "minicap_direct",
                 [](const std::string& arch) { return std::format("prebuilt/minicap/{}/bin/minicap", arch); },
                 [](const std::string& arch, int sdk) {
                     return std::format("prebuilt/minicap/{}/lib/android-{}/minicap.so", arch, sdk);
                 });
-
-            cost["minicap_direct"] = test_screencap(scp);
         }
         if (profile || scmd == "minicap_stream") {
-            auto scp = new Unit::MinicapStream();
-            scp->set_io(io);
-            scp->parse(config.value());
-            scp->set_replacement(adbRepl);
-
-            scp->init(
-                res.value().width, res.value().height,
+            doTest(
+                new Unit::MinicapStream(), "minicap_stream",
                 [](const std::string& arch) { return std::format("prebuilt/minicap/{}/bin/minicap", arch); },
                 [](const std::string& arch, int sdk) {
                     return std::format("prebuilt/minicap/{}/lib/android-{}/minicap.so", arch, sdk);
                 });
-
-            cost["minicap_stream"] = test_screencap(scp);
         }
 
         if (profile) {
@@ -327,10 +287,7 @@ int main(int argc, char* argv[])
         }
     }
     else if (cmd == "invoke_app") {
-        auto inv = new Unit::InvokeApp();
-        inv->set_io(io);
-        inv->parse(config.value());
-        inv->set_replacement(adbRepl);
+        auto inv = initUnit(new Unit::InvokeApp);
 
         std::ifstream f(".invokeapp");
         std::string invtp = "";
