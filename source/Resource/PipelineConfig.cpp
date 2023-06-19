@@ -122,7 +122,7 @@ bool PipelineConfig::parse_task(const std::string& name, const json::value& inpu
 
     json::value v(0U);
 
-    if (!get_and_check(input, "timeout", data.timeout, uint(UINT_MAX))) {
+    if (!get_and_check(input, "timeout", data.timeout, 10 * 1000U)) {
         LogError << "failed to get_and_check timeout" << VAR(input);
         return false;
     }
