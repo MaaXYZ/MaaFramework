@@ -5,6 +5,7 @@
 #include <map>
 #include <memory>
 #include <optional>
+#include <ostream>
 #include <string>
 #include <tuple>
 #include <variant>
@@ -131,7 +132,7 @@ public:
 
     bool as_boolean() const;
     int as_integer() const;
-    // unsigned as_unsigned() const;
+    unsigned as_unsigned() const;
     long as_long() const;
     unsigned long as_unsigned_long() const;
     long long as_long_long() const;
@@ -200,6 +201,7 @@ public:
 
     explicit operator bool() const { return as_boolean(); }
     explicit operator int() const { return as_integer(); }
+    explicit operator unsigned() const { return as_unsigned(); }
     explicit operator long() const { return as_long(); }
     explicit operator unsigned long() const { return as_unsigned_long(); }
     explicit operator long long() const { return as_long_long(); }
@@ -519,13 +521,6 @@ auto parse(istream_t& istream, bool check_bom);
 
 template <typename ifstream_t = std::ifstream, typename path_t = void>
 auto open(const path_t& path, bool check_bom = false);
-
-template <typename ostream_t, typename string_t>
-ostream_t& operator<<(ostream_t& out, const basic_value<string_t>& val);
-template <typename ostream_t, typename string_t>
-ostream_t& operator<<(ostream_t& out, const basic_array<string_t>& arr);
-template <typename ostream_t, typename string_t>
-ostream_t& operator<<(ostream_t& out, const basic_object<string_t>& obj);
 
 namespace literals
 {
@@ -891,6 +886,13 @@ MEOJSON_INLINE int basic_value<string_t>::as_integer() const
     else {
         throw exception("Wrong Type");
     }
+}
+
+template <typename string_t>
+MEOJSON_INLINE unsigned basic_value<string_t>::as_unsigned() const
+{
+    // I don't know why there is no std::stou.
+    return static_cast<unsigned>(as_unsigned_long());
 }
 
 template <typename string_t>
@@ -2366,6 +2368,37 @@ MEOJSON_INLINE auto open(const path_t& filepath, bool check_bom)
     return opt;
 }
 
+template <typename ostream_t, typename string_t,
+          typename std_ostream_t =
+              std::basic_ostream<typename string_t::value_type, std::char_traits<typename string_t::value_type>>,
+          typename enable_t = typename std::enable_if_t<std::is_same_v<std_ostream_t, ostream_t> ||
+                                                        std::is_base_of_v<std_ostream_t, ostream_t>>>
+ostream_t& operator<<(ostream_t& out, const basic_value<string_t>& val)
+{
+    out << val.format();
+    return out;
+}
+template <typename ostream_t, typename string_t,
+          typename std_ostream_t =
+              std::basic_ostream<typename string_t::value_type, std::char_traits<typename string_t::value_type>>,
+          typename enable_t =
+              std::enable_if_t<std::is_same_v<std_ostream_t, ostream_t> || std::is_base_of_v<std_ostream_t, ostream_t>>>
+ostream_t& operator<<(ostream_t& out, const basic_array<string_t>& arr)
+{
+    out << arr.format();
+    return out;
+}
+template <typename ostream_t, typename string_t,
+          typename std_ostream_t =
+              std::basic_ostream<typename string_t::value_type, std::char_traits<typename string_t::value_type>>,
+          typename enable_t =
+              std::enable_if_t<std::is_same_v<std_ostream_t, ostream_t> || std::is_base_of_v<std_ostream_t, ostream_t>>>
+ostream_t& operator<<(ostream_t& out, const basic_object<string_t>& obj)
+{
+    out << obj.format();
+    return out;
+}
+
 namespace literals
 {
     MEOJSON_INLINE value operator""_json(const char* str, size_t len)
@@ -2444,27 +2477,6 @@ namespace literals
         return val.is_object() ? val.as_object() : u32object();
     }
 } // namespace literals
-
-template <typename ostream_t, typename string_t>
-MEOJSON_INLINE ostream_t& operator<<(ostream_t& out, const basic_value<string_t>& val)
-{
-    out << val.format();
-    return out;
-}
-
-template <typename ostream_t, typename string_t>
-MEOJSON_INLINE ostream_t& operator<<(ostream_t& out, const basic_array<string_t>& arr)
-{
-    out << arr.format();
-    return out;
-}
-
-template <typename ostream_t, typename string_t>
-MEOJSON_INLINE ostream_t& operator<<(ostream_t& out, const basic_object<string_t>& obj)
-{
-    out << obj.format();
-    return out;
-}
 
 template <typename string_t>
 MEOJSON_INLINE const basic_value<string_t> invalid_value()
