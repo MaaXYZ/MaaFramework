@@ -36,7 +36,7 @@ enum class MaaMsg : int64_t
 
 inline std::ostream& operator<<(std::ostream& os, const MaaMsg& type)
 {
-    static const std::unordered_map<MaaMsg, std::string> _type_name = {
+    static const std::unordered_map<MaaMsg, std::string> kMsgNames = {
         /* Global Msg */
         { MaaMsg::InvalidMsg, "InvalidMsg" },
 
@@ -60,7 +60,7 @@ inline std::ostream& operator<<(std::ostream& os, const MaaMsg& type)
 
         { MaaMsg::PipelineMsg, "PipelineMsg" },
     };
-    return os << _type_name.at(type);
+    return os << kMsgNames.at(type);
 }
 
 // 内部使用的回调

@@ -62,12 +62,11 @@ public:
     };
 
 public:
-    template <typename stream_t>
     class LogStream
     {
     public:
         template <typename... args_t>
-        LogStream(std::mutex& m, stream_t& s, level lv, args_t&&... args) : lock_(m), stream_(s)
+        LogStream(std::mutex& m, std::ofstream& s, level lv, args_t&&... args) : lock_(m), stream_(s)
         {
             stream_props(lv, std::forward<args_t>(args)...);
         }
@@ -192,7 +191,7 @@ public:
 
     private:
         std::unique_lock<std::mutex> lock_;
-        stream_t& stream_;
+        std::ofstream& stream_;
         separator sep_ = separator::space;
     };
 
@@ -233,7 +232,7 @@ public:
 
 private:
     template <typename... args_t>
-    LogStream<std::ofstream> stream(level lv, args_t&&... args)
+    LogStream stream(level lv, args_t&&... args)
     {
         return LogStream(trace_mutex_, ofs_, lv, std::forward<args_t>(args)...);
     }
@@ -308,7 +307,7 @@ private:
         internal_trace() << "-----------------------------";
     }
 
-    LogStream<std::ofstream> internal_trace() { return trace("Logger"); }
+    LogStream internal_trace() { return trace("Logger"); }
 
 private:
     std::filesystem::path log_path_;
@@ -332,10 +331,10 @@ public:
     {}
     ~ScopeEnterHelper() { stream_ << "| enter"; }
 
-    Logger::LogStream<std::ofstream>& operator()() { return stream_; }
+    Logger::LogStream& operator()() { return stream_; }
 
 private:
-    Logger::LogStream<std::ofstream> stream_;
+    Logger::LogStream stream_;
 };
 
 template <typename... args_t>

@@ -19,85 +19,78 @@ MAA_PIPELINE_RES_NS_BEGIN
 
 namespace Recognition
 {
-enum class Type
-{
-    Invalid = 0,
-    DirectHit,
-    TemplateMatch,
-    OcrPipeline,
-    OcrRec,
-    FreezesWait,
-};
+    enum class Type
+    {
+        Invalid = 0,
+        DirectHit,
+        TemplateMatch,
+        OcrPipeline,
+        OcrRec,
+        FreezesWait,
+    };
 
-struct TemplMatchingParams
-{
-    std::vector<std::string> templ_names;
-    std::vector<double> thresholds;
-    int method = 0;
-    bool green_mask = false;
-};
+    struct TemplMatchingParams
+    {
+        std::vector<std::string> templates;
+        std::vector<double> thresholds;
+        int method = 0;
+        bool green_mask = false;
+    };
 
-struct OcrParams
-{
-    std::vector<std::string> text;
+    struct OcrParams
+    {
+        std::vector<std::string> text;
 
-    std::unordered_map<std::string, std::string> replace;
-};
+        std::unordered_map<std::string, std::string> replace;
+    };
 
-struct FreezesWaitingParams
-{
-    double threshold = 0.0;
-    int method = 0;
-    int wait_time = 0;
-};
+    struct FreezesWaitingParams
+    {
+        double threshold = 0.0;
+        int method = 0;
+        int wait_time = 0;
+    };
 
-using Params =
-    std::variant<Recognition::TemplMatchingParams, Recognition::OcrParams, Recognition::FreezesWaitingParams>;
+    using Params =
+        std::variant<Recognition::TemplMatchingParams, Recognition::OcrParams, Recognition::FreezesWaitingParams>;
 } // namespace Recognition
 
 namespace Action
 {
-enum class Type
-{
-    Invalid = 0,
-    DoNothing,
-    ClickSelf,
-    ClickRegion,
-    SwipeSelf,
-    SwipeRegion,
-};
+    enum class Type
+    {
+        Invalid = 0,
+        DoNothing,
+        ClickSelf,
+        ClickRegion,
+        SwipeSelf,
+        SwipeRegion,
+    };
 
-struct ClickParams
-{
-    cv::Point point_move {};
-    cv::Rect rect_move {};
-};
+    struct ClickParams
+    {
+        cv::Point point_move{};
+        cv::Rect rect_move{};
+    };
 
-struct ClickRegionParams
-{
-    cv::Rect region {};
-};
+    struct ClickRegionParams
+    {
+        cv::Rect region{};
+    };
 
-struct SwipeRegionParams
-{
-    std::vector<cv::Point> points;
-    std::vector<int> delays;
-};
+    struct SwipeRegionParams
+    {
+        std::vector<cv::Point> points;
+        std::vector<int> delays;
+    };
 
-struct SwipeSelfParams
-{
-    // TODO
-};
+    struct SwipeSelfParams
+    {
+        // TODO
+    };
 
-using Params = std::variant<Action::ClickParams, Action::ClickRegionParams, Action::SwipeRegionParams>;
+    using Params = std::variant<Action::ClickParams, Action::ClickRegionParams, Action::SwipeRegionParams>;
 } // namespace Action
-
-enum class NextMode
-{
-    Invalid = 0,
-    Find,
-    Foreach,
-};
 
 struct Data
 {
@@ -105,28 +98,24 @@ struct Data
     std::vector<std::string> base;
     bool checkpoint = false;
 
-    Recognition::Type recognition_type = Recognition::Type::Invalid;
-    Recognition::Params recognition_params;
+    Recognition::Type rec_type = Recognition::Type::Invalid;
+    Recognition::Params rec_params;
 
-    cv::Rect roi {};
+    std::vector<cv::Rect> roi;
     bool cache = false;
-    uint times = UINT_MAX;
-    uint timeout = UINT_MAX;
-
-    std::vector<std::string> next;
-    NextMode next_mode = NextMode::Invalid;
-
-    std::vector<std::string> overflow_next;
-    NextMode overflow_next_mode = NextMode::Invalid;
-
-    std::vector<std::string> timeout_next;
-    NextMode timeout_next_mode = NextMode::Invalid;
 
     Action::Type action_type = Action::Type::Invalid;
     Action::Params action_params;
+    std::vector<std::string> next;
 
-    int pre_delay = 0;
-    int post_delay = 0;
+    uint timeout = UINT_MAX;
+    std::vector<std::string> timeout_next;
+
+    uint run_times = UINT_MAX;
+    std::vector<std::string> runout_next;
+
+    uint pre_delay = 0;
+    uint post_delay = 0;
 
     bool notify = false;
 };
