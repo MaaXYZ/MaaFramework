@@ -73,7 +73,7 @@ bool PipelineConfig::parse_json(const json::value& input)
 }
 
 template <typename OutT>
-bool get_and_check(const json::value& input, const std::string& key, OutT& output, const OutT& default_val)
+bool get_and_check_value(const json::value& input, const std::string& key, OutT& output, const OutT& default_val)
 {
     auto opt = input.find<OutT>(key);
     if (!opt) {
@@ -87,6 +87,36 @@ bool get_and_check(const json::value& input, const std::string& key, OutT& outpu
         output = *opt;
     }
     return true;
+}
+
+template <typename OutT>
+bool get_and_check_value_or_array(const json::value& input, const std::string& key, std::vector<OutT>& output)
+{
+    auto opt = input.find(key);
+    if (!opt) {
+        // 因为是get，没找到就拉倒
+        return true;
+    }
+
+    if (opt->is_array()) {
+        output.clear();
+        for (const auto& item : opt->as_array()) {
+            if (!item.is<OutT>()) {
+                LogError << "type error" << VAR(key) << VAR(input);
+                return false;
+            }
+            output.emplace_back(item.as<OutT>());
+        }
+    }
+    else if (opt->is<OutT>()) {
+        output = { opt->as<OutT>() };
+    }
+    else {
+        LogError << "type error" << VAR(key) << VAR(input);
+        return false;
+    }
+
+    return !output.empty();
 }
 
 bool PipelineConfig::parse_task(const std::string& name, const json::value& input)
@@ -106,8 +136,8 @@ bool PipelineConfig::parse_task(const std::string& name, const json::value& inpu
         return false;
     }
 
-    if (!get_and_check(input, "cache", data.cache, false)) {
-        LogError << "failed to get_and_check cache" << VAR(input);
+    if (!get_and_check_value(input, "cache", data.cache, false)) {
+        LogError << "failed to get_and_check_value cache" << VAR(input);
         return false;
     }
 
@@ -115,45 +145,44 @@ bool PipelineConfig::parse_task(const std::string& name, const json::value& inpu
         LogError << "failed to parse_action" << VAR(input);
         return false;
     }
-    if (!parse_next(input, "next", data.next)) {
+
+    if (!get_and_check_value_or_array(input, "next", data.next)) {
         LogError << "failed to parse_next next" << VAR(input);
         return false;
     }
 
-    json::value v(0U);
-
-    if (!get_and_check(input, "timeout", data.timeout, 10 * 1000U)) {
-        LogError << "failed to get_and_check timeout" << VAR(input);
+    if (!get_and_check_value(input, "timeout", data.timeout, 10 * 1000U)) {
+        LogError << "failed to get_and_check_value timeout" << VAR(input);
         return false;
     }
 
-    if (!parse_next(input, "timeout_next", data.next)) {
+    if (!get_and_check_value_or_array(input, "timeout_next", data.next)) {
         LogError << "failed to parse_next timeout_next" << VAR(input);
         return false;
     }
 
-    if (!get_and_check(input, "run_times", data.run_times, uint(UINT_MAX))) {
-        LogError << "failed to get_and_check run_times" << VAR(input);
+    if (!get_and_check_value(input, "run_times", data.run_times, uint(UINT_MAX))) {
+        LogError << "failed to get_and_check_value run_times" << VAR(input);
         return false;
     }
 
-    if (!parse_next(input, "runout_next", data.runout_next)) {
+    if (!get_and_check_value_or_array(input, "runout_next", data.runout_next)) {
         LogError << "failed to parse_next runout_next" << VAR(input);
         return false;
     }
 
-    if (!get_and_check(input, "pre_delay", data.pre_delay, 0U)) {
-        LogError << "failed to get_and_check pre_delay" << VAR(input);
+    if (!get_and_check_value(input, "pre_delay", data.pre_delay, 0U)) {
+        LogError << "failed to get_and_check_value pre_delay" << VAR(input);
         return false;
     }
 
-    if (!get_and_check(input, "post_delay", data.post_delay, 0U)) {
-        LogError << "failed to get_and_check post_delay" << VAR(input);
+    if (!get_and_check_value(input, "post_delay", data.post_delay, 0U)) {
+        LogError << "failed to get_and_check_value post_delay" << VAR(input);
         return false;
     }
 
-    if (!get_and_check(input, "notify", data.notify, false)) {
-        LogError << "failed to get_and_check notify" << VAR(input);
+    if (!get_and_check_value(input, "notify", data.notify, false)) {
+        LogError << "failed to get_and_check_value notify" << VAR(input);
         return false;
     }
 
@@ -164,8 +193,8 @@ bool PipelineConfig::parse_recognition(const json::value& input, MAA_PIPELINE_RE
                                        MAA_PIPELINE_RES_NS::Recognition::Params& out_param)
 {
     std::string rec_type_name;
-    if (!get_and_check(input, "recognition", rec_type_name, std::string("DirectHit"))) {
-        LogError << "failed to get_and_check recognition" << VAR(input);
+    if (!get_and_check_value(input, "recognition", rec_type_name, std::string("DirectHit"))) {
+        LogError << "failed to get_and_check_value recognition" << VAR(input);
         return false;
     }
 
@@ -202,79 +231,152 @@ bool PipelineConfig::parse_recognition(const json::value& input, MAA_PIPELINE_RE
 
 bool PipelineConfig::parse_templ_matching_params(const json::value& input, Recognition::Params& output)
 {
-    return false;
+    Recognition::TemplMatchingParams result;
+
+    if (!get_and_check_value_or_array(input, "templates", result.templates)) {
+        LogError << "failed to get_and_check_value_or_array templates" << VAR(input);
+        return false;
+    }
+    if (result.templates.empty()) {
+        LogError << "templates is empty" << VAR(input);
+        return false;
+    }
+
+    if (!get_and_check_value_or_array(input, "threshold", result.thresholds)) {
+        LogError << "failed to get_and_check_value_or_array threshold" << VAR(input);
+        return false;
+    }
+
+    if (result.thresholds.empty()) {
+        constexpr double kDefaultThreshold = 0.8;
+        result.thresholds = { kDefaultThreshold };
+    }
+
+    if (result.templates.size() != result.thresholds.size()) {
+        LogError << "templates.size() != thresholds.size()" << VAR(result.templates.size())
+                 << VAR(result.thresholds.size());
+        return false;
+    }
+
+    constexpr int kDefaultMethod = 3; // cv::TM_CCOEFF_NORMED
+    if (!get_and_check_value(input, "method", result.method, kDefaultMethod)) {
+        LogError << "failed to get_and_check_value method" << VAR(input);
+        return false;
+    }
+
+    if (!get_and_check_value(input, "green_mask", result.green_mask, false)) {
+        LogError << "failed to get_and_check_value green_mask" << VAR(input);
+        return false;
+    }
+
+    output = result;
+    return true;
 }
 
 bool PipelineConfig::parse_ocr_params(const json::value& input, Recognition::Params& output)
 {
-    return false;
+    Recognition::OcrParams result;
+
+    if (!get_and_check_value_or_array(input, "text", result.text)) {
+        LogError << "failed to get_and_check_value_or_array text" << VAR(input);
+        return false;
+    }
+
+    if (auto replace_opt = input.find("replace")) {
+        if (!replace_opt->is_array()) {
+            LogError << "replace is not array" << VAR(input);
+            return false;
+        }
+        auto& replace_array = replace_opt->as_array();
+        for (const auto& pair : replace_array) {
+            if (!pair.is_array()) {
+                LogError << "replace pair is not array" << VAR(input);
+                return false;
+            }
+            auto& pair_array = pair.as_array();
+            if (pair_array.size() != 2) {
+                LogError << "replace pair size != 2" << VAR(input);
+                return false;
+            }
+            auto& first = pair_array[0];
+            auto& second = pair_array[1];
+            if (!first.is_string() || !second.is_string()) {
+                LogError << "replace pair is not string" << VAR(input);
+                return false;
+            }
+            result.replace.emplace(first.as_string(), second.as_string());
+        }
+    }
+
+    output = result;
+    return true;
 }
 
 bool PipelineConfig::parse_freezes_wait_params(const json::value& input, Recognition::Params& output)
 {
-    return false;
+    Recognition::FreezesWaitingParams result;
+
+    constexpr double kDefaultThreshold = 0.8;
+    if (!get_and_check_value(input, "threshold", result.threshold, kDefaultThreshold)) {
+        LogError << "failed to get_and_check_value threshold" << VAR(input);
+        return false;
+    }
+
+    constexpr int kDefaultMethod = 3; // cv::TM_CCOEFF_NORMED
+    if (!get_and_check_value(input, "method", result.method, kDefaultMethod)) {
+        LogError << "failed to get_and_check_value method" << VAR(input);
+        return false;
+    }
+
+    if (!get_and_check_value(input, "wait_time", result.wait_time, uint(UINT_MAX))) {
+        LogError << "failed to get_and_check_value wait_time" << VAR(input);
+        return false;
+    }
+
+    output = result;
+    return true;
 }
 
-bool PipelineConfig::parse_roi(const json::value& input, std::vector<cv::Rect>& roi)
+bool PipelineConfig::parse_roi(const json::value& input, std::vector<cv::Rect>& output)
 {
-    roi.clear();
-
-    auto roi_opt = input.find<json::array>("roi");
+    auto roi_opt = input.find("roi");
     if (!roi_opt) {
+        // 这个不是必选字段，没有就没有了
+        output.clear();
         return true;
     }
-    auto& roi_array = *roi_opt;
-    if (roi_array.empty()) {
-        LogError << "roi array is empty" << VAR(input);
+
+    cv::Rect single_roi;
+    if (parse_rect(*roi_opt, single_roi)) {
+        output = { single_roi };
+        return true;
+    }
+
+    if (!roi_opt->is_array()) {
+        LogError << "roi is not array" << VAR(input);
         return false;
     }
 
-    auto parse_single_roi = [&](const json::array& int_array) {
-        if (int_array.size() != 4) {
-            LogError << "roi size != 4" << VAR(int_array.size());
+    auto& roi_array = roi_opt->as_array();
+    output.clear();
+    for (const auto& roi_item : roi_array) {
+        cv::Rect roi;
+        if (!parse_rect(roi_item, roi)) {
+            LogError << "failed to parse_rect" << VAR(roi_item);
             return false;
         }
-        std::vector<int> roi_vec;
-        for (const auto& r : int_array) {
-            if (!r.is_number()) {
-                LogError << "type error" << VAR(r) << "is not integer";
-                return false;
-            }
-            roi_vec.emplace_back(r.as_integer());
-        }
-        roi.emplace_back(roi_vec[0], roi_vec[1], roi_vec[2], roi_vec[3]);
-        return true;
-    };
-
-    auto type = roi_array.begin()->type();
-    switch (type) {
-    case json::value::value_type::number:
-        return parse_single_roi(roi_array);
-    case json::value::value_type::array: {
-        bool parsed = true;
-        for (const auto& r : roi_array) {
-            if (!r.is_array()) {
-                LogError << "type error" << VAR(r) << "is not json::array";
-                return false;
-            }
-            parsed &= parse_single_roi(r.as_array());
-        }
-        return parsed;
-    } break;
-    default:
-        LogError << "error roi type" << VAR(input);
-        return false;
+        output.emplace_back(roi);
     }
 
-    return false;
+    return !output.empty();
 }
 
 bool PipelineConfig::parse_action(const json::value& input, MAA_PIPELINE_RES_NS::Action::Type& out_type,
                                   MAA_PIPELINE_RES_NS::Action::Params& out_param)
 {
     std::string act_type_name;
-    if (!get_and_check(input, "action", act_type_name, std::string("DoNothing"))) {
-        LogError << "failed to get_and_check action" << VAR(input);
+    if (!get_and_check_value(input, "action", act_type_name, std::string("DoNothing"))) {
+        LogError << "failed to get_and_check_value action" << VAR(input);
         return false;
     }
 
@@ -310,29 +412,97 @@ bool PipelineConfig::parse_action(const json::value& input, MAA_PIPELINE_RES_NS:
 
 bool PipelineConfig::parse_click_self_params(const json::value& input, MAA_PIPELINE_RES_NS::Action::Params& output)
 {
-    return false;
+    Action::ClickParams result;
+
+    if (auto rect_move_opt = input.find("rect_move")) {
+        if (!parse_rect(*rect_move_opt, result.rect_move)) {
+            LogError << "failed to parse_rect" << VAR(input);
+            return false;
+        }
+    }
+
+    output = result;
+    return true;
 }
 
 bool PipelineConfig::parse_click_region_params(const json::value& input, MAA_PIPELINE_RES_NS::Action::Params& output)
 {
-    return false;
+    Action::ClickRegionParams result;
+
+    if (auto region_opt = input.find("region")) {
+        if (!parse_rect(*region_opt, result.region)) {
+            LogError << "failed to parse_rect" << VAR(input);
+            return false;
+        }
+    }
+
+    output = result;
+    return true;
 }
 
 bool PipelineConfig::parse_swipe_self_params(const json::value& input, MAA_PIPELINE_RES_NS::Action::Params& output)
 {
+    // TODO: 解析参数结构还没想好
     return false;
 }
 
 bool PipelineConfig::parse_swipe_region_params(const json::value& input, MAA_PIPELINE_RES_NS::Action::Params& output)
 {
-    return false;
+    Action::SwipeRegionParams result;
+
+    auto begin_opt = input.find("begin");
+    if (!begin_opt) {
+        LogError << "begin not found" << VAR(input);
+        return false;
+    }
+    if (!parse_rect(*begin_opt, result.begin)) {
+        LogError << "failed to parse_rect" << VAR(input);
+        return false;
+    }
+
+    auto end_opt = input.find("end");
+    if (!end_opt) {
+        LogError << "end not found" << VAR(input);
+        return false;
+    }
+
+    if (!parse_rect(*end_opt, result.end)) {
+        LogError << "failed to parse_rect" << VAR(input);
+        return false;
+    }
+
+    if (!get_and_check_value(input, "duration", result.duration, 0U)) {
+        LogError << "failed to get_and_check_value duration" << VAR(input);
+        return false;
+    }
+
+    output = result;
+    return true;
 }
 
-bool PipelineConfig::parse_next(const json::value& input, const std::string& key, std::vector<std::string>& output)
+bool PipelineConfig::parse_rect(const json::value& input_rect, cv::Rect& output)
 {
-    return false;
-}
+    if (!input_rect.is_array()) {
+        LogError << "rect is not array" << VAR(input_rect);
+        return false;
+    }
 
-#undef CheckTypeError
+    auto& rect_array = input_rect.as_array();
+    if (rect_array.size() != 4) {
+        LogError << "rect size != 4" << VAR(rect_array.size());
+        return false;
+    }
+
+    std::vector<int> rect_move_vec;
+    for (const auto& r : rect_array) {
+        if (!r.is_number()) {
+            LogError << "type error" << VAR(r) << "is not integer";
+            return false;
+        }
+        rect_move_vec.emplace_back(r.as_integer());
+    }
+    output = cv::Rect(rect_move_vec[0], rect_move_vec[1], rect_move_vec[2], rect_move_vec[3]);
+    return true;
+}
 
 MAA_RES_NS_END

@@ -27,7 +27,7 @@ private:
     bool parse_ocr_params(const json::value& input, MAA_PIPELINE_RES_NS::Recognition::Params& output);
     bool parse_freezes_wait_params(const json::value& input, MAA_PIPELINE_RES_NS::Recognition::Params& output);
 
-    bool parse_roi(const json::value& input, std::vector<cv::Rect>& rois);
+    bool parse_roi(const json::value& input, std::vector<cv::Rect>& output);
 
     bool parse_action(const json::value& input, MAA_PIPELINE_RES_NS::Action::Type& out_type,
                       MAA_PIPELINE_RES_NS::Action::Params& out_param);
@@ -36,7 +36,7 @@ private:
     bool parse_swipe_self_params(const json::value& input, MAA_PIPELINE_RES_NS::Action::Params& output);
     bool parse_swipe_region_params(const json::value& input, MAA_PIPELINE_RES_NS::Action::Params& output);
 
-    bool parse_next(const json::value& input, const std::string& key, std::vector<std::string>& output);
+    bool parse_rect(const json::value& input_rect, cv::Rect& output);
 
     std::unordered_map<std::string, MAA_PIPELINE_RES_NS::Data> data_;
 };
