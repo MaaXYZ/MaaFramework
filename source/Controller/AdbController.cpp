@@ -52,9 +52,12 @@ bool AdbController::_connect()
 
     bool connected = control_unit_.connection.connect();
     if (!connected) {
+        notifier.notify(MAAMSG_CONTROLLER_CONNECT_FAILED);
         LogError << "failed to connect";
         return false;
     }
+
+    notifier.notify(MAAMSG_CONTROLLER_CONNECTED);
 
     control_unit_.device_info.set_replacement(replacement);
     if (!control_unit_.device_info.request_uuid()) {

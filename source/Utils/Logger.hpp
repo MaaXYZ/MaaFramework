@@ -18,6 +18,8 @@
 #include "Ranges.hpp"
 #include "Time.hpp"
 
+#include <meojson/json.hpp>
+
 #if defined(__APPLE__) || defined(__linux__)
 #include <unistd.h>
 #endif

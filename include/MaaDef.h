@@ -29,7 +29,6 @@ enum MaaStatusEnum
 };
 
 typedef int64_t MaaId;
-typedef MaaId MaaMsgId;
 typedef MaaId MaaCtrlId;
 typedef MaaId MaaResId;
 typedef MaaId MaaTaskId;
@@ -70,7 +69,7 @@ enum MaaTaskTypeEnum
 
 #define MaaTaskParam_Empty "{}"
 
-typedef void(MAA_CALL* MaaApiCallback)(MaaMsgId msg, const char* details_json, void* callback_arg);
+typedef void(MAA_CALL* MaaApiCallback)(const char* msg, const char* details_json, void* callback_arg);
 typedef MaaApiCallback MaaResourceCallback;
 typedef MaaApiCallback MaaControllerCallback;
 typedef MaaApiCallback MaaInstanceCallback;

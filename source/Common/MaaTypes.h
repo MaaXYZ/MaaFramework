@@ -2,7 +2,6 @@
 
 #include "MaaConf.h"
 #include "MaaDef.h"
-#include "MaaMsg.h"
 
 #include <filesystem>
 #include <string>

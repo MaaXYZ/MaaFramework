@@ -31,6 +31,7 @@
     <ClInclude Include="..\include\MaaCustomController.h" />
     <ClInclude Include="..\include\MaaPort.h" />
     <ClInclude Include="..\include\MaaDef.h" />
+    <ClInclude Include="..\include\MaaMsg.h" />
     <ClInclude Include="Base\AsyncCallback.hpp" />
     <ClInclude Include="Base\NonCopyable.hpp" />
     <ClInclude Include="Common\MaaTypes.h" />
@@ -62,7 +63,6 @@
     <ClInclude Include="Option\GlobalOptionMgr.h" />
     <ClInclude Include="Controller\AdbController.h" />
     <ClInclude Include="Common\MaaConf.h" />
-    <ClInclude Include="Common\MaaMsg.h" />
     <ClInclude Include="Controller\ControllerMgr.h" />
     <ClInclude Include="Instance\InstanceMgr.h" />
     <ClInclude Include="Resource\PipelineConfig.h" />

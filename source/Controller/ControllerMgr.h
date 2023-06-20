@@ -1,7 +1,6 @@
 #pragma once
 
 #include "Base/AsyncCallback.hpp"
-#include "Common/MaaMsg.h"
 #include "Common/MaaTypes.h"
 #include "Instance/InstanceInternalAPI.hpp"
 #include "Utils/NoWarningCVMat.h"

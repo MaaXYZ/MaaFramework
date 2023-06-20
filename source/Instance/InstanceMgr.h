@@ -2,7 +2,6 @@
 
 #include "Base/AsyncCallback.hpp"
 #include "Base/AsyncRunner.hpp"
-#include "Common/MaaMsg.h"
 #include "Common/MaaTypes.h"
 #include "InstanceInternalAPI.hpp"
 #include "Task/TaskBase.h"

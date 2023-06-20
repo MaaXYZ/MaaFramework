@@ -72,8 +72,8 @@
     <ClInclude Include="..\include\MaaDef.h">
       <Filter>Include</Filter>
     </ClInclude>
-    <ClInclude Include="Common\MaaMsg.h">
-      <Filter>Source\Common</Filter>
+    <ClInclude Include="..\include\MaaMsg.h">
+      <Filter>Include</Filter>
     </ClInclude>
     <ClInclude Include="Common\MaaConf.h">
       <Filter>Source\Common</Filter>

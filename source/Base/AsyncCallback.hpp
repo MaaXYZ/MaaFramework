@@ -1,7 +1,7 @@
 #pragma once
 
 #include "Base/AsyncRunner.hpp"
-#include "Common/MaaMsg.h"
+#include "MaaMsg.h"
 #include "Utils/Logger.hpp"
 
 #include <memory>
@@ -15,7 +15,7 @@ class AsyncCallback : public NonCopyable
 private:
     struct NotifyData
     {
-        MaaMsg msg = MaaMsg::InvalidMsg;
+        MaaMsg msg = MAAMSG_INVALID;
         json::value details;
     };
 
@@ -54,7 +54,7 @@ private:
             return false;
         }
 
-        callback_(static_cast<MaaMsgId>(id), cb_data.details.to_string().c_str(), callback_arg_);
+        callback_(cb_data.msg, cb_data.details.to_string().c_str(), callback_arg_);
         return true;
     }
 
