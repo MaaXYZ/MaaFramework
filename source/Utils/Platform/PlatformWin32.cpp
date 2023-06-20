@@ -17,7 +17,7 @@ os_library_handle library_load(const os_string& path)
 
 os_library_function library_get_address(os_library_handle handle, const std::string& name)
 {
-    return reinterpret_cast<os_library_function>(GetProcAddress(handle, ("_" + name).c_str())); // cdecl
+    return reinterpret_cast<os_library_function>(GetProcAddress(handle, name.c_str())); // should be _cdecl or x64
 }
 
 void library_free(os_library_handle handle)
