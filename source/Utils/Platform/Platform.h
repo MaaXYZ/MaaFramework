@@ -32,6 +32,13 @@ inline std::filesystem::path path(const os_string_view& os_str)
     return std::filesystem::path(os_str);
 }
 
+using os_library_handle = void*;
+using os_library_function = void (*)();
+
+os_library_handle library_load(const os_string& path); // posix环境下必须以`.`开头, 防止触发ldconfig
+os_library_function library_get_address(os_library_handle handle, const std::string& name);
+void library_free(os_library_handle handle);
+
 #ifdef _WIN32
 std::string path_to_crt_string(const std::filesystem::path&);
 std::string path_to_ansi_string(const std::filesystem::path&);

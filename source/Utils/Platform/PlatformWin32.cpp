@@ -10,6 +10,21 @@
 
 MAA_PLATFORM_NS_BEGIN
 
+os_library_handle library_load(const os_string& path)
+{
+    return LoadLibrary(path.c_str());
+}
+
+os_library_function library_get_address(os_library_handle handle, const std::string& name)
+{
+    return reinterpret_cast<os_library_function>(GetProcAddress(handle, ("_" + name).c_str())); // cdecl
+}
+
+void library_free(os_library_handle handle)
+{
+    FreeLibrary(handle);
+}
+
 static size_t get_page_size()
 {
     SYSTEM_INFO sysInfo {};
