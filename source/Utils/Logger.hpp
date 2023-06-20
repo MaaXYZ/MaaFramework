@@ -68,6 +68,7 @@ public:
         template <typename... args_t>
         LogStream(std::mutex& m, std::ofstream& s, level lv, args_t&&... args) : lock_(m), stream_(s)
         {
+            stream(std::boolalpha);
             stream_props(lv, std::forward<args_t>(args)...);
         }
         LogStream(const LogStream&) = delete;

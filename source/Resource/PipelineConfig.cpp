@@ -11,7 +11,7 @@ bool PipelineConfig::load(const std::filesystem::path& path, bool is_base)
     LogFunc << VAR(path) << VAR(is_base);
 
     if (is_base) {
-        data_.clear();
+        raw_data_.clear();
     }
 
     if (!std::filesystem::exists(path)) {
@@ -185,6 +185,8 @@ bool PipelineConfig::parse_task(const std::string& name, const json::value& inpu
         LogError << "failed to get_and_check_value notify" << VAR(input);
         return false;
     }
+
+    raw_data_.insert_or_assign(name, std::move(data));
 
     return true;
 }

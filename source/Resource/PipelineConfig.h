@@ -38,7 +38,7 @@ private:
 
     bool parse_rect(const json::value& input_rect, cv::Rect& output);
 
-    std::unordered_map<std::string, MAA_PIPELINE_RES_NS::Data> data_;
+    std::unordered_map<std::string, MAA_PIPELINE_RES_NS::Data> raw_data_;
 };
 
 MAA_RES_NS_END
