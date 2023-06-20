@@ -428,17 +428,80 @@ SocketIOHandlerWin32::~SocketIOHandlerWin32()
 
 bool SocketIOHandlerWin32::write(std::string_view data)
 {
+    if (socket_ == INVALID_SOCKET) {
+        return false;
+    }
+    if (::send(socket_, data.data(), data.length(), 0) >= 0) {
+        return true;
+    }
+    LogError << "Failed to send to SocketIOHandlerWin32, err" << WSAGetLastError();
     return false;
 }
 
 std::string SocketIOHandlerWin32::read(unsigned timeout_sec)
 {
-    return std::string();
+    if (socket_ == INVALID_SOCKET) {
+        return false;
+    }
+    std::string ret_str;
+    constexpr int PipeReadBuffSize = 4096ULL;
+
+    auto check_timeout = [&](const auto& start_time) -> bool {
+        using namespace std::chrono_literals;
+        return std::chrono::steady_clock::now() - start_time < timeout_sec * 1s;
+    };
+
+    auto start_time = std::chrono::steady_clock::now();
+
+    while (true) {
+        char buf_from_child[PipeReadBuffSize];
+
+        if (!check_timeout(start_time)) {
+            break;
+        }
+
+        ssize_t ret_read = ::recv(read_fd_, buf_from_child, PipeReadBuffSize, 0);
+        if (ret_read > 0) {
+            ret_str.insert(ret_str.end(), buf_from_child, buf_from_child + ret_read);
+        }
+        else {
+            break;
+        }
+    }
+    return ret_str;
 }
 
 std::string SocketIOHandlerWin32::read(unsigned timeout_sec, size_t expect)
 {
-    return std::string();
+    if (socket_ == INVALID_SOCKET) {
+        return false;
+    }
+    std::string ret_str;
+    constexpr int PipeReadBuffSize = 4096ULL;
+
+    auto check_timeout = [&](const auto& start_time) -> bool {
+        using namespace std::chrono_literals;
+        return std::chrono::steady_clock::now() - start_time < timeout_sec * 1s;
+    };
+
+    auto start_time = std::chrono::steady_clock::now();
+
+    while (true) {
+        char buf_from_child[PipeReadBuffSize];
+
+        if (!check_timeout(start_time)) {
+            break;
+        }
+
+        ssize_t ret_read = ::recv(read_fd_, buf_from_child, std::min(PipeReadBuffSize, expect - ret_str.size()), 0);
+        if (ret_read > 0) {
+            ret_str.insert(ret_str.end(), buf_from_child, buf_from_child + ret_read);
+        }
+        else {
+            // break;
+        }
+    }
+    return ret_str;
 }
 
 MAA_CTRL_NS_END
