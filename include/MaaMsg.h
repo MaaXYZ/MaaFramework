@@ -18,6 +18,40 @@
 
 /*
     {
+        uuid: string
+    }
+*/
+#define MAAMSG_CONTROLLER_UUID_GOT ("Controller.UUIDGot")
+/* {} */
+#define MAAMSG_CONTROLLER_UUID_GET_FAILED ("Controller.UUIDGetFailed")
+
+/*
+    {
+        resolution: {
+            width: number,
+            height: number
+        }
+    }
+*/
+#define MAAMSG_CONTROLLER_RESOLUTION_GOT ("Controller.ResolutionGot")
+/* {} */
+#define MAAMSG_CONTROLLER_RESOLUTION_GET_FAILED ("Controller.ResolutionGetFailed")
+
+/* {} */
+#define MAAMSG_CONTROLLER_SCREENCAP_INITED ("Controller.ScreencapInited")
+#define MAAMSG_CONTROLLER_SCREENCAP_INIT_FAILED ("Controller.ScreencapInitFailed")
+
+/* {
+        uuid: string,
+        resolution: {
+            width: number,
+            height: number
+        }
+} */
+#define MAAMSG_CONTROLLER_CONNECT_SUCCESS ("Controller.ConnectSuccess")
+
+/*
+    {
         id: number,
         type: [string, task type],
         uuid: [string, controller id],

@@ -61,20 +61,31 @@ bool AdbController::_connect()
 
     control_unit_.device_info.set_replacement(replacement);
     if (!control_unit_.device_info.request_uuid()) {
+        notifier.notify(MAAMSG_CONTROLLER_UUID_GET_FAILED);
         LogError << "failed to request_uuid";
         return false;
     }
+    const auto& uuid = control_unit_.device_info.get_uuid();
+    notifier.notify(MAAMSG_CONTROLLER_UUID_GOT, { { "uuid", uuid } });
+
     if (!control_unit_.device_info.request_resolution()) {
+        notifier.notify(MAAMSG_CONTROLLER_RESOLUTION_GET_FAILED);
         LogError << "failed to request_resolution";
         return false;
     }
     auto [w, h] = control_unit_.device_info.get_resolution();
+    notifier.notify(MAAMSG_CONTROLLER_RESOLUTION_GOT, { { "resolution", { { "width", w }, { "height", h } } } });
 
     control_unit_.screencap.set_replacement(replacement);
     if (!control_unit_.screencap.init(w, h)) {
+        notifier.notify(MAAMSG_CONTROLLER_SCREENCAP_INIT_FAILED);
         LogError << "falied to init screencap";
         return false;
     }
+    notifier.notify(MAAMSG_CONTROLLER_SCREENCAP_INITED);
+
+    notifier.notify(MAAMSG_CONTROLLER_CONNECT_SUCCESS,
+                    { { "uuid", uuid }, { "resolution", { { "width", w }, { "height", h } } } });
 
     return true;
 }
