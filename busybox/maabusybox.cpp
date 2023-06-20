@@ -40,12 +40,12 @@ std::ostream& operator<<(std::ostream& os, const std::optional<T>& v)
     }
 }
 
-inline std::string read_adb_argv(const std::string& cur_dir)
+inline std::string read_controller_config(const std::string& cur_dir)
 {
-    std::ifstream ifs(std::filesystem::path(cur_dir) / "adb_argv.json", std::ios::in);
+    std::ifstream ifs(std::filesystem::path(cur_dir) / "controller_config.json", std::ios::in);
     if (!ifs.is_open()) {
-        std::cerr << "Failed to open adb_argv.json\n"
-                  << "Please copy adb_argv.json to " << cur_dir << std::endl;
+        std::cerr << "Failed to open controller_config.json\n"
+                  << "Please copy controller_config.json to " << cur_dir << std::endl;
         exit(1);
     }
 
@@ -136,7 +136,7 @@ int main(int argc, char* argv[])
 
     using namespace MaaNS::ControllerNS;
 
-    auto config = json::parse(read_adb_argv(result["config"].as<std::string>()));
+    auto config = json::parse(read_controller_config(result["config"].as<std::string>()));
     auto io = PlatformFactory::create();
     MaaSetGlobalOption(MaaGlobalOption_Logging, (std::filesystem::current_path() / "debug").string().c_str());
 
@@ -237,46 +237,24 @@ int main(int argc, char* argv[])
         bool profile = false;
         std::map<std::string, double> cost;
 
-        auto doTest = [&initUnit, &res, profile, &cost]<typename SCP>(SCP* scp, const std::string& name,
-                                                                      auto&&... args) {
-            scp = initUnit(scp);
-
-            scp->init(res.value().width, res.value().height, std::forward<decltype(args)>(args)...);
-
-            cost[name] = test_screencap(scp);
-        };
+        auto scp = initUnit(new Unit::Screencap);
+        scp->init(res.value().width, res.value().height);
 
         if (scmd == "profile") {
             profile = true;
         }
-        if (profile || scmd == "raw_by_netcat") {
-            doTest(new Unit::ScreencapRawByNetcat(), "raw_by_netcat");
-        }
-        if (profile || scmd == "raw_with_gzip") {
-            doTest(new Unit::ScreencapRawWithGzip(), "raw_with_gzip");
-        }
-        if (profile || scmd == "encode") {
-            doTest(new Unit::ScreencapEncode(), "encode");
-        }
-        if (profile || scmd == "encode_to_file") {
-            doTest(new Unit::ScreencapEncodeToFileAndPull(), "encode_to_file");
-        }
-        if (profile || scmd == "minicap_direct") {
-            doTest(
-                new Unit::MinicapDirect(), "minicap_direct",
-                [](const std::string& arch) { return std::format("prebuilt/minicap/{}/bin/minicap", arch); },
-                [](const std::string& arch, int sdk) {
-                    return std::format("prebuilt/minicap/{}/lib/android-{}/minicap.so", arch, sdk);
-                });
-        }
-        if (profile || scmd == "minicap_stream") {
-            doTest(
-                new Unit::MinicapStream(), "minicap_stream",
-                [](const std::string& arch) { return std::format("prebuilt/minicap/{}/bin/minicap", arch); },
-                [](const std::string& arch, int sdk) {
-                    return std::format("prebuilt/minicap/{}/lib/android-{}/minicap.so", arch, sdk);
-                });
-        }
+
+#define TEST_SC(method)                                            \
+    if (profile || scmd == #method) {                              \
+        cost[#method] = test_screencap(scp->get_##method().get()); \
+    }
+
+        TEST_SC(raw_by_netcat)
+        TEST_SC(raw_with_gzip)
+        TEST_SC(encode)
+        TEST_SC(encode_to_file)
+        TEST_SC(minicap_direct)
+        TEST_SC(minicap_stream)
 
         if (profile) {
             std::cout << "\n\nResult: " << std::endl;

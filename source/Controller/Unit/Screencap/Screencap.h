@@ -33,6 +33,16 @@ public:
 
     std::optional<cv::Mat> screencap();
 
+#ifdef MAA_DEBUG
+public:
+    std::shared_ptr<ScreencapRawByNetcat> get_raw_by_netcat() { return raw_by_netcat_uint_; }
+    std::shared_ptr<ScreencapRawWithGzip> get_raw_with_gzip() { return raw_with_gzip_unit_; }
+    std::shared_ptr<ScreencapEncode> get_encode() { return encode_unit_; }
+    std::shared_ptr<ScreencapEncodeToFileAndPull> get_encode_to_file() { return encode_to_file_unit_; }
+    std::shared_ptr<MinicapDirect> get_minicap_direct() { return minicap_direct_unit_; }
+    std::shared_ptr<MinicapStream> get_minicap_stream() { return minicap_stream_unit_; }
+#endif
+
 private:
     bool speed_test();
 
@@ -41,9 +51,8 @@ private:
     std::shared_ptr<ScreencapEncode> encode_unit_ = std::make_shared<ScreencapEncode>();
     std::shared_ptr<ScreencapEncodeToFileAndPull> encode_to_file_unit_ =
         std::make_shared<ScreencapEncodeToFileAndPull>();
-    // TODO: minicap
-    // std::shared_ptr<MinicapDirect> minicap_direct_unit_ = std::make_shared<MinicapDirect>();
-    // std::shared_ptr<MinicapStream> minicap_stream_unit_ = std::make_shared<MinicapStream>();
+    std::shared_ptr<MinicapDirect> minicap_direct_unit_ = std::make_shared<MinicapDirect>();
+    std::shared_ptr<MinicapStream> minicap_stream_unit_ = std::make_shared<MinicapStream>();
 
     Method method_ = Method::UnknownYet;
 };

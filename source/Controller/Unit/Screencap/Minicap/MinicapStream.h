@@ -9,8 +9,7 @@ class MinicapStream : public MinicapBase
 public:
     bool parse(const json::value& config);
 
-    bool init(int w, int h, std::function<std::string(const std::string&)> path_of_bin,
-              std::function<std::string(const std::string&, int)> path_of_lib, const std::string& force_temp = "");
+    bool init(int w, int h, const std::string& force_temp = "");
 
     std::optional<cv::Mat> screencap();
 

@@ -115,10 +115,10 @@ bool demo_waiting(const std::filesystem::path& cur_dir)
 
 std::string read_adb_config(const std::filesystem::path& cur_dir)
 {
-    std::ifstream ifs(cur_dir / "adb_argv.json", std::ios::in);
+    std::ifstream ifs(cur_dir / "controller_config.json", std::ios::in);
     if (!ifs.is_open()) {
-        std::cerr << "Failed to open adb_argv.json\n"
-                  << "Please copy sample/cpp/config/adb_argv.json to " << cur_dir << std::endl;
+        std::cerr << "Failed to open controller_config.json\n"
+                  << "Please copy sample/cpp/config/controller_config.json to " << cur_dir << std::endl;
         exit(1);
     }
 

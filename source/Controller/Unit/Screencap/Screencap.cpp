@@ -3,6 +3,8 @@
 #include "Utils/Logger.hpp"
 #include "Utils/NoWarningCV.h"
 
+#include <format>
+
 MAA_CTRL_UNIT_NS_BEGIN
 
 Screencap::Screencap()
@@ -11,6 +13,8 @@ Screencap::Screencap()
     children_.emplace_back(raw_with_gzip_unit_);
     children_.emplace_back(encode_unit_);
     children_.emplace_back(encode_to_file_unit_);
+    children_.emplace_back(minicap_direct_unit_);
+    children_.emplace_back(minicap_stream_unit_);
 }
 
 bool Screencap::parse(const json::value& config)
@@ -19,6 +23,8 @@ bool Screencap::parse(const json::value& config)
     ret |= raw_with_gzip_unit_->parse(config);
     ret |= encode_unit_->parse(config);
     ret |= encode_to_file_unit_->parse(config);
+    ret |= minicap_direct_unit_->parse(config);
+    ret |= minicap_stream_unit_->parse(config);
     return ret;
 }
 
@@ -30,6 +36,8 @@ bool Screencap::init(int w, int h, const std::string& force_temp)
     raw_with_gzip_unit_->init(w, h);
     encode_unit_->init(w, h);
     encode_to_file_unit_->init(w, h, force_temp);
+    minicap_direct_unit_->init(w, h, force_temp);
+    minicap_stream_unit_->init(w, h, force_temp);
 
     return speed_test();
 }
@@ -40,6 +48,8 @@ void Screencap::deinit()
     raw_with_gzip_unit_->deinit();
     encode_unit_->deinit();
     encode_to_file_unit_->deinit();
+    minicap_direct_unit_->deinit();
+    minicap_stream_unit_->deinit();
 
     method_ = Method::UnknownYet;
 }
@@ -58,6 +68,10 @@ std::optional<cv::Mat> Screencap::screencap()
         return encode_unit_->screencap();
     case Method::EncodeToFileAndPull:
         return encode_to_file_unit_->screencap();
+    case Method::MinicapDirect:
+        return minicap_direct_unit_->screencap();
+    case Method::MinicapStream:
+        return minicap_stream_unit_->screencap();
     default:
         LogInfo << "Not support:" << method_;
         break;
@@ -107,6 +121,20 @@ bool Screencap::speed_test()
         auto now = std::chrono::steady_clock::now();
         if (encode_to_file_unit_->screencap()) {
             check(Method::EncodeToFileAndPull, now);
+        }
+    }
+
+    {
+        auto now = std::chrono::steady_clock::now();
+        if (minicap_direct_unit_->screencap()) {
+            check(Method::MinicapDirect, now);
+        }
+    }
+
+    {
+        auto now = std::chrono::steady_clock::now();
+        if (minicap_stream_unit_->screencap()) {
+            check(Method::MinicapStream, now);
         }
     }
 

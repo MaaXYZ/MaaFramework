@@ -15,13 +15,16 @@ void UnitBase::set_io(std::shared_ptr<PlatformIO> io_ptr)
 void UnitBase::set_replacement(Argv::replacement argv_replace)
 {
     for (auto child : children_) {
-        child->argv_replace_ = argv_replace;
+        child->set_replacement(argv_replace);
     }
     argv_replace_ = std::move(argv_replace);
 }
 
 void UnitBase::merge_replacement(Argv::replacement argv_replace, bool _override)
 {
+    for (auto child : children_) {
+        child->merge_replacement(argv_replace, _override);
+    }
     if (_override) {
         argv_replace.merge(argv_replace_);
         argv_replace_ = std::move(argv_replace);
@@ -33,7 +36,13 @@ void UnitBase::merge_replacement(Argv::replacement argv_replace, bool _override)
 
 bool UnitBase::parse_argv(const std::string& key, const json::value& config, Argv& argv)
 {
-    auto opt = config.find<json::value>(key);
+    auto aopt = config.find<json::object>("argv");
+    if (!aopt) {
+        LogError << "Cannot find argv entry";
+        return false;
+    }
+
+    auto opt = aopt->find<json::value>(key);
     if (!opt) {
         LogError << "Cannot find key" << VAR(key);
         return false;
