@@ -102,7 +102,8 @@ MaaSize MaaResourceGetHash(MaaResourceHandle res, char* buff, MaaSize buff_size)
 }
 
 MaaControllerHandle MaaAdbControllerCreate(MaaString adb_path, MaaString address, MaaJsonString config,
-                                           MaaControllerCallback callback, void* callback_arg)
+                                           MaaAdbControllerType type, MaaControllerCallback callback,
+                                           void* callback_arg)
 {
     LogFunc << VAR(adb_path) << VAR(address) << VAR_VOIDP(callback) << VAR_VOIDP(callback_arg);
 
@@ -112,10 +113,79 @@ MaaControllerHandle MaaAdbControllerCreate(MaaString adb_path, MaaString address
         return nullptr;
     }
 
-    // TODO: use enum and switch cast
-    auto unit_opt =
-        MAA_CTRL_NS::AdbController::parse_config<MAA_CTRL_UNIT_NS::TapTouchInput, MAA_CTRL_UNIT_NS::TapKeyInput,
-                                                 MAA_CTRL_UNIT_NS::Screencap>(*json_opt);
+    std::shared_ptr<MAA_CTRL_UNIT_NS::TouchInputBase> touch_unit;
+    std::shared_ptr<MAA_CTRL_UNIT_NS::KeyInputBase> key_unit;
+    std::shared_ptr<MAA_CTRL_UNIT_NS::ScreencapBase> screencap_unit;
+
+    std::shared_ptr<MAA_CTRL_UNIT_NS::MaatouchInput> maatouch_unit;
+
+    auto touch_type = type & MaaAdbControllerType_Touch_Mask;
+    auto key_type = type & MaaAdbControllerType_Key_Mask;
+    auto screencap_type = type & MaaAdbControllerType_Screencap_Mask;
+
+    if (touch_type == MaaAdbControllerType_Touch_MaaTouch || key_type == MaaAdbControllerType_Key_MaaTouch) {
+        if (touch_type | key_type != MaaAdbControllerType_Input_Preset_Maatouch) {
+            LogWarn << "Using maatouch for partial input!" << VAR((touch_type | key_type));
+            // return nullptr;
+        }
+        maatouch_unit = std::make_shared<MAA_CTRL_UNIT_NS::MaatouchInput>();
+    }
+
+    switch (touch_type) {
+    case MaaAdbControllerType_Touch_Adb:
+        touch_unit = std::make_shared<MAA_CTRL_UNIT_NS::TapTouchInput>();
+        break;
+    case MaaAdbControllerType_Touch_MiniTouch:
+        touch_unit = std::make_shared<MAA_CTRL_UNIT_NS::MinitouchInput>();
+        break;
+    case MaaAdbControllerType_Touch_MaaTouch:
+        touch_unit = maatouch_unit;
+        break;
+    default:
+        LogError << "Unknown touch input type" << VAR(touch_type);
+        return nullptr;
+    }
+
+    switch (key_type) {
+    case MaaAdbControllerType_Key_Adb:
+        key_unit = std::make_shared<MAA_CTRL_UNIT_NS::TapKeyInput>();
+        break;
+    case MaaAdbControllerType_Touch_MaaTouch:
+        key_unit = maatouch_unit;
+        break;
+    default:
+        LogError << "Unknown key input type" << VAR(key_type);
+        return nullptr;
+    }
+
+    switch (screencap_type) {
+    case MaaAdbControllerType_Screencap_Auto:
+        screencap_unit = std::make_shared<MAA_CTRL_UNIT_NS::Screencap>();
+        break;
+    case MaaAdbControllerType_Screencap_RawByNetcat:
+        screencap_unit = std::make_shared<MAA_CTRL_UNIT_NS::ScreencapRawByNetcat>();
+        break;
+    case MaaAdbControllerType_Screencap_RawWithGzip:
+        screencap_unit = std::make_shared<MAA_CTRL_UNIT_NS::ScreencapRawWithGzip>();
+        break;
+    case MaaAdbControllerType_Screencap_Encode:
+        screencap_unit = std::make_shared<MAA_CTRL_UNIT_NS::ScreencapEncode>();
+        break;
+    case MaaAdbControllerType_Screencap_EncodeToFile:
+        screencap_unit = std::make_shared<MAA_CTRL_UNIT_NS::ScreencapEncodeToFileAndPull>();
+        break;
+    case MaaAdbControllerType_Screencap_MinicapDirect:
+        screencap_unit = std::make_shared<MAA_CTRL_UNIT_NS::MinicapDirect>();
+        break;
+    case MaaAdbControllerType_Screencap_MinicapStream:
+        screencap_unit = std::make_shared<MAA_CTRL_UNIT_NS::MinicapStream>();
+        break;
+    default:
+        LogError << "Unknown screencap type" << VAR(screencap_type);
+        return nullptr;
+    }
+
+    auto unit_opt = MAA_CTRL_NS::AdbController::parse_config(*json_opt, touch_unit, key_unit, screencap_unit);
     if (!unit_opt) {
         LogError << "Parse config failed, invalid config:" << *json_opt;
         return nullptr;

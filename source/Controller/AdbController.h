@@ -39,11 +39,10 @@ public:
         std::vector<std::shared_ptr<MAA_CTRL_UNIT_NS::UnitBase>> units;
     };
 
-    template <typename _TouchInput, typename _KeyInput, typename _Screencap>
-    requires std::derived_from<_TouchInput, MAA_CTRL_UNIT_NS::TouchInputBase> &&
-             std::derived_from<_KeyInput, MAA_CTRL_UNIT_NS::KeyInputBase> &&
-             std::derived_from<_Screencap, MAA_CTRL_UNIT_NS::ScreencapBase>
-    static std::optional<ControlUnit> parse_config(const json::value& config)
+    static std::optional<ControlUnit> parse_config(const json::value& config,
+                                                   std::shared_ptr<MAA_CTRL_UNIT_NS::TouchInputBase> touch,
+                                                   std::shared_ptr<MAA_CTRL_UNIT_NS::KeyInputBase> key,
+                                                   std::shared_ptr<MAA_CTRL_UNIT_NS::ScreencapBase> screencap)
     {
         ControlUnit result;
 
@@ -53,19 +52,14 @@ public:
         result.units.push_back(result.device_info);
         result.activity = std::make_shared<MAA_CTRL_UNIT_NS::Activity>();
         result.units.push_back(result.activity);
-        auto touch = std::make_shared<_TouchInput>();
         result.touch_input = touch;
-        result.units.push_back(touch);
-        if constexpr (std::same_as<_TouchInput, _KeyInput>) {
-            result.key_input = result.touch_input;
+        result.units.push_back(std::dynamic_pointer_cast<MAA_CTRL_UNIT_NS::UnitBase>(touch));
+        result.key_input = key;
+        if (key != touch) {
+            result.units.push_back(std::dynamic_pointer_cast<MAA_CTRL_UNIT_NS::UnitBase>(key));
         }
-        else {
-            auto key = std::make_shared<_KeyInput>();
-            result.key_input = key;
-            result.units.push_back(key);
-        }
-        result.screencap = std::make_shared<_Screencap>();
-        result.units.push_back(result.screencap);
+        result.screencap = screencap;
+        result.units.push_back(screencap);
 
         auto ret = result.parse(config);
         return ret ? std::make_optional(std::move(result)) : std::nullopt;

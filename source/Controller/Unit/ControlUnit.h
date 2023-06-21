@@ -6,6 +6,7 @@
 #include "General/Connection.h"
 #include "General/DeviceInfo.h"
 
+#include "Input/MaatouchInput.h"
 #include "Input/MinitouchInput.h"
 #include "Input/TapInput.h"
 
