@@ -124,7 +124,7 @@ MaaControllerHandle MaaAdbControllerCreate(MaaString adb_path, MaaString address
     auto screencap_type = type & MaaAdbControllerType_Screencap_Mask;
 
     if (touch_type == MaaAdbControllerType_Touch_MaaTouch || key_type == MaaAdbControllerType_Key_MaaTouch) {
-        if (touch_type | key_type != MaaAdbControllerType_Input_Preset_Maatouch) {
+        if ((touch_type | key_type) != MaaAdbControllerType_Input_Preset_Maatouch) {
             LogWarn << "Using maatouch for partial input!" << VAR((touch_type | key_type));
             // return nullptr;
         }

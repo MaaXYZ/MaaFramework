@@ -52,12 +52,16 @@ public:
         result.units.push_back(result.device_info);
         result.activity = std::make_shared<MAA_CTRL_UNIT_NS::Activity>();
         result.units.push_back(result.activity);
+
+        auto touch_unit = std::dynamic_pointer_cast<MAA_CTRL_UNIT_NS::UnitBase>(touch);
         result.touch_input = touch;
-        result.units.push_back(std::dynamic_pointer_cast<MAA_CTRL_UNIT_NS::UnitBase>(touch));
+        result.units.push_back(touch_unit);
+        auto key_unit = std::dynamic_pointer_cast<MAA_CTRL_UNIT_NS::UnitBase>(key);
         result.key_input = key;
-        if (key != touch) {
-            result.units.push_back(std::dynamic_pointer_cast<MAA_CTRL_UNIT_NS::UnitBase>(key));
+        if (touch_unit != key_unit) {
+            result.units.push_back(key_unit);
         }
+
         result.screencap = screencap;
         result.units.push_back(screencap);
 
