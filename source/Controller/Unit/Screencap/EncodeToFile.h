@@ -7,16 +7,11 @@ MAA_CTRL_UNIT_NS_BEGIN
 class ScreencapEncodeToFileAndPull : public ScreencapBase
 {
 public:
-    bool parse(const json::value& config);
+    bool parse(const json::value& config) override;
 
-    bool init(int w, int h, const std::string& force_temp = "");
-    void deinit() {}
+    bool init(int w, int h) override;
 
-    std::optional<cv::Mat> screencap();
-
-#ifdef MAA_DEBUG
-    const std::string& get_tempname() const { return tempname_; }
-#endif
+    std::optional<cv::Mat> screencap() override;
 
 private:
     Argv screencap_encode_to_file_argv_;

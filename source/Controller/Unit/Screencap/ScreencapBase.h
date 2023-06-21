@@ -9,6 +9,10 @@ MAA_CTRL_UNIT_NS_BEGIN
 class ScreencapBase : public UnitBase
 {
 public:
+    virtual bool init(int w, int h) = 0;
+    virtual void deinit() {}
+    virtual std::optional<cv::Mat> screencap() = 0;
+
     void set_wh(int w, int h);
     // int get_w() const { return width_; }
     // int get_h() const { return height_; }

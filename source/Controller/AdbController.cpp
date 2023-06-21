@@ -87,6 +87,11 @@ bool AdbController::_connect()
     notifier.notify(MAAMSG_CONTROLLER_CONNECT_SUCCESS,
                     { { "uuid", uuid }, { "resolution", { { "width", w }, { "height", h } } } });
 
+    control_unit_.device_info.set_replacement(replacement);
+    control_unit_.activity.set_replacement(replacement);
+    control_unit_.tap_input.set_replacement(replacement);
+    control_unit_.screencap.set_replacement(replacement);
+
     return true;
 }
 

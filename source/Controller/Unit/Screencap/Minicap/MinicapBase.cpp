@@ -86,7 +86,7 @@ bool MinicapBase::parse(const json::value& config)
 
 // x86_64的prebuilt里面的library是32位的, 用不了
 // arm64-v8会卡住, 不知道原因
-bool MinicapBase::init(int w, int h, const std::string& force_temp)
+bool MinicapBase::init(int w, int h)
 {
     LogFunc;
 
@@ -95,7 +95,7 @@ bool MinicapBase::init(int w, int h, const std::string& force_temp)
         return false;
     }
 
-    if (!binary_->init(force_temp) || !library_->init("minicap.so")) {
+    if (!binary_->init() || !library_->init("minicap.so")) {
         return false;
     }
 

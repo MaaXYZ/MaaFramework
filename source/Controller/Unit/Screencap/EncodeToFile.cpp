@@ -13,11 +13,11 @@ bool ScreencapEncodeToFileAndPull::parse(const json::value& config)
            parse_argv("PullFile", config, pull_file_argv_);
 }
 
-bool ScreencapEncodeToFileAndPull::init(int w, int h, const std::string& force_temp)
+bool ScreencapEncodeToFileAndPull::init(int w, int h)
 {
     set_wh(w, h);
 
-    tempname_ = force_temp.empty() ? temp_name() : force_temp;
+    tempname_ = temp_name();
 
     return true;
 }
