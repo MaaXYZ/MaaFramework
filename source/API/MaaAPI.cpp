@@ -112,7 +112,10 @@ MaaControllerHandle MaaAdbControllerCreate(MaaString adb_path, MaaString address
         return nullptr;
     }
 
-    auto unit_opt = MAA_CTRL_NS::AdbController::parse_config(*json_opt);
+    // TODO: use enum and switch cast
+    auto unit_opt =
+        MAA_CTRL_NS::AdbController::parse_config<MAA_CTRL_UNIT_NS::TapTouchInput, MAA_CTRL_UNIT_NS::TapKeyInput,
+                                                 MAA_CTRL_UNIT_NS::Screencap>(*json_opt);
     if (!unit_opt) {
         LogError << "Parse config failed, invalid config:" << *json_opt;
         return nullptr;

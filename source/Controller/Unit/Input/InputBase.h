@@ -4,7 +4,7 @@
 
 MAA_CTRL_UNIT_NS_BEGIN
 
-class InputTouchBase
+class TouchInputBase
 {
 public:
     struct Step
@@ -19,7 +19,7 @@ public:
     virtual bool swipe(const std::vector<Step>& steps) = 0;
 };
 
-class InputKeyBase
+class KeyInputBase
 {
 public:
     virtual bool press_key(int key) = 0;

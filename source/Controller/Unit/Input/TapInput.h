@@ -4,10 +4,12 @@
 
 MAA_CTRL_UNIT_NS_BEGIN
 
-class TapTouchInput : public InputTouchBase, public UnitBase
+class TapTouchInput : public TouchInputBase, public UnitBase
 {
 public:
     bool parse(const json::value& config) override;
+
+    bool init(int sw, int sh) override { return true; }
 
     bool click(int x, int y) override;
     bool swipe(const std::vector<Step>& steps) override;
@@ -17,7 +19,7 @@ private:
     Argv swipe_argv_;
 };
 
-class TapKeyInput : public InputKeyBase, public UnitBase
+class TapKeyInput : public KeyInputBase, public UnitBase
 {
 public:
     bool parse(const json::value& config) override;

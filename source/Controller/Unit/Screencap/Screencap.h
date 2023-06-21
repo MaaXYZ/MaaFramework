@@ -9,7 +9,7 @@
 
 MAA_CTRL_UNIT_NS_BEGIN
 
-class Screencap : public UnitBase
+class Screencap : public ScreencapBase
 {
 public:
     enum class Method
@@ -28,14 +28,14 @@ public:
 
     bool parse(const json::value& config) override;
 
-    bool init(int w, int h);
-    void deinit();
+    bool init(int w, int h) override;
+    void deinit() override;
 
-    std::optional<cv::Mat> screencap();
+    std::optional<cv::Mat> screencap() override;
 
 #ifdef MAA_DEBUG
 public:
-    const std::vector<std::shared_ptr<ScreencapBase>>& get_units() { return units_ }
+    const std::vector<std::shared_ptr<ScreencapBase>>& get_units() { return units_; }
 #endif
 
 private:

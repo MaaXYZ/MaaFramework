@@ -6,7 +6,7 @@
 
 MAA_CTRL_UNIT_NS_BEGIN
 
-class MinitouchInput : public InputTouchBase, public UnitBase
+class MinitouchInput : public TouchInputBase, public UnitBase
 {
 public:
     MinitouchInput() { children_.emplace_back(invoke_app_); }

@@ -6,10 +6,10 @@
 
 MAA_CTRL_UNIT_NS_BEGIN
 
-class MaatouchInput : public InputTouchBase, public InputKeyBase, public UnitBase
+class MaatouchInput : public TouchInputBase, public KeyInputBase, public UnitBase
 {
 public:
-    MinitouchInput() { children_.emplace_back(invoke_app_); }
+    MaatouchInput() { children_.emplace_back(invoke_app_); }
 
     bool parse(const json::value& config) override;
 
@@ -17,7 +17,7 @@ public:
 
     bool click(int x, int y) override;
     bool swipe(const std::vector<Step>& steps) override;
-    bool MaatouchInput::press_key(int key) override;
+    bool press_key(int key) override;
 
 private:
     void scale_point(int& x, int& y);
