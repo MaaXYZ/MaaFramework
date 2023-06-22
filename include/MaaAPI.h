@@ -32,6 +32,8 @@ extern "C"
     MaaControllerHandle MAA_API MaaCustomControllerCreate(MaaCustomControllerHandle handle,
                                                           MaaControllerCallback callback,
                                                           MaaCallbackTransparentArg callback_arg);
+    MaaControllerHandle MAA_API MaaThriftControllerCreate(MaaString param, MaaControllerCallback callback,
+                                                          MaaCallbackTransparentArg callback_arg);
 
     void MAA_API MaaControllerDestroy(MaaControllerHandle* ctrl);
 

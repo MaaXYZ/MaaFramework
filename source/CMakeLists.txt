@@ -4,13 +4,14 @@ list(REMOVE_ITEM maa_src ${maa_modules_src})
 
 add_subdirectory(modules/MaaUtils)
 add_subdirectory(modules/MaaControlUnit)
+add_subdirectory(modules/MaaThriftController)
 
 add_library(MaaFramework SHARED ${maa_src})
 
 file(GLOB MaaFramework_PUBLIC_HEADERS ${CMAKE_CURRENT_SOURCE_DIR}/../include/*.h)
 set(MaaFramework_INCLUDE ${CMAKE_CURRENT_SOURCE_DIR}/../include)
 
-target_include_directories(MaaFramework PUBLIC ../include PRIVATE . modules/include)
+target_include_directories(MaaFramework PUBLIC ../include PRIVATE . modules/include ${MaaThriftController_INCLUDE_DIRS})
 set_target_properties(MaaFramework PROPERTIES
     PUBLIC_HEADER "${MaaFramework_PUBLIC_HEADERS}"
 )
@@ -21,7 +22,7 @@ if(UNIX)
 endif()
 
 target_link_libraries(MaaFramework MaaControlUnit MaaUtils)
-target_link_libraries(MaaFramework ${OpenCV_LIBS} MaaDerpLearning ONNXRuntime::ONNXRuntime HeaderOnlyLibraries) #asio::asio cpr::cpr
+target_link_libraries(MaaFramework ${OpenCV_LIBS} MaaDerpLearning ONNXRuntime::ONNXRuntime HeaderOnlyLibraries MaaThriftController) #asio::asio cpr::cpr
 
 # clang 15之后有ranges
 # if (CMAKE_CXX_COMPILER_ID MATCHES ".*Clang")
