@@ -2,16 +2,14 @@
 
 #include "../UnitBase.h"
 
+#include "../../ControllerMgr.h"
+
 MAA_CTRL_UNIT_NS_BEGIN
 
 class TouchInputBase
 {
 public:
-    struct Step
-    {
-        int x, y;
-        int delay;
-    };
+    using Step = SwipeParams::Step;
 
     virtual bool init(int swidth, int sheight) = 0;
 

@@ -40,6 +40,8 @@
 /* {} */
 #define MAAMSG_CONTROLLER_SCREENCAP_INITED ("Controller.ScreencapInited")
 #define MAAMSG_CONTROLLER_SCREENCAP_INIT_FAILED ("Controller.ScreencapInitFailed")
+#define MAAMSG_CONTROLLER_TOUCHINPUT_INITED ("Controller.TouchinputInited")
+#define MAAMSG_CONTROLLER_TOUCHINPUT_INIT_FAILED ("Controller.TouchinputInitFailed")
 
 /* {
         uuid: string,
