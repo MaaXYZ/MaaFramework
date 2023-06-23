@@ -35,13 +35,13 @@ public:
 
 #ifdef MAA_DEBUG
 public:
-    const std::vector<std::shared_ptr<ScreencapBase>>& get_units() { return units_; }
+    std::map<Method, std::shared_ptr<ScreencapBase>>& get_units() { return units_; }
 #endif
 
 private:
     bool speed_test();
 
-    std::vector<std::shared_ptr<ScreencapBase>> units_;
+    std::map<Method, std::shared_ptr<ScreencapBase>> units_;
 
     Method method_ = Method::UnknownYet;
 };

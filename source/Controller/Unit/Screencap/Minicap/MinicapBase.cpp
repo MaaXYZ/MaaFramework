@@ -24,20 +24,6 @@ bool MinicapBase::parse(const json::value& config)
     }
 
     {
-        auto opt = mopt->find<json::value>("root");
-        if (!opt) {
-            LogError << "Cannot find entry prebuilt.minicap.root";
-            return false;
-        }
-
-        if (!opt->is_string()) {
-            return false;
-        }
-
-        root_ = opt->as_string();
-    }
-
-    {
         auto opt = mopt->find<json::value>("arch");
         if (!opt) {
             LogError << "Cannot find entry prebuilt.minicap.arch";
@@ -119,8 +105,8 @@ bool MinicapBase::init(int w, int h)
     int fit_sdk = *sdk_iter;
 
     // TODO: 确认低版本是否使用minicap-nopie
-    auto bin = std::format("{}/{}/bin/minicap", root_, target_arch);
-    auto lib = std::format("{}/{}/lib/android-{}/minicap.so", root_, target_arch, fit_sdk);
+    auto bin = std::format("MaaAgentBinary/minicap/{}/bin/minicap", target_arch);
+    auto lib = std::format("MaaAgentBinary/minicap/{}/lib/android-{}/minicap.so", target_arch, fit_sdk);
 
     if (!binary_->push(bin) || !library_->push(lib)) {
         return false;

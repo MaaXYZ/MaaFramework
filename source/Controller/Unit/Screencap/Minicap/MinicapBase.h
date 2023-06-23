@@ -24,7 +24,6 @@ protected:
     std::shared_ptr<InvokeApp> library_ = std::make_shared<InvokeApp>();
 
 private:
-    std::string root_;
     std::vector<std::string> arch_list_;
     std::vector<int> sdk_list_;
 };

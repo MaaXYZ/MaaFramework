@@ -8,22 +8,26 @@
 MAA_CTRL_UNIT_NS_BEGIN
 
 Screencap::Screencap()
-    : units_({ std::make_shared<ScreencapRawByNetcat>(), std::make_shared<ScreencapRawWithGzip>(),
-               std::make_shared<ScreencapEncode>(), std::make_shared<ScreencapEncodeToFileAndPull>(),
-               std::make_shared<MinicapDirect>(), std::make_shared<MinicapStream>() })
 {
+    units_[Method::RawByNetcat] = std::make_shared<ScreencapRawByNetcat>();
+    units_[Method::RawWithGzip] = std::make_shared<ScreencapRawWithGzip>();
+    units_[Method::Encode] = std::make_shared<ScreencapEncode>();
+    units_[Method::EncodeToFileAndPull] = std::make_shared<ScreencapEncodeToFileAndPull>();
+    units_[Method::MinicapDirect] = std::make_shared<MinicapDirect>();
+    units_[Method::MinicapStream] = std::make_shared<MinicapStream>();
+
     children_.reserve(units_.size());
-    for (auto unit : units_) {
-        children_.push_back(unit);
+    for (auto pair : units_) {
+        children_.emplace_back(pair.second);
     }
 }
 
 bool Screencap::parse(const json::value& config)
 {
     bool ret = false;
-    for (auto unit : units_) {
+    for (auto pair : units_) {
         // TODO: 也许可以考虑删除无法初始化的unit
-        ret |= unit->parse(config);
+        ret |= pair.second->parse(config);
     }
     return ret;
 }
@@ -32,8 +36,8 @@ bool Screencap::init(int w, int h)
 {
     LogFunc;
 
-    for (auto unit : units_) {
-        unit->init(w, h);
+    for (auto pair : units_) {
+        pair.second->init(w, h);
     }
 
     return speed_test();
@@ -43,8 +47,8 @@ void Screencap::deinit()
 {
     LogFunc;
 
-    for (auto unit : units_) {
-        unit->deinit();
+    for (auto pair : units_) {
+        pair.second->deinit();
     }
 
     method_ = Method::UnknownYet;
@@ -62,7 +66,7 @@ std::optional<cv::Mat> Screencap::screencap()
     case Method::EncodeToFileAndPull:
     case Method::MinicapDirect:
     case Method::MinicapStream:
-        return units_[int(method_) - 1]->screencap();
+        return units_[method_]->screencap();
     default:
         LogInfo << "Not support:" << method_;
         break;
@@ -87,10 +91,10 @@ bool Screencap::speed_test()
         LogInfo << VAR(method) << VAR(ms);
     };
 
-    for (size_t i = 0; i < units_.size(); i++) {
+    for (auto pair : units_) {
         auto now = std::chrono::steady_clock::now();
-        if (units_[i]->screencap()) {
-            check(Method(i + 1), now);
+        if (pair.second->screencap()) {
+            check(pair.first, now);
         }
     }
 

@@ -42,10 +42,10 @@ std::ostream& operator<<(std::ostream& os, const std::optional<T>& v)
 
 inline std::string read_controller_config(const std::string& cur_dir)
 {
-    std::ifstream ifs(std::filesystem::path(cur_dir) / "controller_config.json", std::ios::in);
+    std::ifstream ifs(std::filesystem::path(cur_dir) / "config" / "controller_config.json", std::ios::in);
     if (!ifs.is_open()) {
         std::cerr << "Failed to open controller_config.json\n"
-                  << "Please copy controller_config.json to " << cur_dir << std::endl;
+                  << "Please copy controller_config.json to " << std::filesystem::path(cur_dir) / "config" << std::endl;
         exit(1);
     }
 
@@ -244,10 +244,9 @@ int main(int argc, char* argv[])
             profile = true;
         }
 
-#define TEST_SC(method, methodEnum)                                                                           \
-    if (profile || scmd == #method) {                                                                         \
-        cost[#method] =                                                                                       \
-            test_screencap(scp->get_units()[int(MAA_CTRL_UNIT_NS::Screencap::Method::methodEnum) - 1].get()); \
+#define TEST_SC(method, methodEnum)                                                                              \
+    if (profile || scmd == #method) {                                                                            \
+        cost[#method] = test_screencap(scp->get_units()[MAA_CTRL_UNIT_NS::Screencap::Method::methodEnum].get()); \
     }
 
         TEST_SC(raw_by_netcat, RawByNetcat)

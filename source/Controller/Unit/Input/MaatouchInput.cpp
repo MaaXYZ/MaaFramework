@@ -17,16 +17,16 @@ bool MaatouchInput::parse(const json::value& config)
         return false;
     }
 
-    auto mopt = popt->find<json::object>("minitouch");
+    auto mopt = popt->find<json::object>("maatouch");
     if (!mopt) {
         LogError << "Cannot find entry prebuilt.maatouch";
         return false;
     }
 
     {
-        auto opt = mopt->find<json::value>("root");
+        auto opt = mopt->find<json::value>("package");
         if (!opt) {
-            LogError << "Cannot find entry prebuilt.maatouch.root";
+            LogError << "Cannot find entry prebuilt.maatouch.package";
             return false;
         }
 
@@ -34,7 +34,7 @@ bool MaatouchInput::parse(const json::value& config)
             return false;
         }
 
-        root_ = opt->as_string();
+        package_name_ = opt->as_string();
     }
 
     return invoke_app_->parse(config);
@@ -53,7 +53,7 @@ bool MaatouchInput::init(int swidth, int sheight)
         return false;
     }
 
-    auto bin = std::format("{}/universal/minitouch", root_);
+    auto bin = "MaaAgentBinary/maatouch/universal/maatouch";
 
     if (!invoke_app_->push(bin)) {
         return false;
@@ -63,8 +63,7 @@ bool MaatouchInput::init(int swidth, int sheight)
         return false;
     }
 
-    constexpr std::string_view kMaatouchPackageName = "com.shxyke.MaaTouch.App";
-    shell_handler_ = invoke_app_->invoke_app(std::string(kMaatouchPackageName));
+    shell_handler_ = invoke_app_->invoke_app(package_name_);
 
     if (!shell_handler_) {
         return false;

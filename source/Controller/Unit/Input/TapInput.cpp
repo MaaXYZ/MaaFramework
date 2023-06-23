@@ -27,11 +27,11 @@ bool TapTouchInput::swipe(const std::vector<Step>& steps)
         return false;
     }
 
-    // TODO: 考虑调用多次
-    merge_replacement({ { "{X1}", std::to_string(steps[0].x) },
-                        { "{Y1}", std::to_string(steps[0].y) },
-                        { "{X2}", std::to_string(steps[1].x) },
-                        { "{Y2}", std::to_string(steps[1].y) },
+    // TODO: 要叠加delay嘛
+    merge_replacement({ { "{X1}", std::to_string(steps.front().x) },
+                        { "{Y1}", std::to_string(steps.front().y) },
+                        { "{X2}", std::to_string(steps.back().x) },
+                        { "{Y2}", std::to_string(steps.back().y) },
                         { "{DURATION}", std::to_string(steps[0].delay) } });
     auto cmd_ret = command(swipe_argv_.gen(argv_replace_));
 
