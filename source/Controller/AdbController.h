@@ -54,16 +54,16 @@ public:
         result.units.push_back(result.activity);
 
         auto touch_unit = std::dynamic_pointer_cast<MAA_CTRL_UNIT_NS::UnitBase>(touch);
-        result.touch_input = touch;
-        result.units.push_back(touch_unit);
+        result.touch_input = std::move(touch);
+        result.units.emplace_back(touch_unit); // 后面还要用
         auto key_unit = std::dynamic_pointer_cast<MAA_CTRL_UNIT_NS::UnitBase>(key);
-        result.key_input = key;
+        result.key_input = std::move(key);
         if (touch_unit != key_unit) {
-            result.units.push_back(key_unit);
+            result.units.emplace_back(std::move(key_unit));
         }
 
         result.screencap = screencap;
-        result.units.push_back(screencap);
+        result.units.emplace_back(std::move(screencap));
 
         auto ret = result.parse(config);
         return ret ? std::make_optional(std::move(result)) : std::nullopt;

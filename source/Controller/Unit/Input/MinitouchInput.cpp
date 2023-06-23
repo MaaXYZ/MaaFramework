@@ -24,6 +24,20 @@ bool MinitouchInput::parse(const json::value& config)
     }
 
     {
+        auto opt = mopt->find<json::value>("root");
+        if (!opt) {
+            LogError << "Cannot find entry prebuilt.minitouch.root";
+            return false;
+        }
+
+        if (!opt->is_string()) {
+            return false;
+        }
+
+        root_ = opt->as_string();
+    }
+
+    {
         auto opt = mopt->find<json::value>("arch");
         if (!opt) {
             LogError << "Cannot find entry prebuilt.minitouch.arch";
@@ -72,7 +86,7 @@ bool MinitouchInput::init(int swidth, int sheight)
         return false;
     }
     const std::string& target_arch = *arch_iter;
-    auto bin = std::format("MaaAgentBinary/minitouch/{}/minitouch", target_arch);
+    auto bin = std::format("{}/{}/minitouch", root_, target_arch);
 
     if (!invoke_app_->push(bin)) {
         return false;

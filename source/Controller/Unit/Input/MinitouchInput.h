@@ -24,6 +24,7 @@ private:
     std::shared_ptr<InvokeApp> invoke_app_ = std::make_shared<InvokeApp>();
     std::shared_ptr<IOHandler> shell_handler_ = nullptr;
 
+    std::string root_;
     std::vector<std::string> arch_list_;
     int width_ = 0;
     int height_ = 0;
