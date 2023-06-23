@@ -477,7 +477,7 @@ std::string SocketIOHandlerWin32::read(unsigned timeout_sec, size_t expect)
         return "";
     }
     std::string ret_str;
-    constexpr int PipeReadBuffSize = 4096ULL;
+    constexpr size_t PipeReadBuffSize = 4096ULL;
 
     auto check_timeout = [&](const auto& start_time) -> bool {
         using namespace std::chrono_literals;
@@ -493,7 +493,8 @@ std::string SocketIOHandlerWin32::read(unsigned timeout_sec, size_t expect)
             break;
         }
 
-        auto ret_read = ::recv(socket_, buf_from_child, std::min(PipeReadBuffSize, expect - ret_str.size()), 0);
+        auto ret_read =
+            ::recv(socket_, buf_from_child, static_cast<int>(std::min(PipeReadBuffSize, expect - ret_str.size())), 0);
         if (ret_read > 0) {
             ret_str.insert(ret_str.end(), buf_from_child, buf_from_child + ret_read);
         }
