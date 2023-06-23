@@ -32,7 +32,11 @@ inline std::filesystem::path path(const os_string_view& os_str)
     return std::filesystem::path(os_str);
 }
 
+#ifdef _WIN32
+using os_library_handle = HMODULE;
+#else
 using os_library_handle = void*;
+#endif
 using os_library_function = void (*)();
 
 os_library_handle library_load(const os_string& path); // posix环境下必须以`.`开头, 防止触发ldconfig
