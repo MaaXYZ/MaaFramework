@@ -24,20 +24,20 @@ bool TapTouchInput::swipe(const std::vector<Step>& steps)
     LogFunc;
 
     if (steps.size() < 2) {
+        LogError << VAR(steps.size());
         return false;
     }
 
-    int delaySum = -steps.back().delay;
+    int delay_sum = 0;
     for (const auto& step : steps) {
-        delaySum += step.delay;
+        delay_sum += step.delay;
     }
 
-    // TODO: 要叠加delay嘛
     merge_replacement({ { "{X1}", std::to_string(steps.front().x) },
                         { "{Y1}", std::to_string(steps.front().y) },
                         { "{X2}", std::to_string(steps.back().x) },
                         { "{Y2}", std::to_string(steps.back().y) },
-                        { "{DURATION}", std::to_string(delaySum) } });
+                        { "{DURATION}", std::to_string(delay_sum) } });
     auto cmd_ret = command(swipe_argv_.gen(argv_replace_));
 
     return cmd_ret.has_value() && cmd_ret.value().empty();
