@@ -431,7 +431,7 @@ bool SocketIOHandlerWin32::write(std::string_view data)
     if (socket_ == INVALID_SOCKET) {
         return false;
     }
-    if (::send(socket_, data.data(), data.length(), 0) >= 0) {
+    if (::send(socket_, data.data(), static_cast<int>(data.length()), 0) >= 0) {
         return true;
     }
     LogError << "Failed to send to SocketIOHandlerWin32, err" << WSAGetLastError();
@@ -441,7 +441,7 @@ bool SocketIOHandlerWin32::write(std::string_view data)
 std::string SocketIOHandlerWin32::read(unsigned timeout_sec)
 {
     if (socket_ == INVALID_SOCKET) {
-        return false;
+        return "";
     }
     std::string ret_str;
     constexpr int PipeReadBuffSize = 4096ULL;
@@ -460,7 +460,7 @@ std::string SocketIOHandlerWin32::read(unsigned timeout_sec)
             break;
         }
 
-        ssize_t ret_read = ::recv(read_fd_, buf_from_child, PipeReadBuffSize, 0);
+        auto ret_read = ::recv(socket_, buf_from_child, PipeReadBuffSize, 0);
         if (ret_read > 0) {
             ret_str.insert(ret_str.end(), buf_from_child, buf_from_child + ret_read);
         }
@@ -474,7 +474,7 @@ std::string SocketIOHandlerWin32::read(unsigned timeout_sec)
 std::string SocketIOHandlerWin32::read(unsigned timeout_sec, size_t expect)
 {
     if (socket_ == INVALID_SOCKET) {
-        return false;
+        return "";
     }
     std::string ret_str;
     constexpr int PipeReadBuffSize = 4096ULL;
@@ -493,7 +493,7 @@ std::string SocketIOHandlerWin32::read(unsigned timeout_sec, size_t expect)
             break;
         }
 
-        ssize_t ret_read = ::recv(read_fd_, buf_from_child, std::min(PipeReadBuffSize, expect - ret_str.size()), 0);
+        auto ret_read = ::recv(socket_, buf_from_child, std::min(PipeReadBuffSize, expect - ret_str.size()), 0);
         if (ret_read > 0) {
             ret_str.insert(ret_str.end(), buf_from_child, buf_from_child + ret_read);
         }
