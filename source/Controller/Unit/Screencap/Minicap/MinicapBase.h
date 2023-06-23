@@ -15,10 +15,9 @@ public:
         children_.emplace_back(library_);
     }
 
-    bool parse(const json::value& config);
+    bool parse(const json::value& config) override;
 
-    bool init(int w, int h, const std::string& force_temp = "");
-    void deinit() {}
+    bool init(int w, int h) override;
 
 protected:
     std::shared_ptr<InvokeApp> binary_ = std::make_shared<InvokeApp>();

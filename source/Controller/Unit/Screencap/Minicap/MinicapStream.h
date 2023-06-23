@@ -7,11 +7,11 @@ MAA_CTRL_UNIT_NS_BEGIN
 class MinicapStream : public MinicapBase
 {
 public:
-    bool parse(const json::value& config);
+    bool parse(const json::value& config) override;
 
-    bool init(int w, int h, const std::string& force_temp = "");
+    bool init(int w, int h) override;
 
-    std::optional<cv::Mat> screencap();
+    std::optional<cv::Mat> screencap() override;
 
 private:
     void read_until(size_t size);

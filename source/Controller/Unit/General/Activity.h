@@ -7,7 +7,7 @@ MAA_CTRL_UNIT_NS_BEGIN
 class Activity : public UnitBase
 {
 public:
-    bool parse(const json::value& config);
+    bool parse(const json::value& config) override;
 
     bool start(const std::string& intent);
     bool stop(const std::string& intent);

@@ -1,4 +1,4 @@
-#include "MinitouchInput.h"
+#include "MaatouchInput.h"
 
 #include "Utils/Logger.hpp"
 #include "Utils/Ranges.hpp"
@@ -9,7 +9,7 @@
 
 MAA_CTRL_UNIT_NS_BEGIN
 
-bool MinitouchInput::parse(const json::value& config)
+bool MaatouchInput::parse(const json::value& config)
 {
     auto popt = config.find<json::object>("prebuilt");
     if (!popt) {
@@ -17,16 +17,16 @@ bool MinitouchInput::parse(const json::value& config)
         return false;
     }
 
-    auto mopt = popt->find<json::object>("minitouch");
+    auto mopt = popt->find<json::object>("maatouch");
     if (!mopt) {
-        LogError << "Cannot find entry prebuilt.minitouch";
+        LogError << "Cannot find entry prebuilt.maatouch";
         return false;
     }
 
     {
         auto opt = mopt->find<json::value>("root");
         if (!opt) {
-            LogError << "Cannot find entry prebuilt.minitouch.root";
+            LogError << "Cannot find entry prebuilt.maatouch.root";
             return false;
         }
 
@@ -38,31 +38,23 @@ bool MinitouchInput::parse(const json::value& config)
     }
 
     {
-        auto opt = mopt->find<json::value>("arch");
+        auto opt = mopt->find<json::value>("package");
         if (!opt) {
-            LogError << "Cannot find entry prebuilt.minitouch.arch";
+            LogError << "Cannot find entry prebuilt.maatouch.package";
             return false;
         }
 
-        const auto& value = *opt;
-        if (!value.is_array()) {
+        if (!opt->is_string()) {
             return false;
         }
 
-        const auto& arr = value.as_array();
-        if (ranges::any_of(arr, [](const json::value& val) { return !val.is_string(); })) {
-            return false;
-        }
-
-        arch_list_.clear();
-        arch_list_.reserve(arr.size());
-        ranges::transform(arr, std::back_inserter(arch_list_), [](const json::value& val) { return val.as_string(); });
+        package_name_ = opt->as_string();
     }
 
     return invoke_app_->parse(config);
 }
 
-bool MinitouchInput::init(int swidth, int sheight)
+bool MaatouchInput::init(int swidth, int sheight)
 {
     LogFunc;
 
@@ -75,18 +67,7 @@ bool MinitouchInput::init(int swidth, int sheight)
         return false;
     }
 
-    auto archs = invoke_app_->abilist();
-
-    if (!archs) {
-        return false;
-    }
-
-    auto arch_iter = ranges::find_first_of(*archs, arch_list_);
-    if (arch_iter == archs->end()) {
-        return false;
-    }
-    const std::string& target_arch = *arch_iter;
-    auto bin = std::format("{}/{}/minitouch", root_, target_arch);
+    auto bin = std::format("{}/universal/maatouch", root_);
 
     if (!invoke_app_->push(bin)) {
         return false;
@@ -96,8 +77,7 @@ bool MinitouchInput::init(int swidth, int sheight)
         return false;
     }
 
-    constexpr std::string_view kMinitouchArgs = "-i";
-    shell_handler_ = invoke_app_->invoke_bin(std::string(kMinitouchArgs));
+    shell_handler_ = invoke_app_->invoke_app(package_name_);
 
     if (!shell_handler_) {
         return false;
@@ -143,7 +123,7 @@ bool MinitouchInput::init(int swidth, int sheight)
     }
 }
 
-bool MinitouchInput::click(int x, int y)
+bool MaatouchInput::click(int x, int y)
 {
     if (!shell_handler_) {
         return false;
@@ -168,7 +148,7 @@ bool MinitouchInput::click(int x, int y)
     return true;
 }
 
-bool MinitouchInput::swipe(const std::vector<Step>& steps)
+bool MaatouchInput::swipe(const std::vector<Step>& steps)
 {
     if (!shell_handler_ || steps.size() < 2) {
         return false;
@@ -197,7 +177,24 @@ bool MinitouchInput::swipe(const std::vector<Step>& steps)
     return shell_handler_->write("u\nc\n");
 }
 
-void MinitouchInput::scale_point(int& x, int& y)
+bool MaatouchInput::press_key(int key)
+{
+    if (!shell_handler_) {
+        return false;
+    }
+
+    bool res = shell_handler_->write(std::format("k {} d\nc\n", key)) &&
+               shell_handler_->write(std::format("k {} u\nc\n", key));
+
+    if (!res) {
+        return false;
+    }
+
+    // sleep?
+    return true;
+}
+
+void MaatouchInput::scale_point(int& x, int& y)
 {
     x = static_cast<int>(round(x * xscale_));
     y = static_cast<int>(round(y * yscale_));

@@ -13,11 +13,11 @@ bool MinicapStream::parse(const json::value& config)
     return MinicapBase::parse(config) && parse_argv("ForwardSocket", config, forward_argv_);
 }
 
-bool MinicapStream::init(int w, int h, const std::string& force_temp)
+bool MinicapStream::init(int w, int h)
 {
     LogFunc;
 
-    if (!MinicapBase::init(w, h, force_temp)) {
+    if (!MinicapBase::init(w, h)) {
         return false;
     }
 

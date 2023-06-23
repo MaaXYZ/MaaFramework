@@ -69,6 +69,34 @@ enum MaaTaskTypeEnum
 
 #define MaaTaskParam_Empty "{}"
 
+typedef int32_t MaaAdbControllerType;
+enum MaaAdbControllerTypeEnum
+{
+    MaaAdbControllerType_Touch_Adb = 1,
+    MaaAdbControllerType_Touch_MiniTouch = 2,
+    MaaAdbControllerType_Touch_MaaTouch = 3,
+    MaaAdbControllerType_Touch_Mask = 0xFF,
+
+    MaaAdbControllerType_Key_Adb = 1 << 8,
+    MaaAdbControllerType_Key_MaaTouch = 2 << 8,
+    MaaAdbControllerType_Key_Mask = 0xFF00,
+
+    // same as Screencap::Method
+    MaaAdbControllerType_Screencap_Auto = 0 << 16,
+    MaaAdbControllerType_Screencap_RawByNetcat = 1 << 16,
+    MaaAdbControllerType_Screencap_RawWithGzip = 2 << 16,
+    MaaAdbControllerType_Screencap_Encode = 3 << 16,
+    MaaAdbControllerType_Screencap_EncodeToFile = 4 << 16,
+    MaaAdbControllerType_Screencap_MinicapDirect = 5 << 16,
+    MaaAdbControllerType_Screencap_MinicapStream = 6 << 16,
+    MaaAdbControllerType_Screencap_Mask = 0xFF0000,
+
+    MaaAdbControllerType_Input_Preset_Adb = MaaAdbControllerType_Touch_Adb | MaaAdbControllerType_Key_Adb,
+    MaaAdbControllerType_Input_Preset_Minitouch = MaaAdbControllerType_Touch_MiniTouch | MaaAdbControllerType_Key_Adb,
+    MaaAdbControllerType_Input_Preset_Maatouch =
+        MaaAdbControllerType_Touch_MaaTouch | MaaAdbControllerType_Key_MaaTouch,
+};
+
 typedef void(MAA_CALL* MaaApiCallback)(const char* msg, const char* details_json, void* callback_arg);
 typedef MaaApiCallback MaaResourceCallback;
 typedef MaaApiCallback MaaControllerCallback;

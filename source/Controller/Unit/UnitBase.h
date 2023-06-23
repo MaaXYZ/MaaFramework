@@ -13,6 +13,10 @@ public:
     using Argv = ArgvWrapper<std::vector<std::string>>;
 
 public:
+    virtual ~UnitBase() {}
+
+    virtual bool parse(const json::value& config) = 0;
+
     void set_io(std::shared_ptr<PlatformIO> io_ptr);
     void set_replacement(Argv::replacement argv_replace);
     void merge_replacement(Argv::replacement argv_replace, bool _override = true);

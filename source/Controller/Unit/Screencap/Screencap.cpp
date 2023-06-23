@@ -9,47 +9,47 @@ MAA_CTRL_UNIT_NS_BEGIN
 
 Screencap::Screencap()
 {
-    children_.emplace_back(raw_by_netcat_uint_);
-    children_.emplace_back(raw_with_gzip_unit_);
-    children_.emplace_back(encode_unit_);
-    children_.emplace_back(encode_to_file_unit_);
-    children_.emplace_back(minicap_direct_unit_);
-    children_.emplace_back(minicap_stream_unit_);
+    units_[Method::RawByNetcat] = std::make_shared<ScreencapRawByNetcat>();
+    units_[Method::RawWithGzip] = std::make_shared<ScreencapRawWithGzip>();
+    units_[Method::Encode] = std::make_shared<ScreencapEncode>();
+    units_[Method::EncodeToFileAndPull] = std::make_shared<ScreencapEncodeToFileAndPull>();
+    units_[Method::MinicapDirect] = std::make_shared<MinicapDirect>();
+    units_[Method::MinicapStream] = std::make_shared<MinicapStream>();
+
+    children_.reserve(units_.size());
+    for (auto pair : units_) {
+        children_.emplace_back(pair.second);
+    }
 }
 
 bool Screencap::parse(const json::value& config)
 {
-    bool ret = raw_by_netcat_uint_->parse(config);
-    ret |= raw_with_gzip_unit_->parse(config);
-    ret |= encode_unit_->parse(config);
-    ret |= encode_to_file_unit_->parse(config);
-    ret |= minicap_direct_unit_->parse(config);
-    ret |= minicap_stream_unit_->parse(config);
+    bool ret = false;
+    for (auto pair : units_) {
+        // TODO: 也许可以考虑删除无法初始化的unit
+        ret |= pair.second->parse(config);
+    }
     return ret;
 }
 
-bool Screencap::init(int w, int h, const std::string& force_temp)
+bool Screencap::init(int w, int h)
 {
     LogFunc;
 
-    raw_by_netcat_uint_->init(w, h);
-    raw_with_gzip_unit_->init(w, h);
-    encode_unit_->init(w, h);
-    encode_to_file_unit_->init(w, h, force_temp);
-    minicap_direct_unit_->init(w, h, force_temp);
-    minicap_stream_unit_->init(w, h, force_temp);
+    for (auto pair : units_) {
+        pair.second->init(w, h);
+    }
 
     return speed_test();
 }
 
 void Screencap::deinit()
 {
-    raw_by_netcat_uint_->deinit();
-    raw_with_gzip_unit_->deinit();
-    encode_unit_->deinit();
-    encode_to_file_unit_->deinit();
-    minicap_direct_unit_->deinit();
-    minicap_stream_unit_->deinit();
+    LogFunc;
+
+    for (auto pair : units_) {
+        pair.second->deinit();
+    }
 
     method_ = Method::UnknownYet;
 }
@@ -61,17 +61,12 @@ std::optional<cv::Mat> Screencap::screencap()
         LogError << "Unknown screencap method";
         return std::nullopt;
     case Method::RawByNetcat:
-        return raw_by_netcat_uint_->screencap();
     case Method::RawWithGzip:
-        return raw_with_gzip_unit_->screencap();
     case Method::Encode:
-        return encode_unit_->screencap();
     case Method::EncodeToFileAndPull:
-        return encode_to_file_unit_->screencap();
     case Method::MinicapDirect:
-        return minicap_direct_unit_->screencap();
     case Method::MinicapStream:
-        return minicap_stream_unit_->screencap();
+        return units_[method_]->screencap();
     default:
         LogInfo << "Not support:" << method_;
         break;
@@ -96,45 +91,10 @@ bool Screencap::speed_test()
         LogInfo << VAR(method) << VAR(ms);
     };
 
-    {
+    for (auto pair : units_) {
         auto now = std::chrono::steady_clock::now();
-        if (raw_by_netcat_uint_->screencap()) {
-            check(Method::RawByNetcat, now);
-        }
-    }
-
-    {
-        auto now = std::chrono::steady_clock::now();
-        if (raw_with_gzip_unit_->screencap()) {
-            check(Method::RawWithGzip, now);
-        }
-    }
-
-    {
-        auto now = std::chrono::steady_clock::now();
-        if (encode_unit_->screencap()) {
-            check(Method::Encode, now);
-        }
-    }
-
-    {
-        auto now = std::chrono::steady_clock::now();
-        if (encode_to_file_unit_->screencap()) {
-            check(Method::EncodeToFileAndPull, now);
-        }
-    }
-
-    {
-        auto now = std::chrono::steady_clock::now();
-        if (minicap_direct_unit_->screencap()) {
-            check(Method::MinicapDirect, now);
-        }
-    }
-
-    {
-        auto now = std::chrono::steady_clock::now();
-        if (minicap_stream_unit_->screencap()) {
-            check(Method::MinicapStream, now);
+        if (pair.second->screencap()) {
+            check(pair.first, now);
         }
     }
 

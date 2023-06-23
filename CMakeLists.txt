@@ -103,11 +103,11 @@ if (WIN32)
 endif ()
 target_link_libraries(maabusybox MaaFramework ${OpenCV_LIBS} ZLIB::ZLIB header_only_libraries)
 target_include_directories(maabusybox PUBLIC ${MaaFramework_INCLUDE} "source")
-add_custom_command(OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/controller_config.json ${CMAKE_CURRENT_BINARY_DIR}/prebuilt
-    COMMAND ${CMAKE_COMMAND} -E copy ${CMAKE_CURRENT_SOURCE_DIR}/sample/cpp/config/controller_config.json ${CMAKE_CURRENT_BINARY_DIR}/controller_config.json
-    COMMAND ${CMAKE_COMMAND} -E create_symlink ${CMAKE_CURRENT_SOURCE_DIR}/MaaAgentBinary ${CMAKE_CURRENT_BINARY_DIR}/prebuilt
+add_custom_command(OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/config ${CMAKE_CURRENT_BINARY_DIR}/MaaAgentBinary
+    COMMAND ${CMAKE_COMMAND} -E copy_directory ${CMAKE_CURRENT_SOURCE_DIR}/sample/cpp/config ${CMAKE_CURRENT_BINARY_DIR}/config
+    COMMAND ${CMAKE_COMMAND} -E copy_directory ${CMAKE_CURRENT_SOURCE_DIR}/MaaAgentBinary ${CMAKE_CURRENT_BINARY_DIR}/MaaAgentBinary
 )
-add_custom_target(maabusybox_res ALL DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/controller_config.json ${CMAKE_CURRENT_BINARY_DIR}/prebuilt)
+add_custom_target(maabusybox_res ALL DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/config ${CMAKE_CURRENT_BINARY_DIR}/MaaAgentBinary)
 add_dependencies(maabusybox maabusybox_res)
 
 ###

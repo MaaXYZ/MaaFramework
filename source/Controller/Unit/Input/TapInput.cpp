@@ -4,13 +4,12 @@
 
 MAA_CTRL_UNIT_NS_BEGIN
 
-bool TapInput::parse(const json::value& config)
+bool TapTouchInput::parse(const json::value& config)
 {
-    return parse_argv("Click", config, click_argv_) && parse_argv("Swipe", config, swipe_argv_) &&
-           parse_argv("PressKey", config, press_key_argv_);
+    return parse_argv("Click", config, click_argv_) && parse_argv("Swipe", config, swipe_argv_);
 }
 
-bool TapInput::click(int x, int y)
+bool TapTouchInput::click(int x, int y)
 {
     LogFunc;
 
@@ -20,21 +19,36 @@ bool TapInput::click(int x, int y)
     return cmd_ret.has_value() && cmd_ret.value().empty();
 }
 
-bool TapInput::swipe(int x1, int y1, int x2, int y2, int duration)
+bool TapTouchInput::swipe(const std::vector<Step>& steps)
 {
     LogFunc;
 
-    merge_replacement({ { "{X1}", std::to_string(x1) },
-                        { "{Y1}", std::to_string(y1) },
-                        { "{X2}", std::to_string(x2) },
-                        { "{Y2}", std::to_string(y2) },
-                        { "{DURATION}", std::to_string(duration) } });
+    if (steps.size() < 2) {
+        LogError << VAR(steps.size());
+        return false;
+    }
+
+    int delay_sum = 0;
+    for (const auto& step : steps) {
+        delay_sum += step.delay;
+    }
+
+    merge_replacement({ { "{X1}", std::to_string(steps.front().x) },
+                        { "{Y1}", std::to_string(steps.front().y) },
+                        { "{X2}", std::to_string(steps.back().x) },
+                        { "{Y2}", std::to_string(steps.back().y) },
+                        { "{DURATION}", std::to_string(delay_sum) } });
     auto cmd_ret = command(swipe_argv_.gen(argv_replace_));
 
     return cmd_ret.has_value() && cmd_ret.value().empty();
 }
 
-bool TapInput::press_key(int key)
+bool TapKeyInput::parse(const json::value& config)
+{
+    return parse_argv("PressKey", config, press_key_argv_);
+}
+
+bool TapKeyInput::press_key(int key)
 {
     LogFunc;
 
