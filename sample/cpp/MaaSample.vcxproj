@@ -195,7 +195,8 @@ xcopy "$(ProjectDir)\resource" "$(TargetDir)" /s /e /y</Command>
       <Profile>true</Profile>
     </Link>
     <PostBuildEvent>
-      <Command>Copy "$(ProjectDir)\config\adb_argv.json" "$(TargetDir)"</Command>
+      <Command>xcopy "$(ProjectDir)\config\controller_config.json" "$(TargetDir)" /y
+xcopy "$(ProjectDir)\resource" "$(TargetDir)" /s /e /y</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">
@@ -289,7 +290,8 @@ xcopy "$(ProjectDir)\resource" "$(TargetDir)" /s /e /y</Command>
       <Profile>true</Profile>
     </Link>
     <PostBuildEvent>
-      <Command>Copy "$(ProjectDir)\config\adb_argv.json" "$(TargetDir)"</Command>
+      <Command>xcopy "$(ProjectDir)\config\controller_config.json" "$(TargetDir)" /y
+xcopy "$(ProjectDir)\resource" "$(TargetDir)" /s /e /y</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|ARM64'">
@@ -317,7 +319,8 @@ xcopy "$(ProjectDir)\resource" "$(TargetDir)" /s /e /y</Command>
       <Profile>true</Profile>
     </Link>
     <PostBuildEvent>
-      <Command>Copy "$(ProjectDir)\config\adb_argv.json" "$(TargetDir)"</Command>
+      <Command>xcopy "$(ProjectDir)\config\controller_config.json" "$(TargetDir)" /y
+xcopy "$(ProjectDir)\resource" "$(TargetDir)" /s /e /y</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
