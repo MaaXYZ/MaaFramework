@@ -14,10 +14,11 @@ public:
         children_.emplace_back(binary_);
         children_.emplace_back(library_);
     }
+    virtual ~MinicapBase() override = default;
 
-    bool parse(const json::value& config) override;
+    virtual bool parse(const json::value& config) override;
 
-    bool init(int w, int h) override;
+    virtual bool init(int w, int h) override;
 
 protected:
     std::shared_ptr<InvokeApp> binary_ = std::make_shared<InvokeApp>();

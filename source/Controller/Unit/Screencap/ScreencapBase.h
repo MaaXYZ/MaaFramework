@@ -9,6 +9,8 @@ MAA_CTRL_UNIT_NS_BEGIN
 class ScreencapBase : public UnitBase
 {
 public:
+    virtual ~ScreencapBase() override = default;
+
     virtual bool init(int w, int h) = 0;
     virtual void deinit() {}
     virtual std::optional<cv::Mat> screencap() = 0;

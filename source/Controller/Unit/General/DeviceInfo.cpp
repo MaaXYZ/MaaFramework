@@ -6,7 +6,7 @@ MAA_CTRL_UNIT_NS_BEGIN
 
 bool DeviceInfo::parse(const json::value& config)
 {
-    return parse_argv("Uuid", config, uuid_argv_) && parse_argv("Resolution", config, resolution_argv_) &&
+    return parse_argv("UUID", config, uuid_argv_) && parse_argv("Resolution", config, resolution_argv_) &&
            parse_argv("Orientation", config, orientation_argv_);
 }
 

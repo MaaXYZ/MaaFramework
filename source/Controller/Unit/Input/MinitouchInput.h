@@ -10,13 +10,14 @@ class MinitouchInput : public TouchInputBase, public UnitBase
 {
 public:
     MinitouchInput() { children_.emplace_back(invoke_app_); }
+    virtual ~MinitouchInput() override = default;
 
-    bool parse(const json::value& config) override;
+    virtual bool parse(const json::value& config) override;
 
-    bool init(int swidth, int sheight) override;
+    virtual bool init(int swidth, int sheight) override;
 
-    bool click(int x, int y) override;
-    bool swipe(const std::vector<Step>& steps) override;
+    virtual bool click(int x, int y) override;
+    virtual bool swipe(const std::vector<Step>& steps) override;
 
 private:
     void scale_point(int& x, int& y);

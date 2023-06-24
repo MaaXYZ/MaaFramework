@@ -113,32 +113,30 @@ MaaControllerHandle MaaAdbControllerCreate(MaaString adb_path, MaaString address
         return nullptr;
     }
 
-    std::shared_ptr<MAA_CTRL_UNIT_NS::TouchInputBase> touch_unit;
-    std::shared_ptr<MAA_CTRL_UNIT_NS::KeyInputBase> key_unit;
-    std::shared_ptr<MAA_CTRL_UNIT_NS::ScreencapBase> screencap_unit;
-
-    std::shared_ptr<MAA_CTRL_UNIT_NS::MaatouchInput> maatouch_unit;
+    std::shared_ptr<MAA_CTRL_UNIT_NS::TouchInputBase> touch_unit = nullptr;
+    std::shared_ptr<MAA_CTRL_UNIT_NS::KeyInputBase> key_unit = nullptr;
+    std::shared_ptr<MAA_CTRL_UNIT_NS::ScreencapBase> screencap_unit = nullptr;
 
     auto touch_type = type & MaaAdbControllerType_Touch_Mask;
     auto key_type = type & MaaAdbControllerType_Key_Mask;
     auto screencap_type = type & MaaAdbControllerType_Screencap_Mask;
 
-    if (touch_type == MaaAdbControllerType_Touch_MaaTouch || key_type == MaaAdbControllerType_Key_MaaTouch) {
-        if ((touch_type | key_type) != MaaAdbControllerType_Input_Preset_Maatouch) {
-            LogWarn << "Using maatouch for partial input!" << VAR((touch_type | key_type));
-            // return nullptr;
-        }
-        maatouch_unit = std::make_shared<MAA_CTRL_UNIT_NS::MaatouchInput>();
-    }
+    std::shared_ptr<MAA_CTRL_UNIT_NS::MaatouchInput> maatouch_unit = nullptr;
 
     switch (touch_type) {
     case MaaAdbControllerType_Touch_Adb:
+        LogInfo << "touch_type: TapTouchInput";
         touch_unit = std::make_shared<MAA_CTRL_UNIT_NS::TapTouchInput>();
         break;
     case MaaAdbControllerType_Touch_MiniTouch:
+        LogInfo << "touch_type: MinitouchInput";
         touch_unit = std::make_shared<MAA_CTRL_UNIT_NS::MinitouchInput>();
         break;
     case MaaAdbControllerType_Touch_MaaTouch:
+        LogInfo << "touch_type: MaatouchInput";
+        if (!maatouch_unit) {
+            maatouch_unit = std::make_shared<MAA_CTRL_UNIT_NS::MaatouchInput>();
+        }
         touch_unit = maatouch_unit;
         break;
     default:
@@ -148,9 +146,14 @@ MaaControllerHandle MaaAdbControllerCreate(MaaString adb_path, MaaString address
 
     switch (key_type) {
     case MaaAdbControllerType_Key_Adb:
+        LogInfo << "key_type: TapKeyInput";
         key_unit = std::make_shared<MAA_CTRL_UNIT_NS::TapKeyInput>();
         break;
     case MaaAdbControllerType_Touch_MaaTouch:
+        LogInfo << "key_type: TapKeyInput";
+        if (!maatouch_unit) {
+            maatouch_unit = std::make_shared<MAA_CTRL_UNIT_NS::MaatouchInput>();
+        }
         key_unit = maatouch_unit;
         break;
     default:
@@ -160,24 +163,31 @@ MaaControllerHandle MaaAdbControllerCreate(MaaString adb_path, MaaString address
 
     switch (screencap_type) {
     case MaaAdbControllerType_Screencap_Auto:
+        LogInfo << "screencap_type: Screencap";
         screencap_unit = std::make_shared<MAA_CTRL_UNIT_NS::Screencap>();
         break;
     case MaaAdbControllerType_Screencap_RawByNetcat:
+        LogInfo << "screencap_type: ScreencapRawByNetcat";
         screencap_unit = std::make_shared<MAA_CTRL_UNIT_NS::ScreencapRawByNetcat>();
         break;
     case MaaAdbControllerType_Screencap_RawWithGzip:
+        LogInfo << "screencap_type: ScreencapRawWithGzip";
         screencap_unit = std::make_shared<MAA_CTRL_UNIT_NS::ScreencapRawWithGzip>();
         break;
     case MaaAdbControllerType_Screencap_Encode:
+        LogInfo << "screencap_type: ScreencapEncode";
         screencap_unit = std::make_shared<MAA_CTRL_UNIT_NS::ScreencapEncode>();
         break;
     case MaaAdbControllerType_Screencap_EncodeToFile:
+        LogInfo << "screencap_type: ScreencapEncodeToFile";
         screencap_unit = std::make_shared<MAA_CTRL_UNIT_NS::ScreencapEncodeToFileAndPull>();
         break;
     case MaaAdbControllerType_Screencap_MinicapDirect:
+        LogInfo << "screencap_type: MinicapDirect";
         screencap_unit = std::make_shared<MAA_CTRL_UNIT_NS::MinicapDirect>();
         break;
     case MaaAdbControllerType_Screencap_MinicapStream:
+        LogInfo << "screencap_type: MinicapStream";
         screencap_unit = std::make_shared<MAA_CTRL_UNIT_NS::MinicapStream>();
         break;
     default:

@@ -51,7 +51,7 @@
             "{ADB}",
             "kill-server"
         ],
-        "Uuid": [
+        "UUID": [
             "{ADB}",
             "-s",
             "{ADB_SERIAL}",

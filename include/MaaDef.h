@@ -97,7 +97,7 @@ enum MaaAdbControllerTypeEnum
         MaaAdbControllerType_Touch_MaaTouch | MaaAdbControllerType_Key_MaaTouch,
 };
 
-typedef void(MAA_CALL* MaaApiCallback)(const char* msg, const char* details_json, void* callback_arg);
+typedef void(MAA_CALL* MaaApiCallback)(MaaString msg, MaaString details_json, void* callback_arg);
 typedef MaaApiCallback MaaResourceCallback;
 typedef MaaApiCallback MaaControllerCallback;
 typedef MaaApiCallback MaaInstanceCallback;

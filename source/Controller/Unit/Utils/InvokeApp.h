@@ -7,7 +7,9 @@ MAA_CTRL_UNIT_NS_BEGIN
 class InvokeApp : public UnitBase
 {
 public:
-    bool parse(const json::value& config) override;
+    virtual ~InvokeApp() override = default;
+
+    virtual bool parse(const json::value& config) override;
 
     bool init(const std::string& force_temp = "");
 

@@ -11,6 +11,8 @@ class TouchInputBase
 public:
     using Step = SwipeParams::Step;
 
+    virtual ~TouchInputBase() = default;
+
     virtual bool init(int swidth, int sheight) = 0;
 
     virtual bool click(int x, int y) = 0;
@@ -20,6 +22,7 @@ public:
 class KeyInputBase
 {
 public:
+    virtual ~KeyInputBase() = default;
     virtual bool press_key(int key) = 0;
 };
 

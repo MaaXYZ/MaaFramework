@@ -7,11 +7,13 @@ MAA_CTRL_UNIT_NS_BEGIN
 class ScreencapEncode : public ScreencapBase
 {
 public:
-    bool parse(const json::value& config) override;
+    virtual ~ScreencapEncode() override = default;
 
-    bool init(int w, int h) override;
+    virtual bool parse(const json::value& config) override;
 
-    std::optional<cv::Mat> screencap() override;
+    virtual bool init(int w, int h) override;
+
+    virtual std::optional<cv::Mat> screencap() override;
 
 private:
     Argv screencap_encode_argv_;

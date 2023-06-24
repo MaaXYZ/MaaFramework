@@ -13,7 +13,9 @@ public:
         int height = 0;
     };
 
-    bool parse(const json::value& config) override;
+    virtual ~DeviceInfo() override = default;
+
+    virtual bool parse(const json::value& config) override;
 
     std::optional<std::string> request_uuid();
     std::optional<Resolution> request_resolution();

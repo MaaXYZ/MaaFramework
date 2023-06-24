@@ -13,7 +13,7 @@ public:
     using Argv = ArgvWrapper<std::vector<std::string>>;
 
 public:
-    virtual ~UnitBase() {}
+    virtual ~UnitBase() = default;
 
     virtual bool parse(const json::value& config) = 0;
 

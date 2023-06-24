@@ -241,13 +241,13 @@ bool InstanceMgr::run_task(typename AsyncRunner<TaskPtr>::Id id, TaskPtr task_pt
         { "hash", get_resource_hash() },
     };
 
-    notifier.notify(MAAMSG_TASK_STARTED, details);
+    notifier.notify(MaaMsg_Task_Started, details);
 
     LogInfo << "task start:" << VAR(details);
     bool ret = task_ptr->run();
     LogInfo << "task end:" << VAR(details) << VAR(ret);
 
-    notifier.notify(ret ? MAAMSG_TASK_COMPLETED : MAAMSG_TASK_FAILED, details);
+    notifier.notify(ret ? MaaMsg_Task_Completed : MaaMsg_Task_Failed, details);
 
     std::unique_lock<std::mutex> lock(task_mutex_);
     task_map_.erase(id);

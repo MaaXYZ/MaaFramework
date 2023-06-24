@@ -10,14 +10,15 @@ class MaatouchInput : public TouchInputBase, public KeyInputBase, public UnitBas
 {
 public:
     MaatouchInput() { children_.emplace_back(invoke_app_); }
+    virtual ~MaatouchInput() override = default;
 
-    bool parse(const json::value& config) override;
+    virtual bool parse(const json::value& config) override;
 
-    bool init(int swidth, int sheight) override;
+    virtual bool init(int swidth, int sheight) override;
 
-    bool click(int x, int y) override;
-    bool swipe(const std::vector<Step>& steps) override;
-    bool press_key(int key) override;
+    virtual bool click(int x, int y) override;
+    virtual bool swipe(const std::vector<Step>& steps) override;
+    virtual bool press_key(int key) override;
 
 private:
     void scale_point(int& x, int& y);

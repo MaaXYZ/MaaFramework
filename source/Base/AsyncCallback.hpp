@@ -15,7 +15,7 @@ class AsyncCallback : public NonCopyable
 private:
     struct NotifyData
     {
-        MaaMsg msg = MAAMSG_INVALID;
+        MaaMsg msg = MaaMsg_Invalid;
         json::value details;
     };
 

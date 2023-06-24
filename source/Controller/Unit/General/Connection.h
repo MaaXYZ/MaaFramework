@@ -7,7 +7,9 @@ MAA_CTRL_UNIT_NS_BEGIN
 class Connection : public UnitBase
 {
 public:
-    bool parse(const json::value& config) override;
+    virtual ~Connection() override = default;
+
+    virtual bool parse(const json::value& config) override;
 
     bool connect();
     bool kill_server();

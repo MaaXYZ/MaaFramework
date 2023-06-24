@@ -82,11 +82,11 @@ bool ResourceMgr::run_load(typename AsyncRunner<std::filesystem::path>::Id id, s
         { "path", path_to_utf8_string(path) },
     };
 
-    notifier.notify(MAAMSG_RESOURCE_START_LOADING, details);
+    notifier.notify(MaaMsg_Resource_StartLoading, details);
 
     loaded_ = load(path);
 
-    notifier.notify(loaded_ ? MAAMSG_RESOURCE_LOADING_COMPLETED : MAAMSG_RESOURCE_LOADING_ERROR, details);
+    notifier.notify(loaded_ ? MaaMsg_Resource_LoadingCompleted : MaaMsg_Resource_LoadingError, details);
 
     return loaded_;
 }

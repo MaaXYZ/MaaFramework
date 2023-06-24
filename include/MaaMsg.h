@@ -1,6 +1,6 @@
 #pragma once
 
-#define MAAMSG_INVALID ("Invalid")
+#define MaaMsg_Invalid ("Invalid")
 
 /*
     {
@@ -8,22 +8,18 @@
         path: [string, resource path]
     }
 */
-#define MAAMSG_RESOURCE_START_LOADING ("Resource.StartLoading")
-#define MAAMSG_RESOURCE_LOADING_COMPLETED ("Resource.LoadingCompleted")
-#define MAAMSG_RESOURCE_LOADING_ERROR ("Resource.LoadingError")
-
-/* {} */
-#define MAAMSG_CONTROLLER_CONNECTED ("Controller.Connected")
-#define MAAMSG_CONTROLLER_CONNECT_FAILED ("Controller.ConnectFailed")
+#define MaaMsg_Resource_StartLoading ("Resource.StartLoading")
+#define MaaMsg_Resource_LoadingCompleted ("Resource.LoadingCompleted")
+#define MaaMsg_Resource_LoadingError ("Resource.LoadingError")
 
 /*
     {
         uuid: string
     }
 */
-#define MAAMSG_CONTROLLER_UUID_GOT ("Controller.UUIDGot")
+#define MaaMsg_Controller_UUIDGot ("Controller.UUIDGot")
 /* {} */
-#define MAAMSG_CONTROLLER_UUID_GET_FAILED ("Controller.UUIDGetFailed")
+#define MaaMsg_Controller_UUIDGetFailed ("Controller.UUIDGetFailed")
 
 /*
     {
@@ -33,15 +29,15 @@
         }
     }
 */
-#define MAAMSG_CONTROLLER_RESOLUTION_GOT ("Controller.ResolutionGot")
+#define MaaMsg_Controller_ResolutionGot ("Controller.ResolutionGot")
 /* {} */
-#define MAAMSG_CONTROLLER_RESOLUTION_GET_FAILED ("Controller.ResolutionGetFailed")
+#define MaaMsg_Controller_ResolutionGetFailed ("Controller.ResolutionGetFailed")
 
 /* {} */
-#define MAAMSG_CONTROLLER_SCREENCAP_INITED ("Controller.ScreencapInited")
-#define MAAMSG_CONTROLLER_SCREENCAP_INIT_FAILED ("Controller.ScreencapInitFailed")
-#define MAAMSG_CONTROLLER_TOUCHINPUT_INITED ("Controller.TouchinputInited")
-#define MAAMSG_CONTROLLER_TOUCHINPUT_INIT_FAILED ("Controller.TouchinputInitFailed")
+#define MaaMsg_Controller_ScreencapInited ("Controller.ScreencapInited")
+#define MaaMsg_Controller_ScreencapInitFailed ("Controller.ScreencapInitFailed")
+#define MaaMsg_Controller_TouchInputInited ("Controller.TouchinputInited")
+#define MaaMsg_Controller_TouchInputInitFailed ("Controller.TouchinputInitFailed")
 
 /* {
         uuid: string,
@@ -50,7 +46,11 @@
             height: number
         }
 } */
-#define MAAMSG_CONTROLLER_CONNECT_SUCCESS ("Controller.ConnectSuccess")
+#define MaaMsg_Controller_ConnectSuccess ("Controller.ConnectSuccess")
+/* {
+*      "why": string
+} */
+#define MaaMsg_Controller_ConnectFalied ("Controller.ConnectFailed")
 
 /*
     {
@@ -60,9 +60,9 @@
         hash: [string, resource hash]
     }
 */
-#define MAAMSG_TASK_STARTED ("Task.Started")
-#define MAAMSG_TASK_COMPLETED ("Task.Completed")
-#define MAAMSG_TASK_FAILED ("Task.Failed")
-#define MAAMSG_TASK_STOPPED ("Task.Stopped")
+#define MaaMsg_Task_Started ("Task.Started")
+#define MaaMsg_Task_Completed ("Task.Completed")
+#define MaaMsg_Task_Failed ("Task.Failed")
+#define MaaMsg_Task_Stopped ("Task.Stopped")
 
 typedef const char* MaaMsg;

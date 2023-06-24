@@ -25,13 +25,14 @@ public:
 
 public:
     Screencap();
+    virtual ~Screencap() override = default;
 
-    bool parse(const json::value& config) override;
+    virtual bool parse(const json::value& config) override;
 
-    bool init(int w, int h) override;
-    void deinit() override;
+    virtual bool init(int w, int h) override;
+    virtual void deinit() override;
 
-    std::optional<cv::Mat> screencap() override;
+    virtual std::optional<cv::Mat> screencap() override;
 
 #ifdef MAA_DEBUG
 public:

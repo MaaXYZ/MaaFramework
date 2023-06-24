@@ -8,6 +8,53 @@
 
 MAA_CTRL_NS_BEGIN
 
+void AdbController::ControlUnit::set_io(const std::shared_ptr<PlatformIO>& io_ptr)
+{
+    for (auto unit : units) {
+        unit->set_io(io_ptr);
+    }
+}
+
+bool AdbController::ControlUnit::parse(const json::value& config)
+{
+    bool ret = true;
+    for (auto unit : units) {
+        ret = ret && unit->parse(config);
+    }
+    return ret;
+}
+
+std::optional<AdbController::ControlUnit> AdbController::parse_config(
+    const json::value& config, std::shared_ptr<MAA_CTRL_UNIT_NS::TouchInputBase> touch,
+    std::shared_ptr<MAA_CTRL_UNIT_NS::KeyInputBase> key, std::shared_ptr<MAA_CTRL_UNIT_NS::ScreencapBase> screencap)
+{
+    {
+        ControlUnit result;
+
+        result.connection = std::make_shared<MAA_CTRL_UNIT_NS::Connection>();
+        result.units.push_back(result.connection);
+        result.device_info = std::make_shared<MAA_CTRL_UNIT_NS::DeviceInfo>();
+        result.units.push_back(result.device_info);
+        result.activity = std::make_shared<MAA_CTRL_UNIT_NS::Activity>();
+        result.units.push_back(result.activity);
+
+        auto touch_unit = std::dynamic_pointer_cast<MAA_CTRL_UNIT_NS::UnitBase>(touch);
+        result.touch_input = std::move(touch);
+        result.units.emplace_back(touch_unit); // 后面还要用
+        auto key_unit = std::dynamic_pointer_cast<MAA_CTRL_UNIT_NS::UnitBase>(key);
+        result.key_input = std::move(key);
+        if (touch_unit != key_unit) {
+            result.units.emplace_back(std::move(key_unit));
+        }
+
+        result.screencap = screencap;
+        result.units.emplace_back(std::move(screencap));
+
+        auto ret = result.parse(config);
+        return ret ? std::make_optional(std::move(result)) : std::nullopt;
+    }
+}
+
 AdbController::AdbController(std::string adb_path, std::string address, ControlUnit control_unit,
                              MaaControllerCallback callback, void* callback_arg)
     : ControllerMgr(callback, callback_arg), adb_path_(std::move(adb_path)), address_(std::move(address)),
@@ -29,48 +76,50 @@ bool AdbController::_connect()
 
     bool connected = control_unit_.connection->connect();
     if (!connected) {
-        notifier.notify(MAAMSG_CONTROLLER_CONNECT_FAILED);
+        notifier.notify(MaaMsg_Controller_ConnectFalied, { { "why", "ConnectFailed" } });
         LogError << "failed to connect";
         return false;
     }
-
-    notifier.notify(MAAMSG_CONTROLLER_CONNECTED);
 
     for (auto unit : control_unit_.units) {
         unit->set_replacement(replacement);
     }
 
     if (!control_unit_.device_info->request_uuid()) {
-        notifier.notify(MAAMSG_CONTROLLER_UUID_GET_FAILED);
+        notifier.notify(MaaMsg_Controller_UUIDGetFailed);
+        notifier.notify(MaaMsg_Controller_ConnectFalied, { { "why", "UUIDGetFailed" } });
         LogError << "failed to request_uuid";
         return false;
     }
     const auto& uuid = control_unit_.device_info->get_uuid();
-    notifier.notify(MAAMSG_CONTROLLER_UUID_GOT, { { "uuid", uuid } });
+    notifier.notify(MaaMsg_Controller_UUIDGot, { { "uuid", uuid } });
 
     if (!control_unit_.device_info->request_resolution()) {
-        notifier.notify(MAAMSG_CONTROLLER_RESOLUTION_GET_FAILED);
+        notifier.notify(MaaMsg_Controller_ResolutionGetFailed);
+        notifier.notify(MaaMsg_Controller_ConnectFalied, { { "why", "ResolutionGetFailed" } });
         LogError << "failed to request_resolution";
         return false;
     }
     auto [w, h] = control_unit_.device_info->get_resolution();
-    notifier.notify(MAAMSG_CONTROLLER_RESOLUTION_GOT, { { "resolution", { { "width", w }, { "height", h } } } });
+    notifier.notify(MaaMsg_Controller_ResolutionGot, { { "resolution", { { "width", w }, { "height", h } } } });
 
     if (!control_unit_.screencap->init(w, h)) {
-        notifier.notify(MAAMSG_CONTROLLER_SCREENCAP_INIT_FAILED);
+        notifier.notify(MaaMsg_Controller_ScreencapInitFailed);
+        notifier.notify(MaaMsg_Controller_ConnectFalied, { { "why", "ScreencapInitFailed" } });
         LogError << "falied to init screencap";
         return false;
     }
-    notifier.notify(MAAMSG_CONTROLLER_SCREENCAP_INITED);
+    notifier.notify(MaaMsg_Controller_ScreencapInited);
 
     if (!control_unit_.touch_input->init(w, h)) {
-        notifier.notify(MAAMSG_CONTROLLER_TOUCHINPUT_INIT_FAILED);
+        notifier.notify(MaaMsg_Controller_TouchInputInitFailed);
+        notifier.notify(MaaMsg_Controller_ConnectFalied, { { "why", "TouchInputInitFailed" } });
         LogError << "falied to init touch_input";
         return false;
     }
-    notifier.notify(MAAMSG_CONTROLLER_TOUCHINPUT_INITED);
+    notifier.notify(MaaMsg_Controller_TouchInputInited);
 
-    notifier.notify(MAAMSG_CONTROLLER_CONNECT_SUCCESS,
+    notifier.notify(MaaMsg_Controller_ConnectSuccess,
                     { { "uuid", uuid }, { "resolution", { { "width", w }, { "height", h } } } });
 
     return true;
@@ -93,10 +142,10 @@ void AdbController::_swipe(SwipeParams param)
 cv::Mat AdbController::_screencap()
 {
     auto ret = control_unit_.screencap->screencap();
-    if (ret) {
-        return std::move(ret.value());
+    if (!ret) {
+        return cv::Mat();
     }
-    return cv::Mat();
+    return std::move(ret.value());
 }
 
 MAA_CTRL_NS_END

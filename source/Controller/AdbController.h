@@ -13,28 +13,15 @@ class AdbController : public ControllerMgr
 public:
     struct ControlUnit
     {
-        void set_io(const std::shared_ptr<PlatformIO>& io_ptr)
-        {
-            for (auto unit : units) {
-                unit->set_io(io_ptr);
-            }
-        }
+        void set_io(const std::shared_ptr<PlatformIO>& io_ptr);
+        bool parse(const json::value& config);
 
-        bool parse(const json::value& config)
-        {
-            bool ret = true;
-            for (auto unit : units) {
-                ret = ret && unit->parse(config);
-            }
-            return ret;
-        }
-
-        std::shared_ptr<MAA_CTRL_UNIT_NS::Connection> connection;
-        std::shared_ptr<MAA_CTRL_UNIT_NS::DeviceInfo> device_info;
-        std::shared_ptr<MAA_CTRL_UNIT_NS::Activity> activity;
-        std::shared_ptr<MAA_CTRL_UNIT_NS::TouchInputBase> touch_input;
-        std::shared_ptr<MAA_CTRL_UNIT_NS::KeyInputBase> key_input;
-        std::shared_ptr<MAA_CTRL_UNIT_NS::ScreencapBase> screencap;
+        std::shared_ptr<MAA_CTRL_UNIT_NS::Connection> connection = nullptr;
+        std::shared_ptr<MAA_CTRL_UNIT_NS::DeviceInfo> device_info = nullptr;
+        std::shared_ptr<MAA_CTRL_UNIT_NS::Activity> activity = nullptr;
+        std::shared_ptr<MAA_CTRL_UNIT_NS::TouchInputBase> touch_input = nullptr;
+        std::shared_ptr<MAA_CTRL_UNIT_NS::KeyInputBase> key_input = nullptr;
+        std::shared_ptr<MAA_CTRL_UNIT_NS::ScreencapBase> screencap = nullptr;
 
         std::vector<std::shared_ptr<MAA_CTRL_UNIT_NS::UnitBase>> units;
     };
@@ -42,32 +29,7 @@ public:
     static std::optional<ControlUnit> parse_config(const json::value& config,
                                                    std::shared_ptr<MAA_CTRL_UNIT_NS::TouchInputBase> touch,
                                                    std::shared_ptr<MAA_CTRL_UNIT_NS::KeyInputBase> key,
-                                                   std::shared_ptr<MAA_CTRL_UNIT_NS::ScreencapBase> screencap)
-    {
-        ControlUnit result;
-
-        result.connection = std::make_shared<MAA_CTRL_UNIT_NS::Connection>();
-        result.units.push_back(result.connection);
-        result.device_info = std::make_shared<MAA_CTRL_UNIT_NS::DeviceInfo>();
-        result.units.push_back(result.device_info);
-        result.activity = std::make_shared<MAA_CTRL_UNIT_NS::Activity>();
-        result.units.push_back(result.activity);
-
-        auto touch_unit = std::dynamic_pointer_cast<MAA_CTRL_UNIT_NS::UnitBase>(touch);
-        result.touch_input = std::move(touch);
-        result.units.emplace_back(touch_unit); // 后面还要用
-        auto key_unit = std::dynamic_pointer_cast<MAA_CTRL_UNIT_NS::UnitBase>(key);
-        result.key_input = std::move(key);
-        if (touch_unit != key_unit) {
-            result.units.emplace_back(std::move(key_unit));
-        }
-
-        result.screencap = screencap;
-        result.units.emplace_back(std::move(screencap));
-
-        auto ret = result.parse(config);
-        return ret ? std::make_optional(std::move(result)) : std::nullopt;
-    }
+                                                   std::shared_ptr<MAA_CTRL_UNIT_NS::ScreencapBase> screencap);
 
 public:
     AdbController(std::string adb_path, std::string address, ControlUnit config, MaaControllerCallback callback,

@@ -7,11 +7,13 @@ MAA_CTRL_UNIT_NS_BEGIN
 class ScreencapRawWithGzip : public ScreencapBase
 {
 public:
-    bool parse(const json::value& config) override;
+    virtual ~ScreencapRawWithGzip() override = default;
 
-    bool init(int w, int h) override;
+    virtual bool parse(const json::value& config) override;
 
-    std::optional<cv::Mat> screencap() override;
+    virtual bool init(int w, int h) override;
+
+    virtual std::optional<cv::Mat> screencap() override;
 
 private:
     Argv screencap_raw_with_gzip_argv_;
