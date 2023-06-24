@@ -82,13 +82,13 @@ enum MaaAdbControllerTypeEnum
     MaaAdbControllerType_Key_Mask = 0xFF00,
 
     // same as Screencap::Method
-    MaaAdbControllerType_Screencap_Auto = 0 << 16,
-    MaaAdbControllerType_Screencap_RawByNetcat = 1 << 16,
-    MaaAdbControllerType_Screencap_RawWithGzip = 2 << 16,
-    MaaAdbControllerType_Screencap_Encode = 3 << 16,
-    MaaAdbControllerType_Screencap_EncodeToFile = 4 << 16,
-    MaaAdbControllerType_Screencap_MinicapDirect = 5 << 16,
-    MaaAdbControllerType_Screencap_MinicapStream = 6 << 16,
+    MaaAdbControllerType_Screencap_Auto = 1 << 16,
+    MaaAdbControllerType_Screencap_RawByNetcat = 2 << 16,
+    MaaAdbControllerType_Screencap_RawWithGzip = 3 << 16,
+    MaaAdbControllerType_Screencap_Encode = 4 << 16,
+    MaaAdbControllerType_Screencap_EncodeToFile = 5 << 16,
+    MaaAdbControllerType_Screencap_MinicapDirect = 6 << 16,
+    MaaAdbControllerType_Screencap_MinicapStream = 7 << 16,
     MaaAdbControllerType_Screencap_Mask = 0xFF0000,
 
     MaaAdbControllerType_Input_Preset_Adb = MaaAdbControllerType_Touch_Adb | MaaAdbControllerType_Key_Adb,

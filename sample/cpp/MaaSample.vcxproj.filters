@@ -8,6 +8,12 @@
     <Filter Include="Config">
       <UniqueIdentifier>{230b11c3-4119-4677-9107-b711970a9bea}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Resource">
+      <UniqueIdentifier>{5b2c83d7-4760-40ce-b051-b8de5e384491}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Resource\pipeline">
+      <UniqueIdentifier>{ec83d564-b35c-4f3e-a492-d41eabf6f9a1}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -17,6 +23,12 @@
   <ItemGroup>
     <None Include="config\controller_config.json">
       <Filter>Config</Filter>
+    </None>
+    <None Include="resource\properties.json">
+      <Filter>Resource</Filter>
+    </None>
+    <None Include="resource\pipeline\main.json">
+      <Filter>Resource\pipeline</Filter>
     </None>
   </ItemGroup>
 </Project>
