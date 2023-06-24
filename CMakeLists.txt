@@ -90,7 +90,7 @@ endif()
 
 ### busybox
 
-file(GLOB_RECURSE maabusybox_src busybox/*.cpp busybox/*.hpp ${maa_src})
+file(GLOB_RECURSE maabusybox_src test/busybox/*.cpp test/busybox/*.hpp ${maa_src})
 add_executable(maabusybox ${maabusybox_src})
 set_target_properties(maabusybox PROPERTIES
     CXX_STANDARD 20
