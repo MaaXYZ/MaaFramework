@@ -249,6 +249,12 @@
     <ClInclude Include="Controller\Unit\Screencap\Minicap\MinicapStream.h">
       <Filter>Source\Controller\Unit\Screencap\Minicap</Filter>
     </ClInclude>
+    <ClInclude Include="Controller\Unit\Input\InputBase.h">
+      <Filter>Source\Controller\Unit\Input</Filter>
+    </ClInclude>
+    <ClInclude Include="Controller\Unit\Input\MaatouchInput.h">
+      <Filter>Source\Controller\Unit\Input</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Controller\ControllerMgr.cpp">
@@ -340,6 +346,9 @@
     </ClCompile>
     <ClCompile Include="Controller\Unit\Screencap\Minicap\MinicapStream.cpp">
       <Filter>Source\Controller\Unit\Screencap\Minicap</Filter>
+    </ClCompile>
+    <ClCompile Include="Controller\Unit\Input\MaatouchInput.cpp">
+      <Filter>Source\Controller\Unit\Input</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

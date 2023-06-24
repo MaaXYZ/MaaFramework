@@ -44,6 +44,8 @@
     <ClInclude Include="Controller\Unit\General\Activity.h" />
     <ClInclude Include="Controller\Unit\General\Connection.h" />
     <ClInclude Include="Controller\Unit\General\DeviceInfo.h" />
+    <ClInclude Include="Controller\Unit\Input\InputBase.h" />
+    <ClInclude Include="Controller\Unit\Input\MaatouchInput.h" />
     <ClInclude Include="Controller\Unit\Input\MinitouchInput.h" />
     <ClInclude Include="Controller\Unit\Input\TapInput.h" />
     <ClInclude Include="Controller\Unit\Screencap\Encode.h" />
@@ -99,6 +101,7 @@
     <ClCompile Include="Controller\Unit\General\Activity.cpp" />
     <ClCompile Include="Controller\Unit\General\Connection.cpp" />
     <ClCompile Include="Controller\Unit\General\DeviceInfo.cpp" />
+    <ClCompile Include="Controller\Unit\Input\MaatouchInput.cpp" />
     <ClCompile Include="Controller\Unit\Input\MinitouchInput.cpp" />
     <ClCompile Include="Controller\Unit\Input\TapInput.cpp" />
     <ClCompile Include="Controller\Unit\Screencap\Encode.cpp" />

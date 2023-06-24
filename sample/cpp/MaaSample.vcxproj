@@ -30,7 +30,7 @@
     <ClCompile Include="main.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="config\adb_argv.json" />
+    <None Include="config\controller_config.json" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>16.0</VCProjectVersion>
@@ -161,8 +161,13 @@
       <Profile>true</Profile>
     </Link>
     <PostBuildEvent>
-      <Command>Copy "$(ProjectDir)\config\adb_argv.json" "$(TargetDir)"</Command>
+      <Command>xcopy "$(ProjectDir)\config\controller_config.json" "$(TargetDir)" /y
+xcopy "$(ProjectDir)\resource" "$(TargetDir)" /s /e /y</Command>
     </PostBuildEvent>
+    <PreLinkEvent>
+      <Command>
+      </Command>
+    </PreLinkEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|ARM64'">
     <ClCompile>
@@ -216,8 +221,13 @@
       <Profile>true</Profile>
     </Link>
     <PostBuildEvent>
-      <Command>Copy "$(ProjectDir)\config\adb_argv.json" "$(TargetDir)"</Command>
+      <Command>xcopy "$(ProjectDir)\config\controller_config.json" "$(TargetDir)" /y
+xcopy "$(ProjectDir)\resource" "$(TargetDir)" /s /e /y</Command>
     </PostBuildEvent>
+    <PreLinkEvent>
+      <Command>
+      </Command>
+    </PreLinkEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
@@ -244,8 +254,13 @@
       <Profile>true</Profile>
     </Link>
     <PostBuildEvent>
-      <Command>Copy "$(ProjectDir)\config\adb_argv.json" "$(TargetDir)"</Command>
+      <Command>xcopy "$(ProjectDir)\config\controller_config.json" "$(TargetDir)" /y
+xcopy "$(ProjectDir)\resource" "$(TargetDir)" /s /e /y</Command>
     </PostBuildEvent>
+    <PreLinkEvent>
+      <Command>
+      </Command>
+    </PreLinkEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|ARM64'">
     <ClCompile>

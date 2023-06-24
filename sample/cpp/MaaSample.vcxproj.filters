@@ -15,7 +15,7 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <None Include="config\adb_argv.json">
+    <None Include="config\controller_config.json">
       <Filter>Config</Filter>
     </None>
   </ItemGroup>
