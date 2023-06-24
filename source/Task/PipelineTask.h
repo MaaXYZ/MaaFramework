@@ -7,6 +7,7 @@ MAA_TASK_NS_BEGIN
 class PipelineTask : public TaskBase
 {
 public:
+    using TaskBase::TaskBase;
     virtual ~PipelineTask() override = default;
 
     virtual bool run() override;

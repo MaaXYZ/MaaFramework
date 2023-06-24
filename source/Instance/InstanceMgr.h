@@ -3,6 +3,7 @@
 #include "Base/AsyncCallback.hpp"
 #include "Base/AsyncRunner.hpp"
 #include "Common/MaaTypes.h"
+#include "Instance/InstanceStatus.h"
 #include "InstanceInternalAPI.hpp"
 #include "Task/TaskBase.h"
 
@@ -37,7 +38,7 @@ public: // from MaaInstanceAPI
 public: // from InstanceInternalAPI
     virtual MaaResourceAPI* resource() override;
     virtual MaaControllerAPI* controller() override;
-    // TODO: status
+    virtual InstanceStatus* status() override;
 
 private:
     using TaskPtr = std::shared_ptr<TaskNS::TaskBase>;
@@ -47,6 +48,8 @@ private:
 private:
     MaaResourceAPI* resource_ = nullptr;
     MaaControllerAPI* controller_ = nullptr;
+    InstanceStatus status_;
+
     std::mutex task_mutex_;
     std::map<typename AsyncRunner<TaskPtr>::Id, TaskPtr> task_map_;
 

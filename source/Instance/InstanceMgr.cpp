@@ -93,7 +93,7 @@ MaaTaskId InstanceMgr::post_task(MaaTaskType type, std::string_view param)
     TaskPtr task_ptr = nullptr;
     switch (type) {
     case MaaTaskType_Pipeline:
-        task_ptr = std::make_shared<TaskNS::PipelineTask>();
+        task_ptr = std::make_shared<TaskNS::PipelineTask>(this);
         break;
     default:
         LogError << "Unknown task type:" << type;
@@ -223,6 +223,11 @@ MaaResourceAPI* InstanceMgr::resource()
 MaaControllerAPI* InstanceMgr::controller()
 {
     return controller_;
+}
+
+InstanceStatus* InstanceMgr::status()
+{
+    return &status_;
 }
 
 bool InstanceMgr::run_task(typename AsyncRunner<TaskPtr>::Id id, TaskPtr task_ptr)

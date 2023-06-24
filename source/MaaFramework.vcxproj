@@ -62,6 +62,7 @@
     <ClInclude Include="Controller\Unit\Utils.h" />
     <ClInclude Include="Controller\Unit\Utils\InvokeApp.h" />
     <ClInclude Include="Instance\InstanceInternalAPI.hpp" />
+    <ClInclude Include="Instance\InstanceStatus.h" />
     <ClInclude Include="Option\GlobalOptionMgr.h" />
     <ClInclude Include="Controller\AdbController.h" />
     <ClInclude Include="Common\MaaConf.h" />
@@ -118,6 +119,7 @@
     <ClCompile Include="Controller\Unit\Utils\InvokeApp.cpp" />
     <ClCompile Include="Instance\InstanceMgr.cpp" />
     <ClCompile Include="API\MaaAPI.cpp" />
+    <ClCompile Include="Instance\InstanceStatus.cpp" />
     <ClCompile Include="Option\GlobalOptionMgr.cpp" />
     <ClCompile Include="Resource\PipelineConfig.cpp" />
     <ClCompile Include="Resource\ResourceMgr.cpp" />

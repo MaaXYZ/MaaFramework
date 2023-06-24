@@ -255,6 +255,7 @@
     <ClInclude Include="Controller\Unit\Input\MaatouchInput.h">
       <Filter>Source\Controller\Unit\Input</Filter>
     </ClInclude>
+    <ClInclude Include="Instance\InstanceStatus.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Controller\ControllerMgr.cpp">
@@ -350,5 +351,6 @@
     <ClCompile Include="Controller\Unit\Input\MaatouchInput.cpp">
       <Filter>Source\Controller\Unit\Input</Filter>
     </ClCompile>
+    <ClCompile Include="Instance\InstanceStatus.cpp" />
   </ItemGroup>
 </Project>
