@@ -9,6 +9,8 @@
 #include <variant>
 #include <vector>
 
+#include "Vision/VisionTypes.h"
+
 #define MAA_PIPELINE_RES_NS MAA_RES_NS::Pipeline
 #define MAA_PIPELINE_RES_NS_BEGIN \
     namespace MAA_PIPELINE_RES_NS \
@@ -29,30 +31,8 @@ enum class Type
     FreezesWait,
 };
 
-struct TemplMatchingParams
-{
-    std::vector<std::string> templates;
-    std::vector<double> thresholds;
-    int method = 0;
-    bool green_mask = false;
-};
-
-struct OcrParams
-{
-    std::vector<std::string> text;
-
-    std::unordered_map<std::string, std::string> replace;
-};
-
-struct FreezesWaitingParams
-{
-    double threshold = 0.0;
-    int method = 0;
-    uint wait_time = 0;
-};
-
 using Params =
-    std::variant<Recognition::TemplMatchingParams, Recognition::OcrParams, Recognition::FreezesWaitingParams>;
+    std::variant<MAA_VISION_NS::TemplMatchingParams, MAA_VISION_NS::OcrParams, MAA_VISION_NS::FreezesWaitingParams>;
 } // namespace Recognition
 
 namespace Action

@@ -2,13 +2,13 @@
 
 #include "Base/AsyncCallback.hpp"
 #include "Common/MaaTypes.h"
+#include "PipelineConfig.h"
+#include "TemplateConfig.h"
+#include "OCRConfig.h"
 
 #include <atomic>
 
 MAA_RES_NS_BEGIN
-
-class PipelineConfig;
-class Config;
 
 class ResourceMgr : public MaaResourceAPI
 {
@@ -27,16 +27,18 @@ public:
     virtual std::string get_hash() const override;
 
 public:
-    const auto& adb_cfg() const { return adb_cfg_; }
     const auto& pipeline_cfg() const { return pipeline_cfg_; }
+    const auto& template_cfg() const { return template_cfg_; }
+    const auto& ocr_cfg() const { return ocr_cfg_; }
 
 private:
     bool run_load(typename AsyncRunner<std::filesystem::path>::Id id, std::filesystem::path path);
     bool load(const std::filesystem::path& path);
 
 private:
-    std::shared_ptr<Config> adb_cfg_ = nullptr;
-    std::shared_ptr<PipelineConfig> pipeline_cfg_ = nullptr;
+    PipelineConfig pipeline_cfg_;
+    TemplateConfig template_cfg_;
+    OCRConfig ocr_cfg_;
 
 private:
     std::filesystem::path user_path_;

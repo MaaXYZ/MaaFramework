@@ -70,10 +70,7 @@ public:
     virtual MaaBool connected() const override;
 
     virtual std::vector<uint8_t> get_image() const override;
-    virtual std::string get_uuid() const override;
-
-public:
-    void bind_inst(InstanceInternalAPI* inst);
+    virtual std::string get_uuid() const override = 0;
 
 public:
     void click(const cv::Rect& r);
@@ -89,8 +86,6 @@ protected:
     virtual cv::Mat _screencap() = 0;
 
 protected:
-    MAA_RES_NS::ResourceMgr* resource() const;
-
     AsyncCallback<MaaControllerCallback, void*> notifier;
 
 private:

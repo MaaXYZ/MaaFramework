@@ -234,7 +234,7 @@
     <ClInclude Include="Controller\Unit\UnitBase.h">
       <Filter>Source\Controller\Unit</Filter>
     </ClInclude>
-    <ClInclude Include="Controller\Unit\Utils.h">
+    <ClInclude Include="Controller\Unit\UnitUtils.h">
       <Filter>Source\Controller\Unit</Filter>
     </ClInclude>
     <ClInclude Include="Controller\Unit\Screencap\Minicap\Minicap.h">
@@ -255,7 +255,21 @@
     <ClInclude Include="Controller\Unit\Input\MaatouchInput.h">
       <Filter>Source\Controller\Unit\Input</Filter>
     </ClInclude>
-    <ClInclude Include="Instance\InstanceStatus.h" />
+    <ClInclude Include="Instance\InstanceStatus.h">
+      <Filter>Source\Instance</Filter>
+    </ClInclude>
+    <ClInclude Include="Vision\Matcher.h">
+      <Filter>Source\Vision</Filter>
+    </ClInclude>
+    <ClInclude Include="Vision\VisionBase.h">
+      <Filter>Source\Vision</Filter>
+    </ClInclude>
+    <ClInclude Include="Vision\VisionUtils.hpp">
+      <Filter>Source\Vision</Filter>
+    </ClInclude>
+    <ClInclude Include="Resource\TemplateConfig.h" />
+    <ClInclude Include="Vision\VisionTypes.h" />
+    <ClInclude Include="Resource\OCRConfig.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Controller\ControllerMgr.cpp">
@@ -336,7 +350,7 @@
     <ClCompile Include="Controller\Unit\UnitBase.cpp">
       <Filter>Source\Controller\Unit</Filter>
     </ClCompile>
-    <ClCompile Include="Controller\Unit\Utils.cpp">
+    <ClCompile Include="Controller\Unit\UnitUtils.cpp">
       <Filter>Source\Controller\Unit</Filter>
     </ClCompile>
     <ClCompile Include="Controller\Unit\Screencap\Minicap\MinicapBase.cpp">
@@ -351,6 +365,16 @@
     <ClCompile Include="Controller\Unit\Input\MaatouchInput.cpp">
       <Filter>Source\Controller\Unit\Input</Filter>
     </ClCompile>
-    <ClCompile Include="Instance\InstanceStatus.cpp" />
+    <ClCompile Include="Instance\InstanceStatus.cpp">
+      <Filter>Source\Instance</Filter>
+    </ClCompile>
+    <ClCompile Include="Vision\Matcher.cpp">
+      <Filter>Source\Vision</Filter>
+    </ClCompile>
+    <ClCompile Include="Vision\VisionBase.cpp">
+      <Filter>Source\Vision</Filter>
+    </ClCompile>
+    <ClCompile Include="Resource\TemplateConfig.cpp" />
+    <ClCompile Include="Resource\OCRConfig.cpp" />
   </ItemGroup>
 </Project>

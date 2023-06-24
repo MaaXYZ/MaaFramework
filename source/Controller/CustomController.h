@@ -10,6 +10,8 @@ public:
     CustomController(MaaCustomControllerHandle handle, MaaControllerCallback callback, void* callback_arg);
     virtual ~CustomController() override = default;
 
+    virtual std::string get_uuid() const override;
+
 protected:
     virtual bool _connect() override;
     virtual void _click(ClickParams param) override;

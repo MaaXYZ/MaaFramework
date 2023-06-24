@@ -9,6 +9,30 @@ CustomController::CustomController(MaaCustomControllerHandle handle, MaaControll
     : ControllerMgr(callback, callback_arg), handle_(handle)
 {}
 
+std::string CustomController::get_uuid() const
+{
+    LogFunc << VAR_VOIDP(handle_) << VAR_VOIDP(handle_->get_uuid);
+
+    if (!handle_ || !handle_->get_uuid) {
+        LogError << "handle_ or handle_->get_uuid is nullptr";
+        return {};
+    }
+
+    MaaSize buff_size = handle_->get_uuid(nullptr, 0);
+    auto buff = std::make_unique<char[]>(buff_size);
+    MaaSize written = handle_->get_uuid(buff.get(), buff_size);
+
+    LogTrace << VAR(buff_size) << VAR(buff) << VAR(written);
+
+    if (written != buff_size) {
+        LogError << "written != buff_size";
+        return {};
+    }
+    std::string uuid(buff.get(), buff.get() + written);
+    LogTrace << VAR(uuid);
+    return uuid;
+}
+
 bool CustomController::_connect()
 {
     LogFunc << VAR_VOIDP(handle_) << VAR_VOIDP(handle_->connect);

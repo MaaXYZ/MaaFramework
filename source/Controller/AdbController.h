@@ -36,11 +36,14 @@ public:
                   void* callback_arg);
     virtual ~AdbController() override;
 
+    virtual std::string get_uuid() const override;
+
 protected:
     virtual bool _connect() override;
     virtual void _click(ClickParams param) override;
     virtual void _swipe(SwipeParams param) override;
     virtual cv::Mat _screencap() override;
+
 
 private:
     std::string adb_path_;

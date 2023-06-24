@@ -1,6 +1,7 @@
 #include "PipelineConfig.h"
 
 #include "Utils/Logger.hpp"
+#include "Vision/VisionTypes.h"
 
 MAA_RES_NS_BEGIN
 
@@ -11,14 +12,21 @@ bool PipelineConfig::load(const std::filesystem::path& path, bool is_base)
     LogFunc << VAR(path) << VAR(is_base);
 
     if (is_base) {
-        raw_data_.clear();
+        clear();
     }
 
     if (!std::filesystem::exists(path)) {
-        LogError << "path not exists";
-        return false;
+        if (is_base) {
+            LogError << "path not exists";
+            return false;
+        }
+        else {
+            LogWarn << "path not exists, not base, ignore";
+            return true;
+        }
     }
-    else if (std::filesystem::is_directory(path)) {
+
+    if (std::filesystem::is_directory(path)) {
         for (auto& entry : std::filesystem::directory_iterator(path)) {
             bool ret = open_and_parse_file(entry.path());
             if (!ret) {
@@ -40,6 +48,13 @@ bool PipelineConfig::load(const std::filesystem::path& path, bool is_base)
     }
 
     return true;
+}
+
+void PipelineConfig::clear()
+{
+    LogFunc;
+
+    raw_data_.clear();
 }
 
 bool PipelineConfig::open_and_parse_file(const std::filesystem::path& path)
@@ -186,6 +201,11 @@ bool PipelineConfig::parse_task(const std::string& name, const json::value& inpu
         return false;
     }
 
+    if (!get_and_check_value(input, "checkpoint", data.checkpoint, false)) {
+        LogError << "failed to get_and_check_value checkpoint" << VAR(input);
+        return false;
+    }
+
     raw_data_.insert_or_assign(name, std::move(data));
 
     return true;
@@ -233,7 +253,7 @@ bool PipelineConfig::parse_recognition(const json::value& input, MAA_PIPELINE_RE
 
 bool PipelineConfig::parse_templ_matching_params(const json::value& input, Recognition::Params& output)
 {
-    Recognition::TemplMatchingParams result;
+    MAA_VISION_NS::TemplMatchingParams result;
 
     if (!get_and_check_value_or_array(input, "templates", result.templates)) {
         LogError << "failed to get_and_check_value_or_array templates" << VAR(input);
@@ -251,10 +271,9 @@ bool PipelineConfig::parse_templ_matching_params(const json::value& input, Recog
 
     if (result.thresholds.empty()) {
         constexpr double kDefaultThreshold = 0.8;
-        result.thresholds = { kDefaultThreshold };
+        result.thresholds = std::vector(result.templates.size(), kDefaultThreshold);
     }
-
-    if (result.templates.size() != result.thresholds.size()) {
+    else if (result.templates.size() != result.thresholds.size()) {
         LogError << "templates.size() != thresholds.size()" << VAR(result.templates.size())
                  << VAR(result.thresholds.size());
         return false;
@@ -277,7 +296,7 @@ bool PipelineConfig::parse_templ_matching_params(const json::value& input, Recog
 
 bool PipelineConfig::parse_ocr_params(const json::value& input, Recognition::Params& output)
 {
-    Recognition::OcrParams result;
+    MAA_VISION_NS::OcrParams result;
 
     if (!get_and_check_value_or_array(input, "text", result.text)) {
         LogError << "failed to get_and_check_value_or_array text" << VAR(input);
@@ -316,7 +335,7 @@ bool PipelineConfig::parse_ocr_params(const json::value& input, Recognition::Par
 
 bool PipelineConfig::parse_freezes_wait_params(const json::value& input, Recognition::Params& output)
 {
-    Recognition::FreezesWaitingParams result;
+    MAA_VISION_NS::FreezesWaitingParams result;
 
     constexpr double kDefaultThreshold = 0.8;
     if (!get_and_check_value(input, "threshold", result.threshold, kDefaultThreshold)) {

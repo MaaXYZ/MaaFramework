@@ -66,6 +66,11 @@ AdbController::AdbController(std::string adb_path, std::string address, ControlU
 
 AdbController::~AdbController() {}
 
+std::string AdbController::get_uuid() const
+{
+    return control_unit_.device_info ? control_unit_.device_info->get_uuid() : std::string();
+}
+
 bool AdbController::_connect()
 {
     std::map<std::string, std::string> replacement {

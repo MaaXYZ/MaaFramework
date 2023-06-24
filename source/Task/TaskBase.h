@@ -22,8 +22,8 @@ public:
     virtual std::string_view type() const = 0;
 
 protected:
-    MaaResourceAPI* resource() { return inst_->resource(); }
-    MaaControllerAPI* controller() { return inst_->controller(); }
+    MAA_RES_NS::ResourceMgr* resource() { return inst_->resource(); }
+    MAA_CTRL_NS::ControllerMgr* controller() { return inst_->controller(); }
     InstanceStatus* status() { return inst_->status(); }
 
 private:

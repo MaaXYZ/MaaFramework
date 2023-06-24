@@ -1,6 +1,7 @@
 #include "InstanceMgr.h"
 
 #include "Controller/ControllerMgr.h"
+#include "Resource/ResourceMgr.h"
 #include "Task/PipelineTask.h"
 #include "Utils/Logger.hpp"
 
@@ -63,13 +64,6 @@ bool InstanceMgr::bind_controller(MaaControllerAPI* controller)
 
     if (controller_) {
         LogWarn << "Controller already binded" << VAR_VOIDP(controller_);
-    }
-
-    if (auto* ctrl_mgr = dynamic_cast<MAA_CTRL_NS::ControllerMgr*>(controller)) {
-        ctrl_mgr->bind_inst(this);
-    }
-    else {
-        LogWarn << "Controller is not ControllerMgr";
     }
 
     controller_ = controller;
@@ -215,14 +209,14 @@ std::string InstanceMgr::get_controller_uuid() const
     return controller_ ? controller_->get_uuid() : std::string();
 }
 
-MaaResourceAPI* InstanceMgr::resource()
+MAA_RES_NS::ResourceMgr* InstanceMgr::resource()
 {
-    return resource_;
+    return dynamic_cast<MAA_RES_NS::ResourceMgr*>(resource_);
 }
 
-MaaControllerAPI* InstanceMgr::controller()
+MAA_CTRL_NS::ControllerMgr* InstanceMgr::controller()
 {
-    return controller_;
+    return dynamic_cast<MAA_CTRL_NS::ControllerMgr*>(controller_);
 }
 
 InstanceStatus* InstanceMgr::status()

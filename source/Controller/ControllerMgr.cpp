@@ -1,6 +1,7 @@
 #include "ControllerMgr.h"
 
 #include "Resource/ResourceMgr.h"
+#include "Utils/NoWarningCV.h"
 #include "Utils/Math.hpp"
 
 MAA_CTRL_NS_BEGIN
@@ -83,35 +84,14 @@ MaaStatus ControllerMgr::wait(MaaCtrlId ctrl_id) const
 
 MaaBool ControllerMgr::connected() const
 {
-    // FIXME: remove this
-#ifdef MAA_DEBUG
-    return true;
-#else
-
-    return false;
-
-#endif
+    return connected_;
 }
 
 std::vector<uint8_t> ControllerMgr::get_image() const
 {
-    return std::vector<uint8_t>();
-}
-
-std::string ControllerMgr::get_uuid() const
-{
-    return std::string();
-}
-
-void ControllerMgr::bind_inst(InstanceInternalAPI* inst)
-{
-    LogInfo << VAR_VOIDP(this) << VAR_VOIDP(inst);
-
-    if (inst_) {
-        LogWarn << "Intance already binded" << VAR_VOIDP(inst_);
-    }
-
-    inst_ = inst;
+    std::vector<uint8_t> buff;
+    cv::imencode("png", image_, buff);
+    return buff;
 }
 
 void ControllerMgr::click(const cv::Rect& r)
@@ -135,7 +115,7 @@ void ControllerMgr::swipe(const cv::Point& p1, const cv::Point& p2, int duration
     constexpr int SampleDelay = 2;
 
     SwipeParams params;
-    auto cs = CubicSpline::smoothInOut(1, 1); // TODO: 加个参数？
+    auto cs = CubicSpline::smoothInOut(1, 1); // TODO: �Ӹ�������
     for (int i = 0; i < duration; i += SampleDelay) {
         auto progress = cs(static_cast<double>(i) / duration);
         int x = static_cast<int>(round(std::lerp(p1.x, p2.x, progress)));
@@ -150,11 +130,6 @@ cv::Mat ControllerMgr::screencap()
     std::unique_lock<std::mutex> lock(image_mutex_);
     action_runner_->post({ .type = Action::Type::screencap }, true);
     return image_;
-}
-
-MAA_RES_NS::ResourceMgr* ControllerMgr::resource() const
-{
-    return inst_ ? dynamic_cast<MAA_RES_NS::ResourceMgr*>(inst_->resource()) : nullptr;
 }
 
 bool ControllerMgr::run_action(typename AsyncRunner<Action>::Id id, Action action)

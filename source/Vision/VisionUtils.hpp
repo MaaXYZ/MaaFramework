@@ -1,0 +1,136 @@
+#pragma once
+
+#include "Common/MaaConf.h"
+#include "Utils/NoWarningCV.h"
+#include "Utils/Ranges.hpp"
+
+MAA_VISION_NS_BEGIN
+
+// | 1 2 3 4 |
+// | 5 6 7 8 |
+template <typename ResultsVec>
+inline static void sort_by_horizontal_(ResultsVec& results)
+{
+    ranges::sort(results, [](const auto& lhs, const auto& rhs) -> bool {
+        // y 差距较小则理解为是同一排的，按x排序
+        return std::abs(lhs.rect.y - rhs.rect.y) < 5 ? lhs.rect.x < rhs.rect.x : lhs.rect.y < rhs.rect.y;
+    });
+}
+
+// | 1 3 5 7 |
+// | 2 4 6 8 |
+template <typename ResultsVec>
+inline static void sort_by_vertical_(ResultsVec& results)
+{
+    ranges::sort(results, [](const auto& lhs, const auto& rhs) -> bool {
+        // x 差距较小则理解为是同一排的，按y排序
+        return std::abs(lhs.rect.x - rhs.rect.x) < 5 ? lhs.rect.y < rhs.rect.y : lhs.rect.x < rhs.rect.x;
+    });
+}
+
+template <typename ResultsVec>
+inline static void sort_by_score_(ResultsVec& results)
+{
+    ranges::sort(results, std::greater {}, std::mem_fn(&ResultsVec::value_type::score));
+}
+
+template <typename ResultsVec>
+inline static void sort_by_required_(ResultsVec& results, const std::vector<std::string>& required)
+{
+    std::unordered_map<std::string, size_t> req_cache;
+    for (size_t i = 0; i != required.size(); ++i) {
+        req_cache.emplace(required.at(i), i + 1);
+    }
+
+    // 不在 required 中的将被排在最后
+    ranges::sort(results, [&req_cache](const auto& lhs, const auto& rhs) -> bool {
+        size_t lvalue = req_cache[lhs.text];
+        size_t rvalue = req_cache[rhs.text];
+        if (lvalue == 0) {
+            return false;
+        }
+        else if (rvalue == 0) {
+            return true;
+        }
+        return lvalue < rvalue;
+    });
+}
+
+// Non-Maximum Suppression
+template <typename ResultsVec>
+inline static ResultsVec NMS(ResultsVec results, double threshold = 0.7)
+{
+    ranges::sort(results, [](const auto& a, const auto& b) { return a.score > b.score; });
+
+    ResultsVec nms_results;
+    for (size_t i = 0; i < results.size(); ++i) {
+        const auto& box = results[i];
+        if (box.score < 0.1f) {
+            continue;
+        }
+        nms_results.emplace_back(box);
+        for (size_t j = i + 1; j < results.size(); ++j) {
+            auto& box2 = results[j];
+            if (box2.score < 0.1f) {
+                continue;
+            }
+            int iou_area = (make_rect<cv::Rect>(box.rect) & make_rect<cv::Rect>(box2.rect)).area();
+            if (iou_area > threshold * box2.rect.area()) {
+                box2.score = 0;
+            }
+        }
+    }
+    return nms_results;
+}
+
+template <typename T>
+inline static T softmax(const T& input)
+{
+    T output = input;
+    float rowmax = *ranges::max_element(output);
+    std::vector<float> y(output.size());
+    float sum = 0.0f;
+    for (size_t i = 0; i != output.size(); ++i) {
+        sum += y[i] = std::exp(output[i] - rowmax);
+    }
+    for (size_t i = 0; i != output.size(); ++i) {
+        output[i] = y[i] / sum;
+    }
+    return output;
+}
+
+inline static cv::Mat hwc_to_chw(const cv::Mat& src)
+{
+    std::vector<cv::Mat> rgb_images;
+    cv::split(src, rgb_images);
+
+    // Stretch one-channel images to vector
+    cv::Mat flat_r = rgb_images[0].reshape(1, 1);
+    cv::Mat flat_g = rgb_images[1].reshape(1, 1);
+    cv::Mat flat_b = rgb_images[2].reshape(1, 1);
+
+    // Now we can rearrange channels if need
+    cv::Mat matArray[] = { flat_r, flat_g, flat_b };
+
+    cv::Mat flat_image;
+    // Concatenate three vectors to one
+    cv::hconcat(matArray, 3, flat_image);
+    return flat_image;
+}
+
+inline static std::vector<float> image_to_tensor(const cv::Mat& image)
+{
+    cv::Mat src = image.clone();
+    cv::cvtColor(src, src, cv::COLOR_BGR2RGB);
+
+    cv::Mat chw = hwc_to_chw(src);
+    cv::Mat chw_32f;
+    chw.convertTo(chw_32f, CV_32F, 1.0 / 255.0);
+
+    size_t tensor_size = 1ULL * src.cols * src.rows * src.channels();
+    std::vector<float> tensor(tensor_size);
+    std::memcpy(tensor.data(), chw_32f.data, tensor_size * sizeof(float));
+    return tensor;
+}
+
+MAA_VISION_NS_END

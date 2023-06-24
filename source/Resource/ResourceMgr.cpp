@@ -1,6 +1,5 @@
 #include "ResourceMgr.h"
 
-#include "Resource/PipelineConfig.h"
 #include "Utils/Logger.hpp"
 
 MAA_RES_NS_BEGIN
@@ -98,18 +97,9 @@ bool ResourceMgr::load(const std::filesystem::path& path)
     json::value props = json::open(path / "properties.json").value_or(json::value());
     bool is_base = props.get("is_base", false);
 
-    auto load_cfg = [&](const std::filesystem::path& cfg_path, auto& cfg) {
-        if (std::filesystem::exists(cfg_path)) {
-            if (is_base || !cfg) {
-                cfg = std::make_shared<std::remove_reference_t<decltype(*cfg)>>();
-            }
-            return cfg->load(cfg_path, is_base);
-        }
-
-        return !is_base;
-    };
-
-    bool ret = load_cfg(path / "pipeline", pipeline_cfg_);
+    bool ret = pipeline_cfg_.load(path / "pipeline", is_base);
+    ret &= template_cfg_.lazy_load(pipeline_cfg_.get_image_requirement());
+    ret &= ocr_cfg_.lazy_load(path / "ocr", is_base);
 
     LogInfo << VAR(path) << VAR(ret);
 

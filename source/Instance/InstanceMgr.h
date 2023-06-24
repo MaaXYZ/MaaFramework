@@ -36,8 +36,8 @@ public: // from MaaInstanceAPI
     virtual std::string get_controller_uuid() const override;
 
 public: // from InstanceInternalAPI
-    virtual MaaResourceAPI* resource() override;
-    virtual MaaControllerAPI* controller() override;
+    virtual MAA_RES_NS::ResourceMgr* resource() override;
+    virtual MAA_CTRL_NS::ControllerMgr* controller() override;
     virtual InstanceStatus* status() override;
 
 private:

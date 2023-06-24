@@ -15,6 +15,8 @@ class PipelineConfig : public NonCopyable
 {
 public:
     bool load(const std::filesystem::path& path, bool is_base);
+    void clear();
+    const auto& get_image_requirement() const { return image_requirement_; }
 
 private:
     bool open_and_parse_file(const std::filesystem::path& path);
@@ -38,7 +40,9 @@ private:
 
     bool parse_rect(const json::value& input_rect, cv::Rect& output);
 
+private:
     std::unordered_map<std::string, MAA_PIPELINE_RES_NS::Data> raw_data_;
+    std::map<std::string, std::filesystem::path> image_requirement_;
 };
 
 MAA_RES_NS_END
