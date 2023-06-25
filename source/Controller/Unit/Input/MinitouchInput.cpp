@@ -179,19 +179,29 @@ bool MinitouchInput::swipe(const std::vector<Step>& steps)
         auto first = steps[0];
         int x = first.x, y = first.y;
         scale_point(x, y);
+        auto now = std::chrono::steady_clock::now();
         if (!shell_handler_->write(std::format("d {} {} {} {}\nc\n", 0, x, y, press_))) {
             return false;
         }
-        std::this_thread::sleep_for(std::chrono::milliseconds(first.delay));
+        auto used = std::chrono::steady_clock::now() - now;
+        auto expect = std::chrono::milliseconds(first.delay);
+        if (used < expect) {
+            std::this_thread::sleep_for(expect - used);
+        }
     }
 
     for (auto it = steps.begin() + 1; it != steps.end(); it++) {
         int x = it->x, y = it->y;
+        auto now = std::chrono::steady_clock::now();
         auto res = shell_handler_->write(std::format("m {} {} {} {}\nc\n", 0, x, y, press_));
         if (!res) {
             return false;
         }
-        std::this_thread::sleep_for(std::chrono::milliseconds(it->delay));
+        auto used = std::chrono::steady_clock::now() - now;
+        auto expect = std::chrono::milliseconds(it->delay);
+        if (used < expect) {
+            std::this_thread::sleep_for(expect - used);
+        }
     }
 
     return shell_handler_->write("u\nc\n");

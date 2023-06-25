@@ -1,6 +1,7 @@
 #include "ControllerMgr.h"
 
 #include "Resource/ResourceMgr.h"
+#include "Utils/Math.hpp"
 
 MAA_CTRL_NS_BEGIN
 
@@ -131,7 +132,17 @@ void ControllerMgr::swipe(const cv::Rect& r1, const cv::Rect& r2, int duration)
 
 void ControllerMgr::swipe(const cv::Point& p1, const cv::Point& p2, int duration)
 {
-    // TODO: post swipe
+    constexpr int SampleDelay = 2;
+
+    SwipeParams params;
+    auto cs = CubicSpline::smoothInOut(1, 1); // TODO: 加个参数？
+    for (int i = 0; i < duration; i += SampleDelay) {
+        auto progress = cs(static_cast<double>(i) / duration);
+        int x = static_cast<int>(round(std::lerp(p1.x, p2.x, progress)));
+        int y = static_cast<int>(round(std::lerp(p1.y, p2.y, progress)));
+        params.steps.emplace_back(SwipeParams::Step { .x = x, .y = y, .delay = SampleDelay });
+    }
+    action_runner_->post({ .type = Action::Type::swipe, .params = std::move(params) }, true);
 }
 
 cv::Mat ControllerMgr::screencap()
