@@ -4,7 +4,7 @@
 
 MAA_CTRL_UNIT_NS_BEGIN
 
-class ScreencapRawByNetcat : public ScreencapBase
+class MAAAPI ScreencapRawByNetcat : public ScreencapBase
 {
 public:
     virtual ~ScreencapRawByNetcat() override = default;

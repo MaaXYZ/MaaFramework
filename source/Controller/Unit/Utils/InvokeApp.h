@@ -4,7 +4,7 @@
 
 MAA_CTRL_UNIT_NS_BEGIN
 
-class InvokeApp : public UnitBase
+class MAAAPI InvokeApp : public UnitBase
 {
 public:
     virtual ~InvokeApp() override = default;

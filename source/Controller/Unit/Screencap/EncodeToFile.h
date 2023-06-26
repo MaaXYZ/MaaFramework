@@ -4,7 +4,7 @@
 
 MAA_CTRL_UNIT_NS_BEGIN
 
-class ScreencapEncodeToFileAndPull : public ScreencapBase
+class MAAAPI ScreencapEncodeToFileAndPull : public ScreencapBase
 {
 public:
     virtual ~ScreencapEncodeToFileAndPull() override = default;

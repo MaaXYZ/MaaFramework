@@ -6,12 +6,13 @@
 #include <string>
 
 #include "Common/MaaConf.h"
+#include "MaaPort.h"
 
 MAA_CTRL_NS_BEGIN
 
 class IOHandler;
 
-class PlatformIO
+class MAAAPI PlatformIO
 {
 public:
     virtual ~PlatformIO() = default;

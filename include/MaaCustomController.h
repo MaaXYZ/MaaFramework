@@ -7,7 +7,7 @@
 extern "C"
 {
 #endif
-    struct MAAAPI_PORT MaaCustomControllerAPI
+    struct MAAAPI MaaCustomControllerAPI
     {
         MaaBool (*set_option)(MaaCtrlOption key, MaaString value);
 

@@ -1,14 +1,5 @@
 #pragma once
 
-// The way how the function is called
-#if !defined(MAA_CALL)
-#if defined(_WIN32)
-#define MAA_CALL __stdcall
-#else
-#define MAA_CALL
-#endif /* _WIN32 */
-#endif /* MAA_CALL */
-
 // The function exported symbols
 #if defined _WIN32 || defined __CYGWIN__
 #define MAA_DLL_IMPORT __declspec(dllimport)
@@ -27,13 +18,11 @@
 #endif
 
 #ifdef MAA_DLL_EXPORTS // defined if we are building the DLL (instead of using it)
-#define MAAAPI_PORT MAA_DLL_EXPORT
-#elif defined (MAA_STATIC_LINK)
-#define MAAAPI_PORT
+#define MAAAPI MAA_DLL_EXPORT
 #else
-#define MAAAPI_PORT MAA_DLL_IMPORT
+#define MAAAPI MAA_DLL_IMPORT
 #endif // MAA_DLL_EXPORTS
 
-#define MAAAPI MAAAPI_PORT MAA_CALL
-
-#define MAALOCAL MAA_DLL_LOCAL MAA_CALL
+#ifdef _WIN32
+#pragma warning(disable : 4251)
+#endif

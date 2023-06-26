@@ -90,18 +90,14 @@ endif()
 
 ### busybox
 
-file(GLOB_RECURSE maabusybox_src test/busybox/*.cpp test/busybox/*.hpp ${maa_src})
+file(GLOB_RECURSE maabusybox_src test/busybox/*.cpp test/busybox/*.hpp)
 add_executable(maabusybox ${maabusybox_src})
 set_target_properties(maabusybox PROPERTIES
     CXX_STANDARD 20
     CXX_STANDARD_REQUIRED ON
 )
-target_compile_definitions(maabusybox PRIVATE MAA_STATIC_LINK MAA_DEBUG)
-if (WIN32)
-    target_link_libraries(maabusybox ws2_32)
-    target_compile_definitions(maabusybox PRIVATE _UNICODE UNICODE)
-endif ()
-target_link_libraries(maabusybox MaaFramework ${OpenCV_LIBS} ZLIB::ZLIB header_only_libraries)
+target_compile_definitions(maabusybox PRIVATE MAA_DEBUG)
+target_link_libraries(maabusybox MaaFramework header_only_libraries)
 target_include_directories(maabusybox PUBLIC ${MaaFramework_INCLUDE} "source")
 add_custom_command(OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/config ${CMAKE_CURRENT_BINARY_DIR}/MaaAgentBinary
     COMMAND ${CMAKE_COMMAND} -E copy_directory ${CMAKE_CURRENT_SOURCE_DIR}/sample/cpp/config ${CMAKE_CURRENT_BINARY_DIR}/config

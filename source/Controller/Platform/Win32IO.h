@@ -10,7 +10,7 @@
 
 MAA_CTRL_NS_BEGIN
 
-class Win32IO : public PlatformIO
+class MAAAPI Win32IO : public PlatformIO
 {
 public:
     Win32IO();

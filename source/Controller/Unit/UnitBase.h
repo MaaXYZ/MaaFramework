@@ -1,13 +1,14 @@
 #pragma once
 
 #include "Common/MaaConf.h"
+#include "MaaPort.h"
 
 #include "Controller/Platform/PlatformIO.h"
 #include "Utils/ArgvWrapper.hpp"
 
 MAA_CTRL_UNIT_NS_BEGIN
 
-class UnitBase
+class MAAAPI UnitBase
 {
 public:
     using Argv = ArgvWrapper<std::vector<std::string>>;

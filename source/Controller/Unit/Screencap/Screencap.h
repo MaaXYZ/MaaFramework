@@ -9,7 +9,7 @@
 
 MAA_CTRL_UNIT_NS_BEGIN
 
-class Screencap : public ScreencapBase
+class MAAAPI Screencap : public ScreencapBase
 {
 public:
     enum class Method
@@ -34,10 +34,7 @@ public:
 
     virtual std::optional<cv::Mat> screencap() override;
 
-#ifdef MAA_DEBUG
-public:
-    std::map<Method, std::shared_ptr<ScreencapBase>>& get_units() { return units_; }
-#endif
+    std::shared_ptr<ScreencapBase>& get_unit(Method method) { return units_[method]; }
 
 private:
     bool speed_test();

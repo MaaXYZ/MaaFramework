@@ -4,7 +4,7 @@
 
 MAA_CTRL_UNIT_NS_BEGIN
 
-class ScreencapEncode : public ScreencapBase
+class MAAAPI ScreencapEncode : public ScreencapBase
 {
 public:
     virtual ~ScreencapEncode() override = default;

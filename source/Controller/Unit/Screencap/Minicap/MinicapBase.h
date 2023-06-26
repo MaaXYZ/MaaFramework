@@ -6,7 +6,7 @@
 
 MAA_CTRL_UNIT_NS_BEGIN
 
-class MinicapBase : public ScreencapBase
+class MAAAPI MinicapBase : public ScreencapBase
 {
 public:
     MinicapBase()

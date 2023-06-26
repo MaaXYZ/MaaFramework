@@ -1,7 +1,7 @@
 #define _CRT_SECURE_NO_WARNINGS
 
-#if !defined(MAA_STATIC_LINK) || !defined(MAA_DEBUG)
-#error "maa busybox must be compiled with MAA_STATIC_LINK and MAA_DEBUG "
+#if !defined(MAA_DEBUG)
+#error "maa busybox must be compiled with MAA_DEBUG "
 #endif
 
 #include "Controller/Platform/PlatformFactory.h"
@@ -246,7 +246,7 @@ int main(int argc, char* argv[])
 
 #define TEST_SC(method, methodEnum)                                                                              \
     if (profile || scmd == #method) {                                                                            \
-        cost[#method] = test_screencap(scp->get_units()[MAA_CTRL_UNIT_NS::Screencap::Method::methodEnum].get()); \
+        cost[#method] = test_screencap(scp->get_unit(MAA_CTRL_UNIT_NS::Screencap::Method::methodEnum).get()); \
     }
 
         TEST_SC(raw_by_netcat, RawByNetcat)

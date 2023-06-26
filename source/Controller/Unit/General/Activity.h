@@ -4,7 +4,7 @@
 
 MAA_CTRL_UNIT_NS_BEGIN
 
-class Activity : public UnitBase
+class MAAAPI Activity : public UnitBase
 {
 public:
     virtual ~Activity() override = default;

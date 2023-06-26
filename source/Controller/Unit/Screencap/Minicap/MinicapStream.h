@@ -4,7 +4,7 @@
 
 MAA_CTRL_UNIT_NS_BEGIN
 
-class MinicapStream : public MinicapBase
+class MAAAPI MinicapStream : public MinicapBase
 {
 public:
     virtual ~MinicapStream() override = default;

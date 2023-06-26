@@ -4,7 +4,7 @@
 
 MAA_CTRL_UNIT_NS_BEGIN
 
-class DeviceInfo : public UnitBase
+class MAAAPI DeviceInfo : public UnitBase
 {
 public:
     struct Resolution
