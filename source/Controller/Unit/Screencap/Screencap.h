@@ -9,7 +9,7 @@
 
 MAA_CTRL_UNIT_NS_BEGIN
 
-class MAAAPI_DEBUG Screencap : public ScreencapBase
+class MAA_DEBUG_API Screencap : public ScreencapBase
 {
 public:
     enum class Method

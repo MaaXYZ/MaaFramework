@@ -8,7 +8,7 @@
 
 MAA_CTRL_UNIT_NS_BEGIN
 
-class MAAAPI_DEBUG UnitBase
+class MAA_DEBUG_API UnitBase
 {
 public:
     using Argv = ArgvWrapper<std::vector<std::string>>;

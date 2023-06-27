@@ -18,15 +18,15 @@
 #endif
 
 #ifdef MAA_DLL_EXPORTS // defined if we are building the DLL (instead of using it)
-#define MAAAPI MAA_DLL_EXPORT
+#define MAA_API MAA_DLL_EXPORT
 #else
-#define MAAAPI MAA_DLL_IMPORT
+#define MAA_API MAA_DLL_IMPORT
 #endif // MAA_DLL_EXPORTS
 
-#ifdef MAA_DEBUG
-#define MAAAPI_DEBUG MAAAPI
+#ifdef MAA_DEBUG_DLL_EXPORTS
+#define MAA_DEBUG_API MAA_DLL_EXPORT
 #else
-#define MAAAPI_DEBUG
+#define MAA_DEBUG_API MAA_DLL_IMPORT
 #endif
 
 #ifdef _WIN32

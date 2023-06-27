@@ -10,7 +10,7 @@
 
 MAA_CTRL_NS_BEGIN
 
-class MAAAPI_DEBUG PosixIO : public PlatformIO
+class MAA_DEBUG_API PosixIO : public PlatformIO
 {
 public:
     PosixIO();
