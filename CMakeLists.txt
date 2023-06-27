@@ -8,6 +8,7 @@ endif ()
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_LIST_DIR}/cmake")
 
 option(BUILD_TEST "build a demo" ON)
+option(BUILD_BUSYBOX "build test utility" ON)
 option(BUILD_XCFRAMEWORK "build xcframework for macOS app" OFF)
 option(BUILD_UNIVERSAL "build both arm64 and x86_64 on macOS" OFF)
 option(INSTALL_PYTHON "install python ffi" OFF)
@@ -51,6 +52,9 @@ if (WIN32)
     #注意：相比VS版本缺少了 -D_CONSOLE -D_WINDLL 两项
     target_compile_definitions(MaaFramework PRIVATE MAA_DLL_EXPORTS _UNICODE UNICODE)
 endif ()
+if (BUILD_BUSYBOX)
+    target_compile_definitions(MaaFramework PRIVATE MAA_DEBUG_DLL_EXPORTS)
+endif ()
 target_include_directories(MaaFramework PUBLIC include PRIVATE source)
 set(MaaFramework_PUBLIC_HEADERS include/MaaAPI.h)
 set(MaaFramework_INCLUDE include)
@@ -90,22 +94,24 @@ endif()
 
 ### busybox
 
-file(GLOB_RECURSE maabusybox_src test/busybox/*.cpp test/busybox/*.hpp)
-add_executable(maabusybox ${maabusybox_src})
-set_target_properties(maabusybox PROPERTIES
-    CXX_STANDARD 20
-    CXX_STANDARD_REQUIRED ON
-)
-target_compile_definitions(maabusybox PRIVATE MAA_DEBUG)
-target_link_libraries(maabusybox MaaFramework header_only_libraries)
-target_include_directories(maabusybox PUBLIC ${MaaFramework_INCLUDE} "source")
-add_custom_command(OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/config ${CMAKE_CURRENT_BINARY_DIR}/MaaAgentBinary
-    COMMAND ${CMAKE_COMMAND} -E copy_directory ${CMAKE_CURRENT_SOURCE_DIR}/sample/cpp/config ${CMAKE_CURRENT_BINARY_DIR}/config
-    COMMAND ${CMAKE_COMMAND} -E copy_directory ${CMAKE_CURRENT_SOURCE_DIR}/MaaAgentBinary ${CMAKE_CURRENT_BINARY_DIR}/MaaAgentBinary
-)
-add_custom_target(maabusybox_res ALL DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/config ${CMAKE_CURRENT_BINARY_DIR}/MaaAgentBinary)
-set_property(TARGET maabusybox_res APPEND PROPERTY ADDITIONAL_CLEAN_FILES ${CMAKE_CURRENT_BINARY_DIR}/config ${CMAKE_CURRENT_BINARY_DIR}/MaaAgentBinary)
-add_dependencies(maabusybox maabusybox_res)
+if (BUILD_BUSYBOX)
+    file(GLOB_RECURSE maabusybox_src test/busybox/*.cpp test/busybox/*.hpp)
+    add_executable(maabusybox ${maabusybox_src})
+    set_target_properties(maabusybox PROPERTIES
+        CXX_STANDARD 20
+        CXX_STANDARD_REQUIRED ON
+    )
+    target_compile_definitions(maabusybox PRIVATE MAA_DEBUG)
+    target_link_libraries(maabusybox MaaFramework header_only_libraries)
+    target_include_directories(maabusybox PUBLIC ${MaaFramework_INCLUDE} "source")
+    add_custom_command(OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/config ${CMAKE_CURRENT_BINARY_DIR}/MaaAgentBinary
+        COMMAND ${CMAKE_COMMAND} -E copy_directory ${CMAKE_CURRENT_SOURCE_DIR}/sample/cpp/config ${CMAKE_CURRENT_BINARY_DIR}/config
+        COMMAND ${CMAKE_COMMAND} -E copy_directory ${CMAKE_CURRENT_SOURCE_DIR}/MaaAgentBinary ${CMAKE_CURRENT_BINARY_DIR}/MaaAgentBinary
+    )
+    add_custom_target(maabusybox_res ALL DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/config ${CMAKE_CURRENT_BINARY_DIR}/MaaAgentBinary)
+    set_property(TARGET maabusybox_res APPEND PROPERTY ADDITIONAL_CLEAN_FILES ${CMAKE_CURRENT_BINARY_DIR}/config ${CMAKE_CURRENT_BINARY_DIR}/MaaAgentBinary)
+    add_dependencies(maabusybox maabusybox_res)
+endif ()
 
 ###
 
