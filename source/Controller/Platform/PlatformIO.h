@@ -12,7 +12,7 @@ MAA_CTRL_NS_BEGIN
 
 class IOHandler;
 
-class MAAAPI_DEBUG PlatformIO
+class MAA_DEBUG_API PlatformIO
 {
 public:
     virtual ~PlatformIO() = default;

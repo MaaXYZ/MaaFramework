@@ -7,71 +7,71 @@
 extern "C"
 {
 #endif
-    MaaBool MAAAPI MaaSetGlobalOption(MaaGlobalOption key, MaaString value);
+    MaaBool MAA_API MaaSetGlobalOption(MaaGlobalOption key, MaaString value);
 
     /* Resource */
 
-    MaaResourceHandle MAAAPI MaaResourceCreate(MaaString user_path, MaaResourceCallback callback, void* callback_arg);
-    void MAAAPI MaaResourceDestroy(MaaResourceHandle* res);
+    MaaResourceHandle MAA_API MaaResourceCreate(MaaString user_path, MaaResourceCallback callback, void* callback_arg);
+    void MAA_API MaaResourceDestroy(MaaResourceHandle* res);
 
-    MaaResId MAAAPI MaaResourcePostResource(MaaResourceHandle res, MaaString path);
-    MaaStatus MAAAPI MaaResourceStatus(MaaResourceHandle res, MaaResId id);
-    MaaStatus MAAAPI MaaResourceWait(MaaResourceHandle res, MaaResId id);
-    MaaBool MAAAPI MaaResourceLoaded(MaaResourceHandle res);
+    MaaResId MAA_API MaaResourcePostResource(MaaResourceHandle res, MaaString path);
+    MaaStatus MAA_API MaaResourceStatus(MaaResourceHandle res, MaaResId id);
+    MaaStatus MAA_API MaaResourceWait(MaaResourceHandle res, MaaResId id);
+    MaaBool MAA_API MaaResourceLoaded(MaaResourceHandle res);
 
-    MaaBool MAAAPI MaaResourceSetOption(MaaResourceHandle res, MaaResOption key, MaaString value);
-    MaaSize MAAAPI MaaResourceGetHash(MaaResourceHandle res, char* buff, MaaSize buff_size);
+    MaaBool MAA_API MaaResourceSetOption(MaaResourceHandle res, MaaResOption key, MaaString value);
+    MaaSize MAA_API MaaResourceGetHash(MaaResourceHandle res, char* buff, MaaSize buff_size);
 
     /* Controller */
 
-    MaaControllerHandle MAAAPI MaaAdbControllerCreate(MaaString adb_path, MaaString address, MaaJsonString config,
+    MaaControllerHandle MAA_API MaaAdbControllerCreate(MaaString adb_path, MaaString address, MaaJsonString config,
                                                       MaaAdbControllerType type, MaaControllerCallback callback,
                                                       void* callback_arg);
-    MaaControllerHandle MAAAPI MaaCustomControllerCreate(MaaCustomControllerHandle handle,
+    MaaControllerHandle MAA_API MaaCustomControllerCreate(MaaCustomControllerHandle handle,
                                                          MaaControllerCallback callback, void* callback_arg);
 
-    void MAAAPI MaaControllerDestroy(MaaControllerHandle* ctrl);
+    void MAA_API MaaControllerDestroy(MaaControllerHandle* ctrl);
 
-    MaaBool MAAAPI MaaControllerSetOption(MaaControllerHandle ctrl, MaaCtrlOption key, MaaString value);
+    MaaBool MAA_API MaaControllerSetOption(MaaControllerHandle ctrl, MaaCtrlOption key, MaaString value);
 
-    MaaCtrlId MAAAPI MaaControllerPostConnection(MaaControllerHandle ctrl);
-    MaaCtrlId MAAAPI MaaControllerPostClick(MaaControllerHandle ctrl, int32_t x, int32_t y);
-    MaaCtrlId MAAAPI MaaControllerPostSwipe(MaaControllerHandle ctrl, int32_t* x_steps_buff, int32_t* y_steps_buff,
+    MaaCtrlId MAA_API MaaControllerPostConnection(MaaControllerHandle ctrl);
+    MaaCtrlId MAA_API MaaControllerPostClick(MaaControllerHandle ctrl, int32_t x, int32_t y);
+    MaaCtrlId MAA_API MaaControllerPostSwipe(MaaControllerHandle ctrl, int32_t* x_steps_buff, int32_t* y_steps_buff,
                                             int32_t* step_delay_buff, MaaSize buff_size);
-    MaaCtrlId MAAAPI MaaControllerPostScreencap(MaaControllerHandle ctrl);
+    MaaCtrlId MAA_API MaaControllerPostScreencap(MaaControllerHandle ctrl);
 
-    MaaStatus MAAAPI MaaControllerStatus(MaaControllerHandle ctrl, MaaCtrlId id);
-    MaaStatus MAAAPI MaaControllerWait(MaaControllerHandle ctrl, MaaCtrlId id);
-    MaaBool MAAAPI MaaControllerConnected(MaaControllerHandle ctrl);
+    MaaStatus MAA_API MaaControllerStatus(MaaControllerHandle ctrl, MaaCtrlId id);
+    MaaStatus MAA_API MaaControllerWait(MaaControllerHandle ctrl, MaaCtrlId id);
+    MaaBool MAA_API MaaControllerConnected(MaaControllerHandle ctrl);
 
-    MaaSize MAAAPI MaaControllerGetImage(MaaControllerHandle ctrl, void* buff, MaaSize buff_size);
-    MaaSize MAAAPI MaaControllerGetUUID(MaaControllerHandle ctrl, char* buff, MaaSize buff_size);
+    MaaSize MAA_API MaaControllerGetImage(MaaControllerHandle ctrl, void* buff, MaaSize buff_size);
+    MaaSize MAA_API MaaControllerGetUUID(MaaControllerHandle ctrl, char* buff, MaaSize buff_size);
 
     /* Instance */
 
-    MaaInstanceHandle MAAAPI MaaCreate(MaaInstanceCallback callback, void* callback_arg);
-    void MAAAPI MaaDestroy(MaaInstanceHandle* inst);
-    MaaBool MAAAPI MaaSetOption(MaaInstanceHandle inst, MaaInstOption key, MaaString value);
+    MaaInstanceHandle MAA_API MaaCreate(MaaInstanceCallback callback, void* callback_arg);
+    void MAA_API MaaDestroy(MaaInstanceHandle* inst);
+    MaaBool MAA_API MaaSetOption(MaaInstanceHandle inst, MaaInstOption key, MaaString value);
 
-    MaaBool MAAAPI MaaBindResource(MaaInstanceHandle inst, MaaResourceHandle res);
-    MaaBool MAAAPI MaaBindController(MaaInstanceHandle inst, MaaControllerHandle ctrl);
-    MaaBool MAAAPI MaaInited(MaaInstanceHandle inst);
+    MaaBool MAA_API MaaBindResource(MaaInstanceHandle inst, MaaResourceHandle res);
+    MaaBool MAA_API MaaBindController(MaaInstanceHandle inst, MaaControllerHandle ctrl);
+    MaaBool MAA_API MaaInited(MaaInstanceHandle inst);
 
-    MaaTaskId MAAAPI MaaPostTask(MaaInstanceHandle inst, MaaTaskType type, MaaJsonString param);
-    MaaBool MAAAPI MaaSetTaskParam(MaaInstanceHandle inst, MaaTaskId id, MaaJsonString param);
+    MaaTaskId MAA_API MaaPostTask(MaaInstanceHandle inst, MaaTaskType type, MaaJsonString param);
+    MaaBool MAA_API MaaSetTaskParam(MaaInstanceHandle inst, MaaTaskId id, MaaJsonString param);
 
-    MaaStatus MAAAPI MaaTaskStatus(MaaInstanceHandle inst, MaaTaskId id);
-    MaaStatus MAAAPI MaaTaskWait(MaaInstanceHandle inst, MaaTaskId id);
-    MaaBool MAAAPI MaaTaskAllFinished(MaaInstanceHandle inst);
+    MaaStatus MAA_API MaaTaskStatus(MaaInstanceHandle inst, MaaTaskId id);
+    MaaStatus MAA_API MaaTaskWait(MaaInstanceHandle inst, MaaTaskId id);
+    MaaBool MAA_API MaaTaskAllFinished(MaaInstanceHandle inst);
 
-    void MAAAPI MaaStop(MaaInstanceHandle inst);
+    void MAA_API MaaStop(MaaInstanceHandle inst);
 
-    MaaSize MAAAPI MaaGetResourceHash(MaaInstanceHandle inst, char* buff, MaaSize buff_size);
-    MaaSize MAAAPI MaaGetControllerUUID(MaaInstanceHandle inst, char* buff, MaaSize buff_size);
+    MaaSize MAA_API MaaGetResourceHash(MaaInstanceHandle inst, char* buff, MaaSize buff_size);
+    MaaSize MAA_API MaaGetControllerUUID(MaaInstanceHandle inst, char* buff, MaaSize buff_size);
 
     /* Utils */
 
-    MaaString MAAAPI MaaVersion();
+    MaaString MAA_API MaaVersion();
 
 #ifdef __cplusplus
 }
