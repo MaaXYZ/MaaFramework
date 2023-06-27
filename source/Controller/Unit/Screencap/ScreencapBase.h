@@ -6,7 +6,7 @@
 
 MAA_CTRL_UNIT_NS_BEGIN
 
-class MAAAPI ScreencapBase : public UnitBase
+class MAAAPI_DEBUG ScreencapBase : public UnitBase
 {
 public:
     virtual ~ScreencapBase() override = default;

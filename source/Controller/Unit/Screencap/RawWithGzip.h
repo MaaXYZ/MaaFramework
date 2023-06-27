@@ -4,7 +4,7 @@
 
 MAA_CTRL_UNIT_NS_BEGIN
 
-class MAAAPI ScreencapRawWithGzip : public ScreencapBase
+class MAAAPI_DEBUG ScreencapRawWithGzip : public ScreencapBase
 {
 public:
     virtual ~ScreencapRawWithGzip() override = default;

@@ -4,7 +4,7 @@
 
 MAA_CTRL_UNIT_NS_BEGIN
 
-class MAAAPI MinicapDirect : public MinicapBase
+class MAAAPI_DEBUG MinicapDirect : public MinicapBase
 {
 public:
     virtual ~MinicapDirect() override = default;

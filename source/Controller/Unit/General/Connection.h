@@ -4,7 +4,7 @@
 
 MAA_CTRL_UNIT_NS_BEGIN
 
-class MAAAPI Connection : public UnitBase
+class MAAAPI_DEBUG Connection : public UnitBase
 {
 public:
     virtual ~Connection() override = default;

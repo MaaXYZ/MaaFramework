@@ -23,6 +23,12 @@
 #define MAAAPI MAA_DLL_IMPORT
 #endif // MAA_DLL_EXPORTS
 
+#ifdef MAA_DEBUG
+#define MAAAPI_DEBUG MAAAPI
+#else
+#define MAAAPI_DEBUG
+#endif
+
 #ifdef _WIN32
 #pragma warning(disable : 4251)
 #endif
