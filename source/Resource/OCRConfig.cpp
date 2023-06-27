@@ -52,6 +52,11 @@ bool OCRConfig::lazy_load(const std::filesystem::path& path, bool is_base)
 
     LogInfo << VAR(det_model_path_) << VAR(rec_model_path_) << VAR(rec_label_path_);
 
+    bool path_ready = !det_model_path_.empty() && !rec_model_path_.empty() && !rec_label_path_.empty();
+    if (!path_ready) {
+        return false;
+    }
+
 #ifdef MAA_DEBUG
     if (!deter() || !recer() || !ocrer()) {
         LogError << "failed to load OCR config";
@@ -59,7 +64,7 @@ bool OCRConfig::lazy_load(const std::filesystem::path& path, bool is_base)
     }
 #endif
 
-    return !det_model_path_.empty() && !rec_model_path_.empty() && !rec_label_path_.empty();
+    return path_ready;
 }
 
 void OCRConfig::clear()
