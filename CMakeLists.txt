@@ -7,12 +7,8 @@ endif ()
 
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_LIST_DIR}/cmake")
 
-option(BUILD_TEST "build a demo" ON)
-option(BUILD_BUSYBOX "build test utility" ON)
-option(BUILD_XCFRAMEWORK "build xcframework for macOS app" OFF)
-option(BUILD_UNIVERSAL "build both arm64 and x86_64 on macOS" OFF)
-option(INSTALL_PYTHON "install python ffi" OFF)
-option(INSTALL_RESOURCE "install resource" OFF)
+option(BUILD_SAMPLE "build a demo" ON)
+option(BUILD_BUSYBOX "build the busybox" OFF)
 option(INSTALL_DEVEL "install development files" OFF)
 option(INSTALL_THIRD_LIBS "install third party libraries" ON)
 option(USE_MAADEPS "use third-party libraries built by MaaDeps" ON)
@@ -48,13 +44,9 @@ file(GLOB_RECURSE maa_src source/*.cpp source/*.h source/*.hpp)
 
 add_library(MaaFramework SHARED ${maa_src})
 
-if (WIN32)
-    #注意：相比VS版本缺少了 -D_CONSOLE -D_WINDLL 两项
-    target_compile_definitions(MaaFramework PRIVATE MAA_DLL_EXPORTS _UNICODE UNICODE)
-endif ()
-if (BUILD_BUSYBOX)
-    target_compile_definitions(MaaFramework PRIVATE MAA_DEBUG_DLL_EXPORTS)
-endif ()
+target_compile_definitions(MaaFramework PRIVATE MAA_DLL_EXPORTS _UNICODE UNICODE)
+target_compile_definitions(MaaFramework PRIVATE "$<$<CONFIG:DEBUG>:MAA_DEBUG;MAA_DEBUG_DLL_EXPORTS>")
+
 target_include_directories(MaaFramework PUBLIC include PRIVATE source)
 set(MaaFramework_PUBLIC_HEADERS include/MaaAPI.h)
 set(MaaFramework_INCLUDE include)
@@ -69,7 +61,7 @@ if(UNIX)
     set_target_properties(MaaFramework PROPERTIES INSTALL_RPATH "$ORIGIN/")
 endif()
 
-if (BUILD_TEST)
+if (BUILD_SAMPLE)
     add_executable(sample sample/cpp/main.cpp)
     set_target_properties(sample PROPERTIES
         CXX_STANDARD 20
@@ -77,7 +69,24 @@ if (BUILD_TEST)
     )
     target_link_libraries(sample MaaFramework)
     target_include_directories(sample PUBLIC ${MaaFramework_INCLUDE})
-endif (BUILD_TEST)
+endif (BUILD_SAMPLE)
+
+if (BUILD_BUSYBOX)
+    file(GLOB_RECURSE maabusybox_src test/busybox/*.cpp test/busybox/*.hpp)
+    add_executable(maabusybox ${maabusybox_src})
+    set_target_properties(maabusybox PROPERTIES
+        CXX_STANDARD 20
+        CXX_STANDARD_REQUIRED ON
+    )
+    target_link_libraries(maabusybox MaaFramework header_only_libraries)
+    target_include_directories(maabusybox PUBLIC ${MaaFramework_INCLUDE} "source")
+    add_custom_command(OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/config ${CMAKE_CURRENT_BINARY_DIR}/MaaAgentBinary
+        COMMAND ${CMAKE_COMMAND} -E copy_directory ${CMAKE_CURRENT_SOURCE_DIR}/sample/cpp/config ${CMAKE_CURRENT_BINARY_DIR}/config
+        COMMAND ${CMAKE_COMMAND} -E copy_directory ${CMAKE_CURRENT_SOURCE_DIR}/MaaAgentBinary ${CMAKE_CURRENT_BINARY_DIR}/MaaAgentBinary
+    )
+    add_custom_target(maabusybox_res ALL DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/config ${CMAKE_CURRENT_BINARY_DIR}/MaaAgentBinary)
+    add_dependencies(maabusybox maabusybox_res)
+endif (BUILD_BUSYBOX)
 
 find_package(OpenCV REQUIRED COMPONENTS core imgproc imgcodecs videoio)
 find_package(ZLIB REQUIRED)
@@ -91,29 +100,6 @@ target_link_libraries(MaaFramework ${OpenCV_LIBS} MaaDerpLearning ZLIB::ZLIB hea
 if(WIN32)
     target_link_libraries(MaaFramework ws2_32)
 endif()
-
-### busybox
-
-if (BUILD_BUSYBOX)
-    file(GLOB_RECURSE maabusybox_src test/busybox/*.cpp test/busybox/*.hpp)
-    add_executable(maabusybox ${maabusybox_src})
-    set_target_properties(maabusybox PROPERTIES
-        CXX_STANDARD 20
-        CXX_STANDARD_REQUIRED ON
-    )
-    target_compile_definitions(maabusybox PRIVATE MAA_DEBUG)
-    target_link_libraries(maabusybox MaaFramework header_only_libraries)
-    target_include_directories(maabusybox PUBLIC ${MaaFramework_INCLUDE} "source")
-    add_custom_command(OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/config ${CMAKE_CURRENT_BINARY_DIR}/MaaAgentBinary
-        COMMAND ${CMAKE_COMMAND} -E copy_directory ${CMAKE_CURRENT_SOURCE_DIR}/sample/cpp/config ${CMAKE_CURRENT_BINARY_DIR}/config
-        COMMAND ${CMAKE_COMMAND} -E copy_directory ${CMAKE_CURRENT_SOURCE_DIR}/MaaAgentBinary ${CMAKE_CURRENT_BINARY_DIR}/MaaAgentBinary
-    )
-    add_custom_target(maabusybox_res ALL DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/config ${CMAKE_CURRENT_BINARY_DIR}/MaaAgentBinary)
-    set_property(TARGET maabusybox_res APPEND PROPERTY ADDITIONAL_CLEAN_FILES ${CMAKE_CURRENT_BINARY_DIR}/config ${CMAKE_CURRENT_BINARY_DIR}/MaaAgentBinary)
-    add_dependencies(maabusybox maabusybox_res)
-endif ()
-
-###
 
 # clang 15之后有ranges
 # if (CMAKE_CXX_COMPILER_ID MATCHES ".*Clang")
@@ -135,13 +121,6 @@ install(TARGETS MaaFramework
 if(INSTALL_THIRD_LIBS AND USE_MAADEPS)
     maadeps_install()
 endif()
-
-if (INSTALL_PYTHON)
-    install(DIRECTORY sample/python DESTINATION .)
-endif (INSTALL_PYTHON)
-if (INSTALL_RESOURCE)
-    install(DIRECTORY resource DESTINATION .)
-endif (INSTALL_RESOURCE)
 
 
 if (APPLE)

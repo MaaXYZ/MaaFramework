@@ -1,9 +1,5 @@
 #define _CRT_SECURE_NO_WARNINGS
 
-#if !defined(MAA_DEBUG)
-#error "maa busybox must be compiled with MAA_DEBUG "
-#endif
-
 #include "Controller/Platform/PlatformFactory.h"
 #include "Controller/Unit/ControlUnit.h"
 #include "MaaAPI.h"
@@ -114,7 +110,7 @@ int main(int argc, char* argv[])
         ("c,config", "config directory", cxxopts::value<std::string>()->default_value((std::filesystem::current_path()).string()))
         ("t,client", "client, $MAA_CLIENT", cxxopts::value<std::string>()->default_value(client))
         ("h,help", "print usage", cxxopts::value<bool>())
-        
+
         ("command", "command", cxxopts::value<std::string>()->default_value("help"))
         ("subcommand", "sub command", cxxopts::value<std::string>()->default_value("help"))
         ("params", "rest params", cxxopts::value<std::vector<std::string>>()->default_value(""))
@@ -244,8 +240,8 @@ int main(int argc, char* argv[])
             profile = true;
         }
 
-#define TEST_SC(method, methodEnum)                                                                              \
-    if (profile || scmd == #method) {                                                                            \
+#define TEST_SC(method, methodEnum)                                                                           \
+    if (profile || scmd == #method) {                                                                         \
         cost[#method] = test_screencap(scp->get_unit(MAA_CTRL_UNIT_NS::Screencap::Method::methodEnum).get()); \
     }
 
