@@ -23,8 +23,7 @@ public:
     ResultOpt analyze() const;
 
 public:
-    static cv::Mat match_template(const cv::Mat& image, const cv::Mat& templ, double threshold, int method,
-                                  bool green_mask);
+    static cv::Mat match_template(const cv::Mat& image, const cv::Mat& templ, int method, bool green_mask);
 
 private:
     ResultOpt match_and_postproc(const cv::Mat& templ, double threshold) const;

@@ -34,7 +34,7 @@ Matcher::ResultOpt Matcher::analyze() const
 
 Matcher::ResultOpt Matcher::match_and_postproc(const cv::Mat& templ, double threshold) const
 {
-    cv::Mat matched = match_template(image_(roi_), templ, threshold, param_.method, param_.green_mask);
+    cv::Mat matched = match_template(image_(roi_), templ, param_.method, param_.green_mask);
     if (matched.empty()) {
         return std::nullopt;
     }
@@ -54,8 +54,7 @@ Matcher::ResultOpt Matcher::match_and_postproc(const cv::Mat& templ, double thre
     return Result { .rect = rect, .score = max_val };
 }
 
-cv::Mat Matcher::match_template(const cv::Mat& image, const cv::Mat& templ, double threshold, int method,
-                                bool green_mask)
+cv::Mat Matcher::match_template(const cv::Mat& image, const cv::Mat& templ, int method, bool green_mask)
 {
     if (templ.cols > image.cols || templ.rows > image.rows) {
         LogError << "templ size is too large" << VAR(image) << VAR(templ);

@@ -464,6 +464,7 @@ bool PipelineConfig::parse_click_region_params(const json::value& input, MAA_PIP
 bool PipelineConfig::parse_swipe_self_params(const json::value& input, MAA_PIPELINE_RES_NS::Action::Params& output)
 {
     // TODO: 解析参数结构还没想好
+    std::ignore = input, output;
     return false;
 }
 

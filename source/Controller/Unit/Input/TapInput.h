@@ -11,7 +11,7 @@ public:
 
     virtual bool parse(const json::value& config) override;
 
-    virtual bool init(int sw, int sh) override { return true; }
+    virtual bool init(int sw, int sh) override;
 
     virtual bool click(int x, int y) override;
     virtual bool swipe(const std::vector<Step>& steps) override;

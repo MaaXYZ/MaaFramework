@@ -26,6 +26,7 @@ ResourceMgr::~ResourceMgr()
 
 bool ResourceMgr::set_option(MaaResOption key, const std::string& value)
 {
+    std::ignore = key, value;
     return false;
 }
 

@@ -97,8 +97,3 @@
 #ifndef MAA_VERSION
 #define MAA_VERSION "DEBUG_VERSION"
 #endif
-
-#if defined(_MSC_VER)
-// FIXME: remove this
-#pragma warning(disable : 4100)
-#endif

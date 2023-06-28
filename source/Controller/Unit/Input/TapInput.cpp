@@ -9,6 +9,12 @@ bool TapTouchInput::parse(const json::value& config)
     return parse_argv("Click", config, click_argv_) && parse_argv("Swipe", config, swipe_argv_);
 }
 
+bool TapTouchInput::init(int sw, int sh)
+{
+    std::ignore = sw, sh;
+    return true;
+}
+
 bool TapTouchInput::click(int x, int y)
 {
     LogFunc;

@@ -398,6 +398,8 @@ std::string PipeIOHandlerWin32::read(unsigned timeout_sec)
 
 std::string PipeIOHandlerWin32::read(unsigned timeout_sec, size_t expect)
 {
+    // TODO
+    std::ignore = timeout_sec, expect;
     return std::string();
 }
 

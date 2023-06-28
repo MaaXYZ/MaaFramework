@@ -50,6 +50,8 @@ private:
         // LogFunc << VAR_VOIDP(callback_) << VAR_VOIDP(callback_arg_) << VAR(id) << VAR(cb_data.msg)
         //         << VAR(cb_data.details);
 
+        std::ignore = id;
+
         if (!callback_) {
             return false;
         }

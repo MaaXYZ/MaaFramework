@@ -29,6 +29,7 @@ ControllerMgr::~ControllerMgr()
 
 bool ControllerMgr::set_option(MaaCtrlOption key, const std::string& value)
 {
+    std::ignore = key, value;
     return false;
 }
 
