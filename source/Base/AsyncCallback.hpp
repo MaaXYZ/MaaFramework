@@ -9,7 +9,7 @@
 MAA_NS_BEGIN
 
 template <typename Callback, typename CallbackArg = void*>
-requires std::is_constructible_v<MAA_APICallback, Callback>
+requires std::is_constructible_v<MaaAPICallback, Callback>
 class AsyncCallback : public NonCopyable
 {
 private:
