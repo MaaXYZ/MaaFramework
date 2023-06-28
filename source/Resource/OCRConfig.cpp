@@ -82,7 +82,7 @@ const std::unique_ptr<fastdeploy::vision::ocr::DBDetector>& OCRConfig::deter() c
         return deter_;
     }
 
-    LogFunc << "lazy load Detector" << VAR(det_model_path_);
+    LogFunc << "Load Detector" << VAR(det_model_path_);
 
     auto det_model = read_file<std::string>(det_model_path_);
     auto det_option = option_;
@@ -105,7 +105,7 @@ const std::unique_ptr<fastdeploy::vision::ocr::Recognizer>& OCRConfig::recer() c
         return recer_;
     }
 
-    LogFunc << "lazy load Recognizer" << VAR(rec_model_path_) << VAR(rec_label_path_);
+    LogFunc << "Load Recognizer" << VAR(rec_model_path_) << VAR(rec_label_path_);
 
     auto rec_model = read_file<std::string>(rec_model_path_);
     std::string rec_label = read_file<std::string>(rec_label_path_);
@@ -128,6 +128,8 @@ const std::unique_ptr<fastdeploy::pipeline::PPOCRv3>& OCRConfig::ocrer() const
     if (ocrer_) {
         return ocrer_;
     }
+
+    LogFunc << "Load OCRer" << VAR(deter()) << VAR(recer());
 
     ocrer_ = std::make_unique<fastdeploy::pipeline::PPOCRv3>(deter().get(), recer().get());
 

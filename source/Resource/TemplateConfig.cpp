@@ -61,6 +61,8 @@ const cv::Mat& TemplateConfig::get_template_image(const std::string& name) const
         return templ_iter->second;
     }
 
+    LogFunc << "Load Templ" << VAR(name);
+
     auto path_iter = template_paths_.find(name);
     if (path_iter == template_paths_.end()) {
         LogError << "Invalid template name" << VAR(name);

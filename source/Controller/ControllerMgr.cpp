@@ -115,7 +115,7 @@ void ControllerMgr::swipe(const cv::Point& p1, const cv::Point& p2, int duration
     constexpr int SampleDelay = 2;
 
     SwipeParams params;
-    auto cs = CubicSpline::smoothInOut(1, 1); // TODO: �Ӹ�������
+    auto cs = CubicSpline::smooth_in_out(1, 1); // TODO: �Ӹ�������
     for (int i = 0; i < duration; i += SampleDelay) {
         auto progress = cs(static_cast<double>(i) / duration);
         int x = static_cast<int>(round(std::lerp(p1.x, p2.x, progress)));

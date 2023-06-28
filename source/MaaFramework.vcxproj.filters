@@ -126,9 +126,6 @@
     <ClInclude Include="Utils\NoWarningCVMat.h">
       <Filter>Source\Utils</Filter>
     </ClInclude>
-    <ClInclude Include="Utils\NoWarningCPR.h">
-      <Filter>Source\Utils</Filter>
-    </ClInclude>
     <ClInclude Include="Utils\NoWarningCV.h">
       <Filter>Source\Utils</Filter>
     </ClInclude>
@@ -267,9 +264,18 @@
     <ClInclude Include="Vision\VisionUtils.hpp">
       <Filter>Source\Vision</Filter>
     </ClInclude>
-    <ClInclude Include="Resource\TemplateConfig.h" />
-    <ClInclude Include="Vision\VisionTypes.h" />
-    <ClInclude Include="Resource\OCRConfig.h" />
+    <ClInclude Include="Vision\VisionTypes.h">
+      <Filter>Source\Vision</Filter>
+    </ClInclude>
+    <ClInclude Include="Resource\OCRConfig.h">
+      <Filter>Source\Resource</Filter>
+    </ClInclude>
+    <ClInclude Include="Resource\TemplateConfig.h">
+      <Filter>Source\Resource</Filter>
+    </ClInclude>
+    <ClInclude Include="Utils\Math.hpp">
+      <Filter>Source\Utils</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Controller\ControllerMgr.cpp">
@@ -374,7 +380,11 @@
     <ClCompile Include="Vision\VisionBase.cpp">
       <Filter>Source\Vision</Filter>
     </ClCompile>
-    <ClCompile Include="Resource\TemplateConfig.cpp" />
-    <ClCompile Include="Resource\OCRConfig.cpp" />
+    <ClCompile Include="Resource\TemplateConfig.cpp">
+      <Filter>Source\Resource</Filter>
+    </ClCompile>
+    <ClCompile Include="Resource\OCRConfig.cpp">
+      <Filter>Source\Resource</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>

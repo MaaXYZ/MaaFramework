@@ -177,7 +177,6 @@ bool ScreencapBase::clean_cr(std::string& buffer)
         return false;
     }
 
-    // TODO: 应该可以优化为若干次copy+find, 效率应该会好一点, 但是没必要
     auto last = buffer.end() - 1;
     auto ptr = scan;
     while (++scan != last) {

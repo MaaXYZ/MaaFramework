@@ -198,13 +198,28 @@ public:
         separator sep_ = separator::space;
     };
 
+    class FakeStream
+    {
+    public:
+        template <typename T>
+        FakeStream& operator<<(T&& value)
+        {
+            std::ignore = std::forward<T>(value);
+            return *this;
+        }
+    };
+
 public:
     virtual ~Logger() override { flush(); }
 
     template <typename... args_t>
-    auto debug(args_t&&... args)
+    auto debug([[maybe_unused]]args_t&&... args)
     {
+#ifdef MAA_DEBUG
         return stream(level::debug, std::forward<args_t>(args)...);
+#else
+        return FakeStream();
+#endif
     }
     template <typename... args_t>
     auto trace(args_t&&... args)

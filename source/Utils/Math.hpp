@@ -2,9 +2,11 @@
 
 struct CubicSpline
 {
-    double a, b, c;
+    double a = 0;
+    double b = 0;
+    double c = 0;
 
-    static CubicSpline smoothInOut(double in, double out)
+    static CubicSpline smooth_in_out(double in, double out)
     {
         return CubicSpline { .a = in, .b = -(2 * in + out - 3), .c = -(-in - out + 2) };
     }
