@@ -325,7 +325,7 @@ bool PipelineConfig::parse_ocr_params(const json::value& input, Recognition::Par
                 LogError << "replace pair is not string" << VAR(input);
                 return false;
             }
-            result.replace.emplace(first.as_string(), second.as_string());
+            result.replace.emplace_back(std::make_pair(first.as_string(), second.as_string()));
         }
     }
 

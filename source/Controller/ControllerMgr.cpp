@@ -1,8 +1,8 @@
 #include "ControllerMgr.h"
 
 #include "Resource/ResourceMgr.h"
-#include "Utils/NoWarningCV.h"
 #include "Utils/Math.hpp"
+#include "Utils/NoWarningCV.h"
 
 MAA_CTRL_NS_BEGIN
 
@@ -180,14 +180,11 @@ cv::Point ControllerMgr::rand_point(const cv::Rect& r)
 
 std::ostream& operator<<(std::ostream& os, const SwipeParams::Step& step)
 {
-#define VAR_STEP(x) #x << ":" << x
-    os << VAR_STEP(step.x) << VAR_STEP(step.y) << VAR_STEP(step.delay);
-#undef VAR_STEP
-
+    os << VAR_RAW(step.x) << VAR_RAW(step.y) << VAR_RAW(step.delay);
     return os;
 }
 
-inline std::ostream& operator<<(std::ostream& os, const Action& action)
+std::ostream& operator<<(std::ostream& os, const Action& action)
 {
     switch (action.type) {
     case Action::Type::connect:

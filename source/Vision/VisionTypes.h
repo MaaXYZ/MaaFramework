@@ -20,8 +20,7 @@ struct TemplMatchingParams
 struct OcrParams
 {
     std::vector<std::string> text;
-
-    std::unordered_map<std::string, std::string> replace;
+    std::vector<std::pair<std::string, std::string>> replace;
 };
 
 struct FreezesWaitingParams

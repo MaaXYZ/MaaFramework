@@ -276,6 +276,7 @@
     <ClInclude Include="Utils\Math.hpp">
       <Filter>Source\Utils</Filter>
     </ClInclude>
+    <ClInclude Include="Vision\OCRer.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Controller\ControllerMgr.cpp">
@@ -386,5 +387,6 @@
     <ClCompile Include="Resource\OCRConfig.cpp">
       <Filter>Source\Resource</Filter>
     </ClCompile>
+    <ClCompile Include="Vision\OCRer.cpp" />
   </ItemGroup>
 </Project>

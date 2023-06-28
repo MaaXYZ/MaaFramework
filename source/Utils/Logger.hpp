@@ -213,7 +213,7 @@ public:
     virtual ~Logger() override { flush(); }
 
     template <typename... args_t>
-    auto debug([[maybe_unused]]args_t&&... args)
+    auto debug([[maybe_unused]] args_t&&... args)
     {
 #ifdef MAA_DEBUG
         return stream(level::debug, std::forward<args_t>(args)...);
@@ -409,8 +409,9 @@ inline constexpr std::string_view pertty_file(std::string_view file)
     MAA_NS::LogUtils::ScopeLeaveHelper LogScopeHeplerName(LOG_ARGS); \
     MAA_NS::LogUtils::ScopeEnterHelper(LOG_ARGS)()
 
-#define VAR(x) MAA_NS::Logger::separator::none << "[" << #x << "=" << (x) << "] " << MAA_NS::Logger::separator::space
-#define VAR_VOIDP(x) \
-    MAA_NS::Logger::separator::none << "[" << #x << "=" << ((void*)x) << "] " << MAA_NS::Logger::separator::space
+#define VAR_RAW(x) "[" << #x << "=" << (x) << "] "
+#define VAR(x) MAA_NS::Logger::separator::none << VAR_RAW(x) << MAA_NS::Logger::separator::space
+#define VAR_VOIDP_RAW(x) "[" << #x << "=" << ((void*)x) << "] "
+#define VAR_VOIDP(x) MAA_NS::Logger::separator::none << VAR_VOIDP_RAW(x) << MAA_NS::Logger::separator::space
 
 MAA_NS_END

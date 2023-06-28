@@ -1,4 +1,5 @@
 #pragma once
+
 #include "VisionBase.h"
 
 #include <optional>
@@ -12,7 +13,7 @@ class Matcher : public VisionBase
 public:
     struct Result
     {
-        cv::Rect rect {};
+        cv::Rect box {};
         double score = 0.0;
     };
     using ResultOpt = std::optional<Result>;

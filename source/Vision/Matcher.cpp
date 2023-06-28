@@ -50,8 +50,8 @@ Matcher::ResultOpt Matcher::match_and_postproc(const cv::Mat& templ, double thre
         return std::nullopt;
     }
 
-    cv::Rect rect(max_loc.x + roi_.x, max_loc.y + roi_.y, templ.cols, templ.rows);
-    return Result { .rect = rect, .score = max_val };
+    cv::Rect box(max_loc.x + roi_.x, max_loc.y + roi_.y, templ.cols, templ.rows);
+    return Result { .box = box, .score = max_val };
 }
 
 cv::Mat Matcher::match_template(const cv::Mat& image, const cv::Mat& templ, int method, bool green_mask)

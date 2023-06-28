@@ -95,6 +95,7 @@
     <ClInclude Include="Utils\StringMisc.hpp" />
     <ClInclude Include="Utils\Time.hpp" />
     <ClInclude Include="Vision\Matcher.h" />
+    <ClInclude Include="Vision\OCRer.h" />
     <ClInclude Include="Vision\VisionTypes.h" />
     <ClInclude Include="Vision\VisionUtils.hpp" />
     <ClInclude Include="Vision\VisionBase.h" />
@@ -135,6 +136,7 @@
     <ClCompile Include="Utils\Platform\PlatformPosix.cpp" />
     <ClCompile Include="Utils\Platform\PlatformWin32.cpp" />
     <ClCompile Include="Vision\Matcher.cpp" />
+    <ClCompile Include="Vision\OCRer.cpp" />
     <ClCompile Include="Vision\VisionBase.cpp" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
