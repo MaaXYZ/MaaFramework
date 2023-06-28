@@ -15,20 +15,15 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="main.cpp" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="config\controller_config.json" />
-    <None Include="resource\pipeline\main.json" />
-    <None Include="resource\properties.json" />
+    <ClCompile Include="maabusybox.cpp" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>16.0</VCProjectVersion>
     <Keyword>Win32Proj</Keyword>
-    <ProjectGuid>{63B4F1A2-291C-4C85-91E1-A1F6DAE30D64}</ProjectGuid>
+    <ProjectGuid>{9E0A1B3F-6F4A-46D0-ACD1-826E943FE121}</ProjectGuid>
     <RootNamespace>Tools</RootNamespace>
     <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
-    <ProjectName>Sample</ProjectName>
+    <ProjectName>Busybox</ProjectName>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
@@ -69,17 +64,17 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
-    <IncludePath>$(SolutionDir)include</IncludePath>
+    <IncludePath>$(SolutionDir)include;$(SolutionDir)source;$(SolutionDir)3rdparty\include</IncludePath>
     <LibraryPath>$(TargetDir);$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">
     <LinkIncremental>false</LinkIncremental>
-    <IncludePath>$(SolutionDir)include</IncludePath>
+    <IncludePath>$(SolutionDir)include;$(SolutionDir)source;$(SolutionDir)3rdparty\include</IncludePath>
     <LibraryPath>$(TargetDir);$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>false</LinkIncremental>
-    <IncludePath>$(SolutionDir)include</IncludePath>
+    <IncludePath>$(SolutionDir)include;$(SolutionDir)source;$(SolutionDir)3rdparty\include</IncludePath>
     <LibraryPath>$(TargetDir);$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -101,18 +96,10 @@
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>MaaFramework.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>MaaFramework.lib;MaaDerpLearning.lib;opencv_world4.lib;zlib.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>$(TargetDir);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <Profile>true</Profile>
     </Link>
-    <PostBuildEvent>
-      <Command>xcopy "$(ProjectDir)\config\controller_config.json" "$(TargetDir)" /y
-xcopy "$(ProjectDir)\resource" "$(TargetDir)" /s /e /y</Command>
-    </PostBuildEvent>
-    <PreLinkEvent>
-      <Command>
-      </Command>
-    </PreLinkEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">
     <ClCompile>
@@ -134,14 +121,10 @@ xcopy "$(ProjectDir)\resource" "$(TargetDir)" /s /e /y</Command>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>MaaFramework.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>MaaFramework.lib;MaaDerpLearning.lib;opencv_world4.lib;zlib.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>$(TargetDir);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <Profile>true</Profile>
     </Link>
-    <PostBuildEvent>
-      <Command>xcopy "$(ProjectDir)\config\controller_config.json" "$(TargetDir)" /y
-xcopy "$(ProjectDir)\resource" "$(TargetDir)" /s /e /y</Command>
-    </PostBuildEvent>
     <PreLinkEvent>
       <Command>
       </Command>
@@ -167,14 +150,10 @@ xcopy "$(ProjectDir)\resource" "$(TargetDir)" /s /e /y</Command>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>MaaFramework.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>MaaFramework.lib;MaaDerpLearning.lib;opencv_world4d.lib;zlibd.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>$(TargetDir);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <Profile>true</Profile>
     </Link>
-    <PostBuildEvent>
-      <Command>xcopy "$(ProjectDir)\config\controller_config.json" "$(TargetDir)" /y
-xcopy "$(ProjectDir)\resource" "$(TargetDir)" /s /e /y</Command>
-    </PostBuildEvent>
     <PreLinkEvent>
       <Command>
       </Command>

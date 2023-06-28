@@ -1,16 +1,18 @@
 #define _CRT_SECURE_NO_WARNINGS
 
+#include <cstdlib>
+#include <filesystem>
+#include <iostream>
+#include <thread>
+
+#include <cxxopts/cxxopts.hpp>
+
 #include "Controller/Platform/PlatformFactory.h"
 #include "Controller/Unit/ControlUnit.h"
 #include "MaaAPI.h"
 #include "Utils/ArgvWrapper.hpp"
 #include "Utils/NoWarningCV.h"
 #include "Utils/StringMisc.hpp"
-#include "cxxopts.hpp"
-#include <cstdlib>
-#include <filesystem>
-#include <iostream>
-#include <thread>
 
 std::ostream& operator<<(std::ostream& os, const MaaNS::ControllerNS::Unit::DeviceInfo::Resolution& res)
 {

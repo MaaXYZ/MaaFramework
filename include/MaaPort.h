@@ -23,8 +23,10 @@
 #define MAA_API MAA_DLL_IMPORT
 #endif // MAA_DLL_EXPORTS
 
-#ifdef MAA_DEBUG_DLL_EXPORTS
+#if defined MAA_DEBUG_DLL_EXPORTS
 #define MAA_DEBUG_API MAA_DLL_EXPORT
+#elif defined MAA_DLL_EXPORTS
+#define MAA_DEBUG_API
 #else
 #define MAA_DEBUG_API MAA_DLL_IMPORT
 #endif
