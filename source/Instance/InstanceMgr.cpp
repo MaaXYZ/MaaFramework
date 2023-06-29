@@ -77,7 +77,8 @@ bool InstanceMgr::inited() const
 
 bool InstanceMgr::set_option(MaaInstOption key, const std::string& value)
 {
-    std::ignore = key, value;
+    std::ignore = key;
+    std::ignore = value;
     return false;
 }
 
