@@ -69,7 +69,7 @@ jobs:
       - name: Install dep
         run: |
           pacman -Sy
-          pacman -S --noconfirm cmake python
+          pacman -S --noconfirm cmake python ccache
 
       - name: Install cross compile toolchains
         if: ${{ matrix.arch != 'x86_64' }}
