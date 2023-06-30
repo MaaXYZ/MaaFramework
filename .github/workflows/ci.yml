@@ -66,10 +66,10 @@ jobs:
     steps:
       - uses: actions/checkout@v3
 
-      - name: Install cmake
+      - name: Install dep
         run: |
           pacman -Sy
-          pacman -S --noconfirm cmake
+          pacman -S --noconfirm cmake python
 
       - name: Install cross compile toolchains
         if: ${{ matrix.arch != 'x86_64' }}
