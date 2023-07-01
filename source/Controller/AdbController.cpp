@@ -8,13 +8,11 @@
 MAA_CTRL_NS_BEGIN
 
 AdbController::AdbController(std::string adb_path, std::string address,
-                             std::shared_ptr<MAA_CTRL_UNIT_NS::ControlUnitAPI> unit_mgr,
-                             MaaControllerCallback callback, void* callback_arg)
+                             std::shared_ptr<MAA_CTRL_UNIT_NS::ControlUnitAPI> unit_mgr, MaaControllerCallback callback,
+                             void* callback_arg)
     : ControllerMgr(callback, callback_arg), adb_path_(std::move(adb_path)), address_(std::move(address)),
       unit_mgr_(std::move(unit_mgr))
-{
-    unit_mgr_->set_adb(adb_path_, address_);
-}
+{}
 
 AdbController::~AdbController()
 {

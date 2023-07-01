@@ -105,7 +105,7 @@ bool ScreencapFastestWay::speed_test()
     }
 
     auto ms = std::chrono::duration_cast<std::chrono::milliseconds>(cost);
-    LogInfo << "The fastest method is " << method_ << VAR(ms);
+    LogInfo << "The fastest method is" << method_ << VAR(ms);
     return true;
 }
 

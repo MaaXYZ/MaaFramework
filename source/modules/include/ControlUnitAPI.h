@@ -99,8 +99,6 @@ class ControlUnitAPI
 public:
     virtual ~ControlUnitAPI() = default;
 
-    virtual void set_adb(const std::string& adb_path, const std::string& adb_serial) = 0;
-
     virtual std::shared_ptr<ConnectionAPI> connection_obj() = 0;
     virtual std::shared_ptr<DeviceInfoAPI> device_info_obj() = 0;
     virtual std::shared_ptr<ActivityAPI> activity_obj() = 0;
@@ -109,14 +107,21 @@ public:
     virtual std::shared_ptr<ScreencapAPI> screencap_obj() = 0;
 };
 
-std::shared_ptr<ControlUnitAPI> MAA_API create_controller_unit(MaaAdbControllerType type, MaaJsonString config);
+std::shared_ptr<ControlUnitAPI> MAA_API create_adb_controller_unit(MaaString adb_path, MaaString adb_serial,
+                                                                   MaaAdbControllerType type, MaaJsonString config);
 
 // for debug
-std::shared_ptr<ConnectionAPI> MAA_DEBUG_API create_connection(MaaAdbControllerType type, MaaJsonString config);
-std::shared_ptr<DeviceInfoAPI> MAA_DEBUG_API create_device_info(MaaAdbControllerType type, MaaJsonString config);
-std::shared_ptr<ActivityAPI> MAA_DEBUG_API create_activity(MaaAdbControllerType type, MaaJsonString config);
-std::shared_ptr<TouchInputAPI> MAA_DEBUG_API create_touch_input(MaaAdbControllerType type, MaaJsonString config);
-std::shared_ptr<KeyInputAPI> MAA_DEBUG_API create_key_input(MaaAdbControllerType type, MaaJsonString config);
-std::shared_ptr<ScreencapAPI> MAA_DEBUG_API create_screencap(MaaAdbControllerType type, MaaJsonString config);
+std::shared_ptr<ConnectionAPI> MAA_DEBUG_API create_adb_connection(MaaString adb_path, MaaString adb_serial,
+                                                                   MaaAdbControllerType type, MaaJsonString config);
+std::shared_ptr<DeviceInfoAPI> MAA_DEBUG_API create_adb_device_info(MaaString adb_path, MaaString adb_serial,
+                                                                    MaaAdbControllerType type, MaaJsonString config);
+std::shared_ptr<ActivityAPI> MAA_DEBUG_API create_adb_activity(MaaString adb_path, MaaString adb_serial,
+                                                               MaaAdbControllerType type, MaaJsonString config);
+std::shared_ptr<TouchInputAPI> MAA_DEBUG_API create_adb_touch_input(MaaString adb_path, MaaString adb_serial,
+                                                                    MaaAdbControllerType type, MaaJsonString config);
+std::shared_ptr<KeyInputAPI> MAA_DEBUG_API create_adb_key_input(MaaString adb_path, MaaString adb_serial,
+                                                                MaaAdbControllerType type, MaaJsonString config);
+std::shared_ptr<ScreencapAPI> MAA_DEBUG_API create_adb_screencap(MaaString adb_path, MaaString adb_serial,
+                                                                 MaaAdbControllerType type, MaaJsonString config);
 
 MAA_CTRL_UNIT_NS_END

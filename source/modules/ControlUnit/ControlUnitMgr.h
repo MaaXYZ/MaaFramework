@@ -12,8 +12,6 @@ public:
     virtual ~ControlUnitMgr() override = default;
 
 public: // from ControlUnitAPI
-    virtual void set_adb(const std::string& adb_path, const std::string& adb_serial) override;
-
     virtual std::shared_ptr<ConnectionAPI> connection_obj() override { return connection_; }
     virtual std::shared_ptr<DeviceInfoAPI> device_info_obj() override { return device_info_; }
     virtual std::shared_ptr<ActivityAPI> activity_obj() override { return activity_; }
@@ -24,6 +22,7 @@ public: // from ControlUnitAPI
 public:
     bool parse(const json::value& config);
     void set_io(const std::shared_ptr<PlatformIO>& io_ptr);
+    void set_argv_replacement(const std::map<std::string, std::string>& replacement);
 
     void set_connection_obj(std::shared_ptr<ConnectionBase> obj) { connection_ = std::move(obj); }
     void set_device_info_obj(std::shared_ptr<DeviceInfoBase> obj) { device_info_ = std::move(obj); }

@@ -20,7 +20,7 @@ inline std::string read_controller_config(const std::string& cur_dir)
     std::ifstream ifs(std::filesystem::path(cur_dir) / "config" / "controller_config.json", std::ios::in);
     if (!ifs.is_open()) {
         std::cerr << "Failed to open controller_config.json\n"
-            << "Please copy controller_config.json to " << std::filesystem::path(cur_dir) / "config" << std::endl;
+                  << "Please copy controller_config.json to " << std::filesystem::path(cur_dir) / "config" << std::endl;
         exit(1);
     }
 
@@ -113,7 +113,7 @@ int main(int argc, char* argv[])
     using namespace MAA_CTRL_UNIT_NS;
 
     if (cmd == "connect") {
-        auto connection = create_connection(0, config.c_str());
+        auto connection = create_adb_connection(adb.c_str(), adb_address.c_str(), 0, config.c_str());
         if (!connection) {
             LogError << "Failed to create connection";
             return -1;
@@ -121,7 +121,7 @@ int main(int argc, char* argv[])
         LogInfo << "connect: " << connection->connect();
     }
     else if (cmd == "device_info") {
-        auto device_info = create_device_info(0, config.c_str());
+        auto device_info = create_adb_device_info(adb.c_str(), adb_address.c_str(), 0, config.c_str());
 
         if (!device_info) {
             LogError << "Failed to create device_info";
@@ -133,7 +133,7 @@ int main(int argc, char* argv[])
         LogInfo << "orientation:" << device_info->request_orientation();
     }
     else if (cmd == "activity") {
-        auto activity = create_activity(0, config.c_str());
+        auto activity = create_adb_activity(adb.c_str(), adb_address.c_str(), 0, config.c_str());
         if (!activity) {
             LogError << "Failed to create activity";
             return -1;
@@ -194,7 +194,7 @@ int main(int argc, char* argv[])
     //     }
     // }
     else if (cmd == "screencap") {
-        auto device = create_device_info(0, config.c_str());
+        auto device = create_adb_device_info(adb.c_str(), adb_address.c_str(), 0, config.c_str());
         if (!device) {
             LogError << "Failed to create device_info";
             return -1;
@@ -211,16 +211,17 @@ int main(int argc, char* argv[])
 
         if (scmd == "help") {
             std::cout << "Usage: " << argv[0]
-                << " screencap [profile | raw_by_netcat | raw_with_gzip | encode | encode_to_file | "
-                "minicap_direct | minicap_strean]"
-                << std::endl;
+                      << " screencap [profile | raw_by_netcat | raw_with_gzip | encode | encode_to_file | "
+                         "minicap_direct | minicap_strean]"
+                      << std::endl;
             return 0;
         }
 
         bool profile = false;
         std::map<std::string, double> cost;
 
-        auto scp = create_screencap(MaaAdbControllerType_Screencap_FastestWay, config.c_str());
+        auto scp = create_adb_screencap(adb.c_str(), adb_address.c_str(), MaaAdbControllerType_Screencap_FastestWay,
+                                        config.c_str());
         scp->init(res->width, res->height);
 
         if (scmd == "profile") {

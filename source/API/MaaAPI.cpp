@@ -107,7 +107,7 @@ MaaControllerHandle MaaAdbControllerCreate(MaaString adb_path, MaaString address
 {
     LogFunc << VAR(adb_path) << VAR(address) << VAR_VOIDP(callback) << VAR_VOIDP(callback_arg);
 
-    auto unit_mgr = MAA_CTRL_UNIT_NS::create_controller_unit(type, config);
+    auto unit_mgr = MAA_CTRL_UNIT_NS::create_adb_controller_unit(adb_path, address, type, config);
     if (!unit_mgr) {
         LogError << "Failed to create controller unit";
         return nullptr;

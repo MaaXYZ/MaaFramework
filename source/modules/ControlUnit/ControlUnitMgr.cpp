@@ -18,33 +18,6 @@
 
 MAA_CTRL_UNIT_NS_BEGIN
 
-void ControlUnitMgr::set_adb(const std::string& adb_path, const std::string& adb_serial)
-{
-    std::map<std::string, std::string> replacement {
-        { "{ADB}", adb_path },
-        { "{ADB_SERIAL}", adb_serial },
-    };
-
-    if (connection_) {
-        connection_->set_replacement(replacement);
-    }
-    if (device_info_) {
-        device_info_->set_replacement(replacement);
-    }
-    if (activity_) {
-        activity_->set_replacement(replacement);
-    }
-    if (touch_input_) {
-        touch_input_->set_replacement(replacement);
-    }
-    if (key_input_) {
-        key_input_->set_replacement(replacement);
-    }
-    if (screencap_) {
-        screencap_->set_replacement(replacement);
-    }
-}
-
 bool ControlUnitMgr::parse(const json::value& config)
 {
     bool ret = true;
@@ -81,7 +54,30 @@ void ControlUnitMgr::set_io(const std::shared_ptr<PlatformIO>& io_ptr)
     }
 }
 
-std::shared_ptr<ControlUnitAPI> create_controller_unit(MaaAdbControllerType type, MaaJsonString config)
+void ControlUnitMgr::set_argv_replacement(const std::map<std::string, std::string>& replacement)
+{
+    if (connection_) {
+        connection_->set_replacement(replacement);
+    }
+    if (device_info_) {
+        device_info_->set_replacement(replacement);
+    }
+    if (activity_) {
+        activity_->set_replacement(replacement);
+    }
+    if (touch_input_) {
+        touch_input_->set_replacement(replacement);
+    }
+    if (key_input_) {
+        key_input_->set_replacement(replacement);
+    }
+    if (screencap_) {
+        screencap_->set_replacement(replacement);
+    }
+}
+
+std::shared_ptr<ControlUnitAPI> create_adb_controller_unit(MaaString adb_path, MaaString adb_serial,
+                                                           MaaAdbControllerType type, MaaJsonString config)
 {
     LogFunc << VAR(type) << VAR(config);
 
@@ -194,10 +190,16 @@ std::shared_ptr<ControlUnitAPI> create_controller_unit(MaaAdbControllerType type
     }
     unit_mgr->set_io(platform_io);
 
+    unit_mgr->set_argv_replacement({
+        { "{ADB}", adb_path },
+        { "{ADB_SERIAL}", adb_serial },
+    });
+
     return unit_mgr;
 }
 
-std::shared_ptr<ConnectionAPI> create_connection(MaaAdbControllerType type, MaaJsonString config)
+std::shared_ptr<ConnectionAPI> create_adb_connection(MaaString adb_path, MaaString adb_serial,
+                                                     MaaAdbControllerType type, MaaJsonString config)
 {
     std::ignore = type;
 
@@ -221,11 +223,16 @@ std::shared_ptr<ConnectionAPI> create_connection(MaaAdbControllerType type, MaaJ
         return nullptr;
     }
     connection->set_io(platform_io);
+    connection->set_replacement({
+        { "{ADB}", adb_path },
+        { "{ADB_SERIAL}", adb_serial },
+    });
 
     return connection;
 }
 
-std::shared_ptr<DeviceInfoAPI> create_device_info(MaaAdbControllerType type, MaaJsonString config)
+std::shared_ptr<DeviceInfoAPI> create_adb_device_info(MaaString adb_path, MaaString adb_serial,
+                                                      MaaAdbControllerType type, MaaJsonString config)
 {
     std::ignore = type;
 
@@ -249,11 +256,16 @@ std::shared_ptr<DeviceInfoAPI> create_device_info(MaaAdbControllerType type, Maa
         return nullptr;
     }
     device_info->set_io(platform_io);
+    device_info->set_replacement({
+        { "{ADB}", adb_path },
+        { "{ADB_SERIAL}", adb_serial },
+    });
 
     return device_info;
 }
 
-std::shared_ptr<ActivityAPI> create_activity(MaaAdbControllerType type, MaaJsonString config)
+std::shared_ptr<ActivityAPI> create_adb_activity(MaaString adb_path, MaaString adb_serial, MaaAdbControllerType type,
+                                                 MaaJsonString config)
 {
     std::ignore = type;
 
@@ -277,11 +289,16 @@ std::shared_ptr<ActivityAPI> create_activity(MaaAdbControllerType type, MaaJsonS
         return nullptr;
     }
     activity->set_io(platform_io);
+    activity->set_replacement({
+        { "{ADB}", adb_path },
+        { "{ADB_SERIAL}", adb_serial },
+    });
 
     return activity;
 }
 
-std::shared_ptr<TouchInputAPI> create_touch_input(MaaAdbControllerType type, MaaJsonString config)
+std::shared_ptr<TouchInputAPI> create_adb_touch_input(MaaString adb_path, MaaString adb_serial,
+                                                      MaaAdbControllerType type, MaaJsonString config)
 {
     auto json_opt = json::parse(std::string_view(config));
     if (!json_opt) {
@@ -320,11 +337,16 @@ std::shared_ptr<TouchInputAPI> create_touch_input(MaaAdbControllerType type, Maa
         return nullptr;
     }
     touch_unit->set_io(platform_io);
+    touch_unit->set_replacement({
+        { "{ADB}", adb_path },
+        { "{ADB_SERIAL}", adb_serial },
+    });
 
     return touch_unit;
 }
 
-std::shared_ptr<KeyInputAPI> create_key_input(MaaAdbControllerType type, MaaJsonString config)
+std::shared_ptr<KeyInputAPI> create_adb_key_input(MaaString adb_path, MaaString adb_serial, MaaAdbControllerType type,
+                                                  MaaJsonString config)
 {
     auto json_opt = json::parse(std::string_view(config));
     if (!json_opt) {
@@ -359,11 +381,16 @@ std::shared_ptr<KeyInputAPI> create_key_input(MaaAdbControllerType type, MaaJson
         return nullptr;
     }
     key_unit->set_io(platform_io);
+    key_unit->set_replacement({
+        { "{ADB}", adb_path },
+        { "{ADB_SERIAL}", adb_serial },
+    });
 
     return key_unit;
 }
 
-std::shared_ptr<ScreencapAPI> create_screencap(MaaAdbControllerType type, MaaJsonString config)
+std::shared_ptr<ScreencapAPI> create_adb_screencap(MaaString adb_path, MaaString adb_serial, MaaAdbControllerType type,
+                                                   MaaJsonString config)
 {
     auto json_opt = json::parse(std::string_view(config));
     if (!json_opt) {
@@ -418,6 +445,10 @@ std::shared_ptr<ScreencapAPI> create_screencap(MaaAdbControllerType type, MaaJso
         return nullptr;
     }
     screencap_unit->set_io(platform_io);
+    screencap_unit->set_replacement({
+        { "{ADB}", adb_path },
+        { "{ADB_SERIAL}", adb_serial },
+    });
 
     return screencap_unit;
 }
