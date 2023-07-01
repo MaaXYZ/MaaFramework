@@ -1,7 +1,7 @@
 #pragma once
 
 #include "Common/MaaConf.h"
-#include "Platform/Platform.h"
+#include "Platform/PlatformImpl.hpp"
 
 MAA_NS_BEGIN
 

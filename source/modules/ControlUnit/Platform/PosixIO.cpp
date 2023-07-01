@@ -18,7 +18,7 @@
 #include <cstring> // for strerror
 
 #include "Utils/Logger.hpp"
-#include "Utils/Platform/Platform.h"
+#include "Utils/Platform.hpp"
 
 MAA_CTRL_UNIT_NS_BEGIN
 

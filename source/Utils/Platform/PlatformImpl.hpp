@@ -8,15 +8,19 @@
 #include <utility>
 
 #ifdef _WIN32
+
 #include "SafeWindows.h"
 
-#include <atomic>
-#include <format>
 #include <mbctype.h>
 
-#include "Utils/StringMisc.hpp"
-#else
-#include "PlatformPosix.h"
+#else //  _WIN32
+
+#include <cstdlib>
+#include <dlfcn.h>
+#include <fcntl.h>
+#include <sys/wait.h>
+#include <unistd.h>
+
 #endif //  _WIN32
 
 #include "Common/MaaConf.h"
@@ -343,8 +347,6 @@ inline std::string path_to_crt_string(const std::filesystem::path& path)
 #endif
 
 // --------- detail ------------
-
-extern const size_t page_size;
 
 void* aligned_alloc(size_t len, size_t align);
 void aligned_free(void* ptr);
