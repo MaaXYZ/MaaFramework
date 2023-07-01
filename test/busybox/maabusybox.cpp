@@ -7,35 +7,12 @@
 
 #include <cxxopts/cxxopts.hpp>
 
-#include "Controller/Platform/PlatformFactory.h"
-#include "Controller/Unit/ControlUnit.h"
-#include "MaaAPI.h"
-#include "Utils/ArgvWrapper.hpp"
-#include "Utils/NoWarningCV.h"
-#include "Utils/StringMisc.hpp"
+#include "Utils/Logger.hpp"
+#include "modules/include/ControlUnitAPI.h"
 
-std::ostream& operator<<(std::ostream& os, const MaaNS::ControllerNS::Unit::DeviceInfo::Resolution& res)
+std::ostream& operator<<(std::ostream& os, const MAA_CTRL_UNIT_NS::DeviceResolution& res)
 {
     return os << "{ width: " << res.width << ", height: " << res.height << " }";
-}
-
-template <typename T>
-std::ostream& operator<<(std::ostream& os, const std::vector<T>& v)
-{
-    os << "[";
-    std::copy(v.begin(), v.end(), std::ostream_iterator<T>(os, ", "));
-    return os << "]";
-}
-
-template <typename T>
-std::ostream& operator<<(std::ostream& os, const std::optional<T>& v)
-{
-    if (v.has_value()) {
-        return os << v.value();
-    }
-    else {
-        return os << "<nullopt>";
-    }
 }
 
 inline std::string read_controller_config(const std::string& cur_dir)
@@ -43,7 +20,7 @@ inline std::string read_controller_config(const std::string& cur_dir)
     std::ifstream ifs(std::filesystem::path(cur_dir) / "config" / "controller_config.json", std::ios::in);
     if (!ifs.is_open()) {
         std::cerr << "Failed to open controller_config.json\n"
-                  << "Please copy controller_config.json to " << std::filesystem::path(cur_dir) / "config" << std::endl;
+            << "Please copy controller_config.json to " << std::filesystem::path(cur_dir) / "config" << std::endl;
         exit(1);
     }
 
@@ -62,28 +39,28 @@ std::map<std::string_view, std::string> intents = {
     { "txwy", "tw.txwy.and.arknights/com.u8.sdk.U8UnityContext" }
 };
 
-template <typename SCP>
-double test_screencap(SCP* scp, int count = 10)
-{
-    std::chrono::milliseconds sum(0);
-    for (int i = 0; i < count; i++) {
-        auto now = std::chrono::steady_clock::now();
-        auto mat = scp->screencap();
-        if (mat.has_value()) {
-            auto dur = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::steady_clock::now() - now);
-
-            auto file = std::format("temp-{}.png", i);
-            cv::imwrite(file, mat.value());
-            std::cout << "image saved to " << file << std::endl;
-
-            std::cout << "time cost: " << dur << std::endl;
-            sum += dur;
-        }
-    }
-    double cost = sum.count() / double(count);
-    std::cout << "average time cost: " << cost << "ms" << std::endl;
-    return cost;
-}
+// template <typename SCP>
+// double test_screencap(SCP* scp, int count = 10)
+//{
+//     std::chrono::milliseconds sum(0);
+//     for (int i = 0; i < count; i++) {
+//         auto now = std::chrono::steady_clock::now();
+//         auto mat = scp->screencap();
+//         if (mat.has_value()) {
+//             auto dur = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::steady_clock::now() - now);
+//
+//             auto file = std::format("temp-{}.png", i);
+//             cv::imwrite(file, mat.value());
+//             std::cout << "image saved to " << file << std::endl;
+//
+//             std::cout << "time cost: " << dur << std::endl;
+//             sum += dur;
+//         }
+//     }
+//     double cost = sum.count() / double(count);
+//     std::cout << "average time cost: " << cost << "ms" << std::endl;
+//     return cost;
+// }
 
 int main(int argc, char* argv[])
 {
@@ -131,47 +108,47 @@ int main(int argc, char* argv[])
         std::cout << options.help() << std::endl;
         return 0;
     }
+    std::string config = read_controller_config(result["config"].as<std::string>());
 
-    using namespace MaaNS::ControllerNS;
-
-    auto config = json::parse(read_controller_config(result["config"].as<std::string>()));
-    auto io = PlatformFactory::create();
-    MaaSetGlobalOption(MaaGlobalOption_Logging, (std::filesystem::current_path() / "debug").string().c_str());
-
-    Unit::UnitBase::Argv::replacement adbRepl = { { "{ADB}", adb }, { "{ADB_SERIAL}", adb_address } };
-
-    auto initUnit = [io, &config, &adbRepl]<typename Unit>(Unit* unit) -> Unit* {
-        unit->set_io(io);
-        unit->parse(config.value());
-        unit->set_replacement(adbRepl);
-        return unit;
-    };
+    using namespace MAA_CTRL_UNIT_NS;
 
     if (cmd == "connect") {
-        auto connect = initUnit(new Unit::Connection);
-
-        std::cout << "return: " << std::boolalpha << connect->connect() << std::endl;
+        auto connection = create_connection(0, config.c_str());
+        if (!connection) {
+            LogError << "Failed to create connection";
+            return -1;
+        }
+        LogInfo << "connect: " << connection->connect();
     }
     else if (cmd == "device_info") {
-        auto device = initUnit(new Unit::DeviceInfo);
+        auto device_info = create_device_info(0, config.c_str());
 
-        std::cout << "uuid: " << device->request_uuid() << std::endl;
-        std::cout << "resolution: " << device->request_resolution() << std::endl;
-        std::cout << "orientation: " << device->request_orientation() << std::endl;
+        if (!device_info) {
+            LogError << "Failed to create device_info";
+            return -1;
+        }
+
+        LogInfo << "uuid:" << device_info->request_uuid();
+        LogInfo << "resolution:" << device_info->request_resolution().has_value();
+        LogInfo << "orientation:" << device_info->request_orientation();
     }
     else if (cmd == "activity") {
-        auto activity = initUnit(new Unit::Activity);
+        auto activity = create_activity(0, config.c_str());
+        if (!activity) {
+            LogError << "Failed to create activity";
+            return -1;
+        }
 
         auto scmd = result["subcommand"].as<std::string>();
 
-        if (scmd == "help") {
-            std::cout << "Usage: " << argv[0] << " activity [start | stop]" << std::endl;
-        }
-        else if (scmd == "start") {
-            std::cout << "return: " << std::boolalpha << activity->start(intents[client]) << std::endl;
+        if (scmd == "start") {
+            LogInfo << "start" << activity->start(intents[client]);
         }
         else if (scmd == "stop") {
-            std::cout << "return: " << std::boolalpha << activity->stop(intents[client]) << std::endl;
+            LogInfo << "stop" << activity->stop(intents[client]);
+        }
+        else {
+            std::cout << "Usage: " << argv[0] << " activity [start | stop]" << std::endl;
         }
     }
     // else if (cmd == "tap_input") {
@@ -217,49 +194,37 @@ int main(int argc, char* argv[])
     //     }
     // }
     else if (cmd == "screencap") {
-        auto device = initUnit(new Unit::DeviceInfo);
+        auto device = create_device_info(0, config.c_str());
+        if (!device) {
+            LogError << "Failed to create device_info";
+            return -1;
+        }
 
         auto res = device->request_resolution();
+        if (!res) {
+            LogError << "Failed to get resolution";
+            return -1;
+        }
 
         auto scmd = result["subcommand"].as<std::string>();
         // auto params = result["params"].as<std::vector<std::string>>();
 
         if (scmd == "help") {
             std::cout << "Usage: " << argv[0]
-                      << " screencap [profile | raw_by_netcat | raw_with_gzip | encode | encode_to_file | "
-                         "minicap_direct | minicap_strean]"
-                      << std::endl;
+                << " screencap [profile | raw_by_netcat | raw_with_gzip | encode | encode_to_file | "
+                "minicap_direct | minicap_strean]"
+                << std::endl;
             return 0;
         }
 
         bool profile = false;
         std::map<std::string, double> cost;
 
-        auto scp = initUnit(new Unit::Screencap);
-        scp->init(res.value().width, res.value().height);
+        auto scp = create_screencap(MaaAdbControllerType_Screencap_FastestWay, config.c_str());
+        scp->init(res->width, res->height);
 
         if (scmd == "profile") {
             profile = true;
-        }
-
-#define TEST_SC(method, methodEnum)                                                                           \
-    if (profile || scmd == #method) {                                                                         \
-        cost[#method] = test_screencap(scp->get_unit(MAA_CTRL_UNIT_NS::Screencap::Method::methodEnum).get()); \
-    }
-
-        TEST_SC(raw_by_netcat, RawByNetcat)
-        TEST_SC(raw_with_gzip, RawWithGzip)
-        TEST_SC(encode, Encode)
-        TEST_SC(encode_to_file, EncodeToFileAndPull)
-        TEST_SC(minicap_direct, MinicapDirect)
-        TEST_SC(minicap_stream, MinicapStream)
-
-        if (profile) {
-            std::cout << "\n\nResult: " << std::endl;
-            for (const auto& pr : cost) {
-                std::cout << pr.first << ": " << pr.second << "ms" << std::endl;
-            }
-            std::cout << "\n" << std::endl;
         }
     }
     // else if (cmd == "invoke_app") {
@@ -345,4 +310,6 @@ int main(int argc, char* argv[])
     //         trackMinitouch(h);
     //     }
     // }
+
+    return 0;
 }

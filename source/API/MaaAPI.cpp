@@ -9,6 +9,7 @@
 #include "Resource/ResourceMgr.h"
 #include "Utils/Logger.hpp"
 #include "Utils/Platform.hpp"
+#include "modules/include/ControlUnitAPI.h"
 
 MaaBool MaaSetGlobalOption(MaaGlobalOption key, MaaString value)
 {
@@ -101,107 +102,18 @@ MaaSize MaaResourceGetHash(MaaResourceHandle res, char* buff, MaaSize buff_size)
     return size;
 }
 
-MaaControllerHandle MaaAdbControllerCreate(MaaString adb_path, MaaString address, MaaJsonString config,
-                                           MaaAdbControllerType type, MaaControllerCallback callback,
-                                           void* callback_arg)
+MaaControllerHandle MaaAdbControllerCreate(MaaString adb_path, MaaString address, MaaAdbControllerType type,
+                                           MaaJsonString config, MaaControllerCallback callback, void* callback_arg)
 {
     LogFunc << VAR(adb_path) << VAR(address) << VAR_VOIDP(callback) << VAR_VOIDP(callback_arg);
 
-    auto json_opt = json::parse(std::string_view(config));
-    if (!json_opt) {
-        LogError << "Parse json failed, invalid config:" << config;
+    auto unit_mgr = MAA_CTRL_UNIT_NS::create_controller_unit(type, config);
+    if (!unit_mgr) {
+        LogError << "Failed to create controller unit";
         return nullptr;
     }
 
-    std::shared_ptr<MAA_CTRL_UNIT_NS::TouchInputBase> touch_unit = nullptr;
-    std::shared_ptr<MAA_CTRL_UNIT_NS::KeyInputBase> key_unit = nullptr;
-    std::shared_ptr<MAA_CTRL_UNIT_NS::ScreencapBase> screencap_unit = nullptr;
-
-    auto touch_type = type & MaaAdbControllerType_Touch_Mask;
-    auto key_type = type & MaaAdbControllerType_Key_Mask;
-    auto screencap_type = type & MaaAdbControllerType_Screencap_Mask;
-
-    std::shared_ptr<MAA_CTRL_UNIT_NS::MaatouchInput> maatouch_unit = nullptr;
-
-    switch (touch_type) {
-    case MaaAdbControllerType_Touch_Adb:
-        LogInfo << "touch_type: TapTouchInput";
-        touch_unit = std::make_shared<MAA_CTRL_UNIT_NS::TapTouchInput>();
-        break;
-    case MaaAdbControllerType_Touch_MiniTouch:
-        LogInfo << "touch_type: MinitouchInput";
-        touch_unit = std::make_shared<MAA_CTRL_UNIT_NS::MinitouchInput>();
-        break;
-    case MaaAdbControllerType_Touch_MaaTouch:
-        LogInfo << "touch_type: MaatouchInput";
-        if (!maatouch_unit) {
-            maatouch_unit = std::make_shared<MAA_CTRL_UNIT_NS::MaatouchInput>();
-        }
-        touch_unit = maatouch_unit;
-        break;
-    default:
-        LogError << "Unknown touch input type" << VAR(touch_type);
-        return nullptr;
-    }
-
-    switch (key_type) {
-    case MaaAdbControllerType_Key_Adb:
-        LogInfo << "key_type: TapKeyInput";
-        key_unit = std::make_shared<MAA_CTRL_UNIT_NS::TapKeyInput>();
-        break;
-    case MaaAdbControllerType_Touch_MaaTouch:
-        LogInfo << "key_type: TapKeyInput";
-        if (!maatouch_unit) {
-            maatouch_unit = std::make_shared<MAA_CTRL_UNIT_NS::MaatouchInput>();
-        }
-        key_unit = maatouch_unit;
-        break;
-    default:
-        LogError << "Unknown key input type" << VAR(key_type);
-        return nullptr;
-    }
-
-    switch (screencap_type) {
-    case MaaAdbControllerType_Screencap_Auto:
-        LogInfo << "screencap_type: Screencap";
-        screencap_unit = std::make_shared<MAA_CTRL_UNIT_NS::Screencap>();
-        break;
-    case MaaAdbControllerType_Screencap_RawByNetcat:
-        LogInfo << "screencap_type: ScreencapRawByNetcat";
-        screencap_unit = std::make_shared<MAA_CTRL_UNIT_NS::ScreencapRawByNetcat>();
-        break;
-    case MaaAdbControllerType_Screencap_RawWithGzip:
-        LogInfo << "screencap_type: ScreencapRawWithGzip";
-        screencap_unit = std::make_shared<MAA_CTRL_UNIT_NS::ScreencapRawWithGzip>();
-        break;
-    case MaaAdbControllerType_Screencap_Encode:
-        LogInfo << "screencap_type: ScreencapEncode";
-        screencap_unit = std::make_shared<MAA_CTRL_UNIT_NS::ScreencapEncode>();
-        break;
-    case MaaAdbControllerType_Screencap_EncodeToFile:
-        LogInfo << "screencap_type: ScreencapEncodeToFile";
-        screencap_unit = std::make_shared<MAA_CTRL_UNIT_NS::ScreencapEncodeToFileAndPull>();
-        break;
-    case MaaAdbControllerType_Screencap_MinicapDirect:
-        LogInfo << "screencap_type: MinicapDirect";
-        screencap_unit = std::make_shared<MAA_CTRL_UNIT_NS::MinicapDirect>();
-        break;
-    case MaaAdbControllerType_Screencap_MinicapStream:
-        LogInfo << "screencap_type: MinicapStream";
-        screencap_unit = std::make_shared<MAA_CTRL_UNIT_NS::MinicapStream>();
-        break;
-    default:
-        LogError << "Unknown screencap type" << VAR(screencap_type);
-        return nullptr;
-    }
-
-    auto unit_opt = MAA_CTRL_NS::AdbController::parse_config(*json_opt, touch_unit, key_unit, screencap_unit);
-    if (!unit_opt) {
-        LogError << "Parse config failed, invalid config:" << *json_opt;
-        return nullptr;
-    }
-
-    return new MAA_CTRL_NS::AdbController(adb_path, address, std::move(*unit_opt), callback, callback_arg);
+    return new MAA_CTRL_NS::AdbController(adb_path, address, std::move(unit_mgr), callback, callback_arg);
 }
 
 MaaControllerHandle MaaCustomControllerCreate(MaaCustomControllerHandle handle, MaaControllerCallback callback,

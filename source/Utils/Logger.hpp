@@ -26,13 +26,6 @@
 
 MAA_NS_BEGIN
 
-#ifdef __GNUC__
-inline std::ostream& operator<<(std::ostream& os, const std::chrono::milliseconds& ms)
-{
-    return os << ms.count() << "ms";
-}
-#endif
-
 template <typename T>
 concept has_stream_insertion_operator = requires { std::declval<std::ostream&>() << std::declval<T>(); };
 
@@ -338,6 +331,25 @@ inline constexpr Logger::separator Logger::separator::space(" ");
 inline constexpr Logger::separator Logger::separator::tab("\t");
 inline constexpr Logger::separator Logger::separator::newline("\n");
 inline constexpr Logger::separator Logger::separator::comma(",");
+
+#ifdef __GNUC__
+inline std::ostream& operator<<(std::ostream& os, const std::chrono::milliseconds& ms)
+{
+    return os << ms.count() << "ms";
+}
+#endif
+
+template <typename T>
+std::ostream& operator<<(std::ostream& os, const std::optional<T>& v)
+{
+    if (v) {
+        os << *v;
+    }
+    else {
+        os << "<nullopt>";
+    }
+    return os;
+}
 
 namespace LogUtils
 {

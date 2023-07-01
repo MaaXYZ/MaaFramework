@@ -82,7 +82,7 @@ enum MaaAdbControllerTypeEnum
     MaaAdbControllerType_Key_Mask = 0xFF00,
 
     // same as Screencap::Method
-    MaaAdbControllerType_Screencap_Auto = 1 << 16,
+    MaaAdbControllerType_Screencap_FastestWay = 1 << 16,
     MaaAdbControllerType_Screencap_RawByNetcat = 2 << 16,
     MaaAdbControllerType_Screencap_RawWithGzip = 3 << 16,
     MaaAdbControllerType_Screencap_Encode = 4 << 16,
@@ -97,7 +97,7 @@ enum MaaAdbControllerTypeEnum
         MaaAdbControllerType_Touch_MaaTouch | MaaAdbControllerType_Key_MaaTouch,
 };
 
-typedef void(* MaaAPICallback)(MaaString msg, MaaString details_json, void* callback_arg);
+typedef void (*MaaAPICallback)(MaaString msg, MaaString details_json, void* callback_arg);
 typedef MaaAPICallback MaaResourceCallback;
 typedef MaaAPICallback MaaControllerCallback;
 typedef MaaAPICallback MaaInstanceCallback;
