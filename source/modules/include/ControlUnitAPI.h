@@ -3,8 +3,6 @@
 #include <memory>
 #include <optional>
 
-#include <meojson/json.hpp>
-
 #include "Common/MaaConf.h"
 #include "MaaDef.h"
 #include "Utils/NoWarningCVMat.h"

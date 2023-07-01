@@ -1,5 +1,7 @@
 #pragma once
 
+#include <meojson/json.hpp>
+
 #include "ControlUnitAPI.h"
 #include "Platform/PlatformIO.h"
 #include "Utils/ArgvWrapper.hpp"

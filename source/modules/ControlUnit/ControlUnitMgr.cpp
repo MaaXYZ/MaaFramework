@@ -1,5 +1,7 @@
 #include "ControlUnitMgr.h"
 
+#include <meojson/json.hpp>
+
 #include "General/Activity.h"
 #include "General/Connection.h"
 #include "General/DeviceInfo.h"
