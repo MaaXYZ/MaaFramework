@@ -91,10 +91,10 @@ find_package(OpenCV REQUIRED COMPONENTS core imgproc imgcodecs videoio)
 find_package(ZLIB REQUIRED)
 find_package(MaaDerpLearning REQUIRED)
 # find_package(asio REQUIRED)
-# find_package(ONNXRuntime)
+find_package(ONNXRuntime)
 # find_package(cpr CONFIG REQUIRED)
 
-target_link_libraries(MaaFramework ${OpenCV_LIBS} MaaDerpLearning ZLIB::ZLIB header_only_libraries) #asio::asio ONNXRuntime::ONNXRuntime cpr::cpr
+target_link_libraries(MaaFramework ${OpenCV_LIBS} MaaDerpLearning ONNXRuntime::ONNXRuntime ZLIB::ZLIB header_only_libraries) #asio::asio cpr::cpr
 
 if(WIN32)
     target_link_libraries(MaaFramework ws2_32)

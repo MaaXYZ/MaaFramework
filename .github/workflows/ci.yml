@@ -57,52 +57,58 @@ jobs:
           name: MAA-win-${{ matrix.lowercase_target }}
           path: ${{ matrix.msbuild_target }}/Release
 
-  # ubuntu:
-  #   runs-on: ubuntu-latest
-  #   strategy:
-  #     matrix:
-  #       arch: [aarch64, x86_64]
-  #   steps:
-  #     - uses: actions/checkout@v3
+  ubuntu:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        arch: [aarch64, x86_64]
+    container: archlinux:base-devel
+    steps:
+      - uses: actions/checkout@v3
 
-  #     - name: Install cross compile toolchains
-  #       if: ${{ matrix.arch != 'x86_64' }}
-  #       run: |
-  #         sudo apt-get update
-  #         sudo apt-get install g++-12-aarch64-linux-gnu g++-12-aarch64-linux-gnu
+      - name: Install dep
+        run: |
+          pacman -Sy
+          pacman -S --noconfirm cmake python ccache
 
-  #     - name: Setup ccache
-  #       uses: Chocobo1/setup-ccache-action@v1
-  #       with:
-  #         remove_stale_cache: false
+      - name: Install cross compile toolchains
+        if: ${{ matrix.arch != 'x86_64' }}
+        run: |
+          pacman -Sy
+          pacman -S --noconfirm aarch64-linux-gnu-gcc
 
-  #     - name: Bootstrap MaaDeps
-  #       env:
-  #         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-  #       run: |
-  #         python3 maadeps-download.py ${{ matrix.arch == 'x86_64' && 'x64' || 'arm64' }}-linux
+      - name: Setup ccache
+        uses: Chocobo1/setup-ccache-action@v1
+        with:
+          remove_stale_cache: false
 
-  #     - name: Build MAA
-  #       env:
-  #         CC: ${{ matrix.arch == 'x86_64' && 'ccache gcc-12' || 'ccache aarch64-linux-gnu-gcc-12' }}
-  #         CXX: ${{ matrix.arch == 'x86_64' && 'ccache g++-12' || 'ccache aarch64-linux-gnu-g++-12' }}
-  #       run: |
-  #         mkdir -p build
-  #         cmake -B build \
-  #           -DMAADEPS_TRIPLET='maa-${{ matrix.arch == 'x86_64' && 'x64' || 'arm64' }}-linux' \
-  #           -DINSTALL_THIRD_LIBS=ON \
-  #           -DINSTALL_RESOURCE=ON \
-  #           -DINSTALL_PYTHON=ON \
-  #           -DMAA_VERSION='${{ needs.meta.outputs.tag }}'
-  #         cmake --build build --parallel $(nproc --all)
+      - name: Bootstrap MaaDeps
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          python3 maadeps-download.py ${{ matrix.arch == 'x86_64' && 'x64' || 'arm64' }}-linux
 
-  #         mkdir -p install
-  #         cmake --install build --prefix install
+      - name: Build MAA
+        env:
+          CC: ${{ matrix.arch == 'x86_64' && 'ccache gcc' || 'ccache aarch64-linux-gnu-gcc' }}
+          CXX: ${{ matrix.arch == 'x86_64' && 'ccache g++' || 'ccache aarch64-linux-gnu-g++' }}
+        run: |
+          mkdir -p build
+          cmake -B build \
+            -DMAADEPS_TRIPLET='maa-${{ matrix.arch == 'x86_64' && 'x64' || 'arm64' }}-linux' \
+            -DINSTALL_THIRD_LIBS=ON \
+            -DINSTALL_RESOURCE=ON \
+            -DINSTALL_PYTHON=ON \
+            -DMAA_VERSION='${{ needs.meta.outputs.tag }}'
+          cmake --build build --parallel $(nproc --all)
 
-  #     - uses: actions/upload-artifact@v3
-  #       with:
-  #         name: MAA-linux-${{ matrix.arch }}
-  #         path: 'install'
+          mkdir -p install
+          cmake --install build --prefix install
+
+      - uses: actions/upload-artifact@v3
+        with:
+          name: MAA-linux-${{ matrix.arch }}
+          path: 'install'
 
   # macOS:
   #   runs-on: macos-13

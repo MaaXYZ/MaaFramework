@@ -4,6 +4,8 @@
 #include "Utils/Math.hpp"
 #include "Utils/NoWarningCV.h"
 
+#include <tuple>
+
 MAA_CTRL_NS_BEGIN
 
 std::minstd_rand ControllerMgr::rand_engine_(std::random_device {}());
@@ -29,7 +31,8 @@ ControllerMgr::~ControllerMgr()
 
 bool ControllerMgr::set_option(MaaCtrlOption key, const std::string& value)
 {
-    std::ignore = key, value;
+    std::ignore = key;
+    std::ignore = value;
     return false;
 }
 

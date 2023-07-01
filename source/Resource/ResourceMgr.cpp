@@ -2,6 +2,8 @@
 
 #include "Utils/Logger.hpp"
 
+#include <tuple>
+
 MAA_RES_NS_BEGIN
 
 ResourceMgr::ResourceMgr(const std::filesystem::path& user_path, MaaResourceCallback callback, void* callback_arg)
@@ -26,7 +28,8 @@ ResourceMgr::~ResourceMgr()
 
 bool ResourceMgr::set_option(MaaResOption key, const std::string& value)
 {
-    std::ignore = key, value;
+    std::ignore = key;
+    std::ignore = value;
     return false;
 }
 

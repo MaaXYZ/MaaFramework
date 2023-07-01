@@ -2,6 +2,8 @@
 
 #include "Utils/Logger.hpp"
 
+#include <tuple>
+
 MAA_CTRL_UNIT_NS_BEGIN
 
 bool TapTouchInput::parse(const json::value& config)
@@ -11,7 +13,8 @@ bool TapTouchInput::parse(const json::value& config)
 
 bool TapTouchInput::init(int sw, int sh)
 {
-    std::ignore = sw, sh;
+    std::ignore = sw;
+    std::ignore = sh;
     return true;
 }
 
