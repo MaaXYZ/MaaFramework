@@ -3,6 +3,7 @@ file(GLOB_RECURSE maa_modules_src modules/*.cpp modules/*.h modules/*.hpp)
 list(REMOVE_ITEM maa_src ${maa_modules_src})
 
 add_subdirectory(modules/MaaControlUnit)
+add_subdirectory(modules/MaaUtils)
 
 add_library(MaaFramework SHARED ${maa_src})
 
@@ -21,7 +22,7 @@ if(UNIX)
     set_target_properties(MaaFramework PROPERTIES INSTALL_RPATH "$ORIGIN/")
 endif()
 
-target_link_libraries(MaaFramework MaaControlUnit)
+target_link_libraries(MaaFramework MaaControlUnit MaaUtils)
 target_link_libraries(MaaFramework ${OpenCV_LIBS} MaaDerpLearning ONNXRuntime::ONNXRuntime ZLIB::ZLIB HeaderOnlyLibraries) #asio::asio cpr::cpr
 
 if(WIN32)
