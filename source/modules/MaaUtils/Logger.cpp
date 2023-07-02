@@ -2,9 +2,10 @@
 
 MAA_NS_BEGIN
 
-void _()
+Logger& Logger::get_instance()
 {
-    Logger::get_instance();
+    static Logger unique_instance;
+    return unique_instance;
 }
 
 MAA_NS_END

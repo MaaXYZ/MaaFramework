@@ -19,8 +19,8 @@ else ()
     set(MAA_DEBUG_EXPORTS OFF)
 endif ()
 
-include(${PROJECT_SOURCE_DIR}/cmake/assets.cmake)
 include(${PROJECT_SOURCE_DIR}/cmake/config.cmake) # Basic compile & link configuration
+include(${PROJECT_SOURCE_DIR}/cmake/assets.cmake)
 include(${PROJECT_SOURCE_DIR}/cmake/utils.cmake)
 include(${PROJECT_SOURCE_DIR}/cmake/version.cmake)
 

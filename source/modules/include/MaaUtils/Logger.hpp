@@ -225,11 +225,7 @@ public:
     };
 
 public:
-    static Logger& get_instance()
-    {
-        static Logger unique_instance;
-        return unique_instance;
-    }
+    static Logger& get_instance();
     ~Logger() { flush(); }
 
     Logger(const Logger&) = delete;
