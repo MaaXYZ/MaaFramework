@@ -21,6 +21,7 @@ endif ()
 
 include(${PROJECT_SOURCE_DIR}/cmake/config.cmake) # Basic compile & link configuration
 include(${PROJECT_SOURCE_DIR}/cmake/utils.cmake)
+include(${PROJECT_SOURCE_DIR}/cmake/version.cmake)
 
 if(USE_MAADEPS)
     include(${PROJECT_SOURCE_DIR}/MaaDeps/maadeps.cmake)
@@ -44,52 +45,11 @@ if (BUILD_BUSYBOX)
     add_subdirectory(test/busybox)
 endif (BUILD_BUSYBOX)
 
-# clang 15之后有ranges
-# if (CMAKE_CXX_COMPILER_ID MATCHES ".*Clang")
-#     find_package(range-v3 REQUIRED)
-#     target_link_libraries(MaaFramework range-v3::range-v3)
-# endif ()
-
-if(INSTALL_DEVEL)
-    set(MaaFramework_install_extra_args PUBLIC_HEADER DESTINATION devel/include ARCHIVE DESTINATION devel/lib)
-endif()
-
-install(TARGETS MaaFramework
-    RUNTIME DESTINATION .
-    LIBRARY DESTINATION .
-    PUBLIC_HEADER DESTINATION .
-    ${MaaFramework_install_extra_args}
-)
-
 if(INSTALL_THIRD_LIBS AND USE_MAADEPS)
     maadeps_install()
 endif()
 
-if (APPLE)
-    include(${PROJECT_SOURCE_DIR}/cmake/macos.cmake)
-endif (APPLE)
-
-# define MAA_VERSION from git
-if (NOT DEFINED MAA_VERSION)
-    find_package(Git)
-endif ()
-if (NOT DEFINED MAA_VERSION AND GIT_FOUND)
-    execute_process(
-        COMMAND "${GIT_EXECUTABLE}" rev-parse HEAD
-        WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}"
-        RESULT_VARIABLE result
-        OUTPUT_VARIABLE output
-        ERROR_VARIABLE err
-        OUTPUT_STRIP_TRAILING_WHITESPACE
-    )
-    if (result EQUAL 0)
-        set(MAA_VERSION "${output}")
-    else ()
-        message(WARNING "git rev-parse returning ${result}, output:\n${err}")
-    endif ()
-endif ()
-if (NOT MAA_VERSION)
-    set(MAA_VERSION "DEBUG_VERSION")
-endif ()
-message(STATUS "MAA_VERSION=${MAA_VERSION}")
-add_compile_definitions(MAA_VERSION="${MAA_VERSION}")
+# 好像还没适配，先注释了
+# if (APPLE)
+#     include(${PROJECT_SOURCE_DIR}/cmake/macos.cmake)
+# endif (APPLE)

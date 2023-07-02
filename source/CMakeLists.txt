@@ -26,3 +26,20 @@ target_link_libraries(MaaFramework ${OpenCV_LIBS} MaaDerpLearning ONNXRuntime::O
 if(WIN32)
     target_link_libraries(MaaFramework ws2_32)
 endif()
+
+# clang 15之后有ranges
+# if (CMAKE_CXX_COMPILER_ID MATCHES ".*Clang")
+#     find_package(range-v3 REQUIRED)
+#     target_link_libraries(MaaFramework range-v3::range-v3)
+# endif ()
+
+if(INSTALL_DEVEL)
+    set(MaaFramework_install_extra_args PUBLIC_HEADER DESTINATION devel/include ARCHIVE DESTINATION devel/lib)
+endif()
+
+install(TARGETS MaaFramework
+    RUNTIME DESTINATION .
+    LIBRARY DESTINATION .
+    PUBLIC_HEADER DESTINATION .
+    ${MaaFramework_install_extra_args}
+)
