@@ -39,6 +39,8 @@ add_library(header_only_libraries INTERFACE)
 target_include_directories(header_only_libraries INTERFACE 3rdparty/include)
 
 file(GLOB_RECURSE maa_src source/*.cpp source/*.h source/*.hpp)
+file(GLOB_RECURSE maa_modules_src source/modules/*.cpp source/modules/*.h source/modules/*.hpp)
+list(REMOVE_ITEM maa_src ${maa_modules_src})
 
 add_library(MaaFramework SHARED ${maa_src})
 
@@ -94,6 +96,9 @@ find_package(MaaDerpLearning REQUIRED)
 find_package(ONNXRuntime)
 # find_package(cpr CONFIG REQUIRED)
 
+add_subdirectory(${CMAKE_SOURCE_DIR}/source/modules/ControlUnit)
+
+target_link_libraries(MaaFramework MaaControlUnit)
 target_link_libraries(MaaFramework ${OpenCV_LIBS} MaaDerpLearning ONNXRuntime::ONNXRuntime ZLIB::ZLIB header_only_libraries) #asio::asio cpr::cpr
 
 if(WIN32)

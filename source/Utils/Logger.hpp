@@ -26,6 +26,10 @@
 
 MAA_NS_BEGIN
 
+#ifdef __GNUC__
+std::ostream& operator<<(std::ostream& os, const std::chrono::milliseconds& ms);
+#endif
+
 template <typename T>
 concept has_stream_insertion_operator = requires { std::declval<std::ostream&>() << std::declval<T>(); };
 
