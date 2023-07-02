@@ -5,6 +5,7 @@ set_target_properties(maabusybox PROPERTIES
     CXX_STANDARD_REQUIRED ON
 )
 
+target_compile_definitions(maabusybox PRIVATE MAA_DEBUG)
 target_link_libraries(maabusybox MaaFramework HeaderOnlyLibraries)
 target_include_directories(maabusybox PUBLIC ${MaaFramework_INCLUDE} "../../source")
 

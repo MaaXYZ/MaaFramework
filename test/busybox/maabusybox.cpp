@@ -156,6 +156,72 @@ int main(int argc, char* argv[])
             LogInfo << "Usage: " << argv[0] << " activity [start | stop]";
         }
     }
+    else if (cmd == "touch") {
+        auto scmd = result["subcommand"].as<std::string>();
+
+        if (scmd == "help") {
+            std::cout << "Usage: " << argv[0] << " touch [adb | minitouch | maatouch]";
+            return 0;
+        }
+
+        MaaAdbControllerType type = -1;
+
+        if (scmd == "adb") {
+            type = MaaAdbControllerType_Touch_Adb;
+        }
+        else if (scmd == "minitouch") {
+            type = MaaAdbControllerType_Touch_MiniTouch;
+        }
+        else if (scmd == "maatouch") {
+            type = MaaAdbControllerType_Touch_MaaTouch;
+        }
+        else {
+            return 1;
+        }
+
+        auto input = create_adb_touch_input(adb.c_str(), adb_address.c_str(), type, config.c_str());
+        std::cout << "Usage:\n"
+                  << "click: c [x] [y]\n"
+                  << "swipe: s [x1] [y1] [x2] [y2] [d]\n"
+                  << "quit: q\n"
+                  << std::flush;
+
+        bool quit = false;
+
+        while (!quit) {
+            std::string cmd;
+            std::getline(std::cin, cmd);
+            std::istringstream is(cmd);
+
+            char c;
+            if (is >> c) {
+                continue;
+            }
+            switch (c) {
+            case 'c': {
+                int x = 0, y = 0;
+                if (!is >> x >> y) {
+                    break;
+                }
+                std::cout << "click: " << input->click(x, y) << std::endl;
+                break;
+            }
+            case 's': {
+                int x1 = 0, y1 = 0, x2 = 0, y2 = 0, d = 0;
+                if (!is >> x1 >> y1 >> x2 >> y2 >> d) {
+                    break;
+                }
+                std::vector<MAA_CTRL_UNIT_NS::SwipeStep> steps { { x1, y1, d }, { x2, y2, 0 } };
+                std::cout << "swipe: " << input->swipe(steps);
+                break;
+            }
+            case 'q': {
+                quit = true;
+                break;
+            }
+            }
+        }
+    }
     // else if (cmd == "tap_input") {
     //     auto tap = initUnit(new Unit::TapInput);
 
