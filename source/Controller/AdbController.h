@@ -1,7 +1,7 @@
 #pragma once
 #include "ControllerMgr.h"
 
-#include "ControlUnitAPI.h"
+#include "MaaControlUnit/ControlUnitAPI.h"
 
 #include <memory>
 

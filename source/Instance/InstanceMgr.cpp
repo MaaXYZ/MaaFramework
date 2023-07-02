@@ -3,7 +3,7 @@
 #include "Controller/ControllerMgr.h"
 #include "Resource/ResourceMgr.h"
 #include "Task/PipelineTask.h"
-#include "Utils/Logger.hpp"
+#include "MaaUtils/Logger.hpp"
 
 MAA_NS_BEGIN
 

@@ -1,7 +1,7 @@
 #pragma once
 
 #include "Common/MaaConf.h"
-#include "Utils/Logger.hpp"
+#include "MaaUtils/Logger.hpp"
 
 #include <condition_variable>
 #include <functional>

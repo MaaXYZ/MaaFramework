@@ -27,73 +27,15 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\include\MaaAPI.h" />
-    <ClInclude Include="..\include\MaaCustomController.h" />
-    <ClInclude Include="..\include\MaaPort.h" />
-    <ClInclude Include="..\include\MaaDef.h" />
-    <ClInclude Include="..\include\MaaMsg.h" />
-    <ClInclude Include="Base\AsyncCallback.hpp" />
-    <ClInclude Include="Base\NonCopyable.hpp" />
-    <ClInclude Include="Common\MaaTypes.h" />
-    <ClInclude Include="Controller\CustomController.h" />
-    <ClInclude Include="Instance\InstanceInternalAPI.hpp" />
-    <ClInclude Include="Instance\InstanceStatus.h" />
-    <ClInclude Include="Option\GlobalOptionMgr.h" />
-    <ClInclude Include="Controller\AdbController.h" />
-    <ClInclude Include="Common\MaaConf.h" />
-    <ClInclude Include="Controller\ControllerMgr.h" />
-    <ClInclude Include="Instance\InstanceMgr.h" />
-    <ClInclude Include="Resource\OCRConfig.h" />
-    <ClInclude Include="Resource\PipelineConfig.h" />
-    <ClInclude Include="Resource\ResourceMgr.h" />
-    <ClInclude Include="Resource\TemplateConfig.h" />
-    <ClInclude Include="Task\TaskBase.h" />
-    <ClInclude Include="Task\PipelineTask.h" />
-    <ClInclude Include="Resource\PipelineTypes.h" />
-    <ClInclude Include="Base\AsyncRunner.hpp" />
-    <ClInclude Include="Utils\ArgvWrapper.hpp" />
-    <ClInclude Include="Utils\Demangle.hpp" />
-    <ClInclude Include="Utils\File.hpp" />
-    <ClInclude Include="Utils\ImageIo.hpp" />
-    <ClInclude Include="Utils\Locale.hpp" />
-    <ClInclude Include="Utils\Math.hpp" />
-    <ClInclude Include="Utils\NoWarningCV.h" />
-    <ClInclude Include="Utils\NoWarningCVMat.h" />
-    <ClInclude Include="Utils\Platform.hpp" />
-    <ClInclude Include="Utils\Platform\PlatformImpl.hpp" />
-    <ClInclude Include="Utils\Platform\SafeWindows.h" />
-    <ClInclude Include="Utils\Ranges.hpp" />
-    <ClInclude Include="Base\SingletonHolder.hpp" />
-    <ClInclude Include="Utils\StringMisc.hpp" />
-    <ClInclude Include="Utils\TempPath.hpp" />
-    <ClInclude Include="Utils\Time.hpp" />
-    <ClInclude Include="Vision\Matcher.h" />
-    <ClInclude Include="Vision\OCRer.h" />
-    <ClInclude Include="Vision\VisionTypes.h" />
-    <ClInclude Include="Vision\VisionUtils.hpp" />
-    <ClInclude Include="Vision\VisionBase.h" />
+    <ClInclude Include="..\include\MaaUtils\Logger.hpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="Controller\AdbController.cpp" />
-    <ClCompile Include="Controller\ControllerMgr.cpp" />
-    <ClCompile Include="Controller\CustomController.cpp" />
-    <ClCompile Include="Instance\InstanceMgr.cpp" />
-    <ClCompile Include="API\MaaAPI.cpp" />
-    <ClCompile Include="Instance\InstanceStatus.cpp" />
-    <ClCompile Include="Option\GlobalOptionMgr.cpp" />
-    <ClCompile Include="Resource\OCRConfig.cpp" />
-    <ClCompile Include="Resource\PipelineConfig.cpp" />
-    <ClCompile Include="Resource\ResourceMgr.cpp" />
-    <ClCompile Include="Resource\TemplateConfig.cpp" />
-    <ClCompile Include="Task\PipelineTask.cpp" />
-    <ClCompile Include="Vision\Matcher.cpp" />
-    <ClCompile Include="Vision\OCRer.cpp" />
-    <ClCompile Include="Vision\VisionBase.cpp" />
+    <ClCompile Include="Logger.cpp" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>16.0</VCProjectVersion>
     <Keyword>Win32Proj</Keyword>
-    <ProjectGuid>{362d1e30-f5ae-4279-9985-65c27b3ba300}</ProjectGuid>
+    <ProjectGuid>{27862F0F-109D-40C8-B48B-9461D15222E3}</ProjectGuid>
     <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
     <PreferredToolArchitecture>x64</PreferredToolArchitecture>
   </PropertyGroup>
@@ -166,37 +108,37 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
-    <IncludePath>$(ProjectDir)..\include;$(ProjectDir)modules\include;$(ProjectDir)..\3rdparty\include</IncludePath>
+    <IncludePath>$(ProjectDir)..\include;$(ProjectDir)..\..\..\include;$(ProjectDir)..\..\;$(ProjectDir)..\..\..\3rdparty\include</IncludePath>
     <LibraryPath>$(SolutionDir)\$(Platform)\$(Configuration)\;$(LibraryPath)</LibraryPath>
     <OutDir>$(SolutionDir)\$(Platform)\$(Configuration)\</OutDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|ARM64'">
     <LinkIncremental>false</LinkIncremental>
-    <IncludePath>$(ProjectDir)..\include;$(ProjectDir)modules\include;$(ProjectDir)..\3rdparty\include;$(ProjectDir)</IncludePath>
+    <IncludePath>$(ProjectDir)..\include;$(ProjectDir)..\..\..\include;$(ProjectDir)..\..\;$(ProjectDir)..\..\..\3rdparty\include</IncludePath>
     <LibraryPath>$(SolutionDir)\$(Platform)\$(Configuration)\;$(LibraryPath)</LibraryPath>
     <OutDir>$(SolutionDir)$(Platform)\$(Configuration)\</OutDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">
     <LinkIncremental>false</LinkIncremental>
-    <IncludePath>$(ProjectDir)..\include;$(ProjectDir)modules\include;$(ProjectDir)..\3rdparty\include</IncludePath>
+    <IncludePath>$(ProjectDir)..\include;$(ProjectDir)..\..\..\include;$(ProjectDir)..\..\;$(ProjectDir)..\..\..\3rdparty\include</IncludePath>
     <LibraryPath>$(SolutionDir)\$(Platform)\$(Configuration)\;$(LibraryPath)</LibraryPath>
     <OutDir>$(SolutionDir)\$(Platform)\$(Configuration)\</OutDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
-    <IncludePath>$(ProjectDir)..\include;$(ProjectDir)modules\include;$(ProjectDir)..\3rdparty\include</IncludePath>
+    <IncludePath>$(ProjectDir)..\include;$(ProjectDir)..\..\..\include;$(ProjectDir)..\..\;$(ProjectDir)..\..\..\3rdparty\include</IncludePath>
     <LibraryPath>$(SolutionDir)\$(Platform)\$(Configuration)\;$(LibraryPath)</LibraryPath>
     <OutDir>$(SolutionDir)\$(Platform)\$(Configuration)\</OutDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|ARM64'">
     <LinkIncremental>false</LinkIncremental>
-    <IncludePath>$(ProjectDir)..\include;$(ProjectDir)modules\include;$(ProjectDir)..\3rdparty\include;$(ProjectDir)</IncludePath>
+    <IncludePath>$(ProjectDir)..\include;$(ProjectDir)..\..\..\include;$(ProjectDir)..\..\;$(ProjectDir)..\..\..\3rdparty\include</IncludePath>
     <LibraryPath>$(SolutionDir)\$(Platform)\$(Configuration)\;$(LibraryPath)</LibraryPath>
     <OutDir>$(SolutionDir)$(Platform)\$(Configuration)\</OutDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|ARM64'">
     <LinkIncremental>true</LinkIncremental>
-    <IncludePath>$(ProjectDir)..\include;$(ProjectDir)modules\include;$(ProjectDir)..\3rdparty\include;$(ProjectDir)</IncludePath>
+    <IncludePath>$(ProjectDir)..\include;$(ProjectDir)..\..\..\include;$(ProjectDir)..\..\;$(ProjectDir)..\..\..\3rdparty\include</IncludePath>
     <LibraryPath>$(SolutionDir)\$(Platform)\$(Configuration)\;$(LibraryPath)</LibraryPath>
     <OutDir>$(SolutionDir)$(Platform)\$(Configuration)\</OutDir>
   </PropertyGroup>
@@ -206,7 +148,7 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>NDEBUG;_CONSOLE;MAA_DLL_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>NDEBUG;_CONSOLE;MAA_UTILS_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp20</LanguageStandard>
       <LanguageStandard_C>stdc11</LanguageStandard_C>
@@ -221,7 +163,7 @@
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>MaaUtils.lib;MaaControlUnit.lib;MaaDerpLearning.lib;opencv_world4.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>opencv_world4.lib;zlib.lib;ws2_32.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <UACExecutionLevel>RequireAdministrator</UACExecutionLevel>
       <Profile>true</Profile>
       <AdditionalOptions>/ignore:4286 %(AdditionalOptions)</AdditionalOptions>
@@ -233,7 +175,7 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>NDEBUG;_CONSOLE;MAA_DLL_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>NDEBUG;_CONSOLE;MAA_UTILS_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp20</LanguageStandard>
       <LanguageStandard_C>stdc11</LanguageStandard_C>
@@ -248,7 +190,7 @@
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>MaaUtils.lib;MaaControlUnit.lib;MaaDerpLearning.lib;opencv_world4.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>opencv_world4.lib;zlib.lib;ws2_32.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <UACExecutionLevel>RequireAdministrator</UACExecutionLevel>
       <Profile>true</Profile>
     </Link>
@@ -258,7 +200,7 @@
       <WarningLevel>Level4</WarningLevel>
       <IntrinsicFunctions>false</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>NDEBUG;_CONSOLE;MAA_DLL_EXPORTS;MAA_DEBUG;MAA_DEBUG_DLL_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>NDEBUG;_CONSOLE;MAA_UTILS_EXPORTS;MAA_DEBUG;MAA_DEBUG_DLL_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp20</LanguageStandard>
       <LanguageStandard_C>stdc11</LanguageStandard_C>
@@ -274,7 +216,7 @@
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>MaaUtils.lib;MaaControlUnit.lib;MaaDerpLearning.lib;opencv_world4.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>opencv_world4.lib;zlib.lib;ws2_32.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <UACExecutionLevel>RequireAdministrator</UACExecutionLevel>
       <Profile>true</Profile>
     </Link>
@@ -284,7 +226,7 @@
       <WarningLevel>Level4</WarningLevel>
       <IntrinsicFunctions>false</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>_CONSOLE;_DEBUG;MAA_DLL_EXPORTS;MAA_DEBUG;MAA_DEBUG_DLL_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_CONSOLE;_DEBUG;MAA_UTILS_EXPORTS;MAA_DEBUG;MAA_DEBUG_DLL_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp20</LanguageStandard>
       <LanguageStandard_C>stdc11</LanguageStandard_C>
@@ -299,7 +241,7 @@
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>MaaUtils.lib;MaaControlUnit.lib;MaaDerpLearning.lib;opencv_world4d.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>opencv_world4d.lib;zlibd.lib;ws2_32.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <UACExecutionLevel>RequireAdministrator</UACExecutionLevel>
     </Link>
   </ItemDefinitionGroup>
@@ -308,7 +250,7 @@
       <WarningLevel>Level4</WarningLevel>
       <IntrinsicFunctions>false</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>NDEBUG;_CONSOLE;MAA_DLL_EXPORTS;MAA_DEBUG;MAA_DEBUG_DLL_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>NDEBUG;_CONSOLE;MAA_UTILS_EXPORTS;MAA_DEBUG;MAA_DEBUG_DLL_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp20</LanguageStandard>
       <LanguageStandard_C>stdc11</LanguageStandard_C>
@@ -324,7 +266,7 @@
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>MaaUtils.lib;MaaControlUnit.lib;MaaDerpLearning.lib;opencv_world4.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>opencv_world4.lib;zlib.lib;ws2_32.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <UACExecutionLevel>RequireAdministrator</UACExecutionLevel>
       <Profile>true</Profile>
     </Link>
@@ -334,7 +276,7 @@
       <WarningLevel>Level4</WarningLevel>
       <IntrinsicFunctions>false</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>_CONSOLE;_DEBUG;MAA_DLL_EXPORTS;MAA_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_CONSOLE;_DEBUG;MAA_UTILS_EXPORTS;MAA_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp20</LanguageStandard>
       <LanguageStandard_C>stdc11</LanguageStandard_C>
@@ -349,7 +291,7 @@
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>MaaUtils.lib;MaaControlUnit.lib;MaaDerpLearning.lib;opencv_world4d.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>opencv_world4d.lib;zlibd.lib;ws2_32.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <UACExecutionLevel>RequireAdministrator</UACExecutionLevel>
     </Link>
   </ItemDefinitionGroup>

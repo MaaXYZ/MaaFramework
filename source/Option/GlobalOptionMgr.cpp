@@ -1,6 +1,6 @@
 #include "GlobalOptionMgr.h"
 
-#include "Utils/Logger.hpp"
+#include "MaaUtils/Logger.hpp"
 #include "Utils/Platform.hpp"
 
 MAA_NS_BEGIN

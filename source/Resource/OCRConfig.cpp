@@ -4,7 +4,7 @@
 
 #include "Utils/Demangle.hpp"
 #include "Utils/File.hpp"
-#include "Utils/Logger.hpp"
+#include "MaaUtils/Logger.hpp"
 #include "Utils/Platform.hpp"
 #include "Utils/Ranges.hpp"
 #include "Utils/StringMisc.hpp"

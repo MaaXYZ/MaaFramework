@@ -3,7 +3,7 @@
 #include "Utils/NoWarningCV.h"
 
 #include "Utils/ImageIo.hpp"
-#include "Utils/Logger.hpp"
+#include "MaaUtils/Logger.hpp"
 #include "Utils/StringMisc.hpp"
 #include "Utils/Time.hpp"
 

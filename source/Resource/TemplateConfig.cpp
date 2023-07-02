@@ -1,7 +1,7 @@
 #include "TemplateConfig.h"
 
 #include "Utils/ImageIo.hpp"
-#include "Utils/Logger.hpp"
+#include "MaaUtils/Logger.hpp"
 
 MAA_RES_NS_BEGIN
 

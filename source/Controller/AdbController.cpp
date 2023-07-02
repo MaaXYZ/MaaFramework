@@ -1,6 +1,6 @@
 #include "AdbController.h"
 
-#include "Utils/Logger.hpp"
+#include "MaaUtils/Logger.hpp"
 #include "Utils/StringMisc.hpp"
 
 #include <meojson/json.hpp>

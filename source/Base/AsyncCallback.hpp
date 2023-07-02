@@ -2,7 +2,7 @@
 
 #include "Base/AsyncRunner.hpp"
 #include "MaaMsg.h"
-#include "Utils/Logger.hpp"
+#include "MaaUtils/Logger.hpp"
 
 #include <memory>
 

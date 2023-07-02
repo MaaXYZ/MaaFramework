@@ -3,7 +3,7 @@
 #include <regex>
 
 #include "Resource/ResourceMgr.h"
-#include "Utils/Logger.hpp"
+#include "MaaUtils/Logger.hpp"
 #include "Utils/Ranges.hpp"
 #include "Utils/StringMisc.hpp"
 

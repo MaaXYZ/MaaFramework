@@ -102,9 +102,6 @@
     <ClInclude Include="Utils\Locale.hpp">
       <Filter>Source\Utils</Filter>
     </ClInclude>
-    <ClInclude Include="Utils\Logger.hpp">
-      <Filter>Source\Utils</Filter>
-    </ClInclude>
     <ClInclude Include="Task\PipelineTask.h">
       <Filter>Source\Task</Filter>
     </ClInclude>

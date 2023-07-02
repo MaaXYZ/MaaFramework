@@ -1,6 +1,6 @@
 #include "ResourceMgr.h"
 
-#include "Utils/Logger.hpp"
+#include "MaaUtils/Logger.hpp"
 
 #include <tuple>
 

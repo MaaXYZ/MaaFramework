@@ -1,6 +1,6 @@
 #include "PipelineTask.h"
 
-#include "Utils/Logger.hpp"
+#include "MaaUtils/Logger.hpp"
 
 MAA_TASK_NS_BEGIN
 

@@ -1,6 +1,6 @@
 #include "PipelineConfig.h"
 
-#include "Utils/Logger.hpp"
+#include "MaaUtils/Logger.hpp"
 #include "Vision/VisionTypes.h"
 
 #include <tuple>

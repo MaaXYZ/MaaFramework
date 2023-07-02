@@ -70,17 +70,17 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
     <IncludePath>$(SolutionDir)include</IncludePath>
-    <LibraryPath>$(TargetDir);$(LibraryPath)</LibraryPath>
+    <LibraryPath>$(SolutionDir)\$(Platform)\$(Configuration)\;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">
     <LinkIncremental>false</LinkIncremental>
     <IncludePath>$(SolutionDir)include</IncludePath>
-    <LibraryPath>$(TargetDir);$(LibraryPath)</LibraryPath>
+    <LibraryPath>$(SolutionDir)\$(Platform)\$(Configuration)\;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>false</LinkIncremental>
     <IncludePath>$(SolutionDir)include</IncludePath>
-    <LibraryPath>$(TargetDir);$(LibraryPath)</LibraryPath>
+    <LibraryPath>$(SolutionDir)\$(Platform)\$(Configuration)\;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <ClCompile>

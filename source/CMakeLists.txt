@@ -2,7 +2,7 @@ file(GLOB_RECURSE maa_src *.cpp *.h *.hpp ../include/*.h)
 file(GLOB_RECURSE maa_modules_src modules/*.cpp modules/*.h modules/*.hpp)
 list(REMOVE_ITEM maa_src ${maa_modules_src})
 
-add_subdirectory(modules/ControlUnit)
+add_subdirectory(modules/MaaControlUnit)
 
 add_library(MaaFramework SHARED ${maa_src})
 
