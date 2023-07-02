@@ -12,6 +12,6 @@ target_include_directories(MaaControlUnit
             ${CMAKE_CURRENT_SOURCE_DIR}/../../../include)
 target_link_libraries(MaaControlUnit HeaderOnlyLibraries ${OpenCV_LIBS})
 target_compile_definitions(MaaControlUnit PRIVATE MAA_DLL_EXPORTS)
-if (BUILD_BUSYBOX)
+if (MAA_DEBUG_EXPORTS)
     target_compile_definitions(MaaControlUnit PRIVATE MAA_DEBUG_DLL_EXPORTS)
 endif ()
