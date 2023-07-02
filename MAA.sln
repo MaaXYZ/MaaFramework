@@ -1,9 +1,12 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 16
-VisualStudioVersion = 16.0.33801.447
+# Visual Studio Version 17
+VisualStudioVersion = 17.6.33723.286
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "MaaFramework", "source\MaaFramework.vcxproj", "{362D1E30-F5AE-4279-9985-65C27B3BA300}"
+	ProjectSection(ProjectDependencies) = postProject
+		{DD48546D-48D4-4C84-BAC4-6126D0B5BFB3} = {DD48546D-48D4-4C84-BAC4-6126D0B5BFB3}
+	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{11F02235-5785-408B-9651-8A4B41FF36F4}"
 	ProjectSection(SolutionItems) = preProject
@@ -17,10 +20,12 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Sample", "sample\cpp\MaaSam
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Busybox", "test\busybox\MaaBusybox.vcxproj", "{9E0A1B3F-6F4A-46D0-ACD1-826E943FE121}"
 	ProjectSection(ProjectDependencies) = postProject
-		{362D1E30-F5AE-4279-9985-65C27B3BA300} = {362D1E30-F5AE-4279-9985-65C27B3BA300}
+		{DD48546D-48D4-4C84-BAC4-6126D0B5BFB3} = {DD48546D-48D4-4C84-BAC4-6126D0B5BFB3}
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Testing", "Testing", "{A8554E76-AA8A-4681-ADF0-A2536A279CBC}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ControlUnit", "source\modules\ControlUnit\MaaControlUnit.vcxproj", "{DD48546D-48D4-4C84-BAC4-6126D0B5BFB3}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -60,6 +65,18 @@ Global
 		{9E0A1B3F-6F4A-46D0-ACD1-826E943FE121}.RelWithDebInfo|ARM64.ActiveCfg = RelWithDebInfo|x64
 		{9E0A1B3F-6F4A-46D0-ACD1-826E943FE121}.RelWithDebInfo|x64.ActiveCfg = RelWithDebInfo|x64
 		{9E0A1B3F-6F4A-46D0-ACD1-826E943FE121}.RelWithDebInfo|x64.Build.0 = RelWithDebInfo|x64
+		{DD48546D-48D4-4C84-BAC4-6126D0B5BFB3}.Debug|ARM64.ActiveCfg = Debug|ARM64
+		{DD48546D-48D4-4C84-BAC4-6126D0B5BFB3}.Debug|ARM64.Build.0 = Debug|ARM64
+		{DD48546D-48D4-4C84-BAC4-6126D0B5BFB3}.Debug|x64.ActiveCfg = Debug|x64
+		{DD48546D-48D4-4C84-BAC4-6126D0B5BFB3}.Debug|x64.Build.0 = Debug|x64
+		{DD48546D-48D4-4C84-BAC4-6126D0B5BFB3}.Release|ARM64.ActiveCfg = Release|ARM64
+		{DD48546D-48D4-4C84-BAC4-6126D0B5BFB3}.Release|ARM64.Build.0 = Release|ARM64
+		{DD48546D-48D4-4C84-BAC4-6126D0B5BFB3}.Release|x64.ActiveCfg = Release|x64
+		{DD48546D-48D4-4C84-BAC4-6126D0B5BFB3}.Release|x64.Build.0 = Release|x64
+		{DD48546D-48D4-4C84-BAC4-6126D0B5BFB3}.RelWithDebInfo|ARM64.ActiveCfg = RelWithDebInfo|ARM64
+		{DD48546D-48D4-4C84-BAC4-6126D0B5BFB3}.RelWithDebInfo|ARM64.Build.0 = RelWithDebInfo|ARM64
+		{DD48546D-48D4-4C84-BAC4-6126D0B5BFB3}.RelWithDebInfo|x64.ActiveCfg = RelWithDebInfo|x64
+		{DD48546D-48D4-4C84-BAC4-6126D0B5BFB3}.RelWithDebInfo|x64.Build.0 = RelWithDebInfo|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

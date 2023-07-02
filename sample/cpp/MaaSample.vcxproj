@@ -107,6 +107,8 @@
     </Link>
     <PostBuildEvent>
       <Command>xcopy "$(ProjectDir)\config\controller_config.json" "$(TargetDir)" /y
+
+
 xcopy "$(ProjectDir)\resource" "$(TargetDir)" /s /e /y</Command>
     </PostBuildEvent>
     <PreLinkEvent>
@@ -140,6 +142,8 @@ xcopy "$(ProjectDir)\resource" "$(TargetDir)" /s /e /y</Command>
     </Link>
     <PostBuildEvent>
       <Command>xcopy "$(ProjectDir)\config\controller_config.json" "$(TargetDir)" /y
+
+
 xcopy "$(ProjectDir)\resource" "$(TargetDir)" /s /e /y</Command>
     </PostBuildEvent>
     <PreLinkEvent>
@@ -173,6 +177,8 @@ xcopy "$(ProjectDir)\resource" "$(TargetDir)" /s /e /y</Command>
     </Link>
     <PostBuildEvent>
       <Command>xcopy "$(ProjectDir)\config\controller_config.json" "$(TargetDir)" /y
+
+
 xcopy "$(ProjectDir)\resource" "$(TargetDir)" /s /e /y</Command>
     </PostBuildEvent>
     <PreLinkEvent>

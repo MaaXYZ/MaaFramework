@@ -27,10 +27,10 @@
 MAA_NS_BEGIN
 
 #ifdef __GNUC__
-inline std::ostream& operator<<(std::ostream& os, const std::chrono::milliseconds& ms)
-{
-    return os << ms.count() << "ms";
-}
+std::ostream& operator<<(std::ostream& os, const std::chrono::milliseconds& ms);
+
+template <typename T>
+std::ostream& operator<<(std::ostream& os, const std::optional<T>& v);
 #endif
 
 template <typename T>
@@ -68,14 +68,25 @@ public:
     {
     public:
         template <typename... args_t>
-        LogStream(std::mutex& m, std::ofstream& s, level lv, args_t&&... args) : lock_(m), stream_(s)
+        LogStream(std::mutex& m, std::ofstream& s, level lv, args_t&&... args) : mutex_(m), stream_(s)
         {
             stream(std::boolalpha);
             stream_props(lv, std::forward<args_t>(args)...);
         }
         LogStream(const LogStream&) = delete;
         LogStream(LogStream&&) = default;
-        ~LogStream() { stream_endl(); }
+        ~LogStream()
+        {
+            stream_endl();
+
+            std::lock_guard<std::mutex> lock(mutex_);
+
+#ifdef MAA_DEBUG
+            std::cout << cout_buffer_.str();
+#endif
+
+            stream_ << buffer_.str();
+        }
 
         template <typename T>
         LogStream& operator<<(T&& value)
@@ -114,21 +125,21 @@ public:
 
 #ifdef MAA_DEBUG
             if constexpr (std::is_constructible_v<std::string_view, std::decay_t<decltype(content)>>) {
-                std::cout << utf8_to_stdout(content) << sep_.str;
+                cout_buffer_ << utf8_to_stdout(content) << sep_.str;
             }
             else {
-                std::cout << content << sep_.str;
+                cout_buffer_ << content << sep_.str;
             }
 #endif
-            stream_ << std::forward<decltype(content)>(content) << sep_.str;
+            buffer_ << std::forward<decltype(content)>(content) << sep_.str;
         }
 
         void stream_endl()
         {
 #ifdef MAA_DEBUG
-            std::cout << "\033[0m" << std::endl;
+            cout_buffer_ << "\033[0m" << std::endl;
 #endif
-            stream_ << std::endl;
+            buffer_ << std::endl;
         }
 
         template <typename... args_t>
@@ -171,7 +182,7 @@ public:
                 color = "\033[31m";
                 break;
             }
-            std::cout << color;
+            cout_buffer_ << color;
         }
 #endif
 
@@ -193,9 +204,14 @@ public:
         }
 
     private:
-        std::unique_lock<std::mutex> lock_;
+        std::mutex& mutex_;
         std::ofstream& stream_;
         separator sep_ = separator::space;
+
+        std::stringstream buffer_;
+#ifdef MAA_DEBUG
+        std::stringstream cout_buffer_;
+#endif
     };
 
     class FakeStream
@@ -339,6 +355,25 @@ inline constexpr Logger::separator Logger::separator::tab("\t");
 inline constexpr Logger::separator Logger::separator::newline("\n");
 inline constexpr Logger::separator Logger::separator::comma(",");
 
+#ifdef __GNUC__
+inline std::ostream& operator<<(std::ostream& os, const std::chrono::milliseconds& ms)
+{
+    return os << ms.count() << "ms";
+}
+#endif
+
+template <typename T>
+std::ostream& operator<<(std::ostream& os, const std::optional<T>& v)
+{
+    if (v) {
+        os << *v;
+    }
+    else {
+        os << "<nullopt>";
+    }
+    return os;
+}
+
 namespace LogUtils
 {
 class ScopeEnterHelper
@@ -366,7 +401,7 @@ public:
             std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::steady_clock::now() - start_);
         std::apply([](auto&&... args) { return Logger::get_instance().trace(std::forward<decltype(args)>(args)...); },
                    std::move(args_))
-            << "| leave," << duration << "ms";
+            << "| leave," << duration;
     }
 
 private:

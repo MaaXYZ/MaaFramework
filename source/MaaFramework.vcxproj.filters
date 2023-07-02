@@ -28,38 +28,17 @@
     <Filter Include="Source\Utils">
       <UniqueIdentifier>{4a70ba3f-91ed-42d2-92dd-892f2d97929c}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Source\Utils\Platform">
-      <UniqueIdentifier>{9349568b-d1d8-40ea-b55a-a240e5fe89f8}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Source\Base">
       <UniqueIdentifier>{12797767-44fd-4da8-a4cd-bdc75190adf4}</UniqueIdentifier>
     </Filter>
     <Filter Include="Source\API">
       <UniqueIdentifier>{5d5c3d80-dbca-4b8c-a8dc-41fba1acc500}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Source\Controller\Platform">
-      <UniqueIdentifier>{4655f327-d19a-47ad-bfa7-fff686529122}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Source\Controller\Unit">
-      <UniqueIdentifier>{eeeb8595-d01a-4a8b-9c5f-4d1378a8a99e}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Source\GlobalOption">
       <UniqueIdentifier>{fe669fc4-8884-469a-b9f6-7c84f37bfb26}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Source\Controller\Unit\General">
-      <UniqueIdentifier>{8f861cca-2c0f-406f-8656-830269c9d58b}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Source\Controller\Unit\Input">
-      <UniqueIdentifier>{46480169-5d0d-40c4-b2df-29632c39418f}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Source\Controller\Unit\Utils">
-      <UniqueIdentifier>{1234fca8-b590-4de4-abfd-87bdf10d7f64}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Source\Controller\Unit\Screencap">
-      <UniqueIdentifier>{c6d65def-099d-4396-8423-70bf40e2b341}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Source\Controller\Unit\Screencap\Minicap">
-      <UniqueIdentifier>{15ab5d5b-71cd-46f1-bccc-419152e0b070}</UniqueIdentifier>
+    <Filter Include="Source\Utils\Platform">
+      <UniqueIdentifier>{8a0f5e47-e09b-4f1b-aa5a-112f945c7a4b}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -90,15 +69,6 @@
     <ClInclude Include="Utils\Platform.hpp">
       <Filter>Source\Utils</Filter>
     </ClInclude>
-    <ClInclude Include="Utils\Platform\Platform.h">
-      <Filter>Source\Utils\Platform</Filter>
-    </ClInclude>
-    <ClInclude Include="Utils\Platform\PlatformPosix.h">
-      <Filter>Source\Utils\Platform</Filter>
-    </ClInclude>
-    <ClInclude Include="Utils\Platform\PlatformWin32.h">
-      <Filter>Source\Utils\Platform</Filter>
-    </ClInclude>
     <ClInclude Include="Utils\Ranges.hpp">
       <Filter>Source\Utils</Filter>
     </ClInclude>
@@ -107,9 +77,6 @@
     </ClInclude>
     <ClInclude Include="Utils\Time.hpp">
       <Filter>Source\Utils</Filter>
-    </ClInclude>
-    <ClInclude Include="Utils\Platform\SafeWindows.h">
-      <Filter>Source\Utils\Platform</Filter>
     </ClInclude>
     <ClInclude Include="Utils\ArgvWrapper.hpp">
       <Filter>Source\Utils</Filter>
@@ -171,86 +138,11 @@
     <ClInclude Include="Base\NonCopyable.hpp">
       <Filter>Source\Base</Filter>
     </ClInclude>
-    <ClInclude Include="Controller\Platform\PlatformIO.h">
-      <Filter>Source\Controller\Platform</Filter>
-    </ClInclude>
-    <ClInclude Include="Controller\Platform\Win32IO.h">
-      <Filter>Source\Controller\Platform</Filter>
-    </ClInclude>
     <ClInclude Include="Instance\InstanceInternalAPI.hpp">
       <Filter>Source\Instance</Filter>
     </ClInclude>
     <ClInclude Include="Common\MaaTypes.h">
       <Filter>Source\Common</Filter>
-    </ClInclude>
-    <ClInclude Include="Controller\Platform\PosixIO.h">
-      <Filter>Source\Controller\Platform</Filter>
-    </ClInclude>
-    <ClInclude Include="Controller\Platform\PlatformFactory.h">
-      <Filter>Source\Controller\Platform</Filter>
-    </ClInclude>
-    <ClInclude Include="Controller\Unit\General\Activity.h">
-      <Filter>Source\Controller\Unit\General</Filter>
-    </ClInclude>
-    <ClInclude Include="Controller\Unit\General\Connection.h">
-      <Filter>Source\Controller\Unit\General</Filter>
-    </ClInclude>
-    <ClInclude Include="Controller\Unit\Input\MinitouchInput.h">
-      <Filter>Source\Controller\Unit\Input</Filter>
-    </ClInclude>
-    <ClInclude Include="Controller\Unit\Input\TapInput.h">
-      <Filter>Source\Controller\Unit\Input</Filter>
-    </ClInclude>
-    <ClInclude Include="Controller\Unit\Utils\InvokeApp.h">
-      <Filter>Source\Controller\Unit\Utils</Filter>
-    </ClInclude>
-    <ClInclude Include="Controller\Unit\Screencap\Encode.h">
-      <Filter>Source\Controller\Unit\Screencap</Filter>
-    </ClInclude>
-    <ClInclude Include="Controller\Unit\Screencap\EncodeToFile.h">
-      <Filter>Source\Controller\Unit\Screencap</Filter>
-    </ClInclude>
-    <ClInclude Include="Controller\Unit\Screencap\RawByNetcat.h">
-      <Filter>Source\Controller\Unit\Screencap</Filter>
-    </ClInclude>
-    <ClInclude Include="Controller\Unit\Screencap\RawWithGzip.h">
-      <Filter>Source\Controller\Unit\Screencap</Filter>
-    </ClInclude>
-    <ClInclude Include="Controller\Unit\Screencap\Screencap.h">
-      <Filter>Source\Controller\Unit\Screencap</Filter>
-    </ClInclude>
-    <ClInclude Include="Controller\Unit\Screencap\ScreencapBase.h">
-      <Filter>Source\Controller\Unit\Screencap</Filter>
-    </ClInclude>
-    <ClInclude Include="Controller\Unit\General\DeviceInfo.h">
-      <Filter>Source\Controller\Unit\General</Filter>
-    </ClInclude>
-    <ClInclude Include="Controller\Unit\ControlUnit.h">
-      <Filter>Source\Controller\Unit</Filter>
-    </ClInclude>
-    <ClInclude Include="Controller\Unit\UnitBase.h">
-      <Filter>Source\Controller\Unit</Filter>
-    </ClInclude>
-    <ClInclude Include="Controller\Unit\UnitUtils.h">
-      <Filter>Source\Controller\Unit</Filter>
-    </ClInclude>
-    <ClInclude Include="Controller\Unit\Screencap\Minicap\Minicap.h">
-      <Filter>Source\Controller\Unit\Screencap\Minicap</Filter>
-    </ClInclude>
-    <ClInclude Include="Controller\Unit\Screencap\Minicap\MinicapBase.h">
-      <Filter>Source\Controller\Unit\Screencap\Minicap</Filter>
-    </ClInclude>
-    <ClInclude Include="Controller\Unit\Screencap\Minicap\MinicapDirect.h">
-      <Filter>Source\Controller\Unit\Screencap\Minicap</Filter>
-    </ClInclude>
-    <ClInclude Include="Controller\Unit\Screencap\Minicap\MinicapStream.h">
-      <Filter>Source\Controller\Unit\Screencap\Minicap</Filter>
-    </ClInclude>
-    <ClInclude Include="Controller\Unit\Input\InputBase.h">
-      <Filter>Source\Controller\Unit\Input</Filter>
-    </ClInclude>
-    <ClInclude Include="Controller\Unit\Input\MaatouchInput.h">
-      <Filter>Source\Controller\Unit\Input</Filter>
     </ClInclude>
     <ClInclude Include="Instance\InstanceStatus.h">
       <Filter>Source\Instance</Filter>
@@ -276,7 +168,18 @@
     <ClInclude Include="Utils\Math.hpp">
       <Filter>Source\Utils</Filter>
     </ClInclude>
-    <ClInclude Include="Vision\OCRer.h" />
+    <ClInclude Include="Utils\TempPath.hpp">
+      <Filter>Source\Utils</Filter>
+    </ClInclude>
+    <ClInclude Include="Utils\Platform\PlatformImpl.hpp">
+      <Filter>Source\Utils\Platform</Filter>
+    </ClInclude>
+    <ClInclude Include="Utils\Platform\SafeWindows.h">
+      <Filter>Source\Utils\Platform</Filter>
+    </ClInclude>
+    <ClInclude Include="Vision\OCRer.h">
+      <Filter>Source\Vision</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Controller\ControllerMgr.cpp">
@@ -287,12 +190,6 @@
     </ClCompile>
     <ClCompile Include="Resource\ResourceMgr.cpp">
       <Filter>Source\Resource</Filter>
-    </ClCompile>
-    <ClCompile Include="Utils\Platform\PlatformPosix.cpp">
-      <Filter>Source\Utils\Platform</Filter>
-    </ClCompile>
-    <ClCompile Include="Utils\Platform\PlatformWin32.cpp">
-      <Filter>Source\Utils\Platform</Filter>
     </ClCompile>
     <ClCompile Include="Controller\AdbController.cpp">
       <Filter>Source\Controller</Filter>
@@ -312,66 +209,6 @@
     <ClCompile Include="Option\GlobalOptionMgr.cpp">
       <Filter>Source\GlobalOption</Filter>
     </ClCompile>
-    <ClCompile Include="Controller\Platform\Win32IO.cpp">
-      <Filter>Source\Controller\Platform</Filter>
-    </ClCompile>
-    <ClCompile Include="Controller\Platform\PosixIO.cpp">
-      <Filter>Source\Controller\Platform</Filter>
-    </ClCompile>
-    <ClCompile Include="Controller\Unit\General\Activity.cpp">
-      <Filter>Source\Controller\Unit\General</Filter>
-    </ClCompile>
-    <ClCompile Include="Controller\Unit\General\Connection.cpp">
-      <Filter>Source\Controller\Unit\General</Filter>
-    </ClCompile>
-    <ClCompile Include="Controller\Unit\Input\MinitouchInput.cpp">
-      <Filter>Source\Controller\Unit\Input</Filter>
-    </ClCompile>
-    <ClCompile Include="Controller\Unit\Input\TapInput.cpp">
-      <Filter>Source\Controller\Unit\Input</Filter>
-    </ClCompile>
-    <ClCompile Include="Controller\Unit\Utils\InvokeApp.cpp">
-      <Filter>Source\Controller\Unit\Utils</Filter>
-    </ClCompile>
-    <ClCompile Include="Controller\Unit\Screencap\Encode.cpp">
-      <Filter>Source\Controller\Unit\Screencap</Filter>
-    </ClCompile>
-    <ClCompile Include="Controller\Unit\Screencap\EncodeToFile.cpp">
-      <Filter>Source\Controller\Unit\Screencap</Filter>
-    </ClCompile>
-    <ClCompile Include="Controller\Unit\Screencap\RawByNetcat.cpp">
-      <Filter>Source\Controller\Unit\Screencap</Filter>
-    </ClCompile>
-    <ClCompile Include="Controller\Unit\Screencap\RawWithGzip.cpp">
-      <Filter>Source\Controller\Unit\Screencap</Filter>
-    </ClCompile>
-    <ClCompile Include="Controller\Unit\Screencap\Screencap.cpp">
-      <Filter>Source\Controller\Unit\Screencap</Filter>
-    </ClCompile>
-    <ClCompile Include="Controller\Unit\Screencap\ScreencapBase.cpp">
-      <Filter>Source\Controller\Unit\Screencap</Filter>
-    </ClCompile>
-    <ClCompile Include="Controller\Unit\General\DeviceInfo.cpp">
-      <Filter>Source\Controller\Unit\General</Filter>
-    </ClCompile>
-    <ClCompile Include="Controller\Unit\UnitBase.cpp">
-      <Filter>Source\Controller\Unit</Filter>
-    </ClCompile>
-    <ClCompile Include="Controller\Unit\UnitUtils.cpp">
-      <Filter>Source\Controller\Unit</Filter>
-    </ClCompile>
-    <ClCompile Include="Controller\Unit\Screencap\Minicap\MinicapBase.cpp">
-      <Filter>Source\Controller\Unit\Screencap\Minicap</Filter>
-    </ClCompile>
-    <ClCompile Include="Controller\Unit\Screencap\Minicap\MinicapDirect.cpp">
-      <Filter>Source\Controller\Unit\Screencap\Minicap</Filter>
-    </ClCompile>
-    <ClCompile Include="Controller\Unit\Screencap\Minicap\MinicapStream.cpp">
-      <Filter>Source\Controller\Unit\Screencap\Minicap</Filter>
-    </ClCompile>
-    <ClCompile Include="Controller\Unit\Input\MaatouchInput.cpp">
-      <Filter>Source\Controller\Unit\Input</Filter>
-    </ClCompile>
     <ClCompile Include="Instance\InstanceStatus.cpp">
       <Filter>Source\Instance</Filter>
     </ClCompile>
@@ -387,6 +224,8 @@
     <ClCompile Include="Resource\OCRConfig.cpp">
       <Filter>Source\Resource</Filter>
     </ClCompile>
-    <ClCompile Include="Vision\OCRer.cpp" />
+    <ClCompile Include="Vision\OCRer.cpp">
+      <Filter>Source\Vision</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>

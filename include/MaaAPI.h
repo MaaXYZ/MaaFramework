@@ -24,11 +24,11 @@ extern "C"
 
     /* Controller */
 
-    MaaControllerHandle MAA_API MaaAdbControllerCreate(MaaString adb_path, MaaString address, MaaJsonString config,
-                                                      MaaAdbControllerType type, MaaControllerCallback callback,
-                                                      void* callback_arg);
+    MaaControllerHandle MAA_API MaaAdbControllerCreate(MaaString adb_path, MaaString address, MaaAdbControllerType type,
+                                                       MaaJsonString config, MaaControllerCallback callback,
+                                                       void* callback_arg);
     MaaControllerHandle MAA_API MaaCustomControllerCreate(MaaCustomControllerHandle handle,
-                                                         MaaControllerCallback callback, void* callback_arg);
+                                                          MaaControllerCallback callback, void* callback_arg);
 
     void MAA_API MaaControllerDestroy(MaaControllerHandle* ctrl);
 
@@ -37,7 +37,7 @@ extern "C"
     MaaCtrlId MAA_API MaaControllerPostConnection(MaaControllerHandle ctrl);
     MaaCtrlId MAA_API MaaControllerPostClick(MaaControllerHandle ctrl, int32_t x, int32_t y);
     MaaCtrlId MAA_API MaaControllerPostSwipe(MaaControllerHandle ctrl, int32_t* x_steps_buff, int32_t* y_steps_buff,
-                                            int32_t* step_delay_buff, MaaSize buff_size);
+                                             int32_t* step_delay_buff, MaaSize buff_size);
     MaaCtrlId MAA_API MaaControllerPostScreencap(MaaControllerHandle ctrl);
 
     MaaStatus MAA_API MaaControllerStatus(MaaControllerHandle ctrl, MaaCtrlId id);

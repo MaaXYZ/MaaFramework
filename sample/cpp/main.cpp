@@ -36,9 +36,10 @@ bool demo_waiting(const std::filesystem::path& cur_dir)
 {
     auto maa_handle = MaaCreate(nullptr, nullptr);
     auto resource_handle = MaaResourceCreate((cur_dir / "cache").string().c_str(), nullptr, nullptr);
-    auto controller_handle = MaaAdbControllerCreate(
-        adb.c_str(), adb_address.c_str(), adb_config.c_str(),
-        MaaAdbControllerType_Input_Preset_Minitouch | MaaAdbControllerType_Screencap_Auto, nullptr, nullptr);
+    auto controller_handle =
+        MaaAdbControllerCreate(adb.c_str(), adb_address.c_str(),
+                               MaaAdbControllerType_Input_Preset_Minitouch | MaaAdbControllerType_Screencap_FastestWay,
+                               adb_config.c_str(), nullptr, nullptr);
 
     MaaBindResource(maa_handle, resource_handle);
     MaaBindController(maa_handle, controller_handle);
@@ -73,9 +74,10 @@ bool demo_polling(const std::filesystem::path& cur_dir)
     auto resource_handle = MaaResourceCreate((cur_dir / "cache").string().c_str(), nullptr, nullptr);
     auto resource_id = MaaResourcePostResource(resource_handle, (cur_dir / "resource").string().c_str());
 
-    auto controller_handle = MaaAdbControllerCreate(
-        adb.c_str(), adb_address.c_str(), adb_config.c_str(),
-        MaaAdbControllerType_Input_Preset_Minitouch | MaaAdbControllerType_Screencap_Auto, nullptr, nullptr);
+    auto controller_handle =
+        MaaAdbControllerCreate(adb.c_str(), adb_address.c_str(),
+                               MaaAdbControllerType_Input_Preset_Minitouch | MaaAdbControllerType_Screencap_FastestWay,
+                               adb_config.c_str(), nullptr, nullptr);
     auto connection_id = MaaControllerPostConnection(controller_handle);
 
     for (auto status = MaaResourceStatus(resource_handle, resource_id);
