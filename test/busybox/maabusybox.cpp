@@ -189,11 +189,11 @@ int main(int argc, char* argv[])
         bool quit = false;
 
         while (!quit) {
-            std::string cmd;
-            std::getline(std::cin, cmd);
-            std::istringstream is(cmd);
+            std::string in;
+            std::getline(std::cin, in);
+            std::istringstream is(in);
 
-            char c = is.get();
+            char c = static_cast<char>(is.get());
             switch (c) {
             case 'c': {
                 int x = 0, y = 0;

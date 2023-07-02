@@ -208,9 +208,7 @@ public:
         separator sep_ = separator::space;
 
         std::stringstream buffer_;
-#ifdef MAA_DEBUG
         std::stringstream cout_buffer_;
-#endif
     };
 
     class FakeStream
