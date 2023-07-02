@@ -120,7 +120,7 @@ std::shared_ptr<ControlUnitAPI> MAA_API create_adb_controller_unit(MaaString adb
         key_unit = std::make_shared<TapKeyInput>();
         break;
     case MaaAdbControllerType_Touch_MaaTouch:
-        LogInfo << "key_type: TapKeyInput";
+        LogInfo << "key_type: MaatouchInput";
         if (!maatouch_unit) {
             maatouch_unit = std::make_shared<MaatouchInput>();
         }

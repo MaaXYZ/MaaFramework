@@ -8,6 +8,7 @@
 #include <cxxopts/cxxopts.hpp>
 
 #include "Utils/Logger.hpp"
+#include "Utils/NoWarningCV.h"
 #include "modules/include/ControlUnitAPI.h"
 
 std::ostream& operator<<(std::ostream& os, const MAA_CTRL_UNIT_NS::DeviceResolution& res)
@@ -39,28 +40,27 @@ std::map<std::string_view, std::string> intents = {
     { "txwy", "tw.txwy.and.arknights/com.u8.sdk.U8UnityContext" }
 };
 
-// template <typename SCP>
-// double test_screencap(SCP* scp, int count = 10)
-//{
-//     std::chrono::milliseconds sum(0);
-//     for (int i = 0; i < count; i++) {
-//         auto now = std::chrono::steady_clock::now();
-//         auto mat = scp->screencap();
-//         if (mat.has_value()) {
-//             auto dur = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::steady_clock::now() - now);
-//
-//             auto file = std::format("temp-{}.png", i);
-//             cv::imwrite(file, mat.value());
-//             std::cout << "image saved to " << file << std::endl;
-//
-//             std::cout << "time cost: " << dur << std::endl;
-//             sum += dur;
-//         }
-//     }
-//     double cost = sum.count() / double(count);
-//     std::cout << "average time cost: " << cost << "ms" << std::endl;
-//     return cost;
-// }
+double test_screencap(MAA_CTRL_UNIT_NS::ScreencapAPI* scp, int count = 10)
+{
+    std::chrono::milliseconds sum(0);
+    for (int i = 0; i < count; i++) {
+        auto now = std::chrono::steady_clock::now();
+        auto mat = scp->screencap();
+        if (mat.has_value()) {
+            auto dur = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::steady_clock::now() - now);
+
+            auto file = std::format("temp-{}.png", i);
+            cv::imwrite(file, mat.value());
+            std::cout << "image saved to " << file << std::endl;
+
+            std::cout << "time cost: " << dur.count() << "ms" << std::endl;
+            sum += dur;
+        }
+    }
+    double cost = sum.count() / double(count);
+    std::cout << "average time cost: " << cost << "ms" << std::endl;
+    return cost;
+}
 
 int main(int argc, char* argv[])
 {
@@ -211,7 +211,7 @@ int main(int argc, char* argv[])
 
         if (scmd == "help") {
             std::cout << "Usage: " << argv[0]
-                      << " screencap [profile | raw_by_netcat | raw_with_gzip | encode | encode_to_file | "
+                      << " screencap [profile | fastest | raw_by_netcat | raw_with_gzip | encode | encode_to_file | "
                          "minicap_direct | minicap_strean]"
                       << std::endl;
             return 0;
@@ -220,15 +220,29 @@ int main(int argc, char* argv[])
         bool profile = false;
         std::map<std::string, double> cost;
 
-        auto scp = create_adb_screencap(adb.c_str(), adb_address.c_str(), MaaAdbControllerType_Screencap_FastestWay,
-                                        config.c_str());
-        scp->init(res->width, res->height);
+        auto create_scp = [&adb, &adb_address, &config, &res](MaaAdbControllerType type) {
+            auto scp = create_adb_screencap(adb.c_str(), adb_address.c_str(), type, config.c_str());
+            scp->init(res->width, res->height);
+            return scp;
+        };
 
         if (scmd == "profile") {
             profile = true;
         }
 
-        std::ignore = profile;
+#define TEST_SCP(type, id)                                          \
+    if (profile || scmd == type) {                                  \
+        auto scp = create_scp(MaaAdbControllerType_Screencap_##id); \
+        test_screencap(scp.get());                                  \
+    }
+
+        TEST_SCP("fastest", FastestWay)
+        TEST_SCP("raw_by_netcat", RawByNetcat)
+        TEST_SCP("raw_with_gzip", RawWithGzip)
+        TEST_SCP("encode", Encode)
+        TEST_SCP("encode_to_file", EncodeToFile)
+        TEST_SCP("minicap_direct", MinicapDirect)
+        TEST_SCP("minicap_stream", MinicapStream)
     }
     // else if (cmd == "invoke_app") {
     //     auto inv = initUnit(new Unit::InvokeApp);

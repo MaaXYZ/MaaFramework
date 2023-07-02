@@ -57,13 +57,13 @@ public:
     virtual ~ScreencapBase() override = default;
 };
 
-class TouchInputBase : public TouchInputAPI, public UnitBase
+class TouchInputBase : public TouchInputAPI, virtual public UnitBase
 {
 public:
     virtual ~TouchInputBase() override = default;
 };
 
-class KeyInputBase : public KeyInputAPI, public UnitBase
+class KeyInputBase : public KeyInputAPI, virtual public UnitBase
 {
 public:
     virtual ~KeyInputBase() override = default;
