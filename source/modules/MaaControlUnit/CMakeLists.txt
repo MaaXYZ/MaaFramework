@@ -1,10 +1,7 @@
-file(GLOB_RECURSE MaaControlUnitSrc *.h *.hpp *.cpp)
+file(GLOB_RECURSE maa_control_unit_src *.h *.hpp *.cpp)
 
-add_library(MaaControlUnit SHARED ${MaaControlUnitSrc})
-set_target_properties(MaaControlUnit PROPERTIES
-    CXX_STANDARD 20
-    CXX_STANDARD_REQUIRED ON
-)
+add_library(MaaControlUnit SHARED ${maa_control_unit_src})
+
 target_include_directories(MaaControlUnit
     PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}
             ${CMAKE_CURRENT_SOURCE_DIR}/../include

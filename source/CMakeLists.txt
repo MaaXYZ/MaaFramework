@@ -2,19 +2,16 @@ file(GLOB_RECURSE maa_src *.cpp *.h *.hpp ../include/*.h)
 file(GLOB_RECURSE maa_modules_src modules/*.cpp modules/*.h modules/*.hpp)
 list(REMOVE_ITEM maa_src ${maa_modules_src})
 
-add_subdirectory(modules/MaaControlUnit)
 add_subdirectory(modules/MaaUtils)
+add_subdirectory(modules/MaaControlUnit)
 
 add_library(MaaFramework SHARED ${maa_src})
 
 set(MaaFramework_PUBLIC_HEADERS ${CMAKE_CURRENT_SOURCE_DIR}/../include/MaaAPI.h)
 set(MaaFramework_INCLUDE ${CMAKE_CURRENT_SOURCE_DIR}/../include)
-set(MaaFramework_INCLUDE ${CMAKE_CURRENT_SOURCE_DIR}/source/include)
 
-target_include_directories(MaaFramework PUBLIC ../include PRIVATE .)
+target_include_directories(MaaFramework PUBLIC ../include PRIVATE . modules/include)
 set_target_properties(MaaFramework PROPERTIES
-    CXX_STANDARD 20
-    CXX_STANDARD_REQUIRED ON
     PUBLIC_HEADER "${MaaFramework_PUBLIC_HEADERS}"
 )
 

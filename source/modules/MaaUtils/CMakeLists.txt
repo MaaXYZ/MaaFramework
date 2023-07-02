@@ -1,10 +1,6 @@
-file(GLOB_RECURSE MaaUtils *.h *.hpp *.cpp)
+file(GLOB_RECURSE maa_utils_src *.h *.hpp *.cpp)
 
-add_library(MaaUtils SHARED ${MaaUtilsSrc})
-set_target_properties(MaaUtils PROPERTIES
-    CXX_STANDARD 20
-    CXX_STANDARD_REQUIRED ON
-)
+add_library(MaaUtils SHARED ${maa_utils_src})
 target_include_directories(MaaUtils
     PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}
             ${CMAKE_CURRENT_SOURCE_DIR}/../include
