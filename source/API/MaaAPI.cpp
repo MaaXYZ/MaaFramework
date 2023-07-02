@@ -2,6 +2,7 @@
 
 #include <meojson/json.hpp>
 
+#include "ControlUnitAPI.h"
 #include "Controller/AdbController.h"
 #include "Controller/CustomController.h"
 #include "Instance/InstanceMgr.h"
@@ -9,7 +10,6 @@
 #include "Resource/ResourceMgr.h"
 #include "Utils/Logger.hpp"
 #include "Utils/Platform.hpp"
-#include "modules/include/ControlUnitAPI.h"
 
 MaaBool MaaSetGlobalOption(MaaGlobalOption key, MaaString value)
 {

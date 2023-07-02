@@ -7,9 +7,9 @@
 
 #include <cxxopts/cxxopts.hpp>
 
+#include "ControlUnitAPI.h"
 #include "Utils/Logger.hpp"
 #include "Utils/NoWarningCV.h"
-#include "modules/include/ControlUnitAPI.h"
 
 std::ostream& operator<<(std::ostream& os, const MAA_CTRL_UNIT_NS::DeviceResolution& res)
 {

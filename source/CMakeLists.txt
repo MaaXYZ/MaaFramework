@@ -8,6 +8,7 @@ add_library(MaaFramework SHARED ${maa_src})
 
 set(MaaFramework_PUBLIC_HEADERS ${CMAKE_CURRENT_SOURCE_DIR}/../include/MaaAPI.h)
 set(MaaFramework_INCLUDE ${CMAKE_CURRENT_SOURCE_DIR}/../include)
+set(MaaFramework_INCLUDE ${CMAKE_CURRENT_SOURCE_DIR}/source/include)
 
 target_include_directories(MaaFramework PUBLIC ../include PRIVATE .)
 set_target_properties(MaaFramework PROPERTIES
