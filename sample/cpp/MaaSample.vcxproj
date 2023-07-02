@@ -106,10 +106,11 @@
       <Profile>true</Profile>
     </Link>
     <PostBuildEvent>
-      <Command>xcopy "$(ProjectDir)\config\controller_config.json" "$(TargetDir)" /y
+      <Command>xcopy "$(SolutionDir)\assets\config\controller_config.json" "$(TargetDir)" /y
 
 
-xcopy "$(ProjectDir)\resource" "$(TargetDir)" /s /e /y</Command>
+
+xcopy "$(SolutionDir)\assets\resource" "$(TargetDir)" /s /e /y</Command>
     </PostBuildEvent>
     <PreLinkEvent>
       <Command>
@@ -141,10 +142,11 @@ xcopy "$(ProjectDir)\resource" "$(TargetDir)" /s /e /y</Command>
       <Profile>true</Profile>
     </Link>
     <PostBuildEvent>
-      <Command>xcopy "$(ProjectDir)\config\controller_config.json" "$(TargetDir)" /y
+      <Command>xcopy "$(SolutionDir)\assets\config\controller_config.json" "$(TargetDir)" /y
 
 
-xcopy "$(ProjectDir)\resource" "$(TargetDir)" /s /e /y</Command>
+
+xcopy "$(SolutionDir)\assets\resource" "$(TargetDir)" /s /e /y</Command>
     </PostBuildEvent>
     <PreLinkEvent>
       <Command>
@@ -176,10 +178,11 @@ xcopy "$(ProjectDir)\resource" "$(TargetDir)" /s /e /y</Command>
       <Profile>true</Profile>
     </Link>
     <PostBuildEvent>
-      <Command>xcopy "$(ProjectDir)\config\controller_config.json" "$(TargetDir)" /y
+      <Command>xcopy "$(SolutionDir)\assets\config\controller_config.json" "$(TargetDir)" /y
 
 
-xcopy "$(ProjectDir)\resource" "$(TargetDir)" /s /e /y</Command>
+
+xcopy "$(SolutionDir)\assets\resource" "$(TargetDir)" /s /e /y</Command>
     </PostBuildEvent>
     <PreLinkEvent>
       <Command>
