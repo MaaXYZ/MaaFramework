@@ -18,10 +18,10 @@ std::ostream& operator<<(std::ostream& os, const MAA_CTRL_UNIT_NS::DeviceResolut
 
 inline std::string read_controller_config(const std::string& cur_dir)
 {
-    std::ifstream ifs(std::filesystem::path(cur_dir) / "config" / "controller_config.json", std::ios::in);
+    std::ifstream ifs(std::filesystem::path(cur_dir) / "controller_config.json", std::ios::in);
     if (!ifs.is_open()) {
         std::cerr << "Failed to open controller_config.json\n"
-                  << "Please copy controller_config.json to " << std::filesystem::path(cur_dir) / "config" << std::endl;
+                  << "Please copy controller_config.json to " << std::filesystem::path(cur_dir) << std::endl;
         exit(1);
     }
 
@@ -40,7 +40,7 @@ std::map<std::string_view, std::string> intents = {
     { "txwy", "tw.txwy.and.arknights/com.u8.sdk.U8UnityContext" }
 };
 
-double test_screencap(MAA_CTRL_UNIT_NS::ScreencapAPI* scp, int count = 10)
+double test_screencap(std::shared_ptr<MAA_CTRL_UNIT_NS::ScreencapAPI> scp, int count = 10)
 {
     std::chrono::milliseconds sum(0);
     for (int i = 0; i < count; i++) {
@@ -86,7 +86,7 @@ int main(int argc, char* argv[])
     options.add_options()
         ("a,adb", "adb path, $MAA_ADB", cxxopts::value<std::string>()->default_value(adb))
         ("s,serial", "adb address, $MAA_ADB_SERIAL", cxxopts::value<std::string>()->default_value(adb_address))
-        ("c,config", "config directory", cxxopts::value<std::string>()->default_value((std::filesystem::current_path()).string()))
+        ("c,config", "config directory", cxxopts::value<std::string>()->default_value(std::filesystem::path(argv[0]).parent_path().string()))
         ("t,client", "client, $MAA_CLIENT", cxxopts::value<std::string>()->default_value(client))
         ("h,help", "print usage", cxxopts::value<bool>())
 
@@ -108,6 +108,11 @@ int main(int argc, char* argv[])
         std::cout << options.help() << std::endl;
         return 0;
     }
+
+    adb = result["adb"].as<std::string>();
+    adb_address = result["serial"].as<std::string>();
+    client = result["client"].as<std::string>();
+
     std::string config = read_controller_config(result["config"].as<std::string>());
 
     using namespace MAA_CTRL_UNIT_NS;
@@ -148,7 +153,7 @@ int main(int argc, char* argv[])
             LogInfo << "stop" << activity->stop(intents[client]);
         }
         else {
-            std::cout << "Usage: " << argv[0] << " activity [start | stop]" << std::endl;
+            LogInfo << "Usage: " << argv[0] << " activity [start | stop]";
         }
     }
     // else if (cmd == "tap_input") {
@@ -210,10 +215,9 @@ int main(int argc, char* argv[])
         // auto params = result["params"].as<std::vector<std::string>>();
 
         if (scmd == "help") {
-            std::cout << "Usage: " << argv[0]
-                      << " screencap [profile | fastest | raw_by_netcat | raw_with_gzip | encode | encode_to_file | "
-                         "minicap_direct | minicap_strean]"
-                      << std::endl;
+            LogInfo << "Usage: " << argv[0]
+                    << " screencap [profile | fastest | raw_by_netcat | raw_with_gzip | encode | encode_to_file | "
+                       "minicap_direct | minicap_strean]";
             return 0;
         }
 
@@ -233,7 +237,7 @@ int main(int argc, char* argv[])
 #define TEST_SCP(type, id)                                          \
     if (profile || scmd == type) {                                  \
         auto scp = create_scp(MaaAdbControllerType_Screencap_##id); \
-        test_screencap(scp.get());                                  \
+        test_screencap(scp);                                        \
     }
 
         TEST_SCP("fastest", FastestWay)
