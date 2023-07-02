@@ -385,7 +385,7 @@ public:
             std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::steady_clock::now() - start_);
         std::apply([](auto&&... args) { return Logger::get_instance().trace(std::forward<decltype(args)>(args)...); },
                    std::move(args_))
-            << "| leave," << duration << "ms";
+            << "| leave," << duration;
     }
 
 private:
