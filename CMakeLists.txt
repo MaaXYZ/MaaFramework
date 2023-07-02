@@ -13,11 +13,13 @@ option(INSTALL_DEVEL "install development files" OFF)
 option(INSTALL_THIRD_LIBS "install third party libraries" ON)
 option(USE_MAADEPS "use third-party libraries built by MaaDeps" ON)
 
-if (BUILD_BUSYBOX)
+if (CMAKE_BUILD_TYPE STREQUAL "Debug")
     add_compile_definitions(MAA_DEBUG)
-    set(MAA_DEBUG_EXPORTS ON)
+    if (BUILD_BUSYBOX)
+        set(MAA_DEBUG_EXPORTS ON)
+    endif ()
 else ()
-    set(MAA_DEBUG_EXPORTS OFF)
+    set(BUILD_BUSYBOX OFF)
 endif ()
 
 include(${PROJECT_SOURCE_DIR}/cmake/config.cmake) # Basic compile & link configuration
