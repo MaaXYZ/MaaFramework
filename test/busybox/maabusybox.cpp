@@ -193,10 +193,7 @@ int main(int argc, char* argv[])
             std::getline(std::cin, cmd);
             std::istringstream is(cmd);
 
-            char c;
-            if (is >> c) {
-                continue;
-            }
+            char c = is.get();
             switch (c) {
             case 'c': {
                 int x = 0, y = 0;
