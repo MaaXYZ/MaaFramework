@@ -1,4 +1,4 @@
-set(maa_assets_target ${CMAKE_RUNTIME_OUTPUT_DIRECTORY})
+set(maa_assets_target ${CMAKE_BINARY_DIR})
 
 add_custom_command(OUTPUT ${maa_assets_target}/controller_config.json
     COMMAND ${CMAKE_COMMAND} -E copy ${PROJECT_SOURCE_DIR}/assets/config/controller_config.json ${maa_assets_target}/controller_config.json

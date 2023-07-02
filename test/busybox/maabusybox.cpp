@@ -86,7 +86,7 @@ int main(int argc, char* argv[])
     options.add_options()
         ("a,adb", "adb path, $MAA_ADB", cxxopts::value<std::string>()->default_value(adb))
         ("s,serial", "adb address, $MAA_ADB_SERIAL", cxxopts::value<std::string>()->default_value(adb_address))
-        ("c,config", "config directory", cxxopts::value<std::string>()->default_value(std::filesystem::path(argv[0]).parent_path().string()))
+        ("c,config", "config directory", cxxopts::value<std::string>()->default_value(std::filesystem::current_path().string()))
         ("t,client", "client, $MAA_CLIENT", cxxopts::value<std::string>()->default_value(client))
         ("h,help", "print usage", cxxopts::value<bool>())
 
