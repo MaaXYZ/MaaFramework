@@ -14,6 +14,7 @@ option(INSTALL_THIRD_LIBS "install third party libraries" ON)
 option(USE_MAADEPS "use third-party libraries built by MaaDeps" ON)
 
 if (BUILD_BUSYBOX)
+    add_compile_definitions(MAA_DEBUG)
     set(MAA_DEBUG_EXPORTS ON)
 else ()
     set(MAA_DEBUG_EXPORTS OFF)
