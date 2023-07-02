@@ -5,7 +5,7 @@ if (NOT CMAKE_BUILD_TYPE)
     set(CMAKE_BUILD_TYPE "Release" CACHE STRING "Choose the type of build." FORCE)
 endif ()
 
-list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_LIST_DIR}/cmake")
+list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_LIST_DIR}/cmake/modules")
 
 option(BUILD_SAMPLE "build a demo" ON)
 option(BUILD_BUSYBOX "build the busybox" OFF)
@@ -13,81 +13,18 @@ option(INSTALL_DEVEL "install development files" OFF)
 option(INSTALL_THIRD_LIBS "install third party libraries" ON)
 option(USE_MAADEPS "use third-party libraries built by MaaDeps" ON)
 
+if (BUILD_BUSYBOX)
+    set(MAA_DEBUG_EXPORTS ON)
+else ()
+    set(MAA_DEBUG_EXPORTS OFF)
+endif ()
+
+include(${PROJECT_SOURCE_DIR}/cmake/config.cmake) # Basic compile & link configuration
 include(${PROJECT_SOURCE_DIR}/cmake/utils.cmake)
 
 if(USE_MAADEPS)
     include(${PROJECT_SOURCE_DIR}/MaaDeps/maadeps.cmake)
 endif()
-
-if (MSVC)
-    add_compile_options("/utf-8")
-    add_compile_options("/MP")
-    add_compile_options("/W4;/WX")
-    add_compile_options("/wd4127")  # conditional expression is constant
-
-    set(CMAKE_MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Debug>:Debug>DLL")
-elseif ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU")
-    add_compile_options("-Wall;-Werror;-Wextra;-Wpedantic;-Wno-missing-field-initializers")
-    if (CMAKE_CXX_COMPILER_ID MATCHES "GNU" AND CMAKE_CXX_COMPILER_VERSION VERSION_LESS 13)
-        add_compile_options("-Wno-restrict")
-    endif()
-elseif ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang")
-    message("clang")
-endif ()
-
-add_library(header_only_libraries INTERFACE)
-target_include_directories(header_only_libraries INTERFACE 3rdparty/include)
-
-file(GLOB_RECURSE maa_src source/*.cpp source/*.h source/*.hpp)
-file(GLOB_RECURSE maa_modules_src source/modules/*.cpp source/modules/*.h source/modules/*.hpp)
-list(REMOVE_ITEM maa_src ${maa_modules_src})
-
-add_library(MaaFramework SHARED ${maa_src})
-
-target_compile_definitions(MaaFramework PRIVATE MAA_DLL_EXPORTS _UNICODE UNICODE)
-target_compile_definitions(MaaFramework PRIVATE "$<$<CONFIG:DEBUG>:MAA_DEBUG;MAA_DEBUG_DLL_EXPORTS>")
-
-target_include_directories(MaaFramework PUBLIC include PRIVATE source)
-set(MaaFramework_PUBLIC_HEADERS include/MaaAPI.h)
-set(MaaFramework_INCLUDE include)
-target_sources(MaaFramework PUBLIC ${MaaFramework_PUBLIC_HEADERS})
-set_target_properties(MaaFramework PROPERTIES
-    CXX_STANDARD 20
-    CXX_STANDARD_REQUIRED ON
-    PUBLIC_HEADER "${MaaFramework_PUBLIC_HEADERS}"
-)
-
-if(UNIX)
-    set_target_properties(MaaFramework PROPERTIES INSTALL_RPATH "$ORIGIN/")
-endif()
-
-if (BUILD_SAMPLE)
-    add_executable(sample sample/cpp/main.cpp)
-    set_target_properties(sample PROPERTIES
-        CXX_STANDARD 20
-        CXX_STANDARD_REQUIRED ON
-    )
-    target_link_libraries(sample MaaFramework)
-    target_include_directories(sample PUBLIC ${MaaFramework_INCLUDE})
-endif (BUILD_SAMPLE)
-
-if (BUILD_BUSYBOX)
-    file(GLOB_RECURSE maabusybox_src test/busybox/*.cpp test/busybox/*.hpp)
-    add_executable(maabusybox ${maabusybox_src})
-    set_target_properties(maabusybox PROPERTIES
-        CXX_STANDARD 20
-        CXX_STANDARD_REQUIRED ON
-    )
-    target_link_libraries(maabusybox MaaFramework header_only_libraries)
-    target_include_directories(maabusybox PUBLIC ${MaaFramework_INCLUDE} "source")
-    add_custom_command(OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/config ${CMAKE_CURRENT_BINARY_DIR}/MaaAgentBinary
-        COMMAND ${CMAKE_COMMAND} -E copy_directory ${CMAKE_CURRENT_SOURCE_DIR}/sample/cpp/config ${CMAKE_CURRENT_BINARY_DIR}/config
-        COMMAND ${CMAKE_COMMAND} -E copy_directory ${CMAKE_CURRENT_SOURCE_DIR}/MaaAgentBinary ${CMAKE_CURRENT_BINARY_DIR}/MaaAgentBinary
-    )
-    add_custom_target(maabusybox_res ALL DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/config ${CMAKE_CURRENT_BINARY_DIR}/MaaAgentBinary)
-    set_property(TARGET maabusybox_res APPEND PROPERTY ADDITIONAL_CLEAN_FILES ${CMAKE_CURRENT_BINARY_DIR}/config ${CMAKE_CURRENT_BINARY_DIR}/MaaAgentBinary)
-    add_dependencies(maabusybox maabusybox_res)
-endif (BUILD_BUSYBOX)
 
 find_package(OpenCV REQUIRED COMPONENTS core imgproc imgcodecs videoio)
 find_package(ZLIB REQUIRED)
@@ -96,14 +33,16 @@ find_package(MaaDerpLearning REQUIRED)
 find_package(ONNXRuntime)
 # find_package(cpr CONFIG REQUIRED)
 
-add_subdirectory(${CMAKE_SOURCE_DIR}/source/modules/ControlUnit)
+add_subdirectory(3rdparty)
+add_subdirectory(source)
 
-target_link_libraries(MaaFramework MaaControlUnit)
-target_link_libraries(MaaFramework ${OpenCV_LIBS} MaaDerpLearning ONNXRuntime::ONNXRuntime ZLIB::ZLIB header_only_libraries) #asio::asio cpr::cpr
+if (BUILD_SAMPLE)
+    add_subdirectory(sample/cpp)
+endif (BUILD_SAMPLE)
 
-if(WIN32)
-    target_link_libraries(MaaFramework ws2_32)
-endif()
+if (BUILD_BUSYBOX)
+    add_subdirectory(test/busybox)
+endif (BUILD_BUSYBOX)
 
 # clang 15之后有ranges
 # if (CMAKE_CXX_COMPILER_ID MATCHES ".*Clang")
@@ -125,7 +64,6 @@ install(TARGETS MaaFramework
 if(INSTALL_THIRD_LIBS AND USE_MAADEPS)
     maadeps_install()
 endif()
-
 
 if (APPLE)
     include(${PROJECT_SOURCE_DIR}/cmake/macos.cmake)

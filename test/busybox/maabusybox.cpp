@@ -227,6 +227,8 @@ int main(int argc, char* argv[])
         if (scmd == "profile") {
             profile = true;
         }
+
+        std::ignore = profile;
     }
     // else if (cmd == "invoke_app") {
     //     auto inv = initUnit(new Unit::InvokeApp);

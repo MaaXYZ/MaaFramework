@@ -28,6 +28,9 @@ MAA_NS_BEGIN
 
 #ifdef __GNUC__
 std::ostream& operator<<(std::ostream& os, const std::chrono::milliseconds& ms);
+
+template <typename T>
+std::ostream& operator<<(std::ostream& os, const std::optional<T>& v);
 #endif
 
 template <typename T>
