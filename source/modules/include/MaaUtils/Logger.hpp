@@ -114,10 +114,10 @@ public:
                 return std::forward<T>(value);
             }
             else if constexpr (std::is_constructible_v<json::array, T>) {
-                return json::array(std::forward<T>(value)).to_string();
+                return json::array(std::forward<T>(value));
             }
             else if constexpr (std::is_constructible_v<json::object, T>) {
-                return json::object(std::forward<T>(value)).to_string();
+                return json::object(std::forward<T>(value));
             }
             else if constexpr (ranges::input_range<T> && has_value_type<T> && !has_key_mapped_type<T>) {
                 using value_type = typename std::decay_t<T>::value_type;
