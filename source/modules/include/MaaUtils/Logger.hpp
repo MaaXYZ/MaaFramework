@@ -161,9 +161,44 @@ public:
         }
 
 #ifdef MAA_DEBUG
-        void print_color(level lv);
+        void print_color(level lv)
+        {
+            std::string_view color;
+
+            switch (lv) {
+            case level::debug:
+            case level::trace:
+                break;
+            case level::info:
+                color = "\033[32m";
+                break;
+            case level::warn:
+                color = "\033[33m";
+                break;
+            case level::error:
+                color = "\033[31m";
+                break;
+            }
+            cout_buffer_ << color;
+        }
 #endif
-        constexpr std::string_view level_str(level lv);
+
+        constexpr std::string_view level_str(level lv)
+        {
+            switch (lv) {
+            case level::debug:
+                return "DBG";
+            case level::trace:
+                return "TRC";
+            case level::info:
+                return "INF";
+            case level::warn:
+                return "WRN";
+            case level::error:
+                return "ERR";
+            }
+            return "NoLV";
+        }
 
     private:
         std::mutex& mutex_;
@@ -171,9 +206,7 @@ public:
         separator sep_ = separator::space;
 
         std::stringstream buffer_;
-#ifdef MAA_DEBUG
         std::stringstream cout_buffer_;
-#endif
     };
 
     class MAA_UTILS_API FakeStream
@@ -293,6 +326,25 @@ private:
     std::tuple<args_t...> args_;
     std::chrono::time_point<std::chrono::steady_clock> start_ = std::chrono::steady_clock::now();
 };
+}
+
+#ifdef __GNUC__
+inline std::ostream& operator<<(std::ostream& os, const std::chrono::milliseconds& ms)
+{
+    return os << ms.count() << "ms";
+}
+#endif
+
+template <typename T>
+std::ostream& operator<<(std::ostream& os, const std::optional<T>& v)
+{
+    if (v) {
+        os << *v;
+    }
+    else {
+        os << "<nullopt>";
+    }
+    return os;
 }
 
 inline constexpr std::string_view pertty_file(std::string_view file)
