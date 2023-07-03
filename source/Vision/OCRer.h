@@ -31,11 +31,10 @@ private:
     ResultsVec predict() const;
     void postproc_trim_(Result& res) const;
     void postproc_replace_(Result& res) const;
-    bool filter_and_replace_by_required_(Result& res) const;
 
     OcrParams param_;
 };
 
-std::ostream& operator<<(std::ostream& os, const OCRer::Result& res);
-
 MAA_VISION_NS_END
+
+std::ostream& operator<<(std::ostream& os, const MAA_VISION_NS::OCRer::Result& res);

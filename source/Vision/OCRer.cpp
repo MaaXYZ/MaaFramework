@@ -2,8 +2,8 @@
 
 #include <regex>
 
-#include "Resource/ResourceMgr.h"
 #include "MaaUtils/Logger.hpp"
+#include "Resource/ResourceMgr.h"
 #include "Utils/Ranges.hpp"
 #include "Utils/StringMisc.hpp"
 
@@ -28,8 +28,7 @@ OCRer::ResultOpt OCRer::analyze() const
         postproc_replace_(res);
     }
 
-    // TODO
-    //LogTrace << VAR(results);
+    LogTrace << VAR(results);
 
     return results;
 }
@@ -75,9 +74,9 @@ OCRer::ResultsVec OCRer::predict() const
         results.emplace_back(
             Result { .text = std::move(ocr_result.text.at(i)), .box = my_box, .score = ocr_result.rec_scores.at(i) });
     }
+
     auto costs = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::steady_clock::now() - start_time);
-    // TODO
-    //LogTrace << VAR(results) << VAR(image_roi) << VAR(costs);
+    LogTrace << VAR(results) << VAR(image_roi) << VAR(costs);
 
     return results;
 }

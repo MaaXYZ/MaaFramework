@@ -265,8 +265,12 @@ public:
 
     explicit basic_array(const basic_value<string_t>& val);
     explicit basic_array(basic_value<string_t>&& val);
-    template <typename array_t>
-    basic_array(array_t arr);
+    template <typename array_t, typename _ = std::enable_if_t<std::is_constructible_v<
+                                    typename value_type, typename std::decay_t<array_t>::value_type>>>
+    basic_array(array_t arr)
+    {
+        _array_data.assign(std::make_move_iterator(arr.begin()), std::make_move_iterator(arr.end()));
+    }
 
     ~basic_array() noexcept = default;
 
@@ -358,6 +362,8 @@ class basic_object
 
 public:
     using raw_object = std::map<string_t, basic_value<string_t>>;
+    using key_type = typename raw_object::key_type;
+    using mapped_type = typename raw_object::mapped_type;
     using value_type = typename raw_object::value_type;
     using iterator = typename raw_object::iterator;
     using const_iterator = typename raw_object::const_iterator;
@@ -372,8 +378,12 @@ public:
     basic_object(std::initializer_list<value_type> init_list);
     explicit basic_object(const basic_value<string_t>& val);
     explicit basic_object(basic_value<string_t>&& val);
-    template <typename map_t>
-    basic_object(map_t map);
+    template <typename map_t, typename _ = std::enable_if_t<std::is_constructible_v<
+                                  typename value_type, typename std::decay_t<map_t>::value_type>>>
+    basic_object(map_t map)
+    {
+        _object_data.insert(std::make_move_iterator(map.begin()), std::make_move_iterator(map.end()));
+    }
 
     ~basic_object() = default;
 
@@ -1341,15 +1351,6 @@ MEOJSON_INLINE basic_array<string_t>::basic_array(basic_value<string_t>&& val)
 }
 
 template <typename string_t>
-template <typename array_t>
-MEOJSON_INLINE basic_array<string_t>::basic_array(array_t arr)
-{
-    static_assert(std::is_constructible_v<value_type, typename array_t::value_type>,
-                  "array_t can not construct a json array");
-    _array_data.assign(std::make_move_iterator(arr.begin()), std::make_move_iterator(arr.end()));
-}
-
-template <typename string_t>
 MEOJSON_INLINE void basic_array<string_t>::clear() noexcept
 {
     _array_data.clear();
@@ -1908,15 +1909,6 @@ MEOJSON_INLINE bool basic_object<string_t>::operator==(const basic_object<string
     return _object_data == rhs._object_data;
 }
 
-template <typename string_t>
-template <typename map_t>
-basic_object<string_t>::basic_object(map_t map)
-{
-    static_assert(std::is_constructible_v<value_type, typename map_t::value_type>,
-                  "map_t can not construct a json object");
-    _object_data.insert(std::make_move_iterator(map.begin()), std::make_move_iterator(map.end()));
-}
-
 // *************************
 // *      parser impl      *
 // *************************
@@ -2248,9 +2240,9 @@ MEOJSON_INLINE std::optional<string_t> parser<string_t, parsing_t>::parse_stdstr
             case 't':
                 result.push_back('\t');
                 break;
-            // case 'u':
-            //     result.push_back('\u');
-            //     break;
+                // case 'u':
+                //     result.push_back('\u');
+                //     break;
             default:
                 // Illegal backslash escape
                 return std::nullopt;
