@@ -76,7 +76,7 @@ public:
         {
             stream_endl();
 
-            std::lock_guard<std::mutex> lock(mutex_);
+            std::unique_lock<std::mutex> lock(mutex_);
 
 #ifdef MAA_DEBUG
             std::cout << cout_buffer_.str();
