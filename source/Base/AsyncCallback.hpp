@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Base/AsyncRunner.hpp"
+#include "Base/NonCopyable.hpp"
 #include "MaaMsg.h"
 #include "MaaUtils/Logger.hpp"
 

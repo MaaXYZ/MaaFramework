@@ -1,5 +1,6 @@
 #pragma once
 
+#include "Base/NonCopyable.hpp"
 #include "Common/MaaConf.h"
 #include "MaaUtils/Logger.hpp"
 

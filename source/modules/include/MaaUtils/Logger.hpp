@@ -10,7 +10,6 @@
 #include <tuple>
 #include <type_traits>
 
-#include "Base/SingletonHolder.hpp"
 #include "Common/MaaConf.h"
 #include "Common/MaaTypes.h"
 #include "MaaPort.h"
@@ -29,10 +28,9 @@ MAA_NS_BEGIN
 
 #ifdef __GNUC__
 std::ostream& operator<<(std::ostream& os, const std::chrono::milliseconds& ms);
-
+#endif
 template <typename T>
 std::ostream& operator<<(std::ostream& os, const std::optional<T>& v);
-#endif
 
 template <typename T>
 concept has_stream_insertion_operator = requires { std::declval<std::ostream&>() << std::declval<T>(); };
@@ -63,7 +61,7 @@ public:
     };
 
 public:
-    class LogStream
+    class MAA_UTILS_API LogStream
     {
     public:
         template <typename... args_t>
@@ -73,7 +71,7 @@ public:
             stream_props(lv, std::forward<args_t>(args)...);
         }
         LogStream(const LogStream&) = delete;
-        LogStream(LogStream&&) = default;
+        LogStream(LogStream&&) noexcept = default;
         ~LogStream()
         {
             stream_endl();
@@ -163,44 +161,9 @@ public:
         }
 
 #ifdef MAA_DEBUG
-        void print_color(level lv)
-        {
-            std::string_view color;
-
-            switch (lv) {
-            case level::debug:
-            case level::trace:
-                break;
-            case level::info:
-                color = "\033[32m";
-                break;
-            case level::warn:
-                color = "\033[33m";
-                break;
-            case level::error:
-                color = "\033[31m";
-                break;
-            }
-            cout_buffer_ << color;
-        }
+        void print_color(level lv);
 #endif
-
-        constexpr std::string_view level_str(level lv)
-        {
-            switch (lv) {
-            case level::debug:
-                return "DBG";
-            case level::trace:
-                return "TRC";
-            case level::info:
-                return "INF";
-            case level::warn:
-                return "WRN";
-            case level::error:
-                return "ERR";
-            }
-            return "NoLV";
-        }
+        constexpr std::string_view level_str(level lv);
 
     private:
         std::mutex& mutex_;
@@ -208,10 +171,12 @@ public:
         separator sep_ = separator::space;
 
         std::stringstream buffer_;
+#ifdef MAA_DEBUG
         std::stringstream cout_buffer_;
+#endif
     };
 
-    class FakeStream
+    class MAA_UTILS_API FakeStream
     {
     public:
         template <typename T>
@@ -261,11 +226,7 @@ public:
         return stream(level::error, std::forward<args_t>(args)...);
     }
 
-    void start_logging(std::filesystem::path dir)
-    {
-        log_path_ = std::move(dir) / "maa.log";
-        reinit();
-    }
+    void start_logging(std::filesystem::path dir);
 
 private:
     template <typename... args_t>
@@ -274,77 +235,17 @@ private:
         return LogStream(trace_mutex_, ofs_, lv, std::forward<args_t>(args)...);
     }
 
-    void flush()
-    {
-        internal_trace() << "-----------------------------";
-        internal_trace() << "Flush log";
-        internal_trace() << "-----------------------------";
-
-        rotate();
-        open();
-    }
+    void flush();
 
 private:
     Logger() = default;
 
-    void reinit()
-    {
-        rotate();
-        open();
-        log_start();
-    }
+    void reinit();
+    void rotate();
+    void open();
+    void log_start();
 
-    void rotate()
-    {
-        if (log_path_.empty() || !std::filesystem::exists(log_path_)) {
-            return;
-        }
-
-        std::unique_lock<std::mutex> m_trace_lock(trace_mutex_);
-        if (ofs_.is_open()) {
-            ofs_.close();
-        }
-
-        constexpr uintmax_t MaxLogSize = 4ULL * 1024 * 1024;
-        const uintmax_t log_size = std::filesystem::file_size(log_path_);
-        if (log_size < MaxLogSize) {
-            return;
-        }
-
-        const std::filesystem::path bak_path = log_path_.parent_path() / "maa.bak.log";
-        try {
-            std::filesystem::rename(log_path_, bak_path);
-        }
-        catch (...) {
-        }
-    }
-
-    void open()
-    {
-        if (log_path_.empty()) {
-            return;
-        }
-
-        std::filesystem::create_directories(log_path_.parent_path());
-
-        std::unique_lock<std::mutex> m_trace_lock(trace_mutex_);
-        if (ofs_.is_open()) {
-            ofs_.close();
-        }
-        ofs_.open(log_path_, std::ios::out | std::ios::app);
-    }
-
-    void log_start()
-    {
-        internal_trace() << "-----------------------------";
-        internal_trace() << "MAA Process Start";
-        internal_trace() << "Version" << MAA_VERSION;
-        internal_trace() << "Built at" << __DATE__ << __TIME__;
-        internal_trace() << "Log Path" << log_path_;
-        internal_trace() << "-----------------------------";
-    }
-
-    LogStream internal_trace() { return trace("Logger"); }
+    LogStream internal_trace();
 
 private:
     std::filesystem::path log_path_;
@@ -357,25 +258,6 @@ inline constexpr Logger::separator Logger::separator::space(" ");
 inline constexpr Logger::separator Logger::separator::tab("\t");
 inline constexpr Logger::separator Logger::separator::newline("\n");
 inline constexpr Logger::separator Logger::separator::comma(",");
-
-#ifdef __GNUC__
-inline std::ostream& operator<<(std::ostream& os, const std::chrono::milliseconds& ms)
-{
-    return os << ms.count() << "ms";
-}
-#endif
-
-template <typename T>
-std::ostream& operator<<(std::ostream& os, const std::optional<T>& v)
-{
-    if (v) {
-        os << *v;
-    }
-    else {
-        os << "<nullopt>";
-    }
-    return os;
-}
 
 namespace LogUtils
 {
