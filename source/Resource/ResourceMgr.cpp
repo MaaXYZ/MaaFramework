@@ -7,7 +7,8 @@
 
 MAA_RES_NS_BEGIN
 
-ResourceMgr::ResourceMgr(const std::filesystem::path& user_path, MaaResourceCallback callback, void* callback_arg)
+ResourceMgr::ResourceMgr(const std::filesystem::path& user_path, MaaResourceCallback callback,
+                         MaaCallbackTransparentArg callback_arg)
     : user_path_(user_path), notifier(callback, callback_arg)
 {
     LogFunc << VAR(user_path_) << VAR_VOIDP(callback) << VAR_VOIDP(callback_arg);

@@ -14,7 +14,8 @@ MAA_RES_NS_BEGIN
 class ResourceMgr : public MaaResourceAPI
 {
 public:
-    ResourceMgr(const std::filesystem::path& user_path, MaaResourceCallback callback, void* callback_arg);
+    ResourceMgr(const std::filesystem::path& user_path, MaaResourceCallback callback,
+                MaaCallbackTransparentArg callback_arg);
     virtual ~ResourceMgr() override;
 
     virtual bool set_option(MaaResOption key, const std::string& value) override;
@@ -47,7 +48,7 @@ private:
     std::atomic_bool loaded_ = false;
 
     std::unique_ptr<AsyncRunner<std::filesystem::path>> res_loader_ = nullptr;
-    MessageNotifier<MaaResourceCallback, void*> notifier;
+    MessageNotifier<MaaResourceCallback> notifier;
 };
 
 MAA_RES_NS_END

@@ -5,7 +5,8 @@
 
 MAA_CTRL_NS_BEGIN
 
-CustomController::CustomController(MaaCustomControllerHandle handle, MaaControllerCallback callback, void* callback_arg)
+CustomController::CustomController(MaaCustomControllerHandle handle, MaaControllerCallback callback,
+                                   MaaCallbackTransparentArg callback_arg)
     : ControllerMgr(callback, callback_arg), handle_(handle)
 {}
 

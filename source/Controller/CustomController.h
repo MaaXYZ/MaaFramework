@@ -7,7 +7,8 @@ MAA_CTRL_NS_BEGIN
 class CustomController : public ControllerMgr
 {
 public:
-    CustomController(MaaCustomControllerHandle handle, MaaControllerCallback callback, void* callback_arg);
+    CustomController(MaaCustomControllerHandle handle, MaaControllerCallback callback,
+                     MaaCallbackTransparentArg callback_arg);
     virtual ~CustomController() override = default;
 
     virtual std::string get_uuid() const override;

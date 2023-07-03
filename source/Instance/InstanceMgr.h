@@ -14,7 +14,7 @@ MAA_NS_BEGIN
 class InstanceMgr : public MaaInstanceAPI, public InstanceInternalAPI
 {
 public:
-    InstanceMgr(MaaInstanceCallback callback, void* callback_arg);
+    InstanceMgr(MaaInstanceCallback callback, MaaCallbackTransparentArg callback_arg);
     virtual ~InstanceMgr() override;
 
 public: // from MaaInstanceAPI
@@ -54,7 +54,7 @@ private:
     std::map<typename AsyncRunner<TaskPtr>::Id, TaskPtr> task_map_;
 
     std::unique_ptr<AsyncRunner<TaskPtr>> task_runner_ = nullptr;
-    MessageNotifier<MaaInstanceCallback, void*> notifier;
+    MessageNotifier<MaaInstanceCallback> notifier;
 };
 
 MAA_NS_END

@@ -8,7 +8,8 @@
 
 MAA_NS_BEGIN
 
-InstanceMgr::InstanceMgr(MaaInstanceCallback callback, void* callback_arg) : notifier(callback, callback_arg)
+InstanceMgr::InstanceMgr(MaaInstanceCallback callback, MaaCallbackTransparentArg callback_arg)
+    : notifier(callback, callback_arg)
 {
     LogFunc << VAR_VOIDP(callback) << VAR_VOIDP(callback_arg);
 

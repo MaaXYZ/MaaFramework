@@ -2,10 +2,10 @@
 
 #include <meojson/json.hpp>
 
-#include "MaaControlUnit/ControlUnitAPI.h"
 #include "Controller/AdbController.h"
 #include "Controller/CustomController.h"
 #include "Instance/InstanceMgr.h"
+#include "MaaControlUnit/ControlUnitAPI.h"
 #include "MaaUtils/Logger.hpp"
 #include "Option/GlobalOptionMgr.h"
 #include "Resource/ResourceMgr.h"
@@ -18,7 +18,8 @@ MaaBool MaaSetGlobalOption(MaaGlobalOption key, MaaString value)
     return MAA_NS::GlobalOptionMgr::get_instance().set_option(key, value);
 }
 
-MaaResourceHandle MaaResourceCreate(MaaString user_path, MaaResourceCallback callback, void* callback_arg)
+MaaResourceHandle MaaResourceCreate(MaaString user_path, MaaResourceCallback callback,
+                                    MaaCallbackTransparentArg callback_arg)
 {
     LogFunc << VAR(user_path) << VAR_VOIDP(callback) << VAR_VOIDP(callback_arg);
 
@@ -103,7 +104,8 @@ MaaSize MaaResourceGetHash(MaaResourceHandle res, char* buff, MaaSize buff_size)
 }
 
 MaaControllerHandle MaaAdbControllerCreate(MaaString adb_path, MaaString address, MaaAdbControllerType type,
-                                           MaaJsonString config, MaaControllerCallback callback, void* callback_arg)
+                                           MaaJsonString config, MaaControllerCallback callback,
+                                           MaaCallbackTransparentArg callback_arg)
 {
     LogFunc << VAR(adb_path) << VAR(address) << VAR_VOIDP(callback) << VAR_VOIDP(callback_arg);
 
@@ -117,7 +119,7 @@ MaaControllerHandle MaaAdbControllerCreate(MaaString adb_path, MaaString address
 }
 
 MaaControllerHandle MaaCustomControllerCreate(MaaCustomControllerHandle handle, MaaControllerCallback callback,
-                                              void* callback_arg)
+                                              MaaCallbackTransparentArg callback_arg)
 {
     LogFunc << VAR(handle) << VAR_VOIDP(callback) << VAR_VOIDP(callback_arg);
 
@@ -256,7 +258,7 @@ MaaSize MaaControllerGetUUID(MaaControllerHandle ctrl, char* buff, MaaSize buff_
     return size;
 }
 
-MaaInstanceHandle MaaCreate(MaaInstanceCallback callback, void* callback_arg)
+MaaInstanceHandle MaaCreate(MaaInstanceCallback callback, MaaCallbackTransparentArg callback_arg)
 {
     LogFunc << VAR_VOIDP(callback) << VAR_VOIDP(callback_arg);
 

@@ -54,7 +54,7 @@ std::ostream& operator<<(std::ostream& os, const Action& action);
 class ControllerMgr : public MaaControllerAPI
 {
 public:
-    ControllerMgr(MaaControllerCallback callback, void* callback_arg);
+    ControllerMgr(MaaControllerCallback callback, MaaCallbackTransparentArg callback_arg);
 
     virtual ~ControllerMgr() override;
 
@@ -87,7 +87,7 @@ protected:
     virtual cv::Mat _screencap() = 0;
 
 protected:
-    MessageNotifier<MaaControllerCallback, void*> notifier;
+    MessageNotifier<MaaControllerCallback> notifier;
 
 private:
     bool run_action(typename AsyncRunner<Action>::Id id, Action action);
