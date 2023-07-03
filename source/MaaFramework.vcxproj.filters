@@ -114,9 +114,6 @@
     <ClInclude Include="Task\TaskBase.h">
       <Filter>Source\Task</Filter>
     </ClInclude>
-    <ClInclude Include="Base\AsyncCallback.hpp">
-      <Filter>Source\Base</Filter>
-    </ClInclude>
     <ClInclude Include="Base\AsyncRunner.hpp">
       <Filter>Source\Base</Filter>
     </ClInclude>
@@ -177,6 +174,7 @@
     <ClInclude Include="Vision\OCRer.h">
       <Filter>Source\Vision</Filter>
     </ClInclude>
+    <ClInclude Include="Base\MessageNotifier.hpp" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Controller\ControllerMgr.cpp">

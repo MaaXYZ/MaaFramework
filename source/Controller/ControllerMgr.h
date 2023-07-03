@@ -1,6 +1,7 @@
 #pragma once
 
-#include "Base/AsyncCallback.hpp"
+#include "Base/AsyncRunner.hpp"
+#include "Base/MessageNotifier.hpp"
 #include "Common/MaaTypes.h"
 #include "Instance/InstanceInternalAPI.hpp"
 #include "Utils/NoWarningCVMat.h"
@@ -86,7 +87,7 @@ protected:
     virtual cv::Mat _screencap() = 0;
 
 protected:
-    AsyncCallback<MaaControllerCallback, void*> notifier;
+    MessageNotifier<MaaControllerCallback, void*> notifier;
 
 private:
     bool run_action(typename AsyncRunner<Action>::Id id, Action action);

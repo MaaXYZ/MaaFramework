@@ -64,5 +64,3 @@
 #define MaaMsg_Task_Completed ("Task.Completed")
 #define MaaMsg_Task_Failed ("Task.Failed")
 #define MaaMsg_Task_Stopped ("Task.Stopped")
-
-typedef const char* MaaMsg;

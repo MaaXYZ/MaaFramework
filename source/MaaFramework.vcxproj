@@ -32,7 +32,7 @@
     <ClInclude Include="..\include\MaaPort.h" />
     <ClInclude Include="..\include\MaaDef.h" />
     <ClInclude Include="..\include\MaaMsg.h" />
-    <ClInclude Include="Base\AsyncCallback.hpp" />
+    <ClInclude Include="Base\MessageNotifier.hpp" />
     <ClInclude Include="Base\NonCopyable.hpp" />
     <ClInclude Include="Common\MaaTypes.h" />
     <ClInclude Include="Controller\CustomController.h" />

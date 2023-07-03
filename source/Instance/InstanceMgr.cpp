@@ -1,9 +1,10 @@
 #include "InstanceMgr.h"
 
 #include "Controller/ControllerMgr.h"
+#include "MaaUtils/Logger.hpp"
 #include "Resource/ResourceMgr.h"
 #include "Task/PipelineTask.h"
-#include "MaaUtils/Logger.hpp"
+#include "MaaMsg.h"
 
 MAA_NS_BEGIN
 
@@ -22,8 +23,6 @@ InstanceMgr::~InstanceMgr()
     if (task_runner_) {
         task_runner_->release();
     }
-
-    notifier.release();
 }
 
 bool InstanceMgr::bind_resource(MaaResourceAPI* resource)

@@ -25,8 +25,6 @@ ControllerMgr::~ControllerMgr()
     if (action_runner_) {
         action_runner_->release();
     }
-
-    notifier.release();
 }
 
 bool ControllerMgr::set_option(MaaCtrlOption key, const std::string& value)

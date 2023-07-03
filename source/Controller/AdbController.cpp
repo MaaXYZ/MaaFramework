@@ -1,5 +1,6 @@
 #include "AdbController.h"
 
+#include "MaaMsg.h"
 #include "MaaUtils/Logger.hpp"
 #include "Utils/StringMisc.hpp"
 

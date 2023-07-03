@@ -1,10 +1,11 @@
 #pragma once
 
-#include "Base/AsyncCallback.hpp"
+#include "Base/AsyncRunner.hpp"
+#include "Base/MessageNotifier.hpp"
 #include "Common/MaaTypes.h"
+#include "OCRConfig.h"
 #include "PipelineConfig.h"
 #include "TemplateConfig.h"
-#include "OCRConfig.h"
 
 #include <atomic>
 
@@ -46,7 +47,7 @@ private:
     std::atomic_bool loaded_ = false;
 
     std::unique_ptr<AsyncRunner<std::filesystem::path>> res_loader_ = nullptr;
-    AsyncCallback<MaaResourceCallback, void*> notifier;
+    MessageNotifier<MaaResourceCallback, void*> notifier;
 };
 
 MAA_RES_NS_END

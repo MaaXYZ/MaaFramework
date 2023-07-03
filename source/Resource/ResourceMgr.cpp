@@ -1,8 +1,9 @@
 #include "ResourceMgr.h"
 
-#include "MaaUtils/Logger.hpp"
-
 #include <tuple>
+
+#include "MaaUtils/Logger.hpp"
+#include "MaaMsg.h"
 
 MAA_RES_NS_BEGIN
 
@@ -22,8 +23,6 @@ ResourceMgr::~ResourceMgr()
     if (res_loader_) {
         res_loader_->release();
     }
-
-    notifier.release();
 }
 
 bool ResourceMgr::set_option(MaaResOption key, const std::string& value)

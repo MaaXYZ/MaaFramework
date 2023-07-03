@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Base/AsyncCallback.hpp"
+#include "Base/MessageNotifier.hpp"
 #include "Base/AsyncRunner.hpp"
 #include "Common/MaaTypes.h"
 #include "Instance/InstanceStatus.h"
@@ -54,7 +54,7 @@ private:
     std::map<typename AsyncRunner<TaskPtr>::Id, TaskPtr> task_map_;
 
     std::unique_ptr<AsyncRunner<TaskPtr>> task_runner_ = nullptr;
-    AsyncCallback<MaaInstanceCallback, void*> notifier;
+    MessageNotifier<MaaInstanceCallback, void*> notifier;
 };
 
 MAA_NS_END
