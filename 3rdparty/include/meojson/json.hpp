@@ -265,8 +265,8 @@ public:
 
     explicit basic_array(const basic_value<string_t>& val);
     explicit basic_array(basic_value<string_t>&& val);
-    template <typename array_t, typename _ = std::enable_if_t<std::is_constructible_v<
-                                    typename value_type, typename std::decay_t<array_t>::value_type>>>
+    template <typename array_t, typename _ = std::enable_if_t<
+                                    std::is_constructible_v<value_type, typename std::decay_t<array_t>::value_type>>>
     basic_array(array_t arr)
     {
         _array_data.assign(std::make_move_iterator(arr.begin()), std::make_move_iterator(arr.end()));
@@ -378,8 +378,8 @@ public:
     basic_object(std::initializer_list<value_type> init_list);
     explicit basic_object(const basic_value<string_t>& val);
     explicit basic_object(basic_value<string_t>&& val);
-    template <typename map_t, typename _ = std::enable_if_t<std::is_constructible_v<
-                                  typename value_type, typename std::decay_t<map_t>::value_type>>>
+    template <typename map_t, typename _ = std::enable_if_t<
+                                  std::is_constructible_v<value_type, typename std::decay_t<map_t>::value_type>>>
     basic_object(map_t map)
     {
         _object_data.insert(std::make_move_iterator(map.begin()), std::make_move_iterator(map.end()));
