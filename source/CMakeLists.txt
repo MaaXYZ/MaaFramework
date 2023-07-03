@@ -14,17 +14,14 @@ target_include_directories(MaaFramework PUBLIC ../include PRIVATE . modules/incl
 set_target_properties(MaaFramework PROPERTIES
     PUBLIC_HEADER "${MaaFramework_PUBLIC_HEADERS}"
 )
+target_compile_definitions(MaaFramework PRIVATE MAA_DLL_EXPORTS)
 
 if(UNIX)
     set_target_properties(MaaFramework PROPERTIES INSTALL_RPATH "$ORIGIN/")
 endif()
 
 target_link_libraries(MaaFramework MaaControlUnit MaaUtils)
-target_link_libraries(MaaFramework ${OpenCV_LIBS} MaaDerpLearning ONNXRuntime::ONNXRuntime ZLIB::ZLIB HeaderOnlyLibraries) #asio::asio cpr::cpr
-
-if(WIN32)
-    target_link_libraries(MaaFramework ws2_32)
-endif()
+target_link_libraries(MaaFramework ${OpenCV_LIBS} MaaDerpLearning ONNXRuntime::ONNXRuntime HeaderOnlyLibraries) #asio::asio cpr::cpr
 
 # clang 15之后有ranges
 # if (CMAKE_CXX_COMPILER_ID MATCHES ".*Clang")

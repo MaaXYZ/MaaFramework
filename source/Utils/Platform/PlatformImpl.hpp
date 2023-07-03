@@ -56,7 +56,7 @@ void library_free(os_library_handle handle);
 
 inline os_library_handle library_load(const os_string& path)
 {
-    return LoadLibrary(path.c_str());
+    return LoadLibraryW(path.c_str());
 }
 
 inline os_library_function library_get_address(os_library_handle handle, const std::string& name)
