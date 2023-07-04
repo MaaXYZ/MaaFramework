@@ -80,6 +80,9 @@ bool PipelineConfig::parse_json(const json::value& input)
     }
 
     for (const auto& [key, value] : input.as_object()) {
+        if (key == "$schema") {
+            continue;
+        }
         bool ret = parse_task(key, value);
         if (!ret) {
             LogError << "parse_task failed" << VAR(key) << VAR(value);

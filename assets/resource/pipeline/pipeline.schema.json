@@ -1,0 +1,132 @@
+{
+  "$schema": "https://json-schema.org/draft-07/schema",
+  "type": "object",
+  "properties": {
+    "$schema": {
+      "type": "string"
+    }
+  },
+  "patternProperties": {
+    "^.*$": {
+      "type": "object",
+      "properties": {
+        "base": {
+          "description": "基任务名。可选，默认无。\n若有，则所有没写的属性字段都使用基任务的值。",
+          "type": "string"
+        },
+        "recognition": {
+          "description": "识别算法类型。可选，默认 DirectHit。",
+          "enum": [
+            "DirectHit",
+            "TemplateMatch",
+            "OcrDetAndRec",
+            "OcrOnlyRec",
+            "FreezesWait"
+          ],
+          "default": "DirectHit"
+        },
+        "roi": {
+          "description": "识别区域坐标。可选，默认全屏。\n四个值分别为 [x, y, w, h]。",
+          "anyOf": [
+            {
+              "$ref": "#/definitions/rect"
+            },
+            {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/rect"
+              },
+              "minItems": 1
+            }
+          ]
+        },
+        "cache": {
+          "description": "是否缓存。可选，默认关。\n缓存当次识别到的位置，下次只在该位置识别。",
+          "type": "boolean",
+          "default": false
+        },
+        "action": {
+          "description": "执行的动作。可选，默认 DoNothing。",
+          "enum": [
+            "DoNothing",
+            "ClickSelf",
+            "ClickRegion",
+            "SwipeSelf",
+            "SwipeRegion"
+          ],
+          "default": "DoNothing"
+        },
+        "next": {
+          "description": "接下来要执行的任务列表。可选，默认空。\n按序识别每个任务，只执行第一个识别到的。",
+          "$ref": "#/definitions/tasklist"
+        },
+        "timeout": {
+          "description": "超时时间，毫秒。默认 10 * 1000。",
+          "type": "integer",
+          "minimum": 0,
+          "default": 10000
+        },
+        "timeout_next": {
+          "description": "超时后执行的任务列表。可选，默认空。",
+          "$ref": "#/definitions/tasklist"
+        },
+        "run_times": {
+          "description": "任务执行次数。可选，默认 UINT_MAX。",
+          "type": "integer",
+          "minimum": 0,
+          "default": 4294967295
+        },
+        "runout_next": {
+          "description": "任务执行次数达到了后执行的任务列表，可选，默认空。",
+          "$ref": "#/definitions/tasklist"
+        },
+        "pre_delay": {
+          "description": "识别到 到 执行动作前 的延迟，毫秒。可选，默认 0。\n推荐尽可能增加中间过程任务，少用延迟，不然既慢还不稳定。",
+          "type": "integer",
+          "minimum": 0,
+          "default": 0
+        },
+        "post_delay": {
+          "description": "执行动作后 到 下一个步骤 的延迟，毫秒。可选，默认 0。\n推荐尽可能增加中间过程任务，少用延迟，不然既慢还不稳定。",
+          "type": "integer",
+          "minimum": 0,
+          "default": 0
+        },
+        "checkpoint": {
+          "description": "当前任务是否为检查点。可选，默认否。",
+          "type": "boolean",
+          "default": false
+        },
+        "notify": {
+          "description": "是否产生同步回调消息。可选，默认否。",
+          "type": "boolean",
+          "default": false
+        }
+      },
+      "additionalProperties": false
+    }
+  },
+  "definitions": {
+    "rect": {
+      "type": "array",
+      "items": {
+        "type": "number"
+      },
+      "minItems": 4,
+      "maxItems": 4
+    },
+    "tasklist": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      ]
+    }
+  }
+}
