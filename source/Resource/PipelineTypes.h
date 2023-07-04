@@ -72,7 +72,7 @@ struct SwipeSelfParams
 using Params = std::variant<Action::ClickParams, Action::ClickRegionParams, Action::SwipeRegionParams>;
 } // namespace Action
 
-struct Data
+struct TaskData
 {
     std::string name;
     std::vector<std::string> base;

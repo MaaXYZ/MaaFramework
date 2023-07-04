@@ -224,5 +224,6 @@
     <ClCompile Include="Vision\OCRer.cpp">
       <Filter>Source\Vision</Filter>
     </ClCompile>
+    <ClCompile Include="Task\TaskBase.cpp" />
   </ItemGroup>
 </Project>

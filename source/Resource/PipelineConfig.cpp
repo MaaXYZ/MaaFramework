@@ -143,7 +143,7 @@ bool PipelineConfig::parse_task(const std::string& name, const json::value& inpu
 {
     LogFunc << VAR(name);
 
-    Data data;
+    TaskData data;
     data.name = name;
 
     if (!parse_recognition(input, data.rec_type, data.rec_params)) {
@@ -251,10 +251,14 @@ bool PipelineConfig::parse_recognition(const json::value& input, MAA_PIPELINE_RE
 
 bool PipelineConfig::parse_direct_hit_params(const json::value& input, MAA_PIPELINE_RES_NS::Recognition::Params& output)
 {
-    std::ignore = input;
+    MAA_VISION_NS::DirectHitParams result;
 
-    output = MAA_VISION_NS::DirectHitParams();
+    if (!parse_roi(input, result.roi)) {
+        LogError << "failed to parse_roi" << VAR(input);
+        return false;
+    }
 
+    output = result;
     return true;
 }
 

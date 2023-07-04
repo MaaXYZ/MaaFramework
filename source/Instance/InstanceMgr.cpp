@@ -107,10 +107,6 @@ MaaTaskId InstanceMgr::post_task(std::string_view task, std::string_view param)
     auto id = task_runner_->post(task_ptr);
     LogTrace << task_ptr->type() << VAR(id);
 
-    std::unique_lock<std::mutex> lock(task_mutex_);
-    task_map_.emplace(id, task_ptr);
-    lock.unlock();
-
     return id;
 }
 
@@ -118,30 +114,21 @@ bool InstanceMgr::set_task_param(MaaTaskId task_id, std::string_view param)
 {
     LogInfo << VAR(task_id) << VAR(param);
 
-    std::unique_lock<std::mutex> lock(task_mutex_);
-    auto iter = task_map_.find(task_id);
-    if (iter == task_map_.end()) {
-        LogError << "Invalid task id:" << task_id;
-        return false;
-    }
-
-    auto task_ptr = iter->second;
-    lock.unlock();
-
-    if (!task_ptr) {
-        LogError << "Invalid task ptr:" << task_id;
-        return false;
-    }
-
     auto param_opt = json::parse(param);
     if (!param_opt) {
         LogError << "Invalid param:" << param;
         return false;
     }
 
-    bool ret = task_ptr->set_param(*param_opt);
+    bool ret = false;
+    task_runner_->for_each([&](TaskId id, TaskPtr task_ptr) {
+        if (static_cast<TaskId>(task_id) != id) {
+            return;
+        }
+        ret = task_ptr->set_param(*param_opt);
+        LogTrace << task_ptr->type() << VAR(ret);
+    });
 
-    LogTrace << task_ptr->type() << VAR(ret);
     return ret;
 }
 
@@ -184,13 +171,13 @@ void InstanceMgr::stop()
         controller_->on_stop();
     }
 
-    std::unique_lock<std::mutex> lock(task_mutex_);
-    task_map_.clear();
-    lock.unlock();
-
-    if (task_runner_) {
-        task_runner_->clear();
-    }
+    task_runner_->for_each([](TaskId id, TaskPtr task_ptr) {
+        std::ignore = id;
+        if (task_ptr) {
+            task_ptr->on_stop();
+        }
+    });
+    task_runner_->clear();
 }
 
 std::string InstanceMgr::get_resource_hash() const
@@ -218,7 +205,7 @@ InstanceStatus* InstanceMgr::status()
     return &status_;
 }
 
-bool InstanceMgr::run_task(typename AsyncRunner<TaskPtr>::Id id, TaskPtr task_ptr)
+bool InstanceMgr::run_task(TaskId id, TaskPtr task_ptr)
 {
     LogFunc << VAR(id) << VAR(task_ptr);
 
@@ -236,9 +223,6 @@ bool InstanceMgr::run_task(typename AsyncRunner<TaskPtr>::Id id, TaskPtr task_pt
     LogInfo << "task end:" << VAR(details) << VAR(ret);
 
     notifier.notify(ret ? MaaMsg_Task_Completed : MaaMsg_Task_Failed, details);
-
-    std::unique_lock<std::mutex> lock(task_mutex_);
-    task_map_.erase(id);
 
     return ret;
 }

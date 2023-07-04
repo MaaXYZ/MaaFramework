@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Common/MaaConf.h"
+#include "MaaUtils/Logger.hpp"
 #include "Utils/NoWarningCV.h"
 #include "Utils/Ranges.hpp"
 
@@ -131,6 +132,23 @@ inline static std::vector<float> image_to_tensor(const cv::Mat& image)
     std::vector<float> tensor(tensor_size);
     std::memcpy(tensor.data(), chw_32f.data, tensor_size * sizeof(float));
     return tensor;
+}
+
+inline cv::Mat match_template(const cv::Mat& image, const cv::Mat& templ, int method, bool green_mask)
+{
+    if (templ.cols > image.cols || templ.rows > image.rows) {
+        LogError << "templ size is too large" << VAR(image) << VAR(templ);
+        return {};
+    }
+
+    auto mask = cv::noArray();
+    if (green_mask) {
+        cv::inRange(templ, cv::Scalar(0, 255, 0), cv::Scalar(0, 255, 0), mask);
+    }
+
+    cv::Mat matched;
+    cv::matchTemplate(image, templ, matched, method, mask);
+    return matched;
 }
 
 MAA_VISION_NS_END

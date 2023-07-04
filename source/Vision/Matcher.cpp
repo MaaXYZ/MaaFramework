@@ -1,9 +1,10 @@
 #include "Matcher.h"
 
-#include "Resource/ResourceMgr.h"
 #include "MaaUtils/Logger.hpp"
+#include "Resource/ResourceMgr.h"
 #include "Utils/NoWarningCV.h"
 #include "Utils/StringMisc.hpp"
+#include "VisionUtils.hpp"
 
 MAA_VISION_NS_BEGIN
 
@@ -22,8 +23,25 @@ Matcher::ResultOpt Matcher::analyze() const
             LogWarn << "template is empty" << VAR(name) << VAR(i) << VAR(templ);
             continue;
         }
+        double threshold = param_.thresholds.at(i);
 
-        auto opt = match_and_postproc(templ, param_.thresholds.at(i));
+        auto ret = traverse_rois(templ, threshold);
+        if (ret) {
+            return ret;
+        }
+    }
+
+    return std::nullopt;
+}
+
+Matcher::ResultOpt Matcher::traverse_rois(const cv::Mat& templ, double threshold) const
+{
+    if (param_.roi.empty()) {
+        return match_and_postproc(cv::Rect(0, 0, image_.cols, image_.rows), templ, threshold);
+    }
+
+    for (const cv::Rect& roi : param_.roi) {
+        auto opt = match_and_postproc(roi, templ, threshold);
         if (opt) {
             return opt;
         }
@@ -32,9 +50,9 @@ Matcher::ResultOpt Matcher::analyze() const
     return std::nullopt;
 }
 
-Matcher::ResultOpt Matcher::match_and_postproc(const cv::Mat& templ, double threshold) const
+Matcher::ResultOpt Matcher::match_and_postproc(const cv::Rect& roi, const cv::Mat& templ, double threshold) const
 {
-    cv::Mat matched = match_template(image_(roi_), templ, param_.method, param_.green_mask);
+    cv::Mat matched = match_template(image_with_roi(roi), templ, param_.method, param_.green_mask);
     if (matched.empty()) {
         return std::nullopt;
     }
@@ -50,25 +68,8 @@ Matcher::ResultOpt Matcher::match_and_postproc(const cv::Mat& templ, double thre
         return std::nullopt;
     }
 
-    cv::Rect box(max_loc.x + roi_.x, max_loc.y + roi_.y, templ.cols, templ.rows);
+    cv::Rect box(max_loc.x + roi.x, max_loc.y + roi.y, templ.cols, templ.rows);
     return Result { .box = box, .score = max_val };
-}
-
-cv::Mat Matcher::match_template(const cv::Mat& image, const cv::Mat& templ, int method, bool green_mask)
-{
-    if (templ.cols > image.cols || templ.rows > image.rows) {
-        LogError << "templ size is too large" << VAR(image) << VAR(templ);
-        return {};
-    }
-
-    auto mask = cv::noArray();
-    if (green_mask) {
-        cv::inRange(templ, cv::Scalar(0, 255, 0), cv::Scalar(0, 255, 0), mask);
-    }
-
-    cv::Mat matched;
-    cv::matchTemplate(image, templ, matched, method, mask);
-    return matched;
 }
 
 MAA_VISION_NS_END

@@ -21,13 +21,12 @@ public:
 public:
     using VisionBase::VisionBase;
 
+    void set_param(TemplMatchingParams param) { param_ = std::move(param); }
     ResultOpt analyze() const;
 
-public:
-    static cv::Mat match_template(const cv::Mat& image, const cv::Mat& templ, int method, bool green_mask);
-
 private:
-    ResultOpt match_and_postproc(const cv::Mat& templ, double threshold) const;
+    ResultOpt traverse_rois(const cv::Mat& templ, double threshold) const;
+    ResultOpt match_and_postproc(const cv::Rect& roi, const cv::Mat& templ, double threshold) const;
 
     TemplMatchingParams param_;
 };

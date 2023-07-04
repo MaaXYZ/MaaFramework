@@ -2,8 +2,8 @@
 
 #include "Utils/NoWarningCV.h"
 
-#include "Utils/ImageIo.hpp"
 #include "MaaUtils/Logger.hpp"
+#include "Utils/ImageIo.hpp"
 #include "Utils/StringMisc.hpp"
 #include "Utils/Time.hpp"
 
@@ -16,25 +16,12 @@ VisionBase::VisionBase(InstanceInternalAPI* inst, const cv::Mat& image) : inst_(
     set_image(image);
 }
 
-VisionBase::VisionBase(InstanceInternalAPI* inst, const cv::Mat& image, const cv::Rect& roi) : inst_(inst)
-{
-    set_image(image);
-    set_roi(roi);
-}
-
 void VisionBase::set_image(const cv::Mat& image)
 {
     image_ = image;
 #ifdef MAA_DEBUG
     image_draw_ = image.clone();
 #endif
-
-    set_roi(roi_);
-}
-
-void VisionBase::set_roi(const cv::Rect& roi)
-{
-    roi_ = correct_roi(roi, image_);
 }
 
 cv::Rect VisionBase::correct_roi(const cv::Rect& roi, const cv::Mat& image)
@@ -74,6 +61,12 @@ cv::Rect VisionBase::correct_roi(const cv::Rect& roi, const cv::Mat& image)
         res.height = image.rows - res.y;
     }
     return res;
+}
+
+cv::Mat VisionBase::image_with_roi(const cv::Rect& roi) const
+{
+    cv::Rect roi_corrected = correct_roi(roi, image_);
+    return image_(roi_corrected);
 }
 
 MAA_VISION_NS_END

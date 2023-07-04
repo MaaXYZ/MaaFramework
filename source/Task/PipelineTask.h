@@ -17,13 +17,20 @@ public:
     virtual std::string_view type() const override { return "PipelineTask"; }
 
 private:
-    std::optional<cv::Rect> recognize(MAA_PIPELINE_RES_NS::Recognition::Type type,
-                                      const MAA_PIPELINE_RES_NS::Recognition::Params& param);
-    std::optional<cv::Rect> direct_hit(const MAA_VISION_NS::DirectHitParams& param);
-    std::optional<cv::Rect> template_match(const MAA_VISION_NS::TemplMatchingParams& param);
-    std::optional<cv::Rect> ocr_det_and_rec(const MAA_VISION_NS::OcrParams& param);
-    std::optional<cv::Rect> ocr_only_rec(const MAA_VISION_NS::OcrParams& param);
-    std::optional<cv::Rect> freezes_wait(const MAA_VISION_NS::FreezesWaitingParams& param);
+    struct RecResult
+    {
+        cv::Rect box {};
+    };
+
+    std::optional<RecResult> recognize(MAA_PIPELINE_RES_NS::Recognition::Type type,
+                                       const MAA_PIPELINE_RES_NS::Recognition::Params& param);
+    std::optional<RecResult> direct_hit(const cv::Mat& image, const MAA_VISION_NS::DirectHitParams& param);
+    std::optional<RecResult> template_match(const cv::Mat& image, const MAA_VISION_NS::TemplMatchingParams& param);
+    std::optional<RecResult> ocr_det_and_rec(const cv::Mat& image, const MAA_VISION_NS::OcrParams& param);
+    std::optional<RecResult> ocr_only_rec(const cv::Mat& image, const MAA_VISION_NS::OcrParams& param);
+    std::optional<RecResult> freezes_wait(const cv::Mat& image, const MAA_VISION_NS::FreezesWaitingParams& param);
+
+    void start_to_act(const RecResult& result);
 
 private:
     std::string connecting_task_;

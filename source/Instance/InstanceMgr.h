@@ -1,7 +1,7 @@
 #pragma once
 
-#include "Base/MessageNotifier.hpp"
 #include "Base/AsyncRunner.hpp"
+#include "Base/MessageNotifier.hpp"
 #include "Common/MaaTypes.h"
 #include "Instance/InstanceStatus.h"
 #include "InstanceInternalAPI.hpp"
@@ -42,16 +42,14 @@ public: // from InstanceInternalAPI
 
 private:
     using TaskPtr = std::shared_ptr<TaskNS::TaskBase>;
+    using TaskId = AsyncRunner<TaskPtr>::Id;
 
-    bool run_task(typename AsyncRunner<TaskPtr>::Id id, TaskPtr task_ptr);
+    bool run_task(TaskId id, TaskPtr task_ptr);
 
 private:
     MaaResourceAPI* resource_ = nullptr;
     MaaControllerAPI* controller_ = nullptr;
     InstanceStatus status_;
-
-    std::mutex task_mutex_;
-    std::map<typename AsyncRunner<TaskPtr>::Id, TaskPtr> task_map_;
 
     std::unique_ptr<AsyncRunner<TaskPtr>> task_runner_ = nullptr;
     MessageNotifier<MaaInstanceCallback> notifier;

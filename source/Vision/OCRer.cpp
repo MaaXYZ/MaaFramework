@@ -17,23 +17,46 @@ std::ostream& operator<<(std::ostream& os, const OCRer::Result& res)
 
 OCRer::ResultOpt OCRer::analyze() const
 {
-    auto results = predict();
+    auto results = traverse_rois();
 
     if (results.empty()) {
         return std::nullopt;
     }
 
-    for (auto& res : results) {
+    for (auto iter = results.begin(); iter != results.end();) {
+        auto& res = *iter;
+
         postproc_trim_(res);
         postproc_replace_(res);
+
+        if (!filter_by_required(res)) {
+            iter = results.erase(iter);
+            continue;
+        }
+
+        ++iter;
     }
 
     LogTrace << VAR(results);
 
+    return results.empty() ? std::nullopt : std::make_optional(std::move(results));
+}
+
+OCRer::ResultsVec OCRer::traverse_rois() const
+{
+    if (param_.roi.empty()) {
+        return predict(cv::Rect(0, 0, image_.cols, image_.rows));
+    }
+
+    ResultsVec results;
+    for (const cv::Rect& roi : param_.roi) {
+        auto cur = predict(roi);
+        results.insert(results.end(), std::make_move_iterator(cur.begin()), std::make_move_iterator(cur.end()));
+    }
     return results;
 }
 
-OCRer::ResultsVec OCRer::predict() const
+OCRer::ResultsVec OCRer::predict(const cv::Rect& roi) const
 {
     fastdeploy::vision::OCRResult ocr_result;
     auto& inferencer = resource()->ocr_cfg().ocrer();
@@ -43,10 +66,10 @@ OCRer::ResultsVec OCRer::predict() const
     }
     auto start_time = std::chrono::steady_clock::now();
 
-    auto image_roi = image_(roi_);
+    auto image_roi = image_with_roi(roi);
     bool ret = inferencer->Predict(image_roi, &ocr_result);
     if (!ret) {
-        LogWarn << "inferencer return false" << VAR(inferencer) << VAR(image_);
+        LogWarn << "inferencer return false" << VAR(inferencer) << VAR(image_) << VAR(roi) << VAR(image_roi);
         return {};
     }
     if (ocr_result.boxes.size() != ocr_result.text.size()) {
@@ -66,7 +89,7 @@ OCRer::ResultsVec OCRer::predict() const
         auto [left, right] = ranges::minmax(x_collect);
         auto [top, bottom] = ranges::minmax(y_collect);
 
-        cv::Rect my_box(left + roi_.x, top + roi_.y, right - left, bottom - top);
+        cv::Rect my_box(left + roi.x, top + roi.y, right - left, bottom - top);
 #ifdef MAA_DEBUG
         cv::rectangle(image_draw_, my_box, cv::Scalar(0, 0, 255), 2);
 #endif
@@ -91,6 +114,21 @@ void OCRer::postproc_replace_(Result& res) const
     for (const auto& [regex, new_str] : param_.replace) {
         res.text = std::regex_replace(res.text, std::regex(regex), new_str);
     }
+}
+
+bool OCRer::filter_by_required(const Result& res) const
+{
+    if (param_.text.empty()) {
+        return true;
+    }
+
+    for (const auto& text : param_.text) {
+        if (std::regex_search(res.text, std::regex(text))) {
+            return true;
+        }
+    }
+
+    return false;
 }
 
 MAA_VISION_NS_END

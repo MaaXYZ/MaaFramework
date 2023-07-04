@@ -19,7 +19,10 @@ public:
     const auto& get_image_requirement() const { return image_requirement_; }
 
 public:
-    const MAA_PIPELINE_RES_NS::Data& get_data(const std::string& task_name) const { return raw_data_.at(task_name); }
+    const MAA_PIPELINE_RES_NS::TaskData& get_data(const std::string& task_name) const
+    {
+        return raw_data_.at(task_name);
+    }
 
 private:
     bool open_and_parse_file(const std::filesystem::path& path);
@@ -45,7 +48,7 @@ private:
     bool parse_rect(const json::value& input_rect, cv::Rect& output);
 
 private:
-    std::unordered_map<std::string, MAA_PIPELINE_RES_NS::Data> raw_data_;
+    std::unordered_map<std::string, MAA_PIPELINE_RES_NS::TaskData> raw_data_;
     std::map<std::string, std::filesystem::path> image_requirement_;
 };
 

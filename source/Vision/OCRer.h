@@ -25,12 +25,15 @@ public:
 public:
     using VisionBase::VisionBase;
 
+    void set_param(OcrParams param) { param_ = std::move(param); }
     ResultOpt analyze() const;
 
 private:
-    ResultsVec predict() const;
+    ResultsVec traverse_rois() const;
+    ResultsVec predict(const cv::Rect& roi) const;
     void postproc_trim_(Result& res) const;
     void postproc_replace_(Result& res) const;
+    bool filter_by_required(const Result& res) const;
 
     OcrParams param_;
 };

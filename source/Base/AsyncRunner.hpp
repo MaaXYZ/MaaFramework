@@ -6,8 +6,8 @@
 
 #include <condition_variable>
 #include <functional>
+#include <list>
 #include <mutex>
-#include <queue>
 #include <shared_mutex>
 #include <thread>
 
@@ -32,12 +32,15 @@ public:
     void clear();
     bool running() const;
 
+    template <typename Pred>
+    void for_each(Pred pred);
+
 private:
     void working();
 
     ProcessFunc process_;
 
-    std::queue<std::pair<Id, Item>> queue_;
+    std::list<std::pair<Id, Item>> queue_;
     std::mutex mutex_;
     std::condition_variable cond_;
     std::atomic_bool running_ = false;
@@ -110,7 +113,7 @@ inline void AsyncRunner<Item>::working()
         running_ = true;
 
         auto [id, item] = std::move(queue_.front());
-        queue_.pop();
+        queue_.pop_front();
         lock.unlock();
 
         std::unique_lock<std::shared_mutex> status_lock(status_mutex_);
@@ -138,7 +141,7 @@ inline typename AsyncRunner<Item>::Id AsyncRunner<Item>::post(Item item, bool bl
     {
         std::unique_lock<std::mutex> lock(mutex_);
         id = ++cross_inst_id_;
-        queue_.emplace(id, std::move(item));
+        queue_.emplace_back(id, std::move(item));
 
         {
             std::unique_lock<std::shared_mutex> status_lock(status_mutex_);
@@ -209,6 +212,15 @@ template <typename Item>
 inline bool AsyncRunner<Item>::running() const
 {
     return running_;
+}
+
+template <typename Item>
+template <typename Pred>
+inline void AsyncRunner<Item>::for_each(Pred pred)
+{
+    for (auto& [id, item] : queue_) {
+        pred(id, item);
+    }
 }
 
 MAA_NS_END

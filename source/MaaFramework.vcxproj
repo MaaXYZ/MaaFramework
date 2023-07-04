@@ -86,6 +86,7 @@
     <ClCompile Include="Resource\ResourceMgr.cpp" />
     <ClCompile Include="Resource\TemplateConfig.cpp" />
     <ClCompile Include="Task\PipelineTask.cpp" />
+    <ClCompile Include="Task\TaskBase.cpp" />
     <ClCompile Include="Vision\Matcher.cpp" />
     <ClCompile Include="Vision\OCRer.cpp" />
     <ClCompile Include="Vision\VisionBase.cpp" />
