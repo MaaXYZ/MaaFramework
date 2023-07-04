@@ -174,7 +174,9 @@
     <ClInclude Include="Vision\OCRer.h">
       <Filter>Source\Vision</Filter>
     </ClInclude>
-    <ClInclude Include="Base\MessageNotifier.hpp" />
+    <ClInclude Include="Base\MessageNotifier.hpp">
+      <Filter>Source\Base</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Controller\ControllerMgr.cpp">

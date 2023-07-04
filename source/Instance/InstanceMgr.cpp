@@ -86,7 +86,7 @@ MaaTaskId InstanceMgr::post_task(std::string_view task, std::string_view param)
 {
     LogInfo << VAR(task) << VAR(param);
 
-    TaskPtr task_ptr = std::make_shared<TaskNS::PipelineTask>(this, task);
+    TaskPtr task_ptr = std::make_shared<TaskNS::PipelineTask>(task, this);
 
     auto param_opt = json::parse(param);
     if (!param_opt) {

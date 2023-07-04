@@ -13,7 +13,7 @@ MAA_TASK_NS_BEGIN
 class TaskBase
 {
 public:
-    TaskBase(InstanceInternalAPI* inst, std::string_view task_name) : inst_(inst), task_name_(task_name) {}
+    TaskBase(std::string_view task_name, InstanceInternalAPI* inst) : task_name_(task_name), inst_(inst) {}
     virtual ~TaskBase() = default;
 
     virtual bool run() = 0;
