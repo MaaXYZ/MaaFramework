@@ -86,9 +86,9 @@ public:
             std::unique_lock<std::mutex> lock(mutex_);
 
 #ifdef MAA_DEBUG
-            std::cout << std::move(cout_buffer_.str());
+            std::cout << std::move(cout_buffer_).str();
 #endif
-            stream_ << std::move(buffer_.str());
+            stream_ << std::move(buffer_).str();
         }
 
         template <typename T>
@@ -131,7 +131,7 @@ public:
                     else {
                         std::stringstream val_ss;
                         val_ss << to_stream(std::forward<value_type>(val));
-                        jtmp.emplace(std::move(val_ss.str()));
+                        jtmp.emplace(std::move(val_ss).str());
                     }
                 }
                 return jtmp;
@@ -151,7 +151,7 @@ public:
                     else {
                         std::stringstream key_ss;
                         key_ss << to_stream(key);
-                        strkey = std::move(key_ss.str());
+                        strkey = std::move(key_ss).str();
                     }
 
                     if constexpr (std::is_constructible_v<json::value, mapped_stream_type>) {
@@ -160,7 +160,7 @@ public:
                     else {
                         std::stringstream val_ss;
                         val_ss << to_stream(std::forward<mapped_type>(val));
-                        jtmp.emplace(std::move(strkey), std::move(val_ss.str()));
+                        jtmp.emplace(std::move(strkey), std::move(val_ss).str());
                     }
                 }
                 return jtmp;
