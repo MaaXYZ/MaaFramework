@@ -173,7 +173,7 @@ bool PipelineConfig::parse_task(const std::string& name, const json::value& inpu
         return false;
     }
 
-    if (!get_and_check_value_or_array(input, "timeout_next", data.next)) {
+    if (!get_and_check_value_or_array(input, "timeout_next", data.timeout_next)) {
         LogError << "failed to parse_next timeout_next" << VAR(input);
         return false;
     }
