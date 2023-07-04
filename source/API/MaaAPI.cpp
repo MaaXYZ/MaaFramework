@@ -315,14 +315,14 @@ MaaBool MaaInited(MaaInstanceHandle inst)
     return inst->inited();
 }
 
-MaaTaskId MaaPostTask(MaaInstanceHandle inst, MaaTaskType type, MaaJsonString param)
+MaaTaskId MaaPostTask(MaaInstanceHandle inst, MaaString task, MaaJsonString param)
 {
-    LogFunc << VAR_VOIDP(inst) << VAR(type) << VAR(param);
+    LogFunc << VAR_VOIDP(inst) << VAR(task) << VAR(param);
 
     if (!inst) {
         return MaaInvalidId;
     }
-    return inst->post_task(type, param);
+    return inst->post_task(task, param);
 }
 
 MaaBool MaaSetTaskParam(MaaInstanceHandle inst, MaaTaskId id, MaaJsonString param)

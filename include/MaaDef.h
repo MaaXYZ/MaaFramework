@@ -60,13 +60,6 @@ enum MaaInstOptionEnum
     MaaInstOption_Invalid = 0,
 };
 
-typedef int32_t MaaTaskType;
-enum MaaTaskTypeEnum
-{
-    MaaTaskType_Invalid = 0,
-    MaaTaskType_Pipeline = 1,
-};
-
 #define MaaTaskParam_Empty "{}"
 
 typedef int32_t MaaAdbControllerType;

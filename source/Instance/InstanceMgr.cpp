@@ -1,10 +1,10 @@
 #include "InstanceMgr.h"
 
 #include "Controller/ControllerMgr.h"
+#include "MaaMsg.h"
 #include "MaaUtils/Logger.hpp"
 #include "Resource/ResourceMgr.h"
 #include "Task/PipelineTask.h"
-#include "MaaMsg.h"
 
 MAA_NS_BEGIN
 
@@ -82,19 +82,11 @@ bool InstanceMgr::set_option(MaaInstOption key, const std::string& value)
     return false;
 }
 
-MaaTaskId InstanceMgr::post_task(MaaTaskType type, std::string_view param)
+MaaTaskId InstanceMgr::post_task(std::string_view task, std::string_view param)
 {
-    LogInfo << VAR(type) << VAR(param);
+    LogInfo << VAR(task) << VAR(param);
 
-    TaskPtr task_ptr = nullptr;
-    switch (type) {
-    case MaaTaskType_Pipeline:
-        task_ptr = std::make_shared<TaskNS::PipelineTask>(this);
-        break;
-    default:
-        LogError << "Unknown task type:" << type;
-        return MaaInvalidId;
-    }
+    TaskPtr task_ptr = std::make_shared<TaskNS::PipelineTask>(this, task);
 
     auto param_opt = json::parse(param);
     if (!param_opt) {

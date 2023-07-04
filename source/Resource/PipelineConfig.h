@@ -18,6 +18,9 @@ public:
     void clear();
     const auto& get_image_requirement() const { return image_requirement_; }
 
+public:
+    const MAA_PIPELINE_RES_NS::Data& get_data(const std::string& task_name) const { return raw_data_.at(task_name); }
+
 private:
     bool open_and_parse_file(const std::filesystem::path& path);
     bool parse_json(const json::value& input);
@@ -25,9 +28,10 @@ private:
 
     bool parse_recognition(const json::value& input, MAA_PIPELINE_RES_NS::Recognition::Type& out_type,
                            MAA_PIPELINE_RES_NS::Recognition::Params& out_param);
+    bool parse_direct_hit_params(const json::value& input, MAA_PIPELINE_RES_NS::Recognition::Params& output);
     bool parse_templ_matching_params(const json::value& input, MAA_PIPELINE_RES_NS::Recognition::Params& output);
     bool parse_ocr_params(const json::value& input, MAA_PIPELINE_RES_NS::Recognition::Params& output);
-    bool parse_freezes_wait_params(const json::value& input, MAA_PIPELINE_RES_NS::Recognition::Params& output);
+    bool parse_freezes_waiting_params(const json::value& input, MAA_PIPELINE_RES_NS::Recognition::Params& output);
 
     bool parse_roi(const json::value& input, std::vector<cv::Rect>& output);
 

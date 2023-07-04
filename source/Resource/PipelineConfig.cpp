@@ -148,11 +148,6 @@ bool PipelineConfig::parse_task(const std::string& name, const json::value& inpu
         return false;
     }
 
-    if (!parse_roi(input, data.roi)) {
-        LogError << "failed to parse_roi" << VAR(input);
-        return false;
-    }
-
     if (!get_and_check_value(input, "cache", data.cache, false)) {
         LogError << "failed to get_and_check_value cache" << VAR(input);
         return false;
@@ -223,8 +218,8 @@ bool PipelineConfig::parse_recognition(const json::value& input, MAA_PIPELINE_RE
     }
 
     static const std::unordered_map<std::string, Recognition::Type> kRecTypeMap = {
-        { "DirectHit", Recognition::Type::DirectHit },     { "TemplateMatch", Recognition::Type::TemplateMatch },
-        { "OcrPipeline", Recognition::Type::OcrPipeline }, { "OcrRec", Recognition::Type::OcrRec },
+        { "DirectHit", Recognition::Type::DirectHit },       { "TemplateMatch", Recognition::Type::TemplateMatch },
+        { "OcrDetAndRec", Recognition::Type::OcrDetAndRec }, { "OcrOnlyRec", Recognition::Type::OcrOnlyRec },
         { "FreezesWait", Recognition::Type::FreezesWait },
     };
     auto rec_type_iter = kRecTypeMap.find(rec_type_name);
@@ -236,16 +231,14 @@ bool PipelineConfig::parse_recognition(const json::value& input, MAA_PIPELINE_RE
 
     switch (out_type) {
     case Recognition::Type::DirectHit:
-        return true;
+        return parse_direct_hit_params(input, out_param);
     case Recognition::Type::TemplateMatch:
         return parse_templ_matching_params(input, out_param);
-    case Recognition::Type::OcrPipeline:
-    case Recognition::Type::OcrRec:
+    case Recognition::Type::OcrDetAndRec:
+    case Recognition::Type::OcrOnlyRec:
         return parse_ocr_params(input, out_param);
-        break;
     case Recognition::Type::FreezesWait:
-        return parse_freezes_wait_params(input, out_param);
-        break;
+        return parse_freezes_waiting_params(input, out_param);
     default:
         return false;
     }
@@ -253,9 +246,23 @@ bool PipelineConfig::parse_recognition(const json::value& input, MAA_PIPELINE_RE
     return false;
 }
 
+bool PipelineConfig::parse_direct_hit_params(const json::value& input, MAA_PIPELINE_RES_NS::Recognition::Params& output)
+{
+    std::ignore = input;
+
+    output = MAA_VISION_NS::DirectHitParams();
+
+    return true;
+}
+
 bool PipelineConfig::parse_templ_matching_params(const json::value& input, Recognition::Params& output)
 {
     MAA_VISION_NS::TemplMatchingParams result;
+
+    if (!parse_roi(input, result.roi)) {
+        LogError << "failed to parse_roi" << VAR(input);
+        return false;
+    }
 
     if (!get_and_check_value_or_array(input, "templates", result.templates)) {
         LogError << "failed to get_and_check_value_or_array templates" << VAR(input);
@@ -300,6 +307,11 @@ bool PipelineConfig::parse_ocr_params(const json::value& input, Recognition::Par
 {
     MAA_VISION_NS::OcrParams result;
 
+    if (!parse_roi(input, result.roi)) {
+        LogError << "failed to parse_roi" << VAR(input);
+        return false;
+    }
+
     if (!get_and_check_value_or_array(input, "text", result.text)) {
         LogError << "failed to get_and_check_value_or_array text" << VAR(input);
         return false;
@@ -335,9 +347,14 @@ bool PipelineConfig::parse_ocr_params(const json::value& input, Recognition::Par
     return true;
 }
 
-bool PipelineConfig::parse_freezes_wait_params(const json::value& input, Recognition::Params& output)
+bool PipelineConfig::parse_freezes_waiting_params(const json::value& input, Recognition::Params& output)
 {
     MAA_VISION_NS::FreezesWaitingParams result;
+
+    if (!parse_roi(input, result.roi)) {
+        LogError << "failed to parse_roi" << VAR(input);
+        return false;
+    }
 
     constexpr double kDefaultThreshold = 0.8;
     if (!get_and_check_value(input, "threshold", result.threshold, kDefaultThreshold)) {

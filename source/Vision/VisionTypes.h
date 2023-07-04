@@ -9,8 +9,12 @@
 
 MAA_VISION_NS_BEGIN
 
+struct DirectHitParams
+{};
+
 struct TemplMatchingParams
 {
+    std::vector<cv::Rect> roi;
     std::vector<std::string> templates;
     std::vector<double> thresholds;
     int method = 0;
@@ -19,12 +23,14 @@ struct TemplMatchingParams
 
 struct OcrParams
 {
+    std::vector<cv::Rect> roi;
     std::vector<std::string> text;
     std::vector<std::pair<std::string, std::string>> replace;
 };
 
 struct FreezesWaitingParams
 {
+    std::vector<cv::Rect> roi;
     double threshold = 0.0;
     int method = 0;
     uint wait_time = 0;

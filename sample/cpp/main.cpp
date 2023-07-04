@@ -61,7 +61,7 @@ bool demo_waiting(const std::filesystem::path& cur_dir)
         return false;
     }
 
-    auto task_id = MaaPostTask(maa_handle, MaaTaskType_Pipeline, MaaTaskParam_Empty);
+    auto task_id = MaaPostTask(maa_handle, "Test", MaaTaskParam_Empty);
     MaaTaskWait(maa_handle, task_id);
 
     destroy();
@@ -106,7 +106,7 @@ bool demo_polling(const std::filesystem::path& cur_dir)
         return false;
     }
 
-    MaaPostTask(maa_handle, MaaTaskType_Pipeline, MaaTaskParam_Empty);
+    MaaPostTask(maa_handle, "Test", MaaTaskParam_Empty);
 
     while (!MaaTaskAllFinished(maa_handle)) {
         std::this_thread::yield();

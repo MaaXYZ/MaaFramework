@@ -26,13 +26,13 @@ enum class Type
     Invalid = 0,
     DirectHit,
     TemplateMatch,
-    OcrPipeline,
-    OcrRec,
+    OcrDetAndRec,
+    OcrOnlyRec,
     FreezesWait,
 };
 
-using Params =
-    std::variant<MAA_VISION_NS::TemplMatchingParams, MAA_VISION_NS::OcrParams, MAA_VISION_NS::FreezesWaitingParams>;
+using Params = std::variant<MAA_VISION_NS::DirectHitParams, MAA_VISION_NS::TemplMatchingParams,
+                            MAA_VISION_NS::OcrParams, MAA_VISION_NS::FreezesWaitingParams>;
 } // namespace Recognition
 
 namespace Action
@@ -81,7 +81,6 @@ struct Data
     Recognition::Type rec_type = Recognition::Type::Invalid;
     Recognition::Params rec_params;
 
-    std::vector<cv::Rect> roi;
     bool cache = false;
 
     Action::Type action_type = Action::Type::Invalid;
