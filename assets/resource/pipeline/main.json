@@ -1,4 +1,3 @@
 {
-    "$schema": "./pipeline.schema.json",
     "EmptyTask": {}
 }
