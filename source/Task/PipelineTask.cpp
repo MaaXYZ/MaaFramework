@@ -11,35 +11,35 @@ MAA_TASK_NS_BEGIN
 
 bool PipelineTask::run()
 {
-    using namespace MAA_PIPELINE_RES_NS;
+    LogFunc << VAR(first_task_);
 
-    LogFunc << VAR(task_name_);
+    const auto& data_mgr = resource()->pipeline_cfg();
+    auto cur_task = data_mgr.get_data(first_task_);
+    std::vector<std::string> next_list = { first_task_ };
 
-    const TaskData& task_data = resource()->pipeline_cfg().get_data(std::string(task_name_));
+    RunningResult ret = RunningResult::Success;
+    while (!next_list.empty() && !need_exit()) {
+        ret = find_first_and_run(next_list, cur_task.timeout, cur_task);
 
-    bool timeout = false;
-    auto start_time = std::chrono::steady_clock::now();
-
-    RecResult rec_result;
-    while (!timeout && !need_exit()) {
-        auto rec_opt = recognize(task_data.rec_type, task_data.rec_params);
-        if (!rec_opt) {
-            timeout = std::chrono::steady_clock::now() - start_time > std::chrono::milliseconds(task_data.timeout);
-            continue;
+        switch (ret) {
+        case RunningResult::Success:
+            next_list = cur_task.next;
+            break;
+        case RunningResult::Timeout:
+            next_list = cur_task.timeout_next;
+            break;
+        case RunningResult::Runout:
+            next_list = cur_task.runout_next;
+            break;
+        case RunningResult::Interrupted:
+            next_list.clear();
+            break;
+        default:
+            break;
         }
-        rec_result = std::move(*rec_opt);
-        break;
     }
 
-    sleep(task_data.pre_delay);
-
-    start_to_act(rec_result);
-
-    sleep(task_data.post_delay);
-
-    // TODO: switch to next.
-
-    return true;
+    return ret == RunningResult::Success;
 }
 
 bool PipelineTask::set_param(const json::value& param)
@@ -47,6 +47,61 @@ bool PipelineTask::set_param(const json::value& param)
     LogFunc << VAR(param);
 
     return true;
+}
+
+PipelineTask::RunningResult PipelineTask::find_first_and_run(const std::vector<std::string>& list,
+                                                             std::chrono::milliseconds find_timeout,
+                                                             /*out*/ MAA_PIPELINE_RES_NS::TaskData& found_data)
+{
+    FindResult result;
+
+    auto start_time = std::chrono::steady_clock::now();
+    while (true) {
+        auto find_opt = find_first(list);
+        if (find_opt) {
+            result = *std::move(find_opt);
+            break;
+        }
+
+        if (std::chrono::steady_clock::now() - start_time > find_timeout) {
+            return RunningResult::Timeout;
+        }
+        if (need_exit()) {
+            return RunningResult::Interrupted;
+        }
+    }
+
+    if (need_exit()) {
+        return RunningResult::Interrupted;
+    }
+
+    uint64_t run_times = status()->get_pipeline_run_times(result.task_data.name);
+    if (result.task_data.times_limit <= run_times) {
+        found_data = std::move(result.task_data);
+        return RunningResult::Runout;
+    }
+
+    start_to_act(result);
+
+    status()->increase_pipeline_run_times(result.task_data.name);
+
+    found_data = std::move(result.task_data);
+    return RunningResult::Success;
+}
+
+std::optional<PipelineTask::FindResult> PipelineTask::find_first(const std::vector<std::string>& list)
+{
+    const auto& data_mgr = resource()->pipeline_cfg();
+
+    for (const std::string& name : list) {
+        const auto& task_data = data_mgr.get_data(name);
+        auto rec_opt = recognize(task_data.rec_type, task_data.rec_params);
+        if (!rec_opt) {
+            continue;
+        }
+        return FindResult { .rec = *std::move(rec_opt), .task_data = task_data };
+    }
+    return std::nullopt;
 }
 
 std::optional<PipelineTask::RecResult> PipelineTask::recognize(MAA_PIPELINE_RES_NS::Recognition::Type type,
@@ -135,9 +190,13 @@ std::optional<PipelineTask::RecResult> PipelineTask::freezes_wait(const cv::Mat&
     return std::nullopt;
 }
 
-void PipelineTask::start_to_act(const RecResult& result)
+void PipelineTask::start_to_act(const FindResult& act)
 {
-    std::ignore = result;
+    sleep(act.task_data.pre_delay);
+
+    // TODO: act
+
+    sleep(act.task_data.post_delay);
 }
 
 MAA_TASK_NS_END

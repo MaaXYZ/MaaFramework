@@ -166,18 +166,20 @@ bool PipelineConfig::parse_task(const std::string& name, const json::value& inpu
         return false;
     }
 
-    if (!get_and_check_value(input, "timeout", data.timeout, 10 * 1000U)) {
+    uint timeout = 0;
+    if (!get_and_check_value(input, "timeout", timeout, 10 * 1000U)) {
         LogError << "failed to get_and_check_value timeout" << VAR(input);
         return false;
     }
+    data.timeout = std::chrono::milliseconds(timeout);
 
     if (!get_and_check_value_or_array(input, "timeout_next", data.timeout_next)) {
         LogError << "failed to parse_next timeout_next" << VAR(input);
         return false;
     }
 
-    if (!get_and_check_value(input, "run_times", data.run_times, uint(UINT_MAX))) {
-        LogError << "failed to get_and_check_value run_times" << VAR(input);
+    if (!get_and_check_value(input, "times_limit", data.times_limit, uint(UINT_MAX))) {
+        LogError << "failed to get_and_check_value times_limit" << VAR(input);
         return false;
     }
 
@@ -186,15 +188,19 @@ bool PipelineConfig::parse_task(const std::string& name, const json::value& inpu
         return false;
     }
 
-    if (!get_and_check_value(input, "pre_delay", data.pre_delay, 0U)) {
+    uint pre_delay = 0U;
+    if (!get_and_check_value(input, "pre_delay", pre_delay, 0U)) {
         LogError << "failed to get_and_check_value pre_delay" << VAR(input);
         return false;
     }
+    data.pre_delay = std::chrono::milliseconds(pre_delay);
 
-    if (!get_and_check_value(input, "post_delay", data.post_delay, 0U)) {
+    uint post_delay = 0U;
+    if (!get_and_check_value(input, "post_delay", post_delay, 0U)) {
         LogError << "failed to get_and_check_value post_delay" << VAR(input);
         return false;
     }
+    data.post_delay = std::chrono::milliseconds(post_delay);
 
     if (!get_and_check_value(input, "notify", data.notify, false)) {
         LogError << "failed to get_and_check_value notify" << VAR(input);

@@ -14,7 +14,7 @@ MAA_TASK_NS_BEGIN
 class TaskBase : public MaaInstanceSink
 {
 public:
-    TaskBase(std::string_view task_name, InstanceInternalAPI* inst) : task_name_(task_name), inst_(inst) {}
+    TaskBase(std::string task_name, InstanceInternalAPI* inst) : first_task_(task_name), inst_(inst) {}
     virtual ~TaskBase() = default;
 
     virtual bool run() = 0;
@@ -33,9 +33,10 @@ protected:
 protected:
     bool need_exit() const { return need_exit_; }
     void sleep(uint ms) const;
+    void sleep(std::chrono::milliseconds ms) const;
     InstanceInternalAPI* inst() const { return inst_; }
 
-    std::string_view task_name_;
+    std::string first_task_;
 
 private:
     bool need_exit_ = false;

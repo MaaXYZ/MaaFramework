@@ -8,6 +8,7 @@
 #include <unordered_map>
 #include <variant>
 #include <vector>
+#include <chrono>
 
 #include "Vision/VisionTypes.h"
 
@@ -87,14 +88,14 @@ struct TaskData
     Action::Params action_params;
     std::vector<std::string> next;
 
-    uint timeout = UINT_MAX;
+    std::chrono::milliseconds timeout;
     std::vector<std::string> timeout_next;
 
-    uint run_times = UINT_MAX;
+    uint times_limit = UINT_MAX;
     std::vector<std::string> runout_next;
 
-    uint pre_delay = 0;
-    uint post_delay = 0;
+    std::chrono::milliseconds pre_delay;
+    std::chrono::milliseconds post_delay;
 
     bool notify = false;
 };

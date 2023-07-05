@@ -1,32 +1,41 @@
 #include "TaskBase.h"
 
+#include <chrono>
+
 #include "MaaUtils/Logger.hpp"
 
 MAA_TASK_NS_BEGIN
 
 void TaskBase::sleep(uint ms) const
 {
+    sleep(std::chrono::milliseconds(ms));
+}
+
+void TaskBase::sleep(std::chrono::milliseconds ms) const
+{
     if (need_exit()) {
         return;
     }
-    if (ms == 0) {
+
+    using namespace std::chrono_literals;
+
+    if (ms == 0ms) {
         std::this_thread::yield();
         return;
     }
 
-    auto millisecond = std::chrono::milliseconds(ms);
-    auto interval = std::chrono::milliseconds(std::min(ms, 5000U));
+    auto interval = std::min(ms, 5000ms);
 
-    LogTrace << "ready to sleep" << millisecond << VAR(interval);
+    LogTrace << "ready to sleep" << ms << VAR(interval);
 
-    for (auto sleep_time = interval; sleep_time <= millisecond && !need_exit(); sleep_time += interval) {
+    for (auto sleep_time = interval; sleep_time <= ms && !need_exit(); sleep_time += interval) {
         std::this_thread::sleep_for(interval);
     }
     if (!need_exit()) {
-        std::this_thread::sleep_for(millisecond % interval);
+        std::this_thread::sleep_for(ms % interval);
     }
 
-    LogTrace << "end of sleep" << millisecond << VAR(interval);
+    LogTrace << "end of sleep" << ms << VAR(interval);
 }
 
 MAA_TASK_NS_END
