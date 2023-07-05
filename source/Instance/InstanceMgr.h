@@ -24,7 +24,7 @@ public: // from MaaInstanceAPI
 
     virtual bool set_option(MaaInstOption key, const std::string& value) override;
 
-    virtual MaaTaskId post_task(std::string_view task, std::string_view param) override;
+    virtual MaaTaskId post_task(std::string task, std::string_view param) override;
     virtual bool set_task_param(MaaTaskId task_id, std::string_view param) override;
     virtual MaaStatus status(MaaTaskId task_id) const override;
     virtual MaaStatus wait(MaaTaskId task_id) const override;

@@ -82,11 +82,11 @@ bool InstanceMgr::set_option(MaaInstOption key, const std::string& value)
     return false;
 }
 
-MaaTaskId InstanceMgr::post_task(std::string_view task, std::string_view param)
+MaaTaskId InstanceMgr::post_task(std::string task, std::string_view param)
 {
     LogInfo << VAR(task) << VAR(param);
 
-    TaskPtr task_ptr = std::make_shared<TaskNS::PipelineTask>(std::string(task), this);
+    TaskPtr task_ptr = std::make_shared<TaskNS::PipelineTask>(std::move(task), this);
 
     auto param_opt = json::parse(param);
     if (!param_opt) {

@@ -14,7 +14,7 @@ MAA_TASK_NS_BEGIN
 class TaskBase : public MaaInstanceSink
 {
 public:
-    TaskBase(std::string task_name, InstanceInternalAPI* inst) : first_task_(task_name), inst_(inst) {}
+    TaskBase(std::string task_name, InstanceInternalAPI* inst) : first_task_(std::move(task_name)), inst_(inst) {}
     virtual ~TaskBase() = default;
 
     virtual bool run() = 0;
