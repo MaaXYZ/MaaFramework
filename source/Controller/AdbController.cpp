@@ -77,7 +77,7 @@ bool AdbController::_connect()
     return true;
 }
 
-void AdbController::_click(ClickParams param)
+void AdbController::_click(ClickSelfParams param)
 {
     if (!unit_mgr_->touch_input_obj()->click(param.x, param.y)) {
         LogError << "failed to click";

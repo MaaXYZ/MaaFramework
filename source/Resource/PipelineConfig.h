@@ -31,21 +31,22 @@ private:
 
     bool parse_recognition(const json::value& input, MAA_PIPELINE_RES_NS::Recognition::Type& out_type,
                            MAA_PIPELINE_RES_NS::Recognition::Params& out_param);
-    bool parse_direct_hit_params(const json::value& input, MAA_PIPELINE_RES_NS::Recognition::Params& output);
-    bool parse_templ_matching_params(const json::value& input, MAA_PIPELINE_RES_NS::Recognition::Params& output);
-    bool parse_ocr_params(const json::value& input, MAA_PIPELINE_RES_NS::Recognition::Params& output);
-    bool parse_freezes_waiting_params(const json::value& input, MAA_PIPELINE_RES_NS::Recognition::Params& output);
+    bool parse_direct_hit_params(const json::value& input, MAA_VISION_NS::DirectHitParams& output);
+    bool parse_templ_matching_params(const json::value& input, MAA_VISION_NS::TemplMatchingParams& output);
+    bool parse_ocr_params(const json::value& input, MAA_VISION_NS::OcrParams& output);
+    bool parse_freezes_waiting_params(const json::value& input, MAA_VISION_NS::FreezesWaitingParams& output);
 
     bool parse_roi(const json::value& input, std::vector<cv::Rect>& output);
 
     bool parse_action(const json::value& input, MAA_PIPELINE_RES_NS::Action::Type& out_type,
                       MAA_PIPELINE_RES_NS::Action::Params& out_param);
-    bool parse_click_self_params(const json::value& input, MAA_PIPELINE_RES_NS::Action::Params& output);
-    bool parse_click_region_params(const json::value& input, MAA_PIPELINE_RES_NS::Action::Params& output);
-    bool parse_swipe_self_params(const json::value& input, MAA_PIPELINE_RES_NS::Action::Params& output);
-    bool parse_swipe_region_params(const json::value& input, MAA_PIPELINE_RES_NS::Action::Params& output);
+    bool parse_click(const json::value& input, MAA_PIPELINE_RES_NS::Action::ClickParams& output);
+    bool parse_swipe(const json::value& input, MAA_PIPELINE_RES_NS::Action::SwipeParams& output);
 
     bool parse_rect(const json::value& input_rect, cv::Rect& output);
+    bool parse_action_target(const json::value& input, const std::string& key,
+                             MAA_PIPELINE_RES_NS::Action::Target& output_type,
+                             MAA_PIPELINE_RES_NS::Action::TargetParam& output_param);
 
 private:
     std::unordered_map<std::string, MAA_PIPELINE_RES_NS::TaskData> raw_data_;

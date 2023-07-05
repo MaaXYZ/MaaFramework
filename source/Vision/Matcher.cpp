@@ -36,6 +36,10 @@ Matcher::ResultOpt Matcher::analyze() const
 
 Matcher::ResultOpt Matcher::traverse_rois(const cv::Mat& templ, double threshold) const
 {
+    if (!cache_.empty()) {
+        return match_and_postproc(cache_, templ, threshold);
+    }
+
     if (param_.roi.empty()) {
         return match_and_postproc(cv::Rect(0, 0, image_.cols, image_.rows), templ, threshold);
     }

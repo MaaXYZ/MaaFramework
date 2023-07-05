@@ -24,6 +24,11 @@ void VisionBase::set_image(const cv::Mat& image)
 #endif
 }
 
+void VisionBase::set_cache(const cv::Rect& cache)
+{
+    cache_ = cache;
+}
+
 cv::Rect VisionBase::correct_roi(const cv::Rect& roi, const cv::Mat& image)
 {
     if (image.empty()) {

@@ -80,9 +80,6 @@ bool PipelineConfig::parse_json(const json::value& input)
     }
 
     for (const auto& [key, value] : input.as_object()) {
-        if (key == "$schema") {
-            continue;
-        }
         bool ret = parse_task(key, value);
         if (!ret) {
             LogError << "parse_task failed" << VAR(key) << VAR(value);
@@ -220,16 +217,19 @@ bool PipelineConfig::parse_task(const std::string& name, const json::value& inpu
 bool PipelineConfig::parse_recognition(const json::value& input, MAA_PIPELINE_RES_NS::Recognition::Type& out_type,
                                        MAA_PIPELINE_RES_NS::Recognition::Params& out_param)
 {
+    using namespace MAA_PIPELINE_RES_NS::Recognition;
+    using namespace MAA_VISION_NS;
+
     std::string rec_type_name;
     if (!get_and_check_value(input, "recognition", rec_type_name, std::string("DirectHit"))) {
         LogError << "failed to get_and_check_value recognition" << VAR(input);
         return false;
     }
 
-    static const std::unordered_map<std::string, Recognition::Type> kRecTypeMap = {
-        { "DirectHit", Recognition::Type::DirectHit },       { "TemplateMatch", Recognition::Type::TemplateMatch },
-        { "OcrDetAndRec", Recognition::Type::OcrDetAndRec }, { "OcrOnlyRec", Recognition::Type::OcrOnlyRec },
-        { "FreezesWait", Recognition::Type::FreezesWait },
+    static const std::unordered_map<std::string, Type> kRecTypeMap = {
+        { "DirectHit", Type::DirectHit },       { "TemplateMatch", Type::TemplateMatch },
+        { "OcrDetAndRec", Type::OcrDetAndRec }, { "OcrOnlyRec", Type::OcrOnlyRec },
+        { "FreezesWait", Type::FreezesWait },
     };
     auto rec_type_iter = kRecTypeMap.find(rec_type_name);
     if (rec_type_iter == kRecTypeMap.end()) {
@@ -239,15 +239,15 @@ bool PipelineConfig::parse_recognition(const json::value& input, MAA_PIPELINE_RE
     out_type = rec_type_iter->second;
 
     switch (out_type) {
-    case Recognition::Type::DirectHit:
-        return parse_direct_hit_params(input, out_param);
-    case Recognition::Type::TemplateMatch:
-        return parse_templ_matching_params(input, out_param);
-    case Recognition::Type::OcrDetAndRec:
-    case Recognition::Type::OcrOnlyRec:
-        return parse_ocr_params(input, out_param);
-    case Recognition::Type::FreezesWait:
-        return parse_freezes_waiting_params(input, out_param);
+    case Type::DirectHit:
+        return parse_direct_hit_params(input, std::get<DirectHitParams>(out_param));
+    case Type::TemplateMatch:
+        return parse_templ_matching_params(input, std::get<TemplMatchingParams>(out_param));
+    case Type::OcrDetAndRec:
+    case Type::OcrOnlyRec:
+        return parse_ocr_params(input, std::get<OcrParams>(out_param));
+    case Type::FreezesWait:
+        return parse_freezes_waiting_params(input, std::get<FreezesWaitingParams>(out_param));
     default:
         return false;
     }
@@ -255,77 +255,69 @@ bool PipelineConfig::parse_recognition(const json::value& input, MAA_PIPELINE_RE
     return false;
 }
 
-bool PipelineConfig::parse_direct_hit_params(const json::value& input, MAA_PIPELINE_RES_NS::Recognition::Params& output)
+bool PipelineConfig::parse_direct_hit_params(const json::value& input, MAA_VISION_NS::DirectHitParams& output)
 {
-    MAA_VISION_NS::DirectHitParams result;
-
-    if (!parse_roi(input, result.roi)) {
+    if (!parse_roi(input, output.roi)) {
         LogError << "failed to parse_roi" << VAR(input);
         return false;
     }
 
-    output = result;
     return true;
 }
 
-bool PipelineConfig::parse_templ_matching_params(const json::value& input, Recognition::Params& output)
+bool PipelineConfig::parse_templ_matching_params(const json::value& input, MAA_VISION_NS::TemplMatchingParams& output)
 {
-    MAA_VISION_NS::TemplMatchingParams result;
-
-    if (!parse_roi(input, result.roi)) {
+    if (!parse_roi(input, output.roi)) {
         LogError << "failed to parse_roi" << VAR(input);
         return false;
     }
 
-    if (!get_and_check_value_or_array(input, "templates", result.templates)) {
+    if (!get_and_check_value_or_array(input, "templates", output.templates)) {
         LogError << "failed to get_and_check_value_or_array templates" << VAR(input);
         return false;
     }
-    if (result.templates.empty()) {
+    if (output.templates.empty()) {
         LogError << "templates is empty" << VAR(input);
         return false;
     }
 
-    if (!get_and_check_value_or_array(input, "threshold", result.thresholds)) {
+    if (!get_and_check_value_or_array(input, "threshold", output.thresholds)) {
         LogError << "failed to get_and_check_value_or_array threshold" << VAR(input);
         return false;
     }
 
-    if (result.thresholds.empty()) {
+    if (output.thresholds.empty()) {
         constexpr double kDefaultThreshold = 0.8;
-        result.thresholds = std::vector(result.templates.size(), kDefaultThreshold);
+        output.thresholds = std::vector(output.templates.size(), kDefaultThreshold);
     }
-    else if (result.templates.size() != result.thresholds.size()) {
-        LogError << "templates.size() != thresholds.size()" << VAR(result.templates.size())
-                 << VAR(result.thresholds.size());
+    else if (output.templates.size() != output.thresholds.size()) {
+        LogError << "templates.size() != thresholds.size()" << VAR(output.templates.size())
+                 << VAR(output.thresholds.size());
         return false;
     }
 
     constexpr int kDefaultMethod = 3; // cv::TM_CCOEFF_NORMED
-    if (!get_and_check_value(input, "method", result.method, kDefaultMethod)) {
+    if (!get_and_check_value(input, "method", output.method, kDefaultMethod)) {
         LogError << "failed to get_and_check_value method" << VAR(input);
         return false;
     }
 
-    if (!get_and_check_value(input, "green_mask", result.green_mask, false)) {
+    if (!get_and_check_value(input, "green_mask", output.green_mask, false)) {
         LogError << "failed to get_and_check_value green_mask" << VAR(input);
         return false;
     }
 
-    output = result;
     return true;
 }
 
-bool PipelineConfig::parse_ocr_params(const json::value& input, Recognition::Params& output)
+bool PipelineConfig::parse_ocr_params(const json::value& input, MAA_VISION_NS::OcrParams& output)
 {
-    MAA_VISION_NS::OcrParams result;
-
-    if (!parse_roi(input, result.roi)) {
+    if (!parse_roi(input, output.roi)) {
         LogError << "failed to parse_roi" << VAR(input);
         return false;
     }
 
-    if (!get_and_check_value_or_array(input, "text", result.text)) {
+    if (!get_and_check_value_or_array(input, "text", output.text)) {
         LogError << "failed to get_and_check_value_or_array text" << VAR(input);
         return false;
     }
@@ -352,41 +344,37 @@ bool PipelineConfig::parse_ocr_params(const json::value& input, Recognition::Par
                 LogError << "replace pair is not string" << VAR(input);
                 return false;
             }
-            result.replace.emplace_back(std::make_pair(first.as_string(), second.as_string()));
+            output.replace.emplace_back(std::make_pair(first.as_string(), second.as_string()));
         }
     }
 
-    output = result;
     return true;
 }
 
-bool PipelineConfig::parse_freezes_waiting_params(const json::value& input, Recognition::Params& output)
+bool PipelineConfig::parse_freezes_waiting_params(const json::value& input, MAA_VISION_NS::FreezesWaitingParams& output)
 {
-    MAA_VISION_NS::FreezesWaitingParams result;
-
-    if (!parse_roi(input, result.roi)) {
+    if (!parse_roi(input, output.roi)) {
         LogError << "failed to parse_roi" << VAR(input);
         return false;
     }
 
     constexpr double kDefaultThreshold = 0.8;
-    if (!get_and_check_value(input, "threshold", result.threshold, kDefaultThreshold)) {
+    if (!get_and_check_value(input, "threshold", output.threshold, kDefaultThreshold)) {
         LogError << "failed to get_and_check_value threshold" << VAR(input);
         return false;
     }
 
     constexpr int kDefaultMethod = 3; // cv::TM_CCOEFF_NORMED
-    if (!get_and_check_value(input, "method", result.method, kDefaultMethod)) {
+    if (!get_and_check_value(input, "method", output.method, kDefaultMethod)) {
         LogError << "failed to get_and_check_value method" << VAR(input);
         return false;
     }
 
-    if (!get_and_check_value(input, "wait_time", result.wait_time, uint(UINT_MAX))) {
+    if (!get_and_check_value(input, "wait_time", output.wait_time, uint(UINT_MAX))) {
         LogError << "failed to get_and_check_value wait_time" << VAR(input);
         return false;
     }
 
-    output = result;
     return true;
 }
 
@@ -427,16 +415,18 @@ bool PipelineConfig::parse_roi(const json::value& input, std::vector<cv::Rect>& 
 bool PipelineConfig::parse_action(const json::value& input, MAA_PIPELINE_RES_NS::Action::Type& out_type,
                                   MAA_PIPELINE_RES_NS::Action::Params& out_param)
 {
+    using namespace Action;
+
     std::string act_type_name;
     if (!get_and_check_value(input, "action", act_type_name, std::string("DoNothing"))) {
         LogError << "failed to get_and_check_value action" << VAR(input);
         return false;
     }
 
-    static const std::unordered_map<std::string, Action::Type> kActTypeMap = {
-        { "DoNothing", Action::Type::DoNothing },     { "ClickSelf", Action::Type::ClickSelf },
-        { "ClickRegion", Action::Type::ClickRegion }, { "SwipeSelf", Action::Type::SwipeSelf },
-        { "SwipeRegion", Action::Type::SwipeRegion },
+    static const std::unordered_map<std::string, Type> kActTypeMap = {
+        { "DoNothing", Type::DoNothing },
+        { "Click", Type::Click },
+        { "Swipe", Type::Swipe },
     };
     auto act_type_iter = kActTypeMap.find(act_type_name);
     if (act_type_iter == kActTypeMap.cend()) {
@@ -446,16 +436,12 @@ bool PipelineConfig::parse_action(const json::value& input, MAA_PIPELINE_RES_NS:
     out_type = act_type_iter->second;
 
     switch (out_type) {
-    case Action::Type::DoNothing:
+    case Type::DoNothing:
         return true;
-    case Action::Type::ClickSelf:
-        return parse_click_self_params(input, out_param);
-    case Action::Type::ClickRegion:
-        return parse_click_region_params(input, out_param);
-    case Action::Type::SwipeSelf:
-        return parse_swipe_self_params(input, out_param);
-    case Action::Type::SwipeRegion:
-        return parse_swipe_region_params(input, out_param);
+    case Type::Click:
+        return parse_click(input, std::get<ClickParams>(out_param));
+    case Type::Swipe:
+        return parse_swipe(input, std::get<SwipeParams>(out_param));
     default:
         return false;
     }
@@ -463,75 +449,34 @@ bool PipelineConfig::parse_action(const json::value& input, MAA_PIPELINE_RES_NS:
     return false;
 }
 
-bool PipelineConfig::parse_click_self_params(const json::value& input, MAA_PIPELINE_RES_NS::Action::Params& output)
+bool PipelineConfig::parse_click(const json::value& input, MAA_PIPELINE_RES_NS::Action::ClickParams& output)
 {
-    Action::ClickParams result;
-
-    if (auto rect_move_opt = input.find("rect_move")) {
-        if (!parse_rect(*rect_move_opt, result.rect_move)) {
-            LogError << "failed to parse_rect" << VAR(input);
-            return false;
-        }
+    if (!parse_action_target(input, "target", output.target, output.target_param)) {
+        LogError << "failed to parse_action_target" << VAR(input);
+        return false;
     }
 
-    output = result;
     return true;
 }
 
-bool PipelineConfig::parse_click_region_params(const json::value& input, MAA_PIPELINE_RES_NS::Action::Params& output)
+bool PipelineConfig::parse_swipe(const json::value& input, MAA_PIPELINE_RES_NS::Action::SwipeParams& output)
 {
-    Action::ClickRegionParams result;
-
-    if (auto region_opt = input.find("region")) {
-        if (!parse_rect(*region_opt, result.region)) {
-            LogError << "failed to parse_rect" << VAR(input);
-            return false;
-        }
-    }
-
-    output = result;
-    return true;
-}
-
-bool PipelineConfig::parse_swipe_self_params(const json::value& input, MAA_PIPELINE_RES_NS::Action::Params& output)
-{
-    // TODO: 解析参数结构还没想好
-    std::ignore = input;
-    std::ignore = output;
-    return false;
-}
-
-bool PipelineConfig::parse_swipe_region_params(const json::value& input, MAA_PIPELINE_RES_NS::Action::Params& output)
-{
-    Action::SwipeRegionParams result;
-
-    auto begin_opt = input.find("begin");
-    if (!begin_opt) {
-        LogError << "begin not found" << VAR(input);
-        return false;
-    }
-    if (!parse_rect(*begin_opt, result.begin)) {
-        LogError << "failed to parse_rect" << VAR(input);
+    if (!parse_action_target(input, "begin", output.begin, output.begin_param)) {
+        LogError << "failed to parse_action_target begin" << VAR(input);
         return false;
     }
 
-    auto end_opt = input.find("end");
-    if (!end_opt) {
-        LogError << "end not found" << VAR(input);
+    if (!parse_action_target(input, "end", output.end, output.end_param)) {
+        LogError << "failed to parse_action_target end" << VAR(input);
         return false;
     }
 
-    if (!parse_rect(*end_opt, result.end)) {
-        LogError << "failed to parse_rect" << VAR(input);
-        return false;
-    }
-
-    if (!get_and_check_value(input, "duration", result.duration, 0U)) {
+    constexpr uint kDefaultDuration = 200;
+    if (!get_and_check_value(input, "duration", output.duration, kDefaultDuration)) {
         LogError << "failed to get_and_check_value duration" << VAR(input);
         return false;
     }
 
-    output = result;
     return true;
 }
 
@@ -557,6 +502,37 @@ bool PipelineConfig::parse_rect(const json::value& input_rect, cv::Rect& output)
         rect_move_vec.emplace_back(r.as_integer());
     }
     output = cv::Rect(rect_move_vec[0], rect_move_vec[1], rect_move_vec[2], rect_move_vec[3]);
+    return true;
+}
+
+bool PipelineConfig::parse_action_target(const json::value& input, const std::string& key,
+                                         MAA_PIPELINE_RES_NS::Action::Target& output_type,
+                                         MAA_PIPELINE_RES_NS::Action::TargetParam& output_param)
+{
+    using namespace MAA_PIPELINE_RES_NS::Action;
+
+    auto param_opt = input.find(key);
+    if (!param_opt) {
+        output_type = Target::Self;
+    }
+    else {
+        if (param_opt->is_boolean() && param_opt->as_boolean()) {
+            output_type = Target::Self;
+        }
+        else if (param_opt->is_string()) {
+            output_type = Target::PreTask;
+            output_param = param_opt->as_string();
+        }
+        else if (param_opt->is_array()) {
+            output_type = Target::Region;
+            parse_rect(*param_opt, std::get<cv::Rect>(output_param));
+        }
+        else {
+            LogError << "param type error" << VAR(*param_opt);
+            return false;
+        }
+    }
+
     return true;
 }
 

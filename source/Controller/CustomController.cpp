@@ -46,7 +46,7 @@ bool CustomController::_connect()
     return handle_->connect();
 }
 
-void CustomController::_click(ClickParams param)
+void CustomController::_click(ClickSelfParams param)
 {
     LogFunc << VAR_VOIDP(handle_) << VAR_VOIDP(handle_->click) << VAR(param.x) << VAR(param.y);
 

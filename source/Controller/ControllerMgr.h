@@ -17,7 +17,7 @@ MAA_RES_NS_END
 
 MAA_CTRL_NS_BEGIN
 
-struct ClickParams
+struct ClickSelfParams
 {
     int x = 0;
     int y = 0;
@@ -34,7 +34,7 @@ struct SwipeParams
 };
 std::ostream& operator<<(std::ostream& os, const SwipeParams::Step& step);
 
-using Params = std::variant<ClickParams, SwipeParams>;
+using Params = std::variant<ClickSelfParams, SwipeParams>;
 
 struct Action
 {
@@ -82,7 +82,7 @@ public:
 
 protected:
     virtual bool _connect() = 0;
-    virtual void _click(ClickParams param) = 0;
+    virtual void _click(ClickSelfParams param) = 0;
     virtual void _swipe(SwipeParams param) = 0;
     virtual cv::Mat _screencap() = 0;
 

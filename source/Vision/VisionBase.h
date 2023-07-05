@@ -13,6 +13,7 @@ public:
     VisionBase(InstanceInternalAPI* inst, const cv::Mat& image);
 
     void set_image(const cv::Mat& image);
+    void set_cache(const cv::Rect& cache);
 
 #ifdef MAA_DEBUG
     const cv::Mat& get_image_draw() const { return image_draw_; }
@@ -24,12 +25,15 @@ protected:
 
 protected:
     MAA_RES_NS::ResourceMgr* resource() const { return inst_->resource(); }
+    InstanceStatus* status() const { return inst_->status(); }
 
 protected:
     cv::Mat image_;
 #ifdef MAA_DEBUG
     cv::Mat image_draw_;
 #endif
+    cv::Rect cache_;
+
     InstanceInternalAPI* inst_ = nullptr;
 };
 

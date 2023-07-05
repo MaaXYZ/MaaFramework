@@ -3,12 +3,12 @@
 #include "Common/MaaConf.h"
 #include "Utils/NoWarningCVMat.h"
 
+#include <chrono>
 #include <memory>
 #include <string>
 #include <unordered_map>
 #include <variant>
 #include <vector>
-#include <chrono>
 
 #include "Vision/VisionTypes.h"
 
@@ -42,35 +42,37 @@ enum class Type
 {
     Invalid = 0,
     DoNothing,
-    ClickSelf,
-    ClickRegion,
-    SwipeSelf,
-    SwipeRegion,
+    Click,
+    Swipe,
 };
+
+enum class Target
+{
+    Invalid = 0,
+    Self,
+    PreTask,
+    Region,
+};
+
+using TargetParam = std::variant<std::string, cv::Rect>;
 
 struct ClickParams
 {
-    cv::Rect rect_move {};
+    Target target = Target::Invalid;
+    TargetParam target_param;
 };
 
-struct ClickRegionParams
+struct SwipeParams
 {
-    cv::Rect region {};
-};
+    Target begin;
+    TargetParam begin_param;
+    Target end;
+    TargetParam end_param;
 
-struct SwipeRegionParams
-{
-    cv::Rect begin {};
-    cv::Rect end {};
     uint duration = 0;
 };
 
-struct SwipeSelfParams
-{
-    // TODO
-};
-
-using Params = std::variant<Action::ClickParams, Action::ClickRegionParams, Action::SwipeRegionParams>;
+using Params = std::variant<Action::ClickParams, Action::SwipeParams>;
 } // namespace Action
 
 struct TaskData

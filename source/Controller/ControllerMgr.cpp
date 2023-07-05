@@ -42,7 +42,7 @@ MaaCtrlId ControllerMgr::post_connection()
 
 MaaCtrlId ControllerMgr::post_click(int x, int y)
 {
-    ClickParams params { .x = x, .y = y };
+    ClickSelfParams params { .x = x, .y = y };
     return action_runner_->post({ .type = Action::Type::click, .params = std::move(params) });
 }
 
@@ -104,7 +104,7 @@ void ControllerMgr::click(const cv::Rect& r)
 
 void ControllerMgr::click(const cv::Point& p)
 {
-    ClickParams params { .x = p.x, .y = p.y };
+    ClickSelfParams params { .x = p.x, .y = p.y };
     action_runner_->post({ .type = Action::Type::click, .params = std::move(params) }, true);
 }
 
@@ -144,7 +144,7 @@ bool ControllerMgr::run_action(typename AsyncRunner<Action>::Id id, Action actio
         connected_ = _connect();
         return connected_;
     case Action::Type::click:
-        _click(std::get<ClickParams>(action.params));
+        _click(std::get<ClickSelfParams>(action.params));
         return true;
     case Action::Type::swipe:
         _swipe(std::get<SwipeParams>(action.params));
