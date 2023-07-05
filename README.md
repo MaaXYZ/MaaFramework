@@ -2,20 +2,25 @@
 
 <img alt="LOGO" src="https://cdn.jsdelivr.net/gh/MaaAssistantArknights/design@main/logo/maa-logo_512x512.png" width="256" height="256" />
 
-# MAA
+# MAA Framework
+
+<br>
+
+一款软件自动化测试框架，基于图像识别技术，模拟点击控制，一键完成设定好的测试任务
 
 </div>
+
 <br>
 
 ## 拆库及解耦
 
 - [MaaFramework](https://github.com/MaaAssistantArknights/MaaFramework)  
   技术栈：C++ / Vision  
-  手游通用 图像识别 + 控制 框架，~~Json 解释器~~，不涉及具体游戏任务
+  通用 图像识别 + 控制 框架，~~Json 解释器~~，不涉及具体待测软件业务逻辑
 
-- MaaArknightsCore  
+- MaaCore  
   技术栈：C++ / Python / Vision  
-  明日方舟 游戏业务逻辑，图像识别 + 控制 部分
+  待测软件业务逻辑，图像识别 + 控制 部分
 
 - MaaCommon  
   技术栈：C# / RPC / ......  
@@ -24,7 +29,7 @@
 
 ## 目标期望
 
-如果适配新游戏，Framework 一行不改，Common 只进行配置文件相关修改
+如果适配新软件，Framework 一行不改，Common 只进行配置文件相关修改
 
 ## How to build
 
