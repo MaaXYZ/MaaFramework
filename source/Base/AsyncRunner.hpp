@@ -148,6 +148,7 @@ inline typename AsyncRunner<Item>::Id AsyncRunner<Item>::post(Item item, bool bl
             status_map_.emplace(id, MaaStatus_Pending);
         }
 
+        running_ = true;
         cond_.notify_one();
     }
 
