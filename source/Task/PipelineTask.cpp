@@ -245,6 +245,9 @@ void PipelineTask::start_to_act(const FoundResult& act)
     case Type::Swipe:
         swipe(std::get<SwipeParams>(act.task_data.action_params), act.rec.box);
         break;
+    default:
+        LogError << "Unknown action" << VAR(static_cast<int>(act.task_data.action_type));
+        break;
     }
 
     sleep(act.task_data.post_delay);
