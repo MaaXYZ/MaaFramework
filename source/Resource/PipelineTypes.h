@@ -28,11 +28,10 @@ enum class Type
     DirectHit,
     TemplateMatch,
     OCR,
-    FreezesWait,
 };
 
-using Params = std::variant<MAA_VISION_NS::DirectHitParams, MAA_VISION_NS::TemplMatchingParams,
-                            MAA_VISION_NS::OcrParams, MAA_VISION_NS::FreezesWaitingParams>;
+using Params =
+    std::variant<MAA_VISION_NS::DirectHitParams, MAA_VISION_NS::TemplMatchingParams, MAA_VISION_NS::OcrParams>;
 } // namespace Recognition
 
 namespace Action
@@ -43,6 +42,7 @@ enum class Type
     DoNothing,
     Click,
     Swipe,
+    WaitFreezes,
 };
 
 enum class Target
@@ -71,7 +71,17 @@ struct SwipeParams
     uint duration = 0;
 };
 
-using Params = std::variant<Action::ClickParams, Action::SwipeParams>;
+struct WaitFreezesParams
+{
+    Target target = Target::Invalid;
+    TargetParam target_param;
+
+    double threshold = 0.0;
+    int method = 0;
+    std::chrono::milliseconds frozen_time;
+};
+
+using Params = std::variant<Action::ClickParams, Action::SwipeParams, Action::WaitFreezesParams>;
 } // namespace Action
 
 struct TaskData

@@ -177,6 +177,7 @@
     <ClInclude Include="Base\MessageNotifier.hpp">
       <Filter>Source\Base</Filter>
     </ClInclude>
+    <ClInclude Include="Vision\Comparator.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Controller\ControllerMgr.cpp">
@@ -225,5 +226,6 @@
       <Filter>Source\Vision</Filter>
     </ClCompile>
     <ClCompile Include="Task\TaskBase.cpp" />
+    <ClCompile Include="Vision\Comparator.cpp" />
   </ItemGroup>
 </Project>

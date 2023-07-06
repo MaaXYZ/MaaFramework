@@ -20,7 +20,6 @@ public:
 #endif
 
 protected:
-    static cv::Rect correct_roi(const cv::Rect& roi, const cv::Mat& image);
     cv::Mat image_with_roi(const cv::Rect& roi) const;
 
 protected:

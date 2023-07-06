@@ -230,7 +230,6 @@ bool PipelineConfig::parse_recognition(const json::value& input, MAA_PIPELINE_RE
         { "DirectHit", Type::DirectHit },
         { "TemplateMatch", Type::TemplateMatch },
         { "OCR", Type::OCR },
-        { "FreezesWait", Type::FreezesWait },
     };
     auto rec_type_iter = kRecTypeMap.find(rec_type_name);
     if (rec_type_iter == kRecTypeMap.end()) {
@@ -246,8 +245,6 @@ bool PipelineConfig::parse_recognition(const json::value& input, MAA_PIPELINE_RE
         return parse_templ_matching_params(input, std::get<TemplMatchingParams>(out_param));
     case Type::OCR:
         return parse_ocr_params(input, std::get<OcrParams>(out_param));
-    case Type::FreezesWait:
-        return parse_freezes_waiting_params(input, std::get<FreezesWaitingParams>(out_param));
     default:
         return false;
     }
@@ -356,28 +353,6 @@ bool PipelineConfig::parse_ocr_params(const json::value& input, MAA_VISION_NS::O
     return true;
 }
 
-bool PipelineConfig::parse_freezes_waiting_params(const json::value& input, MAA_VISION_NS::FreezesWaitingParams& output)
-{
-    if (!parse_roi(input, output.roi)) {
-        LogError << "failed to parse_roi" << VAR(input);
-        return false;
-    }
-
-    constexpr double kDefaultThreshold = 0.8;
-    if (!get_and_check_value(input, "threshold", output.threshold, kDefaultThreshold)) {
-        LogError << "failed to get_and_check_value threshold" << VAR(input);
-        return false;
-    }
-
-    constexpr int kDefaultMethod = 3; // cv::TM_CCOEFF_NORMED
-    if (!get_and_check_value(input, "method", output.method, kDefaultMethod)) {
-        LogError << "failed to get_and_check_value method" << VAR(input);
-        return false;
-    }
-
-    return true;
-}
-
 bool PipelineConfig::parse_roi(const json::value& input, std::vector<cv::Rect>& output)
 {
     auto roi_opt = input.find("roi");
@@ -427,6 +402,7 @@ bool PipelineConfig::parse_action(const json::value& input, MAA_PIPELINE_RES_NS:
         { "DoNothing", Type::DoNothing },
         { "Click", Type::Click },
         { "Swipe", Type::Swipe },
+        { "WaitFreezes", Type::WaitFreezes },
     };
     auto act_type_iter = kActTypeMap.find(act_type_name);
     if (act_type_iter == kActTypeMap.cend()) {
@@ -442,6 +418,8 @@ bool PipelineConfig::parse_action(const json::value& input, MAA_PIPELINE_RES_NS:
         return parse_click(input, std::get<ClickParams>(out_param));
     case Type::Swipe:
         return parse_swipe(input, std::get<SwipeParams>(out_param));
+    case Type::WaitFreezes:
+        return parse_wait_freezes_params(input, std::get<WaitFreezesParams>(out_param));
     default:
         return false;
     }
@@ -476,6 +454,41 @@ bool PipelineConfig::parse_swipe(const json::value& input, MAA_PIPELINE_RES_NS::
         LogError << "failed to get_and_check_value duration" << VAR(input);
         return false;
     }
+
+    return true;
+}
+
+bool PipelineConfig::parse_wait_freezes_params(const json::value& input,
+                                               MAA_PIPELINE_RES_NS::Action::WaitFreezesParams& output)
+{
+    if (!parse_action_target(input, "target", output.target, output.target_param)) {
+        LogError << "failed to parse_action_target" << VAR(input);
+        return false;
+    }
+
+    // if (!parse_roi(input, output.roi)) {
+    //     LogError << "failed to parse_roi" << VAR(input);
+    //     return false;
+    // }
+
+    constexpr double kDefaultThreshold = 0.8;
+    if (!get_and_check_value(input, "threshold", output.threshold, kDefaultThreshold)) {
+        LogError << "failed to get_and_check_value threshold" << VAR(input);
+        return false;
+    }
+
+    constexpr int kDefaultMethod = 3; // cv::TM_CCOEFF_NORMED
+    if (!get_and_check_value(input, "method", output.method, kDefaultMethod)) {
+        LogError << "failed to get_and_check_value method" << VAR(input);
+        return false;
+    }
+
+    uint frozen_time = 0U;
+    if (!get_and_check_value(input, "frozen_time", frozen_time, 5 * 1000U)) {
+        LogError << "failed to get_and_check_value frozen_time" << VAR(input);
+        return false;
+    }
+    output.frozen_time = std::chrono::milliseconds(frozen_time);
 
     return true;
 }

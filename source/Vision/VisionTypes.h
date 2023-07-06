@@ -31,7 +31,7 @@ struct OcrParams
     std::vector<std::pair<std::string, std::string>> replace;
 };
 
-struct FreezesWaitingParams
+struct CompParams
 {
     std::vector<cv::Rect> roi;
     double threshold = 0.0;

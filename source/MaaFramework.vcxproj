@@ -67,6 +67,7 @@
     <ClInclude Include="Utils\StringMisc.hpp" />
     <ClInclude Include="Utils\TempPath.hpp" />
     <ClInclude Include="Utils\Time.hpp" />
+    <ClInclude Include="Vision\Comparator.h" />
     <ClInclude Include="Vision\Matcher.h" />
     <ClInclude Include="Vision\OCRer.h" />
     <ClInclude Include="Vision\VisionTypes.h" />
@@ -87,6 +88,7 @@
     <ClCompile Include="Resource\TemplateConfig.cpp" />
     <ClCompile Include="Task\PipelineTask.cpp" />
     <ClCompile Include="Task\TaskBase.cpp" />
+    <ClCompile Include="Vision\Comparator.cpp" />
     <ClCompile Include="Vision\Matcher.cpp" />
     <ClCompile Include="Vision\OCRer.cpp" />
     <ClCompile Include="Vision\VisionBase.cpp" />

@@ -3,6 +3,7 @@
 #include "Controller/ControllerMgr.h"
 #include "MaaUtils/Logger.hpp"
 #include "Resource/ResourceMgr.h"
+#include "Vision/Comparator.h"
 #include "Vision/Matcher.h"
 #include "Vision/OCRer.h"
 #include "Vision/VisionUtils.hpp"
@@ -147,8 +148,6 @@ std::optional<PipelineTask::RecResult> PipelineTask::recognize(const MAA_PIPELIN
         return template_match(image, std::get<TemplMatchingParams>(task_data.rec_params), cache);
     case Type::OCR:
         return ocr(image, std::get<OcrParams>(task_data.rec_params), cache);
-    case Type::FreezesWait:
-        return freezes_wait(image, std::get<FreezesWaitingParams>(task_data.rec_params), cache);
     default:
         LogError << "Unknown type" << VAR(static_cast<int>(task_data.rec_type));
         return std::nullopt;
@@ -182,9 +181,8 @@ std::optional<PipelineTask::RecResult> PipelineTask::template_match(const cv::Ma
     return RecResult { .box = ret->box };
 }
 
-std::optional<PipelineTask::RecResult> PipelineTask::ocr(const cv::Mat& image,
-                                                                     const MAA_VISION_NS::OcrParams& param,
-                                                                     const cv::Rect& cache)
+std::optional<PipelineTask::RecResult> PipelineTask::ocr(const cv::Mat& image, const MAA_VISION_NS::OcrParams& param,
+                                                         const cv::Rect& cache)
 {
     using namespace MAA_VISION_NS;
 
@@ -204,18 +202,6 @@ std::optional<PipelineTask::RecResult> PipelineTask::ocr(const cv::Mat& image,
     return RecResult { .box = res.front().box };
 }
 
-std::optional<PipelineTask::RecResult> PipelineTask::freezes_wait(const cv::Mat& image,
-                                                                  const MAA_VISION_NS::FreezesWaitingParams& param,
-                                                                  const cv::Rect& cache)
-{
-    // TODO
-    std::ignore = image;
-    std::ignore = param;
-    std::ignore = cache;
-
-    return std::nullopt;
-}
-
 void PipelineTask::start_to_act(const FoundResult& act)
 {
     using namespace MAA_PIPELINE_RES_NS::Action;
@@ -230,6 +216,9 @@ void PipelineTask::start_to_act(const FoundResult& act)
         break;
     case Type::Swipe:
         swipe(std::get<SwipeParams>(act.task_data.action_params), act.rec.box);
+        break;
+    case Type::WaitFreezes:
+        wait_freezes(std::get<WaitFreezesParams>(act.task_data.action_params), act.rec.box);
         break;
     default:
         LogError << "Unknown action" << VAR(static_cast<int>(act.task_data.action_type));
@@ -262,6 +251,40 @@ void PipelineTask::swipe(const MAA_PIPELINE_RES_NS::Action::SwipeParams& param, 
     cv::Rect end = get_target_rect(param.end, param.end_param, cur_box);
 
     controller()->swipe(begin, end, param.duration);
+}
+
+void PipelineTask::wait_freezes(const MAA_PIPELINE_RES_NS::Action::WaitFreezesParams& param, const cv::Rect& cur_box)
+{
+    if (!controller()) {
+        LogError << "Controller is null";
+        return;
+    }
+    using namespace MAA_VISION_NS;
+
+    cv::Rect target = get_target_rect(param.target, param.target_param, cur_box);
+
+    Comparator comp;
+    comp.set_param({
+        .roi = { target },
+        .threshold = param.threshold,
+        .method = param.method,
+    });
+
+    auto pre_time = std::chrono::steady_clock::now();
+    cv::Mat pre_image = controller()->screencap();
+
+    while (!need_exit()) {
+        cv::Mat cur_image = controller()->screencap();
+        if (!comp.analyze(pre_image, cur_image)) {
+            pre_image = cur_image;
+            pre_time = std::chrono::steady_clock::now();
+            continue;
+        }
+
+        if (duration_since(pre_time) > param.frozen_time) {
+            break;
+        }
+    }
 }
 
 cv::Rect PipelineTask::get_target_rect(const MAA_PIPELINE_RES_NS::Action::Target type,
