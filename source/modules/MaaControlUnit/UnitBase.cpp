@@ -72,8 +72,7 @@ std::optional<std::string> UnitBase::command(Argv::value cmd, bool recv_by_socke
     std::string sock_data;
     int ret = io_ptr_->call_command(cmd, recv_by_socket, pipe_data, sock_data, timeout);
 
-    auto duration =
-        std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::steady_clock::now() - start_time);
+    auto duration = duration_since(start_time);
 
     LogInfo << VAR(cmd) << VAR(ret) << VAR(pipe_data.size()) << VAR(sock_data.size()) << VAR(duration);
     if (!pipe_data.empty() && pipe_data.size() < 4096) {

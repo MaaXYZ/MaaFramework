@@ -80,16 +80,15 @@ bool ScreencapFastestWay::speed_test()
     LogFunc;
 
     method_ = Method::UnknownYet;
-    std::chrono::nanoseconds cost(INT64_MAX);
+    std::chrono::milliseconds cost(INT64_MAX);
 
     auto check = [this, &cost](Method method, std::chrono::steady_clock::time_point start) {
-        auto duration = std::chrono::steady_clock::now() - start;
+        auto duration = duration_since(start);
         if (duration < cost) {
             method_ = method;
             cost = duration;
         }
-        auto ms = std::chrono::duration_cast<std::chrono::milliseconds>(duration);
-        LogInfo << VAR(method) << VAR(ms);
+        LogInfo << VAR(method) << VAR(duration);
     };
 
     for (auto pair : units_) {
@@ -104,8 +103,7 @@ bool ScreencapFastestWay::speed_test()
         return false;
     }
 
-    auto ms = std::chrono::duration_cast<std::chrono::milliseconds>(cost);
-    LogInfo << "The fastest method is" << method_ << VAR(ms);
+    LogInfo << "The fastest method is" << method_ << VAR(cost);
     return true;
 }
 

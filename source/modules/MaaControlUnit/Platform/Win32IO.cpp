@@ -105,10 +105,8 @@ int Win32IO::call_command(const std::vector<std::string>& cmd, bool recv_by_sock
             wait_handles.push_back(sockov.hEvent);
         }
         if (wait_handles.empty()) break;
-        auto elapsed = steady_clock::now() - start_time;
         // TODO: 这里目前是隔 5000ms 判断一次，应该可以加一个 wait_handle 来判断外部中断（need_exit）
-        auto wait_time =
-            (std::min)(timeout - duration_cast<milliseconds>(elapsed).count(), process_running ? 5LL * 1000 : 0LL);
+        auto wait_time = (std::min)(timeout - duration_since(start_time).count(), process_running ? 5LL * 1000 : 0LL);
         if (wait_time < 0) break;
         auto wait_result =
             WaitForMultipleObjectsEx((DWORD)wait_handles.size(), wait_handles.data(), FALSE, (DWORD)wait_time, TRUE);

@@ -31,6 +31,8 @@ public:
 private:
     ResultsVec traverse_rois() const;
     ResultsVec predict(const cv::Rect& roi) const;
+    ResultsVec predict_det_and_rec(const cv::Rect& roi) const;
+    Result predict_only_rec(const cv::Rect& roi) const;
     void postproc_trim_(Result& res) const;
     void postproc_replace_(Result& res) const;
     bool filter_by_required(const Result& res) const;

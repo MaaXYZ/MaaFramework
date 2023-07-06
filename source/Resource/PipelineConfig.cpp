@@ -227,8 +227,9 @@ bool PipelineConfig::parse_recognition(const json::value& input, MAA_PIPELINE_RE
     }
 
     static const std::unordered_map<std::string, Type> kRecTypeMap = {
-        { "DirectHit", Type::DirectHit },       { "TemplateMatch", Type::TemplateMatch },
-        { "OcrDetAndRec", Type::OcrDetAndRec }, { "OcrOnlyRec", Type::OcrOnlyRec },
+        { "DirectHit", Type::DirectHit },
+        { "TemplateMatch", Type::TemplateMatch },
+        { "OCR", Type::OCR },
         { "FreezesWait", Type::FreezesWait },
     };
     auto rec_type_iter = kRecTypeMap.find(rec_type_name);
@@ -243,8 +244,7 @@ bool PipelineConfig::parse_recognition(const json::value& input, MAA_PIPELINE_RE
         return parse_direct_hit_params(input, std::get<DirectHitParams>(out_param));
     case Type::TemplateMatch:
         return parse_templ_matching_params(input, std::get<TemplMatchingParams>(out_param));
-    case Type::OcrDetAndRec:
-    case Type::OcrOnlyRec:
+    case Type::OCR:
         return parse_ocr_params(input, std::get<OcrParams>(out_param));
     case Type::FreezesWait:
         return parse_freezes_waiting_params(input, std::get<FreezesWaitingParams>(out_param));
@@ -317,6 +317,11 @@ bool PipelineConfig::parse_ocr_params(const json::value& input, MAA_VISION_NS::O
         return false;
     }
 
+    if (!get_and_check_value(input, "only_rec", output.only_rec, false)) {
+        LogError << "failed to get_and_check_value only_rec" << VAR(input);
+        return false;
+    }
+
     if (!get_and_check_value_or_array(input, "text", output.text)) {
         LogError << "failed to get_and_check_value_or_array text" << VAR(input);
         return false;
@@ -367,11 +372,6 @@ bool PipelineConfig::parse_freezes_waiting_params(const json::value& input, MAA_
     constexpr int kDefaultMethod = 3; // cv::TM_CCOEFF_NORMED
     if (!get_and_check_value(input, "method", output.method, kDefaultMethod)) {
         LogError << "failed to get_and_check_value method" << VAR(input);
-        return false;
-    }
-
-    if (!get_and_check_value(input, "wait_time", output.wait_time, uint(UINT_MAX))) {
-        LogError << "failed to get_and_check_value wait_time" << VAR(input);
         return false;
     }
 

@@ -46,10 +46,8 @@ private:
                                         const cv::Rect& cache);
     std::optional<RecResult> template_match(const cv::Mat& image, const MAA_VISION_NS::TemplMatchingParams& param,
                                             const cv::Rect& cache);
-    std::optional<RecResult> ocr_det_and_rec(const cv::Mat& image, const MAA_VISION_NS::OcrParams& param,
+    std::optional<RecResult> ocr(const cv::Mat& image, const MAA_VISION_NS::OcrParams& param,
                                              const cv::Rect& cache);
-    std::optional<RecResult> ocr_only_rec(const cv::Mat& image, const MAA_VISION_NS::OcrParams& param,
-                                          const cv::Rect& cache);
     std::optional<RecResult> freezes_wait(const cv::Mat& image, const MAA_VISION_NS::FreezesWaitingParams& param,
                                           const cv::Rect& cache);
 

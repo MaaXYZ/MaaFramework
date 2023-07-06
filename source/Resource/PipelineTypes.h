@@ -27,8 +27,7 @@ enum class Type
     Invalid = 0,
     DirectHit,
     TemplateMatch,
-    OcrDetAndRec,
-    OcrOnlyRec,
+    OCR,
     FreezesWait,
 };
 

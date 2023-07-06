@@ -44,8 +44,13 @@ OCRer::ResultOpt OCRer::analyze() const
 
 OCRer::ResultsVec OCRer::traverse_rois() const
 {
+    if (!cache_.empty()) {
+        return { predict_only_rec(cache_) };
+    }
+
     if (param_.roi.empty()) {
-        return predict(cv::Rect(0, 0, image_.cols, image_.rows));
+        cv::Rect roi(0, 0, image_.cols, image_.rows);
+        return predict(roi);
     }
 
     ResultsVec results;
@@ -58,7 +63,16 @@ OCRer::ResultsVec OCRer::traverse_rois() const
 
 OCRer::ResultsVec OCRer::predict(const cv::Rect& roi) const
 {
-    fastdeploy::vision::OCRResult ocr_result;
+    return param_.only_rec ? ResultsVec { predict_only_rec(roi) } : predict_det_and_rec(roi);
+}
+
+OCRer::ResultsVec OCRer::predict_det_and_rec(const cv::Rect& roi) const
+{
+    if (!resource()) {
+        LogError << "Resource not binded";
+        return {};
+    }
+
     auto& inferencer = resource()->ocr_cfg().ocrer();
     if (!inferencer) {
         LogError << "resource()->ocr_cfg().ocrer() is null";
@@ -67,6 +81,8 @@ OCRer::ResultsVec OCRer::predict(const cv::Rect& roi) const
     auto start_time = std::chrono::steady_clock::now();
 
     auto image_roi = image_with_roi(roi);
+
+    fastdeploy::vision::OCRResult ocr_result;
     bool ret = inferencer->Predict(image_roi, &ocr_result);
     if (!ret) {
         LogWarn << "inferencer return false" << VAR(inferencer) << VAR(image_) << VAR(roi) << VAR(image_roi);
@@ -98,10 +114,47 @@ OCRer::ResultsVec OCRer::predict(const cv::Rect& roi) const
             Result { .text = std::move(ocr_result.text.at(i)), .box = my_box, .score = ocr_result.rec_scores.at(i) });
     }
 
-    auto costs = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::steady_clock::now() - start_time);
+    auto costs = duration_since(start_time);
     LogTrace << VAR(results) << VAR(image_roi) << VAR(costs);
 
     return results;
+}
+
+OCRer::Result OCRer::predict_only_rec(const cv::Rect& roi) const
+{
+    if (!resource()) {
+        LogError << "Resource not binded";
+        return {};
+    }
+
+    auto& inferencer = resource()->ocr_cfg().recer();
+    if (!inferencer) {
+        LogError << "resource()->ocr_cfg().recer() is null";
+        return {};
+    }
+    auto start_time = std::chrono::steady_clock::now();
+
+    auto image_roi = image_with_roi(roi);
+
+    std::string rec_text;
+    float rec_score = 0;
+
+    bool ret = inferencer->Predict(image_roi, &rec_text, &rec_score);
+    if (!ret) {
+        LogWarn << "inferencer return false" << VAR(inferencer) << VAR(image_) << VAR(roi) << VAR(image_roi);
+        return {};
+    }
+
+#ifdef MAA_DEBUG
+    cv::rectangle(image_draw_, roi, cv::Scalar(0, 0, 255), 2);
+#endif
+
+    Result result { .text = std::move(rec_text), .box = roi, .score = rec_score };
+
+    auto costs = duration_since(start_time);
+    LogTrace << VAR(result) << VAR(image_roi) << VAR(costs);
+
+    return result;
 }
 
 void OCRer::postproc_trim_(Result& res) const

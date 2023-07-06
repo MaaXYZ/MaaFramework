@@ -1,5 +1,6 @@
 #pragma once
 
+#include <chrono>
 #include <cstdio>
 #include <string>
 
@@ -45,6 +46,11 @@ inline std::string get_time_filestem()
     std::string stem = get_format_time();
     string_replace_all_(stem, { { ":", "-" }, { " ", "_" }, { ".", "-" } });
     return stem;
+}
+
+inline std::chrono::milliseconds duration_since(const std::chrono::steady_clock::time_point& start_time)
+{
+    return std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::steady_clock::now() - start_time);
 }
 
 MAA_NS_END

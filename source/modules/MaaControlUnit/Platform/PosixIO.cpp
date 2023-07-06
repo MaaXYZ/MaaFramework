@@ -59,7 +59,7 @@ int PosixIO::call_command(const std::vector<std::string>& cmd, bool recv_by_sock
     MAA_PLATFORM_NS::single_page_buffer<char> sock_buffer;
 
     auto check_timeout = [&](const auto& start_time) -> bool {
-        return timeout && timeout < duration_cast<milliseconds>(steady_clock::now() - start_time).count();
+        return timeout && timeout < duration_since(start_time).count();
     };
 
     int exit_ret = 0;

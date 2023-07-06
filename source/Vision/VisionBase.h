@@ -24,8 +24,8 @@ protected:
     cv::Mat image_with_roi(const cv::Rect& roi) const;
 
 protected:
-    MAA_RES_NS::ResourceMgr* resource() const { return inst_->resource(); }
-    InstanceStatus* status() const { return inst_->status(); }
+    MAA_RES_NS::ResourceMgr* resource() const { return inst_ ? inst_->resource() : nullptr; }
+    InstanceStatus* status() const { return inst_ ? inst_->status() : nullptr; }
 
 protected:
     cv::Mat image_;

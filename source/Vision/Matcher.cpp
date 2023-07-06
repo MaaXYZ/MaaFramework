@@ -10,15 +10,20 @@ MAA_VISION_NS_BEGIN
 
 Matcher::ResultOpt Matcher::analyze() const
 {
+    if (!resource()) {
+        LogError << "Resource not binded";
+        return std::nullopt;
+    }
     if (param_.templates.size() != param_.thresholds.size()) {
         LogError << "templates.size() != thresholds.size()" << VAR(param_.templates.size())
                  << VAR(param_.thresholds.size());
         return std::nullopt;
     }
 
+    auto& templ_mgr = resource()->template_cfg();
     for (size_t i = 0; i != param_.templates.size(); ++i) {
         const std::string& name = param_.templates.at(i);
-        const cv::Mat& templ = resource()->template_cfg().get_template_image(name);
+        const cv::Mat& templ = templ_mgr.get_template_image(name);
         if (templ.empty()) {
             LogWarn << "template is empty" << VAR(name) << VAR(i) << VAR(templ);
             continue;

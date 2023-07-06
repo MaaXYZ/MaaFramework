@@ -145,10 +145,8 @@ std::optional<PipelineTask::RecResult> PipelineTask::recognize(const MAA_PIPELIN
         return direct_hit(image, std::get<DirectHitParams>(task_data.rec_params), cache);
     case Type::TemplateMatch:
         return template_match(image, std::get<TemplMatchingParams>(task_data.rec_params), cache);
-    case Type::OcrDetAndRec:
-        return ocr_det_and_rec(image, std::get<OcrParams>(task_data.rec_params), cache);
-    case Type::OcrOnlyRec:
-        return ocr_only_rec(image, std::get<OcrParams>(task_data.rec_params), cache);
+    case Type::OCR:
+        return ocr(image, std::get<OcrParams>(task_data.rec_params), cache);
     case Type::FreezesWait:
         return freezes_wait(image, std::get<FreezesWaitingParams>(task_data.rec_params), cache);
     default:
@@ -184,7 +182,7 @@ std::optional<PipelineTask::RecResult> PipelineTask::template_match(const cv::Ma
     return RecResult { .box = ret->box };
 }
 
-std::optional<PipelineTask::RecResult> PipelineTask::ocr_det_and_rec(const cv::Mat& image,
+std::optional<PipelineTask::RecResult> PipelineTask::ocr(const cv::Mat& image,
                                                                      const MAA_VISION_NS::OcrParams& param,
                                                                      const cv::Rect& cache)
 {
@@ -204,18 +202,6 @@ std::optional<PipelineTask::RecResult> PipelineTask::ocr_det_and_rec(const cv::M
     // sort_by_required_(res, param.text);
 
     return RecResult { .box = res.front().box };
-}
-
-std::optional<PipelineTask::RecResult> PipelineTask::ocr_only_rec(const cv::Mat& image,
-                                                                  const MAA_VISION_NS::OcrParams& param,
-                                                                  const cv::Rect& cache)
-{
-    // TODO
-    std::ignore = image;
-    std::ignore = param;
-    std::ignore = cache;
-
-    return std::nullopt;
 }
 
 std::optional<PipelineTask::RecResult> PipelineTask::freezes_wait(const cv::Mat& image,
