@@ -2,8 +2,8 @@
 
 #include <tuple>
 
-#include "MaaUtils/Logger.hpp"
 #include "MaaMsg.h"
+#include "MaaUtils/Logger.hpp"
 
 MAA_RES_NS_BEGIN
 
@@ -103,7 +103,7 @@ bool ResourceMgr::load(const std::filesystem::path& path)
 
     bool ret = pipeline_cfg_.load(path / "pipeline", is_base);
     ret &= template_cfg_.lazy_load(pipeline_cfg_.get_image_requirement());
-    ret &= ocr_cfg_.lazy_load(path / "ocr", is_base);
+    ret &= ocr_cfg_.lazy_load(path / "model" / "ocr", is_base);
 
     LogInfo << VAR(path) << VAR(ret);
 

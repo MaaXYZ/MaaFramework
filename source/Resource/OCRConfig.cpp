@@ -2,9 +2,9 @@
 
 #include <filesystem>
 
+#include "MaaUtils/Logger.hpp"
 #include "Utils/Demangle.hpp"
 #include "Utils/File.hpp"
-#include "MaaUtils/Logger.hpp"
 #include "Utils/Platform.hpp"
 #include "Utils/Ranges.hpp"
 #include "Utils/StringMisc.hpp"
@@ -25,17 +25,15 @@ bool OCRConfig::lazy_load(const std::filesystem::path& path, bool is_base)
     }
 
     using namespace path_literals;
-    const auto det_dir = path / "det"_p;
-    const auto det_model_file = det_dir / "inference.onnx"_p;
+    const auto det_model_file = path / "det.onnx"_p;
 
     if (std::filesystem::exists(det_model_file) && det_model_path_ != det_model_file) {
         det_model_path_ = det_model_file;
         deter_ = nullptr;
     }
 
-    const auto rec_dir = path / "rec"_p;
-    const auto rec_model_file = rec_dir / "inference.onnx"_p;
-    const auto rec_label_file = rec_dir / "keys.txt"_p;
+    const auto rec_model_file = path / "rec.onnx"_p;
+    const auto rec_label_file = path / "keys.txt"_p;
 
     if (std::filesystem::exists(rec_model_file) && rec_model_path_ != rec_model_file) {
         rec_model_path_ = rec_model_file;
