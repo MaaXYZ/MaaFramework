@@ -52,7 +52,7 @@ bool PipelineTask::set_param(const json::value& param)
 {
     LogFunc << VAR(param);
 
-    return false;
+    return true;
 }
 
 PipelineTask::RunningResult PipelineTask::find_first_and_run(const std::vector<std::string>& list,
@@ -129,9 +129,6 @@ std::optional<PipelineTask::RecResult> PipelineTask::recognize(const MAA_PIPELIN
         LogError << "Controller not binded";
         return std::nullopt;
     }
-
-    cv::Mat image = controller()->screencap();
-
     if (!status()) {
         LogError << "Status not binded";
         return std::nullopt;
@@ -143,11 +140,15 @@ std::optional<PipelineTask::RecResult> PipelineTask::recognize(const MAA_PIPELIN
 
     switch (task_data.rec_type) {
     case Type::DirectHit:
-        return direct_hit(image, std::get<DirectHitParams>(task_data.rec_params), cache);
-    case Type::TemplateMatch:
+        return direct_hit(cv::Mat(), std::get<DirectHitParams>(task_data.rec_params), cache);
+    case Type::TemplateMatch: {
+        cv::Mat image = controller()->screencap();
         return template_match(image, std::get<TemplMatchingParams>(task_data.rec_params), cache);
-    case Type::OCR:
+    }
+    case Type::OCR: {
+        cv::Mat image = controller()->screencap();
         return ocr(image, std::get<OcrParams>(task_data.rec_params), cache);
+    }
     default:
         LogError << "Unknown type" << VAR(static_cast<int>(task_data.rec_type));
         return std::nullopt;

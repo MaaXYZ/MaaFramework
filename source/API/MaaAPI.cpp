@@ -233,7 +233,7 @@ MaaSize MaaControllerGetImage(MaaControllerHandle ctrl, void* buff, MaaSize buff
     if (!ctrl || !buff) {
         return MaaNullSize;
     }
-    auto image = ctrl->get_image();
+    auto image = ctrl->get_image_cache();
     size_t size = image.size();
     if (size >= buff_size) {
         return MaaNullSize;
@@ -308,7 +308,6 @@ MaaBool MaaBindController(MaaInstanceHandle inst, MaaControllerHandle ctrl)
 
 MaaBool MaaInited(MaaInstanceHandle inst)
 {
-    LogFunc << VAR_VOIDP(inst);
     if (!inst) {
         return false;
     }

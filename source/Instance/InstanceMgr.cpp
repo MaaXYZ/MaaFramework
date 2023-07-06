@@ -36,8 +36,7 @@ bool InstanceMgr::bind_resource(MaaResourceAPI* resource)
     }
 
     if (!resource->loaded()) {
-        LogError << "Resource not loaded";
-        return false;
+        LogWarn << "Resource not loaded";
     }
 
     if (resource_) {
@@ -58,8 +57,7 @@ bool InstanceMgr::bind_controller(MaaControllerAPI* controller)
     }
 
     if (!controller->connected()) {
-        LogError << "Controller not connected";
-        return false;
+        LogWarn << "Controller not connected";
     }
 
     if (controller_) {

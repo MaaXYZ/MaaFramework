@@ -63,7 +63,10 @@ bool MinicapStream::init(int w, int h)
     // TODO: 解决大端底的情况
     MinicapHeader header;
 
-    take_out(&header, sizeof(header));
+    if (!take_out(&header, sizeof(header))) {
+        LogError << "take_out header failed";
+        return false;
+    }
 
     LogInfo << VAR(header.version) << VAR(header.size) << VAR(header.pid) << VAR(header.real_width)
             << VAR(header.real_height) << VAR(header.virt_width) << VAR(header.virt_height) << VAR(header.orientation)
@@ -78,7 +81,10 @@ bool MinicapStream::init(int w, int h)
         return false;
     }
 
-    take_out(nullptr, header.size - sizeof(header));
+    if (!take_out(nullptr, header.size - sizeof(header))) {
+        LogError << "take_out header failed";
+        return false;
+    }
 
     return true;
 }
@@ -92,32 +98,51 @@ std::optional<cv::Mat> MinicapStream::screencap()
     }
 
     uint32_t size;
-    take_out(&size, 4);
+    if (!take_out(&size, 4)) {
+        LogError << "take_out size failed";
+        return std::nullopt;
+    }
 
-    read_until(size);
+    if (!read_until(size)) {
+        LogError << "read_until size failed";
+        return std::nullopt;
+    }
 
     auto data = std::move(buffer_);
     buffer_.clear();
 
-    return screencap_helper_.process_data(data, std::bind(&ScreencapHelper::decode_jpg, &screencap_helper_, std::placeholders::_1));
+    return screencap_helper_.process_data(
+        data, std::bind(&ScreencapHelper::decode_jpg, &screencap_helper_, std::placeholders::_1));
 }
 
-void MinicapStream::read_until(size_t size)
+bool MinicapStream::read_until(size_t size)
 {
-    // TODO: 出问题了记得退出
-    while (buffer_.size() < size) {
+    LogFunc;
+
+    using namespace std::chrono_literals;
+    auto start = std::chrono::steady_clock::now();
+
+    while (buffer_.size() < size && duration_since(start) < 5s) {
         auto ret = stream_handle_->read(2, size - buffer_.size());
         buffer_.insert(buffer_.end(), ret.begin(), ret.end());
     }
+
+    return buffer_.size() == size;
 }
 
-void MinicapStream::take_out(void* out, size_t size)
+bool MinicapStream::take_out(void* out, size_t size)
 {
-    read_until(size);
+    LogFunc;
+
+    if (!read_until(size)) {
+        return false;
+    }
     if (out) {
         memcpy(out, buffer_.c_str(), size);
     }
-    buffer_.erase(buffer_.begin(), buffer_.begin() + size);
+    buffer_.erase(0, size);
+
+    return true;
 }
 
 MAA_CTRL_UNIT_NS_END

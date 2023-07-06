@@ -39,7 +39,7 @@ typedef MaaOption MaaGlobalOption;
 enum MaaGlobalOptionEnum
 {
     MaaGlobalOption_Invalid = 0,
-    MaaGlobalOption_Logging = 1,
+    MaaGlobalOption_Logging = 1, // value: log dir
 };
 
 typedef MaaOption MaaResOption;
@@ -52,6 +52,7 @@ typedef MaaOption MaaCtrlOption;
 enum MaaCtrlOptionEnum
 {
     MaaCtrlOption_Invalid = 0,
+    MaaCtrlOption_ScreenshotTargetResolution = 1, // value: "width height", e.g. "1920 1080"
 };
 
 typedef MaaOption MaaInstOption;

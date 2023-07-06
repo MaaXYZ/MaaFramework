@@ -45,7 +45,7 @@ public:
     virtual MaaStatus wait(MaaCtrlId ctrl_id) const = 0;
     virtual MaaBool connected() const = 0;
 
-    virtual std::vector<uint8_t> get_image() const = 0;
+    virtual std::vector<uint8_t> get_image_cache() const = 0;
 
     virtual std::string get_uuid() const = 0;
 };

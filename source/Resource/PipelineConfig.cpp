@@ -28,18 +28,22 @@ bool PipelineConfig::load(const std::filesystem::path& path, bool is_base)
         }
     }
 
+    bool loaded = false;
     if (std::filesystem::is_directory(path)) {
-        for (auto& entry : std::filesystem::directory_iterator(path)) {
-            bool ret = open_and_parse_file(entry.path());
-            if (!ret) {
+        for (auto& entry : std::filesystem::recursive_directory_iterator(path)) {
+            if (!entry.is_regular_file() || entry.path().extension() != ".json") {
+                continue;
+            }
+            loaded = open_and_parse_file(entry.path());
+            if (!loaded) {
                 LogError << "open_and_parse_file failed" << VAR(entry.path());
                 return false;
             }
         }
     }
-    else if (std::filesystem::is_regular_file(path)) {
-        bool ret = open_and_parse_file(path);
-        if (!ret) {
+    else if (std::filesystem::is_regular_file(path) && path.extension() == ".json") {
+        loaded = open_and_parse_file(path);
+        if (!loaded) {
             LogError << "open_and_parse_file failed" << VAR(path);
             return false;
         }
@@ -49,7 +53,7 @@ bool PipelineConfig::load(const std::filesystem::path& path, bool is_base)
         return false;
     }
 
-    return true;
+    return loaded;
 }
 
 void PipelineConfig::clear()
@@ -240,10 +244,13 @@ bool PipelineConfig::parse_recognition(const json::value& input, MAA_PIPELINE_RE
 
     switch (out_type) {
     case Type::DirectHit:
+        out_param = DirectHitParams {};
         return parse_direct_hit_params(input, std::get<DirectHitParams>(out_param));
     case Type::TemplateMatch:
+        out_param = TemplMatchingParams {};
         return parse_templ_matching_params(input, std::get<TemplMatchingParams>(out_param));
     case Type::OCR:
+        out_param = OcrParams {};
         return parse_ocr_params(input, std::get<OcrParams>(out_param));
     default:
         return false;
@@ -415,10 +422,13 @@ bool PipelineConfig::parse_action(const json::value& input, MAA_PIPELINE_RES_NS:
     case Type::DoNothing:
         return true;
     case Type::Click:
+        out_param = ClickParams {};
         return parse_click(input, std::get<ClickParams>(out_param));
     case Type::Swipe:
+        out_param = SwipeParams {};
         return parse_swipe(input, std::get<SwipeParams>(out_param));
     case Type::WaitFreezes:
+        out_param = WaitFreezesParams {};
         return parse_wait_freezes_params(input, std::get<WaitFreezesParams>(out_param));
     default:
         return false;

@@ -30,9 +30,23 @@ ControllerMgr::~ControllerMgr()
 
 bool ControllerMgr::set_option(MaaCtrlOption key, const std::string& value)
 {
-    std::ignore = key;
-    std::ignore = value;
-    return false;
+    LogInfo << VAR(key) << VAR(value);
+
+    switch (key) {
+    case MaaCtrlOption_ScreenshotTargetResolution: {
+        std::stringstream ss(value);
+        ss >> image_target_width_ >> image_target_height_;
+        LogInfo << VAR(image_target_width_) << VAR(image_target_height_);
+        if (image_target_width_ <= 0 || image_target_height_ <= 0) {
+            LogError << "Invalid target resolution" << VAR(image_target_width_) << VAR(image_target_height_);
+            return false;
+        }
+        return true;
+    }
+    default:
+        LogError << "Unknown key" << VAR(key) << VAR(value);
+        return false;
+    }
 }
 
 MaaCtrlId ControllerMgr::post_connection()
@@ -90,7 +104,7 @@ MaaBool ControllerMgr::connected() const
     return connected_;
 }
 
-std::vector<uint8_t> ControllerMgr::get_image() const
+std::vector<uint8_t> ControllerMgr::get_image_cache() const
 {
     std::vector<uint8_t> buff;
     cv::imencode("png", image_, buff);
@@ -118,7 +132,7 @@ void ControllerMgr::swipe(const cv::Point& p1, const cv::Point& p2, int duration
     constexpr int SampleDelay = 2;
 
     SwipeParams params;
-    auto cs = CubicSpline::smooth_in_out(1, 1); // TODO: �Ӹ�������
+    auto cs = CubicSpline::smooth_in_out(1, 1);
     for (int i = 0; i < duration; i += SampleDelay) {
         auto progress = cs(static_cast<double>(i) / duration);
         int x = static_cast<int>(round(std::lerp(p1.x, p2.x, progress)));
@@ -149,9 +163,11 @@ bool ControllerMgr::run_action(typename AsyncRunner<Action>::Id id, Action actio
     case Action::Type::swipe:
         _swipe(std::get<SwipeParams>(action.params));
         return true;
-    case Action::Type::screencap:
-        image_ = _screencap();
+    case Action::Type::screencap: {
+        cv::Mat temp = _screencap();
+        cv::resize(temp, image_, { image_target_width_, image_target_height_ });
         return !image_.empty();
+    }
     }
 
     return false;

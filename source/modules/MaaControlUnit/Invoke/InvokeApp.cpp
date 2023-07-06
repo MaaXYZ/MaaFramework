@@ -1,6 +1,7 @@
 #include "InvokeApp.h"
 
 #include "MaaUtils/Logger.hpp"
+#include "Utils/Platform.hpp"
 #include "Utils/TempPath.hpp"
 
 MAA_CTRL_UNIT_NS_BEGIN
@@ -67,7 +68,8 @@ bool InvokeApp::push(const std::string& path)
         return false;
     }
 
-    merge_replacement({ { "{BIN_PATH}", path }, { "{BIN_WORKING_FILE}", tempname_ } });
+    std::string absolute_path = path_to_crt_string(std::filesystem::absolute(MAA_NS::path(path)));
+    merge_replacement({ { "{BIN_PATH}", absolute_path }, { "{BIN_WORKING_FILE}", tempname_ } });
     auto cmd_ret = command(push_bin_argv_.gen(argv_replace_));
 
     if (!cmd_ret) {

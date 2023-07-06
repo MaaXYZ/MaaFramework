@@ -18,8 +18,8 @@ public: // from ScreencapAPI
     virtual std::optional<cv::Mat> screencap() override;
 
 private:
-    void read_until(size_t size);
-    void take_out(void* out, size_t size);
+    bool read_until(size_t size);
+    bool take_out(void* out, size_t size);
 
     Argv forward_argv_;
 

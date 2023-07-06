@@ -70,7 +70,7 @@ public:
     virtual MaaStatus wait(MaaCtrlId ctrl_id) const override;
     virtual MaaBool connected() const override;
 
-    virtual std::vector<uint8_t> get_image() const override;
+    virtual std::vector<uint8_t> get_image_cache() const override;
     virtual std::string get_uuid() const override = 0;
 
 public:
@@ -102,6 +102,8 @@ private:
     bool connected_ = false;
     std::mutex image_mutex_;
     cv::Mat image_;
+    int image_target_width_ = 1280;
+    int image_target_height_ = 720;
 
     std::unique_ptr<AsyncRunner<Action>> action_runner_ = nullptr;
 };
