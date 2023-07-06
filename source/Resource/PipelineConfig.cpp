@@ -269,7 +269,7 @@ bool PipelineConfig::parse_templ_matching_params(const json::value& input, MAA_V
         return false;
     }
 
-    if (!get_and_check_value_or_array(input, "templates", output.templates)) {
+    if (!get_and_check_value_or_array(input, "template", output.templates)) {
         LogError << "failed to get_and_check_value_or_array templates" << VAR(input);
         return false;
     }
@@ -448,6 +448,11 @@ bool PipelineConfig::parse_swipe(const json::value& input, MAA_PIPELINE_RES_NS::
         LogError << "failed to parse_action_target end" << VAR(input);
         return false;
     }
+    if (output.begin == MAA_PIPELINE_RES_NS::Action::Target::Self &&
+        output.end == MAA_PIPELINE_RES_NS::Action::Target::Self) {
+        LogError << "not set swipe begin or end";
+        return false;
+    }
 
     constexpr uint kDefaultDuration = 200;
     if (!get_and_check_value(input, "duration", output.duration, kDefaultDuration)) {
@@ -471,7 +476,7 @@ bool PipelineConfig::parse_wait_freezes_params(const json::value& input,
     //     return false;
     // }
 
-    constexpr double kDefaultThreshold = 0.8;
+    constexpr double kDefaultThreshold = 0.95;
     if (!get_and_check_value(input, "threshold", output.threshold, kDefaultThreshold)) {
         LogError << "failed to get_and_check_value threshold" << VAR(input);
         return false;
