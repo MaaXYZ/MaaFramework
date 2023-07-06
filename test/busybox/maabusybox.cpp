@@ -7,6 +7,7 @@
 
 #include <cxxopts/cxxopts.hpp>
 
+#include "MaaAPI.h"
 #include "MaaControlUnit/ControlUnitAPI.h"
 #include "MaaUtils/Logger.hpp"
 #include "Utils/NoWarningCV.h"
@@ -60,6 +61,44 @@ double test_screencap(std::shared_ptr<MAA_CTRL_UNIT_NS::ScreencapAPI> scp, int c
     double cost = sum.count() / double(count);
     std::cout << "average time cost: " << cost << "ms" << std::endl;
     return cost;
+}
+
+bool demo_waiting(const std::filesystem::path& cur_dir, const std::string& adb, const std::string& adb_address,
+                  const std::string& adb_config, const std::string& task)
+{
+    auto maa_handle = MaaCreate(nullptr, nullptr);
+    auto resource_handle = MaaResourceCreate((cur_dir / "cache").string().c_str(), nullptr, nullptr);
+    auto controller_handle =
+        MaaAdbControllerCreate(adb.c_str(), adb_address.c_str(),
+                               MaaAdbControllerType_Input_Preset_Minitouch | MaaAdbControllerType_Screencap_FastestWay,
+                               adb_config.c_str(), nullptr, nullptr);
+
+    MaaBindResource(maa_handle, resource_handle);
+    MaaBindController(maa_handle, controller_handle);
+
+    auto resource_id = MaaResourcePostResource(resource_handle, (cur_dir / "resource").string().c_str());
+    auto connection_id = MaaControllerPostConnection(controller_handle);
+
+    MaaResourceWait(resource_handle, resource_id);
+    MaaControllerWait(controller_handle, connection_id);
+
+    auto destroy = [&]() {
+        MaaDestroy(&maa_handle);
+        MaaResourceDestroy(&resource_handle);
+        MaaControllerDestroy(&controller_handle);
+    };
+
+    if (!MaaInited(maa_handle)) {
+        destroy();
+        return false;
+    }
+
+    auto task_id = MaaPostTask(maa_handle, task.c_str(), MaaTaskParam_Empty);
+    MaaTaskWait(maa_handle, task_id);
+
+    destroy();
+
+    return true;
 }
 
 int main(int argc, char* argv[])
@@ -117,7 +156,11 @@ int main(int argc, char* argv[])
 
     using namespace MAA_CTRL_UNIT_NS;
 
-    if (cmd == "connect") {
+    if (cmd == "task") {
+        auto task = result["subcommand"].as<std::string>();
+        LogInfo << demo_waiting(std::filesystem::current_path(), adb, adb_address, config, task);
+    }
+    else if (cmd == "connect") {
         auto connection = create_adb_connection(adb.c_str(), adb_address.c_str(), 0, config.c_str());
         if (!connection) {
             LogError << "Failed to create connection";

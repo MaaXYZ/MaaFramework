@@ -1,3 +1,13 @@
 {
-    "EmptyTask": {}
+    "EmptyTask": {},
+    "ClickTest": {
+        "name": "ClickTest",
+        "action": "Click",
+        "target": [
+            0,
+            0,
+            0,
+            0
+        ]
+    }
 }
