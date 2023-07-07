@@ -46,7 +46,7 @@ public: // from KeyInputAPI
     virtual bool press_key(int key) override;
 
 private:
-    void scale_point(int& x, int& y);
+    std::pair<int, int> scale_point(int x, int y);
 
     std::shared_ptr<InvokeApp> invoke_app_ = std::make_shared<InvokeApp>();
     std::shared_ptr<IOHandler> shell_handler_ = nullptr;

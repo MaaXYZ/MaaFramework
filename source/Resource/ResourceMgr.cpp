@@ -102,7 +102,6 @@ bool ResourceMgr::load(const std::filesystem::path& path)
     bool is_base = props.get("is_base", false);
 
     bool ret = pipeline_cfg_.load(path / "pipeline", is_base);
-    ret &= template_cfg_.lazy_load(pipeline_cfg_.get_image_requirement());
     ret &= ocr_cfg_.lazy_load(path / "model" / "ocr", is_base);
 
     LogInfo << VAR(path) << VAR(ret);

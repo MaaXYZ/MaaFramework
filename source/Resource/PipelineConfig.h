@@ -3,11 +3,13 @@
 #include "Base/NonCopyable.hpp"
 
 #include <filesystem>
+#include <set>
 
 #include <meojson/json.hpp>
 
 #include "Common/MaaConf.h"
 #include "PipelineTypes.h"
+#include "TemplateConfig.h"
 
 MAA_RES_NS_BEGIN
 
@@ -16,13 +18,14 @@ class PipelineConfig : public NonCopyable
 public:
     bool load(const std::filesystem::path& path, bool is_base);
     void clear();
-    const auto& get_image_requirement() const { return image_requirement_; }
 
 public:
-    const auto& get_data(const std::string& task_name) const { return raw_data_.at(task_name); }
+    const MAA_PIPELINE_RES_NS::TaskData& get_task_data(const std::string& task_name) const;
 
 private:
     bool open_and_parse_file(const std::filesystem::path& path);
+    bool load_template_images(const std::filesystem::path& path);
+
     bool parse_json(const json::value& input);
     bool parse_task(const std::string& name, const json::value& input);
 
@@ -46,8 +49,12 @@ private:
                              MAA_PIPELINE_RES_NS::Action::TargetParam& output_param);
 
 private:
-    std::unordered_map<std::string, MAA_PIPELINE_RES_NS::TaskData> raw_data_;
-    std::map<std::string, std::filesystem::path> image_requirement_;
+    using TaskDataMap = std::map<std::string, MAA_PIPELINE_RES_NS::TaskData>;
+
+    TaskDataMap raw_data_;
+    mutable TaskDataMap processed_data_;
+
+    TemplateConfig template_mgr_;
 };
 
 MAA_RES_NS_END

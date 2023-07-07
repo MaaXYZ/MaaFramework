@@ -126,11 +126,11 @@ public:
                 json::value jtmp;
                 for (auto&& val : value) {
                     if constexpr (std::is_constructible_v<json::value, value_stream_type>) {
-                        jtmp.emplace(to_stream(std::forward<value_type>(val)));
+                        jtmp.emplace(to_stream(std::forward<decltype(val)>(val)));
                     }
                     else {
                         std::stringstream val_ss;
-                        val_ss << to_stream(std::forward<value_type>(val));
+                        val_ss << to_stream(std::forward<decltype(val)>(val));
                         jtmp.emplace(std::move(val_ss).str());
                     }
                 }
@@ -155,11 +155,11 @@ public:
                     }
 
                     if constexpr (std::is_constructible_v<json::value, mapped_stream_type>) {
-                        jtmp.emplace(std::move(strkey), to_stream(std::forward<mapped_type>(val)));
+                        jtmp.emplace(std::move(strkey), to_stream(std::forward<decltype(val)>(val)));
                     }
                     else {
                         std::stringstream val_ss;
-                        val_ss << to_stream(std::forward<mapped_type>(val));
+                        val_ss << to_stream(std::forward<decltype(val)>(val));
                         jtmp.emplace(std::move(strkey), std::move(val_ss).str());
                     }
                 }

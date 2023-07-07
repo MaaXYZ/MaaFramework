@@ -1,7 +1,6 @@
 #include "Matcher.h"
 
 #include "MaaUtils/Logger.hpp"
-#include "Resource/ResourceMgr.h"
 #include "Utils/NoWarningCV.h"
 #include "Utils/StringMisc.hpp"
 #include "VisionUtils.hpp"
@@ -14,22 +13,26 @@ Matcher::ResultOpt Matcher::analyze() const
         LogError << "Resource not binded";
         return std::nullopt;
     }
-    if (param_.templates.size() != param_.thresholds.size()) {
-        LogError << "templates.size() != thresholds.size()" << VAR(param_.templates.size())
+    if (param_.template_images.empty()) {
+        LogError << "templates is empty" << VAR(param_.template_paths);
+        return std::nullopt;
+    }
+
+    if (param_.template_images.size() != param_.thresholds.size()) {
+        LogError << "templates.size() != thresholds.size()" << VAR(param_.template_images.size())
                  << VAR(param_.thresholds.size());
         return std::nullopt;
     }
 
-    auto& templ_mgr = resource()->template_cfg();
-    for (size_t i = 0; i != param_.templates.size(); ++i) {
-        const std::string& name = param_.templates.at(i);
-        const cv::Mat& templ = templ_mgr.get_template_image(name);
+    for (size_t i = 0; i != param_.template_images.size(); ++i) {
+        const cv::Mat& templ = param_.template_images.at(i);
         if (templ.empty()) {
-            LogWarn << "template is empty" << VAR(name) << VAR(i) << VAR(templ);
+            LogWarn << "template is empty" << VAR(param_.template_paths) << VAR(i) << VAR(templ);
             continue;
         }
         double threshold = param_.thresholds.at(i);
 
+        LogTrace << param_.template_paths.at(i) << VAR(i) << VAR(threshold);
         auto ret = traverse_rois(templ, threshold);
         if (ret) {
             return ret;
@@ -61,7 +64,10 @@ Matcher::ResultOpt Matcher::traverse_rois(const cv::Mat& templ, double threshold
 
 Matcher::ResultOpt Matcher::match_and_postproc(const cv::Rect& roi, const cv::Mat& templ, double threshold) const
 {
-    cv::Mat matched = match_template(image_with_roi(roi), templ, param_.method, param_.green_mask);
+    auto start = std::chrono::steady_clock::now();
+
+    cv::Mat image = image_with_roi(roi);
+    cv::Mat matched = match_template(image, templ, param_.method, param_.green_mask);
     if (matched.empty()) {
         return std::nullopt;
     }
@@ -73,11 +79,18 @@ Matcher::ResultOpt Matcher::match_and_postproc(const cv::Rect& roi, const cv::Ma
     if (std::isnan(max_val) || std::isinf(max_val)) {
         max_val = 0;
     }
+
     if (max_val < threshold) {
         return std::nullopt;
     }
 
     cv::Rect box(max_loc.x + roi.x, max_loc.y + roi.y, templ.cols, templ.rows);
+
+    if (max_val > threshold * 0.7) {
+        auto costs = duration_since(start);
+        LogTrace << VAR(box) << VAR(max_val) << VAR(costs);
+    }
+
     return Result { .box = box, .score = max_val };
 }
 

@@ -30,7 +30,7 @@ public:
 
 public:
     const auto& pipeline_cfg() const { return pipeline_cfg_; }
-    const auto& template_cfg() const { return template_cfg_; }
+    // const auto& template_cfg() const { return template_cfg_; }
     const auto& ocr_cfg() const { return ocr_cfg_; }
 
 private:
@@ -39,7 +39,7 @@ private:
 
 private:
     PipelineConfig pipeline_cfg_;
-    TemplateConfig template_cfg_;
+    // TemplateConfig template_cfg_;
     OCRConfig ocr_cfg_;
 
 private:

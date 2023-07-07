@@ -141,6 +141,7 @@ bool MinitouchInput::init(int swidth, int sheight)
 bool MinitouchInput::click(int x, int y)
 {
     if (!shell_handler_) {
+        LogError << "shell handler not ready";
         return false;
     }
 
@@ -150,12 +151,15 @@ bool MinitouchInput::click(int x, int y)
         y = std::clamp(y, 0, height_ - 1);
     }
 
-    scale_point(x, y);
+    auto [real_x, real_y] = scale_point(x, y);
 
-    bool res = shell_handler_->write(std::format("d {} {} {} {}\nc\n", 0, x, y, press_)) &&
+    LogInfo << VAR(x) << VAR(y) << VAR(real_x) << VAR(real_y);
+
+    bool res = shell_handler_->write(std::format("d {} {} {} {}\nc\n", 0, real_x, real_y, press_)) &&
                shell_handler_->write(std::format("u\nc\n"));
 
     if (!res) {
+        LogError << "click failed";
         return false;
     }
 
@@ -172,8 +176,7 @@ bool MinitouchInput::swipe(const std::vector<SwipeStep>& steps)
     // 检查第一个点的位置?
     {
         auto first = steps[0];
-        int x = first.x, y = first.y;
-        scale_point(x, y);
+        auto [x, y] = scale_point(first.x, first.y);
         auto now = std::chrono::steady_clock::now();
         if (!shell_handler_->write(std::format("d {} {} {} {}\nc\n", 0, x, y, press_))) {
             return false;
@@ -202,10 +205,9 @@ bool MinitouchInput::swipe(const std::vector<SwipeStep>& steps)
     return shell_handler_->write("u\nc\n");
 }
 
-void MinitouchInput::scale_point(int& x, int& y)
+std::pair<int, int> MinitouchInput::scale_point(int x, int y)
 {
-    x = static_cast<int>(round(x * xscale_));
-    y = static_cast<int>(round(y * yscale_));
+    return std::make_pair(static_cast<int>(round(x * xscale_)), static_cast<int>(round(y * yscale_)));
 }
 
 MAA_CTRL_UNIT_NS_END

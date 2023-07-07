@@ -17,7 +17,8 @@ struct DirectHitParams
 struct TemplMatchingParams
 {
     std::vector<cv::Rect> roi;
-    std::vector<std::string> templates;
+    std::vector<std::string> template_paths;
+    std::vector<cv::Mat> template_images;
     std::vector<double> thresholds;
     int method = 0;
     bool green_mask = false;

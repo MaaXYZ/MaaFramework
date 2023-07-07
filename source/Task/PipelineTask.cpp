@@ -20,7 +20,7 @@ bool PipelineTask::run()
     }
 
     const auto& data_mgr = resource()->pipeline_cfg();
-    auto cur_task = data_mgr.get_data(first_task_);
+    auto cur_task = data_mgr.get_task_data(first_task_);
     std::vector<std::string> next_list = { first_task_ };
 
     RunningResult ret = RunningResult::Success;
@@ -64,6 +64,8 @@ PipelineTask::RunningResult PipelineTask::find_first_and_run(const std::vector<s
         return RunningResult::InternalError;
     }
 
+    LogFunc << VAR(list) << VAR(find_timeout);
+
     FoundResult result;
 
     auto start_time = std::chrono::steady_clock::now();
@@ -85,12 +87,17 @@ PipelineTask::RunningResult PipelineTask::find_first_and_run(const std::vector<s
         return RunningResult::Interrupted;
     }
     const std::string& name = result.task_data.name;
+    LogInfo << "Task found:" << name << VAR(result.rec.box);
 
     uint64_t run_times = status()->get_pipeline_run_times(name);
     if (result.task_data.times_limit <= run_times) {
+        LogInfo << "Task runout:" << name;
+
         found_data = std::move(result.task_data);
         return RunningResult::Runout;
     }
+
+    LogInfo << "Task start to act:" << name;
 
     start_to_act(result);
 
@@ -110,7 +117,7 @@ std::optional<PipelineTask::FoundResult> PipelineTask::find_first(const std::vec
     const auto& data_mgr = resource()->pipeline_cfg();
 
     for (const std::string& name : list) {
-        const auto& task_data = data_mgr.get_data(name);
+        const auto& task_data = data_mgr.get_task_data(name);
         auto rec_opt = recognize(task_data);
         if (!rec_opt) {
             continue;

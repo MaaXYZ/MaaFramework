@@ -23,9 +23,11 @@ bool TapTouchInput::click(int x, int y)
     LogFunc;
 
     merge_replacement({ { "{X}", std::to_string(x) }, { "{Y}", std::to_string(y) } });
+
+    LogTrace << VAR(x) << VAR(y);
     auto cmd_ret = command(click_argv_.gen(argv_replace_));
 
-    return cmd_ret.has_value() && cmd_ret.value().empty();
+    return cmd_ret && cmd_ret->empty();
 }
 
 bool TapTouchInput::swipe(const std::vector<SwipeStep>& steps)

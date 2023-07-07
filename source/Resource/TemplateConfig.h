@@ -13,17 +13,18 @@ MAA_RES_NS_BEGIN
 class TemplateConfig : public NonCopyable
 {
 public:
-    bool lazy_load(const std::string& name, const std::filesystem::path& path);
-    bool lazy_load(const std::map<std::string, std::filesystem::path>& path_map);
+    bool lazy_load(const std::string& name, const std::vector<std::filesystem::path>& paths);
     void clear();
 
 public:
-    const cv::Mat& get_template_image(const std::string& name) const;
+    const std::vector<cv::Mat>& get_template_images(const std::string& name) const;
 
 private:
     // for lazy load
-    std::map<std::string, std::filesystem::path> template_paths_;
-    mutable std::map<std::string, cv::Mat> template_cache_;
+    using Paths = std::map<std::string, std::vector<std::filesystem::path>>;
+    Paths template_paths_;
+
+    mutable std::map<std::string, std::vector<cv::Mat>> template_cache_;
     mutable std::map<std::filesystem::path, cv::Mat> template_bank_;
 };
 

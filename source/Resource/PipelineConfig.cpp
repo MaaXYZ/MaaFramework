@@ -53,6 +53,8 @@ bool PipelineConfig::load(const std::filesystem::path& path, bool is_base)
         return false;
     }
 
+    loaded &= load_template_images(path);
+
     return loaded;
 }
 
@@ -61,6 +63,32 @@ void PipelineConfig::clear()
     LogFunc;
 
     raw_data_.clear();
+}
+
+const MAA_PIPELINE_RES_NS::TaskData& PipelineConfig::get_task_data(const std::string& task_name) const
+{
+    if (processed_data_.find(task_name) == processed_data_.end()) {
+        if (auto raw_iter = raw_data_.find(task_name); raw_iter != raw_data_.end()) {
+            processed_data_.emplace(*raw_iter);
+        }
+        else {
+            LogError << "Invalid task name" << VAR(task_name);
+            static MAA_PIPELINE_RES_NS::TaskData empty;
+            return empty;
+        }
+    }
+
+    auto task_iter = processed_data_.find(task_name);
+
+    auto& task_data = task_iter->second;
+    if (task_data.rec_type == MAA_PIPELINE_RES_NS::Recognition::Type::TemplateMatch) {
+        auto& images = std::get<MAA_VISION_NS::TemplMatchingParams>(task_data.rec_params).template_images;
+        if (images.empty()) {
+            images = template_mgr_.get_template_images(task_name);
+        }
+    }
+
+    return task_data;
 }
 
 bool PipelineConfig::open_and_parse_file(const std::filesystem::path& path)
@@ -74,6 +102,27 @@ bool PipelineConfig::open_and_parse_file(const std::filesystem::path& path)
     }
 
     return parse_json(*json_opt);
+}
+
+bool PipelineConfig::load_template_images(const std::filesystem::path& path)
+{
+    LogFunc << VAR(path);
+
+    for (const auto& [name, task_data] : raw_data_) {
+        if (task_data.rec_type != MAA_PIPELINE_RES_NS::Recognition::Type::TemplateMatch) {
+            continue;
+        }
+        const auto& relatives = std::get<MAA_VISION_NS::TemplMatchingParams>(task_data.rec_params).template_paths;
+        std::vector<std::filesystem::path> paths;
+        ranges::transform(relatives, std::back_inserter(paths),
+                          [&](const std::string& rlt) { return path / MAA_NS::path(rlt); });
+        bool ret = template_mgr_.lazy_load(name, paths);
+        if (!ret) {
+            LogError << "template_cfg_.lazy_load failed" << VAR(name) << VAR(paths);
+            return false;
+        }
+    }
+    return true;
 }
 
 bool PipelineConfig::parse_json(const json::value& input)
@@ -276,11 +325,11 @@ bool PipelineConfig::parse_templ_matching_params(const json::value& input, MAA_V
         return false;
     }
 
-    if (!get_and_check_value_or_array(input, "template", output.templates)) {
+    if (!get_and_check_value_or_array(input, "template", output.template_paths)) {
         LogError << "failed to get_and_check_value_or_array templates" << VAR(input);
         return false;
     }
-    if (output.templates.empty()) {
+    if (output.template_paths.empty()) {
         LogError << "templates is empty" << VAR(input);
         return false;
     }
@@ -291,11 +340,11 @@ bool PipelineConfig::parse_templ_matching_params(const json::value& input, MAA_V
     }
 
     if (output.thresholds.empty()) {
-        constexpr double kDefaultThreshold = 0.8;
-        output.thresholds = std::vector(output.templates.size(), kDefaultThreshold);
+        constexpr double kDefaultThreshold = 0.95;
+        output.thresholds = std::vector(output.template_paths.size(), kDefaultThreshold);
     }
-    else if (output.templates.size() != output.thresholds.size()) {
-        LogError << "templates.size() != thresholds.size()" << VAR(output.templates.size())
+    else if (output.template_paths.size() != output.thresholds.size()) {
+        LogError << "templates.size() != thresholds.size()" << VAR(output.template_paths.size())
                  << VAR(output.thresholds.size());
         return false;
     }
