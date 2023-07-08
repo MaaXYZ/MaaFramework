@@ -126,4 +126,28 @@ cv::Mat CustomController::_screencap()
     return res;
 }
 
+bool CustomController::_start_app(AppParams param)
+{
+    LogFunc << VAR_VOIDP(handle_) << VAR_VOIDP(handle_->start_app) << VAR(param.package);
+
+    if (!handle_ || !handle_->start_app) {
+        LogError << "handle_ or handle_->start_app is nullptr";
+        return false;
+    }
+
+    return handle_->start_app(param.package.c_str());
+}
+
+bool CustomController::_stop_app(AppParams param)
+{
+    LogFunc << VAR_VOIDP(handle_) << VAR_VOIDP(handle_->stop_app) << VAR(param.package);
+
+    if (!handle_ || !handle_->stop_app) {
+        LogError << "handle_ or handle_->stop_app is nullptr";
+        return false;
+    }
+
+    return handle_->stop_app(param.package.c_str());
+}
+
 MAA_CTRL_NS_END

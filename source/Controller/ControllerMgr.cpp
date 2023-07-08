@@ -37,6 +37,9 @@ bool ControllerMgr::set_option(MaaCtrlOption key, MaaOptionValue value, MaaOptio
         return set_target_width(value, val_size);
     case MaaCtrlOption_ScreenshotTargetHeight:
         return set_target_height(value, val_size);
+
+    case MaaCtrlOption_DefaultAppPackage:
+        return set_default_app_package(value, val_size);
     default:
         LogError << "Unknown key" << VAR(key) << VAR(value);
         return false;
@@ -148,6 +151,34 @@ cv::Mat ControllerMgr::screencap()
     return image_;
 }
 
+void ControllerMgr::start_app()
+{
+    if (default_app_package_.empty()) {
+        LogError << "default_app_package_ is empty";
+        return;
+    }
+    start_app(default_app_package_);
+}
+
+void ControllerMgr::stop_app()
+{
+    if (default_app_package_.empty()) {
+        LogError << "default_app_package_ is empty";
+        return;
+    }
+    stop_app(default_app_package_);
+}
+
+void ControllerMgr::start_app(const std::string& package)
+{
+    action_runner_->post({ .type = Action::Type::start_app, .params = AppParams { .package = package } }, true);
+}
+
+void ControllerMgr::stop_app(const std::string& package)
+{
+    action_runner_->post({ .type = Action::Type::stop_app, .params = AppParams { .package = package } }, true);
+}
+
 cv::Point ControllerMgr::rand_point(const cv::Rect& r)
 {
     int x = 0, y = 0;
@@ -179,14 +210,22 @@ bool ControllerMgr::run_action(typename AsyncRunner<Action>::Id id, Action actio
     case Action::Type::connect:
         connected_ = _connect();
         return connected_;
+
     case Action::Type::click:
         _click(std::get<ClickParams>(action.params));
         return true;
     case Action::Type::swipe:
         _swipe(std::get<SwipeParams>(action.params));
         return true;
+
     case Action::Type::screencap:
         return postproc_screenshot(_screencap());
+
+    case Action::Type::start_app:
+        return _start_app(std::get<AppParams>(action.params));
+    case Action::Type::stop_app:
+        return _stop_app(std::get<AppParams>(action.params));
+
     default:
         LogError << "Unknown action type" << VAR(static_cast<int>(action.type));
         return false;
@@ -215,9 +254,9 @@ bool ControllerMgr::postproc_screenshot(const cv::Mat& raw)
         return false;
     }
 
-    if (raw.cols != _get_resolution().first || raw.rows != _get_resolution().second) {
-        LogWarn << "Invalid resolution" << VAR(raw.cols) << VAR(raw.rows) << VAR(_get_resolution().first)
-                << VAR(_get_resolution().second);
+    auto [res_w, res_h] = _get_resolution();
+    if (raw.cols != res_w || raw.rows != res_h) {
+        LogWarn << "Invalid resolution" << VAR(raw.cols) << VAR(raw.rows) << VAR(res_w) << VAR(res_h);
     }
 
     if (image_target_width_ == 0) {
@@ -266,6 +305,13 @@ bool ControllerMgr::set_target_height(MaaOptionValue value, MaaOptionValueSize v
     return true;
 }
 
+bool ControllerMgr::set_default_app_package(MaaOptionValue value, MaaOptionValueSize val_size)
+{
+    std::string_view package(reinterpret_cast<char*>(value), val_size);
+    default_app_package_ = package;
+    return true;
+}
+
 std::ostream& operator<<(std::ostream& os, const SwipeParams::Step& step)
 {
     os << VAR_RAW(step.x) << VAR_RAW(step.y) << VAR_RAW(step.delay);
@@ -286,6 +332,15 @@ std::ostream& operator<<(std::ostream& os, const Action& action)
         break;
     case Action::Type::screencap:
         os << "screencap";
+        break;
+    case Action::Type::start_app:
+        os << "start_app";
+        break;
+    case Action::Type::stop_app:
+        os << "stop_app";
+        break;
+    default:
+        os << "unknown action";
         break;
     }
     return os;

@@ -13,23 +13,47 @@ AdbController::AdbController(std::string adb_path, std::string address,
                              MaaCallbackTransparentArg callback_arg)
     : ControllerMgr(callback, callback_arg), adb_path_(std::move(adb_path)), address_(std::move(address)),
       unit_mgr_(std::move(unit_mgr))
-{}
+{
+    LogTrace << VAR(adb_path_) << VAR(address_) << VAR(unit_mgr_) << VAR(unit_mgr_->activity_obj())
+             << VAR(unit_mgr_->connection_obj()) << VAR(unit_mgr_->device_info_obj()) << VAR(unit_mgr_->key_input_obj())
+             << VAR(unit_mgr_->screencap_obj()) << VAR(unit_mgr_->touch_input_obj());
+}
 
 AdbController::~AdbController()
 {
-    if (unit_mgr_) {
+    if (!unit_mgr_) {
+        return;
+    }
+
+    if (unit_mgr_->screencap_obj()) {
         unit_mgr_->screencap_obj()->deinit();
+    }
+    if (unit_mgr_->touch_input_obj()) {
         unit_mgr_->touch_input_obj()->deinit();
     }
 }
 
 std::string AdbController::get_uuid() const
 {
+    if (!unit_mgr_ || !unit_mgr_->device_info_obj()) {
+        LogError << "unit is nullptr" << VAR(unit_mgr_) << VAR(unit_mgr_->device_info_obj());
+        return {};
+    }
+
     return unit_mgr_->device_info_obj()->get_uuid();
 }
 
 bool AdbController::_connect()
 {
+    if (!unit_mgr_ || !unit_mgr_->connection_obj() || !unit_mgr_->device_info_obj() || !unit_mgr_->screencap_obj() ||
+        !unit_mgr_->touch_input_obj() || !unit_mgr_->key_input_obj() || !unit_mgr_->activity_obj()) {
+        LogError << "unit is nullptr" << VAR(unit_mgr_) << VAR(unit_mgr_->connection_obj())
+                 << VAR(unit_mgr_->device_info_obj()) << VAR(unit_mgr_->screencap_obj())
+                 << VAR(unit_mgr_->touch_input_obj()) << VAR(unit_mgr_->key_input_obj())
+                 << VAR(unit_mgr_->activity_obj());
+        return false;
+    }
+
     bool connected = unit_mgr_->connection_obj()->connect();
     if (!connected) {
         notifier.notify(MaaMsg_Controller_ConnectFalied, { { "why", "ConnectFailed" } });
@@ -85,30 +109,69 @@ std::pair<int, int> AdbController::_get_resolution() const
 
 void AdbController::_click(ClickParams param)
 {
-    if (!unit_mgr_->touch_input_obj()->click(param.x, param.y)) {
+    if (!unit_mgr_ || !unit_mgr_->touch_input_obj()) {
+        LogError << "unit is nullptr" << VAR(unit_mgr_) << VAR(unit_mgr_->touch_input_obj());
+        return;
+    }
+
+    bool ret = unit_mgr_->touch_input_obj()->click(param.x, param.y);
+
+    if (!ret) {
         LogError << "failed to click";
     }
 }
 
 void AdbController::_swipe(SwipeParams param)
 {
+    if (!unit_mgr_ || !unit_mgr_->touch_input_obj()) {
+        LogError << "unit is nullptr" << VAR(unit_mgr_) << VAR(unit_mgr_->touch_input_obj());
+        return;
+    }
+
     std::vector<MAA_CTRL_UNIT_NS::SwipeStep> steps;
     for (const auto& step : param.steps) {
         steps.emplace_back(MAA_CTRL_UNIT_NS::SwipeStep { step.x, step.y, step.delay });
     }
 
-    if (!unit_mgr_->touch_input_obj()->swipe(steps)) {
+    bool ret = unit_mgr_->touch_input_obj()->swipe(steps);
+
+    if (!ret) {
         LogError << "failed to swipe";
     }
 }
 
 cv::Mat AdbController::_screencap()
 {
+    if (!unit_mgr_ || !unit_mgr_->screencap_obj()) {
+        LogError << "unit is nullptr" << VAR(unit_mgr_) << VAR(unit_mgr_->screencap_obj());
+        return {};
+    }
+
     auto ret = unit_mgr_->screencap_obj()->screencap();
     if (!ret) {
         return cv::Mat();
     }
     return std::move(ret.value());
+}
+
+bool AdbController::_start_app(AppParams param)
+{
+    if (!unit_mgr_ || !unit_mgr_->activity_obj()) {
+        LogError << "unit is nullptr" << VAR(unit_mgr_) << VAR(unit_mgr_->activity_obj());
+        return false;
+    }
+
+    return unit_mgr_->activity_obj()->start(param.package);
+}
+
+bool AdbController::_stop_app(AppParams param)
+{
+    if (!unit_mgr_ || !unit_mgr_->activity_obj()) {
+        LogError << "unit is nullptr" << VAR(unit_mgr_) << VAR(unit_mgr_->activity_obj());
+        return false;
+    }
+
+    return unit_mgr_->activity_obj()->stop(param.package);
 }
 
 MAA_CTRL_NS_END

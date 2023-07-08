@@ -43,6 +43,8 @@ enum class Type
     Click,
     Swipe,
     WaitFreezes,
+    StartApp,
+    StopApp,
 };
 
 enum class Target
@@ -81,7 +83,12 @@ struct WaitFreezesParams
     std::chrono::milliseconds frozen_time;
 };
 
-using Params = std::variant<Action::ClickParams, Action::SwipeParams, Action::WaitFreezesParams>;
+struct AppInfo
+{
+    std::string package;
+};
+
+using Params = std::variant<Action::ClickParams, Action::SwipeParams, Action::WaitFreezesParams, Action::AppInfo>;
 } // namespace Action
 
 struct TaskData

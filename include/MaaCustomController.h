@@ -16,9 +16,8 @@ extern "C"
         MaaBool (*swipe)(int32_t* x_steps_buff, int32_t* y_steps_buff, int32_t* step_delay_buff, MaaSize buff_size);
         MaaBool (*press_key)(int32_t keycode);
 
-        MaaBool (*app_start)(MaaString package_name);
-        // if activity is empty, kill current app
-        MaaBool (*app_stop)(MaaString package_name);
+        MaaBool (*start_app)(MaaString package_name);
+        MaaBool (*stop_app)(MaaString package_name);
 
         MaaBool (*get_resolution)(int32_t* width, int32_t* height);
         // if buff is null, screencap and return image size; else return written size

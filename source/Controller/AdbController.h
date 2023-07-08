@@ -22,6 +22,8 @@ protected:
     virtual void _click(ClickParams param) override;
     virtual void _swipe(SwipeParams param) override;
     virtual cv::Mat _screencap() override;
+    virtual bool _start_app(AppParams param) override;
+    virtual bool _stop_app(AppParams param) override;
 
 private:
     std::string adb_path_;

@@ -65,6 +65,9 @@ enum MaaCtrlOptionEnum
     // Only one of width and height can be set, and the other is automatically scaled according to the aspect ratio.
     // value: int, eg: 1920; val_size: sizeof(int)
     MaaCtrlOption_ScreenshotTargetHeight = 2,
+
+    // value: string, eg: "com.hypergryph.arknights/com.u8.sdk.U8UnityContext"; val_size: string length
+    MaaCtrlOption_DefaultAppPackage = 3,
 };
 
 typedef MaaOption MaaInstOption;

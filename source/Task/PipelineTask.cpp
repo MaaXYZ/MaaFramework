@@ -228,6 +228,12 @@ void PipelineTask::start_to_act(const FoundResult& act)
     case Type::WaitFreezes:
         wait_freezes(std::get<WaitFreezesParams>(act.task_data.action_params), act.rec.box);
         break;
+    case Type::StartApp:
+        start_app(std::get<AppInfo>(act.task_data.action_params));
+        break;
+    case Type::StopApp:
+        stop_app(std::get<AppInfo>(act.task_data.action_params));
+        break;
     default:
         LogError << "Unknown action" << VAR(static_cast<int>(act.task_data.action_type));
         break;
@@ -293,6 +299,28 @@ void PipelineTask::wait_freezes(const MAA_PIPELINE_RES_NS::Action::WaitFreezesPa
             break;
         }
     }
+}
+
+void PipelineTask::start_app(const MAA_PIPELINE_RES_NS::Action::AppInfo& param)
+{
+    if (!controller()) {
+        LogError << "Controller is null";
+        return;
+    }
+    using namespace MAA_VISION_NS;
+
+    controller()->start_app(param.package);
+}
+
+void PipelineTask::stop_app(const MAA_PIPELINE_RES_NS::Action::AppInfo& param)
+{
+    if (!controller()) {
+        LogError << "Controller is null";
+        return;
+    }
+    using namespace MAA_VISION_NS;
+
+    controller()->stop_app(param.package);
 }
 
 cv::Rect PipelineTask::get_target_rect(const MAA_PIPELINE_RES_NS::Action::Target type,

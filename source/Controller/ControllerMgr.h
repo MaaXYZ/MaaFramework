@@ -32,9 +32,14 @@ struct SwipeParams
     };
     std::vector<Step> steps;
 };
+struct AppParams
+{
+    std::string package;
+};
+
 std::ostream& operator<<(std::ostream& os, const SwipeParams::Step& step);
 
-using Params = std::variant<ClickParams, SwipeParams>;
+using Params = std::variant<ClickParams, SwipeParams, AppParams>;
 
 struct Action
 {
@@ -44,6 +49,8 @@ struct Action
         click,
         swipe,
         screencap,
+        start_app,
+        stop_app,
     } type;
 
     Params params;
@@ -80,12 +87,19 @@ public:
     void swipe(const cv::Point& p1, const cv::Point& p2, int duration);
     cv::Mat screencap();
 
+    void start_app();
+    void stop_app();
+    void start_app(const std::string& package);
+    void stop_app(const std::string& package);
+
 protected:
     virtual bool _connect() = 0;
     virtual std::pair<int, int> _get_resolution() const = 0;
     virtual void _click(ClickParams param) = 0;
     virtual void _swipe(SwipeParams param) = 0;
     virtual cv::Mat _screencap() = 0;
+    virtual bool _start_app(AppParams param) = 0;
+    virtual bool _stop_app(AppParams param) = 0;
 
 protected:
     MessageNotifier<MaaControllerCallback> notifier;
@@ -100,6 +114,7 @@ private:
 private: // options
     bool set_target_width(MaaOptionValue value, MaaOptionValueSize val_size);
     bool set_target_height(MaaOptionValue value, MaaOptionValueSize val_size);
+    bool set_default_app_package(MaaOptionValue value, MaaOptionValueSize val_size);
 
 private:
     InstanceInternalAPI* inst_ = nullptr;
@@ -113,6 +128,7 @@ private:
 
     int image_target_width_ = 0;
     int image_target_height_ = 1080;
+    std::string default_app_package_;
 
     std::unique_ptr<AsyncRunner<Action>> action_runner_ = nullptr;
 };

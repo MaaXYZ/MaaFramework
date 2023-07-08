@@ -455,10 +455,12 @@ bool PipelineConfig::parse_action(const json::value& input, MAA_PIPELINE_RES_NS:
     }
 
     static const std::unordered_map<std::string, Type> kActTypeMap = {
-        { "DoNothing", Type::DoNothing },
-        { "Click", Type::Click },
-        { "Swipe", Type::Swipe },
-        { "WaitFreezes", Type::WaitFreezes },
+        { "DoNothing", Type::DoNothing },     //
+        { "Click", Type::Click },             //
+        { "Swipe", Type::Swipe },             //
+        { "WaitFreezes", Type::WaitFreezes }, //
+        { "StartApp", Type::StartApp },       //
+        { "StopApp", Type::StopApp },         //
     };
     auto act_type_iter = kActTypeMap.find(act_type_name);
     if (act_type_iter == kActTypeMap.cend()) {
@@ -479,6 +481,10 @@ bool PipelineConfig::parse_action(const json::value& input, MAA_PIPELINE_RES_NS:
     case Type::WaitFreezes:
         out_param = WaitFreezesParams {};
         return parse_wait_freezes_params(input, std::get<WaitFreezesParams>(out_param));
+    case Type::StartApp:
+    case Type::StopApp:
+        out_param = AppInfo {};
+        return parse_app_info(input, std::get<AppInfo>(out_param));
     default:
         return false;
     }
@@ -553,6 +559,16 @@ bool PipelineConfig::parse_wait_freezes_params(const json::value& input,
         return false;
     }
     output.frozen_time = std::chrono::milliseconds(frozen_time);
+
+    return true;
+}
+
+bool PipelineConfig::parse_app_info(const json::value& input, MAA_PIPELINE_RES_NS::Action::AppInfo& output)
+{
+    if (!get_and_check_value(input, "package", output.package, std::string())) {
+        LogError << "failed to get_and_check_value activity" << VAR(input);
+        return false;
+    }
 
     return true;
 }

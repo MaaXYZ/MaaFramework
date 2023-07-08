@@ -46,13 +46,14 @@ private:
                                         const cv::Rect& cache);
     std::optional<RecResult> template_match(const cv::Mat& image, const MAA_VISION_NS::TemplMatchingParams& param,
                                             const cv::Rect& cache);
-    std::optional<RecResult> ocr(const cv::Mat& image, const MAA_VISION_NS::OcrParams& param,
-                                             const cv::Rect& cache);
+    std::optional<RecResult> ocr(const cv::Mat& image, const MAA_VISION_NS::OcrParams& param, const cv::Rect& cache);
 
 private:
     void click(const MAA_PIPELINE_RES_NS::Action::ClickParams& param, const cv::Rect& cur_box);
     void swipe(const MAA_PIPELINE_RES_NS::Action::SwipeParams& param, const cv::Rect& cur_box);
     void wait_freezes(const MAA_PIPELINE_RES_NS::Action::WaitFreezesParams& param, const cv::Rect& cur_box);
+    void start_app(const MAA_PIPELINE_RES_NS::Action::AppInfo& param);
+    void stop_app(const MAA_PIPELINE_RES_NS::Action::AppInfo& param);
 
     cv::Rect get_target_rect(const MAA_PIPELINE_RES_NS::Action::Target type,
                              const MAA_PIPELINE_RES_NS::Action::TargetParam& param, const cv::Rect& cur_box);
