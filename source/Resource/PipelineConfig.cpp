@@ -340,7 +340,7 @@ bool PipelineConfig::parse_templ_matching_params(const json::value& input, MAA_V
     }
 
     if (output.thresholds.empty()) {
-        constexpr double kDefaultThreshold = 0.95;
+        constexpr double kDefaultThreshold = 0.7;
         output.thresholds = std::vector(output.template_paths.size(), kDefaultThreshold);
     }
     else if (output.template_paths.size() != output.thresholds.size()) {
@@ -349,7 +349,7 @@ bool PipelineConfig::parse_templ_matching_params(const json::value& input, MAA_V
         return false;
     }
 
-    constexpr int kDefaultMethod = 3; // cv::TM_CCOEFF_NORMED
+    constexpr int kDefaultMethod = 5; // cv::TM_CCOEFF_NORMED
     if (!get_and_check_value(input, "method", output.method, kDefaultMethod)) {
         LogError << "failed to get_and_check_value method" << VAR(input);
         return false;
@@ -547,7 +547,7 @@ bool PipelineConfig::parse_wait_freezes_params(const json::value& input,
         return false;
     }
 
-    constexpr int kDefaultMethod = 3; // cv::TM_CCOEFF_NORMED
+    constexpr int kDefaultMethod = 5; // cv::TM_CCOEFF_NORMED
     if (!get_and_check_value(input, "method", output.method, kDefaultMethod)) {
         LogError << "failed to get_and_check_value method" << VAR(input);
         return false;
