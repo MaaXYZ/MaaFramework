@@ -28,21 +28,15 @@ ControllerMgr::~ControllerMgr()
     }
 }
 
-bool ControllerMgr::set_option(MaaCtrlOption key, const std::string& value)
+bool ControllerMgr::set_option(MaaCtrlOption key, MaaOptionValue value, MaaOptionValueSize val_size)
 {
-    LogInfo << VAR(key) << VAR(value);
+    LogInfo << VAR(key) << VAR(value) << VAR(val_size);
 
     switch (key) {
-    case MaaCtrlOption_ScreenshotTargetResolution: {
-        std::stringstream ss(value);
-        ss >> image_target_width_ >> image_target_height_;
-        LogInfo << VAR(image_target_width_) << VAR(image_target_height_);
-        if (image_target_width_ <= 0 || image_target_height_ <= 0) {
-            LogError << "Invalid target resolution" << VAR(image_target_width_) << VAR(image_target_height_);
-            return false;
-        }
-        return true;
-    }
+    case MaaCtrlOption_ScreenshotTargetWidth:
+        return set_target_width(value, val_size);
+    case MaaCtrlOption_ScreenshotTargetHeight:
+        return set_target_height(value, val_size);
     default:
         LogError << "Unknown key" << VAR(key) << VAR(value);
         return false;
@@ -56,6 +50,7 @@ MaaCtrlId ControllerMgr::post_connection()
 
 MaaCtrlId ControllerMgr::post_click(int x, int y)
 {
+    preproce_touch_coord(x, y);
     ClickParams params { .x = x, .y = y };
     return action_runner_->post({ .type = Action::Type::click, .params = std::move(params) });
 }
@@ -118,7 +113,8 @@ void ControllerMgr::click(const cv::Rect& r)
 
 void ControllerMgr::click(const cv::Point& p)
 {
-    ClickParams params { .x = p.x, .y = p.y };
+    auto [x, y] = preproce_touch_coord(p.x, p.y);
+    ClickParams params { .x = x, .y = y };
     action_runner_->post({ .type = Action::Type::click, .params = std::move(params) }, true);
 }
 
@@ -131,12 +127,15 @@ void ControllerMgr::swipe(const cv::Point& p1, const cv::Point& p2, int duration
 {
     constexpr int SampleDelay = 2;
 
+    auto [px1, py1] = preproce_touch_coord(p1.x, p1.y);
+    auto [px2, py2] = preproce_touch_coord(p2.x, p2.y);
+
     SwipeParams params;
     auto cs = CubicSpline::smooth_in_out(1, 1);
     for (int i = 0; i < duration; i += SampleDelay) {
         auto progress = cs(static_cast<double>(i) / duration);
-        int x = static_cast<int>(round(std::lerp(p1.x, p2.x, progress)));
-        int y = static_cast<int>(round(std::lerp(p1.y, p2.y, progress)));
+        int x = static_cast<int>(round(std::lerp(px1, px2, progress)));
+        int y = static_cast<int>(round(std::lerp(py1, py2, progress)));
         params.steps.emplace_back(SwipeParams::Step { .x = x, .y = y, .delay = SampleDelay });
     }
     action_runner_->post({ .type = Action::Type::swipe, .params = std::move(params) }, true);
@@ -147,30 +146,6 @@ cv::Mat ControllerMgr::screencap()
     std::unique_lock<std::mutex> lock(image_mutex_);
     action_runner_->post({ .type = Action::Type::screencap }, true);
     return image_;
-}
-
-bool ControllerMgr::run_action(typename AsyncRunner<Action>::Id id, Action action)
-{
-    LogFunc << VAR(id) << VAR(action);
-
-    switch (action.type) {
-    case Action::Type::connect:
-        connected_ = _connect();
-        return connected_;
-    case Action::Type::click:
-        _click(std::get<ClickParams>(action.params));
-        return true;
-    case Action::Type::swipe:
-        _swipe(std::get<SwipeParams>(action.params));
-        return true;
-    case Action::Type::screencap: {
-        cv::Mat temp = _screencap();
-        cv::resize(temp, image_, { image_target_width_, image_target_height_ });
-        return !image_.empty();
-    }
-    }
-
-    return false;
 }
 
 cv::Point ControllerMgr::rand_point(const cv::Rect& r)
@@ -194,6 +169,101 @@ cv::Point ControllerMgr::rand_point(const cv::Rect& r)
     }
 
     return { x, y };
+}
+
+bool ControllerMgr::run_action(typename AsyncRunner<Action>::Id id, Action action)
+{
+    LogFunc << VAR(id) << VAR(action);
+
+    switch (action.type) {
+    case Action::Type::connect:
+        connected_ = _connect();
+        return connected_;
+    case Action::Type::click:
+        _click(std::get<ClickParams>(action.params));
+        return true;
+    case Action::Type::swipe:
+        _swipe(std::get<SwipeParams>(action.params));
+        return true;
+    case Action::Type::screencap:
+        return postproc_screenshot(_screencap());
+    default:
+        LogError << "Unknown action type" << VAR(static_cast<int>(action.type));
+        return false;
+    }
+
+    return false;
+}
+
+std::pair<int, int> ControllerMgr::preproce_touch_coord(int x, int y)
+{
+    auto [res_w, res_h] = _get_resolution();
+
+    double scale_width = static_cast<double>(image_target_width_) / res_w;
+    double scale_height = static_cast<double>(image_target_height_) / res_h;
+
+    int proced_x = static_cast<int>(std::round(x * scale_width));
+    int proced_y = static_cast<int>(std::round(y * scale_height));
+
+    return { proced_x, proced_y };
+}
+
+bool ControllerMgr::postproc_screenshot(const cv::Mat& raw)
+{
+    if (raw.empty()) {
+        LogError << "Empty screenshot";
+        return false;
+    }
+
+    if (raw.cols != _get_resolution().first || raw.rows != _get_resolution().second) {
+        LogWarn << "Invalid resolution" << VAR(raw.cols) << VAR(raw.rows) << VAR(_get_resolution().first)
+                << VAR(_get_resolution().second);
+    }
+
+    if (image_target_width_ == 0) {
+        double scale = static_cast<double>(raw.cols) / raw.rows;
+        image_target_width_ = static_cast<int>(std::round(image_target_height_ * scale));
+        LogInfo << VAR(image_target_width_) << VAR(image_target_height_);
+    }
+    if (image_target_height_ == 0) {
+        double scale = static_cast<double>(raw.rows) / raw.cols;
+        image_target_height_ = static_cast<int>(std::round(image_target_width_ * scale));
+        LogInfo << VAR(image_target_width_) << VAR(image_target_height_);
+    }
+
+    if (raw.cols == image_target_width_ && raw.rows == image_target_height_) {
+        image_ = raw;
+        return true;
+    }
+
+    cv::resize(raw, image_, { image_target_width_, image_target_height_ });
+    return !image_.empty();
+}
+
+bool ControllerMgr::set_target_width(MaaOptionValue value, MaaOptionValueSize val_size)
+{
+    if (val_size != sizeof(image_target_width_)) {
+        LogError << "invalid value size: " << val_size;
+        return false;
+    }
+    image_target_width_ = *reinterpret_cast<int*>(value);
+    image_target_height_ = 0;
+
+    LogInfo << "image_target_width_ = " << image_target_width_;
+    return true;
+}
+
+bool ControllerMgr::set_target_height(MaaOptionValue value, MaaOptionValueSize val_size)
+{
+    if (val_size != sizeof(image_target_height_)) {
+        LogError << "invalid value size: " << val_size;
+        return false;
+    }
+    image_target_width_ = 0;
+    image_target_height_ = *reinterpret_cast<int*>(value);
+
+    LogInfo << "image_target_height_ = " << image_target_height_;
+    return true;
 }
 
 std::ostream& operator<<(std::ostream& os, const SwipeParams::Step& step)

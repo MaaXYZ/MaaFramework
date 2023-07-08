@@ -18,7 +18,7 @@ public:
                 MaaCallbackTransparentArg callback_arg);
     virtual ~ResourceMgr() override;
 
-    virtual bool set_option(MaaResOption key, const std::string& value) override;
+    virtual bool set_option(MaaResOption key, MaaOptionValue value, MaaOptionValueSize val_size) override;
 
     virtual MaaResId post_resource(std::filesystem::path path) override;
 

@@ -36,10 +36,15 @@ typedef MaaId MaaTaskId;
 
 typedef int32_t MaaOption;
 typedef MaaOption MaaGlobalOption;
+typedef void* MaaOptionValue;
+typedef uint64_t MaaOptionValueSize;
+
 enum MaaGlobalOptionEnum
 {
     MaaGlobalOption_Invalid = 0,
-    MaaGlobalOption_Logging = 1, // value: log dir
+
+    // value: string, log dir, eg: "C:\\Users\\Administrator\\Desktop\\log"; val_size: string length
+    MaaGlobalOption_Logging = 1,
 };
 
 typedef MaaOption MaaResOption;
@@ -52,7 +57,14 @@ typedef MaaOption MaaCtrlOption;
 enum MaaCtrlOptionEnum
 {
     MaaCtrlOption_Invalid = 0,
-    MaaCtrlOption_ScreenshotTargetResolution = 1, // value: "width height", e.g. "1920 1080"
+
+    // Only one of width and height can be set, and the other is automatically scaled according to the aspect ratio.
+    // value: int, eg: 1920; val_size: sizeof(int)
+    MaaCtrlOption_ScreenshotTargetWidth = 1,
+
+    // Only one of width and height can be set, and the other is automatically scaled according to the aspect ratio.
+    // value: int, eg: 1920; val_size: sizeof(int)
+    MaaCtrlOption_ScreenshotTargetHeight = 2,
 };
 
 typedef MaaOption MaaInstOption;
@@ -75,7 +87,6 @@ enum MaaAdbControllerTypeEnum
     MaaAdbControllerType_Key_MaaTouch = 2 << 8,
     MaaAdbControllerType_Key_Mask = 0xFF00,
 
-    // same as Screencap::Method
     MaaAdbControllerType_Screencap_FastestWay = 1 << 16,
     MaaAdbControllerType_Screencap_RawByNetcat = 2 << 16,
     MaaAdbControllerType_Screencap_RawWithGzip = 3 << 16,

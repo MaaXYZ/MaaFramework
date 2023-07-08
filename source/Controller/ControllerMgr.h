@@ -58,7 +58,7 @@ public:
 
     virtual ~ControllerMgr() override;
 
-    virtual bool set_option(MaaCtrlOption key, const std::string& value) override;
+    virtual bool set_option(MaaCtrlOption key, MaaOptionValue value, MaaOptionValueSize val_size) override;
 
     virtual MaaCtrlId post_connection() override;
     virtual MaaCtrlId post_click(int x, int y) override;
@@ -82,6 +82,7 @@ public:
 
 protected:
     virtual bool _connect() = 0;
+    virtual std::pair<int, int> _get_resolution() const = 0;
     virtual void _click(ClickParams param) = 0;
     virtual void _swipe(SwipeParams param) = 0;
     virtual cv::Mat _screencap() = 0;
@@ -90,8 +91,15 @@ protected:
     MessageNotifier<MaaControllerCallback> notifier;
 
 private:
-    bool run_action(typename AsyncRunner<Action>::Id id, Action action);
     static cv::Point rand_point(const cv::Rect& r);
+
+    bool run_action(typename AsyncRunner<Action>::Id id, Action action);
+    std::pair<int, int> preproce_touch_coord(int x, int y);
+    bool postproc_screenshot(const cv::Mat& raw);
+
+private: // options
+    bool set_target_width(MaaOptionValue value, MaaOptionValueSize val_size);
+    bool set_target_height(MaaOptionValue value, MaaOptionValueSize val_size);
 
 private:
     InstanceInternalAPI* inst_ = nullptr;
@@ -102,8 +110,9 @@ private:
     bool connected_ = false;
     std::mutex image_mutex_;
     cv::Mat image_;
-    int image_target_width_ = 1280;
-    int image_target_height_ = 720;
+
+    int image_target_width_ = 0;
+    int image_target_height_ = 1080;
 
     std::unique_ptr<AsyncRunner<Action>> action_runner_ = nullptr;
 };

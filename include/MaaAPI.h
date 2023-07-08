@@ -7,11 +7,12 @@
 extern "C"
 {
 #endif
-    MaaBool MAA_API MaaSetGlobalOption(MaaGlobalOption key, MaaString value);
+    MaaBool MAA_API MaaSetGlobalOption(MaaGlobalOption key, MaaOptionValue value, MaaOptionValueSize val_size);
 
     /* Resource */
 
-    MaaResourceHandle MAA_API MaaResourceCreate(MaaString user_path, MaaResourceCallback callback, MaaCallbackTransparentArg callback_arg);
+    MaaResourceHandle MAA_API MaaResourceCreate(MaaString user_path, MaaResourceCallback callback,
+                                                MaaCallbackTransparentArg callback_arg);
     void MAA_API MaaResourceDestroy(MaaResourceHandle* res);
 
     MaaResId MAA_API MaaResourcePostResource(MaaResourceHandle res, MaaString path);
@@ -19,7 +20,8 @@ extern "C"
     MaaStatus MAA_API MaaResourceWait(MaaResourceHandle res, MaaResId id);
     MaaBool MAA_API MaaResourceLoaded(MaaResourceHandle res);
 
-    MaaBool MAA_API MaaResourceSetOption(MaaResourceHandle res, MaaResOption key, MaaString value);
+    MaaBool MAA_API MaaResourceSetOption(MaaResourceHandle res, MaaResOption key, MaaOptionValue value,
+                                         MaaOptionValueSize val_size);
     MaaSize MAA_API MaaResourceGetHash(MaaResourceHandle res, char* buff, MaaSize buff_size);
 
     /* Controller */
@@ -33,7 +35,8 @@ extern "C"
 
     void MAA_API MaaControllerDestroy(MaaControllerHandle* ctrl);
 
-    MaaBool MAA_API MaaControllerSetOption(MaaControllerHandle ctrl, MaaCtrlOption key, MaaString value);
+    MaaBool MAA_API MaaControllerSetOption(MaaControllerHandle ctrl, MaaCtrlOption key, MaaOptionValue value,
+                                           MaaOptionValueSize val_size);
 
     MaaCtrlId MAA_API MaaControllerPostConnection(MaaControllerHandle ctrl);
     MaaCtrlId MAA_API MaaControllerPostClick(MaaControllerHandle ctrl, int32_t x, int32_t y);
@@ -52,7 +55,8 @@ extern "C"
 
     MaaInstanceHandle MAA_API MaaCreate(MaaInstanceCallback callback, MaaCallbackTransparentArg callback_arg);
     void MAA_API MaaDestroy(MaaInstanceHandle* inst);
-    MaaBool MAA_API MaaSetOption(MaaInstanceHandle inst, MaaInstOption key, MaaString value);
+    MaaBool MAA_API MaaSetOption(MaaInstanceHandle inst, MaaInstOption key, MaaOptionValue value,
+                                 MaaOptionValueSize val_size);
 
     MaaBool MAA_API MaaBindResource(MaaInstanceHandle inst, MaaResourceHandle res);
     MaaBool MAA_API MaaBindController(MaaInstanceHandle inst, MaaControllerHandle ctrl);

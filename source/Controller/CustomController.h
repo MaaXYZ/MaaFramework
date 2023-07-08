@@ -15,6 +15,7 @@ public:
 
 protected:
     virtual bool _connect() override;
+    virtual std::pair<int, int> _get_resolution() const override;
     virtual void _click(ClickParams param) override;
     virtual void _swipe(SwipeParams param) override;
     virtual cv::Mat _screencap() override;

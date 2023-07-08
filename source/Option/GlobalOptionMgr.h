@@ -17,10 +17,13 @@ public:
 public:
     virtual ~GlobalOptionMgr() = default;
 
-    bool set_option(MaaGlobalOption key, const std::string& value);
+    bool set_option(MaaGlobalOption key, MaaOptionValue value, MaaOptionValueSize val_size);
 
-protected:
+private:
     GlobalOptionMgr() = default;
+
+private:
+    bool set_logging(MaaOptionValue value, MaaOptionValueSize val_size);
 };
 
 MAA_NS_END

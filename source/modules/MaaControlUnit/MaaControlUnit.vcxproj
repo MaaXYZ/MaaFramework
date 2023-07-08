@@ -27,6 +27,7 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\include\MaaControlUnit\ControlUnitAPI.h" />
     <ClInclude Include="include\ControlUnitAPI.h" />
     <ClInclude Include="ControlUnitMgr.h" />
     <ClInclude Include="General\Activity.h" />

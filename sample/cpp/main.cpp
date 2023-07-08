@@ -24,7 +24,8 @@ int main([[maybe_unused]] int argc, char** argv)
     const auto cur_dir = std::filesystem::path(argv[0]).parent_path();
     adb_config = read_adb_config(cur_dir);
 
-    MaaSetGlobalOption(MaaGlobalOption_Logging, (cur_dir / "debug").string().c_str());
+    auto log_path = (cur_dir / "debug").string();
+    MaaSetGlobalOption(MaaGlobalOption_Logging, (void*)log_path.c_str(), log_path.size());
 
     // demo_polling(cur_dir);
     demo_waiting(cur_dir);
@@ -38,11 +39,14 @@ bool demo_waiting(const std::filesystem::path& cur_dir)
     auto resource_handle = MaaResourceCreate((cur_dir / "cache").string().c_str(), nullptr, nullptr);
     auto controller_handle =
         MaaAdbControllerCreate(adb.c_str(), adb_address.c_str(),
-                               MaaAdbControllerType_Input_Preset_Minitouch | MaaAdbControllerType_Screencap_FastestWay,
+                               MaaAdbControllerType_Input_Preset_Adb | MaaAdbControllerType_Screencap_RawWithGzip,
                                adb_config.c_str(), nullptr, nullptr);
 
     MaaBindResource(maa_handle, resource_handle);
     MaaBindController(maa_handle, controller_handle);
+    int height = 720;
+    MaaControllerSetOption(controller_handle, MaaCtrlOption_ScreenshotTargetHeight, reinterpret_cast<void*>(&height),
+                           sizeof(int));
 
     auto resource_id = MaaResourcePostResource(resource_handle, (cur_dir / "resource").string().c_str());
     auto connection_id = MaaControllerPostConnection(controller_handle);
@@ -79,7 +83,9 @@ bool demo_polling(const std::filesystem::path& cur_dir)
                                MaaAdbControllerType_Input_Preset_Minitouch | MaaAdbControllerType_Screencap_FastestWay,
                                adb_config.c_str(), nullptr, nullptr);
     auto connection_id = MaaControllerPostConnection(controller_handle);
-
+    int height = 720;
+    MaaControllerSetOption(controller_handle, MaaCtrlOption_ScreenshotTargetHeight, reinterpret_cast<void*>(&height),
+                           sizeof(int));
     for (auto status = MaaResourceStatus(resource_handle, resource_id);
          status == MaaStatus_Pending || status == MaaStatus_Running;
          status = MaaResourceStatus(resource_handle, resource_id)) {

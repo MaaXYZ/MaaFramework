@@ -11,11 +11,11 @@
 #include "Resource/ResourceMgr.h"
 #include "Utils/Platform.hpp"
 
-MaaBool MaaSetGlobalOption(MaaGlobalOption key, MaaString value)
+MaaBool MaaSetGlobalOption(MaaGlobalOption key, MaaOptionValue value, MaaOptionValueSize val_size)
 {
-    LogFunc << VAR(key) << VAR(value);
+    LogFunc << VAR(key) << VAR_VOIDP(value) << VAR(val_size);
 
-    return MAA_NS::GlobalOptionMgr::get_instance().set_option(key, value);
+    return MAA_NS::GlobalOptionMgr::get_instance().set_option(key, value, val_size);
 }
 
 MaaResourceHandle MaaResourceCreate(MaaString user_path, MaaResourceCallback callback,
@@ -77,14 +77,14 @@ MaaBool MaaResourceLoaded(MaaResourceHandle res)
     return res->loaded();
 }
 
-MaaBool MaaResourceSetOption(MaaResourceHandle res, MaaResOption key, MaaString value)
+MaaBool MaaResourceSetOption(MaaResourceHandle res, MaaResOption key, MaaOptionValue value, MaaOptionValueSize val_size)
 {
-    LogFunc << VAR_VOIDP(res) << VAR(key) << VAR(value);
+    LogFunc << VAR_VOIDP(res) << VAR(key) << VAR_VOIDP(value) << VAR(val_size);
 
     if (!res) {
         return false;
     }
-    return res->set_option(key, value);
+    return res->set_option(key, value, val_size);
 }
 
 MaaSize MaaResourceGetHash(MaaResourceHandle res, char* buff, MaaSize buff_size)
@@ -141,14 +141,15 @@ void MaaControllerDestroy(MaaControllerHandle* ctrl)
     *ctrl = nullptr;
 }
 
-MaaBool MaaControllerSetOption(MaaControllerHandle ctrl, MaaCtrlOption key, MaaString value)
+MaaBool MaaControllerSetOption(MaaControllerHandle ctrl, MaaCtrlOption key, MaaOptionValue value,
+                               MaaOptionValueSize val_size)
 {
-    LogFunc << VAR_VOIDP(ctrl) << VAR(key) << VAR(value);
+    LogFunc << VAR_VOIDP(ctrl) << VAR(key) << VAR_VOIDP(value) << VAR(val_size);
 
     if (!ctrl) {
         return false;
     }
-    return ctrl->set_option(key, value);
+    return ctrl->set_option(key, value, val_size);
 }
 
 MaaCtrlId MaaControllerPostConnection(MaaControllerHandle ctrl)
@@ -276,14 +277,14 @@ void MaaDestroy(MaaInstanceHandle* inst)
     *inst = nullptr;
 }
 
-MaaBool MaaSetOption(MaaInstanceHandle inst, MaaInstOption key, MaaString value)
+MaaBool MaaSetOption(MaaInstanceHandle inst, MaaInstOption key, MaaOptionValue value, MaaOptionValueSize val_size)
 {
-    LogFunc << VAR_VOIDP(inst) << VAR(key) << VAR(value);
+    LogFunc << VAR_VOIDP(inst) << VAR(key) << VAR_VOIDP(value) << VAR(val_size);
 
     if (!inst) {
         return false;
     }
-    return inst->set_option(key, value);
+    return inst->set_option(key, value, val_size);
 }
 
 MaaBool MaaBindResource(MaaInstanceHandle inst, MaaResourceHandle res)

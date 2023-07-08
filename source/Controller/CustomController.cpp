@@ -46,6 +46,18 @@ bool CustomController::_connect()
     return handle_->connect();
 }
 
+std::pair<int, int> CustomController::_get_resolution() const
+{
+    LogFunc << VAR_VOIDP(handle_) << VAR_VOIDP(handle_->get_resolution);
+    if (!handle_ || !handle_->get_resolution) {
+        LogError << "handle_ or handle_->get_resolution is nullptr";
+        return {};
+    }
+    int width = 0, height = 0;
+    handle_->get_resolution(&width, &height);
+    return { width, height };
+}
+
 void CustomController::_click(ClickParams param)
 {
     LogFunc << VAR_VOIDP(handle_) << VAR_VOIDP(handle_->click) << VAR(param.x) << VAR(param.y);

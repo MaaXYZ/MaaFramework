@@ -73,10 +73,12 @@ bool InstanceMgr::inited() const
     return resource_ && controller_ && resource_->loaded() && controller_->connected();
 }
 
-bool InstanceMgr::set_option(MaaInstOption key, const std::string& value)
+bool InstanceMgr::set_option(MaaInstOption key, MaaOptionValue value, MaaOptionValueSize val_size)
 {
     std::ignore = key;
     std::ignore = value;
+    std::ignore = val_size;
+
     return false;
 }
 

@@ -19,7 +19,7 @@ struct MaaResourceAPI : public MaaInstanceSink
 public:
     virtual ~MaaResourceAPI() = default;
 
-    virtual bool set_option(MaaResOption key, const std::string& value) = 0;
+    virtual bool set_option(MaaResOption key, MaaOptionValue value, MaaOptionValueSize val_size) = 0;
 
     virtual MaaResId post_resource(std::filesystem::path path) = 0;
     virtual MaaStatus status(MaaResId res_id) const = 0;
@@ -34,7 +34,7 @@ struct MaaControllerAPI : public MaaInstanceSink
 public:
     virtual ~MaaControllerAPI() = default;
 
-    virtual bool set_option(MaaCtrlOption key, const std::string& value) = 0;
+    virtual bool set_option(MaaCtrlOption key, MaaOptionValue value, MaaOptionValueSize val_size) = 0;
 
     virtual MaaCtrlId post_connection() = 0;
     virtual MaaCtrlId post_click(int x, int y) = 0;
@@ -59,7 +59,7 @@ public:
     virtual bool bind_controller(MaaControllerAPI* controller) = 0;
     virtual bool inited() const = 0;
 
-    virtual bool set_option(MaaInstOption key, const std::string& value) = 0;
+    virtual bool set_option(MaaInstOption key, MaaOptionValue value, MaaOptionValueSize val_size) = 0;
 
     virtual MaaTaskId post_task(std::string task, std::string_view param) = 0;
     virtual bool set_task_param(MaaTaskId task_id, std::string_view param) = 0;

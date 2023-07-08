@@ -26,10 +26,12 @@ ResourceMgr::~ResourceMgr()
     }
 }
 
-bool ResourceMgr::set_option(MaaResOption key, const std::string& value)
+bool ResourceMgr::set_option(MaaResOption key, MaaOptionValue value, MaaOptionValueSize val_size)
 {
     std::ignore = key;
     std::ignore = value;
+    std::ignore = val_size;
+
     return false;
 }
 

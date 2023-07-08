@@ -53,6 +53,7 @@ bool AdbController::_connect()
         return false;
     }
     auto [w, h] = unit_mgr_->device_info_obj()->get_resolution();
+    resolution_ = { w, h };
     notifier.notify(MaaMsg_Controller_ResolutionGot, { { "resolution", { { "width", w }, { "height", h } } } });
 
     if (!unit_mgr_->screencap_obj()->init(w, h)) {
@@ -75,6 +76,11 @@ bool AdbController::_connect()
                     { { "uuid", uuid }, { "resolution", { { "width", w }, { "height", h } } } });
 
     return true;
+}
+
+std::pair<int, int> AdbController::_get_resolution() const
+{
+    return resolution_;
 }
 
 void AdbController::_click(ClickParams param)
