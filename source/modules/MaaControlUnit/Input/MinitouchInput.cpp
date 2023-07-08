@@ -202,7 +202,7 @@ bool MinitouchInput::swipe(const std::vector<SwipeStep>& steps)
         }
     }
 
-    return shell_handler_->write("u\nc\n");
+    return shell_handler_->write(std::format("u {}\nc\n", 0));
 }
 
 std::pair<int, int> MinitouchInput::scale_point(int x, int y)
