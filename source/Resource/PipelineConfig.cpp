@@ -252,8 +252,8 @@ bool PipelineConfig::parse_task(const std::string& name, const json::value& inpu
     }
     data.post_delay = std::chrono::milliseconds(post_delay);
 
-    if (!get_and_check_value(input, "notify", data.notify, false)) {
-        LogError << "failed to get_and_check_value notify" << VAR(input);
+    if (!get_and_check_value(input, "notification", data.notification, std::string())) {
+        LogError << "failed to get_and_check_value notification" << VAR(input);
         return false;
     }
 

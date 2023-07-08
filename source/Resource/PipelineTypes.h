@@ -94,7 +94,6 @@ using Params = std::variant<Action::ClickParams, Action::SwipeParams, Action::Wa
 struct TaskData
 {
     std::string name;
-    std::vector<std::string> base;
     bool checkpoint = false;
 
     Recognition::Type rec_type = Recognition::Type::Invalid;
@@ -115,7 +114,7 @@ struct TaskData
     std::chrono::milliseconds pre_delay;
     std::chrono::milliseconds post_delay;
 
-    bool notify = false;
+    std::string notification;
 };
 
 MAA_PIPELINE_RES_NS_END
