@@ -87,7 +87,7 @@ PipelineTask::RunningResult PipelineTask::find_first_and_run(const std::vector<s
         return RunningResult::Interrupted;
     }
     const std::string& name = result.task_data.name;
-    LogInfo << "Task found:" << name << VAR(result.rec.box);
+    LogInfo << "Task hit:" << name << VAR(result.rec.box);
 
     uint64_t run_times = status()->get_pipeline_run_times(name);
     if (result.task_data.times_limit <= run_times) {

@@ -1,7 +1,7 @@
 #include "UnitBase.h"
 
-#include "UnitBase.h"
 #include "MaaUtils/Logger.hpp"
+#include "UnitBase.h"
 
 MAA_CTRL_UNIT_NS_BEGIN
 
@@ -64,7 +64,7 @@ std::optional<std::string> UnitBase::command(Argv::value cmd, bool recv_by_socke
         return std::nullopt;
     }
 
-    LogInfo << cmd;
+    LogTrace << cmd;
 
     auto start_time = std::chrono::steady_clock::now();
 
