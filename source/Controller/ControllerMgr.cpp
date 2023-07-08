@@ -38,8 +38,11 @@ bool ControllerMgr::set_option(MaaCtrlOption key, MaaOptionValue value, MaaOptio
     case MaaCtrlOption_ScreenshotTargetHeight:
         return set_target_height(value, val_size);
 
+    case MaaCtrlOption_DefaultAppPackageEntry:
+        return set_default_app_package_entry(value, val_size);
     case MaaCtrlOption_DefaultAppPackage:
         return set_default_app_package(value, val_size);
+
     default:
         LogError << "Unknown key" << VAR(key) << VAR(value);
         return false;
@@ -153,11 +156,11 @@ cv::Mat ControllerMgr::screencap()
 
 void ControllerMgr::start_app()
 {
-    if (default_app_package_.empty()) {
-        LogError << "default_app_package_ is empty";
+    if (default_app_package_entry_.empty()) {
+        LogError << "default_app_package_entry_ is empty";
         return;
     }
-    start_app(default_app_package_);
+    start_app(default_app_package_entry_);
 }
 
 void ControllerMgr::stop_app()
@@ -302,6 +305,13 @@ bool ControllerMgr::set_target_height(MaaOptionValue value, MaaOptionValueSize v
     image_target_height_ = *reinterpret_cast<int*>(value);
 
     LogInfo << "image_target_height_ = " << image_target_height_;
+    return true;
+}
+
+bool ControllerMgr::set_default_app_package_entry(MaaOptionValue value, MaaOptionValueSize val_size)
+{
+    std::string_view package(reinterpret_cast<char*>(value), val_size);
+    default_app_package_entry_ = package;
     return true;
 }
 

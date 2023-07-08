@@ -66,8 +66,13 @@ enum MaaCtrlOptionEnum
     // value: int, eg: 1920; val_size: sizeof(int)
     MaaCtrlOption_ScreenshotTargetHeight = 2,
 
+    // For StartApp
     // value: string, eg: "com.hypergryph.arknights/com.u8.sdk.U8UnityContext"; val_size: string length
-    MaaCtrlOption_DefaultAppPackage = 3,
+    MaaCtrlOption_DefaultAppPackageEntry = 3,
+
+    // For StopApp
+    // value: string, eg: "com.hypergryph.arknights"; val_size: string length
+    MaaCtrlOption_DefaultAppPackage = 4,
 };
 
 typedef MaaOption MaaInstOption;

@@ -114,6 +114,7 @@ private:
 private: // options
     bool set_target_width(MaaOptionValue value, MaaOptionValueSize val_size);
     bool set_target_height(MaaOptionValue value, MaaOptionValueSize val_size);
+    bool set_default_app_package_entry(MaaOptionValue value, MaaOptionValueSize val_size);
     bool set_default_app_package(MaaOptionValue value, MaaOptionValueSize val_size);
 
 private:
@@ -128,6 +129,7 @@ private:
 
     int image_target_width_ = 0;
     int image_target_height_ = 1080;
+    std::string default_app_package_entry_;
     std::string default_app_package_;
 
     std::unique_ptr<AsyncRunner<Action>> action_runner_ = nullptr;
