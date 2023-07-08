@@ -64,8 +64,6 @@ std::optional<std::string> UnitBase::command(Argv::value cmd, bool recv_by_socke
         return std::nullopt;
     }
 
-    LogTrace << cmd;
-
     auto start_time = std::chrono::steady_clock::now();
 
     std::string pipe_data;
@@ -74,7 +72,8 @@ std::optional<std::string> UnitBase::command(Argv::value cmd, bool recv_by_socke
 
     auto duration = duration_since(start_time);
 
-    LogInfo << VAR(cmd) << VAR(ret) << VAR(pipe_data.size()) << VAR(sock_data.size()) << VAR(duration);
+    LogTrace << VAR(cmd) << VAR(ret) << VAR(pipe_data.size()) << VAR(sock_data.size()) << VAR(duration);
+
     if (!pipe_data.empty() && pipe_data.size() < 4096) {
         LogTrace << Logger::separator::newline << "stdout output:" << pipe_data;
     }

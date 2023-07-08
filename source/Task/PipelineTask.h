@@ -41,7 +41,7 @@ private:
     void start_to_act(const FoundResult& act);
 
 private:
-    std::optional<RecResult> recognize(const MAA_PIPELINE_RES_NS::TaskData& task_data);
+    std::optional<RecResult> recognize(const cv::Mat& image, const MAA_PIPELINE_RES_NS::TaskData& task_data);
     std::optional<RecResult> direct_hit(const cv::Mat& image, const MAA_VISION_NS::DirectHitParams& param,
                                         const cv::Rect& cache);
     std::optional<RecResult> template_match(const cv::Mat& image, const MAA_VISION_NS::TemplMatchingParams& param,

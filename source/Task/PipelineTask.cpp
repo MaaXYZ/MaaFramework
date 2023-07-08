@@ -113,12 +113,17 @@ std::optional<PipelineTask::FoundResult> PipelineTask::find_first(const std::vec
         LogError << "Resource not binded";
         return std::nullopt;
     }
+    if (!controller()) {
+        LogError << "Controller not binded";
+        return std::nullopt;
+    }
 
+    cv::Mat image = controller()->screencap();
     const auto& data_mgr = resource()->pipeline_cfg();
 
     for (const std::string& name : list) {
         const auto& task_data = data_mgr.get_task_data(name);
-        auto rec_opt = recognize(task_data);
+        auto rec_opt = recognize(image, task_data);
         if (!rec_opt) {
             continue;
         }
@@ -127,15 +132,12 @@ std::optional<PipelineTask::FoundResult> PipelineTask::find_first(const std::vec
     return std::nullopt;
 }
 
-std::optional<PipelineTask::RecResult> PipelineTask::recognize(const MAA_PIPELINE_RES_NS::TaskData& task_data)
+std::optional<PipelineTask::RecResult> PipelineTask::recognize(const cv::Mat& image,
+                                                               const MAA_PIPELINE_RES_NS::TaskData& task_data)
 {
     using namespace MAA_PIPELINE_RES_NS::Recognition;
     using namespace MAA_VISION_NS;
 
-    if (!controller()) {
-        LogError << "Controller not binded";
-        return std::nullopt;
-    }
     if (!status()) {
         LogError << "Status not binded";
         return std::nullopt;
@@ -147,15 +149,14 @@ std::optional<PipelineTask::RecResult> PipelineTask::recognize(const MAA_PIPELIN
 
     switch (task_data.rec_type) {
     case Type::DirectHit:
-        return direct_hit(cv::Mat(), std::get<DirectHitParams>(task_data.rec_params), cache);
-    case Type::TemplateMatch: {
-        cv::Mat image = controller()->screencap();
+        return direct_hit(image, std::get<DirectHitParams>(task_data.rec_params), cache);
+
+    case Type::TemplateMatch:
         return template_match(image, std::get<TemplMatchingParams>(task_data.rec_params), cache);
-    }
-    case Type::OCR: {
-        cv::Mat image = controller()->screencap();
+
+    case Type::OCR:
         return ocr(image, std::get<OcrParams>(task_data.rec_params), cache);
-    }
+
     default:
         LogError << "Unknown type" << VAR(static_cast<int>(task_data.rec_type));
         return std::nullopt;
