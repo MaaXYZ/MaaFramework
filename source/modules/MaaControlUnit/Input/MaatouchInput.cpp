@@ -136,7 +136,7 @@ bool MaatouchInput::click(int x, int y)
     LogInfo << VAR(x) << VAR(y) << VAR(real_x) << VAR(real_y);
 
     bool res = shell_handler_->write(std::format("d {} {} {} {}\nc\n", 0, real_x, real_y, press_)) &&
-               shell_handler_->write(std::format("u\nc\n"));
+               shell_handler_->write(std::format("u {}\nc\n", 0));
 
     if (!res) {
         LogError << "click failed";

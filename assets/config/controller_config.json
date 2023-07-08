@@ -191,7 +191,7 @@
             "{ADB}",
             "-s",
             "{ADB_SERIAL}",
-            "exec-out",
+            "shell",
             "export LD_LIBRARY_PATH=/data/local/tmp/; \"/data/local/tmp/{BIN_WORKING_FILE}\" {BIN_EXTRA_PARAMS}"
         ],
         "InvokeApp": [

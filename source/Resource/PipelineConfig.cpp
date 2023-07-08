@@ -602,6 +602,7 @@ bool PipelineConfig::parse_action_target(const json::value& input, const std::st
         }
         else if (param_opt->is_array()) {
             output_type = Target::Region;
+            output_param = cv::Rect();
             parse_rect(*param_opt, std::get<cv::Rect>(output_param));
         }
         else {
