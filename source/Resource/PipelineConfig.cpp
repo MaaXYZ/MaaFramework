@@ -62,6 +62,7 @@ void PipelineConfig::clear()
 {
     LogFunc;
 
+    processed_data_.clear();
     raw_data_.clear();
 }
 

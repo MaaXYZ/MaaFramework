@@ -12,94 +12,13 @@
 #include "MaaUtils/Logger.hpp"
 #include "Utils/NoWarningCV.h"
 
-std::ostream& operator<<(std::ostream& os, const MAA_CTRL_UNIT_NS::DeviceResolution& res)
-{
-    return os << "{ width: " << res.width << ", height: " << res.height << " }";
-}
+std::ostream& operator<<(std::ostream& os, const MAA_CTRL_UNIT_NS::DeviceResolution& res);
 
-inline std::string read_controller_config(const std::string& cur_dir)
-{
-    std::ifstream ifs(std::filesystem::path(cur_dir) / "controller_config.json", std::ios::in);
-    if (!ifs.is_open()) {
-        std::cerr << "Failed to open controller_config.json\n"
-                  << "Please copy controller_config.json to " << std::filesystem::path(cur_dir) << std::endl;
-        exit(1);
-    }
-
-    std::stringstream buffer;
-    buffer << ifs.rdbuf();
-    return buffer.str();
-}
-
-// 用string防止后续的replacement触发explicit构造函数
-std::map<std::string_view, std::string> intents = {
-    { "Official", "com.hypergryph.arknights/com.u8.sdk.U8UnityContext" },
-    { "Bilibili", "com.hypergryph.arknights.bilibili/com.u8.sdk.U8UnityContext" },
-    { "YoStarEN", "com.YoStarEN.Arknights/com.u8.sdk.U8UnityContext" },
-    { "YoStarJP", "com.YoStarJP.Arknights/com.u8.sdk.U8UnityContext" },
-    { "YoStarKR", "com.YoStarKR.Arknights/com.u8.sdk.U8UnityContext" },
-    { "txwy", "tw.txwy.and.arknights/com.u8.sdk.U8UnityContext" }
-};
-
-double test_screencap(std::shared_ptr<MAA_CTRL_UNIT_NS::ScreencapAPI> scp, int count = 10)
-{
-    std::chrono::milliseconds sum(0);
-    for (int i = 0; i < count; i++) {
-        auto now = std::chrono::steady_clock::now();
-        auto mat = scp->screencap();
-        if (mat.has_value()) {
-            auto dur = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::steady_clock::now() - now);
-
-            auto file = std::format("temp-{}.png", i);
-            cv::imwrite(file, mat.value());
-            std::cout << "image saved to " << file << std::endl;
-
-            std::cout << "time cost: " << dur.count() << "ms" << std::endl;
-            sum += dur;
-        }
-    }
-    double cost = sum.count() / double(count);
-    std::cout << "average time cost: " << cost << "ms" << std::endl;
-    return cost;
-}
+std::string read_controller_config(const std::string& cur_dir);
+double test_screencap(std::shared_ptr<MAA_CTRL_UNIT_NS::ScreencapAPI> scp, int count = 10);
 
 bool demo_waiting(const std::filesystem::path& cur_dir, const std::string& adb, const std::string& adb_address,
-                  const std::string& adb_config, const std::string& task)
-{
-    auto maa_handle = MaaCreate(nullptr, nullptr);
-    auto resource_handle = MaaResourceCreate((cur_dir / "cache").string().c_str(), nullptr, nullptr);
-    auto controller_handle =
-        MaaAdbControllerCreate(adb.c_str(), adb_address.c_str(),
-                               MaaAdbControllerType_Input_Preset_Minitouch | MaaAdbControllerType_Screencap_FastestWay,
-                               adb_config.c_str(), nullptr, nullptr);
-
-    MaaBindResource(maa_handle, resource_handle);
-    MaaBindController(maa_handle, controller_handle);
-
-    auto resource_id = MaaResourcePostResource(resource_handle, (cur_dir / "resource").string().c_str());
-    auto connection_id = MaaControllerPostConnection(controller_handle);
-
-    MaaResourceWait(resource_handle, resource_id);
-    MaaControllerWait(controller_handle, connection_id);
-
-    auto destroy = [&]() {
-        MaaDestroy(&maa_handle);
-        MaaResourceDestroy(&resource_handle);
-        MaaControllerDestroy(&controller_handle);
-    };
-
-    if (!MaaInited(maa_handle)) {
-        destroy();
-        return false;
-    }
-
-    auto task_id = MaaPostTask(maa_handle, task.c_str(), MaaTaskParam_Empty);
-    MaaTaskWait(maa_handle, task_id);
-
-    destroy();
-
-    return true;
-}
+                  const std::string& adb_config, const std::string& task);
 
 int main(int argc, char* argv[])
 {
@@ -187,13 +106,22 @@ int main(int argc, char* argv[])
             return -1;
         }
 
+        static const std::map<std::string_view, std::string> kAppIntents = {
+            { "Official", "com.hypergryph.arknights/com.u8.sdk.U8UnityContext" },
+            { "Bilibili", "com.hypergryph.arknights.bilibili/com.u8.sdk.U8UnityContext" },
+            { "YoStarEN", "com.YoStarEN.Arknights/com.u8.sdk.U8UnityContext" },
+            { "YoStarJP", "com.YoStarJP.Arknights/com.u8.sdk.U8UnityContext" },
+            { "YoStarKR", "com.YoStarKR.Arknights/com.u8.sdk.U8UnityContext" },
+            { "txwy", "tw.txwy.and.arknights/com.u8.sdk.U8UnityContext" }
+        };
+
         auto scmd = result["subcommand"].as<std::string>();
 
         if (scmd == "start") {
-            LogInfo << "start" << activity->start(intents[client]);
+            LogInfo << "start" << activity->start(kAppIntents.at(client));
         }
         else if (scmd == "stop") {
-            LogInfo << "stop" << activity->stop(intents[client]);
+            LogInfo << "stop" << activity->stop(kAppIntents.at(client));
         }
         else {
             LogInfo << "Usage: " << argv[0] << " activity [start | stop]";
@@ -439,4 +367,83 @@ int main(int argc, char* argv[])
     // }
 
     return 0;
+}
+
+std::string read_controller_config(const std::string& cur_dir)
+{
+    std::ifstream ifs(std::filesystem::path(cur_dir) / "controller_config.json", std::ios::in);
+    if (!ifs.is_open()) {
+        std::cerr << "Failed to open controller_config.json\n"
+                  << "Please copy controller_config.json to " << std::filesystem::path(cur_dir) << std::endl;
+        exit(1);
+    }
+
+    std::stringstream buffer;
+    buffer << ifs.rdbuf();
+    return buffer.str();
+}
+
+std::ostream& operator<<(std::ostream& os, const MAA_CTRL_UNIT_NS::DeviceResolution& res)
+{
+    return os << "{ width: " << res.width << ", height: " << res.height << " }";
+}
+
+double test_screencap(std::shared_ptr<MAA_CTRL_UNIT_NS::ScreencapAPI> scp, int count)
+{
+    std::chrono::milliseconds sum(0);
+    for (int i = 0; i < count; i++) {
+        auto now = std::chrono::steady_clock::now();
+        auto mat = scp->screencap();
+        if (mat.has_value()) {
+            auto dur = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::steady_clock::now() - now);
+
+            auto file = std::format("temp-{}.png", i);
+            cv::imwrite(file, mat.value());
+            std::cout << "image saved to " << file << std::endl;
+
+            std::cout << "time cost: " << dur.count() << "ms" << std::endl;
+            sum += dur;
+        }
+    }
+    double cost = sum.count() / double(count);
+    std::cout << "average time cost: " << cost << "ms" << std::endl;
+    return cost;
+}
+
+bool demo_waiting(const std::filesystem::path& cur_dir, const std::string& adb, const std::string& adb_address,
+                  const std::string& adb_config, const std::string& task)
+{
+    auto maa_handle = MaaCreate(nullptr, nullptr);
+    auto resource_handle = MaaResourceCreate((cur_dir / "cache").string().c_str(), nullptr, nullptr);
+    auto controller_handle =
+        MaaAdbControllerCreate(adb.c_str(), adb_address.c_str(),
+                               MaaAdbControllerType_Input_Preset_Minitouch | MaaAdbControllerType_Screencap_FastestWay,
+                               adb_config.c_str(), nullptr, nullptr);
+
+    MaaBindResource(maa_handle, resource_handle);
+    MaaBindController(maa_handle, controller_handle);
+
+    auto resource_id = MaaResourcePostResource(resource_handle, (cur_dir / "resource").string().c_str());
+    auto connection_id = MaaControllerPostConnection(controller_handle);
+
+    MaaResourceWait(resource_handle, resource_id);
+    MaaControllerWait(controller_handle, connection_id);
+
+    auto destroy = [&]() {
+        MaaDestroy(&maa_handle);
+        MaaResourceDestroy(&resource_handle);
+        MaaControllerDestroy(&controller_handle);
+    };
+
+    if (!MaaInited(maa_handle)) {
+        destroy();
+        return false;
+    }
+
+    auto task_id = MaaPostTask(maa_handle, task.c_str(), MaaTaskParam_Empty);
+    MaaTaskWait(maa_handle, task_id);
+
+    destroy();
+
+    return true;
 }
