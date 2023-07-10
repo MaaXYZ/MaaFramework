@@ -236,6 +236,7 @@ void PipelineTask::start_to_act(const FoundResult& act)
         break;
     case Type::StopApp:
         stop_app(std::get<AppInfo>(act.task_data.action_params));
+        break;
     case Type::CustomTask:
         run_custom_task(std::get<CustomTaskParams>(act.task_data.action_params));
         break;
