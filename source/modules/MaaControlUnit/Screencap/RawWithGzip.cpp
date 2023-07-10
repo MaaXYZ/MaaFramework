@@ -17,8 +17,6 @@ bool ScreencapRawWithGzip::init(int w, int h)
 
 std::optional<cv::Mat> ScreencapRawWithGzip::screencap()
 {
-    LogFunc;
-
     if (!io_ptr_) {
         LogError << "io_ptr is nullptr";
         return std::nullopt;

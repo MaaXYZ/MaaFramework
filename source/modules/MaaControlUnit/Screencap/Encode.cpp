@@ -17,8 +17,6 @@ bool ScreencapEncode::init(int w, int h)
 
 std::optional<cv::Mat> ScreencapEncode::screencap()
 {
-    LogFunc;
-
     if (!io_ptr_) {
         LogError << "io_ptr is nullptr";
         return std::nullopt;
@@ -30,8 +28,8 @@ std::optional<cv::Mat> ScreencapEncode::screencap()
         return std::nullopt;
     }
 
-    return screencap_helper_.process_data(cmd_ret.value(),
-                                std::bind(&ScreencapHelper::decode_png, &screencap_helper_, std::placeholders::_1));
+    return screencap_helper_.process_data(
+        cmd_ret.value(), std::bind(&ScreencapHelper::decode_png, &screencap_helper_, std::placeholders::_1));
 }
 
 MAA_CTRL_UNIT_NS_END

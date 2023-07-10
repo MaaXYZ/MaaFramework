@@ -53,8 +53,6 @@ void ScreencapRawByNetcat::deinit()
 
 std::optional<cv::Mat> ScreencapRawByNetcat::screencap()
 {
-    LogFunc;
-
     if (!io_ptr_) {
         LogError << "io_ptr is nullptr";
         return std::nullopt;
@@ -67,8 +65,8 @@ std::optional<cv::Mat> ScreencapRawByNetcat::screencap()
         return std::nullopt;
     }
 
-    return screencap_helper_.process_data(cmd_ret.value(),
-                                std::bind(&ScreencapHelper::decode_raw, &screencap_helper_, std::placeholders::_1));
+    return screencap_helper_.process_data(
+        cmd_ret.value(), std::bind(&ScreencapHelper::decode_raw, &screencap_helper_, std::placeholders::_1));
 }
 
 std::optional<std::string> ScreencapRawByNetcat::request_netcat_address()

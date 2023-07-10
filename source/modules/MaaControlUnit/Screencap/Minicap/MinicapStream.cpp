@@ -91,8 +91,6 @@ bool MinicapStream::init(int w, int h)
 
 std::optional<cv::Mat> MinicapStream::screencap()
 {
-    LogFunc;
-
     if (!stream_handle_) {
         return std::nullopt;
     }

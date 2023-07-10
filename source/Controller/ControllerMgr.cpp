@@ -207,7 +207,7 @@ cv::Point ControllerMgr::rand_point(const cv::Rect& r)
 
 bool ControllerMgr::run_action(typename AsyncRunner<Action>::Id id, Action action)
 {
-    LogFunc << VAR(id) << VAR(action);
+    // LogFunc << VAR(id) << VAR(action);
 
     switch (action.type) {
     case Action::Type::connect:
@@ -241,8 +241,8 @@ std::pair<int, int> ControllerMgr::preproce_touch_coord(int x, int y)
 {
     auto [res_w, res_h] = _get_resolution();
 
-    double scale_width = static_cast<double>(image_target_width_) / res_w;
-    double scale_height = static_cast<double>(image_target_height_) / res_h;
+    double scale_width = static_cast<double>(res_w) / image_target_width_;
+    double scale_height = static_cast<double>(res_h) / image_target_height_;
 
     int proced_x = static_cast<int>(std::round(x * scale_width));
     int proced_y = static_cast<int>(std::round(y * scale_height));

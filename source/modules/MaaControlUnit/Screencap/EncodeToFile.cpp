@@ -1,7 +1,7 @@
 #include "EncodeToFile.h"
 
-#include "Utils/ImageIo.hpp"
 #include "MaaUtils/Logger.hpp"
+#include "Utils/ImageIo.hpp"
 #include "Utils/NoWarningCV.h"
 #include "Utils/TempPath.hpp"
 
@@ -24,8 +24,6 @@ bool ScreencapEncodeToFileAndPull::init(int w, int h)
 
 std::optional<cv::Mat> ScreencapEncodeToFileAndPull::screencap()
 {
-    LogFunc;
-
     if (!io_ptr_) {
         LogError << "io_ptr is nullptr";
         return std::nullopt;
