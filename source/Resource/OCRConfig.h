@@ -3,8 +3,8 @@
 #include "Base/NonCopyable.hpp"
 #include "Common/MaaConf.h"
 
-#include <vector>
 #include <filesystem>
+#include <vector>
 
 MAA_SUPPRESS_CV_WARNINGS_BEGIN
 #include "fastdeploy/vision/ocr/ppocr/dbdetector.h"

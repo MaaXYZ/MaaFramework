@@ -9,9 +9,9 @@ MAA_NS_BEGIN
 
 template <typename Argv>
 concept CheckArgv = requires(Argv& argv) {
-    argv.clear();
-    argv.reserve(0);
-};
+                        argv.clear();
+                        argv.reserve(0);
+                    };
 
 template <typename Argv>
 requires IsSomeKindOfStringArray<Argv> && CheckArgv<Argv>

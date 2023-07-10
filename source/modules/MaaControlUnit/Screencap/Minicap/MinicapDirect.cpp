@@ -18,7 +18,7 @@ std::optional<cv::Mat> MinicapDirect::screencap()
         return std::nullopt;
     }
 
-    return screencap_helper_.process_data(
-        res.value(), std::bind(&ScreencapHelper::decode_jpg_with_minicap_header, &screencap_helper_, std::placeholders::_1));
+    return screencap_helper_.process_data(res.value(), std::bind(&ScreencapHelper::decode_jpg_with_minicap_header,
+                                                                 &screencap_helper_, std::placeholders::_1));
 }
 MAA_CTRL_UNIT_NS_END

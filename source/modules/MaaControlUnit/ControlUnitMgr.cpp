@@ -8,6 +8,7 @@
 #include "Input/MaatouchInput.h"
 #include "Input/MinitouchInput.h"
 #include "Input/TapInput.h"
+#include "MaaUtils/Logger.hpp"
 #include "Platform/PlatformFactory.h"
 #include "Screencap/Encode.h"
 #include "Screencap/EncodeToFile.h"
@@ -16,7 +17,6 @@
 #include "Screencap/Minicap/MinicapStream.h"
 #include "Screencap/RawByNetcat.h"
 #include "Screencap/RawWithGzip.h"
-#include "MaaUtils/Logger.hpp"
 
 MAA_CTRL_UNIT_NS_BEGIN
 
