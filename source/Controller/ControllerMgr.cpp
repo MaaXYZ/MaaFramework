@@ -208,6 +208,7 @@ cv::Point ControllerMgr::rand_point(const cv::Rect& r)
 bool ControllerMgr::run_action(typename AsyncRunner<Action>::Id id, Action action)
 {
     // LogFunc << VAR(id) << VAR(action);
+    std::ignore = id;
 
     switch (action.type) {
     case Action::Type::connect:
