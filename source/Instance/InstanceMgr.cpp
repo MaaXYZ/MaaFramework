@@ -4,6 +4,7 @@
 #include "MaaMsg.h"
 #include "MaaUtils/Logger.hpp"
 #include "Resource/ResourceMgr.h"
+#include "Task/CustomTask.h"
 #include "Task/PipelineTask.h"
 
 MAA_NS_BEGIN
@@ -105,7 +106,7 @@ MaaTaskId InstanceMgr::post_task(std::string task, std::string_view param)
         return MaaInvalidId;
     }
     auto id = task_runner_->post(task_ptr);
-    LogTrace << task_ptr->type() << VAR(id);
+    LogTrace << VAR(id);
 
     return id;
 }
@@ -126,10 +127,33 @@ bool InstanceMgr::set_task_param(MaaTaskId task_id, std::string_view param)
             return;
         }
         ret = task_ptr->set_param(*param_opt);
-        LogTrace << task_ptr->type() << VAR(ret);
+        LogTrace << VAR(id) << VAR(ret);
     });
 
     return ret;
+}
+
+void InstanceMgr::register_custom_task(std::string name, MaaCustomTaskHandle handle)
+{
+    LogInfo << VAR(name) << VAR_VOIDP(handle);
+
+    auto ptr = std::make_shared<MAA_TASK_NS::CustomTask>(std::move(name), handle, this);
+
+    custom_tasks_.insert_or_assign(std::move(name), std::move(ptr));
+}
+
+void InstanceMgr::unregister_custom_task(std::string name)
+{
+    LogInfo << VAR(name);
+
+    custom_tasks_.erase(name);
+}
+
+void InstanceMgr::clear_custom_task()
+{
+    LogInfo;
+
+    custom_tasks_.clear();
 }
 
 MaaStatus InstanceMgr::status(MaaTaskId task_id) const
@@ -205,13 +229,22 @@ InstanceStatus* InstanceMgr::status()
     return &status_;
 }
 
+MAA_TASK_NS::CustomTaskPtr InstanceMgr::custom_task(const std::string& name)
+{
+    auto it = custom_tasks_.find(name);
+    if (it == custom_tasks_.end()) {
+        LogError << "Custom task not found:" << name;
+        return nullptr;
+    }
+    return it->second;
+}
+
 bool InstanceMgr::run_task(TaskId id, TaskPtr task_ptr)
 {
     LogFunc << VAR(id) << VAR(task_ptr);
 
     const json::value details = {
         { "id", id },
-        { "type", std::string(task_ptr->type()) },
         { "uuid", get_controller_uuid() },
         { "hash", get_resource_hash() },
     };

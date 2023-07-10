@@ -315,6 +315,38 @@ MaaBool MaaInited(MaaInstanceHandle inst)
     return inst->inited();
 }
 
+void MaaRegisterCustomTask(MaaInstanceHandle inst, MaaString name, MaaCustomTaskHandle task)
+{
+    LogFunc << VAR_VOIDP(inst) << VAR(name) << VAR_VOIDP(task);
+
+    if (!inst) {
+        return;
+    }
+
+    inst->register_custom_task(name, task);
+}
+
+void MaaUnregisterCustomTask(MaaInstanceHandle inst, MaaString name)
+{
+    LogFunc << VAR_VOIDP(inst) << VAR(name);
+
+    if (!inst) {
+        return;
+    }
+    inst->unregister_custom_task(name);
+}
+
+void MaaClearCustomTask(MaaInstanceHandle inst)
+{
+    LogFunc << VAR_VOIDP(inst);
+
+    if (!inst) {
+        return;
+    }
+
+    inst->clear_custom_task();
+}
+
 MaaTaskId MaaPostTask(MaaInstanceHandle inst, MaaString task, MaaJsonString param)
 {
     LogFunc << VAR_VOIDP(inst) << VAR(task) << VAR(param);

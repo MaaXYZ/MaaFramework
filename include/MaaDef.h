@@ -119,3 +119,6 @@ typedef MaaAPICallback MaaInstanceCallback;
 
 struct MaaCustomControllerAPI;
 typedef MaaCustomControllerAPI* MaaCustomControllerHandle;
+
+struct MaaCustomTaskAPI;
+typedef MaaCustomTaskAPI* MaaCustomTaskHandle;

@@ -6,7 +6,7 @@
 
 MAA_TASK_NS_BEGIN
 
-void TaskBase::sleep(uint ms) const
+void TaskBase::sleep(unsigned ms) const
 {
     sleep(std::chrono::milliseconds(ms));
 }

@@ -14,8 +14,6 @@ public:
     virtual bool run() override;
     virtual bool set_param(const json::value& param) override;
 
-    virtual std::string_view type() const override { return "PipelineTask"; }
-
 private:
     enum class RunningResult
     {
@@ -54,6 +52,7 @@ private:
     void wait_freezes(const MAA_PIPELINE_RES_NS::Action::WaitFreezesParams& param, const cv::Rect& cur_box);
     void start_app(const MAA_PIPELINE_RES_NS::Action::AppInfo& param);
     void stop_app(const MAA_PIPELINE_RES_NS::Action::AppInfo& param);
+    void run_custom_task(const MAA_PIPELINE_RES_NS::Action::CustomTaskParams& param);
 
     cv::Rect get_target_rect(const MAA_PIPELINE_RES_NS::Action::Target type,
                              const MAA_PIPELINE_RES_NS::Action::TargetParam& param, const cv::Rect& cur_box);

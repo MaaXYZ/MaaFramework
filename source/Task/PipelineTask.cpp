@@ -1,6 +1,8 @@
 #include "PipelineTask.h"
 
 #include "Controller/ControllerMgr.h"
+#include "CustomTask.h"
+#include "Instance/InstanceStatus.h"
 #include "MaaUtils/Logger.hpp"
 #include "Resource/ResourceMgr.h"
 #include "Vision/Comparator.h"
@@ -234,6 +236,8 @@ void PipelineTask::start_to_act(const FoundResult& act)
         break;
     case Type::StopApp:
         stop_app(std::get<AppInfo>(act.task_data.action_params));
+    case Type::CustomTask:
+        run_custom_task(std::get<CustomTaskParams>(act.task_data.action_params));
         break;
     default:
         LogError << "Unknown action" << VAR(static_cast<int>(act.task_data.action_type));
@@ -322,6 +326,27 @@ void PipelineTask::stop_app(const MAA_PIPELINE_RES_NS::Action::AppInfo& param)
     using namespace MAA_VISION_NS;
 
     controller()->stop_app(param.package);
+}
+
+void PipelineTask::run_custom_task(const MAA_PIPELINE_RES_NS::Action::CustomTaskParams& param)
+{
+    if (!inst()) {
+        LogError << "Inst is null";
+        return;
+    }
+    auto task = inst()->custom_task(param.task_name);
+    if (!task) {
+        LogError << "Custom task not found" << VAR(param.task_name);
+        return;
+    }
+
+    LogFunc << "Run custom task" << VAR(param.task_name) << VAR(param.task_param);
+
+    bool ret = task->set_param(param.task_param);
+    LogTrace << "Set custom task param" << VAR(param.task_param) << VAR(ret);
+
+    ret = task->run();
+    LogTrace << "Run custom task" << VAR(ret) << VAR(param.task_name);
 }
 
 cv::Rect PipelineTask::get_target_rect(const MAA_PIPELINE_RES_NS::Action::Target type,

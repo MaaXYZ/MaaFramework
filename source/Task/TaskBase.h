@@ -20,8 +20,6 @@ public:
     virtual bool run() = 0;
     virtual bool set_param(const json::value& param) = 0;
 
-    virtual std::string_view type() const = 0;
-
 public: // from MaaInstanceSink
     virtual void on_stop() override { need_exit_ = true; }
 
@@ -32,7 +30,7 @@ protected:
 
 protected:
     bool need_exit() const { return need_exit_; }
-    void sleep(uint ms) const;
+    void sleep(unsigned ms) const;
     void sleep(std::chrono::milliseconds ms) const;
     InstanceInternalAPI* inst() const { return inst_; }
 

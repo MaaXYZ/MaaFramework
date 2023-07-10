@@ -218,7 +218,7 @@ bool PipelineConfig::parse_task(const std::string& name, const json::value& inpu
     }
 
     uint timeout = 0;
-    if (!get_and_check_value(input, "timeout", timeout, 10 * 1000U)) {
+    if (!get_and_check_value(input, "timeout", timeout, 20 * 1000U)) {
         LogError << "failed to get_and_check_value timeout" << VAR(input);
         return false;
     }
@@ -462,6 +462,7 @@ bool PipelineConfig::parse_action(const json::value& input, MAA_PIPELINE_RES_NS:
         { "WaitFreezes", Type::WaitFreezes }, //
         { "StartApp", Type::StartApp },       //
         { "StopApp", Type::StopApp },         //
+        { "CustomTask", Type::CustomTask },   //
     };
     auto act_type_iter = kActTypeMap.find(act_type_name);
     if (act_type_iter == kActTypeMap.cend()) {
@@ -473,20 +474,29 @@ bool PipelineConfig::parse_action(const json::value& input, MAA_PIPELINE_RES_NS:
     switch (out_type) {
     case Type::DoNothing:
         return true;
+
     case Type::Click:
         out_param = ClickParams {};
         return parse_click(input, std::get<ClickParams>(out_param));
     case Type::Swipe:
         out_param = SwipeParams {};
         return parse_swipe(input, std::get<SwipeParams>(out_param));
+
     case Type::WaitFreezes:
         out_param = WaitFreezesParams {};
         return parse_wait_freezes_params(input, std::get<WaitFreezesParams>(out_param));
+
     case Type::StartApp:
     case Type::StopApp:
         out_param = AppInfo {};
         return parse_app_info(input, std::get<AppInfo>(out_param));
+
+    case Type::CustomTask:
+        out_param = CustomTaskParams {};
+        return parse_custom_task_params(input, std::get<CustomTaskParams>(out_param));
+
     default:
+        LogError << "unknown act type" << VAR(static_cast<int>(out_type));
         return false;
     }
 
@@ -569,6 +579,22 @@ bool PipelineConfig::parse_app_info(const json::value& input, MAA_PIPELINE_RES_N
     if (!get_and_check_value(input, "package", output.package, std::string())) {
         LogError << "failed to get_and_check_value activity" << VAR(input);
         return false;
+    }
+
+    return true;
+}
+
+bool PipelineConfig::parse_custom_task_params(const json::value& input,
+                                              MAA_PIPELINE_RES_NS::Action::CustomTaskParams& output)
+{
+    if (!get_and_check_value(input, "custom_task", output.task_name, std::string())) {
+        LogError << "failed to get_and_check_value custom_param" << VAR(input);
+        return false;
+    }
+
+    auto param_opt = input.find("custom_param");
+    if (param_opt) {
+        output.task_param = *param_opt;
     }
 
     return true;

@@ -55,7 +55,6 @@
 /*
     {
         id: number,
-        type: [string, task type],
         uuid: [string, controller id],
         hash: [string, resource hash]
     }

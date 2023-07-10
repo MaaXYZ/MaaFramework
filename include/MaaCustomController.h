@@ -21,7 +21,7 @@ extern "C"
 
         MaaBool (*get_resolution)(int32_t* width, int32_t* height);
         // if buff is null, screencap and return image size; else return written size
-        MaaSize (*get_image)(uchar* buff, MaaSize buff_size);
+        MaaSize (*get_image)(uint8_t* buff, MaaSize buff_size);
         // if buff is null, return uuid string size; else return written size
         MaaSize (*get_uuid)(char* buff, MaaSize buff_size);
     };

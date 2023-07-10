@@ -178,6 +178,8 @@
       <Filter>Source\Base</Filter>
     </ClInclude>
     <ClInclude Include="Vision\Comparator.h" />
+    <ClInclude Include="..\include\MaaCustomTask.h" />
+    <ClInclude Include="Task\CustomTask.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Controller\ControllerMgr.cpp">
@@ -227,5 +229,6 @@
     </ClCompile>
     <ClCompile Include="Task\TaskBase.cpp" />
     <ClCompile Include="Vision\Comparator.cpp" />
+    <ClCompile Include="Task\CustomTask.cpp" />
   </ItemGroup>
 </Project>

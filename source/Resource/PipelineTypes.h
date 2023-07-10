@@ -10,6 +10,8 @@
 #include <variant>
 #include <vector>
 
+#include <meojson/json.hpp>
+
 #include "Vision/VisionTypes.h"
 
 #define MAA_PIPELINE_RES_NS MAA_RES_NS::Pipeline
@@ -45,6 +47,7 @@ enum class Type
     WaitFreezes,
     StartApp,
     StopApp,
+    CustomTask,
 };
 
 enum class Target
@@ -88,7 +91,14 @@ struct AppInfo
     std::string package;
 };
 
-using Params = std::variant<Action::ClickParams, Action::SwipeParams, Action::WaitFreezesParams, Action::AppInfo>;
+struct CustomTaskParams
+{
+    std::string task_name;
+    json::value task_param;
+};
+
+using Params = std::variant<Action::ClickParams, Action::SwipeParams, Action::WaitFreezesParams, Action::AppInfo,
+                            Action::CustomTaskParams>;
 } // namespace Action
 
 struct TaskData

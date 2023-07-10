@@ -29,6 +29,7 @@
   <ItemGroup>
     <ClInclude Include="..\include\MaaAPI.h" />
     <ClInclude Include="..\include\MaaCustomController.h" />
+    <ClInclude Include="..\include\MaaCustomTask.h" />
     <ClInclude Include="..\include\MaaPort.h" />
     <ClInclude Include="..\include\MaaDef.h" />
     <ClInclude Include="..\include\MaaMsg.h" />
@@ -47,6 +48,7 @@
     <ClInclude Include="Resource\PipelineConfig.h" />
     <ClInclude Include="Resource\ResourceMgr.h" />
     <ClInclude Include="Resource\TemplateConfig.h" />
+    <ClInclude Include="Task\CustomTask.h" />
     <ClInclude Include="Task\TaskBase.h" />
     <ClInclude Include="Task\PipelineTask.h" />
     <ClInclude Include="Resource\PipelineTypes.h" />
@@ -86,6 +88,7 @@
     <ClCompile Include="Resource\PipelineConfig.cpp" />
     <ClCompile Include="Resource\ResourceMgr.cpp" />
     <ClCompile Include="Resource\TemplateConfig.cpp" />
+    <ClCompile Include="Task\CustomTask.cpp" />
     <ClCompile Include="Task\PipelineTask.cpp" />
     <ClCompile Include="Task\TaskBase.cpp" />
     <ClCompile Include="Vision\Comparator.cpp" />

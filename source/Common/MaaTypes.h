@@ -63,6 +63,9 @@ public:
 
     virtual MaaTaskId post_task(std::string task, std::string_view param) = 0;
     virtual bool set_task_param(MaaTaskId task_id, std::string_view param) = 0;
+    virtual void register_custom_task(std::string name, MaaCustomTaskHandle handle) = 0;
+    virtual void unregister_custom_task(std::string name) = 0;
+    virtual void clear_custom_task() = 0;
 
     virtual MaaStatus status(MaaTaskId task_id) const = 0;
     virtual MaaStatus wait(MaaTaskId task_id) const = 0;

@@ -43,6 +43,7 @@ private:
     bool parse_swipe(const json::value& input, MAA_PIPELINE_RES_NS::Action::SwipeParams& output);
     bool parse_wait_freezes_params(const json::value& input, MAA_PIPELINE_RES_NS::Action::WaitFreezesParams& output);
     bool parse_app_info(const json::value& input, MAA_PIPELINE_RES_NS::Action::AppInfo& output);
+    bool parse_custom_task_params(const json::value& input, MAA_PIPELINE_RES_NS::Action::CustomTaskParams& output);
 
     bool parse_rect(const json::value& input_rect, cv::Rect& output);
     bool parse_action_target(const json::value& input, const std::string& key,

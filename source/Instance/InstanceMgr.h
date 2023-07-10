@@ -26,6 +26,10 @@ public: // from MaaInstanceAPI
 
     virtual MaaTaskId post_task(std::string task, std::string_view param) override;
     virtual bool set_task_param(MaaTaskId task_id, std::string_view param) override;
+    virtual void register_custom_task(std::string name, MaaCustomTaskHandle handle) override;
+    virtual void unregister_custom_task(std::string name) override;
+    virtual void clear_custom_task() override;
+
     virtual MaaStatus status(MaaTaskId task_id) const override;
     virtual MaaStatus wait(MaaTaskId task_id) const override;
     virtual MaaBool all_finished() const override;
@@ -39,6 +43,7 @@ public: // from InstanceInternalAPI
     virtual MAA_RES_NS::ResourceMgr* resource() override;
     virtual MAA_CTRL_NS::ControllerMgr* controller() override;
     virtual InstanceStatus* status() override;
+    virtual MAA_TASK_NS::CustomTaskPtr custom_task(const std::string& name) override;
 
 private:
     using TaskPtr = std::shared_ptr<TaskNS::TaskBase>;
@@ -50,6 +55,8 @@ private:
     MaaResourceAPI* resource_ = nullptr;
     MaaControllerAPI* controller_ = nullptr;
     InstanceStatus status_;
+
+    std::map<std::string, MAA_TASK_NS::CustomTaskPtr> custom_tasks_;
 
     std::unique_ptr<AsyncRunner<TaskPtr>> task_runner_ = nullptr;
     MessageNotifier<MaaInstanceCallback> notifier;

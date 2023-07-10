@@ -61,6 +61,9 @@ extern "C"
     MaaBool MAA_API MaaBindResource(MaaInstanceHandle inst, MaaResourceHandle res);
     MaaBool MAA_API MaaBindController(MaaInstanceHandle inst, MaaControllerHandle ctrl);
     MaaBool MAA_API MaaInited(MaaInstanceHandle inst);
+    void MAA_API MaaRegisterCustomTask(MaaInstanceHandle inst, MaaString name, MaaCustomTaskHandle task);
+    void MAA_API MaaUnregisterCustomTask(MaaInstanceHandle inst, MaaString name);
+    void MAA_API MaaClearCustomTask(MaaInstanceHandle inst);
 
     MaaTaskId MAA_API MaaPostTask(MaaInstanceHandle inst, MaaString task, MaaJsonString param);
     MaaBool MAA_API MaaSetTaskParam(MaaInstanceHandle inst, MaaTaskId id, MaaJsonString param);
