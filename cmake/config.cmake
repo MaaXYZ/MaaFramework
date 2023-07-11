@@ -11,7 +11,14 @@ elseif ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU")
         add_compile_options("-Wno-restrict")
     endif()
 elseif ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang")
-    message("clang")
+    # TODO: Check only perform on mac
+
+    set(MAC_CXX_EXPERIMENTAL_PATH "/opt/local/libexec/llvm-16/lib" CACHE STRING "path of libc++experimental.a")
+
+    add_compile_options("-fexperimental-library")
+    add_compile_options("-Wno-deprecated-declarations")
+    add_link_options("-L${MAC_CXX_EXPERIMENTAL_PATH}")
+    add_link_options("-lc++experimental")
 endif ()
 
 set(CMAKE_CXX_STANDARD 20)

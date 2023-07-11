@@ -23,7 +23,7 @@ public: // from UnitBase
 public: // from ScreencapAPI
     virtual bool init(int w, int h) override;
     virtual void deinit() override {}
-    virtual std::optional<cv::Mat> screencap() = 0;
+    virtual std::optional<cv::Mat> screencap() override = 0;
 
 protected:
     ScreencapHelper screencap_helper_;

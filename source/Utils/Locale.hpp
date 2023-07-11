@@ -6,6 +6,7 @@
 #include <fstream>
 #include <locale>
 #include <memory>
+#include <sstream>
 #include <string>
 #include <string_view>
 #ifdef _WIN32
