@@ -244,7 +244,7 @@ bool PipelineConfig::parse_task(const std::string& name, const json::value& inpu
         return false;
     }
 
-    uint pre_delay = 500U;
+    uint pre_delay = 200U;
     if (!get_and_check_value(input, "pre_delay", pre_delay, pre_delay)) {
         LogError << "failed to get_and_check_value pre_delay" << VAR(input);
         return false;
