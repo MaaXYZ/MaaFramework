@@ -104,7 +104,7 @@ using Params = std::variant<Action::ClickParams, Action::SwipeParams, Action::Wa
 struct TaskData
 {
     std::string name;
-    bool checkpoint = false;
+    bool is_sub = false;
 
     Recognition::Type rec_type = Recognition::Type::Invalid;
     Recognition::Params rec_params;

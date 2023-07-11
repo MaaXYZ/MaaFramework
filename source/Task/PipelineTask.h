@@ -3,6 +3,8 @@
 #include "Resource/PipelineTypes.h"
 #include "TaskBase.h"
 
+#include <stack>
+
 MAA_TASK_NS_BEGIN
 
 class PipelineTask : public TaskBase
@@ -59,6 +61,9 @@ private:
 
     cv::Rect get_target_rect(const MAA_PIPELINE_RES_NS::Action::Target type,
                              const MAA_PIPELINE_RES_NS::Action::TargetParam& param, const cv::Rect& cur_box);
+
+private:
+    std::stack<std::string> breakpoints_;
 };
 
 MAA_TASK_NS_END

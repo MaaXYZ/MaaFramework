@@ -87,11 +87,6 @@
           "minimum": 0,
           "default": 0
         },
-        "checkpoint": {
-          "description": "当前任务是否为检查点。可选，默认否。",
-          "type": "boolean",
-          "default": false
-        },
         "notify": {
           "description": "是否产生同步回调消息。可选，默认否。",
           "type": "boolean",

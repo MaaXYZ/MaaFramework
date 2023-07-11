@@ -197,6 +197,11 @@ bool PipelineConfig::parse_task(const std::string& name, const json::value& inpu
     TaskData data;
     data.name = name;
 
+    if (!get_and_check_value(input, "is_sub", data.is_sub, false)) {
+        LogError << "failed to get_and_check_value is_sub" << VAR(input);
+        return false;
+    }
+
     if (!parse_recognition(input, data.rec_type, data.rec_params)) {
         LogError << "failed to parse_recognition" << VAR(input);
         return false;
@@ -258,11 +263,6 @@ bool PipelineConfig::parse_task(const std::string& name, const json::value& inpu
         return false;
     }
 
-    if (!get_and_check_value(input, "checkpoint", data.checkpoint, false)) {
-        LogError << "failed to get_and_check_value checkpoint" << VAR(input);
-        return false;
-    }
-
     raw_data_.insert_or_assign(name, std::move(data));
 
     return true;
@@ -294,13 +294,13 @@ bool PipelineConfig::parse_recognition(const json::value& input, MAA_PIPELINE_RE
 
     switch (out_type) {
     case Type::DirectHit:
-        out_param = DirectHitParams {};
+        out_param = DirectHitParams{};
         return parse_direct_hit_params(input, std::get<DirectHitParams>(out_param));
     case Type::TemplateMatch:
-        out_param = TemplMatchingParams {};
+        out_param = TemplMatchingParams{};
         return parse_templ_matching_params(input, std::get<TemplMatchingParams>(out_param));
     case Type::OCR:
-        out_param = OcrParams {};
+        out_param = OcrParams{};
         return parse_ocr_params(input, std::get<OcrParams>(out_param));
     default:
         return false;
@@ -346,7 +346,7 @@ bool PipelineConfig::parse_templ_matching_params(const json::value& input, MAA_V
     }
     else if (output.template_paths.size() != output.thresholds.size()) {
         LogError << "templates.size() != thresholds.size()" << VAR(output.template_paths.size())
-                 << VAR(output.thresholds.size());
+            << VAR(output.thresholds.size());
         return false;
     }
 
@@ -476,23 +476,23 @@ bool PipelineConfig::parse_action(const json::value& input, MAA_PIPELINE_RES_NS:
         return true;
 
     case Type::Click:
-        out_param = ClickParams {};
+        out_param = ClickParams{};
         return parse_click(input, std::get<ClickParams>(out_param));
     case Type::Swipe:
-        out_param = SwipeParams {};
+        out_param = SwipeParams{};
         return parse_swipe(input, std::get<SwipeParams>(out_param));
 
     case Type::WaitFreezes:
-        out_param = WaitFreezesParams {};
+        out_param = WaitFreezesParams{};
         return parse_wait_freezes_params(input, std::get<WaitFreezesParams>(out_param));
 
     case Type::StartApp:
     case Type::StopApp:
-        out_param = AppInfo {};
+        out_param = AppInfo{};
         return parse_app_info(input, std::get<AppInfo>(out_param));
 
     case Type::CustomTask:
-        out_param = CustomTaskParams {};
+        out_param = CustomTaskParams{};
         return parse_custom_task_params(input, std::get<CustomTaskParams>(out_param));
 
     default:
