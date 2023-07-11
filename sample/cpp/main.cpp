@@ -7,37 +7,58 @@
 #include <string>
 #include <thread>
 
+bool demo_waiting();
+bool demo_polling();
 std::string read_adb_config(const std::filesystem::path& cur_dir);
-bool demo_waiting(const std::filesystem::path& cur_dir);
-bool demo_polling(const std::filesystem::path& cur_dir);
 
 std::string adb = "adb";
 std::string adb_address = "127.0.0.1:5555";
 std::string adb_config;
 
+std::string debug_dir;
+std::string cache_dir;
+std::string resource_dir;
+
+std::string task_name;
+
 int main([[maybe_unused]] int argc, char** argv)
 {
+    const auto cur_dir = std::filesystem::path(argv[0]).parent_path();
+
     if (argc == 3) {
         adb = argv[1];
         adb_address = argv[2];
     }
+    if (argc == 4) {
+        resource_dir = argv[3];
+    }
+    else {
+        resource_dir = (cur_dir / "resource").string();
+    }
+    if (argc == 5) {
+        task_name = argv[4];
+    }
+    else {
+        task_name = "StartUp";
+    }
 
-    const auto cur_dir = std::filesystem::path(argv[0]).parent_path();
+    debug_dir = (cur_dir / "debug").string();
+    cache_dir = (cur_dir / "cache").string();
+
     adb_config = read_adb_config(cur_dir);
 
-    auto log_path = (cur_dir / "debug").string();
-    MaaSetGlobalOption(MaaGlobalOption_Logging, (void*)log_path.c_str(), log_path.size());
+    MaaSetGlobalOption(MaaGlobalOption_Logging, (void*)debug_dir.c_str(), debug_dir.size());
 
-    // demo_polling(cur_dir);
-    demo_waiting(cur_dir);
+    // demo_polling();
+    demo_waiting();
 
     return 0;
 }
 
-bool demo_waiting(const std::filesystem::path& cur_dir)
+bool demo_waiting()
 {
     auto maa_handle = MaaCreate(nullptr, nullptr);
-    auto resource_handle = MaaResourceCreate((cur_dir / "cache").string().c_str(), nullptr, nullptr);
+    auto resource_handle = MaaResourceCreate(cache_dir.c_str(), nullptr, nullptr);
     auto controller_handle =
         MaaAdbControllerCreate(adb.c_str(), adb_address.c_str(),
                                MaaAdbControllerType_Input_Preset_Adb | MaaAdbControllerType_Screencap_RawWithGzip,
@@ -49,7 +70,7 @@ bool demo_waiting(const std::filesystem::path& cur_dir)
     MaaControllerSetOption(controller_handle, MaaCtrlOption_ScreenshotTargetHeight, reinterpret_cast<void*>(&height),
                            sizeof(int));
 
-    auto resource_id = MaaResourcePostResource(resource_handle, (cur_dir / "resource").string().c_str());
+    auto resource_id = MaaResourcePostResource(resource_handle, resource_dir.c_str());
     auto connection_id = MaaControllerPostConnection(controller_handle);
 
     MaaResourceWait(resource_handle, resource_id);
@@ -66,7 +87,7 @@ bool demo_waiting(const std::filesystem::path& cur_dir)
         return false;
     }
 
-    auto task_id = MaaPostTask(maa_handle, "StartUp", MaaTaskParam_Empty);
+    auto task_id = MaaPostTask(maa_handle, task_name.c_str(), MaaTaskParam_Empty);
     MaaTaskWait(maa_handle, task_id);
 
     destroy();
@@ -74,10 +95,10 @@ bool demo_waiting(const std::filesystem::path& cur_dir)
     return true;
 }
 
-bool demo_polling(const std::filesystem::path& cur_dir)
+bool demo_polling()
 {
-    auto resource_handle = MaaResourceCreate((cur_dir / "cache").string().c_str(), nullptr, nullptr);
-    auto resource_id = MaaResourcePostResource(resource_handle, (cur_dir / "resource").string().c_str());
+    auto resource_handle = MaaResourceCreate(cache_dir.c_str(), nullptr, nullptr);
+    auto resource_id = MaaResourcePostResource(resource_handle, resource_dir.c_str());
 
     auto controller_handle =
         MaaAdbControllerCreate(adb.c_str(), adb_address.c_str(),
@@ -113,7 +134,7 @@ bool demo_polling(const std::filesystem::path& cur_dir)
         return false;
     }
 
-    MaaPostTask(maa_handle, "StartUp", MaaTaskParam_Empty);
+    MaaPostTask(maa_handle, task_name.c_str(), MaaTaskParam_Empty);
 
     while (!MaaTaskAllFinished(maa_handle)) {
         std::this_thread::yield();
