@@ -25,17 +25,17 @@ int main([[maybe_unused]] int argc, char** argv)
 {
     const auto cur_dir = std::filesystem::path(argv[0]).parent_path();
 
-    if (argc == 3) {
+    if (argc >= 3) {
         adb = argv[1];
         adb_address = argv[2];
     }
-    if (argc == 4) {
+    if (argc >= 4) {
         resource_dir = argv[3];
     }
     else {
         resource_dir = (cur_dir / "resource").string();
     }
-    if (argc == 5) {
+    if (argc >= 5) {
         task_name = argv[4];
     }
     else {

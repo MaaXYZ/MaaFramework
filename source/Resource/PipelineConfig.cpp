@@ -222,8 +222,8 @@ bool PipelineConfig::parse_task(const std::string& name, const json::value& inpu
         return false;
     }
 
-    uint timeout = 0;
-    if (!get_and_check_value(input, "timeout", timeout, 20 * 1000U)) {
+    uint timeout = 20 * 1000U;
+    if (!get_and_check_value(input, "timeout", timeout, timeout)) {
         LogError << "failed to get_and_check_value timeout" << VAR(input);
         return false;
     }
@@ -244,15 +244,15 @@ bool PipelineConfig::parse_task(const std::string& name, const json::value& inpu
         return false;
     }
 
-    uint pre_delay = 0U;
-    if (!get_and_check_value(input, "pre_delay", pre_delay, 0U)) {
+    uint pre_delay = 500U;
+    if (!get_and_check_value(input, "pre_delay", pre_delay, pre_delay)) {
         LogError << "failed to get_and_check_value pre_delay" << VAR(input);
         return false;
     }
     data.pre_delay = std::chrono::milliseconds(pre_delay);
 
-    uint post_delay = 0U;
-    if (!get_and_check_value(input, "post_delay", post_delay, 0U)) {
+    uint post_delay = 500U;
+    if (!get_and_check_value(input, "post_delay", post_delay, post_delay)) {
         LogError << "failed to get_and_check_value post_delay" << VAR(input);
         return false;
     }
@@ -569,8 +569,8 @@ bool PipelineConfig::parse_wait_freezes_params(const json::value& input,
         return false;
     }
 
-    uint frozen_time = 0U;
-    if (!get_and_check_value(input, "frozen_time", frozen_time, 5 * 1000U)) {
+    uint frozen_time = 5 * 1000U;
+    if (!get_and_check_value(input, "frozen_time", frozen_time, frozen_time)) {
         LogError << "failed to get_and_check_value frozen_time" << VAR(input);
         return false;
     }
