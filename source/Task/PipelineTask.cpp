@@ -103,8 +103,6 @@ PipelineTask::RunningResult PipelineTask::find_first_and_run(const std::vector<s
 
     status()->increase_pipeline_run_times(name);
 
-    run_all(result.task_data.subtask);
-
     found_data = std::move(result.task_data);
     return RunningResult::Success;
 }

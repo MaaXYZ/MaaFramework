@@ -217,11 +217,6 @@ bool PipelineConfig::parse_task(const std::string& name, const json::value& inpu
         return false;
     }
 
-    if (!get_and_check_value_or_array(input, "subtask", data.subtask)) {
-        LogError << "failed to parse subtask" << VAR(input);
-        return false;
-    }
-
     uint timeout = 20 * 1000U;
     if (!get_and_check_value(input, "timeout", timeout, timeout)) {
         LogError << "failed to get_and_check_value timeout" << VAR(input);
