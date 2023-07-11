@@ -66,8 +66,6 @@ PipelineTask::RunningResult PipelineTask::find_first_and_run(const std::vector<s
         return RunningResult::InternalError;
     }
 
-    LogFunc << VAR(list) << VAR(find_timeout);
-
     FoundResult result;
 
     auto start_time = std::chrono::steady_clock::now();
@@ -105,8 +103,25 @@ PipelineTask::RunningResult PipelineTask::find_first_and_run(const std::vector<s
 
     status()->increase_pipeline_run_times(name);
 
+    run_all(result.task_data.subtask);
+
     found_data = std::move(result.task_data);
     return RunningResult::Success;
+}
+
+bool PipelineTask::run_all(const std::vector<std::string>& list)
+{
+    if (list.empty()) {
+        return true;
+    }
+
+    LogFunc << VAR(list);
+
+    bool ret = true;
+    for (const std::string& name : list) {
+        ret &= PipelineTask(name, inst()).run();
+    }
+    return ret;
 }
 
 std::optional<PipelineTask::FoundResult> PipelineTask::find_first(const std::vector<std::string>& list)
@@ -119,6 +134,8 @@ std::optional<PipelineTask::FoundResult> PipelineTask::find_first(const std::vec
         LogError << "Controller not binded";
         return std::nullopt;
     }
+
+    LogFunc << VAR(list);
 
     cv::Mat image = controller()->screencap();
     const auto& data_mgr = resource()->pipeline_cfg();

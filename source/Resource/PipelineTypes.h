@@ -115,6 +115,8 @@ struct TaskData
     Action::Params action_params;
     std::vector<std::string> next;
 
+    std::vector<std::string> subtask;
+
     std::chrono::milliseconds timeout;
     std::vector<std::string> timeout_next;
 

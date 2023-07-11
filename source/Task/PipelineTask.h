@@ -25,6 +25,9 @@ private:
     };
     RunningResult find_first_and_run(const std::vector<std::string>& list, std::chrono::milliseconds find_timeout,
                                      /*out*/ MAA_PIPELINE_RES_NS::TaskData& found_data);
+
+    bool run_all(const std::vector<std::string>& list);
+
     struct RecResult
     {
         cv::Rect box {};
