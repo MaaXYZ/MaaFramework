@@ -4,3 +4,6 @@
 [submodule "MaaAgentBinary"]
 	path = MaaAgentBinary
 	url = https://github.com/MaaAssistantArknights/MaaAgentBinary.git
+[submodule "tools/MaaLang"]
+	path = tools/MaaLang
+	url = https://github.com/MaaAssistantArknights/MaaLang.git
