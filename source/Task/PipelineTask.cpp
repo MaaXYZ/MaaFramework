@@ -24,7 +24,7 @@ bool PipelineTask::run()
     const auto& data_mgr = resource()->pipeline_cfg();
     auto cur_task = data_mgr.get_task_data(first_task_);
     std::vector<std::string> next_list = { first_task_ };
-    std::string pre_task_name;
+    std::string pre_main_task_name;
 
     RunningResult ret = RunningResult::Success;
     while (!next_list.empty() && !need_exit()) {
@@ -48,8 +48,11 @@ bool PipelineTask::run()
         }
 
         if (cur_task.is_sub) {
-            breakpoints_.emplace(pre_task_name);
-            LogTrace << "breakpoints add" << pre_task_name;
+            breakpoints_.emplace(pre_main_task_name);
+            LogTrace << "breakpoints add" << pre_main_task_name;
+        }
+        else {
+            pre_main_task_name = cur_task.name;
         }
 
         if (next_list.empty() && !breakpoints_.empty()) {
@@ -58,8 +61,6 @@ bool PipelineTask::run()
             next_list = data_mgr.get_task_data(point).next;
             LogTrace << "breakpoints pop" << VAR(point) << VAR(next_list);
         }
-
-        pre_task_name = cur_task.name;
     }
 
     return ret == RunningResult::Success;
