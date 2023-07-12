@@ -28,7 +28,6 @@ bool PipelineTask::run()
 
     RunningResult ret = RunningResult::Success;
     while (!next_list.empty() && !need_exit()) {
-        pre_task_name = cur_task.name;
         ret = find_first_and_run(next_list, cur_task.timeout, cur_task);
 
         switch (ret) {
@@ -59,6 +58,8 @@ bool PipelineTask::run()
             next_list = data_mgr.get_task_data(point).next;
             LogTrace << "breakpoints pop" << VAR(point) << VAR(next_list);
         }
+
+        pre_task_name = cur_task.name;
     }
 
     return ret == RunningResult::Success;
