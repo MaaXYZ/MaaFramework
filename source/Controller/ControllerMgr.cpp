@@ -108,7 +108,7 @@ MaaBool ControllerMgr::connected() const
 std::vector<uint8_t> ControllerMgr::get_image_cache() const
 {
     std::vector<uint8_t> buff;
-    cv::imencode("png", image_, buff);
+    cv::imencode(".png", image_, buff);
     return buff;
 }
 
