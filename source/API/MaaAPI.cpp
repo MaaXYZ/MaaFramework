@@ -231,15 +231,12 @@ MaaSize MaaControllerGetImage(MaaControllerHandle ctrl, void* buff, MaaSize buff
 {
     LogFunc << VAR_VOIDP(ctrl) << VAR_VOIDP(buff) << VAR(buff_size);
 
-    if (!ctrl) {
+    if (!ctrl || !buff) {
         return MaaNullSize;
     }
     auto image = ctrl->get_image_cache();
     size_t size = image.size();
-    if (!buff) {
-        return size;
-    }
-    if (size > buff_size) {
+    if (size >= buff_size) {
         return MaaNullSize;
     }
     memcpy(buff, image.data(), size);

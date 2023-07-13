@@ -7,12 +7,12 @@ endif ()
 
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_LIST_DIR}/cmake/modules")
 
-option(BUILD_MAAHELPER "build maa helper" ON)
 option(BUILD_SAMPLE "build a demo" ON)
 option(BUILD_BUSYBOX "build the busybox" OFF)
 option(INSTALL_DEVEL "install development files" OFF)
 option(INSTALL_THIRD_LIBS "install third party libraries" ON)
 option(USE_MAADEPS "use third-party libraries built by MaaDeps" ON)
+option(BUILD_EXTENSION "build a extension fo Visual Studio Code" OFF)
 
 if (CMAKE_BUILD_TYPE STREQUAL "Debug")
     add_compile_definitions(MAA_DEBUG)
@@ -42,9 +42,9 @@ find_package(ONNXRuntime)
 add_subdirectory(3rdparty)
 add_subdirectory(source)
 
-if (BUILD_MAAHELPER)
-    add_subdirectory(maahelper)
-endif (BUILD_MAAHELPER)
+if (BUILD_EXTENSION)
+    add_subdirectory(tools/extension/screencap)
+endif (BUILD_EXTENSION)
 
 if (BUILD_SAMPLE)
     add_subdirectory(sample/cpp)
