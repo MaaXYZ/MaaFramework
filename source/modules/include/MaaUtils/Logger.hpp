@@ -81,14 +81,12 @@ public:
         LogStream(LogStream&&) noexcept = default;
         ~LogStream()
         {
-            stream_endl();
-
             std::unique_lock<std::mutex> lock(mutex_);
 
 #ifdef MAA_DEBUG
-            std::cout << std::move(cout_buffer_).str();
+            std::cout << utf8_to_stdout(cout_buffer_.str()) << "\033[0m" << std::endl;
 #endif
-            stream_ << std::move(buffer_).str();
+            stream_ << std::move(buffer_).str() << std::endl;
         }
 
         template <typename T>
@@ -176,22 +174,9 @@ public:
             auto&& content = to_stream(std::forward<T>(value));
 
 #ifdef MAA_DEBUG
-            if constexpr (std::is_constructible_v<std::string_view, std::decay_t<decltype(content)>>) {
-                cout_buffer_ << utf8_to_stdout(content) << sep_.str;
-            }
-            else {
-                cout_buffer_ << content << sep_.str;
-            }
+            cout_buffer_ << content << sep_.str;
 #endif
             buffer_ << std::forward<decltype(content)>(content) << sep_.str;
-        }
-
-        void stream_endl()
-        {
-#ifdef MAA_DEBUG
-            cout_buffer_ << "\033[0m" << std::endl;
-#endif
-            buffer_ << std::endl;
         }
 
         template <typename... args_t>

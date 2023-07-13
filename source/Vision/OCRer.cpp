@@ -88,9 +88,9 @@ OCRer::ResultsVec OCRer::predict_det_and_rec(const cv::Rect& roi) const
         LogWarn << "inferencer return false" << VAR(inferencer) << VAR(image_) << VAR(roi) << VAR(image_roi);
         return {};
     }
-    if (ocr_result.boxes.size() != ocr_result.text.size()) {
-        LogError << "ocr_result.boxes.size() != ocr_result.text.size()" << VAR(ocr_result.boxes.size())
-                 << VAR(ocr_result.text.size());
+    if (ocr_result.boxes.size() != ocr_result.text.size() || ocr_result.text.size() != ocr_result.rec_scores.size()) {
+        LogError << "wrong ocr_result size" << VAR(ocr_result.boxes.size()) << VAR(ocr_result.text.size())
+                 << VAR(ocr_result.rec_scores.size());
         return {};
     }
 
@@ -115,7 +115,7 @@ OCRer::ResultsVec OCRer::predict_det_and_rec(const cv::Rect& roi) const
     }
 
     auto costs = duration_since(start_time);
-    LogTrace << VAR(results) << VAR(image_roi) << VAR(costs);
+    LogTrace << VAR(results) << VAR(image_roi.size()) << VAR(costs);
 
     return results;
 }
@@ -152,7 +152,7 @@ OCRer::Result OCRer::predict_only_rec(const cv::Rect& roi) const
     Result result { .text = std::move(rec_text), .box = roi, .score = rec_score };
 
     auto costs = duration_since(start_time);
-    LogTrace << VAR(result) << VAR(image_roi) << VAR(costs);
+    LogTrace << VAR(result) << VAR(image_roi.size()) << VAR(costs);
 
     return result;
 }
