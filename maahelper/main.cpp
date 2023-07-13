@@ -1,3 +1,5 @@
+#define _CRT_SECURE_NO_WARNINGS
+
 #include <MaaAPI.h>
 
 #include <fstream>
@@ -226,17 +228,27 @@ int main(int argc, char* argv[])
         std::cerr << "Usage: " << argv[0] << " [output_png]" << std::endl;
         return 1;
     }
+
+    std::string adb = "adb";
+    if (getenv("MAA_ADB")) {
+        adb = getenv("MAA_ADB");
+    }
+
+    std::string adb_addr = "127.0.0.1:5555";
+    if (getenv("MAA_ADB_SERIAL")) {
+        adb_addr = getenv("MAA_ADB_SERIAL");
+    }
+
     auto ctrl =
-        MaaAdbControllerCreate("adb", getenv("MAA_ADB_SERIAL"),
+        MaaAdbControllerCreate(adb.c_str(), adb_addr.c_str(),
                                MaaAdbControllerType_Input_Preset_Adb | MaaAdbControllerType_Screencap_EncodeToFile,
                                controller_config.c_str(), callback, NULL);
 
     MaaControllerWait(ctrl, MaaControllerPostConnection(ctrl));
     MaaControllerWait(ctrl, MaaControllerPostScreencap(ctrl));
-    auto size = MaaControllerGetImage(ctrl, NULL, 0);
-    std::vector<char> buf(size);
-    MaaControllerGetImage(ctrl, buf.data(), buf.size());
-    std::ofstream f(argv[1]);
-    f.write(buf.data(), buf.size());
+    static char buffer[16 << 20]; // 16M
+    auto size = MaaControllerGetImage(ctrl, buffer, 16 << 20);
+    std::ofstream f(argv[1], std::ios_base::out | std::ios_base::binary);
+    f.write(buffer, size);
     return 0;
 }
