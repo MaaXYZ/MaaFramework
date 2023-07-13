@@ -12,8 +12,9 @@ elseif ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU")
     endif()
 elseif ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang")
     # TODO: Check only perform on mac
-
     set(MAC_CXX_EXPERIMENTAL_PATH "/opt/local/libexec/llvm-16/lib" CACHE STRING "path of libc++experimental.a")
+    set(CMAKE_MACOSX_RPATH 1)
+    list(APPEND CMAKE_BUILD_RPATH "${MAC_CXX_EXPERIMENTAL_PATH}")
 
     add_compile_options("-fexperimental-library")
     add_compile_options("-Wno-deprecated-declarations")
