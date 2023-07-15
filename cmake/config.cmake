@@ -1,8 +1,17 @@
 if (MSVC)
     add_compile_options("/utf-8")
     add_compile_options("/MP")
-    add_compile_options("/W4;/WX")
+    add_compile_options("/W4;/WX;/Gy;/permissive-;/sdl")
     add_compile_options("/wd4127")  # conditional expression is constant
+
+    set(debug_comp_defs "_DEBUG")
+    add_compile_definitions("$<$<CONFIG:Debug>:${debug_comp_defs}>")
+
+    set(release_comp_options "/Oi;/O1")
+    add_compile_options("$<$<CONFIG:Release>:${release_comp_options}>")
+
+    set(release_link_options "/OPT:REF;/OPT:ICF")
+    add_link_options("$<$<CONFIG:Release>:${release_link_options}>")
 
     set(CMAKE_MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Debug>:Debug>DLL")
 elseif ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU")
