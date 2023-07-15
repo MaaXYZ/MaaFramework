@@ -174,7 +174,6 @@ jobs:
         with:
           path: assets
       - run: |
-          mv -vf assets/changelog/* .
           cd assets
           find . -type f | while read f; do mv -fvt . $f; done
       - uses: softprops/action-gh-release@v1
