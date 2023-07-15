@@ -7,7 +7,7 @@ add_subdirectory(modules/MaaControlUnit)
 
 add_library(MaaFramework SHARED ${maa_src})
 
-set(MaaFramework_PUBLIC_HEADERS ${CMAKE_CURRENT_SOURCE_DIR}/../include/MaaAPI.h)
+file(GLOB MaaFramework_PUBLIC_HEADERS ${CMAKE_CURRENT_SOURCE_DIR}/../include/*.h)
 set(MaaFramework_INCLUDE ${CMAKE_CURRENT_SOURCE_DIR}/../include)
 
 target_include_directories(MaaFramework PUBLIC ../include PRIVATE . modules/include)
@@ -29,13 +29,9 @@ target_link_libraries(MaaFramework ${OpenCV_LIBS} MaaDerpLearning ONNXRuntime::O
 #     target_link_libraries(MaaFramework range-v3::range-v3)
 # endif ()
 
-if(INSTALL_DEVEL)
-    set(MaaFramework_install_extra_args PUBLIC_HEADER DESTINATION devel/include ARCHIVE DESTINATION devel/lib)
-endif()
-
 install(TARGETS MaaFramework
     RUNTIME DESTINATION .
     LIBRARY DESTINATION .
-    PUBLIC_HEADER DESTINATION .
-    ${MaaFramework_install_extra_args}
+    PUBLIC_HEADER DESTINATION include
+    ARCHIVE DESTINATION lib
 )

@@ -438,3 +438,6 @@ enc_temp_folder/*
 
 # Nuke
 .nuke/temp/*
+
+# test install dir
+install

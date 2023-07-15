@@ -18,3 +18,10 @@ target_compile_definitions(MaaControlUnit PRIVATE MAA_DLL_EXPORTS)
 if (MAA_DEBUG_EXPORTS)
     target_compile_definitions(MaaControlUnit PRIVATE MAA_DEBUG_DLL_EXPORTS)
 endif ()
+
+install(TARGETS MaaControlUnit
+    RUNTIME DESTINATION .
+    LIBRARY DESTINATION .
+    PUBLIC_HEADER DESTINATION include
+    ARCHIVE DESTINATION lib
+)

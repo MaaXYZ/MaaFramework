@@ -9,8 +9,8 @@ list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_LIST_DIR}/cmake/modules")
 
 option(BUILD_SAMPLE "build a demo" ON)
 option(BUILD_BUSYBOX "build the busybox" OFF)
-option(INSTALL_DEVEL "install development files" OFF)
-option(INSTALL_THIRD_LIBS "install third party libraries" ON)
+# option(INSTALL_DEVEL "install development files" OFF)
+# option(INSTALL_THIRD_LIBS "install third party libraries" ON)
 option(USE_MAADEPS "use third-party libraries built by MaaDeps" ON)
 option(BUILD_EXTENSION "build a extension fo Visual Studio Code" OFF)
 
@@ -54,7 +54,7 @@ if (BUILD_BUSYBOX)
     add_subdirectory(test/busybox)
 endif (BUILD_BUSYBOX)
 
-if(INSTALL_THIRD_LIBS AND USE_MAADEPS)
+if( USE_MAADEPS)
     maadeps_install()
 endif()
 

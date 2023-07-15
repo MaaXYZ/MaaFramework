@@ -8,3 +8,10 @@ target_include_directories(MaaUtils
             ${CMAKE_CURRENT_SOURCE_DIR}/../../../include)
 target_link_libraries(MaaUtils HeaderOnlyLibraries)
 target_compile_definitions(MaaUtils PRIVATE MAA_UTILS_EXPORTS)
+
+install(TARGETS MaaUtils
+    RUNTIME DESTINATION .
+    LIBRARY DESTINATION .
+    PUBLIC_HEADER DESTINATION include
+    ARCHIVE DESTINATION lib
+)
