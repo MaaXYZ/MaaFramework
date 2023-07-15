@@ -407,36 +407,24 @@ void MaaStop(MaaInstanceHandle inst)
     inst->stop();
 }
 
-MaaSize MaaGetResourceHash(MaaInstanceHandle inst, char* buff, MaaSize buff_size)
+MaaResourceHandle MAA_API MaaGetResource(MaaInstanceHandle inst)
 {
-    LogFunc << VAR_VOIDP(inst) << VAR_VOIDP(buff) << VAR(buff_size);
+    LogFunc << VAR_VOIDP(inst);
 
-    if (!inst || !buff) {
-        return MaaNullSize;
+    if (!inst) {
+        return nullptr;
     }
-    auto hash = inst->get_resource_hash();
-    size_t size = hash.size();
-    if (size >= buff_size) {
-        return MaaNullSize;
-    }
-    memcpy(buff, hash.c_str(), size);
-    return size;
+
+    return inst->resource();
 }
 
-MaaSize MaaGetControllerUUID(MaaInstanceHandle inst, char* buff, MaaSize buff_size)
+MaaControllerHandle MAA_API MaaGetController(MaaInstanceHandle inst)
 {
-    LogFunc << VAR_VOIDP(inst) << VAR_VOIDP(buff) << VAR(buff_size);
-
-    if (!inst || !buff) {
-        return MaaNullSize;
+    LogFunc << VAR_VOIDP(inst);
+    if (!inst) {
+        return nullptr;
     }
-    auto uuid = inst->get_controller_uuid();
-    size_t size = uuid.size();
-    if (size >= buff_size) {
-        return MaaNullSize;
-    }
-    memcpy(buff, uuid.c_str(), size);
-    return size;
+    return inst->controller();
 }
 
 MaaString MaaVersion()

@@ -24,8 +24,8 @@ public: // from MaaInstanceSink
     virtual void on_stop() override { need_exit_ = true; }
 
 protected:
-    MAA_RES_NS::ResourceMgr* resource() { return inst_ ? inst_->resource() : nullptr; }
-    MAA_CTRL_NS::ControllerMgr* controller() { return inst_ ? inst_->controller() : nullptr; }
+    MAA_RES_NS::ResourceMgr* resource() { return inst_ ? inst_->inter_resource() : nullptr; }
+    MAA_CTRL_NS::ControllerMgr* controller() { return inst_ ? inst_->inter_controller() : nullptr; }
     InstanceStatus* status() { return inst_ ? inst_->status() : nullptr; }
 
 protected:

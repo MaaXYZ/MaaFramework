@@ -204,24 +204,24 @@ void InstanceMgr::stop()
     task_runner_->clear();
 }
 
-std::string InstanceMgr::get_resource_hash() const
+MaaResourceHandle InstanceMgr::resource()
 {
-    return resource_ ? resource_->get_hash() : std::string();
+    return resource_;
 }
 
-std::string InstanceMgr::get_controller_uuid() const
+MaaControllerHandle InstanceMgr::controller()
 {
-    return controller_ ? controller_->get_uuid() : std::string();
+    return controller_;
 }
 
-MAA_RES_NS::ResourceMgr* InstanceMgr::resource()
+MAA_RES_NS::ResourceMgr* InstanceMgr::inter_resource()
 {
-    return dynamic_cast<MAA_RES_NS::ResourceMgr*>(resource_);
+    return dynamic_cast<MAA_RES_NS::ResourceMgr*>(resource());
 }
 
-MAA_CTRL_NS::ControllerMgr* InstanceMgr::controller()
+MAA_CTRL_NS::ControllerMgr* InstanceMgr::inter_controller()
 {
-    return dynamic_cast<MAA_CTRL_NS::ControllerMgr*>(controller_);
+    return dynamic_cast<MAA_CTRL_NS::ControllerMgr*>(controller());
 }
 
 InstanceStatus* InstanceMgr::status()
@@ -245,8 +245,8 @@ bool InstanceMgr::run_task(TaskId id, TaskPtr task_ptr)
 
     const json::value details = {
         { "id", id },
-        { "uuid", get_controller_uuid() },
-        { "hash", get_resource_hash() },
+        { "uuid", inter_resource() ? inter_resource()->get_hash() : std::string() },
+        { "hash", inter_controller() ? inter_controller()->get_uuid() : std::string() },
     };
 
     notifier.notify(MaaMsg_Task_Started, details);

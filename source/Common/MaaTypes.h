@@ -73,6 +73,6 @@ public:
 
     virtual void stop() = 0;
 
-    virtual std::string get_resource_hash() const = 0;
-    virtual std::string get_controller_uuid() const = 0;
+    virtual MaaResourceHandle resource() = 0;
+    virtual MaaControllerHandle controller() = 0;
 };

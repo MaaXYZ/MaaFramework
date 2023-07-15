@@ -74,8 +74,8 @@ extern "C"
 
     void MAA_API MaaStop(MaaInstanceHandle inst);
 
-    MaaSize MAA_API MaaGetResourceHash(MaaInstanceHandle inst, char* buff, MaaSize buff_size);
-    MaaSize MAA_API MaaGetControllerUUID(MaaInstanceHandle inst, char* buff, MaaSize buff_size);
+    MaaResourceHandle MAA_API MaaGetResource(MaaInstanceHandle inst);
+    MaaControllerHandle MAA_API MaaGetController(MaaInstanceHandle inst);
 
     /* Utils */
 

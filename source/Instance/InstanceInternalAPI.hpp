@@ -28,8 +28,8 @@ MAA_NS_BEGIN
 struct InstanceInternalAPI : public NonCopyable
 {
 public:
-    virtual MAA_RES_NS::ResourceMgr* resource() = 0;
-    virtual MAA_CTRL_NS::ControllerMgr* controller() = 0;
+    virtual MAA_RES_NS::ResourceMgr* inter_resource() = 0;
+    virtual MAA_CTRL_NS::ControllerMgr* inter_controller() = 0;
     virtual InstanceStatus* status() = 0;
     virtual MAA_TASK_NS::CustomTaskPtr custom_task(const std::string& name) = 0;
 };

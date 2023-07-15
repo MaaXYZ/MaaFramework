@@ -36,12 +36,12 @@ public: // from MaaInstanceAPI
 
     virtual void stop() override;
 
-    virtual std::string get_resource_hash() const override;
-    virtual std::string get_controller_uuid() const override;
+    virtual MaaResourceHandle resource() override;
+    virtual MaaControllerHandle controller() override;
 
 public: // from InstanceInternalAPI
-    virtual MAA_RES_NS::ResourceMgr* resource() override;
-    virtual MAA_CTRL_NS::ControllerMgr* controller() override;
+    virtual MAA_RES_NS::ResourceMgr* inter_resource() override;
+    virtual MAA_CTRL_NS::ControllerMgr* inter_controller() override;
     virtual InstanceStatus* status() override;
     virtual MAA_TASK_NS::CustomTaskPtr custom_task(const std::string& name) override;
 
