@@ -60,7 +60,8 @@ jobs:
 
       - name: Add msbuild to PATH
         uses: microsoft/setup-msbuild@v1
-      - name: Build MaaSample
+
+      - name: Build MAA
         run: |
           MSBUILD MAA.sln /t:rebuild /p:Configuration="Release" /p:Platform="${{ matrix.msbuild_target }}" /m /p:MAA_VERSION="${{ needs.meta.outputs.tag }}"
 
