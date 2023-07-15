@@ -13,9 +13,11 @@ if (MSVC)
 
     set(release_comp_options "/Oi;/O1")
     add_compile_options("$<$<CONFIG:Release>:${release_comp_options}>")
+    add_compile_options("$<$<CONFIG:ReleaseWithDebInfo>:${release_comp_options}>")
 
     set(release_link_options "/OPT:REF;/OPT:ICF")
     add_link_options("$<$<CONFIG:Release>:${release_link_options}>")
+    add_link_options("$<$<CONFIG:ReleaseWithDebInfo>:${release_link_options}>")
 
     set(CMAKE_MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Debug>:Debug>DLL")
 elseif ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU")
