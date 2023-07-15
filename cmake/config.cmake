@@ -1,10 +1,14 @@
+# 强行覆盖优化级别，防止产生大量警告
+string(REGEX REPLACE "([\\/\\-]O)[23]" "\\11"
+  CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE}")
+
 if (MSVC)
     add_compile_options("/utf-8")
     add_compile_options("/MP")
     add_compile_options("/W4;/WX;/Gy;/permissive-;/sdl")
     add_compile_options("/wd4127")  # conditional expression is constant
 
-    set(debug_comp_defs "_DEBUG")
+    set(debug_comp_defs "_DEBUG;MAA_DEBUG")
     add_compile_definitions("$<$<CONFIG:Debug>:${debug_comp_defs}>")
 
     set(release_comp_options "/Oi;/O1")

@@ -35,3 +35,5 @@ install(TARGETS MaaFramework
     PUBLIC_HEADER DESTINATION include
     ARCHIVE DESTINATION lib
 )
+
+source_group(TREE ${CMAKE_SOURCE_DIR} FILES ${maa_src})

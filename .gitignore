@@ -441,3 +441,6 @@ enc_temp_folder/*
 
 # test install dir
 install
+
+# cmake settings
+CMakeSettings.json
