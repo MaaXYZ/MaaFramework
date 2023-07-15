@@ -176,9 +176,9 @@ jobs:
       - run: |
           cd assets
           for f in *; do
-            zip -j -r $f-${{ needs.meta.outputs.tag }}.zip $f
+            (cd $f && zip -r ../$f-${{ needs.meta.outputs.tag }}.zip .)
           done
       - uses: softprops/action-gh-release@v1
         with:
-          files: assets/*
+          files: assets/*.zip
           tag_name: ${{ needs.meta.outputs.tag }}
