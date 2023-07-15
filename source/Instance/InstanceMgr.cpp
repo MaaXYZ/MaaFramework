@@ -137,7 +137,7 @@ void InstanceMgr::register_custom_task(std::string name, MaaCustomTaskHandle han
 {
     LogInfo << VAR(name) << VAR_VOIDP(handle);
 
-    auto ptr = std::make_shared<MAA_TASK_NS::CustomTask>(std::move(name), handle, this);
+    auto ptr = std::make_shared<MAA_TASK_NS::CustomTask>(name, handle, this);
 
     custom_tasks_.insert_or_assign(std::move(name), std::move(ptr));
 }
