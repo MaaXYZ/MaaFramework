@@ -7,6 +7,8 @@ endif ()
 
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_LIST_DIR}/cmake/modules")
 
+set_property(GLOBAL PROPERTY USE_FOLDERS ON)
+
 option(BUILD_SAMPLE "build a demo" ON)
 option(BUILD_BUSYBOX "build the busybox" OFF)
 # option(INSTALL_DEVEL "install development files" OFF)

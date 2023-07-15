@@ -1,6 +1,8 @@
-# 强行覆盖优化级别，防止产生大量警告
-string(REGEX REPLACE "([\\/\\-]O)[23]" "\\11"
-  CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE}")
+set(debug_comp_defs "_DEBUG;MAA_DEBUG")
+add_compile_definitions("$<$<CONFIG:Debug>:${debug_comp_defs}>")
+
+set(rel_debug_comp_defs "MAA_DEBUG")
+add_compile_definitions("$<$<CONFIG:RelWithDebInfo>:${rel_debug_comp_defs}>")
 
 if (MSVC)
     add_compile_options("/utf-8")
@@ -8,16 +10,11 @@ if (MSVC)
     add_compile_options("/W4;/WX;/Gy;/permissive-;/sdl")
     add_compile_options("/wd4127")  # conditional expression is constant
 
-    set(debug_comp_defs "_DEBUG;MAA_DEBUG")
-    add_compile_definitions("$<$<CONFIG:Debug>:${debug_comp_defs}>")
-
-    set(release_comp_options "/Oi;/O1")
-    add_compile_options("$<$<CONFIG:Release>:${release_comp_options}>")
-    add_compile_options("$<$<CONFIG:ReleaseWithDebInfo>:${release_comp_options}>")
+    set(rel_debug_comp_options "/Od")
+    add_compile_options("$<$<CONFIG:RelWithDebInfo>:${rel_debug_comp_options}>")
 
     set(release_link_options "/OPT:REF;/OPT:ICF")
     add_link_options("$<$<CONFIG:Release>:${release_link_options}>")
-    add_link_options("$<$<CONFIG:ReleaseWithDebInfo>:${release_link_options}>")
 
     set(CMAKE_MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Debug>:Debug>DLL")
 elseif ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU")
@@ -25,6 +22,9 @@ elseif ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU")
     if (CMAKE_CXX_COMPILER_ID MATCHES "GNU" AND CMAKE_CXX_COMPILER_VERSION VERSION_LESS 13)
         add_compile_options("-Wno-restrict")
     endif()
+    
+    set(rel_debug_comp_options "-O0")
+    add_compile_options("$<$<CONFIG:RelWithDebInfo>:${rel_debug_comp_options}>")
 elseif ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang")
     # TODO: Check only perform on mac
     set(MAC_CXX_EXPERIMENTAL_PATH "/opt/local/libexec/llvm-16/lib" CACHE STRING "path of libc++experimental.a")
@@ -35,6 +35,9 @@ elseif ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang")
     add_compile_options("-Wno-deprecated-declarations")
     add_link_options("-L${MAC_CXX_EXPERIMENTAL_PATH}")
     add_link_options("-lc++experimental")
+    
+    set(rel_debug_comp_options "-O0")
+    add_compile_options("$<$<CONFIG:RelWithDebInfo>:${rel_debug_comp_options}>")
 endif ()
 
 set(CMAKE_CXX_STANDARD 20)
