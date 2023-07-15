@@ -232,6 +232,9 @@
       <Profile>true</Profile>
       <AdditionalOptions>/ignore:4286 %(AdditionalOptions)</AdditionalOptions>
     </Link>
+    <PostBuildEvent>
+      <Command>xcopy "$(SolutionDir)\include\" "$(TargetDir)\include\" /s /e /y</Command>
+    </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|ARM64'">
     <ClCompile>
@@ -258,6 +261,9 @@
       <UACExecutionLevel>RequireAdministrator</UACExecutionLevel>
       <Profile>true</Profile>
     </Link>
+    <PostBuildEvent>
+      <Command>xcopy "$(SolutionDir)\include\" "$(TargetDir)\include\" /s /e /y</Command>
+    </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">
     <ClCompile>
