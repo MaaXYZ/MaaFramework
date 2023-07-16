@@ -52,6 +52,13 @@ jobs:
     steps:
       - uses: actions/checkout@v3
 
+      # Download host arch tools for Thrift of CustomThriftController
+      - name: Download host tools from MaaDeps
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          python3 maadeps-download.py x64-windows
+
       - name: Bootstrap MaaDeps
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -99,6 +106,13 @@ jobs:
         uses: Chocobo1/setup-ccache-action@v1
         with:
           remove_stale_cache: false
+
+      # Download host arch tools for Thrift of CustomThriftController
+      - name: Download host tools from MaaDeps
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          python3 maadeps-download.py x64-linux
 
       - name: Bootstrap MaaDeps
         env:

@@ -27,122 +27,68 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\include\MaaAPI.h" />
-    <ClInclude Include="..\include\MaaCustomController.h" />
-    <ClInclude Include="..\include\MaaCustomTask.h" />
-    <ClInclude Include="..\include\MaaPort.h" />
-    <ClInclude Include="..\include\MaaDef.h" />
-    <ClInclude Include="..\include\MaaMsg.h" />
-    <ClInclude Include="Base\MessageNotifier.hpp" />
-    <ClInclude Include="Base\NonCopyable.hpp" />
-    <ClInclude Include="Common\MaaTypes.h" />
-    <ClInclude Include="Controller\CustomController.h" />
-    <ClInclude Include="Controller\CustomThriftController.h" />
-    <ClInclude Include="Instance\InstanceInternalAPI.hpp" />
-    <ClInclude Include="Instance\InstanceStatus.h" />
-    <ClInclude Include="Option\GlobalOptionMgr.h" />
-    <ClInclude Include="Controller\AdbController.h" />
-    <ClInclude Include="Common\MaaConf.h" />
-    <ClInclude Include="Controller\ControllerMgr.h" />
-    <ClInclude Include="Instance\InstanceMgr.h" />
-    <ClInclude Include="Resource\OCRConfig.h" />
-    <ClInclude Include="Resource\PipelineConfig.h" />
-    <ClInclude Include="Resource\ResourceMgr.h" />
-    <ClInclude Include="Resource\TemplateConfig.h" />
-    <ClInclude Include="Task\CustomTask.h" />
-    <ClInclude Include="Task\TaskBase.h" />
-    <ClInclude Include="Task\PipelineTask.h" />
-    <ClInclude Include="Resource\PipelineTypes.h" />
-    <ClInclude Include="Base\AsyncRunner.hpp" />
-    <ClInclude Include="Utils\ArgvWrapper.hpp" />
-    <ClInclude Include="Utils\Demangle.hpp" />
-    <ClInclude Include="Utils\File.hpp" />
-    <ClInclude Include="Utils\ImageIo.hpp" />
-    <ClInclude Include="Utils\Locale.hpp" />
-    <ClInclude Include="Utils\Math.hpp" />
-    <ClInclude Include="Utils\NoWarningCV.h" />
-    <ClInclude Include="Utils\NoWarningCVMat.h" />
-    <ClInclude Include="Utils\Platform.hpp" />
-    <ClInclude Include="Utils\Platform\PlatformImpl.hpp" />
-    <ClInclude Include="Utils\Platform\SafeWindows.h" />
-    <ClInclude Include="Utils\Ranges.hpp" />
-    <ClInclude Include="Base\SingletonHolder.hpp" />
-    <ClInclude Include="Utils\StringMisc.hpp" />
-    <ClInclude Include="Utils\TempPath.hpp" />
-    <ClInclude Include="Utils\Time.hpp" />
-    <ClInclude Include="Vision\Comparator.h" />
-    <ClInclude Include="Vision\Matcher.h" />
-    <ClInclude Include="Vision\OCRer.h" />
-    <ClInclude Include="Vision\VisionTypes.h" />
-    <ClInclude Include="Vision\VisionUtils.hpp" />
-    <ClInclude Include="Vision\VisionBase.h" />
+    <CustomBuild Include="..\..\..\include\interfaces\ThriftController.thrift">
+      <FileType>Document</FileType>
+      <Command>mkdir $(OutDirFullPath)$(ProjectName)
+..\..\..\MaaDeps\vcpkg\installed\maa-$(PreferredToolArchitecture)-windows\tools\thrift\thrift.exe --gen cpp:no_skeleton --out $(OutDirFullPath)$(ProjectName) %(FullPath)</Command>
+      <Message>Generate ThriftController</Message>
+      <Outputs>$(OutDirFullPath)$(ProjectName)\%(Filename).cpp;$(OutDirFullPath)$(ProjectName)\%(Filename).h;$(OutDirFullPath)$(ProjectName)\%(Filename)_types.cpp;$(OutDirFullPath)$(ProjectName)\%(Filename)_types.h</Outputs>
+      <TreatOutputAsContent>true</TreatOutputAsContent>
+    </CustomBuild>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="Controller\AdbController.cpp" />
-    <ClCompile Include="Controller\ControllerMgr.cpp" />
-    <ClCompile Include="Controller\CustomController.cpp" />
-    <ClCompile Include="Controller\CustomThriftController.cpp" />
-    <ClCompile Include="Instance\InstanceMgr.cpp" />
-    <ClCompile Include="API\MaaAPI.cpp" />
-    <ClCompile Include="Instance\InstanceStatus.cpp" />
-    <ClCompile Include="Option\GlobalOptionMgr.cpp" />
-    <ClCompile Include="Resource\OCRConfig.cpp" />
-    <ClCompile Include="Resource\PipelineConfig.cpp" />
-    <ClCompile Include="Resource\ResourceMgr.cpp" />
-    <ClCompile Include="Resource\TemplateConfig.cpp" />
-    <ClCompile Include="Task\CustomTask.cpp" />
-    <ClCompile Include="Task\PipelineTask.cpp" />
-    <ClCompile Include="Task\TaskBase.cpp" />
-    <ClCompile Include="Vision\Comparator.cpp" />
-    <ClCompile Include="Vision\Matcher.cpp" />
-    <ClCompile Include="Vision\OCRer.cpp" />
-    <ClCompile Include="Vision\VisionBase.cpp" />
+    <ClCompile Include="$(OutDirFullPath)$(ProjectName)\ThriftController.cpp" />
+    <ClCompile Include="$(OutDirFullPath)$(ProjectName)\ThriftController_types.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="$(OutDirFullPath)$(ProjectName)\ThriftController.h" />
+    <ClInclude Include="$(OutDirFullPath)$(ProjectName)\ThriftController_types.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>16.0</VCProjectVersion>
     <Keyword>Win32Proj</Keyword>
-    <ProjectGuid>{362d1e30-f5ae-4279-9985-65c27b3ba300}</ProjectGuid>
+    <ProjectGuid>{8238edb1-19bf-4e3b-af5b-016120d59d7b}</ProjectGuid>
     <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
     <PreferredToolArchitecture>x64</PreferredToolArchitecture>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
-    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <ConfigurationType>StaticLibrary</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
     <PlatformToolset>v143</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|ARM64'" Label="Configuration">
-    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <ConfigurationType>StaticLibrary</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
     <PlatformToolset>v143</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'" Label="Configuration">
-    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <ConfigurationType>StaticLibrary</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
     <PlatformToolset>v143</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
-    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <ConfigurationType>StaticLibrary</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
     <PlatformToolset>v143</PlatformToolset>
     <WholeProgramOptimization>false</WholeProgramOptimization>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|ARM64'" Label="Configuration">
-    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <ConfigurationType>StaticLibrary</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
     <PlatformToolset>v143</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|ARM64'" Label="Configuration">
-    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <ConfigurationType>StaticLibrary</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
     <PlatformToolset>v143</PlatformToolset>
     <WholeProgramOptimization>false</WholeProgramOptimization>
@@ -174,37 +120,37 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
-    <IncludePath>$(ProjectDir)..\include;$(ProjectDir)modules\include;$(ProjectDir)..\3rdparty\include;$(OutDir)\MaaThriftController</IncludePath>
+    <IncludePath>$(ProjectDir)..\include;$(ProjectDir)..\..\..\include;$(ProjectDir)..\..\;$(ProjectDir)..\..\..\3rdparty\include</IncludePath>
     <LibraryPath>$(SolutionDir)\$(Platform)\$(Configuration)\;$(LibraryPath)</LibraryPath>
     <OutDir>$(SolutionDir)\$(Platform)\$(Configuration)\</OutDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|ARM64'">
     <LinkIncremental>false</LinkIncremental>
-    <IncludePath>$(ProjectDir)..\include;$(ProjectDir)modules\include;$(ProjectDir)..\3rdparty\include;$(ProjectDir);$(OutDir)\MaaThriftController</IncludePath>
+    <IncludePath>$(ProjectDir)..\include;$(ProjectDir)..\..\..\include;$(ProjectDir)..\..\;$(ProjectDir)..\..\..\3rdparty\include</IncludePath>
     <LibraryPath>$(SolutionDir)\$(Platform)\$(Configuration)\;$(LibraryPath)</LibraryPath>
     <OutDir>$(SolutionDir)$(Platform)\$(Configuration)\</OutDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">
     <LinkIncremental>false</LinkIncremental>
-    <IncludePath>$(ProjectDir)..\include;$(ProjectDir)modules\include;$(ProjectDir)..\3rdparty\include;$(OutDir)\MaaThriftController</IncludePath>
+    <IncludePath>$(ProjectDir)..\include;$(ProjectDir)..\..\..\include;$(ProjectDir)..\..\;$(ProjectDir)..\..\..\3rdparty\include</IncludePath>
     <LibraryPath>$(SolutionDir)\$(Platform)\$(Configuration)\;$(LibraryPath)</LibraryPath>
     <OutDir>$(SolutionDir)\$(Platform)\$(Configuration)\</OutDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
-    <IncludePath>$(ProjectDir)..\include;$(ProjectDir)modules\include;$(ProjectDir)..\3rdparty\include;$(OutDir)\MaaThriftController</IncludePath>
+    <IncludePath>$(ProjectDir)..\include;$(ProjectDir)..\..\..\include;$(ProjectDir)..\..\;$(ProjectDir)..\..\..\3rdparty\include</IncludePath>
     <LibraryPath>$(SolutionDir)\$(Platform)\$(Configuration)\;$(LibraryPath)</LibraryPath>
     <OutDir>$(SolutionDir)\$(Platform)\$(Configuration)\</OutDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|ARM64'">
     <LinkIncremental>false</LinkIncremental>
-    <IncludePath>$(ProjectDir)..\include;$(ProjectDir)modules\include;$(ProjectDir)..\3rdparty\include;$(ProjectDir);$(OutDir)\MaaThriftController</IncludePath>
+    <IncludePath>$(ProjectDir)..\include;$(ProjectDir)..\..\..\include;$(ProjectDir)..\..\;$(ProjectDir)..\..\..\3rdparty\include</IncludePath>
     <LibraryPath>$(SolutionDir)\$(Platform)\$(Configuration)\;$(LibraryPath)</LibraryPath>
     <OutDir>$(SolutionDir)$(Platform)\$(Configuration)\</OutDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|ARM64'">
     <LinkIncremental>true</LinkIncremental>
-    <IncludePath>$(ProjectDir)..\include;$(ProjectDir)modules\include;$(ProjectDir)..\3rdparty\include;$(ProjectDir);$(OutDir)\MaaThriftController</IncludePath>
+    <IncludePath>$(ProjectDir)..\include;$(ProjectDir)..\..\..\include;$(ProjectDir)..\..\;$(ProjectDir)..\..\..\3rdparty\include</IncludePath>
     <LibraryPath>$(SolutionDir)\$(Platform)\$(Configuration)\;$(LibraryPath)</LibraryPath>
     <OutDir>$(SolutionDir)$(Platform)\$(Configuration)\</OutDir>
   </PropertyGroup>
@@ -214,7 +160,7 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>NDEBUG;_CONSOLE;MAA_DLL_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp20</LanguageStandard>
       <LanguageStandard_C>stdc11</LanguageStandard_C>
@@ -229,14 +175,11 @@
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>MaaUtils.lib;MaaControlUnit.lib;MaaDerpLearning.lib;MaaThriftController.lib;opencv_world4.lib;thriftmd.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>ws2_32.lib;thriftmd.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <UACExecutionLevel>RequireAdministrator</UACExecutionLevel>
       <Profile>true</Profile>
       <AdditionalOptions>/ignore:4286 %(AdditionalOptions)</AdditionalOptions>
     </Link>
-    <PostBuildEvent>
-      <Command>xcopy "$(SolutionDir)\include\" "$(TargetDir)\include\" /s /e /y</Command>
-    </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|ARM64'">
     <ClCompile>
@@ -244,7 +187,7 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>NDEBUG;_CONSOLE;MAA_DLL_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp20</LanguageStandard>
       <LanguageStandard_C>stdc11</LanguageStandard_C>
@@ -259,20 +202,17 @@
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>MaaUtils.lib;MaaControlUnit.lib;MaaDerpLearning.lib;MaaThriftController.lib;opencv_world4.lib;thriftmd.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>ws2_32.lib;thriftmd.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <UACExecutionLevel>RequireAdministrator</UACExecutionLevel>
       <Profile>true</Profile>
     </Link>
-    <PostBuildEvent>
-      <Command>xcopy "$(SolutionDir)\include\" "$(TargetDir)\include\" /s /e /y</Command>
-    </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">
     <ClCompile>
       <WarningLevel>Level4</WarningLevel>
       <IntrinsicFunctions>false</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>NDEBUG;_CONSOLE;MAA_DLL_EXPORTS;MAA_DEBUG;MAA_DEBUG_DLL_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp20</LanguageStandard>
       <LanguageStandard_C>stdc11</LanguageStandard_C>
@@ -288,7 +228,7 @@
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>MaaUtils.lib;MaaControlUnit.lib;MaaDerpLearning.lib;MaaThriftController.lib;opencv_world4.lib;thriftmd.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>ws2_32.lib;thriftmd.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <UACExecutionLevel>RequireAdministrator</UACExecutionLevel>
       <Profile>true</Profile>
     </Link>
@@ -298,7 +238,7 @@
       <WarningLevel>Level4</WarningLevel>
       <IntrinsicFunctions>false</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>_CONSOLE;_DEBUG;MAA_DLL_EXPORTS;MAA_DEBUG;MAA_DEBUG_DLL_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_CONSOLE;_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp20</LanguageStandard>
       <LanguageStandard_C>stdc11</LanguageStandard_C>
@@ -313,7 +253,7 @@
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>MaaUtils.lib;MaaControlUnit.lib;MaaDerpLearning.lib;MaaThriftController.lib;opencv_world4d.lib;thriftmdd.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>ws2_32.lib;thriftmdd.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <UACExecutionLevel>RequireAdministrator</UACExecutionLevel>
     </Link>
   </ItemDefinitionGroup>
@@ -322,7 +262,7 @@
       <WarningLevel>Level4</WarningLevel>
       <IntrinsicFunctions>false</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>NDEBUG;_CONSOLE;MAA_DLL_EXPORTS;MAA_DEBUG;MAA_DEBUG_DLL_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp20</LanguageStandard>
       <LanguageStandard_C>stdc11</LanguageStandard_C>
@@ -338,7 +278,7 @@
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>MaaUtils.lib;MaaControlUnit.lib;MaaDerpLearning.lib;MaaThriftController.lib;opencv_world4.lib;thriftmd.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>ws2_32.lib;thriftmd.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <UACExecutionLevel>RequireAdministrator</UACExecutionLevel>
       <Profile>true</Profile>
     </Link>
@@ -348,7 +288,7 @@
       <WarningLevel>Level4</WarningLevel>
       <IntrinsicFunctions>false</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>_CONSOLE;_DEBUG;MAA_DLL_EXPORTS;MAA_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_CONSOLE;_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp20</LanguageStandard>
       <LanguageStandard_C>stdc11</LanguageStandard_C>
@@ -363,7 +303,7 @@
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>MaaUtils.lib;MaaControlUnit.lib;MaaDerpLearning.lib;MaaThriftController.lib;opencv_world4d.lib;thriftmdd.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>ws2_32.lib;thriftmd.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <UACExecutionLevel>RequireAdministrator</UACExecutionLevel>
     </Link>
   </ItemDefinitionGroup>

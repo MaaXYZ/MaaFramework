@@ -4,6 +4,7 @@
 
 #include "Controller/AdbController.h"
 #include "Controller/CustomController.h"
+#include "Controller/CustomThriftController.h"
 #include "Instance/InstanceMgr.h"
 #include "MaaControlUnit/ControlUnitAPI.h"
 #include "MaaUtils/Logger.hpp"
@@ -127,6 +128,20 @@ MaaControllerHandle MaaCustomControllerCreate(MaaCustomControllerHandle handle, 
     }
 
     return new MAA_CTRL_NS::CustomController(handle, callback, callback_arg);
+}
+
+MaaControllerHandle MAA_API MaaThriftControllerCreate(MaaString param, MaaControllerCallback callback,
+                                                      MaaCallbackTransparentArg callback_arg)
+{
+    LogFunc << VAR(param) << VAR_VOIDP(callback) << VAR_VOIDP(callback_arg);
+
+    try {
+        return new MAA_CTRL_NS::CustomThriftController(param, callback, callback_arg);
+    }
+    catch (const std::exception& e) {
+        LogError << "Failed to create thrift controller: " << e.what();
+        return nullptr;
+    }
 }
 
 void MaaControllerDestroy(MaaControllerHandle ctrl)

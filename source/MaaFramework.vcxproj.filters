@@ -126,6 +126,9 @@
     <ClInclude Include="Controller\CustomController.h">
       <Filter>Source\Controller</Filter>
     </ClInclude>
+    <ClInclude Include="Controller\CustomThriftController.h">
+      <Filter>Source\Controller</Filter>
+    </ClInclude>
     <ClInclude Include="Option\GlobalOptionMgr.h">
       <Filter>Source\GlobalOption</Filter>
     </ClInclude>
@@ -204,6 +207,9 @@
       <Filter>Source\API</Filter>
     </ClCompile>
     <ClCompile Include="Controller\CustomController.cpp">
+      <Filter>Source\Controller</Filter>
+    </ClCompile>
+    <ClCompile Include="Controller\CustomThriftController.cpp">
       <Filter>Source\Controller</Filter>
     </ClCompile>
     <ClCompile Include="Option\GlobalOptionMgr.cpp">
