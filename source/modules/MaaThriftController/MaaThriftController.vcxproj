@@ -36,14 +36,6 @@
       <TreatOutputAsContent>true</TreatOutputAsContent>
     </CustomBuild>
   </ItemGroup>
-  <ItemGroup>
-    <ClCompile Include="$(OutDirFullPath)$(ProjectName)\ThriftController.cpp" />
-    <ClCompile Include="$(OutDirFullPath)$(ProjectName)\ThriftController_types.cpp" />
-  </ItemGroup>
-  <ItemGroup>
-    <ClInclude Include="$(OutDirFullPath)$(ProjectName)\ThriftController.h" />
-    <ClInclude Include="$(OutDirFullPath)$(ProjectName)\ThriftController_types.h" />
-  </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>16.0</VCProjectVersion>
     <Keyword>Win32Proj</Keyword>
