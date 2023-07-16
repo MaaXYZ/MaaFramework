@@ -77,9 +77,9 @@ bool demo_waiting()
     MaaControllerWait(controller_handle, connection_id);
 
     auto destroy = [&]() {
-        MaaDestroy(&maa_handle);
-        MaaResourceDestroy(&resource_handle);
-        MaaControllerDestroy(&controller_handle);
+        MaaDestroy(maa_handle);
+        MaaResourceDestroy(resource_handle);
+        MaaControllerDestroy(controller_handle);
     };
 
     if (!MaaInited(maa_handle)) {
@@ -124,9 +124,9 @@ bool demo_polling()
     MaaBindController(maa_handle, controller_handle);
 
     auto destroy = [&]() {
-        MaaDestroy(&maa_handle);
-        MaaResourceDestroy(&resource_handle);
-        MaaControllerDestroy(&controller_handle);
+        MaaDestroy(maa_handle);
+        MaaResourceDestroy(resource_handle);
+        MaaControllerDestroy(controller_handle);
     };
 
     if (!MaaInited(maa_handle)) {

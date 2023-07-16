@@ -264,7 +264,7 @@ MaaInstanceHandle MaaCreate(MaaInstanceCallback callback, MaaCallbackTransparent
     return new MAA_NS::InstanceMgr(callback, callback_arg);
 }
 
-void MaaDestroy(MaaInstanceHandle* inst)
+void MaaDestroy(MaaInstanceHandle inst)
 {
     LogFunc << VAR_VOIDP(inst);
 
