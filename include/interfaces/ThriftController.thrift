@@ -17,6 +17,9 @@ struct SwipeStep {
 struct SwipeParams {
   1: list<SwipeStep> steps,
 }
+struct PressKeyParams {
+  1: i32 keycode,
+}
 
 struct CustomImage {
   1: Size size,
@@ -31,7 +34,7 @@ service ThriftController {
   bool connect(),
   bool click(1: ClickParams param),
   bool swipe(1: SwipeParams param),
-  bool press_key(1: i32 keycode),
+  bool press_key(1: PressKeyParams param),
 
   bool start_game(1: string activity),
   bool stop_game(1: string activity),

@@ -95,6 +95,18 @@ void CustomController::_swipe(SwipeParams param)
     handle_->swipe(x_buf.data(), y_buf.data(), delay_buf.data(), size);
 }
 
+void CustomController::_press_key(PressKeyParams param)
+{
+    LogFunc << VAR_VOIDP(handle_) << VAR_VOIDP(handle_->press_key) << VAR(param.keycode);
+
+    if (!handle_ || !handle_->press_key) {
+        LogError << "handle_ or handle_->press_key is nullptr";
+        return;
+    }
+
+    handle_->press_key(param.keycode);
+}
+
 cv::Mat CustomController::_screencap()
 {
     LogFunc << VAR_VOIDP(handle_) << VAR_VOIDP(handle_->get_image);

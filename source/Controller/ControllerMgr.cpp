@@ -147,6 +147,11 @@ void ControllerMgr::swipe(const cv::Point& p1, const cv::Point& p2, int duration
     action_runner_->post({ .type = Action::Type::swipe, .params = std::move(params) }, true);
 }
 
+void ControllerMgr::press_key(int keycode)
+{
+    action_runner_->post({ .type = Action::Type::press_key, .params = PressKeyParams { .keycode = keycode } }, true);
+}
+
 cv::Mat ControllerMgr::screencap()
 {
     std::unique_lock<std::mutex> lock(image_mutex_);
@@ -220,6 +225,9 @@ bool ControllerMgr::run_action(typename AsyncRunner<Action>::Id id, Action actio
         return true;
     case Action::Type::swipe:
         _swipe(std::get<SwipeParams>(action.params));
+        return true;
+    case Action::Type::press_key:
+        _press_key(std::get<PressKeyParams>(action.params));
         return true;
 
     case Action::Type::screencap:

@@ -262,6 +262,7 @@ void PipelineTask::start_to_act(const FoundResult& act)
     case Type::Swipe:
         swipe(std::get<SwipeParams>(act.task_data.action_params), act.rec.box);
         break;
+    case Type::Key:
         break;
     case Type::StartApp:
         start_app(std::get<AppInfo>(act.task_data.action_params));
@@ -304,6 +305,17 @@ void PipelineTask::swipe(const MAA_PIPELINE_RES_NS::Action::SwipeParams& param, 
     cv::Rect end = get_target_rect(param.end, param.end_param, cur_box);
 
     controller()->swipe(begin, end, param.duration);
+}
+
+void PipelineTask::press_key(const MAA_PIPELINE_RES_NS::Action::KeyParams& param)
+{
+    if (!controller()) {
+        LogError << "Controller is null";
+        return;
+    }
+    for (const auto& key : param.keys) {
+        controller()->press_key(key);
+    }
 }
 
 void PipelineTask::wait_freezes(const MAA_PIPELINE_RES_NS::WaitFreezesParams& param, const cv::Rect& cur_box)

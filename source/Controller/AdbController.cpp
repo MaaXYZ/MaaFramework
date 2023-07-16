@@ -140,6 +140,20 @@ void AdbController::_swipe(SwipeParams param)
     }
 }
 
+void AdbController::_press_key(PressKeyParams param)
+{
+    if (!unit_mgr_ || !unit_mgr_->key_input_obj()) {
+        LogError << "unit is nullptr" << VAR(unit_mgr_) << VAR(unit_mgr_->key_input_obj());
+        return;
+    }
+
+    bool ret = unit_mgr_->key_input_obj()->press_key(param.keycode);
+
+    if (!ret) {
+        LogError << "failed to press_key";
+    }
+}
+
 cv::Mat AdbController::_screencap()
 {
     if (!unit_mgr_ || !unit_mgr_->screencap_obj()) {

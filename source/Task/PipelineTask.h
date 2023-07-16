@@ -54,6 +54,8 @@ private:
 private:
     void click(const MAA_PIPELINE_RES_NS::Action::ClickParams& param, const cv::Rect& cur_box);
     void swipe(const MAA_PIPELINE_RES_NS::Action::SwipeParams& param, const cv::Rect& cur_box);
+    void press_key(const MAA_PIPELINE_RES_NS::Action::KeyParams& param);
+
     void start_app(const MAA_PIPELINE_RES_NS::Action::AppInfo& param);
     void stop_app(const MAA_PIPELINE_RES_NS::Action::AppInfo& param);
     void run_custom_task(const MAA_PIPELINE_RES_NS::Action::CustomTaskParams& param);

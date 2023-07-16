@@ -32,6 +32,10 @@ struct SwipeParams
     };
     std::vector<Step> steps;
 };
+struct PressKeyParams
+{
+    int keycode = 0;
+};
 struct AppParams
 {
     std::string package;
@@ -39,7 +43,7 @@ struct AppParams
 
 std::ostream& operator<<(std::ostream& os, const SwipeParams::Step& step);
 
-using Params = std::variant<ClickParams, SwipeParams, AppParams>;
+using Params = std::variant<ClickParams, SwipeParams, PressKeyParams, AppParams>;
 
 struct Action
 {
@@ -48,6 +52,7 @@ struct Action
         connect,
         click,
         swipe,
+        press_key,
         screencap,
         start_app,
         stop_app,
@@ -85,6 +90,7 @@ public:
     void click(const cv::Point& p);
     void swipe(const cv::Rect& r1, const cv::Rect& r2, int duration);
     void swipe(const cv::Point& p1, const cv::Point& p2, int duration);
+    void press_key(int keycode);
     cv::Mat screencap();
 
     void start_app();
@@ -97,6 +103,7 @@ protected:
     virtual std::pair<int, int> _get_resolution() const = 0;
     virtual void _click(ClickParams param) = 0;
     virtual void _swipe(SwipeParams param) = 0;
+    virtual void _press_key(PressKeyParams param) = 0;
     virtual cv::Mat _screencap() = 0;
     virtual bool _start_app(AppParams param) = 0;
     virtual bool _stop_app(AppParams param) = 0;

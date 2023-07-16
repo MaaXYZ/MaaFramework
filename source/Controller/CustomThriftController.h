@@ -18,6 +18,7 @@ protected:
     virtual std::pair<int, int> _get_resolution() const override;
     virtual void _click(ClickParams param) override;
     virtual void _swipe(SwipeParams param) override;
+    virtual void _press_key(PressKeyParams param) override;
     virtual cv::Mat _screencap() override;
     virtual bool _start_app(AppParams param) override;
     virtual bool _stop_app(AppParams param) override;

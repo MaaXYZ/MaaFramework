@@ -466,12 +466,10 @@ bool PipelineConfig::parse_action(const json::value& input, MAA_PIPELINE_RES_NS:
     }
 
     static const std::unordered_map<std::string, Type> kActTypeMap = {
-        { "DoNothing", Type::DoNothing },   //
-        { "Click", Type::Click },           //
-        { "Swipe", Type::Swipe },           //
-        { "Key", Type::Key },               //
-        { "StopApp", Type::StopApp },       //
-        { "CustomTask", Type::CustomTask }, //
+        { "DoNothing", Type::DoNothing },   { "Click", Type::Click },
+        { "Swipe", Type::Swipe },           { "Key", Type::Key },
+        { "StartApp", Type::StartApp },     { "StopApp", Type::StopApp },
+        { "CustomTask", Type::CustomTask },
     };
     auto act_type_iter = kActTypeMap.find(act_type_name);
     if (act_type_iter == kActTypeMap.cend()) {
@@ -550,10 +548,18 @@ bool PipelineConfig::parse_swipe(const json::value& input, MAA_PIPELINE_RES_NS::
 
 bool PipelineConfig::parse_key_press(const json::value& input, MAA_PIPELINE_RES_NS::Action::KeyParams& output)
 {
-    if (!get_and_check_value_or_array(input, "key", output.keys)) {
-        LogError << "failed to get_and_check_value_or_array key" << VAR(input);
-        return false;
+    std::string str_keys;
+    if (!get_and_check_value(input, "key", str_keys, std::string())) {
+        if (!get_and_check_value_or_array(input, "key", output.keys)) {
+            LogError << "failed to get_and_check_value_or_array key" << VAR(input);
+            return false;
+        }
     }
+    else {
+        ranges::transform(str_keys, std::back_inserter(output.keys), [](char c) { return static_cast<int>(c); });
+        LogTrace << "key press" << VAR(str_keys) << VAR(output.keys);
+    }
+
     return true;
 }
 

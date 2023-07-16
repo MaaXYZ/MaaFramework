@@ -157,6 +157,21 @@ void CustomThriftController::_swipe(SwipeParams param)
     client_->swipe(swipe_param);
 }
 
+void CustomThriftController::_press_key(PressKeyParams param)
+{
+    LogFunc;
+
+    if (!client_ || !transport_->isOpen()) {
+        LogError << "client_ is nullptr or transport_ is not open";
+        return;
+    }
+
+    ThriftController::PressKeyParams thrift_param;
+    thrift_param.keycode = param.keycode;
+
+    client_->press_key(thrift_param);
+}
+
 cv::Mat CustomThriftController::_screencap()
 {
     LogFunc;
