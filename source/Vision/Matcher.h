@@ -25,8 +25,8 @@ public:
     ResultOpt analyze() const;
 
 private:
-    ResultOpt traverse_rois(const cv::Mat& templ, double threshold) const;
-    ResultOpt match_and_postproc(const cv::Rect& roi, const cv::Mat& templ, double threshold) const;
+    Result traverse_rois(const cv::Mat& templ, double threshold) const;
+    Result match_and_postproc(const cv::Rect& roi, const cv::Mat& templ) const;
 
     TemplMatchingParams param_;
 };

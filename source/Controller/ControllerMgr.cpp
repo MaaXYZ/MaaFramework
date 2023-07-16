@@ -156,7 +156,7 @@ cv::Mat ControllerMgr::screencap()
 {
     std::unique_lock<std::mutex> lock(image_mutex_);
     action_runner_->post({ .type = Action::Type::screencap }, true);
-    return image_;
+    return image_.clone();
 }
 
 void ControllerMgr::start_app()

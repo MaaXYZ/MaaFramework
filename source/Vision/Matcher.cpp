@@ -31,45 +31,47 @@ Matcher::ResultOpt Matcher::analyze() const
             continue;
         }
         double threshold = param_.thresholds.at(i);
+        auto start = std::chrono::steady_clock::now();
 
-        LogTrace << param_.template_paths.at(i) << VAR(i) << VAR(threshold);
-        auto ret = traverse_rois(templ, threshold);
-        if (ret) {
-            return ret;
+        auto res = traverse_rois(templ, threshold);
+
+        auto costs = duration_since(start);
+        LogTrace << param_.template_paths.at(i) << VAR(res.score) << VAR(threshold) << VAR(costs);
+
+        if (res.score > threshold) {
+            return res;
         }
     }
 
     return std::nullopt;
 }
 
-Matcher::ResultOpt Matcher::traverse_rois(const cv::Mat& templ, double threshold) const
+Matcher::Result Matcher::traverse_rois(const cv::Mat& templ, double threshold) const
 {
     if (!cache_.empty()) {
-        return match_and_postproc(cache_, templ, threshold);
+        return match_and_postproc(cache_, templ);
     }
 
     if (param_.roi.empty()) {
-        return match_and_postproc(cv::Rect(0, 0, image_.cols, image_.rows), templ, threshold);
+        return match_and_postproc(cv::Rect(0, 0, image_.cols, image_.rows), templ);
     }
 
     for (const cv::Rect& roi : param_.roi) {
-        auto opt = match_and_postproc(roi, templ, threshold);
-        if (opt) {
-            return opt;
+        auto res = match_and_postproc(roi, templ);
+        if (res.score > threshold) {
+            return res;
         }
     }
 
-    return std::nullopt;
+    return {};
 }
 
-Matcher::ResultOpt Matcher::match_and_postproc(const cv::Rect& roi, const cv::Mat& templ, double threshold) const
+Matcher::Result Matcher::match_and_postproc(const cv::Rect& roi, const cv::Mat& templ) const
 {
-    auto start = std::chrono::steady_clock::now();
-
     cv::Mat image = image_with_roi(roi);
     cv::Mat matched = match_template(image, templ, param_.method, param_.green_mask);
     if (matched.empty()) {
-        return std::nullopt;
+        return {};
     }
 
     double min_val = 0.0, max_val = 0.0;
@@ -80,16 +82,7 @@ Matcher::ResultOpt Matcher::match_and_postproc(const cv::Rect& roi, const cv::Ma
         max_val = 0;
     }
 
-    if (max_val < threshold) {
-        return std::nullopt;
-    }
-
     cv::Rect box(max_loc.x + roi.x, max_loc.y + roi.y, templ.cols, templ.rows);
-
-    if (max_val > threshold * 0.7) {
-        auto costs = duration_since(start);
-        LogTrace << VAR(box) << VAR(max_val) << VAR(costs);
-    }
 
     return Result { .box = box, .score = max_val };
 }

@@ -1,5 +1,6 @@
 #include "Comparator.h"
 
+#include "MaaUtils/Logger.hpp"
 #include "Utils/NoWarningCV.h"
 #include "VisionUtils.hpp"
 
@@ -19,8 +20,11 @@ Comparator::Result Comparator::analyze(const cv::Mat& lhs, const cv::Mat& rhs) c
     for (const cv::Rect& roi : param_.roi) {
         cv::Mat lhs_roi = lhs(correct_roi(roi, lhs));
         cv::Mat rhs_roi = rhs(correct_roi(roi, rhs));
-        bool ret = comp(lhs_roi, rhs_roi, param_.method) > param_.threshold;
-        if (!ret) {
+        double similarity = comp(lhs_roi, rhs_roi, param_.method);
+
+        LogTrace << VAR(roi) << VAR(similarity) << VAR(param_.threshold);
+
+        if (similarity < param_.threshold) {
             return false;
         }
     }

@@ -330,6 +330,8 @@ void PipelineTask::wait_freezes(const MAA_PIPELINE_RES_NS::WaitFreezesParams& pa
     }
     using namespace MAA_VISION_NS;
 
+    LogFunc << VAR(param.time);
+
     cv::Rect target = get_target_rect(param.target, param.target_param, cur_box);
 
     Comparator comp;
@@ -339,8 +341,8 @@ void PipelineTask::wait_freezes(const MAA_PIPELINE_RES_NS::WaitFreezesParams& pa
         .method = param.method,
     });
 
-    auto pre_time = std::chrono::steady_clock::now();
     cv::Mat pre_image = controller()->screencap();
+    auto pre_time = std::chrono::steady_clock::now();
 
     while (!need_exit()) {
         cv::Mat cur_image = controller()->screencap();
