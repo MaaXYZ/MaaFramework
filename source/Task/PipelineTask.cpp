@@ -250,6 +250,7 @@ void PipelineTask::start_to_act(const FoundResult& act)
 {
     using namespace MAA_PIPELINE_RES_NS::Action;
 
+    wait_freezes(act.task_data.pre_wait_freezes, act.rec.box);
     sleep(act.task_data.pre_delay);
 
     switch (act.task_data.action_type) {
@@ -261,8 +262,6 @@ void PipelineTask::start_to_act(const FoundResult& act)
     case Type::Swipe:
         swipe(std::get<SwipeParams>(act.task_data.action_params), act.rec.box);
         break;
-    case Type::WaitFreezes:
-        wait_freezes(std::get<WaitFreezesParams>(act.task_data.action_params), act.rec.box);
         break;
     case Type::StartApp:
         start_app(std::get<AppInfo>(act.task_data.action_params));
@@ -278,6 +277,7 @@ void PipelineTask::start_to_act(const FoundResult& act)
         break;
     }
 
+    wait_freezes(act.task_data.post_wait_freezes, act.rec.box);
     sleep(act.task_data.post_delay);
 }
 
@@ -306,8 +306,12 @@ void PipelineTask::swipe(const MAA_PIPELINE_RES_NS::Action::SwipeParams& param, 
     controller()->swipe(begin, end, param.duration);
 }
 
-void PipelineTask::wait_freezes(const MAA_PIPELINE_RES_NS::Action::WaitFreezesParams& param, const cv::Rect& cur_box)
+void PipelineTask::wait_freezes(const MAA_PIPELINE_RES_NS::WaitFreezesParams& param, const cv::Rect& cur_box)
 {
+    if (param.time <= std::chrono::milliseconds(0)) {
+        return;
+    }
+
     if (!controller()) {
         LogError << "Controller is null";
         return;
@@ -334,7 +338,7 @@ void PipelineTask::wait_freezes(const MAA_PIPELINE_RES_NS::Action::WaitFreezesPa
             continue;
         }
 
-        if (duration_since(pre_time) > param.frozen_time) {
+        if (duration_since(pre_time) > param.time) {
             break;
         }
     }

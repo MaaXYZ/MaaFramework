@@ -44,10 +44,11 @@ enum class Type
     DoNothing,
     Click,
     Swipe,
-    WaitFreezes,
+    Key,
     StartApp,
     StopApp,
     CustomTask,
+    // InputText, // TODO
 };
 
 enum class Target
@@ -76,14 +77,9 @@ struct SwipeParams
     uint duration = 0;
 };
 
-struct WaitFreezesParams
+struct KeyParams
 {
-    Target target = Target::Invalid;
-    TargetParam target_param;
-
-    double threshold = 0.0;
-    int method = 0;
-    std::chrono::milliseconds frozen_time;
+    std::vector<int> keys;
 };
 
 struct AppInfo
@@ -97,9 +93,19 @@ struct CustomTaskParams
     json::value task_param;
 };
 
-using Params = std::variant<Action::ClickParams, Action::SwipeParams, Action::WaitFreezesParams, Action::AppInfo,
-                            Action::CustomTaskParams>;
+using Params = std::variant<ClickParams, SwipeParams, KeyParams, AppInfo, CustomTaskParams>;
 } // namespace Action
+
+struct WaitFreezesParams
+{
+    std::chrono::milliseconds time;
+
+    Action::Target target = Action::Target::Invalid;
+    Action::TargetParam target_param;
+
+    double threshold = 0.0;
+    int method = 0;
+};
 
 struct TaskData
 {
@@ -123,6 +129,9 @@ struct TaskData
 
     std::chrono::milliseconds pre_delay;
     std::chrono::milliseconds post_delay;
+
+    WaitFreezesParams pre_wait_freezes;
+    WaitFreezesParams post_wait_freezes;
 
     std::string notification;
 };

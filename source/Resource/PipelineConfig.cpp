@@ -258,6 +258,16 @@ bool PipelineConfig::parse_task(const std::string& name, const json::value& inpu
     }
     data.post_delay = std::chrono::milliseconds(post_delay);
 
+    if (!parse_wait_freezes_params(input, "pre_wait_freezes", data.pre_wait_freezes)) {
+        LogError << "failed to pre_wait_freezes" << VAR(input);
+        return false;
+    }
+
+    if (!parse_wait_freezes_params(input, "post_wait_freezes", data.post_wait_freezes)) {
+        LogError << "failed to post_wait_freezes" << VAR(input);
+        return false;
+    }
+
     if (!get_and_check_value(input, "notification", data.notification, std::string())) {
         LogError << "failed to get_and_check_value notification" << VAR(input);
         return false;
@@ -294,13 +304,13 @@ bool PipelineConfig::parse_recognition(const json::value& input, MAA_PIPELINE_RE
 
     switch (out_type) {
     case Type::DirectHit:
-        out_param = DirectHitParams{};
+        out_param = DirectHitParams {};
         return parse_direct_hit_params(input, std::get<DirectHitParams>(out_param));
     case Type::TemplateMatch:
-        out_param = TemplMatchingParams{};
+        out_param = TemplMatchingParams {};
         return parse_templ_matching_params(input, std::get<TemplMatchingParams>(out_param));
     case Type::OCR:
-        out_param = OcrParams{};
+        out_param = OcrParams {};
         return parse_ocr_params(input, std::get<OcrParams>(out_param));
     default:
         return false;
@@ -346,7 +356,7 @@ bool PipelineConfig::parse_templ_matching_params(const json::value& input, MAA_V
     }
     else if (output.template_paths.size() != output.thresholds.size()) {
         LogError << "templates.size() != thresholds.size()" << VAR(output.template_paths.size())
-            << VAR(output.thresholds.size());
+                 << VAR(output.thresholds.size());
         return false;
     }
 
@@ -456,13 +466,12 @@ bool PipelineConfig::parse_action(const json::value& input, MAA_PIPELINE_RES_NS:
     }
 
     static const std::unordered_map<std::string, Type> kActTypeMap = {
-        { "DoNothing", Type::DoNothing },     //
-        { "Click", Type::Click },             //
-        { "Swipe", Type::Swipe },             //
-        { "WaitFreezes", Type::WaitFreezes }, //
-        { "StartApp", Type::StartApp },       //
-        { "StopApp", Type::StopApp },         //
-        { "CustomTask", Type::CustomTask },   //
+        { "DoNothing", Type::DoNothing },   //
+        { "Click", Type::Click },           //
+        { "Swipe", Type::Swipe },           //
+        { "Key", Type::Key },               //
+        { "StopApp", Type::StopApp },       //
+        { "CustomTask", Type::CustomTask }, //
     };
     auto act_type_iter = kActTypeMap.find(act_type_name);
     if (act_type_iter == kActTypeMap.cend()) {
@@ -476,23 +485,23 @@ bool PipelineConfig::parse_action(const json::value& input, MAA_PIPELINE_RES_NS:
         return true;
 
     case Type::Click:
-        out_param = ClickParams{};
+        out_param = ClickParams {};
         return parse_click(input, std::get<ClickParams>(out_param));
     case Type::Swipe:
-        out_param = SwipeParams{};
+        out_param = SwipeParams {};
         return parse_swipe(input, std::get<SwipeParams>(out_param));
 
-    case Type::WaitFreezes:
-        out_param = WaitFreezesParams{};
-        return parse_wait_freezes_params(input, std::get<WaitFreezesParams>(out_param));
+    case Type::Key:
+        out_param = KeyParams {};
+        return parse_key_press(input, std::get<KeyParams>(out_param));
 
     case Type::StartApp:
     case Type::StopApp:
-        out_param = AppInfo{};
+        out_param = AppInfo {};
         return parse_app_info(input, std::get<AppInfo>(out_param));
 
     case Type::CustomTask:
-        out_param = CustomTaskParams{};
+        out_param = CustomTaskParams {};
         return parse_custom_task_params(input, std::get<CustomTaskParams>(out_param));
 
     default:
@@ -539,38 +548,12 @@ bool PipelineConfig::parse_swipe(const json::value& input, MAA_PIPELINE_RES_NS::
     return true;
 }
 
-bool PipelineConfig::parse_wait_freezes_params(const json::value& input,
-                                               MAA_PIPELINE_RES_NS::Action::WaitFreezesParams& output)
+bool PipelineConfig::parse_key_press(const json::value& input, MAA_PIPELINE_RES_NS::Action::KeyParams& output)
 {
-    if (!parse_action_target(input, "target", output.target, output.target_param)) {
-        LogError << "failed to parse_action_target" << VAR(input);
+    if (!get_and_check_value_or_array(input, "key", output.keys)) {
+        LogError << "failed to get_and_check_value_or_array key" << VAR(input);
         return false;
     }
-
-    // if (!parse_roi(input, output.roi)) {
-    //     LogError << "failed to parse_roi" << VAR(input);
-    //     return false;
-    // }
-
-    constexpr double kDefaultThreshold = 0.95;
-    if (!get_and_check_value(input, "threshold", output.threshold, kDefaultThreshold)) {
-        LogError << "failed to get_and_check_value threshold" << VAR(input);
-        return false;
-    }
-
-    constexpr int kDefaultMethod = 5; // cv::TM_CCOEFF_NORMED
-    if (!get_and_check_value(input, "method", output.method, kDefaultMethod)) {
-        LogError << "failed to get_and_check_value method" << VAR(input);
-        return false;
-    }
-
-    uint frozen_time = 5 * 1000U;
-    if (!get_and_check_value(input, "frozen_time", frozen_time, frozen_time)) {
-        LogError << "failed to get_and_check_value frozen_time" << VAR(input);
-        return false;
-    }
-    output.frozen_time = std::chrono::milliseconds(frozen_time);
-
     return true;
 }
 
@@ -598,6 +581,61 @@ bool PipelineConfig::parse_custom_task_params(const json::value& input,
     }
 
     return true;
+}
+
+bool PipelineConfig::parse_wait_freezes_params(const json::value& input, const std::string& key,
+                                               MAA_PIPELINE_RES_NS::WaitFreezesParams& output)
+{
+    using namespace MAA_PIPELINE_RES_NS;
+
+    auto opt = input.find(key);
+    if (!opt) {
+        output = WaitFreezesParams {};
+        return true;
+    }
+
+    const auto& field = *opt;
+
+    output = WaitFreezesParams {
+        .time = std::chrono::milliseconds(1),
+        .target = Action::Target::Self,
+        .target_param = {},
+        .threshold = 0.95,
+        .method = 5,
+    };
+
+    if (field.is_number()) {
+        output.time = std::chrono::milliseconds(field.as_unsigned());
+        return true;
+    }
+    else if (field.is_object()) {
+        uint time = 1U;
+        if (!get_and_check_value(field, "time", time, time)) {
+            LogError << "failed to parse_wait_freezes_params time" << VAR(field);
+            return false;
+        }
+        output.time = std::chrono::milliseconds(time);
+
+        if (!parse_action_target(field, "target", output.target, output.target_param)) {
+            LogError << "failed to parse_wait_freezes_params parse_action_target" << VAR(field);
+            return false;
+        }
+
+        if (!get_and_check_value(field, "threshold", output.threshold, output.threshold)) {
+            LogError << "failed to parse_wait_freezes_params threshold" << VAR(field);
+            return false;
+        }
+
+        if (!get_and_check_value(field, "method", output.method, output.method)) {
+            LogError << "failed to parse_wait_freezes_params method" << VAR(field);
+            return false;
+        }
+        return true;
+    }
+    else {
+        LogError << "invalid wait_freezes_params" << VAR(field);
+        return false;
+    }
 }
 
 bool PipelineConfig::parse_rect(const json::value& input_rect, cv::Rect& output)
