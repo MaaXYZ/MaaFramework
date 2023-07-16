@@ -52,7 +52,7 @@ jobs:
     steps:
       - uses: actions/checkout@v3
 
-      # Download host arch tools
+      # Download host arch tools for Thrift of CustomThriftController
       - name: Download host tools from MaaDeps
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -107,7 +107,7 @@ jobs:
         with:
           remove_stale_cache: false
 
-      # Download host arch tools
+      # Download host arch tools for Thrift of CustomThriftController
       - name: Download host tools from MaaDeps
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
