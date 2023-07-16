@@ -56,14 +56,14 @@ bool AdbController::_connect()
 
     bool connected = unit_mgr_->connection_obj()->connect();
     if (!connected) {
-        notifier.notify(MaaMsg_Controller_ConnectFalied, { { "why", "ConnectFailed" } });
+        notifier.notify(MaaMsg_Controller_ConnectFailed, { { "why", "ConnectFailed" } });
         LogError << "failed to connect";
         return false;
     }
 
     if (!unit_mgr_->device_info_obj()->request_uuid()) {
         notifier.notify(MaaMsg_Controller_UUIDGetFailed);
-        notifier.notify(MaaMsg_Controller_ConnectFalied, { { "why", "UUIDGetFailed" } });
+        notifier.notify(MaaMsg_Controller_ConnectFailed, { { "why", "UUIDGetFailed" } });
         LogError << "failed to request_uuid";
         return false;
     }
@@ -72,7 +72,7 @@ bool AdbController::_connect()
 
     if (!unit_mgr_->device_info_obj()->request_resolution()) {
         notifier.notify(MaaMsg_Controller_ResolutionGetFailed);
-        notifier.notify(MaaMsg_Controller_ConnectFalied, { { "why", "ResolutionGetFailed" } });
+        notifier.notify(MaaMsg_Controller_ConnectFailed, { { "why", "ResolutionGetFailed" } });
         LogError << "failed to request_resolution";
         return false;
     }
@@ -82,16 +82,16 @@ bool AdbController::_connect()
 
     if (!unit_mgr_->screencap_obj()->init(w, h)) {
         notifier.notify(MaaMsg_Controller_ScreencapInitFailed);
-        notifier.notify(MaaMsg_Controller_ConnectFalied, { { "why", "ScreencapInitFailed" } });
-        LogError << "falied to init screencap";
+        notifier.notify(MaaMsg_Controller_ConnectFailed, { { "why", "ScreencapInitFailed" } });
+        LogError << "failed to init screencap";
         return false;
     }
     notifier.notify(MaaMsg_Controller_ScreencapInited);
 
     if (!unit_mgr_->touch_input_obj()->init(w, h)) {
         notifier.notify(MaaMsg_Controller_TouchInputInitFailed);
-        notifier.notify(MaaMsg_Controller_ConnectFalied, { { "why", "TouchInputInitFailed" } });
-        LogError << "falied to init touch_input";
+        notifier.notify(MaaMsg_Controller_ConnectFailed, { { "why", "TouchInputInitFailed" } });
+        LogError << "failed to init touch_input";
         return false;
     }
     notifier.notify(MaaMsg_Controller_TouchInputInited);

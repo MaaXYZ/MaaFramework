@@ -50,7 +50,7 @@
 /* {
 *      "why": string
 } */
-#define MaaMsg_Controller_ConnectFalied ("Controller.ConnectFailed")
+#define MaaMsg_Controller_ConnectFailed ("Controller.ConnectFailed")
 
 /*
     {
