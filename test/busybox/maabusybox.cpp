@@ -430,9 +430,9 @@ bool demo_waiting(const std::filesystem::path& cur_dir, const std::string& adb, 
     MaaControllerWait(controller_handle, connection_id);
 
     auto destroy = [&]() {
-        MaaDestroy(&maa_handle);
-        MaaResourceDestroy(&resource_handle);
-        MaaControllerDestroy(&controller_handle);
+        MaaDestroy(maa_handle);
+        MaaResourceDestroy(resource_handle);
+        MaaControllerDestroy(controller_handle);
     };
 
     if (!MaaInited(maa_handle)) {

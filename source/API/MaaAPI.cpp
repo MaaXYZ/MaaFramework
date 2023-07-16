@@ -27,15 +27,14 @@ MaaResourceHandle MaaResourceCreate(MaaString user_path, MaaResourceCallback cal
     return new MAA_RES_NS::ResourceMgr(MAA_NS::path(user_path), callback, callback_arg);
 }
 
-void MaaResourceDestroy(MaaResourceHandle* res)
+void MaaResourceDestroy(MaaResourceHandle res)
 {
     LogFunc << VAR_VOIDP(res);
 
-    if (res == nullptr || *res == nullptr) {
+    if (res == nullptr) {
         return;
     }
-    delete *res;
-    *res = nullptr;
+    delete res;
 }
 
 MaaResId MaaResourcePostResource(MaaResourceHandle res, MaaString path)
@@ -145,15 +144,14 @@ MaaControllerHandle MAA_API MaaThriftControllerCreate(MaaString param, MaaContro
     }
 }
 
-void MaaControllerDestroy(MaaControllerHandle* ctrl)
+void MaaControllerDestroy(MaaControllerHandle ctrl)
 {
     LogFunc << VAR_VOIDP(ctrl);
 
-    if (ctrl == nullptr || *ctrl == nullptr) {
+    if (ctrl == nullptr) {
         return;
     }
-    delete *ctrl;
-    *ctrl = nullptr;
+    delete ctrl;
 }
 
 MaaBool MaaControllerSetOption(MaaControllerHandle ctrl, MaaCtrlOption key, MaaOptionValue value,
@@ -281,15 +279,14 @@ MaaInstanceHandle MaaCreate(MaaInstanceCallback callback, MaaCallbackTransparent
     return new MAA_NS::InstanceMgr(callback, callback_arg);
 }
 
-void MaaDestroy(MaaInstanceHandle* inst)
+void MaaDestroy(MaaInstanceHandle inst)
 {
     LogFunc << VAR_VOIDP(inst);
 
-    if (inst == nullptr || *inst == nullptr) {
+    if (inst == nullptr) {
         return;
     }
-    delete *inst;
-    *inst = nullptr;
+    delete inst;
 }
 
 MaaBool MaaSetOption(MaaInstanceHandle inst, MaaInstOption key, MaaOptionValue value, MaaOptionValueSize val_size)

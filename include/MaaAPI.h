@@ -13,7 +13,7 @@ extern "C"
 
     MaaResourceHandle MAA_API MaaResourceCreate(MaaString user_path, MaaResourceCallback callback,
                                                 MaaCallbackTransparentArg callback_arg);
-    void MAA_API MaaResourceDestroy(MaaResourceHandle* res);
+    void MAA_API MaaResourceDestroy(MaaResourceHandle res);
 
     MaaResId MAA_API MaaResourcePostResource(MaaResourceHandle res, MaaString path);
     MaaStatus MAA_API MaaResourceStatus(MaaResourceHandle res, MaaResId id);
@@ -35,7 +35,7 @@ extern "C"
     MaaControllerHandle MAA_API MaaThriftControllerCreate(MaaString param, MaaControllerCallback callback,
                                                           MaaCallbackTransparentArg callback_arg);
 
-    void MAA_API MaaControllerDestroy(MaaControllerHandle* ctrl);
+    void MAA_API MaaControllerDestroy(MaaControllerHandle ctrl);
 
     MaaBool MAA_API MaaControllerSetOption(MaaControllerHandle ctrl, MaaCtrlOption key, MaaOptionValue value,
                                            MaaOptionValueSize val_size);
@@ -56,7 +56,7 @@ extern "C"
     /* Instance */
 
     MaaInstanceHandle MAA_API MaaCreate(MaaInstanceCallback callback, MaaCallbackTransparentArg callback_arg);
-    void MAA_API MaaDestroy(MaaInstanceHandle* inst);
+    void MAA_API MaaDestroy(MaaInstanceHandle inst);
     MaaBool MAA_API MaaSetOption(MaaInstanceHandle inst, MaaInstOption key, MaaOptionValue value,
                                  MaaOptionValueSize val_size);
 
