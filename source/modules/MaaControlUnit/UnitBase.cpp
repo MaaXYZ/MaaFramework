@@ -57,7 +57,7 @@ bool UnitBase::parse_argv(const std::string& key, const json::value& config, Arg
     return true;
 }
 
-std::optional<std::string> UnitBase::command(Argv::value cmd, bool recv_by_socket, int64_t timeout)
+std::optional<std::string> UnitBase::command(const Argv::value& cmd, bool recv_by_socket, int64_t timeout)
 {
     if (!io_ptr_) {
         LogError << "io_ptr is nullptr";
@@ -72,7 +72,8 @@ std::optional<std::string> UnitBase::command(Argv::value cmd, bool recv_by_socke
 
     auto duration = duration_since(start_time);
 
-    LogTrace << VAR(cmd) << VAR(ret) << VAR(pipe_data.size()) << VAR(sock_data.size()) << VAR(duration);
+    std::string scmd = json::array(cmd).to_string();
+    LogTrace << VAR(scmd) << VAR(ret) << VAR(pipe_data.size()) << VAR(sock_data.size()) << VAR(duration);
 
     if (!pipe_data.empty() && pipe_data.size() < 4096) {
         LogTrace << Logger::separator::newline << "stdout output:" << pipe_data;

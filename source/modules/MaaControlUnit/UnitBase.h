@@ -25,7 +25,7 @@ public:
 protected:
     static bool parse_argv(const std::string& key, const json::value& config, /*out*/ Argv& argv);
 
-    std::optional<std::string> command(Argv::value cmd, bool recv_by_socket = false, int64_t timeout = 20000);
+    std::optional<std::string> command(const Argv::value& cmd, bool recv_by_socket = false, int64_t timeout = 20000);
 
 protected:
     std::shared_ptr<PlatformIO> io_ptr_ = nullptr;
