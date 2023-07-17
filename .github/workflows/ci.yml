@@ -78,9 +78,12 @@ jobs:
         run: |
           MSBUILD MAA.sln /t:rebuild /p:MAA_VERSION="${{ needs.meta.outputs.tag }}" /p:Configuration="Release" /p:Platform="${{ matrix.msbuild_target }}" /m
 
-      - name: Copy docs
+      - name: Install
+        shell: bash
         run: |
-          xcopy docs ${{ matrix.msbuild_target }}\Release\docs\ /s /e /y
+          cp -r docs ${{ matrix.msbuild_target }}/Release
+          rm -rf ${{ matrix.msbuild_target }}/MaaThriftController
+          
 
       - uses: actions/upload-artifact@v3
         with:
