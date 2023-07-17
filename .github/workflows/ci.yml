@@ -4,9 +4,12 @@ on:
   push:
     tags:
       - 'v*'
+    branches:
+      - '**'
     paths:
       - '.github/workflows/ci.yml'
       - '3rdparty/include/**'
+      - 'MaaDeps/**'
       - 'include/**'
       - 'source/**'
       - 'sample/**'
@@ -14,9 +17,12 @@ on:
       - 'CMakeLists.txt'
       - '*.sln'
   pull_request:
+    branches:
+      - '**'
     paths:
       - '.github/workflows/ci.yml'
       - '3rdparty/include/**'
+      - 'MaaDeps/**'
       - 'include/**'
       - 'source/**'
       - 'sample/**'

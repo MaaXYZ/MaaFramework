@@ -2,6 +2,8 @@ name: test
 
 on:
   push:
+    branches:
+      - '**'
     paths:
       - '.github/workflows/smoke-testing.yml'
       - '3rdparty/include/**'
@@ -11,9 +13,11 @@ on:
       - 'cmake/**'
       - 'CMakeLists.txt'
       - '*.sln'
-      - 'resource/**'
+      - 'assets/**'
       - 'MaaDeps/**'
   pull_request:
+    branches:
+      - '**'
     paths:
       - '.github/workflows/smoke-testing.yml'
       - '3rdparty/include/**'
@@ -23,7 +27,7 @@ on:
       - 'cmake/**'
       - 'CMakeLists.txt'
       - '*.sln'
-      - 'resource/**'
+      - 'assets/**'
       - 'MaaDeps/**'
   workflow_dispatch:
 
