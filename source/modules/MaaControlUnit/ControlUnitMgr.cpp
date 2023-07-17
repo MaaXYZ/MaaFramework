@@ -18,6 +18,8 @@
 #include "Screencap/RawByNetcat.h"
 #include "Screencap/RawWithGzip.h"
 
+#pragma message("MAA_VERSION: " MAA_VERSION)
+
 MAA_CTRL_UNIT_NS_BEGIN
 
 bool ControlUnitMgr::parse(const json::value& config)

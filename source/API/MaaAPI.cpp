@@ -12,6 +12,8 @@
 #include "Resource/ResourceMgr.h"
 #include "Utils/Platform.hpp"
 
+#pragma message("MAA_VERSION: " MAA_VERSION)
+
 MaaString MaaVersion()
 {
     return MAA_VERSION;

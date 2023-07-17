@@ -1,5 +1,7 @@
 #include "MaaUtils/Logger.hpp"
 
+#pragma message("MAA_VERSION: " MAA_VERSION)
+
 MAA_NS_BEGIN
 
 Logger& Logger::get_instance()

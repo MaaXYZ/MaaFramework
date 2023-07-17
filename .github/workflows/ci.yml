@@ -76,7 +76,7 @@ jobs:
 
       - name: Build MAA
         run: |
-          MSBUILD MAA.sln /t:rebuild /p:Configuration="Release" /p:Platform="${{ matrix.msbuild_target }}" /m /p:MAA_VERSION="${{ needs.meta.outputs.tag }}"
+          MSBUILD MAA.sln /t:rebuild /p:MAA_VERSION="${{ needs.meta.outputs.tag }}" /p:Configuration="Release" /p:Platform="${{ matrix.msbuild_target }}" /m
 
       - name: Copy docs
         run: |
