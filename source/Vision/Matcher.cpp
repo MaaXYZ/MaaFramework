@@ -56,14 +56,15 @@ Matcher::Result Matcher::traverse_rois(const cv::Mat& templ, double threshold) c
         return match_and_postproc(cv::Rect(0, 0, image_.cols, image_.rows), templ);
     }
 
+    Result res;
     for (const cv::Rect& roi : param_.roi) {
-        auto res = match_and_postproc(roi, templ);
+        res = match_and_postproc(roi, templ);
         if (res.score > threshold) {
-            return res;
+            break;
         }
     }
 
-    return {};
+    return res;
 }
 
 Matcher::Result Matcher::match_and_postproc(const cv::Rect& roi, const cv::Mat& templ) const
