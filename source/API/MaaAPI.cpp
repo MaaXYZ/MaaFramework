@@ -12,6 +12,11 @@
 #include "Resource/ResourceMgr.h"
 #include "Utils/Platform.hpp"
 
+MaaString MaaVersion()
+{
+    return MAA_VERSION;
+}
+
 MaaBool MaaSetGlobalOption(MaaGlobalOption key, MaaOptionValue value, MaaOptionValueSize val_size)
 {
     LogFunc << VAR(key) << VAR_VOIDP(value) << VAR(val_size);
@@ -130,8 +135,8 @@ MaaControllerHandle MaaCustomControllerCreate(MaaCustomControllerHandle handle, 
     return new MAA_CTRL_NS::CustomController(handle, callback, callback_arg);
 }
 
-MaaControllerHandle MAA_API MaaThriftControllerCreate(MaaString param, MaaControllerCallback callback,
-                                                      MaaCallbackTransparentArg callback_arg)
+MaaControllerHandle MaaThriftControllerCreate(MaaString param, MaaControllerCallback callback,
+                                              MaaCallbackTransparentArg callback_arg)
 {
     LogFunc << VAR(param) << VAR_VOIDP(callback) << VAR_VOIDP(callback_arg);
 
@@ -430,7 +435,7 @@ void MaaStop(MaaInstanceHandle inst)
     inst->stop();
 }
 
-MaaResourceHandle MAA_API MaaGetResource(MaaInstanceHandle inst)
+MaaResourceHandle MaaGetResource(MaaInstanceHandle inst)
 {
     LogFunc << VAR_VOIDP(inst);
 
@@ -441,16 +446,11 @@ MaaResourceHandle MAA_API MaaGetResource(MaaInstanceHandle inst)
     return inst->resource();
 }
 
-MaaControllerHandle MAA_API MaaGetController(MaaInstanceHandle inst)
+MaaControllerHandle MaaGetController(MaaInstanceHandle inst)
 {
     LogFunc << VAR_VOIDP(inst);
     if (!inst) {
         return nullptr;
     }
     return inst->controller();
-}
-
-MaaString MaaVersion()
-{
-    return MAA_VERSION;
 }

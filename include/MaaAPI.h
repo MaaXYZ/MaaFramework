@@ -7,6 +7,8 @@
 extern "C"
 {
 #endif
+
+    MaaString MAA_API MaaVersion();
     MaaBool MAA_API MaaSetGlobalOption(MaaGlobalOption key, MaaOptionValue value, MaaOptionValueSize val_size);
 
     /* Resource */
@@ -78,10 +80,6 @@ extern "C"
 
     MaaResourceHandle MAA_API MaaGetResource(MaaInstanceHandle inst);
     MaaControllerHandle MAA_API MaaGetController(MaaInstanceHandle inst);
-
-    /* Utils */
-
-    MaaString MAA_API MaaVersion();
 
 #ifdef __cplusplus
 }

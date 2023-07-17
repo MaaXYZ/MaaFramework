@@ -101,6 +101,8 @@ bool ResourceMgr::load(const std::filesystem::path& path)
     LogFunc << VAR(path);
 
     json::value props = json::open(path / "properties.json").value_or(json::value());
+    LogInfo << VAR(props);
+
     bool is_base = props.get("is_base", false);
 
     bool ret = pipeline_cfg_.load(path / "pipeline", is_base);
