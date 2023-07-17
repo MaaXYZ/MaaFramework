@@ -135,6 +135,8 @@ MaaControllerHandle MAA_API MaaThriftControllerCreate(MaaString param, MaaContro
 {
     LogFunc << VAR(param) << VAR_VOIDP(callback) << VAR_VOIDP(callback_arg);
 
+#ifdef WITH_THRIFT
+
     try {
         return new MAA_CTRL_NS::CustomThriftController(param, callback, callback_arg);
     }
@@ -142,6 +144,15 @@ MaaControllerHandle MAA_API MaaThriftControllerCreate(MaaString param, MaaContro
         LogError << "Failed to create thrift controller: " << e.what();
         return nullptr;
     }
+
+#else
+
+#pragma message("The build without thrift")
+
+    LogError << "The build without thrift";
+    return nullptr;
+
+#endif // WITH_THRIFT
 }
 
 void MaaControllerDestroy(MaaControllerHandle ctrl)

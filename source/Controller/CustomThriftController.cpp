@@ -1,3 +1,5 @@
+#ifdef WITH_THRIFT
+
 #include "CustomThriftController.h"
 
 #ifdef _MSC_VER
@@ -220,3 +222,5 @@ bool CustomThriftController::_stop_app(AppParams param)
 }
 
 MAA_CTRL_NS_END
+
+#endif // WITH_THRIFT

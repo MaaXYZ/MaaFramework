@@ -1,4 +1,7 @@
 #pragma once
+
+#ifdef WITH_THRIFT
+
 #include "ControllerMgr.h"
 
 #include "ThriftController.h"
@@ -38,3 +41,5 @@ private:
 };
 
 MAA_CTRL_NS_END
+
+#endif // WITH_THRIFT
