@@ -10,8 +10,8 @@ target_link_libraries(MaaUtils HeaderOnlyLibraries)
 target_compile_definitions(MaaUtils PRIVATE MAA_UTILS_EXPORTS)
 
 install(TARGETS MaaUtils
-    RUNTIME DESTINATION .
-    LIBRARY DESTINATION .
+    RUNTIME DESTINATION bin
+    LIBRARY DESTINATION bin
     PUBLIC_HEADER DESTINATION include
     ARCHIVE DESTINATION lib
 )

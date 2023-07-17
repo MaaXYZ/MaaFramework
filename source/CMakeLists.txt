@@ -31,8 +31,8 @@ target_link_libraries(MaaFramework ${OpenCV_LIBS} MaaDerpLearning ONNXRuntime::O
 # endif ()
 
 install(TARGETS MaaFramework
-    RUNTIME DESTINATION .
-    LIBRARY DESTINATION .
+    RUNTIME DESTINATION bin
+    LIBRARY DESTINATION bin
     PUBLIC_HEADER DESTINATION include
     ARCHIVE DESTINATION lib
 )

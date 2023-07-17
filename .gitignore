@@ -441,3 +441,5 @@ enc_temp_folder/*
 
 # test install dir
 install
+
+.DS_Store

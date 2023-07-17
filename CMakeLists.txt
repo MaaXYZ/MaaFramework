@@ -53,8 +53,8 @@ if (BUILD_BUSYBOX)
     add_subdirectory(test/busybox)
 endif (BUILD_BUSYBOX)
 
-if( USE_MAADEPS)
-    maadeps_install()
+if(USE_MAADEPS)
+    maadeps_install(bin)
 endif()
 
 # 好像还没适配，先注释了
