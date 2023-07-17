@@ -48,13 +48,8 @@ bool PipelineTask::run()
         }
 
         if (cur_task.is_sub) {
-            if (breakpoints_.empty() || breakpoints_.top() != pre_breakpoint) {
-                breakpoints_.emplace(pre_breakpoint);
-                LogInfo << "breakpoints add" << pre_breakpoint;
-            }
-        }
-        else {
-            pre_breakpoint = cur_task.name;
+            breakpoints_.emplace(pre_breakpoint);
+            LogInfo << "breakpoints add" << pre_breakpoint;
         }
 
         if (next_list.empty() && !breakpoints_.empty()) {
@@ -62,6 +57,9 @@ bool PipelineTask::run()
             breakpoints_.pop();
             next_list = data_mgr.get_task_data(top_bp).next;
             LogInfo << "breakpoints pop" << VAR(top_bp) << VAR(next_list);
+        }
+        else {
+            pre_breakpoint = cur_task.name;
         }
     }
 
