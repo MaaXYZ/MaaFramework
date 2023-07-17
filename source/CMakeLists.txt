@@ -17,8 +17,12 @@ set_target_properties(MaaFramework PROPERTIES
 )
 target_compile_definitions(MaaFramework PRIVATE MAA_DLL_EXPORTS)
 
-if(UNIX)
-    set_target_properties(MaaFramework PROPERTIES INSTALL_RPATH "$ORIGIN/")
+if(APPLE)
+  set_target_properties(MaaFramework PROPERTIES
+    INSTALL_RPATH "@loader_path;${MAC_CXX_EXPERIMENTAL_PATH}")
+elseif(UNIX)
+  set_target_properties(MaaFramework PROPERTIES
+    INSTALL_RPATH "$ORIGIN")
 endif()
 
 target_link_libraries(MaaFramework MaaControlUnit MaaUtils)
