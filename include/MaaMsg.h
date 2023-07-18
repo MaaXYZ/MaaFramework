@@ -53,6 +53,16 @@
 #define MaaMsg_Controller_ConnectFailed ("Controller.ConnectFailed")
 
 /*
+ * {
+ *    id: number
+ * }
+ */
+#define MaaMsg_Controller_Action_Started ("Controller.Action.Started")
+#define MaaMsg_Controller_Action_Completed ("Controller.Action.Completed")
+#define MaaMsg_Controller_Action_Failed ("Controller.Action.Failed")
+// #define MaaMsg_Controller_Action_Stopped ("Controller.Action.Stopped")
+
+/*
     {
         id: number,
         uuid: [string, controller id],

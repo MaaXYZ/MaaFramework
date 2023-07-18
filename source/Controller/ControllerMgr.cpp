@@ -3,6 +3,7 @@
 #include "Resource/ResourceMgr.h"
 #include "Utils/Math.hpp"
 #include "Utils/NoWarningCV.h"
+#include <MaaMsg.h>
 
 #include <tuple>
 
@@ -213,37 +214,49 @@ cv::Point ControllerMgr::rand_point(const cv::Rect& r)
 bool ControllerMgr::run_action(typename AsyncRunner<Action>::Id id, Action action)
 {
     // LogFunc << VAR(id) << VAR(action);
-    std::ignore = id;
+
+    bool ret = false;
+
+    notifier.notify(MaaMsg_Controller_Action_Started, { { "id", id } });
 
     switch (action.type) {
     case Action::Type::connect:
         connected_ = _connect();
-        return connected_;
+        ret = connected_;
+        break;
 
     case Action::Type::click:
         _click(std::get<ClickParams>(action.params));
-        return true;
+        ret = true;
+        break;
     case Action::Type::swipe:
         _swipe(std::get<SwipeParams>(action.params));
-        return true;
+        ret = true;
+        break;
     case Action::Type::press_key:
         _press_key(std::get<PressKeyParams>(action.params));
-        return true;
+        ret = true;
+        break;
 
     case Action::Type::screencap:
-        return postproc_screenshot(_screencap());
+        ret = postproc_screenshot(_screencap());
+        break;
 
     case Action::Type::start_app:
-        return _start_app(std::get<AppParams>(action.params));
+        ret = _start_app(std::get<AppParams>(action.params));
+        break;
     case Action::Type::stop_app:
-        return _stop_app(std::get<AppParams>(action.params));
+        ret = _stop_app(std::get<AppParams>(action.params));
+        break;
 
     default:
         LogError << "Unknown action type" << VAR(static_cast<int>(action.type));
-        return false;
+        ret = false;
     }
 
-    return false;
+    notifier.notify(ret ? MaaMsg_Controller_Action_Completed : MaaMsg_Controller_Action_Failed, { { "id", id } });
+
+    return ret;
 }
 
 std::pair<int, int> ControllerMgr::preproce_touch_coord(int x, int y)
