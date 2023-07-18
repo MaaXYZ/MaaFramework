@@ -21,8 +21,7 @@ bool PipelineTask::run()
         return false;
     }
 
-    const auto& data_mgr = resource()->pipeline_cfg();
-    auto cur_task = data_mgr.get_task_data(first_task_);
+    auto cur_task = get_task_data(first_task_);
     std::vector<std::string> next_list = { first_task_ };
     std::string pre_breakpoint;
 
@@ -55,7 +54,7 @@ bool PipelineTask::run()
         if (next_list.empty() && !breakpoints_.empty()) {
             std::string top_bp = std::move(breakpoints_.top());
             breakpoints_.pop();
-            next_list = data_mgr.get_task_data(top_bp).next;
+            next_list = get_task_data(top_bp).next;
             LogInfo << "breakpoints pop" << VAR(top_bp) << VAR(next_list);
         }
         else {
@@ -69,6 +68,31 @@ bool PipelineTask::run()
 bool PipelineTask::set_param(const json::value& param)
 {
     LogFunc << VAR(param);
+
+    bool ret = true;
+
+    auto modified_opt = param.find<json::object>("modified");
+    if (modified_opt) {
+        ret &= set_modified_task(*modified_opt);
+    }
+
+    return ret;
+}
+
+bool PipelineTask::set_modified_task(const json::value& input)
+{
+    LogFunc << VAR(input);
+
+    MAA_RES_NS::PipelineConfig::TaskDataMap task_data_map;
+    bool parsed = MAA_RES_NS::PipelineConfig::parse_json(input, task_data_map);
+
+    if (!parsed) {
+        LogError << "Parse json failed";
+        return false;
+    }
+
+    task_data_map.merge(std::move(modified_tasks_));
+    modified_tasks_ = std::move(task_data_map);
 
     return true;
 }
@@ -140,10 +164,6 @@ bool PipelineTask::run_all(const std::vector<std::string>& list)
 
 std::optional<PipelineTask::FoundResult> PipelineTask::find_first(const std::vector<std::string>& list)
 {
-    if (!resource()) {
-        LogError << "Resource not binded";
-        return std::nullopt;
-    }
     if (!controller()) {
         LogError << "Controller not binded";
         return std::nullopt;
@@ -152,10 +172,9 @@ std::optional<PipelineTask::FoundResult> PipelineTask::find_first(const std::vec
     LogFunc << VAR(list);
 
     cv::Mat image = controller()->screencap();
-    const auto& data_mgr = resource()->pipeline_cfg();
 
     for (const std::string& name : list) {
-        const auto& task_data = data_mgr.get_task_data(name);
+        const auto& task_data = get_task_data(name);
         auto rec_opt = recognize(image, task_data);
         if (!rec_opt) {
             continue;
@@ -420,6 +439,23 @@ cv::Rect PipelineTask::get_target_rect(const MAA_PIPELINE_RES_NS::Action::Target
         LogError << "Unknown target" << VAR(static_cast<int>(type));
         return {};
     }
+}
+
+const MAA_PIPELINE_RES_NS::TaskData& PipelineTask::get_task_data(const std::string& task_name)
+{
+    auto modified_it = modified_tasks_.find(task_name);
+    if (modified_it != modified_tasks_.end()) {
+        return modified_it->second;
+    }
+
+    if (!resource()) {
+        LogError << "Resource not binded";
+        static MAA_PIPELINE_RES_NS::TaskData empty;
+        return empty;
+    }
+
+    auto& data_mgr = resource()->pipeline_cfg();
+    return data_mgr.get_task_data(task_name);
 }
 
 MAA_TASK_NS_END

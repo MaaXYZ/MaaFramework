@@ -17,6 +17,8 @@ public:
     virtual bool set_param(const json::value& param) override;
 
 private:
+    bool set_modified_task(const json::value& input);
+
     enum class RunningResult
     {
         Success,
@@ -65,8 +67,11 @@ private:
     cv::Rect get_target_rect(const MAA_PIPELINE_RES_NS::Action::Target type,
                              const MAA_PIPELINE_RES_NS::Action::TargetParam& param, const cv::Rect& cur_box);
 
+    const MAA_PIPELINE_RES_NS::TaskData& get_task_data(const std::string& task_name);
+
 private:
     std::stack<std::string> breakpoints_;
+    std::unordered_map<std::string, MAA_PIPELINE_RES_NS::TaskData> modified_tasks_;
 };
 
 MAA_TASK_NS_END
