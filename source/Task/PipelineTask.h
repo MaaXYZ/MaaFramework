@@ -18,6 +18,7 @@ public:
 
 private:
     bool set_modified_task(const json::value& input);
+    bool refresh_modified_template_match_task();
 
     enum class RunningResult
     {

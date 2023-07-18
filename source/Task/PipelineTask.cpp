@@ -5,6 +5,7 @@
 #include "Instance/InstanceStatus.h"
 #include "MaaUtils/Logger.hpp"
 #include "Resource/ResourceMgr.h"
+#include "Utils/ImageIo.hpp"
 #include "Vision/Comparator.h"
 #include "Vision/Matcher.h"
 #include "Vision/OCRer.h"
@@ -83,8 +84,14 @@ bool PipelineTask::set_modified_task(const json::value& input)
 {
     LogFunc << VAR(input);
 
+    if (!resource()) {
+        LogError << "Resource not binded";
+        return false;
+    }
+
     MAA_RES_NS::PipelineConfig::TaskDataMap task_data_map;
-    bool parsed = MAA_RES_NS::PipelineConfig::parse_json(input, task_data_map);
+    auto& raw_data_map = resource()->pipeline_cfg().get_task_data_map();
+    bool parsed = MAA_RES_NS::PipelineConfig::parse_json(input, task_data_map, raw_data_map);
 
     if (!parsed) {
         LogError << "Parse json failed";
@@ -93,6 +100,54 @@ bool PipelineTask::set_modified_task(const json::value& input)
 
     task_data_map.merge(std::move(modified_tasks_));
     modified_tasks_ = std::move(task_data_map);
+
+    return refresh_modified_template_match_task();
+}
+
+bool PipelineTask::refresh_modified_template_match_task()
+{
+    if (!resource()) {
+        LogError << "Resource not binded";
+        return false;
+    }
+
+    auto& data_mgr = resource()->pipeline_cfg();
+
+    for (auto& [name, task_data] : modified_tasks_) {
+        if (task_data.rec_type != MAA_PIPELINE_RES_NS::Recognition::Type::TemplateMatch) {
+            continue;
+        }
+        auto& task_param = std::get<MAA_VISION_NS::TemplMatchingParams>(task_data.rec_params);
+
+        const auto& raw_task = data_mgr.get_task_data(name);
+
+        bool need_load = false;
+        if (raw_task.rec_type != MAA_PIPELINE_RES_NS::Recognition::Type::TemplateMatch) {
+            need_load = true;
+        }
+        else {
+            auto& raw_param = std::get<MAA_VISION_NS::TemplMatchingParams>(raw_task.rec_params);
+            if (task_param.template_paths != raw_param.template_paths) {
+                need_load = true;
+            }
+            else {
+                task_param.template_images = raw_param.template_images;
+                need_load = false;
+            }
+        }
+        if (!need_load) {
+            continue;
+        }
+
+        for (const auto& path : task_param.template_paths) {
+            cv::Mat templ = imread(path);
+            if (templ.empty()) {
+                LogError << "Load template failed" << VAR(name) << VAR(path);
+                return false;
+            }
+            task_param.template_images.emplace_back(std::move(templ));
+        }
+    }
 
     return true;
 }
