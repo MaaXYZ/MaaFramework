@@ -113,6 +113,11 @@ std::vector<uint8_t> ControllerMgr::get_image_cache() const
     return buff;
 }
 
+void ControllerMgr::terminate() const
+{
+    action_runner_->release();
+}
+
 void ControllerMgr::click(const cv::Rect& r)
 {
     click(rand_point(r));
