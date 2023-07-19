@@ -32,8 +32,8 @@ enum class Type
     OCR,
 };
 
-using Params =
-    std::variant<MAA_VISION_NS::DirectHitParams, MAA_VISION_NS::TemplMatchingParams, MAA_VISION_NS::OcrParams>;
+using Params = std::variant<std::monostate, MAA_VISION_NS::DirectHitParams, MAA_VISION_NS::TemplMatchingParams,
+                            MAA_VISION_NS::OcrParams>;
 } // namespace Recognition
 
 namespace Action
@@ -59,22 +59,22 @@ enum class Target
     Region,
 };
 
-using TargetParam = std::variant<std::string, cv::Rect>;
+using TargetParam = std::variant<std::monostate, std::string, cv::Rect>;
 
 struct ClickParams
 {
-    Target target = Target::Invalid;
+    Target target = Target::Self;
     TargetParam target_param;
 };
 
 struct SwipeParams
 {
-    Target begin;
+    Target begin = Target::Self;
     TargetParam begin_param;
-    Target end;
+    Target end = Target::Self;
     TargetParam end_param;
 
-    uint duration = 0;
+    uint duration = 200;
 };
 
 struct KeyParams
@@ -93,47 +93,49 @@ struct CustomTaskParams
     json::value task_param;
 };
 
-using Params = std::variant<ClickParams, SwipeParams, KeyParams, AppInfo, CustomTaskParams>;
+using Params = std::variant<std::monostate, ClickParams, SwipeParams, KeyParams, AppInfo, CustomTaskParams>;
 } // namespace Action
 
 struct WaitFreezesParams
 {
-    std::chrono::milliseconds time;
+    std::chrono::milliseconds time = std::chrono::milliseconds(0);
 
-    Action::Target target = Action::Target::Invalid;
+    Action::Target target = Action::Target::Self;
     Action::TargetParam target_param;
 
-    double threshold = 0.0;
-    int method = 0;
+    double threshold = 0.95;
+    int method = MAA_VISION_NS::TemplMatchingParams::kDefaultMethod;
 };
 
 struct TaskData
 {
+    using NextList = std::vector<std::string>;
+
     std::string name;
     bool is_sub = false;
 
-    Recognition::Type rec_type = Recognition::Type::Invalid;
-    Recognition::Params rec_params;
+    Recognition::Type rec_type = Recognition::Type::DirectHit;
+    Recognition::Params rec_params = MAA_VISION_NS::DirectHitParams {};
 
     bool cache = false;
 
-    Action::Type action_type = Action::Type::Invalid;
+    Action::Type action_type = Action::Type::DoNothing;
     Action::Params action_params;
-    std::vector<std::string> next;
+    NextList next;
 
-    std::chrono::milliseconds timeout;
-    std::vector<std::string> timeout_next;
+    std::chrono::milliseconds timeout = std::chrono::milliseconds(20 * 1000);
+    NextList timeout_next;
 
     uint times_limit = UINT_MAX;
-    std::vector<std::string> runout_next;
+    NextList runout_next;
 
-    std::chrono::milliseconds pre_delay;
-    std::chrono::milliseconds post_delay;
+    std::chrono::milliseconds pre_delay = std::chrono::milliseconds(200);
+    std::chrono::milliseconds post_delay = std::chrono::milliseconds(500);
 
     WaitFreezesParams pre_wait_freezes;
     WaitFreezesParams post_wait_freezes;
 
-    std::string notification;
+    bool notify = false;
 };
 
 MAA_PIPELINE_RES_NS_END
