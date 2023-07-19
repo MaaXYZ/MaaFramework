@@ -17,42 +17,7 @@ bool PipelineConfig::load(const std::filesystem::path& path, bool is_base)
         clear();
     }
 
-    if (!std::filesystem::exists(path)) {
-        if (is_base) {
-            LogError << "path not exists";
-            return false;
-        }
-        else {
-            LogWarn << "path not exists, not base, ignore";
-            return true;
-        }
-    }
-
-    bool loaded = false;
-    if (std::filesystem::is_directory(path)) {
-        for (auto& entry : std::filesystem::recursive_directory_iterator(path)) {
-            if (!entry.is_regular_file() || entry.path().extension() != ".json") {
-                continue;
-            }
-            loaded = open_and_parse_file(entry.path());
-            if (!loaded) {
-                LogError << "open_and_parse_file failed" << VAR(entry.path());
-                return false;
-            }
-        }
-    }
-    else if (std::filesystem::is_regular_file(path) && path.extension() == ".json") {
-        loaded = open_and_parse_file(path);
-        if (!loaded) {
-            LogError << "open_and_parse_file failed" << VAR(path);
-            return false;
-        }
-    }
-    else {
-        LogError << "path is not directory or regular file";
-        return false;
-    }
-
+    bool loaded = load_all_json(path);
     loaded &= load_template_images(path);
     loaded &= check_all_next_list();
 
@@ -84,6 +49,41 @@ const MAA_PIPELINE_RES_NS::TaskData& PipelineConfig::get_task_data(const std::st
     }
 
     return task_data;
+}
+
+bool PipelineConfig::load_all_json(const std::filesystem::path& path)
+{
+    if (!std::filesystem::exists(path)) {
+        LogError << "path not exists";
+        return false;
+    }
+
+    bool loaded = false;
+    if (std::filesystem::is_directory(path)) {
+        for (auto& entry : std::filesystem::recursive_directory_iterator(path)) {
+            if (!entry.is_regular_file() || entry.path().extension() != ".json") {
+                continue;
+            }
+            loaded = open_and_parse_file(entry.path());
+            if (!loaded) {
+                LogError << "open_and_parse_file failed" << VAR(entry.path());
+                return false;
+            }
+        }
+    }
+    else if (std::filesystem::is_regular_file(path) && path.extension() == ".json") {
+        loaded = open_and_parse_file(path);
+        if (!loaded) {
+            LogError << "open_and_parse_file failed" << VAR(path);
+            return false;
+        }
+    }
+    else {
+        LogError << "path is not directory or regular file";
+        return false;
+    }
+
+    return loaded;
 }
 
 bool PipelineConfig::open_and_parse_file(const std::filesystem::path& path)

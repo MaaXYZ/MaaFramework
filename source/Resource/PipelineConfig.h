@@ -73,6 +73,7 @@ public:
                                     const MAA_PIPELINE_RES_NS::Action::TargetParam& default_param);
 
 private:
+    bool load_all_json(const std::filesystem::path& path);
     bool open_and_parse_file(const std::filesystem::path& path);
     bool load_template_images(const std::filesystem::path& path);
     bool check_all_next_list() const;
