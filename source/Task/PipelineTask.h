@@ -1,5 +1,6 @@
 #pragma once
 
+#include "Resource/PipelineConfig.h"
 #include "Resource/PipelineTypes.h"
 #include "TaskBase.h"
 
@@ -17,8 +18,10 @@ public:
     virtual bool set_param(const json::value& param) override;
 
 private:
+    using TaskDataMap = MAA_RES_NS::PipelineConfig::TaskDataMap;
+
     bool set_modified_task(const json::value& input);
-    bool refresh_modified_template_match_task();
+    bool check_and_load_template_images(TaskDataMap& map);
 
     enum class RunningResult
     {
@@ -72,7 +75,7 @@ private:
 
 private:
     std::stack<std::string> breakpoints_;
-    std::unordered_map<std::string, MAA_PIPELINE_RES_NS::TaskData> modified_tasks_;
+    TaskDataMap modified_tasks_;
 };
 
 MAA_TASK_NS_END

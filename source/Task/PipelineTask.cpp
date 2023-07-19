@@ -98,13 +98,18 @@ bool PipelineTask::set_modified_task(const json::value& input)
         return false;
     }
 
+    bool loaded = check_and_load_template_images(task_data_map);
+    if (!loaded) {
+        LogError << "Load template images failed";
+        return false;
+    }
+
     task_data_map.merge(std::move(modified_tasks_));
     modified_tasks_ = std::move(task_data_map);
-
-    return refresh_modified_template_match_task();
+    return true;
 }
 
-bool PipelineTask::refresh_modified_template_match_task()
+bool PipelineTask::check_and_load_template_images(TaskDataMap& map)
 {
     if (!resource()) {
         LogError << "Resource not binded";
@@ -113,7 +118,7 @@ bool PipelineTask::refresh_modified_template_match_task()
 
     auto& data_mgr = resource()->pipeline_cfg();
 
-    for (auto& [name, task_data] : modified_tasks_) {
+    for (auto& [name, task_data] : map) {
         if (task_data.rec_type != MAA_PIPELINE_RES_NS::Recognition::Type::TemplateMatch) {
             continue;
         }
