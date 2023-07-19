@@ -85,6 +85,8 @@ public:
     virtual std::vector<uint8_t> get_image_cache() const override;
     virtual std::string get_uuid() const override = 0;
 
+    virtual void terminate() const override;
+
 public:
     void click(const cv::Rect& r);
     void click(const cv::Point& p);

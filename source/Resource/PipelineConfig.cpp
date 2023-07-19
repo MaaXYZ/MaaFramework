@@ -102,7 +102,7 @@ bool PipelineConfig::open_and_parse_file(const std::filesystem::path& path)
         return false;
     }
 
-    return parse_json(*json_opt);
+    return parse_json(*json_opt, raw_data_);
 }
 
 bool PipelineConfig::load_template_images(const std::filesystem::path& path)
@@ -126,20 +126,27 @@ bool PipelineConfig::load_template_images(const std::filesystem::path& path)
     return true;
 }
 
-bool PipelineConfig::parse_json(const json::value& input)
+bool PipelineConfig::parse_json(const json::value& input, TaskDataMap& output)
 {
     if (!input.is_object()) {
         LogError << "json is not object";
         return false;
     }
 
+    TaskDataMap data_map;
+
     for (const auto& [key, value] : input.as_object()) {
-        bool ret = parse_task(key, value);
+        TaskData task_data;
+        bool ret = parse_task(key, value, task_data);
         if (!ret) {
             LogError << "parse_task failed" << VAR(key) << VAR(value);
             return false;
         }
+        data_map.insert_or_assign(key, task_data);
     }
+
+    output = std::move(data_map);
+
     return true;
 }
 
@@ -190,7 +197,7 @@ bool get_and_check_value_or_array(const json::value& input, const std::string& k
     return !output.empty();
 }
 
-bool PipelineConfig::parse_task(const std::string& name, const json::value& input)
+bool PipelineConfig::parse_task(const std::string& name, const json::value& input, TaskData& output)
 {
     LogFunc << VAR(name);
 
@@ -273,7 +280,7 @@ bool PipelineConfig::parse_task(const std::string& name, const json::value& inpu
         return false;
     }
 
-    raw_data_.insert_or_assign(name, std::move(data));
+    output = std::move(data);
 
     return true;
 }
