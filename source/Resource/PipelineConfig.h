@@ -75,6 +75,8 @@ public:
 private:
     bool open_and_parse_file(const std::filesystem::path& path);
     bool load_template_images(const std::filesystem::path& path);
+    bool check_all_next_list() const;
+    bool check_next_list(const MAA_PIPELINE_RES_NS::TaskData::NextList& next_list) const;
 
 private:
     TaskDataMap task_data_map_;

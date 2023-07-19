@@ -109,6 +109,8 @@ struct WaitFreezesParams
 
 struct TaskData
 {
+    using NextList = std::vector<std::string>;
+
     std::string name;
     bool is_sub = false;
 
@@ -119,13 +121,13 @@ struct TaskData
 
     Action::Type action_type = Action::Type::DoNothing;
     Action::Params action_params;
-    std::vector<std::string> next;
+    NextList next;
 
     std::chrono::milliseconds timeout = std::chrono::milliseconds(20 * 1000);
-    std::vector<std::string> timeout_next;
+    NextList timeout_next;
 
     uint times_limit = UINT_MAX;
-    std::vector<std::string> runout_next;
+    NextList runout_next;
 
     std::chrono::milliseconds pre_delay = std::chrono::milliseconds(200);
     std::chrono::milliseconds post_delay = std::chrono::milliseconds(500);

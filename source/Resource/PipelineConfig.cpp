@@ -54,6 +54,7 @@ bool PipelineConfig::load(const std::filesystem::path& path, bool is_base)
     }
 
     loaded &= load_template_images(path);
+    loaded &= check_all_next_list();
 
     return loaded;
 }
@@ -121,6 +122,32 @@ bool PipelineConfig::load_template_images(const std::filesystem::path& path)
         bool ret = template_mgr_.lazy_load(name, paths);
         if (!ret) {
             LogError << "template_cfg_.lazy_load failed" << VAR(name) << VAR(paths);
+            return false;
+        }
+    }
+    return true;
+}
+
+bool PipelineConfig::check_all_next_list() const
+{
+    LogFunc;
+
+    for (const auto& [name, task_data] : task_data_map_) {
+        bool ret = check_next_list(task_data.next) && check_next_list(task_data.timeout_next) &&
+                   check_next_list(task_data.runout_next);
+        if (!ret) {
+            LogError << "check_next_list failed" << VAR(name);
+            return false;
+        }
+    }
+    return true;
+}
+
+bool PipelineConfig::check_next_list(const TaskData::NextList& next_list) const
+{
+    for (const std::string& name : next_list) {
+        if (!task_data_map_.contains(name)) {
+            LogError << "Invalid next task name" << VAR(name);
             return false;
         }
     }
