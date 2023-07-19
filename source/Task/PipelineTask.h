@@ -20,7 +20,7 @@ public:
 private:
     using TaskDataMap = MAA_RES_NS::PipelineConfig::TaskDataMap;
 
-    bool set_modified_task(const json::value& input);
+    bool set_diff_task(const json::value& input);
     bool check_and_load_template_images(TaskDataMap& map);
 
     enum class RunningResult
@@ -75,7 +75,7 @@ private:
 
 private:
     std::stack<std::string> breakpoints_;
-    TaskDataMap modified_tasks_;
+    TaskDataMap diff_tasks_;
 };
 
 MAA_TASK_NS_END

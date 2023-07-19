@@ -72,15 +72,15 @@ bool PipelineTask::set_param(const json::value& param)
 
     bool ret = true;
 
-    auto modified_opt = param.find<json::object>("modified");
-    if (modified_opt) {
-        ret &= set_modified_task(*modified_opt);
+    auto diff_opt = param.find<json::object>("diff_task");
+    if (diff_opt) {
+        ret &= set_diff_task(*diff_opt);
     }
 
     return ret;
 }
 
-bool PipelineTask::set_modified_task(const json::value& input)
+bool PipelineTask::set_diff_task(const json::value& input)
 {
     LogFunc << VAR(input);
 
@@ -92,7 +92,6 @@ bool PipelineTask::set_modified_task(const json::value& input)
     MAA_RES_NS::PipelineConfig::TaskDataMap task_data_map;
     auto& raw_data_map = resource()->pipeline_cfg().get_task_data_map();
     bool parsed = MAA_RES_NS::PipelineConfig::parse_json(input, task_data_map, raw_data_map);
-
     if (!parsed) {
         LogError << "Parse json failed";
         return false;
@@ -104,8 +103,8 @@ bool PipelineTask::set_modified_task(const json::value& input)
         return false;
     }
 
-    task_data_map.merge(std::move(modified_tasks_));
-    modified_tasks_ = std::move(task_data_map);
+    task_data_map.merge(std::move(diff_tasks_));
+    diff_tasks_ = std::move(task_data_map);
     return true;
 }
 
@@ -503,8 +502,8 @@ cv::Rect PipelineTask::get_target_rect(const MAA_PIPELINE_RES_NS::Action::Target
 
 const MAA_PIPELINE_RES_NS::TaskData& PipelineTask::get_task_data(const std::string& task_name)
 {
-    auto modified_it = modified_tasks_.find(task_name);
-    if (modified_it != modified_tasks_.end()) {
+    auto modified_it = diff_tasks_.find(task_name);
+    if (modified_it != diff_tasks_.end()) {
         return modified_it->second;
     }
 
