@@ -43,7 +43,7 @@ struct AppParams
 
 std::ostream& operator<<(std::ostream& os, const SwipeParams::Step& step);
 
-using Params = std::variant<ClickParams, SwipeParams, PressKeyParams, AppParams>;
+using Params = std::variant<std::monostate, ClickParams, SwipeParams, PressKeyParams, AppParams>;
 
 struct Action
 {
@@ -85,7 +85,7 @@ public:
     virtual std::vector<uint8_t> get_image_cache() const override;
     virtual std::string get_uuid() const override = 0;
 
-    virtual void terminate() const override;
+    virtual void on_stop() override;
 
 public:
     void click(const cv::Rect& r);

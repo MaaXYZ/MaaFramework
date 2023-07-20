@@ -113,7 +113,7 @@ std::vector<uint8_t> ControllerMgr::get_image_cache() const
     return buff;
 }
 
-void ControllerMgr::terminate() const
+void ControllerMgr::on_stop()
 {
     action_runner_->release();
 }

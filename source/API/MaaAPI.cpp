@@ -169,7 +169,7 @@ void MaaControllerDestroy(MaaControllerHandle ctrl)
     if (ctrl == nullptr) {
         return;
     }
-    ctrl->terminate();
+    ctrl->on_stop();
     delete ctrl;
 }
 
