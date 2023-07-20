@@ -47,3 +47,8 @@ install(TARGETS MaaFramework
 )
 
 source_group(TREE ${CMAKE_SOURCE_DIR} FILES ${maa_src})
+
+add_custom_command(TARGET MaaFramework POST_BUILD
+  COMMAND ${CMAKE_COMMAND} -E copy -t $<TARGET_FILE_DIR:MaaFramework> $<TARGET_RUNTIME_DLLS:MaaFramework>
+  COMMAND_EXPAND_LISTS
+)
