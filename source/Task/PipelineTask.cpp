@@ -168,7 +168,7 @@ PipelineTask::RunningResult PipelineTask::find_first_and_run(const std::vector<s
         return RunningResult::InternalError;
     }
 
-    LogFunc << VAR(cur_task_name_) << VAR(list);
+    // LogFunc << VAR(cur_task_name_) << VAR(list);
 
     FoundResult result;
 
