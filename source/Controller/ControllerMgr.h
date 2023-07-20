@@ -9,6 +9,7 @@
 #include <memory>
 #include <mutex>
 #include <random>
+#include <set>
 #include <variant>
 
 MAA_RES_NS_BEGIN
@@ -141,6 +142,8 @@ private:
     std::string default_app_package_entry_;
     std::string default_app_package_;
 
+    std::set<AsyncRunner<Action>::Id> post_ids_;
+    std::mutex post_ids_mutex_;
     std::unique_ptr<AsyncRunner<Action>> action_runner_ = nullptr;
 };
 

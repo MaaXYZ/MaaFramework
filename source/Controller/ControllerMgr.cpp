@@ -52,14 +52,20 @@ bool ControllerMgr::set_option(MaaCtrlOption key, MaaOptionValue value, MaaOptio
 
 MaaCtrlId ControllerMgr::post_connection()
 {
-    return action_runner_->post({ .type = Action::Type::connect });
+    auto id = action_runner_->post({ .type = Action::Type::connect });
+    std::unique_lock lock { post_ids_mutex_ };
+    post_ids_.emplace(id);
+    return id;
 }
 
 MaaCtrlId ControllerMgr::post_click(int x, int y)
 {
     preproce_touch_coord(x, y);
     ClickParams params { .x = x, .y = y };
-    return action_runner_->post({ .type = Action::Type::click, .params = std::move(params) });
+    auto id = action_runner_->post({ .type = Action::Type::click, .params = std::move(params) });
+    std::unique_lock lock { post_ids_mutex_ };
+    post_ids_.emplace(id);
+    return id;
 }
 
 MaaCtrlId ControllerMgr::post_swipe(std::vector<int> x_steps, std::vector<int> y_steps, std::vector<int> step_delay)
@@ -74,12 +80,18 @@ MaaCtrlId ControllerMgr::post_swipe(std::vector<int> x_steps, std::vector<int> y
         params.steps.emplace_back(std::move(step));
     }
 
-    return action_runner_->post({ .type = Action::Type::swipe, .params = std::move(params) });
+    auto id = action_runner_->post({ .type = Action::Type::swipe, .params = std::move(params) });
+    std::unique_lock lock { post_ids_mutex_ };
+    post_ids_.emplace(id);
+    return id;
 }
 
 MaaCtrlId ControllerMgr::post_screencap()
 {
-    return action_runner_->post({ .type = Action::Type::screencap });
+    auto id = action_runner_->post({ .type = Action::Type::screencap });
+    std::unique_lock lock { post_ids_mutex_ };
+    post_ids_.emplace(id);
+    return id;
 }
 
 MaaStatus ControllerMgr::status(MaaCtrlId ctrl_id) const
@@ -222,7 +234,15 @@ bool ControllerMgr::run_action(typename AsyncRunner<Action>::Id id, Action actio
 
     bool ret = false;
 
-    notifier.notify(MaaMsg_Controller_Action_Started, { { "id", id } });
+    bool notify = false;
+    {
+        std::unique_lock lock { post_ids_mutex_ };
+        notify = post_ids_.erase(id) > 0;
+    }
+
+    if (notify) {
+        notifier.notify(MaaMsg_Controller_Action_Started, { { "id", id } });
+    }
 
     switch (action.type) {
     case Action::Type::connect:
@@ -259,7 +279,9 @@ bool ControllerMgr::run_action(typename AsyncRunner<Action>::Id id, Action actio
         ret = false;
     }
 
-    notifier.notify(ret ? MaaMsg_Controller_Action_Completed : MaaMsg_Controller_Action_Failed, { { "id", id } });
+    if (notify) {
+        notifier.notify(ret ? MaaMsg_Controller_Action_Completed : MaaMsg_Controller_Action_Failed, { { "id", id } });
+    }
 
     return ret;
 }
