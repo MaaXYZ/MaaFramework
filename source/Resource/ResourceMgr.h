@@ -14,8 +14,7 @@ MAA_RES_NS_BEGIN
 class ResourceMgr : public MaaResourceAPI
 {
 public:
-    ResourceMgr(const std::filesystem::path& user_path, MaaResourceCallback callback,
-                MaaCallbackTransparentArg callback_arg);
+    ResourceMgr(MaaResourceCallback callback, MaaCallbackTransparentArg callback_arg);
     virtual ~ResourceMgr() override;
 
     virtual bool set_option(MaaResOption key, MaaOptionValue value, MaaOptionValueSize val_size) override;
@@ -44,7 +43,6 @@ private:
     OCRConfig ocr_cfg_;
 
 private:
-    std::filesystem::path user_path_;
     std::vector<std::filesystem::path> paths_;
     std::atomic_bool loaded_ = false;
 

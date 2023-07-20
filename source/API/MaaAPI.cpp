@@ -26,12 +26,11 @@ MaaBool MaaSetGlobalOption(MaaGlobalOption key, MaaOptionValue value, MaaOptionV
     return MAA_NS::GlobalOptionMgr::get_instance().set_option(key, value, val_size);
 }
 
-MaaResourceHandle MaaResourceCreate(MaaString user_path, MaaResourceCallback callback,
-                                    MaaCallbackTransparentArg callback_arg)
+MaaResourceHandle MaaResourceCreate(MaaResourceCallback callback, MaaCallbackTransparentArg callback_arg)
 {
-    LogFunc << VAR(user_path) << VAR_VOIDP(callback) << VAR_VOIDP(callback_arg);
+    LogFunc << VAR_VOIDP(callback) << VAR_VOIDP(callback_arg);
 
-    return new MAA_RES_NS::ResourceMgr(MAA_NS::path(user_path), callback, callback_arg);
+    return new MAA_RES_NS::ResourceMgr(callback, callback_arg);
 }
 
 void MaaResourceDestroy(MaaResourceHandle res)

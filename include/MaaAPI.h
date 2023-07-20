@@ -13,8 +13,7 @@ extern "C"
 
     /* Resource */
 
-    MaaResourceHandle MAA_API MaaResourceCreate(MaaString user_path, MaaResourceCallback callback,
-                                                MaaCallbackTransparentArg callback_arg);
+    MaaResourceHandle MAA_API MaaResourceCreate(MaaResourceCallback callback, MaaCallbackTransparentArg callback_arg);
     void MAA_API MaaResourceDestroy(MaaResourceHandle res);
 
     MaaResId MAA_API MaaResourcePostResource(MaaResourceHandle res, MaaString path);

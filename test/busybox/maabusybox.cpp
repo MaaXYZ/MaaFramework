@@ -414,7 +414,7 @@ bool demo_waiting(const std::filesystem::path& cur_dir, const std::string& adb, 
                   const std::string& adb_config, const std::string& task)
 {
     auto maa_handle = MaaCreate(nullptr, nullptr);
-    auto resource_handle = MaaResourceCreate((cur_dir / "cache").string().c_str(), nullptr, nullptr);
+    auto resource_handle = MaaResourceCreate(nullptr, nullptr);
     auto controller_handle =
         MaaAdbControllerCreate(adb.c_str(), adb_address.c_str(),
                                MaaAdbControllerType_Input_Preset_Minitouch | MaaAdbControllerType_Screencap_FastestWay,
