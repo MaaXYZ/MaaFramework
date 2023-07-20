@@ -48,8 +48,6 @@ public:
     virtual std::vector<uint8_t> get_image_cache() const = 0;
 
     virtual std::string get_uuid() const = 0;
-
-    virtual void terminate() const = 0;
 };
 
 struct MaaInstanceAPI
