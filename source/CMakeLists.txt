@@ -19,14 +19,6 @@ set_target_properties(MaaFramework PROPERTIES
 )
 target_compile_definitions(MaaFramework PRIVATE MAA_DLL_EXPORTS)
 
-if(APPLE)
-  set_target_properties(MaaFramework PROPERTIES
-    INSTALL_RPATH "@loader_path;${MAC_CXX_EXPERIMENTAL_PATH}")
-elseif(UNIX)
-  set_target_properties(MaaFramework PROPERTIES
-    INSTALL_RPATH "$ORIGIN")
-endif()
-
 target_link_libraries(MaaFramework MaaControlUnit MaaUtils)
 if(WITH_THRIFT)
     target_link_libraries(MaaFramework MaaThriftController)
@@ -48,7 +40,14 @@ install(TARGETS MaaFramework
 
 source_group(TREE ${CMAKE_SOURCE_DIR} FILES ${maa_src})
 
-add_custom_command(TARGET MaaFramework POST_BUILD
-  COMMAND ${CMAKE_COMMAND} -E copy -t $<TARGET_FILE_DIR:MaaFramework> $<TARGET_RUNTIME_DLLS:MaaFramework>
-  COMMAND_EXPAND_LISTS
-)
+if (WIN32)
+  add_custom_command(TARGET MaaFramework POST_BUILD
+    COMMAND ${CMAKE_COMMAND} -E copy -t $<TARGET_FILE_DIR:MaaFramework> $<TARGET_RUNTIME_DLLS:MaaFramework>
+    COMMAND_EXPAND_LISTS
+  )
+else ()
+  add_custom_command(TARGET MaaFramework POST_BUILD
+    COMMAND ${CMAKE_COMMAND} -E copy ${ONNXRuntime_LIBRARY} $<TARGET_FILE_DIR:MaaFramework>
+    COMMAND_EXPAND_LISTS
+  )
+endif (WIN32)

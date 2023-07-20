@@ -22,7 +22,7 @@ elseif ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU")
     if (CMAKE_CXX_COMPILER_ID MATCHES "GNU" AND CMAKE_CXX_COMPILER_VERSION VERSION_LESS 13)
         add_compile_options("-Wno-restrict")
     endif()
-    
+
     set(rel_debug_comp_options "-O0")
     add_compile_options("$<$<CONFIG:RelWithDebInfo>:${rel_debug_comp_options}>")
 elseif ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang")
@@ -39,6 +39,12 @@ elseif ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang")
     
     set(rel_debug_comp_options "-O0")
     add_compile_options("$<$<CONFIG:RelWithDebInfo>:${rel_debug_comp_options}>")
+endif ()
+
+if (APPLE)
+    set(CMAKE_INSTALL_RPATH "@loader_path;${MAC_CXX_EXPERIMENTAL_PATH}")
+elseif (UNIX)
+    set(CMAKE_INSTALL_RPATH "$ORIGIN")
 endif ()
 
 set(CMAKE_CXX_STANDARD 20)

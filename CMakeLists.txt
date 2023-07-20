@@ -8,7 +8,7 @@ endif ()
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_LIST_DIR}/cmake/modules")
 
 set_property(GLOBAL PROPERTY USE_FOLDERS ON)
-set(CMAKE_MAP_IMPORTED_CONFIG_RELWITHDEBINFO Release)
+set(CMAKE_MAP_IMPORTED_CONFIG_RELWITHDEBINFO "RelWithDebInfo;Release;")
 
 option(BUILD_SAMPLE "build a demo" ON)
 option(BUILD_BUSYBOX "build the busybox" OFF)

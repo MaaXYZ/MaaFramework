@@ -21,16 +21,11 @@ if(ONNXRuntime_FOUND)
         add_library(ONNXRuntime::ONNXRuntime SHARED IMPORTED)
         if (WIN32)
             set_target_properties(ONNXRuntime::ONNXRuntime PROPERTIES
-                IMPORTED_IMPLIB_DEBUG "${ONNXRuntime_LIBRARY_IMP}"
-                IMPORTED_IMPLIB_RELEASE "${ONNXRuntime_LIBRARY_IMP}"
-                IMPORTED_IMPLIB_RELWITHDEBINFO "${ONNXRuntime_LIBRARY_IMP}"
+                IMPORTED_IMPLIB "${ONNXRuntime_LIBRARY_IMP}"
             )
         endif (WIN32)
         set_target_properties(ONNXRuntime::ONNXRuntime PROPERTIES
-            IMPORTED_CONFIGURATIONS "Debug;Release;RelWithDebInfo"
-            IMPORTED_LOCATION_DEBUG "${ONNXRuntime_LIBRARY}"
-            IMPORTED_LOCATION_RELEASE "${ONNXRuntime_LIBRARY}"
-            IMPORTED_LOCATION_RELWITHDEBINFO "${ONNXRuntime_LIBRARY}"
+            IMPORTED_LOCATION "${ONNXRuntime_LIBRARY}"
             INTERFACE_INCLUDE_DIRECTORIES "${ONNXRuntime_INCLUDE_DIR}"
         )
     endif()
