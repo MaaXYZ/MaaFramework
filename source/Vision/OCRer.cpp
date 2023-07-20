@@ -37,7 +37,7 @@ OCRer::ResultOpt OCRer::analyze() const
         ++iter;
     }
 
-    LogTrace << VAR(results);
+    LogTrace << VAR(results) << VAR(param_.text);
 
     return results.empty() ? std::nullopt : std::make_optional(std::move(results));
 }

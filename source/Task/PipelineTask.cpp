@@ -236,6 +236,7 @@ std::optional<PipelineTask::FoundResult> PipelineTask::find_first(const std::vec
     cv::Mat image = controller()->screencap();
 
     for (const std::string& name : list) {
+        LogTrace << "recognize:" << name;
         const auto& task_data = get_task_data(name);
         auto rec_opt = recognize(image, task_data);
         if (!rec_opt) {
@@ -251,7 +252,6 @@ std::optional<PipelineTask::RecResult> PipelineTask::recognize(const cv::Mat& im
 {
     using namespace MAA_PIPELINE_RES_NS::Recognition;
     using namespace MAA_VISION_NS;
-    LogFunc << VAR(cur_task_name_);
 
     if (!status()) {
         LogError << "Status not binded";
@@ -329,7 +329,7 @@ std::optional<PipelineTask::RecResult> PipelineTask::ocr(const cv::Mat& image, c
 void PipelineTask::start_to_act(const FoundResult& act)
 {
     using namespace MAA_PIPELINE_RES_NS::Action;
-    LogFunc << VAR(cur_task_name_);
+    LogFunc << VAR(act.task_data.name);
 
     wait_freezes(act.task_data.pre_wait_freezes, act.rec.box);
     sleep(act.task_data.pre_delay);
@@ -411,7 +411,7 @@ void PipelineTask::wait_freezes(const MAA_PIPELINE_RES_NS::WaitFreezesParams& pa
     }
     using namespace MAA_VISION_NS;
 
-    LogFunc << VAR(param.time);
+    LogFunc << "Wait freezes:" << VAR(param.time) << VAR(param.threshold) << VAR(param.method);
 
     cv::Rect target = get_target_rect(param.target, param.target_param, cur_box);
 
