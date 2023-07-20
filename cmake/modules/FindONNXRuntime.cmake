@@ -13,7 +13,10 @@ if(ONNXRuntime_FOUND)
     if(NOT TARGET ONNXRuntime::ONNXRuntime)
         add_library(ONNXRuntime::ONNXRuntime UNKNOWN IMPORTED)
         set_target_properties(ONNXRuntime::ONNXRuntime PROPERTIES
-            IMPORTED_LOCATION "${ONNXRuntime_LIBRARY}"
+            IMPORTED_CONFIGURATIONS "Debug;Release;RelWithDebInfo"
+            IMPORTED_LOCATION_DEBUG "${ONNXRuntime_LIBRARY}"
+            IMPORTED_LOCATION_RELEASE "${ONNXRuntime_LIBRARY}"
+            IMPORTED_LOCATION_RELWITHDEBINFO "${ONNXRuntime_LIBRARY}"
             INTERFACE_INCLUDE_DIRECTORIES "${ONNXRuntime_INCLUDE_DIR}"
         )
     endif()

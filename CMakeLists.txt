@@ -8,6 +8,7 @@ endif ()
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_LIST_DIR}/cmake/modules")
 
 set_property(GLOBAL PROPERTY USE_FOLDERS ON)
+set(CMAKE_MAP_IMPORTED_CONFIG_RELWITHDEBINFO Release)
 
 option(BUILD_SAMPLE "build a demo" ON)
 option(BUILD_BUSYBOX "build the busybox" OFF)
@@ -42,6 +43,8 @@ endif(WITH_THRIFT)
 # find_package(asio REQUIRED)
 find_package(ONNXRuntime)
 # find_package(cpr CONFIG REQUIRED)
+
+# set_target_properties(${OpenCV_LIBS} PROPERTIES MAP_IMPORTED_CONFIG_RELWITHDEBINFO RELEASE)
 
 add_subdirectory(3rdparty)
 add_subdirectory(source)
