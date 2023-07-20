@@ -19,11 +19,15 @@ std::string debug_dir;
 std::string cache_dir;
 std::string resource_dir;
 
-std::string task_name;
+std::string task_name = "StartUp";
 
 int main([[maybe_unused]] int argc, char** argv)
 {
     const auto cur_dir = std::filesystem::path(argv[0]).parent_path();
+
+    debug_dir = (cur_dir / "debug").string();
+    cache_dir = (cur_dir / "cache").string();
+    resource_dir = (cur_dir / "resource").string();
 
     if (argc >= 3) {
         adb = argv[1];
@@ -32,18 +36,9 @@ int main([[maybe_unused]] int argc, char** argv)
     if (argc >= 4) {
         resource_dir = argv[3];
     }
-    else {
-        resource_dir = (cur_dir / "resource").string();
-    }
     if (argc >= 5) {
         task_name = argv[4];
     }
-    else {
-        task_name = "StartUp";
-    }
-
-    debug_dir = (cur_dir / "debug").string();
-    cache_dir = (cur_dir / "cache").string();
 
     adb_config = read_adb_config(cur_dir);
 
