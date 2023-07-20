@@ -23,12 +23,15 @@ bool PipelineTask::run()
     }
 
     auto cur_task = get_task_data(first_task_);
+    cur_task_name_ = cur_task.name;
     std::vector<std::string> next_list = { first_task_ };
+    std::stack<std::string> breakpoints_stack;
     std::string pre_breakpoint;
 
     RunningResult ret = RunningResult::Success;
     while (!next_list.empty() && !need_exit()) {
         ret = find_first_and_run(next_list, cur_task.timeout, cur_task);
+        cur_task_name_ = cur_task.name;
 
         switch (ret) {
         case RunningResult::Success:
@@ -48,13 +51,13 @@ bool PipelineTask::run()
         }
 
         if (cur_task.is_sub) {
-            breakpoints_.emplace(pre_breakpoint);
+            breakpoints_stack.emplace(pre_breakpoint);
             LogInfo << "breakpoints add" << pre_breakpoint;
         }
 
-        if (next_list.empty() && !breakpoints_.empty()) {
-            std::string top_bp = std::move(breakpoints_.top());
-            breakpoints_.pop();
+        if (next_list.empty() && !breakpoints_stack.empty()) {
+            std::string top_bp = std::move(breakpoints_stack.top());
+            breakpoints_stack.pop();
             next_list = get_task_data(top_bp).next;
             LogInfo << "breakpoints pop" << VAR(top_bp) << VAR(next_list);
         }
@@ -165,6 +168,8 @@ PipelineTask::RunningResult PipelineTask::find_first_and_run(const std::vector<s
         return RunningResult::InternalError;
     }
 
+    LogFunc << VAR(cur_task_name_) << VAR(list);
+
     FoundResult result;
 
     auto start_time = std::chrono::steady_clock::now();
@@ -196,8 +201,6 @@ PipelineTask::RunningResult PipelineTask::find_first_and_run(const std::vector<s
         return RunningResult::Runout;
     }
 
-    LogInfo << "Task start to act:" << name;
-
     start_to_act(result);
 
     status()->increase_pipeline_run_times(name);
@@ -228,7 +231,7 @@ std::optional<PipelineTask::FoundResult> PipelineTask::find_first(const std::vec
         return std::nullopt;
     }
 
-    LogFunc << VAR(list);
+    LogFunc << VAR(cur_task_name_) << VAR(list);
 
     cv::Mat image = controller()->screencap();
 
@@ -248,6 +251,7 @@ std::optional<PipelineTask::RecResult> PipelineTask::recognize(const cv::Mat& im
 {
     using namespace MAA_PIPELINE_RES_NS::Recognition;
     using namespace MAA_VISION_NS;
+    LogFunc << VAR(cur_task_name_);
 
     if (!status()) {
         LogError << "Status not binded";
@@ -325,6 +329,7 @@ std::optional<PipelineTask::RecResult> PipelineTask::ocr(const cv::Mat& image, c
 void PipelineTask::start_to_act(const FoundResult& act)
 {
     using namespace MAA_PIPELINE_RES_NS::Action;
+    LogFunc << VAR(cur_task_name_);
 
     wait_freezes(act.task_data.pre_wait_freezes, act.rec.box);
     sleep(act.task_data.pre_delay);

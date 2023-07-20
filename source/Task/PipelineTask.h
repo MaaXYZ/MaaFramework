@@ -74,8 +74,8 @@ private:
     const MAA_PIPELINE_RES_NS::TaskData& get_task_data(const std::string& task_name);
 
 private:
-    std::stack<std::string> breakpoints_;
     TaskDataMap diff_tasks_;
+    std::string cur_task_name_;
 };
 
 MAA_TASK_NS_END

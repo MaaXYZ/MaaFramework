@@ -525,7 +525,7 @@ bool PipelineConfig::parse_action(const json::value& input, MAA_PIPELINE_RES_NS:
         return false;
     }
 
-    static const std::unordered_map<std::string, Type> kActTypeMap = {
+    const std::unordered_map<std::string, Type> kActTypeMap = {
         { kDefaultActionFlag, default_type },
         { "DoNothing", Type::DoNothing },
         { "Click", Type::Click },
