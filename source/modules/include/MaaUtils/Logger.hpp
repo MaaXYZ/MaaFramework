@@ -193,7 +193,7 @@ public:
 #endif
             auto tid = static_cast<unsigned short>(std::hash<std::thread::id> {}(std::this_thread::get_id()));
 
-            std::string props = std::format("[{}][{}][Px{}][Tx{}]", format_time(), level_str(lv), pid, tid);
+            std::string props = std::format("[{}][{}][Px{}][Tx{}]", format_now(), level_str(lv), pid, tid);
             for (auto&& arg : { args... }) {
                 props += std::format("[{}]", arg);
             }
