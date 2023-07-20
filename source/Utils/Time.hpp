@@ -16,34 +16,32 @@
 
 MAA_NS_BEGIN
 
-inline std::string get_format_time()
+inline std::string format_time()
 {
-    char buff[128] = { 0 };
+    constexpr std::string_view format = "{:0>4}-{:0>2}-{:0>2} {:0>2}:{:0>2}:{:0>2}.{:0>3}";
+
 #ifdef _WIN32
+
     SYSTEMTIME curtime;
     GetLocalTime(&curtime);
-#ifdef _MSC_VER
-    sprintf_s(buff, sizeof(buff),
-#else  // ! _MSC_VER
-    sprintf(buff,
-#endif // END _MSC_VER
-              "%04d-%02d-%02d %02d:%02d:%02d.%03d", curtime.wYear, curtime.wMonth, curtime.wDay, curtime.wHour,
-              curtime.wMinute, curtime.wSecond, curtime.wMilliseconds);
+    return std::format(format, curtime.wYear, curtime.wMonth, curtime.wDay, curtime.wHour, curtime.wMinute,
+                       curtime.wSecond, curtime.wMilliseconds);
 
-#else  // ! _WIN32
-    struct timeval tv = {};
+#else // ! _WIN32
+
+    timeval tv = {};
     gettimeofday(&tv, nullptr);
     time_t nowtime = tv.tv_sec;
-    struct tm* tm_info = localtime(&nowtime);
-    auto offset = strftime(buff, sizeof(buff), "%Y-%m-%d %H:%M:%S", tm_info);
-    sprintf(buff + offset, ".%03ld", static_cast<long int>(tv.tv_usec / 1000));
+    tm* tm_info = localtime(&nowtime);
+    return std::format(format, tm_info->tm_year + 1900, tm_info->tm_mon, tm_info->tm_mday, tm_info->tm_hour,
+                       tm_info->tm_min, tm_info->tm_sec, tv.tv_usec / 1000);
+
 #endif // END _WIN32
-    return buff;
 }
 
-inline std::string get_time_filestem()
+inline std::string time_filestem()
 {
-    std::string stem = get_format_time();
+    std::string stem = format_time();
     string_replace_all_(stem, { { ":", "-" }, { " ", "_" }, { ".", "-" } });
     return stem;
 }
