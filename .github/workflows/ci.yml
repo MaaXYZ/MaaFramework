@@ -122,19 +122,20 @@ jobs:
       - name: Add msbuild to PATH
         uses: microsoft/setup-msbuild@v1
 
+      - name: Setup upterm session
+        uses: lhotari/action-upterm@v1
+
       - name: Build MAA
         uses: lukka/run-cmake@v10
         with:
           # cmakeListsTxtPath: '${{ github.workspace }}/CMakeLists.txt'
           # workflowPreset: 'workflow-name'
-          configurePreset: "NinjaMulti"
+          configurePreset: "MSVC 2022"
           # configurePresetAdditionalArgs: "['-DENABLE_YOUR_FEATURE=1']"
-          buildPreset: "NinjaMulti - Release"
+          buildPreset: "MSVC 2022 - Release"
           # buildPresetAdditionalArgs: "['--config Release']"
           # testPreset: 'ninja-multi-vcpkg'
           # testPresetAdditionalArgs: "['--config Release']"
-      - name: Setup upterm session
-        uses: lhotari/action-upterm@v1
 
   ubuntu:
     runs-on: ubuntu-latest
