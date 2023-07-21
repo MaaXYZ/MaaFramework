@@ -83,12 +83,56 @@ jobs:
         run: |
           cp -r docs ${{ matrix.msbuild_target }}/Release
           rm -rf ${{ matrix.msbuild_target }}/MaaThriftController
-          
 
       - uses: actions/upload-artifact@v3
         with:
           name: MAA-win-${{ matrix.lowercase_target }}
           path: ${{ matrix.msbuild_target }}/Release
+
+  windows-cmake:
+    needs: meta
+    strategy:
+      matrix:
+        include:
+          - msbuild_target: x64
+            lowercase_target: x64
+          - msbuild_target: ARM64
+            lowercase_target: arm64
+    env:
+      MAABUILDER_TARGET_PLATFORM: ${{ matrix.msbuild_target }}
+    runs-on: windows-latest
+
+    steps:
+      - uses: actions/checkout@v3
+      - uses: lukka/get-cmake@latest
+
+      # Download host arch tools for Thrift of CustomThriftController
+      - name: Download host tools from MaaDeps
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          python3 maadeps-download.py x64-windows
+
+      - name: Bootstrap MaaDeps
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          python3 maadeps-download.py ${{ matrix.lowercase_target }}-windows
+
+      - name: Add msbuild to PATH
+        uses: microsoft/setup-msbuild@v1
+
+      - name: Build MAA
+        uses: lukka/run-cmake@v10
+        with:
+          # cmakeListsTxtPath: '${{ github.workspace }}/CMakeLists.txt'
+          # workflowPreset: 'workflow-name'
+          configurePreset: "NinjaMulti"
+          # configurePresetAdditionalArgs: "['-DENABLE_YOUR_FEATURE=1']"
+          buildPreset: "NinjaMulti - Release"
+          # buildPresetAdditionalArgs: "['--config Release']"
+          # testPreset: 'ninja-multi-vcpkg'
+          # testPresetAdditionalArgs: "['--config Release']"
 
   ubuntu:
     runs-on: ubuntu-latest
@@ -186,7 +230,6 @@ jobs:
   #       with:
   #         name: MaaFramework-macos-${{ matrix.arch }}
   #         path: 'install/*.dylib'
-
 
   release:
     if: startsWith(github.ref, 'refs/tags/v')
