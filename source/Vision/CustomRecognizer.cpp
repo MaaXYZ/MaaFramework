@@ -1,5 +1,7 @@
 #include "CustomRecognizer.h"
 
+#include "Utils/NoWarningCV.h"
+
 #include "MaaUtils/Logger.hpp"
 
 MAA_VISION_NS_BEGIN
@@ -20,7 +22,7 @@ CustomRecognizer::ResultOpt CustomRecognizer::analyze() const
     auto result = recognizer_->analyze(image, param_.custom_param.to_string().c_str());
 
     cv::Rect box { result.box.x, result.box.y, result.box.width, result.box.height };
-    LogTrace << VAR(result.success) << VAR(result.detail);
+    LogTrace << VAR(result.success) << VAR(box) << VAR(result.detail);
 
     if (!result.success) {
         return std::nullopt;

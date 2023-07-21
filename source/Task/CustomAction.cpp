@@ -1,5 +1,7 @@
 #include "CustomAction.h"
 
+#include "Utils/NoWarningCV.h"
+
 #include "MaaCustomAction.h"
 #include "MaaUtils/Logger.hpp"
 
@@ -10,7 +12,7 @@ CustomAction::CustomAction(MaaCustomActionHandle handle) : action_(handle) {}
 bool CustomAction::run(const MAA_PIPELINE_RES_NS::Action::CustomParam& param, const cv::Rect& cur_box,
                        const json::value& rec_detail)
 {
-    LogFunc << VAR_VOIDP(action_) << VAR(param.custom_param) << VAR(rec_detail);
+    LogFunc << VAR_VOIDP(action_) << VAR(param.custom_param) << VAR(cur_box) << VAR(rec_detail);
 
     if (!action_ || !action_->run) {
         LogError << "Action is null" << VAR_VOIDP(action_) << VAR_VOIDP(action_->run);
