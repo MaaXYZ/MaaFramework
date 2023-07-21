@@ -11,6 +11,7 @@
 struct MaaInstanceSink
 {
 public:
+    virtual ~MaaInstanceSink() = default;
     virtual void on_stop() {}
 };
 
@@ -63,9 +64,13 @@ public:
 
     virtual MaaTaskId post_task(std::string task, std::string_view param) = 0;
     virtual bool set_task_param(MaaTaskId task_id, std::string_view param) = 0;
-    virtual void register_custom_task(std::string name, MaaCustomTaskHandle handle) = 0;
-    virtual void unregister_custom_task(std::string name) = 0;
-    virtual void clear_custom_task() = 0;
+
+    virtual bool register_custom_recognizer(std::string name, MaaCustomRecognizerHandle handle) = 0;
+    virtual bool unregister_custom_recognizer(std::string name) = 0;
+    virtual void clear_custom_recognizer() = 0;
+    virtual bool register_custom_action(std::string name, MaaCustomActionHandle handle) = 0;
+    virtual bool unregister_custom_action(std::string name) = 0;
+    virtual void clear_custom_action() = 0;
 
     virtual MaaStatus status(MaaTaskId task_id) const = 0;
     virtual MaaStatus wait(MaaTaskId task_id) const = 0;

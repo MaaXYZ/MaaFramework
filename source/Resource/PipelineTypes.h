@@ -30,10 +30,11 @@ enum class Type
     DirectHit,
     TemplateMatch,
     OCR,
+    Custom,
 };
 
-using Params = std::variant<std::monostate, MAA_VISION_NS::DirectHitParams, MAA_VISION_NS::TemplMatchingParams,
-                            MAA_VISION_NS::OcrParams>;
+using Param = std::variant<std::monostate, MAA_VISION_NS::DirectHitParam, MAA_VISION_NS::TemplMatchingParam,
+                           MAA_VISION_NS::OcrParam, MAA_VISION_NS::CustomParam>;
 } // namespace Recognition
 
 namespace Action
@@ -47,7 +48,7 @@ enum class Type
     Key,
     StartApp,
     StopApp,
-    CustomTask,
+    Custom,
     // InputText, // TODO
 };
 
@@ -61,13 +62,13 @@ enum class Target
 
 using TargetParam = std::variant<std::monostate, std::string, cv::Rect>;
 
-struct ClickParams
+struct ClickParam
 {
     Target target = Target::Self;
     TargetParam target_param;
 };
 
-struct SwipeParams
+struct SwipeParam
 {
     Target begin = Target::Self;
     TargetParam begin_param;
@@ -77,26 +78,26 @@ struct SwipeParams
     uint duration = 200;
 };
 
-struct KeyParams
+struct KeyParam
 {
     std::vector<int> keys;
 };
 
-struct AppInfo
+struct AppParam
 {
     std::string package;
 };
 
-struct CustomTaskParams
+struct CustomParam
 {
-    std::string task_name;
-    json::value task_param;
+    std::string name;
+    json::value custom_param;
 };
 
-using Params = std::variant<std::monostate, ClickParams, SwipeParams, KeyParams, AppInfo, CustomTaskParams>;
+using Param = std::variant<std::monostate, ClickParam, SwipeParam, KeyParam, AppParam, CustomParam>;
 } // namespace Action
 
-struct WaitFreezesParams
+struct WaitFreezesParam
 {
     std::chrono::milliseconds time = std::chrono::milliseconds(0);
 
@@ -104,7 +105,7 @@ struct WaitFreezesParams
     Action::TargetParam target_param;
 
     double threshold = 0.95;
-    int method = MAA_VISION_NS::TemplMatchingParams::kDefaultMethod;
+    int method = MAA_VISION_NS::TemplMatchingParam::kDefaultMethod;
 };
 
 struct TaskData
@@ -115,12 +116,12 @@ struct TaskData
     bool is_sub = false;
 
     Recognition::Type rec_type = Recognition::Type::DirectHit;
-    Recognition::Params rec_params = MAA_VISION_NS::DirectHitParams {};
+    Recognition::Param rec_param = MAA_VISION_NS::DirectHitParam {};
 
     bool cache = false;
 
     Action::Type action_type = Action::Type::DoNothing;
-    Action::Params action_params;
+    Action::Param action_param;
     NextList next;
 
     std::chrono::milliseconds timeout = std::chrono::milliseconds(20 * 1000);
@@ -132,8 +133,8 @@ struct TaskData
     std::chrono::milliseconds pre_delay = std::chrono::milliseconds(200);
     std::chrono::milliseconds post_delay = std::chrono::milliseconds(500);
 
-    WaitFreezesParams pre_wait_freezes;
-    WaitFreezesParams post_wait_freezes;
+    WaitFreezesParam pre_wait_freezes;
+    WaitFreezesParam post_wait_freezes;
 
     bool notify = false;
 };

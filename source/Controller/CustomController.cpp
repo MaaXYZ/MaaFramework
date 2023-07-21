@@ -58,7 +58,7 @@ std::pair<int, int> CustomController::_get_resolution() const
     return { width, height };
 }
 
-void CustomController::_click(ClickParams param)
+void CustomController::_click(ClickParam param)
 {
     LogFunc << VAR_VOIDP(handle_) << VAR_VOIDP(handle_->click) << VAR(param.x) << VAR(param.y);
 
@@ -70,7 +70,7 @@ void CustomController::_click(ClickParams param)
     handle_->click(param.x, param.y);
 }
 
-void CustomController::_swipe(SwipeParams param)
+void CustomController::_swipe(SwipeParam param)
 {
     LogFunc << VAR_VOIDP(handle_) << VAR_VOIDP(handle_->swipe) << VAR(param.steps.size()) << VAR(param.steps.front())
             << VAR(param.steps.back());
@@ -95,7 +95,7 @@ void CustomController::_swipe(SwipeParams param)
     handle_->swipe(x_buf.data(), y_buf.data(), delay_buf.data(), size);
 }
 
-void CustomController::_press_key(PressKeyParams param)
+void CustomController::_press_key(PressKeyParam param)
 {
     LogFunc << VAR_VOIDP(handle_) << VAR_VOIDP(handle_->press_key) << VAR(param.keycode);
 
@@ -138,7 +138,7 @@ cv::Mat CustomController::_screencap()
     return res;
 }
 
-bool CustomController::_start_app(AppParams param)
+bool CustomController::_start_app(AppParam param)
 {
     LogFunc << VAR_VOIDP(handle_) << VAR_VOIDP(handle_->start_app) << VAR(param.package);
 
@@ -150,7 +150,7 @@ bool CustomController::_start_app(AppParams param)
     return handle_->start_app(param.package.c_str());
 }
 
-bool CustomController::_stop_app(AppParams param)
+bool CustomController::_stop_app(AppParam param)
 {
     LogFunc << VAR_VOIDP(handle_) << VAR_VOIDP(handle_->stop_app) << VAR(param.package);
 

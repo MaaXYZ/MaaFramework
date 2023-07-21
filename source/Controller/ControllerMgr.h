@@ -18,12 +18,12 @@ MAA_RES_NS_END
 
 MAA_CTRL_NS_BEGIN
 
-struct ClickParams
+struct ClickParam
 {
     int x = 0;
     int y = 0;
 };
-struct SwipeParams
+struct SwipeParam
 {
     struct Step
     {
@@ -33,18 +33,18 @@ struct SwipeParams
     };
     std::vector<Step> steps;
 };
-struct PressKeyParams
+struct PressKeyParam
 {
     int keycode = 0;
 };
-struct AppParams
+struct AppParam
 {
     std::string package;
 };
 
-std::ostream& operator<<(std::ostream& os, const SwipeParams::Step& step);
+std::ostream& operator<<(std::ostream& os, const SwipeParam::Step& step);
 
-using Params = std::variant<std::monostate, ClickParams, SwipeParams, PressKeyParams, AppParams>;
+using Param = std::variant<std::monostate, ClickParam, SwipeParam, PressKeyParam, AppParam>;
 
 struct Action
 {
@@ -59,7 +59,7 @@ struct Action
         stop_app,
     } type;
 
-    Params params;
+    Param param;
 };
 
 std::ostream& operator<<(std::ostream& os, const Action& action);
@@ -104,12 +104,12 @@ public:
 protected:
     virtual bool _connect() = 0;
     virtual std::pair<int, int> _get_resolution() const = 0;
-    virtual void _click(ClickParams param) = 0;
-    virtual void _swipe(SwipeParams param) = 0;
-    virtual void _press_key(PressKeyParams param) = 0;
+    virtual void _click(ClickParam param) = 0;
+    virtual void _swipe(SwipeParam param) = 0;
+    virtual void _press_key(PressKeyParam param) = 0;
     virtual cv::Mat _screencap() = 0;
-    virtual bool _start_app(AppParams param) = 0;
-    virtual bool _stop_app(AppParams param) = 0;
+    virtual bool _start_app(AppParam param) = 0;
+    virtual bool _stop_app(AppParam param) = 0;
 
 protected:
     MessageNotifier<MaaControllerCallback> notifier;

@@ -10,29 +10,10 @@
           "enum": [
             "DirectHit",
             "TemplateMatch",
-            "OCR"
+            "OCR",
+            "Custom"
           ],
           "default": "DirectHit"
-        },
-        "roi": {
-          "description": "识别区域坐标。可选，默认全屏。\n四个值分别为 [x, y, w, h]。",
-          "anyOf": [
-            {
-              "$ref": "#/definitions/rect"
-            },
-            {
-              "type": "array",
-              "items": {
-                "$ref": "#/definitions/rect"
-              },
-              "minItems": 1
-            }
-          ]
-        },
-        "cache": {
-          "description": "是否缓存。可选，默认关。\n缓存当次识别到的位置，下次只在该位置识别。",
-          "type": "boolean",
-          "default": false
         },
         "action": {
           "description": "执行的动作。可选，默认 DoNothing。",
@@ -40,10 +21,11 @@
             "DoNothing",
             "Click",
             "Swipe",
+            "Key",
             "WaitFreezes",
             "StartApp",
             "StopApp",
-            "CustomTask"
+            "Custom"
           ],
           "default": "DoNothing"
         },
@@ -52,7 +34,7 @@
           "$ref": "#/definitions/tasklist"
         },
         "is_sub": {
-          "description": "是否是子任务。可选，默认否。\n如果是子任务，执行完本任务（及后续 next 等）后，会返回最近的 **非子任务** 继续执行。",
+          "description": "是否是子任务。可选，默认否。\n如果是子任务，执行完本任务（及后续 next 等）后，会返回来再次识别本任务 **所在的** next 列表。",
           "type": "boolean",
           "default": false
         },
@@ -88,7 +70,19 @@
           "minimum": 0,
           "default": 500
         },
-        "notification": {
+        "pre_wait_freezes": {
+          "description": "识别到 到 执行动作前，等待画面不动了的时间，毫秒。可选，默认 0，即不等待。",
+          "type": "integer",
+          "minimum": 0,
+          "default": 0
+        },
+        "post_wait_freezes": {
+          "description": "行动动作后 到 识别 next，等待画面不动了的时间，毫秒。可选，默认 0，即不等待。",
+          "type": "integer",
+          "minimum": 0,
+          "default": 0
+        },
+        "notify": {
           "description": "产生同步回调消息。可选，默认空，即不产生。",
           "type": "string",
           "default": false

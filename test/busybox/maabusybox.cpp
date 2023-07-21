@@ -50,11 +50,11 @@ int main(int argc, char* argv[])
 
         ("command", "command", cxxopts::value<std::string>()->default_value("help"))
         ("subcommand", "sub command", cxxopts::value<std::string>()->default_value("help"))
-        ("params", "rest params", cxxopts::value<std::vector<std::string>>()->default_value(""))
+        ("param", "rest param", cxxopts::value<std::vector<std::string>>()->default_value(""))
         ;
     // clang-format on
 
-    options.parse_positional({ "command", "subcommand", "params" });
+    options.parse_positional({ "command", "subcommand", "param" });
 
     options.positional_help("[COMMAND] [SUBCOMMAND]");
 
@@ -194,41 +194,41 @@ int main(int argc, char* argv[])
     //     auto tap = initUnit(new Unit::TapInput);
 
     //     auto scmd = result["subcommand"].as<std::string>();
-    //     auto params = result["params"].as<std::vector<std::string>>();
+    //     auto param = result["param"].as<std::vector<std::string>>();
 
     //     if (scmd == "help") {
     //         std::cout << "Usage: " << argv[0] << " tap_input [click | swipe | press_key]" << std::endl;
     //     }
     //     else if (scmd == "click") {
-    //         if (params.size() < 2) {
+    //         if (param.size() < 2) {
     //             std::cout << "Usage: " << argv[0] << " tap_input click [X] [Y]" << std::endl;
     //             return 0;
     //         }
 
-    //         int x = atoi(params[0].c_str());
-    //         int y = atoi(params[1].c_str());
+    //         int x = atoi(param[0].c_str());
+    //         int y = atoi(param[1].c_str());
     //         std::cout << "return: " << std::boolalpha << tap->click(x, y) << std::endl;
     //     }
     //     else if (scmd == "swipe") {
-    //         if (params.size() < 5) {
+    //         if (param.size() < 5) {
     //             std::cout << "Usage: " << argv[0] << " tap_input swipe [X1] [Y1] [X2] [Y2] [DURATION]" << std::endl;
     //             return 0;
     //         }
 
-    //         int x1 = atoi(params[0].c_str());
-    //         int y1 = atoi(params[1].c_str());
-    //         int x2 = atoi(params[2].c_str());
-    //         int y2 = atoi(params[3].c_str());
-    //         int dur = atoi(params[4].c_str());
+    //         int x1 = atoi(param[0].c_str());
+    //         int y1 = atoi(param[1].c_str());
+    //         int x2 = atoi(param[2].c_str());
+    //         int y2 = atoi(param[3].c_str());
+    //         int dur = atoi(param[4].c_str());
     //         std::cout << "return: " << std::boolalpha << tap->swipe(x1, y1, x2, y2, dur) << std::endl;
     //     }
     //     else if (scmd == "press_key") {
-    //         if (params.size() < 1) {
+    //         if (param.size() < 1) {
     //             std::cout << "Usage: " << argv[0] << " tap_input press_key [KEY]" << std::endl;
     //             return 0;
     //         }
 
-    //         int key = atoi(params[0].c_str());
+    //         int key = atoi(param[0].c_str());
     //         std::cout << "return: " << std::boolalpha << tap->press_key(key) << std::endl;
     //     }
     // }
@@ -246,7 +246,7 @@ int main(int argc, char* argv[])
         }
 
         auto scmd = result["subcommand"].as<std::string>();
-        // auto params = result["params"].as<std::vector<std::string>>();
+        // auto param = result["param"].as<std::vector<std::string>>();
 
         if (scmd == "help") {
             LogInfo << "Usage: " << argv[0]
@@ -297,7 +297,7 @@ int main(int argc, char* argv[])
     //     invtp = inv->get_tempname();
 
     //     auto scmd = result["subcommand"].as<std::string>();
-    //     auto params = result["params"].as<std::vector<std::string>>();
+    //     auto param = result["param"].as<std::vector<std::string>>();
 
     //     auto trackMinitouch = [](std::shared_ptr<MaaNS::ControllerNS::IOHandler> h) {
     //         while (true) {
@@ -333,13 +333,13 @@ int main(int argc, char* argv[])
     //         std::cout << inv->abilist() << std::endl;
     //     }
     //     else if (scmd == "push") {
-    //         if (params.size() < 1) {
+    //         if (param.size() < 1) {
     //             std::cout << "Usage: " << argv[0] << " invoke_app push [file]" << std::endl;
     //             return 0;
     //         }
 
     //         std::cout << "push as " << invtp << std::endl;
-    //         std::cout << "return: " << std::boolalpha << inv->push(params[0]) << std::endl;
+    //         std::cout << "return: " << std::boolalpha << inv->push(param[0]) << std::endl;
     //         std::ofstream fo(".invokeapp");
     //         fo << inv->get_tempname();
     //     }
@@ -348,20 +348,20 @@ int main(int argc, char* argv[])
     //         std::cout << "return: " << std::boolalpha << inv->chmod() << std::endl;
     //     }
     //     else if (scmd == "invoke_bin") {
-    //         while (params.size() > 0 && params[0].empty()) {
-    //             params.erase(params.begin());
+    //         while (param.size() > 0 && param[0].empty()) {
+    //             param.erase(param.begin());
     //         }
-    //         std::cout << "params: " << params << std::endl;
-    //         auto h = inv->invoke_bin(params.size() > 0 ? params[0] : "");
+    //         std::cout << "param: " << param << std::endl;
+    //         auto h = inv->invoke_bin(param.size() > 0 ? param[0] : "");
     //         trackMinitouch(h);
     //     }
     //     else if (scmd == "invoke_app") {
-    //         if (params.size() < 1) {
+    //         if (param.size() < 1) {
     //             std::cout << "Usage: " << argv[0] << " invoke_app invoke_app [package]" << std::endl;
     //             return 0;
     //         }
 
-    //         auto h = inv->invoke_app(params[0]);
+    //         auto h = inv->invoke_app(param[0]);
     //         trackMinitouch(h);
     //     }
     // }

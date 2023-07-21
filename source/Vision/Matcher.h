@@ -21,14 +21,14 @@ public:
 public:
     using VisionBase::VisionBase;
 
-    void set_param(TemplMatchingParams param) { param_ = std::move(param); }
+    void set_param(TemplMatchingParam param) { param_ = std::move(param); }
     ResultOpt analyze() const;
 
 private:
     Result traverse_rois(const cv::Mat& templ, double threshold) const;
     Result match_and_postproc(const cv::Rect& roi, const cv::Mat& templ) const;
 
-    TemplMatchingParams param_;
+    TemplMatchingParam param_;
 };
 
 MAA_VISION_NS_END

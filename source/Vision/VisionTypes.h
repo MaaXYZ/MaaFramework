@@ -1,20 +1,23 @@
 #pragma once
 
 #include "Common/MaaConf.h"
-#include "Utils/NoWarningCVMat.h"
 
 #include <string>
 #include <unordered_map>
 #include <vector>
 
+#include <meojson/json.hpp>
+
+#include "Utils/NoWarningCVMat.h"
+
 MAA_VISION_NS_BEGIN
 
-struct DirectHitParams
+struct DirectHitParam
 {
     std::vector<cv::Rect> roi; // only for "ClickSelf"
 };
 
-struct TemplMatchingParams
+struct TemplMatchingParam
 {
     inline static constexpr double kDefaultThreshold = 0.7;
     inline static constexpr int kDefaultMethod = 5; // cv::TM_CCOEFF_NORMED
@@ -27,7 +30,7 @@ struct TemplMatchingParams
     bool green_mask = false;
 };
 
-struct OcrParams
+struct OcrParam
 {
     bool only_rec = false;
     std::vector<cv::Rect> roi;
@@ -35,11 +38,17 @@ struct OcrParams
     std::vector<std::pair<std::string, std::string>> replace;
 };
 
-struct CompParams
+struct CompParam
 {
     std::vector<cv::Rect> roi;
     double threshold = 0.0;
     int method = 0;
+};
+
+struct CustomParam
+{
+    std::string name;
+    json::value custom_param;
 };
 
 MAA_VISION_NS_END

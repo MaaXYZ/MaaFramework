@@ -5,7 +5,7 @@
 #include "Common/MaaTypes.h"
 #include "Instance/InstanceStatus.h"
 #include "InstanceInternalAPI.hpp"
-#include "Task/TaskBase.h"
+#include "Task/PipelineTask.h"
 
 #include <mutex>
 
@@ -26,9 +26,13 @@ public: // from MaaInstanceAPI
 
     virtual MaaTaskId post_task(std::string task, std::string_view param) override;
     virtual bool set_task_param(MaaTaskId task_id, std::string_view param) override;
-    virtual void register_custom_task(std::string name, MaaCustomTaskHandle handle) override;
-    virtual void unregister_custom_task(std::string name) override;
-    virtual void clear_custom_task() override;
+
+    virtual bool register_custom_recognizer(std::string name, MaaCustomRecognizerHandle handle) override;
+    virtual bool unregister_custom_recognizer(std::string name) override;
+    virtual void clear_custom_recognizer() override;
+    virtual bool register_custom_action(std::string name, MaaCustomActionHandle handle) override;
+    virtual bool unregister_custom_action(std::string name) override;
+    virtual void clear_custom_action() override;
 
     virtual MaaStatus status(MaaTaskId task_id) const override;
     virtual MaaStatus wait(MaaTaskId task_id) const override;
@@ -43,10 +47,11 @@ public: // from InstanceInternalAPI
     virtual MAA_RES_NS::ResourceMgr* inter_resource() override;
     virtual MAA_CTRL_NS::ControllerMgr* inter_controller() override;
     virtual InstanceStatus* status() override;
-    virtual MAA_TASK_NS::CustomTaskPtr custom_task(const std::string& name) override;
+    virtual MAA_VISION_NS::CustomRecognizerPtr custom_recognizer(const std::string& name) override;
+    virtual MAA_TASK_NS::CustomActionPtr custom_action(const std::string& name) override;
 
 private:
-    using TaskPtr = std::shared_ptr<TaskNS::TaskBase>;
+    using TaskPtr = std::shared_ptr<TaskNS::PipelineTask>;
     using TaskId = AsyncRunner<TaskPtr>::Id;
 
     bool run_task(TaskId id, TaskPtr task_ptr);
@@ -56,7 +61,8 @@ private:
     MaaControllerAPI* controller_ = nullptr;
     InstanceStatus status_;
 
-    std::map<std::string, MAA_TASK_NS::CustomTaskPtr> custom_tasks_;
+    std::unordered_map<std::string, MAA_VISION_NS::CustomRecognizerPtr> custom_recognizers_;
+    std::unordered_map<std::string, MAA_TASK_NS::CustomActionPtr> custom_actions_;
 
     std::unique_ptr<AsyncRunner<TaskPtr>> task_runner_ = nullptr;
     MessageNotifier<MaaInstanceCallback> notifier;

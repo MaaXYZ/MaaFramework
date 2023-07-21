@@ -18,9 +18,14 @@ MAA_NS_BEGIN
 class InstanceStatus;
 MAA_NS_END
 
+MAA_VISION_NS_BEGIN
+class CustomRecognizer;
+using CustomRecognizerPtr = std::shared_ptr<CustomRecognizer>;
+MAA_VISION_NS_END
+
 MAA_TASK_NS_BEGIN
-class CustomTask;
-using CustomTaskPtr = std::shared_ptr<CustomTask>;
+class CustomAction;
+using CustomActionPtr = std::shared_ptr<CustomAction>;
 MAA_TASK_NS_END
 
 MAA_NS_BEGIN
@@ -31,7 +36,8 @@ public:
     virtual MAA_RES_NS::ResourceMgr* inter_resource() = 0;
     virtual MAA_CTRL_NS::ControllerMgr* inter_controller() = 0;
     virtual InstanceStatus* status() = 0;
-    virtual MAA_TASK_NS::CustomTaskPtr custom_task(const std::string& name) = 0;
+    virtual MAA_VISION_NS::CustomRecognizerPtr custom_recognizer(const std::string& name) = 0;
+    virtual MAA_TASK_NS::CustomActionPtr custom_action(const std::string& name) = 0;
 };
 
 MAA_NS_END

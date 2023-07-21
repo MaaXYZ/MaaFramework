@@ -32,38 +32,39 @@ public:
                            const MAA_PIPELINE_RES_NS::TaskData& default_value);
 
     static bool parse_recognition(const json::value& input, MAA_PIPELINE_RES_NS::Recognition::Type& out_type,
-                                  MAA_PIPELINE_RES_NS::Recognition::Params& out_param,
+                                  MAA_PIPELINE_RES_NS::Recognition::Param& out_param,
                                   const MAA_PIPELINE_RES_NS::Recognition::Type& default_type,
-                                  const MAA_PIPELINE_RES_NS::Recognition::Params& default_param);
-    static bool parse_direct_hit_params(const json::value& input, MAA_VISION_NS::DirectHitParams& output,
-                                        const MAA_VISION_NS::DirectHitParams& default_value);
-    static bool parse_templ_matching_params(const json::value& input, MAA_VISION_NS::TemplMatchingParams& output,
-                                            const MAA_VISION_NS::TemplMatchingParams& default_value);
-    static bool parse_ocr_params(const json::value& input, MAA_VISION_NS::OcrParams& output,
-                                 const MAA_VISION_NS::OcrParams& default_value);
+                                  const MAA_PIPELINE_RES_NS::Recognition::Param& default_param);
+    static bool parse_direct_hit_param(const json::value& input, MAA_VISION_NS::DirectHitParam& output,
+                                       const MAA_VISION_NS::DirectHitParam& default_value);
+    static bool parse_templ_matching_param(const json::value& input, MAA_VISION_NS::TemplMatchingParam& output,
+                                           const MAA_VISION_NS::TemplMatchingParam& default_value);
+    static bool parse_ocr_param(const json::value& input, MAA_VISION_NS::OcrParam& output,
+                                const MAA_VISION_NS::OcrParam& default_value);
+    static bool parse_custom_recognizer_param(const json::value& input, MAA_VISION_NS::CustomParam& output,
+                                              const MAA_VISION_NS::CustomParam& default_value);
 
     static bool parse_roi(const json::value& input, std::vector<cv::Rect>& output,
                           const std::vector<cv::Rect>& default_value);
 
     static bool parse_action(const json::value& input, MAA_PIPELINE_RES_NS::Action::Type& out_type,
-                             MAA_PIPELINE_RES_NS::Action::Params& out_param,
+                             MAA_PIPELINE_RES_NS::Action::Param& out_param,
                              const MAA_PIPELINE_RES_NS::Action::Type& default_type,
-                             const MAA_PIPELINE_RES_NS::Action::Params& default_param);
-    static bool parse_click(const json::value& input, MAA_PIPELINE_RES_NS::Action::ClickParams& output,
-                            const MAA_PIPELINE_RES_NS::Action::ClickParams& default_value);
-    static bool parse_swipe(const json::value& input, MAA_PIPELINE_RES_NS::Action::SwipeParams& output,
-                            const MAA_PIPELINE_RES_NS::Action::SwipeParams& default_value);
-    static bool parse_key_press(const json::value& input, MAA_PIPELINE_RES_NS::Action::KeyParams& output,
-                                const MAA_PIPELINE_RES_NS::Action::KeyParams& default_value);
-    static bool parse_app_info(const json::value& input, MAA_PIPELINE_RES_NS::Action::AppInfo& output,
-                               const MAA_PIPELINE_RES_NS::Action::AppInfo& default_value);
-    static bool parse_custom_task_params(const json::value& input,
-                                         MAA_PIPELINE_RES_NS::Action::CustomTaskParams& output,
-                                         const MAA_PIPELINE_RES_NS::Action::CustomTaskParams& default_value);
+                             const MAA_PIPELINE_RES_NS::Action::Param& default_param);
+    static bool parse_click(const json::value& input, MAA_PIPELINE_RES_NS::Action::ClickParam& output,
+                            const MAA_PIPELINE_RES_NS::Action::ClickParam& default_value);
+    static bool parse_swipe(const json::value& input, MAA_PIPELINE_RES_NS::Action::SwipeParam& output,
+                            const MAA_PIPELINE_RES_NS::Action::SwipeParam& default_value);
+    static bool parse_key_press(const json::value& input, MAA_PIPELINE_RES_NS::Action::KeyParam& output,
+                                const MAA_PIPELINE_RES_NS::Action::KeyParam& default_value);
+    static bool parse_app_info(const json::value& input, MAA_PIPELINE_RES_NS::Action::AppParam& output,
+                               const MAA_PIPELINE_RES_NS::Action::AppParam& default_value);
+    static bool parse_custom_action_param(const json::value& input, MAA_PIPELINE_RES_NS::Action::CustomParam& output,
+                                          const MAA_PIPELINE_RES_NS::Action::CustomParam& default_value);
 
-    static bool parse_wait_freezes_params(const json::value& input, const std::string& key,
-                                          MAA_PIPELINE_RES_NS::WaitFreezesParams& output,
-                                          const MAA_PIPELINE_RES_NS::WaitFreezesParams& default_value);
+    static bool parse_wait_freezes_param(const json::value& input, const std::string& key,
+                                         MAA_PIPELINE_RES_NS::WaitFreezesParam& output,
+                                         const MAA_PIPELINE_RES_NS::WaitFreezesParam& default_value);
 
     static bool parse_rect(const json::value& input_rect, cv::Rect& output);
     static bool parse_action_target(const json::value& input, const std::string& key,
