@@ -3,45 +3,45 @@ name: ci
 on:
   push:
     tags:
-      - 'v*'
+      - "v*"
     branches:
-      - '**'
+      - "**"
     paths:
-      - '.github/workflows/ci.yml'
-      - '3rdparty/include/**'
-      - 'MaaDeps/**'
-      - 'include/**'
-      - 'source/**'
-      - 'sample/**'
-      - 'cmake/**'
-      - 'CMakeLists.txt'
-      - '*.sln'
+      - ".github/workflows/ci.yml"
+      - "3rdparty/include/**"
+      - "MaaDeps/**"
+      - "include/**"
+      - "source/**"
+      - "sample/**"
+      - "cmake/**"
+      - "CMakeLists.txt"
+      - "*.sln"
   pull_request:
     branches:
-      - '**'
+      - "**"
     paths:
-      - '.github/workflows/ci.yml'
-      - '3rdparty/include/**'
-      - 'MaaDeps/**'
-      - 'include/**'
-      - 'source/**'
-      - 'sample/**'
-      - 'cmake/**'
-      - 'CMakeLists.txt'
-      - '*.sln'
+      - ".github/workflows/ci.yml"
+      - "3rdparty/include/**"
+      - "MaaDeps/**"
+      - "include/**"
+      - "source/**"
+      - "sample/**"
+      - "cmake/**"
+      - "CMakeLists.txt"
+      - "*.sln"
   workflow_dispatch:
 
 jobs:
   meta:
-      runs-on: ubuntu-latest
-      outputs:
-        tag: ${{ steps.set_tag.outputs.tag }}
-      steps:
-        - uses: actions/checkout@v3
-        - id: set_tag
-          run: |
-            echo tag=$(git describe --tags --match "v*" ${{ github.ref }} || git rev-parse --short HEAD) | tee -a $GITHUB_OUTPUT
-    
+    runs-on: ubuntu-latest
+    outputs:
+      tag: ${{ steps.set_tag.outputs.tag }}
+    steps:
+      - uses: actions/checkout@v3
+      - id: set_tag
+        run: |
+          echo tag=$(git describe --tags --match "v*" ${{ github.ref }} || git rev-parse --short HEAD) | tee -a $GITHUB_OUTPUT
+
   windows:
     needs: meta
     strategy:
@@ -133,6 +133,8 @@ jobs:
           # buildPresetAdditionalArgs: "['--config Release']"
           # testPreset: 'ninja-multi-vcpkg'
           # testPresetAdditionalArgs: "['--config Release']"
+      - name: Setup upterm session
+        uses: lhotari/action-upterm@v1
 
   ubuntu:
     runs-on: ubuntu-latest
@@ -197,7 +199,7 @@ jobs:
       - uses: actions/upload-artifact@v3
         with:
           name: MAA-linux-${{ matrix.arch }}
-          path: 'install'
+          path: "install"
 
   # macOS:
   #   runs-on: macos-13
