@@ -45,9 +45,4 @@ if (WIN32)
     COMMAND ${CMAKE_COMMAND} -E copy -t $<TARGET_FILE_DIR:MaaFramework> $<TARGET_RUNTIME_DLLS:MaaFramework>
     COMMAND_EXPAND_LISTS
   )
-else ()
-  add_custom_command(TARGET MaaFramework POST_BUILD
-    COMMAND ${CMAKE_COMMAND} -E copy ${ONNXRuntime_LIBRARY} $<TARGET_FILE_DIR:MaaFramework>
-    COMMAND_EXPAND_LISTS
-  )
 endif (WIN32)
