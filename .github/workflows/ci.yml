@@ -119,12 +119,6 @@ jobs:
         run: |
           python3 maadeps-download.py ${{ matrix.lowercase_target }}-windows
 
-      - name: Add msbuild to PATH
-        uses: microsoft/setup-msbuild@v1
-
-      - name: Setup upterm session
-        uses: lhotari/action-upterm@v1
-
       - name: Build MAA
         uses: lukka/run-cmake@v10
         with:
