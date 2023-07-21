@@ -12,13 +12,13 @@ public:
 public:
     Comparator() = default;
 
-    void set_param(CompParams param) { param_ = std::move(param); }
+    void set_param(CompParam param) { param_ = std::move(param); }
     Result analyze(const cv::Mat& lhs, const cv::Mat& rhs) const;
 
 private:
     static double comp(const cv::Mat& lhs, const cv::Mat& rhs, int method);
 
-    CompParams param_;
+    CompParam param_;
 };
 
 MAA_VISION_NS_END

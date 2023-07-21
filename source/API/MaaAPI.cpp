@@ -345,36 +345,73 @@ MaaBool MaaInited(MaaInstanceHandle inst)
     return inst->inited();
 }
 
-void MaaRegisterCustomTask(MaaInstanceHandle inst, MaaString name, MaaCustomTaskHandle task)
+MaaBool MaaRegisterCustomRecognizer(MaaInstanceHandle inst, MaaString name, MaaCustomRecognizerHandle recognizer)
 {
-    LogFunc << VAR_VOIDP(inst) << VAR(name) << VAR_VOIDP(task);
+    LogFunc << VAR_VOIDP(inst) << VAR(name) << VAR_VOIDP(recognizer);
 
     if (!inst) {
-        return;
+        return false;
     }
 
-    inst->register_custom_task(name, task);
+    return inst->register_custom_recognizer(name, recognizer);
 }
 
-void MaaUnregisterCustomTask(MaaInstanceHandle inst, MaaString name)
+MaaBool MaaUnregisterCustomRecognizer(MaaInstanceHandle inst, MaaString name)
 {
     LogFunc << VAR_VOIDP(inst) << VAR(name);
 
     if (!inst) {
-        return;
+        return false;
     }
-    inst->unregister_custom_task(name);
+
+    return inst->unregister_custom_recognizer(name);
 }
 
-void MaaClearCustomTask(MaaInstanceHandle inst)
+MaaBool MaaClearCustomRecognizer(MaaInstanceHandle inst)
 {
     LogFunc << VAR_VOIDP(inst);
 
     if (!inst) {
-        return;
+        return false;
     }
 
-    inst->clear_custom_task();
+    inst->clear_custom_recognizer();
+    return true;
+}
+
+MaaBool MaaRegisterCustomAction(MaaInstanceHandle inst, MaaString name, MaaCustomActionHandle action)
+{
+    LogFunc << VAR_VOIDP(inst) << VAR(name) << VAR_VOIDP(action);
+
+    if (!inst) {
+        return false;
+    }
+
+    return inst->register_custom_action(name, action);
+}
+
+MaaBool MaaUnregisterCustomAction(MaaInstanceHandle inst, MaaString name)
+{
+    LogFunc << VAR_VOIDP(inst) << VAR(name);
+
+    if (!inst) {
+        return false;
+    }
+
+    return inst->unregister_custom_action(name);
+}
+
+MaaBool MaaClearCustomAction(MaaInstanceHandle inst)
+{
+    LogFunc << VAR_VOIDP(inst);
+
+    if (!inst) {
+        return false;
+    }
+
+    inst->clear_custom_action();
+
+    return true;
 }
 
 MaaTaskId MaaPostTask(MaaInstanceHandle inst, MaaString task, MaaJsonString param)

@@ -111,9 +111,6 @@
     <ClInclude Include="Resource\PipelineConfig.h">
       <Filter>Source\Resource</Filter>
     </ClInclude>
-    <ClInclude Include="Task\TaskBase.h">
-      <Filter>Source\Task</Filter>
-    </ClInclude>
     <ClInclude Include="Base\AsyncRunner.hpp">
       <Filter>Source\Base</Filter>
     </ClInclude>
@@ -181,8 +178,10 @@
       <Filter>Source\Base</Filter>
     </ClInclude>
     <ClInclude Include="Vision\Comparator.h" />
-    <ClInclude Include="..\include\MaaCustomTask.h" />
-    <ClInclude Include="Task\CustomTask.h" />
+    <ClInclude Include="..\include\MaaCustomRecognizer.h" />
+    <ClInclude Include="Vision\CustomRecognizer.h" />
+    <ClInclude Include="Task\CustomAction.h" />
+    <ClInclude Include="..\include\MaaCustomAction.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Controller\ControllerMgr.cpp">
@@ -233,8 +232,8 @@
     <ClCompile Include="Vision\OCRer.cpp">
       <Filter>Source\Vision</Filter>
     </ClCompile>
-    <ClCompile Include="Task\TaskBase.cpp" />
     <ClCompile Include="Vision\Comparator.cpp" />
-    <ClCompile Include="Task\CustomTask.cpp" />
+    <ClCompile Include="Vision\CustomRecognizer.cpp" />
+    <ClCompile Include="Task\CustomAction.cpp" />
   </ItemGroup>
 </Project>

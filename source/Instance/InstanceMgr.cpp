@@ -4,8 +4,9 @@
 #include "MaaMsg.h"
 #include "MaaUtils/Logger.hpp"
 #include "Resource/ResourceMgr.h"
-#include "Task/CustomTask.h"
+#include "Task/CustomAction.h"
 #include "Task/PipelineTask.h"
+#include "Vision/CustomRecognizer.h"
 
 MAA_NS_BEGIN
 
@@ -133,27 +134,51 @@ bool InstanceMgr::set_task_param(MaaTaskId task_id, std::string_view param)
     return ret;
 }
 
-void InstanceMgr::register_custom_task(std::string name, MaaCustomTaskHandle handle)
+bool InstanceMgr::register_custom_recognizer(std::string name, MaaCustomRecognizerHandle handle)
 {
     LogInfo << VAR(name) << VAR_VOIDP(handle);
+    if (!handle) {
+        LogError << "Invalid handle";
+        return false;
+    }
 
-    auto ptr = std::make_shared<MAA_TASK_NS::CustomTask>(name, handle, this);
-
-    custom_tasks_.insert_or_assign(std::move(name), std::move(ptr));
+    auto recognizer_ptr = std::make_shared<MAA_VISION_NS::CustomRecognizer>(handle);
+    return custom_recognizers_.insert_or_assign(std::move(name), std::move(recognizer_ptr)).second;
 }
 
-void InstanceMgr::unregister_custom_task(std::string name)
+bool InstanceMgr::unregister_custom_recognizer(std::string name)
 {
     LogInfo << VAR(name);
-
-    custom_tasks_.erase(name);
+    return custom_recognizers_.erase(name) > 0;
 }
 
-void InstanceMgr::clear_custom_task()
+void InstanceMgr::clear_custom_recognizer()
 {
     LogInfo;
+    custom_recognizers_.clear();
+}
 
-    custom_tasks_.clear();
+bool InstanceMgr::register_custom_action(std::string name, MaaCustomActionHandle handle)
+{
+    LogInfo << VAR(name) << VAR_VOIDP(handle);
+    if (!handle) {
+        LogError << "Invalid handle";
+        return false;
+    }
+    auto action_ptr = std::make_shared<MAA_TASK_NS::CustomAction>(handle);
+    return custom_actions_.insert_or_assign(std::move(name), std::move(action_ptr)).second;
+}
+
+bool InstanceMgr::unregister_custom_action(std::string name)
+{
+    LogInfo << VAR(name);
+    return custom_actions_.erase(name) > 0;
+}
+
+void InstanceMgr::clear_custom_action()
+{
+    LogInfo;
+    custom_actions_.clear();
 }
 
 MaaStatus InstanceMgr::status(MaaTaskId task_id) const
@@ -229,11 +254,21 @@ InstanceStatus* InstanceMgr::status()
     return &status_;
 }
 
-MAA_TASK_NS::CustomTaskPtr InstanceMgr::custom_task(const std::string& name)
+MAA_VISION_NS::CustomRecognizerPtr InstanceMgr::custom_recognizer(const std::string& name)
 {
-    auto it = custom_tasks_.find(name);
-    if (it == custom_tasks_.end()) {
-        LogError << "Custom task not found:" << name;
+    auto it = custom_recognizers_.find(name);
+    if (it == custom_recognizers_.end()) {
+        LogError << "Custom recognizer not found:" << name;
+        return nullptr;
+    }
+    return it->second;
+}
+
+MAA_TASK_NS::CustomActionPtr InstanceMgr::custom_action(const std::string& name)
+{
+    auto it = custom_actions_.find(name);
+    if (it == custom_actions_.end()) {
+        LogError << "Custom action not found:" << name;
         return nullptr;
     }
     return it->second;

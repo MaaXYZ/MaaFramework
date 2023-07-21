@@ -28,8 +28,9 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\include\MaaAPI.h" />
+    <ClInclude Include="..\include\MaaCustomAction.h" />
     <ClInclude Include="..\include\MaaCustomController.h" />
-    <ClInclude Include="..\include\MaaCustomTask.h" />
+    <ClInclude Include="..\include\MaaCustomRecognizer.h" />
     <ClInclude Include="..\include\MaaPort.h" />
     <ClInclude Include="..\include\MaaDef.h" />
     <ClInclude Include="..\include\MaaMsg.h" />
@@ -49,8 +50,7 @@
     <ClInclude Include="Resource\PipelineConfig.h" />
     <ClInclude Include="Resource\ResourceMgr.h" />
     <ClInclude Include="Resource\TemplateConfig.h" />
-    <ClInclude Include="Task\CustomTask.h" />
-    <ClInclude Include="Task\TaskBase.h" />
+    <ClInclude Include="Task\CustomAction.h" />
     <ClInclude Include="Task\PipelineTask.h" />
     <ClInclude Include="Resource\PipelineTypes.h" />
     <ClInclude Include="Base\AsyncRunner.hpp" />
@@ -71,6 +71,7 @@
     <ClInclude Include="Utils\TempPath.hpp" />
     <ClInclude Include="Utils\Time.hpp" />
     <ClInclude Include="Vision\Comparator.h" />
+    <ClInclude Include="Vision\CustomRecognizer.h" />
     <ClInclude Include="Vision\Matcher.h" />
     <ClInclude Include="Vision\OCRer.h" />
     <ClInclude Include="Vision\VisionTypes.h" />
@@ -90,10 +91,10 @@
     <ClCompile Include="Resource\PipelineConfig.cpp" />
     <ClCompile Include="Resource\ResourceMgr.cpp" />
     <ClCompile Include="Resource\TemplateConfig.cpp" />
-    <ClCompile Include="Task\CustomTask.cpp" />
+    <ClCompile Include="Task\CustomAction.cpp" />
     <ClCompile Include="Task\PipelineTask.cpp" />
-    <ClCompile Include="Task\TaskBase.cpp" />
     <ClCompile Include="Vision\Comparator.cpp" />
+    <ClCompile Include="Vision\CustomRecognizer.cpp" />
     <ClCompile Include="Vision\Matcher.cpp" />
     <ClCompile Include="Vision\OCRer.cpp" />
     <ClCompile Include="Vision\VisionBase.cpp" />

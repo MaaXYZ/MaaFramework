@@ -23,13 +23,13 @@ inline cv::Mat imread(const std::string& utf8_path, int flags = cv::IMREAD_COLOR
 }
 
 inline bool imwrite(const std::filesystem::path& path, cv::InputArray img,
-                    const std::vector<int>& params = std::vector<int>())
+                    const std::vector<int>& param = std::vector<int>())
 {
     std::filesystem::create_directories(path.parent_path());
     std::ofstream of(path, std::ios::out | std::ios::binary);
     std::vector<uint8_t> encoded;
     auto ext = path_to_utf8_string(path.extension());
-    if (cv::imencode(ext, img, encoded, params)) {
+    if (cv::imencode(ext, img, encoded, param)) {
         of.write(reinterpret_cast<char*>(encoded.data()), encoded.size());
         return true;
     }
@@ -37,9 +37,9 @@ inline bool imwrite(const std::filesystem::path& path, cv::InputArray img,
 }
 
 inline bool imwrite(const std::string& utf8_path, cv::InputArray img,
-                    const std::vector<int>& params = std::vector<int>())
+                    const std::vector<int>& param = std::vector<int>())
 {
-    return imwrite(path(utf8_path), img, params);
+    return imwrite(path(utf8_path), img, param);
 }
 
 MAA_NS_END

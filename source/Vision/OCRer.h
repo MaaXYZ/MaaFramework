@@ -25,7 +25,7 @@ public:
 public:
     using VisionBase::VisionBase;
 
-    void set_param(OcrParams param) { param_ = std::move(param); }
+    void set_param(OcrParam param) { param_ = std::move(param); }
     ResultOpt analyze() const;
 
 private:
@@ -37,7 +37,7 @@ private:
     void postproc_replace_(Result& res) const;
     bool filter_by_required(const Result& res) const;
 
-    OcrParams param_;
+    OcrParam param_;
 };
 
 MAA_VISION_NS_END

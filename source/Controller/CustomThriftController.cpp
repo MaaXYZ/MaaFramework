@@ -119,10 +119,10 @@ std::pair<int, int> CustomThriftController::_get_resolution() const
 
     ThriftController::Size resolution;
     client_->get_resolution(resolution);
-    return { resolution.x, resolution.y };
+    return { resolution.width, resolution.height };
 }
 
-void CustomThriftController::_click(ClickParams param)
+void CustomThriftController::_click(ClickParam param)
 {
     LogFunc << VAR(param.x) << VAR(param.y);
 
@@ -131,14 +131,14 @@ void CustomThriftController::_click(ClickParams param)
         return;
     }
 
-    ThriftController::ClickParams click_param;
+    ThriftController::ClickParam click_param;
     click_param.point.x = param.x;
     click_param.point.y = param.y;
 
     client_->click(click_param);
 }
 
-void CustomThriftController::_swipe(SwipeParams param)
+void CustomThriftController::_swipe(SwipeParam param)
 {
     LogFunc << VAR(param.steps.size()) << VAR(param.steps.front()) << VAR(param.steps.back());
 
@@ -147,7 +147,7 @@ void CustomThriftController::_swipe(SwipeParams param)
         return;
     }
 
-    ThriftController::SwipeParams swipe_param;
+    ThriftController::SwipeParam swipe_param;
     for (const auto& step : param.steps) {
         ThriftController::SwipeStep thrift_step;
         thrift_step.point.x = step.x;
@@ -159,7 +159,7 @@ void CustomThriftController::_swipe(SwipeParams param)
     client_->swipe(swipe_param);
 }
 
-void CustomThriftController::_press_key(PressKeyParams param)
+void CustomThriftController::_press_key(PressKeyParam param)
 {
     LogFunc;
 
@@ -168,7 +168,7 @@ void CustomThriftController::_press_key(PressKeyParams param)
         return;
     }
 
-    ThriftController::PressKeyParams thrift_param;
+    ThriftController::PressKeyParam thrift_param;
     thrift_param.keycode = param.keycode;
 
     client_->press_key(thrift_param);
@@ -190,14 +190,14 @@ cv::Mat CustomThriftController::_screencap()
         return {};
     }
 
-    cv::Mat orig_mat(img.size.x, img.size.y, img.type, img.data.data());
+    cv::Mat orig_mat(img.size.width, img.size.height, img.type, img.data.data());
     cv::Mat out_mat;
     orig_mat.copyTo(out_mat);
 
     return out_mat;
 }
 
-bool CustomThriftController::_start_app(AppParams param)
+bool CustomThriftController::_start_app(AppParam param)
 {
     LogFunc << VAR(param.package);
 
@@ -209,7 +209,7 @@ bool CustomThriftController::_start_app(AppParams param)
     return client_->start_game(param.package);
 }
 
-bool CustomThriftController::_stop_app(AppParams param)
+bool CustomThriftController::_stop_app(AppParam param)
 {
     LogFunc << VAR(param.package);
 

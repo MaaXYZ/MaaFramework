@@ -107,7 +107,7 @@ std::pair<int, int> AdbController::_get_resolution() const
     return resolution_;
 }
 
-void AdbController::_click(ClickParams param)
+void AdbController::_click(ClickParam param)
 {
     if (!unit_mgr_ || !unit_mgr_->touch_input_obj()) {
         LogError << "unit is nullptr" << VAR(unit_mgr_) << VAR(unit_mgr_->touch_input_obj());
@@ -121,7 +121,7 @@ void AdbController::_click(ClickParams param)
     }
 }
 
-void AdbController::_swipe(SwipeParams param)
+void AdbController::_swipe(SwipeParam param)
 {
     if (!unit_mgr_ || !unit_mgr_->touch_input_obj()) {
         LogError << "unit is nullptr" << VAR(unit_mgr_) << VAR(unit_mgr_->touch_input_obj());
@@ -140,7 +140,7 @@ void AdbController::_swipe(SwipeParams param)
     }
 }
 
-void AdbController::_press_key(PressKeyParams param)
+void AdbController::_press_key(PressKeyParam param)
 {
     if (!unit_mgr_ || !unit_mgr_->key_input_obj()) {
         LogError << "unit is nullptr" << VAR(unit_mgr_) << VAR(unit_mgr_->key_input_obj());
@@ -168,7 +168,7 @@ cv::Mat AdbController::_screencap()
     return std::move(ret.value());
 }
 
-bool AdbController::_start_app(AppParams param)
+bool AdbController::_start_app(AppParam param)
 {
     if (!unit_mgr_ || !unit_mgr_->activity_obj()) {
         LogError << "unit is nullptr" << VAR(unit_mgr_) << VAR(unit_mgr_->activity_obj());
@@ -178,7 +178,7 @@ bool AdbController::_start_app(AppParams param)
     return unit_mgr_->activity_obj()->start(param.package);
 }
 
-bool AdbController::_stop_app(AppParams param)
+bool AdbController::_stop_app(AppParam param)
 {
     if (!unit_mgr_ || !unit_mgr_->activity_obj()) {
         LogError << "unit is nullptr" << VAR(unit_mgr_) << VAR(unit_mgr_->activity_obj());

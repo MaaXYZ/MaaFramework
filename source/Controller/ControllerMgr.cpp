@@ -61,8 +61,8 @@ MaaCtrlId ControllerMgr::post_connection()
 MaaCtrlId ControllerMgr::post_click(int x, int y)
 {
     preproce_touch_coord(x, y);
-    ClickParams params { .x = x, .y = y };
-    auto id = action_runner_->post({ .type = Action::Type::click, .params = std::move(params) });
+    ClickParam param { .x = x, .y = y };
+    auto id = action_runner_->post({ .type = Action::Type::click, .param = std::move(param) });
     std::unique_lock lock { post_ids_mutex_ };
     post_ids_.emplace(id);
     return id;
@@ -70,17 +70,17 @@ MaaCtrlId ControllerMgr::post_click(int x, int y)
 
 MaaCtrlId ControllerMgr::post_swipe(std::vector<int> x_steps, std::vector<int> y_steps, std::vector<int> step_delay)
 {
-    SwipeParams params;
+    SwipeParam param;
     for (size_t i = 0; i != x_steps.size(); ++i) {
-        SwipeParams::Step step {
+        SwipeParam::Step step {
             .x = x_steps[i],
             .y = y_steps[i],
             .delay = step_delay[i],
         };
-        params.steps.emplace_back(std::move(step));
+        param.steps.emplace_back(std::move(step));
     }
 
-    auto id = action_runner_->post({ .type = Action::Type::swipe, .params = std::move(params) });
+    auto id = action_runner_->post({ .type = Action::Type::swipe, .param = std::move(param) });
     std::unique_lock lock { post_ids_mutex_ };
     post_ids_.emplace(id);
     return id;
@@ -138,8 +138,8 @@ void ControllerMgr::click(const cv::Rect& r)
 void ControllerMgr::click(const cv::Point& p)
 {
     auto [x, y] = preproce_touch_coord(p.x, p.y);
-    ClickParams params { .x = x, .y = y };
-    action_runner_->post({ .type = Action::Type::click, .params = std::move(params) }, true);
+    ClickParam param { .x = x, .y = y };
+    action_runner_->post({ .type = Action::Type::click, .param = std::move(param) }, true);
 }
 
 void ControllerMgr::swipe(const cv::Rect& r1, const cv::Rect& r2, int duration)
@@ -154,20 +154,20 @@ void ControllerMgr::swipe(const cv::Point& p1, const cv::Point& p2, int duration
     auto [px1, py1] = preproce_touch_coord(p1.x, p1.y);
     auto [px2, py2] = preproce_touch_coord(p2.x, p2.y);
 
-    SwipeParams params;
+    SwipeParam param;
     auto cs = CubicSpline::smooth_in_out(1, 1);
     for (int i = 0; i < duration; i += SampleDelay) {
         auto progress = cs(static_cast<double>(i) / duration);
         int x = static_cast<int>(round(std::lerp(px1, px2, progress)));
         int y = static_cast<int>(round(std::lerp(py1, py2, progress)));
-        params.steps.emplace_back(SwipeParams::Step { .x = x, .y = y, .delay = SampleDelay });
+        param.steps.emplace_back(SwipeParam::Step { .x = x, .y = y, .delay = SampleDelay });
     }
-    action_runner_->post({ .type = Action::Type::swipe, .params = std::move(params) }, true);
+    action_runner_->post({ .type = Action::Type::swipe, .param = std::move(param) }, true);
 }
 
 void ControllerMgr::press_key(int keycode)
 {
-    action_runner_->post({ .type = Action::Type::press_key, .params = PressKeyParams { .keycode = keycode } }, true);
+    action_runner_->post({ .type = Action::Type::press_key, .param = PressKeyParam { .keycode = keycode } }, true);
 }
 
 cv::Mat ControllerMgr::screencap()
@@ -197,12 +197,12 @@ void ControllerMgr::stop_app()
 
 void ControllerMgr::start_app(const std::string& package)
 {
-    action_runner_->post({ .type = Action::Type::start_app, .params = AppParams { .package = package } }, true);
+    action_runner_->post({ .type = Action::Type::start_app, .param = AppParam { .package = package } }, true);
 }
 
 void ControllerMgr::stop_app(const std::string& package)
 {
-    action_runner_->post({ .type = Action::Type::stop_app, .params = AppParams { .package = package } }, true);
+    action_runner_->post({ .type = Action::Type::stop_app, .param = AppParam { .package = package } }, true);
 }
 
 cv::Point ControllerMgr::rand_point(const cv::Rect& r)
@@ -251,15 +251,15 @@ bool ControllerMgr::run_action(typename AsyncRunner<Action>::Id id, Action actio
         break;
 
     case Action::Type::click:
-        _click(std::get<ClickParams>(action.params));
+        _click(std::get<ClickParam>(action.param));
         ret = true;
         break;
     case Action::Type::swipe:
-        _swipe(std::get<SwipeParams>(action.params));
+        _swipe(std::get<SwipeParam>(action.param));
         ret = true;
         break;
     case Action::Type::press_key:
-        _press_key(std::get<PressKeyParams>(action.params));
+        _press_key(std::get<PressKeyParam>(action.param));
         ret = true;
         break;
 
@@ -268,10 +268,10 @@ bool ControllerMgr::run_action(typename AsyncRunner<Action>::Id id, Action actio
         break;
 
     case Action::Type::start_app:
-        ret = _start_app(std::get<AppParams>(action.params));
+        ret = _start_app(std::get<AppParam>(action.param));
         break;
     case Action::Type::stop_app:
-        ret = _stop_app(std::get<AppParams>(action.params));
+        ret = _stop_app(std::get<AppParam>(action.param));
         break;
 
     default:
@@ -371,7 +371,7 @@ bool ControllerMgr::set_default_app_package(MaaOptionValue value, MaaOptionValue
     return true;
 }
 
-std::ostream& operator<<(std::ostream& os, const SwipeParams::Step& step)
+std::ostream& operator<<(std::ostream& os, const SwipeParam::Step& step)
 {
     os << VAR_RAW(step.x) << VAR_RAW(step.y) << VAR_RAW(step.delay);
     return os;
