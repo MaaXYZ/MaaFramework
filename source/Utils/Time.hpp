@@ -14,8 +14,9 @@ MAA_NS_BEGIN
 
 inline std::string format_now()
 {
-#ifndef __APPLE__   // Apple's compiler cannot now build format-chrono. 2023/07/21
-    return std::format("{}", std::chrono::floor<std::chrono::milliseconds>(std::chrono::system_clock::now()));
+#ifndef __APPLE__ // Now Apple's compiler cannot build std::chrono::format. 2023/07/21
+    return std::format("{}", std::chrono::current_zone()->to_local(
+                                 std::chrono::floor<std::chrono::milliseconds>(std::chrono::system_clock::now())));
 #else
     timeval tv = {};
     gettimeofday(&tv, nullptr);
@@ -28,8 +29,8 @@ inline std::string format_now()
 
 inline std::string now_filestem()
 {
-#ifndef __APPLE__ // Apple's compiler cannot now build format-chrono. 2023/07/21
-    return std::format("{:%Y.%m.%d-%H.%M.%S}", std::chrono::system_clock::now());
+#ifndef __APPLE__ // Now Apple's compiler cannot build std::chrono::format. 2023/07/21
+    return std::format("{:%Y.%m.%d-%H.%M.%S}", std::chrono::current_zone()->to_local(std::chrono::system_clock::now()));
 #else
     timeval tv = {};
     gettimeofday(&tv, nullptr);
