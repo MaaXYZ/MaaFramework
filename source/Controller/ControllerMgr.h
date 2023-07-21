@@ -128,7 +128,7 @@ private: // options
     bool set_default_app_package(MaaOptionValue value, MaaOptionValueSize val_size);
 
 private:
-    InstanceInternalAPI* inst_ = nullptr;
+    // InstanceInternalAPI* inst_ = nullptr;
 
 private:
     static std::minstd_rand rand_engine_;
