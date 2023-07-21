@@ -124,9 +124,9 @@ jobs:
         with:
           # cmakeListsTxtPath: '${{ github.workspace }}/CMakeLists.txt'
           # workflowPreset: 'workflow-name'
-          configurePreset: "MSVC 2022"
-          # configurePresetAdditionalArgs: "['-DENABLE_YOUR_FEATURE=1']"
-          buildPreset: "MSVC 2022 - Release"
+          configurePreset: "${{ matrix.lowercase_target == 'x64' && 'MSVC 2022' || 'MSVC 2022 ARM' }}"
+          configurePresetAdditionalArgs: '["-DMAADEPS_TRIPLET=maa-${{ matrix.lowercase_target }}-windows"]'
+          buildPreset: "${{ matrix.lowercase_target == 'x64' && 'MSVC 2022' || 'MSVC 2022 ARM' }} - Release"
           # buildPresetAdditionalArgs: "['--config Release']"
           # testPreset: 'ninja-multi-vcpkg'
           # testPresetAdditionalArgs: "['--config Release']"
@@ -141,10 +141,15 @@ jobs:
     steps:
       - uses: actions/checkout@v3
 
+      # maybe should explicitly update some pkg instead of all?
+      - name: Update system
+        run: |
+          pacman -Syu --noconfirm
+
       - name: Install dep
         run: |
           pacman -Sy
-          pacman -S --noconfirm cmake python ccache
+          pacman -S --noconfirm cmake python ccache ninja
 
       - name: Install cross compile toolchains
         if: ${{ matrix.arch != 'x86_64' }}
@@ -175,16 +180,12 @@ jobs:
           CC: ${{ matrix.arch == 'x86_64' && 'ccache gcc' || 'ccache aarch64-linux-gnu-gcc' }}
           CXX: ${{ matrix.arch == 'x86_64' && 'ccache g++' || 'ccache aarch64-linux-gnu-g++' }}
         run: |
-          mkdir -p build
-          cmake -B build \
+          cmake --preset 'NinjaMulti' \
             -DMAADEPS_TRIPLET='maa-${{ matrix.arch == 'x86_64' && 'x64' || 'arm64' }}-linux' \
-            -DINSTALL_THIRD_LIBS=ON \
-            -DINSTALL_RESOURCE=ON \
-            -DINSTALL_PYTHON=ON \
-            -DMAA_VERSION='${{ needs.meta.outputs.tag }}'
-          cmake --build build --parallel $(nproc --all)
 
-          mkdir -p install
+            # -DMAA_VERSION='${{ needs.meta.outputs.tag }}'
+
+          cmake --build build --preset 'NinjaMulti - Release'
           cmake --install build --prefix install
 
       - name: Copy docs

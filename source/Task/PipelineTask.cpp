@@ -15,7 +15,7 @@
 MAA_TASK_NS_BEGIN
 
 PipelineTask::PipelineTask(std::string first_task_name, InstanceInternalAPI* inst)
-    : first_task_name_(std::move(first_task_name)), inst_(inst)
+    : inst_(inst), first_task_name_(std::move(first_task_name))
 {}
 
 bool PipelineTask::run()

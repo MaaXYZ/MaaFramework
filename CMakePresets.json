@@ -1,79 +1,103 @@
 {
-  "version": 5,
-  "cmakeMinimumRequired": {
-    "major": 3,
-    "minor": 21,
-    "patch": 0
-  },
-  "configurePresets": [
-    {
-      "name": "NinjaMulti",
-      "displayName": "Ninja MultiConfig",
-      "description": "Ninja MultiConfig",
-      "generator": "Ninja Multi-Config",
-      "binaryDir": "${sourceDir}/build"
+    "version": 5,
+    "cmakeMinimumRequired": {
+        "major": 3,
+        "minor": 21,
+        "patch": 0
     },
-    {
-      "name": "MSVC 2022",
-      "displayName": "MSVC 2022",
-      "description": "MSVC 2022",
-      "generator": "Visual Studio 17 2022",
-      "binaryDir": "${sourceDir}/build",
-      "condition": {
-        "type": "equals",
-        "lhs": "${hostSystemName}",
-        "rhs": "Windows"
-      }
-    }
-  ],
-  "buildPresets": [
-    {
-      "name": "NinjaMulti - Debug",
-      "displayName": "Ninja MultiConfig Debug",
-      "description": "Ninja MultiConfig Debug",
-      "configurePreset": "NinjaMulti",
-      "configuration": "Debug",
-      "jobs": 16
-    },
-    {
-      "name": "NinjaMulti - RelWithDebInfo",
-      "displayName": "Ninja MultiConfig RelWithDebInfo",
-      "description": "Ninja MultiConfig RelWithDebInfo",
-      "configurePreset": "NinjaMulti",
-      "configuration": "RelWithDebInfo",
-      "jobs": 16
-    },
-    {
-      "name": "NinjaMulti - Release",
-      "displayName": "Ninja MultiConfig Release",
-      "description": "Ninja MultiConfig Release",
-      "configurePreset": "NinjaMulti",
-      "configuration": "Release",
-      "jobs": 16
-    },
-    {
-      "name": "MSVC 2022 - Debug",
-      "displayName": "MSVC 2022 Debug",
-      "description": "MSVC 2022 Debug",
-      "configurePreset": "MSVC 2022",
-      "configuration": "Debug",
-      "jobs": 16
-    },
-    {
-      "name": "MSVC 2022 - RelWithDebInfo",
-      "displayName": "MSVC 2022 RelWithDebInfo",
-      "description": "MSVC 2022 RelWithDebInfo",
-      "configurePreset": "MSVC 2022",
-      "configuration": "RelWithDebInfo",
-      "jobs": 16
-    },
-    {
-      "name": "MSVC 2022 - Release",
-      "displayName": "MSVC 2022 Release",
-      "description": "MSVC 2022 Release",
-      "configurePreset": "MSVC 2022",
-      "configuration": "Release",
-      "jobs": 16
-    }
-  ]
+    "configurePresets": [
+        {
+            "name": "NinjaMulti",
+            "displayName": "Ninja MultiConfig",
+            "description": "Ninja MultiConfig",
+            "generator": "Ninja Multi-Config",
+            "binaryDir": "${sourceDir}/build"
+        },
+        {
+            "name": "MSVC 2022",
+            "displayName": "MSVC 2022",
+            "description": "MSVC 2022",
+            "generator": "Visual Studio 17 2022",
+            "binaryDir": "${sourceDir}/build",
+            "condition": {
+                "type": "equals",
+                "lhs": "${hostSystemName}",
+                "rhs": "Windows"
+            }
+        },
+        {
+            "name": "MSVC 2022 ARM",
+            "displayName": "MSVC 2022 ARM",
+            "description": "MSVC 2022 ARM",
+            "generator": "Visual Studio 17 2022",
+            "binaryDir": "${sourceDir}/build",
+            "condition": {
+                "type": "equals",
+                "lhs": "${hostSystemName}",
+                "rhs": "Windows"
+            },
+            "architecture": {
+                "strategy": "set",
+                "value": "ARM64"
+            }
+        }
+    ],
+    "buildPresets": [
+        {
+            "name": "NinjaMulti - Debug",
+            "displayName": "Ninja MultiConfig Debug",
+            "description": "Ninja MultiConfig Debug",
+            "configurePreset": "NinjaMulti",
+            "configuration": "Debug",
+            "jobs": 16
+        },
+        {
+            "name": "NinjaMulti - RelWithDebInfo",
+            "displayName": "Ninja MultiConfig RelWithDebInfo",
+            "description": "Ninja MultiConfig RelWithDebInfo",
+            "configurePreset": "NinjaMulti",
+            "configuration": "RelWithDebInfo",
+            "jobs": 16
+        },
+        {
+            "name": "NinjaMulti - Release",
+            "displayName": "Ninja MultiConfig Release",
+            "description": "Ninja MultiConfig Release",
+            "configurePreset": "NinjaMulti",
+            "configuration": "Release",
+            "jobs": 16
+        },
+        {
+            "name": "MSVC 2022 - Debug",
+            "displayName": "MSVC 2022 Debug",
+            "description": "MSVC 2022 Debug",
+            "configurePreset": "MSVC 2022",
+            "configuration": "Debug",
+            "jobs": 16
+        },
+        {
+            "name": "MSVC 2022 - RelWithDebInfo",
+            "displayName": "MSVC 2022 RelWithDebInfo",
+            "description": "MSVC 2022 RelWithDebInfo",
+            "configurePreset": "MSVC 2022",
+            "configuration": "RelWithDebInfo",
+            "jobs": 16
+        },
+        {
+            "name": "MSVC 2022 - Release",
+            "displayName": "MSVC 2022 Release",
+            "description": "MSVC 2022 Release",
+            "configurePreset": "MSVC 2022",
+            "configuration": "Release",
+            "jobs": 16
+        },
+        {
+            "name": "MSVC 2022 ARM - Release",
+            "displayName": "MSVC 2022 ARM Release",
+            "description": "MSVC 2022 ARM Release",
+            "configurePreset": "MSVC 2022 ARM",
+            "configuration": "Release",
+            "jobs": 16
+        }
+    ]
 }
