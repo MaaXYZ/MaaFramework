@@ -57,6 +57,7 @@
     <ClInclude Include="Utils\ArgvWrapper.hpp" />
     <ClInclude Include="Utils\Demangle.hpp" />
     <ClInclude Include="Utils\File.hpp" />
+    <ClInclude Include="Utils\Format.hpp" />
     <ClInclude Include="Utils\ImageIo.hpp" />
     <ClInclude Include="Utils\Locale.hpp" />
     <ClInclude Include="Utils\Math.hpp" />

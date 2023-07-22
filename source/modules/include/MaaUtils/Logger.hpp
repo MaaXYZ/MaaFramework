@@ -117,7 +117,7 @@ public:
             else if constexpr (std::is_constructible_v<json::object, T>) {
                 return json::object(std::forward<T>(value));
             }
-            else if constexpr (ranges::input_range<T> && has_value_type<T> && !has_key_mapped_type<T>) {
+            else if constexpr (MAA_RNS::ranges::input_range<T> && has_value_type<T> && !has_key_mapped_type<T>) {
                 using value_type = typename std::decay_t<T>::value_type;
                 using value_stream_type = decltype(to_stream(std::declval<value_type>()));
 
@@ -134,7 +134,7 @@ public:
                 }
                 return jtmp;
             }
-            else if constexpr (ranges::input_range<T> && has_value_type<T> && has_key_mapped_type<T>) {
+            else if constexpr (MAA_RNS::ranges::input_range<T> && has_value_type<T> && has_key_mapped_type<T>) {
                 using key_type = typename std::decay_t<T>::key_type;
                 using key_stream_type = decltype(to_stream(std::declval<key_type>()));
                 using mapped_type = typename std::decay_t<T>::mapped_type;
@@ -193,9 +193,9 @@ public:
 #endif
             auto tid = static_cast<unsigned short>(std::hash<std::thread::id> {}(std::this_thread::get_id()));
 
-            std::string props = fmt::format("[{}][{}][Px{}][Tx{}]", format_now(), level_str(lv), pid, tid);
+            std::string props = MAA_FMT::format("[{}][{}][Px{}][Tx{}]", format_now(), level_str(lv), pid, tid);
             for (auto&& arg : { args... }) {
-                props += fmt::format("[{}]", arg);
+                props += MAA_FMT::format("[{}]", arg);
             }
             stream(props);
         }

@@ -50,13 +50,13 @@ bool MinitouchInput::parse(const json::value& config)
         }
 
         const auto& arr = value.as_array();
-        if (ranges::any_of(arr, [](const json::value& val) { return !val.is_string(); })) {
+        if (MAA_RNS::ranges::any_of(arr, [](const json::value& val) { return !val.is_string(); })) {
             return false;
         }
 
         arch_list_.clear();
         arch_list_.reserve(arr.size());
-        ranges::transform(arr, std::back_inserter(arch_list_), [](const json::value& val) { return val.as_string(); });
+        MAA_RNS::ranges::transform(arr, std::back_inserter(arch_list_), [](const json::value& val) { return val.as_string(); });
     }
 
     return invoke_app_->parse(config);
@@ -76,12 +76,12 @@ bool MinitouchInput::init(int swidth, int sheight)
         return false;
     }
 
-    auto arch_iter = ranges::find_first_of(*archs, arch_list_);
+    auto arch_iter = MAA_RNS::ranges::find_first_of(*archs, arch_list_);
     if (arch_iter == archs->end()) {
         return false;
     }
     const std::string& target_arch = *arch_iter;
-    auto bin = fmt::format("{}/{}/minitouch", root_, target_arch);
+    auto bin = MAA_FMT::format("{}/{}/minitouch", root_, target_arch);
 
     if (!invoke_app_->push(bin)) {
         return false;
@@ -155,8 +155,8 @@ bool MinitouchInput::click(int x, int y)
 
     LogInfo << VAR(x) << VAR(y) << VAR(real_x) << VAR(real_y);
 
-    bool res = shell_handler_->write(fmt::format("d {} {} {} {}\nc\n", 0, real_x, real_y, press_)) &&
-               shell_handler_->write(fmt::format("u {}\nc\n", 0));
+    bool res = shell_handler_->write(MAA_FMT::format("d {} {} {} {}\nc\n", 0, real_x, real_y, press_)) &&
+               shell_handler_->write(MAA_FMT::format("u {}\nc\n", 0));
 
     if (!res) {
         LogError << "click failed";
@@ -178,7 +178,7 @@ bool MinitouchInput::swipe(const std::vector<SwipeStep>& steps)
         auto first = steps[0];
         auto [x, y] = scale_point(first.x, first.y);
         auto now = std::chrono::steady_clock::now();
-        if (!shell_handler_->write(fmt::format("d {} {} {} {}\nc\n", 0, x, y, press_))) {
+        if (!shell_handler_->write(MAA_FMT::format("d {} {} {} {}\nc\n", 0, x, y, press_))) {
             return false;
         }
         auto used = std::chrono::steady_clock::now() - now;
@@ -191,7 +191,7 @@ bool MinitouchInput::swipe(const std::vector<SwipeStep>& steps)
     for (auto it = steps.begin() + 1; it != steps.end(); it++) {
         int x = it->x, y = it->y;
         auto now = std::chrono::steady_clock::now();
-        auto res = shell_handler_->write(fmt::format("m {} {} {} {}\nc\n", 0, x, y, press_));
+        auto res = shell_handler_->write(MAA_FMT::format("m {} {} {} {}\nc\n", 0, x, y, press_));
         if (!res) {
             return false;
         }
@@ -202,7 +202,7 @@ bool MinitouchInput::swipe(const std::vector<SwipeStep>& steps)
         }
     }
 
-    return shell_handler_->write(fmt::format("u {}\nc\n", 0));
+    return shell_handler_->write(MAA_FMT::format("u {}\nc\n", 0));
 }
 
 std::pair<int, int> MinitouchInput::scale_point(int x, int y)

@@ -36,13 +36,13 @@ bool ArgvWrapper<Argv>::parse(const json::value& value)
     }
 
     const auto& arr = value.as_array();
-    if (ranges::any_of(arr, [](const json::value& val) { return !val.is_string(); })) {
+    if (MAA_RNS::ranges::any_of(arr, [](const json::value& val) { return !val.is_string(); })) {
         return false;
     }
 
     argv.clear();
     argv.reserve(arr.size());
-    ranges::transform(arr, std::back_inserter(argv), [](const json::value& val) { return val.as_string(); });
+    MAA_RNS::ranges::transform(arr, std::back_inserter(argv), [](const json::value& val) { return val.as_string(); });
     return true;
 }
 

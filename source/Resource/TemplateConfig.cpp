@@ -9,7 +9,7 @@ bool TemplateConfig::lazy_load(const std::string& name, const std::vector<std::f
 {
     LogTrace << VAR(name) << VAR(paths);
 
-    if (!ranges::all_of(paths, [](const auto& path) -> bool { return std::filesystem::exists(path); })) {
+    if (!MAA_RNS::ranges::all_of(paths, [](const auto& path) -> bool { return std::filesystem::exists(path); })) {
         LogError << "not exists" << VAR(paths);
         return false;
     }
@@ -24,7 +24,7 @@ bool TemplateConfig::lazy_load(const std::string& name, const std::vector<std::f
 
 #ifdef MAA_DEBUG
     const auto& images = get_template_images(name);
-    if (ranges::any_of(images, [](const auto& image) -> bool { return image.empty(); })) {
+    if (MAA_RNS::ranges::any_of(images, [](const auto& image) -> bool { return image.empty(); })) {
         LogError << "image is empty" << VAR(images);
         return false;
     }

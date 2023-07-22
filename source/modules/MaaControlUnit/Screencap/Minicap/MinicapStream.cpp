@@ -31,7 +31,7 @@ bool MinicapStream::init(int w, int h)
     uint32_t width = screencap_helper_.get_w();
     uint32_t height = screencap_helper_.get_h();
 
-    process_handle_ = binary_->invoke_bin(fmt::format("-P {}x{}@{}x{}/{}", width, height, width, height, 0));
+    process_handle_ = binary_->invoke_bin(MAA_FMT::format("-P {}x{}@{}x{}/{}", width, height, width, height, 0));
 
     if (!process_handle_) {
         return false;

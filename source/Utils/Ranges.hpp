@@ -2,11 +2,17 @@
 
 #include "Common/MaaConf.h"
 
+#define MAA_RNS MAA_NS::MaaRangesNS
+#define MAA_RNS_NS_BEGIN \
+    namespace MAA_RNS \
+    {
+#define MAA_RNS_NS_END }
+
 #ifdef MAA_USE_RANGES_RANGE_V3
 
 #include <range/v3/all.hpp>
 
-MAA_NS_BEGIN
+MAA_RNS_NS_BEGIN
 
 namespace ranges
 {
@@ -34,18 +40,18 @@ inline constexpr remove_if_fn remove_if {};
 
 namespace views = ::ranges::views;
 
-MAA_NS_END
+MAA_RNS_NS_END
 
 #elif defined(MAA_USE_RANGES_STL)
 
 #include <ranges>
 
-MAA_NS_BEGIN
+MAA_RNS_NS_BEGIN
 
 namespace ranges = std::ranges;
 namespace views = std::views;
 
-MAA_NS_END
+MAA_RNS_NS_END
 
 #elif defined(MAA_USE_RANGES_BOOST)
 
@@ -54,12 +60,12 @@ MAA_NS_END
 #include <boost/range/adaptors.hpp>
 #include <boost/range/algorithm.hpp>
 
-MAA_NS_BEGIN
+MAA_RNS_NS_BEGIN
 
 namespace ranges = boost::range;
 namespace views = boost::adaptors;
 
-MAA_NS_END
+MAA_RNS_NS_END
 
 #else
 

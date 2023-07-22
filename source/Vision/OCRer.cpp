@@ -102,8 +102,8 @@ OCRer::ResultsVec OCRer::predict_det_and_rec(const cv::Rect& roi) const
         const auto& raw_box = ocr_result.boxes.at(i);
         int x_collect[] = { raw_box[0], raw_box[2], raw_box[4], raw_box[6] };
         int y_collect[] = { raw_box[1], raw_box[3], raw_box[5], raw_box[7] };
-        auto [left, right] = ranges::minmax(x_collect);
-        auto [top, bottom] = ranges::minmax(y_collect);
+        auto [left, right] = MAA_RNS::ranges::minmax(x_collect);
+        auto [top, bottom] = MAA_RNS::ranges::minmax(y_collect);
 
         cv::Rect my_box(left + roi.x, top + roi.y, right - left, bottom - top);
 #ifdef MAA_DEBUG

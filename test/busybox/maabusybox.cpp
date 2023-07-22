@@ -398,7 +398,7 @@ double test_screencap(std::shared_ptr<MAA_CTRL_UNIT_NS::ScreencapAPI> scp, int c
         if (mat.has_value()) {
             auto dur = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::steady_clock::now() - now);
 
-            auto file = fmt::format("temp-{}.png", i);
+            auto file = MAA_FMT::format("temp-{}.png", i);
             cv::imwrite(file, mat.value());
             std::cout << "image saved to " << file << std::endl;
 

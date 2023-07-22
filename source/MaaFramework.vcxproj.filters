@@ -182,6 +182,7 @@
     <ClInclude Include="Vision\CustomRecognizer.h" />
     <ClInclude Include="Task\CustomAction.h" />
     <ClInclude Include="..\include\MaaCustomAction.h" />
+    <ClInclude Include="Utils\Format.hpp" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Controller\ControllerMgr.cpp">

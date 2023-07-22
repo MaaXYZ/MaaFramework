@@ -117,7 +117,7 @@ bool PipelineConfig::load_template_images(const std::filesystem::path& path)
         }
         const auto& relatives = std::get<MAA_VISION_NS::TemplMatchingParam>(task_data.rec_param).template_paths;
         std::vector<std::filesystem::path> paths;
-        ranges::transform(relatives, std::back_inserter(paths),
+        MAA_RNS::ranges::transform(relatives, std::back_inserter(paths),
                           [&](const std::string& rlt) { return path / MAA_NS::path(rlt); });
         bool ret = template_mgr_.lazy_load(name, paths);
         if (!ret) {
@@ -662,7 +662,7 @@ bool PipelineConfig::parse_key_press(const json::value& input, MAA_PIPELINE_RES_
         return false;
     }
     else {
-        ranges::transform(str_keys, std::back_inserter(output.keys), [](char c) { return static_cast<int>(c); });
+        MAA_RNS::ranges::transform(str_keys, std::back_inserter(output.keys), [](char c) { return static_cast<int>(c); });
         LogTrace << "key press" << VAR(str_keys) << VAR(output.keys);
     }
 

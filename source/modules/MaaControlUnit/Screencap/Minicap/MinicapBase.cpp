@@ -50,13 +50,13 @@ bool MinicapBase::parse(const json::value& config)
         }
 
         const auto& arr = value.as_array();
-        if (ranges::any_of(arr, [](const json::value& val) { return !val.is_string(); })) {
+        if (MAA_RNS::ranges::any_of(arr, [](const json::value& val) { return !val.is_string(); })) {
             return false;
         }
 
         arch_list_.clear();
         arch_list_.reserve(arr.size());
-        ranges::transform(arr, std::back_inserter(arch_list_), [](const json::value& val) { return val.as_string(); });
+        MAA_RNS::ranges::transform(arr, std::back_inserter(arch_list_), [](const json::value& val) { return val.as_string(); });
     }
 
     {
@@ -72,13 +72,13 @@ bool MinicapBase::parse(const json::value& config)
         }
 
         const auto& arr = value.as_array();
-        if (ranges::any_of(arr, [](const json::value& val) { return !val.is_number(); })) {
+        if (MAA_RNS::ranges::any_of(arr, [](const json::value& val) { return !val.is_number(); })) {
             return false;
         }
 
         sdk_list_.clear();
         sdk_list_.reserve(arr.size());
-        ranges::transform(arr, std::back_inserter(sdk_list_), [](const json::value& val) { return val.as_integer(); });
+        MAA_RNS::ranges::transform(arr, std::back_inserter(sdk_list_), [](const json::value& val) { return val.as_integer(); });
     }
 
     return binary_->parse(config) && library_->parse(config);
@@ -106,21 +106,21 @@ bool MinicapBase::init(int w, int h)
         return false;
     }
 
-    auto arch_iter = ranges::find_first_of(*archs, arch_list_);
+    auto arch_iter = MAA_RNS::ranges::find_first_of(*archs, arch_list_);
     if (arch_iter == archs->end()) {
         return false;
     }
     const std::string& target_arch = *arch_iter;
 
-    auto sdk_iter = ranges::find_if(sdk_list_, [sdk](int s) { return s <= sdk.value(); });
+    auto sdk_iter = MAA_RNS::ranges::find_if(sdk_list_, [sdk](int s) { return s <= sdk.value(); });
     if (sdk_iter == sdk_list_.end()) {
         return false;
     }
     int fit_sdk = *sdk_iter;
 
     // TODO: 确认低版本是否使用minicap-nopie
-    auto bin = fmt::format("{}/{}/bin/minicap", root_, target_arch);
-    auto lib = fmt::format("{}/{}/lib/android-{}/minicap.so", root_, target_arch, fit_sdk);
+    auto bin = MAA_FMT::format("{}/{}/bin/minicap", root_, target_arch);
+    auto lib = MAA_FMT::format("{}/{}/lib/android-{}/minicap.so", root_, target_arch, fit_sdk);
 
     if (!binary_->push(bin) || !library_->push(lib)) {
         return false;

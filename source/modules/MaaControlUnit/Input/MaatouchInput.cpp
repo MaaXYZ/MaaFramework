@@ -62,7 +62,7 @@ bool MaatouchInput::init(int swidth, int sheight)
         return false;
     }
 
-    auto bin = fmt::format("{}/universal/maatouch", root_);
+    auto bin = MAA_FMT::format("{}/universal/maatouch", root_);
 
     if (!invoke_app_->push(bin)) {
         return false;
@@ -135,8 +135,8 @@ bool MaatouchInput::click(int x, int y)
 
     LogInfo << VAR(x) << VAR(y) << VAR(real_x) << VAR(real_y);
 
-    bool res = shell_handler_->write(fmt::format("d {} {} {} {}\nc\n", 0, real_x, real_y, press_)) &&
-               shell_handler_->write(fmt::format("u {}\nc\n", 0));
+    bool res = shell_handler_->write(MAA_FMT::format("d {} {} {} {}\nc\n", 0, real_x, real_y, press_)) &&
+               shell_handler_->write(MAA_FMT::format("u {}\nc\n", 0));
 
     if (!res) {
         LogError << "click failed";
@@ -159,7 +159,7 @@ bool MaatouchInput::swipe(const std::vector<SwipeStep>& steps)
         int x = first.x, y = first.y;
         scale_point(x, y);
         auto now = std::chrono::steady_clock::now();
-        if (!shell_handler_->write(fmt::format("d {} {} {} {}\nc\n", 0, x, y, press_))) {
+        if (!shell_handler_->write(MAA_FMT::format("d {} {} {} {}\nc\n", 0, x, y, press_))) {
             return false;
         }
         auto used = std::chrono::steady_clock::now() - now;
@@ -172,7 +172,7 @@ bool MaatouchInput::swipe(const std::vector<SwipeStep>& steps)
     for (auto it = steps.begin() + 1; it != steps.end(); it++) {
         int x = it->x, y = it->y;
         auto now = std::chrono::steady_clock::now();
-        auto res = shell_handler_->write(fmt::format("m {} {} {} {}\nc\n", 0, x, y, press_));
+        auto res = shell_handler_->write(MAA_FMT::format("m {} {} {} {}\nc\n", 0, x, y, press_));
         if (!res) {
             return false;
         }
@@ -183,7 +183,7 @@ bool MaatouchInput::swipe(const std::vector<SwipeStep>& steps)
         }
     }
 
-    return shell_handler_->write(fmt::format("u {}\nc\n", 0));
+    return shell_handler_->write(MAA_FMT::format("u {}\nc\n", 0));
 }
 
 bool MaatouchInput::press_key(int key)
@@ -192,8 +192,8 @@ bool MaatouchInput::press_key(int key)
         return false;
     }
 
-    bool res = shell_handler_->write(fmt::format("k {} d\nc\n", key)) &&
-               shell_handler_->write(fmt::format("k {} u\nc\n", key));
+    bool res = shell_handler_->write(MAA_FMT::format("k {} d\nc\n", key)) &&
+               shell_handler_->write(MAA_FMT::format("k {} u\nc\n", key));
 
     if (!res) {
         return false;
