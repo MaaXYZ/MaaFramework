@@ -26,6 +26,7 @@ public: // from MaaInstanceSink
 public:
     bool run();
     bool set_param(const json::value& param);
+    std::string first_task_name() const { return first_task_name_; }
 
 private:
     using TaskDataMap = MAA_RES_NS::PipelineConfig::TaskDataMap;

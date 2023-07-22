@@ -278,8 +278,14 @@ bool InstanceMgr::run_task(TaskId id, TaskPtr task_ptr)
 {
     LogFunc << VAR(id) << VAR(task_ptr);
 
+    if (!task_ptr) {
+        LogError << "task_ptr is nullptr";
+        return false;
+    }
+
     const json::value details = {
         { "id", id },
+        { "task", task_ptr->first_task_name() },
         { "uuid", inter_resource() ? inter_resource()->get_hash() : std::string() },
         { "hash", inter_controller() ? inter_controller()->get_uuid() : std::string() },
     };

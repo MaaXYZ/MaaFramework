@@ -54,50 +54,58 @@ bool AdbController::_connect()
         return false;
     }
 
+    json::value details = {
+        { "adb", path_to_utf8_string(adb_path_) },
+        { "address", address_ },
+    };
+
     bool connected = unit_mgr_->connection_obj()->connect();
     if (!connected) {
-        notifier.notify(MaaMsg_Controller_ConnectFailed, { { "why", "ConnectFailed" } });
+        notifier.notify(MaaMsg_Controller_ConnectFailed, details | json::object { { "why", "ConnectFailed" } });
         LogError << "failed to connect";
         return false;
     }
 
     if (!unit_mgr_->device_info_obj()->request_uuid()) {
-        notifier.notify(MaaMsg_Controller_UUIDGetFailed);
-        notifier.notify(MaaMsg_Controller_ConnectFailed, { { "why", "UUIDGetFailed" } });
+        notifier.notify(MaaMsg_Controller_UUIDGetFailed, details);
+        notifier.notify(MaaMsg_Controller_ConnectFailed, details | json::object { { "why", "UUIDGetFailed" } });
         LogError << "failed to request_uuid";
         return false;
     }
     const auto& uuid = unit_mgr_->device_info_obj()->get_uuid();
-    notifier.notify(MaaMsg_Controller_UUIDGot, { { "uuid", uuid } });
+    details |= { { "uuid", uuid } };
+
+    notifier.notify(MaaMsg_Controller_UUIDGot, details | json::object { { "uuid", uuid } });
 
     if (!unit_mgr_->device_info_obj()->request_resolution()) {
-        notifier.notify(MaaMsg_Controller_ResolutionGetFailed);
-        notifier.notify(MaaMsg_Controller_ConnectFailed, { { "why", "ResolutionGetFailed" } });
+        notifier.notify(MaaMsg_Controller_ResolutionGetFailed, details);
+        notifier.notify(MaaMsg_Controller_ConnectFailed, details | json::object { { "why", "ResolutionGetFailed" } });
         LogError << "failed to request_resolution";
         return false;
     }
     auto [w, h] = unit_mgr_->device_info_obj()->get_resolution();
     resolution_ = { w, h };
-    notifier.notify(MaaMsg_Controller_ResolutionGot, { { "resolution", { { "width", w }, { "height", h } } } });
+    details |= { { "resolution", { { "width", w }, { "height", h } } } };
+
+    notifier.notify(MaaMsg_Controller_ResolutionGot, details);
 
     if (!unit_mgr_->screencap_obj()->init(w, h)) {
-        notifier.notify(MaaMsg_Controller_ScreencapInitFailed);
-        notifier.notify(MaaMsg_Controller_ConnectFailed, { { "why", "ScreencapInitFailed" } });
+        notifier.notify(MaaMsg_Controller_ScreencapInitFailed, details);
+        notifier.notify(MaaMsg_Controller_ConnectFailed, details | json::object { { "why", "ScreencapInitFailed" } });
         LogError << "failed to init screencap";
         return false;
     }
-    notifier.notify(MaaMsg_Controller_ScreencapInited);
+    notifier.notify(MaaMsg_Controller_ScreencapInited, details);
 
     if (!unit_mgr_->touch_input_obj()->init(w, h)) {
-        notifier.notify(MaaMsg_Controller_TouchInputInitFailed);
-        notifier.notify(MaaMsg_Controller_ConnectFailed, { { "why", "TouchInputInitFailed" } });
+        notifier.notify(MaaMsg_Controller_TouchInputInitFailed, details);
+        notifier.notify(MaaMsg_Controller_ConnectFailed, details | json::object { { "why", "TouchInputInitFailed" } });
         LogError << "failed to init touch_input";
         return false;
     }
-    notifier.notify(MaaMsg_Controller_TouchInputInited);
+    notifier.notify(MaaMsg_Controller_TouchInputInited, details);
 
-    notifier.notify(MaaMsg_Controller_ConnectSuccess,
-                    { { "uuid", uuid }, { "resolution", { { "width", w }, { "height", h } } } });
+    notifier.notify(MaaMsg_Controller_ConnectSuccess, details);
 
     return true;
 }

@@ -240,8 +240,12 @@ bool ControllerMgr::run_action(typename AsyncRunner<Action>::Id id, Action actio
         notify = post_ids_.erase(id) > 0;
     }
 
+    const json::value details = {
+        { "id", id },
+        { "uuid", get_uuid() },
+    };
     if (notify) {
-        notifier.notify(MaaMsg_Controller_Action_Started, { { "id", id } });
+        notifier.notify(MaaMsg_Controller_Action_Started, details);
     }
 
     switch (action.type) {
@@ -280,7 +284,7 @@ bool ControllerMgr::run_action(typename AsyncRunner<Action>::Id id, Action actio
     }
 
     if (notify) {
-        notifier.notify(ret ? MaaMsg_Controller_Action_Completed : MaaMsg_Controller_Action_Failed, { { "id", id } });
+        notifier.notify(ret ? MaaMsg_Controller_Action_Completed : MaaMsg_Controller_Action_Failed, details);
     }
 
     return ret;
