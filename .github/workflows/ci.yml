@@ -228,7 +228,7 @@ jobs:
 
       - uses: actions/upload-artifact@v3
         with:
-          name: MAA-linux-${{ matrix.arch }}
+          name: MAA-macos-${{ matrix.arch }}
           path: "install"
 
   release:
