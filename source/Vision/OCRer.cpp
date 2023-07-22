@@ -89,7 +89,8 @@ OCRer::ResultsVec OCRer::predict_det_and_rec(const cv::Rect& roi) const
         return {};
     }
     if (ocr_result.boxes.size() != ocr_result.text.size() || ocr_result.text.size() != ocr_result.rec_scores.size()) {
-        LogError << "wrong ocr_result size" << VAR(ocr_result.boxes.size()) << VAR(ocr_result.text.size())
+        LogError << "wrong ocr_result size" << VAR(ocr_result.boxes) << VAR(ocr_result.boxes.size())
+                 << VAR(ocr_result.text) << VAR(ocr_result.text.size()) << VAR(ocr_result.rec_scores)
                  << VAR(ocr_result.rec_scores.size());
         return {};
     }

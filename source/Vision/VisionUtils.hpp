@@ -180,9 +180,10 @@ inline cv::Mat match_template(const cv::Mat& image, const cv::Mat& templ, int me
         return {};
     }
 
-    auto mask = cv::noArray();
+    cv::Mat mask = cv::Mat::ones(templ.size(), CV_8UC1);
     if (green_mask) {
         cv::inRange(templ, cv::Scalar(0, 255, 0), cv::Scalar(0, 255, 0), mask);
+        mask = ~mask;
     }
 
     cv::Mat matched;
