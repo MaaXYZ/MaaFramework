@@ -2,9 +2,8 @@
 #include "MinicapDef.h"
 
 #include "MaaUtils/Logger.hpp"
+#include "Utils/Format.hpp"
 #include "Utils/NoWarningCV.h"
-
-#include <format>
 
 MAA_CTRL_UNIT_NS_BEGIN
 
@@ -32,7 +31,7 @@ bool MinicapStream::init(int w, int h)
     uint32_t width = screencap_helper_.get_w();
     uint32_t height = screencap_helper_.get_h();
 
-    process_handle_ = binary_->invoke_bin(std::format("-P {}x{}@{}x{}/{}", width, height, width, height, 0));
+    process_handle_ = binary_->invoke_bin(fmt::format("-P {}x{}@{}x{}/{}", width, height, width, height, 0));
 
     if (!process_handle_) {
         return false;

@@ -1,7 +1,6 @@
 #pragma once
 
 #include <filesystem>
-#include <format>
 #include <fstream>
 #include <iostream>
 #include <mutex>
@@ -13,6 +12,7 @@
 #include "Common/MaaConf.h"
 #include "Common/MaaTypes.h"
 #include "MaaPort.h"
+#include "Utils/Format.hpp"
 #include "Utils/Locale.hpp"
 #include "Utils/Platform.hpp"
 #include "Utils/Ranges.hpp"
@@ -38,9 +38,9 @@ template <typename T>
 concept has_value_type = requires { typename std::decay_t<T>::value_type; };
 template <typename T>
 concept has_key_mapped_type = requires {
-                                  typename std::decay_t<T>::key_type;
-                                  typename std::decay_t<T>::mapped_type;
-                              };
+    typename std::decay_t<T>::key_type;
+    typename std::decay_t<T>::mapped_type;
+};
 
 class MAA_UTILS_API Logger
 {
@@ -193,9 +193,9 @@ public:
 #endif
             auto tid = static_cast<unsigned short>(std::hash<std::thread::id> {}(std::this_thread::get_id()));
 
-            std::string props = std::format("[{}][{}][Px{}][Tx{}]", format_now(), level_str(lv), pid, tid);
+            std::string props = fmt::format("[{}][{}][Px{}][Tx{}]", format_now(), level_str(lv), pid, tid);
             for (auto&& arg : { args... }) {
-                props += std::format("[{}]", arg);
+                props += fmt::format("[{}]", arg);
             }
             stream(props);
         }

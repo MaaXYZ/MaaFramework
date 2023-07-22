@@ -10,6 +10,7 @@
 #include "MaaAPI.h"
 #include "MaaControlUnit/ControlUnitAPI.h"
 #include "MaaUtils/Logger.hpp"
+#include "Utils/Format.hpp"
 #include "Utils/NoWarningCV.h"
 
 std::ostream& operator<<(std::ostream& os, const MAA_CTRL_UNIT_NS::DeviceResolution& res);
@@ -397,7 +398,7 @@ double test_screencap(std::shared_ptr<MAA_CTRL_UNIT_NS::ScreencapAPI> scp, int c
         if (mat.has_value()) {
             auto dur = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::steady_clock::now() - now);
 
-            auto file = std::format("temp-{}.png", i);
+            auto file = fmt::format("temp-{}.png", i);
             cv::imwrite(file, mat.value());
             std::cout << "image saved to " << file << std::endl;
 

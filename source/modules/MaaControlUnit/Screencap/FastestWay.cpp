@@ -1,9 +1,8 @@
 #include "FastestWay.h"
 
 #include "MaaUtils/Logger.hpp"
+#include "Utils/Format.hpp"
 #include "Utils/NoWarningCV.h"
-
-#include <format>
 
 MAA_CTRL_UNIT_NS_BEGIN
 

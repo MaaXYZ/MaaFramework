@@ -93,18 +93,11 @@ jobs:
     needs: meta
     strategy:
       matrix:
-        include:
-          - msbuild_target: x64
-            lowercase_target: x64
-          - msbuild_target: ARM64
-            lowercase_target: arm64
-    env:
-      MAABUILDER_TARGET_PLATFORM: ${{ matrix.msbuild_target }}
+        arch: [aarch64, x86_64]
     runs-on: windows-latest
 
     steps:
       - uses: actions/checkout@v3
-      - uses: lukka/get-cmake@latest
 
       # Download host arch tools for Thrift of CustomThriftController
       - name: Download host tools from MaaDeps
@@ -117,19 +110,14 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          python3 maadeps-download.py ${{ matrix.lowercase_target }}-windows
+          python3 maadeps-download.py ${{ matrix.arch == 'x86_64' && 'x64' || 'arm64' }}-windows
 
       - name: Build MAA
-        uses: lukka/run-cmake@v10
-        with:
-          # cmakeListsTxtPath: '${{ github.workspace }}/CMakeLists.txt'
-          # workflowPreset: 'workflow-name'
-          configurePreset: "${{ matrix.lowercase_target == 'x64' && 'MSVC 2022' || 'MSVC 2022 ARM' }}"
-          configurePresetAdditionalArgs: '["-DMAADEPS_TRIPLET=maa-${{ matrix.lowercase_target }}-windows"]'
-          buildPreset: "${{ matrix.lowercase_target == 'x64' && 'MSVC 2022' || 'MSVC 2022 ARM' }} - Release"
-          # buildPresetAdditionalArgs: "['--config Release']"
-          # testPreset: 'ninja-multi-vcpkg'
-          # testPresetAdditionalArgs: "['--config Release']"
+        run: |
+          cmake --preset "${{ matrix.arch == 'x86_64' && 'MSVC 2022' || 'MSVC 2022 ARM' }}" -DMAADEPS_TRIPLET="maa-${{ matrix.arch == 'x86_64' && 'x64' || 'arm64' }}-windows"
+
+          cmake --build build --preset "${{ matrix.arch == 'x86_64' && 'MSVC 2022' || 'MSVC 2022 ARM' }} - Release"
+          cmake --install build --prefix install
 
   ubuntu:
     runs-on: ubuntu-latest
@@ -181,57 +169,72 @@ jobs:
           CXX: ${{ matrix.arch == 'x86_64' && 'ccache g++' || 'ccache aarch64-linux-gnu-g++' }}
         run: |
           cmake --preset 'NinjaMulti' \
-            -DMAADEPS_TRIPLET='maa-${{ matrix.arch == 'x86_64' && 'x64' || 'arm64' }}-linux' \
-
-            # -DMAA_VERSION='${{ needs.meta.outputs.tag }}'
+            -DMAADEPS_TRIPLET='maa-${{ matrix.arch == 'x86_64' && 'x64' || 'arm64' }}-linux'
 
           cmake --build build --preset 'NinjaMulti - Release'
           cmake --install build --prefix install
-
-      - name: Copy docs
-        run: |
-          cp -r docs install/docs
 
       - uses: actions/upload-artifact@v3
         with:
           name: MAA-linux-${{ matrix.arch }}
           path: "install"
 
-  # macOS:
-  #   runs-on: macos-13
-  #   needs: meta
-  #   strategy:
-  #     matrix:
-  #       arch: [arm64, x86_64]
-  #   steps:
-  #     - uses: actions/checkout@v3
-  #     - name: Install Dependencies
-  #       run: brew install ninja
-  #     - name: Bootstrap MaaDeps
-  #       env:
-  #         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-  #       run: |
-  #         [[ ${{ matrix.arch }} = "arm64" ]] && triplet="arm64-osx" || triplet="x64-osx"
-  #         python3 maadeps-download.py ${triplet}
-  #     - name: Configure MaaFramework
-  #       run: |
-  #         cmake -B build -GNinja -DCMAKE_BUILD_TYPE=Release -DCMAKE_OSX_ARCHITECTURES='${{ matrix.arch }}' -DMAA_VERSION='${{ needs.meta.outputs.tag }}'
-  #     - name: Build MaaFramework
-  #       run: |
-  #         cmake --build build
-  #         cmake --install build --prefix install
+  macos:
+    runs-on: macos-latest
+    needs: meta
+    strategy:
+      matrix:
+        arch: [aarch64, x86_64]
+    steps:
+      - uses: actions/checkout@v3
 
-  #     - name: Copy docs
-  #       run: |
-  #         cp -r docs install/docs
-  #     - uses: actions/upload-artifact@v3
-  #       with:
-  #         name: MaaFramework-macos-${{ matrix.arch }}
-  #         path: 'install/*.dylib'
+      - name: Install dep
+        run: |
+          brew install cmake python ninja
+        # ccache?
+
+      - name: Download fmtlib
+        run: |
+          sh 3rdparty/fetch-fmt.sh
+
+      - name: Install compiler
+        run: |
+          brew install llvm
+        # 16
+
+      # Download host arch tools for Thrift of CustomThriftController
+      - name: Download host tools from MaaDeps
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          python3 maadeps-download.py x64-osx
+
+      - name: Bootstrap MaaDeps
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          python3 maadeps-download.py ${{ matrix.arch == 'x86_64' && 'x64' || 'arm64' }}-osx
+
+      - name: Build MAA
+        env:
+          CC: "/usr/local/opt/llvm/bin/clang"
+          CXX: "/usr/local/opt/llvm/bin/clang++"
+        run: |
+          cmake --preset 'NinjaMulti' \
+            -DMAADEPS_TRIPLET='maa-${{ matrix.arch == 'x86_64' && 'x64' || 'arm64' }}-osx'
+
+          cmake --build build --preset 'NinjaMulti - Release'
+          cmake --install build --prefix install
+
+      - uses: actions/upload-artifact@v3
+        with:
+          name: MAA-linux-${{ matrix.arch }}
+          path: "install"
 
   release:
     if: startsWith(github.ref, 'refs/tags/v')
-    needs: [meta, windows, ubuntu]
+    # needs: [meta, windows, ubuntu]
+    needs: [meta, macos]
     runs-on: ubuntu-latest
     steps:
       - uses: actions/download-artifact@v3

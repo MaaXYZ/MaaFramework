@@ -1,11 +1,11 @@
 #include "MinitouchInput.h"
 
 #include "MaaUtils/Logger.hpp"
+#include "Utils/Format.hpp"
 #include "Utils/Ranges.hpp"
 
 #include <array>
 #include <cmath>
-#include <format>
 
 MAA_CTRL_UNIT_NS_BEGIN
 
@@ -81,7 +81,7 @@ bool MinitouchInput::init(int swidth, int sheight)
         return false;
     }
     const std::string& target_arch = *arch_iter;
-    auto bin = std::format("{}/{}/minitouch", root_, target_arch);
+    auto bin = fmt::format("{}/{}/minitouch", root_, target_arch);
 
     if (!invoke_app_->push(bin)) {
         return false;
@@ -155,8 +155,8 @@ bool MinitouchInput::click(int x, int y)
 
     LogInfo << VAR(x) << VAR(y) << VAR(real_x) << VAR(real_y);
 
-    bool res = shell_handler_->write(std::format("d {} {} {} {}\nc\n", 0, real_x, real_y, press_)) &&
-               shell_handler_->write(std::format("u {}\nc\n", 0));
+    bool res = shell_handler_->write(fmt::format("d {} {} {} {}\nc\n", 0, real_x, real_y, press_)) &&
+               shell_handler_->write(fmt::format("u {}\nc\n", 0));
 
     if (!res) {
         LogError << "click failed";
@@ -178,7 +178,7 @@ bool MinitouchInput::swipe(const std::vector<SwipeStep>& steps)
         auto first = steps[0];
         auto [x, y] = scale_point(first.x, first.y);
         auto now = std::chrono::steady_clock::now();
-        if (!shell_handler_->write(std::format("d {} {} {} {}\nc\n", 0, x, y, press_))) {
+        if (!shell_handler_->write(fmt::format("d {} {} {} {}\nc\n", 0, x, y, press_))) {
             return false;
         }
         auto used = std::chrono::steady_clock::now() - now;
@@ -191,7 +191,7 @@ bool MinitouchInput::swipe(const std::vector<SwipeStep>& steps)
     for (auto it = steps.begin() + 1; it != steps.end(); it++) {
         int x = it->x, y = it->y;
         auto now = std::chrono::steady_clock::now();
-        auto res = shell_handler_->write(std::format("m {} {} {} {}\nc\n", 0, x, y, press_));
+        auto res = shell_handler_->write(fmt::format("m {} {} {} {}\nc\n", 0, x, y, press_));
         if (!res) {
             return false;
         }
@@ -202,7 +202,7 @@ bool MinitouchInput::swipe(const std::vector<SwipeStep>& steps)
         }
     }
 
-    return shell_handler_->write(std::format("u {}\nc\n", 0));
+    return shell_handler_->write(fmt::format("u {}\nc\n", 0));
 }
 
 std::pair<int, int> MinitouchInput::scale_point(int x, int y)

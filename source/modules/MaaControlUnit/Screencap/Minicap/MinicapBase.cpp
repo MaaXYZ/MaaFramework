@@ -1,11 +1,11 @@
 #include "MinicapBase.h"
 
 #include "MaaUtils/Logger.hpp"
+#include "Utils/Format.hpp"
 #include "Utils/NoWarningCV.h"
 #include "Utils/Ranges.hpp"
 
 #include <array>
-#include <format>
 
 MAA_CTRL_UNIT_NS_BEGIN
 
@@ -119,8 +119,8 @@ bool MinicapBase::init(int w, int h)
     int fit_sdk = *sdk_iter;
 
     // TODO: 确认低版本是否使用minicap-nopie
-    auto bin = std::format("{}/{}/bin/minicap", root_, target_arch);
-    auto lib = std::format("{}/{}/lib/android-{}/minicap.so", root_, target_arch, fit_sdk);
+    auto bin = fmt::format("{}/{}/bin/minicap", root_, target_arch);
+    auto lib = fmt::format("{}/{}/lib/android-{}/minicap.so", root_, target_arch, fit_sdk);
 
     if (!binary_->push(bin) || !library_->push(lib)) {
         return false;
