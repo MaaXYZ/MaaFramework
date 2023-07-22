@@ -249,23 +249,33 @@ std::optional<PipelineTask::RecResult> PipelineTask::recognize(const cv::Mat& im
         cache = status()->get_pipeline_rec_cache(task_data.name);
     }
 
+    std::optional<PipelineTask::RecResult> result;
     switch (task_data.rec_type) {
     case Type::DirectHit:
-        return direct_hit(image, std::get<DirectHitParam>(task_data.rec_param), cache);
+        result = direct_hit(image, std::get<DirectHitParam>(task_data.rec_param), cache);
+        break;
 
     case Type::TemplateMatch:
-        return template_match(image, std::get<TemplMatchingParam>(task_data.rec_param), cache);
+        result = template_match(image, std::get<TemplMatchingParam>(task_data.rec_param), cache);
+        break;
 
     case Type::OCR:
-        return ocr(image, std::get<OcrParam>(task_data.rec_param), cache);
+        result = ocr(image, std::get<OcrParam>(task_data.rec_param), cache);
+        break;
 
     case Type::Custom:
-        return custom_recognize(image, std::get<CustomParam>(task_data.rec_param), cache);
+        result = custom_recognize(image, std::get<CustomParam>(task_data.rec_param), cache);
+        break;
 
     default:
         LogError << "Unknown type" << VAR(static_cast<int>(task_data.rec_type));
         return std::nullopt;
     }
+
+    if (result) {
+        status()->set_pipeline_rec_cache(task_data.name, result->box);
+    }
+    return result;
 }
 
 std::optional<PipelineTask::RecResult> PipelineTask::direct_hit(const cv::Mat& image,
