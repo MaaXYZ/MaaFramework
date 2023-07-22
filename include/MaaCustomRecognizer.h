@@ -24,7 +24,7 @@ extern "C"
         void* data;
     };
 
-    struct MAA_API MaaCustomRecognitionResult
+    struct MAA_API MaaRecognitionResult
     {
         MaaBool success;
         MaaRect box;
@@ -33,7 +33,7 @@ extern "C"
 
     struct MAA_API MaaCustomRecognizerAPI
     {
-        MaaCustomRecognitionResult (*analyze)(MaaImage image, MaaJsonString custom_recognition_param);
+        MaaRecognitionResult (*analyze)(MaaImage image, MaaJsonString custom_recognition_param);
     };
 
 #ifdef __cplusplus
