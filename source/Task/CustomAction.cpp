@@ -21,7 +21,7 @@ bool CustomAction::run(const MAA_PIPELINE_RES_NS::Action::CustomParam& param, co
 
     MaaRect box { .x = cur_box.x, .y = cur_box.y, .width = cur_box.width, .height = cur_box.height };
 
-    bool ret = action_->run(param.custom_param.to_string().c_str(), box, rec_detail.to_string().c_str());
+    bool ret = action_->run(param.custom_param.to_string().c_str(), &box, rec_detail.to_string().c_str());
     LogTrace << VAR_VOIDP(action_) << VAR_VOIDP(action_->run) << VAR(ret);
 
     return ret;

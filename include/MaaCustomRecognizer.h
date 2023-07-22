@@ -26,14 +26,13 @@ extern "C"
 
     struct MAA_API MaaRecognitionResult
     {
-        MaaBool success;
         MaaRect box;
-        MaaJsonString detail;
+        char detail[(1 << 20) - sizeof(MaaRect)];
     };
 
     struct MAA_API MaaCustomRecognizerAPI
     {
-        MaaRecognitionResult (*analyze)(MaaImage image, MaaJsonString custom_recognition_param);
+        MaaBool (*analyze)(MaaRecognitionResult* result, const MaaImage* image, MaaJsonString custom_recognition_param);
     };
 
 #ifdef __cplusplus

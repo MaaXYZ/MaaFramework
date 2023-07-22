@@ -12,7 +12,8 @@ extern "C"
 
     struct MAA_API MaaCustomActionAPI
     {
-        MaaBool (*run)(MaaJsonString custom_action_param, MaaRect cur_box, MaaJsonString recognition_result_detail);
+        MaaBool (*run)(MaaJsonString custom_action_param, const MaaRect* cur_box,
+                       MaaJsonString recognition_result_detail);
 
         void (*stop)(void);
     };
