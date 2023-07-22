@@ -82,7 +82,7 @@ jobs:
         shell: bash
         run: |
           cp -r docs ${{ matrix.msbuild_target }}/Release
-          rm -rf ${{ matrix.msbuild_target }}/MaaThriftController
+          rm -rf ${{ matrix.msbuild_target }}/Release/MaaThriftController
 
       - uses: actions/upload-artifact@v3
         with:
