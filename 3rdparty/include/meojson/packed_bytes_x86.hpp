@@ -1,6 +1,7 @@
 #pragma once
 #include "packed_bytes.hpp"
 
+#include <emmintrin.h>
 #if defined(__SSE4_1__) || defined(__AVX2__) || defined(_MSC_VER) 
 // MSVC enables all SSE4.1 intrinsics by default
 #include <smmintrin.h>

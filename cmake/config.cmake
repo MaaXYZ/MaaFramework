@@ -25,10 +25,6 @@ else ()
 
     set(rel_debug_comp_options "-O0")
     add_compile_options("$<$<CONFIG:RelWithDebInfo>:${rel_debug_comp_options}>")
-
-    if(CMAKE_SYSTEM_PROCESSOR MATCHES "AMD64|EM64T|x86_64")
-        add_compile_options("-msse4.1")
-    endif()
 endif ()
 
 if (APPLE)
