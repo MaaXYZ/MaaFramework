@@ -17,19 +17,24 @@
 - [MaaFramework](https://github.com/MaaAssistantArknights/MaaFramework)  
   技术栈：C++ / Vision  
   通用 图像识别 + 控制 框架，~~Json 解释器~~，不涉及具体待测软件业务逻辑
+  目前整体架构已基本完成，更多功能持续更新中！
 
-- [MaaCommon](https://github.com/MaaAssistantArknights/MaaCommon)  
+- [MaaToolKit](https://github.com/MaaAssistantArknights/MaaToolKit)  
   技术栈：C# / RPC / ......  
   平台相关上层业务，~~也就是现在每个 UI 都写了一遍的逻辑~~  
   Http / WS APIs, 模拟器控制、端口查找、定时任务、版本更新、资源下载……
+  正在开发中，欢迎加入我们_(:з」∠)_
 
 - MaaCore  
   技术栈：C++ / Python / Vision  
   待测软件业务逻辑，图像识别 + 控制 部分
 
-## 目标期望
+## 最佳实践
 
-如果适配新软件，Framework 一行不改，Common 只进行配置文件相关修改
+- [MAA1999](https://github.com/MaaAssistantArknights/MAA1999) 《重返未来：1999》小助手  
+  基于全新架构的 亿韭韭韭 小助手。图像技术 + 模拟控制，解放双手！由 MaaFramework 强力驱动！
+
+若您的软件集成了 MaaFramework，欢迎向本仓库提交 PR，在列表中添加上您的项目！
 
 ## How to build
 
