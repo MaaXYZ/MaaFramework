@@ -521,10 +521,13 @@ cv::Rect PipelineTask::get_target_rect(const MAA_PIPELINE_RES_NS::Action::Target
     switch (target.type) {
     case Target::Type::Self:
         raw = cur_box;
+        break;
     case Target::Type::PreTask:
         raw = status()->get_pipeline_rec_cache(std::get<std::string>(target.param));
+        break;
     case Target::Type::Region:
         raw = std::get<cv::Rect>(target.param);
+        break;
     default:
         LogError << "Unknown target" << VAR(static_cast<int>(target.type));
         return {};
