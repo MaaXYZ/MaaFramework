@@ -90,15 +90,11 @@ jobs:
 
     steps:
 
-      - name: Install git on container
-      # https://github.com/MaaAssistantArknights/MaaFramework/actions/runs/5643408179/job/15285186255
-        run: |
-          apt update
-          apt install -y git
-
       - uses: actions/checkout@v3
-        with:
-          submodules: true
+
+      # https://github.com/MaaAssistantArknights/MaaFramework/actions/runs/5643408179/job/15285186255
+      - run: |
+          git submodule update --init
 
       # maybe should explicitly update some pkg instead of all?
       - name: Update system
@@ -144,6 +140,8 @@ jobs:
 
           cmake --build build --preset 'NinjaMulti - Release'
           cmake --install build --prefix install
+
+          rm -rf install/bin/msvc-debug
 
       - uses: actions/upload-artifact@v3
         with:
