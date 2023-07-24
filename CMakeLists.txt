@@ -10,7 +10,7 @@ list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_LIST_DIR}/cmake/modules")
 set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 set(CMAKE_MAP_IMPORTED_CONFIG_RELWITHDEBINFO "RelWithDebInfo;Release;")
 
-option(BUILD_SAMPLE "build a demo" ON)
+option(BUILD_SAMPLE "build a demo" OFF)
 option(BUILD_BUSYBOX "build the busybox" OFF)
 # option(INSTALL_DEVEL "install development files" OFF)
 # option(INSTALL_THIRD_LIBS "install third party libraries" ON)
