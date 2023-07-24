@@ -52,28 +52,32 @@ enum class Type
     // InputText, // TODO
 };
 
-enum class Target
+struct Target
 {
-    Invalid = 0,
-    Self,
-    PreTask,
-    Region,
+    enum class Type
+    {
+        Invalid = 0,
+        Self,
+        PreTask,
+        Region,
+    };
+
+    Type type = Type::Self;
+    std::variant<std::monostate, std::string, cv::Rect> param;
+    cv::Rect offset {};
 };
 
 using TargetParam = std::variant<std::monostate, std::string, cv::Rect>;
 
 struct ClickParam
 {
-    Target target = Target::Self;
-    TargetParam target_param;
+    Target target;
 };
 
 struct SwipeParam
 {
-    Target begin = Target::Self;
-    TargetParam begin_param;
-    Target end = Target::Self;
-    TargetParam end_param;
+    Target begin;
+    Target end;
 
     uint duration = 200;
 };
@@ -101,8 +105,7 @@ struct WaitFreezesParam
 {
     std::chrono::milliseconds time = std::chrono::milliseconds(0);
 
-    Action::Target target = Action::Target::Self;
-    Action::TargetParam target_param;
+    Action::Target target;
 
     double threshold = 0.95;
     int method = MAA_VISION_NS::TemplMatchingParam::kDefaultMethod;

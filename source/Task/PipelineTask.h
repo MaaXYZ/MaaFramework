@@ -82,8 +82,7 @@ private:
 
     void wait_freezes(const MAA_PIPELINE_RES_NS::WaitFreezesParam& param, const cv::Rect& cur_box);
 
-    cv::Rect get_target_rect(const MAA_PIPELINE_RES_NS::Action::Target type,
-                             const MAA_PIPELINE_RES_NS::Action::TargetParam& param, const cv::Rect& cur_box);
+    cv::Rect get_target_rect(const MAA_PIPELINE_RES_NS::Action::Target target, const cv::Rect& cur_box);
 
     const MAA_PIPELINE_RES_NS::TaskData& get_task_data(const std::string& task_name);
 

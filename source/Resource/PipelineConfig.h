@@ -68,10 +68,8 @@ public:
 
     static bool parse_rect(const json::value& input_rect, cv::Rect& output);
     static bool parse_action_target(const json::value& input, const std::string& key,
-                                    MAA_PIPELINE_RES_NS::Action::Target& output_type,
-                                    MAA_PIPELINE_RES_NS::Action::TargetParam& output_param,
-                                    const MAA_PIPELINE_RES_NS::Action::Target& default_type,
-                                    const MAA_PIPELINE_RES_NS::Action::TargetParam& default_param);
+                                    MAA_PIPELINE_RES_NS::Action::Target& output,
+                                    const MAA_PIPELINE_RES_NS::Action::Target& default_value);
 
 private:
     bool load_all_json(const std::filesystem::path& path);

@@ -118,7 +118,7 @@ bool PipelineConfig::load_template_images(const std::filesystem::path& path)
         const auto& relatives = std::get<MAA_VISION_NS::TemplMatchingParam>(task_data.rec_param).template_paths;
         std::vector<std::filesystem::path> paths;
         MAA_RNS::ranges::transform(relatives, std::back_inserter(paths),
-                          [&](const std::string& rlt) { return path / MAA_NS::path(rlt); });
+                                   [&](const std::string& rlt) { return path / MAA_NS::path(rlt); });
         bool ret = template_mgr_.lazy_load(name, paths);
         if (!ret) {
             LogError << "template_cfg_.lazy_load failed" << VAR(name) << VAR(paths);
@@ -610,8 +610,7 @@ bool PipelineConfig::parse_action(const json::value& input, MAA_PIPELINE_RES_NS:
 bool PipelineConfig::parse_click(const json::value& input, MAA_PIPELINE_RES_NS::Action::ClickParam& output,
                                  const MAA_PIPELINE_RES_NS::Action::ClickParam& default_value)
 {
-    if (!parse_action_target(input, "target", output.target, output.target_param, default_value.target,
-                             default_value.target_param)) {
+    if (!parse_action_target(input, "target", output.target, default_value.target)) {
         LogError << "failed to parse_action_target" << VAR(input);
         return false;
     }
@@ -622,18 +621,17 @@ bool PipelineConfig::parse_click(const json::value& input, MAA_PIPELINE_RES_NS::
 bool PipelineConfig::parse_swipe(const json::value& input, MAA_PIPELINE_RES_NS::Action::SwipeParam& output,
                                  const MAA_PIPELINE_RES_NS::Action::SwipeParam& default_value)
 {
-    if (!parse_action_target(input, "begin", output.begin, output.begin_param, default_value.begin,
-                             default_value.begin_param)) {
+    if (!parse_action_target(input, "begin", output.begin, default_value.begin)) {
         LogError << "failed to parse_action_target begin" << VAR(input);
         return false;
     }
 
-    if (!parse_action_target(input, "end", output.end, output.end_param, default_value.end, default_value.end_param)) {
+    if (!parse_action_target(input, "end", output.end, default_value.end)) {
         LogError << "failed to parse_action_target end" << VAR(input);
         return false;
     }
-    if (output.begin == MAA_PIPELINE_RES_NS::Action::Target::Self &&
-        output.end == MAA_PIPELINE_RES_NS::Action::Target::Self) {
+    if (output.begin.type == MAA_PIPELINE_RES_NS::Action::Target::Type::Self &&
+        output.end.type == MAA_PIPELINE_RES_NS::Action::Target::Type::Self) {
         LogError << "not set swipe begin or end";
         return false;
     }
@@ -662,7 +660,8 @@ bool PipelineConfig::parse_key_press(const json::value& input, MAA_PIPELINE_RES_
         return false;
     }
     else {
-        MAA_RNS::ranges::transform(str_keys, std::back_inserter(output.keys), [](char c) { return static_cast<int>(c); });
+        MAA_RNS::ranges::transform(str_keys, std::back_inserter(output.keys),
+                                   [](char c) { return static_cast<int>(c); });
         LogTrace << "key press" << VAR(str_keys) << VAR(output.keys);
     }
 
@@ -728,8 +727,7 @@ bool PipelineConfig::parse_wait_freezes_param(const json::value& input, const st
         }
         output.time = std::chrono::milliseconds(time);
 
-        if (!parse_action_target(field, "target", output.target, output.target_param, default_value.target,
-                                 default_value.target_param)) {
+        if (!parse_action_target(field, "target", output.target, default_value.target)) {
             LogError << "failed to parse_wait_freezes_param parse_action_target" << VAR(field);
             return false;
         }
@@ -777,35 +775,45 @@ bool PipelineConfig::parse_rect(const json::value& input_rect, cv::Rect& output)
 }
 
 bool PipelineConfig::parse_action_target(const json::value& input, const std::string& key,
-                                         MAA_PIPELINE_RES_NS::Action::Target& output_type,
-                                         MAA_PIPELINE_RES_NS::Action::TargetParam& output_param,
-                                         const MAA_PIPELINE_RES_NS::Action::Target& default_type,
-                                         const MAA_PIPELINE_RES_NS::Action::TargetParam& default_param)
+                                         MAA_PIPELINE_RES_NS::Action::Target& output,
+                                         const MAA_PIPELINE_RES_NS::Action::Target& default_value)
 {
     using namespace MAA_PIPELINE_RES_NS::Action;
 
-    auto param_opt = input.find(key);
-    if (!param_opt) {
-        output_type = default_type;
-        output_param = default_param;
+    if (auto param_opt = input.find(key); !param_opt) {
+        output = default_value;
     }
-    else {
-        if (param_opt->is_boolean() && param_opt->as_boolean()) {
-            output_type = Target::Self;
-        }
-        else if (param_opt->is_string()) {
-            output_type = Target::PreTask;
-            output_param = param_opt->as_string();
-        }
-        else if (param_opt->is_array()) {
-            output_type = Target::Region;
-            output_param = cv::Rect();
-            parse_rect(*param_opt, std::get<cv::Rect>(output_param));
-        }
-        else {
-            LogError << "param type error" << VAR(*param_opt);
+    else if (param_opt->is_boolean() && param_opt->as_boolean()) {
+        output.type = Target::Type::Self;
+    }
+    else if (param_opt->is_string()) {
+        output.type = Target::Type::PreTask;
+        output.param = param_opt->as_string();
+    }
+    else if (param_opt->is_array()) {
+        output.type = Target::Type::Region;
+        cv::Rect rect;
+        if (!parse_rect(*param_opt, rect)) {
             return false;
         }
+        output.param = rect;
+    }
+    else {
+        LogError << "param type error" << VAR(key) << VAR(*param_opt);
+        return false;
+    }
+
+    if (auto offset_opt = input.find(key + "_offset"); !offset_opt) {
+        output.offset = default_value.offset;
+    }
+    else if (offset_opt->is_array()) {
+        if (!parse_rect(*offset_opt, output.offset)) {
+            return false;
+        }
+    }
+    else {
+        LogError << "offset type error" << VAR(key + "_offset") << VAR(*offset_opt);
+        return false;
     }
 
     return true;

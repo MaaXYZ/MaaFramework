@@ -401,7 +401,7 @@ void PipelineTask::click(const MAA_PIPELINE_RES_NS::Action::ClickParam& param, c
         return;
     }
 
-    cv::Rect rect = get_target_rect(param.target, param.target_param, cur_box);
+    cv::Rect rect = get_target_rect(param.target, cur_box);
 
     controller()->click(rect);
 }
@@ -413,8 +413,8 @@ void PipelineTask::swipe(const MAA_PIPELINE_RES_NS::Action::SwipeParam& param, c
         return;
     }
 
-    cv::Rect begin = get_target_rect(param.begin, param.begin_param, cur_box);
-    cv::Rect end = get_target_rect(param.end, param.end_param, cur_box);
+    cv::Rect begin = get_target_rect(param.begin, cur_box);
+    cv::Rect end = get_target_rect(param.end, cur_box);
 
     controller()->swipe(begin, end, param.duration);
 }
@@ -444,7 +444,7 @@ void PipelineTask::wait_freezes(const MAA_PIPELINE_RES_NS::WaitFreezesParam& par
 
     LogFunc << "Wait freezes:" << VAR(param.time) << VAR(param.threshold) << VAR(param.method);
 
-    cv::Rect target = get_target_rect(param.target, param.target_param, cur_box);
+    cv::Rect target = get_target_rect(param.target, cur_box);
 
     Comparator comp;
     comp.set_param({
@@ -508,8 +508,7 @@ void PipelineTask::custom_action(const MAA_PIPELINE_RES_NS::Action::CustomParam&
     action->run(param, cur_box, json::value());
 }
 
-cv::Rect PipelineTask::get_target_rect(const MAA_PIPELINE_RES_NS::Action::Target type,
-                                       const MAA_PIPELINE_RES_NS::Action::TargetParam& param, const cv::Rect& cur_box)
+cv::Rect PipelineTask::get_target_rect(const MAA_PIPELINE_RES_NS::Action::Target target, const cv::Rect& cur_box)
 {
     using namespace MAA_PIPELINE_RES_NS::Action;
 
@@ -518,17 +517,21 @@ cv::Rect PipelineTask::get_target_rect(const MAA_PIPELINE_RES_NS::Action::Target
         return {};
     }
 
-    switch (type) {
-    case Target::Self:
-        return cur_box;
-    case Target::PreTask:
-        return status()->get_pipeline_rec_cache(std::get<std::string>(param));
-    case Target::Region:
-        return std::get<cv::Rect>(param);
+    cv::Rect raw;
+    switch (target.type) {
+    case Target::Type::Self:
+        raw = cur_box;
+    case Target::Type::PreTask:
+        raw = status()->get_pipeline_rec_cache(std::get<std::string>(target.param));
+    case Target::Type::Region:
+        raw = std::get<cv::Rect>(target.param);
     default:
-        LogError << "Unknown target" << VAR(static_cast<int>(type));
+        LogError << "Unknown target" << VAR(static_cast<int>(target.type));
         return {};
     }
+
+    return cv::Rect { raw.x + target.offset.x, raw.y + target.offset.y, raw.width + target.offset.width,
+                      raw.height + target.offset.height };
 }
 
 const MAA_PIPELINE_RES_NS::TaskData& PipelineTask::get_task_data(const std::string& task_name)
