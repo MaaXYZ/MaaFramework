@@ -86,7 +86,7 @@ jobs:
 
       - uses: actions/upload-artifact@v3
         with:
-          name: MAA-win-${{ matrix.lowercase_target }}
+          name: MAA-win-${{ matrix.lowercase_target }}-vcx
           path: ${{ matrix.msbuild_target }}/Release
 
   windows-cmake:
@@ -118,6 +118,11 @@ jobs:
 
           cmake --build build --preset "${{ matrix.arch == 'x86_64' && 'MSVC 2022' || 'MSVC 2022 ARM' }} - Release"
           cmake --install build --prefix install
+
+      - uses: actions/upload-artifact@v3
+        with:
+          name: MAA-win-${{ matrix.arch }}
+          path: "install"
 
   ubuntu:
     runs-on: ubuntu-latest
