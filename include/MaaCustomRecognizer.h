@@ -24,15 +24,18 @@ extern "C"
         void* data;
     };
 
+#define MaaRecognitionResultDetailBuffSize 16384
+
     struct MAA_API MaaRecognitionResult
     {
         MaaRect box;
-        char detail[(1 << 20) - sizeof(MaaRect)];
+        void* detail_buff; // size = MaaRecognitionResultDetailBuffSize
     };
 
     struct MAA_API MaaCustomRecognizerAPI
     {
-        MaaBool (*analyze)(MaaRecognitionResult* result, const MaaImage* image, MaaJsonString custom_recognition_param);
+        MaaBool (*analyze)(const MaaImage* image, MaaJsonString custom_recognition_param,
+                           /*out*/ MaaRecognitionResult* result);
     };
 
 #ifdef __cplusplus
