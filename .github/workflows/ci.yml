@@ -75,6 +75,13 @@ jobs:
           cmake --build build --preset "${{ matrix.arch == 'x86_64' && 'MSVC 2022' || 'MSVC 2022 ARM' }} - Release"
           cmake --install build --prefix install
 
+      - run: rm -rf install/bin/msvc-debug
+
+      - name: Copy docs
+        shell: bash
+        run: |
+          cp -r docs install
+
       - uses: actions/upload-artifact@v3
         with:
           name: MAA-win-${{ matrix.arch }}
@@ -141,7 +148,9 @@ jobs:
           cmake --build build --preset 'NinjaMulti - Release'
           cmake --install build --prefix install
 
-          rm -rf install/bin/msvc-debug
+      - name: Copy docs
+        run: |
+          cp -r docs install
 
       - uses: actions/upload-artifact@v3
         with:
@@ -197,6 +206,10 @@ jobs:
 
           cmake --build build --preset 'NinjaMulti - Release'
           cmake --install build --prefix install
+
+      - name: Copy docs
+        run: |
+          cp -r docs install
 
       - uses: actions/upload-artifact@v3
         with:
