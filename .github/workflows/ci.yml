@@ -75,7 +75,10 @@ jobs:
           cmake --build build --preset "${{ matrix.arch == 'x86_64' && 'MSVC 2022' || 'MSVC 2022 ARM' }} - Release"
           cmake --install build --prefix install
 
-      - run: rm -rf install/bin/msvc-debug
+      - name: Remove msvc-debug
+        shell: bash
+        run: |
+          rm -rf install/bin/msvc-debug
 
       - name: Copy docs
         shell: bash
