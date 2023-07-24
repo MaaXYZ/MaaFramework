@@ -28,7 +28,7 @@ else ()
 endif ()
 
 if (APPLE)
-    set(CMAKE_INSTALL_RPATH "@loaderpath;@executable_path")
+    set(CMAKE_INSTALL_RPATH "@loader_path;@executable_path")
     if ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang")
         add_compile_definitions(MAA_USE_FMTLIB)
         add_compile_options("-Wno-deprecated-declarations") # supress tmpnam
