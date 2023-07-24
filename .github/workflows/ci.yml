@@ -16,6 +16,7 @@ on:
       - "cmake/**"
       - "CMakeLists.txt"
       - "*.sln"
+
   pull_request:
     branches:
       - "**"
@@ -44,60 +45,15 @@ jobs:
 
   windows:
     needs: meta
-    strategy:
-      matrix:
-        include:
-          - msbuild_target: x64
-            lowercase_target: x64
-          - msbuild_target: ARM64
-            lowercase_target: arm64
-    env:
-      MAABUILDER_TARGET_PLATFORM: ${{ matrix.msbuild_target }}
     runs-on: windows-latest
-
-    steps:
-      - uses: actions/checkout@v3
-
-      # Download host arch tools for Thrift of CustomThriftController
-      - name: Download host tools from MaaDeps
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: |
-          python3 maadeps-download.py x64-windows
-
-      - name: Bootstrap MaaDeps
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: |
-          python3 maadeps-download.py ${{ matrix.lowercase_target }}-windows
-
-      - name: Add msbuild to PATH
-        uses: microsoft/setup-msbuild@v1
-
-      - name: Build MAA
-        run: |
-          MSBUILD MAA.sln /t:rebuild /p:MAA_VERSION="${{ needs.meta.outputs.tag }}" /p:Configuration="Release" /p:Platform="${{ matrix.msbuild_target }}" /m
-
-      - name: Install
-        shell: bash
-        run: |
-          cp -r docs ${{ matrix.msbuild_target }}/Release
-          rm -rf ${{ matrix.msbuild_target }}/Release/MaaThriftController
-
-      - uses: actions/upload-artifact@v3
-        with:
-          name: MAA-win-${{ matrix.lowercase_target }}-vcx
-          path: ${{ matrix.msbuild_target }}/Release
-
-  windows-cmake:
-    needs: meta
     strategy:
       matrix:
         arch: [aarch64, x86_64]
-    runs-on: windows-latest
 
     steps:
       - uses: actions/checkout@v3
+        with:
+          submodules: true
 
       # Download host arch tools for Thrift of CustomThriftController
       - name: Download host tools from MaaDeps
@@ -119,21 +75,30 @@ jobs:
           cmake --build build --preset "${{ matrix.arch == 'x86_64' && 'MSVC 2022' || 'MSVC 2022 ARM' }} - Release"
           cmake --install build --prefix install
 
+      - name: Remove msvc-debug
+        shell: bash
+        run: |
+          rm -rf install/bin/msvc-debug
+
+      - name: Copy docs
+        shell: bash
+        run: |
+          cp -r docs install
+
       - uses: actions/upload-artifact@v3
         with:
           name: MAA-win-${{ matrix.arch }}
           path: "install"
 
   ubuntu:
-    runs-on: ubuntu-latest
     needs: meta
+    runs-on: ubuntu-latest
+    container: archlinux:base-devel
     strategy:
       matrix:
         arch: [aarch64, x86_64]
-    container: archlinux:base-devel
-    steps:
-      - uses: actions/checkout@v3
 
+    steps:
       # maybe should explicitly update some pkg instead of all?
       - name: Update system
         run: |
@@ -142,7 +107,12 @@ jobs:
       - name: Install dep
         run: |
           pacman -Sy
-          pacman -S --noconfirm cmake python ccache ninja
+          pacman -S --noconfirm cmake python ccache ninja git
+
+      # https://github.com/MaaAssistantArknights/MaaFramework/actions/runs/5643408179/job/15285186255
+      - uses: actions/checkout@v3
+        with:
+          submodules: true
 
       - name: Install cross compile toolchains
         if: ${{ matrix.arch != 'x86_64' }}
@@ -179,19 +149,26 @@ jobs:
           cmake --build build --preset 'NinjaMulti - Release'
           cmake --install build --prefix install
 
+      - name: Copy docs
+        run: |
+          cp -r docs install
+
       - uses: actions/upload-artifact@v3
         with:
           name: MAA-linux-${{ matrix.arch }}
           path: "install"
 
   macos:
-    runs-on: macos-latest
     needs: meta
+    runs-on: macos-latest
     strategy:
       matrix:
         arch: [aarch64, x86_64]
+
     steps:
       - uses: actions/checkout@v3
+        with:
+          submodules: true
 
       - name: Install dep
         run: |
@@ -231,6 +208,10 @@ jobs:
           cmake --build build --preset 'NinjaMulti - Release'
           cmake --install build --prefix install
 
+      - name: Copy docs
+        run: |
+          cp -r docs install
+
       - uses: actions/upload-artifact@v3
         with:
           name: MAA-macos-${{ matrix.arch }}
@@ -238,18 +219,20 @@ jobs:
 
   release:
     if: startsWith(github.ref, 'refs/tags/v')
-    # needs: [meta, windows, ubuntu]
-    needs: [meta, macos]
+    needs: [meta, windows, ubuntu]
     runs-on: ubuntu-latest
+
     steps:
       - uses: actions/download-artifact@v3
         with:
           path: assets
+
       - run: |
           cd assets
           for f in *; do
             (cd $f && zip -r ../$f-${{ needs.meta.outputs.tag }}.zip .)
           done
+
       - uses: softprops/action-gh-release@v1
         with:
           files: assets/*.zip
