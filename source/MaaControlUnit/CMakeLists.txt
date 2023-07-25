@@ -5,8 +5,7 @@ add_library(MaaControlUnit SHARED ${maa_control_unit_src})
 target_include_directories(MaaControlUnit
     PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}
             ${CMAKE_CURRENT_SOURCE_DIR}/../include
-            ${CMAKE_CURRENT_SOURCE_DIR}/../..
-            ${CMAKE_CURRENT_SOURCE_DIR}/../../../include)
+            ${CMAKE_CURRENT_SOURCE_DIR}/../../include)
 
 target_link_libraries(MaaControlUnit MaaUtils HeaderOnlyLibraries ${OpenCV_LIBS} ZLIB::ZLIB)
 if(WIN32)
