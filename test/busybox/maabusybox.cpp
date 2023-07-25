@@ -9,7 +9,7 @@
 
 #include "MaaAPI.h"
 #include "MaaControlUnit/ControlUnitAPI.h"
-#include "MaaUtils/Logger.hpp"
+#include "Utils/Logger.hpp"
 #include "Utils/Format.hpp"
 #include "Utils/NoWarningCV.h"
 

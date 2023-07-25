@@ -1,48 +1,6 @@
-file(GLOB_RECURSE maa_src *.cpp *.h *.hpp ../include/*.h)
-file(GLOB_RECURSE maa_modules_src modules/*.cpp modules/*.h modules/*.hpp)
-list(REMOVE_ITEM maa_src ${maa_modules_src})
-
-add_subdirectory(modules/MaaUtils)
-add_subdirectory(modules/MaaControlUnit)
+add_subdirectory(MaaUtils)
+add_subdirectory(MaaControlUnit)
+add_subdirectory(MAAFramework)
 if(WITH_THRIFT)
-    add_subdirectory(modules/MaaThriftController)
+    add_subdirectory(MaaThriftController)
 endif(WITH_THRIFT)
-
-add_library(MaaFramework SHARED ${maa_src})
-
-file(GLOB MaaFramework_PUBLIC_HEADERS ${CMAKE_CURRENT_SOURCE_DIR}/../include/*.h)
-set(MaaFramework_INCLUDE ${CMAKE_CURRENT_SOURCE_DIR}/../include)
-
-target_include_directories(MaaFramework PUBLIC ../include PRIVATE . modules/include ${MaaThriftController_INCLUDE_DIRS})
-set_target_properties(MaaFramework PROPERTIES
-    PUBLIC_HEADER "${MaaFramework_PUBLIC_HEADERS}"
-)
-target_compile_definitions(MaaFramework PRIVATE MAA_DLL_EXPORTS)
-
-target_link_libraries(MaaFramework MaaControlUnit MaaUtils)
-if(WITH_THRIFT)
-    target_link_libraries(MaaFramework MaaThriftController)
-endif(WITH_THRIFT)
-target_link_libraries(MaaFramework ${OpenCV_LIBS} MaaDerpLearning ONNXRuntime::ONNXRuntime HeaderOnlyLibraries) #asio::asio cpr::cpr
-
-# clang 15之后有ranges
-# if (CMAKE_CXX_COMPILER_ID MATCHES ".*Clang")
-#     find_package(range-v3 REQUIRED)
-#     target_link_libraries(MaaFramework range-v3::range-v3)
-# endif ()
-
-install(TARGETS MaaFramework
-    RUNTIME DESTINATION bin
-    LIBRARY DESTINATION bin
-    PUBLIC_HEADER DESTINATION include
-    ARCHIVE DESTINATION lib
-)
-
-source_group(TREE ${CMAKE_SOURCE_DIR} FILES ${maa_src})
-
-if (WIN32)
-  add_custom_command(TARGET MaaFramework POST_BUILD
-    COMMAND ${CMAKE_COMMAND} -E copy -t $<TARGET_FILE_DIR:MaaFramework> $<TARGET_RUNTIME_DLLS:MaaFramework>
-    COMMAND_EXPAND_LISTS
-  )
-endif (WIN32)
