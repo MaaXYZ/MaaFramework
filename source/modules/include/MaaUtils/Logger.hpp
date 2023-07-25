@@ -38,12 +38,16 @@ template <typename T>
 concept has_value_type = requires { typename std::decay_t<T>::value_type; };
 template <typename T>
 concept has_key_mapped_type = requires {
-    typename std::decay_t<T>::key_type;
-    typename std::decay_t<T>::mapped_type;
-};
+                                  typename std::decay_t<T>::key_type;
+                                  typename std::decay_t<T>::mapped_type;
+                              };
 
 class MAA_UTILS_API Logger
 {
+public:
+    static constexpr std::string_view kLogFilename = "maa.log";
+    static constexpr std::string_view kLogbakFilename = "maa.bak.log";
+
 public:
     enum class level
     {
@@ -262,7 +266,7 @@ public:
 
 public:
     static Logger& get_instance();
-    ~Logger() { flush(); }
+    ~Logger() { close(); }
 
     Logger(const Logger&) = delete;
     Logger(Logger&&) = delete;
@@ -300,6 +304,7 @@ public:
     }
 
     void start_logging(std::filesystem::path dir);
+    void flush();
 
 private:
     template <typename... args_t>
@@ -308,19 +313,19 @@ private:
         return LogStream(trace_mutex_, ofs_, lv, std::forward<args_t>(args)...);
     }
 
-    void flush();
-
 private:
     Logger() = default;
 
     void reinit();
-    void rotate();
+    bool rotate();
     void open();
-    void log_start();
+    void close();
+    void log_proc_info();
 
     LogStream internal_trace();
 
 private:
+    std::filesystem::path log_dir_;
     std::filesystem::path log_path_;
     std::ofstream ofs_;
     std::mutex trace_mutex_;
