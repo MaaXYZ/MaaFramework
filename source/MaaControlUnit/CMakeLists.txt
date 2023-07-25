@@ -17,6 +17,8 @@ if (MAA_DEBUG_EXPORTS)
     target_compile_definitions(MaaControlUnit PRIVATE MAA_DEBUG_DLL_EXPORTS)
 endif ()
 
+add_dependencies(MaaControlUnit MaaUtils)
+
 install(TARGETS MaaControlUnit
     RUNTIME DESTINATION bin
     LIBRARY DESTINATION bin

@@ -23,6 +23,8 @@ target_link_libraries(MaaFramework ${OpenCV_LIBS} MaaDerpLearning ONNXRuntime::O
 #     target_link_libraries(MaaFramework range-v3::range-v3)
 # endif ()
 
+add_dependencies(MaaFramework MaaControlUnit MaaUtils MaaThriftController)
+
 install(TARGETS MaaFramework
     RUNTIME DESTINATION bin
     LIBRARY DESTINATION bin
