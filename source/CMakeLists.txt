@@ -1,6 +1,6 @@
 add_subdirectory(MaaUtils)
 add_subdirectory(MaaControlUnit)
-add_subdirectory(MAAFramework)
 if(WITH_THRIFT)
     add_subdirectory(MaaThriftController)
 endif(WITH_THRIFT)
+add_subdirectory(MAAFramework)
