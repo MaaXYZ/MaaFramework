@@ -2,10 +2,10 @@ file(GLOB_RECURSE maa_src *.cpp *.h *.hpp ../include/*.h)
 
 add_library(MaaFramework SHARED ${maa_src})
 
-file(GLOB MaaFramework_PUBLIC_HEADERS ${CMAKE_CURRENT_SOURCE_DIR}/../include/*.h)
-set(MaaFramework_INCLUDE ${CMAKE_CURRENT_SOURCE_DIR}/../include)
+file(GLOB MaaFramework_PUBLIC_HEADERS ${CMAKE_CURRENT_SOURCE_DIR}/../../include/*.h)
+set(MaaFramework_INCLUDE ${CMAKE_CURRENT_SOURCE_DIR}/../../include)
 
-target_include_directories(MaaFramework PUBLIC ../include PRIVATE . include ${MaaThriftController_INCLUDE_DIRS})
+target_include_directories(MaaFramework PUBLIC ../../include PRIVATE . ../include ${MaaThriftController_INCLUDE_DIRS})
 set_target_properties(MaaFramework PROPERTIES
     PUBLIC_HEADER "${MaaFramework_PUBLIC_HEADERS}"
 )
