@@ -63,6 +63,10 @@ bool PipelineTask::run()
         if (next_list.empty() && !breakpoints_stack.empty()) {
             std::string top_bp = std::move(breakpoints_stack.top());
             breakpoints_stack.pop();
+            if (pre_breakpoint == top_bp) {
+                LogInfo << "breakpoints top is same as pre breakpoint" << VAR(top_bp);
+                continue;
+            }
             pre_breakpoint = top_bp;
             next_list = get_task_data(top_bp).next;
             LogInfo << "breakpoints pop" << VAR(top_bp) << VAR(next_list);
