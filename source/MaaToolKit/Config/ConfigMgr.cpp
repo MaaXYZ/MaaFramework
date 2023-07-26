@@ -122,7 +122,9 @@ const std::filesystem::path& ConfigMgr::config_path() const
     static const std::filesystem::path config_path("maa_toolkit.json");
     return config_path;
 #else
-// TODO
+    // TODO: unix 设备上应该不方便放当前目录，可能调整到 data 或者家目录之类的地方
+    static const std::filesystem::path config_path("maa_toolkit.json");
+    return config_path;
 #endif
 }
 
