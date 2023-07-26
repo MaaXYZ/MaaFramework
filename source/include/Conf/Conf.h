@@ -60,6 +60,8 @@
     {
 #define MAA_NS_END }
 
+/* MaaFramwork */
+
 #define MAA_RES_NS MAA_NS::ResourceNS
 #define MAA_RES_NS_BEGIN \
     namespace MAA_RES_NS \
@@ -72,12 +74,6 @@
     {
 #define MAA_CTRL_NS_END }
 
-#define MAA_CTRL_UNIT_NS MAA_CTRL_NS::Unit
-#define MAA_CTRL_UNIT_NS_BEGIN \
-    namespace MAA_CTRL_UNIT_NS \
-    {
-#define MAA_CTRL_UNIT_NS_END }
-
 #define MAA_VISION_NS MAA_NS::VisionNS
 #define MAA_VISION_NS_BEGIN \
     namespace MAA_VISION_NS \
@@ -89,6 +85,21 @@
     namespace MAA_TASK_NS \
     {
 #define MAA_TASK_NS_END }
+
+/* MaaControlUnit */
+
+#define MAA_CTRL_UNIT_NS MAA_CTRL_NS::Unit
+#define MAA_CTRL_UNIT_NS_BEGIN \
+    namespace MAA_CTRL_UNIT_NS \
+    {
+#define MAA_CTRL_UNIT_NS_END }
+
+/* MaaToolKit */
+#define MAA_TOOLKIT_NS MAA_NS::ToolKitNS
+#define MAA_TOOLKIT_NS_BEGIN \
+    namespace MAA_TOOLKIT_NS \
+    {
+#define MAA_TOOLKIT_NS_END }
 
 #ifndef NOMINMAX
 #define NOMINMAX

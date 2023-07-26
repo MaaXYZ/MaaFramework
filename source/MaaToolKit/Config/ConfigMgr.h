@@ -6,9 +6,9 @@
 #include <utility>
 #include <vector>
 
-#include "Base/SingletonHolder.hpp"
-#include "Common/MaaConf.h"
+#include "Conf/Conf.h"
 #include "Config.h"
+#include "Utils/SingletonHolder.hpp"
 
 MAA_TOOLKIT_NS_BEGIN
 

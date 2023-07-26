@@ -3,14 +3,13 @@
 #include <map>
 #include <string>
 
-#include "Common/MaaConf.h"
-#include "Common/MaaTypes.h"
+#include "Conf/Conf.h"
 
 #include <meojson/json.hpp>
 
 MAA_TOOLKIT_NS_BEGIN
 
-class Config : public MaaToolKitConfigAPI
+class Config // TODO:  public MaaToolKitConfigAPI
 {
 public:
     json::value to_json() const;

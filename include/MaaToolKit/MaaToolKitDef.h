@@ -1,13 +1,6 @@
 #pragma once
 
-#include <stdint.h>
-
-typedef uint8_t MaaBool;
-typedef uint64_t MaaSize;
-#define MaaNullSize ((MaaSize)-1)
-
-typedef const char* MaaString;
-typedef MaaString MaaJsonString;
+#include "MaaFramework/MaaDef.h"
 
 struct MaaToolKitConfigAPI;
 typedef struct MaaToolKitConfigAPI* MaaToolKitConfigHandle;

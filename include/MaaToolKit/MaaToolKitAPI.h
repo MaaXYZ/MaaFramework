@@ -1,15 +1,11 @@
 #pragma once
 
 #include "MaaToolKitDef.h"
-#include "MaaToolKitPort.h"
 
 #ifdef __cplusplus
 extern "C"
 {
 #endif
-
-    MaaString MAA_TOOLKIT_API MaaFrameworkVersion();
-    MaaString MAA_TOOLKIT_API MaaToolKitVersion();
 
     MaaBool MAA_TOOLKIT_API MaaToolKitInit();
     MaaBool MAA_TOOLKIT_API MaaToolKitUninit();

@@ -20,6 +20,8 @@
     <ClCompile Include="Config\ConfigMgr.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\..\include\MaaToolKit\MaaToolKitAPI.h" />
+    <ClInclude Include="..\..\include\MaaToolKit\MaaToolKitDef.h" />
     <ClInclude Include="Config\Config.h" />
     <ClInclude Include="Config\ConfigMgr.h" />
   </ItemGroup>
