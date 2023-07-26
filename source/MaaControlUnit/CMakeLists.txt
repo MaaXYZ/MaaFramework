@@ -12,10 +12,7 @@ if(WIN32)
     target_link_libraries(MaaControlUnit ws2_32)
 endif()
 
-target_compile_definitions(MaaControlUnit PRIVATE MAA_DLL_EXPORTS)
-if (MAA_DEBUG_EXPORTS)
-    target_compile_definitions(MaaControlUnit PRIVATE MAA_DEBUG_DLL_EXPORTS)
-endif ()
+target_compile_definitions(MaaControlUnit PRIVATE MAA_CONTROL_UNIT_EXPORTS)
 
 add_dependencies(MaaControlUnit MaaUtils)
 

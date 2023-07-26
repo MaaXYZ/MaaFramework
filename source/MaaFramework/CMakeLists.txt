@@ -9,7 +9,7 @@ target_include_directories(MaaFramework PUBLIC ../../include PRIVATE . ../includ
 set_target_properties(MaaFramework PROPERTIES
     PUBLIC_HEADER "${MaaFramework_PUBLIC_HEADERS}"
 )
-target_compile_definitions(MaaFramework PRIVATE MAA_DLL_EXPORTS)
+target_compile_definitions(MaaFramework PRIVATE MAA_FRAMEWORK_EXPORTS)
 
 target_link_libraries(MaaFramework MaaControlUnit MaaUtils)
 if(WITH_THRIFT)

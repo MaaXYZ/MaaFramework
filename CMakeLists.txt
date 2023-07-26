@@ -19,10 +19,6 @@ option(USE_MAADEPS "use third-party libraries built by MaaDeps" ON)
 option(BUILD_EXTENSION "build a extension fo Visual Studio Code" OFF)
 option(WITH_THRIFT "build with thrift" ON)
 
-if (BUILD_BUSYBOX)
-    set(MAA_DEBUG_EXPORTS ON)
-endif ()
-
 include(${PROJECT_SOURCE_DIR}/cmake/config.cmake) # Basic compile & link configuration
 include(${PROJECT_SOURCE_DIR}/cmake/assets.cmake)
 include(${PROJECT_SOURCE_DIR}/cmake/utils.cmake)
