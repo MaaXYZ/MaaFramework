@@ -3,8 +3,8 @@
 #include <memory>
 #include <optional>
 
-#include "MaaConf.h"
-#include "MaaDef.h"
+#include "Conf/Conf.h"
+#include "MaaFramework/MaaDef.h"
 #include "Utils/NoWarningCVMat.h"
 
 MAA_CTRL_UNIT_NS_BEGIN

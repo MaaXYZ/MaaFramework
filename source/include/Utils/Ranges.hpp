@@ -1,6 +1,6 @@
 #pragma once
 
-#include "MaaConf.h"
+#include "Conf/Conf.h"
 
 #define MAA_RNS MAA_NS::MaaRangesNS
 #define MAA_RNS_NS_BEGIN \

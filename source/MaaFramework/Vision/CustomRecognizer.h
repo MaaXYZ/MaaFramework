@@ -4,7 +4,7 @@
 
 #include <meojson/json.hpp>
 
-#include "MaaCustomRecognizer.h"
+#include "MaaFramework/MaaCustomRecognizer.h"
 #include "VisionBase.h"
 #include "VisionTypes.h"
 

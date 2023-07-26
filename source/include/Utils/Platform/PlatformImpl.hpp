@@ -23,7 +23,7 @@
 
 #endif //  _WIN32
 
-#include "MaaConf.h"
+#include "Conf/Conf.h"
 
 #define MAA_PLATFORM_NS MAA_NS::platform_ns
 #define MAA_PLATFORM_NS_BEGIN \

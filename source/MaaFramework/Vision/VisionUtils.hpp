@@ -1,6 +1,6 @@
 #pragma once
 
-#include "MaaConf.h"
+#include "Conf/Conf.h"
 #include "Utils/Logger.hpp"
 #include "Utils/NoWarningCV.h"
 #include "Utils/Ranges.hpp"

@@ -1,7 +1,7 @@
 #include "MaatouchInput.h"
 
-#include "Utils/Logger.hpp"
 #include "Utils/Format.hpp"
+#include "Utils/Logger.hpp"
 #include "Utils/Ranges.hpp"
 
 #include <array>

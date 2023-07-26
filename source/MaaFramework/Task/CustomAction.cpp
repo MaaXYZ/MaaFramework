@@ -2,7 +2,7 @@
 
 #include "Utils/NoWarningCV.h"
 
-#include "MaaCustomAction.h"
+#include "MaaFramework/MaaCustomAction.h"
 #include "Utils/Logger.hpp"
 
 MAA_TASK_NS_BEGIN

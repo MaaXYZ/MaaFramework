@@ -1,9 +1,9 @@
 #include "ControllerMgr.h"
 
+#include "MaaFramework/MaaMsg.h"
 #include "Resource/ResourceMgr.h"
 #include "Utils/Math.hpp"
 #include "Utils/NoWarningCV.h"
-#include <MaaMsg.h>
 
 #include <tuple>
 

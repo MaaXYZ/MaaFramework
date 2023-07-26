@@ -1,7 +1,7 @@
 #pragma once
 
 #include "Utils/NonCopyable.hpp"
-#include "MaaConf.h"
+#include "Conf/Conf.h"
 
 #include <filesystem>
 #include <vector>

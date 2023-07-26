@@ -15,36 +15,41 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="maabusybox.cpp" />
+    <ClCompile Include="API\MaaToolKitAPI.cpp" />
+    <ClCompile Include="Config\Config.cpp" />
+    <ClCompile Include="Config\ConfigMgr.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="Config\Config.h" />
+    <ClInclude Include="Config\ConfigMgr.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>16.0</VCProjectVersion>
     <Keyword>Win32Proj</Keyword>
-    <ProjectGuid>{9E0A1B3F-6F4A-46D0-ACD1-826E943FE121}</ProjectGuid>
-    <RootNamespace>Tools</RootNamespace>
+    <ProjectGuid>{56FC5B20-B981-4737-80B5-EFA6701CD2F0}</ProjectGuid>
     <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
-    <ProjectName>Busybox</ProjectName>
+    <PreferredToolArchitecture>x64</PreferredToolArchitecture>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
-    <ConfigurationType>Application</ConfigurationType>
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
     <PlatformToolset>v143</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'" Label="Configuration">
-    <ConfigurationType>Application</ConfigurationType>
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
     <PlatformToolset>v143</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
-    <ConfigurationType>Application</ConfigurationType>
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
     <PlatformToolset>v143</PlatformToolset>
-    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <WholeProgramOptimization>false</WholeProgramOptimization>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
@@ -64,18 +69,21 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
-    <IncludePath>$(SolutionDir)include;$(SolutionDir)source\include;$(SolutionDir)source\MaaFramework\include;$(SolutionDir)3rdparty\include</IncludePath>
+    <IncludePath>$(ProjectDir)..\include;$(ProjectDir)..\..\include;$(ProjectDir)..\..\3rdparty\include;</IncludePath>
     <LibraryPath>$(SolutionDir)\$(Platform)\$(Configuration)\;$(LibraryPath)</LibraryPath>
+    <OutDir>$(SolutionDir)\$(Platform)\$(Configuration)\</OutDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">
     <LinkIncremental>false</LinkIncremental>
-    <IncludePath>$(SolutionDir)include;$(SolutionDir)source\include;$(SolutionDir)source\MaaFramework\include;$(SolutionDir)3rdparty\include</IncludePath>
+    <IncludePath>$(ProjectDir)..\include;$(ProjectDir)..\..\include;$(ProjectDir)..\..\3rdparty\include;</IncludePath>
     <LibraryPath>$(SolutionDir)\$(Platform)\$(Configuration)\;$(LibraryPath)</LibraryPath>
+    <OutDir>$(SolutionDir)\$(Platform)\$(Configuration)\</OutDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <LinkIncremental>false</LinkIncremental>
-    <IncludePath>$(SolutionDir)include;$(SolutionDir)source\include;$(SolutionDir)source\MaaFramework\include;$(SolutionDir)3rdparty\include</IncludePath>
+    <LinkIncremental>true</LinkIncremental>
+    <IncludePath>$(ProjectDir)..\include;$(ProjectDir)..\..\include;$(ProjectDir)..\..\3rdparty\include;</IncludePath>
     <LibraryPath>$(SolutionDir)\$(Platform)\$(Configuration)\;$(LibraryPath)</LibraryPath>
+    <OutDir>$(SolutionDir)\$(Platform)\$(Configuration)\</OutDir>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <ClCompile>
@@ -83,102 +91,79 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>NDEBUG;_CONSOLE;MAA_TOOLKIT_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp20</LanguageStandard>
-      <LanguageStandard_C>stdc17</LanguageStandard_C>
+      <LanguageStandard_C>stdc11</LanguageStandard_C>
       <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
       <Optimization>MinSpace</Optimization>
-      <AdditionalOptions>/utf-8 /MP %(AdditionalOptions)</AdditionalOptions>
+      <AdditionalOptions>/utf-8 /MP $(ExternalCompilerOptions) %(AdditionalOptions)</AdditionalOptions>
+      <TreatWarningAsError>true</TreatWarningAsError>
+      <AdditionalIncludeDirectories>$(ProjectDir);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <DisableSpecificWarnings>4251</DisableSpecificWarnings>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>MaaFramework.lib;MaaControlUnit.lib;MaaUtils.lib;opencv_world4.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <AdditionalLibraryDirectories>$(TargetDir);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>MaaUtils.lib;opencv_world4.lib;zlib.lib;ws2_32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <UACExecutionLevel>RequireAdministrator</UACExecutionLevel>
       <Profile>true</Profile>
+      <AdditionalOptions>/ignore:4286 %(AdditionalOptions)</AdditionalOptions>
     </Link>
-    <PostBuildEvent>
-      <Command>xcopy "$(SolutionDir)\assets\config\controller_config.json" "$(TargetDir)" /y
-
-
-
-xcopy "$(SolutionDir)\assets\resource" "$(TargetDir)" /s /e /y</Command>
-    </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">
     <ClCompile>
       <WarningLevel>Level4</WarningLevel>
-      <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>false</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>NDEBUG;_CONSOLE;MAA_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>NDEBUG;_CONSOLE;MAA_TOOLKIT_EXPORTS;MAA_DEBUG;MAA_DEBUG_DLL_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp20</LanguageStandard>
-      <LanguageStandard_C>stdc17</LanguageStandard_C>
+      <LanguageStandard_C>stdc11</LanguageStandard_C>
       <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
       <Optimization>Disabled</Optimization>
-      <AdditionalOptions>/utf-8 /MP %(AdditionalOptions)</AdditionalOptions>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
+      <AdditionalOptions>/utf-8 /MP $(ExternalCompilerOptions) %(AdditionalOptions)</AdditionalOptions>
+      <TreatWarningAsError>true</TreatWarningAsError>
+      <AdditionalIncludeDirectories>$(ProjectDir);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <DisableSpecificWarnings>4251</DisableSpecificWarnings>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>MaaFramework.lib;MaaControlUnit.lib;MaaUtils.lib;opencv_world4.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <AdditionalLibraryDirectories>$(TargetDir);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>MaaUtils.lib;opencv_world4.lib;zlib.lib;ws2_32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <UACExecutionLevel>RequireAdministrator</UACExecutionLevel>
       <Profile>true</Profile>
     </Link>
-    <PreLinkEvent>
-      <Command>
-      </Command>
-    </PreLinkEvent>
-    <PostBuildEvent>
-      <Command>xcopy "$(SolutionDir)\assets\config\controller_config.json" "$(TargetDir)" /y
-
-
-
-xcopy "$(SolutionDir)\assets\resource" "$(TargetDir)" /s /e /y</Command>
-    </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
       <WarningLevel>Level4</WarningLevel>
-      <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>false</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>_DEBUG;_CONSOLE;MAA_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_CONSOLE;_DEBUG;MAA_TOOLKIT_EXPORTS;MAA_DEBUG;MAA_DEBUG_DLL_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp20</LanguageStandard>
-      <LanguageStandard_C>stdc17</LanguageStandard_C>
+      <LanguageStandard_C>stdc11</LanguageStandard_C>
       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
       <Optimization>Disabled</Optimization>
-      <AdditionalOptions>/utf-8 /MP %(AdditionalOptions)</AdditionalOptions>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
+      <AdditionalOptions>/utf-8 /MP $(ExternalCompilerOptions) %(AdditionalOptions)</AdditionalOptions>
+      <TreatWarningAsError>true</TreatWarningAsError>
+      <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
+      <AdditionalIncludeDirectories>$(ProjectDir);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <DisableSpecificWarnings>4251</DisableSpecificWarnings>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
-      <EnableCOMDATFolding>true</EnableCOMDATFolding>
-      <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>MaaFramework.lib;MaaControlUnit.lib;MaaUtils.lib;opencv_world4d.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <AdditionalLibraryDirectories>$(TargetDir);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <Profile>true</Profile>
+      <AdditionalDependencies>MaaUtils.lib;opencv_world4d.lib;zlibd.lib;ws2_32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <UACExecutionLevel>RequireAdministrator</UACExecutionLevel>
     </Link>
-    <PreLinkEvent>
-      <Command>
-      </Command>
-    </PreLinkEvent>
-    <PostBuildEvent>
-      <Command>xcopy "$(SolutionDir)\assets\config\controller_config.json" "$(TargetDir)" /y
-
-
-
-xcopy "$(SolutionDir)\assets\resource" "$(TargetDir)" /s /e /y</Command>
-    </PostBuildEvent>
   </ItemDefinitionGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

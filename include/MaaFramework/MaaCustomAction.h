@@ -1,9 +1,9 @@
 #pragma once
 
-#include "MaaDef.h"
-#include "MaaPort.h"
+#include "MaaFramework/MaaDef.h"
+#include "MaaFramework/MaaPort.h"
 
-#include "MaaCustomRecognizer.h"
+#include "MaaFramework/MaaCustomRecognizer.h"
 
 #ifdef __cplusplus
 extern "C"

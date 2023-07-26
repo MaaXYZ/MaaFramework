@@ -1,8 +1,8 @@
 #pragma once
 
-#include "MaaConf.h"
+#include "Conf/Conf.h"
 
-#include "MaaDef.h"
+#include "MaaFramework/MaaDef.h"
 #include "Resource/PipelineTypes.h"
 
 MAA_TASK_NS_BEGIN

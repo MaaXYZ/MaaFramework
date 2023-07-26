@@ -1,6 +1,6 @@
 #pragma once
 
-#include "MaaConf.h"
+#include "Conf/Conf.h"
 
 #define MAA_FMT MAA_NS::MaaFormatNS
 #define MAA_FMT_NS_BEGIN \

@@ -1,7 +1,7 @@
 #pragma once
 
-#include "MaaDef.h"
-#include "MaaPort.h"
+#include "MaaFramework/MaaDef.h"
+#include "MaaFramework/MaaPort.h"
 
 #ifdef __cplusplus
 extern "C"

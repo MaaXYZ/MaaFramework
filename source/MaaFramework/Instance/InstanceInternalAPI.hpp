@@ -4,7 +4,7 @@
 #include <string>
 
 #include "Utils/NonCopyable.hpp"
-#include "MaaConf.h"
+#include "Conf/Conf.h"
 
 MAA_RES_NS_BEGIN
 class ResourceMgr;

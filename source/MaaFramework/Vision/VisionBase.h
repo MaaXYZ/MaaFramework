@@ -1,6 +1,6 @@
 #pragma once
 
-#include "MaaConf.h"
+#include "Conf/Conf.h"
 #include "Instance/InstanceInternalAPI.hpp"
 #include "Utils/NoWarningCVMat.h"
 

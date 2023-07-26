@@ -2,7 +2,7 @@
 
 #include <type_traits>
 
-#include "MaaConf.h"
+#include "Conf/Conf.h"
 #include "NonCopyable.hpp"
 
 MAA_NS_BEGIN

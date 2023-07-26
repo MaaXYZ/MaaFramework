@@ -1,7 +1,7 @@
 #include "InstanceMgr.h"
 
 #include "Controller/ControllerMgr.h"
-#include "MaaMsg.h"
+#include "MaaFramework/MaaMsg.h"
 #include "Utils/Logger.hpp"
 #include "Resource/ResourceMgr.h"
 #include "Task/CustomAction.h"

@@ -34,3 +34,9 @@
 #else
 #define MAA_UTILS_API MAA_DLL_IMPORT
 #endif
+
+#ifdef MAA_TOOLKIT_EXPORTS
+#define MAA_TOOLKIT_API MAA_DLL_EXPORT
+#else
+#define MAA_TOOLKIT_API MAA_DLL_IMPORT
+#endif

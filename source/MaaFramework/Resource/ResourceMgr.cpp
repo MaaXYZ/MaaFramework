@@ -2,7 +2,7 @@
 
 #include <tuple>
 
-#include "MaaMsg.h"
+#include "MaaFramework/MaaMsg.h"
 #include "Utils/Logger.hpp"
 
 MAA_RES_NS_BEGIN

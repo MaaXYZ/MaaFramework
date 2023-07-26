@@ -15,7 +15,7 @@
 #include <iconv.h>
 #endif
 
-#include "MaaConf.h"
+#include "Conf/Conf.h"
 
 MAA_NS_BEGIN
 

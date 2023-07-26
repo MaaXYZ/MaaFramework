@@ -9,8 +9,8 @@
 #include <tuple>
 #include <type_traits>
 
-#include "MaaConf.h"
-#include "MaaPort.h"
+#include "Conf/Conf.h"
+#include "MaaFramework/MaaPort.h"
 #include "Utils/Format.hpp"
 #include "Utils/Locale.hpp"
 #include "Utils/Platform.hpp"

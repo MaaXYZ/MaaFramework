@@ -5,7 +5,7 @@
 #include <optional>
 #include <string>
 
-#include "MaaConf.h"
+#include "Conf/Conf.h"
 
 MAA_CTRL_UNIT_NS_BEGIN
 

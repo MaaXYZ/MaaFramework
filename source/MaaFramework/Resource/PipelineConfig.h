@@ -7,7 +7,7 @@
 
 #include <meojson/json.hpp>
 
-#include "MaaConf.h"
+#include "Conf/Conf.h"
 #include "PipelineTypes.h"
 #include "TemplateConfig.h"
 

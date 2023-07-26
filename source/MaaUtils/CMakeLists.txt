@@ -1,4 +1,4 @@
-file(GLOB_RECURSE maa_utils_src *.h *.hpp *.cpp ../include/MaaUtils/*.hpp)
+file(GLOB_RECURSE maa_utils_src *.h *.hpp *.cpp ../include/Utils/*.hpp)
 
 add_library(MaaUtils SHARED ${maa_utils_src})
 target_include_directories(MaaUtils

@@ -4,7 +4,7 @@
 #include <optional>
 #include <string>
 
-#include "MaaConf.h"
+#include "Conf/Conf.h"
 #include "Utils/NoWarningCVMat.h"
 
 MAA_CTRL_UNIT_NS_BEGIN

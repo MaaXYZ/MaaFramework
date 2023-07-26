@@ -1,7 +1,7 @@
 #pragma once
 
-#include "MaaConf.h"
-#include "MaaDef.h"
+#include "Conf/Conf.h"
+#include "MaaFramework/MaaDef.h"
 
 #include <filesystem>
 #include <string>
