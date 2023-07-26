@@ -1,6 +1,6 @@
 #pragma once
 
-#ifdef _WIN32
+#if defined(_WIN32) && !defined(MAA_USE_BOOST_IO)
 #include "PlatformIO.h"
 
 #include "Utils/Platform/SafeWindows.h"

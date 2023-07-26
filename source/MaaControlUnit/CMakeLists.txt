@@ -13,6 +13,10 @@ if(WIN32)
 endif()
 
 target_compile_definitions(MaaControlUnit PRIVATE MAA_CONTROL_UNIT_EXPORTS)
+if (USE_BOOST_IO)
+    target_compile_definitions(MaaControlUnit PRIVATE MAA_USE_BOOST_IO)
+    target_link_libraries(MaaControlUnit Boost::system)
+endif ()
 
 add_dependencies(MaaControlUnit MaaUtils)
 

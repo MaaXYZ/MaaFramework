@@ -1,4 +1,4 @@
-#ifndef _WIN32
+#if !defined(_WIN32) && !defined(MAA_USE_BOOST_IO)
 
 #include "PosixIO.h"
 

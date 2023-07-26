@@ -1,12 +1,12 @@
 #pragma once
-#ifndef _WIN32
+#if !defined(_WIN32) && !defined(MAA_USE_BOOST_IO)
 
 #include "Utils/NonCopyable.hpp"
 
 #include <netinet/in.h>
 
-#include "Utils/SingletonHolder.hpp"
 #include "PlatformIO.h"
+#include "Utils/SingletonHolder.hpp"
 
 MAA_CTRL_UNIT_NS_BEGIN
 

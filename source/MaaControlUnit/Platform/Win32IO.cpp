@@ -1,4 +1,4 @@
-#ifdef _WIN32
+#if defined(_WIN32) && !defined(MAA_USE_BOOST_IO)
 #include "Win32IO.h"
 
 #include <ws2tcpip.h>
