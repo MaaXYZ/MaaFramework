@@ -36,7 +36,7 @@ source_group(TREE ${CMAKE_SOURCE_DIR} FILES ${maa_src})
 
 if (WIN32)
   add_custom_command(TARGET MaaFramework POST_BUILD
-    COMMAND ${CMAKE_COMMAND} -E copy -t $<TARGET_FILE_DIR:MaaFramework> $<TARGET_RUNTIME_DLLS:MaaFramework>
+    COMMAND ${CMAKE_COMMAND} -E copy $<TARGET_RUNTIME_DLLS:MaaFramework> $<TARGET_FILE_DIR:MaaFramework>
     COMMAND_EXPAND_LISTS
   )
 endif (WIN32)

@@ -35,10 +35,10 @@ typedef MaaId MaaTaskId;
 #define MaaInvalidId ((MaaId)0)
 
 typedef int32_t MaaOption;
-typedef MaaOption MaaGlobalOption;
 typedef void* MaaOptionValue;
 typedef uint64_t MaaOptionValueSize;
 
+typedef MaaOption MaaGlobalOption;
 enum MaaGlobalOptionEnum
 {
     MaaGlobalOption_Invalid = 0,
