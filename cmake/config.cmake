@@ -9,6 +9,7 @@ if (MSVC)
     add_compile_options("/MP")
     add_compile_options("/W4;/WX;/Gy;/permissive-;/sdl")
     add_compile_options("/wd4127")  # conditional expression is constant
+    add_compile_options("/wd4251")  # export dll with templates
 
     set(rel_debug_comp_options "/Od")
     add_compile_options("$<$<CONFIG:RelWithDebInfo>:${rel_debug_comp_options}>")

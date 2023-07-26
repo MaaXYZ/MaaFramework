@@ -34,7 +34,3 @@
 #else
 #define MAA_UTILS_API MAA_DLL_IMPORT
 #endif
-
-#ifdef _WIN32
-#pragma warning(disable : 4251)
-#endif
