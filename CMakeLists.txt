@@ -9,6 +9,7 @@ list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_LIST_DIR}/cmake/modules")
 
 set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 set(CMAKE_MAP_IMPORTED_CONFIG_RELWITHDEBINFO "RelWithDebInfo;Release;")
+set(Boost_NO_WARN_NEW_VERSIONS 1)
 
 option(BUILD_SAMPLE "build a demo" OFF)
 option(BUILD_BUSYBOX "build the busybox" OFF)
@@ -35,6 +36,7 @@ if(USE_MAADEPS)
 endif()
 
 find_package(OpenCV REQUIRED COMPONENTS core imgproc imgcodecs videoio)
+find_package(Boost REQUIRED COMPONENTS system regex)
 find_package(ZLIB REQUIRED)
 find_package(MaaDerpLearning REQUIRED)
 if(WITH_THRIFT)
