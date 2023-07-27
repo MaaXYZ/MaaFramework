@@ -81,15 +81,13 @@ DeviceResolution DeviceInfo::adjust_resolution_by_orientation(int v1, int v2)
     case 1:
     case 3:
         LogInfo << VAR(orientation_) << "as portrait";
-        width = std::min(v1, v2);
-        height = std::max(v1, v2);
+        std::tie(height, width) = std::minmax(v1, v2);
         break;
     case 0:
     case 2:
     default:
         LogInfo << VAR(orientation_) << "as landscape";
-        width = std::max(v1, v2);
-        height = std::min(v1, v2);
+        std::tie(width, height) = std::minmax(v1, v2);
         break;
     }
     return DeviceResolution { .width = width, .height = height };
