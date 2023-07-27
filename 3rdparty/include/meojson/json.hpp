@@ -6,10 +6,13 @@
 #include <memory>
 #include <optional>
 #include <ostream>
+#include <sstream>
 #include <string>
 #include <tuple>
 #include <variant>
 #include <vector>
+
+#include "packed_bytes.hpp"
 
 #define MEOJSON_INLINE inline
 
@@ -183,16 +186,16 @@ public:
     basic_value<string_t>& operator[](const string_t& key);
     basic_value<string_t>& operator[](string_t&& key);
 
-    basic_value<string_t> operator|(const basic_object<string_t>& rhs) &;
-    basic_value<string_t> operator|(basic_object<string_t>&& rhs) &;
+    basic_value<string_t> operator|(const basic_object<string_t>& rhs) const&;
+    basic_value<string_t> operator|(basic_object<string_t>&& rhs) const&;
     basic_value<string_t> operator|(const basic_object<string_t>& rhs) &&;
     basic_value<string_t> operator|(basic_object<string_t>&& rhs) &&;
 
     basic_value<string_t>& operator|=(const basic_object<string_t>& rhs);
     basic_value<string_t>& operator|=(basic_object<string_t>&& rhs);
 
-    basic_value<string_t> operator+(const basic_array<string_t>& rhs) &;
-    basic_value<string_t> operator+(basic_array<string_t>&& rhs) &;
+    basic_value<string_t> operator+(const basic_array<string_t>& rhs) const&;
+    basic_value<string_t> operator+(basic_array<string_t>&& rhs) const&;
     basic_value<string_t> operator+(const basic_array<string_t>& rhs) &&;
     basic_value<string_t> operator+(basic_array<string_t>&& rhs) &&;
 
@@ -321,8 +324,8 @@ public:
     const basic_value<string_t>& operator[](size_t pos) const;
     basic_value<string_t>& operator[](size_t pos);
 
-    basic_array<string_t> operator+(const basic_array<string_t>& rhs) &;
-    basic_array<string_t> operator+(basic_array<string_t>&& rhs) &;
+    basic_array<string_t> operator+(const basic_array<string_t>& rhs) const&;
+    basic_array<string_t> operator+(basic_array<string_t>&& rhs) const&;
     basic_array<string_t> operator+(const basic_array<string_t>& rhs) &&;
     basic_array<string_t> operator+(basic_array<string_t>&& rhs) &&;
 
@@ -427,8 +430,8 @@ public:
     basic_value<string_t>& operator[](const string_t& key);
     basic_value<string_t>& operator[](string_t&& key);
 
-    basic_object<string_t> operator|(const basic_object<string_t>& rhs) &;
-    basic_object<string_t> operator|(basic_object<string_t>&& rhs) &;
+    basic_object<string_t> operator|(const basic_object<string_t>& rhs) const&;
+    basic_object<string_t> operator|(basic_object<string_t>&& rhs) const&;
     basic_object<string_t> operator|(const basic_object<string_t>& rhs) &&;
     basic_object<string_t> operator|(basic_object<string_t>&& rhs) &&;
 
@@ -460,7 +463,8 @@ private:
 // *      parser declare      *
 // ****************************
 
-template <typename string_t = default_string_t, typename parsing_t = void>
+template <typename string_t = default_string_t, typename parsing_t = void,
+          typename accel_traits = packed_bytes_trait_max>
 class parser
 {
 public:
@@ -488,6 +492,7 @@ private:
     // parse and return a string_t
     std::optional<string_t> parse_stdstring();
 
+    void skip_string_literal();
     bool skip_whitespace() noexcept;
     bool skip_digit();
 
@@ -557,6 +562,9 @@ namespace literals
 
 template <typename string_t = default_string_t>
 const basic_value<string_t> invalid_value();
+
+template <bool loose, typename any_t, typename string_t = default_string_t>
+basic_value<string_t> serialize(any_t&& arg);
 
 // ******************************
 // *      basic_value impl      *
@@ -1205,13 +1213,13 @@ MEOJSON_INLINE basic_value<string_t>& basic_value<string_t>::operator[](string_t
 }
 
 template <typename string_t>
-MEOJSON_INLINE basic_value<string_t> basic_value<string_t>::operator|(const basic_object<string_t>& rhs) &
+MEOJSON_INLINE basic_value<string_t> basic_value<string_t>::operator|(const basic_object<string_t>& rhs) const&
 {
     return as_object() | rhs;
 }
 
 template <typename string_t>
-MEOJSON_INLINE basic_value<string_t> basic_value<string_t>::operator|(basic_object<string_t>&& rhs) &
+MEOJSON_INLINE basic_value<string_t> basic_value<string_t>::operator|(basic_object<string_t>&& rhs) const&
 {
     return as_object() | std::move(rhs);
 }
@@ -1243,13 +1251,13 @@ MEOJSON_INLINE basic_value<string_t>& basic_value<string_t>::operator|=(basic_ob
 }
 
 template <typename string_t>
-MEOJSON_INLINE basic_value<string_t> basic_value<string_t>::operator+(const basic_array<string_t>& rhs) &
+MEOJSON_INLINE basic_value<string_t> basic_value<string_t>::operator+(const basic_array<string_t>& rhs) const&
 {
     return as_array() + rhs;
 }
 
 template <typename string_t>
-MEOJSON_INLINE basic_value<string_t> basic_value<string_t>::operator+(basic_array<string_t>&& rhs) &
+MEOJSON_INLINE basic_value<string_t> basic_value<string_t>::operator+(basic_array<string_t>&& rhs) const&
 {
     return as_array() + std::move(rhs);
 }
@@ -1573,7 +1581,7 @@ MEOJSON_INLINE const basic_value<string_t>& basic_array<string_t>::operator[](si
 }
 
 template <typename string_t>
-MEOJSON_INLINE basic_array<string_t> basic_array<string_t>::operator+(const basic_array<string_t>& rhs) &
+MEOJSON_INLINE basic_array<string_t> basic_array<string_t>::operator+(const basic_array<string_t>& rhs) const&
 {
     basic_array<string_t> temp = *this;
     temp._array_data.insert(_array_data.end(), rhs.begin(), rhs.end());
@@ -1581,7 +1589,7 @@ MEOJSON_INLINE basic_array<string_t> basic_array<string_t>::operator+(const basi
 }
 
 template <typename string_t>
-MEOJSON_INLINE basic_array<string_t> basic_array<string_t>::operator+(basic_array<string_t>&& rhs) &
+MEOJSON_INLINE basic_array<string_t> basic_array<string_t>::operator+(basic_array<string_t>&& rhs) const&
 {
     basic_array<string_t> temp = *this;
     temp._array_data.insert(_array_data.end(), std::make_move_iterator(rhs.begin()),
@@ -1858,7 +1866,7 @@ MEOJSON_INLINE basic_value<string_t>& basic_object<string_t>::operator[](string_
 }
 
 template <typename string_t>
-MEOJSON_INLINE basic_object<string_t> basic_object<string_t>::operator|(const basic_object<string_t>& rhs) &
+MEOJSON_INLINE basic_object<string_t> basic_object<string_t>::operator|(const basic_object<string_t>& rhs) const&
 {
     basic_object<string_t> temp = *this;
     temp._object_data.insert(rhs.begin(), rhs.end());
@@ -1866,7 +1874,7 @@ MEOJSON_INLINE basic_object<string_t> basic_object<string_t>::operator|(const ba
 }
 
 template <typename string_t>
-MEOJSON_INLINE basic_object<string_t> basic_object<string_t>::operator|(basic_object<string_t>&& rhs) &
+MEOJSON_INLINE basic_object<string_t> basic_object<string_t>::operator|(basic_object<string_t>&& rhs) const&
 {
     basic_object<string_t> temp = *this;
     // temp._object_data.merge(std::move(rhs._object_data));
@@ -1913,14 +1921,15 @@ MEOJSON_INLINE bool basic_object<string_t>::operator==(const basic_object<string
 // *      parser impl      *
 // *************************
 
-template <typename string_t, typename parsing_t>
-MEOJSON_INLINE std::optional<basic_value<string_t>> parser<string_t, parsing_t>::parse(const parsing_t& content)
+template <typename string_t, typename parsing_t, typename accel_traits>
+MEOJSON_INLINE std::optional<basic_value<string_t>> parser<string_t, parsing_t, accel_traits>::parse(
+    const parsing_t& content)
 {
-    return parser<string_t, parsing_t>(content.cbegin(), content.cend()).parse();
+    return parser<string_t, parsing_t, accel_traits>(content.cbegin(), content.cend()).parse();
 }
 
-template <typename string_t, typename parsing_t>
-MEOJSON_INLINE std::optional<basic_value<string_t>> parser<string_t, parsing_t>::parse()
+template <typename string_t, typename parsing_t, typename accel_traits>
+MEOJSON_INLINE std::optional<basic_value<string_t>> parser<string_t, parsing_t, accel_traits>::parse()
 {
     if (!skip_whitespace()) {
         return std::nullopt;
@@ -1951,8 +1960,8 @@ MEOJSON_INLINE std::optional<basic_value<string_t>> parser<string_t, parsing_t>:
     return result_value;
 }
 
-template <typename string_t, typename parsing_t>
-MEOJSON_INLINE basic_value<string_t> parser<string_t, parsing_t>::parse_value()
+template <typename string_t, typename parsing_t, typename accel_traits>
+MEOJSON_INLINE basic_value<string_t> parser<string_t, parsing_t, accel_traits>::parse_value()
 {
     switch (*_cur) {
     case 'n':
@@ -1983,8 +1992,8 @@ MEOJSON_INLINE basic_value<string_t> parser<string_t, parsing_t>::parse_value()
     }
 }
 
-template <typename string_t, typename parsing_t>
-MEOJSON_INLINE basic_value<string_t> parser<string_t, parsing_t>::parse_null()
+template <typename string_t, typename parsing_t, typename accel_traits>
+MEOJSON_INLINE basic_value<string_t> parser<string_t, parsing_t, accel_traits>::parse_null()
 {
     for (const auto& ch : null_string<string_t>()) {
         if (*_cur == ch) {
@@ -1998,8 +2007,8 @@ MEOJSON_INLINE basic_value<string_t> parser<string_t, parsing_t>::parse_null()
     return basic_value<string_t>();
 }
 
-template <typename string_t, typename parsing_t>
-MEOJSON_INLINE basic_value<string_t> parser<string_t, parsing_t>::parse_boolean()
+template <typename string_t, typename parsing_t, typename accel_traits>
+MEOJSON_INLINE basic_value<string_t> parser<string_t, parsing_t, accel_traits>::parse_boolean()
 {
     switch (*_cur) {
     case 't':
@@ -2027,8 +2036,8 @@ MEOJSON_INLINE basic_value<string_t> parser<string_t, parsing_t>::parse_boolean(
     }
 }
 
-template <typename string_t, typename parsing_t>
-MEOJSON_INLINE basic_value<string_t> parser<string_t, parsing_t>::parse_number()
+template <typename string_t, typename parsing_t, typename accel_traits>
+MEOJSON_INLINE basic_value<string_t> parser<string_t, parsing_t, accel_traits>::parse_number()
 {
     const auto first = _cur;
     if (*_cur == '-') {
@@ -2066,8 +2075,8 @@ MEOJSON_INLINE basic_value<string_t> parser<string_t, parsing_t>::parse_number()
     return basic_value<string_t>(basic_value<string_t>::value_type::number, string_t(first, _cur));
 }
 
-template <typename string_t, typename parsing_t>
-MEOJSON_INLINE basic_value<string_t> parser<string_t, parsing_t>::parse_string()
+template <typename string_t, typename parsing_t, typename accel_traits>
+MEOJSON_INLINE basic_value<string_t> parser<string_t, parsing_t, accel_traits>::parse_string()
 {
     auto string_opt = parse_stdstring();
     if (!string_opt) {
@@ -2076,8 +2085,8 @@ MEOJSON_INLINE basic_value<string_t> parser<string_t, parsing_t>::parse_string()
     return basic_value<string_t>(basic_value<string_t>::value_type::string, std::move(string_opt).value());
 }
 
-template <typename string_t, typename parsing_t>
-MEOJSON_INLINE basic_value<string_t> parser<string_t, parsing_t>::parse_array()
+template <typename string_t, typename parsing_t, typename accel_traits>
+MEOJSON_INLINE basic_value<string_t> parser<string_t, parsing_t, accel_traits>::parse_array()
 {
     if (*_cur == '[') {
         ++_cur;
@@ -2127,8 +2136,8 @@ MEOJSON_INLINE basic_value<string_t> parser<string_t, parsing_t>::parse_array()
     return basic_array<string_t>(std::move(result));
 }
 
-template <typename string_t, typename parsing_t>
-MEOJSON_INLINE basic_value<string_t> parser<string_t, parsing_t>::parse_object()
+template <typename string_t, typename parsing_t, typename accel_traits>
+MEOJSON_INLINE basic_value<string_t> parser<string_t, parsing_t, accel_traits>::parse_object()
 {
     if (*_cur == '{') {
         ++_cur;
@@ -2191,8 +2200,8 @@ MEOJSON_INLINE basic_value<string_t> parser<string_t, parsing_t>::parse_object()
     return basic_object<string_t>(std::move(result));
 }
 
-template <typename string_t, typename parsing_t>
-MEOJSON_INLINE std::optional<string_t> parser<string_t, parsing_t>::parse_stdstring()
+template <typename string_t, typename parsing_t, typename accel_traits>
+MEOJSON_INLINE std::optional<string_t> parser<string_t, parsing_t, accel_traits>::parse_stdstring()
 {
     if (*_cur == '"') {
         ++_cur;
@@ -2205,6 +2214,11 @@ MEOJSON_INLINE std::optional<string_t> parser<string_t, parsing_t>::parse_stdstr
     auto no_escape_beg = _cur;
 
     while (_cur != _end) {
+        if constexpr (sizeof(*_cur) == 1) {
+            if constexpr (accel_traits::available) {
+                skip_string_literal();
+            }
+        }
         switch (*_cur) {
         case '\t':
         case '\r':
@@ -2262,8 +2276,30 @@ MEOJSON_INLINE std::optional<string_t> parser<string_t, parsing_t>::parse_stdstr
     return std::nullopt;
 }
 
-template <typename string_t, typename parsing_t>
-MEOJSON_INLINE bool parser<string_t, parsing_t>::skip_whitespace() noexcept
+template <typename string_t, typename parsing_t, typename accel_traits>
+MEOJSON_INLINE void parser<string_t, parsing_t, accel_traits>::skip_string_literal()
+{
+    if constexpr (sizeof(*_cur) != 1) {
+        return;
+    }
+    while (_end - _cur >= accel_traits::step) {
+        auto pack = accel_traits::load_unaligned(&(*_cur));
+        auto result = accel_traits::less(pack, 32);
+        result = accel_traits::bitwise_or(result, accel_traits::equal(pack, static_cast<uint8_t>('"')));
+        result = accel_traits::bitwise_or(result, accel_traits::equal(pack, static_cast<uint8_t>('\\')));
+        if (accel_traits::is_all_zero(result)) {
+            _cur += accel_traits::step;
+        }
+        else {
+            auto index = accel_traits::first_nonzero_byte(result);
+            _cur += index;
+            break;
+        }
+    }
+}
+
+template <typename string_t, typename parsing_t, typename accel_traits>
+MEOJSON_INLINE bool parser<string_t, parsing_t, accel_traits>::skip_whitespace() noexcept
 {
     while (_cur != _end) {
         switch (*_cur) {
@@ -2282,8 +2318,8 @@ MEOJSON_INLINE bool parser<string_t, parsing_t>::skip_whitespace() noexcept
     return false;
 }
 
-template <typename string_t, typename parsing_t>
-MEOJSON_INLINE bool parser<string_t, parsing_t>::skip_digit()
+template <typename string_t, typename parsing_t, typename accel_traits>
+MEOJSON_INLINE bool parser<string_t, parsing_t, accel_traits>::skip_digit()
 {
     // At least one digit
     if (_cur != _end && std::isdigit(*_cur)) {
@@ -2474,6 +2510,113 @@ template <typename string_t>
 MEOJSON_INLINE const basic_value<string_t> invalid_value()
 {
     return basic_value<string_t>(basic_value<string_t>::value_type::invalid, typename basic_value<string_t>::var_t());
+}
+
+namespace _serialization_helper
+{
+    template <typename T>
+    class has_output_operator
+    {
+        template <typename U>
+        static auto test(int) -> decltype(std::declval<std::ostream&>() << std::declval<U>(), std::true_type());
+
+        template <typename U>
+        static std::false_type test(...);
+
+    public:
+        static constexpr bool value = decltype(test<T>(0))::value;
+    };
+
+    template <typename...>
+    using void_t = void;
+
+    template <typename T, typename = void>
+    constexpr bool is_container = false;
+    template <typename T>
+    constexpr bool is_container<
+        T, void_t<typename T::value_type, decltype(std::declval<T>().begin()), decltype(std::declval<T>().end())>> =
+        true;
+
+    // something like a map
+    template <typename T, typename = void>
+    constexpr bool is_associative_container = false;
+    template <typename T>
+    constexpr bool is_associative_container<T, void_t<typename T::key_type, typename T::mapped_type>> = is_container<T>;
+
+    // something like a vector
+    template <typename T, typename = void>
+    constexpr bool is_sequence_container = false;
+    template <typename T>
+    constexpr bool is_sequence_container<T> = is_container<T> && !is_associative_container<T>;
+
+    template <typename input_t, typename string_t>
+    MEOJSON_INLINE string_t to_stream_string(input_t&& arg)
+    {
+        if constexpr (has_output_operator<input_t>::value) {
+            using char_t = typename string_t::value_type;
+            using stringstream_t = std::basic_stringstream<char_t, std::char_traits<char_t>, std::allocator<char_t>>;
+
+            stringstream_t ss;
+            ss << std::forward<input_t>(arg);
+            return std::move(ss).str();
+        }
+        else {
+            static_assert(!sizeof(input_t), "Unable to convert type to string, there is no operator <<.");
+        }
+    }
+
+    template <bool loose, typename input_t, typename string_t>
+    MEOJSON_INLINE string_t to_string(input_t&& arg)
+    {
+        if constexpr (std::is_constructible_v<string_t, input_t>) {
+            return arg;
+        }
+        else if constexpr (loose) {
+            return to_stream_string<input_t, string_t>(std::forward<input_t>(arg));
+        }
+        else {
+            static_assert(!sizeof(input_t), "Unable to convert type to string.");
+        }
+    }
+}
+
+template <bool loose, typename any_t, typename string_t>
+MEOJSON_INLINE basic_value<string_t> serialize(any_t&& arg)
+{
+    using namespace _serialization_helper;
+
+    if constexpr (std::is_constructible_v<basic_value<string_t>, any_t>) {
+        return arg;
+    }
+    else if constexpr (std::is_constructible_v<basic_array<string_t>, any_t>) {
+        return basic_array<string_t>(std::forward<any_t>(arg));
+    }
+    else if constexpr (std::is_constructible_v<basic_object<string_t>, any_t>) {
+        return basic_object<string_t>(std::forward<any_t>(arg));
+    }
+    else if constexpr (is_sequence_container<std::decay_t<any_t>>) {
+        basic_value<string_t> result;
+        for (auto&& val : arg) {
+            using value_t = decltype(val);
+
+            result.emplace(serialize<loose, value_t, string_t>(std::forward<value_t>(val)));
+        }
+        return result;
+    }
+    else if constexpr (is_associative_container<std::decay_t<any_t>>) {
+        basic_value<string_t> result;
+        for (auto&& [key, val] : arg) {
+            using key_t = decltype(key);
+            using value_t = decltype(val);
+
+            result.emplace(to_string<loose, key_t, string_t>(std::forward<key_t>(key)),
+                           serialize<loose, value_t, string_t>(std::forward<value_t>(val)));
+        }
+        return result;
+    }
+    else {
+        return to_string<loose, any_t, string_t>(std::forward<any_t>(arg));
+    }
 }
 
 template <typename string_t>

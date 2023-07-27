@@ -1,4 +1,4 @@
-#include "MaaAPI.h"
+#include "MaaFramework/MaaAPI.h"
 
 #include <filesystem>
 #include <fstream>
@@ -16,14 +16,16 @@ std::string adb_address = "127.0.0.1:5555";
 std::string adb_config;
 
 std::string debug_dir;
-std::string cache_dir;
 std::string resource_dir;
 
-std::string task_name;
+std::string task_name = "StartUp";
 
 int main([[maybe_unused]] int argc, char** argv)
 {
     const auto cur_dir = std::filesystem::path(argv[0]).parent_path();
+
+    debug_dir = (cur_dir / "debug").string();
+    resource_dir = (cur_dir / "resource").string();
 
     if (argc >= 3) {
         adb = argv[1];
@@ -32,18 +34,9 @@ int main([[maybe_unused]] int argc, char** argv)
     if (argc >= 4) {
         resource_dir = argv[3];
     }
-    else {
-        resource_dir = (cur_dir / "resource").string();
-    }
     if (argc >= 5) {
         task_name = argv[4];
     }
-    else {
-        task_name = "StartUp";
-    }
-
-    debug_dir = (cur_dir / "debug").string();
-    cache_dir = (cur_dir / "cache").string();
 
     adb_config = read_adb_config(cur_dir);
 
@@ -58,7 +51,7 @@ int main([[maybe_unused]] int argc, char** argv)
 bool demo_waiting()
 {
     auto maa_handle = MaaCreate(nullptr, nullptr);
-    auto resource_handle = MaaResourceCreate(cache_dir.c_str(), nullptr, nullptr);
+    auto resource_handle = MaaResourceCreate(nullptr, nullptr);
     auto controller_handle =
         MaaAdbControllerCreate(adb.c_str(), adb_address.c_str(),
                                MaaAdbControllerType_Input_Preset_Adb | MaaAdbControllerType_Screencap_RawWithGzip,
@@ -97,7 +90,7 @@ bool demo_waiting()
 
 bool demo_polling()
 {
-    auto resource_handle = MaaResourceCreate(cache_dir.c_str(), nullptr, nullptr);
+    auto resource_handle = MaaResourceCreate(nullptr, nullptr);
     auto resource_id = MaaResourcePostResource(resource_handle, resource_dir.c_str());
 
     auto controller_handle =
