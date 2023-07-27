@@ -14,12 +14,12 @@
 
 ## 拆库及解耦
 
-- [MaaFramework](https://github.com/MaaAssistantArknights/MaaFramework)  
+- [MaaFramework](https://github.com/MaaAssistantArknights/MaaFramework/tree/main/include/MaaFramework)  
   技术栈：C++ / Vision  
   通用 图像识别 + 控制 框架，~~Json 解释器~~，不涉及具体待测软件业务逻辑  
   目前整体架构已基本完成，更多功能持续更新中！
 
-- [MaaToolKit](https://github.com/MaaAssistantArknights/MaaToolKit)  
+- [MaaToolKit](https://github.com/MaaAssistantArknights/MaaFramework/tree/main/include/MaaToolKit)  
   技术栈：C# / RPC / ......  
   平台相关上层业务，~~也就是现在每个 UI 都写了一遍的逻辑~~  
   Http / WS APIs, 模拟器控制、端口查找、定时任务、版本更新、资源下载……  
