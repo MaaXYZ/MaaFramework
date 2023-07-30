@@ -11,7 +11,7 @@ set_target_properties(MaaToolKit PROPERTIES
 )
 target_compile_definitions(MaaToolKit PRIVATE MAA_TOOLKIT_EXPORTS)
 
-target_link_libraries(MaaToolKit MaaFramework MaaUtils HeaderOnlyLibraries Boost::system)
+target_link_libraries(MaaToolKit MaaFramework MaaUtils HeaderOnlyLibraries Boost::system Boost::url)
 
 install(TARGETS MaaToolKit
     RUNTIME DESTINATION bin

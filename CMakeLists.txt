@@ -34,7 +34,7 @@ endif()
 
 find_package(OpenCV REQUIRED COMPONENTS core imgproc imgcodecs videoio)
 if (USE_BOOST_IO)
-find_package(Boost REQUIRED COMPONENTS system)
+find_package(Boost REQUIRED COMPONENTS system url)
 endif (USE_BOOST_IO)
 find_package(ZLIB REQUIRED)
 find_package(MaaDerpLearning REQUIRED)

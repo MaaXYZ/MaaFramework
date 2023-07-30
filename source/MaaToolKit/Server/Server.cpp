@@ -1,4 +1,5 @@
 #include "Server.h"
+#include <meojson/json.hpp>
 
 using tcp = boost::asio::ip::tcp;
 
@@ -20,10 +21,14 @@ boost::beast::http::message_generator handleRequest(
         return res;
     };
 
-    std::ostringstream oss;
-    oss << "{ \"target\": \"" << request.target() << "\" }";
+    auto fakeUrl = std::string("http://localhost");
+    fakeUrl.append(request.target().begin(), request.target().end());
 
-    return respOk(oss.str());
+    auto u = boost::urls::parse_uri(std::string_view(fakeUrl)).value();
+
+    auto resp = json::object { { "path", u.path() } };
+
+    return respOk(resp.to_string());
 }
 
 void handleSession(tcp::socket& socket)

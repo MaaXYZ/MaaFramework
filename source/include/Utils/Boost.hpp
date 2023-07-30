@@ -14,4 +14,5 @@ MAA_SUPPRESS_BOOST_WARNINGS_BEGIN
 #include <boost/asio.hpp>
 #include <boost/beast.hpp>
 #include <boost/process.hpp>
+#include <boost/url.hpp>
 MAA_SUPPRESS_BOOST_WARNINGS_END
