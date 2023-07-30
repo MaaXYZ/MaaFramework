@@ -21,6 +21,11 @@
     MAA_DO_PRAGMA(warning(push))       \
     MAA_DO_PRAGMA(warning(disable : 5054 4251 4305 4275 4100 4244 4127))
 #define MAA_SUPPRESS_CV_WARNINGS_END MAA_DO_PRAGMA(warning(pop))
+
+#define MAA_SUPPRESS_BOOST_WARNINGS_BEGIN \
+    MAA_DO_PRAGMA(warning(push))          \
+    MAA_DO_PRAGMA(warning(disable : 4702))
+#define MAA_SUPPRESS_BOOST_WARNINGS_END MAA_DO_PRAGMA(warning(pop))
 #elif defined(__clang__)
 #define MAA_SUPPRESS_CV_WARNINGS_BEGIN                                               \
     MAA_DO_PRAGMA(clang diagnostic push)                                             \

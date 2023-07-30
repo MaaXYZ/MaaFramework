@@ -56,6 +56,7 @@ endif (BUILD_EXTENSION)
 
 if (BUILD_SAMPLE)
     add_subdirectory(sample/cpp)
+    add_subdirectory(sample/server)
 endif (BUILD_SAMPLE)
 
 # if (BUILD_BUSYBOX)

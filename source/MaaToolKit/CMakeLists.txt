@@ -2,16 +2,16 @@ file(GLOB_RECURSE maa_toolkit_src *.h *.hpp *.cpp ../include)
 
 add_library(MaaToolKit SHARED ${maa_toolkit_src})
 
-target_include_directories(MaaToolKit
-    PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}
-            ${CMAKE_CURRENT_SOURCE_DIR}/../include
-            ${CMAKE_CURRENT_SOURCE_DIR}/../../include)
+file(GLOB MaaToolKit_PUBLIC_HEADERS ${CMAKE_CURRENT_SOURCE_DIR}/../../include/*.h)
+set(MaaToolKit_INCLUDE ${CMAKE_CURRENT_SOURCE_DIR}/../../include)
 
-target_link_libraries(MaaToolKit MaaFramework MaaUtils HeaderOnlyLibraries ${OpenCV_LIBS})
-
+target_include_directories(MaaToolKit INTERFACE ../../include PRIVATE . ../include ../../include)
+set_target_properties(MaaToolKit PROPERTIES
+    PUBLIC_HEADER "${MaaToolKit_PUBLIC_HEADERS}"
+)
 target_compile_definitions(MaaToolKit PRIVATE MAA_TOOLKIT_EXPORTS)
 
-add_dependencies(MaaToolKit MaaFramework)
+target_link_libraries(MaaToolKit MaaFramework MaaUtils HeaderOnlyLibraries Boost::system)
 
 install(TARGETS MaaToolKit
     RUNTIME DESTINATION bin
