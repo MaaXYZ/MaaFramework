@@ -1,7 +1,7 @@
 #include "FastestWay.h"
 
-#include "Utils/Logger.hpp"
 #include "Utils/Format.hpp"
+#include "Utils/Logger.hpp"
 #include "Utils/NoWarningCV.h"
 
 MAA_CTRL_UNIT_NS_BEGIN
@@ -32,12 +32,12 @@ bool ScreencapFastestWay::parse(const json::value& config)
     return ret;
 }
 
-bool ScreencapFastestWay::init(int w, int h)
+bool ScreencapFastestWay::init(int swidth, int sheight)
 {
     LogFunc;
 
     for (auto pair : units_) {
-        pair.second->init(w, h);
+        pair.second->init(swidth, sheight);
     }
 
     return speed_test();
@@ -52,6 +52,14 @@ void ScreencapFastestWay::deinit()
     }
 
     method_ = Method::UnknownYet;
+}
+
+void ScreencapFastestWay::set_wh(int swidth, int sheight)
+{
+    LogFunc;
+    for (auto pair : units_) {
+        pair.second->set_wh(swidth, sheight);
+    }
 }
 
 std::optional<cv::Mat> ScreencapFastestWay::screencap()

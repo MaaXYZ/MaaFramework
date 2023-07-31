@@ -22,8 +22,6 @@ public: // from DeviceInfoAPI
     virtual int get_orientation() const override { return orientation_; }
 
 private:
-    DeviceResolution adjust_resolution_by_orientation(int v1, int v2);
-
     Argv uuid_argv_;
     Argv resolution_argv_;
     Argv orientation_argv_;

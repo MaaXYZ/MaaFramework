@@ -10,9 +10,9 @@ bool ScreencapRawByNetcat::parse(const json::value& config)
            parse_argv("NetcatAddress", config, netcat_address_argv_);
 }
 
-bool ScreencapRawByNetcat::init(int w, int h)
+bool ScreencapRawByNetcat::init(int swidth, int sheight)
 {
-    screencap_helper_.set_wh(w, h);
+    set_wh(swidth, sheight);
 
     if (!io_ptr_) {
         LogError << "io_ptr is nullptr";

@@ -58,13 +58,13 @@ enum MaaCtrlOptionEnum
 {
     MaaCtrlOption_Invalid = 0,
 
-    // Only one of width and height can be set, and the other is automatically scaled according to the aspect ratio.
+    // Only one of long and short side can be set, and the other is automatically scaled according to the aspect ratio.
     // value: int, eg: 1920; val_size: sizeof(int)
-    MaaCtrlOption_ScreenshotTargetWidth = 1,
+    MaaCtrlOption_ScreenshotTargetLongSide = 1,
 
-    // Only one of width and height can be set, and the other is automatically scaled according to the aspect ratio.
-    // value: int, eg: 1920; val_size: sizeof(int)
-    MaaCtrlOption_ScreenshotTargetHeight = 2,
+    // Only one of long and short side can be set, and the other is automatically scaled according to the aspect ratio.
+    // value: int, eg: 1080; val_size: sizeof(int)
+    MaaCtrlOption_ScreenshotTargetShortSide = 2,
 
     // For StartApp
     // value: string, eg: "com.hypergryph.arknights/com.u8.sdk.U8UnityContext"; val_size: string length

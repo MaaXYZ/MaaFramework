@@ -31,8 +31,6 @@ std::optional<DeviceResolution> DeviceInfo::request_resolution()
 {
     LogFunc;
 
-    request_orientation();
-
     auto cmd_ret = command(resolution_argv_.gen(argv_replace_));
 
     if (!cmd_ret) {
@@ -40,10 +38,7 @@ std::optional<DeviceResolution> DeviceInfo::request_resolution()
     }
 
     std::istringstream iss(cmd_ret.value());
-    int v1 = 0, v2 = 0;
-    iss >> v1 >> v2;
-
-    resolution_ = adjust_resolution_by_orientation(v1, v2);
+    iss >> resolution_.width >> resolution_.height;
     return resolution_;
 }
 
@@ -72,25 +67,6 @@ std::optional<int> DeviceInfo::request_orientation()
 
     orientation_ = ori;
     return orientation_;
-}
-
-DeviceResolution DeviceInfo::adjust_resolution_by_orientation(int v1, int v2)
-{
-    int width = 0, height = 0;
-    switch (orientation_) {
-    case 1:
-    case 3:
-        LogInfo << VAR(orientation_) << "as portrait";
-        std::tie(height, width) = std::minmax(v1, v2);
-        break;
-    case 0:
-    case 2:
-    default:
-        LogInfo << VAR(orientation_) << "as landscape";
-        std::tie(width, height) = std::minmax(v1, v2);
-        break;
-    }
-    return DeviceResolution { .width = width, .height = height };
 }
 
 MAA_CTRL_UNIT_NS_END

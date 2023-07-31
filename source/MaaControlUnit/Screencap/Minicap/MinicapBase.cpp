@@ -1,7 +1,7 @@
 #include "MinicapBase.h"
 
-#include "Utils/Logger.hpp"
 #include "Utils/Format.hpp"
+#include "Utils/Logger.hpp"
 #include "Utils/NoWarningCV.h"
 #include "Utils/Ranges.hpp"
 
@@ -56,7 +56,8 @@ bool MinicapBase::parse(const json::value& config)
 
         arch_list_.clear();
         arch_list_.reserve(arr.size());
-        MAA_RNS::ranges::transform(arr, std::back_inserter(arch_list_), [](const json::value& val) { return val.as_string(); });
+        MAA_RNS::ranges::transform(arr, std::back_inserter(arch_list_),
+                                   [](const json::value& val) { return val.as_string(); });
     }
 
     {
@@ -78,7 +79,8 @@ bool MinicapBase::parse(const json::value& config)
 
         sdk_list_.clear();
         sdk_list_.reserve(arr.size());
-        MAA_RNS::ranges::transform(arr, std::back_inserter(sdk_list_), [](const json::value& val) { return val.as_integer(); });
+        MAA_RNS::ranges::transform(arr, std::back_inserter(sdk_list_),
+                                   [](const json::value& val) { return val.as_integer(); });
     }
 
     return binary_->parse(config) && library_->parse(config);
@@ -86,7 +88,7 @@ bool MinicapBase::parse(const json::value& config)
 
 // x86_64的prebuilt里面的library是32位的, 用不了
 // arm64-v8会卡住, 不知道原因
-bool MinicapBase::init(int w, int h)
+bool MinicapBase::init(int swidth, int sheight)
 {
     LogFunc;
 
@@ -130,7 +132,7 @@ bool MinicapBase::init(int w, int h)
         return false;
     }
 
-    screencap_helper_.set_wh(w, h);
+    set_wh(swidth, sheight);
     return true;
 }
 

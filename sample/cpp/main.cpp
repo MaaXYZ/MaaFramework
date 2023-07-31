@@ -60,7 +60,7 @@ bool demo_waiting()
     MaaBindResource(maa_handle, resource_handle);
     MaaBindController(maa_handle, controller_handle);
     int height = 720;
-    MaaControllerSetOption(controller_handle, MaaCtrlOption_ScreenshotTargetHeight, reinterpret_cast<void*>(&height),
+    MaaControllerSetOption(controller_handle, MaaCtrlOption_ScreenshotTargetShortSide, reinterpret_cast<void*>(&height),
                            sizeof(int));
 
     auto resource_id = MaaResourcePostResource(resource_handle, resource_dir.c_str());
@@ -99,7 +99,7 @@ bool demo_polling()
                                adb_config.c_str(), nullptr, nullptr);
     auto connection_id = MaaControllerPostConnection(controller_handle);
     int height = 720;
-    MaaControllerSetOption(controller_handle, MaaCtrlOption_ScreenshotTargetHeight, reinterpret_cast<void*>(&height),
+    MaaControllerSetOption(controller_handle, MaaCtrlOption_ScreenshotTargetShortSide, reinterpret_cast<void*>(&height),
                            sizeof(int));
     for (auto status = MaaResourceStatus(resource_handle, resource_id);
          status == MaaStatus_Pending || status == MaaStatus_Running;

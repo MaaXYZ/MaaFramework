@@ -9,9 +9,9 @@ bool ScreencapEncode::parse(const json::value& config)
     return parse_argv("ScreencapEncode", config, screencap_encode_argv_);
 }
 
-bool ScreencapEncode::init(int w, int h)
+bool ScreencapEncode::init(int swidth, int sheight)
 {
-    screencap_helper_.set_wh(w, h);
+    set_wh(swidth, sheight);
     return true;
 }
 

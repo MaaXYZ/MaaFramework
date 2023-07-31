@@ -1,7 +1,7 @@
 #include "MinitouchInput.h"
 
-#include "Utils/Logger.hpp"
 #include "Utils/Format.hpp"
+#include "Utils/Logger.hpp"
 #include "Utils/Ranges.hpp"
 
 #include <array>
@@ -56,7 +56,8 @@ bool MinitouchInput::parse(const json::value& config)
 
         arch_list_.clear();
         arch_list_.reserve(arr.size());
-        MAA_RNS::ranges::transform(arr, std::back_inserter(arch_list_), [](const json::value& val) { return val.as_string(); });
+        MAA_RNS::ranges::transform(arr, std::back_inserter(arch_list_),
+                                   [](const json::value& val) { return val.as_string(); });
     }
 
     return invoke_app_->parse(config);
@@ -99,7 +100,8 @@ bool MinitouchInput::init(int swidth, int sheight)
     }
 
     // TODO: timeout?
-    std::string prev {};
+    std::string prev;
+    std::string info;
     while (true) {
         auto str = prev + shell_handler_->read(5);
         if (str.empty()) {
@@ -115,27 +117,35 @@ bool MinitouchInput::init(int swidth, int sheight)
             prev = str; // 也许还得再读点?
             continue;
         }
-        auto info = str.substr(pos + 1, rpos - pos - 1);
-        LogInfo << "minitouch info:" << info;
 
-        int contact = 0;
-        int x = 0;
-        int y = 0;
-        int pressure = 0;
-
-        std::istringstream ins(info);
-        if (!(ins >> contact >> x >> y >> pressure)) {
-            return false;
-        }
-
-        width_ = swidth;
-        height_ = sheight;
-        xscale_ = double(x) / swidth;
-        yscale_ = double(y) / sheight;
-        press_ = pressure;
-
-        return true;
+        info = str.substr(pos + 1, rpos - pos - 1);
+        break;
     }
+
+    LogInfo << "minitouch info:" << info;
+
+    int contact = 0;
+    int x = 0;
+    int y = 0;
+    int pressure = 0;
+
+    std::istringstream ins(info);
+    if (!(ins >> contact >> x >> y >> pressure)) {
+        return false;
+    }
+
+    width_ = swidth;
+    height_ = sheight;
+    xscale_ = double(x) / swidth;
+    yscale_ = double(y) / sheight;
+    press_ = pressure;
+
+    return true;
+}
+
+void MinitouchInput::set_wh(int swidth, int sheight)
+{
+    init(swidth, sheight);
 }
 
 bool MinitouchInput::click(int x, int y)

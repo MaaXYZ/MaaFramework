@@ -9,9 +9,10 @@ bool ScreencapRawWithGzip::parse(const json::value& config)
     return parse_argv("ScreencapRawWithGzip", config, screencap_raw_with_gzip_argv_);
 }
 
-bool ScreencapRawWithGzip::init(int w, int h)
+bool ScreencapRawWithGzip::init(int swidth, int sheight)
 {
-    screencap_helper_.set_wh(w, h);
+    set_wh(swidth, sheight);
+
     return true;
 }
 

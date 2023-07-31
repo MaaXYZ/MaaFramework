@@ -183,7 +183,7 @@ bool AdbController::_start_app(AppParam param)
         return false;
     }
 
-    return unit_mgr_->activity_obj()->start(param.package);
+    return unit_mgr_->activity_obj()->start(param.package) && reinit_resolution();
 }
 
 bool AdbController::_stop_app(AppParam param)
@@ -193,7 +193,40 @@ bool AdbController::_stop_app(AppParam param)
         return false;
     }
 
-    return unit_mgr_->activity_obj()->stop(param.package);
+    return unit_mgr_->activity_obj()->stop(param.package) && reinit_resolution();
+}
+
+bool AdbController::reinit_resolution()
+{
+    LogFunc;
+
+    if (!unit_mgr_ || !unit_mgr_->device_info_obj() || !unit_mgr_->screencap_obj() || !unit_mgr_->touch_input_obj()) {
+        LogError << "unit is nullptr" << VAR(unit_mgr_) << VAR(unit_mgr_->device_info_obj())
+                 << VAR(unit_mgr_->screencap_obj()) << VAR(unit_mgr_->touch_input_obj());
+        return false;
+    }
+
+    json::value details = {
+        { "adb", path_to_utf8_string(adb_path_) },
+        { "address", address_ },
+        { "uuid", unit_mgr_->device_info_obj()->get_uuid() },
+    };
+
+    if (!unit_mgr_->device_info_obj()->request_resolution()) {
+        notifier.notify(MaaMsg_Controller_ResolutionGetFailed, details);
+        LogError << "failed to request_resolution";
+        return false;
+    }
+    auto [w, h] = unit_mgr_->device_info_obj()->get_resolution();
+    resolution_ = { w, h };
+    details |= { { "resolution", { { "width", w }, { "height", h } } } };
+
+    notifier.notify(MaaMsg_Controller_ResolutionGot, details);
+
+    unit_mgr_->screencap_obj()->set_wh(w, h);
+    unit_mgr_->touch_input_obj()->set_wh(w, h);
+
+    return true;
 }
 
 MAA_CTRL_NS_END

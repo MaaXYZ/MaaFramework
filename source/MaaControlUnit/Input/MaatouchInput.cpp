@@ -79,9 +79,10 @@ bool MaatouchInput::init(int swidth, int sheight)
     }
 
     // TODO: timeout?
-    std::string prev {};
+    std::string prev;
+    std::string info;
     while (true) {
-        auto str = prev + shell_handler_->read(5);
+        std::string str = prev + shell_handler_->read(5);
         if (str.empty()) {
             std::this_thread::sleep_for(std::chrono::milliseconds(2000));
             continue;
@@ -95,27 +96,35 @@ bool MaatouchInput::init(int swidth, int sheight)
             prev = str; // 也许还得再读点?
             continue;
         }
-        auto info = str.substr(pos + 1, rpos - pos - 1);
-        LogInfo << "minitouch info:" << info;
 
-        int contact = 0;
-        int x = 0;
-        int y = 0;
-        int pressure = 0;
-
-        std::istringstream ins(info);
-        if (!ins >> contact >> x >> y >> pressure) {
-            return false;
-        }
-
-        width_ = swidth;
-        height_ = sheight;
-        xscale_ = double(x) / swidth;
-        yscale_ = double(y) / sheight;
-        press_ = pressure;
-
-        return true;
+        info = str.substr(pos + 1, rpos - pos - 1);
+        break;
     }
+
+    LogInfo << "minitouch info:" << info;
+
+    int contact = 0;
+    int x = 0;
+    int y = 0;
+    int pressure = 0;
+
+    std::istringstream ins(info);
+    if (!ins >> contact >> x >> y >> pressure) {
+        return false;
+    }
+
+    width_ = swidth;
+    height_ = sheight;
+    xscale_ = double(x) / swidth;
+    yscale_ = double(y) / sheight;
+    press_ = pressure;
+
+    return true;
+}
+
+void MaatouchInput::set_wh(int swidth, int sheight)
+{
+    init(swidth, sheight);
 }
 
 bool MaatouchInput::click(int x, int y)

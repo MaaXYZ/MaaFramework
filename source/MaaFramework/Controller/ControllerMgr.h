@@ -120,10 +120,12 @@ private:
     bool run_action(typename AsyncRunner<Action>::Id id, Action action);
     std::pair<int, int> preproce_touch_coord(int x, int y);
     bool postproc_screenshot(const cv::Mat& raw);
+    bool check_and_calc_target_image_size(const cv::Mat& raw);
+    void clear_target_image_size();
 
 private: // options
-    bool set_target_width(MaaOptionValue value, MaaOptionValueSize val_size);
-    bool set_target_height(MaaOptionValue value, MaaOptionValueSize val_size);
+    bool set_image_target_long_side(MaaOptionValue value, MaaOptionValueSize val_size);
+    bool set_image_target_short_side(MaaOptionValue value, MaaOptionValueSize val_size);
     bool set_default_app_package_entry(MaaOptionValue value, MaaOptionValueSize val_size);
     bool set_default_app_package(MaaOptionValue value, MaaOptionValueSize val_size);
 
@@ -137,8 +139,11 @@ private:
     std::mutex image_mutex_;
     cv::Mat image_;
 
+    int image_target_long_side_ = 0;
+    int image_target_short_side_ = 720;
     int image_target_width_ = 0;
-    int image_target_height_ = 1080;
+    int image_target_height_ = 0;
+
     std::string default_app_package_entry_;
     std::string default_app_package_;
 

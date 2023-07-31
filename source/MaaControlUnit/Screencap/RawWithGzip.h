@@ -15,14 +15,12 @@ public: // from UnitBase
     virtual bool parse(const json::value& config) override;
 
 public: // from ScreencapAPI
-    virtual bool init(int w, int h) override;
+    virtual bool init(int swidth, int sheight) override;
     virtual void deinit() override {}
 
     virtual std::optional<cv::Mat> screencap() override;
 
 private:
-    ScreencapHelper screencap_helper_;
-
     Argv screencap_raw_with_gzip_argv_;
 };
 

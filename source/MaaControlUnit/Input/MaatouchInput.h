@@ -38,6 +38,7 @@ public: // from UnitBase
 public: // from TouchInputAPI
     virtual bool init(int swidth, int sheight) override;
     virtual void deinit() override {}
+    virtual void set_wh(int swidth, int sheight) override;
 
     virtual bool click(int x, int y) override;
     virtual bool swipe(const std::vector<SwipeStep>& steps) override;

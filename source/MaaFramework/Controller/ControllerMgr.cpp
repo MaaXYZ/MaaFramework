@@ -34,10 +34,10 @@ bool ControllerMgr::set_option(MaaCtrlOption key, MaaOptionValue value, MaaOptio
     LogInfo << VAR(key) << VAR(value) << VAR(val_size);
 
     switch (key) {
-    case MaaCtrlOption_ScreenshotTargetWidth:
-        return set_target_width(value, val_size);
-    case MaaCtrlOption_ScreenshotTargetHeight:
-        return set_target_height(value, val_size);
+    case MaaCtrlOption_ScreenshotTargetLongSide:
+        return set_image_target_long_side(value, val_size);
+    case MaaCtrlOption_ScreenshotTargetShortSide:
+        return set_image_target_short_side(value, val_size);
 
     case MaaCtrlOption_DefaultAppPackageEntry:
         return set_default_app_package_entry(value, val_size);
@@ -273,9 +273,11 @@ bool ControllerMgr::run_action(typename AsyncRunner<Action>::Id id, Action actio
 
     case Action::Type::start_app:
         ret = _start_app(std::get<AppParam>(action.param));
+        clear_target_image_size();
         break;
     case Action::Type::stop_app:
         ret = _stop_app(std::get<AppParam>(action.param));
+        clear_target_image_size();
         break;
 
     default:
@@ -294,8 +296,14 @@ std::pair<int, int> ControllerMgr::preproce_touch_coord(int x, int y)
 {
     auto [res_w, res_h] = _get_resolution();
 
-    double scale_width = static_cast<double>(res_w) / image_target_width_;
-    double scale_height = static_cast<double>(res_h) / image_target_height_;
+    if (image_target_width_ == 0 || image_target_height_ == 0) {
+        // 正常来说连接完后都会截个图测试，那时候就会走到 check_and_calc_target_image_size，这里不应该是 0
+        LogError << "Invalid image target size" << VAR(image_target_width_) << VAR(image_target_height_);
+        return {};
+    }
+
+    double scale_width = static_cast<double>(std::max(res_w, res_h)) / image_target_width_;
+    double scale_height = static_cast<double>(std::min(res_w, res_h)) / image_target_height_;
 
     int proced_x = static_cast<int>(std::round(x * scale_width));
     int proced_y = static_cast<int>(std::round(y * scale_height));
@@ -315,49 +323,92 @@ bool ControllerMgr::postproc_screenshot(const cv::Mat& raw)
         LogWarn << "Invalid resolution" << VAR(raw.cols) << VAR(raw.rows) << VAR(res_w) << VAR(res_h);
     }
 
-    if (image_target_width_ == 0) {
-        double scale = static_cast<double>(raw.cols) / raw.rows;
-        image_target_width_ = static_cast<int>(std::round(image_target_height_ * scale));
-        LogInfo << VAR(image_target_width_) << VAR(image_target_height_);
-    }
-    if (image_target_height_ == 0) {
-        double scale = static_cast<double>(raw.rows) / raw.cols;
-        image_target_height_ = static_cast<int>(std::round(image_target_width_ * scale));
-        LogInfo << VAR(image_target_width_) << VAR(image_target_height_);
-    }
-
-    if (raw.cols == image_target_width_ && raw.rows == image_target_height_) {
-        image_ = raw;
-        return true;
+    if (!check_and_calc_target_image_size(raw)) {
+        LogError << "Invalid target image size";
+        return false;
     }
 
     cv::resize(raw, image_, { image_target_width_, image_target_height_ });
     return !image_.empty();
 }
 
-bool ControllerMgr::set_target_width(MaaOptionValue value, MaaOptionValueSize val_size)
+bool ControllerMgr::check_and_calc_target_image_size(const cv::Mat& raw)
 {
-    if (val_size != sizeof(image_target_width_)) {
-        LogError << "invalid value size: " << val_size;
+    if (image_target_width_ != 0 && image_target_height_ != 0) {
+        return true;
+    }
+
+    if (image_target_long_side_ == 0 && image_target_short_side_ == 0) {
+        LogError << "Invalid image target size";
         return false;
     }
-    image_target_width_ = *reinterpret_cast<int*>(value);
-    image_target_height_ = 0;
 
-    LogInfo << "image_target_width_ = " << image_target_width_;
+    int cur_width = raw.cols;
+    int cur_height = raw.rows;
+
+    LogTrace << "Re-calc image target size:" << VAR(image_target_long_side_) << VAR(image_target_short_side_)
+             << VAR(cur_width) << VAR(cur_height);
+
+    double scale = static_cast<double>(cur_width) / cur_height;
+
+    if (image_target_short_side_ != 0) {
+        if (cur_width > cur_height) {
+            image_target_width_ = static_cast<int>(std::round(image_target_short_side_ * scale));
+            image_target_height_ = image_target_short_side_;
+        }
+        else {
+            image_target_width_ = image_target_short_side_;
+            image_target_height_ = static_cast<int>(std::round(image_target_short_side_ / scale));
+        }
+    }
+    else { // image_target_long_side_ != 0
+        if (cur_width > cur_height) {
+            image_target_width_ = image_target_long_side_;
+            image_target_height_ = static_cast<int>(std::round(image_target_long_side_ / scale));
+        }
+        else {
+            image_target_width_ = static_cast<int>(std::round(image_target_long_side_ * scale));
+            image_target_height_ = image_target_long_side_;
+        }
+    }
+
+    LogInfo << VAR(image_target_width_) << VAR(image_target_height_);
     return true;
 }
 
-bool ControllerMgr::set_target_height(MaaOptionValue value, MaaOptionValueSize val_size)
+void ControllerMgr::clear_target_image_size()
 {
-    if (val_size != sizeof(image_target_height_)) {
+    image_target_width_ = 0;
+    image_target_height_ = 0;
+}
+
+bool ControllerMgr::set_image_target_long_side(MaaOptionValue value, MaaOptionValueSize val_size)
+{
+    if (val_size != sizeof(image_target_long_side_)) {
         LogError << "invalid value size: " << val_size;
         return false;
     }
-    image_target_width_ = 0;
-    image_target_height_ = *reinterpret_cast<int*>(value);
+    image_target_long_side_ = *reinterpret_cast<int*>(value);
+    image_target_short_side_ = 0;
 
-    LogInfo << "image_target_height_ = " << image_target_height_;
+    clear_target_image_size();
+
+    LogInfo << "image_target_width_ = " << image_target_long_side_;
+    return true;
+}
+
+bool ControllerMgr::set_image_target_short_side(MaaOptionValue value, MaaOptionValueSize val_size)
+{
+    if (val_size != sizeof(image_target_short_side_)) {
+        LogError << "invalid value size: " << val_size;
+        return false;
+    }
+    image_target_long_side_ = 0;
+    image_target_short_side_ = *reinterpret_cast<int*>(value);
+
+    clear_target_image_size();
+
+    LogInfo << "image_target_height_ = " << image_target_short_side_;
     return true;
 }
 

@@ -4,6 +4,7 @@
 
 #include "MaaControlUnit/ControlUnitAPI.h"
 #include "Platform/PlatformIO.h"
+#include "Screencap/ScreencapHelper.h"
 #include "Utils/ArgvWrapper.hpp"
 
 MAA_CTRL_UNIT_NS_BEGIN
@@ -55,6 +56,12 @@ class ScreencapBase : public ScreencapAPI, public UnitBase
 {
 public:
     virtual ~ScreencapBase() override = default;
+
+public:
+    virtual void set_wh(int swidth, int sheight) override { screencap_helper_.set_wh(swidth, sheight); }
+
+protected:
+    ScreencapHelper screencap_helper_;
 };
 
 class TouchInputBase : public TouchInputAPI, virtual public UnitBase

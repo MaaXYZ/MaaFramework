@@ -27,6 +27,8 @@ protected:
     virtual bool _stop_app(AppParam param) override;
 
 private:
+    bool reinit_resolution();
+
     std::string adb_path_;
     std::string address_;
     std::pair<int, int> resolution_ = { 0, 0 };

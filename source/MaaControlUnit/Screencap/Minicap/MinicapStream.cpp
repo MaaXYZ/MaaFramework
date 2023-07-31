@@ -1,8 +1,8 @@
 #include "MinicapStream.h"
 #include "MinicapDef.h"
 
-#include "Utils/Logger.hpp"
 #include "Utils/Format.hpp"
+#include "Utils/Logger.hpp"
 #include "Utils/NoWarningCV.h"
 
 MAA_CTRL_UNIT_NS_BEGIN
@@ -12,11 +12,11 @@ bool MinicapStream::parse(const json::value& config)
     return MinicapBase::parse(config) && parse_argv("ForwardSocket", config, forward_argv_);
 }
 
-bool MinicapStream::init(int w, int h)
+bool MinicapStream::init(int swidth, int sheight)
 {
     LogFunc;
 
-    if (!MinicapBase::init(w, h)) {
+    if (!MinicapBase::init(swidth, sheight)) {
         return false;
     }
 

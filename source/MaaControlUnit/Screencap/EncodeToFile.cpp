@@ -1,7 +1,7 @@
 #include "EncodeToFile.h"
 
-#include "Utils/Logger.hpp"
 #include "Utils/ImageIo.hpp"
+#include "Utils/Logger.hpp"
 #include "Utils/NoWarningCV.h"
 #include "Utils/TempPath.hpp"
 
@@ -13,9 +13,9 @@ bool ScreencapEncodeToFileAndPull::parse(const json::value& config)
            parse_argv("PullFile", config, pull_file_argv_);
 }
 
-bool ScreencapEncodeToFileAndPull::init(int w, int h)
+bool ScreencapEncodeToFileAndPull::init(int swidth, int sheight)
 {
-    screencap_helper_.set_wh(w, h);
+    set_wh(swidth, sheight);
 
     tempname_ = temp_name();
 
