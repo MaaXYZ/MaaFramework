@@ -54,7 +54,7 @@ jobs:
 
       - name: Run Testing
         run: |
-          .\install\Release\sample.exe
+          .\install\bin\sample.exe
 
       - name: Upload Logs
         if: always()
