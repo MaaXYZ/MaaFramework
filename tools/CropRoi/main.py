@@ -37,9 +37,9 @@ def click_and_crop(event, x, y, flags, param):
         cv2.imshow("image", draw)
 
 
-std_width: int = 1280
-std_height: int = 720
-std_ratio = std_width / std_height
+std_long_side: int = 1280
+std_short_side: int = 720
+std_ratio = std_long_side / std_short_side
 
 cv2.namedWindow("image")
 cv2.setMouseCallback("image", click_and_crop)
@@ -51,14 +51,23 @@ for filename in os.listdir("./src"):
     print("src:", filename)
     image = cv2.imread("./src/" + filename)
 
-    cur_ratio = image.shape[1] / image.shape[0]
 
-    if cur_ratio >= std_ratio:  # 说明是宽屏或默认16:9，按照高度计算缩放
-        dsize_width: int = (int)(cur_ratio * std_height)
-        dsize_height: int = std_height
-    else:                       # 否则可能是偏正方形的屏幕，按宽度计算
-        dsize_width: int = std_width
-        dsize_height: int = std_width / cur_ratio
+    if image.shape[1] > image.shape[0]: # landscape
+        cur_ratio = image.shape[1] / image.shape[0]
+        if cur_ratio >= std_ratio:  # 说明是宽屏或默认16:9，按照高度计算缩放
+            dsize_width: int = (int)(cur_ratio * std_short_side)
+            dsize_height: int = std_short_side
+        else:                       # 否则可能是偏正方形的屏幕，按宽度计算
+            dsize_width: int = std_long_side
+            dsize_height: int = (int)(std_long_side / cur_ratio)
+    else:                               # portrait
+        cur_ratio = image.shape[0] / image.shape[1]
+        if cur_ratio >= std_ratio:  # 说明是宽屏或默认16:9，按照高度计算缩放
+            dsize_width: int = std_short_side
+            dsize_height: int = (int)(std_short_side * cur_ratio)
+        else:                       # 否则可能是偏正方形的屏幕，按宽度计算
+            dsize_width: int = (int)(std_long_side / cur_ratio)
+            dsize_height: int = std_long_side
 
     dsize = (dsize_width, dsize_height)
     image = cv2.resize(image, dsize, interpolation=cv2.INTER_AREA)
