@@ -8,7 +8,7 @@ using tcp = boost::asio::ip::tcp;
 
 MAA_TOOLKIT_NS_BEGIN
 
-boost::beast::http::message_generator handleRequest(
+boost::beast::http::message_generator handle_request(
     boost::beast::http::request<boost::beast::http::string_body>&& request)
 {
     using namespace boost::beast;
@@ -24,10 +24,10 @@ boost::beast::http::message_generator handleRequest(
         return res;
     };
 
-    return respOk(SingletonHolder<ApiDispatcher>::get_instance().handleRoute(std::move(request)).to_string());
+    return respOk(SingletonHolder<ApiDispatcher>::get_instance().handle_route(std::move(request)).to_string());
 }
 
-void handleSession(tcp::socket& socket)
+void handle_session(tcp::socket& socket)
 {
     using namespace boost::beast;
 
@@ -44,7 +44,7 @@ void handleSession(tcp::socket& socket)
             // ERROR
             break;
         }
-        http::message_generator msg = handleRequest(std::move(request));
+        http::message_generator msg = handle_request(std::move(request));
         auto keep_alive = msg.keep_alive();
         write(socket, std::move(msg), ec);
         if (ec) {
@@ -70,7 +70,7 @@ bool HttpServer::start(std::string_view ip, uint16_t port)
     tcp::acceptor acc { ctx, { address, port } };
     acceptor = std::make_shared<tcp::acceptor>(std::move(acc));
 
-    initMaaFramework(SingletonHolder<ApiDispatcher>::get_instance());
+    init_maa_framework(SingletonHolder<ApiDispatcher>::get_instance());
 
     stopping = false;
     dispatcher = std::make_shared<std::thread>([this]() {
@@ -81,7 +81,7 @@ bool HttpServer::start(std::string_view ip, uint16_t port)
             if (ec) {
                 break;
             }
-            std::thread([](tcp::socket&& sock) { handleSession(sock); }, std::move(socket)).detach();
+            std::thread([](tcp::socket&& sock) { handle_session(sock); }, std::move(socket)).detach();
         }
     });
 

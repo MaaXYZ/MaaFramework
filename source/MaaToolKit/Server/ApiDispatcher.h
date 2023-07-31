@@ -19,8 +19,8 @@ public:
 
     using RouteEndpoint = std::function<json::object(Params param, Body body)>;
 
-    void registerRoute(Method method, const std::string& path, RouteEndpoint endpoint);
-    json::object handleRoute(boost::beast::http::request<boost::beast::http::string_body>&& request);
+    void register_route(Method method, const std::string& path, RouteEndpoint endpoint);
+    json::object handle_route(boost::beast::http::request<boost::beast::http::string_body>&& request);
 
 private:
     std::map<Method, std::map<std::string, RouteEndpoint>> endpoints;

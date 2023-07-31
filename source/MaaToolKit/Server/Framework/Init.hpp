@@ -5,9 +5,9 @@
 
 MAA_TOOLKIT_NS_BEGIN
 
-void initMaaFramework(ApiDispatcher& disp)
+void init_maa_framework(ApiDispatcher& disp)
 {
-    disp.registerRoute(ApiDispatcher::Method::get, "/api/version", [](ApiDispatcher::Params, ApiDispatcher::Body) {
+    disp.register_route(ApiDispatcher::Method::get, "/api/version", [](ApiDispatcher::Params, ApiDispatcher::Body) {
         return json::object { { "version", MaaVersion() } };
     });
 }
