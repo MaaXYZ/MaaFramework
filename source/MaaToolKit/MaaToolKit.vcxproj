@@ -19,6 +19,7 @@
     <ClCompile Include="Config\Config.cpp" />
     <ClCompile Include="Config\ConfigMgr.cpp" />
     <ClCompile Include="Server\ApiDispatcher.cpp" />
+    <ClCompile Include="Server\Framework\Controller.cpp" />
     <ClCompile Include="Server\RequestResponse.cpp" />
     <ClCompile Include="Server\Server.cpp" />
   </ItemGroup>
@@ -28,6 +29,9 @@
     <ClInclude Include="Config\Config.h" />
     <ClInclude Include="Config\ConfigMgr.h" />
     <ClInclude Include="Server\ApiDispatcher.h" />
+    <ClInclude Include="Server\Framework\Controller.h" />
+    <ClInclude Include="Server\Framework\Init.hpp" />
+    <ClInclude Include="Server\JsonValidator.hpp" />
     <ClInclude Include="Server\RequestResponse.h" />
     <ClInclude Include="Server\Server.h" />
   </ItemGroup>
