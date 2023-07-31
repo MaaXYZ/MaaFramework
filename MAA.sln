@@ -30,6 +30,9 @@ EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "MaaUtils", "source\MaaUtils\MaaUtils.vcxproj", "{27862F0F-109D-40C8-B48B-9461D15222E3}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "MaaToolKit", "source\MaaToolKit\MaaToolKit.vcxproj", "{56FC5B20-B981-4737-80B5-EFA6701CD2F0}"
+	ProjectSection(ProjectDependencies) = postProject
+		{27862F0F-109D-40C8-B48B-9461D15222E3} = {27862F0F-109D-40C8-B48B-9461D15222E3}
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
