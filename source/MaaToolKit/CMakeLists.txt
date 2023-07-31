@@ -2,8 +2,8 @@ file(GLOB_RECURSE maa_toolkit_src *.h *.hpp *.cpp ../include)
 
 add_library(MaaToolKit SHARED ${maa_toolkit_src})
 
-file(GLOB MaaToolKit_PUBLIC_HEADERS ${CMAKE_CURRENT_SOURCE_DIR}/../../include/*.h)
-set(MaaToolKit_INCLUDE ${CMAKE_CURRENT_SOURCE_DIR}/../../include)
+file(GLOB MaaToolKit_PUBLIC_HEADERS ${CMAKE_CURRENT_SOURCE_DIR}/../../include/MaaToolKit/*.h)
+set(MaaToolKit_INCLUDE ${CMAKE_CURRENT_SOURCE_DIR}/../../include/MaaToolKit)
 
 target_include_directories(MaaToolKit INTERFACE ../../include PRIVATE . ../include ../../include)
 set_target_properties(MaaToolKit PROPERTIES
