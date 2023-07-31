@@ -11,6 +11,8 @@ class RequestResponse
 public:
     RequestResponse(boost::beast::http::request<boost::beast::http::string_body>&& req) : request(req) {}
 
+    json::object request_body_json();
+
     void reply_json(json::object object, boost::beast::http::status status = boost::beast::http::status::ok);
     void reply_file(void* data, uint64_t size, std::string_view mime,
                     boost::beast::http::status status = boost::beast::http::status::ok);
@@ -19,6 +21,11 @@ public:
     void reply_error(const char* why, boost::beast::http::status status)
     {
         reply_json({ { "success", false }, { "error", why } }, status);
+    }
+
+    void reply_bad_request(const char* why = "bad request")
+    {
+        reply_error(why, boost::beast::http::status::bad_request);
     }
 
     const boost::beast::http::request<boost::beast::http::string_body>& get_request() { return request; }

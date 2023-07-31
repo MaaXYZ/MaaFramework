@@ -15,10 +15,8 @@ public:
     friend class SingletonHolder<ApiDispatcher>;
 
     using Method = boost::beast::http::verb;
-    using Params = boost::urls::params_view;
-    using Body = std::string_view;
 
-    using RouteEndpoint = std::function<void(RequestResponse&, Params, Body)>;
+    using RouteEndpoint = std::function<void(RequestResponse&)>;
 
     void register_route(Method method, const std::string& path, RouteEndpoint endpoint);
     void handle_route(RequestResponse& rr);

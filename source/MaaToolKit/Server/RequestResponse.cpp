@@ -1,6 +1,20 @@
 #include "RequestResponse.h"
+#include "JsonValidator.hpp"
 
 MAA_TOOLKIT_NS_BEGIN
+
+json::object RequestResponse::request_body_json()
+{
+    auto body = request.body();
+    auto res = json::parse(body);
+    if (!res) {
+        throw JsonValidateFailedException("json parse failed");
+    }
+    if (!res->is_object()) {
+        throw JsonValidateFailedException("not a json object");
+    }
+    return res->as_object();
+}
 
 void RequestResponse::reply_json(json::object object, boost::beast::http::status status)
 {

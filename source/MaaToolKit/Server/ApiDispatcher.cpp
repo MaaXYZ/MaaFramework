@@ -1,4 +1,5 @@
 #include "ApiDispatcher.h"
+#include "JsonValidator.hpp"
 
 MAA_TOOLKIT_NS_BEGIN
 
@@ -13,15 +14,20 @@ void ApiDispatcher::handle_route(RequestResponse& rr)
 
     auto url = boost::urls::parse_origin_form(request.target()).value();
     if (!endpoints.count(request.method())) {
-        rr.reply_error("Unknown method", boost::beast::http::status::bad_request);
+        rr.reply_bad_request("unknown method");
         return;
     }
     auto& epm = endpoints[request.method()];
     if (!epm.count(url.path())) {
-        rr.reply_error("Unknown path", boost::beast::http::status::bad_request);
+        rr.reply_bad_request("unknown path");
         return;
     }
-    epm[url.path()](rr, url.params(), request.body());
+    try {
+        epm[url.path()](rr);
+    }
+    catch (JsonValidateFailedException err) {
+        rr.reply_bad_request(err.what());
+    }
 }
 
 MAA_TOOLKIT_NS_END

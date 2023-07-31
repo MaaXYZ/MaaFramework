@@ -15,4 +15,7 @@ MAA_SUPPRESS_BOOST_WARNINGS_BEGIN
 #include <boost/beast.hpp>
 #include <boost/process.hpp>
 #include <boost/url.hpp>
+#include <boost/uuid/uuid.hpp>
+#include <boost/uuid/uuid_generators.hpp>
+#include <boost/uuid/uuid_io.hpp>
 MAA_SUPPRESS_BOOST_WARNINGS_END
