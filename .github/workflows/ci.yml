@@ -72,7 +72,7 @@ jobs:
         run: |
           cmake --preset "${{ matrix.arch == 'x86_64' && 'MSVC 2022' || 'MSVC 2022 ARM' }}" -DMAADEPS_TRIPLET="maa-${{ matrix.arch == 'x86_64' && 'x64' || 'arm64' }}-windows" -DMAA_VERSION='${{ needs.meta.outputs.tag }}'
 
-          cmake --build build --preset "${{ matrix.arch == 'x86_64' && 'MSVC 2022' || 'MSVC 2022 ARM' }} - Release"
+          cmake --build build --preset "${{ matrix.arch == 'x86_64' && 'MSVC 2022' || 'MSVC 2022 ARM' }} - Release" -j 16
           cmake --install build --prefix install
 
       - name: Remove msvc-debug
@@ -147,7 +147,7 @@ jobs:
             -DMAADEPS_TRIPLET='maa-${{ matrix.arch == 'x86_64' && 'x64' || 'arm64' }}-linux' \
             -DMAA_VERSION='${{ needs.meta.outputs.tag }}'
 
-          cmake --build build --preset 'NinjaMulti - Release'
+          cmake --build build --preset 'NinjaMulti - Release' -j 16
           cmake --install build --prefix install
 
       - name: Copy docs
@@ -207,7 +207,7 @@ jobs:
             -DMAADEPS_TRIPLET='maa-${{ matrix.arch == 'x86_64' && 'x64' || 'arm64' }}-osx' \
             -DMAA_VERSION='${{ needs.meta.outputs.tag }}'
 
-          cmake --build build --preset 'NinjaMulti - Release'
+          cmake --build build --preset 'NinjaMulti - Release' -j 16
           cmake --install build --prefix install
 
       - name: Copy docs
