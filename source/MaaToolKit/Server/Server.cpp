@@ -1,4 +1,7 @@
 #include "Server.h"
+#include "ApiDispatcher.h"
+#include "Framework/Init.hpp"
+
 #include <meojson/json.hpp>
 
 using tcp = boost::asio::ip::tcp;
@@ -21,14 +24,7 @@ boost::beast::http::message_generator handleRequest(
         return res;
     };
 
-    auto fakeUrl = std::string("http://localhost");
-    fakeUrl.append(request.target().begin(), request.target().end());
-
-    auto u = boost::urls::parse_uri(std::string_view(fakeUrl)).value();
-
-    auto resp = json::object { { "path", u.path() } };
-
-    return respOk(resp.to_string());
+    return respOk(SingletonHolder<ApiDispatcher>::get_instance().handleRoute(std::move(request)).to_string());
 }
 
 void handleSession(tcp::socket& socket)
@@ -74,11 +70,17 @@ bool HttpServer::start(std::string_view ip, uint16_t port)
     tcp::acceptor acc { ctx, { address, port } };
     acceptor = std::make_shared<tcp::acceptor>(std::move(acc));
 
+    initMaaFramework(SingletonHolder<ApiDispatcher>::get_instance());
+
     stopping = false;
     dispatcher = std::make_shared<std::thread>([this]() {
+        boost::system::error_code ec;
         while (!stopping) {
             tcp::socket socket(ctx);
-            acceptor->accept(socket);
+            acceptor->accept(socket, ec);
+            if (ec) {
+                break;
+            }
             std::thread([](tcp::socket&& sock) { handleSession(sock); }, std::move(socket)).detach();
         }
     });
@@ -89,6 +91,7 @@ bool HttpServer::start(std::string_view ip, uint16_t port)
 bool HttpServer::stop()
 {
     stopping = true;
+    acceptor->close();
     dispatcher->join();
     acceptor = nullptr;
     dispatcher = nullptr;
