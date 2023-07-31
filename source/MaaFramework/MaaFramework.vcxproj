@@ -210,7 +210,7 @@
       <WarningLevel>Level4</WarningLevel>
       <IntrinsicFunctions>false</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>WITH_THRIFT;_CONSOLE;_DEBUG;MAA_FRAMEWORK_EXPORTS;MAA_DEBUG;MAA_DEBUG_DLL_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>WITH_THRIFT;_CONSOLE;_DEBUG;MAA_FRAMEWORK_EXPORTS;MAA_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp20</LanguageStandard>
       <LanguageStandard_C>stdc11</LanguageStandard_C>
