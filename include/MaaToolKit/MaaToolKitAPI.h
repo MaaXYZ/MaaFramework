@@ -10,7 +10,7 @@ extern "C"
     MaaBool MAA_TOOLKIT_API MaaToolKitInit();
     MaaBool MAA_TOOLKIT_API MaaToolKitUninit();
 
-    MaaBool MAA_TOOLKIT_API MaaToolKitStartWebServer(MaaString ip, MaaString port);
+    MaaBool MAA_TOOLKIT_API MaaToolKitStartWebServer(MaaString ip, MaaPort port);
     MaaBool MAA_TOOLKIT_API MaaToolKitStopWebServer();
 
     MaaToolKitConfigHandle MAA_TOOLKIT_API MaaToolKitGetCurrentConfig();

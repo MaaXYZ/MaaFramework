@@ -34,14 +34,20 @@
     MAA_DO_PRAGMA(clang diagnostic ignored "-Wc11-extensions")                       \
     MAA_DO_PRAGMA(clang diagnostic ignored "-Wunused-but-set-variable")
 #define MAA_SUPPRESS_CV_WARNINGS_END MAA_DO_PRAGMA(clang diagnostic pop)
+#define MAA_SUPPRESS_BOOST_WARNINGS_BEGIN
+#define MAA_SUPPRESS_BOOST_WARNINGS_END
 #elif defined(__GNUC__)
 #define MAA_SUPPRESS_CV_WARNINGS_BEGIN \
     MAA_DO_PRAGMA(GCC diagnostic push) \
     MAA_DO_PRAGMA(GCC diagnostic ignored "-Wdeprecated-enum-enum-conversion")
 #define MAA_SUPPRESS_CV_WARNINGS_END MAA_DO_PRAGMA(GCC diagnostic pop)
+#define MAA_SUPPRESS_BOOST_WARNINGS_BEGIN
+#define MAA_SUPPRESS_BOOST_WARNINGS_END
 #else
 #define MAA_SUPPRESS_CV_WARNINGS_BEGIN
 #define MAA_SUPPRESS_CV_WARNINGS_END
+#define MAA_SUPPRESS_BOOST_WARNINGS_BEGIN
+#define MAA_SUPPRESS_BOOST_WARNINGS_END
 #endif
 
 #ifdef __GNUC__

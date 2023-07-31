@@ -63,18 +63,15 @@ void handleSession(tcp::socket& socket)
     socket.shutdown(tcp::socket::shutdown_send, ec);
 }
 
-bool HttpServer::start(std::string_view ip, std::string_view port)
+bool HttpServer::start(std::string_view ip, uint16_t port)
 {
     if (acceptor) {
         return false;
     }
     auto address = boost::asio::ip::make_address(ip);
-    int nport;
-    std::from_chars(port.data(), port.data() + port.size(), nport);
-    uint16_t uport = static_cast<uint16_t>(nport);
 
     // TODO: 不知道为啥make_shared直接传参匹配不到
-    tcp::acceptor acc { ctx, { address, uport } };
+    tcp::acceptor acc { ctx, { address, port } };
     acceptor = std::make_shared<tcp::acceptor>(std::move(acc));
 
     stopping = false;

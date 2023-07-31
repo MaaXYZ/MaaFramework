@@ -13,7 +13,7 @@ class HttpServer : public SingletonHolder<HttpServer>
 public:
     friend class SingletonHolder<HttpServer>;
 
-    bool start(std::string_view ip, std::string_view port);
+    bool start(std::string_view ip, uint16_t port);
     bool stop();
 
 private:
