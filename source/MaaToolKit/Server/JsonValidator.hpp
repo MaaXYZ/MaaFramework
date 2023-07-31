@@ -5,9 +5,9 @@ MAA_TOOLKIT_NS_BEGIN
 
 struct JsonValidateFailedException : public std::exception
 {
-    JsonValidateFailedException(std::string&& s) : err(s) {}
+    JsonValidateFailedException(std::string s) : err(std::move(s)) {}
 
-    const char* what() const override { return err.c_str(); }
+    virtual const char* what() const noexcept override { return err.c_str(); }
 
     std::string err;
 };
