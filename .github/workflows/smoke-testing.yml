@@ -47,7 +47,7 @@ jobs:
 
       - name: Build MAA
         run: |
-          cmake --preset "MSVC 2022" -DMAADEPS_TRIPLET="maa-x64-windows"
+          cmake --preset "MSVC 2022" -DMAADEPS_TRIPLET="maa-x64-windows" -DBUILD_SAMPLE=ON -DUSE_BOOST_IO
 
           cmake --build build --preset "MSVC 2022 - Release" -j 16
           cmake --install build --prefix install
