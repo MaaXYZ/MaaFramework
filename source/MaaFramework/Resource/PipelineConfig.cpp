@@ -561,6 +561,7 @@ bool PipelineConfig::parse_action(const json::value& input, MAA_PIPELINE_RES_NS:
         { "StartApp", Type::StartApp },
         { "StopApp", Type::StopApp },
         { "Custom", Type::Custom },
+        { "StopTask", Type::StopTask },
     };
     auto act_type_iter = kActTypeMap.find(act_type_name);
     if (act_type_iter == kActTypeMap.cend()) {
@@ -598,6 +599,10 @@ bool PipelineConfig::parse_action(const json::value& input, MAA_PIPELINE_RES_NS:
         out_param = CustomParam {};
         return parse_custom_action_param(input, std::get<CustomParam>(out_param),
                                          same_type ? std::get<CustomParam>(default_param) : CustomParam {});
+
+    case Type::StopTask:
+        out_param = {};
+        return true;
 
     default:
         LogError << "unknown act type" << VAR(static_cast<int>(out_type));

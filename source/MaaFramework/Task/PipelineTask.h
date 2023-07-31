@@ -5,8 +5,8 @@
 #include <meojson/json.hpp>
 
 #include "API/MaaTypes.h"
-#include "Instance/InstanceInternalAPI.hpp"
 #include "Conf/Conf.h"
+#include "Instance/InstanceInternalAPI.hpp"
 #include "Resource/PipelineConfig.h"
 #include "Resource/PipelineTypes.h"
 
@@ -59,7 +59,7 @@ private:
     RunningResult find_first_and_run(const std::vector<std::string>& list, std::chrono::milliseconds find_timeout,
                                      /*out*/ MAA_PIPELINE_RES_NS::TaskData& found_data);
     std::optional<FoundResult> find_first(const std::vector<std::string>& list);
-    void start_to_act(const FoundResult& act);
+    RunningResult start_to_act(const FoundResult& act);
 
 private:
     std::optional<RecResult> recognize(const cv::Mat& image, const MAA_PIPELINE_RES_NS::TaskData& task_data);

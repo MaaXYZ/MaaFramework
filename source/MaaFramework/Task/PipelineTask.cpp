@@ -204,12 +204,12 @@ PipelineTask::RunningResult PipelineTask::find_first_and_run(const std::vector<s
         return RunningResult::Runout;
     }
 
-    start_to_act(result);
+    auto ret = start_to_act(result);
 
     status()->increase_pipeline_run_times(name);
 
     found_data = std::move(result.task_data);
-    return RunningResult::Success;
+    return ret;
 }
 
 std::optional<PipelineTask::FoundResult> PipelineTask::find_first(const std::vector<std::string>& list)
@@ -356,7 +356,7 @@ std::optional<PipelineTask::RecResult> PipelineTask::custom_recognize(const cv::
     return RecResult { .box = ret->box };
 }
 
-void PipelineTask::start_to_act(const FoundResult& act)
+PipelineTask::RunningResult PipelineTask::start_to_act(const FoundResult& act)
 {
     using namespace MAA_PIPELINE_RES_NS::Action;
     LogFunc << VAR(act.task_data.name);
@@ -386,6 +386,9 @@ void PipelineTask::start_to_act(const FoundResult& act)
     case Type::Custom:
         custom_action(std::get<CustomParam>(act.task_data.action_param), act.rec.box);
         break;
+    case Type::StopTask:
+        LogInfo << "Action: StopTask";
+        return RunningResult::Interrupted;
     default:
         LogError << "Unknown action" << VAR(static_cast<int>(act.task_data.action_type));
         break;
@@ -393,6 +396,8 @@ void PipelineTask::start_to_act(const FoundResult& act)
 
     wait_freezes(act.task_data.post_wait_freezes, act.rec.box);
     sleep(act.task_data.post_delay);
+
+    return RunningResult::Success;
 }
 
 void PipelineTask::click(const MAA_PIPELINE_RES_NS::Action::ClickParam& param, const cv::Rect& cur_box)

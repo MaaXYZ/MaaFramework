@@ -49,6 +49,7 @@ enum class Type
     StartApp,
     StopApp,
     Custom,
+    StopTask,
     // InputText, // TODO
 };
 
