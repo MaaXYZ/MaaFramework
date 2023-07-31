@@ -1,6 +1,7 @@
 #include "Server.h"
 #include "ApiDispatcher.h"
 #include "Framework/Init.hpp"
+#include "RequestResponse.h"
 
 #include <meojson/json.hpp>
 
@@ -11,20 +12,15 @@ MAA_TOOLKIT_NS_BEGIN
 boost::beast::http::message_generator handle_request(
     boost::beast::http::request<boost::beast::http::string_body>&& request)
 {
-    using namespace boost::beast;
+    RequestResponse rr(std::move(request));
 
-    auto respOk = [&request](string_view json) {
-        http::response<http::string_body> res(http::status::ok, request.version());
-        res.set(http::field::server, BOOST_BEAST_VERSION_STRING);
-        res.set(http::field::content_type, "application/json");
-        res.content_length(json.size());
-        res.keep_alive(request.keep_alive());
-        res.body() = json;
-        res.prepare_payload();
-        return res;
-    };
+    SingletonHolder<ApiDispatcher>::get_instance().handle_route(rr);
 
-    return respOk(SingletonHolder<ApiDispatcher>::get_instance().handle_route(std::move(request)).to_string());
+    if (!rr.has_response()) {
+        rr.reply_error("internal error", boost::beast::http::status::internal_server_error);
+    }
+
+    return rr.take_response();
 }
 
 void handle_session(tcp::socket& socket)

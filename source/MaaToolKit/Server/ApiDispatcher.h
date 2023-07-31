@@ -1,5 +1,6 @@
 #pragma once
 
+#include "RequestResponse.h"
 #include "Utils/Boost.hpp"
 #include "Utils/SingletonHolder.hpp"
 
@@ -17,10 +18,10 @@ public:
     using Params = boost::urls::params_view;
     using Body = std::string_view;
 
-    using RouteEndpoint = std::function<json::object(Params param, Body body)>;
+    using RouteEndpoint = std::function<void(RequestResponse&, Params, Body)>;
 
     void register_route(Method method, const std::string& path, RouteEndpoint endpoint);
-    json::object handle_route(boost::beast::http::request<boost::beast::http::string_body>&& request);
+    void handle_route(RequestResponse& rr);
 
 private:
     std::map<Method, std::map<std::string, RouteEndpoint>> endpoints;

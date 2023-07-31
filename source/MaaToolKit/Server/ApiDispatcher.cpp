@@ -7,18 +7,21 @@ void ApiDispatcher::register_route(Method method, const std::string& path, Route
     endpoints[method][path] = endpoint;
 }
 
-json::object ApiDispatcher::handle_route(boost::beast::http::request<boost::beast::http::string_body>&& request)
+void ApiDispatcher::handle_route(RequestResponse& rr)
 {
+    const auto& request = rr.get_request();
+
     auto url = boost::urls::parse_origin_form(request.target()).value();
-    // endpoints[request.method()][url.path()]
     if (!endpoints.count(request.method())) {
-        return { { "error", "Unknown method" } };
+        rr.reply_error("Unknown method", boost::beast::http::status::bad_request);
+        return;
     }
     auto& epm = endpoints[request.method()];
     if (!epm.count(url.path())) {
-        return { { "error", "Unknown path" } };
+        rr.reply_error("Unknown path", boost::beast::http::status::bad_request);
+        return;
     }
-    return epm[url.path()](url.params(), request.body());
+    epm[url.path()](rr, url.params(), request.body());
 }
 
 MAA_TOOLKIT_NS_END
