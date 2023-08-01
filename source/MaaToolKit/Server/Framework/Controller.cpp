@@ -19,7 +19,7 @@ void controller_callback(MaaString msg, MaaJsonString details_json, MaaCallbackT
 
 void init_maa_framework_controller(ApiDispatcher& disp)
 {
-    disp.register_route(ApiDispatcher::Method::post, "/api/controller/adb", [](RequestResponse& rr) {
+    disp.register_route("controller.create.adb", [](json::object req) -> std::optional<json::object> {
         struct Param
         {
             std::string adb;
@@ -80,16 +80,9 @@ void init_maa_framework_controller(ApiDispatcher& disp)
             }
         };
 
-        auto body = rr.request_body_json();
-        if (!body.has_value()) {
-            rr.reply_bad_request("json parse failed");
-            return;
-        }
-
-        auto pparam = Param::from_json(body.value());
+        auto pparam = Param::from_json(req);
         if (!pparam.has_value()) {
-            rr.reply_bad_request();
-            return;
+            return std::nullopt;
         }
         const auto& param = pparam.value();
 
@@ -97,7 +90,7 @@ void init_maa_framework_controller(ApiDispatcher& disp)
         handles[id] = MaaAdbControllerCreate(param.adb.c_str(), param.address.c_str(), param.type, param.config.c_str(),
                                              controller_callback, 0);
 
-        rr.reply_ok({ { "uuid", boost::uuids::to_string(id) } });
+        return json::object { { "uuid", boost::uuids::to_string(id) } };
     });
 }
 

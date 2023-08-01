@@ -1,28 +1,39 @@
 #include "ApiDispatcher.h"
+#include "Framework/Init.h"
 #include "JsonValidator.hpp"
 
 MAA_TOOLKIT_NS_BEGIN
 
-void ApiDispatcher::register_route(Method method, const std::string& path, RouteEndpoint endpoint)
+void ApiDispatcher::register_route(const std::string& name, RouteEndpoint endpoint)
 {
-    endpoints[method][path] = endpoint;
+    endpoints[name] = endpoint;
 }
 
-void ApiDispatcher::handle_route(RequestResponse& rr)
+std::optional<json::object> ApiDispatcher::handle_route(json::object request)
 {
-    const auto& request = rr.get_request();
+    auto action = require_key_as_string(request, "action");
+    if (!action.has_value()) {
+        return std::nullopt;
+    }
+    if (!endpoints.count(action.value())) {
+        return std::nullopt;
+    }
 
-    auto url = boost::urls::parse_origin_form(request.target()).value();
-    if (!endpoints.count(request.method())) {
-        rr.reply_bad_request("unknown method");
+    auto param = require_key(request, "param").value_or(json::object {});
+    if (!param.is_object()) {
+        return std::nullopt;
+    }
+
+    return endpoints[action.value()](param.as_object());
+}
+
+void ApiDispatcher::init()
+{
+    if (inited) {
         return;
     }
-    auto& epm = endpoints[request.method()];
-    if (!epm.count(url.path())) {
-        rr.reply_bad_request("unknown path");
-        return;
-    }
-    epm[url.path()](rr);
+    init_maa_framework(*this);
+    inited = true;
 }
 
 MAA_TOOLKIT_NS_END

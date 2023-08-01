@@ -13,16 +13,17 @@ class ApiDispatcher : public SingletonHolder<ApiDispatcher>
 {
 public:
     friend class SingletonHolder<ApiDispatcher>;
+    using RouteEndpoint = std::function<std::optional<json::object>(json::object)>;
 
-    using Method = boost::beast::http::verb;
+    void register_route(const std::string& name, RouteEndpoint endpoint);
+    std::optional<json::object> handle_route(json::object request);
 
-    using RouteEndpoint = std::function<void(RequestResponse&)>;
-
-    void register_route(Method method, const std::string& path, RouteEndpoint endpoint);
-    void handle_route(RequestResponse& rr);
+    void init();
 
 private:
-    std::map<Method, std::map<std::string, RouteEndpoint>> endpoints;
+    bool inited = false;
+
+    std::map<std::string, RouteEndpoint> endpoints;
 };
 
 MAA_TOOLKIT_NS_END

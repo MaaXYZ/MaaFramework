@@ -1,6 +1,6 @@
-#include "Server.h"
+#include "HttpServer.h"
 #include "ApiDispatcher.h"
-#include "Framework/Init.hpp"
+#include "Framework/Init.h"
 #include "RequestResponse.h"
 
 #include <meojson/json.hpp>
@@ -9,21 +9,31 @@ using tcp = boost::asio::ip::tcp;
 
 MAA_TOOLKIT_NS_BEGIN
 
-boost::beast::http::message_generator handle_request(
+static boost::beast::http::message_generator handle_request(
     boost::beast::http::request<boost::beast::http::string_body>&& request)
 {
     RequestResponse rr(std::move(request));
 
-    SingletonHolder<ApiDispatcher>::get_instance().handle_route(rr);
-
-    if (!rr.has_response()) {
-        rr.reply_error("internal error", boost::beast::http::status::internal_server_error);
+    if (rr.get_request().method() != boost::beast::http::verb::post) {
+        rr.reply_bad_request("only post supported");
+    }
+    else {
+        auto req = rr.request_body_json();
+        if (req.has_value()) {
+            SingletonHolder<ApiDispatcher>::get_instance().handle_route(req.value());
+            if (!rr.has_response()) {
+                rr.reply_error("internal error", boost::beast::http::status::internal_server_error);
+            }
+        }
+        else {
+            rr.reply_bad_request("json parse error");
+        }
     }
 
     return rr.take_response();
 }
 
-void handle_session(tcp::socket& socket)
+static void handle_session(tcp::socket& socket)
 {
     using namespace boost::beast;
 
@@ -60,13 +70,14 @@ bool HttpServer::start(std::string_view ip, uint16_t port)
     if (acceptor) {
         return false;
     }
+
+    SingletonHolder<ApiDispatcher>::get_instance().init();
+
     auto address = boost::asio::ip::make_address(ip);
 
     // TODO: 不知道为啥make_shared直接传参匹配不到
     tcp::acceptor acc { ctx, { address, port } };
     acceptor = std::make_shared<tcp::acceptor>(std::move(acc));
-
-    init_maa_framework(SingletonHolder<ApiDispatcher>::get_instance());
 
     stopping = false;
     dispatcher = std::make_shared<std::thread>([this]() {
