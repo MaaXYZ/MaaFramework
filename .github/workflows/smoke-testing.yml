@@ -56,7 +56,7 @@ jobs:
         run: |
           cd install
           copy bin\*.dll share
-          share\sample.exe
+          .\share\sample.exe
 
       - name: Upload Logs
         if: always()
