@@ -6,8 +6,63 @@
 #include <meojson/json.hpp>
 
 using tcp = boost::asio::ip::tcp;
+namespace websocket = boost::beast::websocket;
 
 MAA_TOOLKIT_NS_BEGIN
+
+inline void write_ws(websocket::stream<tcp::socket>& ws, const std::string& str)
+{
+    ws.write(boost::asio::buffer(str.c_str(), str.size() + 1));
+}
+
+static json::object handle_request_ws(websocket::stream<tcp::socket>& ws, boost::beast::flat_buffer& buffer)
+{
+    if (!ws.got_text()) {
+        return { { "success", false }, { "error", "binary not supported" } };
+    }
+
+    auto req = json::parse(boost::beast::buffers_to_string(buffer.data()));
+    if (!req || !req->is_object()) {
+        return { { "success", false }, { "error", "json parse failed" } };
+    }
+
+    auto res = SingletonHolder<ApiDispatcher>::get_instance().handle_route(req->as_object());
+    if (res.has_value()) {
+        return { { "success", true }, { "data", res.value() } };
+    }
+    else {
+        return { { "success", false }, { "error", "internal error" } };
+    }
+}
+
+static void handle_session_ws(tcp::socket& socket, boost::beast::http::request<boost::beast::http::string_body>& req)
+{
+    using namespace boost::beast;
+
+    websocket::stream<tcp::socket> ws(std::move(socket));
+    error_code ec;
+
+    ws.accept(req, ec);
+    if (ec) {
+        return;
+    }
+
+    while (true) {
+        flat_buffer buffer;
+
+        // Read a message
+        ws.read(buffer, ec);
+        if (ec == http::error::end_of_stream) {
+            break;
+        }
+        if (ec) {
+            // ERROR
+            break;
+        }
+
+        write_ws(ws, handle_request_ws(ws, buffer).to_string());
+    }
+}
 
 static boost::beast::http::message_generator handle_request(
     boost::beast::http::request<boost::beast::http::string_body>&& request)
@@ -49,6 +104,10 @@ static void handle_session(tcp::socket& socket)
         if (ec) {
             // ERROR
             break;
+        }
+        if (websocket::is_upgrade(request)) {
+            handle_session_ws(socket, request);
+            return;
         }
         http::message_generator msg = handle_request(std::move(request));
         auto keep_alive = msg.keep_alive();
