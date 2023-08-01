@@ -55,8 +55,8 @@ jobs:
       - name: Run Testing
         run: |
           cd install
-          copy share\controller_config.json bin\
-          .\bin\sample.exe
+          copy bin\*.dll share
+          share\sample.exe
 
       - name: Upload Logs
         if: always()
