@@ -22,12 +22,7 @@ void ApiDispatcher::handle_route(RequestResponse& rr)
         rr.reply_bad_request("unknown path");
         return;
     }
-    try {
-        epm[url.path()](rr);
-    }
-    catch (JsonValidateFailedException err) {
-        rr.reply_bad_request(err.what());
-    }
+    epm[url.path()](rr);
 }
 
 MAA_TOOLKIT_NS_END

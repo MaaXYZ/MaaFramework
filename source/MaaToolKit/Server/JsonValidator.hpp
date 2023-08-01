@@ -3,43 +3,43 @@
 
 MAA_TOOLKIT_NS_BEGIN
 
-struct JsonValidateFailedException : public std::exception
-{
-    JsonValidateFailedException(std::string s) : err(std::move(s)) {}
-
-    virtual const char* what() const noexcept override { return err.c_str(); }
-
-    std::string err;
-};
-
-inline json::value require_key(const json::object& obj, const std::string& key)
+inline std::optional<json::value> require_key(const json::object& obj, const std::string& key)
 {
     auto val = obj.find(key);
     if (!val.has_value()) {
-        throw JsonValidateFailedException("require key " + key);
+        return std::nullopt;
     }
     return val.value();
 }
 
-inline std::string require_key_as_string(const json::object& obj, const std::string& key)
+inline std::optional<std::string> require_key_as_string(const json::object& obj, const std::string& key)
 {
-    auto v = require_key(obj, key);
+    auto pv = require_key(obj, key);
+    if (!pv.has_value()) {
+        return std::nullopt;
+    }
+    auto& v = pv.value();
     if (!v.is_string()) {
-        throw JsonValidateFailedException("key " + key + " must be string");
+        return std::nullopt;
     }
     return v.as_string();
 }
 
-inline std::vector<std::string> require_key_as_string_array(const json::object& obj, const std::string& key)
+inline std::optional<std::vector<std::string>> require_key_as_string_array(const json::object& obj,
+                                                                           const std::string& key)
 {
-    auto v = require_key(obj, key);
+    auto pv = require_key(obj, key);
+    if (!pv.has_value()) {
+        return std::nullopt;
+    }
+    auto& v = pv.value();
     if (!v.is_array()) {
-        throw JsonValidateFailedException("key " + key + " must be string array");
+        return std::nullopt;
     }
     std::vector<std::string> res;
     for (const auto& va : v.as_array()) {
         if (!va.is_string()) {
-            throw JsonValidateFailedException("key " + key + " must be string array");
+            return std::nullopt;
         }
         res.push_back(va.as_string());
     }
