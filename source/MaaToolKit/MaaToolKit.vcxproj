@@ -20,8 +20,9 @@
     <ClCompile Include="Config\ConfigMgr.cpp" />
     <ClCompile Include="Server\ApiDispatcher.cpp" />
     <ClCompile Include="Server\Framework\Controller.cpp" />
+    <ClCompile Include="Server\Framework\Init.cpp" />
+    <ClCompile Include="Server\HttpServer.cpp" />
     <ClCompile Include="Server\RequestResponse.cpp" />
-    <ClCompile Include="Server\Server.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\include\MaaToolKit\MaaToolKitAPI.h" />
@@ -30,10 +31,10 @@
     <ClInclude Include="Config\ConfigMgr.h" />
     <ClInclude Include="Server\ApiDispatcher.h" />
     <ClInclude Include="Server\Framework\Controller.h" />
-    <ClInclude Include="Server\Framework\Init.hpp" />
+    <ClInclude Include="Server\Framework\Init.h" />
+    <ClInclude Include="Server\HttpServer.h" />
     <ClInclude Include="Server\JsonValidator.hpp" />
     <ClInclude Include="Server\RequestResponse.h" />
-    <ClInclude Include="Server\Server.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>16.0</VCProjectVersion>
