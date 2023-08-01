@@ -15,7 +15,8 @@ inline void write_ws(websocket::stream<tcp::socket>& ws, const std::string& str)
     ws.write(boost::asio::buffer(str.c_str(), str.size() + 1));
 }
 
-static json::object handle_request_ws(websocket::stream<tcp::socket>& ws, boost::beast::flat_buffer& buffer)
+static json::object handle_request_ws(websocket::stream<tcp::socket>& ws, boost::beast::flat_buffer& buffer,
+                                      ApiDispatcher::Callback callback)
 {
     if (!ws.got_text()) {
         return { { "success", false }, { "error", "binary not supported" } };
@@ -26,7 +27,7 @@ static json::object handle_request_ws(websocket::stream<tcp::socket>& ws, boost:
         return { { "success", false }, { "error", "json parse failed" } };
     }
 
-    auto res = SingletonHolder<ApiDispatcher>::get_instance().handle_route(req->as_object());
+    auto res = SingletonHolder<ApiDispatcher>::get_instance().handle_route(req->as_object(), callback);
     if (res.has_value()) {
         return { { "success", true }, { "data", res.value() } };
     }
@@ -47,6 +48,15 @@ static void handle_session_ws(tcp::socket& socket, boost::beast::http::request<b
         return;
     }
 
+    std::mutex mtx;
+    std::vector<std::string> msg;
+
+    auto append = [&mtx, &msg](const json::object& obj) {
+        std::string m = obj.to_string();
+        std::unique_lock<std::mutex> lock(mtx);
+        msg.emplace_back(std::move(m));
+    };
+
     while (true) {
         flat_buffer buffer;
 
@@ -60,7 +70,17 @@ static void handle_session_ws(tcp::socket& socket, boost::beast::http::request<b
             break;
         }
 
-        write_ws(ws, handle_request_ws(ws, buffer).to_string());
+        append(handle_request_ws(ws, buffer, append));
+
+        std::vector<std::string> temp;
+        {
+            std::unique_lock<std::mutex> lock(mtx);
+            temp.swap(msg);
+        }
+
+        for (const auto& m : temp) {
+            write_ws(ws, m);
+        }
     }
 }
 
@@ -75,7 +95,7 @@ static boost::beast::http::message_generator handle_request(
     else {
         auto req = rr.request_body_json();
         if (req.has_value()) {
-            SingletonHolder<ApiDispatcher>::get_instance().handle_route(req.value());
+            SingletonHolder<ApiDispatcher>::get_instance().handle_route(req.value(), [](const json::object&) {});
             if (!rr.has_response()) {
                 rr.reply_error("internal error", boost::beast::http::status::internal_server_error);
             }
