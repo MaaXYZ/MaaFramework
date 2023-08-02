@@ -2,8 +2,8 @@
 
 #include "../ApiDispatcher.h"
 
-MAA_TOOLKIT_NS_BEGIN
+MAA_TOOLKIT_SERVER_BEGIN
 
 void init_maa_framework(ApiDispatcher& disp);
 
-MAA_TOOLKIT_NS_END
+MAA_TOOLKIT_SERVER_END

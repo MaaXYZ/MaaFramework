@@ -7,7 +7,7 @@
 #include "Utils/Logger.hpp"
 #include "Utils/Ranges.hpp"
 
-MAA_TOOLKIT_NS_BEGIN
+MAA_TOOLKIT_CONFIG_NS_BEGIN
 
 bool ConfigMgr::init()
 {
@@ -128,4 +128,4 @@ const std::filesystem::path& ConfigMgr::config_path() const
 #endif
 }
 
-MAA_TOOLKIT_NS_END
+MAA_TOOLKIT_CONFIG_NS_END

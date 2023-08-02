@@ -1,7 +1,7 @@
 #include "Conf/Conf.h"
 #include <meojson/json.hpp>
 
-MAA_TOOLKIT_NS_BEGIN
+MAA_TOOLKIT_SERVER_BEGIN
 
 inline std::optional<json::value> require_key(const json::object& obj, const std::string& key)
 {
@@ -46,4 +46,4 @@ inline std::optional<std::vector<std::string>> require_key_as_string_array(const
     return res;
 }
 
-MAA_TOOLKIT_NS_END
+MAA_TOOLKIT_SERVER_END

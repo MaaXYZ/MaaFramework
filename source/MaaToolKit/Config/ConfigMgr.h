@@ -10,14 +10,14 @@
 #include "Config.h"
 #include "Utils/SingletonHolder.hpp"
 
-MAA_TOOLKIT_NS_BEGIN
+MAA_TOOLKIT_CONFIG_NS_BEGIN
 
 class ConfigMgr : public SingletonHolder<ConfigMgr>
 {
     friend class SingletonHolder<ConfigMgr>;
 
 public:
-    inline static const std::string kConfigKey = "Configuration";
+    inline static const std::string kConfigKey = "Config";
     inline static const std::string kCurrentKey = "Current";
 
 public:
@@ -28,7 +28,7 @@ public:
     bool uninit();
 
 private:
-    ConfigMgr() = default;
+    ConfigMgr();
 
     bool parse_json();
     bool create_default_config();
@@ -38,9 +38,8 @@ private:
     const std::filesystem::path& config_path() const;
 
 private:
-    std::vector<std::pair<std::string, Config>> configs_vec_; // for C API
-    std::map<std::string, Config> configs_map_;
+    std::vector<Config> configs_vec_; // for C API
     std::string current_;
 };
 
-MAA_TOOLKIT_NS_END
+MAA_TOOLKIT_CONFIG_NS_END

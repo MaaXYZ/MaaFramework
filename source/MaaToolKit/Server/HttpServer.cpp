@@ -8,7 +8,7 @@
 using tcp = boost::asio::ip::tcp;
 namespace websocket = boost::beast::websocket;
 
-MAA_TOOLKIT_NS_BEGIN
+MAA_TOOLKIT_SERVER_BEGIN
 
 inline void write_ws(websocket::stream<tcp::socket>& ws, const std::string& str)
 {
@@ -164,4 +164,4 @@ bool HttpServer::stop()
     return true;
 }
 
-MAA_TOOLKIT_NS_END
+MAA_TOOLKIT_SERVER_END

@@ -7,7 +7,7 @@
 
 #include <meojson/json.hpp>
 
-MAA_TOOLKIT_NS_BEGIN
+MAA_TOOLKIT_CONFIG_NS_BEGIN
 
 class Config // TODO:  public MaaToolKitConfigAPI
 {
@@ -16,4 +16,4 @@ public:
     bool from_json(const json::value& json);
 };
 
-MAA_TOOLKIT_NS_END
+MAA_TOOLKIT_CONFIG_NS_END

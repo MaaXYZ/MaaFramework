@@ -6,7 +6,7 @@
 #include <string>
 #include <thread>
 
-MAA_TOOLKIT_NS_BEGIN
+MAA_TOOLKIT_SERVER_BEGIN
 
 class HttpServer : public SingletonHolder<HttpServer>
 {
@@ -27,4 +27,4 @@ private:
     std::shared_ptr<std::thread> dispatcher = nullptr;
 };
 
-MAA_TOOLKIT_NS_END
+MAA_TOOLKIT_SERVER_END

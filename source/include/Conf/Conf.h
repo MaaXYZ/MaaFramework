@@ -65,6 +65,14 @@
 #define MAA_AUTO_DEDUCED_ZERO_INIT_END
 #endif
 
+#ifndef NOMINMAX
+#define NOMINMAX
+#endif
+
+#ifndef MAA_VERSION
+#define MAA_VERSION "DEBUG_VERSION"
+#endif
+
 #define MAA_NS MaaNS
 #define MAA_NS_BEGIN \
     namespace MAA_NS \
@@ -113,10 +121,14 @@
     {
 #define MAA_TOOLKIT_NS_END }
 
-#ifndef NOMINMAX
-#define NOMINMAX
-#endif
+#define MAA_TOOLKIT_CONFIG_NS MAA_TOOLKIT_NS::ConfigNS
+#define MAA_TOOLKIT_CONFIG_NS_BEGIN \
+    namespace MAA_TOOLKIT_CONFIG_NS \
+    {
+#define MAA_TOOLKIT_CONFIG_NS_END }
 
-#ifndef MAA_VERSION
-#define MAA_VERSION "DEBUG_VERSION"
-#endif
+#define MAA_TOOLKIT_SERVER_NS MAA_TOOLKIT_NS::ServerNS
+#define MAA_TOOLKIT_SERVER_NS_BEGIN \
+    namespace MAA_TOOLKIT_SERVER_NS \
+    {
+#define MAA_TOOLKIT_SERVER_NS_END }

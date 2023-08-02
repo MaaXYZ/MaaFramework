@@ -7,12 +7,12 @@ extern "C"
 {
 #endif
 
-    MaaBool MAA_TOOLKIT_API MaaToolKitInit();
-    MaaBool MAA_TOOLKIT_API MaaToolKitUninit();
-
     MaaSize MAA_TOOLKIT_API MaaToolKitConfigSize();
     MaaToolKitConfigHandle MAA_TOOLKIT_API MaaToolKitGetConfig(MaaSize index);
     MaaSize MAA_TOOLKIT_API MaaToolKitGetCurrentConfigIndex();
+
+    MaaToolKitConfigHandle MAA_TOOLKIT_API MaaToolKitGetCurrentConfig();
+    MaaBool MAA_TOOLKIT_API MaaToolKitSetCurrentConfig(MaaToolKitConfigHandle config_handle);
 
     MaaToolKitConfigHandle MAA_TOOLKIT_API MaaToolKitAddConfig(MaaString config_name, MaaString copy_from);
     MaaBool MAA_TOOLKIT_API MaaToolKitDelConfig(MaaString config_name);

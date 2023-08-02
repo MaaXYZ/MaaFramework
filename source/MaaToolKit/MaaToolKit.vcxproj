@@ -28,6 +28,7 @@
     <ClInclude Include="..\..\include\MaaToolKit\MaaToolKitAPI.h" />
     <ClInclude Include="..\..\include\MaaToolKit\MaaToolKitDef.h" />
     <ClInclude Include="Config\Config.h" />
+    <ClInclude Include="Config\ConfigAPI.h" />
     <ClInclude Include="Config\ConfigMgr.h" />
     <ClInclude Include="Server\ApiDispatcher.h" />
     <ClInclude Include="Server\Framework\Controller.h" />

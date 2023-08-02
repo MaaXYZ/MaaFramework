@@ -1,6 +1,6 @@
 #include "Config.h"
 
-MAA_TOOLKIT_NS_BEGIN
+MAA_TOOLKIT_CONFIG_NS_BEGIN
 
 json::value Config::to_json() const
 {
@@ -13,4 +13,4 @@ bool Config::from_json(const json::value& json)
     return false;
 }
 
-MAA_TOOLKIT_NS_END
+MAA_TOOLKIT_CONFIG_NS_END
