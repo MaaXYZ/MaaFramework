@@ -286,8 +286,8 @@ bool InstanceMgr::run_task(TaskId id, TaskPtr task_ptr)
     const json::value details = {
         { "id", id },
         { "task", task_ptr->first_task_name() },
-        { "uuid", inter_resource() ? inter_resource()->get_hash() : std::string() },
-        { "hash", inter_controller() ? inter_controller()->get_uuid() : std::string() },
+        { "hash", inter_resource() ? inter_resource()->get_hash() : std::string() },
+        { "uuid", inter_controller() ? inter_controller()->get_uuid() : std::string() },
     };
 
     notifier.notify(MaaMsg_Task_Started, details);
