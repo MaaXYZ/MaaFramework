@@ -16,14 +16,22 @@ public:
 
 public:
     virtual ~GlobalOptionMgr() = default;
-
     bool set_option(MaaGlobalOption key, MaaOptionValue value, MaaOptionValueSize val_size);
+
+public:
+    bool debug_mode() const { return debug_mode_; }
+    const std::filesystem::path& logging_path() const { return logging_path_; }
 
 private:
     GlobalOptionMgr() = default;
 
 private:
     bool set_logging(MaaOptionValue value, MaaOptionValueSize val_size);
+    bool set_debug_mode(MaaOptionValue value, MaaOptionValueSize val_size);
+
+private:
+    std::filesystem::path logging_path_;
+    bool debug_mode_ = false;
 };
 
 MAA_NS_END

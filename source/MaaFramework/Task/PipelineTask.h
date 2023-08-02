@@ -64,12 +64,13 @@ private:
 private:
     std::optional<RecResult> recognize(const cv::Mat& image, const MAA_PIPELINE_RES_NS::TaskData& task_data);
     std::optional<RecResult> direct_hit(const cv::Mat& image, const MAA_VISION_NS::DirectHitParam& param,
-                                        const cv::Rect& cache);
+                                        const cv::Rect& cache, const std::string& name);
     std::optional<RecResult> template_match(const cv::Mat& image, const MAA_VISION_NS::TemplMatchingParam& param,
-                                            const cv::Rect& cache);
-    std::optional<RecResult> ocr(const cv::Mat& image, const MAA_VISION_NS::OcrParam& param, const cv::Rect& cache);
+                                            const cv::Rect& cache, const std::string& name);
+    std::optional<RecResult> ocr(const cv::Mat& image, const MAA_VISION_NS::OcrParam& param, const cv::Rect& cache,
+                                 const std::string& name);
     std::optional<RecResult> custom_recognize(const cv::Mat& image, const MAA_VISION_NS::CustomParam& param,
-                                              const cv::Rect& cache);
+                                              const cv::Rect& cache, const std::string& name);
 
 private:
     void click(const MAA_PIPELINE_RES_NS::Action::ClickParam& param, const cv::Rect& cur_box);

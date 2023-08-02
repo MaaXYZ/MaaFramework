@@ -2,8 +2,9 @@
 
 #include <regex>
 
-#include "Utils/Logger.hpp"
 #include "Resource/ResourceMgr.h"
+#include "Utils/ImageIo.hpp"
+#include "Utils/Logger.hpp"
 #include "Utils/Ranges.hpp"
 #include "Utils/StringMisc.hpp"
 
@@ -37,7 +38,7 @@ OCRer::ResultOpt OCRer::analyze() const
         ++iter;
     }
 
-    LogTrace << VAR(results) << VAR(param_.text);
+    LogTrace << name_ << VAR(results) << VAR(param_.text);
 
     return results.empty() ? std::nullopt : std::make_optional(std::move(results));
 }
@@ -96,6 +97,12 @@ OCRer::ResultsVec OCRer::predict_det_and_rec(const cv::Rect& roi) const
     }
 
     ResultsVec results;
+
+    cv::Mat image_draw;
+    if (debug_draw_) {
+        image_draw = draw_roi(roi);
+    }
+
     for (size_t i = 0; i != ocr_result.text.size(); ++i) {
         // the raw_box rect like ↓
         // 0 - 1
@@ -107,16 +114,23 @@ OCRer::ResultsVec OCRer::predict_det_and_rec(const cv::Rect& roi) const
         auto [top, bottom] = MAA_RNS::ranges::minmax(y_collect);
 
         cv::Rect my_box(left + roi.x, top + roi.y, right - left, bottom - top);
-#ifdef MAA_DEBUG
-        cv::rectangle(image_draw_, my_box, cv::Scalar(0, 0, 255), 2);
-#endif
-
+        if (debug_draw_) {
+            const auto color = cv::Scalar(0, 0, 255);
+            cv::rectangle(image_draw, my_box, color, 1);
+            std::string flag =
+                MAA_FMT::format("{}: [{}, {}, {}, {}]", i, my_box.x, my_box.y, my_box.width, my_box.height);
+            cv::putText(image_draw, flag, cv::Point(my_box.x, my_box.y - 5), cv::FONT_HERSHEY_PLAIN, 1.2, color, 1);
+        }
         results.emplace_back(
             Result { .text = std::move(ocr_result.text.at(i)), .box = my_box, .score = ocr_result.rec_scores.at(i) });
     }
 
     auto costs = duration_since(start_time);
     LogTrace << VAR(results) << VAR(image_roi.size()) << VAR(costs);
+
+    if (save_draw_) {
+        save_image(image_draw);
+    }
 
     return results;
 }
@@ -146,14 +160,19 @@ OCRer::Result OCRer::predict_only_rec(const cv::Rect& roi) const
         return {};
     }
 
-#ifdef MAA_DEBUG
-    cv::rectangle(image_draw_, roi, cv::Scalar(0, 0, 255), 2);
-#endif
+    cv::Mat image_draw;
+    if (debug_draw_) {
+        image_draw = draw_roi(roi);
+    }
 
     Result result { .text = std::move(rec_text), .box = roi, .score = rec_score };
 
     auto costs = duration_since(start_time);
     LogTrace << VAR(result) << VAR(image_roi.size()) << VAR(costs);
+
+    if (save_draw_) {
+        save_image(image_draw);
+    }
 
     return result;
 }

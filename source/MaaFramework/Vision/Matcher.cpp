@@ -14,12 +14,12 @@ Matcher::ResultOpt Matcher::analyze() const
         return std::nullopt;
     }
     if (param_.template_images.empty()) {
-        LogError << "templates is empty" << VAR(param_.template_paths);
+        LogError << name_ << "templates is empty" << VAR(param_.template_paths);
         return std::nullopt;
     }
 
     if (param_.template_images.size() != param_.thresholds.size()) {
-        LogError << "templates.size() != thresholds.size()" << VAR(param_.template_images.size())
+        LogError << name_ << "templates.size() != thresholds.size()" << VAR(param_.template_images.size())
                  << VAR(param_.thresholds.size());
         return std::nullopt;
     }
@@ -27,7 +27,7 @@ Matcher::ResultOpt Matcher::analyze() const
     for (size_t i = 0; i != param_.template_images.size(); ++i) {
         const cv::Mat& templ = param_.template_images.at(i);
         if (templ.empty()) {
-            LogWarn << "template is empty" << VAR(param_.template_paths) << VAR(i) << VAR(templ);
+            LogWarn << name_ << "template is empty" << VAR(param_.template_paths) << VAR(i) << VAR(templ);
             continue;
         }
         double threshold = param_.thresholds.at(i);
@@ -36,7 +36,7 @@ Matcher::ResultOpt Matcher::analyze() const
         auto res = traverse_rois(templ, threshold);
 
         auto costs = duration_since(start);
-        LogTrace << param_.template_paths.at(i) << VAR(res.score) << VAR(threshold) << VAR(costs);
+        LogTrace << name_ << param_.template_paths.at(i) << VAR(res.score) << VAR(threshold) << VAR(costs);
 
         if (res.score > threshold) {
             return res;
@@ -84,6 +84,27 @@ Matcher::Result Matcher::match_and_postproc(const cv::Rect& roi, const cv::Mat& 
     }
 
     cv::Rect box(max_loc.x + roi.x, max_loc.y + roi.y, templ.cols, templ.rows);
+
+    cv::Mat image_draw;
+    if (debug_draw_) {
+        int raw_width = image_.cols;
+        image_draw = draw_roi(roi);
+
+        const auto color = cv::Scalar(0, 0, 255);
+        cv::rectangle(image_draw, box, color, 1);
+        std::string flag =
+            MAA_FMT::format("Res: {:.3f}, [{}, {}, {}, {}]", max_val, box.x, box.y, box.width, box.height);
+        cv::putText(image_draw, flag, cv::Point(box.x, box.y - 5), cv::FONT_HERSHEY_PLAIN, 1.2, color, 1);
+
+        cv::copyMakeBorder(image_draw, image_draw, 0, 0, 0, templ.cols, cv::BORDER_CONSTANT, cv::Scalar(0, 0, 0));
+        cv::Mat draw_templ_roi = image_draw(cv::Rect(raw_width, 0, templ.cols, templ.rows));
+        templ.copyTo(draw_templ_roi);
+        cv::line(image_draw, cv::Point(raw_width, 0), cv::Point(box.x, box.y), color, 1);
+    }
+
+    if (save_draw_) {
+        save_image(image_draw);
+    }
 
     return Result { .box = box, .score = max_val };
 }

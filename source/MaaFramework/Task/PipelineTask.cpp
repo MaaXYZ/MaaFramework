@@ -253,23 +253,23 @@ std::optional<PipelineTask::RecResult> PipelineTask::recognize(const cv::Mat& im
     std::optional<PipelineTask::RecResult> result;
     switch (task_data.rec_type) {
     case Type::DirectHit:
-        result = direct_hit(image, std::get<DirectHitParam>(task_data.rec_param), cache);
+        result = direct_hit(image, std::get<DirectHitParam>(task_data.rec_param), cache, task_data.name);
         break;
 
     case Type::TemplateMatch:
-        result = template_match(image, std::get<TemplMatchingParam>(task_data.rec_param), cache);
+        result = template_match(image, std::get<TemplMatchingParam>(task_data.rec_param), cache, task_data.name);
         break;
 
     case Type::OCR:
-        result = ocr(image, std::get<OcrParam>(task_data.rec_param), cache);
+        result = ocr(image, std::get<OcrParam>(task_data.rec_param), cache, task_data.name);
         break;
 
     case Type::Custom:
-        result = custom_recognize(image, std::get<CustomParam>(task_data.rec_param), cache);
+        result = custom_recognize(image, std::get<CustomParam>(task_data.rec_param), cache, task_data.name);
         break;
 
     default:
-        LogError << "Unknown type" << VAR(static_cast<int>(task_data.rec_type));
+        LogError << "Unknown type" << VAR(static_cast<int>(task_data.rec_type)) << VAR(task_data.name);
         return std::nullopt;
     }
 
@@ -281,23 +281,25 @@ std::optional<PipelineTask::RecResult> PipelineTask::recognize(const cv::Mat& im
 
 std::optional<PipelineTask::RecResult> PipelineTask::direct_hit(const cv::Mat& image,
                                                                 const MAA_VISION_NS::DirectHitParam& param,
-                                                                const cv::Rect& cache)
+                                                                const cv::Rect& cache, const std::string& name)
 {
     std::ignore = image;
     std::ignore = cache;
+    std::ignore = name;
 
     return RecResult { .box = param.roi.empty() ? cv::Rect() : param.roi.front() };
 }
 
 std::optional<PipelineTask::RecResult> PipelineTask::template_match(const cv::Mat& image,
                                                                     const MAA_VISION_NS::TemplMatchingParam& param,
-                                                                    const cv::Rect& cache)
+                                                                    const cv::Rect& cache, const std::string& name)
 {
     using namespace MAA_VISION_NS;
 
     Matcher matcher(inst_, image);
     matcher.set_param(param);
     matcher.set_cache(cache);
+    matcher.set_name(name);
 
     auto ret = matcher.analyze();
     if (!ret) {
@@ -307,15 +309,16 @@ std::optional<PipelineTask::RecResult> PipelineTask::template_match(const cv::Ma
 }
 
 std::optional<PipelineTask::RecResult> PipelineTask::ocr(const cv::Mat& image, const MAA_VISION_NS::OcrParam& param,
-                                                         const cv::Rect& cache)
+                                                         const cv::Rect& cache, const std::string& name)
 {
     using namespace MAA_VISION_NS;
 
-    OCRer ocer(inst_, image);
-    ocer.set_param(param);
-    ocer.set_cache(cache);
+    OCRer ocrer(inst_, image);
+    ocrer.set_param(param);
+    ocrer.set_cache(cache);
+    ocrer.set_name(name);
 
-    auto ret = ocer.analyze();
+    auto ret = ocrer.analyze();
     if (!ret) {
         return std::nullopt;
     }
@@ -329,7 +332,7 @@ std::optional<PipelineTask::RecResult> PipelineTask::ocr(const cv::Mat& image, c
 
 std::optional<PipelineTask::RecResult> PipelineTask::custom_recognize(const cv::Mat& image,
                                                                       const MAA_VISION_NS::CustomParam& param,
-                                                                      const cv::Rect& cache)
+                                                                      const cv::Rect& cache, const std::string& name)
 {
     using namespace MAA_VISION_NS;
 
@@ -347,6 +350,7 @@ std::optional<PipelineTask::RecResult> PipelineTask::custom_recognize(const cv::
     }
     recognizer->set_image(image);
     recognizer->set_param(param);
+    recognizer->set_name(name);
 
     auto ret = recognizer->analyze();
     if (!ret) {

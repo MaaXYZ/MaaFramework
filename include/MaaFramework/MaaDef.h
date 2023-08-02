@@ -45,6 +45,9 @@ enum MaaGlobalOptionEnum
 
     // value: string, log dir, eg: "C:\\Users\\Administrator\\Desktop\\log"; val_size: string length
     MaaGlobalOption_Logging = 1,
+
+    // value: bool, eg: true; val_size: sizeof(bool)
+    MaaGlobalOption_DebugMode = 2,
 };
 
 typedef MaaOption MaaResOption;
