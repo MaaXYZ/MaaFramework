@@ -4,8 +4,6 @@
 
 #include "MaaFramework/MaaDef.h"
 
-typedef uint16_t MaaPort;
-
 struct MaaToolKitConfigAPI;
 typedef struct MaaToolKitConfigAPI* MaaToolKitConfigHandle;
 

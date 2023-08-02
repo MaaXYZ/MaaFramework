@@ -81,7 +81,7 @@ bool demo_waiting()
     }
 
     auto task_id = MaaPostTask(maa_handle, task_name.c_str(), MaaTaskParam_Empty);
-    MaaTaskWait(maa_handle, task_id);
+    MaaWaitTask(maa_handle, task_id);
 
     destroy();
 

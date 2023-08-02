@@ -83,7 +83,7 @@ extern "C"
     MaaBool MAA_FRAMEWORK_API MaaSetTaskParam(MaaInstanceHandle inst, MaaTaskId id, MaaJsonString param);
 
     MaaStatus MAA_FRAMEWORK_API MaaTaskStatus(MaaInstanceHandle inst, MaaTaskId id);
-    MaaStatus MAA_FRAMEWORK_API MaaTaskWait(MaaInstanceHandle inst, MaaTaskId id);
+    MaaStatus MAA_FRAMEWORK_API MaaWaitTask(MaaInstanceHandle inst, MaaTaskId id);
     MaaBool MAA_FRAMEWORK_API MaaTaskAllFinished(MaaInstanceHandle inst);
 
     void MAA_FRAMEWORK_API MaaStop(MaaInstanceHandle inst);

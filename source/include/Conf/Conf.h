@@ -99,13 +99,14 @@
 
 /* MaaControlUnit */
 
-#define MAA_CTRL_UNIT_NS MAA_CTRL_NS::Unit
+#define MAA_CTRL_UNIT_NS MAA_CTRL_NS::UnitNs
 #define MAA_CTRL_UNIT_NS_BEGIN \
     namespace MAA_CTRL_UNIT_NS \
     {
 #define MAA_CTRL_UNIT_NS_END }
 
 /* MaaToolKit */
+
 #define MAA_TOOLKIT_NS MAA_NS::ToolKitNS
 #define MAA_TOOLKIT_NS_BEGIN \
     namespace MAA_TOOLKIT_NS \

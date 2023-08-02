@@ -444,7 +444,7 @@ MaaStatus MaaTaskStatus(MaaInstanceHandle inst, MaaTaskId id)
     return inst->status(id);
 }
 
-MaaStatus MaaTaskWait(MaaInstanceHandle inst, MaaTaskId id)
+MaaStatus MaaWaitTask(MaaInstanceHandle inst, MaaTaskId id)
 {
     // LogFunc << VAR_VOIDP(inst) << VAR(id);
 
