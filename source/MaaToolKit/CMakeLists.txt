@@ -13,11 +13,12 @@ target_compile_definitions(MaaToolKit PRIVATE MAA_TOOLKIT_EXPORTS)
 
 target_link_libraries(MaaToolKit MaaFramework MaaUtils HeaderOnlyLibraries Boost::system Boost::url)
 
-install(TARGETS MaaToolKit
-    RUNTIME DESTINATION bin
-    LIBRARY DESTINATION bin
-    PUBLIC_HEADER DESTINATION include
-    ARCHIVE DESTINATION lib
-)
+# WIP, do not install for now
+# install(TARGETS MaaToolKit
+#     RUNTIME DESTINATION bin
+#     LIBRARY DESTINATION bin
+#     PUBLIC_HEADER DESTINATION include
+#     ARCHIVE DESTINATION lib
+# )
 
 source_group(TREE ${CMAKE_SOURCE_DIR} FILES ${maa_toolkit_src})
