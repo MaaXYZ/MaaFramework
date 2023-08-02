@@ -83,6 +83,7 @@ jobs:
           rm -rf install/bin/msvc-debug
 
       - uses: actions/upload-artifact@v3
+        if: always()
         with:
           name: MAA-win-${{ matrix.arch }}
           path: "install"
