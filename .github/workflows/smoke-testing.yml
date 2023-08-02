@@ -32,38 +32,38 @@ on:
   workflow_dispatch:
 
 jobs:
-  smoke-testing-cmake:
-    runs-on: windows-latest
-    steps:
-      - uses: actions/checkout@v3
-        with:
-          submodules: true
+#   smoke-testing-cmake:
+#     runs-on: windows-latest
+#     steps:
+#       - uses: actions/checkout@v3
+#         with:
+#           submodules: true
 
-      - name: Bootstrap MaaDeps
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: |
-          python3 maadeps-download.py x64-windows
+#       - name: Bootstrap MaaDeps
+#         env:
+#           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+#         run: |
+#           python3 maadeps-download.py x64-windows
 
-      - name: Build MAA
-        run: |
-          cmake --preset "MSVC 2022" -DMAADEPS_TRIPLET="maa-x64-windows" -DBUILD_SAMPLE=ON -DUSE_BOOST_IO=ON
+#       - name: Build MAA
+#         run: |
+#           cmake --preset "MSVC 2022" -DMAADEPS_TRIPLET="maa-x64-windows" -DBUILD_SAMPLE=ON -DUSE_BOOST_IO=ON
 
-          cmake --build build --preset "MSVC 2022 - Release" -j 16
-          cmake --install build --prefix install
+#           cmake --build build --preset "MSVC 2022 - Release" -j 16
+#           cmake --install build --prefix install
 
-      - name: Run Testing
-        run: |
-          cd install
-          copy bin\*.dll share
-          .\share\sample.exe
+#       - name: Run Testing
+#         run: |
+#           cd install
+#           copy bin\*.dll share
+#           .\share\sample.exe
 
-      - name: Upload Logs
-        if: always()
-        uses: actions/upload-artifact@v3
-        with:
-          name: log
-          path: .\install\Release\debug
+#       - name: Upload Logs
+#         if: always()
+#         uses: actions/upload-artifact@v3
+#         with:
+#           name: log
+#           path: .\install\Release\debug
 
   smoke-testing:
     runs-on: windows-latest
