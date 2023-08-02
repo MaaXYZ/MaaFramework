@@ -18,6 +18,7 @@
     <ClCompile Include="API\MaaToolKitAPI.cpp" />
     <ClCompile Include="Config\Config.cpp" />
     <ClCompile Include="Config\ConfigMgr.cpp" />
+    <ClCompile Include="Config\Task.cpp" />
     <ClCompile Include="Server\ApiDispatcher.cpp" />
     <ClCompile Include="Server\Framework\Controller.cpp" />
     <ClCompile Include="Server\Framework\Init.cpp" />
@@ -30,6 +31,7 @@
     <ClInclude Include="Config\Config.h" />
     <ClInclude Include="Config\ConfigAPI.h" />
     <ClInclude Include="Config\ConfigMgr.h" />
+    <ClInclude Include="Config\Task.h" />
     <ClInclude Include="Server\ApiDispatcher.h" />
     <ClInclude Include="Server\Framework\Controller.h" />
     <ClInclude Include="Server\Framework\Init.h" />

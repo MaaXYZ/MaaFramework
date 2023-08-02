@@ -42,20 +42,20 @@ extern "C"
     MaaToolKitTaskHandle MAA_TOOLKIT_API MaaToolKitAddTask(MaaToolKitConfigHandle config_handle, MaaString task_name,
                                                            MaaToolKitTaskHandle copy_from);
     MaaBool MAA_TOOLKIT_API MaaToolKitDelTask(MaaToolKitConfigHandle config_handle, MaaString task_name);
+    MaaBool MAA_TOOLKIT_API MaaToolKitSetTaskIndex(MaaToolKitConfigHandle config_handle, MaaString task_name,
+                                                   MaaSize new_index);
 
     MaaString MAA_TOOLKIT_API MaaToolKitGetTaskName(MaaToolKitTaskHandle task_handle);
     MaaBool MAA_TOOLKIT_API MaaToolKitSetTaskName(MaaToolKitTaskHandle task_handle, MaaString new_name);
     MaaString MAA_TOOLKIT_API MaaToolKitGetTaskDescription(MaaToolKitConfigHandle config_handle);
     MaaBool MAA_TOOLKIT_API MaaToolKitSetTaskDescription(MaaToolKitConfigHandle config_handle,
-                                                           MaaString new_description);
+                                                         MaaString new_description);
     MaaString MAA_TOOLKIT_API MaaToolKitGetTaskType(MaaToolKitTaskHandle task_handle);
     MaaBool MAA_TOOLKIT_API MaaToolKitSetTaskType(MaaToolKitTaskHandle task_handle, MaaString new_type);
     MaaJsonString MAA_TOOLKIT_API MaaToolKitGetTaskParam(MaaToolKitTaskHandle task_handle);
     MaaBool MAA_TOOLKIT_API MaaToolKitSetTaskParam(MaaToolKitTaskHandle task_handle, MaaJsonString new_param);
     MaaBool MAA_TOOLKIT_API MaaToolKitGetTaskEnabled(MaaToolKitTaskHandle task_handle);
     MaaBool MAA_TOOLKIT_API MaaToolKitSetTaskEnabled(MaaToolKitTaskHandle task_handle, MaaBool new_enabled);
-    MaaBool MAA_TOOLKIT_API MaaToolKitGetTaskIndex(MaaToolKitTaskHandle task_handle);
-    MaaBool MAA_TOOLKIT_API MaaToolKitSetTaskIndex(MaaToolKitTaskHandle task_handle, MaaBool new_enabled);
 
     MaaBool MAA_TOOLKIT_API MaaToolKitPostAllTask(MaaToolKitConfigHandle config_handle);
     MaaStatus MAA_TOOLKIT_API MaaToolKitWaitAllTask(MaaToolKitConfigHandle config_handle);
