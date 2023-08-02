@@ -73,17 +73,14 @@ jobs:
           cmake --preset "${{ matrix.arch == 'x86_64' && 'MSVC 2022' || 'MSVC 2022 ARM' }}" -DMAADEPS_TRIPLET="maa-${{ matrix.arch == 'x86_64' && 'x64' || 'arm64' }}-windows" -DMAA_VERSION='${{ needs.meta.outputs.tag }}'
 
           cmake --build build --preset "${{ matrix.arch == 'x86_64' && 'MSVC 2022' || 'MSVC 2022 ARM' }} - Release" -j 16
+
+      - name: Install
+        shell: bash
+        if: always()
+        run: |
           cmake --install build --prefix install
-
-      - name: Remove msvc-debug
-        shell: bash
-        run: |
-          rm -rf install/bin/msvc-debug
-
-      - name: Copy docs
-        shell: bash
-        run: |
           cp -r docs install
+          rm -rf install/bin/msvc-debug
 
       - uses: actions/upload-artifact@v3
         with:
@@ -148,13 +145,16 @@ jobs:
             -DMAA_VERSION='${{ needs.meta.outputs.tag }}'
 
           cmake --build build --preset 'NinjaMulti - Release' -j 16
-          cmake --install build --prefix install
 
-      - name: Copy docs
+      - name: Install
+        shell: bash
+        if: always()
         run: |
+          cmake --install build --prefix install
           cp -r docs install
 
       - uses: actions/upload-artifact@v3
+        if: always()
         with:
           name: MAA-linux-${{ matrix.arch }}
           path: "install"
@@ -208,13 +208,16 @@ jobs:
             -DMAA_VERSION='${{ needs.meta.outputs.tag }}'
 
           cmake --build build --preset 'NinjaMulti - Release' -j 16
-          cmake --install build --prefix install
 
-      - name: Copy docs
+      - name: Install
+        shell: bash
+        if: always()
         run: |
+          cmake --install build --prefix install
           cp -r docs install
 
       - uses: actions/upload-artifact@v3
+        if: always()
         with:
           name: MAA-macos-${{ matrix.arch }}
           path: "install"
