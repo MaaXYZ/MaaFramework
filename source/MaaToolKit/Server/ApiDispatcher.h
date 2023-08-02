@@ -14,11 +14,10 @@ class ApiDispatcher : public SingletonHolder<ApiDispatcher>
 public:
     friend class SingletonHolder<ApiDispatcher>;
 
-    using Callback = std::function<void(const json::object&)>;
-    using RouteEndpoint = std::function<std::optional<json::object>(json::object, Callback)>;
+    using RouteEndpoint = std::function<std::optional<json::object>(json::object)>;
 
     void register_route(const std::string& name, RouteEndpoint endpoint);
-    std::optional<json::object> handle_route(json::object request, Callback callback);
+    std::optional<json::object> handle_route(json::object request);
 
     void init();
 

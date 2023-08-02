@@ -215,111 +215,160 @@ auto cfg = R"({
 
 struct ControllerInfo
 {
+    std::mutex lock;
     MaaControllerHandle handle;
-    ApiDispatcher::Callback callback;
+    std::vector<json::object> callback;
 };
 
 auto generator = boost::uuids::random_generator();
 auto from_str = boost::uuids::string_generator();
+std::mutex handle_mtx;
 std::map<boost::uuids::uuid, ControllerInfo*> handles;
 
 void controller_callback(MaaString msg, MaaJsonString details_json, MaaCallbackTransparentArg callback_arg)
 {
     ControllerInfo* info = reinterpret_cast<ControllerInfo*>(callback_arg);
-    info->callback(
-        { { "msg", msg }, { "detail", json::parse(std::string_view(details_json)).value_or(json::object {}) } });
+
+    std::unique_lock<std::mutex> lock(info->lock);
+    info->callback.emplace_back(json::object {
+        { "msg", msg }, { "detail", json::parse(std::string_view(details_json)).value_or(json::object {}) } });
 }
 
 void init_maa_framework_controller(ApiDispatcher& disp)
 {
-    disp.register_route("controller.create.adb",
-                        [](json::object req, ApiDispatcher::Callback callback) -> std::optional<json::object> {
-                            struct Param
-                            {
-                                std::string adb;
-                                std::string address;
-                                MaaAdbControllerType type;
-                                std::string config;
+    disp.register_route("controller.create.adb", [](json::object req) -> std::optional<json::object> {
+        struct Param
+        {
+            std::string adb;
+            std::string address;
+            MaaAdbControllerType type;
+            std::string config;
 
-                                static std::optional<Param> from_json(const json::object& obj)
-                                {
-                                    static std::map<std::string, MaaAdbControllerType> typeIdx = {
-                                        { "touch.adb", MaaAdbControllerType_Touch_Adb },
-                                        { "touch.minitouch", MaaAdbControllerType_Touch_MiniTouch },
-                                        { "touch.maatouch", MaaAdbControllerType_Touch_MaaTouch },
-                                        { "key.adb", MaaAdbControllerType_Key_Adb },
-                                        { "key.maatouch", MaaAdbControllerType_Key_MaaTouch },
-                                        { "screencap.fastest", MaaAdbControllerType_Screencap_FastestWay },
-                                        { "screencap.rawbynetcat", MaaAdbControllerType_Screencap_RawByNetcat },
-                                        { "screencap.rawwithgzip", MaaAdbControllerType_Screencap_RawWithGzip },
-                                        { "screencap.encode", MaaAdbControllerType_Screencap_Encode },
-                                        { "screencap.encodetofile", MaaAdbControllerType_Screencap_EncodeToFile },
-                                        { "screencap.minicapdirect", MaaAdbControllerType_Screencap_MinicapDirect },
-                                        { "screencap.minicapstream", MaaAdbControllerType_Screencap_MinicapStream },
-                                    };
+            static std::optional<Param> from_json(const json::object& obj)
+            {
+                static std::map<std::string, MaaAdbControllerType> typeIdx = {
+                    { "touch.adb", MaaAdbControllerType_Touch_Adb },
+                    { "touch.minitouch", MaaAdbControllerType_Touch_MiniTouch },
+                    { "touch.maatouch", MaaAdbControllerType_Touch_MaaTouch },
+                    { "key.adb", MaaAdbControllerType_Key_Adb },
+                    { "key.maatouch", MaaAdbControllerType_Key_MaaTouch },
+                    { "screencap.fastest", MaaAdbControllerType_Screencap_FastestWay },
+                    { "screencap.rawbynetcat", MaaAdbControllerType_Screencap_RawByNetcat },
+                    { "screencap.rawwithgzip", MaaAdbControllerType_Screencap_RawWithGzip },
+                    { "screencap.encode", MaaAdbControllerType_Screencap_Encode },
+                    { "screencap.encodetofile", MaaAdbControllerType_Screencap_EncodeToFile },
+                    { "screencap.minicapdirect", MaaAdbControllerType_Screencap_MinicapDirect },
+                    { "screencap.minicapstream", MaaAdbControllerType_Screencap_MinicapStream },
+                };
 
-                                    auto adb = require_key_as_string(obj, "adb");
-                                    if (!adb.has_value()) {
-                                        return std::nullopt;
-                                    }
-                                    auto address = require_key_as_string(obj, "address");
-                                    if (!address.has_value()) {
-                                        return std::nullopt;
-                                    }
-                                    auto type = require_key_as_string_array(obj, "type");
-                                    if (!type.has_value()) {
-                                        return std::nullopt;
-                                    }
-                                    // auto config = require_key_as_string(obj, "config");
-                                    // if (!config.has_value()) {
-                                    //     return std::nullopt;
-                                    // }
+                auto adb = require_key_as_string(obj, "adb");
+                if (!adb.has_value()) {
+                    return std::nullopt;
+                }
+                auto address = require_key_as_string(obj, "address");
+                if (!address.has_value()) {
+                    return std::nullopt;
+                }
+                auto type = require_key_as_string_array(obj, "type");
+                if (!type.has_value()) {
+                    return std::nullopt;
+                }
+                // auto config = require_key_as_string(obj, "config");
+                // if (!config.has_value()) {
+                //     return std::nullopt;
+                // }
 
-                                    MaaAdbControllerType ntype = 0;
-                                    for (const auto& t : type.value()) {
-                                        if (typeIdx.count(t)) {
-                                            ntype |= typeIdx[t];
-                                        }
-                                        else {
-                                            return std::nullopt;
-                                        }
-                                    }
+                MaaAdbControllerType ntype = 0;
+                for (const auto& t : type.value()) {
+                    if (typeIdx.count(t)) {
+                        ntype |= typeIdx[t];
+                    }
+                    else {
+                        return std::nullopt;
+                    }
+                }
 
-                                    return Param { std::move(adb.value()), std::move(address.value()), ntype,
-                                                   // std::move(config.value()),
-                                                   cfg };
-                                }
-                            };
+                return Param { std::move(adb.value()), std::move(address.value()), ntype,
+                               // std::move(config.value()),
+                               cfg };
+            }
+        };
 
-                            auto pparam = Param::from_json(req);
-                            if (!pparam.has_value()) {
-                                return std::nullopt;
-                            }
-                            const auto& param = pparam.value();
+        auto pparam = Param::from_json(req);
+        if (!pparam.has_value()) {
+            return std::nullopt;
+        }
+        const auto& param = pparam.value();
 
-                            boost::uuids::uuid id = generator();
-                            auto ci = new ControllerInfo;
-                            ci->handle = MaaAdbControllerCreate(param.adb.c_str(), param.address.c_str(), param.type,
-                                                                param.config.c_str(), controller_callback, ci);
-                            ci->callback = callback;
-                            handles[id] = ci;
+        boost::uuids::uuid id = generator();
+        auto ci = new ControllerInfo;
+        ci->handle = MaaAdbControllerCreate(param.adb.c_str(), param.address.c_str(), param.type, param.config.c_str(),
+                                            controller_callback, ci);
+        {
+            std::unique_lock<std::mutex> lock(handle_mtx);
+            handles[id] = ci;
+        }
 
-                            return json::object { { "uuid", boost::uuids::to_string(id) } };
-                        });
+        return json::object { { "uuid", boost::uuids::to_string(id) } };
+    });
 
-    disp.register_route("controller.connect",
-                        [](json::object req, ApiDispatcher::Callback) -> std::optional<json::object> {
-                            auto uuid = require_key_as_string(req, "uuid");
-                            if (!uuid.has_value()) {
-                                return std::nullopt;
-                            }
-                            auto id = from_str(uuid.value());
-                            if (handles.find(id) == handles.end()) {
-                                return std::nullopt;
-                            }
+    disp.register_route("controller.destroy", [](json::object req) -> std::optional<json::object> {
+        auto uuid = require_key_as_string(req, "uuid");
+        if (!uuid.has_value()) {
+            return std::nullopt;
+        }
+        auto id = from_str(uuid.value());
+        ControllerInfo* ci;
 
-                            return json::object { { "id", MaaControllerPostConnection(handles[id]->handle) } };
-                        });
+        {
+            std::unique_lock<std::mutex> lock(handle_mtx);
+            if (handles.find(id) == handles.end()) {
+                return std::nullopt;
+            }
+            ci = handles[id];
+            handles.erase(handles.find(id));
+            ci->lock.lock();
+        }
+
+        MaaControllerDestroy(ci->handle);
+        delete ci;
+        return json::object {};
+    });
+
+    // disp.register_route("controller.callback", [](json::object req) -> std::optional<json::object> {
+    //     auto uuid = require_key_as_string(req, "uuid");
+    //     if (!uuid.has_value()) {
+    //         return std::nullopt;
+    //     }
+    //     auto id = from_str(uuid.value());
+    //     ControllerInfo* ci;
+    //     std::vector<json::object> arr;
+
+    //     {
+    //         std::unique_lock<std::mutex> lock(handle_mtx);
+    //         if (handles.find(id) == handles.end()) {
+    //             return std::nullopt;
+    //         }
+    //         ci = handles[id];
+    //     }
+
+    //     MaaControllerDestroy(ci->handle);
+    //     delete ci;
+    //     return json::object {};
+    // });
+
+    disp.register_route("controller.connect", [](json::object req) -> std::optional<json::object> {
+        auto uuid = require_key_as_string(req, "uuid");
+        if (!uuid.has_value()) {
+            return std::nullopt;
+        }
+        auto id = from_str(uuid.value());
+        std::unique_lock<std::mutex> lock(handle_mtx);
+        if (handles.find(id) == handles.end()) {
+            return std::nullopt;
+        }
+        return json::object { { "id", MaaControllerPostConnection(handles[id]->handle) } };
+    });
 }
 
 MAA_TOOLKIT_NS_END

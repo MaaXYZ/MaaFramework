@@ -9,7 +9,7 @@ void ApiDispatcher::register_route(const std::string& name, RouteEndpoint endpoi
     endpoints[name] = endpoint;
 }
 
-std::optional<json::object> ApiDispatcher::handle_route(json::object request, Callback callback)
+std::optional<json::object> ApiDispatcher::handle_route(json::object request)
 {
     auto action = require_key_as_string(request, "action");
     if (!action.has_value()) {
@@ -24,7 +24,7 @@ std::optional<json::object> ApiDispatcher::handle_route(json::object request, Ca
         return std::nullopt;
     }
 
-    return endpoints[action.value()](param.as_object(), callback);
+    return endpoints[action.value()](param.as_object());
 }
 
 void ApiDispatcher::init()
