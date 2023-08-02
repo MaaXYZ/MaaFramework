@@ -67,7 +67,7 @@ bool PipelineTask::run()
             next_list = get_task_data(top_bp).next;
             LogInfo << "breakpoints pop" << VAR(top_bp) << VAR(next_list);
         }
-        else if (ret == RunningResult::Success) {
+        else {
             pre_breakpoint = cur_task.name;
         }
     }
