@@ -49,6 +49,7 @@ jobs:
     strategy:
       matrix:
         arch: [aarch64, x86_64]
+      fail-fast: false
 
     steps:
       - uses: actions/checkout@v3
@@ -95,6 +96,7 @@ jobs:
     strategy:
       matrix:
         arch: [aarch64, x86_64]
+      fail-fast: false
 
     steps:
       # maybe should explicitly update some pkg instead of all?
@@ -166,6 +168,7 @@ jobs:
     strategy:
       matrix:
         arch: [aarch64, x86_64]
+      fail-fast: false
 
     steps:
       - uses: actions/checkout@v3
