@@ -3,10 +3,10 @@
 
 MaaBool MaaToolKitStartWebServer(MaaString ip, uint16_t port)
 {
-    return MAA_TOOLKIT_NS::HttpServer::get_instance().start(ip, port);
+    return MAA_TOOLKIT_SERVER_NS::HttpServer::get_instance().start(ip, port);
 }
 
 MaaBool MaaToolKitStopWebServer()
 {
-    return MAA_TOOLKIT_NS::HttpServer::get_instance().stop();
+    return MAA_TOOLKIT_SERVER_NS::HttpServer::get_instance().stop();
 }

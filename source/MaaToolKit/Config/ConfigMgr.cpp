@@ -31,6 +31,89 @@ bool ConfigMgr::uninit()
     return save();
 }
 
+MaaSize ConfigMgr::config_size() const
+{
+    return config_vec_.size();
+}
+
+MaaToolKitConfigHandle ConfigMgr::config_by_index(MaaSize index)
+{
+    if (index >= config_vec_.size()) {
+        LogError << "Out of range" << VAR(index) << VAR(config_vec_.size());
+        return nullptr;
+    }
+    return config_vec_[index].get();
+}
+
+MaaToolKitConfigHandle ConfigMgr::current()
+{
+    auto find_it = config_map_.find(current_);
+    if (find_it == config_map_.end()) {
+        LogError << "Current not found" << VAR(current_) << VAR(config_map_);
+        return nullptr;
+    }
+
+    return find_it->second.get();
+}
+
+MaaToolKitConfigHandle ConfigMgr::add_config(MaaString config_name, MaaToolKitConfigHandle copy_from)
+{
+    LogInfo << VAR(config_name) << VAR_VOIDP(copy_from);
+
+    if (config_map_.contains(config_name)) {
+        LogError << "Config name already exists" << VAR(config_name) << VAR(config_map_);
+        return nullptr;
+    }
+
+    Config new_config;
+    if (auto cast = dynamic_cast<Config*>(copy_from); cast) {
+        new_config = *cast;
+    }
+    new_config.set_name(config_name);
+
+    auto new_config_ptr = std::make_shared<Config>(std::move(new_config));
+    auto& ref = config_vec_.emplace_back(new_config_ptr);
+    config_map_.emplace(config_name, new_config_ptr);
+
+    LogTrace << VAR(config_name) << VAR(new_config_ptr) << VAR(*new_config_ptr) << VAR(config_vec_) << VAR(config_map_);
+
+    return ref.get();
+}
+
+void ConfigMgr::del_task(MaaString config_name)
+{
+    LogInfo << VAR(config_name);
+
+    bool removed = config_map_.erase(config_name) > 0;
+    if (!removed) {
+        LogError << "Config name not found in map" << VAR(config_name) << VAR(config_map_);
+        return;
+    }
+    auto find_it =
+        MAA_RNS::ranges::find_if(config_vec_, [&](const auto& config) { return config->get_name() == config_name; });
+    if (find_it == config_vec_.end()) {
+        LogError << "Config name not found in vec" << VAR(config_name) << VAR(config_vec_);
+        return;
+    }
+    config_vec_.erase(find_it);
+
+    LogTrace << VAR(config_name) << VAR(config_vec_) << VAR(config_map_);
+}
+
+bool ConfigMgr::set_current_config(MaaString config_name)
+{
+    LogInfo << VAR(config_name);
+
+    auto find_it = config_map_.find(config_name);
+    if (find_it == config_map_.end()) {
+        LogError << "Config not found" << VAR(config_vec_) << VAR(config_map_);
+        return false;
+    }
+
+    current_ = config_name;
+    return true;
+}
+
 bool ConfigMgr::parse_json()
 {
     LogFunc << VAR(config_path());
@@ -59,7 +142,7 @@ bool ConfigMgr::parse_json()
     }
 
     current_ = json.get(kCurrentKey, std::string());
-    if (current_.empty() || !configs_map_.contains(current_)) {
+    if (current_.empty() || !config_map_.contains(current_)) {
         LogError << "Failed to find current config:" << VAR(current_);
         return false;
     }
@@ -83,8 +166,8 @@ bool ConfigMgr::save()
     LogFunc;
 
     json::object jconfig;
-    for (const auto& [key, config] : configs_map_) {
-        jconfig.emplace(key, config.to_json());
+    for (const auto& [key, config] : config_map_) {
+        jconfig.emplace(key, config->to_json());
     }
 
     json::value root;
@@ -102,17 +185,21 @@ bool ConfigMgr::save()
 
 void ConfigMgr::insert(std::string name, Config config)
 {
-    LogFunc << VAR(name);
+    LogFunc << VAR(name) << VAR(config);
 
-    auto map_it = configs_map_.find(name);
-    if (map_it != configs_map_.end()) {
-        auto vec_it = MaaRangesNS::ranges::find_if(configs_vec_, [&](const auto& pair) { return pair.first == name; });
-        vec_it->second = config;
-        map_it->second = std::move(config);
+    auto config_ptr = std::make_shared<Config>(std::move(config));
+
+    auto map_it = config_map_.find(name);
+    if (map_it == config_map_.end()) {
+        auto vec_it =
+            MaaRangesNS::ranges::find_if(config_vec_, [&](const auto& ptr) { return ptr->get_name() == name; });
+        *vec_it = config_ptr;
+
+        map_it->second = std::move(config_ptr);
     }
     else {
-        configs_vec_.emplace_back(name, config);
-        configs_map_.emplace(std::move(name), std::move(config));
+        config_vec_.emplace_back(config_ptr);
+        config_map_.emplace(std::move(name), std::move(config_ptr));
     }
 }
 

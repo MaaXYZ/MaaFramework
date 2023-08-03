@@ -3,6 +3,22 @@
 #include "Conf/Conf.h"
 #include "MaaToolKit/MaaToolKitDef.h"
 
+struct MaaToolKitConfigMgrAPI
+{
+    virtual ~MaaToolKitConfigMgrAPI() = default;
+
+    virtual bool init() = 0;
+    virtual bool uninit() = 0;
+
+    virtual MaaSize config_size() const = 0;
+    virtual MaaToolKitConfigHandle config_by_index(MaaSize index) = 0;
+    virtual MaaToolKitConfigHandle current() = 0;
+
+    virtual MaaToolKitConfigHandle add_config(MaaString config_name, MaaToolKitConfigHandle copy_from) = 0;
+    virtual void del_task(MaaString config_name) = 0;
+    virtual bool set_current_config(MaaString config_name) = 0;
+};
+
 struct MaaToolKitConfigAPI
 {
     virtual ~MaaToolKitConfigAPI() = default;

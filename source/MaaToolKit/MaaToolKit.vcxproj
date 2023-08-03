@@ -32,6 +32,7 @@
     <ClInclude Include="Config\ConfigAPI.h" />
     <ClInclude Include="Config\ConfigMgr.h" />
     <ClInclude Include="Config\Task.h" />
+    <ClInclude Include="Device\DeviceFinder.h" />
     <ClInclude Include="Server\ApiDispatcher.h" />
     <ClInclude Include="Server\Framework\Controller.h" />
     <ClInclude Include="Server\Framework\Init.h" />

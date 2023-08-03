@@ -51,6 +51,7 @@ MaaSize Config::task_size() const
 MaaToolKitTaskHandle Config::task_by_index(MaaSize index)
 {
     if (index >= task_vec_.size()) {
+        LogError << "Out of range" << VAR(index) << VAR(task_vec_.size());
         return nullptr;
     }
     return task_vec_[index].get();
@@ -61,7 +62,7 @@ MaaToolKitTaskHandle Config::add_task(MaaString task_name, MaaToolKitTaskHandle 
     LogInfo << VAR(name_) << VAR(task_name) << VAR(copy_from);
 
     if (task_map_.contains(task_name)) {
-        LogError << "Task name already exists:" << task_name;
+        LogError << "Task name already exists" << VAR(task_name) << VAR(task_map_);
         return nullptr;
     }
 
@@ -72,13 +73,12 @@ MaaToolKitTaskHandle Config::add_task(MaaString task_name, MaaToolKitTaskHandle 
     new_task.set_name(task_name);
 
     auto new_task_ptr = std::make_shared<Task>(std::move(new_task));
-    task_vec_.emplace_back(new_task_ptr);
+    auto& ref = task_vec_.emplace_back(new_task_ptr);
     task_map_.emplace(task_name, new_task_ptr);
 
-    LogTrace << VAR(task_name) << VAR(new_task_ptr) << VAR(*new_task_ptr) << VAR(task_vec_.size())
-             << VAR(task_map_.size());
+    LogTrace << VAR(task_name) << VAR(new_task_ptr) << VAR(*new_task_ptr) << VAR(task_vec_) << VAR(task_map_);
 
-    return new_task_ptr.get();
+    return ref.get();
 }
 
 void Config::del_task(MaaString task_name)
@@ -87,17 +87,17 @@ void Config::del_task(MaaString task_name)
 
     bool removed = task_map_.erase(task_name) > 0;
     if (!removed) {
-        LogError << "Task name not found in map:" << task_name;
+        LogError << "Task name not found in map" << VAR(task_name) << VAR(task_map_);
         return;
     }
     auto find_it = MAA_RNS::ranges::find_if(task_vec_, [&](const auto& task) { return task->get_name() == task_name; });
     if (find_it == task_vec_.end()) {
-        LogError << "Task name not found in vec:" << task_name;
+        LogError << "Task name not found in vec" << VAR(task_name) << VAR(task_vec_);
         return;
     }
     task_vec_.erase(find_it);
 
-    LogTrace << VAR(task_name) << VAR(task_vec_.size()) << VAR(task_map_.size());
+    LogTrace << VAR(task_name) << VAR(task_vec_) << VAR(task_map_);
 }
 
 bool Config::set_task_index(MaaString task_name, MaaSize new_index)
@@ -107,6 +107,10 @@ bool Config::set_task_index(MaaString task_name, MaaSize new_index)
     auto find_it = MAA_RNS::ranges::find_if(task_vec_, [&](const auto& task) { return task->get_name() == task_name; });
     if (find_it == task_vec_.end()) {
         LogError << "Task name not found in vec:" << task_name;
+        return false;
+    }
+    if (new_index >= task_vec_.size()) {
+        LogError << "Out of range" << VAR(new_index) << VAR(task_vec_.size());
         return false;
     }
 

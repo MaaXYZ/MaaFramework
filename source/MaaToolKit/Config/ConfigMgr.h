@@ -8,11 +8,12 @@
 
 #include "Conf/Conf.h"
 #include "Config.h"
+#include "ConfigAPI.h"
 #include "Utils/SingletonHolder.hpp"
 
 MAA_TOOLKIT_CONFIG_NS_BEGIN
 
-class ConfigMgr : public SingletonHolder<ConfigMgr>
+class ConfigMgr : public SingletonHolder<ConfigMgr>, public MaaToolKitConfigMgrAPI
 {
     friend class SingletonHolder<ConfigMgr>;
 
@@ -23,9 +24,17 @@ public:
 public:
     virtual ~ConfigMgr() noexcept override = default;
 
-public:
-    bool init();
-    bool uninit();
+public: // from MaaToolKitConfigMgrAPI
+    virtual bool init() override;
+    virtual bool uninit() override;
+
+    virtual MaaSize config_size() const override;
+    virtual MaaToolKitConfigHandle config_by_index(MaaSize index) override;
+    virtual MaaToolKitConfigHandle current() override;
+
+    virtual MaaToolKitConfigHandle add_config(MaaString config_name, MaaToolKitConfigHandle copy_from) override;
+    virtual void del_task(MaaString config_name) override;
+    virtual bool set_current_config(MaaString config_name) override;
 
 private:
     ConfigMgr();
@@ -38,7 +47,8 @@ private:
     const std::filesystem::path& config_path() const;
 
 private:
-    std::vector<Config> configs_vec_; // for C API
+    std::vector<std::shared_ptr<Config>> config_vec_; // for C API
+    std::map<std::string, std::shared_ptr<Config>> config_map_;
     std::string current_;
 };
 
