@@ -13,9 +13,7 @@
 MAA_VISION_NS_BEGIN
 
 struct DirectHitParam
-{
-    std::vector<cv::Rect> roi; // only for "ClickSelf"
-};
+{};
 
 struct TemplMatchingParam
 {

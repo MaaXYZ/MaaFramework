@@ -287,7 +287,7 @@ std::optional<PipelineTask::RecResult> PipelineTask::direct_hit(const cv::Mat& i
     std::ignore = cache;
     std::ignore = name;
 
-    return RecResult { .box = param.roi.empty() ? cv::Rect() : param.roi.front() };
+    return RecResult { .box = cv::Rect() };
 }
 
 std::optional<PipelineTask::RecResult> PipelineTask::template_match(const cv::Mat& image,
