@@ -12,8 +12,8 @@ extern "C"
 
     struct MAA_FRAMEWORK_API MaaCustomActionAPI
     {
-        MaaBool (*run)(MaaJsonString custom_action_param, const MaaRect* cur_box,
-                       MaaJsonString recognition_result_detail);
+        MaaBool (*run)(MaaSyncContextHandle sync_context, MaaString task_name, MaaJsonString custom_action_param,
+                       const MaaRect* cur_box);
 
         void (*stop)(void);
     };

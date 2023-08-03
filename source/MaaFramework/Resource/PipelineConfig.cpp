@@ -351,8 +351,10 @@ bool PipelineConfig::parse_recognition(const json::value& input, MAA_PIPELINE_RE
     switch (out_type) {
     case Type::DirectHit:
         out_param = DirectHitParam {};
-        return parse_direct_hit_param(input, std::get<DirectHitParam>(out_param),
-                                      same_type ? std::get<DirectHitParam>(default_param) : DirectHitParam {});
+        return true;
+        // return parse_direct_hit_param(input, std::get<DirectHitParam>(out_param),
+        //                               same_type ? std::get<DirectHitParam>(default_param) : DirectHitParam {});
+
     case Type::TemplateMatch:
         out_param = TemplMatchingParam {};
         return parse_templ_matching_param(input, std::get<TemplMatchingParam>(out_param),
@@ -374,16 +376,16 @@ bool PipelineConfig::parse_recognition(const json::value& input, MAA_PIPELINE_RE
     return false;
 }
 
-bool PipelineConfig::parse_direct_hit_param(const json::value& input, MAA_VISION_NS::DirectHitParam& output,
-                                            const MAA_VISION_NS::DirectHitParam& default_value)
-{
-    // if (!parse_roi(input, output.roi, default_value.roi)) {
-    //     LogError << "failed to parse_roi" << VAR(input);
-    //     return false;
-    // }
-
-    return true;
-}
+// bool PipelineConfig::parse_direct_hit_param(const json::value& input, MAA_VISION_NS::DirectHitParam& output,
+//                                             const MAA_VISION_NS::DirectHitParam& default_value)
+//{
+//     // if (!parse_roi(input, output.roi, default_value.roi)) {
+//     //     LogError << "failed to parse_roi" << VAR(input);
+//     //     return false;
+//     // }
+//
+//     return true;
+// }
 
 bool PipelineConfig::parse_templ_matching_param(const json::value& input, MAA_VISION_NS::TemplMatchingParam& output,
                                                 const MAA_VISION_NS::TemplMatchingParam& default_value)

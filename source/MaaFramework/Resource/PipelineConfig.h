@@ -35,8 +35,8 @@ public:
                                   MAA_PIPELINE_RES_NS::Recognition::Param& out_param,
                                   const MAA_PIPELINE_RES_NS::Recognition::Type& default_type,
                                   const MAA_PIPELINE_RES_NS::Recognition::Param& default_param);
-    static bool parse_direct_hit_param(const json::value& input, MAA_VISION_NS::DirectHitParam& output,
-                                       const MAA_VISION_NS::DirectHitParam& default_value);
+    // static bool parse_direct_hit_param(const json::value& input, MAA_VISION_NS::DirectHitParam& output,
+    //                                    const MAA_VISION_NS::DirectHitParam& default_value);
     static bool parse_templ_matching_param(const json::value& input, MAA_VISION_NS::TemplMatchingParam& output,
                                            const MAA_VISION_NS::TemplMatchingParam& default_value);
     static bool parse_ocr_param(const json::value& input, MAA_VISION_NS::OcrParam& output,

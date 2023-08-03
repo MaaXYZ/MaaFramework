@@ -34,7 +34,8 @@ extern "C"
 
     struct MAA_FRAMEWORK_API MaaCustomRecognizerAPI
     {
-        MaaBool (*analyze)(const MaaImage* image, MaaJsonString custom_recognition_param,
+        MaaBool (*analyze)(MaaSyncContextHandle sync_context, const MaaImage* image, MaaString task_name,
+                           MaaJsonString custom_recognition_param,
                            /*out*/ MaaRecognitionResult* result);
     };
 

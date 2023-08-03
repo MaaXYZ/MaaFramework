@@ -81,3 +81,21 @@ public:
     virtual MaaResourceHandle resource() = 0;
     virtual MaaControllerHandle controller() = 0;
 };
+
+struct MaaSyncContextAPI
+{
+public:
+    virtual ~MaaSyncContextAPI() = default;
+
+    virtual bool run_task(std::string task, std::string_view param) = 0;
+
+    virtual void click(int x, int y) = 0;
+    virtual void swipe(std::vector<int> x_steps, std::vector<int> y_steps, std::vector<int> step_delay) = 0;
+    virtual std::vector<uint8_t> screencap() = 0;
+
+    virtual std::string task_result(const std::string& task_name) const = 0;
+
+    virtual MaaInstanceHandle instance() = 0;
+    virtual MaaResourceHandle resource() = 0;
+    virtual MaaControllerHandle controller() = 0;
+};

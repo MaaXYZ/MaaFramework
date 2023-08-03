@@ -128,3 +128,6 @@ typedef MaaCustomRecognizerAPI* MaaCustomRecognizerHandle;
 
 struct MaaCustomActionAPI;
 typedef MaaCustomActionAPI* MaaCustomActionHandle;
+
+struct MaaSyncContextAPI;
+typedef MaaSyncContextAPI* MaaSyncContextHandle;

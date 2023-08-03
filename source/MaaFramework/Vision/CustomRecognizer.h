@@ -20,13 +20,15 @@ class CustomRecognizer : public VisionBase
     using ResultOpt = std::optional<Result>;
 
 public:
-    CustomRecognizer(MaaCustomRecognizerHandle handle) : VisionBase(nullptr), recognizer_(handle) {}
+    CustomRecognizer(MaaCustomRecognizerHandle handle, InstanceInternalAPI* inst);
 
     void set_param(CustomParam param) { param_ = std::move(param); }
     ResultOpt analyze() const;
 
 private:
     MaaCustomRecognizerHandle recognizer_ = nullptr;
+    InstanceInternalAPI* inst_ = nullptr;
+
     CustomParam param_;
 };
 

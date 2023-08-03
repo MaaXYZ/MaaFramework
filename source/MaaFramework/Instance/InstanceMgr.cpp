@@ -2,10 +2,10 @@
 
 #include "Controller/ControllerMgr.h"
 #include "MaaFramework/MaaMsg.h"
-#include "Utils/Logger.hpp"
 #include "Resource/ResourceMgr.h"
 #include "Task/CustomAction.h"
 #include "Task/PipelineTask.h"
+#include "Utils/Logger.hpp"
 #include "Vision/CustomRecognizer.h"
 
 MAA_NS_BEGIN
@@ -142,7 +142,7 @@ bool InstanceMgr::register_custom_recognizer(std::string name, MaaCustomRecogniz
         return false;
     }
 
-    auto recognizer_ptr = std::make_shared<MAA_VISION_NS::CustomRecognizer>(handle);
+    auto recognizer_ptr = std::make_shared<MAA_VISION_NS::CustomRecognizer>(handle, this);
     return custom_recognizers_.insert_or_assign(std::move(name), std::move(recognizer_ptr)).second;
 }
 
@@ -165,7 +165,7 @@ bool InstanceMgr::register_custom_action(std::string name, MaaCustomActionHandle
         LogError << "Invalid handle";
         return false;
     }
-    auto action_ptr = std::make_shared<MAA_TASK_NS::CustomAction>(handle);
+    auto action_ptr = std::make_shared<MAA_TASK_NS::CustomAction>(handle, this);
     return custom_actions_.insert_or_assign(std::move(name), std::move(action_ptr)).second;
 }
 

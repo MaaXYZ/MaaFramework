@@ -2,6 +2,7 @@
 
 #include "Conf/Conf.h"
 
+#include "Instance/InstanceInternalAPI.hpp"
 #include "MaaFramework/MaaDef.h"
 #include "Resource/PipelineTypes.h"
 
@@ -10,13 +11,14 @@ MAA_TASK_NS_BEGIN
 class CustomAction
 {
 public:
-    CustomAction(MaaCustomActionHandle handle);
+    CustomAction(MaaCustomActionHandle handle, InstanceInternalAPI* inst);
 
-    bool run(const MAA_PIPELINE_RES_NS::Action::CustomParam& param, const cv::Rect& cur_box,
-             const json::value& rec_detail);
+    bool run(const std::string& task_name, const MAA_PIPELINE_RES_NS::Action::CustomParam& param,
+             const cv::Rect& cur_box);
 
 private:
     MaaCustomActionHandle action_ = nullptr;
+    InstanceInternalAPI* inst_ = nullptr;
 };
 
 MAA_TASK_NS_END

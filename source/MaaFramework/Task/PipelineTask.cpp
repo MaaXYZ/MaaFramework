@@ -285,6 +285,7 @@ std::optional<PipelineTask::RecResult> PipelineTask::direct_hit(const cv::Mat& i
 {
     std::ignore = image;
     std::ignore = cache;
+    std::ignore = param;
     std::ignore = name;
 
     return RecResult { .box = cv::Rect() };
@@ -388,7 +389,7 @@ PipelineTask::RunningResult PipelineTask::start_to_act(const FoundResult& act)
         stop_app(std::get<AppParam>(act.task_data.action_param));
         break;
     case Type::Custom:
-        custom_action(std::get<CustomParam>(act.task_data.action_param), act.rec.box);
+        custom_action(act.task_data.name, std::get<CustomParam>(act.task_data.action_param), act.rec.box);
         break;
     case Type::StopTask:
         LogInfo << "Action: StopTask";
@@ -502,7 +503,8 @@ void PipelineTask::stop_app(const MAA_PIPELINE_RES_NS::Action::AppParam& param)
     controller()->stop_app(param.package);
 }
 
-void PipelineTask::custom_action(const MAA_PIPELINE_RES_NS::Action::CustomParam& param, const cv::Rect& cur_box)
+void PipelineTask::custom_action(const std::string& task_name, const MAA_PIPELINE_RES_NS::Action::CustomParam& param,
+                                 const cv::Rect& cur_box)
 {
     if (!inst_) {
         LogError << "Inst is null";
@@ -515,7 +517,7 @@ void PipelineTask::custom_action(const MAA_PIPELINE_RES_NS::Action::CustomParam&
     }
 
     // TODO: 识别结果转 json
-    action->run(param, cur_box, json::value());
+    action->run(task_name, param, cur_box);
 }
 
 cv::Rect PipelineTask::get_target_rect(const MAA_PIPELINE_RES_NS::Action::Target target, const cv::Rect& cur_box)

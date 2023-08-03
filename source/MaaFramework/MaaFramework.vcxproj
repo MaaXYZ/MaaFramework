@@ -39,6 +39,7 @@
     <ClInclude Include="Resource\ResourceMgr.h" />
     <ClInclude Include="Resource\TemplateConfig.h" />
     <ClInclude Include="Task\CustomAction.h" />
+    <ClInclude Include="Task\SyncContext.h" />
     <ClInclude Include="Task\PipelineTask.h" />
     <ClInclude Include="Resource\PipelineTypes.h" />
     <ClInclude Include="Base\AsyncRunner.hpp" />
@@ -80,6 +81,7 @@
     <ClCompile Include="Resource\ResourceMgr.cpp" />
     <ClCompile Include="Resource\TemplateConfig.cpp" />
     <ClCompile Include="Task\CustomAction.cpp" />
+    <ClCompile Include="Task\SyncContext.cpp" />
     <ClCompile Include="Task\PipelineTask.cpp" />
     <ClCompile Include="Vision\Comparator.cpp" />
     <ClCompile Include="Vision\CustomRecognizer.cpp" />

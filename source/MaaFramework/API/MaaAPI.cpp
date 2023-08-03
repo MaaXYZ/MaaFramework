@@ -7,9 +7,9 @@
 #include "Controller/CustomThriftController.h"
 #include "Instance/InstanceMgr.h"
 #include "MaaControlUnit/ControlUnitAPI.h"
-#include "Utils/Logger.hpp"
 #include "Option/GlobalOptionMgr.h"
 #include "Resource/ResourceMgr.h"
+#include "Utils/Logger.hpp"
 #include "Utils/Platform.hpp"
 
 #pragma message("MAA_VERSION: " MAA_VERSION)
@@ -492,4 +492,66 @@ MaaControllerHandle MaaGetController(MaaInstanceHandle inst)
         return nullptr;
     }
     return inst->controller();
+}
+
+MaaBool MaaSyncContextRunTask(MaaSyncContextHandle sync_context, MaaString task, MaaJsonString param)
+{
+    LogFunc << VAR_VOIDP(sync_context) << VAR(task) << VAR(param);
+    if (!sync_context) {
+        return false;
+    }
+    return sync_context->run_task(task, param);
+}
+
+void MaaSyncContextClick(MaaSyncContextHandle sync_context, int32_t x, int32_t y)
+{
+    LogFunc << VAR_VOIDP(sync_context) << VAR(x) << VAR(y);
+    if (!sync_context) {
+        return;
+    }
+    return sync_context->click(x, y);
+}
+
+void MaaSyncContextSwipe(MaaSyncContextHandle sync_context, int32_t* x_steps_buff, int32_t* y_steps_buff,
+                         int32_t* step_delay_buff, MaaSize buff_size)
+{
+    LogFunc << VAR_VOIDP(sync_context) << VAR(x_steps_buff) << VAR(y_steps_buff) << VAR(step_delay_buff)
+            << VAR(buff_size);
+    if (!sync_context) {
+        return;
+    }
+
+    std::vector<int32_t> x_steps(x_steps_buff, x_steps_buff + buff_size);
+    std::vector<int32_t> y_steps(y_steps_buff, y_steps_buff + buff_size);
+    std::vector<int32_t> step_delay(step_delay_buff, step_delay_buff + buff_size);
+
+    sync_context->swipe(std::move(x_steps), std::move(y_steps), std::move(step_delay));
+}
+
+MaaSize MaaSyncContextScreencap(MaaSyncContextHandle sync_context, void* buff, MaaSize buff_size)
+{
+    LogFunc << VAR_VOIDP(sync_context) << VAR(buff) << VAR(buff_size);
+    if (!sync_context) {
+        return MaaNullSize;
+    }
+    auto data = sync_context->screencap();
+    if (data.size() > buff_size) {
+        return MaaNullSize;
+    }
+    memcpy(buff, data.data(), data.size());
+    return data.size();
+}
+
+MaaSize MaaSyncContextGetTaskResult(MaaSyncContextHandle sync_context, MaaString task, char* buff, MaaSize buff_size)
+{
+    LogFunc << VAR_VOIDP(sync_context) << VAR(task) << VAR(buff) << VAR(buff_size);
+    if (!sync_context) {
+        return MaaNullSize;
+    }
+    auto data = sync_context->task_result(task);
+    if (data.size() > buff_size) {
+        return MaaNullSize;
+    }
+    memcpy(buff, data.data(), data.size());
+    return data.size();
 }
