@@ -46,8 +46,14 @@ MAA 正计划建设为一类项目，而非舟的单一软件。
 
 1. Download pre-built third-party libraries.
   
-  ```bash
-  python maadeps-download.py
-  ```
+    ```bash
+    python maadeps-download.py
+    ```
 
 2. Build with MAA.sln or cmake.
+
+## 相关资源
+
+- [OCR ONNX 模型](https://github.com/MaaAssistantArknights/MaaCommonAssets/tree/main/OCR)
+- [Pipeline 编辑器](https://github.com/MaaAssistantArknights/MaaJsonViewer)
+- [控制器代理（已在 release 中内置）](https://github.com/MaaAssistantArknights/MaaAgentBinary)
