@@ -302,8 +302,8 @@ std::pair<int, int> ControllerMgr::preproce_touch_coord(int x, int y)
         return {};
     }
 
-    double scale_width = static_cast<double>(std::max(res_w, res_h)) / image_target_width_;
-    double scale_height = static_cast<double>(std::min(res_w, res_h)) / image_target_height_;
+    double scale_width = static_cast<double>(res_w) / image_target_width_;
+    double scale_height = static_cast<double>(res_h) / image_target_height_;
 
     int proced_x = static_cast<int>(std::round(x * scale_width));
     int proced_y = static_cast<int>(std::round(y * scale_height));
