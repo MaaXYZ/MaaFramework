@@ -3,7 +3,7 @@
 #include "Utils/NoWarningCV.h"
 
 #include "MaaFramework/MaaCustomAction.h"
-#include "Task/SyncContext.h"
+#include "SyncContext.h"
 #include "Utils/Logger.hpp"
 
 MAA_TASK_NS_BEGIN
