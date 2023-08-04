@@ -1,7 +1,7 @@
 #include "RequestResponse.h"
 #include "JsonValidator.hpp"
 
-MAA_TOOLKIT_SERVER_BEGIN
+MAA_TOOLKIT_SERVER_NS_BEGIN
 
 std::optional<json::object> RequestResponse::request_body_json()
 {
@@ -54,4 +54,4 @@ void RequestResponse::reply_file(void* data, uint64_t size, std::string_view mim
     response = std::make_shared<http::message_generator>(std::move(res));
 }
 
-MAA_TOOLKIT_SERVER_END
+MAA_TOOLKIT_SERVER_NS_END

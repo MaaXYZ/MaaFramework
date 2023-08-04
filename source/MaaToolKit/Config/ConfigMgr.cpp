@@ -31,12 +31,12 @@ bool ConfigMgr::uninit()
     return save();
 }
 
-MaaSize ConfigMgr::config_size() const
+size_t ConfigMgr::config_size() const
 {
     return config_vec_.size();
 }
 
-MaaToolKitConfigHandle ConfigMgr::config_by_index(MaaSize index)
+MaaToolKitConfigHandle ConfigMgr::config_by_index(size_t index)
 {
     if (index >= config_vec_.size()) {
         LogError << "Out of range" << VAR(index) << VAR(config_vec_.size());
@@ -56,11 +56,12 @@ MaaToolKitConfigHandle ConfigMgr::current()
     return find_it->second.get();
 }
 
-MaaToolKitConfigHandle ConfigMgr::add_config(MaaString config_name, MaaToolKitConfigHandle copy_from)
+MaaToolKitConfigHandle ConfigMgr::add_config(std::string_view config_name, MaaToolKitConfigHandle copy_from)
 {
     LogInfo << VAR(config_name) << VAR_VOIDP(copy_from);
 
-    if (config_map_.contains(config_name)) {
+    std::string str_config_name(config_name);
+    if (config_map_.contains(str_config_name)) {
         LogError << "Config name already exists" << VAR(config_name) << VAR(config_map_);
         return nullptr;
     }
@@ -73,38 +74,41 @@ MaaToolKitConfigHandle ConfigMgr::add_config(MaaString config_name, MaaToolKitCo
 
     auto new_config_ptr = std::make_shared<Config>(std::move(new_config));
     auto& ref = config_vec_.emplace_back(new_config_ptr);
-    config_map_.emplace(config_name, new_config_ptr);
+    config_map_.emplace(std::move(str_config_name), new_config_ptr);
 
     LogTrace << VAR(config_name) << VAR(new_config_ptr) << VAR(*new_config_ptr) << VAR(config_vec_) << VAR(config_map_);
 
     return ref.get();
 }
 
-void ConfigMgr::del_task(MaaString config_name)
+bool ConfigMgr::del_config(std::string_view config_name)
 {
     LogInfo << VAR(config_name);
 
-    bool removed = config_map_.erase(config_name) > 0;
+    std::string str_config_name(config_name);
+    bool removed = config_map_.erase(str_config_name) > 0;
     if (!removed) {
         LogError << "Config name not found in map" << VAR(config_name) << VAR(config_map_);
-        return;
+        return false;
     }
     auto find_it =
         MAA_RNS::ranges::find_if(config_vec_, [&](const auto& config) { return config->get_name() == config_name; });
     if (find_it == config_vec_.end()) {
         LogError << "Config name not found in vec" << VAR(config_name) << VAR(config_vec_);
-        return;
+        return false;
     }
     config_vec_.erase(find_it);
 
     LogTrace << VAR(config_name) << VAR(config_vec_) << VAR(config_map_);
+    return true;
 }
 
-bool ConfigMgr::set_current_config(MaaString config_name)
+bool ConfigMgr::set_current_config(std::string_view config_name)
 {
     LogInfo << VAR(config_name);
 
-    auto find_it = config_map_.find(config_name);
+    std::string str_config_name(config_name);
+    auto find_it = config_map_.find(str_config_name);
     if (find_it == config_map_.end()) {
         LogError << "Config not found" << VAR(config_vec_) << VAR(config_map_);
         return false;

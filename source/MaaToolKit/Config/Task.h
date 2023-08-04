@@ -16,16 +16,16 @@ public:
     virtual ~Task() override = default;
 
 public: // from MaaToolKitTaskAPI
-    virtual MaaString get_name() const override { return name_.c_str(); }
-    virtual void set_name(MaaString new_name) override;
-    virtual MaaString get_description() const override { return description_.c_str(); }
-    virtual void set_description(MaaString new_description) override;
-    virtual MaaString get_type() const override { return type_.c_str(); }
-    virtual void set_type(MaaString new_type) override;
-    virtual MaaJsonString get_param() const override { return param_.c_str(); }
-    virtual void set_param(MaaJsonString new_param);
-    virtual MaaBool get_enabled() const override { return enabled_; }
-    virtual void set_enabled(MaaBool new_enabled);
+    virtual std::string_view get_name() const override { return name_; }
+    virtual void set_name(std::string_view new_name) override;
+    virtual std::string_view get_description() const override { return description_; }
+    virtual void set_description(std::string_view new_description) override;
+    virtual std::string_view get_type() const override { return type_; }
+    virtual void set_type(std::string_view new_type) override;
+    virtual std::string_view get_param() const override { return param_; }
+    virtual void set_param(std::string_view new_param);
+    virtual bool get_enabled() const override { return enabled_; }
+    virtual void set_enabled(bool new_enabled);
 
     virtual MaaStatus status() const override;
 
@@ -34,7 +34,7 @@ private:
     std::string description_;
     std::string type_;
     std::string param_;
-    MaaBool enabled_ = true;
+    bool enabled_ = true;
 };
 
 std::ostream& operator<<(std::ostream& os, const Task& task);

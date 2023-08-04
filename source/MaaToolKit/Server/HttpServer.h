@@ -1,12 +1,13 @@
 #pragma once
 
-#include "Utils/Boost.hpp"
-#include "Utils/SingletonHolder.hpp"
-
 #include <string>
 #include <thread>
 
-MAA_TOOLKIT_SERVER_BEGIN
+#include "Conf/Conf.h"
+#include "Utils/Boost.hpp"
+#include "Utils/SingletonHolder.hpp"
+
+MAA_TOOLKIT_SERVER_NS_BEGIN
 
 class HttpServer : public SingletonHolder<HttpServer>
 {
@@ -27,4 +28,4 @@ private:
     std::shared_ptr<std::thread> dispatcher = nullptr;
 };
 
-MAA_TOOLKIT_SERVER_END
+MAA_TOOLKIT_SERVER_NS_END

@@ -28,13 +28,13 @@ public: // from MaaToolKitConfigMgrAPI
     virtual bool init() override;
     virtual bool uninit() override;
 
-    virtual MaaSize config_size() const override;
-    virtual MaaToolKitConfigHandle config_by_index(MaaSize index) override;
+    virtual size_t config_size() const override;
+    virtual MaaToolKitConfigHandle config_by_index(size_t index) override;
     virtual MaaToolKitConfigHandle current() override;
 
-    virtual MaaToolKitConfigHandle add_config(MaaString config_name, MaaToolKitConfigHandle copy_from) override;
-    virtual void del_task(MaaString config_name) override;
-    virtual bool set_current_config(MaaString config_name) override;
+    virtual MaaToolKitConfigHandle add_config(std::string_view config_name, MaaToolKitConfigHandle copy_from) override;
+    virtual bool del_config(std::string_view config_name) override;
+    virtual bool set_current_config(std::string_view config_name) override;
 
 private:
     ConfigMgr();

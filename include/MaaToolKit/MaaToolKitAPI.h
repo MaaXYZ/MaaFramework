@@ -9,7 +9,6 @@ extern "C"
 
     MaaSize MAA_TOOLKIT_API MaaToolKitConfigSize();
     MaaToolKitConfigHandle MAA_TOOLKIT_API MaaToolKitGetConfig(MaaSize index);
-    MaaSize MAA_TOOLKIT_API MaaToolKitGetCurrentConfigIndex();
 
     MaaToolKitConfigHandle MAA_TOOLKIT_API MaaToolKitCurrentConfig();
 
@@ -17,7 +16,7 @@ extern "C"
     MaaBool MAA_TOOLKIT_API MaaToolKitDelConfig(MaaString config_name);
     MaaBool MAA_TOOLKIT_API MaaToolKitSetCurrentConfig(MaaString config_name);
 
-    MaaString MAA_TOOLKIT_API MaaToolKitGetConfigName(MaaToolKitConfigHandle config_handle);
+    MaaString MAA_TOOLKIT_API MaaToolKitConfigName(MaaToolKitConfigHandle config_handle);
     MaaString MAA_TOOLKIT_API MaaToolKitGetConfigDescription(MaaToolKitConfigHandle config_handle);
     MaaBool MAA_TOOLKIT_API MaaToolKitSetConfigDescription(MaaToolKitConfigHandle config_handle,
                                                            MaaString new_description);
@@ -44,9 +43,9 @@ extern "C"
     MaaBool MAA_TOOLKIT_API MaaToolKitSetTaskIndex(MaaToolKitConfigHandle config_handle, MaaString task_name,
                                                    MaaSize new_index);
 
-    MaaString MAA_TOOLKIT_API MaaToolKitGetTaskName(MaaToolKitTaskHandle task_handle);
-    MaaString MAA_TOOLKIT_API MaaToolKitGetTaskDescription(MaaToolKitConfigHandle config_handle);
-    MaaBool MAA_TOOLKIT_API MaaToolKitSetTaskDescription(MaaToolKitConfigHandle config_handle,
+    MaaString MAA_TOOLKIT_API MaaToolKitTaskName(MaaToolKitTaskHandle task_handle);
+    MaaString MAA_TOOLKIT_API MaaToolKitGetTaskDescription(MaaToolKitTaskHandle config_handle);
+    MaaBool MAA_TOOLKIT_API MaaToolKitSetTaskDescription(MaaToolKitTaskHandle config_handle,
                                                          MaaString new_description);
     MaaString MAA_TOOLKIT_API MaaToolKitGetTaskType(MaaToolKitTaskHandle task_handle);
     MaaBool MAA_TOOLKIT_API MaaToolKitSetTaskType(MaaToolKitTaskHandle task_handle, MaaString new_type);

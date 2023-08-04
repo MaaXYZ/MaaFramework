@@ -4,7 +4,7 @@
 
 #include <meojson/json.hpp>
 
-MAA_TOOLKIT_SERVER_BEGIN
+MAA_TOOLKIT_SERVER_NS_BEGIN
 
 class RequestResponse
 {
@@ -44,4 +44,4 @@ private:
     std::shared_ptr<boost::beast::http::message_generator> response;
 };
 
-MAA_TOOLKIT_SERVER_END
+MAA_TOOLKIT_SERVER_NS_END

@@ -13,42 +13,42 @@ Config::Config()
     // TODO
 }
 
-void Config::set_name(MaaString new_name)
+void Config::set_name(std::string_view new_name)
 {
     LogInfo << VAR(name_) << VAR(new_name);
     name_ = new_name;
 }
 
-void Config::set_description(MaaString new_description)
+void Config::set_description(std::string_view new_description)
 {
     LogInfo << VAR(name_) << VAR(description_) << VAR(new_description);
     description_ = new_description;
 }
 
-void Config::set_adb_path(MaaString new_path)
+void Config::set_adb_path(std::string_view new_path)
 {
     LogInfo << VAR(name_) << VAR(adb_path_) << VAR(new_path);
     adb_path_ = new_path;
 }
 
-void Config::set_adb_serial(MaaString new_serial)
+void Config::set_adb_serial(std::string_view new_serial)
 {
     LogInfo << VAR(name_) << VAR(adb_serial_) << VAR(new_serial);
     adb_serial_ = new_serial;
 }
 
-void Config::set_adb_config(MaaJsonString new_config)
+void Config::set_adb_config(std::string_view new_config)
 {
     LogInfo << VAR(name_) << VAR(adb_config_) << VAR(new_config);
     adb_config_ = new_config;
 }
 
-MaaSize Config::task_size() const
+size_t Config::task_size() const
 {
     return task_vec_.size();
 }
 
-MaaToolKitTaskHandle Config::task_by_index(MaaSize index)
+MaaToolKitTaskHandle Config::task_by_index(size_t index)
 {
     if (index >= task_vec_.size()) {
         LogError << "Out of range" << VAR(index) << VAR(task_vec_.size());
@@ -57,11 +57,12 @@ MaaToolKitTaskHandle Config::task_by_index(MaaSize index)
     return task_vec_[index].get();
 }
 
-MaaToolKitTaskHandle Config::add_task(MaaString task_name, MaaToolKitTaskHandle copy_from)
+MaaToolKitTaskHandle Config::add_task(std::string_view task_name, MaaToolKitTaskHandle copy_from)
 {
     LogInfo << VAR(name_) << VAR(task_name) << VAR(copy_from);
 
-    if (task_map_.contains(task_name)) {
+    std::string str_task_name(task_name);
+    if (task_map_.contains(str_task_name)) {
         LogError << "Task name already exists" << VAR(task_name) << VAR(task_map_);
         return nullptr;
     }
@@ -81,26 +82,28 @@ MaaToolKitTaskHandle Config::add_task(MaaString task_name, MaaToolKitTaskHandle 
     return ref.get();
 }
 
-void Config::del_task(MaaString task_name)
+bool Config::del_task(std::string_view task_name)
 {
     LogInfo << VAR(name_) << VAR(task_name);
 
-    bool removed = task_map_.erase(task_name) > 0;
+    std::string str_task_name(task_name);
+    bool removed = task_map_.erase(str_task_name) > 0;
     if (!removed) {
         LogError << "Task name not found in map" << VAR(task_name) << VAR(task_map_);
-        return;
+        return false;
     }
     auto find_it = MAA_RNS::ranges::find_if(task_vec_, [&](const auto& task) { return task->get_name() == task_name; });
     if (find_it == task_vec_.end()) {
         LogError << "Task name not found in vec" << VAR(task_name) << VAR(task_vec_);
-        return;
+        return false;
     }
     task_vec_.erase(find_it);
 
     LogTrace << VAR(task_name) << VAR(task_vec_) << VAR(task_map_);
+    return true;
 }
 
-bool Config::set_task_index(MaaString task_name, MaaSize new_index)
+bool Config::set_task_index(std::string_view task_name, size_t new_index)
 {
     LogInfo << VAR(name_) << VAR(task_name) << VAR(new_index);
 
@@ -121,7 +124,11 @@ bool Config::set_task_index(MaaString task_name, MaaSize new_index)
     return true;
 }
 
-void Config::post_all_task() {}
+bool Config::post_all_task()
+{
+    // TODO
+    return false;
+}
 
 MaaStatus Config::wait_all_task() const
 {
@@ -144,6 +151,8 @@ bool Config::from_json(const json::value& json)
 std::ostream& operator<<(std::ostream& os, const Config& config)
 {
     // TODO: 在此处插入 return 语句
+    std::ignore = config;
+    return os;
 }
 
 MAA_TOOLKIT_CONFIG_NS_END

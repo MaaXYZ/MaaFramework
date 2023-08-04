@@ -8,7 +8,7 @@
 using tcp = boost::asio::ip::tcp;
 namespace websocket = boost::beast::websocket;
 
-MAA_TOOLKIT_SERVER_BEGIN
+MAA_TOOLKIT_SERVER_NS_BEGIN
 
 inline void write_ws(websocket::stream<tcp::socket>& ws, const std::string& str)
 {
@@ -75,7 +75,7 @@ static boost::beast::http::message_generator handle_request(
     else {
         auto req = rr.request_body_json();
         if (req.has_value()) {
-            SingletonHolder<ApiDispatcher>::get_instance().handle_route(req.value(), [](const json::object&) {});
+            SingletonHolder<ApiDispatcher>::get_instance().handle_route(req.value());
             if (!rr.has_response()) {
                 rr.reply_error("internal error", boost::beast::http::status::internal_server_error);
             }
@@ -164,4 +164,4 @@ bool HttpServer::stop()
     return true;
 }
 
-MAA_TOOLKIT_SERVER_END
+MAA_TOOLKIT_SERVER_NS_END

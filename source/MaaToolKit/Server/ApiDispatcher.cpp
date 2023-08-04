@@ -2,7 +2,7 @@
 #include "Framework/Init.h"
 #include "JsonValidator.hpp"
 
-MAA_TOOLKIT_SERVER_BEGIN
+MAA_TOOLKIT_SERVER_NS_BEGIN
 
 void ApiDispatcher::register_route(const std::string& name, RouteEndpoint endpoint)
 {
@@ -36,4 +36,4 @@ void ApiDispatcher::init()
     inited = true;
 }
 
-MAA_TOOLKIT_SERVER_END
+MAA_TOOLKIT_SERVER_NS_END

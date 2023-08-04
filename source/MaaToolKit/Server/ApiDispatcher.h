@@ -7,7 +7,7 @@
 #include <functional>
 #include <meojson/json.hpp>
 
-MAA_TOOLKIT_SERVER_BEGIN
+MAA_TOOLKIT_SERVER_NS_BEGIN
 
 class ApiDispatcher : public SingletonHolder<ApiDispatcher>
 {
@@ -27,4 +27,4 @@ private:
     std::map<std::string, RouteEndpoint> endpoints;
 };
 
-MAA_TOOLKIT_SERVER_END
+MAA_TOOLKIT_SERVER_NS_END

@@ -5,7 +5,7 @@
 
 #include <map>
 
-MAA_TOOLKIT_SERVER_BEGIN
+MAA_TOOLKIT_SERVER_NS_BEGIN
 
 auto cfg = R"({
     "prebuilt": {
@@ -371,4 +371,4 @@ void init_maa_framework_controller(ApiDispatcher& disp)
     });
 }
 
-MAA_TOOLKIT_SERVER_END
+MAA_TOOLKIT_SERVER_NS_END
