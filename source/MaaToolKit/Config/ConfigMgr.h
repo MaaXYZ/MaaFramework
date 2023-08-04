@@ -37,7 +37,7 @@ public: // from MaaToolKitConfigMgrAPI
     virtual bool set_current_config(std::string_view config_name) override;
 
 private:
-    ConfigMgr();
+    ConfigMgr() = default;
 
     bool parse_json();
     bool create_default_config();

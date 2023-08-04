@@ -23,9 +23,9 @@ public: // from MaaToolKitTaskAPI
     virtual std::string_view get_type() const override { return type_; }
     virtual void set_type(std::string_view new_type) override;
     virtual std::string_view get_param() const override { return param_; }
-    virtual void set_param(std::string_view new_param);
+    virtual void set_param(std::string_view new_param) override;
     virtual bool get_enabled() const override { return enabled_; }
-    virtual void set_enabled(bool new_enabled);
+    virtual void set_enabled(bool new_enabled) override;
 
     virtual MaaStatus status() const override;
 
