@@ -654,22 +654,10 @@ bool PipelineConfig::parse_swipe(const json::value& input, MAA_PIPELINE_RES_NS::
 bool PipelineConfig::parse_key_press(const json::value& input, MAA_PIPELINE_RES_NS::Action::KeyParam& output,
                                      const MAA_PIPELINE_RES_NS::Action::KeyParam& default_value)
 {
-    std::string str_keys;
-    bool parse_str_ret = get_and_check_value(input, "key", str_keys, std::string());
-    if (!parse_str_ret) {
-        if (!get_and_check_value_or_array(input, "key", output.keys, default_value.keys)) {
-            LogError << "failed to get_and_check_value_or_array key" << VAR(input);
-            return false;
-        }
-    }
-    else if (str_keys.empty()) {
-        LogError << "key is empty" << VAR(input);
+    // TODO: https://github.com/MaaAssistantArknights/MaaFramework/issues/24#issuecomment-1666533842
+    if (!get_and_check_value_or_array(input, "key", output.keys, default_value.keys)) {
+        LogError << "failed to get_and_check_value_or_array key" << VAR(input);
         return false;
-    }
-    else {
-        MAA_RNS::ranges::transform(str_keys, std::back_inserter(output.keys),
-                                   [](char c) { return static_cast<int>(c); });
-        LogTrace << "key press" << VAR(str_keys) << VAR(output.keys);
     }
 
     return true;
