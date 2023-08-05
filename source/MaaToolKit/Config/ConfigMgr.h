@@ -18,8 +18,27 @@ class ConfigMgr : public SingletonHolder<ConfigMgr>, public MaaToolKitConfigMgrA
     friend class SingletonHolder<ConfigMgr>;
 
 public:
-    inline static const std::string kConfigKey = "Config";
-    inline static const std::string kCurrentKey = "Current";
+    // TODO: linux 可能要区分下放到家目录之类的
+    inline static const std::filesystem::path kUserDir = ".";
+    inline static const std::filesystem::path kConfigPath = kUserDir / "config" / "maa_toolkit.json";
+    inline static const std::filesystem::path kDebugDir = kUserDir / "debug";
+
+public:
+    inline static const std::string kPolicyKey = "policy";
+    inline static const std::string kConfigKey = "config";
+    inline static const std::string kCurrentKey = "current";
+    inline static const std::string kDefaultConfigName = "default";
+
+    inline static const std::string kConfigDescription = "description";
+    inline static const std::string kConfigAdb = "adb";
+    inline static const std::string kConfigAdbSerial = "adb_serial";
+    inline static const std::string kConfigAdbConfig = "adb_config";
+    inline static const std::string kConfigTask = "task";
+
+    inline static const std::string kPolicyLoggging = "logging";
+    inline static constexpr bool kPolicyLogggingDefault = true;
+    inline static const std::string kPolicyDebugMode = "debug_mode";
+    inline static constexpr bool kPolicyDebugModeDefault = false;
 
 public:
     virtual ~ConfigMgr() noexcept override = default;
@@ -39,12 +58,18 @@ public: // from MaaToolKitConfigMgrAPI
 private:
     ConfigMgr() = default;
 
-    bool parse_json();
-    bool create_default_config();
-    bool save();
-    void insert(std::string name, Config config);
+    bool load();
+    bool parse_and_apply_policy(const json::value& policy_json);
+    bool parse_config(const json::value& config_json);
+    bool parse_current(const json::value& current_json);
 
-    const std::filesystem::path& config_path() const;
+    bool generate_default_json() const;
+    static json::value default_policy();
+    static json::value default_config();
+
+    bool dump() const;
+    bool save(const json::value& root) const;
+    void insert(std::string name, Config config);
 
 private:
     std::vector<std::shared_ptr<Config>> config_vec_; // for C API

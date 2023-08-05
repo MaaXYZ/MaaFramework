@@ -100,7 +100,7 @@ bool PipelineTask::set_diff_task(const json::value& input)
 
     MAA_RES_NS::PipelineConfig::TaskDataMap task_data_map;
     auto& raw_data_map = resource()->pipeline_cfg().get_task_data_map();
-    bool parsed = MAA_RES_NS::PipelineConfig::parse_json(input, task_data_map, raw_data_map);
+    bool parsed = MAA_RES_NS::PipelineConfig::parse_config(input, task_data_map, raw_data_map);
     if (!parsed) {
         LogError << "Parse json failed";
         return false;

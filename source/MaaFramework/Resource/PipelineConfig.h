@@ -27,7 +27,7 @@ public:
     const TaskDataMap& get_task_data_map() const { return task_data_map_; }
 
 public:
-    static bool parse_json(const json::value& input, TaskDataMap& output, const TaskDataMap& default_value);
+    static bool parse_config(const json::value& input, TaskDataMap& output, const TaskDataMap& default_value);
     static bool parse_task(const std::string& name, const json::value& input, MAA_PIPELINE_RES_NS::TaskData& output,
                            const MAA_PIPELINE_RES_NS::TaskData& default_value);
 

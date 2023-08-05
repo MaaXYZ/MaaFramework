@@ -4,22 +4,23 @@
 
 #include <meojson/json.hpp>
 
+#include "MaaFramework/MaaAPI.h"
+
 #include "Utils/Logger.hpp"
+#include "Utils/Platform.hpp"
 #include "Utils/Ranges.hpp"
 
 MAA_TOOLKIT_CONFIG_NS_BEGIN
 
 bool ConfigMgr::init()
 {
-    LogFunc << VAR(config_path());
+    LogFunc << VAR(kConfigPath);
 
-    bool ret = false;
-    if (std::filesystem::exists(config_path())) {
-        ret = parse_json();
+    if (!std::filesystem::exists(kConfigPath)) {
+        generate_default_json();
     }
-    else {
-        ret = create_default_config();
-    }
+
+    bool ret = load();
 
     return ret;
 }
@@ -28,7 +29,7 @@ bool ConfigMgr::uninit()
 {
     LogFunc;
 
-    return save();
+    return dump();
 }
 
 size_t ConfigMgr::config_size() const
@@ -118,25 +119,68 @@ bool ConfigMgr::set_current_config(std::string_view config_name)
     return true;
 }
 
-bool ConfigMgr::parse_json()
+bool ConfigMgr::load()
 {
-    LogFunc << VAR(config_path());
+    LogFunc << VAR(kConfigPath);
 
-    auto json_opt = json::open(config_path());
+    auto json_opt = json::open(kConfigPath);
     if (!json_opt) {
-        LogError << "Failed to open config file:" << config_path();
+        LogError << "Failed to open json file:" << kConfigPath;
         return false;
     }
 
     auto& json = *json_opt;
-
-    auto config_opt = json.find<json::object>(kConfigKey);
-    if (!config_opt) {
-        LogError << "Failed to find config key:" << kConfigKey;
+    if (!json.is_object()) {
+        LogError << "Json is not an object:" << VAR(json);
         return false;
     }
 
-    for (const auto& [key, jconfig] : *config_opt) {
+    auto& policy = json[kPolicyKey];
+    if (!parse_and_apply_policy(policy)) {
+        LogError << "Failed to parse policy:" << VAR(policy);
+        return false;
+    }
+
+    auto& config = json[kConfigKey];
+    if (!parse_config(config)) {
+        LogError << "Failed to parse config:" << VAR(config);
+        return false;
+    }
+
+    auto& current = json[kCurrentKey];
+    if (!parse_current(current)) {
+        LogError << "Failed to parse current:" << VAR(current);
+        return false;
+    }
+
+    return true;
+}
+
+bool ConfigMgr::parse_and_apply_policy(const json::value& policy_json)
+{
+    LogFunc << VAR(policy_json);
+
+    bool logging = policy_json.get(kPolicyLoggging, kPolicyLogggingDefault);
+    std::string logging_dir = path_to_utf8_string(logging ? kDebugDir : "");
+    MaaSetGlobalOption(MaaGlobalOption_Logging, (void*)logging_dir.c_str(), logging_dir.size());
+
+    bool debug_mode = policy_json.get(kPolicyDebugMode, kPolicyDebugModeDefault);
+    MaaSetGlobalOption(MaaGlobalOption_DebugMode, &debug_mode, sizeof(debug_mode));
+
+    return true;
+}
+
+bool ConfigMgr::parse_config(const json::value& config_json)
+{
+    LogFunc << VAR(config_json);
+
+    if (!config_json.is_object()) {
+        LogError << "Json is not an object:" << VAR(config_json);
+        return false;
+    }
+
+    auto& config_obj = config_json.as_object();
+    for (const auto& [key, jconfig] : config_obj) {
         Config config;
         if (!config.from_json(jconfig)) {
             LogError << "Failed to parse config:" << VAR(key) << jconfig;
@@ -145,27 +189,58 @@ bool ConfigMgr::parse_json()
         insert(key, std::move(config));
     }
 
-    current_ = json.get(kCurrentKey, std::string());
-    if (current_.empty() || !config_map_.contains(current_)) {
-        LogError << "Failed to find current config:" << VAR(current_);
-        return false;
-    }
-
     return true;
 }
 
-bool ConfigMgr::create_default_config()
+bool ConfigMgr::parse_current(const json::value& current_json)
 {
-    Config config;
-    // TODO: set default config
+    LogFunc << VAR(current_json);
 
-    static const std::string kDefaultKey = "Default";
-    insert(kDefaultKey, std::move(config));
+    if (!current_json.is_string()) {
+        LogError << "Json is not a string:" << VAR(current_json);
+        return false;
+    }
 
-    return save();
+    current_ = current_json.as_string();
+    return true;
 }
 
-bool ConfigMgr::save()
+bool ConfigMgr::generate_default_json() const
+{
+    LogInfo;
+
+    json::value root;
+    root[kPolicyKey] = default_policy();
+    root[kConfigKey] = default_config();
+    root[kCurrentKey] = kDefaultConfigName;
+
+    return save(root);
+}
+
+json::value ConfigMgr::default_policy()
+{
+    return {
+        { kPolicyLoggging, kPolicyLogggingDefault },
+        { kPolicyDebugMode, kPolicyDebugModeDefault },
+    };
+}
+
+json::value ConfigMgr::default_config()
+{
+    json::object config {
+        { kConfigDescription, "Default Config" },
+        { kConfigAdb, "" },
+        { kConfigAdbSerial, "" },
+        { kConfigAdbConfig, "" },
+        { kConfigTask, json::object {} },
+    };
+
+    return {
+        { kDefaultConfigName, config },
+    };
+}
+
+bool ConfigMgr::dump() const
 {
     LogFunc;
 
@@ -178,9 +253,16 @@ bool ConfigMgr::save()
     root[kConfigKey] = std::move(jconfig);
     root[kCurrentKey] = current_;
 
-    std::ofstream ofs(config_path(), std::ios::out);
+    return save(root);
+}
+
+bool ConfigMgr::save(const json::value& root) const
+{
+    LogFunc;
+
+    std::ofstream ofs(kConfigPath, std::ios::out);
     if (!ofs) {
-        LogError << "Failed to open config file:" << config_path();
+        LogError << "Failed to open config file:" << kConfigPath;
         return false;
     }
     ofs << root;
@@ -205,18 +287,6 @@ void ConfigMgr::insert(std::string name, Config config)
         config_vec_.emplace_back(config_ptr);
         config_map_.emplace(std::move(name), std::move(config_ptr));
     }
-}
-
-const std::filesystem::path& ConfigMgr::config_path() const
-{
-#ifdef _WIN32
-    static const std::filesystem::path config_path("maa_toolkit.json");
-    return config_path;
-#else
-    // TODO: unix 设备上应该不方便放当前目录，可能调整到 data 或者家目录之类的地方
-    static const std::filesystem::path config_path("maa_toolkit.json");
-    return config_path;
-#endif
 }
 
 MAA_TOOLKIT_CONFIG_NS_END

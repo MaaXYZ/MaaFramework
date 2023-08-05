@@ -97,7 +97,7 @@ bool PipelineConfig::open_and_parse_file(const std::filesystem::path& path)
     }
 
     TaskDataMap cur_data_map;
-    if (!parse_json(*json_opt, cur_data_map, task_data_map_)) {
+    if (!parse_config(*json_opt, cur_data_map, task_data_map_)) {
         return false;
     }
 
@@ -154,7 +154,7 @@ bool PipelineConfig::check_next_list(const TaskData::NextList& next_list) const
     return true;
 }
 
-bool PipelineConfig::parse_json(const json::value& input, TaskDataMap& output, const TaskDataMap& default_value)
+bool PipelineConfig::parse_config(const json::value& input, TaskDataMap& output, const TaskDataMap& default_value)
 {
     if (!input.is_object()) {
         LogError << "json is not object";

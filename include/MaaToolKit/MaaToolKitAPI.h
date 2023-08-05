@@ -7,6 +7,9 @@ extern "C"
 {
 #endif
 
+    MaaBool MAA_TOOLKIT_API MaaToolKitInit();
+    MaaBool MAA_TOOLKIT_API MaaToolKitUninit();
+
     MaaSize MAA_TOOLKIT_API MaaToolKitConfigSize();
     MaaToolKitConfigHandle MAA_TOOLKIT_API MaaToolKitGetConfig(MaaSize index);
 
@@ -45,8 +48,7 @@ extern "C"
 
     MaaString MAA_TOOLKIT_API MaaToolKitTaskName(MaaToolKitTaskHandle task_handle);
     MaaString MAA_TOOLKIT_API MaaToolKitGetTaskDescription(MaaToolKitTaskHandle config_handle);
-    MaaBool MAA_TOOLKIT_API MaaToolKitSetTaskDescription(MaaToolKitTaskHandle config_handle,
-                                                         MaaString new_description);
+    MaaBool MAA_TOOLKIT_API MaaToolKitSetTaskDescription(MaaToolKitTaskHandle config_handle, MaaString new_description);
     MaaString MAA_TOOLKIT_API MaaToolKitGetTaskType(MaaToolKitTaskHandle task_handle);
     MaaBool MAA_TOOLKIT_API MaaToolKitSetTaskType(MaaToolKitTaskHandle task_handle, MaaString new_type);
     MaaJsonString MAA_TOOLKIT_API MaaToolKitGetTaskParam(MaaToolKitTaskHandle task_handle);
