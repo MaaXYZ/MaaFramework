@@ -34,10 +34,10 @@
 - [MAA1999](https://github.com/MaaAssistantArknights/MAA1999) 《重返未来：1999》小助手  
   基于全新架构的 亿韭韭韭 小助手。图像技术 + 模拟控制，解放双手！由 MaaFramework 强力驱动！
 
-- [MAAIP](https://github.com/Arcelibs/MAAIP) 《idolypride》小助手  
-  基于全新架构的 idolypride 小助手。图像技术 + 模拟控制，解放双手！由 MaaFramework 强力驱动！
+- [MAAIP](https://github.com/Arcelibs/MAAIP) 基於MAA框架技術的idolypride自動化程序  
+  由Github上最火熱的lk99開源套件MaaFramework 製作
 
-- [MAABH3](https://github.com/dongwlin/MAABH3) 《崩坏3》小助手  
+- [MAABH3](https://github.com/dongwlin/MAABH3) 《崩坏3》小助手 | A one-click tool for the daily tasks of Honkai Impact.  
   基于全新架构的 蹦蹦蹦 小助手。图像技术 + 模拟控制，解放双手！由 MaaFramework 强力驱动！
 
 ## 生态共建
