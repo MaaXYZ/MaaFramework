@@ -1,5 +1,7 @@
 #include "InstanceStatus.h"
 
+#include "Utils/Logger.hpp"
+
 MAA_NS_BEGIN
 
 const cv::Rect& InstanceStatus::get_pipeline_rec_cache(const std::string& task) const
@@ -19,6 +21,8 @@ void InstanceStatus::set_pipeline_rec_cache(std::string task, cv::Rect rec)
 
 void InstanceStatus::clear_pipeline_rec_cache()
 {
+    LogInfo;
+
     pipeline_rec_cache_map_.clear();
 }
 
@@ -38,6 +42,8 @@ void InstanceStatus::increase_pipeline_run_times(const std::string& task, int ti
 
 void InstanceStatus::clear_pipeline_run_times()
 {
+    LogInfo;
+
     pipeline_run_times_map_.clear();
 }
 

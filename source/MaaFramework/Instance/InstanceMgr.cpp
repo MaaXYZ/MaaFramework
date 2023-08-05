@@ -298,6 +298,8 @@ bool InstanceMgr::run_task(TaskId id, TaskPtr task_ptr)
 
     notifier.notify(ret ? MaaMsg_Task_Completed : MaaMsg_Task_Failed, details);
 
+    status_.clear_pipeline_run_times();
+
     Logger::get_instance().flush();
 
     return ret;
