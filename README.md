@@ -37,7 +37,8 @@
 - [MAAIP](https://github.com/Arcelibs/MAAIP) 《idolypride》小助手  
   基于全新架构的 idolypride 小助手。图像技术 + 模拟控制，解放双手！由 MaaFramework 强力驱动！
 
-
+- [MAABH3](https://github.com/dongwlin/MAABH3) 《崩坏3》小助手  
+  基于全新架构的 蹦蹦蹦 小助手。图像技术 + 模拟控制，解放双手！由 MaaFramework 强力驱动！
 
 ## 生态共建
 
