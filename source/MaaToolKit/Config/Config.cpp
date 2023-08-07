@@ -73,13 +73,7 @@ MaaToolKitTaskHandle Config::add_task(std::string_view task_name, MaaToolKitTask
     }
     new_task.set_name(task_name);
 
-    auto new_task_ptr = std::make_shared<Task>(std::move(new_task));
-    auto& ref = task_vec_.emplace_back(new_task_ptr);
-    task_map_.emplace(task_name, new_task_ptr);
-
-    LogTrace << VAR(task_name) << VAR(new_task_ptr) << VAR(*new_task_ptr) << VAR(task_vec_) << VAR(task_map_);
-
-    return ref.get();
+    return insert(std::move(str_task_name), std::move(new_task)).get();
 }
 
 bool Config::del_task(std::string_view task_name)
@@ -139,19 +133,60 @@ void Config::stop_all_task() {}
 
 json::value Config::to_json() const
 {
-    return json::value();
+    json::value root;
+    root[kNameKey] = name_;
+    root[kDescriptionKey] = description_;
+    root[kAdbPathKey] = adb_path_;
+    root[kAdbSerialKey] = adb_serial_;
+    root[kAdbConfigKey] = adb_config_;
+
+    auto& tasks = root[kTasksKey].as_array();
+    for (const auto& task : task_vec_) {
+        tasks.emplace_back(task->to_json());
+    }
+    return root;
 }
 
 bool Config::from_json(const json::value& json)
 {
-    std::ignore = json;
-    return false;
+    LogFunc << VAR(json);
+
+    auto name_opt = json.find<std::string>(kNameKey);
+    if (!name_opt) {
+        return false;
+    }
+    name_ = std::move(name_opt).value();
+
+    description_ = json.get(kDescriptionKey, std::string());
+    adb_path_ = json.get(kAdbPathKey, std::string());
+    adb_serial_ = json.get(kAdbSerialKey, std::string());
+    adb_config_ = json.get(kAdbConfigKey, std::string());
+
+    for (const auto& j_task : json.get(kTasksKey, json::array())) {
+        Task task;
+        if (!task.from_json(j_task)) {
+            LogError << "Task from json failed" << VAR(j_task);
+            return false;
+        }
+        insert(std::string(task.get_name()), std::move(task));
+    }
+    return true;
+}
+
+std::shared_ptr<Task> Config::insert(std::string name, Task task)
+{
+    auto new_task_ptr = std::make_shared<Task>(std::move(task));
+    task_vec_.emplace_back(new_task_ptr);
+    task_map_.insert_or_assign(name, new_task_ptr);
+
+    LogTrace << VAR(name) << VAR(new_task_ptr) << VAR(*new_task_ptr) << VAR(task_vec_) << VAR(task_map_);
+    return new_task_ptr;
 }
 
 std::ostream& operator<<(std::ostream& os, const Config& config)
 {
-    // TODO: 在此处插入 return 语句
-    std::ignore = config;
+    os << VAR_RAW(config.name_) << VAR_RAW(config.description_) << VAR_RAW(config.adb_path_)
+       << VAR_RAW(config.adb_serial_) << VAR_RAW(config.adb_config_) << VAR_RAW(config.task_vec_.size());
     return os;
 }
 

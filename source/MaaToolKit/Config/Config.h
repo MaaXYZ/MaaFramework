@@ -16,6 +16,15 @@ MAA_TOOLKIT_CONFIG_NS_BEGIN
 class Config : public MaaToolKitConfigAPI
 {
 public:
+    inline static const std::string kNameKey = "name";
+    inline static const std::string kDescriptionKey = "description";
+    inline static const std::string kAdbPathKey = "adb_path";
+    inline static const std::string kAdbSerialKey = "adb_serial";
+    inline static const std::string kAdbConfigKey = "adb_config";
+
+    inline static const std::string kTasksKey = "tasks";
+
+public:
     Config();
     virtual ~Config() override = default;
 
@@ -49,6 +58,9 @@ public: // from MaaToolKitConfigAPI
 public:
     json::value to_json() const;
     bool from_json(const json::value& json);
+    std::shared_ptr<Task> insert(std::string name, Task task);
+
+    friend std::ostream& operator<<(std::ostream& os, const Config& config);
 
 private:
     std::string name_;
@@ -64,7 +76,5 @@ private:
     MaaControllerHandle controller_ = nullptr;
     MaaInstanceHandle instance_ = nullptr;
 };
-
-std::ostream& operator<<(std::ostream& os, const Config& config);
 
 MAA_TOOLKIT_CONFIG_NS_END

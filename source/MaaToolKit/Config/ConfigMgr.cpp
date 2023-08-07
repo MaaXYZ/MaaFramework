@@ -21,6 +21,10 @@ bool ConfigMgr::init()
     }
 
     bool ret = load();
+    if (!ret) {
+        LogError << "Load failed";
+        return false;
+    }
 
     return ret;
 }
@@ -227,41 +231,37 @@ json::value ConfigMgr::default_policy()
 
 json::value ConfigMgr::default_config()
 {
-    json::object config {
-        { kConfigDescription, "Default Config" },
-        { kConfigAdb, "" },
-        { kConfigAdbSerial, "" },
-        { kConfigAdbConfig, "" },
-        { kConfigTask, json::object {} },
-    };
-
-    return {
-        { kDefaultConfigName, config },
-    };
+    Config default_config;
+    default_config.set_name(kDefaultConfigName);
+    return json::array { default_config.to_json() };
 }
 
 bool ConfigMgr::dump() const
 {
     LogFunc;
 
-    json::object jconfig;
-    for (const auto& [key, config] : config_map_) {
-        jconfig.emplace(key, config->to_json());
-    }
+    return true;
 
-    json::value root;
-    root[kConfigKey] = std::move(jconfig);
-    root[kCurrentKey] = current_;
+    // TODO
+    // json::object jconfig;
+    // for (const auto& [key, config] : config_map_) {
+    //    jconfig.emplace(key, config->to_json());
+    //}
 
-    return save(root);
+    // json::value root;
+    // root[kConfigKey] = std::move(jconfig);
+    // root[kCurrentKey] = current_;
+
+    // return save(root);
 }
 
 bool ConfigMgr::save(const json::value& root) const
 {
     LogFunc;
 
+    std::filesystem::create_directories(kConfigPath.parent_path());
     std::ofstream ofs(kConfigPath, std::ios::out);
-    if (!ofs) {
+    if (!ofs.is_open()) {
         LogError << "Failed to open config file:" << kConfigPath;
         return false;
     }
@@ -276,7 +276,7 @@ void ConfigMgr::insert(std::string name, Config config)
     auto config_ptr = std::make_shared<Config>(std::move(config));
 
     auto map_it = config_map_.find(name);
-    if (map_it == config_map_.end()) {
+    if (map_it != config_map_.end()) {
         auto vec_it =
             MaaRangesNS::ranges::find_if(config_vec_, [&](const auto& ptr) { return ptr->get_name() == name; });
         *vec_it = config_ptr;

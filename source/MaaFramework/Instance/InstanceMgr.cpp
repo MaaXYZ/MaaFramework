@@ -84,11 +84,11 @@ bool InstanceMgr::set_option(MaaInstOption key, MaaOptionValue value, MaaOptionV
     return false;
 }
 
-MaaTaskId InstanceMgr::post_task(std::string task, std::string_view param)
+MaaTaskId InstanceMgr::post_task(std::string entry, std::string_view param)
 {
-    LogInfo << VAR(task) << VAR(param);
+    LogInfo << VAR(entry) << VAR(param);
 
-    TaskPtr task_ptr = std::make_shared<TaskNS::PipelineTask>(std::move(task), this);
+    TaskPtr task_ptr = std::make_shared<TaskNS::PipelineTask>(std::move(entry), this);
 
     auto param_opt = json::parse(param);
     if (!param_opt) {
@@ -285,7 +285,7 @@ bool InstanceMgr::run_task(TaskId id, TaskPtr task_ptr)
 
     const json::value details = {
         { "id", id },
-        { "task", task_ptr->first_task_name() },
+        { "entry", task_ptr->entry() },
         { "hash", inter_resource() ? inter_resource()->get_hash() : std::string() },
         { "uuid", inter_controller() ? inter_controller()->get_uuid() : std::string() },
     };

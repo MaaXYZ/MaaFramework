@@ -16,10 +16,10 @@ void Task::set_description(std::string_view new_description)
     description_ = new_description;
 }
 
-void Task::set_type(std::string_view new_type)
+void Task::set_entry(std::string_view new_entry)
 {
-    LogInfo << VAR(name_) << VAR(type_) << VAR(new_type);
-    type_ = new_type;
+    LogInfo << VAR(name_) << VAR(entry_) << VAR(new_entry);
+    entry_ = new_entry;
 }
 
 void Task::set_param(std::string_view new_param)
@@ -39,10 +39,40 @@ MaaStatus Task::status() const
     return MaaStatus();
 }
 
+json::value Task::to_json() const
+{
+    json::value root;
+    root[kNameKey] = name_;
+    root[kDescriptionKey] = description_;
+    root[kEntryKey] = entry_;
+    root[kParamKey] = param_;
+    root[kEnabledKey] = enabled_;
+
+    return root;
+}
+
+bool Task::from_json(const json::value& json)
+{
+    LogFunc << VAR(json);
+
+    auto name_opt = json.find<std::string>(kNameKey);
+    if (!name_opt) {
+        return false;
+    }
+    name_ = std::move(name_opt).value();
+
+    description_ = json.get(kDescriptionKey, std::string());
+    entry_ = json.get(kEntryKey, std::string());
+    param_ = json.get(kParamKey, std::string());
+    enabled_ = json.get(kEnabledKey, true);
+
+    return true;
+}
+
 std::ostream& operator<<(std::ostream& os, const Task& task)
 {
-    // TODO: 在此处插入 return 语句
-    std::ignore = task;
+    os << VAR_RAW(task.name_) << VAR_RAW(task.description_) << VAR_RAW(task.entry_) << VAR_RAW(task.param_)
+       << VAR_RAW(task.enabled_);
     return os;
 }
 

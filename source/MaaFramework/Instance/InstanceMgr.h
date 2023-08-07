@@ -24,7 +24,7 @@ public: // from MaaInstanceAPI
 
     virtual bool set_option(MaaInstOption key, MaaOptionValue value, MaaOptionValueSize val_size) override;
 
-    virtual MaaTaskId post_task(std::string task, std::string_view param) override;
+    virtual MaaTaskId post_task(std::string entry, std::string_view param) override;
     virtual bool set_task_param(MaaTaskId task_id, std::string_view param) override;
 
     virtual bool register_custom_recognizer(std::string name, MaaCustomRecognizerHandle handle) override;

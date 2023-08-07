@@ -414,14 +414,14 @@ MaaBool MaaClearCustomAction(MaaInstanceHandle inst)
     return true;
 }
 
-MaaTaskId MaaPostTask(MaaInstanceHandle inst, MaaString task, MaaJsonString param)
+MaaTaskId MaaPostTask(MaaInstanceHandle inst, MaaString entry, MaaJsonString param)
 {
-    LogFunc << VAR_VOIDP(inst) << VAR(task) << VAR(param);
+    LogFunc << VAR_VOIDP(inst) << VAR(entry) << VAR(param);
 
     if (!inst) {
         return MaaInvalidId;
     }
-    return inst->post_task(task, param);
+    return inst->post_task(entry, param);
 }
 
 MaaBool MaaSetTaskParam(MaaInstanceHandle inst, MaaTaskId id, MaaJsonString param)

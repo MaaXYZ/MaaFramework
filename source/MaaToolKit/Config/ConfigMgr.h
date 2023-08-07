@@ -29,12 +29,6 @@ public:
     inline static const std::string kCurrentKey = "current";
     inline static const std::string kDefaultConfigName = "default";
 
-    inline static const std::string kConfigDescription = "description";
-    inline static const std::string kConfigAdb = "adb";
-    inline static const std::string kConfigAdbSerial = "adb_serial";
-    inline static const std::string kConfigAdbConfig = "adb_config";
-    inline static const std::string kConfigTask = "task";
-
     inline static const std::string kPolicyLoggging = "logging";
     inline static constexpr bool kPolicyLogggingDefault = true;
     inline static const std::string kPolicyDebugMode = "debug_mode";

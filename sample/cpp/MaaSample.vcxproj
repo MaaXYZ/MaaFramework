@@ -96,7 +96,7 @@
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>MaaFramework.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>MaaFramework.lib;MaaToolKit.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>$(TargetDir);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <Profile>true</Profile>
     </Link>
@@ -132,7 +132,7 @@ xcopy "$(SolutionDir)\assets\resource" "$(TargetDir)" /s /e /y</Command>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>MaaFramework.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>MaaFramework.lib;MaaToolKit.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>$(TargetDir);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <Profile>true</Profile>
     </Link>
@@ -168,7 +168,7 @@ xcopy "$(SolutionDir)\assets\resource" "$(TargetDir)" /s /e /y</Command>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>MaaFramework.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>MaaFramework.lib;MaaToolKit.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>$(TargetDir);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <Profile>true</Profile>
     </Link>

@@ -249,24 +249,24 @@ MaaBool MaaToolKitSetTaskDescription(MaaToolKitTaskHandle task_handle, MaaString
     return true;
 }
 
-MaaString MaaToolKitGetTaskType(MaaToolKitTaskHandle task_handle)
+MaaString MaaToolKitGetTaskEntry(MaaToolKitTaskHandle task_handle)
 {
     if (!task_handle) {
         LogError << "task_handle is null" << VAR(task_handle);
         return nullptr;
     }
 
-    return task_handle->get_type().data();
+    return task_handle->get_entry().data();
 }
 
-MaaBool MaaToolKitSetTaskType(MaaToolKitTaskHandle task_handle, MaaString new_type)
+MaaBool MaaToolKitSetTaskEntry(MaaToolKitTaskHandle task_handle, MaaString new_entry)
 {
     if (!task_handle) {
         LogError << "task_handle is null" << VAR(task_handle);
         return false;
     }
 
-    task_handle->set_type(new_type);
+    task_handle->set_entry(new_entry);
     return true;
 }
 

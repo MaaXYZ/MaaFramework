@@ -60,8 +60,8 @@ struct MaaToolKitTaskAPI
     virtual void set_name(std::string_view new_name) = 0;
     virtual std::string_view get_description() const = 0;
     virtual void set_description(std::string_view new_description) = 0;
-    virtual std::string_view get_type() const = 0;
-    virtual void set_type(std::string_view new_type) = 0;
+    virtual std::string_view get_entry() const = 0;
+    virtual void set_entry(std::string_view new_entry) = 0;
     virtual std::string_view get_param() const = 0;
     virtual void set_param(std::string_view new_param) = 0;
     virtual bool get_enabled() const = 0;

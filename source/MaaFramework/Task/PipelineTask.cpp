@@ -14,22 +14,20 @@
 
 MAA_TASK_NS_BEGIN
 
-PipelineTask::PipelineTask(std::string first_task_name, InstanceInternalAPI* inst)
-    : inst_(inst), first_task_name_(std::move(first_task_name))
-{}
+PipelineTask::PipelineTask(std::string entry, InstanceInternalAPI* inst) : inst_(inst), entry_(std::move(entry)) {}
 
 bool PipelineTask::run()
 {
-    LogFunc << VAR(first_task_name_);
+    LogFunc << VAR(entry_);
 
     if (!resource()) {
         LogError << "Resource not binded";
         return false;
     }
 
-    auto cur_task = get_task_data(first_task_name_);
+    auto cur_task = get_task_data(entry_);
     cur_task_name_ = cur_task.name;
-    std::vector<std::string> next_list = { first_task_name_ };
+    std::vector<std::string> next_list = { entry_ };
     std::stack<std::string> breakpoints_stack;
     std::string pre_breakpoint;
 

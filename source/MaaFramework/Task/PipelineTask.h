@@ -17,7 +17,7 @@ MAA_TASK_NS_BEGIN
 class PipelineTask : public MaaInstanceSink
 {
 public:
-    PipelineTask(std::string first_task_name, InstanceInternalAPI* inst);
+    PipelineTask(std::string entry, InstanceInternalAPI* inst);
     virtual ~PipelineTask() override = default;
 
 public: // from MaaInstanceSink
@@ -26,7 +26,7 @@ public: // from MaaInstanceSink
 public:
     bool run();
     bool set_param(const json::value& param);
-    std::string first_task_name() const { return first_task_name_; }
+    std::string entry() const { return entry_; }
 
 private:
     using TaskDataMap = MAA_RES_NS::PipelineConfig::TaskDataMap;
@@ -101,7 +101,7 @@ private:
     bool need_exit_ = false;
     InstanceInternalAPI* inst_ = nullptr;
 
-    std::string first_task_name_;
+    std::string entry_;
     std::string cur_task_name_;
     TaskDataMap diff_tasks_;
 };
