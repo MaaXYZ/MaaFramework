@@ -276,6 +276,11 @@ std::optional<PipelineTask::RecResult> PipelineTask::recognize(const cv::Mat& im
     if (result) {
         status()->set_pipeline_rec_cache(task_data.name, result->box);
     }
+
+    if (task_data.inverse) {
+        LogTrace << "task_data.inverse is true, reverse the result" << VAR(task_data.name) << VAR(result.has_value());
+        return result ? std::nullopt : std::make_optional(RecResult { .box = cv::Rect() });
+    }
     return result;
 }
 

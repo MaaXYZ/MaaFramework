@@ -118,6 +118,7 @@ struct TaskData
 
     std::string name;
     bool is_sub = false;
+    bool inverse = false;
 
     Recognition::Type rec_type = Recognition::Type::DirectHit;
     Recognition::Param rec_param = MAA_VISION_NS::DirectHitParam {};
