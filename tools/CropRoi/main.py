@@ -41,7 +41,7 @@ std_long_side: int = 1280
 std_short_side: int = 720
 std_ratio = std_long_side / std_short_side
 
-cv2.namedWindow("image")
+cv2.namedWindow("image", cv2.WINDOW_NORMAL)
 cv2.setMouseCallback("image", click_and_crop)
 
 for filename in os.listdir("./src"):
