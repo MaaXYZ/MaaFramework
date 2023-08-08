@@ -27,12 +27,11 @@ public:
     inline static const std::string kPolicyKey = "policy";
     inline static const std::string kConfigKey = "config";
     inline static const std::string kCurrentKey = "current";
-    inline static const std::string kDefaultConfigName = "default";
 
     inline static const std::string kPolicyLoggging = "logging";
-    inline static constexpr bool kPolicyLogggingDefault = true;
     inline static const std::string kPolicyDebugMode = "debug_mode";
-    inline static constexpr bool kPolicyDebugModeDefault = false;
+
+    inline static const std::string kConfigDefaultName = "Default";
 
 public:
     virtual ~ConfigMgr() noexcept override = default;
@@ -57,9 +56,7 @@ private:
     bool parse_config(const json::value& config_json);
     bool parse_current(const json::value& current_json);
 
-    bool generate_default_json() const;
-    static json::value default_policy();
-    static json::value default_config();
+    void generate_default_config();
 
     bool dump() const;
     bool save(const json::value& root) const;
@@ -68,7 +65,10 @@ private:
 private:
     std::vector<std::shared_ptr<Config>> config_vec_; // for C API
     std::map<std::string, std::shared_ptr<Config>> config_map_;
-    std::string current_;
+    std::string current_ = kConfigDefaultName;
+
+    bool policy_logging_ = true;
+    bool policy_debug_mode_ = false;
 };
 
 MAA_TOOLKIT_CONFIG_NS_END

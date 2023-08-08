@@ -17,7 +17,8 @@ bool ConfigMgr::init()
     LogFunc << VAR(kConfigPath);
 
     if (!std::filesystem::exists(kConfigPath)) {
-        generate_default_json();
+        generate_default_config();
+        dump();
     }
 
     bool ret = load();
@@ -164,12 +165,12 @@ bool ConfigMgr::parse_and_apply_policy(const json::value& policy_json)
 {
     LogFunc << VAR(policy_json);
 
-    bool logging = policy_json.get(kPolicyLoggging, kPolicyLogggingDefault);
-    std::string logging_dir = path_to_utf8_string(logging ? kDebugDir : "");
+    policy_logging_ = policy_json.get(kPolicyLoggging, policy_logging_);
+    std::string logging_dir = path_to_utf8_string(policy_logging_ ? kDebugDir : "");
     MaaSetGlobalOption(MaaGlobalOption_Logging, (void*)logging_dir.c_str(), logging_dir.size());
 
-    bool debug_mode = policy_json.get(kPolicyDebugMode, kPolicyDebugModeDefault);
-    MaaSetGlobalOption(MaaGlobalOption_DebugMode, &debug_mode, sizeof(debug_mode));
+    policy_debug_mode_ = policy_json.get(kPolicyDebugMode, policy_debug_mode_);
+    MaaSetGlobalOption(MaaGlobalOption_DebugMode, &policy_debug_mode_, sizeof(policy_debug_mode_));
 
     return true;
 }
@@ -177,6 +178,9 @@ bool ConfigMgr::parse_and_apply_policy(const json::value& policy_json)
 bool ConfigMgr::parse_config(const json::value& config_json)
 {
     LogFunc << VAR(config_json);
+
+    config_vec_.clear();
+    config_map_.clear();
 
     if (!config_json.is_object()) {
         LogError << "Json is not an object:" << VAR(config_json);
@@ -193,6 +197,7 @@ bool ConfigMgr::parse_config(const json::value& config_json)
         insert(key, std::move(config));
     }
 
+    LogInfo << VAR(config_vec_) << VAR(config_map_);
     return true;
 }
 
@@ -209,55 +214,36 @@ bool ConfigMgr::parse_current(const json::value& current_json)
     return true;
 }
 
-bool ConfigMgr::generate_default_json() const
+void ConfigMgr::generate_default_config()
 {
     LogInfo;
 
-    json::value root;
-    root[kPolicyKey] = default_policy();
-    root[kConfigKey] = default_config();
-    root[kCurrentKey] = kDefaultConfigName;
-
-    return save(root);
-}
-
-json::value ConfigMgr::default_policy()
-{
-    return {
-        { kPolicyLoggging, kPolicyLogggingDefault },
-        { kPolicyDebugMode, kPolicyDebugModeDefault },
-    };
-}
-
-json::value ConfigMgr::default_config()
-{
-    Config default_config;
-    default_config.set_name(kDefaultConfigName);
-    return json::array { default_config.to_json() };
+    Config config;
+    config.set_name(kConfigDefaultName);
+    insert(kConfigDefaultName, std::move(config));
 }
 
 bool ConfigMgr::dump() const
 {
-    LogFunc;
+    LogInfo;
 
-    return true;
+    json::value root;
+    root[kPolicyKey] = {
+        { kPolicyLoggging, policy_logging_ },
+        { kPolicyDebugMode, policy_debug_mode_ },
+    };
+    json::array& jconfig = root[kConfigKey].as_array();
+    for (const auto& [key, config] : config_map_) {
+        jconfig.emplace_back(config->to_json());
+    }
+    root[kCurrentKey] = current_;
 
-    // TODO
-    // json::object jconfig;
-    // for (const auto& [key, config] : config_map_) {
-    //    jconfig.emplace(key, config->to_json());
-    //}
-
-    // json::value root;
-    // root[kConfigKey] = std::move(jconfig);
-    // root[kCurrentKey] = current_;
-
-    // return save(root);
+    return save(root);
 }
 
 bool ConfigMgr::save(const json::value& root) const
 {
-    LogFunc;
+    LogInfo;
 
     std::filesystem::create_directories(kConfigPath.parent_path());
     std::ofstream ofs(kConfigPath, std::ios::out);
@@ -271,7 +257,7 @@ bool ConfigMgr::save(const json::value& root) const
 
 void ConfigMgr::insert(std::string name, Config config)
 {
-    LogFunc << VAR(name) << VAR(config);
+    LogInfo << VAR(name) << VAR(config);
 
     auto config_ptr = std::make_shared<Config>(std::move(config));
 
