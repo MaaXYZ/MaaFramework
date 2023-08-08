@@ -25,8 +25,8 @@ public:
     inline static const std::string kTasksKey = "tasks";
 
 public:
-    Config();
-    virtual ~Config() override = default;
+    Config() = default;
+    virtual ~Config() override;
 
 public: // from MaaToolKitConfigAPI
     virtual std::string_view get_name() const override { return name_; }
@@ -56,6 +56,9 @@ public: // from MaaToolKitConfigAPI
     virtual MaaInstanceHandle raw_instance() override { return instance_; }
 
 public:
+    bool init();
+    void uninit();
+
     json::value to_json() const;
     bool from_json(const json::value& json);
     std::shared_ptr<Task> insert(std::string name, Task task);
@@ -67,6 +70,7 @@ private:
     std::string description_;
     std::string adb_path_;
     std::string adb_serial_;
+    int32_t adb_type_ = 0; // TODO
     std::string adb_config_;
 
     std::vector<std::shared_ptr<Task>> task_vec_; // for C API
@@ -75,6 +79,8 @@ private:
     MaaResourceHandle resource_ = nullptr;
     MaaControllerHandle controller_ = nullptr;
     MaaInstanceHandle instance_ = nullptr;
+
+    std::vector<std::filesystem::path> resource_paths_;
 };
 
 MAA_TOOLKIT_CONFIG_NS_END

@@ -7,10 +7,11 @@
 
 MAA_TOOLKIT_CONFIG_NS_BEGIN
 
-Config::Config()
+Config::~Config()
 {
     LogFunc;
-    // TODO
+
+    uninit();
 }
 
 void Config::set_name(std::string_view new_name)
@@ -130,6 +131,29 @@ MaaStatus Config::wait_all_task() const
 }
 
 void Config::stop_all_task() {}
+
+bool Config::init()
+{
+    LogFunc;
+
+    // TODO: callback
+    resource_ = MaaResourceCreate(nullptr, nullptr);
+    controller_ = MaaAdbControllerCreate(adb_path_.c_str(), adb_serial_.c_str(), adb_type_, adb_config_.c_str(),
+                                         nullptr, nullptr);
+    instance_ = MaaCreate(nullptr, nullptr);
+
+    if (!resource_ || !controller_ || !instance_) {
+        LogError << "Create resource or controller failed" << VAR(resource_) << VAR(controller_) << VAR(instance_);
+        return false;
+    }
+
+    MaaBindResource(instance_, resource_);
+    MaaBindController(instance_, controller_);
+
+    return true;
+}
+
+void Config::uninit() {}
 
 json::value Config::to_json() const
 {
