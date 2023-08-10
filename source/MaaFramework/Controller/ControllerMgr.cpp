@@ -72,9 +72,10 @@ MaaCtrlId ControllerMgr::post_swipe(std::vector<int> x_steps, std::vector<int> y
 {
     SwipeParam param;
     for (size_t i = 0; i != x_steps.size(); ++i) {
+        auto [xx, yy] = preproce_touch_coord(x_steps[i], y_steps[i]);
         SwipeParam::Step step {
-            .x = x_steps[i],
-            .y = y_steps[i],
+            .x = xx,
+            .y = yy,
             .delay = step_delay[i],
         };
         param.steps.emplace_back(std::move(step));
@@ -137,8 +138,7 @@ void ControllerMgr::click(const cv::Rect& r)
 
 void ControllerMgr::click(const cv::Point& p)
 {
-    auto [x, y] = preproce_touch_coord(p.x, p.y);
-    ClickParam param { .x = x, .y = y };
+    ClickParam param { .x = p.x, .y = p.y };
     action_runner_->post({ .type = Action::Type::click, .param = std::move(param) }, true);
 }
 
@@ -151,15 +151,12 @@ void ControllerMgr::swipe(const cv::Point& p1, const cv::Point& p2, int duration
 {
     constexpr int SampleDelay = 2;
 
-    auto [px1, py1] = preproce_touch_coord(p1.x, p1.y);
-    auto [px2, py2] = preproce_touch_coord(p2.x, p2.y);
-
     SwipeParam param;
     auto cs = CubicSpline::smooth_in_out(1, 1);
     for (int i = 0; i < duration; i += SampleDelay) {
         auto progress = cs(static_cast<double>(i) / duration);
-        int x = static_cast<int>(round(std::lerp(px1, px2, progress)));
-        int y = static_cast<int>(round(std::lerp(py1, py2, progress)));
+        int x = static_cast<int>(round(std::lerp(p1.x, p2.x, progress)));
+        int y = static_cast<int>(round(std::lerp(p1.y, p2.y, progress)));
         param.steps.emplace_back(SwipeParam::Step { .x = x, .y = y, .delay = SampleDelay });
     }
     action_runner_->post({ .type = Action::Type::swipe, .param = std::move(param) }, true);
