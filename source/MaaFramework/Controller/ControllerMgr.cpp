@@ -60,8 +60,8 @@ MaaCtrlId ControllerMgr::post_connection()
 
 MaaCtrlId ControllerMgr::post_click(int x, int y)
 {
-    preproce_touch_coord(x, y);
-    ClickParam param { .x = x, .y = y };
+    auto [xx, yy] = preproce_touch_coord(x, y);
+    ClickParam param { .x = xx, .y = yy };
     auto id = action_runner_->post({ .type = Action::Type::click, .param = std::move(param) });
     std::unique_lock lock { post_ids_mutex_ };
     post_ids_.emplace(id);
