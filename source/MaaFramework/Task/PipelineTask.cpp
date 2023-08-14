@@ -224,6 +224,11 @@ std::optional<PipelineTask::FoundResult> PipelineTask::find_first(const std::vec
     for (const std::string& name : list) {
         LogDebug << "recognize:" << name;
         const auto& task_data = get_task_data(name);
+        if (!task_data.enabled) {
+            LogDebug << "Task disabled:" << name;
+            continue;
+        }
+
         auto rec_opt = recognize(image, task_data);
         if (!rec_opt) {
             continue;

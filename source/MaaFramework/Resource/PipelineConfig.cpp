@@ -245,6 +245,11 @@ bool PipelineConfig::parse_task(const std::string& name, const json::value& inpu
         return false;
     }
 
+    if (!get_and_check_value(input, "enabled", data.enabled, default_value.enabled)) {
+        LogError << "failed to get_and_check_value enabled" << VAR(input);
+        return false;
+    }
+
     if (!parse_recognition(input, data.rec_type, data.rec_param, default_value.rec_type, default_value.rec_param)) {
         LogError << "failed to parse_recognition" << VAR(input);
         return false;
