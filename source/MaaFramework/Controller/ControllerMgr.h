@@ -118,7 +118,7 @@ private:
     static cv::Point rand_point(const cv::Rect& r);
 
     bool run_action(typename AsyncRunner<Action>::Id id, Action action);
-    std::pair<int, int> preproce_touch_coord(int x, int y);
+    std::pair<int, int> preproc_touch_coord(int x, int y);
     bool postproc_screenshot(const cv::Mat& raw);
     bool check_and_calc_target_image_size(const cv::Mat& raw);
     void clear_target_image_size();

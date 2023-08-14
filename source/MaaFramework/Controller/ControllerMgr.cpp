@@ -60,7 +60,7 @@ MaaCtrlId ControllerMgr::post_connection()
 
 MaaCtrlId ControllerMgr::post_click(int x, int y)
 {
-    auto [xx, yy] = preproce_touch_coord(x, y);
+    auto [xx, yy] = preproc_touch_coord(x, y);
     ClickParam param { .x = xx, .y = yy };
     auto id = action_runner_->post({ .type = Action::Type::click, .param = std::move(param) });
     std::unique_lock lock { post_ids_mutex_ };
@@ -72,7 +72,7 @@ MaaCtrlId ControllerMgr::post_swipe(std::vector<int> x_steps, std::vector<int> y
 {
     SwipeParam param;
     for (size_t i = 0; i != x_steps.size(); ++i) {
-        auto [xx, yy] = preproce_touch_coord(x_steps[i], y_steps[i]);
+        auto [xx, yy] = preproc_touch_coord(x_steps[i], y_steps[i]);
         SwipeParam::Step step {
             .x = xx,
             .y = yy,
@@ -138,7 +138,8 @@ void ControllerMgr::click(const cv::Rect& r)
 
 void ControllerMgr::click(const cv::Point& p)
 {
-    ClickParam param { .x = p.x, .y = p.y };
+    auto [x, y] = preproc_touch_coord(p.x, p.y);
+    ClickParam param { .x = x, .y = y };
     action_runner_->post({ .type = Action::Type::click, .param = std::move(param) }, true);
 }
 
@@ -151,12 +152,15 @@ void ControllerMgr::swipe(const cv::Point& p1, const cv::Point& p2, int duration
 {
     constexpr int SampleDelay = 2;
 
+    auto [x1, y1] = preproc_touch_coord(p1.x, p1.y);
+    auto [x2, y2] = preproc_touch_coord(p2.x, p2.y);
+
     SwipeParam param;
     auto cs = CubicSpline::smooth_in_out(1, 1);
     for (int i = 0; i < duration; i += SampleDelay) {
         auto progress = cs(static_cast<double>(i) / duration);
-        int x = static_cast<int>(round(std::lerp(p1.x, p2.x, progress)));
-        int y = static_cast<int>(round(std::lerp(p1.y, p2.y, progress)));
+        int x = static_cast<int>(round(std::lerp(x1, x2, progress)));
+        int y = static_cast<int>(round(std::lerp(y1, y2, progress)));
         param.steps.emplace_back(SwipeParam::Step { .x = x, .y = y, .delay = SampleDelay });
     }
     action_runner_->post({ .type = Action::Type::swipe, .param = std::move(param) }, true);
@@ -289,7 +293,7 @@ bool ControllerMgr::run_action(typename AsyncRunner<Action>::Id id, Action actio
     return ret;
 }
 
-std::pair<int, int> ControllerMgr::preproce_touch_coord(int x, int y)
+std::pair<int, int> ControllerMgr::preproc_touch_coord(int x, int y)
 {
     auto [res_w, res_h] = _get_resolution();
 
