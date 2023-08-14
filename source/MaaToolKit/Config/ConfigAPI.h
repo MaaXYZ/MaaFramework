@@ -29,12 +29,7 @@ struct MaaToolKitConfigAPI
     virtual void set_name(std::string_view new_name) = 0;
     virtual std::string_view get_description() const = 0;
     virtual void set_description(std::string_view new_description) = 0;
-    virtual std::string_view get_adb_path() const = 0;
-    virtual void set_adb_path(std::string_view new_path) = 0;
-    virtual std::string_view get_adb_serial() const = 0;
-    virtual void set_adb_serial(std::string_view new_serial) = 0;
-    virtual std::string_view get_adb_config() const = 0;
-    virtual void set_adb_config(std::string_view new_config) = 0;
+    virtual void bind_instance(MaaInstanceHandle instance) = 0;
 
     virtual size_t task_size() const = 0;
     virtual MaaToolKitTaskHandle task_by_index(size_t index) = 0;

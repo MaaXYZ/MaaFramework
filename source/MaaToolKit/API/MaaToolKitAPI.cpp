@@ -5,6 +5,12 @@
 #include "Server/HttpServer.h"
 #include "Utils/Logger.hpp"
 
+MaaSize MaaToolKitFindDevice() {}
+MaaString MaaToolKitGetDeviceName(MaaSize index) {}
+MaaString MaaToolKitGetDeviceAdbPath(MaaSize index) {}
+MaaString MaaToolKitGetDeviceAdbSerial(MaaSize index) {}
+MaaJsonString MaaToolKitGetDeviceAdbConfig(MaaSize index) {}
+
 static MaaToolKitConfigMgrAPI& config_mgr = MAA_TOOLKIT_CONFIG_NS::ConfigMgr::get_instance();
 
 MaaBool MaaToolKitInit()
@@ -34,6 +40,21 @@ MaaToolKitConfigHandle MaaToolKitGetConfig(MaaSize index)
 MaaToolKitConfigHandle MaaToolKitCurrentConfig()
 {
     return config_mgr.current();
+}
+
+MaaBool MAA_TOOLKIT_API MaaToolKitBindInstance(MaaToolKitConfigHandle config_handle, MaaInstanceHandle instance_handle)
+{
+    if (!config_handle) {
+        LogError << "config_handle is null" << VAR(config_handle);
+        return false;
+    }
+    if (!instance_handle) {
+        LogError << "instance_handle is null" << VAR(instance_handle);
+        return false;
+    }
+
+    config_handle->bind_instance(instance_handle);
+    return true;
 }
 
 MaaToolKitConfigHandle MaaToolKitAddConfig(MaaString config_name, MaaToolKitConfigHandle copy_from)
@@ -94,76 +115,6 @@ MaaBool MaaToolKitSetConfigDescription(MaaToolKitConfigHandle config_handle, Maa
     }
 
     config_handle->set_description(new_description);
-    return true;
-}
-
-// TODO
-// MaaSize MaaToolKitFindDevice() {}
-// MaaString MaaToolKitGetDeviceName(MaaSize index) {}
-// MaaString MaaToolKitGetDeviceAdbPath(MaaSize index) {}
-// MaaString MaaToolKitGetDeviceAdbSerial(MaaSize index) {}
-// MaaJsonString MaaToolKitGetDeviceAdbConfig(MaaSize index) {}
-
-MaaString MaaToolKitGetAdbPath(MaaToolKitConfigHandle config_handle)
-{
-    if (!config_handle) {
-        LogError << "config_handle is null" << VAR(config_handle);
-        return nullptr;
-    }
-
-    return config_handle->get_adb_path().data();
-}
-
-MaaBool MaaToolKitSetAdbPath(MaaToolKitConfigHandle config_handle, MaaString new_path)
-{
-    if (!config_handle) {
-        LogError << "config_handle is null" << VAR(config_handle);
-        return false;
-    }
-
-    config_handle->set_adb_path(new_path);
-    return false;
-}
-
-MaaString MaaToolKitGetAdbSerial(MaaToolKitConfigHandle config_handle)
-{
-    if (!config_handle) {
-        LogError << "config_handle is null" << VAR(config_handle);
-        return nullptr;
-    }
-
-    return config_handle->get_adb_serial().data();
-}
-
-MaaBool MaaToolKitSetAdbSerial(MaaToolKitConfigHandle config_handle, MaaString new_serial)
-{
-    if (!config_handle) {
-        LogError << "config_handle is null" << VAR(config_handle);
-        return false;
-    }
-
-    config_handle->set_adb_serial(new_serial);
-    return true;
-}
-
-MaaJsonString MaaToolKitGetAdbConfig(MaaToolKitConfigHandle config_handle)
-{
-    if (!config_handle) {
-        LogError << "config_handle is null" << VAR(config_handle);
-        return nullptr;
-    }
-
-    return config_handle->get_adb_config().data();
-}
-
-MaaBool MaaToolKitSetAdbConfig(MaaToolKitConfigHandle config_handle, MaaJsonString new_config)
-{
-    if (!config_handle) {
-        LogError << "config_handle is null" << VAR(config_handle);
-        return false;
-    }
-
-    config_handle->set_adb_config(new_config);
     return true;
 }
 

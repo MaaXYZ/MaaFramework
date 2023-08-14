@@ -7,6 +7,12 @@ extern "C"
 {
 #endif
 
+    MaaSize MAA_TOOLKIT_API MaaToolKitFindDevice();
+    MaaString MAA_TOOLKIT_API MaaToolKitGetDeviceName(MaaSize index);
+    MaaString MAA_TOOLKIT_API MaaToolKitGetDeviceAdbPath(MaaSize index);
+    MaaString MAA_TOOLKIT_API MaaToolKitGetDeviceAdbSerial(MaaSize index);
+    MaaJsonString MAA_TOOLKIT_API MaaToolKitGetDeviceAdbConfig(MaaSize index);
+
     MaaBool MAA_TOOLKIT_API MaaToolKitInit();
     MaaBool MAA_TOOLKIT_API MaaToolKitUninit();
 
@@ -15,6 +21,8 @@ extern "C"
 
     MaaToolKitConfigHandle MAA_TOOLKIT_API MaaToolKitCurrentConfig();
 
+    MaaBool MAA_TOOLKIT_API MaaToolKitBindInstance(MaaToolKitConfigHandle config_handle,
+                                                   MaaInstanceHandle instance_handle);
     MaaToolKitConfigHandle MAA_TOOLKIT_API MaaToolKitAddConfig(MaaString config_name, MaaToolKitConfigHandle copy_from);
     MaaBool MAA_TOOLKIT_API MaaToolKitDelConfig(MaaString config_name);
     MaaBool MAA_TOOLKIT_API MaaToolKitSetCurrentConfig(MaaString config_name);
@@ -23,19 +31,6 @@ extern "C"
     MaaString MAA_TOOLKIT_API MaaToolKitGetConfigDescription(MaaToolKitConfigHandle config_handle);
     MaaBool MAA_TOOLKIT_API MaaToolKitSetConfigDescription(MaaToolKitConfigHandle config_handle,
                                                            MaaString new_description);
-
-    MaaSize MAA_TOOLKIT_API MaaToolKitFindDevice();
-    MaaString MAA_TOOLKIT_API MaaToolKitGetDeviceName(MaaSize index);
-    MaaString MAA_TOOLKIT_API MaaToolKitGetDeviceAdbPath(MaaSize index);
-    MaaString MAA_TOOLKIT_API MaaToolKitGetDeviceAdbSerial(MaaSize index);
-    MaaJsonString MAA_TOOLKIT_API MaaToolKitGetDeviceAdbConfig(MaaSize index);
-
-    MaaString MAA_TOOLKIT_API MaaToolKitGetAdbPath(MaaToolKitConfigHandle config_handle);
-    MaaBool MAA_TOOLKIT_API MaaToolKitSetAdbPath(MaaToolKitConfigHandle config_handle, MaaString new_path);
-    MaaString MAA_TOOLKIT_API MaaToolKitGetAdbSerial(MaaToolKitConfigHandle config_handle);
-    MaaBool MAA_TOOLKIT_API MaaToolKitSetAdbSerial(MaaToolKitConfigHandle config_handle, MaaString new_serial);
-    MaaJsonString MAA_TOOLKIT_API MaaToolKitGetAdbConfig(MaaToolKitConfigHandle config_handle);
-    MaaBool MAA_TOOLKIT_API MaaToolKitSetAdbConfig(MaaToolKitConfigHandle config_handle, MaaJsonString new_config);
 
     MaaSize MAA_TOOLKIT_API MaaToolKitTaskSize(MaaToolKitConfigHandle config_handle);
     MaaToolKitTaskHandle MAA_TOOLKIT_API MaaToolKitGetTask(MaaToolKitConfigHandle config_handle, MaaSize index);

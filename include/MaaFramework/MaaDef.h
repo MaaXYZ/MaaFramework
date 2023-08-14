@@ -89,6 +89,8 @@ enum MaaInstOptionEnum
 typedef int32_t MaaAdbControllerType;
 enum MaaAdbControllerTypeEnum
 {
+    MaaAdbControllerType_Invalid = 0,
+
     MaaAdbControllerType_Touch_Adb = 1,
     MaaAdbControllerType_Touch_MiniTouch = 2,
     MaaAdbControllerType_Touch_MaaTouch = 3,

@@ -7,13 +7,6 @@
 
 MAA_TOOLKIT_CONFIG_NS_BEGIN
 
-Config::~Config()
-{
-    LogFunc;
-
-    uninit();
-}
-
 void Config::set_name(std::string_view new_name)
 {
     LogInfo << VAR(name_) << VAR(new_name);
@@ -26,22 +19,10 @@ void Config::set_description(std::string_view new_description)
     description_ = new_description;
 }
 
-void Config::set_adb_path(std::string_view new_path)
+void Config::bind_instance(MaaInstanceHandle instance)
 {
-    LogInfo << VAR(name_) << VAR(adb_path_) << VAR(new_path);
-    adb_path_ = new_path;
-}
-
-void Config::set_adb_serial(std::string_view new_serial)
-{
-    LogInfo << VAR(name_) << VAR(adb_serial_) << VAR(new_serial);
-    adb_serial_ = new_serial;
-}
-
-void Config::set_adb_config(std::string_view new_config)
-{
-    LogInfo << VAR(name_) << VAR(adb_config_) << VAR(new_config);
-    adb_config_ = new_config;
+    LogInfo << VAR(name_) << VAR_VOIDP(instance_) << VAR_VOIDP(instance);
+    instance_ = instance;
 }
 
 size_t Config::task_size() const
@@ -121,48 +102,55 @@ bool Config::set_task_index(std::string_view task_name, size_t new_index)
 
 bool Config::post_all_task()
 {
-    // TODO
-    return false;
+    if (!instance_) {
+        LogError << "Instance not binded";
+        return false;
+    }
+
+    for (const auto& task : task_vec_) {
+        if (!task->get_enabled()) {
+            continue;
+        }
+
+        last_task_id_ = MaaPostTask(instance_, task->get_entry().data(), task->get_param().data());
+    }
 }
 
 MaaStatus Config::wait_all_task() const
 {
-    return MaaStatus();
-}
-
-void Config::stop_all_task() {}
-
-bool Config::init()
-{
-    LogFunc;
-
-    // TODO: callback
-    resource_ = MaaResourceCreate(nullptr, nullptr);
-    controller_ = MaaAdbControllerCreate(adb_path_.c_str(), adb_serial_.c_str(), adb_type_, adb_config_.c_str(),
-                                         nullptr, nullptr);
-    instance_ = MaaCreate(nullptr, nullptr);
-
-    if (!resource_ || !controller_ || !instance_) {
-        LogError << "Create resource or controller failed" << VAR(resource_) << VAR(controller_) << VAR(instance_);
-        return false;
+    if (!instance_) {
+        LogError << "Instance not binded";
+        return MaaStatus_Invalid;
     }
 
-    MaaBindResource(instance_, resource_);
-    MaaBindController(instance_, controller_);
-
-    return true;
+    return MaaWaitTask(instance_, last_task_id_);
 }
 
-void Config::uninit() {}
+void Config::stop_all_task()
+{
+    if (!instance_) {
+        LogError << "Instance not binded";
+        return;
+    }
+
+    MaaStop(instance_);
+}
+
+MaaResourceHandle Config::raw_resource()
+{
+    return MaaGetResource(instance_);
+}
+
+MaaControllerHandle Config::raw_controller()
+{
+    return MaaGetController(instance_);
+}
 
 json::value Config::to_json() const
 {
     json::value root;
     root[kNameKey] = name_;
     root[kDescriptionKey] = description_;
-    root[kAdbPathKey] = adb_path_;
-    root[kAdbSerialKey] = adb_serial_;
-    root[kAdbConfigKey] = adb_config_;
 
     auto& tasks = root[kTasksKey].as_array();
     for (const auto& task : task_vec_) {
@@ -182,9 +170,6 @@ bool Config::from_json(const json::value& json)
     name_ = std::move(name_opt).value();
 
     description_ = json.get(kDescriptionKey, std::string());
-    adb_path_ = json.get(kAdbPathKey, std::string());
-    adb_serial_ = json.get(kAdbSerialKey, std::string());
-    adb_config_ = json.get(kAdbConfigKey, std::string());
 
     for (const auto& j_task : json.get(kTasksKey, json::array())) {
         Task task;
@@ -209,8 +194,7 @@ std::shared_ptr<Task> Config::insert(std::string name, Task task)
 
 std::ostream& operator<<(std::ostream& os, const Config& config)
 {
-    os << VAR_RAW(config.name_) << VAR_RAW(config.description_) << VAR_RAW(config.adb_path_)
-       << VAR_RAW(config.adb_serial_) << VAR_RAW(config.adb_config_) << VAR_RAW(config.task_vec_.size());
+    os << VAR_RAW(config.name_) << VAR_RAW(config.description_) << VAR_RAW(config.task_vec_.size());
     return os;
 }
 
