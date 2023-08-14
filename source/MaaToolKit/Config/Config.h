@@ -67,8 +67,6 @@ private:
 
     MaaInstanceHandle instance_ = nullptr;
     MaaTaskId last_task_id_ = 0;
-
-    std::vector<std::filesystem::path> resource_paths_;
 };
 
 MAA_TOOLKIT_CONFIG_NS_END

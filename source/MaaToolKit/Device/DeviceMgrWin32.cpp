@@ -1,5 +1,7 @@
 #include "DeviceMgrWin32.h"
 
+#include <tuple> // for std::ignore
+
 MAA_TOOLKIT_DEVICE_NS_BEGIN
 
 size_t DeviceMgrWin32::find_device()

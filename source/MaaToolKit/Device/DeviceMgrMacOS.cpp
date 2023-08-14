@@ -1,5 +1,7 @@
 #include "DeviceMgrMacOS.h"
 
+#include <tuple> // for std::ignore
+
 MAA_TOOLKIT_DEVICE_NS_BEGIN
 
 size_t DeviceMgrMacOS::find_device()
