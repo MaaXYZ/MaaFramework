@@ -2,25 +2,54 @@
 
 #include "Config/ConfigAPI.h"
 #include "Config/ConfigMgr.h"
+#include "Device/DeviceMgr.h"
 #include "Server/HttpServer.h"
 #include "Utils/Logger.hpp"
 
-MaaSize MaaToolKitFindDevice() {}
-MaaString MaaToolKitGetDeviceName(MaaSize index) {}
-MaaString MaaToolKitGetDeviceAdbPath(MaaSize index) {}
-MaaString MaaToolKitGetDeviceAdbSerial(MaaSize index) {}
-MaaJsonString MaaToolKitGetDeviceAdbConfig(MaaSize index) {}
+static MaaToolKitDeviceMgrAPI& device_mgr = MAA_TOOLKIT_DEVICE_NS::DeviceMgr::get_instance();
+
+MaaSize MaaToolKitFindDevice()
+{
+    LogFunc;
+
+    return device_mgr.find_device();
+}
+
+MaaString MaaToolKitGetDeviceName(MaaSize index)
+{
+    return device_mgr.device_name(index).data();
+}
+
+MaaString MaaToolKitGetDeviceAdbPath(MaaSize index)
+{
+    return device_mgr.device_adb_path(index).data();
+}
+
+MaaString MaaToolKitGetDeviceAdbSerial(MaaSize index)
+{
+    return device_mgr.device_adb_serial(index).data();
+}
+
+MaaAdbControllerType MAA_TOOLKIT_API MaaToolKitGetDeviceAdbControllerType(MaaSize index)
+{
+    return device_mgr.device_adb_controller_type(index);
+}
+
+MaaJsonString MaaToolKitGetDeviceAdbConfig(MaaSize index)
+{
+    return device_mgr.device_adb_config(index).data();
+}
 
 static MaaToolKitConfigMgrAPI& config_mgr = MAA_TOOLKIT_CONFIG_NS::ConfigMgr::get_instance();
 
-MaaBool MaaToolKitInit()
+MaaBool MaaToolKitConfigInit()
 {
     LogFunc;
 
     return config_mgr.init();
 }
 
-MaaBool MaaToolKitUninit()
+MaaBool MaaToolKitConfigUninit()
 {
     LogFunc;
 

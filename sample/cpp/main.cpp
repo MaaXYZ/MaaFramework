@@ -2,14 +2,14 @@
 
 int main()
 {
-    MaaToolKitInit();
+    MaaToolKitConfigInit();
 
     auto* handle = MaaToolKitCurrentConfig();
 
     MaaToolKitPostAllTask(handle);
     MaaToolKitWaitAllTask(handle);
 
-    MaaToolKitUninit();
+    MaaToolKitConfigUninit();
 
     return 0;
 }

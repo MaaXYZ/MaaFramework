@@ -114,6 +114,8 @@ bool Config::post_all_task()
 
         last_task_id_ = MaaPostTask(instance_, task->get_entry().data(), task->get_param().data());
     }
+
+    return true;
 }
 
 MaaStatus Config::wait_all_task() const
