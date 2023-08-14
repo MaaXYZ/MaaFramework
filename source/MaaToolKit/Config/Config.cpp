@@ -75,7 +75,7 @@ bool Config::del_task(std::string_view task_name)
     }
     task_vec_.erase(find_it);
 
-    LogTrace << VAR(task_name) << VAR(task_vec_) << VAR(task_map_);
+    LogDebug << VAR(task_name) << VAR(task_vec_) << VAR(task_map_);
     return true;
 }
 
@@ -190,7 +190,7 @@ std::shared_ptr<Task> Config::insert(std::string name, Task task)
     task_vec_.emplace_back(new_task_ptr);
     task_map_.insert_or_assign(name, new_task_ptr);
 
-    LogTrace << VAR(name) << VAR(new_task_ptr) << VAR(*new_task_ptr) << VAR(task_vec_) << VAR(task_map_);
+    LogDebug << VAR(name) << VAR(new_task_ptr) << VAR(*new_task_ptr) << VAR(task_vec_) << VAR(task_map_);
     return new_task_ptr;
 }
 

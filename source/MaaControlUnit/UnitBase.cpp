@@ -73,13 +73,13 @@ std::optional<std::string> UnitBase::command(const Argv::value& cmd, bool recv_b
     auto duration = duration_since(start_time);
 
     std::string scmd = json::array(cmd).to_string();
-    LogTrace << VAR(scmd) << VAR(ret) << VAR(pipe_data.size()) << VAR(sock_data.size()) << VAR(duration);
+    LogDebug << VAR(scmd) << VAR(ret) << VAR(pipe_data.size()) << VAR(sock_data.size()) << VAR(duration);
 
     if (!pipe_data.empty() && pipe_data.size() < 4096) {
-        LogTrace << Logger::separator::newline << "stdout output:" << pipe_data;
+        LogDebug << Logger::separator::newline << "stdout output:" << pipe_data;
     }
     if (recv_by_socket && !sock_data.empty() && sock_data.size() < 4096) {
-        LogTrace << Logger::separator::newline << "socket output:" << sock_data;
+        LogDebug << Logger::separator::newline << "socket output:" << sock_data;
     }
 
     if (ret != 0) {

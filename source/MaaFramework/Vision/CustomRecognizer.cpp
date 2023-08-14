@@ -35,7 +35,7 @@ CustomRecognizer::ResultOpt CustomRecognizer::analyze() const
         recognizer_->analyze(&sync_ctx, &image, name_.c_str(), param_.custom_param.to_string().c_str(), &result);
 
     cv::Rect box { result.box.x, result.box.y, result.box.width, result.box.height };
-    LogTrace << VAR(success) << VAR(box) << VAR(detail);
+    LogDebug << VAR(success) << VAR(box) << VAR(detail);
 
     if (!success) {
         return std::nullopt;

@@ -14,7 +14,7 @@ AdbController::AdbController(std::string adb_path, std::string address,
     : ControllerMgr(callback, callback_arg), adb_path_(std::move(adb_path)), address_(std::move(address)),
       unit_mgr_(std::move(unit_mgr))
 {
-    LogTrace << VAR(adb_path_) << VAR(address_) << VAR(unit_mgr_) << VAR(unit_mgr_->activity_obj())
+    LogDebug << VAR(adb_path_) << VAR(address_) << VAR(unit_mgr_) << VAR(unit_mgr_->activity_obj())
              << VAR(unit_mgr_->connection_obj()) << VAR(unit_mgr_->device_info_obj()) << VAR(unit_mgr_->key_input_obj())
              << VAR(unit_mgr_->screencap_obj()) << VAR(unit_mgr_->touch_input_obj());
 }

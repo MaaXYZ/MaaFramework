@@ -23,14 +23,14 @@ std::string CustomController::get_uuid() const
     auto buff = std::make_unique<char[]>(buff_size);
     MaaSize written = handle_->get_uuid(buff.get(), buff_size);
 
-    LogTrace << VAR(buff_size) << VAR(buff) << VAR(written);
+    LogDebug << VAR(buff_size) << VAR(buff) << VAR(written);
 
     if (written != buff_size) {
         LogError << "written != buff_size";
         return {};
     }
     std::string uuid(buff.get(), buff.get() + written);
-    LogTrace << VAR(uuid);
+    LogDebug << VAR(uuid);
     return uuid;
 }
 

@@ -7,7 +7,7 @@ MAA_RES_NS_BEGIN
 
 bool TemplateConfig::lazy_load(const std::string& name, const std::vector<std::filesystem::path>& paths)
 {
-    LogTrace << VAR(name) << VAR(paths);
+    LogDebug << VAR(name) << VAR(paths);
 
     if (!MAA_RNS::ranges::all_of(paths, [](const auto& path) -> bool { return std::filesystem::exists(path); })) {
         LogError << "not exists" << VAR(paths);
@@ -64,11 +64,11 @@ const std::vector<cv::Mat>& TemplateConfig::get_template_images(const std::strin
 
         if (bank_iter != template_bank_.end()) {
             images.emplace_back(bank_iter->second);
-            LogTrace << "Withdraw image" << VAR(name) << VAR(path);
+            LogDebug << "Withdraw image" << VAR(name) << VAR(path);
         }
         else {
             auto& image = images.emplace_back(imread(path));
-            LogTrace << "Read image" << VAR(name) << VAR(path);
+            LogDebug << "Read image" << VAR(name) << VAR(path);
             template_bank_.emplace(name, image);
         }
     }

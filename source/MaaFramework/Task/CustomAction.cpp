@@ -25,7 +25,7 @@ bool CustomAction::run(const std::string& task_name, const MAA_PIPELINE_RES_NS::
     MaaRect box { .x = cur_box.x, .y = cur_box.y, .width = cur_box.width, .height = cur_box.height };
 
     bool ret = action_->run(&sync_ctx, task_name.c_str(), param.custom_param.to_string().c_str(), &box);
-    LogTrace << VAR_VOIDP(action_) << VAR_VOIDP(action_->run) << VAR(ret);
+    LogDebug << VAR_VOIDP(action_) << VAR_VOIDP(action_->run) << VAR(ret);
 
     return ret;
 }

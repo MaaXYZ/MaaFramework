@@ -29,7 +29,7 @@ bool TapTouchInput::click(int x, int y)
 
     merge_replacement({ { "{X}", std::to_string(x) }, { "{Y}", std::to_string(y) } });
 
-    LogTrace << VAR(x) << VAR(y);
+    LogDebug << VAR(x) << VAR(y);
     auto cmd_ret = command(click_argv_.gen(argv_replace_));
 
     return cmd_ret && cmd_ret->empty();

@@ -347,7 +347,7 @@ bool ControllerMgr::check_and_calc_target_image_size(const cv::Mat& raw)
     int cur_width = raw.cols;
     int cur_height = raw.rows;
 
-    LogTrace << "Re-calc image target size:" << VAR(image_target_long_side_) << VAR(image_target_short_side_)
+    LogDebug << "Re-calc image target size:" << VAR(image_target_long_side_) << VAR(image_target_short_side_)
              << VAR(cur_width) << VAR(cur_height);
 
     double scale = static_cast<double>(cur_width) / cur_height;

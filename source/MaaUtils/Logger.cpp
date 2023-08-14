@@ -21,9 +21,9 @@ void Logger::start_logging(std::filesystem::path dir)
 
 void Logger::flush()
 {
-    internal_trace() << kSplitLine;
-    internal_trace() << "Flush log";
-    internal_trace() << kSplitLine;
+    internal_dbg() << kSplitLine;
+    internal_dbg() << "Flush log";
+    internal_dbg() << kSplitLine;
 
     bool rotated = rotate();
     open();
@@ -85,9 +85,9 @@ void Logger::open()
 
 void Logger::close()
 {
-    internal_trace() << kSplitLine;
-    internal_trace() << "Close log";
-    internal_trace() << kSplitLine;
+    internal_dbg() << kSplitLine;
+    internal_dbg() << "Close log";
+    internal_dbg() << kSplitLine;
 
     std::unique_lock<std::mutex> m_trace_lock(trace_mutex_);
     if (ofs_.is_open()) {
@@ -97,17 +97,17 @@ void Logger::close()
 
 void Logger::log_proc_info()
 {
-    internal_trace() << kSplitLine;
-    internal_trace() << "MAA Process Start";
-    internal_trace() << "Version" << MAA_VERSION;
-    internal_trace() << "Built at" << __DATE__ << __TIME__;
-    internal_trace() << "Log Path" << log_path_;
-    internal_trace() << kSplitLine;
+    internal_dbg() << kSplitLine;
+    internal_dbg() << "MAA Process Start";
+    internal_dbg() << "Version" << MAA_VERSION;
+    internal_dbg() << "Built at" << __DATE__ << __TIME__;
+    internal_dbg() << "Log Path" << log_path_;
+    internal_dbg() << kSplitLine;
 }
 
-Logger::LogStream Logger::internal_trace()
+Logger::LogStream Logger::internal_dbg()
 {
-    return trace("Logger");
+    return debug("Logger");
 }
 
 MAA_NS_END

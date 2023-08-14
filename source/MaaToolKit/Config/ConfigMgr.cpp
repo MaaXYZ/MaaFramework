@@ -82,7 +82,7 @@ MaaToolKitConfigHandle ConfigMgr::add_config(std::string_view config_name, MaaTo
     auto& ref = config_vec_.emplace_back(new_config_ptr);
     config_map_.emplace(std::move(str_config_name), new_config_ptr);
 
-    LogTrace << VAR(config_name) << VAR(new_config_ptr) << VAR(*new_config_ptr) << VAR(config_vec_) << VAR(config_map_);
+    LogDebug << VAR(config_name) << VAR(new_config_ptr) << VAR(*new_config_ptr) << VAR(config_vec_) << VAR(config_map_);
 
     return ref.get();
 }
@@ -105,7 +105,7 @@ bool ConfigMgr::del_config(std::string_view config_name)
     }
     config_vec_.erase(find_it);
 
-    LogTrace << VAR(config_name) << VAR(config_vec_) << VAR(config_map_);
+    LogDebug << VAR(config_name) << VAR(config_vec_) << VAR(config_map_);
     return true;
 }
 

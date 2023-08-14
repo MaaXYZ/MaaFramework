@@ -36,7 +36,7 @@ Matcher::ResultOpt Matcher::analyze() const
         auto res = traverse_rois(templ, threshold);
 
         auto costs = duration_since(start);
-        LogTrace << name_ << param_.template_paths.at(i) << VAR(res.score) << VAR(threshold) << VAR(costs);
+        LogDebug << name_ << param_.template_paths.at(i) << VAR(res.score) << VAR(threshold) << VAR(costs);
 
         if (res.score > threshold) {
             return res;

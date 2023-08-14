@@ -38,7 +38,7 @@ OCRer::ResultOpt OCRer::analyze() const
         ++iter;
     }
 
-    LogTrace << name_ << VAR(results) << VAR(param_.text);
+    LogDebug << name_ << VAR(results) << VAR(param_.text);
 
     return results.empty() ? std::nullopt : std::make_optional(std::move(results));
 }
@@ -126,7 +126,7 @@ OCRer::ResultsVec OCRer::predict_det_and_rec(const cv::Rect& roi) const
     }
 
     auto costs = duration_since(start_time);
-    LogTrace << VAR(results) << VAR(image_roi.size()) << VAR(costs);
+    LogDebug << VAR(results) << VAR(image_roi.size()) << VAR(costs);
 
     if (save_draw_) {
         save_image(image_draw);
@@ -168,7 +168,7 @@ OCRer::Result OCRer::predict_only_rec(const cv::Rect& roi) const
     Result result { .text = std::move(rec_text), .box = roi, .score = rec_score };
 
     auto costs = duration_since(start_time);
-    LogTrace << VAR(result) << VAR(image_roi.size()) << VAR(costs);
+    LogDebug << VAR(result) << VAR(image_roi.size()) << VAR(costs);
 
     if (save_draw_) {
         save_image(image_draw);

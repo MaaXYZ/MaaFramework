@@ -222,7 +222,7 @@ std::optional<PipelineTask::FoundResult> PipelineTask::find_first(const std::vec
     cv::Mat image = controller()->screencap();
 
     for (const std::string& name : list) {
-        LogTrace << "recognize:" << name;
+        LogDebug << "recognize:" << name;
         const auto& task_data = get_task_data(name);
         auto rec_opt = recognize(image, task_data);
         if (!rec_opt) {
@@ -276,7 +276,7 @@ std::optional<PipelineTask::RecResult> PipelineTask::recognize(const cv::Mat& im
     }
 
     if (task_data.inverse) {
-        LogTrace << "task_data.inverse is true, reverse the result" << VAR(task_data.name) << VAR(result.has_value());
+        LogDebug << "task_data.inverse is true, reverse the result" << VAR(task_data.name) << VAR(result.has_value());
         return result ? std::nullopt : std::make_optional(RecResult { .box = cv::Rect() });
     }
     return result;
@@ -589,7 +589,7 @@ void PipelineTask::sleep(std::chrono::milliseconds ms) const
 
     auto interval = std::min(ms, 5000ms);
 
-    LogTrace << "ready to sleep" << ms << VAR(interval);
+    LogDebug << "ready to sleep" << ms << VAR(interval);
 
     for (auto sleep_time = interval; sleep_time <= ms && !need_exit(); sleep_time += interval) {
         std::this_thread::sleep_for(interval);
@@ -598,7 +598,7 @@ void PipelineTask::sleep(std::chrono::milliseconds ms) const
         std::this_thread::sleep_for(ms % interval);
     }
 
-    LogTrace << "end of sleep" << ms << VAR(interval);
+    LogDebug << "end of sleep" << ms << VAR(interval);
 }
 
 MAA_TASK_NS_END

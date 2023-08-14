@@ -22,7 +22,7 @@ CustomThriftController::CustomThriftController(const std::string& param_str, Maa
                                                void* callback_arg)
     : ControllerMgr(callback, callback_arg)
 {
-    LogTrace << VAR(param_str);
+    LogDebug << VAR(param_str);
 
     static const std::unordered_map<std::string, ThriftControllerTypeEnum> type_map = {
         { "Socket", ThriftControllerTypeEnum::MaaThriftControllerType_Socket },

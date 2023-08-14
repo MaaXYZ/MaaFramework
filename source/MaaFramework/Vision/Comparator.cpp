@@ -22,7 +22,7 @@ Comparator::Result Comparator::analyze(const cv::Mat& lhs, const cv::Mat& rhs) c
         cv::Mat rhs_roi = rhs(correct_roi(roi, rhs));
         double similarity = comp(lhs_roi, rhs_roi, param_.method);
 
-        LogTrace << VAR(roi) << VAR(similarity) << VAR(param_.threshold);
+        LogDebug << VAR(roi) << VAR(similarity) << VAR(param_.threshold);
 
         if (similarity < param_.threshold) {
             return false;

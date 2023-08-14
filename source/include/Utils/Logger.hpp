@@ -50,8 +50,8 @@ public:
 public:
     enum class level
     {
-        debug,
         trace,
+        debug,
         info,
         warn,
         error,
@@ -209,8 +209,8 @@ public:
             std::string_view color;
 
             switch (lv) {
-            case level::debug:
             case level::trace:
+            case level::debug:
                 break;
             case level::info:
                 color = "\033[32m";
@@ -229,10 +229,10 @@ public:
         constexpr std::string_view level_str(level lv)
         {
             switch (lv) {
-            case level::debug:
-                return "DBG";
             case level::trace:
                 return "TRC";
+            case level::debug:
+                return "DBG";
             case level::info:
                 return "INF";
             case level::warn:
@@ -273,18 +273,14 @@ public:
     Logger& operator=(Logger&&) = delete;
 
     template <typename... args_t>
-    auto debug([[maybe_unused]] args_t&&... args)
-    {
-#ifdef MAA_DEBUG
-        return stream(level::debug, std::forward<args_t>(args)...);
-#else
-        return FakeStream();
-#endif
-    }
-    template <typename... args_t>
     auto trace(args_t&&... args)
     {
         return stream(level::trace, std::forward<args_t>(args)...);
+    }
+    template <typename... args_t>
+    auto debug([[maybe_unused]] args_t&&... args)
+    {
+        return stream(level::debug, std::forward<args_t>(args)...);
     }
     template <typename... args_t>
     auto info(args_t&&... args)
@@ -321,7 +317,7 @@ private:
     void close();
     void log_proc_info();
 
-    LogStream internal_trace();
+    LogStream internal_dbg();
 
 private:
     std::filesystem::path log_dir_;
@@ -342,7 +338,7 @@ class ScopeEnterHelper
 {
 public:
     template <typename... args_t>
-    ScopeEnterHelper(args_t&&... args) : stream_(Logger::get_instance().trace(std::forward<args_t>(args)...))
+    ScopeEnterHelper(args_t&&... args) : stream_(Logger::get_instance().debug(std::forward<args_t>(args)...))
     {}
     ~ScopeEnterHelper() { stream_ << "| enter"; }
 
@@ -359,7 +355,7 @@ public:
     ScopeLeaveHelper(args_t&&... args) : args_(std::forward<args_t>(args)...) {}
     ~ScopeLeaveHelper()
     {
-        std::apply([](auto&&... args) { return Logger::get_instance().trace(std::forward<decltype(args)>(args)...); },
+        std::apply([](auto&&... args) { return Logger::get_instance().debug(std::forward<decltype(args)>(args)...); },
                    std::move(args_))
             << "| leave," << duration_since(start_);
     }
@@ -408,8 +404,8 @@ inline constexpr std::string_view pertty_file(std::string_view file)
 #endif
 #define LOG_ARGS MAA_FILE, MAA_LINE, MAA_FUNCTION
 
-#define LogDebug MAA_NS::Logger::get_instance().debug(LOG_ARGS)
 #define LogTrace MAA_NS::Logger::get_instance().trace(LOG_ARGS)
+#define LogDebug MAA_NS::Logger::get_instance().debug(LOG_ARGS)
 #define LogInfo MAA_NS::Logger::get_instance().info(LOG_ARGS)
 #define LogWarn MAA_NS::Logger::get_instance().warn(LOG_ARGS)
 #define LogError MAA_NS::Logger::get_instance().error(LOG_ARGS)
