@@ -17,7 +17,6 @@ option(USE_BOOST_IO "use boost as platform io" OFF)
 # option(INSTALL_DEVEL "install development files" OFF)
 # option(INSTALL_THIRD_LIBS "install third party libraries" ON)
 option(USE_MAADEPS "use third-party libraries built by MaaDeps" ON)
-option(BUILD_EXTENSION "build a extension fo Visual Studio Code" OFF)
 option(WITH_THRIFT "build with thrift" ON)
 
 include(${PROJECT_SOURCE_DIR}/cmake/config.cmake) # Basic compile & link configuration
@@ -45,13 +44,8 @@ find_package(ONNXRuntime)
 add_subdirectory(3rdparty)
 add_subdirectory(source)
 
-if (BUILD_EXTENSION)
-    add_subdirectory(tools/extension/screencap)
-endif (BUILD_EXTENSION)
-
 if (BUILD_SAMPLE)
     add_subdirectory(sample/cpp)
-    add_subdirectory(sample/server)
 endif (BUILD_SAMPLE)
 
 # if (BUILD_BUSYBOX)
