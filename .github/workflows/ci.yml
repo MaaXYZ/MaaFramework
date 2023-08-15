@@ -71,7 +71,7 @@ jobs:
 
       - name: Build MAA
         run: |
-          cmake --preset "${{ matrix.arch == 'x86_64' && 'MSVC 2022' || 'MSVC 2022 ARM' }}" -DMAADEPS_TRIPLET="maa-${{ matrix.arch == 'x86_64' && 'x64' || 'arm64' }}-windows" -DMAA_VERSION='${{ needs.meta.outputs.tag }}'
+          cmake --preset "${{ matrix.arch == 'x86_64' && 'MSVC 2022' || 'MSVC 2022 ARM' }}" -DMAADEPS_TRIPLET="maa-${{ matrix.arch == 'x86_64' && 'x64' || 'arm64' }}-windows" -DMAA_HASH_VERSION='${{ needs.meta.outputs.tag }}'
 
           cmake --build build --preset "${{ matrix.arch == 'x86_64' && 'MSVC 2022' || 'MSVC 2022 ARM' }} - Release" -j 16
 
@@ -145,7 +145,7 @@ jobs:
         run: |
           cmake --preset 'NinjaMulti' \
             -DMAADEPS_TRIPLET='maa-${{ matrix.arch == 'x86_64' && 'x64' || 'arm64' }}-linux' \
-            -DMAA_VERSION='${{ needs.meta.outputs.tag }}'
+            -DMAA_HASH_VERSION='${{ needs.meta.outputs.tag }}'
 
           cmake --build build --preset 'NinjaMulti - Release' -j 16
 
@@ -209,7 +209,7 @@ jobs:
         run: |
           cmake --preset 'NinjaMulti' \
             -DMAADEPS_TRIPLET='maa-${{ matrix.arch == 'x86_64' && 'x64' || 'arm64' }}-osx' \
-            -DMAA_VERSION='${{ needs.meta.outputs.tag }}'
+            -DMAA_HASH_VERSION='${{ needs.meta.outputs.tag }}'
 
           cmake --build build --preset 'NinjaMulti - Release' -j 16
 
