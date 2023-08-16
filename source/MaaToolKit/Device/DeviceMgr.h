@@ -4,6 +4,8 @@
 #include "DeviceAPI.h"
 
 #include <vector>
+#include <string>
+#include <string_view>
 
 MAA_TOOLKIT_DEVICE_NS_BEGIN
 
