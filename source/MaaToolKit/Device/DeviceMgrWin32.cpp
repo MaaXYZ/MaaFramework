@@ -73,18 +73,19 @@ std::vector<DeviceMgrWin32::Emulator> DeviceMgrWin32::get_emulators()
 {
     // https://learn.microsoft.com/en-us/windows/win32/psapi/enumerating-all-processes
     DWORD all_pids[4096] = { 0 };
-    DWORD written = 0;
+    DWORD pid_written = 0;
 
-    if (!EnumProcesses(all_pids, sizeof(all_pids), &written)) {
+    if (!EnumProcesses(all_pids, sizeof(all_pids), &pid_written)) {
         auto error = GetLastError();
         LogError << "Failed to EnumProcesses" << VAR(error);
         return {};
     }
-    DWORD size = written / sizeof(DWORD);
+    DWORD size = pid_written / sizeof(DWORD);
     LogDebug << "Process size:" << size;
 
     std::vector<Emulator> result;
     std::vector<std::string> all_proc_names;
+    TCHAR process_name_buff[MAX_PATH] = { 0 };
 
     for (DWORD i = 0; i < size; ++i) {
         DWORD pid = all_pids[i];
@@ -99,7 +100,6 @@ std::vector<DeviceMgrWin32::Emulator> DeviceMgrWin32::get_emulators()
             continue;
         }
 
-        TCHAR process_name_buff[MAX_PATH] = { 0 };
         HMODULE mod = nullptr;
         DWORD mod_written = 0;
         if (!EnumProcessModules(process, &mod, sizeof(mod), &mod_written)) {
@@ -108,6 +108,7 @@ std::vector<DeviceMgrWin32::Emulator> DeviceMgrWin32::get_emulators()
             continue;
         }
 
+        memset(process_name_buff, 0, sizeof(process_name_buff));
         GetModuleBaseName(process, mod, process_name_buff, sizeof(process_name_buff) / sizeof(TCHAR));
         std::string process_name = from_osstring(process_name_buff);
 
