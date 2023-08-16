@@ -8,6 +8,7 @@ extern "C"
 #endif
 
     MaaSize MAA_TOOLKIT_API MaaToolKitFindDevice();
+    MaaSize MAA_TOOLKIT_API MaaToolKitFindDeviceBySpecifiedADB(MaaString adb_path);
     MaaString MAA_TOOLKIT_API MaaToolKitGetDeviceName(MaaSize index);
     MaaString MAA_TOOLKIT_API MaaToolKitGetDeviceAdbPath(MaaSize index);
     MaaString MAA_TOOLKIT_API MaaToolKitGetDeviceAdbSerial(MaaSize index);

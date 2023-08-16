@@ -9,7 +9,7 @@ struct MaaToolKitDeviceMgrAPI
 {
     virtual ~MaaToolKitDeviceMgrAPI() = default;
 
-    virtual size_t find_device() = 0;
+    virtual size_t find_device(std::string_view adb_path = std::string_view()) = 0;
 
     virtual std::string_view device_name(size_t index) const = 0;
     virtual std::string_view device_adb_path(size_t index) const = 0;

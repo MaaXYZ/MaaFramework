@@ -66,6 +66,11 @@ MaaToolKitConfigHandle ConfigMgr::add_config(std::string_view config_name, MaaTo
 {
     LogInfo << VAR(config_name) << VAR_VOIDP(copy_from);
 
+    if (config_name.empty()) {
+        LogError << "Name is empty";
+        return nullptr;
+    }
+
     std::string str_config_name(config_name);
     if (config_map_.contains(str_config_name)) {
         LogError << "Config name already exists" << VAR(config_name) << VAR(config_map_);
@@ -91,6 +96,11 @@ bool ConfigMgr::del_config(std::string_view config_name)
 {
     LogInfo << VAR(config_name);
 
+    if (config_name.empty()) {
+        LogError << "Name is empty";
+        return false;
+    }
+
     std::string str_config_name(config_name);
     bool removed = config_map_.erase(str_config_name) > 0;
     if (!removed) {
@@ -112,6 +122,11 @@ bool ConfigMgr::del_config(std::string_view config_name)
 bool ConfigMgr::set_current_config(std::string_view config_name)
 {
     LogInfo << VAR(config_name);
+
+    if (config_name.empty()) {
+        LogError << "Name is empty";
+        return false;
+    }
 
     std::string str_config_name(config_name);
     auto find_it = config_map_.find(str_config_name);

@@ -54,7 +54,7 @@ public: // from MaaToolKitConfigAPI
 public:
     json::value to_json() const;
     bool from_json(const json::value& json);
-    std::shared_ptr<Task> insert(std::string name, Task task);
+    const std::shared_ptr<Task>& insert(std::string name, Task task);
 
     friend std::ostream& operator<<(std::ostream& os, const Config& config);
 

@@ -7,12 +7,20 @@
 #include "Utils/Logger.hpp"
 
 static MaaToolKitDeviceMgrAPI& device_mgr = MAA_TOOLKIT_DEVICE_NS::DeviceMgr::get_instance();
+static MaaToolKitConfigMgrAPI& config_mgr = MAA_TOOLKIT_CONFIG_NS::ConfigMgr::get_instance();
 
 MaaSize MaaToolKitFindDevice()
 {
     LogFunc;
 
     return device_mgr.find_device();
+}
+
+MaaSize MaaToolKitFindDeviceBySpecifiedADB(MaaString adb_path)
+{
+    LogFunc;
+
+    return device_mgr.find_device(adb_path);
 }
 
 MaaString MaaToolKitGetDeviceName(MaaSize index)
@@ -39,8 +47,6 @@ MaaJsonString MaaToolKitGetDeviceAdbConfig(MaaSize index)
 {
     return device_mgr.device_adb_config(index).data();
 }
-
-static MaaToolKitConfigMgrAPI& config_mgr = MAA_TOOLKIT_CONFIG_NS::ConfigMgr::get_instance();
 
 MaaBool MaaToolKitConfigInit()
 {
@@ -88,31 +94,16 @@ MaaBool MaaToolKitBindInstance(MaaToolKitConfigHandle config_handle, MaaInstance
 
 MaaToolKitConfigHandle MaaToolKitAddConfig(MaaString config_name, MaaToolKitConfigHandle copy_from)
 {
-    if (!config_name) {
-        LogError << "Config name is null" << VAR(config_name);
-        return nullptr;
-    }
-
     return config_mgr.add_config(config_name, copy_from);
 }
 
 MaaBool MaaToolKitDelConfig(MaaString config_name)
 {
-    if (!config_name) {
-        LogError << "Config name is null" << VAR(config_name);
-        return false;
-    }
-
     return config_mgr.del_config(config_name);
 }
 
 MaaBool MaaToolKitSetCurrentConfig(MaaString config_name)
 {
-    if (!config_name) {
-        LogError << "Config name is null" << VAR(config_name);
-        return false;
-    }
-
     return config_mgr.set_current_config(config_name);
 }
 

@@ -14,7 +14,7 @@ public:
     virtual ~DeviceMgrMacOS() noexcept override = default;
 
 public: // from MaaToolKitDeviceMgrAPI
-    virtual size_t find_device() override;
+    virtual size_t find_device(std::string_view adb_path = std::string_view()) override;
 
     virtual std::string_view device_name(size_t index) const override;
     virtual std::string_view device_adb_path(size_t index) const override;

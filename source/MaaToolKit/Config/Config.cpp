@@ -43,6 +43,11 @@ MaaToolKitTaskHandle Config::add_task(std::string_view task_name, MaaToolKitTask
 {
     LogInfo << VAR(name_) << VAR(task_name) << VAR(copy_from);
 
+    if (task_name.empty()) {
+        LogError << "Name is empty";
+        return nullptr;
+    }
+
     std::string str_task_name(task_name);
     if (task_map_.contains(str_task_name)) {
         LogError << "Task name already exists" << VAR(task_name) << VAR(task_map_);
@@ -55,12 +60,18 @@ MaaToolKitTaskHandle Config::add_task(std::string_view task_name, MaaToolKitTask
     }
     new_task.set_name(task_name);
 
+    // Don't worry, the raw pointer is always in member cache.
     return insert(std::move(str_task_name), std::move(new_task)).get();
 }
 
 bool Config::del_task(std::string_view task_name)
 {
     LogInfo << VAR(name_) << VAR(task_name);
+
+    if (task_name.empty()) {
+        LogError << "Name is empty";
+        return false;
+    }
 
     std::string str_task_name(task_name);
     bool removed = task_map_.erase(str_task_name) > 0;
@@ -184,14 +195,13 @@ bool Config::from_json(const json::value& json)
     return true;
 }
 
-std::shared_ptr<Task> Config::insert(std::string name, Task task)
+const std::shared_ptr<Task>& Config::insert(std::string name, Task task)
 {
-    auto new_task_ptr = std::make_shared<Task>(std::move(task));
-    task_vec_.emplace_back(new_task_ptr);
-    task_map_.insert_or_assign(name, new_task_ptr);
+    auto& ref = task_vec_.emplace_back(std::make_shared<Task>(std::move(task)));
+    task_map_.insert_or_assign(name, ref);
 
-    LogDebug << VAR(name) << VAR(new_task_ptr) << VAR(*new_task_ptr) << VAR(task_vec_) << VAR(task_map_);
-    return new_task_ptr;
+    LogDebug << VAR(name) << VAR(ref) << VAR(*ref) << VAR(task_vec_) << VAR(task_map_);
+    return ref;
 }
 
 std::ostream& operator<<(std::ostream& os, const Config& config)
