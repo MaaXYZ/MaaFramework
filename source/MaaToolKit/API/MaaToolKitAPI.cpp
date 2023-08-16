@@ -30,7 +30,7 @@ MaaString MaaToolKitGetDeviceAdbSerial(MaaSize index)
     return device_mgr.device_adb_serial(index).data();
 }
 
-MaaAdbControllerType MAA_TOOLKIT_API MaaToolKitGetDeviceAdbControllerType(MaaSize index)
+MaaAdbControllerType MaaToolKitGetDeviceAdbControllerType(MaaSize index)
 {
     return device_mgr.device_adb_controller_type(index);
 }
@@ -71,7 +71,7 @@ MaaToolKitConfigHandle MaaToolKitCurrentConfig()
     return config_mgr.current();
 }
 
-MaaBool MAA_TOOLKIT_API MaaToolKitBindInstance(MaaToolKitConfigHandle config_handle, MaaInstanceHandle instance_handle)
+MaaBool MaaToolKitBindInstance(MaaToolKitConfigHandle config_handle, MaaInstanceHandle instance_handle)
 {
     if (!config_handle) {
         LogError << "config_handle is null" << VAR(config_handle);
