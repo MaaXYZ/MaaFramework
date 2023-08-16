@@ -72,7 +72,7 @@ size_t DeviceMgrWin32::find_device(std::string_view adb_path)
 std::vector<DeviceMgrWin32::Emulator> DeviceMgrWin32::get_emulators()
 {
     // https://learn.microsoft.com/en-us/windows/win32/psapi/enumerating-all-processes
-    DWORD all_pids[16 * 1024] = { 0 };
+    DWORD all_pids[4096] = { 0 };
     DWORD written = 0;
 
     if (!EnumProcesses(all_pids, sizeof(all_pids), &written)) {
