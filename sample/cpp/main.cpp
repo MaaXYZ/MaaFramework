@@ -1,5 +1,7 @@
 #include "MaaFramework/MaaAPI.h"
 
+#include "MaaToolKit/MaaToolKitAPI.h"
+
 #include <filesystem>
 #include <fstream>
 #include <iostream>
@@ -22,6 +24,9 @@ std::string task_name = "StartUp";
 
 int main([[maybe_unused]] int argc, char** argv)
 {
+    MaaToolKitConfigInit();
+    MaaToolKitFindDevice();
+
     const auto cur_dir = std::filesystem::path(argv[0]).parent_path();
 
     debug_dir = (cur_dir / "debug").string();
