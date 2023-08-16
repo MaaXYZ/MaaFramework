@@ -1,23 +1,38 @@
 #pragma once
 
-#include "Device/DeviceMgrLinux.h"
-#include "Device/DeviceMgrMacOS.h"
-#include "Device/DeviceMgrWin32.h"
+#include "Conf/Conf.h"
+#include "DeviceAPI.h"
+
+#include <vector>
 
 MAA_TOOLKIT_DEVICE_NS_BEGIN
 
-#if defined(_WIN32)
+class DeviceMgr : public MaaToolKitDeviceMgrAPI
+{
 
-using DeviceMgr = DeviceMgrWin32;
+public:
+    virtual ~DeviceMgr() noexcept override = default;
 
-#elif defined(__linux__)
+public: // from MaaToolKitDeviceMgrAPI
+    virtual size_t find_device(std::string_view adb_path = std::string_view()) override = 0;
 
-using DeviceMgr = DeviceMgrLinux;
+    virtual std::string_view device_name(size_t index) const override final;
+    virtual std::string_view device_adb_path(size_t index) const override final;
+    virtual std::string_view device_adb_serial(size_t index) const override final;
+    virtual MaaAdbControllerType device_adb_controller_type(size_t index) const override final;
+    virtual std::string_view device_adb_config(size_t index) const override final;
 
-#elif defined(__APPLE__)
+protected:
+    struct Device
+    {
+        std::string name;
+        std::string adb_path;
+        std::string adb_serial;
+        MaaAdbControllerType adb_controller_type = MaaAdbControllerType_Invalid;
+        std::string adb_config;
+    };
 
-using DeviceMgr = DeviceMgrMacOS;
-
-#endif
+    std::vector<Device> devices_;
+};
 
 MAA_TOOLKIT_DEVICE_NS_END

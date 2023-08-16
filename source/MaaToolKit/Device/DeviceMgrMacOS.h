@@ -1,12 +1,14 @@
 #pragma once
 
+#if defined(__APPLE__)
+
 #include "Conf/Conf.h"
-#include "DeviceAPI.h"
+#include "DeviceMgr.h"
 #include "Utils/SingletonHolder.hpp"
 
 MAA_TOOLKIT_DEVICE_NS_BEGIN
 
-class DeviceMgrMacOS : public SingletonHolder<DeviceMgrMacOS>, public MaaToolKitDeviceMgrAPI
+class DeviceMgrMacOS : public SingletonHolder<DeviceMgrMacOS>, public DeviceMgr
 {
     friend class SingletonHolder<DeviceMgrMacOS>;
 
@@ -16,14 +18,10 @@ public:
 public: // from MaaToolKitDeviceMgrAPI
     virtual size_t find_device(std::string_view adb_path = std::string_view()) override;
 
-    virtual std::string_view device_name(size_t index) const override;
-    virtual std::string_view device_adb_path(size_t index) const override;
-    virtual std::string_view device_adb_serial(size_t index) const override;
-    virtual MaaAdbControllerType device_adb_controller_type(size_t index) const override;
-    virtual std::string_view device_adb_config(size_t index) const override;
-
 private:
     DeviceMgrMacOS() = default;
 };
 
 MAA_TOOLKIT_DEVICE_NS_END
+
+#endif

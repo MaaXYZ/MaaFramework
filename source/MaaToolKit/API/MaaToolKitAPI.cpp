@@ -1,12 +1,20 @@
 #include "MaaToolKit/MaaToolKitAPI.h"
 
-#include "Config/ConfigAPI.h"
 #include "Config/ConfigMgr.h"
-#include "Device/DeviceMgr.h"
+#include "Device/DeviceMgrLinux.h"
+#include "Device/DeviceMgrMacOS.h"
+#include "Device/DeviceMgrWin32.h"
 #include "Server/HttpServer.h"
 #include "Utils/Logger.hpp"
 
-static MaaToolKitDeviceMgrAPI& device_mgr = MAA_TOOLKIT_DEVICE_NS::DeviceMgr::get_instance();
+#if defined(_WIN32)
+static MaaToolKitDeviceMgrAPI& device_mgr = MAA_TOOLKIT_DEVICE_NS::DeviceMgrWin32::get_instance();
+#elif defined(__linux__)
+static MaaToolKitDeviceMgrAPI& device_mgr = MAA_TOOLKIT_DEVICE_NS::DeviceMgrLinux::get_instance();
+#elif defined(__APPLE__)
+static MaaToolKitDeviceMgrAPI& device_mgr = MAA_TOOLKIT_DEVICE_NS::DeviceMgrMacOS::get_instance();
+#endif
+
 static MaaToolKitConfigMgrAPI& config_mgr = MAA_TOOLKIT_CONFIG_NS::ConfigMgr::get_instance();
 
 MaaSize MaaToolKitFindDevice()

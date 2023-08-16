@@ -19,6 +19,7 @@
     <ClCompile Include="Config\Config.cpp" />
     <ClCompile Include="Config\ConfigMgr.cpp" />
     <ClCompile Include="Config\Task.cpp" />
+    <ClCompile Include="Device\DeviceMgr.cpp" />
     <ClCompile Include="Device\DeviceMgrLinux.cpp" />
     <ClCompile Include="Device\DeviceMgrMacOS.cpp" />
     <ClCompile Include="Device\DeviceMgrWin32.cpp" />
