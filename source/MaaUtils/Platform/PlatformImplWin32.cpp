@@ -202,7 +202,7 @@ std::string path_to_ansi_string(std::string_view utf8_path)
     return path_to_crt_string(path(utf8_path));
 }
 
-std::set<ProcessInfo> list_process()
+std::set<ProcessInfo> list_processes()
 {
     // https://learn.microsoft.com/en-us/windows/win32/psapi/enumerating-all-processes
 

@@ -12,7 +12,7 @@
 #include <libproc.h>
 #include <sys/sysctl.h>
 
-std::set<ProcessInfo> list_process()
+std::set<ProcessInfo> list_processes()
 {
     int mib[4] = { CTL_KERN, KERN_PROC, KERN_PROC_ALL, 0 };
     size_t size;

@@ -65,7 +65,7 @@ inline std::ostream& operator<<(std::ostream& os, const ProcessInfo& info)
     return os << info.pid << " " << info.name;
 }
 
-std::set<ProcessInfo> MAA_UTILS_API list_process();
+std::set<ProcessInfo> MAA_UTILS_API list_processes();
 os_string MAA_UTILS_API get_process_path(os_pid pid);
 
 /* single_page_buffer */

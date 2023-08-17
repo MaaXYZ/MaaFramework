@@ -70,66 +70,24 @@ size_t DeviceMgrWin32::find_device(std::string_view adb_path)
 
 std::vector<DeviceMgrWin32::Emulator> DeviceMgrWin32::get_emulators()
 {
-    // https://learn.microsoft.com/en-us/windows/win32/psapi/enumerating-all-processes
-    DWORD all_pids[4096] = { 0 };
-    DWORD pid_written = 0;
-
-    if (!EnumProcesses(all_pids, sizeof(all_pids), &pid_written)) {
-        auto error = GetLastError();
-        LogError << "Failed to EnumProcesses" << VAR(error);
-        return {};
-    }
-    DWORD size = pid_written / sizeof(DWORD);
-    LogDebug << "Process size:" << size;
-
     std::vector<Emulator> result;
-    std::vector<std::string> all_proc_names;
-    WCHAR process_name_buff[MAX_PATH] = { 0 };
 
-    for (DWORD i = 0; i < size; ++i) {
-        DWORD pid = all_pids[i];
-        if (pid == 0) {
-            continue;
-        }
-
-        HANDLE process = OpenProcess(PROCESS_QUERY_INFORMATION | PROCESS_VM_READ, FALSE, pid);
-        if (process == nullptr) {
-            auto error = GetLastError();
-            LogError << "Failed to OpenProcess" << VAR(error) << VAR(pid);
-            continue;
-        }
-
-        HMODULE mod = nullptr;
-        DWORD mod_written = 0;
-        if (!EnumProcessModules(process, &mod, sizeof(mod), &mod_written)) {
-            auto error = GetLastError();
-            LogError << "Failed to EnumProcessModules" << VAR(error) << VAR(pid);
-            continue;
-        }
-
-        memset(process_name_buff, 0, sizeof(process_name_buff));
-        GetModuleBaseNameW(process, mod, process_name_buff, sizeof(process_name_buff) / sizeof(TCHAR));
-        std::string process_name = from_osstring(process_name_buff);
-
-        all_proc_names.emplace_back(process_name);
-
-        auto find_it = MAA_RNS::ranges::find_if(kEmulators, [&process_name](const auto& emulator) -> bool {
-            return process_name.find(emulator.process_keyword) != std::string::npos;
+    auto all_processes = list_processes();
+    for (const auto& process : all_processes) {
+        auto find_it = MAA_RNS::ranges::find_if(kEmulators, [&process](const auto& emulator) -> bool {
+            return process.name.find(emulator.process_keyword) != std::string::npos;
         });
         if (find_it == kEmulators.cend()) {
             continue;
         }
 
         auto emulator = *find_it;
-        emulator.pid = pid;
-        emulator.process_name = std::move(process_name);
+        emulator.pid = process.pid;
+        emulator.process_name = process.name;
 
         result.emplace_back(std::move(emulator));
     }
 
-#ifdef MAA_DEBUG
-    LogInfo << VAR(all_proc_names);
-#endif
     LogInfo << VAR(result);
 
     return result;

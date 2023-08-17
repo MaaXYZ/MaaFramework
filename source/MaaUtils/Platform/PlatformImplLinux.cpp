@@ -11,7 +11,7 @@
 #include <sys/wait.h>
 #include <unistd.h>
 
-std::set<ProcessInfo> list_process()
+std::set<ProcessInfo> list_processes()
 {
     // TODO
     return {};
