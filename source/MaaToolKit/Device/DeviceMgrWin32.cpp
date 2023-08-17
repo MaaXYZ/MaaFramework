@@ -85,7 +85,7 @@ std::vector<DeviceMgrWin32::Emulator> DeviceMgrWin32::get_emulators()
 
     std::vector<Emulator> result;
     std::vector<std::string> all_proc_names;
-    TCHAR process_name_buff[MAX_PATH] = { 0 };
+    WCHAR process_name_buff[MAX_PATH] = { 0 };
 
     for (DWORD i = 0; i < size; ++i) {
         DWORD pid = all_pids[i];
@@ -109,7 +109,7 @@ std::vector<DeviceMgrWin32::Emulator> DeviceMgrWin32::get_emulators()
         }
 
         memset(process_name_buff, 0, sizeof(process_name_buff));
-        GetModuleBaseName(process, mod, process_name_buff, sizeof(process_name_buff) / sizeof(TCHAR));
+        GetModuleBaseNameW(process, mod, process_name_buff, sizeof(process_name_buff) / sizeof(TCHAR));
         std::string process_name = from_osstring(process_name_buff);
 
         all_proc_names.emplace_back(process_name);
