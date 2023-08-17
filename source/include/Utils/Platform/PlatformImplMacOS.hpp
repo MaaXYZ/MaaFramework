@@ -1,19 +1,6 @@
-#include "Utils.h"
+#ifdef __APPLE__
 
-#include "Utils/Logger.hpp"
-#include "Utils/Platform.hpp"
-#include "Utils/Ranges.hpp"
-
-#if defined(__APPLE__)
-
-#include <libproc.h>
-#include <sys/sysctl.h>
-#include <sys/types.h>
-#include <unistd.h>
-
-MAA_TOOLKIT_DEVICE_NS_BEGIN
-
-std::vector<ProcessInfo> get_processes_info()
+inline std::vector<ProcessInfo> list_process()
 {
     int mib[4] = { CTL_KERN, KERN_PROC, KERN_PROC_ALL, 0 };
     size_t size;
@@ -34,13 +21,11 @@ std::vector<ProcessInfo> get_processes_info()
     return result;
 }
 
-os_string get_process_path(os_pid pid)
+inline os_string get_process_path(os_pid pid)
 {
     char pathbuf[PROC_PIDPATHINFO_MAXSIZE];
     proc_pidpath(pid, pathbuf, sizeof(pathbuf));
     return pathbuf;
 }
-
-MAA_TOOLKIT_DEVICE_NS_END
 
 #endif

@@ -79,6 +79,12 @@
     {
 #define MAA_NS_END }
 
+#define MAA_PLATFORM_NS MAA_NS::PlatformNS
+#define MAA_PLATFORM_NS_BEGIN \
+    namespace MAA_PLATFORM_NS \
+    {
+#define MAA_PLATFORM_NS_END }
+
 /* MaaFramwork */
 
 #define MAA_RES_NS MAA_NS::ResourceNS
