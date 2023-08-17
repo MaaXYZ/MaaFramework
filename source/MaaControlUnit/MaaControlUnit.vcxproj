@@ -23,10 +23,9 @@
     <ClInclude Include="Input\MaatouchInput.h" />
     <ClInclude Include="Input\MinitouchInput.h" />
     <ClInclude Include="Input\TapInput.h" />
+    <ClInclude Include="Platform\BoostIO.h" />
     <ClInclude Include="Platform\PlatformFactory.h" />
     <ClInclude Include="Platform\PlatformIO.h" />
-    <ClInclude Include="Platform\PosixIO.h" />
-    <ClInclude Include="Platform\Win32IO.h" />
     <ClInclude Include="Screencap\Encode.h" />
     <ClInclude Include="Screencap\EncodeToFile.h" />
     <ClInclude Include="Screencap\Minicap\MinicapDef.h" />
@@ -48,8 +47,7 @@
     <ClCompile Include="Input\MaatouchInput.cpp" />
     <ClCompile Include="Input\MinitouchInput.cpp" />
     <ClCompile Include="Input\TapInput.cpp" />
-    <ClCompile Include="Platform\PosixIO.cpp" />
-    <ClCompile Include="Platform\Win32IO.cpp" />
+    <ClCompile Include="Platform\BoostIO.cpp" />
     <ClCompile Include="Screencap\Encode.cpp" />
     <ClCompile Include="Screencap\EncodeToFile.cpp" />
     <ClCompile Include="Screencap\Minicap\MinicapBase.cpp" />
@@ -130,7 +128,7 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>NDEBUG;_CONSOLE;MAA_CONTROL_UNIT_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>NDEBUG;_CONSOLE;MAA_CONTROL_UNIT_EXPORTS;MAA_USE_BOOST_IO;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp20</LanguageStandard>
       <LanguageStandard_C>stdc11</LanguageStandard_C>
@@ -157,7 +155,7 @@
       <WarningLevel>Level4</WarningLevel>
       <IntrinsicFunctions>false</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>NDEBUG;_CONSOLE;MAA_CONTROL_UNIT_EXPORTS;MAA_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>NDEBUG;_CONSOLE;MAA_CONTROL_UNIT_EXPORTS;MAA_DEBUG;MAA_USE_BOOST_IO;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp20</LanguageStandard>
       <LanguageStandard_C>stdc11</LanguageStandard_C>
@@ -184,7 +182,7 @@
       <WarningLevel>Level4</WarningLevel>
       <IntrinsicFunctions>false</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>_CONSOLE;_DEBUG;MAA_CONTROL_UNIT_EXPORTS;MAA_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_CONSOLE;_DEBUG;MAA_CONTROL_UNIT_EXPORTS;MAA_DEBUG;MAA_USE_BOOST_IO;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp20</LanguageStandard>
       <LanguageStandard_C>stdc11</LanguageStandard_C>

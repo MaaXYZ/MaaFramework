@@ -1,8 +1,8 @@
 #include "EncodeToFile.h"
 
-#include "Utils/ImageIo.hpp"
-#include "Utils/Logger.hpp"
-#include "Utils/NoWarningCV.h"
+#include "Utils/ImageIo.h"
+#include "Utils/Logger.h"
+#include "Utils/NoWarningCV.hpp"
 #include "Utils/TempPath.hpp"
 
 MAA_CTRL_UNIT_NS_BEGIN

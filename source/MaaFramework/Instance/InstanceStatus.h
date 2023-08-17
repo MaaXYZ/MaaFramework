@@ -6,7 +6,7 @@
 #include <map>
 #include <string>
 
-#include "Utils/NoWarningCVMat.h"
+#include "Utils/NoWarningCVMat.hpp"
 
 MAA_NS_BEGIN
 

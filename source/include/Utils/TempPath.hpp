@@ -5,7 +5,7 @@
 #include <cstdio>
 #include <filesystem>
 
-#include "Utils/Logger.hpp"
+#include "Utils/Logger.h"
 
 MAA_NS_BEGIN
 

@@ -1,7 +1,7 @@
 #include "CustomController.h"
 
-#include "Utils/Logger.hpp"
-#include "Utils/NoWarningCV.h"
+#include "Utils/Logger.h"
+#include "Utils/NoWarningCV.hpp"
 
 MAA_CTRL_NS_BEGIN
 

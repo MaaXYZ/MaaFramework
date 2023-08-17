@@ -2,7 +2,7 @@
 
 #include "Conf/Conf.h"
 #include "Instance/InstanceInternalAPI.hpp"
-#include "Utils/NoWarningCVMat.h"
+#include "Utils/NoWarningCVMat.hpp"
 
 MAA_VISION_NS_BEGIN
 

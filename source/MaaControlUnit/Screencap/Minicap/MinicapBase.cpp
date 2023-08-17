@@ -1,8 +1,8 @@
 #include "MinicapBase.h"
 
 #include "Utils/Format.hpp"
-#include "Utils/Logger.hpp"
-#include "Utils/NoWarningCV.h"
+#include "Utils/Logger.h"
+#include "Utils/NoWarningCV.hpp"
 #include "Utils/Ranges.hpp"
 
 #include <array>

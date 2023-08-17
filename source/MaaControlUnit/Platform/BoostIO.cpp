@@ -1,11 +1,9 @@
-#ifdef MAA_USE_BOOST_IO
-
 #include "BoostIO.h"
 
 #include <chrono>
 
-#include "Utils/Logger.hpp"
-#include "Utils/Platform.hpp"
+#include "Utils/Logger.h"
+#include "Utils/Platform.h"
 
 MAA_CTRL_UNIT_NS_BEGIN
 
@@ -23,8 +21,8 @@ int BoostIO::call_command(const std::vector<std::string>& cmd, bool recv_by_sock
 
     auto start_time = std::chrono::steady_clock::now();
 
-    MAA_PLATFORM_NS::single_page_buffer<char> pipe_buffer;
-    MAA_PLATFORM_NS::single_page_buffer<char> sock_buffer;
+    single_page_buffer<char> pipe_buffer;
+    single_page_buffer<char> sock_buffer;
 
     auto check_timeout = [&](const auto& start_time) -> bool {
         return timeout && timeout < duration_cast<milliseconds>(steady_clock::now() - start_time).count();
@@ -236,7 +234,6 @@ std::string IOHandlerBoostStream::read(unsigned timeout_sec)
 
 std::string IOHandlerBoostStream::read(unsigned timeout_sec, size_t expect)
 {
-
     auto start_time = std::chrono::steady_clock::now();
     auto check_timeout = [&](const auto& start_time) -> bool {
         using namespace std::chrono_literals;
@@ -262,5 +259,3 @@ std::string IOHandlerBoostStream::read(unsigned timeout_sec, size_t expect)
 }
 
 MAA_CTRL_UNIT_NS_END
-
-#endif

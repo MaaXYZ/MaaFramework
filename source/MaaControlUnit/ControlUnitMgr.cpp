@@ -16,7 +16,7 @@
 #include "Screencap/Minicap/MinicapStream.h"
 #include "Screencap/RawByNetcat.h"
 #include "Screencap/RawWithGzip.h"
-#include "Utils/Logger.hpp"
+#include "Utils/Logger.h"
 
 #pragma message("MAA_VERSION: " MAA_VERSION)
 

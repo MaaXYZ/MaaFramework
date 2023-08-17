@@ -4,10 +4,10 @@
 #include <string>
 #include <vector>
 
-#include "NoWarningCV.h"
+#include "NoWarningCV.hpp"
 
 #include "File.hpp"
-#include "Platform.hpp"
+#include "Platform.h"
 
 MAA_NS_BEGIN
 

@@ -3,7 +3,7 @@
 #include <tuple>
 
 #include "MaaFramework/MaaMsg.h"
-#include "Utils/Logger.hpp"
+#include "Utils/Logger.h"
 
 MAA_RES_NS_BEGIN
 

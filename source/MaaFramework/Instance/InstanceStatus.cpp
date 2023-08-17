@@ -1,6 +1,6 @@
 #include "InstanceStatus.h"
 
-#include "Utils/Logger.hpp"
+#include "Utils/Logger.h"
 
 MAA_NS_BEGIN
 

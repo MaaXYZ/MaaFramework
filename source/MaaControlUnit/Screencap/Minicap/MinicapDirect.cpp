@@ -1,8 +1,8 @@
 #include "MinicapDirect.h"
 
-#include "Utils/Logger.hpp"
+#include "Utils/Logger.h"
 #include "Utils/Format.hpp"
-#include "Utils/NoWarningCV.h"
+#include "Utils/NoWarningCV.hpp"
 
 MAA_CTRL_UNIT_NS_BEGIN
 

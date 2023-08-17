@@ -1,6 +1,18 @@
 #ifdef __APPLE__
 
-inline std::vector<ProcessInfo> list_process()
+#include "Platform.h"
+
+#include <cstdlib>
+#include <dlfcn.h>
+#include <fcntl.h>
+#include <sys/types.h>
+#include <sys/wait.h>
+#include <unistd.h>
+
+#include <libproc.h>
+#include <sys/sysctl.h>
+
+std::set<ProcessInfo> list_process()
 {
     int mib[4] = { CTL_KERN, KERN_PROC, KERN_PROC_ALL, 0 };
     size_t size;
@@ -11,17 +23,21 @@ inline std::vector<ProcessInfo> list_process()
 
     sysctl(mib, 4, proc_list, &size, NULL, 0);
 
-    std::vector<ProcessInfo> result;
+    std::set<ProcessInfo> result;
     for (int i = 0; i < proc_count; i++) {
-        result.push_back({ proc_list[i].kp_proc.p_pid, proc_list[i].kp_proc.p_comm });
+        result.emplace({ proc_list[i].kp_proc.p_pid, proc_list[i].kp_proc.p_comm });
     }
 
     delete[] proc_list;
 
+#ifdef MAA_DEBUG
+    LogInfo << "Process list:" << result;
+#endif
+
     return result;
 }
 
-inline os_string get_process_path(os_pid pid)
+os_string get_process_path(os_pid pid)
 {
     char pathbuf[PROC_PIDPATHINFO_MAXSIZE];
     proc_pidpath(pid, pathbuf, sizeof(pathbuf));

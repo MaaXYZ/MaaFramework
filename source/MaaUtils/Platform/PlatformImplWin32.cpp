@@ -1,40 +1,17 @@
 #ifdef _WIN32
 
-inline os_library_handle library_load(const os_string& path)
-{
-    return LoadLibraryW(path.c_str());
-}
+#include "Platform.h"
 
-inline os_library_function library_get_address(os_library_handle handle, const std::string& name)
-{
-    return reinterpret_cast<os_library_function>(GetProcAddress(handle, name.c_str())); // should be _cdecl or x64
-}
+#include "Utils/SafeWindows.hpp"
 
-inline void library_free(os_library_handle handle)
-{
-    FreeLibrary(handle);
-}
+#include <Psapi.h>
+#include <mbctype.h>
 
-inline static size_t get_page_size()
-{
-    SYSTEM_INFO sysInfo {};
-    GetSystemInfo(&sysInfo);
-    return sysInfo.dwPageSize;
-}
+#include "Logger.h"
 
-inline static const size_t page_size = get_page_size();
+MAA_NS_BEGIN
 
-inline void* aligned_alloc(size_t len, size_t align)
-{
-    return _aligned_malloc(len, align);
-}
-
-inline void aligned_free(void* ptr)
-{
-    _aligned_free(ptr);
-}
-
-inline static std::string get_ansi_short_path(const std::filesystem::path& path)
+std::string get_ansi_short_path(const std::filesystem::path& path)
 {
     wchar_t short_path[MAX_PATH] {};
     auto& osstr = path.native();
@@ -48,7 +25,7 @@ inline static std::string get_ansi_short_path(const std::filesystem::path& path)
     return result;
 }
 
-inline std::string path_to_crt_string(const std::filesystem::path& path)
+std::string path_to_crt_string(const std::filesystem::path& path)
 {
     // UCRT may use UTF-8 encoding while ANSI code page is still some other MBCS encoding
     // so we use CRT wcstombs instead of WideCharToMultiByte
@@ -67,7 +44,7 @@ inline std::string path_to_crt_string(const std::filesystem::path& path)
     }
 }
 
-inline std::string path_to_ansi_string(const std::filesystem::path& path)
+std::string path_to_ansi_string(const std::filesystem::path& path)
 {
     // UCRT may use UTF-8 encoding while ANSI code page is still some other MBCS encoding
     // so we use CRT wcstombs instead of WideCharToMultiByte
@@ -85,7 +62,7 @@ inline std::string path_to_ansi_string(const std::filesystem::path& path)
     }
 }
 
-inline os_string to_osstring(std::string_view utf8_str)
+os_string to_osstring(std::string_view utf8_str)
 {
     int len = MultiByteToWideChar(CP_UTF8, 0, utf8_str.data(), (int)utf8_str.size(), nullptr, 0);
     os_string result(len, 0);
@@ -93,7 +70,7 @@ inline os_string to_osstring(std::string_view utf8_str)
     return result;
 }
 
-inline std::string from_osstring(const os_string_view& os_str)
+std::string from_osstring(os_string_view os_str)
 {
     int len = WideCharToMultiByte(CP_UTF8, 0, os_str.data(), (int)os_str.size(), nullptr, 0, nullptr, nullptr);
     std::string result(len, 0);
@@ -105,7 +82,7 @@ inline std::string from_osstring(const os_string_view& os_str)
 // https://ipvb.gitee.io/windows/2019/07/21/CmdlineReEscape/
 // https://github.com/microsoft/terminal/pull/1815
 
-inline os_string escape_one(os_string_view arg)
+os_string escape_one(os_string_view arg)
 {
     if (arg.empty()) {
         return os_string(2, '"');
@@ -166,7 +143,7 @@ inline os_string escape_one(os_string_view arg)
     return buf;
 }
 
-inline os_string args_to_cmd(const std::vector<os_string>& args)
+os_string args_to_cmd(const std::vector<os_string>& args)
 {
     if (args.size() == 0) {
         return os_string {};
@@ -180,7 +157,7 @@ inline os_string args_to_cmd(const std::vector<os_string>& args)
     return res;
 }
 
-inline os_string args_to_cmd(const std::vector<os_string_view>& args)
+os_string args_to_cmd(const std::vector<os_string_view>& args)
 {
     if (args.size() == 0) {
         return os_string {};
@@ -194,7 +171,7 @@ inline os_string args_to_cmd(const std::vector<os_string_view>& args)
     return res;
 }
 
-inline std::vector<os_string> cmd_to_args(const os_string& cmd)
+std::vector<os_string> cmd_to_args(const os_string& cmd)
 {
     int argc;
     std::vector<os_string> res;
@@ -210,25 +187,103 @@ inline std::vector<os_string> cmd_to_args(const os_string& cmd)
     return res;
 }
 
-// Allow construct a path from utf8-string in win32; string_view ver.
-inline std::filesystem::path path(std::string_view utf8_str)
-{
-    return std::filesystem::path(to_osstring(utf8_str));
-}
-
-inline std::string path_to_utf8_string(const std::filesystem::path& path)
+std::string path_to_utf8_string(const std::filesystem::path& path)
 {
     return from_osstring(path.native());
 }
 
-inline std::string path_to_crt_string(std::string_view utf8_path)
+std::string path_to_crt_string(std::string_view utf8_path)
 {
     return path_to_crt_string(path(utf8_path));
 }
 
-inline std::string path_to_ansi_string(std::string_view utf8_path)
+std::string path_to_ansi_string(std::string_view utf8_path)
 {
     return path_to_crt_string(path(utf8_path));
 }
+
+std::set<ProcessInfo> list_process()
+{
+    // https://learn.microsoft.com/en-us/windows/win32/psapi/enumerating-all-processes
+
+    constexpr size_t kMaxProcesses = 16 * 1024;
+
+    auto all_pids = std::make_unique<DWORD[]>(kMaxProcesses);
+    DWORD pid_read = 0;
+
+    if (!EnumProcesses(all_pids.get(), sizeof(DWORD) * kMaxProcesses, &pid_read)) {
+        auto error = GetLastError();
+        LogError << "Failed to EnumProcesses" << VAR(error);
+        return {};
+    }
+    DWORD size = pid_read / sizeof(DWORD);
+    LogDebug << "Process size:" << size;
+
+    WCHAR name_buff[MAX_PATH] = { 0 };
+
+    std::set<ProcessInfo> result;
+
+    for (DWORD i = 0; i < size; ++i) {
+        DWORD pid = *(all_pids.get() + i);
+        if (pid == 0) {
+            continue;
+        }
+
+        HANDLE process = OpenProcess(PROCESS_QUERY_INFORMATION | PROCESS_VM_READ, FALSE, pid);
+        if (process == nullptr) {
+            auto error = GetLastError();
+            LogError << "Failed to OpenProcess" << VAR(error) << VAR(pid);
+            continue;
+        }
+
+        HMODULE mod = nullptr;
+        DWORD mod_read = 0;
+        if (!EnumProcessModules(process, &mod, sizeof(mod), &mod_read)) {
+            auto error = GetLastError();
+            LogError << "Failed to EnumProcessModules" << VAR(error) << VAR(pid);
+            CloseHandle(process);
+            continue;
+        }
+
+        memset(name_buff, 0, sizeof(name_buff));
+
+        GetModuleBaseNameW(process, mod, name_buff, sizeof(name_buff) / sizeof(WCHAR));
+        CloseHandle(process);
+
+        result.emplace(pid, from_osstring(name_buff));
+    }
+
+#ifdef MAA_DEBUG
+    LogInfo << "Process list:" << result;
+#endif
+
+    return result;
+}
+
+os_string get_process_path(os_pid pid)
+{
+    // TODO
+    std::ignore = pid;
+    return {};
+}
+
+size_t get_page_size()
+{
+    SYSTEM_INFO sysInfo {};
+    GetSystemInfo(&sysInfo);
+    return sysInfo.dwPageSize;
+}
+
+void* aligned_alloc(size_t len, size_t align)
+{
+    return _aligned_malloc(len, align);
+}
+
+void aligned_free(void* ptr)
+{
+    _aligned_free(ptr);
+}
+
+MAA_NS_END
 
 #endif

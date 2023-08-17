@@ -1,6 +1,6 @@
 #include "RawWithGzip.h"
 
-#include "Utils/Logger.hpp"
+#include "Utils/Logger.h"
 
 MAA_CTRL_UNIT_NS_BEGIN
 

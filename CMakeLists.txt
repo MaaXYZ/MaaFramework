@@ -12,10 +12,6 @@ set(CMAKE_MAP_IMPORTED_CONFIG_RELWITHDEBINFO "RelWithDebInfo;Release;")
 set(Boost_NO_WARN_NEW_VERSIONS 1)
 
 option(BUILD_SAMPLE "build a demo" OFF)
-option(USE_BOOST_IO "use boost as platform io" OFF)
-# option(BUILD_BUSYBOX "build the busybox" OFF)
-# option(INSTALL_DEVEL "install development files" OFF)
-# option(INSTALL_THIRD_LIBS "install third party libraries" ON)
 option(USE_MAADEPS "use third-party libraries built by MaaDeps" ON)
 option(WITH_THRIFT "build with thrift" ON)
 

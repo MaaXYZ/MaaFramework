@@ -3,8 +3,8 @@
 #include <regex>
 
 #include "Resource/ResourceMgr.h"
-#include "Utils/ImageIo.hpp"
-#include "Utils/Logger.hpp"
+#include "Utils/ImageIo.h"
+#include "Utils/Logger.h"
 #include "Utils/Ranges.hpp"
 #include "Utils/StringMisc.hpp"
 

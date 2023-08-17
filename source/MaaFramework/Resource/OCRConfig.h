@@ -11,7 +11,7 @@ MAA_SUPPRESS_CV_WARNINGS_BEGIN
 #include "fastdeploy/vision/ocr/ppocr/ppocr_v3.h"
 #include "fastdeploy/vision/ocr/ppocr/recognizer.h"
 MAA_SUPPRESS_CV_WARNINGS_END
-#include "Utils/NoWarningCV.h"
+#include "Utils/NoWarningCV.hpp"
 
 MAA_RES_NS_BEGIN
 

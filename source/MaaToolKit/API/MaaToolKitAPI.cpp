@@ -5,7 +5,7 @@
 #include "Device/DeviceMgrMacOS.h"
 #include "Device/DeviceMgrWin32.h"
 #include "Server/HttpServer.h"
-#include "Utils/Logger.hpp"
+#include "Utils/Logger.h"
 
 #if defined(_WIN32)
 static MaaToolKitDeviceMgrAPI& device_mgr = MAA_TOOLKIT_DEVICE_NS::DeviceMgrWin32::get_instance();

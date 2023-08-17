@@ -1,6 +1,6 @@
 #if defined(_WIN32)
 
-#include "Utils/Platform/SafeWindows.h"
+#include "Utils/SafeWindows.hpp"
 
 #include "DeviceMgrWin32.h"
 
@@ -9,8 +9,8 @@
 
 #include <Psapi.h>
 
-#include "Utils/Logger.hpp"
-#include "Utils/Platform.hpp"
+#include "Utils/Logger.h"
+#include "Utils/Platform.h"
 #include "Utils/Ranges.hpp"
 
 MAA_TOOLKIT_DEVICE_NS_BEGIN
@@ -22,7 +22,6 @@ std::ostream& operator<<(std::ostream& os, const DeviceMgrWin32::Emulator& emula
 }
 
 static const std::vector<DeviceMgrWin32::Emulator> kEmulators = {
-
     { .name = "BlueStacks",
       .process_keyword = "HD-Player",
       .adb_relative_paths = { path("HD-Adb.exe"), path("Engine\\ProgramFiles\\HD-Adb.exe") },

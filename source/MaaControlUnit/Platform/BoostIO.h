@@ -1,5 +1,4 @@
 #pragma once
-#ifdef MAA_USE_BOOST_IO
 
 #include "PlatformIO.h"
 #include "Utils/Boost.hpp"
@@ -67,5 +66,3 @@ private:
 };
 
 MAA_CTRL_UNIT_NS_END
-
-#endif

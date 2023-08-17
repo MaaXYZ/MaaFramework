@@ -1,8 +1,8 @@
 #pragma once
 
 #include "Conf/Conf.h"
-#include "Utils/Logger.hpp"
-#include "Utils/NoWarningCV.h"
+#include "Utils/Logger.h"
+#include "Utils/NoWarningCV.hpp"
 #include "Utils/Ranges.hpp"
 
 MAA_VISION_NS_BEGIN

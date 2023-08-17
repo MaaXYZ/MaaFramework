@@ -5,7 +5,7 @@
 #include "Resource/ResourceMgr.h"
 #include "Task/CustomAction.h"
 #include "Task/PipelineTask.h"
-#include "Utils/Logger.hpp"
+#include "Utils/Logger.h"
 #include "Vision/CustomRecognizer.h"
 
 MAA_NS_BEGIN

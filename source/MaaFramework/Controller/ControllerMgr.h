@@ -4,7 +4,7 @@
 #include "Base/AsyncRunner.hpp"
 #include "Base/MessageNotifier.hpp"
 #include "Instance/InstanceInternalAPI.hpp"
-#include "Utils/NoWarningCVMat.h"
+#include "Utils/NoWarningCVMat.hpp"
 
 #include <memory>
 #include <mutex>

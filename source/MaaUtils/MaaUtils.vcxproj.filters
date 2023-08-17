@@ -1,0 +1,44 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <ClCompile Include="Platform\PlatformImplMacOS.cpp">
+      <Filter>Platform</Filter>
+    </ClCompile>
+    <ClCompile Include="Platform\PlatformImplPosix.cpp">
+      <Filter>Platform</Filter>
+    </ClCompile>
+    <ClCompile Include="Platform\PlatformImplWin32.cpp">
+      <Filter>Platform</Filter>
+    </ClCompile>
+    <ClCompile Include="Platform\PlatformImplLinux.cpp">
+      <Filter>Platform</Filter>
+    </ClCompile>
+    <ClCompile Include="Logger\Logger.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="Platform">
+      <UniqueIdentifier>{64f33cc0-fb5d-4c88-8d01-17b4ad90d95e}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\include\Utils\ArgvWrapper.hpp" />
+    <ClInclude Include="..\include\Utils\Boost.hpp" />
+    <ClInclude Include="..\include\Utils\Demangle.hpp" />
+    <ClInclude Include="..\include\Utils\File.hpp" />
+    <ClInclude Include="..\include\Utils\Format.hpp" />
+    <ClInclude Include="..\include\Utils\ImageIo.h" />
+    <ClInclude Include="..\include\Utils\Locale.hpp" />
+    <ClInclude Include="..\include\Utils\Logger.h" />
+    <ClInclude Include="..\include\Utils\Math.hpp" />
+    <ClInclude Include="..\include\Utils\NonCopyable.hpp" />
+    <ClInclude Include="..\include\Utils\NoWarningCV.hpp" />
+    <ClInclude Include="..\include\Utils\NoWarningCVMat.hpp" />
+    <ClInclude Include="..\include\Utils\Platform.h" />
+    <ClInclude Include="..\include\Utils\Ranges.hpp" />
+    <ClInclude Include="..\include\Utils\SafeWindows.hpp" />
+    <ClInclude Include="..\include\Utils\SingletonHolder.hpp" />
+    <ClInclude Include="..\include\Utils\StringMisc.hpp" />
+    <ClInclude Include="..\include\Utils\TempPath.hpp" />
+    <ClInclude Include="..\include\Utils\Time.hpp" />
+  </ItemGroup>
+</Project>

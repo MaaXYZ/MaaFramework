@@ -7,16 +7,12 @@ target_include_directories(MaaControlUnit
             ${CMAKE_CURRENT_SOURCE_DIR}/../include
             ${CMAKE_CURRENT_SOURCE_DIR}/../../include)
 
-target_link_libraries(MaaControlUnit MaaUtils HeaderOnlyLibraries ${OpenCV_LIBS} ZLIB::ZLIB)
+target_link_libraries(MaaControlUnit MaaUtils HeaderOnlyLibraries ${OpenCV_LIBS} ZLIB::ZLIB Boost::system)
 if(WIN32)
     target_link_libraries(MaaControlUnit ws2_32)
 endif()
 
 target_compile_definitions(MaaControlUnit PRIVATE MAA_CONTROL_UNIT_EXPORTS)
-if (USE_BOOST_IO)
-    target_compile_definitions(MaaControlUnit PRIVATE MAA_USE_BOOST_IO)
-    target_link_libraries(MaaControlUnit Boost::system)
-endif ()
 
 add_dependencies(MaaControlUnit MaaUtils)
 

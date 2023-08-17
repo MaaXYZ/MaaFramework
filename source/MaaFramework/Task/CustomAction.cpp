@@ -1,10 +1,10 @@
 #include "CustomAction.h"
 
-#include "Utils/NoWarningCV.h"
+#include "Utils/NoWarningCV.hpp"
 
 #include "MaaFramework/MaaCustomAction.h"
 #include "SyncContext.h"
-#include "Utils/Logger.hpp"
+#include "Utils/Logger.h"
 
 MAA_TASK_NS_BEGIN
 

@@ -1,6 +1,6 @@
 #include "DeviceMgr.h"
 
-#include "Utils/Logger.hpp"
+#include "Utils/Logger.h"
 
 MAA_TOOLKIT_DEVICE_NS_BEGIN
 

@@ -2,7 +2,7 @@
 
 #include "MaaFramework/MaaAPI.h"
 
-#include "Utils/Logger.hpp"
+#include "Utils/Logger.h"
 #include "Utils/Ranges.hpp"
 
 MAA_TOOLKIT_CONFIG_NS_BEGIN

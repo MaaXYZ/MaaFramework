@@ -1,7 +1,7 @@
 #include "Matcher.h"
 
-#include "Utils/Logger.hpp"
-#include "Utils/NoWarningCV.h"
+#include "Utils/Logger.h"
+#include "Utils/NoWarningCV.hpp"
 #include "Utils/StringMisc.hpp"
 #include "VisionUtils.hpp"
 

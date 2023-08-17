@@ -1,9 +1,9 @@
 #include "CustomRecognizer.h"
 
-#include "Utils/NoWarningCV.h"
+#include "Utils/NoWarningCV.hpp"
 
 #include "Task/SyncContext.h"
-#include "Utils/Logger.hpp"
+#include "Utils/Logger.h"
 
 MAA_VISION_NS_BEGIN
 

@@ -1,6 +1,6 @@
 #include "Task.h"
 
-#include "Utils/Logger.hpp"
+#include "Utils/Logger.h"
 
 MAA_TOOLKIT_CONFIG_NS_BEGIN
 

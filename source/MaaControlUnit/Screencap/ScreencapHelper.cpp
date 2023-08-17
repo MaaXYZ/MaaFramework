@@ -1,7 +1,7 @@
 #include "ScreencapHelper.h"
 
-#include "Utils/Logger.hpp"
-#include "Utils/NoWarningCV.h"
+#include "Utils/Logger.h"
+#include "Utils/NoWarningCV.hpp"
 
 #ifdef _MSC_VER
 #pragma warning(push)

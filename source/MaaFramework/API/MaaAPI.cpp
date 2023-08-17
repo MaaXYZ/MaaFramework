@@ -9,8 +9,8 @@
 #include "MaaControlUnit/ControlUnitAPI.h"
 #include "Option/GlobalOptionMgr.h"
 #include "Resource/ResourceMgr.h"
-#include "Utils/Logger.hpp"
-#include "Utils/Platform.hpp"
+#include "Utils/Logger.h"
+#include "Utils/Platform.h"
 
 #pragma message("MAA_VERSION: " MAA_VERSION)
 

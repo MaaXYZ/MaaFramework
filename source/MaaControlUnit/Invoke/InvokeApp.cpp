@@ -1,7 +1,7 @@
 #include "InvokeApp.h"
 
-#include "Utils/Logger.hpp"
-#include "Utils/Platform.hpp"
+#include "Utils/Logger.h"
+#include "Utils/Platform.h"
 #include "Utils/TempPath.hpp"
 
 MAA_CTRL_UNIT_NS_BEGIN

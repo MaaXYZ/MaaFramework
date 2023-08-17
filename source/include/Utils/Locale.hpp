@@ -10,7 +10,7 @@
 #include <string>
 #include <string_view>
 #ifdef _WIN32
-#include "Platform/SafeWindows.h"
+#include "SafeWindows.hpp"
 #elif defined(__linux__)
 #include <iconv.h>
 #endif

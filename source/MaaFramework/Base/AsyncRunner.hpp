@@ -1,7 +1,7 @@
 #pragma once
 
 #include "Conf/Conf.h"
-#include "Utils/Logger.hpp"
+#include "Utils/Logger.h"
 #include "Utils/NonCopyable.hpp"
 
 #include <condition_variable>

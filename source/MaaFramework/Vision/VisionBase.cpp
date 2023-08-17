@@ -1,10 +1,10 @@
 #include "VisionBase.h"
 
-#include "Utils/NoWarningCV.h"
+#include "Utils/NoWarningCV.hpp"
 
 #include "Option/GlobalOptionMgr.h"
-#include "Utils/ImageIo.hpp"
-#include "Utils/Logger.hpp"
+#include "Utils/ImageIo.h"
+#include "Utils/Logger.h"
 #include "Utils/StringMisc.hpp"
 #include "Utils/Time.hpp"
 #include "VisionUtils.hpp"

@@ -5,7 +5,7 @@
 #include <string>
 
 #include "Conf/Conf.h"
-#include "Utils/NoWarningCVMat.h"
+#include "Utils/NoWarningCVMat.hpp"
 
 MAA_CTRL_UNIT_NS_BEGIN
 

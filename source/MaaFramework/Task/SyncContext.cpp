@@ -4,7 +4,7 @@
 
 #include "Controller/ControllerMgr.h"
 #include "PipelineTask.h"
-#include "Utils/Logger.hpp"
+#include "Utils/Logger.h"
 
 MAA_TASK_NS_BEGIN
 
