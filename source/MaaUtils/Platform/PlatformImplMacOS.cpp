@@ -27,7 +27,7 @@ std::set<ProcessInfo> list_processes()
 
     std::set<ProcessInfo> result;
     for (int i = 0; i < proc_count; i++) {
-        result.emplace({ proc_list[i].kp_proc.p_pid, proc_list[i].kp_proc.p_comm });
+        result.emplace(ProcessInfo { proc_list[i].kp_proc.p_pid, proc_list[i].kp_proc.p_comm });
     }
 
     delete[] proc_list;
