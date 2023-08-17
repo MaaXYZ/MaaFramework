@@ -53,7 +53,7 @@ using os_pid = pid_t;
 
 struct ProcessInfo
 {
-    os_pid pid;
+    os_pid pid = 0;
     std::string name;
 
     bool operator<(const ProcessInfo& rhs) const { return pid < rhs.pid; }
@@ -79,8 +79,6 @@ template <typename TElem>
 requires std::is_trivial_v<TElem>
 class single_page_buffer
 {
-    TElem* _ptr = nullptr;
-
 public:
     single_page_buffer()
     {
@@ -115,6 +113,7 @@ public:
 
 private:
     inline static const size_t page_size_ = get_page_size();
+    TElem* _ptr = nullptr;
 };
 
 MAA_NS_END
