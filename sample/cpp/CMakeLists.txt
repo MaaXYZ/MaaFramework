@@ -1,4 +1,4 @@
-add_executable(sample main.cpp)
+add_executable(sample main.cpp test.cpp)
 
 target_link_libraries(sample MaaFramework MaaToolKit)
 

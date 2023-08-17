@@ -12,6 +12,8 @@
 #include <libproc.h>
 #include <sys/sysctl.h>
 
+MAA_NS_BEGIN
+
 std::set<ProcessInfo> list_processes()
 {
     int mib[4] = { CTL_KERN, KERN_PROC, KERN_PROC_ALL, 0 };
@@ -43,5 +45,7 @@ os_string get_process_path(os_pid pid)
     proc_pidpath(pid, pathbuf, sizeof(pathbuf));
     return pathbuf;
 }
+
+MAA_NS_END
 
 #endif
