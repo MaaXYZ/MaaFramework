@@ -42,8 +42,10 @@ inline std::filesystem::path path(const os_string_view& os_str)
 }
 
 #ifdef _WIN32
+using os_pid = DWORD;
 using os_library_handle = HMODULE;
 #else
+using os_pid = pid_t;
 using os_library_handle = void*;
 #endif
 using os_library_function = void (*)();

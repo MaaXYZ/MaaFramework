@@ -5,6 +5,7 @@
 
 MAA_NS_BEGIN
 
+using os_pid = MAA_PLATFORM_NS::os_pid;
 using os_string = MAA_PLATFORM_NS::os_string;
 
 #ifdef _WIN32
