@@ -8,7 +8,7 @@ endif ()
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_LIST_DIR}/cmake/modules")
 
 set_property(GLOBAL PROPERTY USE_FOLDERS ON)
-set(CMAKE_MAP_IMPORTED_CONFIG_RELWITHDEBINFO "RelWithDebInfo;Release;")
+set(CMAKE_MAP_IMPORTED_CONFIG_DebWithRelDeps "DebWithRelDeps;Release;")
 set(Boost_NO_WARN_NEW_VERSIONS 1)
 
 option(BUILD_SAMPLE "build a demo" OFF)
@@ -34,8 +34,6 @@ if(WITH_THRIFT)
     find_package(Thrift CONFIG REQUIRED)
 endif(WITH_THRIFT)
 find_package(ONNXRuntime)
-
-# set_target_properties(${OpenCV_LIBS} PROPERTIES MAP_IMPORTED_CONFIG_RELWITHDEBINFO RELEASE)
 
 add_subdirectory(3rdparty)
 add_subdirectory(source)

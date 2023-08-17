@@ -52,11 +52,11 @@
             "jobs": 16
         },
         {
-            "name": "NinjaMulti - RelWithDebInfo",
-            "displayName": "Ninja MultiConfig RelWithDebInfo",
-            "description": "Ninja MultiConfig RelWithDebInfo",
+            "name": "NinjaMulti - DebWithRelDeps",
+            "displayName": "Ninja MultiConfig DebWithRelDeps",
+            "description": "Ninja MultiConfig DebWithRelDeps",
             "configurePreset": "NinjaMulti",
-            "configuration": "RelWithDebInfo",
+            "configuration": "DebWithRelDeps",
             "jobs": 16
         },
         {
@@ -76,11 +76,11 @@
             "jobs": 16
         },
         {
-            "name": "MSVC 2022 - RelWithDebInfo",
-            "displayName": "MSVC 2022 RelWithDebInfo",
-            "description": "MSVC 2022 RelWithDebInfo",
+            "name": "MSVC 2022 - DebWithRelDeps",
+            "displayName": "MSVC 2022 DebWithRelDeps",
+            "description": "MSVC 2022 DebWithRelDeps",
             "configurePreset": "MSVC 2022",
-            "configuration": "RelWithDebInfo",
+            "configuration": "DebWithRelDeps",
             "jobs": 16
         },
         {
