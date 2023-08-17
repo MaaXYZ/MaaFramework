@@ -88,19 +88,19 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
-    <IncludePath>$(ProjectDir)..\include;$(ProjectDir)..\include\Utils;$(ProjectDir)..\..\include;$(ProjectDir)..\..\3rdparty\include</IncludePath>
+    <IncludePath>$(ProjectDir)..\include;$(ProjectDir)..\..\include;$(ProjectDir)..\..\3rdparty\include</IncludePath>
     <LibraryPath>$(SolutionDir)\$(Platform)\$(Configuration)\;$(LibraryPath)</LibraryPath>
     <OutDir>$(SolutionDir)\$(Platform)\$(Configuration)\</OutDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='DebWithRelDeps|x64'">
     <LinkIncremental>false</LinkIncremental>
-    <IncludePath>$(ProjectDir)..\include;$(ProjectDir)..\include\Utils;$(ProjectDir)..\..\include;$(ProjectDir)..\..\3rdparty\include</IncludePath>
+    <IncludePath>$(ProjectDir)..\include;$(ProjectDir)..\..\include;$(ProjectDir)..\..\3rdparty\include</IncludePath>
     <LibraryPath>$(SolutionDir)\$(Platform)\$(Configuration)\;$(LibraryPath)</LibraryPath>
     <OutDir>$(SolutionDir)\$(Platform)\$(Configuration)\</OutDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
-    <IncludePath>$(ProjectDir)..\include;$(ProjectDir)..\include\Utils;$(ProjectDir)..\..\include;$(ProjectDir)..\..\3rdparty\include</IncludePath>
+    <IncludePath>$(ProjectDir)..\include;$(ProjectDir)..\..\include;$(ProjectDir)..\..\3rdparty\include</IncludePath>
     <LibraryPath>$(SolutionDir)\$(Platform)\$(Configuration)\;$(LibraryPath)</LibraryPath>
     <OutDir>$(SolutionDir)\$(Platform)\$(Configuration)\</OutDir>
   </PropertyGroup>

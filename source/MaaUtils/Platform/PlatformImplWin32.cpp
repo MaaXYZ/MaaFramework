@@ -1,13 +1,13 @@
 #ifdef _WIN32
 
-#include "Platform.h"
 
 #include "Utils/SafeWindows.hpp"
 
 #include <Psapi.h>
 #include <mbctype.h>
 
-#include "Logger.h"
+#include "Utils/Platform.h"
+#include "Utils/Logger.h"
 
 MAA_NS_BEGIN
 

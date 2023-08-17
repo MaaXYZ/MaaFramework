@@ -1,4 +1,4 @@
-#include "Logger.h"
+#include "Utils/Logger.h"
 
 #pragma message("MAA_VERSION: " MAA_VERSION)
 
