@@ -25,6 +25,24 @@ std::optional<cv::Mat> ScreencapHelper::process_data(
 {
     bool tried_clean = false;
 
+#ifdef _WIN32
+    if (end_of_line_ == EndOfLine::UnknownYet) {
+        auto saved = buffer;
+        if (clean_cr(buffer)) {
+            auto res = decoder(buffer);
+            if (res) {
+                LogInfo << "end_of_line is CRLF";
+                end_of_line_ = EndOfLine::CRLF;
+                return res;
+            }
+            else {
+                saved.swap(buffer);
+            }
+        }
+        tried_clean = true;
+    }
+#endif
+
     if (end_of_line_ == EndOfLine::CRLF) {
         tried_clean = true;
         if (!clean_cr(buffer)) {
