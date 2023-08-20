@@ -202,7 +202,9 @@ bool IOHandlerBoostStream::write(std::string_view data)
         return false;
     }
 
+    // std::cerr << "write " << std::string(data.data(), data.data() + data.size()) << std::endl;
     in_->write(data.data(), data.size());
+    in_->flush();
     return true;
 }
 

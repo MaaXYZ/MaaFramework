@@ -150,7 +150,7 @@ std::optional<cv::Mat> MinicapStream::screencap()
 
 bool MinicapStream::read_until(size_t size)
 {
-    LogFunc;
+    // LogFunc;
 
     using namespace std::chrono_literals;
     auto start = std::chrono::steady_clock::now();
@@ -165,7 +165,7 @@ bool MinicapStream::read_until(size_t size)
 
 bool MinicapStream::take_out(void* out, size_t size)
 {
-    LogFunc;
+    // LogFunc;
 
     if (!read_until(size)) {
         return false;
