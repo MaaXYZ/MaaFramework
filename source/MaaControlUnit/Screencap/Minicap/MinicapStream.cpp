@@ -34,13 +34,18 @@ bool MinicapStream::init(int swidth, int sheight)
     process_handle_ = binary_->invoke_bin(MAA_FMT::format("-P {}x{}@{}x{}/{}", width, height, width, height, 0));
 
     if (!process_handle_) {
+        LogError << "invoke screencap failed";
         return false;
     }
 
+    std::string outputBuffer;
     while (true) {
         auto res = process_handle_->read(5);
-        std::cout << res;
-        if (res.find("Allocating") != std::string::npos) {
+        if (res.length() > 0) {
+            LogInfo << "minicap stderr:" << res;
+            outputBuffer.append(res);
+        }
+        if (outputBuffer.find("Allocating") != std::string::npos) {
             break;
         }
     }
@@ -52,12 +57,16 @@ bool MinicapStream::init(int swidth, int sheight)
         local = serial_host.substr(0, shp);
     }
 
+    LogInfo << "minicap try listen at:" << local;
+
     // stream_handle_ = io_ptr_->tcp("172.27.176.1", 1313);
     stream_handle_ = io_ptr_->tcp(local, 1313);
 
     if (!stream_handle_) {
         return false;
     }
+
+    LogInfo << "connected to screencap";
 
     // TODO: 解决大端底的情况
     MinicapHeader header;
@@ -100,16 +109,23 @@ std::optional<cv::Mat> MinicapStream::screencap()
         return std::nullopt;
     }
 
+    // std::cerr << "minicap image size: " << (double(size) / (1 << 10)) << " KB" << std::endl;
+
+    buffer_.clear();
+
     if (!read_until(size)) {
         LogError << "read_until size failed";
         return std::nullopt;
     }
 
-    auto data = std::move(buffer_);
-    buffer_.clear();
+    if (buffer_.find("\xff\xd8") != 0 || buffer_.find("\xff\xd9") != buffer_.size() - 2) {
+        std::cerr << "minicap image seems to be corrupted!" << std::endl;
+    }
 
-    return screencap_helper_.process_data(
-        data, std::bind(&ScreencapHelper::decode_jpg, &screencap_helper_, std::placeholders::_1));
+    std::string data;
+    data.swap(buffer_);
+
+    return screencap_helper_.decode_jpg(data);
 }
 
 bool MinicapStream::read_until(size_t size)

@@ -114,9 +114,10 @@ std::shared_ptr<IOHandler> BoostIO::interactive_shell(const std::vector<std::str
 
     std::shared_ptr<boost::process::opstream> pin(new boost::process::opstream);
     std::shared_ptr<boost::process::ipstream> pout(new boost::process::ipstream);
-    std::shared_ptr<boost::process::child> proc(
-        new boost::process::child(boost::process::search_path(cmd[0]), boost::process::args(rcmd),
-                                  boost::process::std_in<*pin, boost::process::std_out> * pout));
+    std::shared_ptr<boost::process::child> proc(new boost::process::child(
+        boost::process::search_path(cmd[0]), boost::process::args(rcmd),
+        boost::process::std_in<*pin, boost::process::std_out> * pout, boost::process::std_err > *pout));
+    // boost::process::std_in<*pin, boost::process::std_out> * pout, boost::process::std_err > *pout));
 
     return std::make_shared<IOHandlerBoostStream>(pout, pin, proc);
 }
@@ -218,13 +219,17 @@ std::string IOHandlerBoostStream::read(unsigned timeout_sec)
 
     std::string result;
 
+    // dirty hack
+    if (out_->rdbuf()->in_avail() == 0) {
+        out_->read(buffer, 1);
+        result.push_back(buffer[0]);
+    }
+
     while (check_timeout(start_time)) {
-        out_->read(buffer, bufferSize);
-        auto read_num = out_->gcount();
+        auto read_num = out_->readsome(buffer, bufferSize);
         while (read_num > 0) {
             result.insert(result.end(), buffer, buffer + read_num);
-            out_->read(buffer, bufferSize);
-            read_num = out_->gcount();
+            read_num = out_->readsome(buffer, bufferSize);
         }
         break;
     }
