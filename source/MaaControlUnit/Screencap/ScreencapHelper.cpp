@@ -142,13 +142,18 @@ std::optional<cv::Mat> ScreencapHelper::decode_jpg(const std::string& buffer)
 // 是直接就能实现的吧?
 std::optional<cv::Mat> ScreencapHelper::decode_jpg_with_minicap_header(const std::string& buffer)
 {
-    auto pos = buffer.find("\n\xff\xd8"); // FFD8是JPG文件头
+    auto begin = buffer.find("\xff\xd8"); // FFD8是JPG文件头
+    auto end = buffer.find("\xff\xd9");   // FFD9是JPG文件尾
 
-    if (pos == std::string::npos) {
+    if (begin == std::string::npos || end == std::string::npos) {
         return std::nullopt;
     }
 
-    auto data = buffer.substr(pos + 1);
+    if (begin != 0) {
+        LogInfo << "Extra header before jpg:" << buffer.substr(0, begin);
+    }
+
+    auto data = buffer.substr(begin, end - begin + 2);
 
     cv::Mat temp = cv::imdecode({ data.data(), int(data.size()) }, cv::IMREAD_COLOR);
     if (temp.empty()) {

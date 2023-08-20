@@ -26,8 +26,6 @@ public: // from ScreencapAPI
     virtual std::optional<cv::Mat> screencap() override = 0;
 
 protected:
-    ScreencapHelper screencap_helper_;
-
     std::shared_ptr<InvokeApp> binary_ = std::make_shared<InvokeApp>();
     std::shared_ptr<InvokeApp> library_ = std::make_shared<InvokeApp>();
 
