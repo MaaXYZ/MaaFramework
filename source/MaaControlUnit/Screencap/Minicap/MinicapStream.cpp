@@ -7,6 +7,14 @@
 
 MAA_CTRL_UNIT_NS_BEGIN
 
+MinicapStream::~MinicapStream()
+{
+    if (quit_ == false) {
+        quit_ = true;
+        pull_thread_.join();
+    }
+}
+
 bool MinicapStream::parse(const json::value& config)
 {
     return MinicapBase::parse(config) && parse_argv("ForwardSocket", config, forward_argv_);
@@ -94,38 +102,50 @@ bool MinicapStream::init(int swidth, int sheight)
         return false;
     }
 
+    quit_ = false;
+    pull_thread_ = std::thread([this]() {
+        while (!quit_) {
+            uint32_t size;
+            if (!take_out(&size, 4)) {
+                LogError << "take_out size failed";
+                continue;
+            }
+
+            // std::cerr << "minicap image size: " << (double(size) / (1 << 10)) << " KB" << std::endl;
+
+            buffer_.clear();
+
+            if (!read_until(size)) {
+                LogError << "read_until size failed";
+                continue;
+            }
+
+            if (buffer_.find("\xff\xd8") != 0 || buffer_.find("\xff\xd9") != buffer_.size() - 2) {
+                std::cerr << "minicap image seems to be corrupted!" << std::endl;
+            }
+
+            std::string data;
+            data.swap(buffer_);
+
+            auto img = screencap_helper_.decode_jpg(data);
+
+            if (img.has_value()) {
+                std::unique_lock<std::mutex> locker(lock_);
+                image_ = std::move(img.value());
+            }
+        }
+    });
+
     return true;
 }
 
 std::optional<cv::Mat> MinicapStream::screencap()
 {
-    if (!stream_handle_) {
-        return std::nullopt;
-    }
+    std::unique_lock<std::mutex> locker(lock_);
+    auto img = std::move(image_);
+    locker.unlock();
 
-    uint32_t size;
-    if (!take_out(&size, 4)) {
-        LogError << "take_out size failed";
-        return std::nullopt;
-    }
-
-    // std::cerr << "minicap image size: " << (double(size) / (1 << 10)) << " KB" << std::endl;
-
-    buffer_.clear();
-
-    if (!read_until(size)) {
-        LogError << "read_until size failed";
-        return std::nullopt;
-    }
-
-    if (buffer_.find("\xff\xd8") != 0 || buffer_.find("\xff\xd9") != buffer_.size() - 2) {
-        std::cerr << "minicap image seems to be corrupted!" << std::endl;
-    }
-
-    std::string data;
-    data.swap(buffer_);
-
-    return screencap_helper_.decode_jpg(data);
+    return img;
 }
 
 bool MinicapStream::read_until(size_t size)

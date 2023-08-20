@@ -2,12 +2,14 @@
 
 #include "MinicapBase.h"
 
+#include <thread>
+
 MAA_CTRL_UNIT_NS_BEGIN
 
 class MinicapStream : public MinicapBase
 {
 public:
-    virtual ~MinicapStream() override = default;
+    virtual ~MinicapStream() override;
 
 public: // from UnitBase
     virtual bool parse(const json::value& config) override;
@@ -23,7 +25,13 @@ private:
 
     Argv forward_argv_;
 
+    std::mutex lock_;
+    cv::Mat image_;
+
     std::string buffer_;
+    bool quit_ = true;
+    std::thread pull_thread_;
+
     std::shared_ptr<IOHandler> process_handle_;
     std::shared_ptr<IOHandler> stream_handle_;
 };
