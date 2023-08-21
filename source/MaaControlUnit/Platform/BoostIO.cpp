@@ -7,7 +7,7 @@
 
 MAA_CTRL_UNIT_NS_BEGIN
 
-BoostIO::BoostIO() : ios_(new boost::asio::io_context), server_sock_(*ios_)
+BoostIO::BoostIO() : ios_(std::make_shared<boost::asio::io_context>()), server_sock_(*ios_)
 {
     support_socket_ = true;
 }
@@ -19,10 +19,15 @@ int BoostIO::call_command(const std::vector<std::string>& cmd, bool recv_by_sock
 {
     using namespace std::chrono;
 
+    if (cmd.empty()) {
+        LogError << "cmd is empty";
+        return -1;
+    }
+
     auto start_time = std::chrono::steady_clock::now();
 
-    constexpr size_t bufferSize = 4096;
-    char buffer[bufferSize];
+    constexpr size_t kBufferSize = 4096;
+    char buffer[kBufferSize] = { 0 };
 
     auto check_timeout = [&](const auto& start_time) -> bool {
         return timeout && timeout < duration_cast<milliseconds>(steady_clock::now() - start_time).count();
@@ -33,20 +38,27 @@ int BoostIO::call_command(const std::vector<std::string>& cmd, bool recv_by_sock
 
     boost::process::ipstream pout;
 
-    boost::process::child proc(boost::process::search_path(cmd[0]), boost::process::args(rcmd),
+    auto exec = boost::process::search_path(cmd[0]);
+    if (!std::filesystem::exists(exec)) {
+        LogError << "path not exists" << VAR(exec) << VAR(cmd[0]); 
+        return -1;
+    }
+
+    boost::process::child proc(exec, boost::process::args(rcmd),
                                boost::process::std_in<boost::process::null, boost::process::std_out> pout);
 
     if (recv_by_socket) {
         auto socket = server_sock_.accept();
         if (!socket.is_open()) {
+            LogError << "socket is not opened";
             return -1;
         }
         boost::system::error_code error;
         do {
-            auto read_num = socket.read_some(boost::asio::mutable_buffer(buffer, bufferSize), error);
+            auto read_num = socket.read_some(boost::asio::mutable_buffer(buffer, kBufferSize), error);
             while (error != boost::asio::error::eof && read_num > 0) {
                 sock_data.insert(sock_data.end(), buffer, buffer + read_num);
-                read_num = socket.read_some(boost::asio::mutable_buffer(buffer, bufferSize), error);
+                read_num = socket.read_some(boost::asio::mutable_buffer(buffer, kBufferSize), error);
             }
         } while (proc.running() && socket.is_open() && !check_timeout(start_time));
         proc.wait();
@@ -62,17 +74,17 @@ int BoostIO::call_command(const std::vector<std::string>& cmd, bool recv_by_sock
                 pipe_data.push_back(ch);
             }
 
-            auto read_num = pout.readsome(buffer, bufferSize);
+            auto read_num = pout.readsome(buffer, kBufferSize);
             while (read_num > 0) {
                 pipe_data.insert(pipe_data.end(), buffer, buffer + read_num);
-                read_num = pout.readsome(buffer, bufferSize);
+                read_num = pout.readsome(buffer, kBufferSize);
             }
         } while (proc.running() && !check_timeout(start_time));
         proc.wait();
     }
 
     if (proc.running()) {
-        // std::cerr << "terminated!" << std::endl;
+        LogError << "terminate";
         proc.terminate();
     }
 
@@ -104,11 +116,17 @@ std::shared_ptr<IOHandler> BoostIO::tcp(const std::string& target, unsigned shor
 {
     using namespace boost::asio::ip;
 
+    if (!ios_) {
+        LogError << "ios_ is nullptr";
+        return nullptr;
+    }
+
     tcp::socket socket(*ios_);
 
     socket.connect(tcp::endpoint(address::from_string(target), port));
 
     if (!socket.is_open()) {
+        LogError << "socket is not opened";
         return nullptr;
     }
 
@@ -140,6 +158,7 @@ IOHandlerBoostSocket::~IOHandlerBoostSocket()
 bool IOHandlerBoostSocket::write(std::string_view data)
 {
     if (!sock_.is_open()) {
+        LogError << "socket is not opened";
         return false;
     }
     sock_.write_some(boost::asio::buffer(data));
@@ -180,18 +199,18 @@ std::string IOHandlerBoostSocket::read(unsigned timeout_sec, size_t expect)
         return std::chrono::steady_clock::now() - start_time < timeout_sec * 1s;
     };
 
-    constexpr size_t bufferSize = 4096;
-    char buffer[bufferSize];
+    constexpr size_t kBufferSize = 4096;
+    char buffer[kBufferSize] = { 0 };
 
     std::string result;
 
     boost::system::error_code error;
     while (expect > result.size() && sock_.is_open() && check_timeout(start_time)) {
-        auto maxi = std::min(bufferSize, expect - result.size());
+        auto maxi = std::min(kBufferSize, expect - result.size());
         auto read_num = sock_.read_some(boost::asio::mutable_buffer(buffer, maxi), error);
         while (error != boost::asio::error::eof && read_num > 0) {
             result.insert(result.end(), buffer, buffer + read_num);
-            maxi = std::min(bufferSize, expect - result.size());
+            maxi = std::min(kBufferSize, expect - result.size());
             read_num = sock_.read_some(boost::asio::mutable_buffer(buffer, maxi), error);
         }
     }
@@ -226,8 +245,8 @@ std::string IOHandlerBoostStream::read(unsigned timeout_sec)
         return std::chrono::steady_clock::now() - start_time < timeout_sec * 1s;
     };
 
-    constexpr size_t bufferSize = 4096;
-    char buffer[bufferSize];
+    constexpr size_t kBufferSize = 4096;
+    char buffer[kBufferSize] = { 0 };
 
     std::string result;
 
@@ -238,10 +257,10 @@ std::string IOHandlerBoostStream::read(unsigned timeout_sec)
     }
 
     while (check_timeout(start_time)) {
-        auto read_num = out_->readsome(buffer, bufferSize);
+        auto read_num = out_->readsome(buffer, kBufferSize);
         while (read_num > 0) {
             result.insert(result.end(), buffer, buffer + read_num);
-            read_num = out_->readsome(buffer, bufferSize);
+            read_num = out_->readsome(buffer, kBufferSize);
         }
         break;
     }
