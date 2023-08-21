@@ -1,4 +1,4 @@
-﻿
+
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.6.33723.286
@@ -11,12 +11,12 @@ EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Sample", "sample\cpp\MaaSample.vcxproj", "{63B4F1A2-291C-4C85-91E1-A1F6DAE30D64}"
 	ProjectSection(ProjectDependencies) = postProject
 		{56FC5B20-B981-4737-80B5-EFA6701CD2F0} = {56FC5B20-B981-4737-80B5-EFA6701CD2F0}
+		{362D1E30-F5AE-4279-9985-65C27B3BA300} = {362D1E30-F5AE-4279-9985-65C27B3BA300}
 	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "MaaFramework", "source\MaaFramework\MaaFramework.vcxproj", "{362D1E30-F5AE-4279-9985-65C27B3BA300}"
 	ProjectSection(ProjectDependencies) = postProject
 		{27862F0F-109D-40C8-B48B-9461D15222E3} = {27862F0F-109D-40C8-B48B-9461D15222E3}
-		{8238EDB1-19BF-4E3B-AF5B-016120D59D7B} = {8238EDB1-19BF-4E3B-AF5B-016120D59D7B}
 		{DD48546D-48D4-4C84-BAC4-6126D0B5BFB3} = {DD48546D-48D4-4C84-BAC4-6126D0B5BFB3}
 	EndProjectSection
 EndProject
