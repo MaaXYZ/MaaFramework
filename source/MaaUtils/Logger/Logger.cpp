@@ -1,4 +1,12 @@
+#define _CRT_SECURE_NO_WARNINGS
+
 #include "Utils/Logger.h"
+
+#include "Utils/Platform.h"
+
+#ifdef _WIN32
+#include <io.h>
+#endif
 
 #pragma message("MAA_VERSION: " MAA_VERSION)
 
@@ -80,7 +88,15 @@ void Logger::open()
     if (ofs_.is_open()) {
         ofs_.close();
     }
-    ofs_.open(log_path_, std::ios::out | std::ios::app);
+
+    std::string str_log_path = path_to_crt_string(log_path_);
+    FILE* file_ptr = fopen(str_log_path.c_str(), "a");
+
+#ifdef _WIN32
+    SetHandleInformation((HANDLE)_get_osfhandle(_fileno(file_ptr)), HANDLE_FLAG_INHERIT, 0);
+#endif
+
+    ofs_ = std::ofstream(file_ptr);
 }
 
 void Logger::close()
