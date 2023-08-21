@@ -21,8 +21,8 @@ int BoostIO::call_command(const std::vector<std::string>& cmd, bool recv_by_sock
 
     auto start_time = std::chrono::steady_clock::now();
 
-    single_page_buffer<char> pipe_buffer;
-    single_page_buffer<char> sock_buffer;
+    constexpr size_t bufferSize = 4096;
+    char buffer[bufferSize];
 
     auto check_timeout = [&](const auto& start_time) -> bool {
         return timeout && timeout < duration_cast<milliseconds>(steady_clock::now() - start_time).count();
@@ -34,7 +34,7 @@ int BoostIO::call_command(const std::vector<std::string>& cmd, bool recv_by_sock
     boost::process::ipstream pout;
 
     boost::process::child proc(boost::process::search_path(cmd[0]), boost::process::args(rcmd),
-                               boost::process::std_out > pout);
+                               boost::process::std_in<boost::process::null, boost::process::std_out> pout);
 
     if (recv_by_socket) {
         auto socket = server_sock_.accept();
@@ -43,28 +43,36 @@ int BoostIO::call_command(const std::vector<std::string>& cmd, bool recv_by_sock
         }
         boost::system::error_code error;
         do {
-            auto read_num = socket.read_some(boost::asio::mutable_buffer(pipe_buffer.get(), pipe_buffer.size()), error);
+            auto read_num = socket.read_some(boost::asio::mutable_buffer(buffer, bufferSize), error);
             while (error != boost::asio::error::eof && read_num > 0) {
-                sock_data.insert(sock_data.end(), pipe_buffer.get(), pipe_buffer.get() + read_num);
-                read_num = socket.read_some(boost::asio::mutable_buffer(pipe_buffer.get(), pipe_buffer.size()), error);
+                sock_data.insert(sock_data.end(), buffer, buffer + read_num);
+                read_num = socket.read_some(boost::asio::mutable_buffer(buffer, bufferSize), error);
             }
         } while (proc.running() && socket.is_open() && !check_timeout(start_time));
         proc.wait();
     }
     else {
         do {
-            pout.read(pipe_buffer.get(), pipe_buffer.size());
-            auto read_num = pout.gcount();
+            if (pout.rdbuf()->in_avail() == 0) {
+                char ch;
+                pout.read(&ch, 1);
+                if (pout.gcount() != 1) {
+                    break;
+                }
+                pipe_data.push_back(ch);
+            }
+
+            auto read_num = pout.readsome(buffer, bufferSize);
             while (read_num > 0) {
-                pipe_data.insert(pipe_data.end(), pipe_buffer.get(), pipe_buffer.get() + read_num);
-                pout.read(pipe_buffer.get(), pipe_buffer.size());
-                read_num = pout.gcount();
+                pipe_data.insert(pipe_data.end(), buffer, buffer + read_num);
+                read_num = pout.readsome(buffer, bufferSize);
             }
         } while (proc.running() && !check_timeout(start_time));
         proc.wait();
     }
 
     if (proc.running()) {
+        // std::cerr << "terminated!" << std::endl;
         proc.terminate();
     }
 

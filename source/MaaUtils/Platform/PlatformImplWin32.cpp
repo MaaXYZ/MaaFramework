@@ -1,13 +1,12 @@
 #ifdef _WIN32
 
-
 #include "Utils/SafeWindows.hpp"
 
 #include <Psapi.h>
 #include <mbctype.h>
 
-#include "Utils/Platform.h"
 #include "Utils/Logger.h"
+#include "Utils/Platform.h"
 
 MAA_NS_BEGIN
 
@@ -265,23 +264,6 @@ os_string get_process_path(os_pid pid)
     // TODO
     std::ignore = pid;
     return {};
-}
-
-size_t get_page_size()
-{
-    SYSTEM_INFO sysInfo {};
-    GetSystemInfo(&sysInfo);
-    return sysInfo.dwPageSize;
-}
-
-void* aligned_alloc(size_t len, size_t align)
-{
-    return _aligned_malloc(len, align);
-}
-
-void aligned_free(void* ptr)
-{
-    _aligned_free(ptr);
 }
 
 MAA_NS_END

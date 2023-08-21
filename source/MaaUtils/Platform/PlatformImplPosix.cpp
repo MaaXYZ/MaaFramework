@@ -31,21 +31,6 @@ std::string path_to_crt_string(const std::filesystem::path& path)
     return path.native();
 }
 
-size_t get_page_size()
-{
-    return (size_t)sysconf(_SC_PAGESIZE);
-}
-
-void* aligned_alloc(size_t len, size_t align)
-{
-    return ::aligned_alloc(len, align);
-}
-
-void aligned_free(void* ptr)
-{
-    ::free(ptr);
-}
-
 MAA_NS_END
 
 #endif
