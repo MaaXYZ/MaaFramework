@@ -20,7 +20,7 @@ public:
     void close_socket() noexcept override;
 
     std::shared_ptr<IOHandler> tcp(const std::string& target, unsigned short port) override;
-    std::shared_ptr<IOHandler> interactive_shell(const std::vector<std::string>& cmd) override;
+    std::shared_ptr<IOHandler> interactive_shell(const std::vector<std::string>& cmd, bool want_stderr) override;
 
 private:
     std::shared_ptr<boost::asio::io_context> ios_;

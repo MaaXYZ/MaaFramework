@@ -118,7 +118,7 @@ std::shared_ptr<IOHandler> InvokeApp::invoke_bin(const std::string& extra)
 
     merge_replacement({ { "{BIN_WORKING_FILE}", tempname_ }, { "{BIN_EXTRA_PARAMS}", extra } });
     LogInfo << invoke_bin_argv_.gen(argv_replace_);
-    auto cmd_ret = io_ptr_->interactive_shell(invoke_bin_argv_.gen(argv_replace_));
+    auto cmd_ret = io_ptr_->interactive_shell(invoke_bin_argv_.gen(argv_replace_), true);
 
     return cmd_ret;
 }
@@ -134,7 +134,7 @@ std::shared_ptr<IOHandler> InvokeApp::invoke_app(const std::string& package)
 
     merge_replacement({ { "{APP_WORKING_FILE}", tempname_ }, { "{PACKAGE_NAME}", package } });
     LogInfo << invoke_app_argv_.gen(argv_replace_);
-    auto cmd_ret = io_ptr_->interactive_shell(invoke_app_argv_.gen(argv_replace_));
+    auto cmd_ret = io_ptr_->interactive_shell(invoke_app_argv_.gen(argv_replace_), false);
 
     return cmd_ret;
 }

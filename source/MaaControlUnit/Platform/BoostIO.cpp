@@ -115,17 +115,19 @@ std::shared_ptr<IOHandler> BoostIO::tcp(const std::string& target, unsigned shor
     return std::make_shared<IOHandlerBoostSocket>(ios_, std::move(socket));
 }
 
-std::shared_ptr<IOHandler> BoostIO::interactive_shell(const std::vector<std::string>& cmd)
+std::shared_ptr<IOHandler> BoostIO::interactive_shell(const std::vector<std::string>& cmd, bool want_stderr)
 {
     // TODO: 想办法直接把cmd的后面塞进args
     std::vector<std::string> rcmd(cmd.begin() + 1, cmd.end());
 
     std::shared_ptr<boost::process::opstream> pin(new boost::process::opstream);
     std::shared_ptr<boost::process::ipstream> pout(new boost::process::ipstream);
-    std::shared_ptr<boost::process::child> proc(new boost::process::child(
-        boost::process::search_path(cmd[0]), boost::process::args(rcmd),
-        boost::process::std_in<*pin, boost::process::std_out> * pout, boost::process::std_err > *pout));
-    // boost::process::std_in<*pin, boost::process::std_out> * pout, boost::process::std_err > *pout));
+
+    std::shared_ptr<boost::process::child> proc(
+        want_stderr ? new boost::process::child(boost::process::search_path(cmd[0]), boost::process::args(rcmd),
+                                                boost::process::std_in<*pin, boost::process::std_err> * pout)
+                    : new boost::process::child(boost::process::search_path(cmd[0]), boost::process::args(rcmd),
+                                                boost::process::std_in<*pin, boost::process::std_out> * pout));
 
     return std::make_shared<IOHandlerBoostStream>(pout, pin, proc);
 }
