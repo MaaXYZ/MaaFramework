@@ -88,7 +88,7 @@ public:
             std::unique_lock<std::mutex> lock(mutex_);
 
 #ifdef MAA_DEBUG
-            std::cout << utf8_to_stdout(cout_buffer_.str()) << "\033[0m" << std::endl;
+            std::cout << utf8_to_crt(cout_buffer_.str()) << "\033[0m" << std::endl;
 #endif
             stream_ << std::move(buffer_).str() << std::endl;
         }

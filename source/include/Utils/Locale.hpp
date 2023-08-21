@@ -195,7 +195,7 @@ inline std::string utf8_to_unicode_escape(std::string_view utf8_str)
 #endif
 }
 
-inline std::string utf8_to_stdout(std::string_view utf8_str)
+inline std::string utf8_to_crt(std::string_view utf8_str)
 {
 #ifdef _WIN32
     return utf8_to_ansi(utf8_str);

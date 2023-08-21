@@ -10,6 +10,11 @@
 
 MAA_NS_BEGIN
 
+std::string path_to_utf8_string(const std::filesystem::path& path)
+{
+    return from_osstring(path.native());
+}
+
 std::string get_ansi_short_path(const std::filesystem::path& path)
 {
     wchar_t short_path[MAX_PATH] {};
@@ -43,23 +48,23 @@ std::string path_to_crt_string(const std::filesystem::path& path)
     }
 }
 
-std::string path_to_ansi_string(const std::filesystem::path& path)
+ std::string path_to_ansi_string(const std::filesystem::path& path)
 {
-    // UCRT may use UTF-8 encoding while ANSI code page is still some other MBCS encoding
-    // so we use CRT wcstombs instead of WideCharToMultiByte
-    BOOL failed = FALSE;
-    auto& osstr = path.native();
-    auto ansilen = WideCharToMultiByte(CP_ACP, 0, osstr.c_str(), (int)osstr.size(), nullptr, 0, nullptr, &failed);
-    if (!failed) {
-        std::string result(ansilen, 0);
-        WideCharToMultiByte(CP_ACP, 0, osstr.c_str(), (int)osstr.size(), result.data(), ansilen, nullptr, &failed);
-        return result;
-    }
-    else {
-        // contains character that cannot be converted, fallback to short path name in ACP
-        return get_ansi_short_path(path);
-    }
-}
+     // UCRT may use UTF-8 encoding while ANSI code page is still some other MBCS encoding
+     // so we use CRT wcstombs instead of WideCharToMultiByte
+     BOOL failed = FALSE;
+     auto& osstr = path.native();
+     auto ansilen = WideCharToMultiByte(CP_ACP, 0, osstr.c_str(), (int)osstr.size(), nullptr, 0, nullptr, &failed);
+     if (!failed) {
+         std::string result(ansilen, 0);
+         WideCharToMultiByte(CP_ACP, 0, osstr.c_str(), (int)osstr.size(), result.data(), ansilen, nullptr, &failed);
+         return result;
+     }
+     else {
+         // contains character that cannot be converted, fallback to short path name in ACP
+         return get_ansi_short_path(path);
+     }
+ }
 
 os_string to_osstring(std::string_view utf8_str)
 {
@@ -184,21 +189,6 @@ std::vector<os_string> cmd_to_args(const os_string& cmd)
     LocalFree(result);
 
     return res;
-}
-
-std::string path_to_utf8_string(const std::filesystem::path& path)
-{
-    return from_osstring(path.native());
-}
-
-std::string path_to_crt_string(std::string_view utf8_path)
-{
-    return path_to_crt_string(path(utf8_path));
-}
-
-std::string path_to_ansi_string(std::string_view utf8_path)
-{
-    return path_to_crt_string(path(utf8_path));
 }
 
 std::set<ProcessInfo> list_processes()
