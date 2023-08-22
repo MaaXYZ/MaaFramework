@@ -1,6 +1,6 @@
 #pragma once
 
-#include "MaaControlUnit/ControlUnitAPI.h"
+#include "ControlUnit/ControlUnitAPI.h"
 
 #include "UnitBase.h"
 
@@ -22,7 +22,7 @@ public: // from ControlUnitAPI
 public:
     bool parse(const json::value& config);
     void set_io(const std::shared_ptr<PlatformIO>& io_ptr);
-    void set_argv_replacement(const std::map<std::string, std::string>& replacement);
+    void set_replacement(const std::map<std::string, std::string>& replacement);
 
     void set_connection_obj(std::shared_ptr<ConnectionBase> obj) { connection_ = std::move(obj); }
     void set_device_info_obj(std::shared_ptr<DeviceInfoBase> obj) { device_info_ = std::move(obj); }

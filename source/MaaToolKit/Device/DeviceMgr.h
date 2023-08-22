@@ -3,20 +3,15 @@
 #include "Conf/Conf.h"
 #include "DeviceAPI.h"
 
+#include <filesystem>
 #include <string>
 #include <string_view>
 #include <vector>
+#include <ostream>
+
+#include <meojson/json.hpp>
 
 MAA_TOOLKIT_DEVICE_NS_BEGIN
-
-struct Device
-{
-    std::string name;
-    std::string adb_path;
-    std::string adb_serial;
-    MaaAdbControllerType adb_controller_type = MaaAdbControllerType_Invalid;
-    std::string adb_config;
-};
 
 std::ostream& operator<<(std::ostream& os, const Device& device);
 
@@ -28,15 +23,14 @@ public:
 
 public: // from MaaToolKitDeviceMgrAPI
     virtual size_t find_device(std::string_view specified_adb = std::string_view()) override final;
-
-    virtual std::string_view device_name(size_t index) const override final;
-    virtual std::string_view device_adb_path(size_t index) const override final;
-    virtual std::string_view device_adb_serial(size_t index) const override final;
-    virtual MaaAdbControllerType device_adb_controller_type(size_t index) const override final;
-    virtual std::string_view device_adb_config(size_t index) const override final;
+    virtual const std::vector<Device>& get_devices() override final { return devices_; };
 
 protected:
     virtual std::vector<Device> find_device_impl(std::string_view specified_adb) = 0;
+
+protected:
+    std::vector<std::string> request_adb_serials(const std::filesystem::path& adb_path,
+                                                 const json::value& adb_config) const;
 
 private:
     std::vector<Device> devices_;

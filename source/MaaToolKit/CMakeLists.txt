@@ -11,9 +11,9 @@ set_target_properties(MaaToolKit PROPERTIES
 )
 target_compile_definitions(MaaToolKit PRIVATE MAA_TOOLKIT_EXPORTS)
 
-target_link_libraries(MaaToolKit MaaFramework MaaUtils HeaderOnlyLibraries Boost::system Boost::url)
+target_link_libraries(MaaToolKit MaaFramework MaaUtils MaaControlUnit HeaderOnlyLibraries Boost::system Boost::url)
 
-add_dependencies(MaaToolKit MaaFramework MaaUtils)
+add_dependencies(MaaToolKit MaaFramework MaaUtils MaaControlUnit)
 
 # WIP, do not install for now
 # install(TARGETS MaaToolKit

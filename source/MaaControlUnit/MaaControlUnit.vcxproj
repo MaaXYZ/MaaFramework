@@ -15,11 +15,12 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\include\MaaControlUnit\ControlUnitAPI.h" />
+    <ClInclude Include="..\include\ControlUnit\ControlUnitAPI.h" />
     <ClInclude Include="ControlUnitMgr.h" />
     <ClInclude Include="General\Activity.h" />
     <ClInclude Include="General\Connection.h" />
     <ClInclude Include="General\DeviceInfo.h" />
+    <ClInclude Include="General\DeviceList.h" />
     <ClInclude Include="Input\MaatouchInput.h" />
     <ClInclude Include="Input\MinitouchInput.h" />
     <ClInclude Include="Input\TapInput.h" />
@@ -44,6 +45,7 @@
     <ClCompile Include="General\Activity.cpp" />
     <ClCompile Include="General\Connection.cpp" />
     <ClCompile Include="General\DeviceInfo.cpp" />
+    <ClCompile Include="General\DeviceList.cpp" />
     <ClCompile Include="Input\MaatouchInput.cpp" />
     <ClCompile Include="Input\MinitouchInput.cpp" />
     <ClCompile Include="Input\TapInput.cpp" />
@@ -145,7 +147,6 @@
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalDependencies>MaaUtils.lib;opencv_world4.lib;zlib.lib;ws2_32.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <UACExecutionLevel>RequireAdministrator</UACExecutionLevel>
       <Profile>true</Profile>
       <AdditionalOptions>/ignore:4286 %(AdditionalOptions)</AdditionalOptions>
     </Link>
@@ -173,7 +174,6 @@
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalDependencies>MaaUtils.lib;opencv_world4.lib;zlib.lib;ws2_32.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <UACExecutionLevel>RequireAdministrator</UACExecutionLevel>
       <Profile>true</Profile>
     </Link>
   </ItemDefinitionGroup>
@@ -199,7 +199,6 @@
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalDependencies>MaaUtils.lib;opencv_world4d.lib;zlibd.lib;ws2_32.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <UACExecutionLevel>RequireAdministrator</UACExecutionLevel>
     </Link>
   </ItemDefinitionGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

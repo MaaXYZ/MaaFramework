@@ -80,14 +80,18 @@ std::vector<Device> DeviceMgrWin32::find_device_impl(std::string_view specified_
         const auto& constant = kEmulators.at(e.name);
         std::filesystem::path adb_path = get_adb_path(constant, e.process.pid);
 
+        auto serials = request_adb_serials(adb_path, kAdbConfig);
+
         Device device;
         device.name = e.name;
         device.adb_path = path_to_utf8_string(adb_path);
         device.adb_config = kAdbConfig.to_string();
 
-        // TODO
-        // device.adb_serial = ;
-        // device.adb_controller_type = ;
+        // TODO: try to connect
+        device.adb_serials = std::move(serials);
+
+        // TODO: check supports and test speed
+        device.adb_controller_type = MaaAdbControllerType_Screencap_RawWithGzip | MaaAdbControllerType_Input_Preset_Adb;
 
         result.emplace_back(std::move(device));
     }

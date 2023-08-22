@@ -1,4 +1,4 @@
-file(GLOB_RECURSE maa_control_unit_src *.h *.hpp *.cpp ../include/MaaControlUnit/*.h)
+file(GLOB_RECURSE maa_control_unit_src *.h *.hpp *.cpp ../include/ControlUnit/*.h)
 
 add_library(MaaControlUnit SHARED ${maa_control_unit_src})
 

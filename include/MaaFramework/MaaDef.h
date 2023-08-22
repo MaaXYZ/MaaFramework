@@ -100,6 +100,11 @@ enum MaaAdbControllerTypeEnum
     MaaAdbControllerType_Key_MaaTouch = 2 << 8,
     MaaAdbControllerType_Key_Mask = 0xFF00,
 
+    MaaAdbControllerType_Input_Preset_Adb = MaaAdbControllerType_Touch_Adb | MaaAdbControllerType_Key_Adb,
+    MaaAdbControllerType_Input_Preset_Minitouch = MaaAdbControllerType_Touch_MiniTouch | MaaAdbControllerType_Key_Adb,
+    MaaAdbControllerType_Input_Preset_Maatouch =
+        MaaAdbControllerType_Touch_MaaTouch | MaaAdbControllerType_Key_MaaTouch,
+
     MaaAdbControllerType_Screencap_FastestWay = 1 << 16,
     MaaAdbControllerType_Screencap_RawByNetcat = 2 << 16,
     MaaAdbControllerType_Screencap_RawWithGzip = 3 << 16,
@@ -108,11 +113,6 @@ enum MaaAdbControllerTypeEnum
     MaaAdbControllerType_Screencap_MinicapDirect = 6 << 16,
     MaaAdbControllerType_Screencap_MinicapStream = 7 << 16,
     MaaAdbControllerType_Screencap_Mask = 0xFF0000,
-
-    MaaAdbControllerType_Input_Preset_Adb = MaaAdbControllerType_Touch_Adb | MaaAdbControllerType_Key_Adb,
-    MaaAdbControllerType_Input_Preset_Minitouch = MaaAdbControllerType_Touch_MiniTouch | MaaAdbControllerType_Key_Adb,
-    MaaAdbControllerType_Input_Preset_Maatouch =
-        MaaAdbControllerType_Touch_MaaTouch | MaaAdbControllerType_Key_MaaTouch,
 };
 
 typedef void* MaaCallbackTransparentArg;

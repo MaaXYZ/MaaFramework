@@ -5,6 +5,7 @@
 #include "General/Activity.h"
 #include "General/Connection.h"
 #include "General/DeviceInfo.h"
+#include "General/DeviceList.h"
 #include "Input/MaatouchInput.h"
 #include "Input/MinitouchInput.h"
 #include "Input/TapInput.h"
@@ -58,7 +59,7 @@ void ControlUnitMgr::set_io(const std::shared_ptr<PlatformIO>& io_ptr)
     }
 }
 
-void ControlUnitMgr::set_argv_replacement(const std::map<std::string, std::string>& replacement)
+void ControlUnitMgr::set_replacement(const std::map<std::string, std::string>& replacement)
 {
     if (connection_) {
         connection_->set_replacement(replacement);
@@ -80,10 +81,41 @@ void ControlUnitMgr::set_argv_replacement(const std::map<std::string, std::strin
     }
 }
 
+std::shared_ptr<DeviceListAPI> create_adb_device_list_obj(MaaString adb_path, MaaJsonString config)
+{
+    LogFunc << VAR(adb_path) << VAR(config);
+
+    auto device_list_mgr = std::make_shared<DeviceList>();
+
+    auto json_opt = json::parse(std::string_view(config));
+    if (!json_opt) {
+        LogError << "Parse config failed, invalid config:" << config;
+        return nullptr;
+    }
+    bool parsed = device_list_mgr->parse(*json_opt);
+    if (!parsed) {
+        LogError << "Parse json failed, invalid json:" << *json_opt;
+        return nullptr;
+    }
+
+    auto platform_io = PlatformFactory::create();
+    if (!platform_io) {
+        LogError << "Create platform io failed";
+        return nullptr;
+    }
+    device_list_mgr->set_io(platform_io);
+
+    device_list_mgr->set_replacement({
+        { "{ADB}", adb_path },
+    });
+
+    return device_list_mgr;
+}
+
 std::shared_ptr<ControlUnitAPI> create_adb_controller_unit(MaaString adb_path, MaaString adb_serial,
                                                            MaaAdbControllerType type, MaaJsonString config)
 {
-    LogFunc << VAR(type) << VAR(config);
+    LogFunc << VAR(adb_path) << VAR(adb_serial) << VAR(type) << VAR(config);
 
     std::shared_ptr<TouchInputBase> touch_unit = nullptr;
     std::shared_ptr<KeyInputBase> key_unit = nullptr;
@@ -194,7 +226,7 @@ std::shared_ptr<ControlUnitAPI> create_adb_controller_unit(MaaString adb_path, M
     }
     unit_mgr->set_io(platform_io);
 
-    unit_mgr->set_argv_replacement({
+    unit_mgr->set_replacement({
         { "{ADB}", adb_path },
         { "{ADB_SERIAL}", adb_serial },
     });

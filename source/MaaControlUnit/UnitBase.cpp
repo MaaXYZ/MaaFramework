@@ -37,7 +37,7 @@ void UnitBase::merge_replacement(Argv::replacement argv_replace, bool _override)
 
 bool UnitBase::parse_argv(const std::string& key, const json::value& config, Argv& argv)
 {
-    auto aopt = config.find<json::object>("argv");
+    auto aopt = config.find<json::object>("command");
     if (!aopt) {
         LogError << "Cannot find argv entry";
         return false;

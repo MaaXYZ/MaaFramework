@@ -95,6 +95,18 @@ public:
 
 /* Main */
 
+class DeviceListAPI
+{
+public:
+    using Devices = std::vector<std::string>;
+
+    virtual ~DeviceListAPI() = default;
+
+    virtual std::optional<Devices> request_devices() = 0;
+
+    virtual Devices get_devices() const = 0;
+};
+
 class ControlUnitAPI
 {
 public:
@@ -107,6 +119,9 @@ public:
     virtual std::shared_ptr<KeyInputAPI> key_input_obj() = 0;
     virtual std::shared_ptr<ScreencapAPI> screencap_obj() = 0;
 };
+
+std::shared_ptr<DeviceListAPI> MAA_CONTROL_UNIT_API create_adb_device_list_obj(MaaString adb_path,
+                                                                               MaaJsonString config);
 
 std::shared_ptr<ControlUnitAPI> MAA_CONTROL_UNIT_API create_adb_controller_unit(MaaString adb_path,
                                                                                 MaaString adb_serial,

@@ -50,7 +50,7 @@ auto cfg = R"({
             "package": "com.shxyke.MaaTouch.App"
         }
     },
-    "argv": {
+    "command": {
         "Connect": [
             "{ADB}",
             "connect",

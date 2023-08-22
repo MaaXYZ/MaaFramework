@@ -38,7 +38,11 @@ inline static const json::value kAdbConfig = R"(
             "package": "com.shxyke.MaaTouch.App"
         }
     },
-    "argv": {
+    "command": {
+        "Devices": [
+            "{ADB}",
+            "devices",
+        ],
         "Connect": [
             "{ADB}",
             "connect",

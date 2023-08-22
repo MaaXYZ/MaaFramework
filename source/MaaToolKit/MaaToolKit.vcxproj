@@ -36,6 +36,7 @@
     <ClInclude Include="Config\ConfigAPI.h" />
     <ClInclude Include="Config\ConfigMgr.h" />
     <ClInclude Include="Config\Task.h" />
+    <ClInclude Include="Device\AdbConfigDef.hpp" />
     <ClInclude Include="Device\DeviceAPI.h" />
     <ClInclude Include="Device\DeviceMgr.h" />
     <ClInclude Include="Device\DeviceMgrLinux.h" />
@@ -132,7 +133,7 @@
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>MaaUtils.lib;MaaFramework.lib;opencv_world4.lib;zlib.lib;ws2_32.lib;boost_system-vc140-mt.lib;boost_url-vc140-mt.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>MaaControlUnit.lib;MaaUtils.lib;MaaFramework.lib;opencv_world4.lib;zlib.lib;ws2_32.lib;boost_system-vc140-mt.lib;boost_url-vc140-mt.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <UACExecutionLevel>RequireAdministrator</UACExecutionLevel>
       <Profile>true</Profile>
       <AdditionalOptions>/ignore:4286 %(AdditionalOptions)</AdditionalOptions>
@@ -160,7 +161,7 @@
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>MaaUtils.lib;MaaFramework.lib;opencv_world4.lib;zlib.lib;ws2_32.lib;boost_system-vc140-mt.lib;boost_url-vc140-mt.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>MaaControlUnit.lib;MaaUtils.lib;MaaFramework.lib;opencv_world4.lib;zlib.lib;ws2_32.lib;boost_system-vc140-mt.lib;boost_url-vc140-mt.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <UACExecutionLevel>RequireAdministrator</UACExecutionLevel>
       <Profile>true</Profile>
     </Link>
@@ -186,7 +187,7 @@
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>MaaUtils.lib;MaaFramework.lib;opencv_world4d.lib;zlibd.lib;ws2_32.lib;boost_system-vc140-mt-gd.lib;boost_url-vc140-mt-gd.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>MaaControlUnit.lib;MaaUtils.lib;MaaFramework.lib;opencv_world4d.lib;zlibd.lib;ws2_32.lib;boost_system-vc140-mt-gd.lib;boost_url-vc140-mt-gd.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <UACExecutionLevel>RequireAdministrator</UACExecutionLevel>
     </Link>
   </ItemDefinitionGroup>

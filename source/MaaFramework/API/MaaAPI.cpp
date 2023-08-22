@@ -6,7 +6,7 @@
 #include "Controller/CustomController.h"
 #include "Controller/CustomThriftController.h"
 #include "Instance/InstanceMgr.h"
-#include "MaaControlUnit/ControlUnitAPI.h"
+#include "ControlUnit/ControlUnitAPI.h"
 #include "Option/GlobalOptionMgr.h"
 #include "Resource/ResourceMgr.h"
 #include "Utils/Logger.h"

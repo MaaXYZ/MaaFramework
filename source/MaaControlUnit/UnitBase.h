@@ -2,7 +2,7 @@
 
 #include <meojson/json.hpp>
 
-#include "MaaControlUnit/ControlUnitAPI.h"
+#include "ControlUnit/ControlUnitAPI.h"
 #include "Platform/PlatformIO.h"
 #include "Screencap/ScreencapHelper.h"
 #include "Utils/ArgvWrapper.hpp"
@@ -32,6 +32,12 @@ protected:
     std::shared_ptr<PlatformIO> io_ptr_ = nullptr;
     std::vector<std::shared_ptr<UnitBase>> children_;
     Argv::replacement argv_replace_;
+};
+
+class DeviceListBase : public DeviceListAPI, public UnitBase
+{
+public:
+    virtual ~DeviceListBase() override = default;
 };
 
 class ConnectionBase : public ConnectionAPI, public UnitBase
