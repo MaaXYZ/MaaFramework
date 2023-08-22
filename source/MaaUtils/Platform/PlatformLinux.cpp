@@ -65,8 +65,8 @@ std::optional<std::filesystem::path> get_process_path(os_pid pid)
     sprintf(buf, "/proc/%d/exe", pid);
     auto size = readlink(buf, path, 255);
     if (size == -1) {
-        auto err = stderror(errno);
-        LogError << "Failed to get process path" << VAR(pid) << VAR(err);
+        auto error = strerror(errno);
+        LogError << "Failed to get process path" << VAR(pid) << VAR(error);
         return std::nullopt;
     }
 

@@ -46,8 +46,8 @@ std::optional<std::filesystem::path> get_process_path(os_pid pid)
     char pathbuf[PROC_PIDPATHINFO_MAXSIZE] = { 0 };
     auto ret = proc_pidpath(pid, pathbuf, sizeof(pathbuf));
     if (ret <= 0) {
-        auto err = stderror(errno);
-        LogError << "Failed to get process path" << VAR(pid) << VAR(err);
+        auto error = strerror(errno);
+        LogError << "Failed to get process path" << VAR(pid) << VAR(error);
         return std::nullopt;
     }
     return pathbuf;

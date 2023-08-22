@@ -259,7 +259,7 @@ std::optional<std::filesystem::path> get_process_path(os_pid pid)
     }
 
     WCHAR filename[MAX_PATH] = { 0 };
-    if (!GetModuleFileNameEx(process, NULL, filename, MAX_PATH)) {
+    if (!GetModuleFileNameExW(process, NULL, filename, MAX_PATH)) {
         auto error = GetLastError();
         LogError << "Failed to GetModuleFileNameEx" << VAR(error) << VAR(pid) << VAR_VOIDP(process);
         return std::nullopt;
