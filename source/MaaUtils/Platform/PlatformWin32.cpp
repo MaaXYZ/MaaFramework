@@ -249,11 +249,24 @@ std::set<ProcessInfo> list_processes()
     return result;
 }
 
-os_string get_process_path(os_pid pid)
+std::optional<std::filesystem::path> get_process_path(os_pid pid)
 {
-    // TODO
-    std::ignore = pid;
-    return {};
+    HANDLE process = OpenProcess(PROCESS_QUERY_INFORMATION | PROCESS_VM_READ, FALSE, pid);
+    if (process == nullptr) {
+        auto error = GetLastError();
+        LogError << "Failed to OpenProcess" << VAR(error) << VAR(pid);
+        return std::nullopt;
+    }
+
+    WCHAR filename[MAX_PATH] = { 0 };
+    if (!GetModuleFileNameEx(process, NULL, filename, MAX_PATH)) {
+        auto error = GetLastError();
+        LogError << "Failed to GetModuleFileNameEx" << VAR(error) << VAR(pid) << VAR_VOIDP(process);
+        return std::nullopt;
+    }
+
+    CloseHandle(process);
+    return filename;
 }
 
 MAA_NS_END

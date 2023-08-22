@@ -12,6 +12,8 @@
 #include <libproc.h>
 #include <sys/sysctl.h>
 
+#include "Utils/Logger.h"
+
 MAA_NS_BEGIN
 
 std::set<ProcessInfo> list_processes()
@@ -39,10 +41,15 @@ std::set<ProcessInfo> list_processes()
     return result;
 }
 
-os_string get_process_path(os_pid pid)
+std::optional<std::filesystem::path> get_process_path(os_pid pid)
 {
     char pathbuf[PROC_PIDPATHINFO_MAXSIZE] = { 0 };
-    proc_pidpath(pid, pathbuf, sizeof(pathbuf));
+    auto ret = proc_pidpath(pid, pathbuf, sizeof(pathbuf));
+    if (ret <= 0) {
+        auto err = stderror(errno);
+        LogError << "Failed to get process path" << VAR(pid) << VAR(err);
+        return std::nullopt;
+    }
     return pathbuf;
 }
 

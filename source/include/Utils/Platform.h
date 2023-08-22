@@ -8,6 +8,7 @@
 #include <string>
 #include <string_view>
 #include <type_traits>
+#include <optional>
 
 #ifdef _WIN32
 #include "SafeWindows.hpp"
@@ -66,6 +67,6 @@ inline std::ostream& operator<<(std::ostream& os, const ProcessInfo& info)
 }
 
 std::set<ProcessInfo> MAA_UTILS_API list_processes();
-os_string MAA_UTILS_API get_process_path(os_pid pid);
+std::optional<std::filesystem::path> MAA_UTILS_API get_process_path(os_pid pid);
 
 MAA_NS_END

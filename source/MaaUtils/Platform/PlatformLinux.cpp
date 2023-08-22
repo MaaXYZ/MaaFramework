@@ -11,6 +11,8 @@
 #include <sys/wait.h>
 #include <unistd.h>
 
+#include "Utils/Logger.h"
+
 MAA_NS_BEGIN
 
 std::set<ProcessInfo> list_processes()
@@ -49,21 +51,27 @@ std::set<ProcessInfo> list_processes()
             continue;
         }
     }
+
+#ifdef MAA_DEBUG
+    LogInfo << "Process list:" << result;
+#endif
+
     return result;
 }
 
-os_string get_process_path(os_pid pid)
+std::optional<std::filesystem::path> get_process_path(os_pid pid)
 {
     char buf[32] = { 0 }, path[256] = { 0 };
     sprintf(buf, "/proc/%d/exe", pid);
     auto size = readlink(buf, path, 255);
-    if (size != -1) {
-        path[size] = 0;
-        return path;
+    if (size == -1) {
+        auto err = stderror(errno);
+        LogError << "Failed to get process path" << VAR(pid) << VAR(err);
+        return std::nullopt;
     }
-    else {
-        return {};
-    }
+
+    path[size] = 0;
+    return path;
 }
 
 MAA_NS_END
