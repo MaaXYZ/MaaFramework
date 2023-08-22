@@ -9,6 +9,8 @@
 #include <filesystem>
 #include <ostream>
 
+#include "Utils/Platform.h"
+
 MAA_TOOLKIT_DEVICE_NS_BEGIN
 
 class DeviceMgrWin32 : public SingletonHolder<DeviceMgrWin32>, public DeviceMgr
@@ -21,12 +23,13 @@ public:
         // constant
         const std::string name;
         const std::string process_keyword;
-        const std::vector<std::filesystem::path> adb_relative_paths;
+        const std::vector<std::filesystem::path> adb_candidate_paths;
         const std::vector<std::string> adb_common_serials;
 
         // variable
-        unsigned long pid = 0;
+        os_pid pid = 0;
         std::string process_name;
+        std::filesystem::path adb_path;
     };
 
 public:
@@ -38,7 +41,8 @@ public: // from MaaToolKitDeviceMgrAPI
 private:
     DeviceMgrWin32() = default;
 
-    std::vector<Emulator> get_emulators();
+    std::vector<Emulator> get_emulators() const;
+    std::filesystem::path get_adb_path(const Emulator& emulator, os_pid pid) const;
 };
 
 std::ostream& operator<<(std::ostream& os, const DeviceMgrWin32::Emulator& emulator);
