@@ -20,29 +20,20 @@ class DeviceMgrWin32 : public SingletonHolder<DeviceMgrWin32>, public DeviceMgr
 public:
     struct Emulator
     {
-        // constant
-        const std::string name;
-        const std::string process_keyword;
-        const std::vector<std::filesystem::path> adb_candidate_paths;
-        const std::vector<std::string> adb_common_serials;
-
-        // variable
-        os_pid pid = 0;
-        std::string process_name;
-        std::filesystem::path adb_path;
+        std::string name;
+        ProcessInfo process;
     };
 
 public:
     virtual ~DeviceMgrWin32() noexcept override = default;
 
-public: // from MaaToolKitDeviceMgrAPI
-    virtual size_t find_device(std::string_view adb_path = std::string_view()) override;
+public: // from DeviceMgr
+    virtual std::vector<Device> find_device_impl(std::string_view specified_adb) override;
 
 private:
     DeviceMgrWin32() = default;
 
-    std::vector<Emulator> get_emulators() const;
-    std::filesystem::path get_adb_path(const Emulator& emulator, os_pid pid) const;
+    std::vector<Emulator> find_emulators() const;
 };
 
 std::ostream& operator<<(std::ostream& os, const DeviceMgrWin32::Emulator& emulator);

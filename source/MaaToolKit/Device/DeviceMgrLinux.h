@@ -15,8 +15,8 @@ class DeviceMgrLinux : public SingletonHolder<DeviceMgrLinux>, public DeviceMgr
 public:
     virtual ~DeviceMgrLinux() noexcept override = default;
 
-public: // from MaaToolKitDeviceMgrAPI
-    virtual size_t find_device(std::string_view adb_path = std::string_view()) override;
+public: // from DeviceMgr
+    virtual std::vector<Device> find_device_impl(std::string_view specified_adb) override;
 
 private:
     DeviceMgrLinux() = default;

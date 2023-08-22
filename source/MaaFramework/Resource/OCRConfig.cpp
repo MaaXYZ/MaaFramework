@@ -25,15 +25,15 @@ bool OCRConfig::lazy_load(const std::filesystem::path& path, bool is_base)
     }
 
     using namespace path_literals;
-    const auto det_model_file = path / "det.onnx"_p;
+    const auto det_model_file = path / "det.onnx"_path;
 
     if (std::filesystem::exists(det_model_file) && det_model_path_ != det_model_file) {
         det_model_path_ = det_model_file;
         deter_ = nullptr;
     }
 
-    const auto rec_model_file = path / "rec.onnx"_p;
-    const auto rec_label_file = path / "keys.txt"_p;
+    const auto rec_model_file = path / "rec.onnx"_path;
+    const auto rec_label_file = path / "keys.txt"_path;
 
     if (std::filesystem::exists(rec_model_file) && rec_model_path_ != rec_model_file) {
         rec_model_path_ = rec_model_file;

@@ -6,11 +6,11 @@
 
 MAA_TOOLKIT_DEVICE_NS_BEGIN
 
-size_t DeviceMgrLinux::find_device(std::string_view adb_path)
+std::vector<Device> DeviceMgrLinux::find_device_impl(std::string_view specified_adb)
 {
     // TODO
-    std::ignore = adb_path;
-    return 0;
+    std::ignore = specified_adb;
+    return {};
 }
 
 MAA_TOOLKIT_DEVICE_NS_END

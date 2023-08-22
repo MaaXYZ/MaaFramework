@@ -4,6 +4,7 @@
 
 #include "MaaFramework/MaaMsg.h"
 #include "Utils/Logger.h"
+#include "Utils/Platform.h"
 
 MAA_RES_NS_BEGIN
 
@@ -99,13 +100,15 @@ bool ResourceMgr::load(const std::filesystem::path& path)
 {
     LogFunc << VAR(path);
 
-    json::value props = json::open(path / "properties.json").value_or(json::value());
+    using namespace path_literals;
+
+    json::value props = json::open(path / "properties.json"_path).value_or(json::value());
     LogInfo << VAR(props);
 
     bool is_base = props.get("is_base", false);
 
-    bool ret = pipeline_cfg_.load(path / "pipeline", is_base);
-    ret &= ocr_cfg_.lazy_load(path / "model" / "ocr", is_base);
+    bool ret = pipeline_cfg_.load(path / "pipeline"_path, is_base);
+    ret &= ocr_cfg_.lazy_load(path / "model"_path / "ocr"_path, is_base);
 
     LogInfo << VAR(path) << VAR(ret);
 

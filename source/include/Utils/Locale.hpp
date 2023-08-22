@@ -9,6 +9,7 @@
 #include <sstream>
 #include <string>
 #include <string_view>
+
 #ifdef _WIN32
 #include "SafeWindows.hpp"
 #elif defined(__linux__)

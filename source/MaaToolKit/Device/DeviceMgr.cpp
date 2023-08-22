@@ -4,6 +4,23 @@
 
 MAA_TOOLKIT_DEVICE_NS_BEGIN
 
+std::ostream& operator<<(std::ostream& os, const Device& device)
+{
+    os << VAR_RAW(device.name) << VAR_RAW(device.adb_path) << VAR_RAW(device.adb_serial)
+       << VAR_RAW(device.adb_controller_type) << VAR_RAW(device.adb_config);
+    return os;
+}
+
+size_t DeviceMgr::find_device(std::string_view specified_adb)
+{
+    LogFunc << VAR(specified_adb);
+
+    devices_ = find_device_impl(specified_adb);
+    LogInfo << VAR(devices_);
+
+    return devices_.size();
+}
+
 std::string_view DeviceMgr::device_name(size_t index) const
 {
     if (index >= devices_.size()) {
