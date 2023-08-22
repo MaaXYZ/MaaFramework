@@ -37,14 +37,12 @@ static const std::map<std::string, EmulatorConstantData> kEmulators = {
     { "BlueStacks",
       { .keyword = "HD-Player",
         .adb_candidate_paths = { "HD-Adb.exe"_path, "Engine\\ProgramFiles\\HD-Adb.exe"_path },
-        .adb_common_serials = { "127.0.0.1:5555", "127.0.0.1:5556", "127.0.0.1:5565", "127.0.0.1:5575",
-                                "127.0.0.1:5585", "127.0.0.1:5595", "127.0.0.1:5554" } } },
+        .adb_common_serials = { "127.0.0.1:5555", "127.0.0.1:5556", "127.0.0.1:5565", "127.0.0.1:5575" } } },
 
     { "LDPlayer",
       { .keyword = "dnplayer",
         .adb_candidate_paths = { "adb.exe"_path },
-        .adb_common_serials = { "emulator-5554", "emulator-5556", "emulator-5558", "emulator-5560", "127.0.0.1:5555",
-                                "127.0.0.1:5556", "127.0.0.1:5554" } } },
+        .adb_common_serials = { "emulator-5554", "emulator-5556", "127.0.0.1:5555", "127.0.0.1:5556" } } },
 
     { "Nox",
       { .keyword = "Nox",
@@ -61,8 +59,7 @@ static const std::map<std::string, EmulatorConstantData> kEmulators = {
       { .keyword = "MuMuPlayer",
         .adb_candidate_paths = { "vmonitor\\bin\\adb_server.exe"_path,
                                  "MuMu\\emulator\\nemu\\vmonitor\\bin\\adb_server.exe"_path, "adb.exe"_path },
-        .adb_common_serials = { "127.0.0.1:16384", "127.0.0.1:16416", "127.0.0.1:16448", "127.0.0.1:16480",
-                                "127.0.0.1:16512", "127.0.0.1:16544", "127.0.0.1:16576" } } },
+        .adb_common_serials = { "127.0.0.1:16384", "127.0.0.1:16416" } } },
 
     { "MEmuPlayer",
       { .keyword = "MEmu", .adb_candidate_paths = { "adb.exe"_path }, .adb_common_serials = { "127.0.0.1:21503" } } },
@@ -70,9 +67,6 @@ static const std::map<std::string, EmulatorConstantData> kEmulators = {
 
 std::vector<Device> DeviceMgrWin32::find_device_impl(std::string_view specified_adb)
 {
-    // TODO
-    std::ignore = specified_adb;
-
     std::vector<Device> result;
 
     auto all_emulators = find_emulators();
@@ -81,18 +75,31 @@ std::vector<Device> DeviceMgrWin32::find_device_impl(std::string_view specified_
         std::filesystem::path adb_path = get_adb_path(constant, e.process.pid);
 
         auto serials = request_adb_serials(adb_path, kAdbConfig);
+        serials.insert(serials.end(), constant.adb_common_serials.begin(), constant.adb_common_serials.end());
+        // Deduplication
+        auto set = std::set<std::string>(serials.begin(), serials.end());
+        serials.assign(set.begin(), set.end());
+        serials = check_available_adb_serials(adb_path, serials, kAdbConfig);
 
         Device device;
         device.name = e.name;
         device.adb_path = path_to_utf8_string(adb_path);
         device.adb_config = kAdbConfig.to_string();
-
-        // TODO: try to connect
         device.adb_serials = std::move(serials);
 
         // TODO: check supports and test speed
         device.adb_controller_type = MaaAdbControllerType_Screencap_RawWithGzip | MaaAdbControllerType_Input_Preset_Adb;
 
+        result.emplace_back(std::move(device));
+    }
+
+    if (!specified_adb.empty()) {
+        Device device;
+        device.name = "Specified";
+        device.adb_path = specified_adb;
+        device.adb_config = kAdbConfig.to_string();
+        device.adb_serials = request_adb_serials(path(specified_adb), kAdbConfig);
+        device.adb_controller_type = MaaAdbControllerType_Screencap_RawWithGzip | MaaAdbControllerType_Input_Preset_Adb;
         result.emplace_back(std::move(device));
     }
 

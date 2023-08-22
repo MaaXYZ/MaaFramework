@@ -41,7 +41,7 @@ inline static const json::value kAdbConfig = R"(
     "command": {
         "Devices": [
             "{ADB}",
-            "devices",
+            "devices"
         ],
         "Connect": [
             "{ADB}",
