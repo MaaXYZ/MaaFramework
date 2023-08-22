@@ -17,7 +17,7 @@ MAA_NS_BEGIN
 std::set<ProcessInfo> list_processes()
 {
     int mib[4] = { CTL_KERN, KERN_PROC, KERN_PROC_ALL, 0 };
-    size_t size;
+    size_t size = 0;
     sysctl(mib, 4, NULL, &size, NULL, 0);
 
     int proc_count = size / sizeof(struct kinfo_proc);
@@ -41,7 +41,7 @@ std::set<ProcessInfo> list_processes()
 
 os_string get_process_path(os_pid pid)
 {
-    char pathbuf[PROC_PIDPATHINFO_MAXSIZE];
+    char pathbuf[PROC_PIDPATHINFO_MAXSIZE] = { 0 };
     proc_pidpath(pid, pathbuf, sizeof(pathbuf));
     return pathbuf;
 }

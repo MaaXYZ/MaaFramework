@@ -1,23 +1,31 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-    <ClCompile Include="Platform\PlatformImplMacOS.cpp">
-      <Filter>Platform</Filter>
+    <ClCompile Include="Logger\Logger.cpp">
+      <Filter>Source\Logger</Filter>
     </ClCompile>
-    <ClCompile Include="Platform\PlatformImplPosix.cpp">
-      <Filter>Platform</Filter>
+    <ClCompile Include="Platform\PlatformLinux.cpp">
+      <Filter>Source\Platform</Filter>
     </ClCompile>
-    <ClCompile Include="Platform\PlatformImplWin32.cpp">
-      <Filter>Platform</Filter>
+    <ClCompile Include="Platform\PlatformMacOS.cpp">
+      <Filter>Source\Platform</Filter>
     </ClCompile>
-    <ClCompile Include="Platform\PlatformImplLinux.cpp">
-      <Filter>Platform</Filter>
+    <ClCompile Include="Platform\PlatformPosix.cpp">
+      <Filter>Source\Platform</Filter>
     </ClCompile>
-    <ClCompile Include="Logger\Logger.cpp" />
+    <ClCompile Include="Platform\PlatformWin32.cpp">
+      <Filter>Source\Platform</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <Filter Include="Platform">
+    <Filter Include="Source">
       <UniqueIdentifier>{64f33cc0-fb5d-4c88-8d01-17b4ad90d95e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\Logger">
+      <UniqueIdentifier>{1cec177a-94b2-4f54-95d9-da207d70f90e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\Platform">
+      <UniqueIdentifier>{850e87a3-7489-4269-8bef-6dcaa5843b9f}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>

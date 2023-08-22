@@ -16,10 +16,10 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Logger\Logger.cpp" />
-    <ClCompile Include="Platform\PlatformImplLinux.cpp" />
-    <ClCompile Include="Platform\PlatformImplMacOS.cpp" />
-    <ClCompile Include="Platform\PlatformImplPosix.cpp" />
-    <ClCompile Include="Platform\PlatformImplWin32.cpp" />
+    <ClCompile Include="Platform\PlatformLinux.cpp" />
+    <ClCompile Include="Platform\PlatformMacOS.cpp" />
+    <ClCompile Include="Platform\PlatformPosix.cpp" />
+    <ClCompile Include="Platform\PlatformWin32.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\include\Utils\ArgvWrapper.hpp" />

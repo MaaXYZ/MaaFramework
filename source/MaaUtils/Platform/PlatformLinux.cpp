@@ -17,7 +17,7 @@ std::set<ProcessInfo> list_processes()
 {
     std::set<ProcessInfo> result;
     DIR* dir = opendir("/proc");
-    dirent* de;
+    dirent* de = nullptr;
 
     while (true) {
         de = readdir(dir);
@@ -29,13 +29,13 @@ std::set<ProcessInfo> list_processes()
             continue;
         }
 
-        char* ptr;
+        char* ptr = nullptr;
         char* end = de->d_name + strlen(de->d_name);
         pid_t pid = strtol(de->d_name, &ptr, 10);
         if (ptr != end) {
             continue;
         }
-        char buf[32], path[256];
+        char buf[32] = { 0 }, path[256] = { 0 };
         sprintf(buf, "/proc/%d/exe", pid);
         auto size = readlink(buf, path, 255);
         if (size != -1) {
@@ -54,7 +54,7 @@ std::set<ProcessInfo> list_processes()
 
 os_string get_process_path(os_pid pid)
 {
-    char buf[32], path[256];
+    char buf[32] = { 0 }, path[256] = { 0 };
     sprintf(buf, "/proc/%d/exe", pid);
     auto size = readlink(buf, path, 255);
     if (size != -1) {
@@ -62,7 +62,7 @@ os_string get_process_path(os_pid pid)
         return path;
     }
     else {
-        return "";
+        return {};
     }
 }
 

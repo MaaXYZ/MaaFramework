@@ -7,6 +7,9 @@ extern "C"
 {
 #endif
 
+    MaaBool MAA_TOOLKIT_API MaaToolKitInit();
+    MaaBool MAA_TOOLKIT_API MaaToolKitUninit();
+
     MaaSize MAA_TOOLKIT_API MaaToolKitFindDevice();
     MaaSize MAA_TOOLKIT_API MaaToolKitFindDeviceBySpecifiedADB(MaaString adb_path);
     MaaString MAA_TOOLKIT_API MaaToolKitGetDeviceName(MaaSize index);
@@ -14,9 +17,6 @@ extern "C"
     MaaString MAA_TOOLKIT_API MaaToolKitGetDeviceAdbSerial(MaaSize index);
     MaaAdbControllerType MAA_TOOLKIT_API MaaToolKitGetDeviceAdbControllerType(MaaSize index);
     MaaJsonString MAA_TOOLKIT_API MaaToolKitGetDeviceAdbConfig(MaaSize index);
-
-    MaaBool MAA_TOOLKIT_API MaaToolKitConfigInit();
-    MaaBool MAA_TOOLKIT_API MaaToolKitConfigUninit();
 
     MaaSize MAA_TOOLKIT_API MaaToolKitConfigSize();
     MaaToolKitConfigHandle MAA_TOOLKIT_API MaaToolKitGetConfig(MaaSize index);
