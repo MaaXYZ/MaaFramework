@@ -24,7 +24,7 @@ std::string task_name = "StartUp";
 
 int main([[maybe_unused]] int argc, char** argv)
 {
-    MaaToolKitConfigInit();
+    MaaToolKitInit();
     MaaToolKitFindDevice();
 
     const auto cur_dir = std::filesystem::path(argv[0]).parent_path();
@@ -52,6 +52,7 @@ int main([[maybe_unused]] int argc, char** argv)
     // demo_polling();
     demo_waiting();
 
+    MaaToolKitUninit();
     return 0;
 }
 

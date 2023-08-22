@@ -7,6 +7,8 @@
 #include "Server/HttpServer.h"
 #include "Utils/Logger.h"
 
+static MaaToolKitConfigMgrAPI& config_mgr = MAA_TOOLKIT_CONFIG_NS::ConfigMgr::get_instance();
+
 #if defined(_WIN32)
 static MaaToolKitDeviceMgrAPI& device_mgr = MAA_TOOLKIT_DEVICE_NS::DeviceMgrWin32::get_instance();
 #elif defined(__linux__)
@@ -15,7 +17,19 @@ static MaaToolKitDeviceMgrAPI& device_mgr = MAA_TOOLKIT_DEVICE_NS::DeviceMgrLinu
 static MaaToolKitDeviceMgrAPI& device_mgr = MAA_TOOLKIT_DEVICE_NS::DeviceMgrMacOS::get_instance();
 #endif
 
-static MaaToolKitConfigMgrAPI& config_mgr = MAA_TOOLKIT_CONFIG_NS::ConfigMgr::get_instance();
+MaaBool MaaToolKitInit()
+{
+    LogFunc;
+
+    return config_mgr.init();
+}
+
+MaaBool MaaToolKitUninit()
+{
+    LogFunc;
+
+    return config_mgr.uninit();
+}
 
 MaaSize MaaToolKitFindDevice()
 {
@@ -54,20 +68,6 @@ MaaAdbControllerType MaaToolKitGetDeviceAdbControllerType(MaaSize index)
 MaaJsonString MaaToolKitGetDeviceAdbConfig(MaaSize index)
 {
     return device_mgr.device_adb_config(index).data();
-}
-
-MaaBool MaaToolKitConfigInit()
-{
-    LogFunc;
-
-    return config_mgr.init();
-}
-
-MaaBool MaaToolKitConfigUninit()
-{
-    LogFunc;
-
-    return config_mgr.uninit();
 }
 
 MaaSize MaaToolKitConfigSize()
