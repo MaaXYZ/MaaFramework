@@ -45,10 +45,6 @@ int main([[maybe_unused]] int argc, char** argv)
 
     adb_config = read_adb_config(cur_dir);
 
-    MaaSetGlobalOption(MaaGlobalOption_Logging, (void*)debug_dir.c_str(), debug_dir.size());
-    bool t = true;
-    MaaSetGlobalOption(MaaGlobalOption_DebugMode, (void*)&t, sizeof(bool));
-
     // demo_polling();
     demo_waiting();
 

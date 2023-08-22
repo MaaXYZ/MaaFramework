@@ -197,19 +197,19 @@ bool ConfigMgr::parse_config(const json::value& config_json)
     config_vec_.clear();
     config_map_.clear();
 
-    if (!config_json.is_object()) {
-        LogError << "Json is not an object:" << VAR(config_json);
+    if (!config_json.is_array()) {
+        LogError << "Json is not an array:" << VAR(config_json);
         return false;
     }
 
-    auto& config_obj = config_json.as_object();
-    for (const auto& [key, jconfig] : config_obj) {
+    for (const auto& jconfig : config_json.as_array()) {
         Config config;
         if (!config.from_json(jconfig)) {
-            LogError << "Failed to parse config:" << VAR(key) << jconfig;
+            LogError << "Failed to parse config:" << jconfig;
             return false;
         }
-        insert(key, std::move(config));
+        std::string name(config.get_name());
+        insert(std::move(name), std::move(config));
     }
 
     LogInfo << VAR(config_vec_) << VAR(config_map_);
@@ -248,7 +248,7 @@ bool ConfigMgr::dump() const
         { kPolicyDebugMode, policy_debug_mode_ },
     };
     json::array& jconfig = root[kConfigKey].as_array();
-    for (const auto& [key, config] : config_map_) {
+    for (const auto& config : config_map_ | MAA_RNS::views::values) {
         jconfig.emplace_back(config->to_json());
     }
     root[kCurrentKey] = current_;
