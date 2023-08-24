@@ -1,6 +1,6 @@
 #pragma once
 
-#include "MaaFramework/MaaPort.h"
+#include "MaaPort.h"
 #include <stdint.h>
 
 struct MaaResourceAPI;

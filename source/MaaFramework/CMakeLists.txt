@@ -28,7 +28,8 @@ add_dependencies(MaaFramework MaaControlUnit MaaUtils MaaThriftController)
 install(TARGETS MaaFramework
     RUNTIME DESTINATION bin
     LIBRARY DESTINATION bin
-    PUBLIC_HEADER DESTINATION include/MaaFramework
+    # PUBLIC_HEADER DESTINATION include/MaaFramework
+    PUBLIC_HEADER DESTINATION include
     ARCHIVE DESTINATION lib
 )
 
