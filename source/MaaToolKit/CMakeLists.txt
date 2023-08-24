@@ -19,7 +19,7 @@ add_dependencies(MaaToolKit MaaFramework MaaUtils MaaControlUnit)
 # install(TARGETS MaaToolKit
 #     RUNTIME DESTINATION bin
 #     LIBRARY DESTINATION bin
-#     PUBLIC_HEADER DESTINATION include
+#     PUBLIC_HEADER DESTINATION include/MaaToolKit
 #     ARCHIVE DESTINATION lib
 # )
 
