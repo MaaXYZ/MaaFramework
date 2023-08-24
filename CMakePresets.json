@@ -56,7 +56,7 @@
             "displayName": "Ninja MultiConfig DebWithRelDeps",
             "description": "Ninja MultiConfig DebWithRelDeps",
             "configurePreset": "NinjaMulti",
-            "configuration": "DebWithRelDeps",
+            "configuration": "RelWithDebInfo",
             "jobs": 16
         },
         {
