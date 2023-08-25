@@ -15,6 +15,14 @@ public:
     virtual void on_stop() {}
 };
 
+struct MaaBufferAPI
+{
+    virtual ~MaaBufferAPI() = default;
+
+    virtual MaaSize getSize() = 0;
+    virtual void getContent(void* buffer) = 0;
+};
+
 struct MaaResourceAPI : public MaaInstanceSink
 {
 public:

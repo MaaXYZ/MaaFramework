@@ -2,11 +2,12 @@
 
 #include <meojson/json.hpp>
 
+#include "Buffer/MaaBuffer.h"
+#include "ControlUnit/ControlUnitAPI.h"
 #include "Controller/AdbController.h"
 #include "Controller/CustomController.h"
 #include "Controller/CustomThriftController.h"
 #include "Instance/InstanceMgr.h"
-#include "ControlUnit/ControlUnitAPI.h"
 #include "Option/GlobalOptionMgr.h"
 #include "Resource/ResourceMgr.h"
 #include "Utils/Logger.h"
@@ -17,6 +18,35 @@
 MaaString MaaVersion()
 {
     return MAA_VERSION;
+}
+
+MaaBufferHandle MaaAllocBuffer(const void* data, MaaSize size)
+{
+    return new MAA_NS::MaaBuffer(data, size);
+}
+
+void MaaFreeBuffer(MaaBufferHandle handle)
+{
+    if (handle) {
+        delete handle;
+    }
+}
+
+MaaSize MaaGetBufferSize(MaaBufferHandle handle)
+{
+    if (!handle) {
+        return MaaNullSize;
+    }
+    return handle->getSize();
+}
+
+MaaBool MaaGetBufferContent(MaaBufferHandle handle, void* buffer)
+{
+    if (!handle) {
+        return false;
+    }
+    handle->getContent(buffer);
+    return true;
 }
 
 MaaBool MaaSetGlobalOption(MaaGlobalOption key, MaaOptionValue value, MaaOptionValueSize val_size)

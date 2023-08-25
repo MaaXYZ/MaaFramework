@@ -9,6 +9,12 @@ extern "C"
 #endif
 
     MaaString MAA_FRAMEWORK_API MaaVersion();
+
+    MaaBufferHandle MAA_FRAMEWORK_API MaaAllocBuffer(const void* data, MaaSize size);
+    void MAA_FRAMEWORK_API MaaFreeBuffer(MaaBufferHandle handle);
+    MaaSize MAA_FRAMEWORK_API MaaGetBufferSize(MaaBufferHandle handle);
+    MaaBool MAA_FRAMEWORK_API MaaGetBufferContent(MaaBufferHandle handle, void* buffer);
+
     MaaBool MAA_FRAMEWORK_API MaaSetGlobalOption(MaaGlobalOption key, MaaOptionValue value,
                                                  MaaOptionValueSize val_size);
 

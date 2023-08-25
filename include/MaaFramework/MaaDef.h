@@ -3,6 +3,8 @@
 #include "MaaPort.h"
 #include <stdint.h>
 
+struct MaaBufferAPI;
+typedef struct MaaBufferAPI* MaaBufferHandle;
 struct MaaResourceAPI;
 typedef struct MaaResourceAPI* MaaResourceHandle;
 struct MaaControllerAPI;
