@@ -40,8 +40,8 @@ public:
         return *this;
     }
 
-    virtual MaaSize getSize() { return size; }
-    virtual void getContent(void* buf) { memcpy(buf, buffer, size); }
+    virtual MaaSize getSize() override { return size; }
+    virtual void getContent(void* buf) override { memcpy(buf, buffer, size); }
 
 private:
     void acquire(const void* buf, MaaSize sz)
