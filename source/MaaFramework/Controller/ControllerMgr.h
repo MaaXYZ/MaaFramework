@@ -83,7 +83,8 @@ public:
     virtual MaaStatus wait(MaaCtrlId ctrl_id) const override;
     virtual MaaBool connected() const override;
 
-    virtual std::vector<uint8_t> get_image_cache() const override;
+    virtual MaaBufferRef get_image_cache() const override;
+    virtual std::vector<uint8_t> get_image_cache_encoded() const override;
     virtual std::string get_uuid() const override = 0;
 
     virtual void on_stop() override;

@@ -14,6 +14,7 @@ typedef struct MaaInstanceAPI* MaaInstanceHandle;
 
 typedef uint8_t MaaBool;
 typedef uint64_t MaaSize;
+#define MaaNullBuffer ((MaaBufferHandle)0)
 #define MaaNullSize ((MaaSize)-1)
 
 typedef const char* MaaString;

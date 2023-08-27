@@ -295,7 +295,7 @@ MaaSize MaaControllerGetImage(MaaControllerHandle ctrl, void* buff, MaaSize buff
     if (!ctrl || !buff) {
         return MaaNullSize;
     }
-    auto image = ctrl->get_image_cache();
+    auto image = ctrl->get_image_cache_encoded();
     size_t size = image.size();
     if (size >= buff_size) {
         return MaaNullSize;
@@ -318,6 +318,29 @@ MaaSize MaaControllerGetUUID(MaaControllerHandle ctrl, char* buff, MaaSize buff_
     }
     memcpy(buff, uuid.c_str(), size);
     return size;
+}
+
+MaaBufferHandle MaaControllerGetImageBuffer(MaaControllerHandle ctrl)
+{
+    LogFunc << VAR_VOIDP(ctrl);
+
+    if (!ctrl) {
+        return MaaNullBuffer;
+    }
+    auto buffer = ctrl->get_image_cache();
+    return new MAA_NS::MaaBuffer(buffer.buffer, buffer.size, MAA_NS::MaaBuffer::move_in_tag {});
+}
+
+MaaBufferHandle MaaControllerGetUUID(MaaControllerHandle ctrl)
+{
+    LogFunc << VAR_VOIDP(ctrl);
+
+    if (!ctrl) {
+        return MaaNullBuffer;
+    }
+    auto uuid = ctrl->get_uuid();
+    size_t size = uuid.size();
+    return new MAA_NS::MaaBuffer(uuid.c_str(), size + 1);
 }
 
 MaaInstanceHandle MaaCreate(MaaInstanceCallback callback, MaaCallbackTransparentArg callback_arg)
@@ -564,12 +587,22 @@ MaaSize MaaSyncContextScreencap(MaaSyncContextHandle sync_context, void* buff, M
     if (!sync_context) {
         return MaaNullSize;
     }
-    auto data = sync_context->screencap();
+    auto data = sync_context->screencap_encoded();
     if (data.size() > buff_size) {
         return MaaNullSize;
     }
     memcpy(buff, data.data(), data.size());
     return data.size();
+}
+
+MaaBufferHandle MaaSyncContextScreencapViaBuffer(MaaSyncContextHandle sync_context)
+{
+    LogFunc << VAR_VOIDP(sync_context);
+    if (!sync_context) {
+        return MaaNullBuffer;
+    }
+    auto data = sync_context->screencap();
+    return new MAA_NS::MaaBuffer(data.buffer, data.size, MAA_NS::MaaBuffer::move_in_tag {});
 }
 
 MaaSize MaaSyncContextGetTaskResult(MaaSyncContextHandle sync_context, MaaString task, char* buff, MaaSize buff_size)

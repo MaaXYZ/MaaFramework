@@ -59,7 +59,7 @@ void SyncContext::swipe(std::vector<int> x_steps, std::vector<int> y_steps, std:
     ctrl->wait(id);
 }
 
-std::vector<uint8_t> SyncContext::screencap()
+MaaBufferRef SyncContext::screencap()
 {
     LogFunc;
     auto* ctrl = controller();
@@ -71,6 +71,20 @@ std::vector<uint8_t> SyncContext::screencap()
     ctrl->wait(id);
 
     return ctrl->get_image_cache();
+}
+
+std::vector<uint8_t> SyncContext::screencap_encoded()
+{
+    LogFunc;
+    auto* ctrl = controller();
+    if (!ctrl) {
+        LogError << "Controller is null";
+        return {};
+    }
+    auto id = ctrl->post_screencap();
+    ctrl->wait(id);
+
+    return ctrl->get_image_cache_encoded();
 }
 
 std::string SyncContext::task_result(const std::string& task_name) const

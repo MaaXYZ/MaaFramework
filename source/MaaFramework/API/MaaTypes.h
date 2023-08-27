@@ -8,6 +8,20 @@
 #include <string_view>
 #include <vector>
 
+struct MaaBufferRef
+{
+    uint64_t size;
+    void* buffer;
+};
+
+struct MaaImageBuffer
+{
+    int32_t rows;
+    int32_t cols;
+    int32_t type;
+    uint8_t buffer[0];
+};
+
 struct MaaInstanceSink
 {
 public:
@@ -54,7 +68,8 @@ public:
     virtual MaaStatus wait(MaaCtrlId ctrl_id) const = 0;
     virtual MaaBool connected() const = 0;
 
-    virtual std::vector<uint8_t> get_image_cache() const = 0;
+    virtual MaaBufferRef get_image_cache() const = 0;
+    virtual std::vector<uint8_t> get_image_cache_encoded() const = 0;
 
     virtual std::string get_uuid() const = 0;
 };
@@ -99,7 +114,8 @@ public:
 
     virtual void click(int x, int y) = 0;
     virtual void swipe(std::vector<int> x_steps, std::vector<int> y_steps, std::vector<int> step_delay) = 0;
-    virtual std::vector<uint8_t> screencap() = 0;
+    virtual MaaBufferRef screencap() = 0;
+    virtual std::vector<uint8_t> screencap_encoded() = 0;
 
     virtual std::string task_result(const std::string& task_name) const = 0;
 

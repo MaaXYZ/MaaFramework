@@ -63,6 +63,8 @@ extern "C"
 
     MaaSize MAA_FRAMEWORK_API MaaControllerGetImage(MaaControllerHandle ctrl, void* buff, MaaSize buff_size);
     MaaSize MAA_FRAMEWORK_API MaaControllerGetUUID(MaaControllerHandle ctrl, char* buff, MaaSize buff_size);
+    MaaBufferHandle MAA_FRAMEWORK_API MaaControllerGetImageBuffer(MaaControllerHandle ctrl);
+    MaaBufferHandle MAA_FRAMEWORK_API MaaControllerGetUUIDBuffer(MaaControllerHandle ctrl);
 
     /* Instance */
 
@@ -105,6 +107,7 @@ extern "C"
     void MAA_FRAMEWORK_API MaaSyncContextSwipe(MaaSyncContextHandle sync_context, int32_t* x_steps_buff,
                                                int32_t* y_steps_buff, int32_t* step_delay_buff, MaaSize buff_size);
     MaaSize MAA_FRAMEWORK_API MaaSyncContextScreencap(MaaSyncContextHandle sync_context, void* buff, MaaSize buff_size);
+    MaaBufferHandle MAA_FRAMEWORK_API MaaSyncContextScreencapViaBuffer(MaaSyncContextHandle sync_context);
     MaaSize MAA_FRAMEWORK_API MaaSyncContextGetTaskResult(MaaSyncContextHandle sync_context, MaaString task, char* buff,
                                                           MaaSize buff_size);
 

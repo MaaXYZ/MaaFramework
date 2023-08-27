@@ -3,14 +3,19 @@
 #include "API/MaaTypes.h"
 
 #include <cstdlib>
+#include <vector>
 
 MAA_NS_BEGIN
 
 class MaaBuffer : public MaaBufferAPI
 {
 public:
+    struct move_in_tag
+    {};
+
     MaaBuffer() : buffer(nullptr), size(0) {}
     MaaBuffer(const void* buf, MaaSize sz) { acquire(buf, sz); }
+    MaaBuffer(void* buf, MaaSize sz, move_in_tag) : buffer(reinterpret_cast<uint8_t*>(buf)), size(sz) {}
     MaaBuffer(const MaaBuffer& other) { acquire(other.buffer, other.size); }
     MaaBuffer(MaaBuffer&& other) : buffer(other.buffer), size(other.size)
     {

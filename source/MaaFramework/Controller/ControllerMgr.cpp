@@ -119,7 +119,19 @@ MaaBool ControllerMgr::connected() const
     return connected_;
 }
 
-std::vector<uint8_t> ControllerMgr::get_image_cache() const
+MaaBufferRef ControllerMgr::get_image_cache() const
+{
+    auto size = sizeof(MaaImageBuffer) + image_.elemSize();
+    auto buffer = new uint8_t[size];
+    auto ptr = new (buffer) MaaImageBuffer;
+    ptr->rows = image_.rows;
+    ptr->cols = image_.cols;
+    ptr->type = image_.type();
+    std::memcpy(ptr->buffer, image_.data, image_.elemSize());
+    return MaaBufferRef { size, buffer };
+}
+
+std::vector<uint8_t> ControllerMgr::get_image_cache_encoded() const
 {
     std::vector<uint8_t> buff;
     cv::imencode(".png", image_, buff);
