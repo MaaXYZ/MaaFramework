@@ -331,7 +331,7 @@ MaaBufferHandle MaaControllerGetImageBuffer(MaaControllerHandle ctrl)
     return new MAA_NS::MaaBuffer(buffer.buffer, buffer.size, MAA_NS::MaaBuffer::move_in_tag {});
 }
 
-MaaBufferHandle MaaControllerGetUUID(MaaControllerHandle ctrl)
+MaaBufferHandle MaaControllerGetUUIDBuffer(MaaControllerHandle ctrl)
 {
     LogFunc << VAR_VOIDP(ctrl);
 
