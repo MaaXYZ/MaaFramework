@@ -1,5 +1,6 @@
 #include "ControllerMgr.h"
 
+#include "Buffer/MaaBuffer.h"
 #include "MaaFramework/MaaMsg.h"
 #include "Resource/ResourceMgr.h"
 #include "Utils/Math.hpp"
@@ -121,14 +122,7 @@ MaaBool ControllerMgr::connected() const
 
 MaaBufferRef ControllerMgr::get_image_cache() const
 {
-    auto size = sizeof(MaaImageBuffer) + image_.elemSize();
-    auto buffer = new uint8_t[size];
-    auto ptr = new (buffer) MaaImageBuffer;
-    ptr->rows = image_.rows;
-    ptr->cols = image_.cols;
-    ptr->type = image_.type();
-    std::memcpy(ptr->buffer, image_.data, image_.elemSize());
-    return MaaBufferRef { size, buffer };
+    return MAA_NS::MaaBuffer(image_).takeRef();
 }
 
 std::vector<uint8_t> ControllerMgr::get_image_cache_encoded() const

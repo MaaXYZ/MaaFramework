@@ -1,6 +1,7 @@
 #pragma once
 
 #include "API/MaaTypes.h"
+#include "Utils/NoWarningCVMat.hpp"
 
 #include <cstdlib>
 #include <vector>
@@ -16,6 +17,15 @@ public:
     MaaBuffer() : buffer(nullptr), size(0) {}
     MaaBuffer(const void* buf, MaaSize sz) { acquire(buf, sz); }
     MaaBuffer(void* buf, MaaSize sz, move_in_tag) : buffer(reinterpret_cast<uint8_t*>(buf)), size(sz) {}
+    MaaBuffer(const MaaBufferRef& ref) : MaaBuffer(ref.buffer, ref.size, move_in_tag {}) {}
+    MaaBuffer(const cv::Mat& mat)
+    {
+        auto size = sizeof(MaaImageBuffer) + mat.elemSize();
+        buffer = new uint8_t[size];
+        auto buf = new (buffer) MaaImageBuffer { mat.rows, mat.cols, mat.type() };
+        memcpy(buf->buffer, mat.data, mat.elemSize());
+    }
+
     MaaBuffer(const MaaBuffer& other) { acquire(other.buffer, other.size); }
     MaaBuffer(MaaBuffer&& other) : buffer(other.buffer), size(other.size)
     {
@@ -43,6 +53,19 @@ public:
         other.buffer = nullptr;
         other.size = 0;
         return *this;
+    }
+
+    MaaBufferRef takeRef()
+    {
+        MaaBufferRef ref { size, buffer };
+        buffer = nullptr;
+        size = 0;
+        return ref;
+    }
+    cv::Mat toMat()
+    {
+        MaaImageBuffer* info = reinterpret_cast<MaaImageBuffer*>(buffer);
+        return cv::Mat(info->rows, info->cols, info->type, info->buffer);
     }
 
     virtual MaaSize getSize() override { return size; }

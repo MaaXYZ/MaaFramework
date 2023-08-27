@@ -327,8 +327,7 @@ MaaBufferHandle MaaControllerGetImageBuffer(MaaControllerHandle ctrl)
     if (!ctrl) {
         return MaaNullBuffer;
     }
-    auto buffer = ctrl->get_image_cache();
-    return new MAA_NS::MaaBuffer(buffer.buffer, buffer.size, MAA_NS::MaaBuffer::move_in_tag {});
+    return new MAA_NS::MaaBuffer(ctrl->get_image_cache());
 }
 
 MaaBufferHandle MaaControllerGetUUIDBuffer(MaaControllerHandle ctrl)
@@ -340,7 +339,7 @@ MaaBufferHandle MaaControllerGetUUIDBuffer(MaaControllerHandle ctrl)
     }
     auto uuid = ctrl->get_uuid();
     size_t size = uuid.size();
-    return new MAA_NS::MaaBuffer(uuid.c_str(), size + 1);
+    return new MAA_NS::MaaBuffer(uuid.c_str(), size);
 }
 
 MaaInstanceHandle MaaCreate(MaaInstanceCallback callback, MaaCallbackTransparentArg callback_arg)
@@ -601,8 +600,7 @@ MaaBufferHandle MaaSyncContextScreencapViaBuffer(MaaSyncContextHandle sync_conte
     if (!sync_context) {
         return MaaNullBuffer;
     }
-    auto data = sync_context->screencap();
-    return new MAA_NS::MaaBuffer(data.buffer, data.size, MAA_NS::MaaBuffer::move_in_tag {});
+    return new MAA_NS::MaaBuffer(sync_context->screencap());
 }
 
 MaaSize MaaSyncContextGetTaskResult(MaaSyncContextHandle sync_context, MaaString task, char* buff, MaaSize buff_size)
