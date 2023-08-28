@@ -1,6 +1,5 @@
 #include "ControllerMgr.h"
 
-#include "Buffer/MaaBuffer.h"
 #include "MaaFramework/MaaMsg.h"
 #include "Resource/ResourceMgr.h"
 #include "Utils/Math.hpp"
@@ -120,12 +119,7 @@ MaaBool ControllerMgr::connected() const
     return connected_;
 }
 
-MaaBufferRef ControllerMgr::get_image_cache() const
-{
-    return MAA_NS::MaaBuffer(image_).takeRef();
-}
-
-std::vector<uint8_t> ControllerMgr::get_image_cache_encoded() const
+std::vector<uint8_t> ControllerMgr::get_image_cache() const
 {
     std::vector<uint8_t> buff;
     cv::imencode(".png", image_, buff);

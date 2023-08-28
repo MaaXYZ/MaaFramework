@@ -2,12 +2,11 @@
 
 #include <meojson/json.hpp>
 
-#include "Buffer/MaaBuffer.h"
-#include "ControlUnit/ControlUnitAPI.h"
 #include "Controller/AdbController.h"
 #include "Controller/CustomController.h"
 #include "Controller/CustomThriftController.h"
 #include "Instance/InstanceMgr.h"
+#include "ControlUnit/ControlUnitAPI.h"
 #include "Option/GlobalOptionMgr.h"
 #include "Resource/ResourceMgr.h"
 #include "Utils/Logger.h"
@@ -18,35 +17,6 @@
 MaaString MaaVersion()
 {
     return MAA_VERSION;
-}
-
-MaaBufferHandle MaaAllocBuffer(const void* data, MaaSize size)
-{
-    return new MAA_NS::MaaBuffer(data, size);
-}
-
-void MaaFreeBuffer(MaaBufferHandle handle)
-{
-    if (handle) {
-        delete handle;
-    }
-}
-
-MaaSize MaaGetBufferSize(MaaBufferHandle handle)
-{
-    if (!handle) {
-        return MaaNullSize;
-    }
-    return handle->getSize();
-}
-
-MaaBool MaaGetBufferContent(MaaBufferHandle handle, void* buffer)
-{
-    if (!handle) {
-        return false;
-    }
-    handle->getContent(buffer);
-    return true;
 }
 
 MaaBool MaaSetGlobalOption(MaaGlobalOption key, MaaOptionValue value, MaaOptionValueSize val_size)
@@ -295,7 +265,7 @@ MaaSize MaaControllerGetImage(MaaControllerHandle ctrl, void* buff, MaaSize buff
     if (!ctrl || !buff) {
         return MaaNullSize;
     }
-    auto image = ctrl->get_image_cache_encoded();
+    auto image = ctrl->get_image_cache();
     size_t size = image.size();
     if (size >= buff_size) {
         return MaaNullSize;
@@ -318,28 +288,6 @@ MaaSize MaaControllerGetUUID(MaaControllerHandle ctrl, char* buff, MaaSize buff_
     }
     memcpy(buff, uuid.c_str(), size);
     return size;
-}
-
-MaaBufferHandle MaaControllerGetImageBuffer(MaaControllerHandle ctrl)
-{
-    LogFunc << VAR_VOIDP(ctrl);
-
-    if (!ctrl) {
-        return MaaNullBuffer;
-    }
-    return new MAA_NS::MaaBuffer(ctrl->get_image_cache());
-}
-
-MaaBufferHandle MaaControllerGetUUIDBuffer(MaaControllerHandle ctrl)
-{
-    LogFunc << VAR_VOIDP(ctrl);
-
-    if (!ctrl) {
-        return MaaNullBuffer;
-    }
-    auto uuid = ctrl->get_uuid();
-    size_t size = uuid.size();
-    return new MAA_NS::MaaBuffer(uuid.c_str(), size);
 }
 
 MaaInstanceHandle MaaCreate(MaaInstanceCallback callback, MaaCallbackTransparentArg callback_arg)
@@ -586,21 +534,12 @@ MaaSize MaaSyncContextScreencap(MaaSyncContextHandle sync_context, void* buff, M
     if (!sync_context) {
         return MaaNullSize;
     }
-    auto data = sync_context->screencap_encoded();
+    auto data = sync_context->screencap();
     if (data.size() > buff_size) {
         return MaaNullSize;
     }
     memcpy(buff, data.data(), data.size());
     return data.size();
-}
-
-MaaBufferHandle MaaSyncContextScreencapViaBuffer(MaaSyncContextHandle sync_context)
-{
-    LogFunc << VAR_VOIDP(sync_context);
-    if (!sync_context) {
-        return MaaNullBuffer;
-    }
-    return new MAA_NS::MaaBuffer(sync_context->screencap());
 }
 
 MaaSize MaaSyncContextGetTaskResult(MaaSyncContextHandle sync_context, MaaString task, char* buff, MaaSize buff_size)

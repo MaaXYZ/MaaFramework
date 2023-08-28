@@ -24,8 +24,7 @@ public: // from MaaSyncContextAPI
 
     virtual void click(int x, int y) override;
     virtual void swipe(std::vector<int> x_steps, std::vector<int> y_steps, std::vector<int> step_delay) override;
-    virtual MaaBufferRef screencap() override;
-    virtual std::vector<uint8_t> screencap_encoded() override;
+    virtual std::vector<uint8_t> screencap() override;
 
     virtual std::string task_result(const std::string& task_name) const override;
 
