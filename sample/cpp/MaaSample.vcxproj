@@ -100,17 +100,6 @@
       <AdditionalLibraryDirectories>$(TargetDir);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <Profile>true</Profile>
     </Link>
-    <PostBuildEvent>
-      <Command>xcopy "$(SolutionDir)\assets\config\controller_config.json" "$(TargetDir)" /y
-
-
-
-xcopy "$(SolutionDir)\assets\resource" "$(TargetDir)" /s /e /y</Command>
-    </PostBuildEvent>
-    <PreLinkEvent>
-      <Command>
-      </Command>
-    </PreLinkEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='DebWithRelDeps|x64'">
     <ClCompile>
@@ -136,17 +125,6 @@ xcopy "$(SolutionDir)\assets\resource" "$(TargetDir)" /s /e /y</Command>
       <AdditionalLibraryDirectories>$(TargetDir);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <Profile>true</Profile>
     </Link>
-    <PostBuildEvent>
-      <Command>xcopy "$(SolutionDir)\assets\config\controller_config.json" "$(TargetDir)" /y
-
-
-
-xcopy "$(SolutionDir)\assets\resource" "$(TargetDir)" /s /e /y</Command>
-    </PostBuildEvent>
-    <PreLinkEvent>
-      <Command>
-      </Command>
-    </PreLinkEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
@@ -172,17 +150,6 @@ xcopy "$(SolutionDir)\assets\resource" "$(TargetDir)" /s /e /y</Command>
       <AdditionalLibraryDirectories>$(TargetDir);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <Profile>true</Profile>
     </Link>
-    <PostBuildEvent>
-      <Command>xcopy "$(SolutionDir)\assets\config\controller_config.json" "$(TargetDir)" /y
-
-
-
-xcopy "$(SolutionDir)\assets\resource" "$(TargetDir)" /s /e /y</Command>
-    </PostBuildEvent>
-    <PreLinkEvent>
-      <Command>
-      </Command>
-    </PreLinkEvent>
   </ItemDefinitionGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

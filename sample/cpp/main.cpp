@@ -14,7 +14,7 @@ int main([[maybe_unused]] int argc, char** argv)
     auto device_size = MaaToolKitFindDevice();
     if (device_size == 0) {
         std::cout << "No device found" << std::endl;
-        return -1;
+        return 0;
     }
 
     const int kIndex = 0; // for demo, we just use the first device
@@ -40,7 +40,7 @@ int main([[maybe_unused]] int argc, char** argv)
         MaaResourceDestroy(resource_handle);
         MaaControllerDestroy(controller_handle);
         MaaToolKitUninit();
-        return false;
+        return 0;
     }
 
     auto task_id = MaaPostTask(maa_handle, "StartUp", MaaTaskParam_Empty);

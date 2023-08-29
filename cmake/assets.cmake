@@ -1,13 +1,5 @@
 set(maa_assets_target ${CMAKE_BINARY_DIR})
 
-add_custom_command(OUTPUT ${maa_assets_target}/controller_config.json
-    COMMAND ${CMAKE_COMMAND} -E copy ${PROJECT_SOURCE_DIR}/assets/config/controller_config.json ${maa_assets_target}/controller_config.json
-)
-add_custom_target(AssetsControllerConfig ALL DEPENDS ${maa_assets_target}/controller_config.json)
-set_property(TARGET AssetsControllerConfig APPEND PROPERTY ADDITIONAL_CLEAN_FILES ${maa_assets_target}/controller_config.json)
-set_target_properties(AssetsControllerConfig PROPERTIES FOLDER Assets)
-install(FILES ${PROJECT_SOURCE_DIR}/assets/config/controller_config.json DESTINATION share)
-
 add_custom_command(OUTPUT ${maa_assets_target}/MaaAgentBinary
     COMMAND ${CMAKE_COMMAND} -E copy_directory ${PROJECT_SOURCE_DIR}/assets/config/MaaAgentBinary ${maa_assets_target}/MaaAgentBinary
 )
