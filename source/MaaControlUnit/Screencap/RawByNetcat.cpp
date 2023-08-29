@@ -59,7 +59,8 @@ std::optional<cv::Mat> ScreencapRawByNetcat::screencap()
     }
 
     merge_replacement({ { "{NETCAT_ADDRESS}", netcat_address_ }, { "{NETCAT_PORT}", std::to_string(netcat_port_) } });
-    auto cmd_ret = command(screencap_raw_by_netcat_argv_.gen(argv_replace_), true);
+    constexpr int kTimeout = 2000; // netcat 能用的时候一般都很快，但连不上的时候会一直卡着，所以超时设短一点
+    auto cmd_ret = command(screencap_raw_by_netcat_argv_.gen(argv_replace_), true, kTimeout);
 
     if (!cmd_ret) {
         return std::nullopt;

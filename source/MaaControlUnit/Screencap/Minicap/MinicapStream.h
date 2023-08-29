@@ -2,6 +2,7 @@
 
 #include "MinicapBase.h"
 
+#include <atomic>
 #include <thread>
 
 MAA_CTRL_UNIT_NS_BEGIN
@@ -22,10 +23,12 @@ public: // from ScreencapAPI
 private:
     bool read_until(size_t size);
     bool take_out(void* out, size_t size);
+    void working_thread();
 
     Argv forward_argv_;
 
-    std::mutex lock_;
+    std::atomic_bool working_ = false;
+    std::mutex mutex_;
     cv::Mat image_;
 
     std::string buffer_;

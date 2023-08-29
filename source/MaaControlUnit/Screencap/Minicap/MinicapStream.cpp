@@ -9,8 +9,8 @@ MAA_CTRL_UNIT_NS_BEGIN
 
 MinicapStream::~MinicapStream()
 {
-    if (quit_ == false) {
-        quit_ = true;
+    quit_ = true;
+    if (pull_thread_.joinable()) {
         pull_thread_.join();
     }
 }
@@ -103,49 +103,23 @@ bool MinicapStream::init(int swidth, int sheight)
     }
 
     quit_ = false;
-    pull_thread_ = std::thread([this]() {
-        while (!quit_) {
-            uint32_t size;
-            if (!take_out(&size, 4)) {
-                LogError << "take_out size failed";
-                continue;
-            }
-
-            // std::cerr << "minicap image size: " << (double(size) / (1 << 10)) << " KB" << std::endl;
-
-            buffer_.clear();
-
-            if (!read_until(size)) {
-                LogError << "read_until size failed";
-                continue;
-            }
-
-            if (buffer_.find("\xff\xd8") != 0 || buffer_.find("\xff\xd9") != buffer_.size() - 2) {
-                std::cerr << "minicap image seems to be corrupted!" << std::endl;
-            }
-
-            std::string data;
-            data.swap(buffer_);
-
-            auto img = screencap_helper_.decode_jpg(data);
-
-            if (img.has_value()) {
-                std::unique_lock<std::mutex> locker(lock_);
-                image_ = std::move(img.value());
-            }
-        }
-    });
+    pull_thread_ = std::thread(std::bind(&MinicapStream::working_thread, this));
 
     return true;
 }
 
 std::optional<cv::Mat> MinicapStream::screencap()
 {
-    std::unique_lock<std::mutex> locker(lock_);
-    auto img = std::move(image_);
-    locker.unlock();
+    if (!working_) {
+        using namespace std::chrono_literals;
+        std::this_thread::sleep_for(2s);
+    }
+    if (!working_) {
+        return std::nullopt;
+    }
 
-    return img;
+    std::unique_lock<std::mutex> locker(mutex_);
+    return image_.clone(); // 这里的mat是个“引用”，外部接受的会被工作线程覆写
 }
 
 bool MinicapStream::read_until(size_t size)
@@ -176,6 +150,43 @@ bool MinicapStream::take_out(void* out, size_t size)
     buffer_.erase(0, size);
 
     return true;
+}
+
+void MinicapStream::working_thread()
+{
+    while (!quit_) {
+        uint32_t size;
+        if (!take_out(&size, 4)) {
+            LogError << "take_out size failed";
+            continue;
+        }
+
+        // std::cerr << "minicap image size: " << (double(size) / (1 << 10)) << " KB" << std::endl;
+
+        buffer_.clear();
+
+        if (!read_until(size)) {
+            LogError << "read_until size failed";
+            continue;
+        }
+
+        if (buffer_.find("\xff\xd8") != 0 || buffer_.find("\xff\xd9") != buffer_.size() - 2) {
+            std::cerr << "minicap image seems to be corrupted!" << std::endl;
+        }
+
+        std::string data;
+        data.swap(buffer_);
+
+        auto img_opt = screencap_helper_.decode_jpg(data);
+
+        if (!img_opt || img_opt->empty()) {
+            continue;
+        }
+
+        std::unique_lock<std::mutex> locker(mutex_);
+        image_ = std::move(*img_opt);
+        working_ = true;
+    }
 }
 
 MAA_CTRL_UNIT_NS_END

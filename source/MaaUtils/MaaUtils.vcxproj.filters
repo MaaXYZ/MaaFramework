@@ -46,7 +46,6 @@
     <ClInclude Include="..\include\Utils\SafeWindows.hpp" />
     <ClInclude Include="..\include\Utils\SingletonHolder.hpp" />
     <ClInclude Include="..\include\Utils\StringMisc.hpp" />
-    <ClInclude Include="..\include\Utils\TempPath.hpp" />
     <ClInclude Include="..\include\Utils\Time.hpp" />
   </ItemGroup>
 </Project>

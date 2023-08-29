@@ -2,7 +2,7 @@
 
 #include "Utils/Logger.h"
 #include "Utils/Platform.h"
-#include "Utils/TempPath.hpp"
+#include "Utils/Time.hpp"
 
 MAA_CTRL_UNIT_NS_BEGIN
 
@@ -17,7 +17,7 @@ bool InvokeApp::init(const std::string& force_temp)
 {
     LogFunc;
 
-    tempname_ = force_temp.empty() ? temp_name() : force_temp;
+    tempname_ = force_temp.empty() ? now_filestem() : force_temp;
     return true;
 }
 

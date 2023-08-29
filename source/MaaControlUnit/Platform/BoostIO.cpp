@@ -24,67 +24,32 @@ int BoostIO::call_command(const std::vector<std::string>& cmd, bool recv_by_sock
         return -1;
     }
 
-    auto start_time = std::chrono::steady_clock::now();
-
-    constexpr size_t kBufferSize = 4096;
-    char buffer[kBufferSize] = { 0 };
-
-    auto check_timeout = [&](const auto& start_time) -> bool {
-        return timeout && timeout < duration_cast<milliseconds>(steady_clock::now() - start_time).count();
-    };
-
+    auto exec = boost::process::search_path(cmd[0]);
+    if (!std::filesystem::exists(exec)) {
+        LogError << "path not exists" << VAR(exec) << VAR(cmd[0]);
+        return -1;
+    }
     // TODO: 想办法直接把cmd的后面塞进args
     std::vector<std::string> rcmd(cmd.begin() + 1, cmd.end());
 
     boost::process::ipstream pout;
-
-    auto exec = boost::process::search_path(cmd[0]);
-    if (!std::filesystem::exists(exec)) {
-        LogError << "path not exists" << VAR(exec) << VAR(cmd[0]); 
-        return -1;
-    }
-
     boost::process::child proc(exec, boost::process::args(rcmd),
                                boost::process::std_in<boost::process::null, boost::process::std_out> pout);
 
+    const auto start_time = std::chrono::steady_clock::now();
+    auto terminate = [&]() -> bool {
+        return !proc.running() || (timeout && timeout < duration_since(start_time).count());
+    };
+
     if (recv_by_socket) {
-        auto socket = server_sock_.accept();
-        if (!socket.is_open()) {
-            LogError << "socket is not opened";
-            return -1;
-        }
-        boost::system::error_code error;
-        do {
-            auto read_num = socket.read_some(boost::asio::mutable_buffer(buffer, kBufferSize), error);
-            while (error != boost::asio::error::eof && read_num > 0) {
-                sock_data.insert(sock_data.end(), buffer, buffer + read_num);
-                read_num = socket.read_some(boost::asio::mutable_buffer(buffer, kBufferSize), error);
-            }
-        } while (proc.running() && socket.is_open() && !check_timeout(start_time));
-        proc.wait();
+        read_sock_data(sock_data, terminate);
     }
     else {
-        do {
-            if (pout.rdbuf()->in_avail() == 0) {
-                char ch;
-                pout.read(&ch, 1);
-                if (pout.gcount() != 1) {
-                    break;
-                }
-                pipe_data.push_back(ch);
-            }
-
-            auto read_num = pout.readsome(buffer, kBufferSize);
-            while (read_num > 0) {
-                pipe_data.insert(pipe_data.end(), buffer, buffer + read_num);
-                read_num = pout.readsome(buffer, kBufferSize);
-            }
-        } while (proc.running() && !check_timeout(start_time));
-        proc.wait();
+        read_pipe_data(pout, pipe_data, terminate);
     }
 
     if (proc.running()) {
-        LogError << "terminate";
+        LogWarn << "terminate" << VAR(exec);
         proc.terminate();
     }
 
@@ -95,11 +60,11 @@ std::optional<unsigned short> BoostIO::create_socket(const std::string& local_ad
 {
     using namespace boost::asio::ip;
 
-    tcp::endpoint endPoint(tcp::endpoint(address::from_string(local_address), 0));
+    tcp::endpoint endpoint(tcp::endpoint(address::from_string(local_address), 0));
 
-    server_sock_.open(endPoint.protocol());
+    server_sock_.open(endpoint.protocol());
     server_sock_.set_option(tcp::acceptor::reuse_address(true));
-    server_sock_.bind(endPoint);
+    server_sock_.bind(endpoint);
 
     server_sock_.listen();
 
@@ -148,6 +113,51 @@ std::shared_ptr<IOHandler> BoostIO::interactive_shell(const std::vector<std::str
                                                 boost::process::std_in<*pin, boost::process::std_out> * pout));
 
     return std::make_shared<IOHandlerBoostStream>(pout, pin, proc);
+}
+
+void BoostIO::read_sock_data(std::string& data, std::function<bool(void)> terminate)
+{
+    constexpr size_t kBufferSize = 128 * 1024;
+    auto buffer = std::make_unique<char[]>(kBufferSize);
+
+    auto socket = server_sock_.accept();
+    if (!socket.is_open()) {
+        LogError << "socket is not opened";
+        return;
+    }
+    boost::system::error_code error;
+    do {
+        memset(buffer.get(), 0, kBufferSize);
+        auto read_num = socket.read_some(boost::asio::mutable_buffer(buffer.get(), kBufferSize), error);
+        while (error != boost::asio::error::eof && read_num > 0) {
+            data.insert(data.end(), buffer.get(), buffer.get() + read_num);
+            read_num = socket.read_some(boost::asio::mutable_buffer(buffer.get(), kBufferSize), error);
+        }
+    } while (socket.is_open() && !terminate());
+}
+
+void BoostIO::read_pipe_data(boost::process::ipstream& pout, std::string& data, std::function<bool(void)> terminate)
+{
+    constexpr size_t kBufferSize = 128 * 1024;
+    auto buffer = std::make_unique<char[]>(kBufferSize);
+
+    do {
+        if (pout.rdbuf()->in_avail() == 0) {
+            char ch;
+            pout.read(&ch, 1);
+            if (pout.gcount() != 1) {
+                break;
+            }
+            data.push_back(ch);
+        }
+
+        memset(buffer.get(), 0, kBufferSize);
+        auto read_num = pout.readsome(buffer.get(), kBufferSize);
+        while (read_num > 0) {
+            data.insert(data.end(), buffer.get(), buffer.get() + read_num);
+            read_num = pout.readsome(buffer.get(), kBufferSize);
+        }
+    } while (!terminate());
 }
 
 IOHandlerBoostSocket::~IOHandlerBoostSocket()

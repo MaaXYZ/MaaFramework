@@ -3,7 +3,7 @@
 #include "Utils/ImageIo.h"
 #include "Utils/Logger.h"
 #include "Utils/NoWarningCV.hpp"
-#include "Utils/TempPath.hpp"
+#include "Utils/Time.hpp"
 
 MAA_CTRL_UNIT_NS_BEGIN
 
@@ -17,7 +17,7 @@ bool ScreencapEncodeToFileAndPull::init(int swidth, int sheight)
 {
     set_wh(swidth, sheight);
 
-    tempname_ = temp_name();
+    tempname_ = now_filestem();
 
     return true;
 }
@@ -29,7 +29,7 @@ std::optional<cv::Mat> ScreencapEncodeToFileAndPull::screencap()
         return std::nullopt;
     }
 
-    auto dst_path = temp_path(tempname_);
+    auto dst_path = std::filesystem::temp_directory_path() / now_filestem();
 
     merge_replacement({ { "{TEMP_FILE}", tempname_ }, { "{DST_PATH}", path_to_crt_string(dst_path) } });
     auto cmd_ret = command(screencap_encode_to_file_argv_.gen(argv_replace_));
