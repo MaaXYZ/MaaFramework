@@ -7,7 +7,7 @@ MAA_TOOLKIT_DEVICE_NS_BEGIN
 
 std::ostream& operator<<(std::ostream& os, const Device& device)
 {
-    os << VAR_RAW(device.name) << VAR_RAW(device.adb_path) << VAR_RAW(json::array(device.adb_serials))
+    os << VAR_RAW(device.name) << VAR_RAW(device.adb_path) << VAR_RAW(device.adb_serial)
        << VAR_RAW(device.adb_controller_type) << VAR_RAW(device.adb_config);
     return os;
 }
@@ -69,6 +69,23 @@ std::vector<std::string> DeviceMgr::check_available_adb_serials(const std::files
         available.emplace_back(ser);
     }
     return available;
+}
+
+MaaAdbControllerType DeviceMgr::check_adb_controller_type(const std::filesystem::path& adb_path,
+                                                          const std::string& adb_serial,
+                                                          const json::value& adb_config) const
+{
+    std::ignore = adb_path;
+    std::ignore = adb_serial;
+    std::ignore = adb_config;
+
+    // TODO: 判断触控方式是否支持
+    constexpr MaaAdbControllerType kInputType = MaaAdbControllerType_Input_Preset_Minitouch;
+
+    // TODO: speed test
+    constexpr MaaAdbControllerType kScreencapType = MaaAdbControllerType_Screencap_FastestWay;
+
+    return kInputType | kScreencapType;
 }
 
 MAA_TOOLKIT_DEVICE_NS_END

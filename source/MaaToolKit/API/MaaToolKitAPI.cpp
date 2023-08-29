@@ -55,14 +55,9 @@ MaaString MaaToolKitGetDeviceAdbPath(MaaSize index)
     return device_mgr.get_devices().at(index).adb_path.c_str();
 }
 
-MaaSize MAA_TOOLKIT_API MaaToolKitDeviceAdbSerialSize(MaaSize index)
+MaaString MaaToolKitDeviceAdbSerial(MaaSize index)
 {
-    return device_mgr.get_devices().at(index).adb_serials.size();
-}
-
-MaaString MAA_TOOLKIT_API MaaToolKitGetDeviceAdbSerial(MaaSize device_index, MaaSize serial_index)
-{
-    return device_mgr.get_devices().at(device_index).adb_serials.at(serial_index).c_str();
+    return device_mgr.get_devices().at(index).adb_serial.c_str();
 }
 
 MaaAdbControllerType MaaToolKitGetDeviceAdbControllerType(MaaSize index)

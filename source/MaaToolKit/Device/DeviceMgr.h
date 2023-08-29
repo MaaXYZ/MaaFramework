@@ -35,6 +35,8 @@ protected:
     std::vector<std::string> check_available_adb_serials(const std::filesystem::path& adb_path,
                                                          const std::vector<std::string>& serials,
                                                          const json::value& adb_config) const;
+    MaaAdbControllerType check_adb_controller_type(const std::filesystem::path& adb_path, const std::string& adb_serial,
+                                                   const json::value& adb_config) const;
 
 private:
     std::vector<Device> devices_;

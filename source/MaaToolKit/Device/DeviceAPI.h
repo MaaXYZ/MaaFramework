@@ -11,7 +11,7 @@ struct Device
 {
     std::string name;
     std::string adb_path;
-    std::vector<std::string> adb_serials;
+    std::string adb_serial;
     MaaAdbControllerType adb_controller_type = MaaAdbControllerType_Invalid;
     std::string adb_config;
 };

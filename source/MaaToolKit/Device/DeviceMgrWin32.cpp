@@ -81,26 +81,32 @@ std::vector<Device> DeviceMgrWin32::find_device_impl(std::string_view specified_
         serials.assign(set.begin(), set.end());
         serials = check_available_adb_serials(adb_path, serials, kAdbConfig);
 
-        Device device;
-        device.name = e.name;
-        device.adb_path = path_to_utf8_string(adb_path);
-        device.adb_config = kAdbConfig.to_string();
-        device.adb_serials = std::move(serials);
-
-        // TODO: check supports and test speed
-        device.adb_controller_type = MaaAdbControllerType_Screencap_RawWithGzip | MaaAdbControllerType_Input_Preset_Adb;
-
-        result.emplace_back(std::move(device));
+        for (const std::string& ser : serials) {
+            Device device;
+            device.name = e.name;
+            device.adb_path = path_to_utf8_string(adb_path);
+            device.adb_serial = ser;
+            // TODO: 根据设备情况使用不同的配置
+            device.adb_config = kAdbConfig.to_string();
+            device.adb_controller_type =
+                check_adb_controller_type(device.adb_path, device.adb_serial, device.adb_config);
+            result.emplace_back(std::move(device));
+        }
     }
 
     if (!specified_adb.empty()) {
-        Device device;
-        device.name = "Specified";
-        device.adb_path = specified_adb;
-        device.adb_config = kAdbConfig.to_string();
-        device.adb_serials = request_adb_serials(path(specified_adb), kAdbConfig);
-        device.adb_controller_type = MaaAdbControllerType_Screencap_RawWithGzip | MaaAdbControllerType_Input_Preset_Adb;
-        result.emplace_back(std::move(device));
+        auto serials = request_adb_serials(path(specified_adb), kAdbConfig);
+
+        for (const std::string& ser : serials) {
+            Device device;
+            device.name = specified_adb;
+            device.adb_path = specified_adb;
+            device.adb_serial = ser;
+            device.adb_config = kAdbConfig.to_string();
+            device.adb_controller_type =
+                check_adb_controller_type(device.adb_path, device.adb_serial, device.adb_config);
+            result.emplace_back(std::move(device));
+        }
     }
 
     return result;
