@@ -1,9 +1,6 @@
 [submodule "MaaDeps"]
 	path = MaaDeps
 	url = https://github.com/MaaAssistantArknights/MaaDeps.git
-[submodule "tools/MaaLang"]
-	path = tools/MaaLang
-	url = https://github.com/MaaAssistantArknights/MaaLang.git
 [submodule "assets/config/MaaAgentBinary"]
 	path = assets/config/MaaAgentBinary
 	url = https://github.com/MaaAssistantArknights/MaaAgentBinary.git

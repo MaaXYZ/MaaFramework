@@ -15,12 +15,11 @@ target_link_libraries(MaaToolKit MaaFramework MaaUtils MaaControlUnit HeaderOnly
 
 add_dependencies(MaaToolKit MaaFramework MaaUtils MaaControlUnit)
 
-# WIP, do not install for now
-# install(TARGETS MaaToolKit
-#     RUNTIME DESTINATION bin
-#     LIBRARY DESTINATION bin
-#     PUBLIC_HEADER DESTINATION include/MaaToolKit
-#     ARCHIVE DESTINATION lib
-# )
+install(TARGETS MaaToolKit
+    RUNTIME DESTINATION bin
+    LIBRARY DESTINATION bin
+    PUBLIC_HEADER DESTINATION include/MaaToolKit
+    ARCHIVE DESTINATION lib
+)
 
 source_group(TREE ${CMAKE_SOURCE_DIR} FILES ${maa_toolkit_src})

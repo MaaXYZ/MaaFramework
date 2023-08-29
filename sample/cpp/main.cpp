@@ -1,5 +1,4 @@
 #include "MaaFramework/MaaAPI.h"
-
 #include "MaaToolKit/MaaToolKitAPI.h"
 
 #include <filesystem>
@@ -9,149 +8,48 @@
 #include <string>
 #include <thread>
 
-bool demo_waiting();
-bool demo_polling();
-std::string read_adb_config(const std::filesystem::path& cur_dir);
-
-std::string adb = "adb";
-std::string adb_address = "127.0.0.1:5555";
-std::string adb_config;
-
-std::string debug_dir;
-std::string resource_dir;
-
-std::string task_name = "StartUp";
-
 int main([[maybe_unused]] int argc, char** argv)
 {
     MaaToolKitInit();
-    MaaToolKitFindDevice();
-
-    const auto cur_dir = std::filesystem::path(argv[0]).parent_path();
-
-    debug_dir = (cur_dir / "debug").string();
-    resource_dir = (cur_dir / "resource").string();
-
-    if (argc >= 3) {
-        adb = argv[1];
-        adb_address = argv[2];
-    }
-    if (argc >= 4) {
-        resource_dir = argv[3];
-    }
-    if (argc >= 5) {
-        task_name = argv[4];
+    auto device_size = MaaToolKitFindDevice();
+    if (device_size == 0) {
+        std::cout << "No device found" << std::endl;
+        return -1;
     }
 
-    adb_config = read_adb_config(cur_dir);
+    const int kIndex = 0; // for demo, we just use the first device
+    auto controller_handle = MaaAdbControllerCreate(
+        MaaToolKitGetDeviceAdbPath(kIndex), MaaToolKitGetDeviceAdbSerial(kIndex),
+        MaaToolKitGetDeviceAdbControllerType(kIndex), MaaToolKitGetDeviceAdbConfig(kIndex), nullptr, nullptr);
+    auto ctrl_id = MaaControllerPostConnection(controller_handle);
+    MaaControllerWait(controller_handle, ctrl_id);
 
-    // demo_polling();
-    demo_waiting();
-
-    MaaToolKitUninit();
-    return 0;
-}
-
-bool demo_waiting()
-{
-    auto maa_handle = MaaCreate(nullptr, nullptr);
     auto resource_handle = MaaResourceCreate(nullptr, nullptr);
-    auto controller_handle =
-        MaaAdbControllerCreate(adb.c_str(), adb_address.c_str(),
-                               MaaAdbControllerType_Input_Preset_Adb | MaaAdbControllerType_Screencap_RawWithGzip,
-                               adb_config.c_str(), nullptr, nullptr);
+    auto resource_dir = std::filesystem::path(argv[0]).parent_path() / "resource";
+    auto res_id = MaaResourcePostResource(resource_handle, resource_dir.string().c_str());
+    MaaResourceWait(resource_handle, res_id);
 
+    auto maa_handle = MaaCreate(nullptr, nullptr);
     MaaBindResource(maa_handle, resource_handle);
     MaaBindController(maa_handle, controller_handle);
-    int height = 720;
-    MaaControllerSetOption(controller_handle, MaaCtrlOption_ScreenshotTargetShortSide, reinterpret_cast<void*>(&height),
-                           sizeof(int));
 
-    auto resource_id = MaaResourcePostResource(resource_handle, resource_dir.c_str());
-    auto connection_id = MaaControllerPostConnection(controller_handle);
+    if (!MaaInited(maa_handle)) {
+        std::cout << "failed to init maa" << std::endl;
 
-    MaaResourceWait(resource_handle, resource_id);
-    MaaControllerWait(controller_handle, connection_id);
-
-    auto destroy = [&]() {
         MaaDestroy(maa_handle);
         MaaResourceDestroy(resource_handle);
         MaaControllerDestroy(controller_handle);
-    };
-
-    if (!MaaInited(maa_handle)) {
-        destroy();
+        MaaToolKitUninit();
         return false;
     }
 
-    auto task_id = MaaPostTask(maa_handle, task_name.c_str(), MaaTaskParam_Empty);
+    auto task_id = MaaPostTask(maa_handle, "StartUp", MaaTaskParam_Empty);
     MaaWaitTask(maa_handle, task_id);
 
-    destroy();
+    MaaDestroy(maa_handle);
+    MaaResourceDestroy(resource_handle);
+    MaaControllerDestroy(controller_handle);
+    MaaToolKitUninit();
 
-    return true;
-}
-
-bool demo_polling()
-{
-    auto resource_handle = MaaResourceCreate(nullptr, nullptr);
-    auto resource_id = MaaResourcePostResource(resource_handle, resource_dir.c_str());
-
-    auto controller_handle =
-        MaaAdbControllerCreate(adb.c_str(), adb_address.c_str(),
-                               MaaAdbControllerType_Input_Preset_Minitouch | MaaAdbControllerType_Screencap_FastestWay,
-                               adb_config.c_str(), nullptr, nullptr);
-    auto connection_id = MaaControllerPostConnection(controller_handle);
-    int height = 720;
-    MaaControllerSetOption(controller_handle, MaaCtrlOption_ScreenshotTargetShortSide, reinterpret_cast<void*>(&height),
-                           sizeof(int));
-    for (auto status = MaaResourceStatus(resource_handle, resource_id);
-         status == MaaStatus_Pending || status == MaaStatus_Running;
-         status = MaaResourceStatus(resource_handle, resource_id)) {
-        std::this_thread::yield();
-    }
-    for (auto status = MaaControllerStatus(controller_handle, connection_id);
-         status == MaaStatus_Pending || status == MaaStatus_Running;
-         status = MaaControllerStatus(controller_handle, connection_id)) {
-        std::this_thread::yield();
-    }
-
-    auto maa_handle = MaaCreate(nullptr, nullptr);
-    MaaBindResource(maa_handle, resource_handle);
-    MaaBindController(maa_handle, controller_handle);
-
-    auto destroy = [&]() {
-        MaaDestroy(maa_handle);
-        MaaResourceDestroy(resource_handle);
-        MaaControllerDestroy(controller_handle);
-    };
-
-    if (!MaaInited(maa_handle)) {
-        destroy();
-        return false;
-    }
-
-    MaaPostTask(maa_handle, task_name.c_str(), MaaTaskParam_Empty);
-
-    while (!MaaTaskAllFinished(maa_handle)) {
-        std::this_thread::yield();
-    }
-
-    destroy();
-
-    return true;
-}
-
-std::string read_adb_config(const std::filesystem::path& cur_dir)
-{
-    std::ifstream ifs(cur_dir / "controller_config.json", std::ios::in);
-    if (!ifs.is_open()) {
-        std::cerr << "Failed to open controller_config.json\n"
-                  << "Please copy sample/cpp/config/controller_config.json to " << cur_dir << std::endl;
-        exit(1);
-    }
-
-    std::stringstream buffer;
-    buffer << ifs.rdbuf();
-    return buffer.str();
+    return 0;
 }

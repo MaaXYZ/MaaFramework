@@ -55,7 +55,7 @@ MaaString MaaToolKitGetDeviceAdbPath(MaaSize index)
     return device_mgr.get_devices().at(index).adb_path.c_str();
 }
 
-MaaString MaaToolKitDeviceAdbSerial(MaaSize index)
+MaaString MaaToolKitGetDeviceAdbSerial(MaaSize index)
 {
     return device_mgr.get_devices().at(index).adb_serial.c_str();
 }
@@ -351,12 +351,12 @@ MaaInstanceHandle MaaToolKitGetRawInstance(MaaToolKitConfigHandle config_handle)
     return config_handle->raw_instance();
 }
 
-MaaBool MaaToolKitStartWebServer(MaaString ip, uint16_t port)
-{
-    return MAA_TOOLKIT_SERVER_NS::HttpServer::get_instance().start(ip, port);
-}
-
-MaaBool MaaToolKitStopWebServer()
-{
-    return MAA_TOOLKIT_SERVER_NS::HttpServer::get_instance().stop();
-}
+// MaaBool MaaToolKitStartWebServer(MaaString ip, uint16_t port)
+//{
+//     return MAA_TOOLKIT_SERVER_NS::HttpServer::get_instance().start(ip, port);
+// }
+//
+// MaaBool MaaToolKitStopWebServer()
+//{
+//     return MAA_TOOLKIT_SERVER_NS::HttpServer::get_instance().stop();
+// }
