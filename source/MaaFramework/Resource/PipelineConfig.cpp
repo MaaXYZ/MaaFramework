@@ -115,13 +115,10 @@ bool PipelineConfig::load_template_images(const std::filesystem::path& path)
         if (task_data.rec_type != MAA_PIPELINE_RES_NS::Recognition::Type::TemplateMatch) {
             continue;
         }
-        const auto& relatives = std::get<MAA_VISION_NS::TemplMatchingParam>(task_data.rec_param).template_paths;
-        std::vector<std::filesystem::path> paths;
-        MAA_RNS::ranges::transform(relatives, std::back_inserter(paths),
-                                   [&](const std::string& rlt) { return path / MAA_NS::path(rlt); });
-        bool ret = template_mgr_.lazy_load(name, paths);
+        const auto& templates = std::get<MAA_VISION_NS::TemplMatchingParam>(task_data.rec_param).template_paths;
+        bool ret = template_mgr_.lazy_load(name, path, templates);
         if (!ret) {
-            LogError << "template_cfg_.lazy_load failed" << VAR(name) << VAR(paths);
+            LogError << "template_cfg_.lazy_load failed" << VAR(name) << VAR(path) << VAR(templates);
             return false;
         }
     }

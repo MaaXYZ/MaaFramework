@@ -1,31 +1,25 @@
 #include "TemplateConfig.h"
 
-#include "Utils/Logger.h"
 #include "Utils/ImageIo.h"
+#include "Utils/Logger.h"
 
 MAA_RES_NS_BEGIN
 
-bool TemplateConfig::lazy_load(const std::string& name, const std::vector<std::filesystem::path>& paths)
+bool TemplateConfig::lazy_load(const std::string& name, const std::filesystem::path& root,
+                               const std::vector<std::string>& paths)
 {
-    LogDebug << VAR(name) << VAR(paths);
+    LogDebug << VAR(name) << VAR(root) << VAR(paths);
 
-    if (!MAA_RNS::ranges::all_of(paths, [](const auto& path) -> bool { return std::filesystem::exists(path); })) {
-        LogError << "not exists" << VAR(paths);
-        return false;
-    }
+    auto& lazy_paths = template_paths_[name];
+    lazy_paths.roots.emplace_back(root);
+    lazy_paths.paths = paths;
 
-    if (auto old_path_iter = template_paths_.find(name);
-        old_path_iter != template_paths_.end() && paths == old_path_iter->second) {
-        LogDebug << "same paths, ignore" << VAR(paths);
-        return true;
-    }
-    template_paths_.insert_or_assign(name, paths);
     template_cache_.erase(name);
 
 #ifdef MAA_DEBUG
     const auto& images = get_template_images(name);
-    if (MAA_RNS::ranges::any_of(images, [](const auto& image) -> bool { return image.empty(); })) {
-        LogError << "image is empty" << VAR(images);
+    if (images.empty() || MAA_RNS::ranges::any_of(images, [](const auto& image) -> bool { return image.empty(); })) {
+        LogError << "image is empty" << VAR(name) << VAR(images);
         return false;
     }
 #endif
@@ -56,22 +50,40 @@ const std::vector<cv::Mat>& TemplateConfig::get_template_images(const std::strin
         static std::vector<cv::Mat> empty;
         return empty;
     }
-    const auto& paths = path_iter->second;
+    const Paths& paths = path_iter->second;
 
     std::vector<cv::Mat> images;
-    for (const auto& path : paths) {
-        auto bank_iter = template_bank_.find(path);
+    for (const auto& templ_path : paths.paths) {
+        cv::Mat templ_mat;
+        for (const auto& root : paths.roots | MAA_RNS::views::reverse) {
+            auto path = root / MAA_NS::path(templ_path);
 
-        if (bank_iter != template_bank_.end()) {
-            images.emplace_back(bank_iter->second);
-            LogDebug << "Withdraw image" << VAR(name) << VAR(path);
+            if (auto bank_iter = template_bank_.find(path); bank_iter != template_bank_.end()) {
+                LogDebug << "Withdraw image" << VAR(name) << VAR(path);
+                templ_mat = bank_iter->second;
+                break;
+            }
+            else if (std::filesystem::exists(path)) {
+                LogDebug << "Read image" << VAR(name) << VAR(path);
+                templ_mat = MAA_NS::imread(path);
+                template_bank_.emplace(name, templ_mat);
+                break;
+            }
         }
-        else {
-            auto& image = images.emplace_back(imread(path));
-            LogDebug << "Read image" << VAR(name) << VAR(path);
-            template_bank_.emplace(name, image);
+        if (templ_mat.empty()) {
+            LogError << "template image is empty" << VAR(name) << VAR(templ_path) << VAR(paths.roots);
+            continue;
         }
+
+        images.emplace_back(std::move(templ_mat));
     }
+
+    if (images.empty()) {
+        LogError << "template list is empty" << VAR(name) << VAR(paths.paths) << VAR(paths.roots);
+        static std::vector<cv::Mat> empty;
+        return empty;
+    }
+
     return template_cache_.emplace(name, std::move(images)).first->second;
 }
 

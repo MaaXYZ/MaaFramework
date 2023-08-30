@@ -1,7 +1,7 @@
 #pragma once
 
-#include "Utils/NonCopyable.hpp"
 #include "Conf/Conf.h"
+#include "Utils/NonCopyable.hpp"
 
 #include <filesystem>
 #include <map>
@@ -13,7 +13,13 @@ MAA_RES_NS_BEGIN
 class TemplateConfig : public NonCopyable
 {
 public:
-    bool lazy_load(const std::string& name, const std::vector<std::filesystem::path>& paths);
+    struct Paths
+    {
+        std::vector<std::filesystem::path> roots; // 类似环境变量，一级一级找，优先级高的在后面
+        std::vector<std::string> paths;           // 要找的，多个
+    };
+
+    bool lazy_load(const std::string& name, const std::filesystem::path& root, const std::vector<std::string>& paths);
     void clear();
 
 public:
@@ -21,8 +27,7 @@ public:
 
 private:
     // for lazy load
-    using Paths = std::map<std::string, std::vector<std::filesystem::path>>;
-    Paths template_paths_;
+    std::map<std::string, Paths> template_paths_;
 
     mutable std::map<std::string, std::vector<cv::Mat>> template_cache_;
     mutable std::map<std::filesystem::path, cv::Mat> template_bank_;
