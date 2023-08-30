@@ -25,6 +25,8 @@ public:
 
 public:
     const std::vector<cv::Mat>& get_template_images(const std::string& name) const;
+    const std::vector<cv::Mat>& load_images(const std::string& name) const;
+    cv::Mat load_image(const std::string& name, const std::filesystem::path& path) const;
 
 private:
     // for lazy load

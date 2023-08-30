@@ -42,7 +42,12 @@ const std::vector<cv::Mat>& TemplateConfig::get_template_images(const std::strin
         return templ_iter->second;
     }
 
-    LogFunc << "Load Templ" << VAR(name);
+    return load_images(name);
+}
+
+const std::vector<cv::Mat>& TemplateConfig::load_images(const std::string& name) const
+{
+    LogFunc << VAR(name);
 
     auto path_iter = template_paths_.find(name);
     if (path_iter == template_paths_.end()) {
@@ -57,16 +62,8 @@ const std::vector<cv::Mat>& TemplateConfig::get_template_images(const std::strin
         cv::Mat templ_mat;
         for (const auto& root : paths.roots | MAA_RNS::views::reverse) {
             auto path = root / MAA_NS::path(filename);
-
-            if (auto bank_iter = template_bank_.find(path); bank_iter != template_bank_.end()) {
-                LogDebug << "Withdraw image" << VAR(name) << VAR(path);
-                templ_mat = bank_iter->second;
-                break;
-            }
-            else if (std::filesystem::exists(path)) {
-                LogDebug << "Read image" << VAR(name) << VAR(path);
-                templ_mat = MAA_NS::imread(path);
-                template_bank_.emplace(name, templ_mat);
+            templ_mat = load_image(name, path);
+            if (!templ_mat.empty()) {
                 break;
             }
         }
@@ -90,6 +87,23 @@ const std::vector<cv::Mat>& TemplateConfig::get_template_images(const std::strin
     }
 
     return template_cache_.emplace(name, std::move(images)).first->second;
+}
+
+cv::Mat TemplateConfig::load_image(const std::string& name, const std::filesystem::path& path) const
+{
+    if (auto bank_iter = template_bank_.find(path); bank_iter != template_bank_.end()) {
+        LogDebug << "Withdraw image" << VAR(name) << VAR(path);
+        return bank_iter->second;
+    }
+    else if (std::filesystem::exists(path)) {
+        LogDebug << "Read image" << VAR(name) << VAR(path);
+        cv::Mat temp = MAA_NS::imread(path);
+        template_bank_.emplace(name, temp);
+        return temp;
+    }
+
+    LogDebug << "Image not found" << VAR(name) << VAR(path);
+    return {};
 }
 
 MAA_RES_NS_END
