@@ -62,7 +62,7 @@ const std::vector<cv::Mat>& TemplateConfig::load_images(const std::string& name)
         cv::Mat templ_mat;
         for (const auto& root : paths.roots | MAA_RNS::views::reverse) {
             auto path = root / MAA_NS::path(filename);
-            templ_mat = load_image(name, path);
+            templ_mat = load_single_image(path);
             if (!templ_mat.empty()) {
                 break;
             }
@@ -89,20 +89,20 @@ const std::vector<cv::Mat>& TemplateConfig::load_images(const std::string& name)
     return template_cache_.emplace(name, std::move(images)).first->second;
 }
 
-cv::Mat TemplateConfig::load_image(const std::string& name, const std::filesystem::path& path) const
+cv::Mat TemplateConfig::load_single_image(const std::filesystem::path& path) const
 {
     if (auto bank_iter = template_bank_.find(path); bank_iter != template_bank_.end()) {
-        LogDebug << "Withdraw image" << VAR(name) << VAR(path);
+        LogDebug << "Withdraw image" << VAR(path);
         return bank_iter->second;
     }
     else if (std::filesystem::exists(path)) {
-        LogDebug << "Read image" << VAR(name) << VAR(path);
+        LogDebug << "Read image" << VAR(path);
         cv::Mat temp = MAA_NS::imread(path);
-        template_bank_.emplace(name, temp);
+        template_bank_.emplace(path, temp);
         return temp;
     }
 
-    LogDebug << "Image not found" << VAR(name) << VAR(path);
+    LogDebug << "Image not found" << VAR(path);
     return {};
 }
 
