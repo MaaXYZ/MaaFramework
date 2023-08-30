@@ -497,6 +497,10 @@ void PipelineTask::start_app(const MAA_PIPELINE_RES_NS::Action::AppParam& param)
     }
     using namespace MAA_VISION_NS;
 
+    if (param.package.empty()) {
+        controller()->start_app(controller()->get_default_app_package_entry());
+        return;
+    }
     controller()->start_app(param.package);
 }
 
@@ -508,6 +512,10 @@ void PipelineTask::stop_app(const MAA_PIPELINE_RES_NS::Action::AppParam& param)
     }
     using namespace MAA_VISION_NS;
 
+    if (param.package.empty()) {
+        controller()->start_app(controller()->get_default_app_package());
+        return;
+    }
     controller()->stop_app(param.package);
 }
 
