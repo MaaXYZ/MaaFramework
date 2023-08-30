@@ -149,31 +149,30 @@ bool MinicapStream::take_out(void* out, size_t size)
 
 void MinicapStream::working_thread()
 {
+    LogFunc;
+
     while (!quit_) {
-        uint32_t size;
+        uint32_t size = 0;
         if (!take_out(&size, 4)) {
-            image_ = cv::Mat();
             LogError << "take_out size failed";
+            std::unique_lock<std::mutex> locker(mutex_);
+            image_ = cv::Mat();
             continue;
         }
-
-        // std::cerr << "minicap image size: " << (double(size) / (1 << 10)) << " KB" << std::endl;
 
         std::string buffer;
-
         if (!read_until(buffer, size)) {
-            image_ = cv::Mat();
             LogError << "read_until size failed";
+            std::unique_lock<std::mutex> locker(mutex_);
+            image_ = cv::Mat();
             continue;
-        }
-
-        if (buffer.find("\xff\xd8") != 0 || buffer.find("\xff\xd9") != buffer.size() - 2) {
-            LogError << "minicap image seems to be corrupted!";
         }
 
         auto img_opt = screencap_helper_.decode_jpg(buffer);
 
         if (!img_opt || img_opt->empty()) {
+            LogError << "decode jpg failed";
+            std::unique_lock<std::mutex> locker(mutex_);
             image_ = cv::Mat();
             continue;
         }

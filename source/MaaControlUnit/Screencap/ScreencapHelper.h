@@ -22,7 +22,7 @@ public:
     std::optional<cv::Mat> decode_gzip(const std::string& buffer);
     std::optional<cv::Mat> decode_png(const std::string& buffer);
     std::optional<cv::Mat> decode_jpg(const std::string& buffer);
-    std::optional<cv::Mat> decode_jpg_with_minicap_header(const std::string& buffer);
+    std::optional<cv::Mat> decode(const std::string& buffer);
     static bool clean_cr(std::string& buffer);
 
 protected:
@@ -30,6 +30,8 @@ protected:
     int height_ = 0;
 
 private:
+    bool check_head_tail(std::string_view input, std::string_view head, std::string_view tail);
+
     enum class EndOfLine
     {
         UnknownYet,

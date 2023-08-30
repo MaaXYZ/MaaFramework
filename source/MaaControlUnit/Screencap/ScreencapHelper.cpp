@@ -138,47 +138,24 @@ std::optional<cv::Mat> ScreencapHelper::decode_gzip(const std::string& buffer)
 
 std::optional<cv::Mat> ScreencapHelper::decode_png(const std::string& buffer)
 {
-    cv::Mat temp = cv::imdecode({ buffer.data(), int(buffer.size()) }, cv::IMREAD_COLOR);
-    if (temp.empty()) {
+    if (!check_head_tail(buffer, "\x89\x50\x4E\x47", "\xAE\x42\x60\x82")) {
         return std::nullopt;
     }
-
-    return temp.clone();
+    return decode(buffer);
 }
 
-// 是直接就能实现的吧?
 std::optional<cv::Mat> ScreencapHelper::decode_jpg(const std::string& buffer)
 {
-    cv::Mat temp = cv::imdecode({ buffer.data(), int(buffer.size()) }, cv::IMREAD_COLOR);
-    if (temp.empty()) {
+    if (!check_head_tail(buffer, "\xFF\xD8\xFF", "\xFF\xD9")) {
         return std::nullopt;
     }
-
-    return temp.clone();
+    return decode(buffer);
 }
 
-// 是直接就能实现的吧?
-std::optional<cv::Mat> ScreencapHelper::decode_jpg_with_minicap_header(const std::string& buffer)
+std::optional<cv::Mat> ScreencapHelper::decode(const std::string& buffer)
 {
-    auto begin = buffer.find("\xff\xd8"); // FFD8是JPG文件头
-    auto end = buffer.find("\xff\xd9");   // FFD9是JPG文件尾
-
-    if (begin == std::string::npos || end == std::string::npos) {
-        return std::nullopt;
-    }
-
-    if (begin != 0) {
-        LogInfo << "Extra header before jpg:" << buffer.substr(0, begin);
-    }
-
-    auto data = buffer.substr(begin, end - begin + 2);
-
-    cv::Mat temp = cv::imdecode({ data.data(), int(data.size()) }, cv::IMREAD_COLOR);
-    if (temp.empty()) {
-        return std::nullopt;
-    }
-
-    return temp.clone();
+    cv::Mat img = cv::imdecode({ buffer.data(), int(buffer.size()) }, cv::IMREAD_COLOR);
+    return img.empty() ? std::nullopt : std::make_optional(img);
 }
 
 bool ScreencapHelper::clean_cr(std::string& buffer)
@@ -211,6 +188,21 @@ bool ScreencapHelper::clean_cr(std::string& buffer)
     *ptr = *last;
     ++ptr;
     buffer.erase(ptr, buffer.end());
+    return true;
+}
+
+bool ScreencapHelper::check_head_tail(std::string_view input, std::string_view head, std::string_view tail)
+{
+    if (input.size() < head.size() || input.size() < tail.size()) {
+        LogError << "input too short" << VAR(input) << VAR(head) << VAR(tail);
+        return false;
+    }
+
+    if (input.substr(0, head.size()) != head || input.substr(input.size() - tail.size(), tail.size()) != tail) {
+        LogError << "head or tail mismatch" << VAR(input) << VAR(head) << VAR(tail);
+        return false;
+    }
+
     return true;
 }
 
