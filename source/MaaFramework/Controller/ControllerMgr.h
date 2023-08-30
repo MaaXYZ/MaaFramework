@@ -101,9 +101,6 @@ public:
     void start_app(const std::string& package);
     void stop_app(const std::string& package);
 
-    std::string get_default_app_package_entry();
-    std::string get_default_app_package();
-
 protected:
     virtual bool _connect() = 0;
     virtual std::pair<int, int> _get_resolution() const = 0;

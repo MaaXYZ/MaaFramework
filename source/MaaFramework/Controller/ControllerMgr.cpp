@@ -206,16 +206,6 @@ void ControllerMgr::stop_app(const std::string& package)
     action_runner_->post({ .type = Action::Type::stop_app, .param = AppParam { .package = package } }, true);
 }
 
-std::string ControllerMgr::get_default_app_package_entry()
-{
-    return default_app_package_entry_;
-}
-
-std::string ControllerMgr::get_default_app_package()
-{
-    return default_app_package_;
-}
-
 cv::Point ControllerMgr::rand_point(const cv::Rect& r)
 {
     int x = 0, y = 0;
