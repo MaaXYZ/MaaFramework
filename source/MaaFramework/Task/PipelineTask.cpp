@@ -47,8 +47,7 @@ bool PipelineTask::run()
             next_list = cur_task.runout_next;
             break;
         case RunningResult::Interrupted:
-            next_list.clear();
-            break;
+            return true;
         default:
             break;
         }
