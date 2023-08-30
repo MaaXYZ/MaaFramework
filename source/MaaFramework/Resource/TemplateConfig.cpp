@@ -6,13 +6,13 @@
 MAA_RES_NS_BEGIN
 
 bool TemplateConfig::lazy_load(const std::string& name, const std::filesystem::path& root,
-                               const std::vector<std::string>& paths)
+                               const std::vector<std::string>& filenames)
 {
-    LogDebug << VAR(name) << VAR(root) << VAR(paths);
+    LogDebug << VAR(name) << VAR(root) << VAR(filenames);
 
     auto& lazy_paths = template_paths_[name];
     lazy_paths.roots.emplace_back(root);
-    lazy_paths.paths = paths;
+    lazy_paths.filenames = filenames;
 
     template_cache_.erase(name);
 
@@ -53,10 +53,10 @@ const std::vector<cv::Mat>& TemplateConfig::get_template_images(const std::strin
     const Paths& paths = path_iter->second;
 
     std::vector<cv::Mat> images;
-    for (const auto& templ_path : paths.paths) {
+    for (const auto& filename : paths.filenames) {
         cv::Mat templ_mat;
         for (const auto& root : paths.roots | MAA_RNS::views::reverse) {
-            auto path = root / MAA_NS::path(templ_path);
+            auto path = root / MAA_NS::path(filename);
 
             if (auto bank_iter = template_bank_.find(path); bank_iter != template_bank_.end()) {
                 LogDebug << "Withdraw image" << VAR(name) << VAR(path);
@@ -71,15 +71,20 @@ const std::vector<cv::Mat>& TemplateConfig::get_template_images(const std::strin
             }
         }
         if (templ_mat.empty()) {
-            LogError << "template image is empty" << VAR(name) << VAR(templ_path) << VAR(paths.roots);
+            LogError << "template image is empty" << VAR(name) << VAR(filename) << VAR(paths.roots);
+#ifdef MAA_DEBUG
+            static std::vector<cv::Mat> empty;
+            return empty;
+#else
             continue;
+#endif
         }
 
         images.emplace_back(std::move(templ_mat));
     }
 
     if (images.empty()) {
-        LogError << "template list is empty" << VAR(name) << VAR(paths.paths) << VAR(paths.roots);
+        LogError << "template list is empty" << VAR(name) << VAR(paths.filenames) << VAR(paths.roots);
         static std::vector<cv::Mat> empty;
         return empty;
     }
