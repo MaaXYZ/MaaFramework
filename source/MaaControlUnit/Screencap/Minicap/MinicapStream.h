@@ -2,8 +2,8 @@
 
 #include "MinicapBase.h"
 
-#include <atomic>
 #include <thread>
+#include <condition_variable>
 
 MAA_CTRL_UNIT_NS_BEGIN
 
@@ -21,18 +21,16 @@ public: // from ScreencapAPI
     virtual std::optional<cv::Mat> screencap() override;
 
 private:
-    bool read_until(size_t size);
+    bool read_until(std::string& buffer, size_t size);
     bool take_out(void* out, size_t size);
     void working_thread();
 
     Argv forward_argv_;
 
-    std::atomic_bool working_ = false;
+    bool quit_ = true;
     std::mutex mutex_;
     cv::Mat image_;
-
-    std::string buffer_;
-    bool quit_ = true;
+    std::condition_variable cond_;
     std::thread pull_thread_;
 
     std::shared_ptr<IOHandler> process_handle_;

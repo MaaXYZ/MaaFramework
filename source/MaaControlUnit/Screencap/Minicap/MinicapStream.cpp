@@ -110,45 +110,40 @@ bool MinicapStream::init(int swidth, int sheight)
 
 std::optional<cv::Mat> MinicapStream::screencap()
 {
-    if (!working_) {
-        using namespace std::chrono_literals;
-        std::this_thread::sleep_for(2s);
-    }
-    if (!working_) {
-        return std::nullopt;
-    }
-
     std::unique_lock<std::mutex> locker(mutex_);
-    return image_.clone(); // 这里的mat是个“引用”，外部接受的会被工作线程覆写
+
+    using namespace std::chrono_literals;
+    cond_.wait_for(locker, 2s); // 等下一帧
+
+    return image_.empty() ? std::nullopt : std::make_optional(image_.clone());
 }
 
-bool MinicapStream::read_until(size_t size)
+bool MinicapStream::read_until(std::string& buffer, size_t size)
 {
     // LogFunc;
 
     using namespace std::chrono_literals;
     auto start = std::chrono::steady_clock::now();
 
-    while (buffer_.size() < size && duration_since(start) < 5s) {
-        auto ret = stream_handle_->read(2, size - buffer_.size());
-        buffer_.insert(buffer_.end(), ret.begin(), ret.end());
+    while (buffer.size() < size && duration_since(start) < 5s) {
+        auto ret = stream_handle_->read(2, size - buffer.size());
+        buffer += std::move(ret);
     }
 
-    return buffer_.size() == size;
+    return buffer.size() == size;
 }
 
 bool MinicapStream::take_out(void* out, size_t size)
 {
     // LogFunc;
 
-    if (!read_until(size)) {
+    std::string buffer;
+    if (!read_until(buffer, size)) {
         return false;
     }
     if (out) {
-        memcpy(out, buffer_.c_str(), size);
+        memcpy(out, buffer.data(), size);
     }
-    buffer_.erase(0, size);
-
     return true;
 }
 
@@ -157,35 +152,35 @@ void MinicapStream::working_thread()
     while (!quit_) {
         uint32_t size;
         if (!take_out(&size, 4)) {
+            image_ = cv::Mat();
             LogError << "take_out size failed";
             continue;
         }
 
         // std::cerr << "minicap image size: " << (double(size) / (1 << 10)) << " KB" << std::endl;
 
-        buffer_.clear();
+        std::string buffer;
 
-        if (!read_until(size)) {
+        if (!read_until(buffer, size)) {
+            image_ = cv::Mat();
             LogError << "read_until size failed";
             continue;
         }
 
-        if (buffer_.find("\xff\xd8") != 0 || buffer_.find("\xff\xd9") != buffer_.size() - 2) {
-            std::cerr << "minicap image seems to be corrupted!" << std::endl;
+        if (buffer.find("\xff\xd8") != 0 || buffer.find("\xff\xd9") != buffer.size() - 2) {
+            LogError << "minicap image seems to be corrupted!";
         }
 
-        std::string data;
-        data.swap(buffer_);
-
-        auto img_opt = screencap_helper_.decode_jpg(data);
+        auto img_opt = screencap_helper_.decode_jpg(buffer);
 
         if (!img_opt || img_opt->empty()) {
+            image_ = cv::Mat();
             continue;
         }
 
         std::unique_lock<std::mutex> locker(mutex_);
         image_ = std::move(*img_opt);
-        working_ = true;
+        cond_.notify_all();
     }
 }
 
