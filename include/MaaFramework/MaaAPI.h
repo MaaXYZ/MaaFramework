@@ -25,10 +25,13 @@ extern "C"
     int32_t MAA_FRAMEWORK_API MaaGetImageWidth(MaaImageBufferHandle handle);
     int32_t MAA_FRAMEWORK_API MaaGetImageHeight(MaaImageBufferHandle handle);
     int32_t MAA_FRAMEWORK_API MaaGetImageType(MaaImageBufferHandle handle);
+    MaaBool MAA_FRAMEWORK_API MaaSetImageRawData(MaaImageBufferHandle handle, MaaImageRawData data, int32_t width,
+                                                 int32_t height, int32_t type);
 
     typedef uint8_t* MaaImageEncodedData;
     MaaImageEncodedData MAA_FRAMEWORK_API MaaGetImageEncoded(MaaImageBufferHandle handle);
     MaaSize MAA_FRAMEWORK_API MaaGetImageEncodedSize(MaaImageBufferHandle handle);
+    MaaBool MAA_FRAMEWORK_API MaaSetImageEncoded(MaaImageBufferHandle handle, MaaImageEncodedData data, MaaSize size);
 
     MaaBool MAA_FRAMEWORK_API MaaSetGlobalOption(MaaGlobalOption key, MaaOptionValue value,
                                                  MaaOptionValueSize val_size);
@@ -46,7 +49,7 @@ extern "C"
 
     MaaBool MAA_FRAMEWORK_API MaaResourceSetOption(MaaResourceHandle res, MaaResOption key, MaaOptionValue value,
                                                    MaaOptionValueSize val_size);
-    MaaBool MAA_FRAMEWORK_API MaaResourceGetHash(MaaResourceHandle res, MaaStringBufferHandle buff);
+    MaaBool MAA_FRAMEWORK_API MaaResourceGetHash(MaaResourceHandle res, /* out */ MaaStringBufferHandle buff);
 
     /* Controller */
 
@@ -76,8 +79,8 @@ extern "C"
     MaaStatus MAA_FRAMEWORK_API MaaControllerWait(MaaControllerHandle ctrl, MaaCtrlId id);
     MaaBool MAA_FRAMEWORK_API MaaControllerConnected(MaaControllerHandle ctrl);
 
-    MaaBool MAA_FRAMEWORK_API MaaControllerGetImage(MaaControllerHandle ctrl, MaaImageBufferHandle buffer);
-    MaaBool MAA_FRAMEWORK_API MaaControllerGetUUID(MaaControllerHandle ctrl, MaaStringBufferHandle buffer);
+    MaaBool MAA_FRAMEWORK_API MaaControllerGetImage(MaaControllerHandle ctrl, /* out */ MaaImageBufferHandle buffer);
+    MaaBool MAA_FRAMEWORK_API MaaControllerGetUUID(MaaControllerHandle ctrl, /* out */ MaaStringBufferHandle buffer);
 
     /* Instance */
 
@@ -114,14 +117,22 @@ extern "C"
 
     /* SyncContext */
 
-    MaaBool MAA_FRAMEWORK_API MaaSyncContextRunTask(MaaSyncContextHandle sync_context, MaaString task,
-                                                    MaaString param);
+    MaaBool MAA_FRAMEWORK_API MaaSyncContextRunTask(MaaSyncContextHandle sync_context, MaaString task, MaaString param);
     void MAA_FRAMEWORK_API MaaSyncContextClick(MaaSyncContextHandle sync_context, int32_t x, int32_t y);
     void MAA_FRAMEWORK_API MaaSyncContextSwipe(MaaSyncContextHandle sync_context, int32_t* x_steps_buff,
                                                int32_t* y_steps_buff, int32_t* step_delay_buff, MaaSize buff_size);
-    MaaBool MAA_FRAMEWORK_API MaaSyncContextScreencap(MaaSyncContextHandle sync_context, MaaImageBufferHandle buffer);
+    MaaBool MAA_FRAMEWORK_API MaaSyncContextScreencap(MaaSyncContextHandle sync_context,
+                                                      /* out */ MaaImageBufferHandle buffer);
     MaaBool MAA_FRAMEWORK_API MaaSyncContextGetTaskResult(MaaSyncContextHandle sync_context, MaaString task,
-                                                          MaaStringBufferHandle buffer);
+                                                          /* out */ MaaStringBufferHandle buffer);
+
+    MaaBool MAA_FRAMEWORK_API MaaSyncContextRunRecognizer(MaaSyncContextHandle sync_context, MaaImageBufferHandle image,
+                                                          MaaString task, MaaString task_param,
+                                                          /* out */ MaaRectHandle box,
+                                                          /* out */ MaaStringBufferHandle detail_buff);
+    MaaBool MAA_FRAMEWORK_API MaaSyncContextRunAction(MaaSyncContextHandle sync_context, MaaString task_name,
+                                                      MaaString task_param, MaaRectHandle cur_box,
+                                                      MaaString cur_rec_detail);
 
 #ifdef __cplusplus
 }

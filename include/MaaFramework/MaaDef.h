@@ -137,3 +137,19 @@ typedef struct MaaCustomActionAPI* MaaCustomActionHandle;
 
 struct MaaSyncContextAPI;
 typedef struct MaaSyncContextAPI* MaaSyncContextHandle;
+
+#ifdef __cplusplus
+extern "C"
+{
+#endif
+    typedef struct MAA_FRAMEWORK_API MaaRect
+    {
+        int32_t x;
+        int32_t y;
+        int32_t width;
+        int32_t height;
+    }* MaaRectHandle;
+
+#ifdef __cplusplus
+}
+#endif

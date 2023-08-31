@@ -8,15 +8,6 @@ extern "C"
 {
 #endif
 
-    struct MAA_FRAMEWORK_API MaaRect
-    {
-        int32_t x;
-        int32_t y;
-        int32_t width;
-        int32_t height;
-    };
-    typedef MaaRect* MaaRectHandle;
-
     struct MAA_FRAMEWORK_API MaaCustomRecognizerAPI
     {
         MaaBool (*analyze)(MaaSyncContextHandle sync_context, const MaaImageBufferHandle image, MaaString task_name,

@@ -29,41 +29,51 @@ MaaStringBufferHandle MaaCreateStringBuffer()
 void MaaDestroyStringBuffer(MaaStringBufferHandle handle)
 {
     if (!handle) {
+        LogError << "handle is null";
         return;
     }
+
     delete handle;
 }
 
 MaaString MaaGetString(MaaStringBufferHandle handle)
 {
     if (!handle) {
+        LogError << "handle is null";
         return nullptr;
     }
+
     return handle->data();
 }
 
-MaaSize MAA_FRAMEWORK_API MaaGetStringSize(MaaStringBufferHandle handle)
+MaaSize MaaGetStringSize(MaaStringBufferHandle handle)
 {
     if (!handle) {
+        LogError << "handle is null";
         return 0;
     }
+
     return handle->size();
 }
 
-MaaBool MAA_FRAMEWORK_API MaaSetString(MaaStringBufferHandle handle, MaaString str)
+MaaBool MaaSetString(MaaStringBufferHandle handle, MaaString str)
 {
     if (!handle || !str) {
+        LogError << "handle is null";
         return false;
     }
+
     handle->set(str);
     return true;
 }
 
-MaaBool MAA_FRAMEWORK_API MaaSetStringEx(MaaStringBufferHandle handle, MaaString str, MaaSize size)
+MaaBool MaaSetStringEx(MaaStringBufferHandle handle, MaaString str, MaaSize size)
 {
     if (!handle || !str) {
+        LogError << "handle is null";
         return false;
     }
+
     handle->set(std::string(str, size));
     return true;
 }
@@ -76,57 +86,96 @@ MaaImageBufferHandle MaaCreateImageBuffer()
 void MaaDestroyImageBuffer(MaaImageBufferHandle handle)
 {
     if (!handle) {
+        LogError << "handle is null";
         return;
     }
+
     delete handle;
 }
 
 void* MaaGetImageRawData(MaaImageBufferHandle handle)
 {
     if (!handle) {
+        LogError << "handle is null";
         return nullptr;
     }
+
     return handle->raw_data();
 }
 
 int32_t MaaGetImageWidth(MaaImageBufferHandle handle)
 {
     if (!handle) {
+        LogError << "handle is null";
         return 0;
     }
+
     return handle->width();
 }
 
 int32_t MaaGetImageHeight(MaaImageBufferHandle handle)
 {
     if (!handle) {
+        LogError << "handle is null";
         return 0;
     }
+
     return handle->height();
 }
 
 int32_t MaaGetImageType(MaaImageBufferHandle handle)
 {
     if (!handle) {
+        LogError << "handle is null";
         return 0;
     }
+
     return handle->type();
+}
+
+MaaBool MaaSetImageRawData(MaaImageBufferHandle handle, MaaImageRawData data, int32_t width, int32_t height,
+                           int32_t type)
+{
+    if (!handle || !data) {
+        LogError << "handle is null";
+        return false;
+    }
+
+    cv::Mat img(height, width, type, data);
+    handle->set(img);
+    return true;
 }
 
 uint8_t* MaaGetImageEncoded(MaaImageBufferHandle handle)
 {
     if (!handle) {
+        LogError << "handle is null";
         return nullptr;
     }
+
     return handle->encoded();
 }
 
 MaaSize MaaGetImageEncodedSize(MaaImageBufferHandle handle)
 {
     if (!handle) {
+        LogError << "handle is null";
         return 0;
     }
+
     return handle->encoded_size();
+}
+
+MaaBool MaaSetImageEncoded(MaaImageBufferHandle handle, MaaImageEncodedData data, MaaSize size)
+{
+    if (!handle || !data) {
+        LogError << "handle is null";
+        return false;
+    }
+
+    cv::Mat img = cv::imdecode({ data, static_cast<int>(size) }, cv::IMREAD_COLOR);
+    handle->set(img);
+    return true;
 }
 
 MaaBool MaaSetGlobalOption(MaaGlobalOption key, MaaOptionValue value, MaaOptionValueSize val_size)
@@ -148,8 +197,10 @@ void MaaResourceDestroy(MaaResourceHandle res)
     LogFunc << VAR_VOIDP(res);
 
     if (res == nullptr) {
+        LogError << "handle is null";
         return;
     }
+
     delete res;
 }
 
@@ -158,8 +209,10 @@ MaaResId MaaResourcePostResource(MaaResourceHandle res, MaaString path)
     LogFunc << VAR_VOIDP(res) << VAR(path);
 
     if (!res) {
+        LogError << "handle is null";
         return MaaInvalidId;
     }
+
     return res->post_resource(MAA_NS::path(path));
 }
 
@@ -168,8 +221,10 @@ MaaStatus MaaResourceStatus(MaaResourceHandle res, MaaResId id)
     // LogFunc << VAR_VOIDP(res) << VAR(id);
 
     if (!res) {
+        LogError << "handle is null";
         return MaaStatus_Invalid;
     }
+
     return res->status(id);
 }
 
@@ -178,8 +233,10 @@ MaaStatus MaaResourceWait(MaaResourceHandle res, MaaResId id)
     // LogFunc << VAR_VOIDP(res) << VAR(id);
 
     if (!res) {
+        LogError << "handle is null";
         return MaaStatus_Invalid;
     }
+
     return res->wait(id);
 }
 
@@ -188,8 +245,10 @@ MaaBool MaaResourceLoaded(MaaResourceHandle res)
     // LogFunc << VAR_VOIDP(res);
 
     if (!res) {
+        LogError << "handle is null";
         return false;
     }
+
     return res->loaded();
 }
 
@@ -198,16 +257,20 @@ MaaBool MaaResourceSetOption(MaaResourceHandle res, MaaResOption key, MaaOptionV
     LogFunc << VAR_VOIDP(res) << VAR(key) << VAR_VOIDP(value) << VAR(val_size);
 
     if (!res) {
+        LogError << "handle is null";
         return false;
     }
+
     return res->set_option(key, value, val_size);
 }
 
 MaaBool MaaResourceGetHash(MaaResourceHandle res, MaaStringBufferHandle buff)
 {
     if (!res || !buff) {
+        LogError << "handle is null";
         return false;
     }
+
     buff->set(res->get_hash());
     return true;
 }
@@ -233,6 +296,7 @@ MaaControllerHandle MaaCustomControllerCreate(MaaCustomControllerHandle handle, 
     LogFunc << VAR(handle) << VAR_VOIDP(callback) << VAR_VOIDP(callback_arg);
 
     if (!handle) {
+        LogError << "handle is null";
         return nullptr;
     }
 
@@ -269,8 +333,10 @@ void MaaControllerDestroy(MaaControllerHandle ctrl)
     LogFunc << VAR_VOIDP(ctrl);
 
     if (ctrl == nullptr) {
+        LogError << "handle is null";
         return;
     }
+
     ctrl->on_stop();
     delete ctrl;
 }
@@ -281,17 +347,22 @@ MaaBool MaaControllerSetOption(MaaControllerHandle ctrl, MaaCtrlOption key, MaaO
     LogFunc << VAR_VOIDP(ctrl) << VAR(key) << VAR_VOIDP(value) << VAR(val_size);
 
     if (!ctrl) {
+        LogError << "handle is null";
         return false;
     }
+
     return ctrl->set_option(key, value, val_size);
 }
 
 MaaCtrlId MaaControllerPostConnection(MaaControllerHandle ctrl)
 {
     LogFunc << VAR_VOIDP(ctrl);
+
     if (!ctrl) {
+        LogError << "handle is null";
         return false;
     }
+
     return ctrl->post_connection();
 }
 
@@ -300,8 +371,10 @@ MaaCtrlId MaaControllerPostClick(MaaControllerHandle ctrl, int32_t x, int32_t y)
     LogFunc << VAR_VOIDP(ctrl) << VAR(x) << VAR(y);
 
     if (!ctrl) {
+        LogError << "handle is null";
         return MaaInvalidId;
     }
+
     return ctrl->post_click(x, y);
 }
 
@@ -312,6 +385,7 @@ MaaCtrlId MaaControllerPostSwipe(MaaControllerHandle ctrl, int32_t* x_steps_buff
             << VAR(buff_size);
 
     if (!ctrl || !x_steps_buff || !y_steps_buff || !step_delay_buff || buff_size < 2) {
+        LogError << "handle is null";
         return MaaInvalidId;
     }
 
@@ -327,8 +401,10 @@ MaaCtrlId MaaControllerPostScreencap(MaaControllerHandle ctrl)
     LogFunc << VAR_VOIDP(ctrl);
 
     if (!ctrl) {
+        LogError << "handle is null";
         return MaaInvalidId;
     }
+
     return ctrl->post_screencap();
 }
 
@@ -337,8 +413,10 @@ MaaStatus MaaControllerStatus(MaaControllerHandle ctrl, MaaCtrlId id)
     // LogFunc << VAR_VOIDP(ctrl) << VAR(id);
 
     if (!ctrl) {
+        LogError << "handle is null";
         return MaaStatus_Invalid;
     }
+
     return ctrl->status(id);
 }
 
@@ -347,25 +425,32 @@ MaaStatus MaaControllerWait(MaaControllerHandle ctrl, MaaCtrlId id)
     // LogFunc << VAR_VOIDP(ctrl) << VAR(id);
 
     if (!ctrl) {
+        LogError << "handle is null";
         return MaaStatus_Invalid;
     }
+
     return ctrl->wait(id);
 }
 
 MaaBool MaaControllerConnected(MaaControllerHandle ctrl)
 {
     LogFunc << VAR_VOIDP(ctrl);
+
     if (!ctrl) {
+        LogError << "handle is null";
         return false;
     }
+
     return ctrl->connected();
 }
 
 MaaBool MaaControllerGetImage(MaaControllerHandle ctrl, MaaImageBufferHandle buffer)
 {
     if (!ctrl || !buffer) {
+        LogError << "handle is null";
         return false;
     }
+
     buffer->set(ctrl->get_image());
     return true;
 }
@@ -373,8 +458,10 @@ MaaBool MaaControllerGetImage(MaaControllerHandle ctrl, MaaImageBufferHandle buf
 MaaBool MaaControllerGetUUID(MaaControllerHandle ctrl, MaaStringBufferHandle buffer)
 {
     if (!ctrl || !buffer) {
+        LogError << "handle is null";
         return false;
     }
+
     buffer->set(ctrl->get_uuid());
     return true;
 }
@@ -391,8 +478,10 @@ void MaaDestroy(MaaInstanceHandle inst)
     LogFunc << VAR_VOIDP(inst);
 
     if (inst == nullptr) {
+        LogError << "handle is null";
         return;
     }
+
     delete inst;
 }
 
@@ -401,8 +490,10 @@ MaaBool MaaSetOption(MaaInstanceHandle inst, MaaInstOption key, MaaOptionValue v
     LogFunc << VAR_VOIDP(inst) << VAR(key) << VAR_VOIDP(value) << VAR(val_size);
 
     if (!inst) {
+        LogError << "handle is null";
         return false;
     }
+
     return inst->set_option(key, value, val_size);
 }
 
@@ -411,8 +502,10 @@ MaaBool MaaBindResource(MaaInstanceHandle inst, MaaResourceHandle res)
     LogFunc << VAR_VOIDP(inst) << VAR_VOIDP(res);
 
     if (!inst || !res) {
+        LogError << "handle is null";
         return false;
     }
+
     return inst->bind_resource(res);
 }
 
@@ -421,16 +514,20 @@ MaaBool MaaBindController(MaaInstanceHandle inst, MaaControllerHandle ctrl)
     LogFunc << VAR_VOIDP(inst) << VAR_VOIDP(ctrl);
 
     if (!inst || !ctrl) {
+        LogError << "handle is null";
         return false;
     }
+
     return inst->bind_controller(ctrl);
 }
 
 MaaBool MaaInited(MaaInstanceHandle inst)
 {
     if (!inst) {
+        LogError << "handle is null";
         return false;
     }
+
     return inst->inited();
 }
 
@@ -439,6 +536,7 @@ MaaBool MaaRegisterCustomRecognizer(MaaInstanceHandle inst, MaaString name, MaaC
     LogFunc << VAR_VOIDP(inst) << VAR(name) << VAR_VOIDP(recognizer);
 
     if (!inst) {
+        LogError << "handle is null";
         return false;
     }
 
@@ -450,6 +548,7 @@ MaaBool MaaUnregisterCustomRecognizer(MaaInstanceHandle inst, MaaString name)
     LogFunc << VAR_VOIDP(inst) << VAR(name);
 
     if (!inst) {
+        LogError << "handle is null";
         return false;
     }
 
@@ -461,6 +560,7 @@ MaaBool MaaClearCustomRecognizer(MaaInstanceHandle inst)
     LogFunc << VAR_VOIDP(inst);
 
     if (!inst) {
+        LogError << "handle is null";
         return false;
     }
 
@@ -473,6 +573,7 @@ MaaBool MaaRegisterCustomAction(MaaInstanceHandle inst, MaaString name, MaaCusto
     LogFunc << VAR_VOIDP(inst) << VAR(name) << VAR_VOIDP(action);
 
     if (!inst) {
+        LogError << "handle is null";
         return false;
     }
 
@@ -484,6 +585,7 @@ MaaBool MaaUnregisterCustomAction(MaaInstanceHandle inst, MaaString name)
     LogFunc << VAR_VOIDP(inst) << VAR(name);
 
     if (!inst) {
+        LogError << "handle is null";
         return false;
     }
 
@@ -495,6 +597,7 @@ MaaBool MaaClearCustomAction(MaaInstanceHandle inst)
     LogFunc << VAR_VOIDP(inst);
 
     if (!inst) {
+        LogError << "handle is null";
         return false;
     }
 
@@ -508,6 +611,7 @@ MaaTaskId MaaPostTask(MaaInstanceHandle inst, MaaString entry, MaaString param)
     LogFunc << VAR_VOIDP(inst) << VAR(entry) << VAR(param);
 
     if (!inst) {
+        LogError << "handle is null";
         return MaaInvalidId;
     }
     return inst->post_task(entry, param);
@@ -518,6 +622,7 @@ MaaBool MaaSetTaskParam(MaaInstanceHandle inst, MaaTaskId id, MaaString param)
     LogFunc << VAR_VOIDP(inst) << VAR(id) << VAR(param);
 
     if (!inst) {
+        LogError << "handle is null";
         return false;
     }
     return inst->set_task_param(id, param);
@@ -528,6 +633,7 @@ MaaStatus MaaTaskStatus(MaaInstanceHandle inst, MaaTaskId id)
     // LogFunc << VAR_VOIDP(inst) << VAR(id);
 
     if (!inst) {
+        LogError << "handle is null";
         return MaaStatus_Invalid;
     }
     return inst->status(id);
@@ -538,6 +644,7 @@ MaaStatus MaaWaitTask(MaaInstanceHandle inst, MaaTaskId id)
     // LogFunc << VAR_VOIDP(inst) << VAR(id);
 
     if (!inst) {
+        LogError << "handle is null";
         return MaaStatus_Invalid;
     }
     return inst->wait(id);
@@ -547,6 +654,7 @@ MaaBool MaaTaskAllFinished(MaaInstanceHandle inst)
 {
     // LogFunc << VAR_VOIDP(inst) << VAR(id);
     if (!inst) {
+        LogError << "handle is null";
         return false;
     }
     return inst->all_finished();
@@ -557,6 +665,7 @@ void MaaStop(MaaInstanceHandle inst)
     LogFunc << VAR_VOIDP(inst);
 
     if (!inst) {
+        LogError << "handle is null";
         return;
     }
 
@@ -568,6 +677,7 @@ MaaResourceHandle MaaGetResource(MaaInstanceHandle inst)
     LogFunc << VAR_VOIDP(inst);
 
     if (!inst) {
+        LogError << "handle is null";
         return nullptr;
     }
 
@@ -577,7 +687,9 @@ MaaResourceHandle MaaGetResource(MaaInstanceHandle inst)
 MaaControllerHandle MaaGetController(MaaInstanceHandle inst)
 {
     LogFunc << VAR_VOIDP(inst);
+
     if (!inst) {
+        LogError << "handle is null";
         return nullptr;
     }
     return inst->controller();
@@ -586,18 +698,24 @@ MaaControllerHandle MaaGetController(MaaInstanceHandle inst)
 MaaBool MaaSyncContextRunTask(MaaSyncContextHandle sync_context, MaaString task, MaaString param)
 {
     LogFunc << VAR_VOIDP(sync_context) << VAR(task) << VAR(param);
+
     if (!sync_context) {
+        LogError << "handle is null";
         return false;
     }
+
     return sync_context->run_task(task, param);
 }
 
 void MaaSyncContextClick(MaaSyncContextHandle sync_context, int32_t x, int32_t y)
 {
     LogFunc << VAR_VOIDP(sync_context) << VAR(x) << VAR(y);
+
     if (!sync_context) {
+        LogError << "handle is null";
         return;
     }
+
     return sync_context->click(x, y);
 }
 
@@ -606,7 +724,9 @@ void MaaSyncContextSwipe(MaaSyncContextHandle sync_context, int32_t* x_steps_buf
 {
     LogFunc << VAR_VOIDP(sync_context) << VAR(x_steps_buff) << VAR(y_steps_buff) << VAR(step_delay_buff)
             << VAR(buff_size);
+
     if (!sync_context) {
+        LogError << "handle is null";
         return;
     }
 
@@ -620,9 +740,12 @@ void MaaSyncContextSwipe(MaaSyncContextHandle sync_context, int32_t* x_steps_buf
 MaaBool MaaSyncContextScreencap(MaaSyncContextHandle sync_context, MaaImageBufferHandle buffer)
 {
     LogFunc << VAR_VOIDP(sync_context) << VAR(buffer);
+
     if (!sync_context || !buffer) {
+        LogError << "handle is null";
         return false;
     }
+
     buffer->set(sync_context->screencap());
     return true;
 }
@@ -630,9 +753,40 @@ MaaBool MaaSyncContextScreencap(MaaSyncContextHandle sync_context, MaaImageBuffe
 MaaBool MaaSyncContextGetTaskResult(MaaSyncContextHandle sync_context, MaaString task, MaaStringBufferHandle buffer)
 {
     LogFunc << VAR_VOIDP(sync_context) << VAR(buffer);
+
     if (!sync_context || !buffer) {
+        LogError << "handle is null";
         return false;
     }
+
     buffer->set(sync_context->task_result(task));
     return true;
+}
+
+MaaBool MaaSyncContextRunRecognizer(MaaSyncContextHandle sync_context, MaaImageBufferHandle image, MaaString task,
+                                    MaaString task_param, MaaRectHandle box, MaaStringBufferHandle detail_buff)
+{
+    // TODO
+    std::ignore = sync_context;
+    std::ignore = image;
+    std::ignore = task;
+    std::ignore = task_param;
+
+    std::ignore = box;
+    std::ignore = detail_buff;
+
+    return false;
+}
+
+MaaBool MaaSyncContextRunAction(MaaSyncContextHandle sync_context, MaaString task_name, MaaString task_param,
+                                MaaRectHandle cur_box, MaaString cur_rec_detail)
+{
+    // TODO
+    std::ignore = sync_context;
+    std::ignore = task_name;
+    std::ignore = task_param;
+    std::ignore = cur_box;
+    std::ignore = cur_rec_detail;
+
+    return false;
 }
