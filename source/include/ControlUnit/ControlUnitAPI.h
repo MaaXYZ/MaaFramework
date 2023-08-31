@@ -121,26 +121,26 @@ public:
 };
 
 std::shared_ptr<DeviceListAPI> MAA_CONTROL_UNIT_API create_adb_device_list_obj(MaaString adb_path,
-                                                                               MaaJsonString config);
+                                                                               MaaString config);
 std::shared_ptr<ControlUnitAPI> MAA_CONTROL_UNIT_API create_adb_controller_unit(MaaString adb_path,
                                                                                 MaaString adb_serial,
                                                                                 MaaAdbControllerType type,
-                                                                                MaaJsonString config);
+                                                                                MaaString config);
 std::shared_ptr<ConnectionAPI> MAA_CONTROL_UNIT_API create_adb_connection(MaaString adb_path, MaaString adb_serial,
                                                                           MaaAdbControllerType type,
-                                                                          MaaJsonString config);
+                                                                          MaaString config);
 std::shared_ptr<DeviceInfoAPI> MAA_CONTROL_UNIT_API create_adb_device_info(MaaString adb_path, MaaString adb_serial,
                                                                            MaaAdbControllerType type,
-                                                                           MaaJsonString config);
+                                                                           MaaString config);
 std::shared_ptr<ActivityAPI> MAA_CONTROL_UNIT_API create_adb_activity(MaaString adb_path, MaaString adb_serial,
-                                                                      MaaAdbControllerType type, MaaJsonString config);
+                                                                      MaaAdbControllerType type, MaaString config);
 std::shared_ptr<TouchInputAPI> MAA_CONTROL_UNIT_API create_adb_touch_input(MaaString adb_path, MaaString adb_serial,
                                                                            MaaAdbControllerType type,
-                                                                           MaaJsonString config);
+                                                                           MaaString config);
 std::shared_ptr<KeyInputAPI> MAA_CONTROL_UNIT_API create_adb_key_input(MaaString adb_path, MaaString adb_serial,
-                                                                       MaaAdbControllerType type, MaaJsonString config);
+                                                                       MaaAdbControllerType type, MaaString config);
 std::shared_ptr<ScreencapAPI> MAA_CONTROL_UNIT_API create_adb_screencap(MaaString adb_path, MaaString adb_serial,
                                                                         MaaAdbControllerType type,
-                                                                        MaaJsonString config);
+                                                                        MaaString config);
 
 MAA_CTRL_UNIT_NS_END

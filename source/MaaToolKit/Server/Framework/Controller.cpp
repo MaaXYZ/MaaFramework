@@ -225,7 +225,7 @@ auto from_str = boost::uuids::string_generator();
 std::mutex handle_mtx;
 std::map<boost::uuids::uuid, ControllerInfo*> handles;
 
-void controller_callback(MaaString msg, MaaJsonString details_json, MaaCallbackTransparentArg callback_arg)
+void controller_callback(MaaString msg, MaaString details_json, MaaCallbackTransparentArg callback_arg)
 {
     ControllerInfo* info = reinterpret_cast<ControllerInfo*>(callback_arg);
 

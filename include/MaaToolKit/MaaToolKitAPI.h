@@ -18,7 +18,7 @@ extern "C"
     MaaString MAA_TOOLKIT_API MaaToolKitGetDeviceAdbPath(MaaSize index);
     MaaString MAA_TOOLKIT_API MaaToolKitGetDeviceAdbSerial(MaaSize index);
     MaaAdbControllerType MAA_TOOLKIT_API MaaToolKitGetDeviceAdbControllerType(MaaSize index);
-    MaaJsonString MAA_TOOLKIT_API MaaToolKitGetDeviceAdbConfig(MaaSize index);
+    MaaString MAA_TOOLKIT_API MaaToolKitGetDeviceAdbConfig(MaaSize index);
 
     /* config */
 
@@ -52,8 +52,8 @@ extern "C"
     MaaBool MAA_TOOLKIT_API MaaToolKitSetTaskDescription(MaaToolKitTaskHandle config_handle, MaaString new_description);
     MaaString MAA_TOOLKIT_API MaaToolKitGetTaskEntry(MaaToolKitTaskHandle task_handle);
     MaaBool MAA_TOOLKIT_API MaaToolKitSetTaskEntry(MaaToolKitTaskHandle task_handle, MaaString new_entry);
-    MaaJsonString MAA_TOOLKIT_API MaaToolKitGetTaskParam(MaaToolKitTaskHandle task_handle);
-    MaaBool MAA_TOOLKIT_API MaaToolKitSetTaskParam(MaaToolKitTaskHandle task_handle, MaaJsonString new_param);
+    MaaString MAA_TOOLKIT_API MaaToolKitGetTaskParam(MaaToolKitTaskHandle task_handle);
+    MaaBool MAA_TOOLKIT_API MaaToolKitSetTaskParam(MaaToolKitTaskHandle task_handle, MaaString new_param);
     MaaBool MAA_TOOLKIT_API MaaToolKitGetTaskEnabled(MaaToolKitTaskHandle task_handle);
     MaaBool MAA_TOOLKIT_API MaaToolKitSetTaskEnabled(MaaToolKitTaskHandle task_handle, MaaBool new_enabled);
 

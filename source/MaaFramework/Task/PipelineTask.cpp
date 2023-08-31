@@ -396,7 +396,7 @@ PipelineTask::RunningResult PipelineTask::start_to_act(const FoundResult& act)
         stop_app(std::get<AppParam>(act.task_data.action_param));
         break;
     case Type::Custom:
-        custom_action(act.task_data.name, std::get<CustomParam>(act.task_data.action_param), act.rec.box);
+        custom_action(act.task_data.name, std::get<CustomParam>(act.task_data.action_param), act.rec.box, act.rec.detail);
         break;
     case Type::StopTask:
         LogInfo << "Action: StopTask";
@@ -521,7 +521,7 @@ void PipelineTask::stop_app(const MAA_PIPELINE_RES_NS::Action::AppParam& param)
 }
 
 void PipelineTask::custom_action(const std::string& task_name, const MAA_PIPELINE_RES_NS::Action::CustomParam& param,
-                                 const cv::Rect& cur_box)
+                                 const cv::Rect& cur_box, const std::string& cur_rec_detail)
 {
     if (!inst_) {
         LogError << "Inst is null";
@@ -533,8 +533,7 @@ void PipelineTask::custom_action(const std::string& task_name, const MAA_PIPELIN
         return;
     }
 
-    // TODO: 识别结果转 json
-    action->run(task_name, param, cur_box);
+    action->run(task_name, param, cur_box, cur_rec_detail);
 }
 
 cv::Rect PipelineTask::get_target_rect(const MAA_PIPELINE_RES_NS::Action::Target target, const cv::Rect& cur_box)
