@@ -73,7 +73,7 @@ MaaBool my_analyze(MaaSyncContextHandle sync_context, const MaaImageBufferHandle
 
     // Approach 2
     // This approach is more efficient, but may be difficult for some languages.
-    // I recommend you to use method 2 if you can
+    // I recommend you to use approach 2 if you can.
     void* raw_data = MaaGetImageRawData(image);
     int32_t width = MaaGetImageWidth(image);
     int32_t height = MaaGetImageHeight(image);
@@ -91,7 +91,7 @@ MaaBool my_analyze(MaaSyncContextHandle sync_context, const MaaImageBufferHandle
     box->width = my_result[2];
     box->height = my_result[3];
 
-    // Step 2: output anything you want.
+    // Step 2: output anything you want
     MaaSetString(detail_buff,
                  "Balabala, this string will be used by MaaCustomActionAPI and MaaSyncContextGetTaskResult. "
                  "And for compatibility, I recommend you use json.");
