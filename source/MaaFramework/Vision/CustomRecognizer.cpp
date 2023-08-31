@@ -43,7 +43,9 @@ CustomRecognizer::ResultOpt CustomRecognizer::analyze() const
         return std::nullopt;
     }
 
-    return Result { .box = box, .detail = std::move(detail) };
+    auto jdetail = json::parse(detail).value_or(detail);
+
+    return Result { .box = box, .detail = std::move(jdetail) };
 }
 
 MAA_VISION_NS_END

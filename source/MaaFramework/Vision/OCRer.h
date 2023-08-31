@@ -17,6 +17,15 @@ public:
         std::string text;
         cv::Rect box {};
         double score = 0.0;
+
+        json::value to_json() const
+        {
+            json::value root;
+            root["text"] = text;
+            root["box"] = json::array({ box.x, box.y, box.width, box.height });
+            root["score"] = score;
+            return root;
+        }
     };
 
     using ResultsVec = std::vector<Result>;

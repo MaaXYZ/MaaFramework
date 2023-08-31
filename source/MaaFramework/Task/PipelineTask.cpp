@@ -194,16 +194,31 @@ PipelineTask::RunningResult PipelineTask::find_first_and_run(const std::vector<s
     LogInfo << "Task hit:" << name << VAR(result.rec.box);
 
     uint64_t run_times = status()->get_pipeline_run_times(name);
+
+    json::value task_result;
+    task_result["recognition"] = result.rec.detail;
+    task_result["run_times"] = run_times;
+
     if (result.task_data.times_limit <= run_times) {
         LogInfo << "Task runout:" << name;
 
         found_data = std::move(result.task_data);
+
+        task_result["status"] = "Runout";
+        task_result["last_time"] = format_now();
+        status()->set_pipeline_task_result(name, std::move(task_result));
+
         return RunningResult::Runout;
     }
 
     auto ret = start_to_act(result);
 
     status()->increase_pipeline_run_times(name);
+
+    task_result["status"] = "Success";
+    task_result["last_time"] = format_now();
+    task_result["run_times"] = run_times + 1;
+    status()->set_pipeline_task_result(name, std::move(task_result));
 
     found_data = std::move(result.task_data);
     return ret;
@@ -249,7 +264,7 @@ std::optional<PipelineTask::RecResult> PipelineTask::recognize(const cv::Mat& im
     }
     cv::Rect cache {};
     if (task_data.cache) {
-        cache = status()->get_pipeline_rec_cache(task_data.name);
+        cache = status()->get_pipeline_rec_box(task_data.name);
     }
 
     std::optional<PipelineTask::RecResult> result;
@@ -276,7 +291,8 @@ std::optional<PipelineTask::RecResult> PipelineTask::recognize(const cv::Mat& im
     }
 
     if (result) {
-        status()->set_pipeline_rec_cache(task_data.name, result->box);
+        status()->set_pipeline_rec_box(task_data.name, result->box);
+        status()->set_pipeline_rec_detail(task_data.name, result->detail);
     }
 
     if (task_data.inverse) {
@@ -295,7 +311,7 @@ std::optional<PipelineTask::RecResult> PipelineTask::direct_hit(const cv::Mat& i
     std::ignore = param;
     std::ignore = name;
 
-    return RecResult { .box = cv::Rect() };
+    return RecResult { .box = cv::Rect(), .detail = json::object() };
 }
 
 std::optional<PipelineTask::RecResult> PipelineTask::template_match(const cv::Mat& image,
@@ -313,7 +329,7 @@ std::optional<PipelineTask::RecResult> PipelineTask::template_match(const cv::Ma
     if (!ret) {
         return std::nullopt;
     }
-    return RecResult { .box = ret->box };
+    return RecResult { .box = ret->box, .detail = ret->to_json() };
 }
 
 std::optional<PipelineTask::RecResult> PipelineTask::ocr(const cv::Mat& image, const MAA_VISION_NS::OcrParam& param,
@@ -335,7 +351,13 @@ std::optional<PipelineTask::RecResult> PipelineTask::ocr(const cv::Mat& image, c
     // TODO: sort by required regex.
     // sort_by_required_(res, param.text);
 
-    return RecResult { .box = res.front().box };
+    json::value detail = res.front().to_json();
+    json::array& all = detail["all"].as_array();
+    for (auto& item : res) {
+        all.emplace_back(item.to_json());
+    }
+
+    return RecResult { .box = res.front().box, .detail = std::move(detail) };
 }
 
 std::optional<PipelineTask::RecResult> PipelineTask::custom_recognize(const cv::Mat& image,
@@ -365,7 +387,7 @@ std::optional<PipelineTask::RecResult> PipelineTask::custom_recognize(const cv::
         return std::nullopt;
     }
 
-    return RecResult { .box = ret->box };
+    return RecResult { .box = ret->box, .detail = ret->to_json() };
 }
 
 PipelineTask::RunningResult PipelineTask::start_to_act(const FoundResult& act)
@@ -396,7 +418,8 @@ PipelineTask::RunningResult PipelineTask::start_to_act(const FoundResult& act)
         stop_app(std::get<AppParam>(act.task_data.action_param));
         break;
     case Type::Custom:
-        custom_action(act.task_data.name, std::get<CustomParam>(act.task_data.action_param), act.rec.box, act.rec.detail);
+        custom_action(act.task_data.name, std::get<CustomParam>(act.task_data.action_param), act.rec.box,
+                      act.rec.detail);
         break;
     case Type::StopTask:
         LogInfo << "Action: StopTask";
@@ -521,7 +544,7 @@ void PipelineTask::stop_app(const MAA_PIPELINE_RES_NS::Action::AppParam& param)
 }
 
 void PipelineTask::custom_action(const std::string& task_name, const MAA_PIPELINE_RES_NS::Action::CustomParam& param,
-                                 const cv::Rect& cur_box, const std::string& cur_rec_detail)
+                                 const cv::Rect& cur_box, const json::value& cur_rec_detail)
 {
     if (!inst_) {
         LogError << "Inst is null";
@@ -551,7 +574,7 @@ cv::Rect PipelineTask::get_target_rect(const MAA_PIPELINE_RES_NS::Action::Target
         raw = cur_box;
         break;
     case Target::Type::PreTask:
-        raw = status()->get_pipeline_rec_cache(std::get<std::string>(target.param));
+        raw = status()->get_pipeline_rec_box(std::get<std::string>(target.param));
         break;
     case Target::Type::Region:
         raw = std::get<cv::Rect>(target.param);

@@ -15,6 +15,14 @@ public:
     {
         cv::Rect box {};
         double score = 0.0;
+
+        json::value to_json() const
+        {
+            json::value root;
+            root["box"] = json::array({ box.x, box.y, box.width, box.height });
+            root["score"] = score;
+            return root;
+        }
     };
     using ResultOpt = std::optional<Result>;
 

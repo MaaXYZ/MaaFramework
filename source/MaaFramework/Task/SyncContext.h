@@ -36,6 +36,8 @@ public: // from MaaInstanceSink
     virtual void on_stop() override { need_exit_ = true; }
 
 private:
+    InstanceStatus* status() const { return inst_ ? inst_->status() : nullptr; }
+
     InstanceInternalAPI* inst_ = nullptr;
     bool need_exit_ = false;
 };

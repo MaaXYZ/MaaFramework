@@ -43,7 +43,7 @@ private:
     struct RecResult
     {
         cv::Rect box {};
-        std::string detail;
+        json::value detail;
     };
 
     struct FoundResult
@@ -81,7 +81,7 @@ private:
     void start_app(const MAA_PIPELINE_RES_NS::Action::AppParam& param);
     void stop_app(const MAA_PIPELINE_RES_NS::Action::AppParam& param);
     void custom_action(const std::string& task_name, const MAA_PIPELINE_RES_NS::Action::CustomParam& param,
-                       const cv::Rect& cur_box, const std::string& cur_rec_detail);
+                       const cv::Rect& cur_box, const json::value& cur_rec_detail);
 
     void wait_freezes(const MAA_PIPELINE_RES_NS::WaitFreezesParam& param, const cv::Rect& cur_box);
 

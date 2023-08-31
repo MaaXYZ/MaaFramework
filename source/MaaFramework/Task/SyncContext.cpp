@@ -3,6 +3,7 @@
 #include <meojson/json.hpp>
 
 #include "Controller/ControllerMgr.h"
+#include "Instance/InstanceStatus.h"
 #include "PipelineTask.h"
 #include "Utils/Logger.h"
 
@@ -75,10 +76,12 @@ cv::Mat SyncContext::screencap()
 
 std::string SyncContext::task_result(const std::string& task_name) const
 {
-    // TODO
-    std::ignore = task_name;
+    if (!status()) {
+        LogError << "Instance status is null";
+        return {};
+    }
 
-    return json::value().to_string();
+    return status()->get_pipeline_task_result(task_name).to_string();
 }
 
 MAA_TASK_NS_END

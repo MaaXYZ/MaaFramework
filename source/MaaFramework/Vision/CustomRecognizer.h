@@ -15,7 +15,15 @@ class CustomRecognizer : public VisionBase
     struct Result
     {
         cv::Rect box;
-        std::string detail;
+        json::value detail;
+
+        json::value to_json() const
+        {
+            json::value root;
+            root["box"] = json::array({ box.x, box.y, box.width, box.height });
+            root["detail"] = detail;
+            return root;
+        }
     };
     using ResultOpt = std::optional<Result>;
 
