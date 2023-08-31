@@ -15,12 +15,13 @@ extern "C"
         int32_t width;
         int32_t height;
     };
+    typedef MaaRect* MaaRectHandle;
 
     struct MAA_FRAMEWORK_API MaaCustomRecognizerAPI
     {
         MaaBool (*analyze)(MaaSyncContextHandle sync_context, const MaaImageBufferHandle image, MaaString task_name,
                            MaaString custom_recognition_param,
-                           /*out*/ MaaRect* box,
+                           /*out*/ MaaRectHandle box,
                            /*out*/ MaaStringBufferHandle detail_buff);
     };
 
