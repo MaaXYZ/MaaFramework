@@ -38,24 +38,24 @@ MaaSize MaaToolKitFindDevice()
     return device_mgr.find_device();
 }
 
-MaaSize MaaToolKitFindDeviceBySpecifiedADB(MaaString adb_path)
+MaaSize MaaToolKitFindDeviceBySpecifiedADB(MaaStringView adb_path)
 {
     LogFunc;
 
     return device_mgr.find_device(adb_path);
 }
 
-MaaString MaaToolKitGetDeviceName(MaaSize index)
+MaaStringView MaaToolKitGetDeviceName(MaaSize index)
 {
     return device_mgr.get_devices().at(index).name.c_str();
 }
 
-MaaString MaaToolKitGetDeviceAdbPath(MaaSize index)
+MaaStringView MaaToolKitGetDeviceAdbPath(MaaSize index)
 {
     return device_mgr.get_devices().at(index).adb_path.c_str();
 }
 
-MaaString MaaToolKitGetDeviceAdbSerial(MaaSize index)
+MaaStringView MaaToolKitGetDeviceAdbSerial(MaaSize index)
 {
     return device_mgr.get_devices().at(index).adb_serial.c_str();
 }
@@ -65,7 +65,7 @@ MaaAdbControllerType MaaToolKitGetDeviceAdbControllerType(MaaSize index)
     return device_mgr.get_devices().at(index).adb_controller_type;
 }
 
-MaaString MaaToolKitGetDeviceAdbConfig(MaaSize index)
+MaaStringView MaaToolKitGetDeviceAdbConfig(MaaSize index)
 {
     return device_mgr.get_devices().at(index).adb_config.c_str();
 }
@@ -100,22 +100,22 @@ MaaBool MaaToolKitBindInstance(MaaToolKitConfigHandle config_handle, MaaInstance
     return true;
 }
 
-MaaToolKitConfigHandle MaaToolKitAddConfig(MaaString config_name, MaaToolKitConfigHandle copy_from)
+MaaToolKitConfigHandle MaaToolKitAddConfig(MaaStringView config_name, MaaToolKitConfigHandle copy_from)
 {
     return config_mgr.add_config(config_name, copy_from);
 }
 
-MaaBool MaaToolKitDelConfig(MaaString config_name)
+MaaBool MaaToolKitDelConfig(MaaStringView config_name)
 {
     return config_mgr.del_config(config_name);
 }
 
-MaaBool MaaToolKitSetCurrentConfig(MaaString config_name)
+MaaBool MaaToolKitSetCurrentConfig(MaaStringView config_name)
 {
     return config_mgr.set_current_config(config_name);
 }
 
-MaaString MaaToolKitConfigName(MaaToolKitConfigHandle config_handle)
+MaaStringView MaaToolKitConfigName(MaaToolKitConfigHandle config_handle)
 {
     if (!config_handle) {
         LogError << "config_handle is null" << VAR(config_handle);
@@ -125,7 +125,7 @@ MaaString MaaToolKitConfigName(MaaToolKitConfigHandle config_handle)
     return config_handle->get_name().data();
 }
 
-MaaString MaaToolKitGetConfigDescription(MaaToolKitConfigHandle config_handle)
+MaaStringView MaaToolKitGetConfigDescription(MaaToolKitConfigHandle config_handle)
 {
     if (!config_handle) {
         LogError << "config_handle is null" << VAR(config_handle);
@@ -135,7 +135,7 @@ MaaString MaaToolKitGetConfigDescription(MaaToolKitConfigHandle config_handle)
     return config_handle->get_description().data();
 }
 
-MaaBool MaaToolKitSetConfigDescription(MaaToolKitConfigHandle config_handle, MaaString new_description)
+MaaBool MaaToolKitSetConfigDescription(MaaToolKitConfigHandle config_handle, MaaStringView new_description)
 {
     if (!config_handle) {
         LogError << "config_handle is null" << VAR(config_handle);
@@ -166,7 +166,7 @@ MaaToolKitTaskHandle MaaToolKitGetTask(MaaToolKitConfigHandle config_handle, Maa
     return config_handle->task_by_index(index);
 }
 
-MaaToolKitTaskHandle MaaToolKitAddTask(MaaToolKitConfigHandle config_handle, MaaString task_name,
+MaaToolKitTaskHandle MaaToolKitAddTask(MaaToolKitConfigHandle config_handle, MaaStringView task_name,
                                        MaaToolKitTaskHandle copy_from)
 {
     if (!config_handle) {
@@ -177,7 +177,7 @@ MaaToolKitTaskHandle MaaToolKitAddTask(MaaToolKitConfigHandle config_handle, Maa
     return config_handle->add_task(task_name, copy_from);
 }
 
-MaaBool MaaToolKitDelTask(MaaToolKitConfigHandle config_handle, MaaString task_name)
+MaaBool MaaToolKitDelTask(MaaToolKitConfigHandle config_handle, MaaStringView task_name)
 {
     if (!config_handle) {
         LogError << "config_handle is null" << VAR(config_handle);
@@ -187,7 +187,7 @@ MaaBool MaaToolKitDelTask(MaaToolKitConfigHandle config_handle, MaaString task_n
     return config_handle->del_task(task_name);
 }
 
-MaaBool MaaToolKitSetTaskIndex(MaaToolKitConfigHandle config_handle, MaaString task_name, MaaSize new_index)
+MaaBool MaaToolKitSetTaskIndex(MaaToolKitConfigHandle config_handle, MaaStringView task_name, MaaSize new_index)
 {
     if (!config_handle) {
         LogError << "config_handle is null" << VAR(config_handle);
@@ -197,7 +197,7 @@ MaaBool MaaToolKitSetTaskIndex(MaaToolKitConfigHandle config_handle, MaaString t
     return config_handle->set_task_index(task_name, new_index);
 }
 
-MaaString MaaToolKitTaskName(MaaToolKitTaskHandle task_handle)
+MaaStringView MaaToolKitTaskName(MaaToolKitTaskHandle task_handle)
 {
     if (!task_handle) {
         LogError << "task_handle is null" << VAR(task_handle);
@@ -207,7 +207,7 @@ MaaString MaaToolKitTaskName(MaaToolKitTaskHandle task_handle)
     return task_handle->get_name().data();
 }
 
-MaaString MaaToolKitGetTaskDescription(MaaToolKitTaskHandle task_handle)
+MaaStringView MaaToolKitGetTaskDescription(MaaToolKitTaskHandle task_handle)
 {
     if (!task_handle) {
         LogError << "task_handle is null" << VAR(task_handle);
@@ -217,7 +217,7 @@ MaaString MaaToolKitGetTaskDescription(MaaToolKitTaskHandle task_handle)
     return task_handle->get_description().data();
 }
 
-MaaBool MaaToolKitSetTaskDescription(MaaToolKitTaskHandle task_handle, MaaString new_description)
+MaaBool MaaToolKitSetTaskDescription(MaaToolKitTaskHandle task_handle, MaaStringView new_description)
 {
     if (!task_handle) {
         LogError << "task_handle is null" << VAR(task_handle);
@@ -228,7 +228,7 @@ MaaBool MaaToolKitSetTaskDescription(MaaToolKitTaskHandle task_handle, MaaString
     return true;
 }
 
-MaaString MaaToolKitGetTaskEntry(MaaToolKitTaskHandle task_handle)
+MaaStringView MaaToolKitGetTaskEntry(MaaToolKitTaskHandle task_handle)
 {
     if (!task_handle) {
         LogError << "task_handle is null" << VAR(task_handle);
@@ -238,7 +238,7 @@ MaaString MaaToolKitGetTaskEntry(MaaToolKitTaskHandle task_handle)
     return task_handle->get_entry().data();
 }
 
-MaaBool MaaToolKitSetTaskEntry(MaaToolKitTaskHandle task_handle, MaaString new_entry)
+MaaBool MaaToolKitSetTaskEntry(MaaToolKitTaskHandle task_handle, MaaStringView new_entry)
 {
     if (!task_handle) {
         LogError << "task_handle is null" << VAR(task_handle);
@@ -249,7 +249,7 @@ MaaBool MaaToolKitSetTaskEntry(MaaToolKitTaskHandle task_handle, MaaString new_e
     return true;
 }
 
-MaaString MaaToolKitGetTaskParam(MaaToolKitTaskHandle task_handle)
+MaaStringView MaaToolKitGetTaskParam(MaaToolKitTaskHandle task_handle)
 {
     if (!task_handle) {
         LogError << "task_handle is null" << VAR(task_handle);
@@ -258,7 +258,7 @@ MaaString MaaToolKitGetTaskParam(MaaToolKitTaskHandle task_handle)
     return task_handle->get_param().data();
 }
 
-MaaBool MaaToolKitSetTaskParam(MaaToolKitTaskHandle task_handle, MaaString new_param)
+MaaBool MaaToolKitSetTaskParam(MaaToolKitTaskHandle task_handle, MaaStringView new_param)
 {
     if (!task_handle) {
         LogError << "task_handle is null" << VAR(task_handle);
@@ -351,7 +351,7 @@ MaaInstanceHandle MaaToolKitGetRawInstance(MaaToolKitConfigHandle config_handle)
     return config_handle->raw_instance();
 }
 
-// MaaBool MaaToolKitStartWebServer(MaaString ip, uint16_t port)
+// MaaBool MaaToolKitStartWebServer(MaaStringView ip, uint16_t port)
 //{
 //     return MAA_TOOLKIT_SERVER_NS::HttpServer::get_instance().start(ip, port);
 // }

@@ -16,7 +16,7 @@
 
 #pragma message("MAA_VERSION: " MAA_VERSION)
 
-MaaString MaaVersion()
+MaaStringView MaaVersion()
 {
     return MAA_VERSION;
 }
@@ -36,7 +36,7 @@ void MaaDestroyStringBuffer(MaaStringBufferHandle handle)
     delete handle;
 }
 
-MaaString MaaGetString(MaaStringBufferHandle handle)
+MaaStringView MaaGetString(MaaStringBufferHandle handle)
 {
     if (!handle) {
         LogError << "handle is null";
@@ -56,7 +56,7 @@ MaaSize MaaGetStringSize(MaaStringBufferHandle handle)
     return handle->size();
 }
 
-MaaBool MaaSetString(MaaStringBufferHandle handle, MaaString str)
+MaaBool MaaSetString(MaaStringBufferHandle handle, MaaStringView str)
 {
     if (!handle || !str) {
         LogError << "handle is null";
@@ -67,7 +67,7 @@ MaaBool MaaSetString(MaaStringBufferHandle handle, MaaString str)
     return true;
 }
 
-MaaBool MaaSetStringEx(MaaStringBufferHandle handle, MaaString str, MaaSize size)
+MaaBool MaaSetStringEx(MaaStringBufferHandle handle, MaaStringView str, MaaSize size)
 {
     if (!handle || !str) {
         LogError << "handle is null";
@@ -204,7 +204,7 @@ void MaaResourceDestroy(MaaResourceHandle res)
     delete res;
 }
 
-MaaResId MaaResourcePostResource(MaaResourceHandle res, MaaString path)
+MaaResId MaaResourcePostResource(MaaResourceHandle res, MaaStringView path)
 {
     LogFunc << VAR_VOIDP(res) << VAR(path);
 
@@ -275,8 +275,8 @@ MaaBool MaaResourceGetHash(MaaResourceHandle res, MaaStringBufferHandle buff)
     return true;
 }
 
-MaaControllerHandle MaaAdbControllerCreate(MaaString adb_path, MaaString address, MaaAdbControllerType type,
-                                           MaaString config, MaaControllerCallback callback,
+MaaControllerHandle MaaAdbControllerCreate(MaaStringView adb_path, MaaStringView address, MaaAdbControllerType type,
+                                           MaaStringView config, MaaControllerCallback callback,
                                            MaaCallbackTransparentArg callback_arg)
 {
     LogFunc << VAR(adb_path) << VAR(address) << VAR_VOIDP(callback) << VAR_VOIDP(callback_arg);
@@ -303,7 +303,7 @@ MaaControllerHandle MaaCustomControllerCreate(MaaCustomControllerHandle handle, 
     return new MAA_CTRL_NS::CustomController(handle, callback, callback_arg);
 }
 
-MaaControllerHandle MaaThriftControllerCreate(MaaString param, MaaControllerCallback callback,
+MaaControllerHandle MaaThriftControllerCreate(MaaStringView param, MaaControllerCallback callback,
                                               MaaCallbackTransparentArg callback_arg)
 {
     LogFunc << VAR(param) << VAR_VOIDP(callback) << VAR_VOIDP(callback_arg);
@@ -531,7 +531,7 @@ MaaBool MaaInited(MaaInstanceHandle inst)
     return inst->inited();
 }
 
-MaaBool MaaRegisterCustomRecognizer(MaaInstanceHandle inst, MaaString name, MaaCustomRecognizerHandle recognizer)
+MaaBool MaaRegisterCustomRecognizer(MaaInstanceHandle inst, MaaStringView name, MaaCustomRecognizerHandle recognizer)
 {
     LogFunc << VAR_VOIDP(inst) << VAR(name) << VAR_VOIDP(recognizer);
 
@@ -543,7 +543,7 @@ MaaBool MaaRegisterCustomRecognizer(MaaInstanceHandle inst, MaaString name, MaaC
     return inst->register_custom_recognizer(name, recognizer);
 }
 
-MaaBool MaaUnregisterCustomRecognizer(MaaInstanceHandle inst, MaaString name)
+MaaBool MaaUnregisterCustomRecognizer(MaaInstanceHandle inst, MaaStringView name)
 {
     LogFunc << VAR_VOIDP(inst) << VAR(name);
 
@@ -568,7 +568,7 @@ MaaBool MaaClearCustomRecognizer(MaaInstanceHandle inst)
     return true;
 }
 
-MaaBool MaaRegisterCustomAction(MaaInstanceHandle inst, MaaString name, MaaCustomActionHandle action)
+MaaBool MaaRegisterCustomAction(MaaInstanceHandle inst, MaaStringView name, MaaCustomActionHandle action)
 {
     LogFunc << VAR_VOIDP(inst) << VAR(name) << VAR_VOIDP(action);
 
@@ -580,7 +580,7 @@ MaaBool MaaRegisterCustomAction(MaaInstanceHandle inst, MaaString name, MaaCusto
     return inst->register_custom_action(name, action);
 }
 
-MaaBool MaaUnregisterCustomAction(MaaInstanceHandle inst, MaaString name)
+MaaBool MaaUnregisterCustomAction(MaaInstanceHandle inst, MaaStringView name)
 {
     LogFunc << VAR_VOIDP(inst) << VAR(name);
 
@@ -606,7 +606,7 @@ MaaBool MaaClearCustomAction(MaaInstanceHandle inst)
     return true;
 }
 
-MaaTaskId MaaPostTask(MaaInstanceHandle inst, MaaString entry, MaaString param)
+MaaTaskId MaaPostTask(MaaInstanceHandle inst, MaaStringView entry, MaaStringView param)
 {
     LogFunc << VAR_VOIDP(inst) << VAR(entry) << VAR(param);
 
@@ -617,7 +617,7 @@ MaaTaskId MaaPostTask(MaaInstanceHandle inst, MaaString entry, MaaString param)
     return inst->post_task(entry, param);
 }
 
-MaaBool MaaSetTaskParam(MaaInstanceHandle inst, MaaTaskId id, MaaString param)
+MaaBool MaaSetTaskParam(MaaInstanceHandle inst, MaaTaskId id, MaaStringView param)
 {
     LogFunc << VAR_VOIDP(inst) << VAR(id) << VAR(param);
 
@@ -695,7 +695,7 @@ MaaControllerHandle MaaGetController(MaaInstanceHandle inst)
     return inst->controller();
 }
 
-MaaBool MaaSyncContextRunTask(MaaSyncContextHandle sync_context, MaaString task, MaaString param)
+MaaBool MaaSyncContextRunTask(MaaSyncContextHandle sync_context, MaaStringView task, MaaStringView param)
 {
     LogFunc << VAR_VOIDP(sync_context) << VAR(task) << VAR(param);
 
@@ -750,7 +750,7 @@ MaaBool MaaSyncContextScreencap(MaaSyncContextHandle sync_context, MaaImageBuffe
     return true;
 }
 
-MaaBool MaaSyncContextGetTaskResult(MaaSyncContextHandle sync_context, MaaString task, MaaStringBufferHandle buffer)
+MaaBool MaaSyncContextGetTaskResult(MaaSyncContextHandle sync_context, MaaStringView task, MaaStringBufferHandle buffer)
 {
     LogFunc << VAR_VOIDP(sync_context) << VAR(buffer);
 
@@ -763,8 +763,8 @@ MaaBool MaaSyncContextGetTaskResult(MaaSyncContextHandle sync_context, MaaString
     return true;
 }
 
-MaaBool MaaSyncContextRunRecognizer(MaaSyncContextHandle sync_context, MaaImageBufferHandle image, MaaString task,
-                                    MaaString task_param, MaaRectHandle box, MaaStringBufferHandle detail_buff)
+MaaBool MaaSyncContextRunRecognizer(MaaSyncContextHandle sync_context, MaaImageBufferHandle image, MaaStringView task,
+                                    MaaStringView task_param, MaaRectHandle box, MaaStringBufferHandle detail_buff)
 {
     // TODO
     std::ignore = sync_context;
@@ -778,8 +778,8 @@ MaaBool MaaSyncContextRunRecognizer(MaaSyncContextHandle sync_context, MaaImageB
     return false;
 }
 
-MaaBool MaaSyncContextRunAction(MaaSyncContextHandle sync_context, MaaString task_name, MaaString task_param,
-                                MaaRectHandle cur_box, MaaString cur_rec_detail)
+MaaBool MaaSyncContextRunAction(MaaSyncContextHandle sync_context, MaaStringView task_name, MaaStringView task_param,
+                                MaaRectHandle cur_box, MaaStringView cur_rec_detail)
 {
     // TODO
     std::ignore = sync_context;

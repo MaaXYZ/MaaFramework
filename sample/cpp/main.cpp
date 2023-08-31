@@ -64,8 +64,8 @@ int main([[maybe_unused]] int argc, char** argv)
     return 0;
 }
 
-MaaBool my_analyze(MaaSyncContextHandle sync_context, const MaaImageBufferHandle image, MaaString task_name,
-                   MaaString custom_recognition_param,
+MaaBool my_analyze(MaaSyncContextHandle sync_context, const MaaImageBufferHandle image, MaaStringView task_name,
+                   MaaStringView custom_recognition_param,
                    /*out*/ MaaRectHandle box,
                    /*out*/ MaaStringBufferHandle detail_buff)
 {

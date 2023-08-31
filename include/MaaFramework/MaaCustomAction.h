@@ -12,8 +12,8 @@ extern "C"
 
     struct MAA_FRAMEWORK_API MaaCustomActionAPI
     {
-        MaaBool (*run)(MaaSyncContextHandle sync_context, MaaString task_name, MaaString custom_action_param,
-                       MaaRectHandle cur_box, MaaString cur_rec_detail);
+        MaaBool (*run)(MaaSyncContextHandle sync_context, MaaStringView task_name, MaaStringView custom_action_param,
+                       MaaRectHandle cur_box, MaaStringView cur_rec_detail);
 
         void (*stop)(void);
     };

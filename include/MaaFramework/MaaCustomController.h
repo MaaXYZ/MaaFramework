@@ -9,15 +9,15 @@ extern "C"
 #endif
     struct MAA_FRAMEWORK_API MaaCustomControllerAPI
     {
-        MaaBool (*set_option)(MaaCtrlOption key, MaaString value);
+        MaaBool (*set_option)(MaaCtrlOption key, MaaStringView value);
 
         MaaBool (*connect)(void);
         MaaBool (*click)(int32_t x, int32_t y);
         MaaBool (*swipe)(int32_t* x_steps_buff, int32_t* y_steps_buff, int32_t* step_delay_buff, MaaSize buff_size);
         MaaBool (*press_key)(int32_t keycode);
 
-        MaaBool (*start_app)(MaaString package_name);
-        MaaBool (*stop_app)(MaaString package_name);
+        MaaBool (*start_app)(MaaStringView package_name);
+        MaaBool (*stop_app)(MaaStringView package_name);
 
         MaaBool (*get_resolution)(int32_t* width, int32_t* height);
         // if buff is null, screencap and return image size; else return written size

@@ -81,7 +81,7 @@ void ControlUnitMgr::set_replacement(const std::map<std::string, std::string>& r
     }
 }
 
-std::shared_ptr<DeviceListAPI> create_adb_device_list_obj(MaaString adb_path, MaaString config)
+std::shared_ptr<DeviceListAPI> create_adb_device_list_obj(MaaStringView adb_path, MaaStringView config)
 {
     LogFunc << VAR(adb_path) << VAR(config);
 
@@ -112,8 +112,8 @@ std::shared_ptr<DeviceListAPI> create_adb_device_list_obj(MaaString adb_path, Ma
     return device_list_mgr;
 }
 
-std::shared_ptr<ControlUnitAPI> create_adb_controller_unit(MaaString adb_path, MaaString adb_serial,
-                                                           MaaAdbControllerType type, MaaString config)
+std::shared_ptr<ControlUnitAPI> create_adb_controller_unit(MaaStringView adb_path, MaaStringView adb_serial,
+                                                           MaaAdbControllerType type, MaaStringView config)
 {
     LogFunc << VAR(adb_path) << VAR(adb_serial) << VAR(type) << VAR(config);
 
@@ -234,8 +234,8 @@ std::shared_ptr<ControlUnitAPI> create_adb_controller_unit(MaaString adb_path, M
     return unit_mgr;
 }
 
-std::shared_ptr<ConnectionAPI> create_adb_connection(MaaString adb_path, MaaString adb_serial,
-                                                     MaaAdbControllerType type, MaaString config)
+std::shared_ptr<ConnectionAPI> create_adb_connection(MaaStringView adb_path, MaaStringView adb_serial,
+                                                     MaaAdbControllerType type, MaaStringView config)
 {
     std::ignore = type;
 
@@ -267,8 +267,8 @@ std::shared_ptr<ConnectionAPI> create_adb_connection(MaaString adb_path, MaaStri
     return connection;
 }
 
-std::shared_ptr<DeviceInfoAPI> create_adb_device_info(MaaString adb_path, MaaString adb_serial,
-                                                      MaaAdbControllerType type, MaaString config)
+std::shared_ptr<DeviceInfoAPI> create_adb_device_info(MaaStringView adb_path, MaaStringView adb_serial,
+                                                      MaaAdbControllerType type, MaaStringView config)
 {
     std::ignore = type;
 
@@ -300,8 +300,8 @@ std::shared_ptr<DeviceInfoAPI> create_adb_device_info(MaaString adb_path, MaaStr
     return device_info;
 }
 
-std::shared_ptr<ActivityAPI> create_adb_activity(MaaString adb_path, MaaString adb_serial, MaaAdbControllerType type,
-                                                 MaaString config)
+std::shared_ptr<ActivityAPI> create_adb_activity(MaaStringView adb_path, MaaStringView adb_serial, MaaAdbControllerType type,
+                                                 MaaStringView config)
 {
     std::ignore = type;
 
@@ -333,8 +333,8 @@ std::shared_ptr<ActivityAPI> create_adb_activity(MaaString adb_path, MaaString a
     return activity;
 }
 
-std::shared_ptr<TouchInputAPI> create_adb_touch_input(MaaString adb_path, MaaString adb_serial,
-                                                      MaaAdbControllerType type, MaaString config)
+std::shared_ptr<TouchInputAPI> create_adb_touch_input(MaaStringView adb_path, MaaStringView adb_serial,
+                                                      MaaAdbControllerType type, MaaStringView config)
 {
     auto json_opt = json::parse(std::string_view(config));
     if (!json_opt) {
@@ -381,8 +381,8 @@ std::shared_ptr<TouchInputAPI> create_adb_touch_input(MaaString adb_path, MaaStr
     return touch_unit;
 }
 
-std::shared_ptr<KeyInputAPI> create_adb_key_input(MaaString adb_path, MaaString adb_serial, MaaAdbControllerType type,
-                                                  MaaString config)
+std::shared_ptr<KeyInputAPI> create_adb_key_input(MaaStringView adb_path, MaaStringView adb_serial, MaaAdbControllerType type,
+                                                  MaaStringView config)
 {
     auto json_opt = json::parse(std::string_view(config));
     if (!json_opt) {
@@ -425,8 +425,8 @@ std::shared_ptr<KeyInputAPI> create_adb_key_input(MaaString adb_path, MaaString 
     return key_unit;
 }
 
-std::shared_ptr<ScreencapAPI> create_adb_screencap(MaaString adb_path, MaaString adb_serial, MaaAdbControllerType type,
-                                                   MaaString config)
+std::shared_ptr<ScreencapAPI> create_adb_screencap(MaaStringView adb_path, MaaStringView adb_serial, MaaAdbControllerType type,
+                                                   MaaStringView config)
 {
     auto json_opt = json::parse(std::string_view(config));
     if (!json_opt) {

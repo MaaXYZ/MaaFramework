@@ -120,27 +120,31 @@ public:
     virtual std::shared_ptr<ScreencapAPI> screencap_obj() = 0;
 };
 
-std::shared_ptr<DeviceListAPI> MAA_CONTROL_UNIT_API create_adb_device_list_obj(MaaString adb_path,
-                                                                               MaaString config);
-std::shared_ptr<ControlUnitAPI> MAA_CONTROL_UNIT_API create_adb_controller_unit(MaaString adb_path,
-                                                                                MaaString adb_serial,
+std::shared_ptr<DeviceListAPI> MAA_CONTROL_UNIT_API create_adb_device_list_obj(MaaStringView adb_path,
+                                                                               MaaStringView config);
+std::shared_ptr<ControlUnitAPI> MAA_CONTROL_UNIT_API create_adb_controller_unit(MaaStringView adb_path,
+                                                                                MaaStringView adb_serial,
                                                                                 MaaAdbControllerType type,
-                                                                                MaaString config);
-std::shared_ptr<ConnectionAPI> MAA_CONTROL_UNIT_API create_adb_connection(MaaString adb_path, MaaString adb_serial,
+                                                                                MaaStringView config);
+std::shared_ptr<ConnectionAPI> MAA_CONTROL_UNIT_API create_adb_connection(MaaStringView adb_path,
+                                                                          MaaStringView adb_serial,
                                                                           MaaAdbControllerType type,
-                                                                          MaaString config);
-std::shared_ptr<DeviceInfoAPI> MAA_CONTROL_UNIT_API create_adb_device_info(MaaString adb_path, MaaString adb_serial,
+                                                                          MaaStringView config);
+std::shared_ptr<DeviceInfoAPI> MAA_CONTROL_UNIT_API create_adb_device_info(MaaStringView adb_path,
+                                                                           MaaStringView adb_serial,
                                                                            MaaAdbControllerType type,
-                                                                           MaaString config);
-std::shared_ptr<ActivityAPI> MAA_CONTROL_UNIT_API create_adb_activity(MaaString adb_path, MaaString adb_serial,
-                                                                      MaaAdbControllerType type, MaaString config);
-std::shared_ptr<TouchInputAPI> MAA_CONTROL_UNIT_API create_adb_touch_input(MaaString adb_path, MaaString adb_serial,
+                                                                           MaaStringView config);
+std::shared_ptr<ActivityAPI> MAA_CONTROL_UNIT_API create_adb_activity(MaaStringView adb_path, MaaStringView adb_serial,
+                                                                      MaaAdbControllerType type, MaaStringView config);
+std::shared_ptr<TouchInputAPI> MAA_CONTROL_UNIT_API create_adb_touch_input(MaaStringView adb_path,
+                                                                           MaaStringView adb_serial,
                                                                            MaaAdbControllerType type,
-                                                                           MaaString config);
-std::shared_ptr<KeyInputAPI> MAA_CONTROL_UNIT_API create_adb_key_input(MaaString adb_path, MaaString adb_serial,
-                                                                       MaaAdbControllerType type, MaaString config);
-std::shared_ptr<ScreencapAPI> MAA_CONTROL_UNIT_API create_adb_screencap(MaaString adb_path, MaaString adb_serial,
+                                                                           MaaStringView config);
+std::shared_ptr<KeyInputAPI> MAA_CONTROL_UNIT_API create_adb_key_input(MaaStringView adb_path, MaaStringView adb_serial,
+                                                                       MaaAdbControllerType type, MaaStringView config);
+std::shared_ptr<ScreencapAPI> MAA_CONTROL_UNIT_API create_adb_screencap(MaaStringView adb_path,
+                                                                        MaaStringView adb_serial,
                                                                         MaaAdbControllerType type,
-                                                                        MaaString config);
+                                                                        MaaStringView config);
 
 MAA_CTRL_UNIT_NS_END

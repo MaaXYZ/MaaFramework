@@ -19,7 +19,7 @@ typedef uint8_t MaaBool;
 typedef uint64_t MaaSize;
 #define MaaNullSize ((MaaSize)-1)
 
-typedef const char* MaaString;
+typedef const char* MaaStringView;
 
 typedef int32_t MaaStatus;
 enum MaaStatusEnum
@@ -121,7 +121,7 @@ enum MaaAdbControllerTypeEnum
 
 typedef void* MaaCallbackTransparentArg;
 
-typedef void (*MaaAPICallback)(MaaString msg, MaaString details_json, MaaCallbackTransparentArg callback_arg);
+typedef void (*MaaAPICallback)(MaaStringView msg, MaaStringView details_json, MaaCallbackTransparentArg callback_arg);
 typedef MaaAPICallback MaaResourceCallback;
 typedef MaaAPICallback MaaControllerCallback;
 typedef MaaAPICallback MaaInstanceCallback;

@@ -8,14 +8,14 @@ extern "C"
 {
 #endif
     /* Utils */
-    MaaString MAA_FRAMEWORK_API MaaVersion();
+    MaaStringView MAA_FRAMEWORK_API MaaVersion();
 
     MaaStringBufferHandle MAA_FRAMEWORK_API MaaCreateStringBuffer();
     void MAA_FRAMEWORK_API MaaDestroyStringBuffer(MaaStringBufferHandle handle);
-    MaaString MAA_FRAMEWORK_API MaaGetString(MaaStringBufferHandle handle);
+    MaaStringView MAA_FRAMEWORK_API MaaGetString(MaaStringBufferHandle handle);
     MaaSize MAA_FRAMEWORK_API MaaGetStringSize(MaaStringBufferHandle handle);
-    MaaBool MAA_FRAMEWORK_API MaaSetString(MaaStringBufferHandle handle, MaaString str);
-    MaaBool MAA_FRAMEWORK_API MaaSetStringEx(MaaStringBufferHandle handle, MaaString str, MaaSize size);
+    MaaBool MAA_FRAMEWORK_API MaaSetString(MaaStringBufferHandle handle, MaaStringView str);
+    MaaBool MAA_FRAMEWORK_API MaaSetStringEx(MaaStringBufferHandle handle, MaaStringView str, MaaSize size);
 
     MaaImageBufferHandle MAA_FRAMEWORK_API MaaCreateImageBuffer();
     void MAA_FRAMEWORK_API MaaDestroyImageBuffer(MaaImageBufferHandle handle);
@@ -42,7 +42,7 @@ extern "C"
                                                           MaaCallbackTransparentArg callback_arg);
     void MAA_FRAMEWORK_API MaaResourceDestroy(MaaResourceHandle res);
 
-    MaaResId MAA_FRAMEWORK_API MaaResourcePostResource(MaaResourceHandle res, MaaString path);
+    MaaResId MAA_FRAMEWORK_API MaaResourcePostResource(MaaResourceHandle res, MaaStringView path);
     MaaStatus MAA_FRAMEWORK_API MaaResourceStatus(MaaResourceHandle res, MaaResId id);
     MaaStatus MAA_FRAMEWORK_API MaaResourceWait(MaaResourceHandle res, MaaResId id);
     MaaBool MAA_FRAMEWORK_API MaaResourceLoaded(MaaResourceHandle res);
@@ -53,14 +53,14 @@ extern "C"
 
     /* Controller */
 
-    MaaControllerHandle MAA_FRAMEWORK_API MaaAdbControllerCreate(MaaString adb_path, MaaString address,
-                                                                 MaaAdbControllerType type, MaaString config,
+    MaaControllerHandle MAA_FRAMEWORK_API MaaAdbControllerCreate(MaaStringView adb_path, MaaStringView address,
+                                                                 MaaAdbControllerType type, MaaStringView config,
                                                                  MaaControllerCallback callback,
                                                                  MaaCallbackTransparentArg callback_arg);
     MaaControllerHandle MAA_FRAMEWORK_API MaaCustomControllerCreate(MaaCustomControllerHandle handle,
                                                                     MaaControllerCallback callback,
                                                                     MaaCallbackTransparentArg callback_arg);
-    MaaControllerHandle MAA_FRAMEWORK_API MaaThriftControllerCreate(MaaString param, MaaControllerCallback callback,
+    MaaControllerHandle MAA_FRAMEWORK_API MaaThriftControllerCreate(MaaStringView param, MaaControllerCallback callback,
                                                                     MaaCallbackTransparentArg callback_arg);
 
     void MAA_FRAMEWORK_API MaaControllerDestroy(MaaControllerHandle ctrl);
@@ -93,18 +93,18 @@ extern "C"
     MaaBool MAA_FRAMEWORK_API MaaBindController(MaaInstanceHandle inst, MaaControllerHandle ctrl);
     MaaBool MAA_FRAMEWORK_API MaaInited(MaaInstanceHandle inst);
 
-    MaaBool MAA_FRAMEWORK_API MaaRegisterCustomRecognizer(MaaInstanceHandle inst, MaaString name,
+    MaaBool MAA_FRAMEWORK_API MaaRegisterCustomRecognizer(MaaInstanceHandle inst, MaaStringView name,
                                                           MaaCustomRecognizerHandle recognizer);
-    MaaBool MAA_FRAMEWORK_API MaaUnregisterCustomRecognizer(MaaInstanceHandle inst, MaaString name);
+    MaaBool MAA_FRAMEWORK_API MaaUnregisterCustomRecognizer(MaaInstanceHandle inst, MaaStringView name);
     MaaBool MAA_FRAMEWORK_API MaaClearCustomRecognizer(MaaInstanceHandle inst);
 
-    MaaBool MAA_FRAMEWORK_API MaaRegisterCustomAction(MaaInstanceHandle inst, MaaString name,
+    MaaBool MAA_FRAMEWORK_API MaaRegisterCustomAction(MaaInstanceHandle inst, MaaStringView name,
                                                       MaaCustomActionHandle action);
-    MaaBool MAA_FRAMEWORK_API MaaUnregisterCustomAction(MaaInstanceHandle inst, MaaString name);
+    MaaBool MAA_FRAMEWORK_API MaaUnregisterCustomAction(MaaInstanceHandle inst, MaaStringView name);
     MaaBool MAA_FRAMEWORK_API MaaClearCustomAction(MaaInstanceHandle inst);
 
-    MaaTaskId MAA_FRAMEWORK_API MaaPostTask(MaaInstanceHandle inst, MaaString entry, MaaString param);
-    MaaBool MAA_FRAMEWORK_API MaaSetTaskParam(MaaInstanceHandle inst, MaaTaskId id, MaaString param);
+    MaaTaskId MAA_FRAMEWORK_API MaaPostTask(MaaInstanceHandle inst, MaaStringView entry, MaaStringView param);
+    MaaBool MAA_FRAMEWORK_API MaaSetTaskParam(MaaInstanceHandle inst, MaaTaskId id, MaaStringView param);
 
     MaaStatus MAA_FRAMEWORK_API MaaTaskStatus(MaaInstanceHandle inst, MaaTaskId id);
     MaaStatus MAA_FRAMEWORK_API MaaWaitTask(MaaInstanceHandle inst, MaaTaskId id);
@@ -117,22 +117,23 @@ extern "C"
 
     /* SyncContext */
 
-    MaaBool MAA_FRAMEWORK_API MaaSyncContextRunTask(MaaSyncContextHandle sync_context, MaaString task, MaaString param);
+    MaaBool MAA_FRAMEWORK_API MaaSyncContextRunTask(MaaSyncContextHandle sync_context, MaaStringView task,
+                                                    MaaStringView param);
     void MAA_FRAMEWORK_API MaaSyncContextClick(MaaSyncContextHandle sync_context, int32_t x, int32_t y);
     void MAA_FRAMEWORK_API MaaSyncContextSwipe(MaaSyncContextHandle sync_context, int32_t* x_steps_buff,
                                                int32_t* y_steps_buff, int32_t* step_delay_buff, MaaSize buff_size);
     MaaBool MAA_FRAMEWORK_API MaaSyncContextScreencap(MaaSyncContextHandle sync_context,
                                                       /* out */ MaaImageBufferHandle buffer);
-    MaaBool MAA_FRAMEWORK_API MaaSyncContextGetTaskResult(MaaSyncContextHandle sync_context, MaaString task,
+    MaaBool MAA_FRAMEWORK_API MaaSyncContextGetTaskResult(MaaSyncContextHandle sync_context, MaaStringView task,
                                                           /* out */ MaaStringBufferHandle buffer);
 
     MaaBool MAA_FRAMEWORK_API MaaSyncContextRunRecognizer(MaaSyncContextHandle sync_context, MaaImageBufferHandle image,
-                                                          MaaString task, MaaString task_param,
+                                                          MaaStringView task, MaaStringView task_param,
                                                           /* out */ MaaRectHandle box,
                                                           /* out */ MaaStringBufferHandle detail_buff);
-    MaaBool MAA_FRAMEWORK_API MaaSyncContextRunAction(MaaSyncContextHandle sync_context, MaaString task_name,
-                                                      MaaString task_param, MaaRectHandle cur_box,
-                                                      MaaString cur_rec_detail);
+    MaaBool MAA_FRAMEWORK_API MaaSyncContextRunAction(MaaSyncContextHandle sync_context, MaaStringView task_name,
+                                                      MaaStringView task_param, MaaRectHandle cur_box,
+                                                      MaaStringView cur_rec_detail);
 
 #ifdef __cplusplus
 }
