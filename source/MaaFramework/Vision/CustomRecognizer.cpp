@@ -29,7 +29,7 @@ CustomRecognizer::ResultOpt CustomRecognizer::analyze() const
     std::string custom_param_str = param_.custom_param.to_string();
 
     /*out*/
-    MaaRect maa_box;
+    MaaRect maa_box { 0 };
     StringBuffer detail_buffer;
 
     bool ret = recognizer_->analyze(&sync_ctx, &image_buffer, name_.c_str(), custom_param_str.c_str(), &maa_box,

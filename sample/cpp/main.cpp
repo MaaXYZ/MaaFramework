@@ -90,11 +90,11 @@ MaaBool my_analyze(MaaSyncContextHandle sync_context, const MaaImageBufferHandle
     /* Output recognition result */
 
     // Step 1: output box
-    std::array<int, 4> my_result; // your result
-    box->x = my_result[0];
-    box->y = my_result[1];
-    box->width = my_result[2];
-    box->height = my_result[3];
+    std::array<int, 4> my_box { 0 }; // your result
+    box->x = my_box[0];
+    box->y = my_box[1];
+    box->width = my_box[2];
+    box->height = my_box[3];
 
     // Step 2: output anything you want
     MaaSetString(detail_buff,
