@@ -4,6 +4,8 @@
 #include "Utils/Logger.h"
 #include "Utils/NoWarningCV.hpp"
 
+#include <unordered_set>
+
 MAA_CTRL_UNIT_NS_BEGIN
 
 ScreencapFastestWay::ScreencapFastestWay()
@@ -98,7 +100,17 @@ bool ScreencapFastestWay::speed_test()
         LogInfo << VAR(method) << VAR(duration);
     };
 
+    // RawByNetcat 第一次速度很慢，但后面快
+    // MinicapStream 是直接取数据，只取一次不准
+    const std::unordered_set<Method> kDropFirst = { Method::RawByNetcat, Method::MinicapStream };
+
     for (auto pair : units_) {
+        if (kDropFirst.contains(pair.first)) {
+            if (!pair.second->screencap()) {
+                continue;
+            }
+        }
+
         auto now = std::chrono::steady_clock::now();
         if (pair.second->screencap()) {
             check(pair.first, now);
