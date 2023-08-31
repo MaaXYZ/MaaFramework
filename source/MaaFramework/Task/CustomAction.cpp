@@ -20,8 +20,7 @@ bool CustomAction::run(const std::string& task_name, const MAA_PIPELINE_RES_NS::
         return false;
     }
 
-    MAA_TASK_NS::SyncContext sync_ctx(inst_);
-
+    SyncContext sync_ctx(inst_);
     MaaRect box { .x = cur_box.x, .y = cur_box.y, .width = cur_box.width, .height = cur_box.height };
 
     bool ret = action_->run(&sync_ctx, task_name.c_str(), param.custom_param.to_string().c_str(), &box);

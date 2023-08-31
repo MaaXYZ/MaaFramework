@@ -2,11 +2,13 @@
 
 #include <meojson/json.hpp>
 
+#include "Buffer/ImageBuffer.hpp"
+#include "Buffer/StringBuffer.hpp"
+#include "ControlUnit/ControlUnitAPI.h"
 #include "Controller/AdbController.h"
 #include "Controller/CustomController.h"
 #include "Controller/CustomThriftController.h"
 #include "Instance/InstanceMgr.h"
-#include "ControlUnit/ControlUnitAPI.h"
 #include "Option/GlobalOptionMgr.h"
 #include "Resource/ResourceMgr.h"
 #include "Utils/Logger.h"
@@ -17,6 +19,114 @@
 MaaString MaaVersion()
 {
     return MAA_VERSION;
+}
+
+MaaStringBufferHandle MaaCreateStringBuffer()
+{
+    return new MAA_NS::StringBuffer;
+}
+
+void MaaDestroyStringBuffer(MaaStringBufferHandle handle)
+{
+    if (!handle) {
+        return;
+    }
+    delete handle;
+}
+
+MaaString MaaGetString(MaaStringBufferHandle handle)
+{
+    if (!handle) {
+        return nullptr;
+    }
+    return handle->data();
+}
+
+MaaSize MAA_FRAMEWORK_API MaaGetStringSize(MaaStringBufferHandle handle)
+{
+    if (!handle) {
+        return 0;
+    }
+    return handle->size();
+}
+
+MaaBool MAA_FRAMEWORK_API MaaSetString(MaaStringBufferHandle handle, MaaString str)
+{
+    if (!handle || !str) {
+        return false;
+    }
+    handle->set(str);
+    return true;
+}
+
+MaaBool MAA_FRAMEWORK_API MaaSetStringEx(MaaStringBufferHandle handle, MaaString str, MaaSize size)
+{
+    if (!handle || !str) {
+        return false;
+    }
+    handle->set(std::string(str, size));
+    return true;
+}
+
+MaaImageBufferHandle MaaCreateImageBuffer()
+{
+    return new MAA_NS::ImageBuffer;
+}
+
+void MaaDestroyImageBuffer(MaaImageBufferHandle handle)
+{
+    if (!handle) {
+        return;
+    }
+    delete handle;
+}
+
+void* MaaGetImageRawData(MaaImageBufferHandle handle)
+{
+    if (!handle) {
+        return nullptr;
+    }
+    return handle->raw_data();
+}
+
+int32_t MaaGetImageWidth(MaaImageBufferHandle handle)
+{
+    if (!handle) {
+        return 0;
+    }
+    return handle->width();
+}
+
+int32_t MaaGetImageHeight(MaaImageBufferHandle handle)
+{
+    if (!handle) {
+        return 0;
+    }
+    return handle->height();
+}
+
+int32_t MaaGetImageType(MaaImageBufferHandle handle)
+{
+    if (!handle) {
+        return 0;
+    }
+    return handle->type();
+}
+
+uint8_t* MaaGetImageEncoded(MaaImageBufferHandle handle)
+{
+    if (!handle) {
+        return nullptr;
+    }
+    return handle->encoded();
+}
+
+MaaSize MaaGetImageEncodedSize(MaaImageBufferHandle handle)
+{
+    if (!handle) {
+        return 0;
+    }
+    return handle->encoded_size();
 }
 
 MaaBool MaaSetGlobalOption(MaaGlobalOption key, MaaOptionValue value, MaaOptionValueSize val_size)
@@ -93,24 +203,17 @@ MaaBool MaaResourceSetOption(MaaResourceHandle res, MaaResOption key, MaaOptionV
     return res->set_option(key, value, val_size);
 }
 
-MaaSize MaaResourceGetHash(MaaResourceHandle res, char* buff, MaaSize buff_size)
+MaaBool MaaResourceGetHash(MaaResourceHandle res, MaaStringBufferHandle buff)
 {
-    LogFunc << VAR_VOIDP(res) << VAR_VOIDP(buff) << VAR(buff_size);
-
     if (!res || !buff) {
-        return MaaNullSize;
+        return false;
     }
-    auto hash = res->get_hash();
-    size_t size = hash.size();
-    if (size >= buff_size) {
-        return MaaNullSize;
-    }
-    memcpy(buff, hash.c_str(), size);
-    return size;
+    buff->set(res->get_hash());
+    return true;
 }
 
 MaaControllerHandle MaaAdbControllerCreate(MaaString adb_path, MaaString address, MaaAdbControllerType type,
-                                           MaaJsonString config, MaaControllerCallback callback,
+                                           MaaString config, MaaControllerCallback callback,
                                            MaaCallbackTransparentArg callback_arg)
 {
     LogFunc << VAR(adb_path) << VAR(address) << VAR_VOIDP(callback) << VAR_VOIDP(callback_arg);
@@ -258,36 +361,22 @@ MaaBool MaaControllerConnected(MaaControllerHandle ctrl)
     return ctrl->connected();
 }
 
-MaaSize MaaControllerGetImage(MaaControllerHandle ctrl, void* buff, MaaSize buff_size)
+MaaBool MaaControllerGetImage(MaaControllerHandle ctrl, MaaImageBufferHandle buffer)
 {
-    LogFunc << VAR_VOIDP(ctrl) << VAR_VOIDP(buff) << VAR(buff_size);
-
-    if (!ctrl || !buff) {
-        return MaaNullSize;
+    if (!ctrl || !buffer) {
+        return false;
     }
-    auto image = ctrl->get_image_cache();
-    size_t size = image.size();
-    if (size >= buff_size) {
-        return MaaNullSize;
-    }
-    memcpy(buff, image.data(), size);
-    return size;
+    buffer->set(ctrl->get_image());
+    return true;
 }
 
-MaaSize MaaControllerGetUUID(MaaControllerHandle ctrl, char* buff, MaaSize buff_size)
+MaaBool MaaControllerGetUUID(MaaControllerHandle ctrl, MaaStringBufferHandle buffer)
 {
-    LogFunc << VAR_VOIDP(ctrl) << VAR_VOIDP(buff) << VAR(buff_size);
-
-    if (!ctrl || !buff) {
-        return MaaNullSize;
+    if (!ctrl || !buffer) {
+        return false;
     }
-    auto uuid = ctrl->get_uuid();
-    size_t size = uuid.size();
-    if (size >= buff_size) {
-        return MaaNullSize;
-    }
-    memcpy(buff, uuid.c_str(), size);
-    return size;
+    buffer->set(ctrl->get_uuid());
+    return true;
 }
 
 MaaInstanceHandle MaaCreate(MaaInstanceCallback callback, MaaCallbackTransparentArg callback_arg)
@@ -414,7 +503,7 @@ MaaBool MaaClearCustomAction(MaaInstanceHandle inst)
     return true;
 }
 
-MaaTaskId MaaPostTask(MaaInstanceHandle inst, MaaString entry, MaaJsonString param)
+MaaTaskId MaaPostTask(MaaInstanceHandle inst, MaaString entry, MaaString param)
 {
     LogFunc << VAR_VOIDP(inst) << VAR(entry) << VAR(param);
 
@@ -424,7 +513,7 @@ MaaTaskId MaaPostTask(MaaInstanceHandle inst, MaaString entry, MaaJsonString par
     return inst->post_task(entry, param);
 }
 
-MaaBool MaaSetTaskParam(MaaInstanceHandle inst, MaaTaskId id, MaaJsonString param)
+MaaBool MaaSetTaskParam(MaaInstanceHandle inst, MaaTaskId id, MaaString param)
 {
     LogFunc << VAR_VOIDP(inst) << VAR(id) << VAR(param);
 
@@ -494,7 +583,7 @@ MaaControllerHandle MaaGetController(MaaInstanceHandle inst)
     return inst->controller();
 }
 
-MaaBool MaaSyncContextRunTask(MaaSyncContextHandle sync_context, MaaString task, MaaJsonString param)
+MaaBool MaaSyncContextRunTask(MaaSyncContextHandle sync_context, MaaString task, MaaString param)
 {
     LogFunc << VAR_VOIDP(sync_context) << VAR(task) << VAR(param);
     if (!sync_context) {
@@ -528,30 +617,22 @@ void MaaSyncContextSwipe(MaaSyncContextHandle sync_context, int32_t* x_steps_buf
     sync_context->swipe(std::move(x_steps), std::move(y_steps), std::move(step_delay));
 }
 
-MaaSize MaaSyncContextScreencap(MaaSyncContextHandle sync_context, void* buff, MaaSize buff_size)
+MaaBool MaaSyncContextScreencap(MaaSyncContextHandle sync_context, MaaImageBufferHandle buffer)
 {
-    LogFunc << VAR_VOIDP(sync_context) << VAR(buff) << VAR(buff_size);
-    if (!sync_context) {
-        return MaaNullSize;
+    LogFunc << VAR_VOIDP(sync_context) << VAR(buffer);
+    if (!sync_context || !buffer) {
+        return false;
     }
-    auto data = sync_context->screencap();
-    if (data.size() > buff_size) {
-        return MaaNullSize;
-    }
-    memcpy(buff, data.data(), data.size());
-    return data.size();
+    buffer->set(sync_context->screencap());
+    return true;
 }
 
-MaaSize MaaSyncContextGetTaskResult(MaaSyncContextHandle sync_context, MaaString task, char* buff, MaaSize buff_size)
+MaaBool MaaSyncContextGetTaskResult(MaaSyncContextHandle sync_context, MaaString task, MaaStringBufferHandle buffer)
 {
-    LogFunc << VAR_VOIDP(sync_context) << VAR(task) << VAR(buff) << VAR(buff_size);
-    if (!sync_context) {
-        return MaaNullSize;
+    LogFunc << VAR_VOIDP(sync_context) << VAR(buffer);
+    if (!sync_context || !buffer) {
+        return false;
     }
-    auto data = sync_context->task_result(task);
-    if (data.size() > buff_size) {
-        return MaaNullSize;
-    }
-    memcpy(buff, data.data(), data.size());
-    return data.size();
+    buffer->set(sync_context->task_result(task));
+    return true;
 }

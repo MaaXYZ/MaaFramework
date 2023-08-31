@@ -119,11 +119,9 @@ MaaBool ControllerMgr::connected() const
     return connected_;
 }
 
-std::vector<uint8_t> ControllerMgr::get_image_cache() const
+cv::Mat ControllerMgr::get_image() const
 {
-    std::vector<uint8_t> buff;
-    cv::imencode(".png", image_, buff);
-    return buff;
+    return image_;
 }
 
 void ControllerMgr::on_stop()

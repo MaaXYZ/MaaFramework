@@ -65,7 +65,7 @@ MaaAdbControllerType MaaToolKitGetDeviceAdbControllerType(MaaSize index)
     return device_mgr.get_devices().at(index).adb_controller_type;
 }
 
-MaaJsonString MaaToolKitGetDeviceAdbConfig(MaaSize index)
+MaaString MaaToolKitGetDeviceAdbConfig(MaaSize index)
 {
     return device_mgr.get_devices().at(index).adb_config.c_str();
 }
@@ -249,7 +249,7 @@ MaaBool MaaToolKitSetTaskEntry(MaaToolKitTaskHandle task_handle, MaaString new_e
     return true;
 }
 
-MaaJsonString MaaToolKitGetTaskParam(MaaToolKitTaskHandle task_handle)
+MaaString MaaToolKitGetTaskParam(MaaToolKitTaskHandle task_handle)
 {
     if (!task_handle) {
         LogError << "task_handle is null" << VAR(task_handle);
@@ -258,7 +258,7 @@ MaaJsonString MaaToolKitGetTaskParam(MaaToolKitTaskHandle task_handle)
     return task_handle->get_param().data();
 }
 
-MaaBool MaaToolKitSetTaskParam(MaaToolKitTaskHandle task_handle, MaaJsonString new_param)
+MaaBool MaaToolKitSetTaskParam(MaaToolKitTaskHandle task_handle, MaaString new_param)
 {
     if (!task_handle) {
         LogError << "task_handle is null" << VAR(task_handle);

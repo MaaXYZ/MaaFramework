@@ -16,27 +16,12 @@ extern "C"
         int32_t height;
     };
 
-    struct MAA_FRAMEWORK_API MaaImage
-    {
-        int32_t rows;
-        int32_t cols;
-        int32_t type;
-        void* data;
-    };
-
-#define MaaRecognitionResultDetailBuffSize 16384
-
-    struct MAA_FRAMEWORK_API MaaRecognitionResult
-    {
-        MaaRect box;
-        void* detail_buff; // size = MaaRecognitionResultDetailBuffSize
-    };
-
     struct MAA_FRAMEWORK_API MaaCustomRecognizerAPI
     {
-        MaaBool (*analyze)(MaaSyncContextHandle sync_context, const MaaImage* image, MaaString task_name,
-                           MaaJsonString custom_recognition_param,
-                           /*out*/ MaaRecognitionResult* result);
+        MaaBool (*analyze)(MaaSyncContextHandle sync_context, const MaaImageBufferHandle image, MaaString task_name,
+                           MaaString custom_recognition_param,
+                           /*out*/ MaaRect* box,
+                           /*out*/ MaaStringBufferHandle detail_buff);
     };
 
 #ifdef __cplusplus

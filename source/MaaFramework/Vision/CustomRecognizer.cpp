@@ -2,6 +2,8 @@
 
 #include "Utils/NoWarningCV.hpp"
 
+#include "Buffer/ImageBuffer.hpp"
+#include "Buffer/StringBuffer.hpp"
 #include "Task/SyncContext.h"
 #include "Utils/Logger.h"
 
@@ -20,28 +22,28 @@ CustomRecognizer::ResultOpt CustomRecognizer::analyze() const
         return std::nullopt;
     }
 
+    /*in*/
     MAA_TASK_NS::SyncContext sync_ctx(inst_);
+    ImageBuffer image_buffer;
+    image_buffer.set(image_);
+    std::string custom_param_str = param_.custom_param.to_string();
 
-    MaaImage image {
-        .rows = image_.rows, .cols = image_.cols, .type = image_.type(), .data = static_cast<void*>(image_.data)
-    };
+    /*out*/
+    MaaRect maa_box;
+    StringBuffer detail_buffer;
 
-    MaaRecognitionResult result;
-    std::string detail;
-    detail.resize(MaaRecognitionResultDetailBuffSize);
-    result.detail_buff = detail.data();
+    bool ret = recognizer_->analyze(&sync_ctx, &image_buffer, name_.c_str(), custom_param_str.c_str(), &maa_box,
+                                    &detail_buffer);
 
-    auto success =
-        recognizer_->analyze(&sync_ctx, &image, name_.c_str(), param_.custom_param.to_string().c_str(), &result);
+    cv::Rect box { maa_box.x, maa_box.y, maa_box.width, maa_box.height };
+    std::string detail(detail_buffer.data(), detail_buffer.size());
+    LogDebug << VAR(ret) << VAR(box) << VAR(detail);
 
-    cv::Rect box { result.box.x, result.box.y, result.box.width, result.box.height };
-    LogDebug << VAR(success) << VAR(box) << VAR(detail);
-
-    if (!success) {
+    if (!ret) {
         return std::nullopt;
     }
 
-    return Result { .box = box, .detail = detail };
+    return Result { .box = box, .detail = std::move(detail) };
 }
 
 MAA_VISION_NS_END

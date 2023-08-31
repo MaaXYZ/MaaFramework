@@ -59,7 +59,7 @@ void SyncContext::swipe(std::vector<int> x_steps, std::vector<int> y_steps, std:
     ctrl->wait(id);
 }
 
-std::vector<uint8_t> SyncContext::screencap()
+cv::Mat SyncContext::screencap()
 {
     LogFunc;
     auto* ctrl = controller();
@@ -70,7 +70,7 @@ std::vector<uint8_t> SyncContext::screencap()
     auto id = ctrl->post_screencap();
     ctrl->wait(id);
 
-    return ctrl->get_image_cache();
+    return ctrl->get_image();
 }
 
 std::string SyncContext::task_result(const std::string& task_name) const

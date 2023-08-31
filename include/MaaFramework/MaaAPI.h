@@ -7,8 +7,29 @@
 extern "C"
 {
 #endif
-
+    /* Utils */
     MaaString MAA_FRAMEWORK_API MaaVersion();
+
+    MaaStringBufferHandle MAA_FRAMEWORK_API MaaCreateStringBuffer();
+    void MAA_FRAMEWORK_API MaaDestroyStringBuffer(MaaStringBufferHandle handle);
+    MaaString MAA_FRAMEWORK_API MaaGetString(MaaStringBufferHandle handle);
+    MaaSize MAA_FRAMEWORK_API MaaGetStringSize(MaaStringBufferHandle handle);
+    MaaBool MAA_FRAMEWORK_API MaaSetString(MaaStringBufferHandle handle, MaaString str);
+    MaaBool MAA_FRAMEWORK_API MaaSetStringEx(MaaStringBufferHandle handle, MaaString str, MaaSize size);
+
+    MaaImageBufferHandle MAA_FRAMEWORK_API MaaCreateImageBuffer();
+    void MAA_FRAMEWORK_API MaaDestroyImageBuffer(MaaImageBufferHandle handle);
+
+    typedef void* MaaImageRawData;
+    MaaImageRawData MAA_FRAMEWORK_API MaaGetImageRawData(MaaImageBufferHandle handle);
+    int32_t MAA_FRAMEWORK_API MaaGetImageWidth(MaaImageBufferHandle handle);
+    int32_t MAA_FRAMEWORK_API MaaGetImageHeight(MaaImageBufferHandle handle);
+    int32_t MAA_FRAMEWORK_API MaaGetImageType(MaaImageBufferHandle handle);
+
+    typedef uint8_t* MaaImageEncodedData;
+    MaaImageEncodedData MAA_FRAMEWORK_API MaaGetImageEncoded(MaaImageBufferHandle handle);
+    MaaSize MAA_FRAMEWORK_API MaaGetImageEncodedSize(MaaImageBufferHandle handle);
+
     MaaBool MAA_FRAMEWORK_API MaaSetGlobalOption(MaaGlobalOption key, MaaOptionValue value,
                                                  MaaOptionValueSize val_size);
 
@@ -25,12 +46,12 @@ extern "C"
 
     MaaBool MAA_FRAMEWORK_API MaaResourceSetOption(MaaResourceHandle res, MaaResOption key, MaaOptionValue value,
                                                    MaaOptionValueSize val_size);
-    MaaSize MAA_FRAMEWORK_API MaaResourceGetHash(MaaResourceHandle res, char* buff, MaaSize buff_size);
+    MaaBool MAA_FRAMEWORK_API MaaResourceGetHash(MaaResourceHandle res, MaaStringBufferHandle buff);
 
     /* Controller */
 
     MaaControllerHandle MAA_FRAMEWORK_API MaaAdbControllerCreate(MaaString adb_path, MaaString address,
-                                                                 MaaAdbControllerType type, MaaJsonString config,
+                                                                 MaaAdbControllerType type, MaaString config,
                                                                  MaaControllerCallback callback,
                                                                  MaaCallbackTransparentArg callback_arg);
     MaaControllerHandle MAA_FRAMEWORK_API MaaCustomControllerCreate(MaaCustomControllerHandle handle,
@@ -55,8 +76,8 @@ extern "C"
     MaaStatus MAA_FRAMEWORK_API MaaControllerWait(MaaControllerHandle ctrl, MaaCtrlId id);
     MaaBool MAA_FRAMEWORK_API MaaControllerConnected(MaaControllerHandle ctrl);
 
-    MaaSize MAA_FRAMEWORK_API MaaControllerGetImage(MaaControllerHandle ctrl, void* buff, MaaSize buff_size);
-    MaaSize MAA_FRAMEWORK_API MaaControllerGetUUID(MaaControllerHandle ctrl, char* buff, MaaSize buff_size);
+    MaaBool MAA_FRAMEWORK_API MaaControllerGetImage(MaaControllerHandle ctrl, MaaImageBufferHandle buffer);
+    MaaBool MAA_FRAMEWORK_API MaaControllerGetUUID(MaaControllerHandle ctrl, MaaStringBufferHandle buffer);
 
     /* Instance */
 
@@ -79,8 +100,8 @@ extern "C"
     MaaBool MAA_FRAMEWORK_API MaaUnregisterCustomAction(MaaInstanceHandle inst, MaaString name);
     MaaBool MAA_FRAMEWORK_API MaaClearCustomAction(MaaInstanceHandle inst);
 
-    MaaTaskId MAA_FRAMEWORK_API MaaPostTask(MaaInstanceHandle inst, MaaString entry, MaaJsonString param);
-    MaaBool MAA_FRAMEWORK_API MaaSetTaskParam(MaaInstanceHandle inst, MaaTaskId id, MaaJsonString param);
+    MaaTaskId MAA_FRAMEWORK_API MaaPostTask(MaaInstanceHandle inst, MaaString entry, MaaString param);
+    MaaBool MAA_FRAMEWORK_API MaaSetTaskParam(MaaInstanceHandle inst, MaaTaskId id, MaaString param);
 
     MaaStatus MAA_FRAMEWORK_API MaaTaskStatus(MaaInstanceHandle inst, MaaTaskId id);
     MaaStatus MAA_FRAMEWORK_API MaaWaitTask(MaaInstanceHandle inst, MaaTaskId id);
@@ -94,13 +115,13 @@ extern "C"
     /* SyncContext */
 
     MaaBool MAA_FRAMEWORK_API MaaSyncContextRunTask(MaaSyncContextHandle sync_context, MaaString task,
-                                                    MaaJsonString param);
+                                                    MaaString param);
     void MAA_FRAMEWORK_API MaaSyncContextClick(MaaSyncContextHandle sync_context, int32_t x, int32_t y);
     void MAA_FRAMEWORK_API MaaSyncContextSwipe(MaaSyncContextHandle sync_context, int32_t* x_steps_buff,
                                                int32_t* y_steps_buff, int32_t* step_delay_buff, MaaSize buff_size);
-    MaaSize MAA_FRAMEWORK_API MaaSyncContextScreencap(MaaSyncContextHandle sync_context, void* buff, MaaSize buff_size);
-    MaaSize MAA_FRAMEWORK_API MaaSyncContextGetTaskResult(MaaSyncContextHandle sync_context, MaaString task, char* buff,
-                                                          MaaSize buff_size);
+    MaaBool MAA_FRAMEWORK_API MaaSyncContextScreencap(MaaSyncContextHandle sync_context, MaaImageBufferHandle buffer);
+    MaaBool MAA_FRAMEWORK_API MaaSyncContextGetTaskResult(MaaSyncContextHandle sync_context, MaaString task,
+                                                          MaaStringBufferHandle buffer);
 
 #ifdef __cplusplus
 }

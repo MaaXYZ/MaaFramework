@@ -24,6 +24,8 @@
     <ClInclude Include="..\..\include\MaaFramework\MaaPort.h" />
     <ClInclude Include="API\MaaTypes.h" />
     <ClInclude Include="Base\MessageNotifier.hpp" />
+    <ClInclude Include="Buffer\ImageBuffer.hpp" />
+    <ClInclude Include="Buffer\StringBuffer.hpp" />
     <ClInclude Include="Common\MaaTypes.h" />
     <ClInclude Include="Controller\CustomController.h" />
     <ClInclude Include="Controller\CustomThriftController.h" />

@@ -2,6 +2,7 @@
 
 #include "Conf/Conf.h"
 #include "MaaFramework/MaaDef.h"
+#include "Utils/NoWarningCVMat.hpp"
 
 #include <filesystem>
 #include <string>
@@ -46,8 +47,7 @@ public:
     virtual MaaStatus wait(MaaCtrlId ctrl_id) const = 0;
     virtual MaaBool connected() const = 0;
 
-    virtual std::vector<uint8_t> get_image_cache() const = 0;
-
+    virtual cv::Mat get_image() const = 0;
     virtual std::string get_uuid() const = 0;
 };
 
@@ -91,11 +91,38 @@ public:
 
     virtual void click(int x, int y) = 0;
     virtual void swipe(std::vector<int> x_steps, std::vector<int> y_steps, std::vector<int> step_delay) = 0;
-    virtual std::vector<uint8_t> screencap() = 0;
+    virtual cv::Mat screencap() = 0;
 
     virtual std::string task_result(const std::string& task_name) const = 0;
 
     virtual MaaInstanceHandle instance() = 0;
     virtual MaaResourceHandle resource() = 0;
     virtual MaaControllerHandle controller() = 0;
+};
+
+struct MaaStringBuffer
+{
+public:
+    virtual ~MaaStringBuffer() = default;
+
+    virtual const char* data() const = 0;
+    virtual size_t size() const = 0;
+
+    virtual void set(std::string str) = 0;
+};
+
+struct MaaImageBuffer
+{
+public:
+    virtual ~MaaImageBuffer() = default;
+
+    virtual void* raw_data() const = 0;
+    virtual int32_t width() const = 0;
+    virtual int32_t height() const = 0;
+    virtual int32_t type() const = 0;
+
+    virtual uint8_t* encoded() = 0;
+    virtual size_t encoded_size() = 0;
+
+    virtual void set(cv::Mat image) = 0;
 };

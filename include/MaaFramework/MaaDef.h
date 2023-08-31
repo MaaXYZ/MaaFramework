@@ -3,6 +3,11 @@
 #include "MaaPort.h"
 #include <stdint.h>
 
+struct MaaStringBuffer;
+typedef struct MaaStringBuffer* MaaStringBufferHandle;
+struct MaaImageBuffer;
+typedef struct MaaImageBuffer* MaaImageBufferHandle;
+
 struct MaaResourceAPI;
 typedef struct MaaResourceAPI* MaaResourceHandle;
 struct MaaControllerAPI;
@@ -15,7 +20,6 @@ typedef uint64_t MaaSize;
 #define MaaNullSize ((MaaSize)-1)
 
 typedef const char* MaaString;
-typedef MaaString MaaJsonString;
 
 typedef int32_t MaaStatus;
 enum MaaStatusEnum
@@ -117,7 +121,7 @@ enum MaaAdbControllerTypeEnum
 
 typedef void* MaaCallbackTransparentArg;
 
-typedef void (*MaaAPICallback)(MaaString msg, MaaJsonString details_json, MaaCallbackTransparentArg callback_arg);
+typedef void (*MaaAPICallback)(MaaString msg, MaaString details_json, MaaCallbackTransparentArg callback_arg);
 typedef MaaAPICallback MaaResourceCallback;
 typedef MaaAPICallback MaaControllerCallback;
 typedef MaaAPICallback MaaInstanceCallback;
