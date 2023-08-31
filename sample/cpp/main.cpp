@@ -1,12 +1,18 @@
 #include "MaaFramework/MaaAPI.h"
 
+#include <array>
 #include <filesystem>
 #include <iostream>
 #include <string>
-#include <array>
 
 #include "MaaFramework/MaaCustomRecognizer.h"
 #include "MaaToolKit/MaaToolKitAPI.h"
+
+#ifdef _WIN32
+// for demo, we disable some warnings
+#pragma warning(disable : 4100) // unreferenced formal parameter
+#pragma warning(disable : 4189) // local variable is initialized but not referenced
+#endif
 
 void register_my_recognizer(MaaInstanceHandle maa_handle);
 
@@ -58,7 +64,6 @@ int main([[maybe_unused]] int argc, char** argv)
     return 0;
 }
 
-
 MaaBool my_analyze(MaaSyncContextHandle sync_context, const MaaImageBufferHandle image, MaaString task_name,
                    MaaString custom_recognition_param,
                    /*out*/ MaaRectHandle box,
@@ -83,7 +88,7 @@ MaaBool my_analyze(MaaSyncContextHandle sync_context, const MaaImageBufferHandle
     // And do your computer vision...
 
     /* Output recognition result */
-    
+
     // Step 1: output box
     std::array<int, 4> my_result; // your result
     box->x = my_result[0];
