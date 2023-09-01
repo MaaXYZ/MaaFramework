@@ -16,7 +16,7 @@ std::ostream& operator<<(std::ostream& os, const OCRer::Result& res)
     return os;
 }
 
-OCRer::ResultOpt OCRer::analyze() const
+OCRer::ResultVecOpt OCRer::analyze() const
 {
     auto results = traverse_rois();
 

@@ -9,10 +9,6 @@ MAA_VISION_NS_BEGIN
 
 Matcher::ResultOpt Matcher::analyze() const
 {
-    if (!resource()) {
-        LogError << "Resource not binded";
-        return std::nullopt;
-    }
     if (param_.template_images.empty()) {
         LogError << name_ << "templates is empty" << VAR(param_.template_paths);
         return std::nullopt;

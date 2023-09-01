@@ -29,13 +29,13 @@ public:
     };
 
     using ResultsVec = std::vector<Result>;
-    using ResultOpt = std::optional<ResultsVec>;
+    using ResultVecOpt = std::optional<ResultsVec>;
 
 public:
     using VisionBase::VisionBase;
 
     void set_param(OcrParam param) { param_ = std::move(param); }
-    ResultOpt analyze() const;
+    ResultVecOpt analyze() const;
 
 private:
     ResultsVec traverse_rois() const;
