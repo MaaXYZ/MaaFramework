@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">
+  <metadata>
+    <id>$id$</id>
+    <version>$version$</version>
+    <title>MAA Framework Runtimes</title>
+    <authors>MAA Team</authors>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <license type="expression">LGPL-2.1-only</license>
+    <!--iconUrl is deprecated. Use icon instead.-->
+    <iconUrl>https://cdn.jsdelivr.net/gh/MaaAssistantArknights/design@main/logo/maa-logo_128x128.png</iconUrl>
+    <!--readme-->
+    <description>MaaFramework is a software automation testing framework based on image recognition.</description>
+    <releaseNotes>Release notes are at https://github.com/MaaAssistantArknights/MaaFramework/releases.</releaseNotes>
+    <copyright>Copyright © 2021-$year$ MAA Team and Contributers. All rights reserved.</copyright>
+    <tags>MAA native runtimes C++ computer-vision</tags>
+    <repository type="git" url="https://github.com/MaaAssistantArknights/MaaFramework/"  branch="$branch$" commit="$commit$" />
+  </metadata>
+  <files>
+    <file src="$docs_path$\**\*.*" target="docs" />
+    <file src="$assets_path$\MAA-linux-aarch64\bin\**"  target="runtimes\linux-arm64\native" />
+    <file src="$assets_path$\MAA-linux-x86_64\bin\**"   target="runtimes\linux-x64\native" />
+    <file src="$assets_path$\MAA-macos-aarch64\bin\**"  target="runtimes\osx-arm64\native" />
+    <file src="$assets_path$\MAA-macos-x86_64\bin\**"   target="runtimes\osx-x64\native" />
+    <file src="$assets_path$\MAA-win-aarch64\bin\**"    target="runtimes\win-arm64\native" />
+    <file src="$assets_path$\MAA-win-x86_64\bin\**"     target="runtimes\win-x64\native" />
+
+    <!--empty directory in lib to avoid nuget adding a reference-->
+    <file src="_._" target="lib/netstandard1.0/_._" />
+  </files>
+</package>

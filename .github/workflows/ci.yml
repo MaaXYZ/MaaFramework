@@ -35,13 +35,33 @@ on:
 jobs:
   meta:
     runs-on: ubuntu-latest
-    outputs:
-      tag: ${{ steps.set_tag.outputs.tag }}
     steps:
       - uses: actions/checkout@v3
+        with:
+          fetch-depth: 99
+          fetch-tags: true
       - id: set_tag
         run: |
-          echo tag=$(git describe --tags --match "v*" ${{ github.ref }} || git rev-parse --short HEAD) | tee -a $GITHUB_OUTPUT
+          is_release=${{ startsWith(github.ref, 'refs/tags/v') }}
+          tag=$(git describe --tags --match "v*" ${{ github.ref }} || true)
+          if [[ $tag != v* ]]; then
+            tag=$(curl -sX GET "https://api.github.com/repos/MaaAssistantArknights/MaaFramework/releases/latest" --header 'authorization: Bearer ${{ secrets.GITHUB_TOKEN }}' | awk '/tag_name/{print $4}' FS='["]')
+            if [[ $tag != v* ]]; then
+              tag="v0.0.0"
+            fi
+            tag=$(date "+$tag-%y%m%d-$(git rev-parse --short HEAD)")
+          fi
+          if ! $($is_release) ; then
+            prefix=${tag%-*-*}
+            suffix=${tag#$prefix-}
+            tag="$prefix-ci.$suffix"
+          fi
+
+          echo tag=$tag | tee -a $GITHUB_OUTPUT
+          echo is_release=$is_release | tee -a $GITHUB_OUTPUT
+    outputs:
+      tag: ${{ steps.set_tag.outputs.tag }}
+      is_release: ${{ steps.set_tag.outputs.is_release }}
 
   windows:
     needs: meta
@@ -227,7 +247,7 @@ jobs:
           path: "install"
 
   release:
-    if: startsWith(github.ref, 'refs/tags/v')
+    if: ${{ needs.meta.outputs.is_release == 'true' }}
     needs: [meta, windows, ubuntu, macos]
     runs-on: ubuntu-latest
 
@@ -238,7 +258,7 @@ jobs:
 
       - run: |
           cd assets
-          for f in *; do
+          for f in */; do
             (cd $f && zip -r ../$f-${{ needs.meta.outputs.tag }}.zip .)
           done
 
@@ -246,3 +266,41 @@ jobs:
         with:
           files: assets/*.zip
           tag_name: ${{ needs.meta.outputs.tag }}
+
+  pack:
+    needs: [meta, windows, ubuntu, macos]
+    runs-on: ubuntu-latest
+    env:
+      NUGET_PACKAGE_ID: Maa.Framework.Runtimes # need ${{ secrets.NuGetAPIKey }}
+      NUGET_PACKAGE_SOURCE: https://api.nuget.org/v3/index.json # https://apiint.nugettest.org/v3/index.json
+
+    steps:
+      - uses: nuget/setup-nuget@v1
+
+      - uses: actions/checkout@v3
+      - uses: actions/download-artifact@v3
+        with:
+          path: assets
+
+      - name: Nuget Pack
+        working-directory: pkgs/nupkgs
+        run: |
+          tag=${{ needs.meta.outputs.tag }}
+          nuget pack Maa.Framework.Runtimes.nuspec \
+            -Verbosity detailed \
+            -Properties "id=$NUGET_PACKAGE_ID;version=${tag#v};year=$(date +%Y);branch=$(git rev-parse --abbrev-ref HEAD);commit=$(git rev-parse HEAD);docs_path=../../docs;assets_path=../../assets"
+
+      - uses: actions/upload-artifact@v3
+        if: always()
+        with:
+          name: nupkgs
+          path: "pkgs/nupkgs/*.nupkg"
+
+      - name: Publish Nupkgs
+        if: ${{ needs.meta.outputs.is_release == 'true' }}
+        working-directory: pkgs/nupkgs
+        run: |
+          nuget push *.nupkg \
+            -ApiKey ${{ secrets.NuGetAPIKey }} \
+            -Source $NUGET_PACKAGE_SOURCE \
+            -SkipDuplicate
