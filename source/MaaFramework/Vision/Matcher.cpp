@@ -70,8 +70,6 @@ Matcher::ResultsVec Matcher::foreach_rois(const cv::Mat& templ) const
 
 Matcher::Result Matcher::match_and_postproc(const cv::Rect& roi, const cv::Mat& templ) const
 {
-    auto start = std::chrono::steady_clock::now();
-
     cv::Mat image = image_with_roi(roi);
     cv::Mat matched = match_template(image, templ, param_.method, param_.green_mask);
     if (matched.empty()) {
