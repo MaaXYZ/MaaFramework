@@ -8,52 +8,54 @@
 
 MAA_VISION_NS_BEGIN
 
-Classifier::ResultOpt Classifier::analyze() const
+Classifier::ResultsVec Classifier::analyze() const
 {
     LogFunc << name_;
 
     if (!param_.session) {
         LogError << "OrtSession not loaded";
-        return std::nullopt;
+        return {};
     }
     if (param_.cls_size == 0) {
         LogError << "cls_size == 0";
-        return std::nullopt;
+        return {};
     }
     if (param_.cls_size != param_.labels.size()) {
         LogError << "cls_size != labels.size()" << VAR(param_.cls_size) << VAR(param_.labels.size());
-        return std::nullopt;
+        return {};
     }
-    auto start = std::chrono::steady_clock::now();
 
-    Result result = foreach_rois();
+    auto start_time = std::chrono::steady_clock::now();
+    ResultsVec results = foreach_rois();
+    auto costs = duration_since(start_time);
+    LogDebug << name_ << "Raw:" << VAR(results) << VAR(costs);
 
-    auto costs = duration_since(start);
-    LogDebug << name_ << result.box << VAR(result.cls_index) << VAR(result.label) << VAR(result.score) << VAR(costs);
+    const auto& expected = param_.expected;
+    filter(results, expected);
 
-    return result.score == 0 ? std::nullopt : std::make_optional(result);
+    costs = duration_since(start_time);
+    LogDebug << name_ << "Filter:" << VAR(results) << VAR(expected) << VAR(costs);
+
+    return results;
 }
 
-Classifier::Result Classifier::foreach_rois() const
+Classifier::ResultsVec Classifier::foreach_rois() const
 {
     if (!cache_.empty()) {
-        return classify(cache_);
+        return { classify(cache_) };
     }
 
     if (param_.roi.empty()) {
-        return classify(cv::Rect(0, 0, image_.cols, image_.rows));
+        return { classify(cv::Rect(0, 0, image_.cols, image_.rows)) };
     }
 
+    ResultsVec results;
     for (const cv::Rect& roi : param_.roi) {
         Result res = classify(roi);
-        auto find_it = MAA_RNS::ranges::find(param_.expected, res.cls_index);
-        if (find_it == param_.expected.end()) {
-            continue;
-        }
-        return res;
+        results.emplace_back(std::move(res));
     }
 
-    return {};
+    return results;
 }
 
 Classifier::Result Classifier::classify(const cv::Rect& roi) const
@@ -73,11 +75,11 @@ Classifier::Result Classifier::classify(const cv::Rect& roi) const
 
     Ort::Value input_tensor = Ort::Value::CreateTensor<float>(memory_info, input.data(), input.size(),
                                                               input_shape.data(), input_shape.size());
-    Result result;
-    result.raw.resize(param_.cls_size);
 
+    std::vector<float> output;
+    output.resize(param_.cls_size);
     std::array<int64_t, 2> output_shape { kBatchSize, static_cast<int64_t>(param_.cls_size) };
-    Ort::Value output_tensor = Ort::Value::CreateTensor<float>(memory_info, result.raw.data(), result.raw.size(),
+    Ort::Value output_tensor = Ort::Value::CreateTensor<float>(memory_info, output.data(), output.size(),
                                                                output_shape.data(), output_shape.size());
 
     Ort::AllocatorWithDefaultOptions allocator;
@@ -89,14 +91,13 @@ Classifier::Result Classifier::classify(const cv::Rect& roi) const
     Ort::RunOptions run_options;
     param_.session->Run(run_options, input_names.data(), &input_tensor, 1, output_names.data(), &output_tensor, 1);
 
+    Result result;
+    result.raw = std::move(output);
     result.probs = softmax(result.raw);
     result.cls_index = std::max_element(result.probs.begin(), result.probs.end()) - result.probs.begin();
     result.score = result.probs[result.cls_index];
     result.label = param_.labels[result.cls_index];
     result.box = roi;
-
-    LogDebug << VAR(roi) << VAR(result.cls_index) << VAR(result.label) << VAR(result.score) << VAR(result.probs)
-             << VAR(result.raw);
 
     draw_result(result);
 
@@ -123,6 +124,18 @@ void Classifier::draw_result(const Result& result) const
     if (save_draw_) {
         save_image(image_draw);
     }
+}
+
+void Classifier::filter(ResultsVec& results, const std::vector<size_t>& expected) const
+{
+    if (expected.empty()) {
+        return;
+    }
+
+    auto it = std::remove_if(results.begin(), results.end(), [&](const Result& res) {
+        return std::find(expected.begin(), expected.end(), res.cls_index) == expected.end();
+    });
+    results.erase(it, results.end());
 }
 
 MAA_VISION_NS_END

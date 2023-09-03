@@ -14,7 +14,7 @@ inline static void sort_by_horizontal_(ResultsVec& results)
 {
     MAA_RNS::ranges::sort(results, [](const auto& lhs, const auto& rhs) -> bool {
         // y 差距较小则理解为是同一排的，按x排序
-        return std::abs(lhs.rect.y - rhs.rect.y) < 5 ? lhs.rect.x < rhs.rect.x : lhs.rect.y < rhs.rect.y;
+        return std::abs(lhs.box.y - rhs.box.y) < 5 ? lhs.box.x < rhs.box.x : lhs.box.y < rhs.box.y;
     });
 }
 
@@ -25,7 +25,7 @@ inline static void sort_by_vertical_(ResultsVec& results)
 {
     MAA_RNS::ranges::sort(results, [](const auto& lhs, const auto& rhs) -> bool {
         // x 差距较小则理解为是同一排的，按y排序
-        return std::abs(lhs.rect.x - rhs.rect.x) < 5 ? lhs.rect.y < rhs.rect.y : lhs.rect.x < rhs.rect.x;
+        return std::abs(lhs.box.x - rhs.box.x) < 5 ? lhs.box.y < rhs.box.y : lhs.box.x < rhs.box.x;
     });
 }
 
@@ -65,19 +65,21 @@ inline static ResultsVec NMS(ResultsVec results, double threshold = 0.7)
 
     ResultsVec nms_results;
     for (size_t i = 0; i < results.size(); ++i) {
-        const auto& box = results[i];
-        if (box.score < 0.1f) {
+        const auto& res1 = results[i];
+        if (res1.score < 0.1f) {
             continue;
         }
-        nms_results.emplace_back(box);
+        auto res1_box = res1.box;
+        nms_results.emplace_back(std::move(res1));
+
         for (size_t j = i + 1; j < results.size(); ++j) {
-            auto& box2 = results[j];
-            if (box2.score < 0.1f) {
+            auto& res2 = results[j];
+            if (res2.score < 0.1f) {
                 continue;
             }
-            int iou_area = (make_rect<cv::Rect>(box.rect) & make_rect<cv::Rect>(box2.rect)).area();
-            if (iou_area > threshold * box2.rect.area()) {
-                box2.score = 0;
+            int iou_area = (res1_box & res2.box).area();
+            if (iou_area > threshold * res2.box.area()) {
+                res2.score = 0;
             }
         }
     }

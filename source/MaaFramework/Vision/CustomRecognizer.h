@@ -1,6 +1,6 @@
 #pragma once
 
-#include <optional>
+#include <vector>
 
 #include <meojson/json.hpp>
 
@@ -25,13 +25,13 @@ class CustomRecognizer : public VisionBase
             return root;
         }
     };
-    using ResultOpt = std::optional<Result>;
+    using ResultsVec = std::vector<Result>;
 
 public:
     CustomRecognizer(MaaCustomRecognizerHandle handle, InstanceInternalAPI* inst);
 
     void set_param(CustomParam param) { param_ = std::move(param); }
-    ResultOpt analyze() const;
+    ResultsVec analyze() const;
 
 private:
     MaaCustomRecognizerHandle recognizer_ = nullptr;

@@ -64,8 +64,7 @@ private:
 
 private:
     std::optional<RecResult> recognize(const cv::Mat& image, const MAA_PIPELINE_RES_NS::TaskData& task_data);
-    std::optional<RecResult> direct_hit(const cv::Mat& image, const MAA_VISION_NS::DirectHitParam& param,
-                                        const cv::Rect& cache, const std::string& name);
+    std::optional<RecResult> direct_hit();
     std::optional<RecResult> template_match(const cv::Mat& image, const MAA_VISION_NS::TemplMatchingParam& param,
                                             const cv::Rect& cache, const std::string& name);
     std::optional<RecResult> ocr(const cv::Mat& image, const MAA_VISION_NS::OcrParam& param, const cv::Rect& cache,

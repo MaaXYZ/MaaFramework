@@ -16,31 +16,21 @@ std::ostream& operator<<(std::ostream& os, const OCRer::Result& res)
     return os;
 }
 
-OCRer::ResultVecOpt OCRer::analyze() const
+OCRer::ResultsVec OCRer::analyze() const
 {
-    auto results = foreach_rois();
+    auto start_time = std::chrono::steady_clock::now();
 
-    if (results.empty()) {
-        return std::nullopt;
-    }
+    ResultsVec results = foreach_rois();
 
-    for (auto iter = results.begin(); iter != results.end();) {
-        auto& res = *iter;
+    auto costs = duration_since(start_time);
+    LogDebug << name_ << "Raw:" << VAR(results) << VAR(costs);
 
-        postproc_trim_(res);
-        postproc_replace_(res);
+    const auto& expected = param_.text;
+    postproc_and_filter(results, expected);
 
-        if (!filter_by_required(res)) {
-            iter = results.erase(iter);
-            continue;
-        }
-
-        ++iter;
-    }
-
-    LogDebug << name_ << VAR(results) << VAR(param_.text);
-
-    return results.empty() ? std::nullopt : std::make_optional(std::move(results));
+    costs = duration_since(start_time);
+    LogDebug << name_ << "Proc:" << VAR(results) << VAR(expected) << VAR(costs);
+    return results;
 }
 
 OCRer::ResultsVec OCRer::foreach_rois() const
@@ -79,8 +69,6 @@ OCRer::ResultsVec OCRer::predict_det_and_rec(const cv::Rect& roi) const
         LogError << "resource()->ocr_cfg().ocrer() is null";
         return {};
     }
-    auto start_time = std::chrono::steady_clock::now();
-
     auto image_roi = image_with_roi(roi);
 
     fastdeploy::vision::OCRResult ocr_result;
@@ -113,9 +101,6 @@ OCRer::ResultsVec OCRer::predict_det_and_rec(const cv::Rect& roi) const
             Result { .text = std::move(ocr_result.text.at(i)), .box = my_box, .score = ocr_result.rec_scores.at(i) });
     }
 
-    auto costs = duration_since(start_time);
-    LogDebug << VAR(results) << VAR(image_roi.size()) << VAR(costs);
-
     draw_result(roi, results);
 
     return results;
@@ -133,8 +118,6 @@ OCRer::Result OCRer::predict_only_rec(const cv::Rect& roi) const
         LogError << "resource()->ocr_cfg().recer() is null";
         return {};
     }
-    auto start_time = std::chrono::steady_clock::now();
-
     auto image_roi = image_with_roi(roi);
 
     std::string rec_text;
@@ -147,13 +130,48 @@ OCRer::Result OCRer::predict_only_rec(const cv::Rect& roi) const
     }
 
     Result result { .text = std::move(rec_text), .box = roi, .score = rec_score };
-
-    auto costs = duration_since(start_time);
-    LogDebug << VAR(result) << VAR(image_roi.size()) << VAR(costs);
-
     draw_result(roi, { result });
 
     return result;
+}
+
+void OCRer::draw_result(const cv::Rect& roi, const ResultsVec& results) const
+{
+    if (!debug_draw_) {
+        return;
+    }
+
+    cv::Mat image_draw = draw_roi(roi);
+
+    for (size_t i = 0; i != results.size(); ++i) {
+        const cv::Rect& my_box = results.at(i).box;
+
+        const auto color = cv::Scalar(0, 0, 255);
+        cv::rectangle(image_draw, my_box, color, 1);
+        std::string flag = MAA_FMT::format("{}: [{}, {}, {}, {}]", i, my_box.x, my_box.y, my_box.width, my_box.height);
+        cv::putText(image_draw, flag, cv::Point(my_box.x, my_box.y - 5), cv::FONT_HERSHEY_PLAIN, 1.2, color, 1);
+    }
+
+    if (save_draw_) {
+        save_image(image_draw);
+    }
+}
+
+void OCRer::postproc_and_filter(ResultsVec& results, const std::vector<std::string>& expected) const
+{
+    for (auto iter = results.begin(); iter != results.end();) {
+        auto& res = *iter;
+
+        postproc_trim_(res);
+        postproc_replace_(res);
+
+        if (!filter_by_required(res, expected)) {
+            iter = results.erase(iter);
+            continue;
+        }
+
+        ++iter;
+    }
 }
 
 void OCRer::postproc_trim_(Result& res) const
@@ -168,41 +186,19 @@ void OCRer::postproc_replace_(Result& res) const
     }
 }
 
-bool OCRer::filter_by_required(const Result& res) const
+bool OCRer::filter_by_required(const Result& res, const std::vector<std::string>& expected) const
 {
-    if (param_.text.empty()) {
+    if (expected.empty()) {
         return true;
     }
 
-    for (const auto& text : param_.text) {
+    for (const auto& text : expected) {
         if (std::regex_search(res.text, std::regex(text))) {
             return true;
         }
     }
 
     return false;
-}
-
-void OCRer::draw_result(const cv::Rect& roi, const ResultsVec& res) const
-{
-    if (!debug_draw_) {
-        return;
-    }
-
-    cv::Mat image_draw = draw_roi(roi);
-
-    for (size_t i = 0; i != res.size(); ++i) {
-        const cv::Rect& my_box = res.at(i).box;
-
-        const auto color = cv::Scalar(0, 0, 255);
-        cv::rectangle(image_draw, my_box, color, 1);
-        std::string flag = MAA_FMT::format("{}: [{}, {}, {}, {}]", i, my_box.x, my_box.y, my_box.width, my_box.height);
-        cv::putText(image_draw, flag, cv::Point(my_box.x, my_box.y - 5), cv::FONT_HERSHEY_PLAIN, 1.2, color, 1);
-    }
-
-    if (save_draw_) {
-        save_image(image_draw);
-    }
 }
 
 MAA_VISION_NS_END

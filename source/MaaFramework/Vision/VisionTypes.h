@@ -13,7 +13,7 @@
 
 namespace Ort
 {
-class Session;
+struct Session;
 }
 
 MAA_VISION_NS_BEGIN

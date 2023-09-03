@@ -1,10 +1,9 @@
 #pragma once
 
-#include "VisionBase.h"
-
-#include <optional>
+#include <ostream>
 #include <vector>
 
+#include "VisionBase.h"
 #include "VisionTypes.h"
 
 MAA_VISION_NS_BEGIN
@@ -27,29 +26,47 @@ public:
             return root;
         }
     };
-
     using ResultsVec = std::vector<Result>;
-    using ResultVecOpt = std::optional<ResultsVec>;
 
 public:
     using VisionBase::VisionBase;
 
     void set_param(OcrParam param) { param_ = std::move(param); }
-    ResultVecOpt analyze() const;
+    ResultsVec analyze() const;
 
 private:
     ResultsVec foreach_rois() const;
     ResultsVec predict(const cv::Rect& roi) const;
     ResultsVec predict_det_and_rec(const cv::Rect& roi) const;
     Result predict_only_rec(const cv::Rect& roi) const;
+    void draw_result(const cv::Rect& roi, const ResultsVec& results) const;
+
+    void postproc_and_filter(ResultsVec& results, const std::vector<std::string>& expected) const;
     void postproc_trim_(Result& res) const;
     void postproc_replace_(Result& res) const;
-    bool filter_by_required(const Result& res) const;
-    void draw_result(const cv::Rect& roi, const ResultsVec& res) const;
+    bool filter_by_required(const Result& res, const std::vector<std::string>& expected) const;
 
     OcrParam param_;
 };
 
 MAA_VISION_NS_END
 
-std::ostream& operator<<(std::ostream& os, const MAA_VISION_NS::OCRer::Result& res);
+MAA_NS_BEGIN
+
+inline std::ostream& operator<<(std::ostream& os, const MAA_VISION_NS::OCRer::Result& res)
+{
+    os << res.to_json().to_string();
+    return os;
+}
+
+inline std::ostream& operator<<(std::ostream& os, const MAA_VISION_NS::OCRer::ResultsVec& resutls)
+{
+    json::array root;
+    for (const auto& res : resutls) {
+        root.emplace_back(res.to_json());
+    }
+    os << root.to_string();
+    return os;
+}
+
+MAA_NS_END

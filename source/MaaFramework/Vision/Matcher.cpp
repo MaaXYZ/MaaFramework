@@ -7,57 +7,62 @@
 
 MAA_VISION_NS_BEGIN
 
-Matcher::ResultOpt Matcher::analyze() const
+Matcher::ResultsVec Matcher::analyze() const
 {
     if (param_.template_images.empty()) {
         LogError << name_ << "templates is empty" << VAR(param_.template_paths);
-        return std::nullopt;
+        return {};
     }
 
     if (param_.template_images.size() != param_.thresholds.size()) {
         LogError << name_ << "templates.size() != thresholds.size()" << VAR(param_.template_images.size())
                  << VAR(param_.thresholds.size());
-        return std::nullopt;
+        return {};
     }
 
+    ResultsVec all_results;
     for (size_t i = 0; i != param_.template_images.size(); ++i) {
         const cv::Mat& templ = param_.template_images.at(i);
-        if (templ.empty()) {
-            LogWarn << name_ << "template is empty" << VAR(param_.template_paths) << VAR(i) << VAR(templ);
-            continue;
-        }
+
+        auto start_time = std::chrono::steady_clock::now();
+        ResultsVec results = foreach_rois(templ);
+
+        auto costs = duration_since(start_time);
+        const std::string& path = param_.template_paths.at(i);
+        LogDebug << name_ << "Raw:" << VAR(results) << VAR(path) << VAR(costs);
+
         double threshold = param_.thresholds.at(i);
-        auto start = std::chrono::steady_clock::now();
+        filter(results, threshold);
 
-        auto res = foreach_rois(templ, threshold);
+        costs = duration_since(start_time);
+        LogDebug << name_ << "Filter:" << VAR(results) << VAR(path) << VAR(threshold) << VAR(costs);
 
-        auto costs = duration_since(start);
-        LogDebug << name_ << param_.template_paths.at(i) << VAR(res.score) << VAR(threshold) << VAR(costs);
-
-        if (res.score > threshold) {
-            return res;
-        }
+        all_results.insert(all_results.end(), std::make_move_iterator(results.begin()),
+                           std::make_move_iterator(results.end()));
     }
 
-    return std::nullopt;
+    return all_results;
 }
 
-Matcher::Result Matcher::foreach_rois(const cv::Mat& templ, double threshold) const
+Matcher::ResultsVec Matcher::foreach_rois(const cv::Mat& templ) const
 {
+    if (templ.empty()) {
+        LogWarn << name_ << "template is empty" << VAR(param_.template_paths) << VAR(templ);
+        return {};
+    }
+
     if (!cache_.empty()) {
-        return match_and_postproc(cache_, templ);
+        return { match_and_postproc(cache_, templ) };
     }
 
     if (param_.roi.empty()) {
-        return match_and_postproc(cv::Rect(0, 0, image_.cols, image_.rows), templ);
+        return { match_and_postproc(cv::Rect(0, 0, image_.cols, image_.rows), templ) };
     }
 
-    Result res;
+    ResultsVec res;
     for (const cv::Rect& roi : param_.roi) {
-        res = match_and_postproc(roi, templ);
-        if (res.score > threshold) {
-            break;
-        }
+        Result temp = match_and_postproc(roi, templ);
+        res.emplace_back(std::move(temp));
     }
 
     return res;
@@ -65,6 +70,8 @@ Matcher::Result Matcher::foreach_rois(const cv::Mat& templ, double threshold) co
 
 Matcher::Result Matcher::match_and_postproc(const cv::Rect& roi, const cv::Mat& templ) const
 {
+    auto start = std::chrono::steady_clock::now();
+
     cv::Mat image = image_with_roi(roi);
     cv::Mat matched = match_template(image, templ, param_.method, param_.green_mask);
     if (matched.empty()) {
@@ -80,7 +87,6 @@ Matcher::Result Matcher::match_and_postproc(const cv::Rect& roi, const cv::Mat& 
     }
 
     cv::Rect box(max_loc.x + roi.x, max_loc.y + roi.y, templ.cols, templ.rows);
-
     Result result { .box = box, .score = max_val };
 
     draw_result(roi, templ, result);
@@ -109,6 +115,19 @@ void Matcher::draw_result(const cv::Rect& roi, const cv::Mat& templ, const Resul
 
     if (save_draw_) {
         save_image(image_draw);
+    }
+}
+
+void Matcher::filter(ResultsVec& results, double threshold) const
+{
+    for (auto iter = results.begin(); iter != results.end();) {
+        auto& res = *iter;
+
+        if (res.score < threshold) {
+            iter = results.erase(iter);
+            continue;
+        }
+        ++iter;
     }
 }
 

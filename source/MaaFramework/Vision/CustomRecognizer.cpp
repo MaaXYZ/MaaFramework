@@ -13,14 +13,16 @@ CustomRecognizer::CustomRecognizer(MaaCustomRecognizerHandle handle, InstanceInt
     : VisionBase(nullptr), recognizer_(handle), inst_(inst)
 {}
 
-CustomRecognizer::ResultOpt CustomRecognizer::analyze() const
+CustomRecognizer::ResultsVec CustomRecognizer::analyze() const
 {
     LogFunc << VAR_VOIDP(recognizer_) << VAR(recognizer_->analyze) << VAR(param_.custom_param);
 
     if (!recognizer_ || !recognizer_->analyze) {
         LogError << "Recognizer is null";
-        return std::nullopt;
+        return {};
     }
+
+    auto start_time = std::chrono::steady_clock::now();
 
     /*in*/
     MAA_TASK_NS::SyncContext sync_ctx(inst_);
@@ -37,15 +39,18 @@ CustomRecognizer::ResultOpt CustomRecognizer::analyze() const
 
     cv::Rect box { maa_box.x, maa_box.y, maa_box.width, maa_box.height };
     std::string detail(detail_buffer.data(), detail_buffer.size());
-    LogDebug << VAR(ret) << VAR(box) << VAR(detail);
+
+    auto costs = duration_since(start_time);
+    LogDebug << VAR(ret) << VAR(box) << VAR(detail) << VAR(costs);
 
     if (!ret) {
-        return std::nullopt;
+        return {};
     }
 
     auto jdetail = json::parse(detail).value_or(detail);
-
-    return Result { .box = box, .detail = std::move(jdetail) };
+    return {
+        Result { .box = box, .detail = std::move(jdetail) },
+    };
 }
 
 MAA_VISION_NS_END

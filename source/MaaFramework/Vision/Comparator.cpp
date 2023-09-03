@@ -6,29 +6,61 @@
 
 MAA_VISION_NS_BEGIN
 
-Comparator::Result Comparator::analyze(const cv::Mat& lhs, const cv::Mat& rhs) const
+Comparator::ResultsVec Comparator::analyze(const cv::Mat& lhs, const cv::Mat& rhs) const
 {
     if (lhs.size() != rhs.size()) {
         LogError << "lhs.size() != rhs.size()" << VAR(lhs) << VAR(rhs);
-        return false;
+        return {};
     }
+
+    auto start_time = std::chrono::steady_clock::now();
+
+    ResultsVec results = foreach_rois(lhs, rhs);
+
+    auto costs = duration_since(start_time);
+    LogDebug << "Raw:" << VAR(results) << VAR(costs);
+
+    double threshold = param_.threshold;
+    filter(results, threshold);
+
+    costs = duration_since(start_time);
+    LogDebug << "Proc:" << VAR(results) << VAR(threshold) << VAR(costs);
+    return results;
+}
+
+Comparator::ResultsVec Comparator::foreach_rois(const cv::Mat& lhs, const cv::Mat& rhs) const
+{
+    auto method = param_.method;
 
     if (param_.roi.empty()) {
-        return comp(lhs, rhs, param_.method) > param_.threshold;
+        double score = comp(lhs, rhs, method);
+        return { Result { .box = cv::Rect(0, 0, lhs.cols, lhs.rows), .score = score } };
     }
 
+    ResultsVec results;
     for (const cv::Rect& roi : param_.roi) {
         cv::Mat lhs_roi = lhs(correct_roi(roi, lhs));
         cv::Mat rhs_roi = rhs(correct_roi(roi, rhs));
-        double similarity = comp(lhs_roi, rhs_roi, param_.method);
 
-        LogDebug << VAR(roi) << VAR(similarity) << VAR(param_.threshold);
-
-        if (similarity < param_.threshold) {
-            return false;
-        }
+        double score = comp(lhs_roi, rhs_roi, method);
+        Result res { .box = roi, .score = score };
+        results.emplace_back(std::move(res));
     }
-    return true;
+
+    return results;
+}
+
+void Comparator::filter(ResultsVec& results, double threshold) const
+{
+    for (auto iter = results.begin(); iter != results.end();) {
+        auto& res = *iter;
+
+        if (res.score < threshold) {
+            iter = results.erase(iter);
+            continue;
+        }
+        ++iter;
+    }
 }
 
 double Comparator::comp(const cv::Mat& lhs, const cv::Mat& rhs, int method)

@@ -1,5 +1,7 @@
 #include "PipelineTask.h"
 
+#include <sstream>
+
 #include "Controller/ControllerMgr.h"
 #include "Instance/InstanceStatus.h"
 #include "Resource/ResourceMgr.h"
@@ -270,7 +272,7 @@ std::optional<PipelineTask::RecResult> PipelineTask::recognize(const cv::Mat& im
     std::optional<PipelineTask::RecResult> result;
     switch (task_data.rec_type) {
     case Type::DirectHit:
-        result = direct_hit(image, std::get<DirectHitParam>(task_data.rec_param), cache, task_data.name);
+        result = direct_hit();
         break;
 
     case Type::TemplateMatch:
@@ -302,16 +304,9 @@ std::optional<PipelineTask::RecResult> PipelineTask::recognize(const cv::Mat& im
     return result;
 }
 
-std::optional<PipelineTask::RecResult> PipelineTask::direct_hit(const cv::Mat& image,
-                                                                const MAA_VISION_NS::DirectHitParam& param,
-                                                                const cv::Rect& cache, const std::string& name)
+std::optional<PipelineTask::RecResult> PipelineTask::direct_hit()
 {
-    std::ignore = image;
-    std::ignore = cache;
-    std::ignore = param;
-    std::ignore = name;
-
-    return RecResult { .box = cv::Rect(), .detail = json::object() };
+    return RecResult { .box = cv::Rect(), .detail = json::array() };
 }
 
 std::optional<PipelineTask::RecResult> PipelineTask::template_match(const cv::Mat& image,
@@ -326,10 +321,16 @@ std::optional<PipelineTask::RecResult> PipelineTask::template_match(const cv::Ma
     matcher.set_name(name);
 
     auto ret = matcher.analyze();
-    if (!ret) {
+    if (ret.empty()) {
         return std::nullopt;
     }
-    return RecResult { .box = ret->box, .detail = ret->to_json() };
+
+    const cv::Rect& box = ret.front().box;
+    json::array detail;
+    for (const auto& res : ret) {
+        detail.emplace_back(res.to_json());
+    }
+    return RecResult { .box = box, .detail = detail.to_string() };
 }
 
 std::optional<PipelineTask::RecResult> PipelineTask::ocr(const cv::Mat& image, const MAA_VISION_NS::OcrParam& param,
@@ -343,21 +344,19 @@ std::optional<PipelineTask::RecResult> PipelineTask::ocr(const cv::Mat& image, c
     ocrer.set_name(name);
 
     auto ret = ocrer.analyze();
-    if (!ret) {
+    if (ret.empty()) {
         return std::nullopt;
     }
-    auto& res = *ret;
 
     // TODO: sort by required regex.
     // sort_by_required_(res, param.text);
 
-    json::value detail = res.front().to_json();
-    json::array& all = detail["all"].as_array();
-    for (auto& item : res) {
-        all.emplace_back(item.to_json());
+    const cv::Rect& box = ret.front().box;
+    json::array detail;
+    for (const auto& res : ret) {
+        detail.emplace_back(res.to_json());
     }
-
-    return RecResult { .box = res.front().box, .detail = std::move(detail) };
+    return RecResult { .box = box, .detail = std::move(detail) };
 }
 
 std::optional<PipelineTask::RecResult> PipelineTask::custom_recognize(const cv::Mat& image,
@@ -383,11 +382,17 @@ std::optional<PipelineTask::RecResult> PipelineTask::custom_recognize(const cv::
     recognizer->set_name(name);
 
     auto ret = recognizer->analyze();
-    if (!ret) {
+    if (ret.empty()) {
         return std::nullopt;
     }
 
-    return RecResult { .box = ret->box, .detail = ret->to_json() };
+    const cv::Rect& box = ret.front().box;
+    json::array detail;
+    for (const auto& res : ret) {
+        detail.emplace_back(res.to_json());
+    }
+
+    return RecResult { .box = box, .detail = std::move(detail) };
 }
 
 PipelineTask::RunningResult PipelineTask::start_to_act(const FoundResult& act)
@@ -499,7 +504,8 @@ void PipelineTask::wait_freezes(const MAA_PIPELINE_RES_NS::WaitFreezesParam& par
 
     while (!need_exit()) {
         cv::Mat cur_image = controller()->screencap();
-        if (!comp.analyze(pre_image, cur_image)) {
+        auto ret = comp.analyze(pre_image, cur_image);
+        if (ret.empty()) {
             pre_image = cur_image;
             pre_time = std::chrono::steady_clock::now();
             continue;
