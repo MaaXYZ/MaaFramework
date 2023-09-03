@@ -18,7 +18,7 @@ std::ostream& operator<<(std::ostream& os, const OCRer::Result& res)
 
 OCRer::ResultVecOpt OCRer::analyze() const
 {
-    auto results = traverse_rois();
+    auto results = foreach_rois();
 
     if (results.empty()) {
         return std::nullopt;
@@ -43,7 +43,7 @@ OCRer::ResultVecOpt OCRer::analyze() const
     return results.empty() ? std::nullopt : std::make_optional(std::move(results));
 }
 
-OCRer::ResultsVec OCRer::traverse_rois() const
+OCRer::ResultsVec OCRer::foreach_rois() const
 {
     if (!cache_.empty()) {
         return { predict_only_rec(cache_) };
@@ -98,11 +98,6 @@ OCRer::ResultsVec OCRer::predict_det_and_rec(const cv::Rect& roi) const
 
     ResultsVec results;
 
-    cv::Mat image_draw;
-    if (debug_draw_) {
-        image_draw = draw_roi(roi);
-    }
-
     for (size_t i = 0; i != ocr_result.text.size(); ++i) {
         // the raw_box rect like ↓
         // 0 - 1
@@ -114,13 +109,6 @@ OCRer::ResultsVec OCRer::predict_det_and_rec(const cv::Rect& roi) const
         auto [top, bottom] = MAA_RNS::ranges::minmax(y_collect);
 
         cv::Rect my_box(left + roi.x, top + roi.y, right - left, bottom - top);
-        if (debug_draw_) {
-            const auto color = cv::Scalar(0, 0, 255);
-            cv::rectangle(image_draw, my_box, color, 1);
-            std::string flag =
-                MAA_FMT::format("{}: [{}, {}, {}, {}]", i, my_box.x, my_box.y, my_box.width, my_box.height);
-            cv::putText(image_draw, flag, cv::Point(my_box.x, my_box.y - 5), cv::FONT_HERSHEY_PLAIN, 1.2, color, 1);
-        }
         results.emplace_back(
             Result { .text = std::move(ocr_result.text.at(i)), .box = my_box, .score = ocr_result.rec_scores.at(i) });
     }
@@ -128,9 +116,7 @@ OCRer::ResultsVec OCRer::predict_det_and_rec(const cv::Rect& roi) const
     auto costs = duration_since(start_time);
     LogDebug << VAR(results) << VAR(image_roi.size()) << VAR(costs);
 
-    if (save_draw_) {
-        save_image(image_draw);
-    }
+    draw_result(roi, results);
 
     return results;
 }
@@ -160,19 +146,12 @@ OCRer::Result OCRer::predict_only_rec(const cv::Rect& roi) const
         return {};
     }
 
-    cv::Mat image_draw;
-    if (debug_draw_) {
-        image_draw = draw_roi(roi);
-    }
-
     Result result { .text = std::move(rec_text), .box = roi, .score = rec_score };
 
     auto costs = duration_since(start_time);
     LogDebug << VAR(result) << VAR(image_roi.size()) << VAR(costs);
 
-    if (save_draw_) {
-        save_image(image_draw);
-    }
+    draw_result(roi, { result });
 
     return result;
 }
@@ -202,6 +181,28 @@ bool OCRer::filter_by_required(const Result& res) const
     }
 
     return false;
+}
+
+void OCRer::draw_result(const cv::Rect& roi, const ResultsVec& res) const
+{
+    if (!debug_draw_) {
+        return;
+    }
+
+    cv::Mat image_draw = draw_roi(roi);
+
+    for (size_t i = 0; i != res.size(); ++i) {
+        const cv::Rect& my_box = res.at(i).box;
+
+        const auto color = cv::Scalar(0, 0, 255);
+        cv::rectangle(image_draw, my_box, color, 1);
+        std::string flag = MAA_FMT::format("{}: [{}, {}, {}, {}]", i, my_box.x, my_box.y, my_box.width, my_box.height);
+        cv::putText(image_draw, flag, cv::Point(my_box.x, my_box.y - 5), cv::FONT_HERSHEY_PLAIN, 1.2, color, 1);
+    }
+
+    if (save_draw_) {
+        save_image(image_draw);
+    }
 }
 
 MAA_VISION_NS_END

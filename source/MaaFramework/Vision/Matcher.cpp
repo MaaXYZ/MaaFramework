@@ -29,7 +29,7 @@ Matcher::ResultOpt Matcher::analyze() const
         double threshold = param_.thresholds.at(i);
         auto start = std::chrono::steady_clock::now();
 
-        auto res = traverse_rois(templ, threshold);
+        auto res = foreach_rois(templ, threshold);
 
         auto costs = duration_since(start);
         LogDebug << name_ << param_.template_paths.at(i) << VAR(res.score) << VAR(threshold) << VAR(costs);
@@ -42,7 +42,7 @@ Matcher::ResultOpt Matcher::analyze() const
     return std::nullopt;
 }
 
-Matcher::Result Matcher::traverse_rois(const cv::Mat& templ, double threshold) const
+Matcher::Result Matcher::foreach_rois(const cv::Mat& templ, double threshold) const
 {
     if (!cache_.empty()) {
         return match_and_postproc(cache_, templ);
@@ -81,28 +81,35 @@ Matcher::Result Matcher::match_and_postproc(const cv::Rect& roi, const cv::Mat& 
 
     cv::Rect box(max_loc.x + roi.x, max_loc.y + roi.y, templ.cols, templ.rows);
 
-    cv::Mat image_draw;
-    if (debug_draw_) {
-        int raw_width = image_.cols;
-        image_draw = draw_roi(roi);
+    Result result { .box = box, .score = max_val };
 
-        const auto color = cv::Scalar(0, 0, 255);
-        cv::rectangle(image_draw, box, color, 1);
-        std::string flag =
-            MAA_FMT::format("Res: {:.3f}, [{}, {}, {}, {}]", max_val, box.x, box.y, box.width, box.height);
-        cv::putText(image_draw, flag, cv::Point(box.x, box.y - 5), cv::FONT_HERSHEY_PLAIN, 1.2, color, 1);
+    draw_result(roi, templ, result);
+    return result;
+}
 
-        cv::copyMakeBorder(image_draw, image_draw, 0, 0, 0, templ.cols, cv::BORDER_CONSTANT, cv::Scalar(0, 0, 0));
-        cv::Mat draw_templ_roi = image_draw(cv::Rect(raw_width, 0, templ.cols, templ.rows));
-        templ.copyTo(draw_templ_roi);
-        cv::line(image_draw, cv::Point(raw_width, 0), cv::Point(box.x, box.y), color, 1);
+void Matcher::draw_result(const cv::Rect& roi, const cv::Mat& templ, const Result& result) const
+{
+    if (!debug_draw_) {
+        return;
     }
+
+    cv::Mat image_draw = draw_roi(roi);
+    const auto color = cv::Scalar(0, 0, 255);
+    cv::rectangle(image_draw, result.box, color, 1);
+
+    std::string flag = MAA_FMT::format("Res: {:.3f}, [{}, {}, {}, {}]", result.score, result.box.x, result.box.y,
+                                       result.box.width, result.box.height);
+    cv::putText(image_draw, flag, cv::Point(result.box.x, result.box.y - 5), cv::FONT_HERSHEY_PLAIN, 1.2, color, 1);
+
+    int raw_width = image_.cols;
+    cv::copyMakeBorder(image_draw, image_draw, 0, 0, 0, templ.cols, cv::BORDER_CONSTANT, cv::Scalar(0, 0, 0));
+    cv::Mat draw_templ_roi = image_draw(cv::Rect(raw_width, 0, templ.cols, templ.rows));
+    templ.copyTo(draw_templ_roi);
+    cv::line(image_draw, cv::Point(raw_width, 0), cv::Point(result.box.x, result.box.y), color, 1);
 
     if (save_draw_) {
         save_image(image_draw);
     }
-
-    return Result { .box = box, .score = max_val };
 }
 
 MAA_VISION_NS_END

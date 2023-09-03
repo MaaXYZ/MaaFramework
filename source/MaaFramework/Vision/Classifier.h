@@ -24,8 +24,9 @@ public:
     ResultOpt analyze() const;
 
 private:
-    Result traverse_rois() const;
+    Result foreach_rois() const;
     Result classify(const cv::Rect& roi) const;
+    void draw_result(const Result& res) const;
 
     ClassifierParam param_;
 };

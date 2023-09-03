@@ -26,7 +26,7 @@ Classifier::ResultOpt Classifier::analyze() const
     }
     auto start = std::chrono::steady_clock::now();
 
-    Result result = traverse_rois();
+    Result result = foreach_rois();
 
     auto costs = duration_since(start);
     LogDebug << name_ << result.box << VAR(result.cls_index) << VAR(result.label) << VAR(result.score) << VAR(costs);
@@ -34,7 +34,7 @@ Classifier::ResultOpt Classifier::analyze() const
     return result.score == 0 ? std::nullopt : std::make_optional(result);
 }
 
-Classifier::Result Classifier::traverse_rois() const
+Classifier::Result Classifier::foreach_rois() const
 {
     if (!cache_.empty()) {
         return classify(cache_);
@@ -76,7 +76,7 @@ Classifier::Result Classifier::classify(const cv::Rect& roi) const
     Result result;
     result.raw.resize(param_.cls_size);
 
-    std::array<int64_t, 2> output_shape { kBatchSize, param_.cls_size };
+    std::array<int64_t, 2> output_shape { kBatchSize, static_cast<int64_t>(param_.cls_size) };
     Ort::Value output_tensor = Ort::Value::CreateTensor<float>(memory_info, result.raw.data(), result.raw.size(),
                                                                output_shape.data(), output_shape.size());
 
@@ -98,25 +98,31 @@ Classifier::Result Classifier::classify(const cv::Rect& roi) const
     LogDebug << VAR(roi) << VAR(result.cls_index) << VAR(result.label) << VAR(result.score) << VAR(result.probs)
              << VAR(result.raw);
 
-    cv::Mat image_draw;
-    if (debug_draw_) {
-        image_draw = draw_roi(roi);
+    draw_result(result);
 
-        cv::Point pt(roi.x + roi.width + 5, roi.y);
-        for (size_t i = 0; i != param_.cls_size; ++i) {
-            const auto color = i == result.cls_index ? cv::Scalar(0, 255, 0) : cv::Scalar(0, 0, 255);
-            std::string text =
-                MAA_FMT::format("{} {}: prob {:.3f}, raw {:.3f}", i, param_.labels[i], result.probs[i], result.raw[i]);
-            cv::putText(image_draw, text, pt, cv::FONT_HERSHEY_PLAIN, 1.2, color, 1);
-            pt.y += 10;
-        }
+    return result;
+}
+
+void Classifier::draw_result(const Result& result) const
+{
+    if (!debug_draw_) {
+        return;
+    }
+
+    cv::Mat image_draw = draw_roi(result.box);
+    cv::Point pt(result.box.x + result.box.width + 5, result.box.y);
+
+    for (size_t i = 0; i != param_.cls_size; ++i) {
+        const auto color = i == result.cls_index ? cv::Scalar(0, 255, 0) : cv::Scalar(0, 0, 255);
+        std::string text =
+            MAA_FMT::format("{} {}: prob {:.3f}, raw {:.3f}", i, param_.labels[i], result.probs[i], result.raw[i]);
+        cv::putText(image_draw, text, pt, cv::FONT_HERSHEY_PLAIN, 1.2, color, 1);
+        pt.y += 10;
     }
 
     if (save_draw_) {
         save_image(image_draw);
     }
-
-    return result;
 }
 
 MAA_VISION_NS_END
