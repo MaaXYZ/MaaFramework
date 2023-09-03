@@ -574,7 +574,7 @@ cv::Rect PipelineTask::get_target_rect(const MAA_PIPELINE_RES_NS::Action::Target
         return {};
     }
 
-    cv::Rect raw;
+    cv::Rect raw {};
     switch (target.type) {
     case Target::Type::Self:
         raw = cur_box;

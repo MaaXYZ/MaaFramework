@@ -27,8 +27,8 @@ protected:
     void save_image(const cv::Mat& image) const;
 
 protected:
-    cv::Mat image_;
-    cv::Rect cache_;
+    cv::Mat image_ {};
+    cv::Rect cache_ {};
     std::string name_;
 
     InstanceInternalAPI* inst_ = nullptr;

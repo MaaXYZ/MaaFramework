@@ -14,7 +14,7 @@ class CustomRecognizer : public VisionBase
 {
     struct Result
     {
-        cv::Rect box;
+        cv::Rect box {};
         json::value detail;
 
         json::value to_json() const

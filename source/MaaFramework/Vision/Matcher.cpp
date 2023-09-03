@@ -77,7 +77,7 @@ Matcher::Result Matcher::match_and_postproc(const cv::Rect& roi, const cv::Mat& 
     }
 
     double min_val = 0.0, max_val = 0.0;
-    cv::Point min_loc, max_loc;
+    cv::Point min_loc {}, max_loc {};
     cv::minMaxLoc(matched, &min_val, &max_val, &min_loc, &max_loc);
 
     if (std::isnan(max_val) || std::isinf(max_val)) {

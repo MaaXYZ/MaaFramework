@@ -8,7 +8,7 @@ const cv::Rect& InstanceStatus::get_pipeline_rec_box(const std::string& task) co
 {
     auto it = pipeline_rec_box_map_.find(task);
     if (it == pipeline_rec_box_map_.end()) {
-        static cv::Rect empty;
+        static cv::Rect empty {};
         return empty;
     }
     return it->second;

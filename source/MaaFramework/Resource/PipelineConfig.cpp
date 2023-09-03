@@ -522,7 +522,7 @@ bool PipelineConfig::parse_roi(const json::value& input, std::vector<cv::Rect>& 
         return true;
     }
 
-    cv::Rect single_roi;
+    cv::Rect single_roi {};
     if (parse_rect(*roi_opt, single_roi)) {
         output = { single_roi };
         return true;
@@ -536,7 +536,7 @@ bool PipelineConfig::parse_roi(const json::value& input, std::vector<cv::Rect>& 
     auto& roi_array = roi_opt->as_array();
     output.clear();
     for (const auto& roi_item : roi_array) {
-        cv::Rect roi;
+        cv::Rect roi {};
         if (!parse_rect(roi_item, roi)) {
             LogError << "failed to parse_rect" << VAR(roi_item);
             return false;
@@ -794,7 +794,7 @@ bool PipelineConfig::parse_action_target(const json::value& input, const std::st
     }
     else if (param_opt->is_array()) {
         output.type = Target::Type::Region;
-        cv::Rect rect;
+        cv::Rect rect {};
         if (!parse_rect(*param_opt, rect)) {
             return false;
         }
