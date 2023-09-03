@@ -19,6 +19,7 @@ include(${PROJECT_SOURCE_DIR}/cmake/config.cmake) # Basic compile & link configu
 include(${PROJECT_SOURCE_DIR}/cmake/assets.cmake)
 include(${PROJECT_SOURCE_DIR}/cmake/utils.cmake)
 include(${PROJECT_SOURCE_DIR}/cmake/version.cmake)
+# include(${PROJECT_SOURCE_DIR}/cmake/nuget.cmake)
 if(WITH_THRIFT)
     include(${PROJECT_SOURCE_DIR}/cmake/thrift-gen.cmake)
 endif(WITH_THRIFT)
