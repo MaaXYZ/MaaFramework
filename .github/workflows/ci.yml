@@ -267,7 +267,7 @@ jobs:
           files: assets/*.zip
           tag_name: ${{ needs.meta.outputs.tag }}
 
-  pack:
+  nuget_pack:
     needs: [meta, windows, ubuntu, macos]
     runs-on: ubuntu-latest
     env:
