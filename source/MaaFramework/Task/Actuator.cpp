@@ -8,7 +8,7 @@
 
 MAA_TASK_NS_BEGIN
 
-Actuator::Actuator(TaskInstAPI& task_inst) : task_inst_(task_inst), inst_(task_inst_.inst()) {}
+Actuator::Actuator(InstanceInternalAPI* inst) : inst_(inst) {}
 
 bool Actuator::run(const Recognizer::Result& rec_result, const TaskData& task_data)
 {
@@ -19,7 +19,6 @@ bool Actuator::run(const Recognizer::Result& rec_result, const TaskData& task_da
     sleep(task_data.pre_delay);
 
     switch (task_data.action_type) {
-    // TODO: 这些内部 aciton 也可以作为但一个单独的 InterAction 类，但好像也没啥必要（
     case Type::DoNothing:
         break;
     case Type::Click:

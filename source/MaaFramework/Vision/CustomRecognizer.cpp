@@ -21,15 +21,11 @@ CustomRecognizer::ResultsVec CustomRecognizer::analyze() const
         LogError << "Recognizer is null";
         return {};
     }
-    if (!task_inst_) {
-        LogError << "task_inst_ is null";
-        return {};
-    }
 
     auto start_time = std::chrono::steady_clock::now();
 
     /*in*/
-    MAA_TASK_NS::SyncContext sync_ctx(*task_inst_);
+    MAA_TASK_NS::SyncContext sync_ctx(inst_);
     ImageBuffer image_buffer;
     image_buffer.set(image_);
     std::string custom_param_str = param_.custom_param.to_string();

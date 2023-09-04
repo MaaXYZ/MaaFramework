@@ -1,6 +1,7 @@
 #pragma once
 
 #include <string_view>
+#include <stack>
 
 #include <meojson/json.hpp>
 
@@ -10,9 +11,7 @@
 #include "Recognizer.h"
 #include "Resource/PipelineResMgr.h"
 #include "Resource/PipelineTypes.h"
-#include "Task/TaskInstAPI.h"
 
-#include <stack>
 
 MAA_TASK_NS_BEGIN
 
@@ -22,7 +21,7 @@ public:
     using TaskData = MAA_RES_NS::TaskData;
 
 public:
-    Actuator(TaskInstAPI& task_inst);
+    Actuator(InstanceInternalAPI* inst);
 
     bool run(const Recognizer::Result& rec_result, const TaskData& task_data);
 
@@ -52,7 +51,6 @@ private:
 
 private:
     bool need_exit_ = false;
-    TaskInstAPI& task_inst_;
     InstanceInternalAPI* inst_ = nullptr;
 };
 

@@ -20,10 +20,6 @@ public:
 
 public:
     TaskDataMgr(InstanceInternalAPI* inst);
-    TaskDataMgr(const TaskDataMgr&) = default;
-    TaskDataMgr(TaskDataMgr&&) = default;
-    TaskDataMgr& operator=(const TaskDataMgr&) = default;
-    TaskDataMgr& operator=(TaskDataMgr&) = default;
 
     const TaskData& get_task_data(const std::string& task_name);
     bool set_param(const json::value& param);

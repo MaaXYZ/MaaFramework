@@ -9,7 +9,6 @@
 #include "Resource/PipelineResMgr.h"
 #include "Resource/PipelineTypes.h"
 #include "Task/TaskDataMgr.h"
-#include "Task/TaskInstAPI.h"
 
 #include <stack>
 
@@ -18,7 +17,7 @@ MAA_TASK_NS_BEGIN
 class SyncContext : public MaaSyncContextAPI, public MaaInstanceSink
 {
 public:
-    SyncContext(TaskInstAPI& task_inst);
+    SyncContext(InstanceInternalAPI* inst);
     virtual ~SyncContext() override = default;
 
 public: // from MaaSyncContextAPI
@@ -45,7 +44,6 @@ private:
     InstanceStatus* status() const { return inst_ ? inst_->inter_status() : nullptr; }
 
     bool need_exit_ = false;
-    TaskInstAPI& task_inst_;
     InstanceInternalAPI* inst_ = nullptr;
 };
 

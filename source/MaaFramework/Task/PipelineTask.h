@@ -12,25 +12,19 @@
 #include "Task/Actuator.h"
 #include "Task/Recognizer.h"
 #include "Task/TaskDataMgr.h"
-#include "Task/TaskInstAPI.h"
 
 #include <stack>
 
 MAA_TASK_NS_BEGIN
 
-class PipelineTask : public TaskInstAPI, public MaaInstanceSink
+class PipelineTask : public MaaInstanceSink
 {
 public:
     using TaskData = MAA_RES_NS::TaskData;
 
 public:
     PipelineTask(std::string entry, InstanceInternalAPI* inst);
-    PipelineTask(std::string entry, TaskInstAPI& task_inst);
     virtual ~PipelineTask() override = default;
-
-public: // from TaskInstAPI
-    virtual InstanceInternalAPI* inst() override { return inst_; }
-    virtual TaskDataMgr& data_mgr() override { return data_mgr_; }
 
 public: // from MaaInstanceSink
     virtual void on_stop() override { need_exit_ = true; }

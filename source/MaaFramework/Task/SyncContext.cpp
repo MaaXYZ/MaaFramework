@@ -9,7 +9,7 @@
 
 MAA_TASK_NS_BEGIN
 
-SyncContext::SyncContext(TaskInstAPI& task_inst) : task_inst_(task_inst), inst_(task_inst_.inst()) {}
+SyncContext::SyncContext(InstanceInternalAPI* inst) : inst_(inst) {}
 
 bool SyncContext::run_task(std::string task, std::string_view param)
 {
@@ -26,7 +26,7 @@ bool SyncContext::run_task(std::string task, std::string_view param)
         return false;
     }
 
-    PipelineTask pipeline(task, task_inst_);
+    PipelineTask pipeline(task, inst_);
     pipeline.set_param(*json_opt);
 
     return pipeline.run();
@@ -51,11 +51,13 @@ bool SyncContext::run_recognizer(cv::Mat image, std::string task, std::string_vi
         return false;
     }
 
-    PipelineTask pipeline(task, task_inst_);
-    pipeline.set_param(*json_opt);
+    Recognizer recognizer(inst_);
 
-    const auto& task_data = pipeline.data_mgr().get_task_data(task);
-    auto opt = pipeline.recognizer().recognize(image, task_data);
+    TaskDataMgr data_mgr(inst_);
+    data_mgr.set_param(*json_opt);
+    const auto& task_data = data_mgr.get_task_data(task);
+
+    auto opt = recognizer.recognize(image, task_data);
     if (!opt) {
         return false;
     }
@@ -80,12 +82,15 @@ bool SyncContext::run_action(std::string task, std::string_view param, cv::Rect 
         return false;
     }
 
-    PipelineTask pipeline(task, task_inst_);
-    pipeline.set_param(*json_opt);
+    Actuator actuator(inst_);
 
     Recognizer::Result rec_result { .box = cur_box, .detail = std::move(cur_detail) };
-    const auto& task_data = pipeline.data_mgr().get_task_data(task);
-    auto ret = pipeline.actuator().run(rec_result, task_data);
+
+    TaskDataMgr data_mgr(inst_);
+    data_mgr.set_param(*json_opt);
+    const auto& task_data = data_mgr.get_task_data(task);
+
+    auto ret = actuator.run(rec_result, task_data);
     return ret;
 }
 

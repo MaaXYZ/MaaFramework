@@ -48,7 +48,6 @@
     <ClInclude Include="Task\PipelineTask.h" />
     <ClInclude Include="Resource\PipelineTypes.h" />
     <ClInclude Include="Base\AsyncRunner.hpp" />
-    <ClInclude Include="Task\TaskInstAPI.h" />
     <ClInclude Include="Utils\ArgvWrapper.hpp" />
     <ClInclude Include="Utils\Demangle.hpp" />
     <ClInclude Include="Utils\File.hpp" />

@@ -9,7 +9,7 @@
 
 MAA_TASK_NS_BEGIN
 
-Recognizer::Recognizer(TaskInstAPI& task_inst) : task_inst_(task_inst), inst_(task_inst_.inst()) {}
+Recognizer::Recognizer(InstanceInternalAPI* inst) : inst_(inst) {}
 
 std::optional<Recognizer::Result> Recognizer::recognize(const cv::Mat& image, const TaskData& task_data)
 {

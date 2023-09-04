@@ -12,12 +12,7 @@
 MAA_TASK_NS_BEGIN
 
 PipelineTask::PipelineTask(std::string entry, InstanceInternalAPI* inst)
-    : inst_(inst), entry_(std::move(entry)), data_mgr_(inst), recognizer_(*this), actuator_(*this)
-{}
-
-PipelineTask::PipelineTask(std::string entry, TaskInstAPI& task_inst)
-    : inst_(task_inst.inst()), entry_(std::move(entry)), data_mgr_(task_inst.data_mgr()), recognizer_(*this),
-      actuator_(*this)
+    : inst_(inst), entry_(std::move(entry)), data_mgr_(inst), recognizer_(inst), actuator_(inst)
 {}
 
 bool PipelineTask::run()

@@ -9,7 +9,6 @@
 #include "Instance/InstanceInternalAPI.hpp"
 #include "Resource/PipelineResMgr.h"
 #include "Resource/PipelineTypes.h"
-#include "Task/TaskInstAPI.h"
 
 #include <stack>
 
@@ -27,7 +26,7 @@ public:
     };
 
 public:
-    Recognizer(TaskInstAPI& task_inst);
+    Recognizer(InstanceInternalAPI* inst);
 
 public:
     std::optional<Result> recognize(const cv::Mat& image, const TaskData& task_data);
@@ -45,7 +44,6 @@ private:
     InstanceStatus* status() { return inst_ ? inst_->inter_status() : nullptr; }
 
 private:
-    TaskInstAPI& task_inst_;
     InstanceInternalAPI* inst_ = nullptr;
 };
 
