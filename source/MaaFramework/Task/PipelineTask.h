@@ -30,7 +30,7 @@ public:
 
 public: // from TaskInstAPI
     virtual InstanceInternalAPI* inst() override { return inst_; }
-    virtual TaskDataMgr& data_mgr() { return data_mgr_; }
+    virtual TaskDataMgr& data_mgr() override { return data_mgr_; }
 
 public: // from MaaInstanceSink
     virtual void on_stop() override { need_exit_ = true; }
