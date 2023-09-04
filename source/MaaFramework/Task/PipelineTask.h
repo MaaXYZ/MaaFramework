@@ -7,7 +7,7 @@
 #include "API/MaaTypes.h"
 #include "Conf/Conf.h"
 #include "Instance/InstanceInternalAPI.hpp"
-#include "Resource/PipelineConfig.h"
+#include "Resource/PipelineResMgr.h"
 #include "Resource/PipelineTypes.h"
 
 #include <stack>
@@ -29,7 +29,7 @@ public:
     std::string entry() const { return entry_; }
 
 private:
-    using TaskDataMap = MAA_RES_NS::PipelineConfig::TaskDataMap;
+    using TaskDataMap = MAA_RES_NS::PipelineResMgr::TaskDataMap;
 
     enum class RunningResult
     {

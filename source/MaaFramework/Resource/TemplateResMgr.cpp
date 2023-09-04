@@ -1,11 +1,11 @@
-#include "TemplateConfig.h"
+#include "TemplateResMgr.h"
 
 #include "Utils/ImageIo.h"
 #include "Utils/Logger.h"
 
 MAA_RES_NS_BEGIN
 
-bool TemplateConfig::lazy_load(const std::string& name, const std::filesystem::path& root,
+bool TemplateResMgr::lazy_load(const std::string& name, const std::filesystem::path& root,
                                const std::vector<std::string>& filenames)
 {
     LogDebug << VAR(name) << VAR(root) << VAR(filenames);
@@ -27,7 +27,7 @@ bool TemplateConfig::lazy_load(const std::string& name, const std::filesystem::p
     return true;
 }
 
-void TemplateConfig::clear()
+void TemplateResMgr::clear()
 {
     LogFunc;
 
@@ -36,7 +36,7 @@ void TemplateConfig::clear()
     template_bank_.clear();
 }
 
-const std::vector<cv::Mat>& TemplateConfig::get_template_images(const std::string& name) const
+const std::vector<cv::Mat>& TemplateResMgr::get_template_images(const std::string& name) const
 {
     if (auto templ_iter = template_cache_.find(name); templ_iter != template_cache_.end()) {
         return templ_iter->second;
@@ -45,7 +45,7 @@ const std::vector<cv::Mat>& TemplateConfig::get_template_images(const std::strin
     return load_images(name);
 }
 
-const std::vector<cv::Mat>& TemplateConfig::load_images(const std::string& name) const
+const std::vector<cv::Mat>& TemplateResMgr::load_images(const std::string& name) const
 {
     LogFunc << VAR(name);
 
@@ -89,7 +89,7 @@ const std::vector<cv::Mat>& TemplateConfig::load_images(const std::string& name)
     return template_cache_.emplace(name, std::move(images)).first->second;
 }
 
-cv::Mat TemplateConfig::load_single_image(const std::filesystem::path& path) const
+cv::Mat TemplateResMgr::load_single_image(const std::filesystem::path& path) const
 {
     if (auto bank_iter = template_bank_.find(path); bank_iter != template_bank_.end()) {
         LogDebug << "Withdraw image" << VAR(path);

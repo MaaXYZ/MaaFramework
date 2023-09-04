@@ -36,10 +36,10 @@
     <ClInclude Include="Common\MaaConf.h" />
     <ClInclude Include="Controller\ControllerMgr.h" />
     <ClInclude Include="Instance\InstanceMgr.h" />
-    <ClInclude Include="Resource\OCRConfig.h" />
-    <ClInclude Include="Resource\PipelineConfig.h" />
+    <ClInclude Include="Resource\OCRResMgr.h" />
+    <ClInclude Include="Resource\PipelineResMgr.h" />
     <ClInclude Include="Resource\ResourceMgr.h" />
-    <ClInclude Include="Resource\TemplateConfig.h" />
+    <ClInclude Include="Resource\TemplateResMgr.h" />
     <ClInclude Include="Task\CustomAction.h" />
     <ClInclude Include="Task\SyncContext.h" />
     <ClInclude Include="Task\PipelineTask.h" />
@@ -80,10 +80,10 @@
     <ClCompile Include="API\MaaAPI.cpp" />
     <ClCompile Include="Instance\InstanceStatus.cpp" />
     <ClCompile Include="Option\GlobalOptionMgr.cpp" />
-    <ClCompile Include="Resource\OCRConfig.cpp" />
-    <ClCompile Include="Resource\PipelineConfig.cpp" />
+    <ClCompile Include="Resource\OCRResMgr.cpp" />
+    <ClCompile Include="Resource\PipelineResMgr.cpp" />
     <ClCompile Include="Resource\ResourceMgr.cpp" />
-    <ClCompile Include="Resource\TemplateConfig.cpp" />
+    <ClCompile Include="Resource\TemplateResMgr.cpp" />
     <ClCompile Include="Task\CustomAction.cpp" />
     <ClCompile Include="Task\SyncContext.cpp" />
     <ClCompile Include="Task\PipelineTask.cpp" />

@@ -9,11 +9,11 @@
 
 #include "Conf/Conf.h"
 #include "PipelineTypes.h"
-#include "TemplateConfig.h"
+#include "TemplateResMgr.h"
 
 MAA_RES_NS_BEGIN
 
-class PipelineConfig : public NonCopyable
+class PipelineResMgr : public NonCopyable
 {
 public:
     bool load(const std::filesystem::path& path, bool is_base);
@@ -80,7 +80,7 @@ private:
 
 private:
     TaskDataMap task_data_map_;
-    TemplateConfig template_mgr_;
+    TemplateResMgr template_mgr_;
 };
 
 MAA_RES_NS_END

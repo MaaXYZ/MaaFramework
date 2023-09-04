@@ -3,9 +3,9 @@
 #include "API/MaaTypes.h"
 #include "Base/AsyncRunner.hpp"
 #include "Base/MessageNotifier.hpp"
-#include "OCRConfig.h"
-#include "PipelineConfig.h"
-#include "TemplateConfig.h"
+#include "OCRResMgr.h"
+#include "PipelineResMgr.h"
+#include "TemplateResMgr.h"
 
 #include <atomic>
 
@@ -28,19 +28,18 @@ public:
     virtual std::string get_hash() const override;
 
 public:
-    const auto& pipeline_cfg() const { return pipeline_cfg_; }
-    auto& pipeline_cfg() { return pipeline_cfg_; }
-    const auto& ocr_cfg() const { return ocr_cfg_; }
-    auto& ocr_cfg() { return ocr_cfg_; }
+    const auto& pipeline_cfg() const { return pipeline_res_; }
+    auto& pipeline_cfg() { return pipeline_res_; }
+    const auto& ocr_cfg() const { return ocr_res_; }
+    auto& ocr_cfg() { return ocr_res_; }
 
 private:
     bool run_load(typename AsyncRunner<std::filesystem::path>::Id id, std::filesystem::path path);
     bool load(const std::filesystem::path& path);
 
 private:
-    PipelineConfig pipeline_cfg_;
-    // TemplateConfig template_cfg_;
-    OCRConfig ocr_cfg_;
+    PipelineResMgr pipeline_res_;
+    OCRResMgr ocr_res_;
 
 private:
     std::vector<std::filesystem::path> paths_;

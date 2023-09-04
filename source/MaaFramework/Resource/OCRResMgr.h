@@ -15,10 +15,10 @@ MAA_SUPPRESS_CV_WARNINGS_END
 
 MAA_RES_NS_BEGIN
 
-class OCRConfig : public NonCopyable
+class OCRResMgr : public NonCopyable
 {
 public:
-    OCRConfig();
+    OCRResMgr();
     bool lazy_load(const std::filesystem::path& path, bool is_base);
     void clear();
 

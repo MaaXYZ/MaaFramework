@@ -6,7 +6,7 @@
 #include "API/MaaTypes.h"
 #include "Conf/Conf.h"
 #include "Instance/InstanceInternalAPI.hpp"
-#include "Resource/PipelineConfig.h"
+#include "Resource/PipelineResMgr.h"
 #include "Resource/PipelineTypes.h"
 
 #include <stack>

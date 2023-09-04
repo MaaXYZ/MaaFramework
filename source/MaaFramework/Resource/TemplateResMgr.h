@@ -10,7 +10,7 @@
 
 MAA_RES_NS_BEGIN
 
-class TemplateConfig : public NonCopyable
+class TemplateResMgr : public NonCopyable
 {
 public:
     struct Paths

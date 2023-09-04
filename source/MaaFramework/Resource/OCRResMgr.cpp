@@ -1,4 +1,4 @@
-#include "OCRConfig.h"
+#include "OCRResMgr.h"
 
 #include <filesystem>
 
@@ -11,12 +11,12 @@
 
 MAA_RES_NS_BEGIN
 
-OCRConfig::OCRConfig()
+OCRResMgr::OCRResMgr()
 {
     option_.UseOrtBackend();
 }
 
-bool OCRConfig::lazy_load(const std::filesystem::path& path, bool is_base)
+bool OCRResMgr::lazy_load(const std::filesystem::path& path, bool is_base)
 {
     LogFunc << VAR(path) << VAR(is_base);
 
@@ -65,7 +65,7 @@ bool OCRConfig::lazy_load(const std::filesystem::path& path, bool is_base)
     return path_ready;
 }
 
-void OCRConfig::clear()
+void OCRResMgr::clear()
 {
     LogFunc;
 
@@ -74,7 +74,7 @@ void OCRConfig::clear()
     deter_ = nullptr;
 }
 
-const std::unique_ptr<fastdeploy::vision::ocr::DBDetector>& OCRConfig::deter() const
+const std::unique_ptr<fastdeploy::vision::ocr::DBDetector>& OCRResMgr::deter() const
 {
     if (deter_) {
         return deter_;
@@ -97,7 +97,7 @@ const std::unique_ptr<fastdeploy::vision::ocr::DBDetector>& OCRConfig::deter() c
     return deter_;
 }
 
-const std::unique_ptr<fastdeploy::vision::ocr::Recognizer>& OCRConfig::recer() const
+const std::unique_ptr<fastdeploy::vision::ocr::Recognizer>& OCRResMgr::recer() const
 {
     if (recer_) {
         return recer_;
@@ -121,7 +121,7 @@ const std::unique_ptr<fastdeploy::vision::ocr::Recognizer>& OCRConfig::recer() c
     return recer_;
 }
 
-const std::unique_ptr<fastdeploy::pipeline::PPOCRv3>& OCRConfig::ocrer() const
+const std::unique_ptr<fastdeploy::pipeline::PPOCRv3>& OCRResMgr::ocrer() const
 {
     if (ocrer_) {
         return ocrer_;
