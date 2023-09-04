@@ -27,6 +27,8 @@ void PipelineResMgr::clear()
     LogFunc;
 
     task_data_map_.clear();
+    paths_.clear();
+    template_mgr_.clear();
 }
 
 const TaskData& PipelineResMgr::get_task_data(const std::string& task_name)
@@ -109,12 +111,14 @@ bool PipelineResMgr::load_template_images(const std::filesystem::path& path)
 {
     LogFunc << VAR(path);
 
+    template_mgr_.add_root(path);
+
     for (const auto& [name, task_data] : task_data_map_) {
         if (task_data.rec_type != Recognition::Type::TemplateMatch) {
             continue;
         }
         const auto& templates = std::get<MAA_VISION_NS::TemplMatchingParam>(task_data.rec_param).template_paths;
-        bool ret = template_mgr_.lazy_load(name, path, templates);
+        bool ret = template_mgr_.lazy_load(name, templates);
         if (!ret) {
             LogError << "template_cfg_.lazy_load failed" << VAR(name) << VAR(path) << VAR(templates);
             return false;

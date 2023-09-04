@@ -5,15 +5,16 @@
 
 MAA_RES_NS_BEGIN
 
-bool TemplateResMgr::lazy_load(const std::string& name, const std::filesystem::path& root,
-                               const std::vector<std::string>& filenames)
+void TemplateResMgr::add_root(const std::filesystem::path& root)
 {
-    LogDebug << VAR(name) << VAR(root) << VAR(filenames);
+    roots_.emplace_back(root);
+}
 
-    auto& lazy_paths = template_paths_[name];
-    lazy_paths.roots.emplace_back(root);
-    lazy_paths.filenames = filenames;
+bool TemplateResMgr::lazy_load(const std::string& name, const std::vector<std::string>& filenames)
+{
+    LogDebug << VAR(name) << VAR(filenames);
 
+    template_filenames_.insert_or_assign(name, filenames);
     template_cache_.erase(name);
 
 #ifdef MAA_DEBUG
@@ -31,7 +32,8 @@ void TemplateResMgr::clear()
 {
     LogFunc;
 
-    template_paths_.clear();
+    roots_.clear();
+    template_filenames_.clear();
     template_cache_.clear();
     template_bank_.clear();
 }
@@ -49,18 +51,17 @@ const std::vector<cv::Mat>& TemplateResMgr::load_images(const std::string& name)
 {
     LogFunc << VAR(name);
 
-    auto path_iter = template_paths_.find(name);
-    if (path_iter == template_paths_.end()) {
+    auto path_iter = template_filenames_.find(name);
+    if (path_iter == template_filenames_.end()) {
         LogError << "Invalid template name" << VAR(name);
         static std::vector<cv::Mat> empty;
         return empty;
     }
-    const Paths& paths = path_iter->second;
 
     std::vector<cv::Mat> images;
-    for (const auto& filename : paths.filenames) {
+    for (const auto& filename : path_iter->second) {
         cv::Mat templ_mat;
-        for (const auto& root : paths.roots | MAA_RNS::views::reverse) {
+        for (const auto& root : roots_ | MAA_RNS::views::reverse) {
             auto path = root / MAA_NS::path(filename);
             templ_mat = load_single_image(path);
             if (!templ_mat.empty()) {
@@ -68,7 +69,7 @@ const std::vector<cv::Mat>& TemplateResMgr::load_images(const std::string& name)
             }
         }
         if (templ_mat.empty()) {
-            LogError << "template image is empty" << VAR(name) << VAR(filename) << VAR(paths.roots);
+            LogError << "template image is empty" << VAR(name) << VAR(filename) << VAR(roots_);
 #ifdef MAA_DEBUG
             static std::vector<cv::Mat> empty;
             return empty;
@@ -76,12 +77,11 @@ const std::vector<cv::Mat>& TemplateResMgr::load_images(const std::string& name)
             continue;
 #endif
         }
-
         images.emplace_back(std::move(templ_mat));
     }
 
     if (images.empty()) {
-        LogError << "template list is empty" << VAR(name) << VAR(paths.filenames) << VAR(paths.roots);
+        LogError << "template list is empty" << VAR(name) << VAR(path_iter->second) << VAR(roots_);
         static std::vector<cv::Mat> empty;
         return empty;
     }
