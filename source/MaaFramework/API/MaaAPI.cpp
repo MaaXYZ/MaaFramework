@@ -204,7 +204,7 @@ void MaaResourceDestroy(MaaResourceHandle res)
     delete res;
 }
 
-MaaResId MaaResourcePostResource(MaaResourceHandle res, MaaStringView path)
+MaaResId MaaResourcePostPath(MaaResourceHandle res, MaaStringView path)
 {
     LogFunc << VAR_VOIDP(res) << VAR(path);
 
@@ -213,7 +213,7 @@ MaaResId MaaResourcePostResource(MaaResourceHandle res, MaaStringView path)
         return MaaInvalidId;
     }
 
-    return res->post_resource(MAA_NS::path(path));
+    return res->post_path(MAA_NS::path(path));
 }
 
 MaaStatus MaaResourceStatus(MaaResourceHandle res, MaaResId id)

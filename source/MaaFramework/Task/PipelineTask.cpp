@@ -98,7 +98,7 @@ bool PipelineTask::set_diff_task(const json::value& input)
     }
 
     MAA_RES_NS::PipelineResMgr::TaskDataMap task_data_map;
-    auto& raw_data_map = resource()->pipeline_cfg().get_task_data_map();
+    auto& raw_data_map = resource()->pipeline_res().get_task_data_map();
     bool parsed = MAA_RES_NS::PipelineResMgr::parse_config(input, task_data_map, raw_data_map);
     if (!parsed) {
         LogError << "Parse json failed";
@@ -123,7 +123,7 @@ bool PipelineTask::check_and_load_template_images(TaskDataMap& map)
         return false;
     }
 
-    auto& data_mgr = resource()->pipeline_cfg();
+    auto& data_mgr = resource()->pipeline_res();
 
     for (auto& [name, task_data] : map) {
         if (task_data.rec_type != MAA_PIPELINE_RES_NS::Recognition::Type::TemplateMatch) {
@@ -607,7 +607,7 @@ const MAA_PIPELINE_RES_NS::TaskData& PipelineTask::get_task_data(const std::stri
         return empty;
     }
 
-    auto& data_mgr = resource()->pipeline_cfg();
+    auto& data_mgr = resource()->pipeline_res();
     return data_mgr.get_task_data(task_name);
 }
 

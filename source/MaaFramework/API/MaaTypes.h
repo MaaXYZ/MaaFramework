@@ -23,7 +23,7 @@ public:
 
     virtual bool set_option(MaaResOption key, MaaOptionValue value, MaaOptionValueSize val_size) = 0;
 
-    virtual MaaResId post_resource(std::filesystem::path path) = 0;
+    virtual MaaResId post_path(std::filesystem::path path) = 0;
     virtual MaaStatus status(MaaResId res_id) const = 0;
     virtual MaaStatus wait(MaaResId res_id) const = 0;
     virtual MaaBool loaded() const = 0;

@@ -19,7 +19,7 @@ public:
 
     virtual bool set_option(MaaResOption key, MaaOptionValue value, MaaOptionValueSize val_size) override;
 
-    virtual MaaResId post_resource(std::filesystem::path path) override;
+    virtual MaaResId post_path(std::filesystem::path path) override;
 
     virtual MaaStatus status(MaaResId res_id) const override;
     virtual MaaStatus wait(MaaResId res_id) const override;
@@ -28,10 +28,10 @@ public:
     virtual std::string get_hash() const override;
 
 public:
-    const auto& pipeline_cfg() const { return pipeline_res_; }
-    auto& pipeline_cfg() { return pipeline_res_; }
-    const auto& ocr_cfg() const { return ocr_res_; }
-    auto& ocr_cfg() { return ocr_res_; }
+    const auto& pipeline_res() const { return pipeline_res_; }
+    auto& pipeline_res() { return pipeline_res_; }
+    const auto& ocr_res() const { return ocr_res_; }
+    auto& ocr_res() { return ocr_res_; }
 
 private:
     bool run_load(typename AsyncRunner<std::filesystem::path>::Id id, std::filesystem::path path);

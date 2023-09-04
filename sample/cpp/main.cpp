@@ -34,7 +34,7 @@ int main([[maybe_unused]] int argc, char** argv)
 
     auto resource_handle = MaaResourceCreate(nullptr, nullptr);
     auto resource_dir = std::filesystem::path(argv[0]).parent_path() / "resource";
-    auto res_id = MaaResourcePostResource(resource_handle, resource_dir.string().c_str());
+    auto res_id = MaaResourcePostPath(resource_handle, resource_dir.string().c_str());
     MaaResourceWait(resource_handle, res_id);
 
     auto maa_handle = MaaCreate(nullptr, nullptr);

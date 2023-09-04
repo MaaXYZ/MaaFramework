@@ -64,9 +64,9 @@ OCRer::ResultsVec OCRer::predict_det_and_rec(const cv::Rect& roi) const
         return {};
     }
 
-    auto& inferencer = resource()->ocr_cfg().ocrer();
+    auto& inferencer = resource()->ocr_res().ocrer();
     if (!inferencer) {
-        LogError << "resource()->ocr_cfg().ocrer() is null";
+        LogError << "resource()->ocr_res().ocrer() is null";
         return {};
     }
     auto image_roi = image_with_roi(roi);
@@ -113,9 +113,9 @@ OCRer::Result OCRer::predict_only_rec(const cv::Rect& roi) const
         return {};
     }
 
-    auto& inferencer = resource()->ocr_cfg().recer();
+    auto& inferencer = resource()->ocr_res().recer();
     if (!inferencer) {
-        LogError << "resource()->ocr_cfg().recer() is null";
+        LogError << "resource()->ocr_res().recer() is null";
         return {};
     }
     auto image_roi = image_with_roi(roi);

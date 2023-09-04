@@ -35,7 +35,7 @@ bool ResourceMgr::set_option(MaaResOption key, MaaOptionValue value, MaaOptionVa
     return false;
 }
 
-MaaResId ResourceMgr::post_resource(std::filesystem::path path)
+MaaResId ResourceMgr::post_path(std::filesystem::path path)
 {
     LogInfo << VAR(path);
 
