@@ -16,15 +16,17 @@ MAA_RES_NS_BEGIN
 class PipelineResMgr : public NonCopyable
 {
 public:
-    bool load(const std::filesystem::path& path, bool is_base);
-    void clear();
-
-public:
     using TaskDataMap = std::unordered_map<std::string, TaskData>;
 
 public:
+    bool load(const std::filesystem::path& path, bool is_base);
+    void clear();
+
     const TaskData& get_task_data(const std::string& task_name);
+
+    const std::vector<std::filesystem::path>& get_paths() const { return paths_; }
     const TaskDataMap& get_task_data_map() const { return task_data_map_; }
+    const TemplateResMgr& get_template_mgr() const { return template_mgr_; }
 
 public:
     static bool parse_config(const json::value& input, TaskDataMap& output, const TaskDataMap& default_value);
@@ -74,7 +76,6 @@ private:
 
 private:
     std::vector<std::filesystem::path> paths_;
-
     TaskDataMap task_data_map_;
     TemplateResMgr template_mgr_;
 };

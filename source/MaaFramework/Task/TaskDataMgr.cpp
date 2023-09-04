@@ -10,19 +10,29 @@ TaskDataMgr::TaskDataMgr(InstanceInternalAPI* inst) : inst_(inst) {}
 
 const MAA_RES_NS::TaskData& TaskDataMgr::get_task_data(const std::string& task_name)
 {
-    auto diff_it = diff_tasks_.find(task_name);
-    if (diff_it != diff_tasks_.end()) {
-        return diff_it->second;
-    }
-
     if (!resource()) {
         LogError << "Resource not binded";
         static MAA_RES_NS::TaskData empty;
         return empty;
     }
+    auto& raw_data_mgr = resource()->pipeline_res();
 
-    auto& data_mgr = resource()->pipeline_res();
-    return data_mgr.get_task_data(task_name);
+    auto diff_it = diff_tasks_.find(task_name);
+    if (diff_it == diff_tasks_.end()) {
+        return raw_data_mgr.get_task_data(task_name);
+    }
+
+    auto& task_data = diff_it->second;
+    if (task_data.rec_type == MAA_RES_NS::Recognition::Type::TemplateMatch) {
+        auto& images = std::get<MAA_VISION_NS::TemplMatchingParam>(task_data.rec_param).template_images;
+        if (images.empty()) {
+            images = diff_template_mgr_.get_template_images(task_name);
+        }
+        if (images.empty()) {
+            images = raw_data_mgr.get_template_mgr().get_template_images(task_name);
+        }
+    }
+    return task_data;
 }
 
 bool TaskDataMgr::set_param(const json::value& param)
@@ -74,7 +84,8 @@ bool TaskDataMgr::check_and_load_template_images(TaskDataMap& map)
         return false;
     }
 
-    auto& data_mgr = resource()->pipeline_res();
+    auto& raw_data_mgr = resource()->pipeline_res();
+    diff_template_mgr_.set_roots(raw_data_mgr.get_paths());
 
     for (auto& [name, task_data] : map) {
         if (task_data.rec_type != MAA_RES_NS::Recognition::Type::TemplateMatch) {
@@ -82,7 +93,7 @@ bool TaskDataMgr::check_and_load_template_images(TaskDataMap& map)
         }
         auto& task_param = std::get<MAA_VISION_NS::TemplMatchingParam>(task_data.rec_param);
 
-        const auto& raw_task = data_mgr.get_task_data(name);
+        const auto& raw_task = raw_data_mgr.get_task_data(name);
 
         bool need_load = false;
         if (raw_task.rec_type != MAA_RES_NS::Recognition::Type::TemplateMatch) {
@@ -102,15 +113,7 @@ bool TaskDataMgr::check_and_load_template_images(TaskDataMap& map)
             continue;
         }
 
-        for (const auto& path : task_param.template_paths) {
-            // TODO: 现在这里只支持绝对路径了，应该要把 TemplateResMgr 里 roots 那套查找方法也弄过来
-            cv::Mat templ = imread(path);
-            if (templ.empty()) {
-                LogError << "Load template failed" << VAR(name) << VAR(path);
-                return false;
-            }
-            task_param.template_images.emplace_back(std::move(templ));
-        }
+        diff_template_mgr_.lazy_load(name, task_param.template_paths);
     }
 
     return true;

@@ -14,6 +14,7 @@ bool PipelineResMgr::load(const std::filesystem::path& path, bool is_base)
     if (is_base) {
         clear();
     }
+    paths_.emplace_back(path);
 
     bool loaded = load_all_json(path);
     loaded &= load_template_images(path);

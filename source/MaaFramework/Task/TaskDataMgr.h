@@ -8,6 +8,7 @@
 #include "Instance/InstanceInternalAPI.hpp"
 #include "Resource/PipelineResMgr.h"
 #include "Resource/PipelineTypes.h"
+#include "Resource/TemplateResMgr.h"
 
 #include <stack>
 
@@ -36,6 +37,7 @@ private:
 private:
     InstanceInternalAPI* inst_ = nullptr;
     TaskDataMap diff_tasks_;
+    MAA_RES_NS::TemplateResMgr diff_template_mgr_;
 };
 
 MAA_TASK_NS_END

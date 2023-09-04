@@ -10,6 +10,11 @@ void TemplateResMgr::add_root(const std::filesystem::path& root)
     roots_.emplace_back(root);
 }
 
+void TemplateResMgr::set_roots(const std::vector<std::filesystem::path>& roots)
+{
+    roots_ = roots;
+}
+
 bool TemplateResMgr::lazy_load(const std::string& name, const std::vector<std::string>& filenames)
 {
     LogDebug << VAR(name) << VAR(filenames);

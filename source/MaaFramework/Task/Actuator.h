@@ -1,7 +1,7 @@
 #pragma once
 
-#include <string_view>
 #include <stack>
+#include <string_view>
 
 #include <meojson/json.hpp>
 
@@ -11,7 +11,6 @@
 #include "Recognizer.h"
 #include "Resource/PipelineResMgr.h"
 #include "Resource/PipelineTypes.h"
-
 
 MAA_TASK_NS_BEGIN
 
