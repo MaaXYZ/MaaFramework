@@ -68,7 +68,7 @@ private:
 private:
     MAA_RES_NS::ResourceMgr* resource() { return inst_ ? inst_->inter_resource() : nullptr; }
     MAA_CTRL_NS::ControllerMgr* controller() { return inst_ ? inst_->inter_controller() : nullptr; }
-    InstanceStatus* status() { return inst_ ? inst_->status() : nullptr; }
+    InstanceStatus* status() { return inst_ ? inst_->inter_status() : nullptr; }
 
     bool need_exit() const { return need_exit_; }
 

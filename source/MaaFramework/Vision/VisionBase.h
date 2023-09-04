@@ -21,7 +21,6 @@ protected:
 
 protected:
     MAA_RES_NS::ResourceMgr* resource() const { return inst_ ? inst_->inter_resource() : nullptr; }
-    InstanceStatus* status() const { return inst_ ? inst_->status() : nullptr; }
 
     cv::Mat draw_roi(const cv::Rect& roi) const;
     void save_image(const cv::Mat& image) const;

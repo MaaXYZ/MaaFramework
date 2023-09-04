@@ -44,9 +44,8 @@ private:
     cv::Rect get_target_rect(const MAA_RES_NS::Action::Target target, const cv::Rect& cur_box);
 
 private:
-    MAA_RES_NS::ResourceMgr* resource() { return inst_ ? inst_->inter_resource() : nullptr; }
     MAA_CTRL_NS::ControllerMgr* controller() { return inst_ ? inst_->inter_controller() : nullptr; }
-    InstanceStatus* status() { return inst_ ? inst_->status() : nullptr; }
+    InstanceStatus* status() { return inst_ ? inst_->inter_status() : nullptr; }
     bool need_exit() const { return need_exit_; }
     void sleep(unsigned ms) const;
     void sleep(std::chrono::milliseconds ms) const;

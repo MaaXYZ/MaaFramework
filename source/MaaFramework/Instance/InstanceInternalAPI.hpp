@@ -35,7 +35,7 @@ struct InstanceInternalAPI : public NonCopyable
 public:
     virtual MAA_RES_NS::ResourceMgr* inter_resource() = 0;
     virtual MAA_CTRL_NS::ControllerMgr* inter_controller() = 0;
-    virtual InstanceStatus* status() = 0;
+    virtual InstanceStatus* inter_status() = 0;
     virtual MAA_VISION_NS::CustomRecognizerPtr custom_recognizer(const std::string& name) = 0;
     virtual MAA_TASK_NS::CustomActionPtr custom_action(const std::string& name) = 0;
 };

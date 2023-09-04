@@ -34,9 +34,9 @@ public: // from MaaInstanceAPI
     virtual bool unregister_custom_action(std::string name) override;
     virtual void clear_custom_action() override;
 
-    virtual MaaStatus status(MaaTaskId task_id) const override;
-    virtual MaaStatus wait(MaaTaskId task_id) const override;
-    virtual MaaBool all_finished() const override;
+    virtual MaaStatus task_status(MaaTaskId task_id) const override;
+    virtual MaaStatus task_wait(MaaTaskId task_id) const override;
+    virtual MaaBool task_all_finished() const override;
 
     virtual void stop() override;
 
@@ -46,7 +46,7 @@ public: // from MaaInstanceAPI
 public: // from InstanceInternalAPI
     virtual MAA_RES_NS::ResourceMgr* inter_resource() override;
     virtual MAA_CTRL_NS::ControllerMgr* inter_controller() override;
-    virtual InstanceStatus* status() override;
+    virtual InstanceStatus* inter_status() override;
     virtual MAA_VISION_NS::CustomRecognizerPtr custom_recognizer(const std::string& name) override;
     virtual MAA_TASK_NS::CustomActionPtr custom_action(const std::string& name) override;
 

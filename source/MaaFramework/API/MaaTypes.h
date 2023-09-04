@@ -72,9 +72,9 @@ public:
     virtual bool unregister_custom_action(std::string name) = 0;
     virtual void clear_custom_action() = 0;
 
-    virtual MaaStatus status(MaaTaskId task_id) const = 0;
-    virtual MaaStatus wait(MaaTaskId task_id) const = 0;
-    virtual MaaBool all_finished() const = 0;
+    virtual MaaStatus task_status(MaaTaskId task_id) const = 0;
+    virtual MaaStatus task_wait(MaaTaskId task_id) const = 0;
+    virtual MaaBool task_all_finished() const = 0;
 
     virtual void stop() = 0;
 

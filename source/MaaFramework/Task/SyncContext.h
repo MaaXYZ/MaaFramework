@@ -42,7 +42,7 @@ public: // from MaaInstanceSink
     virtual void on_stop() override { need_exit_ = true; }
 
 private:
-    InstanceStatus* status() const { return inst_ ? inst_->status() : nullptr; }
+    InstanceStatus* status() const { return inst_ ? inst_->inter_status() : nullptr; }
 
     bool need_exit_ = false;
     TaskInstAPI& task_inst_;

@@ -646,7 +646,7 @@ MaaStatus MaaTaskStatus(MaaInstanceHandle inst, MaaTaskId id)
         LogError << "handle is null";
         return MaaStatus_Invalid;
     }
-    return inst->status(id);
+    return inst->task_status(id);
 }
 
 MaaStatus MaaWaitTask(MaaInstanceHandle inst, MaaTaskId id)
@@ -657,7 +657,7 @@ MaaStatus MaaWaitTask(MaaInstanceHandle inst, MaaTaskId id)
         LogError << "handle is null";
         return MaaStatus_Invalid;
     }
-    return inst->wait(id);
+    return inst->task_wait(id);
 }
 
 MaaBool MaaTaskAllFinished(MaaInstanceHandle inst)
@@ -667,7 +667,7 @@ MaaBool MaaTaskAllFinished(MaaInstanceHandle inst)
         LogError << "handle is null";
         return false;
     }
-    return inst->all_finished();
+    return inst->task_all_finished();
 }
 
 void MaaStop(MaaInstanceHandle inst)

@@ -181,7 +181,7 @@ void InstanceMgr::clear_custom_action()
     custom_actions_.clear();
 }
 
-MaaStatus InstanceMgr::status(MaaTaskId task_id) const
+MaaStatus InstanceMgr::task_status(MaaTaskId task_id) const
 {
     if (!task_runner_) {
         LogError << "task_runner is nullptr";
@@ -190,7 +190,7 @@ MaaStatus InstanceMgr::status(MaaTaskId task_id) const
     return task_runner_->status(task_id);
 }
 
-MaaStatus InstanceMgr::wait(MaaTaskId task_id) const
+MaaStatus InstanceMgr::task_wait(MaaTaskId task_id) const
 {
     if (!task_runner_) {
         LogError << "task_runner is nullptr";
@@ -200,7 +200,7 @@ MaaStatus InstanceMgr::wait(MaaTaskId task_id) const
     return task_runner_->status(task_id);
 }
 
-MaaBool InstanceMgr::all_finished() const
+MaaBool InstanceMgr::task_all_finished() const
 {
     if (!task_runner_) {
         LogError << "task_runner is nullptr";
@@ -249,7 +249,7 @@ MAA_CTRL_NS::ControllerMgr* InstanceMgr::inter_controller()
     return dynamic_cast<MAA_CTRL_NS::ControllerMgr*>(controller());
 }
 
-InstanceStatus* InstanceMgr::status()
+InstanceStatus* InstanceMgr::inter_status()
 {
     return &status_;
 }
