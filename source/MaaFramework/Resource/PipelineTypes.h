@@ -14,13 +14,7 @@
 
 #include "Vision/VisionTypes.h"
 
-#define MAA_PIPELINE_RES_NS MAA_RES_NS::Pipeline
-#define MAA_PIPELINE_RES_NS_BEGIN \
-    namespace MAA_PIPELINE_RES_NS \
-    {
-#define MAA_PIPELINE_RES_NS_END }
-
-MAA_PIPELINE_RES_NS_BEGIN
+MAA_RES_NS_BEGIN
 
 namespace Recognition
 {
@@ -145,4 +139,4 @@ struct TaskData
     bool notify = false;
 };
 
-MAA_PIPELINE_RES_NS_END
+MAA_RES_NS_END

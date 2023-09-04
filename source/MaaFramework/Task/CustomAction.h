@@ -5,6 +5,7 @@
 #include "Instance/InstanceInternalAPI.hpp"
 #include "MaaFramework/MaaDef.h"
 #include "Resource/PipelineTypes.h"
+#include "Task/TaskInstAPI.h"
 
 MAA_TASK_NS_BEGIN
 
@@ -13,12 +14,14 @@ class CustomAction
 public:
     CustomAction(MaaCustomActionHandle handle, InstanceInternalAPI* inst);
 
-    bool run(const std::string& task_name, const MAA_PIPELINE_RES_NS::Action::CustomParam& param,
+    bool run(const std::string& task_name, const MAA_RES_NS::Action::CustomParam& param,
              const cv::Rect& cur_box, const json::value& cur_rec_detail);
+    void set_task_inst(MAA_TASK_NS::TaskInstAPI* task_inst) { task_inst_ = task_inst; }
 
 private:
     MaaCustomActionHandle action_ = nullptr;
     InstanceInternalAPI* inst_ = nullptr;
+    MAA_TASK_NS::TaskInstAPI* task_inst_ = nullptr;
 };
 
 MAA_TASK_NS_END

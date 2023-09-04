@@ -40,11 +40,15 @@
     <ClInclude Include="Resource\PipelineResMgr.h" />
     <ClInclude Include="Resource\ResourceMgr.h" />
     <ClInclude Include="Resource\TemplateResMgr.h" />
+    <ClInclude Include="Task\Actuator.h" />
     <ClInclude Include="Task\CustomAction.h" />
+    <ClInclude Include="Task\TaskDataMgr.h" />
+    <ClInclude Include="Task\Recognizer.h" />
     <ClInclude Include="Task\SyncContext.h" />
     <ClInclude Include="Task\PipelineTask.h" />
     <ClInclude Include="Resource\PipelineTypes.h" />
     <ClInclude Include="Base\AsyncRunner.hpp" />
+    <ClInclude Include="Task\TaskInstAPI.h" />
     <ClInclude Include="Utils\ArgvWrapper.hpp" />
     <ClInclude Include="Utils\Demangle.hpp" />
     <ClInclude Include="Utils\File.hpp" />
@@ -84,7 +88,10 @@
     <ClCompile Include="Resource\PipelineResMgr.cpp" />
     <ClCompile Include="Resource\ResourceMgr.cpp" />
     <ClCompile Include="Resource\TemplateResMgr.cpp" />
+    <ClCompile Include="Task\Actuator.cpp" />
     <ClCompile Include="Task\CustomAction.cpp" />
+    <ClCompile Include="Task\TaskDataMgr.cpp" />
+    <ClCompile Include="Task\Recognizer.cpp" />
     <ClCompile Include="Task\SyncContext.cpp" />
     <ClCompile Include="Task\PipelineTask.cpp" />
     <ClCompile Include="Vision\Classifier.cpp" />

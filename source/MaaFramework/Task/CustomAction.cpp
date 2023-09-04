@@ -10,7 +10,7 @@ MAA_TASK_NS_BEGIN
 
 CustomAction::CustomAction(MaaCustomActionHandle handle, InstanceInternalAPI* inst) : action_(handle), inst_(inst) {}
 
-bool CustomAction::run(const std::string& task_name, const MAA_PIPELINE_RES_NS::Action::CustomParam& param,
+bool CustomAction::run(const std::string& task_name, const MAA_RES_NS::Action::CustomParam& param,
                        const cv::Rect& cur_box, const json::value& cur_rec_detail)
 {
     LogFunc << VAR(task_name) << VAR_VOIDP(action_) << VAR(param.custom_param) << VAR(cur_box);
@@ -19,8 +19,12 @@ bool CustomAction::run(const std::string& task_name, const MAA_PIPELINE_RES_NS::
         LogError << "Action is null" << VAR_VOIDP(action_) << VAR_VOIDP(action_->run);
         return false;
     }
+    if (!task_inst_) {
+        LogError << "task_inst_ is null";
+        return false;
+    }
 
-    SyncContext sync_ctx(inst_);
+    SyncContext sync_ctx(*task_inst_);
     std::string custom_param_string = param.custom_param.to_string();
     MaaRect box { .x = cur_box.x, .y = cur_box.y, .width = cur_box.width, .height = cur_box.height };
     std::string cur_rec_detail_string = cur_rec_detail.to_string();

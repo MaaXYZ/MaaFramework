@@ -88,6 +88,9 @@ public:
     virtual ~MaaSyncContextAPI() = default;
 
     virtual bool run_task(std::string task, std::string_view param) = 0;
+    virtual bool run_recognizer(cv::Mat image, std::string task, std::string_view param,
+                                /*out*/ cv::Rect& box, /*out*/ std::string& detail) = 0;
+    virtual bool run_action(std::string task, std::string_view param, cv::Rect cur_box, std::string cur_detail) = 0;
 
     virtual void click(int x, int y) = 0;
     virtual void swipe(std::vector<int> x_steps, std::vector<int> y_steps, std::vector<int> step_delay) = 0;
@@ -108,6 +111,8 @@ public:
     virtual const char* data() const = 0;
     virtual size_t size() const = 0;
 
+    virtual const std::string& get() const = 0;
+
     virtual void set(std::string str) = 0;
 };
 
@@ -123,6 +128,8 @@ public:
 
     virtual uint8_t* encoded() = 0;
     virtual size_t encoded_size() = 0;
+
+    virtual const cv::Mat& get() const = 0;
 
     virtual void set(cv::Mat image) = 0;
 };

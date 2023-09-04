@@ -66,7 +66,7 @@ int main([[maybe_unused]] int argc, char** argv)
 
 MaaBool my_analyze(MaaSyncContextHandle sync_context, const MaaImageBufferHandle image, MaaStringView task_name,
                    MaaStringView custom_recognition_param,
-                   /*out*/ MaaRectHandle box,
+                   /*out*/ MaaRectHandle out_box,
                    /*out*/ MaaStringBufferHandle detail_buff)
 {
     /* Get image */
@@ -89,12 +89,12 @@ MaaBool my_analyze(MaaSyncContextHandle sync_context, const MaaImageBufferHandle
 
     /* Output recognition result */
 
-    // Step 1: output box
+    // Step 1: output out_box
     std::array<int, 4> my_box { 0 }; // your result
-    box->x = my_box[0];
-    box->y = my_box[1];
-    box->width = my_box[2];
-    box->height = my_box[3];
+    out_box->x = my_box[0];
+    out_box->y = my_box[1];
+    out_box->width = my_box[2];
+    out_box->height = my_box[3];
 
     // Step 2: output anything you want
     MaaSetString(detail_buff,

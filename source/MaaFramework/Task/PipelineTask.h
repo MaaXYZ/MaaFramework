@@ -9,28 +9,42 @@
 #include "Instance/InstanceInternalAPI.hpp"
 #include "Resource/PipelineResMgr.h"
 #include "Resource/PipelineTypes.h"
+#include "Task/Actuator.h"
+#include "Task/Recognizer.h"
+#include "Task/TaskDataMgr.h"
+#include "Task/TaskInstAPI.h"
 
 #include <stack>
 
 MAA_TASK_NS_BEGIN
 
-class PipelineTask : public MaaInstanceSink
+class PipelineTask : public TaskInstAPI, public MaaInstanceSink
 {
 public:
+    using TaskData = MAA_RES_NS::TaskData;
+
+public:
     PipelineTask(std::string entry, InstanceInternalAPI* inst);
+    PipelineTask(std::string entry, TaskInstAPI& task_inst);
     virtual ~PipelineTask() override = default;
+
+public: // from TaskInstAPI
+    virtual InstanceInternalAPI* inst() override { return inst_; }
+    virtual TaskDataMgr& data_mgr() { return data_mgr_; }
 
 public: // from MaaInstanceSink
     virtual void on_stop() override { need_exit_ = true; }
 
 public:
+    const std::string& entry() const { return entry_; }
+
     bool run();
     bool set_param(const json::value& param);
-    std::string entry() const { return entry_; }
+
+    Recognizer& recognizer() { return recognizer_; }
+    Actuator& actuator() { return actuator_; }
 
 private:
-    using TaskDataMap = MAA_RES_NS::PipelineResMgr::TaskDataMap;
-
     enum class RunningResult
     {
         Success,
@@ -40,53 +54,16 @@ private:
         InternalError,
     };
 
-    struct RecResult
+    struct RecognitionResult
     {
-        cv::Rect box {};
-        json::value detail;
+        Recognizer::Result rec_result;
+        MAA_RES_NS::TaskData task_data;
     };
-
-    struct FoundResult
-    {
-        RecResult rec;
-        MAA_PIPELINE_RES_NS::TaskData task_data;
-    };
-
-private:
-    bool set_diff_task(const json::value& input);
-    bool check_and_load_template_images(TaskDataMap& map);
 
 private:
     RunningResult find_first_and_run(const std::vector<std::string>& list, std::chrono::milliseconds find_timeout,
-                                     /*out*/ MAA_PIPELINE_RES_NS::TaskData& found_data);
-    std::optional<FoundResult> find_first(const std::vector<std::string>& list);
-    RunningResult start_to_act(const FoundResult& act);
-
-private:
-    std::optional<RecResult> recognize(const cv::Mat& image, const MAA_PIPELINE_RES_NS::TaskData& task_data);
-    std::optional<RecResult> direct_hit();
-    std::optional<RecResult> template_match(const cv::Mat& image, const MAA_VISION_NS::TemplMatchingParam& param,
-                                            const cv::Rect& cache, const std::string& name);
-    std::optional<RecResult> ocr(const cv::Mat& image, const MAA_VISION_NS::OcrParam& param, const cv::Rect& cache,
-                                 const std::string& name);
-    std::optional<RecResult> custom_recognize(const cv::Mat& image, const MAA_VISION_NS::CustomParam& param,
-                                              const cv::Rect& cache, const std::string& name);
-
-private:
-    void click(const MAA_PIPELINE_RES_NS::Action::ClickParam& param, const cv::Rect& cur_box);
-    void swipe(const MAA_PIPELINE_RES_NS::Action::SwipeParam& param, const cv::Rect& cur_box);
-    void press_key(const MAA_PIPELINE_RES_NS::Action::KeyParam& param);
-
-    void start_app(const MAA_PIPELINE_RES_NS::Action::AppParam& param);
-    void stop_app(const MAA_PIPELINE_RES_NS::Action::AppParam& param);
-    void custom_action(const std::string& task_name, const MAA_PIPELINE_RES_NS::Action::CustomParam& param,
-                       const cv::Rect& cur_box, const json::value& cur_rec_detail);
-
-    void wait_freezes(const MAA_PIPELINE_RES_NS::WaitFreezesParam& param, const cv::Rect& cur_box);
-
-    cv::Rect get_target_rect(const MAA_PIPELINE_RES_NS::Action::Target target, const cv::Rect& cur_box);
-
-    const MAA_PIPELINE_RES_NS::TaskData& get_task_data(const std::string& task_name);
+                                     /*out*/ MAA_RES_NS::TaskData& found_data);
+    std::optional<RecognitionResult> find_first(const std::vector<std::string>& list);
 
 private:
     MAA_RES_NS::ResourceMgr* resource() { return inst_ ? inst_->inter_resource() : nullptr; }
@@ -94,8 +71,6 @@ private:
     InstanceStatus* status() { return inst_ ? inst_->status() : nullptr; }
 
     bool need_exit() const { return need_exit_; }
-    void sleep(unsigned ms) const;
-    void sleep(std::chrono::milliseconds ms) const;
 
 private:
     bool need_exit_ = false;
@@ -103,7 +78,10 @@ private:
 
     std::string entry_;
     std::string cur_task_name_;
-    TaskDataMap diff_tasks_;
+
+    TaskDataMgr data_mgr_;
+    Recognizer recognizer_;
+    Actuator actuator_;
 };
 
 MAA_TASK_NS_END

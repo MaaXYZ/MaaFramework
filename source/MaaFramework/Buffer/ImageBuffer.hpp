@@ -32,6 +32,8 @@ public:
         return encoded_.size();
     }
 
+    virtual const cv::Mat& get() const override { return image_; }
+
     virtual void set(cv::Mat image) override
     {
         dirty_ = true;

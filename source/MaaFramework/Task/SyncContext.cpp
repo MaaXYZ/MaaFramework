@@ -9,7 +9,7 @@
 
 MAA_TASK_NS_BEGIN
 
-SyncContext::SyncContext(InstanceInternalAPI* inst) : inst_(inst) {}
+SyncContext::SyncContext(TaskInstAPI& task_inst) : task_inst_(task_inst), inst_(task_inst_.inst()) {}
 
 bool SyncContext::run_task(std::string task, std::string_view param)
 {
@@ -26,10 +26,67 @@ bool SyncContext::run_task(std::string task, std::string_view param)
         return false;
     }
 
-    PipelineTask pipeline(task, inst_);
+    PipelineTask pipeline(task, task_inst_);
     pipeline.set_param(*json_opt);
 
     return pipeline.run();
+}
+
+bool SyncContext::run_recognizer(cv::Mat image, std::string task, std::string_view param, cv::Rect& box,
+                                 std::string& detail)
+{
+    LogFunc << VAR(task) << VAR(param);
+
+    box = cv::Rect();
+    detail.clear();
+
+    if (!inst_) {
+        LogError << "Instance is null";
+        return false;
+    }
+
+    auto json_opt = json::parse(param);
+    if (!json_opt) {
+        LogError << "Parse param failed" << VAR(param);
+        return false;
+    }
+
+    PipelineTask pipeline(task, task_inst_);
+    pipeline.set_param(*json_opt);
+
+    const auto& task_data = pipeline.data_mgr().get_task_data(task);
+    auto opt = pipeline.recognizer().recognize(image, task_data);
+    if (!opt) {
+        return false;
+    }
+
+    box = opt->box;
+    detail = opt->detail.to_string();
+    return true;
+}
+
+bool SyncContext::run_action(std::string task, std::string_view param, cv::Rect cur_box, std::string cur_detail)
+{
+    LogFunc << VAR(task) << VAR(param);
+
+    if (!inst_) {
+        LogError << "Instance is null";
+        return false;
+    }
+
+    auto json_opt = json::parse(param);
+    if (!json_opt) {
+        LogError << "Parse param failed" << VAR(param);
+        return false;
+    }
+
+    PipelineTask pipeline(task, task_inst_);
+    pipeline.set_param(*json_opt);
+
+    Recognizer::Result rec_result { .box = cur_box, .detail = std::move(cur_detail) };
+    const auto& task_data = pipeline.data_mgr().get_task_data(task);
+    auto ret = pipeline.actuator().run(rec_result, task_data);
+    return ret;
 }
 
 void SyncContext::click(int x, int y)

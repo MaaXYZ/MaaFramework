@@ -7,8 +7,6 @@
 
 MAA_RES_NS_BEGIN
 
-using namespace MAA_PIPELINE_RES_NS;
-
 bool PipelineResMgr::load(const std::filesystem::path& path, bool is_base)
 {
     LogFunc << VAR(path) << VAR(is_base);
@@ -31,17 +29,17 @@ void PipelineResMgr::clear()
     task_data_map_.clear();
 }
 
-const MAA_PIPELINE_RES_NS::TaskData& PipelineResMgr::get_task_data(const std::string& task_name)
+const TaskData& PipelineResMgr::get_task_data(const std::string& task_name)
 {
     auto task_iter = task_data_map_.find(task_name);
     if (task_iter == task_data_map_.end()) {
         LogError << "Invalid task name" << VAR(task_name);
-        static MAA_PIPELINE_RES_NS::TaskData empty;
+        static TaskData empty;
         return empty;
     }
 
     auto& task_data = task_iter->second;
-    if (task_data.rec_type == MAA_PIPELINE_RES_NS::Recognition::Type::TemplateMatch) {
+    if (task_data.rec_type == Recognition::Type::TemplateMatch) {
         auto& images = std::get<MAA_VISION_NS::TemplMatchingParam>(task_data.rec_param).template_images;
         if (images.empty()) {
             images = template_mgr_.get_template_images(task_name);
@@ -112,7 +110,7 @@ bool PipelineResMgr::load_template_images(const std::filesystem::path& path)
     LogFunc << VAR(path);
 
     for (const auto& [name, task_data] : task_data_map_) {
-        if (task_data.rec_type != MAA_PIPELINE_RES_NS::Recognition::Type::TemplateMatch) {
+        if (task_data.rec_type != Recognition::Type::TemplateMatch) {
             continue;
         }
         const auto& templates = std::get<MAA_VISION_NS::TemplMatchingParam>(task_data.rec_param).template_paths;
@@ -225,7 +223,7 @@ bool get_and_check_value_or_array(const json::value& input, const std::string& k
 }
 
 bool PipelineResMgr::parse_task(const std::string& name, const json::value& input, TaskData& output,
-                                const MAA_PIPELINE_RES_NS::TaskData& default_value)
+                                const TaskData& default_value)
 {
     LogFunc << VAR(name);
 
@@ -325,12 +323,11 @@ bool PipelineResMgr::parse_task(const std::string& name, const json::value& inpu
     return true;
 }
 
-bool PipelineResMgr::parse_recognition(const json::value& input, MAA_PIPELINE_RES_NS::Recognition::Type& out_type,
-                                       MAA_PIPELINE_RES_NS::Recognition::Param& out_param,
-                                       const MAA_PIPELINE_RES_NS::Recognition::Type& default_type,
-                                       const MAA_PIPELINE_RES_NS::Recognition::Param& default_param)
+bool PipelineResMgr::parse_recognition(const json::value& input, Recognition::Type& out_type,
+                                       Recognition::Param& out_param, const Recognition::Type& default_type,
+                                       const Recognition::Param& default_param)
 {
-    using namespace MAA_PIPELINE_RES_NS::Recognition;
+    using namespace Recognition;
     using namespace MAA_VISION_NS;
 
     static const std::string kDefaultRecognitionFlag = "DefaultRecognitionFlag";
@@ -547,10 +544,8 @@ bool PipelineResMgr::parse_roi(const json::value& input, std::vector<cv::Rect>& 
     return !output.empty();
 }
 
-bool PipelineResMgr::parse_action(const json::value& input, MAA_PIPELINE_RES_NS::Action::Type& out_type,
-                                  MAA_PIPELINE_RES_NS::Action::Param& out_param,
-                                  const MAA_PIPELINE_RES_NS::Action::Type& default_type,
-                                  const MAA_PIPELINE_RES_NS::Action::Param& default_param)
+bool PipelineResMgr::parse_action(const json::value& input, Action::Type& out_type, Action::Param& out_param,
+                                  const Action::Type& default_type, const Action::Param& default_param)
 {
     using namespace Action;
 
@@ -621,8 +616,8 @@ bool PipelineResMgr::parse_action(const json::value& input, MAA_PIPELINE_RES_NS:
     return false;
 }
 
-bool PipelineResMgr::parse_click(const json::value& input, MAA_PIPELINE_RES_NS::Action::ClickParam& output,
-                                 const MAA_PIPELINE_RES_NS::Action::ClickParam& default_value)
+bool PipelineResMgr::parse_click(const json::value& input, Action::ClickParam& output,
+                                 const Action::ClickParam& default_value)
 {
     if (!parse_action_target(input, "target", output.target, default_value.target)) {
         LogError << "failed to parse_action_target" << VAR(input);
@@ -632,8 +627,8 @@ bool PipelineResMgr::parse_click(const json::value& input, MAA_PIPELINE_RES_NS::
     return true;
 }
 
-bool PipelineResMgr::parse_swipe(const json::value& input, MAA_PIPELINE_RES_NS::Action::SwipeParam& output,
-                                 const MAA_PIPELINE_RES_NS::Action::SwipeParam& default_value)
+bool PipelineResMgr::parse_swipe(const json::value& input, Action::SwipeParam& output,
+                                 const Action::SwipeParam& default_value)
 {
     if (!parse_action_target(input, "begin", output.begin, default_value.begin)) {
         LogError << "failed to parse_action_target begin" << VAR(input);
@@ -644,8 +639,7 @@ bool PipelineResMgr::parse_swipe(const json::value& input, MAA_PIPELINE_RES_NS::
         LogError << "failed to parse_action_target end" << VAR(input);
         return false;
     }
-    if (output.begin.type == MAA_PIPELINE_RES_NS::Action::Target::Type::Self &&
-        output.end.type == MAA_PIPELINE_RES_NS::Action::Target::Type::Self) {
+    if (output.begin.type == Action::Target::Type::Self && output.end.type == Action::Target::Type::Self) {
         LogError << "not set swipe begin or end";
         return false;
     }
@@ -658,8 +652,8 @@ bool PipelineResMgr::parse_swipe(const json::value& input, MAA_PIPELINE_RES_NS::
     return true;
 }
 
-bool PipelineResMgr::parse_key_press(const json::value& input, MAA_PIPELINE_RES_NS::Action::KeyParam& output,
-                                     const MAA_PIPELINE_RES_NS::Action::KeyParam& default_value)
+bool PipelineResMgr::parse_key_press(const json::value& input, Action::KeyParam& output,
+                                     const Action::KeyParam& default_value)
 {
     // TODO: https://github.com/MaaAssistantArknights/MaaFramework/issues/24#issuecomment-1666533842
     if (!get_and_check_value_or_array(input, "key", output.keys, default_value.keys)) {
@@ -670,8 +664,8 @@ bool PipelineResMgr::parse_key_press(const json::value& input, MAA_PIPELINE_RES_
     return true;
 }
 
-bool PipelineResMgr::parse_app_info(const json::value& input, MAA_PIPELINE_RES_NS::Action::AppParam& output,
-                                    const MAA_PIPELINE_RES_NS::Action::AppParam& default_value)
+bool PipelineResMgr::parse_app_info(const json::value& input, Action::AppParam& output,
+                                    const Action::AppParam& default_value)
 {
     if (!get_and_check_value(input, "package", output.package, default_value.package)) {
         LogError << "failed to get_and_check_value activity" << VAR(input);
@@ -681,9 +675,8 @@ bool PipelineResMgr::parse_app_info(const json::value& input, MAA_PIPELINE_RES_N
     return true;
 }
 
-bool PipelineResMgr::parse_custom_action_param(const json::value& input,
-                                               MAA_PIPELINE_RES_NS::Action::CustomParam& output,
-                                               const MAA_PIPELINE_RES_NS::Action::CustomParam& default_value)
+bool PipelineResMgr::parse_custom_action_param(const json::value& input, Action::CustomParam& output,
+                                               const Action::CustomParam& default_value)
 {
     if (!get_and_check_value(input, "custom_action", output.name, default_value.name)) {
         LogError << "failed to get_and_check_value custom_action" << VAR(input);
@@ -704,11 +697,8 @@ bool PipelineResMgr::parse_custom_action_param(const json::value& input,
 }
 
 bool PipelineResMgr::parse_wait_freezes_param(const json::value& input, const std::string& key,
-                                              MAA_PIPELINE_RES_NS::WaitFreezesParam& output,
-                                              const MAA_PIPELINE_RES_NS::WaitFreezesParam& default_value)
+                                              WaitFreezesParam& output, const WaitFreezesParam& default_value)
 {
-    using namespace MAA_PIPELINE_RES_NS;
-
     auto opt = input.find(key);
     if (!opt) {
         output = default_value;
@@ -776,11 +766,10 @@ bool PipelineResMgr::parse_rect(const json::value& input_rect, cv::Rect& output)
     return true;
 }
 
-bool PipelineResMgr::parse_action_target(const json::value& input, const std::string& key,
-                                         MAA_PIPELINE_RES_NS::Action::Target& output,
-                                         const MAA_PIPELINE_RES_NS::Action::Target& default_value)
+bool PipelineResMgr::parse_action_target(const json::value& input, const std::string& key, Action::Target& output,
+                                         const Action::Target& default_value)
 {
-    using namespace MAA_PIPELINE_RES_NS::Action;
+    using namespace Action;
 
     if (auto param_opt = input.find(key); !param_opt) {
         output = default_value;

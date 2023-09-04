@@ -49,7 +49,7 @@ extern "C"
 
     MaaBool MAA_FRAMEWORK_API MaaResourceSetOption(MaaResourceHandle res, MaaResOption key, MaaOptionValue value,
                                                    MaaOptionValueSize val_size);
-    MaaBool MAA_FRAMEWORK_API MaaResourceGetHash(MaaResourceHandle res, /* out */ MaaStringBufferHandle buff);
+    MaaBool MAA_FRAMEWORK_API MaaResourceGetHash(MaaResourceHandle res, /* out */ MaaStringBufferHandle buffer);
 
     /* Controller */
 
@@ -119,6 +119,13 @@ extern "C"
 
     MaaBool MAA_FRAMEWORK_API MaaSyncContextRunTask(MaaSyncContextHandle sync_context, MaaStringView task,
                                                     MaaStringView param);
+    MaaBool MAA_FRAMEWORK_API MaaSyncContextRunRecognizer(MaaSyncContextHandle sync_context, MaaImageBufferHandle image,
+                                                          MaaStringView task, MaaStringView task_param,
+                                                          /* out */ MaaRectHandle out_box,
+                                                          /* out */ MaaStringBufferHandle detail_buff);
+    MaaBool MAA_FRAMEWORK_API MaaSyncContextRunAction(MaaSyncContextHandle sync_context, MaaStringView task,
+                                                      MaaStringView task_param, MaaRectHandle cur_box,
+                                                      MaaStringView cur_rec_detail);
     void MAA_FRAMEWORK_API MaaSyncContextClick(MaaSyncContextHandle sync_context, int32_t x, int32_t y);
     void MAA_FRAMEWORK_API MaaSyncContextSwipe(MaaSyncContextHandle sync_context, int32_t* x_steps_buff,
                                                int32_t* y_steps_buff, int32_t* step_delay_buff, MaaSize buff_size);
@@ -126,14 +133,6 @@ extern "C"
                                                       /* out */ MaaImageBufferHandle buffer);
     MaaBool MAA_FRAMEWORK_API MaaSyncContextGetTaskResult(MaaSyncContextHandle sync_context, MaaStringView task,
                                                           /* out */ MaaStringBufferHandle buffer);
-
-    MaaBool MAA_FRAMEWORK_API MaaSyncContextRunRecognizer(MaaSyncContextHandle sync_context, MaaImageBufferHandle image,
-                                                          MaaStringView task, MaaStringView task_param,
-                                                          /* out */ MaaRectHandle box,
-                                                          /* out */ MaaStringBufferHandle detail_buff);
-    MaaBool MAA_FRAMEWORK_API MaaSyncContextRunAction(MaaSyncContextHandle sync_context, MaaStringView task_name,
-                                                      MaaStringView task_param, MaaRectHandle cur_box,
-                                                      MaaStringView cur_rec_detail);
 
 #ifdef __cplusplus
 }

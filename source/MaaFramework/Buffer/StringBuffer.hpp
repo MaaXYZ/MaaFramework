@@ -13,6 +13,8 @@ public:
     virtual const char* data() const override { return str_.data(); }
     virtual size_t size() const override { return str_.size(); }
 
+    virtual const std::string& get() const override { return str_; }
+
     virtual void set(std::string str) override { str_ = std::move(str); }
 
 private:

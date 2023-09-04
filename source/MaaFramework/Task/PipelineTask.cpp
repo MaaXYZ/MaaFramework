@@ -8,15 +8,17 @@
 #include "Task/CustomAction.h"
 #include "Utils/ImageIo.h"
 #include "Utils/Logger.h"
-#include "Vision/Comparator.h"
-#include "Vision/CustomRecognizer.h"
-#include "Vision/Matcher.h"
-#include "Vision/OCRer.h"
-#include "Vision/VisionUtils.hpp"
 
 MAA_TASK_NS_BEGIN
 
-PipelineTask::PipelineTask(std::string entry, InstanceInternalAPI* inst) : inst_(inst), entry_(std::move(entry)) {}
+PipelineTask::PipelineTask(std::string entry, InstanceInternalAPI* inst)
+    : inst_(inst), entry_(std::move(entry)), data_mgr_(inst), recognizer_(*this), actuator_(*this)
+{}
+
+PipelineTask::PipelineTask(std::string entry, TaskInstAPI& task_inst)
+    : inst_(task_inst.inst()), entry_(std::move(entry)), data_mgr_(task_inst.data_mgr()), recognizer_(*this),
+      actuator_(*this)
+{}
 
 bool PipelineTask::run()
 {
@@ -27,7 +29,7 @@ bool PipelineTask::run()
         return false;
     }
 
-    auto cur_task = get_task_data(entry_);
+    auto cur_task = data_mgr_.get_task_data(entry_);
     cur_task_name_ = cur_task.name;
     std::vector<std::string> next_list = { entry_ };
     std::stack<std::string> breakpoints_stack;
@@ -63,7 +65,7 @@ bool PipelineTask::run()
             std::string top_bp = std::move(breakpoints_stack.top());
             breakpoints_stack.pop();
             pre_breakpoint = top_bp;
-            next_list = get_task_data(top_bp).next;
+            next_list = data_mgr_.get_task_data(top_bp).next;
             LogInfo << "breakpoints pop" << VAR(top_bp) << VAR(next_list);
         }
         else {
@@ -76,103 +78,18 @@ bool PipelineTask::run()
 
 bool PipelineTask::set_param(const json::value& param)
 {
-    LogFunc << VAR(param);
-
-    bool ret = true;
-
-    auto diff_opt = param.find<json::object>("diff_task");
-    if (diff_opt) {
-        ret &= set_diff_task(*diff_opt);
-    }
-
-    return ret;
-}
-
-bool PipelineTask::set_diff_task(const json::value& input)
-{
-    LogFunc << VAR(input);
-
-    if (!resource()) {
-        LogError << "Resource not binded";
-        return false;
-    }
-
-    MAA_RES_NS::PipelineResMgr::TaskDataMap task_data_map;
-    auto& raw_data_map = resource()->pipeline_res().get_task_data_map();
-    bool parsed = MAA_RES_NS::PipelineResMgr::parse_config(input, task_data_map, raw_data_map);
-    if (!parsed) {
-        LogError << "Parse json failed";
-        return false;
-    }
-
-    bool loaded = check_and_load_template_images(task_data_map);
-    if (!loaded) {
-        LogError << "Load template images failed";
-        return false;
-    }
-
-    task_data_map.merge(std::move(diff_tasks_));
-    diff_tasks_ = std::move(task_data_map);
-    return true;
-}
-
-bool PipelineTask::check_and_load_template_images(TaskDataMap& map)
-{
-    if (!resource()) {
-        LogError << "Resource not binded";
-        return false;
-    }
-
-    auto& data_mgr = resource()->pipeline_res();
-
-    for (auto& [name, task_data] : map) {
-        if (task_data.rec_type != MAA_PIPELINE_RES_NS::Recognition::Type::TemplateMatch) {
-            continue;
-        }
-        auto& task_param = std::get<MAA_VISION_NS::TemplMatchingParam>(task_data.rec_param);
-
-        const auto& raw_task = data_mgr.get_task_data(name);
-
-        bool need_load = false;
-        if (raw_task.rec_type != MAA_PIPELINE_RES_NS::Recognition::Type::TemplateMatch) {
-            need_load = true;
-        }
-        else {
-            auto& raw_param = std::get<MAA_VISION_NS::TemplMatchingParam>(raw_task.rec_param);
-            if (task_param.template_paths != raw_param.template_paths) {
-                need_load = true;
-            }
-            else {
-                task_param.template_images = raw_param.template_images;
-                need_load = false;
-            }
-        }
-        if (!need_load) {
-            continue;
-        }
-
-        for (const auto& path : task_param.template_paths) {
-            cv::Mat templ = imread(path);
-            if (templ.empty()) {
-                LogError << "Load template failed" << VAR(name) << VAR(path);
-                return false;
-            }
-            task_param.template_images.emplace_back(std::move(templ));
-        }
-    }
-
-    return true;
+    return data_mgr_.set_param(param);
 }
 
 PipelineTask::RunningResult PipelineTask::find_first_and_run(const std::vector<std::string>& list,
                                                              std::chrono::milliseconds find_timeout,
-                                                             /*out*/ MAA_PIPELINE_RES_NS::TaskData& found_data)
+                                                             /*out*/ MAA_RES_NS::TaskData& found_data)
 {
     if (!status()) {
         LogError << "Status not binded";
         return RunningResult::InternalError;
     }
-    FoundResult result;
+    RecognitionResult result;
 
     auto start_time = std::chrono::steady_clock::now();
     while (true) {
@@ -193,12 +110,12 @@ PipelineTask::RunningResult PipelineTask::find_first_and_run(const std::vector<s
         return RunningResult::Interrupted;
     }
     const std::string& name = result.task_data.name;
-    LogInfo << "Task hit:" << name << VAR(result.rec.box);
+    LogInfo << "Task hit:" << name << VAR(result.rec_result.box);
 
     uint64_t run_times = status()->get_pipeline_run_times(name);
 
     json::value task_result;
-    task_result["recognition"] = result.rec.detail;
+    task_result["recognition"] = result.rec_result.detail;
     task_result["run_times"] = run_times;
 
     if (result.task_data.times_limit <= run_times) {
@@ -213,7 +130,7 @@ PipelineTask::RunningResult PipelineTask::find_first_and_run(const std::vector<s
         return RunningResult::Runout;
     }
 
-    auto ret = start_to_act(result);
+    auto ret = actuator_.run(result.rec_result, result.task_data);
 
     status()->increase_pipeline_run_times(name);
 
@@ -223,10 +140,10 @@ PipelineTask::RunningResult PipelineTask::find_first_and_run(const std::vector<s
     status()->set_pipeline_task_result(name, std::move(task_result));
 
     found_data = std::move(result.task_data);
-    return ret;
+    return ret ? RunningResult::Success : RunningResult::Interrupted;
 }
 
-std::optional<PipelineTask::FoundResult> PipelineTask::find_first(const std::vector<std::string>& list)
+std::optional<PipelineTask::RecognitionResult> PipelineTask::find_first(const std::vector<std::string>& list)
 {
     if (!controller()) {
         LogError << "Controller not binded";
@@ -239,408 +156,19 @@ std::optional<PipelineTask::FoundResult> PipelineTask::find_first(const std::vec
 
     for (const std::string& name : list) {
         LogDebug << "recognize:" << name;
-        const auto& task_data = get_task_data(name);
+        const auto& task_data = data_mgr_.get_task_data(name);
         if (!task_data.enabled) {
             LogDebug << "Task disabled:" << name;
             continue;
         }
 
-        auto rec_opt = recognize(image, task_data);
+        auto rec_opt = recognizer_.recognize(image, task_data);
         if (!rec_opt) {
             continue;
         }
-        return FoundResult { .rec = *std::move(rec_opt), .task_data = task_data };
+        return RecognitionResult { .rec_result = *std::move(rec_opt), .task_data = task_data };
     }
     return std::nullopt;
-}
-
-std::optional<PipelineTask::RecResult> PipelineTask::recognize(const cv::Mat& image,
-                                                               const MAA_PIPELINE_RES_NS::TaskData& task_data)
-{
-    using namespace MAA_PIPELINE_RES_NS::Recognition;
-    using namespace MAA_VISION_NS;
-
-    if (!status()) {
-        LogError << "Status not binded";
-        return std::nullopt;
-    }
-    cv::Rect cache {};
-    if (task_data.cache) {
-        cache = status()->get_pipeline_rec_box(task_data.name);
-    }
-
-    std::optional<PipelineTask::RecResult> result;
-    switch (task_data.rec_type) {
-    case Type::DirectHit:
-        result = direct_hit();
-        break;
-
-    case Type::TemplateMatch:
-        result = template_match(image, std::get<TemplMatchingParam>(task_data.rec_param), cache, task_data.name);
-        break;
-
-    case Type::OCR:
-        result = ocr(image, std::get<OcrParam>(task_data.rec_param), cache, task_data.name);
-        break;
-
-    case Type::Custom:
-        result = custom_recognize(image, std::get<CustomParam>(task_data.rec_param), cache, task_data.name);
-        break;
-
-    default:
-        LogError << "Unknown type" << VAR(static_cast<int>(task_data.rec_type)) << VAR(task_data.name);
-        return std::nullopt;
-    }
-
-    if (result) {
-        status()->set_pipeline_rec_box(task_data.name, result->box);
-        status()->set_pipeline_rec_detail(task_data.name, result->detail);
-    }
-
-    if (task_data.inverse) {
-        LogDebug << "task_data.inverse is true, reverse the result" << VAR(task_data.name) << VAR(result.has_value());
-        return result ? std::nullopt : std::make_optional(RecResult { .box = cv::Rect() });
-    }
-    return result;
-}
-
-std::optional<PipelineTask::RecResult> PipelineTask::direct_hit()
-{
-    return RecResult { .box = cv::Rect(), .detail = json::array() };
-}
-
-std::optional<PipelineTask::RecResult> PipelineTask::template_match(const cv::Mat& image,
-                                                                    const MAA_VISION_NS::TemplMatchingParam& param,
-                                                                    const cv::Rect& cache, const std::string& name)
-{
-    using namespace MAA_VISION_NS;
-
-    Matcher matcher(inst_, image);
-    matcher.set_param(param);
-    matcher.set_cache(cache);
-    matcher.set_name(name);
-
-    auto ret = matcher.analyze();
-    if (ret.empty()) {
-        return std::nullopt;
-    }
-
-    const cv::Rect& box = ret.front().box;
-    json::array detail;
-    for (const auto& res : ret) {
-        detail.emplace_back(res.to_json());
-    }
-    return RecResult { .box = box, .detail = detail.to_string() };
-}
-
-std::optional<PipelineTask::RecResult> PipelineTask::ocr(const cv::Mat& image, const MAA_VISION_NS::OcrParam& param,
-                                                         const cv::Rect& cache, const std::string& name)
-{
-    using namespace MAA_VISION_NS;
-
-    OCRer ocrer(inst_, image);
-    ocrer.set_param(param);
-    ocrer.set_cache(cache);
-    ocrer.set_name(name);
-
-    auto ret = ocrer.analyze();
-    if (ret.empty()) {
-        return std::nullopt;
-    }
-
-    // TODO: sort by required regex.
-    // sort_by_required_(res, param.text);
-
-    const cv::Rect& box = ret.front().box;
-    json::array detail;
-    for (const auto& res : ret) {
-        detail.emplace_back(res.to_json());
-    }
-    return RecResult { .box = box, .detail = std::move(detail) };
-}
-
-std::optional<PipelineTask::RecResult> PipelineTask::custom_recognize(const cv::Mat& image,
-                                                                      const MAA_VISION_NS::CustomParam& param,
-                                                                      const cv::Rect& cache, const std::string& name)
-{
-    using namespace MAA_VISION_NS;
-
-    std::ignore = cache;
-
-    if (!inst_) {
-        LogError << "Instance not binded";
-        return std::nullopt;
-    }
-
-    auto recognizer = inst_->custom_recognizer(param.name);
-    if (!recognizer) {
-        LogError << "Custom recognizer not found:" << param.name;
-        return std::nullopt;
-    }
-    recognizer->set_image(image);
-    recognizer->set_param(param);
-    recognizer->set_name(name);
-
-    auto ret = recognizer->analyze();
-    if (ret.empty()) {
-        return std::nullopt;
-    }
-
-    const cv::Rect& box = ret.front().box;
-    json::array detail;
-    for (const auto& res : ret) {
-        detail.emplace_back(res.to_json());
-    }
-
-    return RecResult { .box = box, .detail = std::move(detail) };
-}
-
-PipelineTask::RunningResult PipelineTask::start_to_act(const FoundResult& act)
-{
-    using namespace MAA_PIPELINE_RES_NS::Action;
-    LogFunc << VAR(act.task_data.name);
-
-    wait_freezes(act.task_data.pre_wait_freezes, act.rec.box);
-    sleep(act.task_data.pre_delay);
-
-    switch (act.task_data.action_type) {
-    // TODO: 这些内部 aciton 也可以作为但一个单独的 InterAction 类，但好像也没啥必要（
-    case Type::DoNothing:
-        break;
-    case Type::Click:
-        click(std::get<ClickParam>(act.task_data.action_param), act.rec.box);
-        break;
-    case Type::Swipe:
-        swipe(std::get<SwipeParam>(act.task_data.action_param), act.rec.box);
-        break;
-    case Type::Key:
-        press_key(std::get<KeyParam>(act.task_data.action_param));
-        break;
-    case Type::StartApp:
-        start_app(std::get<AppParam>(act.task_data.action_param));
-        break;
-    case Type::StopApp:
-        stop_app(std::get<AppParam>(act.task_data.action_param));
-        break;
-    case Type::Custom:
-        custom_action(act.task_data.name, std::get<CustomParam>(act.task_data.action_param), act.rec.box,
-                      act.rec.detail);
-        break;
-    case Type::StopTask:
-        LogInfo << "Action: StopTask";
-        return RunningResult::Interrupted;
-    default:
-        LogError << "Unknown action" << VAR(static_cast<int>(act.task_data.action_type));
-        break;
-    }
-
-    wait_freezes(act.task_data.post_wait_freezes, act.rec.box);
-    sleep(act.task_data.post_delay);
-
-    return RunningResult::Success;
-}
-
-void PipelineTask::click(const MAA_PIPELINE_RES_NS::Action::ClickParam& param, const cv::Rect& cur_box)
-{
-    if (!controller()) {
-        LogError << "Controller is null";
-        return;
-    }
-
-    cv::Rect rect = get_target_rect(param.target, cur_box);
-
-    controller()->click(rect);
-}
-
-void PipelineTask::swipe(const MAA_PIPELINE_RES_NS::Action::SwipeParam& param, const cv::Rect& cur_box)
-{
-    if (!controller()) {
-        LogError << "Controller is null";
-        return;
-    }
-
-    cv::Rect begin = get_target_rect(param.begin, cur_box);
-    cv::Rect end = get_target_rect(param.end, cur_box);
-
-    controller()->swipe(begin, end, param.duration);
-}
-
-void PipelineTask::press_key(const MAA_PIPELINE_RES_NS::Action::KeyParam& param)
-{
-    if (!controller()) {
-        LogError << "Controller is null";
-        return;
-    }
-    for (const auto& key : param.keys) {
-        controller()->press_key(key);
-    }
-}
-
-void PipelineTask::wait_freezes(const MAA_PIPELINE_RES_NS::WaitFreezesParam& param, const cv::Rect& cur_box)
-{
-    if (param.time <= std::chrono::milliseconds(0)) {
-        return;
-    }
-
-    if (!controller()) {
-        LogError << "Controller is null";
-        return;
-    }
-    using namespace MAA_VISION_NS;
-
-    LogFunc << "Wait freezes:" << VAR(param.time) << VAR(param.threshold) << VAR(param.method);
-
-    cv::Rect target = get_target_rect(param.target, cur_box);
-
-    Comparator comp;
-    comp.set_param({
-        .roi = { target },
-        .threshold = param.threshold,
-        .method = param.method,
-    });
-
-    cv::Mat pre_image = controller()->screencap();
-    auto pre_time = std::chrono::steady_clock::now();
-
-    while (!need_exit()) {
-        cv::Mat cur_image = controller()->screencap();
-        auto ret = comp.analyze(pre_image, cur_image);
-        if (ret.empty()) {
-            pre_image = cur_image;
-            pre_time = std::chrono::steady_clock::now();
-            continue;
-        }
-
-        if (duration_since(pre_time) > param.time) {
-            break;
-        }
-    }
-}
-
-void PipelineTask::start_app(const MAA_PIPELINE_RES_NS::Action::AppParam& param)
-{
-    if (!controller()) {
-        LogError << "Controller is null";
-        return;
-    }
-    using namespace MAA_VISION_NS;
-
-    if (param.package.empty()) {
-        controller()->start_app();
-    }
-    else {
-        controller()->start_app(param.package);
-    }
-}
-
-void PipelineTask::stop_app(const MAA_PIPELINE_RES_NS::Action::AppParam& param)
-{
-    if (!controller()) {
-        LogError << "Controller is null";
-        return;
-    }
-    using namespace MAA_VISION_NS;
-
-    if (param.package.empty()) {
-        controller()->stop_app();
-    }
-    else {
-        controller()->stop_app(param.package);
-    }
-}
-
-void PipelineTask::custom_action(const std::string& task_name, const MAA_PIPELINE_RES_NS::Action::CustomParam& param,
-                                 const cv::Rect& cur_box, const json::value& cur_rec_detail)
-{
-    if (!inst_) {
-        LogError << "Inst is null";
-        return;
-    }
-    auto action = inst_->custom_action(param.name);
-    if (!action) {
-        LogError << "Custom task not found" << VAR(param.name);
-        return;
-    }
-
-    action->run(task_name, param, cur_box, cur_rec_detail);
-}
-
-cv::Rect PipelineTask::get_target_rect(const MAA_PIPELINE_RES_NS::Action::Target target, const cv::Rect& cur_box)
-{
-    using namespace MAA_PIPELINE_RES_NS::Action;
-
-    if (!status()) {
-        LogError << "Status is null";
-        return {};
-    }
-
-    cv::Rect raw {};
-    switch (target.type) {
-    case Target::Type::Self:
-        raw = cur_box;
-        break;
-    case Target::Type::PreTask:
-        raw = status()->get_pipeline_rec_box(std::get<std::string>(target.param));
-        break;
-    case Target::Type::Region:
-        raw = std::get<cv::Rect>(target.param);
-        break;
-    default:
-        LogError << "Unknown target" << VAR(static_cast<int>(target.type));
-        return {};
-    }
-
-    return cv::Rect { raw.x + target.offset.x, raw.y + target.offset.y, raw.width + target.offset.width,
-                      raw.height + target.offset.height };
-}
-
-const MAA_PIPELINE_RES_NS::TaskData& PipelineTask::get_task_data(const std::string& task_name)
-{
-    auto modified_it = diff_tasks_.find(task_name);
-    if (modified_it != diff_tasks_.end()) {
-        return modified_it->second;
-    }
-
-    if (!resource()) {
-        LogError << "Resource not binded";
-        static MAA_PIPELINE_RES_NS::TaskData empty;
-        return empty;
-    }
-
-    auto& data_mgr = resource()->pipeline_res();
-    return data_mgr.get_task_data(task_name);
-}
-
-void PipelineTask::sleep(unsigned ms) const
-{
-    sleep(std::chrono::milliseconds(ms));
-}
-
-void PipelineTask::sleep(std::chrono::milliseconds ms) const
-{
-    if (need_exit()) {
-        return;
-    }
-
-    using namespace std::chrono_literals;
-
-    if (ms == 0ms) {
-        std::this_thread::yield();
-        return;
-    }
-
-    auto interval = std::min(ms, 5000ms);
-
-    LogDebug << "ready to sleep" << ms << VAR(interval);
-
-    for (auto sleep_time = interval; sleep_time <= ms && !need_exit(); sleep_time += interval) {
-        std::this_thread::sleep_for(interval);
-    }
-    if (!need_exit()) {
-        std::this_thread::sleep_for(ms % interval);
-    }
-
-    LogDebug << "end of sleep" << ms << VAR(interval);
 }
 
 MAA_TASK_NS_END

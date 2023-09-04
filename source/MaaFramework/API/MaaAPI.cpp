@@ -142,6 +142,11 @@ MaaBool MaaSetImageRawData(MaaImageBufferHandle handle, MaaImageRawData data, in
     }
 
     cv::Mat img(height, width, type, data);
+    if (img.empty()) {
+        LogError << "img is empty" << VAR_VOIDP(data) << VAR(width) << VAR(height) << VAR(type);
+        return false;
+    }
+
     handle->set(img);
     return true;
 }
@@ -174,6 +179,11 @@ MaaBool MaaSetImageEncoded(MaaImageBufferHandle handle, MaaImageEncodedData data
     }
 
     cv::Mat img = cv::imdecode({ data, static_cast<int>(size) }, cv::IMREAD_COLOR);
+    if (img.empty()) {
+        LogError << "img is empty" << VAR_VOIDP(data) << VAR(size);
+        return false;
+    }
+
     handle->set(img);
     return true;
 }
@@ -264,14 +274,14 @@ MaaBool MaaResourceSetOption(MaaResourceHandle res, MaaResOption key, MaaOptionV
     return res->set_option(key, value, val_size);
 }
 
-MaaBool MaaResourceGetHash(MaaResourceHandle res, MaaStringBufferHandle buff)
+MaaBool MaaResourceGetHash(MaaResourceHandle res, MaaStringBufferHandle buffer)
 {
-    if (!res || !buff) {
+    if (!res || !buffer) {
         LogError << "handle is null";
         return false;
     }
 
-    buff->set(res->get_hash());
+    buffer->set(res->get_hash());
     return true;
 }
 
@@ -707,6 +717,56 @@ MaaBool MaaSyncContextRunTask(MaaSyncContextHandle sync_context, MaaStringView t
     return sync_context->run_task(task, param);
 }
 
+MaaBool MaaSyncContextRunRecognizer(MaaSyncContextHandle sync_context, MaaImageBufferHandle image, MaaStringView task,
+                                    MaaStringView task_param, MaaRectHandle out_box, MaaStringBufferHandle detail_buff)
+{
+    LogFunc << VAR_VOIDP(sync_context) << VAR(image) << VAR(task) << VAR(task_param) << VAR(out_box) << VAR(detail_buff);
+
+    if (!sync_context || !image) {
+        LogError << "handle is null";
+        return false;
+    }
+
+    cv::Rect cvbox {};
+    std::string detail;
+
+    bool ret = sync_context->run_recognizer(image->get(), task, task_param, cvbox, detail);
+
+    if (out_box) {
+        out_box->x = cvbox.x;
+        out_box->y = cvbox.y;
+        out_box->width = cvbox.width;
+        out_box->height = cvbox.height;
+    }
+    if (detail_buff) {
+        detail_buff->set(std::move(detail));
+    }
+
+    return ret;
+}
+
+MaaBool MaaSyncContextRunAction(MaaSyncContextHandle sync_context, MaaStringView task, MaaStringView task_param,
+                                MaaRectHandle cur_box, MaaStringView cur_rec_detail)
+{
+    LogFunc << VAR_VOIDP(sync_context) << VAR(task) << VAR(task_param) << VAR(cur_box) << VAR(cur_rec_detail);
+
+    if (!sync_context) {
+        LogError << "handle is null";
+        return false;
+    }
+
+    cv::Rect cvbox {};
+    if (cur_box) {
+        cvbox.x = cur_box->x;
+        cvbox.y = cur_box->y;
+        cvbox.width = cur_box->width;
+        cvbox.height = cur_box->height;
+    }
+
+    bool ret = sync_context->run_action(task, task_param, cvbox, cur_rec_detail);
+    return ret;
+}
+
 void MaaSyncContextClick(MaaSyncContextHandle sync_context, int32_t x, int32_t y)
 {
     LogFunc << VAR_VOIDP(sync_context) << VAR(x) << VAR(y);
@@ -752,7 +812,7 @@ MaaBool MaaSyncContextScreencap(MaaSyncContextHandle sync_context, MaaImageBuffe
 
 MaaBool MaaSyncContextGetTaskResult(MaaSyncContextHandle sync_context, MaaStringView task, MaaStringBufferHandle buffer)
 {
-    LogFunc << VAR_VOIDP(sync_context) << VAR(buffer);
+    LogFunc << VAR_VOIDP(sync_context) << VAR(task) << VAR(buffer);
 
     if (!sync_context || !buffer) {
         LogError << "handle is null";
@@ -761,32 +821,4 @@ MaaBool MaaSyncContextGetTaskResult(MaaSyncContextHandle sync_context, MaaString
 
     buffer->set(sync_context->task_result(task));
     return true;
-}
-
-MaaBool MaaSyncContextRunRecognizer(MaaSyncContextHandle sync_context, MaaImageBufferHandle image, MaaStringView task,
-                                    MaaStringView task_param, MaaRectHandle box, MaaStringBufferHandle detail_buff)
-{
-    // TODO
-    std::ignore = sync_context;
-    std::ignore = image;
-    std::ignore = task;
-    std::ignore = task_param;
-
-    std::ignore = box;
-    std::ignore = detail_buff;
-
-    return false;
-}
-
-MaaBool MaaSyncContextRunAction(MaaSyncContextHandle sync_context, MaaStringView task_name, MaaStringView task_param,
-                                MaaRectHandle cur_box, MaaStringView cur_rec_detail)
-{
-    // TODO
-    std::ignore = sync_context;
-    std::ignore = task_name;
-    std::ignore = task_param;
-    std::ignore = cur_box;
-    std::ignore = cur_rec_detail;
-
-    return false;
 }
