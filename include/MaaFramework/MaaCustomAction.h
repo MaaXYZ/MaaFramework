@@ -10,7 +10,7 @@ extern "C"
 {
 #endif
 
-    struct MAA_FRAMEWORK_API MaaCustomActionAPI
+    struct MaaCustomActionAPI
     {
         MaaBool (*run)(MaaSyncContextHandle sync_context, MaaStringView task_name, MaaStringView custom_action_param,
                        MaaRectHandle cur_box, MaaStringView cur_rec_detail);

@@ -142,7 +142,8 @@ typedef struct MaaSyncContextAPI* MaaSyncContextHandle;
 extern "C"
 {
 #endif
-    typedef struct MAA_FRAMEWORK_API MaaRect
+
+    typedef struct MaaRect
     {
         int32_t x;
         int32_t y;

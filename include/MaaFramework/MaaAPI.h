@@ -7,6 +7,7 @@
 extern "C"
 {
 #endif
+
     /* Utils */
     MaaStringView MAA_FRAMEWORK_API MaaVersion();
 

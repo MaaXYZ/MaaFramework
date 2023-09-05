@@ -8,7 +8,7 @@ extern "C"
 {
 #endif
 
-    struct MAA_FRAMEWORK_API MaaCustomRecognizerAPI
+    struct MaaCustomRecognizerAPI
     {
         MaaBool (*analyze)(MaaSyncContextHandle sync_context, const MaaImageBufferHandle image, MaaStringView task_name,
                            MaaStringView custom_recognition_param,
