@@ -13,7 +13,7 @@ extern "C"
     /* device */
 
     MaaSize MAA_TOOLKIT_API MaaToolKitFindDevice();
-    MaaSize MAA_TOOLKIT_API MaaToolKitFindDeviceBySpecifiedADB(MaaStringView adb_path);
+    MaaSize MAA_TOOLKIT_API MaaToolKitFindDeviceWithAdb(MaaStringView adb_path);
     MaaStringView MAA_TOOLKIT_API MaaToolKitGetDeviceName(MaaSize index);
     MaaStringView MAA_TOOLKIT_API MaaToolKitGetDeviceAdbPath(MaaSize index);
     MaaStringView MAA_TOOLKIT_API MaaToolKitGetDeviceAdbSerial(MaaSize index);

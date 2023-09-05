@@ -12,11 +12,19 @@ std::ostream& operator<<(std::ostream& os, const Device& device)
     return os;
 }
 
-size_t DeviceMgr::find_device(std::string_view specified_adb)
+size_t DeviceMgr::find_device()
 {
-    LogFunc << VAR(specified_adb);
+    LogFunc;
 
-    devices_ = find_device_impl(specified_adb);
+    devices_ = find_device_impl();
+    return devices_.size();
+}
+
+size_t DeviceMgr::find_device_with_adb(std::string_view adb_path)
+{
+    LogFunc << VAR(adb_path);
+
+    devices_ = find_device_with_adb_impl(adb_path);
     return devices_.size();
 }
 

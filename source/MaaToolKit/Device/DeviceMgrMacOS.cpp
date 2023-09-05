@@ -6,10 +6,14 @@
 
 MAA_TOOLKIT_DEVICE_NS_BEGIN
 
-std::vector<Device> DeviceMgrMacOS::find_device_impl(std::string_view specified_adb)
+std::vector<Device> DeviceMgrMacOS::find_device_impl()
 {
-    // TODO
-    std::ignore = specified_adb;
+    return {};
+}
+
+std::vector<Device> DeviceMgrMacOS::find_device_with_adb_impl(std::string_view adb_path)
+{
+    std::ignore = adb_path;
     return {};
 }
 

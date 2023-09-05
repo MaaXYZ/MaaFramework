@@ -65,7 +65,7 @@ static const std::map<std::string, EmulatorConstantData> kEmulators = {
       { .keyword = "MEmu", .adb_candidate_paths = { "adb.exe"_path }, .adb_common_serials = { "127.0.0.1:21503" } } },
 };
 
-std::vector<Device> DeviceMgrWin32::find_device_impl(std::string_view specified_adb)
+std::vector<Device> DeviceMgrWin32::find_device_impl()
 {
     std::vector<Device> result;
 
@@ -94,21 +94,24 @@ std::vector<Device> DeviceMgrWin32::find_device_impl(std::string_view specified_
         }
     }
 
-    if (!specified_adb.empty()) {
-        auto serials = request_adb_serials(path(specified_adb), kAdbConfig);
+    return result;
+}
 
-        for (const std::string& ser : serials) {
-            Device device;
-            device.name = specified_adb;
-            device.adb_path = specified_adb;
-            device.adb_serial = ser;
-            device.adb_config = kAdbConfig.to_string();
-            device.adb_controller_type =
-                check_adb_controller_type(device.adb_path, device.adb_serial, device.adb_config);
-            result.emplace_back(std::move(device));
-        }
+std::vector<Device> DeviceMgrWin32::find_device_with_adb_impl(std::string_view adb_path)
+{
+    std::vector<Device> result;
+
+    auto serials = request_adb_serials(path(adb_path), kAdbConfig);
+
+    for (const std::string& ser : serials) {
+        Device device;
+        device.name = adb_path;
+        device.adb_path = adb_path;
+        device.adb_serial = ser;
+        device.adb_config = kAdbConfig.to_string();
+        device.adb_controller_type = check_adb_controller_type(device.adb_path, device.adb_serial, device.adb_config);
+        result.emplace_back(std::move(device));
     }
-
     return result;
 }
 

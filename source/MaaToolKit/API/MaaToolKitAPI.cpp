@@ -38,11 +38,11 @@ MaaSize MaaToolKitFindDevice()
     return device_mgr.find_device();
 }
 
-MaaSize MaaToolKitFindDeviceBySpecifiedADB(MaaStringView adb_path)
+MaaSize MaaToolKitFindDeviceWithAdb(MaaStringView adb_path)
 {
     LogFunc;
 
-    return device_mgr.find_device(adb_path);
+    return device_mgr.find_device_with_adb(adb_path);
 }
 
 MaaStringView MaaToolKitGetDeviceName(MaaSize index)

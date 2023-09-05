@@ -21,11 +21,13 @@ public:
     virtual ~DeviceMgr() noexcept override = default;
 
 public: // from MaaToolKitDeviceMgrAPI
-    virtual size_t find_device(std::string_view specified_adb = std::string_view()) override final;
-    virtual const std::vector<Device>& get_devices() override final { return devices_; };
+    virtual size_t find_device() override final;
+    virtual size_t find_device_with_adb(std::string_view adb_path) override final;
+    virtual const std::vector<Device>& get_devices() const override final { return devices_; };
 
 protected:
-    virtual std::vector<Device> find_device_impl(std::string_view specified_adb) = 0;
+    virtual std::vector<Device> find_device_impl() = 0;
+    virtual std::vector<Device> find_device_with_adb_impl(std::string_view adb_path) = 0;
 
 protected:
     std::vector<std::string> request_adb_serials(const std::filesystem::path& adb_path,

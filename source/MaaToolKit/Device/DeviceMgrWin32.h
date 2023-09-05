@@ -28,7 +28,8 @@ public:
     virtual ~DeviceMgrWin32() noexcept override = default;
 
 public: // from DeviceMgr
-    virtual std::vector<Device> find_device_impl(std::string_view specified_adb) override;
+    virtual std::vector<Device> find_device_impl() override;
+    virtual std::vector<Device> find_device_with_adb_impl(std::string_view adb_path) override;
 
 private:
     DeviceMgrWin32() = default;
