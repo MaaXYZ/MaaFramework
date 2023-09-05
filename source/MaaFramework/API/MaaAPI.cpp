@@ -720,7 +720,8 @@ MaaBool MaaSyncContextRunTask(MaaSyncContextHandle sync_context, MaaStringView t
 MaaBool MaaSyncContextRunRecognizer(MaaSyncContextHandle sync_context, MaaImageBufferHandle image, MaaStringView task,
                                     MaaStringView task_param, MaaRectHandle out_box, MaaStringBufferHandle detail_buff)
 {
-    LogFunc << VAR_VOIDP(sync_context) << VAR(image) << VAR(task) << VAR(task_param) << VAR(out_box) << VAR(detail_buff);
+    LogFunc << VAR_VOIDP(sync_context) << VAR(image) << VAR(task) << VAR(task_param) << VAR(out_box)
+            << VAR(detail_buff);
 
     if (!sync_context || !image) {
         LogError << "handle is null";

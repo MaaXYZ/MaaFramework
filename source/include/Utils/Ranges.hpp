@@ -4,7 +4,7 @@
 
 #define MAA_RNS MAA_NS::MaaRangesNS
 #define MAA_RNS_NS_BEGIN \
-    namespace MAA_RNS \
+    namespace MAA_RNS    \
     {
 #define MAA_RNS_NS_END }
 

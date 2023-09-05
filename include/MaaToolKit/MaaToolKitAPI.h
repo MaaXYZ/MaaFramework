@@ -29,7 +29,8 @@ extern "C"
 
     MaaBool MAA_TOOLKIT_API MaaToolKitBindInstance(MaaToolKitConfigHandle config_handle,
                                                    MaaInstanceHandle instance_handle);
-    MaaToolKitConfigHandle MAA_TOOLKIT_API MaaToolKitAddConfig(MaaStringView config_name, MaaToolKitConfigHandle copy_from);
+    MaaToolKitConfigHandle MAA_TOOLKIT_API MaaToolKitAddConfig(MaaStringView config_name,
+                                                               MaaToolKitConfigHandle copy_from);
     MaaBool MAA_TOOLKIT_API MaaToolKitDelConfig(MaaStringView config_name);
     MaaBool MAA_TOOLKIT_API MaaToolKitSetCurrentConfig(MaaStringView config_name);
 
@@ -41,15 +42,16 @@ extern "C"
     MaaSize MAA_TOOLKIT_API MaaToolKitTaskSize(MaaToolKitConfigHandle config_handle);
     MaaToolKitTaskHandle MAA_TOOLKIT_API MaaToolKitGetTask(MaaToolKitConfigHandle config_handle, MaaSize index);
 
-    MaaToolKitTaskHandle MAA_TOOLKIT_API MaaToolKitAddTask(MaaToolKitConfigHandle config_handle, MaaStringView task_name,
-                                                           MaaToolKitTaskHandle copy_from);
+    MaaToolKitTaskHandle MAA_TOOLKIT_API MaaToolKitAddTask(MaaToolKitConfigHandle config_handle,
+                                                           MaaStringView task_name, MaaToolKitTaskHandle copy_from);
     MaaBool MAA_TOOLKIT_API MaaToolKitDelTask(MaaToolKitConfigHandle config_handle, MaaStringView task_name);
     MaaBool MAA_TOOLKIT_API MaaToolKitSetTaskIndex(MaaToolKitConfigHandle config_handle, MaaStringView task_name,
                                                    MaaSize new_index);
 
     MaaStringView MAA_TOOLKIT_API MaaToolKitTaskName(MaaToolKitTaskHandle task_handle);
     MaaStringView MAA_TOOLKIT_API MaaToolKitGetTaskDescription(MaaToolKitTaskHandle config_handle);
-    MaaBool MAA_TOOLKIT_API MaaToolKitSetTaskDescription(MaaToolKitTaskHandle config_handle, MaaStringView new_description);
+    MaaBool MAA_TOOLKIT_API MaaToolKitSetTaskDescription(MaaToolKitTaskHandle config_handle,
+                                                         MaaStringView new_description);
     MaaStringView MAA_TOOLKIT_API MaaToolKitGetTaskEntry(MaaToolKitTaskHandle task_handle);
     MaaBool MAA_TOOLKIT_API MaaToolKitSetTaskEntry(MaaToolKitTaskHandle task_handle, MaaStringView new_entry);
     MaaStringView MAA_TOOLKIT_API MaaToolKitGetTaskParam(MaaToolKitTaskHandle task_handle);

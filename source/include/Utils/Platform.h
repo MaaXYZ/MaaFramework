@@ -3,12 +3,12 @@
 #include "Conf/Conf.h"
 
 #include <filesystem>
+#include <optional>
 #include <ostream>
 #include <set>
 #include <string>
 #include <string_view>
 #include <type_traits>
-#include <optional>
 
 #ifdef _WIN32
 #include "SafeWindows.hpp"

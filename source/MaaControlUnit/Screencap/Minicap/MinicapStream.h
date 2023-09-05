@@ -2,8 +2,8 @@
 
 #include "MinicapBase.h"
 
-#include <thread>
 #include <condition_variable>
+#include <thread>
 
 MAA_CTRL_UNIT_NS_BEGIN
 

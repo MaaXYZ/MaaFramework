@@ -1,7 +1,7 @@
 #include "MinicapDirect.h"
 
-#include "Utils/Logger.h"
 #include "Utils/Format.hpp"
+#include "Utils/Logger.h"
 #include "Utils/NoWarningCV.hpp"
 
 MAA_CTRL_UNIT_NS_BEGIN
@@ -17,7 +17,7 @@ std::optional<cv::Mat> MinicapDirect::screencap()
         return std::nullopt;
     }
 
-    return screencap_helper_.process_data(res.value(), std::bind(&ScreencapHelper::decode_jpg,
-                                                                 &screencap_helper_, std::placeholders::_1));
+    return screencap_helper_.process_data(
+        res.value(), std::bind(&ScreencapHelper::decode_jpg, &screencap_helper_, std::placeholders::_1));
 }
 MAA_CTRL_UNIT_NS_END

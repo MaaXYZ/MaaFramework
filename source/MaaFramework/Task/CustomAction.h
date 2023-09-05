@@ -13,8 +13,8 @@ class CustomAction
 public:
     CustomAction(MaaCustomActionHandle handle, InstanceInternalAPI* inst);
 
-    bool run(const std::string& task_name, const MAA_RES_NS::Action::CustomParam& param,
-             const cv::Rect& cur_box, const json::value& cur_rec_detail);
+    bool run(const std::string& task_name, const MAA_RES_NS::Action::CustomParam& param, const cv::Rect& cur_box,
+             const json::value& cur_rec_detail);
 
 private:
     MaaCustomActionHandle action_ = nullptr;

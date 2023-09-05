@@ -1,7 +1,7 @@
 #include "UnitBase.h"
 
-#include "Utils/Logger.h"
 #include "UnitBase.h"
+#include "Utils/Logger.h"
 
 MAA_CTRL_UNIT_NS_BEGIN
 

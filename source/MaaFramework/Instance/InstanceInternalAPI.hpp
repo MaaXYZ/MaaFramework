@@ -3,8 +3,8 @@
 #include <memory>
 #include <string>
 
-#include "Utils/NonCopyable.hpp"
 #include "Conf/Conf.h"
+#include "Utils/NonCopyable.hpp"
 
 MAA_RES_NS_BEGIN
 class ResourceMgr;
