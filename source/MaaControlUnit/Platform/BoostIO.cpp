@@ -34,7 +34,8 @@ int BoostIO::call_command(const std::vector<std::string>& cmd, bool recv_by_sock
 
     boost::process::ipstream pout;
     boost::process::child proc(exec, boost::process::args(rcmd),
-                               boost::process::std_in<boost::process::null, boost::process::std_out> pout);
+                               boost::process::std_in<boost::process::null, boost::process::std_out> pout,
+                               boost::process::std_err > boost::process::null);
 
     const auto start_time = std::chrono::steady_clock::now();
     auto terminate = [&]() -> bool {
