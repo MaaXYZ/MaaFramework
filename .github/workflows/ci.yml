@@ -286,6 +286,14 @@ jobs:
         with:
           path: assets
 
+      - name: Publish Nupkgs
+        run: |
+          nuget push assets/MAA-nupkgs/*.nupkg \
+            -ApiKey ${{ secrets.NuGetAPIKey }} \
+            -Source $NUGET_PACKAGE_SOURCE \
+            -SkipDuplicate
+          rm -r assets/MAA-nupkgs
+
       - run: |
           cd assets
           for f in *; do
@@ -296,10 +304,3 @@ jobs:
         with:
           files: assets/*.zip
           tag_name: ${{ needs.meta.outputs.tag }}
-
-      - name: Publish Nupkgs
-        run: |
-          nuget push assets/MAA-nupkgs/*.nupkg \
-            -ApiKey ${{ secrets.NuGetAPIKey }} \
-            -Source $NUGET_PACKAGE_SOURCE \
-            -SkipDuplicate
