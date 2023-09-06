@@ -245,27 +245,6 @@ jobs:
           name: MAA-macos-${{ matrix.arch }}
           path: "install"
 
-  release:
-    if: ${{ needs.meta.outputs.is_release == 'true' }}
-    needs: [meta, windows, ubuntu, macos]
-    runs-on: ubuntu-latest
-
-    steps:
-      - uses: actions/download-artifact@v3
-        with:
-          path: assets
-
-      - run: |
-          cd assets
-          for f in */; do
-            (cd $f && zip -r ../$f-${{ needs.meta.outputs.tag }}.zip .)
-          done
-
-      - uses: softprops/action-gh-release@v1
-        with:
-          files: assets/*.zip
-          tag_name: ${{ needs.meta.outputs.tag }}
-
   nuget_pack:
     needs: [meta, windows, ubuntu, macos]
     runs-on: ubuntu-latest
@@ -295,11 +274,34 @@ jobs:
           name: nupkgs
           path: "pkgs/nupkgs/*.nupkg"
 
+
+  release:
+    if: ${{ needs.meta.outputs.is_release == 'true' }}
+    needs: [meta, windows, ubuntu, macos, nuget_pack]
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/download-artifact@v3
+        with:
+          path: assets
+
+      - run: |
+          cd assets
+          for f in */; do
+            (cd $f && zip -r ../$f-${{ needs.meta.outputs.tag }}.zip .)
+          done
+      
+      - uses: softprops/action-gh-release@v1
+        with:
+          files: assets/*.zip
+          tag_name: ${{ needs.meta.outputs.tag }}
+
+      
       - name: Publish Nupkgs
         if: ${{ needs.meta.outputs.is_release == 'true' }}
         working-directory: pkgs/nupkgs
         run: |
-          nuget push *.nupkg \
+          nuget push **/*.nupkg \
             -ApiKey ${{ secrets.NuGetAPIKey }} \
             -Source $NUGET_PACKAGE_SOURCE \
             -SkipDuplicate
