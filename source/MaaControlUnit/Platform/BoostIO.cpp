@@ -48,9 +48,16 @@ int BoostIO::call_command(const std::vector<std::string>& cmd, bool recv_by_sock
         read_pipe_data(pout, pipe_data, terminate);
     }
 
+    while (!terminate()) {
+        std::this_thread::yield();
+    }
+
     if (proc.running()) {
         LogWarn << "terminate" << VAR(exec);
         proc.terminate();
+    }
+    else {
+        proc.wait();
     }
 
     return proc.exit_code();
