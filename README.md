@@ -40,7 +40,7 @@
 - [MAABH3](https://github.com/MaaAssistantArknights/MAABH3) 《崩坏3》小助手 | A one-click tool for the daily tasks of Honkai Impact.  
   基于全新架构的 蹦蹦蹦 小助手。图像技术 + 模拟控制，解放双手！由 MaaFramework 强力驱动！
 
-- [MAALimbusCompany](https://github.com/MaaAssistantArknights/MAALimbusCompany) 边狱公司 小助手  
+- [MAALimbusCompany](https://github.com/hxdnshx/MAALimbusCompany) 边狱公司 小助手  
   基于全新架构的 边狱公司 小助手。图像技术 + 模拟控制，解放双手！由 MaaFramework 强力驱动！
 
 ## 生态共建
