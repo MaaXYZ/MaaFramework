@@ -250,7 +250,6 @@ jobs:
     runs-on: ubuntu-latest
     env:
       NUGET_PACKAGE_ID: Maa.Framework.Runtimes # need ${{ secrets.NuGetAPIKey }}
-      NUGET_PACKAGE_SOURCE: https://api.nuget.org/v3/index.json # https://apiint.nugettest.org/v3/index.json
 
     steps:
       - uses: nuget/setup-nuget@v1
@@ -271,7 +270,7 @@ jobs:
       - uses: actions/upload-artifact@v3
         if: always()
         with:
-          name: nupkgs
+          name: MAA-nupkgs
           path: "pkgs/nupkgs/*.nupkg"
 
 
@@ -279,6 +278,8 @@ jobs:
     if: ${{ needs.meta.outputs.is_release == 'true' }}
     needs: [meta, windows, ubuntu, macos, nuget_pack]
     runs-on: ubuntu-latest
+    env:
+      NUGET_PACKAGE_SOURCE: https://api.nuget.org/v3/index.json # https://apiint.nugettest.org/v3/index.json
 
     steps:
       - uses: actions/download-artifact@v3
@@ -296,12 +297,9 @@ jobs:
           files: assets/*.zip
           tag_name: ${{ needs.meta.outputs.tag }}
 
-      
       - name: Publish Nupkgs
-        if: ${{ needs.meta.outputs.is_release == 'true' }}
-        working-directory: pkgs/nupkgs
         run: |
-          nuget push **/*.nupkg \
+          nuget push assets/MAA-nupkgs/*.nupkg \
             -ApiKey ${{ secrets.NuGetAPIKey }} \
             -Source $NUGET_PACKAGE_SOURCE \
             -SkipDuplicate
