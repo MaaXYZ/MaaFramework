@@ -21,6 +21,8 @@ public: // from DeviceMgr
 
 private:
     DeviceMgrMacOS() = default;
+
+    std::vector<Emulator> find_emulators() const;
 };
 
 MAA_TOOLKIT_DEVICE_NS_END

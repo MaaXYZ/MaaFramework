@@ -18,12 +18,6 @@ MAA_TOOLKIT_DEVICE_NS_BEGIN
 
 using namespace path_literals;
 
-std::ostream& operator<<(std::ostream& os, const DeviceMgrWin32::Emulator& emulator)
-{
-    os << VAR_RAW(emulator.name) << VAR_RAW(emulator.process);
-    return os;
-}
-
 struct EmulatorConstantData
 {
     std::string keyword;

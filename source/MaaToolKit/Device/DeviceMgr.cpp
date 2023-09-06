@@ -5,6 +5,12 @@
 
 MAA_TOOLKIT_DEVICE_NS_BEGIN
 
+std::ostream& operator<<(std::ostream& os, const DeviceMgr::Emulator& emulator)
+{
+    os << VAR_RAW(emulator.name) << VAR_RAW(emulator.process);
+    return os;
+}
+
 std::ostream& operator<<(std::ostream& os, const Device& device)
 {
     os << VAR_RAW(device.name) << VAR_RAW(device.adb_path) << VAR_RAW(device.adb_serial)

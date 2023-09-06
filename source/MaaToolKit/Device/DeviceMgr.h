@@ -2,6 +2,7 @@
 
 #include "Conf/Conf.h"
 #include "DeviceAPI.h"
+#include "Utils/Platform.h"
 
 #include <filesystem>
 #include <ostream>
@@ -21,6 +22,12 @@ public:
     virtual ~DeviceMgr() noexcept override = default;
 
 public: // from MaaToolKitDeviceMgrAPI
+    struct Emulator
+    {
+        std::string name;
+        ProcessInfo process;
+    };
+
     virtual size_t find_device() override final;
     virtual size_t find_device_with_adb(std::string_view adb_path) override final;
     virtual const std::vector<Device>& get_devices() const override final { return devices_; };
@@ -43,5 +50,7 @@ protected:
 private:
     std::vector<Device> devices_;
 };
+
+std::ostream& operator<<(std::ostream& os, const DeviceMgr::Emulator& emulator);
 
 MAA_TOOLKIT_DEVICE_NS_END
