@@ -63,9 +63,9 @@ class TouchInputAPI
 public:
     virtual ~TouchInputAPI() = default;
 
-    virtual bool init(int swidth, int sheight) = 0;
+    virtual bool init(int swidth, int sheight, int orientation) = 0;
     virtual void deinit() = 0;
-    virtual void set_wh(int swidth, int sheight) = 0;
+    virtual void set_wh(int swidth, int sheight, int orientation) = 0;
 
     virtual bool click(int x, int y) = 0;
     virtual bool swipe(const std::vector<SwipeStep>& steps) = 0;

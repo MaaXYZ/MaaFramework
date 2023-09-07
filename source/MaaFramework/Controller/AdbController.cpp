@@ -85,7 +85,8 @@ bool AdbController::_connect()
     }
     auto [w, h] = unit_mgr_->device_info_obj()->get_resolution();
     resolution_ = { w, h };
-    details |= { { "resolution", { { "width", w }, { "height", h } } } };
+    int orientation = unit_mgr_->device_info_obj()->request_orientation().value_or(0);
+    details |= { { "resolution", { { "width", w }, { "height", h } } }, { "orientation", orientation } };
 
     notifier.notify(MaaMsg_Controller_ResolutionGot, details);
 
@@ -97,7 +98,7 @@ bool AdbController::_connect()
     }
     notifier.notify(MaaMsg_Controller_ScreencapInited, details);
 
-    if (!unit_mgr_->touch_input_obj()->init(w, h)) {
+    if (!unit_mgr_->touch_input_obj()->init(w, h, orientation)) {
         notifier.notify(MaaMsg_Controller_TouchInputInitFailed, details);
         notifier.notify(MaaMsg_Controller_ConnectFailed, details | json::object { { "why", "TouchInputInitFailed" } });
         LogError << "failed to init touch_input";
@@ -219,12 +220,13 @@ bool AdbController::reinit_resolution()
     }
     auto [w, h] = unit_mgr_->device_info_obj()->get_resolution();
     resolution_ = { w, h };
-    details |= { { "resolution", { { "width", w }, { "height", h } } } };
+    int orientation = unit_mgr_->device_info_obj()->request_orientation().value_or(0);
+    details |= { { "resolution", { { "width", w }, { "height", h } } }, { "orientation", orientation } };
 
     notifier.notify(MaaMsg_Controller_ResolutionGot, details);
 
     unit_mgr_->screencap_obj()->set_wh(w, h);
-    unit_mgr_->touch_input_obj()->set_wh(w, h);
+    unit_mgr_->touch_input_obj()->set_wh(w, h, orientation);
 
     return true;
 }

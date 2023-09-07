@@ -36,9 +36,9 @@ public: // from UnitBase
     }
 
 public: // from TouchInputAPI
-    virtual bool init(int swidth, int sheight) override;
+    virtual bool init(int swidth, int sheight, int orientation) override;
     virtual void deinit() override {}
-    virtual void set_wh(int swidth, int sheight) override;
+    virtual void set_wh(int swidth, int sheight, int orientation) override;
 
     virtual bool click(int x, int y) override;
     virtual bool swipe(const std::vector<SwipeStep>& steps) override;
@@ -54,8 +54,8 @@ private:
 
     std::string root_;
     std::string package_name_;
-    int width_ = 0;
-    int height_ = 0;
+    int swidth_ = 0;  // screen width
+    int sheight_ = 0; // screen height
     double xscale_ = 0;
     double yscale_ = 0;
     int press_ = 0;

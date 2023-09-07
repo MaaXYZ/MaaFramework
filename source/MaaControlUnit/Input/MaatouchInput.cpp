@@ -54,9 +54,11 @@ bool MaatouchInput::parse(const json::value& config)
     return invoke_app_->parse(config);
 }
 
-bool MaatouchInput::init(int swidth, int sheight)
+bool MaatouchInput::init(int swidth, int sheight, int orientation)
 {
     LogFunc;
+
+    std::ignore = orientation;
 
     if (!invoke_app_->init()) {
         return false;
@@ -101,20 +103,21 @@ bool MaatouchInput::init(int swidth, int sheight)
         break;
     }
 
-    LogInfo << "minitouch info:" << info;
+    LogInfo << "maatouch info:" << info;
+    string_trim_(info);
 
     int contact = 0;
     int x = 0;
     int y = 0;
     int pressure = 0;
 
-    std::istringstream ins(info);
-    if (!ins >> contact >> x >> y >> pressure) {
+    std::istringstream ins(std::move(info));
+    if (!(ins >> contact >> x >> y >> pressure)) {
         return false;
     }
 
-    width_ = swidth;
-    height_ = sheight;
+    swidth_ = swidth;
+    sheight_ = sheight;
     xscale_ = double(x) / swidth;
     yscale_ = double(y) / sheight;
     press_ = pressure;
@@ -122,9 +125,9 @@ bool MaatouchInput::init(int swidth, int sheight)
     return true;
 }
 
-void MaatouchInput::set_wh(int swidth, int sheight)
+void MaatouchInput::set_wh(int swidth, int sheight, int orientation)
 {
-    init(swidth, sheight);
+    init(swidth, sheight, orientation);
 }
 
 bool MaatouchInput::click(int x, int y)
@@ -134,10 +137,10 @@ bool MaatouchInput::click(int x, int y)
         return false;
     }
 
-    if (x < 0 || x >= width_ || y < 0 || y >= height_) {
+    if (x < 0 || x >= swidth_ || y < 0 || y >= sheight_) {
         LogError << "click point out of range";
-        x = std::clamp(x, 0, width_ - 1);
-        y = std::clamp(y, 0, height_ - 1);
+        x = std::clamp(x, 0, swidth_ - 1);
+        y = std::clamp(y, 0, sheight_ - 1);
     }
 
     auto [real_x, real_y] = scale_point(x, y);

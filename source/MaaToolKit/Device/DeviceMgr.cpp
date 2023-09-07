@@ -94,7 +94,7 @@ MaaAdbControllerType DeviceMgr::check_adb_controller_type(const std::filesystem:
     std::ignore = adb_config;
 
     // TODO: 判断触控方式是否支持
-    constexpr MaaAdbControllerType kInputType = MaaAdbControllerType_Input_Preset_Minitouch;
+    constexpr MaaAdbControllerType kInputType = MaaAdbControllerType_Input_Preset_Maatouch;
 
     // TODO: speed test
     constexpr MaaAdbControllerType kScreencapType = MaaAdbControllerType_Screencap_FastestWay;

@@ -129,7 +129,7 @@ std::shared_ptr<ControlUnitAPI> create_adb_controller_unit(MaaStringView adb_pat
 
     switch (touch_type) {
     case MaaAdbControllerType_Touch_Adb:
-        LogInfo << "touch_type: TapInput";
+        LogInfo << "touch_type: TapTouchInput";
         touch_unit = std::make_shared<TapTouchInput>();
         break;
     case MaaAdbControllerType_Touch_MiniTouch:
@@ -153,7 +153,7 @@ std::shared_ptr<ControlUnitAPI> create_adb_controller_unit(MaaStringView adb_pat
         LogInfo << "key_type: TapKeyInput";
         key_unit = std::make_shared<TapKeyInput>();
         break;
-    case MaaAdbControllerType_Touch_MaaTouch:
+    case MaaAdbControllerType_Key_MaaTouch:
         LogInfo << "key_type: MaatouchInput";
         if (!maatouch_unit) {
             maatouch_unit = std::make_shared<MaatouchInput>();
@@ -396,8 +396,8 @@ std::shared_ptr<KeyInputAPI> create_adb_key_input(MaaStringView adb_path, MaaStr
         LogInfo << "key_type: TapKeyInput";
         key_unit = std::make_shared<TapKeyInput>();
         break;
-    case MaaAdbControllerType_Touch_MaaTouch:
-        LogInfo << "key_type: TapKeyInput";
+    case MaaAdbControllerType_Key_MaaTouch:
+        LogInfo << "key_type: MaatouchInput";
         key_unit = std::make_shared<MaatouchInput>();
         break;
     default:

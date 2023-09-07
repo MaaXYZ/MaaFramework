@@ -63,7 +63,7 @@ bool MinitouchInput::parse(const json::value& config)
     return invoke_app_->parse(config);
 }
 
-bool MinitouchInput::init(int swidth, int sheight)
+bool MinitouchInput::init(int swidth, int sheight, int orientation)
 {
     LogFunc;
 
@@ -123,29 +123,33 @@ bool MinitouchInput::init(int swidth, int sheight)
     }
 
     LogInfo << "minitouch info:" << info;
+    string_trim_(info);
 
     int contact = 0;
     int x = 0;
     int y = 0;
     int pressure = 0;
 
-    std::istringstream ins(info);
+    std::istringstream ins(std::move(info));
     if (!(ins >> contact >> x >> y >> pressure)) {
         return false;
     }
 
-    width_ = swidth;
-    height_ = sheight;
+    swidth_ = swidth;
+    sheight_ = sheight;
+    twidth_ = x;
+    theight_ = y;
     xscale_ = double(x) / swidth;
     yscale_ = double(y) / sheight;
     press_ = pressure;
+    orientation_ = orientation;
 
     return true;
 }
 
-void MinitouchInput::set_wh(int swidth, int sheight)
+void MinitouchInput::set_wh(int swidth, int sheight, int orientation)
 {
-    init(swidth, sheight);
+    init(swidth, sheight, orientation);
 }
 
 bool MinitouchInput::click(int x, int y)
@@ -155,10 +159,10 @@ bool MinitouchInput::click(int x, int y)
         return false;
     }
 
-    if (x < 0 || x >= width_ || y < 0 || y >= height_) {
+    if (x < 0 || x >= swidth_ || y < 0 || y >= sheight_) {
         LogError << "click point out of range";
-        x = std::clamp(x, 0, width_ - 1);
-        y = std::clamp(y, 0, height_ - 1);
+        x = std::clamp(x, 0, swidth_ - 1);
+        y = std::clamp(y, 0, sheight_ - 1);
     }
 
     auto [real_x, real_y] = scale_point(x, y);
@@ -217,7 +221,31 @@ bool MinitouchInput::swipe(const std::vector<SwipeStep>& steps)
 
 std::pair<int, int> MinitouchInput::scale_point(int x, int y)
 {
-    return std::make_pair(static_cast<int>(round(x * xscale_)), static_cast<int>(round(y * yscale_)));
+    auto int_round = [](double v) -> int { return static_cast<int>(round(v)); };
+
+    switch (orientation_) {
+    case 0:
+    default:
+        return {
+            int_round(x * xscale_),
+            int_round(y * yscale_),
+        };
+    case 1:
+        return {
+            theight_ - int_round(y * yscale_),
+            int_round(x * xscale_),
+        };
+    case 2:
+        return {
+            twidth_ - int_round(x * xscale_),
+            theight_ - int_round(y * yscale_),
+        };
+    case 3:
+        return {
+            int_round(y * yscale_),
+            twidth_ - int_round(x * xscale_),
+        };
+    }
 }
 
 MAA_CTRL_UNIT_NS_END
