@@ -136,7 +136,7 @@ struct TaskData
     WaitFreezesParam pre_wait_freezes;
     WaitFreezesParam post_wait_freezes;
 
-    bool notify = false;
+    bool focus = false;
 };
 
 MAA_RES_NS_END

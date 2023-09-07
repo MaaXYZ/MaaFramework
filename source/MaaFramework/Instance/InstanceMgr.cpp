@@ -254,6 +254,11 @@ InstanceStatus* InstanceMgr::inter_status()
     return &status_;
 }
 
+void InstanceMgr::notify(std::string_view msg, const json::value& details)
+{
+    notifier.notify(msg, details);
+}
+
 MAA_VISION_NS::CustomRecognizerPtr InstanceMgr::custom_recognizer(const std::string& name)
 {
     auto it = custom_recognizers_.find(name);
@@ -286,6 +291,7 @@ bool InstanceMgr::run_task(TaskId id, TaskPtr task_ptr)
     const json::value details = {
         { "id", id },
         { "entry", task_ptr->entry() },
+        { "name", task_ptr->entry() },
         { "hash", inter_resource() ? inter_resource()->get_hash() : std::string() },
         { "uuid", inter_controller() ? inter_controller()->get_uuid() : std::string() },
     };
@@ -293,7 +299,10 @@ bool InstanceMgr::run_task(TaskId id, TaskPtr task_ptr)
     notifier.notify(MaaMsg_Task_Started, details);
 
     LogInfo << "task start:" << VAR(details);
+
+    task_ptr->set_taskid(id);
     bool ret = task_ptr->run();
+
     LogInfo << "task end:" << VAR(details) << VAR(ret);
 
     notifier.notify(ret ? MaaMsg_Task_Completed : MaaMsg_Task_Failed, details);

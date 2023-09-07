@@ -4,6 +4,7 @@
 
 #include "Controller/ControllerMgr.h"
 #include "Instance/InstanceStatus.h"
+#include "MaaFramework/MaaMsg.h"
 #include "Resource/ResourceMgr.h"
 #include "Task/CustomAction.h"
 #include "Utils/ImageIo.h"
@@ -109,30 +110,46 @@ PipelineTask::RunningResult PipelineTask::find_first_and_run(const std::vector<s
 
     uint64_t run_times = status()->get_pipeline_run_times(name);
 
-    json::value task_result;
-    task_result["recognition"] = result.rec_result.detail;
-    task_result["run_times"] = run_times;
+    json::value detail = {
+        { "id", task_id_ },
+        { "entry", entry() },
+        { "name", name },
+        { "hash", resource() ? resource()->get_hash() : std::string() },
+        { "uuid", controller() ? controller()->get_uuid() : std::string() },
+        { "recognition", result.rec_result.detail },
+        { "run_times", run_times },
+        { "last_time", format_now() },
+        { "status", "Hit" },
+    };
+
+    status()->set_pipeline_task_result(name, detail);
+    if (result.task_data.focus) {
+        notify(MaaMsg_Task_Focus_Hit, detail);
+    }
 
     if (result.task_data.times_limit <= run_times) {
         LogInfo << "Task runout:" << name;
 
+        detail["status"] = "Runout";
+        status()->set_pipeline_task_result(name, detail);
+        if (result.task_data.focus) {
+            notify(MaaMsg_Task_Focus_Runout, detail);
+        }
+
         found_data = std::move(result.task_data);
-
-        task_result["status"] = "Runout";
-        task_result["last_time"] = format_now();
-        status()->set_pipeline_task_result(name, std::move(task_result));
-
         return RunningResult::Runout;
     }
 
     auto ret = actuator_.run(result.rec_result, result.task_data);
-
     status()->increase_pipeline_run_times(name);
 
-    task_result["status"] = "Success";
-    task_result["last_time"] = format_now();
-    task_result["run_times"] = run_times + 1;
-    status()->set_pipeline_task_result(name, std::move(task_result));
+    detail["status"] = "Completed";
+    detail["last_time"] = format_now();
+    detail["run_times"] = run_times + 1;
+    status()->set_pipeline_task_result(name, detail);
+    if (result.task_data.focus) {
+        notify(MaaMsg_Task_Focus_Completed, detail);
+    }
 
     found_data = std::move(result.task_data);
     return ret ? RunningResult::Success : RunningResult::Interrupted;

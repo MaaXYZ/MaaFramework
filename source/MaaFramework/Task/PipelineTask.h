@@ -33,6 +33,7 @@ public:
     const std::string& entry() const { return entry_; }
 
     bool run();
+    void set_taskid(int64_t id) { task_id_ = id; }
     bool set_param(const json::value& param);
 
     Recognizer& recognizer() { return recognizer_; }
@@ -63,6 +64,10 @@ private:
     MAA_RES_NS::ResourceMgr* resource() { return inst_ ? inst_->inter_resource() : nullptr; }
     MAA_CTRL_NS::ControllerMgr* controller() { return inst_ ? inst_->inter_controller() : nullptr; }
     InstanceStatus* status() { return inst_ ? inst_->inter_status() : nullptr; }
+    void notify(std::string_view msg, json::value detail = json::value())
+    {
+        if (inst_) inst_->notify(msg, detail);
+    }
 
     bool need_exit() const { return need_exit_; }
 
@@ -70,6 +75,7 @@ private:
     bool need_exit_ = false;
     InstanceInternalAPI* inst_ = nullptr;
 
+    int64_t task_id_ = 0;
     std::string entry_;
     std::string cur_task_name_;
 

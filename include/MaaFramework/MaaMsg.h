@@ -5,7 +5,7 @@
 /*
     {
         id: number,
-        path: [string, resource path]
+        path: string
     }
 */
 #define MaaMsg_Resource_StartLoading ("Resource.StartLoading")
@@ -65,11 +65,30 @@
 /*
     {
         id: number,
-        uuid: [string, controller id],
-        hash: [string, resource hash]
+        entry: string,
+        name: string,
+        uuid: string,
+        hash: string
     }
 */
 #define MaaMsg_Task_Started ("Task.Started")
 #define MaaMsg_Task_Completed ("Task.Completed")
 #define MaaMsg_Task_Failed ("Task.Failed")
 #define MaaMsg_Task_Stopped ("Task.Stopped")
+
+/*
+    {
+        id: number,
+        entry: string,
+        name: string,
+        uuid: string,
+        hash: string,
+        recognition: object,
+        run_times: number,
+        last_time: string,
+        status: string
+    }
+*/
+#define MaaMsg_Task_Focus_Hit ("Task.Focus.Hit")
+#define MaaMsg_Task_Focus_Runout ("Task.Focus.Runout")
+#define MaaMsg_Task_Focus_Completed ("Task.Focus.Completed")

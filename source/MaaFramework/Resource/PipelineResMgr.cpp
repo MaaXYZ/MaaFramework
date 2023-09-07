@@ -318,8 +318,8 @@ bool PipelineResMgr::parse_task(const std::string& name, const json::value& inpu
         return false;
     }
 
-    if (!get_and_check_value(input, "notify", data.notify, default_value.notify)) {
-        LogError << "failed to get_and_check_value notify" << VAR(input);
+    if (!get_and_check_value(input, "focus", data.focus, default_value.focus)) {
+        LogError << "failed to get_and_check_value focus" << VAR(input);
         return false;
     }
 
