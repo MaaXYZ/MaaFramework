@@ -36,6 +36,7 @@ struct TemplMatchingParam
 
 struct OcrParam
 {
+    std::string model;
     bool only_rec = false;
     std::vector<cv::Rect> roi;
     std::vector<std::string> text;

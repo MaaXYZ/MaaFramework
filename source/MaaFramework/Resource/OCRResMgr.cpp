@@ -24,119 +24,149 @@ bool OCRResMgr::lazy_load(const std::filesystem::path& path, bool is_base)
         clear();
     }
 
-    using namespace path_literals;
-    const auto det_model_file = path / "det.onnx"_path;
+    roots_.emplace_back(path);
 
-    if (std::filesystem::exists(det_model_file) && det_model_path_ != det_model_file) {
-        det_model_path_ = det_model_file;
-        deter_ = nullptr;
-    }
-
-    const auto rec_model_file = path / "rec.onnx"_path;
-    const auto rec_label_file = path / "keys.txt"_path;
-
-    if (std::filesystem::exists(rec_model_file) && rec_model_path_ != rec_model_file) {
-        rec_model_path_ = rec_model_file;
-        recer_ = nullptr;
-    }
-    if (std::filesystem::exists(rec_label_file) && rec_model_path_ != rec_label_file) {
-        rec_label_path_ = rec_label_file;
-        recer_ = nullptr;
-    }
-
-    if (deter_ && recer_) {
-        ocrer_ = std::make_unique<fastdeploy::pipeline::PPOCRv3>(deter_.get(), recer_.get());
-    }
-
-    LogInfo << VAR(det_model_path_) << VAR(rec_model_path_) << VAR(rec_label_path_);
-
-    bool path_ready = !det_model_path_.empty() && !rec_model_path_.empty() && !rec_label_path_.empty();
-    if (!path_ready) {
-        return false;
-    }
-
-#ifdef MAA_DEBUG
-    if (!deter() || !recer() || !ocrer()) {
-        LogError << "failed to load OCR config";
-        return false;
-    }
-#endif
-
-    return path_ready;
+    return true;
 }
 
 void OCRResMgr::clear()
 {
     LogFunc;
 
-    ocrer_ = nullptr;
-    recer_ = nullptr;
-    deter_ = nullptr;
+    roots_.clear();
+    deters_.clear();
+    recers_.clear();
+    ocrers_.clear();
 }
 
-const std::unique_ptr<fastdeploy::vision::ocr::DBDetector>& OCRResMgr::deter() const
+std::shared_ptr<fastdeploy::vision::ocr::DBDetector> OCRResMgr::deter(const std::string& name) const
 {
-    if (deter_) {
-        return deter_;
+    if (auto iter = deters_.find(name); iter != deters_.end()) {
+        return iter->second;
     }
 
-    LogFunc << "Load Detector" << VAR(det_model_path_);
-
-    auto det_model = read_file<std::string>(det_model_path_);
-    auto det_option = option_;
-
-    det_option.SetModelBuffer(det_model.data(), det_model.size(), nullptr, 0, fastdeploy::ModelFormat::ONNX);
-
-    deter_ = std::make_unique<fastdeploy::vision::ocr::DBDetector>("dummy.onnx", std::string(), det_option,
-                                                                   fastdeploy::ModelFormat::ONNX);
-    if (!deter_ || !deter_->Initialized()) {
-        LogError << "failed to init deter" << VAR(deter_);
-        static decltype(deter_) empty;
-        return empty;
+    auto deter = load_deter(name);
+    if (deter) {
+        deters_.emplace(name, deter);
     }
-    return deter_;
+
+    return deter;
 }
 
-const std::unique_ptr<fastdeploy::vision::ocr::Recognizer>& OCRResMgr::recer() const
+std::shared_ptr<fastdeploy::vision::ocr::Recognizer> OCRResMgr::recer(const std::string& name) const
 {
-    if (recer_) {
-        return recer_;
+    if (auto iter = recers_.find(name); iter != recers_.end()) {
+        return iter->second;
     }
 
-    LogFunc << "Load Recognizer" << VAR(rec_model_path_) << VAR(rec_label_path_);
-
-    auto rec_model = read_file<std::string>(rec_model_path_);
-    std::string rec_label = read_file<std::string>(rec_label_path_);
-
-    auto rec_option = option_;
-    rec_option.SetModelBuffer(rec_model.data(), rec_model.size(), nullptr, 0, fastdeploy::ModelFormat::ONNX);
-
-    recer_ = std::make_unique<fastdeploy::vision::ocr::Recognizer>("dummy.onnx", std::string(), rec_label, rec_option,
-                                                                   fastdeploy::ModelFormat::ONNX);
-    if (!recer_ || !recer_->Initialized()) {
-        LogError << "failed to init recer" << VAR(recer_);
-        static decltype(recer_) empty;
-        return empty;
+    auto recer = load_recer(name);
+    if (recer) {
+        recers_.emplace(name, recer);
     }
-    return recer_;
+
+    return recer;
 }
 
-const std::unique_ptr<fastdeploy::pipeline::PPOCRv3>& OCRResMgr::ocrer() const
+std::shared_ptr<fastdeploy::pipeline::PPOCRv3> OCRResMgr::ocrer(const std::string& name) const
 {
-    if (ocrer_) {
-        return ocrer_;
+    if (auto iter = ocrers_.find(name); iter != ocrers_.end()) {
+        return iter->second;
     }
 
-    LogFunc << "Load OCRer" << VAR(deter()) << VAR(recer());
-
-    ocrer_ = std::make_unique<fastdeploy::pipeline::PPOCRv3>(deter().get(), recer().get());
-
-    if (!ocrer_ || !ocrer_->Initialized()) {
-        LogError << "failed to init ocrer_" << VAR(ocrer_);
-        static decltype(ocrer_) empty;
-        return empty;
+    auto ocrer = load_ocrer(name);
+    if (ocrer) {
+        ocrers_.emplace(name, ocrer);
     }
-    return ocrer_;
+
+    return ocrer;
+}
+
+std::shared_ptr<fastdeploy::vision::ocr::DBDetector> OCRResMgr::load_deter(const std::string& name) const
+{
+    using namespace path_literals;
+
+    LogFunc << VAR(name) << VAR(roots_);
+
+    for (const auto& root : roots_ | MAA_RNS::views::reverse) {
+        const auto dir = root / MAA_NS::path(name);
+        const auto model_path = dir / "det.onnx"_path;
+        if (!std::filesystem::exists(model_path)) {
+            continue;
+        }
+
+        LogDebug << VAR(model_path);
+
+        auto model = read_file<std::string>(model_path);
+
+        auto option = option_;
+        option.SetModelBuffer(model.data(), model.size(), nullptr, 0, fastdeploy::ModelFormat::ONNX);
+
+        auto det = std::make_shared<fastdeploy::vision::ocr::DBDetector>("dummy.onnx", std::string(), option,
+                                                                         fastdeploy::ModelFormat::ONNX);
+        if (!det || !det->Initialized()) {
+            LogError << "Failed to load DBDetector:" << VAR(name) << VAR(det) << VAR(det->Initialized());
+            return nullptr;
+        }
+        return det;
+    }
+
+    return nullptr;
+}
+
+std::shared_ptr<fastdeploy::vision::ocr::Recognizer> OCRResMgr::load_recer(const std::string& name) const
+{
+    using namespace path_literals;
+
+    LogFunc << VAR(name) << VAR(roots_);
+
+    for (const auto& root : roots_ | MAA_RNS::views::reverse) {
+        const auto dir = root / MAA_NS::path(name);
+        const auto model_path = dir / "rec.onnx"_path;
+        const auto label_path = dir / "keys.txt"_path;
+        if (!std::filesystem::exists(model_path) || !std::filesystem::exists(label_path)) {
+            continue;
+        }
+
+        LogDebug << VAR(model_path);
+
+        auto model = read_file<std::string>(model_path);
+        auto label = read_file<std::string>(label_path);
+
+        auto option = option_;
+        option.SetModelBuffer(model.data(), model.size(), nullptr, 0, fastdeploy::ModelFormat::ONNX);
+
+        auto rec = std::make_shared<fastdeploy::vision::ocr::Recognizer>("dummy.onnx", std::string(), label, option,
+                                                                         fastdeploy::ModelFormat::ONNX);
+        if (!rec || !rec->Initialized()) {
+            LogError << "Failed to load Recognizer:" << VAR(name) << VAR(rec) << VAR(rec->Initialized());
+            return nullptr;
+        }
+        return rec;
+    }
+
+    return nullptr;
+}
+
+std::shared_ptr<fastdeploy::pipeline::PPOCRv3> OCRResMgr::load_ocrer(const std::string& name) const
+{
+    using namespace path_literals;
+
+    LogFunc << VAR(name) << VAR(roots_);
+
+    auto det = deter(name);
+    auto rec = recer(name);
+    if (!det || !rec) {
+        LogError << "Failed to load det or rec:" << VAR(name) << VAR(det) << VAR(rec);
+        return nullptr;
+    }
+
+    auto ocr = std::make_shared<fastdeploy::pipeline::PPOCRv3>(det.get(), rec.get());
+
+    if (!ocr || !ocr->Initialized()) {
+        LogError << "Failed to load PPOCRv3:" << VAR(name) << VAR(ocr) << VAR(ocr->Initialized());
+        return nullptr;
+    }
+    return ocr;
 }
 
 MAA_RES_NS_END

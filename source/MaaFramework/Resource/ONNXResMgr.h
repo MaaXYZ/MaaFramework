@@ -13,6 +13,7 @@ MAA_RES_NS_BEGIN
 class ONNXResMgr : public NonCopyable
 {
 public:
+    // TODO: 这俩可以拆一下放两个 ResMgr 里（？
     inline static const std::filesystem::path kClassifierDir = "classify";
     inline static const std::filesystem::path kDetectorDir = "detect";
 

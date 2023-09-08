@@ -465,6 +465,11 @@ bool PipelineResMgr::parse_ocr_param(const json::value& input, MAA_VISION_NS::Oc
         return false;
     }
 
+    if (!get_and_check_value(input, "model", output.model, default_value.model)) {
+        LogError << "failed to get_and_check_value model" << VAR(input);
+        return false;
+    }
+
     if (!get_and_check_value(input, "only_rec", output.only_rec, default_value.only_rec)) {
         LogError << "failed to get_and_check_value only_rec" << VAR(input);
         return false;

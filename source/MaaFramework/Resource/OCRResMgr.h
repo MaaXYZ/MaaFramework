@@ -22,20 +22,22 @@ public:
     void clear();
 
 public:
-    const std::unique_ptr<fastdeploy::vision::ocr::DBDetector>& deter() const;
-    const std::unique_ptr<fastdeploy::vision::ocr::Recognizer>& recer() const;
-    const std::unique_ptr<fastdeploy::pipeline::PPOCRv3>& ocrer() const;
+    std::shared_ptr<fastdeploy::vision::ocr::DBDetector> deter(const std::string& name) const;
+    std::shared_ptr<fastdeploy::vision::ocr::Recognizer> recer(const std::string& name) const;
+    std::shared_ptr<fastdeploy::pipeline::PPOCRv3> ocrer(const std::string& name) const;
 
 private:
-    mutable std::unique_ptr<fastdeploy::vision::ocr::DBDetector> deter_ = nullptr;
-    mutable std::unique_ptr<fastdeploy::vision::ocr::Recognizer> recer_ = nullptr;
-    mutable std::unique_ptr<fastdeploy::pipeline::PPOCRv3> ocrer_ = nullptr;
+    std::shared_ptr<fastdeploy::vision::ocr::DBDetector> load_deter(const std::string& name) const;
+    std::shared_ptr<fastdeploy::vision::ocr::Recognizer> load_recer(const std::string& name) const;
+    std::shared_ptr<fastdeploy::pipeline::PPOCRv3> load_ocrer(const std::string& name) const;
+
+    std::vector<std::filesystem::path> roots_;
 
     fastdeploy::RuntimeOption option_;
 
-    std::filesystem::path det_model_path_;
-    std::filesystem::path rec_model_path_;
-    std::filesystem::path rec_label_path_;
+    mutable std::unordered_map<std::string, std::shared_ptr<fastdeploy::vision::ocr::DBDetector>> deters_;
+    mutable std::unordered_map<std::string, std::shared_ptr<fastdeploy::vision::ocr::Recognizer>> recers_;
+    mutable std::unordered_map<std::string, std::shared_ptr<fastdeploy::pipeline::PPOCRv3>> ocrers_;
 };
 
 MAA_RES_NS_END

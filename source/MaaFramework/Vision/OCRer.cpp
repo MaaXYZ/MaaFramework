@@ -23,13 +23,13 @@ OCRer::ResultsVec OCRer::analyze() const
     ResultsVec results = foreach_rois();
 
     auto costs = duration_since(start_time);
-    LogDebug << name_ << "Raw:" << VAR(results) << VAR(costs);
+    LogDebug << name_ << "Raw:" << VAR(results) << VAR(param_.model) << VAR(costs);
 
     const auto& expected = param_.text;
     postproc_and_filter(results, expected);
 
     costs = duration_since(start_time);
-    LogDebug << name_ << "Proc:" << VAR(results) << VAR(expected) << VAR(costs);
+    LogDebug << name_ << "Proc:" << VAR(results) << VAR(expected) << VAR(param_.model) << VAR(costs);
     return results;
 }
 
@@ -64,7 +64,7 @@ OCRer::ResultsVec OCRer::predict_det_and_rec(const cv::Rect& roi) const
         return {};
     }
 
-    auto& inferencer = resource()->ocr_res().ocrer();
+    auto inferencer = resource()->ocr_res().ocrer(param_.model);
     if (!inferencer) {
         LogError << "resource()->ocr_res().ocrer() is null";
         return {};
@@ -113,7 +113,7 @@ OCRer::Result OCRer::predict_only_rec(const cv::Rect& roi) const
         return {};
     }
 
-    auto& inferencer = resource()->ocr_res().recer();
+    auto inferencer = resource()->ocr_res().recer(param_.model);
     if (!inferencer) {
         LogError << "resource()->ocr_res().recer() is null";
         return {};

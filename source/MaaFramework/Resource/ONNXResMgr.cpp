@@ -65,7 +65,7 @@ std::shared_ptr<Ort::Session> ONNXResMgr::detector(const std::string& name) cons
 std::shared_ptr<Ort::Session> ONNXResMgr::load(const std::string& name,
                                                const std::vector<std::filesystem::path>& roots) const
 {
-    LogDebug << VAR(name) << VAR(roots);
+    LogFunc << VAR(name) << VAR(roots);
 
     for (const auto& root : roots | MAA_RNS::views::reverse) {
         auto path = root / MAA_NS::path(name);
