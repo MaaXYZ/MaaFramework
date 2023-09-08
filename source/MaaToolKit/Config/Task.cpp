@@ -34,6 +34,22 @@ void Task::set_enabled(bool new_enabled)
     enabled_ = new_enabled;
 }
 
+std::string_view Task::get_custom_info(std::string_view key) const
+{
+    auto find_it = custom_info_.find(std::string(key));
+    if (find_it == custom_info_.end()) {
+        LogError << "Key not found" << VAR(key) << VAR(custom_info_);
+        return std::string_view();
+    }
+    return find_it->second;
+}
+
+void Task::set_custom_info(std::string key, std::string value)
+{
+    LogInfo << VAR(name_) << VAR(key) << VAR(value);
+    custom_info_.insert_or_assign(std::move(key), std::move(value));
+}
+
 MaaStatus Task::status() const
 {
     return MaaStatus();
@@ -47,6 +63,7 @@ json::value Task::to_json() const
     root[kEntryKey] = entry_;
     root[kParamKey] = param_;
     root[kEnabledKey] = enabled_;
+    root[kCustomInfoKey] = json::object(custom_info_);
 
     return root;
 }

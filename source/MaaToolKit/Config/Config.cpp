@@ -19,6 +19,22 @@ void Config::set_description(std::string_view new_description)
     description_ = new_description;
 }
 
+std::string_view Config::get_custom_info(std::string_view key) const
+{
+    auto find_it = custom_info_.find(std::string(key));
+    if (find_it == custom_info_.end()) {
+        LogError << "Key not found" << VAR(key) << VAR(custom_info_);
+        return std::string_view();
+    }
+    return find_it->second;
+}
+
+void Config::set_custom_info(std::string key, std::string value)
+{
+    LogInfo << VAR(name_) << VAR(key) << VAR(value);
+    custom_info_.insert_or_assign(std::move(key), std::move(value));
+}
+
 void Config::bind_instance(MaaInstanceHandle instance)
 {
     LogInfo << VAR(name_) << VAR_VOIDP(instance_) << VAR_VOIDP(instance);
@@ -169,6 +185,7 @@ json::value Config::to_json() const
     for (const auto& task : task_vec_) {
         tasks.emplace_back(task->to_json());
     }
+    root[kCustomInfoKey] = json::object(custom_info_);
     return root;
 }
 

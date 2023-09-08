@@ -18,6 +18,7 @@ public:
     inline static const std::string kEntryKey = "entry";
     inline static const std::string kParamKey = "param";
     inline static const std::string kEnabledKey = "enabled";
+    inline static const std::string kCustomInfoKey = "custom";
 
 public:
     virtual ~Task() override = default;
@@ -33,6 +34,8 @@ public: // from MaaToolKitTaskAPI
     virtual void set_param(std::string_view new_param) override;
     virtual bool get_enabled() const override { return enabled_; }
     virtual void set_enabled(bool new_enabled) override;
+    virtual std::string_view get_custom_info(std::string_view key) const override;
+    virtual void set_custom_info(std::string key, std::string value) override;
 
     virtual MaaStatus status() const override;
 
@@ -48,6 +51,7 @@ private:
     std::string entry_;
     std::string param_;
     bool enabled_ = true;
+    std::map<std::string, std::string> custom_info_;
 };
 
 MAA_TOOLKIT_CONFIG_NS_END

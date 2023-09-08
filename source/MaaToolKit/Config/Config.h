@@ -18,10 +18,7 @@ class Config : public MaaToolKitConfigAPI
 public:
     inline static const std::string kNameKey = "name";
     inline static const std::string kDescriptionKey = "description";
-    inline static const std::string kAdbPathKey = "adb_path";
-    inline static const std::string kAdbSerialKey = "adb_serial";
-    inline static const std::string kAdbConfigKey = "adb_config";
-
+    inline static const std::string kCustomInfoKey = "custom";
     inline static const std::string kTasksKey = "tasks";
 
 public:
@@ -33,8 +30,8 @@ public: // from MaaToolKitConfigAPI
     virtual void set_name(std::string_view new_name) override;
     virtual std::string_view get_description() const override { return description_; }
     virtual void set_description(std::string_view new_description) override;
-
-    virtual void bind_instance(MaaInstanceHandle instance) override;
+    virtual std::string_view get_custom_info(std::string_view key) const override;
+    virtual void set_custom_info(std::string key, std::string value) override;
 
     virtual size_t task_size() const override;
     virtual MaaToolKitTaskHandle task_by_index(size_t index) override;
@@ -43,6 +40,7 @@ public: // from MaaToolKitConfigAPI
     virtual bool del_task(std::string_view task_name) override;
     virtual bool set_task_index(std::string_view task_name, size_t new_index) override;
 
+    virtual void bind_instance(MaaInstanceHandle instance) override;
     virtual bool post_all_task() override;
     virtual MaaStatus wait_all_task() const override;
     virtual void stop_all_task() override;
@@ -61,6 +59,7 @@ public:
 private:
     std::string name_;
     std::string description_;
+    std::map<std::string, std::string> custom_info_;
 
     std::vector<std::shared_ptr<Task>> task_vec_; // for C API
     std::map<std::string, std::shared_ptr<Task>> task_map_;

@@ -70,6 +70,17 @@ MaaStringView MaaToolKitGetDeviceAdbConfig(MaaSize index)
     return device_mgr.get_devices().at(index).adb_config.c_str();
 }
 
+MaaStringView MaaToolKitGetCustomInfo(MaaStringView key)
+{
+    return config_mgr.get_custom_info(key).data();
+}
+
+MaaBool MaaToolKitSetCustomInfo(MaaStringView key, MaaStringView value)
+{
+    config_mgr.set_custom_info(key, value);
+    return true;
+}
+
 MaaSize MaaToolKitConfigSize()
 {
     return config_mgr.config_size();
@@ -143,6 +154,27 @@ MaaBool MaaToolKitSetConfigDescription(MaaToolKitConfigHandle config_handle, Maa
     }
 
     config_handle->set_description(new_description);
+    return true;
+}
+
+MaaStringView MaaToolKitGetConfigCustomInfo(MaaToolKitConfigHandle config_handle, MaaStringView key)
+{
+    if (!config_handle) {
+        LogError << "config_handle is null" << VAR(config_handle);
+        return nullptr;
+    }
+
+    return config_handle->get_custom_info(key).data();
+}
+
+MaaBool MaaToolKitSetConfigCustomInfo(MaaToolKitConfigHandle config_handle, MaaStringView key, MaaStringView value)
+{
+    if (!config_handle) {
+        LogError << "config_handle is null" << VAR(config_handle);
+        return false;
+    }
+
+    config_handle->set_custom_info(key, value);
     return true;
 }
 
@@ -284,6 +316,25 @@ MaaBool MaaToolKitSetTaskEnabled(MaaToolKitTaskHandle task_handle, MaaBool new_e
         return false;
     }
     task_handle->set_enabled(new_enabled);
+    return true;
+}
+
+MaaStringView MaaToolKitGetTaskCustomInfo(MaaToolKitTaskHandle task_handle, MaaStringView key)
+{
+    if (!task_handle) {
+        LogError << "task_handle is null" << VAR(task_handle);
+        return nullptr;
+    }
+    return task_handle->get_custom_info(key).data();
+}
+
+MaaBool MaaToolKitSetTaskCustomInfo(MaaToolKitTaskHandle task_handle, MaaStringView key, MaaStringView value)
+{
+    if (!task_handle) {
+        LogError << "task_handle is null" << VAR(task_handle);
+        return false;
+    }
+    task_handle->set_custom_info(key, value);
     return true;
 }
 

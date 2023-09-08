@@ -22,6 +22,8 @@ extern "C"
 
     /* config */
 
+    MaaStringView MAA_TOOLKIT_API MaaToolKitGetCustomInfo(MaaStringView key);
+    MaaBool MAA_TOOLKIT_API MaaToolKitSetCustomInfo(MaaStringView key, MaaStringView value);
     MaaSize MAA_TOOLKIT_API MaaToolKitConfigSize();
     MaaToolKitConfigHandle MAA_TOOLKIT_API MaaToolKitGetConfig(MaaSize index);
 
@@ -38,6 +40,10 @@ extern "C"
     MaaStringView MAA_TOOLKIT_API MaaToolKitGetConfigDescription(MaaToolKitConfigHandle config_handle);
     MaaBool MAA_TOOLKIT_API MaaToolKitSetConfigDescription(MaaToolKitConfigHandle config_handle,
                                                            MaaStringView new_description);
+    MaaStringView MAA_TOOLKIT_API MaaToolKitGetConfigCustomInfo(MaaToolKitConfigHandle config_handle,
+                                                                MaaStringView key);
+    MaaBool MAA_TOOLKIT_API MaaToolKitSetConfigCustomInfo(MaaToolKitConfigHandle config_handle, MaaStringView key,
+                                                          MaaStringView value);
 
     MaaSize MAA_TOOLKIT_API MaaToolKitTaskSize(MaaToolKitConfigHandle config_handle);
     MaaToolKitTaskHandle MAA_TOOLKIT_API MaaToolKitGetTask(MaaToolKitConfigHandle config_handle, MaaSize index);
@@ -58,6 +64,9 @@ extern "C"
     MaaBool MAA_TOOLKIT_API MaaToolKitSetTaskParam(MaaToolKitTaskHandle task_handle, MaaStringView new_param);
     MaaBool MAA_TOOLKIT_API MaaToolKitGetTaskEnabled(MaaToolKitTaskHandle task_handle);
     MaaBool MAA_TOOLKIT_API MaaToolKitSetTaskEnabled(MaaToolKitTaskHandle task_handle, MaaBool new_enabled);
+    MaaStringView MAA_TOOLKIT_API MaaToolKitGetTaskCustomInfo(MaaToolKitTaskHandle task_handle, MaaStringView key);
+    MaaBool MAA_TOOLKIT_API MaaToolKitSetTaskCustomInfo(MaaToolKitTaskHandle task_handle, MaaStringView key,
+                                                        MaaStringView value);
 
     MaaBool MAA_TOOLKIT_API MaaToolKitPostAllTask(MaaToolKitConfigHandle config_handle);
     MaaStatus MAA_TOOLKIT_API MaaToolKitWaitAllTask(MaaToolKitConfigHandle config_handle);

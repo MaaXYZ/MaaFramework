@@ -27,6 +27,7 @@ public:
     inline static const std::string kPolicyKey = "policy";
     inline static const std::string kConfigKey = "config";
     inline static const std::string kCurrentKey = "current";
+    inline static const std::string kCustomInfoKey = "custom";
 
     inline static const std::string kPolicyLoggging = "logging";
     inline static const std::string kPolicyDebugMode = "debug_mode";
@@ -39,6 +40,9 @@ public:
 public: // from MaaToolKitConfigMgrAPI
     virtual bool init() override;
     virtual bool uninit() override;
+
+    virtual std::string_view get_custom_info(std::string_view key) const override;
+    virtual void set_custom_info(std::string key, std::string value) override;
 
     virtual size_t config_size() const override;
     virtual MaaToolKitConfigHandle config_by_index(size_t index) override;
@@ -58,6 +62,7 @@ private:
 
     void generate_default_config();
 
+    json::value to_json() const;
     bool dump() const;
     bool save(const json::value& root) const;
     void insert(std::string name, Config config);
@@ -66,6 +71,7 @@ private:
     std::vector<std::shared_ptr<Config>> config_vec_; // for C API
     std::map<std::string, std::shared_ptr<Config>> config_map_;
     std::string current_ = kConfigDefaultName;
+    std::map<std::string, std::string> custom_info_;
 
     bool policy_logging_ = true;
     bool policy_debug_mode_ = false;

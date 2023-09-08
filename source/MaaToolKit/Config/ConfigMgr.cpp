@@ -37,6 +37,22 @@ bool ConfigMgr::uninit()
     return dump();
 }
 
+std::string_view ConfigMgr::get_custom_info(std::string_view key) const
+{
+    auto find_it = custom_info_.find(std::string(key));
+    if (find_it == custom_info_.end()) {
+        LogError << "Key not found" << VAR(key) << VAR(custom_info_);
+        return std::string_view();
+    }
+    return find_it->second;
+}
+
+void ConfigMgr::set_custom_info(std::string key, std::string value)
+{
+    LogInfo << VAR(key) << VAR(value);
+    custom_info_.insert_or_assign(std::move(key), std::move(value));
+}
+
 size_t ConfigMgr::config_size() const
 {
     return config_vec_.size();
@@ -238,10 +254,8 @@ void ConfigMgr::generate_default_config()
     insert(kConfigDefaultName, std::move(config));
 }
 
-bool ConfigMgr::dump() const
+json::value ConfigMgr::to_json() const
 {
-    LogInfo;
-
     json::value root;
     root[kPolicyKey] = {
         { kPolicyLoggging, policy_logging_ },
@@ -252,8 +266,16 @@ bool ConfigMgr::dump() const
         jconfig.emplace_back(config->to_json());
     }
     root[kCurrentKey] = current_;
+    root[kCustomInfoKey] = json::object(custom_info_);
 
-    return save(root);
+    return root;
+}
+
+bool ConfigMgr::dump() const
+{
+    LogInfo;
+
+    return save(to_json());
 }
 
 bool ConfigMgr::save(const json::value& root) const
