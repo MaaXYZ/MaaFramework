@@ -31,10 +31,10 @@ private:
 
     std::string root_;
     std::vector<std::string> arch_list_;
-    int swidth_ = 0;  // screen width
-    int sheight_ = 0; // screen height
-    int twidth_ = 0;  // touch width
-    int theight_ = 0; // touch height
+    int screen_width_ = 0;
+    int screen_height_ = 0;
+    int touch_width_ = 0;
+    int touch_height_ = 0;
     double xscale_ = 0;
     double yscale_ = 0;
     int press_ = 0;

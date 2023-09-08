@@ -54,11 +54,14 @@ private:
 
     std::string root_;
     std::string package_name_;
-    int swidth_ = 0;  // screen width
-    int sheight_ = 0; // screen height
+    int screen_width_ = 0;
+    int screen_height_ = 0;
+    int touch_width_ = 0;
+    int touch_height_ = 0;
     double xscale_ = 0;
     double yscale_ = 0;
     int press_ = 0;
+    int orientation_ = 0;
 };
 
 MAA_CTRL_UNIT_NS_END

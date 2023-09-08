@@ -58,8 +58,6 @@ bool MaatouchInput::init(int swidth, int sheight, int orientation)
 {
     LogFunc;
 
-    std::ignore = orientation;
-
     if (!invoke_app_->init()) {
         return false;
     }
@@ -116,11 +114,17 @@ bool MaatouchInput::init(int swidth, int sheight, int orientation)
         return false;
     }
 
-    swidth_ = swidth;
-    sheight_ = sheight;
-    xscale_ = double(x) / swidth;
-    yscale_ = double(y) / sheight;
+    screen_width_ = swidth;
+    screen_height_ = sheight;
+    touch_width_ = x;
+    touch_height_ = y;
+    xscale_ = double(touch_width_) / swidth;
+    yscale_ = double(touch_height_) / sheight;
     press_ = pressure;
+    orientation_ = orientation;
+
+    LogInfo << VAR(screen_width_) << VAR(screen_height_) << VAR(touch_width_) << VAR(touch_height_) << VAR(xscale_)
+            << VAR(yscale_) << VAR(press_) << VAR(orientation_);
 
     return true;
 }
@@ -137,10 +141,10 @@ bool MaatouchInput::click(int x, int y)
         return false;
     }
 
-    if (x < 0 || x >= swidth_ || y < 0 || y >= sheight_) {
+    if (x < 0 || x >= screen_width_ || y < 0 || y >= screen_height_) {
         LogError << "click point out of range";
-        x = std::clamp(x, 0, swidth_ - 1);
-        y = std::clamp(y, 0, sheight_ - 1);
+        x = std::clamp(x, 0, screen_width_ - 1);
+        y = std::clamp(y, 0, screen_height_ - 1);
     }
 
     auto [real_x, real_y] = scale_point(x, y);
