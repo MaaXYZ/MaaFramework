@@ -28,7 +28,6 @@ struct TemplMatchingParam
 
     std::vector<cv::Rect> roi;
     std::vector<std::string> template_paths;
-    std::vector<cv::Mat> template_images;
     std::vector<double> thresholds;
     int method = kDefaultMethod;
     bool green_mask = false;

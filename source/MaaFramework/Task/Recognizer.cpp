@@ -82,10 +82,26 @@ std::optional<Recognizer::Result> Recognizer::template_match(const cv::Mat& imag
 {
     using namespace MAA_VISION_NS;
 
+    if (!resource()) {
+        LogError << "Resource not binded";
+        return std::nullopt;
+    }
+
     Matcher matcher(inst_, image);
+    matcher.set_name(name);
     matcher.set_param(param);
     matcher.set_cache(cache);
-    matcher.set_name(name);
+
+    std::vector<std::shared_ptr<cv::Mat>> templates;
+    for (const auto& path : param.template_paths) {
+        auto templ = resource()->template_res().image(path);
+        if (!templ) {
+            LogWarn << "Template not found:" << path;
+            continue;
+        }
+        templates.emplace_back(std::move(templ));
+    }
+    matcher.set_templates(std::move(templates));
 
     auto ret = matcher.analyze();
     if (ret.empty()) {
@@ -105,10 +121,20 @@ std::optional<Recognizer::Result> Recognizer::ocr(const cv::Mat& image, const MA
 {
     using namespace MAA_VISION_NS;
 
+    if (!resource()) {
+        LogError << "Resource not binded";
+        return std::nullopt;
+    }
+
     OCRer ocrer(inst_, image);
+    ocrer.set_name(name);
     ocrer.set_param(param);
     ocrer.set_cache(cache);
-    ocrer.set_name(name);
+
+    auto det_session = resource()->ocr_res().deter(param.model);
+    auto rec_session = resource()->ocr_res().recer(param.model);
+    auto ocr_session = resource()->ocr_res().ocrer(param.model);
+    ocrer.set_session(std::move(det_session), std::move(rec_session), std::move(ocr_session));
 
     auto ret = ocrer.analyze();
     if (ret.empty()) {

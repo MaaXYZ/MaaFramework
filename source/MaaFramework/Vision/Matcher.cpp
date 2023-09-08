@@ -9,20 +9,26 @@ MAA_VISION_NS_BEGIN
 
 Matcher::ResultsVec Matcher::analyze() const
 {
-    if (param_.template_images.empty()) {
+    if (templates_.empty()) {
         LogError << name_ << "templates is empty" << VAR(param_.template_paths);
         return {};
     }
 
-    if (param_.template_images.size() != param_.thresholds.size()) {
-        LogError << name_ << "templates.size() != thresholds.size()" << VAR(param_.template_images.size())
+    if (templates_.size() != param_.thresholds.size()) {
+        LogError << name_ << "templates.size() != thresholds.size()" << VAR(templates_.size())
                  << VAR(param_.thresholds.size());
         return {};
     }
 
     ResultsVec all_results;
-    for (size_t i = 0; i != param_.template_images.size(); ++i) {
-        const cv::Mat& templ = param_.template_images.at(i);
+    for (size_t i = 0; i != templates_.size(); ++i) {
+        const auto& image_ptr = templates_.at(i);
+        if (!image_ptr) {
+            LogWarn << name_ << "template is empty" << VAR(param_.template_paths.at(i)) << VAR(image_ptr);
+            continue;
+        }
+
+        const cv::Mat& templ = *image_ptr;
 
         auto start_time = std::chrono::steady_clock::now();
         ResultsVec results = foreach_rois(templ);

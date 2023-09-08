@@ -9,7 +9,6 @@
 
 #include "Conf/Conf.h"
 #include "PipelineTypes.h"
-#include "TemplateResMgr.h"
 
 MAA_RES_NS_BEGIN
 
@@ -26,7 +25,6 @@ public:
 
     const std::vector<std::filesystem::path>& get_paths() const { return paths_; }
     const TaskDataMap& get_task_data_map() const { return task_data_map_; }
-    const TemplateResMgr& get_template_mgr() const { return template_mgr_; }
 
 public:
     static bool parse_config(const json::value& input, TaskDataMap& output, const TaskDataMap& default_value);
@@ -74,14 +72,12 @@ public:
 private:
     bool load_all_json(const std::filesystem::path& path);
     bool open_and_parse_file(const std::filesystem::path& path);
-    bool load_template_images(const std::filesystem::path& path);
     bool check_all_next_list() const;
     bool check_next_list(const TaskData::NextList& next_list) const;
 
 private:
     std::vector<std::filesystem::path> paths_;
     TaskDataMap task_data_map_;
-    TemplateResMgr template_mgr_;
 };
 
 MAA_RES_NS_END

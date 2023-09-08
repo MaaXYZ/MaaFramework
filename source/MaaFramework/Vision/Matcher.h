@@ -29,6 +29,7 @@ public:
 public:
     using VisionBase::VisionBase;
 
+    void set_templates(std::vector<std::shared_ptr<cv::Mat>> templates) { templates_ = std::move(templates); }
     void set_param(TemplMatchingParam param) { param_ = std::move(param); }
     ResultsVec analyze() const;
 
@@ -40,6 +41,7 @@ private:
     void filter(ResultsVec& results, double threshold) const;
 
     TemplMatchingParam param_;
+    std::vector<std::shared_ptr<cv::Mat>> templates_;
 };
 
 MAA_VISION_NS_END

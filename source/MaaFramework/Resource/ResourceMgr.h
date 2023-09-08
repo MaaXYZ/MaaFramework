@@ -35,6 +35,8 @@ public:
     auto& ocr_res() { return ocr_res_; }
     const auto& onnx_res() const { return onnx_res_; }
     auto& onnx_res() { return onnx_res_; }
+    const auto& template_res() const { return template_res_; }
+    auto& template_res() { return template_res_; }
 
 private:
     bool run_load(typename AsyncRunner<std::filesystem::path>::Id id, std::filesystem::path path);
@@ -44,6 +46,7 @@ private:
     PipelineResMgr pipeline_res_;
     OCRResMgr ocr_res_;
     ONNXResMgr onnx_res_;
+    TemplateResMgr template_res_;
 
 private:
     std::vector<std::filesystem::path> paths_;

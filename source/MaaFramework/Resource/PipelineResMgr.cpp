@@ -17,7 +17,6 @@ bool PipelineResMgr::load(const std::filesystem::path& path, bool is_base)
     paths_.emplace_back(path);
 
     bool loaded = load_all_json(path);
-    loaded &= load_template_images(path);
     loaded &= check_all_next_list();
 
     return loaded;
@@ -29,7 +28,6 @@ void PipelineResMgr::clear()
 
     task_data_map_.clear();
     paths_.clear();
-    template_mgr_.clear();
 }
 
 const TaskData& PipelineResMgr::get_task_data(const std::string& task_name)
@@ -41,15 +39,7 @@ const TaskData& PipelineResMgr::get_task_data(const std::string& task_name)
         return empty;
     }
 
-    auto& task_data = task_iter->second;
-    if (task_data.rec_type == Recognition::Type::TemplateMatch) {
-        auto& images = std::get<MAA_VISION_NS::TemplMatchingParam>(task_data.rec_param).template_images;
-        if (images.empty()) {
-            images = template_mgr_.get_template_images(task_name);
-        }
-    }
-
-    return task_data;
+    return task_iter->second;
 }
 
 bool PipelineResMgr::load_all_json(const std::filesystem::path& path)
@@ -105,26 +95,6 @@ bool PipelineResMgr::open_and_parse_file(const std::filesystem::path& path)
     cur_data_map.merge(std::move(task_data_map_));
     task_data_map_ = std::move(cur_data_map);
 
-    return true;
-}
-
-bool PipelineResMgr::load_template_images(const std::filesystem::path& path)
-{
-    LogFunc << VAR(path);
-
-    template_mgr_.add_root(path);
-
-    for (const auto& [name, task_data] : task_data_map_) {
-        if (task_data.rec_type != Recognition::Type::TemplateMatch) {
-            continue;
-        }
-        const auto& templates = std::get<MAA_VISION_NS::TemplMatchingParam>(task_data.rec_param).template_paths;
-        bool ret = template_mgr_.lazy_load(name, templates);
-        if (!ret) {
-            LogError << "template_cfg_.lazy_load failed" << VAR(name) << VAR(path) << VAR(templates);
-            return false;
-        }
-    }
     return true;
 }
 
@@ -424,9 +394,6 @@ bool PipelineResMgr::parse_templ_matching_param(const json::value& input, MAA_VI
     if (output.template_paths.empty()) {
         LogError << "templates is empty" << VAR(input);
         return false;
-    }
-    if (output.template_paths == default_value.template_paths) {
-        output.template_images = default_value.template_images;
     }
 
     if (!get_and_check_value_or_array(input, "threshold", output.thresholds, default_value.thresholds)) {

@@ -13,24 +13,21 @@ MAA_RES_NS_BEGIN
 class TemplateResMgr : public NonCopyable
 {
 public:
-    void add_root(const std::filesystem::path& root);
-    void set_roots(const std::vector<std::filesystem::path>& roots);
+    using Image = cv::Mat;
 
-    bool lazy_load(const std::string& name, const std::vector<std::string>& filenames);
+    bool lazy_load(const std::filesystem::path& path, bool is_base);
+
     void clear();
 
 public:
-    const std::vector<cv::Mat>& get_template_images(const std::string& name) const;
-    const std::vector<cv::Mat>& load_images(const std::string& name) const;
-    cv::Mat load_single_image(const std::filesystem::path& path) const;
+    std::shared_ptr<Image> image(const std::string& name) const;
 
 private:
-    // for lazy load
-    std::vector<std::filesystem::path> roots_; // 类似环境变量，一级一级找，优先级高的在后面
-    std::map<std::string, std::vector<std::string>> template_filenames_;
+    std::shared_ptr<Image> load(const std::string& name) const;
 
-    mutable std::map<std::string, std::vector<cv::Mat>> template_cache_;
-    mutable std::map<std::filesystem::path, cv::Mat> template_bank_;
+    std::vector<std::filesystem::path> roots_;
+
+    mutable std::map<std::string, std::shared_ptr<Image>> images_;
 };
 
 MAA_RES_NS_END

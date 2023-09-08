@@ -107,7 +107,7 @@ inline static cv::Mat hwc_to_chw(const cv::Mat& src)
     std::vector<cv::Mat> rgb_images;
     cv::split(src, rgb_images);
 
-    // Stretch one-channel images to vector
+    // Stretch one-channel image to vector
     cv::Mat flat_r = rgb_images[0].reshape(1, 1);
     cv::Mat flat_g = rgb_images[1].reshape(1, 1);
     cv::Mat flat_b = rgb_images[2].reshape(1, 1);

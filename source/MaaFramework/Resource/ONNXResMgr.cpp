@@ -8,8 +8,6 @@
 
 MAA_RES_NS_BEGIN
 
-ONNXResMgr::ONNXResMgr() {}
-
 bool ONNXResMgr::lazy_load(const std::filesystem::path& path, bool is_base)
 {
     LogFunc << VAR(path) << VAR(is_base);

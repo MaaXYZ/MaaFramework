@@ -1,7 +1,15 @@
 #pragma once
 
+#include "Conf/Conf.h"
+
 #include <ostream>
 #include <vector>
+
+MAA_SUPPRESS_CV_WARNINGS_BEGIN
+#include "fastdeploy/vision/ocr/ppocr/dbdetector.h"
+#include "fastdeploy/vision/ocr/ppocr/ppocr_v3.h"
+#include "fastdeploy/vision/ocr/ppocr/recognizer.h"
+MAA_SUPPRESS_CV_WARNINGS_END
 
 #include "VisionBase.h"
 #include "VisionTypes.h"
@@ -31,6 +39,14 @@ public:
 public:
     using VisionBase::VisionBase;
 
+    void set_session(std::shared_ptr<fastdeploy::vision::ocr::DBDetector> deter,
+                     std::shared_ptr<fastdeploy::vision::ocr::Recognizer> recer,
+                     std::shared_ptr<fastdeploy::pipeline::PPOCRv3> ocrer)
+    {
+        deter_ = std::move(deter);
+        recer_ = std::move(recer);
+        ocrer_ = std::move(ocrer);
+    }
     void set_param(OcrParam param) { param_ = std::move(param); }
     ResultsVec analyze() const;
 
@@ -47,6 +63,9 @@ private:
     bool filter_by_required(const Result& res, const std::vector<std::string>& expected) const;
 
     OcrParam param_;
+    std::shared_ptr<fastdeploy::vision::ocr::DBDetector> deter_ = nullptr;
+    std::shared_ptr<fastdeploy::vision::ocr::Recognizer> recer_ = nullptr;
+    std::shared_ptr<fastdeploy::pipeline::PPOCRv3> ocrer_ = nullptr;
 };
 
 MAA_VISION_NS_END

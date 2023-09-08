@@ -2,7 +2,6 @@
 
 #include <regex>
 
-#include "Resource/ResourceMgr.h"
 #include "Utils/ImageIo.h"
 #include "Utils/Logger.h"
 #include "Utils/Ranges.hpp"
@@ -59,22 +58,16 @@ OCRer::ResultsVec OCRer::predict(const cv::Rect& roi) const
 
 OCRer::ResultsVec OCRer::predict_det_and_rec(const cv::Rect& roi) const
 {
-    if (!resource()) {
-        LogError << "Resource not binded";
-        return {};
-    }
-
-    auto inferencer = resource()->ocr_res().ocrer(param_.model);
-    if (!inferencer) {
-        LogError << "resource()->ocr_res().ocrer() is null";
+    if (!ocrer_) {
+        LogError << "ocrer_ is null";
         return {};
     }
     auto image_roi = image_with_roi(roi);
 
     fastdeploy::vision::OCRResult ocr_result;
-    bool ret = inferencer->Predict(image_roi, &ocr_result);
+    bool ret = ocrer_->Predict(image_roi, &ocr_result);
     if (!ret) {
-        LogWarn << "inferencer return false" << VAR(inferencer) << VAR(image_) << VAR(roi) << VAR(image_roi);
+        LogWarn << "inferencer return false" << VAR(ocrer_) << VAR(image_) << VAR(roi) << VAR(image_roi);
         return {};
     }
     if (ocr_result.boxes.size() != ocr_result.text.size() || ocr_result.text.size() != ocr_result.rec_scores.size()) {
@@ -108,13 +101,7 @@ OCRer::ResultsVec OCRer::predict_det_and_rec(const cv::Rect& roi) const
 
 OCRer::Result OCRer::predict_only_rec(const cv::Rect& roi) const
 {
-    if (!resource()) {
-        LogError << "Resource not binded";
-        return {};
-    }
-
-    auto inferencer = resource()->ocr_res().recer(param_.model);
-    if (!inferencer) {
+    if (!recer_) {
         LogError << "resource()->ocr_res().recer() is null";
         return {};
     }
@@ -123,9 +110,9 @@ OCRer::Result OCRer::predict_only_rec(const cv::Rect& roi) const
     std::string rec_text;
     float rec_score = 0;
 
-    bool ret = inferencer->Predict(image_roi, &rec_text, &rec_score);
+    bool ret = recer_->Predict(image_roi, &rec_text, &rec_score);
     if (!ret) {
-        LogWarn << "inferencer return false" << VAR(inferencer) << VAR(image_) << VAR(roi) << VAR(image_roi);
+        LogWarn << "recer_ return false" << VAR(recer_) << VAR(image_) << VAR(roi) << VAR(image_roi);
         return {};
     }
 
