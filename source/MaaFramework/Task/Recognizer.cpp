@@ -1,8 +1,11 @@
 #include "Recognizer.h"
 
 #include "Instance/InstanceStatus.h"
+#include "Resource/ResourceMgr.h"
 #include "Utils/Logger.h"
+#include "Vision/Classifier.h"
 #include "Vision/CustomRecognizer.h"
+#include "Vision/Detector.h"
 #include "Vision/Matcher.h"
 #include "Vision/OCRer.h"
 #include "Vision/VisionUtils.hpp"
@@ -37,6 +40,14 @@ std::optional<Recognizer::Result> Recognizer::recognize(const cv::Mat& image, co
 
     case Type::OCR:
         result = ocr(image, std::get<OcrParam>(task_data.rec_param), cache, task_data.name);
+        break;
+
+    case Type::Classify:
+        result = classify(image, std::get<ClassifierParam>(task_data.rec_param), task_data.name);
+        break;
+
+    case Type::Detect:
+        result = detect(image, std::get<DetectorParam>(task_data.rec_param), task_data.name);
         break;
 
     case Type::Custom:
@@ -106,6 +117,67 @@ std::optional<Recognizer::Result> Recognizer::ocr(const cv::Mat& image, const MA
 
     // TODO: sort by required regex.
     // sort_by_required_(res, param.text);
+
+    const cv::Rect& box = ret.front().box;
+    json::array detail;
+    for (const auto& res : ret) {
+        detail.emplace_back(res.to_json());
+    }
+    return Result { .box = box, .detail = std::move(detail) };
+}
+
+std::optional<Recognizer::Result> Recognizer::classify(const cv::Mat& image,
+                                                       const MAA_VISION_NS::ClassifierParam& param,
+                                                       const std::string& name)
+{
+    using namespace MAA_VISION_NS;
+
+    if (!resource()) {
+        LogError << "Resource not binded";
+        return std::nullopt;
+    }
+
+    Classifier classifier(inst_, image);
+    classifier.set_name(name);
+    classifier.set_param(param);
+
+    auto session = resource()->onnx_res().classifier(param.model);
+    classifier.set_session(std::move(session));
+
+    auto ret = classifier.analyze();
+    if (ret.empty()) {
+        return std::nullopt;
+    }
+
+    const cv::Rect& box = ret.front().box;
+    json::array detail;
+    for (const auto& res : ret) {
+        detail.emplace_back(res.to_json());
+    }
+    return Result { .box = box, .detail = std::move(detail) };
+}
+
+std::optional<Recognizer::Result> Recognizer::detect(const cv::Mat& image, const MAA_VISION_NS::DetectorParam& param,
+                                                     const std::string& name)
+{
+    using namespace MAA_VISION_NS;
+
+    if (!resource()) {
+        LogError << "Resource not binded";
+        return std::nullopt;
+    }
+
+    Detector detector(inst_, image);
+    detector.set_name(name);
+    detector.set_param(param);
+
+    auto session = resource()->onnx_res().detector(param.model);
+    detector.set_session(std::move(session));
+
+    auto ret = detector.analyze();
+    if (ret.empty()) {
+        return std::nullopt;
+    }
 
     const cv::Rect& box = ret.front().box;
     json::array detail;

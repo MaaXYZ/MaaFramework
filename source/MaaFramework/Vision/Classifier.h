@@ -3,6 +3,8 @@
 #include <ostream>
 #include <vector>
 
+#include <onnxruntime/core/session/onnxruntime_cxx_api.h>
+
 #include "VisionBase.h"
 #include "VisionTypes.h"
 
@@ -34,7 +36,11 @@ public:
     };
     using ResultsVec = std::vector<Result>;
 
+public:
+    using VisionBase::VisionBase;
+
     void set_param(ClassifierParam param) { param_ = std::move(param); }
+    void set_session(std::shared_ptr<Ort::Session> session) { session_ = std::move(session); }
     ResultsVec analyze() const;
 
 private:
@@ -45,6 +51,7 @@ private:
     void filter(ResultsVec& results, const std::vector<size_t>& expected) const;
 
     ClassifierParam param_;
+    std::shared_ptr<Ort::Session> session_ = nullptr;
 };
 
 MAA_VISION_NS_END

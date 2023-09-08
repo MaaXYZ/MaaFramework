@@ -59,8 +59,7 @@ struct ClassifierParam
 {
     size_t cls_size = 0;
     std::vector<std::string> labels; // only for output and debug
-    std::string model_path;
-    std::shared_ptr<Ort::Session> session = nullptr;
+    std::string model;
 
     std::vector<cv::Rect> roi;
     std::vector</*index*/ size_t> expected;
@@ -73,11 +72,11 @@ struct DetectorParam
         YoloV8,
     };
     inline static constexpr Net kDefaultNet = Net::YoloV8;
+    inline static constexpr double kDefaultThreshold = 0.3;
 
     size_t cls_size = 0;
     std::vector<std::string> labels; // only for output and debug
-    std::string model_path;
-    std::shared_ptr<Ort::Session> session = nullptr;
+    std::string model;
     Net net = kDefaultNet;
 
     std::vector<cv::Rect> roi;

@@ -12,7 +12,7 @@ Detector::ResultsVec Detector::analyze() const
 {
     LogFunc << name_;
 
-    if (!param_.session) {
+    if (!session_) {
         LogError << "OrtSession not loaded";
         return {};
     }
@@ -60,7 +60,7 @@ Detector::ResultsVec Detector::foreach_rois() const
 
 Detector::ResultsVec Detector::detect(const cv::Rect& roi) const
 {
-    if (!param_.session) {
+    if (!session_) {
         LogError << "OrtSession not loaded";
         return {};
     }
@@ -77,14 +77,14 @@ Detector::ResultsVec Detector::detect(const cv::Rect& roi) const
                                                               input_shape.data(), input_shape.size());
 
     Ort::AllocatorWithDefaultOptions allocator;
-    const std::string in_0 = param_.session->GetInputNameAllocated(0, allocator).get();
-    const std::string out_0 = param_.session->GetOutputNameAllocated(0, allocator).get();
+    const std::string in_0 = session_->GetInputNameAllocated(0, allocator).get();
+    const std::string out_0 = session_->GetOutputNameAllocated(0, allocator).get();
     const std::vector input_names { in_0.c_str() };
     const std::vector output_names { out_0.c_str() };
 
     Ort::RunOptions run_options;
-    auto output_tensor = param_.session->Run(run_options, input_names.data(), &input_tensor, input_names.size(),
-                                             output_names.data(), output_names.size());
+    auto output_tensor = session_->Run(run_options, input_names.data(), &input_tensor, input_names.size(),
+                                       output_names.data(), output_names.size());
 
     const float* raw_output = output_tensor[0].GetTensorData<float>();
     // output_shape is { 1, 5, 8400 }

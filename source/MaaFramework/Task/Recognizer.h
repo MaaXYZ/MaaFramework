@@ -37,11 +37,16 @@ private:
                                          const cv::Rect& cache, const std::string& name);
     std::optional<Result> ocr(const cv::Mat& image, const MAA_VISION_NS::OcrParam& param, const cv::Rect& cache,
                               const std::string& name);
+    std::optional<Result> classify(const cv::Mat& image, const MAA_VISION_NS::ClassifierParam& param,
+                                   const std::string& name);
+    std::optional<Result> detect(const cv::Mat& image, const MAA_VISION_NS::DetectorParam& param,
+                                 const std::string& name);
     std::optional<Result> custom_recognize(const cv::Mat& image, const MAA_VISION_NS::CustomParam& param,
                                            const cv::Rect& cache, const std::string& name);
 
 private:
     InstanceStatus* status() { return inst_ ? inst_->inter_status() : nullptr; }
+    MAA_RES_NS::ResourceMgr* resource() { return inst_ ? inst_->inter_resource() : nullptr; }
 
 private:
     InstanceInternalAPI* inst_ = nullptr;

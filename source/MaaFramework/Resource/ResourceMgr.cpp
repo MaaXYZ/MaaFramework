@@ -109,6 +109,7 @@ bool ResourceMgr::load(const std::filesystem::path& path)
 
     bool ret = pipeline_res_.load(path / "pipeline"_path, is_base);
     ret &= ocr_res_.lazy_load(path / "model"_path / "ocr"_path, is_base);
+    ret &= onnx_res_.lazy_load(path / "model"_path, is_base);
 
     LogInfo << VAR(path) << VAR(ret);
 

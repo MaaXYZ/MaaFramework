@@ -12,7 +12,7 @@ Classifier::ResultsVec Classifier::analyze() const
 {
     LogFunc << name_;
 
-    if (!param_.session) {
+    if (!session_) {
         LogError << "OrtSession not loaded";
         return {};
     }
@@ -60,7 +60,7 @@ Classifier::ResultsVec Classifier::foreach_rois() const
 
 Classifier::Result Classifier::classify(const cv::Rect& roi) const
 {
-    if (!param_.session) {
+    if (!session_) {
         LogError << "OrtSession not loaded";
         return {};
     }
@@ -83,13 +83,13 @@ Classifier::Result Classifier::classify(const cv::Rect& roi) const
                                                                output_shape.data(), output_shape.size());
 
     Ort::AllocatorWithDefaultOptions allocator;
-    const std::string in_0 = param_.session->GetInputNameAllocated(0, allocator).get();
-    const std::string out_0 = param_.session->GetOutputNameAllocated(0, allocator).get();
+    const std::string in_0 = session_->GetInputNameAllocated(0, allocator).get();
+    const std::string out_0 = session_->GetOutputNameAllocated(0, allocator).get();
     const std::vector input_names { in_0.c_str() };
     const std::vector output_names { out_0.c_str() };
 
     Ort::RunOptions run_options;
-    param_.session->Run(run_options, input_names.data(), &input_tensor, 1, output_names.data(), &output_tensor, 1);
+    session_->Run(run_options, input_names.data(), &input_tensor, 1, output_names.data(), &output_tensor, 1);
 
     Result result;
     result.raw = std::move(output);

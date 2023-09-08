@@ -43,6 +43,10 @@ public:
                                 const MAA_VISION_NS::OcrParam& default_value);
     static bool parse_custom_recognizer_param(const json::value& input, MAA_VISION_NS::CustomParam& output,
                                               const MAA_VISION_NS::CustomParam& default_value);
+    static bool parse_classifier_param(const json::value& input, MAA_VISION_NS::ClassifierParam& output,
+                                       const MAA_VISION_NS::ClassifierParam& default_value);
+    static bool parse_detector_param(const json::value& input, MAA_VISION_NS::DetectorParam& output,
+                                     const MAA_VISION_NS::DetectorParam& default_value);
 
     static bool parse_roi(const json::value& input, std::vector<cv::Rect>& output,
                           const std::vector<cv::Rect>& default_value);

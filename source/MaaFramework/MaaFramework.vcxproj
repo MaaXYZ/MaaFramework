@@ -37,6 +37,7 @@
     <ClInclude Include="Controller\ControllerMgr.h" />
     <ClInclude Include="Instance\InstanceMgr.h" />
     <ClInclude Include="Resource\OCRResMgr.h" />
+    <ClInclude Include="Resource\ONNXResMgr.h" />
     <ClInclude Include="Resource\PipelineResMgr.h" />
     <ClInclude Include="Resource\ResourceMgr.h" />
     <ClInclude Include="Resource\TemplateResMgr.h" />
@@ -84,6 +85,7 @@
     <ClCompile Include="Instance\InstanceStatus.cpp" />
     <ClCompile Include="Option\GlobalOptionMgr.cpp" />
     <ClCompile Include="Resource\OCRResMgr.cpp" />
+    <ClCompile Include="Resource\ONNXResMgr.cpp" />
     <ClCompile Include="Resource\PipelineResMgr.cpp" />
     <ClCompile Include="Resource\ResourceMgr.cpp" />
     <ClCompile Include="Resource\TemplateResMgr.cpp" />

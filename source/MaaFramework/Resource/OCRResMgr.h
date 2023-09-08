@@ -4,7 +4,6 @@
 #include "Utils/NonCopyable.hpp"
 
 #include <filesystem>
-#include <vector>
 
 MAA_SUPPRESS_CV_WARNINGS_BEGIN
 #include "fastdeploy/vision/ocr/ppocr/dbdetector.h"

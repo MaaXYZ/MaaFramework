@@ -347,6 +347,8 @@ bool PipelineResMgr::parse_recognition(const json::value& input, Recognition::Ty
         { "DirectHit", Type::DirectHit },
         { "TemplateMatch", Type::TemplateMatch },
         { "OCR", Type::OCR },
+        { "Classify", Type::Classify },
+        { "Detect", Type::Detect },
         { "Custom", Type::Custom },
     };
     auto rec_type_iter = kRecTypeMap.find(rec_type_name);
@@ -369,6 +371,17 @@ bool PipelineResMgr::parse_recognition(const json::value& input, Recognition::Ty
         return parse_templ_matching_param(input, std::get<TemplMatchingParam>(out_param),
                                           same_type ? std::get<TemplMatchingParam>(default_param)
                                                     : TemplMatchingParam {});
+
+    case Type::Classify:
+        out_param = ClassifierParam {};
+        return parse_classifier_param(input, std::get<ClassifierParam>(out_param),
+                                      same_type ? std::get<ClassifierParam>(default_param) : ClassifierParam {});
+
+    case Type::Detect:
+        out_param = DetectorParam {};
+        return parse_detector_param(input, std::get<DetectorParam>(out_param),
+                                    same_type ? std::get<DetectorParam>(default_param) : DetectorParam {});
+
     case Type::OCR:
         out_param = OcrParam {};
         return parse_ocr_param(input, std::get<OcrParam>(out_param),
@@ -510,6 +523,89 @@ bool PipelineResMgr::parse_custom_recognizer_param(const json::value& input, MAA
     auto param_opt = input.find("custom_recognizer_param");
     if (param_opt) {
         output.custom_param = *param_opt;
+    }
+
+    return true;
+}
+
+bool PipelineResMgr::parse_classifier_param(const json::value& input, MAA_VISION_NS::ClassifierParam& output,
+                                            const MAA_VISION_NS::ClassifierParam& default_value)
+{
+    if (!parse_roi(input, output.roi, default_value.roi)) {
+        LogError << "failed to parse_roi" << VAR(input);
+        return false;
+    }
+
+    if (!get_and_check_value(input, "cls_size", output.cls_size, default_value.cls_size)) {
+        LogError << "failed to get_and_check_value cls_size" << VAR(input);
+        return false;
+    }
+
+    if (!get_and_check_value_or_array(input, "labels", output.labels, default_value.labels)) {
+        LogError << "failed to get_and_check_value_or_array labels" << VAR(input);
+        return false;
+    }
+    if (output.labels.size() < output.cls_size) {
+        LogDebug << "labels.size() < cls_size, fill 'Unknown'" << VAR(output.labels.size()) << VAR(output.cls_size);
+        output.labels.resize(output.cls_size, "Unknown");
+    }
+
+    if (!get_and_check_value(input, "model", output.model, default_value.model)) {
+        LogError << "failed to get_and_check_value model" << VAR(input);
+        return false;
+    }
+
+    if (!get_and_check_value_or_array(input, "expected", output.expected, default_value.expected)) {
+        LogError << "failed to get_and_check_value_or_array expected" << VAR(input);
+        return false;
+    }
+
+    return true;
+}
+
+bool PipelineResMgr::parse_detector_param(const json::value& input, MAA_VISION_NS::DetectorParam& output,
+                                          const MAA_VISION_NS::DetectorParam& default_value)
+{
+    if (!parse_roi(input, output.roi, default_value.roi)) {
+        LogError << "failed to parse_roi" << VAR(input);
+        return false;
+    }
+
+    if (!get_and_check_value(input, "cls_size", output.cls_size, default_value.cls_size)) {
+        LogError << "failed to get_and_check_value cls_size" << VAR(input);
+        return false;
+    }
+
+    if (!get_and_check_value_or_array(input, "labels", output.labels, default_value.labels)) {
+        LogError << "failed to get_and_check_value_or_array labels" << VAR(input);
+        return false;
+    }
+    if (output.labels.size() < output.cls_size) {
+        LogDebug << "labels.size() < cls_size, fill 'Unknown'" << VAR(output.labels.size()) << VAR(output.cls_size);
+        output.labels.resize(output.cls_size, "Unknown");
+    }
+
+    if (!get_and_check_value(input, "model", output.model, default_value.model)) {
+        LogError << "failed to get_and_check_value model" << VAR(input);
+        return false;
+    }
+
+    if (!get_and_check_value_or_array(input, "expected", output.expected, default_value.expected)) {
+        LogError << "failed to get_and_check_value_or_array expected" << VAR(input);
+        return false;
+    }
+
+    if (!get_and_check_value_or_array(input, "threshold", output.thresholds, default_value.thresholds)) {
+        LogError << "failed to get_and_check_value_or_array threshold" << VAR(input);
+        return false;
+    }
+    if (output.thresholds.empty()) {
+        output.thresholds = std::vector(output.expected.size(), MAA_VISION_NS::DetectorParam::kDefaultThreshold);
+    }
+    else if (output.expected.size() != output.thresholds.size()) {
+        LogError << "templates.size() != thresholds.size()" << VAR(output.expected.size())
+                 << VAR(output.thresholds.size());
+        return false;
     }
 
     return true;
