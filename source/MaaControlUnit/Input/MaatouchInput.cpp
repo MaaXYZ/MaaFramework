@@ -72,19 +72,25 @@ bool MaatouchInput::init(int swidth, int sheight, int orientation)
         return false;
     }
 
-    shell_handler_ = invoke_app_->invoke_app(package_name_);
+    auto start_time = std::chrono::steady_clock::now();
+    bool timeout = false;
+    auto check_time = [&]() {
+        timeout = duration_since(start_time) > std::chrono::seconds(10);
+        return !timeout;
+    };
 
+    shell_handler_ = invoke_app_->invoke_app(package_name_);
     if (!shell_handler_) {
         return false;
     }
 
-    // TODO: timeout?
     std::string prev;
     std::string info;
-    while (true) {
-        std::string str = prev + shell_handler_->read(5);
+    while (check_time()) {
+        auto str = prev + shell_handler_->read(5);
+        LogDebug << "output:" << str;
         if (str.empty()) {
-            std::this_thread::sleep_for(std::chrono::milliseconds(2000));
+            std::this_thread::sleep_for(std::chrono::seconds(2));
             continue;
         }
         auto pos = str.find('^');
@@ -99,6 +105,10 @@ bool MaatouchInput::init(int swidth, int sheight, int orientation)
 
         info = str.substr(pos + 1, rpos - pos - 1);
         break;
+    }
+    if (timeout) {
+        LogError << "read maatouch info timeout";
+        return false;
     }
 
     LogInfo << "maatouch info:" << info;
