@@ -10,7 +10,7 @@
 MAA_VISION_NS_BEGIN
 
 CustomRecognizer::CustomRecognizer(MaaCustomRecognizerHandle handle, InstanceInternalAPI* inst)
-    : VisionBase(nullptr), recognizer_(handle), inst_(inst)
+    : VisionBase(), recognizer_(handle), inst_(inst)
 {}
 
 CustomRecognizer::ResultsVec CustomRecognizer::analyze() const

@@ -11,13 +11,6 @@
 
 MAA_VISION_NS_BEGIN
 
-VisionBase::VisionBase(InstanceInternalAPI* inst) : inst_(inst) {}
-
-VisionBase::VisionBase(InstanceInternalAPI* inst, const cv::Mat& image) : inst_(inst)
-{
-    set_image(image);
-}
-
 void VisionBase::set_image(const cv::Mat& image)
 {
     image_ = image;

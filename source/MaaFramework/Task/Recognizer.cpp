@@ -87,7 +87,8 @@ std::optional<Recognizer::Result> Recognizer::template_match(const cv::Mat& imag
         return std::nullopt;
     }
 
-    Matcher matcher(inst_, image);
+    Matcher matcher;
+    matcher.set_image(image);
     matcher.set_name(name);
     matcher.set_param(param);
     matcher.set_cache(cache);
@@ -126,7 +127,8 @@ std::optional<Recognizer::Result> Recognizer::ocr(const cv::Mat& image, const MA
         return std::nullopt;
     }
 
-    OCRer ocrer(inst_, image);
+    OCRer ocrer;
+    ocrer.set_image(image);
     ocrer.set_name(name);
     ocrer.set_param(param);
     ocrer.set_cache(cache);
@@ -163,7 +165,8 @@ std::optional<Recognizer::Result> Recognizer::classify(const cv::Mat& image,
         return std::nullopt;
     }
 
-    Classifier classifier(inst_, image);
+    Classifier classifier;
+    classifier.set_image(image);
     classifier.set_name(name);
     classifier.set_param(param);
 
@@ -193,7 +196,8 @@ std::optional<Recognizer::Result> Recognizer::detect(const cv::Mat& image, const
         return std::nullopt;
     }
 
-    Detector detector(inst_, image);
+    Detector detector;
+    detector.set_image(image);
     detector.set_name(name);
     detector.set_param(param);
 
