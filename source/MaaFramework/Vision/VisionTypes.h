@@ -84,4 +84,17 @@ struct DetectorParam
     std::vector<double> thresholds;
 };
 
+struct ColorMatcherParam
+{
+    inline static constexpr int kDefaultCount = 1;
+    inline static constexpr int kDefaultMethod = 4; // cv::COLOR_BGR2RGB
+    using Range = std::pair<cv::Scalar, cv::Scalar>;
+
+    std::vector<cv::Rect> roi;
+    std::vector<Range> range;
+    int count = kDefaultCount;
+    int method = kDefaultMethod;
+    bool connected = false; // 是否计算连通域
+};
+
 MAA_VISION_NS_END

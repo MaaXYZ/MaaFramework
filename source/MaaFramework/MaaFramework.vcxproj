@@ -66,6 +66,7 @@
     <ClInclude Include="Utils\TempPath.hpp" />
     <ClInclude Include="Utils\Time.hpp" />
     <ClInclude Include="Vision\Classifier.h" />
+    <ClInclude Include="Vision\ColorMatcher.h" />
     <ClInclude Include="Vision\Comparator.h" />
     <ClInclude Include="Vision\CustomRecognizer.h" />
     <ClInclude Include="Vision\Matcher.h" />
@@ -96,6 +97,7 @@
     <ClCompile Include="Task\SyncContext.cpp" />
     <ClCompile Include="Task\PipelineTask.cpp" />
     <ClCompile Include="Vision\Classifier.cpp" />
+    <ClCompile Include="Vision\ColorMatcher.cpp" />
     <ClCompile Include="Vision\Comparator.cpp" />
     <ClCompile Include="Vision\CustomRecognizer.cpp" />
     <ClCompile Include="Vision\Matcher.cpp" />

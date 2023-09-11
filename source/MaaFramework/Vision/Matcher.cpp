@@ -97,7 +97,7 @@ Matcher::Result Matcher::match_and_postproc(const cv::Rect& roi, const cv::Mat& 
     return result;
 }
 
-void Matcher::draw_result(const cv::Rect& roi, const cv::Mat& templ, const Result& result) const
+void Matcher::draw_result(const cv::Rect& roi, const cv::Mat& templ, const Result& res) const
 {
     if (!debug_draw_) {
         return;
@@ -105,17 +105,17 @@ void Matcher::draw_result(const cv::Rect& roi, const cv::Mat& templ, const Resul
 
     cv::Mat image_draw = draw_roi(roi);
     const auto color = cv::Scalar(0, 0, 255);
-    cv::rectangle(image_draw, result.box, color, 1);
+    cv::rectangle(image_draw, res.box, color, 1);
 
-    std::string flag = MAA_FMT::format("Res: {:.3f}, [{}, {}, {}, {}]", result.score, result.box.x, result.box.y,
-                                       result.box.width, result.box.height);
-    cv::putText(image_draw, flag, cv::Point(result.box.x, result.box.y - 5), cv::FONT_HERSHEY_PLAIN, 1.2, color, 1);
+    std::string flag = MAA_FMT::format("Res: {:.3f}, [{}, {}, {}, {}]", res.score, res.box.x, res.box.y, res.box.width,
+                                       res.box.height);
+    cv::putText(image_draw, flag, cv::Point(res.box.x, res.box.y - 5), cv::FONT_HERSHEY_PLAIN, 1.2, color, 1);
 
     int raw_width = image_.cols;
     cv::copyMakeBorder(image_draw, image_draw, 0, 0, 0, templ.cols, cv::BORDER_CONSTANT, cv::Scalar(0, 0, 0));
     cv::Mat draw_templ_roi = image_draw(cv::Rect(raw_width, 0, templ.cols, templ.rows));
     templ.copyTo(draw_templ_roi);
-    cv::line(image_draw, cv::Point(raw_width, 0), cv::Point(result.box.x, result.box.y), color, 1);
+    cv::line(image_draw, cv::Point(raw_width, 0), res.box.tl(), color, 1);
 
     if (save_draw_) {
         save_image(image_draw);

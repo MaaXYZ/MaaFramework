@@ -33,8 +33,6 @@ public:
     using ResultsVec = std::vector<Result>;
 
 public:
-    using VisionBase::VisionBase;
-
     void set_session(std::shared_ptr<Ort::Session> session) { session_ = std::move(session); }
     void set_param(DetectorParam param) { param_ = std::move(param); }
     ResultsVec analyze() const;

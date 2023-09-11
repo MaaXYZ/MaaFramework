@@ -27,8 +27,6 @@ public:
     using ResultsVec = std::vector<Result>;
 
 public:
-    using VisionBase::VisionBase;
-
     void set_templates(std::vector<std::shared_ptr<cv::Mat>> templates) { templates_ = std::move(templates); }
     void set_param(TemplMatchingParam param) { param_ = std::move(param); }
     ResultsVec analyze() const;
@@ -36,7 +34,7 @@ public:
 private:
     ResultsVec foreach_rois(const cv::Mat& templ) const;
     Result match_and_postproc(const cv::Rect& roi, const cv::Mat& templ) const;
-    void draw_result(const cv::Rect& roi, const cv::Mat& templ, const Result& result) const;
+    void draw_result(const cv::Rect& roi, const cv::Mat& templ, const Result& res) const;
 
     void filter(ResultsVec& results, double threshold) const;
 
