@@ -35,16 +35,18 @@ public:
                                   const Recognition::Type& default_type, const Recognition::Param& default_param);
     // static bool parse_direct_hit_param(const json::value& input, MAA_VISION_NS::DirectHitParam& output,
     //                                    const MAA_VISION_NS::DirectHitParam& default_value);
-    static bool parse_templ_matching_param(const json::value& input, MAA_VISION_NS::TemplMatchingParam& output,
-                                           const MAA_VISION_NS::TemplMatchingParam& default_value);
-    static bool parse_ocr_param(const json::value& input, MAA_VISION_NS::OcrParam& output,
-                                const MAA_VISION_NS::OcrParam& default_value);
-    static bool parse_custom_recognizer_param(const json::value& input, MAA_VISION_NS::CustomParam& output,
-                                              const MAA_VISION_NS::CustomParam& default_value);
+    static bool parse_template_matcher_param(const json::value& input, MAA_VISION_NS::TemplateMatcherParam& output,
+                                             const MAA_VISION_NS::TemplateMatcherParam& default_value);
+    static bool parse_ocrer_param(const json::value& input, MAA_VISION_NS::OCRerParam& output,
+                                  const MAA_VISION_NS::OCRerParam& default_value);
+    static bool parse_custom_recognizer_param(const json::value& input, MAA_VISION_NS::CustomRecognizerParam& output,
+                                              const MAA_VISION_NS::CustomRecognizerParam& default_value);
     static bool parse_classifier_param(const json::value& input, MAA_VISION_NS::ClassifierParam& output,
                                        const MAA_VISION_NS::ClassifierParam& default_value);
     static bool parse_detector_param(const json::value& input, MAA_VISION_NS::DetectorParam& output,
                                      const MAA_VISION_NS::DetectorParam& default_value);
+    static bool parse_color_matcher_param(const json::value& input, MAA_VISION_NS::ColorMatcherParam& output,
+                                          const MAA_VISION_NS::ColorMatcherParam& default_value);
 
     static bool parse_roi(const json::value& input, std::vector<cv::Rect>& output,
                           const std::vector<cv::Rect>& default_value);

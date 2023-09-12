@@ -45,7 +45,7 @@ public:
         recer_ = std::move(recer);
         ocrer_ = std::move(ocrer);
     }
-    void set_param(OcrParam param) { param_ = std::move(param); }
+    void set_param(OCRerParam param) { param_ = std::move(param); }
     ResultsVec analyze() const;
 
 private:
@@ -60,7 +60,7 @@ private:
     void postproc_replace_(Result& res) const;
     bool filter_by_required(const Result& res, const std::vector<std::string>& expected) const;
 
-    OcrParam param_;
+    OCRerParam param_;
     std::shared_ptr<fastdeploy::vision::ocr::DBDetector> deter_ = nullptr;
     std::shared_ptr<fastdeploy::vision::ocr::Recognizer> recer_ = nullptr;
     std::shared_ptr<fastdeploy::pipeline::PPOCRv3> ocrer_ = nullptr;

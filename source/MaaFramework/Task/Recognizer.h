@@ -33,15 +33,15 @@ public:
 
 private:
     std::optional<Result> direct_hit();
-    std::optional<Result> template_match(const cv::Mat& image, const MAA_VISION_NS::TemplMatchingParam& param,
+    std::optional<Result> template_match(const cv::Mat& image, const MAA_VISION_NS::TemplateMatcherParam& param,
                                          const cv::Rect& cache, const std::string& name);
-    std::optional<Result> ocr(const cv::Mat& image, const MAA_VISION_NS::OcrParam& param, const cv::Rect& cache,
+    std::optional<Result> ocr(const cv::Mat& image, const MAA_VISION_NS::OCRerParam& param, const cv::Rect& cache,
                               const std::string& name);
     std::optional<Result> classify(const cv::Mat& image, const MAA_VISION_NS::ClassifierParam& param,
                                    const std::string& name);
     std::optional<Result> detect(const cv::Mat& image, const MAA_VISION_NS::DetectorParam& param,
                                  const std::string& name);
-    std::optional<Result> custom_recognize(const cv::Mat& image, const MAA_VISION_NS::CustomParam& param,
+    std::optional<Result> custom_recognize(const cv::Mat& image, const MAA_VISION_NS::CustomRecognizerParam& param,
                                            const cv::Rect& cache, const std::string& name);
 
 private:

@@ -319,6 +319,7 @@ bool PipelineResMgr::parse_recognition(const json::value& input, Recognition::Ty
         { "OCR", Type::OCR },
         { "Classify", Type::Classify },
         { "Detect", Type::Detect },
+        { "ColorMatch", Type::ColorMatch },
         { "Custom", Type::Custom },
     };
     auto rec_type_iter = kRecTypeMap.find(rec_type_name);
@@ -337,10 +338,10 @@ bool PipelineResMgr::parse_recognition(const json::value& input, Recognition::Ty
         //                               same_type ? std::get<DirectHitParam>(default_param) : DirectHitParam {});
 
     case Type::TemplateMatch:
-        out_param = TemplMatchingParam {};
-        return parse_templ_matching_param(input, std::get<TemplMatchingParam>(out_param),
-                                          same_type ? std::get<TemplMatchingParam>(default_param)
-                                                    : TemplMatchingParam {});
+        out_param = TemplateMatcherParam {};
+        return parse_template_matcher_param(input, std::get<TemplateMatcherParam>(out_param),
+                                            same_type ? std::get<TemplateMatcherParam>(default_param)
+                                                      : TemplateMatcherParam {});
 
     case Type::Classify:
         out_param = ClassifierParam {};
@@ -353,14 +354,20 @@ bool PipelineResMgr::parse_recognition(const json::value& input, Recognition::Ty
                                     same_type ? std::get<DetectorParam>(default_param) : DetectorParam {});
 
     case Type::OCR:
-        out_param = OcrParam {};
-        return parse_ocr_param(input, std::get<OcrParam>(out_param),
-                               same_type ? std::get<OcrParam>(default_param) : OcrParam {});
+        out_param = OCRerParam {};
+        return parse_ocrer_param(input, std::get<OCRerParam>(out_param),
+                                 same_type ? std::get<OCRerParam>(default_param) : OCRerParam {});
+
+    case Type::ColorMatch:
+        out_param = ColorMatcherParam {};
+        return parse_color_matcher_param(input, std::get<ColorMatcherParam>(out_param),
+                                         same_type ? std::get<ColorMatcherParam>(default_param) : ColorMatcherParam {});
 
     case Type::Custom:
-        out_param = CustomParam {};
-        return parse_custom_recognizer_param(input, std::get<CustomParam>(out_param),
-                                             same_type ? std::get<CustomParam>(default_param) : CustomParam {});
+        out_param = CustomRecognizerParam {};
+        return parse_custom_recognizer_param(input, std::get<CustomRecognizerParam>(out_param),
+                                             same_type ? std::get<CustomRecognizerParam>(default_param)
+                                                       : CustomRecognizerParam {});
     default:
         return false;
     }
@@ -379,8 +386,8 @@ bool PipelineResMgr::parse_recognition(const json::value& input, Recognition::Ty
 //     return true;
 // }
 
-bool PipelineResMgr::parse_templ_matching_param(const json::value& input, MAA_VISION_NS::TemplMatchingParam& output,
-                                                const MAA_VISION_NS::TemplMatchingParam& default_value)
+bool PipelineResMgr::parse_template_matcher_param(const json::value& input, MAA_VISION_NS::TemplateMatcherParam& output,
+                                                  const MAA_VISION_NS::TemplateMatcherParam& default_value)
 {
     if (!parse_roi(input, output.roi, default_value.roi)) {
         LogError << "failed to parse_roi" << VAR(input);
@@ -403,7 +410,7 @@ bool PipelineResMgr::parse_templ_matching_param(const json::value& input, MAA_VI
 
     if (output.thresholds.empty()) {
         output.thresholds =
-            std::vector(output.template_paths.size(), MAA_VISION_NS::TemplMatchingParam::kDefaultThreshold);
+            std::vector(output.template_paths.size(), MAA_VISION_NS::TemplateMatcherParam::kDefaultThreshold);
     }
     else if (output.template_paths.size() != output.thresholds.size()) {
         LogError << "templates.size() != thresholds.size()" << VAR(output.template_paths.size())
@@ -424,8 +431,8 @@ bool PipelineResMgr::parse_templ_matching_param(const json::value& input, MAA_VI
     return true;
 }
 
-bool PipelineResMgr::parse_ocr_param(const json::value& input, MAA_VISION_NS::OcrParam& output,
-                                     const MAA_VISION_NS::OcrParam& default_value)
+bool PipelineResMgr::parse_ocrer_param(const json::value& input, MAA_VISION_NS::OCRerParam& output,
+                                       const MAA_VISION_NS::OCRerParam& default_value)
 {
     if (!parse_roi(input, output.roi, default_value.roi)) {
         LogError << "failed to parse_roi" << VAR(input);
@@ -479,8 +486,9 @@ bool PipelineResMgr::parse_ocr_param(const json::value& input, MAA_VISION_NS::Oc
     return true;
 }
 
-bool PipelineResMgr::parse_custom_recognizer_param(const json::value& input, MAA_VISION_NS::CustomParam& output,
-                                                   const MAA_VISION_NS::CustomParam& default_value)
+bool PipelineResMgr::parse_custom_recognizer_param(const json::value& input,
+                                                   MAA_VISION_NS::CustomRecognizerParam& output,
+                                                   const MAA_VISION_NS::CustomRecognizerParam& default_value)
 {
     if (!get_and_check_value(input, "custom_recognizer", output.name, default_value.name)) {
         LogError << "failed to get_and_check_value custom_recognizer" << VAR(input);
@@ -577,6 +585,123 @@ bool PipelineResMgr::parse_detector_param(const json::value& input, MAA_VISION_N
     else if (output.expected.size() != output.thresholds.size()) {
         LogError << "templates.size() != thresholds.size()" << VAR(output.expected.size())
                  << VAR(output.thresholds.size());
+        return false;
+    }
+
+    return true;
+}
+
+template <typename OutT>
+bool get_and_check_array_or_2darray(const json::value& input, const std::string& key,
+                                    std::vector<std::vector<OutT>>& output,
+                                    const std::vector<std::vector<OutT>>& default_value)
+{
+    auto opt = input.find(key);
+    if (!opt) {
+        output = default_value;
+        return true;
+    }
+    if (!opt->is_array() || opt->as_array().empty()) {
+        LogError << "type error" << VAR(key) << VAR(input);
+        return false;
+    }
+
+    output.clear();
+
+    auto& front = opt->as_array()[0];
+    if (front.is_array()) {
+        for (const auto& arr : opt->as_array()) {
+            if (!arr.is_array()) {
+                LogError << "type error" << VAR(key) << VAR(input);
+                return false;
+            }
+            std::vector<OutT> row;
+            for (const auto& item : arr.as_array()) {
+                if (!item.is<OutT>()) {
+                    LogError << "type error" << VAR(key) << VAR(input);
+                    return false;
+                }
+                row.emplace_back(item.as<OutT>());
+            }
+            output.emplace_back(std::move(row));
+        }
+    }
+    else if (front.is<OutT>()) {
+        std::vector<OutT> row;
+        for (const auto& item : opt->as_array()) {
+            if (!item.is<OutT>()) {
+                LogError << "type error" << VAR(key) << VAR(input);
+                return false;
+            }
+            row.emplace_back(item.as<OutT>());
+        }
+        output.emplace_back(std::move(row));
+    }
+    else {
+        LogError << "type error" << VAR(key) << VAR(input);
+        return false;
+    }
+
+    return !output.empty();
+}
+
+bool PipelineResMgr::parse_color_matcher_param(const json::value& input, MAA_VISION_NS::ColorMatcherParam& output,
+                                               const MAA_VISION_NS::ColorMatcherParam& default_value)
+{
+    if (!parse_roi(input, output.roi, default_value.roi)) {
+        LogError << "failed to parse_roi" << VAR(input);
+        return false;
+    }
+
+    std::vector<std::vector<int>> default_lower;
+    std::vector<std::vector<int>> default_upper;
+
+    auto scalar_to_vector = [](const cv::Vec4i& scalar) {
+        return std::vector { scalar[0], scalar[1], scalar[2], scalar[3] };
+    };
+    for (const auto& pair : default_value.range) {
+        default_lower.emplace_back(scalar_to_vector(pair.first));
+        default_upper.emplace_back(scalar_to_vector(pair.second));
+    }
+
+    std::vector<std::vector<int>> lower;
+    if (!get_and_check_array_or_2darray(input, "lower", lower, default_lower)) {
+        LogError << "failed to get_and_check_array_or_2darray lower" << VAR(input);
+        return false;
+    }
+
+    std::vector<std::vector<int>> upper;
+    if (!get_and_check_array_or_2darray(input, "upper", upper, default_upper)) {
+        LogError << "failed to get_and_check_array_or_2darray lower" << VAR(input);
+        return false;
+    }
+
+    constexpr int kMaxChannel = 4;
+    if (lower.size() != upper.size() || lower.size() > kMaxChannel) {
+        LogError << "lower.size() != upper.size()" << VAR(lower.size()) << VAR(upper.size());
+        return false;
+    }
+    lower.resize(kMaxChannel);
+    upper.resize(kMaxChannel);
+
+    for (size_t i = 0; i != lower.size(); ++i) {
+        auto& l = lower[i];
+        auto& u = upper[i];
+        output.range.emplace_back(cv::Vec4i { l[0], l[1], l[2], l[3] }, cv::Vec4i { u[0], u[1], u[2], u[3] });
+    }
+
+    if (!get_and_check_value(input, "count", output.count, default_value.count)) {
+        LogError << "failed to get_and_check_value count" << VAR(input);
+        return false;
+    }
+
+    if (!get_and_check_value(input, "method", output.method, default_value.method)) {
+        LogError << "failed to get_and_check_value method" << VAR(input);
+        return false;
+    }
+
+    if (!get_and_check_value(input, "connected", output.connected, default_value.connected)) {
+        LogError << "failed to get_and_check_value connected" << VAR(input);
         return false;
     }
 

@@ -21,7 +21,7 @@ MAA_VISION_NS_BEGIN
 struct DirectHitParam
 {};
 
-struct TemplMatchingParam
+struct TemplateMatcherParam
 {
     inline static constexpr double kDefaultThreshold = 0.7;
     inline static constexpr int kDefaultMethod = 5; // cv::TM_CCOEFF_NORMED
@@ -33,7 +33,7 @@ struct TemplMatchingParam
     bool green_mask = false;
 };
 
-struct OcrParam
+struct OCRerParam
 {
     std::string model;
     bool only_rec = false;
@@ -49,7 +49,7 @@ struct CompParam
     int method = 0;
 };
 
-struct CustomParam
+struct CustomRecognizerParam
 {
     std::string name;
     json::value custom_param;
@@ -88,7 +88,7 @@ struct ColorMatcherParam
 {
     inline static constexpr int kDefaultCount = 1;
     inline static constexpr int kDefaultMethod = 4; // cv::COLOR_BGR2RGB
-    using Range = std::pair<cv::Scalar, cv::Scalar>;
+    using Range = std::pair<cv::Vec4i, cv::Vec4i>;
 
     std::vector<cv::Rect> roi;
     std::vector<Range> range;

@@ -26,12 +26,13 @@ enum class Type
     OCR,
     Classify,
     Detect,
+    ColorMatch,
     Custom,
 };
 
-using Param = std::variant<std::monostate, MAA_VISION_NS::DirectHitParam, MAA_VISION_NS::TemplMatchingParam,
-                           MAA_VISION_NS::OcrParam, MAA_VISION_NS::ClassifierParam, MAA_VISION_NS::DetectorParam,
-                           MAA_VISION_NS::CustomParam>;
+using Param = std::variant<std::monostate, MAA_VISION_NS::DirectHitParam, MAA_VISION_NS::TemplateMatcherParam,
+                           MAA_VISION_NS::OCRerParam, MAA_VISION_NS::ClassifierParam, MAA_VISION_NS::DetectorParam,
+                           MAA_VISION_NS::ColorMatcherParam, MAA_VISION_NS::CustomRecognizerParam>;
 } // namespace Recognition
 
 namespace Action
@@ -106,7 +107,7 @@ struct WaitFreezesParam
     Action::Target target;
 
     double threshold = 0.95;
-    int method = MAA_VISION_NS::TemplMatchingParam::kDefaultMethod;
+    int method = MAA_VISION_NS::TemplateMatcherParam::kDefaultMethod;
 };
 
 struct TaskData

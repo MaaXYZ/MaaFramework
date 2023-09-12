@@ -35,11 +35,11 @@ std::optional<Recognizer::Result> Recognizer::recognize(const cv::Mat& image, co
         break;
 
     case Type::TemplateMatch:
-        result = template_match(image, std::get<TemplMatchingParam>(task_data.rec_param), cache, task_data.name);
+        result = template_match(image, std::get<TemplateMatcherParam>(task_data.rec_param), cache, task_data.name);
         break;
 
     case Type::OCR:
-        result = ocr(image, std::get<OcrParam>(task_data.rec_param), cache, task_data.name);
+        result = ocr(image, std::get<OCRerParam>(task_data.rec_param), cache, task_data.name);
         break;
 
     case Type::Classify:
@@ -51,7 +51,7 @@ std::optional<Recognizer::Result> Recognizer::recognize(const cv::Mat& image, co
         break;
 
     case Type::Custom:
-        result = custom_recognize(image, std::get<CustomParam>(task_data.rec_param), cache, task_data.name);
+        result = custom_recognize(image, std::get<CustomRecognizerParam>(task_data.rec_param), cache, task_data.name);
         break;
 
     default:
@@ -77,7 +77,7 @@ std::optional<Recognizer::Result> Recognizer::direct_hit()
 }
 
 std::optional<Recognizer::Result> Recognizer::template_match(const cv::Mat& image,
-                                                             const MAA_VISION_NS::TemplMatchingParam& param,
+                                                             const MAA_VISION_NS::TemplateMatcherParam& param,
                                                              const cv::Rect& cache, const std::string& name)
 {
     using namespace MAA_VISION_NS;
@@ -117,7 +117,7 @@ std::optional<Recognizer::Result> Recognizer::template_match(const cv::Mat& imag
     return Result { .box = box, .detail = detail.to_string() };
 }
 
-std::optional<Recognizer::Result> Recognizer::ocr(const cv::Mat& image, const MAA_VISION_NS::OcrParam& param,
+std::optional<Recognizer::Result> Recognizer::ocr(const cv::Mat& image, const MAA_VISION_NS::OCRerParam& param,
                                                   const cv::Rect& cache, const std::string& name)
 {
     using namespace MAA_VISION_NS;
@@ -218,7 +218,7 @@ std::optional<Recognizer::Result> Recognizer::detect(const cv::Mat& image, const
 }
 
 std::optional<Recognizer::Result> Recognizer::custom_recognize(const cv::Mat& image,
-                                                               const MAA_VISION_NS::CustomParam& param,
+                                                               const MAA_VISION_NS::CustomRecognizerParam& param,
                                                                const cv::Rect& cache, const std::string& name)
 {
     using namespace MAA_VISION_NS;

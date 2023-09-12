@@ -28,7 +28,7 @@ public:
 
 public:
     void set_templates(std::vector<std::shared_ptr<cv::Mat>> templates) { templates_ = std::move(templates); }
-    void set_param(TemplMatchingParam param) { param_ = std::move(param); }
+    void set_param(TemplateMatcherParam param) { param_ = std::move(param); }
     ResultsVec analyze() const;
 
 private:
@@ -38,7 +38,7 @@ private:
 
     void filter(ResultsVec& results, double threshold) const;
 
-    TemplMatchingParam param_;
+    TemplateMatcherParam param_;
     std::vector<std::shared_ptr<cv::Mat>> templates_;
 };
 

@@ -31,14 +31,14 @@ class CustomRecognizer : public VisionBase
 public:
     CustomRecognizer(MaaCustomRecognizerHandle handle, InstanceInternalAPI* inst);
 
-    void set_param(CustomParam param) { param_ = std::move(param); }
+    void set_param(CustomRecognizerParam param) { param_ = std::move(param); }
     ResultsVec analyze() const;
 
 private:
     MaaCustomRecognizerHandle recognizer_ = nullptr;
     InstanceInternalAPI* inst_ = nullptr;
 
-    CustomParam param_;
+    CustomRecognizerParam param_;
 };
 
 MAA_VISION_NS_END
