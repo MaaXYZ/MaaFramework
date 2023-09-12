@@ -4,6 +4,7 @@
 #include "Resource/ResourceMgr.h"
 #include "Utils/Logger.h"
 #include "Vision/Classifier.h"
+#include "Vision/ColorMatcher.h"
 #include "Vision/CustomRecognizer.h"
 #include "Vision/Detector.h"
 #include "Vision/Matcher.h"
@@ -36,6 +37,10 @@ std::optional<Recognizer::Result> Recognizer::recognize(const cv::Mat& image, co
 
     case Type::TemplateMatch:
         result = template_match(image, std::get<TemplateMatcherParam>(task_data.rec_param), cache, task_data.name);
+        break;
+
+    case Type::ColorMatch:
+        result = color_match(image, std::get<ColorMatcherParam>(task_data.rec_param), cache, task_data.name);
         break;
 
     case Type::OCR:
@@ -103,6 +108,36 @@ std::optional<Recognizer::Result> Recognizer::template_match(const cv::Mat& imag
         templates.emplace_back(std::move(templ));
     }
     matcher.set_templates(std::move(templates));
+
+    auto ret = matcher.analyze();
+    if (ret.empty()) {
+        return std::nullopt;
+    }
+
+    const cv::Rect& box = ret.front().box;
+    json::array detail;
+    for (const auto& res : ret) {
+        detail.emplace_back(res.to_json());
+    }
+    return Result { .box = box, .detail = detail.to_string() };
+}
+
+std::optional<Recognizer::Result> Recognizer::color_match(const cv::Mat& image,
+                                                          const MAA_VISION_NS::ColorMatcherParam& param,
+                                                          const cv::Rect& cache, const std::string& name)
+{
+    using namespace MAA_VISION_NS;
+
+    if (!resource()) {
+        LogError << "Resource not binded";
+        return std::nullopt;
+    }
+
+    ColorMatcher matcher;
+    matcher.set_image(image);
+    matcher.set_name(name);
+    matcher.set_param(param);
+    matcher.set_cache(cache);
 
     auto ret = matcher.analyze();
     if (ret.empty()) {

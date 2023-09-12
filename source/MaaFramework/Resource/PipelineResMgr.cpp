@@ -656,12 +656,9 @@ bool PipelineResMgr::parse_color_matcher_param(const json::value& input, MAA_VIS
     std::vector<std::vector<int>> default_lower;
     std::vector<std::vector<int>> default_upper;
 
-    auto scalar_to_vector = [](const cv::Vec4i& scalar) {
-        return std::vector { scalar[0], scalar[1], scalar[2], scalar[3] };
-    };
     for (const auto& pair : default_value.range) {
-        default_lower.emplace_back(scalar_to_vector(pair.first));
-        default_upper.emplace_back(scalar_to_vector(pair.second));
+        default_lower.emplace_back(pair.first);
+        default_upper.emplace_back(pair.second);
     }
 
     std::vector<std::vector<int>> lower;
@@ -677,17 +674,19 @@ bool PipelineResMgr::parse_color_matcher_param(const json::value& input, MAA_VIS
     }
 
     constexpr int kMaxChannel = 4;
-    if (lower.size() != upper.size() || lower.size() > kMaxChannel) {
-        LogError << "lower.size() != upper.size()" << VAR(lower.size()) << VAR(upper.size());
+    if (lower.empty() || lower.size() != upper.size()) {
+        LogError << "bad size" << VAR(lower.size()) << VAR(upper.size());
         return false;
     }
-    lower.resize(kMaxChannel);
-    upper.resize(kMaxChannel);
 
     for (size_t i = 0; i != lower.size(); ++i) {
         auto& l = lower[i];
         auto& u = upper[i];
-        output.range.emplace_back(cv::Vec4i { l[0], l[1], l[2], l[3] }, cv::Vec4i { u[0], u[1], u[2], u[3] });
+        if (l.empty() || l.size() != u.size() || l.size() > kMaxChannel) {
+            LogError << "bad size" << VAR(l.size()) << VAR(u.size()) << VAR(kMaxChannel);
+            return false;
+        }
+        output.range.emplace_back(std::make_pair(l, u));
     }
 
     if (!get_and_check_value(input, "count", output.count, default_value.count)) {

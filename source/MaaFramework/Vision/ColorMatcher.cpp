@@ -92,14 +92,17 @@ void ColorMatcher::draw_result(const cv::Rect& roi, const cv::Mat& color, const 
     cv::putText(image_draw, flag, cv::Point(res.box.x, res.box.y - 5), cv::FONT_HERSHEY_PLAIN, 1.2, color_draw, 1);
 
     int raw_width = image_.cols;
-    cv::copyMakeBorder(image_draw, image_draw, 0, 0, 0, color.cols, cv::BORDER_CONSTANT, cv::Scalar(0, 0, 0));
+    cv::copyMakeBorder(image_draw, image_draw, 0, 0, 0, color.cols + res.dst.cols, cv::BORDER_CONSTANT,
+                       cv::Scalar(0, 0, 0));
     cv::Mat draw_color_roi = image_draw(cv::Rect(raw_width, 0, color.cols, color.rows));
     color.copyTo(draw_color_roi);
 
-    cv::Mat draw_bin_roi = image_draw(cv::Rect(raw_width, color.rows, res.dst.cols, res.dst.rows));
-    res.dst.copyTo(draw_bin_roi);
+    cv::Mat draw_bin_roi = image_draw(cv::Rect(raw_width + color.cols, 0, res.dst.cols, res.dst.rows));
+    cv::Mat three_channel_bin;
+    cv::cvtColor(res.dst, three_channel_bin, cv::COLOR_GRAY2BGR);
+    three_channel_bin.copyTo(draw_bin_roi);
 
-    cv::line(image_draw, cv::Point(raw_width, color.rows), res.box.tl(), color_draw, 1);
+    cv::line(image_draw, cv::Point(raw_width + color.cols, 0), res.box.tl(), color_draw, 1);
 
     if (save_draw_) {
         save_image(image_draw);

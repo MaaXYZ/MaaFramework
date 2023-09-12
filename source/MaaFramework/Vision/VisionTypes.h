@@ -88,7 +88,7 @@ struct ColorMatcherParam
 {
     inline static constexpr int kDefaultCount = 1;
     inline static constexpr int kDefaultMethod = 4; // cv::COLOR_BGR2RGB
-    using Range = std::pair<cv::Vec4i, cv::Vec4i>;
+    using Range = std::pair<std::vector<int>, std::vector<int>>;
 
     std::vector<cv::Rect> roi;
     std::vector<Range> range;
