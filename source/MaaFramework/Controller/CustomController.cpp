@@ -1,5 +1,7 @@
 #include "CustomController.h"
 
+#include "Buffer/ImageBuffer.hpp"
+#include "Buffer/StringBuffer.hpp"
 #include "Utils/Logger.h"
 #include "Utils/NoWarningCV.hpp"
 
@@ -19,19 +21,13 @@ std::string CustomController::get_uuid() const
         return {};
     }
 
-    MaaSize buff_size = handle_->get_uuid(nullptr, 0);
-    auto buff = std::make_unique<char[]>(buff_size);
-    MaaSize written = handle_->get_uuid(buff.get(), buff_size);
-
-    LogDebug << VAR(buff_size) << VAR(buff) << VAR(written);
-
-    if (written != buff_size) {
-        LogError << "written != buff_size";
+    StringBuffer buffer;
+    MaaBool ret = handle_->get_uuid(&buffer);
+    if (!ret) {
+        LogError << "failed to get_uuid" << VAR(ret);
         return {};
     }
-    std::string uuid(buff.get(), buff.get() + written);
-    LogDebug << VAR(uuid);
-    return uuid;
+    return buffer.get();
 }
 
 bool CustomController::_connect()
@@ -84,8 +80,8 @@ bool CustomController::_swipe(SwipeParam param)
 
 bool CustomController::_touch_down(TouchParam param)
 {
-    LogFunc << VAR_VOIDP(handle_) << VAR_VOIDP(handle_->touch_down) << VAR(param.contact) << VAR(param.x) << VAR(param.y)
-            << VAR(param.pressure);
+    LogFunc << VAR_VOIDP(handle_) << VAR_VOIDP(handle_->touch_down) << VAR(param.contact) << VAR(param.x)
+            << VAR(param.y) << VAR(param.pressure);
 
     if (!handle_ || !handle_->touch_down) {
         LogError << "handle_ or handle_->touch_down is nullptr";
@@ -97,8 +93,8 @@ bool CustomController::_touch_down(TouchParam param)
 
 bool CustomController::_touch_move(TouchParam param)
 {
-    LogFunc << VAR_VOIDP(handle_) << VAR_VOIDP(handle_->touch_move) << VAR(param.contact) << VAR(param.x) << VAR(param.y)
-            << VAR(param.pressure);
+    LogFunc << VAR_VOIDP(handle_) << VAR_VOIDP(handle_->touch_move) << VAR(param.contact) << VAR(param.x)
+            << VAR(param.y) << VAR(param.pressure);
 
     if (!handle_ || !handle_->touch_move) {
         LogError << "handle_ or handle_->touch_move is nullptr";
@@ -141,26 +137,14 @@ cv::Mat CustomController::_screencap()
         return {};
     }
 
-    MaaSize size = handle_->get_image(nullptr, 0);
-    if (size == 0 || size == MaaNullSize) {
-        LogError << "error size" << VAR(size);
+    ImageBuffer buffer;
+    MaaBool ret = handle_->get_image(&buffer);
+    if (!ret) {
+        LogError << "failed to get_image" << VAR(ret);
         return {};
     }
 
-    auto buffer = std::make_unique<uchar[]>(size);
-    MaaSize written = handle_->get_image(buffer.get(), size);
-    if (written != size) {
-        LogError << "written != size" << VAR(written) << VAR(size);
-        return {};
-    }
-
-    std::vector vec_buf(buffer.get(), buffer.get() + written);
-    cv::Mat res = cv::imdecode(vec_buf, cv::IMREAD_COLOR);
-    if (res.empty()) {
-        LogError << "image is empty!" << VAR(written) << VAR(size);
-        return {};
-    }
-    return res;
+    return buffer.get();
 }
 
 bool CustomController::_start_app(AppParam param)
