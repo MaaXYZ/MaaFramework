@@ -135,7 +135,7 @@ void CustomThriftController::_click(ClickParam param)
     thrift_param.point.x = param.x;
     thrift_param.point.y = param.y;
 
-    client_->click(click_param);
+    client_->click(thrift_param);
 }
 
 void CustomThriftController::_swipe(SwipeParam param)
@@ -151,7 +151,7 @@ void CustomThriftController::_swipe(SwipeParam param)
     thrift_param.point1.y = param.y1;
     thrift_param.point2.x = param.x2;
     thrift_param.point2.y = param.y2;
-    thrift_param.duration = duration;
+    thrift_param.duration = param.duration;
     client_->swipe(thrift_param);
 }
 
