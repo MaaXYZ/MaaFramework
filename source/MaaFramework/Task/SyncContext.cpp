@@ -139,7 +139,7 @@ bool SyncContext::press_key(int keycode)
 bool SyncContext::touch_down(int contact, int x, int y, int pressure)
 {
     LogFunc << VAR(contact) << VAR(x) << VAR(y) << VAR(pressure);
-         
+
     auto* ctrl = controller();
     if (!ctrl) {
         LogError << "Controller is null";
