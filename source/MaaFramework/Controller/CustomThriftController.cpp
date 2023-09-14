@@ -161,7 +161,7 @@ bool CustomThriftController::_down(AdvancedTouchParam param)
 
     if (!client_ || !transport_->isOpen()) {
         LogError << "client_ is nullptr or transport_ is not open";
-        return;
+        return false;
     }
 
     ThriftController::AdvancedTouchParam thrift_param;
@@ -179,7 +179,7 @@ bool CustomThriftController::_move(AdvancedTouchParam param)
 
     if (!client_ || !transport_->isOpen()) {
         LogError << "client_ is nullptr or transport_ is not open";
-        return;
+        return false;
     }
 
     ThriftController::AdvancedTouchParam thrift_param;
@@ -197,7 +197,7 @@ bool CustomThriftController::_up(AdvancedTouchParam param)
 
     if (!client_ || !transport_->isOpen()) {
         LogError << "client_ is nullptr or transport_ is not open";
-        return;
+        return false;
     }
 
     ThriftController::AdvancedTouchParam thrift_param;
