@@ -713,16 +713,17 @@ MaaBool MaaTaskAllFinished(MaaInstanceHandle inst)
     return inst->task_all_finished();
 }
 
-void MaaStop(MaaInstanceHandle inst)
+MaaBool MaaStop(MaaInstanceHandle inst)
 {
     LogFunc << VAR_VOIDP(inst);
 
     if (!inst) {
         LogError << "handle is null";
-        return;
+        return false;
     }
 
     inst->stop();
+    return true;
 }
 
 MaaResourceHandle MaaGetResource(MaaInstanceHandle inst)
@@ -811,41 +812,44 @@ MaaBool MaaSyncContextRunAction(MaaSyncContextHandle sync_context, MaaStringView
     return ret;
 }
 
-void MaaSyncContextClick(MaaSyncContextHandle sync_context, int32_t x, int32_t y)
+MaaBool MaaSyncContextClick(MaaSyncContextHandle sync_context, int32_t x, int32_t y)
 {
     LogFunc << VAR_VOIDP(sync_context) << VAR(x) << VAR(y);
 
     if (!sync_context) {
         LogError << "handle is null";
-        return;
+        return false;
     }
 
-    return sync_context->click(x, y);
+    sync_context->click(x, y);
+    return true;
 }
 
-void MaaSyncContextSwipe(MaaSyncContextHandle sync_context, int32_t x1, int32_t y1, int32_t x2, int32_t y2,
-                         int32_t duration)
+MaaBool MaaSyncContextSwipe(MaaSyncContextHandle sync_context, int32_t x1, int32_t y1, int32_t x2, int32_t y2,
+                            int32_t duration)
 {
     LogFunc << VAR_VOIDP(sync_context) << VAR(x1) << VAR(y1) << VAR(x2) << VAR(y2) << VAR(duration);
 
     if (!sync_context) {
         LogError << "handle is null";
-        return;
+        return false;
     }
 
     sync_context->swipe(x1, y1, x2, y2, duration);
+    return true;
 }
 
-void MaaSyncContextPressKey(MaaSyncContextHandle sync_context, int32_t keycode)
+MaaBool MaaSyncContextPressKey(MaaSyncContextHandle sync_context, int32_t keycode)
 {
     LogFunc << VAR_VOIDP(sync_context) << VAR(keycode);
 
     if (!sync_context) {
         LogError << "handle is null";
-        return;
+        return false;
     }
 
     sync_context->press_key(keycode);
+    return true;
 }
 
 MaaBool MaaSyncContextTouchDown(MaaSyncContextHandle sync_context, int32_t contact, int32_t x, int32_t y,

@@ -118,7 +118,7 @@ extern "C"
     MaaStatus MAA_FRAMEWORK_API MaaWaitTask(MaaInstanceHandle inst, MaaTaskId id);
     MaaBool MAA_FRAMEWORK_API MaaTaskAllFinished(MaaInstanceHandle inst);
 
-    void MAA_FRAMEWORK_API MaaStop(MaaInstanceHandle inst);
+    MaaBool MAA_FRAMEWORK_API MaaStop(MaaInstanceHandle inst);
 
     MaaResourceHandle MAA_FRAMEWORK_API MaaGetResource(MaaInstanceHandle inst);
     MaaControllerHandle MAA_FRAMEWORK_API MaaGetController(MaaInstanceHandle inst);
@@ -134,10 +134,10 @@ extern "C"
     MaaBool MAA_FRAMEWORK_API MaaSyncContextRunAction(MaaSyncContextHandle sync_context, MaaStringView task,
                                                       MaaStringView task_param, MaaRectHandle cur_box,
                                                       MaaStringView cur_rec_detail);
-    void MAA_FRAMEWORK_API MaaSyncContextClick(MaaSyncContextHandle sync_context, int32_t x, int32_t y);
-    void MAA_FRAMEWORK_API MaaSyncContextSwipe(MaaSyncContextHandle sync_context, int32_t x1, int32_t y1, int32_t x2,
+    MaaBool MAA_FRAMEWORK_API MaaSyncContextClick(MaaSyncContextHandle sync_context, int32_t x, int32_t y);
+    MaaBool MAA_FRAMEWORK_API MaaSyncContextSwipe(MaaSyncContextHandle sync_context, int32_t x1, int32_t y1, int32_t x2,
                                                int32_t y2, int32_t duration);
-    void MAA_FRAMEWORK_API MaaSyncContextPressKey(MaaSyncContextHandle sync_context, int32_t keycode);
+    MaaBool MAA_FRAMEWORK_API MaaSyncContextPressKey(MaaSyncContextHandle sync_context, int32_t keycode);
 
     MaaBool MAA_FRAMEWORK_API MaaSyncContextTouchDown(MaaSyncContextHandle sync_context, int32_t contact, int32_t x,
                                                       int32_t y, int32_t pressure);
