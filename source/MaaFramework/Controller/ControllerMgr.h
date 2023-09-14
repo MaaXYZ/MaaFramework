@@ -99,27 +99,27 @@ public:
     virtual void on_stop() override;
 
 public:
-    void click(const cv::Rect& r);
-    void click(const cv::Point& p);
-    void swipe(const cv::Rect& r1, const cv::Rect& r2, int duration);
-    void swipe(const cv::Point& p1, const cv::Point& p2, int duration);
-    void press_key(int keycode);
+    bool click(const cv::Rect& r);
+    bool click(const cv::Point& p);
+    bool swipe(const cv::Rect& r1, const cv::Rect& r2, int duration);
+    bool swipe(const cv::Point& p1, const cv::Point& p2, int duration);
+    bool press_key(int keycode);
     cv::Mat screencap();
 
-    void start_app();
-    void stop_app();
-    void start_app(const std::string& package);
-    void stop_app(const std::string& package);
+    bool start_app();
+    bool stop_app();
+    bool start_app(const std::string& package);
+    bool stop_app(const std::string& package);
 
 protected:
     virtual bool _connect() = 0;
     virtual std::pair<int, int> _get_resolution() const = 0;
-    virtual void _click(ClickParam param) = 0;
-    virtual void _swipe(SwipeParam param) = 0;
+    virtual bool _click(ClickParam param) = 0;
+    virtual bool _swipe(SwipeParam param) = 0;
     virtual bool _touch_down(TouchParam param) = 0;
     virtual bool _touch_move(TouchParam param) = 0;
     virtual bool _touch_up(TouchParam param) = 0;
-    virtual void _press_key(PressKeyParam param) = 0;
+    virtual bool _press_key(PressKeyParam param) = 0;
     virtual cv::Mat _screencap() = 0;
     virtual bool _start_app(AppParam param) = 0;
     virtual bool _stop_app(AppParam param) = 0;

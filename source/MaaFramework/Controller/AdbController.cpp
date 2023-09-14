@@ -116,11 +116,11 @@ std::pair<int, int> AdbController::_get_resolution() const
     return resolution_;
 }
 
-void AdbController::_click(ClickParam param)
+bool AdbController::_click(ClickParam param)
 {
     if (!unit_mgr_ || !unit_mgr_->touch_input_obj()) {
         LogError << "unit is nullptr" << VAR(unit_mgr_) << VAR(unit_mgr_->touch_input_obj());
-        return;
+        return false;
     }
 
     bool ret = unit_mgr_->touch_input_obj()->click(param.x, param.y);
@@ -128,13 +128,15 @@ void AdbController::_click(ClickParam param)
     if (!ret) {
         LogError << "failed to click";
     }
+
+    return ret;
 }
 
-void AdbController::_swipe(SwipeParam param)
+bool AdbController::_swipe(SwipeParam param)
 {
     if (!unit_mgr_ || !unit_mgr_->touch_input_obj()) {
         LogError << "unit is nullptr" << VAR(unit_mgr_) << VAR(unit_mgr_->touch_input_obj());
-        return;
+        return false;
     }
 
     bool ret = unit_mgr_->touch_input_obj()->swipe(param.x1, param.y1, param.x2, param.y2, param.duration);
@@ -142,6 +144,8 @@ void AdbController::_swipe(SwipeParam param)
     if (!ret) {
         LogError << "failed to swipe";
     }
+
+    return ret;
 }
 
 bool AdbController::_touch_down(TouchParam param)
@@ -192,11 +196,11 @@ bool AdbController::_touch_up(TouchParam param)
     return ret;
 }
 
-void AdbController::_press_key(PressKeyParam param)
+bool AdbController::_press_key(PressKeyParam param)
 {
     if (!unit_mgr_ || !unit_mgr_->key_input_obj()) {
         LogError << "unit is nullptr" << VAR(unit_mgr_) << VAR(unit_mgr_->key_input_obj());
-        return;
+        return false;
     }
 
     bool ret = unit_mgr_->key_input_obj()->press_key(param.keycode);
@@ -204,6 +208,8 @@ void AdbController::_press_key(PressKeyParam param)
     if (!ret) {
         LogError << "failed to press_key";
     }
+
+    return ret;
 }
 
 cv::Mat AdbController::_screencap()

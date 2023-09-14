@@ -655,7 +655,6 @@ MaaBool MaaClearCustomAction(MaaInstanceHandle inst)
     }
 
     inst->clear_custom_action();
-
     return true;
 }
 
@@ -821,8 +820,7 @@ MaaBool MaaSyncContextClick(MaaSyncContextHandle sync_context, int32_t x, int32_
         return false;
     }
 
-    sync_context->click(x, y);
-    return true;
+    return sync_context->click(x, y);
 }
 
 MaaBool MaaSyncContextSwipe(MaaSyncContextHandle sync_context, int32_t x1, int32_t y1, int32_t x2, int32_t y2,
@@ -835,8 +833,7 @@ MaaBool MaaSyncContextSwipe(MaaSyncContextHandle sync_context, int32_t x1, int32
         return false;
     }
 
-    sync_context->swipe(x1, y1, x2, y2, duration);
-    return true;
+    return sync_context->swipe(x1, y1, x2, y2, duration);
 }
 
 MaaBool MaaSyncContextPressKey(MaaSyncContextHandle sync_context, int32_t keycode)
@@ -848,8 +845,7 @@ MaaBool MaaSyncContextPressKey(MaaSyncContextHandle sync_context, int32_t keycod
         return false;
     }
 
-    sync_context->press_key(keycode);
-    return true;
+    return sync_context->press_key(keycode);
 }
 
 MaaBool MaaSyncContextTouchDown(MaaSyncContextHandle sync_context, int32_t contact, int32_t x, int32_t y,
@@ -899,7 +895,13 @@ MaaBool MaaSyncContextScreencap(MaaSyncContextHandle sync_context, MaaImageBuffe
         return false;
     }
 
-    buffer->set(sync_context->screencap());
+    auto img = sync_context->screencap();
+    if (img.empty()) {
+        LogError << "image is empty";
+        return false;
+    }
+
+    buffer->set(std::move(img));
     return true;
 }
 
@@ -912,6 +914,12 @@ MaaBool MaaSyncContextGetTaskResult(MaaSyncContextHandle sync_context, MaaString
         return false;
     }
 
-    buffer->set(sync_context->task_result(task));
+    auto res = sync_context->task_result(task);
+    if (res.empty()) {
+        LogError << "res is empty";
+        return false;
+    }
+
+    buffer->set(std::move(res));
     return true;
 }

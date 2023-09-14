@@ -94,46 +94,46 @@ bool SyncContext::run_action(std::string task, std::string_view param, cv::Rect 
     return ret;
 }
 
-void SyncContext::click(int x, int y)
+bool SyncContext::click(int x, int y)
 {
     LogFunc << VAR(x) << VAR(y);
 
     auto* ctrl = controller();
     if (!ctrl) {
         LogError << "Controller is null";
-        return;
+        return false;
     }
 
     auto id = ctrl->post_click(x, y);
-    ctrl->wait(id);
+    return ctrl->wait(id) == MaaStatus_Success;
 }
 
-void SyncContext::swipe(int x1, int y1, int x2, int y2, int duration)
+bool SyncContext::swipe(int x1, int y1, int x2, int y2, int duration)
 {
     LogFunc << VAR(x1) << VAR(x2) << VAR(y1) << VAR(y2) << VAR(duration);
 
     auto* ctrl = controller();
     if (!ctrl) {
         LogError << "Controller is null";
-        return;
+        return false;
     }
 
     auto id = ctrl->post_swipe(x1, x2, y1, y2, duration);
-    ctrl->wait(id);
+    return ctrl->wait(id) == MaaStatus_Success;
 }
 
-void SyncContext::press_key(int keycode)
+bool SyncContext::press_key(int keycode)
 {
     LogFunc << VAR(keycode);
 
     auto* ctrl = controller();
     if (!ctrl) {
         LogError << "Controller is null";
-        return;
+        return false;
     }
 
     auto id = ctrl->post_press_key(keycode);
-    ctrl->wait(id);
+    return ctrl->wait(id) == MaaStatus_Success;
 }
 
 bool SyncContext::touch_down(int contact, int x, int y, int pressure)

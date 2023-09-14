@@ -158,35 +158,32 @@ void ControllerMgr::on_stop()
     action_runner_->release();
 }
 
-void ControllerMgr::click(const cv::Rect& r)
+bool ControllerMgr::click(const cv::Rect& r)
 {
-    click(rand_point(r));
+    return click(rand_point(r));
 }
 
-void ControllerMgr::click(const cv::Point& p)
+bool ControllerMgr::click(const cv::Point& p)
 {
-    auto [x, y] = preproc_touch_point(p.x, p.y);
-    ClickParam param { .x = x, .y = y };
-    action_runner_->post({ .type = Action::Type::click, .param = std::move(param) }, true);
+    auto id = post_click(p.x, p.y);
+    return status(id) == MaaStatus_Success;
 }
 
-void ControllerMgr::swipe(const cv::Rect& r1, const cv::Rect& r2, int duration)
+bool ControllerMgr::swipe(const cv::Rect& r1, const cv::Rect& r2, int duration)
 {
-    swipe(rand_point(r1), rand_point(r2), duration);
+    return swipe(rand_point(r1), rand_point(r2), duration);
 }
 
-void ControllerMgr::swipe(const cv::Point& p1, const cv::Point& p2, int duration)
+bool ControllerMgr::swipe(const cv::Point& p1, const cv::Point& p2, int duration)
 {
-    auto [x1, y1] = preproc_touch_point(p1.x, p1.y);
-    auto [x2, y2] = preproc_touch_point(p2.x, p2.y);
-
-    SwipeParam param { .x1 = x1, .y1 = y1, .x2 = x2, .y2 = y2, .duration = duration };
-    action_runner_->post({ .type = Action::Type::swipe, .param = std::move(param) }, true);
+    auto id = post_swipe(p1.x, p1.y, p2.x, p2.y, duration);
+    return status(id) == MaaStatus_Success;
 }
 
-void ControllerMgr::press_key(int keycode)
+bool ControllerMgr::press_key(int keycode)
 {
-    action_runner_->post({ .type = Action::Type::press_key, .param = PressKeyParam { .keycode = keycode } }, true);
+    auto id = post_press_key(keycode);
+    return status(id) == MaaStatus_Success;
 }
 
 cv::Mat ControllerMgr::screencap()
@@ -196,32 +193,34 @@ cv::Mat ControllerMgr::screencap()
     return image_.clone();
 }
 
-void ControllerMgr::start_app()
+bool ControllerMgr::start_app()
 {
     if (default_app_package_entry_.empty()) {
         LogError << "default_app_package_entry_ is empty";
-        return;
+        return false;
     }
-    start_app(default_app_package_entry_);
+    return start_app(default_app_package_entry_);
 }
 
-void ControllerMgr::stop_app()
+bool ControllerMgr::stop_app()
 {
     if (default_app_package_.empty()) {
         LogError << "default_app_package_ is empty";
-        return;
+        return false;
     }
-    stop_app(default_app_package_);
+    return stop_app(default_app_package_);
 }
 
-void ControllerMgr::start_app(const std::string& package)
+bool ControllerMgr::start_app(const std::string& package)
 {
-    action_runner_->post({ .type = Action::Type::start_app, .param = AppParam { .package = package } }, true);
+    auto id = action_runner_->post({ .type = Action::Type::start_app, .param = AppParam { .package = package } }, true);
+    return status(id) == MaaStatus_Success;
 }
 
-void ControllerMgr::stop_app(const std::string& package)
+bool ControllerMgr::stop_app(const std::string& package)
 {
-    action_runner_->post({ .type = Action::Type::stop_app, .param = AppParam { .package = package } }, true);
+    auto id = action_runner_->post({ .type = Action::Type::stop_app, .param = AppParam { .package = package } }, true);
+    return status(id) == MaaStatus_Success;
 }
 
 cv::Point ControllerMgr::rand_point(const cv::Rect& r)
@@ -269,17 +268,15 @@ bool ControllerMgr::run_action(typename AsyncRunner<Action>::Id id, Action actio
 
     switch (action.type) {
     case Action::Type::connect:
-        connected_ = _connect();
-        ret = connected_;
+        ret = _connect();
+        connected_ = ret;
         break;
 
     case Action::Type::click:
-        _click(std::get<ClickParam>(action.param));
-        ret = true;
+        ret = _click(std::get<ClickParam>(action.param));
         break;
     case Action::Type::swipe:
-        _swipe(std::get<SwipeParam>(action.param));
-        ret = true;
+        ret = _swipe(std::get<SwipeParam>(action.param));
         break;
 
     case Action::Type::touch_down:
@@ -293,8 +290,7 @@ bool ControllerMgr::run_action(typename AsyncRunner<Action>::Id id, Action actio
         break;
 
     case Action::Type::press_key:
-        _press_key(std::get<PressKeyParam>(action.param));
-        ret = true;
+        ret = _press_key(std::get<PressKeyParam>(action.param));
         break;
 
     case Action::Type::screencap:

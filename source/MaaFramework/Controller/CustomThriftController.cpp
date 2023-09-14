@@ -122,29 +122,29 @@ std::pair<int, int> CustomThriftController::_get_resolution() const
     return { resolution.width, resolution.height };
 }
 
-void CustomThriftController::_click(ClickParam param)
+bool CustomThriftController::_click(ClickParam param)
 {
     LogFunc << VAR(param.x) << VAR(param.y);
 
     if (!client_ || !transport_->isOpen()) {
         LogError << "client_ is nullptr or transport_ is not open";
-        return;
+        return false;
     }
 
     ThriftController::ClickParam thrift_param;
     thrift_param.point.x = param.x;
     thrift_param.point.y = param.y;
 
-    client_->click(thrift_param);
+    return client_->click(thrift_param);
 }
 
-void CustomThriftController::_swipe(SwipeParam param)
+bool CustomThriftController::_swipe(SwipeParam param)
 {
     LogFunc << VAR(param.x1) << VAR(param.x2) << VAR(param.y1) << VAR(param.y2) << VAR(param.duration);
 
     if (!client_ || !transport_->isOpen()) {
         LogError << "client_ is nullptr or transport_ is not open";
-        return;
+        return false;
     }
     ThriftController::SwipeParam thrift_param;
     thrift_param.point1.x = param.x1;
@@ -152,7 +152,7 @@ void CustomThriftController::_swipe(SwipeParam param)
     thrift_param.point2.x = param.x2;
     thrift_param.point2.y = param.y2;
     thrift_param.duration = param.duration;
-    client_->swipe(thrift_param);
+    return client_->swipe(thrift_param);
 }
 
 bool CustomThriftController::_touch_down(TouchParam param)
@@ -206,19 +206,19 @@ bool CustomThriftController::_touch_up(TouchParam param)
     return client_->touch_up(thrift_param);
 }
 
-void CustomThriftController::_press_key(PressKeyParam param)
+bool CustomThriftController::_press_key(PressKeyParam param)
 {
     LogFunc;
 
     if (!client_ || !transport_->isOpen()) {
         LogError << "client_ is nullptr or transport_ is not open";
-        return;
+        return false;
     }
 
     ThriftController::PressKeyParam thrift_param;
     thrift_param.keycode = param.keycode;
 
-    client_->press_key(thrift_param);
+    return client_->press_key(thrift_param);
 }
 
 cv::Mat CustomThriftController::_screencap()

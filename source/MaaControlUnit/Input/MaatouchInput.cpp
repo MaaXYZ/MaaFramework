@@ -161,16 +161,15 @@ bool MaatouchInput::click(int x, int y)
 
     LogInfo << VAR(x) << VAR(y) << VAR(touch_x) << VAR(touch_y);
 
-    bool res = shell_handler_->write(MAA_FMT::format("d {} {} {} {}\nc\n", 0, touch_x, touch_y, press_)) &&
+    bool ret = shell_handler_->write(MAA_FMT::format("d {} {} {} {}\nc\n", 0, touch_x, touch_y, press_)) &&
                shell_handler_->write(MAA_FMT::format("u {}\nc\n", 0));
 
-    if (!res) {
-        LogError << "click failed";
+    if (!ret) {
+        LogError << "failed to write";
         return false;
     }
 
-    // sleep?
-    return true;
+    return ret;
 }
 
 bool MaatouchInput::swipe(int x1, int y1, int x2, int y2, int duration)
@@ -232,6 +231,11 @@ bool MaatouchInput::swipe(int x1, int y1, int x2, int y2, int duration)
     now = std::chrono::steady_clock::now();
     ret &= shell_handler_->write(MAA_FMT::format("u {}\nc\n", 0));
 
+    if (!ret) {
+        LogError << "failed to write";
+        return false;
+    }
+
     return ret;
 }
 
@@ -241,15 +245,15 @@ bool MaatouchInput::press_key(int key)
         return false;
     }
 
-    bool res = shell_handler_->write(MAA_FMT::format("k {} d\nc\n", key)) &&
+    bool ret = shell_handler_->write(MAA_FMT::format("k {} d\nc\n", key)) &&
                shell_handler_->write(MAA_FMT::format("k {} u\nc\n", key));
 
-    if (!res) {
+    if (!ret) {
+        LogError << "failed to write";
         return false;
     }
 
-    // sleep?
-    return true;
+    return ret;
 }
 
 bool MaatouchInput::touch_down(int contact, int x, int y, int pressure)
@@ -263,7 +267,14 @@ bool MaatouchInput::touch_down(int contact, int x, int y, int pressure)
 
     LogInfo << VAR(contact) << VAR(x) << VAR(y) << VAR(touch_x) << VAR(touch_y);
 
-    return shell_handler_->write(MAA_FMT::format("d {} {} {} {}\nc\n", contact, touch_x, touch_y, pressure));
+    bool ret = shell_handler_->write(MAA_FMT::format("d {} {} {} {}\nc\n", contact, touch_x, touch_y, pressure));
+
+    if (!ret) {
+        LogError << "failed to write";
+        return false;
+    }
+
+    return ret;
 }
 
 bool MaatouchInput::touch_move(int contact, int x, int y, int pressure)
@@ -277,7 +288,13 @@ bool MaatouchInput::touch_move(int contact, int x, int y, int pressure)
 
     LogInfo << VAR(contact) << VAR(x) << VAR(y) << VAR(touch_x) << VAR(touch_y);
 
-    return shell_handler_->write(MAA_FMT::format("m {} {} {} {}\nc\n", contact, touch_x, touch_y, pressure));
+    bool ret = shell_handler_->write(MAA_FMT::format("m {} {} {} {}\nc\n", contact, touch_x, touch_y, pressure));
+    if (!ret) {
+        LogError << "failed to write";
+        return false;
+    }
+
+    return ret;
 }
 
 bool MaatouchInput::touch_up(int contact)
@@ -289,7 +306,13 @@ bool MaatouchInput::touch_up(int contact)
 
     LogInfo << VAR(contact);
 
-    return shell_handler_->write(MAA_FMT::format("u {}\nc\n", contact));
+    bool ret = shell_handler_->write(MAA_FMT::format("u {}\nc\n", contact));
+    if (!ret) {
+        LogError << "failed to write";
+        return false;
+    }
+
+    return ret;
 }
 
 MAA_CTRL_UNIT_NS_END

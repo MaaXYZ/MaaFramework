@@ -97,9 +97,9 @@ public:
                                 /*out*/ cv::Rect& box, /*out*/ std::string& detail) = 0;
     virtual bool run_action(std::string task, std::string_view param, cv::Rect cur_box, std::string cur_detail) = 0;
 
-    virtual void click(int x, int y) = 0;
-    virtual void swipe(int x1, int y1, int x2, int y2, int duration) = 0;
-    virtual void press_key(int keycode) = 0;
+    virtual bool click(int x, int y) = 0;
+    virtual bool swipe(int x1, int y1, int x2, int y2, int duration) = 0;
+    virtual bool press_key(int keycode) = 0;
     virtual cv::Mat screencap() = 0;
 
     virtual bool touch_down(int contact, int x, int y, int pressure) = 0;

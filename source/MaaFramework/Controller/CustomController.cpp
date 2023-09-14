@@ -58,28 +58,28 @@ std::pair<int, int> CustomController::_get_resolution() const
     return { width, height };
 }
 
-void CustomController::_click(ClickParam param)
+bool CustomController::_click(ClickParam param)
 {
     LogFunc << VAR_VOIDP(handle_) << VAR_VOIDP(handle_->click) << VAR(param.x) << VAR(param.y);
 
     if (!handle_ || !handle_->click) {
         LogError << "handle_ or handle_->click is nullptr";
-        return;
+        return false;
     }
 
-    handle_->click(param.x, param.y);
+    return handle_->click(param.x, param.y);
 }
 
-void CustomController::_swipe(SwipeParam param)
+bool CustomController::_swipe(SwipeParam param)
 {
     LogFunc << VAR_VOIDP(handle_) << VAR_VOIDP(handle_->swipe) << VAR(param.x1) << VAR(param.x2) << VAR(param.y1)
             << VAR(param.y2) << VAR(param.duration);
 
     if (!handle_ || !handle_->swipe) {
         LogError << "handle_ or handle_->swipe is nullptr";
-        return;
+        return false;
     }
-    handle_->swipe(param.x1, param.y1, param.x2, param.y2, param.duration);
+    return handle_->swipe(param.x1, param.y1, param.x2, param.y2, param.duration);
 }
 
 bool CustomController::_touch_down(TouchParam param)
@@ -120,16 +120,16 @@ bool CustomController::_touch_up(TouchParam param)
     return handle_->touch_up(param.contact);
 }
 
-void CustomController::_press_key(PressKeyParam param)
+bool CustomController::_press_key(PressKeyParam param)
 {
     LogFunc << VAR_VOIDP(handle_) << VAR_VOIDP(handle_->press_key) << VAR(param.keycode);
 
     if (!handle_ || !handle_->press_key) {
         LogError << "handle_ or handle_->press_key is nullptr";
-        return;
+        return false;
     }
 
-    handle_->press_key(param.keycode);
+    return handle_->press_key(param.keycode);
 }
 
 cv::Mat CustomController::_screencap()
