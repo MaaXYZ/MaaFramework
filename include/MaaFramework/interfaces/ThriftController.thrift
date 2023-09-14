@@ -14,6 +14,13 @@ struct SwipeParam {
   2: Point point2,
   3: i32 duration,
 }
+
+struct AdvancedTouchParam {
+  1: i32 contact,
+  2: Point point,
+  3: i32 pressure,
+}
+
 struct PressKeyParam {
   1: i32 keycode,
 }
@@ -35,6 +42,11 @@ service ThriftController {
   bool connect(),
   bool click(1: ClickParam param),
   bool swipe(1: SwipeParam param),
+  
+  bool down(1: AdvancedTouchParam param),
+  bool move(1: AdvancedTouchParam param),
+  bool up(1: AdvancedTouchParam param),
+
   bool press_key(1: PressKeyParam param),
 
   bool start_game(1: string activity),

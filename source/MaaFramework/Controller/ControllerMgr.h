@@ -31,6 +31,13 @@ struct SwipeParam
     int y2 = 0;
     int duration = 0;
 };
+struct AdvancedTouchParam
+{
+    int contact = 0;
+    int x = 0;
+    int y = 0;
+    int pressure = 0;
+};
 struct PressKeyParam
 {
     int keycode = 0;
@@ -40,7 +47,7 @@ struct AppParam
     std::string package;
 };
 
-using Param = std::variant<std::monostate, ClickParam, SwipeParam, PressKeyParam, AppParam>;
+using Param = std::variant<std::monostate, ClickParam, SwipeParam, AdvancedTouchParam, PressKeyParam, AppParam>;
 
 struct Action
 {
@@ -49,6 +56,9 @@ struct Action
         connect,
         click,
         swipe,
+        down,
+        move,
+        up,
         press_key,
         screencap,
         start_app,
@@ -73,6 +83,10 @@ public:
     virtual MaaCtrlId post_click(int x, int y) override;
     virtual MaaCtrlId post_swipe(int x1, int y1, int x2, int y2, int duration) override;
     virtual MaaCtrlId post_screencap() override;
+
+    virtual MaaCtrlId post_down(int contact, int x, int y, int pressure) override;
+    virtual MaaCtrlId post_move(int contact, int x, int y, int pressure) override;
+    virtual MaaCtrlId post_up(int contact) override;
 
     virtual MaaStatus status(MaaCtrlId ctrl_id) const override;
     virtual MaaStatus wait(MaaCtrlId ctrl_id) const override;
@@ -101,6 +115,9 @@ protected:
     virtual std::pair<int, int> _get_resolution() const = 0;
     virtual void _click(ClickParam param) = 0;
     virtual void _swipe(SwipeParam param) = 0;
+    virtual bool _down(AdvancedTouchParam param) = 0;
+    virtual bool _move(AdvancedTouchParam param) = 0;
+    virtual bool _up(AdvancedTouchParam param) = 0;
     virtual void _press_key(PressKeyParam param) = 0;
     virtual cv::Mat _screencap() = 0;
     virtual bool _start_app(AppParam param) = 0;

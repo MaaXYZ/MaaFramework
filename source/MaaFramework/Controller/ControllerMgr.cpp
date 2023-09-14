@@ -86,6 +86,35 @@ MaaCtrlId ControllerMgr::post_screencap()
     return id;
 }
 
+MaaCtrlId ControllerMgr::post_down(int contact, int x, int y, int pressure)
+{
+    auto [xx, yy] = preproc_touch_point(x, y);
+    AdvancedTouchParam param { .contact = contact, .x = xx, .y = yy, .pressure = pressure };
+    auto id = action_runner_->post({ .type = Action::Type::down, .param = std::move(param) });
+    std::unique_lock lock { post_ids_mutex_ };
+    post_ids_.emplace(id);
+    return id;
+}
+
+MaaCtrlId ControllerMgr::post_move(int contact, int x, int y, int pressure)
+{
+    auto [xx, yy] = preproc_touch_point(x, y);
+    AdvancedTouchParam param { .contact = contact, .x = xx, .y = yy, .pressure = pressure };
+    auto id = action_runner_->post({ .type = Action::Type::move, .param = std::move(param) });
+    std::unique_lock lock { post_ids_mutex_ };
+    post_ids_.emplace(id);
+    return id;
+}
+
+MaaCtrlId ControllerMgr::post_up(int contact)
+{
+    AdvancedTouchParam param { .contact = contact };
+    auto id = action_runner_->post({ .type = Action::Type::up, .param = std::move(param) });
+    std::unique_lock lock { post_ids_mutex_ };
+    post_ids_.emplace(id);
+    return id;
+}
+
 MaaStatus ControllerMgr::status(MaaCtrlId ctrl_id) const
 {
     if (!action_runner_) {
@@ -243,6 +272,17 @@ bool ControllerMgr::run_action(typename AsyncRunner<Action>::Id id, Action actio
         _swipe(std::get<SwipeParam>(action.param));
         ret = true;
         break;
+
+    case Action::Type::down:
+        ret = _down(std::get<AdvancedTouchParam>(action.param));
+        break;
+    case Action::Type::move:
+        ret = _move(std::get<AdvancedTouchParam>(action.param));
+        break;
+    case Action::Type::up:
+        ret = _up(std::get<AdvancedTouchParam>(action.param));
+        break;
+
     case Action::Type::press_key:
         _press_key(std::get<PressKeyParam>(action.param));
         ret = true;

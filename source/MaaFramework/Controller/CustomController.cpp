@@ -72,14 +72,52 @@ void CustomController::_click(ClickParam param)
 
 void CustomController::_swipe(SwipeParam param)
 {
-    LogFunc << VAR_VOIDP(handle_) << VAR_VOIDP(handle_->swipe) << VAR(param.x1) << VAR(param.x2)
-            << VAR(param.y1) << VAR(param.y2) << VAR(param.duration);
+    LogFunc << VAR_VOIDP(handle_) << VAR_VOIDP(handle_->swipe) << VAR(param.x1) << VAR(param.x2) << VAR(param.y1)
+            << VAR(param.y2) << VAR(param.duration);
 
     if (!handle_ || !handle_->swipe) {
         LogError << "handle_ or handle_->swipe is nullptr";
         return;
     }
     handle_->swipe(param.x1, param.y1, param.x2, param.y2, param.duration);
+}
+
+bool CustomController::_down(AdvancedTouchParam param)
+{
+    LogFunc << VAR_VOIDP(handle_) << VAR_VOIDP(handle_->down) << VAR(param.contact) << VAR(param.x) << VAR(param.y)
+            << VAR(param.pressure);
+
+    if (!handle_ || !handle_->down) {
+        LogError << "handle_ or handle_->down is nullptr";
+        return false;
+    }
+
+    return handle_->down(param.contact, param.x, param.y, param.pressure);
+}
+
+bool CustomController::_move(AdvancedTouchParam param)
+{
+    LogFunc << VAR_VOIDP(handle_) << VAR_VOIDP(handle_->move) << VAR(param.contact) << VAR(param.x) << VAR(param.y)
+            << VAR(param.pressure);
+
+    if (!handle_ || !handle_->move) {
+        LogError << "handle_ or handle_->move is nullptr";
+        return false;
+    }
+
+    return handle_->move(param.contact, param.x, param.y, param.pressure);
+}
+
+bool CustomController::_up(AdvancedTouchParam param)
+{
+    LogFunc << VAR_VOIDP(handle_) << VAR_VOIDP(handle_->up) << VAR(param.contact);
+
+    if (!handle_ || !handle_->up) {
+        LogError << "handle_ or handle_->up is nullptr";
+        return false;
+    }
+
+    return handle_->up(param.contact);
 }
 
 void CustomController::_press_key(PressKeyParam param)

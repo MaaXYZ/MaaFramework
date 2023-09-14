@@ -252,4 +252,44 @@ bool MaatouchInput::press_key(int key)
     return true;
 }
 
+bool MaatouchInput::down(int contact, int x, int y, int pressure)
+{
+    if (!shell_handler_) {
+        LogError << "shell handler not ready";
+        return false;
+    }
+
+    auto [touch_x, touch_y] = screen_to_touch(x, y);
+
+    LogInfo << VAR(contact) << VAR(x) << VAR(y) << VAR(touch_x) << VAR(touch_y);
+
+    return shell_handler_->write(MAA_FMT::format("d {} {} {} {}\nc\n", contact, touch_x, touch_y, pressure));
+}
+
+bool MaatouchInput::move(int contact, int x, int y, int pressure)
+{
+    if (!shell_handler_) {
+        LogError << "shell handler not ready";
+        return false;
+    }
+
+    auto [touch_x, touch_y] = screen_to_touch(x, y);
+
+    LogInfo << VAR(contact) << VAR(x) << VAR(y) << VAR(touch_x) << VAR(touch_y);
+
+    return shell_handler_->write(MAA_FMT::format("m {} {} {} {}\nc\n", contact, touch_x, touch_y, pressure));
+}
+
+bool MaatouchInput::up(int contact)
+{
+    if (!shell_handler_) {
+        LogError << "shell handler not ready";
+        return false;
+    }
+
+    LogInfo << VAR(contact);
+
+    return shell_handler_->write(MAA_FMT::format("u {}\nc\n", contact));
+}
+
 MAA_CTRL_UNIT_NS_END

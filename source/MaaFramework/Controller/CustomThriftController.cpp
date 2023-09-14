@@ -155,6 +155,57 @@ void CustomThriftController::_swipe(SwipeParam param)
     client_->swipe(thrift_param);
 }
 
+bool CustomThriftController::_down(AdvancedTouchParam param)
+{
+    LogFunc << VAR(param.contact) << VAR(param.x) << VAR(param.y) << VAR(param.pressure);
+
+    if (!client_ || !transport_->isOpen()) {
+        LogError << "client_ is nullptr or transport_ is not open";
+        return;
+    }
+
+    ThriftController::AdvancedTouchParam thrift_param;
+    thrift_param.contact = param.contact;
+    thrift_param.point.x = param.x;
+    thrift_param.point.y = param.y;
+    thrift_param.pressure = param.pressure;
+
+    return client_->down(thrift_param);
+}
+
+bool CustomThriftController::_move(AdvancedTouchParam param)
+{
+    LogFunc << VAR(param.contact) << VAR(param.x) << VAR(param.y) << VAR(param.pressure);
+
+    if (!client_ || !transport_->isOpen()) {
+        LogError << "client_ is nullptr or transport_ is not open";
+        return;
+    }
+
+    ThriftController::AdvancedTouchParam thrift_param;
+    thrift_param.contact = param.contact;
+    thrift_param.point.x = param.x;
+    thrift_param.point.y = param.y;
+    thrift_param.pressure = param.pressure;
+
+    return client_->move(thrift_param);
+}
+
+bool CustomThriftController::_up(AdvancedTouchParam param)
+{
+    LogFunc << VAR(param.contact);
+
+    if (!client_ || !transport_->isOpen()) {
+        LogError << "client_ is nullptr or transport_ is not open";
+        return;
+    }
+
+    ThriftController::AdvancedTouchParam thrift_param;
+    thrift_param.contact = param.contact;
+
+    return client_->up(thrift_param);
+}
+
 void CustomThriftController::_press_key(PressKeyParam param)
 {
     LogFunc;

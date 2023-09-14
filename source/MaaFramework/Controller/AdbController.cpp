@@ -144,6 +144,54 @@ void AdbController::_swipe(SwipeParam param)
     }
 }
 
+bool AdbController::_down(AdvancedTouchParam param)
+{
+    if (!unit_mgr_ || !unit_mgr_->touch_input_obj()) {
+        LogError << "unit is nullptr" << VAR(unit_mgr_) << VAR(unit_mgr_->touch_input_obj());
+        return false;
+    }
+
+    bool ret = unit_mgr_->touch_input_obj()->down(param.contact, param.x, param.y, param.pressure);
+
+    if (!ret) {
+        LogError << "failed to down";
+    }
+
+    return ret;
+}
+
+bool AdbController::_move(AdvancedTouchParam param)
+{
+    if (!unit_mgr_ || !unit_mgr_->touch_input_obj()) {
+        LogError << "unit is nullptr" << VAR(unit_mgr_) << VAR(unit_mgr_->touch_input_obj());
+        return false;
+    }
+
+    bool ret = unit_mgr_->touch_input_obj()->move(param.contact, param.x, param.y, param.pressure);
+
+    if (!ret) {
+        LogError << "failed to move";
+    }
+
+    return ret;
+}
+
+bool AdbController::_up(AdvancedTouchParam param)
+{
+    if (!unit_mgr_ || !unit_mgr_->touch_input_obj()) {
+        LogError << "unit is nullptr" << VAR(unit_mgr_) << VAR(unit_mgr_->touch_input_obj());
+        return false;
+    }
+
+    bool ret = unit_mgr_->touch_input_obj()->move(param.contact, param.x, param.y, param.pressure);
+
+    if (!ret) {
+        LogError << "failed to up";
+    }
+
+    return ret;
+}
+
 void AdbController::_press_key(PressKeyParam param)
 {
     if (!unit_mgr_ || !unit_mgr_->key_input_obj()) {

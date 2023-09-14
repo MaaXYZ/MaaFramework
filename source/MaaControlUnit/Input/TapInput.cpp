@@ -50,6 +50,24 @@ bool TapTouchInput::swipe(int x1, int y1, int x2, int y2, int duration)
     return cmd_ret.has_value() && cmd_ret.value().empty();
 }
 
+bool TapTouchInput::down(int contact, int x, int y, int pressure)
+{
+    LogError << "TapTouchInput not supports" << VAR(contact) << VAR(x) << VAR(y) << VAR(pressure);
+    return false;
+}
+
+bool TapTouchInput::move(int contact, int x, int y, int pressure)
+{
+    LogError << "TapTouchInput not supports" << VAR(contact) << VAR(x) << VAR(y) << VAR(pressure);
+    return false;
+}
+
+bool TapTouchInput::up(int contact)
+{
+    LogError << "TapTouchInput not supports" << VAR(contact);
+    return false;
+}
+
 bool TapKeyInput::parse(const json::value& config)
 {
     return parse_argv("PressKey", config, press_key_argv_);

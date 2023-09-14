@@ -43,6 +43,10 @@ public:
     virtual MaaCtrlId post_swipe(int x1, int y1, int x2, int y2, int duration) = 0;
     virtual MaaCtrlId post_screencap() = 0;
 
+    virtual MaaCtrlId post_down(int contact, int x, int y, int pressure) = 0;
+    virtual MaaCtrlId post_move(int contact, int x, int y, int pressure) = 0;
+    virtual MaaCtrlId post_up(int contact) = 0;
+
     virtual MaaStatus status(MaaCtrlId ctrl_id) const = 0;
     virtual MaaStatus wait(MaaCtrlId ctrl_id) const = 0;
     virtual MaaBool connected() const = 0;
