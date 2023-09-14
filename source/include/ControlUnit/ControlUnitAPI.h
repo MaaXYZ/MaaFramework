@@ -51,13 +51,6 @@ public:
 
 /* Input */
 
-struct SwipeStep
-{
-    int x = 0;
-    int y = 0;
-    int delay = 0;
-};
-
 class TouchInputAPI
 {
 public:
@@ -68,7 +61,7 @@ public:
     virtual void set_wh(int swidth, int sheight, int orientation) = 0;
 
     virtual bool click(int x, int y) = 0;
-    virtual bool swipe(const std::vector<SwipeStep>& steps) = 0;
+    virtual bool swipe(int x1, int y1, int x2, int y2, int duration) = 0;
 };
 
 class KeyInputAPI

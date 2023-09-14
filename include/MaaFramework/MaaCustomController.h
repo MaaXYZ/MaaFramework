@@ -14,7 +14,7 @@ extern "C"
 
         MaaBool (*connect)(void);
         MaaBool (*click)(int32_t x, int32_t y);
-        MaaBool (*swipe)(int32_t* x_steps_buff, int32_t* y_steps_buff, int32_t* step_delay_buff, MaaSize buff_size);
+        MaaBool (*swipe)(int32_t x1, int32_t y1, int32_t x2, int32_t y2, int32_t duration);
         MaaBool (*press_key)(int32_t keycode);
 
         MaaBool (*start_app)(MaaStringView package_name);

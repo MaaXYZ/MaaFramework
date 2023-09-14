@@ -2,7 +2,6 @@
 
 #include "MaaFramework/MaaMsg.h"
 #include "Resource/ResourceMgr.h"
-#include "Utils/Math.hpp"
 #include "Utils/NoWarningCV.hpp"
 
 #include <tuple>
@@ -60,7 +59,7 @@ MaaCtrlId ControllerMgr::post_connection()
 
 MaaCtrlId ControllerMgr::post_click(int x, int y)
 {
-    auto [xx, yy] = preproc_touch_coord(x, y);
+    auto [xx, yy] = preproc_touch_point(x, y);
     ClickParam param { .x = xx, .y = yy };
     auto id = action_runner_->post({ .type = Action::Type::click, .param = std::move(param) });
     std::unique_lock lock { post_ids_mutex_ };
@@ -68,19 +67,11 @@ MaaCtrlId ControllerMgr::post_click(int x, int y)
     return id;
 }
 
-MaaCtrlId ControllerMgr::post_swipe(std::vector<int> x_steps, std::vector<int> y_steps, std::vector<int> step_delay)
+MaaCtrlId ControllerMgr::post_swipe(int x1, int y1, int x2, int y2, int duration)
 {
-    SwipeParam param;
-    for (size_t i = 0; i != x_steps.size(); ++i) {
-        auto [xx, yy] = preproc_touch_coord(x_steps[i], y_steps[i]);
-        SwipeParam::Step step {
-            .x = xx,
-            .y = yy,
-            .delay = step_delay[i],
-        };
-        param.steps.emplace_back(std::move(step));
-    }
-
+    auto [xx1, yy1] = preproc_touch_point(x1, y1);
+    auto [xx2, yy2] = preproc_touch_point(x2, y2);
+    SwipeParam param { .x1 = xx1, .y1 = yy1, .x2 = xx2, .y2 = yy2, .duration = duration };
     auto id = action_runner_->post({ .type = Action::Type::swipe, .param = std::move(param) });
     std::unique_lock lock { post_ids_mutex_ };
     post_ids_.emplace(id);
@@ -136,7 +127,7 @@ void ControllerMgr::click(const cv::Rect& r)
 
 void ControllerMgr::click(const cv::Point& p)
 {
-    auto [x, y] = preproc_touch_coord(p.x, p.y);
+    auto [x, y] = preproc_touch_point(p.x, p.y);
     ClickParam param { .x = x, .y = y };
     action_runner_->post({ .type = Action::Type::click, .param = std::move(param) }, true);
 }
@@ -150,17 +141,10 @@ void ControllerMgr::swipe(const cv::Point& p1, const cv::Point& p2, int duration
 {
     constexpr int SampleDelay = 2;
 
-    auto [x1, y1] = preproc_touch_coord(p1.x, p1.y);
-    auto [x2, y2] = preproc_touch_coord(p2.x, p2.y);
+    auto [x1, y1] = preproc_touch_point(p1.x, p1.y);
+    auto [x2, y2] = preproc_touch_point(p2.x, p2.y);
 
-    SwipeParam param;
-    auto cs = CubicSpline::smooth_in_out(1, 1);
-    for (int i = 0; i < duration; i += SampleDelay) {
-        auto progress = cs(static_cast<double>(i) / duration);
-        int x = static_cast<int>(round(std::lerp(x1, x2, progress)));
-        int y = static_cast<int>(round(std::lerp(y1, y2, progress)));
-        param.steps.emplace_back(SwipeParam::Step { .x = x, .y = y, .delay = SampleDelay });
-    }
+    SwipeParam param { .x1 = x1, .y1 = y1, .x2 = x2, .y2 = y2, .duration = duration };
     action_runner_->post({ .type = Action::Type::swipe, .param = std::move(param) }, true);
 }
 
@@ -291,7 +275,7 @@ bool ControllerMgr::run_action(typename AsyncRunner<Action>::Id id, Action actio
     return ret;
 }
 
-std::pair<int, int> ControllerMgr::preproc_touch_coord(int x, int y)
+std::pair<int, int> ControllerMgr::preproc_touch_point(int x, int y)
 {
     auto [res_w, res_h] = _get_resolution();
 
@@ -423,12 +407,6 @@ bool ControllerMgr::set_default_app_package(MaaOptionValue value, MaaOptionValue
     std::string_view package(reinterpret_cast<char*>(value), val_size);
     default_app_package_ = package;
     return true;
-}
-
-std::ostream& operator<<(std::ostream& os, const SwipeParam::Step& step)
-{
-    os << VAR_RAW(step.x) << VAR_RAW(step.y) << VAR_RAW(step.delay);
-    return os;
 }
 
 std::ostream& operator<<(std::ostream& os, const Action& action)

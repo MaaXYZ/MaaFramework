@@ -37,7 +37,6 @@
     <ClInclude Include="..\include\Utils\ImageIo.h" />
     <ClInclude Include="..\include\Utils\Locale.hpp" />
     <ClInclude Include="..\include\Utils\Logger.h" />
-    <ClInclude Include="..\include\Utils\Math.hpp" />
     <ClInclude Include="..\include\Utils\NonCopyable.hpp" />
     <ClInclude Include="..\include\Utils\NoWarningCV.hpp" />
     <ClInclude Include="..\include\Utils\NoWarningCVMat.hpp" />

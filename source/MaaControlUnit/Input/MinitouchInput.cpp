@@ -174,16 +174,16 @@ bool MinitouchInput::click(int x, int y)
     }
 
     if (x < 0 || x >= screen_width_ || y < 0 || y >= screen_height_) {
-        LogError << "click point out of range";
+        LogWarn << "click point out of range" << VAR(x) << VAR(y);
         x = std::clamp(x, 0, screen_width_ - 1);
         y = std::clamp(y, 0, screen_height_ - 1);
     }
 
-    auto [real_x, real_y] = scale_point(x, y);
+    auto [touch_x, touch_y] = screen_to_touch(x, y);
 
-    LogInfo << VAR(x) << VAR(y) << VAR(real_x) << VAR(real_y);
+    LogInfo << VAR(x) << VAR(y) << VAR(touch_x) << VAR(touch_y);
 
-    bool res = shell_handler_->write(MAA_FMT::format("d {} {} {} {}\nc\n", 0, real_x, real_y, press_)) &&
+    bool res = shell_handler_->write(MAA_FMT::format("d {} {} {} {}\nc\n", 0, touch_x, touch_y, press_)) &&
                shell_handler_->write(MAA_FMT::format("u {}\nc\n", 0));
 
     if (!res) {
@@ -195,71 +195,66 @@ bool MinitouchInput::click(int x, int y)
     return true;
 }
 
-bool MinitouchInput::swipe(const std::vector<SwipeStep>& steps)
+bool MinitouchInput::swipe(int x1, int y1, int x2, int y2, int duration)
 {
-    if (!shell_handler_ || steps.size() < 2) {
+    if (!shell_handler_) {
         return false;
     }
 
-    // 检查第一个点的位置?
-    {
-        auto first = steps[0];
-        auto [x, y] = scale_point(first.x, first.y);
-        auto now = std::chrono::steady_clock::now();
-        if (!shell_handler_->write(MAA_FMT::format("d {} {} {} {}\nc\n", 0, x, y, press_))) {
-            return false;
-        }
-        auto used = std::chrono::steady_clock::now() - now;
-        auto expect = std::chrono::milliseconds(first.delay);
-        if (used < expect) {
-            std::this_thread::sleep_for(expect - used);
+    if (x1 < 0 || x1 >= screen_width_ || y1 < 0 || y1 >= screen_height_ || x2 < 0 || x2 >= screen_width_ || y2 < 0 ||
+        y2 >= screen_height_) {
+        LogWarn << "swipe point out of range" << VAR(x1) << VAR(y1) << VAR(x2) << VAR(y2);
+        x1 = std::clamp(x1, 0, screen_width_ - 1);
+        y1 = std::clamp(y1, 0, screen_height_ - 1);
+        x2 = std::clamp(x2, 0, screen_width_ - 1);
+        y2 = std::clamp(y2, 0, screen_height_ - 1);
+    }
+    if (duration <= 0) {
+        LogWarn << "duration out of range" << VAR(duration);
+        duration = 500;
+    }
+
+    auto [touch_x1, touch_y1] = screen_to_touch(x1, y1);
+    auto [touch_x2, touch_y2] = screen_to_touch(x2, y2);
+
+    LogInfo << VAR(x1) << VAR(y1) << VAR(touch_x1) << VAR(touch_y1) << VAR(x2) << VAR(y2) << VAR(touch_x2)
+            << VAR(touch_y2) << VAR(duration);
+
+    auto start = std::chrono::steady_clock::now();
+    auto now = start;
+    bool ret = true;
+    ret &= shell_handler_->write(MAA_FMT::format("d {} {} {} {}\nc\n", 0, touch_x1, touch_y1, press_));
+    if (!ret) {
+        LogError << "write error";
+        return false;
+    }
+
+    constexpr double kInterval = 10; // ms
+    const double steps = duration / kInterval;
+    const double x_step_len = (x2 - x1) / steps;
+    const double y_step_len = (y2 - y1) / steps;
+    const std::chrono::milliseconds delay(static_cast<int>(kInterval));
+
+    for (int i = 0; i < steps; ++i) {
+        auto [tx, ty] = screen_to_touch(x1 + steps * x_step_len, y1 + steps * y_step_len);
+        std::this_thread::sleep_until(now + delay);
+        now = std::chrono::steady_clock::now();
+
+        ret &= shell_handler_->write(MAA_FMT::format("m {} {} {} {}\nc\n", 0, tx, ty, press_));
+        if (!ret) {
+            LogWarn << "write error";
         }
     }
 
-    for (auto it = steps.begin() + 1; it != steps.end(); it++) {
-        int x = it->x, y = it->y;
-        auto now = std::chrono::steady_clock::now();
-        auto res = shell_handler_->write(MAA_FMT::format("m {} {} {} {}\nc\n", 0, x, y, press_));
-        if (!res) {
-            return false;
-        }
-        auto used = std::chrono::steady_clock::now() - now;
-        auto expect = std::chrono::milliseconds(it->delay);
-        if (used < expect) {
-            std::this_thread::sleep_for(expect - used);
-        }
-    }
+    std::this_thread::sleep_until(now + delay);
+    now = std::chrono::steady_clock::now();
+    ret &= shell_handler_->write(MAA_FMT::format("m {} {} {} {}\nc\n", 0, touch_x2, touch_y2, press_));
 
-    return shell_handler_->write(MAA_FMT::format("u {}\nc\n", 0));
-}
+    std::this_thread::sleep_until(now + delay);
+    now = std::chrono::steady_clock::now();
+    ret &= shell_handler_->write(MAA_FMT::format("u {}\nc\n", 0));
 
-std::pair<int, int> MinitouchInput::scale_point(int x, int y)
-{
-    auto int_round = [](double v) -> int { return static_cast<int>(round(v)); };
-
-    switch (orientation_) {
-    case 0:
-    default:
-        return {
-            int_round(x * xscale_),
-            int_round(y * yscale_),
-        };
-    case 1:
-        return {
-            touch_height_ - int_round(y * yscale_),
-            int_round(x * xscale_),
-        };
-    case 2:
-        return {
-            touch_width_ - int_round(x * xscale_),
-            touch_height_ - int_round(y * yscale_),
-        };
-    case 3:
-        return {
-            int_round(y * yscale_),
-            touch_width_ - int_round(x * xscale_),
-        };
-    }
+    return ret;
 }
 
 MAA_CTRL_UNIT_NS_END

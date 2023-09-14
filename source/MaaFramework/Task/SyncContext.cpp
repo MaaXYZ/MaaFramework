@@ -108,9 +108,9 @@ void SyncContext::click(int x, int y)
     ctrl->wait(id);
 }
 
-void SyncContext::swipe(std::vector<int> x_steps, std::vector<int> y_steps, std::vector<int> step_delay)
+void SyncContext::swipe(int x1, int y1, int x2, int y2, int duration)
 {
-    LogFunc << VAR(x_steps) << VAR(y_steps) << VAR(step_delay);
+    LogFunc << VAR(x1) << VAR(x2) << VAR(y1) << VAR(y2) << VAR(duration);
 
     auto* ctrl = controller();
     if (!ctrl) {
@@ -118,7 +118,7 @@ void SyncContext::swipe(std::vector<int> x_steps, std::vector<int> y_steps, std:
         return;
     }
 
-    auto id = ctrl->post_swipe(std::move(x_steps), std::move(y_steps), std::move(step_delay));
+    auto id = ctrl->post_swipe(x1, x2, y1, y2, duration);
     ctrl->wait(id);
 }
 

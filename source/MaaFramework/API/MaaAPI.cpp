@@ -388,22 +388,17 @@ MaaCtrlId MaaControllerPostClick(MaaControllerHandle ctrl, int32_t x, int32_t y)
     return ctrl->post_click(x, y);
 }
 
-MaaCtrlId MaaControllerPostSwipe(MaaControllerHandle ctrl, int32_t* x_steps_buff, int32_t* y_steps_buff,
-                                 int32_t* step_delay_buff, MaaSize buff_size)
+MaaCtrlId MaaControllerPostSwipe(MaaControllerHandle ctrl, int32_t x1, int32_t y1, int32_t x2, int32_t y2,
+                                 int32_t duration)
 {
-    LogFunc << VAR_VOIDP(ctrl) << VAR_VOIDP(x_steps_buff) << VAR_VOIDP(y_steps_buff) << VAR_VOIDP(step_delay_buff)
-            << VAR(buff_size);
+    LogFunc << VAR_VOIDP(ctrl) << VAR(x1) << VAR(y1) << VAR(x2) << VAR(y2) << VAR(duration);
 
-    if (!ctrl || !x_steps_buff || !y_steps_buff || !step_delay_buff || buff_size < 2) {
+    if (!ctrl) {
         LogError << "handle is null";
         return MaaInvalidId;
     }
 
-    std::vector<int32_t> x_steps(x_steps_buff, x_steps_buff + buff_size);
-    std::vector<int32_t> y_steps(y_steps_buff, y_steps_buff + buff_size);
-    std::vector<int32_t> step_delay(step_delay_buff, step_delay_buff + buff_size);
-
-    return ctrl->post_swipe(std::move(x_steps), std::move(y_steps), std::move(step_delay));
+    return ctrl->post_swipe(x1, y1, x2, y2, duration);
 }
 
 MaaCtrlId MaaControllerPostScreencap(MaaControllerHandle ctrl)
@@ -780,22 +775,17 @@ void MaaSyncContextClick(MaaSyncContextHandle sync_context, int32_t x, int32_t y
     return sync_context->click(x, y);
 }
 
-void MaaSyncContextSwipe(MaaSyncContextHandle sync_context, int32_t* x_steps_buff, int32_t* y_steps_buff,
-                         int32_t* step_delay_buff, MaaSize buff_size)
+void MaaSyncContextSwipe(MaaSyncContextHandle sync_context, int32_t x1, int32_t y1, int32_t x2, int32_t y2,
+                         int32_t duration)
 {
-    LogFunc << VAR_VOIDP(sync_context) << VAR(x_steps_buff) << VAR(y_steps_buff) << VAR(step_delay_buff)
-            << VAR(buff_size);
+    LogFunc << VAR_VOIDP(sync_context) << VAR(x1) << VAR(y1) << VAR(x2) << VAR(y2) << VAR(duration);
 
     if (!sync_context) {
         LogError << "handle is null";
         return;
     }
 
-    std::vector<int32_t> x_steps(x_steps_buff, x_steps_buff + buff_size);
-    std::vector<int32_t> y_steps(y_steps_buff, y_steps_buff + buff_size);
-    std::vector<int32_t> step_delay(step_delay_buff, step_delay_buff + buff_size);
-
-    sync_context->swipe(std::move(x_steps), std::move(y_steps), std::move(step_delay));
+    sync_context->swipe(x1, y1, x2, y2, duration);
 }
 
 MaaBool MaaSyncContextScreencap(MaaSyncContextHandle sync_context, MaaImageBufferHandle buffer)

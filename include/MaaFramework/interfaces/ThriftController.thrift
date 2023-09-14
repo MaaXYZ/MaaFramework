@@ -9,13 +9,10 @@ struct ClickParam {
   1: Point point,
 }
 
-struct SwipeStep {
-  1: Point point,
-  2: i32 delay,
-}
-
 struct SwipeParam {
-  1: list<SwipeStep> steps,
+  1: Point point1,
+  2: Point point2,
+  3: i32 duration,
 }
 struct PressKeyParam {
   1: i32 keycode,

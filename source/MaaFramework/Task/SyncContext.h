@@ -28,7 +28,7 @@ public: // from MaaSyncContextAPI
                             std::string cur_detail) override;
 
     virtual void click(int x, int y) override;
-    virtual void swipe(std::vector<int> x_steps, std::vector<int> y_steps, std::vector<int> step_delay) override;
+    virtual void swipe(int x1, int y1, int x2, int y2, int duration) override;
     virtual cv::Mat screencap() override;
 
     virtual std::string task_result(const std::string& task_name) const override;

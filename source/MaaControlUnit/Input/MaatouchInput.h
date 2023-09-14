@@ -41,13 +41,17 @@ public: // from TouchInputAPI
     virtual void set_wh(int swidth, int sheight, int orientation) override;
 
     virtual bool click(int x, int y) override;
-    virtual bool swipe(const std::vector<SwipeStep>& steps) override;
+    virtual bool swipe(int x1, int y1, int x2, int y2, int duration) override;
 
 public: // from KeyInputAPI
     virtual bool press_key(int key) override;
 
 private:
-    std::pair<int, int> scale_point(int x, int y);
+    template <typename T1, typename T2>
+    inline std::pair<int, int> screen_to_touch(T1 x, T2 y)
+    {
+        return std::make_pair(static_cast<int>(round(x * xscale_)), static_cast<int>(round(y * yscale_)));
+    }
 
     std::shared_ptr<InvokeApp> invoke_app_ = std::make_shared<InvokeApp>();
     std::shared_ptr<IOHandler> shell_handler_ = nullptr;

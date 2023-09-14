@@ -18,7 +18,7 @@ public: // from TouchInputAPI
     virtual void set_wh(int swidth, int sheight, int orientation) override;
 
     virtual bool click(int x, int y) override;
-    virtual bool swipe(const std::vector<SwipeStep>& steps) override;
+    virtual bool swipe(int x1, int y1, int x2, int y2, int duration) override;
 
 private:
     Argv click_argv_;

@@ -72,27 +72,14 @@ void CustomController::_click(ClickParam param)
 
 void CustomController::_swipe(SwipeParam param)
 {
-    LogFunc << VAR_VOIDP(handle_) << VAR_VOIDP(handle_->swipe) << VAR(param.steps.size()) << VAR(param.steps.front())
-            << VAR(param.steps.back());
+    LogFunc << VAR_VOIDP(handle_) << VAR_VOIDP(handle_->swipe) << VAR(param.x1) << VAR(param.x2)
+            << VAR(param.y1) << VAR(param.y2) << VAR(param.duration);
 
     if (!handle_ || !handle_->swipe) {
         LogError << "handle_ or handle_->swipe is nullptr";
         return;
     }
-    size_t size = param.steps.size();
-
-    std::vector<int32_t> x_buf, y_buf, delay_buf;
-    x_buf.reserve(size);
-    y_buf.reserve(size);
-    delay_buf.reserve(size);
-
-    for (const auto& step : param.steps) {
-        x_buf.emplace_back(step.x);
-        y_buf.emplace_back(step.y);
-        delay_buf.emplace_back(step.delay);
-    }
-
-    handle_->swipe(x_buf.data(), y_buf.data(), delay_buf.data(), size);
+    handle_->swipe(param.x1, param.x2, param.y1, param.y2, param.duration);
 }
 
 void CustomController::_press_key(PressKeyParam param)

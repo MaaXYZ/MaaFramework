@@ -140,23 +140,14 @@ void CustomThriftController::_click(ClickParam param)
 
 void CustomThriftController::_swipe(SwipeParam param)
 {
-    LogFunc << VAR(param.steps.size()) << VAR(param.steps.front()) << VAR(param.steps.back());
+    LogFunc << VAR(param.x1) << VAR(param.x2) << VAR(param.y1) << VAR(param.y2) << VAR(param.duration);
 
     if (!client_ || !transport_->isOpen()) {
         LogError << "client_ is nullptr or transport_ is not open";
         return;
     }
 
-    ThriftController::SwipeParam swipe_param;
-    for (const auto& step : param.steps) {
-        ThriftController::SwipeStep thrift_step;
-        thrift_step.point.x = step.x;
-        thrift_step.point.y = step.y;
-        thrift_step.delay = step.delay;
-        swipe_param.steps.push_back(thrift_step);
-    }
-
-    client_->swipe(swipe_param);
+    client_->swipe(param.x1, param.x2, param.y1, param.y2, param.duration);
 }
 
 void CustomThriftController::_press_key(PressKeyParam param)

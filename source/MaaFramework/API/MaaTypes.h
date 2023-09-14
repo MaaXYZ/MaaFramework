@@ -40,7 +40,7 @@ public:
 
     virtual MaaCtrlId post_connection() = 0;
     virtual MaaCtrlId post_click(int x, int y) = 0;
-    virtual MaaCtrlId post_swipe(std::vector<int> x_steps, std::vector<int> y_steps, std::vector<int> step_delay) = 0;
+    virtual MaaCtrlId post_swipe(int x1, int y1, int x2, int y2, int duration) = 0;
     virtual MaaCtrlId post_screencap() = 0;
 
     virtual MaaStatus status(MaaCtrlId ctrl_id) const = 0;
@@ -93,7 +93,7 @@ public:
     virtual bool run_action(std::string task, std::string_view param, cv::Rect cur_box, std::string cur_detail) = 0;
 
     virtual void click(int x, int y) = 0;
-    virtual void swipe(std::vector<int> x_steps, std::vector<int> y_steps, std::vector<int> step_delay) = 0;
+    virtual void swipe(int x1, int y1, int x2, int y2, int duration) = 0;
     virtual cv::Mat screencap() = 0;
 
     virtual std::string task_result(const std::string& task_name) const = 0;

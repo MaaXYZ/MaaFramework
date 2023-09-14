@@ -25,13 +25,11 @@ struct ClickParam
 };
 struct SwipeParam
 {
-    struct Step
-    {
-        int x = 0;
-        int y = 0;
-        int delay = 0;
-    };
-    std::vector<Step> steps;
+    int x1 = 0;
+    int y1 = 0;
+    int x2 = 0;
+    int y2 = 0;
+    int duration = 0;
 };
 struct PressKeyParam
 {
@@ -41,8 +39,6 @@ struct AppParam
 {
     std::string package;
 };
-
-std::ostream& operator<<(std::ostream& os, const SwipeParam::Step& step);
 
 using Param = std::variant<std::monostate, ClickParam, SwipeParam, PressKeyParam, AppParam>;
 
@@ -75,8 +71,7 @@ public:
 
     virtual MaaCtrlId post_connection() override;
     virtual MaaCtrlId post_click(int x, int y) override;
-    virtual MaaCtrlId post_swipe(std::vector<int> x_steps, std::vector<int> y_steps,
-                                 std::vector<int> step_delay) override;
+    virtual MaaCtrlId post_swipe(int x1, int y1, int x2, int y2, int duration) override;
     virtual MaaCtrlId post_screencap() override;
 
     virtual MaaStatus status(MaaCtrlId ctrl_id) const override;
@@ -118,7 +113,7 @@ private:
     static cv::Point rand_point(const cv::Rect& r);
 
     bool run_action(typename AsyncRunner<Action>::Id id, Action action);
-    std::pair<int, int> preproc_touch_coord(int x, int y);
+    std::pair<int, int> preproc_touch_point(int x, int y);
     bool postproc_screenshot(const cv::Mat& raw);
     bool check_and_calc_target_image_size(const cv::Mat& raw);
     void clear_target_image_size();

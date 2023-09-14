@@ -26,7 +26,7 @@ void TapTouchInput::set_wh(int swidth, int sheight, int orientation)
 
 bool TapTouchInput::click(int x, int y)
 {
-    LogFunc;
+    LogInfo << VAR(x) << VAR(y);
 
     merge_replacement({ { "{X}", std::to_string(x) }, { "{Y}", std::to_string(y) } });
 
@@ -36,25 +36,15 @@ bool TapTouchInput::click(int x, int y)
     return cmd_ret && cmd_ret->empty();
 }
 
-bool TapTouchInput::swipe(const std::vector<SwipeStep>& steps)
+bool TapTouchInput::swipe(int x1, int y1, int x2, int y2, int duration)
 {
-    LogFunc;
+    LogInfo << VAR(x1) << VAR(y1) << VAR(x2) << VAR(y2) << VAR(duration);
 
-    if (steps.size() < 2) {
-        LogError << VAR(steps.size());
-        return false;
-    }
-
-    int delay_sum = 0;
-    for (const auto& step : steps) {
-        delay_sum += step.delay;
-    }
-
-    merge_replacement({ { "{X1}", std::to_string(steps.front().x) },
-                        { "{Y1}", std::to_string(steps.front().y) },
-                        { "{X2}", std::to_string(steps.back().x) },
-                        { "{Y2}", std::to_string(steps.back().y) },
-                        { "{DURATION}", std::to_string(delay_sum) } });
+    merge_replacement({ { "{X1}", std::to_string(x1) },
+                        { "{Y1}", std::to_string(y1) },
+                        { "{X2}", std::to_string(x2) },
+                        { "{Y2}", std::to_string(y2) },
+                        { "{DURATION}", duration ? std::to_string(duration) : std::string() } });
     auto cmd_ret = command(swipe_argv_.gen(argv_replace_));
 
     return cmd_ret.has_value() && cmd_ret.value().empty();
@@ -67,7 +57,7 @@ bool TapKeyInput::parse(const json::value& config)
 
 bool TapKeyInput::press_key(int key)
 {
-    LogFunc;
+    LogInfo << VAR(key);
 
     merge_replacement({ { "{KEY}", std::to_string(key) } });
     auto cmd_ret = command(press_key_argv_.gen(argv_replace_));

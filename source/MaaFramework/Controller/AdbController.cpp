@@ -137,12 +137,7 @@ void AdbController::_swipe(SwipeParam param)
         return;
     }
 
-    std::vector<MAA_CTRL_UNIT_NS::SwipeStep> steps;
-    for (const auto& step : param.steps) {
-        steps.emplace_back(MAA_CTRL_UNIT_NS::SwipeStep { step.x, step.y, step.delay });
-    }
-
-    bool ret = unit_mgr_->touch_input_obj()->swipe(steps);
+    bool ret = unit_mgr_->touch_input_obj()->swipe(param.x1, param.x2, param.y1, param.y2, param.duration);
 
     if (!ret) {
         LogError << "failed to swipe";

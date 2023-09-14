@@ -71,9 +71,8 @@ extern "C"
 
     MaaCtrlId MAA_FRAMEWORK_API MaaControllerPostConnection(MaaControllerHandle ctrl);
     MaaCtrlId MAA_FRAMEWORK_API MaaControllerPostClick(MaaControllerHandle ctrl, int32_t x, int32_t y);
-    MaaCtrlId MAA_FRAMEWORK_API MaaControllerPostSwipe(MaaControllerHandle ctrl, int32_t* x_steps_buff,
-                                                       int32_t* y_steps_buff, int32_t* step_delay_buff,
-                                                       MaaSize buff_size);
+    MaaCtrlId MAA_FRAMEWORK_API MaaControllerPostSwipe(MaaControllerHandle ctrl, int32_t x1, int32_t y1, int32_t x2,
+                                                       int32_t y2, int32_t duration);
     MaaCtrlId MAA_FRAMEWORK_API MaaControllerPostScreencap(MaaControllerHandle ctrl);
 
     MaaStatus MAA_FRAMEWORK_API MaaControllerStatus(MaaControllerHandle ctrl, MaaCtrlId id);
@@ -128,8 +127,8 @@ extern "C"
                                                       MaaStringView task_param, MaaRectHandle cur_box,
                                                       MaaStringView cur_rec_detail);
     void MAA_FRAMEWORK_API MaaSyncContextClick(MaaSyncContextHandle sync_context, int32_t x, int32_t y);
-    void MAA_FRAMEWORK_API MaaSyncContextSwipe(MaaSyncContextHandle sync_context, int32_t* x_steps_buff,
-                                               int32_t* y_steps_buff, int32_t* step_delay_buff, MaaSize buff_size);
+    void MAA_FRAMEWORK_API MaaSyncContextSwipe(MaaSyncContextHandle sync_context, int32_t x1, int32_t y1, int32_t x2,
+                                               int32_t y2, int32_t duration);
     MaaBool MAA_FRAMEWORK_API MaaSyncContextScreencap(MaaSyncContextHandle sync_context,
                                                       /* out */ MaaImageBufferHandle buffer);
     MaaBool MAA_FRAMEWORK_API MaaSyncContextGetTaskResult(MaaSyncContextHandle sync_context, MaaStringView task,
