@@ -91,7 +91,7 @@ bool ResourceMgr::run_load(typename AsyncRunner<std::filesystem::path>::Id id, s
 
     loaded_ = load(path);
 
-    notifier.notify(loaded_ ? MaaMsg_Resource_LoadingCompleted : MaaMsg_Resource_LoadingError, details);
+    notifier.notify(loaded_ ? MaaMsg_Resource_LoadingCompleted : MaaMsg_Resource_LoadingFailed, details);
 
     return loaded_;
 }

@@ -10,7 +10,7 @@
 */
 #define MaaMsg_Resource_StartLoading ("Resource.StartLoading")
 #define MaaMsg_Resource_LoadingCompleted ("Resource.LoadingCompleted")
-#define MaaMsg_Resource_LoadingError ("Resource.LoadingError")
+#define MaaMsg_Resource_LoadingFailed ("Resource.LoadingFailed")
 
 /*
     {
