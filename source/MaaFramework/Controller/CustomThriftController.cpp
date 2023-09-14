@@ -131,9 +131,9 @@ void CustomThriftController::_click(ClickParam param)
         return;
     }
 
-    ThriftController::ClickParam click_param;
-    click_param.point.x = param.x;
-    click_param.point.y = param.y;
+    ThriftController::ClickParam thrift_param;
+    thrift_param.point.x = param.x;
+    thrift_param.point.y = param.y;
 
     client_->click(click_param);
 }
@@ -146,8 +146,13 @@ void CustomThriftController::_swipe(SwipeParam param)
         LogError << "client_ is nullptr or transport_ is not open";
         return;
     }
-
-    client_->swipe(param.x1, param.x2, param.y1, param.y2, param.duration);
+    ThriftController::SwipeParam thrift_param;
+    thrift_param.point1.x = param.x1;
+    thrift_param.point1.y = param.y1;
+    thrift_param.point2.x = param.x2;
+    thrift_param.point2.y = param.y2;
+    thrift_param.duration = duration;
+    client_->swipe(thrift_param);
 }
 
 void CustomThriftController::_press_key(PressKeyParam param)
@@ -181,7 +186,7 @@ cv::Mat CustomThriftController::_screencap()
         return {};
     }
 
-    cv::Mat orig_mat(img.size.width, img.size.height, img.type, img.data.data());
+    cv::Mat orig_mat(img.size.height, img.size.width, img.type, img.data.data());
     cv::Mat out_mat;
     orig_mat.copyTo(out_mat);
 

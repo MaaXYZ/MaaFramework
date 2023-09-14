@@ -139,8 +139,6 @@ void ControllerMgr::swipe(const cv::Rect& r1, const cv::Rect& r2, int duration)
 
 void ControllerMgr::swipe(const cv::Point& p1, const cv::Point& p2, int duration)
 {
-    constexpr int SampleDelay = 2;
-
     auto [x1, y1] = preproc_touch_point(p1.x, p1.y);
     auto [x2, y2] = preproc_touch_point(p2.x, p2.y);
 

@@ -79,7 +79,7 @@ void CustomController::_swipe(SwipeParam param)
         LogError << "handle_ or handle_->swipe is nullptr";
         return;
     }
-    handle_->swipe(param.x1, param.x2, param.y1, param.y2, param.duration);
+    handle_->swipe(param.x1, param.y1, param.x2, param.y2, param.duration);
 }
 
 void CustomController::_press_key(PressKeyParam param)

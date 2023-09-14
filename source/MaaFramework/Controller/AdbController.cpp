@@ -137,7 +137,7 @@ void AdbController::_swipe(SwipeParam param)
         return;
     }
 
-    bool ret = unit_mgr_->touch_input_obj()->swipe(param.x1, param.x2, param.y1, param.y2, param.duration);
+    bool ret = unit_mgr_->touch_input_obj()->swipe(param.x1, param.y1, param.x2, param.y2, param.duration);
 
     if (!ret) {
         LogError << "failed to swipe";
