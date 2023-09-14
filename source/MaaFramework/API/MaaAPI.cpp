@@ -36,6 +36,27 @@ void MaaDestroyStringBuffer(MaaStringBufferHandle handle)
     delete handle;
 }
 
+MaaBool MaaIsStringEmpty(MaaStringBufferHandle handle)
+{
+    if (!handle) {
+        LogError << "handle is null";
+        return true; // means empty
+    }
+
+    return handle->empty();
+}
+
+MaaBool MaaClearString(MaaStringBufferHandle handle)
+{
+    if (!handle) {
+        LogError << "handle is null";
+        return false;
+    }
+
+    handle->clear();
+    return true;
+}
+
 MaaStringView MaaGetString(MaaStringBufferHandle handle)
 {
     if (!handle) {
@@ -131,6 +152,37 @@ int32_t MaaGetImageType(MaaImageBufferHandle handle)
     }
 
     return handle->type();
+}
+
+int32_t MaaGetImageChannels(MaaImageBufferHandle handle)
+{
+    if (!handle) {
+        LogError << "handle is null";
+        return 0;
+    }
+
+    return handle->channels();
+}
+
+MaaBool MaaIsImageEmpty(MaaImageBufferHandle handle)
+{
+    if (!handle) {
+        LogError << "handle is null";
+        return true; // means empty
+    }
+
+    return handle->empty();
+}
+
+MaaBool MaaClearImage(MaaImageBufferHandle handle)
+{
+    if (!handle) {
+        LogError << "handle is null";
+        return false;
+    }
+
+    handle->clear();
+    return true;
 }
 
 MaaBool MaaSetImageRawData(MaaImageBufferHandle handle, MaaImageRawData data, int32_t width, int32_t height,
@@ -281,7 +333,13 @@ MaaBool MaaResourceGetHash(MaaResourceHandle res, MaaStringBufferHandle buffer)
         return false;
     }
 
-    buffer->set(res->get_hash());
+    auto hash = res->get_hash();
+    if (hash.empty()) {
+        LogError << "hash is empty";
+        return false;
+    }
+
+    buffer->set(std::move(hash));
     return true;
 }
 
@@ -504,7 +562,13 @@ MaaBool MaaControllerGetImage(MaaControllerHandle ctrl, MaaImageBufferHandle buf
         return false;
     }
 
-    buffer->set(ctrl->get_image());
+    auto img = ctrl->get_image();
+    if (img.empty()) {
+        LogError << "image is empty";
+        return false;
+    }
+
+    buffer->set(std::move(img));
     return true;
 }
 
@@ -515,7 +579,13 @@ MaaBool MaaControllerGetUUID(MaaControllerHandle ctrl, MaaStringBufferHandle buf
         return false;
     }
 
-    buffer->set(ctrl->get_uuid());
+    auto uuid = ctrl->get_uuid();
+    if (uuid.empty()) {
+        LogError << "uuid is empty";
+        return false;
+    }
+
+    buffer->set(std::move(uuid));
     return true;
 }
 

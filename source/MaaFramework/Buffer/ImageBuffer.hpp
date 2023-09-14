@@ -15,9 +15,17 @@ class ImageBuffer : public MaaImageBuffer
 public:
     virtual ~ImageBuffer() override = default;
 
+    virtual bool empty() const override { return image_.empty(); }
+    virtual void clear() override
+    {
+        image_.release();
+        encoded_.clear();
+    }
+
     virtual void* raw_data() const override { return image_.data; }
     virtual int32_t width() const override { return image_.cols; }
     virtual int32_t height() const override { return image_.rows; }
+    virtual int32_t channels() const override { return image_.channels(); }
     virtual int32_t type() const override { return image_.type(); }
 
     virtual uint8_t* encoded() override
@@ -46,7 +54,13 @@ private:
         if (!dirty_) {
             return;
         }
-        cv::imencode(".png", image_, encoded_);
+
+        if (image_.empty()) {
+            encoded_.clear();
+        }
+        else {
+            cv::imencode(".png", image_, encoded_);
+        }
         dirty_ = false;
     }
 

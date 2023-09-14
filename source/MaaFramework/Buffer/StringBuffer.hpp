@@ -10,6 +10,9 @@ class StringBuffer : public MaaStringBuffer
 public:
     virtual ~StringBuffer() override = default;
 
+    virtual bool empty() const override { return str_.empty(); }
+    virtual void clear() override { str_.clear(); }
+
     virtual const char* data() const override { return str_.data(); }
     virtual size_t size() const override { return str_.size(); }
 

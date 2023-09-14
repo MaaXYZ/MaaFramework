@@ -13,6 +13,10 @@ extern "C"
 
     MaaStringBufferHandle MAA_FRAMEWORK_API MaaCreateStringBuffer();
     void MAA_FRAMEWORK_API MaaDestroyStringBuffer(MaaStringBufferHandle handle);
+
+    MaaBool MAA_FRAMEWORK_API MaaIsStringEmpty(MaaStringBufferHandle handle);
+    MaaBool MAA_FRAMEWORK_API MaaClearString(MaaStringBufferHandle handle);
+
     MaaStringView MAA_FRAMEWORK_API MaaGetString(MaaStringBufferHandle handle);
     MaaSize MAA_FRAMEWORK_API MaaGetStringSize(MaaStringBufferHandle handle);
     MaaBool MAA_FRAMEWORK_API MaaSetString(MaaStringBufferHandle handle, MaaStringView str);
@@ -20,12 +24,15 @@ extern "C"
 
     MaaImageBufferHandle MAA_FRAMEWORK_API MaaCreateImageBuffer();
     void MAA_FRAMEWORK_API MaaDestroyImageBuffer(MaaImageBufferHandle handle);
+    MaaBool MAA_FRAMEWORK_API MaaIsImageEmpty(MaaImageBufferHandle handle);
+    MaaBool MAA_FRAMEWORK_API MaaClearImage(MaaImageBufferHandle handle);
 
     typedef void* MaaImageRawData;
     MaaImageRawData MAA_FRAMEWORK_API MaaGetImageRawData(MaaImageBufferHandle handle);
     int32_t MAA_FRAMEWORK_API MaaGetImageWidth(MaaImageBufferHandle handle);
     int32_t MAA_FRAMEWORK_API MaaGetImageHeight(MaaImageBufferHandle handle);
     int32_t MAA_FRAMEWORK_API MaaGetImageType(MaaImageBufferHandle handle);
+    int32_t MAA_FRAMEWORK_API MaaGetImageChannels(MaaImageBufferHandle handle);
     MaaBool MAA_FRAMEWORK_API MaaSetImageRawData(MaaImageBufferHandle handle, MaaImageRawData data, int32_t width,
                                                  int32_t height, int32_t type);
 
