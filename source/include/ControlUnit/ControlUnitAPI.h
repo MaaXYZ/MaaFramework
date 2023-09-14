@@ -63,9 +63,9 @@ public:
     virtual bool click(int x, int y) = 0;
     virtual bool swipe(int x1, int y1, int x2, int y2, int duration) = 0;
 
-    virtual bool down(int contact, int x, int y, int pressure) = 0;
-    virtual bool move(int contact, int x, int y, int pressure) = 0;
-    virtual bool up(int contact) = 0;
+    virtual bool touch_down(int contact, int x, int y, int pressure) = 0;
+    virtual bool touch_move(int contact, int x, int y, int pressure) = 0;
+    virtual bool touch_up(int contact) = 0;
 };
 
 class KeyInputAPI

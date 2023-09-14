@@ -82,42 +82,42 @@ void CustomController::_swipe(SwipeParam param)
     handle_->swipe(param.x1, param.y1, param.x2, param.y2, param.duration);
 }
 
-bool CustomController::_down(AdvancedTouchParam param)
+bool CustomController::_touch_down(TouchParam param)
 {
-    LogFunc << VAR_VOIDP(handle_) << VAR_VOIDP(handle_->down) << VAR(param.contact) << VAR(param.x) << VAR(param.y)
+    LogFunc << VAR_VOIDP(handle_) << VAR_VOIDP(handle_->touch_down) << VAR(param.contact) << VAR(param.x) << VAR(param.y)
             << VAR(param.pressure);
 
-    if (!handle_ || !handle_->down) {
-        LogError << "handle_ or handle_->down is nullptr";
+    if (!handle_ || !handle_->touch_down) {
+        LogError << "handle_ or handle_->touch_down is nullptr";
         return false;
     }
 
-    return handle_->down(param.contact, param.x, param.y, param.pressure);
+    return handle_->touch_down(param.contact, param.x, param.y, param.pressure);
 }
 
-bool CustomController::_move(AdvancedTouchParam param)
+bool CustomController::_touch_move(TouchParam param)
 {
-    LogFunc << VAR_VOIDP(handle_) << VAR_VOIDP(handle_->move) << VAR(param.contact) << VAR(param.x) << VAR(param.y)
+    LogFunc << VAR_VOIDP(handle_) << VAR_VOIDP(handle_->touch_move) << VAR(param.contact) << VAR(param.x) << VAR(param.y)
             << VAR(param.pressure);
 
-    if (!handle_ || !handle_->move) {
-        LogError << "handle_ or handle_->move is nullptr";
+    if (!handle_ || !handle_->touch_move) {
+        LogError << "handle_ or handle_->touch_move is nullptr";
         return false;
     }
 
-    return handle_->move(param.contact, param.x, param.y, param.pressure);
+    return handle_->touch_move(param.contact, param.x, param.y, param.pressure);
 }
 
-bool CustomController::_up(AdvancedTouchParam param)
+bool CustomController::_touch_up(TouchParam param)
 {
-    LogFunc << VAR_VOIDP(handle_) << VAR_VOIDP(handle_->up) << VAR(param.contact);
+    LogFunc << VAR_VOIDP(handle_) << VAR_VOIDP(handle_->touch_up) << VAR(param.contact);
 
-    if (!handle_ || !handle_->up) {
-        LogError << "handle_ or handle_->up is nullptr";
+    if (!handle_ || !handle_->touch_up) {
+        LogError << "handle_ or handle_->touch_up is nullptr";
         return false;
     }
 
-    return handle_->up(param.contact);
+    return handle_->touch_up(param.contact);
 }
 
 void CustomController::_press_key(PressKeyParam param)

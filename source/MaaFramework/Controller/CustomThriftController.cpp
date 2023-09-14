@@ -155,7 +155,7 @@ void CustomThriftController::_swipe(SwipeParam param)
     client_->swipe(thrift_param);
 }
 
-bool CustomThriftController::_down(AdvancedTouchParam param)
+bool CustomThriftController::_touch_down(TouchParam param)
 {
     LogFunc << VAR(param.contact) << VAR(param.x) << VAR(param.y) << VAR(param.pressure);
 
@@ -164,16 +164,16 @@ bool CustomThriftController::_down(AdvancedTouchParam param)
         return false;
     }
 
-    ThriftController::AdvancedTouchParam thrift_param;
+    ThriftController::TouchParam thrift_param;
     thrift_param.contact = param.contact;
     thrift_param.point.x = param.x;
     thrift_param.point.y = param.y;
     thrift_param.pressure = param.pressure;
 
-    return client_->down(thrift_param);
+    return client_->touch_down(thrift_param);
 }
 
-bool CustomThriftController::_move(AdvancedTouchParam param)
+bool CustomThriftController::_touch_move(TouchParam param)
 {
     LogFunc << VAR(param.contact) << VAR(param.x) << VAR(param.y) << VAR(param.pressure);
 
@@ -182,16 +182,16 @@ bool CustomThriftController::_move(AdvancedTouchParam param)
         return false;
     }
 
-    ThriftController::AdvancedTouchParam thrift_param;
+    ThriftController::TouchParam thrift_param;
     thrift_param.contact = param.contact;
     thrift_param.point.x = param.x;
     thrift_param.point.y = param.y;
     thrift_param.pressure = param.pressure;
 
-    return client_->move(thrift_param);
+    return client_->touch_move(thrift_param);
 }
 
-bool CustomThriftController::_up(AdvancedTouchParam param)
+bool CustomThriftController::_touch_up(TouchParam param)
 {
     LogFunc << VAR(param.contact);
 
@@ -200,10 +200,10 @@ bool CustomThriftController::_up(AdvancedTouchParam param)
         return false;
     }
 
-    ThriftController::AdvancedTouchParam thrift_param;
+    ThriftController::TouchParam thrift_param;
     thrift_param.contact = param.contact;
 
-    return client_->up(thrift_param);
+    return client_->touch_up(thrift_param);
 }
 
 void CustomThriftController::_press_key(PressKeyParam param)

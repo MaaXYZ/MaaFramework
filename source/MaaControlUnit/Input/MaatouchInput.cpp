@@ -252,7 +252,7 @@ bool MaatouchInput::press_key(int key)
     return true;
 }
 
-bool MaatouchInput::down(int contact, int x, int y, int pressure)
+bool MaatouchInput::touch_down(int contact, int x, int y, int pressure)
 {
     if (!shell_handler_) {
         LogError << "shell handler not ready";
@@ -266,7 +266,7 @@ bool MaatouchInput::down(int contact, int x, int y, int pressure)
     return shell_handler_->write(MAA_FMT::format("d {} {} {} {}\nc\n", contact, touch_x, touch_y, pressure));
 }
 
-bool MaatouchInput::move(int contact, int x, int y, int pressure)
+bool MaatouchInput::touch_move(int contact, int x, int y, int pressure)
 {
     if (!shell_handler_) {
         LogError << "shell handler not ready";
@@ -280,7 +280,7 @@ bool MaatouchInput::move(int contact, int x, int y, int pressure)
     return shell_handler_->write(MAA_FMT::format("m {} {} {} {}\nc\n", contact, touch_x, touch_y, pressure));
 }
 
-bool MaatouchInput::up(int contact)
+bool MaatouchInput::touch_up(int contact)
 {
     if (!shell_handler_) {
         LogError << "shell handler not ready";

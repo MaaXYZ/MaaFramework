@@ -401,6 +401,54 @@ MaaCtrlId MaaControllerPostSwipe(MaaControllerHandle ctrl, int32_t x1, int32_t y
     return ctrl->post_swipe(x1, y1, x2, y2, duration);
 }
 
+MaaCtrlId MaaControllerPostPressKey(MaaControllerHandle ctrl, int32_t keycode)
+{
+    LogFunc << VAR_VOIDP(ctrl) << VAR(keycode);
+
+    if (!ctrl) {
+        LogError << "handle is null";
+        return MaaInvalidId;
+    }
+
+    return ctrl->post_press_key(keycode);
+}
+
+MaaCtrlId MaaControllerPostTouchDown(MaaControllerHandle ctrl, int32_t contact, int32_t x, int32_t y, int32_t pressure)
+{
+    LogFunc << VAR_VOIDP(ctrl) << VAR(contact) << VAR(x) << VAR(y) << VAR(pressure);
+
+    if (!ctrl) {
+        LogError << "handle is null";
+        return MaaInvalidId;
+    }
+
+    return ctrl->post_touch_down(contact, x, y, pressure);
+}
+
+MaaCtrlId MaaControllerPostTouchMove(MaaControllerHandle ctrl, int32_t contact, int32_t x, int32_t y, int32_t pressure)
+{
+    LogFunc << VAR_VOIDP(ctrl) << VAR(contact) << VAR(x) << VAR(y) << VAR(pressure);
+
+    if (!ctrl) {
+        LogError << "handle is null";
+        return MaaInvalidId;
+    }
+
+    return ctrl->post_touch_move(contact, x, y, pressure);
+}
+
+MaaCtrlId MaaControllerPostTouchUp(MaaControllerHandle ctrl, int32_t contact)
+{
+    LogFunc << VAR_VOIDP(ctrl) << VAR(contact);
+
+    if (!ctrl) {
+        LogError << "handle is null";
+        return MaaInvalidId;
+    }
+
+    return ctrl->post_touch_up(contact);
+}
+
 MaaCtrlId MaaControllerPostScreencap(MaaControllerHandle ctrl)
 {
     LogFunc << VAR_VOIDP(ctrl);
@@ -786,6 +834,56 @@ void MaaSyncContextSwipe(MaaSyncContextHandle sync_context, int32_t x1, int32_t 
     }
 
     sync_context->swipe(x1, y1, x2, y2, duration);
+}
+
+void MaaSyncContextPressKey(MaaSyncContextHandle sync_context, int32_t keycode)
+{
+    LogFunc << VAR_VOIDP(sync_context) << VAR(keycode);
+
+    if (!sync_context) {
+        LogError << "handle is null";
+        return;
+    }
+
+    sync_context->press_key(keycode);
+}
+
+MaaBool MaaSyncContextTouchDown(MaaSyncContextHandle sync_context, int32_t contact, int32_t x, int32_t y,
+                                int32_t pressure)
+{
+    LogFunc << VAR_VOIDP(sync_context) << VAR(contact) << VAR(x) << VAR(y) << VAR(pressure);
+
+    if (!sync_context) {
+        LogError << "handle is null";
+        return false;
+    }
+
+    return sync_context->touch_down(contact, x, y, pressure);
+}
+
+MaaBool MaaSyncContextTouchMove(MaaSyncContextHandle sync_context, int32_t contact, int32_t x, int32_t y,
+                                int32_t pressure)
+{
+    LogFunc << VAR_VOIDP(sync_context) << VAR(contact) << VAR(x) << VAR(y) << VAR(pressure);
+
+    if (!sync_context) {
+        LogError << "handle is null";
+        return false;
+    }
+
+    return sync_context->touch_move(contact, x, y, pressure);
+}
+
+MaaBool MaaSyncContextTouchUp(MaaSyncContextHandle sync_context, int32_t contact)
+{
+    LogFunc << VAR_VOIDP(sync_context) << VAR(contact);
+
+    if (!sync_context) {
+        LogError << "handle is null";
+        return false;
+    }
+
+    return sync_context->touch_up(contact);
 }
 
 MaaBool MaaSyncContextScreencap(MaaSyncContextHandle sync_context, MaaImageBufferHandle buffer)

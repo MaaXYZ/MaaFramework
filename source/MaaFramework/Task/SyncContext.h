@@ -29,6 +29,10 @@ public: // from MaaSyncContextAPI
 
     virtual void click(int x, int y) override;
     virtual void swipe(int x1, int y1, int x2, int y2, int duration) override;
+    virtual void press_key(int keycode) override;
+    virtual bool touch_down(int contact, int x, int y, int pressure) override;
+    virtual bool touch_move(int contact, int x, int y, int pressure) override;
+    virtual bool touch_up(int contact) override;
     virtual cv::Mat screencap() override;
 
     virtual std::string task_result(const std::string& task_name) const override;

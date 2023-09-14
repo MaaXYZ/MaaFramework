@@ -78,6 +78,15 @@ MaaCtrlId ControllerMgr::post_swipe(int x1, int y1, int x2, int y2, int duration
     return id;
 }
 
+MaaCtrlId ControllerMgr::post_press_key(int keycode)
+{
+    PressKeyParam param { .keycode = keycode };
+    auto id = action_runner_->post({ .type = Action::Type::press_key, .param = std::move(param) });
+    std::unique_lock lock { post_ids_mutex_ };
+    post_ids_.emplace(id);
+    return id;
+}
+
 MaaCtrlId ControllerMgr::post_screencap()
 {
     auto id = action_runner_->post({ .type = Action::Type::screencap });
@@ -86,30 +95,30 @@ MaaCtrlId ControllerMgr::post_screencap()
     return id;
 }
 
-MaaCtrlId ControllerMgr::post_down(int contact, int x, int y, int pressure)
+MaaCtrlId ControllerMgr::post_touch_down(int contact, int x, int y, int pressure)
 {
     auto [xx, yy] = preproc_touch_point(x, y);
-    AdvancedTouchParam param { .contact = contact, .x = xx, .y = yy, .pressure = pressure };
-    auto id = action_runner_->post({ .type = Action::Type::down, .param = std::move(param) });
+    TouchParam param { .contact = contact, .x = xx, .y = yy, .pressure = pressure };
+    auto id = action_runner_->post({ .type = Action::Type::touch_down, .param = std::move(param) });
     std::unique_lock lock { post_ids_mutex_ };
     post_ids_.emplace(id);
     return id;
 }
 
-MaaCtrlId ControllerMgr::post_move(int contact, int x, int y, int pressure)
+MaaCtrlId ControllerMgr::post_touch_move(int contact, int x, int y, int pressure)
 {
     auto [xx, yy] = preproc_touch_point(x, y);
-    AdvancedTouchParam param { .contact = contact, .x = xx, .y = yy, .pressure = pressure };
-    auto id = action_runner_->post({ .type = Action::Type::move, .param = std::move(param) });
+    TouchParam param { .contact = contact, .x = xx, .y = yy, .pressure = pressure };
+    auto id = action_runner_->post({ .type = Action::Type::touch_move, .param = std::move(param) });
     std::unique_lock lock { post_ids_mutex_ };
     post_ids_.emplace(id);
     return id;
 }
 
-MaaCtrlId ControllerMgr::post_up(int contact)
+MaaCtrlId ControllerMgr::post_touch_up(int contact)
 {
-    AdvancedTouchParam param { .contact = contact };
-    auto id = action_runner_->post({ .type = Action::Type::up, .param = std::move(param) });
+    TouchParam param { .contact = contact };
+    auto id = action_runner_->post({ .type = Action::Type::touch_up, .param = std::move(param) });
     std::unique_lock lock { post_ids_mutex_ };
     post_ids_.emplace(id);
     return id;
@@ -273,14 +282,14 @@ bool ControllerMgr::run_action(typename AsyncRunner<Action>::Id id, Action actio
         ret = true;
         break;
 
-    case Action::Type::down:
-        ret = _down(std::get<AdvancedTouchParam>(action.param));
+    case Action::Type::touch_down:
+        ret = _touch_down(std::get<TouchParam>(action.param));
         break;
-    case Action::Type::move:
-        ret = _move(std::get<AdvancedTouchParam>(action.param));
+    case Action::Type::touch_move:
+        ret = _touch_move(std::get<TouchParam>(action.param));
         break;
-    case Action::Type::up:
-        ret = _up(std::get<AdvancedTouchParam>(action.param));
+    case Action::Type::touch_up:
+        ret = _touch_up(std::get<TouchParam>(action.param));
         break;
 
     case Action::Type::press_key:

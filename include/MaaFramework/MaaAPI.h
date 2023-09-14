@@ -73,6 +73,14 @@ extern "C"
     MaaCtrlId MAA_FRAMEWORK_API MaaControllerPostClick(MaaControllerHandle ctrl, int32_t x, int32_t y);
     MaaCtrlId MAA_FRAMEWORK_API MaaControllerPostSwipe(MaaControllerHandle ctrl, int32_t x1, int32_t y1, int32_t x2,
                                                        int32_t y2, int32_t duration);
+    MaaCtrlId MAA_FRAMEWORK_API MaaControllerPostPressKey(MaaControllerHandle ctrl, int32_t keycode);
+
+    MaaCtrlId MAA_FRAMEWORK_API MaaControllerPostTouchDown(MaaControllerHandle ctrl, int32_t contact, int32_t x,
+                                                           int32_t y, int32_t pressure);
+    MaaCtrlId MAA_FRAMEWORK_API MaaControllerPostTouchMove(MaaControllerHandle ctrl, int32_t contact, int32_t x,
+                                                           int32_t y, int32_t pressure);
+    MaaCtrlId MAA_FRAMEWORK_API MaaControllerPostTouchUp(MaaControllerHandle ctrl, int32_t contact);
+
     MaaCtrlId MAA_FRAMEWORK_API MaaControllerPostScreencap(MaaControllerHandle ctrl);
 
     MaaStatus MAA_FRAMEWORK_API MaaControllerStatus(MaaControllerHandle ctrl, MaaCtrlId id);
@@ -129,6 +137,14 @@ extern "C"
     void MAA_FRAMEWORK_API MaaSyncContextClick(MaaSyncContextHandle sync_context, int32_t x, int32_t y);
     void MAA_FRAMEWORK_API MaaSyncContextSwipe(MaaSyncContextHandle sync_context, int32_t x1, int32_t y1, int32_t x2,
                                                int32_t y2, int32_t duration);
+    void MAA_FRAMEWORK_API MaaSyncContextPressKey(MaaSyncContextHandle sync_context, int32_t keycode);
+
+    MaaBool MAA_FRAMEWORK_API MaaSyncContextTouchDown(MaaSyncContextHandle sync_context, int32_t contact, int32_t x,
+                                                      int32_t y, int32_t pressure);
+    MaaBool MAA_FRAMEWORK_API MaaSyncContextTouchMove(MaaSyncContextHandle sync_context, int32_t contact, int32_t x,
+                                                      int32_t y, int32_t pressure);
+    MaaBool MAA_FRAMEWORK_API MaaSyncContextTouchUp(MaaSyncContextHandle sync_context, int32_t contact);
+
     MaaBool MAA_FRAMEWORK_API MaaSyncContextScreencap(MaaSyncContextHandle sync_context,
                                                       /* out */ MaaImageBufferHandle buffer);
     MaaBool MAA_FRAMEWORK_API MaaSyncContextGetTaskResult(MaaSyncContextHandle sync_context, MaaStringView task,

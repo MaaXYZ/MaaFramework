@@ -21,9 +21,9 @@ protected:
     virtual std::pair<int, int> _get_resolution() const override;
     virtual void _click(ClickParam param) override;
     virtual void _swipe(SwipeParam param) override;
-    virtual bool _down(AdvancedTouchParam param) override;
-    virtual bool _move(AdvancedTouchParam param) override;
-    virtual bool _up(AdvancedTouchParam param) override;
+    virtual bool _touch_down(TouchParam param) override;
+    virtual bool _touch_move(TouchParam param) override;
+    virtual bool _touch_up(TouchParam param) override;
     virtual void _press_key(PressKeyParam param) override;
     virtual cv::Mat _screencap() override;
     virtual bool _start_app(AppParam param) override;

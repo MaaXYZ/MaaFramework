@@ -257,7 +257,7 @@ bool MinitouchInput::swipe(int x1, int y1, int x2, int y2, int duration)
     return ret;
 }
 
-bool MinitouchInput::down(int contact, int x, int y, int pressure)
+bool MinitouchInput::touch_down(int contact, int x, int y, int pressure)
 {
     if (!shell_handler_) {
         LogError << "shell handler not ready";
@@ -271,7 +271,7 @@ bool MinitouchInput::down(int contact, int x, int y, int pressure)
     return shell_handler_->write(MAA_FMT::format("d {} {} {} {}\nc\n", contact, touch_x, touch_y, pressure));
 }
 
-bool MinitouchInput::move(int contact, int x, int y, int pressure)
+bool MinitouchInput::touch_move(int contact, int x, int y, int pressure)
 {
     if (!shell_handler_) {
         LogError << "shell handler not ready";
@@ -285,7 +285,7 @@ bool MinitouchInput::move(int contact, int x, int y, int pressure)
     return shell_handler_->write(MAA_FMT::format("m {} {} {} {}\nc\n", contact, touch_x, touch_y, pressure));
 }
 
-bool MinitouchInput::up(int contact)
+bool MinitouchInput::touch_up(int contact)
 {
     if (!shell_handler_) {
         LogError << "shell handler not ready";

@@ -41,11 +41,12 @@ public:
     virtual MaaCtrlId post_connection() = 0;
     virtual MaaCtrlId post_click(int x, int y) = 0;
     virtual MaaCtrlId post_swipe(int x1, int y1, int x2, int y2, int duration) = 0;
+    virtual MaaCtrlId post_press_key(int keycode) = 0;
     virtual MaaCtrlId post_screencap() = 0;
 
-    virtual MaaCtrlId post_down(int contact, int x, int y, int pressure) = 0;
-    virtual MaaCtrlId post_move(int contact, int x, int y, int pressure) = 0;
-    virtual MaaCtrlId post_up(int contact) = 0;
+    virtual MaaCtrlId post_touch_down(int contact, int x, int y, int pressure) = 0;
+    virtual MaaCtrlId post_touch_move(int contact, int x, int y, int pressure) = 0;
+    virtual MaaCtrlId post_touch_up(int contact) = 0;
 
     virtual MaaStatus status(MaaCtrlId ctrl_id) const = 0;
     virtual MaaStatus wait(MaaCtrlId ctrl_id) const = 0;
@@ -98,7 +99,12 @@ public:
 
     virtual void click(int x, int y) = 0;
     virtual void swipe(int x1, int y1, int x2, int y2, int duration) = 0;
+    virtual void press_key(int keycode) = 0;
     virtual cv::Mat screencap() = 0;
+
+    virtual bool touch_down(int contact, int x, int y, int pressure) = 0;
+    virtual bool touch_move(int contact, int x, int y, int pressure) = 0;
+    virtual bool touch_up(int contact) = 0;
 
     virtual std::string task_result(const std::string& task_name) const = 0;
 

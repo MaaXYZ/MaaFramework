@@ -16,9 +16,9 @@ extern "C"
         MaaBool (*click)(int32_t x, int32_t y);
         MaaBool (*swipe)(int32_t x1, int32_t y1, int32_t x2, int32_t y2, int32_t duration);
 
-        MaaBool (*down)(int32_t contact, int32_t x, int32_t y, int32_t pressure);
-        MaaBool (*move)(int32_t contact, int32_t x, int32_t y, int32_t pressure);
-        MaaBool (*up)(int32_t contact);
+        MaaBool (*touch_down)(int32_t contact, int32_t x, int32_t y, int32_t pressure);
+        MaaBool (*touch_move)(int32_t contact, int32_t x, int32_t y, int32_t pressure);
+        MaaBool (*touch_up)(int32_t contact);
 
         MaaBool (*press_key)(int32_t keycode);
 

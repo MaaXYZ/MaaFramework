@@ -122,6 +122,62 @@ void SyncContext::swipe(int x1, int y1, int x2, int y2, int duration)
     ctrl->wait(id);
 }
 
+void SyncContext::press_key(int keycode)
+{
+    LogFunc << VAR(keycode);
+
+    auto* ctrl = controller();
+    if (!ctrl) {
+        LogError << "Controller is null";
+        return;
+    }
+
+    auto id = ctrl->post_press_key(keycode);
+    ctrl->wait(id);
+}
+
+bool SyncContext::touch_down(int contact, int x, int y, int pressure)
+{
+    LogFunc << VAR(contact) << VAR(x) << VAR(y) << VAR(pressure);
+         
+    auto* ctrl = controller();
+    if (!ctrl) {
+        LogError << "Controller is null";
+        return false;
+    }
+
+    auto id = ctrl->post_touch_down(contact, x, y, pressure);
+    return ctrl->wait(id) == MaaStatus_Success;
+}
+
+bool SyncContext::touch_move(int contact, int x, int y, int pressure)
+{
+    LogFunc << VAR(contact) << VAR(x) << VAR(y) << VAR(pressure);
+
+    auto* ctrl = controller();
+    if (!ctrl) {
+        LogError << "Controller is null";
+        return false;
+    }
+
+    auto id = ctrl->post_touch_move(contact, x, y, pressure);
+    return ctrl->wait(id) == MaaStatus_Success;
+}
+
+bool SyncContext::touch_up(int contact)
+{
+    LogFunc << VAR(contact);
+
+    auto* ctrl = controller();
+    if (!ctrl) {
+        LogError << "Controller is null";
+        return false;
+    }
+
+    auto id = ctrl->post_touch_up(contact);
+    return ctrl->wait(id) == MaaStatus_Success;
+}
+
 cv::Mat SyncContext::screencap()
 {
     LogFunc;
