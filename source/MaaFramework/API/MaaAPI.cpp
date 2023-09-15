@@ -154,16 +154,6 @@ int32_t MaaGetImageType(MaaImageBufferHandle handle)
     return handle->type();
 }
 
-int32_t MaaGetImageChannels(MaaImageBufferHandle handle)
-{
-    if (!handle) {
-        LogError << "handle is null";
-        return 0;
-    }
-
-    return handle->channels();
-}
-
 MaaBool MaaIsImageEmpty(MaaImageBufferHandle handle)
 {
     if (!handle) {

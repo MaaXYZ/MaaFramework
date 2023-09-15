@@ -140,7 +140,6 @@ public:
     virtual void* raw_data() const = 0;
     virtual int32_t width() const = 0;
     virtual int32_t height() const = 0;
-    virtual int32_t channels() const = 0;
     virtual int32_t type() const = 0;
 
     virtual uint8_t* encoded() = 0;

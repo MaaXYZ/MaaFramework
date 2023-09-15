@@ -25,7 +25,6 @@ public:
     virtual void* raw_data() const override { return image_.data; }
     virtual int32_t width() const override { return image_.cols; }
     virtual int32_t height() const override { return image_.rows; }
-    virtual int32_t channels() const override { return image_.channels(); }
     virtual int32_t type() const override { return image_.type(); }
 
     virtual uint8_t* encoded() override

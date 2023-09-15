@@ -32,7 +32,6 @@ extern "C"
     int32_t MAA_FRAMEWORK_API MaaGetImageWidth(MaaImageBufferHandle handle);
     int32_t MAA_FRAMEWORK_API MaaGetImageHeight(MaaImageBufferHandle handle);
     int32_t MAA_FRAMEWORK_API MaaGetImageType(MaaImageBufferHandle handle);
-    int32_t MAA_FRAMEWORK_API MaaGetImageChannels(MaaImageBufferHandle handle);
     MaaBool MAA_FRAMEWORK_API MaaSetImageRawData(MaaImageBufferHandle handle, MaaImageRawData data, int32_t width,
                                                  int32_t height, int32_t type);
 
