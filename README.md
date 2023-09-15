@@ -46,6 +46,9 @@
 - [MBA](https://github.com/MaaAssistantArknights/MBA) BA 小助手  
   基于 MAA 全新架构的 BA 小助手。图像技术 + 模拟控制，解放双手，不再点点点！由 MaaFramework 强力驱动！
 
+- [MAS](https://github.com/MaaAssistantArknights/MaaAssistantSkland) 森空岛 小助手  
+  基于全新架构的 森空岛 小助手。图像技术 + 模拟控制，解放双手！由 MaaFramework 强力驱动！
+
 ## 生态共建
 
 MAA 正计划建设为一类项目，而非舟的单一软件。  
