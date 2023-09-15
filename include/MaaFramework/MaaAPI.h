@@ -13,7 +13,6 @@ extern "C"
 
     MaaStringBufferHandle MAA_FRAMEWORK_API MaaCreateStringBuffer();
     void MAA_FRAMEWORK_API MaaDestroyStringBuffer(MaaStringBufferHandle handle);
-
     MaaBool MAA_FRAMEWORK_API MaaIsStringEmpty(MaaStringBufferHandle handle);
     MaaBool MAA_FRAMEWORK_API MaaClearString(MaaStringBufferHandle handle);
 
