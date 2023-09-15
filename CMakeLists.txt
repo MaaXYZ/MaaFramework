@@ -14,6 +14,7 @@ set(Boost_NO_WARN_NEW_VERSIONS 1)
 option(BUILD_SAMPLE "build a demo" OFF)
 option(USE_MAADEPS "use third-party libraries built by MaaDeps" ON)
 option(WITH_THRIFT "build with thrift" ON)
+option(BUILD_EXTRAS "build binding extras" OFF)
 
 include(${PROJECT_SOURCE_DIR}/cmake/config.cmake) # Basic compile & link configuration
 include(${PROJECT_SOURCE_DIR}/cmake/assets.cmake)
@@ -42,6 +43,10 @@ add_subdirectory(source)
 if (BUILD_SAMPLE)
     add_subdirectory(sample/cpp)
 endif (BUILD_SAMPLE)
+
+if (BUILD_EXTRAS)
+    add_subdirectory(bindingExtras)
+endif()
 
 if(USE_MAADEPS)
     maadeps_install(bin)
