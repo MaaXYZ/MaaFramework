@@ -83,10 +83,21 @@ Matcher::ResultsVec Matcher::match_and_postproc(const cv::Rect& roi, const cv::M
     }
 
     ResultsVec raw_results;
+    Result max_result;
     for (int col = 0; col < matched.cols; ++col) {
         for (int row = 0; row < matched.rows; ++row) {
-            double score = matched.at<double>(col, row);
-            constexpr float kThreshold = 0.3f;
+            float score = matched.at<float>(row, col);
+            if (std::isnan(score) || std::isinf(score)) {
+                continue;
+            }
+
+            if (max_result.score < score) {
+                max_result.score = score;
+                cv::Rect box(col + roi.x, row + roi.y, templ.cols, templ.rows);
+                max_result.box = box;
+            }
+
+            constexpr float kThreshold = 0.5f;
             if (score < kThreshold) {
                 continue;
             }
@@ -95,19 +106,9 @@ Matcher::ResultsVec Matcher::match_and_postproc(const cv::Rect& roi, const cv::M
             raw_results.emplace_back(result);
         }
     }
-
+    // At least there is a result
     if (raw_results.empty()) {
-        double min_val = 0.0, max_val = 0.0;
-        cv::Point min_loc {}, max_loc {};
-        cv::minMaxLoc(matched, &min_val, &max_val, &min_loc, &max_loc);
-
-        if (std::isnan(max_val) || std::isinf(max_val)) {
-            max_val = 0;
-        }
-
-        cv::Rect box(max_loc.x + roi.x, max_loc.y + roi.y, templ.cols, templ.rows);
-        Result result { .box = box, .score = max_val };
-        raw_results.emplace_back(result);
+        raw_results.emplace_back(max_result);
     }
 
     auto nms_results = NMS(std::move(raw_results));
