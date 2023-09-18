@@ -58,23 +58,23 @@ Matcher::ResultsVec Matcher::foreach_rois(const cv::Mat& templ) const
     }
 
     if (!cache_.empty()) {
-        return { match_and_postproc(cache_, templ) };
+        return match_and_postproc(cache_, templ);
     }
 
     if (param_.roi.empty()) {
-        return { match_and_postproc(cv::Rect(0, 0, image_.cols, image_.rows), templ) };
+        return match_and_postproc(cv::Rect(0, 0, image_.cols, image_.rows), templ);
     }
 
-    ResultsVec res;
+    ResultsVec results;
     for (const cv::Rect& roi : param_.roi) {
-        Result temp = match_and_postproc(roi, templ);
-        res.emplace_back(std::move(temp));
+        ResultsVec res = match_and_postproc(roi, templ);
+        results.insert(results.end(), std::make_move_iterator(res.begin()), std::make_move_iterator(res.end()));
     }
 
-    return res;
+    return results;
 }
 
-Matcher::Result Matcher::match_and_postproc(const cv::Rect& roi, const cv::Mat& templ) const
+Matcher::ResultsVec Matcher::match_and_postproc(const cv::Rect& roi, const cv::Mat& templ) const
 {
     cv::Mat image = image_with_roi(roi);
     cv::Mat matched = match_template(image, templ, param_.method, param_.green_mask);
@@ -82,22 +82,41 @@ Matcher::Result Matcher::match_and_postproc(const cv::Rect& roi, const cv::Mat& 
         return {};
     }
 
-    double min_val = 0.0, max_val = 0.0;
-    cv::Point min_loc {}, max_loc {};
-    cv::minMaxLoc(matched, &min_val, &max_val, &min_loc, &max_loc);
-
-    if (std::isnan(max_val) || std::isinf(max_val)) {
-        max_val = 0;
+    ResultsVec raw_results;
+    for (int col = 0; col < matched.cols; ++col) {
+        for (int row = 0; row < matched.rows; ++row) {
+            double score = matched.at<double>(col, row);
+            constexpr float kThreshold = 0.3f;
+            if (score < kThreshold) {
+                continue;
+            }
+            cv::Rect box(col + roi.x, row + roi.y, templ.cols, templ.rows);
+            Result result { .box = box, .score = score };
+            raw_results.emplace_back(result);
+        }
     }
 
-    cv::Rect box(max_loc.x + roi.x, max_loc.y + roi.y, templ.cols, templ.rows);
-    Result result { .box = box, .score = max_val };
+    if (raw_results.empty()) {
+        double min_val = 0.0, max_val = 0.0;
+        cv::Point min_loc {}, max_loc {};
+        cv::minMaxLoc(matched, &min_val, &max_val, &min_loc, &max_loc);
 
-    draw_result(roi, templ, result);
-    return result;
+        if (std::isnan(max_val) || std::isinf(max_val)) {
+            max_val = 0;
+        }
+
+        cv::Rect box(max_loc.x + roi.x, max_loc.y + roi.y, templ.cols, templ.rows);
+        Result result { .box = box, .score = max_val };
+        raw_results.emplace_back(result);
+    }
+
+    auto nms_results = NMS(std::move(raw_results));
+    draw_result(roi, templ, nms_results);
+
+    return nms_results;
 }
 
-void Matcher::draw_result(const cv::Rect& roi, const cv::Mat& templ, const Result& res) const
+void Matcher::draw_result(const cv::Rect& roi, const cv::Mat& templ, const ResultsVec& results) const
 {
     if (!debug_draw_) {
         return;
@@ -105,17 +124,24 @@ void Matcher::draw_result(const cv::Rect& roi, const cv::Mat& templ, const Resul
 
     cv::Mat image_draw = draw_roi(roi);
     const auto color = cv::Scalar(0, 0, 255);
-    cv::rectangle(image_draw, res.box, color, 1);
 
-    std::string flag = MAA_FMT::format("Res: {:.3f}, [{}, {}, {}, {}]", res.score, res.box.x, res.box.y, res.box.width,
-                                       res.box.height);
-    cv::putText(image_draw, flag, cv::Point(res.box.x, res.box.y - 5), cv::FONT_HERSHEY_PLAIN, 1.2, color, 1);
+    for (size_t i = 0; i != results.size(); ++i) {
+        const auto& res = results.at(i);
+        cv::rectangle(image_draw, res.box, color, 1);
+
+        std::string flag = MAA_FMT::format("{}: {:.3f}, [{}, {}, {}, {}]", i, res.score, res.box.x, res.box.y,
+                                           res.box.width, res.box.height);
+        cv::putText(image_draw, flag, cv::Point(res.box.x, res.box.y - 5), cv::FONT_HERSHEY_PLAIN, 1.2, color, 1);
+    }
 
     int raw_width = image_.cols;
     cv::copyMakeBorder(image_draw, image_draw, 0, 0, 0, templ.cols, cv::BORDER_CONSTANT, cv::Scalar(0, 0, 0));
     cv::Mat draw_templ_roi = image_draw(cv::Rect(raw_width, 0, templ.cols, templ.rows));
     templ.copyTo(draw_templ_roi);
-    cv::line(image_draw, cv::Point(raw_width, 0), res.box.tl(), color, 1);
+
+    if (!results.empty()) {
+        cv::line(image_draw, cv::Point(raw_width, 0), results.front().box.tl(), color, 1);
+    }
 
     if (save_draw_) {
         save_image(image_draw);

@@ -45,8 +45,8 @@ OCRer::ResultsVec OCRer::foreach_rois() const
 
     ResultsVec results;
     for (const cv::Rect& roi : param_.roi) {
-        auto cur = predict(roi);
-        results.insert(results.end(), std::make_move_iterator(cur.begin()), std::make_move_iterator(cur.end()));
+        ResultsVec res = predict(roi);
+        results.insert(results.end(), std::make_move_iterator(res.begin()), std::make_move_iterator(res.end()));
     }
     return results;
 }
