@@ -10,7 +10,10 @@
           "enum": [
             "DirectHit",
             "TemplateMatch",
+            "ColorMatch",
             "OCR",
+            "Classify",
+            "Detect",
             "Custom"
           ],
           "default": "DirectHit"
