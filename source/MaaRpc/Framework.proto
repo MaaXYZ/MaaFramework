@@ -38,7 +38,7 @@ service MaaFrameworkImage {
   rpc clear(HandleRequest) returns (BoolResponse);
   rpc info(HandleRequest) returns (ImageInfoResponse);
   rpc get_encoded(HandleRequest) returns (BufferResponse);
-  rpc set_encoded(Image_SetEncodedRequest) returns (BoolResponse);
+  rpc set_encoded(HandleBufferRequest) returns (BoolResponse);
 }
 
 service MaaFrameworkResource {

@@ -15,6 +15,7 @@ message ImageInfo {
   optional Size size = 2;
 }
 enum Status {
+  invalid = 0;
   pending = 1000;
   running = 2000;
   success = 3000;
@@ -29,9 +30,13 @@ message HandleBufferRequest {
   optional Handle handle = 1;
   optional bytes buffer = 2;
 }
-message HandleIdRequest {
+message HandleStringRequest {
   optional Handle handle = 1;
   optional string str = 2;
+}
+message HandleIdRequest {
+  optional Handle handle = 1;
+  optional Id id = 2;
 }
 
 message EmptyResponse { optional RpcStatus status = 1; }
