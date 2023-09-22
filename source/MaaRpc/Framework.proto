@@ -1,0 +1,52 @@
+syntax = "proto3";
+
+package maa;
+
+import "Types.proto";
+
+message SetGlobalOptionRequest {
+  oneof option {
+    string logging = 1;
+    bool debug_mode = 2;
+  }
+}
+
+service MaaFramework {
+  rpc version(EmptyRequest) returns (StringResponse);
+  rpc set_global_option(SetGlobalOptionRequest) returns (BoolResponse);
+
+  rpc acquire_callback_id(EmptyRequest) returns (IdResponse);
+  rpc register_callback(IdRequest) returns (stream Callback);
+  rpc unregister_callback(IdRequest) returns (BoolResponse);
+}
+
+/*
+service MaaFrameworkString {
+  rpc create(EmptyRequest) returns (HandleResponse);
+  rpc destroy(HandleRequest) returns (EmptyResponse);
+  rpc is_empty(HandleRequest) returns (BoolResponse);
+  rpc clear(HandleRequest) returns (BoolResponse);
+  rpc get(HandleRequest) returns (BufferResponse);
+  rpc set(BufferRequest) returns (BoolResponse);
+}
+*/
+
+service MaaFrameworkImage {
+  rpc create(EmptyRequest) returns (HandleResponse);
+  rpc destroy(HandleRequest) returns (EmptyResponse);
+  rpc is_empty(HandleRequest) returns (BoolResponse);
+  rpc clear(HandleRequest) returns (BoolResponse);
+  rpc info(HandleRequest) returns (ImageInfoResponse);
+  rpc get_encoded(HandleRequest) returns (BufferResponse);
+  rpc set_encoded(Image_SetEncodedRequest) returns (BoolResponse);
+}
+
+service MaaFrameworkResource {
+  rpc create(IdRequest) returns (HandleResponse);
+  rpc destroy(HandleRequest) returns (EmptyResponse);
+  rpc post_path(HandleStringRequest) returns (IdResponse);
+  rpc status(HandleIdRequest) returns (StatusResponse);
+  rpc wait(HandleIdRequest) returns (StatusResponse);
+  rpc loaded(HandleRequest) returns (BoolResponse);
+  rpc hash(HandleRequest) returns (StringResponse);
+}

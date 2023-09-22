@@ -14,6 +14,7 @@ set(Boost_NO_WARN_NEW_VERSIONS 1)
 option(BUILD_SAMPLE "build a demo" OFF)
 option(USE_MAADEPS "use third-party libraries built by MaaDeps" ON)
 option(WITH_THRIFT "build with thrift" ON)
+option(WITH_GRPC "build with protobuf and grpc" ON)
 option(BUILD_JAVASCRIPT "build JavaScript binding extras" OFF)
 
 include(${PROJECT_SOURCE_DIR}/cmake/config.cmake) # Basic compile & link configuration
@@ -35,6 +36,10 @@ find_package(MaaDerpLearning REQUIRED)
 if(WITH_THRIFT)
     find_package(Thrift CONFIG REQUIRED)
 endif(WITH_THRIFT)
+if(WITH_GRPC)
+    find_package(protobuf REQUIRED)
+    find_package(gRPC CONFIG REQUIRED)
+endif(WITH_GRPC)
 find_package(ONNXRuntime)
 
 add_subdirectory(3rdparty)
