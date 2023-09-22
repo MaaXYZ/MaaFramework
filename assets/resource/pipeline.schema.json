@@ -95,9 +95,9 @@
           "minimum": 0,
           "default": 0
         },
-        "notify": {
+        "focus": {
           "description": "产生同步回调消息。可选，默认空，即不产生。",
-          "type": "string",
+          "type": "boolean",
           "default": false
         }
       },
