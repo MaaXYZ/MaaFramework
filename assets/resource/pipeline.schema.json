@@ -38,6 +38,16 @@
           "type": "boolean",
           "default": false
         },
+        "inverse": {
+          "description": "反转识别结果，识别到了当做没识别到，没识别到的当做识别到了。可选，默认否。",
+          "type": "boolean",
+          "default": false
+        },
+        "enabled": {
+          "description": "是否启用该 task。可选，默认 true",
+          "type": "boolean",
+          "default": true
+        },
         "timeout": {
           "description": "next list 识别超时时间，毫秒。默认 20 * 1000。",
           "type": "integer",
