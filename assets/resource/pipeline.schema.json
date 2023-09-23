@@ -193,6 +193,75 @@
         "custom_recognizer_param": {
           "description": "任务参数，任意类型，会在执行时透传。可选，默认空 json，即 {}",
           "default": {}
+        },
+        "target": {
+          "description": "等待的目标。可选，默认 true。",
+          "$ref": "#/definitions/target_type",
+          "default": true
+        },
+        "target_offset": {
+          "description": "在 target 的基础上额外移动再作为等待目标，四个值分别相加。可选，默认 [0, 0, 0, 0]。",
+          "$ref": "#/definitions/rect",
+          "default": [
+            0,
+            0,
+            0,
+            0
+          ]
+        },
+        "begin": {
+          "description": "滑动起点。可选，默认 true。",
+          "$ref": "#/definitions/target_type",
+          "default": true
+        },
+        "begin_offset": {
+          "description": "在 begin 的基础上额外移动再作为起点，四个值分别相加。可选，默认 [0, 0, 0, 0]。",
+          "$ref": "#/definitions/rect",
+          "default": [
+            0,
+            0,
+            0,
+            0
+          ]
+        },
+        "end": {
+          "description": "滑动终点。必选，默认 true。",
+          "$ref": "#/definitions/target_type",
+          "default": true
+        },
+        "end_offset": {
+          "description": "在 end 的基础上额外移动再作为终点，四个值分别相加。可选，默认 [0, 0, 0, 0]。",
+          "$ref": "#/definitions/rect",
+          "default": [
+            0,
+            0,
+            0,
+            0
+          ]
+        },
+        "duration": {
+          "description": "滑动持续时间，单位毫秒。可选，默认 200",
+          "type": "integer",
+          "default": 200
+        },
+        "key": {
+          "description": "要按的键，仅支持 ascii。",
+          "$ref": "#/definitions/keylist",
+          "default": 0
+        },
+        "package": {
+          "description": "启动入口。可选，默认空。",
+          "type": "string",
+          "default": ""
+        },
+        "custom_action": {
+          "description": "任务名，同 MaaRegisterCustomAction 接口传入的动作名。必选。",
+          "type": "string",
+          "default": ""
+        },
+        "custom_action_param": {
+          "description": "任务参数，任意类型，通过 MaaCustomRecognizerAPI 传入 json string。可选，默认空 json，即 {}",
+          "default": {}
         }
       },
       "additionalProperties": false,
@@ -367,6 +436,94 @@
               }
             }
           ] 
+        },
+        "action": {
+          "oneOf": [
+            {
+              "$comment": "Swipe",
+              "if": {
+                "required": [
+                  "action"
+                ],
+                "properties": {
+                  "action": {
+                    "enum": [
+                      "Swipe"
+                    ]
+                  }
+                }
+              },
+              "then": {
+                "required": [
+                  "end"
+                ]
+              }
+            },
+            {
+              "$comment": "Key",
+              "if": {
+                "required": [
+                  "action"
+                ],
+                "properties": {
+                  "action": {
+                    "enum": [
+                      "Key"
+                    ]
+                  }
+                }
+              },
+              "then": {
+                "required": [
+                  "key"
+                ]
+              }
+            },
+            {
+              "$comment": "StopApp",
+              "if": {
+                "required": [
+                  "action"
+                ],
+                "properties": {
+                  "action": {
+                    "enum": [
+                      "StopApp"
+                    ]
+                  }
+                }
+              },
+              "then": {
+                "properties": {
+                  "package": {
+                    "description": "关闭要关闭的程序。可选，默认空。",
+                    "type": "string",
+                    "default": ""
+                  }
+                }
+              }
+            },
+            {
+              "$comment": "Custom",
+              "if": {
+                "required": [
+                  "action"
+                ],
+                "properties": {
+                  "action": {
+                    "enum": [
+                      "Custom"
+                    ]
+                  }
+                }
+              },
+              "then": {
+                "required": [
+                  "custom_action"
+                ]
+              }
+            }
+          ]
         }
       }
     }
@@ -472,6 +629,24 @@
           "type": "array",
           "items": {
             "type": "integer"
+          },
+          "minItems": 1
+        }
+      ]
+    },
+    "keylist": {
+      "anyOf": [
+        {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 127
+        },
+        {
+          "type": "array",
+          "items": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 127
           },
           "minItems": 1
         }
