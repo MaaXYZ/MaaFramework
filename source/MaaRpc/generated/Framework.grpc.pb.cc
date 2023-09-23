@@ -27,6 +27,7 @@ static const char* MaaFramework_method_names[] = {
   "/maa.MaaFramework/acquire_callback_id",
   "/maa.MaaFramework/register_callback",
   "/maa.MaaFramework/unregister_callback",
+  "/maa.MaaFramework/acquire_custom_controller_id",
 };
 
 std::unique_ptr< MaaFramework::Stub> MaaFramework::NewStub(const std::shared_ptr< ::grpc::ChannelInterface>& channel, const ::grpc::StubOptions& options) {
@@ -41,6 +42,7 @@ MaaFramework::Stub::Stub(const std::shared_ptr< ::grpc::ChannelInterface>& chann
   , rpcmethod_acquire_callback_id_(MaaFramework_method_names[2], options.suffix_for_stats(),::grpc::internal::RpcMethod::NORMAL_RPC, channel)
   , rpcmethod_register_callback_(MaaFramework_method_names[3], options.suffix_for_stats(),::grpc::internal::RpcMethod::SERVER_STREAMING, channel)
   , rpcmethod_unregister_callback_(MaaFramework_method_names[4], options.suffix_for_stats(),::grpc::internal::RpcMethod::NORMAL_RPC, channel)
+  , rpcmethod_acquire_custom_controller_id_(MaaFramework_method_names[5], options.suffix_for_stats(),::grpc::internal::RpcMethod::NORMAL_RPC, channel)
   {}
 
 ::grpc::Status MaaFramework::Stub::version(::grpc::ClientContext* context, const ::maa::EmptyRequest& request, ::maa::StringResponse* response) {
@@ -151,6 +153,29 @@ void MaaFramework::Stub::async::unregister_callback(::grpc::ClientContext* conte
   return result;
 }
 
+::grpc::Status MaaFramework::Stub::acquire_custom_controller_id(::grpc::ClientContext* context, const ::maa::EmptyRequest& request, ::maa::IdResponse* response) {
+  return ::grpc::internal::BlockingUnaryCall< ::maa::EmptyRequest, ::maa::IdResponse, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(channel_.get(), rpcmethod_acquire_custom_controller_id_, context, request, response);
+}
+
+void MaaFramework::Stub::async::acquire_custom_controller_id(::grpc::ClientContext* context, const ::maa::EmptyRequest* request, ::maa::IdResponse* response, std::function<void(::grpc::Status)> f) {
+  ::grpc::internal::CallbackUnaryCall< ::maa::EmptyRequest, ::maa::IdResponse, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(stub_->channel_.get(), stub_->rpcmethod_acquire_custom_controller_id_, context, request, response, std::move(f));
+}
+
+void MaaFramework::Stub::async::acquire_custom_controller_id(::grpc::ClientContext* context, const ::maa::EmptyRequest* request, ::maa::IdResponse* response, ::grpc::ClientUnaryReactor* reactor) {
+  ::grpc::internal::ClientCallbackUnaryFactory::Create< ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(stub_->channel_.get(), stub_->rpcmethod_acquire_custom_controller_id_, context, request, response, reactor);
+}
+
+::grpc::ClientAsyncResponseReader< ::maa::IdResponse>* MaaFramework::Stub::PrepareAsyncacquire_custom_controller_idRaw(::grpc::ClientContext* context, const ::maa::EmptyRequest& request, ::grpc::CompletionQueue* cq) {
+  return ::grpc::internal::ClientAsyncResponseReaderHelper::Create< ::maa::IdResponse, ::maa::EmptyRequest, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(channel_.get(), cq, rpcmethod_acquire_custom_controller_id_, context, request);
+}
+
+::grpc::ClientAsyncResponseReader< ::maa::IdResponse>* MaaFramework::Stub::Asyncacquire_custom_controller_idRaw(::grpc::ClientContext* context, const ::maa::EmptyRequest& request, ::grpc::CompletionQueue* cq) {
+  auto* result =
+    this->PrepareAsyncacquire_custom_controller_idRaw(context, request, cq);
+  result->StartCall();
+  return result;
+}
+
 MaaFramework::Service::Service() {
   AddMethod(new ::grpc::internal::RpcServiceMethod(
       MaaFramework_method_names[0],
@@ -202,6 +227,16 @@ MaaFramework::Service::Service() {
              ::maa::EmptyResponse* resp) {
                return service->unregister_callback(ctx, req, resp);
              }, this)));
+  AddMethod(new ::grpc::internal::RpcServiceMethod(
+      MaaFramework_method_names[5],
+      ::grpc::internal::RpcMethod::NORMAL_RPC,
+      new ::grpc::internal::RpcMethodHandler< MaaFramework::Service, ::maa::EmptyRequest, ::maa::IdResponse, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(
+          [](MaaFramework::Service* service,
+             ::grpc::ServerContext* ctx,
+             const ::maa::EmptyRequest* req,
+             ::maa::IdResponse* resp) {
+               return service->acquire_custom_controller_id(ctx, req, resp);
+             }, this)));
 }
 
 MaaFramework::Service::~Service() {
@@ -242,6 +277,13 @@ MaaFramework::Service::~Service() {
   return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
 }
 
+::grpc::Status MaaFramework::Service::acquire_custom_controller_id(::grpc::ServerContext* context, const ::maa::EmptyRequest* request, ::maa::IdResponse* response) {
+  (void) context;
+  (void) request;
+  (void) response;
+  return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+}
+
 
 static const char* MaaFrameworkImage_method_names[] = {
   "/maa.MaaFrameworkImage/create",
@@ -249,7 +291,7 @@ static const char* MaaFrameworkImage_method_names[] = {
   "/maa.MaaFrameworkImage/is_empty",
   "/maa.MaaFrameworkImage/clear",
   "/maa.MaaFrameworkImage/info",
-  "/maa.MaaFrameworkImage/get_encoded",
+  "/maa.MaaFrameworkImage/encoded",
   "/maa.MaaFrameworkImage/set_encoded",
 };
 
@@ -265,7 +307,7 @@ MaaFrameworkImage::Stub::Stub(const std::shared_ptr< ::grpc::ChannelInterface>& 
   , rpcmethod_is_empty_(MaaFrameworkImage_method_names[2], options.suffix_for_stats(),::grpc::internal::RpcMethod::NORMAL_RPC, channel)
   , rpcmethod_clear_(MaaFrameworkImage_method_names[3], options.suffix_for_stats(),::grpc::internal::RpcMethod::NORMAL_RPC, channel)
   , rpcmethod_info_(MaaFrameworkImage_method_names[4], options.suffix_for_stats(),::grpc::internal::RpcMethod::NORMAL_RPC, channel)
-  , rpcmethod_get_encoded_(MaaFrameworkImage_method_names[5], options.suffix_for_stats(),::grpc::internal::RpcMethod::NORMAL_RPC, channel)
+  , rpcmethod_encoded_(MaaFrameworkImage_method_names[5], options.suffix_for_stats(),::grpc::internal::RpcMethod::NORMAL_RPC, channel)
   , rpcmethod_set_encoded_(MaaFrameworkImage_method_names[6], options.suffix_for_stats(),::grpc::internal::RpcMethod::NORMAL_RPC, channel)
   {}
 
@@ -384,25 +426,25 @@ void MaaFrameworkImage::Stub::async::info(::grpc::ClientContext* context, const 
   return result;
 }
 
-::grpc::Status MaaFrameworkImage::Stub::get_encoded(::grpc::ClientContext* context, const ::maa::HandleRequest& request, ::maa::BufferResponse* response) {
-  return ::grpc::internal::BlockingUnaryCall< ::maa::HandleRequest, ::maa::BufferResponse, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(channel_.get(), rpcmethod_get_encoded_, context, request, response);
+::grpc::Status MaaFrameworkImage::Stub::encoded(::grpc::ClientContext* context, const ::maa::HandleRequest& request, ::maa::BufferResponse* response) {
+  return ::grpc::internal::BlockingUnaryCall< ::maa::HandleRequest, ::maa::BufferResponse, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(channel_.get(), rpcmethod_encoded_, context, request, response);
 }
 
-void MaaFrameworkImage::Stub::async::get_encoded(::grpc::ClientContext* context, const ::maa::HandleRequest* request, ::maa::BufferResponse* response, std::function<void(::grpc::Status)> f) {
-  ::grpc::internal::CallbackUnaryCall< ::maa::HandleRequest, ::maa::BufferResponse, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(stub_->channel_.get(), stub_->rpcmethod_get_encoded_, context, request, response, std::move(f));
+void MaaFrameworkImage::Stub::async::encoded(::grpc::ClientContext* context, const ::maa::HandleRequest* request, ::maa::BufferResponse* response, std::function<void(::grpc::Status)> f) {
+  ::grpc::internal::CallbackUnaryCall< ::maa::HandleRequest, ::maa::BufferResponse, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(stub_->channel_.get(), stub_->rpcmethod_encoded_, context, request, response, std::move(f));
 }
 
-void MaaFrameworkImage::Stub::async::get_encoded(::grpc::ClientContext* context, const ::maa::HandleRequest* request, ::maa::BufferResponse* response, ::grpc::ClientUnaryReactor* reactor) {
-  ::grpc::internal::ClientCallbackUnaryFactory::Create< ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(stub_->channel_.get(), stub_->rpcmethod_get_encoded_, context, request, response, reactor);
+void MaaFrameworkImage::Stub::async::encoded(::grpc::ClientContext* context, const ::maa::HandleRequest* request, ::maa::BufferResponse* response, ::grpc::ClientUnaryReactor* reactor) {
+  ::grpc::internal::ClientCallbackUnaryFactory::Create< ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(stub_->channel_.get(), stub_->rpcmethod_encoded_, context, request, response, reactor);
 }
 
-::grpc::ClientAsyncResponseReader< ::maa::BufferResponse>* MaaFrameworkImage::Stub::PrepareAsyncget_encodedRaw(::grpc::ClientContext* context, const ::maa::HandleRequest& request, ::grpc::CompletionQueue* cq) {
-  return ::grpc::internal::ClientAsyncResponseReaderHelper::Create< ::maa::BufferResponse, ::maa::HandleRequest, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(channel_.get(), cq, rpcmethod_get_encoded_, context, request);
+::grpc::ClientAsyncResponseReader< ::maa::BufferResponse>* MaaFrameworkImage::Stub::PrepareAsyncencodedRaw(::grpc::ClientContext* context, const ::maa::HandleRequest& request, ::grpc::CompletionQueue* cq) {
+  return ::grpc::internal::ClientAsyncResponseReaderHelper::Create< ::maa::BufferResponse, ::maa::HandleRequest, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(channel_.get(), cq, rpcmethod_encoded_, context, request);
 }
 
-::grpc::ClientAsyncResponseReader< ::maa::BufferResponse>* MaaFrameworkImage::Stub::Asyncget_encodedRaw(::grpc::ClientContext* context, const ::maa::HandleRequest& request, ::grpc::CompletionQueue* cq) {
+::grpc::ClientAsyncResponseReader< ::maa::BufferResponse>* MaaFrameworkImage::Stub::AsyncencodedRaw(::grpc::ClientContext* context, const ::maa::HandleRequest& request, ::grpc::CompletionQueue* cq) {
   auto* result =
-    this->PrepareAsyncget_encodedRaw(context, request, cq);
+    this->PrepareAsyncencodedRaw(context, request, cq);
   result->StartCall();
   return result;
 }
@@ -489,7 +531,7 @@ MaaFrameworkImage::Service::Service() {
              ::grpc::ServerContext* ctx,
              const ::maa::HandleRequest* req,
              ::maa::BufferResponse* resp) {
-               return service->get_encoded(ctx, req, resp);
+               return service->encoded(ctx, req, resp);
              }, this)));
   AddMethod(new ::grpc::internal::RpcServiceMethod(
       MaaFrameworkImage_method_names[6],
@@ -541,7 +583,7 @@ MaaFrameworkImage::Service::~Service() {
   return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
 }
 
-::grpc::Status MaaFrameworkImage::Service::get_encoded(::grpc::ServerContext* context, const ::maa::HandleRequest* request, ::maa::BufferResponse* response) {
+::grpc::Status MaaFrameworkImage::Service::encoded(::grpc::ServerContext* context, const ::maa::HandleRequest* request, ::maa::BufferResponse* response) {
   (void) context;
   (void) request;
   (void) response;
@@ -870,8 +912,10 @@ MaaFrameworkResource::Service::~Service() {
 
 
 static const char* MaaFrameworkController_method_names[] = {
-  "/maa.MaaFrameworkController/create",
+  "/maa.MaaFrameworkController/create_adb",
   "/maa.MaaFrameworkController/destroy",
+  "/maa.MaaFrameworkController/create_custom",
+  "/maa.MaaFrameworkController/submit_custom_controller",
   "/maa.MaaFrameworkController/set_option",
   "/maa.MaaFrameworkController/post_connection",
   "/maa.MaaFrameworkController/post_click",
@@ -895,43 +939,45 @@ std::unique_ptr< MaaFrameworkController::Stub> MaaFrameworkController::NewStub(c
 }
 
 MaaFrameworkController::Stub::Stub(const std::shared_ptr< ::grpc::ChannelInterface>& channel, const ::grpc::StubOptions& options)
-  : channel_(channel), rpcmethod_create_(MaaFrameworkController_method_names[0], options.suffix_for_stats(),::grpc::internal::RpcMethod::NORMAL_RPC, channel)
+  : channel_(channel), rpcmethod_create_adb_(MaaFrameworkController_method_names[0], options.suffix_for_stats(),::grpc::internal::RpcMethod::NORMAL_RPC, channel)
   , rpcmethod_destroy_(MaaFrameworkController_method_names[1], options.suffix_for_stats(),::grpc::internal::RpcMethod::NORMAL_RPC, channel)
-  , rpcmethod_set_option_(MaaFrameworkController_method_names[2], options.suffix_for_stats(),::grpc::internal::RpcMethod::NORMAL_RPC, channel)
-  , rpcmethod_post_connection_(MaaFrameworkController_method_names[3], options.suffix_for_stats(),::grpc::internal::RpcMethod::NORMAL_RPC, channel)
-  , rpcmethod_post_click_(MaaFrameworkController_method_names[4], options.suffix_for_stats(),::grpc::internal::RpcMethod::NORMAL_RPC, channel)
-  , rpcmethod_post_swipe_(MaaFrameworkController_method_names[5], options.suffix_for_stats(),::grpc::internal::RpcMethod::NORMAL_RPC, channel)
-  , rpcmethod_post_press_key_(MaaFrameworkController_method_names[6], options.suffix_for_stats(),::grpc::internal::RpcMethod::NORMAL_RPC, channel)
-  , rpcmethod_post_touch_down_(MaaFrameworkController_method_names[7], options.suffix_for_stats(),::grpc::internal::RpcMethod::NORMAL_RPC, channel)
-  , rpcmethod_post_touch_move_(MaaFrameworkController_method_names[8], options.suffix_for_stats(),::grpc::internal::RpcMethod::NORMAL_RPC, channel)
-  , rpcmethod_post_touch_up_(MaaFrameworkController_method_names[9], options.suffix_for_stats(),::grpc::internal::RpcMethod::NORMAL_RPC, channel)
-  , rpcmethod_post_screencap_(MaaFrameworkController_method_names[10], options.suffix_for_stats(),::grpc::internal::RpcMethod::NORMAL_RPC, channel)
-  , rpcmethod_status_(MaaFrameworkController_method_names[11], options.suffix_for_stats(),::grpc::internal::RpcMethod::NORMAL_RPC, channel)
-  , rpcmethod_wait_(MaaFrameworkController_method_names[12], options.suffix_for_stats(),::grpc::internal::RpcMethod::NORMAL_RPC, channel)
-  , rpcmethod_connected_(MaaFrameworkController_method_names[13], options.suffix_for_stats(),::grpc::internal::RpcMethod::NORMAL_RPC, channel)
-  , rpcmethod_image_(MaaFrameworkController_method_names[14], options.suffix_for_stats(),::grpc::internal::RpcMethod::NORMAL_RPC, channel)
-  , rpcmethod_uuid_(MaaFrameworkController_method_names[15], options.suffix_for_stats(),::grpc::internal::RpcMethod::NORMAL_RPC, channel)
+  , rpcmethod_create_custom_(MaaFrameworkController_method_names[2], options.suffix_for_stats(),::grpc::internal::RpcMethod::SERVER_STREAMING, channel)
+  , rpcmethod_submit_custom_controller_(MaaFrameworkController_method_names[3], options.suffix_for_stats(),::grpc::internal::RpcMethod::NORMAL_RPC, channel)
+  , rpcmethod_set_option_(MaaFrameworkController_method_names[4], options.suffix_for_stats(),::grpc::internal::RpcMethod::NORMAL_RPC, channel)
+  , rpcmethod_post_connection_(MaaFrameworkController_method_names[5], options.suffix_for_stats(),::grpc::internal::RpcMethod::NORMAL_RPC, channel)
+  , rpcmethod_post_click_(MaaFrameworkController_method_names[6], options.suffix_for_stats(),::grpc::internal::RpcMethod::NORMAL_RPC, channel)
+  , rpcmethod_post_swipe_(MaaFrameworkController_method_names[7], options.suffix_for_stats(),::grpc::internal::RpcMethod::NORMAL_RPC, channel)
+  , rpcmethod_post_press_key_(MaaFrameworkController_method_names[8], options.suffix_for_stats(),::grpc::internal::RpcMethod::NORMAL_RPC, channel)
+  , rpcmethod_post_touch_down_(MaaFrameworkController_method_names[9], options.suffix_for_stats(),::grpc::internal::RpcMethod::NORMAL_RPC, channel)
+  , rpcmethod_post_touch_move_(MaaFrameworkController_method_names[10], options.suffix_for_stats(),::grpc::internal::RpcMethod::NORMAL_RPC, channel)
+  , rpcmethod_post_touch_up_(MaaFrameworkController_method_names[11], options.suffix_for_stats(),::grpc::internal::RpcMethod::NORMAL_RPC, channel)
+  , rpcmethod_post_screencap_(MaaFrameworkController_method_names[12], options.suffix_for_stats(),::grpc::internal::RpcMethod::NORMAL_RPC, channel)
+  , rpcmethod_status_(MaaFrameworkController_method_names[13], options.suffix_for_stats(),::grpc::internal::RpcMethod::NORMAL_RPC, channel)
+  , rpcmethod_wait_(MaaFrameworkController_method_names[14], options.suffix_for_stats(),::grpc::internal::RpcMethod::NORMAL_RPC, channel)
+  , rpcmethod_connected_(MaaFrameworkController_method_names[15], options.suffix_for_stats(),::grpc::internal::RpcMethod::NORMAL_RPC, channel)
+  , rpcmethod_image_(MaaFrameworkController_method_names[16], options.suffix_for_stats(),::grpc::internal::RpcMethod::NORMAL_RPC, channel)
+  , rpcmethod_uuid_(MaaFrameworkController_method_names[17], options.suffix_for_stats(),::grpc::internal::RpcMethod::NORMAL_RPC, channel)
   {}
 
-::grpc::Status MaaFrameworkController::Stub::create(::grpc::ClientContext* context, const ::maa::AdbControlleRequest& request, ::maa::HandleResponse* response) {
-  return ::grpc::internal::BlockingUnaryCall< ::maa::AdbControlleRequest, ::maa::HandleResponse, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(channel_.get(), rpcmethod_create_, context, request, response);
+::grpc::Status MaaFrameworkController::Stub::create_adb(::grpc::ClientContext* context, const ::maa::AdbControllerRequest& request, ::maa::HandleResponse* response) {
+  return ::grpc::internal::BlockingUnaryCall< ::maa::AdbControllerRequest, ::maa::HandleResponse, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(channel_.get(), rpcmethod_create_adb_, context, request, response);
 }
 
-void MaaFrameworkController::Stub::async::create(::grpc::ClientContext* context, const ::maa::AdbControlleRequest* request, ::maa::HandleResponse* response, std::function<void(::grpc::Status)> f) {
-  ::grpc::internal::CallbackUnaryCall< ::maa::AdbControlleRequest, ::maa::HandleResponse, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(stub_->channel_.get(), stub_->rpcmethod_create_, context, request, response, std::move(f));
+void MaaFrameworkController::Stub::async::create_adb(::grpc::ClientContext* context, const ::maa::AdbControllerRequest* request, ::maa::HandleResponse* response, std::function<void(::grpc::Status)> f) {
+  ::grpc::internal::CallbackUnaryCall< ::maa::AdbControllerRequest, ::maa::HandleResponse, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(stub_->channel_.get(), stub_->rpcmethod_create_adb_, context, request, response, std::move(f));
 }
 
-void MaaFrameworkController::Stub::async::create(::grpc::ClientContext* context, const ::maa::AdbControlleRequest* request, ::maa::HandleResponse* response, ::grpc::ClientUnaryReactor* reactor) {
-  ::grpc::internal::ClientCallbackUnaryFactory::Create< ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(stub_->channel_.get(), stub_->rpcmethod_create_, context, request, response, reactor);
+void MaaFrameworkController::Stub::async::create_adb(::grpc::ClientContext* context, const ::maa::AdbControllerRequest* request, ::maa::HandleResponse* response, ::grpc::ClientUnaryReactor* reactor) {
+  ::grpc::internal::ClientCallbackUnaryFactory::Create< ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(stub_->channel_.get(), stub_->rpcmethod_create_adb_, context, request, response, reactor);
 }
 
-::grpc::ClientAsyncResponseReader< ::maa::HandleResponse>* MaaFrameworkController::Stub::PrepareAsynccreateRaw(::grpc::ClientContext* context, const ::maa::AdbControlleRequest& request, ::grpc::CompletionQueue* cq) {
-  return ::grpc::internal::ClientAsyncResponseReaderHelper::Create< ::maa::HandleResponse, ::maa::AdbControlleRequest, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(channel_.get(), cq, rpcmethod_create_, context, request);
+::grpc::ClientAsyncResponseReader< ::maa::HandleResponse>* MaaFrameworkController::Stub::PrepareAsynccreate_adbRaw(::grpc::ClientContext* context, const ::maa::AdbControllerRequest& request, ::grpc::CompletionQueue* cq) {
+  return ::grpc::internal::ClientAsyncResponseReaderHelper::Create< ::maa::HandleResponse, ::maa::AdbControllerRequest, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(channel_.get(), cq, rpcmethod_create_adb_, context, request);
 }
 
-::grpc::ClientAsyncResponseReader< ::maa::HandleResponse>* MaaFrameworkController::Stub::AsynccreateRaw(::grpc::ClientContext* context, const ::maa::AdbControlleRequest& request, ::grpc::CompletionQueue* cq) {
+::grpc::ClientAsyncResponseReader< ::maa::HandleResponse>* MaaFrameworkController::Stub::Asynccreate_adbRaw(::grpc::ClientContext* context, const ::maa::AdbControllerRequest& request, ::grpc::CompletionQueue* cq) {
   auto* result =
-    this->PrepareAsynccreateRaw(context, request, cq);
+    this->PrepareAsynccreate_adbRaw(context, request, cq);
   result->StartCall();
   return result;
 }
@@ -955,6 +1001,45 @@ void MaaFrameworkController::Stub::async::destroy(::grpc::ClientContext* context
 ::grpc::ClientAsyncResponseReader< ::maa::EmptyResponse>* MaaFrameworkController::Stub::AsyncdestroyRaw(::grpc::ClientContext* context, const ::maa::HandleRequest& request, ::grpc::CompletionQueue* cq) {
   auto* result =
     this->PrepareAsyncdestroyRaw(context, request, cq);
+  result->StartCall();
+  return result;
+}
+
+::grpc::ClientReader< ::maa::CustomControllerResponse>* MaaFrameworkController::Stub::create_customRaw(::grpc::ClientContext* context, const ::maa::CustomControllerRequest& request) {
+  return ::grpc::internal::ClientReaderFactory< ::maa::CustomControllerResponse>::Create(channel_.get(), rpcmethod_create_custom_, context, request);
+}
+
+void MaaFrameworkController::Stub::async::create_custom(::grpc::ClientContext* context, const ::maa::CustomControllerRequest* request, ::grpc::ClientReadReactor< ::maa::CustomControllerResponse>* reactor) {
+  ::grpc::internal::ClientCallbackReaderFactory< ::maa::CustomControllerResponse>::Create(stub_->channel_.get(), stub_->rpcmethod_create_custom_, context, request, reactor);
+}
+
+::grpc::ClientAsyncReader< ::maa::CustomControllerResponse>* MaaFrameworkController::Stub::Asynccreate_customRaw(::grpc::ClientContext* context, const ::maa::CustomControllerRequest& request, ::grpc::CompletionQueue* cq, void* tag) {
+  return ::grpc::internal::ClientAsyncReaderFactory< ::maa::CustomControllerResponse>::Create(channel_.get(), cq, rpcmethod_create_custom_, context, request, true, tag);
+}
+
+::grpc::ClientAsyncReader< ::maa::CustomControllerResponse>* MaaFrameworkController::Stub::PrepareAsynccreate_customRaw(::grpc::ClientContext* context, const ::maa::CustomControllerRequest& request, ::grpc::CompletionQueue* cq) {
+  return ::grpc::internal::ClientAsyncReaderFactory< ::maa::CustomControllerResponse>::Create(channel_.get(), cq, rpcmethod_create_custom_, context, request, false, nullptr);
+}
+
+::grpc::Status MaaFrameworkController::Stub::submit_custom_controller(::grpc::ClientContext* context, const ::maa::SubmitCustomControllerRequest& request, ::maa::EmptyResponse* response) {
+  return ::grpc::internal::BlockingUnaryCall< ::maa::SubmitCustomControllerRequest, ::maa::EmptyResponse, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(channel_.get(), rpcmethod_submit_custom_controller_, context, request, response);
+}
+
+void MaaFrameworkController::Stub::async::submit_custom_controller(::grpc::ClientContext* context, const ::maa::SubmitCustomControllerRequest* request, ::maa::EmptyResponse* response, std::function<void(::grpc::Status)> f) {
+  ::grpc::internal::CallbackUnaryCall< ::maa::SubmitCustomControllerRequest, ::maa::EmptyResponse, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(stub_->channel_.get(), stub_->rpcmethod_submit_custom_controller_, context, request, response, std::move(f));
+}
+
+void MaaFrameworkController::Stub::async::submit_custom_controller(::grpc::ClientContext* context, const ::maa::SubmitCustomControllerRequest* request, ::maa::EmptyResponse* response, ::grpc::ClientUnaryReactor* reactor) {
+  ::grpc::internal::ClientCallbackUnaryFactory::Create< ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(stub_->channel_.get(), stub_->rpcmethod_submit_custom_controller_, context, request, response, reactor);
+}
+
+::grpc::ClientAsyncResponseReader< ::maa::EmptyResponse>* MaaFrameworkController::Stub::PrepareAsyncsubmit_custom_controllerRaw(::grpc::ClientContext* context, const ::maa::SubmitCustomControllerRequest& request, ::grpc::CompletionQueue* cq) {
+  return ::grpc::internal::ClientAsyncResponseReaderHelper::Create< ::maa::EmptyResponse, ::maa::SubmitCustomControllerRequest, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(channel_.get(), cq, rpcmethod_submit_custom_controller_, context, request);
+}
+
+::grpc::ClientAsyncResponseReader< ::maa::EmptyResponse>* MaaFrameworkController::Stub::Asyncsubmit_custom_controllerRaw(::grpc::ClientContext* context, const ::maa::SubmitCustomControllerRequest& request, ::grpc::CompletionQueue* cq) {
+  auto* result =
+    this->PrepareAsyncsubmit_custom_controllerRaw(context, request, cq);
   result->StartCall();
   return result;
 }
@@ -1285,12 +1370,12 @@ MaaFrameworkController::Service::Service() {
   AddMethod(new ::grpc::internal::RpcServiceMethod(
       MaaFrameworkController_method_names[0],
       ::grpc::internal::RpcMethod::NORMAL_RPC,
-      new ::grpc::internal::RpcMethodHandler< MaaFrameworkController::Service, ::maa::AdbControlleRequest, ::maa::HandleResponse, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(
+      new ::grpc::internal::RpcMethodHandler< MaaFrameworkController::Service, ::maa::AdbControllerRequest, ::maa::HandleResponse, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(
           [](MaaFrameworkController::Service* service,
              ::grpc::ServerContext* ctx,
-             const ::maa::AdbControlleRequest* req,
+             const ::maa::AdbControllerRequest* req,
              ::maa::HandleResponse* resp) {
-               return service->create(ctx, req, resp);
+               return service->create_adb(ctx, req, resp);
              }, this)));
   AddMethod(new ::grpc::internal::RpcServiceMethod(
       MaaFrameworkController_method_names[1],
@@ -1304,6 +1389,26 @@ MaaFrameworkController::Service::Service() {
              }, this)));
   AddMethod(new ::grpc::internal::RpcServiceMethod(
       MaaFrameworkController_method_names[2],
+      ::grpc::internal::RpcMethod::SERVER_STREAMING,
+      new ::grpc::internal::ServerStreamingHandler< MaaFrameworkController::Service, ::maa::CustomControllerRequest, ::maa::CustomControllerResponse>(
+          [](MaaFrameworkController::Service* service,
+             ::grpc::ServerContext* ctx,
+             const ::maa::CustomControllerRequest* req,
+             ::grpc::ServerWriter<::maa::CustomControllerResponse>* writer) {
+               return service->create_custom(ctx, req, writer);
+             }, this)));
+  AddMethod(new ::grpc::internal::RpcServiceMethod(
+      MaaFrameworkController_method_names[3],
+      ::grpc::internal::RpcMethod::NORMAL_RPC,
+      new ::grpc::internal::RpcMethodHandler< MaaFrameworkController::Service, ::maa::SubmitCustomControllerRequest, ::maa::EmptyResponse, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(
+          [](MaaFrameworkController::Service* service,
+             ::grpc::ServerContext* ctx,
+             const ::maa::SubmitCustomControllerRequest* req,
+             ::maa::EmptyResponse* resp) {
+               return service->submit_custom_controller(ctx, req, resp);
+             }, this)));
+  AddMethod(new ::grpc::internal::RpcServiceMethod(
+      MaaFrameworkController_method_names[4],
       ::grpc::internal::RpcMethod::NORMAL_RPC,
       new ::grpc::internal::RpcMethodHandler< MaaFrameworkController::Service, ::maa::ControllerSetOptionRequest, ::maa::EmptyResponse, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(
           [](MaaFrameworkController::Service* service,
@@ -1313,7 +1418,7 @@ MaaFrameworkController::Service::Service() {
                return service->set_option(ctx, req, resp);
              }, this)));
   AddMethod(new ::grpc::internal::RpcServiceMethod(
-      MaaFrameworkController_method_names[3],
+      MaaFrameworkController_method_names[5],
       ::grpc::internal::RpcMethod::NORMAL_RPC,
       new ::grpc::internal::RpcMethodHandler< MaaFrameworkController::Service, ::maa::HandleRequest, ::maa::IdResponse, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(
           [](MaaFrameworkController::Service* service,
@@ -1323,7 +1428,7 @@ MaaFrameworkController::Service::Service() {
                return service->post_connection(ctx, req, resp);
              }, this)));
   AddMethod(new ::grpc::internal::RpcServiceMethod(
-      MaaFrameworkController_method_names[4],
+      MaaFrameworkController_method_names[6],
       ::grpc::internal::RpcMethod::NORMAL_RPC,
       new ::grpc::internal::RpcMethodHandler< MaaFrameworkController::Service, ::maa::ControllerPostClickRequest, ::maa::IdResponse, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(
           [](MaaFrameworkController::Service* service,
@@ -1333,7 +1438,7 @@ MaaFrameworkController::Service::Service() {
                return service->post_click(ctx, req, resp);
              }, this)));
   AddMethod(new ::grpc::internal::RpcServiceMethod(
-      MaaFrameworkController_method_names[5],
+      MaaFrameworkController_method_names[7],
       ::grpc::internal::RpcMethod::NORMAL_RPC,
       new ::grpc::internal::RpcMethodHandler< MaaFrameworkController::Service, ::maa::ControllerPostSwipeRequest, ::maa::IdResponse, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(
           [](MaaFrameworkController::Service* service,
@@ -1343,7 +1448,7 @@ MaaFrameworkController::Service::Service() {
                return service->post_swipe(ctx, req, resp);
              }, this)));
   AddMethod(new ::grpc::internal::RpcServiceMethod(
-      MaaFrameworkController_method_names[6],
+      MaaFrameworkController_method_names[8],
       ::grpc::internal::RpcMethod::NORMAL_RPC,
       new ::grpc::internal::RpcMethodHandler< MaaFrameworkController::Service, ::maa::ControllerPostKeyRequest, ::maa::IdResponse, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(
           [](MaaFrameworkController::Service* service,
@@ -1353,7 +1458,7 @@ MaaFrameworkController::Service::Service() {
                return service->post_press_key(ctx, req, resp);
              }, this)));
   AddMethod(new ::grpc::internal::RpcServiceMethod(
-      MaaFrameworkController_method_names[7],
+      MaaFrameworkController_method_names[9],
       ::grpc::internal::RpcMethod::NORMAL_RPC,
       new ::grpc::internal::RpcMethodHandler< MaaFrameworkController::Service, ::maa::ControllerPostTouchRequest, ::maa::IdResponse, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(
           [](MaaFrameworkController::Service* service,
@@ -1363,7 +1468,7 @@ MaaFrameworkController::Service::Service() {
                return service->post_touch_down(ctx, req, resp);
              }, this)));
   AddMethod(new ::grpc::internal::RpcServiceMethod(
-      MaaFrameworkController_method_names[8],
+      MaaFrameworkController_method_names[10],
       ::grpc::internal::RpcMethod::NORMAL_RPC,
       new ::grpc::internal::RpcMethodHandler< MaaFrameworkController::Service, ::maa::ControllerPostTouchRequest, ::maa::IdResponse, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(
           [](MaaFrameworkController::Service* service,
@@ -1373,7 +1478,7 @@ MaaFrameworkController::Service::Service() {
                return service->post_touch_move(ctx, req, resp);
              }, this)));
   AddMethod(new ::grpc::internal::RpcServiceMethod(
-      MaaFrameworkController_method_names[9],
+      MaaFrameworkController_method_names[11],
       ::grpc::internal::RpcMethod::NORMAL_RPC,
       new ::grpc::internal::RpcMethodHandler< MaaFrameworkController::Service, ::maa::ControllerPostTouchRequest, ::maa::IdResponse, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(
           [](MaaFrameworkController::Service* service,
@@ -1383,7 +1488,7 @@ MaaFrameworkController::Service::Service() {
                return service->post_touch_up(ctx, req, resp);
              }, this)));
   AddMethod(new ::grpc::internal::RpcServiceMethod(
-      MaaFrameworkController_method_names[10],
+      MaaFrameworkController_method_names[12],
       ::grpc::internal::RpcMethod::NORMAL_RPC,
       new ::grpc::internal::RpcMethodHandler< MaaFrameworkController::Service, ::maa::HandleRequest, ::maa::IdResponse, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(
           [](MaaFrameworkController::Service* service,
@@ -1393,7 +1498,7 @@ MaaFrameworkController::Service::Service() {
                return service->post_screencap(ctx, req, resp);
              }, this)));
   AddMethod(new ::grpc::internal::RpcServiceMethod(
-      MaaFrameworkController_method_names[11],
+      MaaFrameworkController_method_names[13],
       ::grpc::internal::RpcMethod::NORMAL_RPC,
       new ::grpc::internal::RpcMethodHandler< MaaFrameworkController::Service, ::maa::HandleIdRequest, ::maa::StatusResponse, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(
           [](MaaFrameworkController::Service* service,
@@ -1403,7 +1508,7 @@ MaaFrameworkController::Service::Service() {
                return service->status(ctx, req, resp);
              }, this)));
   AddMethod(new ::grpc::internal::RpcServiceMethod(
-      MaaFrameworkController_method_names[12],
+      MaaFrameworkController_method_names[14],
       ::grpc::internal::RpcMethod::NORMAL_RPC,
       new ::grpc::internal::RpcMethodHandler< MaaFrameworkController::Service, ::maa::HandleIdRequest, ::maa::EmptyResponse, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(
           [](MaaFrameworkController::Service* service,
@@ -1413,7 +1518,7 @@ MaaFrameworkController::Service::Service() {
                return service->wait(ctx, req, resp);
              }, this)));
   AddMethod(new ::grpc::internal::RpcServiceMethod(
-      MaaFrameworkController_method_names[13],
+      MaaFrameworkController_method_names[15],
       ::grpc::internal::RpcMethod::NORMAL_RPC,
       new ::grpc::internal::RpcMethodHandler< MaaFrameworkController::Service, ::maa::HandleRequest, ::maa::BoolResponse, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(
           [](MaaFrameworkController::Service* service,
@@ -1423,7 +1528,7 @@ MaaFrameworkController::Service::Service() {
                return service->connected(ctx, req, resp);
              }, this)));
   AddMethod(new ::grpc::internal::RpcServiceMethod(
-      MaaFrameworkController_method_names[14],
+      MaaFrameworkController_method_names[16],
       ::grpc::internal::RpcMethod::NORMAL_RPC,
       new ::grpc::internal::RpcMethodHandler< MaaFrameworkController::Service, ::maa::ControllerGetImageRequest, ::maa::EmptyResponse, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(
           [](MaaFrameworkController::Service* service,
@@ -1433,7 +1538,7 @@ MaaFrameworkController::Service::Service() {
                return service->image(ctx, req, resp);
              }, this)));
   AddMethod(new ::grpc::internal::RpcServiceMethod(
-      MaaFrameworkController_method_names[15],
+      MaaFrameworkController_method_names[17],
       ::grpc::internal::RpcMethod::NORMAL_RPC,
       new ::grpc::internal::RpcMethodHandler< MaaFrameworkController::Service, ::maa::HandleRequest, ::maa::StringResponse, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(
           [](MaaFrameworkController::Service* service,
@@ -1447,7 +1552,7 @@ MaaFrameworkController::Service::Service() {
 MaaFrameworkController::Service::~Service() {
 }
 
-::grpc::Status MaaFrameworkController::Service::create(::grpc::ServerContext* context, const ::maa::AdbControlleRequest* request, ::maa::HandleResponse* response) {
+::grpc::Status MaaFrameworkController::Service::create_adb(::grpc::ServerContext* context, const ::maa::AdbControllerRequest* request, ::maa::HandleResponse* response) {
   (void) context;
   (void) request;
   (void) response;
@@ -1455,6 +1560,20 @@ MaaFrameworkController::Service::~Service() {
 }
 
 ::grpc::Status MaaFrameworkController::Service::destroy(::grpc::ServerContext* context, const ::maa::HandleRequest* request, ::maa::EmptyResponse* response) {
+  (void) context;
+  (void) request;
+  (void) response;
+  return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+}
+
+::grpc::Status MaaFrameworkController::Service::create_custom(::grpc::ServerContext* context, const ::maa::CustomControllerRequest* request, ::grpc::ServerWriter< ::maa::CustomControllerResponse>* writer) {
+  (void) context;
+  (void) request;
+  (void) writer;
+  return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+}
+
+::grpc::Status MaaFrameworkController::Service::submit_custom_controller(::grpc::ServerContext* context, const ::maa::SubmitCustomControllerRequest* request, ::maa::EmptyResponse* response) {
   (void) context;
   (void) request;
   (void) response;
@@ -1553,6 +1672,1374 @@ MaaFrameworkController::Service::~Service() {
 }
 
 ::grpc::Status MaaFrameworkController::Service::uuid(::grpc::ServerContext* context, const ::maa::HandleRequest* request, ::maa::StringResponse* response) {
+  (void) context;
+  (void) request;
+  (void) response;
+  return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+}
+
+
+static const char* MaaFrameworkInstance_method_names[] = {
+  "/maa.MaaFrameworkInstance/create",
+  "/maa.MaaFrameworkInstance/destroy",
+  "/maa.MaaFrameworkInstance/register_custom_recognizer",
+  "/maa.MaaFrameworkInstance/submit_custom_recognizer",
+  "/maa.MaaFrameworkInstance/unregister_custom_recognizer",
+  "/maa.MaaFrameworkInstance/clear_custom_recognizer",
+  "/maa.MaaFrameworkInstance/register_custom_action",
+  "/maa.MaaFrameworkInstance/submit_custom_action",
+  "/maa.MaaFrameworkInstance/unregister_custom_action",
+  "/maa.MaaFrameworkInstance/clear_custom_action",
+  "/maa.MaaFrameworkInstance/bind_resource",
+  "/maa.MaaFrameworkInstance/bind_controller",
+  "/maa.MaaFrameworkInstance/inited",
+  "/maa.MaaFrameworkInstance/post_task",
+  "/maa.MaaFrameworkInstance/set_task_param",
+  "/maa.MaaFrameworkInstance/status",
+  "/maa.MaaFrameworkInstance/wait",
+  "/maa.MaaFrameworkInstance/all_finished",
+  "/maa.MaaFrameworkInstance/stop",
+  "/maa.MaaFrameworkInstance/resource",
+  "/maa.MaaFrameworkInstance/controller",
+};
+
+std::unique_ptr< MaaFrameworkInstance::Stub> MaaFrameworkInstance::NewStub(const std::shared_ptr< ::grpc::ChannelInterface>& channel, const ::grpc::StubOptions& options) {
+  (void)options;
+  std::unique_ptr< MaaFrameworkInstance::Stub> stub(new MaaFrameworkInstance::Stub(channel, options));
+  return stub;
+}
+
+MaaFrameworkInstance::Stub::Stub(const std::shared_ptr< ::grpc::ChannelInterface>& channel, const ::grpc::StubOptions& options)
+  : channel_(channel), rpcmethod_create_(MaaFrameworkInstance_method_names[0], options.suffix_for_stats(),::grpc::internal::RpcMethod::NORMAL_RPC, channel)
+  , rpcmethod_destroy_(MaaFrameworkInstance_method_names[1], options.suffix_for_stats(),::grpc::internal::RpcMethod::NORMAL_RPC, channel)
+  , rpcmethod_register_custom_recognizer_(MaaFrameworkInstance_method_names[2], options.suffix_for_stats(),::grpc::internal::RpcMethod::SERVER_STREAMING, channel)
+  , rpcmethod_submit_custom_recognizer_(MaaFrameworkInstance_method_names[3], options.suffix_for_stats(),::grpc::internal::RpcMethod::NORMAL_RPC, channel)
+  , rpcmethod_unregister_custom_recognizer_(MaaFrameworkInstance_method_names[4], options.suffix_for_stats(),::grpc::internal::RpcMethod::NORMAL_RPC, channel)
+  , rpcmethod_clear_custom_recognizer_(MaaFrameworkInstance_method_names[5], options.suffix_for_stats(),::grpc::internal::RpcMethod::NORMAL_RPC, channel)
+  , rpcmethod_register_custom_action_(MaaFrameworkInstance_method_names[6], options.suffix_for_stats(),::grpc::internal::RpcMethod::SERVER_STREAMING, channel)
+  , rpcmethod_submit_custom_action_(MaaFrameworkInstance_method_names[7], options.suffix_for_stats(),::grpc::internal::RpcMethod::NORMAL_RPC, channel)
+  , rpcmethod_unregister_custom_action_(MaaFrameworkInstance_method_names[8], options.suffix_for_stats(),::grpc::internal::RpcMethod::NORMAL_RPC, channel)
+  , rpcmethod_clear_custom_action_(MaaFrameworkInstance_method_names[9], options.suffix_for_stats(),::grpc::internal::RpcMethod::NORMAL_RPC, channel)
+  , rpcmethod_bind_resource_(MaaFrameworkInstance_method_names[10], options.suffix_for_stats(),::grpc::internal::RpcMethod::NORMAL_RPC, channel)
+  , rpcmethod_bind_controller_(MaaFrameworkInstance_method_names[11], options.suffix_for_stats(),::grpc::internal::RpcMethod::NORMAL_RPC, channel)
+  , rpcmethod_inited_(MaaFrameworkInstance_method_names[12], options.suffix_for_stats(),::grpc::internal::RpcMethod::NORMAL_RPC, channel)
+  , rpcmethod_post_task_(MaaFrameworkInstance_method_names[13], options.suffix_for_stats(),::grpc::internal::RpcMethod::NORMAL_RPC, channel)
+  , rpcmethod_set_task_param_(MaaFrameworkInstance_method_names[14], options.suffix_for_stats(),::grpc::internal::RpcMethod::NORMAL_RPC, channel)
+  , rpcmethod_status_(MaaFrameworkInstance_method_names[15], options.suffix_for_stats(),::grpc::internal::RpcMethod::NORMAL_RPC, channel)
+  , rpcmethod_wait_(MaaFrameworkInstance_method_names[16], options.suffix_for_stats(),::grpc::internal::RpcMethod::NORMAL_RPC, channel)
+  , rpcmethod_all_finished_(MaaFrameworkInstance_method_names[17], options.suffix_for_stats(),::grpc::internal::RpcMethod::NORMAL_RPC, channel)
+  , rpcmethod_stop_(MaaFrameworkInstance_method_names[18], options.suffix_for_stats(),::grpc::internal::RpcMethod::NORMAL_RPC, channel)
+  , rpcmethod_resource_(MaaFrameworkInstance_method_names[19], options.suffix_for_stats(),::grpc::internal::RpcMethod::NORMAL_RPC, channel)
+  , rpcmethod_controller_(MaaFrameworkInstance_method_names[20], options.suffix_for_stats(),::grpc::internal::RpcMethod::NORMAL_RPC, channel)
+  {}
+
+::grpc::Status MaaFrameworkInstance::Stub::create(::grpc::ClientContext* context, const ::maa::IdRequest& request, ::maa::HandleResponse* response) {
+  return ::grpc::internal::BlockingUnaryCall< ::maa::IdRequest, ::maa::HandleResponse, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(channel_.get(), rpcmethod_create_, context, request, response);
+}
+
+void MaaFrameworkInstance::Stub::async::create(::grpc::ClientContext* context, const ::maa::IdRequest* request, ::maa::HandleResponse* response, std::function<void(::grpc::Status)> f) {
+  ::grpc::internal::CallbackUnaryCall< ::maa::IdRequest, ::maa::HandleResponse, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(stub_->channel_.get(), stub_->rpcmethod_create_, context, request, response, std::move(f));
+}
+
+void MaaFrameworkInstance::Stub::async::create(::grpc::ClientContext* context, const ::maa::IdRequest* request, ::maa::HandleResponse* response, ::grpc::ClientUnaryReactor* reactor) {
+  ::grpc::internal::ClientCallbackUnaryFactory::Create< ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(stub_->channel_.get(), stub_->rpcmethod_create_, context, request, response, reactor);
+}
+
+::grpc::ClientAsyncResponseReader< ::maa::HandleResponse>* MaaFrameworkInstance::Stub::PrepareAsynccreateRaw(::grpc::ClientContext* context, const ::maa::IdRequest& request, ::grpc::CompletionQueue* cq) {
+  return ::grpc::internal::ClientAsyncResponseReaderHelper::Create< ::maa::HandleResponse, ::maa::IdRequest, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(channel_.get(), cq, rpcmethod_create_, context, request);
+}
+
+::grpc::ClientAsyncResponseReader< ::maa::HandleResponse>* MaaFrameworkInstance::Stub::AsynccreateRaw(::grpc::ClientContext* context, const ::maa::IdRequest& request, ::grpc::CompletionQueue* cq) {
+  auto* result =
+    this->PrepareAsynccreateRaw(context, request, cq);
+  result->StartCall();
+  return result;
+}
+
+::grpc::Status MaaFrameworkInstance::Stub::destroy(::grpc::ClientContext* context, const ::maa::HandleRequest& request, ::maa::EmptyResponse* response) {
+  return ::grpc::internal::BlockingUnaryCall< ::maa::HandleRequest, ::maa::EmptyResponse, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(channel_.get(), rpcmethod_destroy_, context, request, response);
+}
+
+void MaaFrameworkInstance::Stub::async::destroy(::grpc::ClientContext* context, const ::maa::HandleRequest* request, ::maa::EmptyResponse* response, std::function<void(::grpc::Status)> f) {
+  ::grpc::internal::CallbackUnaryCall< ::maa::HandleRequest, ::maa::EmptyResponse, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(stub_->channel_.get(), stub_->rpcmethod_destroy_, context, request, response, std::move(f));
+}
+
+void MaaFrameworkInstance::Stub::async::destroy(::grpc::ClientContext* context, const ::maa::HandleRequest* request, ::maa::EmptyResponse* response, ::grpc::ClientUnaryReactor* reactor) {
+  ::grpc::internal::ClientCallbackUnaryFactory::Create< ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(stub_->channel_.get(), stub_->rpcmethod_destroy_, context, request, response, reactor);
+}
+
+::grpc::ClientAsyncResponseReader< ::maa::EmptyResponse>* MaaFrameworkInstance::Stub::PrepareAsyncdestroyRaw(::grpc::ClientContext* context, const ::maa::HandleRequest& request, ::grpc::CompletionQueue* cq) {
+  return ::grpc::internal::ClientAsyncResponseReaderHelper::Create< ::maa::EmptyResponse, ::maa::HandleRequest, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(channel_.get(), cq, rpcmethod_destroy_, context, request);
+}
+
+::grpc::ClientAsyncResponseReader< ::maa::EmptyResponse>* MaaFrameworkInstance::Stub::AsyncdestroyRaw(::grpc::ClientContext* context, const ::maa::HandleRequest& request, ::grpc::CompletionQueue* cq) {
+  auto* result =
+    this->PrepareAsyncdestroyRaw(context, request, cq);
+  result->StartCall();
+  return result;
+}
+
+::grpc::ClientReader< ::maa::CustomRecognizerResponse>* MaaFrameworkInstance::Stub::register_custom_recognizerRaw(::grpc::ClientContext* context, const ::maa::CustomRecognizerRequest& request) {
+  return ::grpc::internal::ClientReaderFactory< ::maa::CustomRecognizerResponse>::Create(channel_.get(), rpcmethod_register_custom_recognizer_, context, request);
+}
+
+void MaaFrameworkInstance::Stub::async::register_custom_recognizer(::grpc::ClientContext* context, const ::maa::CustomRecognizerRequest* request, ::grpc::ClientReadReactor< ::maa::CustomRecognizerResponse>* reactor) {
+  ::grpc::internal::ClientCallbackReaderFactory< ::maa::CustomRecognizerResponse>::Create(stub_->channel_.get(), stub_->rpcmethod_register_custom_recognizer_, context, request, reactor);
+}
+
+::grpc::ClientAsyncReader< ::maa::CustomRecognizerResponse>* MaaFrameworkInstance::Stub::Asyncregister_custom_recognizerRaw(::grpc::ClientContext* context, const ::maa::CustomRecognizerRequest& request, ::grpc::CompletionQueue* cq, void* tag) {
+  return ::grpc::internal::ClientAsyncReaderFactory< ::maa::CustomRecognizerResponse>::Create(channel_.get(), cq, rpcmethod_register_custom_recognizer_, context, request, true, tag);
+}
+
+::grpc::ClientAsyncReader< ::maa::CustomRecognizerResponse>* MaaFrameworkInstance::Stub::PrepareAsyncregister_custom_recognizerRaw(::grpc::ClientContext* context, const ::maa::CustomRecognizerRequest& request, ::grpc::CompletionQueue* cq) {
+  return ::grpc::internal::ClientAsyncReaderFactory< ::maa::CustomRecognizerResponse>::Create(channel_.get(), cq, rpcmethod_register_custom_recognizer_, context, request, false, nullptr);
+}
+
+::grpc::Status MaaFrameworkInstance::Stub::submit_custom_recognizer(::grpc::ClientContext* context, const ::maa::SubmitCustomRecognizerRequest& request, ::maa::EmptyResponse* response) {
+  return ::grpc::internal::BlockingUnaryCall< ::maa::SubmitCustomRecognizerRequest, ::maa::EmptyResponse, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(channel_.get(), rpcmethod_submit_custom_recognizer_, context, request, response);
+}
+
+void MaaFrameworkInstance::Stub::async::submit_custom_recognizer(::grpc::ClientContext* context, const ::maa::SubmitCustomRecognizerRequest* request, ::maa::EmptyResponse* response, std::function<void(::grpc::Status)> f) {
+  ::grpc::internal::CallbackUnaryCall< ::maa::SubmitCustomRecognizerRequest, ::maa::EmptyResponse, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(stub_->channel_.get(), stub_->rpcmethod_submit_custom_recognizer_, context, request, response, std::move(f));
+}
+
+void MaaFrameworkInstance::Stub::async::submit_custom_recognizer(::grpc::ClientContext* context, const ::maa::SubmitCustomRecognizerRequest* request, ::maa::EmptyResponse* response, ::grpc::ClientUnaryReactor* reactor) {
+  ::grpc::internal::ClientCallbackUnaryFactory::Create< ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(stub_->channel_.get(), stub_->rpcmethod_submit_custom_recognizer_, context, request, response, reactor);
+}
+
+::grpc::ClientAsyncResponseReader< ::maa::EmptyResponse>* MaaFrameworkInstance::Stub::PrepareAsyncsubmit_custom_recognizerRaw(::grpc::ClientContext* context, const ::maa::SubmitCustomRecognizerRequest& request, ::grpc::CompletionQueue* cq) {
+  return ::grpc::internal::ClientAsyncResponseReaderHelper::Create< ::maa::EmptyResponse, ::maa::SubmitCustomRecognizerRequest, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(channel_.get(), cq, rpcmethod_submit_custom_recognizer_, context, request);
+}
+
+::grpc::ClientAsyncResponseReader< ::maa::EmptyResponse>* MaaFrameworkInstance::Stub::Asyncsubmit_custom_recognizerRaw(::grpc::ClientContext* context, const ::maa::SubmitCustomRecognizerRequest& request, ::grpc::CompletionQueue* cq) {
+  auto* result =
+    this->PrepareAsyncsubmit_custom_recognizerRaw(context, request, cq);
+  result->StartCall();
+  return result;
+}
+
+::grpc::Status MaaFrameworkInstance::Stub::unregister_custom_recognizer(::grpc::ClientContext* context, const ::maa::HandleStringRequest& request, ::maa::EmptyResponse* response) {
+  return ::grpc::internal::BlockingUnaryCall< ::maa::HandleStringRequest, ::maa::EmptyResponse, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(channel_.get(), rpcmethod_unregister_custom_recognizer_, context, request, response);
+}
+
+void MaaFrameworkInstance::Stub::async::unregister_custom_recognizer(::grpc::ClientContext* context, const ::maa::HandleStringRequest* request, ::maa::EmptyResponse* response, std::function<void(::grpc::Status)> f) {
+  ::grpc::internal::CallbackUnaryCall< ::maa::HandleStringRequest, ::maa::EmptyResponse, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(stub_->channel_.get(), stub_->rpcmethod_unregister_custom_recognizer_, context, request, response, std::move(f));
+}
+
+void MaaFrameworkInstance::Stub::async::unregister_custom_recognizer(::grpc::ClientContext* context, const ::maa::HandleStringRequest* request, ::maa::EmptyResponse* response, ::grpc::ClientUnaryReactor* reactor) {
+  ::grpc::internal::ClientCallbackUnaryFactory::Create< ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(stub_->channel_.get(), stub_->rpcmethod_unregister_custom_recognizer_, context, request, response, reactor);
+}
+
+::grpc::ClientAsyncResponseReader< ::maa::EmptyResponse>* MaaFrameworkInstance::Stub::PrepareAsyncunregister_custom_recognizerRaw(::grpc::ClientContext* context, const ::maa::HandleStringRequest& request, ::grpc::CompletionQueue* cq) {
+  return ::grpc::internal::ClientAsyncResponseReaderHelper::Create< ::maa::EmptyResponse, ::maa::HandleStringRequest, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(channel_.get(), cq, rpcmethod_unregister_custom_recognizer_, context, request);
+}
+
+::grpc::ClientAsyncResponseReader< ::maa::EmptyResponse>* MaaFrameworkInstance::Stub::Asyncunregister_custom_recognizerRaw(::grpc::ClientContext* context, const ::maa::HandleStringRequest& request, ::grpc::CompletionQueue* cq) {
+  auto* result =
+    this->PrepareAsyncunregister_custom_recognizerRaw(context, request, cq);
+  result->StartCall();
+  return result;
+}
+
+::grpc::Status MaaFrameworkInstance::Stub::clear_custom_recognizer(::grpc::ClientContext* context, const ::maa::HandleRequest& request, ::maa::EmptyResponse* response) {
+  return ::grpc::internal::BlockingUnaryCall< ::maa::HandleRequest, ::maa::EmptyResponse, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(channel_.get(), rpcmethod_clear_custom_recognizer_, context, request, response);
+}
+
+void MaaFrameworkInstance::Stub::async::clear_custom_recognizer(::grpc::ClientContext* context, const ::maa::HandleRequest* request, ::maa::EmptyResponse* response, std::function<void(::grpc::Status)> f) {
+  ::grpc::internal::CallbackUnaryCall< ::maa::HandleRequest, ::maa::EmptyResponse, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(stub_->channel_.get(), stub_->rpcmethod_clear_custom_recognizer_, context, request, response, std::move(f));
+}
+
+void MaaFrameworkInstance::Stub::async::clear_custom_recognizer(::grpc::ClientContext* context, const ::maa::HandleRequest* request, ::maa::EmptyResponse* response, ::grpc::ClientUnaryReactor* reactor) {
+  ::grpc::internal::ClientCallbackUnaryFactory::Create< ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(stub_->channel_.get(), stub_->rpcmethod_clear_custom_recognizer_, context, request, response, reactor);
+}
+
+::grpc::ClientAsyncResponseReader< ::maa::EmptyResponse>* MaaFrameworkInstance::Stub::PrepareAsyncclear_custom_recognizerRaw(::grpc::ClientContext* context, const ::maa::HandleRequest& request, ::grpc::CompletionQueue* cq) {
+  return ::grpc::internal::ClientAsyncResponseReaderHelper::Create< ::maa::EmptyResponse, ::maa::HandleRequest, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(channel_.get(), cq, rpcmethod_clear_custom_recognizer_, context, request);
+}
+
+::grpc::ClientAsyncResponseReader< ::maa::EmptyResponse>* MaaFrameworkInstance::Stub::Asyncclear_custom_recognizerRaw(::grpc::ClientContext* context, const ::maa::HandleRequest& request, ::grpc::CompletionQueue* cq) {
+  auto* result =
+    this->PrepareAsyncclear_custom_recognizerRaw(context, request, cq);
+  result->StartCall();
+  return result;
+}
+
+::grpc::ClientReader< ::maa::CustomRecognizerResponse>* MaaFrameworkInstance::Stub::register_custom_actionRaw(::grpc::ClientContext* context, const ::maa::CustomRecognizerRequest& request) {
+  return ::grpc::internal::ClientReaderFactory< ::maa::CustomRecognizerResponse>::Create(channel_.get(), rpcmethod_register_custom_action_, context, request);
+}
+
+void MaaFrameworkInstance::Stub::async::register_custom_action(::grpc::ClientContext* context, const ::maa::CustomRecognizerRequest* request, ::grpc::ClientReadReactor< ::maa::CustomRecognizerResponse>* reactor) {
+  ::grpc::internal::ClientCallbackReaderFactory< ::maa::CustomRecognizerResponse>::Create(stub_->channel_.get(), stub_->rpcmethod_register_custom_action_, context, request, reactor);
+}
+
+::grpc::ClientAsyncReader< ::maa::CustomRecognizerResponse>* MaaFrameworkInstance::Stub::Asyncregister_custom_actionRaw(::grpc::ClientContext* context, const ::maa::CustomRecognizerRequest& request, ::grpc::CompletionQueue* cq, void* tag) {
+  return ::grpc::internal::ClientAsyncReaderFactory< ::maa::CustomRecognizerResponse>::Create(channel_.get(), cq, rpcmethod_register_custom_action_, context, request, true, tag);
+}
+
+::grpc::ClientAsyncReader< ::maa::CustomRecognizerResponse>* MaaFrameworkInstance::Stub::PrepareAsyncregister_custom_actionRaw(::grpc::ClientContext* context, const ::maa::CustomRecognizerRequest& request, ::grpc::CompletionQueue* cq) {
+  return ::grpc::internal::ClientAsyncReaderFactory< ::maa::CustomRecognizerResponse>::Create(channel_.get(), cq, rpcmethod_register_custom_action_, context, request, false, nullptr);
+}
+
+::grpc::Status MaaFrameworkInstance::Stub::submit_custom_action(::grpc::ClientContext* context, const ::maa::SubmitCustomRecognizerRequest& request, ::maa::EmptyResponse* response) {
+  return ::grpc::internal::BlockingUnaryCall< ::maa::SubmitCustomRecognizerRequest, ::maa::EmptyResponse, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(channel_.get(), rpcmethod_submit_custom_action_, context, request, response);
+}
+
+void MaaFrameworkInstance::Stub::async::submit_custom_action(::grpc::ClientContext* context, const ::maa::SubmitCustomRecognizerRequest* request, ::maa::EmptyResponse* response, std::function<void(::grpc::Status)> f) {
+  ::grpc::internal::CallbackUnaryCall< ::maa::SubmitCustomRecognizerRequest, ::maa::EmptyResponse, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(stub_->channel_.get(), stub_->rpcmethod_submit_custom_action_, context, request, response, std::move(f));
+}
+
+void MaaFrameworkInstance::Stub::async::submit_custom_action(::grpc::ClientContext* context, const ::maa::SubmitCustomRecognizerRequest* request, ::maa::EmptyResponse* response, ::grpc::ClientUnaryReactor* reactor) {
+  ::grpc::internal::ClientCallbackUnaryFactory::Create< ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(stub_->channel_.get(), stub_->rpcmethod_submit_custom_action_, context, request, response, reactor);
+}
+
+::grpc::ClientAsyncResponseReader< ::maa::EmptyResponse>* MaaFrameworkInstance::Stub::PrepareAsyncsubmit_custom_actionRaw(::grpc::ClientContext* context, const ::maa::SubmitCustomRecognizerRequest& request, ::grpc::CompletionQueue* cq) {
+  return ::grpc::internal::ClientAsyncResponseReaderHelper::Create< ::maa::EmptyResponse, ::maa::SubmitCustomRecognizerRequest, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(channel_.get(), cq, rpcmethod_submit_custom_action_, context, request);
+}
+
+::grpc::ClientAsyncResponseReader< ::maa::EmptyResponse>* MaaFrameworkInstance::Stub::Asyncsubmit_custom_actionRaw(::grpc::ClientContext* context, const ::maa::SubmitCustomRecognizerRequest& request, ::grpc::CompletionQueue* cq) {
+  auto* result =
+    this->PrepareAsyncsubmit_custom_actionRaw(context, request, cq);
+  result->StartCall();
+  return result;
+}
+
+::grpc::Status MaaFrameworkInstance::Stub::unregister_custom_action(::grpc::ClientContext* context, const ::maa::HandleStringRequest& request, ::maa::EmptyResponse* response) {
+  return ::grpc::internal::BlockingUnaryCall< ::maa::HandleStringRequest, ::maa::EmptyResponse, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(channel_.get(), rpcmethod_unregister_custom_action_, context, request, response);
+}
+
+void MaaFrameworkInstance::Stub::async::unregister_custom_action(::grpc::ClientContext* context, const ::maa::HandleStringRequest* request, ::maa::EmptyResponse* response, std::function<void(::grpc::Status)> f) {
+  ::grpc::internal::CallbackUnaryCall< ::maa::HandleStringRequest, ::maa::EmptyResponse, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(stub_->channel_.get(), stub_->rpcmethod_unregister_custom_action_, context, request, response, std::move(f));
+}
+
+void MaaFrameworkInstance::Stub::async::unregister_custom_action(::grpc::ClientContext* context, const ::maa::HandleStringRequest* request, ::maa::EmptyResponse* response, ::grpc::ClientUnaryReactor* reactor) {
+  ::grpc::internal::ClientCallbackUnaryFactory::Create< ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(stub_->channel_.get(), stub_->rpcmethod_unregister_custom_action_, context, request, response, reactor);
+}
+
+::grpc::ClientAsyncResponseReader< ::maa::EmptyResponse>* MaaFrameworkInstance::Stub::PrepareAsyncunregister_custom_actionRaw(::grpc::ClientContext* context, const ::maa::HandleStringRequest& request, ::grpc::CompletionQueue* cq) {
+  return ::grpc::internal::ClientAsyncResponseReaderHelper::Create< ::maa::EmptyResponse, ::maa::HandleStringRequest, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(channel_.get(), cq, rpcmethod_unregister_custom_action_, context, request);
+}
+
+::grpc::ClientAsyncResponseReader< ::maa::EmptyResponse>* MaaFrameworkInstance::Stub::Asyncunregister_custom_actionRaw(::grpc::ClientContext* context, const ::maa::HandleStringRequest& request, ::grpc::CompletionQueue* cq) {
+  auto* result =
+    this->PrepareAsyncunregister_custom_actionRaw(context, request, cq);
+  result->StartCall();
+  return result;
+}
+
+::grpc::Status MaaFrameworkInstance::Stub::clear_custom_action(::grpc::ClientContext* context, const ::maa::HandleRequest& request, ::maa::EmptyResponse* response) {
+  return ::grpc::internal::BlockingUnaryCall< ::maa::HandleRequest, ::maa::EmptyResponse, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(channel_.get(), rpcmethod_clear_custom_action_, context, request, response);
+}
+
+void MaaFrameworkInstance::Stub::async::clear_custom_action(::grpc::ClientContext* context, const ::maa::HandleRequest* request, ::maa::EmptyResponse* response, std::function<void(::grpc::Status)> f) {
+  ::grpc::internal::CallbackUnaryCall< ::maa::HandleRequest, ::maa::EmptyResponse, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(stub_->channel_.get(), stub_->rpcmethod_clear_custom_action_, context, request, response, std::move(f));
+}
+
+void MaaFrameworkInstance::Stub::async::clear_custom_action(::grpc::ClientContext* context, const ::maa::HandleRequest* request, ::maa::EmptyResponse* response, ::grpc::ClientUnaryReactor* reactor) {
+  ::grpc::internal::ClientCallbackUnaryFactory::Create< ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(stub_->channel_.get(), stub_->rpcmethod_clear_custom_action_, context, request, response, reactor);
+}
+
+::grpc::ClientAsyncResponseReader< ::maa::EmptyResponse>* MaaFrameworkInstance::Stub::PrepareAsyncclear_custom_actionRaw(::grpc::ClientContext* context, const ::maa::HandleRequest& request, ::grpc::CompletionQueue* cq) {
+  return ::grpc::internal::ClientAsyncResponseReaderHelper::Create< ::maa::EmptyResponse, ::maa::HandleRequest, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(channel_.get(), cq, rpcmethod_clear_custom_action_, context, request);
+}
+
+::grpc::ClientAsyncResponseReader< ::maa::EmptyResponse>* MaaFrameworkInstance::Stub::Asyncclear_custom_actionRaw(::grpc::ClientContext* context, const ::maa::HandleRequest& request, ::grpc::CompletionQueue* cq) {
+  auto* result =
+    this->PrepareAsyncclear_custom_actionRaw(context, request, cq);
+  result->StartCall();
+  return result;
+}
+
+::grpc::Status MaaFrameworkInstance::Stub::bind_resource(::grpc::ClientContext* context, const ::maa::HandleRequest& request, ::maa::EmptyResponse* response) {
+  return ::grpc::internal::BlockingUnaryCall< ::maa::HandleRequest, ::maa::EmptyResponse, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(channel_.get(), rpcmethod_bind_resource_, context, request, response);
+}
+
+void MaaFrameworkInstance::Stub::async::bind_resource(::grpc::ClientContext* context, const ::maa::HandleRequest* request, ::maa::EmptyResponse* response, std::function<void(::grpc::Status)> f) {
+  ::grpc::internal::CallbackUnaryCall< ::maa::HandleRequest, ::maa::EmptyResponse, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(stub_->channel_.get(), stub_->rpcmethod_bind_resource_, context, request, response, std::move(f));
+}
+
+void MaaFrameworkInstance::Stub::async::bind_resource(::grpc::ClientContext* context, const ::maa::HandleRequest* request, ::maa::EmptyResponse* response, ::grpc::ClientUnaryReactor* reactor) {
+  ::grpc::internal::ClientCallbackUnaryFactory::Create< ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(stub_->channel_.get(), stub_->rpcmethod_bind_resource_, context, request, response, reactor);
+}
+
+::grpc::ClientAsyncResponseReader< ::maa::EmptyResponse>* MaaFrameworkInstance::Stub::PrepareAsyncbind_resourceRaw(::grpc::ClientContext* context, const ::maa::HandleRequest& request, ::grpc::CompletionQueue* cq) {
+  return ::grpc::internal::ClientAsyncResponseReaderHelper::Create< ::maa::EmptyResponse, ::maa::HandleRequest, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(channel_.get(), cq, rpcmethod_bind_resource_, context, request);
+}
+
+::grpc::ClientAsyncResponseReader< ::maa::EmptyResponse>* MaaFrameworkInstance::Stub::Asyncbind_resourceRaw(::grpc::ClientContext* context, const ::maa::HandleRequest& request, ::grpc::CompletionQueue* cq) {
+  auto* result =
+    this->PrepareAsyncbind_resourceRaw(context, request, cq);
+  result->StartCall();
+  return result;
+}
+
+::grpc::Status MaaFrameworkInstance::Stub::bind_controller(::grpc::ClientContext* context, const ::maa::HandleRequest& request, ::maa::EmptyResponse* response) {
+  return ::grpc::internal::BlockingUnaryCall< ::maa::HandleRequest, ::maa::EmptyResponse, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(channel_.get(), rpcmethod_bind_controller_, context, request, response);
+}
+
+void MaaFrameworkInstance::Stub::async::bind_controller(::grpc::ClientContext* context, const ::maa::HandleRequest* request, ::maa::EmptyResponse* response, std::function<void(::grpc::Status)> f) {
+  ::grpc::internal::CallbackUnaryCall< ::maa::HandleRequest, ::maa::EmptyResponse, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(stub_->channel_.get(), stub_->rpcmethod_bind_controller_, context, request, response, std::move(f));
+}
+
+void MaaFrameworkInstance::Stub::async::bind_controller(::grpc::ClientContext* context, const ::maa::HandleRequest* request, ::maa::EmptyResponse* response, ::grpc::ClientUnaryReactor* reactor) {
+  ::grpc::internal::ClientCallbackUnaryFactory::Create< ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(stub_->channel_.get(), stub_->rpcmethod_bind_controller_, context, request, response, reactor);
+}
+
+::grpc::ClientAsyncResponseReader< ::maa::EmptyResponse>* MaaFrameworkInstance::Stub::PrepareAsyncbind_controllerRaw(::grpc::ClientContext* context, const ::maa::HandleRequest& request, ::grpc::CompletionQueue* cq) {
+  return ::grpc::internal::ClientAsyncResponseReaderHelper::Create< ::maa::EmptyResponse, ::maa::HandleRequest, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(channel_.get(), cq, rpcmethod_bind_controller_, context, request);
+}
+
+::grpc::ClientAsyncResponseReader< ::maa::EmptyResponse>* MaaFrameworkInstance::Stub::Asyncbind_controllerRaw(::grpc::ClientContext* context, const ::maa::HandleRequest& request, ::grpc::CompletionQueue* cq) {
+  auto* result =
+    this->PrepareAsyncbind_controllerRaw(context, request, cq);
+  result->StartCall();
+  return result;
+}
+
+::grpc::Status MaaFrameworkInstance::Stub::inited(::grpc::ClientContext* context, const ::maa::HandleRequest& request, ::maa::BoolResponse* response) {
+  return ::grpc::internal::BlockingUnaryCall< ::maa::HandleRequest, ::maa::BoolResponse, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(channel_.get(), rpcmethod_inited_, context, request, response);
+}
+
+void MaaFrameworkInstance::Stub::async::inited(::grpc::ClientContext* context, const ::maa::HandleRequest* request, ::maa::BoolResponse* response, std::function<void(::grpc::Status)> f) {
+  ::grpc::internal::CallbackUnaryCall< ::maa::HandleRequest, ::maa::BoolResponse, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(stub_->channel_.get(), stub_->rpcmethod_inited_, context, request, response, std::move(f));
+}
+
+void MaaFrameworkInstance::Stub::async::inited(::grpc::ClientContext* context, const ::maa::HandleRequest* request, ::maa::BoolResponse* response, ::grpc::ClientUnaryReactor* reactor) {
+  ::grpc::internal::ClientCallbackUnaryFactory::Create< ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(stub_->channel_.get(), stub_->rpcmethod_inited_, context, request, response, reactor);
+}
+
+::grpc::ClientAsyncResponseReader< ::maa::BoolResponse>* MaaFrameworkInstance::Stub::PrepareAsyncinitedRaw(::grpc::ClientContext* context, const ::maa::HandleRequest& request, ::grpc::CompletionQueue* cq) {
+  return ::grpc::internal::ClientAsyncResponseReaderHelper::Create< ::maa::BoolResponse, ::maa::HandleRequest, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(channel_.get(), cq, rpcmethod_inited_, context, request);
+}
+
+::grpc::ClientAsyncResponseReader< ::maa::BoolResponse>* MaaFrameworkInstance::Stub::AsyncinitedRaw(::grpc::ClientContext* context, const ::maa::HandleRequest& request, ::grpc::CompletionQueue* cq) {
+  auto* result =
+    this->PrepareAsyncinitedRaw(context, request, cq);
+  result->StartCall();
+  return result;
+}
+
+::grpc::Status MaaFrameworkInstance::Stub::post_task(::grpc::ClientContext* context, const ::maa::InstancePostTaskRequest& request, ::maa::IdResponse* response) {
+  return ::grpc::internal::BlockingUnaryCall< ::maa::InstancePostTaskRequest, ::maa::IdResponse, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(channel_.get(), rpcmethod_post_task_, context, request, response);
+}
+
+void MaaFrameworkInstance::Stub::async::post_task(::grpc::ClientContext* context, const ::maa::InstancePostTaskRequest* request, ::maa::IdResponse* response, std::function<void(::grpc::Status)> f) {
+  ::grpc::internal::CallbackUnaryCall< ::maa::InstancePostTaskRequest, ::maa::IdResponse, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(stub_->channel_.get(), stub_->rpcmethod_post_task_, context, request, response, std::move(f));
+}
+
+void MaaFrameworkInstance::Stub::async::post_task(::grpc::ClientContext* context, const ::maa::InstancePostTaskRequest* request, ::maa::IdResponse* response, ::grpc::ClientUnaryReactor* reactor) {
+  ::grpc::internal::ClientCallbackUnaryFactory::Create< ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(stub_->channel_.get(), stub_->rpcmethod_post_task_, context, request, response, reactor);
+}
+
+::grpc::ClientAsyncResponseReader< ::maa::IdResponse>* MaaFrameworkInstance::Stub::PrepareAsyncpost_taskRaw(::grpc::ClientContext* context, const ::maa::InstancePostTaskRequest& request, ::grpc::CompletionQueue* cq) {
+  return ::grpc::internal::ClientAsyncResponseReaderHelper::Create< ::maa::IdResponse, ::maa::InstancePostTaskRequest, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(channel_.get(), cq, rpcmethod_post_task_, context, request);
+}
+
+::grpc::ClientAsyncResponseReader< ::maa::IdResponse>* MaaFrameworkInstance::Stub::Asyncpost_taskRaw(::grpc::ClientContext* context, const ::maa::InstancePostTaskRequest& request, ::grpc::CompletionQueue* cq) {
+  auto* result =
+    this->PrepareAsyncpost_taskRaw(context, request, cq);
+  result->StartCall();
+  return result;
+}
+
+::grpc::Status MaaFrameworkInstance::Stub::set_task_param(::grpc::ClientContext* context, const ::maa::InstanceSetTaskParamRequest& request, ::maa::EmptyResponse* response) {
+  return ::grpc::internal::BlockingUnaryCall< ::maa::InstanceSetTaskParamRequest, ::maa::EmptyResponse, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(channel_.get(), rpcmethod_set_task_param_, context, request, response);
+}
+
+void MaaFrameworkInstance::Stub::async::set_task_param(::grpc::ClientContext* context, const ::maa::InstanceSetTaskParamRequest* request, ::maa::EmptyResponse* response, std::function<void(::grpc::Status)> f) {
+  ::grpc::internal::CallbackUnaryCall< ::maa::InstanceSetTaskParamRequest, ::maa::EmptyResponse, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(stub_->channel_.get(), stub_->rpcmethod_set_task_param_, context, request, response, std::move(f));
+}
+
+void MaaFrameworkInstance::Stub::async::set_task_param(::grpc::ClientContext* context, const ::maa::InstanceSetTaskParamRequest* request, ::maa::EmptyResponse* response, ::grpc::ClientUnaryReactor* reactor) {
+  ::grpc::internal::ClientCallbackUnaryFactory::Create< ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(stub_->channel_.get(), stub_->rpcmethod_set_task_param_, context, request, response, reactor);
+}
+
+::grpc::ClientAsyncResponseReader< ::maa::EmptyResponse>* MaaFrameworkInstance::Stub::PrepareAsyncset_task_paramRaw(::grpc::ClientContext* context, const ::maa::InstanceSetTaskParamRequest& request, ::grpc::CompletionQueue* cq) {
+  return ::grpc::internal::ClientAsyncResponseReaderHelper::Create< ::maa::EmptyResponse, ::maa::InstanceSetTaskParamRequest, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(channel_.get(), cq, rpcmethod_set_task_param_, context, request);
+}
+
+::grpc::ClientAsyncResponseReader< ::maa::EmptyResponse>* MaaFrameworkInstance::Stub::Asyncset_task_paramRaw(::grpc::ClientContext* context, const ::maa::InstanceSetTaskParamRequest& request, ::grpc::CompletionQueue* cq) {
+  auto* result =
+    this->PrepareAsyncset_task_paramRaw(context, request, cq);
+  result->StartCall();
+  return result;
+}
+
+::grpc::Status MaaFrameworkInstance::Stub::status(::grpc::ClientContext* context, const ::maa::HandleIdRequest& request, ::maa::StatusResponse* response) {
+  return ::grpc::internal::BlockingUnaryCall< ::maa::HandleIdRequest, ::maa::StatusResponse, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(channel_.get(), rpcmethod_status_, context, request, response);
+}
+
+void MaaFrameworkInstance::Stub::async::status(::grpc::ClientContext* context, const ::maa::HandleIdRequest* request, ::maa::StatusResponse* response, std::function<void(::grpc::Status)> f) {
+  ::grpc::internal::CallbackUnaryCall< ::maa::HandleIdRequest, ::maa::StatusResponse, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(stub_->channel_.get(), stub_->rpcmethod_status_, context, request, response, std::move(f));
+}
+
+void MaaFrameworkInstance::Stub::async::status(::grpc::ClientContext* context, const ::maa::HandleIdRequest* request, ::maa::StatusResponse* response, ::grpc::ClientUnaryReactor* reactor) {
+  ::grpc::internal::ClientCallbackUnaryFactory::Create< ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(stub_->channel_.get(), stub_->rpcmethod_status_, context, request, response, reactor);
+}
+
+::grpc::ClientAsyncResponseReader< ::maa::StatusResponse>* MaaFrameworkInstance::Stub::PrepareAsyncstatusRaw(::grpc::ClientContext* context, const ::maa::HandleIdRequest& request, ::grpc::CompletionQueue* cq) {
+  return ::grpc::internal::ClientAsyncResponseReaderHelper::Create< ::maa::StatusResponse, ::maa::HandleIdRequest, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(channel_.get(), cq, rpcmethod_status_, context, request);
+}
+
+::grpc::ClientAsyncResponseReader< ::maa::StatusResponse>* MaaFrameworkInstance::Stub::AsyncstatusRaw(::grpc::ClientContext* context, const ::maa::HandleIdRequest& request, ::grpc::CompletionQueue* cq) {
+  auto* result =
+    this->PrepareAsyncstatusRaw(context, request, cq);
+  result->StartCall();
+  return result;
+}
+
+::grpc::Status MaaFrameworkInstance::Stub::wait(::grpc::ClientContext* context, const ::maa::HandleIdRequest& request, ::maa::EmptyResponse* response) {
+  return ::grpc::internal::BlockingUnaryCall< ::maa::HandleIdRequest, ::maa::EmptyResponse, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(channel_.get(), rpcmethod_wait_, context, request, response);
+}
+
+void MaaFrameworkInstance::Stub::async::wait(::grpc::ClientContext* context, const ::maa::HandleIdRequest* request, ::maa::EmptyResponse* response, std::function<void(::grpc::Status)> f) {
+  ::grpc::internal::CallbackUnaryCall< ::maa::HandleIdRequest, ::maa::EmptyResponse, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(stub_->channel_.get(), stub_->rpcmethod_wait_, context, request, response, std::move(f));
+}
+
+void MaaFrameworkInstance::Stub::async::wait(::grpc::ClientContext* context, const ::maa::HandleIdRequest* request, ::maa::EmptyResponse* response, ::grpc::ClientUnaryReactor* reactor) {
+  ::grpc::internal::ClientCallbackUnaryFactory::Create< ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(stub_->channel_.get(), stub_->rpcmethod_wait_, context, request, response, reactor);
+}
+
+::grpc::ClientAsyncResponseReader< ::maa::EmptyResponse>* MaaFrameworkInstance::Stub::PrepareAsyncwaitRaw(::grpc::ClientContext* context, const ::maa::HandleIdRequest& request, ::grpc::CompletionQueue* cq) {
+  return ::grpc::internal::ClientAsyncResponseReaderHelper::Create< ::maa::EmptyResponse, ::maa::HandleIdRequest, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(channel_.get(), cq, rpcmethod_wait_, context, request);
+}
+
+::grpc::ClientAsyncResponseReader< ::maa::EmptyResponse>* MaaFrameworkInstance::Stub::AsyncwaitRaw(::grpc::ClientContext* context, const ::maa::HandleIdRequest& request, ::grpc::CompletionQueue* cq) {
+  auto* result =
+    this->PrepareAsyncwaitRaw(context, request, cq);
+  result->StartCall();
+  return result;
+}
+
+::grpc::Status MaaFrameworkInstance::Stub::all_finished(::grpc::ClientContext* context, const ::maa::HandleRequest& request, ::maa::BoolResponse* response) {
+  return ::grpc::internal::BlockingUnaryCall< ::maa::HandleRequest, ::maa::BoolResponse, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(channel_.get(), rpcmethod_all_finished_, context, request, response);
+}
+
+void MaaFrameworkInstance::Stub::async::all_finished(::grpc::ClientContext* context, const ::maa::HandleRequest* request, ::maa::BoolResponse* response, std::function<void(::grpc::Status)> f) {
+  ::grpc::internal::CallbackUnaryCall< ::maa::HandleRequest, ::maa::BoolResponse, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(stub_->channel_.get(), stub_->rpcmethod_all_finished_, context, request, response, std::move(f));
+}
+
+void MaaFrameworkInstance::Stub::async::all_finished(::grpc::ClientContext* context, const ::maa::HandleRequest* request, ::maa::BoolResponse* response, ::grpc::ClientUnaryReactor* reactor) {
+  ::grpc::internal::ClientCallbackUnaryFactory::Create< ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(stub_->channel_.get(), stub_->rpcmethod_all_finished_, context, request, response, reactor);
+}
+
+::grpc::ClientAsyncResponseReader< ::maa::BoolResponse>* MaaFrameworkInstance::Stub::PrepareAsyncall_finishedRaw(::grpc::ClientContext* context, const ::maa::HandleRequest& request, ::grpc::CompletionQueue* cq) {
+  return ::grpc::internal::ClientAsyncResponseReaderHelper::Create< ::maa::BoolResponse, ::maa::HandleRequest, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(channel_.get(), cq, rpcmethod_all_finished_, context, request);
+}
+
+::grpc::ClientAsyncResponseReader< ::maa::BoolResponse>* MaaFrameworkInstance::Stub::Asyncall_finishedRaw(::grpc::ClientContext* context, const ::maa::HandleRequest& request, ::grpc::CompletionQueue* cq) {
+  auto* result =
+    this->PrepareAsyncall_finishedRaw(context, request, cq);
+  result->StartCall();
+  return result;
+}
+
+::grpc::Status MaaFrameworkInstance::Stub::stop(::grpc::ClientContext* context, const ::maa::HandleRequest& request, ::maa::EmptyResponse* response) {
+  return ::grpc::internal::BlockingUnaryCall< ::maa::HandleRequest, ::maa::EmptyResponse, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(channel_.get(), rpcmethod_stop_, context, request, response);
+}
+
+void MaaFrameworkInstance::Stub::async::stop(::grpc::ClientContext* context, const ::maa::HandleRequest* request, ::maa::EmptyResponse* response, std::function<void(::grpc::Status)> f) {
+  ::grpc::internal::CallbackUnaryCall< ::maa::HandleRequest, ::maa::EmptyResponse, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(stub_->channel_.get(), stub_->rpcmethod_stop_, context, request, response, std::move(f));
+}
+
+void MaaFrameworkInstance::Stub::async::stop(::grpc::ClientContext* context, const ::maa::HandleRequest* request, ::maa::EmptyResponse* response, ::grpc::ClientUnaryReactor* reactor) {
+  ::grpc::internal::ClientCallbackUnaryFactory::Create< ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(stub_->channel_.get(), stub_->rpcmethod_stop_, context, request, response, reactor);
+}
+
+::grpc::ClientAsyncResponseReader< ::maa::EmptyResponse>* MaaFrameworkInstance::Stub::PrepareAsyncstopRaw(::grpc::ClientContext* context, const ::maa::HandleRequest& request, ::grpc::CompletionQueue* cq) {
+  return ::grpc::internal::ClientAsyncResponseReaderHelper::Create< ::maa::EmptyResponse, ::maa::HandleRequest, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(channel_.get(), cq, rpcmethod_stop_, context, request);
+}
+
+::grpc::ClientAsyncResponseReader< ::maa::EmptyResponse>* MaaFrameworkInstance::Stub::AsyncstopRaw(::grpc::ClientContext* context, const ::maa::HandleRequest& request, ::grpc::CompletionQueue* cq) {
+  auto* result =
+    this->PrepareAsyncstopRaw(context, request, cq);
+  result->StartCall();
+  return result;
+}
+
+::grpc::Status MaaFrameworkInstance::Stub::resource(::grpc::ClientContext* context, const ::maa::HandleRequest& request, ::maa::HandleRequest* response) {
+  return ::grpc::internal::BlockingUnaryCall< ::maa::HandleRequest, ::maa::HandleRequest, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(channel_.get(), rpcmethod_resource_, context, request, response);
+}
+
+void MaaFrameworkInstance::Stub::async::resource(::grpc::ClientContext* context, const ::maa::HandleRequest* request, ::maa::HandleRequest* response, std::function<void(::grpc::Status)> f) {
+  ::grpc::internal::CallbackUnaryCall< ::maa::HandleRequest, ::maa::HandleRequest, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(stub_->channel_.get(), stub_->rpcmethod_resource_, context, request, response, std::move(f));
+}
+
+void MaaFrameworkInstance::Stub::async::resource(::grpc::ClientContext* context, const ::maa::HandleRequest* request, ::maa::HandleRequest* response, ::grpc::ClientUnaryReactor* reactor) {
+  ::grpc::internal::ClientCallbackUnaryFactory::Create< ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(stub_->channel_.get(), stub_->rpcmethod_resource_, context, request, response, reactor);
+}
+
+::grpc::ClientAsyncResponseReader< ::maa::HandleRequest>* MaaFrameworkInstance::Stub::PrepareAsyncresourceRaw(::grpc::ClientContext* context, const ::maa::HandleRequest& request, ::grpc::CompletionQueue* cq) {
+  return ::grpc::internal::ClientAsyncResponseReaderHelper::Create< ::maa::HandleRequest, ::maa::HandleRequest, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(channel_.get(), cq, rpcmethod_resource_, context, request);
+}
+
+::grpc::ClientAsyncResponseReader< ::maa::HandleRequest>* MaaFrameworkInstance::Stub::AsyncresourceRaw(::grpc::ClientContext* context, const ::maa::HandleRequest& request, ::grpc::CompletionQueue* cq) {
+  auto* result =
+    this->PrepareAsyncresourceRaw(context, request, cq);
+  result->StartCall();
+  return result;
+}
+
+::grpc::Status MaaFrameworkInstance::Stub::controller(::grpc::ClientContext* context, const ::maa::HandleRequest& request, ::maa::HandleRequest* response) {
+  return ::grpc::internal::BlockingUnaryCall< ::maa::HandleRequest, ::maa::HandleRequest, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(channel_.get(), rpcmethod_controller_, context, request, response);
+}
+
+void MaaFrameworkInstance::Stub::async::controller(::grpc::ClientContext* context, const ::maa::HandleRequest* request, ::maa::HandleRequest* response, std::function<void(::grpc::Status)> f) {
+  ::grpc::internal::CallbackUnaryCall< ::maa::HandleRequest, ::maa::HandleRequest, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(stub_->channel_.get(), stub_->rpcmethod_controller_, context, request, response, std::move(f));
+}
+
+void MaaFrameworkInstance::Stub::async::controller(::grpc::ClientContext* context, const ::maa::HandleRequest* request, ::maa::HandleRequest* response, ::grpc::ClientUnaryReactor* reactor) {
+  ::grpc::internal::ClientCallbackUnaryFactory::Create< ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(stub_->channel_.get(), stub_->rpcmethod_controller_, context, request, response, reactor);
+}
+
+::grpc::ClientAsyncResponseReader< ::maa::HandleRequest>* MaaFrameworkInstance::Stub::PrepareAsynccontrollerRaw(::grpc::ClientContext* context, const ::maa::HandleRequest& request, ::grpc::CompletionQueue* cq) {
+  return ::grpc::internal::ClientAsyncResponseReaderHelper::Create< ::maa::HandleRequest, ::maa::HandleRequest, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(channel_.get(), cq, rpcmethod_controller_, context, request);
+}
+
+::grpc::ClientAsyncResponseReader< ::maa::HandleRequest>* MaaFrameworkInstance::Stub::AsynccontrollerRaw(::grpc::ClientContext* context, const ::maa::HandleRequest& request, ::grpc::CompletionQueue* cq) {
+  auto* result =
+    this->PrepareAsynccontrollerRaw(context, request, cq);
+  result->StartCall();
+  return result;
+}
+
+MaaFrameworkInstance::Service::Service() {
+  AddMethod(new ::grpc::internal::RpcServiceMethod(
+      MaaFrameworkInstance_method_names[0],
+      ::grpc::internal::RpcMethod::NORMAL_RPC,
+      new ::grpc::internal::RpcMethodHandler< MaaFrameworkInstance::Service, ::maa::IdRequest, ::maa::HandleResponse, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(
+          [](MaaFrameworkInstance::Service* service,
+             ::grpc::ServerContext* ctx,
+             const ::maa::IdRequest* req,
+             ::maa::HandleResponse* resp) {
+               return service->create(ctx, req, resp);
+             }, this)));
+  AddMethod(new ::grpc::internal::RpcServiceMethod(
+      MaaFrameworkInstance_method_names[1],
+      ::grpc::internal::RpcMethod::NORMAL_RPC,
+      new ::grpc::internal::RpcMethodHandler< MaaFrameworkInstance::Service, ::maa::HandleRequest, ::maa::EmptyResponse, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(
+          [](MaaFrameworkInstance::Service* service,
+             ::grpc::ServerContext* ctx,
+             const ::maa::HandleRequest* req,
+             ::maa::EmptyResponse* resp) {
+               return service->destroy(ctx, req, resp);
+             }, this)));
+  AddMethod(new ::grpc::internal::RpcServiceMethod(
+      MaaFrameworkInstance_method_names[2],
+      ::grpc::internal::RpcMethod::SERVER_STREAMING,
+      new ::grpc::internal::ServerStreamingHandler< MaaFrameworkInstance::Service, ::maa::CustomRecognizerRequest, ::maa::CustomRecognizerResponse>(
+          [](MaaFrameworkInstance::Service* service,
+             ::grpc::ServerContext* ctx,
+             const ::maa::CustomRecognizerRequest* req,
+             ::grpc::ServerWriter<::maa::CustomRecognizerResponse>* writer) {
+               return service->register_custom_recognizer(ctx, req, writer);
+             }, this)));
+  AddMethod(new ::grpc::internal::RpcServiceMethod(
+      MaaFrameworkInstance_method_names[3],
+      ::grpc::internal::RpcMethod::NORMAL_RPC,
+      new ::grpc::internal::RpcMethodHandler< MaaFrameworkInstance::Service, ::maa::SubmitCustomRecognizerRequest, ::maa::EmptyResponse, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(
+          [](MaaFrameworkInstance::Service* service,
+             ::grpc::ServerContext* ctx,
+             const ::maa::SubmitCustomRecognizerRequest* req,
+             ::maa::EmptyResponse* resp) {
+               return service->submit_custom_recognizer(ctx, req, resp);
+             }, this)));
+  AddMethod(new ::grpc::internal::RpcServiceMethod(
+      MaaFrameworkInstance_method_names[4],
+      ::grpc::internal::RpcMethod::NORMAL_RPC,
+      new ::grpc::internal::RpcMethodHandler< MaaFrameworkInstance::Service, ::maa::HandleStringRequest, ::maa::EmptyResponse, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(
+          [](MaaFrameworkInstance::Service* service,
+             ::grpc::ServerContext* ctx,
+             const ::maa::HandleStringRequest* req,
+             ::maa::EmptyResponse* resp) {
+               return service->unregister_custom_recognizer(ctx, req, resp);
+             }, this)));
+  AddMethod(new ::grpc::internal::RpcServiceMethod(
+      MaaFrameworkInstance_method_names[5],
+      ::grpc::internal::RpcMethod::NORMAL_RPC,
+      new ::grpc::internal::RpcMethodHandler< MaaFrameworkInstance::Service, ::maa::HandleRequest, ::maa::EmptyResponse, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(
+          [](MaaFrameworkInstance::Service* service,
+             ::grpc::ServerContext* ctx,
+             const ::maa::HandleRequest* req,
+             ::maa::EmptyResponse* resp) {
+               return service->clear_custom_recognizer(ctx, req, resp);
+             }, this)));
+  AddMethod(new ::grpc::internal::RpcServiceMethod(
+      MaaFrameworkInstance_method_names[6],
+      ::grpc::internal::RpcMethod::SERVER_STREAMING,
+      new ::grpc::internal::ServerStreamingHandler< MaaFrameworkInstance::Service, ::maa::CustomRecognizerRequest, ::maa::CustomRecognizerResponse>(
+          [](MaaFrameworkInstance::Service* service,
+             ::grpc::ServerContext* ctx,
+             const ::maa::CustomRecognizerRequest* req,
+             ::grpc::ServerWriter<::maa::CustomRecognizerResponse>* writer) {
+               return service->register_custom_action(ctx, req, writer);
+             }, this)));
+  AddMethod(new ::grpc::internal::RpcServiceMethod(
+      MaaFrameworkInstance_method_names[7],
+      ::grpc::internal::RpcMethod::NORMAL_RPC,
+      new ::grpc::internal::RpcMethodHandler< MaaFrameworkInstance::Service, ::maa::SubmitCustomRecognizerRequest, ::maa::EmptyResponse, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(
+          [](MaaFrameworkInstance::Service* service,
+             ::grpc::ServerContext* ctx,
+             const ::maa::SubmitCustomRecognizerRequest* req,
+             ::maa::EmptyResponse* resp) {
+               return service->submit_custom_action(ctx, req, resp);
+             }, this)));
+  AddMethod(new ::grpc::internal::RpcServiceMethod(
+      MaaFrameworkInstance_method_names[8],
+      ::grpc::internal::RpcMethod::NORMAL_RPC,
+      new ::grpc::internal::RpcMethodHandler< MaaFrameworkInstance::Service, ::maa::HandleStringRequest, ::maa::EmptyResponse, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(
+          [](MaaFrameworkInstance::Service* service,
+             ::grpc::ServerContext* ctx,
+             const ::maa::HandleStringRequest* req,
+             ::maa::EmptyResponse* resp) {
+               return service->unregister_custom_action(ctx, req, resp);
+             }, this)));
+  AddMethod(new ::grpc::internal::RpcServiceMethod(
+      MaaFrameworkInstance_method_names[9],
+      ::grpc::internal::RpcMethod::NORMAL_RPC,
+      new ::grpc::internal::RpcMethodHandler< MaaFrameworkInstance::Service, ::maa::HandleRequest, ::maa::EmptyResponse, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(
+          [](MaaFrameworkInstance::Service* service,
+             ::grpc::ServerContext* ctx,
+             const ::maa::HandleRequest* req,
+             ::maa::EmptyResponse* resp) {
+               return service->clear_custom_action(ctx, req, resp);
+             }, this)));
+  AddMethod(new ::grpc::internal::RpcServiceMethod(
+      MaaFrameworkInstance_method_names[10],
+      ::grpc::internal::RpcMethod::NORMAL_RPC,
+      new ::grpc::internal::RpcMethodHandler< MaaFrameworkInstance::Service, ::maa::HandleRequest, ::maa::EmptyResponse, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(
+          [](MaaFrameworkInstance::Service* service,
+             ::grpc::ServerContext* ctx,
+             const ::maa::HandleRequest* req,
+             ::maa::EmptyResponse* resp) {
+               return service->bind_resource(ctx, req, resp);
+             }, this)));
+  AddMethod(new ::grpc::internal::RpcServiceMethod(
+      MaaFrameworkInstance_method_names[11],
+      ::grpc::internal::RpcMethod::NORMAL_RPC,
+      new ::grpc::internal::RpcMethodHandler< MaaFrameworkInstance::Service, ::maa::HandleRequest, ::maa::EmptyResponse, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(
+          [](MaaFrameworkInstance::Service* service,
+             ::grpc::ServerContext* ctx,
+             const ::maa::HandleRequest* req,
+             ::maa::EmptyResponse* resp) {
+               return service->bind_controller(ctx, req, resp);
+             }, this)));
+  AddMethod(new ::grpc::internal::RpcServiceMethod(
+      MaaFrameworkInstance_method_names[12],
+      ::grpc::internal::RpcMethod::NORMAL_RPC,
+      new ::grpc::internal::RpcMethodHandler< MaaFrameworkInstance::Service, ::maa::HandleRequest, ::maa::BoolResponse, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(
+          [](MaaFrameworkInstance::Service* service,
+             ::grpc::ServerContext* ctx,
+             const ::maa::HandleRequest* req,
+             ::maa::BoolResponse* resp) {
+               return service->inited(ctx, req, resp);
+             }, this)));
+  AddMethod(new ::grpc::internal::RpcServiceMethod(
+      MaaFrameworkInstance_method_names[13],
+      ::grpc::internal::RpcMethod::NORMAL_RPC,
+      new ::grpc::internal::RpcMethodHandler< MaaFrameworkInstance::Service, ::maa::InstancePostTaskRequest, ::maa::IdResponse, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(
+          [](MaaFrameworkInstance::Service* service,
+             ::grpc::ServerContext* ctx,
+             const ::maa::InstancePostTaskRequest* req,
+             ::maa::IdResponse* resp) {
+               return service->post_task(ctx, req, resp);
+             }, this)));
+  AddMethod(new ::grpc::internal::RpcServiceMethod(
+      MaaFrameworkInstance_method_names[14],
+      ::grpc::internal::RpcMethod::NORMAL_RPC,
+      new ::grpc::internal::RpcMethodHandler< MaaFrameworkInstance::Service, ::maa::InstanceSetTaskParamRequest, ::maa::EmptyResponse, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(
+          [](MaaFrameworkInstance::Service* service,
+             ::grpc::ServerContext* ctx,
+             const ::maa::InstanceSetTaskParamRequest* req,
+             ::maa::EmptyResponse* resp) {
+               return service->set_task_param(ctx, req, resp);
+             }, this)));
+  AddMethod(new ::grpc::internal::RpcServiceMethod(
+      MaaFrameworkInstance_method_names[15],
+      ::grpc::internal::RpcMethod::NORMAL_RPC,
+      new ::grpc::internal::RpcMethodHandler< MaaFrameworkInstance::Service, ::maa::HandleIdRequest, ::maa::StatusResponse, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(
+          [](MaaFrameworkInstance::Service* service,
+             ::grpc::ServerContext* ctx,
+             const ::maa::HandleIdRequest* req,
+             ::maa::StatusResponse* resp) {
+               return service->status(ctx, req, resp);
+             }, this)));
+  AddMethod(new ::grpc::internal::RpcServiceMethod(
+      MaaFrameworkInstance_method_names[16],
+      ::grpc::internal::RpcMethod::NORMAL_RPC,
+      new ::grpc::internal::RpcMethodHandler< MaaFrameworkInstance::Service, ::maa::HandleIdRequest, ::maa::EmptyResponse, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(
+          [](MaaFrameworkInstance::Service* service,
+             ::grpc::ServerContext* ctx,
+             const ::maa::HandleIdRequest* req,
+             ::maa::EmptyResponse* resp) {
+               return service->wait(ctx, req, resp);
+             }, this)));
+  AddMethod(new ::grpc::internal::RpcServiceMethod(
+      MaaFrameworkInstance_method_names[17],
+      ::grpc::internal::RpcMethod::NORMAL_RPC,
+      new ::grpc::internal::RpcMethodHandler< MaaFrameworkInstance::Service, ::maa::HandleRequest, ::maa::BoolResponse, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(
+          [](MaaFrameworkInstance::Service* service,
+             ::grpc::ServerContext* ctx,
+             const ::maa::HandleRequest* req,
+             ::maa::BoolResponse* resp) {
+               return service->all_finished(ctx, req, resp);
+             }, this)));
+  AddMethod(new ::grpc::internal::RpcServiceMethod(
+      MaaFrameworkInstance_method_names[18],
+      ::grpc::internal::RpcMethod::NORMAL_RPC,
+      new ::grpc::internal::RpcMethodHandler< MaaFrameworkInstance::Service, ::maa::HandleRequest, ::maa::EmptyResponse, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(
+          [](MaaFrameworkInstance::Service* service,
+             ::grpc::ServerContext* ctx,
+             const ::maa::HandleRequest* req,
+             ::maa::EmptyResponse* resp) {
+               return service->stop(ctx, req, resp);
+             }, this)));
+  AddMethod(new ::grpc::internal::RpcServiceMethod(
+      MaaFrameworkInstance_method_names[19],
+      ::grpc::internal::RpcMethod::NORMAL_RPC,
+      new ::grpc::internal::RpcMethodHandler< MaaFrameworkInstance::Service, ::maa::HandleRequest, ::maa::HandleRequest, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(
+          [](MaaFrameworkInstance::Service* service,
+             ::grpc::ServerContext* ctx,
+             const ::maa::HandleRequest* req,
+             ::maa::HandleRequest* resp) {
+               return service->resource(ctx, req, resp);
+             }, this)));
+  AddMethod(new ::grpc::internal::RpcServiceMethod(
+      MaaFrameworkInstance_method_names[20],
+      ::grpc::internal::RpcMethod::NORMAL_RPC,
+      new ::grpc::internal::RpcMethodHandler< MaaFrameworkInstance::Service, ::maa::HandleRequest, ::maa::HandleRequest, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(
+          [](MaaFrameworkInstance::Service* service,
+             ::grpc::ServerContext* ctx,
+             const ::maa::HandleRequest* req,
+             ::maa::HandleRequest* resp) {
+               return service->controller(ctx, req, resp);
+             }, this)));
+}
+
+MaaFrameworkInstance::Service::~Service() {
+}
+
+::grpc::Status MaaFrameworkInstance::Service::create(::grpc::ServerContext* context, const ::maa::IdRequest* request, ::maa::HandleResponse* response) {
+  (void) context;
+  (void) request;
+  (void) response;
+  return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+}
+
+::grpc::Status MaaFrameworkInstance::Service::destroy(::grpc::ServerContext* context, const ::maa::HandleRequest* request, ::maa::EmptyResponse* response) {
+  (void) context;
+  (void) request;
+  (void) response;
+  return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+}
+
+::grpc::Status MaaFrameworkInstance::Service::register_custom_recognizer(::grpc::ServerContext* context, const ::maa::CustomRecognizerRequest* request, ::grpc::ServerWriter< ::maa::CustomRecognizerResponse>* writer) {
+  (void) context;
+  (void) request;
+  (void) writer;
+  return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+}
+
+::grpc::Status MaaFrameworkInstance::Service::submit_custom_recognizer(::grpc::ServerContext* context, const ::maa::SubmitCustomRecognizerRequest* request, ::maa::EmptyResponse* response) {
+  (void) context;
+  (void) request;
+  (void) response;
+  return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+}
+
+::grpc::Status MaaFrameworkInstance::Service::unregister_custom_recognizer(::grpc::ServerContext* context, const ::maa::HandleStringRequest* request, ::maa::EmptyResponse* response) {
+  (void) context;
+  (void) request;
+  (void) response;
+  return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+}
+
+::grpc::Status MaaFrameworkInstance::Service::clear_custom_recognizer(::grpc::ServerContext* context, const ::maa::HandleRequest* request, ::maa::EmptyResponse* response) {
+  (void) context;
+  (void) request;
+  (void) response;
+  return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+}
+
+::grpc::Status MaaFrameworkInstance::Service::register_custom_action(::grpc::ServerContext* context, const ::maa::CustomRecognizerRequest* request, ::grpc::ServerWriter< ::maa::CustomRecognizerResponse>* writer) {
+  (void) context;
+  (void) request;
+  (void) writer;
+  return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+}
+
+::grpc::Status MaaFrameworkInstance::Service::submit_custom_action(::grpc::ServerContext* context, const ::maa::SubmitCustomRecognizerRequest* request, ::maa::EmptyResponse* response) {
+  (void) context;
+  (void) request;
+  (void) response;
+  return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+}
+
+::grpc::Status MaaFrameworkInstance::Service::unregister_custom_action(::grpc::ServerContext* context, const ::maa::HandleStringRequest* request, ::maa::EmptyResponse* response) {
+  (void) context;
+  (void) request;
+  (void) response;
+  return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+}
+
+::grpc::Status MaaFrameworkInstance::Service::clear_custom_action(::grpc::ServerContext* context, const ::maa::HandleRequest* request, ::maa::EmptyResponse* response) {
+  (void) context;
+  (void) request;
+  (void) response;
+  return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+}
+
+::grpc::Status MaaFrameworkInstance::Service::bind_resource(::grpc::ServerContext* context, const ::maa::HandleRequest* request, ::maa::EmptyResponse* response) {
+  (void) context;
+  (void) request;
+  (void) response;
+  return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+}
+
+::grpc::Status MaaFrameworkInstance::Service::bind_controller(::grpc::ServerContext* context, const ::maa::HandleRequest* request, ::maa::EmptyResponse* response) {
+  (void) context;
+  (void) request;
+  (void) response;
+  return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+}
+
+::grpc::Status MaaFrameworkInstance::Service::inited(::grpc::ServerContext* context, const ::maa::HandleRequest* request, ::maa::BoolResponse* response) {
+  (void) context;
+  (void) request;
+  (void) response;
+  return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+}
+
+::grpc::Status MaaFrameworkInstance::Service::post_task(::grpc::ServerContext* context, const ::maa::InstancePostTaskRequest* request, ::maa::IdResponse* response) {
+  (void) context;
+  (void) request;
+  (void) response;
+  return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+}
+
+::grpc::Status MaaFrameworkInstance::Service::set_task_param(::grpc::ServerContext* context, const ::maa::InstanceSetTaskParamRequest* request, ::maa::EmptyResponse* response) {
+  (void) context;
+  (void) request;
+  (void) response;
+  return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+}
+
+::grpc::Status MaaFrameworkInstance::Service::status(::grpc::ServerContext* context, const ::maa::HandleIdRequest* request, ::maa::StatusResponse* response) {
+  (void) context;
+  (void) request;
+  (void) response;
+  return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+}
+
+::grpc::Status MaaFrameworkInstance::Service::wait(::grpc::ServerContext* context, const ::maa::HandleIdRequest* request, ::maa::EmptyResponse* response) {
+  (void) context;
+  (void) request;
+  (void) response;
+  return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+}
+
+::grpc::Status MaaFrameworkInstance::Service::all_finished(::grpc::ServerContext* context, const ::maa::HandleRequest* request, ::maa::BoolResponse* response) {
+  (void) context;
+  (void) request;
+  (void) response;
+  return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+}
+
+::grpc::Status MaaFrameworkInstance::Service::stop(::grpc::ServerContext* context, const ::maa::HandleRequest* request, ::maa::EmptyResponse* response) {
+  (void) context;
+  (void) request;
+  (void) response;
+  return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+}
+
+::grpc::Status MaaFrameworkInstance::Service::resource(::grpc::ServerContext* context, const ::maa::HandleRequest* request, ::maa::HandleRequest* response) {
+  (void) context;
+  (void) request;
+  (void) response;
+  return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+}
+
+::grpc::Status MaaFrameworkInstance::Service::controller(::grpc::ServerContext* context, const ::maa::HandleRequest* request, ::maa::HandleRequest* response) {
+  (void) context;
+  (void) request;
+  (void) response;
+  return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+}
+
+
+static const char* MaaFrameworkSyncContext_method_names[] = {
+  "/maa.MaaFrameworkSyncContext/run_task",
+  "/maa.MaaFrameworkSyncContext/run_recognizer",
+  "/maa.MaaFrameworkSyncContext/run_action",
+  "/maa.MaaFrameworkSyncContext/click",
+  "/maa.MaaFrameworkSyncContext/swipe",
+  "/maa.MaaFrameworkSyncContext/key",
+  "/maa.MaaFrameworkSyncContext/touch_down",
+  "/maa.MaaFrameworkSyncContext/touch_move",
+  "/maa.MaaFrameworkSyncContext/touch_up",
+  "/maa.MaaFrameworkSyncContext/screencap",
+  "/maa.MaaFrameworkSyncContext/task_result",
+};
+
+std::unique_ptr< MaaFrameworkSyncContext::Stub> MaaFrameworkSyncContext::NewStub(const std::shared_ptr< ::grpc::ChannelInterface>& channel, const ::grpc::StubOptions& options) {
+  (void)options;
+  std::unique_ptr< MaaFrameworkSyncContext::Stub> stub(new MaaFrameworkSyncContext::Stub(channel, options));
+  return stub;
+}
+
+MaaFrameworkSyncContext::Stub::Stub(const std::shared_ptr< ::grpc::ChannelInterface>& channel, const ::grpc::StubOptions& options)
+  : channel_(channel), rpcmethod_run_task_(MaaFrameworkSyncContext_method_names[0], options.suffix_for_stats(),::grpc::internal::RpcMethod::NORMAL_RPC, channel)
+  , rpcmethod_run_recognizer_(MaaFrameworkSyncContext_method_names[1], options.suffix_for_stats(),::grpc::internal::RpcMethod::NORMAL_RPC, channel)
+  , rpcmethod_run_action_(MaaFrameworkSyncContext_method_names[2], options.suffix_for_stats(),::grpc::internal::RpcMethod::NORMAL_RPC, channel)
+  , rpcmethod_click_(MaaFrameworkSyncContext_method_names[3], options.suffix_for_stats(),::grpc::internal::RpcMethod::NORMAL_RPC, channel)
+  , rpcmethod_swipe_(MaaFrameworkSyncContext_method_names[4], options.suffix_for_stats(),::grpc::internal::RpcMethod::NORMAL_RPC, channel)
+  , rpcmethod_key_(MaaFrameworkSyncContext_method_names[5], options.suffix_for_stats(),::grpc::internal::RpcMethod::NORMAL_RPC, channel)
+  , rpcmethod_touch_down_(MaaFrameworkSyncContext_method_names[6], options.suffix_for_stats(),::grpc::internal::RpcMethod::NORMAL_RPC, channel)
+  , rpcmethod_touch_move_(MaaFrameworkSyncContext_method_names[7], options.suffix_for_stats(),::grpc::internal::RpcMethod::NORMAL_RPC, channel)
+  , rpcmethod_touch_up_(MaaFrameworkSyncContext_method_names[8], options.suffix_for_stats(),::grpc::internal::RpcMethod::NORMAL_RPC, channel)
+  , rpcmethod_screencap_(MaaFrameworkSyncContext_method_names[9], options.suffix_for_stats(),::grpc::internal::RpcMethod::NORMAL_RPC, channel)
+  , rpcmethod_task_result_(MaaFrameworkSyncContext_method_names[10], options.suffix_for_stats(),::grpc::internal::RpcMethod::NORMAL_RPC, channel)
+  {}
+
+::grpc::Status MaaFrameworkSyncContext::Stub::run_task(::grpc::ClientContext* context, const ::maa::SyncContextRunTaskRequest& request, ::maa::EmptyResponse* response) {
+  return ::grpc::internal::BlockingUnaryCall< ::maa::SyncContextRunTaskRequest, ::maa::EmptyResponse, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(channel_.get(), rpcmethod_run_task_, context, request, response);
+}
+
+void MaaFrameworkSyncContext::Stub::async::run_task(::grpc::ClientContext* context, const ::maa::SyncContextRunTaskRequest* request, ::maa::EmptyResponse* response, std::function<void(::grpc::Status)> f) {
+  ::grpc::internal::CallbackUnaryCall< ::maa::SyncContextRunTaskRequest, ::maa::EmptyResponse, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(stub_->channel_.get(), stub_->rpcmethod_run_task_, context, request, response, std::move(f));
+}
+
+void MaaFrameworkSyncContext::Stub::async::run_task(::grpc::ClientContext* context, const ::maa::SyncContextRunTaskRequest* request, ::maa::EmptyResponse* response, ::grpc::ClientUnaryReactor* reactor) {
+  ::grpc::internal::ClientCallbackUnaryFactory::Create< ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(stub_->channel_.get(), stub_->rpcmethod_run_task_, context, request, response, reactor);
+}
+
+::grpc::ClientAsyncResponseReader< ::maa::EmptyResponse>* MaaFrameworkSyncContext::Stub::PrepareAsyncrun_taskRaw(::grpc::ClientContext* context, const ::maa::SyncContextRunTaskRequest& request, ::grpc::CompletionQueue* cq) {
+  return ::grpc::internal::ClientAsyncResponseReaderHelper::Create< ::maa::EmptyResponse, ::maa::SyncContextRunTaskRequest, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(channel_.get(), cq, rpcmethod_run_task_, context, request);
+}
+
+::grpc::ClientAsyncResponseReader< ::maa::EmptyResponse>* MaaFrameworkSyncContext::Stub::Asyncrun_taskRaw(::grpc::ClientContext* context, const ::maa::SyncContextRunTaskRequest& request, ::grpc::CompletionQueue* cq) {
+  auto* result =
+    this->PrepareAsyncrun_taskRaw(context, request, cq);
+  result->StartCall();
+  return result;
+}
+
+::grpc::Status MaaFrameworkSyncContext::Stub::run_recognizer(::grpc::ClientContext* context, const ::maa::SyncContextRunRecognizerRequest& request, ::maa::SyncContextRunRecognizerResponse* response) {
+  return ::grpc::internal::BlockingUnaryCall< ::maa::SyncContextRunRecognizerRequest, ::maa::SyncContextRunRecognizerResponse, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(channel_.get(), rpcmethod_run_recognizer_, context, request, response);
+}
+
+void MaaFrameworkSyncContext::Stub::async::run_recognizer(::grpc::ClientContext* context, const ::maa::SyncContextRunRecognizerRequest* request, ::maa::SyncContextRunRecognizerResponse* response, std::function<void(::grpc::Status)> f) {
+  ::grpc::internal::CallbackUnaryCall< ::maa::SyncContextRunRecognizerRequest, ::maa::SyncContextRunRecognizerResponse, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(stub_->channel_.get(), stub_->rpcmethod_run_recognizer_, context, request, response, std::move(f));
+}
+
+void MaaFrameworkSyncContext::Stub::async::run_recognizer(::grpc::ClientContext* context, const ::maa::SyncContextRunRecognizerRequest* request, ::maa::SyncContextRunRecognizerResponse* response, ::grpc::ClientUnaryReactor* reactor) {
+  ::grpc::internal::ClientCallbackUnaryFactory::Create< ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(stub_->channel_.get(), stub_->rpcmethod_run_recognizer_, context, request, response, reactor);
+}
+
+::grpc::ClientAsyncResponseReader< ::maa::SyncContextRunRecognizerResponse>* MaaFrameworkSyncContext::Stub::PrepareAsyncrun_recognizerRaw(::grpc::ClientContext* context, const ::maa::SyncContextRunRecognizerRequest& request, ::grpc::CompletionQueue* cq) {
+  return ::grpc::internal::ClientAsyncResponseReaderHelper::Create< ::maa::SyncContextRunRecognizerResponse, ::maa::SyncContextRunRecognizerRequest, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(channel_.get(), cq, rpcmethod_run_recognizer_, context, request);
+}
+
+::grpc::ClientAsyncResponseReader< ::maa::SyncContextRunRecognizerResponse>* MaaFrameworkSyncContext::Stub::Asyncrun_recognizerRaw(::grpc::ClientContext* context, const ::maa::SyncContextRunRecognizerRequest& request, ::grpc::CompletionQueue* cq) {
+  auto* result =
+    this->PrepareAsyncrun_recognizerRaw(context, request, cq);
+  result->StartCall();
+  return result;
+}
+
+::grpc::Status MaaFrameworkSyncContext::Stub::run_action(::grpc::ClientContext* context, const ::maa::SyncContextRunActionRequest& request, ::maa::EmptyResponse* response) {
+  return ::grpc::internal::BlockingUnaryCall< ::maa::SyncContextRunActionRequest, ::maa::EmptyResponse, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(channel_.get(), rpcmethod_run_action_, context, request, response);
+}
+
+void MaaFrameworkSyncContext::Stub::async::run_action(::grpc::ClientContext* context, const ::maa::SyncContextRunActionRequest* request, ::maa::EmptyResponse* response, std::function<void(::grpc::Status)> f) {
+  ::grpc::internal::CallbackUnaryCall< ::maa::SyncContextRunActionRequest, ::maa::EmptyResponse, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(stub_->channel_.get(), stub_->rpcmethod_run_action_, context, request, response, std::move(f));
+}
+
+void MaaFrameworkSyncContext::Stub::async::run_action(::grpc::ClientContext* context, const ::maa::SyncContextRunActionRequest* request, ::maa::EmptyResponse* response, ::grpc::ClientUnaryReactor* reactor) {
+  ::grpc::internal::ClientCallbackUnaryFactory::Create< ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(stub_->channel_.get(), stub_->rpcmethod_run_action_, context, request, response, reactor);
+}
+
+::grpc::ClientAsyncResponseReader< ::maa::EmptyResponse>* MaaFrameworkSyncContext::Stub::PrepareAsyncrun_actionRaw(::grpc::ClientContext* context, const ::maa::SyncContextRunActionRequest& request, ::grpc::CompletionQueue* cq) {
+  return ::grpc::internal::ClientAsyncResponseReaderHelper::Create< ::maa::EmptyResponse, ::maa::SyncContextRunActionRequest, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(channel_.get(), cq, rpcmethod_run_action_, context, request);
+}
+
+::grpc::ClientAsyncResponseReader< ::maa::EmptyResponse>* MaaFrameworkSyncContext::Stub::Asyncrun_actionRaw(::grpc::ClientContext* context, const ::maa::SyncContextRunActionRequest& request, ::grpc::CompletionQueue* cq) {
+  auto* result =
+    this->PrepareAsyncrun_actionRaw(context, request, cq);
+  result->StartCall();
+  return result;
+}
+
+::grpc::Status MaaFrameworkSyncContext::Stub::click(::grpc::ClientContext* context, const ::maa::SyncContextClickRequest& request, ::maa::EmptyRequest* response) {
+  return ::grpc::internal::BlockingUnaryCall< ::maa::SyncContextClickRequest, ::maa::EmptyRequest, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(channel_.get(), rpcmethod_click_, context, request, response);
+}
+
+void MaaFrameworkSyncContext::Stub::async::click(::grpc::ClientContext* context, const ::maa::SyncContextClickRequest* request, ::maa::EmptyRequest* response, std::function<void(::grpc::Status)> f) {
+  ::grpc::internal::CallbackUnaryCall< ::maa::SyncContextClickRequest, ::maa::EmptyRequest, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(stub_->channel_.get(), stub_->rpcmethod_click_, context, request, response, std::move(f));
+}
+
+void MaaFrameworkSyncContext::Stub::async::click(::grpc::ClientContext* context, const ::maa::SyncContextClickRequest* request, ::maa::EmptyRequest* response, ::grpc::ClientUnaryReactor* reactor) {
+  ::grpc::internal::ClientCallbackUnaryFactory::Create< ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(stub_->channel_.get(), stub_->rpcmethod_click_, context, request, response, reactor);
+}
+
+::grpc::ClientAsyncResponseReader< ::maa::EmptyRequest>* MaaFrameworkSyncContext::Stub::PrepareAsyncclickRaw(::grpc::ClientContext* context, const ::maa::SyncContextClickRequest& request, ::grpc::CompletionQueue* cq) {
+  return ::grpc::internal::ClientAsyncResponseReaderHelper::Create< ::maa::EmptyRequest, ::maa::SyncContextClickRequest, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(channel_.get(), cq, rpcmethod_click_, context, request);
+}
+
+::grpc::ClientAsyncResponseReader< ::maa::EmptyRequest>* MaaFrameworkSyncContext::Stub::AsyncclickRaw(::grpc::ClientContext* context, const ::maa::SyncContextClickRequest& request, ::grpc::CompletionQueue* cq) {
+  auto* result =
+    this->PrepareAsyncclickRaw(context, request, cq);
+  result->StartCall();
+  return result;
+}
+
+::grpc::Status MaaFrameworkSyncContext::Stub::swipe(::grpc::ClientContext* context, const ::maa::SyncContextSwipeRequest& request, ::maa::EmptyRequest* response) {
+  return ::grpc::internal::BlockingUnaryCall< ::maa::SyncContextSwipeRequest, ::maa::EmptyRequest, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(channel_.get(), rpcmethod_swipe_, context, request, response);
+}
+
+void MaaFrameworkSyncContext::Stub::async::swipe(::grpc::ClientContext* context, const ::maa::SyncContextSwipeRequest* request, ::maa::EmptyRequest* response, std::function<void(::grpc::Status)> f) {
+  ::grpc::internal::CallbackUnaryCall< ::maa::SyncContextSwipeRequest, ::maa::EmptyRequest, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(stub_->channel_.get(), stub_->rpcmethod_swipe_, context, request, response, std::move(f));
+}
+
+void MaaFrameworkSyncContext::Stub::async::swipe(::grpc::ClientContext* context, const ::maa::SyncContextSwipeRequest* request, ::maa::EmptyRequest* response, ::grpc::ClientUnaryReactor* reactor) {
+  ::grpc::internal::ClientCallbackUnaryFactory::Create< ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(stub_->channel_.get(), stub_->rpcmethod_swipe_, context, request, response, reactor);
+}
+
+::grpc::ClientAsyncResponseReader< ::maa::EmptyRequest>* MaaFrameworkSyncContext::Stub::PrepareAsyncswipeRaw(::grpc::ClientContext* context, const ::maa::SyncContextSwipeRequest& request, ::grpc::CompletionQueue* cq) {
+  return ::grpc::internal::ClientAsyncResponseReaderHelper::Create< ::maa::EmptyRequest, ::maa::SyncContextSwipeRequest, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(channel_.get(), cq, rpcmethod_swipe_, context, request);
+}
+
+::grpc::ClientAsyncResponseReader< ::maa::EmptyRequest>* MaaFrameworkSyncContext::Stub::AsyncswipeRaw(::grpc::ClientContext* context, const ::maa::SyncContextSwipeRequest& request, ::grpc::CompletionQueue* cq) {
+  auto* result =
+    this->PrepareAsyncswipeRaw(context, request, cq);
+  result->StartCall();
+  return result;
+}
+
+::grpc::Status MaaFrameworkSyncContext::Stub::key(::grpc::ClientContext* context, const ::maa::SyncContextKeyRequest& request, ::maa::EmptyRequest* response) {
+  return ::grpc::internal::BlockingUnaryCall< ::maa::SyncContextKeyRequest, ::maa::EmptyRequest, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(channel_.get(), rpcmethod_key_, context, request, response);
+}
+
+void MaaFrameworkSyncContext::Stub::async::key(::grpc::ClientContext* context, const ::maa::SyncContextKeyRequest* request, ::maa::EmptyRequest* response, std::function<void(::grpc::Status)> f) {
+  ::grpc::internal::CallbackUnaryCall< ::maa::SyncContextKeyRequest, ::maa::EmptyRequest, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(stub_->channel_.get(), stub_->rpcmethod_key_, context, request, response, std::move(f));
+}
+
+void MaaFrameworkSyncContext::Stub::async::key(::grpc::ClientContext* context, const ::maa::SyncContextKeyRequest* request, ::maa::EmptyRequest* response, ::grpc::ClientUnaryReactor* reactor) {
+  ::grpc::internal::ClientCallbackUnaryFactory::Create< ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(stub_->channel_.get(), stub_->rpcmethod_key_, context, request, response, reactor);
+}
+
+::grpc::ClientAsyncResponseReader< ::maa::EmptyRequest>* MaaFrameworkSyncContext::Stub::PrepareAsynckeyRaw(::grpc::ClientContext* context, const ::maa::SyncContextKeyRequest& request, ::grpc::CompletionQueue* cq) {
+  return ::grpc::internal::ClientAsyncResponseReaderHelper::Create< ::maa::EmptyRequest, ::maa::SyncContextKeyRequest, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(channel_.get(), cq, rpcmethod_key_, context, request);
+}
+
+::grpc::ClientAsyncResponseReader< ::maa::EmptyRequest>* MaaFrameworkSyncContext::Stub::AsynckeyRaw(::grpc::ClientContext* context, const ::maa::SyncContextKeyRequest& request, ::grpc::CompletionQueue* cq) {
+  auto* result =
+    this->PrepareAsynckeyRaw(context, request, cq);
+  result->StartCall();
+  return result;
+}
+
+::grpc::Status MaaFrameworkSyncContext::Stub::touch_down(::grpc::ClientContext* context, const ::maa::SyncContextTouchRequest& request, ::maa::EmptyRequest* response) {
+  return ::grpc::internal::BlockingUnaryCall< ::maa::SyncContextTouchRequest, ::maa::EmptyRequest, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(channel_.get(), rpcmethod_touch_down_, context, request, response);
+}
+
+void MaaFrameworkSyncContext::Stub::async::touch_down(::grpc::ClientContext* context, const ::maa::SyncContextTouchRequest* request, ::maa::EmptyRequest* response, std::function<void(::grpc::Status)> f) {
+  ::grpc::internal::CallbackUnaryCall< ::maa::SyncContextTouchRequest, ::maa::EmptyRequest, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(stub_->channel_.get(), stub_->rpcmethod_touch_down_, context, request, response, std::move(f));
+}
+
+void MaaFrameworkSyncContext::Stub::async::touch_down(::grpc::ClientContext* context, const ::maa::SyncContextTouchRequest* request, ::maa::EmptyRequest* response, ::grpc::ClientUnaryReactor* reactor) {
+  ::grpc::internal::ClientCallbackUnaryFactory::Create< ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(stub_->channel_.get(), stub_->rpcmethod_touch_down_, context, request, response, reactor);
+}
+
+::grpc::ClientAsyncResponseReader< ::maa::EmptyRequest>* MaaFrameworkSyncContext::Stub::PrepareAsynctouch_downRaw(::grpc::ClientContext* context, const ::maa::SyncContextTouchRequest& request, ::grpc::CompletionQueue* cq) {
+  return ::grpc::internal::ClientAsyncResponseReaderHelper::Create< ::maa::EmptyRequest, ::maa::SyncContextTouchRequest, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(channel_.get(), cq, rpcmethod_touch_down_, context, request);
+}
+
+::grpc::ClientAsyncResponseReader< ::maa::EmptyRequest>* MaaFrameworkSyncContext::Stub::Asynctouch_downRaw(::grpc::ClientContext* context, const ::maa::SyncContextTouchRequest& request, ::grpc::CompletionQueue* cq) {
+  auto* result =
+    this->PrepareAsynctouch_downRaw(context, request, cq);
+  result->StartCall();
+  return result;
+}
+
+::grpc::Status MaaFrameworkSyncContext::Stub::touch_move(::grpc::ClientContext* context, const ::maa::SyncContextTouchRequest& request, ::maa::EmptyRequest* response) {
+  return ::grpc::internal::BlockingUnaryCall< ::maa::SyncContextTouchRequest, ::maa::EmptyRequest, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(channel_.get(), rpcmethod_touch_move_, context, request, response);
+}
+
+void MaaFrameworkSyncContext::Stub::async::touch_move(::grpc::ClientContext* context, const ::maa::SyncContextTouchRequest* request, ::maa::EmptyRequest* response, std::function<void(::grpc::Status)> f) {
+  ::grpc::internal::CallbackUnaryCall< ::maa::SyncContextTouchRequest, ::maa::EmptyRequest, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(stub_->channel_.get(), stub_->rpcmethod_touch_move_, context, request, response, std::move(f));
+}
+
+void MaaFrameworkSyncContext::Stub::async::touch_move(::grpc::ClientContext* context, const ::maa::SyncContextTouchRequest* request, ::maa::EmptyRequest* response, ::grpc::ClientUnaryReactor* reactor) {
+  ::grpc::internal::ClientCallbackUnaryFactory::Create< ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(stub_->channel_.get(), stub_->rpcmethod_touch_move_, context, request, response, reactor);
+}
+
+::grpc::ClientAsyncResponseReader< ::maa::EmptyRequest>* MaaFrameworkSyncContext::Stub::PrepareAsynctouch_moveRaw(::grpc::ClientContext* context, const ::maa::SyncContextTouchRequest& request, ::grpc::CompletionQueue* cq) {
+  return ::grpc::internal::ClientAsyncResponseReaderHelper::Create< ::maa::EmptyRequest, ::maa::SyncContextTouchRequest, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(channel_.get(), cq, rpcmethod_touch_move_, context, request);
+}
+
+::grpc::ClientAsyncResponseReader< ::maa::EmptyRequest>* MaaFrameworkSyncContext::Stub::Asynctouch_moveRaw(::grpc::ClientContext* context, const ::maa::SyncContextTouchRequest& request, ::grpc::CompletionQueue* cq) {
+  auto* result =
+    this->PrepareAsynctouch_moveRaw(context, request, cq);
+  result->StartCall();
+  return result;
+}
+
+::grpc::Status MaaFrameworkSyncContext::Stub::touch_up(::grpc::ClientContext* context, const ::maa::SyncContextTouchRequest& request, ::maa::EmptyRequest* response) {
+  return ::grpc::internal::BlockingUnaryCall< ::maa::SyncContextTouchRequest, ::maa::EmptyRequest, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(channel_.get(), rpcmethod_touch_up_, context, request, response);
+}
+
+void MaaFrameworkSyncContext::Stub::async::touch_up(::grpc::ClientContext* context, const ::maa::SyncContextTouchRequest* request, ::maa::EmptyRequest* response, std::function<void(::grpc::Status)> f) {
+  ::grpc::internal::CallbackUnaryCall< ::maa::SyncContextTouchRequest, ::maa::EmptyRequest, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(stub_->channel_.get(), stub_->rpcmethod_touch_up_, context, request, response, std::move(f));
+}
+
+void MaaFrameworkSyncContext::Stub::async::touch_up(::grpc::ClientContext* context, const ::maa::SyncContextTouchRequest* request, ::maa::EmptyRequest* response, ::grpc::ClientUnaryReactor* reactor) {
+  ::grpc::internal::ClientCallbackUnaryFactory::Create< ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(stub_->channel_.get(), stub_->rpcmethod_touch_up_, context, request, response, reactor);
+}
+
+::grpc::ClientAsyncResponseReader< ::maa::EmptyRequest>* MaaFrameworkSyncContext::Stub::PrepareAsynctouch_upRaw(::grpc::ClientContext* context, const ::maa::SyncContextTouchRequest& request, ::grpc::CompletionQueue* cq) {
+  return ::grpc::internal::ClientAsyncResponseReaderHelper::Create< ::maa::EmptyRequest, ::maa::SyncContextTouchRequest, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(channel_.get(), cq, rpcmethod_touch_up_, context, request);
+}
+
+::grpc::ClientAsyncResponseReader< ::maa::EmptyRequest>* MaaFrameworkSyncContext::Stub::Asynctouch_upRaw(::grpc::ClientContext* context, const ::maa::SyncContextTouchRequest& request, ::grpc::CompletionQueue* cq) {
+  auto* result =
+    this->PrepareAsynctouch_upRaw(context, request, cq);
+  result->StartCall();
+  return result;
+}
+
+::grpc::Status MaaFrameworkSyncContext::Stub::screencap(::grpc::ClientContext* context, const ::maa::SyncContextScreencapRequest& request, ::maa::EmptyResponse* response) {
+  return ::grpc::internal::BlockingUnaryCall< ::maa::SyncContextScreencapRequest, ::maa::EmptyResponse, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(channel_.get(), rpcmethod_screencap_, context, request, response);
+}
+
+void MaaFrameworkSyncContext::Stub::async::screencap(::grpc::ClientContext* context, const ::maa::SyncContextScreencapRequest* request, ::maa::EmptyResponse* response, std::function<void(::grpc::Status)> f) {
+  ::grpc::internal::CallbackUnaryCall< ::maa::SyncContextScreencapRequest, ::maa::EmptyResponse, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(stub_->channel_.get(), stub_->rpcmethod_screencap_, context, request, response, std::move(f));
+}
+
+void MaaFrameworkSyncContext::Stub::async::screencap(::grpc::ClientContext* context, const ::maa::SyncContextScreencapRequest* request, ::maa::EmptyResponse* response, ::grpc::ClientUnaryReactor* reactor) {
+  ::grpc::internal::ClientCallbackUnaryFactory::Create< ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(stub_->channel_.get(), stub_->rpcmethod_screencap_, context, request, response, reactor);
+}
+
+::grpc::ClientAsyncResponseReader< ::maa::EmptyResponse>* MaaFrameworkSyncContext::Stub::PrepareAsyncscreencapRaw(::grpc::ClientContext* context, const ::maa::SyncContextScreencapRequest& request, ::grpc::CompletionQueue* cq) {
+  return ::grpc::internal::ClientAsyncResponseReaderHelper::Create< ::maa::EmptyResponse, ::maa::SyncContextScreencapRequest, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(channel_.get(), cq, rpcmethod_screencap_, context, request);
+}
+
+::grpc::ClientAsyncResponseReader< ::maa::EmptyResponse>* MaaFrameworkSyncContext::Stub::AsyncscreencapRaw(::grpc::ClientContext* context, const ::maa::SyncContextScreencapRequest& request, ::grpc::CompletionQueue* cq) {
+  auto* result =
+    this->PrepareAsyncscreencapRaw(context, request, cq);
+  result->StartCall();
+  return result;
+}
+
+::grpc::Status MaaFrameworkSyncContext::Stub::task_result(::grpc::ClientContext* context, const ::maa::HandleStringRequest& request, ::maa::StringResponse* response) {
+  return ::grpc::internal::BlockingUnaryCall< ::maa::HandleStringRequest, ::maa::StringResponse, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(channel_.get(), rpcmethod_task_result_, context, request, response);
+}
+
+void MaaFrameworkSyncContext::Stub::async::task_result(::grpc::ClientContext* context, const ::maa::HandleStringRequest* request, ::maa::StringResponse* response, std::function<void(::grpc::Status)> f) {
+  ::grpc::internal::CallbackUnaryCall< ::maa::HandleStringRequest, ::maa::StringResponse, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(stub_->channel_.get(), stub_->rpcmethod_task_result_, context, request, response, std::move(f));
+}
+
+void MaaFrameworkSyncContext::Stub::async::task_result(::grpc::ClientContext* context, const ::maa::HandleStringRequest* request, ::maa::StringResponse* response, ::grpc::ClientUnaryReactor* reactor) {
+  ::grpc::internal::ClientCallbackUnaryFactory::Create< ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(stub_->channel_.get(), stub_->rpcmethod_task_result_, context, request, response, reactor);
+}
+
+::grpc::ClientAsyncResponseReader< ::maa::StringResponse>* MaaFrameworkSyncContext::Stub::PrepareAsynctask_resultRaw(::grpc::ClientContext* context, const ::maa::HandleStringRequest& request, ::grpc::CompletionQueue* cq) {
+  return ::grpc::internal::ClientAsyncResponseReaderHelper::Create< ::maa::StringResponse, ::maa::HandleStringRequest, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(channel_.get(), cq, rpcmethod_task_result_, context, request);
+}
+
+::grpc::ClientAsyncResponseReader< ::maa::StringResponse>* MaaFrameworkSyncContext::Stub::Asynctask_resultRaw(::grpc::ClientContext* context, const ::maa::HandleStringRequest& request, ::grpc::CompletionQueue* cq) {
+  auto* result =
+    this->PrepareAsynctask_resultRaw(context, request, cq);
+  result->StartCall();
+  return result;
+}
+
+MaaFrameworkSyncContext::Service::Service() {
+  AddMethod(new ::grpc::internal::RpcServiceMethod(
+      MaaFrameworkSyncContext_method_names[0],
+      ::grpc::internal::RpcMethod::NORMAL_RPC,
+      new ::grpc::internal::RpcMethodHandler< MaaFrameworkSyncContext::Service, ::maa::SyncContextRunTaskRequest, ::maa::EmptyResponse, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(
+          [](MaaFrameworkSyncContext::Service* service,
+             ::grpc::ServerContext* ctx,
+             const ::maa::SyncContextRunTaskRequest* req,
+             ::maa::EmptyResponse* resp) {
+               return service->run_task(ctx, req, resp);
+             }, this)));
+  AddMethod(new ::grpc::internal::RpcServiceMethod(
+      MaaFrameworkSyncContext_method_names[1],
+      ::grpc::internal::RpcMethod::NORMAL_RPC,
+      new ::grpc::internal::RpcMethodHandler< MaaFrameworkSyncContext::Service, ::maa::SyncContextRunRecognizerRequest, ::maa::SyncContextRunRecognizerResponse, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(
+          [](MaaFrameworkSyncContext::Service* service,
+             ::grpc::ServerContext* ctx,
+             const ::maa::SyncContextRunRecognizerRequest* req,
+             ::maa::SyncContextRunRecognizerResponse* resp) {
+               return service->run_recognizer(ctx, req, resp);
+             }, this)));
+  AddMethod(new ::grpc::internal::RpcServiceMethod(
+      MaaFrameworkSyncContext_method_names[2],
+      ::grpc::internal::RpcMethod::NORMAL_RPC,
+      new ::grpc::internal::RpcMethodHandler< MaaFrameworkSyncContext::Service, ::maa::SyncContextRunActionRequest, ::maa::EmptyResponse, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(
+          [](MaaFrameworkSyncContext::Service* service,
+             ::grpc::ServerContext* ctx,
+             const ::maa::SyncContextRunActionRequest* req,
+             ::maa::EmptyResponse* resp) {
+               return service->run_action(ctx, req, resp);
+             }, this)));
+  AddMethod(new ::grpc::internal::RpcServiceMethod(
+      MaaFrameworkSyncContext_method_names[3],
+      ::grpc::internal::RpcMethod::NORMAL_RPC,
+      new ::grpc::internal::RpcMethodHandler< MaaFrameworkSyncContext::Service, ::maa::SyncContextClickRequest, ::maa::EmptyRequest, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(
+          [](MaaFrameworkSyncContext::Service* service,
+             ::grpc::ServerContext* ctx,
+             const ::maa::SyncContextClickRequest* req,
+             ::maa::EmptyRequest* resp) {
+               return service->click(ctx, req, resp);
+             }, this)));
+  AddMethod(new ::grpc::internal::RpcServiceMethod(
+      MaaFrameworkSyncContext_method_names[4],
+      ::grpc::internal::RpcMethod::NORMAL_RPC,
+      new ::grpc::internal::RpcMethodHandler< MaaFrameworkSyncContext::Service, ::maa::SyncContextSwipeRequest, ::maa::EmptyRequest, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(
+          [](MaaFrameworkSyncContext::Service* service,
+             ::grpc::ServerContext* ctx,
+             const ::maa::SyncContextSwipeRequest* req,
+             ::maa::EmptyRequest* resp) {
+               return service->swipe(ctx, req, resp);
+             }, this)));
+  AddMethod(new ::grpc::internal::RpcServiceMethod(
+      MaaFrameworkSyncContext_method_names[5],
+      ::grpc::internal::RpcMethod::NORMAL_RPC,
+      new ::grpc::internal::RpcMethodHandler< MaaFrameworkSyncContext::Service, ::maa::SyncContextKeyRequest, ::maa::EmptyRequest, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(
+          [](MaaFrameworkSyncContext::Service* service,
+             ::grpc::ServerContext* ctx,
+             const ::maa::SyncContextKeyRequest* req,
+             ::maa::EmptyRequest* resp) {
+               return service->key(ctx, req, resp);
+             }, this)));
+  AddMethod(new ::grpc::internal::RpcServiceMethod(
+      MaaFrameworkSyncContext_method_names[6],
+      ::grpc::internal::RpcMethod::NORMAL_RPC,
+      new ::grpc::internal::RpcMethodHandler< MaaFrameworkSyncContext::Service, ::maa::SyncContextTouchRequest, ::maa::EmptyRequest, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(
+          [](MaaFrameworkSyncContext::Service* service,
+             ::grpc::ServerContext* ctx,
+             const ::maa::SyncContextTouchRequest* req,
+             ::maa::EmptyRequest* resp) {
+               return service->touch_down(ctx, req, resp);
+             }, this)));
+  AddMethod(new ::grpc::internal::RpcServiceMethod(
+      MaaFrameworkSyncContext_method_names[7],
+      ::grpc::internal::RpcMethod::NORMAL_RPC,
+      new ::grpc::internal::RpcMethodHandler< MaaFrameworkSyncContext::Service, ::maa::SyncContextTouchRequest, ::maa::EmptyRequest, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(
+          [](MaaFrameworkSyncContext::Service* service,
+             ::grpc::ServerContext* ctx,
+             const ::maa::SyncContextTouchRequest* req,
+             ::maa::EmptyRequest* resp) {
+               return service->touch_move(ctx, req, resp);
+             }, this)));
+  AddMethod(new ::grpc::internal::RpcServiceMethod(
+      MaaFrameworkSyncContext_method_names[8],
+      ::grpc::internal::RpcMethod::NORMAL_RPC,
+      new ::grpc::internal::RpcMethodHandler< MaaFrameworkSyncContext::Service, ::maa::SyncContextTouchRequest, ::maa::EmptyRequest, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(
+          [](MaaFrameworkSyncContext::Service* service,
+             ::grpc::ServerContext* ctx,
+             const ::maa::SyncContextTouchRequest* req,
+             ::maa::EmptyRequest* resp) {
+               return service->touch_up(ctx, req, resp);
+             }, this)));
+  AddMethod(new ::grpc::internal::RpcServiceMethod(
+      MaaFrameworkSyncContext_method_names[9],
+      ::grpc::internal::RpcMethod::NORMAL_RPC,
+      new ::grpc::internal::RpcMethodHandler< MaaFrameworkSyncContext::Service, ::maa::SyncContextScreencapRequest, ::maa::EmptyResponse, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(
+          [](MaaFrameworkSyncContext::Service* service,
+             ::grpc::ServerContext* ctx,
+             const ::maa::SyncContextScreencapRequest* req,
+             ::maa::EmptyResponse* resp) {
+               return service->screencap(ctx, req, resp);
+             }, this)));
+  AddMethod(new ::grpc::internal::RpcServiceMethod(
+      MaaFrameworkSyncContext_method_names[10],
+      ::grpc::internal::RpcMethod::NORMAL_RPC,
+      new ::grpc::internal::RpcMethodHandler< MaaFrameworkSyncContext::Service, ::maa::HandleStringRequest, ::maa::StringResponse, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(
+          [](MaaFrameworkSyncContext::Service* service,
+             ::grpc::ServerContext* ctx,
+             const ::maa::HandleStringRequest* req,
+             ::maa::StringResponse* resp) {
+               return service->task_result(ctx, req, resp);
+             }, this)));
+}
+
+MaaFrameworkSyncContext::Service::~Service() {
+}
+
+::grpc::Status MaaFrameworkSyncContext::Service::run_task(::grpc::ServerContext* context, const ::maa::SyncContextRunTaskRequest* request, ::maa::EmptyResponse* response) {
+  (void) context;
+  (void) request;
+  (void) response;
+  return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+}
+
+::grpc::Status MaaFrameworkSyncContext::Service::run_recognizer(::grpc::ServerContext* context, const ::maa::SyncContextRunRecognizerRequest* request, ::maa::SyncContextRunRecognizerResponse* response) {
+  (void) context;
+  (void) request;
+  (void) response;
+  return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+}
+
+::grpc::Status MaaFrameworkSyncContext::Service::run_action(::grpc::ServerContext* context, const ::maa::SyncContextRunActionRequest* request, ::maa::EmptyResponse* response) {
+  (void) context;
+  (void) request;
+  (void) response;
+  return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+}
+
+::grpc::Status MaaFrameworkSyncContext::Service::click(::grpc::ServerContext* context, const ::maa::SyncContextClickRequest* request, ::maa::EmptyRequest* response) {
+  (void) context;
+  (void) request;
+  (void) response;
+  return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+}
+
+::grpc::Status MaaFrameworkSyncContext::Service::swipe(::grpc::ServerContext* context, const ::maa::SyncContextSwipeRequest* request, ::maa::EmptyRequest* response) {
+  (void) context;
+  (void) request;
+  (void) response;
+  return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+}
+
+::grpc::Status MaaFrameworkSyncContext::Service::key(::grpc::ServerContext* context, const ::maa::SyncContextKeyRequest* request, ::maa::EmptyRequest* response) {
+  (void) context;
+  (void) request;
+  (void) response;
+  return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+}
+
+::grpc::Status MaaFrameworkSyncContext::Service::touch_down(::grpc::ServerContext* context, const ::maa::SyncContextTouchRequest* request, ::maa::EmptyRequest* response) {
+  (void) context;
+  (void) request;
+  (void) response;
+  return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+}
+
+::grpc::Status MaaFrameworkSyncContext::Service::touch_move(::grpc::ServerContext* context, const ::maa::SyncContextTouchRequest* request, ::maa::EmptyRequest* response) {
+  (void) context;
+  (void) request;
+  (void) response;
+  return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+}
+
+::grpc::Status MaaFrameworkSyncContext::Service::touch_up(::grpc::ServerContext* context, const ::maa::SyncContextTouchRequest* request, ::maa::EmptyRequest* response) {
+  (void) context;
+  (void) request;
+  (void) response;
+  return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+}
+
+::grpc::Status MaaFrameworkSyncContext::Service::screencap(::grpc::ServerContext* context, const ::maa::SyncContextScreencapRequest* request, ::maa::EmptyResponse* response) {
+  (void) context;
+  (void) request;
+  (void) response;
+  return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+}
+
+::grpc::Status MaaFrameworkSyncContext::Service::task_result(::grpc::ServerContext* context, const ::maa::HandleStringRequest* request, ::maa::StringResponse* response) {
   (void) context;
   (void) request;
   (void) response;

@@ -72,6 +72,13 @@ class MaaFramework final {
     std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::maa::EmptyResponse>> PrepareAsyncunregister_callback(::grpc::ClientContext* context, const ::maa::IdRequest& request, ::grpc::CompletionQueue* cq) {
       return std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::maa::EmptyResponse>>(PrepareAsyncunregister_callbackRaw(context, request, cq));
     }
+    virtual ::grpc::Status acquire_custom_controller_id(::grpc::ClientContext* context, const ::maa::EmptyRequest& request, ::maa::IdResponse* response) = 0;
+    std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::maa::IdResponse>> Asyncacquire_custom_controller_id(::grpc::ClientContext* context, const ::maa::EmptyRequest& request, ::grpc::CompletionQueue* cq) {
+      return std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::maa::IdResponse>>(Asyncacquire_custom_controller_idRaw(context, request, cq));
+    }
+    std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::maa::IdResponse>> PrepareAsyncacquire_custom_controller_id(::grpc::ClientContext* context, const ::maa::EmptyRequest& request, ::grpc::CompletionQueue* cq) {
+      return std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::maa::IdResponse>>(PrepareAsyncacquire_custom_controller_idRaw(context, request, cq));
+    }
     class async_interface {
      public:
       virtual ~async_interface() {}
@@ -84,6 +91,8 @@ class MaaFramework final {
       virtual void register_callback(::grpc::ClientContext* context, const ::maa::IdRequest* request, ::grpc::ClientReadReactor< ::maa::Callback>* reactor) = 0;
       virtual void unregister_callback(::grpc::ClientContext* context, const ::maa::IdRequest* request, ::maa::EmptyResponse* response, std::function<void(::grpc::Status)>) = 0;
       virtual void unregister_callback(::grpc::ClientContext* context, const ::maa::IdRequest* request, ::maa::EmptyResponse* response, ::grpc::ClientUnaryReactor* reactor) = 0;
+      virtual void acquire_custom_controller_id(::grpc::ClientContext* context, const ::maa::EmptyRequest* request, ::maa::IdResponse* response, std::function<void(::grpc::Status)>) = 0;
+      virtual void acquire_custom_controller_id(::grpc::ClientContext* context, const ::maa::EmptyRequest* request, ::maa::IdResponse* response, ::grpc::ClientUnaryReactor* reactor) = 0;
     };
     typedef class async_interface experimental_async_interface;
     virtual class async_interface* async() { return nullptr; }
@@ -100,6 +109,8 @@ class MaaFramework final {
     virtual ::grpc::ClientAsyncReaderInterface< ::maa::Callback>* PrepareAsyncregister_callbackRaw(::grpc::ClientContext* context, const ::maa::IdRequest& request, ::grpc::CompletionQueue* cq) = 0;
     virtual ::grpc::ClientAsyncResponseReaderInterface< ::maa::EmptyResponse>* Asyncunregister_callbackRaw(::grpc::ClientContext* context, const ::maa::IdRequest& request, ::grpc::CompletionQueue* cq) = 0;
     virtual ::grpc::ClientAsyncResponseReaderInterface< ::maa::EmptyResponse>* PrepareAsyncunregister_callbackRaw(::grpc::ClientContext* context, const ::maa::IdRequest& request, ::grpc::CompletionQueue* cq) = 0;
+    virtual ::grpc::ClientAsyncResponseReaderInterface< ::maa::IdResponse>* Asyncacquire_custom_controller_idRaw(::grpc::ClientContext* context, const ::maa::EmptyRequest& request, ::grpc::CompletionQueue* cq) = 0;
+    virtual ::grpc::ClientAsyncResponseReaderInterface< ::maa::IdResponse>* PrepareAsyncacquire_custom_controller_idRaw(::grpc::ClientContext* context, const ::maa::EmptyRequest& request, ::grpc::CompletionQueue* cq) = 0;
   };
   class Stub final : public StubInterface {
    public:
@@ -141,6 +152,13 @@ class MaaFramework final {
     std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::maa::EmptyResponse>> PrepareAsyncunregister_callback(::grpc::ClientContext* context, const ::maa::IdRequest& request, ::grpc::CompletionQueue* cq) {
       return std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::maa::EmptyResponse>>(PrepareAsyncunregister_callbackRaw(context, request, cq));
     }
+    ::grpc::Status acquire_custom_controller_id(::grpc::ClientContext* context, const ::maa::EmptyRequest& request, ::maa::IdResponse* response) override;
+    std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::maa::IdResponse>> Asyncacquire_custom_controller_id(::grpc::ClientContext* context, const ::maa::EmptyRequest& request, ::grpc::CompletionQueue* cq) {
+      return std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::maa::IdResponse>>(Asyncacquire_custom_controller_idRaw(context, request, cq));
+    }
+    std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::maa::IdResponse>> PrepareAsyncacquire_custom_controller_id(::grpc::ClientContext* context, const ::maa::EmptyRequest& request, ::grpc::CompletionQueue* cq) {
+      return std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::maa::IdResponse>>(PrepareAsyncacquire_custom_controller_idRaw(context, request, cq));
+    }
     class async final :
       public StubInterface::async_interface {
      public:
@@ -153,6 +171,8 @@ class MaaFramework final {
       void register_callback(::grpc::ClientContext* context, const ::maa::IdRequest* request, ::grpc::ClientReadReactor< ::maa::Callback>* reactor) override;
       void unregister_callback(::grpc::ClientContext* context, const ::maa::IdRequest* request, ::maa::EmptyResponse* response, std::function<void(::grpc::Status)>) override;
       void unregister_callback(::grpc::ClientContext* context, const ::maa::IdRequest* request, ::maa::EmptyResponse* response, ::grpc::ClientUnaryReactor* reactor) override;
+      void acquire_custom_controller_id(::grpc::ClientContext* context, const ::maa::EmptyRequest* request, ::maa::IdResponse* response, std::function<void(::grpc::Status)>) override;
+      void acquire_custom_controller_id(::grpc::ClientContext* context, const ::maa::EmptyRequest* request, ::maa::IdResponse* response, ::grpc::ClientUnaryReactor* reactor) override;
      private:
       friend class Stub;
       explicit async(Stub* stub): stub_(stub) { }
@@ -175,11 +195,14 @@ class MaaFramework final {
     ::grpc::ClientAsyncReader< ::maa::Callback>* PrepareAsyncregister_callbackRaw(::grpc::ClientContext* context, const ::maa::IdRequest& request, ::grpc::CompletionQueue* cq) override;
     ::grpc::ClientAsyncResponseReader< ::maa::EmptyResponse>* Asyncunregister_callbackRaw(::grpc::ClientContext* context, const ::maa::IdRequest& request, ::grpc::CompletionQueue* cq) override;
     ::grpc::ClientAsyncResponseReader< ::maa::EmptyResponse>* PrepareAsyncunregister_callbackRaw(::grpc::ClientContext* context, const ::maa::IdRequest& request, ::grpc::CompletionQueue* cq) override;
+    ::grpc::ClientAsyncResponseReader< ::maa::IdResponse>* Asyncacquire_custom_controller_idRaw(::grpc::ClientContext* context, const ::maa::EmptyRequest& request, ::grpc::CompletionQueue* cq) override;
+    ::grpc::ClientAsyncResponseReader< ::maa::IdResponse>* PrepareAsyncacquire_custom_controller_idRaw(::grpc::ClientContext* context, const ::maa::EmptyRequest& request, ::grpc::CompletionQueue* cq) override;
     const ::grpc::internal::RpcMethod rpcmethod_version_;
     const ::grpc::internal::RpcMethod rpcmethod_set_global_option_;
     const ::grpc::internal::RpcMethod rpcmethod_acquire_callback_id_;
     const ::grpc::internal::RpcMethod rpcmethod_register_callback_;
     const ::grpc::internal::RpcMethod rpcmethod_unregister_callback_;
+    const ::grpc::internal::RpcMethod rpcmethod_acquire_custom_controller_id_;
   };
   static std::unique_ptr<Stub> NewStub(const std::shared_ptr< ::grpc::ChannelInterface>& channel, const ::grpc::StubOptions& options = ::grpc::StubOptions());
 
@@ -192,6 +215,7 @@ class MaaFramework final {
     virtual ::grpc::Status acquire_callback_id(::grpc::ServerContext* context, const ::maa::EmptyRequest* request, ::maa::IdResponse* response);
     virtual ::grpc::Status register_callback(::grpc::ServerContext* context, const ::maa::IdRequest* request, ::grpc::ServerWriter< ::maa::Callback>* writer);
     virtual ::grpc::Status unregister_callback(::grpc::ServerContext* context, const ::maa::IdRequest* request, ::maa::EmptyResponse* response);
+    virtual ::grpc::Status acquire_custom_controller_id(::grpc::ServerContext* context, const ::maa::EmptyRequest* request, ::maa::IdResponse* response);
   };
   template <class BaseClass>
   class WithAsyncMethod_version : public BaseClass {
@@ -293,7 +317,27 @@ class MaaFramework final {
       ::grpc::Service::RequestAsyncUnary(4, context, request, response, new_call_cq, notification_cq, tag);
     }
   };
-  typedef WithAsyncMethod_version<WithAsyncMethod_set_global_option<WithAsyncMethod_acquire_callback_id<WithAsyncMethod_register_callback<WithAsyncMethod_unregister_callback<Service > > > > > AsyncService;
+  template <class BaseClass>
+  class WithAsyncMethod_acquire_custom_controller_id : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    WithAsyncMethod_acquire_custom_controller_id() {
+      ::grpc::Service::MarkMethodAsync(5);
+    }
+    ~WithAsyncMethod_acquire_custom_controller_id() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status acquire_custom_controller_id(::grpc::ServerContext* /*context*/, const ::maa::EmptyRequest* /*request*/, ::maa::IdResponse* /*response*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    void Requestacquire_custom_controller_id(::grpc::ServerContext* context, ::maa::EmptyRequest* request, ::grpc::ServerAsyncResponseWriter< ::maa::IdResponse>* response, ::grpc::CompletionQueue* new_call_cq, ::grpc::ServerCompletionQueue* notification_cq, void *tag) {
+      ::grpc::Service::RequestAsyncUnary(5, context, request, response, new_call_cq, notification_cq, tag);
+    }
+  };
+  typedef WithAsyncMethod_version<WithAsyncMethod_set_global_option<WithAsyncMethod_acquire_callback_id<WithAsyncMethod_register_callback<WithAsyncMethod_unregister_callback<WithAsyncMethod_acquire_custom_controller_id<Service > > > > > > AsyncService;
   template <class BaseClass>
   class WithCallbackMethod_version : public BaseClass {
    private:
@@ -424,7 +468,34 @@ class MaaFramework final {
     virtual ::grpc::ServerUnaryReactor* unregister_callback(
       ::grpc::CallbackServerContext* /*context*/, const ::maa::IdRequest* /*request*/, ::maa::EmptyResponse* /*response*/)  { return nullptr; }
   };
-  typedef WithCallbackMethod_version<WithCallbackMethod_set_global_option<WithCallbackMethod_acquire_callback_id<WithCallbackMethod_register_callback<WithCallbackMethod_unregister_callback<Service > > > > > CallbackService;
+  template <class BaseClass>
+  class WithCallbackMethod_acquire_custom_controller_id : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    WithCallbackMethod_acquire_custom_controller_id() {
+      ::grpc::Service::MarkMethodCallback(5,
+          new ::grpc::internal::CallbackUnaryHandler< ::maa::EmptyRequest, ::maa::IdResponse>(
+            [this](
+                   ::grpc::CallbackServerContext* context, const ::maa::EmptyRequest* request, ::maa::IdResponse* response) { return this->acquire_custom_controller_id(context, request, response); }));}
+    void SetMessageAllocatorFor_acquire_custom_controller_id(
+        ::grpc::MessageAllocator< ::maa::EmptyRequest, ::maa::IdResponse>* allocator) {
+      ::grpc::internal::MethodHandler* const handler = ::grpc::Service::GetHandler(5);
+      static_cast<::grpc::internal::CallbackUnaryHandler< ::maa::EmptyRequest, ::maa::IdResponse>*>(handler)
+              ->SetMessageAllocator(allocator);
+    }
+    ~WithCallbackMethod_acquire_custom_controller_id() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status acquire_custom_controller_id(::grpc::ServerContext* /*context*/, const ::maa::EmptyRequest* /*request*/, ::maa::IdResponse* /*response*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    virtual ::grpc::ServerUnaryReactor* acquire_custom_controller_id(
+      ::grpc::CallbackServerContext* /*context*/, const ::maa::EmptyRequest* /*request*/, ::maa::IdResponse* /*response*/)  { return nullptr; }
+  };
+  typedef WithCallbackMethod_version<WithCallbackMethod_set_global_option<WithCallbackMethod_acquire_callback_id<WithCallbackMethod_register_callback<WithCallbackMethod_unregister_callback<WithCallbackMethod_acquire_custom_controller_id<Service > > > > > > CallbackService;
   typedef CallbackService ExperimentalCallbackService;
   template <class BaseClass>
   class WithGenericMethod_version : public BaseClass {
@@ -507,6 +578,23 @@ class MaaFramework final {
     }
     // disable synchronous version of this method
     ::grpc::Status unregister_callback(::grpc::ServerContext* /*context*/, const ::maa::IdRequest* /*request*/, ::maa::EmptyResponse* /*response*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+  };
+  template <class BaseClass>
+  class WithGenericMethod_acquire_custom_controller_id : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    WithGenericMethod_acquire_custom_controller_id() {
+      ::grpc::Service::MarkMethodGeneric(5);
+    }
+    ~WithGenericMethod_acquire_custom_controller_id() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status acquire_custom_controller_id(::grpc::ServerContext* /*context*/, const ::maa::EmptyRequest* /*request*/, ::maa::IdResponse* /*response*/) override {
       abort();
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
@@ -609,6 +697,26 @@ class MaaFramework final {
     }
     void Requestunregister_callback(::grpc::ServerContext* context, ::grpc::ByteBuffer* request, ::grpc::ServerAsyncResponseWriter< ::grpc::ByteBuffer>* response, ::grpc::CompletionQueue* new_call_cq, ::grpc::ServerCompletionQueue* notification_cq, void *tag) {
       ::grpc::Service::RequestAsyncUnary(4, context, request, response, new_call_cq, notification_cq, tag);
+    }
+  };
+  template <class BaseClass>
+  class WithRawMethod_acquire_custom_controller_id : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    WithRawMethod_acquire_custom_controller_id() {
+      ::grpc::Service::MarkMethodRaw(5);
+    }
+    ~WithRawMethod_acquire_custom_controller_id() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status acquire_custom_controller_id(::grpc::ServerContext* /*context*/, const ::maa::EmptyRequest* /*request*/, ::maa::IdResponse* /*response*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    void Requestacquire_custom_controller_id(::grpc::ServerContext* context, ::grpc::ByteBuffer* request, ::grpc::ServerAsyncResponseWriter< ::grpc::ByteBuffer>* response, ::grpc::CompletionQueue* new_call_cq, ::grpc::ServerCompletionQueue* notification_cq, void *tag) {
+      ::grpc::Service::RequestAsyncUnary(5, context, request, response, new_call_cq, notification_cq, tag);
     }
   };
   template <class BaseClass>
@@ -722,6 +830,28 @@ class MaaFramework final {
       ::grpc::CallbackServerContext* /*context*/, const ::grpc::ByteBuffer* /*request*/, ::grpc::ByteBuffer* /*response*/)  { return nullptr; }
   };
   template <class BaseClass>
+  class WithRawCallbackMethod_acquire_custom_controller_id : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    WithRawCallbackMethod_acquire_custom_controller_id() {
+      ::grpc::Service::MarkMethodRawCallback(5,
+          new ::grpc::internal::CallbackUnaryHandler< ::grpc::ByteBuffer, ::grpc::ByteBuffer>(
+            [this](
+                   ::grpc::CallbackServerContext* context, const ::grpc::ByteBuffer* request, ::grpc::ByteBuffer* response) { return this->acquire_custom_controller_id(context, request, response); }));
+    }
+    ~WithRawCallbackMethod_acquire_custom_controller_id() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status acquire_custom_controller_id(::grpc::ServerContext* /*context*/, const ::maa::EmptyRequest* /*request*/, ::maa::IdResponse* /*response*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    virtual ::grpc::ServerUnaryReactor* acquire_custom_controller_id(
+      ::grpc::CallbackServerContext* /*context*/, const ::grpc::ByteBuffer* /*request*/, ::grpc::ByteBuffer* /*response*/)  { return nullptr; }
+  };
+  template <class BaseClass>
   class WithStreamedUnaryMethod_version : public BaseClass {
    private:
     void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
@@ -829,7 +959,34 @@ class MaaFramework final {
     // replace default version of method with streamed unary
     virtual ::grpc::Status Streamedunregister_callback(::grpc::ServerContext* context, ::grpc::ServerUnaryStreamer< ::maa::IdRequest,::maa::EmptyResponse>* server_unary_streamer) = 0;
   };
-  typedef WithStreamedUnaryMethod_version<WithStreamedUnaryMethod_set_global_option<WithStreamedUnaryMethod_acquire_callback_id<WithStreamedUnaryMethod_unregister_callback<Service > > > > StreamedUnaryService;
+  template <class BaseClass>
+  class WithStreamedUnaryMethod_acquire_custom_controller_id : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    WithStreamedUnaryMethod_acquire_custom_controller_id() {
+      ::grpc::Service::MarkMethodStreamed(5,
+        new ::grpc::internal::StreamedUnaryHandler<
+          ::maa::EmptyRequest, ::maa::IdResponse>(
+            [this](::grpc::ServerContext* context,
+                   ::grpc::ServerUnaryStreamer<
+                     ::maa::EmptyRequest, ::maa::IdResponse>* streamer) {
+                       return this->Streamedacquire_custom_controller_id(context,
+                         streamer);
+                  }));
+    }
+    ~WithStreamedUnaryMethod_acquire_custom_controller_id() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable regular version of this method
+    ::grpc::Status acquire_custom_controller_id(::grpc::ServerContext* /*context*/, const ::maa::EmptyRequest* /*request*/, ::maa::IdResponse* /*response*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    // replace default version of method with streamed unary
+    virtual ::grpc::Status Streamedacquire_custom_controller_id(::grpc::ServerContext* context, ::grpc::ServerUnaryStreamer< ::maa::EmptyRequest,::maa::IdResponse>* server_unary_streamer) = 0;
+  };
+  typedef WithStreamedUnaryMethod_version<WithStreamedUnaryMethod_set_global_option<WithStreamedUnaryMethod_acquire_callback_id<WithStreamedUnaryMethod_unregister_callback<WithStreamedUnaryMethod_acquire_custom_controller_id<Service > > > > > StreamedUnaryService;
   template <class BaseClass>
   class WithSplitStreamingMethod_register_callback : public BaseClass {
    private:
@@ -858,7 +1015,7 @@ class MaaFramework final {
     virtual ::grpc::Status Streamedregister_callback(::grpc::ServerContext* context, ::grpc::ServerSplitStreamer< ::maa::IdRequest,::maa::Callback>* server_split_streamer) = 0;
   };
   typedef WithSplitStreamingMethod_register_callback<Service > SplitStreamedService;
-  typedef WithStreamedUnaryMethod_version<WithStreamedUnaryMethod_set_global_option<WithStreamedUnaryMethod_acquire_callback_id<WithSplitStreamingMethod_register_callback<WithStreamedUnaryMethod_unregister_callback<Service > > > > > StreamedService;
+  typedef WithStreamedUnaryMethod_version<WithStreamedUnaryMethod_set_global_option<WithStreamedUnaryMethod_acquire_callback_id<WithSplitStreamingMethod_register_callback<WithStreamedUnaryMethod_unregister_callback<WithStreamedUnaryMethod_acquire_custom_controller_id<Service > > > > > > StreamedService;
 };
 
 class MaaFrameworkImage final {
@@ -904,12 +1061,12 @@ class MaaFrameworkImage final {
     std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::maa::ImageInfoResponse>> PrepareAsyncinfo(::grpc::ClientContext* context, const ::maa::HandleRequest& request, ::grpc::CompletionQueue* cq) {
       return std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::maa::ImageInfoResponse>>(PrepareAsyncinfoRaw(context, request, cq));
     }
-    virtual ::grpc::Status get_encoded(::grpc::ClientContext* context, const ::maa::HandleRequest& request, ::maa::BufferResponse* response) = 0;
-    std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::maa::BufferResponse>> Asyncget_encoded(::grpc::ClientContext* context, const ::maa::HandleRequest& request, ::grpc::CompletionQueue* cq) {
-      return std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::maa::BufferResponse>>(Asyncget_encodedRaw(context, request, cq));
+    virtual ::grpc::Status encoded(::grpc::ClientContext* context, const ::maa::HandleRequest& request, ::maa::BufferResponse* response) = 0;
+    std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::maa::BufferResponse>> Asyncencoded(::grpc::ClientContext* context, const ::maa::HandleRequest& request, ::grpc::CompletionQueue* cq) {
+      return std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::maa::BufferResponse>>(AsyncencodedRaw(context, request, cq));
     }
-    std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::maa::BufferResponse>> PrepareAsyncget_encoded(::grpc::ClientContext* context, const ::maa::HandleRequest& request, ::grpc::CompletionQueue* cq) {
-      return std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::maa::BufferResponse>>(PrepareAsyncget_encodedRaw(context, request, cq));
+    std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::maa::BufferResponse>> PrepareAsyncencoded(::grpc::ClientContext* context, const ::maa::HandleRequest& request, ::grpc::CompletionQueue* cq) {
+      return std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::maa::BufferResponse>>(PrepareAsyncencodedRaw(context, request, cq));
     }
     virtual ::grpc::Status set_encoded(::grpc::ClientContext* context, const ::maa::HandleBufferRequest& request, ::maa::EmptyResponse* response) = 0;
     std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::maa::EmptyResponse>> Asyncset_encoded(::grpc::ClientContext* context, const ::maa::HandleBufferRequest& request, ::grpc::CompletionQueue* cq) {
@@ -931,8 +1088,8 @@ class MaaFrameworkImage final {
       virtual void clear(::grpc::ClientContext* context, const ::maa::HandleRequest* request, ::maa::EmptyResponse* response, ::grpc::ClientUnaryReactor* reactor) = 0;
       virtual void info(::grpc::ClientContext* context, const ::maa::HandleRequest* request, ::maa::ImageInfoResponse* response, std::function<void(::grpc::Status)>) = 0;
       virtual void info(::grpc::ClientContext* context, const ::maa::HandleRequest* request, ::maa::ImageInfoResponse* response, ::grpc::ClientUnaryReactor* reactor) = 0;
-      virtual void get_encoded(::grpc::ClientContext* context, const ::maa::HandleRequest* request, ::maa::BufferResponse* response, std::function<void(::grpc::Status)>) = 0;
-      virtual void get_encoded(::grpc::ClientContext* context, const ::maa::HandleRequest* request, ::maa::BufferResponse* response, ::grpc::ClientUnaryReactor* reactor) = 0;
+      virtual void encoded(::grpc::ClientContext* context, const ::maa::HandleRequest* request, ::maa::BufferResponse* response, std::function<void(::grpc::Status)>) = 0;
+      virtual void encoded(::grpc::ClientContext* context, const ::maa::HandleRequest* request, ::maa::BufferResponse* response, ::grpc::ClientUnaryReactor* reactor) = 0;
       virtual void set_encoded(::grpc::ClientContext* context, const ::maa::HandleBufferRequest* request, ::maa::EmptyResponse* response, std::function<void(::grpc::Status)>) = 0;
       virtual void set_encoded(::grpc::ClientContext* context, const ::maa::HandleBufferRequest* request, ::maa::EmptyResponse* response, ::grpc::ClientUnaryReactor* reactor) = 0;
     };
@@ -950,8 +1107,8 @@ class MaaFrameworkImage final {
     virtual ::grpc::ClientAsyncResponseReaderInterface< ::maa::EmptyResponse>* PrepareAsyncclearRaw(::grpc::ClientContext* context, const ::maa::HandleRequest& request, ::grpc::CompletionQueue* cq) = 0;
     virtual ::grpc::ClientAsyncResponseReaderInterface< ::maa::ImageInfoResponse>* AsyncinfoRaw(::grpc::ClientContext* context, const ::maa::HandleRequest& request, ::grpc::CompletionQueue* cq) = 0;
     virtual ::grpc::ClientAsyncResponseReaderInterface< ::maa::ImageInfoResponse>* PrepareAsyncinfoRaw(::grpc::ClientContext* context, const ::maa::HandleRequest& request, ::grpc::CompletionQueue* cq) = 0;
-    virtual ::grpc::ClientAsyncResponseReaderInterface< ::maa::BufferResponse>* Asyncget_encodedRaw(::grpc::ClientContext* context, const ::maa::HandleRequest& request, ::grpc::CompletionQueue* cq) = 0;
-    virtual ::grpc::ClientAsyncResponseReaderInterface< ::maa::BufferResponse>* PrepareAsyncget_encodedRaw(::grpc::ClientContext* context, const ::maa::HandleRequest& request, ::grpc::CompletionQueue* cq) = 0;
+    virtual ::grpc::ClientAsyncResponseReaderInterface< ::maa::BufferResponse>* AsyncencodedRaw(::grpc::ClientContext* context, const ::maa::HandleRequest& request, ::grpc::CompletionQueue* cq) = 0;
+    virtual ::grpc::ClientAsyncResponseReaderInterface< ::maa::BufferResponse>* PrepareAsyncencodedRaw(::grpc::ClientContext* context, const ::maa::HandleRequest& request, ::grpc::CompletionQueue* cq) = 0;
     virtual ::grpc::ClientAsyncResponseReaderInterface< ::maa::EmptyResponse>* Asyncset_encodedRaw(::grpc::ClientContext* context, const ::maa::HandleBufferRequest& request, ::grpc::CompletionQueue* cq) = 0;
     virtual ::grpc::ClientAsyncResponseReaderInterface< ::maa::EmptyResponse>* PrepareAsyncset_encodedRaw(::grpc::ClientContext* context, const ::maa::HandleBufferRequest& request, ::grpc::CompletionQueue* cq) = 0;
   };
@@ -993,12 +1150,12 @@ class MaaFrameworkImage final {
     std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::maa::ImageInfoResponse>> PrepareAsyncinfo(::grpc::ClientContext* context, const ::maa::HandleRequest& request, ::grpc::CompletionQueue* cq) {
       return std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::maa::ImageInfoResponse>>(PrepareAsyncinfoRaw(context, request, cq));
     }
-    ::grpc::Status get_encoded(::grpc::ClientContext* context, const ::maa::HandleRequest& request, ::maa::BufferResponse* response) override;
-    std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::maa::BufferResponse>> Asyncget_encoded(::grpc::ClientContext* context, const ::maa::HandleRequest& request, ::grpc::CompletionQueue* cq) {
-      return std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::maa::BufferResponse>>(Asyncget_encodedRaw(context, request, cq));
+    ::grpc::Status encoded(::grpc::ClientContext* context, const ::maa::HandleRequest& request, ::maa::BufferResponse* response) override;
+    std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::maa::BufferResponse>> Asyncencoded(::grpc::ClientContext* context, const ::maa::HandleRequest& request, ::grpc::CompletionQueue* cq) {
+      return std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::maa::BufferResponse>>(AsyncencodedRaw(context, request, cq));
     }
-    std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::maa::BufferResponse>> PrepareAsyncget_encoded(::grpc::ClientContext* context, const ::maa::HandleRequest& request, ::grpc::CompletionQueue* cq) {
-      return std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::maa::BufferResponse>>(PrepareAsyncget_encodedRaw(context, request, cq));
+    std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::maa::BufferResponse>> PrepareAsyncencoded(::grpc::ClientContext* context, const ::maa::HandleRequest& request, ::grpc::CompletionQueue* cq) {
+      return std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::maa::BufferResponse>>(PrepareAsyncencodedRaw(context, request, cq));
     }
     ::grpc::Status set_encoded(::grpc::ClientContext* context, const ::maa::HandleBufferRequest& request, ::maa::EmptyResponse* response) override;
     std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::maa::EmptyResponse>> Asyncset_encoded(::grpc::ClientContext* context, const ::maa::HandleBufferRequest& request, ::grpc::CompletionQueue* cq) {
@@ -1020,8 +1177,8 @@ class MaaFrameworkImage final {
       void clear(::grpc::ClientContext* context, const ::maa::HandleRequest* request, ::maa::EmptyResponse* response, ::grpc::ClientUnaryReactor* reactor) override;
       void info(::grpc::ClientContext* context, const ::maa::HandleRequest* request, ::maa::ImageInfoResponse* response, std::function<void(::grpc::Status)>) override;
       void info(::grpc::ClientContext* context, const ::maa::HandleRequest* request, ::maa::ImageInfoResponse* response, ::grpc::ClientUnaryReactor* reactor) override;
-      void get_encoded(::grpc::ClientContext* context, const ::maa::HandleRequest* request, ::maa::BufferResponse* response, std::function<void(::grpc::Status)>) override;
-      void get_encoded(::grpc::ClientContext* context, const ::maa::HandleRequest* request, ::maa::BufferResponse* response, ::grpc::ClientUnaryReactor* reactor) override;
+      void encoded(::grpc::ClientContext* context, const ::maa::HandleRequest* request, ::maa::BufferResponse* response, std::function<void(::grpc::Status)>) override;
+      void encoded(::grpc::ClientContext* context, const ::maa::HandleRequest* request, ::maa::BufferResponse* response, ::grpc::ClientUnaryReactor* reactor) override;
       void set_encoded(::grpc::ClientContext* context, const ::maa::HandleBufferRequest* request, ::maa::EmptyResponse* response, std::function<void(::grpc::Status)>) override;
       void set_encoded(::grpc::ClientContext* context, const ::maa::HandleBufferRequest* request, ::maa::EmptyResponse* response, ::grpc::ClientUnaryReactor* reactor) override;
      private:
@@ -1045,8 +1202,8 @@ class MaaFrameworkImage final {
     ::grpc::ClientAsyncResponseReader< ::maa::EmptyResponse>* PrepareAsyncclearRaw(::grpc::ClientContext* context, const ::maa::HandleRequest& request, ::grpc::CompletionQueue* cq) override;
     ::grpc::ClientAsyncResponseReader< ::maa::ImageInfoResponse>* AsyncinfoRaw(::grpc::ClientContext* context, const ::maa::HandleRequest& request, ::grpc::CompletionQueue* cq) override;
     ::grpc::ClientAsyncResponseReader< ::maa::ImageInfoResponse>* PrepareAsyncinfoRaw(::grpc::ClientContext* context, const ::maa::HandleRequest& request, ::grpc::CompletionQueue* cq) override;
-    ::grpc::ClientAsyncResponseReader< ::maa::BufferResponse>* Asyncget_encodedRaw(::grpc::ClientContext* context, const ::maa::HandleRequest& request, ::grpc::CompletionQueue* cq) override;
-    ::grpc::ClientAsyncResponseReader< ::maa::BufferResponse>* PrepareAsyncget_encodedRaw(::grpc::ClientContext* context, const ::maa::HandleRequest& request, ::grpc::CompletionQueue* cq) override;
+    ::grpc::ClientAsyncResponseReader< ::maa::BufferResponse>* AsyncencodedRaw(::grpc::ClientContext* context, const ::maa::HandleRequest& request, ::grpc::CompletionQueue* cq) override;
+    ::grpc::ClientAsyncResponseReader< ::maa::BufferResponse>* PrepareAsyncencodedRaw(::grpc::ClientContext* context, const ::maa::HandleRequest& request, ::grpc::CompletionQueue* cq) override;
     ::grpc::ClientAsyncResponseReader< ::maa::EmptyResponse>* Asyncset_encodedRaw(::grpc::ClientContext* context, const ::maa::HandleBufferRequest& request, ::grpc::CompletionQueue* cq) override;
     ::grpc::ClientAsyncResponseReader< ::maa::EmptyResponse>* PrepareAsyncset_encodedRaw(::grpc::ClientContext* context, const ::maa::HandleBufferRequest& request, ::grpc::CompletionQueue* cq) override;
     const ::grpc::internal::RpcMethod rpcmethod_create_;
@@ -1054,7 +1211,7 @@ class MaaFrameworkImage final {
     const ::grpc::internal::RpcMethod rpcmethod_is_empty_;
     const ::grpc::internal::RpcMethod rpcmethod_clear_;
     const ::grpc::internal::RpcMethod rpcmethod_info_;
-    const ::grpc::internal::RpcMethod rpcmethod_get_encoded_;
+    const ::grpc::internal::RpcMethod rpcmethod_encoded_;
     const ::grpc::internal::RpcMethod rpcmethod_set_encoded_;
   };
   static std::unique_ptr<Stub> NewStub(const std::shared_ptr< ::grpc::ChannelInterface>& channel, const ::grpc::StubOptions& options = ::grpc::StubOptions());
@@ -1068,7 +1225,7 @@ class MaaFrameworkImage final {
     virtual ::grpc::Status is_empty(::grpc::ServerContext* context, const ::maa::HandleRequest* request, ::maa::BoolResponse* response);
     virtual ::grpc::Status clear(::grpc::ServerContext* context, const ::maa::HandleRequest* request, ::maa::EmptyResponse* response);
     virtual ::grpc::Status info(::grpc::ServerContext* context, const ::maa::HandleRequest* request, ::maa::ImageInfoResponse* response);
-    virtual ::grpc::Status get_encoded(::grpc::ServerContext* context, const ::maa::HandleRequest* request, ::maa::BufferResponse* response);
+    virtual ::grpc::Status encoded(::grpc::ServerContext* context, const ::maa::HandleRequest* request, ::maa::BufferResponse* response);
     virtual ::grpc::Status set_encoded(::grpc::ServerContext* context, const ::maa::HandleBufferRequest* request, ::maa::EmptyResponse* response);
   };
   template <class BaseClass>
@@ -1172,22 +1329,22 @@ class MaaFrameworkImage final {
     }
   };
   template <class BaseClass>
-  class WithAsyncMethod_get_encoded : public BaseClass {
+  class WithAsyncMethod_encoded : public BaseClass {
    private:
     void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
-    WithAsyncMethod_get_encoded() {
+    WithAsyncMethod_encoded() {
       ::grpc::Service::MarkMethodAsync(5);
     }
-    ~WithAsyncMethod_get_encoded() override {
+    ~WithAsyncMethod_encoded() override {
       BaseClassMustBeDerivedFromService(this);
     }
     // disable synchronous version of this method
-    ::grpc::Status get_encoded(::grpc::ServerContext* /*context*/, const ::maa::HandleRequest* /*request*/, ::maa::BufferResponse* /*response*/) override {
+    ::grpc::Status encoded(::grpc::ServerContext* /*context*/, const ::maa::HandleRequest* /*request*/, ::maa::BufferResponse* /*response*/) override {
       abort();
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
-    void Requestget_encoded(::grpc::ServerContext* context, ::maa::HandleRequest* request, ::grpc::ServerAsyncResponseWriter< ::maa::BufferResponse>* response, ::grpc::CompletionQueue* new_call_cq, ::grpc::ServerCompletionQueue* notification_cq, void *tag) {
+    void Requestencoded(::grpc::ServerContext* context, ::maa::HandleRequest* request, ::grpc::ServerAsyncResponseWriter< ::maa::BufferResponse>* response, ::grpc::CompletionQueue* new_call_cq, ::grpc::ServerCompletionQueue* notification_cq, void *tag) {
       ::grpc::Service::RequestAsyncUnary(5, context, request, response, new_call_cq, notification_cq, tag);
     }
   };
@@ -1211,7 +1368,7 @@ class MaaFrameworkImage final {
       ::grpc::Service::RequestAsyncUnary(6, context, request, response, new_call_cq, notification_cq, tag);
     }
   };
-  typedef WithAsyncMethod_create<WithAsyncMethod_destroy<WithAsyncMethod_is_empty<WithAsyncMethod_clear<WithAsyncMethod_info<WithAsyncMethod_get_encoded<WithAsyncMethod_set_encoded<Service > > > > > > > AsyncService;
+  typedef WithAsyncMethod_create<WithAsyncMethod_destroy<WithAsyncMethod_is_empty<WithAsyncMethod_clear<WithAsyncMethod_info<WithAsyncMethod_encoded<WithAsyncMethod_set_encoded<Service > > > > > > > AsyncService;
   template <class BaseClass>
   class WithCallbackMethod_create : public BaseClass {
    private:
@@ -1348,30 +1505,30 @@ class MaaFrameworkImage final {
       ::grpc::CallbackServerContext* /*context*/, const ::maa::HandleRequest* /*request*/, ::maa::ImageInfoResponse* /*response*/)  { return nullptr; }
   };
   template <class BaseClass>
-  class WithCallbackMethod_get_encoded : public BaseClass {
+  class WithCallbackMethod_encoded : public BaseClass {
    private:
     void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
-    WithCallbackMethod_get_encoded() {
+    WithCallbackMethod_encoded() {
       ::grpc::Service::MarkMethodCallback(5,
           new ::grpc::internal::CallbackUnaryHandler< ::maa::HandleRequest, ::maa::BufferResponse>(
             [this](
-                   ::grpc::CallbackServerContext* context, const ::maa::HandleRequest* request, ::maa::BufferResponse* response) { return this->get_encoded(context, request, response); }));}
-    void SetMessageAllocatorFor_get_encoded(
+                   ::grpc::CallbackServerContext* context, const ::maa::HandleRequest* request, ::maa::BufferResponse* response) { return this->encoded(context, request, response); }));}
+    void SetMessageAllocatorFor_encoded(
         ::grpc::MessageAllocator< ::maa::HandleRequest, ::maa::BufferResponse>* allocator) {
       ::grpc::internal::MethodHandler* const handler = ::grpc::Service::GetHandler(5);
       static_cast<::grpc::internal::CallbackUnaryHandler< ::maa::HandleRequest, ::maa::BufferResponse>*>(handler)
               ->SetMessageAllocator(allocator);
     }
-    ~WithCallbackMethod_get_encoded() override {
+    ~WithCallbackMethod_encoded() override {
       BaseClassMustBeDerivedFromService(this);
     }
     // disable synchronous version of this method
-    ::grpc::Status get_encoded(::grpc::ServerContext* /*context*/, const ::maa::HandleRequest* /*request*/, ::maa::BufferResponse* /*response*/) override {
+    ::grpc::Status encoded(::grpc::ServerContext* /*context*/, const ::maa::HandleRequest* /*request*/, ::maa::BufferResponse* /*response*/) override {
       abort();
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
-    virtual ::grpc::ServerUnaryReactor* get_encoded(
+    virtual ::grpc::ServerUnaryReactor* encoded(
       ::grpc::CallbackServerContext* /*context*/, const ::maa::HandleRequest* /*request*/, ::maa::BufferResponse* /*response*/)  { return nullptr; }
   };
   template <class BaseClass>
@@ -1401,7 +1558,7 @@ class MaaFrameworkImage final {
     virtual ::grpc::ServerUnaryReactor* set_encoded(
       ::grpc::CallbackServerContext* /*context*/, const ::maa::HandleBufferRequest* /*request*/, ::maa::EmptyResponse* /*response*/)  { return nullptr; }
   };
-  typedef WithCallbackMethod_create<WithCallbackMethod_destroy<WithCallbackMethod_is_empty<WithCallbackMethod_clear<WithCallbackMethod_info<WithCallbackMethod_get_encoded<WithCallbackMethod_set_encoded<Service > > > > > > > CallbackService;
+  typedef WithCallbackMethod_create<WithCallbackMethod_destroy<WithCallbackMethod_is_empty<WithCallbackMethod_clear<WithCallbackMethod_info<WithCallbackMethod_encoded<WithCallbackMethod_set_encoded<Service > > > > > > > CallbackService;
   typedef CallbackService ExperimentalCallbackService;
   template <class BaseClass>
   class WithGenericMethod_create : public BaseClass {
@@ -1489,18 +1646,18 @@ class MaaFrameworkImage final {
     }
   };
   template <class BaseClass>
-  class WithGenericMethod_get_encoded : public BaseClass {
+  class WithGenericMethod_encoded : public BaseClass {
    private:
     void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
-    WithGenericMethod_get_encoded() {
+    WithGenericMethod_encoded() {
       ::grpc::Service::MarkMethodGeneric(5);
     }
-    ~WithGenericMethod_get_encoded() override {
+    ~WithGenericMethod_encoded() override {
       BaseClassMustBeDerivedFromService(this);
     }
     // disable synchronous version of this method
-    ::grpc::Status get_encoded(::grpc::ServerContext* /*context*/, const ::maa::HandleRequest* /*request*/, ::maa::BufferResponse* /*response*/) override {
+    ::grpc::Status encoded(::grpc::ServerContext* /*context*/, const ::maa::HandleRequest* /*request*/, ::maa::BufferResponse* /*response*/) override {
       abort();
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
@@ -1623,22 +1780,22 @@ class MaaFrameworkImage final {
     }
   };
   template <class BaseClass>
-  class WithRawMethod_get_encoded : public BaseClass {
+  class WithRawMethod_encoded : public BaseClass {
    private:
     void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
-    WithRawMethod_get_encoded() {
+    WithRawMethod_encoded() {
       ::grpc::Service::MarkMethodRaw(5);
     }
-    ~WithRawMethod_get_encoded() override {
+    ~WithRawMethod_encoded() override {
       BaseClassMustBeDerivedFromService(this);
     }
     // disable synchronous version of this method
-    ::grpc::Status get_encoded(::grpc::ServerContext* /*context*/, const ::maa::HandleRequest* /*request*/, ::maa::BufferResponse* /*response*/) override {
+    ::grpc::Status encoded(::grpc::ServerContext* /*context*/, const ::maa::HandleRequest* /*request*/, ::maa::BufferResponse* /*response*/) override {
       abort();
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
-    void Requestget_encoded(::grpc::ServerContext* context, ::grpc::ByteBuffer* request, ::grpc::ServerAsyncResponseWriter< ::grpc::ByteBuffer>* response, ::grpc::CompletionQueue* new_call_cq, ::grpc::ServerCompletionQueue* notification_cq, void *tag) {
+    void Requestencoded(::grpc::ServerContext* context, ::grpc::ByteBuffer* request, ::grpc::ServerAsyncResponseWriter< ::grpc::ByteBuffer>* response, ::grpc::CompletionQueue* new_call_cq, ::grpc::ServerCompletionQueue* notification_cq, void *tag) {
       ::grpc::Service::RequestAsyncUnary(5, context, request, response, new_call_cq, notification_cq, tag);
     }
   };
@@ -1773,25 +1930,25 @@ class MaaFrameworkImage final {
       ::grpc::CallbackServerContext* /*context*/, const ::grpc::ByteBuffer* /*request*/, ::grpc::ByteBuffer* /*response*/)  { return nullptr; }
   };
   template <class BaseClass>
-  class WithRawCallbackMethod_get_encoded : public BaseClass {
+  class WithRawCallbackMethod_encoded : public BaseClass {
    private:
     void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
-    WithRawCallbackMethod_get_encoded() {
+    WithRawCallbackMethod_encoded() {
       ::grpc::Service::MarkMethodRawCallback(5,
           new ::grpc::internal::CallbackUnaryHandler< ::grpc::ByteBuffer, ::grpc::ByteBuffer>(
             [this](
-                   ::grpc::CallbackServerContext* context, const ::grpc::ByteBuffer* request, ::grpc::ByteBuffer* response) { return this->get_encoded(context, request, response); }));
+                   ::grpc::CallbackServerContext* context, const ::grpc::ByteBuffer* request, ::grpc::ByteBuffer* response) { return this->encoded(context, request, response); }));
     }
-    ~WithRawCallbackMethod_get_encoded() override {
+    ~WithRawCallbackMethod_encoded() override {
       BaseClassMustBeDerivedFromService(this);
     }
     // disable synchronous version of this method
-    ::grpc::Status get_encoded(::grpc::ServerContext* /*context*/, const ::maa::HandleRequest* /*request*/, ::maa::BufferResponse* /*response*/) override {
+    ::grpc::Status encoded(::grpc::ServerContext* /*context*/, const ::maa::HandleRequest* /*request*/, ::maa::BufferResponse* /*response*/) override {
       abort();
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
-    virtual ::grpc::ServerUnaryReactor* get_encoded(
+    virtual ::grpc::ServerUnaryReactor* encoded(
       ::grpc::CallbackServerContext* /*context*/, const ::grpc::ByteBuffer* /*request*/, ::grpc::ByteBuffer* /*response*/)  { return nullptr; }
   };
   template <class BaseClass>
@@ -1952,31 +2109,31 @@ class MaaFrameworkImage final {
     virtual ::grpc::Status Streamedinfo(::grpc::ServerContext* context, ::grpc::ServerUnaryStreamer< ::maa::HandleRequest,::maa::ImageInfoResponse>* server_unary_streamer) = 0;
   };
   template <class BaseClass>
-  class WithStreamedUnaryMethod_get_encoded : public BaseClass {
+  class WithStreamedUnaryMethod_encoded : public BaseClass {
    private:
     void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
-    WithStreamedUnaryMethod_get_encoded() {
+    WithStreamedUnaryMethod_encoded() {
       ::grpc::Service::MarkMethodStreamed(5,
         new ::grpc::internal::StreamedUnaryHandler<
           ::maa::HandleRequest, ::maa::BufferResponse>(
             [this](::grpc::ServerContext* context,
                    ::grpc::ServerUnaryStreamer<
                      ::maa::HandleRequest, ::maa::BufferResponse>* streamer) {
-                       return this->Streamedget_encoded(context,
+                       return this->Streamedencoded(context,
                          streamer);
                   }));
     }
-    ~WithStreamedUnaryMethod_get_encoded() override {
+    ~WithStreamedUnaryMethod_encoded() override {
       BaseClassMustBeDerivedFromService(this);
     }
     // disable regular version of this method
-    ::grpc::Status get_encoded(::grpc::ServerContext* /*context*/, const ::maa::HandleRequest* /*request*/, ::maa::BufferResponse* /*response*/) override {
+    ::grpc::Status encoded(::grpc::ServerContext* /*context*/, const ::maa::HandleRequest* /*request*/, ::maa::BufferResponse* /*response*/) override {
       abort();
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
     // replace default version of method with streamed unary
-    virtual ::grpc::Status Streamedget_encoded(::grpc::ServerContext* context, ::grpc::ServerUnaryStreamer< ::maa::HandleRequest,::maa::BufferResponse>* server_unary_streamer) = 0;
+    virtual ::grpc::Status Streamedencoded(::grpc::ServerContext* context, ::grpc::ServerUnaryStreamer< ::maa::HandleRequest,::maa::BufferResponse>* server_unary_streamer) = 0;
   };
   template <class BaseClass>
   class WithStreamedUnaryMethod_set_encoded : public BaseClass {
@@ -2005,9 +2162,9 @@ class MaaFrameworkImage final {
     // replace default version of method with streamed unary
     virtual ::grpc::Status Streamedset_encoded(::grpc::ServerContext* context, ::grpc::ServerUnaryStreamer< ::maa::HandleBufferRequest,::maa::EmptyResponse>* server_unary_streamer) = 0;
   };
-  typedef WithStreamedUnaryMethod_create<WithStreamedUnaryMethod_destroy<WithStreamedUnaryMethod_is_empty<WithStreamedUnaryMethod_clear<WithStreamedUnaryMethod_info<WithStreamedUnaryMethod_get_encoded<WithStreamedUnaryMethod_set_encoded<Service > > > > > > > StreamedUnaryService;
+  typedef WithStreamedUnaryMethod_create<WithStreamedUnaryMethod_destroy<WithStreamedUnaryMethod_is_empty<WithStreamedUnaryMethod_clear<WithStreamedUnaryMethod_info<WithStreamedUnaryMethod_encoded<WithStreamedUnaryMethod_set_encoded<Service > > > > > > > StreamedUnaryService;
   typedef Service SplitStreamedService;
-  typedef WithStreamedUnaryMethod_create<WithStreamedUnaryMethod_destroy<WithStreamedUnaryMethod_is_empty<WithStreamedUnaryMethod_clear<WithStreamedUnaryMethod_info<WithStreamedUnaryMethod_get_encoded<WithStreamedUnaryMethod_set_encoded<Service > > > > > > > StreamedService;
+  typedef WithStreamedUnaryMethod_create<WithStreamedUnaryMethod_destroy<WithStreamedUnaryMethod_is_empty<WithStreamedUnaryMethod_clear<WithStreamedUnaryMethod_info<WithStreamedUnaryMethod_encoded<WithStreamedUnaryMethod_set_encoded<Service > > > > > > > StreamedService;
 };
 
 class MaaFrameworkResource final {
@@ -3167,12 +3324,12 @@ class MaaFrameworkController final {
   class StubInterface {
    public:
     virtual ~StubInterface() {}
-    virtual ::grpc::Status create(::grpc::ClientContext* context, const ::maa::AdbControlleRequest& request, ::maa::HandleResponse* response) = 0;
-    std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::maa::HandleResponse>> Asynccreate(::grpc::ClientContext* context, const ::maa::AdbControlleRequest& request, ::grpc::CompletionQueue* cq) {
-      return std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::maa::HandleResponse>>(AsynccreateRaw(context, request, cq));
+    virtual ::grpc::Status create_adb(::grpc::ClientContext* context, const ::maa::AdbControllerRequest& request, ::maa::HandleResponse* response) = 0;
+    std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::maa::HandleResponse>> Asynccreate_adb(::grpc::ClientContext* context, const ::maa::AdbControllerRequest& request, ::grpc::CompletionQueue* cq) {
+      return std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::maa::HandleResponse>>(Asynccreate_adbRaw(context, request, cq));
     }
-    std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::maa::HandleResponse>> PrepareAsynccreate(::grpc::ClientContext* context, const ::maa::AdbControlleRequest& request, ::grpc::CompletionQueue* cq) {
-      return std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::maa::HandleResponse>>(PrepareAsynccreateRaw(context, request, cq));
+    std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::maa::HandleResponse>> PrepareAsynccreate_adb(::grpc::ClientContext* context, const ::maa::AdbControllerRequest& request, ::grpc::CompletionQueue* cq) {
+      return std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::maa::HandleResponse>>(PrepareAsynccreate_adbRaw(context, request, cq));
     }
     virtual ::grpc::Status destroy(::grpc::ClientContext* context, const ::maa::HandleRequest& request, ::maa::EmptyResponse* response) = 0;
     std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::maa::EmptyResponse>> Asyncdestroy(::grpc::ClientContext* context, const ::maa::HandleRequest& request, ::grpc::CompletionQueue* cq) {
@@ -3180,6 +3337,22 @@ class MaaFrameworkController final {
     }
     std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::maa::EmptyResponse>> PrepareAsyncdestroy(::grpc::ClientContext* context, const ::maa::HandleRequest& request, ::grpc::CompletionQueue* cq) {
       return std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::maa::EmptyResponse>>(PrepareAsyncdestroyRaw(context, request, cq));
+    }
+    std::unique_ptr< ::grpc::ClientReaderInterface< ::maa::CustomControllerResponse>> create_custom(::grpc::ClientContext* context, const ::maa::CustomControllerRequest& request) {
+      return std::unique_ptr< ::grpc::ClientReaderInterface< ::maa::CustomControllerResponse>>(create_customRaw(context, request));
+    }
+    std::unique_ptr< ::grpc::ClientAsyncReaderInterface< ::maa::CustomControllerResponse>> Asynccreate_custom(::grpc::ClientContext* context, const ::maa::CustomControllerRequest& request, ::grpc::CompletionQueue* cq, void* tag) {
+      return std::unique_ptr< ::grpc::ClientAsyncReaderInterface< ::maa::CustomControllerResponse>>(Asynccreate_customRaw(context, request, cq, tag));
+    }
+    std::unique_ptr< ::grpc::ClientAsyncReaderInterface< ::maa::CustomControllerResponse>> PrepareAsynccreate_custom(::grpc::ClientContext* context, const ::maa::CustomControllerRequest& request, ::grpc::CompletionQueue* cq) {
+      return std::unique_ptr< ::grpc::ClientAsyncReaderInterface< ::maa::CustomControllerResponse>>(PrepareAsynccreate_customRaw(context, request, cq));
+    }
+    virtual ::grpc::Status submit_custom_controller(::grpc::ClientContext* context, const ::maa::SubmitCustomControllerRequest& request, ::maa::EmptyResponse* response) = 0;
+    std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::maa::EmptyResponse>> Asyncsubmit_custom_controller(::grpc::ClientContext* context, const ::maa::SubmitCustomControllerRequest& request, ::grpc::CompletionQueue* cq) {
+      return std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::maa::EmptyResponse>>(Asyncsubmit_custom_controllerRaw(context, request, cq));
+    }
+    std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::maa::EmptyResponse>> PrepareAsyncsubmit_custom_controller(::grpc::ClientContext* context, const ::maa::SubmitCustomControllerRequest& request, ::grpc::CompletionQueue* cq) {
+      return std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::maa::EmptyResponse>>(PrepareAsyncsubmit_custom_controllerRaw(context, request, cq));
     }
     virtual ::grpc::Status set_option(::grpc::ClientContext* context, const ::maa::ControllerSetOptionRequest& request, ::maa::EmptyResponse* response) = 0;
     std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::maa::EmptyResponse>> Asyncset_option(::grpc::ClientContext* context, const ::maa::ControllerSetOptionRequest& request, ::grpc::CompletionQueue* cq) {
@@ -3282,10 +3455,13 @@ class MaaFrameworkController final {
     class async_interface {
      public:
       virtual ~async_interface() {}
-      virtual void create(::grpc::ClientContext* context, const ::maa::AdbControlleRequest* request, ::maa::HandleResponse* response, std::function<void(::grpc::Status)>) = 0;
-      virtual void create(::grpc::ClientContext* context, const ::maa::AdbControlleRequest* request, ::maa::HandleResponse* response, ::grpc::ClientUnaryReactor* reactor) = 0;
+      virtual void create_adb(::grpc::ClientContext* context, const ::maa::AdbControllerRequest* request, ::maa::HandleResponse* response, std::function<void(::grpc::Status)>) = 0;
+      virtual void create_adb(::grpc::ClientContext* context, const ::maa::AdbControllerRequest* request, ::maa::HandleResponse* response, ::grpc::ClientUnaryReactor* reactor) = 0;
       virtual void destroy(::grpc::ClientContext* context, const ::maa::HandleRequest* request, ::maa::EmptyResponse* response, std::function<void(::grpc::Status)>) = 0;
       virtual void destroy(::grpc::ClientContext* context, const ::maa::HandleRequest* request, ::maa::EmptyResponse* response, ::grpc::ClientUnaryReactor* reactor) = 0;
+      virtual void create_custom(::grpc::ClientContext* context, const ::maa::CustomControllerRequest* request, ::grpc::ClientReadReactor< ::maa::CustomControllerResponse>* reactor) = 0;
+      virtual void submit_custom_controller(::grpc::ClientContext* context, const ::maa::SubmitCustomControllerRequest* request, ::maa::EmptyResponse* response, std::function<void(::grpc::Status)>) = 0;
+      virtual void submit_custom_controller(::grpc::ClientContext* context, const ::maa::SubmitCustomControllerRequest* request, ::maa::EmptyResponse* response, ::grpc::ClientUnaryReactor* reactor) = 0;
       virtual void set_option(::grpc::ClientContext* context, const ::maa::ControllerSetOptionRequest* request, ::maa::EmptyResponse* response, std::function<void(::grpc::Status)>) = 0;
       virtual void set_option(::grpc::ClientContext* context, const ::maa::ControllerSetOptionRequest* request, ::maa::EmptyResponse* response, ::grpc::ClientUnaryReactor* reactor) = 0;
       virtual void post_connection(::grpc::ClientContext* context, const ::maa::HandleRequest* request, ::maa::IdResponse* response, std::function<void(::grpc::Status)>) = 0;
@@ -3319,10 +3495,15 @@ class MaaFrameworkController final {
     virtual class async_interface* async() { return nullptr; }
     class async_interface* experimental_async() { return async(); }
    private:
-    virtual ::grpc::ClientAsyncResponseReaderInterface< ::maa::HandleResponse>* AsynccreateRaw(::grpc::ClientContext* context, const ::maa::AdbControlleRequest& request, ::grpc::CompletionQueue* cq) = 0;
-    virtual ::grpc::ClientAsyncResponseReaderInterface< ::maa::HandleResponse>* PrepareAsynccreateRaw(::grpc::ClientContext* context, const ::maa::AdbControlleRequest& request, ::grpc::CompletionQueue* cq) = 0;
+    virtual ::grpc::ClientAsyncResponseReaderInterface< ::maa::HandleResponse>* Asynccreate_adbRaw(::grpc::ClientContext* context, const ::maa::AdbControllerRequest& request, ::grpc::CompletionQueue* cq) = 0;
+    virtual ::grpc::ClientAsyncResponseReaderInterface< ::maa::HandleResponse>* PrepareAsynccreate_adbRaw(::grpc::ClientContext* context, const ::maa::AdbControllerRequest& request, ::grpc::CompletionQueue* cq) = 0;
     virtual ::grpc::ClientAsyncResponseReaderInterface< ::maa::EmptyResponse>* AsyncdestroyRaw(::grpc::ClientContext* context, const ::maa::HandleRequest& request, ::grpc::CompletionQueue* cq) = 0;
     virtual ::grpc::ClientAsyncResponseReaderInterface< ::maa::EmptyResponse>* PrepareAsyncdestroyRaw(::grpc::ClientContext* context, const ::maa::HandleRequest& request, ::grpc::CompletionQueue* cq) = 0;
+    virtual ::grpc::ClientReaderInterface< ::maa::CustomControllerResponse>* create_customRaw(::grpc::ClientContext* context, const ::maa::CustomControllerRequest& request) = 0;
+    virtual ::grpc::ClientAsyncReaderInterface< ::maa::CustomControllerResponse>* Asynccreate_customRaw(::grpc::ClientContext* context, const ::maa::CustomControllerRequest& request, ::grpc::CompletionQueue* cq, void* tag) = 0;
+    virtual ::grpc::ClientAsyncReaderInterface< ::maa::CustomControllerResponse>* PrepareAsynccreate_customRaw(::grpc::ClientContext* context, const ::maa::CustomControllerRequest& request, ::grpc::CompletionQueue* cq) = 0;
+    virtual ::grpc::ClientAsyncResponseReaderInterface< ::maa::EmptyResponse>* Asyncsubmit_custom_controllerRaw(::grpc::ClientContext* context, const ::maa::SubmitCustomControllerRequest& request, ::grpc::CompletionQueue* cq) = 0;
+    virtual ::grpc::ClientAsyncResponseReaderInterface< ::maa::EmptyResponse>* PrepareAsyncsubmit_custom_controllerRaw(::grpc::ClientContext* context, const ::maa::SubmitCustomControllerRequest& request, ::grpc::CompletionQueue* cq) = 0;
     virtual ::grpc::ClientAsyncResponseReaderInterface< ::maa::EmptyResponse>* Asyncset_optionRaw(::grpc::ClientContext* context, const ::maa::ControllerSetOptionRequest& request, ::grpc::CompletionQueue* cq) = 0;
     virtual ::grpc::ClientAsyncResponseReaderInterface< ::maa::EmptyResponse>* PrepareAsyncset_optionRaw(::grpc::ClientContext* context, const ::maa::ControllerSetOptionRequest& request, ::grpc::CompletionQueue* cq) = 0;
     virtual ::grpc::ClientAsyncResponseReaderInterface< ::maa::IdResponse>* Asyncpost_connectionRaw(::grpc::ClientContext* context, const ::maa::HandleRequest& request, ::grpc::CompletionQueue* cq) = 0;
@@ -3355,12 +3536,12 @@ class MaaFrameworkController final {
   class Stub final : public StubInterface {
    public:
     Stub(const std::shared_ptr< ::grpc::ChannelInterface>& channel, const ::grpc::StubOptions& options = ::grpc::StubOptions());
-    ::grpc::Status create(::grpc::ClientContext* context, const ::maa::AdbControlleRequest& request, ::maa::HandleResponse* response) override;
-    std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::maa::HandleResponse>> Asynccreate(::grpc::ClientContext* context, const ::maa::AdbControlleRequest& request, ::grpc::CompletionQueue* cq) {
-      return std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::maa::HandleResponse>>(AsynccreateRaw(context, request, cq));
+    ::grpc::Status create_adb(::grpc::ClientContext* context, const ::maa::AdbControllerRequest& request, ::maa::HandleResponse* response) override;
+    std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::maa::HandleResponse>> Asynccreate_adb(::grpc::ClientContext* context, const ::maa::AdbControllerRequest& request, ::grpc::CompletionQueue* cq) {
+      return std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::maa::HandleResponse>>(Asynccreate_adbRaw(context, request, cq));
     }
-    std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::maa::HandleResponse>> PrepareAsynccreate(::grpc::ClientContext* context, const ::maa::AdbControlleRequest& request, ::grpc::CompletionQueue* cq) {
-      return std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::maa::HandleResponse>>(PrepareAsynccreateRaw(context, request, cq));
+    std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::maa::HandleResponse>> PrepareAsynccreate_adb(::grpc::ClientContext* context, const ::maa::AdbControllerRequest& request, ::grpc::CompletionQueue* cq) {
+      return std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::maa::HandleResponse>>(PrepareAsynccreate_adbRaw(context, request, cq));
     }
     ::grpc::Status destroy(::grpc::ClientContext* context, const ::maa::HandleRequest& request, ::maa::EmptyResponse* response) override;
     std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::maa::EmptyResponse>> Asyncdestroy(::grpc::ClientContext* context, const ::maa::HandleRequest& request, ::grpc::CompletionQueue* cq) {
@@ -3368,6 +3549,22 @@ class MaaFrameworkController final {
     }
     std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::maa::EmptyResponse>> PrepareAsyncdestroy(::grpc::ClientContext* context, const ::maa::HandleRequest& request, ::grpc::CompletionQueue* cq) {
       return std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::maa::EmptyResponse>>(PrepareAsyncdestroyRaw(context, request, cq));
+    }
+    std::unique_ptr< ::grpc::ClientReader< ::maa::CustomControllerResponse>> create_custom(::grpc::ClientContext* context, const ::maa::CustomControllerRequest& request) {
+      return std::unique_ptr< ::grpc::ClientReader< ::maa::CustomControllerResponse>>(create_customRaw(context, request));
+    }
+    std::unique_ptr< ::grpc::ClientAsyncReader< ::maa::CustomControllerResponse>> Asynccreate_custom(::grpc::ClientContext* context, const ::maa::CustomControllerRequest& request, ::grpc::CompletionQueue* cq, void* tag) {
+      return std::unique_ptr< ::grpc::ClientAsyncReader< ::maa::CustomControllerResponse>>(Asynccreate_customRaw(context, request, cq, tag));
+    }
+    std::unique_ptr< ::grpc::ClientAsyncReader< ::maa::CustomControllerResponse>> PrepareAsynccreate_custom(::grpc::ClientContext* context, const ::maa::CustomControllerRequest& request, ::grpc::CompletionQueue* cq) {
+      return std::unique_ptr< ::grpc::ClientAsyncReader< ::maa::CustomControllerResponse>>(PrepareAsynccreate_customRaw(context, request, cq));
+    }
+    ::grpc::Status submit_custom_controller(::grpc::ClientContext* context, const ::maa::SubmitCustomControllerRequest& request, ::maa::EmptyResponse* response) override;
+    std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::maa::EmptyResponse>> Asyncsubmit_custom_controller(::grpc::ClientContext* context, const ::maa::SubmitCustomControllerRequest& request, ::grpc::CompletionQueue* cq) {
+      return std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::maa::EmptyResponse>>(Asyncsubmit_custom_controllerRaw(context, request, cq));
+    }
+    std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::maa::EmptyResponse>> PrepareAsyncsubmit_custom_controller(::grpc::ClientContext* context, const ::maa::SubmitCustomControllerRequest& request, ::grpc::CompletionQueue* cq) {
+      return std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::maa::EmptyResponse>>(PrepareAsyncsubmit_custom_controllerRaw(context, request, cq));
     }
     ::grpc::Status set_option(::grpc::ClientContext* context, const ::maa::ControllerSetOptionRequest& request, ::maa::EmptyResponse* response) override;
     std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::maa::EmptyResponse>> Asyncset_option(::grpc::ClientContext* context, const ::maa::ControllerSetOptionRequest& request, ::grpc::CompletionQueue* cq) {
@@ -3470,10 +3667,13 @@ class MaaFrameworkController final {
     class async final :
       public StubInterface::async_interface {
      public:
-      void create(::grpc::ClientContext* context, const ::maa::AdbControlleRequest* request, ::maa::HandleResponse* response, std::function<void(::grpc::Status)>) override;
-      void create(::grpc::ClientContext* context, const ::maa::AdbControlleRequest* request, ::maa::HandleResponse* response, ::grpc::ClientUnaryReactor* reactor) override;
+      void create_adb(::grpc::ClientContext* context, const ::maa::AdbControllerRequest* request, ::maa::HandleResponse* response, std::function<void(::grpc::Status)>) override;
+      void create_adb(::grpc::ClientContext* context, const ::maa::AdbControllerRequest* request, ::maa::HandleResponse* response, ::grpc::ClientUnaryReactor* reactor) override;
       void destroy(::grpc::ClientContext* context, const ::maa::HandleRequest* request, ::maa::EmptyResponse* response, std::function<void(::grpc::Status)>) override;
       void destroy(::grpc::ClientContext* context, const ::maa::HandleRequest* request, ::maa::EmptyResponse* response, ::grpc::ClientUnaryReactor* reactor) override;
+      void create_custom(::grpc::ClientContext* context, const ::maa::CustomControllerRequest* request, ::grpc::ClientReadReactor< ::maa::CustomControllerResponse>* reactor) override;
+      void submit_custom_controller(::grpc::ClientContext* context, const ::maa::SubmitCustomControllerRequest* request, ::maa::EmptyResponse* response, std::function<void(::grpc::Status)>) override;
+      void submit_custom_controller(::grpc::ClientContext* context, const ::maa::SubmitCustomControllerRequest* request, ::maa::EmptyResponse* response, ::grpc::ClientUnaryReactor* reactor) override;
       void set_option(::grpc::ClientContext* context, const ::maa::ControllerSetOptionRequest* request, ::maa::EmptyResponse* response, std::function<void(::grpc::Status)>) override;
       void set_option(::grpc::ClientContext* context, const ::maa::ControllerSetOptionRequest* request, ::maa::EmptyResponse* response, ::grpc::ClientUnaryReactor* reactor) override;
       void post_connection(::grpc::ClientContext* context, const ::maa::HandleRequest* request, ::maa::IdResponse* response, std::function<void(::grpc::Status)>) override;
@@ -3513,10 +3713,15 @@ class MaaFrameworkController final {
    private:
     std::shared_ptr< ::grpc::ChannelInterface> channel_;
     class async async_stub_{this};
-    ::grpc::ClientAsyncResponseReader< ::maa::HandleResponse>* AsynccreateRaw(::grpc::ClientContext* context, const ::maa::AdbControlleRequest& request, ::grpc::CompletionQueue* cq) override;
-    ::grpc::ClientAsyncResponseReader< ::maa::HandleResponse>* PrepareAsynccreateRaw(::grpc::ClientContext* context, const ::maa::AdbControlleRequest& request, ::grpc::CompletionQueue* cq) override;
+    ::grpc::ClientAsyncResponseReader< ::maa::HandleResponse>* Asynccreate_adbRaw(::grpc::ClientContext* context, const ::maa::AdbControllerRequest& request, ::grpc::CompletionQueue* cq) override;
+    ::grpc::ClientAsyncResponseReader< ::maa::HandleResponse>* PrepareAsynccreate_adbRaw(::grpc::ClientContext* context, const ::maa::AdbControllerRequest& request, ::grpc::CompletionQueue* cq) override;
     ::grpc::ClientAsyncResponseReader< ::maa::EmptyResponse>* AsyncdestroyRaw(::grpc::ClientContext* context, const ::maa::HandleRequest& request, ::grpc::CompletionQueue* cq) override;
     ::grpc::ClientAsyncResponseReader< ::maa::EmptyResponse>* PrepareAsyncdestroyRaw(::grpc::ClientContext* context, const ::maa::HandleRequest& request, ::grpc::CompletionQueue* cq) override;
+    ::grpc::ClientReader< ::maa::CustomControllerResponse>* create_customRaw(::grpc::ClientContext* context, const ::maa::CustomControllerRequest& request) override;
+    ::grpc::ClientAsyncReader< ::maa::CustomControllerResponse>* Asynccreate_customRaw(::grpc::ClientContext* context, const ::maa::CustomControllerRequest& request, ::grpc::CompletionQueue* cq, void* tag) override;
+    ::grpc::ClientAsyncReader< ::maa::CustomControllerResponse>* PrepareAsynccreate_customRaw(::grpc::ClientContext* context, const ::maa::CustomControllerRequest& request, ::grpc::CompletionQueue* cq) override;
+    ::grpc::ClientAsyncResponseReader< ::maa::EmptyResponse>* Asyncsubmit_custom_controllerRaw(::grpc::ClientContext* context, const ::maa::SubmitCustomControllerRequest& request, ::grpc::CompletionQueue* cq) override;
+    ::grpc::ClientAsyncResponseReader< ::maa::EmptyResponse>* PrepareAsyncsubmit_custom_controllerRaw(::grpc::ClientContext* context, const ::maa::SubmitCustomControllerRequest& request, ::grpc::CompletionQueue* cq) override;
     ::grpc::ClientAsyncResponseReader< ::maa::EmptyResponse>* Asyncset_optionRaw(::grpc::ClientContext* context, const ::maa::ControllerSetOptionRequest& request, ::grpc::CompletionQueue* cq) override;
     ::grpc::ClientAsyncResponseReader< ::maa::EmptyResponse>* PrepareAsyncset_optionRaw(::grpc::ClientContext* context, const ::maa::ControllerSetOptionRequest& request, ::grpc::CompletionQueue* cq) override;
     ::grpc::ClientAsyncResponseReader< ::maa::IdResponse>* Asyncpost_connectionRaw(::grpc::ClientContext* context, const ::maa::HandleRequest& request, ::grpc::CompletionQueue* cq) override;
@@ -3545,8 +3750,10 @@ class MaaFrameworkController final {
     ::grpc::ClientAsyncResponseReader< ::maa::EmptyResponse>* PrepareAsyncimageRaw(::grpc::ClientContext* context, const ::maa::ControllerGetImageRequest& request, ::grpc::CompletionQueue* cq) override;
     ::grpc::ClientAsyncResponseReader< ::maa::StringResponse>* AsyncuuidRaw(::grpc::ClientContext* context, const ::maa::HandleRequest& request, ::grpc::CompletionQueue* cq) override;
     ::grpc::ClientAsyncResponseReader< ::maa::StringResponse>* PrepareAsyncuuidRaw(::grpc::ClientContext* context, const ::maa::HandleRequest& request, ::grpc::CompletionQueue* cq) override;
-    const ::grpc::internal::RpcMethod rpcmethod_create_;
+    const ::grpc::internal::RpcMethod rpcmethod_create_adb_;
     const ::grpc::internal::RpcMethod rpcmethod_destroy_;
+    const ::grpc::internal::RpcMethod rpcmethod_create_custom_;
+    const ::grpc::internal::RpcMethod rpcmethod_submit_custom_controller_;
     const ::grpc::internal::RpcMethod rpcmethod_set_option_;
     const ::grpc::internal::RpcMethod rpcmethod_post_connection_;
     const ::grpc::internal::RpcMethod rpcmethod_post_click_;
@@ -3568,8 +3775,10 @@ class MaaFrameworkController final {
    public:
     Service();
     virtual ~Service();
-    virtual ::grpc::Status create(::grpc::ServerContext* context, const ::maa::AdbControlleRequest* request, ::maa::HandleResponse* response);
+    virtual ::grpc::Status create_adb(::grpc::ServerContext* context, const ::maa::AdbControllerRequest* request, ::maa::HandleResponse* response);
     virtual ::grpc::Status destroy(::grpc::ServerContext* context, const ::maa::HandleRequest* request, ::maa::EmptyResponse* response);
+    virtual ::grpc::Status create_custom(::grpc::ServerContext* context, const ::maa::CustomControllerRequest* request, ::grpc::ServerWriter< ::maa::CustomControllerResponse>* writer);
+    virtual ::grpc::Status submit_custom_controller(::grpc::ServerContext* context, const ::maa::SubmitCustomControllerRequest* request, ::maa::EmptyResponse* response);
     virtual ::grpc::Status set_option(::grpc::ServerContext* context, const ::maa::ControllerSetOptionRequest* request, ::maa::EmptyResponse* response);
     virtual ::grpc::Status post_connection(::grpc::ServerContext* context, const ::maa::HandleRequest* request, ::maa::IdResponse* response);
     virtual ::grpc::Status post_click(::grpc::ServerContext* context, const ::maa::ControllerPostClickRequest* request, ::maa::IdResponse* response);
@@ -3586,22 +3795,22 @@ class MaaFrameworkController final {
     virtual ::grpc::Status uuid(::grpc::ServerContext* context, const ::maa::HandleRequest* request, ::maa::StringResponse* response);
   };
   template <class BaseClass>
-  class WithAsyncMethod_create : public BaseClass {
+  class WithAsyncMethod_create_adb : public BaseClass {
    private:
     void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
-    WithAsyncMethod_create() {
+    WithAsyncMethod_create_adb() {
       ::grpc::Service::MarkMethodAsync(0);
     }
-    ~WithAsyncMethod_create() override {
+    ~WithAsyncMethod_create_adb() override {
       BaseClassMustBeDerivedFromService(this);
     }
     // disable synchronous version of this method
-    ::grpc::Status create(::grpc::ServerContext* /*context*/, const ::maa::AdbControlleRequest* /*request*/, ::maa::HandleResponse* /*response*/) override {
+    ::grpc::Status create_adb(::grpc::ServerContext* /*context*/, const ::maa::AdbControllerRequest* /*request*/, ::maa::HandleResponse* /*response*/) override {
       abort();
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
-    void Requestcreate(::grpc::ServerContext* context, ::maa::AdbControlleRequest* request, ::grpc::ServerAsyncResponseWriter< ::maa::HandleResponse>* response, ::grpc::CompletionQueue* new_call_cq, ::grpc::ServerCompletionQueue* notification_cq, void *tag) {
+    void Requestcreate_adb(::grpc::ServerContext* context, ::maa::AdbControllerRequest* request, ::grpc::ServerAsyncResponseWriter< ::maa::HandleResponse>* response, ::grpc::CompletionQueue* new_call_cq, ::grpc::ServerCompletionQueue* notification_cq, void *tag) {
       ::grpc::Service::RequestAsyncUnary(0, context, request, response, new_call_cq, notification_cq, tag);
     }
   };
@@ -3626,12 +3835,52 @@ class MaaFrameworkController final {
     }
   };
   template <class BaseClass>
+  class WithAsyncMethod_create_custom : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    WithAsyncMethod_create_custom() {
+      ::grpc::Service::MarkMethodAsync(2);
+    }
+    ~WithAsyncMethod_create_custom() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status create_custom(::grpc::ServerContext* /*context*/, const ::maa::CustomControllerRequest* /*request*/, ::grpc::ServerWriter< ::maa::CustomControllerResponse>* /*writer*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    void Requestcreate_custom(::grpc::ServerContext* context, ::maa::CustomControllerRequest* request, ::grpc::ServerAsyncWriter< ::maa::CustomControllerResponse>* writer, ::grpc::CompletionQueue* new_call_cq, ::grpc::ServerCompletionQueue* notification_cq, void *tag) {
+      ::grpc::Service::RequestAsyncServerStreaming(2, context, request, writer, new_call_cq, notification_cq, tag);
+    }
+  };
+  template <class BaseClass>
+  class WithAsyncMethod_submit_custom_controller : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    WithAsyncMethod_submit_custom_controller() {
+      ::grpc::Service::MarkMethodAsync(3);
+    }
+    ~WithAsyncMethod_submit_custom_controller() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status submit_custom_controller(::grpc::ServerContext* /*context*/, const ::maa::SubmitCustomControllerRequest* /*request*/, ::maa::EmptyResponse* /*response*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    void Requestsubmit_custom_controller(::grpc::ServerContext* context, ::maa::SubmitCustomControllerRequest* request, ::grpc::ServerAsyncResponseWriter< ::maa::EmptyResponse>* response, ::grpc::CompletionQueue* new_call_cq, ::grpc::ServerCompletionQueue* notification_cq, void *tag) {
+      ::grpc::Service::RequestAsyncUnary(3, context, request, response, new_call_cq, notification_cq, tag);
+    }
+  };
+  template <class BaseClass>
   class WithAsyncMethod_set_option : public BaseClass {
    private:
     void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
     WithAsyncMethod_set_option() {
-      ::grpc::Service::MarkMethodAsync(2);
+      ::grpc::Service::MarkMethodAsync(4);
     }
     ~WithAsyncMethod_set_option() override {
       BaseClassMustBeDerivedFromService(this);
@@ -3642,7 +3891,7 @@ class MaaFrameworkController final {
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
     void Requestset_option(::grpc::ServerContext* context, ::maa::ControllerSetOptionRequest* request, ::grpc::ServerAsyncResponseWriter< ::maa::EmptyResponse>* response, ::grpc::CompletionQueue* new_call_cq, ::grpc::ServerCompletionQueue* notification_cq, void *tag) {
-      ::grpc::Service::RequestAsyncUnary(2, context, request, response, new_call_cq, notification_cq, tag);
+      ::grpc::Service::RequestAsyncUnary(4, context, request, response, new_call_cq, notification_cq, tag);
     }
   };
   template <class BaseClass>
@@ -3651,7 +3900,7 @@ class MaaFrameworkController final {
     void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
     WithAsyncMethod_post_connection() {
-      ::grpc::Service::MarkMethodAsync(3);
+      ::grpc::Service::MarkMethodAsync(5);
     }
     ~WithAsyncMethod_post_connection() override {
       BaseClassMustBeDerivedFromService(this);
@@ -3662,7 +3911,7 @@ class MaaFrameworkController final {
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
     void Requestpost_connection(::grpc::ServerContext* context, ::maa::HandleRequest* request, ::grpc::ServerAsyncResponseWriter< ::maa::IdResponse>* response, ::grpc::CompletionQueue* new_call_cq, ::grpc::ServerCompletionQueue* notification_cq, void *tag) {
-      ::grpc::Service::RequestAsyncUnary(3, context, request, response, new_call_cq, notification_cq, tag);
+      ::grpc::Service::RequestAsyncUnary(5, context, request, response, new_call_cq, notification_cq, tag);
     }
   };
   template <class BaseClass>
@@ -3671,7 +3920,7 @@ class MaaFrameworkController final {
     void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
     WithAsyncMethod_post_click() {
-      ::grpc::Service::MarkMethodAsync(4);
+      ::grpc::Service::MarkMethodAsync(6);
     }
     ~WithAsyncMethod_post_click() override {
       BaseClassMustBeDerivedFromService(this);
@@ -3682,7 +3931,7 @@ class MaaFrameworkController final {
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
     void Requestpost_click(::grpc::ServerContext* context, ::maa::ControllerPostClickRequest* request, ::grpc::ServerAsyncResponseWriter< ::maa::IdResponse>* response, ::grpc::CompletionQueue* new_call_cq, ::grpc::ServerCompletionQueue* notification_cq, void *tag) {
-      ::grpc::Service::RequestAsyncUnary(4, context, request, response, new_call_cq, notification_cq, tag);
+      ::grpc::Service::RequestAsyncUnary(6, context, request, response, new_call_cq, notification_cq, tag);
     }
   };
   template <class BaseClass>
@@ -3691,7 +3940,7 @@ class MaaFrameworkController final {
     void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
     WithAsyncMethod_post_swipe() {
-      ::grpc::Service::MarkMethodAsync(5);
+      ::grpc::Service::MarkMethodAsync(7);
     }
     ~WithAsyncMethod_post_swipe() override {
       BaseClassMustBeDerivedFromService(this);
@@ -3702,7 +3951,7 @@ class MaaFrameworkController final {
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
     void Requestpost_swipe(::grpc::ServerContext* context, ::maa::ControllerPostSwipeRequest* request, ::grpc::ServerAsyncResponseWriter< ::maa::IdResponse>* response, ::grpc::CompletionQueue* new_call_cq, ::grpc::ServerCompletionQueue* notification_cq, void *tag) {
-      ::grpc::Service::RequestAsyncUnary(5, context, request, response, new_call_cq, notification_cq, tag);
+      ::grpc::Service::RequestAsyncUnary(7, context, request, response, new_call_cq, notification_cq, tag);
     }
   };
   template <class BaseClass>
@@ -3711,7 +3960,7 @@ class MaaFrameworkController final {
     void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
     WithAsyncMethod_post_press_key() {
-      ::grpc::Service::MarkMethodAsync(6);
+      ::grpc::Service::MarkMethodAsync(8);
     }
     ~WithAsyncMethod_post_press_key() override {
       BaseClassMustBeDerivedFromService(this);
@@ -3722,7 +3971,7 @@ class MaaFrameworkController final {
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
     void Requestpost_press_key(::grpc::ServerContext* context, ::maa::ControllerPostKeyRequest* request, ::grpc::ServerAsyncResponseWriter< ::maa::IdResponse>* response, ::grpc::CompletionQueue* new_call_cq, ::grpc::ServerCompletionQueue* notification_cq, void *tag) {
-      ::grpc::Service::RequestAsyncUnary(6, context, request, response, new_call_cq, notification_cq, tag);
+      ::grpc::Service::RequestAsyncUnary(8, context, request, response, new_call_cq, notification_cq, tag);
     }
   };
   template <class BaseClass>
@@ -3731,7 +3980,7 @@ class MaaFrameworkController final {
     void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
     WithAsyncMethod_post_touch_down() {
-      ::grpc::Service::MarkMethodAsync(7);
+      ::grpc::Service::MarkMethodAsync(9);
     }
     ~WithAsyncMethod_post_touch_down() override {
       BaseClassMustBeDerivedFromService(this);
@@ -3742,7 +3991,7 @@ class MaaFrameworkController final {
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
     void Requestpost_touch_down(::grpc::ServerContext* context, ::maa::ControllerPostTouchRequest* request, ::grpc::ServerAsyncResponseWriter< ::maa::IdResponse>* response, ::grpc::CompletionQueue* new_call_cq, ::grpc::ServerCompletionQueue* notification_cq, void *tag) {
-      ::grpc::Service::RequestAsyncUnary(7, context, request, response, new_call_cq, notification_cq, tag);
+      ::grpc::Service::RequestAsyncUnary(9, context, request, response, new_call_cq, notification_cq, tag);
     }
   };
   template <class BaseClass>
@@ -3751,7 +4000,7 @@ class MaaFrameworkController final {
     void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
     WithAsyncMethod_post_touch_move() {
-      ::grpc::Service::MarkMethodAsync(8);
+      ::grpc::Service::MarkMethodAsync(10);
     }
     ~WithAsyncMethod_post_touch_move() override {
       BaseClassMustBeDerivedFromService(this);
@@ -3762,7 +4011,7 @@ class MaaFrameworkController final {
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
     void Requestpost_touch_move(::grpc::ServerContext* context, ::maa::ControllerPostTouchRequest* request, ::grpc::ServerAsyncResponseWriter< ::maa::IdResponse>* response, ::grpc::CompletionQueue* new_call_cq, ::grpc::ServerCompletionQueue* notification_cq, void *tag) {
-      ::grpc::Service::RequestAsyncUnary(8, context, request, response, new_call_cq, notification_cq, tag);
+      ::grpc::Service::RequestAsyncUnary(10, context, request, response, new_call_cq, notification_cq, tag);
     }
   };
   template <class BaseClass>
@@ -3771,7 +4020,7 @@ class MaaFrameworkController final {
     void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
     WithAsyncMethod_post_touch_up() {
-      ::grpc::Service::MarkMethodAsync(9);
+      ::grpc::Service::MarkMethodAsync(11);
     }
     ~WithAsyncMethod_post_touch_up() override {
       BaseClassMustBeDerivedFromService(this);
@@ -3782,7 +4031,7 @@ class MaaFrameworkController final {
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
     void Requestpost_touch_up(::grpc::ServerContext* context, ::maa::ControllerPostTouchRequest* request, ::grpc::ServerAsyncResponseWriter< ::maa::IdResponse>* response, ::grpc::CompletionQueue* new_call_cq, ::grpc::ServerCompletionQueue* notification_cq, void *tag) {
-      ::grpc::Service::RequestAsyncUnary(9, context, request, response, new_call_cq, notification_cq, tag);
+      ::grpc::Service::RequestAsyncUnary(11, context, request, response, new_call_cq, notification_cq, tag);
     }
   };
   template <class BaseClass>
@@ -3791,7 +4040,7 @@ class MaaFrameworkController final {
     void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
     WithAsyncMethod_post_screencap() {
-      ::grpc::Service::MarkMethodAsync(10);
+      ::grpc::Service::MarkMethodAsync(12);
     }
     ~WithAsyncMethod_post_screencap() override {
       BaseClassMustBeDerivedFromService(this);
@@ -3802,7 +4051,7 @@ class MaaFrameworkController final {
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
     void Requestpost_screencap(::grpc::ServerContext* context, ::maa::HandleRequest* request, ::grpc::ServerAsyncResponseWriter< ::maa::IdResponse>* response, ::grpc::CompletionQueue* new_call_cq, ::grpc::ServerCompletionQueue* notification_cq, void *tag) {
-      ::grpc::Service::RequestAsyncUnary(10, context, request, response, new_call_cq, notification_cq, tag);
+      ::grpc::Service::RequestAsyncUnary(12, context, request, response, new_call_cq, notification_cq, tag);
     }
   };
   template <class BaseClass>
@@ -3811,7 +4060,7 @@ class MaaFrameworkController final {
     void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
     WithAsyncMethod_status() {
-      ::grpc::Service::MarkMethodAsync(11);
+      ::grpc::Service::MarkMethodAsync(13);
     }
     ~WithAsyncMethod_status() override {
       BaseClassMustBeDerivedFromService(this);
@@ -3822,7 +4071,7 @@ class MaaFrameworkController final {
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
     void Requeststatus(::grpc::ServerContext* context, ::maa::HandleIdRequest* request, ::grpc::ServerAsyncResponseWriter< ::maa::StatusResponse>* response, ::grpc::CompletionQueue* new_call_cq, ::grpc::ServerCompletionQueue* notification_cq, void *tag) {
-      ::grpc::Service::RequestAsyncUnary(11, context, request, response, new_call_cq, notification_cq, tag);
+      ::grpc::Service::RequestAsyncUnary(13, context, request, response, new_call_cq, notification_cq, tag);
     }
   };
   template <class BaseClass>
@@ -3831,7 +4080,7 @@ class MaaFrameworkController final {
     void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
     WithAsyncMethod_wait() {
-      ::grpc::Service::MarkMethodAsync(12);
+      ::grpc::Service::MarkMethodAsync(14);
     }
     ~WithAsyncMethod_wait() override {
       BaseClassMustBeDerivedFromService(this);
@@ -3842,7 +4091,7 @@ class MaaFrameworkController final {
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
     void Requestwait(::grpc::ServerContext* context, ::maa::HandleIdRequest* request, ::grpc::ServerAsyncResponseWriter< ::maa::EmptyResponse>* response, ::grpc::CompletionQueue* new_call_cq, ::grpc::ServerCompletionQueue* notification_cq, void *tag) {
-      ::grpc::Service::RequestAsyncUnary(12, context, request, response, new_call_cq, notification_cq, tag);
+      ::grpc::Service::RequestAsyncUnary(14, context, request, response, new_call_cq, notification_cq, tag);
     }
   };
   template <class BaseClass>
@@ -3851,7 +4100,7 @@ class MaaFrameworkController final {
     void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
     WithAsyncMethod_connected() {
-      ::grpc::Service::MarkMethodAsync(13);
+      ::grpc::Service::MarkMethodAsync(15);
     }
     ~WithAsyncMethod_connected() override {
       BaseClassMustBeDerivedFromService(this);
@@ -3862,7 +4111,7 @@ class MaaFrameworkController final {
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
     void Requestconnected(::grpc::ServerContext* context, ::maa::HandleRequest* request, ::grpc::ServerAsyncResponseWriter< ::maa::BoolResponse>* response, ::grpc::CompletionQueue* new_call_cq, ::grpc::ServerCompletionQueue* notification_cq, void *tag) {
-      ::grpc::Service::RequestAsyncUnary(13, context, request, response, new_call_cq, notification_cq, tag);
+      ::grpc::Service::RequestAsyncUnary(15, context, request, response, new_call_cq, notification_cq, tag);
     }
   };
   template <class BaseClass>
@@ -3871,7 +4120,7 @@ class MaaFrameworkController final {
     void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
     WithAsyncMethod_image() {
-      ::grpc::Service::MarkMethodAsync(14);
+      ::grpc::Service::MarkMethodAsync(16);
     }
     ~WithAsyncMethod_image() override {
       BaseClassMustBeDerivedFromService(this);
@@ -3882,7 +4131,7 @@ class MaaFrameworkController final {
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
     void Requestimage(::grpc::ServerContext* context, ::maa::ControllerGetImageRequest* request, ::grpc::ServerAsyncResponseWriter< ::maa::EmptyResponse>* response, ::grpc::CompletionQueue* new_call_cq, ::grpc::ServerCompletionQueue* notification_cq, void *tag) {
-      ::grpc::Service::RequestAsyncUnary(14, context, request, response, new_call_cq, notification_cq, tag);
+      ::grpc::Service::RequestAsyncUnary(16, context, request, response, new_call_cq, notification_cq, tag);
     }
   };
   template <class BaseClass>
@@ -3891,7 +4140,7 @@ class MaaFrameworkController final {
     void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
     WithAsyncMethod_uuid() {
-      ::grpc::Service::MarkMethodAsync(15);
+      ::grpc::Service::MarkMethodAsync(17);
     }
     ~WithAsyncMethod_uuid() override {
       BaseClassMustBeDerivedFromService(this);
@@ -3902,36 +4151,36 @@ class MaaFrameworkController final {
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
     void Requestuuid(::grpc::ServerContext* context, ::maa::HandleRequest* request, ::grpc::ServerAsyncResponseWriter< ::maa::StringResponse>* response, ::grpc::CompletionQueue* new_call_cq, ::grpc::ServerCompletionQueue* notification_cq, void *tag) {
-      ::grpc::Service::RequestAsyncUnary(15, context, request, response, new_call_cq, notification_cq, tag);
+      ::grpc::Service::RequestAsyncUnary(17, context, request, response, new_call_cq, notification_cq, tag);
     }
   };
-  typedef WithAsyncMethod_create<WithAsyncMethod_destroy<WithAsyncMethod_set_option<WithAsyncMethod_post_connection<WithAsyncMethod_post_click<WithAsyncMethod_post_swipe<WithAsyncMethod_post_press_key<WithAsyncMethod_post_touch_down<WithAsyncMethod_post_touch_move<WithAsyncMethod_post_touch_up<WithAsyncMethod_post_screencap<WithAsyncMethod_status<WithAsyncMethod_wait<WithAsyncMethod_connected<WithAsyncMethod_image<WithAsyncMethod_uuid<Service > > > > > > > > > > > > > > > > AsyncService;
+  typedef WithAsyncMethod_create_adb<WithAsyncMethod_destroy<WithAsyncMethod_create_custom<WithAsyncMethod_submit_custom_controller<WithAsyncMethod_set_option<WithAsyncMethod_post_connection<WithAsyncMethod_post_click<WithAsyncMethod_post_swipe<WithAsyncMethod_post_press_key<WithAsyncMethod_post_touch_down<WithAsyncMethod_post_touch_move<WithAsyncMethod_post_touch_up<WithAsyncMethod_post_screencap<WithAsyncMethod_status<WithAsyncMethod_wait<WithAsyncMethod_connected<WithAsyncMethod_image<WithAsyncMethod_uuid<Service > > > > > > > > > > > > > > > > > > AsyncService;
   template <class BaseClass>
-  class WithCallbackMethod_create : public BaseClass {
+  class WithCallbackMethod_create_adb : public BaseClass {
    private:
     void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
-    WithCallbackMethod_create() {
+    WithCallbackMethod_create_adb() {
       ::grpc::Service::MarkMethodCallback(0,
-          new ::grpc::internal::CallbackUnaryHandler< ::maa::AdbControlleRequest, ::maa::HandleResponse>(
+          new ::grpc::internal::CallbackUnaryHandler< ::maa::AdbControllerRequest, ::maa::HandleResponse>(
             [this](
-                   ::grpc::CallbackServerContext* context, const ::maa::AdbControlleRequest* request, ::maa::HandleResponse* response) { return this->create(context, request, response); }));}
-    void SetMessageAllocatorFor_create(
-        ::grpc::MessageAllocator< ::maa::AdbControlleRequest, ::maa::HandleResponse>* allocator) {
+                   ::grpc::CallbackServerContext* context, const ::maa::AdbControllerRequest* request, ::maa::HandleResponse* response) { return this->create_adb(context, request, response); }));}
+    void SetMessageAllocatorFor_create_adb(
+        ::grpc::MessageAllocator< ::maa::AdbControllerRequest, ::maa::HandleResponse>* allocator) {
       ::grpc::internal::MethodHandler* const handler = ::grpc::Service::GetHandler(0);
-      static_cast<::grpc::internal::CallbackUnaryHandler< ::maa::AdbControlleRequest, ::maa::HandleResponse>*>(handler)
+      static_cast<::grpc::internal::CallbackUnaryHandler< ::maa::AdbControllerRequest, ::maa::HandleResponse>*>(handler)
               ->SetMessageAllocator(allocator);
     }
-    ~WithCallbackMethod_create() override {
+    ~WithCallbackMethod_create_adb() override {
       BaseClassMustBeDerivedFromService(this);
     }
     // disable synchronous version of this method
-    ::grpc::Status create(::grpc::ServerContext* /*context*/, const ::maa::AdbControlleRequest* /*request*/, ::maa::HandleResponse* /*response*/) override {
+    ::grpc::Status create_adb(::grpc::ServerContext* /*context*/, const ::maa::AdbControllerRequest* /*request*/, ::maa::HandleResponse* /*response*/) override {
       abort();
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
-    virtual ::grpc::ServerUnaryReactor* create(
-      ::grpc::CallbackServerContext* /*context*/, const ::maa::AdbControlleRequest* /*request*/, ::maa::HandleResponse* /*response*/)  { return nullptr; }
+    virtual ::grpc::ServerUnaryReactor* create_adb(
+      ::grpc::CallbackServerContext* /*context*/, const ::maa::AdbControllerRequest* /*request*/, ::maa::HandleResponse* /*response*/)  { return nullptr; }
   };
   template <class BaseClass>
   class WithCallbackMethod_destroy : public BaseClass {
@@ -3961,18 +4210,67 @@ class MaaFrameworkController final {
       ::grpc::CallbackServerContext* /*context*/, const ::maa::HandleRequest* /*request*/, ::maa::EmptyResponse* /*response*/)  { return nullptr; }
   };
   template <class BaseClass>
+  class WithCallbackMethod_create_custom : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    WithCallbackMethod_create_custom() {
+      ::grpc::Service::MarkMethodCallback(2,
+          new ::grpc::internal::CallbackServerStreamingHandler< ::maa::CustomControllerRequest, ::maa::CustomControllerResponse>(
+            [this](
+                   ::grpc::CallbackServerContext* context, const ::maa::CustomControllerRequest* request) { return this->create_custom(context, request); }));
+    }
+    ~WithCallbackMethod_create_custom() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status create_custom(::grpc::ServerContext* /*context*/, const ::maa::CustomControllerRequest* /*request*/, ::grpc::ServerWriter< ::maa::CustomControllerResponse>* /*writer*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    virtual ::grpc::ServerWriteReactor< ::maa::CustomControllerResponse>* create_custom(
+      ::grpc::CallbackServerContext* /*context*/, const ::maa::CustomControllerRequest* /*request*/)  { return nullptr; }
+  };
+  template <class BaseClass>
+  class WithCallbackMethod_submit_custom_controller : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    WithCallbackMethod_submit_custom_controller() {
+      ::grpc::Service::MarkMethodCallback(3,
+          new ::grpc::internal::CallbackUnaryHandler< ::maa::SubmitCustomControllerRequest, ::maa::EmptyResponse>(
+            [this](
+                   ::grpc::CallbackServerContext* context, const ::maa::SubmitCustomControllerRequest* request, ::maa::EmptyResponse* response) { return this->submit_custom_controller(context, request, response); }));}
+    void SetMessageAllocatorFor_submit_custom_controller(
+        ::grpc::MessageAllocator< ::maa::SubmitCustomControllerRequest, ::maa::EmptyResponse>* allocator) {
+      ::grpc::internal::MethodHandler* const handler = ::grpc::Service::GetHandler(3);
+      static_cast<::grpc::internal::CallbackUnaryHandler< ::maa::SubmitCustomControllerRequest, ::maa::EmptyResponse>*>(handler)
+              ->SetMessageAllocator(allocator);
+    }
+    ~WithCallbackMethod_submit_custom_controller() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status submit_custom_controller(::grpc::ServerContext* /*context*/, const ::maa::SubmitCustomControllerRequest* /*request*/, ::maa::EmptyResponse* /*response*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    virtual ::grpc::ServerUnaryReactor* submit_custom_controller(
+      ::grpc::CallbackServerContext* /*context*/, const ::maa::SubmitCustomControllerRequest* /*request*/, ::maa::EmptyResponse* /*response*/)  { return nullptr; }
+  };
+  template <class BaseClass>
   class WithCallbackMethod_set_option : public BaseClass {
    private:
     void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
     WithCallbackMethod_set_option() {
-      ::grpc::Service::MarkMethodCallback(2,
+      ::grpc::Service::MarkMethodCallback(4,
           new ::grpc::internal::CallbackUnaryHandler< ::maa::ControllerSetOptionRequest, ::maa::EmptyResponse>(
             [this](
                    ::grpc::CallbackServerContext* context, const ::maa::ControllerSetOptionRequest* request, ::maa::EmptyResponse* response) { return this->set_option(context, request, response); }));}
     void SetMessageAllocatorFor_set_option(
         ::grpc::MessageAllocator< ::maa::ControllerSetOptionRequest, ::maa::EmptyResponse>* allocator) {
-      ::grpc::internal::MethodHandler* const handler = ::grpc::Service::GetHandler(2);
+      ::grpc::internal::MethodHandler* const handler = ::grpc::Service::GetHandler(4);
       static_cast<::grpc::internal::CallbackUnaryHandler< ::maa::ControllerSetOptionRequest, ::maa::EmptyResponse>*>(handler)
               ->SetMessageAllocator(allocator);
     }
@@ -3993,13 +4291,13 @@ class MaaFrameworkController final {
     void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
     WithCallbackMethod_post_connection() {
-      ::grpc::Service::MarkMethodCallback(3,
+      ::grpc::Service::MarkMethodCallback(5,
           new ::grpc::internal::CallbackUnaryHandler< ::maa::HandleRequest, ::maa::IdResponse>(
             [this](
                    ::grpc::CallbackServerContext* context, const ::maa::HandleRequest* request, ::maa::IdResponse* response) { return this->post_connection(context, request, response); }));}
     void SetMessageAllocatorFor_post_connection(
         ::grpc::MessageAllocator< ::maa::HandleRequest, ::maa::IdResponse>* allocator) {
-      ::grpc::internal::MethodHandler* const handler = ::grpc::Service::GetHandler(3);
+      ::grpc::internal::MethodHandler* const handler = ::grpc::Service::GetHandler(5);
       static_cast<::grpc::internal::CallbackUnaryHandler< ::maa::HandleRequest, ::maa::IdResponse>*>(handler)
               ->SetMessageAllocator(allocator);
     }
@@ -4020,13 +4318,13 @@ class MaaFrameworkController final {
     void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
     WithCallbackMethod_post_click() {
-      ::grpc::Service::MarkMethodCallback(4,
+      ::grpc::Service::MarkMethodCallback(6,
           new ::grpc::internal::CallbackUnaryHandler< ::maa::ControllerPostClickRequest, ::maa::IdResponse>(
             [this](
                    ::grpc::CallbackServerContext* context, const ::maa::ControllerPostClickRequest* request, ::maa::IdResponse* response) { return this->post_click(context, request, response); }));}
     void SetMessageAllocatorFor_post_click(
         ::grpc::MessageAllocator< ::maa::ControllerPostClickRequest, ::maa::IdResponse>* allocator) {
-      ::grpc::internal::MethodHandler* const handler = ::grpc::Service::GetHandler(4);
+      ::grpc::internal::MethodHandler* const handler = ::grpc::Service::GetHandler(6);
       static_cast<::grpc::internal::CallbackUnaryHandler< ::maa::ControllerPostClickRequest, ::maa::IdResponse>*>(handler)
               ->SetMessageAllocator(allocator);
     }
@@ -4047,13 +4345,13 @@ class MaaFrameworkController final {
     void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
     WithCallbackMethod_post_swipe() {
-      ::grpc::Service::MarkMethodCallback(5,
+      ::grpc::Service::MarkMethodCallback(7,
           new ::grpc::internal::CallbackUnaryHandler< ::maa::ControllerPostSwipeRequest, ::maa::IdResponse>(
             [this](
                    ::grpc::CallbackServerContext* context, const ::maa::ControllerPostSwipeRequest* request, ::maa::IdResponse* response) { return this->post_swipe(context, request, response); }));}
     void SetMessageAllocatorFor_post_swipe(
         ::grpc::MessageAllocator< ::maa::ControllerPostSwipeRequest, ::maa::IdResponse>* allocator) {
-      ::grpc::internal::MethodHandler* const handler = ::grpc::Service::GetHandler(5);
+      ::grpc::internal::MethodHandler* const handler = ::grpc::Service::GetHandler(7);
       static_cast<::grpc::internal::CallbackUnaryHandler< ::maa::ControllerPostSwipeRequest, ::maa::IdResponse>*>(handler)
               ->SetMessageAllocator(allocator);
     }
@@ -4074,13 +4372,13 @@ class MaaFrameworkController final {
     void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
     WithCallbackMethod_post_press_key() {
-      ::grpc::Service::MarkMethodCallback(6,
+      ::grpc::Service::MarkMethodCallback(8,
           new ::grpc::internal::CallbackUnaryHandler< ::maa::ControllerPostKeyRequest, ::maa::IdResponse>(
             [this](
                    ::grpc::CallbackServerContext* context, const ::maa::ControllerPostKeyRequest* request, ::maa::IdResponse* response) { return this->post_press_key(context, request, response); }));}
     void SetMessageAllocatorFor_post_press_key(
         ::grpc::MessageAllocator< ::maa::ControllerPostKeyRequest, ::maa::IdResponse>* allocator) {
-      ::grpc::internal::MethodHandler* const handler = ::grpc::Service::GetHandler(6);
+      ::grpc::internal::MethodHandler* const handler = ::grpc::Service::GetHandler(8);
       static_cast<::grpc::internal::CallbackUnaryHandler< ::maa::ControllerPostKeyRequest, ::maa::IdResponse>*>(handler)
               ->SetMessageAllocator(allocator);
     }
@@ -4101,13 +4399,13 @@ class MaaFrameworkController final {
     void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
     WithCallbackMethod_post_touch_down() {
-      ::grpc::Service::MarkMethodCallback(7,
+      ::grpc::Service::MarkMethodCallback(9,
           new ::grpc::internal::CallbackUnaryHandler< ::maa::ControllerPostTouchRequest, ::maa::IdResponse>(
             [this](
                    ::grpc::CallbackServerContext* context, const ::maa::ControllerPostTouchRequest* request, ::maa::IdResponse* response) { return this->post_touch_down(context, request, response); }));}
     void SetMessageAllocatorFor_post_touch_down(
         ::grpc::MessageAllocator< ::maa::ControllerPostTouchRequest, ::maa::IdResponse>* allocator) {
-      ::grpc::internal::MethodHandler* const handler = ::grpc::Service::GetHandler(7);
+      ::grpc::internal::MethodHandler* const handler = ::grpc::Service::GetHandler(9);
       static_cast<::grpc::internal::CallbackUnaryHandler< ::maa::ControllerPostTouchRequest, ::maa::IdResponse>*>(handler)
               ->SetMessageAllocator(allocator);
     }
@@ -4128,13 +4426,13 @@ class MaaFrameworkController final {
     void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
     WithCallbackMethod_post_touch_move() {
-      ::grpc::Service::MarkMethodCallback(8,
+      ::grpc::Service::MarkMethodCallback(10,
           new ::grpc::internal::CallbackUnaryHandler< ::maa::ControllerPostTouchRequest, ::maa::IdResponse>(
             [this](
                    ::grpc::CallbackServerContext* context, const ::maa::ControllerPostTouchRequest* request, ::maa::IdResponse* response) { return this->post_touch_move(context, request, response); }));}
     void SetMessageAllocatorFor_post_touch_move(
         ::grpc::MessageAllocator< ::maa::ControllerPostTouchRequest, ::maa::IdResponse>* allocator) {
-      ::grpc::internal::MethodHandler* const handler = ::grpc::Service::GetHandler(8);
+      ::grpc::internal::MethodHandler* const handler = ::grpc::Service::GetHandler(10);
       static_cast<::grpc::internal::CallbackUnaryHandler< ::maa::ControllerPostTouchRequest, ::maa::IdResponse>*>(handler)
               ->SetMessageAllocator(allocator);
     }
@@ -4155,13 +4453,13 @@ class MaaFrameworkController final {
     void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
     WithCallbackMethod_post_touch_up() {
-      ::grpc::Service::MarkMethodCallback(9,
+      ::grpc::Service::MarkMethodCallback(11,
           new ::grpc::internal::CallbackUnaryHandler< ::maa::ControllerPostTouchRequest, ::maa::IdResponse>(
             [this](
                    ::grpc::CallbackServerContext* context, const ::maa::ControllerPostTouchRequest* request, ::maa::IdResponse* response) { return this->post_touch_up(context, request, response); }));}
     void SetMessageAllocatorFor_post_touch_up(
         ::grpc::MessageAllocator< ::maa::ControllerPostTouchRequest, ::maa::IdResponse>* allocator) {
-      ::grpc::internal::MethodHandler* const handler = ::grpc::Service::GetHandler(9);
+      ::grpc::internal::MethodHandler* const handler = ::grpc::Service::GetHandler(11);
       static_cast<::grpc::internal::CallbackUnaryHandler< ::maa::ControllerPostTouchRequest, ::maa::IdResponse>*>(handler)
               ->SetMessageAllocator(allocator);
     }
@@ -4182,13 +4480,13 @@ class MaaFrameworkController final {
     void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
     WithCallbackMethod_post_screencap() {
-      ::grpc::Service::MarkMethodCallback(10,
+      ::grpc::Service::MarkMethodCallback(12,
           new ::grpc::internal::CallbackUnaryHandler< ::maa::HandleRequest, ::maa::IdResponse>(
             [this](
                    ::grpc::CallbackServerContext* context, const ::maa::HandleRequest* request, ::maa::IdResponse* response) { return this->post_screencap(context, request, response); }));}
     void SetMessageAllocatorFor_post_screencap(
         ::grpc::MessageAllocator< ::maa::HandleRequest, ::maa::IdResponse>* allocator) {
-      ::grpc::internal::MethodHandler* const handler = ::grpc::Service::GetHandler(10);
+      ::grpc::internal::MethodHandler* const handler = ::grpc::Service::GetHandler(12);
       static_cast<::grpc::internal::CallbackUnaryHandler< ::maa::HandleRequest, ::maa::IdResponse>*>(handler)
               ->SetMessageAllocator(allocator);
     }
@@ -4209,13 +4507,13 @@ class MaaFrameworkController final {
     void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
     WithCallbackMethod_status() {
-      ::grpc::Service::MarkMethodCallback(11,
+      ::grpc::Service::MarkMethodCallback(13,
           new ::grpc::internal::CallbackUnaryHandler< ::maa::HandleIdRequest, ::maa::StatusResponse>(
             [this](
                    ::grpc::CallbackServerContext* context, const ::maa::HandleIdRequest* request, ::maa::StatusResponse* response) { return this->status(context, request, response); }));}
     void SetMessageAllocatorFor_status(
         ::grpc::MessageAllocator< ::maa::HandleIdRequest, ::maa::StatusResponse>* allocator) {
-      ::grpc::internal::MethodHandler* const handler = ::grpc::Service::GetHandler(11);
+      ::grpc::internal::MethodHandler* const handler = ::grpc::Service::GetHandler(13);
       static_cast<::grpc::internal::CallbackUnaryHandler< ::maa::HandleIdRequest, ::maa::StatusResponse>*>(handler)
               ->SetMessageAllocator(allocator);
     }
@@ -4236,13 +4534,13 @@ class MaaFrameworkController final {
     void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
     WithCallbackMethod_wait() {
-      ::grpc::Service::MarkMethodCallback(12,
+      ::grpc::Service::MarkMethodCallback(14,
           new ::grpc::internal::CallbackUnaryHandler< ::maa::HandleIdRequest, ::maa::EmptyResponse>(
             [this](
                    ::grpc::CallbackServerContext* context, const ::maa::HandleIdRequest* request, ::maa::EmptyResponse* response) { return this->wait(context, request, response); }));}
     void SetMessageAllocatorFor_wait(
         ::grpc::MessageAllocator< ::maa::HandleIdRequest, ::maa::EmptyResponse>* allocator) {
-      ::grpc::internal::MethodHandler* const handler = ::grpc::Service::GetHandler(12);
+      ::grpc::internal::MethodHandler* const handler = ::grpc::Service::GetHandler(14);
       static_cast<::grpc::internal::CallbackUnaryHandler< ::maa::HandleIdRequest, ::maa::EmptyResponse>*>(handler)
               ->SetMessageAllocator(allocator);
     }
@@ -4263,13 +4561,13 @@ class MaaFrameworkController final {
     void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
     WithCallbackMethod_connected() {
-      ::grpc::Service::MarkMethodCallback(13,
+      ::grpc::Service::MarkMethodCallback(15,
           new ::grpc::internal::CallbackUnaryHandler< ::maa::HandleRequest, ::maa::BoolResponse>(
             [this](
                    ::grpc::CallbackServerContext* context, const ::maa::HandleRequest* request, ::maa::BoolResponse* response) { return this->connected(context, request, response); }));}
     void SetMessageAllocatorFor_connected(
         ::grpc::MessageAllocator< ::maa::HandleRequest, ::maa::BoolResponse>* allocator) {
-      ::grpc::internal::MethodHandler* const handler = ::grpc::Service::GetHandler(13);
+      ::grpc::internal::MethodHandler* const handler = ::grpc::Service::GetHandler(15);
       static_cast<::grpc::internal::CallbackUnaryHandler< ::maa::HandleRequest, ::maa::BoolResponse>*>(handler)
               ->SetMessageAllocator(allocator);
     }
@@ -4290,13 +4588,13 @@ class MaaFrameworkController final {
     void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
     WithCallbackMethod_image() {
-      ::grpc::Service::MarkMethodCallback(14,
+      ::grpc::Service::MarkMethodCallback(16,
           new ::grpc::internal::CallbackUnaryHandler< ::maa::ControllerGetImageRequest, ::maa::EmptyResponse>(
             [this](
                    ::grpc::CallbackServerContext* context, const ::maa::ControllerGetImageRequest* request, ::maa::EmptyResponse* response) { return this->image(context, request, response); }));}
     void SetMessageAllocatorFor_image(
         ::grpc::MessageAllocator< ::maa::ControllerGetImageRequest, ::maa::EmptyResponse>* allocator) {
-      ::grpc::internal::MethodHandler* const handler = ::grpc::Service::GetHandler(14);
+      ::grpc::internal::MethodHandler* const handler = ::grpc::Service::GetHandler(16);
       static_cast<::grpc::internal::CallbackUnaryHandler< ::maa::ControllerGetImageRequest, ::maa::EmptyResponse>*>(handler)
               ->SetMessageAllocator(allocator);
     }
@@ -4317,13 +4615,13 @@ class MaaFrameworkController final {
     void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
     WithCallbackMethod_uuid() {
-      ::grpc::Service::MarkMethodCallback(15,
+      ::grpc::Service::MarkMethodCallback(17,
           new ::grpc::internal::CallbackUnaryHandler< ::maa::HandleRequest, ::maa::StringResponse>(
             [this](
                    ::grpc::CallbackServerContext* context, const ::maa::HandleRequest* request, ::maa::StringResponse* response) { return this->uuid(context, request, response); }));}
     void SetMessageAllocatorFor_uuid(
         ::grpc::MessageAllocator< ::maa::HandleRequest, ::maa::StringResponse>* allocator) {
-      ::grpc::internal::MethodHandler* const handler = ::grpc::Service::GetHandler(15);
+      ::grpc::internal::MethodHandler* const handler = ::grpc::Service::GetHandler(17);
       static_cast<::grpc::internal::CallbackUnaryHandler< ::maa::HandleRequest, ::maa::StringResponse>*>(handler)
               ->SetMessageAllocator(allocator);
     }
@@ -4338,21 +4636,21 @@ class MaaFrameworkController final {
     virtual ::grpc::ServerUnaryReactor* uuid(
       ::grpc::CallbackServerContext* /*context*/, const ::maa::HandleRequest* /*request*/, ::maa::StringResponse* /*response*/)  { return nullptr; }
   };
-  typedef WithCallbackMethod_create<WithCallbackMethod_destroy<WithCallbackMethod_set_option<WithCallbackMethod_post_connection<WithCallbackMethod_post_click<WithCallbackMethod_post_swipe<WithCallbackMethod_post_press_key<WithCallbackMethod_post_touch_down<WithCallbackMethod_post_touch_move<WithCallbackMethod_post_touch_up<WithCallbackMethod_post_screencap<WithCallbackMethod_status<WithCallbackMethod_wait<WithCallbackMethod_connected<WithCallbackMethod_image<WithCallbackMethod_uuid<Service > > > > > > > > > > > > > > > > CallbackService;
+  typedef WithCallbackMethod_create_adb<WithCallbackMethod_destroy<WithCallbackMethod_create_custom<WithCallbackMethod_submit_custom_controller<WithCallbackMethod_set_option<WithCallbackMethod_post_connection<WithCallbackMethod_post_click<WithCallbackMethod_post_swipe<WithCallbackMethod_post_press_key<WithCallbackMethod_post_touch_down<WithCallbackMethod_post_touch_move<WithCallbackMethod_post_touch_up<WithCallbackMethod_post_screencap<WithCallbackMethod_status<WithCallbackMethod_wait<WithCallbackMethod_connected<WithCallbackMethod_image<WithCallbackMethod_uuid<Service > > > > > > > > > > > > > > > > > > CallbackService;
   typedef CallbackService ExperimentalCallbackService;
   template <class BaseClass>
-  class WithGenericMethod_create : public BaseClass {
+  class WithGenericMethod_create_adb : public BaseClass {
    private:
     void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
-    WithGenericMethod_create() {
+    WithGenericMethod_create_adb() {
       ::grpc::Service::MarkMethodGeneric(0);
     }
-    ~WithGenericMethod_create() override {
+    ~WithGenericMethod_create_adb() override {
       BaseClassMustBeDerivedFromService(this);
     }
     // disable synchronous version of this method
-    ::grpc::Status create(::grpc::ServerContext* /*context*/, const ::maa::AdbControlleRequest* /*request*/, ::maa::HandleResponse* /*response*/) override {
+    ::grpc::Status create_adb(::grpc::ServerContext* /*context*/, const ::maa::AdbControllerRequest* /*request*/, ::maa::HandleResponse* /*response*/) override {
       abort();
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
@@ -4375,12 +4673,46 @@ class MaaFrameworkController final {
     }
   };
   template <class BaseClass>
+  class WithGenericMethod_create_custom : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    WithGenericMethod_create_custom() {
+      ::grpc::Service::MarkMethodGeneric(2);
+    }
+    ~WithGenericMethod_create_custom() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status create_custom(::grpc::ServerContext* /*context*/, const ::maa::CustomControllerRequest* /*request*/, ::grpc::ServerWriter< ::maa::CustomControllerResponse>* /*writer*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+  };
+  template <class BaseClass>
+  class WithGenericMethod_submit_custom_controller : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    WithGenericMethod_submit_custom_controller() {
+      ::grpc::Service::MarkMethodGeneric(3);
+    }
+    ~WithGenericMethod_submit_custom_controller() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status submit_custom_controller(::grpc::ServerContext* /*context*/, const ::maa::SubmitCustomControllerRequest* /*request*/, ::maa::EmptyResponse* /*response*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+  };
+  template <class BaseClass>
   class WithGenericMethod_set_option : public BaseClass {
    private:
     void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
     WithGenericMethod_set_option() {
-      ::grpc::Service::MarkMethodGeneric(2);
+      ::grpc::Service::MarkMethodGeneric(4);
     }
     ~WithGenericMethod_set_option() override {
       BaseClassMustBeDerivedFromService(this);
@@ -4397,7 +4729,7 @@ class MaaFrameworkController final {
     void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
     WithGenericMethod_post_connection() {
-      ::grpc::Service::MarkMethodGeneric(3);
+      ::grpc::Service::MarkMethodGeneric(5);
     }
     ~WithGenericMethod_post_connection() override {
       BaseClassMustBeDerivedFromService(this);
@@ -4414,7 +4746,7 @@ class MaaFrameworkController final {
     void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
     WithGenericMethod_post_click() {
-      ::grpc::Service::MarkMethodGeneric(4);
+      ::grpc::Service::MarkMethodGeneric(6);
     }
     ~WithGenericMethod_post_click() override {
       BaseClassMustBeDerivedFromService(this);
@@ -4431,7 +4763,7 @@ class MaaFrameworkController final {
     void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
     WithGenericMethod_post_swipe() {
-      ::grpc::Service::MarkMethodGeneric(5);
+      ::grpc::Service::MarkMethodGeneric(7);
     }
     ~WithGenericMethod_post_swipe() override {
       BaseClassMustBeDerivedFromService(this);
@@ -4448,7 +4780,7 @@ class MaaFrameworkController final {
     void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
     WithGenericMethod_post_press_key() {
-      ::grpc::Service::MarkMethodGeneric(6);
+      ::grpc::Service::MarkMethodGeneric(8);
     }
     ~WithGenericMethod_post_press_key() override {
       BaseClassMustBeDerivedFromService(this);
@@ -4465,7 +4797,7 @@ class MaaFrameworkController final {
     void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
     WithGenericMethod_post_touch_down() {
-      ::grpc::Service::MarkMethodGeneric(7);
+      ::grpc::Service::MarkMethodGeneric(9);
     }
     ~WithGenericMethod_post_touch_down() override {
       BaseClassMustBeDerivedFromService(this);
@@ -4482,7 +4814,7 @@ class MaaFrameworkController final {
     void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
     WithGenericMethod_post_touch_move() {
-      ::grpc::Service::MarkMethodGeneric(8);
+      ::grpc::Service::MarkMethodGeneric(10);
     }
     ~WithGenericMethod_post_touch_move() override {
       BaseClassMustBeDerivedFromService(this);
@@ -4499,7 +4831,7 @@ class MaaFrameworkController final {
     void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
     WithGenericMethod_post_touch_up() {
-      ::grpc::Service::MarkMethodGeneric(9);
+      ::grpc::Service::MarkMethodGeneric(11);
     }
     ~WithGenericMethod_post_touch_up() override {
       BaseClassMustBeDerivedFromService(this);
@@ -4516,7 +4848,7 @@ class MaaFrameworkController final {
     void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
     WithGenericMethod_post_screencap() {
-      ::grpc::Service::MarkMethodGeneric(10);
+      ::grpc::Service::MarkMethodGeneric(12);
     }
     ~WithGenericMethod_post_screencap() override {
       BaseClassMustBeDerivedFromService(this);
@@ -4533,7 +4865,7 @@ class MaaFrameworkController final {
     void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
     WithGenericMethod_status() {
-      ::grpc::Service::MarkMethodGeneric(11);
+      ::grpc::Service::MarkMethodGeneric(13);
     }
     ~WithGenericMethod_status() override {
       BaseClassMustBeDerivedFromService(this);
@@ -4550,7 +4882,7 @@ class MaaFrameworkController final {
     void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
     WithGenericMethod_wait() {
-      ::grpc::Service::MarkMethodGeneric(12);
+      ::grpc::Service::MarkMethodGeneric(14);
     }
     ~WithGenericMethod_wait() override {
       BaseClassMustBeDerivedFromService(this);
@@ -4567,7 +4899,7 @@ class MaaFrameworkController final {
     void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
     WithGenericMethod_connected() {
-      ::grpc::Service::MarkMethodGeneric(13);
+      ::grpc::Service::MarkMethodGeneric(15);
     }
     ~WithGenericMethod_connected() override {
       BaseClassMustBeDerivedFromService(this);
@@ -4584,7 +4916,7 @@ class MaaFrameworkController final {
     void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
     WithGenericMethod_image() {
-      ::grpc::Service::MarkMethodGeneric(14);
+      ::grpc::Service::MarkMethodGeneric(16);
     }
     ~WithGenericMethod_image() override {
       BaseClassMustBeDerivedFromService(this);
@@ -4601,7 +4933,7 @@ class MaaFrameworkController final {
     void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
     WithGenericMethod_uuid() {
-      ::grpc::Service::MarkMethodGeneric(15);
+      ::grpc::Service::MarkMethodGeneric(17);
     }
     ~WithGenericMethod_uuid() override {
       BaseClassMustBeDerivedFromService(this);
@@ -4613,22 +4945,22 @@ class MaaFrameworkController final {
     }
   };
   template <class BaseClass>
-  class WithRawMethod_create : public BaseClass {
+  class WithRawMethod_create_adb : public BaseClass {
    private:
     void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
-    WithRawMethod_create() {
+    WithRawMethod_create_adb() {
       ::grpc::Service::MarkMethodRaw(0);
     }
-    ~WithRawMethod_create() override {
+    ~WithRawMethod_create_adb() override {
       BaseClassMustBeDerivedFromService(this);
     }
     // disable synchronous version of this method
-    ::grpc::Status create(::grpc::ServerContext* /*context*/, const ::maa::AdbControlleRequest* /*request*/, ::maa::HandleResponse* /*response*/) override {
+    ::grpc::Status create_adb(::grpc::ServerContext* /*context*/, const ::maa::AdbControllerRequest* /*request*/, ::maa::HandleResponse* /*response*/) override {
       abort();
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
-    void Requestcreate(::grpc::ServerContext* context, ::grpc::ByteBuffer* request, ::grpc::ServerAsyncResponseWriter< ::grpc::ByteBuffer>* response, ::grpc::CompletionQueue* new_call_cq, ::grpc::ServerCompletionQueue* notification_cq, void *tag) {
+    void Requestcreate_adb(::grpc::ServerContext* context, ::grpc::ByteBuffer* request, ::grpc::ServerAsyncResponseWriter< ::grpc::ByteBuffer>* response, ::grpc::CompletionQueue* new_call_cq, ::grpc::ServerCompletionQueue* notification_cq, void *tag) {
       ::grpc::Service::RequestAsyncUnary(0, context, request, response, new_call_cq, notification_cq, tag);
     }
   };
@@ -4653,12 +4985,52 @@ class MaaFrameworkController final {
     }
   };
   template <class BaseClass>
+  class WithRawMethod_create_custom : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    WithRawMethod_create_custom() {
+      ::grpc::Service::MarkMethodRaw(2);
+    }
+    ~WithRawMethod_create_custom() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status create_custom(::grpc::ServerContext* /*context*/, const ::maa::CustomControllerRequest* /*request*/, ::grpc::ServerWriter< ::maa::CustomControllerResponse>* /*writer*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    void Requestcreate_custom(::grpc::ServerContext* context, ::grpc::ByteBuffer* request, ::grpc::ServerAsyncWriter< ::grpc::ByteBuffer>* writer, ::grpc::CompletionQueue* new_call_cq, ::grpc::ServerCompletionQueue* notification_cq, void *tag) {
+      ::grpc::Service::RequestAsyncServerStreaming(2, context, request, writer, new_call_cq, notification_cq, tag);
+    }
+  };
+  template <class BaseClass>
+  class WithRawMethod_submit_custom_controller : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    WithRawMethod_submit_custom_controller() {
+      ::grpc::Service::MarkMethodRaw(3);
+    }
+    ~WithRawMethod_submit_custom_controller() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status submit_custom_controller(::grpc::ServerContext* /*context*/, const ::maa::SubmitCustomControllerRequest* /*request*/, ::maa::EmptyResponse* /*response*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    void Requestsubmit_custom_controller(::grpc::ServerContext* context, ::grpc::ByteBuffer* request, ::grpc::ServerAsyncResponseWriter< ::grpc::ByteBuffer>* response, ::grpc::CompletionQueue* new_call_cq, ::grpc::ServerCompletionQueue* notification_cq, void *tag) {
+      ::grpc::Service::RequestAsyncUnary(3, context, request, response, new_call_cq, notification_cq, tag);
+    }
+  };
+  template <class BaseClass>
   class WithRawMethod_set_option : public BaseClass {
    private:
     void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
     WithRawMethod_set_option() {
-      ::grpc::Service::MarkMethodRaw(2);
+      ::grpc::Service::MarkMethodRaw(4);
     }
     ~WithRawMethod_set_option() override {
       BaseClassMustBeDerivedFromService(this);
@@ -4669,7 +5041,7 @@ class MaaFrameworkController final {
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
     void Requestset_option(::grpc::ServerContext* context, ::grpc::ByteBuffer* request, ::grpc::ServerAsyncResponseWriter< ::grpc::ByteBuffer>* response, ::grpc::CompletionQueue* new_call_cq, ::grpc::ServerCompletionQueue* notification_cq, void *tag) {
-      ::grpc::Service::RequestAsyncUnary(2, context, request, response, new_call_cq, notification_cq, tag);
+      ::grpc::Service::RequestAsyncUnary(4, context, request, response, new_call_cq, notification_cq, tag);
     }
   };
   template <class BaseClass>
@@ -4678,7 +5050,7 @@ class MaaFrameworkController final {
     void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
     WithRawMethod_post_connection() {
-      ::grpc::Service::MarkMethodRaw(3);
+      ::grpc::Service::MarkMethodRaw(5);
     }
     ~WithRawMethod_post_connection() override {
       BaseClassMustBeDerivedFromService(this);
@@ -4689,7 +5061,7 @@ class MaaFrameworkController final {
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
     void Requestpost_connection(::grpc::ServerContext* context, ::grpc::ByteBuffer* request, ::grpc::ServerAsyncResponseWriter< ::grpc::ByteBuffer>* response, ::grpc::CompletionQueue* new_call_cq, ::grpc::ServerCompletionQueue* notification_cq, void *tag) {
-      ::grpc::Service::RequestAsyncUnary(3, context, request, response, new_call_cq, notification_cq, tag);
+      ::grpc::Service::RequestAsyncUnary(5, context, request, response, new_call_cq, notification_cq, tag);
     }
   };
   template <class BaseClass>
@@ -4698,7 +5070,7 @@ class MaaFrameworkController final {
     void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
     WithRawMethod_post_click() {
-      ::grpc::Service::MarkMethodRaw(4);
+      ::grpc::Service::MarkMethodRaw(6);
     }
     ~WithRawMethod_post_click() override {
       BaseClassMustBeDerivedFromService(this);
@@ -4709,7 +5081,7 @@ class MaaFrameworkController final {
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
     void Requestpost_click(::grpc::ServerContext* context, ::grpc::ByteBuffer* request, ::grpc::ServerAsyncResponseWriter< ::grpc::ByteBuffer>* response, ::grpc::CompletionQueue* new_call_cq, ::grpc::ServerCompletionQueue* notification_cq, void *tag) {
-      ::grpc::Service::RequestAsyncUnary(4, context, request, response, new_call_cq, notification_cq, tag);
+      ::grpc::Service::RequestAsyncUnary(6, context, request, response, new_call_cq, notification_cq, tag);
     }
   };
   template <class BaseClass>
@@ -4718,7 +5090,7 @@ class MaaFrameworkController final {
     void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
     WithRawMethod_post_swipe() {
-      ::grpc::Service::MarkMethodRaw(5);
+      ::grpc::Service::MarkMethodRaw(7);
     }
     ~WithRawMethod_post_swipe() override {
       BaseClassMustBeDerivedFromService(this);
@@ -4729,7 +5101,7 @@ class MaaFrameworkController final {
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
     void Requestpost_swipe(::grpc::ServerContext* context, ::grpc::ByteBuffer* request, ::grpc::ServerAsyncResponseWriter< ::grpc::ByteBuffer>* response, ::grpc::CompletionQueue* new_call_cq, ::grpc::ServerCompletionQueue* notification_cq, void *tag) {
-      ::grpc::Service::RequestAsyncUnary(5, context, request, response, new_call_cq, notification_cq, tag);
+      ::grpc::Service::RequestAsyncUnary(7, context, request, response, new_call_cq, notification_cq, tag);
     }
   };
   template <class BaseClass>
@@ -4738,7 +5110,7 @@ class MaaFrameworkController final {
     void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
     WithRawMethod_post_press_key() {
-      ::grpc::Service::MarkMethodRaw(6);
+      ::grpc::Service::MarkMethodRaw(8);
     }
     ~WithRawMethod_post_press_key() override {
       BaseClassMustBeDerivedFromService(this);
@@ -4749,7 +5121,7 @@ class MaaFrameworkController final {
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
     void Requestpost_press_key(::grpc::ServerContext* context, ::grpc::ByteBuffer* request, ::grpc::ServerAsyncResponseWriter< ::grpc::ByteBuffer>* response, ::grpc::CompletionQueue* new_call_cq, ::grpc::ServerCompletionQueue* notification_cq, void *tag) {
-      ::grpc::Service::RequestAsyncUnary(6, context, request, response, new_call_cq, notification_cq, tag);
+      ::grpc::Service::RequestAsyncUnary(8, context, request, response, new_call_cq, notification_cq, tag);
     }
   };
   template <class BaseClass>
@@ -4758,7 +5130,7 @@ class MaaFrameworkController final {
     void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
     WithRawMethod_post_touch_down() {
-      ::grpc::Service::MarkMethodRaw(7);
+      ::grpc::Service::MarkMethodRaw(9);
     }
     ~WithRawMethod_post_touch_down() override {
       BaseClassMustBeDerivedFromService(this);
@@ -4769,7 +5141,7 @@ class MaaFrameworkController final {
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
     void Requestpost_touch_down(::grpc::ServerContext* context, ::grpc::ByteBuffer* request, ::grpc::ServerAsyncResponseWriter< ::grpc::ByteBuffer>* response, ::grpc::CompletionQueue* new_call_cq, ::grpc::ServerCompletionQueue* notification_cq, void *tag) {
-      ::grpc::Service::RequestAsyncUnary(7, context, request, response, new_call_cq, notification_cq, tag);
+      ::grpc::Service::RequestAsyncUnary(9, context, request, response, new_call_cq, notification_cq, tag);
     }
   };
   template <class BaseClass>
@@ -4778,7 +5150,7 @@ class MaaFrameworkController final {
     void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
     WithRawMethod_post_touch_move() {
-      ::grpc::Service::MarkMethodRaw(8);
+      ::grpc::Service::MarkMethodRaw(10);
     }
     ~WithRawMethod_post_touch_move() override {
       BaseClassMustBeDerivedFromService(this);
@@ -4789,7 +5161,7 @@ class MaaFrameworkController final {
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
     void Requestpost_touch_move(::grpc::ServerContext* context, ::grpc::ByteBuffer* request, ::grpc::ServerAsyncResponseWriter< ::grpc::ByteBuffer>* response, ::grpc::CompletionQueue* new_call_cq, ::grpc::ServerCompletionQueue* notification_cq, void *tag) {
-      ::grpc::Service::RequestAsyncUnary(8, context, request, response, new_call_cq, notification_cq, tag);
+      ::grpc::Service::RequestAsyncUnary(10, context, request, response, new_call_cq, notification_cq, tag);
     }
   };
   template <class BaseClass>
@@ -4798,7 +5170,7 @@ class MaaFrameworkController final {
     void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
     WithRawMethod_post_touch_up() {
-      ::grpc::Service::MarkMethodRaw(9);
+      ::grpc::Service::MarkMethodRaw(11);
     }
     ~WithRawMethod_post_touch_up() override {
       BaseClassMustBeDerivedFromService(this);
@@ -4809,7 +5181,7 @@ class MaaFrameworkController final {
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
     void Requestpost_touch_up(::grpc::ServerContext* context, ::grpc::ByteBuffer* request, ::grpc::ServerAsyncResponseWriter< ::grpc::ByteBuffer>* response, ::grpc::CompletionQueue* new_call_cq, ::grpc::ServerCompletionQueue* notification_cq, void *tag) {
-      ::grpc::Service::RequestAsyncUnary(9, context, request, response, new_call_cq, notification_cq, tag);
+      ::grpc::Service::RequestAsyncUnary(11, context, request, response, new_call_cq, notification_cq, tag);
     }
   };
   template <class BaseClass>
@@ -4818,7 +5190,7 @@ class MaaFrameworkController final {
     void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
     WithRawMethod_post_screencap() {
-      ::grpc::Service::MarkMethodRaw(10);
+      ::grpc::Service::MarkMethodRaw(12);
     }
     ~WithRawMethod_post_screencap() override {
       BaseClassMustBeDerivedFromService(this);
@@ -4829,7 +5201,7 @@ class MaaFrameworkController final {
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
     void Requestpost_screencap(::grpc::ServerContext* context, ::grpc::ByteBuffer* request, ::grpc::ServerAsyncResponseWriter< ::grpc::ByteBuffer>* response, ::grpc::CompletionQueue* new_call_cq, ::grpc::ServerCompletionQueue* notification_cq, void *tag) {
-      ::grpc::Service::RequestAsyncUnary(10, context, request, response, new_call_cq, notification_cq, tag);
+      ::grpc::Service::RequestAsyncUnary(12, context, request, response, new_call_cq, notification_cq, tag);
     }
   };
   template <class BaseClass>
@@ -4838,7 +5210,7 @@ class MaaFrameworkController final {
     void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
     WithRawMethod_status() {
-      ::grpc::Service::MarkMethodRaw(11);
+      ::grpc::Service::MarkMethodRaw(13);
     }
     ~WithRawMethod_status() override {
       BaseClassMustBeDerivedFromService(this);
@@ -4849,7 +5221,7 @@ class MaaFrameworkController final {
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
     void Requeststatus(::grpc::ServerContext* context, ::grpc::ByteBuffer* request, ::grpc::ServerAsyncResponseWriter< ::grpc::ByteBuffer>* response, ::grpc::CompletionQueue* new_call_cq, ::grpc::ServerCompletionQueue* notification_cq, void *tag) {
-      ::grpc::Service::RequestAsyncUnary(11, context, request, response, new_call_cq, notification_cq, tag);
+      ::grpc::Service::RequestAsyncUnary(13, context, request, response, new_call_cq, notification_cq, tag);
     }
   };
   template <class BaseClass>
@@ -4858,7 +5230,7 @@ class MaaFrameworkController final {
     void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
     WithRawMethod_wait() {
-      ::grpc::Service::MarkMethodRaw(12);
+      ::grpc::Service::MarkMethodRaw(14);
     }
     ~WithRawMethod_wait() override {
       BaseClassMustBeDerivedFromService(this);
@@ -4869,7 +5241,7 @@ class MaaFrameworkController final {
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
     void Requestwait(::grpc::ServerContext* context, ::grpc::ByteBuffer* request, ::grpc::ServerAsyncResponseWriter< ::grpc::ByteBuffer>* response, ::grpc::CompletionQueue* new_call_cq, ::grpc::ServerCompletionQueue* notification_cq, void *tag) {
-      ::grpc::Service::RequestAsyncUnary(12, context, request, response, new_call_cq, notification_cq, tag);
+      ::grpc::Service::RequestAsyncUnary(14, context, request, response, new_call_cq, notification_cq, tag);
     }
   };
   template <class BaseClass>
@@ -4878,7 +5250,7 @@ class MaaFrameworkController final {
     void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
     WithRawMethod_connected() {
-      ::grpc::Service::MarkMethodRaw(13);
+      ::grpc::Service::MarkMethodRaw(15);
     }
     ~WithRawMethod_connected() override {
       BaseClassMustBeDerivedFromService(this);
@@ -4889,7 +5261,7 @@ class MaaFrameworkController final {
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
     void Requestconnected(::grpc::ServerContext* context, ::grpc::ByteBuffer* request, ::grpc::ServerAsyncResponseWriter< ::grpc::ByteBuffer>* response, ::grpc::CompletionQueue* new_call_cq, ::grpc::ServerCompletionQueue* notification_cq, void *tag) {
-      ::grpc::Service::RequestAsyncUnary(13, context, request, response, new_call_cq, notification_cq, tag);
+      ::grpc::Service::RequestAsyncUnary(15, context, request, response, new_call_cq, notification_cq, tag);
     }
   };
   template <class BaseClass>
@@ -4898,7 +5270,7 @@ class MaaFrameworkController final {
     void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
     WithRawMethod_image() {
-      ::grpc::Service::MarkMethodRaw(14);
+      ::grpc::Service::MarkMethodRaw(16);
     }
     ~WithRawMethod_image() override {
       BaseClassMustBeDerivedFromService(this);
@@ -4909,7 +5281,7 @@ class MaaFrameworkController final {
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
     void Requestimage(::grpc::ServerContext* context, ::grpc::ByteBuffer* request, ::grpc::ServerAsyncResponseWriter< ::grpc::ByteBuffer>* response, ::grpc::CompletionQueue* new_call_cq, ::grpc::ServerCompletionQueue* notification_cq, void *tag) {
-      ::grpc::Service::RequestAsyncUnary(14, context, request, response, new_call_cq, notification_cq, tag);
+      ::grpc::Service::RequestAsyncUnary(16, context, request, response, new_call_cq, notification_cq, tag);
     }
   };
   template <class BaseClass>
@@ -4918,7 +5290,7 @@ class MaaFrameworkController final {
     void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
     WithRawMethod_uuid() {
-      ::grpc::Service::MarkMethodRaw(15);
+      ::grpc::Service::MarkMethodRaw(17);
     }
     ~WithRawMethod_uuid() override {
       BaseClassMustBeDerivedFromService(this);
@@ -4929,29 +5301,29 @@ class MaaFrameworkController final {
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
     void Requestuuid(::grpc::ServerContext* context, ::grpc::ByteBuffer* request, ::grpc::ServerAsyncResponseWriter< ::grpc::ByteBuffer>* response, ::grpc::CompletionQueue* new_call_cq, ::grpc::ServerCompletionQueue* notification_cq, void *tag) {
-      ::grpc::Service::RequestAsyncUnary(15, context, request, response, new_call_cq, notification_cq, tag);
+      ::grpc::Service::RequestAsyncUnary(17, context, request, response, new_call_cq, notification_cq, tag);
     }
   };
   template <class BaseClass>
-  class WithRawCallbackMethod_create : public BaseClass {
+  class WithRawCallbackMethod_create_adb : public BaseClass {
    private:
     void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
-    WithRawCallbackMethod_create() {
+    WithRawCallbackMethod_create_adb() {
       ::grpc::Service::MarkMethodRawCallback(0,
           new ::grpc::internal::CallbackUnaryHandler< ::grpc::ByteBuffer, ::grpc::ByteBuffer>(
             [this](
-                   ::grpc::CallbackServerContext* context, const ::grpc::ByteBuffer* request, ::grpc::ByteBuffer* response) { return this->create(context, request, response); }));
+                   ::grpc::CallbackServerContext* context, const ::grpc::ByteBuffer* request, ::grpc::ByteBuffer* response) { return this->create_adb(context, request, response); }));
     }
-    ~WithRawCallbackMethod_create() override {
+    ~WithRawCallbackMethod_create_adb() override {
       BaseClassMustBeDerivedFromService(this);
     }
     // disable synchronous version of this method
-    ::grpc::Status create(::grpc::ServerContext* /*context*/, const ::maa::AdbControlleRequest* /*request*/, ::maa::HandleResponse* /*response*/) override {
+    ::grpc::Status create_adb(::grpc::ServerContext* /*context*/, const ::maa::AdbControllerRequest* /*request*/, ::maa::HandleResponse* /*response*/) override {
       abort();
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
-    virtual ::grpc::ServerUnaryReactor* create(
+    virtual ::grpc::ServerUnaryReactor* create_adb(
       ::grpc::CallbackServerContext* /*context*/, const ::grpc::ByteBuffer* /*request*/, ::grpc::ByteBuffer* /*response*/)  { return nullptr; }
   };
   template <class BaseClass>
@@ -4977,12 +5349,56 @@ class MaaFrameworkController final {
       ::grpc::CallbackServerContext* /*context*/, const ::grpc::ByteBuffer* /*request*/, ::grpc::ByteBuffer* /*response*/)  { return nullptr; }
   };
   template <class BaseClass>
+  class WithRawCallbackMethod_create_custom : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    WithRawCallbackMethod_create_custom() {
+      ::grpc::Service::MarkMethodRawCallback(2,
+          new ::grpc::internal::CallbackServerStreamingHandler< ::grpc::ByteBuffer, ::grpc::ByteBuffer>(
+            [this](
+                   ::grpc::CallbackServerContext* context, const::grpc::ByteBuffer* request) { return this->create_custom(context, request); }));
+    }
+    ~WithRawCallbackMethod_create_custom() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status create_custom(::grpc::ServerContext* /*context*/, const ::maa::CustomControllerRequest* /*request*/, ::grpc::ServerWriter< ::maa::CustomControllerResponse>* /*writer*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    virtual ::grpc::ServerWriteReactor< ::grpc::ByteBuffer>* create_custom(
+      ::grpc::CallbackServerContext* /*context*/, const ::grpc::ByteBuffer* /*request*/)  { return nullptr; }
+  };
+  template <class BaseClass>
+  class WithRawCallbackMethod_submit_custom_controller : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    WithRawCallbackMethod_submit_custom_controller() {
+      ::grpc::Service::MarkMethodRawCallback(3,
+          new ::grpc::internal::CallbackUnaryHandler< ::grpc::ByteBuffer, ::grpc::ByteBuffer>(
+            [this](
+                   ::grpc::CallbackServerContext* context, const ::grpc::ByteBuffer* request, ::grpc::ByteBuffer* response) { return this->submit_custom_controller(context, request, response); }));
+    }
+    ~WithRawCallbackMethod_submit_custom_controller() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status submit_custom_controller(::grpc::ServerContext* /*context*/, const ::maa::SubmitCustomControllerRequest* /*request*/, ::maa::EmptyResponse* /*response*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    virtual ::grpc::ServerUnaryReactor* submit_custom_controller(
+      ::grpc::CallbackServerContext* /*context*/, const ::grpc::ByteBuffer* /*request*/, ::grpc::ByteBuffer* /*response*/)  { return nullptr; }
+  };
+  template <class BaseClass>
   class WithRawCallbackMethod_set_option : public BaseClass {
    private:
     void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
     WithRawCallbackMethod_set_option() {
-      ::grpc::Service::MarkMethodRawCallback(2,
+      ::grpc::Service::MarkMethodRawCallback(4,
           new ::grpc::internal::CallbackUnaryHandler< ::grpc::ByteBuffer, ::grpc::ByteBuffer>(
             [this](
                    ::grpc::CallbackServerContext* context, const ::grpc::ByteBuffer* request, ::grpc::ByteBuffer* response) { return this->set_option(context, request, response); }));
@@ -5004,7 +5420,7 @@ class MaaFrameworkController final {
     void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
     WithRawCallbackMethod_post_connection() {
-      ::grpc::Service::MarkMethodRawCallback(3,
+      ::grpc::Service::MarkMethodRawCallback(5,
           new ::grpc::internal::CallbackUnaryHandler< ::grpc::ByteBuffer, ::grpc::ByteBuffer>(
             [this](
                    ::grpc::CallbackServerContext* context, const ::grpc::ByteBuffer* request, ::grpc::ByteBuffer* response) { return this->post_connection(context, request, response); }));
@@ -5026,7 +5442,7 @@ class MaaFrameworkController final {
     void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
     WithRawCallbackMethod_post_click() {
-      ::grpc::Service::MarkMethodRawCallback(4,
+      ::grpc::Service::MarkMethodRawCallback(6,
           new ::grpc::internal::CallbackUnaryHandler< ::grpc::ByteBuffer, ::grpc::ByteBuffer>(
             [this](
                    ::grpc::CallbackServerContext* context, const ::grpc::ByteBuffer* request, ::grpc::ByteBuffer* response) { return this->post_click(context, request, response); }));
@@ -5048,7 +5464,7 @@ class MaaFrameworkController final {
     void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
     WithRawCallbackMethod_post_swipe() {
-      ::grpc::Service::MarkMethodRawCallback(5,
+      ::grpc::Service::MarkMethodRawCallback(7,
           new ::grpc::internal::CallbackUnaryHandler< ::grpc::ByteBuffer, ::grpc::ByteBuffer>(
             [this](
                    ::grpc::CallbackServerContext* context, const ::grpc::ByteBuffer* request, ::grpc::ByteBuffer* response) { return this->post_swipe(context, request, response); }));
@@ -5070,7 +5486,7 @@ class MaaFrameworkController final {
     void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
     WithRawCallbackMethod_post_press_key() {
-      ::grpc::Service::MarkMethodRawCallback(6,
+      ::grpc::Service::MarkMethodRawCallback(8,
           new ::grpc::internal::CallbackUnaryHandler< ::grpc::ByteBuffer, ::grpc::ByteBuffer>(
             [this](
                    ::grpc::CallbackServerContext* context, const ::grpc::ByteBuffer* request, ::grpc::ByteBuffer* response) { return this->post_press_key(context, request, response); }));
@@ -5092,7 +5508,7 @@ class MaaFrameworkController final {
     void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
     WithRawCallbackMethod_post_touch_down() {
-      ::grpc::Service::MarkMethodRawCallback(7,
+      ::grpc::Service::MarkMethodRawCallback(9,
           new ::grpc::internal::CallbackUnaryHandler< ::grpc::ByteBuffer, ::grpc::ByteBuffer>(
             [this](
                    ::grpc::CallbackServerContext* context, const ::grpc::ByteBuffer* request, ::grpc::ByteBuffer* response) { return this->post_touch_down(context, request, response); }));
@@ -5114,7 +5530,7 @@ class MaaFrameworkController final {
     void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
     WithRawCallbackMethod_post_touch_move() {
-      ::grpc::Service::MarkMethodRawCallback(8,
+      ::grpc::Service::MarkMethodRawCallback(10,
           new ::grpc::internal::CallbackUnaryHandler< ::grpc::ByteBuffer, ::grpc::ByteBuffer>(
             [this](
                    ::grpc::CallbackServerContext* context, const ::grpc::ByteBuffer* request, ::grpc::ByteBuffer* response) { return this->post_touch_move(context, request, response); }));
@@ -5136,7 +5552,7 @@ class MaaFrameworkController final {
     void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
     WithRawCallbackMethod_post_touch_up() {
-      ::grpc::Service::MarkMethodRawCallback(9,
+      ::grpc::Service::MarkMethodRawCallback(11,
           new ::grpc::internal::CallbackUnaryHandler< ::grpc::ByteBuffer, ::grpc::ByteBuffer>(
             [this](
                    ::grpc::CallbackServerContext* context, const ::grpc::ByteBuffer* request, ::grpc::ByteBuffer* response) { return this->post_touch_up(context, request, response); }));
@@ -5158,7 +5574,7 @@ class MaaFrameworkController final {
     void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
     WithRawCallbackMethod_post_screencap() {
-      ::grpc::Service::MarkMethodRawCallback(10,
+      ::grpc::Service::MarkMethodRawCallback(12,
           new ::grpc::internal::CallbackUnaryHandler< ::grpc::ByteBuffer, ::grpc::ByteBuffer>(
             [this](
                    ::grpc::CallbackServerContext* context, const ::grpc::ByteBuffer* request, ::grpc::ByteBuffer* response) { return this->post_screencap(context, request, response); }));
@@ -5180,7 +5596,7 @@ class MaaFrameworkController final {
     void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
     WithRawCallbackMethod_status() {
-      ::grpc::Service::MarkMethodRawCallback(11,
+      ::grpc::Service::MarkMethodRawCallback(13,
           new ::grpc::internal::CallbackUnaryHandler< ::grpc::ByteBuffer, ::grpc::ByteBuffer>(
             [this](
                    ::grpc::CallbackServerContext* context, const ::grpc::ByteBuffer* request, ::grpc::ByteBuffer* response) { return this->status(context, request, response); }));
@@ -5202,7 +5618,7 @@ class MaaFrameworkController final {
     void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
     WithRawCallbackMethod_wait() {
-      ::grpc::Service::MarkMethodRawCallback(12,
+      ::grpc::Service::MarkMethodRawCallback(14,
           new ::grpc::internal::CallbackUnaryHandler< ::grpc::ByteBuffer, ::grpc::ByteBuffer>(
             [this](
                    ::grpc::CallbackServerContext* context, const ::grpc::ByteBuffer* request, ::grpc::ByteBuffer* response) { return this->wait(context, request, response); }));
@@ -5224,7 +5640,7 @@ class MaaFrameworkController final {
     void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
     WithRawCallbackMethod_connected() {
-      ::grpc::Service::MarkMethodRawCallback(13,
+      ::grpc::Service::MarkMethodRawCallback(15,
           new ::grpc::internal::CallbackUnaryHandler< ::grpc::ByteBuffer, ::grpc::ByteBuffer>(
             [this](
                    ::grpc::CallbackServerContext* context, const ::grpc::ByteBuffer* request, ::grpc::ByteBuffer* response) { return this->connected(context, request, response); }));
@@ -5246,7 +5662,7 @@ class MaaFrameworkController final {
     void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
     WithRawCallbackMethod_image() {
-      ::grpc::Service::MarkMethodRawCallback(14,
+      ::grpc::Service::MarkMethodRawCallback(16,
           new ::grpc::internal::CallbackUnaryHandler< ::grpc::ByteBuffer, ::grpc::ByteBuffer>(
             [this](
                    ::grpc::CallbackServerContext* context, const ::grpc::ByteBuffer* request, ::grpc::ByteBuffer* response) { return this->image(context, request, response); }));
@@ -5268,7 +5684,7 @@ class MaaFrameworkController final {
     void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
     WithRawCallbackMethod_uuid() {
-      ::grpc::Service::MarkMethodRawCallback(15,
+      ::grpc::Service::MarkMethodRawCallback(17,
           new ::grpc::internal::CallbackUnaryHandler< ::grpc::ByteBuffer, ::grpc::ByteBuffer>(
             [this](
                    ::grpc::CallbackServerContext* context, const ::grpc::ByteBuffer* request, ::grpc::ByteBuffer* response) { return this->uuid(context, request, response); }));
@@ -5285,31 +5701,31 @@ class MaaFrameworkController final {
       ::grpc::CallbackServerContext* /*context*/, const ::grpc::ByteBuffer* /*request*/, ::grpc::ByteBuffer* /*response*/)  { return nullptr; }
   };
   template <class BaseClass>
-  class WithStreamedUnaryMethod_create : public BaseClass {
+  class WithStreamedUnaryMethod_create_adb : public BaseClass {
    private:
     void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
-    WithStreamedUnaryMethod_create() {
+    WithStreamedUnaryMethod_create_adb() {
       ::grpc::Service::MarkMethodStreamed(0,
         new ::grpc::internal::StreamedUnaryHandler<
-          ::maa::AdbControlleRequest, ::maa::HandleResponse>(
+          ::maa::AdbControllerRequest, ::maa::HandleResponse>(
             [this](::grpc::ServerContext* context,
                    ::grpc::ServerUnaryStreamer<
-                     ::maa::AdbControlleRequest, ::maa::HandleResponse>* streamer) {
-                       return this->Streamedcreate(context,
+                     ::maa::AdbControllerRequest, ::maa::HandleResponse>* streamer) {
+                       return this->Streamedcreate_adb(context,
                          streamer);
                   }));
     }
-    ~WithStreamedUnaryMethod_create() override {
+    ~WithStreamedUnaryMethod_create_adb() override {
       BaseClassMustBeDerivedFromService(this);
     }
     // disable regular version of this method
-    ::grpc::Status create(::grpc::ServerContext* /*context*/, const ::maa::AdbControlleRequest* /*request*/, ::maa::HandleResponse* /*response*/) override {
+    ::grpc::Status create_adb(::grpc::ServerContext* /*context*/, const ::maa::AdbControllerRequest* /*request*/, ::maa::HandleResponse* /*response*/) override {
       abort();
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
     // replace default version of method with streamed unary
-    virtual ::grpc::Status Streamedcreate(::grpc::ServerContext* context, ::grpc::ServerUnaryStreamer< ::maa::AdbControlleRequest,::maa::HandleResponse>* server_unary_streamer) = 0;
+    virtual ::grpc::Status Streamedcreate_adb(::grpc::ServerContext* context, ::grpc::ServerUnaryStreamer< ::maa::AdbControllerRequest,::maa::HandleResponse>* server_unary_streamer) = 0;
   };
   template <class BaseClass>
   class WithStreamedUnaryMethod_destroy : public BaseClass {
@@ -5339,12 +5755,39 @@ class MaaFrameworkController final {
     virtual ::grpc::Status Streameddestroy(::grpc::ServerContext* context, ::grpc::ServerUnaryStreamer< ::maa::HandleRequest,::maa::EmptyResponse>* server_unary_streamer) = 0;
   };
   template <class BaseClass>
+  class WithStreamedUnaryMethod_submit_custom_controller : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    WithStreamedUnaryMethod_submit_custom_controller() {
+      ::grpc::Service::MarkMethodStreamed(3,
+        new ::grpc::internal::StreamedUnaryHandler<
+          ::maa::SubmitCustomControllerRequest, ::maa::EmptyResponse>(
+            [this](::grpc::ServerContext* context,
+                   ::grpc::ServerUnaryStreamer<
+                     ::maa::SubmitCustomControllerRequest, ::maa::EmptyResponse>* streamer) {
+                       return this->Streamedsubmit_custom_controller(context,
+                         streamer);
+                  }));
+    }
+    ~WithStreamedUnaryMethod_submit_custom_controller() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable regular version of this method
+    ::grpc::Status submit_custom_controller(::grpc::ServerContext* /*context*/, const ::maa::SubmitCustomControllerRequest* /*request*/, ::maa::EmptyResponse* /*response*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    // replace default version of method with streamed unary
+    virtual ::grpc::Status Streamedsubmit_custom_controller(::grpc::ServerContext* context, ::grpc::ServerUnaryStreamer< ::maa::SubmitCustomControllerRequest,::maa::EmptyResponse>* server_unary_streamer) = 0;
+  };
+  template <class BaseClass>
   class WithStreamedUnaryMethod_set_option : public BaseClass {
    private:
     void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
     WithStreamedUnaryMethod_set_option() {
-      ::grpc::Service::MarkMethodStreamed(2,
+      ::grpc::Service::MarkMethodStreamed(4,
         new ::grpc::internal::StreamedUnaryHandler<
           ::maa::ControllerSetOptionRequest, ::maa::EmptyResponse>(
             [this](::grpc::ServerContext* context,
@@ -5371,7 +5814,7 @@ class MaaFrameworkController final {
     void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
     WithStreamedUnaryMethod_post_connection() {
-      ::grpc::Service::MarkMethodStreamed(3,
+      ::grpc::Service::MarkMethodStreamed(5,
         new ::grpc::internal::StreamedUnaryHandler<
           ::maa::HandleRequest, ::maa::IdResponse>(
             [this](::grpc::ServerContext* context,
@@ -5398,7 +5841,7 @@ class MaaFrameworkController final {
     void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
     WithStreamedUnaryMethod_post_click() {
-      ::grpc::Service::MarkMethodStreamed(4,
+      ::grpc::Service::MarkMethodStreamed(6,
         new ::grpc::internal::StreamedUnaryHandler<
           ::maa::ControllerPostClickRequest, ::maa::IdResponse>(
             [this](::grpc::ServerContext* context,
@@ -5425,7 +5868,7 @@ class MaaFrameworkController final {
     void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
     WithStreamedUnaryMethod_post_swipe() {
-      ::grpc::Service::MarkMethodStreamed(5,
+      ::grpc::Service::MarkMethodStreamed(7,
         new ::grpc::internal::StreamedUnaryHandler<
           ::maa::ControllerPostSwipeRequest, ::maa::IdResponse>(
             [this](::grpc::ServerContext* context,
@@ -5452,7 +5895,7 @@ class MaaFrameworkController final {
     void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
     WithStreamedUnaryMethod_post_press_key() {
-      ::grpc::Service::MarkMethodStreamed(6,
+      ::grpc::Service::MarkMethodStreamed(8,
         new ::grpc::internal::StreamedUnaryHandler<
           ::maa::ControllerPostKeyRequest, ::maa::IdResponse>(
             [this](::grpc::ServerContext* context,
@@ -5479,7 +5922,7 @@ class MaaFrameworkController final {
     void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
     WithStreamedUnaryMethod_post_touch_down() {
-      ::grpc::Service::MarkMethodStreamed(7,
+      ::grpc::Service::MarkMethodStreamed(9,
         new ::grpc::internal::StreamedUnaryHandler<
           ::maa::ControllerPostTouchRequest, ::maa::IdResponse>(
             [this](::grpc::ServerContext* context,
@@ -5506,7 +5949,7 @@ class MaaFrameworkController final {
     void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
     WithStreamedUnaryMethod_post_touch_move() {
-      ::grpc::Service::MarkMethodStreamed(8,
+      ::grpc::Service::MarkMethodStreamed(10,
         new ::grpc::internal::StreamedUnaryHandler<
           ::maa::ControllerPostTouchRequest, ::maa::IdResponse>(
             [this](::grpc::ServerContext* context,
@@ -5533,7 +5976,7 @@ class MaaFrameworkController final {
     void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
     WithStreamedUnaryMethod_post_touch_up() {
-      ::grpc::Service::MarkMethodStreamed(9,
+      ::grpc::Service::MarkMethodStreamed(11,
         new ::grpc::internal::StreamedUnaryHandler<
           ::maa::ControllerPostTouchRequest, ::maa::IdResponse>(
             [this](::grpc::ServerContext* context,
@@ -5560,7 +6003,7 @@ class MaaFrameworkController final {
     void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
     WithStreamedUnaryMethod_post_screencap() {
-      ::grpc::Service::MarkMethodStreamed(10,
+      ::grpc::Service::MarkMethodStreamed(12,
         new ::grpc::internal::StreamedUnaryHandler<
           ::maa::HandleRequest, ::maa::IdResponse>(
             [this](::grpc::ServerContext* context,
@@ -5587,7 +6030,7 @@ class MaaFrameworkController final {
     void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
     WithStreamedUnaryMethod_status() {
-      ::grpc::Service::MarkMethodStreamed(11,
+      ::grpc::Service::MarkMethodStreamed(13,
         new ::grpc::internal::StreamedUnaryHandler<
           ::maa::HandleIdRequest, ::maa::StatusResponse>(
             [this](::grpc::ServerContext* context,
@@ -5614,7 +6057,7 @@ class MaaFrameworkController final {
     void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
     WithStreamedUnaryMethod_wait() {
-      ::grpc::Service::MarkMethodStreamed(12,
+      ::grpc::Service::MarkMethodStreamed(14,
         new ::grpc::internal::StreamedUnaryHandler<
           ::maa::HandleIdRequest, ::maa::EmptyResponse>(
             [this](::grpc::ServerContext* context,
@@ -5641,7 +6084,7 @@ class MaaFrameworkController final {
     void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
     WithStreamedUnaryMethod_connected() {
-      ::grpc::Service::MarkMethodStreamed(13,
+      ::grpc::Service::MarkMethodStreamed(15,
         new ::grpc::internal::StreamedUnaryHandler<
           ::maa::HandleRequest, ::maa::BoolResponse>(
             [this](::grpc::ServerContext* context,
@@ -5668,7 +6111,7 @@ class MaaFrameworkController final {
     void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
     WithStreamedUnaryMethod_image() {
-      ::grpc::Service::MarkMethodStreamed(14,
+      ::grpc::Service::MarkMethodStreamed(16,
         new ::grpc::internal::StreamedUnaryHandler<
           ::maa::ControllerGetImageRequest, ::maa::EmptyResponse>(
             [this](::grpc::ServerContext* context,
@@ -5695,7 +6138,7 @@ class MaaFrameworkController final {
     void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
     WithStreamedUnaryMethod_uuid() {
-      ::grpc::Service::MarkMethodStreamed(15,
+      ::grpc::Service::MarkMethodStreamed(17,
         new ::grpc::internal::StreamedUnaryHandler<
           ::maa::HandleRequest, ::maa::StringResponse>(
             [this](::grpc::ServerContext* context,
@@ -5716,9 +6159,5158 @@ class MaaFrameworkController final {
     // replace default version of method with streamed unary
     virtual ::grpc::Status Streameduuid(::grpc::ServerContext* context, ::grpc::ServerUnaryStreamer< ::maa::HandleRequest,::maa::StringResponse>* server_unary_streamer) = 0;
   };
-  typedef WithStreamedUnaryMethod_create<WithStreamedUnaryMethod_destroy<WithStreamedUnaryMethod_set_option<WithStreamedUnaryMethod_post_connection<WithStreamedUnaryMethod_post_click<WithStreamedUnaryMethod_post_swipe<WithStreamedUnaryMethod_post_press_key<WithStreamedUnaryMethod_post_touch_down<WithStreamedUnaryMethod_post_touch_move<WithStreamedUnaryMethod_post_touch_up<WithStreamedUnaryMethod_post_screencap<WithStreamedUnaryMethod_status<WithStreamedUnaryMethod_wait<WithStreamedUnaryMethod_connected<WithStreamedUnaryMethod_image<WithStreamedUnaryMethod_uuid<Service > > > > > > > > > > > > > > > > StreamedUnaryService;
+  typedef WithStreamedUnaryMethod_create_adb<WithStreamedUnaryMethod_destroy<WithStreamedUnaryMethod_submit_custom_controller<WithStreamedUnaryMethod_set_option<WithStreamedUnaryMethod_post_connection<WithStreamedUnaryMethod_post_click<WithStreamedUnaryMethod_post_swipe<WithStreamedUnaryMethod_post_press_key<WithStreamedUnaryMethod_post_touch_down<WithStreamedUnaryMethod_post_touch_move<WithStreamedUnaryMethod_post_touch_up<WithStreamedUnaryMethod_post_screencap<WithStreamedUnaryMethod_status<WithStreamedUnaryMethod_wait<WithStreamedUnaryMethod_connected<WithStreamedUnaryMethod_image<WithStreamedUnaryMethod_uuid<Service > > > > > > > > > > > > > > > > > StreamedUnaryService;
+  template <class BaseClass>
+  class WithSplitStreamingMethod_create_custom : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    WithSplitStreamingMethod_create_custom() {
+      ::grpc::Service::MarkMethodStreamed(2,
+        new ::grpc::internal::SplitServerStreamingHandler<
+          ::maa::CustomControllerRequest, ::maa::CustomControllerResponse>(
+            [this](::grpc::ServerContext* context,
+                   ::grpc::ServerSplitStreamer<
+                     ::maa::CustomControllerRequest, ::maa::CustomControllerResponse>* streamer) {
+                       return this->Streamedcreate_custom(context,
+                         streamer);
+                  }));
+    }
+    ~WithSplitStreamingMethod_create_custom() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable regular version of this method
+    ::grpc::Status create_custom(::grpc::ServerContext* /*context*/, const ::maa::CustomControllerRequest* /*request*/, ::grpc::ServerWriter< ::maa::CustomControllerResponse>* /*writer*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    // replace default version of method with split streamed
+    virtual ::grpc::Status Streamedcreate_custom(::grpc::ServerContext* context, ::grpc::ServerSplitStreamer< ::maa::CustomControllerRequest,::maa::CustomControllerResponse>* server_split_streamer) = 0;
+  };
+  typedef WithSplitStreamingMethod_create_custom<Service > SplitStreamedService;
+  typedef WithStreamedUnaryMethod_create_adb<WithStreamedUnaryMethod_destroy<WithSplitStreamingMethod_create_custom<WithStreamedUnaryMethod_submit_custom_controller<WithStreamedUnaryMethod_set_option<WithStreamedUnaryMethod_post_connection<WithStreamedUnaryMethod_post_click<WithStreamedUnaryMethod_post_swipe<WithStreamedUnaryMethod_post_press_key<WithStreamedUnaryMethod_post_touch_down<WithStreamedUnaryMethod_post_touch_move<WithStreamedUnaryMethod_post_touch_up<WithStreamedUnaryMethod_post_screencap<WithStreamedUnaryMethod_status<WithStreamedUnaryMethod_wait<WithStreamedUnaryMethod_connected<WithStreamedUnaryMethod_image<WithStreamedUnaryMethod_uuid<Service > > > > > > > > > > > > > > > > > > StreamedService;
+};
+
+class MaaFrameworkInstance final {
+ public:
+  static constexpr char const* service_full_name() {
+    return "maa.MaaFrameworkInstance";
+  }
+  class StubInterface {
+   public:
+    virtual ~StubInterface() {}
+    virtual ::grpc::Status create(::grpc::ClientContext* context, const ::maa::IdRequest& request, ::maa::HandleResponse* response) = 0;
+    std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::maa::HandleResponse>> Asynccreate(::grpc::ClientContext* context, const ::maa::IdRequest& request, ::grpc::CompletionQueue* cq) {
+      return std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::maa::HandleResponse>>(AsynccreateRaw(context, request, cq));
+    }
+    std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::maa::HandleResponse>> PrepareAsynccreate(::grpc::ClientContext* context, const ::maa::IdRequest& request, ::grpc::CompletionQueue* cq) {
+      return std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::maa::HandleResponse>>(PrepareAsynccreateRaw(context, request, cq));
+    }
+    virtual ::grpc::Status destroy(::grpc::ClientContext* context, const ::maa::HandleRequest& request, ::maa::EmptyResponse* response) = 0;
+    std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::maa::EmptyResponse>> Asyncdestroy(::grpc::ClientContext* context, const ::maa::HandleRequest& request, ::grpc::CompletionQueue* cq) {
+      return std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::maa::EmptyResponse>>(AsyncdestroyRaw(context, request, cq));
+    }
+    std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::maa::EmptyResponse>> PrepareAsyncdestroy(::grpc::ClientContext* context, const ::maa::HandleRequest& request, ::grpc::CompletionQueue* cq) {
+      return std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::maa::EmptyResponse>>(PrepareAsyncdestroyRaw(context, request, cq));
+    }
+    std::unique_ptr< ::grpc::ClientReaderInterface< ::maa::CustomRecognizerResponse>> register_custom_recognizer(::grpc::ClientContext* context, const ::maa::CustomRecognizerRequest& request) {
+      return std::unique_ptr< ::grpc::ClientReaderInterface< ::maa::CustomRecognizerResponse>>(register_custom_recognizerRaw(context, request));
+    }
+    std::unique_ptr< ::grpc::ClientAsyncReaderInterface< ::maa::CustomRecognizerResponse>> Asyncregister_custom_recognizer(::grpc::ClientContext* context, const ::maa::CustomRecognizerRequest& request, ::grpc::CompletionQueue* cq, void* tag) {
+      return std::unique_ptr< ::grpc::ClientAsyncReaderInterface< ::maa::CustomRecognizerResponse>>(Asyncregister_custom_recognizerRaw(context, request, cq, tag));
+    }
+    std::unique_ptr< ::grpc::ClientAsyncReaderInterface< ::maa::CustomRecognizerResponse>> PrepareAsyncregister_custom_recognizer(::grpc::ClientContext* context, const ::maa::CustomRecognizerRequest& request, ::grpc::CompletionQueue* cq) {
+      return std::unique_ptr< ::grpc::ClientAsyncReaderInterface< ::maa::CustomRecognizerResponse>>(PrepareAsyncregister_custom_recognizerRaw(context, request, cq));
+    }
+    virtual ::grpc::Status submit_custom_recognizer(::grpc::ClientContext* context, const ::maa::SubmitCustomRecognizerRequest& request, ::maa::EmptyResponse* response) = 0;
+    std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::maa::EmptyResponse>> Asyncsubmit_custom_recognizer(::grpc::ClientContext* context, const ::maa::SubmitCustomRecognizerRequest& request, ::grpc::CompletionQueue* cq) {
+      return std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::maa::EmptyResponse>>(Asyncsubmit_custom_recognizerRaw(context, request, cq));
+    }
+    std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::maa::EmptyResponse>> PrepareAsyncsubmit_custom_recognizer(::grpc::ClientContext* context, const ::maa::SubmitCustomRecognizerRequest& request, ::grpc::CompletionQueue* cq) {
+      return std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::maa::EmptyResponse>>(PrepareAsyncsubmit_custom_recognizerRaw(context, request, cq));
+    }
+    virtual ::grpc::Status unregister_custom_recognizer(::grpc::ClientContext* context, const ::maa::HandleStringRequest& request, ::maa::EmptyResponse* response) = 0;
+    std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::maa::EmptyResponse>> Asyncunregister_custom_recognizer(::grpc::ClientContext* context, const ::maa::HandleStringRequest& request, ::grpc::CompletionQueue* cq) {
+      return std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::maa::EmptyResponse>>(Asyncunregister_custom_recognizerRaw(context, request, cq));
+    }
+    std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::maa::EmptyResponse>> PrepareAsyncunregister_custom_recognizer(::grpc::ClientContext* context, const ::maa::HandleStringRequest& request, ::grpc::CompletionQueue* cq) {
+      return std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::maa::EmptyResponse>>(PrepareAsyncunregister_custom_recognizerRaw(context, request, cq));
+    }
+    virtual ::grpc::Status clear_custom_recognizer(::grpc::ClientContext* context, const ::maa::HandleRequest& request, ::maa::EmptyResponse* response) = 0;
+    std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::maa::EmptyResponse>> Asyncclear_custom_recognizer(::grpc::ClientContext* context, const ::maa::HandleRequest& request, ::grpc::CompletionQueue* cq) {
+      return std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::maa::EmptyResponse>>(Asyncclear_custom_recognizerRaw(context, request, cq));
+    }
+    std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::maa::EmptyResponse>> PrepareAsyncclear_custom_recognizer(::grpc::ClientContext* context, const ::maa::HandleRequest& request, ::grpc::CompletionQueue* cq) {
+      return std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::maa::EmptyResponse>>(PrepareAsyncclear_custom_recognizerRaw(context, request, cq));
+    }
+    std::unique_ptr< ::grpc::ClientReaderInterface< ::maa::CustomRecognizerResponse>> register_custom_action(::grpc::ClientContext* context, const ::maa::CustomRecognizerRequest& request) {
+      return std::unique_ptr< ::grpc::ClientReaderInterface< ::maa::CustomRecognizerResponse>>(register_custom_actionRaw(context, request));
+    }
+    std::unique_ptr< ::grpc::ClientAsyncReaderInterface< ::maa::CustomRecognizerResponse>> Asyncregister_custom_action(::grpc::ClientContext* context, const ::maa::CustomRecognizerRequest& request, ::grpc::CompletionQueue* cq, void* tag) {
+      return std::unique_ptr< ::grpc::ClientAsyncReaderInterface< ::maa::CustomRecognizerResponse>>(Asyncregister_custom_actionRaw(context, request, cq, tag));
+    }
+    std::unique_ptr< ::grpc::ClientAsyncReaderInterface< ::maa::CustomRecognizerResponse>> PrepareAsyncregister_custom_action(::grpc::ClientContext* context, const ::maa::CustomRecognizerRequest& request, ::grpc::CompletionQueue* cq) {
+      return std::unique_ptr< ::grpc::ClientAsyncReaderInterface< ::maa::CustomRecognizerResponse>>(PrepareAsyncregister_custom_actionRaw(context, request, cq));
+    }
+    virtual ::grpc::Status submit_custom_action(::grpc::ClientContext* context, const ::maa::SubmitCustomRecognizerRequest& request, ::maa::EmptyResponse* response) = 0;
+    std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::maa::EmptyResponse>> Asyncsubmit_custom_action(::grpc::ClientContext* context, const ::maa::SubmitCustomRecognizerRequest& request, ::grpc::CompletionQueue* cq) {
+      return std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::maa::EmptyResponse>>(Asyncsubmit_custom_actionRaw(context, request, cq));
+    }
+    std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::maa::EmptyResponse>> PrepareAsyncsubmit_custom_action(::grpc::ClientContext* context, const ::maa::SubmitCustomRecognizerRequest& request, ::grpc::CompletionQueue* cq) {
+      return std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::maa::EmptyResponse>>(PrepareAsyncsubmit_custom_actionRaw(context, request, cq));
+    }
+    virtual ::grpc::Status unregister_custom_action(::grpc::ClientContext* context, const ::maa::HandleStringRequest& request, ::maa::EmptyResponse* response) = 0;
+    std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::maa::EmptyResponse>> Asyncunregister_custom_action(::grpc::ClientContext* context, const ::maa::HandleStringRequest& request, ::grpc::CompletionQueue* cq) {
+      return std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::maa::EmptyResponse>>(Asyncunregister_custom_actionRaw(context, request, cq));
+    }
+    std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::maa::EmptyResponse>> PrepareAsyncunregister_custom_action(::grpc::ClientContext* context, const ::maa::HandleStringRequest& request, ::grpc::CompletionQueue* cq) {
+      return std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::maa::EmptyResponse>>(PrepareAsyncunregister_custom_actionRaw(context, request, cq));
+    }
+    virtual ::grpc::Status clear_custom_action(::grpc::ClientContext* context, const ::maa::HandleRequest& request, ::maa::EmptyResponse* response) = 0;
+    std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::maa::EmptyResponse>> Asyncclear_custom_action(::grpc::ClientContext* context, const ::maa::HandleRequest& request, ::grpc::CompletionQueue* cq) {
+      return std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::maa::EmptyResponse>>(Asyncclear_custom_actionRaw(context, request, cq));
+    }
+    std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::maa::EmptyResponse>> PrepareAsyncclear_custom_action(::grpc::ClientContext* context, const ::maa::HandleRequest& request, ::grpc::CompletionQueue* cq) {
+      return std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::maa::EmptyResponse>>(PrepareAsyncclear_custom_actionRaw(context, request, cq));
+    }
+    virtual ::grpc::Status bind_resource(::grpc::ClientContext* context, const ::maa::HandleRequest& request, ::maa::EmptyResponse* response) = 0;
+    std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::maa::EmptyResponse>> Asyncbind_resource(::grpc::ClientContext* context, const ::maa::HandleRequest& request, ::grpc::CompletionQueue* cq) {
+      return std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::maa::EmptyResponse>>(Asyncbind_resourceRaw(context, request, cq));
+    }
+    std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::maa::EmptyResponse>> PrepareAsyncbind_resource(::grpc::ClientContext* context, const ::maa::HandleRequest& request, ::grpc::CompletionQueue* cq) {
+      return std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::maa::EmptyResponse>>(PrepareAsyncbind_resourceRaw(context, request, cq));
+    }
+    virtual ::grpc::Status bind_controller(::grpc::ClientContext* context, const ::maa::HandleRequest& request, ::maa::EmptyResponse* response) = 0;
+    std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::maa::EmptyResponse>> Asyncbind_controller(::grpc::ClientContext* context, const ::maa::HandleRequest& request, ::grpc::CompletionQueue* cq) {
+      return std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::maa::EmptyResponse>>(Asyncbind_controllerRaw(context, request, cq));
+    }
+    std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::maa::EmptyResponse>> PrepareAsyncbind_controller(::grpc::ClientContext* context, const ::maa::HandleRequest& request, ::grpc::CompletionQueue* cq) {
+      return std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::maa::EmptyResponse>>(PrepareAsyncbind_controllerRaw(context, request, cq));
+    }
+    virtual ::grpc::Status inited(::grpc::ClientContext* context, const ::maa::HandleRequest& request, ::maa::BoolResponse* response) = 0;
+    std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::maa::BoolResponse>> Asyncinited(::grpc::ClientContext* context, const ::maa::HandleRequest& request, ::grpc::CompletionQueue* cq) {
+      return std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::maa::BoolResponse>>(AsyncinitedRaw(context, request, cq));
+    }
+    std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::maa::BoolResponse>> PrepareAsyncinited(::grpc::ClientContext* context, const ::maa::HandleRequest& request, ::grpc::CompletionQueue* cq) {
+      return std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::maa::BoolResponse>>(PrepareAsyncinitedRaw(context, request, cq));
+    }
+    virtual ::grpc::Status post_task(::grpc::ClientContext* context, const ::maa::InstancePostTaskRequest& request, ::maa::IdResponse* response) = 0;
+    std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::maa::IdResponse>> Asyncpost_task(::grpc::ClientContext* context, const ::maa::InstancePostTaskRequest& request, ::grpc::CompletionQueue* cq) {
+      return std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::maa::IdResponse>>(Asyncpost_taskRaw(context, request, cq));
+    }
+    std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::maa::IdResponse>> PrepareAsyncpost_task(::grpc::ClientContext* context, const ::maa::InstancePostTaskRequest& request, ::grpc::CompletionQueue* cq) {
+      return std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::maa::IdResponse>>(PrepareAsyncpost_taskRaw(context, request, cq));
+    }
+    virtual ::grpc::Status set_task_param(::grpc::ClientContext* context, const ::maa::InstanceSetTaskParamRequest& request, ::maa::EmptyResponse* response) = 0;
+    std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::maa::EmptyResponse>> Asyncset_task_param(::grpc::ClientContext* context, const ::maa::InstanceSetTaskParamRequest& request, ::grpc::CompletionQueue* cq) {
+      return std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::maa::EmptyResponse>>(Asyncset_task_paramRaw(context, request, cq));
+    }
+    std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::maa::EmptyResponse>> PrepareAsyncset_task_param(::grpc::ClientContext* context, const ::maa::InstanceSetTaskParamRequest& request, ::grpc::CompletionQueue* cq) {
+      return std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::maa::EmptyResponse>>(PrepareAsyncset_task_paramRaw(context, request, cq));
+    }
+    virtual ::grpc::Status status(::grpc::ClientContext* context, const ::maa::HandleIdRequest& request, ::maa::StatusResponse* response) = 0;
+    std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::maa::StatusResponse>> Asyncstatus(::grpc::ClientContext* context, const ::maa::HandleIdRequest& request, ::grpc::CompletionQueue* cq) {
+      return std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::maa::StatusResponse>>(AsyncstatusRaw(context, request, cq));
+    }
+    std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::maa::StatusResponse>> PrepareAsyncstatus(::grpc::ClientContext* context, const ::maa::HandleIdRequest& request, ::grpc::CompletionQueue* cq) {
+      return std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::maa::StatusResponse>>(PrepareAsyncstatusRaw(context, request, cq));
+    }
+    virtual ::grpc::Status wait(::grpc::ClientContext* context, const ::maa::HandleIdRequest& request, ::maa::EmptyResponse* response) = 0;
+    std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::maa::EmptyResponse>> Asyncwait(::grpc::ClientContext* context, const ::maa::HandleIdRequest& request, ::grpc::CompletionQueue* cq) {
+      return std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::maa::EmptyResponse>>(AsyncwaitRaw(context, request, cq));
+    }
+    std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::maa::EmptyResponse>> PrepareAsyncwait(::grpc::ClientContext* context, const ::maa::HandleIdRequest& request, ::grpc::CompletionQueue* cq) {
+      return std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::maa::EmptyResponse>>(PrepareAsyncwaitRaw(context, request, cq));
+    }
+    virtual ::grpc::Status all_finished(::grpc::ClientContext* context, const ::maa::HandleRequest& request, ::maa::BoolResponse* response) = 0;
+    std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::maa::BoolResponse>> Asyncall_finished(::grpc::ClientContext* context, const ::maa::HandleRequest& request, ::grpc::CompletionQueue* cq) {
+      return std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::maa::BoolResponse>>(Asyncall_finishedRaw(context, request, cq));
+    }
+    std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::maa::BoolResponse>> PrepareAsyncall_finished(::grpc::ClientContext* context, const ::maa::HandleRequest& request, ::grpc::CompletionQueue* cq) {
+      return std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::maa::BoolResponse>>(PrepareAsyncall_finishedRaw(context, request, cq));
+    }
+    virtual ::grpc::Status stop(::grpc::ClientContext* context, const ::maa::HandleRequest& request, ::maa::EmptyResponse* response) = 0;
+    std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::maa::EmptyResponse>> Asyncstop(::grpc::ClientContext* context, const ::maa::HandleRequest& request, ::grpc::CompletionQueue* cq) {
+      return std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::maa::EmptyResponse>>(AsyncstopRaw(context, request, cq));
+    }
+    std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::maa::EmptyResponse>> PrepareAsyncstop(::grpc::ClientContext* context, const ::maa::HandleRequest& request, ::grpc::CompletionQueue* cq) {
+      return std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::maa::EmptyResponse>>(PrepareAsyncstopRaw(context, request, cq));
+    }
+    virtual ::grpc::Status resource(::grpc::ClientContext* context, const ::maa::HandleRequest& request, ::maa::HandleRequest* response) = 0;
+    std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::maa::HandleRequest>> Asyncresource(::grpc::ClientContext* context, const ::maa::HandleRequest& request, ::grpc::CompletionQueue* cq) {
+      return std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::maa::HandleRequest>>(AsyncresourceRaw(context, request, cq));
+    }
+    std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::maa::HandleRequest>> PrepareAsyncresource(::grpc::ClientContext* context, const ::maa::HandleRequest& request, ::grpc::CompletionQueue* cq) {
+      return std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::maa::HandleRequest>>(PrepareAsyncresourceRaw(context, request, cq));
+    }
+    virtual ::grpc::Status controller(::grpc::ClientContext* context, const ::maa::HandleRequest& request, ::maa::HandleRequest* response) = 0;
+    std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::maa::HandleRequest>> Asynccontroller(::grpc::ClientContext* context, const ::maa::HandleRequest& request, ::grpc::CompletionQueue* cq) {
+      return std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::maa::HandleRequest>>(AsynccontrollerRaw(context, request, cq));
+    }
+    std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::maa::HandleRequest>> PrepareAsynccontroller(::grpc::ClientContext* context, const ::maa::HandleRequest& request, ::grpc::CompletionQueue* cq) {
+      return std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::maa::HandleRequest>>(PrepareAsynccontrollerRaw(context, request, cq));
+    }
+    class async_interface {
+     public:
+      virtual ~async_interface() {}
+      virtual void create(::grpc::ClientContext* context, const ::maa::IdRequest* request, ::maa::HandleResponse* response, std::function<void(::grpc::Status)>) = 0;
+      virtual void create(::grpc::ClientContext* context, const ::maa::IdRequest* request, ::maa::HandleResponse* response, ::grpc::ClientUnaryReactor* reactor) = 0;
+      virtual void destroy(::grpc::ClientContext* context, const ::maa::HandleRequest* request, ::maa::EmptyResponse* response, std::function<void(::grpc::Status)>) = 0;
+      virtual void destroy(::grpc::ClientContext* context, const ::maa::HandleRequest* request, ::maa::EmptyResponse* response, ::grpc::ClientUnaryReactor* reactor) = 0;
+      virtual void register_custom_recognizer(::grpc::ClientContext* context, const ::maa::CustomRecognizerRequest* request, ::grpc::ClientReadReactor< ::maa::CustomRecognizerResponse>* reactor) = 0;
+      virtual void submit_custom_recognizer(::grpc::ClientContext* context, const ::maa::SubmitCustomRecognizerRequest* request, ::maa::EmptyResponse* response, std::function<void(::grpc::Status)>) = 0;
+      virtual void submit_custom_recognizer(::grpc::ClientContext* context, const ::maa::SubmitCustomRecognizerRequest* request, ::maa::EmptyResponse* response, ::grpc::ClientUnaryReactor* reactor) = 0;
+      virtual void unregister_custom_recognizer(::grpc::ClientContext* context, const ::maa::HandleStringRequest* request, ::maa::EmptyResponse* response, std::function<void(::grpc::Status)>) = 0;
+      virtual void unregister_custom_recognizer(::grpc::ClientContext* context, const ::maa::HandleStringRequest* request, ::maa::EmptyResponse* response, ::grpc::ClientUnaryReactor* reactor) = 0;
+      virtual void clear_custom_recognizer(::grpc::ClientContext* context, const ::maa::HandleRequest* request, ::maa::EmptyResponse* response, std::function<void(::grpc::Status)>) = 0;
+      virtual void clear_custom_recognizer(::grpc::ClientContext* context, const ::maa::HandleRequest* request, ::maa::EmptyResponse* response, ::grpc::ClientUnaryReactor* reactor) = 0;
+      virtual void register_custom_action(::grpc::ClientContext* context, const ::maa::CustomRecognizerRequest* request, ::grpc::ClientReadReactor< ::maa::CustomRecognizerResponse>* reactor) = 0;
+      virtual void submit_custom_action(::grpc::ClientContext* context, const ::maa::SubmitCustomRecognizerRequest* request, ::maa::EmptyResponse* response, std::function<void(::grpc::Status)>) = 0;
+      virtual void submit_custom_action(::grpc::ClientContext* context, const ::maa::SubmitCustomRecognizerRequest* request, ::maa::EmptyResponse* response, ::grpc::ClientUnaryReactor* reactor) = 0;
+      virtual void unregister_custom_action(::grpc::ClientContext* context, const ::maa::HandleStringRequest* request, ::maa::EmptyResponse* response, std::function<void(::grpc::Status)>) = 0;
+      virtual void unregister_custom_action(::grpc::ClientContext* context, const ::maa::HandleStringRequest* request, ::maa::EmptyResponse* response, ::grpc::ClientUnaryReactor* reactor) = 0;
+      virtual void clear_custom_action(::grpc::ClientContext* context, const ::maa::HandleRequest* request, ::maa::EmptyResponse* response, std::function<void(::grpc::Status)>) = 0;
+      virtual void clear_custom_action(::grpc::ClientContext* context, const ::maa::HandleRequest* request, ::maa::EmptyResponse* response, ::grpc::ClientUnaryReactor* reactor) = 0;
+      virtual void bind_resource(::grpc::ClientContext* context, const ::maa::HandleRequest* request, ::maa::EmptyResponse* response, std::function<void(::grpc::Status)>) = 0;
+      virtual void bind_resource(::grpc::ClientContext* context, const ::maa::HandleRequest* request, ::maa::EmptyResponse* response, ::grpc::ClientUnaryReactor* reactor) = 0;
+      virtual void bind_controller(::grpc::ClientContext* context, const ::maa::HandleRequest* request, ::maa::EmptyResponse* response, std::function<void(::grpc::Status)>) = 0;
+      virtual void bind_controller(::grpc::ClientContext* context, const ::maa::HandleRequest* request, ::maa::EmptyResponse* response, ::grpc::ClientUnaryReactor* reactor) = 0;
+      virtual void inited(::grpc::ClientContext* context, const ::maa::HandleRequest* request, ::maa::BoolResponse* response, std::function<void(::grpc::Status)>) = 0;
+      virtual void inited(::grpc::ClientContext* context, const ::maa::HandleRequest* request, ::maa::BoolResponse* response, ::grpc::ClientUnaryReactor* reactor) = 0;
+      virtual void post_task(::grpc::ClientContext* context, const ::maa::InstancePostTaskRequest* request, ::maa::IdResponse* response, std::function<void(::grpc::Status)>) = 0;
+      virtual void post_task(::grpc::ClientContext* context, const ::maa::InstancePostTaskRequest* request, ::maa::IdResponse* response, ::grpc::ClientUnaryReactor* reactor) = 0;
+      virtual void set_task_param(::grpc::ClientContext* context, const ::maa::InstanceSetTaskParamRequest* request, ::maa::EmptyResponse* response, std::function<void(::grpc::Status)>) = 0;
+      virtual void set_task_param(::grpc::ClientContext* context, const ::maa::InstanceSetTaskParamRequest* request, ::maa::EmptyResponse* response, ::grpc::ClientUnaryReactor* reactor) = 0;
+      virtual void status(::grpc::ClientContext* context, const ::maa::HandleIdRequest* request, ::maa::StatusResponse* response, std::function<void(::grpc::Status)>) = 0;
+      virtual void status(::grpc::ClientContext* context, const ::maa::HandleIdRequest* request, ::maa::StatusResponse* response, ::grpc::ClientUnaryReactor* reactor) = 0;
+      virtual void wait(::grpc::ClientContext* context, const ::maa::HandleIdRequest* request, ::maa::EmptyResponse* response, std::function<void(::grpc::Status)>) = 0;
+      virtual void wait(::grpc::ClientContext* context, const ::maa::HandleIdRequest* request, ::maa::EmptyResponse* response, ::grpc::ClientUnaryReactor* reactor) = 0;
+      virtual void all_finished(::grpc::ClientContext* context, const ::maa::HandleRequest* request, ::maa::BoolResponse* response, std::function<void(::grpc::Status)>) = 0;
+      virtual void all_finished(::grpc::ClientContext* context, const ::maa::HandleRequest* request, ::maa::BoolResponse* response, ::grpc::ClientUnaryReactor* reactor) = 0;
+      virtual void stop(::grpc::ClientContext* context, const ::maa::HandleRequest* request, ::maa::EmptyResponse* response, std::function<void(::grpc::Status)>) = 0;
+      virtual void stop(::grpc::ClientContext* context, const ::maa::HandleRequest* request, ::maa::EmptyResponse* response, ::grpc::ClientUnaryReactor* reactor) = 0;
+      virtual void resource(::grpc::ClientContext* context, const ::maa::HandleRequest* request, ::maa::HandleRequest* response, std::function<void(::grpc::Status)>) = 0;
+      virtual void resource(::grpc::ClientContext* context, const ::maa::HandleRequest* request, ::maa::HandleRequest* response, ::grpc::ClientUnaryReactor* reactor) = 0;
+      virtual void controller(::grpc::ClientContext* context, const ::maa::HandleRequest* request, ::maa::HandleRequest* response, std::function<void(::grpc::Status)>) = 0;
+      virtual void controller(::grpc::ClientContext* context, const ::maa::HandleRequest* request, ::maa::HandleRequest* response, ::grpc::ClientUnaryReactor* reactor) = 0;
+    };
+    typedef class async_interface experimental_async_interface;
+    virtual class async_interface* async() { return nullptr; }
+    class async_interface* experimental_async() { return async(); }
+   private:
+    virtual ::grpc::ClientAsyncResponseReaderInterface< ::maa::HandleResponse>* AsynccreateRaw(::grpc::ClientContext* context, const ::maa::IdRequest& request, ::grpc::CompletionQueue* cq) = 0;
+    virtual ::grpc::ClientAsyncResponseReaderInterface< ::maa::HandleResponse>* PrepareAsynccreateRaw(::grpc::ClientContext* context, const ::maa::IdRequest& request, ::grpc::CompletionQueue* cq) = 0;
+    virtual ::grpc::ClientAsyncResponseReaderInterface< ::maa::EmptyResponse>* AsyncdestroyRaw(::grpc::ClientContext* context, const ::maa::HandleRequest& request, ::grpc::CompletionQueue* cq) = 0;
+    virtual ::grpc::ClientAsyncResponseReaderInterface< ::maa::EmptyResponse>* PrepareAsyncdestroyRaw(::grpc::ClientContext* context, const ::maa::HandleRequest& request, ::grpc::CompletionQueue* cq) = 0;
+    virtual ::grpc::ClientReaderInterface< ::maa::CustomRecognizerResponse>* register_custom_recognizerRaw(::grpc::ClientContext* context, const ::maa::CustomRecognizerRequest& request) = 0;
+    virtual ::grpc::ClientAsyncReaderInterface< ::maa::CustomRecognizerResponse>* Asyncregister_custom_recognizerRaw(::grpc::ClientContext* context, const ::maa::CustomRecognizerRequest& request, ::grpc::CompletionQueue* cq, void* tag) = 0;
+    virtual ::grpc::ClientAsyncReaderInterface< ::maa::CustomRecognizerResponse>* PrepareAsyncregister_custom_recognizerRaw(::grpc::ClientContext* context, const ::maa::CustomRecognizerRequest& request, ::grpc::CompletionQueue* cq) = 0;
+    virtual ::grpc::ClientAsyncResponseReaderInterface< ::maa::EmptyResponse>* Asyncsubmit_custom_recognizerRaw(::grpc::ClientContext* context, const ::maa::SubmitCustomRecognizerRequest& request, ::grpc::CompletionQueue* cq) = 0;
+    virtual ::grpc::ClientAsyncResponseReaderInterface< ::maa::EmptyResponse>* PrepareAsyncsubmit_custom_recognizerRaw(::grpc::ClientContext* context, const ::maa::SubmitCustomRecognizerRequest& request, ::grpc::CompletionQueue* cq) = 0;
+    virtual ::grpc::ClientAsyncResponseReaderInterface< ::maa::EmptyResponse>* Asyncunregister_custom_recognizerRaw(::grpc::ClientContext* context, const ::maa::HandleStringRequest& request, ::grpc::CompletionQueue* cq) = 0;
+    virtual ::grpc::ClientAsyncResponseReaderInterface< ::maa::EmptyResponse>* PrepareAsyncunregister_custom_recognizerRaw(::grpc::ClientContext* context, const ::maa::HandleStringRequest& request, ::grpc::CompletionQueue* cq) = 0;
+    virtual ::grpc::ClientAsyncResponseReaderInterface< ::maa::EmptyResponse>* Asyncclear_custom_recognizerRaw(::grpc::ClientContext* context, const ::maa::HandleRequest& request, ::grpc::CompletionQueue* cq) = 0;
+    virtual ::grpc::ClientAsyncResponseReaderInterface< ::maa::EmptyResponse>* PrepareAsyncclear_custom_recognizerRaw(::grpc::ClientContext* context, const ::maa::HandleRequest& request, ::grpc::CompletionQueue* cq) = 0;
+    virtual ::grpc::ClientReaderInterface< ::maa::CustomRecognizerResponse>* register_custom_actionRaw(::grpc::ClientContext* context, const ::maa::CustomRecognizerRequest& request) = 0;
+    virtual ::grpc::ClientAsyncReaderInterface< ::maa::CustomRecognizerResponse>* Asyncregister_custom_actionRaw(::grpc::ClientContext* context, const ::maa::CustomRecognizerRequest& request, ::grpc::CompletionQueue* cq, void* tag) = 0;
+    virtual ::grpc::ClientAsyncReaderInterface< ::maa::CustomRecognizerResponse>* PrepareAsyncregister_custom_actionRaw(::grpc::ClientContext* context, const ::maa::CustomRecognizerRequest& request, ::grpc::CompletionQueue* cq) = 0;
+    virtual ::grpc::ClientAsyncResponseReaderInterface< ::maa::EmptyResponse>* Asyncsubmit_custom_actionRaw(::grpc::ClientContext* context, const ::maa::SubmitCustomRecognizerRequest& request, ::grpc::CompletionQueue* cq) = 0;
+    virtual ::grpc::ClientAsyncResponseReaderInterface< ::maa::EmptyResponse>* PrepareAsyncsubmit_custom_actionRaw(::grpc::ClientContext* context, const ::maa::SubmitCustomRecognizerRequest& request, ::grpc::CompletionQueue* cq) = 0;
+    virtual ::grpc::ClientAsyncResponseReaderInterface< ::maa::EmptyResponse>* Asyncunregister_custom_actionRaw(::grpc::ClientContext* context, const ::maa::HandleStringRequest& request, ::grpc::CompletionQueue* cq) = 0;
+    virtual ::grpc::ClientAsyncResponseReaderInterface< ::maa::EmptyResponse>* PrepareAsyncunregister_custom_actionRaw(::grpc::ClientContext* context, const ::maa::HandleStringRequest& request, ::grpc::CompletionQueue* cq) = 0;
+    virtual ::grpc::ClientAsyncResponseReaderInterface< ::maa::EmptyResponse>* Asyncclear_custom_actionRaw(::grpc::ClientContext* context, const ::maa::HandleRequest& request, ::grpc::CompletionQueue* cq) = 0;
+    virtual ::grpc::ClientAsyncResponseReaderInterface< ::maa::EmptyResponse>* PrepareAsyncclear_custom_actionRaw(::grpc::ClientContext* context, const ::maa::HandleRequest& request, ::grpc::CompletionQueue* cq) = 0;
+    virtual ::grpc::ClientAsyncResponseReaderInterface< ::maa::EmptyResponse>* Asyncbind_resourceRaw(::grpc::ClientContext* context, const ::maa::HandleRequest& request, ::grpc::CompletionQueue* cq) = 0;
+    virtual ::grpc::ClientAsyncResponseReaderInterface< ::maa::EmptyResponse>* PrepareAsyncbind_resourceRaw(::grpc::ClientContext* context, const ::maa::HandleRequest& request, ::grpc::CompletionQueue* cq) = 0;
+    virtual ::grpc::ClientAsyncResponseReaderInterface< ::maa::EmptyResponse>* Asyncbind_controllerRaw(::grpc::ClientContext* context, const ::maa::HandleRequest& request, ::grpc::CompletionQueue* cq) = 0;
+    virtual ::grpc::ClientAsyncResponseReaderInterface< ::maa::EmptyResponse>* PrepareAsyncbind_controllerRaw(::grpc::ClientContext* context, const ::maa::HandleRequest& request, ::grpc::CompletionQueue* cq) = 0;
+    virtual ::grpc::ClientAsyncResponseReaderInterface< ::maa::BoolResponse>* AsyncinitedRaw(::grpc::ClientContext* context, const ::maa::HandleRequest& request, ::grpc::CompletionQueue* cq) = 0;
+    virtual ::grpc::ClientAsyncResponseReaderInterface< ::maa::BoolResponse>* PrepareAsyncinitedRaw(::grpc::ClientContext* context, const ::maa::HandleRequest& request, ::grpc::CompletionQueue* cq) = 0;
+    virtual ::grpc::ClientAsyncResponseReaderInterface< ::maa::IdResponse>* Asyncpost_taskRaw(::grpc::ClientContext* context, const ::maa::InstancePostTaskRequest& request, ::grpc::CompletionQueue* cq) = 0;
+    virtual ::grpc::ClientAsyncResponseReaderInterface< ::maa::IdResponse>* PrepareAsyncpost_taskRaw(::grpc::ClientContext* context, const ::maa::InstancePostTaskRequest& request, ::grpc::CompletionQueue* cq) = 0;
+    virtual ::grpc::ClientAsyncResponseReaderInterface< ::maa::EmptyResponse>* Asyncset_task_paramRaw(::grpc::ClientContext* context, const ::maa::InstanceSetTaskParamRequest& request, ::grpc::CompletionQueue* cq) = 0;
+    virtual ::grpc::ClientAsyncResponseReaderInterface< ::maa::EmptyResponse>* PrepareAsyncset_task_paramRaw(::grpc::ClientContext* context, const ::maa::InstanceSetTaskParamRequest& request, ::grpc::CompletionQueue* cq) = 0;
+    virtual ::grpc::ClientAsyncResponseReaderInterface< ::maa::StatusResponse>* AsyncstatusRaw(::grpc::ClientContext* context, const ::maa::HandleIdRequest& request, ::grpc::CompletionQueue* cq) = 0;
+    virtual ::grpc::ClientAsyncResponseReaderInterface< ::maa::StatusResponse>* PrepareAsyncstatusRaw(::grpc::ClientContext* context, const ::maa::HandleIdRequest& request, ::grpc::CompletionQueue* cq) = 0;
+    virtual ::grpc::ClientAsyncResponseReaderInterface< ::maa::EmptyResponse>* AsyncwaitRaw(::grpc::ClientContext* context, const ::maa::HandleIdRequest& request, ::grpc::CompletionQueue* cq) = 0;
+    virtual ::grpc::ClientAsyncResponseReaderInterface< ::maa::EmptyResponse>* PrepareAsyncwaitRaw(::grpc::ClientContext* context, const ::maa::HandleIdRequest& request, ::grpc::CompletionQueue* cq) = 0;
+    virtual ::grpc::ClientAsyncResponseReaderInterface< ::maa::BoolResponse>* Asyncall_finishedRaw(::grpc::ClientContext* context, const ::maa::HandleRequest& request, ::grpc::CompletionQueue* cq) = 0;
+    virtual ::grpc::ClientAsyncResponseReaderInterface< ::maa::BoolResponse>* PrepareAsyncall_finishedRaw(::grpc::ClientContext* context, const ::maa::HandleRequest& request, ::grpc::CompletionQueue* cq) = 0;
+    virtual ::grpc::ClientAsyncResponseReaderInterface< ::maa::EmptyResponse>* AsyncstopRaw(::grpc::ClientContext* context, const ::maa::HandleRequest& request, ::grpc::CompletionQueue* cq) = 0;
+    virtual ::grpc::ClientAsyncResponseReaderInterface< ::maa::EmptyResponse>* PrepareAsyncstopRaw(::grpc::ClientContext* context, const ::maa::HandleRequest& request, ::grpc::CompletionQueue* cq) = 0;
+    virtual ::grpc::ClientAsyncResponseReaderInterface< ::maa::HandleRequest>* AsyncresourceRaw(::grpc::ClientContext* context, const ::maa::HandleRequest& request, ::grpc::CompletionQueue* cq) = 0;
+    virtual ::grpc::ClientAsyncResponseReaderInterface< ::maa::HandleRequest>* PrepareAsyncresourceRaw(::grpc::ClientContext* context, const ::maa::HandleRequest& request, ::grpc::CompletionQueue* cq) = 0;
+    virtual ::grpc::ClientAsyncResponseReaderInterface< ::maa::HandleRequest>* AsynccontrollerRaw(::grpc::ClientContext* context, const ::maa::HandleRequest& request, ::grpc::CompletionQueue* cq) = 0;
+    virtual ::grpc::ClientAsyncResponseReaderInterface< ::maa::HandleRequest>* PrepareAsynccontrollerRaw(::grpc::ClientContext* context, const ::maa::HandleRequest& request, ::grpc::CompletionQueue* cq) = 0;
+  };
+  class Stub final : public StubInterface {
+   public:
+    Stub(const std::shared_ptr< ::grpc::ChannelInterface>& channel, const ::grpc::StubOptions& options = ::grpc::StubOptions());
+    ::grpc::Status create(::grpc::ClientContext* context, const ::maa::IdRequest& request, ::maa::HandleResponse* response) override;
+    std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::maa::HandleResponse>> Asynccreate(::grpc::ClientContext* context, const ::maa::IdRequest& request, ::grpc::CompletionQueue* cq) {
+      return std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::maa::HandleResponse>>(AsynccreateRaw(context, request, cq));
+    }
+    std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::maa::HandleResponse>> PrepareAsynccreate(::grpc::ClientContext* context, const ::maa::IdRequest& request, ::grpc::CompletionQueue* cq) {
+      return std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::maa::HandleResponse>>(PrepareAsynccreateRaw(context, request, cq));
+    }
+    ::grpc::Status destroy(::grpc::ClientContext* context, const ::maa::HandleRequest& request, ::maa::EmptyResponse* response) override;
+    std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::maa::EmptyResponse>> Asyncdestroy(::grpc::ClientContext* context, const ::maa::HandleRequest& request, ::grpc::CompletionQueue* cq) {
+      return std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::maa::EmptyResponse>>(AsyncdestroyRaw(context, request, cq));
+    }
+    std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::maa::EmptyResponse>> PrepareAsyncdestroy(::grpc::ClientContext* context, const ::maa::HandleRequest& request, ::grpc::CompletionQueue* cq) {
+      return std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::maa::EmptyResponse>>(PrepareAsyncdestroyRaw(context, request, cq));
+    }
+    std::unique_ptr< ::grpc::ClientReader< ::maa::CustomRecognizerResponse>> register_custom_recognizer(::grpc::ClientContext* context, const ::maa::CustomRecognizerRequest& request) {
+      return std::unique_ptr< ::grpc::ClientReader< ::maa::CustomRecognizerResponse>>(register_custom_recognizerRaw(context, request));
+    }
+    std::unique_ptr< ::grpc::ClientAsyncReader< ::maa::CustomRecognizerResponse>> Asyncregister_custom_recognizer(::grpc::ClientContext* context, const ::maa::CustomRecognizerRequest& request, ::grpc::CompletionQueue* cq, void* tag) {
+      return std::unique_ptr< ::grpc::ClientAsyncReader< ::maa::CustomRecognizerResponse>>(Asyncregister_custom_recognizerRaw(context, request, cq, tag));
+    }
+    std::unique_ptr< ::grpc::ClientAsyncReader< ::maa::CustomRecognizerResponse>> PrepareAsyncregister_custom_recognizer(::grpc::ClientContext* context, const ::maa::CustomRecognizerRequest& request, ::grpc::CompletionQueue* cq) {
+      return std::unique_ptr< ::grpc::ClientAsyncReader< ::maa::CustomRecognizerResponse>>(PrepareAsyncregister_custom_recognizerRaw(context, request, cq));
+    }
+    ::grpc::Status submit_custom_recognizer(::grpc::ClientContext* context, const ::maa::SubmitCustomRecognizerRequest& request, ::maa::EmptyResponse* response) override;
+    std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::maa::EmptyResponse>> Asyncsubmit_custom_recognizer(::grpc::ClientContext* context, const ::maa::SubmitCustomRecognizerRequest& request, ::grpc::CompletionQueue* cq) {
+      return std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::maa::EmptyResponse>>(Asyncsubmit_custom_recognizerRaw(context, request, cq));
+    }
+    std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::maa::EmptyResponse>> PrepareAsyncsubmit_custom_recognizer(::grpc::ClientContext* context, const ::maa::SubmitCustomRecognizerRequest& request, ::grpc::CompletionQueue* cq) {
+      return std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::maa::EmptyResponse>>(PrepareAsyncsubmit_custom_recognizerRaw(context, request, cq));
+    }
+    ::grpc::Status unregister_custom_recognizer(::grpc::ClientContext* context, const ::maa::HandleStringRequest& request, ::maa::EmptyResponse* response) override;
+    std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::maa::EmptyResponse>> Asyncunregister_custom_recognizer(::grpc::ClientContext* context, const ::maa::HandleStringRequest& request, ::grpc::CompletionQueue* cq) {
+      return std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::maa::EmptyResponse>>(Asyncunregister_custom_recognizerRaw(context, request, cq));
+    }
+    std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::maa::EmptyResponse>> PrepareAsyncunregister_custom_recognizer(::grpc::ClientContext* context, const ::maa::HandleStringRequest& request, ::grpc::CompletionQueue* cq) {
+      return std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::maa::EmptyResponse>>(PrepareAsyncunregister_custom_recognizerRaw(context, request, cq));
+    }
+    ::grpc::Status clear_custom_recognizer(::grpc::ClientContext* context, const ::maa::HandleRequest& request, ::maa::EmptyResponse* response) override;
+    std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::maa::EmptyResponse>> Asyncclear_custom_recognizer(::grpc::ClientContext* context, const ::maa::HandleRequest& request, ::grpc::CompletionQueue* cq) {
+      return std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::maa::EmptyResponse>>(Asyncclear_custom_recognizerRaw(context, request, cq));
+    }
+    std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::maa::EmptyResponse>> PrepareAsyncclear_custom_recognizer(::grpc::ClientContext* context, const ::maa::HandleRequest& request, ::grpc::CompletionQueue* cq) {
+      return std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::maa::EmptyResponse>>(PrepareAsyncclear_custom_recognizerRaw(context, request, cq));
+    }
+    std::unique_ptr< ::grpc::ClientReader< ::maa::CustomRecognizerResponse>> register_custom_action(::grpc::ClientContext* context, const ::maa::CustomRecognizerRequest& request) {
+      return std::unique_ptr< ::grpc::ClientReader< ::maa::CustomRecognizerResponse>>(register_custom_actionRaw(context, request));
+    }
+    std::unique_ptr< ::grpc::ClientAsyncReader< ::maa::CustomRecognizerResponse>> Asyncregister_custom_action(::grpc::ClientContext* context, const ::maa::CustomRecognizerRequest& request, ::grpc::CompletionQueue* cq, void* tag) {
+      return std::unique_ptr< ::grpc::ClientAsyncReader< ::maa::CustomRecognizerResponse>>(Asyncregister_custom_actionRaw(context, request, cq, tag));
+    }
+    std::unique_ptr< ::grpc::ClientAsyncReader< ::maa::CustomRecognizerResponse>> PrepareAsyncregister_custom_action(::grpc::ClientContext* context, const ::maa::CustomRecognizerRequest& request, ::grpc::CompletionQueue* cq) {
+      return std::unique_ptr< ::grpc::ClientAsyncReader< ::maa::CustomRecognizerResponse>>(PrepareAsyncregister_custom_actionRaw(context, request, cq));
+    }
+    ::grpc::Status submit_custom_action(::grpc::ClientContext* context, const ::maa::SubmitCustomRecognizerRequest& request, ::maa::EmptyResponse* response) override;
+    std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::maa::EmptyResponse>> Asyncsubmit_custom_action(::grpc::ClientContext* context, const ::maa::SubmitCustomRecognizerRequest& request, ::grpc::CompletionQueue* cq) {
+      return std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::maa::EmptyResponse>>(Asyncsubmit_custom_actionRaw(context, request, cq));
+    }
+    std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::maa::EmptyResponse>> PrepareAsyncsubmit_custom_action(::grpc::ClientContext* context, const ::maa::SubmitCustomRecognizerRequest& request, ::grpc::CompletionQueue* cq) {
+      return std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::maa::EmptyResponse>>(PrepareAsyncsubmit_custom_actionRaw(context, request, cq));
+    }
+    ::grpc::Status unregister_custom_action(::grpc::ClientContext* context, const ::maa::HandleStringRequest& request, ::maa::EmptyResponse* response) override;
+    std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::maa::EmptyResponse>> Asyncunregister_custom_action(::grpc::ClientContext* context, const ::maa::HandleStringRequest& request, ::grpc::CompletionQueue* cq) {
+      return std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::maa::EmptyResponse>>(Asyncunregister_custom_actionRaw(context, request, cq));
+    }
+    std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::maa::EmptyResponse>> PrepareAsyncunregister_custom_action(::grpc::ClientContext* context, const ::maa::HandleStringRequest& request, ::grpc::CompletionQueue* cq) {
+      return std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::maa::EmptyResponse>>(PrepareAsyncunregister_custom_actionRaw(context, request, cq));
+    }
+    ::grpc::Status clear_custom_action(::grpc::ClientContext* context, const ::maa::HandleRequest& request, ::maa::EmptyResponse* response) override;
+    std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::maa::EmptyResponse>> Asyncclear_custom_action(::grpc::ClientContext* context, const ::maa::HandleRequest& request, ::grpc::CompletionQueue* cq) {
+      return std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::maa::EmptyResponse>>(Asyncclear_custom_actionRaw(context, request, cq));
+    }
+    std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::maa::EmptyResponse>> PrepareAsyncclear_custom_action(::grpc::ClientContext* context, const ::maa::HandleRequest& request, ::grpc::CompletionQueue* cq) {
+      return std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::maa::EmptyResponse>>(PrepareAsyncclear_custom_actionRaw(context, request, cq));
+    }
+    ::grpc::Status bind_resource(::grpc::ClientContext* context, const ::maa::HandleRequest& request, ::maa::EmptyResponse* response) override;
+    std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::maa::EmptyResponse>> Asyncbind_resource(::grpc::ClientContext* context, const ::maa::HandleRequest& request, ::grpc::CompletionQueue* cq) {
+      return std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::maa::EmptyResponse>>(Asyncbind_resourceRaw(context, request, cq));
+    }
+    std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::maa::EmptyResponse>> PrepareAsyncbind_resource(::grpc::ClientContext* context, const ::maa::HandleRequest& request, ::grpc::CompletionQueue* cq) {
+      return std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::maa::EmptyResponse>>(PrepareAsyncbind_resourceRaw(context, request, cq));
+    }
+    ::grpc::Status bind_controller(::grpc::ClientContext* context, const ::maa::HandleRequest& request, ::maa::EmptyResponse* response) override;
+    std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::maa::EmptyResponse>> Asyncbind_controller(::grpc::ClientContext* context, const ::maa::HandleRequest& request, ::grpc::CompletionQueue* cq) {
+      return std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::maa::EmptyResponse>>(Asyncbind_controllerRaw(context, request, cq));
+    }
+    std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::maa::EmptyResponse>> PrepareAsyncbind_controller(::grpc::ClientContext* context, const ::maa::HandleRequest& request, ::grpc::CompletionQueue* cq) {
+      return std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::maa::EmptyResponse>>(PrepareAsyncbind_controllerRaw(context, request, cq));
+    }
+    ::grpc::Status inited(::grpc::ClientContext* context, const ::maa::HandleRequest& request, ::maa::BoolResponse* response) override;
+    std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::maa::BoolResponse>> Asyncinited(::grpc::ClientContext* context, const ::maa::HandleRequest& request, ::grpc::CompletionQueue* cq) {
+      return std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::maa::BoolResponse>>(AsyncinitedRaw(context, request, cq));
+    }
+    std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::maa::BoolResponse>> PrepareAsyncinited(::grpc::ClientContext* context, const ::maa::HandleRequest& request, ::grpc::CompletionQueue* cq) {
+      return std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::maa::BoolResponse>>(PrepareAsyncinitedRaw(context, request, cq));
+    }
+    ::grpc::Status post_task(::grpc::ClientContext* context, const ::maa::InstancePostTaskRequest& request, ::maa::IdResponse* response) override;
+    std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::maa::IdResponse>> Asyncpost_task(::grpc::ClientContext* context, const ::maa::InstancePostTaskRequest& request, ::grpc::CompletionQueue* cq) {
+      return std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::maa::IdResponse>>(Asyncpost_taskRaw(context, request, cq));
+    }
+    std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::maa::IdResponse>> PrepareAsyncpost_task(::grpc::ClientContext* context, const ::maa::InstancePostTaskRequest& request, ::grpc::CompletionQueue* cq) {
+      return std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::maa::IdResponse>>(PrepareAsyncpost_taskRaw(context, request, cq));
+    }
+    ::grpc::Status set_task_param(::grpc::ClientContext* context, const ::maa::InstanceSetTaskParamRequest& request, ::maa::EmptyResponse* response) override;
+    std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::maa::EmptyResponse>> Asyncset_task_param(::grpc::ClientContext* context, const ::maa::InstanceSetTaskParamRequest& request, ::grpc::CompletionQueue* cq) {
+      return std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::maa::EmptyResponse>>(Asyncset_task_paramRaw(context, request, cq));
+    }
+    std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::maa::EmptyResponse>> PrepareAsyncset_task_param(::grpc::ClientContext* context, const ::maa::InstanceSetTaskParamRequest& request, ::grpc::CompletionQueue* cq) {
+      return std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::maa::EmptyResponse>>(PrepareAsyncset_task_paramRaw(context, request, cq));
+    }
+    ::grpc::Status status(::grpc::ClientContext* context, const ::maa::HandleIdRequest& request, ::maa::StatusResponse* response) override;
+    std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::maa::StatusResponse>> Asyncstatus(::grpc::ClientContext* context, const ::maa::HandleIdRequest& request, ::grpc::CompletionQueue* cq) {
+      return std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::maa::StatusResponse>>(AsyncstatusRaw(context, request, cq));
+    }
+    std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::maa::StatusResponse>> PrepareAsyncstatus(::grpc::ClientContext* context, const ::maa::HandleIdRequest& request, ::grpc::CompletionQueue* cq) {
+      return std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::maa::StatusResponse>>(PrepareAsyncstatusRaw(context, request, cq));
+    }
+    ::grpc::Status wait(::grpc::ClientContext* context, const ::maa::HandleIdRequest& request, ::maa::EmptyResponse* response) override;
+    std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::maa::EmptyResponse>> Asyncwait(::grpc::ClientContext* context, const ::maa::HandleIdRequest& request, ::grpc::CompletionQueue* cq) {
+      return std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::maa::EmptyResponse>>(AsyncwaitRaw(context, request, cq));
+    }
+    std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::maa::EmptyResponse>> PrepareAsyncwait(::grpc::ClientContext* context, const ::maa::HandleIdRequest& request, ::grpc::CompletionQueue* cq) {
+      return std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::maa::EmptyResponse>>(PrepareAsyncwaitRaw(context, request, cq));
+    }
+    ::grpc::Status all_finished(::grpc::ClientContext* context, const ::maa::HandleRequest& request, ::maa::BoolResponse* response) override;
+    std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::maa::BoolResponse>> Asyncall_finished(::grpc::ClientContext* context, const ::maa::HandleRequest& request, ::grpc::CompletionQueue* cq) {
+      return std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::maa::BoolResponse>>(Asyncall_finishedRaw(context, request, cq));
+    }
+    std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::maa::BoolResponse>> PrepareAsyncall_finished(::grpc::ClientContext* context, const ::maa::HandleRequest& request, ::grpc::CompletionQueue* cq) {
+      return std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::maa::BoolResponse>>(PrepareAsyncall_finishedRaw(context, request, cq));
+    }
+    ::grpc::Status stop(::grpc::ClientContext* context, const ::maa::HandleRequest& request, ::maa::EmptyResponse* response) override;
+    std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::maa::EmptyResponse>> Asyncstop(::grpc::ClientContext* context, const ::maa::HandleRequest& request, ::grpc::CompletionQueue* cq) {
+      return std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::maa::EmptyResponse>>(AsyncstopRaw(context, request, cq));
+    }
+    std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::maa::EmptyResponse>> PrepareAsyncstop(::grpc::ClientContext* context, const ::maa::HandleRequest& request, ::grpc::CompletionQueue* cq) {
+      return std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::maa::EmptyResponse>>(PrepareAsyncstopRaw(context, request, cq));
+    }
+    ::grpc::Status resource(::grpc::ClientContext* context, const ::maa::HandleRequest& request, ::maa::HandleRequest* response) override;
+    std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::maa::HandleRequest>> Asyncresource(::grpc::ClientContext* context, const ::maa::HandleRequest& request, ::grpc::CompletionQueue* cq) {
+      return std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::maa::HandleRequest>>(AsyncresourceRaw(context, request, cq));
+    }
+    std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::maa::HandleRequest>> PrepareAsyncresource(::grpc::ClientContext* context, const ::maa::HandleRequest& request, ::grpc::CompletionQueue* cq) {
+      return std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::maa::HandleRequest>>(PrepareAsyncresourceRaw(context, request, cq));
+    }
+    ::grpc::Status controller(::grpc::ClientContext* context, const ::maa::HandleRequest& request, ::maa::HandleRequest* response) override;
+    std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::maa::HandleRequest>> Asynccontroller(::grpc::ClientContext* context, const ::maa::HandleRequest& request, ::grpc::CompletionQueue* cq) {
+      return std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::maa::HandleRequest>>(AsynccontrollerRaw(context, request, cq));
+    }
+    std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::maa::HandleRequest>> PrepareAsynccontroller(::grpc::ClientContext* context, const ::maa::HandleRequest& request, ::grpc::CompletionQueue* cq) {
+      return std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::maa::HandleRequest>>(PrepareAsynccontrollerRaw(context, request, cq));
+    }
+    class async final :
+      public StubInterface::async_interface {
+     public:
+      void create(::grpc::ClientContext* context, const ::maa::IdRequest* request, ::maa::HandleResponse* response, std::function<void(::grpc::Status)>) override;
+      void create(::grpc::ClientContext* context, const ::maa::IdRequest* request, ::maa::HandleResponse* response, ::grpc::ClientUnaryReactor* reactor) override;
+      void destroy(::grpc::ClientContext* context, const ::maa::HandleRequest* request, ::maa::EmptyResponse* response, std::function<void(::grpc::Status)>) override;
+      void destroy(::grpc::ClientContext* context, const ::maa::HandleRequest* request, ::maa::EmptyResponse* response, ::grpc::ClientUnaryReactor* reactor) override;
+      void register_custom_recognizer(::grpc::ClientContext* context, const ::maa::CustomRecognizerRequest* request, ::grpc::ClientReadReactor< ::maa::CustomRecognizerResponse>* reactor) override;
+      void submit_custom_recognizer(::grpc::ClientContext* context, const ::maa::SubmitCustomRecognizerRequest* request, ::maa::EmptyResponse* response, std::function<void(::grpc::Status)>) override;
+      void submit_custom_recognizer(::grpc::ClientContext* context, const ::maa::SubmitCustomRecognizerRequest* request, ::maa::EmptyResponse* response, ::grpc::ClientUnaryReactor* reactor) override;
+      void unregister_custom_recognizer(::grpc::ClientContext* context, const ::maa::HandleStringRequest* request, ::maa::EmptyResponse* response, std::function<void(::grpc::Status)>) override;
+      void unregister_custom_recognizer(::grpc::ClientContext* context, const ::maa::HandleStringRequest* request, ::maa::EmptyResponse* response, ::grpc::ClientUnaryReactor* reactor) override;
+      void clear_custom_recognizer(::grpc::ClientContext* context, const ::maa::HandleRequest* request, ::maa::EmptyResponse* response, std::function<void(::grpc::Status)>) override;
+      void clear_custom_recognizer(::grpc::ClientContext* context, const ::maa::HandleRequest* request, ::maa::EmptyResponse* response, ::grpc::ClientUnaryReactor* reactor) override;
+      void register_custom_action(::grpc::ClientContext* context, const ::maa::CustomRecognizerRequest* request, ::grpc::ClientReadReactor< ::maa::CustomRecognizerResponse>* reactor) override;
+      void submit_custom_action(::grpc::ClientContext* context, const ::maa::SubmitCustomRecognizerRequest* request, ::maa::EmptyResponse* response, std::function<void(::grpc::Status)>) override;
+      void submit_custom_action(::grpc::ClientContext* context, const ::maa::SubmitCustomRecognizerRequest* request, ::maa::EmptyResponse* response, ::grpc::ClientUnaryReactor* reactor) override;
+      void unregister_custom_action(::grpc::ClientContext* context, const ::maa::HandleStringRequest* request, ::maa::EmptyResponse* response, std::function<void(::grpc::Status)>) override;
+      void unregister_custom_action(::grpc::ClientContext* context, const ::maa::HandleStringRequest* request, ::maa::EmptyResponse* response, ::grpc::ClientUnaryReactor* reactor) override;
+      void clear_custom_action(::grpc::ClientContext* context, const ::maa::HandleRequest* request, ::maa::EmptyResponse* response, std::function<void(::grpc::Status)>) override;
+      void clear_custom_action(::grpc::ClientContext* context, const ::maa::HandleRequest* request, ::maa::EmptyResponse* response, ::grpc::ClientUnaryReactor* reactor) override;
+      void bind_resource(::grpc::ClientContext* context, const ::maa::HandleRequest* request, ::maa::EmptyResponse* response, std::function<void(::grpc::Status)>) override;
+      void bind_resource(::grpc::ClientContext* context, const ::maa::HandleRequest* request, ::maa::EmptyResponse* response, ::grpc::ClientUnaryReactor* reactor) override;
+      void bind_controller(::grpc::ClientContext* context, const ::maa::HandleRequest* request, ::maa::EmptyResponse* response, std::function<void(::grpc::Status)>) override;
+      void bind_controller(::grpc::ClientContext* context, const ::maa::HandleRequest* request, ::maa::EmptyResponse* response, ::grpc::ClientUnaryReactor* reactor) override;
+      void inited(::grpc::ClientContext* context, const ::maa::HandleRequest* request, ::maa::BoolResponse* response, std::function<void(::grpc::Status)>) override;
+      void inited(::grpc::ClientContext* context, const ::maa::HandleRequest* request, ::maa::BoolResponse* response, ::grpc::ClientUnaryReactor* reactor) override;
+      void post_task(::grpc::ClientContext* context, const ::maa::InstancePostTaskRequest* request, ::maa::IdResponse* response, std::function<void(::grpc::Status)>) override;
+      void post_task(::grpc::ClientContext* context, const ::maa::InstancePostTaskRequest* request, ::maa::IdResponse* response, ::grpc::ClientUnaryReactor* reactor) override;
+      void set_task_param(::grpc::ClientContext* context, const ::maa::InstanceSetTaskParamRequest* request, ::maa::EmptyResponse* response, std::function<void(::grpc::Status)>) override;
+      void set_task_param(::grpc::ClientContext* context, const ::maa::InstanceSetTaskParamRequest* request, ::maa::EmptyResponse* response, ::grpc::ClientUnaryReactor* reactor) override;
+      void status(::grpc::ClientContext* context, const ::maa::HandleIdRequest* request, ::maa::StatusResponse* response, std::function<void(::grpc::Status)>) override;
+      void status(::grpc::ClientContext* context, const ::maa::HandleIdRequest* request, ::maa::StatusResponse* response, ::grpc::ClientUnaryReactor* reactor) override;
+      void wait(::grpc::ClientContext* context, const ::maa::HandleIdRequest* request, ::maa::EmptyResponse* response, std::function<void(::grpc::Status)>) override;
+      void wait(::grpc::ClientContext* context, const ::maa::HandleIdRequest* request, ::maa::EmptyResponse* response, ::grpc::ClientUnaryReactor* reactor) override;
+      void all_finished(::grpc::ClientContext* context, const ::maa::HandleRequest* request, ::maa::BoolResponse* response, std::function<void(::grpc::Status)>) override;
+      void all_finished(::grpc::ClientContext* context, const ::maa::HandleRequest* request, ::maa::BoolResponse* response, ::grpc::ClientUnaryReactor* reactor) override;
+      void stop(::grpc::ClientContext* context, const ::maa::HandleRequest* request, ::maa::EmptyResponse* response, std::function<void(::grpc::Status)>) override;
+      void stop(::grpc::ClientContext* context, const ::maa::HandleRequest* request, ::maa::EmptyResponse* response, ::grpc::ClientUnaryReactor* reactor) override;
+      void resource(::grpc::ClientContext* context, const ::maa::HandleRequest* request, ::maa::HandleRequest* response, std::function<void(::grpc::Status)>) override;
+      void resource(::grpc::ClientContext* context, const ::maa::HandleRequest* request, ::maa::HandleRequest* response, ::grpc::ClientUnaryReactor* reactor) override;
+      void controller(::grpc::ClientContext* context, const ::maa::HandleRequest* request, ::maa::HandleRequest* response, std::function<void(::grpc::Status)>) override;
+      void controller(::grpc::ClientContext* context, const ::maa::HandleRequest* request, ::maa::HandleRequest* response, ::grpc::ClientUnaryReactor* reactor) override;
+     private:
+      friend class Stub;
+      explicit async(Stub* stub): stub_(stub) { }
+      Stub* stub() { return stub_; }
+      Stub* stub_;
+    };
+    class async* async() override { return &async_stub_; }
+
+   private:
+    std::shared_ptr< ::grpc::ChannelInterface> channel_;
+    class async async_stub_{this};
+    ::grpc::ClientAsyncResponseReader< ::maa::HandleResponse>* AsynccreateRaw(::grpc::ClientContext* context, const ::maa::IdRequest& request, ::grpc::CompletionQueue* cq) override;
+    ::grpc::ClientAsyncResponseReader< ::maa::HandleResponse>* PrepareAsynccreateRaw(::grpc::ClientContext* context, const ::maa::IdRequest& request, ::grpc::CompletionQueue* cq) override;
+    ::grpc::ClientAsyncResponseReader< ::maa::EmptyResponse>* AsyncdestroyRaw(::grpc::ClientContext* context, const ::maa::HandleRequest& request, ::grpc::CompletionQueue* cq) override;
+    ::grpc::ClientAsyncResponseReader< ::maa::EmptyResponse>* PrepareAsyncdestroyRaw(::grpc::ClientContext* context, const ::maa::HandleRequest& request, ::grpc::CompletionQueue* cq) override;
+    ::grpc::ClientReader< ::maa::CustomRecognizerResponse>* register_custom_recognizerRaw(::grpc::ClientContext* context, const ::maa::CustomRecognizerRequest& request) override;
+    ::grpc::ClientAsyncReader< ::maa::CustomRecognizerResponse>* Asyncregister_custom_recognizerRaw(::grpc::ClientContext* context, const ::maa::CustomRecognizerRequest& request, ::grpc::CompletionQueue* cq, void* tag) override;
+    ::grpc::ClientAsyncReader< ::maa::CustomRecognizerResponse>* PrepareAsyncregister_custom_recognizerRaw(::grpc::ClientContext* context, const ::maa::CustomRecognizerRequest& request, ::grpc::CompletionQueue* cq) override;
+    ::grpc::ClientAsyncResponseReader< ::maa::EmptyResponse>* Asyncsubmit_custom_recognizerRaw(::grpc::ClientContext* context, const ::maa::SubmitCustomRecognizerRequest& request, ::grpc::CompletionQueue* cq) override;
+    ::grpc::ClientAsyncResponseReader< ::maa::EmptyResponse>* PrepareAsyncsubmit_custom_recognizerRaw(::grpc::ClientContext* context, const ::maa::SubmitCustomRecognizerRequest& request, ::grpc::CompletionQueue* cq) override;
+    ::grpc::ClientAsyncResponseReader< ::maa::EmptyResponse>* Asyncunregister_custom_recognizerRaw(::grpc::ClientContext* context, const ::maa::HandleStringRequest& request, ::grpc::CompletionQueue* cq) override;
+    ::grpc::ClientAsyncResponseReader< ::maa::EmptyResponse>* PrepareAsyncunregister_custom_recognizerRaw(::grpc::ClientContext* context, const ::maa::HandleStringRequest& request, ::grpc::CompletionQueue* cq) override;
+    ::grpc::ClientAsyncResponseReader< ::maa::EmptyResponse>* Asyncclear_custom_recognizerRaw(::grpc::ClientContext* context, const ::maa::HandleRequest& request, ::grpc::CompletionQueue* cq) override;
+    ::grpc::ClientAsyncResponseReader< ::maa::EmptyResponse>* PrepareAsyncclear_custom_recognizerRaw(::grpc::ClientContext* context, const ::maa::HandleRequest& request, ::grpc::CompletionQueue* cq) override;
+    ::grpc::ClientReader< ::maa::CustomRecognizerResponse>* register_custom_actionRaw(::grpc::ClientContext* context, const ::maa::CustomRecognizerRequest& request) override;
+    ::grpc::ClientAsyncReader< ::maa::CustomRecognizerResponse>* Asyncregister_custom_actionRaw(::grpc::ClientContext* context, const ::maa::CustomRecognizerRequest& request, ::grpc::CompletionQueue* cq, void* tag) override;
+    ::grpc::ClientAsyncReader< ::maa::CustomRecognizerResponse>* PrepareAsyncregister_custom_actionRaw(::grpc::ClientContext* context, const ::maa::CustomRecognizerRequest& request, ::grpc::CompletionQueue* cq) override;
+    ::grpc::ClientAsyncResponseReader< ::maa::EmptyResponse>* Asyncsubmit_custom_actionRaw(::grpc::ClientContext* context, const ::maa::SubmitCustomRecognizerRequest& request, ::grpc::CompletionQueue* cq) override;
+    ::grpc::ClientAsyncResponseReader< ::maa::EmptyResponse>* PrepareAsyncsubmit_custom_actionRaw(::grpc::ClientContext* context, const ::maa::SubmitCustomRecognizerRequest& request, ::grpc::CompletionQueue* cq) override;
+    ::grpc::ClientAsyncResponseReader< ::maa::EmptyResponse>* Asyncunregister_custom_actionRaw(::grpc::ClientContext* context, const ::maa::HandleStringRequest& request, ::grpc::CompletionQueue* cq) override;
+    ::grpc::ClientAsyncResponseReader< ::maa::EmptyResponse>* PrepareAsyncunregister_custom_actionRaw(::grpc::ClientContext* context, const ::maa::HandleStringRequest& request, ::grpc::CompletionQueue* cq) override;
+    ::grpc::ClientAsyncResponseReader< ::maa::EmptyResponse>* Asyncclear_custom_actionRaw(::grpc::ClientContext* context, const ::maa::HandleRequest& request, ::grpc::CompletionQueue* cq) override;
+    ::grpc::ClientAsyncResponseReader< ::maa::EmptyResponse>* PrepareAsyncclear_custom_actionRaw(::grpc::ClientContext* context, const ::maa::HandleRequest& request, ::grpc::CompletionQueue* cq) override;
+    ::grpc::ClientAsyncResponseReader< ::maa::EmptyResponse>* Asyncbind_resourceRaw(::grpc::ClientContext* context, const ::maa::HandleRequest& request, ::grpc::CompletionQueue* cq) override;
+    ::grpc::ClientAsyncResponseReader< ::maa::EmptyResponse>* PrepareAsyncbind_resourceRaw(::grpc::ClientContext* context, const ::maa::HandleRequest& request, ::grpc::CompletionQueue* cq) override;
+    ::grpc::ClientAsyncResponseReader< ::maa::EmptyResponse>* Asyncbind_controllerRaw(::grpc::ClientContext* context, const ::maa::HandleRequest& request, ::grpc::CompletionQueue* cq) override;
+    ::grpc::ClientAsyncResponseReader< ::maa::EmptyResponse>* PrepareAsyncbind_controllerRaw(::grpc::ClientContext* context, const ::maa::HandleRequest& request, ::grpc::CompletionQueue* cq) override;
+    ::grpc::ClientAsyncResponseReader< ::maa::BoolResponse>* AsyncinitedRaw(::grpc::ClientContext* context, const ::maa::HandleRequest& request, ::grpc::CompletionQueue* cq) override;
+    ::grpc::ClientAsyncResponseReader< ::maa::BoolResponse>* PrepareAsyncinitedRaw(::grpc::ClientContext* context, const ::maa::HandleRequest& request, ::grpc::CompletionQueue* cq) override;
+    ::grpc::ClientAsyncResponseReader< ::maa::IdResponse>* Asyncpost_taskRaw(::grpc::ClientContext* context, const ::maa::InstancePostTaskRequest& request, ::grpc::CompletionQueue* cq) override;
+    ::grpc::ClientAsyncResponseReader< ::maa::IdResponse>* PrepareAsyncpost_taskRaw(::grpc::ClientContext* context, const ::maa::InstancePostTaskRequest& request, ::grpc::CompletionQueue* cq) override;
+    ::grpc::ClientAsyncResponseReader< ::maa::EmptyResponse>* Asyncset_task_paramRaw(::grpc::ClientContext* context, const ::maa::InstanceSetTaskParamRequest& request, ::grpc::CompletionQueue* cq) override;
+    ::grpc::ClientAsyncResponseReader< ::maa::EmptyResponse>* PrepareAsyncset_task_paramRaw(::grpc::ClientContext* context, const ::maa::InstanceSetTaskParamRequest& request, ::grpc::CompletionQueue* cq) override;
+    ::grpc::ClientAsyncResponseReader< ::maa::StatusResponse>* AsyncstatusRaw(::grpc::ClientContext* context, const ::maa::HandleIdRequest& request, ::grpc::CompletionQueue* cq) override;
+    ::grpc::ClientAsyncResponseReader< ::maa::StatusResponse>* PrepareAsyncstatusRaw(::grpc::ClientContext* context, const ::maa::HandleIdRequest& request, ::grpc::CompletionQueue* cq) override;
+    ::grpc::ClientAsyncResponseReader< ::maa::EmptyResponse>* AsyncwaitRaw(::grpc::ClientContext* context, const ::maa::HandleIdRequest& request, ::grpc::CompletionQueue* cq) override;
+    ::grpc::ClientAsyncResponseReader< ::maa::EmptyResponse>* PrepareAsyncwaitRaw(::grpc::ClientContext* context, const ::maa::HandleIdRequest& request, ::grpc::CompletionQueue* cq) override;
+    ::grpc::ClientAsyncResponseReader< ::maa::BoolResponse>* Asyncall_finishedRaw(::grpc::ClientContext* context, const ::maa::HandleRequest& request, ::grpc::CompletionQueue* cq) override;
+    ::grpc::ClientAsyncResponseReader< ::maa::BoolResponse>* PrepareAsyncall_finishedRaw(::grpc::ClientContext* context, const ::maa::HandleRequest& request, ::grpc::CompletionQueue* cq) override;
+    ::grpc::ClientAsyncResponseReader< ::maa::EmptyResponse>* AsyncstopRaw(::grpc::ClientContext* context, const ::maa::HandleRequest& request, ::grpc::CompletionQueue* cq) override;
+    ::grpc::ClientAsyncResponseReader< ::maa::EmptyResponse>* PrepareAsyncstopRaw(::grpc::ClientContext* context, const ::maa::HandleRequest& request, ::grpc::CompletionQueue* cq) override;
+    ::grpc::ClientAsyncResponseReader< ::maa::HandleRequest>* AsyncresourceRaw(::grpc::ClientContext* context, const ::maa::HandleRequest& request, ::grpc::CompletionQueue* cq) override;
+    ::grpc::ClientAsyncResponseReader< ::maa::HandleRequest>* PrepareAsyncresourceRaw(::grpc::ClientContext* context, const ::maa::HandleRequest& request, ::grpc::CompletionQueue* cq) override;
+    ::grpc::ClientAsyncResponseReader< ::maa::HandleRequest>* AsynccontrollerRaw(::grpc::ClientContext* context, const ::maa::HandleRequest& request, ::grpc::CompletionQueue* cq) override;
+    ::grpc::ClientAsyncResponseReader< ::maa::HandleRequest>* PrepareAsynccontrollerRaw(::grpc::ClientContext* context, const ::maa::HandleRequest& request, ::grpc::CompletionQueue* cq) override;
+    const ::grpc::internal::RpcMethod rpcmethod_create_;
+    const ::grpc::internal::RpcMethod rpcmethod_destroy_;
+    const ::grpc::internal::RpcMethod rpcmethod_register_custom_recognizer_;
+    const ::grpc::internal::RpcMethod rpcmethod_submit_custom_recognizer_;
+    const ::grpc::internal::RpcMethod rpcmethod_unregister_custom_recognizer_;
+    const ::grpc::internal::RpcMethod rpcmethod_clear_custom_recognizer_;
+    const ::grpc::internal::RpcMethod rpcmethod_register_custom_action_;
+    const ::grpc::internal::RpcMethod rpcmethod_submit_custom_action_;
+    const ::grpc::internal::RpcMethod rpcmethod_unregister_custom_action_;
+    const ::grpc::internal::RpcMethod rpcmethod_clear_custom_action_;
+    const ::grpc::internal::RpcMethod rpcmethod_bind_resource_;
+    const ::grpc::internal::RpcMethod rpcmethod_bind_controller_;
+    const ::grpc::internal::RpcMethod rpcmethod_inited_;
+    const ::grpc::internal::RpcMethod rpcmethod_post_task_;
+    const ::grpc::internal::RpcMethod rpcmethod_set_task_param_;
+    const ::grpc::internal::RpcMethod rpcmethod_status_;
+    const ::grpc::internal::RpcMethod rpcmethod_wait_;
+    const ::grpc::internal::RpcMethod rpcmethod_all_finished_;
+    const ::grpc::internal::RpcMethod rpcmethod_stop_;
+    const ::grpc::internal::RpcMethod rpcmethod_resource_;
+    const ::grpc::internal::RpcMethod rpcmethod_controller_;
+  };
+  static std::unique_ptr<Stub> NewStub(const std::shared_ptr< ::grpc::ChannelInterface>& channel, const ::grpc::StubOptions& options = ::grpc::StubOptions());
+
+  class Service : public ::grpc::Service {
+   public:
+    Service();
+    virtual ~Service();
+    virtual ::grpc::Status create(::grpc::ServerContext* context, const ::maa::IdRequest* request, ::maa::HandleResponse* response);
+    virtual ::grpc::Status destroy(::grpc::ServerContext* context, const ::maa::HandleRequest* request, ::maa::EmptyResponse* response);
+    virtual ::grpc::Status register_custom_recognizer(::grpc::ServerContext* context, const ::maa::CustomRecognizerRequest* request, ::grpc::ServerWriter< ::maa::CustomRecognizerResponse>* writer);
+    virtual ::grpc::Status submit_custom_recognizer(::grpc::ServerContext* context, const ::maa::SubmitCustomRecognizerRequest* request, ::maa::EmptyResponse* response);
+    virtual ::grpc::Status unregister_custom_recognizer(::grpc::ServerContext* context, const ::maa::HandleStringRequest* request, ::maa::EmptyResponse* response);
+    virtual ::grpc::Status clear_custom_recognizer(::grpc::ServerContext* context, const ::maa::HandleRequest* request, ::maa::EmptyResponse* response);
+    virtual ::grpc::Status register_custom_action(::grpc::ServerContext* context, const ::maa::CustomRecognizerRequest* request, ::grpc::ServerWriter< ::maa::CustomRecognizerResponse>* writer);
+    virtual ::grpc::Status submit_custom_action(::grpc::ServerContext* context, const ::maa::SubmitCustomRecognizerRequest* request, ::maa::EmptyResponse* response);
+    virtual ::grpc::Status unregister_custom_action(::grpc::ServerContext* context, const ::maa::HandleStringRequest* request, ::maa::EmptyResponse* response);
+    virtual ::grpc::Status clear_custom_action(::grpc::ServerContext* context, const ::maa::HandleRequest* request, ::maa::EmptyResponse* response);
+    virtual ::grpc::Status bind_resource(::grpc::ServerContext* context, const ::maa::HandleRequest* request, ::maa::EmptyResponse* response);
+    virtual ::grpc::Status bind_controller(::grpc::ServerContext* context, const ::maa::HandleRequest* request, ::maa::EmptyResponse* response);
+    virtual ::grpc::Status inited(::grpc::ServerContext* context, const ::maa::HandleRequest* request, ::maa::BoolResponse* response);
+    virtual ::grpc::Status post_task(::grpc::ServerContext* context, const ::maa::InstancePostTaskRequest* request, ::maa::IdResponse* response);
+    virtual ::grpc::Status set_task_param(::grpc::ServerContext* context, const ::maa::InstanceSetTaskParamRequest* request, ::maa::EmptyResponse* response);
+    virtual ::grpc::Status status(::grpc::ServerContext* context, const ::maa::HandleIdRequest* request, ::maa::StatusResponse* response);
+    virtual ::grpc::Status wait(::grpc::ServerContext* context, const ::maa::HandleIdRequest* request, ::maa::EmptyResponse* response);
+    virtual ::grpc::Status all_finished(::grpc::ServerContext* context, const ::maa::HandleRequest* request, ::maa::BoolResponse* response);
+    virtual ::grpc::Status stop(::grpc::ServerContext* context, const ::maa::HandleRequest* request, ::maa::EmptyResponse* response);
+    virtual ::grpc::Status resource(::grpc::ServerContext* context, const ::maa::HandleRequest* request, ::maa::HandleRequest* response);
+    virtual ::grpc::Status controller(::grpc::ServerContext* context, const ::maa::HandleRequest* request, ::maa::HandleRequest* response);
+  };
+  template <class BaseClass>
+  class WithAsyncMethod_create : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    WithAsyncMethod_create() {
+      ::grpc::Service::MarkMethodAsync(0);
+    }
+    ~WithAsyncMethod_create() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status create(::grpc::ServerContext* /*context*/, const ::maa::IdRequest* /*request*/, ::maa::HandleResponse* /*response*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    void Requestcreate(::grpc::ServerContext* context, ::maa::IdRequest* request, ::grpc::ServerAsyncResponseWriter< ::maa::HandleResponse>* response, ::grpc::CompletionQueue* new_call_cq, ::grpc::ServerCompletionQueue* notification_cq, void *tag) {
+      ::grpc::Service::RequestAsyncUnary(0, context, request, response, new_call_cq, notification_cq, tag);
+    }
+  };
+  template <class BaseClass>
+  class WithAsyncMethod_destroy : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    WithAsyncMethod_destroy() {
+      ::grpc::Service::MarkMethodAsync(1);
+    }
+    ~WithAsyncMethod_destroy() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status destroy(::grpc::ServerContext* /*context*/, const ::maa::HandleRequest* /*request*/, ::maa::EmptyResponse* /*response*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    void Requestdestroy(::grpc::ServerContext* context, ::maa::HandleRequest* request, ::grpc::ServerAsyncResponseWriter< ::maa::EmptyResponse>* response, ::grpc::CompletionQueue* new_call_cq, ::grpc::ServerCompletionQueue* notification_cq, void *tag) {
+      ::grpc::Service::RequestAsyncUnary(1, context, request, response, new_call_cq, notification_cq, tag);
+    }
+  };
+  template <class BaseClass>
+  class WithAsyncMethod_register_custom_recognizer : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    WithAsyncMethod_register_custom_recognizer() {
+      ::grpc::Service::MarkMethodAsync(2);
+    }
+    ~WithAsyncMethod_register_custom_recognizer() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status register_custom_recognizer(::grpc::ServerContext* /*context*/, const ::maa::CustomRecognizerRequest* /*request*/, ::grpc::ServerWriter< ::maa::CustomRecognizerResponse>* /*writer*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    void Requestregister_custom_recognizer(::grpc::ServerContext* context, ::maa::CustomRecognizerRequest* request, ::grpc::ServerAsyncWriter< ::maa::CustomRecognizerResponse>* writer, ::grpc::CompletionQueue* new_call_cq, ::grpc::ServerCompletionQueue* notification_cq, void *tag) {
+      ::grpc::Service::RequestAsyncServerStreaming(2, context, request, writer, new_call_cq, notification_cq, tag);
+    }
+  };
+  template <class BaseClass>
+  class WithAsyncMethod_submit_custom_recognizer : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    WithAsyncMethod_submit_custom_recognizer() {
+      ::grpc::Service::MarkMethodAsync(3);
+    }
+    ~WithAsyncMethod_submit_custom_recognizer() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status submit_custom_recognizer(::grpc::ServerContext* /*context*/, const ::maa::SubmitCustomRecognizerRequest* /*request*/, ::maa::EmptyResponse* /*response*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    void Requestsubmit_custom_recognizer(::grpc::ServerContext* context, ::maa::SubmitCustomRecognizerRequest* request, ::grpc::ServerAsyncResponseWriter< ::maa::EmptyResponse>* response, ::grpc::CompletionQueue* new_call_cq, ::grpc::ServerCompletionQueue* notification_cq, void *tag) {
+      ::grpc::Service::RequestAsyncUnary(3, context, request, response, new_call_cq, notification_cq, tag);
+    }
+  };
+  template <class BaseClass>
+  class WithAsyncMethod_unregister_custom_recognizer : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    WithAsyncMethod_unregister_custom_recognizer() {
+      ::grpc::Service::MarkMethodAsync(4);
+    }
+    ~WithAsyncMethod_unregister_custom_recognizer() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status unregister_custom_recognizer(::grpc::ServerContext* /*context*/, const ::maa::HandleStringRequest* /*request*/, ::maa::EmptyResponse* /*response*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    void Requestunregister_custom_recognizer(::grpc::ServerContext* context, ::maa::HandleStringRequest* request, ::grpc::ServerAsyncResponseWriter< ::maa::EmptyResponse>* response, ::grpc::CompletionQueue* new_call_cq, ::grpc::ServerCompletionQueue* notification_cq, void *tag) {
+      ::grpc::Service::RequestAsyncUnary(4, context, request, response, new_call_cq, notification_cq, tag);
+    }
+  };
+  template <class BaseClass>
+  class WithAsyncMethod_clear_custom_recognizer : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    WithAsyncMethod_clear_custom_recognizer() {
+      ::grpc::Service::MarkMethodAsync(5);
+    }
+    ~WithAsyncMethod_clear_custom_recognizer() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status clear_custom_recognizer(::grpc::ServerContext* /*context*/, const ::maa::HandleRequest* /*request*/, ::maa::EmptyResponse* /*response*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    void Requestclear_custom_recognizer(::grpc::ServerContext* context, ::maa::HandleRequest* request, ::grpc::ServerAsyncResponseWriter< ::maa::EmptyResponse>* response, ::grpc::CompletionQueue* new_call_cq, ::grpc::ServerCompletionQueue* notification_cq, void *tag) {
+      ::grpc::Service::RequestAsyncUnary(5, context, request, response, new_call_cq, notification_cq, tag);
+    }
+  };
+  template <class BaseClass>
+  class WithAsyncMethod_register_custom_action : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    WithAsyncMethod_register_custom_action() {
+      ::grpc::Service::MarkMethodAsync(6);
+    }
+    ~WithAsyncMethod_register_custom_action() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status register_custom_action(::grpc::ServerContext* /*context*/, const ::maa::CustomRecognizerRequest* /*request*/, ::grpc::ServerWriter< ::maa::CustomRecognizerResponse>* /*writer*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    void Requestregister_custom_action(::grpc::ServerContext* context, ::maa::CustomRecognizerRequest* request, ::grpc::ServerAsyncWriter< ::maa::CustomRecognizerResponse>* writer, ::grpc::CompletionQueue* new_call_cq, ::grpc::ServerCompletionQueue* notification_cq, void *tag) {
+      ::grpc::Service::RequestAsyncServerStreaming(6, context, request, writer, new_call_cq, notification_cq, tag);
+    }
+  };
+  template <class BaseClass>
+  class WithAsyncMethod_submit_custom_action : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    WithAsyncMethod_submit_custom_action() {
+      ::grpc::Service::MarkMethodAsync(7);
+    }
+    ~WithAsyncMethod_submit_custom_action() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status submit_custom_action(::grpc::ServerContext* /*context*/, const ::maa::SubmitCustomRecognizerRequest* /*request*/, ::maa::EmptyResponse* /*response*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    void Requestsubmit_custom_action(::grpc::ServerContext* context, ::maa::SubmitCustomRecognizerRequest* request, ::grpc::ServerAsyncResponseWriter< ::maa::EmptyResponse>* response, ::grpc::CompletionQueue* new_call_cq, ::grpc::ServerCompletionQueue* notification_cq, void *tag) {
+      ::grpc::Service::RequestAsyncUnary(7, context, request, response, new_call_cq, notification_cq, tag);
+    }
+  };
+  template <class BaseClass>
+  class WithAsyncMethod_unregister_custom_action : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    WithAsyncMethod_unregister_custom_action() {
+      ::grpc::Service::MarkMethodAsync(8);
+    }
+    ~WithAsyncMethod_unregister_custom_action() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status unregister_custom_action(::grpc::ServerContext* /*context*/, const ::maa::HandleStringRequest* /*request*/, ::maa::EmptyResponse* /*response*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    void Requestunregister_custom_action(::grpc::ServerContext* context, ::maa::HandleStringRequest* request, ::grpc::ServerAsyncResponseWriter< ::maa::EmptyResponse>* response, ::grpc::CompletionQueue* new_call_cq, ::grpc::ServerCompletionQueue* notification_cq, void *tag) {
+      ::grpc::Service::RequestAsyncUnary(8, context, request, response, new_call_cq, notification_cq, tag);
+    }
+  };
+  template <class BaseClass>
+  class WithAsyncMethod_clear_custom_action : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    WithAsyncMethod_clear_custom_action() {
+      ::grpc::Service::MarkMethodAsync(9);
+    }
+    ~WithAsyncMethod_clear_custom_action() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status clear_custom_action(::grpc::ServerContext* /*context*/, const ::maa::HandleRequest* /*request*/, ::maa::EmptyResponse* /*response*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    void Requestclear_custom_action(::grpc::ServerContext* context, ::maa::HandleRequest* request, ::grpc::ServerAsyncResponseWriter< ::maa::EmptyResponse>* response, ::grpc::CompletionQueue* new_call_cq, ::grpc::ServerCompletionQueue* notification_cq, void *tag) {
+      ::grpc::Service::RequestAsyncUnary(9, context, request, response, new_call_cq, notification_cq, tag);
+    }
+  };
+  template <class BaseClass>
+  class WithAsyncMethod_bind_resource : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    WithAsyncMethod_bind_resource() {
+      ::grpc::Service::MarkMethodAsync(10);
+    }
+    ~WithAsyncMethod_bind_resource() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status bind_resource(::grpc::ServerContext* /*context*/, const ::maa::HandleRequest* /*request*/, ::maa::EmptyResponse* /*response*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    void Requestbind_resource(::grpc::ServerContext* context, ::maa::HandleRequest* request, ::grpc::ServerAsyncResponseWriter< ::maa::EmptyResponse>* response, ::grpc::CompletionQueue* new_call_cq, ::grpc::ServerCompletionQueue* notification_cq, void *tag) {
+      ::grpc::Service::RequestAsyncUnary(10, context, request, response, new_call_cq, notification_cq, tag);
+    }
+  };
+  template <class BaseClass>
+  class WithAsyncMethod_bind_controller : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    WithAsyncMethod_bind_controller() {
+      ::grpc::Service::MarkMethodAsync(11);
+    }
+    ~WithAsyncMethod_bind_controller() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status bind_controller(::grpc::ServerContext* /*context*/, const ::maa::HandleRequest* /*request*/, ::maa::EmptyResponse* /*response*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    void Requestbind_controller(::grpc::ServerContext* context, ::maa::HandleRequest* request, ::grpc::ServerAsyncResponseWriter< ::maa::EmptyResponse>* response, ::grpc::CompletionQueue* new_call_cq, ::grpc::ServerCompletionQueue* notification_cq, void *tag) {
+      ::grpc::Service::RequestAsyncUnary(11, context, request, response, new_call_cq, notification_cq, tag);
+    }
+  };
+  template <class BaseClass>
+  class WithAsyncMethod_inited : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    WithAsyncMethod_inited() {
+      ::grpc::Service::MarkMethodAsync(12);
+    }
+    ~WithAsyncMethod_inited() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status inited(::grpc::ServerContext* /*context*/, const ::maa::HandleRequest* /*request*/, ::maa::BoolResponse* /*response*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    void Requestinited(::grpc::ServerContext* context, ::maa::HandleRequest* request, ::grpc::ServerAsyncResponseWriter< ::maa::BoolResponse>* response, ::grpc::CompletionQueue* new_call_cq, ::grpc::ServerCompletionQueue* notification_cq, void *tag) {
+      ::grpc::Service::RequestAsyncUnary(12, context, request, response, new_call_cq, notification_cq, tag);
+    }
+  };
+  template <class BaseClass>
+  class WithAsyncMethod_post_task : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    WithAsyncMethod_post_task() {
+      ::grpc::Service::MarkMethodAsync(13);
+    }
+    ~WithAsyncMethod_post_task() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status post_task(::grpc::ServerContext* /*context*/, const ::maa::InstancePostTaskRequest* /*request*/, ::maa::IdResponse* /*response*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    void Requestpost_task(::grpc::ServerContext* context, ::maa::InstancePostTaskRequest* request, ::grpc::ServerAsyncResponseWriter< ::maa::IdResponse>* response, ::grpc::CompletionQueue* new_call_cq, ::grpc::ServerCompletionQueue* notification_cq, void *tag) {
+      ::grpc::Service::RequestAsyncUnary(13, context, request, response, new_call_cq, notification_cq, tag);
+    }
+  };
+  template <class BaseClass>
+  class WithAsyncMethod_set_task_param : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    WithAsyncMethod_set_task_param() {
+      ::grpc::Service::MarkMethodAsync(14);
+    }
+    ~WithAsyncMethod_set_task_param() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status set_task_param(::grpc::ServerContext* /*context*/, const ::maa::InstanceSetTaskParamRequest* /*request*/, ::maa::EmptyResponse* /*response*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    void Requestset_task_param(::grpc::ServerContext* context, ::maa::InstanceSetTaskParamRequest* request, ::grpc::ServerAsyncResponseWriter< ::maa::EmptyResponse>* response, ::grpc::CompletionQueue* new_call_cq, ::grpc::ServerCompletionQueue* notification_cq, void *tag) {
+      ::grpc::Service::RequestAsyncUnary(14, context, request, response, new_call_cq, notification_cq, tag);
+    }
+  };
+  template <class BaseClass>
+  class WithAsyncMethod_status : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    WithAsyncMethod_status() {
+      ::grpc::Service::MarkMethodAsync(15);
+    }
+    ~WithAsyncMethod_status() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status status(::grpc::ServerContext* /*context*/, const ::maa::HandleIdRequest* /*request*/, ::maa::StatusResponse* /*response*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    void Requeststatus(::grpc::ServerContext* context, ::maa::HandleIdRequest* request, ::grpc::ServerAsyncResponseWriter< ::maa::StatusResponse>* response, ::grpc::CompletionQueue* new_call_cq, ::grpc::ServerCompletionQueue* notification_cq, void *tag) {
+      ::grpc::Service::RequestAsyncUnary(15, context, request, response, new_call_cq, notification_cq, tag);
+    }
+  };
+  template <class BaseClass>
+  class WithAsyncMethod_wait : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    WithAsyncMethod_wait() {
+      ::grpc::Service::MarkMethodAsync(16);
+    }
+    ~WithAsyncMethod_wait() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status wait(::grpc::ServerContext* /*context*/, const ::maa::HandleIdRequest* /*request*/, ::maa::EmptyResponse* /*response*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    void Requestwait(::grpc::ServerContext* context, ::maa::HandleIdRequest* request, ::grpc::ServerAsyncResponseWriter< ::maa::EmptyResponse>* response, ::grpc::CompletionQueue* new_call_cq, ::grpc::ServerCompletionQueue* notification_cq, void *tag) {
+      ::grpc::Service::RequestAsyncUnary(16, context, request, response, new_call_cq, notification_cq, tag);
+    }
+  };
+  template <class BaseClass>
+  class WithAsyncMethod_all_finished : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    WithAsyncMethod_all_finished() {
+      ::grpc::Service::MarkMethodAsync(17);
+    }
+    ~WithAsyncMethod_all_finished() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status all_finished(::grpc::ServerContext* /*context*/, const ::maa::HandleRequest* /*request*/, ::maa::BoolResponse* /*response*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    void Requestall_finished(::grpc::ServerContext* context, ::maa::HandleRequest* request, ::grpc::ServerAsyncResponseWriter< ::maa::BoolResponse>* response, ::grpc::CompletionQueue* new_call_cq, ::grpc::ServerCompletionQueue* notification_cq, void *tag) {
+      ::grpc::Service::RequestAsyncUnary(17, context, request, response, new_call_cq, notification_cq, tag);
+    }
+  };
+  template <class BaseClass>
+  class WithAsyncMethod_stop : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    WithAsyncMethod_stop() {
+      ::grpc::Service::MarkMethodAsync(18);
+    }
+    ~WithAsyncMethod_stop() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status stop(::grpc::ServerContext* /*context*/, const ::maa::HandleRequest* /*request*/, ::maa::EmptyResponse* /*response*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    void Requeststop(::grpc::ServerContext* context, ::maa::HandleRequest* request, ::grpc::ServerAsyncResponseWriter< ::maa::EmptyResponse>* response, ::grpc::CompletionQueue* new_call_cq, ::grpc::ServerCompletionQueue* notification_cq, void *tag) {
+      ::grpc::Service::RequestAsyncUnary(18, context, request, response, new_call_cq, notification_cq, tag);
+    }
+  };
+  template <class BaseClass>
+  class WithAsyncMethod_resource : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    WithAsyncMethod_resource() {
+      ::grpc::Service::MarkMethodAsync(19);
+    }
+    ~WithAsyncMethod_resource() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status resource(::grpc::ServerContext* /*context*/, const ::maa::HandleRequest* /*request*/, ::maa::HandleRequest* /*response*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    void Requestresource(::grpc::ServerContext* context, ::maa::HandleRequest* request, ::grpc::ServerAsyncResponseWriter< ::maa::HandleRequest>* response, ::grpc::CompletionQueue* new_call_cq, ::grpc::ServerCompletionQueue* notification_cq, void *tag) {
+      ::grpc::Service::RequestAsyncUnary(19, context, request, response, new_call_cq, notification_cq, tag);
+    }
+  };
+  template <class BaseClass>
+  class WithAsyncMethod_controller : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    WithAsyncMethod_controller() {
+      ::grpc::Service::MarkMethodAsync(20);
+    }
+    ~WithAsyncMethod_controller() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status controller(::grpc::ServerContext* /*context*/, const ::maa::HandleRequest* /*request*/, ::maa::HandleRequest* /*response*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    void Requestcontroller(::grpc::ServerContext* context, ::maa::HandleRequest* request, ::grpc::ServerAsyncResponseWriter< ::maa::HandleRequest>* response, ::grpc::CompletionQueue* new_call_cq, ::grpc::ServerCompletionQueue* notification_cq, void *tag) {
+      ::grpc::Service::RequestAsyncUnary(20, context, request, response, new_call_cq, notification_cq, tag);
+    }
+  };
+  typedef WithAsyncMethod_create<WithAsyncMethod_destroy<WithAsyncMethod_register_custom_recognizer<WithAsyncMethod_submit_custom_recognizer<WithAsyncMethod_unregister_custom_recognizer<WithAsyncMethod_clear_custom_recognizer<WithAsyncMethod_register_custom_action<WithAsyncMethod_submit_custom_action<WithAsyncMethod_unregister_custom_action<WithAsyncMethod_clear_custom_action<WithAsyncMethod_bind_resource<WithAsyncMethod_bind_controller<WithAsyncMethod_inited<WithAsyncMethod_post_task<WithAsyncMethod_set_task_param<WithAsyncMethod_status<WithAsyncMethod_wait<WithAsyncMethod_all_finished<WithAsyncMethod_stop<WithAsyncMethod_resource<WithAsyncMethod_controller<Service > > > > > > > > > > > > > > > > > > > > > AsyncService;
+  template <class BaseClass>
+  class WithCallbackMethod_create : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    WithCallbackMethod_create() {
+      ::grpc::Service::MarkMethodCallback(0,
+          new ::grpc::internal::CallbackUnaryHandler< ::maa::IdRequest, ::maa::HandleResponse>(
+            [this](
+                   ::grpc::CallbackServerContext* context, const ::maa::IdRequest* request, ::maa::HandleResponse* response) { return this->create(context, request, response); }));}
+    void SetMessageAllocatorFor_create(
+        ::grpc::MessageAllocator< ::maa::IdRequest, ::maa::HandleResponse>* allocator) {
+      ::grpc::internal::MethodHandler* const handler = ::grpc::Service::GetHandler(0);
+      static_cast<::grpc::internal::CallbackUnaryHandler< ::maa::IdRequest, ::maa::HandleResponse>*>(handler)
+              ->SetMessageAllocator(allocator);
+    }
+    ~WithCallbackMethod_create() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status create(::grpc::ServerContext* /*context*/, const ::maa::IdRequest* /*request*/, ::maa::HandleResponse* /*response*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    virtual ::grpc::ServerUnaryReactor* create(
+      ::grpc::CallbackServerContext* /*context*/, const ::maa::IdRequest* /*request*/, ::maa::HandleResponse* /*response*/)  { return nullptr; }
+  };
+  template <class BaseClass>
+  class WithCallbackMethod_destroy : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    WithCallbackMethod_destroy() {
+      ::grpc::Service::MarkMethodCallback(1,
+          new ::grpc::internal::CallbackUnaryHandler< ::maa::HandleRequest, ::maa::EmptyResponse>(
+            [this](
+                   ::grpc::CallbackServerContext* context, const ::maa::HandleRequest* request, ::maa::EmptyResponse* response) { return this->destroy(context, request, response); }));}
+    void SetMessageAllocatorFor_destroy(
+        ::grpc::MessageAllocator< ::maa::HandleRequest, ::maa::EmptyResponse>* allocator) {
+      ::grpc::internal::MethodHandler* const handler = ::grpc::Service::GetHandler(1);
+      static_cast<::grpc::internal::CallbackUnaryHandler< ::maa::HandleRequest, ::maa::EmptyResponse>*>(handler)
+              ->SetMessageAllocator(allocator);
+    }
+    ~WithCallbackMethod_destroy() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status destroy(::grpc::ServerContext* /*context*/, const ::maa::HandleRequest* /*request*/, ::maa::EmptyResponse* /*response*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    virtual ::grpc::ServerUnaryReactor* destroy(
+      ::grpc::CallbackServerContext* /*context*/, const ::maa::HandleRequest* /*request*/, ::maa::EmptyResponse* /*response*/)  { return nullptr; }
+  };
+  template <class BaseClass>
+  class WithCallbackMethod_register_custom_recognizer : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    WithCallbackMethod_register_custom_recognizer() {
+      ::grpc::Service::MarkMethodCallback(2,
+          new ::grpc::internal::CallbackServerStreamingHandler< ::maa::CustomRecognizerRequest, ::maa::CustomRecognizerResponse>(
+            [this](
+                   ::grpc::CallbackServerContext* context, const ::maa::CustomRecognizerRequest* request) { return this->register_custom_recognizer(context, request); }));
+    }
+    ~WithCallbackMethod_register_custom_recognizer() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status register_custom_recognizer(::grpc::ServerContext* /*context*/, const ::maa::CustomRecognizerRequest* /*request*/, ::grpc::ServerWriter< ::maa::CustomRecognizerResponse>* /*writer*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    virtual ::grpc::ServerWriteReactor< ::maa::CustomRecognizerResponse>* register_custom_recognizer(
+      ::grpc::CallbackServerContext* /*context*/, const ::maa::CustomRecognizerRequest* /*request*/)  { return nullptr; }
+  };
+  template <class BaseClass>
+  class WithCallbackMethod_submit_custom_recognizer : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    WithCallbackMethod_submit_custom_recognizer() {
+      ::grpc::Service::MarkMethodCallback(3,
+          new ::grpc::internal::CallbackUnaryHandler< ::maa::SubmitCustomRecognizerRequest, ::maa::EmptyResponse>(
+            [this](
+                   ::grpc::CallbackServerContext* context, const ::maa::SubmitCustomRecognizerRequest* request, ::maa::EmptyResponse* response) { return this->submit_custom_recognizer(context, request, response); }));}
+    void SetMessageAllocatorFor_submit_custom_recognizer(
+        ::grpc::MessageAllocator< ::maa::SubmitCustomRecognizerRequest, ::maa::EmptyResponse>* allocator) {
+      ::grpc::internal::MethodHandler* const handler = ::grpc::Service::GetHandler(3);
+      static_cast<::grpc::internal::CallbackUnaryHandler< ::maa::SubmitCustomRecognizerRequest, ::maa::EmptyResponse>*>(handler)
+              ->SetMessageAllocator(allocator);
+    }
+    ~WithCallbackMethod_submit_custom_recognizer() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status submit_custom_recognizer(::grpc::ServerContext* /*context*/, const ::maa::SubmitCustomRecognizerRequest* /*request*/, ::maa::EmptyResponse* /*response*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    virtual ::grpc::ServerUnaryReactor* submit_custom_recognizer(
+      ::grpc::CallbackServerContext* /*context*/, const ::maa::SubmitCustomRecognizerRequest* /*request*/, ::maa::EmptyResponse* /*response*/)  { return nullptr; }
+  };
+  template <class BaseClass>
+  class WithCallbackMethod_unregister_custom_recognizer : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    WithCallbackMethod_unregister_custom_recognizer() {
+      ::grpc::Service::MarkMethodCallback(4,
+          new ::grpc::internal::CallbackUnaryHandler< ::maa::HandleStringRequest, ::maa::EmptyResponse>(
+            [this](
+                   ::grpc::CallbackServerContext* context, const ::maa::HandleStringRequest* request, ::maa::EmptyResponse* response) { return this->unregister_custom_recognizer(context, request, response); }));}
+    void SetMessageAllocatorFor_unregister_custom_recognizer(
+        ::grpc::MessageAllocator< ::maa::HandleStringRequest, ::maa::EmptyResponse>* allocator) {
+      ::grpc::internal::MethodHandler* const handler = ::grpc::Service::GetHandler(4);
+      static_cast<::grpc::internal::CallbackUnaryHandler< ::maa::HandleStringRequest, ::maa::EmptyResponse>*>(handler)
+              ->SetMessageAllocator(allocator);
+    }
+    ~WithCallbackMethod_unregister_custom_recognizer() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status unregister_custom_recognizer(::grpc::ServerContext* /*context*/, const ::maa::HandleStringRequest* /*request*/, ::maa::EmptyResponse* /*response*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    virtual ::grpc::ServerUnaryReactor* unregister_custom_recognizer(
+      ::grpc::CallbackServerContext* /*context*/, const ::maa::HandleStringRequest* /*request*/, ::maa::EmptyResponse* /*response*/)  { return nullptr; }
+  };
+  template <class BaseClass>
+  class WithCallbackMethod_clear_custom_recognizer : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    WithCallbackMethod_clear_custom_recognizer() {
+      ::grpc::Service::MarkMethodCallback(5,
+          new ::grpc::internal::CallbackUnaryHandler< ::maa::HandleRequest, ::maa::EmptyResponse>(
+            [this](
+                   ::grpc::CallbackServerContext* context, const ::maa::HandleRequest* request, ::maa::EmptyResponse* response) { return this->clear_custom_recognizer(context, request, response); }));}
+    void SetMessageAllocatorFor_clear_custom_recognizer(
+        ::grpc::MessageAllocator< ::maa::HandleRequest, ::maa::EmptyResponse>* allocator) {
+      ::grpc::internal::MethodHandler* const handler = ::grpc::Service::GetHandler(5);
+      static_cast<::grpc::internal::CallbackUnaryHandler< ::maa::HandleRequest, ::maa::EmptyResponse>*>(handler)
+              ->SetMessageAllocator(allocator);
+    }
+    ~WithCallbackMethod_clear_custom_recognizer() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status clear_custom_recognizer(::grpc::ServerContext* /*context*/, const ::maa::HandleRequest* /*request*/, ::maa::EmptyResponse* /*response*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    virtual ::grpc::ServerUnaryReactor* clear_custom_recognizer(
+      ::grpc::CallbackServerContext* /*context*/, const ::maa::HandleRequest* /*request*/, ::maa::EmptyResponse* /*response*/)  { return nullptr; }
+  };
+  template <class BaseClass>
+  class WithCallbackMethod_register_custom_action : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    WithCallbackMethod_register_custom_action() {
+      ::grpc::Service::MarkMethodCallback(6,
+          new ::grpc::internal::CallbackServerStreamingHandler< ::maa::CustomRecognizerRequest, ::maa::CustomRecognizerResponse>(
+            [this](
+                   ::grpc::CallbackServerContext* context, const ::maa::CustomRecognizerRequest* request) { return this->register_custom_action(context, request); }));
+    }
+    ~WithCallbackMethod_register_custom_action() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status register_custom_action(::grpc::ServerContext* /*context*/, const ::maa::CustomRecognizerRequest* /*request*/, ::grpc::ServerWriter< ::maa::CustomRecognizerResponse>* /*writer*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    virtual ::grpc::ServerWriteReactor< ::maa::CustomRecognizerResponse>* register_custom_action(
+      ::grpc::CallbackServerContext* /*context*/, const ::maa::CustomRecognizerRequest* /*request*/)  { return nullptr; }
+  };
+  template <class BaseClass>
+  class WithCallbackMethod_submit_custom_action : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    WithCallbackMethod_submit_custom_action() {
+      ::grpc::Service::MarkMethodCallback(7,
+          new ::grpc::internal::CallbackUnaryHandler< ::maa::SubmitCustomRecognizerRequest, ::maa::EmptyResponse>(
+            [this](
+                   ::grpc::CallbackServerContext* context, const ::maa::SubmitCustomRecognizerRequest* request, ::maa::EmptyResponse* response) { return this->submit_custom_action(context, request, response); }));}
+    void SetMessageAllocatorFor_submit_custom_action(
+        ::grpc::MessageAllocator< ::maa::SubmitCustomRecognizerRequest, ::maa::EmptyResponse>* allocator) {
+      ::grpc::internal::MethodHandler* const handler = ::grpc::Service::GetHandler(7);
+      static_cast<::grpc::internal::CallbackUnaryHandler< ::maa::SubmitCustomRecognizerRequest, ::maa::EmptyResponse>*>(handler)
+              ->SetMessageAllocator(allocator);
+    }
+    ~WithCallbackMethod_submit_custom_action() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status submit_custom_action(::grpc::ServerContext* /*context*/, const ::maa::SubmitCustomRecognizerRequest* /*request*/, ::maa::EmptyResponse* /*response*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    virtual ::grpc::ServerUnaryReactor* submit_custom_action(
+      ::grpc::CallbackServerContext* /*context*/, const ::maa::SubmitCustomRecognizerRequest* /*request*/, ::maa::EmptyResponse* /*response*/)  { return nullptr; }
+  };
+  template <class BaseClass>
+  class WithCallbackMethod_unregister_custom_action : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    WithCallbackMethod_unregister_custom_action() {
+      ::grpc::Service::MarkMethodCallback(8,
+          new ::grpc::internal::CallbackUnaryHandler< ::maa::HandleStringRequest, ::maa::EmptyResponse>(
+            [this](
+                   ::grpc::CallbackServerContext* context, const ::maa::HandleStringRequest* request, ::maa::EmptyResponse* response) { return this->unregister_custom_action(context, request, response); }));}
+    void SetMessageAllocatorFor_unregister_custom_action(
+        ::grpc::MessageAllocator< ::maa::HandleStringRequest, ::maa::EmptyResponse>* allocator) {
+      ::grpc::internal::MethodHandler* const handler = ::grpc::Service::GetHandler(8);
+      static_cast<::grpc::internal::CallbackUnaryHandler< ::maa::HandleStringRequest, ::maa::EmptyResponse>*>(handler)
+              ->SetMessageAllocator(allocator);
+    }
+    ~WithCallbackMethod_unregister_custom_action() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status unregister_custom_action(::grpc::ServerContext* /*context*/, const ::maa::HandleStringRequest* /*request*/, ::maa::EmptyResponse* /*response*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    virtual ::grpc::ServerUnaryReactor* unregister_custom_action(
+      ::grpc::CallbackServerContext* /*context*/, const ::maa::HandleStringRequest* /*request*/, ::maa::EmptyResponse* /*response*/)  { return nullptr; }
+  };
+  template <class BaseClass>
+  class WithCallbackMethod_clear_custom_action : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    WithCallbackMethod_clear_custom_action() {
+      ::grpc::Service::MarkMethodCallback(9,
+          new ::grpc::internal::CallbackUnaryHandler< ::maa::HandleRequest, ::maa::EmptyResponse>(
+            [this](
+                   ::grpc::CallbackServerContext* context, const ::maa::HandleRequest* request, ::maa::EmptyResponse* response) { return this->clear_custom_action(context, request, response); }));}
+    void SetMessageAllocatorFor_clear_custom_action(
+        ::grpc::MessageAllocator< ::maa::HandleRequest, ::maa::EmptyResponse>* allocator) {
+      ::grpc::internal::MethodHandler* const handler = ::grpc::Service::GetHandler(9);
+      static_cast<::grpc::internal::CallbackUnaryHandler< ::maa::HandleRequest, ::maa::EmptyResponse>*>(handler)
+              ->SetMessageAllocator(allocator);
+    }
+    ~WithCallbackMethod_clear_custom_action() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status clear_custom_action(::grpc::ServerContext* /*context*/, const ::maa::HandleRequest* /*request*/, ::maa::EmptyResponse* /*response*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    virtual ::grpc::ServerUnaryReactor* clear_custom_action(
+      ::grpc::CallbackServerContext* /*context*/, const ::maa::HandleRequest* /*request*/, ::maa::EmptyResponse* /*response*/)  { return nullptr; }
+  };
+  template <class BaseClass>
+  class WithCallbackMethod_bind_resource : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    WithCallbackMethod_bind_resource() {
+      ::grpc::Service::MarkMethodCallback(10,
+          new ::grpc::internal::CallbackUnaryHandler< ::maa::HandleRequest, ::maa::EmptyResponse>(
+            [this](
+                   ::grpc::CallbackServerContext* context, const ::maa::HandleRequest* request, ::maa::EmptyResponse* response) { return this->bind_resource(context, request, response); }));}
+    void SetMessageAllocatorFor_bind_resource(
+        ::grpc::MessageAllocator< ::maa::HandleRequest, ::maa::EmptyResponse>* allocator) {
+      ::grpc::internal::MethodHandler* const handler = ::grpc::Service::GetHandler(10);
+      static_cast<::grpc::internal::CallbackUnaryHandler< ::maa::HandleRequest, ::maa::EmptyResponse>*>(handler)
+              ->SetMessageAllocator(allocator);
+    }
+    ~WithCallbackMethod_bind_resource() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status bind_resource(::grpc::ServerContext* /*context*/, const ::maa::HandleRequest* /*request*/, ::maa::EmptyResponse* /*response*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    virtual ::grpc::ServerUnaryReactor* bind_resource(
+      ::grpc::CallbackServerContext* /*context*/, const ::maa::HandleRequest* /*request*/, ::maa::EmptyResponse* /*response*/)  { return nullptr; }
+  };
+  template <class BaseClass>
+  class WithCallbackMethod_bind_controller : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    WithCallbackMethod_bind_controller() {
+      ::grpc::Service::MarkMethodCallback(11,
+          new ::grpc::internal::CallbackUnaryHandler< ::maa::HandleRequest, ::maa::EmptyResponse>(
+            [this](
+                   ::grpc::CallbackServerContext* context, const ::maa::HandleRequest* request, ::maa::EmptyResponse* response) { return this->bind_controller(context, request, response); }));}
+    void SetMessageAllocatorFor_bind_controller(
+        ::grpc::MessageAllocator< ::maa::HandleRequest, ::maa::EmptyResponse>* allocator) {
+      ::grpc::internal::MethodHandler* const handler = ::grpc::Service::GetHandler(11);
+      static_cast<::grpc::internal::CallbackUnaryHandler< ::maa::HandleRequest, ::maa::EmptyResponse>*>(handler)
+              ->SetMessageAllocator(allocator);
+    }
+    ~WithCallbackMethod_bind_controller() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status bind_controller(::grpc::ServerContext* /*context*/, const ::maa::HandleRequest* /*request*/, ::maa::EmptyResponse* /*response*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    virtual ::grpc::ServerUnaryReactor* bind_controller(
+      ::grpc::CallbackServerContext* /*context*/, const ::maa::HandleRequest* /*request*/, ::maa::EmptyResponse* /*response*/)  { return nullptr; }
+  };
+  template <class BaseClass>
+  class WithCallbackMethod_inited : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    WithCallbackMethod_inited() {
+      ::grpc::Service::MarkMethodCallback(12,
+          new ::grpc::internal::CallbackUnaryHandler< ::maa::HandleRequest, ::maa::BoolResponse>(
+            [this](
+                   ::grpc::CallbackServerContext* context, const ::maa::HandleRequest* request, ::maa::BoolResponse* response) { return this->inited(context, request, response); }));}
+    void SetMessageAllocatorFor_inited(
+        ::grpc::MessageAllocator< ::maa::HandleRequest, ::maa::BoolResponse>* allocator) {
+      ::grpc::internal::MethodHandler* const handler = ::grpc::Service::GetHandler(12);
+      static_cast<::grpc::internal::CallbackUnaryHandler< ::maa::HandleRequest, ::maa::BoolResponse>*>(handler)
+              ->SetMessageAllocator(allocator);
+    }
+    ~WithCallbackMethod_inited() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status inited(::grpc::ServerContext* /*context*/, const ::maa::HandleRequest* /*request*/, ::maa::BoolResponse* /*response*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    virtual ::grpc::ServerUnaryReactor* inited(
+      ::grpc::CallbackServerContext* /*context*/, const ::maa::HandleRequest* /*request*/, ::maa::BoolResponse* /*response*/)  { return nullptr; }
+  };
+  template <class BaseClass>
+  class WithCallbackMethod_post_task : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    WithCallbackMethod_post_task() {
+      ::grpc::Service::MarkMethodCallback(13,
+          new ::grpc::internal::CallbackUnaryHandler< ::maa::InstancePostTaskRequest, ::maa::IdResponse>(
+            [this](
+                   ::grpc::CallbackServerContext* context, const ::maa::InstancePostTaskRequest* request, ::maa::IdResponse* response) { return this->post_task(context, request, response); }));}
+    void SetMessageAllocatorFor_post_task(
+        ::grpc::MessageAllocator< ::maa::InstancePostTaskRequest, ::maa::IdResponse>* allocator) {
+      ::grpc::internal::MethodHandler* const handler = ::grpc::Service::GetHandler(13);
+      static_cast<::grpc::internal::CallbackUnaryHandler< ::maa::InstancePostTaskRequest, ::maa::IdResponse>*>(handler)
+              ->SetMessageAllocator(allocator);
+    }
+    ~WithCallbackMethod_post_task() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status post_task(::grpc::ServerContext* /*context*/, const ::maa::InstancePostTaskRequest* /*request*/, ::maa::IdResponse* /*response*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    virtual ::grpc::ServerUnaryReactor* post_task(
+      ::grpc::CallbackServerContext* /*context*/, const ::maa::InstancePostTaskRequest* /*request*/, ::maa::IdResponse* /*response*/)  { return nullptr; }
+  };
+  template <class BaseClass>
+  class WithCallbackMethod_set_task_param : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    WithCallbackMethod_set_task_param() {
+      ::grpc::Service::MarkMethodCallback(14,
+          new ::grpc::internal::CallbackUnaryHandler< ::maa::InstanceSetTaskParamRequest, ::maa::EmptyResponse>(
+            [this](
+                   ::grpc::CallbackServerContext* context, const ::maa::InstanceSetTaskParamRequest* request, ::maa::EmptyResponse* response) { return this->set_task_param(context, request, response); }));}
+    void SetMessageAllocatorFor_set_task_param(
+        ::grpc::MessageAllocator< ::maa::InstanceSetTaskParamRequest, ::maa::EmptyResponse>* allocator) {
+      ::grpc::internal::MethodHandler* const handler = ::grpc::Service::GetHandler(14);
+      static_cast<::grpc::internal::CallbackUnaryHandler< ::maa::InstanceSetTaskParamRequest, ::maa::EmptyResponse>*>(handler)
+              ->SetMessageAllocator(allocator);
+    }
+    ~WithCallbackMethod_set_task_param() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status set_task_param(::grpc::ServerContext* /*context*/, const ::maa::InstanceSetTaskParamRequest* /*request*/, ::maa::EmptyResponse* /*response*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    virtual ::grpc::ServerUnaryReactor* set_task_param(
+      ::grpc::CallbackServerContext* /*context*/, const ::maa::InstanceSetTaskParamRequest* /*request*/, ::maa::EmptyResponse* /*response*/)  { return nullptr; }
+  };
+  template <class BaseClass>
+  class WithCallbackMethod_status : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    WithCallbackMethod_status() {
+      ::grpc::Service::MarkMethodCallback(15,
+          new ::grpc::internal::CallbackUnaryHandler< ::maa::HandleIdRequest, ::maa::StatusResponse>(
+            [this](
+                   ::grpc::CallbackServerContext* context, const ::maa::HandleIdRequest* request, ::maa::StatusResponse* response) { return this->status(context, request, response); }));}
+    void SetMessageAllocatorFor_status(
+        ::grpc::MessageAllocator< ::maa::HandleIdRequest, ::maa::StatusResponse>* allocator) {
+      ::grpc::internal::MethodHandler* const handler = ::grpc::Service::GetHandler(15);
+      static_cast<::grpc::internal::CallbackUnaryHandler< ::maa::HandleIdRequest, ::maa::StatusResponse>*>(handler)
+              ->SetMessageAllocator(allocator);
+    }
+    ~WithCallbackMethod_status() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status status(::grpc::ServerContext* /*context*/, const ::maa::HandleIdRequest* /*request*/, ::maa::StatusResponse* /*response*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    virtual ::grpc::ServerUnaryReactor* status(
+      ::grpc::CallbackServerContext* /*context*/, const ::maa::HandleIdRequest* /*request*/, ::maa::StatusResponse* /*response*/)  { return nullptr; }
+  };
+  template <class BaseClass>
+  class WithCallbackMethod_wait : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    WithCallbackMethod_wait() {
+      ::grpc::Service::MarkMethodCallback(16,
+          new ::grpc::internal::CallbackUnaryHandler< ::maa::HandleIdRequest, ::maa::EmptyResponse>(
+            [this](
+                   ::grpc::CallbackServerContext* context, const ::maa::HandleIdRequest* request, ::maa::EmptyResponse* response) { return this->wait(context, request, response); }));}
+    void SetMessageAllocatorFor_wait(
+        ::grpc::MessageAllocator< ::maa::HandleIdRequest, ::maa::EmptyResponse>* allocator) {
+      ::grpc::internal::MethodHandler* const handler = ::grpc::Service::GetHandler(16);
+      static_cast<::grpc::internal::CallbackUnaryHandler< ::maa::HandleIdRequest, ::maa::EmptyResponse>*>(handler)
+              ->SetMessageAllocator(allocator);
+    }
+    ~WithCallbackMethod_wait() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status wait(::grpc::ServerContext* /*context*/, const ::maa::HandleIdRequest* /*request*/, ::maa::EmptyResponse* /*response*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    virtual ::grpc::ServerUnaryReactor* wait(
+      ::grpc::CallbackServerContext* /*context*/, const ::maa::HandleIdRequest* /*request*/, ::maa::EmptyResponse* /*response*/)  { return nullptr; }
+  };
+  template <class BaseClass>
+  class WithCallbackMethod_all_finished : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    WithCallbackMethod_all_finished() {
+      ::grpc::Service::MarkMethodCallback(17,
+          new ::grpc::internal::CallbackUnaryHandler< ::maa::HandleRequest, ::maa::BoolResponse>(
+            [this](
+                   ::grpc::CallbackServerContext* context, const ::maa::HandleRequest* request, ::maa::BoolResponse* response) { return this->all_finished(context, request, response); }));}
+    void SetMessageAllocatorFor_all_finished(
+        ::grpc::MessageAllocator< ::maa::HandleRequest, ::maa::BoolResponse>* allocator) {
+      ::grpc::internal::MethodHandler* const handler = ::grpc::Service::GetHandler(17);
+      static_cast<::grpc::internal::CallbackUnaryHandler< ::maa::HandleRequest, ::maa::BoolResponse>*>(handler)
+              ->SetMessageAllocator(allocator);
+    }
+    ~WithCallbackMethod_all_finished() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status all_finished(::grpc::ServerContext* /*context*/, const ::maa::HandleRequest* /*request*/, ::maa::BoolResponse* /*response*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    virtual ::grpc::ServerUnaryReactor* all_finished(
+      ::grpc::CallbackServerContext* /*context*/, const ::maa::HandleRequest* /*request*/, ::maa::BoolResponse* /*response*/)  { return nullptr; }
+  };
+  template <class BaseClass>
+  class WithCallbackMethod_stop : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    WithCallbackMethod_stop() {
+      ::grpc::Service::MarkMethodCallback(18,
+          new ::grpc::internal::CallbackUnaryHandler< ::maa::HandleRequest, ::maa::EmptyResponse>(
+            [this](
+                   ::grpc::CallbackServerContext* context, const ::maa::HandleRequest* request, ::maa::EmptyResponse* response) { return this->stop(context, request, response); }));}
+    void SetMessageAllocatorFor_stop(
+        ::grpc::MessageAllocator< ::maa::HandleRequest, ::maa::EmptyResponse>* allocator) {
+      ::grpc::internal::MethodHandler* const handler = ::grpc::Service::GetHandler(18);
+      static_cast<::grpc::internal::CallbackUnaryHandler< ::maa::HandleRequest, ::maa::EmptyResponse>*>(handler)
+              ->SetMessageAllocator(allocator);
+    }
+    ~WithCallbackMethod_stop() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status stop(::grpc::ServerContext* /*context*/, const ::maa::HandleRequest* /*request*/, ::maa::EmptyResponse* /*response*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    virtual ::grpc::ServerUnaryReactor* stop(
+      ::grpc::CallbackServerContext* /*context*/, const ::maa::HandleRequest* /*request*/, ::maa::EmptyResponse* /*response*/)  { return nullptr; }
+  };
+  template <class BaseClass>
+  class WithCallbackMethod_resource : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    WithCallbackMethod_resource() {
+      ::grpc::Service::MarkMethodCallback(19,
+          new ::grpc::internal::CallbackUnaryHandler< ::maa::HandleRequest, ::maa::HandleRequest>(
+            [this](
+                   ::grpc::CallbackServerContext* context, const ::maa::HandleRequest* request, ::maa::HandleRequest* response) { return this->resource(context, request, response); }));}
+    void SetMessageAllocatorFor_resource(
+        ::grpc::MessageAllocator< ::maa::HandleRequest, ::maa::HandleRequest>* allocator) {
+      ::grpc::internal::MethodHandler* const handler = ::grpc::Service::GetHandler(19);
+      static_cast<::grpc::internal::CallbackUnaryHandler< ::maa::HandleRequest, ::maa::HandleRequest>*>(handler)
+              ->SetMessageAllocator(allocator);
+    }
+    ~WithCallbackMethod_resource() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status resource(::grpc::ServerContext* /*context*/, const ::maa::HandleRequest* /*request*/, ::maa::HandleRequest* /*response*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    virtual ::grpc::ServerUnaryReactor* resource(
+      ::grpc::CallbackServerContext* /*context*/, const ::maa::HandleRequest* /*request*/, ::maa::HandleRequest* /*response*/)  { return nullptr; }
+  };
+  template <class BaseClass>
+  class WithCallbackMethod_controller : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    WithCallbackMethod_controller() {
+      ::grpc::Service::MarkMethodCallback(20,
+          new ::grpc::internal::CallbackUnaryHandler< ::maa::HandleRequest, ::maa::HandleRequest>(
+            [this](
+                   ::grpc::CallbackServerContext* context, const ::maa::HandleRequest* request, ::maa::HandleRequest* response) { return this->controller(context, request, response); }));}
+    void SetMessageAllocatorFor_controller(
+        ::grpc::MessageAllocator< ::maa::HandleRequest, ::maa::HandleRequest>* allocator) {
+      ::grpc::internal::MethodHandler* const handler = ::grpc::Service::GetHandler(20);
+      static_cast<::grpc::internal::CallbackUnaryHandler< ::maa::HandleRequest, ::maa::HandleRequest>*>(handler)
+              ->SetMessageAllocator(allocator);
+    }
+    ~WithCallbackMethod_controller() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status controller(::grpc::ServerContext* /*context*/, const ::maa::HandleRequest* /*request*/, ::maa::HandleRequest* /*response*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    virtual ::grpc::ServerUnaryReactor* controller(
+      ::grpc::CallbackServerContext* /*context*/, const ::maa::HandleRequest* /*request*/, ::maa::HandleRequest* /*response*/)  { return nullptr; }
+  };
+  typedef WithCallbackMethod_create<WithCallbackMethod_destroy<WithCallbackMethod_register_custom_recognizer<WithCallbackMethod_submit_custom_recognizer<WithCallbackMethod_unregister_custom_recognizer<WithCallbackMethod_clear_custom_recognizer<WithCallbackMethod_register_custom_action<WithCallbackMethod_submit_custom_action<WithCallbackMethod_unregister_custom_action<WithCallbackMethod_clear_custom_action<WithCallbackMethod_bind_resource<WithCallbackMethod_bind_controller<WithCallbackMethod_inited<WithCallbackMethod_post_task<WithCallbackMethod_set_task_param<WithCallbackMethod_status<WithCallbackMethod_wait<WithCallbackMethod_all_finished<WithCallbackMethod_stop<WithCallbackMethod_resource<WithCallbackMethod_controller<Service > > > > > > > > > > > > > > > > > > > > > CallbackService;
+  typedef CallbackService ExperimentalCallbackService;
+  template <class BaseClass>
+  class WithGenericMethod_create : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    WithGenericMethod_create() {
+      ::grpc::Service::MarkMethodGeneric(0);
+    }
+    ~WithGenericMethod_create() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status create(::grpc::ServerContext* /*context*/, const ::maa::IdRequest* /*request*/, ::maa::HandleResponse* /*response*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+  };
+  template <class BaseClass>
+  class WithGenericMethod_destroy : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    WithGenericMethod_destroy() {
+      ::grpc::Service::MarkMethodGeneric(1);
+    }
+    ~WithGenericMethod_destroy() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status destroy(::grpc::ServerContext* /*context*/, const ::maa::HandleRequest* /*request*/, ::maa::EmptyResponse* /*response*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+  };
+  template <class BaseClass>
+  class WithGenericMethod_register_custom_recognizer : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    WithGenericMethod_register_custom_recognizer() {
+      ::grpc::Service::MarkMethodGeneric(2);
+    }
+    ~WithGenericMethod_register_custom_recognizer() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status register_custom_recognizer(::grpc::ServerContext* /*context*/, const ::maa::CustomRecognizerRequest* /*request*/, ::grpc::ServerWriter< ::maa::CustomRecognizerResponse>* /*writer*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+  };
+  template <class BaseClass>
+  class WithGenericMethod_submit_custom_recognizer : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    WithGenericMethod_submit_custom_recognizer() {
+      ::grpc::Service::MarkMethodGeneric(3);
+    }
+    ~WithGenericMethod_submit_custom_recognizer() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status submit_custom_recognizer(::grpc::ServerContext* /*context*/, const ::maa::SubmitCustomRecognizerRequest* /*request*/, ::maa::EmptyResponse* /*response*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+  };
+  template <class BaseClass>
+  class WithGenericMethod_unregister_custom_recognizer : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    WithGenericMethod_unregister_custom_recognizer() {
+      ::grpc::Service::MarkMethodGeneric(4);
+    }
+    ~WithGenericMethod_unregister_custom_recognizer() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status unregister_custom_recognizer(::grpc::ServerContext* /*context*/, const ::maa::HandleStringRequest* /*request*/, ::maa::EmptyResponse* /*response*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+  };
+  template <class BaseClass>
+  class WithGenericMethod_clear_custom_recognizer : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    WithGenericMethod_clear_custom_recognizer() {
+      ::grpc::Service::MarkMethodGeneric(5);
+    }
+    ~WithGenericMethod_clear_custom_recognizer() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status clear_custom_recognizer(::grpc::ServerContext* /*context*/, const ::maa::HandleRequest* /*request*/, ::maa::EmptyResponse* /*response*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+  };
+  template <class BaseClass>
+  class WithGenericMethod_register_custom_action : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    WithGenericMethod_register_custom_action() {
+      ::grpc::Service::MarkMethodGeneric(6);
+    }
+    ~WithGenericMethod_register_custom_action() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status register_custom_action(::grpc::ServerContext* /*context*/, const ::maa::CustomRecognizerRequest* /*request*/, ::grpc::ServerWriter< ::maa::CustomRecognizerResponse>* /*writer*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+  };
+  template <class BaseClass>
+  class WithGenericMethod_submit_custom_action : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    WithGenericMethod_submit_custom_action() {
+      ::grpc::Service::MarkMethodGeneric(7);
+    }
+    ~WithGenericMethod_submit_custom_action() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status submit_custom_action(::grpc::ServerContext* /*context*/, const ::maa::SubmitCustomRecognizerRequest* /*request*/, ::maa::EmptyResponse* /*response*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+  };
+  template <class BaseClass>
+  class WithGenericMethod_unregister_custom_action : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    WithGenericMethod_unregister_custom_action() {
+      ::grpc::Service::MarkMethodGeneric(8);
+    }
+    ~WithGenericMethod_unregister_custom_action() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status unregister_custom_action(::grpc::ServerContext* /*context*/, const ::maa::HandleStringRequest* /*request*/, ::maa::EmptyResponse* /*response*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+  };
+  template <class BaseClass>
+  class WithGenericMethod_clear_custom_action : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    WithGenericMethod_clear_custom_action() {
+      ::grpc::Service::MarkMethodGeneric(9);
+    }
+    ~WithGenericMethod_clear_custom_action() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status clear_custom_action(::grpc::ServerContext* /*context*/, const ::maa::HandleRequest* /*request*/, ::maa::EmptyResponse* /*response*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+  };
+  template <class BaseClass>
+  class WithGenericMethod_bind_resource : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    WithGenericMethod_bind_resource() {
+      ::grpc::Service::MarkMethodGeneric(10);
+    }
+    ~WithGenericMethod_bind_resource() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status bind_resource(::grpc::ServerContext* /*context*/, const ::maa::HandleRequest* /*request*/, ::maa::EmptyResponse* /*response*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+  };
+  template <class BaseClass>
+  class WithGenericMethod_bind_controller : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    WithGenericMethod_bind_controller() {
+      ::grpc::Service::MarkMethodGeneric(11);
+    }
+    ~WithGenericMethod_bind_controller() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status bind_controller(::grpc::ServerContext* /*context*/, const ::maa::HandleRequest* /*request*/, ::maa::EmptyResponse* /*response*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+  };
+  template <class BaseClass>
+  class WithGenericMethod_inited : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    WithGenericMethod_inited() {
+      ::grpc::Service::MarkMethodGeneric(12);
+    }
+    ~WithGenericMethod_inited() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status inited(::grpc::ServerContext* /*context*/, const ::maa::HandleRequest* /*request*/, ::maa::BoolResponse* /*response*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+  };
+  template <class BaseClass>
+  class WithGenericMethod_post_task : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    WithGenericMethod_post_task() {
+      ::grpc::Service::MarkMethodGeneric(13);
+    }
+    ~WithGenericMethod_post_task() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status post_task(::grpc::ServerContext* /*context*/, const ::maa::InstancePostTaskRequest* /*request*/, ::maa::IdResponse* /*response*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+  };
+  template <class BaseClass>
+  class WithGenericMethod_set_task_param : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    WithGenericMethod_set_task_param() {
+      ::grpc::Service::MarkMethodGeneric(14);
+    }
+    ~WithGenericMethod_set_task_param() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status set_task_param(::grpc::ServerContext* /*context*/, const ::maa::InstanceSetTaskParamRequest* /*request*/, ::maa::EmptyResponse* /*response*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+  };
+  template <class BaseClass>
+  class WithGenericMethod_status : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    WithGenericMethod_status() {
+      ::grpc::Service::MarkMethodGeneric(15);
+    }
+    ~WithGenericMethod_status() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status status(::grpc::ServerContext* /*context*/, const ::maa::HandleIdRequest* /*request*/, ::maa::StatusResponse* /*response*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+  };
+  template <class BaseClass>
+  class WithGenericMethod_wait : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    WithGenericMethod_wait() {
+      ::grpc::Service::MarkMethodGeneric(16);
+    }
+    ~WithGenericMethod_wait() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status wait(::grpc::ServerContext* /*context*/, const ::maa::HandleIdRequest* /*request*/, ::maa::EmptyResponse* /*response*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+  };
+  template <class BaseClass>
+  class WithGenericMethod_all_finished : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    WithGenericMethod_all_finished() {
+      ::grpc::Service::MarkMethodGeneric(17);
+    }
+    ~WithGenericMethod_all_finished() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status all_finished(::grpc::ServerContext* /*context*/, const ::maa::HandleRequest* /*request*/, ::maa::BoolResponse* /*response*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+  };
+  template <class BaseClass>
+  class WithGenericMethod_stop : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    WithGenericMethod_stop() {
+      ::grpc::Service::MarkMethodGeneric(18);
+    }
+    ~WithGenericMethod_stop() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status stop(::grpc::ServerContext* /*context*/, const ::maa::HandleRequest* /*request*/, ::maa::EmptyResponse* /*response*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+  };
+  template <class BaseClass>
+  class WithGenericMethod_resource : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    WithGenericMethod_resource() {
+      ::grpc::Service::MarkMethodGeneric(19);
+    }
+    ~WithGenericMethod_resource() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status resource(::grpc::ServerContext* /*context*/, const ::maa::HandleRequest* /*request*/, ::maa::HandleRequest* /*response*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+  };
+  template <class BaseClass>
+  class WithGenericMethod_controller : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    WithGenericMethod_controller() {
+      ::grpc::Service::MarkMethodGeneric(20);
+    }
+    ~WithGenericMethod_controller() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status controller(::grpc::ServerContext* /*context*/, const ::maa::HandleRequest* /*request*/, ::maa::HandleRequest* /*response*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+  };
+  template <class BaseClass>
+  class WithRawMethod_create : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    WithRawMethod_create() {
+      ::grpc::Service::MarkMethodRaw(0);
+    }
+    ~WithRawMethod_create() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status create(::grpc::ServerContext* /*context*/, const ::maa::IdRequest* /*request*/, ::maa::HandleResponse* /*response*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    void Requestcreate(::grpc::ServerContext* context, ::grpc::ByteBuffer* request, ::grpc::ServerAsyncResponseWriter< ::grpc::ByteBuffer>* response, ::grpc::CompletionQueue* new_call_cq, ::grpc::ServerCompletionQueue* notification_cq, void *tag) {
+      ::grpc::Service::RequestAsyncUnary(0, context, request, response, new_call_cq, notification_cq, tag);
+    }
+  };
+  template <class BaseClass>
+  class WithRawMethod_destroy : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    WithRawMethod_destroy() {
+      ::grpc::Service::MarkMethodRaw(1);
+    }
+    ~WithRawMethod_destroy() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status destroy(::grpc::ServerContext* /*context*/, const ::maa::HandleRequest* /*request*/, ::maa::EmptyResponse* /*response*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    void Requestdestroy(::grpc::ServerContext* context, ::grpc::ByteBuffer* request, ::grpc::ServerAsyncResponseWriter< ::grpc::ByteBuffer>* response, ::grpc::CompletionQueue* new_call_cq, ::grpc::ServerCompletionQueue* notification_cq, void *tag) {
+      ::grpc::Service::RequestAsyncUnary(1, context, request, response, new_call_cq, notification_cq, tag);
+    }
+  };
+  template <class BaseClass>
+  class WithRawMethod_register_custom_recognizer : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    WithRawMethod_register_custom_recognizer() {
+      ::grpc::Service::MarkMethodRaw(2);
+    }
+    ~WithRawMethod_register_custom_recognizer() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status register_custom_recognizer(::grpc::ServerContext* /*context*/, const ::maa::CustomRecognizerRequest* /*request*/, ::grpc::ServerWriter< ::maa::CustomRecognizerResponse>* /*writer*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    void Requestregister_custom_recognizer(::grpc::ServerContext* context, ::grpc::ByteBuffer* request, ::grpc::ServerAsyncWriter< ::grpc::ByteBuffer>* writer, ::grpc::CompletionQueue* new_call_cq, ::grpc::ServerCompletionQueue* notification_cq, void *tag) {
+      ::grpc::Service::RequestAsyncServerStreaming(2, context, request, writer, new_call_cq, notification_cq, tag);
+    }
+  };
+  template <class BaseClass>
+  class WithRawMethod_submit_custom_recognizer : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    WithRawMethod_submit_custom_recognizer() {
+      ::grpc::Service::MarkMethodRaw(3);
+    }
+    ~WithRawMethod_submit_custom_recognizer() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status submit_custom_recognizer(::grpc::ServerContext* /*context*/, const ::maa::SubmitCustomRecognizerRequest* /*request*/, ::maa::EmptyResponse* /*response*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    void Requestsubmit_custom_recognizer(::grpc::ServerContext* context, ::grpc::ByteBuffer* request, ::grpc::ServerAsyncResponseWriter< ::grpc::ByteBuffer>* response, ::grpc::CompletionQueue* new_call_cq, ::grpc::ServerCompletionQueue* notification_cq, void *tag) {
+      ::grpc::Service::RequestAsyncUnary(3, context, request, response, new_call_cq, notification_cq, tag);
+    }
+  };
+  template <class BaseClass>
+  class WithRawMethod_unregister_custom_recognizer : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    WithRawMethod_unregister_custom_recognizer() {
+      ::grpc::Service::MarkMethodRaw(4);
+    }
+    ~WithRawMethod_unregister_custom_recognizer() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status unregister_custom_recognizer(::grpc::ServerContext* /*context*/, const ::maa::HandleStringRequest* /*request*/, ::maa::EmptyResponse* /*response*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    void Requestunregister_custom_recognizer(::grpc::ServerContext* context, ::grpc::ByteBuffer* request, ::grpc::ServerAsyncResponseWriter< ::grpc::ByteBuffer>* response, ::grpc::CompletionQueue* new_call_cq, ::grpc::ServerCompletionQueue* notification_cq, void *tag) {
+      ::grpc::Service::RequestAsyncUnary(4, context, request, response, new_call_cq, notification_cq, tag);
+    }
+  };
+  template <class BaseClass>
+  class WithRawMethod_clear_custom_recognizer : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    WithRawMethod_clear_custom_recognizer() {
+      ::grpc::Service::MarkMethodRaw(5);
+    }
+    ~WithRawMethod_clear_custom_recognizer() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status clear_custom_recognizer(::grpc::ServerContext* /*context*/, const ::maa::HandleRequest* /*request*/, ::maa::EmptyResponse* /*response*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    void Requestclear_custom_recognizer(::grpc::ServerContext* context, ::grpc::ByteBuffer* request, ::grpc::ServerAsyncResponseWriter< ::grpc::ByteBuffer>* response, ::grpc::CompletionQueue* new_call_cq, ::grpc::ServerCompletionQueue* notification_cq, void *tag) {
+      ::grpc::Service::RequestAsyncUnary(5, context, request, response, new_call_cq, notification_cq, tag);
+    }
+  };
+  template <class BaseClass>
+  class WithRawMethod_register_custom_action : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    WithRawMethod_register_custom_action() {
+      ::grpc::Service::MarkMethodRaw(6);
+    }
+    ~WithRawMethod_register_custom_action() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status register_custom_action(::grpc::ServerContext* /*context*/, const ::maa::CustomRecognizerRequest* /*request*/, ::grpc::ServerWriter< ::maa::CustomRecognizerResponse>* /*writer*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    void Requestregister_custom_action(::grpc::ServerContext* context, ::grpc::ByteBuffer* request, ::grpc::ServerAsyncWriter< ::grpc::ByteBuffer>* writer, ::grpc::CompletionQueue* new_call_cq, ::grpc::ServerCompletionQueue* notification_cq, void *tag) {
+      ::grpc::Service::RequestAsyncServerStreaming(6, context, request, writer, new_call_cq, notification_cq, tag);
+    }
+  };
+  template <class BaseClass>
+  class WithRawMethod_submit_custom_action : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    WithRawMethod_submit_custom_action() {
+      ::grpc::Service::MarkMethodRaw(7);
+    }
+    ~WithRawMethod_submit_custom_action() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status submit_custom_action(::grpc::ServerContext* /*context*/, const ::maa::SubmitCustomRecognizerRequest* /*request*/, ::maa::EmptyResponse* /*response*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    void Requestsubmit_custom_action(::grpc::ServerContext* context, ::grpc::ByteBuffer* request, ::grpc::ServerAsyncResponseWriter< ::grpc::ByteBuffer>* response, ::grpc::CompletionQueue* new_call_cq, ::grpc::ServerCompletionQueue* notification_cq, void *tag) {
+      ::grpc::Service::RequestAsyncUnary(7, context, request, response, new_call_cq, notification_cq, tag);
+    }
+  };
+  template <class BaseClass>
+  class WithRawMethod_unregister_custom_action : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    WithRawMethod_unregister_custom_action() {
+      ::grpc::Service::MarkMethodRaw(8);
+    }
+    ~WithRawMethod_unregister_custom_action() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status unregister_custom_action(::grpc::ServerContext* /*context*/, const ::maa::HandleStringRequest* /*request*/, ::maa::EmptyResponse* /*response*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    void Requestunregister_custom_action(::grpc::ServerContext* context, ::grpc::ByteBuffer* request, ::grpc::ServerAsyncResponseWriter< ::grpc::ByteBuffer>* response, ::grpc::CompletionQueue* new_call_cq, ::grpc::ServerCompletionQueue* notification_cq, void *tag) {
+      ::grpc::Service::RequestAsyncUnary(8, context, request, response, new_call_cq, notification_cq, tag);
+    }
+  };
+  template <class BaseClass>
+  class WithRawMethod_clear_custom_action : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    WithRawMethod_clear_custom_action() {
+      ::grpc::Service::MarkMethodRaw(9);
+    }
+    ~WithRawMethod_clear_custom_action() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status clear_custom_action(::grpc::ServerContext* /*context*/, const ::maa::HandleRequest* /*request*/, ::maa::EmptyResponse* /*response*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    void Requestclear_custom_action(::grpc::ServerContext* context, ::grpc::ByteBuffer* request, ::grpc::ServerAsyncResponseWriter< ::grpc::ByteBuffer>* response, ::grpc::CompletionQueue* new_call_cq, ::grpc::ServerCompletionQueue* notification_cq, void *tag) {
+      ::grpc::Service::RequestAsyncUnary(9, context, request, response, new_call_cq, notification_cq, tag);
+    }
+  };
+  template <class BaseClass>
+  class WithRawMethod_bind_resource : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    WithRawMethod_bind_resource() {
+      ::grpc::Service::MarkMethodRaw(10);
+    }
+    ~WithRawMethod_bind_resource() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status bind_resource(::grpc::ServerContext* /*context*/, const ::maa::HandleRequest* /*request*/, ::maa::EmptyResponse* /*response*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    void Requestbind_resource(::grpc::ServerContext* context, ::grpc::ByteBuffer* request, ::grpc::ServerAsyncResponseWriter< ::grpc::ByteBuffer>* response, ::grpc::CompletionQueue* new_call_cq, ::grpc::ServerCompletionQueue* notification_cq, void *tag) {
+      ::grpc::Service::RequestAsyncUnary(10, context, request, response, new_call_cq, notification_cq, tag);
+    }
+  };
+  template <class BaseClass>
+  class WithRawMethod_bind_controller : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    WithRawMethod_bind_controller() {
+      ::grpc::Service::MarkMethodRaw(11);
+    }
+    ~WithRawMethod_bind_controller() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status bind_controller(::grpc::ServerContext* /*context*/, const ::maa::HandleRequest* /*request*/, ::maa::EmptyResponse* /*response*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    void Requestbind_controller(::grpc::ServerContext* context, ::grpc::ByteBuffer* request, ::grpc::ServerAsyncResponseWriter< ::grpc::ByteBuffer>* response, ::grpc::CompletionQueue* new_call_cq, ::grpc::ServerCompletionQueue* notification_cq, void *tag) {
+      ::grpc::Service::RequestAsyncUnary(11, context, request, response, new_call_cq, notification_cq, tag);
+    }
+  };
+  template <class BaseClass>
+  class WithRawMethod_inited : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    WithRawMethod_inited() {
+      ::grpc::Service::MarkMethodRaw(12);
+    }
+    ~WithRawMethod_inited() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status inited(::grpc::ServerContext* /*context*/, const ::maa::HandleRequest* /*request*/, ::maa::BoolResponse* /*response*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    void Requestinited(::grpc::ServerContext* context, ::grpc::ByteBuffer* request, ::grpc::ServerAsyncResponseWriter< ::grpc::ByteBuffer>* response, ::grpc::CompletionQueue* new_call_cq, ::grpc::ServerCompletionQueue* notification_cq, void *tag) {
+      ::grpc::Service::RequestAsyncUnary(12, context, request, response, new_call_cq, notification_cq, tag);
+    }
+  };
+  template <class BaseClass>
+  class WithRawMethod_post_task : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    WithRawMethod_post_task() {
+      ::grpc::Service::MarkMethodRaw(13);
+    }
+    ~WithRawMethod_post_task() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status post_task(::grpc::ServerContext* /*context*/, const ::maa::InstancePostTaskRequest* /*request*/, ::maa::IdResponse* /*response*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    void Requestpost_task(::grpc::ServerContext* context, ::grpc::ByteBuffer* request, ::grpc::ServerAsyncResponseWriter< ::grpc::ByteBuffer>* response, ::grpc::CompletionQueue* new_call_cq, ::grpc::ServerCompletionQueue* notification_cq, void *tag) {
+      ::grpc::Service::RequestAsyncUnary(13, context, request, response, new_call_cq, notification_cq, tag);
+    }
+  };
+  template <class BaseClass>
+  class WithRawMethod_set_task_param : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    WithRawMethod_set_task_param() {
+      ::grpc::Service::MarkMethodRaw(14);
+    }
+    ~WithRawMethod_set_task_param() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status set_task_param(::grpc::ServerContext* /*context*/, const ::maa::InstanceSetTaskParamRequest* /*request*/, ::maa::EmptyResponse* /*response*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    void Requestset_task_param(::grpc::ServerContext* context, ::grpc::ByteBuffer* request, ::grpc::ServerAsyncResponseWriter< ::grpc::ByteBuffer>* response, ::grpc::CompletionQueue* new_call_cq, ::grpc::ServerCompletionQueue* notification_cq, void *tag) {
+      ::grpc::Service::RequestAsyncUnary(14, context, request, response, new_call_cq, notification_cq, tag);
+    }
+  };
+  template <class BaseClass>
+  class WithRawMethod_status : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    WithRawMethod_status() {
+      ::grpc::Service::MarkMethodRaw(15);
+    }
+    ~WithRawMethod_status() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status status(::grpc::ServerContext* /*context*/, const ::maa::HandleIdRequest* /*request*/, ::maa::StatusResponse* /*response*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    void Requeststatus(::grpc::ServerContext* context, ::grpc::ByteBuffer* request, ::grpc::ServerAsyncResponseWriter< ::grpc::ByteBuffer>* response, ::grpc::CompletionQueue* new_call_cq, ::grpc::ServerCompletionQueue* notification_cq, void *tag) {
+      ::grpc::Service::RequestAsyncUnary(15, context, request, response, new_call_cq, notification_cq, tag);
+    }
+  };
+  template <class BaseClass>
+  class WithRawMethod_wait : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    WithRawMethod_wait() {
+      ::grpc::Service::MarkMethodRaw(16);
+    }
+    ~WithRawMethod_wait() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status wait(::grpc::ServerContext* /*context*/, const ::maa::HandleIdRequest* /*request*/, ::maa::EmptyResponse* /*response*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    void Requestwait(::grpc::ServerContext* context, ::grpc::ByteBuffer* request, ::grpc::ServerAsyncResponseWriter< ::grpc::ByteBuffer>* response, ::grpc::CompletionQueue* new_call_cq, ::grpc::ServerCompletionQueue* notification_cq, void *tag) {
+      ::grpc::Service::RequestAsyncUnary(16, context, request, response, new_call_cq, notification_cq, tag);
+    }
+  };
+  template <class BaseClass>
+  class WithRawMethod_all_finished : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    WithRawMethod_all_finished() {
+      ::grpc::Service::MarkMethodRaw(17);
+    }
+    ~WithRawMethod_all_finished() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status all_finished(::grpc::ServerContext* /*context*/, const ::maa::HandleRequest* /*request*/, ::maa::BoolResponse* /*response*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    void Requestall_finished(::grpc::ServerContext* context, ::grpc::ByteBuffer* request, ::grpc::ServerAsyncResponseWriter< ::grpc::ByteBuffer>* response, ::grpc::CompletionQueue* new_call_cq, ::grpc::ServerCompletionQueue* notification_cq, void *tag) {
+      ::grpc::Service::RequestAsyncUnary(17, context, request, response, new_call_cq, notification_cq, tag);
+    }
+  };
+  template <class BaseClass>
+  class WithRawMethod_stop : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    WithRawMethod_stop() {
+      ::grpc::Service::MarkMethodRaw(18);
+    }
+    ~WithRawMethod_stop() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status stop(::grpc::ServerContext* /*context*/, const ::maa::HandleRequest* /*request*/, ::maa::EmptyResponse* /*response*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    void Requeststop(::grpc::ServerContext* context, ::grpc::ByteBuffer* request, ::grpc::ServerAsyncResponseWriter< ::grpc::ByteBuffer>* response, ::grpc::CompletionQueue* new_call_cq, ::grpc::ServerCompletionQueue* notification_cq, void *tag) {
+      ::grpc::Service::RequestAsyncUnary(18, context, request, response, new_call_cq, notification_cq, tag);
+    }
+  };
+  template <class BaseClass>
+  class WithRawMethod_resource : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    WithRawMethod_resource() {
+      ::grpc::Service::MarkMethodRaw(19);
+    }
+    ~WithRawMethod_resource() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status resource(::grpc::ServerContext* /*context*/, const ::maa::HandleRequest* /*request*/, ::maa::HandleRequest* /*response*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    void Requestresource(::grpc::ServerContext* context, ::grpc::ByteBuffer* request, ::grpc::ServerAsyncResponseWriter< ::grpc::ByteBuffer>* response, ::grpc::CompletionQueue* new_call_cq, ::grpc::ServerCompletionQueue* notification_cq, void *tag) {
+      ::grpc::Service::RequestAsyncUnary(19, context, request, response, new_call_cq, notification_cq, tag);
+    }
+  };
+  template <class BaseClass>
+  class WithRawMethod_controller : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    WithRawMethod_controller() {
+      ::grpc::Service::MarkMethodRaw(20);
+    }
+    ~WithRawMethod_controller() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status controller(::grpc::ServerContext* /*context*/, const ::maa::HandleRequest* /*request*/, ::maa::HandleRequest* /*response*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    void Requestcontroller(::grpc::ServerContext* context, ::grpc::ByteBuffer* request, ::grpc::ServerAsyncResponseWriter< ::grpc::ByteBuffer>* response, ::grpc::CompletionQueue* new_call_cq, ::grpc::ServerCompletionQueue* notification_cq, void *tag) {
+      ::grpc::Service::RequestAsyncUnary(20, context, request, response, new_call_cq, notification_cq, tag);
+    }
+  };
+  template <class BaseClass>
+  class WithRawCallbackMethod_create : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    WithRawCallbackMethod_create() {
+      ::grpc::Service::MarkMethodRawCallback(0,
+          new ::grpc::internal::CallbackUnaryHandler< ::grpc::ByteBuffer, ::grpc::ByteBuffer>(
+            [this](
+                   ::grpc::CallbackServerContext* context, const ::grpc::ByteBuffer* request, ::grpc::ByteBuffer* response) { return this->create(context, request, response); }));
+    }
+    ~WithRawCallbackMethod_create() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status create(::grpc::ServerContext* /*context*/, const ::maa::IdRequest* /*request*/, ::maa::HandleResponse* /*response*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    virtual ::grpc::ServerUnaryReactor* create(
+      ::grpc::CallbackServerContext* /*context*/, const ::grpc::ByteBuffer* /*request*/, ::grpc::ByteBuffer* /*response*/)  { return nullptr; }
+  };
+  template <class BaseClass>
+  class WithRawCallbackMethod_destroy : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    WithRawCallbackMethod_destroy() {
+      ::grpc::Service::MarkMethodRawCallback(1,
+          new ::grpc::internal::CallbackUnaryHandler< ::grpc::ByteBuffer, ::grpc::ByteBuffer>(
+            [this](
+                   ::grpc::CallbackServerContext* context, const ::grpc::ByteBuffer* request, ::grpc::ByteBuffer* response) { return this->destroy(context, request, response); }));
+    }
+    ~WithRawCallbackMethod_destroy() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status destroy(::grpc::ServerContext* /*context*/, const ::maa::HandleRequest* /*request*/, ::maa::EmptyResponse* /*response*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    virtual ::grpc::ServerUnaryReactor* destroy(
+      ::grpc::CallbackServerContext* /*context*/, const ::grpc::ByteBuffer* /*request*/, ::grpc::ByteBuffer* /*response*/)  { return nullptr; }
+  };
+  template <class BaseClass>
+  class WithRawCallbackMethod_register_custom_recognizer : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    WithRawCallbackMethod_register_custom_recognizer() {
+      ::grpc::Service::MarkMethodRawCallback(2,
+          new ::grpc::internal::CallbackServerStreamingHandler< ::grpc::ByteBuffer, ::grpc::ByteBuffer>(
+            [this](
+                   ::grpc::CallbackServerContext* context, const::grpc::ByteBuffer* request) { return this->register_custom_recognizer(context, request); }));
+    }
+    ~WithRawCallbackMethod_register_custom_recognizer() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status register_custom_recognizer(::grpc::ServerContext* /*context*/, const ::maa::CustomRecognizerRequest* /*request*/, ::grpc::ServerWriter< ::maa::CustomRecognizerResponse>* /*writer*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    virtual ::grpc::ServerWriteReactor< ::grpc::ByteBuffer>* register_custom_recognizer(
+      ::grpc::CallbackServerContext* /*context*/, const ::grpc::ByteBuffer* /*request*/)  { return nullptr; }
+  };
+  template <class BaseClass>
+  class WithRawCallbackMethod_submit_custom_recognizer : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    WithRawCallbackMethod_submit_custom_recognizer() {
+      ::grpc::Service::MarkMethodRawCallback(3,
+          new ::grpc::internal::CallbackUnaryHandler< ::grpc::ByteBuffer, ::grpc::ByteBuffer>(
+            [this](
+                   ::grpc::CallbackServerContext* context, const ::grpc::ByteBuffer* request, ::grpc::ByteBuffer* response) { return this->submit_custom_recognizer(context, request, response); }));
+    }
+    ~WithRawCallbackMethod_submit_custom_recognizer() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status submit_custom_recognizer(::grpc::ServerContext* /*context*/, const ::maa::SubmitCustomRecognizerRequest* /*request*/, ::maa::EmptyResponse* /*response*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    virtual ::grpc::ServerUnaryReactor* submit_custom_recognizer(
+      ::grpc::CallbackServerContext* /*context*/, const ::grpc::ByteBuffer* /*request*/, ::grpc::ByteBuffer* /*response*/)  { return nullptr; }
+  };
+  template <class BaseClass>
+  class WithRawCallbackMethod_unregister_custom_recognizer : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    WithRawCallbackMethod_unregister_custom_recognizer() {
+      ::grpc::Service::MarkMethodRawCallback(4,
+          new ::grpc::internal::CallbackUnaryHandler< ::grpc::ByteBuffer, ::grpc::ByteBuffer>(
+            [this](
+                   ::grpc::CallbackServerContext* context, const ::grpc::ByteBuffer* request, ::grpc::ByteBuffer* response) { return this->unregister_custom_recognizer(context, request, response); }));
+    }
+    ~WithRawCallbackMethod_unregister_custom_recognizer() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status unregister_custom_recognizer(::grpc::ServerContext* /*context*/, const ::maa::HandleStringRequest* /*request*/, ::maa::EmptyResponse* /*response*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    virtual ::grpc::ServerUnaryReactor* unregister_custom_recognizer(
+      ::grpc::CallbackServerContext* /*context*/, const ::grpc::ByteBuffer* /*request*/, ::grpc::ByteBuffer* /*response*/)  { return nullptr; }
+  };
+  template <class BaseClass>
+  class WithRawCallbackMethod_clear_custom_recognizer : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    WithRawCallbackMethod_clear_custom_recognizer() {
+      ::grpc::Service::MarkMethodRawCallback(5,
+          new ::grpc::internal::CallbackUnaryHandler< ::grpc::ByteBuffer, ::grpc::ByteBuffer>(
+            [this](
+                   ::grpc::CallbackServerContext* context, const ::grpc::ByteBuffer* request, ::grpc::ByteBuffer* response) { return this->clear_custom_recognizer(context, request, response); }));
+    }
+    ~WithRawCallbackMethod_clear_custom_recognizer() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status clear_custom_recognizer(::grpc::ServerContext* /*context*/, const ::maa::HandleRequest* /*request*/, ::maa::EmptyResponse* /*response*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    virtual ::grpc::ServerUnaryReactor* clear_custom_recognizer(
+      ::grpc::CallbackServerContext* /*context*/, const ::grpc::ByteBuffer* /*request*/, ::grpc::ByteBuffer* /*response*/)  { return nullptr; }
+  };
+  template <class BaseClass>
+  class WithRawCallbackMethod_register_custom_action : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    WithRawCallbackMethod_register_custom_action() {
+      ::grpc::Service::MarkMethodRawCallback(6,
+          new ::grpc::internal::CallbackServerStreamingHandler< ::grpc::ByteBuffer, ::grpc::ByteBuffer>(
+            [this](
+                   ::grpc::CallbackServerContext* context, const::grpc::ByteBuffer* request) { return this->register_custom_action(context, request); }));
+    }
+    ~WithRawCallbackMethod_register_custom_action() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status register_custom_action(::grpc::ServerContext* /*context*/, const ::maa::CustomRecognizerRequest* /*request*/, ::grpc::ServerWriter< ::maa::CustomRecognizerResponse>* /*writer*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    virtual ::grpc::ServerWriteReactor< ::grpc::ByteBuffer>* register_custom_action(
+      ::grpc::CallbackServerContext* /*context*/, const ::grpc::ByteBuffer* /*request*/)  { return nullptr; }
+  };
+  template <class BaseClass>
+  class WithRawCallbackMethod_submit_custom_action : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    WithRawCallbackMethod_submit_custom_action() {
+      ::grpc::Service::MarkMethodRawCallback(7,
+          new ::grpc::internal::CallbackUnaryHandler< ::grpc::ByteBuffer, ::grpc::ByteBuffer>(
+            [this](
+                   ::grpc::CallbackServerContext* context, const ::grpc::ByteBuffer* request, ::grpc::ByteBuffer* response) { return this->submit_custom_action(context, request, response); }));
+    }
+    ~WithRawCallbackMethod_submit_custom_action() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status submit_custom_action(::grpc::ServerContext* /*context*/, const ::maa::SubmitCustomRecognizerRequest* /*request*/, ::maa::EmptyResponse* /*response*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    virtual ::grpc::ServerUnaryReactor* submit_custom_action(
+      ::grpc::CallbackServerContext* /*context*/, const ::grpc::ByteBuffer* /*request*/, ::grpc::ByteBuffer* /*response*/)  { return nullptr; }
+  };
+  template <class BaseClass>
+  class WithRawCallbackMethod_unregister_custom_action : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    WithRawCallbackMethod_unregister_custom_action() {
+      ::grpc::Service::MarkMethodRawCallback(8,
+          new ::grpc::internal::CallbackUnaryHandler< ::grpc::ByteBuffer, ::grpc::ByteBuffer>(
+            [this](
+                   ::grpc::CallbackServerContext* context, const ::grpc::ByteBuffer* request, ::grpc::ByteBuffer* response) { return this->unregister_custom_action(context, request, response); }));
+    }
+    ~WithRawCallbackMethod_unregister_custom_action() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status unregister_custom_action(::grpc::ServerContext* /*context*/, const ::maa::HandleStringRequest* /*request*/, ::maa::EmptyResponse* /*response*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    virtual ::grpc::ServerUnaryReactor* unregister_custom_action(
+      ::grpc::CallbackServerContext* /*context*/, const ::grpc::ByteBuffer* /*request*/, ::grpc::ByteBuffer* /*response*/)  { return nullptr; }
+  };
+  template <class BaseClass>
+  class WithRawCallbackMethod_clear_custom_action : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    WithRawCallbackMethod_clear_custom_action() {
+      ::grpc::Service::MarkMethodRawCallback(9,
+          new ::grpc::internal::CallbackUnaryHandler< ::grpc::ByteBuffer, ::grpc::ByteBuffer>(
+            [this](
+                   ::grpc::CallbackServerContext* context, const ::grpc::ByteBuffer* request, ::grpc::ByteBuffer* response) { return this->clear_custom_action(context, request, response); }));
+    }
+    ~WithRawCallbackMethod_clear_custom_action() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status clear_custom_action(::grpc::ServerContext* /*context*/, const ::maa::HandleRequest* /*request*/, ::maa::EmptyResponse* /*response*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    virtual ::grpc::ServerUnaryReactor* clear_custom_action(
+      ::grpc::CallbackServerContext* /*context*/, const ::grpc::ByteBuffer* /*request*/, ::grpc::ByteBuffer* /*response*/)  { return nullptr; }
+  };
+  template <class BaseClass>
+  class WithRawCallbackMethod_bind_resource : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    WithRawCallbackMethod_bind_resource() {
+      ::grpc::Service::MarkMethodRawCallback(10,
+          new ::grpc::internal::CallbackUnaryHandler< ::grpc::ByteBuffer, ::grpc::ByteBuffer>(
+            [this](
+                   ::grpc::CallbackServerContext* context, const ::grpc::ByteBuffer* request, ::grpc::ByteBuffer* response) { return this->bind_resource(context, request, response); }));
+    }
+    ~WithRawCallbackMethod_bind_resource() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status bind_resource(::grpc::ServerContext* /*context*/, const ::maa::HandleRequest* /*request*/, ::maa::EmptyResponse* /*response*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    virtual ::grpc::ServerUnaryReactor* bind_resource(
+      ::grpc::CallbackServerContext* /*context*/, const ::grpc::ByteBuffer* /*request*/, ::grpc::ByteBuffer* /*response*/)  { return nullptr; }
+  };
+  template <class BaseClass>
+  class WithRawCallbackMethod_bind_controller : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    WithRawCallbackMethod_bind_controller() {
+      ::grpc::Service::MarkMethodRawCallback(11,
+          new ::grpc::internal::CallbackUnaryHandler< ::grpc::ByteBuffer, ::grpc::ByteBuffer>(
+            [this](
+                   ::grpc::CallbackServerContext* context, const ::grpc::ByteBuffer* request, ::grpc::ByteBuffer* response) { return this->bind_controller(context, request, response); }));
+    }
+    ~WithRawCallbackMethod_bind_controller() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status bind_controller(::grpc::ServerContext* /*context*/, const ::maa::HandleRequest* /*request*/, ::maa::EmptyResponse* /*response*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    virtual ::grpc::ServerUnaryReactor* bind_controller(
+      ::grpc::CallbackServerContext* /*context*/, const ::grpc::ByteBuffer* /*request*/, ::grpc::ByteBuffer* /*response*/)  { return nullptr; }
+  };
+  template <class BaseClass>
+  class WithRawCallbackMethod_inited : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    WithRawCallbackMethod_inited() {
+      ::grpc::Service::MarkMethodRawCallback(12,
+          new ::grpc::internal::CallbackUnaryHandler< ::grpc::ByteBuffer, ::grpc::ByteBuffer>(
+            [this](
+                   ::grpc::CallbackServerContext* context, const ::grpc::ByteBuffer* request, ::grpc::ByteBuffer* response) { return this->inited(context, request, response); }));
+    }
+    ~WithRawCallbackMethod_inited() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status inited(::grpc::ServerContext* /*context*/, const ::maa::HandleRequest* /*request*/, ::maa::BoolResponse* /*response*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    virtual ::grpc::ServerUnaryReactor* inited(
+      ::grpc::CallbackServerContext* /*context*/, const ::grpc::ByteBuffer* /*request*/, ::grpc::ByteBuffer* /*response*/)  { return nullptr; }
+  };
+  template <class BaseClass>
+  class WithRawCallbackMethod_post_task : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    WithRawCallbackMethod_post_task() {
+      ::grpc::Service::MarkMethodRawCallback(13,
+          new ::grpc::internal::CallbackUnaryHandler< ::grpc::ByteBuffer, ::grpc::ByteBuffer>(
+            [this](
+                   ::grpc::CallbackServerContext* context, const ::grpc::ByteBuffer* request, ::grpc::ByteBuffer* response) { return this->post_task(context, request, response); }));
+    }
+    ~WithRawCallbackMethod_post_task() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status post_task(::grpc::ServerContext* /*context*/, const ::maa::InstancePostTaskRequest* /*request*/, ::maa::IdResponse* /*response*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    virtual ::grpc::ServerUnaryReactor* post_task(
+      ::grpc::CallbackServerContext* /*context*/, const ::grpc::ByteBuffer* /*request*/, ::grpc::ByteBuffer* /*response*/)  { return nullptr; }
+  };
+  template <class BaseClass>
+  class WithRawCallbackMethod_set_task_param : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    WithRawCallbackMethod_set_task_param() {
+      ::grpc::Service::MarkMethodRawCallback(14,
+          new ::grpc::internal::CallbackUnaryHandler< ::grpc::ByteBuffer, ::grpc::ByteBuffer>(
+            [this](
+                   ::grpc::CallbackServerContext* context, const ::grpc::ByteBuffer* request, ::grpc::ByteBuffer* response) { return this->set_task_param(context, request, response); }));
+    }
+    ~WithRawCallbackMethod_set_task_param() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status set_task_param(::grpc::ServerContext* /*context*/, const ::maa::InstanceSetTaskParamRequest* /*request*/, ::maa::EmptyResponse* /*response*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    virtual ::grpc::ServerUnaryReactor* set_task_param(
+      ::grpc::CallbackServerContext* /*context*/, const ::grpc::ByteBuffer* /*request*/, ::grpc::ByteBuffer* /*response*/)  { return nullptr; }
+  };
+  template <class BaseClass>
+  class WithRawCallbackMethod_status : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    WithRawCallbackMethod_status() {
+      ::grpc::Service::MarkMethodRawCallback(15,
+          new ::grpc::internal::CallbackUnaryHandler< ::grpc::ByteBuffer, ::grpc::ByteBuffer>(
+            [this](
+                   ::grpc::CallbackServerContext* context, const ::grpc::ByteBuffer* request, ::grpc::ByteBuffer* response) { return this->status(context, request, response); }));
+    }
+    ~WithRawCallbackMethod_status() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status status(::grpc::ServerContext* /*context*/, const ::maa::HandleIdRequest* /*request*/, ::maa::StatusResponse* /*response*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    virtual ::grpc::ServerUnaryReactor* status(
+      ::grpc::CallbackServerContext* /*context*/, const ::grpc::ByteBuffer* /*request*/, ::grpc::ByteBuffer* /*response*/)  { return nullptr; }
+  };
+  template <class BaseClass>
+  class WithRawCallbackMethod_wait : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    WithRawCallbackMethod_wait() {
+      ::grpc::Service::MarkMethodRawCallback(16,
+          new ::grpc::internal::CallbackUnaryHandler< ::grpc::ByteBuffer, ::grpc::ByteBuffer>(
+            [this](
+                   ::grpc::CallbackServerContext* context, const ::grpc::ByteBuffer* request, ::grpc::ByteBuffer* response) { return this->wait(context, request, response); }));
+    }
+    ~WithRawCallbackMethod_wait() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status wait(::grpc::ServerContext* /*context*/, const ::maa::HandleIdRequest* /*request*/, ::maa::EmptyResponse* /*response*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    virtual ::grpc::ServerUnaryReactor* wait(
+      ::grpc::CallbackServerContext* /*context*/, const ::grpc::ByteBuffer* /*request*/, ::grpc::ByteBuffer* /*response*/)  { return nullptr; }
+  };
+  template <class BaseClass>
+  class WithRawCallbackMethod_all_finished : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    WithRawCallbackMethod_all_finished() {
+      ::grpc::Service::MarkMethodRawCallback(17,
+          new ::grpc::internal::CallbackUnaryHandler< ::grpc::ByteBuffer, ::grpc::ByteBuffer>(
+            [this](
+                   ::grpc::CallbackServerContext* context, const ::grpc::ByteBuffer* request, ::grpc::ByteBuffer* response) { return this->all_finished(context, request, response); }));
+    }
+    ~WithRawCallbackMethod_all_finished() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status all_finished(::grpc::ServerContext* /*context*/, const ::maa::HandleRequest* /*request*/, ::maa::BoolResponse* /*response*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    virtual ::grpc::ServerUnaryReactor* all_finished(
+      ::grpc::CallbackServerContext* /*context*/, const ::grpc::ByteBuffer* /*request*/, ::grpc::ByteBuffer* /*response*/)  { return nullptr; }
+  };
+  template <class BaseClass>
+  class WithRawCallbackMethod_stop : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    WithRawCallbackMethod_stop() {
+      ::grpc::Service::MarkMethodRawCallback(18,
+          new ::grpc::internal::CallbackUnaryHandler< ::grpc::ByteBuffer, ::grpc::ByteBuffer>(
+            [this](
+                   ::grpc::CallbackServerContext* context, const ::grpc::ByteBuffer* request, ::grpc::ByteBuffer* response) { return this->stop(context, request, response); }));
+    }
+    ~WithRawCallbackMethod_stop() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status stop(::grpc::ServerContext* /*context*/, const ::maa::HandleRequest* /*request*/, ::maa::EmptyResponse* /*response*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    virtual ::grpc::ServerUnaryReactor* stop(
+      ::grpc::CallbackServerContext* /*context*/, const ::grpc::ByteBuffer* /*request*/, ::grpc::ByteBuffer* /*response*/)  { return nullptr; }
+  };
+  template <class BaseClass>
+  class WithRawCallbackMethod_resource : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    WithRawCallbackMethod_resource() {
+      ::grpc::Service::MarkMethodRawCallback(19,
+          new ::grpc::internal::CallbackUnaryHandler< ::grpc::ByteBuffer, ::grpc::ByteBuffer>(
+            [this](
+                   ::grpc::CallbackServerContext* context, const ::grpc::ByteBuffer* request, ::grpc::ByteBuffer* response) { return this->resource(context, request, response); }));
+    }
+    ~WithRawCallbackMethod_resource() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status resource(::grpc::ServerContext* /*context*/, const ::maa::HandleRequest* /*request*/, ::maa::HandleRequest* /*response*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    virtual ::grpc::ServerUnaryReactor* resource(
+      ::grpc::CallbackServerContext* /*context*/, const ::grpc::ByteBuffer* /*request*/, ::grpc::ByteBuffer* /*response*/)  { return nullptr; }
+  };
+  template <class BaseClass>
+  class WithRawCallbackMethod_controller : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    WithRawCallbackMethod_controller() {
+      ::grpc::Service::MarkMethodRawCallback(20,
+          new ::grpc::internal::CallbackUnaryHandler< ::grpc::ByteBuffer, ::grpc::ByteBuffer>(
+            [this](
+                   ::grpc::CallbackServerContext* context, const ::grpc::ByteBuffer* request, ::grpc::ByteBuffer* response) { return this->controller(context, request, response); }));
+    }
+    ~WithRawCallbackMethod_controller() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status controller(::grpc::ServerContext* /*context*/, const ::maa::HandleRequest* /*request*/, ::maa::HandleRequest* /*response*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    virtual ::grpc::ServerUnaryReactor* controller(
+      ::grpc::CallbackServerContext* /*context*/, const ::grpc::ByteBuffer* /*request*/, ::grpc::ByteBuffer* /*response*/)  { return nullptr; }
+  };
+  template <class BaseClass>
+  class WithStreamedUnaryMethod_create : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    WithStreamedUnaryMethod_create() {
+      ::grpc::Service::MarkMethodStreamed(0,
+        new ::grpc::internal::StreamedUnaryHandler<
+          ::maa::IdRequest, ::maa::HandleResponse>(
+            [this](::grpc::ServerContext* context,
+                   ::grpc::ServerUnaryStreamer<
+                     ::maa::IdRequest, ::maa::HandleResponse>* streamer) {
+                       return this->Streamedcreate(context,
+                         streamer);
+                  }));
+    }
+    ~WithStreamedUnaryMethod_create() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable regular version of this method
+    ::grpc::Status create(::grpc::ServerContext* /*context*/, const ::maa::IdRequest* /*request*/, ::maa::HandleResponse* /*response*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    // replace default version of method with streamed unary
+    virtual ::grpc::Status Streamedcreate(::grpc::ServerContext* context, ::grpc::ServerUnaryStreamer< ::maa::IdRequest,::maa::HandleResponse>* server_unary_streamer) = 0;
+  };
+  template <class BaseClass>
+  class WithStreamedUnaryMethod_destroy : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    WithStreamedUnaryMethod_destroy() {
+      ::grpc::Service::MarkMethodStreamed(1,
+        new ::grpc::internal::StreamedUnaryHandler<
+          ::maa::HandleRequest, ::maa::EmptyResponse>(
+            [this](::grpc::ServerContext* context,
+                   ::grpc::ServerUnaryStreamer<
+                     ::maa::HandleRequest, ::maa::EmptyResponse>* streamer) {
+                       return this->Streameddestroy(context,
+                         streamer);
+                  }));
+    }
+    ~WithStreamedUnaryMethod_destroy() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable regular version of this method
+    ::grpc::Status destroy(::grpc::ServerContext* /*context*/, const ::maa::HandleRequest* /*request*/, ::maa::EmptyResponse* /*response*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    // replace default version of method with streamed unary
+    virtual ::grpc::Status Streameddestroy(::grpc::ServerContext* context, ::grpc::ServerUnaryStreamer< ::maa::HandleRequest,::maa::EmptyResponse>* server_unary_streamer) = 0;
+  };
+  template <class BaseClass>
+  class WithStreamedUnaryMethod_submit_custom_recognizer : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    WithStreamedUnaryMethod_submit_custom_recognizer() {
+      ::grpc::Service::MarkMethodStreamed(3,
+        new ::grpc::internal::StreamedUnaryHandler<
+          ::maa::SubmitCustomRecognizerRequest, ::maa::EmptyResponse>(
+            [this](::grpc::ServerContext* context,
+                   ::grpc::ServerUnaryStreamer<
+                     ::maa::SubmitCustomRecognizerRequest, ::maa::EmptyResponse>* streamer) {
+                       return this->Streamedsubmit_custom_recognizer(context,
+                         streamer);
+                  }));
+    }
+    ~WithStreamedUnaryMethod_submit_custom_recognizer() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable regular version of this method
+    ::grpc::Status submit_custom_recognizer(::grpc::ServerContext* /*context*/, const ::maa::SubmitCustomRecognizerRequest* /*request*/, ::maa::EmptyResponse* /*response*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    // replace default version of method with streamed unary
+    virtual ::grpc::Status Streamedsubmit_custom_recognizer(::grpc::ServerContext* context, ::grpc::ServerUnaryStreamer< ::maa::SubmitCustomRecognizerRequest,::maa::EmptyResponse>* server_unary_streamer) = 0;
+  };
+  template <class BaseClass>
+  class WithStreamedUnaryMethod_unregister_custom_recognizer : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    WithStreamedUnaryMethod_unregister_custom_recognizer() {
+      ::grpc::Service::MarkMethodStreamed(4,
+        new ::grpc::internal::StreamedUnaryHandler<
+          ::maa::HandleStringRequest, ::maa::EmptyResponse>(
+            [this](::grpc::ServerContext* context,
+                   ::grpc::ServerUnaryStreamer<
+                     ::maa::HandleStringRequest, ::maa::EmptyResponse>* streamer) {
+                       return this->Streamedunregister_custom_recognizer(context,
+                         streamer);
+                  }));
+    }
+    ~WithStreamedUnaryMethod_unregister_custom_recognizer() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable regular version of this method
+    ::grpc::Status unregister_custom_recognizer(::grpc::ServerContext* /*context*/, const ::maa::HandleStringRequest* /*request*/, ::maa::EmptyResponse* /*response*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    // replace default version of method with streamed unary
+    virtual ::grpc::Status Streamedunregister_custom_recognizer(::grpc::ServerContext* context, ::grpc::ServerUnaryStreamer< ::maa::HandleStringRequest,::maa::EmptyResponse>* server_unary_streamer) = 0;
+  };
+  template <class BaseClass>
+  class WithStreamedUnaryMethod_clear_custom_recognizer : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    WithStreamedUnaryMethod_clear_custom_recognizer() {
+      ::grpc::Service::MarkMethodStreamed(5,
+        new ::grpc::internal::StreamedUnaryHandler<
+          ::maa::HandleRequest, ::maa::EmptyResponse>(
+            [this](::grpc::ServerContext* context,
+                   ::grpc::ServerUnaryStreamer<
+                     ::maa::HandleRequest, ::maa::EmptyResponse>* streamer) {
+                       return this->Streamedclear_custom_recognizer(context,
+                         streamer);
+                  }));
+    }
+    ~WithStreamedUnaryMethod_clear_custom_recognizer() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable regular version of this method
+    ::grpc::Status clear_custom_recognizer(::grpc::ServerContext* /*context*/, const ::maa::HandleRequest* /*request*/, ::maa::EmptyResponse* /*response*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    // replace default version of method with streamed unary
+    virtual ::grpc::Status Streamedclear_custom_recognizer(::grpc::ServerContext* context, ::grpc::ServerUnaryStreamer< ::maa::HandleRequest,::maa::EmptyResponse>* server_unary_streamer) = 0;
+  };
+  template <class BaseClass>
+  class WithStreamedUnaryMethod_submit_custom_action : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    WithStreamedUnaryMethod_submit_custom_action() {
+      ::grpc::Service::MarkMethodStreamed(7,
+        new ::grpc::internal::StreamedUnaryHandler<
+          ::maa::SubmitCustomRecognizerRequest, ::maa::EmptyResponse>(
+            [this](::grpc::ServerContext* context,
+                   ::grpc::ServerUnaryStreamer<
+                     ::maa::SubmitCustomRecognizerRequest, ::maa::EmptyResponse>* streamer) {
+                       return this->Streamedsubmit_custom_action(context,
+                         streamer);
+                  }));
+    }
+    ~WithStreamedUnaryMethod_submit_custom_action() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable regular version of this method
+    ::grpc::Status submit_custom_action(::grpc::ServerContext* /*context*/, const ::maa::SubmitCustomRecognizerRequest* /*request*/, ::maa::EmptyResponse* /*response*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    // replace default version of method with streamed unary
+    virtual ::grpc::Status Streamedsubmit_custom_action(::grpc::ServerContext* context, ::grpc::ServerUnaryStreamer< ::maa::SubmitCustomRecognizerRequest,::maa::EmptyResponse>* server_unary_streamer) = 0;
+  };
+  template <class BaseClass>
+  class WithStreamedUnaryMethod_unregister_custom_action : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    WithStreamedUnaryMethod_unregister_custom_action() {
+      ::grpc::Service::MarkMethodStreamed(8,
+        new ::grpc::internal::StreamedUnaryHandler<
+          ::maa::HandleStringRequest, ::maa::EmptyResponse>(
+            [this](::grpc::ServerContext* context,
+                   ::grpc::ServerUnaryStreamer<
+                     ::maa::HandleStringRequest, ::maa::EmptyResponse>* streamer) {
+                       return this->Streamedunregister_custom_action(context,
+                         streamer);
+                  }));
+    }
+    ~WithStreamedUnaryMethod_unregister_custom_action() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable regular version of this method
+    ::grpc::Status unregister_custom_action(::grpc::ServerContext* /*context*/, const ::maa::HandleStringRequest* /*request*/, ::maa::EmptyResponse* /*response*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    // replace default version of method with streamed unary
+    virtual ::grpc::Status Streamedunregister_custom_action(::grpc::ServerContext* context, ::grpc::ServerUnaryStreamer< ::maa::HandleStringRequest,::maa::EmptyResponse>* server_unary_streamer) = 0;
+  };
+  template <class BaseClass>
+  class WithStreamedUnaryMethod_clear_custom_action : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    WithStreamedUnaryMethod_clear_custom_action() {
+      ::grpc::Service::MarkMethodStreamed(9,
+        new ::grpc::internal::StreamedUnaryHandler<
+          ::maa::HandleRequest, ::maa::EmptyResponse>(
+            [this](::grpc::ServerContext* context,
+                   ::grpc::ServerUnaryStreamer<
+                     ::maa::HandleRequest, ::maa::EmptyResponse>* streamer) {
+                       return this->Streamedclear_custom_action(context,
+                         streamer);
+                  }));
+    }
+    ~WithStreamedUnaryMethod_clear_custom_action() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable regular version of this method
+    ::grpc::Status clear_custom_action(::grpc::ServerContext* /*context*/, const ::maa::HandleRequest* /*request*/, ::maa::EmptyResponse* /*response*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    // replace default version of method with streamed unary
+    virtual ::grpc::Status Streamedclear_custom_action(::grpc::ServerContext* context, ::grpc::ServerUnaryStreamer< ::maa::HandleRequest,::maa::EmptyResponse>* server_unary_streamer) = 0;
+  };
+  template <class BaseClass>
+  class WithStreamedUnaryMethod_bind_resource : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    WithStreamedUnaryMethod_bind_resource() {
+      ::grpc::Service::MarkMethodStreamed(10,
+        new ::grpc::internal::StreamedUnaryHandler<
+          ::maa::HandleRequest, ::maa::EmptyResponse>(
+            [this](::grpc::ServerContext* context,
+                   ::grpc::ServerUnaryStreamer<
+                     ::maa::HandleRequest, ::maa::EmptyResponse>* streamer) {
+                       return this->Streamedbind_resource(context,
+                         streamer);
+                  }));
+    }
+    ~WithStreamedUnaryMethod_bind_resource() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable regular version of this method
+    ::grpc::Status bind_resource(::grpc::ServerContext* /*context*/, const ::maa::HandleRequest* /*request*/, ::maa::EmptyResponse* /*response*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    // replace default version of method with streamed unary
+    virtual ::grpc::Status Streamedbind_resource(::grpc::ServerContext* context, ::grpc::ServerUnaryStreamer< ::maa::HandleRequest,::maa::EmptyResponse>* server_unary_streamer) = 0;
+  };
+  template <class BaseClass>
+  class WithStreamedUnaryMethod_bind_controller : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    WithStreamedUnaryMethod_bind_controller() {
+      ::grpc::Service::MarkMethodStreamed(11,
+        new ::grpc::internal::StreamedUnaryHandler<
+          ::maa::HandleRequest, ::maa::EmptyResponse>(
+            [this](::grpc::ServerContext* context,
+                   ::grpc::ServerUnaryStreamer<
+                     ::maa::HandleRequest, ::maa::EmptyResponse>* streamer) {
+                       return this->Streamedbind_controller(context,
+                         streamer);
+                  }));
+    }
+    ~WithStreamedUnaryMethod_bind_controller() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable regular version of this method
+    ::grpc::Status bind_controller(::grpc::ServerContext* /*context*/, const ::maa::HandleRequest* /*request*/, ::maa::EmptyResponse* /*response*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    // replace default version of method with streamed unary
+    virtual ::grpc::Status Streamedbind_controller(::grpc::ServerContext* context, ::grpc::ServerUnaryStreamer< ::maa::HandleRequest,::maa::EmptyResponse>* server_unary_streamer) = 0;
+  };
+  template <class BaseClass>
+  class WithStreamedUnaryMethod_inited : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    WithStreamedUnaryMethod_inited() {
+      ::grpc::Service::MarkMethodStreamed(12,
+        new ::grpc::internal::StreamedUnaryHandler<
+          ::maa::HandleRequest, ::maa::BoolResponse>(
+            [this](::grpc::ServerContext* context,
+                   ::grpc::ServerUnaryStreamer<
+                     ::maa::HandleRequest, ::maa::BoolResponse>* streamer) {
+                       return this->Streamedinited(context,
+                         streamer);
+                  }));
+    }
+    ~WithStreamedUnaryMethod_inited() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable regular version of this method
+    ::grpc::Status inited(::grpc::ServerContext* /*context*/, const ::maa::HandleRequest* /*request*/, ::maa::BoolResponse* /*response*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    // replace default version of method with streamed unary
+    virtual ::grpc::Status Streamedinited(::grpc::ServerContext* context, ::grpc::ServerUnaryStreamer< ::maa::HandleRequest,::maa::BoolResponse>* server_unary_streamer) = 0;
+  };
+  template <class BaseClass>
+  class WithStreamedUnaryMethod_post_task : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    WithStreamedUnaryMethod_post_task() {
+      ::grpc::Service::MarkMethodStreamed(13,
+        new ::grpc::internal::StreamedUnaryHandler<
+          ::maa::InstancePostTaskRequest, ::maa::IdResponse>(
+            [this](::grpc::ServerContext* context,
+                   ::grpc::ServerUnaryStreamer<
+                     ::maa::InstancePostTaskRequest, ::maa::IdResponse>* streamer) {
+                       return this->Streamedpost_task(context,
+                         streamer);
+                  }));
+    }
+    ~WithStreamedUnaryMethod_post_task() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable regular version of this method
+    ::grpc::Status post_task(::grpc::ServerContext* /*context*/, const ::maa::InstancePostTaskRequest* /*request*/, ::maa::IdResponse* /*response*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    // replace default version of method with streamed unary
+    virtual ::grpc::Status Streamedpost_task(::grpc::ServerContext* context, ::grpc::ServerUnaryStreamer< ::maa::InstancePostTaskRequest,::maa::IdResponse>* server_unary_streamer) = 0;
+  };
+  template <class BaseClass>
+  class WithStreamedUnaryMethod_set_task_param : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    WithStreamedUnaryMethod_set_task_param() {
+      ::grpc::Service::MarkMethodStreamed(14,
+        new ::grpc::internal::StreamedUnaryHandler<
+          ::maa::InstanceSetTaskParamRequest, ::maa::EmptyResponse>(
+            [this](::grpc::ServerContext* context,
+                   ::grpc::ServerUnaryStreamer<
+                     ::maa::InstanceSetTaskParamRequest, ::maa::EmptyResponse>* streamer) {
+                       return this->Streamedset_task_param(context,
+                         streamer);
+                  }));
+    }
+    ~WithStreamedUnaryMethod_set_task_param() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable regular version of this method
+    ::grpc::Status set_task_param(::grpc::ServerContext* /*context*/, const ::maa::InstanceSetTaskParamRequest* /*request*/, ::maa::EmptyResponse* /*response*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    // replace default version of method with streamed unary
+    virtual ::grpc::Status Streamedset_task_param(::grpc::ServerContext* context, ::grpc::ServerUnaryStreamer< ::maa::InstanceSetTaskParamRequest,::maa::EmptyResponse>* server_unary_streamer) = 0;
+  };
+  template <class BaseClass>
+  class WithStreamedUnaryMethod_status : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    WithStreamedUnaryMethod_status() {
+      ::grpc::Service::MarkMethodStreamed(15,
+        new ::grpc::internal::StreamedUnaryHandler<
+          ::maa::HandleIdRequest, ::maa::StatusResponse>(
+            [this](::grpc::ServerContext* context,
+                   ::grpc::ServerUnaryStreamer<
+                     ::maa::HandleIdRequest, ::maa::StatusResponse>* streamer) {
+                       return this->Streamedstatus(context,
+                         streamer);
+                  }));
+    }
+    ~WithStreamedUnaryMethod_status() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable regular version of this method
+    ::grpc::Status status(::grpc::ServerContext* /*context*/, const ::maa::HandleIdRequest* /*request*/, ::maa::StatusResponse* /*response*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    // replace default version of method with streamed unary
+    virtual ::grpc::Status Streamedstatus(::grpc::ServerContext* context, ::grpc::ServerUnaryStreamer< ::maa::HandleIdRequest,::maa::StatusResponse>* server_unary_streamer) = 0;
+  };
+  template <class BaseClass>
+  class WithStreamedUnaryMethod_wait : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    WithStreamedUnaryMethod_wait() {
+      ::grpc::Service::MarkMethodStreamed(16,
+        new ::grpc::internal::StreamedUnaryHandler<
+          ::maa::HandleIdRequest, ::maa::EmptyResponse>(
+            [this](::grpc::ServerContext* context,
+                   ::grpc::ServerUnaryStreamer<
+                     ::maa::HandleIdRequest, ::maa::EmptyResponse>* streamer) {
+                       return this->Streamedwait(context,
+                         streamer);
+                  }));
+    }
+    ~WithStreamedUnaryMethod_wait() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable regular version of this method
+    ::grpc::Status wait(::grpc::ServerContext* /*context*/, const ::maa::HandleIdRequest* /*request*/, ::maa::EmptyResponse* /*response*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    // replace default version of method with streamed unary
+    virtual ::grpc::Status Streamedwait(::grpc::ServerContext* context, ::grpc::ServerUnaryStreamer< ::maa::HandleIdRequest,::maa::EmptyResponse>* server_unary_streamer) = 0;
+  };
+  template <class BaseClass>
+  class WithStreamedUnaryMethod_all_finished : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    WithStreamedUnaryMethod_all_finished() {
+      ::grpc::Service::MarkMethodStreamed(17,
+        new ::grpc::internal::StreamedUnaryHandler<
+          ::maa::HandleRequest, ::maa::BoolResponse>(
+            [this](::grpc::ServerContext* context,
+                   ::grpc::ServerUnaryStreamer<
+                     ::maa::HandleRequest, ::maa::BoolResponse>* streamer) {
+                       return this->Streamedall_finished(context,
+                         streamer);
+                  }));
+    }
+    ~WithStreamedUnaryMethod_all_finished() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable regular version of this method
+    ::grpc::Status all_finished(::grpc::ServerContext* /*context*/, const ::maa::HandleRequest* /*request*/, ::maa::BoolResponse* /*response*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    // replace default version of method with streamed unary
+    virtual ::grpc::Status Streamedall_finished(::grpc::ServerContext* context, ::grpc::ServerUnaryStreamer< ::maa::HandleRequest,::maa::BoolResponse>* server_unary_streamer) = 0;
+  };
+  template <class BaseClass>
+  class WithStreamedUnaryMethod_stop : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    WithStreamedUnaryMethod_stop() {
+      ::grpc::Service::MarkMethodStreamed(18,
+        new ::grpc::internal::StreamedUnaryHandler<
+          ::maa::HandleRequest, ::maa::EmptyResponse>(
+            [this](::grpc::ServerContext* context,
+                   ::grpc::ServerUnaryStreamer<
+                     ::maa::HandleRequest, ::maa::EmptyResponse>* streamer) {
+                       return this->Streamedstop(context,
+                         streamer);
+                  }));
+    }
+    ~WithStreamedUnaryMethod_stop() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable regular version of this method
+    ::grpc::Status stop(::grpc::ServerContext* /*context*/, const ::maa::HandleRequest* /*request*/, ::maa::EmptyResponse* /*response*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    // replace default version of method with streamed unary
+    virtual ::grpc::Status Streamedstop(::grpc::ServerContext* context, ::grpc::ServerUnaryStreamer< ::maa::HandleRequest,::maa::EmptyResponse>* server_unary_streamer) = 0;
+  };
+  template <class BaseClass>
+  class WithStreamedUnaryMethod_resource : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    WithStreamedUnaryMethod_resource() {
+      ::grpc::Service::MarkMethodStreamed(19,
+        new ::grpc::internal::StreamedUnaryHandler<
+          ::maa::HandleRequest, ::maa::HandleRequest>(
+            [this](::grpc::ServerContext* context,
+                   ::grpc::ServerUnaryStreamer<
+                     ::maa::HandleRequest, ::maa::HandleRequest>* streamer) {
+                       return this->Streamedresource(context,
+                         streamer);
+                  }));
+    }
+    ~WithStreamedUnaryMethod_resource() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable regular version of this method
+    ::grpc::Status resource(::grpc::ServerContext* /*context*/, const ::maa::HandleRequest* /*request*/, ::maa::HandleRequest* /*response*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    // replace default version of method with streamed unary
+    virtual ::grpc::Status Streamedresource(::grpc::ServerContext* context, ::grpc::ServerUnaryStreamer< ::maa::HandleRequest,::maa::HandleRequest>* server_unary_streamer) = 0;
+  };
+  template <class BaseClass>
+  class WithStreamedUnaryMethod_controller : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    WithStreamedUnaryMethod_controller() {
+      ::grpc::Service::MarkMethodStreamed(20,
+        new ::grpc::internal::StreamedUnaryHandler<
+          ::maa::HandleRequest, ::maa::HandleRequest>(
+            [this](::grpc::ServerContext* context,
+                   ::grpc::ServerUnaryStreamer<
+                     ::maa::HandleRequest, ::maa::HandleRequest>* streamer) {
+                       return this->Streamedcontroller(context,
+                         streamer);
+                  }));
+    }
+    ~WithStreamedUnaryMethod_controller() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable regular version of this method
+    ::grpc::Status controller(::grpc::ServerContext* /*context*/, const ::maa::HandleRequest* /*request*/, ::maa::HandleRequest* /*response*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    // replace default version of method with streamed unary
+    virtual ::grpc::Status Streamedcontroller(::grpc::ServerContext* context, ::grpc::ServerUnaryStreamer< ::maa::HandleRequest,::maa::HandleRequest>* server_unary_streamer) = 0;
+  };
+  typedef WithStreamedUnaryMethod_create<WithStreamedUnaryMethod_destroy<WithStreamedUnaryMethod_submit_custom_recognizer<WithStreamedUnaryMethod_unregister_custom_recognizer<WithStreamedUnaryMethod_clear_custom_recognizer<WithStreamedUnaryMethod_submit_custom_action<WithStreamedUnaryMethod_unregister_custom_action<WithStreamedUnaryMethod_clear_custom_action<WithStreamedUnaryMethod_bind_resource<WithStreamedUnaryMethod_bind_controller<WithStreamedUnaryMethod_inited<WithStreamedUnaryMethod_post_task<WithStreamedUnaryMethod_set_task_param<WithStreamedUnaryMethod_status<WithStreamedUnaryMethod_wait<WithStreamedUnaryMethod_all_finished<WithStreamedUnaryMethod_stop<WithStreamedUnaryMethod_resource<WithStreamedUnaryMethod_controller<Service > > > > > > > > > > > > > > > > > > > StreamedUnaryService;
+  template <class BaseClass>
+  class WithSplitStreamingMethod_register_custom_recognizer : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    WithSplitStreamingMethod_register_custom_recognizer() {
+      ::grpc::Service::MarkMethodStreamed(2,
+        new ::grpc::internal::SplitServerStreamingHandler<
+          ::maa::CustomRecognizerRequest, ::maa::CustomRecognizerResponse>(
+            [this](::grpc::ServerContext* context,
+                   ::grpc::ServerSplitStreamer<
+                     ::maa::CustomRecognizerRequest, ::maa::CustomRecognizerResponse>* streamer) {
+                       return this->Streamedregister_custom_recognizer(context,
+                         streamer);
+                  }));
+    }
+    ~WithSplitStreamingMethod_register_custom_recognizer() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable regular version of this method
+    ::grpc::Status register_custom_recognizer(::grpc::ServerContext* /*context*/, const ::maa::CustomRecognizerRequest* /*request*/, ::grpc::ServerWriter< ::maa::CustomRecognizerResponse>* /*writer*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    // replace default version of method with split streamed
+    virtual ::grpc::Status Streamedregister_custom_recognizer(::grpc::ServerContext* context, ::grpc::ServerSplitStreamer< ::maa::CustomRecognizerRequest,::maa::CustomRecognizerResponse>* server_split_streamer) = 0;
+  };
+  template <class BaseClass>
+  class WithSplitStreamingMethod_register_custom_action : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    WithSplitStreamingMethod_register_custom_action() {
+      ::grpc::Service::MarkMethodStreamed(6,
+        new ::grpc::internal::SplitServerStreamingHandler<
+          ::maa::CustomRecognizerRequest, ::maa::CustomRecognizerResponse>(
+            [this](::grpc::ServerContext* context,
+                   ::grpc::ServerSplitStreamer<
+                     ::maa::CustomRecognizerRequest, ::maa::CustomRecognizerResponse>* streamer) {
+                       return this->Streamedregister_custom_action(context,
+                         streamer);
+                  }));
+    }
+    ~WithSplitStreamingMethod_register_custom_action() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable regular version of this method
+    ::grpc::Status register_custom_action(::grpc::ServerContext* /*context*/, const ::maa::CustomRecognizerRequest* /*request*/, ::grpc::ServerWriter< ::maa::CustomRecognizerResponse>* /*writer*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    // replace default version of method with split streamed
+    virtual ::grpc::Status Streamedregister_custom_action(::grpc::ServerContext* context, ::grpc::ServerSplitStreamer< ::maa::CustomRecognizerRequest,::maa::CustomRecognizerResponse>* server_split_streamer) = 0;
+  };
+  typedef WithSplitStreamingMethod_register_custom_recognizer<WithSplitStreamingMethod_register_custom_action<Service > > SplitStreamedService;
+  typedef WithStreamedUnaryMethod_create<WithStreamedUnaryMethod_destroy<WithSplitStreamingMethod_register_custom_recognizer<WithStreamedUnaryMethod_submit_custom_recognizer<WithStreamedUnaryMethod_unregister_custom_recognizer<WithStreamedUnaryMethod_clear_custom_recognizer<WithSplitStreamingMethod_register_custom_action<WithStreamedUnaryMethod_submit_custom_action<WithStreamedUnaryMethod_unregister_custom_action<WithStreamedUnaryMethod_clear_custom_action<WithStreamedUnaryMethod_bind_resource<WithStreamedUnaryMethod_bind_controller<WithStreamedUnaryMethod_inited<WithStreamedUnaryMethod_post_task<WithStreamedUnaryMethod_set_task_param<WithStreamedUnaryMethod_status<WithStreamedUnaryMethod_wait<WithStreamedUnaryMethod_all_finished<WithStreamedUnaryMethod_stop<WithStreamedUnaryMethod_resource<WithStreamedUnaryMethod_controller<Service > > > > > > > > > > > > > > > > > > > > > StreamedService;
+};
+
+class MaaFrameworkSyncContext final {
+ public:
+  static constexpr char const* service_full_name() {
+    return "maa.MaaFrameworkSyncContext";
+  }
+  class StubInterface {
+   public:
+    virtual ~StubInterface() {}
+    virtual ::grpc::Status run_task(::grpc::ClientContext* context, const ::maa::SyncContextRunTaskRequest& request, ::maa::EmptyResponse* response) = 0;
+    std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::maa::EmptyResponse>> Asyncrun_task(::grpc::ClientContext* context, const ::maa::SyncContextRunTaskRequest& request, ::grpc::CompletionQueue* cq) {
+      return std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::maa::EmptyResponse>>(Asyncrun_taskRaw(context, request, cq));
+    }
+    std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::maa::EmptyResponse>> PrepareAsyncrun_task(::grpc::ClientContext* context, const ::maa::SyncContextRunTaskRequest& request, ::grpc::CompletionQueue* cq) {
+      return std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::maa::EmptyResponse>>(PrepareAsyncrun_taskRaw(context, request, cq));
+    }
+    virtual ::grpc::Status run_recognizer(::grpc::ClientContext* context, const ::maa::SyncContextRunRecognizerRequest& request, ::maa::SyncContextRunRecognizerResponse* response) = 0;
+    std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::maa::SyncContextRunRecognizerResponse>> Asyncrun_recognizer(::grpc::ClientContext* context, const ::maa::SyncContextRunRecognizerRequest& request, ::grpc::CompletionQueue* cq) {
+      return std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::maa::SyncContextRunRecognizerResponse>>(Asyncrun_recognizerRaw(context, request, cq));
+    }
+    std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::maa::SyncContextRunRecognizerResponse>> PrepareAsyncrun_recognizer(::grpc::ClientContext* context, const ::maa::SyncContextRunRecognizerRequest& request, ::grpc::CompletionQueue* cq) {
+      return std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::maa::SyncContextRunRecognizerResponse>>(PrepareAsyncrun_recognizerRaw(context, request, cq));
+    }
+    virtual ::grpc::Status run_action(::grpc::ClientContext* context, const ::maa::SyncContextRunActionRequest& request, ::maa::EmptyResponse* response) = 0;
+    std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::maa::EmptyResponse>> Asyncrun_action(::grpc::ClientContext* context, const ::maa::SyncContextRunActionRequest& request, ::grpc::CompletionQueue* cq) {
+      return std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::maa::EmptyResponse>>(Asyncrun_actionRaw(context, request, cq));
+    }
+    std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::maa::EmptyResponse>> PrepareAsyncrun_action(::grpc::ClientContext* context, const ::maa::SyncContextRunActionRequest& request, ::grpc::CompletionQueue* cq) {
+      return std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::maa::EmptyResponse>>(PrepareAsyncrun_actionRaw(context, request, cq));
+    }
+    virtual ::grpc::Status click(::grpc::ClientContext* context, const ::maa::SyncContextClickRequest& request, ::maa::EmptyRequest* response) = 0;
+    std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::maa::EmptyRequest>> Asyncclick(::grpc::ClientContext* context, const ::maa::SyncContextClickRequest& request, ::grpc::CompletionQueue* cq) {
+      return std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::maa::EmptyRequest>>(AsyncclickRaw(context, request, cq));
+    }
+    std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::maa::EmptyRequest>> PrepareAsyncclick(::grpc::ClientContext* context, const ::maa::SyncContextClickRequest& request, ::grpc::CompletionQueue* cq) {
+      return std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::maa::EmptyRequest>>(PrepareAsyncclickRaw(context, request, cq));
+    }
+    virtual ::grpc::Status swipe(::grpc::ClientContext* context, const ::maa::SyncContextSwipeRequest& request, ::maa::EmptyRequest* response) = 0;
+    std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::maa::EmptyRequest>> Asyncswipe(::grpc::ClientContext* context, const ::maa::SyncContextSwipeRequest& request, ::grpc::CompletionQueue* cq) {
+      return std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::maa::EmptyRequest>>(AsyncswipeRaw(context, request, cq));
+    }
+    std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::maa::EmptyRequest>> PrepareAsyncswipe(::grpc::ClientContext* context, const ::maa::SyncContextSwipeRequest& request, ::grpc::CompletionQueue* cq) {
+      return std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::maa::EmptyRequest>>(PrepareAsyncswipeRaw(context, request, cq));
+    }
+    virtual ::grpc::Status key(::grpc::ClientContext* context, const ::maa::SyncContextKeyRequest& request, ::maa::EmptyRequest* response) = 0;
+    std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::maa::EmptyRequest>> Asynckey(::grpc::ClientContext* context, const ::maa::SyncContextKeyRequest& request, ::grpc::CompletionQueue* cq) {
+      return std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::maa::EmptyRequest>>(AsynckeyRaw(context, request, cq));
+    }
+    std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::maa::EmptyRequest>> PrepareAsynckey(::grpc::ClientContext* context, const ::maa::SyncContextKeyRequest& request, ::grpc::CompletionQueue* cq) {
+      return std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::maa::EmptyRequest>>(PrepareAsynckeyRaw(context, request, cq));
+    }
+    virtual ::grpc::Status touch_down(::grpc::ClientContext* context, const ::maa::SyncContextTouchRequest& request, ::maa::EmptyRequest* response) = 0;
+    std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::maa::EmptyRequest>> Asynctouch_down(::grpc::ClientContext* context, const ::maa::SyncContextTouchRequest& request, ::grpc::CompletionQueue* cq) {
+      return std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::maa::EmptyRequest>>(Asynctouch_downRaw(context, request, cq));
+    }
+    std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::maa::EmptyRequest>> PrepareAsynctouch_down(::grpc::ClientContext* context, const ::maa::SyncContextTouchRequest& request, ::grpc::CompletionQueue* cq) {
+      return std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::maa::EmptyRequest>>(PrepareAsynctouch_downRaw(context, request, cq));
+    }
+    virtual ::grpc::Status touch_move(::grpc::ClientContext* context, const ::maa::SyncContextTouchRequest& request, ::maa::EmptyRequest* response) = 0;
+    std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::maa::EmptyRequest>> Asynctouch_move(::grpc::ClientContext* context, const ::maa::SyncContextTouchRequest& request, ::grpc::CompletionQueue* cq) {
+      return std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::maa::EmptyRequest>>(Asynctouch_moveRaw(context, request, cq));
+    }
+    std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::maa::EmptyRequest>> PrepareAsynctouch_move(::grpc::ClientContext* context, const ::maa::SyncContextTouchRequest& request, ::grpc::CompletionQueue* cq) {
+      return std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::maa::EmptyRequest>>(PrepareAsynctouch_moveRaw(context, request, cq));
+    }
+    virtual ::grpc::Status touch_up(::grpc::ClientContext* context, const ::maa::SyncContextTouchRequest& request, ::maa::EmptyRequest* response) = 0;
+    std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::maa::EmptyRequest>> Asynctouch_up(::grpc::ClientContext* context, const ::maa::SyncContextTouchRequest& request, ::grpc::CompletionQueue* cq) {
+      return std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::maa::EmptyRequest>>(Asynctouch_upRaw(context, request, cq));
+    }
+    std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::maa::EmptyRequest>> PrepareAsynctouch_up(::grpc::ClientContext* context, const ::maa::SyncContextTouchRequest& request, ::grpc::CompletionQueue* cq) {
+      return std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::maa::EmptyRequest>>(PrepareAsynctouch_upRaw(context, request, cq));
+    }
+    virtual ::grpc::Status screencap(::grpc::ClientContext* context, const ::maa::SyncContextScreencapRequest& request, ::maa::EmptyResponse* response) = 0;
+    std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::maa::EmptyResponse>> Asyncscreencap(::grpc::ClientContext* context, const ::maa::SyncContextScreencapRequest& request, ::grpc::CompletionQueue* cq) {
+      return std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::maa::EmptyResponse>>(AsyncscreencapRaw(context, request, cq));
+    }
+    std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::maa::EmptyResponse>> PrepareAsyncscreencap(::grpc::ClientContext* context, const ::maa::SyncContextScreencapRequest& request, ::grpc::CompletionQueue* cq) {
+      return std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::maa::EmptyResponse>>(PrepareAsyncscreencapRaw(context, request, cq));
+    }
+    virtual ::grpc::Status task_result(::grpc::ClientContext* context, const ::maa::HandleStringRequest& request, ::maa::StringResponse* response) = 0;
+    std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::maa::StringResponse>> Asynctask_result(::grpc::ClientContext* context, const ::maa::HandleStringRequest& request, ::grpc::CompletionQueue* cq) {
+      return std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::maa::StringResponse>>(Asynctask_resultRaw(context, request, cq));
+    }
+    std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::maa::StringResponse>> PrepareAsynctask_result(::grpc::ClientContext* context, const ::maa::HandleStringRequest& request, ::grpc::CompletionQueue* cq) {
+      return std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::maa::StringResponse>>(PrepareAsynctask_resultRaw(context, request, cq));
+    }
+    class async_interface {
+     public:
+      virtual ~async_interface() {}
+      virtual void run_task(::grpc::ClientContext* context, const ::maa::SyncContextRunTaskRequest* request, ::maa::EmptyResponse* response, std::function<void(::grpc::Status)>) = 0;
+      virtual void run_task(::grpc::ClientContext* context, const ::maa::SyncContextRunTaskRequest* request, ::maa::EmptyResponse* response, ::grpc::ClientUnaryReactor* reactor) = 0;
+      virtual void run_recognizer(::grpc::ClientContext* context, const ::maa::SyncContextRunRecognizerRequest* request, ::maa::SyncContextRunRecognizerResponse* response, std::function<void(::grpc::Status)>) = 0;
+      virtual void run_recognizer(::grpc::ClientContext* context, const ::maa::SyncContextRunRecognizerRequest* request, ::maa::SyncContextRunRecognizerResponse* response, ::grpc::ClientUnaryReactor* reactor) = 0;
+      virtual void run_action(::grpc::ClientContext* context, const ::maa::SyncContextRunActionRequest* request, ::maa::EmptyResponse* response, std::function<void(::grpc::Status)>) = 0;
+      virtual void run_action(::grpc::ClientContext* context, const ::maa::SyncContextRunActionRequest* request, ::maa::EmptyResponse* response, ::grpc::ClientUnaryReactor* reactor) = 0;
+      virtual void click(::grpc::ClientContext* context, const ::maa::SyncContextClickRequest* request, ::maa::EmptyRequest* response, std::function<void(::grpc::Status)>) = 0;
+      virtual void click(::grpc::ClientContext* context, const ::maa::SyncContextClickRequest* request, ::maa::EmptyRequest* response, ::grpc::ClientUnaryReactor* reactor) = 0;
+      virtual void swipe(::grpc::ClientContext* context, const ::maa::SyncContextSwipeRequest* request, ::maa::EmptyRequest* response, std::function<void(::grpc::Status)>) = 0;
+      virtual void swipe(::grpc::ClientContext* context, const ::maa::SyncContextSwipeRequest* request, ::maa::EmptyRequest* response, ::grpc::ClientUnaryReactor* reactor) = 0;
+      virtual void key(::grpc::ClientContext* context, const ::maa::SyncContextKeyRequest* request, ::maa::EmptyRequest* response, std::function<void(::grpc::Status)>) = 0;
+      virtual void key(::grpc::ClientContext* context, const ::maa::SyncContextKeyRequest* request, ::maa::EmptyRequest* response, ::grpc::ClientUnaryReactor* reactor) = 0;
+      virtual void touch_down(::grpc::ClientContext* context, const ::maa::SyncContextTouchRequest* request, ::maa::EmptyRequest* response, std::function<void(::grpc::Status)>) = 0;
+      virtual void touch_down(::grpc::ClientContext* context, const ::maa::SyncContextTouchRequest* request, ::maa::EmptyRequest* response, ::grpc::ClientUnaryReactor* reactor) = 0;
+      virtual void touch_move(::grpc::ClientContext* context, const ::maa::SyncContextTouchRequest* request, ::maa::EmptyRequest* response, std::function<void(::grpc::Status)>) = 0;
+      virtual void touch_move(::grpc::ClientContext* context, const ::maa::SyncContextTouchRequest* request, ::maa::EmptyRequest* response, ::grpc::ClientUnaryReactor* reactor) = 0;
+      virtual void touch_up(::grpc::ClientContext* context, const ::maa::SyncContextTouchRequest* request, ::maa::EmptyRequest* response, std::function<void(::grpc::Status)>) = 0;
+      virtual void touch_up(::grpc::ClientContext* context, const ::maa::SyncContextTouchRequest* request, ::maa::EmptyRequest* response, ::grpc::ClientUnaryReactor* reactor) = 0;
+      virtual void screencap(::grpc::ClientContext* context, const ::maa::SyncContextScreencapRequest* request, ::maa::EmptyResponse* response, std::function<void(::grpc::Status)>) = 0;
+      virtual void screencap(::grpc::ClientContext* context, const ::maa::SyncContextScreencapRequest* request, ::maa::EmptyResponse* response, ::grpc::ClientUnaryReactor* reactor) = 0;
+      virtual void task_result(::grpc::ClientContext* context, const ::maa::HandleStringRequest* request, ::maa::StringResponse* response, std::function<void(::grpc::Status)>) = 0;
+      virtual void task_result(::grpc::ClientContext* context, const ::maa::HandleStringRequest* request, ::maa::StringResponse* response, ::grpc::ClientUnaryReactor* reactor) = 0;
+    };
+    typedef class async_interface experimental_async_interface;
+    virtual class async_interface* async() { return nullptr; }
+    class async_interface* experimental_async() { return async(); }
+   private:
+    virtual ::grpc::ClientAsyncResponseReaderInterface< ::maa::EmptyResponse>* Asyncrun_taskRaw(::grpc::ClientContext* context, const ::maa::SyncContextRunTaskRequest& request, ::grpc::CompletionQueue* cq) = 0;
+    virtual ::grpc::ClientAsyncResponseReaderInterface< ::maa::EmptyResponse>* PrepareAsyncrun_taskRaw(::grpc::ClientContext* context, const ::maa::SyncContextRunTaskRequest& request, ::grpc::CompletionQueue* cq) = 0;
+    virtual ::grpc::ClientAsyncResponseReaderInterface< ::maa::SyncContextRunRecognizerResponse>* Asyncrun_recognizerRaw(::grpc::ClientContext* context, const ::maa::SyncContextRunRecognizerRequest& request, ::grpc::CompletionQueue* cq) = 0;
+    virtual ::grpc::ClientAsyncResponseReaderInterface< ::maa::SyncContextRunRecognizerResponse>* PrepareAsyncrun_recognizerRaw(::grpc::ClientContext* context, const ::maa::SyncContextRunRecognizerRequest& request, ::grpc::CompletionQueue* cq) = 0;
+    virtual ::grpc::ClientAsyncResponseReaderInterface< ::maa::EmptyResponse>* Asyncrun_actionRaw(::grpc::ClientContext* context, const ::maa::SyncContextRunActionRequest& request, ::grpc::CompletionQueue* cq) = 0;
+    virtual ::grpc::ClientAsyncResponseReaderInterface< ::maa::EmptyResponse>* PrepareAsyncrun_actionRaw(::grpc::ClientContext* context, const ::maa::SyncContextRunActionRequest& request, ::grpc::CompletionQueue* cq) = 0;
+    virtual ::grpc::ClientAsyncResponseReaderInterface< ::maa::EmptyRequest>* AsyncclickRaw(::grpc::ClientContext* context, const ::maa::SyncContextClickRequest& request, ::grpc::CompletionQueue* cq) = 0;
+    virtual ::grpc::ClientAsyncResponseReaderInterface< ::maa::EmptyRequest>* PrepareAsyncclickRaw(::grpc::ClientContext* context, const ::maa::SyncContextClickRequest& request, ::grpc::CompletionQueue* cq) = 0;
+    virtual ::grpc::ClientAsyncResponseReaderInterface< ::maa::EmptyRequest>* AsyncswipeRaw(::grpc::ClientContext* context, const ::maa::SyncContextSwipeRequest& request, ::grpc::CompletionQueue* cq) = 0;
+    virtual ::grpc::ClientAsyncResponseReaderInterface< ::maa::EmptyRequest>* PrepareAsyncswipeRaw(::grpc::ClientContext* context, const ::maa::SyncContextSwipeRequest& request, ::grpc::CompletionQueue* cq) = 0;
+    virtual ::grpc::ClientAsyncResponseReaderInterface< ::maa::EmptyRequest>* AsynckeyRaw(::grpc::ClientContext* context, const ::maa::SyncContextKeyRequest& request, ::grpc::CompletionQueue* cq) = 0;
+    virtual ::grpc::ClientAsyncResponseReaderInterface< ::maa::EmptyRequest>* PrepareAsynckeyRaw(::grpc::ClientContext* context, const ::maa::SyncContextKeyRequest& request, ::grpc::CompletionQueue* cq) = 0;
+    virtual ::grpc::ClientAsyncResponseReaderInterface< ::maa::EmptyRequest>* Asynctouch_downRaw(::grpc::ClientContext* context, const ::maa::SyncContextTouchRequest& request, ::grpc::CompletionQueue* cq) = 0;
+    virtual ::grpc::ClientAsyncResponseReaderInterface< ::maa::EmptyRequest>* PrepareAsynctouch_downRaw(::grpc::ClientContext* context, const ::maa::SyncContextTouchRequest& request, ::grpc::CompletionQueue* cq) = 0;
+    virtual ::grpc::ClientAsyncResponseReaderInterface< ::maa::EmptyRequest>* Asynctouch_moveRaw(::grpc::ClientContext* context, const ::maa::SyncContextTouchRequest& request, ::grpc::CompletionQueue* cq) = 0;
+    virtual ::grpc::ClientAsyncResponseReaderInterface< ::maa::EmptyRequest>* PrepareAsynctouch_moveRaw(::grpc::ClientContext* context, const ::maa::SyncContextTouchRequest& request, ::grpc::CompletionQueue* cq) = 0;
+    virtual ::grpc::ClientAsyncResponseReaderInterface< ::maa::EmptyRequest>* Asynctouch_upRaw(::grpc::ClientContext* context, const ::maa::SyncContextTouchRequest& request, ::grpc::CompletionQueue* cq) = 0;
+    virtual ::grpc::ClientAsyncResponseReaderInterface< ::maa::EmptyRequest>* PrepareAsynctouch_upRaw(::grpc::ClientContext* context, const ::maa::SyncContextTouchRequest& request, ::grpc::CompletionQueue* cq) = 0;
+    virtual ::grpc::ClientAsyncResponseReaderInterface< ::maa::EmptyResponse>* AsyncscreencapRaw(::grpc::ClientContext* context, const ::maa::SyncContextScreencapRequest& request, ::grpc::CompletionQueue* cq) = 0;
+    virtual ::grpc::ClientAsyncResponseReaderInterface< ::maa::EmptyResponse>* PrepareAsyncscreencapRaw(::grpc::ClientContext* context, const ::maa::SyncContextScreencapRequest& request, ::grpc::CompletionQueue* cq) = 0;
+    virtual ::grpc::ClientAsyncResponseReaderInterface< ::maa::StringResponse>* Asynctask_resultRaw(::grpc::ClientContext* context, const ::maa::HandleStringRequest& request, ::grpc::CompletionQueue* cq) = 0;
+    virtual ::grpc::ClientAsyncResponseReaderInterface< ::maa::StringResponse>* PrepareAsynctask_resultRaw(::grpc::ClientContext* context, const ::maa::HandleStringRequest& request, ::grpc::CompletionQueue* cq) = 0;
+  };
+  class Stub final : public StubInterface {
+   public:
+    Stub(const std::shared_ptr< ::grpc::ChannelInterface>& channel, const ::grpc::StubOptions& options = ::grpc::StubOptions());
+    ::grpc::Status run_task(::grpc::ClientContext* context, const ::maa::SyncContextRunTaskRequest& request, ::maa::EmptyResponse* response) override;
+    std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::maa::EmptyResponse>> Asyncrun_task(::grpc::ClientContext* context, const ::maa::SyncContextRunTaskRequest& request, ::grpc::CompletionQueue* cq) {
+      return std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::maa::EmptyResponse>>(Asyncrun_taskRaw(context, request, cq));
+    }
+    std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::maa::EmptyResponse>> PrepareAsyncrun_task(::grpc::ClientContext* context, const ::maa::SyncContextRunTaskRequest& request, ::grpc::CompletionQueue* cq) {
+      return std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::maa::EmptyResponse>>(PrepareAsyncrun_taskRaw(context, request, cq));
+    }
+    ::grpc::Status run_recognizer(::grpc::ClientContext* context, const ::maa::SyncContextRunRecognizerRequest& request, ::maa::SyncContextRunRecognizerResponse* response) override;
+    std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::maa::SyncContextRunRecognizerResponse>> Asyncrun_recognizer(::grpc::ClientContext* context, const ::maa::SyncContextRunRecognizerRequest& request, ::grpc::CompletionQueue* cq) {
+      return std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::maa::SyncContextRunRecognizerResponse>>(Asyncrun_recognizerRaw(context, request, cq));
+    }
+    std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::maa::SyncContextRunRecognizerResponse>> PrepareAsyncrun_recognizer(::grpc::ClientContext* context, const ::maa::SyncContextRunRecognizerRequest& request, ::grpc::CompletionQueue* cq) {
+      return std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::maa::SyncContextRunRecognizerResponse>>(PrepareAsyncrun_recognizerRaw(context, request, cq));
+    }
+    ::grpc::Status run_action(::grpc::ClientContext* context, const ::maa::SyncContextRunActionRequest& request, ::maa::EmptyResponse* response) override;
+    std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::maa::EmptyResponse>> Asyncrun_action(::grpc::ClientContext* context, const ::maa::SyncContextRunActionRequest& request, ::grpc::CompletionQueue* cq) {
+      return std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::maa::EmptyResponse>>(Asyncrun_actionRaw(context, request, cq));
+    }
+    std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::maa::EmptyResponse>> PrepareAsyncrun_action(::grpc::ClientContext* context, const ::maa::SyncContextRunActionRequest& request, ::grpc::CompletionQueue* cq) {
+      return std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::maa::EmptyResponse>>(PrepareAsyncrun_actionRaw(context, request, cq));
+    }
+    ::grpc::Status click(::grpc::ClientContext* context, const ::maa::SyncContextClickRequest& request, ::maa::EmptyRequest* response) override;
+    std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::maa::EmptyRequest>> Asyncclick(::grpc::ClientContext* context, const ::maa::SyncContextClickRequest& request, ::grpc::CompletionQueue* cq) {
+      return std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::maa::EmptyRequest>>(AsyncclickRaw(context, request, cq));
+    }
+    std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::maa::EmptyRequest>> PrepareAsyncclick(::grpc::ClientContext* context, const ::maa::SyncContextClickRequest& request, ::grpc::CompletionQueue* cq) {
+      return std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::maa::EmptyRequest>>(PrepareAsyncclickRaw(context, request, cq));
+    }
+    ::grpc::Status swipe(::grpc::ClientContext* context, const ::maa::SyncContextSwipeRequest& request, ::maa::EmptyRequest* response) override;
+    std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::maa::EmptyRequest>> Asyncswipe(::grpc::ClientContext* context, const ::maa::SyncContextSwipeRequest& request, ::grpc::CompletionQueue* cq) {
+      return std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::maa::EmptyRequest>>(AsyncswipeRaw(context, request, cq));
+    }
+    std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::maa::EmptyRequest>> PrepareAsyncswipe(::grpc::ClientContext* context, const ::maa::SyncContextSwipeRequest& request, ::grpc::CompletionQueue* cq) {
+      return std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::maa::EmptyRequest>>(PrepareAsyncswipeRaw(context, request, cq));
+    }
+    ::grpc::Status key(::grpc::ClientContext* context, const ::maa::SyncContextKeyRequest& request, ::maa::EmptyRequest* response) override;
+    std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::maa::EmptyRequest>> Asynckey(::grpc::ClientContext* context, const ::maa::SyncContextKeyRequest& request, ::grpc::CompletionQueue* cq) {
+      return std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::maa::EmptyRequest>>(AsynckeyRaw(context, request, cq));
+    }
+    std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::maa::EmptyRequest>> PrepareAsynckey(::grpc::ClientContext* context, const ::maa::SyncContextKeyRequest& request, ::grpc::CompletionQueue* cq) {
+      return std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::maa::EmptyRequest>>(PrepareAsynckeyRaw(context, request, cq));
+    }
+    ::grpc::Status touch_down(::grpc::ClientContext* context, const ::maa::SyncContextTouchRequest& request, ::maa::EmptyRequest* response) override;
+    std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::maa::EmptyRequest>> Asynctouch_down(::grpc::ClientContext* context, const ::maa::SyncContextTouchRequest& request, ::grpc::CompletionQueue* cq) {
+      return std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::maa::EmptyRequest>>(Asynctouch_downRaw(context, request, cq));
+    }
+    std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::maa::EmptyRequest>> PrepareAsynctouch_down(::grpc::ClientContext* context, const ::maa::SyncContextTouchRequest& request, ::grpc::CompletionQueue* cq) {
+      return std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::maa::EmptyRequest>>(PrepareAsynctouch_downRaw(context, request, cq));
+    }
+    ::grpc::Status touch_move(::grpc::ClientContext* context, const ::maa::SyncContextTouchRequest& request, ::maa::EmptyRequest* response) override;
+    std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::maa::EmptyRequest>> Asynctouch_move(::grpc::ClientContext* context, const ::maa::SyncContextTouchRequest& request, ::grpc::CompletionQueue* cq) {
+      return std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::maa::EmptyRequest>>(Asynctouch_moveRaw(context, request, cq));
+    }
+    std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::maa::EmptyRequest>> PrepareAsynctouch_move(::grpc::ClientContext* context, const ::maa::SyncContextTouchRequest& request, ::grpc::CompletionQueue* cq) {
+      return std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::maa::EmptyRequest>>(PrepareAsynctouch_moveRaw(context, request, cq));
+    }
+    ::grpc::Status touch_up(::grpc::ClientContext* context, const ::maa::SyncContextTouchRequest& request, ::maa::EmptyRequest* response) override;
+    std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::maa::EmptyRequest>> Asynctouch_up(::grpc::ClientContext* context, const ::maa::SyncContextTouchRequest& request, ::grpc::CompletionQueue* cq) {
+      return std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::maa::EmptyRequest>>(Asynctouch_upRaw(context, request, cq));
+    }
+    std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::maa::EmptyRequest>> PrepareAsynctouch_up(::grpc::ClientContext* context, const ::maa::SyncContextTouchRequest& request, ::grpc::CompletionQueue* cq) {
+      return std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::maa::EmptyRequest>>(PrepareAsynctouch_upRaw(context, request, cq));
+    }
+    ::grpc::Status screencap(::grpc::ClientContext* context, const ::maa::SyncContextScreencapRequest& request, ::maa::EmptyResponse* response) override;
+    std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::maa::EmptyResponse>> Asyncscreencap(::grpc::ClientContext* context, const ::maa::SyncContextScreencapRequest& request, ::grpc::CompletionQueue* cq) {
+      return std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::maa::EmptyResponse>>(AsyncscreencapRaw(context, request, cq));
+    }
+    std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::maa::EmptyResponse>> PrepareAsyncscreencap(::grpc::ClientContext* context, const ::maa::SyncContextScreencapRequest& request, ::grpc::CompletionQueue* cq) {
+      return std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::maa::EmptyResponse>>(PrepareAsyncscreencapRaw(context, request, cq));
+    }
+    ::grpc::Status task_result(::grpc::ClientContext* context, const ::maa::HandleStringRequest& request, ::maa::StringResponse* response) override;
+    std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::maa::StringResponse>> Asynctask_result(::grpc::ClientContext* context, const ::maa::HandleStringRequest& request, ::grpc::CompletionQueue* cq) {
+      return std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::maa::StringResponse>>(Asynctask_resultRaw(context, request, cq));
+    }
+    std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::maa::StringResponse>> PrepareAsynctask_result(::grpc::ClientContext* context, const ::maa::HandleStringRequest& request, ::grpc::CompletionQueue* cq) {
+      return std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::maa::StringResponse>>(PrepareAsynctask_resultRaw(context, request, cq));
+    }
+    class async final :
+      public StubInterface::async_interface {
+     public:
+      void run_task(::grpc::ClientContext* context, const ::maa::SyncContextRunTaskRequest* request, ::maa::EmptyResponse* response, std::function<void(::grpc::Status)>) override;
+      void run_task(::grpc::ClientContext* context, const ::maa::SyncContextRunTaskRequest* request, ::maa::EmptyResponse* response, ::grpc::ClientUnaryReactor* reactor) override;
+      void run_recognizer(::grpc::ClientContext* context, const ::maa::SyncContextRunRecognizerRequest* request, ::maa::SyncContextRunRecognizerResponse* response, std::function<void(::grpc::Status)>) override;
+      void run_recognizer(::grpc::ClientContext* context, const ::maa::SyncContextRunRecognizerRequest* request, ::maa::SyncContextRunRecognizerResponse* response, ::grpc::ClientUnaryReactor* reactor) override;
+      void run_action(::grpc::ClientContext* context, const ::maa::SyncContextRunActionRequest* request, ::maa::EmptyResponse* response, std::function<void(::grpc::Status)>) override;
+      void run_action(::grpc::ClientContext* context, const ::maa::SyncContextRunActionRequest* request, ::maa::EmptyResponse* response, ::grpc::ClientUnaryReactor* reactor) override;
+      void click(::grpc::ClientContext* context, const ::maa::SyncContextClickRequest* request, ::maa::EmptyRequest* response, std::function<void(::grpc::Status)>) override;
+      void click(::grpc::ClientContext* context, const ::maa::SyncContextClickRequest* request, ::maa::EmptyRequest* response, ::grpc::ClientUnaryReactor* reactor) override;
+      void swipe(::grpc::ClientContext* context, const ::maa::SyncContextSwipeRequest* request, ::maa::EmptyRequest* response, std::function<void(::grpc::Status)>) override;
+      void swipe(::grpc::ClientContext* context, const ::maa::SyncContextSwipeRequest* request, ::maa::EmptyRequest* response, ::grpc::ClientUnaryReactor* reactor) override;
+      void key(::grpc::ClientContext* context, const ::maa::SyncContextKeyRequest* request, ::maa::EmptyRequest* response, std::function<void(::grpc::Status)>) override;
+      void key(::grpc::ClientContext* context, const ::maa::SyncContextKeyRequest* request, ::maa::EmptyRequest* response, ::grpc::ClientUnaryReactor* reactor) override;
+      void touch_down(::grpc::ClientContext* context, const ::maa::SyncContextTouchRequest* request, ::maa::EmptyRequest* response, std::function<void(::grpc::Status)>) override;
+      void touch_down(::grpc::ClientContext* context, const ::maa::SyncContextTouchRequest* request, ::maa::EmptyRequest* response, ::grpc::ClientUnaryReactor* reactor) override;
+      void touch_move(::grpc::ClientContext* context, const ::maa::SyncContextTouchRequest* request, ::maa::EmptyRequest* response, std::function<void(::grpc::Status)>) override;
+      void touch_move(::grpc::ClientContext* context, const ::maa::SyncContextTouchRequest* request, ::maa::EmptyRequest* response, ::grpc::ClientUnaryReactor* reactor) override;
+      void touch_up(::grpc::ClientContext* context, const ::maa::SyncContextTouchRequest* request, ::maa::EmptyRequest* response, std::function<void(::grpc::Status)>) override;
+      void touch_up(::grpc::ClientContext* context, const ::maa::SyncContextTouchRequest* request, ::maa::EmptyRequest* response, ::grpc::ClientUnaryReactor* reactor) override;
+      void screencap(::grpc::ClientContext* context, const ::maa::SyncContextScreencapRequest* request, ::maa::EmptyResponse* response, std::function<void(::grpc::Status)>) override;
+      void screencap(::grpc::ClientContext* context, const ::maa::SyncContextScreencapRequest* request, ::maa::EmptyResponse* response, ::grpc::ClientUnaryReactor* reactor) override;
+      void task_result(::grpc::ClientContext* context, const ::maa::HandleStringRequest* request, ::maa::StringResponse* response, std::function<void(::grpc::Status)>) override;
+      void task_result(::grpc::ClientContext* context, const ::maa::HandleStringRequest* request, ::maa::StringResponse* response, ::grpc::ClientUnaryReactor* reactor) override;
+     private:
+      friend class Stub;
+      explicit async(Stub* stub): stub_(stub) { }
+      Stub* stub() { return stub_; }
+      Stub* stub_;
+    };
+    class async* async() override { return &async_stub_; }
+
+   private:
+    std::shared_ptr< ::grpc::ChannelInterface> channel_;
+    class async async_stub_{this};
+    ::grpc::ClientAsyncResponseReader< ::maa::EmptyResponse>* Asyncrun_taskRaw(::grpc::ClientContext* context, const ::maa::SyncContextRunTaskRequest& request, ::grpc::CompletionQueue* cq) override;
+    ::grpc::ClientAsyncResponseReader< ::maa::EmptyResponse>* PrepareAsyncrun_taskRaw(::grpc::ClientContext* context, const ::maa::SyncContextRunTaskRequest& request, ::grpc::CompletionQueue* cq) override;
+    ::grpc::ClientAsyncResponseReader< ::maa::SyncContextRunRecognizerResponse>* Asyncrun_recognizerRaw(::grpc::ClientContext* context, const ::maa::SyncContextRunRecognizerRequest& request, ::grpc::CompletionQueue* cq) override;
+    ::grpc::ClientAsyncResponseReader< ::maa::SyncContextRunRecognizerResponse>* PrepareAsyncrun_recognizerRaw(::grpc::ClientContext* context, const ::maa::SyncContextRunRecognizerRequest& request, ::grpc::CompletionQueue* cq) override;
+    ::grpc::ClientAsyncResponseReader< ::maa::EmptyResponse>* Asyncrun_actionRaw(::grpc::ClientContext* context, const ::maa::SyncContextRunActionRequest& request, ::grpc::CompletionQueue* cq) override;
+    ::grpc::ClientAsyncResponseReader< ::maa::EmptyResponse>* PrepareAsyncrun_actionRaw(::grpc::ClientContext* context, const ::maa::SyncContextRunActionRequest& request, ::grpc::CompletionQueue* cq) override;
+    ::grpc::ClientAsyncResponseReader< ::maa::EmptyRequest>* AsyncclickRaw(::grpc::ClientContext* context, const ::maa::SyncContextClickRequest& request, ::grpc::CompletionQueue* cq) override;
+    ::grpc::ClientAsyncResponseReader< ::maa::EmptyRequest>* PrepareAsyncclickRaw(::grpc::ClientContext* context, const ::maa::SyncContextClickRequest& request, ::grpc::CompletionQueue* cq) override;
+    ::grpc::ClientAsyncResponseReader< ::maa::EmptyRequest>* AsyncswipeRaw(::grpc::ClientContext* context, const ::maa::SyncContextSwipeRequest& request, ::grpc::CompletionQueue* cq) override;
+    ::grpc::ClientAsyncResponseReader< ::maa::EmptyRequest>* PrepareAsyncswipeRaw(::grpc::ClientContext* context, const ::maa::SyncContextSwipeRequest& request, ::grpc::CompletionQueue* cq) override;
+    ::grpc::ClientAsyncResponseReader< ::maa::EmptyRequest>* AsynckeyRaw(::grpc::ClientContext* context, const ::maa::SyncContextKeyRequest& request, ::grpc::CompletionQueue* cq) override;
+    ::grpc::ClientAsyncResponseReader< ::maa::EmptyRequest>* PrepareAsynckeyRaw(::grpc::ClientContext* context, const ::maa::SyncContextKeyRequest& request, ::grpc::CompletionQueue* cq) override;
+    ::grpc::ClientAsyncResponseReader< ::maa::EmptyRequest>* Asynctouch_downRaw(::grpc::ClientContext* context, const ::maa::SyncContextTouchRequest& request, ::grpc::CompletionQueue* cq) override;
+    ::grpc::ClientAsyncResponseReader< ::maa::EmptyRequest>* PrepareAsynctouch_downRaw(::grpc::ClientContext* context, const ::maa::SyncContextTouchRequest& request, ::grpc::CompletionQueue* cq) override;
+    ::grpc::ClientAsyncResponseReader< ::maa::EmptyRequest>* Asynctouch_moveRaw(::grpc::ClientContext* context, const ::maa::SyncContextTouchRequest& request, ::grpc::CompletionQueue* cq) override;
+    ::grpc::ClientAsyncResponseReader< ::maa::EmptyRequest>* PrepareAsynctouch_moveRaw(::grpc::ClientContext* context, const ::maa::SyncContextTouchRequest& request, ::grpc::CompletionQueue* cq) override;
+    ::grpc::ClientAsyncResponseReader< ::maa::EmptyRequest>* Asynctouch_upRaw(::grpc::ClientContext* context, const ::maa::SyncContextTouchRequest& request, ::grpc::CompletionQueue* cq) override;
+    ::grpc::ClientAsyncResponseReader< ::maa::EmptyRequest>* PrepareAsynctouch_upRaw(::grpc::ClientContext* context, const ::maa::SyncContextTouchRequest& request, ::grpc::CompletionQueue* cq) override;
+    ::grpc::ClientAsyncResponseReader< ::maa::EmptyResponse>* AsyncscreencapRaw(::grpc::ClientContext* context, const ::maa::SyncContextScreencapRequest& request, ::grpc::CompletionQueue* cq) override;
+    ::grpc::ClientAsyncResponseReader< ::maa::EmptyResponse>* PrepareAsyncscreencapRaw(::grpc::ClientContext* context, const ::maa::SyncContextScreencapRequest& request, ::grpc::CompletionQueue* cq) override;
+    ::grpc::ClientAsyncResponseReader< ::maa::StringResponse>* Asynctask_resultRaw(::grpc::ClientContext* context, const ::maa::HandleStringRequest& request, ::grpc::CompletionQueue* cq) override;
+    ::grpc::ClientAsyncResponseReader< ::maa::StringResponse>* PrepareAsynctask_resultRaw(::grpc::ClientContext* context, const ::maa::HandleStringRequest& request, ::grpc::CompletionQueue* cq) override;
+    const ::grpc::internal::RpcMethod rpcmethod_run_task_;
+    const ::grpc::internal::RpcMethod rpcmethod_run_recognizer_;
+    const ::grpc::internal::RpcMethod rpcmethod_run_action_;
+    const ::grpc::internal::RpcMethod rpcmethod_click_;
+    const ::grpc::internal::RpcMethod rpcmethod_swipe_;
+    const ::grpc::internal::RpcMethod rpcmethod_key_;
+    const ::grpc::internal::RpcMethod rpcmethod_touch_down_;
+    const ::grpc::internal::RpcMethod rpcmethod_touch_move_;
+    const ::grpc::internal::RpcMethod rpcmethod_touch_up_;
+    const ::grpc::internal::RpcMethod rpcmethod_screencap_;
+    const ::grpc::internal::RpcMethod rpcmethod_task_result_;
+  };
+  static std::unique_ptr<Stub> NewStub(const std::shared_ptr< ::grpc::ChannelInterface>& channel, const ::grpc::StubOptions& options = ::grpc::StubOptions());
+
+  class Service : public ::grpc::Service {
+   public:
+    Service();
+    virtual ~Service();
+    virtual ::grpc::Status run_task(::grpc::ServerContext* context, const ::maa::SyncContextRunTaskRequest* request, ::maa::EmptyResponse* response);
+    virtual ::grpc::Status run_recognizer(::grpc::ServerContext* context, const ::maa::SyncContextRunRecognizerRequest* request, ::maa::SyncContextRunRecognizerResponse* response);
+    virtual ::grpc::Status run_action(::grpc::ServerContext* context, const ::maa::SyncContextRunActionRequest* request, ::maa::EmptyResponse* response);
+    virtual ::grpc::Status click(::grpc::ServerContext* context, const ::maa::SyncContextClickRequest* request, ::maa::EmptyRequest* response);
+    virtual ::grpc::Status swipe(::grpc::ServerContext* context, const ::maa::SyncContextSwipeRequest* request, ::maa::EmptyRequest* response);
+    virtual ::grpc::Status key(::grpc::ServerContext* context, const ::maa::SyncContextKeyRequest* request, ::maa::EmptyRequest* response);
+    virtual ::grpc::Status touch_down(::grpc::ServerContext* context, const ::maa::SyncContextTouchRequest* request, ::maa::EmptyRequest* response);
+    virtual ::grpc::Status touch_move(::grpc::ServerContext* context, const ::maa::SyncContextTouchRequest* request, ::maa::EmptyRequest* response);
+    virtual ::grpc::Status touch_up(::grpc::ServerContext* context, const ::maa::SyncContextTouchRequest* request, ::maa::EmptyRequest* response);
+    virtual ::grpc::Status screencap(::grpc::ServerContext* context, const ::maa::SyncContextScreencapRequest* request, ::maa::EmptyResponse* response);
+    virtual ::grpc::Status task_result(::grpc::ServerContext* context, const ::maa::HandleStringRequest* request, ::maa::StringResponse* response);
+  };
+  template <class BaseClass>
+  class WithAsyncMethod_run_task : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    WithAsyncMethod_run_task() {
+      ::grpc::Service::MarkMethodAsync(0);
+    }
+    ~WithAsyncMethod_run_task() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status run_task(::grpc::ServerContext* /*context*/, const ::maa::SyncContextRunTaskRequest* /*request*/, ::maa::EmptyResponse* /*response*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    void Requestrun_task(::grpc::ServerContext* context, ::maa::SyncContextRunTaskRequest* request, ::grpc::ServerAsyncResponseWriter< ::maa::EmptyResponse>* response, ::grpc::CompletionQueue* new_call_cq, ::grpc::ServerCompletionQueue* notification_cq, void *tag) {
+      ::grpc::Service::RequestAsyncUnary(0, context, request, response, new_call_cq, notification_cq, tag);
+    }
+  };
+  template <class BaseClass>
+  class WithAsyncMethod_run_recognizer : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    WithAsyncMethod_run_recognizer() {
+      ::grpc::Service::MarkMethodAsync(1);
+    }
+    ~WithAsyncMethod_run_recognizer() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status run_recognizer(::grpc::ServerContext* /*context*/, const ::maa::SyncContextRunRecognizerRequest* /*request*/, ::maa::SyncContextRunRecognizerResponse* /*response*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    void Requestrun_recognizer(::grpc::ServerContext* context, ::maa::SyncContextRunRecognizerRequest* request, ::grpc::ServerAsyncResponseWriter< ::maa::SyncContextRunRecognizerResponse>* response, ::grpc::CompletionQueue* new_call_cq, ::grpc::ServerCompletionQueue* notification_cq, void *tag) {
+      ::grpc::Service::RequestAsyncUnary(1, context, request, response, new_call_cq, notification_cq, tag);
+    }
+  };
+  template <class BaseClass>
+  class WithAsyncMethod_run_action : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    WithAsyncMethod_run_action() {
+      ::grpc::Service::MarkMethodAsync(2);
+    }
+    ~WithAsyncMethod_run_action() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status run_action(::grpc::ServerContext* /*context*/, const ::maa::SyncContextRunActionRequest* /*request*/, ::maa::EmptyResponse* /*response*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    void Requestrun_action(::grpc::ServerContext* context, ::maa::SyncContextRunActionRequest* request, ::grpc::ServerAsyncResponseWriter< ::maa::EmptyResponse>* response, ::grpc::CompletionQueue* new_call_cq, ::grpc::ServerCompletionQueue* notification_cq, void *tag) {
+      ::grpc::Service::RequestAsyncUnary(2, context, request, response, new_call_cq, notification_cq, tag);
+    }
+  };
+  template <class BaseClass>
+  class WithAsyncMethod_click : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    WithAsyncMethod_click() {
+      ::grpc::Service::MarkMethodAsync(3);
+    }
+    ~WithAsyncMethod_click() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status click(::grpc::ServerContext* /*context*/, const ::maa::SyncContextClickRequest* /*request*/, ::maa::EmptyRequest* /*response*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    void Requestclick(::grpc::ServerContext* context, ::maa::SyncContextClickRequest* request, ::grpc::ServerAsyncResponseWriter< ::maa::EmptyRequest>* response, ::grpc::CompletionQueue* new_call_cq, ::grpc::ServerCompletionQueue* notification_cq, void *tag) {
+      ::grpc::Service::RequestAsyncUnary(3, context, request, response, new_call_cq, notification_cq, tag);
+    }
+  };
+  template <class BaseClass>
+  class WithAsyncMethod_swipe : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    WithAsyncMethod_swipe() {
+      ::grpc::Service::MarkMethodAsync(4);
+    }
+    ~WithAsyncMethod_swipe() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status swipe(::grpc::ServerContext* /*context*/, const ::maa::SyncContextSwipeRequest* /*request*/, ::maa::EmptyRequest* /*response*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    void Requestswipe(::grpc::ServerContext* context, ::maa::SyncContextSwipeRequest* request, ::grpc::ServerAsyncResponseWriter< ::maa::EmptyRequest>* response, ::grpc::CompletionQueue* new_call_cq, ::grpc::ServerCompletionQueue* notification_cq, void *tag) {
+      ::grpc::Service::RequestAsyncUnary(4, context, request, response, new_call_cq, notification_cq, tag);
+    }
+  };
+  template <class BaseClass>
+  class WithAsyncMethod_key : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    WithAsyncMethod_key() {
+      ::grpc::Service::MarkMethodAsync(5);
+    }
+    ~WithAsyncMethod_key() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status key(::grpc::ServerContext* /*context*/, const ::maa::SyncContextKeyRequest* /*request*/, ::maa::EmptyRequest* /*response*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    void Requestkey(::grpc::ServerContext* context, ::maa::SyncContextKeyRequest* request, ::grpc::ServerAsyncResponseWriter< ::maa::EmptyRequest>* response, ::grpc::CompletionQueue* new_call_cq, ::grpc::ServerCompletionQueue* notification_cq, void *tag) {
+      ::grpc::Service::RequestAsyncUnary(5, context, request, response, new_call_cq, notification_cq, tag);
+    }
+  };
+  template <class BaseClass>
+  class WithAsyncMethod_touch_down : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    WithAsyncMethod_touch_down() {
+      ::grpc::Service::MarkMethodAsync(6);
+    }
+    ~WithAsyncMethod_touch_down() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status touch_down(::grpc::ServerContext* /*context*/, const ::maa::SyncContextTouchRequest* /*request*/, ::maa::EmptyRequest* /*response*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    void Requesttouch_down(::grpc::ServerContext* context, ::maa::SyncContextTouchRequest* request, ::grpc::ServerAsyncResponseWriter< ::maa::EmptyRequest>* response, ::grpc::CompletionQueue* new_call_cq, ::grpc::ServerCompletionQueue* notification_cq, void *tag) {
+      ::grpc::Service::RequestAsyncUnary(6, context, request, response, new_call_cq, notification_cq, tag);
+    }
+  };
+  template <class BaseClass>
+  class WithAsyncMethod_touch_move : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    WithAsyncMethod_touch_move() {
+      ::grpc::Service::MarkMethodAsync(7);
+    }
+    ~WithAsyncMethod_touch_move() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status touch_move(::grpc::ServerContext* /*context*/, const ::maa::SyncContextTouchRequest* /*request*/, ::maa::EmptyRequest* /*response*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    void Requesttouch_move(::grpc::ServerContext* context, ::maa::SyncContextTouchRequest* request, ::grpc::ServerAsyncResponseWriter< ::maa::EmptyRequest>* response, ::grpc::CompletionQueue* new_call_cq, ::grpc::ServerCompletionQueue* notification_cq, void *tag) {
+      ::grpc::Service::RequestAsyncUnary(7, context, request, response, new_call_cq, notification_cq, tag);
+    }
+  };
+  template <class BaseClass>
+  class WithAsyncMethod_touch_up : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    WithAsyncMethod_touch_up() {
+      ::grpc::Service::MarkMethodAsync(8);
+    }
+    ~WithAsyncMethod_touch_up() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status touch_up(::grpc::ServerContext* /*context*/, const ::maa::SyncContextTouchRequest* /*request*/, ::maa::EmptyRequest* /*response*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    void Requesttouch_up(::grpc::ServerContext* context, ::maa::SyncContextTouchRequest* request, ::grpc::ServerAsyncResponseWriter< ::maa::EmptyRequest>* response, ::grpc::CompletionQueue* new_call_cq, ::grpc::ServerCompletionQueue* notification_cq, void *tag) {
+      ::grpc::Service::RequestAsyncUnary(8, context, request, response, new_call_cq, notification_cq, tag);
+    }
+  };
+  template <class BaseClass>
+  class WithAsyncMethod_screencap : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    WithAsyncMethod_screencap() {
+      ::grpc::Service::MarkMethodAsync(9);
+    }
+    ~WithAsyncMethod_screencap() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status screencap(::grpc::ServerContext* /*context*/, const ::maa::SyncContextScreencapRequest* /*request*/, ::maa::EmptyResponse* /*response*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    void Requestscreencap(::grpc::ServerContext* context, ::maa::SyncContextScreencapRequest* request, ::grpc::ServerAsyncResponseWriter< ::maa::EmptyResponse>* response, ::grpc::CompletionQueue* new_call_cq, ::grpc::ServerCompletionQueue* notification_cq, void *tag) {
+      ::grpc::Service::RequestAsyncUnary(9, context, request, response, new_call_cq, notification_cq, tag);
+    }
+  };
+  template <class BaseClass>
+  class WithAsyncMethod_task_result : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    WithAsyncMethod_task_result() {
+      ::grpc::Service::MarkMethodAsync(10);
+    }
+    ~WithAsyncMethod_task_result() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status task_result(::grpc::ServerContext* /*context*/, const ::maa::HandleStringRequest* /*request*/, ::maa::StringResponse* /*response*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    void Requesttask_result(::grpc::ServerContext* context, ::maa::HandleStringRequest* request, ::grpc::ServerAsyncResponseWriter< ::maa::StringResponse>* response, ::grpc::CompletionQueue* new_call_cq, ::grpc::ServerCompletionQueue* notification_cq, void *tag) {
+      ::grpc::Service::RequestAsyncUnary(10, context, request, response, new_call_cq, notification_cq, tag);
+    }
+  };
+  typedef WithAsyncMethod_run_task<WithAsyncMethod_run_recognizer<WithAsyncMethod_run_action<WithAsyncMethod_click<WithAsyncMethod_swipe<WithAsyncMethod_key<WithAsyncMethod_touch_down<WithAsyncMethod_touch_move<WithAsyncMethod_touch_up<WithAsyncMethod_screencap<WithAsyncMethod_task_result<Service > > > > > > > > > > > AsyncService;
+  template <class BaseClass>
+  class WithCallbackMethod_run_task : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    WithCallbackMethod_run_task() {
+      ::grpc::Service::MarkMethodCallback(0,
+          new ::grpc::internal::CallbackUnaryHandler< ::maa::SyncContextRunTaskRequest, ::maa::EmptyResponse>(
+            [this](
+                   ::grpc::CallbackServerContext* context, const ::maa::SyncContextRunTaskRequest* request, ::maa::EmptyResponse* response) { return this->run_task(context, request, response); }));}
+    void SetMessageAllocatorFor_run_task(
+        ::grpc::MessageAllocator< ::maa::SyncContextRunTaskRequest, ::maa::EmptyResponse>* allocator) {
+      ::grpc::internal::MethodHandler* const handler = ::grpc::Service::GetHandler(0);
+      static_cast<::grpc::internal::CallbackUnaryHandler< ::maa::SyncContextRunTaskRequest, ::maa::EmptyResponse>*>(handler)
+              ->SetMessageAllocator(allocator);
+    }
+    ~WithCallbackMethod_run_task() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status run_task(::grpc::ServerContext* /*context*/, const ::maa::SyncContextRunTaskRequest* /*request*/, ::maa::EmptyResponse* /*response*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    virtual ::grpc::ServerUnaryReactor* run_task(
+      ::grpc::CallbackServerContext* /*context*/, const ::maa::SyncContextRunTaskRequest* /*request*/, ::maa::EmptyResponse* /*response*/)  { return nullptr; }
+  };
+  template <class BaseClass>
+  class WithCallbackMethod_run_recognizer : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    WithCallbackMethod_run_recognizer() {
+      ::grpc::Service::MarkMethodCallback(1,
+          new ::grpc::internal::CallbackUnaryHandler< ::maa::SyncContextRunRecognizerRequest, ::maa::SyncContextRunRecognizerResponse>(
+            [this](
+                   ::grpc::CallbackServerContext* context, const ::maa::SyncContextRunRecognizerRequest* request, ::maa::SyncContextRunRecognizerResponse* response) { return this->run_recognizer(context, request, response); }));}
+    void SetMessageAllocatorFor_run_recognizer(
+        ::grpc::MessageAllocator< ::maa::SyncContextRunRecognizerRequest, ::maa::SyncContextRunRecognizerResponse>* allocator) {
+      ::grpc::internal::MethodHandler* const handler = ::grpc::Service::GetHandler(1);
+      static_cast<::grpc::internal::CallbackUnaryHandler< ::maa::SyncContextRunRecognizerRequest, ::maa::SyncContextRunRecognizerResponse>*>(handler)
+              ->SetMessageAllocator(allocator);
+    }
+    ~WithCallbackMethod_run_recognizer() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status run_recognizer(::grpc::ServerContext* /*context*/, const ::maa::SyncContextRunRecognizerRequest* /*request*/, ::maa::SyncContextRunRecognizerResponse* /*response*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    virtual ::grpc::ServerUnaryReactor* run_recognizer(
+      ::grpc::CallbackServerContext* /*context*/, const ::maa::SyncContextRunRecognizerRequest* /*request*/, ::maa::SyncContextRunRecognizerResponse* /*response*/)  { return nullptr; }
+  };
+  template <class BaseClass>
+  class WithCallbackMethod_run_action : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    WithCallbackMethod_run_action() {
+      ::grpc::Service::MarkMethodCallback(2,
+          new ::grpc::internal::CallbackUnaryHandler< ::maa::SyncContextRunActionRequest, ::maa::EmptyResponse>(
+            [this](
+                   ::grpc::CallbackServerContext* context, const ::maa::SyncContextRunActionRequest* request, ::maa::EmptyResponse* response) { return this->run_action(context, request, response); }));}
+    void SetMessageAllocatorFor_run_action(
+        ::grpc::MessageAllocator< ::maa::SyncContextRunActionRequest, ::maa::EmptyResponse>* allocator) {
+      ::grpc::internal::MethodHandler* const handler = ::grpc::Service::GetHandler(2);
+      static_cast<::grpc::internal::CallbackUnaryHandler< ::maa::SyncContextRunActionRequest, ::maa::EmptyResponse>*>(handler)
+              ->SetMessageAllocator(allocator);
+    }
+    ~WithCallbackMethod_run_action() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status run_action(::grpc::ServerContext* /*context*/, const ::maa::SyncContextRunActionRequest* /*request*/, ::maa::EmptyResponse* /*response*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    virtual ::grpc::ServerUnaryReactor* run_action(
+      ::grpc::CallbackServerContext* /*context*/, const ::maa::SyncContextRunActionRequest* /*request*/, ::maa::EmptyResponse* /*response*/)  { return nullptr; }
+  };
+  template <class BaseClass>
+  class WithCallbackMethod_click : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    WithCallbackMethod_click() {
+      ::grpc::Service::MarkMethodCallback(3,
+          new ::grpc::internal::CallbackUnaryHandler< ::maa::SyncContextClickRequest, ::maa::EmptyRequest>(
+            [this](
+                   ::grpc::CallbackServerContext* context, const ::maa::SyncContextClickRequest* request, ::maa::EmptyRequest* response) { return this->click(context, request, response); }));}
+    void SetMessageAllocatorFor_click(
+        ::grpc::MessageAllocator< ::maa::SyncContextClickRequest, ::maa::EmptyRequest>* allocator) {
+      ::grpc::internal::MethodHandler* const handler = ::grpc::Service::GetHandler(3);
+      static_cast<::grpc::internal::CallbackUnaryHandler< ::maa::SyncContextClickRequest, ::maa::EmptyRequest>*>(handler)
+              ->SetMessageAllocator(allocator);
+    }
+    ~WithCallbackMethod_click() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status click(::grpc::ServerContext* /*context*/, const ::maa::SyncContextClickRequest* /*request*/, ::maa::EmptyRequest* /*response*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    virtual ::grpc::ServerUnaryReactor* click(
+      ::grpc::CallbackServerContext* /*context*/, const ::maa::SyncContextClickRequest* /*request*/, ::maa::EmptyRequest* /*response*/)  { return nullptr; }
+  };
+  template <class BaseClass>
+  class WithCallbackMethod_swipe : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    WithCallbackMethod_swipe() {
+      ::grpc::Service::MarkMethodCallback(4,
+          new ::grpc::internal::CallbackUnaryHandler< ::maa::SyncContextSwipeRequest, ::maa::EmptyRequest>(
+            [this](
+                   ::grpc::CallbackServerContext* context, const ::maa::SyncContextSwipeRequest* request, ::maa::EmptyRequest* response) { return this->swipe(context, request, response); }));}
+    void SetMessageAllocatorFor_swipe(
+        ::grpc::MessageAllocator< ::maa::SyncContextSwipeRequest, ::maa::EmptyRequest>* allocator) {
+      ::grpc::internal::MethodHandler* const handler = ::grpc::Service::GetHandler(4);
+      static_cast<::grpc::internal::CallbackUnaryHandler< ::maa::SyncContextSwipeRequest, ::maa::EmptyRequest>*>(handler)
+              ->SetMessageAllocator(allocator);
+    }
+    ~WithCallbackMethod_swipe() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status swipe(::grpc::ServerContext* /*context*/, const ::maa::SyncContextSwipeRequest* /*request*/, ::maa::EmptyRequest* /*response*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    virtual ::grpc::ServerUnaryReactor* swipe(
+      ::grpc::CallbackServerContext* /*context*/, const ::maa::SyncContextSwipeRequest* /*request*/, ::maa::EmptyRequest* /*response*/)  { return nullptr; }
+  };
+  template <class BaseClass>
+  class WithCallbackMethod_key : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    WithCallbackMethod_key() {
+      ::grpc::Service::MarkMethodCallback(5,
+          new ::grpc::internal::CallbackUnaryHandler< ::maa::SyncContextKeyRequest, ::maa::EmptyRequest>(
+            [this](
+                   ::grpc::CallbackServerContext* context, const ::maa::SyncContextKeyRequest* request, ::maa::EmptyRequest* response) { return this->key(context, request, response); }));}
+    void SetMessageAllocatorFor_key(
+        ::grpc::MessageAllocator< ::maa::SyncContextKeyRequest, ::maa::EmptyRequest>* allocator) {
+      ::grpc::internal::MethodHandler* const handler = ::grpc::Service::GetHandler(5);
+      static_cast<::grpc::internal::CallbackUnaryHandler< ::maa::SyncContextKeyRequest, ::maa::EmptyRequest>*>(handler)
+              ->SetMessageAllocator(allocator);
+    }
+    ~WithCallbackMethod_key() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status key(::grpc::ServerContext* /*context*/, const ::maa::SyncContextKeyRequest* /*request*/, ::maa::EmptyRequest* /*response*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    virtual ::grpc::ServerUnaryReactor* key(
+      ::grpc::CallbackServerContext* /*context*/, const ::maa::SyncContextKeyRequest* /*request*/, ::maa::EmptyRequest* /*response*/)  { return nullptr; }
+  };
+  template <class BaseClass>
+  class WithCallbackMethod_touch_down : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    WithCallbackMethod_touch_down() {
+      ::grpc::Service::MarkMethodCallback(6,
+          new ::grpc::internal::CallbackUnaryHandler< ::maa::SyncContextTouchRequest, ::maa::EmptyRequest>(
+            [this](
+                   ::grpc::CallbackServerContext* context, const ::maa::SyncContextTouchRequest* request, ::maa::EmptyRequest* response) { return this->touch_down(context, request, response); }));}
+    void SetMessageAllocatorFor_touch_down(
+        ::grpc::MessageAllocator< ::maa::SyncContextTouchRequest, ::maa::EmptyRequest>* allocator) {
+      ::grpc::internal::MethodHandler* const handler = ::grpc::Service::GetHandler(6);
+      static_cast<::grpc::internal::CallbackUnaryHandler< ::maa::SyncContextTouchRequest, ::maa::EmptyRequest>*>(handler)
+              ->SetMessageAllocator(allocator);
+    }
+    ~WithCallbackMethod_touch_down() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status touch_down(::grpc::ServerContext* /*context*/, const ::maa::SyncContextTouchRequest* /*request*/, ::maa::EmptyRequest* /*response*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    virtual ::grpc::ServerUnaryReactor* touch_down(
+      ::grpc::CallbackServerContext* /*context*/, const ::maa::SyncContextTouchRequest* /*request*/, ::maa::EmptyRequest* /*response*/)  { return nullptr; }
+  };
+  template <class BaseClass>
+  class WithCallbackMethod_touch_move : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    WithCallbackMethod_touch_move() {
+      ::grpc::Service::MarkMethodCallback(7,
+          new ::grpc::internal::CallbackUnaryHandler< ::maa::SyncContextTouchRequest, ::maa::EmptyRequest>(
+            [this](
+                   ::grpc::CallbackServerContext* context, const ::maa::SyncContextTouchRequest* request, ::maa::EmptyRequest* response) { return this->touch_move(context, request, response); }));}
+    void SetMessageAllocatorFor_touch_move(
+        ::grpc::MessageAllocator< ::maa::SyncContextTouchRequest, ::maa::EmptyRequest>* allocator) {
+      ::grpc::internal::MethodHandler* const handler = ::grpc::Service::GetHandler(7);
+      static_cast<::grpc::internal::CallbackUnaryHandler< ::maa::SyncContextTouchRequest, ::maa::EmptyRequest>*>(handler)
+              ->SetMessageAllocator(allocator);
+    }
+    ~WithCallbackMethod_touch_move() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status touch_move(::grpc::ServerContext* /*context*/, const ::maa::SyncContextTouchRequest* /*request*/, ::maa::EmptyRequest* /*response*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    virtual ::grpc::ServerUnaryReactor* touch_move(
+      ::grpc::CallbackServerContext* /*context*/, const ::maa::SyncContextTouchRequest* /*request*/, ::maa::EmptyRequest* /*response*/)  { return nullptr; }
+  };
+  template <class BaseClass>
+  class WithCallbackMethod_touch_up : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    WithCallbackMethod_touch_up() {
+      ::grpc::Service::MarkMethodCallback(8,
+          new ::grpc::internal::CallbackUnaryHandler< ::maa::SyncContextTouchRequest, ::maa::EmptyRequest>(
+            [this](
+                   ::grpc::CallbackServerContext* context, const ::maa::SyncContextTouchRequest* request, ::maa::EmptyRequest* response) { return this->touch_up(context, request, response); }));}
+    void SetMessageAllocatorFor_touch_up(
+        ::grpc::MessageAllocator< ::maa::SyncContextTouchRequest, ::maa::EmptyRequest>* allocator) {
+      ::grpc::internal::MethodHandler* const handler = ::grpc::Service::GetHandler(8);
+      static_cast<::grpc::internal::CallbackUnaryHandler< ::maa::SyncContextTouchRequest, ::maa::EmptyRequest>*>(handler)
+              ->SetMessageAllocator(allocator);
+    }
+    ~WithCallbackMethod_touch_up() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status touch_up(::grpc::ServerContext* /*context*/, const ::maa::SyncContextTouchRequest* /*request*/, ::maa::EmptyRequest* /*response*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    virtual ::grpc::ServerUnaryReactor* touch_up(
+      ::grpc::CallbackServerContext* /*context*/, const ::maa::SyncContextTouchRequest* /*request*/, ::maa::EmptyRequest* /*response*/)  { return nullptr; }
+  };
+  template <class BaseClass>
+  class WithCallbackMethod_screencap : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    WithCallbackMethod_screencap() {
+      ::grpc::Service::MarkMethodCallback(9,
+          new ::grpc::internal::CallbackUnaryHandler< ::maa::SyncContextScreencapRequest, ::maa::EmptyResponse>(
+            [this](
+                   ::grpc::CallbackServerContext* context, const ::maa::SyncContextScreencapRequest* request, ::maa::EmptyResponse* response) { return this->screencap(context, request, response); }));}
+    void SetMessageAllocatorFor_screencap(
+        ::grpc::MessageAllocator< ::maa::SyncContextScreencapRequest, ::maa::EmptyResponse>* allocator) {
+      ::grpc::internal::MethodHandler* const handler = ::grpc::Service::GetHandler(9);
+      static_cast<::grpc::internal::CallbackUnaryHandler< ::maa::SyncContextScreencapRequest, ::maa::EmptyResponse>*>(handler)
+              ->SetMessageAllocator(allocator);
+    }
+    ~WithCallbackMethod_screencap() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status screencap(::grpc::ServerContext* /*context*/, const ::maa::SyncContextScreencapRequest* /*request*/, ::maa::EmptyResponse* /*response*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    virtual ::grpc::ServerUnaryReactor* screencap(
+      ::grpc::CallbackServerContext* /*context*/, const ::maa::SyncContextScreencapRequest* /*request*/, ::maa::EmptyResponse* /*response*/)  { return nullptr; }
+  };
+  template <class BaseClass>
+  class WithCallbackMethod_task_result : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    WithCallbackMethod_task_result() {
+      ::grpc::Service::MarkMethodCallback(10,
+          new ::grpc::internal::CallbackUnaryHandler< ::maa::HandleStringRequest, ::maa::StringResponse>(
+            [this](
+                   ::grpc::CallbackServerContext* context, const ::maa::HandleStringRequest* request, ::maa::StringResponse* response) { return this->task_result(context, request, response); }));}
+    void SetMessageAllocatorFor_task_result(
+        ::grpc::MessageAllocator< ::maa::HandleStringRequest, ::maa::StringResponse>* allocator) {
+      ::grpc::internal::MethodHandler* const handler = ::grpc::Service::GetHandler(10);
+      static_cast<::grpc::internal::CallbackUnaryHandler< ::maa::HandleStringRequest, ::maa::StringResponse>*>(handler)
+              ->SetMessageAllocator(allocator);
+    }
+    ~WithCallbackMethod_task_result() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status task_result(::grpc::ServerContext* /*context*/, const ::maa::HandleStringRequest* /*request*/, ::maa::StringResponse* /*response*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    virtual ::grpc::ServerUnaryReactor* task_result(
+      ::grpc::CallbackServerContext* /*context*/, const ::maa::HandleStringRequest* /*request*/, ::maa::StringResponse* /*response*/)  { return nullptr; }
+  };
+  typedef WithCallbackMethod_run_task<WithCallbackMethod_run_recognizer<WithCallbackMethod_run_action<WithCallbackMethod_click<WithCallbackMethod_swipe<WithCallbackMethod_key<WithCallbackMethod_touch_down<WithCallbackMethod_touch_move<WithCallbackMethod_touch_up<WithCallbackMethod_screencap<WithCallbackMethod_task_result<Service > > > > > > > > > > > CallbackService;
+  typedef CallbackService ExperimentalCallbackService;
+  template <class BaseClass>
+  class WithGenericMethod_run_task : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    WithGenericMethod_run_task() {
+      ::grpc::Service::MarkMethodGeneric(0);
+    }
+    ~WithGenericMethod_run_task() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status run_task(::grpc::ServerContext* /*context*/, const ::maa::SyncContextRunTaskRequest* /*request*/, ::maa::EmptyResponse* /*response*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+  };
+  template <class BaseClass>
+  class WithGenericMethod_run_recognizer : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    WithGenericMethod_run_recognizer() {
+      ::grpc::Service::MarkMethodGeneric(1);
+    }
+    ~WithGenericMethod_run_recognizer() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status run_recognizer(::grpc::ServerContext* /*context*/, const ::maa::SyncContextRunRecognizerRequest* /*request*/, ::maa::SyncContextRunRecognizerResponse* /*response*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+  };
+  template <class BaseClass>
+  class WithGenericMethod_run_action : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    WithGenericMethod_run_action() {
+      ::grpc::Service::MarkMethodGeneric(2);
+    }
+    ~WithGenericMethod_run_action() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status run_action(::grpc::ServerContext* /*context*/, const ::maa::SyncContextRunActionRequest* /*request*/, ::maa::EmptyResponse* /*response*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+  };
+  template <class BaseClass>
+  class WithGenericMethod_click : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    WithGenericMethod_click() {
+      ::grpc::Service::MarkMethodGeneric(3);
+    }
+    ~WithGenericMethod_click() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status click(::grpc::ServerContext* /*context*/, const ::maa::SyncContextClickRequest* /*request*/, ::maa::EmptyRequest* /*response*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+  };
+  template <class BaseClass>
+  class WithGenericMethod_swipe : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    WithGenericMethod_swipe() {
+      ::grpc::Service::MarkMethodGeneric(4);
+    }
+    ~WithGenericMethod_swipe() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status swipe(::grpc::ServerContext* /*context*/, const ::maa::SyncContextSwipeRequest* /*request*/, ::maa::EmptyRequest* /*response*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+  };
+  template <class BaseClass>
+  class WithGenericMethod_key : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    WithGenericMethod_key() {
+      ::grpc::Service::MarkMethodGeneric(5);
+    }
+    ~WithGenericMethod_key() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status key(::grpc::ServerContext* /*context*/, const ::maa::SyncContextKeyRequest* /*request*/, ::maa::EmptyRequest* /*response*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+  };
+  template <class BaseClass>
+  class WithGenericMethod_touch_down : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    WithGenericMethod_touch_down() {
+      ::grpc::Service::MarkMethodGeneric(6);
+    }
+    ~WithGenericMethod_touch_down() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status touch_down(::grpc::ServerContext* /*context*/, const ::maa::SyncContextTouchRequest* /*request*/, ::maa::EmptyRequest* /*response*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+  };
+  template <class BaseClass>
+  class WithGenericMethod_touch_move : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    WithGenericMethod_touch_move() {
+      ::grpc::Service::MarkMethodGeneric(7);
+    }
+    ~WithGenericMethod_touch_move() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status touch_move(::grpc::ServerContext* /*context*/, const ::maa::SyncContextTouchRequest* /*request*/, ::maa::EmptyRequest* /*response*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+  };
+  template <class BaseClass>
+  class WithGenericMethod_touch_up : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    WithGenericMethod_touch_up() {
+      ::grpc::Service::MarkMethodGeneric(8);
+    }
+    ~WithGenericMethod_touch_up() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status touch_up(::grpc::ServerContext* /*context*/, const ::maa::SyncContextTouchRequest* /*request*/, ::maa::EmptyRequest* /*response*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+  };
+  template <class BaseClass>
+  class WithGenericMethod_screencap : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    WithGenericMethod_screencap() {
+      ::grpc::Service::MarkMethodGeneric(9);
+    }
+    ~WithGenericMethod_screencap() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status screencap(::grpc::ServerContext* /*context*/, const ::maa::SyncContextScreencapRequest* /*request*/, ::maa::EmptyResponse* /*response*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+  };
+  template <class BaseClass>
+  class WithGenericMethod_task_result : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    WithGenericMethod_task_result() {
+      ::grpc::Service::MarkMethodGeneric(10);
+    }
+    ~WithGenericMethod_task_result() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status task_result(::grpc::ServerContext* /*context*/, const ::maa::HandleStringRequest* /*request*/, ::maa::StringResponse* /*response*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+  };
+  template <class BaseClass>
+  class WithRawMethod_run_task : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    WithRawMethod_run_task() {
+      ::grpc::Service::MarkMethodRaw(0);
+    }
+    ~WithRawMethod_run_task() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status run_task(::grpc::ServerContext* /*context*/, const ::maa::SyncContextRunTaskRequest* /*request*/, ::maa::EmptyResponse* /*response*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    void Requestrun_task(::grpc::ServerContext* context, ::grpc::ByteBuffer* request, ::grpc::ServerAsyncResponseWriter< ::grpc::ByteBuffer>* response, ::grpc::CompletionQueue* new_call_cq, ::grpc::ServerCompletionQueue* notification_cq, void *tag) {
+      ::grpc::Service::RequestAsyncUnary(0, context, request, response, new_call_cq, notification_cq, tag);
+    }
+  };
+  template <class BaseClass>
+  class WithRawMethod_run_recognizer : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    WithRawMethod_run_recognizer() {
+      ::grpc::Service::MarkMethodRaw(1);
+    }
+    ~WithRawMethod_run_recognizer() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status run_recognizer(::grpc::ServerContext* /*context*/, const ::maa::SyncContextRunRecognizerRequest* /*request*/, ::maa::SyncContextRunRecognizerResponse* /*response*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    void Requestrun_recognizer(::grpc::ServerContext* context, ::grpc::ByteBuffer* request, ::grpc::ServerAsyncResponseWriter< ::grpc::ByteBuffer>* response, ::grpc::CompletionQueue* new_call_cq, ::grpc::ServerCompletionQueue* notification_cq, void *tag) {
+      ::grpc::Service::RequestAsyncUnary(1, context, request, response, new_call_cq, notification_cq, tag);
+    }
+  };
+  template <class BaseClass>
+  class WithRawMethod_run_action : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    WithRawMethod_run_action() {
+      ::grpc::Service::MarkMethodRaw(2);
+    }
+    ~WithRawMethod_run_action() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status run_action(::grpc::ServerContext* /*context*/, const ::maa::SyncContextRunActionRequest* /*request*/, ::maa::EmptyResponse* /*response*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    void Requestrun_action(::grpc::ServerContext* context, ::grpc::ByteBuffer* request, ::grpc::ServerAsyncResponseWriter< ::grpc::ByteBuffer>* response, ::grpc::CompletionQueue* new_call_cq, ::grpc::ServerCompletionQueue* notification_cq, void *tag) {
+      ::grpc::Service::RequestAsyncUnary(2, context, request, response, new_call_cq, notification_cq, tag);
+    }
+  };
+  template <class BaseClass>
+  class WithRawMethod_click : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    WithRawMethod_click() {
+      ::grpc::Service::MarkMethodRaw(3);
+    }
+    ~WithRawMethod_click() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status click(::grpc::ServerContext* /*context*/, const ::maa::SyncContextClickRequest* /*request*/, ::maa::EmptyRequest* /*response*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    void Requestclick(::grpc::ServerContext* context, ::grpc::ByteBuffer* request, ::grpc::ServerAsyncResponseWriter< ::grpc::ByteBuffer>* response, ::grpc::CompletionQueue* new_call_cq, ::grpc::ServerCompletionQueue* notification_cq, void *tag) {
+      ::grpc::Service::RequestAsyncUnary(3, context, request, response, new_call_cq, notification_cq, tag);
+    }
+  };
+  template <class BaseClass>
+  class WithRawMethod_swipe : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    WithRawMethod_swipe() {
+      ::grpc::Service::MarkMethodRaw(4);
+    }
+    ~WithRawMethod_swipe() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status swipe(::grpc::ServerContext* /*context*/, const ::maa::SyncContextSwipeRequest* /*request*/, ::maa::EmptyRequest* /*response*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    void Requestswipe(::grpc::ServerContext* context, ::grpc::ByteBuffer* request, ::grpc::ServerAsyncResponseWriter< ::grpc::ByteBuffer>* response, ::grpc::CompletionQueue* new_call_cq, ::grpc::ServerCompletionQueue* notification_cq, void *tag) {
+      ::grpc::Service::RequestAsyncUnary(4, context, request, response, new_call_cq, notification_cq, tag);
+    }
+  };
+  template <class BaseClass>
+  class WithRawMethod_key : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    WithRawMethod_key() {
+      ::grpc::Service::MarkMethodRaw(5);
+    }
+    ~WithRawMethod_key() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status key(::grpc::ServerContext* /*context*/, const ::maa::SyncContextKeyRequest* /*request*/, ::maa::EmptyRequest* /*response*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    void Requestkey(::grpc::ServerContext* context, ::grpc::ByteBuffer* request, ::grpc::ServerAsyncResponseWriter< ::grpc::ByteBuffer>* response, ::grpc::CompletionQueue* new_call_cq, ::grpc::ServerCompletionQueue* notification_cq, void *tag) {
+      ::grpc::Service::RequestAsyncUnary(5, context, request, response, new_call_cq, notification_cq, tag);
+    }
+  };
+  template <class BaseClass>
+  class WithRawMethod_touch_down : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    WithRawMethod_touch_down() {
+      ::grpc::Service::MarkMethodRaw(6);
+    }
+    ~WithRawMethod_touch_down() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status touch_down(::grpc::ServerContext* /*context*/, const ::maa::SyncContextTouchRequest* /*request*/, ::maa::EmptyRequest* /*response*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    void Requesttouch_down(::grpc::ServerContext* context, ::grpc::ByteBuffer* request, ::grpc::ServerAsyncResponseWriter< ::grpc::ByteBuffer>* response, ::grpc::CompletionQueue* new_call_cq, ::grpc::ServerCompletionQueue* notification_cq, void *tag) {
+      ::grpc::Service::RequestAsyncUnary(6, context, request, response, new_call_cq, notification_cq, tag);
+    }
+  };
+  template <class BaseClass>
+  class WithRawMethod_touch_move : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    WithRawMethod_touch_move() {
+      ::grpc::Service::MarkMethodRaw(7);
+    }
+    ~WithRawMethod_touch_move() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status touch_move(::grpc::ServerContext* /*context*/, const ::maa::SyncContextTouchRequest* /*request*/, ::maa::EmptyRequest* /*response*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    void Requesttouch_move(::grpc::ServerContext* context, ::grpc::ByteBuffer* request, ::grpc::ServerAsyncResponseWriter< ::grpc::ByteBuffer>* response, ::grpc::CompletionQueue* new_call_cq, ::grpc::ServerCompletionQueue* notification_cq, void *tag) {
+      ::grpc::Service::RequestAsyncUnary(7, context, request, response, new_call_cq, notification_cq, tag);
+    }
+  };
+  template <class BaseClass>
+  class WithRawMethod_touch_up : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    WithRawMethod_touch_up() {
+      ::grpc::Service::MarkMethodRaw(8);
+    }
+    ~WithRawMethod_touch_up() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status touch_up(::grpc::ServerContext* /*context*/, const ::maa::SyncContextTouchRequest* /*request*/, ::maa::EmptyRequest* /*response*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    void Requesttouch_up(::grpc::ServerContext* context, ::grpc::ByteBuffer* request, ::grpc::ServerAsyncResponseWriter< ::grpc::ByteBuffer>* response, ::grpc::CompletionQueue* new_call_cq, ::grpc::ServerCompletionQueue* notification_cq, void *tag) {
+      ::grpc::Service::RequestAsyncUnary(8, context, request, response, new_call_cq, notification_cq, tag);
+    }
+  };
+  template <class BaseClass>
+  class WithRawMethod_screencap : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    WithRawMethod_screencap() {
+      ::grpc::Service::MarkMethodRaw(9);
+    }
+    ~WithRawMethod_screencap() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status screencap(::grpc::ServerContext* /*context*/, const ::maa::SyncContextScreencapRequest* /*request*/, ::maa::EmptyResponse* /*response*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    void Requestscreencap(::grpc::ServerContext* context, ::grpc::ByteBuffer* request, ::grpc::ServerAsyncResponseWriter< ::grpc::ByteBuffer>* response, ::grpc::CompletionQueue* new_call_cq, ::grpc::ServerCompletionQueue* notification_cq, void *tag) {
+      ::grpc::Service::RequestAsyncUnary(9, context, request, response, new_call_cq, notification_cq, tag);
+    }
+  };
+  template <class BaseClass>
+  class WithRawMethod_task_result : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    WithRawMethod_task_result() {
+      ::grpc::Service::MarkMethodRaw(10);
+    }
+    ~WithRawMethod_task_result() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status task_result(::grpc::ServerContext* /*context*/, const ::maa::HandleStringRequest* /*request*/, ::maa::StringResponse* /*response*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    void Requesttask_result(::grpc::ServerContext* context, ::grpc::ByteBuffer* request, ::grpc::ServerAsyncResponseWriter< ::grpc::ByteBuffer>* response, ::grpc::CompletionQueue* new_call_cq, ::grpc::ServerCompletionQueue* notification_cq, void *tag) {
+      ::grpc::Service::RequestAsyncUnary(10, context, request, response, new_call_cq, notification_cq, tag);
+    }
+  };
+  template <class BaseClass>
+  class WithRawCallbackMethod_run_task : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    WithRawCallbackMethod_run_task() {
+      ::grpc::Service::MarkMethodRawCallback(0,
+          new ::grpc::internal::CallbackUnaryHandler< ::grpc::ByteBuffer, ::grpc::ByteBuffer>(
+            [this](
+                   ::grpc::CallbackServerContext* context, const ::grpc::ByteBuffer* request, ::grpc::ByteBuffer* response) { return this->run_task(context, request, response); }));
+    }
+    ~WithRawCallbackMethod_run_task() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status run_task(::grpc::ServerContext* /*context*/, const ::maa::SyncContextRunTaskRequest* /*request*/, ::maa::EmptyResponse* /*response*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    virtual ::grpc::ServerUnaryReactor* run_task(
+      ::grpc::CallbackServerContext* /*context*/, const ::grpc::ByteBuffer* /*request*/, ::grpc::ByteBuffer* /*response*/)  { return nullptr; }
+  };
+  template <class BaseClass>
+  class WithRawCallbackMethod_run_recognizer : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    WithRawCallbackMethod_run_recognizer() {
+      ::grpc::Service::MarkMethodRawCallback(1,
+          new ::grpc::internal::CallbackUnaryHandler< ::grpc::ByteBuffer, ::grpc::ByteBuffer>(
+            [this](
+                   ::grpc::CallbackServerContext* context, const ::grpc::ByteBuffer* request, ::grpc::ByteBuffer* response) { return this->run_recognizer(context, request, response); }));
+    }
+    ~WithRawCallbackMethod_run_recognizer() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status run_recognizer(::grpc::ServerContext* /*context*/, const ::maa::SyncContextRunRecognizerRequest* /*request*/, ::maa::SyncContextRunRecognizerResponse* /*response*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    virtual ::grpc::ServerUnaryReactor* run_recognizer(
+      ::grpc::CallbackServerContext* /*context*/, const ::grpc::ByteBuffer* /*request*/, ::grpc::ByteBuffer* /*response*/)  { return nullptr; }
+  };
+  template <class BaseClass>
+  class WithRawCallbackMethod_run_action : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    WithRawCallbackMethod_run_action() {
+      ::grpc::Service::MarkMethodRawCallback(2,
+          new ::grpc::internal::CallbackUnaryHandler< ::grpc::ByteBuffer, ::grpc::ByteBuffer>(
+            [this](
+                   ::grpc::CallbackServerContext* context, const ::grpc::ByteBuffer* request, ::grpc::ByteBuffer* response) { return this->run_action(context, request, response); }));
+    }
+    ~WithRawCallbackMethod_run_action() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status run_action(::grpc::ServerContext* /*context*/, const ::maa::SyncContextRunActionRequest* /*request*/, ::maa::EmptyResponse* /*response*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    virtual ::grpc::ServerUnaryReactor* run_action(
+      ::grpc::CallbackServerContext* /*context*/, const ::grpc::ByteBuffer* /*request*/, ::grpc::ByteBuffer* /*response*/)  { return nullptr; }
+  };
+  template <class BaseClass>
+  class WithRawCallbackMethod_click : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    WithRawCallbackMethod_click() {
+      ::grpc::Service::MarkMethodRawCallback(3,
+          new ::grpc::internal::CallbackUnaryHandler< ::grpc::ByteBuffer, ::grpc::ByteBuffer>(
+            [this](
+                   ::grpc::CallbackServerContext* context, const ::grpc::ByteBuffer* request, ::grpc::ByteBuffer* response) { return this->click(context, request, response); }));
+    }
+    ~WithRawCallbackMethod_click() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status click(::grpc::ServerContext* /*context*/, const ::maa::SyncContextClickRequest* /*request*/, ::maa::EmptyRequest* /*response*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    virtual ::grpc::ServerUnaryReactor* click(
+      ::grpc::CallbackServerContext* /*context*/, const ::grpc::ByteBuffer* /*request*/, ::grpc::ByteBuffer* /*response*/)  { return nullptr; }
+  };
+  template <class BaseClass>
+  class WithRawCallbackMethod_swipe : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    WithRawCallbackMethod_swipe() {
+      ::grpc::Service::MarkMethodRawCallback(4,
+          new ::grpc::internal::CallbackUnaryHandler< ::grpc::ByteBuffer, ::grpc::ByteBuffer>(
+            [this](
+                   ::grpc::CallbackServerContext* context, const ::grpc::ByteBuffer* request, ::grpc::ByteBuffer* response) { return this->swipe(context, request, response); }));
+    }
+    ~WithRawCallbackMethod_swipe() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status swipe(::grpc::ServerContext* /*context*/, const ::maa::SyncContextSwipeRequest* /*request*/, ::maa::EmptyRequest* /*response*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    virtual ::grpc::ServerUnaryReactor* swipe(
+      ::grpc::CallbackServerContext* /*context*/, const ::grpc::ByteBuffer* /*request*/, ::grpc::ByteBuffer* /*response*/)  { return nullptr; }
+  };
+  template <class BaseClass>
+  class WithRawCallbackMethod_key : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    WithRawCallbackMethod_key() {
+      ::grpc::Service::MarkMethodRawCallback(5,
+          new ::grpc::internal::CallbackUnaryHandler< ::grpc::ByteBuffer, ::grpc::ByteBuffer>(
+            [this](
+                   ::grpc::CallbackServerContext* context, const ::grpc::ByteBuffer* request, ::grpc::ByteBuffer* response) { return this->key(context, request, response); }));
+    }
+    ~WithRawCallbackMethod_key() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status key(::grpc::ServerContext* /*context*/, const ::maa::SyncContextKeyRequest* /*request*/, ::maa::EmptyRequest* /*response*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    virtual ::grpc::ServerUnaryReactor* key(
+      ::grpc::CallbackServerContext* /*context*/, const ::grpc::ByteBuffer* /*request*/, ::grpc::ByteBuffer* /*response*/)  { return nullptr; }
+  };
+  template <class BaseClass>
+  class WithRawCallbackMethod_touch_down : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    WithRawCallbackMethod_touch_down() {
+      ::grpc::Service::MarkMethodRawCallback(6,
+          new ::grpc::internal::CallbackUnaryHandler< ::grpc::ByteBuffer, ::grpc::ByteBuffer>(
+            [this](
+                   ::grpc::CallbackServerContext* context, const ::grpc::ByteBuffer* request, ::grpc::ByteBuffer* response) { return this->touch_down(context, request, response); }));
+    }
+    ~WithRawCallbackMethod_touch_down() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status touch_down(::grpc::ServerContext* /*context*/, const ::maa::SyncContextTouchRequest* /*request*/, ::maa::EmptyRequest* /*response*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    virtual ::grpc::ServerUnaryReactor* touch_down(
+      ::grpc::CallbackServerContext* /*context*/, const ::grpc::ByteBuffer* /*request*/, ::grpc::ByteBuffer* /*response*/)  { return nullptr; }
+  };
+  template <class BaseClass>
+  class WithRawCallbackMethod_touch_move : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    WithRawCallbackMethod_touch_move() {
+      ::grpc::Service::MarkMethodRawCallback(7,
+          new ::grpc::internal::CallbackUnaryHandler< ::grpc::ByteBuffer, ::grpc::ByteBuffer>(
+            [this](
+                   ::grpc::CallbackServerContext* context, const ::grpc::ByteBuffer* request, ::grpc::ByteBuffer* response) { return this->touch_move(context, request, response); }));
+    }
+    ~WithRawCallbackMethod_touch_move() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status touch_move(::grpc::ServerContext* /*context*/, const ::maa::SyncContextTouchRequest* /*request*/, ::maa::EmptyRequest* /*response*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    virtual ::grpc::ServerUnaryReactor* touch_move(
+      ::grpc::CallbackServerContext* /*context*/, const ::grpc::ByteBuffer* /*request*/, ::grpc::ByteBuffer* /*response*/)  { return nullptr; }
+  };
+  template <class BaseClass>
+  class WithRawCallbackMethod_touch_up : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    WithRawCallbackMethod_touch_up() {
+      ::grpc::Service::MarkMethodRawCallback(8,
+          new ::grpc::internal::CallbackUnaryHandler< ::grpc::ByteBuffer, ::grpc::ByteBuffer>(
+            [this](
+                   ::grpc::CallbackServerContext* context, const ::grpc::ByteBuffer* request, ::grpc::ByteBuffer* response) { return this->touch_up(context, request, response); }));
+    }
+    ~WithRawCallbackMethod_touch_up() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status touch_up(::grpc::ServerContext* /*context*/, const ::maa::SyncContextTouchRequest* /*request*/, ::maa::EmptyRequest* /*response*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    virtual ::grpc::ServerUnaryReactor* touch_up(
+      ::grpc::CallbackServerContext* /*context*/, const ::grpc::ByteBuffer* /*request*/, ::grpc::ByteBuffer* /*response*/)  { return nullptr; }
+  };
+  template <class BaseClass>
+  class WithRawCallbackMethod_screencap : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    WithRawCallbackMethod_screencap() {
+      ::grpc::Service::MarkMethodRawCallback(9,
+          new ::grpc::internal::CallbackUnaryHandler< ::grpc::ByteBuffer, ::grpc::ByteBuffer>(
+            [this](
+                   ::grpc::CallbackServerContext* context, const ::grpc::ByteBuffer* request, ::grpc::ByteBuffer* response) { return this->screencap(context, request, response); }));
+    }
+    ~WithRawCallbackMethod_screencap() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status screencap(::grpc::ServerContext* /*context*/, const ::maa::SyncContextScreencapRequest* /*request*/, ::maa::EmptyResponse* /*response*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    virtual ::grpc::ServerUnaryReactor* screencap(
+      ::grpc::CallbackServerContext* /*context*/, const ::grpc::ByteBuffer* /*request*/, ::grpc::ByteBuffer* /*response*/)  { return nullptr; }
+  };
+  template <class BaseClass>
+  class WithRawCallbackMethod_task_result : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    WithRawCallbackMethod_task_result() {
+      ::grpc::Service::MarkMethodRawCallback(10,
+          new ::grpc::internal::CallbackUnaryHandler< ::grpc::ByteBuffer, ::grpc::ByteBuffer>(
+            [this](
+                   ::grpc::CallbackServerContext* context, const ::grpc::ByteBuffer* request, ::grpc::ByteBuffer* response) { return this->task_result(context, request, response); }));
+    }
+    ~WithRawCallbackMethod_task_result() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status task_result(::grpc::ServerContext* /*context*/, const ::maa::HandleStringRequest* /*request*/, ::maa::StringResponse* /*response*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    virtual ::grpc::ServerUnaryReactor* task_result(
+      ::grpc::CallbackServerContext* /*context*/, const ::grpc::ByteBuffer* /*request*/, ::grpc::ByteBuffer* /*response*/)  { return nullptr; }
+  };
+  template <class BaseClass>
+  class WithStreamedUnaryMethod_run_task : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    WithStreamedUnaryMethod_run_task() {
+      ::grpc::Service::MarkMethodStreamed(0,
+        new ::grpc::internal::StreamedUnaryHandler<
+          ::maa::SyncContextRunTaskRequest, ::maa::EmptyResponse>(
+            [this](::grpc::ServerContext* context,
+                   ::grpc::ServerUnaryStreamer<
+                     ::maa::SyncContextRunTaskRequest, ::maa::EmptyResponse>* streamer) {
+                       return this->Streamedrun_task(context,
+                         streamer);
+                  }));
+    }
+    ~WithStreamedUnaryMethod_run_task() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable regular version of this method
+    ::grpc::Status run_task(::grpc::ServerContext* /*context*/, const ::maa::SyncContextRunTaskRequest* /*request*/, ::maa::EmptyResponse* /*response*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    // replace default version of method with streamed unary
+    virtual ::grpc::Status Streamedrun_task(::grpc::ServerContext* context, ::grpc::ServerUnaryStreamer< ::maa::SyncContextRunTaskRequest,::maa::EmptyResponse>* server_unary_streamer) = 0;
+  };
+  template <class BaseClass>
+  class WithStreamedUnaryMethod_run_recognizer : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    WithStreamedUnaryMethod_run_recognizer() {
+      ::grpc::Service::MarkMethodStreamed(1,
+        new ::grpc::internal::StreamedUnaryHandler<
+          ::maa::SyncContextRunRecognizerRequest, ::maa::SyncContextRunRecognizerResponse>(
+            [this](::grpc::ServerContext* context,
+                   ::grpc::ServerUnaryStreamer<
+                     ::maa::SyncContextRunRecognizerRequest, ::maa::SyncContextRunRecognizerResponse>* streamer) {
+                       return this->Streamedrun_recognizer(context,
+                         streamer);
+                  }));
+    }
+    ~WithStreamedUnaryMethod_run_recognizer() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable regular version of this method
+    ::grpc::Status run_recognizer(::grpc::ServerContext* /*context*/, const ::maa::SyncContextRunRecognizerRequest* /*request*/, ::maa::SyncContextRunRecognizerResponse* /*response*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    // replace default version of method with streamed unary
+    virtual ::grpc::Status Streamedrun_recognizer(::grpc::ServerContext* context, ::grpc::ServerUnaryStreamer< ::maa::SyncContextRunRecognizerRequest,::maa::SyncContextRunRecognizerResponse>* server_unary_streamer) = 0;
+  };
+  template <class BaseClass>
+  class WithStreamedUnaryMethod_run_action : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    WithStreamedUnaryMethod_run_action() {
+      ::grpc::Service::MarkMethodStreamed(2,
+        new ::grpc::internal::StreamedUnaryHandler<
+          ::maa::SyncContextRunActionRequest, ::maa::EmptyResponse>(
+            [this](::grpc::ServerContext* context,
+                   ::grpc::ServerUnaryStreamer<
+                     ::maa::SyncContextRunActionRequest, ::maa::EmptyResponse>* streamer) {
+                       return this->Streamedrun_action(context,
+                         streamer);
+                  }));
+    }
+    ~WithStreamedUnaryMethod_run_action() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable regular version of this method
+    ::grpc::Status run_action(::grpc::ServerContext* /*context*/, const ::maa::SyncContextRunActionRequest* /*request*/, ::maa::EmptyResponse* /*response*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    // replace default version of method with streamed unary
+    virtual ::grpc::Status Streamedrun_action(::grpc::ServerContext* context, ::grpc::ServerUnaryStreamer< ::maa::SyncContextRunActionRequest,::maa::EmptyResponse>* server_unary_streamer) = 0;
+  };
+  template <class BaseClass>
+  class WithStreamedUnaryMethod_click : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    WithStreamedUnaryMethod_click() {
+      ::grpc::Service::MarkMethodStreamed(3,
+        new ::grpc::internal::StreamedUnaryHandler<
+          ::maa::SyncContextClickRequest, ::maa::EmptyRequest>(
+            [this](::grpc::ServerContext* context,
+                   ::grpc::ServerUnaryStreamer<
+                     ::maa::SyncContextClickRequest, ::maa::EmptyRequest>* streamer) {
+                       return this->Streamedclick(context,
+                         streamer);
+                  }));
+    }
+    ~WithStreamedUnaryMethod_click() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable regular version of this method
+    ::grpc::Status click(::grpc::ServerContext* /*context*/, const ::maa::SyncContextClickRequest* /*request*/, ::maa::EmptyRequest* /*response*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    // replace default version of method with streamed unary
+    virtual ::grpc::Status Streamedclick(::grpc::ServerContext* context, ::grpc::ServerUnaryStreamer< ::maa::SyncContextClickRequest,::maa::EmptyRequest>* server_unary_streamer) = 0;
+  };
+  template <class BaseClass>
+  class WithStreamedUnaryMethod_swipe : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    WithStreamedUnaryMethod_swipe() {
+      ::grpc::Service::MarkMethodStreamed(4,
+        new ::grpc::internal::StreamedUnaryHandler<
+          ::maa::SyncContextSwipeRequest, ::maa::EmptyRequest>(
+            [this](::grpc::ServerContext* context,
+                   ::grpc::ServerUnaryStreamer<
+                     ::maa::SyncContextSwipeRequest, ::maa::EmptyRequest>* streamer) {
+                       return this->Streamedswipe(context,
+                         streamer);
+                  }));
+    }
+    ~WithStreamedUnaryMethod_swipe() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable regular version of this method
+    ::grpc::Status swipe(::grpc::ServerContext* /*context*/, const ::maa::SyncContextSwipeRequest* /*request*/, ::maa::EmptyRequest* /*response*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    // replace default version of method with streamed unary
+    virtual ::grpc::Status Streamedswipe(::grpc::ServerContext* context, ::grpc::ServerUnaryStreamer< ::maa::SyncContextSwipeRequest,::maa::EmptyRequest>* server_unary_streamer) = 0;
+  };
+  template <class BaseClass>
+  class WithStreamedUnaryMethod_key : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    WithStreamedUnaryMethod_key() {
+      ::grpc::Service::MarkMethodStreamed(5,
+        new ::grpc::internal::StreamedUnaryHandler<
+          ::maa::SyncContextKeyRequest, ::maa::EmptyRequest>(
+            [this](::grpc::ServerContext* context,
+                   ::grpc::ServerUnaryStreamer<
+                     ::maa::SyncContextKeyRequest, ::maa::EmptyRequest>* streamer) {
+                       return this->Streamedkey(context,
+                         streamer);
+                  }));
+    }
+    ~WithStreamedUnaryMethod_key() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable regular version of this method
+    ::grpc::Status key(::grpc::ServerContext* /*context*/, const ::maa::SyncContextKeyRequest* /*request*/, ::maa::EmptyRequest* /*response*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    // replace default version of method with streamed unary
+    virtual ::grpc::Status Streamedkey(::grpc::ServerContext* context, ::grpc::ServerUnaryStreamer< ::maa::SyncContextKeyRequest,::maa::EmptyRequest>* server_unary_streamer) = 0;
+  };
+  template <class BaseClass>
+  class WithStreamedUnaryMethod_touch_down : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    WithStreamedUnaryMethod_touch_down() {
+      ::grpc::Service::MarkMethodStreamed(6,
+        new ::grpc::internal::StreamedUnaryHandler<
+          ::maa::SyncContextTouchRequest, ::maa::EmptyRequest>(
+            [this](::grpc::ServerContext* context,
+                   ::grpc::ServerUnaryStreamer<
+                     ::maa::SyncContextTouchRequest, ::maa::EmptyRequest>* streamer) {
+                       return this->Streamedtouch_down(context,
+                         streamer);
+                  }));
+    }
+    ~WithStreamedUnaryMethod_touch_down() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable regular version of this method
+    ::grpc::Status touch_down(::grpc::ServerContext* /*context*/, const ::maa::SyncContextTouchRequest* /*request*/, ::maa::EmptyRequest* /*response*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    // replace default version of method with streamed unary
+    virtual ::grpc::Status Streamedtouch_down(::grpc::ServerContext* context, ::grpc::ServerUnaryStreamer< ::maa::SyncContextTouchRequest,::maa::EmptyRequest>* server_unary_streamer) = 0;
+  };
+  template <class BaseClass>
+  class WithStreamedUnaryMethod_touch_move : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    WithStreamedUnaryMethod_touch_move() {
+      ::grpc::Service::MarkMethodStreamed(7,
+        new ::grpc::internal::StreamedUnaryHandler<
+          ::maa::SyncContextTouchRequest, ::maa::EmptyRequest>(
+            [this](::grpc::ServerContext* context,
+                   ::grpc::ServerUnaryStreamer<
+                     ::maa::SyncContextTouchRequest, ::maa::EmptyRequest>* streamer) {
+                       return this->Streamedtouch_move(context,
+                         streamer);
+                  }));
+    }
+    ~WithStreamedUnaryMethod_touch_move() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable regular version of this method
+    ::grpc::Status touch_move(::grpc::ServerContext* /*context*/, const ::maa::SyncContextTouchRequest* /*request*/, ::maa::EmptyRequest* /*response*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    // replace default version of method with streamed unary
+    virtual ::grpc::Status Streamedtouch_move(::grpc::ServerContext* context, ::grpc::ServerUnaryStreamer< ::maa::SyncContextTouchRequest,::maa::EmptyRequest>* server_unary_streamer) = 0;
+  };
+  template <class BaseClass>
+  class WithStreamedUnaryMethod_touch_up : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    WithStreamedUnaryMethod_touch_up() {
+      ::grpc::Service::MarkMethodStreamed(8,
+        new ::grpc::internal::StreamedUnaryHandler<
+          ::maa::SyncContextTouchRequest, ::maa::EmptyRequest>(
+            [this](::grpc::ServerContext* context,
+                   ::grpc::ServerUnaryStreamer<
+                     ::maa::SyncContextTouchRequest, ::maa::EmptyRequest>* streamer) {
+                       return this->Streamedtouch_up(context,
+                         streamer);
+                  }));
+    }
+    ~WithStreamedUnaryMethod_touch_up() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable regular version of this method
+    ::grpc::Status touch_up(::grpc::ServerContext* /*context*/, const ::maa::SyncContextTouchRequest* /*request*/, ::maa::EmptyRequest* /*response*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    // replace default version of method with streamed unary
+    virtual ::grpc::Status Streamedtouch_up(::grpc::ServerContext* context, ::grpc::ServerUnaryStreamer< ::maa::SyncContextTouchRequest,::maa::EmptyRequest>* server_unary_streamer) = 0;
+  };
+  template <class BaseClass>
+  class WithStreamedUnaryMethod_screencap : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    WithStreamedUnaryMethod_screencap() {
+      ::grpc::Service::MarkMethodStreamed(9,
+        new ::grpc::internal::StreamedUnaryHandler<
+          ::maa::SyncContextScreencapRequest, ::maa::EmptyResponse>(
+            [this](::grpc::ServerContext* context,
+                   ::grpc::ServerUnaryStreamer<
+                     ::maa::SyncContextScreencapRequest, ::maa::EmptyResponse>* streamer) {
+                       return this->Streamedscreencap(context,
+                         streamer);
+                  }));
+    }
+    ~WithStreamedUnaryMethod_screencap() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable regular version of this method
+    ::grpc::Status screencap(::grpc::ServerContext* /*context*/, const ::maa::SyncContextScreencapRequest* /*request*/, ::maa::EmptyResponse* /*response*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    // replace default version of method with streamed unary
+    virtual ::grpc::Status Streamedscreencap(::grpc::ServerContext* context, ::grpc::ServerUnaryStreamer< ::maa::SyncContextScreencapRequest,::maa::EmptyResponse>* server_unary_streamer) = 0;
+  };
+  template <class BaseClass>
+  class WithStreamedUnaryMethod_task_result : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    WithStreamedUnaryMethod_task_result() {
+      ::grpc::Service::MarkMethodStreamed(10,
+        new ::grpc::internal::StreamedUnaryHandler<
+          ::maa::HandleStringRequest, ::maa::StringResponse>(
+            [this](::grpc::ServerContext* context,
+                   ::grpc::ServerUnaryStreamer<
+                     ::maa::HandleStringRequest, ::maa::StringResponse>* streamer) {
+                       return this->Streamedtask_result(context,
+                         streamer);
+                  }));
+    }
+    ~WithStreamedUnaryMethod_task_result() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable regular version of this method
+    ::grpc::Status task_result(::grpc::ServerContext* /*context*/, const ::maa::HandleStringRequest* /*request*/, ::maa::StringResponse* /*response*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    // replace default version of method with streamed unary
+    virtual ::grpc::Status Streamedtask_result(::grpc::ServerContext* context, ::grpc::ServerUnaryStreamer< ::maa::HandleStringRequest,::maa::StringResponse>* server_unary_streamer) = 0;
+  };
+  typedef WithStreamedUnaryMethod_run_task<WithStreamedUnaryMethod_run_recognizer<WithStreamedUnaryMethod_run_action<WithStreamedUnaryMethod_click<WithStreamedUnaryMethod_swipe<WithStreamedUnaryMethod_key<WithStreamedUnaryMethod_touch_down<WithStreamedUnaryMethod_touch_move<WithStreamedUnaryMethod_touch_up<WithStreamedUnaryMethod_screencap<WithStreamedUnaryMethod_task_result<Service > > > > > > > > > > > StreamedUnaryService;
   typedef Service SplitStreamedService;
-  typedef WithStreamedUnaryMethod_create<WithStreamedUnaryMethod_destroy<WithStreamedUnaryMethod_set_option<WithStreamedUnaryMethod_post_connection<WithStreamedUnaryMethod_post_click<WithStreamedUnaryMethod_post_swipe<WithStreamedUnaryMethod_post_press_key<WithStreamedUnaryMethod_post_touch_down<WithStreamedUnaryMethod_post_touch_move<WithStreamedUnaryMethod_post_touch_up<WithStreamedUnaryMethod_post_screencap<WithStreamedUnaryMethod_status<WithStreamedUnaryMethod_wait<WithStreamedUnaryMethod_connected<WithStreamedUnaryMethod_image<WithStreamedUnaryMethod_uuid<Service > > > > > > > > > > > > > > > > StreamedService;
+  typedef WithStreamedUnaryMethod_run_task<WithStreamedUnaryMethod_run_recognizer<WithStreamedUnaryMethod_run_action<WithStreamedUnaryMethod_click<WithStreamedUnaryMethod_swipe<WithStreamedUnaryMethod_key<WithStreamedUnaryMethod_touch_down<WithStreamedUnaryMethod_touch_move<WithStreamedUnaryMethod_touch_up<WithStreamedUnaryMethod_screencap<WithStreamedUnaryMethod_task_result<Service > > > > > > > > > > > StreamedService;
 };
 
 }  // namespace maa

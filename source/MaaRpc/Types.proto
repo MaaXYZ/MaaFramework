@@ -14,6 +14,10 @@ message Size {
   optional int32 width = 1;
   optional int32 height = 2;
 }
+message Rect {
+  optional Point xy = 1;
+  optional Size wh = 2;
+}
 enum Status {
   invalid = 0;
   pending = 1000;
@@ -24,6 +28,19 @@ enum Status {
 message Callback {
   optional string msg = 1;
   optional string detail = 2;
+}
+
+message ClickParam { optional Point point = 1; }
+message SwipeParam {
+  optional Point from = 1;
+  optional Point to = 2;
+  optional int32 duration = 3;
+}
+message KeyParam { optional int32 key = 1; }
+message TouchParam {
+  optional int32 contact = 1;
+  optional Point pos = 2;
+  optional int32 pressure = 3;
 }
 
 message EmptyRequest {}
@@ -43,10 +60,10 @@ message HandleIdRequest {
   optional Id id = 2;
 }
 
-message EmptyResponse { optional RpcStatus status = 1; }
+message EmptyResponse { optional RpcStatus status = 101; }
 message IdResponse {
-  optional RpcStatus status = 1;
-  optional Id id = 101;
+  optional Id id = 1;
+  optional RpcStatus status = 101;
 }
 message BoolResponse {
   optional bool value = 1;

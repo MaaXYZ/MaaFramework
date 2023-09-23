@@ -18,6 +18,8 @@ service MaaFramework {
   rpc acquire_callback_id(EmptyRequest) returns (IdResponse);
   rpc register_callback(IdRequest) returns (stream Callback);
   rpc unregister_callback(IdRequest) returns (EmptyResponse);
+
+  rpc acquire_custom_controller_id(EmptyRequest) returns (IdResponse);
 }
 
 /*
@@ -42,7 +44,7 @@ service MaaFrameworkImage {
   rpc is_empty(HandleRequest) returns (BoolResponse);
   rpc clear(HandleRequest) returns (EmptyResponse);
   rpc info(HandleRequest) returns (ImageInfoResponse);
-  rpc get_encoded(HandleRequest) returns (BufferResponse);
+  rpc encoded(HandleRequest) returns (BufferResponse);
   rpc set_encoded(HandleBufferRequest) returns (EmptyResponse);
 }
 
@@ -58,12 +60,53 @@ service MaaFrameworkResource {
   rpc hash(HandleRequest) returns (StringResponse);
 }
 
-message AdbControlleRequest {
-  optional Id id = 1;
+message AdbControllerRequest {
+  optional Id callback = 1;
   optional string adb_path = 2;
   optional string adb_serial = 3;
   optional uint32 adb_type = 4;
   optional string adb_config = 5;
+}
+
+message CustomControllerRequest {
+  optional Id callback = 1;
+  optional Id ctrl = 2;
+}
+
+message CustomControllerSetOptionParam {
+  optional int32 key = 1;
+  optional string value = 2;
+}
+
+message CustomControllerResponse {
+  optional Id ctrl = 1;
+  optional Id id = 2;
+  oneof command {
+    bool connect = 101; // void
+    ClickParam click = 102;
+    SwipeParam swipe = 103;
+    KeyParam key = 104;
+    TouchParam touch_down = 105;
+    TouchParam touch_move = 106;
+    TouchParam touch_up = 107;
+    string start = 108;
+    string stop = 109;
+    bool resolution = 110; // void
+    Handle image = 111;
+    bool uuid = 112; // void
+
+    CustomControllerSetOptionParam set_option = 200;
+  }
+}
+
+message SubmitCustomControllerRequest {
+  optional Handle handle = 1;
+  optional Id id = 2;
+  optional bool ok = 3;
+  oneof result {
+    Size resolution = 101;
+    string uuid = 102;
+  }
 }
 
 message ControllerSetOptionRequest {
@@ -77,26 +120,22 @@ message ControllerSetOptionRequest {
 
 message ControllerPostClickRequest {
   optional Handle handle = 1;
-  optional Point point = 2;
+  optional ClickParam param = 2;
 }
 
 message ControllerPostSwipeRequest {
   optional Handle handle = 1;
-  optional Point point_from = 2;
-  optional Point point_to = 3;
-  optional int32 duration = 4;
+  optional SwipeParam param = 2;
 }
 
 message ControllerPostKeyRequest {
   optional Handle handle = 1;
-  optional int32 key = 2;
+  optional KeyParam param = 2;
 }
 
 message ControllerPostTouchRequest {
   optional Handle handle = 1;
-  optional int32 contact = 2;
-  optional Point point = 3;
-  optional int32 pressure = 4;
+  optional TouchParam param = 2;
 }
 
 message ControllerGetImageRequest {
@@ -105,8 +144,13 @@ message ControllerGetImageRequest {
 }
 
 service MaaFrameworkController {
-  rpc create(AdbControlleRequest) returns (HandleResponse);
+  rpc create_adb(AdbControllerRequest) returns (HandleResponse);
   rpc destroy(HandleRequest) returns (EmptyResponse);
+
+  rpc create_custom(CustomControllerRequest)
+      returns (stream CustomControllerResponse);
+  rpc submit_custom_controller(SubmitCustomControllerRequest)
+      returns (EmptyResponse);
 
   rpc set_option(ControllerSetOptionRequest) returns (EmptyResponse);
   rpc post_connection(HandleRequest) returns (IdResponse);
@@ -124,4 +168,182 @@ service MaaFrameworkController {
 
   rpc image(ControllerGetImageRequest) returns (EmptyResponse);
   rpc uuid(HandleRequest) returns (StringResponse);
+}
+
+message CustomRecognizerRequest {
+  optional Handle handle = 1;
+  optional string name = 2;
+  optional Id reco = 3;
+}
+
+message CustomRecognizerAnalyzeParam {
+  optional Handle context = 1;
+  optional Handle image = 2;
+  optional string task = 3;
+  optional string param = 4;
+}
+
+message CustomRecognizerResponse {
+  optional Id reco = 1;
+  optional Id id = 2;
+  oneof command { CustomRecognizerAnalyzeParam analyze = 101; }
+}
+
+message CustomRecognizerAnalyzeResult {
+  optional bool match = 1;
+  optional Rect box = 2;
+  optional string detail = 3;
+}
+
+message SubmitCustomRecognizerRequest {
+  optional Handle handle = 1;
+  optional Id id = 2;
+  optional bool ok = 3;
+  oneof result { CustomRecognizerAnalyzeResult analyze = 101; }
+}
+
+message CustomActionRequest {
+  optional Handle handle = 1;
+  optional string name = 2;
+  optional Id act = 3;
+}
+
+message CustomActionRunParam {
+  optional Handle context = 1;
+  optional string task = 2;
+  optional string param = 3;
+  optional Rect box = 4;
+  optional string detail = 5;
+}
+
+message CustomActionResponse {
+  optional Id act = 1;
+  optional Id id = 2;
+  oneof command {
+    CustomActionRunParam run = 101;
+    bool stop = 102; // void
+  }
+}
+
+message SubmitCustomActionRequest {
+  optional Handle handle = 1;
+  optional Id id = 2;
+  optional bool ok = 3;
+}
+
+message InstancePostTaskRequest {
+  optional Handle handle = 1;
+  optional string task = 2;
+  optional string param = 3;
+}
+
+message InstanceSetTaskParamRequest {
+  optional Handle handle = 1;
+  optional Id id = 2;
+  optional string param = 3;
+}
+
+service MaaFrameworkInstance {
+  rpc create(IdRequest) returns (HandleResponse);
+  rpc destroy(HandleRequest) returns (EmptyResponse);
+
+  rpc register_custom_recognizer(CustomRecognizerRequest)
+      returns (stream CustomRecognizerResponse);
+  rpc submit_custom_recognizer(SubmitCustomRecognizerRequest)
+      returns (EmptyResponse);
+  rpc unregister_custom_recognizer(HandleStringRequest) returns (EmptyResponse);
+  rpc clear_custom_recognizer(HandleRequest) returns (EmptyResponse);
+
+  rpc register_custom_action(CustomRecognizerRequest)
+      returns (stream CustomRecognizerResponse);
+  rpc submit_custom_action(SubmitCustomRecognizerRequest)
+      returns (EmptyResponse);
+  rpc unregister_custom_action(HandleStringRequest) returns (EmptyResponse);
+  rpc clear_custom_action(HandleRequest) returns (EmptyResponse);
+
+  rpc bind_resource(HandleRequest) returns (EmptyResponse);
+  rpc bind_controller(HandleRequest) returns (EmptyResponse);
+  rpc inited(HandleRequest) returns (BoolResponse);
+
+  rpc post_task(InstancePostTaskRequest) returns (IdResponse);
+  rpc set_task_param(InstanceSetTaskParamRequest) returns (EmptyResponse);
+
+  rpc status(HandleIdRequest) returns (StatusResponse);
+  rpc wait(HandleIdRequest) returns (EmptyResponse);
+  rpc all_finished(HandleRequest) returns (BoolResponse);
+
+  rpc stop(HandleRequest) returns (EmptyResponse);
+
+  rpc resource(HandleRequest) returns (HandleRequest);
+  rpc controller(HandleRequest) returns (HandleRequest);
+}
+
+message SyncContextRunTaskRequest {
+  optional Handle handle = 1;
+  optional string task = 2;
+  optional string param = 3;
+}
+
+message SyncContextRunRecognizerRequest {
+  optional Handle handle = 1;
+  optional string task = 2;
+  optional string param = 3;
+  optional Handle image = 4;
+}
+
+message SyncContextRunRecognizerResponse {
+  optional bool match = 1;
+  optional Rect box = 2;
+  optional string detail = 3;
+  optional RpcStatus status = 101;
+}
+
+message SyncContextRunActionRequest {
+  optional Handle handle = 1;
+  optional string task = 2;
+  optional string param = 3;
+  optional Rect box = 4;
+  optional string detail = 5;
+}
+
+message SyncContextClickRequest {
+  optional Handle handle = 1;
+  optional ClickParam param = 2;
+}
+
+message SyncContextSwipeRequest {
+  optional Handle handle = 1;
+  optional SwipeParam param = 2;
+}
+
+message SyncContextKeyRequest {
+  optional Handle handle = 1;
+  optional KeyParam param = 2;
+}
+
+message SyncContextTouchRequest {
+  optional Handle handle = 1;
+  optional TouchParam param = 2;
+}
+
+message SyncContextScreencapRequest {
+  optional Handle handle = 1;
+  optional Handle image = 2;
+}
+
+service MaaFrameworkSyncContext {
+  rpc run_task(SyncContextRunTaskRequest) returns (EmptyResponse);
+  rpc run_recognizer(SyncContextRunRecognizerRequest)
+      returns (SyncContextRunRecognizerResponse);
+  rpc run_action(SyncContextRunActionRequest) returns (EmptyResponse);
+
+  rpc click(SyncContextClickRequest) returns (EmptyRequest);
+  rpc swipe(SyncContextSwipeRequest) returns (EmptyRequest);
+  rpc key(SyncContextKeyRequest) returns (EmptyRequest);
+  rpc touch_down(SyncContextTouchRequest) returns (EmptyRequest);
+  rpc touch_move(SyncContextTouchRequest) returns (EmptyRequest);
+  rpc touch_up(SyncContextTouchRequest) returns (EmptyRequest);
+
+  rpc screencap(SyncContextScreencapRequest) returns (EmptyResponse);
+  rpc task_result(HandleStringRequest) returns (StringResponse);
 }

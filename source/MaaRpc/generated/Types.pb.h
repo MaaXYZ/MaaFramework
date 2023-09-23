@@ -59,6 +59,9 @@ extern BufferResponseDefaultTypeInternal _BufferResponse_default_instance_;
 class Callback;
 struct CallbackDefaultTypeInternal;
 extern CallbackDefaultTypeInternal _Callback_default_instance_;
+class ClickParam;
+struct ClickParamDefaultTypeInternal;
+extern ClickParamDefaultTypeInternal _ClickParam_default_instance_;
 class EmptyRequest;
 struct EmptyRequestDefaultTypeInternal;
 extern EmptyRequestDefaultTypeInternal _EmptyRequest_default_instance_;
@@ -92,9 +95,15 @@ extern IdRequestDefaultTypeInternal _IdRequest_default_instance_;
 class IdResponse;
 struct IdResponseDefaultTypeInternal;
 extern IdResponseDefaultTypeInternal _IdResponse_default_instance_;
+class KeyParam;
+struct KeyParamDefaultTypeInternal;
+extern KeyParamDefaultTypeInternal _KeyParam_default_instance_;
 class Point;
 struct PointDefaultTypeInternal;
 extern PointDefaultTypeInternal _Point_default_instance_;
+class Rect;
+struct RectDefaultTypeInternal;
+extern RectDefaultTypeInternal _Rect_default_instance_;
 class RpcStatus;
 struct RpcStatusDefaultTypeInternal;
 extern RpcStatusDefaultTypeInternal _RpcStatus_default_instance_;
@@ -107,12 +116,19 @@ extern StatusResponseDefaultTypeInternal _StatusResponse_default_instance_;
 class StringResponse;
 struct StringResponseDefaultTypeInternal;
 extern StringResponseDefaultTypeInternal _StringResponse_default_instance_;
+class SwipeParam;
+struct SwipeParamDefaultTypeInternal;
+extern SwipeParamDefaultTypeInternal _SwipeParam_default_instance_;
+class TouchParam;
+struct TouchParamDefaultTypeInternal;
+extern TouchParamDefaultTypeInternal _TouchParam_default_instance_;
 }  // namespace maa
 PROTOBUF_NAMESPACE_OPEN
 template<> ::maa::BoolResponse* Arena::CreateMaybeMessage<::maa::BoolResponse>(Arena*);
 template<> ::maa::BufferRequest* Arena::CreateMaybeMessage<::maa::BufferRequest>(Arena*);
 template<> ::maa::BufferResponse* Arena::CreateMaybeMessage<::maa::BufferResponse>(Arena*);
 template<> ::maa::Callback* Arena::CreateMaybeMessage<::maa::Callback>(Arena*);
+template<> ::maa::ClickParam* Arena::CreateMaybeMessage<::maa::ClickParam>(Arena*);
 template<> ::maa::EmptyRequest* Arena::CreateMaybeMessage<::maa::EmptyRequest>(Arena*);
 template<> ::maa::EmptyResponse* Arena::CreateMaybeMessage<::maa::EmptyResponse>(Arena*);
 template<> ::maa::Handle* Arena::CreateMaybeMessage<::maa::Handle>(Arena*);
@@ -124,11 +140,15 @@ template<> ::maa::HandleStringRequest* Arena::CreateMaybeMessage<::maa::HandleSt
 template<> ::maa::Id* Arena::CreateMaybeMessage<::maa::Id>(Arena*);
 template<> ::maa::IdRequest* Arena::CreateMaybeMessage<::maa::IdRequest>(Arena*);
 template<> ::maa::IdResponse* Arena::CreateMaybeMessage<::maa::IdResponse>(Arena*);
+template<> ::maa::KeyParam* Arena::CreateMaybeMessage<::maa::KeyParam>(Arena*);
 template<> ::maa::Point* Arena::CreateMaybeMessage<::maa::Point>(Arena*);
+template<> ::maa::Rect* Arena::CreateMaybeMessage<::maa::Rect>(Arena*);
 template<> ::maa::RpcStatus* Arena::CreateMaybeMessage<::maa::RpcStatus>(Arena*);
 template<> ::maa::Size* Arena::CreateMaybeMessage<::maa::Size>(Arena*);
 template<> ::maa::StatusResponse* Arena::CreateMaybeMessage<::maa::StatusResponse>(Arena*);
 template<> ::maa::StringResponse* Arena::CreateMaybeMessage<::maa::StringResponse>(Arena*);
+template<> ::maa::SwipeParam* Arena::CreateMaybeMessage<::maa::SwipeParam>(Arena*);
+template<> ::maa::TouchParam* Arena::CreateMaybeMessage<::maa::TouchParam>(Arena*);
 PROTOBUF_NAMESPACE_CLOSE
 namespace maa {
 
@@ -957,6 +977,184 @@ class Size final :
 };
 // -------------------------------------------------------------------
 
+class Rect final :
+    public ::PROTOBUF_NAMESPACE_ID::Message /* @@protoc_insertion_point(class_definition:maa.Rect) */ {
+ public:
+  inline Rect() : Rect(nullptr) {}
+  ~Rect() override;
+  explicit PROTOBUF_CONSTEXPR Rect(::PROTOBUF_NAMESPACE_ID::internal::ConstantInitialized);
+
+  Rect(const Rect& from);
+  Rect(Rect&& from) noexcept
+    : Rect() {
+    *this = ::std::move(from);
+  }
+
+  inline Rect& operator=(const Rect& from) {
+    CopyFrom(from);
+    return *this;
+  }
+  inline Rect& operator=(Rect&& from) noexcept {
+    if (this == &from) return *this;
+    if (GetOwningArena() == from.GetOwningArena()
+  #ifdef PROTOBUF_FORCE_COPY_IN_MOVE
+        && GetOwningArena() != nullptr
+  #endif  // !PROTOBUF_FORCE_COPY_IN_MOVE
+    ) {
+      InternalSwap(&from);
+    } else {
+      CopyFrom(from);
+    }
+    return *this;
+  }
+
+  static const ::PROTOBUF_NAMESPACE_ID::Descriptor* descriptor() {
+    return GetDescriptor();
+  }
+  static const ::PROTOBUF_NAMESPACE_ID::Descriptor* GetDescriptor() {
+    return default_instance().GetMetadata().descriptor;
+  }
+  static const ::PROTOBUF_NAMESPACE_ID::Reflection* GetReflection() {
+    return default_instance().GetMetadata().reflection;
+  }
+  static const Rect& default_instance() {
+    return *internal_default_instance();
+  }
+  static inline const Rect* internal_default_instance() {
+    return reinterpret_cast<const Rect*>(
+               &_Rect_default_instance_);
+  }
+  static constexpr int kIndexInFileMessages =
+    5;
+
+  friend void swap(Rect& a, Rect& b) {
+    a.Swap(&b);
+  }
+  inline void Swap(Rect* other) {
+    if (other == this) return;
+  #ifdef PROTOBUF_FORCE_COPY_IN_SWAP
+    if (GetOwningArena() != nullptr &&
+        GetOwningArena() == other->GetOwningArena()) {
+   #else  // PROTOBUF_FORCE_COPY_IN_SWAP
+    if (GetOwningArena() == other->GetOwningArena()) {
+  #endif  // !PROTOBUF_FORCE_COPY_IN_SWAP
+      InternalSwap(other);
+    } else {
+      ::PROTOBUF_NAMESPACE_ID::internal::GenericSwap(this, other);
+    }
+  }
+  void UnsafeArenaSwap(Rect* other) {
+    if (other == this) return;
+    GOOGLE_DCHECK(GetOwningArena() == other->GetOwningArena());
+    InternalSwap(other);
+  }
+
+  // implements Message ----------------------------------------------
+
+  Rect* New(::PROTOBUF_NAMESPACE_ID::Arena* arena = nullptr) const final {
+    return CreateMaybeMessage<Rect>(arena);
+  }
+  using ::PROTOBUF_NAMESPACE_ID::Message::CopyFrom;
+  void CopyFrom(const Rect& from);
+  using ::PROTOBUF_NAMESPACE_ID::Message::MergeFrom;
+  void MergeFrom( const Rect& from) {
+    Rect::MergeImpl(*this, from);
+  }
+  private:
+  static void MergeImpl(::PROTOBUF_NAMESPACE_ID::Message& to_msg, const ::PROTOBUF_NAMESPACE_ID::Message& from_msg);
+  public:
+  PROTOBUF_ATTRIBUTE_REINITIALIZES void Clear() final;
+  bool IsInitialized() const final;
+
+  size_t ByteSizeLong() const final;
+  const char* _InternalParse(const char* ptr, ::PROTOBUF_NAMESPACE_ID::internal::ParseContext* ctx) final;
+  uint8_t* _InternalSerialize(
+      uint8_t* target, ::PROTOBUF_NAMESPACE_ID::io::EpsCopyOutputStream* stream) const final;
+  int GetCachedSize() const final { return _impl_._cached_size_.Get(); }
+
+  private:
+  void SharedCtor(::PROTOBUF_NAMESPACE_ID::Arena* arena, bool is_message_owned);
+  void SharedDtor();
+  void SetCachedSize(int size) const final;
+  void InternalSwap(Rect* other);
+
+  private:
+  friend class ::PROTOBUF_NAMESPACE_ID::internal::AnyMetadata;
+  static ::PROTOBUF_NAMESPACE_ID::StringPiece FullMessageName() {
+    return "maa.Rect";
+  }
+  protected:
+  explicit Rect(::PROTOBUF_NAMESPACE_ID::Arena* arena,
+                       bool is_message_owned = false);
+  public:
+
+  static const ClassData _class_data_;
+  const ::PROTOBUF_NAMESPACE_ID::Message::ClassData*GetClassData() const final;
+
+  ::PROTOBUF_NAMESPACE_ID::Metadata GetMetadata() const final;
+
+  // nested types ----------------------------------------------------
+
+  // accessors -------------------------------------------------------
+
+  enum : int {
+    kXyFieldNumber = 1,
+    kWhFieldNumber = 2,
+  };
+  // optional .maa.Point xy = 1;
+  bool has_xy() const;
+  private:
+  bool _internal_has_xy() const;
+  public:
+  void clear_xy();
+  const ::maa::Point& xy() const;
+  PROTOBUF_NODISCARD ::maa::Point* release_xy();
+  ::maa::Point* mutable_xy();
+  void set_allocated_xy(::maa::Point* xy);
+  private:
+  const ::maa::Point& _internal_xy() const;
+  ::maa::Point* _internal_mutable_xy();
+  public:
+  void unsafe_arena_set_allocated_xy(
+      ::maa::Point* xy);
+  ::maa::Point* unsafe_arena_release_xy();
+
+  // optional .maa.Size wh = 2;
+  bool has_wh() const;
+  private:
+  bool _internal_has_wh() const;
+  public:
+  void clear_wh();
+  const ::maa::Size& wh() const;
+  PROTOBUF_NODISCARD ::maa::Size* release_wh();
+  ::maa::Size* mutable_wh();
+  void set_allocated_wh(::maa::Size* wh);
+  private:
+  const ::maa::Size& _internal_wh() const;
+  ::maa::Size* _internal_mutable_wh();
+  public:
+  void unsafe_arena_set_allocated_wh(
+      ::maa::Size* wh);
+  ::maa::Size* unsafe_arena_release_wh();
+
+  // @@protoc_insertion_point(class_scope:maa.Rect)
+ private:
+  class _Internal;
+
+  template <typename T> friend class ::PROTOBUF_NAMESPACE_ID::Arena::InternalHelper;
+  typedef void InternalArenaConstructable_;
+  typedef void DestructorSkippable_;
+  struct Impl_ {
+    ::PROTOBUF_NAMESPACE_ID::internal::HasBits<1> _has_bits_;
+    mutable ::PROTOBUF_NAMESPACE_ID::internal::CachedSize _cached_size_;
+    ::maa::Point* xy_;
+    ::maa::Size* wh_;
+  };
+  union { Impl_ _impl_; };
+  friend struct ::TableStruct_Types_2eproto;
+};
+// -------------------------------------------------------------------
+
 class Callback final :
     public ::PROTOBUF_NAMESPACE_ID::Message /* @@protoc_insertion_point(class_definition:maa.Callback) */ {
  public:
@@ -1005,7 +1203,7 @@ class Callback final :
                &_Callback_default_instance_);
   }
   static constexpr int kIndexInFileMessages =
-    5;
+    6;
 
   friend void swap(Callback& a, Callback& b) {
     a.Swap(&b);
@@ -1135,6 +1333,698 @@ class Callback final :
 };
 // -------------------------------------------------------------------
 
+class ClickParam final :
+    public ::PROTOBUF_NAMESPACE_ID::Message /* @@protoc_insertion_point(class_definition:maa.ClickParam) */ {
+ public:
+  inline ClickParam() : ClickParam(nullptr) {}
+  ~ClickParam() override;
+  explicit PROTOBUF_CONSTEXPR ClickParam(::PROTOBUF_NAMESPACE_ID::internal::ConstantInitialized);
+
+  ClickParam(const ClickParam& from);
+  ClickParam(ClickParam&& from) noexcept
+    : ClickParam() {
+    *this = ::std::move(from);
+  }
+
+  inline ClickParam& operator=(const ClickParam& from) {
+    CopyFrom(from);
+    return *this;
+  }
+  inline ClickParam& operator=(ClickParam&& from) noexcept {
+    if (this == &from) return *this;
+    if (GetOwningArena() == from.GetOwningArena()
+  #ifdef PROTOBUF_FORCE_COPY_IN_MOVE
+        && GetOwningArena() != nullptr
+  #endif  // !PROTOBUF_FORCE_COPY_IN_MOVE
+    ) {
+      InternalSwap(&from);
+    } else {
+      CopyFrom(from);
+    }
+    return *this;
+  }
+
+  static const ::PROTOBUF_NAMESPACE_ID::Descriptor* descriptor() {
+    return GetDescriptor();
+  }
+  static const ::PROTOBUF_NAMESPACE_ID::Descriptor* GetDescriptor() {
+    return default_instance().GetMetadata().descriptor;
+  }
+  static const ::PROTOBUF_NAMESPACE_ID::Reflection* GetReflection() {
+    return default_instance().GetMetadata().reflection;
+  }
+  static const ClickParam& default_instance() {
+    return *internal_default_instance();
+  }
+  static inline const ClickParam* internal_default_instance() {
+    return reinterpret_cast<const ClickParam*>(
+               &_ClickParam_default_instance_);
+  }
+  static constexpr int kIndexInFileMessages =
+    7;
+
+  friend void swap(ClickParam& a, ClickParam& b) {
+    a.Swap(&b);
+  }
+  inline void Swap(ClickParam* other) {
+    if (other == this) return;
+  #ifdef PROTOBUF_FORCE_COPY_IN_SWAP
+    if (GetOwningArena() != nullptr &&
+        GetOwningArena() == other->GetOwningArena()) {
+   #else  // PROTOBUF_FORCE_COPY_IN_SWAP
+    if (GetOwningArena() == other->GetOwningArena()) {
+  #endif  // !PROTOBUF_FORCE_COPY_IN_SWAP
+      InternalSwap(other);
+    } else {
+      ::PROTOBUF_NAMESPACE_ID::internal::GenericSwap(this, other);
+    }
+  }
+  void UnsafeArenaSwap(ClickParam* other) {
+    if (other == this) return;
+    GOOGLE_DCHECK(GetOwningArena() == other->GetOwningArena());
+    InternalSwap(other);
+  }
+
+  // implements Message ----------------------------------------------
+
+  ClickParam* New(::PROTOBUF_NAMESPACE_ID::Arena* arena = nullptr) const final {
+    return CreateMaybeMessage<ClickParam>(arena);
+  }
+  using ::PROTOBUF_NAMESPACE_ID::Message::CopyFrom;
+  void CopyFrom(const ClickParam& from);
+  using ::PROTOBUF_NAMESPACE_ID::Message::MergeFrom;
+  void MergeFrom( const ClickParam& from) {
+    ClickParam::MergeImpl(*this, from);
+  }
+  private:
+  static void MergeImpl(::PROTOBUF_NAMESPACE_ID::Message& to_msg, const ::PROTOBUF_NAMESPACE_ID::Message& from_msg);
+  public:
+  PROTOBUF_ATTRIBUTE_REINITIALIZES void Clear() final;
+  bool IsInitialized() const final;
+
+  size_t ByteSizeLong() const final;
+  const char* _InternalParse(const char* ptr, ::PROTOBUF_NAMESPACE_ID::internal::ParseContext* ctx) final;
+  uint8_t* _InternalSerialize(
+      uint8_t* target, ::PROTOBUF_NAMESPACE_ID::io::EpsCopyOutputStream* stream) const final;
+  int GetCachedSize() const final { return _impl_._cached_size_.Get(); }
+
+  private:
+  void SharedCtor(::PROTOBUF_NAMESPACE_ID::Arena* arena, bool is_message_owned);
+  void SharedDtor();
+  void SetCachedSize(int size) const final;
+  void InternalSwap(ClickParam* other);
+
+  private:
+  friend class ::PROTOBUF_NAMESPACE_ID::internal::AnyMetadata;
+  static ::PROTOBUF_NAMESPACE_ID::StringPiece FullMessageName() {
+    return "maa.ClickParam";
+  }
+  protected:
+  explicit ClickParam(::PROTOBUF_NAMESPACE_ID::Arena* arena,
+                       bool is_message_owned = false);
+  public:
+
+  static const ClassData _class_data_;
+  const ::PROTOBUF_NAMESPACE_ID::Message::ClassData*GetClassData() const final;
+
+  ::PROTOBUF_NAMESPACE_ID::Metadata GetMetadata() const final;
+
+  // nested types ----------------------------------------------------
+
+  // accessors -------------------------------------------------------
+
+  enum : int {
+    kPointFieldNumber = 1,
+  };
+  // optional .maa.Point point = 1;
+  bool has_point() const;
+  private:
+  bool _internal_has_point() const;
+  public:
+  void clear_point();
+  const ::maa::Point& point() const;
+  PROTOBUF_NODISCARD ::maa::Point* release_point();
+  ::maa::Point* mutable_point();
+  void set_allocated_point(::maa::Point* point);
+  private:
+  const ::maa::Point& _internal_point() const;
+  ::maa::Point* _internal_mutable_point();
+  public:
+  void unsafe_arena_set_allocated_point(
+      ::maa::Point* point);
+  ::maa::Point* unsafe_arena_release_point();
+
+  // @@protoc_insertion_point(class_scope:maa.ClickParam)
+ private:
+  class _Internal;
+
+  template <typename T> friend class ::PROTOBUF_NAMESPACE_ID::Arena::InternalHelper;
+  typedef void InternalArenaConstructable_;
+  typedef void DestructorSkippable_;
+  struct Impl_ {
+    ::PROTOBUF_NAMESPACE_ID::internal::HasBits<1> _has_bits_;
+    mutable ::PROTOBUF_NAMESPACE_ID::internal::CachedSize _cached_size_;
+    ::maa::Point* point_;
+  };
+  union { Impl_ _impl_; };
+  friend struct ::TableStruct_Types_2eproto;
+};
+// -------------------------------------------------------------------
+
+class SwipeParam final :
+    public ::PROTOBUF_NAMESPACE_ID::Message /* @@protoc_insertion_point(class_definition:maa.SwipeParam) */ {
+ public:
+  inline SwipeParam() : SwipeParam(nullptr) {}
+  ~SwipeParam() override;
+  explicit PROTOBUF_CONSTEXPR SwipeParam(::PROTOBUF_NAMESPACE_ID::internal::ConstantInitialized);
+
+  SwipeParam(const SwipeParam& from);
+  SwipeParam(SwipeParam&& from) noexcept
+    : SwipeParam() {
+    *this = ::std::move(from);
+  }
+
+  inline SwipeParam& operator=(const SwipeParam& from) {
+    CopyFrom(from);
+    return *this;
+  }
+  inline SwipeParam& operator=(SwipeParam&& from) noexcept {
+    if (this == &from) return *this;
+    if (GetOwningArena() == from.GetOwningArena()
+  #ifdef PROTOBUF_FORCE_COPY_IN_MOVE
+        && GetOwningArena() != nullptr
+  #endif  // !PROTOBUF_FORCE_COPY_IN_MOVE
+    ) {
+      InternalSwap(&from);
+    } else {
+      CopyFrom(from);
+    }
+    return *this;
+  }
+
+  static const ::PROTOBUF_NAMESPACE_ID::Descriptor* descriptor() {
+    return GetDescriptor();
+  }
+  static const ::PROTOBUF_NAMESPACE_ID::Descriptor* GetDescriptor() {
+    return default_instance().GetMetadata().descriptor;
+  }
+  static const ::PROTOBUF_NAMESPACE_ID::Reflection* GetReflection() {
+    return default_instance().GetMetadata().reflection;
+  }
+  static const SwipeParam& default_instance() {
+    return *internal_default_instance();
+  }
+  static inline const SwipeParam* internal_default_instance() {
+    return reinterpret_cast<const SwipeParam*>(
+               &_SwipeParam_default_instance_);
+  }
+  static constexpr int kIndexInFileMessages =
+    8;
+
+  friend void swap(SwipeParam& a, SwipeParam& b) {
+    a.Swap(&b);
+  }
+  inline void Swap(SwipeParam* other) {
+    if (other == this) return;
+  #ifdef PROTOBUF_FORCE_COPY_IN_SWAP
+    if (GetOwningArena() != nullptr &&
+        GetOwningArena() == other->GetOwningArena()) {
+   #else  // PROTOBUF_FORCE_COPY_IN_SWAP
+    if (GetOwningArena() == other->GetOwningArena()) {
+  #endif  // !PROTOBUF_FORCE_COPY_IN_SWAP
+      InternalSwap(other);
+    } else {
+      ::PROTOBUF_NAMESPACE_ID::internal::GenericSwap(this, other);
+    }
+  }
+  void UnsafeArenaSwap(SwipeParam* other) {
+    if (other == this) return;
+    GOOGLE_DCHECK(GetOwningArena() == other->GetOwningArena());
+    InternalSwap(other);
+  }
+
+  // implements Message ----------------------------------------------
+
+  SwipeParam* New(::PROTOBUF_NAMESPACE_ID::Arena* arena = nullptr) const final {
+    return CreateMaybeMessage<SwipeParam>(arena);
+  }
+  using ::PROTOBUF_NAMESPACE_ID::Message::CopyFrom;
+  void CopyFrom(const SwipeParam& from);
+  using ::PROTOBUF_NAMESPACE_ID::Message::MergeFrom;
+  void MergeFrom( const SwipeParam& from) {
+    SwipeParam::MergeImpl(*this, from);
+  }
+  private:
+  static void MergeImpl(::PROTOBUF_NAMESPACE_ID::Message& to_msg, const ::PROTOBUF_NAMESPACE_ID::Message& from_msg);
+  public:
+  PROTOBUF_ATTRIBUTE_REINITIALIZES void Clear() final;
+  bool IsInitialized() const final;
+
+  size_t ByteSizeLong() const final;
+  const char* _InternalParse(const char* ptr, ::PROTOBUF_NAMESPACE_ID::internal::ParseContext* ctx) final;
+  uint8_t* _InternalSerialize(
+      uint8_t* target, ::PROTOBUF_NAMESPACE_ID::io::EpsCopyOutputStream* stream) const final;
+  int GetCachedSize() const final { return _impl_._cached_size_.Get(); }
+
+  private:
+  void SharedCtor(::PROTOBUF_NAMESPACE_ID::Arena* arena, bool is_message_owned);
+  void SharedDtor();
+  void SetCachedSize(int size) const final;
+  void InternalSwap(SwipeParam* other);
+
+  private:
+  friend class ::PROTOBUF_NAMESPACE_ID::internal::AnyMetadata;
+  static ::PROTOBUF_NAMESPACE_ID::StringPiece FullMessageName() {
+    return "maa.SwipeParam";
+  }
+  protected:
+  explicit SwipeParam(::PROTOBUF_NAMESPACE_ID::Arena* arena,
+                       bool is_message_owned = false);
+  public:
+
+  static const ClassData _class_data_;
+  const ::PROTOBUF_NAMESPACE_ID::Message::ClassData*GetClassData() const final;
+
+  ::PROTOBUF_NAMESPACE_ID::Metadata GetMetadata() const final;
+
+  // nested types ----------------------------------------------------
+
+  // accessors -------------------------------------------------------
+
+  enum : int {
+    kFromFieldNumber = 1,
+    kToFieldNumber = 2,
+    kDurationFieldNumber = 3,
+  };
+  // optional .maa.Point from = 1;
+  bool has_from() const;
+  private:
+  bool _internal_has_from() const;
+  public:
+  void clear_from();
+  const ::maa::Point& from() const;
+  PROTOBUF_NODISCARD ::maa::Point* release_from();
+  ::maa::Point* mutable_from();
+  void set_allocated_from(::maa::Point* from);
+  private:
+  const ::maa::Point& _internal_from() const;
+  ::maa::Point* _internal_mutable_from();
+  public:
+  void unsafe_arena_set_allocated_from(
+      ::maa::Point* from);
+  ::maa::Point* unsafe_arena_release_from();
+
+  // optional .maa.Point to = 2;
+  bool has_to() const;
+  private:
+  bool _internal_has_to() const;
+  public:
+  void clear_to();
+  const ::maa::Point& to() const;
+  PROTOBUF_NODISCARD ::maa::Point* release_to();
+  ::maa::Point* mutable_to();
+  void set_allocated_to(::maa::Point* to);
+  private:
+  const ::maa::Point& _internal_to() const;
+  ::maa::Point* _internal_mutable_to();
+  public:
+  void unsafe_arena_set_allocated_to(
+      ::maa::Point* to);
+  ::maa::Point* unsafe_arena_release_to();
+
+  // optional int32 duration = 3;
+  bool has_duration() const;
+  private:
+  bool _internal_has_duration() const;
+  public:
+  void clear_duration();
+  int32_t duration() const;
+  void set_duration(int32_t value);
+  private:
+  int32_t _internal_duration() const;
+  void _internal_set_duration(int32_t value);
+  public:
+
+  // @@protoc_insertion_point(class_scope:maa.SwipeParam)
+ private:
+  class _Internal;
+
+  template <typename T> friend class ::PROTOBUF_NAMESPACE_ID::Arena::InternalHelper;
+  typedef void InternalArenaConstructable_;
+  typedef void DestructorSkippable_;
+  struct Impl_ {
+    ::PROTOBUF_NAMESPACE_ID::internal::HasBits<1> _has_bits_;
+    mutable ::PROTOBUF_NAMESPACE_ID::internal::CachedSize _cached_size_;
+    ::maa::Point* from_;
+    ::maa::Point* to_;
+    int32_t duration_;
+  };
+  union { Impl_ _impl_; };
+  friend struct ::TableStruct_Types_2eproto;
+};
+// -------------------------------------------------------------------
+
+class KeyParam final :
+    public ::PROTOBUF_NAMESPACE_ID::Message /* @@protoc_insertion_point(class_definition:maa.KeyParam) */ {
+ public:
+  inline KeyParam() : KeyParam(nullptr) {}
+  ~KeyParam() override;
+  explicit PROTOBUF_CONSTEXPR KeyParam(::PROTOBUF_NAMESPACE_ID::internal::ConstantInitialized);
+
+  KeyParam(const KeyParam& from);
+  KeyParam(KeyParam&& from) noexcept
+    : KeyParam() {
+    *this = ::std::move(from);
+  }
+
+  inline KeyParam& operator=(const KeyParam& from) {
+    CopyFrom(from);
+    return *this;
+  }
+  inline KeyParam& operator=(KeyParam&& from) noexcept {
+    if (this == &from) return *this;
+    if (GetOwningArena() == from.GetOwningArena()
+  #ifdef PROTOBUF_FORCE_COPY_IN_MOVE
+        && GetOwningArena() != nullptr
+  #endif  // !PROTOBUF_FORCE_COPY_IN_MOVE
+    ) {
+      InternalSwap(&from);
+    } else {
+      CopyFrom(from);
+    }
+    return *this;
+  }
+
+  static const ::PROTOBUF_NAMESPACE_ID::Descriptor* descriptor() {
+    return GetDescriptor();
+  }
+  static const ::PROTOBUF_NAMESPACE_ID::Descriptor* GetDescriptor() {
+    return default_instance().GetMetadata().descriptor;
+  }
+  static const ::PROTOBUF_NAMESPACE_ID::Reflection* GetReflection() {
+    return default_instance().GetMetadata().reflection;
+  }
+  static const KeyParam& default_instance() {
+    return *internal_default_instance();
+  }
+  static inline const KeyParam* internal_default_instance() {
+    return reinterpret_cast<const KeyParam*>(
+               &_KeyParam_default_instance_);
+  }
+  static constexpr int kIndexInFileMessages =
+    9;
+
+  friend void swap(KeyParam& a, KeyParam& b) {
+    a.Swap(&b);
+  }
+  inline void Swap(KeyParam* other) {
+    if (other == this) return;
+  #ifdef PROTOBUF_FORCE_COPY_IN_SWAP
+    if (GetOwningArena() != nullptr &&
+        GetOwningArena() == other->GetOwningArena()) {
+   #else  // PROTOBUF_FORCE_COPY_IN_SWAP
+    if (GetOwningArena() == other->GetOwningArena()) {
+  #endif  // !PROTOBUF_FORCE_COPY_IN_SWAP
+      InternalSwap(other);
+    } else {
+      ::PROTOBUF_NAMESPACE_ID::internal::GenericSwap(this, other);
+    }
+  }
+  void UnsafeArenaSwap(KeyParam* other) {
+    if (other == this) return;
+    GOOGLE_DCHECK(GetOwningArena() == other->GetOwningArena());
+    InternalSwap(other);
+  }
+
+  // implements Message ----------------------------------------------
+
+  KeyParam* New(::PROTOBUF_NAMESPACE_ID::Arena* arena = nullptr) const final {
+    return CreateMaybeMessage<KeyParam>(arena);
+  }
+  using ::PROTOBUF_NAMESPACE_ID::Message::CopyFrom;
+  void CopyFrom(const KeyParam& from);
+  using ::PROTOBUF_NAMESPACE_ID::Message::MergeFrom;
+  void MergeFrom( const KeyParam& from) {
+    KeyParam::MergeImpl(*this, from);
+  }
+  private:
+  static void MergeImpl(::PROTOBUF_NAMESPACE_ID::Message& to_msg, const ::PROTOBUF_NAMESPACE_ID::Message& from_msg);
+  public:
+  PROTOBUF_ATTRIBUTE_REINITIALIZES void Clear() final;
+  bool IsInitialized() const final;
+
+  size_t ByteSizeLong() const final;
+  const char* _InternalParse(const char* ptr, ::PROTOBUF_NAMESPACE_ID::internal::ParseContext* ctx) final;
+  uint8_t* _InternalSerialize(
+      uint8_t* target, ::PROTOBUF_NAMESPACE_ID::io::EpsCopyOutputStream* stream) const final;
+  int GetCachedSize() const final { return _impl_._cached_size_.Get(); }
+
+  private:
+  void SharedCtor(::PROTOBUF_NAMESPACE_ID::Arena* arena, bool is_message_owned);
+  void SharedDtor();
+  void SetCachedSize(int size) const final;
+  void InternalSwap(KeyParam* other);
+
+  private:
+  friend class ::PROTOBUF_NAMESPACE_ID::internal::AnyMetadata;
+  static ::PROTOBUF_NAMESPACE_ID::StringPiece FullMessageName() {
+    return "maa.KeyParam";
+  }
+  protected:
+  explicit KeyParam(::PROTOBUF_NAMESPACE_ID::Arena* arena,
+                       bool is_message_owned = false);
+  public:
+
+  static const ClassData _class_data_;
+  const ::PROTOBUF_NAMESPACE_ID::Message::ClassData*GetClassData() const final;
+
+  ::PROTOBUF_NAMESPACE_ID::Metadata GetMetadata() const final;
+
+  // nested types ----------------------------------------------------
+
+  // accessors -------------------------------------------------------
+
+  enum : int {
+    kKeyFieldNumber = 1,
+  };
+  // optional int32 key = 1;
+  bool has_key() const;
+  private:
+  bool _internal_has_key() const;
+  public:
+  void clear_key();
+  int32_t key() const;
+  void set_key(int32_t value);
+  private:
+  int32_t _internal_key() const;
+  void _internal_set_key(int32_t value);
+  public:
+
+  // @@protoc_insertion_point(class_scope:maa.KeyParam)
+ private:
+  class _Internal;
+
+  template <typename T> friend class ::PROTOBUF_NAMESPACE_ID::Arena::InternalHelper;
+  typedef void InternalArenaConstructable_;
+  typedef void DestructorSkippable_;
+  struct Impl_ {
+    ::PROTOBUF_NAMESPACE_ID::internal::HasBits<1> _has_bits_;
+    mutable ::PROTOBUF_NAMESPACE_ID::internal::CachedSize _cached_size_;
+    int32_t key_;
+  };
+  union { Impl_ _impl_; };
+  friend struct ::TableStruct_Types_2eproto;
+};
+// -------------------------------------------------------------------
+
+class TouchParam final :
+    public ::PROTOBUF_NAMESPACE_ID::Message /* @@protoc_insertion_point(class_definition:maa.TouchParam) */ {
+ public:
+  inline TouchParam() : TouchParam(nullptr) {}
+  ~TouchParam() override;
+  explicit PROTOBUF_CONSTEXPR TouchParam(::PROTOBUF_NAMESPACE_ID::internal::ConstantInitialized);
+
+  TouchParam(const TouchParam& from);
+  TouchParam(TouchParam&& from) noexcept
+    : TouchParam() {
+    *this = ::std::move(from);
+  }
+
+  inline TouchParam& operator=(const TouchParam& from) {
+    CopyFrom(from);
+    return *this;
+  }
+  inline TouchParam& operator=(TouchParam&& from) noexcept {
+    if (this == &from) return *this;
+    if (GetOwningArena() == from.GetOwningArena()
+  #ifdef PROTOBUF_FORCE_COPY_IN_MOVE
+        && GetOwningArena() != nullptr
+  #endif  // !PROTOBUF_FORCE_COPY_IN_MOVE
+    ) {
+      InternalSwap(&from);
+    } else {
+      CopyFrom(from);
+    }
+    return *this;
+  }
+
+  static const ::PROTOBUF_NAMESPACE_ID::Descriptor* descriptor() {
+    return GetDescriptor();
+  }
+  static const ::PROTOBUF_NAMESPACE_ID::Descriptor* GetDescriptor() {
+    return default_instance().GetMetadata().descriptor;
+  }
+  static const ::PROTOBUF_NAMESPACE_ID::Reflection* GetReflection() {
+    return default_instance().GetMetadata().reflection;
+  }
+  static const TouchParam& default_instance() {
+    return *internal_default_instance();
+  }
+  static inline const TouchParam* internal_default_instance() {
+    return reinterpret_cast<const TouchParam*>(
+               &_TouchParam_default_instance_);
+  }
+  static constexpr int kIndexInFileMessages =
+    10;
+
+  friend void swap(TouchParam& a, TouchParam& b) {
+    a.Swap(&b);
+  }
+  inline void Swap(TouchParam* other) {
+    if (other == this) return;
+  #ifdef PROTOBUF_FORCE_COPY_IN_SWAP
+    if (GetOwningArena() != nullptr &&
+        GetOwningArena() == other->GetOwningArena()) {
+   #else  // PROTOBUF_FORCE_COPY_IN_SWAP
+    if (GetOwningArena() == other->GetOwningArena()) {
+  #endif  // !PROTOBUF_FORCE_COPY_IN_SWAP
+      InternalSwap(other);
+    } else {
+      ::PROTOBUF_NAMESPACE_ID::internal::GenericSwap(this, other);
+    }
+  }
+  void UnsafeArenaSwap(TouchParam* other) {
+    if (other == this) return;
+    GOOGLE_DCHECK(GetOwningArena() == other->GetOwningArena());
+    InternalSwap(other);
+  }
+
+  // implements Message ----------------------------------------------
+
+  TouchParam* New(::PROTOBUF_NAMESPACE_ID::Arena* arena = nullptr) const final {
+    return CreateMaybeMessage<TouchParam>(arena);
+  }
+  using ::PROTOBUF_NAMESPACE_ID::Message::CopyFrom;
+  void CopyFrom(const TouchParam& from);
+  using ::PROTOBUF_NAMESPACE_ID::Message::MergeFrom;
+  void MergeFrom( const TouchParam& from) {
+    TouchParam::MergeImpl(*this, from);
+  }
+  private:
+  static void MergeImpl(::PROTOBUF_NAMESPACE_ID::Message& to_msg, const ::PROTOBUF_NAMESPACE_ID::Message& from_msg);
+  public:
+  PROTOBUF_ATTRIBUTE_REINITIALIZES void Clear() final;
+  bool IsInitialized() const final;
+
+  size_t ByteSizeLong() const final;
+  const char* _InternalParse(const char* ptr, ::PROTOBUF_NAMESPACE_ID::internal::ParseContext* ctx) final;
+  uint8_t* _InternalSerialize(
+      uint8_t* target, ::PROTOBUF_NAMESPACE_ID::io::EpsCopyOutputStream* stream) const final;
+  int GetCachedSize() const final { return _impl_._cached_size_.Get(); }
+
+  private:
+  void SharedCtor(::PROTOBUF_NAMESPACE_ID::Arena* arena, bool is_message_owned);
+  void SharedDtor();
+  void SetCachedSize(int size) const final;
+  void InternalSwap(TouchParam* other);
+
+  private:
+  friend class ::PROTOBUF_NAMESPACE_ID::internal::AnyMetadata;
+  static ::PROTOBUF_NAMESPACE_ID::StringPiece FullMessageName() {
+    return "maa.TouchParam";
+  }
+  protected:
+  explicit TouchParam(::PROTOBUF_NAMESPACE_ID::Arena* arena,
+                       bool is_message_owned = false);
+  public:
+
+  static const ClassData _class_data_;
+  const ::PROTOBUF_NAMESPACE_ID::Message::ClassData*GetClassData() const final;
+
+  ::PROTOBUF_NAMESPACE_ID::Metadata GetMetadata() const final;
+
+  // nested types ----------------------------------------------------
+
+  // accessors -------------------------------------------------------
+
+  enum : int {
+    kPosFieldNumber = 2,
+    kContactFieldNumber = 1,
+    kPressureFieldNumber = 3,
+  };
+  // optional .maa.Point pos = 2;
+  bool has_pos() const;
+  private:
+  bool _internal_has_pos() const;
+  public:
+  void clear_pos();
+  const ::maa::Point& pos() const;
+  PROTOBUF_NODISCARD ::maa::Point* release_pos();
+  ::maa::Point* mutable_pos();
+  void set_allocated_pos(::maa::Point* pos);
+  private:
+  const ::maa::Point& _internal_pos() const;
+  ::maa::Point* _internal_mutable_pos();
+  public:
+  void unsafe_arena_set_allocated_pos(
+      ::maa::Point* pos);
+  ::maa::Point* unsafe_arena_release_pos();
+
+  // optional int32 contact = 1;
+  bool has_contact() const;
+  private:
+  bool _internal_has_contact() const;
+  public:
+  void clear_contact();
+  int32_t contact() const;
+  void set_contact(int32_t value);
+  private:
+  int32_t _internal_contact() const;
+  void _internal_set_contact(int32_t value);
+  public:
+
+  // optional int32 pressure = 3;
+  bool has_pressure() const;
+  private:
+  bool _internal_has_pressure() const;
+  public:
+  void clear_pressure();
+  int32_t pressure() const;
+  void set_pressure(int32_t value);
+  private:
+  int32_t _internal_pressure() const;
+  void _internal_set_pressure(int32_t value);
+  public:
+
+  // @@protoc_insertion_point(class_scope:maa.TouchParam)
+ private:
+  class _Internal;
+
+  template <typename T> friend class ::PROTOBUF_NAMESPACE_ID::Arena::InternalHelper;
+  typedef void InternalArenaConstructable_;
+  typedef void DestructorSkippable_;
+  struct Impl_ {
+    ::PROTOBUF_NAMESPACE_ID::internal::HasBits<1> _has_bits_;
+    mutable ::PROTOBUF_NAMESPACE_ID::internal::CachedSize _cached_size_;
+    ::maa::Point* pos_;
+    int32_t contact_;
+    int32_t pressure_;
+  };
+  union { Impl_ _impl_; };
+  friend struct ::TableStruct_Types_2eproto;
+};
+// -------------------------------------------------------------------
+
 class EmptyRequest final :
     public ::PROTOBUF_NAMESPACE_ID::internal::ZeroFieldsBase /* @@protoc_insertion_point(class_definition:maa.EmptyRequest) */ {
  public:
@@ -1182,7 +2072,7 @@ class EmptyRequest final :
                &_EmptyRequest_default_instance_);
   }
   static constexpr int kIndexInFileMessages =
-    6;
+    11;
 
   friend void swap(EmptyRequest& a, EmptyRequest& b) {
     a.Swap(&b);
@@ -1301,7 +2191,7 @@ class IdRequest final :
                &_IdRequest_default_instance_);
   }
   static constexpr int kIndexInFileMessages =
-    7;
+    12;
 
   friend void swap(IdRequest& a, IdRequest& b) {
     a.Swap(&b);
@@ -1459,7 +2349,7 @@ class HandleRequest final :
                &_HandleRequest_default_instance_);
   }
   static constexpr int kIndexInFileMessages =
-    8;
+    13;
 
   friend void swap(HandleRequest& a, HandleRequest& b) {
     a.Swap(&b);
@@ -1617,7 +2507,7 @@ class BufferRequest final :
                &_BufferRequest_default_instance_);
   }
   static constexpr int kIndexInFileMessages =
-    9;
+    14;
 
   friend void swap(BufferRequest& a, BufferRequest& b) {
     a.Swap(&b);
@@ -1775,7 +2665,7 @@ class HandleBufferRequest final :
                &_HandleBufferRequest_default_instance_);
   }
   static constexpr int kIndexInFileMessages =
-    10;
+    15;
 
   friend void swap(HandleBufferRequest& a, HandleBufferRequest& b) {
     a.Swap(&b);
@@ -1953,7 +2843,7 @@ class HandleStringRequest final :
                &_HandleStringRequest_default_instance_);
   }
   static constexpr int kIndexInFileMessages =
-    11;
+    16;
 
   friend void swap(HandleStringRequest& a, HandleStringRequest& b) {
     a.Swap(&b);
@@ -2131,7 +3021,7 @@ class HandleIdRequest final :
                &_HandleIdRequest_default_instance_);
   }
   static constexpr int kIndexInFileMessages =
-    12;
+    17;
 
   friend void swap(HandleIdRequest& a, HandleIdRequest& b) {
     a.Swap(&b);
@@ -2309,7 +3199,7 @@ class EmptyResponse final :
                &_EmptyResponse_default_instance_);
   }
   static constexpr int kIndexInFileMessages =
-    13;
+    18;
 
   friend void swap(EmptyResponse& a, EmptyResponse& b) {
     a.Swap(&b);
@@ -2382,9 +3272,9 @@ class EmptyResponse final :
   // accessors -------------------------------------------------------
 
   enum : int {
-    kStatusFieldNumber = 1,
+    kStatusFieldNumber = 101,
   };
-  // optional .maa.RpcStatus status = 1;
+  // optional .maa.RpcStatus status = 101;
   bool has_status() const;
   private:
   bool _internal_has_status() const;
@@ -2467,7 +3357,7 @@ class IdResponse final :
                &_IdResponse_default_instance_);
   }
   static constexpr int kIndexInFileMessages =
-    14;
+    19;
 
   friend void swap(IdResponse& a, IdResponse& b) {
     a.Swap(&b);
@@ -2540,28 +3430,10 @@ class IdResponse final :
   // accessors -------------------------------------------------------
 
   enum : int {
-    kStatusFieldNumber = 1,
-    kIdFieldNumber = 101,
+    kIdFieldNumber = 1,
+    kStatusFieldNumber = 101,
   };
-  // optional .maa.RpcStatus status = 1;
-  bool has_status() const;
-  private:
-  bool _internal_has_status() const;
-  public:
-  void clear_status();
-  const ::maa::RpcStatus& status() const;
-  PROTOBUF_NODISCARD ::maa::RpcStatus* release_status();
-  ::maa::RpcStatus* mutable_status();
-  void set_allocated_status(::maa::RpcStatus* status);
-  private:
-  const ::maa::RpcStatus& _internal_status() const;
-  ::maa::RpcStatus* _internal_mutable_status();
-  public:
-  void unsafe_arena_set_allocated_status(
-      ::maa::RpcStatus* status);
-  ::maa::RpcStatus* unsafe_arena_release_status();
-
-  // optional .maa.Id id = 101;
+  // optional .maa.Id id = 1;
   bool has_id() const;
   private:
   bool _internal_has_id() const;
@@ -2579,6 +3451,24 @@ class IdResponse final :
       ::maa::Id* id);
   ::maa::Id* unsafe_arena_release_id();
 
+  // optional .maa.RpcStatus status = 101;
+  bool has_status() const;
+  private:
+  bool _internal_has_status() const;
+  public:
+  void clear_status();
+  const ::maa::RpcStatus& status() const;
+  PROTOBUF_NODISCARD ::maa::RpcStatus* release_status();
+  ::maa::RpcStatus* mutable_status();
+  void set_allocated_status(::maa::RpcStatus* status);
+  private:
+  const ::maa::RpcStatus& _internal_status() const;
+  ::maa::RpcStatus* _internal_mutable_status();
+  public:
+  void unsafe_arena_set_allocated_status(
+      ::maa::RpcStatus* status);
+  ::maa::RpcStatus* unsafe_arena_release_status();
+
   // @@protoc_insertion_point(class_scope:maa.IdResponse)
  private:
   class _Internal;
@@ -2589,8 +3479,8 @@ class IdResponse final :
   struct Impl_ {
     ::PROTOBUF_NAMESPACE_ID::internal::HasBits<1> _has_bits_;
     mutable ::PROTOBUF_NAMESPACE_ID::internal::CachedSize _cached_size_;
-    ::maa::RpcStatus* status_;
     ::maa::Id* id_;
+    ::maa::RpcStatus* status_;
   };
   union { Impl_ _impl_; };
   friend struct ::TableStruct_Types_2eproto;
@@ -2645,7 +3535,7 @@ class BoolResponse final :
                &_BoolResponse_default_instance_);
   }
   static constexpr int kIndexInFileMessages =
-    15;
+    20;
 
   friend void swap(BoolResponse& a, BoolResponse& b) {
     a.Swap(&b);
@@ -2818,7 +3708,7 @@ class StringResponse final :
                &_StringResponse_default_instance_);
   }
   static constexpr int kIndexInFileMessages =
-    16;
+    21;
 
   friend void swap(StringResponse& a, StringResponse& b) {
     a.Swap(&b);
@@ -2996,7 +3886,7 @@ class HandleResponse final :
                &_HandleResponse_default_instance_);
   }
   static constexpr int kIndexInFileMessages =
-    17;
+    22;
 
   friend void swap(HandleResponse& a, HandleResponse& b) {
     a.Swap(&b);
@@ -3174,7 +4064,7 @@ class BufferResponse final :
                &_BufferResponse_default_instance_);
   }
   static constexpr int kIndexInFileMessages =
-    18;
+    23;
 
   friend void swap(BufferResponse& a, BufferResponse& b) {
     a.Swap(&b);
@@ -3352,7 +4242,7 @@ class StatusResponse final :
                &_StatusResponse_default_instance_);
   }
   static constexpr int kIndexInFileMessages =
-    19;
+    24;
 
   friend void swap(StatusResponse& a, StatusResponse& b) {
     a.Swap(&b);
@@ -3700,6 +4590,190 @@ inline void Size::set_height(int32_t value) {
 
 // -------------------------------------------------------------------
 
+// Rect
+
+// optional .maa.Point xy = 1;
+inline bool Rect::_internal_has_xy() const {
+  bool value = (_impl_._has_bits_[0] & 0x00000001u) != 0;
+  PROTOBUF_ASSUME(!value || _impl_.xy_ != nullptr);
+  return value;
+}
+inline bool Rect::has_xy() const {
+  return _internal_has_xy();
+}
+inline void Rect::clear_xy() {
+  if (_impl_.xy_ != nullptr) _impl_.xy_->Clear();
+  _impl_._has_bits_[0] &= ~0x00000001u;
+}
+inline const ::maa::Point& Rect::_internal_xy() const {
+  const ::maa::Point* p = _impl_.xy_;
+  return p != nullptr ? *p : reinterpret_cast<const ::maa::Point&>(
+      ::maa::_Point_default_instance_);
+}
+inline const ::maa::Point& Rect::xy() const {
+  // @@protoc_insertion_point(field_get:maa.Rect.xy)
+  return _internal_xy();
+}
+inline void Rect::unsafe_arena_set_allocated_xy(
+    ::maa::Point* xy) {
+  if (GetArenaForAllocation() == nullptr) {
+    delete reinterpret_cast<::PROTOBUF_NAMESPACE_ID::MessageLite*>(_impl_.xy_);
+  }
+  _impl_.xy_ = xy;
+  if (xy) {
+    _impl_._has_bits_[0] |= 0x00000001u;
+  } else {
+    _impl_._has_bits_[0] &= ~0x00000001u;
+  }
+  // @@protoc_insertion_point(field_unsafe_arena_set_allocated:maa.Rect.xy)
+}
+inline ::maa::Point* Rect::release_xy() {
+  _impl_._has_bits_[0] &= ~0x00000001u;
+  ::maa::Point* temp = _impl_.xy_;
+  _impl_.xy_ = nullptr;
+#ifdef PROTOBUF_FORCE_COPY_IN_RELEASE
+  auto* old =  reinterpret_cast<::PROTOBUF_NAMESPACE_ID::MessageLite*>(temp);
+  temp = ::PROTOBUF_NAMESPACE_ID::internal::DuplicateIfNonNull(temp);
+  if (GetArenaForAllocation() == nullptr) { delete old; }
+#else  // PROTOBUF_FORCE_COPY_IN_RELEASE
+  if (GetArenaForAllocation() != nullptr) {
+    temp = ::PROTOBUF_NAMESPACE_ID::internal::DuplicateIfNonNull(temp);
+  }
+#endif  // !PROTOBUF_FORCE_COPY_IN_RELEASE
+  return temp;
+}
+inline ::maa::Point* Rect::unsafe_arena_release_xy() {
+  // @@protoc_insertion_point(field_release:maa.Rect.xy)
+  _impl_._has_bits_[0] &= ~0x00000001u;
+  ::maa::Point* temp = _impl_.xy_;
+  _impl_.xy_ = nullptr;
+  return temp;
+}
+inline ::maa::Point* Rect::_internal_mutable_xy() {
+  _impl_._has_bits_[0] |= 0x00000001u;
+  if (_impl_.xy_ == nullptr) {
+    auto* p = CreateMaybeMessage<::maa::Point>(GetArenaForAllocation());
+    _impl_.xy_ = p;
+  }
+  return _impl_.xy_;
+}
+inline ::maa::Point* Rect::mutable_xy() {
+  ::maa::Point* _msg = _internal_mutable_xy();
+  // @@protoc_insertion_point(field_mutable:maa.Rect.xy)
+  return _msg;
+}
+inline void Rect::set_allocated_xy(::maa::Point* xy) {
+  ::PROTOBUF_NAMESPACE_ID::Arena* message_arena = GetArenaForAllocation();
+  if (message_arena == nullptr) {
+    delete _impl_.xy_;
+  }
+  if (xy) {
+    ::PROTOBUF_NAMESPACE_ID::Arena* submessage_arena =
+        ::PROTOBUF_NAMESPACE_ID::Arena::InternalGetOwningArena(xy);
+    if (message_arena != submessage_arena) {
+      xy = ::PROTOBUF_NAMESPACE_ID::internal::GetOwnedMessage(
+          message_arena, xy, submessage_arena);
+    }
+    _impl_._has_bits_[0] |= 0x00000001u;
+  } else {
+    _impl_._has_bits_[0] &= ~0x00000001u;
+  }
+  _impl_.xy_ = xy;
+  // @@protoc_insertion_point(field_set_allocated:maa.Rect.xy)
+}
+
+// optional .maa.Size wh = 2;
+inline bool Rect::_internal_has_wh() const {
+  bool value = (_impl_._has_bits_[0] & 0x00000002u) != 0;
+  PROTOBUF_ASSUME(!value || _impl_.wh_ != nullptr);
+  return value;
+}
+inline bool Rect::has_wh() const {
+  return _internal_has_wh();
+}
+inline void Rect::clear_wh() {
+  if (_impl_.wh_ != nullptr) _impl_.wh_->Clear();
+  _impl_._has_bits_[0] &= ~0x00000002u;
+}
+inline const ::maa::Size& Rect::_internal_wh() const {
+  const ::maa::Size* p = _impl_.wh_;
+  return p != nullptr ? *p : reinterpret_cast<const ::maa::Size&>(
+      ::maa::_Size_default_instance_);
+}
+inline const ::maa::Size& Rect::wh() const {
+  // @@protoc_insertion_point(field_get:maa.Rect.wh)
+  return _internal_wh();
+}
+inline void Rect::unsafe_arena_set_allocated_wh(
+    ::maa::Size* wh) {
+  if (GetArenaForAllocation() == nullptr) {
+    delete reinterpret_cast<::PROTOBUF_NAMESPACE_ID::MessageLite*>(_impl_.wh_);
+  }
+  _impl_.wh_ = wh;
+  if (wh) {
+    _impl_._has_bits_[0] |= 0x00000002u;
+  } else {
+    _impl_._has_bits_[0] &= ~0x00000002u;
+  }
+  // @@protoc_insertion_point(field_unsafe_arena_set_allocated:maa.Rect.wh)
+}
+inline ::maa::Size* Rect::release_wh() {
+  _impl_._has_bits_[0] &= ~0x00000002u;
+  ::maa::Size* temp = _impl_.wh_;
+  _impl_.wh_ = nullptr;
+#ifdef PROTOBUF_FORCE_COPY_IN_RELEASE
+  auto* old =  reinterpret_cast<::PROTOBUF_NAMESPACE_ID::MessageLite*>(temp);
+  temp = ::PROTOBUF_NAMESPACE_ID::internal::DuplicateIfNonNull(temp);
+  if (GetArenaForAllocation() == nullptr) { delete old; }
+#else  // PROTOBUF_FORCE_COPY_IN_RELEASE
+  if (GetArenaForAllocation() != nullptr) {
+    temp = ::PROTOBUF_NAMESPACE_ID::internal::DuplicateIfNonNull(temp);
+  }
+#endif  // !PROTOBUF_FORCE_COPY_IN_RELEASE
+  return temp;
+}
+inline ::maa::Size* Rect::unsafe_arena_release_wh() {
+  // @@protoc_insertion_point(field_release:maa.Rect.wh)
+  _impl_._has_bits_[0] &= ~0x00000002u;
+  ::maa::Size* temp = _impl_.wh_;
+  _impl_.wh_ = nullptr;
+  return temp;
+}
+inline ::maa::Size* Rect::_internal_mutable_wh() {
+  _impl_._has_bits_[0] |= 0x00000002u;
+  if (_impl_.wh_ == nullptr) {
+    auto* p = CreateMaybeMessage<::maa::Size>(GetArenaForAllocation());
+    _impl_.wh_ = p;
+  }
+  return _impl_.wh_;
+}
+inline ::maa::Size* Rect::mutable_wh() {
+  ::maa::Size* _msg = _internal_mutable_wh();
+  // @@protoc_insertion_point(field_mutable:maa.Rect.wh)
+  return _msg;
+}
+inline void Rect::set_allocated_wh(::maa::Size* wh) {
+  ::PROTOBUF_NAMESPACE_ID::Arena* message_arena = GetArenaForAllocation();
+  if (message_arena == nullptr) {
+    delete _impl_.wh_;
+  }
+  if (wh) {
+    ::PROTOBUF_NAMESPACE_ID::Arena* submessage_arena =
+        ::PROTOBUF_NAMESPACE_ID::Arena::InternalGetOwningArena(wh);
+    if (message_arena != submessage_arena) {
+      wh = ::PROTOBUF_NAMESPACE_ID::internal::GetOwnedMessage(
+          message_arena, wh, submessage_arena);
+    }
+    _impl_._has_bits_[0] |= 0x00000002u;
+  } else {
+    _impl_._has_bits_[0] &= ~0x00000002u;
+  }
+  _impl_.wh_ = wh;
+  // @@protoc_insertion_point(field_set_allocated:maa.Rect.wh)
+}
+
+// -------------------------------------------------------------------
+
 // Callback
 
 // optional string msg = 1;
@@ -3836,6 +4910,494 @@ inline void Callback::set_allocated_detail(std::string* detail) {
   }
 #endif // PROTOBUF_FORCE_COPY_DEFAULT_STRING
   // @@protoc_insertion_point(field_set_allocated:maa.Callback.detail)
+}
+
+// -------------------------------------------------------------------
+
+// ClickParam
+
+// optional .maa.Point point = 1;
+inline bool ClickParam::_internal_has_point() const {
+  bool value = (_impl_._has_bits_[0] & 0x00000001u) != 0;
+  PROTOBUF_ASSUME(!value || _impl_.point_ != nullptr);
+  return value;
+}
+inline bool ClickParam::has_point() const {
+  return _internal_has_point();
+}
+inline void ClickParam::clear_point() {
+  if (_impl_.point_ != nullptr) _impl_.point_->Clear();
+  _impl_._has_bits_[0] &= ~0x00000001u;
+}
+inline const ::maa::Point& ClickParam::_internal_point() const {
+  const ::maa::Point* p = _impl_.point_;
+  return p != nullptr ? *p : reinterpret_cast<const ::maa::Point&>(
+      ::maa::_Point_default_instance_);
+}
+inline const ::maa::Point& ClickParam::point() const {
+  // @@protoc_insertion_point(field_get:maa.ClickParam.point)
+  return _internal_point();
+}
+inline void ClickParam::unsafe_arena_set_allocated_point(
+    ::maa::Point* point) {
+  if (GetArenaForAllocation() == nullptr) {
+    delete reinterpret_cast<::PROTOBUF_NAMESPACE_ID::MessageLite*>(_impl_.point_);
+  }
+  _impl_.point_ = point;
+  if (point) {
+    _impl_._has_bits_[0] |= 0x00000001u;
+  } else {
+    _impl_._has_bits_[0] &= ~0x00000001u;
+  }
+  // @@protoc_insertion_point(field_unsafe_arena_set_allocated:maa.ClickParam.point)
+}
+inline ::maa::Point* ClickParam::release_point() {
+  _impl_._has_bits_[0] &= ~0x00000001u;
+  ::maa::Point* temp = _impl_.point_;
+  _impl_.point_ = nullptr;
+#ifdef PROTOBUF_FORCE_COPY_IN_RELEASE
+  auto* old =  reinterpret_cast<::PROTOBUF_NAMESPACE_ID::MessageLite*>(temp);
+  temp = ::PROTOBUF_NAMESPACE_ID::internal::DuplicateIfNonNull(temp);
+  if (GetArenaForAllocation() == nullptr) { delete old; }
+#else  // PROTOBUF_FORCE_COPY_IN_RELEASE
+  if (GetArenaForAllocation() != nullptr) {
+    temp = ::PROTOBUF_NAMESPACE_ID::internal::DuplicateIfNonNull(temp);
+  }
+#endif  // !PROTOBUF_FORCE_COPY_IN_RELEASE
+  return temp;
+}
+inline ::maa::Point* ClickParam::unsafe_arena_release_point() {
+  // @@protoc_insertion_point(field_release:maa.ClickParam.point)
+  _impl_._has_bits_[0] &= ~0x00000001u;
+  ::maa::Point* temp = _impl_.point_;
+  _impl_.point_ = nullptr;
+  return temp;
+}
+inline ::maa::Point* ClickParam::_internal_mutable_point() {
+  _impl_._has_bits_[0] |= 0x00000001u;
+  if (_impl_.point_ == nullptr) {
+    auto* p = CreateMaybeMessage<::maa::Point>(GetArenaForAllocation());
+    _impl_.point_ = p;
+  }
+  return _impl_.point_;
+}
+inline ::maa::Point* ClickParam::mutable_point() {
+  ::maa::Point* _msg = _internal_mutable_point();
+  // @@protoc_insertion_point(field_mutable:maa.ClickParam.point)
+  return _msg;
+}
+inline void ClickParam::set_allocated_point(::maa::Point* point) {
+  ::PROTOBUF_NAMESPACE_ID::Arena* message_arena = GetArenaForAllocation();
+  if (message_arena == nullptr) {
+    delete _impl_.point_;
+  }
+  if (point) {
+    ::PROTOBUF_NAMESPACE_ID::Arena* submessage_arena =
+        ::PROTOBUF_NAMESPACE_ID::Arena::InternalGetOwningArena(point);
+    if (message_arena != submessage_arena) {
+      point = ::PROTOBUF_NAMESPACE_ID::internal::GetOwnedMessage(
+          message_arena, point, submessage_arena);
+    }
+    _impl_._has_bits_[0] |= 0x00000001u;
+  } else {
+    _impl_._has_bits_[0] &= ~0x00000001u;
+  }
+  _impl_.point_ = point;
+  // @@protoc_insertion_point(field_set_allocated:maa.ClickParam.point)
+}
+
+// -------------------------------------------------------------------
+
+// SwipeParam
+
+// optional .maa.Point from = 1;
+inline bool SwipeParam::_internal_has_from() const {
+  bool value = (_impl_._has_bits_[0] & 0x00000001u) != 0;
+  PROTOBUF_ASSUME(!value || _impl_.from_ != nullptr);
+  return value;
+}
+inline bool SwipeParam::has_from() const {
+  return _internal_has_from();
+}
+inline void SwipeParam::clear_from() {
+  if (_impl_.from_ != nullptr) _impl_.from_->Clear();
+  _impl_._has_bits_[0] &= ~0x00000001u;
+}
+inline const ::maa::Point& SwipeParam::_internal_from() const {
+  const ::maa::Point* p = _impl_.from_;
+  return p != nullptr ? *p : reinterpret_cast<const ::maa::Point&>(
+      ::maa::_Point_default_instance_);
+}
+inline const ::maa::Point& SwipeParam::from() const {
+  // @@protoc_insertion_point(field_get:maa.SwipeParam.from)
+  return _internal_from();
+}
+inline void SwipeParam::unsafe_arena_set_allocated_from(
+    ::maa::Point* from) {
+  if (GetArenaForAllocation() == nullptr) {
+    delete reinterpret_cast<::PROTOBUF_NAMESPACE_ID::MessageLite*>(_impl_.from_);
+  }
+  _impl_.from_ = from;
+  if (from) {
+    _impl_._has_bits_[0] |= 0x00000001u;
+  } else {
+    _impl_._has_bits_[0] &= ~0x00000001u;
+  }
+  // @@protoc_insertion_point(field_unsafe_arena_set_allocated:maa.SwipeParam.from)
+}
+inline ::maa::Point* SwipeParam::release_from() {
+  _impl_._has_bits_[0] &= ~0x00000001u;
+  ::maa::Point* temp = _impl_.from_;
+  _impl_.from_ = nullptr;
+#ifdef PROTOBUF_FORCE_COPY_IN_RELEASE
+  auto* old =  reinterpret_cast<::PROTOBUF_NAMESPACE_ID::MessageLite*>(temp);
+  temp = ::PROTOBUF_NAMESPACE_ID::internal::DuplicateIfNonNull(temp);
+  if (GetArenaForAllocation() == nullptr) { delete old; }
+#else  // PROTOBUF_FORCE_COPY_IN_RELEASE
+  if (GetArenaForAllocation() != nullptr) {
+    temp = ::PROTOBUF_NAMESPACE_ID::internal::DuplicateIfNonNull(temp);
+  }
+#endif  // !PROTOBUF_FORCE_COPY_IN_RELEASE
+  return temp;
+}
+inline ::maa::Point* SwipeParam::unsafe_arena_release_from() {
+  // @@protoc_insertion_point(field_release:maa.SwipeParam.from)
+  _impl_._has_bits_[0] &= ~0x00000001u;
+  ::maa::Point* temp = _impl_.from_;
+  _impl_.from_ = nullptr;
+  return temp;
+}
+inline ::maa::Point* SwipeParam::_internal_mutable_from() {
+  _impl_._has_bits_[0] |= 0x00000001u;
+  if (_impl_.from_ == nullptr) {
+    auto* p = CreateMaybeMessage<::maa::Point>(GetArenaForAllocation());
+    _impl_.from_ = p;
+  }
+  return _impl_.from_;
+}
+inline ::maa::Point* SwipeParam::mutable_from() {
+  ::maa::Point* _msg = _internal_mutable_from();
+  // @@protoc_insertion_point(field_mutable:maa.SwipeParam.from)
+  return _msg;
+}
+inline void SwipeParam::set_allocated_from(::maa::Point* from) {
+  ::PROTOBUF_NAMESPACE_ID::Arena* message_arena = GetArenaForAllocation();
+  if (message_arena == nullptr) {
+    delete _impl_.from_;
+  }
+  if (from) {
+    ::PROTOBUF_NAMESPACE_ID::Arena* submessage_arena =
+        ::PROTOBUF_NAMESPACE_ID::Arena::InternalGetOwningArena(from);
+    if (message_arena != submessage_arena) {
+      from = ::PROTOBUF_NAMESPACE_ID::internal::GetOwnedMessage(
+          message_arena, from, submessage_arena);
+    }
+    _impl_._has_bits_[0] |= 0x00000001u;
+  } else {
+    _impl_._has_bits_[0] &= ~0x00000001u;
+  }
+  _impl_.from_ = from;
+  // @@protoc_insertion_point(field_set_allocated:maa.SwipeParam.from)
+}
+
+// optional .maa.Point to = 2;
+inline bool SwipeParam::_internal_has_to() const {
+  bool value = (_impl_._has_bits_[0] & 0x00000002u) != 0;
+  PROTOBUF_ASSUME(!value || _impl_.to_ != nullptr);
+  return value;
+}
+inline bool SwipeParam::has_to() const {
+  return _internal_has_to();
+}
+inline void SwipeParam::clear_to() {
+  if (_impl_.to_ != nullptr) _impl_.to_->Clear();
+  _impl_._has_bits_[0] &= ~0x00000002u;
+}
+inline const ::maa::Point& SwipeParam::_internal_to() const {
+  const ::maa::Point* p = _impl_.to_;
+  return p != nullptr ? *p : reinterpret_cast<const ::maa::Point&>(
+      ::maa::_Point_default_instance_);
+}
+inline const ::maa::Point& SwipeParam::to() const {
+  // @@protoc_insertion_point(field_get:maa.SwipeParam.to)
+  return _internal_to();
+}
+inline void SwipeParam::unsafe_arena_set_allocated_to(
+    ::maa::Point* to) {
+  if (GetArenaForAllocation() == nullptr) {
+    delete reinterpret_cast<::PROTOBUF_NAMESPACE_ID::MessageLite*>(_impl_.to_);
+  }
+  _impl_.to_ = to;
+  if (to) {
+    _impl_._has_bits_[0] |= 0x00000002u;
+  } else {
+    _impl_._has_bits_[0] &= ~0x00000002u;
+  }
+  // @@protoc_insertion_point(field_unsafe_arena_set_allocated:maa.SwipeParam.to)
+}
+inline ::maa::Point* SwipeParam::release_to() {
+  _impl_._has_bits_[0] &= ~0x00000002u;
+  ::maa::Point* temp = _impl_.to_;
+  _impl_.to_ = nullptr;
+#ifdef PROTOBUF_FORCE_COPY_IN_RELEASE
+  auto* old =  reinterpret_cast<::PROTOBUF_NAMESPACE_ID::MessageLite*>(temp);
+  temp = ::PROTOBUF_NAMESPACE_ID::internal::DuplicateIfNonNull(temp);
+  if (GetArenaForAllocation() == nullptr) { delete old; }
+#else  // PROTOBUF_FORCE_COPY_IN_RELEASE
+  if (GetArenaForAllocation() != nullptr) {
+    temp = ::PROTOBUF_NAMESPACE_ID::internal::DuplicateIfNonNull(temp);
+  }
+#endif  // !PROTOBUF_FORCE_COPY_IN_RELEASE
+  return temp;
+}
+inline ::maa::Point* SwipeParam::unsafe_arena_release_to() {
+  // @@protoc_insertion_point(field_release:maa.SwipeParam.to)
+  _impl_._has_bits_[0] &= ~0x00000002u;
+  ::maa::Point* temp = _impl_.to_;
+  _impl_.to_ = nullptr;
+  return temp;
+}
+inline ::maa::Point* SwipeParam::_internal_mutable_to() {
+  _impl_._has_bits_[0] |= 0x00000002u;
+  if (_impl_.to_ == nullptr) {
+    auto* p = CreateMaybeMessage<::maa::Point>(GetArenaForAllocation());
+    _impl_.to_ = p;
+  }
+  return _impl_.to_;
+}
+inline ::maa::Point* SwipeParam::mutable_to() {
+  ::maa::Point* _msg = _internal_mutable_to();
+  // @@protoc_insertion_point(field_mutable:maa.SwipeParam.to)
+  return _msg;
+}
+inline void SwipeParam::set_allocated_to(::maa::Point* to) {
+  ::PROTOBUF_NAMESPACE_ID::Arena* message_arena = GetArenaForAllocation();
+  if (message_arena == nullptr) {
+    delete _impl_.to_;
+  }
+  if (to) {
+    ::PROTOBUF_NAMESPACE_ID::Arena* submessage_arena =
+        ::PROTOBUF_NAMESPACE_ID::Arena::InternalGetOwningArena(to);
+    if (message_arena != submessage_arena) {
+      to = ::PROTOBUF_NAMESPACE_ID::internal::GetOwnedMessage(
+          message_arena, to, submessage_arena);
+    }
+    _impl_._has_bits_[0] |= 0x00000002u;
+  } else {
+    _impl_._has_bits_[0] &= ~0x00000002u;
+  }
+  _impl_.to_ = to;
+  // @@protoc_insertion_point(field_set_allocated:maa.SwipeParam.to)
+}
+
+// optional int32 duration = 3;
+inline bool SwipeParam::_internal_has_duration() const {
+  bool value = (_impl_._has_bits_[0] & 0x00000004u) != 0;
+  return value;
+}
+inline bool SwipeParam::has_duration() const {
+  return _internal_has_duration();
+}
+inline void SwipeParam::clear_duration() {
+  _impl_.duration_ = 0;
+  _impl_._has_bits_[0] &= ~0x00000004u;
+}
+inline int32_t SwipeParam::_internal_duration() const {
+  return _impl_.duration_;
+}
+inline int32_t SwipeParam::duration() const {
+  // @@protoc_insertion_point(field_get:maa.SwipeParam.duration)
+  return _internal_duration();
+}
+inline void SwipeParam::_internal_set_duration(int32_t value) {
+  _impl_._has_bits_[0] |= 0x00000004u;
+  _impl_.duration_ = value;
+}
+inline void SwipeParam::set_duration(int32_t value) {
+  _internal_set_duration(value);
+  // @@protoc_insertion_point(field_set:maa.SwipeParam.duration)
+}
+
+// -------------------------------------------------------------------
+
+// KeyParam
+
+// optional int32 key = 1;
+inline bool KeyParam::_internal_has_key() const {
+  bool value = (_impl_._has_bits_[0] & 0x00000001u) != 0;
+  return value;
+}
+inline bool KeyParam::has_key() const {
+  return _internal_has_key();
+}
+inline void KeyParam::clear_key() {
+  _impl_.key_ = 0;
+  _impl_._has_bits_[0] &= ~0x00000001u;
+}
+inline int32_t KeyParam::_internal_key() const {
+  return _impl_.key_;
+}
+inline int32_t KeyParam::key() const {
+  // @@protoc_insertion_point(field_get:maa.KeyParam.key)
+  return _internal_key();
+}
+inline void KeyParam::_internal_set_key(int32_t value) {
+  _impl_._has_bits_[0] |= 0x00000001u;
+  _impl_.key_ = value;
+}
+inline void KeyParam::set_key(int32_t value) {
+  _internal_set_key(value);
+  // @@protoc_insertion_point(field_set:maa.KeyParam.key)
+}
+
+// -------------------------------------------------------------------
+
+// TouchParam
+
+// optional int32 contact = 1;
+inline bool TouchParam::_internal_has_contact() const {
+  bool value = (_impl_._has_bits_[0] & 0x00000002u) != 0;
+  return value;
+}
+inline bool TouchParam::has_contact() const {
+  return _internal_has_contact();
+}
+inline void TouchParam::clear_contact() {
+  _impl_.contact_ = 0;
+  _impl_._has_bits_[0] &= ~0x00000002u;
+}
+inline int32_t TouchParam::_internal_contact() const {
+  return _impl_.contact_;
+}
+inline int32_t TouchParam::contact() const {
+  // @@protoc_insertion_point(field_get:maa.TouchParam.contact)
+  return _internal_contact();
+}
+inline void TouchParam::_internal_set_contact(int32_t value) {
+  _impl_._has_bits_[0] |= 0x00000002u;
+  _impl_.contact_ = value;
+}
+inline void TouchParam::set_contact(int32_t value) {
+  _internal_set_contact(value);
+  // @@protoc_insertion_point(field_set:maa.TouchParam.contact)
+}
+
+// optional .maa.Point pos = 2;
+inline bool TouchParam::_internal_has_pos() const {
+  bool value = (_impl_._has_bits_[0] & 0x00000001u) != 0;
+  PROTOBUF_ASSUME(!value || _impl_.pos_ != nullptr);
+  return value;
+}
+inline bool TouchParam::has_pos() const {
+  return _internal_has_pos();
+}
+inline void TouchParam::clear_pos() {
+  if (_impl_.pos_ != nullptr) _impl_.pos_->Clear();
+  _impl_._has_bits_[0] &= ~0x00000001u;
+}
+inline const ::maa::Point& TouchParam::_internal_pos() const {
+  const ::maa::Point* p = _impl_.pos_;
+  return p != nullptr ? *p : reinterpret_cast<const ::maa::Point&>(
+      ::maa::_Point_default_instance_);
+}
+inline const ::maa::Point& TouchParam::pos() const {
+  // @@protoc_insertion_point(field_get:maa.TouchParam.pos)
+  return _internal_pos();
+}
+inline void TouchParam::unsafe_arena_set_allocated_pos(
+    ::maa::Point* pos) {
+  if (GetArenaForAllocation() == nullptr) {
+    delete reinterpret_cast<::PROTOBUF_NAMESPACE_ID::MessageLite*>(_impl_.pos_);
+  }
+  _impl_.pos_ = pos;
+  if (pos) {
+    _impl_._has_bits_[0] |= 0x00000001u;
+  } else {
+    _impl_._has_bits_[0] &= ~0x00000001u;
+  }
+  // @@protoc_insertion_point(field_unsafe_arena_set_allocated:maa.TouchParam.pos)
+}
+inline ::maa::Point* TouchParam::release_pos() {
+  _impl_._has_bits_[0] &= ~0x00000001u;
+  ::maa::Point* temp = _impl_.pos_;
+  _impl_.pos_ = nullptr;
+#ifdef PROTOBUF_FORCE_COPY_IN_RELEASE
+  auto* old =  reinterpret_cast<::PROTOBUF_NAMESPACE_ID::MessageLite*>(temp);
+  temp = ::PROTOBUF_NAMESPACE_ID::internal::DuplicateIfNonNull(temp);
+  if (GetArenaForAllocation() == nullptr) { delete old; }
+#else  // PROTOBUF_FORCE_COPY_IN_RELEASE
+  if (GetArenaForAllocation() != nullptr) {
+    temp = ::PROTOBUF_NAMESPACE_ID::internal::DuplicateIfNonNull(temp);
+  }
+#endif  // !PROTOBUF_FORCE_COPY_IN_RELEASE
+  return temp;
+}
+inline ::maa::Point* TouchParam::unsafe_arena_release_pos() {
+  // @@protoc_insertion_point(field_release:maa.TouchParam.pos)
+  _impl_._has_bits_[0] &= ~0x00000001u;
+  ::maa::Point* temp = _impl_.pos_;
+  _impl_.pos_ = nullptr;
+  return temp;
+}
+inline ::maa::Point* TouchParam::_internal_mutable_pos() {
+  _impl_._has_bits_[0] |= 0x00000001u;
+  if (_impl_.pos_ == nullptr) {
+    auto* p = CreateMaybeMessage<::maa::Point>(GetArenaForAllocation());
+    _impl_.pos_ = p;
+  }
+  return _impl_.pos_;
+}
+inline ::maa::Point* TouchParam::mutable_pos() {
+  ::maa::Point* _msg = _internal_mutable_pos();
+  // @@protoc_insertion_point(field_mutable:maa.TouchParam.pos)
+  return _msg;
+}
+inline void TouchParam::set_allocated_pos(::maa::Point* pos) {
+  ::PROTOBUF_NAMESPACE_ID::Arena* message_arena = GetArenaForAllocation();
+  if (message_arena == nullptr) {
+    delete _impl_.pos_;
+  }
+  if (pos) {
+    ::PROTOBUF_NAMESPACE_ID::Arena* submessage_arena =
+        ::PROTOBUF_NAMESPACE_ID::Arena::InternalGetOwningArena(pos);
+    if (message_arena != submessage_arena) {
+      pos = ::PROTOBUF_NAMESPACE_ID::internal::GetOwnedMessage(
+          message_arena, pos, submessage_arena);
+    }
+    _impl_._has_bits_[0] |= 0x00000001u;
+  } else {
+    _impl_._has_bits_[0] &= ~0x00000001u;
+  }
+  _impl_.pos_ = pos;
+  // @@protoc_insertion_point(field_set_allocated:maa.TouchParam.pos)
+}
+
+// optional int32 pressure = 3;
+inline bool TouchParam::_internal_has_pressure() const {
+  bool value = (_impl_._has_bits_[0] & 0x00000004u) != 0;
+  return value;
+}
+inline bool TouchParam::has_pressure() const {
+  return _internal_has_pressure();
+}
+inline void TouchParam::clear_pressure() {
+  _impl_.pressure_ = 0;
+  _impl_._has_bits_[0] &= ~0x00000004u;
+}
+inline int32_t TouchParam::_internal_pressure() const {
+  return _impl_.pressure_;
+}
+inline int32_t TouchParam::pressure() const {
+  // @@protoc_insertion_point(field_get:maa.TouchParam.pressure)
+  return _internal_pressure();
+}
+inline void TouchParam::_internal_set_pressure(int32_t value) {
+  _impl_._has_bits_[0] |= 0x00000004u;
+  _impl_.pressure_ = value;
+}
+inline void TouchParam::set_pressure(int32_t value) {
+  _internal_set_pressure(value);
+  // @@protoc_insertion_point(field_set:maa.TouchParam.pressure)
 }
 
 // -------------------------------------------------------------------
@@ -4614,7 +6176,7 @@ inline void HandleIdRequest::set_allocated_id(::maa::Id* id) {
 
 // EmptyResponse
 
-// optional .maa.RpcStatus status = 1;
+// optional .maa.RpcStatus status = 101;
 inline bool EmptyResponse::_internal_has_status() const {
   bool value = (_impl_._has_bits_[0] & 0x00000001u) != 0;
   PROTOBUF_ASSUME(!value || _impl_.status_ != nullptr);
@@ -4708,99 +6270,9 @@ inline void EmptyResponse::set_allocated_status(::maa::RpcStatus* status) {
 
 // IdResponse
 
-// optional .maa.RpcStatus status = 1;
-inline bool IdResponse::_internal_has_status() const {
-  bool value = (_impl_._has_bits_[0] & 0x00000001u) != 0;
-  PROTOBUF_ASSUME(!value || _impl_.status_ != nullptr);
-  return value;
-}
-inline bool IdResponse::has_status() const {
-  return _internal_has_status();
-}
-inline void IdResponse::clear_status() {
-  if (_impl_.status_ != nullptr) _impl_.status_->Clear();
-  _impl_._has_bits_[0] &= ~0x00000001u;
-}
-inline const ::maa::RpcStatus& IdResponse::_internal_status() const {
-  const ::maa::RpcStatus* p = _impl_.status_;
-  return p != nullptr ? *p : reinterpret_cast<const ::maa::RpcStatus&>(
-      ::maa::_RpcStatus_default_instance_);
-}
-inline const ::maa::RpcStatus& IdResponse::status() const {
-  // @@protoc_insertion_point(field_get:maa.IdResponse.status)
-  return _internal_status();
-}
-inline void IdResponse::unsafe_arena_set_allocated_status(
-    ::maa::RpcStatus* status) {
-  if (GetArenaForAllocation() == nullptr) {
-    delete reinterpret_cast<::PROTOBUF_NAMESPACE_ID::MessageLite*>(_impl_.status_);
-  }
-  _impl_.status_ = status;
-  if (status) {
-    _impl_._has_bits_[0] |= 0x00000001u;
-  } else {
-    _impl_._has_bits_[0] &= ~0x00000001u;
-  }
-  // @@protoc_insertion_point(field_unsafe_arena_set_allocated:maa.IdResponse.status)
-}
-inline ::maa::RpcStatus* IdResponse::release_status() {
-  _impl_._has_bits_[0] &= ~0x00000001u;
-  ::maa::RpcStatus* temp = _impl_.status_;
-  _impl_.status_ = nullptr;
-#ifdef PROTOBUF_FORCE_COPY_IN_RELEASE
-  auto* old =  reinterpret_cast<::PROTOBUF_NAMESPACE_ID::MessageLite*>(temp);
-  temp = ::PROTOBUF_NAMESPACE_ID::internal::DuplicateIfNonNull(temp);
-  if (GetArenaForAllocation() == nullptr) { delete old; }
-#else  // PROTOBUF_FORCE_COPY_IN_RELEASE
-  if (GetArenaForAllocation() != nullptr) {
-    temp = ::PROTOBUF_NAMESPACE_ID::internal::DuplicateIfNonNull(temp);
-  }
-#endif  // !PROTOBUF_FORCE_COPY_IN_RELEASE
-  return temp;
-}
-inline ::maa::RpcStatus* IdResponse::unsafe_arena_release_status() {
-  // @@protoc_insertion_point(field_release:maa.IdResponse.status)
-  _impl_._has_bits_[0] &= ~0x00000001u;
-  ::maa::RpcStatus* temp = _impl_.status_;
-  _impl_.status_ = nullptr;
-  return temp;
-}
-inline ::maa::RpcStatus* IdResponse::_internal_mutable_status() {
-  _impl_._has_bits_[0] |= 0x00000001u;
-  if (_impl_.status_ == nullptr) {
-    auto* p = CreateMaybeMessage<::maa::RpcStatus>(GetArenaForAllocation());
-    _impl_.status_ = p;
-  }
-  return _impl_.status_;
-}
-inline ::maa::RpcStatus* IdResponse::mutable_status() {
-  ::maa::RpcStatus* _msg = _internal_mutable_status();
-  // @@protoc_insertion_point(field_mutable:maa.IdResponse.status)
-  return _msg;
-}
-inline void IdResponse::set_allocated_status(::maa::RpcStatus* status) {
-  ::PROTOBUF_NAMESPACE_ID::Arena* message_arena = GetArenaForAllocation();
-  if (message_arena == nullptr) {
-    delete _impl_.status_;
-  }
-  if (status) {
-    ::PROTOBUF_NAMESPACE_ID::Arena* submessage_arena =
-        ::PROTOBUF_NAMESPACE_ID::Arena::InternalGetOwningArena(status);
-    if (message_arena != submessage_arena) {
-      status = ::PROTOBUF_NAMESPACE_ID::internal::GetOwnedMessage(
-          message_arena, status, submessage_arena);
-    }
-    _impl_._has_bits_[0] |= 0x00000001u;
-  } else {
-    _impl_._has_bits_[0] &= ~0x00000001u;
-  }
-  _impl_.status_ = status;
-  // @@protoc_insertion_point(field_set_allocated:maa.IdResponse.status)
-}
-
-// optional .maa.Id id = 101;
+// optional .maa.Id id = 1;
 inline bool IdResponse::_internal_has_id() const {
-  bool value = (_impl_._has_bits_[0] & 0x00000002u) != 0;
+  bool value = (_impl_._has_bits_[0] & 0x00000001u) != 0;
   PROTOBUF_ASSUME(!value || _impl_.id_ != nullptr);
   return value;
 }
@@ -4809,7 +6281,7 @@ inline bool IdResponse::has_id() const {
 }
 inline void IdResponse::clear_id() {
   if (_impl_.id_ != nullptr) _impl_.id_->Clear();
-  _impl_._has_bits_[0] &= ~0x00000002u;
+  _impl_._has_bits_[0] &= ~0x00000001u;
 }
 inline const ::maa::Id& IdResponse::_internal_id() const {
   const ::maa::Id* p = _impl_.id_;
@@ -4827,14 +6299,14 @@ inline void IdResponse::unsafe_arena_set_allocated_id(
   }
   _impl_.id_ = id;
   if (id) {
-    _impl_._has_bits_[0] |= 0x00000002u;
+    _impl_._has_bits_[0] |= 0x00000001u;
   } else {
-    _impl_._has_bits_[0] &= ~0x00000002u;
+    _impl_._has_bits_[0] &= ~0x00000001u;
   }
   // @@protoc_insertion_point(field_unsafe_arena_set_allocated:maa.IdResponse.id)
 }
 inline ::maa::Id* IdResponse::release_id() {
-  _impl_._has_bits_[0] &= ~0x00000002u;
+  _impl_._has_bits_[0] &= ~0x00000001u;
   ::maa::Id* temp = _impl_.id_;
   _impl_.id_ = nullptr;
 #ifdef PROTOBUF_FORCE_COPY_IN_RELEASE
@@ -4850,13 +6322,13 @@ inline ::maa::Id* IdResponse::release_id() {
 }
 inline ::maa::Id* IdResponse::unsafe_arena_release_id() {
   // @@protoc_insertion_point(field_release:maa.IdResponse.id)
-  _impl_._has_bits_[0] &= ~0x00000002u;
+  _impl_._has_bits_[0] &= ~0x00000001u;
   ::maa::Id* temp = _impl_.id_;
   _impl_.id_ = nullptr;
   return temp;
 }
 inline ::maa::Id* IdResponse::_internal_mutable_id() {
-  _impl_._has_bits_[0] |= 0x00000002u;
+  _impl_._has_bits_[0] |= 0x00000001u;
   if (_impl_.id_ == nullptr) {
     auto* p = CreateMaybeMessage<::maa::Id>(GetArenaForAllocation());
     _impl_.id_ = p;
@@ -4880,12 +6352,102 @@ inline void IdResponse::set_allocated_id(::maa::Id* id) {
       id = ::PROTOBUF_NAMESPACE_ID::internal::GetOwnedMessage(
           message_arena, id, submessage_arena);
     }
+    _impl_._has_bits_[0] |= 0x00000001u;
+  } else {
+    _impl_._has_bits_[0] &= ~0x00000001u;
+  }
+  _impl_.id_ = id;
+  // @@protoc_insertion_point(field_set_allocated:maa.IdResponse.id)
+}
+
+// optional .maa.RpcStatus status = 101;
+inline bool IdResponse::_internal_has_status() const {
+  bool value = (_impl_._has_bits_[0] & 0x00000002u) != 0;
+  PROTOBUF_ASSUME(!value || _impl_.status_ != nullptr);
+  return value;
+}
+inline bool IdResponse::has_status() const {
+  return _internal_has_status();
+}
+inline void IdResponse::clear_status() {
+  if (_impl_.status_ != nullptr) _impl_.status_->Clear();
+  _impl_._has_bits_[0] &= ~0x00000002u;
+}
+inline const ::maa::RpcStatus& IdResponse::_internal_status() const {
+  const ::maa::RpcStatus* p = _impl_.status_;
+  return p != nullptr ? *p : reinterpret_cast<const ::maa::RpcStatus&>(
+      ::maa::_RpcStatus_default_instance_);
+}
+inline const ::maa::RpcStatus& IdResponse::status() const {
+  // @@protoc_insertion_point(field_get:maa.IdResponse.status)
+  return _internal_status();
+}
+inline void IdResponse::unsafe_arena_set_allocated_status(
+    ::maa::RpcStatus* status) {
+  if (GetArenaForAllocation() == nullptr) {
+    delete reinterpret_cast<::PROTOBUF_NAMESPACE_ID::MessageLite*>(_impl_.status_);
+  }
+  _impl_.status_ = status;
+  if (status) {
     _impl_._has_bits_[0] |= 0x00000002u;
   } else {
     _impl_._has_bits_[0] &= ~0x00000002u;
   }
-  _impl_.id_ = id;
-  // @@protoc_insertion_point(field_set_allocated:maa.IdResponse.id)
+  // @@protoc_insertion_point(field_unsafe_arena_set_allocated:maa.IdResponse.status)
+}
+inline ::maa::RpcStatus* IdResponse::release_status() {
+  _impl_._has_bits_[0] &= ~0x00000002u;
+  ::maa::RpcStatus* temp = _impl_.status_;
+  _impl_.status_ = nullptr;
+#ifdef PROTOBUF_FORCE_COPY_IN_RELEASE
+  auto* old =  reinterpret_cast<::PROTOBUF_NAMESPACE_ID::MessageLite*>(temp);
+  temp = ::PROTOBUF_NAMESPACE_ID::internal::DuplicateIfNonNull(temp);
+  if (GetArenaForAllocation() == nullptr) { delete old; }
+#else  // PROTOBUF_FORCE_COPY_IN_RELEASE
+  if (GetArenaForAllocation() != nullptr) {
+    temp = ::PROTOBUF_NAMESPACE_ID::internal::DuplicateIfNonNull(temp);
+  }
+#endif  // !PROTOBUF_FORCE_COPY_IN_RELEASE
+  return temp;
+}
+inline ::maa::RpcStatus* IdResponse::unsafe_arena_release_status() {
+  // @@protoc_insertion_point(field_release:maa.IdResponse.status)
+  _impl_._has_bits_[0] &= ~0x00000002u;
+  ::maa::RpcStatus* temp = _impl_.status_;
+  _impl_.status_ = nullptr;
+  return temp;
+}
+inline ::maa::RpcStatus* IdResponse::_internal_mutable_status() {
+  _impl_._has_bits_[0] |= 0x00000002u;
+  if (_impl_.status_ == nullptr) {
+    auto* p = CreateMaybeMessage<::maa::RpcStatus>(GetArenaForAllocation());
+    _impl_.status_ = p;
+  }
+  return _impl_.status_;
+}
+inline ::maa::RpcStatus* IdResponse::mutable_status() {
+  ::maa::RpcStatus* _msg = _internal_mutable_status();
+  // @@protoc_insertion_point(field_mutable:maa.IdResponse.status)
+  return _msg;
+}
+inline void IdResponse::set_allocated_status(::maa::RpcStatus* status) {
+  ::PROTOBUF_NAMESPACE_ID::Arena* message_arena = GetArenaForAllocation();
+  if (message_arena == nullptr) {
+    delete _impl_.status_;
+  }
+  if (status) {
+    ::PROTOBUF_NAMESPACE_ID::Arena* submessage_arena =
+        ::PROTOBUF_NAMESPACE_ID::Arena::InternalGetOwningArena(status);
+    if (message_arena != submessage_arena) {
+      status = ::PROTOBUF_NAMESPACE_ID::internal::GetOwnedMessage(
+          message_arena, status, submessage_arena);
+    }
+    _impl_._has_bits_[0] |= 0x00000002u;
+  } else {
+    _impl_._has_bits_[0] &= ~0x00000002u;
+  }
+  _impl_.status_ = status;
+  // @@protoc_insertion_point(field_set_allocated:maa.IdResponse.status)
 }
 
 // -------------------------------------------------------------------
@@ -5643,6 +7205,16 @@ inline void StatusResponse::set_allocated_status(::maa::RpcStatus* status) {
 #ifdef __GNUC__
   #pragma GCC diagnostic pop
 #endif  // __GNUC__
+// -------------------------------------------------------------------
+
+// -------------------------------------------------------------------
+
+// -------------------------------------------------------------------
+
+// -------------------------------------------------------------------
+
+// -------------------------------------------------------------------
+
 // -------------------------------------------------------------------
 
 // -------------------------------------------------------------------

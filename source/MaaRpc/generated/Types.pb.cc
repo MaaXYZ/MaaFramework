@@ -93,6 +93,21 @@ struct SizeDefaultTypeInternal {
   };
 };
 PROTOBUF_ATTRIBUTE_NO_DESTROY PROTOBUF_CONSTINIT PROTOBUF_ATTRIBUTE_INIT_PRIORITY1 SizeDefaultTypeInternal _Size_default_instance_;
+PROTOBUF_CONSTEXPR Rect::Rect(
+    ::_pbi::ConstantInitialized): _impl_{
+    /*decltype(_impl_._has_bits_)*/{}
+  , /*decltype(_impl_._cached_size_)*/{}
+  , /*decltype(_impl_.xy_)*/nullptr
+  , /*decltype(_impl_.wh_)*/nullptr} {}
+struct RectDefaultTypeInternal {
+  PROTOBUF_CONSTEXPR RectDefaultTypeInternal()
+      : _instance(::_pbi::ConstantInitialized{}) {}
+  ~RectDefaultTypeInternal() {}
+  union {
+    Rect _instance;
+  };
+};
+PROTOBUF_ATTRIBUTE_NO_DESTROY PROTOBUF_CONSTINIT PROTOBUF_ATTRIBUTE_INIT_PRIORITY1 RectDefaultTypeInternal _Rect_default_instance_;
 PROTOBUF_CONSTEXPR Callback::Callback(
     ::_pbi::ConstantInitialized): _impl_{
     /*decltype(_impl_._has_bits_)*/{}
@@ -108,6 +123,66 @@ struct CallbackDefaultTypeInternal {
   };
 };
 PROTOBUF_ATTRIBUTE_NO_DESTROY PROTOBUF_CONSTINIT PROTOBUF_ATTRIBUTE_INIT_PRIORITY1 CallbackDefaultTypeInternal _Callback_default_instance_;
+PROTOBUF_CONSTEXPR ClickParam::ClickParam(
+    ::_pbi::ConstantInitialized): _impl_{
+    /*decltype(_impl_._has_bits_)*/{}
+  , /*decltype(_impl_._cached_size_)*/{}
+  , /*decltype(_impl_.point_)*/nullptr} {}
+struct ClickParamDefaultTypeInternal {
+  PROTOBUF_CONSTEXPR ClickParamDefaultTypeInternal()
+      : _instance(::_pbi::ConstantInitialized{}) {}
+  ~ClickParamDefaultTypeInternal() {}
+  union {
+    ClickParam _instance;
+  };
+};
+PROTOBUF_ATTRIBUTE_NO_DESTROY PROTOBUF_CONSTINIT PROTOBUF_ATTRIBUTE_INIT_PRIORITY1 ClickParamDefaultTypeInternal _ClickParam_default_instance_;
+PROTOBUF_CONSTEXPR SwipeParam::SwipeParam(
+    ::_pbi::ConstantInitialized): _impl_{
+    /*decltype(_impl_._has_bits_)*/{}
+  , /*decltype(_impl_._cached_size_)*/{}
+  , /*decltype(_impl_.from_)*/nullptr
+  , /*decltype(_impl_.to_)*/nullptr
+  , /*decltype(_impl_.duration_)*/0} {}
+struct SwipeParamDefaultTypeInternal {
+  PROTOBUF_CONSTEXPR SwipeParamDefaultTypeInternal()
+      : _instance(::_pbi::ConstantInitialized{}) {}
+  ~SwipeParamDefaultTypeInternal() {}
+  union {
+    SwipeParam _instance;
+  };
+};
+PROTOBUF_ATTRIBUTE_NO_DESTROY PROTOBUF_CONSTINIT PROTOBUF_ATTRIBUTE_INIT_PRIORITY1 SwipeParamDefaultTypeInternal _SwipeParam_default_instance_;
+PROTOBUF_CONSTEXPR KeyParam::KeyParam(
+    ::_pbi::ConstantInitialized): _impl_{
+    /*decltype(_impl_._has_bits_)*/{}
+  , /*decltype(_impl_._cached_size_)*/{}
+  , /*decltype(_impl_.key_)*/0} {}
+struct KeyParamDefaultTypeInternal {
+  PROTOBUF_CONSTEXPR KeyParamDefaultTypeInternal()
+      : _instance(::_pbi::ConstantInitialized{}) {}
+  ~KeyParamDefaultTypeInternal() {}
+  union {
+    KeyParam _instance;
+  };
+};
+PROTOBUF_ATTRIBUTE_NO_DESTROY PROTOBUF_CONSTINIT PROTOBUF_ATTRIBUTE_INIT_PRIORITY1 KeyParamDefaultTypeInternal _KeyParam_default_instance_;
+PROTOBUF_CONSTEXPR TouchParam::TouchParam(
+    ::_pbi::ConstantInitialized): _impl_{
+    /*decltype(_impl_._has_bits_)*/{}
+  , /*decltype(_impl_._cached_size_)*/{}
+  , /*decltype(_impl_.pos_)*/nullptr
+  , /*decltype(_impl_.contact_)*/0
+  , /*decltype(_impl_.pressure_)*/0} {}
+struct TouchParamDefaultTypeInternal {
+  PROTOBUF_CONSTEXPR TouchParamDefaultTypeInternal()
+      : _instance(::_pbi::ConstantInitialized{}) {}
+  ~TouchParamDefaultTypeInternal() {}
+  union {
+    TouchParam _instance;
+  };
+};
+PROTOBUF_ATTRIBUTE_NO_DESTROY PROTOBUF_CONSTINIT PROTOBUF_ATTRIBUTE_INIT_PRIORITY1 TouchParamDefaultTypeInternal _TouchParam_default_instance_;
 PROTOBUF_CONSTEXPR EmptyRequest::EmptyRequest(
     ::_pbi::ConstantInitialized) {}
 struct EmptyRequestDefaultTypeInternal {
@@ -224,8 +299,8 @@ PROTOBUF_CONSTEXPR IdResponse::IdResponse(
     ::_pbi::ConstantInitialized): _impl_{
     /*decltype(_impl_._has_bits_)*/{}
   , /*decltype(_impl_._cached_size_)*/{}
-  , /*decltype(_impl_.status_)*/nullptr
-  , /*decltype(_impl_.id_)*/nullptr} {}
+  , /*decltype(_impl_.id_)*/nullptr
+  , /*decltype(_impl_.status_)*/nullptr} {}
 struct IdResponseDefaultTypeInternal {
   PROTOBUF_CONSTEXPR IdResponseDefaultTypeInternal()
       : _instance(::_pbi::ConstantInitialized{}) {}
@@ -311,7 +386,7 @@ struct StatusResponseDefaultTypeInternal {
 };
 PROTOBUF_ATTRIBUTE_NO_DESTROY PROTOBUF_CONSTINIT PROTOBUF_ATTRIBUTE_INIT_PRIORITY1 StatusResponseDefaultTypeInternal _StatusResponse_default_instance_;
 }  // namespace maa
-static ::_pb::Metadata file_level_metadata_Types_2eproto[20];
+static ::_pb::Metadata file_level_metadata_Types_2eproto[25];
 static const ::_pb::EnumDescriptor* file_level_enum_descriptors_Types_2eproto[1];
 static constexpr ::_pb::ServiceDescriptor const** file_level_service_descriptors_Types_2eproto = nullptr;
 
@@ -360,6 +435,16 @@ const uint32_t TableStruct_Types_2eproto::offsets[] PROTOBUF_SECTION_VARIABLE(pr
   PROTOBUF_FIELD_OFFSET(::maa::Size, _impl_.height_),
   0,
   1,
+  PROTOBUF_FIELD_OFFSET(::maa::Rect, _impl_._has_bits_),
+  PROTOBUF_FIELD_OFFSET(::maa::Rect, _internal_metadata_),
+  ~0u,  // no _extensions_
+  ~0u,  // no _oneof_case_
+  ~0u,  // no _weak_field_map_
+  ~0u,  // no _inlined_string_donated_
+  PROTOBUF_FIELD_OFFSET(::maa::Rect, _impl_.xy_),
+  PROTOBUF_FIELD_OFFSET(::maa::Rect, _impl_.wh_),
+  0,
+  1,
   PROTOBUF_FIELD_OFFSET(::maa::Callback, _impl_._has_bits_),
   PROTOBUF_FIELD_OFFSET(::maa::Callback, _internal_metadata_),
   ~0u,  // no _extensions_
@@ -370,6 +455,46 @@ const uint32_t TableStruct_Types_2eproto::offsets[] PROTOBUF_SECTION_VARIABLE(pr
   PROTOBUF_FIELD_OFFSET(::maa::Callback, _impl_.detail_),
   0,
   1,
+  PROTOBUF_FIELD_OFFSET(::maa::ClickParam, _impl_._has_bits_),
+  PROTOBUF_FIELD_OFFSET(::maa::ClickParam, _internal_metadata_),
+  ~0u,  // no _extensions_
+  ~0u,  // no _oneof_case_
+  ~0u,  // no _weak_field_map_
+  ~0u,  // no _inlined_string_donated_
+  PROTOBUF_FIELD_OFFSET(::maa::ClickParam, _impl_.point_),
+  0,
+  PROTOBUF_FIELD_OFFSET(::maa::SwipeParam, _impl_._has_bits_),
+  PROTOBUF_FIELD_OFFSET(::maa::SwipeParam, _internal_metadata_),
+  ~0u,  // no _extensions_
+  ~0u,  // no _oneof_case_
+  ~0u,  // no _weak_field_map_
+  ~0u,  // no _inlined_string_donated_
+  PROTOBUF_FIELD_OFFSET(::maa::SwipeParam, _impl_.from_),
+  PROTOBUF_FIELD_OFFSET(::maa::SwipeParam, _impl_.to_),
+  PROTOBUF_FIELD_OFFSET(::maa::SwipeParam, _impl_.duration_),
+  0,
+  1,
+  2,
+  PROTOBUF_FIELD_OFFSET(::maa::KeyParam, _impl_._has_bits_),
+  PROTOBUF_FIELD_OFFSET(::maa::KeyParam, _internal_metadata_),
+  ~0u,  // no _extensions_
+  ~0u,  // no _oneof_case_
+  ~0u,  // no _weak_field_map_
+  ~0u,  // no _inlined_string_donated_
+  PROTOBUF_FIELD_OFFSET(::maa::KeyParam, _impl_.key_),
+  0,
+  PROTOBUF_FIELD_OFFSET(::maa::TouchParam, _impl_._has_bits_),
+  PROTOBUF_FIELD_OFFSET(::maa::TouchParam, _internal_metadata_),
+  ~0u,  // no _extensions_
+  ~0u,  // no _oneof_case_
+  ~0u,  // no _weak_field_map_
+  ~0u,  // no _inlined_string_donated_
+  PROTOBUF_FIELD_OFFSET(::maa::TouchParam, _impl_.contact_),
+  PROTOBUF_FIELD_OFFSET(::maa::TouchParam, _impl_.pos_),
+  PROTOBUF_FIELD_OFFSET(::maa::TouchParam, _impl_.pressure_),
+  1,
+  0,
+  2,
   ~0u,  // no _has_bits_
   PROTOBUF_FIELD_OFFSET(::maa::EmptyRequest, _internal_metadata_),
   ~0u,  // no _extensions_
@@ -444,8 +569,8 @@ const uint32_t TableStruct_Types_2eproto::offsets[] PROTOBUF_SECTION_VARIABLE(pr
   ~0u,  // no _oneof_case_
   ~0u,  // no _weak_field_map_
   ~0u,  // no _inlined_string_donated_
-  PROTOBUF_FIELD_OFFSET(::maa::IdResponse, _impl_.status_),
   PROTOBUF_FIELD_OFFSET(::maa::IdResponse, _impl_.id_),
+  PROTOBUF_FIELD_OFFSET(::maa::IdResponse, _impl_.status_),
   0,
   1,
   PROTOBUF_FIELD_OFFSET(::maa::BoolResponse, _impl_._has_bits_),
@@ -505,21 +630,26 @@ static const ::_pbi::MigrationSchema schemas[] PROTOBUF_SECTION_VARIABLE(protode
   { 16, 23, -1, sizeof(::maa::Handle)},
   { 24, 32, -1, sizeof(::maa::Point)},
   { 34, 42, -1, sizeof(::maa::Size)},
-  { 44, 52, -1, sizeof(::maa::Callback)},
-  { 54, -1, -1, sizeof(::maa::EmptyRequest)},
-  { 60, 67, -1, sizeof(::maa::IdRequest)},
-  { 68, 75, -1, sizeof(::maa::HandleRequest)},
-  { 76, 83, -1, sizeof(::maa::BufferRequest)},
-  { 84, 92, -1, sizeof(::maa::HandleBufferRequest)},
-  { 94, 102, -1, sizeof(::maa::HandleStringRequest)},
-  { 104, 112, -1, sizeof(::maa::HandleIdRequest)},
-  { 114, 121, -1, sizeof(::maa::EmptyResponse)},
-  { 122, 130, -1, sizeof(::maa::IdResponse)},
-  { 132, 140, -1, sizeof(::maa::BoolResponse)},
-  { 142, 150, -1, sizeof(::maa::StringResponse)},
-  { 152, 160, -1, sizeof(::maa::HandleResponse)},
-  { 162, 170, -1, sizeof(::maa::BufferResponse)},
-  { 172, 180, -1, sizeof(::maa::StatusResponse)},
+  { 44, 52, -1, sizeof(::maa::Rect)},
+  { 54, 62, -1, sizeof(::maa::Callback)},
+  { 64, 71, -1, sizeof(::maa::ClickParam)},
+  { 72, 81, -1, sizeof(::maa::SwipeParam)},
+  { 84, 91, -1, sizeof(::maa::KeyParam)},
+  { 92, 101, -1, sizeof(::maa::TouchParam)},
+  { 104, -1, -1, sizeof(::maa::EmptyRequest)},
+  { 110, 117, -1, sizeof(::maa::IdRequest)},
+  { 118, 125, -1, sizeof(::maa::HandleRequest)},
+  { 126, 133, -1, sizeof(::maa::BufferRequest)},
+  { 134, 142, -1, sizeof(::maa::HandleBufferRequest)},
+  { 144, 152, -1, sizeof(::maa::HandleStringRequest)},
+  { 154, 162, -1, sizeof(::maa::HandleIdRequest)},
+  { 164, 171, -1, sizeof(::maa::EmptyResponse)},
+  { 172, 180, -1, sizeof(::maa::IdResponse)},
+  { 182, 190, -1, sizeof(::maa::BoolResponse)},
+  { 192, 200, -1, sizeof(::maa::StringResponse)},
+  { 202, 210, -1, sizeof(::maa::HandleResponse)},
+  { 212, 220, -1, sizeof(::maa::BufferResponse)},
+  { 222, 230, -1, sizeof(::maa::StatusResponse)},
 };
 
 static const ::_pb::Message* const file_default_instances[] = {
@@ -528,7 +658,12 @@ static const ::_pb::Message* const file_default_instances[] = {
   &::maa::_Handle_default_instance_._instance,
   &::maa::_Point_default_instance_._instance,
   &::maa::_Size_default_instance_._instance,
+  &::maa::_Rect_default_instance_._instance,
   &::maa::_Callback_default_instance_._instance,
+  &::maa::_ClickParam_default_instance_._instance,
+  &::maa::_SwipeParam_default_instance_._instance,
+  &::maa::_KeyParam_default_instance_._instance,
+  &::maa::_TouchParam_default_instance_._instance,
   &::maa::_EmptyRequest_default_instance_._instance,
   &::maa::_IdRequest_default_instance_._instance,
   &::maa::_HandleRequest_default_instance_._instance,
@@ -552,45 +687,56 @@ const char descriptor_table_protodef_Types_2eproto[] PROTOBUF_SECTION_VARIABLE(p
   "\004H\000\210\001\001B\t\n\007_handle\"3\n\005Point\022\016\n\001x\030\001 \001(\005H\000\210"
   "\001\001\022\016\n\001y\030\002 \001(\005H\001\210\001\001B\004\n\002_xB\004\n\002_y\"D\n\004Size\022\022"
   "\n\005width\030\001 \001(\005H\000\210\001\001\022\023\n\006height\030\002 \001(\005H\001\210\001\001B"
-  "\010\n\006_widthB\t\n\007_height\"D\n\010Callback\022\020\n\003msg\030"
-  "\001 \001(\tH\000\210\001\001\022\023\n\006detail\030\002 \001(\tH\001\210\001\001B\006\n\004_msgB"
-  "\t\n\007_detail\"\016\n\014EmptyRequest\",\n\tIdRequest\022"
-  "\030\n\002id\030\001 \001(\0132\007.maa.IdH\000\210\001\001B\005\n\003_id\"<\n\rHand"
-  "leRequest\022 \n\006handle\030\001 \001(\0132\013.maa.HandleH\000"
-  "\210\001\001B\t\n\007_handle\"/\n\rBufferRequest\022\023\n\006buffe"
-  "r\030\001 \001(\014H\000\210\001\001B\t\n\007_buffer\"b\n\023HandleBufferR"
-  "equest\022 \n\006handle\030\001 \001(\0132\013.maa.HandleH\000\210\001\001"
-  "\022\023\n\006buffer\030\002 \001(\014H\001\210\001\001B\t\n\007_handleB\t\n\007_buf"
-  "fer\"\\\n\023HandleStringRequest\022 \n\006handle\030\001 \001"
-  "(\0132\013.maa.HandleH\000\210\001\001\022\020\n\003str\030\002 \001(\tH\001\210\001\001B\t"
-  "\n\007_handleB\006\n\004_str\"_\n\017HandleIdRequest\022 \n\006"
-  "handle\030\001 \001(\0132\013.maa.HandleH\000\210\001\001\022\030\n\002id\030\002 \001"
-  "(\0132\007.maa.IdH\001\210\001\001B\t\n\007_handleB\005\n\003_id\"\?\n\rEm"
-  "ptyResponse\022#\n\006status\030\001 \001(\0132\016.maa.RpcSta"
-  "tusH\000\210\001\001B\t\n\007_status\"]\n\nIdResponse\022#\n\006sta"
-  "tus\030\001 \001(\0132\016.maa.RpcStatusH\000\210\001\001\022\030\n\002id\030e \001"
-  "(\0132\007.maa.IdH\001\210\001\001B\t\n\007_statusB\005\n\003_id\"\\\n\014Bo"
-  "olResponse\022\022\n\005value\030\001 \001(\010H\000\210\001\001\022#\n\006status"
-  "\030e \001(\0132\016.maa.RpcStatusH\001\210\001\001B\010\n\006_valueB\t\n"
-  "\007_status\"^\n\016StringResponse\022\022\n\005value\030\001 \001("
-  "\tH\000\210\001\001\022#\n\006status\030e \001(\0132\016.maa.RpcStatusH\001"
-  "\210\001\001B\010\n\006_valueB\t\n\007_status\"k\n\016HandleRespon"
-  "se\022\037\n\005value\030\001 \001(\0132\013.maa.HandleH\000\210\001\001\022#\n\006s"
-  "tatus\030e \001(\0132\016.maa.RpcStatusH\001\210\001\001B\010\n\006_val"
-  "ueB\t\n\007_status\"^\n\016BufferResponse\022\022\n\005value"
-  "\030\001 \001(\014H\000\210\001\001\022#\n\006status\030e \001(\0132\016.maa.RpcSta"
-  "tusH\001\210\001\001B\010\n\006_valueB\t\n\007_status\"k\n\016StatusR"
-  "esponse\022\037\n\005value\030\001 \001(\0162\013.maa.StatusH\000\210\001\001"
-  "\022#\n\006status\030e \001(\0132\016.maa.RpcStatusH\001\210\001\001B\010\n"
-  "\006_valueB\t\n\007_status*L\n\006Status\022\013\n\007invalid\020"
-  "\000\022\014\n\007pending\020\350\007\022\014\n\007running\020\320\017\022\014\n\007success"
-  "\020\270\027\022\013\n\006failed\020\240\037b\006proto3"
+  "\010\n\006_widthB\t\n\007_height\"M\n\004Rect\022\033\n\002xy\030\001 \001(\013"
+  "2\n.maa.PointH\000\210\001\001\022\032\n\002wh\030\002 \001(\0132\t.maa.Size"
+  "H\001\210\001\001B\005\n\003_xyB\005\n\003_wh\"D\n\010Callback\022\020\n\003msg\030\001"
+  " \001(\tH\000\210\001\001\022\023\n\006detail\030\002 \001(\tH\001\210\001\001B\006\n\004_msgB\t"
+  "\n\007_detail\"6\n\nClickParam\022\036\n\005point\030\001 \001(\0132\n"
+  ".maa.PointH\000\210\001\001B\010\n\006_point\"|\n\nSwipeParam\022"
+  "\035\n\004from\030\001 \001(\0132\n.maa.PointH\000\210\001\001\022\033\n\002to\030\002 \001"
+  "(\0132\n.maa.PointH\001\210\001\001\022\025\n\010duration\030\003 \001(\005H\002\210"
+  "\001\001B\007\n\005_fromB\005\n\003_toB\013\n\t_duration\"$\n\010KeyPa"
+  "ram\022\020\n\003key\030\001 \001(\005H\000\210\001\001B\006\n\004_key\"x\n\nTouchPa"
+  "ram\022\024\n\007contact\030\001 \001(\005H\000\210\001\001\022\034\n\003pos\030\002 \001(\0132\n"
+  ".maa.PointH\001\210\001\001\022\025\n\010pressure\030\003 \001(\005H\002\210\001\001B\n"
+  "\n\010_contactB\006\n\004_posB\013\n\t_pressure\"\016\n\014Empty"
+  "Request\",\n\tIdRequest\022\030\n\002id\030\001 \001(\0132\007.maa.I"
+  "dH\000\210\001\001B\005\n\003_id\"<\n\rHandleRequest\022 \n\006handle"
+  "\030\001 \001(\0132\013.maa.HandleH\000\210\001\001B\t\n\007_handle\"/\n\rB"
+  "ufferRequest\022\023\n\006buffer\030\001 \001(\014H\000\210\001\001B\t\n\007_bu"
+  "ffer\"b\n\023HandleBufferRequest\022 \n\006handle\030\001 "
+  "\001(\0132\013.maa.HandleH\000\210\001\001\022\023\n\006buffer\030\002 \001(\014H\001\210"
+  "\001\001B\t\n\007_handleB\t\n\007_buffer\"\\\n\023HandleString"
+  "Request\022 \n\006handle\030\001 \001(\0132\013.maa.HandleH\000\210\001"
+  "\001\022\020\n\003str\030\002 \001(\tH\001\210\001\001B\t\n\007_handleB\006\n\004_str\"_"
+  "\n\017HandleIdRequest\022 \n\006handle\030\001 \001(\0132\013.maa."
+  "HandleH\000\210\001\001\022\030\n\002id\030\002 \001(\0132\007.maa.IdH\001\210\001\001B\t\n"
+  "\007_handleB\005\n\003_id\"\?\n\rEmptyResponse\022#\n\006stat"
+  "us\030e \001(\0132\016.maa.RpcStatusH\000\210\001\001B\t\n\007_status"
+  "\"]\n\nIdResponse\022\030\n\002id\030\001 \001(\0132\007.maa.IdH\000\210\001\001"
+  "\022#\n\006status\030e \001(\0132\016.maa.RpcStatusH\001\210\001\001B\005\n"
+  "\003_idB\t\n\007_status\"\\\n\014BoolResponse\022\022\n\005value"
+  "\030\001 \001(\010H\000\210\001\001\022#\n\006status\030e \001(\0132\016.maa.RpcSta"
+  "tusH\001\210\001\001B\010\n\006_valueB\t\n\007_status\"^\n\016StringR"
+  "esponse\022\022\n\005value\030\001 \001(\tH\000\210\001\001\022#\n\006status\030e "
+  "\001(\0132\016.maa.RpcStatusH\001\210\001\001B\010\n\006_valueB\t\n\007_s"
+  "tatus\"k\n\016HandleResponse\022\037\n\005value\030\001 \001(\0132\013"
+  ".maa.HandleH\000\210\001\001\022#\n\006status\030e \001(\0132\016.maa.R"
+  "pcStatusH\001\210\001\001B\010\n\006_valueB\t\n\007_status\"^\n\016Bu"
+  "fferResponse\022\022\n\005value\030\001 \001(\014H\000\210\001\001\022#\n\006stat"
+  "us\030e \001(\0132\016.maa.RpcStatusH\001\210\001\001B\010\n\006_valueB"
+  "\t\n\007_status\"k\n\016StatusResponse\022\037\n\005value\030\001 "
+  "\001(\0162\013.maa.StatusH\000\210\001\001\022#\n\006status\030e \001(\0132\016."
+  "maa.RpcStatusH\001\210\001\001B\010\n\006_valueB\t\n\007_status*"
+  "L\n\006Status\022\013\n\007invalid\020\000\022\014\n\007pending\020\350\007\022\014\n\007"
+  "running\020\320\017\022\014\n\007success\020\270\027\022\013\n\006failed\020\240\037b\006p"
+  "roto3"
   ;
 static ::_pbi::once_flag descriptor_table_Types_2eproto_once;
 const ::_pbi::DescriptorTable descriptor_table_Types_2eproto = {
-    false, false, 1544, descriptor_table_protodef_Types_2eproto,
+    false, false, 1965, descriptor_table_protodef_Types_2eproto,
     "Types.proto",
-    &descriptor_table_Types_2eproto_once, nullptr, 0, 20,
+    &descriptor_table_Types_2eproto_once, nullptr, 0, 25,
     schemas, file_default_instances, TableStruct_Types_2eproto::offsets,
     file_level_metadata_Types_2eproto, file_level_enum_descriptors_Types_2eproto,
     file_level_service_descriptors_Types_2eproto,
@@ -1664,6 +1810,267 @@ void Size::InternalSwap(Size* other) {
 
 // ===================================================================
 
+class Rect::_Internal {
+ public:
+  using HasBits = decltype(std::declval<Rect>()._impl_._has_bits_);
+  static const ::maa::Point& xy(const Rect* msg);
+  static void set_has_xy(HasBits* has_bits) {
+    (*has_bits)[0] |= 1u;
+  }
+  static const ::maa::Size& wh(const Rect* msg);
+  static void set_has_wh(HasBits* has_bits) {
+    (*has_bits)[0] |= 2u;
+  }
+};
+
+const ::maa::Point&
+Rect::_Internal::xy(const Rect* msg) {
+  return *msg->_impl_.xy_;
+}
+const ::maa::Size&
+Rect::_Internal::wh(const Rect* msg) {
+  return *msg->_impl_.wh_;
+}
+Rect::Rect(::PROTOBUF_NAMESPACE_ID::Arena* arena,
+                         bool is_message_owned)
+  : ::PROTOBUF_NAMESPACE_ID::Message(arena, is_message_owned) {
+  SharedCtor(arena, is_message_owned);
+  // @@protoc_insertion_point(arena_constructor:maa.Rect)
+}
+Rect::Rect(const Rect& from)
+  : ::PROTOBUF_NAMESPACE_ID::Message() {
+  Rect* const _this = this; (void)_this;
+  new (&_impl_) Impl_{
+      decltype(_impl_._has_bits_){from._impl_._has_bits_}
+    , /*decltype(_impl_._cached_size_)*/{}
+    , decltype(_impl_.xy_){nullptr}
+    , decltype(_impl_.wh_){nullptr}};
+
+  _internal_metadata_.MergeFrom<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(from._internal_metadata_);
+  if (from._internal_has_xy()) {
+    _this->_impl_.xy_ = new ::maa::Point(*from._impl_.xy_);
+  }
+  if (from._internal_has_wh()) {
+    _this->_impl_.wh_ = new ::maa::Size(*from._impl_.wh_);
+  }
+  // @@protoc_insertion_point(copy_constructor:maa.Rect)
+}
+
+inline void Rect::SharedCtor(
+    ::_pb::Arena* arena, bool is_message_owned) {
+  (void)arena;
+  (void)is_message_owned;
+  new (&_impl_) Impl_{
+      decltype(_impl_._has_bits_){}
+    , /*decltype(_impl_._cached_size_)*/{}
+    , decltype(_impl_.xy_){nullptr}
+    , decltype(_impl_.wh_){nullptr}
+  };
+}
+
+Rect::~Rect() {
+  // @@protoc_insertion_point(destructor:maa.Rect)
+  if (auto *arena = _internal_metadata_.DeleteReturnArena<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>()) {
+  (void)arena;
+    return;
+  }
+  SharedDtor();
+}
+
+inline void Rect::SharedDtor() {
+  GOOGLE_DCHECK(GetArenaForAllocation() == nullptr);
+  if (this != internal_default_instance()) delete _impl_.xy_;
+  if (this != internal_default_instance()) delete _impl_.wh_;
+}
+
+void Rect::SetCachedSize(int size) const {
+  _impl_._cached_size_.Set(size);
+}
+
+void Rect::Clear() {
+// @@protoc_insertion_point(message_clear_start:maa.Rect)
+  uint32_t cached_has_bits = 0;
+  // Prevent compiler warnings about cached_has_bits being unused
+  (void) cached_has_bits;
+
+  cached_has_bits = _impl_._has_bits_[0];
+  if (cached_has_bits & 0x00000003u) {
+    if (cached_has_bits & 0x00000001u) {
+      GOOGLE_DCHECK(_impl_.xy_ != nullptr);
+      _impl_.xy_->Clear();
+    }
+    if (cached_has_bits & 0x00000002u) {
+      GOOGLE_DCHECK(_impl_.wh_ != nullptr);
+      _impl_.wh_->Clear();
+    }
+  }
+  _impl_._has_bits_.Clear();
+  _internal_metadata_.Clear<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>();
+}
+
+const char* Rect::_InternalParse(const char* ptr, ::_pbi::ParseContext* ctx) {
+#define CHK_(x) if (PROTOBUF_PREDICT_FALSE(!(x))) goto failure
+  _Internal::HasBits has_bits{};
+  while (!ctx->Done(&ptr)) {
+    uint32_t tag;
+    ptr = ::_pbi::ReadTag(ptr, &tag);
+    switch (tag >> 3) {
+      // optional .maa.Point xy = 1;
+      case 1:
+        if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 10)) {
+          ptr = ctx->ParseMessage(_internal_mutable_xy(), ptr);
+          CHK_(ptr);
+        } else
+          goto handle_unusual;
+        continue;
+      // optional .maa.Size wh = 2;
+      case 2:
+        if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 18)) {
+          ptr = ctx->ParseMessage(_internal_mutable_wh(), ptr);
+          CHK_(ptr);
+        } else
+          goto handle_unusual;
+        continue;
+      default:
+        goto handle_unusual;
+    }  // switch
+  handle_unusual:
+    if ((tag == 0) || ((tag & 7) == 4)) {
+      CHK_(ptr);
+      ctx->SetLastTag(tag);
+      goto message_done;
+    }
+    ptr = UnknownFieldParse(
+        tag,
+        _internal_metadata_.mutable_unknown_fields<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(),
+        ptr, ctx);
+    CHK_(ptr != nullptr);
+  }  // while
+message_done:
+  _impl_._has_bits_.Or(has_bits);
+  return ptr;
+failure:
+  ptr = nullptr;
+  goto message_done;
+#undef CHK_
+}
+
+uint8_t* Rect::_InternalSerialize(
+    uint8_t* target, ::PROTOBUF_NAMESPACE_ID::io::EpsCopyOutputStream* stream) const {
+  // @@protoc_insertion_point(serialize_to_array_start:maa.Rect)
+  uint32_t cached_has_bits = 0;
+  (void) cached_has_bits;
+
+  // optional .maa.Point xy = 1;
+  if (_internal_has_xy()) {
+    target = ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::
+      InternalWriteMessage(1, _Internal::xy(this),
+        _Internal::xy(this).GetCachedSize(), target, stream);
+  }
+
+  // optional .maa.Size wh = 2;
+  if (_internal_has_wh()) {
+    target = ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::
+      InternalWriteMessage(2, _Internal::wh(this),
+        _Internal::wh(this).GetCachedSize(), target, stream);
+  }
+
+  if (PROTOBUF_PREDICT_FALSE(_internal_metadata_.have_unknown_fields())) {
+    target = ::_pbi::WireFormat::InternalSerializeUnknownFieldsToArray(
+        _internal_metadata_.unknown_fields<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(::PROTOBUF_NAMESPACE_ID::UnknownFieldSet::default_instance), target, stream);
+  }
+  // @@protoc_insertion_point(serialize_to_array_end:maa.Rect)
+  return target;
+}
+
+size_t Rect::ByteSizeLong() const {
+// @@protoc_insertion_point(message_byte_size_start:maa.Rect)
+  size_t total_size = 0;
+
+  uint32_t cached_has_bits = 0;
+  // Prevent compiler warnings about cached_has_bits being unused
+  (void) cached_has_bits;
+
+  cached_has_bits = _impl_._has_bits_[0];
+  if (cached_has_bits & 0x00000003u) {
+    // optional .maa.Point xy = 1;
+    if (cached_has_bits & 0x00000001u) {
+      total_size += 1 +
+        ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::MessageSize(
+          *_impl_.xy_);
+    }
+
+    // optional .maa.Size wh = 2;
+    if (cached_has_bits & 0x00000002u) {
+      total_size += 1 +
+        ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::MessageSize(
+          *_impl_.wh_);
+    }
+
+  }
+  return MaybeComputeUnknownFieldsSize(total_size, &_impl_._cached_size_);
+}
+
+const ::PROTOBUF_NAMESPACE_ID::Message::ClassData Rect::_class_data_ = {
+    ::PROTOBUF_NAMESPACE_ID::Message::CopyWithSourceCheck,
+    Rect::MergeImpl
+};
+const ::PROTOBUF_NAMESPACE_ID::Message::ClassData*Rect::GetClassData() const { return &_class_data_; }
+
+
+void Rect::MergeImpl(::PROTOBUF_NAMESPACE_ID::Message& to_msg, const ::PROTOBUF_NAMESPACE_ID::Message& from_msg) {
+  auto* const _this = static_cast<Rect*>(&to_msg);
+  auto& from = static_cast<const Rect&>(from_msg);
+  // @@protoc_insertion_point(class_specific_merge_from_start:maa.Rect)
+  GOOGLE_DCHECK_NE(&from, _this);
+  uint32_t cached_has_bits = 0;
+  (void) cached_has_bits;
+
+  cached_has_bits = from._impl_._has_bits_[0];
+  if (cached_has_bits & 0x00000003u) {
+    if (cached_has_bits & 0x00000001u) {
+      _this->_internal_mutable_xy()->::maa::Point::MergeFrom(
+          from._internal_xy());
+    }
+    if (cached_has_bits & 0x00000002u) {
+      _this->_internal_mutable_wh()->::maa::Size::MergeFrom(
+          from._internal_wh());
+    }
+  }
+  _this->_internal_metadata_.MergeFrom<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(from._internal_metadata_);
+}
+
+void Rect::CopyFrom(const Rect& from) {
+// @@protoc_insertion_point(class_specific_copy_from_start:maa.Rect)
+  if (&from == this) return;
+  Clear();
+  MergeFrom(from);
+}
+
+bool Rect::IsInitialized() const {
+  return true;
+}
+
+void Rect::InternalSwap(Rect* other) {
+  using std::swap;
+  _internal_metadata_.InternalSwap(&other->_internal_metadata_);
+  swap(_impl_._has_bits_[0], other->_impl_._has_bits_[0]);
+  ::PROTOBUF_NAMESPACE_ID::internal::memswap<
+      PROTOBUF_FIELD_OFFSET(Rect, _impl_.wh_)
+      + sizeof(Rect::_impl_.wh_)
+      - PROTOBUF_FIELD_OFFSET(Rect, _impl_.xy_)>(
+          reinterpret_cast<char*>(&_impl_.xy_),
+          reinterpret_cast<char*>(&other->_impl_.xy_));
+}
+
+::PROTOBUF_NAMESPACE_ID::Metadata Rect::GetMetadata() const {
+  return ::_pbi::AssignDescriptors(
+      &descriptor_table_Types_2eproto_getter, &descriptor_table_Types_2eproto_once,
+      file_level_metadata_Types_2eproto[5]);
+}
+
+// ===================================================================
+
 class Callback::_Internal {
  public:
   using HasBits = decltype(std::declval<Callback>()._impl_._has_bits_);
@@ -1938,7 +2345,974 @@ void Callback::InternalSwap(Callback* other) {
 ::PROTOBUF_NAMESPACE_ID::Metadata Callback::GetMetadata() const {
   return ::_pbi::AssignDescriptors(
       &descriptor_table_Types_2eproto_getter, &descriptor_table_Types_2eproto_once,
-      file_level_metadata_Types_2eproto[5]);
+      file_level_metadata_Types_2eproto[6]);
+}
+
+// ===================================================================
+
+class ClickParam::_Internal {
+ public:
+  using HasBits = decltype(std::declval<ClickParam>()._impl_._has_bits_);
+  static const ::maa::Point& point(const ClickParam* msg);
+  static void set_has_point(HasBits* has_bits) {
+    (*has_bits)[0] |= 1u;
+  }
+};
+
+const ::maa::Point&
+ClickParam::_Internal::point(const ClickParam* msg) {
+  return *msg->_impl_.point_;
+}
+ClickParam::ClickParam(::PROTOBUF_NAMESPACE_ID::Arena* arena,
+                         bool is_message_owned)
+  : ::PROTOBUF_NAMESPACE_ID::Message(arena, is_message_owned) {
+  SharedCtor(arena, is_message_owned);
+  // @@protoc_insertion_point(arena_constructor:maa.ClickParam)
+}
+ClickParam::ClickParam(const ClickParam& from)
+  : ::PROTOBUF_NAMESPACE_ID::Message() {
+  ClickParam* const _this = this; (void)_this;
+  new (&_impl_) Impl_{
+      decltype(_impl_._has_bits_){from._impl_._has_bits_}
+    , /*decltype(_impl_._cached_size_)*/{}
+    , decltype(_impl_.point_){nullptr}};
+
+  _internal_metadata_.MergeFrom<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(from._internal_metadata_);
+  if (from._internal_has_point()) {
+    _this->_impl_.point_ = new ::maa::Point(*from._impl_.point_);
+  }
+  // @@protoc_insertion_point(copy_constructor:maa.ClickParam)
+}
+
+inline void ClickParam::SharedCtor(
+    ::_pb::Arena* arena, bool is_message_owned) {
+  (void)arena;
+  (void)is_message_owned;
+  new (&_impl_) Impl_{
+      decltype(_impl_._has_bits_){}
+    , /*decltype(_impl_._cached_size_)*/{}
+    , decltype(_impl_.point_){nullptr}
+  };
+}
+
+ClickParam::~ClickParam() {
+  // @@protoc_insertion_point(destructor:maa.ClickParam)
+  if (auto *arena = _internal_metadata_.DeleteReturnArena<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>()) {
+  (void)arena;
+    return;
+  }
+  SharedDtor();
+}
+
+inline void ClickParam::SharedDtor() {
+  GOOGLE_DCHECK(GetArenaForAllocation() == nullptr);
+  if (this != internal_default_instance()) delete _impl_.point_;
+}
+
+void ClickParam::SetCachedSize(int size) const {
+  _impl_._cached_size_.Set(size);
+}
+
+void ClickParam::Clear() {
+// @@protoc_insertion_point(message_clear_start:maa.ClickParam)
+  uint32_t cached_has_bits = 0;
+  // Prevent compiler warnings about cached_has_bits being unused
+  (void) cached_has_bits;
+
+  cached_has_bits = _impl_._has_bits_[0];
+  if (cached_has_bits & 0x00000001u) {
+    GOOGLE_DCHECK(_impl_.point_ != nullptr);
+    _impl_.point_->Clear();
+  }
+  _impl_._has_bits_.Clear();
+  _internal_metadata_.Clear<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>();
+}
+
+const char* ClickParam::_InternalParse(const char* ptr, ::_pbi::ParseContext* ctx) {
+#define CHK_(x) if (PROTOBUF_PREDICT_FALSE(!(x))) goto failure
+  _Internal::HasBits has_bits{};
+  while (!ctx->Done(&ptr)) {
+    uint32_t tag;
+    ptr = ::_pbi::ReadTag(ptr, &tag);
+    switch (tag >> 3) {
+      // optional .maa.Point point = 1;
+      case 1:
+        if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 10)) {
+          ptr = ctx->ParseMessage(_internal_mutable_point(), ptr);
+          CHK_(ptr);
+        } else
+          goto handle_unusual;
+        continue;
+      default:
+        goto handle_unusual;
+    }  // switch
+  handle_unusual:
+    if ((tag == 0) || ((tag & 7) == 4)) {
+      CHK_(ptr);
+      ctx->SetLastTag(tag);
+      goto message_done;
+    }
+    ptr = UnknownFieldParse(
+        tag,
+        _internal_metadata_.mutable_unknown_fields<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(),
+        ptr, ctx);
+    CHK_(ptr != nullptr);
+  }  // while
+message_done:
+  _impl_._has_bits_.Or(has_bits);
+  return ptr;
+failure:
+  ptr = nullptr;
+  goto message_done;
+#undef CHK_
+}
+
+uint8_t* ClickParam::_InternalSerialize(
+    uint8_t* target, ::PROTOBUF_NAMESPACE_ID::io::EpsCopyOutputStream* stream) const {
+  // @@protoc_insertion_point(serialize_to_array_start:maa.ClickParam)
+  uint32_t cached_has_bits = 0;
+  (void) cached_has_bits;
+
+  // optional .maa.Point point = 1;
+  if (_internal_has_point()) {
+    target = ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::
+      InternalWriteMessage(1, _Internal::point(this),
+        _Internal::point(this).GetCachedSize(), target, stream);
+  }
+
+  if (PROTOBUF_PREDICT_FALSE(_internal_metadata_.have_unknown_fields())) {
+    target = ::_pbi::WireFormat::InternalSerializeUnknownFieldsToArray(
+        _internal_metadata_.unknown_fields<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(::PROTOBUF_NAMESPACE_ID::UnknownFieldSet::default_instance), target, stream);
+  }
+  // @@protoc_insertion_point(serialize_to_array_end:maa.ClickParam)
+  return target;
+}
+
+size_t ClickParam::ByteSizeLong() const {
+// @@protoc_insertion_point(message_byte_size_start:maa.ClickParam)
+  size_t total_size = 0;
+
+  uint32_t cached_has_bits = 0;
+  // Prevent compiler warnings about cached_has_bits being unused
+  (void) cached_has_bits;
+
+  // optional .maa.Point point = 1;
+  cached_has_bits = _impl_._has_bits_[0];
+  if (cached_has_bits & 0x00000001u) {
+    total_size += 1 +
+      ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::MessageSize(
+        *_impl_.point_);
+  }
+
+  return MaybeComputeUnknownFieldsSize(total_size, &_impl_._cached_size_);
+}
+
+const ::PROTOBUF_NAMESPACE_ID::Message::ClassData ClickParam::_class_data_ = {
+    ::PROTOBUF_NAMESPACE_ID::Message::CopyWithSourceCheck,
+    ClickParam::MergeImpl
+};
+const ::PROTOBUF_NAMESPACE_ID::Message::ClassData*ClickParam::GetClassData() const { return &_class_data_; }
+
+
+void ClickParam::MergeImpl(::PROTOBUF_NAMESPACE_ID::Message& to_msg, const ::PROTOBUF_NAMESPACE_ID::Message& from_msg) {
+  auto* const _this = static_cast<ClickParam*>(&to_msg);
+  auto& from = static_cast<const ClickParam&>(from_msg);
+  // @@protoc_insertion_point(class_specific_merge_from_start:maa.ClickParam)
+  GOOGLE_DCHECK_NE(&from, _this);
+  uint32_t cached_has_bits = 0;
+  (void) cached_has_bits;
+
+  if (from._internal_has_point()) {
+    _this->_internal_mutable_point()->::maa::Point::MergeFrom(
+        from._internal_point());
+  }
+  _this->_internal_metadata_.MergeFrom<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(from._internal_metadata_);
+}
+
+void ClickParam::CopyFrom(const ClickParam& from) {
+// @@protoc_insertion_point(class_specific_copy_from_start:maa.ClickParam)
+  if (&from == this) return;
+  Clear();
+  MergeFrom(from);
+}
+
+bool ClickParam::IsInitialized() const {
+  return true;
+}
+
+void ClickParam::InternalSwap(ClickParam* other) {
+  using std::swap;
+  _internal_metadata_.InternalSwap(&other->_internal_metadata_);
+  swap(_impl_._has_bits_[0], other->_impl_._has_bits_[0]);
+  swap(_impl_.point_, other->_impl_.point_);
+}
+
+::PROTOBUF_NAMESPACE_ID::Metadata ClickParam::GetMetadata() const {
+  return ::_pbi::AssignDescriptors(
+      &descriptor_table_Types_2eproto_getter, &descriptor_table_Types_2eproto_once,
+      file_level_metadata_Types_2eproto[7]);
+}
+
+// ===================================================================
+
+class SwipeParam::_Internal {
+ public:
+  using HasBits = decltype(std::declval<SwipeParam>()._impl_._has_bits_);
+  static const ::maa::Point& from(const SwipeParam* msg);
+  static void set_has_from(HasBits* has_bits) {
+    (*has_bits)[0] |= 1u;
+  }
+  static const ::maa::Point& to(const SwipeParam* msg);
+  static void set_has_to(HasBits* has_bits) {
+    (*has_bits)[0] |= 2u;
+  }
+  static void set_has_duration(HasBits* has_bits) {
+    (*has_bits)[0] |= 4u;
+  }
+};
+
+const ::maa::Point&
+SwipeParam::_Internal::from(const SwipeParam* msg) {
+  return *msg->_impl_.from_;
+}
+const ::maa::Point&
+SwipeParam::_Internal::to(const SwipeParam* msg) {
+  return *msg->_impl_.to_;
+}
+SwipeParam::SwipeParam(::PROTOBUF_NAMESPACE_ID::Arena* arena,
+                         bool is_message_owned)
+  : ::PROTOBUF_NAMESPACE_ID::Message(arena, is_message_owned) {
+  SharedCtor(arena, is_message_owned);
+  // @@protoc_insertion_point(arena_constructor:maa.SwipeParam)
+}
+SwipeParam::SwipeParam(const SwipeParam& from)
+  : ::PROTOBUF_NAMESPACE_ID::Message() {
+  SwipeParam* const _this = this; (void)_this;
+  new (&_impl_) Impl_{
+      decltype(_impl_._has_bits_){from._impl_._has_bits_}
+    , /*decltype(_impl_._cached_size_)*/{}
+    , decltype(_impl_.from_){nullptr}
+    , decltype(_impl_.to_){nullptr}
+    , decltype(_impl_.duration_){}};
+
+  _internal_metadata_.MergeFrom<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(from._internal_metadata_);
+  if (from._internal_has_from()) {
+    _this->_impl_.from_ = new ::maa::Point(*from._impl_.from_);
+  }
+  if (from._internal_has_to()) {
+    _this->_impl_.to_ = new ::maa::Point(*from._impl_.to_);
+  }
+  _this->_impl_.duration_ = from._impl_.duration_;
+  // @@protoc_insertion_point(copy_constructor:maa.SwipeParam)
+}
+
+inline void SwipeParam::SharedCtor(
+    ::_pb::Arena* arena, bool is_message_owned) {
+  (void)arena;
+  (void)is_message_owned;
+  new (&_impl_) Impl_{
+      decltype(_impl_._has_bits_){}
+    , /*decltype(_impl_._cached_size_)*/{}
+    , decltype(_impl_.from_){nullptr}
+    , decltype(_impl_.to_){nullptr}
+    , decltype(_impl_.duration_){0}
+  };
+}
+
+SwipeParam::~SwipeParam() {
+  // @@protoc_insertion_point(destructor:maa.SwipeParam)
+  if (auto *arena = _internal_metadata_.DeleteReturnArena<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>()) {
+  (void)arena;
+    return;
+  }
+  SharedDtor();
+}
+
+inline void SwipeParam::SharedDtor() {
+  GOOGLE_DCHECK(GetArenaForAllocation() == nullptr);
+  if (this != internal_default_instance()) delete _impl_.from_;
+  if (this != internal_default_instance()) delete _impl_.to_;
+}
+
+void SwipeParam::SetCachedSize(int size) const {
+  _impl_._cached_size_.Set(size);
+}
+
+void SwipeParam::Clear() {
+// @@protoc_insertion_point(message_clear_start:maa.SwipeParam)
+  uint32_t cached_has_bits = 0;
+  // Prevent compiler warnings about cached_has_bits being unused
+  (void) cached_has_bits;
+
+  cached_has_bits = _impl_._has_bits_[0];
+  if (cached_has_bits & 0x00000003u) {
+    if (cached_has_bits & 0x00000001u) {
+      GOOGLE_DCHECK(_impl_.from_ != nullptr);
+      _impl_.from_->Clear();
+    }
+    if (cached_has_bits & 0x00000002u) {
+      GOOGLE_DCHECK(_impl_.to_ != nullptr);
+      _impl_.to_->Clear();
+    }
+  }
+  _impl_.duration_ = 0;
+  _impl_._has_bits_.Clear();
+  _internal_metadata_.Clear<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>();
+}
+
+const char* SwipeParam::_InternalParse(const char* ptr, ::_pbi::ParseContext* ctx) {
+#define CHK_(x) if (PROTOBUF_PREDICT_FALSE(!(x))) goto failure
+  _Internal::HasBits has_bits{};
+  while (!ctx->Done(&ptr)) {
+    uint32_t tag;
+    ptr = ::_pbi::ReadTag(ptr, &tag);
+    switch (tag >> 3) {
+      // optional .maa.Point from = 1;
+      case 1:
+        if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 10)) {
+          ptr = ctx->ParseMessage(_internal_mutable_from(), ptr);
+          CHK_(ptr);
+        } else
+          goto handle_unusual;
+        continue;
+      // optional .maa.Point to = 2;
+      case 2:
+        if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 18)) {
+          ptr = ctx->ParseMessage(_internal_mutable_to(), ptr);
+          CHK_(ptr);
+        } else
+          goto handle_unusual;
+        continue;
+      // optional int32 duration = 3;
+      case 3:
+        if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 24)) {
+          _Internal::set_has_duration(&has_bits);
+          _impl_.duration_ = ::PROTOBUF_NAMESPACE_ID::internal::ReadVarint32(&ptr);
+          CHK_(ptr);
+        } else
+          goto handle_unusual;
+        continue;
+      default:
+        goto handle_unusual;
+    }  // switch
+  handle_unusual:
+    if ((tag == 0) || ((tag & 7) == 4)) {
+      CHK_(ptr);
+      ctx->SetLastTag(tag);
+      goto message_done;
+    }
+    ptr = UnknownFieldParse(
+        tag,
+        _internal_metadata_.mutable_unknown_fields<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(),
+        ptr, ctx);
+    CHK_(ptr != nullptr);
+  }  // while
+message_done:
+  _impl_._has_bits_.Or(has_bits);
+  return ptr;
+failure:
+  ptr = nullptr;
+  goto message_done;
+#undef CHK_
+}
+
+uint8_t* SwipeParam::_InternalSerialize(
+    uint8_t* target, ::PROTOBUF_NAMESPACE_ID::io::EpsCopyOutputStream* stream) const {
+  // @@protoc_insertion_point(serialize_to_array_start:maa.SwipeParam)
+  uint32_t cached_has_bits = 0;
+  (void) cached_has_bits;
+
+  // optional .maa.Point from = 1;
+  if (_internal_has_from()) {
+    target = ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::
+      InternalWriteMessage(1, _Internal::from(this),
+        _Internal::from(this).GetCachedSize(), target, stream);
+  }
+
+  // optional .maa.Point to = 2;
+  if (_internal_has_to()) {
+    target = ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::
+      InternalWriteMessage(2, _Internal::to(this),
+        _Internal::to(this).GetCachedSize(), target, stream);
+  }
+
+  // optional int32 duration = 3;
+  if (_internal_has_duration()) {
+    target = stream->EnsureSpace(target);
+    target = ::_pbi::WireFormatLite::WriteInt32ToArray(3, this->_internal_duration(), target);
+  }
+
+  if (PROTOBUF_PREDICT_FALSE(_internal_metadata_.have_unknown_fields())) {
+    target = ::_pbi::WireFormat::InternalSerializeUnknownFieldsToArray(
+        _internal_metadata_.unknown_fields<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(::PROTOBUF_NAMESPACE_ID::UnknownFieldSet::default_instance), target, stream);
+  }
+  // @@protoc_insertion_point(serialize_to_array_end:maa.SwipeParam)
+  return target;
+}
+
+size_t SwipeParam::ByteSizeLong() const {
+// @@protoc_insertion_point(message_byte_size_start:maa.SwipeParam)
+  size_t total_size = 0;
+
+  uint32_t cached_has_bits = 0;
+  // Prevent compiler warnings about cached_has_bits being unused
+  (void) cached_has_bits;
+
+  cached_has_bits = _impl_._has_bits_[0];
+  if (cached_has_bits & 0x00000007u) {
+    // optional .maa.Point from = 1;
+    if (cached_has_bits & 0x00000001u) {
+      total_size += 1 +
+        ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::MessageSize(
+          *_impl_.from_);
+    }
+
+    // optional .maa.Point to = 2;
+    if (cached_has_bits & 0x00000002u) {
+      total_size += 1 +
+        ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::MessageSize(
+          *_impl_.to_);
+    }
+
+    // optional int32 duration = 3;
+    if (cached_has_bits & 0x00000004u) {
+      total_size += ::_pbi::WireFormatLite::Int32SizePlusOne(this->_internal_duration());
+    }
+
+  }
+  return MaybeComputeUnknownFieldsSize(total_size, &_impl_._cached_size_);
+}
+
+const ::PROTOBUF_NAMESPACE_ID::Message::ClassData SwipeParam::_class_data_ = {
+    ::PROTOBUF_NAMESPACE_ID::Message::CopyWithSourceCheck,
+    SwipeParam::MergeImpl
+};
+const ::PROTOBUF_NAMESPACE_ID::Message::ClassData*SwipeParam::GetClassData() const { return &_class_data_; }
+
+
+void SwipeParam::MergeImpl(::PROTOBUF_NAMESPACE_ID::Message& to_msg, const ::PROTOBUF_NAMESPACE_ID::Message& from_msg) {
+  auto* const _this = static_cast<SwipeParam*>(&to_msg);
+  auto& from = static_cast<const SwipeParam&>(from_msg);
+  // @@protoc_insertion_point(class_specific_merge_from_start:maa.SwipeParam)
+  GOOGLE_DCHECK_NE(&from, _this);
+  uint32_t cached_has_bits = 0;
+  (void) cached_has_bits;
+
+  cached_has_bits = from._impl_._has_bits_[0];
+  if (cached_has_bits & 0x00000007u) {
+    if (cached_has_bits & 0x00000001u) {
+      _this->_internal_mutable_from()->::maa::Point::MergeFrom(
+          from._internal_from());
+    }
+    if (cached_has_bits & 0x00000002u) {
+      _this->_internal_mutable_to()->::maa::Point::MergeFrom(
+          from._internal_to());
+    }
+    if (cached_has_bits & 0x00000004u) {
+      _this->_impl_.duration_ = from._impl_.duration_;
+    }
+    _this->_impl_._has_bits_[0] |= cached_has_bits;
+  }
+  _this->_internal_metadata_.MergeFrom<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(from._internal_metadata_);
+}
+
+void SwipeParam::CopyFrom(const SwipeParam& from) {
+// @@protoc_insertion_point(class_specific_copy_from_start:maa.SwipeParam)
+  if (&from == this) return;
+  Clear();
+  MergeFrom(from);
+}
+
+bool SwipeParam::IsInitialized() const {
+  return true;
+}
+
+void SwipeParam::InternalSwap(SwipeParam* other) {
+  using std::swap;
+  _internal_metadata_.InternalSwap(&other->_internal_metadata_);
+  swap(_impl_._has_bits_[0], other->_impl_._has_bits_[0]);
+  ::PROTOBUF_NAMESPACE_ID::internal::memswap<
+      PROTOBUF_FIELD_OFFSET(SwipeParam, _impl_.duration_)
+      + sizeof(SwipeParam::_impl_.duration_)
+      - PROTOBUF_FIELD_OFFSET(SwipeParam, _impl_.from_)>(
+          reinterpret_cast<char*>(&_impl_.from_),
+          reinterpret_cast<char*>(&other->_impl_.from_));
+}
+
+::PROTOBUF_NAMESPACE_ID::Metadata SwipeParam::GetMetadata() const {
+  return ::_pbi::AssignDescriptors(
+      &descriptor_table_Types_2eproto_getter, &descriptor_table_Types_2eproto_once,
+      file_level_metadata_Types_2eproto[8]);
+}
+
+// ===================================================================
+
+class KeyParam::_Internal {
+ public:
+  using HasBits = decltype(std::declval<KeyParam>()._impl_._has_bits_);
+  static void set_has_key(HasBits* has_bits) {
+    (*has_bits)[0] |= 1u;
+  }
+};
+
+KeyParam::KeyParam(::PROTOBUF_NAMESPACE_ID::Arena* arena,
+                         bool is_message_owned)
+  : ::PROTOBUF_NAMESPACE_ID::Message(arena, is_message_owned) {
+  SharedCtor(arena, is_message_owned);
+  // @@protoc_insertion_point(arena_constructor:maa.KeyParam)
+}
+KeyParam::KeyParam(const KeyParam& from)
+  : ::PROTOBUF_NAMESPACE_ID::Message() {
+  KeyParam* const _this = this; (void)_this;
+  new (&_impl_) Impl_{
+      decltype(_impl_._has_bits_){from._impl_._has_bits_}
+    , /*decltype(_impl_._cached_size_)*/{}
+    , decltype(_impl_.key_){}};
+
+  _internal_metadata_.MergeFrom<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(from._internal_metadata_);
+  _this->_impl_.key_ = from._impl_.key_;
+  // @@protoc_insertion_point(copy_constructor:maa.KeyParam)
+}
+
+inline void KeyParam::SharedCtor(
+    ::_pb::Arena* arena, bool is_message_owned) {
+  (void)arena;
+  (void)is_message_owned;
+  new (&_impl_) Impl_{
+      decltype(_impl_._has_bits_){}
+    , /*decltype(_impl_._cached_size_)*/{}
+    , decltype(_impl_.key_){0}
+  };
+}
+
+KeyParam::~KeyParam() {
+  // @@protoc_insertion_point(destructor:maa.KeyParam)
+  if (auto *arena = _internal_metadata_.DeleteReturnArena<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>()) {
+  (void)arena;
+    return;
+  }
+  SharedDtor();
+}
+
+inline void KeyParam::SharedDtor() {
+  GOOGLE_DCHECK(GetArenaForAllocation() == nullptr);
+}
+
+void KeyParam::SetCachedSize(int size) const {
+  _impl_._cached_size_.Set(size);
+}
+
+void KeyParam::Clear() {
+// @@protoc_insertion_point(message_clear_start:maa.KeyParam)
+  uint32_t cached_has_bits = 0;
+  // Prevent compiler warnings about cached_has_bits being unused
+  (void) cached_has_bits;
+
+  _impl_.key_ = 0;
+  _impl_._has_bits_.Clear();
+  _internal_metadata_.Clear<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>();
+}
+
+const char* KeyParam::_InternalParse(const char* ptr, ::_pbi::ParseContext* ctx) {
+#define CHK_(x) if (PROTOBUF_PREDICT_FALSE(!(x))) goto failure
+  _Internal::HasBits has_bits{};
+  while (!ctx->Done(&ptr)) {
+    uint32_t tag;
+    ptr = ::_pbi::ReadTag(ptr, &tag);
+    switch (tag >> 3) {
+      // optional int32 key = 1;
+      case 1:
+        if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 8)) {
+          _Internal::set_has_key(&has_bits);
+          _impl_.key_ = ::PROTOBUF_NAMESPACE_ID::internal::ReadVarint32(&ptr);
+          CHK_(ptr);
+        } else
+          goto handle_unusual;
+        continue;
+      default:
+        goto handle_unusual;
+    }  // switch
+  handle_unusual:
+    if ((tag == 0) || ((tag & 7) == 4)) {
+      CHK_(ptr);
+      ctx->SetLastTag(tag);
+      goto message_done;
+    }
+    ptr = UnknownFieldParse(
+        tag,
+        _internal_metadata_.mutable_unknown_fields<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(),
+        ptr, ctx);
+    CHK_(ptr != nullptr);
+  }  // while
+message_done:
+  _impl_._has_bits_.Or(has_bits);
+  return ptr;
+failure:
+  ptr = nullptr;
+  goto message_done;
+#undef CHK_
+}
+
+uint8_t* KeyParam::_InternalSerialize(
+    uint8_t* target, ::PROTOBUF_NAMESPACE_ID::io::EpsCopyOutputStream* stream) const {
+  // @@protoc_insertion_point(serialize_to_array_start:maa.KeyParam)
+  uint32_t cached_has_bits = 0;
+  (void) cached_has_bits;
+
+  // optional int32 key = 1;
+  if (_internal_has_key()) {
+    target = stream->EnsureSpace(target);
+    target = ::_pbi::WireFormatLite::WriteInt32ToArray(1, this->_internal_key(), target);
+  }
+
+  if (PROTOBUF_PREDICT_FALSE(_internal_metadata_.have_unknown_fields())) {
+    target = ::_pbi::WireFormat::InternalSerializeUnknownFieldsToArray(
+        _internal_metadata_.unknown_fields<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(::PROTOBUF_NAMESPACE_ID::UnknownFieldSet::default_instance), target, stream);
+  }
+  // @@protoc_insertion_point(serialize_to_array_end:maa.KeyParam)
+  return target;
+}
+
+size_t KeyParam::ByteSizeLong() const {
+// @@protoc_insertion_point(message_byte_size_start:maa.KeyParam)
+  size_t total_size = 0;
+
+  uint32_t cached_has_bits = 0;
+  // Prevent compiler warnings about cached_has_bits being unused
+  (void) cached_has_bits;
+
+  // optional int32 key = 1;
+  cached_has_bits = _impl_._has_bits_[0];
+  if (cached_has_bits & 0x00000001u) {
+    total_size += ::_pbi::WireFormatLite::Int32SizePlusOne(this->_internal_key());
+  }
+
+  return MaybeComputeUnknownFieldsSize(total_size, &_impl_._cached_size_);
+}
+
+const ::PROTOBUF_NAMESPACE_ID::Message::ClassData KeyParam::_class_data_ = {
+    ::PROTOBUF_NAMESPACE_ID::Message::CopyWithSourceCheck,
+    KeyParam::MergeImpl
+};
+const ::PROTOBUF_NAMESPACE_ID::Message::ClassData*KeyParam::GetClassData() const { return &_class_data_; }
+
+
+void KeyParam::MergeImpl(::PROTOBUF_NAMESPACE_ID::Message& to_msg, const ::PROTOBUF_NAMESPACE_ID::Message& from_msg) {
+  auto* const _this = static_cast<KeyParam*>(&to_msg);
+  auto& from = static_cast<const KeyParam&>(from_msg);
+  // @@protoc_insertion_point(class_specific_merge_from_start:maa.KeyParam)
+  GOOGLE_DCHECK_NE(&from, _this);
+  uint32_t cached_has_bits = 0;
+  (void) cached_has_bits;
+
+  if (from._internal_has_key()) {
+    _this->_internal_set_key(from._internal_key());
+  }
+  _this->_internal_metadata_.MergeFrom<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(from._internal_metadata_);
+}
+
+void KeyParam::CopyFrom(const KeyParam& from) {
+// @@protoc_insertion_point(class_specific_copy_from_start:maa.KeyParam)
+  if (&from == this) return;
+  Clear();
+  MergeFrom(from);
+}
+
+bool KeyParam::IsInitialized() const {
+  return true;
+}
+
+void KeyParam::InternalSwap(KeyParam* other) {
+  using std::swap;
+  _internal_metadata_.InternalSwap(&other->_internal_metadata_);
+  swap(_impl_._has_bits_[0], other->_impl_._has_bits_[0]);
+  swap(_impl_.key_, other->_impl_.key_);
+}
+
+::PROTOBUF_NAMESPACE_ID::Metadata KeyParam::GetMetadata() const {
+  return ::_pbi::AssignDescriptors(
+      &descriptor_table_Types_2eproto_getter, &descriptor_table_Types_2eproto_once,
+      file_level_metadata_Types_2eproto[9]);
+}
+
+// ===================================================================
+
+class TouchParam::_Internal {
+ public:
+  using HasBits = decltype(std::declval<TouchParam>()._impl_._has_bits_);
+  static void set_has_contact(HasBits* has_bits) {
+    (*has_bits)[0] |= 2u;
+  }
+  static const ::maa::Point& pos(const TouchParam* msg);
+  static void set_has_pos(HasBits* has_bits) {
+    (*has_bits)[0] |= 1u;
+  }
+  static void set_has_pressure(HasBits* has_bits) {
+    (*has_bits)[0] |= 4u;
+  }
+};
+
+const ::maa::Point&
+TouchParam::_Internal::pos(const TouchParam* msg) {
+  return *msg->_impl_.pos_;
+}
+TouchParam::TouchParam(::PROTOBUF_NAMESPACE_ID::Arena* arena,
+                         bool is_message_owned)
+  : ::PROTOBUF_NAMESPACE_ID::Message(arena, is_message_owned) {
+  SharedCtor(arena, is_message_owned);
+  // @@protoc_insertion_point(arena_constructor:maa.TouchParam)
+}
+TouchParam::TouchParam(const TouchParam& from)
+  : ::PROTOBUF_NAMESPACE_ID::Message() {
+  TouchParam* const _this = this; (void)_this;
+  new (&_impl_) Impl_{
+      decltype(_impl_._has_bits_){from._impl_._has_bits_}
+    , /*decltype(_impl_._cached_size_)*/{}
+    , decltype(_impl_.pos_){nullptr}
+    , decltype(_impl_.contact_){}
+    , decltype(_impl_.pressure_){}};
+
+  _internal_metadata_.MergeFrom<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(from._internal_metadata_);
+  if (from._internal_has_pos()) {
+    _this->_impl_.pos_ = new ::maa::Point(*from._impl_.pos_);
+  }
+  ::memcpy(&_impl_.contact_, &from._impl_.contact_,
+    static_cast<size_t>(reinterpret_cast<char*>(&_impl_.pressure_) -
+    reinterpret_cast<char*>(&_impl_.contact_)) + sizeof(_impl_.pressure_));
+  // @@protoc_insertion_point(copy_constructor:maa.TouchParam)
+}
+
+inline void TouchParam::SharedCtor(
+    ::_pb::Arena* arena, bool is_message_owned) {
+  (void)arena;
+  (void)is_message_owned;
+  new (&_impl_) Impl_{
+      decltype(_impl_._has_bits_){}
+    , /*decltype(_impl_._cached_size_)*/{}
+    , decltype(_impl_.pos_){nullptr}
+    , decltype(_impl_.contact_){0}
+    , decltype(_impl_.pressure_){0}
+  };
+}
+
+TouchParam::~TouchParam() {
+  // @@protoc_insertion_point(destructor:maa.TouchParam)
+  if (auto *arena = _internal_metadata_.DeleteReturnArena<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>()) {
+  (void)arena;
+    return;
+  }
+  SharedDtor();
+}
+
+inline void TouchParam::SharedDtor() {
+  GOOGLE_DCHECK(GetArenaForAllocation() == nullptr);
+  if (this != internal_default_instance()) delete _impl_.pos_;
+}
+
+void TouchParam::SetCachedSize(int size) const {
+  _impl_._cached_size_.Set(size);
+}
+
+void TouchParam::Clear() {
+// @@protoc_insertion_point(message_clear_start:maa.TouchParam)
+  uint32_t cached_has_bits = 0;
+  // Prevent compiler warnings about cached_has_bits being unused
+  (void) cached_has_bits;
+
+  cached_has_bits = _impl_._has_bits_[0];
+  if (cached_has_bits & 0x00000001u) {
+    GOOGLE_DCHECK(_impl_.pos_ != nullptr);
+    _impl_.pos_->Clear();
+  }
+  if (cached_has_bits & 0x00000006u) {
+    ::memset(&_impl_.contact_, 0, static_cast<size_t>(
+        reinterpret_cast<char*>(&_impl_.pressure_) -
+        reinterpret_cast<char*>(&_impl_.contact_)) + sizeof(_impl_.pressure_));
+  }
+  _impl_._has_bits_.Clear();
+  _internal_metadata_.Clear<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>();
+}
+
+const char* TouchParam::_InternalParse(const char* ptr, ::_pbi::ParseContext* ctx) {
+#define CHK_(x) if (PROTOBUF_PREDICT_FALSE(!(x))) goto failure
+  _Internal::HasBits has_bits{};
+  while (!ctx->Done(&ptr)) {
+    uint32_t tag;
+    ptr = ::_pbi::ReadTag(ptr, &tag);
+    switch (tag >> 3) {
+      // optional int32 contact = 1;
+      case 1:
+        if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 8)) {
+          _Internal::set_has_contact(&has_bits);
+          _impl_.contact_ = ::PROTOBUF_NAMESPACE_ID::internal::ReadVarint32(&ptr);
+          CHK_(ptr);
+        } else
+          goto handle_unusual;
+        continue;
+      // optional .maa.Point pos = 2;
+      case 2:
+        if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 18)) {
+          ptr = ctx->ParseMessage(_internal_mutable_pos(), ptr);
+          CHK_(ptr);
+        } else
+          goto handle_unusual;
+        continue;
+      // optional int32 pressure = 3;
+      case 3:
+        if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 24)) {
+          _Internal::set_has_pressure(&has_bits);
+          _impl_.pressure_ = ::PROTOBUF_NAMESPACE_ID::internal::ReadVarint32(&ptr);
+          CHK_(ptr);
+        } else
+          goto handle_unusual;
+        continue;
+      default:
+        goto handle_unusual;
+    }  // switch
+  handle_unusual:
+    if ((tag == 0) || ((tag & 7) == 4)) {
+      CHK_(ptr);
+      ctx->SetLastTag(tag);
+      goto message_done;
+    }
+    ptr = UnknownFieldParse(
+        tag,
+        _internal_metadata_.mutable_unknown_fields<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(),
+        ptr, ctx);
+    CHK_(ptr != nullptr);
+  }  // while
+message_done:
+  _impl_._has_bits_.Or(has_bits);
+  return ptr;
+failure:
+  ptr = nullptr;
+  goto message_done;
+#undef CHK_
+}
+
+uint8_t* TouchParam::_InternalSerialize(
+    uint8_t* target, ::PROTOBUF_NAMESPACE_ID::io::EpsCopyOutputStream* stream) const {
+  // @@protoc_insertion_point(serialize_to_array_start:maa.TouchParam)
+  uint32_t cached_has_bits = 0;
+  (void) cached_has_bits;
+
+  // optional int32 contact = 1;
+  if (_internal_has_contact()) {
+    target = stream->EnsureSpace(target);
+    target = ::_pbi::WireFormatLite::WriteInt32ToArray(1, this->_internal_contact(), target);
+  }
+
+  // optional .maa.Point pos = 2;
+  if (_internal_has_pos()) {
+    target = ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::
+      InternalWriteMessage(2, _Internal::pos(this),
+        _Internal::pos(this).GetCachedSize(), target, stream);
+  }
+
+  // optional int32 pressure = 3;
+  if (_internal_has_pressure()) {
+    target = stream->EnsureSpace(target);
+    target = ::_pbi::WireFormatLite::WriteInt32ToArray(3, this->_internal_pressure(), target);
+  }
+
+  if (PROTOBUF_PREDICT_FALSE(_internal_metadata_.have_unknown_fields())) {
+    target = ::_pbi::WireFormat::InternalSerializeUnknownFieldsToArray(
+        _internal_metadata_.unknown_fields<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(::PROTOBUF_NAMESPACE_ID::UnknownFieldSet::default_instance), target, stream);
+  }
+  // @@protoc_insertion_point(serialize_to_array_end:maa.TouchParam)
+  return target;
+}
+
+size_t TouchParam::ByteSizeLong() const {
+// @@protoc_insertion_point(message_byte_size_start:maa.TouchParam)
+  size_t total_size = 0;
+
+  uint32_t cached_has_bits = 0;
+  // Prevent compiler warnings about cached_has_bits being unused
+  (void) cached_has_bits;
+
+  cached_has_bits = _impl_._has_bits_[0];
+  if (cached_has_bits & 0x00000007u) {
+    // optional .maa.Point pos = 2;
+    if (cached_has_bits & 0x00000001u) {
+      total_size += 1 +
+        ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::MessageSize(
+          *_impl_.pos_);
+    }
+
+    // optional int32 contact = 1;
+    if (cached_has_bits & 0x00000002u) {
+      total_size += ::_pbi::WireFormatLite::Int32SizePlusOne(this->_internal_contact());
+    }
+
+    // optional int32 pressure = 3;
+    if (cached_has_bits & 0x00000004u) {
+      total_size += ::_pbi::WireFormatLite::Int32SizePlusOne(this->_internal_pressure());
+    }
+
+  }
+  return MaybeComputeUnknownFieldsSize(total_size, &_impl_._cached_size_);
+}
+
+const ::PROTOBUF_NAMESPACE_ID::Message::ClassData TouchParam::_class_data_ = {
+    ::PROTOBUF_NAMESPACE_ID::Message::CopyWithSourceCheck,
+    TouchParam::MergeImpl
+};
+const ::PROTOBUF_NAMESPACE_ID::Message::ClassData*TouchParam::GetClassData() const { return &_class_data_; }
+
+
+void TouchParam::MergeImpl(::PROTOBUF_NAMESPACE_ID::Message& to_msg, const ::PROTOBUF_NAMESPACE_ID::Message& from_msg) {
+  auto* const _this = static_cast<TouchParam*>(&to_msg);
+  auto& from = static_cast<const TouchParam&>(from_msg);
+  // @@protoc_insertion_point(class_specific_merge_from_start:maa.TouchParam)
+  GOOGLE_DCHECK_NE(&from, _this);
+  uint32_t cached_has_bits = 0;
+  (void) cached_has_bits;
+
+  cached_has_bits = from._impl_._has_bits_[0];
+  if (cached_has_bits & 0x00000007u) {
+    if (cached_has_bits & 0x00000001u) {
+      _this->_internal_mutable_pos()->::maa::Point::MergeFrom(
+          from._internal_pos());
+    }
+    if (cached_has_bits & 0x00000002u) {
+      _this->_impl_.contact_ = from._impl_.contact_;
+    }
+    if (cached_has_bits & 0x00000004u) {
+      _this->_impl_.pressure_ = from._impl_.pressure_;
+    }
+    _this->_impl_._has_bits_[0] |= cached_has_bits;
+  }
+  _this->_internal_metadata_.MergeFrom<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(from._internal_metadata_);
+}
+
+void TouchParam::CopyFrom(const TouchParam& from) {
+// @@protoc_insertion_point(class_specific_copy_from_start:maa.TouchParam)
+  if (&from == this) return;
+  Clear();
+  MergeFrom(from);
+}
+
+bool TouchParam::IsInitialized() const {
+  return true;
+}
+
+void TouchParam::InternalSwap(TouchParam* other) {
+  using std::swap;
+  _internal_metadata_.InternalSwap(&other->_internal_metadata_);
+  swap(_impl_._has_bits_[0], other->_impl_._has_bits_[0]);
+  ::PROTOBUF_NAMESPACE_ID::internal::memswap<
+      PROTOBUF_FIELD_OFFSET(TouchParam, _impl_.pressure_)
+      + sizeof(TouchParam::_impl_.pressure_)
+      - PROTOBUF_FIELD_OFFSET(TouchParam, _impl_.pos_)>(
+          reinterpret_cast<char*>(&_impl_.pos_),
+          reinterpret_cast<char*>(&other->_impl_.pos_));
+}
+
+::PROTOBUF_NAMESPACE_ID::Metadata TouchParam::GetMetadata() const {
+  return ::_pbi::AssignDescriptors(
+      &descriptor_table_Types_2eproto_getter, &descriptor_table_Types_2eproto_once,
+      file_level_metadata_Types_2eproto[10]);
 }
 
 // ===================================================================
@@ -1978,7 +3352,7 @@ const ::PROTOBUF_NAMESPACE_ID::Message::ClassData*EmptyRequest::GetClassData() c
 ::PROTOBUF_NAMESPACE_ID::Metadata EmptyRequest::GetMetadata() const {
   return ::_pbi::AssignDescriptors(
       &descriptor_table_Types_2eproto_getter, &descriptor_table_Types_2eproto_once,
-      file_level_metadata_Types_2eproto[6]);
+      file_level_metadata_Types_2eproto[11]);
 }
 
 // ===================================================================
@@ -2183,7 +3557,7 @@ void IdRequest::InternalSwap(IdRequest* other) {
 ::PROTOBUF_NAMESPACE_ID::Metadata IdRequest::GetMetadata() const {
   return ::_pbi::AssignDescriptors(
       &descriptor_table_Types_2eproto_getter, &descriptor_table_Types_2eproto_once,
-      file_level_metadata_Types_2eproto[7]);
+      file_level_metadata_Types_2eproto[12]);
 }
 
 // ===================================================================
@@ -2388,7 +3762,7 @@ void HandleRequest::InternalSwap(HandleRequest* other) {
 ::PROTOBUF_NAMESPACE_ID::Metadata HandleRequest::GetMetadata() const {
   return ::_pbi::AssignDescriptors(
       &descriptor_table_Types_2eproto_getter, &descriptor_table_Types_2eproto_once,
-      file_level_metadata_Types_2eproto[8]);
+      file_level_metadata_Types_2eproto[13]);
 }
 
 // ===================================================================
@@ -2600,7 +3974,7 @@ void BufferRequest::InternalSwap(BufferRequest* other) {
 ::PROTOBUF_NAMESPACE_ID::Metadata BufferRequest::GetMetadata() const {
   return ::_pbi::AssignDescriptors(
       &descriptor_table_Types_2eproto_getter, &descriptor_table_Types_2eproto_once,
-      file_level_metadata_Types_2eproto[9]);
+      file_level_metadata_Types_2eproto[14]);
 }
 
 // ===================================================================
@@ -2864,7 +4238,7 @@ void HandleBufferRequest::InternalSwap(HandleBufferRequest* other) {
 ::PROTOBUF_NAMESPACE_ID::Metadata HandleBufferRequest::GetMetadata() const {
   return ::_pbi::AssignDescriptors(
       &descriptor_table_Types_2eproto_getter, &descriptor_table_Types_2eproto_once,
-      file_level_metadata_Types_2eproto[10]);
+      file_level_metadata_Types_2eproto[15]);
 }
 
 // ===================================================================
@@ -3133,7 +4507,7 @@ void HandleStringRequest::InternalSwap(HandleStringRequest* other) {
 ::PROTOBUF_NAMESPACE_ID::Metadata HandleStringRequest::GetMetadata() const {
   return ::_pbi::AssignDescriptors(
       &descriptor_table_Types_2eproto_getter, &descriptor_table_Types_2eproto_once,
-      file_level_metadata_Types_2eproto[11]);
+      file_level_metadata_Types_2eproto[16]);
 }
 
 // ===================================================================
@@ -3394,7 +4768,7 @@ void HandleIdRequest::InternalSwap(HandleIdRequest* other) {
 ::PROTOBUF_NAMESPACE_ID::Metadata HandleIdRequest::GetMetadata() const {
   return ::_pbi::AssignDescriptors(
       &descriptor_table_Types_2eproto_getter, &descriptor_table_Types_2eproto_once,
-      file_level_metadata_Types_2eproto[12]);
+      file_level_metadata_Types_2eproto[17]);
 }
 
 // ===================================================================
@@ -3484,9 +4858,9 @@ const char* EmptyResponse::_InternalParse(const char* ptr, ::_pbi::ParseContext*
     uint32_t tag;
     ptr = ::_pbi::ReadTag(ptr, &tag);
     switch (tag >> 3) {
-      // optional .maa.RpcStatus status = 1;
-      case 1:
-        if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 10)) {
+      // optional .maa.RpcStatus status = 101;
+      case 101:
+        if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 42)) {
           ptr = ctx->ParseMessage(_internal_mutable_status(), ptr);
           CHK_(ptr);
         } else
@@ -3522,10 +4896,10 @@ uint8_t* EmptyResponse::_InternalSerialize(
   uint32_t cached_has_bits = 0;
   (void) cached_has_bits;
 
-  // optional .maa.RpcStatus status = 1;
+  // optional .maa.RpcStatus status = 101;
   if (_internal_has_status()) {
     target = ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::
-      InternalWriteMessage(1, _Internal::status(this),
+      InternalWriteMessage(101, _Internal::status(this),
         _Internal::status(this).GetCachedSize(), target, stream);
   }
 
@@ -3545,10 +4919,10 @@ size_t EmptyResponse::ByteSizeLong() const {
   // Prevent compiler warnings about cached_has_bits being unused
   (void) cached_has_bits;
 
-  // optional .maa.RpcStatus status = 1;
+  // optional .maa.RpcStatus status = 101;
   cached_has_bits = _impl_._has_bits_[0];
   if (cached_has_bits & 0x00000001u) {
-    total_size += 1 +
+    total_size += 2 +
       ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::MessageSize(
         *_impl_.status_);
   }
@@ -3599,7 +4973,7 @@ void EmptyResponse::InternalSwap(EmptyResponse* other) {
 ::PROTOBUF_NAMESPACE_ID::Metadata EmptyResponse::GetMetadata() const {
   return ::_pbi::AssignDescriptors(
       &descriptor_table_Types_2eproto_getter, &descriptor_table_Types_2eproto_once,
-      file_level_metadata_Types_2eproto[13]);
+      file_level_metadata_Types_2eproto[18]);
 }
 
 // ===================================================================
@@ -3607,23 +4981,23 @@ void EmptyResponse::InternalSwap(EmptyResponse* other) {
 class IdResponse::_Internal {
  public:
   using HasBits = decltype(std::declval<IdResponse>()._impl_._has_bits_);
-  static const ::maa::RpcStatus& status(const IdResponse* msg);
-  static void set_has_status(HasBits* has_bits) {
-    (*has_bits)[0] |= 1u;
-  }
   static const ::maa::Id& id(const IdResponse* msg);
   static void set_has_id(HasBits* has_bits) {
+    (*has_bits)[0] |= 1u;
+  }
+  static const ::maa::RpcStatus& status(const IdResponse* msg);
+  static void set_has_status(HasBits* has_bits) {
     (*has_bits)[0] |= 2u;
   }
 };
 
-const ::maa::RpcStatus&
-IdResponse::_Internal::status(const IdResponse* msg) {
-  return *msg->_impl_.status_;
-}
 const ::maa::Id&
 IdResponse::_Internal::id(const IdResponse* msg) {
   return *msg->_impl_.id_;
+}
+const ::maa::RpcStatus&
+IdResponse::_Internal::status(const IdResponse* msg) {
+  return *msg->_impl_.status_;
 }
 IdResponse::IdResponse(::PROTOBUF_NAMESPACE_ID::Arena* arena,
                          bool is_message_owned)
@@ -3637,15 +5011,15 @@ IdResponse::IdResponse(const IdResponse& from)
   new (&_impl_) Impl_{
       decltype(_impl_._has_bits_){from._impl_._has_bits_}
     , /*decltype(_impl_._cached_size_)*/{}
-    , decltype(_impl_.status_){nullptr}
-    , decltype(_impl_.id_){nullptr}};
+    , decltype(_impl_.id_){nullptr}
+    , decltype(_impl_.status_){nullptr}};
 
   _internal_metadata_.MergeFrom<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(from._internal_metadata_);
-  if (from._internal_has_status()) {
-    _this->_impl_.status_ = new ::maa::RpcStatus(*from._impl_.status_);
-  }
   if (from._internal_has_id()) {
     _this->_impl_.id_ = new ::maa::Id(*from._impl_.id_);
+  }
+  if (from._internal_has_status()) {
+    _this->_impl_.status_ = new ::maa::RpcStatus(*from._impl_.status_);
   }
   // @@protoc_insertion_point(copy_constructor:maa.IdResponse)
 }
@@ -3657,8 +5031,8 @@ inline void IdResponse::SharedCtor(
   new (&_impl_) Impl_{
       decltype(_impl_._has_bits_){}
     , /*decltype(_impl_._cached_size_)*/{}
-    , decltype(_impl_.status_){nullptr}
     , decltype(_impl_.id_){nullptr}
+    , decltype(_impl_.status_){nullptr}
   };
 }
 
@@ -3673,8 +5047,8 @@ IdResponse::~IdResponse() {
 
 inline void IdResponse::SharedDtor() {
   GOOGLE_DCHECK(GetArenaForAllocation() == nullptr);
-  if (this != internal_default_instance()) delete _impl_.status_;
   if (this != internal_default_instance()) delete _impl_.id_;
+  if (this != internal_default_instance()) delete _impl_.status_;
 }
 
 void IdResponse::SetCachedSize(int size) const {
@@ -3690,12 +5064,12 @@ void IdResponse::Clear() {
   cached_has_bits = _impl_._has_bits_[0];
   if (cached_has_bits & 0x00000003u) {
     if (cached_has_bits & 0x00000001u) {
-      GOOGLE_DCHECK(_impl_.status_ != nullptr);
-      _impl_.status_->Clear();
-    }
-    if (cached_has_bits & 0x00000002u) {
       GOOGLE_DCHECK(_impl_.id_ != nullptr);
       _impl_.id_->Clear();
+    }
+    if (cached_has_bits & 0x00000002u) {
+      GOOGLE_DCHECK(_impl_.status_ != nullptr);
+      _impl_.status_->Clear();
     }
   }
   _impl_._has_bits_.Clear();
@@ -3709,18 +5083,18 @@ const char* IdResponse::_InternalParse(const char* ptr, ::_pbi::ParseContext* ct
     uint32_t tag;
     ptr = ::_pbi::ReadTag(ptr, &tag);
     switch (tag >> 3) {
-      // optional .maa.RpcStatus status = 1;
+      // optional .maa.Id id = 1;
       case 1:
         if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 10)) {
-          ptr = ctx->ParseMessage(_internal_mutable_status(), ptr);
+          ptr = ctx->ParseMessage(_internal_mutable_id(), ptr);
           CHK_(ptr);
         } else
           goto handle_unusual;
         continue;
-      // optional .maa.Id id = 101;
+      // optional .maa.RpcStatus status = 101;
       case 101:
         if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 42)) {
-          ptr = ctx->ParseMessage(_internal_mutable_id(), ptr);
+          ptr = ctx->ParseMessage(_internal_mutable_status(), ptr);
           CHK_(ptr);
         } else
           goto handle_unusual;
@@ -3755,18 +5129,18 @@ uint8_t* IdResponse::_InternalSerialize(
   uint32_t cached_has_bits = 0;
   (void) cached_has_bits;
 
-  // optional .maa.RpcStatus status = 1;
-  if (_internal_has_status()) {
-    target = ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::
-      InternalWriteMessage(1, _Internal::status(this),
-        _Internal::status(this).GetCachedSize(), target, stream);
-  }
-
-  // optional .maa.Id id = 101;
+  // optional .maa.Id id = 1;
   if (_internal_has_id()) {
     target = ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::
-      InternalWriteMessage(101, _Internal::id(this),
+      InternalWriteMessage(1, _Internal::id(this),
         _Internal::id(this).GetCachedSize(), target, stream);
+  }
+
+  // optional .maa.RpcStatus status = 101;
+  if (_internal_has_status()) {
+    target = ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::
+      InternalWriteMessage(101, _Internal::status(this),
+        _Internal::status(this).GetCachedSize(), target, stream);
   }
 
   if (PROTOBUF_PREDICT_FALSE(_internal_metadata_.have_unknown_fields())) {
@@ -3787,18 +5161,18 @@ size_t IdResponse::ByteSizeLong() const {
 
   cached_has_bits = _impl_._has_bits_[0];
   if (cached_has_bits & 0x00000003u) {
-    // optional .maa.RpcStatus status = 1;
+    // optional .maa.Id id = 1;
     if (cached_has_bits & 0x00000001u) {
       total_size += 1 +
         ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::MessageSize(
-          *_impl_.status_);
+          *_impl_.id_);
     }
 
-    // optional .maa.Id id = 101;
+    // optional .maa.RpcStatus status = 101;
     if (cached_has_bits & 0x00000002u) {
       total_size += 2 +
         ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::MessageSize(
-          *_impl_.id_);
+          *_impl_.status_);
     }
 
   }
@@ -3823,12 +5197,12 @@ void IdResponse::MergeImpl(::PROTOBUF_NAMESPACE_ID::Message& to_msg, const ::PRO
   cached_has_bits = from._impl_._has_bits_[0];
   if (cached_has_bits & 0x00000003u) {
     if (cached_has_bits & 0x00000001u) {
-      _this->_internal_mutable_status()->::maa::RpcStatus::MergeFrom(
-          from._internal_status());
-    }
-    if (cached_has_bits & 0x00000002u) {
       _this->_internal_mutable_id()->::maa::Id::MergeFrom(
           from._internal_id());
+    }
+    if (cached_has_bits & 0x00000002u) {
+      _this->_internal_mutable_status()->::maa::RpcStatus::MergeFrom(
+          from._internal_status());
     }
   }
   _this->_internal_metadata_.MergeFrom<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(from._internal_metadata_);
@@ -3850,17 +5224,17 @@ void IdResponse::InternalSwap(IdResponse* other) {
   _internal_metadata_.InternalSwap(&other->_internal_metadata_);
   swap(_impl_._has_bits_[0], other->_impl_._has_bits_[0]);
   ::PROTOBUF_NAMESPACE_ID::internal::memswap<
-      PROTOBUF_FIELD_OFFSET(IdResponse, _impl_.id_)
-      + sizeof(IdResponse::_impl_.id_)
-      - PROTOBUF_FIELD_OFFSET(IdResponse, _impl_.status_)>(
-          reinterpret_cast<char*>(&_impl_.status_),
-          reinterpret_cast<char*>(&other->_impl_.status_));
+      PROTOBUF_FIELD_OFFSET(IdResponse, _impl_.status_)
+      + sizeof(IdResponse::_impl_.status_)
+      - PROTOBUF_FIELD_OFFSET(IdResponse, _impl_.id_)>(
+          reinterpret_cast<char*>(&_impl_.id_),
+          reinterpret_cast<char*>(&other->_impl_.id_));
 }
 
 ::PROTOBUF_NAMESPACE_ID::Metadata IdResponse::GetMetadata() const {
   return ::_pbi::AssignDescriptors(
       &descriptor_table_Types_2eproto_getter, &descriptor_table_Types_2eproto_once,
-      file_level_metadata_Types_2eproto[14]);
+      file_level_metadata_Types_2eproto[19]);
 }
 
 // ===================================================================
@@ -4106,7 +5480,7 @@ void BoolResponse::InternalSwap(BoolResponse* other) {
 ::PROTOBUF_NAMESPACE_ID::Metadata BoolResponse::GetMetadata() const {
   return ::_pbi::AssignDescriptors(
       &descriptor_table_Types_2eproto_getter, &descriptor_table_Types_2eproto_once,
-      file_level_metadata_Types_2eproto[15]);
+      file_level_metadata_Types_2eproto[20]);
 }
 
 // ===================================================================
@@ -4375,7 +5749,7 @@ void StringResponse::InternalSwap(StringResponse* other) {
 ::PROTOBUF_NAMESPACE_ID::Metadata StringResponse::GetMetadata() const {
   return ::_pbi::AssignDescriptors(
       &descriptor_table_Types_2eproto_getter, &descriptor_table_Types_2eproto_once,
-      file_level_metadata_Types_2eproto[16]);
+      file_level_metadata_Types_2eproto[21]);
 }
 
 // ===================================================================
@@ -4636,7 +6010,7 @@ void HandleResponse::InternalSwap(HandleResponse* other) {
 ::PROTOBUF_NAMESPACE_ID::Metadata HandleResponse::GetMetadata() const {
   return ::_pbi::AssignDescriptors(
       &descriptor_table_Types_2eproto_getter, &descriptor_table_Types_2eproto_once,
-      file_level_metadata_Types_2eproto[17]);
+      file_level_metadata_Types_2eproto[22]);
 }
 
 // ===================================================================
@@ -4900,7 +6274,7 @@ void BufferResponse::InternalSwap(BufferResponse* other) {
 ::PROTOBUF_NAMESPACE_ID::Metadata BufferResponse::GetMetadata() const {
   return ::_pbi::AssignDescriptors(
       &descriptor_table_Types_2eproto_getter, &descriptor_table_Types_2eproto_once,
-      file_level_metadata_Types_2eproto[18]);
+      file_level_metadata_Types_2eproto[23]);
 }
 
 // ===================================================================
@@ -5148,7 +6522,7 @@ void StatusResponse::InternalSwap(StatusResponse* other) {
 ::PROTOBUF_NAMESPACE_ID::Metadata StatusResponse::GetMetadata() const {
   return ::_pbi::AssignDescriptors(
       &descriptor_table_Types_2eproto_getter, &descriptor_table_Types_2eproto_once,
-      file_level_metadata_Types_2eproto[19]);
+      file_level_metadata_Types_2eproto[24]);
 }
 
 // @@protoc_insertion_point(namespace_scope)
@@ -5174,9 +6548,29 @@ template<> PROTOBUF_NOINLINE ::maa::Size*
 Arena::CreateMaybeMessage< ::maa::Size >(Arena* arena) {
   return Arena::CreateMessageInternal< ::maa::Size >(arena);
 }
+template<> PROTOBUF_NOINLINE ::maa::Rect*
+Arena::CreateMaybeMessage< ::maa::Rect >(Arena* arena) {
+  return Arena::CreateMessageInternal< ::maa::Rect >(arena);
+}
 template<> PROTOBUF_NOINLINE ::maa::Callback*
 Arena::CreateMaybeMessage< ::maa::Callback >(Arena* arena) {
   return Arena::CreateMessageInternal< ::maa::Callback >(arena);
+}
+template<> PROTOBUF_NOINLINE ::maa::ClickParam*
+Arena::CreateMaybeMessage< ::maa::ClickParam >(Arena* arena) {
+  return Arena::CreateMessageInternal< ::maa::ClickParam >(arena);
+}
+template<> PROTOBUF_NOINLINE ::maa::SwipeParam*
+Arena::CreateMaybeMessage< ::maa::SwipeParam >(Arena* arena) {
+  return Arena::CreateMessageInternal< ::maa::SwipeParam >(arena);
+}
+template<> PROTOBUF_NOINLINE ::maa::KeyParam*
+Arena::CreateMaybeMessage< ::maa::KeyParam >(Arena* arena) {
+  return Arena::CreateMessageInternal< ::maa::KeyParam >(arena);
+}
+template<> PROTOBUF_NOINLINE ::maa::TouchParam*
+Arena::CreateMaybeMessage< ::maa::TouchParam >(Arena* arena) {
+  return Arena::CreateMessageInternal< ::maa::TouchParam >(arena);
 }
 template<> PROTOBUF_NOINLINE ::maa::EmptyRequest*
 Arena::CreateMaybeMessage< ::maa::EmptyRequest >(Arena* arena) {
