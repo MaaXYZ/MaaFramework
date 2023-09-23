@@ -84,19 +84,291 @@
         },
         "pre_wait_freezes": {
           "description": "识别到 到 执行动作前，等待画面不动了的时间，毫秒。可选，默认 0，即不等待。",
-          "$ref": "#/definitions/wait_freezes"
+          "$ref": "#/definitions/wait_freezes_type"
         },
         "post_wait_freezes": {
           "description": "行动动作后 到 识别 next，等待画面不动了的时间，毫秒。可选，默认 0，即不等待。",
-          "$ref": "#/definitions/wait_freezes"
+          "$ref": "#/definitions/wait_freezes_type"
         },
         "focus": {
           "description": "产生同步回调消息。可选，默认空，即不产生。",
           "type": "boolean",
           "default": false
+        },
+        "roi": {
+          "description": "识别区域坐标。可选，默认 [0, 0, 0, 0]，即全屏。",
+          "$ref": "#/definitions/rectlist",
+          "default": [
+            0,
+            0,
+            0,
+            0
+          ]
+        },
+        "template": {
+          "description": "模板图片路径，需要 image 文件夹的相对路径。必选。",
+          "$ref": "#/definitions/tasklist",
+          "default": ""
+        },
+        "threshold": {
+          "description": "模板匹配阈值。可选，默认 0.7 。",
+          "type": "number",
+          "default": 0.7,
+          "minimum": 0,
+          "maximum": 1
+        },
+        "method": {
+          "description": "模板匹配算法，即 cv::TemplateMatchModes。可选，默认 5 ",
+          "enum": [
+            1,
+            3,
+            5
+          ],
+          "default": 5
+        },
+        "green_mask": {
+          "description": "是否进行绿色掩码。可选，默认 false。",
+          "type": "boolean",
+          "default": false
+        },
+        "lower": {
+          "description": "颜色下限值。必选。最内层 list 长度需和 method 的通道数一致。",
+          "$ref": "#/definitions/colorlist"
+        },
+        "upper": {
+          "description": "颜色上限值。必选。最内层 list 长度需和 method 的通道数一致。",
+          "$ref": "#/definitions/colorlist"
+        },
+        "count": {
+          "description": "符合的点的数量要求。可选，默认 1。",
+          "type": "integer",
+          "default": 1
+        },
+        "connected": {
+          "description": "是否是相连的点才会被计数。可选，默认否。",
+          "type": "boolean",
+          "default": false
+        },
+        "text": {
+          "description": "要匹配的文字，支持正则。必选（除非通过接口单独设置）。",
+          "$ref": "#/definitions/tasklist",
+          "default": ""
+        },
+        "replace": {
+          "description": "部分文字识别结果不准确，进行替换。可选。",
+          "$ref": "#/definitions/replace_type",
+          "default": []
+        },
+        "only_rec": {
+          "description": "是否仅识别（不进行检测，需要精确设置 roi）。可选，默认 false。",
+          "type": "boolean",
+          "default": false
+        },
+        "model": {
+          "description": "模型 文件夹 路径。使用 model/ocr 文件夹的相对路径。可选，默认为空。",
+          "type": "string",
+          "default": ""
+        },
+        "cls_size": {
+          "description": "总分类数，必选。",
+          "type": "integer",
+          "default": 2
+        },
+        "labels": {
+          "description": "标注，即每个分类的名字。可选。",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "expected": {
+          "description": "期望的分类下标。必选",
+          "$ref": "#/definitions/expected_type"
+        },
+        "custom_recognizer": {
+          "description": "任务名，同 MaaRegisterCustomRecognizer 接口传入的识别器名。必选。",
+          "type": "string",
+          "default": ""
+        },
+        "custom_recognizer_param": {
+          "description": "任务参数，任意类型，会在执行时透传。可选，默认空 json，即 {}",
+          "default": {}
         }
       },
-      "additionalProperties": false
+      "additionalProperties": false,
+      "dependenciesSchemas": {
+        "recognition": {
+          "oneOf": [
+            {
+              "$comment": "TemplateMatch",
+              "if": {
+                "required": [
+                  "recognition"
+                ],
+                "properties": {
+                  "recognition": {
+                    "enum": [
+                      "TemplateMatch"
+                    ]
+                  }
+                }
+              },
+              "then": {
+                "required": [
+                  "template"
+                ]
+              }
+            },
+            {
+              "$comment": "ColorMatch",
+              "if": {
+                "required": [
+                  "recognition"
+                ],
+                "properties": {
+                  "recognition": {
+                    "enum": [
+                      "ColorMatch"
+                    ]
+                  }
+                }
+              },
+              "then": {
+                "required": [
+                  "lower",
+                  "upper"
+                ],
+                "properties": {
+                  "method": {
+                    "description": "颜色匹配方式。即 cv::ColorConversionCodes。可选，默认 4 (RGB)。\n常用值：4 (RGB, 3 通道), 40 (HSV, 3 通道), 6 (GRAY, 1 通道)。",
+                    "type": "integer",
+                    "default": 4
+                  }
+                }
+              }
+            },
+            {
+              "$comment": "OCR",
+              "if": {
+                "required": [
+                  "recognition"
+                ],
+                "properties": {
+                  "recognition": {
+                    "enum": [
+                      "OCR"
+                    ]
+                  }
+                },
+                "not": {
+                  "required": [
+                    "text_doc"
+                  ]
+                }
+              },
+              "then": {
+                "required": [
+                  "text"
+                ]
+              }
+            },
+            {
+              "$comment": "Classify",
+              "if": {
+                "required": [
+                  "recognition"
+                ],
+                "properties": {
+                  "recognition": {
+                    "enum": [
+                      "Classify"
+                    ]
+                  }
+                }
+              },
+              "then": {
+                "required": [
+                  "cls_size",
+                  "model",
+                  "expected"
+                ],
+                "properties": {
+                  "model": {
+                    "description": "模型文件路径。使用 model/classify 文件夹的相对路径。必选。",
+                    "type": "string",
+                    "default": ""
+                  }
+                }
+              }
+            },
+            {
+              "$comment": "Detect",
+              "if": {
+                "required": [
+                  "recognition"
+                ],
+                "properties": {
+                  "recognition": {
+                    "enum": [
+                      "Detect"
+                    ]
+                  }
+                }
+              },
+              "then": {
+                "required": [
+                  "cls_size",
+                  "model",
+                  "expected"
+                ],
+                "properties": {
+                  "model": {
+                    "description": "模型文件路径。使用 model/detect 文件夹的相对路径。必选。",
+                    "type": "string",
+                    "default": ""
+                  },
+                  "threshold": {
+                    "description": "模型置信度阈值。可选，默认 0.3 。",
+                    "anyOf": [
+                      {
+                        "type": "number"
+                      },
+                      {
+                        "type": "array",
+                        "items": {
+                          "type": "number"
+                        },
+                        "minItems": 1
+                      }
+                    ],
+                    "default": 0.3
+                  }
+                }
+              }
+            },
+            {
+              "$comment": "Custom",
+              "if": {
+                "required": [
+                  "recognition"
+                ],
+                "properties": {
+                  "recognition": {
+                    "enum": [
+                      "Custom"
+                    ]
+                  }
+                }
+              },
+              "then": {
+                "required": [
+                  "custom_recognizer"
+                ]
+              }
+            }
+          ] 
+        }
+      }
     }
   },
   "definitions": {
@@ -107,6 +379,30 @@
       },
       "minItems": 4,
       "maxItems": 4
+    },
+    "rectlist": {
+      "anyOf": [
+        {
+          "type": "array",
+          "items": {
+            "type": "number"
+          },
+          "minItems": 4,
+          "maxItems": 4
+        },
+        {
+          "type": "array",
+          "items": {
+            "type": "array",
+            "items": {
+              "type": "number"
+            },
+            "minItems": 4,
+            "maxItems": 4
+          },
+          "minItems": 1
+        }
+      ]
     },
     "tasklist": {
       "anyOf": [
@@ -121,7 +417,67 @@
         }
       ]
     },
-    "target": {
+    "colorlist": {
+      "anyOf": [
+        {
+          "type": "array",
+          "items": {
+            "type": "integer"
+          },
+          "minItems": 1
+        },
+        {
+          "type": "array",
+          "items": {
+            "type": "array",
+            "items": {
+              "type": "integer"
+            },
+            "minItems": 1
+          },
+          "minItems": 1
+        }
+      ]
+    },
+    "replace_type": {
+      "anyOf": [
+        {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "minItems": 2,
+          "maxItems": 2
+        },
+        {
+          "type": "array",
+          "items": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "minItems": 2,
+            "maxItems": 2
+          },
+          "minItems": 1
+        }
+      ]
+    },
+    "expected_type": {
+      "anyOf": [
+        {
+          "type": "integer"
+        },
+        {
+          "type": "array",
+          "items": {
+            "type": "integer"
+          },
+          "minItems": 1
+        }
+      ]
+    },
+    "target_type": {
       "anyOf": [
         {
           "type": "boolean"
@@ -134,7 +490,7 @@
         }
       ]
     },
-    "wait_freezes": {
+    "wait_freezes_type": {
       "anyOf": [
         {
           "type": "integer",
@@ -152,7 +508,7 @@
             },
             "target": {
               "description": "等待的目标。可选，默认 true。",
-              "$ref": "#/definitions/target",
+              "$ref": "#/definitions/target_type",
               "default": true
             },
             "target_offset": {
