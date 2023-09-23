@@ -4,6 +4,11 @@
   "patternProperties": {
     "^(?!.*?\\$schema).*$": {
       "type": "object",
+      "patternProperties": {
+        ".*_doc$": {
+          "type": "string"
+        }
+      },
       "properties": {
         "recognition": {
           "description": "识别算法类型。可选，默认 DirectHit。",
