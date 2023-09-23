@@ -6,13 +6,13 @@ message RpcStatus { optional bool success = 1; }
 
 message Id { optional uint64 id = 1; }
 message Handle { optional uint64 handle = 1; }
+message Point {
+  optional int32 x = 1;
+  optional int32 y = 2;
+}
 message Size {
   optional int32 width = 1;
   optional int32 height = 2;
-}
-message ImageInfo {
-  optional int32 type = 1;
-  optional Size size = 2;
 }
 enum Status {
   invalid = 0;
@@ -20,6 +20,10 @@ enum Status {
   running = 2000;
   success = 3000;
   failed = 4000;
+}
+message Callback {
+  optional string msg = 1;
+  optional string detail = 2;
 }
 
 message EmptyRequest {}
@@ -60,16 +64,7 @@ message BufferResponse {
   optional bytes value = 1;
   optional RpcStatus status = 101;
 }
-message ImageInfoResponse {
-  optional ImageInfo value = 1;
-  optional RpcStatus status = 101;
-}
 message StatusResponse {
   optional Status value = 1;
   optional RpcStatus status = 101;
-}
-
-message Callback {
-  optional string msg = 1;
-  optional string detail = 2;
 }

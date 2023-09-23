@@ -92,12 +92,9 @@ extern IdRequestDefaultTypeInternal _IdRequest_default_instance_;
 class IdResponse;
 struct IdResponseDefaultTypeInternal;
 extern IdResponseDefaultTypeInternal _IdResponse_default_instance_;
-class ImageInfo;
-struct ImageInfoDefaultTypeInternal;
-extern ImageInfoDefaultTypeInternal _ImageInfo_default_instance_;
-class ImageInfoResponse;
-struct ImageInfoResponseDefaultTypeInternal;
-extern ImageInfoResponseDefaultTypeInternal _ImageInfoResponse_default_instance_;
+class Point;
+struct PointDefaultTypeInternal;
+extern PointDefaultTypeInternal _Point_default_instance_;
 class RpcStatus;
 struct RpcStatusDefaultTypeInternal;
 extern RpcStatusDefaultTypeInternal _RpcStatus_default_instance_;
@@ -127,8 +124,7 @@ template<> ::maa::HandleStringRequest* Arena::CreateMaybeMessage<::maa::HandleSt
 template<> ::maa::Id* Arena::CreateMaybeMessage<::maa::Id>(Arena*);
 template<> ::maa::IdRequest* Arena::CreateMaybeMessage<::maa::IdRequest>(Arena*);
 template<> ::maa::IdResponse* Arena::CreateMaybeMessage<::maa::IdResponse>(Arena*);
-template<> ::maa::ImageInfo* Arena::CreateMaybeMessage<::maa::ImageInfo>(Arena*);
-template<> ::maa::ImageInfoResponse* Arena::CreateMaybeMessage<::maa::ImageInfoResponse>(Arena*);
+template<> ::maa::Point* Arena::CreateMaybeMessage<::maa::Point>(Arena*);
 template<> ::maa::RpcStatus* Arena::CreateMaybeMessage<::maa::RpcStatus>(Arena*);
 template<> ::maa::Size* Arena::CreateMaybeMessage<::maa::Size>(Arena*);
 template<> ::maa::StatusResponse* Arena::CreateMaybeMessage<::maa::StatusResponse>(Arena*);
@@ -625,6 +621,174 @@ class Handle final :
 };
 // -------------------------------------------------------------------
 
+class Point final :
+    public ::PROTOBUF_NAMESPACE_ID::Message /* @@protoc_insertion_point(class_definition:maa.Point) */ {
+ public:
+  inline Point() : Point(nullptr) {}
+  ~Point() override;
+  explicit PROTOBUF_CONSTEXPR Point(::PROTOBUF_NAMESPACE_ID::internal::ConstantInitialized);
+
+  Point(const Point& from);
+  Point(Point&& from) noexcept
+    : Point() {
+    *this = ::std::move(from);
+  }
+
+  inline Point& operator=(const Point& from) {
+    CopyFrom(from);
+    return *this;
+  }
+  inline Point& operator=(Point&& from) noexcept {
+    if (this == &from) return *this;
+    if (GetOwningArena() == from.GetOwningArena()
+  #ifdef PROTOBUF_FORCE_COPY_IN_MOVE
+        && GetOwningArena() != nullptr
+  #endif  // !PROTOBUF_FORCE_COPY_IN_MOVE
+    ) {
+      InternalSwap(&from);
+    } else {
+      CopyFrom(from);
+    }
+    return *this;
+  }
+
+  static const ::PROTOBUF_NAMESPACE_ID::Descriptor* descriptor() {
+    return GetDescriptor();
+  }
+  static const ::PROTOBUF_NAMESPACE_ID::Descriptor* GetDescriptor() {
+    return default_instance().GetMetadata().descriptor;
+  }
+  static const ::PROTOBUF_NAMESPACE_ID::Reflection* GetReflection() {
+    return default_instance().GetMetadata().reflection;
+  }
+  static const Point& default_instance() {
+    return *internal_default_instance();
+  }
+  static inline const Point* internal_default_instance() {
+    return reinterpret_cast<const Point*>(
+               &_Point_default_instance_);
+  }
+  static constexpr int kIndexInFileMessages =
+    3;
+
+  friend void swap(Point& a, Point& b) {
+    a.Swap(&b);
+  }
+  inline void Swap(Point* other) {
+    if (other == this) return;
+  #ifdef PROTOBUF_FORCE_COPY_IN_SWAP
+    if (GetOwningArena() != nullptr &&
+        GetOwningArena() == other->GetOwningArena()) {
+   #else  // PROTOBUF_FORCE_COPY_IN_SWAP
+    if (GetOwningArena() == other->GetOwningArena()) {
+  #endif  // !PROTOBUF_FORCE_COPY_IN_SWAP
+      InternalSwap(other);
+    } else {
+      ::PROTOBUF_NAMESPACE_ID::internal::GenericSwap(this, other);
+    }
+  }
+  void UnsafeArenaSwap(Point* other) {
+    if (other == this) return;
+    GOOGLE_DCHECK(GetOwningArena() == other->GetOwningArena());
+    InternalSwap(other);
+  }
+
+  // implements Message ----------------------------------------------
+
+  Point* New(::PROTOBUF_NAMESPACE_ID::Arena* arena = nullptr) const final {
+    return CreateMaybeMessage<Point>(arena);
+  }
+  using ::PROTOBUF_NAMESPACE_ID::Message::CopyFrom;
+  void CopyFrom(const Point& from);
+  using ::PROTOBUF_NAMESPACE_ID::Message::MergeFrom;
+  void MergeFrom( const Point& from) {
+    Point::MergeImpl(*this, from);
+  }
+  private:
+  static void MergeImpl(::PROTOBUF_NAMESPACE_ID::Message& to_msg, const ::PROTOBUF_NAMESPACE_ID::Message& from_msg);
+  public:
+  PROTOBUF_ATTRIBUTE_REINITIALIZES void Clear() final;
+  bool IsInitialized() const final;
+
+  size_t ByteSizeLong() const final;
+  const char* _InternalParse(const char* ptr, ::PROTOBUF_NAMESPACE_ID::internal::ParseContext* ctx) final;
+  uint8_t* _InternalSerialize(
+      uint8_t* target, ::PROTOBUF_NAMESPACE_ID::io::EpsCopyOutputStream* stream) const final;
+  int GetCachedSize() const final { return _impl_._cached_size_.Get(); }
+
+  private:
+  void SharedCtor(::PROTOBUF_NAMESPACE_ID::Arena* arena, bool is_message_owned);
+  void SharedDtor();
+  void SetCachedSize(int size) const final;
+  void InternalSwap(Point* other);
+
+  private:
+  friend class ::PROTOBUF_NAMESPACE_ID::internal::AnyMetadata;
+  static ::PROTOBUF_NAMESPACE_ID::StringPiece FullMessageName() {
+    return "maa.Point";
+  }
+  protected:
+  explicit Point(::PROTOBUF_NAMESPACE_ID::Arena* arena,
+                       bool is_message_owned = false);
+  public:
+
+  static const ClassData _class_data_;
+  const ::PROTOBUF_NAMESPACE_ID::Message::ClassData*GetClassData() const final;
+
+  ::PROTOBUF_NAMESPACE_ID::Metadata GetMetadata() const final;
+
+  // nested types ----------------------------------------------------
+
+  // accessors -------------------------------------------------------
+
+  enum : int {
+    kXFieldNumber = 1,
+    kYFieldNumber = 2,
+  };
+  // optional int32 x = 1;
+  bool has_x() const;
+  private:
+  bool _internal_has_x() const;
+  public:
+  void clear_x();
+  int32_t x() const;
+  void set_x(int32_t value);
+  private:
+  int32_t _internal_x() const;
+  void _internal_set_x(int32_t value);
+  public:
+
+  // optional int32 y = 2;
+  bool has_y() const;
+  private:
+  bool _internal_has_y() const;
+  public:
+  void clear_y();
+  int32_t y() const;
+  void set_y(int32_t value);
+  private:
+  int32_t _internal_y() const;
+  void _internal_set_y(int32_t value);
+  public:
+
+  // @@protoc_insertion_point(class_scope:maa.Point)
+ private:
+  class _Internal;
+
+  template <typename T> friend class ::PROTOBUF_NAMESPACE_ID::Arena::InternalHelper;
+  typedef void InternalArenaConstructable_;
+  typedef void DestructorSkippable_;
+  struct Impl_ {
+    ::PROTOBUF_NAMESPACE_ID::internal::HasBits<1> _has_bits_;
+    mutable ::PROTOBUF_NAMESPACE_ID::internal::CachedSize _cached_size_;
+    int32_t x_;
+    int32_t y_;
+  };
+  union { Impl_ _impl_; };
+  friend struct ::TableStruct_Types_2eproto;
+};
+// -------------------------------------------------------------------
+
 class Size final :
     public ::PROTOBUF_NAMESPACE_ID::Message /* @@protoc_insertion_point(class_definition:maa.Size) */ {
  public:
@@ -673,7 +837,7 @@ class Size final :
                &_Size_default_instance_);
   }
   static constexpr int kIndexInFileMessages =
-    3;
+    4;
 
   friend void swap(Size& a, Size& b) {
     a.Swap(&b);
@@ -793,24 +957,24 @@ class Size final :
 };
 // -------------------------------------------------------------------
 
-class ImageInfo final :
-    public ::PROTOBUF_NAMESPACE_ID::Message /* @@protoc_insertion_point(class_definition:maa.ImageInfo) */ {
+class Callback final :
+    public ::PROTOBUF_NAMESPACE_ID::Message /* @@protoc_insertion_point(class_definition:maa.Callback) */ {
  public:
-  inline ImageInfo() : ImageInfo(nullptr) {}
-  ~ImageInfo() override;
-  explicit PROTOBUF_CONSTEXPR ImageInfo(::PROTOBUF_NAMESPACE_ID::internal::ConstantInitialized);
+  inline Callback() : Callback(nullptr) {}
+  ~Callback() override;
+  explicit PROTOBUF_CONSTEXPR Callback(::PROTOBUF_NAMESPACE_ID::internal::ConstantInitialized);
 
-  ImageInfo(const ImageInfo& from);
-  ImageInfo(ImageInfo&& from) noexcept
-    : ImageInfo() {
+  Callback(const Callback& from);
+  Callback(Callback&& from) noexcept
+    : Callback() {
     *this = ::std::move(from);
   }
 
-  inline ImageInfo& operator=(const ImageInfo& from) {
+  inline Callback& operator=(const Callback& from) {
     CopyFrom(from);
     return *this;
   }
-  inline ImageInfo& operator=(ImageInfo&& from) noexcept {
+  inline Callback& operator=(Callback&& from) noexcept {
     if (this == &from) return *this;
     if (GetOwningArena() == from.GetOwningArena()
   #ifdef PROTOBUF_FORCE_COPY_IN_MOVE
@@ -833,20 +997,20 @@ class ImageInfo final :
   static const ::PROTOBUF_NAMESPACE_ID::Reflection* GetReflection() {
     return default_instance().GetMetadata().reflection;
   }
-  static const ImageInfo& default_instance() {
+  static const Callback& default_instance() {
     return *internal_default_instance();
   }
-  static inline const ImageInfo* internal_default_instance() {
-    return reinterpret_cast<const ImageInfo*>(
-               &_ImageInfo_default_instance_);
+  static inline const Callback* internal_default_instance() {
+    return reinterpret_cast<const Callback*>(
+               &_Callback_default_instance_);
   }
   static constexpr int kIndexInFileMessages =
-    4;
+    5;
 
-  friend void swap(ImageInfo& a, ImageInfo& b) {
+  friend void swap(Callback& a, Callback& b) {
     a.Swap(&b);
   }
-  inline void Swap(ImageInfo* other) {
+  inline void Swap(Callback* other) {
     if (other == this) return;
   #ifdef PROTOBUF_FORCE_COPY_IN_SWAP
     if (GetOwningArena() != nullptr &&
@@ -859,7 +1023,7 @@ class ImageInfo final :
       ::PROTOBUF_NAMESPACE_ID::internal::GenericSwap(this, other);
     }
   }
-  void UnsafeArenaSwap(ImageInfo* other) {
+  void UnsafeArenaSwap(Callback* other) {
     if (other == this) return;
     GOOGLE_DCHECK(GetOwningArena() == other->GetOwningArena());
     InternalSwap(other);
@@ -867,14 +1031,14 @@ class ImageInfo final :
 
   // implements Message ----------------------------------------------
 
-  ImageInfo* New(::PROTOBUF_NAMESPACE_ID::Arena* arena = nullptr) const final {
-    return CreateMaybeMessage<ImageInfo>(arena);
+  Callback* New(::PROTOBUF_NAMESPACE_ID::Arena* arena = nullptr) const final {
+    return CreateMaybeMessage<Callback>(arena);
   }
   using ::PROTOBUF_NAMESPACE_ID::Message::CopyFrom;
-  void CopyFrom(const ImageInfo& from);
+  void CopyFrom(const Callback& from);
   using ::PROTOBUF_NAMESPACE_ID::Message::MergeFrom;
-  void MergeFrom( const ImageInfo& from) {
-    ImageInfo::MergeImpl(*this, from);
+  void MergeFrom( const Callback& from) {
+    Callback::MergeImpl(*this, from);
   }
   private:
   static void MergeImpl(::PROTOBUF_NAMESPACE_ID::Message& to_msg, const ::PROTOBUF_NAMESPACE_ID::Message& from_msg);
@@ -892,15 +1056,15 @@ class ImageInfo final :
   void SharedCtor(::PROTOBUF_NAMESPACE_ID::Arena* arena, bool is_message_owned);
   void SharedDtor();
   void SetCachedSize(int size) const final;
-  void InternalSwap(ImageInfo* other);
+  void InternalSwap(Callback* other);
 
   private:
   friend class ::PROTOBUF_NAMESPACE_ID::internal::AnyMetadata;
   static ::PROTOBUF_NAMESPACE_ID::StringPiece FullMessageName() {
-    return "maa.ImageInfo";
+    return "maa.Callback";
   }
   protected:
-  explicit ImageInfo(::PROTOBUF_NAMESPACE_ID::Arena* arena,
+  explicit Callback(::PROTOBUF_NAMESPACE_ID::Arena* arena,
                        bool is_message_owned = false);
   public:
 
@@ -914,41 +1078,46 @@ class ImageInfo final :
   // accessors -------------------------------------------------------
 
   enum : int {
-    kSizeFieldNumber = 2,
-    kTypeFieldNumber = 1,
+    kMsgFieldNumber = 1,
+    kDetailFieldNumber = 2,
   };
-  // optional .maa.Size size = 2;
-  bool has_size() const;
+  // optional string msg = 1;
+  bool has_msg() const;
   private:
-  bool _internal_has_size() const;
+  bool _internal_has_msg() const;
   public:
-  void clear_size();
-  const ::maa::Size& size() const;
-  PROTOBUF_NODISCARD ::maa::Size* release_size();
-  ::maa::Size* mutable_size();
-  void set_allocated_size(::maa::Size* size);
+  void clear_msg();
+  const std::string& msg() const;
+  template <typename ArgT0 = const std::string&, typename... ArgT>
+  void set_msg(ArgT0&& arg0, ArgT... args);
+  std::string* mutable_msg();
+  PROTOBUF_NODISCARD std::string* release_msg();
+  void set_allocated_msg(std::string* msg);
   private:
-  const ::maa::Size& _internal_size() const;
-  ::maa::Size* _internal_mutable_size();
-  public:
-  void unsafe_arena_set_allocated_size(
-      ::maa::Size* size);
-  ::maa::Size* unsafe_arena_release_size();
-
-  // optional int32 type = 1;
-  bool has_type() const;
-  private:
-  bool _internal_has_type() const;
-  public:
-  void clear_type();
-  int32_t type() const;
-  void set_type(int32_t value);
-  private:
-  int32_t _internal_type() const;
-  void _internal_set_type(int32_t value);
+  const std::string& _internal_msg() const;
+  inline PROTOBUF_ALWAYS_INLINE void _internal_set_msg(const std::string& value);
+  std::string* _internal_mutable_msg();
   public:
 
-  // @@protoc_insertion_point(class_scope:maa.ImageInfo)
+  // optional string detail = 2;
+  bool has_detail() const;
+  private:
+  bool _internal_has_detail() const;
+  public:
+  void clear_detail();
+  const std::string& detail() const;
+  template <typename ArgT0 = const std::string&, typename... ArgT>
+  void set_detail(ArgT0&& arg0, ArgT... args);
+  std::string* mutable_detail();
+  PROTOBUF_NODISCARD std::string* release_detail();
+  void set_allocated_detail(std::string* detail);
+  private:
+  const std::string& _internal_detail() const;
+  inline PROTOBUF_ALWAYS_INLINE void _internal_set_detail(const std::string& value);
+  std::string* _internal_mutable_detail();
+  public:
+
+  // @@protoc_insertion_point(class_scope:maa.Callback)
  private:
   class _Internal;
 
@@ -958,8 +1127,8 @@ class ImageInfo final :
   struct Impl_ {
     ::PROTOBUF_NAMESPACE_ID::internal::HasBits<1> _has_bits_;
     mutable ::PROTOBUF_NAMESPACE_ID::internal::CachedSize _cached_size_;
-    ::maa::Size* size_;
-    int32_t type_;
+    ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr msg_;
+    ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr detail_;
   };
   union { Impl_ _impl_; };
   friend struct ::TableStruct_Types_2eproto;
@@ -1013,7 +1182,7 @@ class EmptyRequest final :
                &_EmptyRequest_default_instance_);
   }
   static constexpr int kIndexInFileMessages =
-    5;
+    6;
 
   friend void swap(EmptyRequest& a, EmptyRequest& b) {
     a.Swap(&b);
@@ -1132,7 +1301,7 @@ class IdRequest final :
                &_IdRequest_default_instance_);
   }
   static constexpr int kIndexInFileMessages =
-    6;
+    7;
 
   friend void swap(IdRequest& a, IdRequest& b) {
     a.Swap(&b);
@@ -1290,7 +1459,7 @@ class HandleRequest final :
                &_HandleRequest_default_instance_);
   }
   static constexpr int kIndexInFileMessages =
-    7;
+    8;
 
   friend void swap(HandleRequest& a, HandleRequest& b) {
     a.Swap(&b);
@@ -1448,7 +1617,7 @@ class BufferRequest final :
                &_BufferRequest_default_instance_);
   }
   static constexpr int kIndexInFileMessages =
-    8;
+    9;
 
   friend void swap(BufferRequest& a, BufferRequest& b) {
     a.Swap(&b);
@@ -1606,7 +1775,7 @@ class HandleBufferRequest final :
                &_HandleBufferRequest_default_instance_);
   }
   static constexpr int kIndexInFileMessages =
-    9;
+    10;
 
   friend void swap(HandleBufferRequest& a, HandleBufferRequest& b) {
     a.Swap(&b);
@@ -1784,7 +1953,7 @@ class HandleStringRequest final :
                &_HandleStringRequest_default_instance_);
   }
   static constexpr int kIndexInFileMessages =
-    10;
+    11;
 
   friend void swap(HandleStringRequest& a, HandleStringRequest& b) {
     a.Swap(&b);
@@ -1962,7 +2131,7 @@ class HandleIdRequest final :
                &_HandleIdRequest_default_instance_);
   }
   static constexpr int kIndexInFileMessages =
-    11;
+    12;
 
   friend void swap(HandleIdRequest& a, HandleIdRequest& b) {
     a.Swap(&b);
@@ -2140,7 +2309,7 @@ class EmptyResponse final :
                &_EmptyResponse_default_instance_);
   }
   static constexpr int kIndexInFileMessages =
-    12;
+    13;
 
   friend void swap(EmptyResponse& a, EmptyResponse& b) {
     a.Swap(&b);
@@ -2298,7 +2467,7 @@ class IdResponse final :
                &_IdResponse_default_instance_);
   }
   static constexpr int kIndexInFileMessages =
-    13;
+    14;
 
   friend void swap(IdResponse& a, IdResponse& b) {
     a.Swap(&b);
@@ -2476,7 +2645,7 @@ class BoolResponse final :
                &_BoolResponse_default_instance_);
   }
   static constexpr int kIndexInFileMessages =
-    14;
+    15;
 
   friend void swap(BoolResponse& a, BoolResponse& b) {
     a.Swap(&b);
@@ -2649,7 +2818,7 @@ class StringResponse final :
                &_StringResponse_default_instance_);
   }
   static constexpr int kIndexInFileMessages =
-    15;
+    16;
 
   friend void swap(StringResponse& a, StringResponse& b) {
     a.Swap(&b);
@@ -2827,7 +2996,7 @@ class HandleResponse final :
                &_HandleResponse_default_instance_);
   }
   static constexpr int kIndexInFileMessages =
-    16;
+    17;
 
   friend void swap(HandleResponse& a, HandleResponse& b) {
     a.Swap(&b);
@@ -3005,7 +3174,7 @@ class BufferResponse final :
                &_BufferResponse_default_instance_);
   }
   static constexpr int kIndexInFileMessages =
-    17;
+    18;
 
   friend void swap(BufferResponse& a, BufferResponse& b) {
     a.Swap(&b);
@@ -3128,184 +3297,6 @@ class BufferResponse final :
     ::PROTOBUF_NAMESPACE_ID::internal::HasBits<1> _has_bits_;
     mutable ::PROTOBUF_NAMESPACE_ID::internal::CachedSize _cached_size_;
     ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr value_;
-    ::maa::RpcStatus* status_;
-  };
-  union { Impl_ _impl_; };
-  friend struct ::TableStruct_Types_2eproto;
-};
-// -------------------------------------------------------------------
-
-class ImageInfoResponse final :
-    public ::PROTOBUF_NAMESPACE_ID::Message /* @@protoc_insertion_point(class_definition:maa.ImageInfoResponse) */ {
- public:
-  inline ImageInfoResponse() : ImageInfoResponse(nullptr) {}
-  ~ImageInfoResponse() override;
-  explicit PROTOBUF_CONSTEXPR ImageInfoResponse(::PROTOBUF_NAMESPACE_ID::internal::ConstantInitialized);
-
-  ImageInfoResponse(const ImageInfoResponse& from);
-  ImageInfoResponse(ImageInfoResponse&& from) noexcept
-    : ImageInfoResponse() {
-    *this = ::std::move(from);
-  }
-
-  inline ImageInfoResponse& operator=(const ImageInfoResponse& from) {
-    CopyFrom(from);
-    return *this;
-  }
-  inline ImageInfoResponse& operator=(ImageInfoResponse&& from) noexcept {
-    if (this == &from) return *this;
-    if (GetOwningArena() == from.GetOwningArena()
-  #ifdef PROTOBUF_FORCE_COPY_IN_MOVE
-        && GetOwningArena() != nullptr
-  #endif  // !PROTOBUF_FORCE_COPY_IN_MOVE
-    ) {
-      InternalSwap(&from);
-    } else {
-      CopyFrom(from);
-    }
-    return *this;
-  }
-
-  static const ::PROTOBUF_NAMESPACE_ID::Descriptor* descriptor() {
-    return GetDescriptor();
-  }
-  static const ::PROTOBUF_NAMESPACE_ID::Descriptor* GetDescriptor() {
-    return default_instance().GetMetadata().descriptor;
-  }
-  static const ::PROTOBUF_NAMESPACE_ID::Reflection* GetReflection() {
-    return default_instance().GetMetadata().reflection;
-  }
-  static const ImageInfoResponse& default_instance() {
-    return *internal_default_instance();
-  }
-  static inline const ImageInfoResponse* internal_default_instance() {
-    return reinterpret_cast<const ImageInfoResponse*>(
-               &_ImageInfoResponse_default_instance_);
-  }
-  static constexpr int kIndexInFileMessages =
-    18;
-
-  friend void swap(ImageInfoResponse& a, ImageInfoResponse& b) {
-    a.Swap(&b);
-  }
-  inline void Swap(ImageInfoResponse* other) {
-    if (other == this) return;
-  #ifdef PROTOBUF_FORCE_COPY_IN_SWAP
-    if (GetOwningArena() != nullptr &&
-        GetOwningArena() == other->GetOwningArena()) {
-   #else  // PROTOBUF_FORCE_COPY_IN_SWAP
-    if (GetOwningArena() == other->GetOwningArena()) {
-  #endif  // !PROTOBUF_FORCE_COPY_IN_SWAP
-      InternalSwap(other);
-    } else {
-      ::PROTOBUF_NAMESPACE_ID::internal::GenericSwap(this, other);
-    }
-  }
-  void UnsafeArenaSwap(ImageInfoResponse* other) {
-    if (other == this) return;
-    GOOGLE_DCHECK(GetOwningArena() == other->GetOwningArena());
-    InternalSwap(other);
-  }
-
-  // implements Message ----------------------------------------------
-
-  ImageInfoResponse* New(::PROTOBUF_NAMESPACE_ID::Arena* arena = nullptr) const final {
-    return CreateMaybeMessage<ImageInfoResponse>(arena);
-  }
-  using ::PROTOBUF_NAMESPACE_ID::Message::CopyFrom;
-  void CopyFrom(const ImageInfoResponse& from);
-  using ::PROTOBUF_NAMESPACE_ID::Message::MergeFrom;
-  void MergeFrom( const ImageInfoResponse& from) {
-    ImageInfoResponse::MergeImpl(*this, from);
-  }
-  private:
-  static void MergeImpl(::PROTOBUF_NAMESPACE_ID::Message& to_msg, const ::PROTOBUF_NAMESPACE_ID::Message& from_msg);
-  public:
-  PROTOBUF_ATTRIBUTE_REINITIALIZES void Clear() final;
-  bool IsInitialized() const final;
-
-  size_t ByteSizeLong() const final;
-  const char* _InternalParse(const char* ptr, ::PROTOBUF_NAMESPACE_ID::internal::ParseContext* ctx) final;
-  uint8_t* _InternalSerialize(
-      uint8_t* target, ::PROTOBUF_NAMESPACE_ID::io::EpsCopyOutputStream* stream) const final;
-  int GetCachedSize() const final { return _impl_._cached_size_.Get(); }
-
-  private:
-  void SharedCtor(::PROTOBUF_NAMESPACE_ID::Arena* arena, bool is_message_owned);
-  void SharedDtor();
-  void SetCachedSize(int size) const final;
-  void InternalSwap(ImageInfoResponse* other);
-
-  private:
-  friend class ::PROTOBUF_NAMESPACE_ID::internal::AnyMetadata;
-  static ::PROTOBUF_NAMESPACE_ID::StringPiece FullMessageName() {
-    return "maa.ImageInfoResponse";
-  }
-  protected:
-  explicit ImageInfoResponse(::PROTOBUF_NAMESPACE_ID::Arena* arena,
-                       bool is_message_owned = false);
-  public:
-
-  static const ClassData _class_data_;
-  const ::PROTOBUF_NAMESPACE_ID::Message::ClassData*GetClassData() const final;
-
-  ::PROTOBUF_NAMESPACE_ID::Metadata GetMetadata() const final;
-
-  // nested types ----------------------------------------------------
-
-  // accessors -------------------------------------------------------
-
-  enum : int {
-    kValueFieldNumber = 1,
-    kStatusFieldNumber = 101,
-  };
-  // optional .maa.ImageInfo value = 1;
-  bool has_value() const;
-  private:
-  bool _internal_has_value() const;
-  public:
-  void clear_value();
-  const ::maa::ImageInfo& value() const;
-  PROTOBUF_NODISCARD ::maa::ImageInfo* release_value();
-  ::maa::ImageInfo* mutable_value();
-  void set_allocated_value(::maa::ImageInfo* value);
-  private:
-  const ::maa::ImageInfo& _internal_value() const;
-  ::maa::ImageInfo* _internal_mutable_value();
-  public:
-  void unsafe_arena_set_allocated_value(
-      ::maa::ImageInfo* value);
-  ::maa::ImageInfo* unsafe_arena_release_value();
-
-  // optional .maa.RpcStatus status = 101;
-  bool has_status() const;
-  private:
-  bool _internal_has_status() const;
-  public:
-  void clear_status();
-  const ::maa::RpcStatus& status() const;
-  PROTOBUF_NODISCARD ::maa::RpcStatus* release_status();
-  ::maa::RpcStatus* mutable_status();
-  void set_allocated_status(::maa::RpcStatus* status);
-  private:
-  const ::maa::RpcStatus& _internal_status() const;
-  ::maa::RpcStatus* _internal_mutable_status();
-  public:
-  void unsafe_arena_set_allocated_status(
-      ::maa::RpcStatus* status);
-  ::maa::RpcStatus* unsafe_arena_release_status();
-
-  // @@protoc_insertion_point(class_scope:maa.ImageInfoResponse)
- private:
-  class _Internal;
-
-  template <typename T> friend class ::PROTOBUF_NAMESPACE_ID::Arena::InternalHelper;
-  typedef void InternalArenaConstructable_;
-  typedef void DestructorSkippable_;
-  struct Impl_ {
-    ::PROTOBUF_NAMESPACE_ID::internal::HasBits<1> _has_bits_;
-    mutable ::PROTOBUF_NAMESPACE_ID::internal::CachedSize _cached_size_;
-    ::maa::ImageInfo* value_;
     ::maa::RpcStatus* status_;
   };
   union { Impl_ _impl_; };
@@ -3484,184 +3475,6 @@ class StatusResponse final :
   union { Impl_ _impl_; };
   friend struct ::TableStruct_Types_2eproto;
 };
-// -------------------------------------------------------------------
-
-class Callback final :
-    public ::PROTOBUF_NAMESPACE_ID::Message /* @@protoc_insertion_point(class_definition:maa.Callback) */ {
- public:
-  inline Callback() : Callback(nullptr) {}
-  ~Callback() override;
-  explicit PROTOBUF_CONSTEXPR Callback(::PROTOBUF_NAMESPACE_ID::internal::ConstantInitialized);
-
-  Callback(const Callback& from);
-  Callback(Callback&& from) noexcept
-    : Callback() {
-    *this = ::std::move(from);
-  }
-
-  inline Callback& operator=(const Callback& from) {
-    CopyFrom(from);
-    return *this;
-  }
-  inline Callback& operator=(Callback&& from) noexcept {
-    if (this == &from) return *this;
-    if (GetOwningArena() == from.GetOwningArena()
-  #ifdef PROTOBUF_FORCE_COPY_IN_MOVE
-        && GetOwningArena() != nullptr
-  #endif  // !PROTOBUF_FORCE_COPY_IN_MOVE
-    ) {
-      InternalSwap(&from);
-    } else {
-      CopyFrom(from);
-    }
-    return *this;
-  }
-
-  static const ::PROTOBUF_NAMESPACE_ID::Descriptor* descriptor() {
-    return GetDescriptor();
-  }
-  static const ::PROTOBUF_NAMESPACE_ID::Descriptor* GetDescriptor() {
-    return default_instance().GetMetadata().descriptor;
-  }
-  static const ::PROTOBUF_NAMESPACE_ID::Reflection* GetReflection() {
-    return default_instance().GetMetadata().reflection;
-  }
-  static const Callback& default_instance() {
-    return *internal_default_instance();
-  }
-  static inline const Callback* internal_default_instance() {
-    return reinterpret_cast<const Callback*>(
-               &_Callback_default_instance_);
-  }
-  static constexpr int kIndexInFileMessages =
-    20;
-
-  friend void swap(Callback& a, Callback& b) {
-    a.Swap(&b);
-  }
-  inline void Swap(Callback* other) {
-    if (other == this) return;
-  #ifdef PROTOBUF_FORCE_COPY_IN_SWAP
-    if (GetOwningArena() != nullptr &&
-        GetOwningArena() == other->GetOwningArena()) {
-   #else  // PROTOBUF_FORCE_COPY_IN_SWAP
-    if (GetOwningArena() == other->GetOwningArena()) {
-  #endif  // !PROTOBUF_FORCE_COPY_IN_SWAP
-      InternalSwap(other);
-    } else {
-      ::PROTOBUF_NAMESPACE_ID::internal::GenericSwap(this, other);
-    }
-  }
-  void UnsafeArenaSwap(Callback* other) {
-    if (other == this) return;
-    GOOGLE_DCHECK(GetOwningArena() == other->GetOwningArena());
-    InternalSwap(other);
-  }
-
-  // implements Message ----------------------------------------------
-
-  Callback* New(::PROTOBUF_NAMESPACE_ID::Arena* arena = nullptr) const final {
-    return CreateMaybeMessage<Callback>(arena);
-  }
-  using ::PROTOBUF_NAMESPACE_ID::Message::CopyFrom;
-  void CopyFrom(const Callback& from);
-  using ::PROTOBUF_NAMESPACE_ID::Message::MergeFrom;
-  void MergeFrom( const Callback& from) {
-    Callback::MergeImpl(*this, from);
-  }
-  private:
-  static void MergeImpl(::PROTOBUF_NAMESPACE_ID::Message& to_msg, const ::PROTOBUF_NAMESPACE_ID::Message& from_msg);
-  public:
-  PROTOBUF_ATTRIBUTE_REINITIALIZES void Clear() final;
-  bool IsInitialized() const final;
-
-  size_t ByteSizeLong() const final;
-  const char* _InternalParse(const char* ptr, ::PROTOBUF_NAMESPACE_ID::internal::ParseContext* ctx) final;
-  uint8_t* _InternalSerialize(
-      uint8_t* target, ::PROTOBUF_NAMESPACE_ID::io::EpsCopyOutputStream* stream) const final;
-  int GetCachedSize() const final { return _impl_._cached_size_.Get(); }
-
-  private:
-  void SharedCtor(::PROTOBUF_NAMESPACE_ID::Arena* arena, bool is_message_owned);
-  void SharedDtor();
-  void SetCachedSize(int size) const final;
-  void InternalSwap(Callback* other);
-
-  private:
-  friend class ::PROTOBUF_NAMESPACE_ID::internal::AnyMetadata;
-  static ::PROTOBUF_NAMESPACE_ID::StringPiece FullMessageName() {
-    return "maa.Callback";
-  }
-  protected:
-  explicit Callback(::PROTOBUF_NAMESPACE_ID::Arena* arena,
-                       bool is_message_owned = false);
-  public:
-
-  static const ClassData _class_data_;
-  const ::PROTOBUF_NAMESPACE_ID::Message::ClassData*GetClassData() const final;
-
-  ::PROTOBUF_NAMESPACE_ID::Metadata GetMetadata() const final;
-
-  // nested types ----------------------------------------------------
-
-  // accessors -------------------------------------------------------
-
-  enum : int {
-    kMsgFieldNumber = 1,
-    kDetailFieldNumber = 2,
-  };
-  // optional string msg = 1;
-  bool has_msg() const;
-  private:
-  bool _internal_has_msg() const;
-  public:
-  void clear_msg();
-  const std::string& msg() const;
-  template <typename ArgT0 = const std::string&, typename... ArgT>
-  void set_msg(ArgT0&& arg0, ArgT... args);
-  std::string* mutable_msg();
-  PROTOBUF_NODISCARD std::string* release_msg();
-  void set_allocated_msg(std::string* msg);
-  private:
-  const std::string& _internal_msg() const;
-  inline PROTOBUF_ALWAYS_INLINE void _internal_set_msg(const std::string& value);
-  std::string* _internal_mutable_msg();
-  public:
-
-  // optional string detail = 2;
-  bool has_detail() const;
-  private:
-  bool _internal_has_detail() const;
-  public:
-  void clear_detail();
-  const std::string& detail() const;
-  template <typename ArgT0 = const std::string&, typename... ArgT>
-  void set_detail(ArgT0&& arg0, ArgT... args);
-  std::string* mutable_detail();
-  PROTOBUF_NODISCARD std::string* release_detail();
-  void set_allocated_detail(std::string* detail);
-  private:
-  const std::string& _internal_detail() const;
-  inline PROTOBUF_ALWAYS_INLINE void _internal_set_detail(const std::string& value);
-  std::string* _internal_mutable_detail();
-  public:
-
-  // @@protoc_insertion_point(class_scope:maa.Callback)
- private:
-  class _Internal;
-
-  template <typename T> friend class ::PROTOBUF_NAMESPACE_ID::Arena::InternalHelper;
-  typedef void InternalArenaConstructable_;
-  typedef void DestructorSkippable_;
-  struct Impl_ {
-    ::PROTOBUF_NAMESPACE_ID::internal::HasBits<1> _has_bits_;
-    mutable ::PROTOBUF_NAMESPACE_ID::internal::CachedSize _cached_size_;
-    ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr msg_;
-    ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr detail_;
-  };
-  union { Impl_ _impl_; };
-  friend struct ::TableStruct_Types_2eproto;
-};
 // ===================================================================
 
 
@@ -3767,6 +3580,66 @@ inline void Handle::set_handle(uint64_t value) {
 
 // -------------------------------------------------------------------
 
+// Point
+
+// optional int32 x = 1;
+inline bool Point::_internal_has_x() const {
+  bool value = (_impl_._has_bits_[0] & 0x00000001u) != 0;
+  return value;
+}
+inline bool Point::has_x() const {
+  return _internal_has_x();
+}
+inline void Point::clear_x() {
+  _impl_.x_ = 0;
+  _impl_._has_bits_[0] &= ~0x00000001u;
+}
+inline int32_t Point::_internal_x() const {
+  return _impl_.x_;
+}
+inline int32_t Point::x() const {
+  // @@protoc_insertion_point(field_get:maa.Point.x)
+  return _internal_x();
+}
+inline void Point::_internal_set_x(int32_t value) {
+  _impl_._has_bits_[0] |= 0x00000001u;
+  _impl_.x_ = value;
+}
+inline void Point::set_x(int32_t value) {
+  _internal_set_x(value);
+  // @@protoc_insertion_point(field_set:maa.Point.x)
+}
+
+// optional int32 y = 2;
+inline bool Point::_internal_has_y() const {
+  bool value = (_impl_._has_bits_[0] & 0x00000002u) != 0;
+  return value;
+}
+inline bool Point::has_y() const {
+  return _internal_has_y();
+}
+inline void Point::clear_y() {
+  _impl_.y_ = 0;
+  _impl_._has_bits_[0] &= ~0x00000002u;
+}
+inline int32_t Point::_internal_y() const {
+  return _impl_.y_;
+}
+inline int32_t Point::y() const {
+  // @@protoc_insertion_point(field_get:maa.Point.y)
+  return _internal_y();
+}
+inline void Point::_internal_set_y(int32_t value) {
+  _impl_._has_bits_[0] |= 0x00000002u;
+  _impl_.y_ = value;
+}
+inline void Point::set_y(int32_t value) {
+  _internal_set_y(value);
+  // @@protoc_insertion_point(field_set:maa.Point.y)
+}
+
+// -------------------------------------------------------------------
+
 // Size
 
 // optional int32 width = 1;
@@ -3827,124 +3700,142 @@ inline void Size::set_height(int32_t value) {
 
 // -------------------------------------------------------------------
 
-// ImageInfo
+// Callback
 
-// optional int32 type = 1;
-inline bool ImageInfo::_internal_has_type() const {
+// optional string msg = 1;
+inline bool Callback::_internal_has_msg() const {
+  bool value = (_impl_._has_bits_[0] & 0x00000001u) != 0;
+  return value;
+}
+inline bool Callback::has_msg() const {
+  return _internal_has_msg();
+}
+inline void Callback::clear_msg() {
+  _impl_.msg_.ClearToEmpty();
+  _impl_._has_bits_[0] &= ~0x00000001u;
+}
+inline const std::string& Callback::msg() const {
+  // @@protoc_insertion_point(field_get:maa.Callback.msg)
+  return _internal_msg();
+}
+template <typename ArgT0, typename... ArgT>
+inline PROTOBUF_ALWAYS_INLINE
+void Callback::set_msg(ArgT0&& arg0, ArgT... args) {
+ _impl_._has_bits_[0] |= 0x00000001u;
+ _impl_.msg_.Set(static_cast<ArgT0 &&>(arg0), args..., GetArenaForAllocation());
+  // @@protoc_insertion_point(field_set:maa.Callback.msg)
+}
+inline std::string* Callback::mutable_msg() {
+  std::string* _s = _internal_mutable_msg();
+  // @@protoc_insertion_point(field_mutable:maa.Callback.msg)
+  return _s;
+}
+inline const std::string& Callback::_internal_msg() const {
+  return _impl_.msg_.Get();
+}
+inline void Callback::_internal_set_msg(const std::string& value) {
+  _impl_._has_bits_[0] |= 0x00000001u;
+  _impl_.msg_.Set(value, GetArenaForAllocation());
+}
+inline std::string* Callback::_internal_mutable_msg() {
+  _impl_._has_bits_[0] |= 0x00000001u;
+  return _impl_.msg_.Mutable(GetArenaForAllocation());
+}
+inline std::string* Callback::release_msg() {
+  // @@protoc_insertion_point(field_release:maa.Callback.msg)
+  if (!_internal_has_msg()) {
+    return nullptr;
+  }
+  _impl_._has_bits_[0] &= ~0x00000001u;
+  auto* p = _impl_.msg_.Release();
+#ifdef PROTOBUF_FORCE_COPY_DEFAULT_STRING
+  if (_impl_.msg_.IsDefault()) {
+    _impl_.msg_.Set("", GetArenaForAllocation());
+  }
+#endif // PROTOBUF_FORCE_COPY_DEFAULT_STRING
+  return p;
+}
+inline void Callback::set_allocated_msg(std::string* msg) {
+  if (msg != nullptr) {
+    _impl_._has_bits_[0] |= 0x00000001u;
+  } else {
+    _impl_._has_bits_[0] &= ~0x00000001u;
+  }
+  _impl_.msg_.SetAllocated(msg, GetArenaForAllocation());
+#ifdef PROTOBUF_FORCE_COPY_DEFAULT_STRING
+  if (_impl_.msg_.IsDefault()) {
+    _impl_.msg_.Set("", GetArenaForAllocation());
+  }
+#endif // PROTOBUF_FORCE_COPY_DEFAULT_STRING
+  // @@protoc_insertion_point(field_set_allocated:maa.Callback.msg)
+}
+
+// optional string detail = 2;
+inline bool Callback::_internal_has_detail() const {
   bool value = (_impl_._has_bits_[0] & 0x00000002u) != 0;
   return value;
 }
-inline bool ImageInfo::has_type() const {
-  return _internal_has_type();
+inline bool Callback::has_detail() const {
+  return _internal_has_detail();
 }
-inline void ImageInfo::clear_type() {
-  _impl_.type_ = 0;
+inline void Callback::clear_detail() {
+  _impl_.detail_.ClearToEmpty();
   _impl_._has_bits_[0] &= ~0x00000002u;
 }
-inline int32_t ImageInfo::_internal_type() const {
-  return _impl_.type_;
+inline const std::string& Callback::detail() const {
+  // @@protoc_insertion_point(field_get:maa.Callback.detail)
+  return _internal_detail();
 }
-inline int32_t ImageInfo::type() const {
-  // @@protoc_insertion_point(field_get:maa.ImageInfo.type)
-  return _internal_type();
+template <typename ArgT0, typename... ArgT>
+inline PROTOBUF_ALWAYS_INLINE
+void Callback::set_detail(ArgT0&& arg0, ArgT... args) {
+ _impl_._has_bits_[0] |= 0x00000002u;
+ _impl_.detail_.Set(static_cast<ArgT0 &&>(arg0), args..., GetArenaForAllocation());
+  // @@protoc_insertion_point(field_set:maa.Callback.detail)
 }
-inline void ImageInfo::_internal_set_type(int32_t value) {
+inline std::string* Callback::mutable_detail() {
+  std::string* _s = _internal_mutable_detail();
+  // @@protoc_insertion_point(field_mutable:maa.Callback.detail)
+  return _s;
+}
+inline const std::string& Callback::_internal_detail() const {
+  return _impl_.detail_.Get();
+}
+inline void Callback::_internal_set_detail(const std::string& value) {
   _impl_._has_bits_[0] |= 0x00000002u;
-  _impl_.type_ = value;
+  _impl_.detail_.Set(value, GetArenaForAllocation());
 }
-inline void ImageInfo::set_type(int32_t value) {
-  _internal_set_type(value);
-  // @@protoc_insertion_point(field_set:maa.ImageInfo.type)
+inline std::string* Callback::_internal_mutable_detail() {
+  _impl_._has_bits_[0] |= 0x00000002u;
+  return _impl_.detail_.Mutable(GetArenaForAllocation());
 }
-
-// optional .maa.Size size = 2;
-inline bool ImageInfo::_internal_has_size() const {
-  bool value = (_impl_._has_bits_[0] & 0x00000001u) != 0;
-  PROTOBUF_ASSUME(!value || _impl_.size_ != nullptr);
-  return value;
-}
-inline bool ImageInfo::has_size() const {
-  return _internal_has_size();
-}
-inline void ImageInfo::clear_size() {
-  if (_impl_.size_ != nullptr) _impl_.size_->Clear();
-  _impl_._has_bits_[0] &= ~0x00000001u;
-}
-inline const ::maa::Size& ImageInfo::_internal_size() const {
-  const ::maa::Size* p = _impl_.size_;
-  return p != nullptr ? *p : reinterpret_cast<const ::maa::Size&>(
-      ::maa::_Size_default_instance_);
-}
-inline const ::maa::Size& ImageInfo::size() const {
-  // @@protoc_insertion_point(field_get:maa.ImageInfo.size)
-  return _internal_size();
-}
-inline void ImageInfo::unsafe_arena_set_allocated_size(
-    ::maa::Size* size) {
-  if (GetArenaForAllocation() == nullptr) {
-    delete reinterpret_cast<::PROTOBUF_NAMESPACE_ID::MessageLite*>(_impl_.size_);
+inline std::string* Callback::release_detail() {
+  // @@protoc_insertion_point(field_release:maa.Callback.detail)
+  if (!_internal_has_detail()) {
+    return nullptr;
   }
-  _impl_.size_ = size;
-  if (size) {
-    _impl_._has_bits_[0] |= 0x00000001u;
+  _impl_._has_bits_[0] &= ~0x00000002u;
+  auto* p = _impl_.detail_.Release();
+#ifdef PROTOBUF_FORCE_COPY_DEFAULT_STRING
+  if (_impl_.detail_.IsDefault()) {
+    _impl_.detail_.Set("", GetArenaForAllocation());
+  }
+#endif // PROTOBUF_FORCE_COPY_DEFAULT_STRING
+  return p;
+}
+inline void Callback::set_allocated_detail(std::string* detail) {
+  if (detail != nullptr) {
+    _impl_._has_bits_[0] |= 0x00000002u;
   } else {
-    _impl_._has_bits_[0] &= ~0x00000001u;
+    _impl_._has_bits_[0] &= ~0x00000002u;
   }
-  // @@protoc_insertion_point(field_unsafe_arena_set_allocated:maa.ImageInfo.size)
-}
-inline ::maa::Size* ImageInfo::release_size() {
-  _impl_._has_bits_[0] &= ~0x00000001u;
-  ::maa::Size* temp = _impl_.size_;
-  _impl_.size_ = nullptr;
-#ifdef PROTOBUF_FORCE_COPY_IN_RELEASE
-  auto* old =  reinterpret_cast<::PROTOBUF_NAMESPACE_ID::MessageLite*>(temp);
-  temp = ::PROTOBUF_NAMESPACE_ID::internal::DuplicateIfNonNull(temp);
-  if (GetArenaForAllocation() == nullptr) { delete old; }
-#else  // PROTOBUF_FORCE_COPY_IN_RELEASE
-  if (GetArenaForAllocation() != nullptr) {
-    temp = ::PROTOBUF_NAMESPACE_ID::internal::DuplicateIfNonNull(temp);
+  _impl_.detail_.SetAllocated(detail, GetArenaForAllocation());
+#ifdef PROTOBUF_FORCE_COPY_DEFAULT_STRING
+  if (_impl_.detail_.IsDefault()) {
+    _impl_.detail_.Set("", GetArenaForAllocation());
   }
-#endif  // !PROTOBUF_FORCE_COPY_IN_RELEASE
-  return temp;
-}
-inline ::maa::Size* ImageInfo::unsafe_arena_release_size() {
-  // @@protoc_insertion_point(field_release:maa.ImageInfo.size)
-  _impl_._has_bits_[0] &= ~0x00000001u;
-  ::maa::Size* temp = _impl_.size_;
-  _impl_.size_ = nullptr;
-  return temp;
-}
-inline ::maa::Size* ImageInfo::_internal_mutable_size() {
-  _impl_._has_bits_[0] |= 0x00000001u;
-  if (_impl_.size_ == nullptr) {
-    auto* p = CreateMaybeMessage<::maa::Size>(GetArenaForAllocation());
-    _impl_.size_ = p;
-  }
-  return _impl_.size_;
-}
-inline ::maa::Size* ImageInfo::mutable_size() {
-  ::maa::Size* _msg = _internal_mutable_size();
-  // @@protoc_insertion_point(field_mutable:maa.ImageInfo.size)
-  return _msg;
-}
-inline void ImageInfo::set_allocated_size(::maa::Size* size) {
-  ::PROTOBUF_NAMESPACE_ID::Arena* message_arena = GetArenaForAllocation();
-  if (message_arena == nullptr) {
-    delete _impl_.size_;
-  }
-  if (size) {
-    ::PROTOBUF_NAMESPACE_ID::Arena* submessage_arena =
-        ::PROTOBUF_NAMESPACE_ID::Arena::InternalGetOwningArena(size);
-    if (message_arena != submessage_arena) {
-      size = ::PROTOBUF_NAMESPACE_ID::internal::GetOwnedMessage(
-          message_arena, size, submessage_arena);
-    }
-    _impl_._has_bits_[0] |= 0x00000001u;
-  } else {
-    _impl_._has_bits_[0] &= ~0x00000001u;
-  }
-  _impl_.size_ = size;
-  // @@protoc_insertion_point(field_set_allocated:maa.ImageInfo.size)
+#endif // PROTOBUF_FORCE_COPY_DEFAULT_STRING
+  // @@protoc_insertion_point(field_set_allocated:maa.Callback.detail)
 }
 
 // -------------------------------------------------------------------
@@ -5629,190 +5520,6 @@ inline void BufferResponse::set_allocated_status(::maa::RpcStatus* status) {
 
 // -------------------------------------------------------------------
 
-// ImageInfoResponse
-
-// optional .maa.ImageInfo value = 1;
-inline bool ImageInfoResponse::_internal_has_value() const {
-  bool value = (_impl_._has_bits_[0] & 0x00000001u) != 0;
-  PROTOBUF_ASSUME(!value || _impl_.value_ != nullptr);
-  return value;
-}
-inline bool ImageInfoResponse::has_value() const {
-  return _internal_has_value();
-}
-inline void ImageInfoResponse::clear_value() {
-  if (_impl_.value_ != nullptr) _impl_.value_->Clear();
-  _impl_._has_bits_[0] &= ~0x00000001u;
-}
-inline const ::maa::ImageInfo& ImageInfoResponse::_internal_value() const {
-  const ::maa::ImageInfo* p = _impl_.value_;
-  return p != nullptr ? *p : reinterpret_cast<const ::maa::ImageInfo&>(
-      ::maa::_ImageInfo_default_instance_);
-}
-inline const ::maa::ImageInfo& ImageInfoResponse::value() const {
-  // @@protoc_insertion_point(field_get:maa.ImageInfoResponse.value)
-  return _internal_value();
-}
-inline void ImageInfoResponse::unsafe_arena_set_allocated_value(
-    ::maa::ImageInfo* value) {
-  if (GetArenaForAllocation() == nullptr) {
-    delete reinterpret_cast<::PROTOBUF_NAMESPACE_ID::MessageLite*>(_impl_.value_);
-  }
-  _impl_.value_ = value;
-  if (value) {
-    _impl_._has_bits_[0] |= 0x00000001u;
-  } else {
-    _impl_._has_bits_[0] &= ~0x00000001u;
-  }
-  // @@protoc_insertion_point(field_unsafe_arena_set_allocated:maa.ImageInfoResponse.value)
-}
-inline ::maa::ImageInfo* ImageInfoResponse::release_value() {
-  _impl_._has_bits_[0] &= ~0x00000001u;
-  ::maa::ImageInfo* temp = _impl_.value_;
-  _impl_.value_ = nullptr;
-#ifdef PROTOBUF_FORCE_COPY_IN_RELEASE
-  auto* old =  reinterpret_cast<::PROTOBUF_NAMESPACE_ID::MessageLite*>(temp);
-  temp = ::PROTOBUF_NAMESPACE_ID::internal::DuplicateIfNonNull(temp);
-  if (GetArenaForAllocation() == nullptr) { delete old; }
-#else  // PROTOBUF_FORCE_COPY_IN_RELEASE
-  if (GetArenaForAllocation() != nullptr) {
-    temp = ::PROTOBUF_NAMESPACE_ID::internal::DuplicateIfNonNull(temp);
-  }
-#endif  // !PROTOBUF_FORCE_COPY_IN_RELEASE
-  return temp;
-}
-inline ::maa::ImageInfo* ImageInfoResponse::unsafe_arena_release_value() {
-  // @@protoc_insertion_point(field_release:maa.ImageInfoResponse.value)
-  _impl_._has_bits_[0] &= ~0x00000001u;
-  ::maa::ImageInfo* temp = _impl_.value_;
-  _impl_.value_ = nullptr;
-  return temp;
-}
-inline ::maa::ImageInfo* ImageInfoResponse::_internal_mutable_value() {
-  _impl_._has_bits_[0] |= 0x00000001u;
-  if (_impl_.value_ == nullptr) {
-    auto* p = CreateMaybeMessage<::maa::ImageInfo>(GetArenaForAllocation());
-    _impl_.value_ = p;
-  }
-  return _impl_.value_;
-}
-inline ::maa::ImageInfo* ImageInfoResponse::mutable_value() {
-  ::maa::ImageInfo* _msg = _internal_mutable_value();
-  // @@protoc_insertion_point(field_mutable:maa.ImageInfoResponse.value)
-  return _msg;
-}
-inline void ImageInfoResponse::set_allocated_value(::maa::ImageInfo* value) {
-  ::PROTOBUF_NAMESPACE_ID::Arena* message_arena = GetArenaForAllocation();
-  if (message_arena == nullptr) {
-    delete _impl_.value_;
-  }
-  if (value) {
-    ::PROTOBUF_NAMESPACE_ID::Arena* submessage_arena =
-        ::PROTOBUF_NAMESPACE_ID::Arena::InternalGetOwningArena(value);
-    if (message_arena != submessage_arena) {
-      value = ::PROTOBUF_NAMESPACE_ID::internal::GetOwnedMessage(
-          message_arena, value, submessage_arena);
-    }
-    _impl_._has_bits_[0] |= 0x00000001u;
-  } else {
-    _impl_._has_bits_[0] &= ~0x00000001u;
-  }
-  _impl_.value_ = value;
-  // @@protoc_insertion_point(field_set_allocated:maa.ImageInfoResponse.value)
-}
-
-// optional .maa.RpcStatus status = 101;
-inline bool ImageInfoResponse::_internal_has_status() const {
-  bool value = (_impl_._has_bits_[0] & 0x00000002u) != 0;
-  PROTOBUF_ASSUME(!value || _impl_.status_ != nullptr);
-  return value;
-}
-inline bool ImageInfoResponse::has_status() const {
-  return _internal_has_status();
-}
-inline void ImageInfoResponse::clear_status() {
-  if (_impl_.status_ != nullptr) _impl_.status_->Clear();
-  _impl_._has_bits_[0] &= ~0x00000002u;
-}
-inline const ::maa::RpcStatus& ImageInfoResponse::_internal_status() const {
-  const ::maa::RpcStatus* p = _impl_.status_;
-  return p != nullptr ? *p : reinterpret_cast<const ::maa::RpcStatus&>(
-      ::maa::_RpcStatus_default_instance_);
-}
-inline const ::maa::RpcStatus& ImageInfoResponse::status() const {
-  // @@protoc_insertion_point(field_get:maa.ImageInfoResponse.status)
-  return _internal_status();
-}
-inline void ImageInfoResponse::unsafe_arena_set_allocated_status(
-    ::maa::RpcStatus* status) {
-  if (GetArenaForAllocation() == nullptr) {
-    delete reinterpret_cast<::PROTOBUF_NAMESPACE_ID::MessageLite*>(_impl_.status_);
-  }
-  _impl_.status_ = status;
-  if (status) {
-    _impl_._has_bits_[0] |= 0x00000002u;
-  } else {
-    _impl_._has_bits_[0] &= ~0x00000002u;
-  }
-  // @@protoc_insertion_point(field_unsafe_arena_set_allocated:maa.ImageInfoResponse.status)
-}
-inline ::maa::RpcStatus* ImageInfoResponse::release_status() {
-  _impl_._has_bits_[0] &= ~0x00000002u;
-  ::maa::RpcStatus* temp = _impl_.status_;
-  _impl_.status_ = nullptr;
-#ifdef PROTOBUF_FORCE_COPY_IN_RELEASE
-  auto* old =  reinterpret_cast<::PROTOBUF_NAMESPACE_ID::MessageLite*>(temp);
-  temp = ::PROTOBUF_NAMESPACE_ID::internal::DuplicateIfNonNull(temp);
-  if (GetArenaForAllocation() == nullptr) { delete old; }
-#else  // PROTOBUF_FORCE_COPY_IN_RELEASE
-  if (GetArenaForAllocation() != nullptr) {
-    temp = ::PROTOBUF_NAMESPACE_ID::internal::DuplicateIfNonNull(temp);
-  }
-#endif  // !PROTOBUF_FORCE_COPY_IN_RELEASE
-  return temp;
-}
-inline ::maa::RpcStatus* ImageInfoResponse::unsafe_arena_release_status() {
-  // @@protoc_insertion_point(field_release:maa.ImageInfoResponse.status)
-  _impl_._has_bits_[0] &= ~0x00000002u;
-  ::maa::RpcStatus* temp = _impl_.status_;
-  _impl_.status_ = nullptr;
-  return temp;
-}
-inline ::maa::RpcStatus* ImageInfoResponse::_internal_mutable_status() {
-  _impl_._has_bits_[0] |= 0x00000002u;
-  if (_impl_.status_ == nullptr) {
-    auto* p = CreateMaybeMessage<::maa::RpcStatus>(GetArenaForAllocation());
-    _impl_.status_ = p;
-  }
-  return _impl_.status_;
-}
-inline ::maa::RpcStatus* ImageInfoResponse::mutable_status() {
-  ::maa::RpcStatus* _msg = _internal_mutable_status();
-  // @@protoc_insertion_point(field_mutable:maa.ImageInfoResponse.status)
-  return _msg;
-}
-inline void ImageInfoResponse::set_allocated_status(::maa::RpcStatus* status) {
-  ::PROTOBUF_NAMESPACE_ID::Arena* message_arena = GetArenaForAllocation();
-  if (message_arena == nullptr) {
-    delete _impl_.status_;
-  }
-  if (status) {
-    ::PROTOBUF_NAMESPACE_ID::Arena* submessage_arena =
-        ::PROTOBUF_NAMESPACE_ID::Arena::InternalGetOwningArena(status);
-    if (message_arena != submessage_arena) {
-      status = ::PROTOBUF_NAMESPACE_ID::internal::GetOwnedMessage(
-          message_arena, status, submessage_arena);
-    }
-    _impl_._has_bits_[0] |= 0x00000002u;
-  } else {
-    _impl_._has_bits_[0] &= ~0x00000002u;
-  }
-  _impl_.status_ = status;
-  // @@protoc_insertion_point(field_set_allocated:maa.ImageInfoResponse.status)
-}
-
-// -------------------------------------------------------------------
-
 // StatusResponse
 
 // optional .maa.Status value = 1;
@@ -5933,151 +5640,9 @@ inline void StatusResponse::set_allocated_status(::maa::RpcStatus* status) {
   // @@protoc_insertion_point(field_set_allocated:maa.StatusResponse.status)
 }
 
-// -------------------------------------------------------------------
-
-// Callback
-
-// optional string msg = 1;
-inline bool Callback::_internal_has_msg() const {
-  bool value = (_impl_._has_bits_[0] & 0x00000001u) != 0;
-  return value;
-}
-inline bool Callback::has_msg() const {
-  return _internal_has_msg();
-}
-inline void Callback::clear_msg() {
-  _impl_.msg_.ClearToEmpty();
-  _impl_._has_bits_[0] &= ~0x00000001u;
-}
-inline const std::string& Callback::msg() const {
-  // @@protoc_insertion_point(field_get:maa.Callback.msg)
-  return _internal_msg();
-}
-template <typename ArgT0, typename... ArgT>
-inline PROTOBUF_ALWAYS_INLINE
-void Callback::set_msg(ArgT0&& arg0, ArgT... args) {
- _impl_._has_bits_[0] |= 0x00000001u;
- _impl_.msg_.Set(static_cast<ArgT0 &&>(arg0), args..., GetArenaForAllocation());
-  // @@protoc_insertion_point(field_set:maa.Callback.msg)
-}
-inline std::string* Callback::mutable_msg() {
-  std::string* _s = _internal_mutable_msg();
-  // @@protoc_insertion_point(field_mutable:maa.Callback.msg)
-  return _s;
-}
-inline const std::string& Callback::_internal_msg() const {
-  return _impl_.msg_.Get();
-}
-inline void Callback::_internal_set_msg(const std::string& value) {
-  _impl_._has_bits_[0] |= 0x00000001u;
-  _impl_.msg_.Set(value, GetArenaForAllocation());
-}
-inline std::string* Callback::_internal_mutable_msg() {
-  _impl_._has_bits_[0] |= 0x00000001u;
-  return _impl_.msg_.Mutable(GetArenaForAllocation());
-}
-inline std::string* Callback::release_msg() {
-  // @@protoc_insertion_point(field_release:maa.Callback.msg)
-  if (!_internal_has_msg()) {
-    return nullptr;
-  }
-  _impl_._has_bits_[0] &= ~0x00000001u;
-  auto* p = _impl_.msg_.Release();
-#ifdef PROTOBUF_FORCE_COPY_DEFAULT_STRING
-  if (_impl_.msg_.IsDefault()) {
-    _impl_.msg_.Set("", GetArenaForAllocation());
-  }
-#endif // PROTOBUF_FORCE_COPY_DEFAULT_STRING
-  return p;
-}
-inline void Callback::set_allocated_msg(std::string* msg) {
-  if (msg != nullptr) {
-    _impl_._has_bits_[0] |= 0x00000001u;
-  } else {
-    _impl_._has_bits_[0] &= ~0x00000001u;
-  }
-  _impl_.msg_.SetAllocated(msg, GetArenaForAllocation());
-#ifdef PROTOBUF_FORCE_COPY_DEFAULT_STRING
-  if (_impl_.msg_.IsDefault()) {
-    _impl_.msg_.Set("", GetArenaForAllocation());
-  }
-#endif // PROTOBUF_FORCE_COPY_DEFAULT_STRING
-  // @@protoc_insertion_point(field_set_allocated:maa.Callback.msg)
-}
-
-// optional string detail = 2;
-inline bool Callback::_internal_has_detail() const {
-  bool value = (_impl_._has_bits_[0] & 0x00000002u) != 0;
-  return value;
-}
-inline bool Callback::has_detail() const {
-  return _internal_has_detail();
-}
-inline void Callback::clear_detail() {
-  _impl_.detail_.ClearToEmpty();
-  _impl_._has_bits_[0] &= ~0x00000002u;
-}
-inline const std::string& Callback::detail() const {
-  // @@protoc_insertion_point(field_get:maa.Callback.detail)
-  return _internal_detail();
-}
-template <typename ArgT0, typename... ArgT>
-inline PROTOBUF_ALWAYS_INLINE
-void Callback::set_detail(ArgT0&& arg0, ArgT... args) {
- _impl_._has_bits_[0] |= 0x00000002u;
- _impl_.detail_.Set(static_cast<ArgT0 &&>(arg0), args..., GetArenaForAllocation());
-  // @@protoc_insertion_point(field_set:maa.Callback.detail)
-}
-inline std::string* Callback::mutable_detail() {
-  std::string* _s = _internal_mutable_detail();
-  // @@protoc_insertion_point(field_mutable:maa.Callback.detail)
-  return _s;
-}
-inline const std::string& Callback::_internal_detail() const {
-  return _impl_.detail_.Get();
-}
-inline void Callback::_internal_set_detail(const std::string& value) {
-  _impl_._has_bits_[0] |= 0x00000002u;
-  _impl_.detail_.Set(value, GetArenaForAllocation());
-}
-inline std::string* Callback::_internal_mutable_detail() {
-  _impl_._has_bits_[0] |= 0x00000002u;
-  return _impl_.detail_.Mutable(GetArenaForAllocation());
-}
-inline std::string* Callback::release_detail() {
-  // @@protoc_insertion_point(field_release:maa.Callback.detail)
-  if (!_internal_has_detail()) {
-    return nullptr;
-  }
-  _impl_._has_bits_[0] &= ~0x00000002u;
-  auto* p = _impl_.detail_.Release();
-#ifdef PROTOBUF_FORCE_COPY_DEFAULT_STRING
-  if (_impl_.detail_.IsDefault()) {
-    _impl_.detail_.Set("", GetArenaForAllocation());
-  }
-#endif // PROTOBUF_FORCE_COPY_DEFAULT_STRING
-  return p;
-}
-inline void Callback::set_allocated_detail(std::string* detail) {
-  if (detail != nullptr) {
-    _impl_._has_bits_[0] |= 0x00000002u;
-  } else {
-    _impl_._has_bits_[0] &= ~0x00000002u;
-  }
-  _impl_.detail_.SetAllocated(detail, GetArenaForAllocation());
-#ifdef PROTOBUF_FORCE_COPY_DEFAULT_STRING
-  if (_impl_.detail_.IsDefault()) {
-    _impl_.detail_.Set("", GetArenaForAllocation());
-  }
-#endif // PROTOBUF_FORCE_COPY_DEFAULT_STRING
-  // @@protoc_insertion_point(field_set_allocated:maa.Callback.detail)
-}
-
 #ifdef __GNUC__
   #pragma GCC diagnostic pop
 #endif  // __GNUC__
-// -------------------------------------------------------------------
-
 // -------------------------------------------------------------------
 
 // -------------------------------------------------------------------

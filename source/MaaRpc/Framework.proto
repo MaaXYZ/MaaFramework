@@ -13,11 +13,11 @@ message SetGlobalOptionRequest {
 
 service MaaFramework {
   rpc version(EmptyRequest) returns (StringResponse);
-  rpc set_global_option(SetGlobalOptionRequest) returns (BoolResponse);
+  rpc set_global_option(SetGlobalOptionRequest) returns (EmptyResponse);
 
   rpc acquire_callback_id(EmptyRequest) returns (IdResponse);
   rpc register_callback(IdRequest) returns (stream Callback);
-  rpc unregister_callback(IdRequest) returns (BoolResponse);
+  rpc unregister_callback(IdRequest) returns (EmptyResponse);
 }
 
 /*
@@ -31,22 +31,97 @@ service MaaFrameworkString {
 }
 */
 
+message ImageInfoResponse {
+  optional int32 type = 1;
+  optional Size size = 2;
+}
+
 service MaaFrameworkImage {
   rpc create(EmptyRequest) returns (HandleResponse);
   rpc destroy(HandleRequest) returns (EmptyResponse);
   rpc is_empty(HandleRequest) returns (BoolResponse);
-  rpc clear(HandleRequest) returns (BoolResponse);
+  rpc clear(HandleRequest) returns (EmptyResponse);
   rpc info(HandleRequest) returns (ImageInfoResponse);
   rpc get_encoded(HandleRequest) returns (BufferResponse);
-  rpc set_encoded(HandleBufferRequest) returns (BoolResponse);
+  rpc set_encoded(HandleBufferRequest) returns (EmptyResponse);
 }
 
 service MaaFrameworkResource {
   rpc create(IdRequest) returns (HandleResponse);
   rpc destroy(HandleRequest) returns (EmptyResponse);
+
   rpc post_path(HandleStringRequest) returns (IdResponse);
+
   rpc status(HandleIdRequest) returns (StatusResponse);
   rpc wait(HandleIdRequest) returns (StatusResponse);
   rpc loaded(HandleRequest) returns (BoolResponse);
   rpc hash(HandleRequest) returns (StringResponse);
+}
+
+message AdbControlleRequest {
+  optional Id id = 1;
+  optional string adb_path = 2;
+  optional string adb_serial = 3;
+  optional uint32 adb_type = 4;
+  optional string adb_config = 5;
+}
+
+message ControllerSetOptionRequest {
+  oneof option {
+    int32 long_side = 1;
+    int32 short_side = 2;
+    string def_package_entry = 3;
+    string def_package = 4;
+  }
+}
+
+message ControllerPostClickRequest {
+  optional Handle handle = 1;
+  optional Point point = 2;
+}
+
+message ControllerPostSwipeRequest {
+  optional Handle handle = 1;
+  optional Point point_from = 2;
+  optional Point point_to = 3;
+  optional int32 duration = 4;
+}
+
+message ControllerPostKeyRequest {
+  optional Handle handle = 1;
+  optional int32 key = 2;
+}
+
+message ControllerPostTouchRequest {
+  optional Handle handle = 1;
+  optional int32 contact = 2;
+  optional Point point = 3;
+  optional int32 pressure = 4;
+}
+
+message ControllerGetImageRequest {
+  optional Handle handle = 1;
+  optional Handle image = 2;
+}
+
+service MaaFrameworkController {
+  rpc create(AdbControlleRequest) returns (HandleResponse);
+  rpc destroy(HandleRequest) returns (EmptyResponse);
+
+  rpc set_option(ControllerSetOptionRequest) returns (EmptyResponse);
+  rpc post_connection(HandleRequest) returns (IdResponse);
+  rpc post_click(ControllerPostClickRequest) returns (IdResponse);
+  rpc post_swipe(ControllerPostSwipeRequest) returns (IdResponse);
+  rpc post_press_key(ControllerPostKeyRequest) returns (IdResponse);
+  rpc post_touch_down(ControllerPostTouchRequest) returns (IdResponse);
+  rpc post_touch_move(ControllerPostTouchRequest) returns (IdResponse);
+  rpc post_touch_up(ControllerPostTouchRequest) returns (IdResponse);
+  rpc post_screencap(HandleRequest) returns (IdResponse);
+
+  rpc status(HandleIdRequest) returns (StatusResponse);
+  rpc wait(HandleIdRequest) returns (EmptyResponse);
+  rpc connected(HandleRequest) returns (BoolResponse);
+
+  rpc image(ControllerGetImageRequest) returns (EmptyResponse);
+  rpc uuid(HandleRequest) returns (StringResponse);
 }

@@ -35,8 +35,134 @@ struct SetGlobalOptionRequestDefaultTypeInternal {
   };
 };
 PROTOBUF_ATTRIBUTE_NO_DESTROY PROTOBUF_CONSTINIT PROTOBUF_ATTRIBUTE_INIT_PRIORITY1 SetGlobalOptionRequestDefaultTypeInternal _SetGlobalOptionRequest_default_instance_;
+PROTOBUF_CONSTEXPR ImageInfoResponse::ImageInfoResponse(
+    ::_pbi::ConstantInitialized): _impl_{
+    /*decltype(_impl_._has_bits_)*/{}
+  , /*decltype(_impl_._cached_size_)*/{}
+  , /*decltype(_impl_.size_)*/nullptr
+  , /*decltype(_impl_.type_)*/0} {}
+struct ImageInfoResponseDefaultTypeInternal {
+  PROTOBUF_CONSTEXPR ImageInfoResponseDefaultTypeInternal()
+      : _instance(::_pbi::ConstantInitialized{}) {}
+  ~ImageInfoResponseDefaultTypeInternal() {}
+  union {
+    ImageInfoResponse _instance;
+  };
+};
+PROTOBUF_ATTRIBUTE_NO_DESTROY PROTOBUF_CONSTINIT PROTOBUF_ATTRIBUTE_INIT_PRIORITY1 ImageInfoResponseDefaultTypeInternal _ImageInfoResponse_default_instance_;
+PROTOBUF_CONSTEXPR AdbControlleRequest::AdbControlleRequest(
+    ::_pbi::ConstantInitialized): _impl_{
+    /*decltype(_impl_._has_bits_)*/{}
+  , /*decltype(_impl_._cached_size_)*/{}
+  , /*decltype(_impl_.adb_path_)*/{&::_pbi::fixed_address_empty_string, ::_pbi::ConstantInitialized{}}
+  , /*decltype(_impl_.adb_serial_)*/{&::_pbi::fixed_address_empty_string, ::_pbi::ConstantInitialized{}}
+  , /*decltype(_impl_.adb_config_)*/{&::_pbi::fixed_address_empty_string, ::_pbi::ConstantInitialized{}}
+  , /*decltype(_impl_.id_)*/nullptr
+  , /*decltype(_impl_.adb_type_)*/0u} {}
+struct AdbControlleRequestDefaultTypeInternal {
+  PROTOBUF_CONSTEXPR AdbControlleRequestDefaultTypeInternal()
+      : _instance(::_pbi::ConstantInitialized{}) {}
+  ~AdbControlleRequestDefaultTypeInternal() {}
+  union {
+    AdbControlleRequest _instance;
+  };
+};
+PROTOBUF_ATTRIBUTE_NO_DESTROY PROTOBUF_CONSTINIT PROTOBUF_ATTRIBUTE_INIT_PRIORITY1 AdbControlleRequestDefaultTypeInternal _AdbControlleRequest_default_instance_;
+PROTOBUF_CONSTEXPR ControllerSetOptionRequest::ControllerSetOptionRequest(
+    ::_pbi::ConstantInitialized): _impl_{
+    /*decltype(_impl_.option_)*/{}
+  , /*decltype(_impl_._cached_size_)*/{}
+  , /*decltype(_impl_._oneof_case_)*/{}} {}
+struct ControllerSetOptionRequestDefaultTypeInternal {
+  PROTOBUF_CONSTEXPR ControllerSetOptionRequestDefaultTypeInternal()
+      : _instance(::_pbi::ConstantInitialized{}) {}
+  ~ControllerSetOptionRequestDefaultTypeInternal() {}
+  union {
+    ControllerSetOptionRequest _instance;
+  };
+};
+PROTOBUF_ATTRIBUTE_NO_DESTROY PROTOBUF_CONSTINIT PROTOBUF_ATTRIBUTE_INIT_PRIORITY1 ControllerSetOptionRequestDefaultTypeInternal _ControllerSetOptionRequest_default_instance_;
+PROTOBUF_CONSTEXPR ControllerPostClickRequest::ControllerPostClickRequest(
+    ::_pbi::ConstantInitialized): _impl_{
+    /*decltype(_impl_._has_bits_)*/{}
+  , /*decltype(_impl_._cached_size_)*/{}
+  , /*decltype(_impl_.handle_)*/nullptr
+  , /*decltype(_impl_.point_)*/nullptr} {}
+struct ControllerPostClickRequestDefaultTypeInternal {
+  PROTOBUF_CONSTEXPR ControllerPostClickRequestDefaultTypeInternal()
+      : _instance(::_pbi::ConstantInitialized{}) {}
+  ~ControllerPostClickRequestDefaultTypeInternal() {}
+  union {
+    ControllerPostClickRequest _instance;
+  };
+};
+PROTOBUF_ATTRIBUTE_NO_DESTROY PROTOBUF_CONSTINIT PROTOBUF_ATTRIBUTE_INIT_PRIORITY1 ControllerPostClickRequestDefaultTypeInternal _ControllerPostClickRequest_default_instance_;
+PROTOBUF_CONSTEXPR ControllerPostSwipeRequest::ControllerPostSwipeRequest(
+    ::_pbi::ConstantInitialized): _impl_{
+    /*decltype(_impl_._has_bits_)*/{}
+  , /*decltype(_impl_._cached_size_)*/{}
+  , /*decltype(_impl_.handle_)*/nullptr
+  , /*decltype(_impl_.point_from_)*/nullptr
+  , /*decltype(_impl_.point_to_)*/nullptr
+  , /*decltype(_impl_.duration_)*/0} {}
+struct ControllerPostSwipeRequestDefaultTypeInternal {
+  PROTOBUF_CONSTEXPR ControllerPostSwipeRequestDefaultTypeInternal()
+      : _instance(::_pbi::ConstantInitialized{}) {}
+  ~ControllerPostSwipeRequestDefaultTypeInternal() {}
+  union {
+    ControllerPostSwipeRequest _instance;
+  };
+};
+PROTOBUF_ATTRIBUTE_NO_DESTROY PROTOBUF_CONSTINIT PROTOBUF_ATTRIBUTE_INIT_PRIORITY1 ControllerPostSwipeRequestDefaultTypeInternal _ControllerPostSwipeRequest_default_instance_;
+PROTOBUF_CONSTEXPR ControllerPostKeyRequest::ControllerPostKeyRequest(
+    ::_pbi::ConstantInitialized): _impl_{
+    /*decltype(_impl_._has_bits_)*/{}
+  , /*decltype(_impl_._cached_size_)*/{}
+  , /*decltype(_impl_.handle_)*/nullptr
+  , /*decltype(_impl_.key_)*/0} {}
+struct ControllerPostKeyRequestDefaultTypeInternal {
+  PROTOBUF_CONSTEXPR ControllerPostKeyRequestDefaultTypeInternal()
+      : _instance(::_pbi::ConstantInitialized{}) {}
+  ~ControllerPostKeyRequestDefaultTypeInternal() {}
+  union {
+    ControllerPostKeyRequest _instance;
+  };
+};
+PROTOBUF_ATTRIBUTE_NO_DESTROY PROTOBUF_CONSTINIT PROTOBUF_ATTRIBUTE_INIT_PRIORITY1 ControllerPostKeyRequestDefaultTypeInternal _ControllerPostKeyRequest_default_instance_;
+PROTOBUF_CONSTEXPR ControllerPostTouchRequest::ControllerPostTouchRequest(
+    ::_pbi::ConstantInitialized): _impl_{
+    /*decltype(_impl_._has_bits_)*/{}
+  , /*decltype(_impl_._cached_size_)*/{}
+  , /*decltype(_impl_.handle_)*/nullptr
+  , /*decltype(_impl_.point_)*/nullptr
+  , /*decltype(_impl_.contact_)*/0
+  , /*decltype(_impl_.pressure_)*/0} {}
+struct ControllerPostTouchRequestDefaultTypeInternal {
+  PROTOBUF_CONSTEXPR ControllerPostTouchRequestDefaultTypeInternal()
+      : _instance(::_pbi::ConstantInitialized{}) {}
+  ~ControllerPostTouchRequestDefaultTypeInternal() {}
+  union {
+    ControllerPostTouchRequest _instance;
+  };
+};
+PROTOBUF_ATTRIBUTE_NO_DESTROY PROTOBUF_CONSTINIT PROTOBUF_ATTRIBUTE_INIT_PRIORITY1 ControllerPostTouchRequestDefaultTypeInternal _ControllerPostTouchRequest_default_instance_;
+PROTOBUF_CONSTEXPR ControllerGetImageRequest::ControllerGetImageRequest(
+    ::_pbi::ConstantInitialized): _impl_{
+    /*decltype(_impl_._has_bits_)*/{}
+  , /*decltype(_impl_._cached_size_)*/{}
+  , /*decltype(_impl_.handle_)*/nullptr
+  , /*decltype(_impl_.image_)*/nullptr} {}
+struct ControllerGetImageRequestDefaultTypeInternal {
+  PROTOBUF_CONSTEXPR ControllerGetImageRequestDefaultTypeInternal()
+      : _instance(::_pbi::ConstantInitialized{}) {}
+  ~ControllerGetImageRequestDefaultTypeInternal() {}
+  union {
+    ControllerGetImageRequest _instance;
+  };
+};
+PROTOBUF_ATTRIBUTE_NO_DESTROY PROTOBUF_CONSTINIT PROTOBUF_ATTRIBUTE_INIT_PRIORITY1 ControllerGetImageRequestDefaultTypeInternal _ControllerGetImageRequest_default_instance_;
 }  // namespace maa
-static ::_pb::Metadata file_level_metadata_Framework_2eproto[1];
+static ::_pb::Metadata file_level_metadata_Framework_2eproto[9];
 static constexpr ::_pb::EnumDescriptor const** file_level_enum_descriptors_Framework_2eproto = nullptr;
 static constexpr ::_pb::ServiceDescriptor const** file_level_service_descriptors_Framework_2eproto = nullptr;
 
@@ -50,55 +176,220 @@ const uint32_t TableStruct_Framework_2eproto::offsets[] PROTOBUF_SECTION_VARIABL
   ::_pbi::kInvalidFieldOffsetTag,
   ::_pbi::kInvalidFieldOffsetTag,
   PROTOBUF_FIELD_OFFSET(::maa::SetGlobalOptionRequest, _impl_.option_),
+  PROTOBUF_FIELD_OFFSET(::maa::ImageInfoResponse, _impl_._has_bits_),
+  PROTOBUF_FIELD_OFFSET(::maa::ImageInfoResponse, _internal_metadata_),
+  ~0u,  // no _extensions_
+  ~0u,  // no _oneof_case_
+  ~0u,  // no _weak_field_map_
+  ~0u,  // no _inlined_string_donated_
+  PROTOBUF_FIELD_OFFSET(::maa::ImageInfoResponse, _impl_.type_),
+  PROTOBUF_FIELD_OFFSET(::maa::ImageInfoResponse, _impl_.size_),
+  1,
+  0,
+  PROTOBUF_FIELD_OFFSET(::maa::AdbControlleRequest, _impl_._has_bits_),
+  PROTOBUF_FIELD_OFFSET(::maa::AdbControlleRequest, _internal_metadata_),
+  ~0u,  // no _extensions_
+  ~0u,  // no _oneof_case_
+  ~0u,  // no _weak_field_map_
+  ~0u,  // no _inlined_string_donated_
+  PROTOBUF_FIELD_OFFSET(::maa::AdbControlleRequest, _impl_.id_),
+  PROTOBUF_FIELD_OFFSET(::maa::AdbControlleRequest, _impl_.adb_path_),
+  PROTOBUF_FIELD_OFFSET(::maa::AdbControlleRequest, _impl_.adb_serial_),
+  PROTOBUF_FIELD_OFFSET(::maa::AdbControlleRequest, _impl_.adb_type_),
+  PROTOBUF_FIELD_OFFSET(::maa::AdbControlleRequest, _impl_.adb_config_),
+  3,
+  0,
+  1,
+  4,
+  2,
+  ~0u,  // no _has_bits_
+  PROTOBUF_FIELD_OFFSET(::maa::ControllerSetOptionRequest, _internal_metadata_),
+  ~0u,  // no _extensions_
+  PROTOBUF_FIELD_OFFSET(::maa::ControllerSetOptionRequest, _impl_._oneof_case_[0]),
+  ~0u,  // no _weak_field_map_
+  ~0u,  // no _inlined_string_donated_
+  ::_pbi::kInvalidFieldOffsetTag,
+  ::_pbi::kInvalidFieldOffsetTag,
+  ::_pbi::kInvalidFieldOffsetTag,
+  ::_pbi::kInvalidFieldOffsetTag,
+  PROTOBUF_FIELD_OFFSET(::maa::ControllerSetOptionRequest, _impl_.option_),
+  PROTOBUF_FIELD_OFFSET(::maa::ControllerPostClickRequest, _impl_._has_bits_),
+  PROTOBUF_FIELD_OFFSET(::maa::ControllerPostClickRequest, _internal_metadata_),
+  ~0u,  // no _extensions_
+  ~0u,  // no _oneof_case_
+  ~0u,  // no _weak_field_map_
+  ~0u,  // no _inlined_string_donated_
+  PROTOBUF_FIELD_OFFSET(::maa::ControllerPostClickRequest, _impl_.handle_),
+  PROTOBUF_FIELD_OFFSET(::maa::ControllerPostClickRequest, _impl_.point_),
+  0,
+  1,
+  PROTOBUF_FIELD_OFFSET(::maa::ControllerPostSwipeRequest, _impl_._has_bits_),
+  PROTOBUF_FIELD_OFFSET(::maa::ControllerPostSwipeRequest, _internal_metadata_),
+  ~0u,  // no _extensions_
+  ~0u,  // no _oneof_case_
+  ~0u,  // no _weak_field_map_
+  ~0u,  // no _inlined_string_donated_
+  PROTOBUF_FIELD_OFFSET(::maa::ControllerPostSwipeRequest, _impl_.handle_),
+  PROTOBUF_FIELD_OFFSET(::maa::ControllerPostSwipeRequest, _impl_.point_from_),
+  PROTOBUF_FIELD_OFFSET(::maa::ControllerPostSwipeRequest, _impl_.point_to_),
+  PROTOBUF_FIELD_OFFSET(::maa::ControllerPostSwipeRequest, _impl_.duration_),
+  0,
+  1,
+  2,
+  3,
+  PROTOBUF_FIELD_OFFSET(::maa::ControllerPostKeyRequest, _impl_._has_bits_),
+  PROTOBUF_FIELD_OFFSET(::maa::ControllerPostKeyRequest, _internal_metadata_),
+  ~0u,  // no _extensions_
+  ~0u,  // no _oneof_case_
+  ~0u,  // no _weak_field_map_
+  ~0u,  // no _inlined_string_donated_
+  PROTOBUF_FIELD_OFFSET(::maa::ControllerPostKeyRequest, _impl_.handle_),
+  PROTOBUF_FIELD_OFFSET(::maa::ControllerPostKeyRequest, _impl_.key_),
+  0,
+  1,
+  PROTOBUF_FIELD_OFFSET(::maa::ControllerPostTouchRequest, _impl_._has_bits_),
+  PROTOBUF_FIELD_OFFSET(::maa::ControllerPostTouchRequest, _internal_metadata_),
+  ~0u,  // no _extensions_
+  ~0u,  // no _oneof_case_
+  ~0u,  // no _weak_field_map_
+  ~0u,  // no _inlined_string_donated_
+  PROTOBUF_FIELD_OFFSET(::maa::ControllerPostTouchRequest, _impl_.handle_),
+  PROTOBUF_FIELD_OFFSET(::maa::ControllerPostTouchRequest, _impl_.contact_),
+  PROTOBUF_FIELD_OFFSET(::maa::ControllerPostTouchRequest, _impl_.point_),
+  PROTOBUF_FIELD_OFFSET(::maa::ControllerPostTouchRequest, _impl_.pressure_),
+  0,
+  2,
+  1,
+  3,
+  PROTOBUF_FIELD_OFFSET(::maa::ControllerGetImageRequest, _impl_._has_bits_),
+  PROTOBUF_FIELD_OFFSET(::maa::ControllerGetImageRequest, _internal_metadata_),
+  ~0u,  // no _extensions_
+  ~0u,  // no _oneof_case_
+  ~0u,  // no _weak_field_map_
+  ~0u,  // no _inlined_string_donated_
+  PROTOBUF_FIELD_OFFSET(::maa::ControllerGetImageRequest, _impl_.handle_),
+  PROTOBUF_FIELD_OFFSET(::maa::ControllerGetImageRequest, _impl_.image_),
+  0,
+  1,
 };
 static const ::_pbi::MigrationSchema schemas[] PROTOBUF_SECTION_VARIABLE(protodesc_cold) = {
   { 0, -1, -1, sizeof(::maa::SetGlobalOptionRequest)},
+  { 9, 17, -1, sizeof(::maa::ImageInfoResponse)},
+  { 19, 30, -1, sizeof(::maa::AdbControlleRequest)},
+  { 35, -1, -1, sizeof(::maa::ControllerSetOptionRequest)},
+  { 46, 54, -1, sizeof(::maa::ControllerPostClickRequest)},
+  { 56, 66, -1, sizeof(::maa::ControllerPostSwipeRequest)},
+  { 70, 78, -1, sizeof(::maa::ControllerPostKeyRequest)},
+  { 80, 90, -1, sizeof(::maa::ControllerPostTouchRequest)},
+  { 94, 102, -1, sizeof(::maa::ControllerGetImageRequest)},
 };
 
 static const ::_pb::Message* const file_default_instances[] = {
   &::maa::_SetGlobalOptionRequest_default_instance_._instance,
+  &::maa::_ImageInfoResponse_default_instance_._instance,
+  &::maa::_AdbControlleRequest_default_instance_._instance,
+  &::maa::_ControllerSetOptionRequest_default_instance_._instance,
+  &::maa::_ControllerPostClickRequest_default_instance_._instance,
+  &::maa::_ControllerPostSwipeRequest_default_instance_._instance,
+  &::maa::_ControllerPostKeyRequest_default_instance_._instance,
+  &::maa::_ControllerPostTouchRequest_default_instance_._instance,
+  &::maa::_ControllerGetImageRequest_default_instance_._instance,
 };
 
 const char descriptor_table_protodef_Framework_2eproto[] PROTOBUF_SECTION_VARIABLE(protodesc_cold) =
   "\n\017Framework.proto\022\003maa\032\013Types.proto\"K\n\026S"
   "etGlobalOptionRequest\022\021\n\007logging\030\001 \001(\tH\000"
-  "\022\024\n\ndebug_mode\030\002 \001(\010H\000B\010\n\006option2\261\002\n\014Maa"
-  "Framework\0221\n\007version\022\021.maa.EmptyRequest\032"
-  "\023.maa.StringResponse\022C\n\021set_global_optio"
-  "n\022\033.maa.SetGlobalOptionRequest\032\021.maa.Boo"
-  "lResponse\0229\n\023acquire_callback_id\022\021.maa.E"
-  "mptyRequest\032\017.maa.IdResponse\0224\n\021register"
-  "_callback\022\016.maa.IdRequest\032\r.maa.Callback"
-  "0\001\0228\n\023unregister_callback\022\016.maa.IdReques"
-  "t\032\021.maa.BoolResponse2\203\003\n\021MaaFrameworkIma"
-  "ge\0220\n\006create\022\021.maa.EmptyRequest\032\023.maa.Ha"
+  "\022\024\n\ndebug_mode\030\002 \001(\010H\000B\010\n\006option\"V\n\021Imag"
+  "eInfoResponse\022\021\n\004type\030\001 \001(\005H\000\210\001\001\022\034\n\004size"
+  "\030\002 \001(\0132\t.maa.SizeH\001\210\001\001B\007\n\005_typeB\007\n\005_size"
+  "\"\316\001\n\023AdbControlleRequest\022\030\n\002id\030\001 \001(\0132\007.m"
+  "aa.IdH\000\210\001\001\022\025\n\010adb_path\030\002 \001(\tH\001\210\001\001\022\027\n\nadb"
+  "_serial\030\003 \001(\tH\002\210\001\001\022\025\n\010adb_type\030\004 \001(\rH\003\210\001"
+  "\001\022\027\n\nadb_config\030\005 \001(\tH\004\210\001\001B\005\n\003_idB\013\n\t_ad"
+  "b_pathB\r\n\013_adb_serialB\013\n\t_adb_typeB\r\n\013_a"
+  "db_config\"\205\001\n\032ControllerSetOptionRequest"
+  "\022\023\n\tlong_side\030\001 \001(\005H\000\022\024\n\nshort_side\030\002 \001("
+  "\005H\000\022\033\n\021def_package_entry\030\003 \001(\tH\000\022\025\n\013def_"
+  "package\030\004 \001(\tH\000B\010\n\006option\"s\n\032ControllerP"
+  "ostClickRequest\022 \n\006handle\030\001 \001(\0132\013.maa.Ha"
+  "ndleH\000\210\001\001\022\036\n\005point\030\002 \001(\0132\n.maa.PointH\001\210\001"
+  "\001B\t\n\007_handleB\010\n\006_point\"\321\001\n\032ControllerPos"
+  "tSwipeRequest\022 \n\006handle\030\001 \001(\0132\013.maa.Hand"
+  "leH\000\210\001\001\022#\n\npoint_from\030\002 \001(\0132\n.maa.PointH"
+  "\001\210\001\001\022!\n\010point_to\030\003 \001(\0132\n.maa.PointH\002\210\001\001\022"
+  "\025\n\010duration\030\004 \001(\005H\003\210\001\001B\t\n\007_handleB\r\n\013_po"
+  "int_fromB\013\n\t_point_toB\013\n\t_duration\"a\n\030Co"
+  "ntrollerPostKeyRequest\022 \n\006handle\030\001 \001(\0132\013"
+  ".maa.HandleH\000\210\001\001\022\020\n\003key\030\002 \001(\005H\001\210\001\001B\t\n\007_h"
+  "andleB\006\n\004_key\"\271\001\n\032ControllerPostTouchReq"
+  "uest\022 \n\006handle\030\001 \001(\0132\013.maa.HandleH\000\210\001\001\022\024"
+  "\n\007contact\030\002 \001(\005H\001\210\001\001\022\036\n\005point\030\003 \001(\0132\n.ma"
+  "a.PointH\002\210\001\001\022\025\n\010pressure\030\004 \001(\005H\003\210\001\001B\t\n\007_"
+  "handleB\n\n\010_contactB\010\n\006_pointB\013\n\t_pressur"
+  "e\"s\n\031ControllerGetImageRequest\022 \n\006handle"
+  "\030\001 \001(\0132\013.maa.HandleH\000\210\001\001\022\037\n\005image\030\002 \001(\0132"
+  "\013.maa.HandleH\001\210\001\001B\t\n\007_handleB\010\n\006_image2\263"
+  "\002\n\014MaaFramework\0221\n\007version\022\021.maa.EmptyRe"
+  "quest\032\023.maa.StringResponse\022D\n\021set_global"
+  "_option\022\033.maa.SetGlobalOptionRequest\032\022.m"
+  "aa.EmptyResponse\0229\n\023acquire_callback_id\022"
+  "\021.maa.EmptyRequest\032\017.maa.IdResponse\0224\n\021r"
+  "egister_callback\022\016.maa.IdRequest\032\r.maa.C"
+  "allback0\001\0229\n\023unregister_callback\022\016.maa.I"
+  "dRequest\032\022.maa.EmptyResponse2\205\003\n\021MaaFram"
+  "eworkImage\0220\n\006create\022\021.maa.EmptyRequest\032"
+  "\023.maa.HandleResponse\0221\n\007destroy\022\022.maa.Ha"
+  "ndleRequest\032\022.maa.EmptyResponse\0221\n\010is_em"
+  "pty\022\022.maa.HandleRequest\032\021.maa.BoolRespon"
+  "se\022/\n\005clear\022\022.maa.HandleRequest\032\022.maa.Em"
+  "ptyResponse\0222\n\004info\022\022.maa.HandleRequest\032"
+  "\026.maa.ImageInfoResponse\0226\n\013get_encoded\022\022"
+  ".maa.HandleRequest\032\023.maa.BufferResponse\022"
+  ";\n\013set_encoded\022\030.maa.HandleBufferRequest"
+  "\032\022.maa.EmptyResponse2\372\002\n\024MaaFrameworkRes"
+  "ource\022-\n\006create\022\016.maa.IdRequest\032\023.maa.Ha"
   "ndleResponse\0221\n\007destroy\022\022.maa.HandleRequ"
-  "est\032\022.maa.EmptyResponse\0221\n\010is_empty\022\022.ma"
-  "a.HandleRequest\032\021.maa.BoolResponse\022.\n\005cl"
-  "ear\022\022.maa.HandleRequest\032\021.maa.BoolRespon"
-  "se\0222\n\004info\022\022.maa.HandleRequest\032\026.maa.Ima"
-  "geInfoResponse\0226\n\013get_encoded\022\022.maa.Hand"
-  "leRequest\032\023.maa.BufferResponse\022:\n\013set_en"
-  "coded\022\030.maa.HandleBufferRequest\032\021.maa.Bo"
-  "olResponse2\372\002\n\024MaaFrameworkResource\022-\n\006c"
-  "reate\022\016.maa.IdRequest\032\023.maa.HandleRespon"
-  "se\0221\n\007destroy\022\022.maa.HandleRequest\032\022.maa."
-  "EmptyResponse\0226\n\tpost_path\022\030.maa.HandleS"
-  "tringRequest\032\017.maa.IdResponse\0223\n\006status\022"
-  "\024.maa.HandleIdRequest\032\023.maa.StatusRespon"
-  "se\0221\n\004wait\022\024.maa.HandleIdRequest\032\023.maa.S"
-  "tatusResponse\022/\n\006loaded\022\022.maa.HandleRequ"
-  "est\032\021.maa.BoolResponse\022/\n\004hash\022\022.maa.Han"
-  "dleRequest\032\023.maa.StringResponseb\006proto3"
+  "est\032\022.maa.EmptyResponse\0226\n\tpost_path\022\030.m"
+  "aa.HandleStringRequest\032\017.maa.IdResponse\022"
+  "3\n\006status\022\024.maa.HandleIdRequest\032\023.maa.St"
+  "atusResponse\0221\n\004wait\022\024.maa.HandleIdReque"
+  "st\032\023.maa.StatusResponse\022/\n\006loaded\022\022.maa."
+  "HandleRequest\032\021.maa.BoolResponse\022/\n\004hash"
+  "\022\022.maa.HandleRequest\032\023.maa.StringRespons"
+  "e2\316\007\n\026MaaFrameworkController\0227\n\006create\022\030"
+  ".maa.AdbControlleRequest\032\023.maa.HandleRes"
+  "ponse\0221\n\007destroy\022\022.maa.HandleRequest\032\022.m"
+  "aa.EmptyResponse\022A\n\nset_option\022\037.maa.Con"
+  "trollerSetOptionRequest\032\022.maa.EmptyRespo"
+  "nse\0226\n\017post_connection\022\022.maa.HandleReque"
+  "st\032\017.maa.IdResponse\022>\n\npost_click\022\037.maa."
+  "ControllerPostClickRequest\032\017.maa.IdRespo"
+  "nse\022>\n\npost_swipe\022\037.maa.ControllerPostSw"
+  "ipeRequest\032\017.maa.IdResponse\022@\n\016post_pres"
+  "s_key\022\035.maa.ControllerPostKeyRequest\032\017.m"
+  "aa.IdResponse\022C\n\017post_touch_down\022\037.maa.C"
+  "ontrollerPostTouchRequest\032\017.maa.IdRespon"
+  "se\022C\n\017post_touch_move\022\037.maa.ControllerPo"
+  "stTouchRequest\032\017.maa.IdResponse\022A\n\rpost_"
+  "touch_up\022\037.maa.ControllerPostTouchReques"
+  "t\032\017.maa.IdResponse\0225\n\016post_screencap\022\022.m"
+  "aa.HandleRequest\032\017.maa.IdResponse\0223\n\006sta"
+  "tus\022\024.maa.HandleIdRequest\032\023.maa.StatusRe"
+  "sponse\0220\n\004wait\022\024.maa.HandleIdRequest\032\022.m"
+  "aa.EmptyResponse\0222\n\tconnected\022\022.maa.Hand"
+  "leRequest\032\021.maa.BoolResponse\022;\n\005image\022\036."
+  "maa.ControllerGetImageRequest\032\022.maa.Empt"
+  "yResponse\022/\n\004uuid\022\022.maa.HandleRequest\032\023."
+  "maa.StringResponseb\006proto3"
   ;
 static const ::_pbi::DescriptorTable* const descriptor_table_Framework_2eproto_deps[1] = {
   &::descriptor_table_Types_2eproto,
 };
 static ::_pbi::once_flag descriptor_table_Framework_2eproto_once;
 const ::_pbi::DescriptorTable descriptor_table_Framework_2eproto = {
-    false, false, 1199, descriptor_table_protodef_Framework_2eproto,
+    false, false, 3346, descriptor_table_protodef_Framework_2eproto,
     "Framework.proto",
-    &descriptor_table_Framework_2eproto_once, descriptor_table_Framework_2eproto_deps, 1, 1,
+    &descriptor_table_Framework_2eproto_once, descriptor_table_Framework_2eproto_deps, 1, 9,
     schemas, file_default_instances, TableStruct_Framework_2eproto::offsets,
     file_level_metadata_Framework_2eproto, file_level_enum_descriptors_Framework_2eproto,
     file_level_service_descriptors_Framework_2eproto,
@@ -370,12 +661,2512 @@ void SetGlobalOptionRequest::InternalSwap(SetGlobalOptionRequest* other) {
       file_level_metadata_Framework_2eproto[0]);
 }
 
+// ===================================================================
+
+class ImageInfoResponse::_Internal {
+ public:
+  using HasBits = decltype(std::declval<ImageInfoResponse>()._impl_._has_bits_);
+  static void set_has_type(HasBits* has_bits) {
+    (*has_bits)[0] |= 2u;
+  }
+  static const ::maa::Size& size(const ImageInfoResponse* msg);
+  static void set_has_size(HasBits* has_bits) {
+    (*has_bits)[0] |= 1u;
+  }
+};
+
+const ::maa::Size&
+ImageInfoResponse::_Internal::size(const ImageInfoResponse* msg) {
+  return *msg->_impl_.size_;
+}
+void ImageInfoResponse::clear_size() {
+  if (_impl_.size_ != nullptr) _impl_.size_->Clear();
+  _impl_._has_bits_[0] &= ~0x00000001u;
+}
+ImageInfoResponse::ImageInfoResponse(::PROTOBUF_NAMESPACE_ID::Arena* arena,
+                         bool is_message_owned)
+  : ::PROTOBUF_NAMESPACE_ID::Message(arena, is_message_owned) {
+  SharedCtor(arena, is_message_owned);
+  // @@protoc_insertion_point(arena_constructor:maa.ImageInfoResponse)
+}
+ImageInfoResponse::ImageInfoResponse(const ImageInfoResponse& from)
+  : ::PROTOBUF_NAMESPACE_ID::Message() {
+  ImageInfoResponse* const _this = this; (void)_this;
+  new (&_impl_) Impl_{
+      decltype(_impl_._has_bits_){from._impl_._has_bits_}
+    , /*decltype(_impl_._cached_size_)*/{}
+    , decltype(_impl_.size_){nullptr}
+    , decltype(_impl_.type_){}};
+
+  _internal_metadata_.MergeFrom<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(from._internal_metadata_);
+  if (from._internal_has_size()) {
+    _this->_impl_.size_ = new ::maa::Size(*from._impl_.size_);
+  }
+  _this->_impl_.type_ = from._impl_.type_;
+  // @@protoc_insertion_point(copy_constructor:maa.ImageInfoResponse)
+}
+
+inline void ImageInfoResponse::SharedCtor(
+    ::_pb::Arena* arena, bool is_message_owned) {
+  (void)arena;
+  (void)is_message_owned;
+  new (&_impl_) Impl_{
+      decltype(_impl_._has_bits_){}
+    , /*decltype(_impl_._cached_size_)*/{}
+    , decltype(_impl_.size_){nullptr}
+    , decltype(_impl_.type_){0}
+  };
+}
+
+ImageInfoResponse::~ImageInfoResponse() {
+  // @@protoc_insertion_point(destructor:maa.ImageInfoResponse)
+  if (auto *arena = _internal_metadata_.DeleteReturnArena<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>()) {
+  (void)arena;
+    return;
+  }
+  SharedDtor();
+}
+
+inline void ImageInfoResponse::SharedDtor() {
+  GOOGLE_DCHECK(GetArenaForAllocation() == nullptr);
+  if (this != internal_default_instance()) delete _impl_.size_;
+}
+
+void ImageInfoResponse::SetCachedSize(int size) const {
+  _impl_._cached_size_.Set(size);
+}
+
+void ImageInfoResponse::Clear() {
+// @@protoc_insertion_point(message_clear_start:maa.ImageInfoResponse)
+  uint32_t cached_has_bits = 0;
+  // Prevent compiler warnings about cached_has_bits being unused
+  (void) cached_has_bits;
+
+  cached_has_bits = _impl_._has_bits_[0];
+  if (cached_has_bits & 0x00000001u) {
+    GOOGLE_DCHECK(_impl_.size_ != nullptr);
+    _impl_.size_->Clear();
+  }
+  _impl_.type_ = 0;
+  _impl_._has_bits_.Clear();
+  _internal_metadata_.Clear<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>();
+}
+
+const char* ImageInfoResponse::_InternalParse(const char* ptr, ::_pbi::ParseContext* ctx) {
+#define CHK_(x) if (PROTOBUF_PREDICT_FALSE(!(x))) goto failure
+  _Internal::HasBits has_bits{};
+  while (!ctx->Done(&ptr)) {
+    uint32_t tag;
+    ptr = ::_pbi::ReadTag(ptr, &tag);
+    switch (tag >> 3) {
+      // optional int32 type = 1;
+      case 1:
+        if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 8)) {
+          _Internal::set_has_type(&has_bits);
+          _impl_.type_ = ::PROTOBUF_NAMESPACE_ID::internal::ReadVarint32(&ptr);
+          CHK_(ptr);
+        } else
+          goto handle_unusual;
+        continue;
+      // optional .maa.Size size = 2;
+      case 2:
+        if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 18)) {
+          ptr = ctx->ParseMessage(_internal_mutable_size(), ptr);
+          CHK_(ptr);
+        } else
+          goto handle_unusual;
+        continue;
+      default:
+        goto handle_unusual;
+    }  // switch
+  handle_unusual:
+    if ((tag == 0) || ((tag & 7) == 4)) {
+      CHK_(ptr);
+      ctx->SetLastTag(tag);
+      goto message_done;
+    }
+    ptr = UnknownFieldParse(
+        tag,
+        _internal_metadata_.mutable_unknown_fields<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(),
+        ptr, ctx);
+    CHK_(ptr != nullptr);
+  }  // while
+message_done:
+  _impl_._has_bits_.Or(has_bits);
+  return ptr;
+failure:
+  ptr = nullptr;
+  goto message_done;
+#undef CHK_
+}
+
+uint8_t* ImageInfoResponse::_InternalSerialize(
+    uint8_t* target, ::PROTOBUF_NAMESPACE_ID::io::EpsCopyOutputStream* stream) const {
+  // @@protoc_insertion_point(serialize_to_array_start:maa.ImageInfoResponse)
+  uint32_t cached_has_bits = 0;
+  (void) cached_has_bits;
+
+  // optional int32 type = 1;
+  if (_internal_has_type()) {
+    target = stream->EnsureSpace(target);
+    target = ::_pbi::WireFormatLite::WriteInt32ToArray(1, this->_internal_type(), target);
+  }
+
+  // optional .maa.Size size = 2;
+  if (_internal_has_size()) {
+    target = ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::
+      InternalWriteMessage(2, _Internal::size(this),
+        _Internal::size(this).GetCachedSize(), target, stream);
+  }
+
+  if (PROTOBUF_PREDICT_FALSE(_internal_metadata_.have_unknown_fields())) {
+    target = ::_pbi::WireFormat::InternalSerializeUnknownFieldsToArray(
+        _internal_metadata_.unknown_fields<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(::PROTOBUF_NAMESPACE_ID::UnknownFieldSet::default_instance), target, stream);
+  }
+  // @@protoc_insertion_point(serialize_to_array_end:maa.ImageInfoResponse)
+  return target;
+}
+
+size_t ImageInfoResponse::ByteSizeLong() const {
+// @@protoc_insertion_point(message_byte_size_start:maa.ImageInfoResponse)
+  size_t total_size = 0;
+
+  uint32_t cached_has_bits = 0;
+  // Prevent compiler warnings about cached_has_bits being unused
+  (void) cached_has_bits;
+
+  cached_has_bits = _impl_._has_bits_[0];
+  if (cached_has_bits & 0x00000003u) {
+    // optional .maa.Size size = 2;
+    if (cached_has_bits & 0x00000001u) {
+      total_size += 1 +
+        ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::MessageSize(
+          *_impl_.size_);
+    }
+
+    // optional int32 type = 1;
+    if (cached_has_bits & 0x00000002u) {
+      total_size += ::_pbi::WireFormatLite::Int32SizePlusOne(this->_internal_type());
+    }
+
+  }
+  return MaybeComputeUnknownFieldsSize(total_size, &_impl_._cached_size_);
+}
+
+const ::PROTOBUF_NAMESPACE_ID::Message::ClassData ImageInfoResponse::_class_data_ = {
+    ::PROTOBUF_NAMESPACE_ID::Message::CopyWithSourceCheck,
+    ImageInfoResponse::MergeImpl
+};
+const ::PROTOBUF_NAMESPACE_ID::Message::ClassData*ImageInfoResponse::GetClassData() const { return &_class_data_; }
+
+
+void ImageInfoResponse::MergeImpl(::PROTOBUF_NAMESPACE_ID::Message& to_msg, const ::PROTOBUF_NAMESPACE_ID::Message& from_msg) {
+  auto* const _this = static_cast<ImageInfoResponse*>(&to_msg);
+  auto& from = static_cast<const ImageInfoResponse&>(from_msg);
+  // @@protoc_insertion_point(class_specific_merge_from_start:maa.ImageInfoResponse)
+  GOOGLE_DCHECK_NE(&from, _this);
+  uint32_t cached_has_bits = 0;
+  (void) cached_has_bits;
+
+  cached_has_bits = from._impl_._has_bits_[0];
+  if (cached_has_bits & 0x00000003u) {
+    if (cached_has_bits & 0x00000001u) {
+      _this->_internal_mutable_size()->::maa::Size::MergeFrom(
+          from._internal_size());
+    }
+    if (cached_has_bits & 0x00000002u) {
+      _this->_impl_.type_ = from._impl_.type_;
+    }
+    _this->_impl_._has_bits_[0] |= cached_has_bits;
+  }
+  _this->_internal_metadata_.MergeFrom<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(from._internal_metadata_);
+}
+
+void ImageInfoResponse::CopyFrom(const ImageInfoResponse& from) {
+// @@protoc_insertion_point(class_specific_copy_from_start:maa.ImageInfoResponse)
+  if (&from == this) return;
+  Clear();
+  MergeFrom(from);
+}
+
+bool ImageInfoResponse::IsInitialized() const {
+  return true;
+}
+
+void ImageInfoResponse::InternalSwap(ImageInfoResponse* other) {
+  using std::swap;
+  _internal_metadata_.InternalSwap(&other->_internal_metadata_);
+  swap(_impl_._has_bits_[0], other->_impl_._has_bits_[0]);
+  ::PROTOBUF_NAMESPACE_ID::internal::memswap<
+      PROTOBUF_FIELD_OFFSET(ImageInfoResponse, _impl_.type_)
+      + sizeof(ImageInfoResponse::_impl_.type_)
+      - PROTOBUF_FIELD_OFFSET(ImageInfoResponse, _impl_.size_)>(
+          reinterpret_cast<char*>(&_impl_.size_),
+          reinterpret_cast<char*>(&other->_impl_.size_));
+}
+
+::PROTOBUF_NAMESPACE_ID::Metadata ImageInfoResponse::GetMetadata() const {
+  return ::_pbi::AssignDescriptors(
+      &descriptor_table_Framework_2eproto_getter, &descriptor_table_Framework_2eproto_once,
+      file_level_metadata_Framework_2eproto[1]);
+}
+
+// ===================================================================
+
+class AdbControlleRequest::_Internal {
+ public:
+  using HasBits = decltype(std::declval<AdbControlleRequest>()._impl_._has_bits_);
+  static const ::maa::Id& id(const AdbControlleRequest* msg);
+  static void set_has_id(HasBits* has_bits) {
+    (*has_bits)[0] |= 8u;
+  }
+  static void set_has_adb_path(HasBits* has_bits) {
+    (*has_bits)[0] |= 1u;
+  }
+  static void set_has_adb_serial(HasBits* has_bits) {
+    (*has_bits)[0] |= 2u;
+  }
+  static void set_has_adb_type(HasBits* has_bits) {
+    (*has_bits)[0] |= 16u;
+  }
+  static void set_has_adb_config(HasBits* has_bits) {
+    (*has_bits)[0] |= 4u;
+  }
+};
+
+const ::maa::Id&
+AdbControlleRequest::_Internal::id(const AdbControlleRequest* msg) {
+  return *msg->_impl_.id_;
+}
+void AdbControlleRequest::clear_id() {
+  if (_impl_.id_ != nullptr) _impl_.id_->Clear();
+  _impl_._has_bits_[0] &= ~0x00000008u;
+}
+AdbControlleRequest::AdbControlleRequest(::PROTOBUF_NAMESPACE_ID::Arena* arena,
+                         bool is_message_owned)
+  : ::PROTOBUF_NAMESPACE_ID::Message(arena, is_message_owned) {
+  SharedCtor(arena, is_message_owned);
+  // @@protoc_insertion_point(arena_constructor:maa.AdbControlleRequest)
+}
+AdbControlleRequest::AdbControlleRequest(const AdbControlleRequest& from)
+  : ::PROTOBUF_NAMESPACE_ID::Message() {
+  AdbControlleRequest* const _this = this; (void)_this;
+  new (&_impl_) Impl_{
+      decltype(_impl_._has_bits_){from._impl_._has_bits_}
+    , /*decltype(_impl_._cached_size_)*/{}
+    , decltype(_impl_.adb_path_){}
+    , decltype(_impl_.adb_serial_){}
+    , decltype(_impl_.adb_config_){}
+    , decltype(_impl_.id_){nullptr}
+    , decltype(_impl_.adb_type_){}};
+
+  _internal_metadata_.MergeFrom<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(from._internal_metadata_);
+  _impl_.adb_path_.InitDefault();
+  #ifdef PROTOBUF_FORCE_COPY_DEFAULT_STRING
+    _impl_.adb_path_.Set("", GetArenaForAllocation());
+  #endif // PROTOBUF_FORCE_COPY_DEFAULT_STRING
+  if (from._internal_has_adb_path()) {
+    _this->_impl_.adb_path_.Set(from._internal_adb_path(), 
+      _this->GetArenaForAllocation());
+  }
+  _impl_.adb_serial_.InitDefault();
+  #ifdef PROTOBUF_FORCE_COPY_DEFAULT_STRING
+    _impl_.adb_serial_.Set("", GetArenaForAllocation());
+  #endif // PROTOBUF_FORCE_COPY_DEFAULT_STRING
+  if (from._internal_has_adb_serial()) {
+    _this->_impl_.adb_serial_.Set(from._internal_adb_serial(), 
+      _this->GetArenaForAllocation());
+  }
+  _impl_.adb_config_.InitDefault();
+  #ifdef PROTOBUF_FORCE_COPY_DEFAULT_STRING
+    _impl_.adb_config_.Set("", GetArenaForAllocation());
+  #endif // PROTOBUF_FORCE_COPY_DEFAULT_STRING
+  if (from._internal_has_adb_config()) {
+    _this->_impl_.adb_config_.Set(from._internal_adb_config(), 
+      _this->GetArenaForAllocation());
+  }
+  if (from._internal_has_id()) {
+    _this->_impl_.id_ = new ::maa::Id(*from._impl_.id_);
+  }
+  _this->_impl_.adb_type_ = from._impl_.adb_type_;
+  // @@protoc_insertion_point(copy_constructor:maa.AdbControlleRequest)
+}
+
+inline void AdbControlleRequest::SharedCtor(
+    ::_pb::Arena* arena, bool is_message_owned) {
+  (void)arena;
+  (void)is_message_owned;
+  new (&_impl_) Impl_{
+      decltype(_impl_._has_bits_){}
+    , /*decltype(_impl_._cached_size_)*/{}
+    , decltype(_impl_.adb_path_){}
+    , decltype(_impl_.adb_serial_){}
+    , decltype(_impl_.adb_config_){}
+    , decltype(_impl_.id_){nullptr}
+    , decltype(_impl_.adb_type_){0u}
+  };
+  _impl_.adb_path_.InitDefault();
+  #ifdef PROTOBUF_FORCE_COPY_DEFAULT_STRING
+    _impl_.adb_path_.Set("", GetArenaForAllocation());
+  #endif // PROTOBUF_FORCE_COPY_DEFAULT_STRING
+  _impl_.adb_serial_.InitDefault();
+  #ifdef PROTOBUF_FORCE_COPY_DEFAULT_STRING
+    _impl_.adb_serial_.Set("", GetArenaForAllocation());
+  #endif // PROTOBUF_FORCE_COPY_DEFAULT_STRING
+  _impl_.adb_config_.InitDefault();
+  #ifdef PROTOBUF_FORCE_COPY_DEFAULT_STRING
+    _impl_.adb_config_.Set("", GetArenaForAllocation());
+  #endif // PROTOBUF_FORCE_COPY_DEFAULT_STRING
+}
+
+AdbControlleRequest::~AdbControlleRequest() {
+  // @@protoc_insertion_point(destructor:maa.AdbControlleRequest)
+  if (auto *arena = _internal_metadata_.DeleteReturnArena<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>()) {
+  (void)arena;
+    return;
+  }
+  SharedDtor();
+}
+
+inline void AdbControlleRequest::SharedDtor() {
+  GOOGLE_DCHECK(GetArenaForAllocation() == nullptr);
+  _impl_.adb_path_.Destroy();
+  _impl_.adb_serial_.Destroy();
+  _impl_.adb_config_.Destroy();
+  if (this != internal_default_instance()) delete _impl_.id_;
+}
+
+void AdbControlleRequest::SetCachedSize(int size) const {
+  _impl_._cached_size_.Set(size);
+}
+
+void AdbControlleRequest::Clear() {
+// @@protoc_insertion_point(message_clear_start:maa.AdbControlleRequest)
+  uint32_t cached_has_bits = 0;
+  // Prevent compiler warnings about cached_has_bits being unused
+  (void) cached_has_bits;
+
+  cached_has_bits = _impl_._has_bits_[0];
+  if (cached_has_bits & 0x0000000fu) {
+    if (cached_has_bits & 0x00000001u) {
+      _impl_.adb_path_.ClearNonDefaultToEmpty();
+    }
+    if (cached_has_bits & 0x00000002u) {
+      _impl_.adb_serial_.ClearNonDefaultToEmpty();
+    }
+    if (cached_has_bits & 0x00000004u) {
+      _impl_.adb_config_.ClearNonDefaultToEmpty();
+    }
+    if (cached_has_bits & 0x00000008u) {
+      GOOGLE_DCHECK(_impl_.id_ != nullptr);
+      _impl_.id_->Clear();
+    }
+  }
+  _impl_.adb_type_ = 0u;
+  _impl_._has_bits_.Clear();
+  _internal_metadata_.Clear<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>();
+}
+
+const char* AdbControlleRequest::_InternalParse(const char* ptr, ::_pbi::ParseContext* ctx) {
+#define CHK_(x) if (PROTOBUF_PREDICT_FALSE(!(x))) goto failure
+  _Internal::HasBits has_bits{};
+  while (!ctx->Done(&ptr)) {
+    uint32_t tag;
+    ptr = ::_pbi::ReadTag(ptr, &tag);
+    switch (tag >> 3) {
+      // optional .maa.Id id = 1;
+      case 1:
+        if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 10)) {
+          ptr = ctx->ParseMessage(_internal_mutable_id(), ptr);
+          CHK_(ptr);
+        } else
+          goto handle_unusual;
+        continue;
+      // optional string adb_path = 2;
+      case 2:
+        if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 18)) {
+          auto str = _internal_mutable_adb_path();
+          ptr = ::_pbi::InlineGreedyStringParser(str, ptr, ctx);
+          CHK_(ptr);
+          CHK_(::_pbi::VerifyUTF8(str, "maa.AdbControlleRequest.adb_path"));
+        } else
+          goto handle_unusual;
+        continue;
+      // optional string adb_serial = 3;
+      case 3:
+        if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 26)) {
+          auto str = _internal_mutable_adb_serial();
+          ptr = ::_pbi::InlineGreedyStringParser(str, ptr, ctx);
+          CHK_(ptr);
+          CHK_(::_pbi::VerifyUTF8(str, "maa.AdbControlleRequest.adb_serial"));
+        } else
+          goto handle_unusual;
+        continue;
+      // optional uint32 adb_type = 4;
+      case 4:
+        if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 32)) {
+          _Internal::set_has_adb_type(&has_bits);
+          _impl_.adb_type_ = ::PROTOBUF_NAMESPACE_ID::internal::ReadVarint32(&ptr);
+          CHK_(ptr);
+        } else
+          goto handle_unusual;
+        continue;
+      // optional string adb_config = 5;
+      case 5:
+        if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 42)) {
+          auto str = _internal_mutable_adb_config();
+          ptr = ::_pbi::InlineGreedyStringParser(str, ptr, ctx);
+          CHK_(ptr);
+          CHK_(::_pbi::VerifyUTF8(str, "maa.AdbControlleRequest.adb_config"));
+        } else
+          goto handle_unusual;
+        continue;
+      default:
+        goto handle_unusual;
+    }  // switch
+  handle_unusual:
+    if ((tag == 0) || ((tag & 7) == 4)) {
+      CHK_(ptr);
+      ctx->SetLastTag(tag);
+      goto message_done;
+    }
+    ptr = UnknownFieldParse(
+        tag,
+        _internal_metadata_.mutable_unknown_fields<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(),
+        ptr, ctx);
+    CHK_(ptr != nullptr);
+  }  // while
+message_done:
+  _impl_._has_bits_.Or(has_bits);
+  return ptr;
+failure:
+  ptr = nullptr;
+  goto message_done;
+#undef CHK_
+}
+
+uint8_t* AdbControlleRequest::_InternalSerialize(
+    uint8_t* target, ::PROTOBUF_NAMESPACE_ID::io::EpsCopyOutputStream* stream) const {
+  // @@protoc_insertion_point(serialize_to_array_start:maa.AdbControlleRequest)
+  uint32_t cached_has_bits = 0;
+  (void) cached_has_bits;
+
+  // optional .maa.Id id = 1;
+  if (_internal_has_id()) {
+    target = ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::
+      InternalWriteMessage(1, _Internal::id(this),
+        _Internal::id(this).GetCachedSize(), target, stream);
+  }
+
+  // optional string adb_path = 2;
+  if (_internal_has_adb_path()) {
+    ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::VerifyUtf8String(
+      this->_internal_adb_path().data(), static_cast<int>(this->_internal_adb_path().length()),
+      ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::SERIALIZE,
+      "maa.AdbControlleRequest.adb_path");
+    target = stream->WriteStringMaybeAliased(
+        2, this->_internal_adb_path(), target);
+  }
+
+  // optional string adb_serial = 3;
+  if (_internal_has_adb_serial()) {
+    ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::VerifyUtf8String(
+      this->_internal_adb_serial().data(), static_cast<int>(this->_internal_adb_serial().length()),
+      ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::SERIALIZE,
+      "maa.AdbControlleRequest.adb_serial");
+    target = stream->WriteStringMaybeAliased(
+        3, this->_internal_adb_serial(), target);
+  }
+
+  // optional uint32 adb_type = 4;
+  if (_internal_has_adb_type()) {
+    target = stream->EnsureSpace(target);
+    target = ::_pbi::WireFormatLite::WriteUInt32ToArray(4, this->_internal_adb_type(), target);
+  }
+
+  // optional string adb_config = 5;
+  if (_internal_has_adb_config()) {
+    ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::VerifyUtf8String(
+      this->_internal_adb_config().data(), static_cast<int>(this->_internal_adb_config().length()),
+      ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::SERIALIZE,
+      "maa.AdbControlleRequest.adb_config");
+    target = stream->WriteStringMaybeAliased(
+        5, this->_internal_adb_config(), target);
+  }
+
+  if (PROTOBUF_PREDICT_FALSE(_internal_metadata_.have_unknown_fields())) {
+    target = ::_pbi::WireFormat::InternalSerializeUnknownFieldsToArray(
+        _internal_metadata_.unknown_fields<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(::PROTOBUF_NAMESPACE_ID::UnknownFieldSet::default_instance), target, stream);
+  }
+  // @@protoc_insertion_point(serialize_to_array_end:maa.AdbControlleRequest)
+  return target;
+}
+
+size_t AdbControlleRequest::ByteSizeLong() const {
+// @@protoc_insertion_point(message_byte_size_start:maa.AdbControlleRequest)
+  size_t total_size = 0;
+
+  uint32_t cached_has_bits = 0;
+  // Prevent compiler warnings about cached_has_bits being unused
+  (void) cached_has_bits;
+
+  cached_has_bits = _impl_._has_bits_[0];
+  if (cached_has_bits & 0x0000001fu) {
+    // optional string adb_path = 2;
+    if (cached_has_bits & 0x00000001u) {
+      total_size += 1 +
+        ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::StringSize(
+          this->_internal_adb_path());
+    }
+
+    // optional string adb_serial = 3;
+    if (cached_has_bits & 0x00000002u) {
+      total_size += 1 +
+        ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::StringSize(
+          this->_internal_adb_serial());
+    }
+
+    // optional string adb_config = 5;
+    if (cached_has_bits & 0x00000004u) {
+      total_size += 1 +
+        ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::StringSize(
+          this->_internal_adb_config());
+    }
+
+    // optional .maa.Id id = 1;
+    if (cached_has_bits & 0x00000008u) {
+      total_size += 1 +
+        ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::MessageSize(
+          *_impl_.id_);
+    }
+
+    // optional uint32 adb_type = 4;
+    if (cached_has_bits & 0x00000010u) {
+      total_size += ::_pbi::WireFormatLite::UInt32SizePlusOne(this->_internal_adb_type());
+    }
+
+  }
+  return MaybeComputeUnknownFieldsSize(total_size, &_impl_._cached_size_);
+}
+
+const ::PROTOBUF_NAMESPACE_ID::Message::ClassData AdbControlleRequest::_class_data_ = {
+    ::PROTOBUF_NAMESPACE_ID::Message::CopyWithSourceCheck,
+    AdbControlleRequest::MergeImpl
+};
+const ::PROTOBUF_NAMESPACE_ID::Message::ClassData*AdbControlleRequest::GetClassData() const { return &_class_data_; }
+
+
+void AdbControlleRequest::MergeImpl(::PROTOBUF_NAMESPACE_ID::Message& to_msg, const ::PROTOBUF_NAMESPACE_ID::Message& from_msg) {
+  auto* const _this = static_cast<AdbControlleRequest*>(&to_msg);
+  auto& from = static_cast<const AdbControlleRequest&>(from_msg);
+  // @@protoc_insertion_point(class_specific_merge_from_start:maa.AdbControlleRequest)
+  GOOGLE_DCHECK_NE(&from, _this);
+  uint32_t cached_has_bits = 0;
+  (void) cached_has_bits;
+
+  cached_has_bits = from._impl_._has_bits_[0];
+  if (cached_has_bits & 0x0000001fu) {
+    if (cached_has_bits & 0x00000001u) {
+      _this->_internal_set_adb_path(from._internal_adb_path());
+    }
+    if (cached_has_bits & 0x00000002u) {
+      _this->_internal_set_adb_serial(from._internal_adb_serial());
+    }
+    if (cached_has_bits & 0x00000004u) {
+      _this->_internal_set_adb_config(from._internal_adb_config());
+    }
+    if (cached_has_bits & 0x00000008u) {
+      _this->_internal_mutable_id()->::maa::Id::MergeFrom(
+          from._internal_id());
+    }
+    if (cached_has_bits & 0x00000010u) {
+      _this->_impl_.adb_type_ = from._impl_.adb_type_;
+    }
+    _this->_impl_._has_bits_[0] |= cached_has_bits;
+  }
+  _this->_internal_metadata_.MergeFrom<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(from._internal_metadata_);
+}
+
+void AdbControlleRequest::CopyFrom(const AdbControlleRequest& from) {
+// @@protoc_insertion_point(class_specific_copy_from_start:maa.AdbControlleRequest)
+  if (&from == this) return;
+  Clear();
+  MergeFrom(from);
+}
+
+bool AdbControlleRequest::IsInitialized() const {
+  return true;
+}
+
+void AdbControlleRequest::InternalSwap(AdbControlleRequest* other) {
+  using std::swap;
+  auto* lhs_arena = GetArenaForAllocation();
+  auto* rhs_arena = other->GetArenaForAllocation();
+  _internal_metadata_.InternalSwap(&other->_internal_metadata_);
+  swap(_impl_._has_bits_[0], other->_impl_._has_bits_[0]);
+  ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr::InternalSwap(
+      &_impl_.adb_path_, lhs_arena,
+      &other->_impl_.adb_path_, rhs_arena
+  );
+  ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr::InternalSwap(
+      &_impl_.adb_serial_, lhs_arena,
+      &other->_impl_.adb_serial_, rhs_arena
+  );
+  ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr::InternalSwap(
+      &_impl_.adb_config_, lhs_arena,
+      &other->_impl_.adb_config_, rhs_arena
+  );
+  ::PROTOBUF_NAMESPACE_ID::internal::memswap<
+      PROTOBUF_FIELD_OFFSET(AdbControlleRequest, _impl_.adb_type_)
+      + sizeof(AdbControlleRequest::_impl_.adb_type_)
+      - PROTOBUF_FIELD_OFFSET(AdbControlleRequest, _impl_.id_)>(
+          reinterpret_cast<char*>(&_impl_.id_),
+          reinterpret_cast<char*>(&other->_impl_.id_));
+}
+
+::PROTOBUF_NAMESPACE_ID::Metadata AdbControlleRequest::GetMetadata() const {
+  return ::_pbi::AssignDescriptors(
+      &descriptor_table_Framework_2eproto_getter, &descriptor_table_Framework_2eproto_once,
+      file_level_metadata_Framework_2eproto[2]);
+}
+
+// ===================================================================
+
+class ControllerSetOptionRequest::_Internal {
+ public:
+};
+
+ControllerSetOptionRequest::ControllerSetOptionRequest(::PROTOBUF_NAMESPACE_ID::Arena* arena,
+                         bool is_message_owned)
+  : ::PROTOBUF_NAMESPACE_ID::Message(arena, is_message_owned) {
+  SharedCtor(arena, is_message_owned);
+  // @@protoc_insertion_point(arena_constructor:maa.ControllerSetOptionRequest)
+}
+ControllerSetOptionRequest::ControllerSetOptionRequest(const ControllerSetOptionRequest& from)
+  : ::PROTOBUF_NAMESPACE_ID::Message() {
+  ControllerSetOptionRequest* const _this = this; (void)_this;
+  new (&_impl_) Impl_{
+      decltype(_impl_.option_){}
+    , /*decltype(_impl_._cached_size_)*/{}
+    , /*decltype(_impl_._oneof_case_)*/{}};
+
+  _internal_metadata_.MergeFrom<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(from._internal_metadata_);
+  clear_has_option();
+  switch (from.option_case()) {
+    case kLongSide: {
+      _this->_internal_set_long_side(from._internal_long_side());
+      break;
+    }
+    case kShortSide: {
+      _this->_internal_set_short_side(from._internal_short_side());
+      break;
+    }
+    case kDefPackageEntry: {
+      _this->_internal_set_def_package_entry(from._internal_def_package_entry());
+      break;
+    }
+    case kDefPackage: {
+      _this->_internal_set_def_package(from._internal_def_package());
+      break;
+    }
+    case OPTION_NOT_SET: {
+      break;
+    }
+  }
+  // @@protoc_insertion_point(copy_constructor:maa.ControllerSetOptionRequest)
+}
+
+inline void ControllerSetOptionRequest::SharedCtor(
+    ::_pb::Arena* arena, bool is_message_owned) {
+  (void)arena;
+  (void)is_message_owned;
+  new (&_impl_) Impl_{
+      decltype(_impl_.option_){}
+    , /*decltype(_impl_._cached_size_)*/{}
+    , /*decltype(_impl_._oneof_case_)*/{}
+  };
+  clear_has_option();
+}
+
+ControllerSetOptionRequest::~ControllerSetOptionRequest() {
+  // @@protoc_insertion_point(destructor:maa.ControllerSetOptionRequest)
+  if (auto *arena = _internal_metadata_.DeleteReturnArena<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>()) {
+  (void)arena;
+    return;
+  }
+  SharedDtor();
+}
+
+inline void ControllerSetOptionRequest::SharedDtor() {
+  GOOGLE_DCHECK(GetArenaForAllocation() == nullptr);
+  if (has_option()) {
+    clear_option();
+  }
+}
+
+void ControllerSetOptionRequest::SetCachedSize(int size) const {
+  _impl_._cached_size_.Set(size);
+}
+
+void ControllerSetOptionRequest::clear_option() {
+// @@protoc_insertion_point(one_of_clear_start:maa.ControllerSetOptionRequest)
+  switch (option_case()) {
+    case kLongSide: {
+      // No need to clear
+      break;
+    }
+    case kShortSide: {
+      // No need to clear
+      break;
+    }
+    case kDefPackageEntry: {
+      _impl_.option_.def_package_entry_.Destroy();
+      break;
+    }
+    case kDefPackage: {
+      _impl_.option_.def_package_.Destroy();
+      break;
+    }
+    case OPTION_NOT_SET: {
+      break;
+    }
+  }
+  _impl_._oneof_case_[0] = OPTION_NOT_SET;
+}
+
+
+void ControllerSetOptionRequest::Clear() {
+// @@protoc_insertion_point(message_clear_start:maa.ControllerSetOptionRequest)
+  uint32_t cached_has_bits = 0;
+  // Prevent compiler warnings about cached_has_bits being unused
+  (void) cached_has_bits;
+
+  clear_option();
+  _internal_metadata_.Clear<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>();
+}
+
+const char* ControllerSetOptionRequest::_InternalParse(const char* ptr, ::_pbi::ParseContext* ctx) {
+#define CHK_(x) if (PROTOBUF_PREDICT_FALSE(!(x))) goto failure
+  while (!ctx->Done(&ptr)) {
+    uint32_t tag;
+    ptr = ::_pbi::ReadTag(ptr, &tag);
+    switch (tag >> 3) {
+      // int32 long_side = 1;
+      case 1:
+        if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 8)) {
+          _internal_set_long_side(::PROTOBUF_NAMESPACE_ID::internal::ReadVarint32(&ptr));
+          CHK_(ptr);
+        } else
+          goto handle_unusual;
+        continue;
+      // int32 short_side = 2;
+      case 2:
+        if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 16)) {
+          _internal_set_short_side(::PROTOBUF_NAMESPACE_ID::internal::ReadVarint32(&ptr));
+          CHK_(ptr);
+        } else
+          goto handle_unusual;
+        continue;
+      // string def_package_entry = 3;
+      case 3:
+        if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 26)) {
+          auto str = _internal_mutable_def_package_entry();
+          ptr = ::_pbi::InlineGreedyStringParser(str, ptr, ctx);
+          CHK_(ptr);
+          CHK_(::_pbi::VerifyUTF8(str, "maa.ControllerSetOptionRequest.def_package_entry"));
+        } else
+          goto handle_unusual;
+        continue;
+      // string def_package = 4;
+      case 4:
+        if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 34)) {
+          auto str = _internal_mutable_def_package();
+          ptr = ::_pbi::InlineGreedyStringParser(str, ptr, ctx);
+          CHK_(ptr);
+          CHK_(::_pbi::VerifyUTF8(str, "maa.ControllerSetOptionRequest.def_package"));
+        } else
+          goto handle_unusual;
+        continue;
+      default:
+        goto handle_unusual;
+    }  // switch
+  handle_unusual:
+    if ((tag == 0) || ((tag & 7) == 4)) {
+      CHK_(ptr);
+      ctx->SetLastTag(tag);
+      goto message_done;
+    }
+    ptr = UnknownFieldParse(
+        tag,
+        _internal_metadata_.mutable_unknown_fields<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(),
+        ptr, ctx);
+    CHK_(ptr != nullptr);
+  }  // while
+message_done:
+  return ptr;
+failure:
+  ptr = nullptr;
+  goto message_done;
+#undef CHK_
+}
+
+uint8_t* ControllerSetOptionRequest::_InternalSerialize(
+    uint8_t* target, ::PROTOBUF_NAMESPACE_ID::io::EpsCopyOutputStream* stream) const {
+  // @@protoc_insertion_point(serialize_to_array_start:maa.ControllerSetOptionRequest)
+  uint32_t cached_has_bits = 0;
+  (void) cached_has_bits;
+
+  // int32 long_side = 1;
+  if (_internal_has_long_side()) {
+    target = stream->EnsureSpace(target);
+    target = ::_pbi::WireFormatLite::WriteInt32ToArray(1, this->_internal_long_side(), target);
+  }
+
+  // int32 short_side = 2;
+  if (_internal_has_short_side()) {
+    target = stream->EnsureSpace(target);
+    target = ::_pbi::WireFormatLite::WriteInt32ToArray(2, this->_internal_short_side(), target);
+  }
+
+  // string def_package_entry = 3;
+  if (_internal_has_def_package_entry()) {
+    ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::VerifyUtf8String(
+      this->_internal_def_package_entry().data(), static_cast<int>(this->_internal_def_package_entry().length()),
+      ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::SERIALIZE,
+      "maa.ControllerSetOptionRequest.def_package_entry");
+    target = stream->WriteStringMaybeAliased(
+        3, this->_internal_def_package_entry(), target);
+  }
+
+  // string def_package = 4;
+  if (_internal_has_def_package()) {
+    ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::VerifyUtf8String(
+      this->_internal_def_package().data(), static_cast<int>(this->_internal_def_package().length()),
+      ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::SERIALIZE,
+      "maa.ControllerSetOptionRequest.def_package");
+    target = stream->WriteStringMaybeAliased(
+        4, this->_internal_def_package(), target);
+  }
+
+  if (PROTOBUF_PREDICT_FALSE(_internal_metadata_.have_unknown_fields())) {
+    target = ::_pbi::WireFormat::InternalSerializeUnknownFieldsToArray(
+        _internal_metadata_.unknown_fields<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(::PROTOBUF_NAMESPACE_ID::UnknownFieldSet::default_instance), target, stream);
+  }
+  // @@protoc_insertion_point(serialize_to_array_end:maa.ControllerSetOptionRequest)
+  return target;
+}
+
+size_t ControllerSetOptionRequest::ByteSizeLong() const {
+// @@protoc_insertion_point(message_byte_size_start:maa.ControllerSetOptionRequest)
+  size_t total_size = 0;
+
+  uint32_t cached_has_bits = 0;
+  // Prevent compiler warnings about cached_has_bits being unused
+  (void) cached_has_bits;
+
+  switch (option_case()) {
+    // int32 long_side = 1;
+    case kLongSide: {
+      total_size += ::_pbi::WireFormatLite::Int32SizePlusOne(this->_internal_long_side());
+      break;
+    }
+    // int32 short_side = 2;
+    case kShortSide: {
+      total_size += ::_pbi::WireFormatLite::Int32SizePlusOne(this->_internal_short_side());
+      break;
+    }
+    // string def_package_entry = 3;
+    case kDefPackageEntry: {
+      total_size += 1 +
+        ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::StringSize(
+          this->_internal_def_package_entry());
+      break;
+    }
+    // string def_package = 4;
+    case kDefPackage: {
+      total_size += 1 +
+        ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::StringSize(
+          this->_internal_def_package());
+      break;
+    }
+    case OPTION_NOT_SET: {
+      break;
+    }
+  }
+  return MaybeComputeUnknownFieldsSize(total_size, &_impl_._cached_size_);
+}
+
+const ::PROTOBUF_NAMESPACE_ID::Message::ClassData ControllerSetOptionRequest::_class_data_ = {
+    ::PROTOBUF_NAMESPACE_ID::Message::CopyWithSourceCheck,
+    ControllerSetOptionRequest::MergeImpl
+};
+const ::PROTOBUF_NAMESPACE_ID::Message::ClassData*ControllerSetOptionRequest::GetClassData() const { return &_class_data_; }
+
+
+void ControllerSetOptionRequest::MergeImpl(::PROTOBUF_NAMESPACE_ID::Message& to_msg, const ::PROTOBUF_NAMESPACE_ID::Message& from_msg) {
+  auto* const _this = static_cast<ControllerSetOptionRequest*>(&to_msg);
+  auto& from = static_cast<const ControllerSetOptionRequest&>(from_msg);
+  // @@protoc_insertion_point(class_specific_merge_from_start:maa.ControllerSetOptionRequest)
+  GOOGLE_DCHECK_NE(&from, _this);
+  uint32_t cached_has_bits = 0;
+  (void) cached_has_bits;
+
+  switch (from.option_case()) {
+    case kLongSide: {
+      _this->_internal_set_long_side(from._internal_long_side());
+      break;
+    }
+    case kShortSide: {
+      _this->_internal_set_short_side(from._internal_short_side());
+      break;
+    }
+    case kDefPackageEntry: {
+      _this->_internal_set_def_package_entry(from._internal_def_package_entry());
+      break;
+    }
+    case kDefPackage: {
+      _this->_internal_set_def_package(from._internal_def_package());
+      break;
+    }
+    case OPTION_NOT_SET: {
+      break;
+    }
+  }
+  _this->_internal_metadata_.MergeFrom<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(from._internal_metadata_);
+}
+
+void ControllerSetOptionRequest::CopyFrom(const ControllerSetOptionRequest& from) {
+// @@protoc_insertion_point(class_specific_copy_from_start:maa.ControllerSetOptionRequest)
+  if (&from == this) return;
+  Clear();
+  MergeFrom(from);
+}
+
+bool ControllerSetOptionRequest::IsInitialized() const {
+  return true;
+}
+
+void ControllerSetOptionRequest::InternalSwap(ControllerSetOptionRequest* other) {
+  using std::swap;
+  _internal_metadata_.InternalSwap(&other->_internal_metadata_);
+  swap(_impl_.option_, other->_impl_.option_);
+  swap(_impl_._oneof_case_[0], other->_impl_._oneof_case_[0]);
+}
+
+::PROTOBUF_NAMESPACE_ID::Metadata ControllerSetOptionRequest::GetMetadata() const {
+  return ::_pbi::AssignDescriptors(
+      &descriptor_table_Framework_2eproto_getter, &descriptor_table_Framework_2eproto_once,
+      file_level_metadata_Framework_2eproto[3]);
+}
+
+// ===================================================================
+
+class ControllerPostClickRequest::_Internal {
+ public:
+  using HasBits = decltype(std::declval<ControllerPostClickRequest>()._impl_._has_bits_);
+  static const ::maa::Handle& handle(const ControllerPostClickRequest* msg);
+  static void set_has_handle(HasBits* has_bits) {
+    (*has_bits)[0] |= 1u;
+  }
+  static const ::maa::Point& point(const ControllerPostClickRequest* msg);
+  static void set_has_point(HasBits* has_bits) {
+    (*has_bits)[0] |= 2u;
+  }
+};
+
+const ::maa::Handle&
+ControllerPostClickRequest::_Internal::handle(const ControllerPostClickRequest* msg) {
+  return *msg->_impl_.handle_;
+}
+const ::maa::Point&
+ControllerPostClickRequest::_Internal::point(const ControllerPostClickRequest* msg) {
+  return *msg->_impl_.point_;
+}
+void ControllerPostClickRequest::clear_handle() {
+  if (_impl_.handle_ != nullptr) _impl_.handle_->Clear();
+  _impl_._has_bits_[0] &= ~0x00000001u;
+}
+void ControllerPostClickRequest::clear_point() {
+  if (_impl_.point_ != nullptr) _impl_.point_->Clear();
+  _impl_._has_bits_[0] &= ~0x00000002u;
+}
+ControllerPostClickRequest::ControllerPostClickRequest(::PROTOBUF_NAMESPACE_ID::Arena* arena,
+                         bool is_message_owned)
+  : ::PROTOBUF_NAMESPACE_ID::Message(arena, is_message_owned) {
+  SharedCtor(arena, is_message_owned);
+  // @@protoc_insertion_point(arena_constructor:maa.ControllerPostClickRequest)
+}
+ControllerPostClickRequest::ControllerPostClickRequest(const ControllerPostClickRequest& from)
+  : ::PROTOBUF_NAMESPACE_ID::Message() {
+  ControllerPostClickRequest* const _this = this; (void)_this;
+  new (&_impl_) Impl_{
+      decltype(_impl_._has_bits_){from._impl_._has_bits_}
+    , /*decltype(_impl_._cached_size_)*/{}
+    , decltype(_impl_.handle_){nullptr}
+    , decltype(_impl_.point_){nullptr}};
+
+  _internal_metadata_.MergeFrom<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(from._internal_metadata_);
+  if (from._internal_has_handle()) {
+    _this->_impl_.handle_ = new ::maa::Handle(*from._impl_.handle_);
+  }
+  if (from._internal_has_point()) {
+    _this->_impl_.point_ = new ::maa::Point(*from._impl_.point_);
+  }
+  // @@protoc_insertion_point(copy_constructor:maa.ControllerPostClickRequest)
+}
+
+inline void ControllerPostClickRequest::SharedCtor(
+    ::_pb::Arena* arena, bool is_message_owned) {
+  (void)arena;
+  (void)is_message_owned;
+  new (&_impl_) Impl_{
+      decltype(_impl_._has_bits_){}
+    , /*decltype(_impl_._cached_size_)*/{}
+    , decltype(_impl_.handle_){nullptr}
+    , decltype(_impl_.point_){nullptr}
+  };
+}
+
+ControllerPostClickRequest::~ControllerPostClickRequest() {
+  // @@protoc_insertion_point(destructor:maa.ControllerPostClickRequest)
+  if (auto *arena = _internal_metadata_.DeleteReturnArena<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>()) {
+  (void)arena;
+    return;
+  }
+  SharedDtor();
+}
+
+inline void ControllerPostClickRequest::SharedDtor() {
+  GOOGLE_DCHECK(GetArenaForAllocation() == nullptr);
+  if (this != internal_default_instance()) delete _impl_.handle_;
+  if (this != internal_default_instance()) delete _impl_.point_;
+}
+
+void ControllerPostClickRequest::SetCachedSize(int size) const {
+  _impl_._cached_size_.Set(size);
+}
+
+void ControllerPostClickRequest::Clear() {
+// @@protoc_insertion_point(message_clear_start:maa.ControllerPostClickRequest)
+  uint32_t cached_has_bits = 0;
+  // Prevent compiler warnings about cached_has_bits being unused
+  (void) cached_has_bits;
+
+  cached_has_bits = _impl_._has_bits_[0];
+  if (cached_has_bits & 0x00000003u) {
+    if (cached_has_bits & 0x00000001u) {
+      GOOGLE_DCHECK(_impl_.handle_ != nullptr);
+      _impl_.handle_->Clear();
+    }
+    if (cached_has_bits & 0x00000002u) {
+      GOOGLE_DCHECK(_impl_.point_ != nullptr);
+      _impl_.point_->Clear();
+    }
+  }
+  _impl_._has_bits_.Clear();
+  _internal_metadata_.Clear<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>();
+}
+
+const char* ControllerPostClickRequest::_InternalParse(const char* ptr, ::_pbi::ParseContext* ctx) {
+#define CHK_(x) if (PROTOBUF_PREDICT_FALSE(!(x))) goto failure
+  _Internal::HasBits has_bits{};
+  while (!ctx->Done(&ptr)) {
+    uint32_t tag;
+    ptr = ::_pbi::ReadTag(ptr, &tag);
+    switch (tag >> 3) {
+      // optional .maa.Handle handle = 1;
+      case 1:
+        if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 10)) {
+          ptr = ctx->ParseMessage(_internal_mutable_handle(), ptr);
+          CHK_(ptr);
+        } else
+          goto handle_unusual;
+        continue;
+      // optional .maa.Point point = 2;
+      case 2:
+        if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 18)) {
+          ptr = ctx->ParseMessage(_internal_mutable_point(), ptr);
+          CHK_(ptr);
+        } else
+          goto handle_unusual;
+        continue;
+      default:
+        goto handle_unusual;
+    }  // switch
+  handle_unusual:
+    if ((tag == 0) || ((tag & 7) == 4)) {
+      CHK_(ptr);
+      ctx->SetLastTag(tag);
+      goto message_done;
+    }
+    ptr = UnknownFieldParse(
+        tag,
+        _internal_metadata_.mutable_unknown_fields<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(),
+        ptr, ctx);
+    CHK_(ptr != nullptr);
+  }  // while
+message_done:
+  _impl_._has_bits_.Or(has_bits);
+  return ptr;
+failure:
+  ptr = nullptr;
+  goto message_done;
+#undef CHK_
+}
+
+uint8_t* ControllerPostClickRequest::_InternalSerialize(
+    uint8_t* target, ::PROTOBUF_NAMESPACE_ID::io::EpsCopyOutputStream* stream) const {
+  // @@protoc_insertion_point(serialize_to_array_start:maa.ControllerPostClickRequest)
+  uint32_t cached_has_bits = 0;
+  (void) cached_has_bits;
+
+  // optional .maa.Handle handle = 1;
+  if (_internal_has_handle()) {
+    target = ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::
+      InternalWriteMessage(1, _Internal::handle(this),
+        _Internal::handle(this).GetCachedSize(), target, stream);
+  }
+
+  // optional .maa.Point point = 2;
+  if (_internal_has_point()) {
+    target = ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::
+      InternalWriteMessage(2, _Internal::point(this),
+        _Internal::point(this).GetCachedSize(), target, stream);
+  }
+
+  if (PROTOBUF_PREDICT_FALSE(_internal_metadata_.have_unknown_fields())) {
+    target = ::_pbi::WireFormat::InternalSerializeUnknownFieldsToArray(
+        _internal_metadata_.unknown_fields<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(::PROTOBUF_NAMESPACE_ID::UnknownFieldSet::default_instance), target, stream);
+  }
+  // @@protoc_insertion_point(serialize_to_array_end:maa.ControllerPostClickRequest)
+  return target;
+}
+
+size_t ControllerPostClickRequest::ByteSizeLong() const {
+// @@protoc_insertion_point(message_byte_size_start:maa.ControllerPostClickRequest)
+  size_t total_size = 0;
+
+  uint32_t cached_has_bits = 0;
+  // Prevent compiler warnings about cached_has_bits being unused
+  (void) cached_has_bits;
+
+  cached_has_bits = _impl_._has_bits_[0];
+  if (cached_has_bits & 0x00000003u) {
+    // optional .maa.Handle handle = 1;
+    if (cached_has_bits & 0x00000001u) {
+      total_size += 1 +
+        ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::MessageSize(
+          *_impl_.handle_);
+    }
+
+    // optional .maa.Point point = 2;
+    if (cached_has_bits & 0x00000002u) {
+      total_size += 1 +
+        ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::MessageSize(
+          *_impl_.point_);
+    }
+
+  }
+  return MaybeComputeUnknownFieldsSize(total_size, &_impl_._cached_size_);
+}
+
+const ::PROTOBUF_NAMESPACE_ID::Message::ClassData ControllerPostClickRequest::_class_data_ = {
+    ::PROTOBUF_NAMESPACE_ID::Message::CopyWithSourceCheck,
+    ControllerPostClickRequest::MergeImpl
+};
+const ::PROTOBUF_NAMESPACE_ID::Message::ClassData*ControllerPostClickRequest::GetClassData() const { return &_class_data_; }
+
+
+void ControllerPostClickRequest::MergeImpl(::PROTOBUF_NAMESPACE_ID::Message& to_msg, const ::PROTOBUF_NAMESPACE_ID::Message& from_msg) {
+  auto* const _this = static_cast<ControllerPostClickRequest*>(&to_msg);
+  auto& from = static_cast<const ControllerPostClickRequest&>(from_msg);
+  // @@protoc_insertion_point(class_specific_merge_from_start:maa.ControllerPostClickRequest)
+  GOOGLE_DCHECK_NE(&from, _this);
+  uint32_t cached_has_bits = 0;
+  (void) cached_has_bits;
+
+  cached_has_bits = from._impl_._has_bits_[0];
+  if (cached_has_bits & 0x00000003u) {
+    if (cached_has_bits & 0x00000001u) {
+      _this->_internal_mutable_handle()->::maa::Handle::MergeFrom(
+          from._internal_handle());
+    }
+    if (cached_has_bits & 0x00000002u) {
+      _this->_internal_mutable_point()->::maa::Point::MergeFrom(
+          from._internal_point());
+    }
+  }
+  _this->_internal_metadata_.MergeFrom<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(from._internal_metadata_);
+}
+
+void ControllerPostClickRequest::CopyFrom(const ControllerPostClickRequest& from) {
+// @@protoc_insertion_point(class_specific_copy_from_start:maa.ControllerPostClickRequest)
+  if (&from == this) return;
+  Clear();
+  MergeFrom(from);
+}
+
+bool ControllerPostClickRequest::IsInitialized() const {
+  return true;
+}
+
+void ControllerPostClickRequest::InternalSwap(ControllerPostClickRequest* other) {
+  using std::swap;
+  _internal_metadata_.InternalSwap(&other->_internal_metadata_);
+  swap(_impl_._has_bits_[0], other->_impl_._has_bits_[0]);
+  ::PROTOBUF_NAMESPACE_ID::internal::memswap<
+      PROTOBUF_FIELD_OFFSET(ControllerPostClickRequest, _impl_.point_)
+      + sizeof(ControllerPostClickRequest::_impl_.point_)
+      - PROTOBUF_FIELD_OFFSET(ControllerPostClickRequest, _impl_.handle_)>(
+          reinterpret_cast<char*>(&_impl_.handle_),
+          reinterpret_cast<char*>(&other->_impl_.handle_));
+}
+
+::PROTOBUF_NAMESPACE_ID::Metadata ControllerPostClickRequest::GetMetadata() const {
+  return ::_pbi::AssignDescriptors(
+      &descriptor_table_Framework_2eproto_getter, &descriptor_table_Framework_2eproto_once,
+      file_level_metadata_Framework_2eproto[4]);
+}
+
+// ===================================================================
+
+class ControllerPostSwipeRequest::_Internal {
+ public:
+  using HasBits = decltype(std::declval<ControllerPostSwipeRequest>()._impl_._has_bits_);
+  static const ::maa::Handle& handle(const ControllerPostSwipeRequest* msg);
+  static void set_has_handle(HasBits* has_bits) {
+    (*has_bits)[0] |= 1u;
+  }
+  static const ::maa::Point& point_from(const ControllerPostSwipeRequest* msg);
+  static void set_has_point_from(HasBits* has_bits) {
+    (*has_bits)[0] |= 2u;
+  }
+  static const ::maa::Point& point_to(const ControllerPostSwipeRequest* msg);
+  static void set_has_point_to(HasBits* has_bits) {
+    (*has_bits)[0] |= 4u;
+  }
+  static void set_has_duration(HasBits* has_bits) {
+    (*has_bits)[0] |= 8u;
+  }
+};
+
+const ::maa::Handle&
+ControllerPostSwipeRequest::_Internal::handle(const ControllerPostSwipeRequest* msg) {
+  return *msg->_impl_.handle_;
+}
+const ::maa::Point&
+ControllerPostSwipeRequest::_Internal::point_from(const ControllerPostSwipeRequest* msg) {
+  return *msg->_impl_.point_from_;
+}
+const ::maa::Point&
+ControllerPostSwipeRequest::_Internal::point_to(const ControllerPostSwipeRequest* msg) {
+  return *msg->_impl_.point_to_;
+}
+void ControllerPostSwipeRequest::clear_handle() {
+  if (_impl_.handle_ != nullptr) _impl_.handle_->Clear();
+  _impl_._has_bits_[0] &= ~0x00000001u;
+}
+void ControllerPostSwipeRequest::clear_point_from() {
+  if (_impl_.point_from_ != nullptr) _impl_.point_from_->Clear();
+  _impl_._has_bits_[0] &= ~0x00000002u;
+}
+void ControllerPostSwipeRequest::clear_point_to() {
+  if (_impl_.point_to_ != nullptr) _impl_.point_to_->Clear();
+  _impl_._has_bits_[0] &= ~0x00000004u;
+}
+ControllerPostSwipeRequest::ControllerPostSwipeRequest(::PROTOBUF_NAMESPACE_ID::Arena* arena,
+                         bool is_message_owned)
+  : ::PROTOBUF_NAMESPACE_ID::Message(arena, is_message_owned) {
+  SharedCtor(arena, is_message_owned);
+  // @@protoc_insertion_point(arena_constructor:maa.ControllerPostSwipeRequest)
+}
+ControllerPostSwipeRequest::ControllerPostSwipeRequest(const ControllerPostSwipeRequest& from)
+  : ::PROTOBUF_NAMESPACE_ID::Message() {
+  ControllerPostSwipeRequest* const _this = this; (void)_this;
+  new (&_impl_) Impl_{
+      decltype(_impl_._has_bits_){from._impl_._has_bits_}
+    , /*decltype(_impl_._cached_size_)*/{}
+    , decltype(_impl_.handle_){nullptr}
+    , decltype(_impl_.point_from_){nullptr}
+    , decltype(_impl_.point_to_){nullptr}
+    , decltype(_impl_.duration_){}};
+
+  _internal_metadata_.MergeFrom<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(from._internal_metadata_);
+  if (from._internal_has_handle()) {
+    _this->_impl_.handle_ = new ::maa::Handle(*from._impl_.handle_);
+  }
+  if (from._internal_has_point_from()) {
+    _this->_impl_.point_from_ = new ::maa::Point(*from._impl_.point_from_);
+  }
+  if (from._internal_has_point_to()) {
+    _this->_impl_.point_to_ = new ::maa::Point(*from._impl_.point_to_);
+  }
+  _this->_impl_.duration_ = from._impl_.duration_;
+  // @@protoc_insertion_point(copy_constructor:maa.ControllerPostSwipeRequest)
+}
+
+inline void ControllerPostSwipeRequest::SharedCtor(
+    ::_pb::Arena* arena, bool is_message_owned) {
+  (void)arena;
+  (void)is_message_owned;
+  new (&_impl_) Impl_{
+      decltype(_impl_._has_bits_){}
+    , /*decltype(_impl_._cached_size_)*/{}
+    , decltype(_impl_.handle_){nullptr}
+    , decltype(_impl_.point_from_){nullptr}
+    , decltype(_impl_.point_to_){nullptr}
+    , decltype(_impl_.duration_){0}
+  };
+}
+
+ControllerPostSwipeRequest::~ControllerPostSwipeRequest() {
+  // @@protoc_insertion_point(destructor:maa.ControllerPostSwipeRequest)
+  if (auto *arena = _internal_metadata_.DeleteReturnArena<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>()) {
+  (void)arena;
+    return;
+  }
+  SharedDtor();
+}
+
+inline void ControllerPostSwipeRequest::SharedDtor() {
+  GOOGLE_DCHECK(GetArenaForAllocation() == nullptr);
+  if (this != internal_default_instance()) delete _impl_.handle_;
+  if (this != internal_default_instance()) delete _impl_.point_from_;
+  if (this != internal_default_instance()) delete _impl_.point_to_;
+}
+
+void ControllerPostSwipeRequest::SetCachedSize(int size) const {
+  _impl_._cached_size_.Set(size);
+}
+
+void ControllerPostSwipeRequest::Clear() {
+// @@protoc_insertion_point(message_clear_start:maa.ControllerPostSwipeRequest)
+  uint32_t cached_has_bits = 0;
+  // Prevent compiler warnings about cached_has_bits being unused
+  (void) cached_has_bits;
+
+  cached_has_bits = _impl_._has_bits_[0];
+  if (cached_has_bits & 0x00000007u) {
+    if (cached_has_bits & 0x00000001u) {
+      GOOGLE_DCHECK(_impl_.handle_ != nullptr);
+      _impl_.handle_->Clear();
+    }
+    if (cached_has_bits & 0x00000002u) {
+      GOOGLE_DCHECK(_impl_.point_from_ != nullptr);
+      _impl_.point_from_->Clear();
+    }
+    if (cached_has_bits & 0x00000004u) {
+      GOOGLE_DCHECK(_impl_.point_to_ != nullptr);
+      _impl_.point_to_->Clear();
+    }
+  }
+  _impl_.duration_ = 0;
+  _impl_._has_bits_.Clear();
+  _internal_metadata_.Clear<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>();
+}
+
+const char* ControllerPostSwipeRequest::_InternalParse(const char* ptr, ::_pbi::ParseContext* ctx) {
+#define CHK_(x) if (PROTOBUF_PREDICT_FALSE(!(x))) goto failure
+  _Internal::HasBits has_bits{};
+  while (!ctx->Done(&ptr)) {
+    uint32_t tag;
+    ptr = ::_pbi::ReadTag(ptr, &tag);
+    switch (tag >> 3) {
+      // optional .maa.Handle handle = 1;
+      case 1:
+        if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 10)) {
+          ptr = ctx->ParseMessage(_internal_mutable_handle(), ptr);
+          CHK_(ptr);
+        } else
+          goto handle_unusual;
+        continue;
+      // optional .maa.Point point_from = 2;
+      case 2:
+        if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 18)) {
+          ptr = ctx->ParseMessage(_internal_mutable_point_from(), ptr);
+          CHK_(ptr);
+        } else
+          goto handle_unusual;
+        continue;
+      // optional .maa.Point point_to = 3;
+      case 3:
+        if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 26)) {
+          ptr = ctx->ParseMessage(_internal_mutable_point_to(), ptr);
+          CHK_(ptr);
+        } else
+          goto handle_unusual;
+        continue;
+      // optional int32 duration = 4;
+      case 4:
+        if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 32)) {
+          _Internal::set_has_duration(&has_bits);
+          _impl_.duration_ = ::PROTOBUF_NAMESPACE_ID::internal::ReadVarint32(&ptr);
+          CHK_(ptr);
+        } else
+          goto handle_unusual;
+        continue;
+      default:
+        goto handle_unusual;
+    }  // switch
+  handle_unusual:
+    if ((tag == 0) || ((tag & 7) == 4)) {
+      CHK_(ptr);
+      ctx->SetLastTag(tag);
+      goto message_done;
+    }
+    ptr = UnknownFieldParse(
+        tag,
+        _internal_metadata_.mutable_unknown_fields<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(),
+        ptr, ctx);
+    CHK_(ptr != nullptr);
+  }  // while
+message_done:
+  _impl_._has_bits_.Or(has_bits);
+  return ptr;
+failure:
+  ptr = nullptr;
+  goto message_done;
+#undef CHK_
+}
+
+uint8_t* ControllerPostSwipeRequest::_InternalSerialize(
+    uint8_t* target, ::PROTOBUF_NAMESPACE_ID::io::EpsCopyOutputStream* stream) const {
+  // @@protoc_insertion_point(serialize_to_array_start:maa.ControllerPostSwipeRequest)
+  uint32_t cached_has_bits = 0;
+  (void) cached_has_bits;
+
+  // optional .maa.Handle handle = 1;
+  if (_internal_has_handle()) {
+    target = ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::
+      InternalWriteMessage(1, _Internal::handle(this),
+        _Internal::handle(this).GetCachedSize(), target, stream);
+  }
+
+  // optional .maa.Point point_from = 2;
+  if (_internal_has_point_from()) {
+    target = ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::
+      InternalWriteMessage(2, _Internal::point_from(this),
+        _Internal::point_from(this).GetCachedSize(), target, stream);
+  }
+
+  // optional .maa.Point point_to = 3;
+  if (_internal_has_point_to()) {
+    target = ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::
+      InternalWriteMessage(3, _Internal::point_to(this),
+        _Internal::point_to(this).GetCachedSize(), target, stream);
+  }
+
+  // optional int32 duration = 4;
+  if (_internal_has_duration()) {
+    target = stream->EnsureSpace(target);
+    target = ::_pbi::WireFormatLite::WriteInt32ToArray(4, this->_internal_duration(), target);
+  }
+
+  if (PROTOBUF_PREDICT_FALSE(_internal_metadata_.have_unknown_fields())) {
+    target = ::_pbi::WireFormat::InternalSerializeUnknownFieldsToArray(
+        _internal_metadata_.unknown_fields<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(::PROTOBUF_NAMESPACE_ID::UnknownFieldSet::default_instance), target, stream);
+  }
+  // @@protoc_insertion_point(serialize_to_array_end:maa.ControllerPostSwipeRequest)
+  return target;
+}
+
+size_t ControllerPostSwipeRequest::ByteSizeLong() const {
+// @@protoc_insertion_point(message_byte_size_start:maa.ControllerPostSwipeRequest)
+  size_t total_size = 0;
+
+  uint32_t cached_has_bits = 0;
+  // Prevent compiler warnings about cached_has_bits being unused
+  (void) cached_has_bits;
+
+  cached_has_bits = _impl_._has_bits_[0];
+  if (cached_has_bits & 0x0000000fu) {
+    // optional .maa.Handle handle = 1;
+    if (cached_has_bits & 0x00000001u) {
+      total_size += 1 +
+        ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::MessageSize(
+          *_impl_.handle_);
+    }
+
+    // optional .maa.Point point_from = 2;
+    if (cached_has_bits & 0x00000002u) {
+      total_size += 1 +
+        ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::MessageSize(
+          *_impl_.point_from_);
+    }
+
+    // optional .maa.Point point_to = 3;
+    if (cached_has_bits & 0x00000004u) {
+      total_size += 1 +
+        ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::MessageSize(
+          *_impl_.point_to_);
+    }
+
+    // optional int32 duration = 4;
+    if (cached_has_bits & 0x00000008u) {
+      total_size += ::_pbi::WireFormatLite::Int32SizePlusOne(this->_internal_duration());
+    }
+
+  }
+  return MaybeComputeUnknownFieldsSize(total_size, &_impl_._cached_size_);
+}
+
+const ::PROTOBUF_NAMESPACE_ID::Message::ClassData ControllerPostSwipeRequest::_class_data_ = {
+    ::PROTOBUF_NAMESPACE_ID::Message::CopyWithSourceCheck,
+    ControllerPostSwipeRequest::MergeImpl
+};
+const ::PROTOBUF_NAMESPACE_ID::Message::ClassData*ControllerPostSwipeRequest::GetClassData() const { return &_class_data_; }
+
+
+void ControllerPostSwipeRequest::MergeImpl(::PROTOBUF_NAMESPACE_ID::Message& to_msg, const ::PROTOBUF_NAMESPACE_ID::Message& from_msg) {
+  auto* const _this = static_cast<ControllerPostSwipeRequest*>(&to_msg);
+  auto& from = static_cast<const ControllerPostSwipeRequest&>(from_msg);
+  // @@protoc_insertion_point(class_specific_merge_from_start:maa.ControllerPostSwipeRequest)
+  GOOGLE_DCHECK_NE(&from, _this);
+  uint32_t cached_has_bits = 0;
+  (void) cached_has_bits;
+
+  cached_has_bits = from._impl_._has_bits_[0];
+  if (cached_has_bits & 0x0000000fu) {
+    if (cached_has_bits & 0x00000001u) {
+      _this->_internal_mutable_handle()->::maa::Handle::MergeFrom(
+          from._internal_handle());
+    }
+    if (cached_has_bits & 0x00000002u) {
+      _this->_internal_mutable_point_from()->::maa::Point::MergeFrom(
+          from._internal_point_from());
+    }
+    if (cached_has_bits & 0x00000004u) {
+      _this->_internal_mutable_point_to()->::maa::Point::MergeFrom(
+          from._internal_point_to());
+    }
+    if (cached_has_bits & 0x00000008u) {
+      _this->_impl_.duration_ = from._impl_.duration_;
+    }
+    _this->_impl_._has_bits_[0] |= cached_has_bits;
+  }
+  _this->_internal_metadata_.MergeFrom<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(from._internal_metadata_);
+}
+
+void ControllerPostSwipeRequest::CopyFrom(const ControllerPostSwipeRequest& from) {
+// @@protoc_insertion_point(class_specific_copy_from_start:maa.ControllerPostSwipeRequest)
+  if (&from == this) return;
+  Clear();
+  MergeFrom(from);
+}
+
+bool ControllerPostSwipeRequest::IsInitialized() const {
+  return true;
+}
+
+void ControllerPostSwipeRequest::InternalSwap(ControllerPostSwipeRequest* other) {
+  using std::swap;
+  _internal_metadata_.InternalSwap(&other->_internal_metadata_);
+  swap(_impl_._has_bits_[0], other->_impl_._has_bits_[0]);
+  ::PROTOBUF_NAMESPACE_ID::internal::memswap<
+      PROTOBUF_FIELD_OFFSET(ControllerPostSwipeRequest, _impl_.duration_)
+      + sizeof(ControllerPostSwipeRequest::_impl_.duration_)
+      - PROTOBUF_FIELD_OFFSET(ControllerPostSwipeRequest, _impl_.handle_)>(
+          reinterpret_cast<char*>(&_impl_.handle_),
+          reinterpret_cast<char*>(&other->_impl_.handle_));
+}
+
+::PROTOBUF_NAMESPACE_ID::Metadata ControllerPostSwipeRequest::GetMetadata() const {
+  return ::_pbi::AssignDescriptors(
+      &descriptor_table_Framework_2eproto_getter, &descriptor_table_Framework_2eproto_once,
+      file_level_metadata_Framework_2eproto[5]);
+}
+
+// ===================================================================
+
+class ControllerPostKeyRequest::_Internal {
+ public:
+  using HasBits = decltype(std::declval<ControllerPostKeyRequest>()._impl_._has_bits_);
+  static const ::maa::Handle& handle(const ControllerPostKeyRequest* msg);
+  static void set_has_handle(HasBits* has_bits) {
+    (*has_bits)[0] |= 1u;
+  }
+  static void set_has_key(HasBits* has_bits) {
+    (*has_bits)[0] |= 2u;
+  }
+};
+
+const ::maa::Handle&
+ControllerPostKeyRequest::_Internal::handle(const ControllerPostKeyRequest* msg) {
+  return *msg->_impl_.handle_;
+}
+void ControllerPostKeyRequest::clear_handle() {
+  if (_impl_.handle_ != nullptr) _impl_.handle_->Clear();
+  _impl_._has_bits_[0] &= ~0x00000001u;
+}
+ControllerPostKeyRequest::ControllerPostKeyRequest(::PROTOBUF_NAMESPACE_ID::Arena* arena,
+                         bool is_message_owned)
+  : ::PROTOBUF_NAMESPACE_ID::Message(arena, is_message_owned) {
+  SharedCtor(arena, is_message_owned);
+  // @@protoc_insertion_point(arena_constructor:maa.ControllerPostKeyRequest)
+}
+ControllerPostKeyRequest::ControllerPostKeyRequest(const ControllerPostKeyRequest& from)
+  : ::PROTOBUF_NAMESPACE_ID::Message() {
+  ControllerPostKeyRequest* const _this = this; (void)_this;
+  new (&_impl_) Impl_{
+      decltype(_impl_._has_bits_){from._impl_._has_bits_}
+    , /*decltype(_impl_._cached_size_)*/{}
+    , decltype(_impl_.handle_){nullptr}
+    , decltype(_impl_.key_){}};
+
+  _internal_metadata_.MergeFrom<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(from._internal_metadata_);
+  if (from._internal_has_handle()) {
+    _this->_impl_.handle_ = new ::maa::Handle(*from._impl_.handle_);
+  }
+  _this->_impl_.key_ = from._impl_.key_;
+  // @@protoc_insertion_point(copy_constructor:maa.ControllerPostKeyRequest)
+}
+
+inline void ControllerPostKeyRequest::SharedCtor(
+    ::_pb::Arena* arena, bool is_message_owned) {
+  (void)arena;
+  (void)is_message_owned;
+  new (&_impl_) Impl_{
+      decltype(_impl_._has_bits_){}
+    , /*decltype(_impl_._cached_size_)*/{}
+    , decltype(_impl_.handle_){nullptr}
+    , decltype(_impl_.key_){0}
+  };
+}
+
+ControllerPostKeyRequest::~ControllerPostKeyRequest() {
+  // @@protoc_insertion_point(destructor:maa.ControllerPostKeyRequest)
+  if (auto *arena = _internal_metadata_.DeleteReturnArena<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>()) {
+  (void)arena;
+    return;
+  }
+  SharedDtor();
+}
+
+inline void ControllerPostKeyRequest::SharedDtor() {
+  GOOGLE_DCHECK(GetArenaForAllocation() == nullptr);
+  if (this != internal_default_instance()) delete _impl_.handle_;
+}
+
+void ControllerPostKeyRequest::SetCachedSize(int size) const {
+  _impl_._cached_size_.Set(size);
+}
+
+void ControllerPostKeyRequest::Clear() {
+// @@protoc_insertion_point(message_clear_start:maa.ControllerPostKeyRequest)
+  uint32_t cached_has_bits = 0;
+  // Prevent compiler warnings about cached_has_bits being unused
+  (void) cached_has_bits;
+
+  cached_has_bits = _impl_._has_bits_[0];
+  if (cached_has_bits & 0x00000001u) {
+    GOOGLE_DCHECK(_impl_.handle_ != nullptr);
+    _impl_.handle_->Clear();
+  }
+  _impl_.key_ = 0;
+  _impl_._has_bits_.Clear();
+  _internal_metadata_.Clear<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>();
+}
+
+const char* ControllerPostKeyRequest::_InternalParse(const char* ptr, ::_pbi::ParseContext* ctx) {
+#define CHK_(x) if (PROTOBUF_PREDICT_FALSE(!(x))) goto failure
+  _Internal::HasBits has_bits{};
+  while (!ctx->Done(&ptr)) {
+    uint32_t tag;
+    ptr = ::_pbi::ReadTag(ptr, &tag);
+    switch (tag >> 3) {
+      // optional .maa.Handle handle = 1;
+      case 1:
+        if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 10)) {
+          ptr = ctx->ParseMessage(_internal_mutable_handle(), ptr);
+          CHK_(ptr);
+        } else
+          goto handle_unusual;
+        continue;
+      // optional int32 key = 2;
+      case 2:
+        if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 16)) {
+          _Internal::set_has_key(&has_bits);
+          _impl_.key_ = ::PROTOBUF_NAMESPACE_ID::internal::ReadVarint32(&ptr);
+          CHK_(ptr);
+        } else
+          goto handle_unusual;
+        continue;
+      default:
+        goto handle_unusual;
+    }  // switch
+  handle_unusual:
+    if ((tag == 0) || ((tag & 7) == 4)) {
+      CHK_(ptr);
+      ctx->SetLastTag(tag);
+      goto message_done;
+    }
+    ptr = UnknownFieldParse(
+        tag,
+        _internal_metadata_.mutable_unknown_fields<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(),
+        ptr, ctx);
+    CHK_(ptr != nullptr);
+  }  // while
+message_done:
+  _impl_._has_bits_.Or(has_bits);
+  return ptr;
+failure:
+  ptr = nullptr;
+  goto message_done;
+#undef CHK_
+}
+
+uint8_t* ControllerPostKeyRequest::_InternalSerialize(
+    uint8_t* target, ::PROTOBUF_NAMESPACE_ID::io::EpsCopyOutputStream* stream) const {
+  // @@protoc_insertion_point(serialize_to_array_start:maa.ControllerPostKeyRequest)
+  uint32_t cached_has_bits = 0;
+  (void) cached_has_bits;
+
+  // optional .maa.Handle handle = 1;
+  if (_internal_has_handle()) {
+    target = ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::
+      InternalWriteMessage(1, _Internal::handle(this),
+        _Internal::handle(this).GetCachedSize(), target, stream);
+  }
+
+  // optional int32 key = 2;
+  if (_internal_has_key()) {
+    target = stream->EnsureSpace(target);
+    target = ::_pbi::WireFormatLite::WriteInt32ToArray(2, this->_internal_key(), target);
+  }
+
+  if (PROTOBUF_PREDICT_FALSE(_internal_metadata_.have_unknown_fields())) {
+    target = ::_pbi::WireFormat::InternalSerializeUnknownFieldsToArray(
+        _internal_metadata_.unknown_fields<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(::PROTOBUF_NAMESPACE_ID::UnknownFieldSet::default_instance), target, stream);
+  }
+  // @@protoc_insertion_point(serialize_to_array_end:maa.ControllerPostKeyRequest)
+  return target;
+}
+
+size_t ControllerPostKeyRequest::ByteSizeLong() const {
+// @@protoc_insertion_point(message_byte_size_start:maa.ControllerPostKeyRequest)
+  size_t total_size = 0;
+
+  uint32_t cached_has_bits = 0;
+  // Prevent compiler warnings about cached_has_bits being unused
+  (void) cached_has_bits;
+
+  cached_has_bits = _impl_._has_bits_[0];
+  if (cached_has_bits & 0x00000003u) {
+    // optional .maa.Handle handle = 1;
+    if (cached_has_bits & 0x00000001u) {
+      total_size += 1 +
+        ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::MessageSize(
+          *_impl_.handle_);
+    }
+
+    // optional int32 key = 2;
+    if (cached_has_bits & 0x00000002u) {
+      total_size += ::_pbi::WireFormatLite::Int32SizePlusOne(this->_internal_key());
+    }
+
+  }
+  return MaybeComputeUnknownFieldsSize(total_size, &_impl_._cached_size_);
+}
+
+const ::PROTOBUF_NAMESPACE_ID::Message::ClassData ControllerPostKeyRequest::_class_data_ = {
+    ::PROTOBUF_NAMESPACE_ID::Message::CopyWithSourceCheck,
+    ControllerPostKeyRequest::MergeImpl
+};
+const ::PROTOBUF_NAMESPACE_ID::Message::ClassData*ControllerPostKeyRequest::GetClassData() const { return &_class_data_; }
+
+
+void ControllerPostKeyRequest::MergeImpl(::PROTOBUF_NAMESPACE_ID::Message& to_msg, const ::PROTOBUF_NAMESPACE_ID::Message& from_msg) {
+  auto* const _this = static_cast<ControllerPostKeyRequest*>(&to_msg);
+  auto& from = static_cast<const ControllerPostKeyRequest&>(from_msg);
+  // @@protoc_insertion_point(class_specific_merge_from_start:maa.ControllerPostKeyRequest)
+  GOOGLE_DCHECK_NE(&from, _this);
+  uint32_t cached_has_bits = 0;
+  (void) cached_has_bits;
+
+  cached_has_bits = from._impl_._has_bits_[0];
+  if (cached_has_bits & 0x00000003u) {
+    if (cached_has_bits & 0x00000001u) {
+      _this->_internal_mutable_handle()->::maa::Handle::MergeFrom(
+          from._internal_handle());
+    }
+    if (cached_has_bits & 0x00000002u) {
+      _this->_impl_.key_ = from._impl_.key_;
+    }
+    _this->_impl_._has_bits_[0] |= cached_has_bits;
+  }
+  _this->_internal_metadata_.MergeFrom<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(from._internal_metadata_);
+}
+
+void ControllerPostKeyRequest::CopyFrom(const ControllerPostKeyRequest& from) {
+// @@protoc_insertion_point(class_specific_copy_from_start:maa.ControllerPostKeyRequest)
+  if (&from == this) return;
+  Clear();
+  MergeFrom(from);
+}
+
+bool ControllerPostKeyRequest::IsInitialized() const {
+  return true;
+}
+
+void ControllerPostKeyRequest::InternalSwap(ControllerPostKeyRequest* other) {
+  using std::swap;
+  _internal_metadata_.InternalSwap(&other->_internal_metadata_);
+  swap(_impl_._has_bits_[0], other->_impl_._has_bits_[0]);
+  ::PROTOBUF_NAMESPACE_ID::internal::memswap<
+      PROTOBUF_FIELD_OFFSET(ControllerPostKeyRequest, _impl_.key_)
+      + sizeof(ControllerPostKeyRequest::_impl_.key_)
+      - PROTOBUF_FIELD_OFFSET(ControllerPostKeyRequest, _impl_.handle_)>(
+          reinterpret_cast<char*>(&_impl_.handle_),
+          reinterpret_cast<char*>(&other->_impl_.handle_));
+}
+
+::PROTOBUF_NAMESPACE_ID::Metadata ControllerPostKeyRequest::GetMetadata() const {
+  return ::_pbi::AssignDescriptors(
+      &descriptor_table_Framework_2eproto_getter, &descriptor_table_Framework_2eproto_once,
+      file_level_metadata_Framework_2eproto[6]);
+}
+
+// ===================================================================
+
+class ControllerPostTouchRequest::_Internal {
+ public:
+  using HasBits = decltype(std::declval<ControllerPostTouchRequest>()._impl_._has_bits_);
+  static const ::maa::Handle& handle(const ControllerPostTouchRequest* msg);
+  static void set_has_handle(HasBits* has_bits) {
+    (*has_bits)[0] |= 1u;
+  }
+  static void set_has_contact(HasBits* has_bits) {
+    (*has_bits)[0] |= 4u;
+  }
+  static const ::maa::Point& point(const ControllerPostTouchRequest* msg);
+  static void set_has_point(HasBits* has_bits) {
+    (*has_bits)[0] |= 2u;
+  }
+  static void set_has_pressure(HasBits* has_bits) {
+    (*has_bits)[0] |= 8u;
+  }
+};
+
+const ::maa::Handle&
+ControllerPostTouchRequest::_Internal::handle(const ControllerPostTouchRequest* msg) {
+  return *msg->_impl_.handle_;
+}
+const ::maa::Point&
+ControllerPostTouchRequest::_Internal::point(const ControllerPostTouchRequest* msg) {
+  return *msg->_impl_.point_;
+}
+void ControllerPostTouchRequest::clear_handle() {
+  if (_impl_.handle_ != nullptr) _impl_.handle_->Clear();
+  _impl_._has_bits_[0] &= ~0x00000001u;
+}
+void ControllerPostTouchRequest::clear_point() {
+  if (_impl_.point_ != nullptr) _impl_.point_->Clear();
+  _impl_._has_bits_[0] &= ~0x00000002u;
+}
+ControllerPostTouchRequest::ControllerPostTouchRequest(::PROTOBUF_NAMESPACE_ID::Arena* arena,
+                         bool is_message_owned)
+  : ::PROTOBUF_NAMESPACE_ID::Message(arena, is_message_owned) {
+  SharedCtor(arena, is_message_owned);
+  // @@protoc_insertion_point(arena_constructor:maa.ControllerPostTouchRequest)
+}
+ControllerPostTouchRequest::ControllerPostTouchRequest(const ControllerPostTouchRequest& from)
+  : ::PROTOBUF_NAMESPACE_ID::Message() {
+  ControllerPostTouchRequest* const _this = this; (void)_this;
+  new (&_impl_) Impl_{
+      decltype(_impl_._has_bits_){from._impl_._has_bits_}
+    , /*decltype(_impl_._cached_size_)*/{}
+    , decltype(_impl_.handle_){nullptr}
+    , decltype(_impl_.point_){nullptr}
+    , decltype(_impl_.contact_){}
+    , decltype(_impl_.pressure_){}};
+
+  _internal_metadata_.MergeFrom<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(from._internal_metadata_);
+  if (from._internal_has_handle()) {
+    _this->_impl_.handle_ = new ::maa::Handle(*from._impl_.handle_);
+  }
+  if (from._internal_has_point()) {
+    _this->_impl_.point_ = new ::maa::Point(*from._impl_.point_);
+  }
+  ::memcpy(&_impl_.contact_, &from._impl_.contact_,
+    static_cast<size_t>(reinterpret_cast<char*>(&_impl_.pressure_) -
+    reinterpret_cast<char*>(&_impl_.contact_)) + sizeof(_impl_.pressure_));
+  // @@protoc_insertion_point(copy_constructor:maa.ControllerPostTouchRequest)
+}
+
+inline void ControllerPostTouchRequest::SharedCtor(
+    ::_pb::Arena* arena, bool is_message_owned) {
+  (void)arena;
+  (void)is_message_owned;
+  new (&_impl_) Impl_{
+      decltype(_impl_._has_bits_){}
+    , /*decltype(_impl_._cached_size_)*/{}
+    , decltype(_impl_.handle_){nullptr}
+    , decltype(_impl_.point_){nullptr}
+    , decltype(_impl_.contact_){0}
+    , decltype(_impl_.pressure_){0}
+  };
+}
+
+ControllerPostTouchRequest::~ControllerPostTouchRequest() {
+  // @@protoc_insertion_point(destructor:maa.ControllerPostTouchRequest)
+  if (auto *arena = _internal_metadata_.DeleteReturnArena<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>()) {
+  (void)arena;
+    return;
+  }
+  SharedDtor();
+}
+
+inline void ControllerPostTouchRequest::SharedDtor() {
+  GOOGLE_DCHECK(GetArenaForAllocation() == nullptr);
+  if (this != internal_default_instance()) delete _impl_.handle_;
+  if (this != internal_default_instance()) delete _impl_.point_;
+}
+
+void ControllerPostTouchRequest::SetCachedSize(int size) const {
+  _impl_._cached_size_.Set(size);
+}
+
+void ControllerPostTouchRequest::Clear() {
+// @@protoc_insertion_point(message_clear_start:maa.ControllerPostTouchRequest)
+  uint32_t cached_has_bits = 0;
+  // Prevent compiler warnings about cached_has_bits being unused
+  (void) cached_has_bits;
+
+  cached_has_bits = _impl_._has_bits_[0];
+  if (cached_has_bits & 0x00000003u) {
+    if (cached_has_bits & 0x00000001u) {
+      GOOGLE_DCHECK(_impl_.handle_ != nullptr);
+      _impl_.handle_->Clear();
+    }
+    if (cached_has_bits & 0x00000002u) {
+      GOOGLE_DCHECK(_impl_.point_ != nullptr);
+      _impl_.point_->Clear();
+    }
+  }
+  if (cached_has_bits & 0x0000000cu) {
+    ::memset(&_impl_.contact_, 0, static_cast<size_t>(
+        reinterpret_cast<char*>(&_impl_.pressure_) -
+        reinterpret_cast<char*>(&_impl_.contact_)) + sizeof(_impl_.pressure_));
+  }
+  _impl_._has_bits_.Clear();
+  _internal_metadata_.Clear<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>();
+}
+
+const char* ControllerPostTouchRequest::_InternalParse(const char* ptr, ::_pbi::ParseContext* ctx) {
+#define CHK_(x) if (PROTOBUF_PREDICT_FALSE(!(x))) goto failure
+  _Internal::HasBits has_bits{};
+  while (!ctx->Done(&ptr)) {
+    uint32_t tag;
+    ptr = ::_pbi::ReadTag(ptr, &tag);
+    switch (tag >> 3) {
+      // optional .maa.Handle handle = 1;
+      case 1:
+        if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 10)) {
+          ptr = ctx->ParseMessage(_internal_mutable_handle(), ptr);
+          CHK_(ptr);
+        } else
+          goto handle_unusual;
+        continue;
+      // optional int32 contact = 2;
+      case 2:
+        if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 16)) {
+          _Internal::set_has_contact(&has_bits);
+          _impl_.contact_ = ::PROTOBUF_NAMESPACE_ID::internal::ReadVarint32(&ptr);
+          CHK_(ptr);
+        } else
+          goto handle_unusual;
+        continue;
+      // optional .maa.Point point = 3;
+      case 3:
+        if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 26)) {
+          ptr = ctx->ParseMessage(_internal_mutable_point(), ptr);
+          CHK_(ptr);
+        } else
+          goto handle_unusual;
+        continue;
+      // optional int32 pressure = 4;
+      case 4:
+        if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 32)) {
+          _Internal::set_has_pressure(&has_bits);
+          _impl_.pressure_ = ::PROTOBUF_NAMESPACE_ID::internal::ReadVarint32(&ptr);
+          CHK_(ptr);
+        } else
+          goto handle_unusual;
+        continue;
+      default:
+        goto handle_unusual;
+    }  // switch
+  handle_unusual:
+    if ((tag == 0) || ((tag & 7) == 4)) {
+      CHK_(ptr);
+      ctx->SetLastTag(tag);
+      goto message_done;
+    }
+    ptr = UnknownFieldParse(
+        tag,
+        _internal_metadata_.mutable_unknown_fields<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(),
+        ptr, ctx);
+    CHK_(ptr != nullptr);
+  }  // while
+message_done:
+  _impl_._has_bits_.Or(has_bits);
+  return ptr;
+failure:
+  ptr = nullptr;
+  goto message_done;
+#undef CHK_
+}
+
+uint8_t* ControllerPostTouchRequest::_InternalSerialize(
+    uint8_t* target, ::PROTOBUF_NAMESPACE_ID::io::EpsCopyOutputStream* stream) const {
+  // @@protoc_insertion_point(serialize_to_array_start:maa.ControllerPostTouchRequest)
+  uint32_t cached_has_bits = 0;
+  (void) cached_has_bits;
+
+  // optional .maa.Handle handle = 1;
+  if (_internal_has_handle()) {
+    target = ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::
+      InternalWriteMessage(1, _Internal::handle(this),
+        _Internal::handle(this).GetCachedSize(), target, stream);
+  }
+
+  // optional int32 contact = 2;
+  if (_internal_has_contact()) {
+    target = stream->EnsureSpace(target);
+    target = ::_pbi::WireFormatLite::WriteInt32ToArray(2, this->_internal_contact(), target);
+  }
+
+  // optional .maa.Point point = 3;
+  if (_internal_has_point()) {
+    target = ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::
+      InternalWriteMessage(3, _Internal::point(this),
+        _Internal::point(this).GetCachedSize(), target, stream);
+  }
+
+  // optional int32 pressure = 4;
+  if (_internal_has_pressure()) {
+    target = stream->EnsureSpace(target);
+    target = ::_pbi::WireFormatLite::WriteInt32ToArray(4, this->_internal_pressure(), target);
+  }
+
+  if (PROTOBUF_PREDICT_FALSE(_internal_metadata_.have_unknown_fields())) {
+    target = ::_pbi::WireFormat::InternalSerializeUnknownFieldsToArray(
+        _internal_metadata_.unknown_fields<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(::PROTOBUF_NAMESPACE_ID::UnknownFieldSet::default_instance), target, stream);
+  }
+  // @@protoc_insertion_point(serialize_to_array_end:maa.ControllerPostTouchRequest)
+  return target;
+}
+
+size_t ControllerPostTouchRequest::ByteSizeLong() const {
+// @@protoc_insertion_point(message_byte_size_start:maa.ControllerPostTouchRequest)
+  size_t total_size = 0;
+
+  uint32_t cached_has_bits = 0;
+  // Prevent compiler warnings about cached_has_bits being unused
+  (void) cached_has_bits;
+
+  cached_has_bits = _impl_._has_bits_[0];
+  if (cached_has_bits & 0x0000000fu) {
+    // optional .maa.Handle handle = 1;
+    if (cached_has_bits & 0x00000001u) {
+      total_size += 1 +
+        ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::MessageSize(
+          *_impl_.handle_);
+    }
+
+    // optional .maa.Point point = 3;
+    if (cached_has_bits & 0x00000002u) {
+      total_size += 1 +
+        ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::MessageSize(
+          *_impl_.point_);
+    }
+
+    // optional int32 contact = 2;
+    if (cached_has_bits & 0x00000004u) {
+      total_size += ::_pbi::WireFormatLite::Int32SizePlusOne(this->_internal_contact());
+    }
+
+    // optional int32 pressure = 4;
+    if (cached_has_bits & 0x00000008u) {
+      total_size += ::_pbi::WireFormatLite::Int32SizePlusOne(this->_internal_pressure());
+    }
+
+  }
+  return MaybeComputeUnknownFieldsSize(total_size, &_impl_._cached_size_);
+}
+
+const ::PROTOBUF_NAMESPACE_ID::Message::ClassData ControllerPostTouchRequest::_class_data_ = {
+    ::PROTOBUF_NAMESPACE_ID::Message::CopyWithSourceCheck,
+    ControllerPostTouchRequest::MergeImpl
+};
+const ::PROTOBUF_NAMESPACE_ID::Message::ClassData*ControllerPostTouchRequest::GetClassData() const { return &_class_data_; }
+
+
+void ControllerPostTouchRequest::MergeImpl(::PROTOBUF_NAMESPACE_ID::Message& to_msg, const ::PROTOBUF_NAMESPACE_ID::Message& from_msg) {
+  auto* const _this = static_cast<ControllerPostTouchRequest*>(&to_msg);
+  auto& from = static_cast<const ControllerPostTouchRequest&>(from_msg);
+  // @@protoc_insertion_point(class_specific_merge_from_start:maa.ControllerPostTouchRequest)
+  GOOGLE_DCHECK_NE(&from, _this);
+  uint32_t cached_has_bits = 0;
+  (void) cached_has_bits;
+
+  cached_has_bits = from._impl_._has_bits_[0];
+  if (cached_has_bits & 0x0000000fu) {
+    if (cached_has_bits & 0x00000001u) {
+      _this->_internal_mutable_handle()->::maa::Handle::MergeFrom(
+          from._internal_handle());
+    }
+    if (cached_has_bits & 0x00000002u) {
+      _this->_internal_mutable_point()->::maa::Point::MergeFrom(
+          from._internal_point());
+    }
+    if (cached_has_bits & 0x00000004u) {
+      _this->_impl_.contact_ = from._impl_.contact_;
+    }
+    if (cached_has_bits & 0x00000008u) {
+      _this->_impl_.pressure_ = from._impl_.pressure_;
+    }
+    _this->_impl_._has_bits_[0] |= cached_has_bits;
+  }
+  _this->_internal_metadata_.MergeFrom<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(from._internal_metadata_);
+}
+
+void ControllerPostTouchRequest::CopyFrom(const ControllerPostTouchRequest& from) {
+// @@protoc_insertion_point(class_specific_copy_from_start:maa.ControllerPostTouchRequest)
+  if (&from == this) return;
+  Clear();
+  MergeFrom(from);
+}
+
+bool ControllerPostTouchRequest::IsInitialized() const {
+  return true;
+}
+
+void ControllerPostTouchRequest::InternalSwap(ControllerPostTouchRequest* other) {
+  using std::swap;
+  _internal_metadata_.InternalSwap(&other->_internal_metadata_);
+  swap(_impl_._has_bits_[0], other->_impl_._has_bits_[0]);
+  ::PROTOBUF_NAMESPACE_ID::internal::memswap<
+      PROTOBUF_FIELD_OFFSET(ControllerPostTouchRequest, _impl_.pressure_)
+      + sizeof(ControllerPostTouchRequest::_impl_.pressure_)
+      - PROTOBUF_FIELD_OFFSET(ControllerPostTouchRequest, _impl_.handle_)>(
+          reinterpret_cast<char*>(&_impl_.handle_),
+          reinterpret_cast<char*>(&other->_impl_.handle_));
+}
+
+::PROTOBUF_NAMESPACE_ID::Metadata ControllerPostTouchRequest::GetMetadata() const {
+  return ::_pbi::AssignDescriptors(
+      &descriptor_table_Framework_2eproto_getter, &descriptor_table_Framework_2eproto_once,
+      file_level_metadata_Framework_2eproto[7]);
+}
+
+// ===================================================================
+
+class ControllerGetImageRequest::_Internal {
+ public:
+  using HasBits = decltype(std::declval<ControllerGetImageRequest>()._impl_._has_bits_);
+  static const ::maa::Handle& handle(const ControllerGetImageRequest* msg);
+  static void set_has_handle(HasBits* has_bits) {
+    (*has_bits)[0] |= 1u;
+  }
+  static const ::maa::Handle& image(const ControllerGetImageRequest* msg);
+  static void set_has_image(HasBits* has_bits) {
+    (*has_bits)[0] |= 2u;
+  }
+};
+
+const ::maa::Handle&
+ControllerGetImageRequest::_Internal::handle(const ControllerGetImageRequest* msg) {
+  return *msg->_impl_.handle_;
+}
+const ::maa::Handle&
+ControllerGetImageRequest::_Internal::image(const ControllerGetImageRequest* msg) {
+  return *msg->_impl_.image_;
+}
+void ControllerGetImageRequest::clear_handle() {
+  if (_impl_.handle_ != nullptr) _impl_.handle_->Clear();
+  _impl_._has_bits_[0] &= ~0x00000001u;
+}
+void ControllerGetImageRequest::clear_image() {
+  if (_impl_.image_ != nullptr) _impl_.image_->Clear();
+  _impl_._has_bits_[0] &= ~0x00000002u;
+}
+ControllerGetImageRequest::ControllerGetImageRequest(::PROTOBUF_NAMESPACE_ID::Arena* arena,
+                         bool is_message_owned)
+  : ::PROTOBUF_NAMESPACE_ID::Message(arena, is_message_owned) {
+  SharedCtor(arena, is_message_owned);
+  // @@protoc_insertion_point(arena_constructor:maa.ControllerGetImageRequest)
+}
+ControllerGetImageRequest::ControllerGetImageRequest(const ControllerGetImageRequest& from)
+  : ::PROTOBUF_NAMESPACE_ID::Message() {
+  ControllerGetImageRequest* const _this = this; (void)_this;
+  new (&_impl_) Impl_{
+      decltype(_impl_._has_bits_){from._impl_._has_bits_}
+    , /*decltype(_impl_._cached_size_)*/{}
+    , decltype(_impl_.handle_){nullptr}
+    , decltype(_impl_.image_){nullptr}};
+
+  _internal_metadata_.MergeFrom<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(from._internal_metadata_);
+  if (from._internal_has_handle()) {
+    _this->_impl_.handle_ = new ::maa::Handle(*from._impl_.handle_);
+  }
+  if (from._internal_has_image()) {
+    _this->_impl_.image_ = new ::maa::Handle(*from._impl_.image_);
+  }
+  // @@protoc_insertion_point(copy_constructor:maa.ControllerGetImageRequest)
+}
+
+inline void ControllerGetImageRequest::SharedCtor(
+    ::_pb::Arena* arena, bool is_message_owned) {
+  (void)arena;
+  (void)is_message_owned;
+  new (&_impl_) Impl_{
+      decltype(_impl_._has_bits_){}
+    , /*decltype(_impl_._cached_size_)*/{}
+    , decltype(_impl_.handle_){nullptr}
+    , decltype(_impl_.image_){nullptr}
+  };
+}
+
+ControllerGetImageRequest::~ControllerGetImageRequest() {
+  // @@protoc_insertion_point(destructor:maa.ControllerGetImageRequest)
+  if (auto *arena = _internal_metadata_.DeleteReturnArena<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>()) {
+  (void)arena;
+    return;
+  }
+  SharedDtor();
+}
+
+inline void ControllerGetImageRequest::SharedDtor() {
+  GOOGLE_DCHECK(GetArenaForAllocation() == nullptr);
+  if (this != internal_default_instance()) delete _impl_.handle_;
+  if (this != internal_default_instance()) delete _impl_.image_;
+}
+
+void ControllerGetImageRequest::SetCachedSize(int size) const {
+  _impl_._cached_size_.Set(size);
+}
+
+void ControllerGetImageRequest::Clear() {
+// @@protoc_insertion_point(message_clear_start:maa.ControllerGetImageRequest)
+  uint32_t cached_has_bits = 0;
+  // Prevent compiler warnings about cached_has_bits being unused
+  (void) cached_has_bits;
+
+  cached_has_bits = _impl_._has_bits_[0];
+  if (cached_has_bits & 0x00000003u) {
+    if (cached_has_bits & 0x00000001u) {
+      GOOGLE_DCHECK(_impl_.handle_ != nullptr);
+      _impl_.handle_->Clear();
+    }
+    if (cached_has_bits & 0x00000002u) {
+      GOOGLE_DCHECK(_impl_.image_ != nullptr);
+      _impl_.image_->Clear();
+    }
+  }
+  _impl_._has_bits_.Clear();
+  _internal_metadata_.Clear<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>();
+}
+
+const char* ControllerGetImageRequest::_InternalParse(const char* ptr, ::_pbi::ParseContext* ctx) {
+#define CHK_(x) if (PROTOBUF_PREDICT_FALSE(!(x))) goto failure
+  _Internal::HasBits has_bits{};
+  while (!ctx->Done(&ptr)) {
+    uint32_t tag;
+    ptr = ::_pbi::ReadTag(ptr, &tag);
+    switch (tag >> 3) {
+      // optional .maa.Handle handle = 1;
+      case 1:
+        if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 10)) {
+          ptr = ctx->ParseMessage(_internal_mutable_handle(), ptr);
+          CHK_(ptr);
+        } else
+          goto handle_unusual;
+        continue;
+      // optional .maa.Handle image = 2;
+      case 2:
+        if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 18)) {
+          ptr = ctx->ParseMessage(_internal_mutable_image(), ptr);
+          CHK_(ptr);
+        } else
+          goto handle_unusual;
+        continue;
+      default:
+        goto handle_unusual;
+    }  // switch
+  handle_unusual:
+    if ((tag == 0) || ((tag & 7) == 4)) {
+      CHK_(ptr);
+      ctx->SetLastTag(tag);
+      goto message_done;
+    }
+    ptr = UnknownFieldParse(
+        tag,
+        _internal_metadata_.mutable_unknown_fields<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(),
+        ptr, ctx);
+    CHK_(ptr != nullptr);
+  }  // while
+message_done:
+  _impl_._has_bits_.Or(has_bits);
+  return ptr;
+failure:
+  ptr = nullptr;
+  goto message_done;
+#undef CHK_
+}
+
+uint8_t* ControllerGetImageRequest::_InternalSerialize(
+    uint8_t* target, ::PROTOBUF_NAMESPACE_ID::io::EpsCopyOutputStream* stream) const {
+  // @@protoc_insertion_point(serialize_to_array_start:maa.ControllerGetImageRequest)
+  uint32_t cached_has_bits = 0;
+  (void) cached_has_bits;
+
+  // optional .maa.Handle handle = 1;
+  if (_internal_has_handle()) {
+    target = ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::
+      InternalWriteMessage(1, _Internal::handle(this),
+        _Internal::handle(this).GetCachedSize(), target, stream);
+  }
+
+  // optional .maa.Handle image = 2;
+  if (_internal_has_image()) {
+    target = ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::
+      InternalWriteMessage(2, _Internal::image(this),
+        _Internal::image(this).GetCachedSize(), target, stream);
+  }
+
+  if (PROTOBUF_PREDICT_FALSE(_internal_metadata_.have_unknown_fields())) {
+    target = ::_pbi::WireFormat::InternalSerializeUnknownFieldsToArray(
+        _internal_metadata_.unknown_fields<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(::PROTOBUF_NAMESPACE_ID::UnknownFieldSet::default_instance), target, stream);
+  }
+  // @@protoc_insertion_point(serialize_to_array_end:maa.ControllerGetImageRequest)
+  return target;
+}
+
+size_t ControllerGetImageRequest::ByteSizeLong() const {
+// @@protoc_insertion_point(message_byte_size_start:maa.ControllerGetImageRequest)
+  size_t total_size = 0;
+
+  uint32_t cached_has_bits = 0;
+  // Prevent compiler warnings about cached_has_bits being unused
+  (void) cached_has_bits;
+
+  cached_has_bits = _impl_._has_bits_[0];
+  if (cached_has_bits & 0x00000003u) {
+    // optional .maa.Handle handle = 1;
+    if (cached_has_bits & 0x00000001u) {
+      total_size += 1 +
+        ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::MessageSize(
+          *_impl_.handle_);
+    }
+
+    // optional .maa.Handle image = 2;
+    if (cached_has_bits & 0x00000002u) {
+      total_size += 1 +
+        ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::MessageSize(
+          *_impl_.image_);
+    }
+
+  }
+  return MaybeComputeUnknownFieldsSize(total_size, &_impl_._cached_size_);
+}
+
+const ::PROTOBUF_NAMESPACE_ID::Message::ClassData ControllerGetImageRequest::_class_data_ = {
+    ::PROTOBUF_NAMESPACE_ID::Message::CopyWithSourceCheck,
+    ControllerGetImageRequest::MergeImpl
+};
+const ::PROTOBUF_NAMESPACE_ID::Message::ClassData*ControllerGetImageRequest::GetClassData() const { return &_class_data_; }
+
+
+void ControllerGetImageRequest::MergeImpl(::PROTOBUF_NAMESPACE_ID::Message& to_msg, const ::PROTOBUF_NAMESPACE_ID::Message& from_msg) {
+  auto* const _this = static_cast<ControllerGetImageRequest*>(&to_msg);
+  auto& from = static_cast<const ControllerGetImageRequest&>(from_msg);
+  // @@protoc_insertion_point(class_specific_merge_from_start:maa.ControllerGetImageRequest)
+  GOOGLE_DCHECK_NE(&from, _this);
+  uint32_t cached_has_bits = 0;
+  (void) cached_has_bits;
+
+  cached_has_bits = from._impl_._has_bits_[0];
+  if (cached_has_bits & 0x00000003u) {
+    if (cached_has_bits & 0x00000001u) {
+      _this->_internal_mutable_handle()->::maa::Handle::MergeFrom(
+          from._internal_handle());
+    }
+    if (cached_has_bits & 0x00000002u) {
+      _this->_internal_mutable_image()->::maa::Handle::MergeFrom(
+          from._internal_image());
+    }
+  }
+  _this->_internal_metadata_.MergeFrom<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(from._internal_metadata_);
+}
+
+void ControllerGetImageRequest::CopyFrom(const ControllerGetImageRequest& from) {
+// @@protoc_insertion_point(class_specific_copy_from_start:maa.ControllerGetImageRequest)
+  if (&from == this) return;
+  Clear();
+  MergeFrom(from);
+}
+
+bool ControllerGetImageRequest::IsInitialized() const {
+  return true;
+}
+
+void ControllerGetImageRequest::InternalSwap(ControllerGetImageRequest* other) {
+  using std::swap;
+  _internal_metadata_.InternalSwap(&other->_internal_metadata_);
+  swap(_impl_._has_bits_[0], other->_impl_._has_bits_[0]);
+  ::PROTOBUF_NAMESPACE_ID::internal::memswap<
+      PROTOBUF_FIELD_OFFSET(ControllerGetImageRequest, _impl_.image_)
+      + sizeof(ControllerGetImageRequest::_impl_.image_)
+      - PROTOBUF_FIELD_OFFSET(ControllerGetImageRequest, _impl_.handle_)>(
+          reinterpret_cast<char*>(&_impl_.handle_),
+          reinterpret_cast<char*>(&other->_impl_.handle_));
+}
+
+::PROTOBUF_NAMESPACE_ID::Metadata ControllerGetImageRequest::GetMetadata() const {
+  return ::_pbi::AssignDescriptors(
+      &descriptor_table_Framework_2eproto_getter, &descriptor_table_Framework_2eproto_once,
+      file_level_metadata_Framework_2eproto[8]);
+}
+
 // @@protoc_insertion_point(namespace_scope)
 }  // namespace maa
 PROTOBUF_NAMESPACE_OPEN
 template<> PROTOBUF_NOINLINE ::maa::SetGlobalOptionRequest*
 Arena::CreateMaybeMessage< ::maa::SetGlobalOptionRequest >(Arena* arena) {
   return Arena::CreateMessageInternal< ::maa::SetGlobalOptionRequest >(arena);
+}
+template<> PROTOBUF_NOINLINE ::maa::ImageInfoResponse*
+Arena::CreateMaybeMessage< ::maa::ImageInfoResponse >(Arena* arena) {
+  return Arena::CreateMessageInternal< ::maa::ImageInfoResponse >(arena);
+}
+template<> PROTOBUF_NOINLINE ::maa::AdbControlleRequest*
+Arena::CreateMaybeMessage< ::maa::AdbControlleRequest >(Arena* arena) {
+  return Arena::CreateMessageInternal< ::maa::AdbControlleRequest >(arena);
+}
+template<> PROTOBUF_NOINLINE ::maa::ControllerSetOptionRequest*
+Arena::CreateMaybeMessage< ::maa::ControllerSetOptionRequest >(Arena* arena) {
+  return Arena::CreateMessageInternal< ::maa::ControllerSetOptionRequest >(arena);
+}
+template<> PROTOBUF_NOINLINE ::maa::ControllerPostClickRequest*
+Arena::CreateMaybeMessage< ::maa::ControllerPostClickRequest >(Arena* arena) {
+  return Arena::CreateMessageInternal< ::maa::ControllerPostClickRequest >(arena);
+}
+template<> PROTOBUF_NOINLINE ::maa::ControllerPostSwipeRequest*
+Arena::CreateMaybeMessage< ::maa::ControllerPostSwipeRequest >(Arena* arena) {
+  return Arena::CreateMessageInternal< ::maa::ControllerPostSwipeRequest >(arena);
+}
+template<> PROTOBUF_NOINLINE ::maa::ControllerPostKeyRequest*
+Arena::CreateMaybeMessage< ::maa::ControllerPostKeyRequest >(Arena* arena) {
+  return Arena::CreateMessageInternal< ::maa::ControllerPostKeyRequest >(arena);
+}
+template<> PROTOBUF_NOINLINE ::maa::ControllerPostTouchRequest*
+Arena::CreateMaybeMessage< ::maa::ControllerPostTouchRequest >(Arena* arena) {
+  return Arena::CreateMessageInternal< ::maa::ControllerPostTouchRequest >(arena);
+}
+template<> PROTOBUF_NOINLINE ::maa::ControllerGetImageRequest*
+Arena::CreateMaybeMessage< ::maa::ControllerGetImageRequest >(Arena* arena) {
+  return Arena::CreateMessageInternal< ::maa::ControllerGetImageRequest >(arena);
 }
 PROTOBUF_NAMESPACE_CLOSE
 
