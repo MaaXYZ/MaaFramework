@@ -85,15 +85,11 @@
         },
         "pre_wait_freezes": {
           "description": "识别到 到 执行动作前，等待画面不动了的时间，毫秒。可选，默认 0，即不等待。",
-          "type": "integer",
-          "minimum": 0,
-          "default": 0
+          "$ref": "#/definitions/wait_freezes"
         },
         "post_wait_freezes": {
           "description": "行动动作后 到 识别 next，等待画面不动了的时间，毫秒。可选，默认 0，即不等待。",
-          "type": "integer",
-          "minimum": 0,
-          "default": 0
+          "$ref": "#/definitions/wait_freezes"
         },
         "focus": {
           "description": "产生同步回调消息。可选，默认空，即不产生。",
@@ -122,6 +118,71 @@
           "type": "array",
           "items": {
             "type": "string"
+          }
+        }
+      ]
+    },
+    "target": {
+      "anyOf": [
+        {
+          "type": "boolean"
+        },
+        {
+          "type": "string"
+        },
+        {
+          "$ref": "#/definitions/rect"
+        }
+      ]
+    },
+    "wait_freezes": {
+      "anyOf": [
+        {
+          "type": "integer",
+          "minimum": 0,
+          "default": 1
+        },
+        {
+          "type": "object",
+          "properties": {
+            "time": { 
+              "description": "连续 time 毫秒 画面 没有较大变化 才会退出动作。可选，默认 1。",
+              "type": "integer",
+              "minimum": 0,
+              "default": 1
+            },
+            "target": {
+              "description": "等待的目标。可选，默认 true。",
+              "$ref": "#/definitions/target",
+              "default": true
+            },
+            "target_offset": {
+              "description": "在 target 的基础上额外移动再作为等待目标，四个值分别相加。可选，默认 [0, 0, 0, 0]。",
+              "$ref": "#/definitions/rect",
+              "default": [
+                0,
+                0,
+                0,
+                0
+              ]
+            },
+            "threshold": {
+              "description": "判断“没有较大变化”的模板匹配阈值。可选，默认 0.95 。",
+              "type": "number",
+              "minimum": 0,
+              "maximum": 1,
+              "default": 0.95
+            },
+            "method": {
+              "description": "判断“没有较大变化”的模板匹配算法，即 cv::TemplateMatchModes。可选，默认 5 。",
+              "type": "integer",
+              "enum": [
+                1,
+                3,
+                5
+              ],
+              "default": 5
+            }
           }
         }
       ]
