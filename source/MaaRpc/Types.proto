@@ -1,8 +1,6 @@
 syntax = "proto3";
 
-package maa;
-
-message RpcStatus { optional bool success = 1; }
+package maarpc;
 
 message Id { optional uint64 id = 1; }
 message Handle { optional uint64 handle = 1; }
@@ -43,7 +41,7 @@ message TouchParam {
   optional int32 pressure = 3;
 }
 
-message EmptyRequest {}
+message EmptyRequest { optional bool unused = 1; }
 message IdRequest { optional Id id = 1; }
 message HandleRequest { optional Handle handle = 1; }
 message BufferRequest { optional bytes buffer = 1; }
@@ -60,28 +58,28 @@ message HandleIdRequest {
   optional Id id = 2;
 }
 
-message EmptyResponse { optional RpcStatus status = 101; }
+message EmptyResponse { optional bool status = 101; }
 message IdResponse {
   optional Id id = 1;
-  optional RpcStatus status = 101;
+  optional bool status = 101;
 }
 message BoolResponse {
   optional bool value = 1;
-  optional RpcStatus status = 101;
+  optional bool status = 101;
 }
 message StringResponse {
   optional string value = 1;
-  optional RpcStatus status = 101;
+  optional bool status = 101;
 }
 message HandleResponse {
   optional Handle value = 1;
-  optional RpcStatus status = 101;
+  optional bool status = 101;
 }
 message BufferResponse {
   optional bytes value = 1;
-  optional RpcStatus status = 101;
+  optional bool status = 101;
 }
 message StatusResponse {
   optional Status value = 1;
-  optional RpcStatus status = 101;
+  optional bool status = 101;
 }

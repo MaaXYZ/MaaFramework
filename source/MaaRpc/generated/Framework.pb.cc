@@ -20,7 +20,7 @@ PROTOBUF_PRAGMA_INIT_SEG
 namespace _pb = ::PROTOBUF_NAMESPACE_ID;
 namespace _pbi = _pb::internal;
 
-namespace maa {
+namespace maarpc {
 PROTOBUF_CONSTEXPR SetGlobalOptionRequest::SetGlobalOptionRequest(
     ::_pbi::ConstantInitialized): _impl_{
     /*decltype(_impl_.option_)*/{}
@@ -444,8 +444,8 @@ PROTOBUF_CONSTEXPR SyncContextRunRecognizerResponse::SyncContextRunRecognizerRes
   , /*decltype(_impl_._cached_size_)*/{}
   , /*decltype(_impl_.detail_)*/{&::_pbi::fixed_address_empty_string, ::_pbi::ConstantInitialized{}}
   , /*decltype(_impl_.box_)*/nullptr
-  , /*decltype(_impl_.status_)*/nullptr
-  , /*decltype(_impl_.match_)*/false} {}
+  , /*decltype(_impl_.match_)*/false
+  , /*decltype(_impl_.status_)*/false} {}
 struct SyncContextRunRecognizerResponseDefaultTypeInternal {
   PROTOBUF_CONSTEXPR SyncContextRunRecognizerResponseDefaultTypeInternal()
       : _instance(::_pbi::ConstantInitialized{}) {}
@@ -548,75 +548,75 @@ struct SyncContextScreencapRequestDefaultTypeInternal {
   };
 };
 PROTOBUF_ATTRIBUTE_NO_DESTROY PROTOBUF_CONSTINIT PROTOBUF_ATTRIBUTE_INIT_PRIORITY1 SyncContextScreencapRequestDefaultTypeInternal _SyncContextScreencapRequest_default_instance_;
-}  // namespace maa
+}  // namespace maarpc
 static ::_pb::Metadata file_level_metadata_Framework_2eproto[33];
 static constexpr ::_pb::EnumDescriptor const** file_level_enum_descriptors_Framework_2eproto = nullptr;
 static constexpr ::_pb::ServiceDescriptor const** file_level_service_descriptors_Framework_2eproto = nullptr;
 
 const uint32_t TableStruct_Framework_2eproto::offsets[] PROTOBUF_SECTION_VARIABLE(protodesc_cold) = {
   ~0u,  // no _has_bits_
-  PROTOBUF_FIELD_OFFSET(::maa::SetGlobalOptionRequest, _internal_metadata_),
+  PROTOBUF_FIELD_OFFSET(::maarpc::SetGlobalOptionRequest, _internal_metadata_),
   ~0u,  // no _extensions_
-  PROTOBUF_FIELD_OFFSET(::maa::SetGlobalOptionRequest, _impl_._oneof_case_[0]),
+  PROTOBUF_FIELD_OFFSET(::maarpc::SetGlobalOptionRequest, _impl_._oneof_case_[0]),
   ~0u,  // no _weak_field_map_
   ~0u,  // no _inlined_string_donated_
   ::_pbi::kInvalidFieldOffsetTag,
   ::_pbi::kInvalidFieldOffsetTag,
-  PROTOBUF_FIELD_OFFSET(::maa::SetGlobalOptionRequest, _impl_.option_),
-  PROTOBUF_FIELD_OFFSET(::maa::ImageInfoResponse, _impl_._has_bits_),
-  PROTOBUF_FIELD_OFFSET(::maa::ImageInfoResponse, _internal_metadata_),
+  PROTOBUF_FIELD_OFFSET(::maarpc::SetGlobalOptionRequest, _impl_.option_),
+  PROTOBUF_FIELD_OFFSET(::maarpc::ImageInfoResponse, _impl_._has_bits_),
+  PROTOBUF_FIELD_OFFSET(::maarpc::ImageInfoResponse, _internal_metadata_),
   ~0u,  // no _extensions_
   ~0u,  // no _oneof_case_
   ~0u,  // no _weak_field_map_
   ~0u,  // no _inlined_string_donated_
-  PROTOBUF_FIELD_OFFSET(::maa::ImageInfoResponse, _impl_.type_),
-  PROTOBUF_FIELD_OFFSET(::maa::ImageInfoResponse, _impl_.size_),
+  PROTOBUF_FIELD_OFFSET(::maarpc::ImageInfoResponse, _impl_.type_),
+  PROTOBUF_FIELD_OFFSET(::maarpc::ImageInfoResponse, _impl_.size_),
   1,
   0,
-  PROTOBUF_FIELD_OFFSET(::maa::AdbControllerRequest, _impl_._has_bits_),
-  PROTOBUF_FIELD_OFFSET(::maa::AdbControllerRequest, _internal_metadata_),
+  PROTOBUF_FIELD_OFFSET(::maarpc::AdbControllerRequest, _impl_._has_bits_),
+  PROTOBUF_FIELD_OFFSET(::maarpc::AdbControllerRequest, _internal_metadata_),
   ~0u,  // no _extensions_
   ~0u,  // no _oneof_case_
   ~0u,  // no _weak_field_map_
   ~0u,  // no _inlined_string_donated_
-  PROTOBUF_FIELD_OFFSET(::maa::AdbControllerRequest, _impl_.callback_),
-  PROTOBUF_FIELD_OFFSET(::maa::AdbControllerRequest, _impl_.adb_path_),
-  PROTOBUF_FIELD_OFFSET(::maa::AdbControllerRequest, _impl_.adb_serial_),
-  PROTOBUF_FIELD_OFFSET(::maa::AdbControllerRequest, _impl_.adb_type_),
-  PROTOBUF_FIELD_OFFSET(::maa::AdbControllerRequest, _impl_.adb_config_),
+  PROTOBUF_FIELD_OFFSET(::maarpc::AdbControllerRequest, _impl_.callback_),
+  PROTOBUF_FIELD_OFFSET(::maarpc::AdbControllerRequest, _impl_.adb_path_),
+  PROTOBUF_FIELD_OFFSET(::maarpc::AdbControllerRequest, _impl_.adb_serial_),
+  PROTOBUF_FIELD_OFFSET(::maarpc::AdbControllerRequest, _impl_.adb_type_),
+  PROTOBUF_FIELD_OFFSET(::maarpc::AdbControllerRequest, _impl_.adb_config_),
   3,
   0,
   1,
   4,
   2,
-  PROTOBUF_FIELD_OFFSET(::maa::CustomControllerRequest, _impl_._has_bits_),
-  PROTOBUF_FIELD_OFFSET(::maa::CustomControllerRequest, _internal_metadata_),
+  PROTOBUF_FIELD_OFFSET(::maarpc::CustomControllerRequest, _impl_._has_bits_),
+  PROTOBUF_FIELD_OFFSET(::maarpc::CustomControllerRequest, _internal_metadata_),
   ~0u,  // no _extensions_
   ~0u,  // no _oneof_case_
   ~0u,  // no _weak_field_map_
   ~0u,  // no _inlined_string_donated_
-  PROTOBUF_FIELD_OFFSET(::maa::CustomControllerRequest, _impl_.callback_),
-  PROTOBUF_FIELD_OFFSET(::maa::CustomControllerRequest, _impl_.ctrl_),
+  PROTOBUF_FIELD_OFFSET(::maarpc::CustomControllerRequest, _impl_.callback_),
+  PROTOBUF_FIELD_OFFSET(::maarpc::CustomControllerRequest, _impl_.ctrl_),
   0,
   1,
-  PROTOBUF_FIELD_OFFSET(::maa::CustomControllerSetOptionParam, _impl_._has_bits_),
-  PROTOBUF_FIELD_OFFSET(::maa::CustomControllerSetOptionParam, _internal_metadata_),
+  PROTOBUF_FIELD_OFFSET(::maarpc::CustomControllerSetOptionParam, _impl_._has_bits_),
+  PROTOBUF_FIELD_OFFSET(::maarpc::CustomControllerSetOptionParam, _internal_metadata_),
   ~0u,  // no _extensions_
   ~0u,  // no _oneof_case_
   ~0u,  // no _weak_field_map_
   ~0u,  // no _inlined_string_donated_
-  PROTOBUF_FIELD_OFFSET(::maa::CustomControllerSetOptionParam, _impl_.key_),
-  PROTOBUF_FIELD_OFFSET(::maa::CustomControllerSetOptionParam, _impl_.value_),
+  PROTOBUF_FIELD_OFFSET(::maarpc::CustomControllerSetOptionParam, _impl_.key_),
+  PROTOBUF_FIELD_OFFSET(::maarpc::CustomControllerSetOptionParam, _impl_.value_),
   1,
   0,
-  PROTOBUF_FIELD_OFFSET(::maa::CustomControllerResponse, _impl_._has_bits_),
-  PROTOBUF_FIELD_OFFSET(::maa::CustomControllerResponse, _internal_metadata_),
+  PROTOBUF_FIELD_OFFSET(::maarpc::CustomControllerResponse, _impl_._has_bits_),
+  PROTOBUF_FIELD_OFFSET(::maarpc::CustomControllerResponse, _internal_metadata_),
   ~0u,  // no _extensions_
-  PROTOBUF_FIELD_OFFSET(::maa::CustomControllerResponse, _impl_._oneof_case_[0]),
+  PROTOBUF_FIELD_OFFSET(::maarpc::CustomControllerResponse, _impl_._oneof_case_[0]),
   ~0u,  // no _weak_field_map_
   ~0u,  // no _inlined_string_donated_
-  PROTOBUF_FIELD_OFFSET(::maa::CustomControllerResponse, _impl_.ctrl_),
-  PROTOBUF_FIELD_OFFSET(::maa::CustomControllerResponse, _impl_.id_),
+  PROTOBUF_FIELD_OFFSET(::maarpc::CustomControllerResponse, _impl_.ctrl_),
+  PROTOBUF_FIELD_OFFSET(::maarpc::CustomControllerResponse, _impl_.id_),
   ::_pbi::kInvalidFieldOffsetTag,
   ::_pbi::kInvalidFieldOffsetTag,
   ::_pbi::kInvalidFieldOffsetTag,
@@ -630,7 +630,7 @@ const uint32_t TableStruct_Framework_2eproto::offsets[] PROTOBUF_SECTION_VARIABL
   ::_pbi::kInvalidFieldOffsetTag,
   ::_pbi::kInvalidFieldOffsetTag,
   ::_pbi::kInvalidFieldOffsetTag,
-  PROTOBUF_FIELD_OFFSET(::maa::CustomControllerResponse, _impl_.command_),
+  PROTOBUF_FIELD_OFFSET(::maarpc::CustomControllerResponse, _impl_.command_),
   0,
   1,
   ~0u,
@@ -646,653 +646,668 @@ const uint32_t TableStruct_Framework_2eproto::offsets[] PROTOBUF_SECTION_VARIABL
   ~0u,
   ~0u,
   ~0u,
-  PROTOBUF_FIELD_OFFSET(::maa::SubmitCustomControllerRequest, _impl_._has_bits_),
-  PROTOBUF_FIELD_OFFSET(::maa::SubmitCustomControllerRequest, _internal_metadata_),
+  PROTOBUF_FIELD_OFFSET(::maarpc::SubmitCustomControllerRequest, _impl_._has_bits_),
+  PROTOBUF_FIELD_OFFSET(::maarpc::SubmitCustomControllerRequest, _internal_metadata_),
   ~0u,  // no _extensions_
-  PROTOBUF_FIELD_OFFSET(::maa::SubmitCustomControllerRequest, _impl_._oneof_case_[0]),
+  PROTOBUF_FIELD_OFFSET(::maarpc::SubmitCustomControllerRequest, _impl_._oneof_case_[0]),
   ~0u,  // no _weak_field_map_
   ~0u,  // no _inlined_string_donated_
-  PROTOBUF_FIELD_OFFSET(::maa::SubmitCustomControllerRequest, _impl_.handle_),
-  PROTOBUF_FIELD_OFFSET(::maa::SubmitCustomControllerRequest, _impl_.id_),
-  PROTOBUF_FIELD_OFFSET(::maa::SubmitCustomControllerRequest, _impl_.ok_),
+  PROTOBUF_FIELD_OFFSET(::maarpc::SubmitCustomControllerRequest, _impl_.handle_),
+  PROTOBUF_FIELD_OFFSET(::maarpc::SubmitCustomControllerRequest, _impl_.id_),
+  PROTOBUF_FIELD_OFFSET(::maarpc::SubmitCustomControllerRequest, _impl_.ok_),
   ::_pbi::kInvalidFieldOffsetTag,
   ::_pbi::kInvalidFieldOffsetTag,
-  PROTOBUF_FIELD_OFFSET(::maa::SubmitCustomControllerRequest, _impl_.result_),
+  PROTOBUF_FIELD_OFFSET(::maarpc::SubmitCustomControllerRequest, _impl_.result_),
   0,
   1,
   2,
   ~0u,
   ~0u,
   ~0u,  // no _has_bits_
-  PROTOBUF_FIELD_OFFSET(::maa::ControllerSetOptionRequest, _internal_metadata_),
+  PROTOBUF_FIELD_OFFSET(::maarpc::ControllerSetOptionRequest, _internal_metadata_),
   ~0u,  // no _extensions_
-  PROTOBUF_FIELD_OFFSET(::maa::ControllerSetOptionRequest, _impl_._oneof_case_[0]),
+  PROTOBUF_FIELD_OFFSET(::maarpc::ControllerSetOptionRequest, _impl_._oneof_case_[0]),
   ~0u,  // no _weak_field_map_
   ~0u,  // no _inlined_string_donated_
   ::_pbi::kInvalidFieldOffsetTag,
   ::_pbi::kInvalidFieldOffsetTag,
   ::_pbi::kInvalidFieldOffsetTag,
   ::_pbi::kInvalidFieldOffsetTag,
-  PROTOBUF_FIELD_OFFSET(::maa::ControllerSetOptionRequest, _impl_.option_),
-  PROTOBUF_FIELD_OFFSET(::maa::ControllerPostClickRequest, _impl_._has_bits_),
-  PROTOBUF_FIELD_OFFSET(::maa::ControllerPostClickRequest, _internal_metadata_),
+  PROTOBUF_FIELD_OFFSET(::maarpc::ControllerSetOptionRequest, _impl_.option_),
+  PROTOBUF_FIELD_OFFSET(::maarpc::ControllerPostClickRequest, _impl_._has_bits_),
+  PROTOBUF_FIELD_OFFSET(::maarpc::ControllerPostClickRequest, _internal_metadata_),
   ~0u,  // no _extensions_
   ~0u,  // no _oneof_case_
   ~0u,  // no _weak_field_map_
   ~0u,  // no _inlined_string_donated_
-  PROTOBUF_FIELD_OFFSET(::maa::ControllerPostClickRequest, _impl_.handle_),
-  PROTOBUF_FIELD_OFFSET(::maa::ControllerPostClickRequest, _impl_.param_),
+  PROTOBUF_FIELD_OFFSET(::maarpc::ControllerPostClickRequest, _impl_.handle_),
+  PROTOBUF_FIELD_OFFSET(::maarpc::ControllerPostClickRequest, _impl_.param_),
   0,
   1,
-  PROTOBUF_FIELD_OFFSET(::maa::ControllerPostSwipeRequest, _impl_._has_bits_),
-  PROTOBUF_FIELD_OFFSET(::maa::ControllerPostSwipeRequest, _internal_metadata_),
+  PROTOBUF_FIELD_OFFSET(::maarpc::ControllerPostSwipeRequest, _impl_._has_bits_),
+  PROTOBUF_FIELD_OFFSET(::maarpc::ControllerPostSwipeRequest, _internal_metadata_),
   ~0u,  // no _extensions_
   ~0u,  // no _oneof_case_
   ~0u,  // no _weak_field_map_
   ~0u,  // no _inlined_string_donated_
-  PROTOBUF_FIELD_OFFSET(::maa::ControllerPostSwipeRequest, _impl_.handle_),
-  PROTOBUF_FIELD_OFFSET(::maa::ControllerPostSwipeRequest, _impl_.param_),
+  PROTOBUF_FIELD_OFFSET(::maarpc::ControllerPostSwipeRequest, _impl_.handle_),
+  PROTOBUF_FIELD_OFFSET(::maarpc::ControllerPostSwipeRequest, _impl_.param_),
   0,
   1,
-  PROTOBUF_FIELD_OFFSET(::maa::ControllerPostKeyRequest, _impl_._has_bits_),
-  PROTOBUF_FIELD_OFFSET(::maa::ControllerPostKeyRequest, _internal_metadata_),
+  PROTOBUF_FIELD_OFFSET(::maarpc::ControllerPostKeyRequest, _impl_._has_bits_),
+  PROTOBUF_FIELD_OFFSET(::maarpc::ControllerPostKeyRequest, _internal_metadata_),
   ~0u,  // no _extensions_
   ~0u,  // no _oneof_case_
   ~0u,  // no _weak_field_map_
   ~0u,  // no _inlined_string_donated_
-  PROTOBUF_FIELD_OFFSET(::maa::ControllerPostKeyRequest, _impl_.handle_),
-  PROTOBUF_FIELD_OFFSET(::maa::ControllerPostKeyRequest, _impl_.param_),
+  PROTOBUF_FIELD_OFFSET(::maarpc::ControllerPostKeyRequest, _impl_.handle_),
+  PROTOBUF_FIELD_OFFSET(::maarpc::ControllerPostKeyRequest, _impl_.param_),
   0,
   1,
-  PROTOBUF_FIELD_OFFSET(::maa::ControllerPostTouchRequest, _impl_._has_bits_),
-  PROTOBUF_FIELD_OFFSET(::maa::ControllerPostTouchRequest, _internal_metadata_),
+  PROTOBUF_FIELD_OFFSET(::maarpc::ControllerPostTouchRequest, _impl_._has_bits_),
+  PROTOBUF_FIELD_OFFSET(::maarpc::ControllerPostTouchRequest, _internal_metadata_),
   ~0u,  // no _extensions_
   ~0u,  // no _oneof_case_
   ~0u,  // no _weak_field_map_
   ~0u,  // no _inlined_string_donated_
-  PROTOBUF_FIELD_OFFSET(::maa::ControllerPostTouchRequest, _impl_.handle_),
-  PROTOBUF_FIELD_OFFSET(::maa::ControllerPostTouchRequest, _impl_.param_),
+  PROTOBUF_FIELD_OFFSET(::maarpc::ControllerPostTouchRequest, _impl_.handle_),
+  PROTOBUF_FIELD_OFFSET(::maarpc::ControllerPostTouchRequest, _impl_.param_),
   0,
   1,
-  PROTOBUF_FIELD_OFFSET(::maa::ControllerGetImageRequest, _impl_._has_bits_),
-  PROTOBUF_FIELD_OFFSET(::maa::ControllerGetImageRequest, _internal_metadata_),
+  PROTOBUF_FIELD_OFFSET(::maarpc::ControllerGetImageRequest, _impl_._has_bits_),
+  PROTOBUF_FIELD_OFFSET(::maarpc::ControllerGetImageRequest, _internal_metadata_),
   ~0u,  // no _extensions_
   ~0u,  // no _oneof_case_
   ~0u,  // no _weak_field_map_
   ~0u,  // no _inlined_string_donated_
-  PROTOBUF_FIELD_OFFSET(::maa::ControllerGetImageRequest, _impl_.handle_),
-  PROTOBUF_FIELD_OFFSET(::maa::ControllerGetImageRequest, _impl_.image_),
+  PROTOBUF_FIELD_OFFSET(::maarpc::ControllerGetImageRequest, _impl_.handle_),
+  PROTOBUF_FIELD_OFFSET(::maarpc::ControllerGetImageRequest, _impl_.image_),
   0,
   1,
-  PROTOBUF_FIELD_OFFSET(::maa::CustomRecognizerRequest, _impl_._has_bits_),
-  PROTOBUF_FIELD_OFFSET(::maa::CustomRecognizerRequest, _internal_metadata_),
+  PROTOBUF_FIELD_OFFSET(::maarpc::CustomRecognizerRequest, _impl_._has_bits_),
+  PROTOBUF_FIELD_OFFSET(::maarpc::CustomRecognizerRequest, _internal_metadata_),
   ~0u,  // no _extensions_
   ~0u,  // no _oneof_case_
   ~0u,  // no _weak_field_map_
   ~0u,  // no _inlined_string_donated_
-  PROTOBUF_FIELD_OFFSET(::maa::CustomRecognizerRequest, _impl_.handle_),
-  PROTOBUF_FIELD_OFFSET(::maa::CustomRecognizerRequest, _impl_.name_),
-  PROTOBUF_FIELD_OFFSET(::maa::CustomRecognizerRequest, _impl_.reco_),
+  PROTOBUF_FIELD_OFFSET(::maarpc::CustomRecognizerRequest, _impl_.handle_),
+  PROTOBUF_FIELD_OFFSET(::maarpc::CustomRecognizerRequest, _impl_.name_),
+  PROTOBUF_FIELD_OFFSET(::maarpc::CustomRecognizerRequest, _impl_.reco_),
   1,
   0,
   2,
-  PROTOBUF_FIELD_OFFSET(::maa::CustomRecognizerAnalyzeParam, _impl_._has_bits_),
-  PROTOBUF_FIELD_OFFSET(::maa::CustomRecognizerAnalyzeParam, _internal_metadata_),
+  PROTOBUF_FIELD_OFFSET(::maarpc::CustomRecognizerAnalyzeParam, _impl_._has_bits_),
+  PROTOBUF_FIELD_OFFSET(::maarpc::CustomRecognizerAnalyzeParam, _internal_metadata_),
   ~0u,  // no _extensions_
   ~0u,  // no _oneof_case_
   ~0u,  // no _weak_field_map_
   ~0u,  // no _inlined_string_donated_
-  PROTOBUF_FIELD_OFFSET(::maa::CustomRecognizerAnalyzeParam, _impl_.context_),
-  PROTOBUF_FIELD_OFFSET(::maa::CustomRecognizerAnalyzeParam, _impl_.image_),
-  PROTOBUF_FIELD_OFFSET(::maa::CustomRecognizerAnalyzeParam, _impl_.task_),
-  PROTOBUF_FIELD_OFFSET(::maa::CustomRecognizerAnalyzeParam, _impl_.param_),
+  PROTOBUF_FIELD_OFFSET(::maarpc::CustomRecognizerAnalyzeParam, _impl_.context_),
+  PROTOBUF_FIELD_OFFSET(::maarpc::CustomRecognizerAnalyzeParam, _impl_.image_),
+  PROTOBUF_FIELD_OFFSET(::maarpc::CustomRecognizerAnalyzeParam, _impl_.task_),
+  PROTOBUF_FIELD_OFFSET(::maarpc::CustomRecognizerAnalyzeParam, _impl_.param_),
   2,
   3,
   0,
   1,
-  PROTOBUF_FIELD_OFFSET(::maa::CustomRecognizerResponse, _impl_._has_bits_),
-  PROTOBUF_FIELD_OFFSET(::maa::CustomRecognizerResponse, _internal_metadata_),
+  PROTOBUF_FIELD_OFFSET(::maarpc::CustomRecognizerResponse, _impl_._has_bits_),
+  PROTOBUF_FIELD_OFFSET(::maarpc::CustomRecognizerResponse, _internal_metadata_),
   ~0u,  // no _extensions_
-  PROTOBUF_FIELD_OFFSET(::maa::CustomRecognizerResponse, _impl_._oneof_case_[0]),
+  PROTOBUF_FIELD_OFFSET(::maarpc::CustomRecognizerResponse, _impl_._oneof_case_[0]),
   ~0u,  // no _weak_field_map_
   ~0u,  // no _inlined_string_donated_
-  PROTOBUF_FIELD_OFFSET(::maa::CustomRecognizerResponse, _impl_.reco_),
-  PROTOBUF_FIELD_OFFSET(::maa::CustomRecognizerResponse, _impl_.id_),
+  PROTOBUF_FIELD_OFFSET(::maarpc::CustomRecognizerResponse, _impl_.reco_),
+  PROTOBUF_FIELD_OFFSET(::maarpc::CustomRecognizerResponse, _impl_.id_),
   ::_pbi::kInvalidFieldOffsetTag,
-  PROTOBUF_FIELD_OFFSET(::maa::CustomRecognizerResponse, _impl_.command_),
+  PROTOBUF_FIELD_OFFSET(::maarpc::CustomRecognizerResponse, _impl_.command_),
   0,
   1,
   ~0u,
-  PROTOBUF_FIELD_OFFSET(::maa::CustomRecognizerAnalyzeResult, _impl_._has_bits_),
-  PROTOBUF_FIELD_OFFSET(::maa::CustomRecognizerAnalyzeResult, _internal_metadata_),
+  PROTOBUF_FIELD_OFFSET(::maarpc::CustomRecognizerAnalyzeResult, _impl_._has_bits_),
+  PROTOBUF_FIELD_OFFSET(::maarpc::CustomRecognizerAnalyzeResult, _internal_metadata_),
   ~0u,  // no _extensions_
   ~0u,  // no _oneof_case_
   ~0u,  // no _weak_field_map_
   ~0u,  // no _inlined_string_donated_
-  PROTOBUF_FIELD_OFFSET(::maa::CustomRecognizerAnalyzeResult, _impl_.match_),
-  PROTOBUF_FIELD_OFFSET(::maa::CustomRecognizerAnalyzeResult, _impl_.box_),
-  PROTOBUF_FIELD_OFFSET(::maa::CustomRecognizerAnalyzeResult, _impl_.detail_),
+  PROTOBUF_FIELD_OFFSET(::maarpc::CustomRecognizerAnalyzeResult, _impl_.match_),
+  PROTOBUF_FIELD_OFFSET(::maarpc::CustomRecognizerAnalyzeResult, _impl_.box_),
+  PROTOBUF_FIELD_OFFSET(::maarpc::CustomRecognizerAnalyzeResult, _impl_.detail_),
   2,
   1,
   0,
-  PROTOBUF_FIELD_OFFSET(::maa::SubmitCustomRecognizerRequest, _impl_._has_bits_),
-  PROTOBUF_FIELD_OFFSET(::maa::SubmitCustomRecognizerRequest, _internal_metadata_),
+  PROTOBUF_FIELD_OFFSET(::maarpc::SubmitCustomRecognizerRequest, _impl_._has_bits_),
+  PROTOBUF_FIELD_OFFSET(::maarpc::SubmitCustomRecognizerRequest, _internal_metadata_),
   ~0u,  // no _extensions_
-  PROTOBUF_FIELD_OFFSET(::maa::SubmitCustomRecognizerRequest, _impl_._oneof_case_[0]),
+  PROTOBUF_FIELD_OFFSET(::maarpc::SubmitCustomRecognizerRequest, _impl_._oneof_case_[0]),
   ~0u,  // no _weak_field_map_
   ~0u,  // no _inlined_string_donated_
-  PROTOBUF_FIELD_OFFSET(::maa::SubmitCustomRecognizerRequest, _impl_.handle_),
-  PROTOBUF_FIELD_OFFSET(::maa::SubmitCustomRecognizerRequest, _impl_.id_),
-  PROTOBUF_FIELD_OFFSET(::maa::SubmitCustomRecognizerRequest, _impl_.ok_),
+  PROTOBUF_FIELD_OFFSET(::maarpc::SubmitCustomRecognizerRequest, _impl_.handle_),
+  PROTOBUF_FIELD_OFFSET(::maarpc::SubmitCustomRecognizerRequest, _impl_.id_),
+  PROTOBUF_FIELD_OFFSET(::maarpc::SubmitCustomRecognizerRequest, _impl_.ok_),
   ::_pbi::kInvalidFieldOffsetTag,
-  PROTOBUF_FIELD_OFFSET(::maa::SubmitCustomRecognizerRequest, _impl_.result_),
+  PROTOBUF_FIELD_OFFSET(::maarpc::SubmitCustomRecognizerRequest, _impl_.result_),
   0,
   1,
   2,
   ~0u,
-  PROTOBUF_FIELD_OFFSET(::maa::CustomActionRequest, _impl_._has_bits_),
-  PROTOBUF_FIELD_OFFSET(::maa::CustomActionRequest, _internal_metadata_),
+  PROTOBUF_FIELD_OFFSET(::maarpc::CustomActionRequest, _impl_._has_bits_),
+  PROTOBUF_FIELD_OFFSET(::maarpc::CustomActionRequest, _internal_metadata_),
   ~0u,  // no _extensions_
   ~0u,  // no _oneof_case_
   ~0u,  // no _weak_field_map_
   ~0u,  // no _inlined_string_donated_
-  PROTOBUF_FIELD_OFFSET(::maa::CustomActionRequest, _impl_.handle_),
-  PROTOBUF_FIELD_OFFSET(::maa::CustomActionRequest, _impl_.name_),
-  PROTOBUF_FIELD_OFFSET(::maa::CustomActionRequest, _impl_.act_),
+  PROTOBUF_FIELD_OFFSET(::maarpc::CustomActionRequest, _impl_.handle_),
+  PROTOBUF_FIELD_OFFSET(::maarpc::CustomActionRequest, _impl_.name_),
+  PROTOBUF_FIELD_OFFSET(::maarpc::CustomActionRequest, _impl_.act_),
   1,
   0,
   2,
-  PROTOBUF_FIELD_OFFSET(::maa::CustomActionRunParam, _impl_._has_bits_),
-  PROTOBUF_FIELD_OFFSET(::maa::CustomActionRunParam, _internal_metadata_),
+  PROTOBUF_FIELD_OFFSET(::maarpc::CustomActionRunParam, _impl_._has_bits_),
+  PROTOBUF_FIELD_OFFSET(::maarpc::CustomActionRunParam, _internal_metadata_),
   ~0u,  // no _extensions_
   ~0u,  // no _oneof_case_
   ~0u,  // no _weak_field_map_
   ~0u,  // no _inlined_string_donated_
-  PROTOBUF_FIELD_OFFSET(::maa::CustomActionRunParam, _impl_.context_),
-  PROTOBUF_FIELD_OFFSET(::maa::CustomActionRunParam, _impl_.task_),
-  PROTOBUF_FIELD_OFFSET(::maa::CustomActionRunParam, _impl_.param_),
-  PROTOBUF_FIELD_OFFSET(::maa::CustomActionRunParam, _impl_.box_),
-  PROTOBUF_FIELD_OFFSET(::maa::CustomActionRunParam, _impl_.detail_),
+  PROTOBUF_FIELD_OFFSET(::maarpc::CustomActionRunParam, _impl_.context_),
+  PROTOBUF_FIELD_OFFSET(::maarpc::CustomActionRunParam, _impl_.task_),
+  PROTOBUF_FIELD_OFFSET(::maarpc::CustomActionRunParam, _impl_.param_),
+  PROTOBUF_FIELD_OFFSET(::maarpc::CustomActionRunParam, _impl_.box_),
+  PROTOBUF_FIELD_OFFSET(::maarpc::CustomActionRunParam, _impl_.detail_),
   3,
   0,
   1,
   4,
   2,
-  PROTOBUF_FIELD_OFFSET(::maa::CustomActionResponse, _impl_._has_bits_),
-  PROTOBUF_FIELD_OFFSET(::maa::CustomActionResponse, _internal_metadata_),
+  PROTOBUF_FIELD_OFFSET(::maarpc::CustomActionResponse, _impl_._has_bits_),
+  PROTOBUF_FIELD_OFFSET(::maarpc::CustomActionResponse, _internal_metadata_),
   ~0u,  // no _extensions_
-  PROTOBUF_FIELD_OFFSET(::maa::CustomActionResponse, _impl_._oneof_case_[0]),
+  PROTOBUF_FIELD_OFFSET(::maarpc::CustomActionResponse, _impl_._oneof_case_[0]),
   ~0u,  // no _weak_field_map_
   ~0u,  // no _inlined_string_donated_
-  PROTOBUF_FIELD_OFFSET(::maa::CustomActionResponse, _impl_.act_),
-  PROTOBUF_FIELD_OFFSET(::maa::CustomActionResponse, _impl_.id_),
+  PROTOBUF_FIELD_OFFSET(::maarpc::CustomActionResponse, _impl_.act_),
+  PROTOBUF_FIELD_OFFSET(::maarpc::CustomActionResponse, _impl_.id_),
   ::_pbi::kInvalidFieldOffsetTag,
   ::_pbi::kInvalidFieldOffsetTag,
-  PROTOBUF_FIELD_OFFSET(::maa::CustomActionResponse, _impl_.command_),
+  PROTOBUF_FIELD_OFFSET(::maarpc::CustomActionResponse, _impl_.command_),
   0,
   1,
   ~0u,
   ~0u,
-  PROTOBUF_FIELD_OFFSET(::maa::SubmitCustomActionRequest, _impl_._has_bits_),
-  PROTOBUF_FIELD_OFFSET(::maa::SubmitCustomActionRequest, _internal_metadata_),
+  PROTOBUF_FIELD_OFFSET(::maarpc::SubmitCustomActionRequest, _impl_._has_bits_),
+  PROTOBUF_FIELD_OFFSET(::maarpc::SubmitCustomActionRequest, _internal_metadata_),
   ~0u,  // no _extensions_
   ~0u,  // no _oneof_case_
   ~0u,  // no _weak_field_map_
   ~0u,  // no _inlined_string_donated_
-  PROTOBUF_FIELD_OFFSET(::maa::SubmitCustomActionRequest, _impl_.handle_),
-  PROTOBUF_FIELD_OFFSET(::maa::SubmitCustomActionRequest, _impl_.id_),
-  PROTOBUF_FIELD_OFFSET(::maa::SubmitCustomActionRequest, _impl_.ok_),
+  PROTOBUF_FIELD_OFFSET(::maarpc::SubmitCustomActionRequest, _impl_.handle_),
+  PROTOBUF_FIELD_OFFSET(::maarpc::SubmitCustomActionRequest, _impl_.id_),
+  PROTOBUF_FIELD_OFFSET(::maarpc::SubmitCustomActionRequest, _impl_.ok_),
   0,
   1,
   2,
-  PROTOBUF_FIELD_OFFSET(::maa::InstancePostTaskRequest, _impl_._has_bits_),
-  PROTOBUF_FIELD_OFFSET(::maa::InstancePostTaskRequest, _internal_metadata_),
+  PROTOBUF_FIELD_OFFSET(::maarpc::InstancePostTaskRequest, _impl_._has_bits_),
+  PROTOBUF_FIELD_OFFSET(::maarpc::InstancePostTaskRequest, _internal_metadata_),
   ~0u,  // no _extensions_
   ~0u,  // no _oneof_case_
   ~0u,  // no _weak_field_map_
   ~0u,  // no _inlined_string_donated_
-  PROTOBUF_FIELD_OFFSET(::maa::InstancePostTaskRequest, _impl_.handle_),
-  PROTOBUF_FIELD_OFFSET(::maa::InstancePostTaskRequest, _impl_.task_),
-  PROTOBUF_FIELD_OFFSET(::maa::InstancePostTaskRequest, _impl_.param_),
+  PROTOBUF_FIELD_OFFSET(::maarpc::InstancePostTaskRequest, _impl_.handle_),
+  PROTOBUF_FIELD_OFFSET(::maarpc::InstancePostTaskRequest, _impl_.task_),
+  PROTOBUF_FIELD_OFFSET(::maarpc::InstancePostTaskRequest, _impl_.param_),
   2,
   0,
   1,
-  PROTOBUF_FIELD_OFFSET(::maa::InstanceSetTaskParamRequest, _impl_._has_bits_),
-  PROTOBUF_FIELD_OFFSET(::maa::InstanceSetTaskParamRequest, _internal_metadata_),
+  PROTOBUF_FIELD_OFFSET(::maarpc::InstanceSetTaskParamRequest, _impl_._has_bits_),
+  PROTOBUF_FIELD_OFFSET(::maarpc::InstanceSetTaskParamRequest, _internal_metadata_),
   ~0u,  // no _extensions_
   ~0u,  // no _oneof_case_
   ~0u,  // no _weak_field_map_
   ~0u,  // no _inlined_string_donated_
-  PROTOBUF_FIELD_OFFSET(::maa::InstanceSetTaskParamRequest, _impl_.handle_),
-  PROTOBUF_FIELD_OFFSET(::maa::InstanceSetTaskParamRequest, _impl_.id_),
-  PROTOBUF_FIELD_OFFSET(::maa::InstanceSetTaskParamRequest, _impl_.param_),
+  PROTOBUF_FIELD_OFFSET(::maarpc::InstanceSetTaskParamRequest, _impl_.handle_),
+  PROTOBUF_FIELD_OFFSET(::maarpc::InstanceSetTaskParamRequest, _impl_.id_),
+  PROTOBUF_FIELD_OFFSET(::maarpc::InstanceSetTaskParamRequest, _impl_.param_),
   1,
   2,
   0,
-  PROTOBUF_FIELD_OFFSET(::maa::SyncContextRunTaskRequest, _impl_._has_bits_),
-  PROTOBUF_FIELD_OFFSET(::maa::SyncContextRunTaskRequest, _internal_metadata_),
+  PROTOBUF_FIELD_OFFSET(::maarpc::SyncContextRunTaskRequest, _impl_._has_bits_),
+  PROTOBUF_FIELD_OFFSET(::maarpc::SyncContextRunTaskRequest, _internal_metadata_),
   ~0u,  // no _extensions_
   ~0u,  // no _oneof_case_
   ~0u,  // no _weak_field_map_
   ~0u,  // no _inlined_string_donated_
-  PROTOBUF_FIELD_OFFSET(::maa::SyncContextRunTaskRequest, _impl_.handle_),
-  PROTOBUF_FIELD_OFFSET(::maa::SyncContextRunTaskRequest, _impl_.task_),
-  PROTOBUF_FIELD_OFFSET(::maa::SyncContextRunTaskRequest, _impl_.param_),
+  PROTOBUF_FIELD_OFFSET(::maarpc::SyncContextRunTaskRequest, _impl_.handle_),
+  PROTOBUF_FIELD_OFFSET(::maarpc::SyncContextRunTaskRequest, _impl_.task_),
+  PROTOBUF_FIELD_OFFSET(::maarpc::SyncContextRunTaskRequest, _impl_.param_),
   2,
   0,
   1,
-  PROTOBUF_FIELD_OFFSET(::maa::SyncContextRunRecognizerRequest, _impl_._has_bits_),
-  PROTOBUF_FIELD_OFFSET(::maa::SyncContextRunRecognizerRequest, _internal_metadata_),
+  PROTOBUF_FIELD_OFFSET(::maarpc::SyncContextRunRecognizerRequest, _impl_._has_bits_),
+  PROTOBUF_FIELD_OFFSET(::maarpc::SyncContextRunRecognizerRequest, _internal_metadata_),
   ~0u,  // no _extensions_
   ~0u,  // no _oneof_case_
   ~0u,  // no _weak_field_map_
   ~0u,  // no _inlined_string_donated_
-  PROTOBUF_FIELD_OFFSET(::maa::SyncContextRunRecognizerRequest, _impl_.handle_),
-  PROTOBUF_FIELD_OFFSET(::maa::SyncContextRunRecognizerRequest, _impl_.task_),
-  PROTOBUF_FIELD_OFFSET(::maa::SyncContextRunRecognizerRequest, _impl_.param_),
-  PROTOBUF_FIELD_OFFSET(::maa::SyncContextRunRecognizerRequest, _impl_.image_),
+  PROTOBUF_FIELD_OFFSET(::maarpc::SyncContextRunRecognizerRequest, _impl_.handle_),
+  PROTOBUF_FIELD_OFFSET(::maarpc::SyncContextRunRecognizerRequest, _impl_.task_),
+  PROTOBUF_FIELD_OFFSET(::maarpc::SyncContextRunRecognizerRequest, _impl_.param_),
+  PROTOBUF_FIELD_OFFSET(::maarpc::SyncContextRunRecognizerRequest, _impl_.image_),
   2,
   0,
   1,
   3,
-  PROTOBUF_FIELD_OFFSET(::maa::SyncContextRunRecognizerResponse, _impl_._has_bits_),
-  PROTOBUF_FIELD_OFFSET(::maa::SyncContextRunRecognizerResponse, _internal_metadata_),
+  PROTOBUF_FIELD_OFFSET(::maarpc::SyncContextRunRecognizerResponse, _impl_._has_bits_),
+  PROTOBUF_FIELD_OFFSET(::maarpc::SyncContextRunRecognizerResponse, _internal_metadata_),
   ~0u,  // no _extensions_
   ~0u,  // no _oneof_case_
   ~0u,  // no _weak_field_map_
   ~0u,  // no _inlined_string_donated_
-  PROTOBUF_FIELD_OFFSET(::maa::SyncContextRunRecognizerResponse, _impl_.match_),
-  PROTOBUF_FIELD_OFFSET(::maa::SyncContextRunRecognizerResponse, _impl_.box_),
-  PROTOBUF_FIELD_OFFSET(::maa::SyncContextRunRecognizerResponse, _impl_.detail_),
-  PROTOBUF_FIELD_OFFSET(::maa::SyncContextRunRecognizerResponse, _impl_.status_),
-  3,
+  PROTOBUF_FIELD_OFFSET(::maarpc::SyncContextRunRecognizerResponse, _impl_.match_),
+  PROTOBUF_FIELD_OFFSET(::maarpc::SyncContextRunRecognizerResponse, _impl_.box_),
+  PROTOBUF_FIELD_OFFSET(::maarpc::SyncContextRunRecognizerResponse, _impl_.detail_),
+  PROTOBUF_FIELD_OFFSET(::maarpc::SyncContextRunRecognizerResponse, _impl_.status_),
+  2,
   1,
   0,
-  2,
-  PROTOBUF_FIELD_OFFSET(::maa::SyncContextRunActionRequest, _impl_._has_bits_),
-  PROTOBUF_FIELD_OFFSET(::maa::SyncContextRunActionRequest, _internal_metadata_),
+  3,
+  PROTOBUF_FIELD_OFFSET(::maarpc::SyncContextRunActionRequest, _impl_._has_bits_),
+  PROTOBUF_FIELD_OFFSET(::maarpc::SyncContextRunActionRequest, _internal_metadata_),
   ~0u,  // no _extensions_
   ~0u,  // no _oneof_case_
   ~0u,  // no _weak_field_map_
   ~0u,  // no _inlined_string_donated_
-  PROTOBUF_FIELD_OFFSET(::maa::SyncContextRunActionRequest, _impl_.handle_),
-  PROTOBUF_FIELD_OFFSET(::maa::SyncContextRunActionRequest, _impl_.task_),
-  PROTOBUF_FIELD_OFFSET(::maa::SyncContextRunActionRequest, _impl_.param_),
-  PROTOBUF_FIELD_OFFSET(::maa::SyncContextRunActionRequest, _impl_.box_),
-  PROTOBUF_FIELD_OFFSET(::maa::SyncContextRunActionRequest, _impl_.detail_),
+  PROTOBUF_FIELD_OFFSET(::maarpc::SyncContextRunActionRequest, _impl_.handle_),
+  PROTOBUF_FIELD_OFFSET(::maarpc::SyncContextRunActionRequest, _impl_.task_),
+  PROTOBUF_FIELD_OFFSET(::maarpc::SyncContextRunActionRequest, _impl_.param_),
+  PROTOBUF_FIELD_OFFSET(::maarpc::SyncContextRunActionRequest, _impl_.box_),
+  PROTOBUF_FIELD_OFFSET(::maarpc::SyncContextRunActionRequest, _impl_.detail_),
   3,
   0,
   1,
   4,
   2,
-  PROTOBUF_FIELD_OFFSET(::maa::SyncContextClickRequest, _impl_._has_bits_),
-  PROTOBUF_FIELD_OFFSET(::maa::SyncContextClickRequest, _internal_metadata_),
+  PROTOBUF_FIELD_OFFSET(::maarpc::SyncContextClickRequest, _impl_._has_bits_),
+  PROTOBUF_FIELD_OFFSET(::maarpc::SyncContextClickRequest, _internal_metadata_),
   ~0u,  // no _extensions_
   ~0u,  // no _oneof_case_
   ~0u,  // no _weak_field_map_
   ~0u,  // no _inlined_string_donated_
-  PROTOBUF_FIELD_OFFSET(::maa::SyncContextClickRequest, _impl_.handle_),
-  PROTOBUF_FIELD_OFFSET(::maa::SyncContextClickRequest, _impl_.param_),
+  PROTOBUF_FIELD_OFFSET(::maarpc::SyncContextClickRequest, _impl_.handle_),
+  PROTOBUF_FIELD_OFFSET(::maarpc::SyncContextClickRequest, _impl_.param_),
   0,
   1,
-  PROTOBUF_FIELD_OFFSET(::maa::SyncContextSwipeRequest, _impl_._has_bits_),
-  PROTOBUF_FIELD_OFFSET(::maa::SyncContextSwipeRequest, _internal_metadata_),
+  PROTOBUF_FIELD_OFFSET(::maarpc::SyncContextSwipeRequest, _impl_._has_bits_),
+  PROTOBUF_FIELD_OFFSET(::maarpc::SyncContextSwipeRequest, _internal_metadata_),
   ~0u,  // no _extensions_
   ~0u,  // no _oneof_case_
   ~0u,  // no _weak_field_map_
   ~0u,  // no _inlined_string_donated_
-  PROTOBUF_FIELD_OFFSET(::maa::SyncContextSwipeRequest, _impl_.handle_),
-  PROTOBUF_FIELD_OFFSET(::maa::SyncContextSwipeRequest, _impl_.param_),
+  PROTOBUF_FIELD_OFFSET(::maarpc::SyncContextSwipeRequest, _impl_.handle_),
+  PROTOBUF_FIELD_OFFSET(::maarpc::SyncContextSwipeRequest, _impl_.param_),
   0,
   1,
-  PROTOBUF_FIELD_OFFSET(::maa::SyncContextKeyRequest, _impl_._has_bits_),
-  PROTOBUF_FIELD_OFFSET(::maa::SyncContextKeyRequest, _internal_metadata_),
+  PROTOBUF_FIELD_OFFSET(::maarpc::SyncContextKeyRequest, _impl_._has_bits_),
+  PROTOBUF_FIELD_OFFSET(::maarpc::SyncContextKeyRequest, _internal_metadata_),
   ~0u,  // no _extensions_
   ~0u,  // no _oneof_case_
   ~0u,  // no _weak_field_map_
   ~0u,  // no _inlined_string_donated_
-  PROTOBUF_FIELD_OFFSET(::maa::SyncContextKeyRequest, _impl_.handle_),
-  PROTOBUF_FIELD_OFFSET(::maa::SyncContextKeyRequest, _impl_.param_),
+  PROTOBUF_FIELD_OFFSET(::maarpc::SyncContextKeyRequest, _impl_.handle_),
+  PROTOBUF_FIELD_OFFSET(::maarpc::SyncContextKeyRequest, _impl_.param_),
   0,
   1,
-  PROTOBUF_FIELD_OFFSET(::maa::SyncContextTouchRequest, _impl_._has_bits_),
-  PROTOBUF_FIELD_OFFSET(::maa::SyncContextTouchRequest, _internal_metadata_),
+  PROTOBUF_FIELD_OFFSET(::maarpc::SyncContextTouchRequest, _impl_._has_bits_),
+  PROTOBUF_FIELD_OFFSET(::maarpc::SyncContextTouchRequest, _internal_metadata_),
   ~0u,  // no _extensions_
   ~0u,  // no _oneof_case_
   ~0u,  // no _weak_field_map_
   ~0u,  // no _inlined_string_donated_
-  PROTOBUF_FIELD_OFFSET(::maa::SyncContextTouchRequest, _impl_.handle_),
-  PROTOBUF_FIELD_OFFSET(::maa::SyncContextTouchRequest, _impl_.param_),
+  PROTOBUF_FIELD_OFFSET(::maarpc::SyncContextTouchRequest, _impl_.handle_),
+  PROTOBUF_FIELD_OFFSET(::maarpc::SyncContextTouchRequest, _impl_.param_),
   0,
   1,
-  PROTOBUF_FIELD_OFFSET(::maa::SyncContextScreencapRequest, _impl_._has_bits_),
-  PROTOBUF_FIELD_OFFSET(::maa::SyncContextScreencapRequest, _internal_metadata_),
+  PROTOBUF_FIELD_OFFSET(::maarpc::SyncContextScreencapRequest, _impl_._has_bits_),
+  PROTOBUF_FIELD_OFFSET(::maarpc::SyncContextScreencapRequest, _internal_metadata_),
   ~0u,  // no _extensions_
   ~0u,  // no _oneof_case_
   ~0u,  // no _weak_field_map_
   ~0u,  // no _inlined_string_donated_
-  PROTOBUF_FIELD_OFFSET(::maa::SyncContextScreencapRequest, _impl_.handle_),
-  PROTOBUF_FIELD_OFFSET(::maa::SyncContextScreencapRequest, _impl_.image_),
+  PROTOBUF_FIELD_OFFSET(::maarpc::SyncContextScreencapRequest, _impl_.handle_),
+  PROTOBUF_FIELD_OFFSET(::maarpc::SyncContextScreencapRequest, _impl_.image_),
   0,
   1,
 };
 static const ::_pbi::MigrationSchema schemas[] PROTOBUF_SECTION_VARIABLE(protodesc_cold) = {
-  { 0, -1, -1, sizeof(::maa::SetGlobalOptionRequest)},
-  { 9, 17, -1, sizeof(::maa::ImageInfoResponse)},
-  { 19, 30, -1, sizeof(::maa::AdbControllerRequest)},
-  { 35, 43, -1, sizeof(::maa::CustomControllerRequest)},
-  { 45, 53, -1, sizeof(::maa::CustomControllerSetOptionParam)},
-  { 55, 77, -1, sizeof(::maa::CustomControllerResponse)},
-  { 92, 104, -1, sizeof(::maa::SubmitCustomControllerRequest)},
-  { 109, -1, -1, sizeof(::maa::ControllerSetOptionRequest)},
-  { 120, 128, -1, sizeof(::maa::ControllerPostClickRequest)},
-  { 130, 138, -1, sizeof(::maa::ControllerPostSwipeRequest)},
-  { 140, 148, -1, sizeof(::maa::ControllerPostKeyRequest)},
-  { 150, 158, -1, sizeof(::maa::ControllerPostTouchRequest)},
-  { 160, 168, -1, sizeof(::maa::ControllerGetImageRequest)},
-  { 170, 179, -1, sizeof(::maa::CustomRecognizerRequest)},
-  { 182, 192, -1, sizeof(::maa::CustomRecognizerAnalyzeParam)},
-  { 196, 206, -1, sizeof(::maa::CustomRecognizerResponse)},
-  { 209, 218, -1, sizeof(::maa::CustomRecognizerAnalyzeResult)},
-  { 221, 232, -1, sizeof(::maa::SubmitCustomRecognizerRequest)},
-  { 236, 245, -1, sizeof(::maa::CustomActionRequest)},
-  { 248, 259, -1, sizeof(::maa::CustomActionRunParam)},
-  { 264, 275, -1, sizeof(::maa::CustomActionResponse)},
-  { 279, 288, -1, sizeof(::maa::SubmitCustomActionRequest)},
-  { 291, 300, -1, sizeof(::maa::InstancePostTaskRequest)},
-  { 303, 312, -1, sizeof(::maa::InstanceSetTaskParamRequest)},
-  { 315, 324, -1, sizeof(::maa::SyncContextRunTaskRequest)},
-  { 327, 337, -1, sizeof(::maa::SyncContextRunRecognizerRequest)},
-  { 341, 351, -1, sizeof(::maa::SyncContextRunRecognizerResponse)},
-  { 355, 366, -1, sizeof(::maa::SyncContextRunActionRequest)},
-  { 371, 379, -1, sizeof(::maa::SyncContextClickRequest)},
-  { 381, 389, -1, sizeof(::maa::SyncContextSwipeRequest)},
-  { 391, 399, -1, sizeof(::maa::SyncContextKeyRequest)},
-  { 401, 409, -1, sizeof(::maa::SyncContextTouchRequest)},
-  { 411, 419, -1, sizeof(::maa::SyncContextScreencapRequest)},
+  { 0, -1, -1, sizeof(::maarpc::SetGlobalOptionRequest)},
+  { 9, 17, -1, sizeof(::maarpc::ImageInfoResponse)},
+  { 19, 30, -1, sizeof(::maarpc::AdbControllerRequest)},
+  { 35, 43, -1, sizeof(::maarpc::CustomControllerRequest)},
+  { 45, 53, -1, sizeof(::maarpc::CustomControllerSetOptionParam)},
+  { 55, 77, -1, sizeof(::maarpc::CustomControllerResponse)},
+  { 92, 104, -1, sizeof(::maarpc::SubmitCustomControllerRequest)},
+  { 109, -1, -1, sizeof(::maarpc::ControllerSetOptionRequest)},
+  { 120, 128, -1, sizeof(::maarpc::ControllerPostClickRequest)},
+  { 130, 138, -1, sizeof(::maarpc::ControllerPostSwipeRequest)},
+  { 140, 148, -1, sizeof(::maarpc::ControllerPostKeyRequest)},
+  { 150, 158, -1, sizeof(::maarpc::ControllerPostTouchRequest)},
+  { 160, 168, -1, sizeof(::maarpc::ControllerGetImageRequest)},
+  { 170, 179, -1, sizeof(::maarpc::CustomRecognizerRequest)},
+  { 182, 192, -1, sizeof(::maarpc::CustomRecognizerAnalyzeParam)},
+  { 196, 206, -1, sizeof(::maarpc::CustomRecognizerResponse)},
+  { 209, 218, -1, sizeof(::maarpc::CustomRecognizerAnalyzeResult)},
+  { 221, 232, -1, sizeof(::maarpc::SubmitCustomRecognizerRequest)},
+  { 236, 245, -1, sizeof(::maarpc::CustomActionRequest)},
+  { 248, 259, -1, sizeof(::maarpc::CustomActionRunParam)},
+  { 264, 275, -1, sizeof(::maarpc::CustomActionResponse)},
+  { 279, 288, -1, sizeof(::maarpc::SubmitCustomActionRequest)},
+  { 291, 300, -1, sizeof(::maarpc::InstancePostTaskRequest)},
+  { 303, 312, -1, sizeof(::maarpc::InstanceSetTaskParamRequest)},
+  { 315, 324, -1, sizeof(::maarpc::SyncContextRunTaskRequest)},
+  { 327, 337, -1, sizeof(::maarpc::SyncContextRunRecognizerRequest)},
+  { 341, 351, -1, sizeof(::maarpc::SyncContextRunRecognizerResponse)},
+  { 355, 366, -1, sizeof(::maarpc::SyncContextRunActionRequest)},
+  { 371, 379, -1, sizeof(::maarpc::SyncContextClickRequest)},
+  { 381, 389, -1, sizeof(::maarpc::SyncContextSwipeRequest)},
+  { 391, 399, -1, sizeof(::maarpc::SyncContextKeyRequest)},
+  { 401, 409, -1, sizeof(::maarpc::SyncContextTouchRequest)},
+  { 411, 419, -1, sizeof(::maarpc::SyncContextScreencapRequest)},
 };
 
 static const ::_pb::Message* const file_default_instances[] = {
-  &::maa::_SetGlobalOptionRequest_default_instance_._instance,
-  &::maa::_ImageInfoResponse_default_instance_._instance,
-  &::maa::_AdbControllerRequest_default_instance_._instance,
-  &::maa::_CustomControllerRequest_default_instance_._instance,
-  &::maa::_CustomControllerSetOptionParam_default_instance_._instance,
-  &::maa::_CustomControllerResponse_default_instance_._instance,
-  &::maa::_SubmitCustomControllerRequest_default_instance_._instance,
-  &::maa::_ControllerSetOptionRequest_default_instance_._instance,
-  &::maa::_ControllerPostClickRequest_default_instance_._instance,
-  &::maa::_ControllerPostSwipeRequest_default_instance_._instance,
-  &::maa::_ControllerPostKeyRequest_default_instance_._instance,
-  &::maa::_ControllerPostTouchRequest_default_instance_._instance,
-  &::maa::_ControllerGetImageRequest_default_instance_._instance,
-  &::maa::_CustomRecognizerRequest_default_instance_._instance,
-  &::maa::_CustomRecognizerAnalyzeParam_default_instance_._instance,
-  &::maa::_CustomRecognizerResponse_default_instance_._instance,
-  &::maa::_CustomRecognizerAnalyzeResult_default_instance_._instance,
-  &::maa::_SubmitCustomRecognizerRequest_default_instance_._instance,
-  &::maa::_CustomActionRequest_default_instance_._instance,
-  &::maa::_CustomActionRunParam_default_instance_._instance,
-  &::maa::_CustomActionResponse_default_instance_._instance,
-  &::maa::_SubmitCustomActionRequest_default_instance_._instance,
-  &::maa::_InstancePostTaskRequest_default_instance_._instance,
-  &::maa::_InstanceSetTaskParamRequest_default_instance_._instance,
-  &::maa::_SyncContextRunTaskRequest_default_instance_._instance,
-  &::maa::_SyncContextRunRecognizerRequest_default_instance_._instance,
-  &::maa::_SyncContextRunRecognizerResponse_default_instance_._instance,
-  &::maa::_SyncContextRunActionRequest_default_instance_._instance,
-  &::maa::_SyncContextClickRequest_default_instance_._instance,
-  &::maa::_SyncContextSwipeRequest_default_instance_._instance,
-  &::maa::_SyncContextKeyRequest_default_instance_._instance,
-  &::maa::_SyncContextTouchRequest_default_instance_._instance,
-  &::maa::_SyncContextScreencapRequest_default_instance_._instance,
+  &::maarpc::_SetGlobalOptionRequest_default_instance_._instance,
+  &::maarpc::_ImageInfoResponse_default_instance_._instance,
+  &::maarpc::_AdbControllerRequest_default_instance_._instance,
+  &::maarpc::_CustomControllerRequest_default_instance_._instance,
+  &::maarpc::_CustomControllerSetOptionParam_default_instance_._instance,
+  &::maarpc::_CustomControllerResponse_default_instance_._instance,
+  &::maarpc::_SubmitCustomControllerRequest_default_instance_._instance,
+  &::maarpc::_ControllerSetOptionRequest_default_instance_._instance,
+  &::maarpc::_ControllerPostClickRequest_default_instance_._instance,
+  &::maarpc::_ControllerPostSwipeRequest_default_instance_._instance,
+  &::maarpc::_ControllerPostKeyRequest_default_instance_._instance,
+  &::maarpc::_ControllerPostTouchRequest_default_instance_._instance,
+  &::maarpc::_ControllerGetImageRequest_default_instance_._instance,
+  &::maarpc::_CustomRecognizerRequest_default_instance_._instance,
+  &::maarpc::_CustomRecognizerAnalyzeParam_default_instance_._instance,
+  &::maarpc::_CustomRecognizerResponse_default_instance_._instance,
+  &::maarpc::_CustomRecognizerAnalyzeResult_default_instance_._instance,
+  &::maarpc::_SubmitCustomRecognizerRequest_default_instance_._instance,
+  &::maarpc::_CustomActionRequest_default_instance_._instance,
+  &::maarpc::_CustomActionRunParam_default_instance_._instance,
+  &::maarpc::_CustomActionResponse_default_instance_._instance,
+  &::maarpc::_SubmitCustomActionRequest_default_instance_._instance,
+  &::maarpc::_InstancePostTaskRequest_default_instance_._instance,
+  &::maarpc::_InstanceSetTaskParamRequest_default_instance_._instance,
+  &::maarpc::_SyncContextRunTaskRequest_default_instance_._instance,
+  &::maarpc::_SyncContextRunRecognizerRequest_default_instance_._instance,
+  &::maarpc::_SyncContextRunRecognizerResponse_default_instance_._instance,
+  &::maarpc::_SyncContextRunActionRequest_default_instance_._instance,
+  &::maarpc::_SyncContextClickRequest_default_instance_._instance,
+  &::maarpc::_SyncContextSwipeRequest_default_instance_._instance,
+  &::maarpc::_SyncContextKeyRequest_default_instance_._instance,
+  &::maarpc::_SyncContextTouchRequest_default_instance_._instance,
+  &::maarpc::_SyncContextScreencapRequest_default_instance_._instance,
 };
 
 const char descriptor_table_protodef_Framework_2eproto[] PROTOBUF_SECTION_VARIABLE(protodesc_cold) =
-  "\n\017Framework.proto\022\003maa\032\013Types.proto\"K\n\026S"
-  "etGlobalOptionRequest\022\021\n\007logging\030\001 \001(\tH\000"
-  "\022\024\n\ndebug_mode\030\002 \001(\010H\000B\010\n\006option\"V\n\021Imag"
-  "eInfoResponse\022\021\n\004type\030\001 \001(\005H\000\210\001\001\022\034\n\004size"
-  "\030\002 \001(\0132\t.maa.SizeH\001\210\001\001B\007\n\005_typeB\007\n\005_size"
-  "\"\333\001\n\024AdbControllerRequest\022\036\n\010callback\030\001 "
-  "\001(\0132\007.maa.IdH\000\210\001\001\022\025\n\010adb_path\030\002 \001(\tH\001\210\001\001"
-  "\022\027\n\nadb_serial\030\003 \001(\tH\002\210\001\001\022\025\n\010adb_type\030\004 "
-  "\001(\rH\003\210\001\001\022\027\n\nadb_config\030\005 \001(\tH\004\210\001\001B\013\n\t_ca"
-  "llbackB\013\n\t_adb_pathB\r\n\013_adb_serialB\013\n\t_a"
-  "db_typeB\r\n\013_adb_config\"k\n\027CustomControll"
-  "erRequest\022\036\n\010callback\030\001 \001(\0132\007.maa.IdH\000\210\001"
-  "\001\022\032\n\004ctrl\030\002 \001(\0132\007.maa.IdH\001\210\001\001B\013\n\t_callba"
-  "ckB\007\n\005_ctrl\"X\n\036CustomControllerSetOption"
-  "Param\022\020\n\003key\030\001 \001(\005H\000\210\001\001\022\022\n\005value\030\002 \001(\tH\001"
-  "\210\001\001B\006\n\004_keyB\010\n\006_value\"\364\003\n\030CustomControll"
-  "erResponse\022\032\n\004ctrl\030\001 \001(\0132\007.maa.IdH\001\210\001\001\022\030"
-  "\n\002id\030\002 \001(\0132\007.maa.IdH\002\210\001\001\022\021\n\007connect\030e \001("
-  "\010H\000\022 \n\005click\030f \001(\0132\017.maa.ClickParamH\000\022 \n"
-  "\005swipe\030g \001(\0132\017.maa.SwipeParamH\000\022\034\n\003key\030h"
-  " \001(\0132\r.maa.KeyParamH\000\022%\n\ntouch_down\030i \001("
-  "\0132\017.maa.TouchParamH\000\022%\n\ntouch_move\030j \001(\013"
-  "2\017.maa.TouchParamH\000\022#\n\010touch_up\030k \001(\0132\017."
-  "maa.TouchParamH\000\022\017\n\005start\030l \001(\tH\000\022\016\n\004sto"
-  "p\030m \001(\tH\000\022\024\n\nresolution\030n \001(\010H\000\022\034\n\005image"
-  "\030o \001(\0132\013.maa.HandleH\000\022\016\n\004uuid\030p \001(\010H\000\022:\n"
-  "\nset_option\030\310\001 \001(\0132#.maa.CustomControlle"
-  "rSetOptionParamH\000B\t\n\007commandB\007\n\005_ctrlB\005\n"
-  "\003_id\"\300\001\n\035SubmitCustomControllerRequest\022 "
-  "\n\006handle\030\001 \001(\0132\013.maa.HandleH\001\210\001\001\022\030\n\002id\030\002"
-  " \001(\0132\007.maa.IdH\002\210\001\001\022\017\n\002ok\030\003 \001(\010H\003\210\001\001\022\037\n\nr"
-  "esolution\030e \001(\0132\t.maa.SizeH\000\022\016\n\004uuid\030f \001"
-  "(\tH\000B\010\n\006resultB\t\n\007_handleB\005\n\003_idB\005\n\003_ok\""
-  "\205\001\n\032ControllerSetOptionRequest\022\023\n\tlong_s"
-  "ide\030\001 \001(\005H\000\022\024\n\nshort_side\030\002 \001(\005H\000\022\033\n\021def"
-  "_package_entry\030\003 \001(\tH\000\022\025\n\013def_package\030\004 "
-  "\001(\tH\000B\010\n\006option\"x\n\032ControllerPostClickRe"
-  "quest\022 \n\006handle\030\001 \001(\0132\013.maa.HandleH\000\210\001\001\022"
-  "#\n\005param\030\002 \001(\0132\017.maa.ClickParamH\001\210\001\001B\t\n\007"
-  "_handleB\010\n\006_param\"x\n\032ControllerPostSwipe"
-  "Request\022 \n\006handle\030\001 \001(\0132\013.maa.HandleH\000\210\001"
-  "\001\022#\n\005param\030\002 \001(\0132\017.maa.SwipeParamH\001\210\001\001B\t"
-  "\n\007_handleB\010\n\006_param\"t\n\030ControllerPostKey"
-  "Request\022 \n\006handle\030\001 \001(\0132\013.maa.HandleH\000\210\001"
-  "\001\022!\n\005param\030\002 \001(\0132\r.maa.KeyParamH\001\210\001\001B\t\n\007"
-  "_handleB\010\n\006_param\"x\n\032ControllerPostTouch"
-  "Request\022 \n\006handle\030\001 \001(\0132\013.maa.HandleH\000\210\001"
-  "\001\022#\n\005param\030\002 \001(\0132\017.maa.TouchParamH\001\210\001\001B\t"
-  "\n\007_handleB\010\n\006_param\"s\n\031ControllerGetImag"
-  "eRequest\022 \n\006handle\030\001 \001(\0132\013.maa.HandleH\000\210"
-  "\001\001\022\037\n\005image\030\002 \001(\0132\013.maa.HandleH\001\210\001\001B\t\n\007_"
-  "handleB\010\n\006_image\"\207\001\n\027CustomRecognizerReq"
-  "uest\022 \n\006handle\030\001 \001(\0132\013.maa.HandleH\000\210\001\001\022\021"
-  "\n\004name\030\002 \001(\tH\001\210\001\001\022\032\n\004reco\030\003 \001(\0132\007.maa.Id"
-  "H\002\210\001\001B\t\n\007_handleB\007\n\005_nameB\007\n\005_reco\"\262\001\n\034C"
-  "ustomRecognizerAnalyzeParam\022!\n\007context\030\001"
-  " \001(\0132\013.maa.HandleH\000\210\001\001\022\037\n\005image\030\002 \001(\0132\013."
-  "maa.HandleH\001\210\001\001\022\021\n\004task\030\003 \001(\tH\002\210\001\001\022\022\n\005pa"
-  "ram\030\004 \001(\tH\003\210\001\001B\n\n\010_contextB\010\n\006_imageB\007\n\005"
-  "_taskB\010\n\006_param\"\241\001\n\030CustomRecognizerResp"
-  "onse\022\032\n\004reco\030\001 \001(\0132\007.maa.IdH\001\210\001\001\022\030\n\002id\030\002"
-  " \001(\0132\007.maa.IdH\002\210\001\001\0224\n\007analyze\030e \001(\0132!.ma"
-  "a.CustomRecognizerAnalyzeParamH\000B\t\n\007comm"
-  "andB\007\n\005_recoB\005\n\003_id\"\202\001\n\035CustomRecognizer"
-  "AnalyzeResult\022\022\n\005match\030\001 \001(\010H\000\210\001\001\022\033\n\003box"
-  "\030\002 \001(\0132\t.maa.RectH\001\210\001\001\022\023\n\006detail\030\003 \001(\tH\002"
-  "\210\001\001B\010\n\006_matchB\006\n\004_boxB\t\n\007_detail\"\306\001\n\035Sub"
-  "mitCustomRecognizerRequest\022 \n\006handle\030\001 \001"
-  "(\0132\013.maa.HandleH\001\210\001\001\022\030\n\002id\030\002 \001(\0132\007.maa.I"
-  "dH\002\210\001\001\022\017\n\002ok\030\003 \001(\010H\003\210\001\001\0225\n\007analyze\030e \001(\013"
-  "2\".maa.CustomRecognizerAnalyzeResultH\000B\010"
-  "\n\006resultB\t\n\007_handleB\005\n\003_idB\005\n\003_ok\"\201\001\n\023Cu"
-  "stomActionRequest\022 \n\006handle\030\001 \001(\0132\013.maa."
-  "HandleH\000\210\001\001\022\021\n\004name\030\002 \001(\tH\001\210\001\001\022\031\n\003act\030\003 "
-  "\001(\0132\007.maa.IdH\002\210\001\001B\t\n\007_handleB\007\n\005_nameB\006\n"
-  "\004_act\"\304\001\n\024CustomActionRunParam\022!\n\007contex"
-  "t\030\001 \001(\0132\013.maa.HandleH\000\210\001\001\022\021\n\004task\030\002 \001(\tH"
-  "\001\210\001\001\022\022\n\005param\030\003 \001(\tH\002\210\001\001\022\033\n\003box\030\004 \001(\0132\t."
-  "maa.RectH\003\210\001\001\022\023\n\006detail\030\005 \001(\tH\004\210\001\001B\n\n\010_c"
-  "ontextB\007\n\005_taskB\010\n\006_paramB\006\n\004_boxB\t\n\007_de"
-  "tail\"\237\001\n\024CustomActionResponse\022\031\n\003act\030\001 \001"
-  "(\0132\007.maa.IdH\001\210\001\001\022\030\n\002id\030\002 \001(\0132\007.maa.IdH\002\210"
-  "\001\001\022(\n\003run\030e \001(\0132\031.maa.CustomActionRunPar"
-  "amH\000\022\016\n\004stop\030f \001(\010H\000B\t\n\007commandB\006\n\004_actB"
-  "\005\n\003_id\"\201\001\n\031SubmitCustomActionRequest\022 \n\006"
-  "handle\030\001 \001(\0132\013.maa.HandleH\000\210\001\001\022\030\n\002id\030\002 \001"
-  "(\0132\007.maa.IdH\001\210\001\001\022\017\n\002ok\030\003 \001(\010H\002\210\001\001B\t\n\007_ha"
-  "ndleB\005\n\003_idB\005\n\003_ok\"\200\001\n\027InstancePostTaskR"
-  "equest\022 \n\006handle\030\001 \001(\0132\013.maa.HandleH\000\210\001\001"
-  "\022\021\n\004task\030\002 \001(\tH\001\210\001\001\022\022\n\005param\030\003 \001(\tH\002\210\001\001B"
-  "\t\n\007_handleB\007\n\005_taskB\010\n\006_param\"\211\001\n\033Instan"
-  "ceSetTaskParamRequest\022 \n\006handle\030\001 \001(\0132\013."
-  "maa.HandleH\000\210\001\001\022\030\n\002id\030\002 \001(\0132\007.maa.IdH\001\210\001"
-  "\001\022\022\n\005param\030\003 \001(\tH\002\210\001\001B\t\n\007_handleB\005\n\003_idB"
-  "\010\n\006_param\"\202\001\n\031SyncContextRunTaskRequest\022"
-  " \n\006handle\030\001 \001(\0132\013.maa.HandleH\000\210\001\001\022\021\n\004tas"
-  "k\030\002 \001(\tH\001\210\001\001\022\022\n\005param\030\003 \001(\tH\002\210\001\001B\t\n\007_han"
-  "dleB\007\n\005_taskB\010\n\006_param\"\263\001\n\037SyncContextRu"
-  "nRecognizerRequest\022 \n\006handle\030\001 \001(\0132\013.maa"
-  ".HandleH\000\210\001\001\022\021\n\004task\030\002 \001(\tH\001\210\001\001\022\022\n\005param"
-  "\030\003 \001(\tH\002\210\001\001\022\037\n\005image\030\004 \001(\0132\013.maa.HandleH"
-  "\003\210\001\001B\t\n\007_handleB\007\n\005_taskB\010\n\006_paramB\010\n\006_i"
-  "mage\"\265\001\n SyncContextRunRecognizerRespons"
-  "e\022\022\n\005match\030\001 \001(\010H\000\210\001\001\022\033\n\003box\030\002 \001(\0132\t.maa"
-  ".RectH\001\210\001\001\022\023\n\006detail\030\003 \001(\tH\002\210\001\001\022#\n\006statu"
-  "s\030e \001(\0132\016.maa.RpcStatusH\003\210\001\001B\010\n\006_matchB\006"
-  "\n\004_boxB\t\n\007_detailB\t\n\007_status\"\311\001\n\033SyncCon"
-  "textRunActionRequest\022 \n\006handle\030\001 \001(\0132\013.m"
-  "aa.HandleH\000\210\001\001\022\021\n\004task\030\002 \001(\tH\001\210\001\001\022\022\n\005par"
-  "am\030\003 \001(\tH\002\210\001\001\022\033\n\003box\030\004 \001(\0132\t.maa.RectH\003\210"
-  "\001\001\022\023\n\006detail\030\005 \001(\tH\004\210\001\001B\t\n\007_handleB\007\n\005_t"
-  "askB\010\n\006_paramB\006\n\004_boxB\t\n\007_detail\"u\n\027Sync"
-  "ContextClickRequest\022 \n\006handle\030\001 \001(\0132\013.ma"
-  "a.HandleH\000\210\001\001\022#\n\005param\030\002 \001(\0132\017.maa.Click"
-  "ParamH\001\210\001\001B\t\n\007_handleB\010\n\006_param\"u\n\027SyncC"
-  "ontextSwipeRequest\022 \n\006handle\030\001 \001(\0132\013.maa"
-  ".HandleH\000\210\001\001\022#\n\005param\030\002 \001(\0132\017.maa.SwipeP"
-  "aramH\001\210\001\001B\t\n\007_handleB\010\n\006_param\"q\n\025SyncCo"
-  "ntextKeyRequest\022 \n\006handle\030\001 \001(\0132\013.maa.Ha"
-  "ndleH\000\210\001\001\022!\n\005param\030\002 \001(\0132\r.maa.KeyParamH"
-  "\001\210\001\001B\t\n\007_handleB\010\n\006_param\"u\n\027SyncContext"
-  "TouchRequest\022 \n\006handle\030\001 \001(\0132\013.maa.Handl"
-  "eH\000\210\001\001\022#\n\005param\030\002 \001(\0132\017.maa.TouchParamH\001"
-  "\210\001\001B\t\n\007_handleB\010\n\006_param\"u\n\033SyncContextS"
-  "creencapRequest\022 \n\006handle\030\001 \001(\0132\013.maa.Ha"
-  "ndleH\000\210\001\001\022\037\n\005image\030\002 \001(\0132\013.maa.HandleH\001\210"
-  "\001\001B\t\n\007_handleB\010\n\006_image2\367\002\n\014MaaFramework"
-  "\0221\n\007version\022\021.maa.EmptyRequest\032\023.maa.Str"
-  "ingResponse\022D\n\021set_global_option\022\033.maa.S"
-  "etGlobalOptionRequest\032\022.maa.EmptyRespons"
-  "e\0229\n\023acquire_callback_id\022\021.maa.EmptyRequ"
-  "est\032\017.maa.IdResponse\0224\n\021register_callbac"
-  "k\022\016.maa.IdRequest\032\r.maa.Callback0\001\0229\n\023un"
-  "register_callback\022\016.maa.IdRequest\032\022.maa."
-  "EmptyResponse\022B\n\034acquire_custom_controll"
-  "er_id\022\021.maa.EmptyRequest\032\017.maa.IdRespons"
-  "e2\201\003\n\021MaaFrameworkImage\0220\n\006create\022\021.maa."
-  "EmptyRequest\032\023.maa.HandleResponse\0221\n\007des"
-  "troy\022\022.maa.HandleRequest\032\022.maa.EmptyResp"
-  "onse\0221\n\010is_empty\022\022.maa.HandleRequest\032\021.m"
-  "aa.BoolResponse\022/\n\005clear\022\022.maa.HandleReq"
-  "uest\032\022.maa.EmptyResponse\0222\n\004info\022\022.maa.H"
-  "andleRequest\032\026.maa.ImageInfoResponse\0222\n\007"
-  "encoded\022\022.maa.HandleRequest\032\023.maa.Buffer"
-  "Response\022;\n\013set_encoded\022\030.maa.HandleBuff"
-  "erRequest\032\022.maa.EmptyResponse2\372\002\n\024MaaFra"
-  "meworkResource\022-\n\006create\022\016.maa.IdRequest"
-  "\032\023.maa.HandleResponse\0221\n\007destroy\022\022.maa.H"
-  "andleRequest\032\022.maa.EmptyResponse\0226\n\tpost"
-  "_path\022\030.maa.HandleStringRequest\032\017.maa.Id"
-  "Response\0223\n\006status\022\024.maa.HandleIdRequest"
-  "\032\023.maa.StatusResponse\0221\n\004wait\022\024.maa.Hand"
-  "leIdRequest\032\023.maa.StatusResponse\022/\n\006load"
-  "ed\022\022.maa.HandleRequest\032\021.maa.BoolRespons"
-  "e\022/\n\004hash\022\022.maa.HandleRequest\032\023.maa.Stri"
-  "ngResponse2\367\010\n\026MaaFrameworkController\022<\n"
-  "\ncreate_adb\022\031.maa.AdbControllerRequest\032\023"
-  ".maa.HandleResponse\0221\n\007destroy\022\022.maa.Han"
-  "dleRequest\032\022.maa.EmptyResponse\022N\n\rcreate"
-  "_custom\022\034.maa.CustomControllerRequest\032\035."
-  "maa.CustomControllerResponse0\001\022R\n\030submit"
-  "_custom_controller\022\".maa.SubmitCustomCon"
-  "trollerRequest\032\022.maa.EmptyResponse\022A\n\nse"
-  "t_option\022\037.maa.ControllerSetOptionReques"
-  "t\032\022.maa.EmptyResponse\0226\n\017post_connection"
-  "\022\022.maa.HandleRequest\032\017.maa.IdResponse\022>\n"
-  "\npost_click\022\037.maa.ControllerPostClickReq"
-  "uest\032\017.maa.IdResponse\022>\n\npost_swipe\022\037.ma"
-  "a.ControllerPostSwipeRequest\032\017.maa.IdRes"
-  "ponse\022@\n\016post_press_key\022\035.maa.Controller"
-  "PostKeyRequest\032\017.maa.IdResponse\022C\n\017post_"
-  "touch_down\022\037.maa.ControllerPostTouchRequ"
-  "est\032\017.maa.IdResponse\022C\n\017post_touch_move\022"
-  "\037.maa.ControllerPostTouchRequest\032\017.maa.I"
-  "dResponse\022A\n\rpost_touch_up\022\037.maa.Control"
-  "lerPostTouchRequest\032\017.maa.IdResponse\0225\n\016"
-  "post_screencap\022\022.maa.HandleRequest\032\017.maa"
-  ".IdResponse\0223\n\006status\022\024.maa.HandleIdRequ"
-  "est\032\023.maa.StatusResponse\0220\n\004wait\022\024.maa.H"
-  "andleIdRequest\032\022.maa.EmptyResponse\0222\n\tco"
-  "nnected\022\022.maa.HandleRequest\032\021.maa.BoolRe"
-  "sponse\022;\n\005image\022\036.maa.ControllerGetImage"
-  "Request\032\022.maa.EmptyResponse\022/\n\004uuid\022\022.ma"
-  "a.HandleRequest\032\023.maa.StringResponse2\315\n\n"
-  "\024MaaFrameworkInstance\022-\n\006create\022\016.maa.Id"
-  "Request\032\023.maa.HandleResponse\0221\n\007destroy\022"
-  "\022.maa.HandleRequest\032\022.maa.EmptyResponse\022"
-  "[\n\032register_custom_recognizer\022\034.maa.Cust"
-  "omRecognizerRequest\032\035.maa.CustomRecogniz"
-  "erResponse0\001\022R\n\030submit_custom_recognizer"
-  "\022\".maa.SubmitCustomRecognizerRequest\032\022.m"
-  "aa.EmptyResponse\022L\n\034unregister_custom_re"
-  "cognizer\022\030.maa.HandleStringRequest\032\022.maa"
-  ".EmptyResponse\022A\n\027clear_custom_recognize"
-  "r\022\022.maa.HandleRequest\032\022.maa.EmptyRespons"
-  "e\022W\n\026register_custom_action\022\034.maa.Custom"
-  "RecognizerRequest\032\035.maa.CustomRecognizer"
-  "Response0\001\022N\n\024submit_custom_action\022\".maa"
-  ".SubmitCustomRecognizerRequest\032\022.maa.Emp"
-  "tyResponse\022H\n\030unregister_custom_action\022\030"
-  ".maa.HandleStringRequest\032\022.maa.EmptyResp"
-  "onse\022=\n\023clear_custom_action\022\022.maa.Handle"
-  "Request\032\022.maa.EmptyResponse\0227\n\rbind_reso"
-  "urce\022\022.maa.HandleRequest\032\022.maa.EmptyResp"
-  "onse\0229\n\017bind_controller\022\022.maa.HandleRequ"
-  "est\032\022.maa.EmptyResponse\022/\n\006inited\022\022.maa."
-  "HandleRequest\032\021.maa.BoolResponse\022:\n\tpost"
-  "_task\022\034.maa.InstancePostTaskRequest\032\017.ma"
-  "a.IdResponse\022F\n\016set_task_param\022 .maa.Ins"
-  "tanceSetTaskParamRequest\032\022.maa.EmptyResp"
-  "onse\0223\n\006status\022\024.maa.HandleIdRequest\032\023.m"
-  "aa.StatusResponse\0220\n\004wait\022\024.maa.HandleId"
-  "Request\032\022.maa.EmptyResponse\0225\n\014all_finis"
-  "hed\022\022.maa.HandleRequest\032\021.maa.BoolRespon"
-  "se\022.\n\004stop\022\022.maa.HandleRequest\032\022.maa.Emp"
-  "tyResponse\0222\n\010resource\022\022.maa.HandleReque"
-  "st\032\022.maa.HandleRequest\0224\n\ncontroller\022\022.m"
-  "aa.HandleRequest\032\022.maa.HandleRequest2\342\005\n"
-  "\027MaaFrameworkSyncContext\022>\n\010run_task\022\036.m"
-  "aa.SyncContextRunTaskRequest\032\022.maa.Empty"
-  "Response\022]\n\016run_recognizer\022$.maa.SyncCon"
-  "textRunRecognizerRequest\032%.maa.SyncConte"
-  "xtRunRecognizerResponse\022B\n\nrun_action\022 ."
-  "maa.SyncContextRunActionRequest\032\022.maa.Em"
-  "ptyResponse\0228\n\005click\022\034.maa.SyncContextCl"
-  "ickRequest\032\021.maa.EmptyRequest\0228\n\005swipe\022\034"
-  ".maa.SyncContextSwipeRequest\032\021.maa.Empty"
-  "Request\0224\n\003key\022\032.maa.SyncContextKeyReque"
-  "st\032\021.maa.EmptyRequest\022=\n\ntouch_down\022\034.ma"
-  "a.SyncContextTouchRequest\032\021.maa.EmptyReq"
-  "uest\022=\n\ntouch_move\022\034.maa.SyncContextTouc"
-  "hRequest\032\021.maa.EmptyRequest\022;\n\010touch_up\022"
-  "\034.maa.SyncContextTouchRequest\032\021.maa.Empt"
-  "yRequest\022A\n\tscreencap\022 .maa.SyncContextS"
-  "creencapRequest\032\022.maa.EmptyResponse\022<\n\013t"
-  "ask_result\022\030.maa.HandleStringRequest\032\023.m"
-  "aa.StringResponseb\006proto3"
+  "\n\017Framework.proto\022\006maarpc\032\013Types.proto\"K"
+  "\n\026SetGlobalOptionRequest\022\021\n\007logging\030\001 \001("
+  "\tH\000\022\024\n\ndebug_mode\030\002 \001(\010H\000B\010\n\006option\"Y\n\021I"
+  "mageInfoResponse\022\021\n\004type\030\001 \001(\005H\000\210\001\001\022\037\n\004s"
+  "ize\030\002 \001(\0132\014.maarpc.SizeH\001\210\001\001B\007\n\005_typeB\007\n"
+  "\005_size\"\336\001\n\024AdbControllerRequest\022!\n\010callb"
+  "ack\030\001 \001(\0132\n.maarpc.IdH\000\210\001\001\022\025\n\010adb_path\030\002"
+  " \001(\tH\001\210\001\001\022\027\n\nadb_serial\030\003 \001(\tH\002\210\001\001\022\025\n\010ad"
+  "b_type\030\004 \001(\rH\003\210\001\001\022\027\n\nadb_config\030\005 \001(\tH\004\210"
+  "\001\001B\013\n\t_callbackB\013\n\t_adb_pathB\r\n\013_adb_ser"
+  "ialB\013\n\t_adb_typeB\r\n\013_adb_config\"q\n\027Custo"
+  "mControllerRequest\022!\n\010callback\030\001 \001(\0132\n.m"
+  "aarpc.IdH\000\210\001\001\022\035\n\004ctrl\030\002 \001(\0132\n.maarpc.IdH"
+  "\001\210\001\001B\013\n\t_callbackB\007\n\005_ctrl\"X\n\036CustomCont"
+  "rollerSetOptionParam\022\020\n\003key\030\001 \001(\005H\000\210\001\001\022\022"
+  "\n\005value\030\002 \001(\tH\001\210\001\001B\006\n\004_keyB\010\n\006_value\"\222\004\n"
+  "\030CustomControllerResponse\022\035\n\004ctrl\030\001 \001(\0132"
+  "\n.maarpc.IdH\001\210\001\001\022\033\n\002id\030\002 \001(\0132\n.maarpc.Id"
+  "H\002\210\001\001\022\021\n\007connect\030e \001(\010H\000\022#\n\005click\030f \001(\0132"
+  "\022.maarpc.ClickParamH\000\022#\n\005swipe\030g \001(\0132\022.m"
+  "aarpc.SwipeParamH\000\022\037\n\003key\030h \001(\0132\020.maarpc"
+  ".KeyParamH\000\022(\n\ntouch_down\030i \001(\0132\022.maarpc"
+  ".TouchParamH\000\022(\n\ntouch_move\030j \001(\0132\022.maar"
+  "pc.TouchParamH\000\022&\n\010touch_up\030k \001(\0132\022.maar"
+  "pc.TouchParamH\000\022\017\n\005start\030l \001(\tH\000\022\016\n\004stop"
+  "\030m \001(\tH\000\022\024\n\nresolution\030n \001(\010H\000\022\037\n\005image\030"
+  "o \001(\0132\016.maarpc.HandleH\000\022\016\n\004uuid\030p \001(\010H\000\022"
+  "=\n\nset_option\030\310\001 \001(\0132&.maarpc.CustomCont"
+  "rollerSetOptionParamH\000B\t\n\007commandB\007\n\005_ct"
+  "rlB\005\n\003_id\"\311\001\n\035SubmitCustomControllerRequ"
+  "est\022#\n\006handle\030\001 \001(\0132\016.maarpc.HandleH\001\210\001\001"
+  "\022\033\n\002id\030\002 \001(\0132\n.maarpc.IdH\002\210\001\001\022\017\n\002ok\030\003 \001("
+  "\010H\003\210\001\001\022\"\n\nresolution\030e \001(\0132\014.maarpc.Size"
+  "H\000\022\016\n\004uuid\030f \001(\tH\000B\010\n\006resultB\t\n\007_handleB"
+  "\005\n\003_idB\005\n\003_ok\"\205\001\n\032ControllerSetOptionReq"
+  "uest\022\023\n\tlong_side\030\001 \001(\005H\000\022\024\n\nshort_side\030"
+  "\002 \001(\005H\000\022\033\n\021def_package_entry\030\003 \001(\tH\000\022\025\n\013"
+  "def_package\030\004 \001(\tH\000B\010\n\006option\"~\n\032Control"
+  "lerPostClickRequest\022#\n\006handle\030\001 \001(\0132\016.ma"
+  "arpc.HandleH\000\210\001\001\022&\n\005param\030\002 \001(\0132\022.maarpc"
+  ".ClickParamH\001\210\001\001B\t\n\007_handleB\010\n\006_param\"~\n"
+  "\032ControllerPostSwipeRequest\022#\n\006handle\030\001 "
+  "\001(\0132\016.maarpc.HandleH\000\210\001\001\022&\n\005param\030\002 \001(\0132"
+  "\022.maarpc.SwipeParamH\001\210\001\001B\t\n\007_handleB\010\n\006_"
+  "param\"z\n\030ControllerPostKeyRequest\022#\n\006han"
+  "dle\030\001 \001(\0132\016.maarpc.HandleH\000\210\001\001\022$\n\005param\030"
+  "\002 \001(\0132\020.maarpc.KeyParamH\001\210\001\001B\t\n\007_handleB"
+  "\010\n\006_param\"~\n\032ControllerPostTouchRequest\022"
+  "#\n\006handle\030\001 \001(\0132\016.maarpc.HandleH\000\210\001\001\022&\n\005"
+  "param\030\002 \001(\0132\022.maarpc.TouchParamH\001\210\001\001B\t\n\007"
+  "_handleB\010\n\006_param\"y\n\031ControllerGetImageR"
+  "equest\022#\n\006handle\030\001 \001(\0132\016.maarpc.HandleH\000"
+  "\210\001\001\022\"\n\005image\030\002 \001(\0132\016.maarpc.HandleH\001\210\001\001B"
+  "\t\n\007_handleB\010\n\006_image\"\215\001\n\027CustomRecognize"
+  "rRequest\022#\n\006handle\030\001 \001(\0132\016.maarpc.Handle"
+  "H\000\210\001\001\022\021\n\004name\030\002 \001(\tH\001\210\001\001\022\035\n\004reco\030\003 \001(\0132\n"
+  ".maarpc.IdH\002\210\001\001B\t\n\007_handleB\007\n\005_nameB\007\n\005_"
+  "reco\"\270\001\n\034CustomRecognizerAnalyzeParam\022$\n"
+  "\007context\030\001 \001(\0132\016.maarpc.HandleH\000\210\001\001\022\"\n\005i"
+  "mage\030\002 \001(\0132\016.maarpc.HandleH\001\210\001\001\022\021\n\004task\030"
+  "\003 \001(\tH\002\210\001\001\022\022\n\005param\030\004 \001(\tH\003\210\001\001B\n\n\010_conte"
+  "xtB\010\n\006_imageB\007\n\005_taskB\010\n\006_param\"\252\001\n\030Cust"
+  "omRecognizerResponse\022\035\n\004reco\030\001 \001(\0132\n.maa"
+  "rpc.IdH\001\210\001\001\022\033\n\002id\030\002 \001(\0132\n.maarpc.IdH\002\210\001\001"
+  "\0227\n\007analyze\030e \001(\0132$.maarpc.CustomRecogni"
+  "zerAnalyzeParamH\000B\t\n\007commandB\007\n\005_recoB\005\n"
+  "\003_id\"\205\001\n\035CustomRecognizerAnalyzeResult\022\022"
+  "\n\005match\030\001 \001(\010H\000\210\001\001\022\036\n\003box\030\002 \001(\0132\014.maarpc"
+  ".RectH\001\210\001\001\022\023\n\006detail\030\003 \001(\tH\002\210\001\001B\010\n\006_matc"
+  "hB\006\n\004_boxB\t\n\007_detail\"\317\001\n\035SubmitCustomRec"
+  "ognizerRequest\022#\n\006handle\030\001 \001(\0132\016.maarpc."
+  "HandleH\001\210\001\001\022\033\n\002id\030\002 \001(\0132\n.maarpc.IdH\002\210\001\001"
+  "\022\017\n\002ok\030\003 \001(\010H\003\210\001\001\0228\n\007analyze\030e \001(\0132%.maa"
+  "rpc.CustomRecognizerAnalyzeResultH\000B\010\n\006r"
+  "esultB\t\n\007_handleB\005\n\003_idB\005\n\003_ok\"\207\001\n\023Custo"
+  "mActionRequest\022#\n\006handle\030\001 \001(\0132\016.maarpc."
+  "HandleH\000\210\001\001\022\021\n\004name\030\002 \001(\tH\001\210\001\001\022\034\n\003act\030\003 "
+  "\001(\0132\n.maarpc.IdH\002\210\001\001B\t\n\007_handleB\007\n\005_name"
+  "B\006\n\004_act\"\312\001\n\024CustomActionRunParam\022$\n\007con"
+  "text\030\001 \001(\0132\016.maarpc.HandleH\000\210\001\001\022\021\n\004task\030"
+  "\002 \001(\tH\001\210\001\001\022\022\n\005param\030\003 \001(\tH\002\210\001\001\022\036\n\003box\030\004 "
+  "\001(\0132\014.maarpc.RectH\003\210\001\001\022\023\n\006detail\030\005 \001(\tH\004"
+  "\210\001\001B\n\n\010_contextB\007\n\005_taskB\010\n\006_paramB\006\n\004_b"
+  "oxB\t\n\007_detail\"\250\001\n\024CustomActionResponse\022\034"
+  "\n\003act\030\001 \001(\0132\n.maarpc.IdH\001\210\001\001\022\033\n\002id\030\002 \001(\013"
+  "2\n.maarpc.IdH\002\210\001\001\022+\n\003run\030e \001(\0132\034.maarpc."
+  "CustomActionRunParamH\000\022\016\n\004stop\030f \001(\010H\000B\t"
+  "\n\007commandB\006\n\004_actB\005\n\003_id\"\207\001\n\031SubmitCusto"
+  "mActionRequest\022#\n\006handle\030\001 \001(\0132\016.maarpc."
+  "HandleH\000\210\001\001\022\033\n\002id\030\002 \001(\0132\n.maarpc.IdH\001\210\001\001"
+  "\022\017\n\002ok\030\003 \001(\010H\002\210\001\001B\t\n\007_handleB\005\n\003_idB\005\n\003_"
+  "ok\"\203\001\n\027InstancePostTaskRequest\022#\n\006handle"
+  "\030\001 \001(\0132\016.maarpc.HandleH\000\210\001\001\022\021\n\004task\030\002 \001("
+  "\tH\001\210\001\001\022\022\n\005param\030\003 \001(\tH\002\210\001\001B\t\n\007_handleB\007\n"
+  "\005_taskB\010\n\006_param\"\217\001\n\033InstanceSetTaskPara"
+  "mRequest\022#\n\006handle\030\001 \001(\0132\016.maarpc.Handle"
+  "H\000\210\001\001\022\033\n\002id\030\002 \001(\0132\n.maarpc.IdH\001\210\001\001\022\022\n\005pa"
+  "ram\030\003 \001(\tH\002\210\001\001B\t\n\007_handleB\005\n\003_idB\010\n\006_par"
+  "am\"\205\001\n\031SyncContextRunTaskRequest\022#\n\006hand"
+  "le\030\001 \001(\0132\016.maarpc.HandleH\000\210\001\001\022\021\n\004task\030\002 "
+  "\001(\tH\001\210\001\001\022\022\n\005param\030\003 \001(\tH\002\210\001\001B\t\n\007_handleB"
+  "\007\n\005_taskB\010\n\006_param\"\271\001\n\037SyncContextRunRec"
+  "ognizerRequest\022#\n\006handle\030\001 \001(\0132\016.maarpc."
+  "HandleH\000\210\001\001\022\021\n\004task\030\002 \001(\tH\001\210\001\001\022\022\n\005param\030"
+  "\003 \001(\tH\002\210\001\001\022\"\n\005image\030\004 \001(\0132\016.maarpc.Handl"
+  "eH\003\210\001\001B\t\n\007_handleB\007\n\005_taskB\010\n\006_paramB\010\n\006"
+  "_image\"\250\001\n SyncContextRunRecognizerRespo"
+  "nse\022\022\n\005match\030\001 \001(\010H\000\210\001\001\022\036\n\003box\030\002 \001(\0132\014.m"
+  "aarpc.RectH\001\210\001\001\022\023\n\006detail\030\003 \001(\tH\002\210\001\001\022\023\n\006"
+  "status\030e \001(\010H\003\210\001\001B\010\n\006_matchB\006\n\004_boxB\t\n\007_"
+  "detailB\t\n\007_status\"\317\001\n\033SyncContextRunActi"
+  "onRequest\022#\n\006handle\030\001 \001(\0132\016.maarpc.Handl"
+  "eH\000\210\001\001\022\021\n\004task\030\002 \001(\tH\001\210\001\001\022\022\n\005param\030\003 \001(\t"
+  "H\002\210\001\001\022\036\n\003box\030\004 \001(\0132\014.maarpc.RectH\003\210\001\001\022\023\n"
+  "\006detail\030\005 \001(\tH\004\210\001\001B\t\n\007_handleB\007\n\005_taskB\010"
+  "\n\006_paramB\006\n\004_boxB\t\n\007_detail\"{\n\027SyncConte"
+  "xtClickRequest\022#\n\006handle\030\001 \001(\0132\016.maarpc."
+  "HandleH\000\210\001\001\022&\n\005param\030\002 \001(\0132\022.maarpc.Clic"
+  "kParamH\001\210\001\001B\t\n\007_handleB\010\n\006_param\"{\n\027Sync"
+  "ContextSwipeRequest\022#\n\006handle\030\001 \001(\0132\016.ma"
+  "arpc.HandleH\000\210\001\001\022&\n\005param\030\002 \001(\0132\022.maarpc"
+  ".SwipeParamH\001\210\001\001B\t\n\007_handleB\010\n\006_param\"w\n"
+  "\025SyncContextKeyRequest\022#\n\006handle\030\001 \001(\0132\016"
+  ".maarpc.HandleH\000\210\001\001\022$\n\005param\030\002 \001(\0132\020.maa"
+  "rpc.KeyParamH\001\210\001\001B\t\n\007_handleB\010\n\006_param\"{"
+  "\n\027SyncContextTouchRequest\022#\n\006handle\030\001 \001("
+  "\0132\016.maarpc.HandleH\000\210\001\001\022&\n\005param\030\002 \001(\0132\022."
+  "maarpc.TouchParamH\001\210\001\001B\t\n\007_handleB\010\n\006_pa"
+  "ram\"{\n\033SyncContextScreencapRequest\022#\n\006ha"
+  "ndle\030\001 \001(\0132\016.maarpc.HandleH\000\210\001\001\022\"\n\005image"
+  "\030\002 \001(\0132\016.maarpc.HandleH\001\210\001\001B\t\n\007_handleB\010"
+  "\n\006_image2\233\003\n\014MaaFramework\0227\n\007version\022\024.m"
+  "aarpc.EmptyRequest\032\026.maarpc.StringRespon"
+  "se\022J\n\021set_global_option\022\036.maarpc.SetGlob"
+  "alOptionRequest\032\025.maarpc.EmptyResponse\022\?"
+  "\n\023acquire_callback_id\022\024.maarpc.EmptyRequ"
+  "est\032\022.maarpc.IdResponse\022:\n\021register_call"
+  "back\022\021.maarpc.IdRequest\032\020.maarpc.Callbac"
+  "k0\001\022\?\n\023unregister_callback\022\021.maarpc.IdRe"
+  "quest\032\025.maarpc.EmptyResponse\022H\n\034acquire_"
+  "custom_controller_id\022\024.maarpc.EmptyReque"
+  "st\032\022.maarpc.IdResponse2\253\003\n\021MaaFrameworkI"
+  "mage\0226\n\006create\022\024.maarpc.EmptyRequest\032\026.m"
+  "aarpc.HandleResponse\0227\n\007destroy\022\025.maarpc"
+  ".HandleRequest\032\025.maarpc.EmptyResponse\0227\n"
+  "\010is_empty\022\025.maarpc.HandleRequest\032\024.maarp"
+  "c.BoolResponse\0225\n\005clear\022\025.maarpc.HandleR"
+  "equest\032\025.maarpc.EmptyResponse\0228\n\004info\022\025."
+  "maarpc.HandleRequest\032\031.maarpc.ImageInfoR"
+  "esponse\0228\n\007encoded\022\025.maarpc.HandleReques"
+  "t\032\026.maarpc.BufferResponse\022A\n\013set_encoded"
+  "\022\033.maarpc.HandleBufferRequest\032\025.maarpc.E"
+  "mptyResponse2\244\003\n\024MaaFrameworkResource\0223\n"
+  "\006create\022\021.maarpc.IdRequest\032\026.maarpc.Hand"
+  "leResponse\0227\n\007destroy\022\025.maarpc.HandleReq"
+  "uest\032\025.maarpc.EmptyResponse\022<\n\tpost_path"
+  "\022\033.maarpc.HandleStringRequest\032\022.maarpc.I"
+  "dResponse\0229\n\006status\022\027.maarpc.HandleIdReq"
+  "uest\032\026.maarpc.StatusResponse\0227\n\004wait\022\027.m"
+  "aarpc.HandleIdRequest\032\026.maarpc.StatusRes"
+  "ponse\0225\n\006loaded\022\025.maarpc.HandleRequest\032\024"
+  ".maarpc.BoolResponse\0225\n\004hash\022\025.maarpc.Ha"
+  "ndleRequest\032\026.maarpc.StringResponse2\343\t\n\026"
+  "MaaFrameworkController\022B\n\ncreate_adb\022\034.m"
+  "aarpc.AdbControllerRequest\032\026.maarpc.Hand"
+  "leResponse\0227\n\007destroy\022\025.maarpc.HandleReq"
+  "uest\032\025.maarpc.EmptyResponse\022T\n\rcreate_cu"
+  "stom\022\037.maarpc.CustomControllerRequest\032 ."
+  "maarpc.CustomControllerResponse0\001\022X\n\030sub"
+  "mit_custom_controller\022%.maarpc.SubmitCus"
+  "tomControllerRequest\032\025.maarpc.EmptyRespo"
+  "nse\022G\n\nset_option\022\".maarpc.ControllerSet"
+  "OptionRequest\032\025.maarpc.EmptyResponse\022<\n\017"
+  "post_connection\022\025.maarpc.HandleRequest\032\022"
+  ".maarpc.IdResponse\022D\n\npost_click\022\".maarp"
+  "c.ControllerPostClickRequest\032\022.maarpc.Id"
+  "Response\022D\n\npost_swipe\022\".maarpc.Controll"
+  "erPostSwipeRequest\032\022.maarpc.IdResponse\022F"
+  "\n\016post_press_key\022 .maarpc.ControllerPost"
+  "KeyRequest\032\022.maarpc.IdResponse\022I\n\017post_t"
+  "ouch_down\022\".maarpc.ControllerPostTouchRe"
+  "quest\032\022.maarpc.IdResponse\022I\n\017post_touch_"
+  "move\022\".maarpc.ControllerPostTouchRequest"
+  "\032\022.maarpc.IdResponse\022G\n\rpost_touch_up\022\"."
+  "maarpc.ControllerPostTouchRequest\032\022.maar"
+  "pc.IdResponse\022;\n\016post_screencap\022\025.maarpc"
+  ".HandleRequest\032\022.maarpc.IdResponse\0229\n\006st"
+  "atus\022\027.maarpc.HandleIdRequest\032\026.maarpc.S"
+  "tatusResponse\0226\n\004wait\022\027.maarpc.HandleIdR"
+  "equest\032\025.maarpc.EmptyResponse\0228\n\tconnect"
+  "ed\022\025.maarpc.HandleRequest\032\024.maarpc.BoolR"
+  "esponse\022A\n\005image\022!.maarpc.ControllerGetI"
+  "mageRequest\032\025.maarpc.EmptyResponse\0225\n\004uu"
+  "id\022\025.maarpc.HandleRequest\032\026.maarpc.Strin"
+  "gResponse2\313\013\n\024MaaFrameworkInstance\0223\n\006cr"
+  "eate\022\021.maarpc.IdRequest\032\026.maarpc.HandleR"
+  "esponse\0227\n\007destroy\022\025.maarpc.HandleReques"
+  "t\032\025.maarpc.EmptyResponse\022a\n\032register_cus"
+  "tom_recognizer\022\037.maarpc.CustomRecognizer"
+  "Request\032 .maarpc.CustomRecognizerRespons"
+  "e0\001\022X\n\030submit_custom_recognizer\022%.maarpc"
+  ".SubmitCustomRecognizerRequest\032\025.maarpc."
+  "EmptyResponse\022R\n\034unregister_custom_recog"
+  "nizer\022\033.maarpc.HandleStringRequest\032\025.maa"
+  "rpc.EmptyResponse\022G\n\027clear_custom_recogn"
+  "izer\022\025.maarpc.HandleRequest\032\025.maarpc.Emp"
+  "tyResponse\022]\n\026register_custom_action\022\037.m"
+  "aarpc.CustomRecognizerRequest\032 .maarpc.C"
+  "ustomRecognizerResponse0\001\022T\n\024submit_cust"
+  "om_action\022%.maarpc.SubmitCustomRecognize"
+  "rRequest\032\025.maarpc.EmptyResponse\022N\n\030unreg"
+  "ister_custom_action\022\033.maarpc.HandleStrin"
+  "gRequest\032\025.maarpc.EmptyResponse\022C\n\023clear"
+  "_custom_action\022\025.maarpc.HandleRequest\032\025."
+  "maarpc.EmptyResponse\022=\n\rbind_resource\022\025."
+  "maarpc.HandleRequest\032\025.maarpc.EmptyRespo"
+  "nse\022\?\n\017bind_controller\022\025.maarpc.HandleRe"
+  "quest\032\025.maarpc.EmptyResponse\0225\n\006inited\022\025"
+  ".maarpc.HandleRequest\032\024.maarpc.BoolRespo"
+  "nse\022@\n\tpost_task\022\037.maarpc.InstancePostTa"
+  "skRequest\032\022.maarpc.IdResponse\022L\n\016set_tas"
+  "k_param\022#.maarpc.InstanceSetTaskParamReq"
+  "uest\032\025.maarpc.EmptyResponse\0229\n\006status\022\027."
+  "maarpc.HandleIdRequest\032\026.maarpc.StatusRe"
+  "sponse\0226\n\004wait\022\027.maarpc.HandleIdRequest\032"
+  "\025.maarpc.EmptyResponse\022;\n\014all_finished\022\025"
+  ".maarpc.HandleRequest\032\024.maarpc.BoolRespo"
+  "nse\0224\n\004stop\022\025.maarpc.HandleRequest\032\025.maa"
+  "rpc.EmptyResponse\0228\n\010resource\022\025.maarpc.H"
+  "andleRequest\032\025.maarpc.HandleRequest\022:\n\nc"
+  "ontroller\022\025.maarpc.HandleRequest\032\025.maarp"
+  "c.HandleRequest2\244\006\n\027MaaFrameworkSyncCont"
+  "ext\022D\n\010run_task\022!.maarpc.SyncContextRunT"
+  "askRequest\032\025.maarpc.EmptyResponse\022c\n\016run"
+  "_recognizer\022\'.maarpc.SyncContextRunRecog"
+  "nizerRequest\032(.maarpc.SyncContextRunReco"
+  "gnizerResponse\022H\n\nrun_action\022#.maarpc.Sy"
+  "ncContextRunActionRequest\032\025.maarpc.Empty"
+  "Response\022>\n\005click\022\037.maarpc.SyncContextCl"
+  "ickRequest\032\024.maarpc.EmptyRequest\022>\n\005swip"
+  "e\022\037.maarpc.SyncContextSwipeRequest\032\024.maa"
+  "rpc.EmptyRequest\022:\n\003key\022\035.maarpc.SyncCon"
+  "textKeyRequest\032\024.maarpc.EmptyRequest\022C\n\n"
+  "touch_down\022\037.maarpc.SyncContextTouchRequ"
+  "est\032\024.maarpc.EmptyRequest\022C\n\ntouch_move\022"
+  "\037.maarpc.SyncContextTouchRequest\032\024.maarp"
+  "c.EmptyRequest\022A\n\010touch_up\022\037.maarpc.Sync"
+  "ContextTouchRequest\032\024.maarpc.EmptyReques"
+  "t\022G\n\tscreencap\022#.maarpc.SyncContextScree"
+  "ncapRequest\032\025.maarpc.EmptyResponse\022B\n\013ta"
+  "sk_result\022\033.maarpc.HandleStringRequest\032\026"
+  ".maarpc.StringResponseb\006proto3"
   ;
 static const ::_pbi::DescriptorTable* const descriptor_table_Framework_2eproto_deps[1] = {
   &::descriptor_table_Types_2eproto,
 };
 static ::_pbi::once_flag descriptor_table_Framework_2eproto_once;
 const ::_pbi::DescriptorTable descriptor_table_Framework_2eproto = {
-    false, false, 9465, descriptor_table_protodef_Framework_2eproto,
+    false, false, 10070, descriptor_table_protodef_Framework_2eproto,
     "Framework.proto",
     &descriptor_table_Framework_2eproto_once, descriptor_table_Framework_2eproto_deps, 1, 33,
     schemas, file_default_instances, TableStruct_Framework_2eproto::offsets,
@@ -1305,7 +1320,7 @@ PROTOBUF_ATTRIBUTE_WEAK const ::_pbi::DescriptorTable* descriptor_table_Framewor
 
 // Force running AddDescriptors() at dynamic initialization time.
 PROTOBUF_ATTRIBUTE_INIT_PRIORITY2 static ::_pbi::AddDescriptorsRunner dynamic_init_dummy_Framework_2eproto(&descriptor_table_Framework_2eproto);
-namespace maa {
+namespace maarpc {
 
 // ===================================================================
 
@@ -1317,7 +1332,7 @@ SetGlobalOptionRequest::SetGlobalOptionRequest(::PROTOBUF_NAMESPACE_ID::Arena* a
                          bool is_message_owned)
   : ::PROTOBUF_NAMESPACE_ID::Message(arena, is_message_owned) {
   SharedCtor(arena, is_message_owned);
-  // @@protoc_insertion_point(arena_constructor:maa.SetGlobalOptionRequest)
+  // @@protoc_insertion_point(arena_constructor:maarpc.SetGlobalOptionRequest)
 }
 SetGlobalOptionRequest::SetGlobalOptionRequest(const SetGlobalOptionRequest& from)
   : ::PROTOBUF_NAMESPACE_ID::Message() {
@@ -1342,7 +1357,7 @@ SetGlobalOptionRequest::SetGlobalOptionRequest(const SetGlobalOptionRequest& fro
       break;
     }
   }
-  // @@protoc_insertion_point(copy_constructor:maa.SetGlobalOptionRequest)
+  // @@protoc_insertion_point(copy_constructor:maarpc.SetGlobalOptionRequest)
 }
 
 inline void SetGlobalOptionRequest::SharedCtor(
@@ -1358,7 +1373,7 @@ inline void SetGlobalOptionRequest::SharedCtor(
 }
 
 SetGlobalOptionRequest::~SetGlobalOptionRequest() {
-  // @@protoc_insertion_point(destructor:maa.SetGlobalOptionRequest)
+  // @@protoc_insertion_point(destructor:maarpc.SetGlobalOptionRequest)
   if (auto *arena = _internal_metadata_.DeleteReturnArena<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>()) {
   (void)arena;
     return;
@@ -1378,7 +1393,7 @@ void SetGlobalOptionRequest::SetCachedSize(int size) const {
 }
 
 void SetGlobalOptionRequest::clear_option() {
-// @@protoc_insertion_point(one_of_clear_start:maa.SetGlobalOptionRequest)
+// @@protoc_insertion_point(one_of_clear_start:maarpc.SetGlobalOptionRequest)
   switch (option_case()) {
     case kLogging: {
       _impl_.option_.logging_.Destroy();
@@ -1397,7 +1412,7 @@ void SetGlobalOptionRequest::clear_option() {
 
 
 void SetGlobalOptionRequest::Clear() {
-// @@protoc_insertion_point(message_clear_start:maa.SetGlobalOptionRequest)
+// @@protoc_insertion_point(message_clear_start:maarpc.SetGlobalOptionRequest)
   uint32_t cached_has_bits = 0;
   // Prevent compiler warnings about cached_has_bits being unused
   (void) cached_has_bits;
@@ -1418,7 +1433,7 @@ const char* SetGlobalOptionRequest::_InternalParse(const char* ptr, ::_pbi::Pars
           auto str = _internal_mutable_logging();
           ptr = ::_pbi::InlineGreedyStringParser(str, ptr, ctx);
           CHK_(ptr);
-          CHK_(::_pbi::VerifyUTF8(str, "maa.SetGlobalOptionRequest.logging"));
+          CHK_(::_pbi::VerifyUTF8(str, "maarpc.SetGlobalOptionRequest.logging"));
         } else
           goto handle_unusual;
         continue;
@@ -1455,7 +1470,7 @@ failure:
 
 uint8_t* SetGlobalOptionRequest::_InternalSerialize(
     uint8_t* target, ::PROTOBUF_NAMESPACE_ID::io::EpsCopyOutputStream* stream) const {
-  // @@protoc_insertion_point(serialize_to_array_start:maa.SetGlobalOptionRequest)
+  // @@protoc_insertion_point(serialize_to_array_start:maarpc.SetGlobalOptionRequest)
   uint32_t cached_has_bits = 0;
   (void) cached_has_bits;
 
@@ -1464,7 +1479,7 @@ uint8_t* SetGlobalOptionRequest::_InternalSerialize(
     ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::VerifyUtf8String(
       this->_internal_logging().data(), static_cast<int>(this->_internal_logging().length()),
       ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::SERIALIZE,
-      "maa.SetGlobalOptionRequest.logging");
+      "maarpc.SetGlobalOptionRequest.logging");
     target = stream->WriteStringMaybeAliased(
         1, this->_internal_logging(), target);
   }
@@ -1479,12 +1494,12 @@ uint8_t* SetGlobalOptionRequest::_InternalSerialize(
     target = ::_pbi::WireFormat::InternalSerializeUnknownFieldsToArray(
         _internal_metadata_.unknown_fields<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(::PROTOBUF_NAMESPACE_ID::UnknownFieldSet::default_instance), target, stream);
   }
-  // @@protoc_insertion_point(serialize_to_array_end:maa.SetGlobalOptionRequest)
+  // @@protoc_insertion_point(serialize_to_array_end:maarpc.SetGlobalOptionRequest)
   return target;
 }
 
 size_t SetGlobalOptionRequest::ByteSizeLong() const {
-// @@protoc_insertion_point(message_byte_size_start:maa.SetGlobalOptionRequest)
+// @@protoc_insertion_point(message_byte_size_start:maarpc.SetGlobalOptionRequest)
   size_t total_size = 0;
 
   uint32_t cached_has_bits = 0;
@@ -1521,7 +1536,7 @@ const ::PROTOBUF_NAMESPACE_ID::Message::ClassData*SetGlobalOptionRequest::GetCla
 void SetGlobalOptionRequest::MergeImpl(::PROTOBUF_NAMESPACE_ID::Message& to_msg, const ::PROTOBUF_NAMESPACE_ID::Message& from_msg) {
   auto* const _this = static_cast<SetGlobalOptionRequest*>(&to_msg);
   auto& from = static_cast<const SetGlobalOptionRequest&>(from_msg);
-  // @@protoc_insertion_point(class_specific_merge_from_start:maa.SetGlobalOptionRequest)
+  // @@protoc_insertion_point(class_specific_merge_from_start:maarpc.SetGlobalOptionRequest)
   GOOGLE_DCHECK_NE(&from, _this);
   uint32_t cached_has_bits = 0;
   (void) cached_has_bits;
@@ -1543,7 +1558,7 @@ void SetGlobalOptionRequest::MergeImpl(::PROTOBUF_NAMESPACE_ID::Message& to_msg,
 }
 
 void SetGlobalOptionRequest::CopyFrom(const SetGlobalOptionRequest& from) {
-// @@protoc_insertion_point(class_specific_copy_from_start:maa.SetGlobalOptionRequest)
+// @@protoc_insertion_point(class_specific_copy_from_start:maarpc.SetGlobalOptionRequest)
   if (&from == this) return;
   Clear();
   MergeFrom(from);
@@ -1574,13 +1589,13 @@ class ImageInfoResponse::_Internal {
   static void set_has_type(HasBits* has_bits) {
     (*has_bits)[0] |= 2u;
   }
-  static const ::maa::Size& size(const ImageInfoResponse* msg);
+  static const ::maarpc::Size& size(const ImageInfoResponse* msg);
   static void set_has_size(HasBits* has_bits) {
     (*has_bits)[0] |= 1u;
   }
 };
 
-const ::maa::Size&
+const ::maarpc::Size&
 ImageInfoResponse::_Internal::size(const ImageInfoResponse* msg) {
   return *msg->_impl_.size_;
 }
@@ -1592,7 +1607,7 @@ ImageInfoResponse::ImageInfoResponse(::PROTOBUF_NAMESPACE_ID::Arena* arena,
                          bool is_message_owned)
   : ::PROTOBUF_NAMESPACE_ID::Message(arena, is_message_owned) {
   SharedCtor(arena, is_message_owned);
-  // @@protoc_insertion_point(arena_constructor:maa.ImageInfoResponse)
+  // @@protoc_insertion_point(arena_constructor:maarpc.ImageInfoResponse)
 }
 ImageInfoResponse::ImageInfoResponse(const ImageInfoResponse& from)
   : ::PROTOBUF_NAMESPACE_ID::Message() {
@@ -1605,10 +1620,10 @@ ImageInfoResponse::ImageInfoResponse(const ImageInfoResponse& from)
 
   _internal_metadata_.MergeFrom<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(from._internal_metadata_);
   if (from._internal_has_size()) {
-    _this->_impl_.size_ = new ::maa::Size(*from._impl_.size_);
+    _this->_impl_.size_ = new ::maarpc::Size(*from._impl_.size_);
   }
   _this->_impl_.type_ = from._impl_.type_;
-  // @@protoc_insertion_point(copy_constructor:maa.ImageInfoResponse)
+  // @@protoc_insertion_point(copy_constructor:maarpc.ImageInfoResponse)
 }
 
 inline void ImageInfoResponse::SharedCtor(
@@ -1624,7 +1639,7 @@ inline void ImageInfoResponse::SharedCtor(
 }
 
 ImageInfoResponse::~ImageInfoResponse() {
-  // @@protoc_insertion_point(destructor:maa.ImageInfoResponse)
+  // @@protoc_insertion_point(destructor:maarpc.ImageInfoResponse)
   if (auto *arena = _internal_metadata_.DeleteReturnArena<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>()) {
   (void)arena;
     return;
@@ -1642,7 +1657,7 @@ void ImageInfoResponse::SetCachedSize(int size) const {
 }
 
 void ImageInfoResponse::Clear() {
-// @@protoc_insertion_point(message_clear_start:maa.ImageInfoResponse)
+// @@protoc_insertion_point(message_clear_start:maarpc.ImageInfoResponse)
   uint32_t cached_has_bits = 0;
   // Prevent compiler warnings about cached_has_bits being unused
   (void) cached_has_bits;
@@ -1673,7 +1688,7 @@ const char* ImageInfoResponse::_InternalParse(const char* ptr, ::_pbi::ParseCont
         } else
           goto handle_unusual;
         continue;
-      // optional .maa.Size size = 2;
+      // optional .maarpc.Size size = 2;
       case 2:
         if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 18)) {
           ptr = ctx->ParseMessage(_internal_mutable_size(), ptr);
@@ -1707,7 +1722,7 @@ failure:
 
 uint8_t* ImageInfoResponse::_InternalSerialize(
     uint8_t* target, ::PROTOBUF_NAMESPACE_ID::io::EpsCopyOutputStream* stream) const {
-  // @@protoc_insertion_point(serialize_to_array_start:maa.ImageInfoResponse)
+  // @@protoc_insertion_point(serialize_to_array_start:maarpc.ImageInfoResponse)
   uint32_t cached_has_bits = 0;
   (void) cached_has_bits;
 
@@ -1717,7 +1732,7 @@ uint8_t* ImageInfoResponse::_InternalSerialize(
     target = ::_pbi::WireFormatLite::WriteInt32ToArray(1, this->_internal_type(), target);
   }
 
-  // optional .maa.Size size = 2;
+  // optional .maarpc.Size size = 2;
   if (_internal_has_size()) {
     target = ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::
       InternalWriteMessage(2, _Internal::size(this),
@@ -1728,12 +1743,12 @@ uint8_t* ImageInfoResponse::_InternalSerialize(
     target = ::_pbi::WireFormat::InternalSerializeUnknownFieldsToArray(
         _internal_metadata_.unknown_fields<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(::PROTOBUF_NAMESPACE_ID::UnknownFieldSet::default_instance), target, stream);
   }
-  // @@protoc_insertion_point(serialize_to_array_end:maa.ImageInfoResponse)
+  // @@protoc_insertion_point(serialize_to_array_end:maarpc.ImageInfoResponse)
   return target;
 }
 
 size_t ImageInfoResponse::ByteSizeLong() const {
-// @@protoc_insertion_point(message_byte_size_start:maa.ImageInfoResponse)
+// @@protoc_insertion_point(message_byte_size_start:maarpc.ImageInfoResponse)
   size_t total_size = 0;
 
   uint32_t cached_has_bits = 0;
@@ -1742,7 +1757,7 @@ size_t ImageInfoResponse::ByteSizeLong() const {
 
   cached_has_bits = _impl_._has_bits_[0];
   if (cached_has_bits & 0x00000003u) {
-    // optional .maa.Size size = 2;
+    // optional .maarpc.Size size = 2;
     if (cached_has_bits & 0x00000001u) {
       total_size += 1 +
         ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::MessageSize(
@@ -1768,7 +1783,7 @@ const ::PROTOBUF_NAMESPACE_ID::Message::ClassData*ImageInfoResponse::GetClassDat
 void ImageInfoResponse::MergeImpl(::PROTOBUF_NAMESPACE_ID::Message& to_msg, const ::PROTOBUF_NAMESPACE_ID::Message& from_msg) {
   auto* const _this = static_cast<ImageInfoResponse*>(&to_msg);
   auto& from = static_cast<const ImageInfoResponse&>(from_msg);
-  // @@protoc_insertion_point(class_specific_merge_from_start:maa.ImageInfoResponse)
+  // @@protoc_insertion_point(class_specific_merge_from_start:maarpc.ImageInfoResponse)
   GOOGLE_DCHECK_NE(&from, _this);
   uint32_t cached_has_bits = 0;
   (void) cached_has_bits;
@@ -1776,7 +1791,7 @@ void ImageInfoResponse::MergeImpl(::PROTOBUF_NAMESPACE_ID::Message& to_msg, cons
   cached_has_bits = from._impl_._has_bits_[0];
   if (cached_has_bits & 0x00000003u) {
     if (cached_has_bits & 0x00000001u) {
-      _this->_internal_mutable_size()->::maa::Size::MergeFrom(
+      _this->_internal_mutable_size()->::maarpc::Size::MergeFrom(
           from._internal_size());
     }
     if (cached_has_bits & 0x00000002u) {
@@ -1788,7 +1803,7 @@ void ImageInfoResponse::MergeImpl(::PROTOBUF_NAMESPACE_ID::Message& to_msg, cons
 }
 
 void ImageInfoResponse::CopyFrom(const ImageInfoResponse& from) {
-// @@protoc_insertion_point(class_specific_copy_from_start:maa.ImageInfoResponse)
+// @@protoc_insertion_point(class_specific_copy_from_start:maarpc.ImageInfoResponse)
   if (&from == this) return;
   Clear();
   MergeFrom(from);
@@ -1821,7 +1836,7 @@ void ImageInfoResponse::InternalSwap(ImageInfoResponse* other) {
 class AdbControllerRequest::_Internal {
  public:
   using HasBits = decltype(std::declval<AdbControllerRequest>()._impl_._has_bits_);
-  static const ::maa::Id& callback(const AdbControllerRequest* msg);
+  static const ::maarpc::Id& callback(const AdbControllerRequest* msg);
   static void set_has_callback(HasBits* has_bits) {
     (*has_bits)[0] |= 8u;
   }
@@ -1839,7 +1854,7 @@ class AdbControllerRequest::_Internal {
   }
 };
 
-const ::maa::Id&
+const ::maarpc::Id&
 AdbControllerRequest::_Internal::callback(const AdbControllerRequest* msg) {
   return *msg->_impl_.callback_;
 }
@@ -1851,7 +1866,7 @@ AdbControllerRequest::AdbControllerRequest(::PROTOBUF_NAMESPACE_ID::Arena* arena
                          bool is_message_owned)
   : ::PROTOBUF_NAMESPACE_ID::Message(arena, is_message_owned) {
   SharedCtor(arena, is_message_owned);
-  // @@protoc_insertion_point(arena_constructor:maa.AdbControllerRequest)
+  // @@protoc_insertion_point(arena_constructor:maarpc.AdbControllerRequest)
 }
 AdbControllerRequest::AdbControllerRequest(const AdbControllerRequest& from)
   : ::PROTOBUF_NAMESPACE_ID::Message() {
@@ -1891,10 +1906,10 @@ AdbControllerRequest::AdbControllerRequest(const AdbControllerRequest& from)
       _this->GetArenaForAllocation());
   }
   if (from._internal_has_callback()) {
-    _this->_impl_.callback_ = new ::maa::Id(*from._impl_.callback_);
+    _this->_impl_.callback_ = new ::maarpc::Id(*from._impl_.callback_);
   }
   _this->_impl_.adb_type_ = from._impl_.adb_type_;
-  // @@protoc_insertion_point(copy_constructor:maa.AdbControllerRequest)
+  // @@protoc_insertion_point(copy_constructor:maarpc.AdbControllerRequest)
 }
 
 inline void AdbControllerRequest::SharedCtor(
@@ -1925,7 +1940,7 @@ inline void AdbControllerRequest::SharedCtor(
 }
 
 AdbControllerRequest::~AdbControllerRequest() {
-  // @@protoc_insertion_point(destructor:maa.AdbControllerRequest)
+  // @@protoc_insertion_point(destructor:maarpc.AdbControllerRequest)
   if (auto *arena = _internal_metadata_.DeleteReturnArena<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>()) {
   (void)arena;
     return;
@@ -1946,7 +1961,7 @@ void AdbControllerRequest::SetCachedSize(int size) const {
 }
 
 void AdbControllerRequest::Clear() {
-// @@protoc_insertion_point(message_clear_start:maa.AdbControllerRequest)
+// @@protoc_insertion_point(message_clear_start:maarpc.AdbControllerRequest)
   uint32_t cached_has_bits = 0;
   // Prevent compiler warnings about cached_has_bits being unused
   (void) cached_has_bits;
@@ -1979,7 +1994,7 @@ const char* AdbControllerRequest::_InternalParse(const char* ptr, ::_pbi::ParseC
     uint32_t tag;
     ptr = ::_pbi::ReadTag(ptr, &tag);
     switch (tag >> 3) {
-      // optional .maa.Id callback = 1;
+      // optional .maarpc.Id callback = 1;
       case 1:
         if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 10)) {
           ptr = ctx->ParseMessage(_internal_mutable_callback(), ptr);
@@ -1993,7 +2008,7 @@ const char* AdbControllerRequest::_InternalParse(const char* ptr, ::_pbi::ParseC
           auto str = _internal_mutable_adb_path();
           ptr = ::_pbi::InlineGreedyStringParser(str, ptr, ctx);
           CHK_(ptr);
-          CHK_(::_pbi::VerifyUTF8(str, "maa.AdbControllerRequest.adb_path"));
+          CHK_(::_pbi::VerifyUTF8(str, "maarpc.AdbControllerRequest.adb_path"));
         } else
           goto handle_unusual;
         continue;
@@ -2003,7 +2018,7 @@ const char* AdbControllerRequest::_InternalParse(const char* ptr, ::_pbi::ParseC
           auto str = _internal_mutable_adb_serial();
           ptr = ::_pbi::InlineGreedyStringParser(str, ptr, ctx);
           CHK_(ptr);
-          CHK_(::_pbi::VerifyUTF8(str, "maa.AdbControllerRequest.adb_serial"));
+          CHK_(::_pbi::VerifyUTF8(str, "maarpc.AdbControllerRequest.adb_serial"));
         } else
           goto handle_unusual;
         continue;
@@ -2022,7 +2037,7 @@ const char* AdbControllerRequest::_InternalParse(const char* ptr, ::_pbi::ParseC
           auto str = _internal_mutable_adb_config();
           ptr = ::_pbi::InlineGreedyStringParser(str, ptr, ctx);
           CHK_(ptr);
-          CHK_(::_pbi::VerifyUTF8(str, "maa.AdbControllerRequest.adb_config"));
+          CHK_(::_pbi::VerifyUTF8(str, "maarpc.AdbControllerRequest.adb_config"));
         } else
           goto handle_unusual;
         continue;
@@ -2052,11 +2067,11 @@ failure:
 
 uint8_t* AdbControllerRequest::_InternalSerialize(
     uint8_t* target, ::PROTOBUF_NAMESPACE_ID::io::EpsCopyOutputStream* stream) const {
-  // @@protoc_insertion_point(serialize_to_array_start:maa.AdbControllerRequest)
+  // @@protoc_insertion_point(serialize_to_array_start:maarpc.AdbControllerRequest)
   uint32_t cached_has_bits = 0;
   (void) cached_has_bits;
 
-  // optional .maa.Id callback = 1;
+  // optional .maarpc.Id callback = 1;
   if (_internal_has_callback()) {
     target = ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::
       InternalWriteMessage(1, _Internal::callback(this),
@@ -2068,7 +2083,7 @@ uint8_t* AdbControllerRequest::_InternalSerialize(
     ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::VerifyUtf8String(
       this->_internal_adb_path().data(), static_cast<int>(this->_internal_adb_path().length()),
       ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::SERIALIZE,
-      "maa.AdbControllerRequest.adb_path");
+      "maarpc.AdbControllerRequest.adb_path");
     target = stream->WriteStringMaybeAliased(
         2, this->_internal_adb_path(), target);
   }
@@ -2078,7 +2093,7 @@ uint8_t* AdbControllerRequest::_InternalSerialize(
     ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::VerifyUtf8String(
       this->_internal_adb_serial().data(), static_cast<int>(this->_internal_adb_serial().length()),
       ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::SERIALIZE,
-      "maa.AdbControllerRequest.adb_serial");
+      "maarpc.AdbControllerRequest.adb_serial");
     target = stream->WriteStringMaybeAliased(
         3, this->_internal_adb_serial(), target);
   }
@@ -2094,7 +2109,7 @@ uint8_t* AdbControllerRequest::_InternalSerialize(
     ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::VerifyUtf8String(
       this->_internal_adb_config().data(), static_cast<int>(this->_internal_adb_config().length()),
       ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::SERIALIZE,
-      "maa.AdbControllerRequest.adb_config");
+      "maarpc.AdbControllerRequest.adb_config");
     target = stream->WriteStringMaybeAliased(
         5, this->_internal_adb_config(), target);
   }
@@ -2103,12 +2118,12 @@ uint8_t* AdbControllerRequest::_InternalSerialize(
     target = ::_pbi::WireFormat::InternalSerializeUnknownFieldsToArray(
         _internal_metadata_.unknown_fields<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(::PROTOBUF_NAMESPACE_ID::UnknownFieldSet::default_instance), target, stream);
   }
-  // @@protoc_insertion_point(serialize_to_array_end:maa.AdbControllerRequest)
+  // @@protoc_insertion_point(serialize_to_array_end:maarpc.AdbControllerRequest)
   return target;
 }
 
 size_t AdbControllerRequest::ByteSizeLong() const {
-// @@protoc_insertion_point(message_byte_size_start:maa.AdbControllerRequest)
+// @@protoc_insertion_point(message_byte_size_start:maarpc.AdbControllerRequest)
   size_t total_size = 0;
 
   uint32_t cached_has_bits = 0;
@@ -2138,7 +2153,7 @@ size_t AdbControllerRequest::ByteSizeLong() const {
           this->_internal_adb_config());
     }
 
-    // optional .maa.Id callback = 1;
+    // optional .maarpc.Id callback = 1;
     if (cached_has_bits & 0x00000008u) {
       total_size += 1 +
         ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::MessageSize(
@@ -2164,7 +2179,7 @@ const ::PROTOBUF_NAMESPACE_ID::Message::ClassData*AdbControllerRequest::GetClass
 void AdbControllerRequest::MergeImpl(::PROTOBUF_NAMESPACE_ID::Message& to_msg, const ::PROTOBUF_NAMESPACE_ID::Message& from_msg) {
   auto* const _this = static_cast<AdbControllerRequest*>(&to_msg);
   auto& from = static_cast<const AdbControllerRequest&>(from_msg);
-  // @@protoc_insertion_point(class_specific_merge_from_start:maa.AdbControllerRequest)
+  // @@protoc_insertion_point(class_specific_merge_from_start:maarpc.AdbControllerRequest)
   GOOGLE_DCHECK_NE(&from, _this);
   uint32_t cached_has_bits = 0;
   (void) cached_has_bits;
@@ -2181,7 +2196,7 @@ void AdbControllerRequest::MergeImpl(::PROTOBUF_NAMESPACE_ID::Message& to_msg, c
       _this->_internal_set_adb_config(from._internal_adb_config());
     }
     if (cached_has_bits & 0x00000008u) {
-      _this->_internal_mutable_callback()->::maa::Id::MergeFrom(
+      _this->_internal_mutable_callback()->::maarpc::Id::MergeFrom(
           from._internal_callback());
     }
     if (cached_has_bits & 0x00000010u) {
@@ -2193,7 +2208,7 @@ void AdbControllerRequest::MergeImpl(::PROTOBUF_NAMESPACE_ID::Message& to_msg, c
 }
 
 void AdbControllerRequest::CopyFrom(const AdbControllerRequest& from) {
-// @@protoc_insertion_point(class_specific_copy_from_start:maa.AdbControllerRequest)
+// @@protoc_insertion_point(class_specific_copy_from_start:maarpc.AdbControllerRequest)
   if (&from == this) return;
   Clear();
   MergeFrom(from);
@@ -2240,21 +2255,21 @@ void AdbControllerRequest::InternalSwap(AdbControllerRequest* other) {
 class CustomControllerRequest::_Internal {
  public:
   using HasBits = decltype(std::declval<CustomControllerRequest>()._impl_._has_bits_);
-  static const ::maa::Id& callback(const CustomControllerRequest* msg);
+  static const ::maarpc::Id& callback(const CustomControllerRequest* msg);
   static void set_has_callback(HasBits* has_bits) {
     (*has_bits)[0] |= 1u;
   }
-  static const ::maa::Id& ctrl(const CustomControllerRequest* msg);
+  static const ::maarpc::Id& ctrl(const CustomControllerRequest* msg);
   static void set_has_ctrl(HasBits* has_bits) {
     (*has_bits)[0] |= 2u;
   }
 };
 
-const ::maa::Id&
+const ::maarpc::Id&
 CustomControllerRequest::_Internal::callback(const CustomControllerRequest* msg) {
   return *msg->_impl_.callback_;
 }
-const ::maa::Id&
+const ::maarpc::Id&
 CustomControllerRequest::_Internal::ctrl(const CustomControllerRequest* msg) {
   return *msg->_impl_.ctrl_;
 }
@@ -2270,7 +2285,7 @@ CustomControllerRequest::CustomControllerRequest(::PROTOBUF_NAMESPACE_ID::Arena*
                          bool is_message_owned)
   : ::PROTOBUF_NAMESPACE_ID::Message(arena, is_message_owned) {
   SharedCtor(arena, is_message_owned);
-  // @@protoc_insertion_point(arena_constructor:maa.CustomControllerRequest)
+  // @@protoc_insertion_point(arena_constructor:maarpc.CustomControllerRequest)
 }
 CustomControllerRequest::CustomControllerRequest(const CustomControllerRequest& from)
   : ::PROTOBUF_NAMESPACE_ID::Message() {
@@ -2283,12 +2298,12 @@ CustomControllerRequest::CustomControllerRequest(const CustomControllerRequest& 
 
   _internal_metadata_.MergeFrom<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(from._internal_metadata_);
   if (from._internal_has_callback()) {
-    _this->_impl_.callback_ = new ::maa::Id(*from._impl_.callback_);
+    _this->_impl_.callback_ = new ::maarpc::Id(*from._impl_.callback_);
   }
   if (from._internal_has_ctrl()) {
-    _this->_impl_.ctrl_ = new ::maa::Id(*from._impl_.ctrl_);
+    _this->_impl_.ctrl_ = new ::maarpc::Id(*from._impl_.ctrl_);
   }
-  // @@protoc_insertion_point(copy_constructor:maa.CustomControllerRequest)
+  // @@protoc_insertion_point(copy_constructor:maarpc.CustomControllerRequest)
 }
 
 inline void CustomControllerRequest::SharedCtor(
@@ -2304,7 +2319,7 @@ inline void CustomControllerRequest::SharedCtor(
 }
 
 CustomControllerRequest::~CustomControllerRequest() {
-  // @@protoc_insertion_point(destructor:maa.CustomControllerRequest)
+  // @@protoc_insertion_point(destructor:maarpc.CustomControllerRequest)
   if (auto *arena = _internal_metadata_.DeleteReturnArena<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>()) {
   (void)arena;
     return;
@@ -2323,7 +2338,7 @@ void CustomControllerRequest::SetCachedSize(int size) const {
 }
 
 void CustomControllerRequest::Clear() {
-// @@protoc_insertion_point(message_clear_start:maa.CustomControllerRequest)
+// @@protoc_insertion_point(message_clear_start:maarpc.CustomControllerRequest)
   uint32_t cached_has_bits = 0;
   // Prevent compiler warnings about cached_has_bits being unused
   (void) cached_has_bits;
@@ -2350,7 +2365,7 @@ const char* CustomControllerRequest::_InternalParse(const char* ptr, ::_pbi::Par
     uint32_t tag;
     ptr = ::_pbi::ReadTag(ptr, &tag);
     switch (tag >> 3) {
-      // optional .maa.Id callback = 1;
+      // optional .maarpc.Id callback = 1;
       case 1:
         if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 10)) {
           ptr = ctx->ParseMessage(_internal_mutable_callback(), ptr);
@@ -2358,7 +2373,7 @@ const char* CustomControllerRequest::_InternalParse(const char* ptr, ::_pbi::Par
         } else
           goto handle_unusual;
         continue;
-      // optional .maa.Id ctrl = 2;
+      // optional .maarpc.Id ctrl = 2;
       case 2:
         if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 18)) {
           ptr = ctx->ParseMessage(_internal_mutable_ctrl(), ptr);
@@ -2392,18 +2407,18 @@ failure:
 
 uint8_t* CustomControllerRequest::_InternalSerialize(
     uint8_t* target, ::PROTOBUF_NAMESPACE_ID::io::EpsCopyOutputStream* stream) const {
-  // @@protoc_insertion_point(serialize_to_array_start:maa.CustomControllerRequest)
+  // @@protoc_insertion_point(serialize_to_array_start:maarpc.CustomControllerRequest)
   uint32_t cached_has_bits = 0;
   (void) cached_has_bits;
 
-  // optional .maa.Id callback = 1;
+  // optional .maarpc.Id callback = 1;
   if (_internal_has_callback()) {
     target = ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::
       InternalWriteMessage(1, _Internal::callback(this),
         _Internal::callback(this).GetCachedSize(), target, stream);
   }
 
-  // optional .maa.Id ctrl = 2;
+  // optional .maarpc.Id ctrl = 2;
   if (_internal_has_ctrl()) {
     target = ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::
       InternalWriteMessage(2, _Internal::ctrl(this),
@@ -2414,12 +2429,12 @@ uint8_t* CustomControllerRequest::_InternalSerialize(
     target = ::_pbi::WireFormat::InternalSerializeUnknownFieldsToArray(
         _internal_metadata_.unknown_fields<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(::PROTOBUF_NAMESPACE_ID::UnknownFieldSet::default_instance), target, stream);
   }
-  // @@protoc_insertion_point(serialize_to_array_end:maa.CustomControllerRequest)
+  // @@protoc_insertion_point(serialize_to_array_end:maarpc.CustomControllerRequest)
   return target;
 }
 
 size_t CustomControllerRequest::ByteSizeLong() const {
-// @@protoc_insertion_point(message_byte_size_start:maa.CustomControllerRequest)
+// @@protoc_insertion_point(message_byte_size_start:maarpc.CustomControllerRequest)
   size_t total_size = 0;
 
   uint32_t cached_has_bits = 0;
@@ -2428,14 +2443,14 @@ size_t CustomControllerRequest::ByteSizeLong() const {
 
   cached_has_bits = _impl_._has_bits_[0];
   if (cached_has_bits & 0x00000003u) {
-    // optional .maa.Id callback = 1;
+    // optional .maarpc.Id callback = 1;
     if (cached_has_bits & 0x00000001u) {
       total_size += 1 +
         ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::MessageSize(
           *_impl_.callback_);
     }
 
-    // optional .maa.Id ctrl = 2;
+    // optional .maarpc.Id ctrl = 2;
     if (cached_has_bits & 0x00000002u) {
       total_size += 1 +
         ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::MessageSize(
@@ -2456,7 +2471,7 @@ const ::PROTOBUF_NAMESPACE_ID::Message::ClassData*CustomControllerRequest::GetCl
 void CustomControllerRequest::MergeImpl(::PROTOBUF_NAMESPACE_ID::Message& to_msg, const ::PROTOBUF_NAMESPACE_ID::Message& from_msg) {
   auto* const _this = static_cast<CustomControllerRequest*>(&to_msg);
   auto& from = static_cast<const CustomControllerRequest&>(from_msg);
-  // @@protoc_insertion_point(class_specific_merge_from_start:maa.CustomControllerRequest)
+  // @@protoc_insertion_point(class_specific_merge_from_start:maarpc.CustomControllerRequest)
   GOOGLE_DCHECK_NE(&from, _this);
   uint32_t cached_has_bits = 0;
   (void) cached_has_bits;
@@ -2464,11 +2479,11 @@ void CustomControllerRequest::MergeImpl(::PROTOBUF_NAMESPACE_ID::Message& to_msg
   cached_has_bits = from._impl_._has_bits_[0];
   if (cached_has_bits & 0x00000003u) {
     if (cached_has_bits & 0x00000001u) {
-      _this->_internal_mutable_callback()->::maa::Id::MergeFrom(
+      _this->_internal_mutable_callback()->::maarpc::Id::MergeFrom(
           from._internal_callback());
     }
     if (cached_has_bits & 0x00000002u) {
-      _this->_internal_mutable_ctrl()->::maa::Id::MergeFrom(
+      _this->_internal_mutable_ctrl()->::maarpc::Id::MergeFrom(
           from._internal_ctrl());
     }
   }
@@ -2476,7 +2491,7 @@ void CustomControllerRequest::MergeImpl(::PROTOBUF_NAMESPACE_ID::Message& to_msg
 }
 
 void CustomControllerRequest::CopyFrom(const CustomControllerRequest& from) {
-// @@protoc_insertion_point(class_specific_copy_from_start:maa.CustomControllerRequest)
+// @@protoc_insertion_point(class_specific_copy_from_start:maarpc.CustomControllerRequest)
   if (&from == this) return;
   Clear();
   MergeFrom(from);
@@ -2521,7 +2536,7 @@ CustomControllerSetOptionParam::CustomControllerSetOptionParam(::PROTOBUF_NAMESP
                          bool is_message_owned)
   : ::PROTOBUF_NAMESPACE_ID::Message(arena, is_message_owned) {
   SharedCtor(arena, is_message_owned);
-  // @@protoc_insertion_point(arena_constructor:maa.CustomControllerSetOptionParam)
+  // @@protoc_insertion_point(arena_constructor:maarpc.CustomControllerSetOptionParam)
 }
 CustomControllerSetOptionParam::CustomControllerSetOptionParam(const CustomControllerSetOptionParam& from)
   : ::PROTOBUF_NAMESPACE_ID::Message() {
@@ -2542,7 +2557,7 @@ CustomControllerSetOptionParam::CustomControllerSetOptionParam(const CustomContr
       _this->GetArenaForAllocation());
   }
   _this->_impl_.key_ = from._impl_.key_;
-  // @@protoc_insertion_point(copy_constructor:maa.CustomControllerSetOptionParam)
+  // @@protoc_insertion_point(copy_constructor:maarpc.CustomControllerSetOptionParam)
 }
 
 inline void CustomControllerSetOptionParam::SharedCtor(
@@ -2562,7 +2577,7 @@ inline void CustomControllerSetOptionParam::SharedCtor(
 }
 
 CustomControllerSetOptionParam::~CustomControllerSetOptionParam() {
-  // @@protoc_insertion_point(destructor:maa.CustomControllerSetOptionParam)
+  // @@protoc_insertion_point(destructor:maarpc.CustomControllerSetOptionParam)
   if (auto *arena = _internal_metadata_.DeleteReturnArena<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>()) {
   (void)arena;
     return;
@@ -2580,7 +2595,7 @@ void CustomControllerSetOptionParam::SetCachedSize(int size) const {
 }
 
 void CustomControllerSetOptionParam::Clear() {
-// @@protoc_insertion_point(message_clear_start:maa.CustomControllerSetOptionParam)
+// @@protoc_insertion_point(message_clear_start:maarpc.CustomControllerSetOptionParam)
   uint32_t cached_has_bits = 0;
   // Prevent compiler warnings about cached_has_bits being unused
   (void) cached_has_bits;
@@ -2616,7 +2631,7 @@ const char* CustomControllerSetOptionParam::_InternalParse(const char* ptr, ::_p
           auto str = _internal_mutable_value();
           ptr = ::_pbi::InlineGreedyStringParser(str, ptr, ctx);
           CHK_(ptr);
-          CHK_(::_pbi::VerifyUTF8(str, "maa.CustomControllerSetOptionParam.value"));
+          CHK_(::_pbi::VerifyUTF8(str, "maarpc.CustomControllerSetOptionParam.value"));
         } else
           goto handle_unusual;
         continue;
@@ -2646,7 +2661,7 @@ failure:
 
 uint8_t* CustomControllerSetOptionParam::_InternalSerialize(
     uint8_t* target, ::PROTOBUF_NAMESPACE_ID::io::EpsCopyOutputStream* stream) const {
-  // @@protoc_insertion_point(serialize_to_array_start:maa.CustomControllerSetOptionParam)
+  // @@protoc_insertion_point(serialize_to_array_start:maarpc.CustomControllerSetOptionParam)
   uint32_t cached_has_bits = 0;
   (void) cached_has_bits;
 
@@ -2661,7 +2676,7 @@ uint8_t* CustomControllerSetOptionParam::_InternalSerialize(
     ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::VerifyUtf8String(
       this->_internal_value().data(), static_cast<int>(this->_internal_value().length()),
       ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::SERIALIZE,
-      "maa.CustomControllerSetOptionParam.value");
+      "maarpc.CustomControllerSetOptionParam.value");
     target = stream->WriteStringMaybeAliased(
         2, this->_internal_value(), target);
   }
@@ -2670,12 +2685,12 @@ uint8_t* CustomControllerSetOptionParam::_InternalSerialize(
     target = ::_pbi::WireFormat::InternalSerializeUnknownFieldsToArray(
         _internal_metadata_.unknown_fields<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(::PROTOBUF_NAMESPACE_ID::UnknownFieldSet::default_instance), target, stream);
   }
-  // @@protoc_insertion_point(serialize_to_array_end:maa.CustomControllerSetOptionParam)
+  // @@protoc_insertion_point(serialize_to_array_end:maarpc.CustomControllerSetOptionParam)
   return target;
 }
 
 size_t CustomControllerSetOptionParam::ByteSizeLong() const {
-// @@protoc_insertion_point(message_byte_size_start:maa.CustomControllerSetOptionParam)
+// @@protoc_insertion_point(message_byte_size_start:maarpc.CustomControllerSetOptionParam)
   size_t total_size = 0;
 
   uint32_t cached_has_bits = 0;
@@ -2710,7 +2725,7 @@ const ::PROTOBUF_NAMESPACE_ID::Message::ClassData*CustomControllerSetOptionParam
 void CustomControllerSetOptionParam::MergeImpl(::PROTOBUF_NAMESPACE_ID::Message& to_msg, const ::PROTOBUF_NAMESPACE_ID::Message& from_msg) {
   auto* const _this = static_cast<CustomControllerSetOptionParam*>(&to_msg);
   auto& from = static_cast<const CustomControllerSetOptionParam&>(from_msg);
-  // @@protoc_insertion_point(class_specific_merge_from_start:maa.CustomControllerSetOptionParam)
+  // @@protoc_insertion_point(class_specific_merge_from_start:maarpc.CustomControllerSetOptionParam)
   GOOGLE_DCHECK_NE(&from, _this);
   uint32_t cached_has_bits = 0;
   (void) cached_has_bits;
@@ -2729,7 +2744,7 @@ void CustomControllerSetOptionParam::MergeImpl(::PROTOBUF_NAMESPACE_ID::Message&
 }
 
 void CustomControllerSetOptionParam::CopyFrom(const CustomControllerSetOptionParam& from) {
-// @@protoc_insertion_point(class_specific_copy_from_start:maa.CustomControllerSetOptionParam)
+// @@protoc_insertion_point(class_specific_copy_from_start:maarpc.CustomControllerSetOptionParam)
   if (&from == this) return;
   Clear();
   MergeFrom(from);
@@ -2763,61 +2778,61 @@ void CustomControllerSetOptionParam::InternalSwap(CustomControllerSetOptionParam
 class CustomControllerResponse::_Internal {
  public:
   using HasBits = decltype(std::declval<CustomControllerResponse>()._impl_._has_bits_);
-  static const ::maa::Id& ctrl(const CustomControllerResponse* msg);
+  static const ::maarpc::Id& ctrl(const CustomControllerResponse* msg);
   static void set_has_ctrl(HasBits* has_bits) {
     (*has_bits)[0] |= 1u;
   }
-  static const ::maa::Id& id(const CustomControllerResponse* msg);
+  static const ::maarpc::Id& id(const CustomControllerResponse* msg);
   static void set_has_id(HasBits* has_bits) {
     (*has_bits)[0] |= 2u;
   }
-  static const ::maa::ClickParam& click(const CustomControllerResponse* msg);
-  static const ::maa::SwipeParam& swipe(const CustomControllerResponse* msg);
-  static const ::maa::KeyParam& key(const CustomControllerResponse* msg);
-  static const ::maa::TouchParam& touch_down(const CustomControllerResponse* msg);
-  static const ::maa::TouchParam& touch_move(const CustomControllerResponse* msg);
-  static const ::maa::TouchParam& touch_up(const CustomControllerResponse* msg);
-  static const ::maa::Handle& image(const CustomControllerResponse* msg);
-  static const ::maa::CustomControllerSetOptionParam& set_option(const CustomControllerResponse* msg);
+  static const ::maarpc::ClickParam& click(const CustomControllerResponse* msg);
+  static const ::maarpc::SwipeParam& swipe(const CustomControllerResponse* msg);
+  static const ::maarpc::KeyParam& key(const CustomControllerResponse* msg);
+  static const ::maarpc::TouchParam& touch_down(const CustomControllerResponse* msg);
+  static const ::maarpc::TouchParam& touch_move(const CustomControllerResponse* msg);
+  static const ::maarpc::TouchParam& touch_up(const CustomControllerResponse* msg);
+  static const ::maarpc::Handle& image(const CustomControllerResponse* msg);
+  static const ::maarpc::CustomControllerSetOptionParam& set_option(const CustomControllerResponse* msg);
 };
 
-const ::maa::Id&
+const ::maarpc::Id&
 CustomControllerResponse::_Internal::ctrl(const CustomControllerResponse* msg) {
   return *msg->_impl_.ctrl_;
 }
-const ::maa::Id&
+const ::maarpc::Id&
 CustomControllerResponse::_Internal::id(const CustomControllerResponse* msg) {
   return *msg->_impl_.id_;
 }
-const ::maa::ClickParam&
+const ::maarpc::ClickParam&
 CustomControllerResponse::_Internal::click(const CustomControllerResponse* msg) {
   return *msg->_impl_.command_.click_;
 }
-const ::maa::SwipeParam&
+const ::maarpc::SwipeParam&
 CustomControllerResponse::_Internal::swipe(const CustomControllerResponse* msg) {
   return *msg->_impl_.command_.swipe_;
 }
-const ::maa::KeyParam&
+const ::maarpc::KeyParam&
 CustomControllerResponse::_Internal::key(const CustomControllerResponse* msg) {
   return *msg->_impl_.command_.key_;
 }
-const ::maa::TouchParam&
+const ::maarpc::TouchParam&
 CustomControllerResponse::_Internal::touch_down(const CustomControllerResponse* msg) {
   return *msg->_impl_.command_.touch_down_;
 }
-const ::maa::TouchParam&
+const ::maarpc::TouchParam&
 CustomControllerResponse::_Internal::touch_move(const CustomControllerResponse* msg) {
   return *msg->_impl_.command_.touch_move_;
 }
-const ::maa::TouchParam&
+const ::maarpc::TouchParam&
 CustomControllerResponse::_Internal::touch_up(const CustomControllerResponse* msg) {
   return *msg->_impl_.command_.touch_up_;
 }
-const ::maa::Handle&
+const ::maarpc::Handle&
 CustomControllerResponse::_Internal::image(const CustomControllerResponse* msg) {
   return *msg->_impl_.command_.image_;
 }
-const ::maa::CustomControllerSetOptionParam&
+const ::maarpc::CustomControllerSetOptionParam&
 CustomControllerResponse::_Internal::set_option(const CustomControllerResponse* msg) {
   return *msg->_impl_.command_.set_option_;
 }
@@ -2829,7 +2844,7 @@ void CustomControllerResponse::clear_id() {
   if (_impl_.id_ != nullptr) _impl_.id_->Clear();
   _impl_._has_bits_[0] &= ~0x00000002u;
 }
-void CustomControllerResponse::set_allocated_click(::maa::ClickParam* click) {
+void CustomControllerResponse::set_allocated_click(::maarpc::ClickParam* click) {
   ::PROTOBUF_NAMESPACE_ID::Arena* message_arena = GetArenaForAllocation();
   clear_command();
   if (click) {
@@ -2843,7 +2858,7 @@ void CustomControllerResponse::set_allocated_click(::maa::ClickParam* click) {
     set_has_click();
     _impl_.command_.click_ = click;
   }
-  // @@protoc_insertion_point(field_set_allocated:maa.CustomControllerResponse.click)
+  // @@protoc_insertion_point(field_set_allocated:maarpc.CustomControllerResponse.click)
 }
 void CustomControllerResponse::clear_click() {
   if (_internal_has_click()) {
@@ -2853,7 +2868,7 @@ void CustomControllerResponse::clear_click() {
     clear_has_command();
   }
 }
-void CustomControllerResponse::set_allocated_swipe(::maa::SwipeParam* swipe) {
+void CustomControllerResponse::set_allocated_swipe(::maarpc::SwipeParam* swipe) {
   ::PROTOBUF_NAMESPACE_ID::Arena* message_arena = GetArenaForAllocation();
   clear_command();
   if (swipe) {
@@ -2867,7 +2882,7 @@ void CustomControllerResponse::set_allocated_swipe(::maa::SwipeParam* swipe) {
     set_has_swipe();
     _impl_.command_.swipe_ = swipe;
   }
-  // @@protoc_insertion_point(field_set_allocated:maa.CustomControllerResponse.swipe)
+  // @@protoc_insertion_point(field_set_allocated:maarpc.CustomControllerResponse.swipe)
 }
 void CustomControllerResponse::clear_swipe() {
   if (_internal_has_swipe()) {
@@ -2877,7 +2892,7 @@ void CustomControllerResponse::clear_swipe() {
     clear_has_command();
   }
 }
-void CustomControllerResponse::set_allocated_key(::maa::KeyParam* key) {
+void CustomControllerResponse::set_allocated_key(::maarpc::KeyParam* key) {
   ::PROTOBUF_NAMESPACE_ID::Arena* message_arena = GetArenaForAllocation();
   clear_command();
   if (key) {
@@ -2891,7 +2906,7 @@ void CustomControllerResponse::set_allocated_key(::maa::KeyParam* key) {
     set_has_key();
     _impl_.command_.key_ = key;
   }
-  // @@protoc_insertion_point(field_set_allocated:maa.CustomControllerResponse.key)
+  // @@protoc_insertion_point(field_set_allocated:maarpc.CustomControllerResponse.key)
 }
 void CustomControllerResponse::clear_key() {
   if (_internal_has_key()) {
@@ -2901,7 +2916,7 @@ void CustomControllerResponse::clear_key() {
     clear_has_command();
   }
 }
-void CustomControllerResponse::set_allocated_touch_down(::maa::TouchParam* touch_down) {
+void CustomControllerResponse::set_allocated_touch_down(::maarpc::TouchParam* touch_down) {
   ::PROTOBUF_NAMESPACE_ID::Arena* message_arena = GetArenaForAllocation();
   clear_command();
   if (touch_down) {
@@ -2915,7 +2930,7 @@ void CustomControllerResponse::set_allocated_touch_down(::maa::TouchParam* touch
     set_has_touch_down();
     _impl_.command_.touch_down_ = touch_down;
   }
-  // @@protoc_insertion_point(field_set_allocated:maa.CustomControllerResponse.touch_down)
+  // @@protoc_insertion_point(field_set_allocated:maarpc.CustomControllerResponse.touch_down)
 }
 void CustomControllerResponse::clear_touch_down() {
   if (_internal_has_touch_down()) {
@@ -2925,7 +2940,7 @@ void CustomControllerResponse::clear_touch_down() {
     clear_has_command();
   }
 }
-void CustomControllerResponse::set_allocated_touch_move(::maa::TouchParam* touch_move) {
+void CustomControllerResponse::set_allocated_touch_move(::maarpc::TouchParam* touch_move) {
   ::PROTOBUF_NAMESPACE_ID::Arena* message_arena = GetArenaForAllocation();
   clear_command();
   if (touch_move) {
@@ -2939,7 +2954,7 @@ void CustomControllerResponse::set_allocated_touch_move(::maa::TouchParam* touch
     set_has_touch_move();
     _impl_.command_.touch_move_ = touch_move;
   }
-  // @@protoc_insertion_point(field_set_allocated:maa.CustomControllerResponse.touch_move)
+  // @@protoc_insertion_point(field_set_allocated:maarpc.CustomControllerResponse.touch_move)
 }
 void CustomControllerResponse::clear_touch_move() {
   if (_internal_has_touch_move()) {
@@ -2949,7 +2964,7 @@ void CustomControllerResponse::clear_touch_move() {
     clear_has_command();
   }
 }
-void CustomControllerResponse::set_allocated_touch_up(::maa::TouchParam* touch_up) {
+void CustomControllerResponse::set_allocated_touch_up(::maarpc::TouchParam* touch_up) {
   ::PROTOBUF_NAMESPACE_ID::Arena* message_arena = GetArenaForAllocation();
   clear_command();
   if (touch_up) {
@@ -2963,7 +2978,7 @@ void CustomControllerResponse::set_allocated_touch_up(::maa::TouchParam* touch_u
     set_has_touch_up();
     _impl_.command_.touch_up_ = touch_up;
   }
-  // @@protoc_insertion_point(field_set_allocated:maa.CustomControllerResponse.touch_up)
+  // @@protoc_insertion_point(field_set_allocated:maarpc.CustomControllerResponse.touch_up)
 }
 void CustomControllerResponse::clear_touch_up() {
   if (_internal_has_touch_up()) {
@@ -2973,7 +2988,7 @@ void CustomControllerResponse::clear_touch_up() {
     clear_has_command();
   }
 }
-void CustomControllerResponse::set_allocated_image(::maa::Handle* image) {
+void CustomControllerResponse::set_allocated_image(::maarpc::Handle* image) {
   ::PROTOBUF_NAMESPACE_ID::Arena* message_arena = GetArenaForAllocation();
   clear_command();
   if (image) {
@@ -2987,7 +3002,7 @@ void CustomControllerResponse::set_allocated_image(::maa::Handle* image) {
     set_has_image();
     _impl_.command_.image_ = image;
   }
-  // @@protoc_insertion_point(field_set_allocated:maa.CustomControllerResponse.image)
+  // @@protoc_insertion_point(field_set_allocated:maarpc.CustomControllerResponse.image)
 }
 void CustomControllerResponse::clear_image() {
   if (_internal_has_image()) {
@@ -2997,7 +3012,7 @@ void CustomControllerResponse::clear_image() {
     clear_has_command();
   }
 }
-void CustomControllerResponse::set_allocated_set_option(::maa::CustomControllerSetOptionParam* set_option) {
+void CustomControllerResponse::set_allocated_set_option(::maarpc::CustomControllerSetOptionParam* set_option) {
   ::PROTOBUF_NAMESPACE_ID::Arena* message_arena = GetArenaForAllocation();
   clear_command();
   if (set_option) {
@@ -3010,13 +3025,13 @@ void CustomControllerResponse::set_allocated_set_option(::maa::CustomControllerS
     set_has_set_option();
     _impl_.command_.set_option_ = set_option;
   }
-  // @@protoc_insertion_point(field_set_allocated:maa.CustomControllerResponse.set_option)
+  // @@protoc_insertion_point(field_set_allocated:maarpc.CustomControllerResponse.set_option)
 }
 CustomControllerResponse::CustomControllerResponse(::PROTOBUF_NAMESPACE_ID::Arena* arena,
                          bool is_message_owned)
   : ::PROTOBUF_NAMESPACE_ID::Message(arena, is_message_owned) {
   SharedCtor(arena, is_message_owned);
-  // @@protoc_insertion_point(arena_constructor:maa.CustomControllerResponse)
+  // @@protoc_insertion_point(arena_constructor:maarpc.CustomControllerResponse)
 }
 CustomControllerResponse::CustomControllerResponse(const CustomControllerResponse& from)
   : ::PROTOBUF_NAMESPACE_ID::Message() {
@@ -3031,10 +3046,10 @@ CustomControllerResponse::CustomControllerResponse(const CustomControllerRespons
 
   _internal_metadata_.MergeFrom<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(from._internal_metadata_);
   if (from._internal_has_ctrl()) {
-    _this->_impl_.ctrl_ = new ::maa::Id(*from._impl_.ctrl_);
+    _this->_impl_.ctrl_ = new ::maarpc::Id(*from._impl_.ctrl_);
   }
   if (from._internal_has_id()) {
-    _this->_impl_.id_ = new ::maa::Id(*from._impl_.id_);
+    _this->_impl_.id_ = new ::maarpc::Id(*from._impl_.id_);
   }
   clear_has_command();
   switch (from.command_case()) {
@@ -3043,32 +3058,32 @@ CustomControllerResponse::CustomControllerResponse(const CustomControllerRespons
       break;
     }
     case kClick: {
-      _this->_internal_mutable_click()->::maa::ClickParam::MergeFrom(
+      _this->_internal_mutable_click()->::maarpc::ClickParam::MergeFrom(
           from._internal_click());
       break;
     }
     case kSwipe: {
-      _this->_internal_mutable_swipe()->::maa::SwipeParam::MergeFrom(
+      _this->_internal_mutable_swipe()->::maarpc::SwipeParam::MergeFrom(
           from._internal_swipe());
       break;
     }
     case kKey: {
-      _this->_internal_mutable_key()->::maa::KeyParam::MergeFrom(
+      _this->_internal_mutable_key()->::maarpc::KeyParam::MergeFrom(
           from._internal_key());
       break;
     }
     case kTouchDown: {
-      _this->_internal_mutable_touch_down()->::maa::TouchParam::MergeFrom(
+      _this->_internal_mutable_touch_down()->::maarpc::TouchParam::MergeFrom(
           from._internal_touch_down());
       break;
     }
     case kTouchMove: {
-      _this->_internal_mutable_touch_move()->::maa::TouchParam::MergeFrom(
+      _this->_internal_mutable_touch_move()->::maarpc::TouchParam::MergeFrom(
           from._internal_touch_move());
       break;
     }
     case kTouchUp: {
-      _this->_internal_mutable_touch_up()->::maa::TouchParam::MergeFrom(
+      _this->_internal_mutable_touch_up()->::maarpc::TouchParam::MergeFrom(
           from._internal_touch_up());
       break;
     }
@@ -3085,7 +3100,7 @@ CustomControllerResponse::CustomControllerResponse(const CustomControllerRespons
       break;
     }
     case kImage: {
-      _this->_internal_mutable_image()->::maa::Handle::MergeFrom(
+      _this->_internal_mutable_image()->::maarpc::Handle::MergeFrom(
           from._internal_image());
       break;
     }
@@ -3094,7 +3109,7 @@ CustomControllerResponse::CustomControllerResponse(const CustomControllerRespons
       break;
     }
     case kSetOption: {
-      _this->_internal_mutable_set_option()->::maa::CustomControllerSetOptionParam::MergeFrom(
+      _this->_internal_mutable_set_option()->::maarpc::CustomControllerSetOptionParam::MergeFrom(
           from._internal_set_option());
       break;
     }
@@ -3102,7 +3117,7 @@ CustomControllerResponse::CustomControllerResponse(const CustomControllerRespons
       break;
     }
   }
-  // @@protoc_insertion_point(copy_constructor:maa.CustomControllerResponse)
+  // @@protoc_insertion_point(copy_constructor:maarpc.CustomControllerResponse)
 }
 
 inline void CustomControllerResponse::SharedCtor(
@@ -3121,7 +3136,7 @@ inline void CustomControllerResponse::SharedCtor(
 }
 
 CustomControllerResponse::~CustomControllerResponse() {
-  // @@protoc_insertion_point(destructor:maa.CustomControllerResponse)
+  // @@protoc_insertion_point(destructor:maarpc.CustomControllerResponse)
   if (auto *arena = _internal_metadata_.DeleteReturnArena<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>()) {
   (void)arena;
     return;
@@ -3143,7 +3158,7 @@ void CustomControllerResponse::SetCachedSize(int size) const {
 }
 
 void CustomControllerResponse::clear_command() {
-// @@protoc_insertion_point(one_of_clear_start:maa.CustomControllerResponse)
+// @@protoc_insertion_point(one_of_clear_start:maarpc.CustomControllerResponse)
   switch (command_case()) {
     case kConnect: {
       // No need to clear
@@ -3222,7 +3237,7 @@ void CustomControllerResponse::clear_command() {
 
 
 void CustomControllerResponse::Clear() {
-// @@protoc_insertion_point(message_clear_start:maa.CustomControllerResponse)
+// @@protoc_insertion_point(message_clear_start:maarpc.CustomControllerResponse)
   uint32_t cached_has_bits = 0;
   // Prevent compiler warnings about cached_has_bits being unused
   (void) cached_has_bits;
@@ -3250,7 +3265,7 @@ const char* CustomControllerResponse::_InternalParse(const char* ptr, ::_pbi::Pa
     uint32_t tag;
     ptr = ::_pbi::ReadTag(ptr, &tag);
     switch (tag >> 3) {
-      // optional .maa.Id ctrl = 1;
+      // optional .maarpc.Id ctrl = 1;
       case 1:
         if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 10)) {
           ptr = ctx->ParseMessage(_internal_mutable_ctrl(), ptr);
@@ -3258,7 +3273,7 @@ const char* CustomControllerResponse::_InternalParse(const char* ptr, ::_pbi::Pa
         } else
           goto handle_unusual;
         continue;
-      // optional .maa.Id id = 2;
+      // optional .maarpc.Id id = 2;
       case 2:
         if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 18)) {
           ptr = ctx->ParseMessage(_internal_mutable_id(), ptr);
@@ -3274,7 +3289,7 @@ const char* CustomControllerResponse::_InternalParse(const char* ptr, ::_pbi::Pa
         } else
           goto handle_unusual;
         continue;
-      // .maa.ClickParam click = 102;
+      // .maarpc.ClickParam click = 102;
       case 102:
         if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 50)) {
           ptr = ctx->ParseMessage(_internal_mutable_click(), ptr);
@@ -3282,7 +3297,7 @@ const char* CustomControllerResponse::_InternalParse(const char* ptr, ::_pbi::Pa
         } else
           goto handle_unusual;
         continue;
-      // .maa.SwipeParam swipe = 103;
+      // .maarpc.SwipeParam swipe = 103;
       case 103:
         if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 58)) {
           ptr = ctx->ParseMessage(_internal_mutable_swipe(), ptr);
@@ -3290,7 +3305,7 @@ const char* CustomControllerResponse::_InternalParse(const char* ptr, ::_pbi::Pa
         } else
           goto handle_unusual;
         continue;
-      // .maa.KeyParam key = 104;
+      // .maarpc.KeyParam key = 104;
       case 104:
         if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 66)) {
           ptr = ctx->ParseMessage(_internal_mutable_key(), ptr);
@@ -3298,7 +3313,7 @@ const char* CustomControllerResponse::_InternalParse(const char* ptr, ::_pbi::Pa
         } else
           goto handle_unusual;
         continue;
-      // .maa.TouchParam touch_down = 105;
+      // .maarpc.TouchParam touch_down = 105;
       case 105:
         if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 74)) {
           ptr = ctx->ParseMessage(_internal_mutable_touch_down(), ptr);
@@ -3306,7 +3321,7 @@ const char* CustomControllerResponse::_InternalParse(const char* ptr, ::_pbi::Pa
         } else
           goto handle_unusual;
         continue;
-      // .maa.TouchParam touch_move = 106;
+      // .maarpc.TouchParam touch_move = 106;
       case 106:
         if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 82)) {
           ptr = ctx->ParseMessage(_internal_mutable_touch_move(), ptr);
@@ -3314,7 +3329,7 @@ const char* CustomControllerResponse::_InternalParse(const char* ptr, ::_pbi::Pa
         } else
           goto handle_unusual;
         continue;
-      // .maa.TouchParam touch_up = 107;
+      // .maarpc.TouchParam touch_up = 107;
       case 107:
         if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 90)) {
           ptr = ctx->ParseMessage(_internal_mutable_touch_up(), ptr);
@@ -3328,7 +3343,7 @@ const char* CustomControllerResponse::_InternalParse(const char* ptr, ::_pbi::Pa
           auto str = _internal_mutable_start();
           ptr = ::_pbi::InlineGreedyStringParser(str, ptr, ctx);
           CHK_(ptr);
-          CHK_(::_pbi::VerifyUTF8(str, "maa.CustomControllerResponse.start"));
+          CHK_(::_pbi::VerifyUTF8(str, "maarpc.CustomControllerResponse.start"));
         } else
           goto handle_unusual;
         continue;
@@ -3338,7 +3353,7 @@ const char* CustomControllerResponse::_InternalParse(const char* ptr, ::_pbi::Pa
           auto str = _internal_mutable_stop();
           ptr = ::_pbi::InlineGreedyStringParser(str, ptr, ctx);
           CHK_(ptr);
-          CHK_(::_pbi::VerifyUTF8(str, "maa.CustomControllerResponse.stop"));
+          CHK_(::_pbi::VerifyUTF8(str, "maarpc.CustomControllerResponse.stop"));
         } else
           goto handle_unusual;
         continue;
@@ -3350,7 +3365,7 @@ const char* CustomControllerResponse::_InternalParse(const char* ptr, ::_pbi::Pa
         } else
           goto handle_unusual;
         continue;
-      // .maa.Handle image = 111;
+      // .maarpc.Handle image = 111;
       case 111:
         if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 122)) {
           ptr = ctx->ParseMessage(_internal_mutable_image(), ptr);
@@ -3366,7 +3381,7 @@ const char* CustomControllerResponse::_InternalParse(const char* ptr, ::_pbi::Pa
         } else
           goto handle_unusual;
         continue;
-      // .maa.CustomControllerSetOptionParam set_option = 200;
+      // .maarpc.CustomControllerSetOptionParam set_option = 200;
       case 200:
         if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 66)) {
           ptr = ctx->ParseMessage(_internal_mutable_set_option(), ptr);
@@ -3400,18 +3415,18 @@ failure:
 
 uint8_t* CustomControllerResponse::_InternalSerialize(
     uint8_t* target, ::PROTOBUF_NAMESPACE_ID::io::EpsCopyOutputStream* stream) const {
-  // @@protoc_insertion_point(serialize_to_array_start:maa.CustomControllerResponse)
+  // @@protoc_insertion_point(serialize_to_array_start:maarpc.CustomControllerResponse)
   uint32_t cached_has_bits = 0;
   (void) cached_has_bits;
 
-  // optional .maa.Id ctrl = 1;
+  // optional .maarpc.Id ctrl = 1;
   if (_internal_has_ctrl()) {
     target = ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::
       InternalWriteMessage(1, _Internal::ctrl(this),
         _Internal::ctrl(this).GetCachedSize(), target, stream);
   }
 
-  // optional .maa.Id id = 2;
+  // optional .maarpc.Id id = 2;
   if (_internal_has_id()) {
     target = ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::
       InternalWriteMessage(2, _Internal::id(this),
@@ -3424,42 +3439,42 @@ uint8_t* CustomControllerResponse::_InternalSerialize(
     target = ::_pbi::WireFormatLite::WriteBoolToArray(101, this->_internal_connect(), target);
   }
 
-  // .maa.ClickParam click = 102;
+  // .maarpc.ClickParam click = 102;
   if (_internal_has_click()) {
     target = ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::
       InternalWriteMessage(102, _Internal::click(this),
         _Internal::click(this).GetCachedSize(), target, stream);
   }
 
-  // .maa.SwipeParam swipe = 103;
+  // .maarpc.SwipeParam swipe = 103;
   if (_internal_has_swipe()) {
     target = ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::
       InternalWriteMessage(103, _Internal::swipe(this),
         _Internal::swipe(this).GetCachedSize(), target, stream);
   }
 
-  // .maa.KeyParam key = 104;
+  // .maarpc.KeyParam key = 104;
   if (_internal_has_key()) {
     target = ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::
       InternalWriteMessage(104, _Internal::key(this),
         _Internal::key(this).GetCachedSize(), target, stream);
   }
 
-  // .maa.TouchParam touch_down = 105;
+  // .maarpc.TouchParam touch_down = 105;
   if (_internal_has_touch_down()) {
     target = ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::
       InternalWriteMessage(105, _Internal::touch_down(this),
         _Internal::touch_down(this).GetCachedSize(), target, stream);
   }
 
-  // .maa.TouchParam touch_move = 106;
+  // .maarpc.TouchParam touch_move = 106;
   if (_internal_has_touch_move()) {
     target = ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::
       InternalWriteMessage(106, _Internal::touch_move(this),
         _Internal::touch_move(this).GetCachedSize(), target, stream);
   }
 
-  // .maa.TouchParam touch_up = 107;
+  // .maarpc.TouchParam touch_up = 107;
   if (_internal_has_touch_up()) {
     target = ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::
       InternalWriteMessage(107, _Internal::touch_up(this),
@@ -3471,7 +3486,7 @@ uint8_t* CustomControllerResponse::_InternalSerialize(
     ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::VerifyUtf8String(
       this->_internal_start().data(), static_cast<int>(this->_internal_start().length()),
       ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::SERIALIZE,
-      "maa.CustomControllerResponse.start");
+      "maarpc.CustomControllerResponse.start");
     target = stream->WriteStringMaybeAliased(
         108, this->_internal_start(), target);
   }
@@ -3481,7 +3496,7 @@ uint8_t* CustomControllerResponse::_InternalSerialize(
     ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::VerifyUtf8String(
       this->_internal_stop().data(), static_cast<int>(this->_internal_stop().length()),
       ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::SERIALIZE,
-      "maa.CustomControllerResponse.stop");
+      "maarpc.CustomControllerResponse.stop");
     target = stream->WriteStringMaybeAliased(
         109, this->_internal_stop(), target);
   }
@@ -3492,7 +3507,7 @@ uint8_t* CustomControllerResponse::_InternalSerialize(
     target = ::_pbi::WireFormatLite::WriteBoolToArray(110, this->_internal_resolution(), target);
   }
 
-  // .maa.Handle image = 111;
+  // .maarpc.Handle image = 111;
   if (_internal_has_image()) {
     target = ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::
       InternalWriteMessage(111, _Internal::image(this),
@@ -3505,7 +3520,7 @@ uint8_t* CustomControllerResponse::_InternalSerialize(
     target = ::_pbi::WireFormatLite::WriteBoolToArray(112, this->_internal_uuid(), target);
   }
 
-  // .maa.CustomControllerSetOptionParam set_option = 200;
+  // .maarpc.CustomControllerSetOptionParam set_option = 200;
   if (_internal_has_set_option()) {
     target = ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::
       InternalWriteMessage(200, _Internal::set_option(this),
@@ -3516,12 +3531,12 @@ uint8_t* CustomControllerResponse::_InternalSerialize(
     target = ::_pbi::WireFormat::InternalSerializeUnknownFieldsToArray(
         _internal_metadata_.unknown_fields<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(::PROTOBUF_NAMESPACE_ID::UnknownFieldSet::default_instance), target, stream);
   }
-  // @@protoc_insertion_point(serialize_to_array_end:maa.CustomControllerResponse)
+  // @@protoc_insertion_point(serialize_to_array_end:maarpc.CustomControllerResponse)
   return target;
 }
 
 size_t CustomControllerResponse::ByteSizeLong() const {
-// @@protoc_insertion_point(message_byte_size_start:maa.CustomControllerResponse)
+// @@protoc_insertion_point(message_byte_size_start:maarpc.CustomControllerResponse)
   size_t total_size = 0;
 
   uint32_t cached_has_bits = 0;
@@ -3530,14 +3545,14 @@ size_t CustomControllerResponse::ByteSizeLong() const {
 
   cached_has_bits = _impl_._has_bits_[0];
   if (cached_has_bits & 0x00000003u) {
-    // optional .maa.Id ctrl = 1;
+    // optional .maarpc.Id ctrl = 1;
     if (cached_has_bits & 0x00000001u) {
       total_size += 1 +
         ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::MessageSize(
           *_impl_.ctrl_);
     }
 
-    // optional .maa.Id id = 2;
+    // optional .maarpc.Id id = 2;
     if (cached_has_bits & 0x00000002u) {
       total_size += 1 +
         ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::MessageSize(
@@ -3551,42 +3566,42 @@ size_t CustomControllerResponse::ByteSizeLong() const {
       total_size += 2 + 1;
       break;
     }
-    // .maa.ClickParam click = 102;
+    // .maarpc.ClickParam click = 102;
     case kClick: {
       total_size += 2 +
         ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::MessageSize(
           *_impl_.command_.click_);
       break;
     }
-    // .maa.SwipeParam swipe = 103;
+    // .maarpc.SwipeParam swipe = 103;
     case kSwipe: {
       total_size += 2 +
         ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::MessageSize(
           *_impl_.command_.swipe_);
       break;
     }
-    // .maa.KeyParam key = 104;
+    // .maarpc.KeyParam key = 104;
     case kKey: {
       total_size += 2 +
         ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::MessageSize(
           *_impl_.command_.key_);
       break;
     }
-    // .maa.TouchParam touch_down = 105;
+    // .maarpc.TouchParam touch_down = 105;
     case kTouchDown: {
       total_size += 2 +
         ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::MessageSize(
           *_impl_.command_.touch_down_);
       break;
     }
-    // .maa.TouchParam touch_move = 106;
+    // .maarpc.TouchParam touch_move = 106;
     case kTouchMove: {
       total_size += 2 +
         ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::MessageSize(
           *_impl_.command_.touch_move_);
       break;
     }
-    // .maa.TouchParam touch_up = 107;
+    // .maarpc.TouchParam touch_up = 107;
     case kTouchUp: {
       total_size += 2 +
         ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::MessageSize(
@@ -3612,7 +3627,7 @@ size_t CustomControllerResponse::ByteSizeLong() const {
       total_size += 2 + 1;
       break;
     }
-    // .maa.Handle image = 111;
+    // .maarpc.Handle image = 111;
     case kImage: {
       total_size += 2 +
         ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::MessageSize(
@@ -3624,7 +3639,7 @@ size_t CustomControllerResponse::ByteSizeLong() const {
       total_size += 2 + 1;
       break;
     }
-    // .maa.CustomControllerSetOptionParam set_option = 200;
+    // .maarpc.CustomControllerSetOptionParam set_option = 200;
     case kSetOption: {
       total_size += 2 +
         ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::MessageSize(
@@ -3648,7 +3663,7 @@ const ::PROTOBUF_NAMESPACE_ID::Message::ClassData*CustomControllerResponse::GetC
 void CustomControllerResponse::MergeImpl(::PROTOBUF_NAMESPACE_ID::Message& to_msg, const ::PROTOBUF_NAMESPACE_ID::Message& from_msg) {
   auto* const _this = static_cast<CustomControllerResponse*>(&to_msg);
   auto& from = static_cast<const CustomControllerResponse&>(from_msg);
-  // @@protoc_insertion_point(class_specific_merge_from_start:maa.CustomControllerResponse)
+  // @@protoc_insertion_point(class_specific_merge_from_start:maarpc.CustomControllerResponse)
   GOOGLE_DCHECK_NE(&from, _this);
   uint32_t cached_has_bits = 0;
   (void) cached_has_bits;
@@ -3656,11 +3671,11 @@ void CustomControllerResponse::MergeImpl(::PROTOBUF_NAMESPACE_ID::Message& to_ms
   cached_has_bits = from._impl_._has_bits_[0];
   if (cached_has_bits & 0x00000003u) {
     if (cached_has_bits & 0x00000001u) {
-      _this->_internal_mutable_ctrl()->::maa::Id::MergeFrom(
+      _this->_internal_mutable_ctrl()->::maarpc::Id::MergeFrom(
           from._internal_ctrl());
     }
     if (cached_has_bits & 0x00000002u) {
-      _this->_internal_mutable_id()->::maa::Id::MergeFrom(
+      _this->_internal_mutable_id()->::maarpc::Id::MergeFrom(
           from._internal_id());
     }
   }
@@ -3670,32 +3685,32 @@ void CustomControllerResponse::MergeImpl(::PROTOBUF_NAMESPACE_ID::Message& to_ms
       break;
     }
     case kClick: {
-      _this->_internal_mutable_click()->::maa::ClickParam::MergeFrom(
+      _this->_internal_mutable_click()->::maarpc::ClickParam::MergeFrom(
           from._internal_click());
       break;
     }
     case kSwipe: {
-      _this->_internal_mutable_swipe()->::maa::SwipeParam::MergeFrom(
+      _this->_internal_mutable_swipe()->::maarpc::SwipeParam::MergeFrom(
           from._internal_swipe());
       break;
     }
     case kKey: {
-      _this->_internal_mutable_key()->::maa::KeyParam::MergeFrom(
+      _this->_internal_mutable_key()->::maarpc::KeyParam::MergeFrom(
           from._internal_key());
       break;
     }
     case kTouchDown: {
-      _this->_internal_mutable_touch_down()->::maa::TouchParam::MergeFrom(
+      _this->_internal_mutable_touch_down()->::maarpc::TouchParam::MergeFrom(
           from._internal_touch_down());
       break;
     }
     case kTouchMove: {
-      _this->_internal_mutable_touch_move()->::maa::TouchParam::MergeFrom(
+      _this->_internal_mutable_touch_move()->::maarpc::TouchParam::MergeFrom(
           from._internal_touch_move());
       break;
     }
     case kTouchUp: {
-      _this->_internal_mutable_touch_up()->::maa::TouchParam::MergeFrom(
+      _this->_internal_mutable_touch_up()->::maarpc::TouchParam::MergeFrom(
           from._internal_touch_up());
       break;
     }
@@ -3712,7 +3727,7 @@ void CustomControllerResponse::MergeImpl(::PROTOBUF_NAMESPACE_ID::Message& to_ms
       break;
     }
     case kImage: {
-      _this->_internal_mutable_image()->::maa::Handle::MergeFrom(
+      _this->_internal_mutable_image()->::maarpc::Handle::MergeFrom(
           from._internal_image());
       break;
     }
@@ -3721,7 +3736,7 @@ void CustomControllerResponse::MergeImpl(::PROTOBUF_NAMESPACE_ID::Message& to_ms
       break;
     }
     case kSetOption: {
-      _this->_internal_mutable_set_option()->::maa::CustomControllerSetOptionParam::MergeFrom(
+      _this->_internal_mutable_set_option()->::maarpc::CustomControllerSetOptionParam::MergeFrom(
           from._internal_set_option());
       break;
     }
@@ -3733,7 +3748,7 @@ void CustomControllerResponse::MergeImpl(::PROTOBUF_NAMESPACE_ID::Message& to_ms
 }
 
 void CustomControllerResponse::CopyFrom(const CustomControllerResponse& from) {
-// @@protoc_insertion_point(class_specific_copy_from_start:maa.CustomControllerResponse)
+// @@protoc_insertion_point(class_specific_copy_from_start:maarpc.CustomControllerResponse)
   if (&from == this) return;
   Clear();
   MergeFrom(from);
@@ -3768,29 +3783,29 @@ void CustomControllerResponse::InternalSwap(CustomControllerResponse* other) {
 class SubmitCustomControllerRequest::_Internal {
  public:
   using HasBits = decltype(std::declval<SubmitCustomControllerRequest>()._impl_._has_bits_);
-  static const ::maa::Handle& handle(const SubmitCustomControllerRequest* msg);
+  static const ::maarpc::Handle& handle(const SubmitCustomControllerRequest* msg);
   static void set_has_handle(HasBits* has_bits) {
     (*has_bits)[0] |= 1u;
   }
-  static const ::maa::Id& id(const SubmitCustomControllerRequest* msg);
+  static const ::maarpc::Id& id(const SubmitCustomControllerRequest* msg);
   static void set_has_id(HasBits* has_bits) {
     (*has_bits)[0] |= 2u;
   }
   static void set_has_ok(HasBits* has_bits) {
     (*has_bits)[0] |= 4u;
   }
-  static const ::maa::Size& resolution(const SubmitCustomControllerRequest* msg);
+  static const ::maarpc::Size& resolution(const SubmitCustomControllerRequest* msg);
 };
 
-const ::maa::Handle&
+const ::maarpc::Handle&
 SubmitCustomControllerRequest::_Internal::handle(const SubmitCustomControllerRequest* msg) {
   return *msg->_impl_.handle_;
 }
-const ::maa::Id&
+const ::maarpc::Id&
 SubmitCustomControllerRequest::_Internal::id(const SubmitCustomControllerRequest* msg) {
   return *msg->_impl_.id_;
 }
-const ::maa::Size&
+const ::maarpc::Size&
 SubmitCustomControllerRequest::_Internal::resolution(const SubmitCustomControllerRequest* msg) {
   return *msg->_impl_.result_.resolution_;
 }
@@ -3802,7 +3817,7 @@ void SubmitCustomControllerRequest::clear_id() {
   if (_impl_.id_ != nullptr) _impl_.id_->Clear();
   _impl_._has_bits_[0] &= ~0x00000002u;
 }
-void SubmitCustomControllerRequest::set_allocated_resolution(::maa::Size* resolution) {
+void SubmitCustomControllerRequest::set_allocated_resolution(::maarpc::Size* resolution) {
   ::PROTOBUF_NAMESPACE_ID::Arena* message_arena = GetArenaForAllocation();
   clear_result();
   if (resolution) {
@@ -3816,7 +3831,7 @@ void SubmitCustomControllerRequest::set_allocated_resolution(::maa::Size* resolu
     set_has_resolution();
     _impl_.result_.resolution_ = resolution;
   }
-  // @@protoc_insertion_point(field_set_allocated:maa.SubmitCustomControllerRequest.resolution)
+  // @@protoc_insertion_point(field_set_allocated:maarpc.SubmitCustomControllerRequest.resolution)
 }
 void SubmitCustomControllerRequest::clear_resolution() {
   if (_internal_has_resolution()) {
@@ -3830,7 +3845,7 @@ SubmitCustomControllerRequest::SubmitCustomControllerRequest(::PROTOBUF_NAMESPAC
                          bool is_message_owned)
   : ::PROTOBUF_NAMESPACE_ID::Message(arena, is_message_owned) {
   SharedCtor(arena, is_message_owned);
-  // @@protoc_insertion_point(arena_constructor:maa.SubmitCustomControllerRequest)
+  // @@protoc_insertion_point(arena_constructor:maarpc.SubmitCustomControllerRequest)
 }
 SubmitCustomControllerRequest::SubmitCustomControllerRequest(const SubmitCustomControllerRequest& from)
   : ::PROTOBUF_NAMESPACE_ID::Message() {
@@ -3846,16 +3861,16 @@ SubmitCustomControllerRequest::SubmitCustomControllerRequest(const SubmitCustomC
 
   _internal_metadata_.MergeFrom<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(from._internal_metadata_);
   if (from._internal_has_handle()) {
-    _this->_impl_.handle_ = new ::maa::Handle(*from._impl_.handle_);
+    _this->_impl_.handle_ = new ::maarpc::Handle(*from._impl_.handle_);
   }
   if (from._internal_has_id()) {
-    _this->_impl_.id_ = new ::maa::Id(*from._impl_.id_);
+    _this->_impl_.id_ = new ::maarpc::Id(*from._impl_.id_);
   }
   _this->_impl_.ok_ = from._impl_.ok_;
   clear_has_result();
   switch (from.result_case()) {
     case kResolution: {
-      _this->_internal_mutable_resolution()->::maa::Size::MergeFrom(
+      _this->_internal_mutable_resolution()->::maarpc::Size::MergeFrom(
           from._internal_resolution());
       break;
     }
@@ -3867,7 +3882,7 @@ SubmitCustomControllerRequest::SubmitCustomControllerRequest(const SubmitCustomC
       break;
     }
   }
-  // @@protoc_insertion_point(copy_constructor:maa.SubmitCustomControllerRequest)
+  // @@protoc_insertion_point(copy_constructor:maarpc.SubmitCustomControllerRequest)
 }
 
 inline void SubmitCustomControllerRequest::SharedCtor(
@@ -3887,7 +3902,7 @@ inline void SubmitCustomControllerRequest::SharedCtor(
 }
 
 SubmitCustomControllerRequest::~SubmitCustomControllerRequest() {
-  // @@protoc_insertion_point(destructor:maa.SubmitCustomControllerRequest)
+  // @@protoc_insertion_point(destructor:maarpc.SubmitCustomControllerRequest)
   if (auto *arena = _internal_metadata_.DeleteReturnArena<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>()) {
   (void)arena;
     return;
@@ -3909,7 +3924,7 @@ void SubmitCustomControllerRequest::SetCachedSize(int size) const {
 }
 
 void SubmitCustomControllerRequest::clear_result() {
-// @@protoc_insertion_point(one_of_clear_start:maa.SubmitCustomControllerRequest)
+// @@protoc_insertion_point(one_of_clear_start:maarpc.SubmitCustomControllerRequest)
   switch (result_case()) {
     case kResolution: {
       if (GetArenaForAllocation() == nullptr) {
@@ -3930,7 +3945,7 @@ void SubmitCustomControllerRequest::clear_result() {
 
 
 void SubmitCustomControllerRequest::Clear() {
-// @@protoc_insertion_point(message_clear_start:maa.SubmitCustomControllerRequest)
+// @@protoc_insertion_point(message_clear_start:maarpc.SubmitCustomControllerRequest)
   uint32_t cached_has_bits = 0;
   // Prevent compiler warnings about cached_has_bits being unused
   (void) cached_has_bits;
@@ -3959,7 +3974,7 @@ const char* SubmitCustomControllerRequest::_InternalParse(const char* ptr, ::_pb
     uint32_t tag;
     ptr = ::_pbi::ReadTag(ptr, &tag);
     switch (tag >> 3) {
-      // optional .maa.Handle handle = 1;
+      // optional .maarpc.Handle handle = 1;
       case 1:
         if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 10)) {
           ptr = ctx->ParseMessage(_internal_mutable_handle(), ptr);
@@ -3967,7 +3982,7 @@ const char* SubmitCustomControllerRequest::_InternalParse(const char* ptr, ::_pb
         } else
           goto handle_unusual;
         continue;
-      // optional .maa.Id id = 2;
+      // optional .maarpc.Id id = 2;
       case 2:
         if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 18)) {
           ptr = ctx->ParseMessage(_internal_mutable_id(), ptr);
@@ -3984,7 +3999,7 @@ const char* SubmitCustomControllerRequest::_InternalParse(const char* ptr, ::_pb
         } else
           goto handle_unusual;
         continue;
-      // .maa.Size resolution = 101;
+      // .maarpc.Size resolution = 101;
       case 101:
         if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 42)) {
           ptr = ctx->ParseMessage(_internal_mutable_resolution(), ptr);
@@ -3998,7 +4013,7 @@ const char* SubmitCustomControllerRequest::_InternalParse(const char* ptr, ::_pb
           auto str = _internal_mutable_uuid();
           ptr = ::_pbi::InlineGreedyStringParser(str, ptr, ctx);
           CHK_(ptr);
-          CHK_(::_pbi::VerifyUTF8(str, "maa.SubmitCustomControllerRequest.uuid"));
+          CHK_(::_pbi::VerifyUTF8(str, "maarpc.SubmitCustomControllerRequest.uuid"));
         } else
           goto handle_unusual;
         continue;
@@ -4028,18 +4043,18 @@ failure:
 
 uint8_t* SubmitCustomControllerRequest::_InternalSerialize(
     uint8_t* target, ::PROTOBUF_NAMESPACE_ID::io::EpsCopyOutputStream* stream) const {
-  // @@protoc_insertion_point(serialize_to_array_start:maa.SubmitCustomControllerRequest)
+  // @@protoc_insertion_point(serialize_to_array_start:maarpc.SubmitCustomControllerRequest)
   uint32_t cached_has_bits = 0;
   (void) cached_has_bits;
 
-  // optional .maa.Handle handle = 1;
+  // optional .maarpc.Handle handle = 1;
   if (_internal_has_handle()) {
     target = ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::
       InternalWriteMessage(1, _Internal::handle(this),
         _Internal::handle(this).GetCachedSize(), target, stream);
   }
 
-  // optional .maa.Id id = 2;
+  // optional .maarpc.Id id = 2;
   if (_internal_has_id()) {
     target = ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::
       InternalWriteMessage(2, _Internal::id(this),
@@ -4052,7 +4067,7 @@ uint8_t* SubmitCustomControllerRequest::_InternalSerialize(
     target = ::_pbi::WireFormatLite::WriteBoolToArray(3, this->_internal_ok(), target);
   }
 
-  // .maa.Size resolution = 101;
+  // .maarpc.Size resolution = 101;
   if (_internal_has_resolution()) {
     target = ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::
       InternalWriteMessage(101, _Internal::resolution(this),
@@ -4064,7 +4079,7 @@ uint8_t* SubmitCustomControllerRequest::_InternalSerialize(
     ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::VerifyUtf8String(
       this->_internal_uuid().data(), static_cast<int>(this->_internal_uuid().length()),
       ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::SERIALIZE,
-      "maa.SubmitCustomControllerRequest.uuid");
+      "maarpc.SubmitCustomControllerRequest.uuid");
     target = stream->WriteStringMaybeAliased(
         102, this->_internal_uuid(), target);
   }
@@ -4073,12 +4088,12 @@ uint8_t* SubmitCustomControllerRequest::_InternalSerialize(
     target = ::_pbi::WireFormat::InternalSerializeUnknownFieldsToArray(
         _internal_metadata_.unknown_fields<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(::PROTOBUF_NAMESPACE_ID::UnknownFieldSet::default_instance), target, stream);
   }
-  // @@protoc_insertion_point(serialize_to_array_end:maa.SubmitCustomControllerRequest)
+  // @@protoc_insertion_point(serialize_to_array_end:maarpc.SubmitCustomControllerRequest)
   return target;
 }
 
 size_t SubmitCustomControllerRequest::ByteSizeLong() const {
-// @@protoc_insertion_point(message_byte_size_start:maa.SubmitCustomControllerRequest)
+// @@protoc_insertion_point(message_byte_size_start:maarpc.SubmitCustomControllerRequest)
   size_t total_size = 0;
 
   uint32_t cached_has_bits = 0;
@@ -4087,14 +4102,14 @@ size_t SubmitCustomControllerRequest::ByteSizeLong() const {
 
   cached_has_bits = _impl_._has_bits_[0];
   if (cached_has_bits & 0x00000007u) {
-    // optional .maa.Handle handle = 1;
+    // optional .maarpc.Handle handle = 1;
     if (cached_has_bits & 0x00000001u) {
       total_size += 1 +
         ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::MessageSize(
           *_impl_.handle_);
     }
 
-    // optional .maa.Id id = 2;
+    // optional .maarpc.Id id = 2;
     if (cached_has_bits & 0x00000002u) {
       total_size += 1 +
         ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::MessageSize(
@@ -4108,7 +4123,7 @@ size_t SubmitCustomControllerRequest::ByteSizeLong() const {
 
   }
   switch (result_case()) {
-    // .maa.Size resolution = 101;
+    // .maarpc.Size resolution = 101;
     case kResolution: {
       total_size += 2 +
         ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::MessageSize(
@@ -4139,7 +4154,7 @@ const ::PROTOBUF_NAMESPACE_ID::Message::ClassData*SubmitCustomControllerRequest:
 void SubmitCustomControllerRequest::MergeImpl(::PROTOBUF_NAMESPACE_ID::Message& to_msg, const ::PROTOBUF_NAMESPACE_ID::Message& from_msg) {
   auto* const _this = static_cast<SubmitCustomControllerRequest*>(&to_msg);
   auto& from = static_cast<const SubmitCustomControllerRequest&>(from_msg);
-  // @@protoc_insertion_point(class_specific_merge_from_start:maa.SubmitCustomControllerRequest)
+  // @@protoc_insertion_point(class_specific_merge_from_start:maarpc.SubmitCustomControllerRequest)
   GOOGLE_DCHECK_NE(&from, _this);
   uint32_t cached_has_bits = 0;
   (void) cached_has_bits;
@@ -4147,11 +4162,11 @@ void SubmitCustomControllerRequest::MergeImpl(::PROTOBUF_NAMESPACE_ID::Message& 
   cached_has_bits = from._impl_._has_bits_[0];
   if (cached_has_bits & 0x00000007u) {
     if (cached_has_bits & 0x00000001u) {
-      _this->_internal_mutable_handle()->::maa::Handle::MergeFrom(
+      _this->_internal_mutable_handle()->::maarpc::Handle::MergeFrom(
           from._internal_handle());
     }
     if (cached_has_bits & 0x00000002u) {
-      _this->_internal_mutable_id()->::maa::Id::MergeFrom(
+      _this->_internal_mutable_id()->::maarpc::Id::MergeFrom(
           from._internal_id());
     }
     if (cached_has_bits & 0x00000004u) {
@@ -4161,7 +4176,7 @@ void SubmitCustomControllerRequest::MergeImpl(::PROTOBUF_NAMESPACE_ID::Message& 
   }
   switch (from.result_case()) {
     case kResolution: {
-      _this->_internal_mutable_resolution()->::maa::Size::MergeFrom(
+      _this->_internal_mutable_resolution()->::maarpc::Size::MergeFrom(
           from._internal_resolution());
       break;
     }
@@ -4177,7 +4192,7 @@ void SubmitCustomControllerRequest::MergeImpl(::PROTOBUF_NAMESPACE_ID::Message& 
 }
 
 void SubmitCustomControllerRequest::CopyFrom(const SubmitCustomControllerRequest& from) {
-// @@protoc_insertion_point(class_specific_copy_from_start:maa.SubmitCustomControllerRequest)
+// @@protoc_insertion_point(class_specific_copy_from_start:maarpc.SubmitCustomControllerRequest)
   if (&from == this) return;
   Clear();
   MergeFrom(from);
@@ -4217,7 +4232,7 @@ ControllerSetOptionRequest::ControllerSetOptionRequest(::PROTOBUF_NAMESPACE_ID::
                          bool is_message_owned)
   : ::PROTOBUF_NAMESPACE_ID::Message(arena, is_message_owned) {
   SharedCtor(arena, is_message_owned);
-  // @@protoc_insertion_point(arena_constructor:maa.ControllerSetOptionRequest)
+  // @@protoc_insertion_point(arena_constructor:maarpc.ControllerSetOptionRequest)
 }
 ControllerSetOptionRequest::ControllerSetOptionRequest(const ControllerSetOptionRequest& from)
   : ::PROTOBUF_NAMESPACE_ID::Message() {
@@ -4250,7 +4265,7 @@ ControllerSetOptionRequest::ControllerSetOptionRequest(const ControllerSetOption
       break;
     }
   }
-  // @@protoc_insertion_point(copy_constructor:maa.ControllerSetOptionRequest)
+  // @@protoc_insertion_point(copy_constructor:maarpc.ControllerSetOptionRequest)
 }
 
 inline void ControllerSetOptionRequest::SharedCtor(
@@ -4266,7 +4281,7 @@ inline void ControllerSetOptionRequest::SharedCtor(
 }
 
 ControllerSetOptionRequest::~ControllerSetOptionRequest() {
-  // @@protoc_insertion_point(destructor:maa.ControllerSetOptionRequest)
+  // @@protoc_insertion_point(destructor:maarpc.ControllerSetOptionRequest)
   if (auto *arena = _internal_metadata_.DeleteReturnArena<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>()) {
   (void)arena;
     return;
@@ -4286,7 +4301,7 @@ void ControllerSetOptionRequest::SetCachedSize(int size) const {
 }
 
 void ControllerSetOptionRequest::clear_option() {
-// @@protoc_insertion_point(one_of_clear_start:maa.ControllerSetOptionRequest)
+// @@protoc_insertion_point(one_of_clear_start:maarpc.ControllerSetOptionRequest)
   switch (option_case()) {
     case kLongSide: {
       // No need to clear
@@ -4313,7 +4328,7 @@ void ControllerSetOptionRequest::clear_option() {
 
 
 void ControllerSetOptionRequest::Clear() {
-// @@protoc_insertion_point(message_clear_start:maa.ControllerSetOptionRequest)
+// @@protoc_insertion_point(message_clear_start:maarpc.ControllerSetOptionRequest)
   uint32_t cached_has_bits = 0;
   // Prevent compiler warnings about cached_has_bits being unused
   (void) cached_has_bits;
@@ -4350,7 +4365,7 @@ const char* ControllerSetOptionRequest::_InternalParse(const char* ptr, ::_pbi::
           auto str = _internal_mutable_def_package_entry();
           ptr = ::_pbi::InlineGreedyStringParser(str, ptr, ctx);
           CHK_(ptr);
-          CHK_(::_pbi::VerifyUTF8(str, "maa.ControllerSetOptionRequest.def_package_entry"));
+          CHK_(::_pbi::VerifyUTF8(str, "maarpc.ControllerSetOptionRequest.def_package_entry"));
         } else
           goto handle_unusual;
         continue;
@@ -4360,7 +4375,7 @@ const char* ControllerSetOptionRequest::_InternalParse(const char* ptr, ::_pbi::
           auto str = _internal_mutable_def_package();
           ptr = ::_pbi::InlineGreedyStringParser(str, ptr, ctx);
           CHK_(ptr);
-          CHK_(::_pbi::VerifyUTF8(str, "maa.ControllerSetOptionRequest.def_package"));
+          CHK_(::_pbi::VerifyUTF8(str, "maarpc.ControllerSetOptionRequest.def_package"));
         } else
           goto handle_unusual;
         continue;
@@ -4389,7 +4404,7 @@ failure:
 
 uint8_t* ControllerSetOptionRequest::_InternalSerialize(
     uint8_t* target, ::PROTOBUF_NAMESPACE_ID::io::EpsCopyOutputStream* stream) const {
-  // @@protoc_insertion_point(serialize_to_array_start:maa.ControllerSetOptionRequest)
+  // @@protoc_insertion_point(serialize_to_array_start:maarpc.ControllerSetOptionRequest)
   uint32_t cached_has_bits = 0;
   (void) cached_has_bits;
 
@@ -4410,7 +4425,7 @@ uint8_t* ControllerSetOptionRequest::_InternalSerialize(
     ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::VerifyUtf8String(
       this->_internal_def_package_entry().data(), static_cast<int>(this->_internal_def_package_entry().length()),
       ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::SERIALIZE,
-      "maa.ControllerSetOptionRequest.def_package_entry");
+      "maarpc.ControllerSetOptionRequest.def_package_entry");
     target = stream->WriteStringMaybeAliased(
         3, this->_internal_def_package_entry(), target);
   }
@@ -4420,7 +4435,7 @@ uint8_t* ControllerSetOptionRequest::_InternalSerialize(
     ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::VerifyUtf8String(
       this->_internal_def_package().data(), static_cast<int>(this->_internal_def_package().length()),
       ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::SERIALIZE,
-      "maa.ControllerSetOptionRequest.def_package");
+      "maarpc.ControllerSetOptionRequest.def_package");
     target = stream->WriteStringMaybeAliased(
         4, this->_internal_def_package(), target);
   }
@@ -4429,12 +4444,12 @@ uint8_t* ControllerSetOptionRequest::_InternalSerialize(
     target = ::_pbi::WireFormat::InternalSerializeUnknownFieldsToArray(
         _internal_metadata_.unknown_fields<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(::PROTOBUF_NAMESPACE_ID::UnknownFieldSet::default_instance), target, stream);
   }
-  // @@protoc_insertion_point(serialize_to_array_end:maa.ControllerSetOptionRequest)
+  // @@protoc_insertion_point(serialize_to_array_end:maarpc.ControllerSetOptionRequest)
   return target;
 }
 
 size_t ControllerSetOptionRequest::ByteSizeLong() const {
-// @@protoc_insertion_point(message_byte_size_start:maa.ControllerSetOptionRequest)
+// @@protoc_insertion_point(message_byte_size_start:maarpc.ControllerSetOptionRequest)
   size_t total_size = 0;
 
   uint32_t cached_has_bits = 0;
@@ -4483,7 +4498,7 @@ const ::PROTOBUF_NAMESPACE_ID::Message::ClassData*ControllerSetOptionRequest::Ge
 void ControllerSetOptionRequest::MergeImpl(::PROTOBUF_NAMESPACE_ID::Message& to_msg, const ::PROTOBUF_NAMESPACE_ID::Message& from_msg) {
   auto* const _this = static_cast<ControllerSetOptionRequest*>(&to_msg);
   auto& from = static_cast<const ControllerSetOptionRequest&>(from_msg);
-  // @@protoc_insertion_point(class_specific_merge_from_start:maa.ControllerSetOptionRequest)
+  // @@protoc_insertion_point(class_specific_merge_from_start:maarpc.ControllerSetOptionRequest)
   GOOGLE_DCHECK_NE(&from, _this);
   uint32_t cached_has_bits = 0;
   (void) cached_has_bits;
@@ -4513,7 +4528,7 @@ void ControllerSetOptionRequest::MergeImpl(::PROTOBUF_NAMESPACE_ID::Message& to_
 }
 
 void ControllerSetOptionRequest::CopyFrom(const ControllerSetOptionRequest& from) {
-// @@protoc_insertion_point(class_specific_copy_from_start:maa.ControllerSetOptionRequest)
+// @@protoc_insertion_point(class_specific_copy_from_start:maarpc.ControllerSetOptionRequest)
   if (&from == this) return;
   Clear();
   MergeFrom(from);
@@ -4541,21 +4556,21 @@ void ControllerSetOptionRequest::InternalSwap(ControllerSetOptionRequest* other)
 class ControllerPostClickRequest::_Internal {
  public:
   using HasBits = decltype(std::declval<ControllerPostClickRequest>()._impl_._has_bits_);
-  static const ::maa::Handle& handle(const ControllerPostClickRequest* msg);
+  static const ::maarpc::Handle& handle(const ControllerPostClickRequest* msg);
   static void set_has_handle(HasBits* has_bits) {
     (*has_bits)[0] |= 1u;
   }
-  static const ::maa::ClickParam& param(const ControllerPostClickRequest* msg);
+  static const ::maarpc::ClickParam& param(const ControllerPostClickRequest* msg);
   static void set_has_param(HasBits* has_bits) {
     (*has_bits)[0] |= 2u;
   }
 };
 
-const ::maa::Handle&
+const ::maarpc::Handle&
 ControllerPostClickRequest::_Internal::handle(const ControllerPostClickRequest* msg) {
   return *msg->_impl_.handle_;
 }
-const ::maa::ClickParam&
+const ::maarpc::ClickParam&
 ControllerPostClickRequest::_Internal::param(const ControllerPostClickRequest* msg) {
   return *msg->_impl_.param_;
 }
@@ -4571,7 +4586,7 @@ ControllerPostClickRequest::ControllerPostClickRequest(::PROTOBUF_NAMESPACE_ID::
                          bool is_message_owned)
   : ::PROTOBUF_NAMESPACE_ID::Message(arena, is_message_owned) {
   SharedCtor(arena, is_message_owned);
-  // @@protoc_insertion_point(arena_constructor:maa.ControllerPostClickRequest)
+  // @@protoc_insertion_point(arena_constructor:maarpc.ControllerPostClickRequest)
 }
 ControllerPostClickRequest::ControllerPostClickRequest(const ControllerPostClickRequest& from)
   : ::PROTOBUF_NAMESPACE_ID::Message() {
@@ -4584,12 +4599,12 @@ ControllerPostClickRequest::ControllerPostClickRequest(const ControllerPostClick
 
   _internal_metadata_.MergeFrom<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(from._internal_metadata_);
   if (from._internal_has_handle()) {
-    _this->_impl_.handle_ = new ::maa::Handle(*from._impl_.handle_);
+    _this->_impl_.handle_ = new ::maarpc::Handle(*from._impl_.handle_);
   }
   if (from._internal_has_param()) {
-    _this->_impl_.param_ = new ::maa::ClickParam(*from._impl_.param_);
+    _this->_impl_.param_ = new ::maarpc::ClickParam(*from._impl_.param_);
   }
-  // @@protoc_insertion_point(copy_constructor:maa.ControllerPostClickRequest)
+  // @@protoc_insertion_point(copy_constructor:maarpc.ControllerPostClickRequest)
 }
 
 inline void ControllerPostClickRequest::SharedCtor(
@@ -4605,7 +4620,7 @@ inline void ControllerPostClickRequest::SharedCtor(
 }
 
 ControllerPostClickRequest::~ControllerPostClickRequest() {
-  // @@protoc_insertion_point(destructor:maa.ControllerPostClickRequest)
+  // @@protoc_insertion_point(destructor:maarpc.ControllerPostClickRequest)
   if (auto *arena = _internal_metadata_.DeleteReturnArena<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>()) {
   (void)arena;
     return;
@@ -4624,7 +4639,7 @@ void ControllerPostClickRequest::SetCachedSize(int size) const {
 }
 
 void ControllerPostClickRequest::Clear() {
-// @@protoc_insertion_point(message_clear_start:maa.ControllerPostClickRequest)
+// @@protoc_insertion_point(message_clear_start:maarpc.ControllerPostClickRequest)
   uint32_t cached_has_bits = 0;
   // Prevent compiler warnings about cached_has_bits being unused
   (void) cached_has_bits;
@@ -4651,7 +4666,7 @@ const char* ControllerPostClickRequest::_InternalParse(const char* ptr, ::_pbi::
     uint32_t tag;
     ptr = ::_pbi::ReadTag(ptr, &tag);
     switch (tag >> 3) {
-      // optional .maa.Handle handle = 1;
+      // optional .maarpc.Handle handle = 1;
       case 1:
         if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 10)) {
           ptr = ctx->ParseMessage(_internal_mutable_handle(), ptr);
@@ -4659,7 +4674,7 @@ const char* ControllerPostClickRequest::_InternalParse(const char* ptr, ::_pbi::
         } else
           goto handle_unusual;
         continue;
-      // optional .maa.ClickParam param = 2;
+      // optional .maarpc.ClickParam param = 2;
       case 2:
         if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 18)) {
           ptr = ctx->ParseMessage(_internal_mutable_param(), ptr);
@@ -4693,18 +4708,18 @@ failure:
 
 uint8_t* ControllerPostClickRequest::_InternalSerialize(
     uint8_t* target, ::PROTOBUF_NAMESPACE_ID::io::EpsCopyOutputStream* stream) const {
-  // @@protoc_insertion_point(serialize_to_array_start:maa.ControllerPostClickRequest)
+  // @@protoc_insertion_point(serialize_to_array_start:maarpc.ControllerPostClickRequest)
   uint32_t cached_has_bits = 0;
   (void) cached_has_bits;
 
-  // optional .maa.Handle handle = 1;
+  // optional .maarpc.Handle handle = 1;
   if (_internal_has_handle()) {
     target = ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::
       InternalWriteMessage(1, _Internal::handle(this),
         _Internal::handle(this).GetCachedSize(), target, stream);
   }
 
-  // optional .maa.ClickParam param = 2;
+  // optional .maarpc.ClickParam param = 2;
   if (_internal_has_param()) {
     target = ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::
       InternalWriteMessage(2, _Internal::param(this),
@@ -4715,12 +4730,12 @@ uint8_t* ControllerPostClickRequest::_InternalSerialize(
     target = ::_pbi::WireFormat::InternalSerializeUnknownFieldsToArray(
         _internal_metadata_.unknown_fields<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(::PROTOBUF_NAMESPACE_ID::UnknownFieldSet::default_instance), target, stream);
   }
-  // @@protoc_insertion_point(serialize_to_array_end:maa.ControllerPostClickRequest)
+  // @@protoc_insertion_point(serialize_to_array_end:maarpc.ControllerPostClickRequest)
   return target;
 }
 
 size_t ControllerPostClickRequest::ByteSizeLong() const {
-// @@protoc_insertion_point(message_byte_size_start:maa.ControllerPostClickRequest)
+// @@protoc_insertion_point(message_byte_size_start:maarpc.ControllerPostClickRequest)
   size_t total_size = 0;
 
   uint32_t cached_has_bits = 0;
@@ -4729,14 +4744,14 @@ size_t ControllerPostClickRequest::ByteSizeLong() const {
 
   cached_has_bits = _impl_._has_bits_[0];
   if (cached_has_bits & 0x00000003u) {
-    // optional .maa.Handle handle = 1;
+    // optional .maarpc.Handle handle = 1;
     if (cached_has_bits & 0x00000001u) {
       total_size += 1 +
         ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::MessageSize(
           *_impl_.handle_);
     }
 
-    // optional .maa.ClickParam param = 2;
+    // optional .maarpc.ClickParam param = 2;
     if (cached_has_bits & 0x00000002u) {
       total_size += 1 +
         ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::MessageSize(
@@ -4757,7 +4772,7 @@ const ::PROTOBUF_NAMESPACE_ID::Message::ClassData*ControllerPostClickRequest::Ge
 void ControllerPostClickRequest::MergeImpl(::PROTOBUF_NAMESPACE_ID::Message& to_msg, const ::PROTOBUF_NAMESPACE_ID::Message& from_msg) {
   auto* const _this = static_cast<ControllerPostClickRequest*>(&to_msg);
   auto& from = static_cast<const ControllerPostClickRequest&>(from_msg);
-  // @@protoc_insertion_point(class_specific_merge_from_start:maa.ControllerPostClickRequest)
+  // @@protoc_insertion_point(class_specific_merge_from_start:maarpc.ControllerPostClickRequest)
   GOOGLE_DCHECK_NE(&from, _this);
   uint32_t cached_has_bits = 0;
   (void) cached_has_bits;
@@ -4765,11 +4780,11 @@ void ControllerPostClickRequest::MergeImpl(::PROTOBUF_NAMESPACE_ID::Message& to_
   cached_has_bits = from._impl_._has_bits_[0];
   if (cached_has_bits & 0x00000003u) {
     if (cached_has_bits & 0x00000001u) {
-      _this->_internal_mutable_handle()->::maa::Handle::MergeFrom(
+      _this->_internal_mutable_handle()->::maarpc::Handle::MergeFrom(
           from._internal_handle());
     }
     if (cached_has_bits & 0x00000002u) {
-      _this->_internal_mutable_param()->::maa::ClickParam::MergeFrom(
+      _this->_internal_mutable_param()->::maarpc::ClickParam::MergeFrom(
           from._internal_param());
     }
   }
@@ -4777,7 +4792,7 @@ void ControllerPostClickRequest::MergeImpl(::PROTOBUF_NAMESPACE_ID::Message& to_
 }
 
 void ControllerPostClickRequest::CopyFrom(const ControllerPostClickRequest& from) {
-// @@protoc_insertion_point(class_specific_copy_from_start:maa.ControllerPostClickRequest)
+// @@protoc_insertion_point(class_specific_copy_from_start:maarpc.ControllerPostClickRequest)
   if (&from == this) return;
   Clear();
   MergeFrom(from);
@@ -4810,21 +4825,21 @@ void ControllerPostClickRequest::InternalSwap(ControllerPostClickRequest* other)
 class ControllerPostSwipeRequest::_Internal {
  public:
   using HasBits = decltype(std::declval<ControllerPostSwipeRequest>()._impl_._has_bits_);
-  static const ::maa::Handle& handle(const ControllerPostSwipeRequest* msg);
+  static const ::maarpc::Handle& handle(const ControllerPostSwipeRequest* msg);
   static void set_has_handle(HasBits* has_bits) {
     (*has_bits)[0] |= 1u;
   }
-  static const ::maa::SwipeParam& param(const ControllerPostSwipeRequest* msg);
+  static const ::maarpc::SwipeParam& param(const ControllerPostSwipeRequest* msg);
   static void set_has_param(HasBits* has_bits) {
     (*has_bits)[0] |= 2u;
   }
 };
 
-const ::maa::Handle&
+const ::maarpc::Handle&
 ControllerPostSwipeRequest::_Internal::handle(const ControllerPostSwipeRequest* msg) {
   return *msg->_impl_.handle_;
 }
-const ::maa::SwipeParam&
+const ::maarpc::SwipeParam&
 ControllerPostSwipeRequest::_Internal::param(const ControllerPostSwipeRequest* msg) {
   return *msg->_impl_.param_;
 }
@@ -4840,7 +4855,7 @@ ControllerPostSwipeRequest::ControllerPostSwipeRequest(::PROTOBUF_NAMESPACE_ID::
                          bool is_message_owned)
   : ::PROTOBUF_NAMESPACE_ID::Message(arena, is_message_owned) {
   SharedCtor(arena, is_message_owned);
-  // @@protoc_insertion_point(arena_constructor:maa.ControllerPostSwipeRequest)
+  // @@protoc_insertion_point(arena_constructor:maarpc.ControllerPostSwipeRequest)
 }
 ControllerPostSwipeRequest::ControllerPostSwipeRequest(const ControllerPostSwipeRequest& from)
   : ::PROTOBUF_NAMESPACE_ID::Message() {
@@ -4853,12 +4868,12 @@ ControllerPostSwipeRequest::ControllerPostSwipeRequest(const ControllerPostSwipe
 
   _internal_metadata_.MergeFrom<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(from._internal_metadata_);
   if (from._internal_has_handle()) {
-    _this->_impl_.handle_ = new ::maa::Handle(*from._impl_.handle_);
+    _this->_impl_.handle_ = new ::maarpc::Handle(*from._impl_.handle_);
   }
   if (from._internal_has_param()) {
-    _this->_impl_.param_ = new ::maa::SwipeParam(*from._impl_.param_);
+    _this->_impl_.param_ = new ::maarpc::SwipeParam(*from._impl_.param_);
   }
-  // @@protoc_insertion_point(copy_constructor:maa.ControllerPostSwipeRequest)
+  // @@protoc_insertion_point(copy_constructor:maarpc.ControllerPostSwipeRequest)
 }
 
 inline void ControllerPostSwipeRequest::SharedCtor(
@@ -4874,7 +4889,7 @@ inline void ControllerPostSwipeRequest::SharedCtor(
 }
 
 ControllerPostSwipeRequest::~ControllerPostSwipeRequest() {
-  // @@protoc_insertion_point(destructor:maa.ControllerPostSwipeRequest)
+  // @@protoc_insertion_point(destructor:maarpc.ControllerPostSwipeRequest)
   if (auto *arena = _internal_metadata_.DeleteReturnArena<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>()) {
   (void)arena;
     return;
@@ -4893,7 +4908,7 @@ void ControllerPostSwipeRequest::SetCachedSize(int size) const {
 }
 
 void ControllerPostSwipeRequest::Clear() {
-// @@protoc_insertion_point(message_clear_start:maa.ControllerPostSwipeRequest)
+// @@protoc_insertion_point(message_clear_start:maarpc.ControllerPostSwipeRequest)
   uint32_t cached_has_bits = 0;
   // Prevent compiler warnings about cached_has_bits being unused
   (void) cached_has_bits;
@@ -4920,7 +4935,7 @@ const char* ControllerPostSwipeRequest::_InternalParse(const char* ptr, ::_pbi::
     uint32_t tag;
     ptr = ::_pbi::ReadTag(ptr, &tag);
     switch (tag >> 3) {
-      // optional .maa.Handle handle = 1;
+      // optional .maarpc.Handle handle = 1;
       case 1:
         if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 10)) {
           ptr = ctx->ParseMessage(_internal_mutable_handle(), ptr);
@@ -4928,7 +4943,7 @@ const char* ControllerPostSwipeRequest::_InternalParse(const char* ptr, ::_pbi::
         } else
           goto handle_unusual;
         continue;
-      // optional .maa.SwipeParam param = 2;
+      // optional .maarpc.SwipeParam param = 2;
       case 2:
         if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 18)) {
           ptr = ctx->ParseMessage(_internal_mutable_param(), ptr);
@@ -4962,18 +4977,18 @@ failure:
 
 uint8_t* ControllerPostSwipeRequest::_InternalSerialize(
     uint8_t* target, ::PROTOBUF_NAMESPACE_ID::io::EpsCopyOutputStream* stream) const {
-  // @@protoc_insertion_point(serialize_to_array_start:maa.ControllerPostSwipeRequest)
+  // @@protoc_insertion_point(serialize_to_array_start:maarpc.ControllerPostSwipeRequest)
   uint32_t cached_has_bits = 0;
   (void) cached_has_bits;
 
-  // optional .maa.Handle handle = 1;
+  // optional .maarpc.Handle handle = 1;
   if (_internal_has_handle()) {
     target = ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::
       InternalWriteMessage(1, _Internal::handle(this),
         _Internal::handle(this).GetCachedSize(), target, stream);
   }
 
-  // optional .maa.SwipeParam param = 2;
+  // optional .maarpc.SwipeParam param = 2;
   if (_internal_has_param()) {
     target = ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::
       InternalWriteMessage(2, _Internal::param(this),
@@ -4984,12 +4999,12 @@ uint8_t* ControllerPostSwipeRequest::_InternalSerialize(
     target = ::_pbi::WireFormat::InternalSerializeUnknownFieldsToArray(
         _internal_metadata_.unknown_fields<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(::PROTOBUF_NAMESPACE_ID::UnknownFieldSet::default_instance), target, stream);
   }
-  // @@protoc_insertion_point(serialize_to_array_end:maa.ControllerPostSwipeRequest)
+  // @@protoc_insertion_point(serialize_to_array_end:maarpc.ControllerPostSwipeRequest)
   return target;
 }
 
 size_t ControllerPostSwipeRequest::ByteSizeLong() const {
-// @@protoc_insertion_point(message_byte_size_start:maa.ControllerPostSwipeRequest)
+// @@protoc_insertion_point(message_byte_size_start:maarpc.ControllerPostSwipeRequest)
   size_t total_size = 0;
 
   uint32_t cached_has_bits = 0;
@@ -4998,14 +5013,14 @@ size_t ControllerPostSwipeRequest::ByteSizeLong() const {
 
   cached_has_bits = _impl_._has_bits_[0];
   if (cached_has_bits & 0x00000003u) {
-    // optional .maa.Handle handle = 1;
+    // optional .maarpc.Handle handle = 1;
     if (cached_has_bits & 0x00000001u) {
       total_size += 1 +
         ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::MessageSize(
           *_impl_.handle_);
     }
 
-    // optional .maa.SwipeParam param = 2;
+    // optional .maarpc.SwipeParam param = 2;
     if (cached_has_bits & 0x00000002u) {
       total_size += 1 +
         ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::MessageSize(
@@ -5026,7 +5041,7 @@ const ::PROTOBUF_NAMESPACE_ID::Message::ClassData*ControllerPostSwipeRequest::Ge
 void ControllerPostSwipeRequest::MergeImpl(::PROTOBUF_NAMESPACE_ID::Message& to_msg, const ::PROTOBUF_NAMESPACE_ID::Message& from_msg) {
   auto* const _this = static_cast<ControllerPostSwipeRequest*>(&to_msg);
   auto& from = static_cast<const ControllerPostSwipeRequest&>(from_msg);
-  // @@protoc_insertion_point(class_specific_merge_from_start:maa.ControllerPostSwipeRequest)
+  // @@protoc_insertion_point(class_specific_merge_from_start:maarpc.ControllerPostSwipeRequest)
   GOOGLE_DCHECK_NE(&from, _this);
   uint32_t cached_has_bits = 0;
   (void) cached_has_bits;
@@ -5034,11 +5049,11 @@ void ControllerPostSwipeRequest::MergeImpl(::PROTOBUF_NAMESPACE_ID::Message& to_
   cached_has_bits = from._impl_._has_bits_[0];
   if (cached_has_bits & 0x00000003u) {
     if (cached_has_bits & 0x00000001u) {
-      _this->_internal_mutable_handle()->::maa::Handle::MergeFrom(
+      _this->_internal_mutable_handle()->::maarpc::Handle::MergeFrom(
           from._internal_handle());
     }
     if (cached_has_bits & 0x00000002u) {
-      _this->_internal_mutable_param()->::maa::SwipeParam::MergeFrom(
+      _this->_internal_mutable_param()->::maarpc::SwipeParam::MergeFrom(
           from._internal_param());
     }
   }
@@ -5046,7 +5061,7 @@ void ControllerPostSwipeRequest::MergeImpl(::PROTOBUF_NAMESPACE_ID::Message& to_
 }
 
 void ControllerPostSwipeRequest::CopyFrom(const ControllerPostSwipeRequest& from) {
-// @@protoc_insertion_point(class_specific_copy_from_start:maa.ControllerPostSwipeRequest)
+// @@protoc_insertion_point(class_specific_copy_from_start:maarpc.ControllerPostSwipeRequest)
   if (&from == this) return;
   Clear();
   MergeFrom(from);
@@ -5079,21 +5094,21 @@ void ControllerPostSwipeRequest::InternalSwap(ControllerPostSwipeRequest* other)
 class ControllerPostKeyRequest::_Internal {
  public:
   using HasBits = decltype(std::declval<ControllerPostKeyRequest>()._impl_._has_bits_);
-  static const ::maa::Handle& handle(const ControllerPostKeyRequest* msg);
+  static const ::maarpc::Handle& handle(const ControllerPostKeyRequest* msg);
   static void set_has_handle(HasBits* has_bits) {
     (*has_bits)[0] |= 1u;
   }
-  static const ::maa::KeyParam& param(const ControllerPostKeyRequest* msg);
+  static const ::maarpc::KeyParam& param(const ControllerPostKeyRequest* msg);
   static void set_has_param(HasBits* has_bits) {
     (*has_bits)[0] |= 2u;
   }
 };
 
-const ::maa::Handle&
+const ::maarpc::Handle&
 ControllerPostKeyRequest::_Internal::handle(const ControllerPostKeyRequest* msg) {
   return *msg->_impl_.handle_;
 }
-const ::maa::KeyParam&
+const ::maarpc::KeyParam&
 ControllerPostKeyRequest::_Internal::param(const ControllerPostKeyRequest* msg) {
   return *msg->_impl_.param_;
 }
@@ -5109,7 +5124,7 @@ ControllerPostKeyRequest::ControllerPostKeyRequest(::PROTOBUF_NAMESPACE_ID::Aren
                          bool is_message_owned)
   : ::PROTOBUF_NAMESPACE_ID::Message(arena, is_message_owned) {
   SharedCtor(arena, is_message_owned);
-  // @@protoc_insertion_point(arena_constructor:maa.ControllerPostKeyRequest)
+  // @@protoc_insertion_point(arena_constructor:maarpc.ControllerPostKeyRequest)
 }
 ControllerPostKeyRequest::ControllerPostKeyRequest(const ControllerPostKeyRequest& from)
   : ::PROTOBUF_NAMESPACE_ID::Message() {
@@ -5122,12 +5137,12 @@ ControllerPostKeyRequest::ControllerPostKeyRequest(const ControllerPostKeyReques
 
   _internal_metadata_.MergeFrom<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(from._internal_metadata_);
   if (from._internal_has_handle()) {
-    _this->_impl_.handle_ = new ::maa::Handle(*from._impl_.handle_);
+    _this->_impl_.handle_ = new ::maarpc::Handle(*from._impl_.handle_);
   }
   if (from._internal_has_param()) {
-    _this->_impl_.param_ = new ::maa::KeyParam(*from._impl_.param_);
+    _this->_impl_.param_ = new ::maarpc::KeyParam(*from._impl_.param_);
   }
-  // @@protoc_insertion_point(copy_constructor:maa.ControllerPostKeyRequest)
+  // @@protoc_insertion_point(copy_constructor:maarpc.ControllerPostKeyRequest)
 }
 
 inline void ControllerPostKeyRequest::SharedCtor(
@@ -5143,7 +5158,7 @@ inline void ControllerPostKeyRequest::SharedCtor(
 }
 
 ControllerPostKeyRequest::~ControllerPostKeyRequest() {
-  // @@protoc_insertion_point(destructor:maa.ControllerPostKeyRequest)
+  // @@protoc_insertion_point(destructor:maarpc.ControllerPostKeyRequest)
   if (auto *arena = _internal_metadata_.DeleteReturnArena<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>()) {
   (void)arena;
     return;
@@ -5162,7 +5177,7 @@ void ControllerPostKeyRequest::SetCachedSize(int size) const {
 }
 
 void ControllerPostKeyRequest::Clear() {
-// @@protoc_insertion_point(message_clear_start:maa.ControllerPostKeyRequest)
+// @@protoc_insertion_point(message_clear_start:maarpc.ControllerPostKeyRequest)
   uint32_t cached_has_bits = 0;
   // Prevent compiler warnings about cached_has_bits being unused
   (void) cached_has_bits;
@@ -5189,7 +5204,7 @@ const char* ControllerPostKeyRequest::_InternalParse(const char* ptr, ::_pbi::Pa
     uint32_t tag;
     ptr = ::_pbi::ReadTag(ptr, &tag);
     switch (tag >> 3) {
-      // optional .maa.Handle handle = 1;
+      // optional .maarpc.Handle handle = 1;
       case 1:
         if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 10)) {
           ptr = ctx->ParseMessage(_internal_mutable_handle(), ptr);
@@ -5197,7 +5212,7 @@ const char* ControllerPostKeyRequest::_InternalParse(const char* ptr, ::_pbi::Pa
         } else
           goto handle_unusual;
         continue;
-      // optional .maa.KeyParam param = 2;
+      // optional .maarpc.KeyParam param = 2;
       case 2:
         if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 18)) {
           ptr = ctx->ParseMessage(_internal_mutable_param(), ptr);
@@ -5231,18 +5246,18 @@ failure:
 
 uint8_t* ControllerPostKeyRequest::_InternalSerialize(
     uint8_t* target, ::PROTOBUF_NAMESPACE_ID::io::EpsCopyOutputStream* stream) const {
-  // @@protoc_insertion_point(serialize_to_array_start:maa.ControllerPostKeyRequest)
+  // @@protoc_insertion_point(serialize_to_array_start:maarpc.ControllerPostKeyRequest)
   uint32_t cached_has_bits = 0;
   (void) cached_has_bits;
 
-  // optional .maa.Handle handle = 1;
+  // optional .maarpc.Handle handle = 1;
   if (_internal_has_handle()) {
     target = ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::
       InternalWriteMessage(1, _Internal::handle(this),
         _Internal::handle(this).GetCachedSize(), target, stream);
   }
 
-  // optional .maa.KeyParam param = 2;
+  // optional .maarpc.KeyParam param = 2;
   if (_internal_has_param()) {
     target = ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::
       InternalWriteMessage(2, _Internal::param(this),
@@ -5253,12 +5268,12 @@ uint8_t* ControllerPostKeyRequest::_InternalSerialize(
     target = ::_pbi::WireFormat::InternalSerializeUnknownFieldsToArray(
         _internal_metadata_.unknown_fields<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(::PROTOBUF_NAMESPACE_ID::UnknownFieldSet::default_instance), target, stream);
   }
-  // @@protoc_insertion_point(serialize_to_array_end:maa.ControllerPostKeyRequest)
+  // @@protoc_insertion_point(serialize_to_array_end:maarpc.ControllerPostKeyRequest)
   return target;
 }
 
 size_t ControllerPostKeyRequest::ByteSizeLong() const {
-// @@protoc_insertion_point(message_byte_size_start:maa.ControllerPostKeyRequest)
+// @@protoc_insertion_point(message_byte_size_start:maarpc.ControllerPostKeyRequest)
   size_t total_size = 0;
 
   uint32_t cached_has_bits = 0;
@@ -5267,14 +5282,14 @@ size_t ControllerPostKeyRequest::ByteSizeLong() const {
 
   cached_has_bits = _impl_._has_bits_[0];
   if (cached_has_bits & 0x00000003u) {
-    // optional .maa.Handle handle = 1;
+    // optional .maarpc.Handle handle = 1;
     if (cached_has_bits & 0x00000001u) {
       total_size += 1 +
         ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::MessageSize(
           *_impl_.handle_);
     }
 
-    // optional .maa.KeyParam param = 2;
+    // optional .maarpc.KeyParam param = 2;
     if (cached_has_bits & 0x00000002u) {
       total_size += 1 +
         ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::MessageSize(
@@ -5295,7 +5310,7 @@ const ::PROTOBUF_NAMESPACE_ID::Message::ClassData*ControllerPostKeyRequest::GetC
 void ControllerPostKeyRequest::MergeImpl(::PROTOBUF_NAMESPACE_ID::Message& to_msg, const ::PROTOBUF_NAMESPACE_ID::Message& from_msg) {
   auto* const _this = static_cast<ControllerPostKeyRequest*>(&to_msg);
   auto& from = static_cast<const ControllerPostKeyRequest&>(from_msg);
-  // @@protoc_insertion_point(class_specific_merge_from_start:maa.ControllerPostKeyRequest)
+  // @@protoc_insertion_point(class_specific_merge_from_start:maarpc.ControllerPostKeyRequest)
   GOOGLE_DCHECK_NE(&from, _this);
   uint32_t cached_has_bits = 0;
   (void) cached_has_bits;
@@ -5303,11 +5318,11 @@ void ControllerPostKeyRequest::MergeImpl(::PROTOBUF_NAMESPACE_ID::Message& to_ms
   cached_has_bits = from._impl_._has_bits_[0];
   if (cached_has_bits & 0x00000003u) {
     if (cached_has_bits & 0x00000001u) {
-      _this->_internal_mutable_handle()->::maa::Handle::MergeFrom(
+      _this->_internal_mutable_handle()->::maarpc::Handle::MergeFrom(
           from._internal_handle());
     }
     if (cached_has_bits & 0x00000002u) {
-      _this->_internal_mutable_param()->::maa::KeyParam::MergeFrom(
+      _this->_internal_mutable_param()->::maarpc::KeyParam::MergeFrom(
           from._internal_param());
     }
   }
@@ -5315,7 +5330,7 @@ void ControllerPostKeyRequest::MergeImpl(::PROTOBUF_NAMESPACE_ID::Message& to_ms
 }
 
 void ControllerPostKeyRequest::CopyFrom(const ControllerPostKeyRequest& from) {
-// @@protoc_insertion_point(class_specific_copy_from_start:maa.ControllerPostKeyRequest)
+// @@protoc_insertion_point(class_specific_copy_from_start:maarpc.ControllerPostKeyRequest)
   if (&from == this) return;
   Clear();
   MergeFrom(from);
@@ -5348,21 +5363,21 @@ void ControllerPostKeyRequest::InternalSwap(ControllerPostKeyRequest* other) {
 class ControllerPostTouchRequest::_Internal {
  public:
   using HasBits = decltype(std::declval<ControllerPostTouchRequest>()._impl_._has_bits_);
-  static const ::maa::Handle& handle(const ControllerPostTouchRequest* msg);
+  static const ::maarpc::Handle& handle(const ControllerPostTouchRequest* msg);
   static void set_has_handle(HasBits* has_bits) {
     (*has_bits)[0] |= 1u;
   }
-  static const ::maa::TouchParam& param(const ControllerPostTouchRequest* msg);
+  static const ::maarpc::TouchParam& param(const ControllerPostTouchRequest* msg);
   static void set_has_param(HasBits* has_bits) {
     (*has_bits)[0] |= 2u;
   }
 };
 
-const ::maa::Handle&
+const ::maarpc::Handle&
 ControllerPostTouchRequest::_Internal::handle(const ControllerPostTouchRequest* msg) {
   return *msg->_impl_.handle_;
 }
-const ::maa::TouchParam&
+const ::maarpc::TouchParam&
 ControllerPostTouchRequest::_Internal::param(const ControllerPostTouchRequest* msg) {
   return *msg->_impl_.param_;
 }
@@ -5378,7 +5393,7 @@ ControllerPostTouchRequest::ControllerPostTouchRequest(::PROTOBUF_NAMESPACE_ID::
                          bool is_message_owned)
   : ::PROTOBUF_NAMESPACE_ID::Message(arena, is_message_owned) {
   SharedCtor(arena, is_message_owned);
-  // @@protoc_insertion_point(arena_constructor:maa.ControllerPostTouchRequest)
+  // @@protoc_insertion_point(arena_constructor:maarpc.ControllerPostTouchRequest)
 }
 ControllerPostTouchRequest::ControllerPostTouchRequest(const ControllerPostTouchRequest& from)
   : ::PROTOBUF_NAMESPACE_ID::Message() {
@@ -5391,12 +5406,12 @@ ControllerPostTouchRequest::ControllerPostTouchRequest(const ControllerPostTouch
 
   _internal_metadata_.MergeFrom<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(from._internal_metadata_);
   if (from._internal_has_handle()) {
-    _this->_impl_.handle_ = new ::maa::Handle(*from._impl_.handle_);
+    _this->_impl_.handle_ = new ::maarpc::Handle(*from._impl_.handle_);
   }
   if (from._internal_has_param()) {
-    _this->_impl_.param_ = new ::maa::TouchParam(*from._impl_.param_);
+    _this->_impl_.param_ = new ::maarpc::TouchParam(*from._impl_.param_);
   }
-  // @@protoc_insertion_point(copy_constructor:maa.ControllerPostTouchRequest)
+  // @@protoc_insertion_point(copy_constructor:maarpc.ControllerPostTouchRequest)
 }
 
 inline void ControllerPostTouchRequest::SharedCtor(
@@ -5412,7 +5427,7 @@ inline void ControllerPostTouchRequest::SharedCtor(
 }
 
 ControllerPostTouchRequest::~ControllerPostTouchRequest() {
-  // @@protoc_insertion_point(destructor:maa.ControllerPostTouchRequest)
+  // @@protoc_insertion_point(destructor:maarpc.ControllerPostTouchRequest)
   if (auto *arena = _internal_metadata_.DeleteReturnArena<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>()) {
   (void)arena;
     return;
@@ -5431,7 +5446,7 @@ void ControllerPostTouchRequest::SetCachedSize(int size) const {
 }
 
 void ControllerPostTouchRequest::Clear() {
-// @@protoc_insertion_point(message_clear_start:maa.ControllerPostTouchRequest)
+// @@protoc_insertion_point(message_clear_start:maarpc.ControllerPostTouchRequest)
   uint32_t cached_has_bits = 0;
   // Prevent compiler warnings about cached_has_bits being unused
   (void) cached_has_bits;
@@ -5458,7 +5473,7 @@ const char* ControllerPostTouchRequest::_InternalParse(const char* ptr, ::_pbi::
     uint32_t tag;
     ptr = ::_pbi::ReadTag(ptr, &tag);
     switch (tag >> 3) {
-      // optional .maa.Handle handle = 1;
+      // optional .maarpc.Handle handle = 1;
       case 1:
         if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 10)) {
           ptr = ctx->ParseMessage(_internal_mutable_handle(), ptr);
@@ -5466,7 +5481,7 @@ const char* ControllerPostTouchRequest::_InternalParse(const char* ptr, ::_pbi::
         } else
           goto handle_unusual;
         continue;
-      // optional .maa.TouchParam param = 2;
+      // optional .maarpc.TouchParam param = 2;
       case 2:
         if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 18)) {
           ptr = ctx->ParseMessage(_internal_mutable_param(), ptr);
@@ -5500,18 +5515,18 @@ failure:
 
 uint8_t* ControllerPostTouchRequest::_InternalSerialize(
     uint8_t* target, ::PROTOBUF_NAMESPACE_ID::io::EpsCopyOutputStream* stream) const {
-  // @@protoc_insertion_point(serialize_to_array_start:maa.ControllerPostTouchRequest)
+  // @@protoc_insertion_point(serialize_to_array_start:maarpc.ControllerPostTouchRequest)
   uint32_t cached_has_bits = 0;
   (void) cached_has_bits;
 
-  // optional .maa.Handle handle = 1;
+  // optional .maarpc.Handle handle = 1;
   if (_internal_has_handle()) {
     target = ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::
       InternalWriteMessage(1, _Internal::handle(this),
         _Internal::handle(this).GetCachedSize(), target, stream);
   }
 
-  // optional .maa.TouchParam param = 2;
+  // optional .maarpc.TouchParam param = 2;
   if (_internal_has_param()) {
     target = ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::
       InternalWriteMessage(2, _Internal::param(this),
@@ -5522,12 +5537,12 @@ uint8_t* ControllerPostTouchRequest::_InternalSerialize(
     target = ::_pbi::WireFormat::InternalSerializeUnknownFieldsToArray(
         _internal_metadata_.unknown_fields<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(::PROTOBUF_NAMESPACE_ID::UnknownFieldSet::default_instance), target, stream);
   }
-  // @@protoc_insertion_point(serialize_to_array_end:maa.ControllerPostTouchRequest)
+  // @@protoc_insertion_point(serialize_to_array_end:maarpc.ControllerPostTouchRequest)
   return target;
 }
 
 size_t ControllerPostTouchRequest::ByteSizeLong() const {
-// @@protoc_insertion_point(message_byte_size_start:maa.ControllerPostTouchRequest)
+// @@protoc_insertion_point(message_byte_size_start:maarpc.ControllerPostTouchRequest)
   size_t total_size = 0;
 
   uint32_t cached_has_bits = 0;
@@ -5536,14 +5551,14 @@ size_t ControllerPostTouchRequest::ByteSizeLong() const {
 
   cached_has_bits = _impl_._has_bits_[0];
   if (cached_has_bits & 0x00000003u) {
-    // optional .maa.Handle handle = 1;
+    // optional .maarpc.Handle handle = 1;
     if (cached_has_bits & 0x00000001u) {
       total_size += 1 +
         ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::MessageSize(
           *_impl_.handle_);
     }
 
-    // optional .maa.TouchParam param = 2;
+    // optional .maarpc.TouchParam param = 2;
     if (cached_has_bits & 0x00000002u) {
       total_size += 1 +
         ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::MessageSize(
@@ -5564,7 +5579,7 @@ const ::PROTOBUF_NAMESPACE_ID::Message::ClassData*ControllerPostTouchRequest::Ge
 void ControllerPostTouchRequest::MergeImpl(::PROTOBUF_NAMESPACE_ID::Message& to_msg, const ::PROTOBUF_NAMESPACE_ID::Message& from_msg) {
   auto* const _this = static_cast<ControllerPostTouchRequest*>(&to_msg);
   auto& from = static_cast<const ControllerPostTouchRequest&>(from_msg);
-  // @@protoc_insertion_point(class_specific_merge_from_start:maa.ControllerPostTouchRequest)
+  // @@protoc_insertion_point(class_specific_merge_from_start:maarpc.ControllerPostTouchRequest)
   GOOGLE_DCHECK_NE(&from, _this);
   uint32_t cached_has_bits = 0;
   (void) cached_has_bits;
@@ -5572,11 +5587,11 @@ void ControllerPostTouchRequest::MergeImpl(::PROTOBUF_NAMESPACE_ID::Message& to_
   cached_has_bits = from._impl_._has_bits_[0];
   if (cached_has_bits & 0x00000003u) {
     if (cached_has_bits & 0x00000001u) {
-      _this->_internal_mutable_handle()->::maa::Handle::MergeFrom(
+      _this->_internal_mutable_handle()->::maarpc::Handle::MergeFrom(
           from._internal_handle());
     }
     if (cached_has_bits & 0x00000002u) {
-      _this->_internal_mutable_param()->::maa::TouchParam::MergeFrom(
+      _this->_internal_mutable_param()->::maarpc::TouchParam::MergeFrom(
           from._internal_param());
     }
   }
@@ -5584,7 +5599,7 @@ void ControllerPostTouchRequest::MergeImpl(::PROTOBUF_NAMESPACE_ID::Message& to_
 }
 
 void ControllerPostTouchRequest::CopyFrom(const ControllerPostTouchRequest& from) {
-// @@protoc_insertion_point(class_specific_copy_from_start:maa.ControllerPostTouchRequest)
+// @@protoc_insertion_point(class_specific_copy_from_start:maarpc.ControllerPostTouchRequest)
   if (&from == this) return;
   Clear();
   MergeFrom(from);
@@ -5617,21 +5632,21 @@ void ControllerPostTouchRequest::InternalSwap(ControllerPostTouchRequest* other)
 class ControllerGetImageRequest::_Internal {
  public:
   using HasBits = decltype(std::declval<ControllerGetImageRequest>()._impl_._has_bits_);
-  static const ::maa::Handle& handle(const ControllerGetImageRequest* msg);
+  static const ::maarpc::Handle& handle(const ControllerGetImageRequest* msg);
   static void set_has_handle(HasBits* has_bits) {
     (*has_bits)[0] |= 1u;
   }
-  static const ::maa::Handle& image(const ControllerGetImageRequest* msg);
+  static const ::maarpc::Handle& image(const ControllerGetImageRequest* msg);
   static void set_has_image(HasBits* has_bits) {
     (*has_bits)[0] |= 2u;
   }
 };
 
-const ::maa::Handle&
+const ::maarpc::Handle&
 ControllerGetImageRequest::_Internal::handle(const ControllerGetImageRequest* msg) {
   return *msg->_impl_.handle_;
 }
-const ::maa::Handle&
+const ::maarpc::Handle&
 ControllerGetImageRequest::_Internal::image(const ControllerGetImageRequest* msg) {
   return *msg->_impl_.image_;
 }
@@ -5647,7 +5662,7 @@ ControllerGetImageRequest::ControllerGetImageRequest(::PROTOBUF_NAMESPACE_ID::Ar
                          bool is_message_owned)
   : ::PROTOBUF_NAMESPACE_ID::Message(arena, is_message_owned) {
   SharedCtor(arena, is_message_owned);
-  // @@protoc_insertion_point(arena_constructor:maa.ControllerGetImageRequest)
+  // @@protoc_insertion_point(arena_constructor:maarpc.ControllerGetImageRequest)
 }
 ControllerGetImageRequest::ControllerGetImageRequest(const ControllerGetImageRequest& from)
   : ::PROTOBUF_NAMESPACE_ID::Message() {
@@ -5660,12 +5675,12 @@ ControllerGetImageRequest::ControllerGetImageRequest(const ControllerGetImageReq
 
   _internal_metadata_.MergeFrom<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(from._internal_metadata_);
   if (from._internal_has_handle()) {
-    _this->_impl_.handle_ = new ::maa::Handle(*from._impl_.handle_);
+    _this->_impl_.handle_ = new ::maarpc::Handle(*from._impl_.handle_);
   }
   if (from._internal_has_image()) {
-    _this->_impl_.image_ = new ::maa::Handle(*from._impl_.image_);
+    _this->_impl_.image_ = new ::maarpc::Handle(*from._impl_.image_);
   }
-  // @@protoc_insertion_point(copy_constructor:maa.ControllerGetImageRequest)
+  // @@protoc_insertion_point(copy_constructor:maarpc.ControllerGetImageRequest)
 }
 
 inline void ControllerGetImageRequest::SharedCtor(
@@ -5681,7 +5696,7 @@ inline void ControllerGetImageRequest::SharedCtor(
 }
 
 ControllerGetImageRequest::~ControllerGetImageRequest() {
-  // @@protoc_insertion_point(destructor:maa.ControllerGetImageRequest)
+  // @@protoc_insertion_point(destructor:maarpc.ControllerGetImageRequest)
   if (auto *arena = _internal_metadata_.DeleteReturnArena<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>()) {
   (void)arena;
     return;
@@ -5700,7 +5715,7 @@ void ControllerGetImageRequest::SetCachedSize(int size) const {
 }
 
 void ControllerGetImageRequest::Clear() {
-// @@protoc_insertion_point(message_clear_start:maa.ControllerGetImageRequest)
+// @@protoc_insertion_point(message_clear_start:maarpc.ControllerGetImageRequest)
   uint32_t cached_has_bits = 0;
   // Prevent compiler warnings about cached_has_bits being unused
   (void) cached_has_bits;
@@ -5727,7 +5742,7 @@ const char* ControllerGetImageRequest::_InternalParse(const char* ptr, ::_pbi::P
     uint32_t tag;
     ptr = ::_pbi::ReadTag(ptr, &tag);
     switch (tag >> 3) {
-      // optional .maa.Handle handle = 1;
+      // optional .maarpc.Handle handle = 1;
       case 1:
         if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 10)) {
           ptr = ctx->ParseMessage(_internal_mutable_handle(), ptr);
@@ -5735,7 +5750,7 @@ const char* ControllerGetImageRequest::_InternalParse(const char* ptr, ::_pbi::P
         } else
           goto handle_unusual;
         continue;
-      // optional .maa.Handle image = 2;
+      // optional .maarpc.Handle image = 2;
       case 2:
         if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 18)) {
           ptr = ctx->ParseMessage(_internal_mutable_image(), ptr);
@@ -5769,18 +5784,18 @@ failure:
 
 uint8_t* ControllerGetImageRequest::_InternalSerialize(
     uint8_t* target, ::PROTOBUF_NAMESPACE_ID::io::EpsCopyOutputStream* stream) const {
-  // @@protoc_insertion_point(serialize_to_array_start:maa.ControllerGetImageRequest)
+  // @@protoc_insertion_point(serialize_to_array_start:maarpc.ControllerGetImageRequest)
   uint32_t cached_has_bits = 0;
   (void) cached_has_bits;
 
-  // optional .maa.Handle handle = 1;
+  // optional .maarpc.Handle handle = 1;
   if (_internal_has_handle()) {
     target = ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::
       InternalWriteMessage(1, _Internal::handle(this),
         _Internal::handle(this).GetCachedSize(), target, stream);
   }
 
-  // optional .maa.Handle image = 2;
+  // optional .maarpc.Handle image = 2;
   if (_internal_has_image()) {
     target = ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::
       InternalWriteMessage(2, _Internal::image(this),
@@ -5791,12 +5806,12 @@ uint8_t* ControllerGetImageRequest::_InternalSerialize(
     target = ::_pbi::WireFormat::InternalSerializeUnknownFieldsToArray(
         _internal_metadata_.unknown_fields<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(::PROTOBUF_NAMESPACE_ID::UnknownFieldSet::default_instance), target, stream);
   }
-  // @@protoc_insertion_point(serialize_to_array_end:maa.ControllerGetImageRequest)
+  // @@protoc_insertion_point(serialize_to_array_end:maarpc.ControllerGetImageRequest)
   return target;
 }
 
 size_t ControllerGetImageRequest::ByteSizeLong() const {
-// @@protoc_insertion_point(message_byte_size_start:maa.ControllerGetImageRequest)
+// @@protoc_insertion_point(message_byte_size_start:maarpc.ControllerGetImageRequest)
   size_t total_size = 0;
 
   uint32_t cached_has_bits = 0;
@@ -5805,14 +5820,14 @@ size_t ControllerGetImageRequest::ByteSizeLong() const {
 
   cached_has_bits = _impl_._has_bits_[0];
   if (cached_has_bits & 0x00000003u) {
-    // optional .maa.Handle handle = 1;
+    // optional .maarpc.Handle handle = 1;
     if (cached_has_bits & 0x00000001u) {
       total_size += 1 +
         ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::MessageSize(
           *_impl_.handle_);
     }
 
-    // optional .maa.Handle image = 2;
+    // optional .maarpc.Handle image = 2;
     if (cached_has_bits & 0x00000002u) {
       total_size += 1 +
         ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::MessageSize(
@@ -5833,7 +5848,7 @@ const ::PROTOBUF_NAMESPACE_ID::Message::ClassData*ControllerGetImageRequest::Get
 void ControllerGetImageRequest::MergeImpl(::PROTOBUF_NAMESPACE_ID::Message& to_msg, const ::PROTOBUF_NAMESPACE_ID::Message& from_msg) {
   auto* const _this = static_cast<ControllerGetImageRequest*>(&to_msg);
   auto& from = static_cast<const ControllerGetImageRequest&>(from_msg);
-  // @@protoc_insertion_point(class_specific_merge_from_start:maa.ControllerGetImageRequest)
+  // @@protoc_insertion_point(class_specific_merge_from_start:maarpc.ControllerGetImageRequest)
   GOOGLE_DCHECK_NE(&from, _this);
   uint32_t cached_has_bits = 0;
   (void) cached_has_bits;
@@ -5841,11 +5856,11 @@ void ControllerGetImageRequest::MergeImpl(::PROTOBUF_NAMESPACE_ID::Message& to_m
   cached_has_bits = from._impl_._has_bits_[0];
   if (cached_has_bits & 0x00000003u) {
     if (cached_has_bits & 0x00000001u) {
-      _this->_internal_mutable_handle()->::maa::Handle::MergeFrom(
+      _this->_internal_mutable_handle()->::maarpc::Handle::MergeFrom(
           from._internal_handle());
     }
     if (cached_has_bits & 0x00000002u) {
-      _this->_internal_mutable_image()->::maa::Handle::MergeFrom(
+      _this->_internal_mutable_image()->::maarpc::Handle::MergeFrom(
           from._internal_image());
     }
   }
@@ -5853,7 +5868,7 @@ void ControllerGetImageRequest::MergeImpl(::PROTOBUF_NAMESPACE_ID::Message& to_m
 }
 
 void ControllerGetImageRequest::CopyFrom(const ControllerGetImageRequest& from) {
-// @@protoc_insertion_point(class_specific_copy_from_start:maa.ControllerGetImageRequest)
+// @@protoc_insertion_point(class_specific_copy_from_start:maarpc.ControllerGetImageRequest)
   if (&from == this) return;
   Clear();
   MergeFrom(from);
@@ -5886,24 +5901,24 @@ void ControllerGetImageRequest::InternalSwap(ControllerGetImageRequest* other) {
 class CustomRecognizerRequest::_Internal {
  public:
   using HasBits = decltype(std::declval<CustomRecognizerRequest>()._impl_._has_bits_);
-  static const ::maa::Handle& handle(const CustomRecognizerRequest* msg);
+  static const ::maarpc::Handle& handle(const CustomRecognizerRequest* msg);
   static void set_has_handle(HasBits* has_bits) {
     (*has_bits)[0] |= 2u;
   }
   static void set_has_name(HasBits* has_bits) {
     (*has_bits)[0] |= 1u;
   }
-  static const ::maa::Id& reco(const CustomRecognizerRequest* msg);
+  static const ::maarpc::Id& reco(const CustomRecognizerRequest* msg);
   static void set_has_reco(HasBits* has_bits) {
     (*has_bits)[0] |= 4u;
   }
 };
 
-const ::maa::Handle&
+const ::maarpc::Handle&
 CustomRecognizerRequest::_Internal::handle(const CustomRecognizerRequest* msg) {
   return *msg->_impl_.handle_;
 }
-const ::maa::Id&
+const ::maarpc::Id&
 CustomRecognizerRequest::_Internal::reco(const CustomRecognizerRequest* msg) {
   return *msg->_impl_.reco_;
 }
@@ -5919,7 +5934,7 @@ CustomRecognizerRequest::CustomRecognizerRequest(::PROTOBUF_NAMESPACE_ID::Arena*
                          bool is_message_owned)
   : ::PROTOBUF_NAMESPACE_ID::Message(arena, is_message_owned) {
   SharedCtor(arena, is_message_owned);
-  // @@protoc_insertion_point(arena_constructor:maa.CustomRecognizerRequest)
+  // @@protoc_insertion_point(arena_constructor:maarpc.CustomRecognizerRequest)
 }
 CustomRecognizerRequest::CustomRecognizerRequest(const CustomRecognizerRequest& from)
   : ::PROTOBUF_NAMESPACE_ID::Message() {
@@ -5941,12 +5956,12 @@ CustomRecognizerRequest::CustomRecognizerRequest(const CustomRecognizerRequest& 
       _this->GetArenaForAllocation());
   }
   if (from._internal_has_handle()) {
-    _this->_impl_.handle_ = new ::maa::Handle(*from._impl_.handle_);
+    _this->_impl_.handle_ = new ::maarpc::Handle(*from._impl_.handle_);
   }
   if (from._internal_has_reco()) {
-    _this->_impl_.reco_ = new ::maa::Id(*from._impl_.reco_);
+    _this->_impl_.reco_ = new ::maarpc::Id(*from._impl_.reco_);
   }
-  // @@protoc_insertion_point(copy_constructor:maa.CustomRecognizerRequest)
+  // @@protoc_insertion_point(copy_constructor:maarpc.CustomRecognizerRequest)
 }
 
 inline void CustomRecognizerRequest::SharedCtor(
@@ -5967,7 +5982,7 @@ inline void CustomRecognizerRequest::SharedCtor(
 }
 
 CustomRecognizerRequest::~CustomRecognizerRequest() {
-  // @@protoc_insertion_point(destructor:maa.CustomRecognizerRequest)
+  // @@protoc_insertion_point(destructor:maarpc.CustomRecognizerRequest)
   if (auto *arena = _internal_metadata_.DeleteReturnArena<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>()) {
   (void)arena;
     return;
@@ -5987,7 +6002,7 @@ void CustomRecognizerRequest::SetCachedSize(int size) const {
 }
 
 void CustomRecognizerRequest::Clear() {
-// @@protoc_insertion_point(message_clear_start:maa.CustomRecognizerRequest)
+// @@protoc_insertion_point(message_clear_start:maarpc.CustomRecognizerRequest)
   uint32_t cached_has_bits = 0;
   // Prevent compiler warnings about cached_has_bits being unused
   (void) cached_has_bits;
@@ -6017,7 +6032,7 @@ const char* CustomRecognizerRequest::_InternalParse(const char* ptr, ::_pbi::Par
     uint32_t tag;
     ptr = ::_pbi::ReadTag(ptr, &tag);
     switch (tag >> 3) {
-      // optional .maa.Handle handle = 1;
+      // optional .maarpc.Handle handle = 1;
       case 1:
         if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 10)) {
           ptr = ctx->ParseMessage(_internal_mutable_handle(), ptr);
@@ -6031,11 +6046,11 @@ const char* CustomRecognizerRequest::_InternalParse(const char* ptr, ::_pbi::Par
           auto str = _internal_mutable_name();
           ptr = ::_pbi::InlineGreedyStringParser(str, ptr, ctx);
           CHK_(ptr);
-          CHK_(::_pbi::VerifyUTF8(str, "maa.CustomRecognizerRequest.name"));
+          CHK_(::_pbi::VerifyUTF8(str, "maarpc.CustomRecognizerRequest.name"));
         } else
           goto handle_unusual;
         continue;
-      // optional .maa.Id reco = 3;
+      // optional .maarpc.Id reco = 3;
       case 3:
         if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 26)) {
           ptr = ctx->ParseMessage(_internal_mutable_reco(), ptr);
@@ -6069,11 +6084,11 @@ failure:
 
 uint8_t* CustomRecognizerRequest::_InternalSerialize(
     uint8_t* target, ::PROTOBUF_NAMESPACE_ID::io::EpsCopyOutputStream* stream) const {
-  // @@protoc_insertion_point(serialize_to_array_start:maa.CustomRecognizerRequest)
+  // @@protoc_insertion_point(serialize_to_array_start:maarpc.CustomRecognizerRequest)
   uint32_t cached_has_bits = 0;
   (void) cached_has_bits;
 
-  // optional .maa.Handle handle = 1;
+  // optional .maarpc.Handle handle = 1;
   if (_internal_has_handle()) {
     target = ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::
       InternalWriteMessage(1, _Internal::handle(this),
@@ -6085,12 +6100,12 @@ uint8_t* CustomRecognizerRequest::_InternalSerialize(
     ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::VerifyUtf8String(
       this->_internal_name().data(), static_cast<int>(this->_internal_name().length()),
       ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::SERIALIZE,
-      "maa.CustomRecognizerRequest.name");
+      "maarpc.CustomRecognizerRequest.name");
     target = stream->WriteStringMaybeAliased(
         2, this->_internal_name(), target);
   }
 
-  // optional .maa.Id reco = 3;
+  // optional .maarpc.Id reco = 3;
   if (_internal_has_reco()) {
     target = ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::
       InternalWriteMessage(3, _Internal::reco(this),
@@ -6101,12 +6116,12 @@ uint8_t* CustomRecognizerRequest::_InternalSerialize(
     target = ::_pbi::WireFormat::InternalSerializeUnknownFieldsToArray(
         _internal_metadata_.unknown_fields<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(::PROTOBUF_NAMESPACE_ID::UnknownFieldSet::default_instance), target, stream);
   }
-  // @@protoc_insertion_point(serialize_to_array_end:maa.CustomRecognizerRequest)
+  // @@protoc_insertion_point(serialize_to_array_end:maarpc.CustomRecognizerRequest)
   return target;
 }
 
 size_t CustomRecognizerRequest::ByteSizeLong() const {
-// @@protoc_insertion_point(message_byte_size_start:maa.CustomRecognizerRequest)
+// @@protoc_insertion_point(message_byte_size_start:maarpc.CustomRecognizerRequest)
   size_t total_size = 0;
 
   uint32_t cached_has_bits = 0;
@@ -6122,14 +6137,14 @@ size_t CustomRecognizerRequest::ByteSizeLong() const {
           this->_internal_name());
     }
 
-    // optional .maa.Handle handle = 1;
+    // optional .maarpc.Handle handle = 1;
     if (cached_has_bits & 0x00000002u) {
       total_size += 1 +
         ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::MessageSize(
           *_impl_.handle_);
     }
 
-    // optional .maa.Id reco = 3;
+    // optional .maarpc.Id reco = 3;
     if (cached_has_bits & 0x00000004u) {
       total_size += 1 +
         ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::MessageSize(
@@ -6150,7 +6165,7 @@ const ::PROTOBUF_NAMESPACE_ID::Message::ClassData*CustomRecognizerRequest::GetCl
 void CustomRecognizerRequest::MergeImpl(::PROTOBUF_NAMESPACE_ID::Message& to_msg, const ::PROTOBUF_NAMESPACE_ID::Message& from_msg) {
   auto* const _this = static_cast<CustomRecognizerRequest*>(&to_msg);
   auto& from = static_cast<const CustomRecognizerRequest&>(from_msg);
-  // @@protoc_insertion_point(class_specific_merge_from_start:maa.CustomRecognizerRequest)
+  // @@protoc_insertion_point(class_specific_merge_from_start:maarpc.CustomRecognizerRequest)
   GOOGLE_DCHECK_NE(&from, _this);
   uint32_t cached_has_bits = 0;
   (void) cached_has_bits;
@@ -6161,11 +6176,11 @@ void CustomRecognizerRequest::MergeImpl(::PROTOBUF_NAMESPACE_ID::Message& to_msg
       _this->_internal_set_name(from._internal_name());
     }
     if (cached_has_bits & 0x00000002u) {
-      _this->_internal_mutable_handle()->::maa::Handle::MergeFrom(
+      _this->_internal_mutable_handle()->::maarpc::Handle::MergeFrom(
           from._internal_handle());
     }
     if (cached_has_bits & 0x00000004u) {
-      _this->_internal_mutable_reco()->::maa::Id::MergeFrom(
+      _this->_internal_mutable_reco()->::maarpc::Id::MergeFrom(
           from._internal_reco());
     }
   }
@@ -6173,7 +6188,7 @@ void CustomRecognizerRequest::MergeImpl(::PROTOBUF_NAMESPACE_ID::Message& to_msg
 }
 
 void CustomRecognizerRequest::CopyFrom(const CustomRecognizerRequest& from) {
-// @@protoc_insertion_point(class_specific_copy_from_start:maa.CustomRecognizerRequest)
+// @@protoc_insertion_point(class_specific_copy_from_start:maarpc.CustomRecognizerRequest)
   if (&from == this) return;
   Clear();
   MergeFrom(from);
@@ -6212,11 +6227,11 @@ void CustomRecognizerRequest::InternalSwap(CustomRecognizerRequest* other) {
 class CustomRecognizerAnalyzeParam::_Internal {
  public:
   using HasBits = decltype(std::declval<CustomRecognizerAnalyzeParam>()._impl_._has_bits_);
-  static const ::maa::Handle& context(const CustomRecognizerAnalyzeParam* msg);
+  static const ::maarpc::Handle& context(const CustomRecognizerAnalyzeParam* msg);
   static void set_has_context(HasBits* has_bits) {
     (*has_bits)[0] |= 4u;
   }
-  static const ::maa::Handle& image(const CustomRecognizerAnalyzeParam* msg);
+  static const ::maarpc::Handle& image(const CustomRecognizerAnalyzeParam* msg);
   static void set_has_image(HasBits* has_bits) {
     (*has_bits)[0] |= 8u;
   }
@@ -6228,11 +6243,11 @@ class CustomRecognizerAnalyzeParam::_Internal {
   }
 };
 
-const ::maa::Handle&
+const ::maarpc::Handle&
 CustomRecognizerAnalyzeParam::_Internal::context(const CustomRecognizerAnalyzeParam* msg) {
   return *msg->_impl_.context_;
 }
-const ::maa::Handle&
+const ::maarpc::Handle&
 CustomRecognizerAnalyzeParam::_Internal::image(const CustomRecognizerAnalyzeParam* msg) {
   return *msg->_impl_.image_;
 }
@@ -6248,7 +6263,7 @@ CustomRecognizerAnalyzeParam::CustomRecognizerAnalyzeParam(::PROTOBUF_NAMESPACE_
                          bool is_message_owned)
   : ::PROTOBUF_NAMESPACE_ID::Message(arena, is_message_owned) {
   SharedCtor(arena, is_message_owned);
-  // @@protoc_insertion_point(arena_constructor:maa.CustomRecognizerAnalyzeParam)
+  // @@protoc_insertion_point(arena_constructor:maarpc.CustomRecognizerAnalyzeParam)
 }
 CustomRecognizerAnalyzeParam::CustomRecognizerAnalyzeParam(const CustomRecognizerAnalyzeParam& from)
   : ::PROTOBUF_NAMESPACE_ID::Message() {
@@ -6279,12 +6294,12 @@ CustomRecognizerAnalyzeParam::CustomRecognizerAnalyzeParam(const CustomRecognize
       _this->GetArenaForAllocation());
   }
   if (from._internal_has_context()) {
-    _this->_impl_.context_ = new ::maa::Handle(*from._impl_.context_);
+    _this->_impl_.context_ = new ::maarpc::Handle(*from._impl_.context_);
   }
   if (from._internal_has_image()) {
-    _this->_impl_.image_ = new ::maa::Handle(*from._impl_.image_);
+    _this->_impl_.image_ = new ::maarpc::Handle(*from._impl_.image_);
   }
-  // @@protoc_insertion_point(copy_constructor:maa.CustomRecognizerAnalyzeParam)
+  // @@protoc_insertion_point(copy_constructor:maarpc.CustomRecognizerAnalyzeParam)
 }
 
 inline void CustomRecognizerAnalyzeParam::SharedCtor(
@@ -6310,7 +6325,7 @@ inline void CustomRecognizerAnalyzeParam::SharedCtor(
 }
 
 CustomRecognizerAnalyzeParam::~CustomRecognizerAnalyzeParam() {
-  // @@protoc_insertion_point(destructor:maa.CustomRecognizerAnalyzeParam)
+  // @@protoc_insertion_point(destructor:maarpc.CustomRecognizerAnalyzeParam)
   if (auto *arena = _internal_metadata_.DeleteReturnArena<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>()) {
   (void)arena;
     return;
@@ -6331,7 +6346,7 @@ void CustomRecognizerAnalyzeParam::SetCachedSize(int size) const {
 }
 
 void CustomRecognizerAnalyzeParam::Clear() {
-// @@protoc_insertion_point(message_clear_start:maa.CustomRecognizerAnalyzeParam)
+// @@protoc_insertion_point(message_clear_start:maarpc.CustomRecognizerAnalyzeParam)
   uint32_t cached_has_bits = 0;
   // Prevent compiler warnings about cached_has_bits being unused
   (void) cached_has_bits;
@@ -6364,7 +6379,7 @@ const char* CustomRecognizerAnalyzeParam::_InternalParse(const char* ptr, ::_pbi
     uint32_t tag;
     ptr = ::_pbi::ReadTag(ptr, &tag);
     switch (tag >> 3) {
-      // optional .maa.Handle context = 1;
+      // optional .maarpc.Handle context = 1;
       case 1:
         if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 10)) {
           ptr = ctx->ParseMessage(_internal_mutable_context(), ptr);
@@ -6372,7 +6387,7 @@ const char* CustomRecognizerAnalyzeParam::_InternalParse(const char* ptr, ::_pbi
         } else
           goto handle_unusual;
         continue;
-      // optional .maa.Handle image = 2;
+      // optional .maarpc.Handle image = 2;
       case 2:
         if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 18)) {
           ptr = ctx->ParseMessage(_internal_mutable_image(), ptr);
@@ -6386,7 +6401,7 @@ const char* CustomRecognizerAnalyzeParam::_InternalParse(const char* ptr, ::_pbi
           auto str = _internal_mutable_task();
           ptr = ::_pbi::InlineGreedyStringParser(str, ptr, ctx);
           CHK_(ptr);
-          CHK_(::_pbi::VerifyUTF8(str, "maa.CustomRecognizerAnalyzeParam.task"));
+          CHK_(::_pbi::VerifyUTF8(str, "maarpc.CustomRecognizerAnalyzeParam.task"));
         } else
           goto handle_unusual;
         continue;
@@ -6396,7 +6411,7 @@ const char* CustomRecognizerAnalyzeParam::_InternalParse(const char* ptr, ::_pbi
           auto str = _internal_mutable_param();
           ptr = ::_pbi::InlineGreedyStringParser(str, ptr, ctx);
           CHK_(ptr);
-          CHK_(::_pbi::VerifyUTF8(str, "maa.CustomRecognizerAnalyzeParam.param"));
+          CHK_(::_pbi::VerifyUTF8(str, "maarpc.CustomRecognizerAnalyzeParam.param"));
         } else
           goto handle_unusual;
         continue;
@@ -6426,18 +6441,18 @@ failure:
 
 uint8_t* CustomRecognizerAnalyzeParam::_InternalSerialize(
     uint8_t* target, ::PROTOBUF_NAMESPACE_ID::io::EpsCopyOutputStream* stream) const {
-  // @@protoc_insertion_point(serialize_to_array_start:maa.CustomRecognizerAnalyzeParam)
+  // @@protoc_insertion_point(serialize_to_array_start:maarpc.CustomRecognizerAnalyzeParam)
   uint32_t cached_has_bits = 0;
   (void) cached_has_bits;
 
-  // optional .maa.Handle context = 1;
+  // optional .maarpc.Handle context = 1;
   if (_internal_has_context()) {
     target = ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::
       InternalWriteMessage(1, _Internal::context(this),
         _Internal::context(this).GetCachedSize(), target, stream);
   }
 
-  // optional .maa.Handle image = 2;
+  // optional .maarpc.Handle image = 2;
   if (_internal_has_image()) {
     target = ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::
       InternalWriteMessage(2, _Internal::image(this),
@@ -6449,7 +6464,7 @@ uint8_t* CustomRecognizerAnalyzeParam::_InternalSerialize(
     ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::VerifyUtf8String(
       this->_internal_task().data(), static_cast<int>(this->_internal_task().length()),
       ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::SERIALIZE,
-      "maa.CustomRecognizerAnalyzeParam.task");
+      "maarpc.CustomRecognizerAnalyzeParam.task");
     target = stream->WriteStringMaybeAliased(
         3, this->_internal_task(), target);
   }
@@ -6459,7 +6474,7 @@ uint8_t* CustomRecognizerAnalyzeParam::_InternalSerialize(
     ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::VerifyUtf8String(
       this->_internal_param().data(), static_cast<int>(this->_internal_param().length()),
       ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::SERIALIZE,
-      "maa.CustomRecognizerAnalyzeParam.param");
+      "maarpc.CustomRecognizerAnalyzeParam.param");
     target = stream->WriteStringMaybeAliased(
         4, this->_internal_param(), target);
   }
@@ -6468,12 +6483,12 @@ uint8_t* CustomRecognizerAnalyzeParam::_InternalSerialize(
     target = ::_pbi::WireFormat::InternalSerializeUnknownFieldsToArray(
         _internal_metadata_.unknown_fields<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(::PROTOBUF_NAMESPACE_ID::UnknownFieldSet::default_instance), target, stream);
   }
-  // @@protoc_insertion_point(serialize_to_array_end:maa.CustomRecognizerAnalyzeParam)
+  // @@protoc_insertion_point(serialize_to_array_end:maarpc.CustomRecognizerAnalyzeParam)
   return target;
 }
 
 size_t CustomRecognizerAnalyzeParam::ByteSizeLong() const {
-// @@protoc_insertion_point(message_byte_size_start:maa.CustomRecognizerAnalyzeParam)
+// @@protoc_insertion_point(message_byte_size_start:maarpc.CustomRecognizerAnalyzeParam)
   size_t total_size = 0;
 
   uint32_t cached_has_bits = 0;
@@ -6496,14 +6511,14 @@ size_t CustomRecognizerAnalyzeParam::ByteSizeLong() const {
           this->_internal_param());
     }
 
-    // optional .maa.Handle context = 1;
+    // optional .maarpc.Handle context = 1;
     if (cached_has_bits & 0x00000004u) {
       total_size += 1 +
         ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::MessageSize(
           *_impl_.context_);
     }
 
-    // optional .maa.Handle image = 2;
+    // optional .maarpc.Handle image = 2;
     if (cached_has_bits & 0x00000008u) {
       total_size += 1 +
         ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::MessageSize(
@@ -6524,7 +6539,7 @@ const ::PROTOBUF_NAMESPACE_ID::Message::ClassData*CustomRecognizerAnalyzeParam::
 void CustomRecognizerAnalyzeParam::MergeImpl(::PROTOBUF_NAMESPACE_ID::Message& to_msg, const ::PROTOBUF_NAMESPACE_ID::Message& from_msg) {
   auto* const _this = static_cast<CustomRecognizerAnalyzeParam*>(&to_msg);
   auto& from = static_cast<const CustomRecognizerAnalyzeParam&>(from_msg);
-  // @@protoc_insertion_point(class_specific_merge_from_start:maa.CustomRecognizerAnalyzeParam)
+  // @@protoc_insertion_point(class_specific_merge_from_start:maarpc.CustomRecognizerAnalyzeParam)
   GOOGLE_DCHECK_NE(&from, _this);
   uint32_t cached_has_bits = 0;
   (void) cached_has_bits;
@@ -6538,11 +6553,11 @@ void CustomRecognizerAnalyzeParam::MergeImpl(::PROTOBUF_NAMESPACE_ID::Message& t
       _this->_internal_set_param(from._internal_param());
     }
     if (cached_has_bits & 0x00000004u) {
-      _this->_internal_mutable_context()->::maa::Handle::MergeFrom(
+      _this->_internal_mutable_context()->::maarpc::Handle::MergeFrom(
           from._internal_context());
     }
     if (cached_has_bits & 0x00000008u) {
-      _this->_internal_mutable_image()->::maa::Handle::MergeFrom(
+      _this->_internal_mutable_image()->::maarpc::Handle::MergeFrom(
           from._internal_image());
     }
   }
@@ -6550,7 +6565,7 @@ void CustomRecognizerAnalyzeParam::MergeImpl(::PROTOBUF_NAMESPACE_ID::Message& t
 }
 
 void CustomRecognizerAnalyzeParam::CopyFrom(const CustomRecognizerAnalyzeParam& from) {
-// @@protoc_insertion_point(class_specific_copy_from_start:maa.CustomRecognizerAnalyzeParam)
+// @@protoc_insertion_point(class_specific_copy_from_start:maarpc.CustomRecognizerAnalyzeParam)
   if (&from == this) return;
   Clear();
   MergeFrom(from);
@@ -6593,26 +6608,26 @@ void CustomRecognizerAnalyzeParam::InternalSwap(CustomRecognizerAnalyzeParam* ot
 class CustomRecognizerResponse::_Internal {
  public:
   using HasBits = decltype(std::declval<CustomRecognizerResponse>()._impl_._has_bits_);
-  static const ::maa::Id& reco(const CustomRecognizerResponse* msg);
+  static const ::maarpc::Id& reco(const CustomRecognizerResponse* msg);
   static void set_has_reco(HasBits* has_bits) {
     (*has_bits)[0] |= 1u;
   }
-  static const ::maa::Id& id(const CustomRecognizerResponse* msg);
+  static const ::maarpc::Id& id(const CustomRecognizerResponse* msg);
   static void set_has_id(HasBits* has_bits) {
     (*has_bits)[0] |= 2u;
   }
-  static const ::maa::CustomRecognizerAnalyzeParam& analyze(const CustomRecognizerResponse* msg);
+  static const ::maarpc::CustomRecognizerAnalyzeParam& analyze(const CustomRecognizerResponse* msg);
 };
 
-const ::maa::Id&
+const ::maarpc::Id&
 CustomRecognizerResponse::_Internal::reco(const CustomRecognizerResponse* msg) {
   return *msg->_impl_.reco_;
 }
-const ::maa::Id&
+const ::maarpc::Id&
 CustomRecognizerResponse::_Internal::id(const CustomRecognizerResponse* msg) {
   return *msg->_impl_.id_;
 }
-const ::maa::CustomRecognizerAnalyzeParam&
+const ::maarpc::CustomRecognizerAnalyzeParam&
 CustomRecognizerResponse::_Internal::analyze(const CustomRecognizerResponse* msg) {
   return *msg->_impl_.command_.analyze_;
 }
@@ -6624,7 +6639,7 @@ void CustomRecognizerResponse::clear_id() {
   if (_impl_.id_ != nullptr) _impl_.id_->Clear();
   _impl_._has_bits_[0] &= ~0x00000002u;
 }
-void CustomRecognizerResponse::set_allocated_analyze(::maa::CustomRecognizerAnalyzeParam* analyze) {
+void CustomRecognizerResponse::set_allocated_analyze(::maarpc::CustomRecognizerAnalyzeParam* analyze) {
   ::PROTOBUF_NAMESPACE_ID::Arena* message_arena = GetArenaForAllocation();
   clear_command();
   if (analyze) {
@@ -6637,13 +6652,13 @@ void CustomRecognizerResponse::set_allocated_analyze(::maa::CustomRecognizerAnal
     set_has_analyze();
     _impl_.command_.analyze_ = analyze;
   }
-  // @@protoc_insertion_point(field_set_allocated:maa.CustomRecognizerResponse.analyze)
+  // @@protoc_insertion_point(field_set_allocated:maarpc.CustomRecognizerResponse.analyze)
 }
 CustomRecognizerResponse::CustomRecognizerResponse(::PROTOBUF_NAMESPACE_ID::Arena* arena,
                          bool is_message_owned)
   : ::PROTOBUF_NAMESPACE_ID::Message(arena, is_message_owned) {
   SharedCtor(arena, is_message_owned);
-  // @@protoc_insertion_point(arena_constructor:maa.CustomRecognizerResponse)
+  // @@protoc_insertion_point(arena_constructor:maarpc.CustomRecognizerResponse)
 }
 CustomRecognizerResponse::CustomRecognizerResponse(const CustomRecognizerResponse& from)
   : ::PROTOBUF_NAMESPACE_ID::Message() {
@@ -6658,15 +6673,15 @@ CustomRecognizerResponse::CustomRecognizerResponse(const CustomRecognizerRespons
 
   _internal_metadata_.MergeFrom<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(from._internal_metadata_);
   if (from._internal_has_reco()) {
-    _this->_impl_.reco_ = new ::maa::Id(*from._impl_.reco_);
+    _this->_impl_.reco_ = new ::maarpc::Id(*from._impl_.reco_);
   }
   if (from._internal_has_id()) {
-    _this->_impl_.id_ = new ::maa::Id(*from._impl_.id_);
+    _this->_impl_.id_ = new ::maarpc::Id(*from._impl_.id_);
   }
   clear_has_command();
   switch (from.command_case()) {
     case kAnalyze: {
-      _this->_internal_mutable_analyze()->::maa::CustomRecognizerAnalyzeParam::MergeFrom(
+      _this->_internal_mutable_analyze()->::maarpc::CustomRecognizerAnalyzeParam::MergeFrom(
           from._internal_analyze());
       break;
     }
@@ -6674,7 +6689,7 @@ CustomRecognizerResponse::CustomRecognizerResponse(const CustomRecognizerRespons
       break;
     }
   }
-  // @@protoc_insertion_point(copy_constructor:maa.CustomRecognizerResponse)
+  // @@protoc_insertion_point(copy_constructor:maarpc.CustomRecognizerResponse)
 }
 
 inline void CustomRecognizerResponse::SharedCtor(
@@ -6693,7 +6708,7 @@ inline void CustomRecognizerResponse::SharedCtor(
 }
 
 CustomRecognizerResponse::~CustomRecognizerResponse() {
-  // @@protoc_insertion_point(destructor:maa.CustomRecognizerResponse)
+  // @@protoc_insertion_point(destructor:maarpc.CustomRecognizerResponse)
   if (auto *arena = _internal_metadata_.DeleteReturnArena<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>()) {
   (void)arena;
     return;
@@ -6715,7 +6730,7 @@ void CustomRecognizerResponse::SetCachedSize(int size) const {
 }
 
 void CustomRecognizerResponse::clear_command() {
-// @@protoc_insertion_point(one_of_clear_start:maa.CustomRecognizerResponse)
+// @@protoc_insertion_point(one_of_clear_start:maarpc.CustomRecognizerResponse)
   switch (command_case()) {
     case kAnalyze: {
       if (GetArenaForAllocation() == nullptr) {
@@ -6732,7 +6747,7 @@ void CustomRecognizerResponse::clear_command() {
 
 
 void CustomRecognizerResponse::Clear() {
-// @@protoc_insertion_point(message_clear_start:maa.CustomRecognizerResponse)
+// @@protoc_insertion_point(message_clear_start:maarpc.CustomRecognizerResponse)
   uint32_t cached_has_bits = 0;
   // Prevent compiler warnings about cached_has_bits being unused
   (void) cached_has_bits;
@@ -6760,7 +6775,7 @@ const char* CustomRecognizerResponse::_InternalParse(const char* ptr, ::_pbi::Pa
     uint32_t tag;
     ptr = ::_pbi::ReadTag(ptr, &tag);
     switch (tag >> 3) {
-      // optional .maa.Id reco = 1;
+      // optional .maarpc.Id reco = 1;
       case 1:
         if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 10)) {
           ptr = ctx->ParseMessage(_internal_mutable_reco(), ptr);
@@ -6768,7 +6783,7 @@ const char* CustomRecognizerResponse::_InternalParse(const char* ptr, ::_pbi::Pa
         } else
           goto handle_unusual;
         continue;
-      // optional .maa.Id id = 2;
+      // optional .maarpc.Id id = 2;
       case 2:
         if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 18)) {
           ptr = ctx->ParseMessage(_internal_mutable_id(), ptr);
@@ -6776,7 +6791,7 @@ const char* CustomRecognizerResponse::_InternalParse(const char* ptr, ::_pbi::Pa
         } else
           goto handle_unusual;
         continue;
-      // .maa.CustomRecognizerAnalyzeParam analyze = 101;
+      // .maarpc.CustomRecognizerAnalyzeParam analyze = 101;
       case 101:
         if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 42)) {
           ptr = ctx->ParseMessage(_internal_mutable_analyze(), ptr);
@@ -6810,25 +6825,25 @@ failure:
 
 uint8_t* CustomRecognizerResponse::_InternalSerialize(
     uint8_t* target, ::PROTOBUF_NAMESPACE_ID::io::EpsCopyOutputStream* stream) const {
-  // @@protoc_insertion_point(serialize_to_array_start:maa.CustomRecognizerResponse)
+  // @@protoc_insertion_point(serialize_to_array_start:maarpc.CustomRecognizerResponse)
   uint32_t cached_has_bits = 0;
   (void) cached_has_bits;
 
-  // optional .maa.Id reco = 1;
+  // optional .maarpc.Id reco = 1;
   if (_internal_has_reco()) {
     target = ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::
       InternalWriteMessage(1, _Internal::reco(this),
         _Internal::reco(this).GetCachedSize(), target, stream);
   }
 
-  // optional .maa.Id id = 2;
+  // optional .maarpc.Id id = 2;
   if (_internal_has_id()) {
     target = ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::
       InternalWriteMessage(2, _Internal::id(this),
         _Internal::id(this).GetCachedSize(), target, stream);
   }
 
-  // .maa.CustomRecognizerAnalyzeParam analyze = 101;
+  // .maarpc.CustomRecognizerAnalyzeParam analyze = 101;
   if (_internal_has_analyze()) {
     target = ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::
       InternalWriteMessage(101, _Internal::analyze(this),
@@ -6839,12 +6854,12 @@ uint8_t* CustomRecognizerResponse::_InternalSerialize(
     target = ::_pbi::WireFormat::InternalSerializeUnknownFieldsToArray(
         _internal_metadata_.unknown_fields<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(::PROTOBUF_NAMESPACE_ID::UnknownFieldSet::default_instance), target, stream);
   }
-  // @@protoc_insertion_point(serialize_to_array_end:maa.CustomRecognizerResponse)
+  // @@protoc_insertion_point(serialize_to_array_end:maarpc.CustomRecognizerResponse)
   return target;
 }
 
 size_t CustomRecognizerResponse::ByteSizeLong() const {
-// @@protoc_insertion_point(message_byte_size_start:maa.CustomRecognizerResponse)
+// @@protoc_insertion_point(message_byte_size_start:maarpc.CustomRecognizerResponse)
   size_t total_size = 0;
 
   uint32_t cached_has_bits = 0;
@@ -6853,14 +6868,14 @@ size_t CustomRecognizerResponse::ByteSizeLong() const {
 
   cached_has_bits = _impl_._has_bits_[0];
   if (cached_has_bits & 0x00000003u) {
-    // optional .maa.Id reco = 1;
+    // optional .maarpc.Id reco = 1;
     if (cached_has_bits & 0x00000001u) {
       total_size += 1 +
         ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::MessageSize(
           *_impl_.reco_);
     }
 
-    // optional .maa.Id id = 2;
+    // optional .maarpc.Id id = 2;
     if (cached_has_bits & 0x00000002u) {
       total_size += 1 +
         ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::MessageSize(
@@ -6869,7 +6884,7 @@ size_t CustomRecognizerResponse::ByteSizeLong() const {
 
   }
   switch (command_case()) {
-    // .maa.CustomRecognizerAnalyzeParam analyze = 101;
+    // .maarpc.CustomRecognizerAnalyzeParam analyze = 101;
     case kAnalyze: {
       total_size += 2 +
         ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::MessageSize(
@@ -6893,7 +6908,7 @@ const ::PROTOBUF_NAMESPACE_ID::Message::ClassData*CustomRecognizerResponse::GetC
 void CustomRecognizerResponse::MergeImpl(::PROTOBUF_NAMESPACE_ID::Message& to_msg, const ::PROTOBUF_NAMESPACE_ID::Message& from_msg) {
   auto* const _this = static_cast<CustomRecognizerResponse*>(&to_msg);
   auto& from = static_cast<const CustomRecognizerResponse&>(from_msg);
-  // @@protoc_insertion_point(class_specific_merge_from_start:maa.CustomRecognizerResponse)
+  // @@protoc_insertion_point(class_specific_merge_from_start:maarpc.CustomRecognizerResponse)
   GOOGLE_DCHECK_NE(&from, _this);
   uint32_t cached_has_bits = 0;
   (void) cached_has_bits;
@@ -6901,17 +6916,17 @@ void CustomRecognizerResponse::MergeImpl(::PROTOBUF_NAMESPACE_ID::Message& to_ms
   cached_has_bits = from._impl_._has_bits_[0];
   if (cached_has_bits & 0x00000003u) {
     if (cached_has_bits & 0x00000001u) {
-      _this->_internal_mutable_reco()->::maa::Id::MergeFrom(
+      _this->_internal_mutable_reco()->::maarpc::Id::MergeFrom(
           from._internal_reco());
     }
     if (cached_has_bits & 0x00000002u) {
-      _this->_internal_mutable_id()->::maa::Id::MergeFrom(
+      _this->_internal_mutable_id()->::maarpc::Id::MergeFrom(
           from._internal_id());
     }
   }
   switch (from.command_case()) {
     case kAnalyze: {
-      _this->_internal_mutable_analyze()->::maa::CustomRecognizerAnalyzeParam::MergeFrom(
+      _this->_internal_mutable_analyze()->::maarpc::CustomRecognizerAnalyzeParam::MergeFrom(
           from._internal_analyze());
       break;
     }
@@ -6923,7 +6938,7 @@ void CustomRecognizerResponse::MergeImpl(::PROTOBUF_NAMESPACE_ID::Message& to_ms
 }
 
 void CustomRecognizerResponse::CopyFrom(const CustomRecognizerResponse& from) {
-// @@protoc_insertion_point(class_specific_copy_from_start:maa.CustomRecognizerResponse)
+// @@protoc_insertion_point(class_specific_copy_from_start:maarpc.CustomRecognizerResponse)
   if (&from == this) return;
   Clear();
   MergeFrom(from);
@@ -6961,7 +6976,7 @@ class CustomRecognizerAnalyzeResult::_Internal {
   static void set_has_match(HasBits* has_bits) {
     (*has_bits)[0] |= 4u;
   }
-  static const ::maa::Rect& box(const CustomRecognizerAnalyzeResult* msg);
+  static const ::maarpc::Rect& box(const CustomRecognizerAnalyzeResult* msg);
   static void set_has_box(HasBits* has_bits) {
     (*has_bits)[0] |= 2u;
   }
@@ -6970,7 +6985,7 @@ class CustomRecognizerAnalyzeResult::_Internal {
   }
 };
 
-const ::maa::Rect&
+const ::maarpc::Rect&
 CustomRecognizerAnalyzeResult::_Internal::box(const CustomRecognizerAnalyzeResult* msg) {
   return *msg->_impl_.box_;
 }
@@ -6982,7 +6997,7 @@ CustomRecognizerAnalyzeResult::CustomRecognizerAnalyzeResult(::PROTOBUF_NAMESPAC
                          bool is_message_owned)
   : ::PROTOBUF_NAMESPACE_ID::Message(arena, is_message_owned) {
   SharedCtor(arena, is_message_owned);
-  // @@protoc_insertion_point(arena_constructor:maa.CustomRecognizerAnalyzeResult)
+  // @@protoc_insertion_point(arena_constructor:maarpc.CustomRecognizerAnalyzeResult)
 }
 CustomRecognizerAnalyzeResult::CustomRecognizerAnalyzeResult(const CustomRecognizerAnalyzeResult& from)
   : ::PROTOBUF_NAMESPACE_ID::Message() {
@@ -7004,10 +7019,10 @@ CustomRecognizerAnalyzeResult::CustomRecognizerAnalyzeResult(const CustomRecogni
       _this->GetArenaForAllocation());
   }
   if (from._internal_has_box()) {
-    _this->_impl_.box_ = new ::maa::Rect(*from._impl_.box_);
+    _this->_impl_.box_ = new ::maarpc::Rect(*from._impl_.box_);
   }
   _this->_impl_.match_ = from._impl_.match_;
-  // @@protoc_insertion_point(copy_constructor:maa.CustomRecognizerAnalyzeResult)
+  // @@protoc_insertion_point(copy_constructor:maarpc.CustomRecognizerAnalyzeResult)
 }
 
 inline void CustomRecognizerAnalyzeResult::SharedCtor(
@@ -7028,7 +7043,7 @@ inline void CustomRecognizerAnalyzeResult::SharedCtor(
 }
 
 CustomRecognizerAnalyzeResult::~CustomRecognizerAnalyzeResult() {
-  // @@protoc_insertion_point(destructor:maa.CustomRecognizerAnalyzeResult)
+  // @@protoc_insertion_point(destructor:maarpc.CustomRecognizerAnalyzeResult)
   if (auto *arena = _internal_metadata_.DeleteReturnArena<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>()) {
   (void)arena;
     return;
@@ -7047,7 +7062,7 @@ void CustomRecognizerAnalyzeResult::SetCachedSize(int size) const {
 }
 
 void CustomRecognizerAnalyzeResult::Clear() {
-// @@protoc_insertion_point(message_clear_start:maa.CustomRecognizerAnalyzeResult)
+// @@protoc_insertion_point(message_clear_start:maarpc.CustomRecognizerAnalyzeResult)
   uint32_t cached_has_bits = 0;
   // Prevent compiler warnings about cached_has_bits being unused
   (void) cached_has_bits;
@@ -7083,7 +7098,7 @@ const char* CustomRecognizerAnalyzeResult::_InternalParse(const char* ptr, ::_pb
         } else
           goto handle_unusual;
         continue;
-      // optional .maa.Rect box = 2;
+      // optional .maarpc.Rect box = 2;
       case 2:
         if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 18)) {
           ptr = ctx->ParseMessage(_internal_mutable_box(), ptr);
@@ -7097,7 +7112,7 @@ const char* CustomRecognizerAnalyzeResult::_InternalParse(const char* ptr, ::_pb
           auto str = _internal_mutable_detail();
           ptr = ::_pbi::InlineGreedyStringParser(str, ptr, ctx);
           CHK_(ptr);
-          CHK_(::_pbi::VerifyUTF8(str, "maa.CustomRecognizerAnalyzeResult.detail"));
+          CHK_(::_pbi::VerifyUTF8(str, "maarpc.CustomRecognizerAnalyzeResult.detail"));
         } else
           goto handle_unusual;
         continue;
@@ -7127,7 +7142,7 @@ failure:
 
 uint8_t* CustomRecognizerAnalyzeResult::_InternalSerialize(
     uint8_t* target, ::PROTOBUF_NAMESPACE_ID::io::EpsCopyOutputStream* stream) const {
-  // @@protoc_insertion_point(serialize_to_array_start:maa.CustomRecognizerAnalyzeResult)
+  // @@protoc_insertion_point(serialize_to_array_start:maarpc.CustomRecognizerAnalyzeResult)
   uint32_t cached_has_bits = 0;
   (void) cached_has_bits;
 
@@ -7137,7 +7152,7 @@ uint8_t* CustomRecognizerAnalyzeResult::_InternalSerialize(
     target = ::_pbi::WireFormatLite::WriteBoolToArray(1, this->_internal_match(), target);
   }
 
-  // optional .maa.Rect box = 2;
+  // optional .maarpc.Rect box = 2;
   if (_internal_has_box()) {
     target = ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::
       InternalWriteMessage(2, _Internal::box(this),
@@ -7149,7 +7164,7 @@ uint8_t* CustomRecognizerAnalyzeResult::_InternalSerialize(
     ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::VerifyUtf8String(
       this->_internal_detail().data(), static_cast<int>(this->_internal_detail().length()),
       ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::SERIALIZE,
-      "maa.CustomRecognizerAnalyzeResult.detail");
+      "maarpc.CustomRecognizerAnalyzeResult.detail");
     target = stream->WriteStringMaybeAliased(
         3, this->_internal_detail(), target);
   }
@@ -7158,12 +7173,12 @@ uint8_t* CustomRecognizerAnalyzeResult::_InternalSerialize(
     target = ::_pbi::WireFormat::InternalSerializeUnknownFieldsToArray(
         _internal_metadata_.unknown_fields<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(::PROTOBUF_NAMESPACE_ID::UnknownFieldSet::default_instance), target, stream);
   }
-  // @@protoc_insertion_point(serialize_to_array_end:maa.CustomRecognizerAnalyzeResult)
+  // @@protoc_insertion_point(serialize_to_array_end:maarpc.CustomRecognizerAnalyzeResult)
   return target;
 }
 
 size_t CustomRecognizerAnalyzeResult::ByteSizeLong() const {
-// @@protoc_insertion_point(message_byte_size_start:maa.CustomRecognizerAnalyzeResult)
+// @@protoc_insertion_point(message_byte_size_start:maarpc.CustomRecognizerAnalyzeResult)
   size_t total_size = 0;
 
   uint32_t cached_has_bits = 0;
@@ -7179,7 +7194,7 @@ size_t CustomRecognizerAnalyzeResult::ByteSizeLong() const {
           this->_internal_detail());
     }
 
-    // optional .maa.Rect box = 2;
+    // optional .maarpc.Rect box = 2;
     if (cached_has_bits & 0x00000002u) {
       total_size += 1 +
         ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::MessageSize(
@@ -7205,7 +7220,7 @@ const ::PROTOBUF_NAMESPACE_ID::Message::ClassData*CustomRecognizerAnalyzeResult:
 void CustomRecognizerAnalyzeResult::MergeImpl(::PROTOBUF_NAMESPACE_ID::Message& to_msg, const ::PROTOBUF_NAMESPACE_ID::Message& from_msg) {
   auto* const _this = static_cast<CustomRecognizerAnalyzeResult*>(&to_msg);
   auto& from = static_cast<const CustomRecognizerAnalyzeResult&>(from_msg);
-  // @@protoc_insertion_point(class_specific_merge_from_start:maa.CustomRecognizerAnalyzeResult)
+  // @@protoc_insertion_point(class_specific_merge_from_start:maarpc.CustomRecognizerAnalyzeResult)
   GOOGLE_DCHECK_NE(&from, _this);
   uint32_t cached_has_bits = 0;
   (void) cached_has_bits;
@@ -7216,7 +7231,7 @@ void CustomRecognizerAnalyzeResult::MergeImpl(::PROTOBUF_NAMESPACE_ID::Message& 
       _this->_internal_set_detail(from._internal_detail());
     }
     if (cached_has_bits & 0x00000002u) {
-      _this->_internal_mutable_box()->::maa::Rect::MergeFrom(
+      _this->_internal_mutable_box()->::maarpc::Rect::MergeFrom(
           from._internal_box());
     }
     if (cached_has_bits & 0x00000004u) {
@@ -7228,7 +7243,7 @@ void CustomRecognizerAnalyzeResult::MergeImpl(::PROTOBUF_NAMESPACE_ID::Message& 
 }
 
 void CustomRecognizerAnalyzeResult::CopyFrom(const CustomRecognizerAnalyzeResult& from) {
-// @@protoc_insertion_point(class_specific_copy_from_start:maa.CustomRecognizerAnalyzeResult)
+// @@protoc_insertion_point(class_specific_copy_from_start:maarpc.CustomRecognizerAnalyzeResult)
   if (&from == this) return;
   Clear();
   MergeFrom(from);
@@ -7267,29 +7282,29 @@ void CustomRecognizerAnalyzeResult::InternalSwap(CustomRecognizerAnalyzeResult* 
 class SubmitCustomRecognizerRequest::_Internal {
  public:
   using HasBits = decltype(std::declval<SubmitCustomRecognizerRequest>()._impl_._has_bits_);
-  static const ::maa::Handle& handle(const SubmitCustomRecognizerRequest* msg);
+  static const ::maarpc::Handle& handle(const SubmitCustomRecognizerRequest* msg);
   static void set_has_handle(HasBits* has_bits) {
     (*has_bits)[0] |= 1u;
   }
-  static const ::maa::Id& id(const SubmitCustomRecognizerRequest* msg);
+  static const ::maarpc::Id& id(const SubmitCustomRecognizerRequest* msg);
   static void set_has_id(HasBits* has_bits) {
     (*has_bits)[0] |= 2u;
   }
   static void set_has_ok(HasBits* has_bits) {
     (*has_bits)[0] |= 4u;
   }
-  static const ::maa::CustomRecognizerAnalyzeResult& analyze(const SubmitCustomRecognizerRequest* msg);
+  static const ::maarpc::CustomRecognizerAnalyzeResult& analyze(const SubmitCustomRecognizerRequest* msg);
 };
 
-const ::maa::Handle&
+const ::maarpc::Handle&
 SubmitCustomRecognizerRequest::_Internal::handle(const SubmitCustomRecognizerRequest* msg) {
   return *msg->_impl_.handle_;
 }
-const ::maa::Id&
+const ::maarpc::Id&
 SubmitCustomRecognizerRequest::_Internal::id(const SubmitCustomRecognizerRequest* msg) {
   return *msg->_impl_.id_;
 }
-const ::maa::CustomRecognizerAnalyzeResult&
+const ::maarpc::CustomRecognizerAnalyzeResult&
 SubmitCustomRecognizerRequest::_Internal::analyze(const SubmitCustomRecognizerRequest* msg) {
   return *msg->_impl_.result_.analyze_;
 }
@@ -7301,7 +7316,7 @@ void SubmitCustomRecognizerRequest::clear_id() {
   if (_impl_.id_ != nullptr) _impl_.id_->Clear();
   _impl_._has_bits_[0] &= ~0x00000002u;
 }
-void SubmitCustomRecognizerRequest::set_allocated_analyze(::maa::CustomRecognizerAnalyzeResult* analyze) {
+void SubmitCustomRecognizerRequest::set_allocated_analyze(::maarpc::CustomRecognizerAnalyzeResult* analyze) {
   ::PROTOBUF_NAMESPACE_ID::Arena* message_arena = GetArenaForAllocation();
   clear_result();
   if (analyze) {
@@ -7314,13 +7329,13 @@ void SubmitCustomRecognizerRequest::set_allocated_analyze(::maa::CustomRecognize
     set_has_analyze();
     _impl_.result_.analyze_ = analyze;
   }
-  // @@protoc_insertion_point(field_set_allocated:maa.SubmitCustomRecognizerRequest.analyze)
+  // @@protoc_insertion_point(field_set_allocated:maarpc.SubmitCustomRecognizerRequest.analyze)
 }
 SubmitCustomRecognizerRequest::SubmitCustomRecognizerRequest(::PROTOBUF_NAMESPACE_ID::Arena* arena,
                          bool is_message_owned)
   : ::PROTOBUF_NAMESPACE_ID::Message(arena, is_message_owned) {
   SharedCtor(arena, is_message_owned);
-  // @@protoc_insertion_point(arena_constructor:maa.SubmitCustomRecognizerRequest)
+  // @@protoc_insertion_point(arena_constructor:maarpc.SubmitCustomRecognizerRequest)
 }
 SubmitCustomRecognizerRequest::SubmitCustomRecognizerRequest(const SubmitCustomRecognizerRequest& from)
   : ::PROTOBUF_NAMESPACE_ID::Message() {
@@ -7336,16 +7351,16 @@ SubmitCustomRecognizerRequest::SubmitCustomRecognizerRequest(const SubmitCustomR
 
   _internal_metadata_.MergeFrom<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(from._internal_metadata_);
   if (from._internal_has_handle()) {
-    _this->_impl_.handle_ = new ::maa::Handle(*from._impl_.handle_);
+    _this->_impl_.handle_ = new ::maarpc::Handle(*from._impl_.handle_);
   }
   if (from._internal_has_id()) {
-    _this->_impl_.id_ = new ::maa::Id(*from._impl_.id_);
+    _this->_impl_.id_ = new ::maarpc::Id(*from._impl_.id_);
   }
   _this->_impl_.ok_ = from._impl_.ok_;
   clear_has_result();
   switch (from.result_case()) {
     case kAnalyze: {
-      _this->_internal_mutable_analyze()->::maa::CustomRecognizerAnalyzeResult::MergeFrom(
+      _this->_internal_mutable_analyze()->::maarpc::CustomRecognizerAnalyzeResult::MergeFrom(
           from._internal_analyze());
       break;
     }
@@ -7353,7 +7368,7 @@ SubmitCustomRecognizerRequest::SubmitCustomRecognizerRequest(const SubmitCustomR
       break;
     }
   }
-  // @@protoc_insertion_point(copy_constructor:maa.SubmitCustomRecognizerRequest)
+  // @@protoc_insertion_point(copy_constructor:maarpc.SubmitCustomRecognizerRequest)
 }
 
 inline void SubmitCustomRecognizerRequest::SharedCtor(
@@ -7373,7 +7388,7 @@ inline void SubmitCustomRecognizerRequest::SharedCtor(
 }
 
 SubmitCustomRecognizerRequest::~SubmitCustomRecognizerRequest() {
-  // @@protoc_insertion_point(destructor:maa.SubmitCustomRecognizerRequest)
+  // @@protoc_insertion_point(destructor:maarpc.SubmitCustomRecognizerRequest)
   if (auto *arena = _internal_metadata_.DeleteReturnArena<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>()) {
   (void)arena;
     return;
@@ -7395,7 +7410,7 @@ void SubmitCustomRecognizerRequest::SetCachedSize(int size) const {
 }
 
 void SubmitCustomRecognizerRequest::clear_result() {
-// @@protoc_insertion_point(one_of_clear_start:maa.SubmitCustomRecognizerRequest)
+// @@protoc_insertion_point(one_of_clear_start:maarpc.SubmitCustomRecognizerRequest)
   switch (result_case()) {
     case kAnalyze: {
       if (GetArenaForAllocation() == nullptr) {
@@ -7412,7 +7427,7 @@ void SubmitCustomRecognizerRequest::clear_result() {
 
 
 void SubmitCustomRecognizerRequest::Clear() {
-// @@protoc_insertion_point(message_clear_start:maa.SubmitCustomRecognizerRequest)
+// @@protoc_insertion_point(message_clear_start:maarpc.SubmitCustomRecognizerRequest)
   uint32_t cached_has_bits = 0;
   // Prevent compiler warnings about cached_has_bits being unused
   (void) cached_has_bits;
@@ -7441,7 +7456,7 @@ const char* SubmitCustomRecognizerRequest::_InternalParse(const char* ptr, ::_pb
     uint32_t tag;
     ptr = ::_pbi::ReadTag(ptr, &tag);
     switch (tag >> 3) {
-      // optional .maa.Handle handle = 1;
+      // optional .maarpc.Handle handle = 1;
       case 1:
         if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 10)) {
           ptr = ctx->ParseMessage(_internal_mutable_handle(), ptr);
@@ -7449,7 +7464,7 @@ const char* SubmitCustomRecognizerRequest::_InternalParse(const char* ptr, ::_pb
         } else
           goto handle_unusual;
         continue;
-      // optional .maa.Id id = 2;
+      // optional .maarpc.Id id = 2;
       case 2:
         if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 18)) {
           ptr = ctx->ParseMessage(_internal_mutable_id(), ptr);
@@ -7466,7 +7481,7 @@ const char* SubmitCustomRecognizerRequest::_InternalParse(const char* ptr, ::_pb
         } else
           goto handle_unusual;
         continue;
-      // .maa.CustomRecognizerAnalyzeResult analyze = 101;
+      // .maarpc.CustomRecognizerAnalyzeResult analyze = 101;
       case 101:
         if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 42)) {
           ptr = ctx->ParseMessage(_internal_mutable_analyze(), ptr);
@@ -7500,18 +7515,18 @@ failure:
 
 uint8_t* SubmitCustomRecognizerRequest::_InternalSerialize(
     uint8_t* target, ::PROTOBUF_NAMESPACE_ID::io::EpsCopyOutputStream* stream) const {
-  // @@protoc_insertion_point(serialize_to_array_start:maa.SubmitCustomRecognizerRequest)
+  // @@protoc_insertion_point(serialize_to_array_start:maarpc.SubmitCustomRecognizerRequest)
   uint32_t cached_has_bits = 0;
   (void) cached_has_bits;
 
-  // optional .maa.Handle handle = 1;
+  // optional .maarpc.Handle handle = 1;
   if (_internal_has_handle()) {
     target = ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::
       InternalWriteMessage(1, _Internal::handle(this),
         _Internal::handle(this).GetCachedSize(), target, stream);
   }
 
-  // optional .maa.Id id = 2;
+  // optional .maarpc.Id id = 2;
   if (_internal_has_id()) {
     target = ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::
       InternalWriteMessage(2, _Internal::id(this),
@@ -7524,7 +7539,7 @@ uint8_t* SubmitCustomRecognizerRequest::_InternalSerialize(
     target = ::_pbi::WireFormatLite::WriteBoolToArray(3, this->_internal_ok(), target);
   }
 
-  // .maa.CustomRecognizerAnalyzeResult analyze = 101;
+  // .maarpc.CustomRecognizerAnalyzeResult analyze = 101;
   if (_internal_has_analyze()) {
     target = ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::
       InternalWriteMessage(101, _Internal::analyze(this),
@@ -7535,12 +7550,12 @@ uint8_t* SubmitCustomRecognizerRequest::_InternalSerialize(
     target = ::_pbi::WireFormat::InternalSerializeUnknownFieldsToArray(
         _internal_metadata_.unknown_fields<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(::PROTOBUF_NAMESPACE_ID::UnknownFieldSet::default_instance), target, stream);
   }
-  // @@protoc_insertion_point(serialize_to_array_end:maa.SubmitCustomRecognizerRequest)
+  // @@protoc_insertion_point(serialize_to_array_end:maarpc.SubmitCustomRecognizerRequest)
   return target;
 }
 
 size_t SubmitCustomRecognizerRequest::ByteSizeLong() const {
-// @@protoc_insertion_point(message_byte_size_start:maa.SubmitCustomRecognizerRequest)
+// @@protoc_insertion_point(message_byte_size_start:maarpc.SubmitCustomRecognizerRequest)
   size_t total_size = 0;
 
   uint32_t cached_has_bits = 0;
@@ -7549,14 +7564,14 @@ size_t SubmitCustomRecognizerRequest::ByteSizeLong() const {
 
   cached_has_bits = _impl_._has_bits_[0];
   if (cached_has_bits & 0x00000007u) {
-    // optional .maa.Handle handle = 1;
+    // optional .maarpc.Handle handle = 1;
     if (cached_has_bits & 0x00000001u) {
       total_size += 1 +
         ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::MessageSize(
           *_impl_.handle_);
     }
 
-    // optional .maa.Id id = 2;
+    // optional .maarpc.Id id = 2;
     if (cached_has_bits & 0x00000002u) {
       total_size += 1 +
         ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::MessageSize(
@@ -7570,7 +7585,7 @@ size_t SubmitCustomRecognizerRequest::ByteSizeLong() const {
 
   }
   switch (result_case()) {
-    // .maa.CustomRecognizerAnalyzeResult analyze = 101;
+    // .maarpc.CustomRecognizerAnalyzeResult analyze = 101;
     case kAnalyze: {
       total_size += 2 +
         ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::MessageSize(
@@ -7594,7 +7609,7 @@ const ::PROTOBUF_NAMESPACE_ID::Message::ClassData*SubmitCustomRecognizerRequest:
 void SubmitCustomRecognizerRequest::MergeImpl(::PROTOBUF_NAMESPACE_ID::Message& to_msg, const ::PROTOBUF_NAMESPACE_ID::Message& from_msg) {
   auto* const _this = static_cast<SubmitCustomRecognizerRequest*>(&to_msg);
   auto& from = static_cast<const SubmitCustomRecognizerRequest&>(from_msg);
-  // @@protoc_insertion_point(class_specific_merge_from_start:maa.SubmitCustomRecognizerRequest)
+  // @@protoc_insertion_point(class_specific_merge_from_start:maarpc.SubmitCustomRecognizerRequest)
   GOOGLE_DCHECK_NE(&from, _this);
   uint32_t cached_has_bits = 0;
   (void) cached_has_bits;
@@ -7602,11 +7617,11 @@ void SubmitCustomRecognizerRequest::MergeImpl(::PROTOBUF_NAMESPACE_ID::Message& 
   cached_has_bits = from._impl_._has_bits_[0];
   if (cached_has_bits & 0x00000007u) {
     if (cached_has_bits & 0x00000001u) {
-      _this->_internal_mutable_handle()->::maa::Handle::MergeFrom(
+      _this->_internal_mutable_handle()->::maarpc::Handle::MergeFrom(
           from._internal_handle());
     }
     if (cached_has_bits & 0x00000002u) {
-      _this->_internal_mutable_id()->::maa::Id::MergeFrom(
+      _this->_internal_mutable_id()->::maarpc::Id::MergeFrom(
           from._internal_id());
     }
     if (cached_has_bits & 0x00000004u) {
@@ -7616,7 +7631,7 @@ void SubmitCustomRecognizerRequest::MergeImpl(::PROTOBUF_NAMESPACE_ID::Message& 
   }
   switch (from.result_case()) {
     case kAnalyze: {
-      _this->_internal_mutable_analyze()->::maa::CustomRecognizerAnalyzeResult::MergeFrom(
+      _this->_internal_mutable_analyze()->::maarpc::CustomRecognizerAnalyzeResult::MergeFrom(
           from._internal_analyze());
       break;
     }
@@ -7628,7 +7643,7 @@ void SubmitCustomRecognizerRequest::MergeImpl(::PROTOBUF_NAMESPACE_ID::Message& 
 }
 
 void SubmitCustomRecognizerRequest::CopyFrom(const SubmitCustomRecognizerRequest& from) {
-// @@protoc_insertion_point(class_specific_copy_from_start:maa.SubmitCustomRecognizerRequest)
+// @@protoc_insertion_point(class_specific_copy_from_start:maarpc.SubmitCustomRecognizerRequest)
   if (&from == this) return;
   Clear();
   MergeFrom(from);
@@ -7663,24 +7678,24 @@ void SubmitCustomRecognizerRequest::InternalSwap(SubmitCustomRecognizerRequest* 
 class CustomActionRequest::_Internal {
  public:
   using HasBits = decltype(std::declval<CustomActionRequest>()._impl_._has_bits_);
-  static const ::maa::Handle& handle(const CustomActionRequest* msg);
+  static const ::maarpc::Handle& handle(const CustomActionRequest* msg);
   static void set_has_handle(HasBits* has_bits) {
     (*has_bits)[0] |= 2u;
   }
   static void set_has_name(HasBits* has_bits) {
     (*has_bits)[0] |= 1u;
   }
-  static const ::maa::Id& act(const CustomActionRequest* msg);
+  static const ::maarpc::Id& act(const CustomActionRequest* msg);
   static void set_has_act(HasBits* has_bits) {
     (*has_bits)[0] |= 4u;
   }
 };
 
-const ::maa::Handle&
+const ::maarpc::Handle&
 CustomActionRequest::_Internal::handle(const CustomActionRequest* msg) {
   return *msg->_impl_.handle_;
 }
-const ::maa::Id&
+const ::maarpc::Id&
 CustomActionRequest::_Internal::act(const CustomActionRequest* msg) {
   return *msg->_impl_.act_;
 }
@@ -7696,7 +7711,7 @@ CustomActionRequest::CustomActionRequest(::PROTOBUF_NAMESPACE_ID::Arena* arena,
                          bool is_message_owned)
   : ::PROTOBUF_NAMESPACE_ID::Message(arena, is_message_owned) {
   SharedCtor(arena, is_message_owned);
-  // @@protoc_insertion_point(arena_constructor:maa.CustomActionRequest)
+  // @@protoc_insertion_point(arena_constructor:maarpc.CustomActionRequest)
 }
 CustomActionRequest::CustomActionRequest(const CustomActionRequest& from)
   : ::PROTOBUF_NAMESPACE_ID::Message() {
@@ -7718,12 +7733,12 @@ CustomActionRequest::CustomActionRequest(const CustomActionRequest& from)
       _this->GetArenaForAllocation());
   }
   if (from._internal_has_handle()) {
-    _this->_impl_.handle_ = new ::maa::Handle(*from._impl_.handle_);
+    _this->_impl_.handle_ = new ::maarpc::Handle(*from._impl_.handle_);
   }
   if (from._internal_has_act()) {
-    _this->_impl_.act_ = new ::maa::Id(*from._impl_.act_);
+    _this->_impl_.act_ = new ::maarpc::Id(*from._impl_.act_);
   }
-  // @@protoc_insertion_point(copy_constructor:maa.CustomActionRequest)
+  // @@protoc_insertion_point(copy_constructor:maarpc.CustomActionRequest)
 }
 
 inline void CustomActionRequest::SharedCtor(
@@ -7744,7 +7759,7 @@ inline void CustomActionRequest::SharedCtor(
 }
 
 CustomActionRequest::~CustomActionRequest() {
-  // @@protoc_insertion_point(destructor:maa.CustomActionRequest)
+  // @@protoc_insertion_point(destructor:maarpc.CustomActionRequest)
   if (auto *arena = _internal_metadata_.DeleteReturnArena<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>()) {
   (void)arena;
     return;
@@ -7764,7 +7779,7 @@ void CustomActionRequest::SetCachedSize(int size) const {
 }
 
 void CustomActionRequest::Clear() {
-// @@protoc_insertion_point(message_clear_start:maa.CustomActionRequest)
+// @@protoc_insertion_point(message_clear_start:maarpc.CustomActionRequest)
   uint32_t cached_has_bits = 0;
   // Prevent compiler warnings about cached_has_bits being unused
   (void) cached_has_bits;
@@ -7794,7 +7809,7 @@ const char* CustomActionRequest::_InternalParse(const char* ptr, ::_pbi::ParseCo
     uint32_t tag;
     ptr = ::_pbi::ReadTag(ptr, &tag);
     switch (tag >> 3) {
-      // optional .maa.Handle handle = 1;
+      // optional .maarpc.Handle handle = 1;
       case 1:
         if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 10)) {
           ptr = ctx->ParseMessage(_internal_mutable_handle(), ptr);
@@ -7808,11 +7823,11 @@ const char* CustomActionRequest::_InternalParse(const char* ptr, ::_pbi::ParseCo
           auto str = _internal_mutable_name();
           ptr = ::_pbi::InlineGreedyStringParser(str, ptr, ctx);
           CHK_(ptr);
-          CHK_(::_pbi::VerifyUTF8(str, "maa.CustomActionRequest.name"));
+          CHK_(::_pbi::VerifyUTF8(str, "maarpc.CustomActionRequest.name"));
         } else
           goto handle_unusual;
         continue;
-      // optional .maa.Id act = 3;
+      // optional .maarpc.Id act = 3;
       case 3:
         if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 26)) {
           ptr = ctx->ParseMessage(_internal_mutable_act(), ptr);
@@ -7846,11 +7861,11 @@ failure:
 
 uint8_t* CustomActionRequest::_InternalSerialize(
     uint8_t* target, ::PROTOBUF_NAMESPACE_ID::io::EpsCopyOutputStream* stream) const {
-  // @@protoc_insertion_point(serialize_to_array_start:maa.CustomActionRequest)
+  // @@protoc_insertion_point(serialize_to_array_start:maarpc.CustomActionRequest)
   uint32_t cached_has_bits = 0;
   (void) cached_has_bits;
 
-  // optional .maa.Handle handle = 1;
+  // optional .maarpc.Handle handle = 1;
   if (_internal_has_handle()) {
     target = ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::
       InternalWriteMessage(1, _Internal::handle(this),
@@ -7862,12 +7877,12 @@ uint8_t* CustomActionRequest::_InternalSerialize(
     ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::VerifyUtf8String(
       this->_internal_name().data(), static_cast<int>(this->_internal_name().length()),
       ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::SERIALIZE,
-      "maa.CustomActionRequest.name");
+      "maarpc.CustomActionRequest.name");
     target = stream->WriteStringMaybeAliased(
         2, this->_internal_name(), target);
   }
 
-  // optional .maa.Id act = 3;
+  // optional .maarpc.Id act = 3;
   if (_internal_has_act()) {
     target = ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::
       InternalWriteMessage(3, _Internal::act(this),
@@ -7878,12 +7893,12 @@ uint8_t* CustomActionRequest::_InternalSerialize(
     target = ::_pbi::WireFormat::InternalSerializeUnknownFieldsToArray(
         _internal_metadata_.unknown_fields<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(::PROTOBUF_NAMESPACE_ID::UnknownFieldSet::default_instance), target, stream);
   }
-  // @@protoc_insertion_point(serialize_to_array_end:maa.CustomActionRequest)
+  // @@protoc_insertion_point(serialize_to_array_end:maarpc.CustomActionRequest)
   return target;
 }
 
 size_t CustomActionRequest::ByteSizeLong() const {
-// @@protoc_insertion_point(message_byte_size_start:maa.CustomActionRequest)
+// @@protoc_insertion_point(message_byte_size_start:maarpc.CustomActionRequest)
   size_t total_size = 0;
 
   uint32_t cached_has_bits = 0;
@@ -7899,14 +7914,14 @@ size_t CustomActionRequest::ByteSizeLong() const {
           this->_internal_name());
     }
 
-    // optional .maa.Handle handle = 1;
+    // optional .maarpc.Handle handle = 1;
     if (cached_has_bits & 0x00000002u) {
       total_size += 1 +
         ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::MessageSize(
           *_impl_.handle_);
     }
 
-    // optional .maa.Id act = 3;
+    // optional .maarpc.Id act = 3;
     if (cached_has_bits & 0x00000004u) {
       total_size += 1 +
         ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::MessageSize(
@@ -7927,7 +7942,7 @@ const ::PROTOBUF_NAMESPACE_ID::Message::ClassData*CustomActionRequest::GetClassD
 void CustomActionRequest::MergeImpl(::PROTOBUF_NAMESPACE_ID::Message& to_msg, const ::PROTOBUF_NAMESPACE_ID::Message& from_msg) {
   auto* const _this = static_cast<CustomActionRequest*>(&to_msg);
   auto& from = static_cast<const CustomActionRequest&>(from_msg);
-  // @@protoc_insertion_point(class_specific_merge_from_start:maa.CustomActionRequest)
+  // @@protoc_insertion_point(class_specific_merge_from_start:maarpc.CustomActionRequest)
   GOOGLE_DCHECK_NE(&from, _this);
   uint32_t cached_has_bits = 0;
   (void) cached_has_bits;
@@ -7938,11 +7953,11 @@ void CustomActionRequest::MergeImpl(::PROTOBUF_NAMESPACE_ID::Message& to_msg, co
       _this->_internal_set_name(from._internal_name());
     }
     if (cached_has_bits & 0x00000002u) {
-      _this->_internal_mutable_handle()->::maa::Handle::MergeFrom(
+      _this->_internal_mutable_handle()->::maarpc::Handle::MergeFrom(
           from._internal_handle());
     }
     if (cached_has_bits & 0x00000004u) {
-      _this->_internal_mutable_act()->::maa::Id::MergeFrom(
+      _this->_internal_mutable_act()->::maarpc::Id::MergeFrom(
           from._internal_act());
     }
   }
@@ -7950,7 +7965,7 @@ void CustomActionRequest::MergeImpl(::PROTOBUF_NAMESPACE_ID::Message& to_msg, co
 }
 
 void CustomActionRequest::CopyFrom(const CustomActionRequest& from) {
-// @@protoc_insertion_point(class_specific_copy_from_start:maa.CustomActionRequest)
+// @@protoc_insertion_point(class_specific_copy_from_start:maarpc.CustomActionRequest)
   if (&from == this) return;
   Clear();
   MergeFrom(from);
@@ -7989,7 +8004,7 @@ void CustomActionRequest::InternalSwap(CustomActionRequest* other) {
 class CustomActionRunParam::_Internal {
  public:
   using HasBits = decltype(std::declval<CustomActionRunParam>()._impl_._has_bits_);
-  static const ::maa::Handle& context(const CustomActionRunParam* msg);
+  static const ::maarpc::Handle& context(const CustomActionRunParam* msg);
   static void set_has_context(HasBits* has_bits) {
     (*has_bits)[0] |= 8u;
   }
@@ -7999,7 +8014,7 @@ class CustomActionRunParam::_Internal {
   static void set_has_param(HasBits* has_bits) {
     (*has_bits)[0] |= 2u;
   }
-  static const ::maa::Rect& box(const CustomActionRunParam* msg);
+  static const ::maarpc::Rect& box(const CustomActionRunParam* msg);
   static void set_has_box(HasBits* has_bits) {
     (*has_bits)[0] |= 16u;
   }
@@ -8008,11 +8023,11 @@ class CustomActionRunParam::_Internal {
   }
 };
 
-const ::maa::Handle&
+const ::maarpc::Handle&
 CustomActionRunParam::_Internal::context(const CustomActionRunParam* msg) {
   return *msg->_impl_.context_;
 }
-const ::maa::Rect&
+const ::maarpc::Rect&
 CustomActionRunParam::_Internal::box(const CustomActionRunParam* msg) {
   return *msg->_impl_.box_;
 }
@@ -8028,7 +8043,7 @@ CustomActionRunParam::CustomActionRunParam(::PROTOBUF_NAMESPACE_ID::Arena* arena
                          bool is_message_owned)
   : ::PROTOBUF_NAMESPACE_ID::Message(arena, is_message_owned) {
   SharedCtor(arena, is_message_owned);
-  // @@protoc_insertion_point(arena_constructor:maa.CustomActionRunParam)
+  // @@protoc_insertion_point(arena_constructor:maarpc.CustomActionRunParam)
 }
 CustomActionRunParam::CustomActionRunParam(const CustomActionRunParam& from)
   : ::PROTOBUF_NAMESPACE_ID::Message() {
@@ -8068,12 +8083,12 @@ CustomActionRunParam::CustomActionRunParam(const CustomActionRunParam& from)
       _this->GetArenaForAllocation());
   }
   if (from._internal_has_context()) {
-    _this->_impl_.context_ = new ::maa::Handle(*from._impl_.context_);
+    _this->_impl_.context_ = new ::maarpc::Handle(*from._impl_.context_);
   }
   if (from._internal_has_box()) {
-    _this->_impl_.box_ = new ::maa::Rect(*from._impl_.box_);
+    _this->_impl_.box_ = new ::maarpc::Rect(*from._impl_.box_);
   }
-  // @@protoc_insertion_point(copy_constructor:maa.CustomActionRunParam)
+  // @@protoc_insertion_point(copy_constructor:maarpc.CustomActionRunParam)
 }
 
 inline void CustomActionRunParam::SharedCtor(
@@ -8104,7 +8119,7 @@ inline void CustomActionRunParam::SharedCtor(
 }
 
 CustomActionRunParam::~CustomActionRunParam() {
-  // @@protoc_insertion_point(destructor:maa.CustomActionRunParam)
+  // @@protoc_insertion_point(destructor:maarpc.CustomActionRunParam)
   if (auto *arena = _internal_metadata_.DeleteReturnArena<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>()) {
   (void)arena;
     return;
@@ -8126,7 +8141,7 @@ void CustomActionRunParam::SetCachedSize(int size) const {
 }
 
 void CustomActionRunParam::Clear() {
-// @@protoc_insertion_point(message_clear_start:maa.CustomActionRunParam)
+// @@protoc_insertion_point(message_clear_start:maarpc.CustomActionRunParam)
   uint32_t cached_has_bits = 0;
   // Prevent compiler warnings about cached_has_bits being unused
   (void) cached_has_bits;
@@ -8162,7 +8177,7 @@ const char* CustomActionRunParam::_InternalParse(const char* ptr, ::_pbi::ParseC
     uint32_t tag;
     ptr = ::_pbi::ReadTag(ptr, &tag);
     switch (tag >> 3) {
-      // optional .maa.Handle context = 1;
+      // optional .maarpc.Handle context = 1;
       case 1:
         if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 10)) {
           ptr = ctx->ParseMessage(_internal_mutable_context(), ptr);
@@ -8176,7 +8191,7 @@ const char* CustomActionRunParam::_InternalParse(const char* ptr, ::_pbi::ParseC
           auto str = _internal_mutable_task();
           ptr = ::_pbi::InlineGreedyStringParser(str, ptr, ctx);
           CHK_(ptr);
-          CHK_(::_pbi::VerifyUTF8(str, "maa.CustomActionRunParam.task"));
+          CHK_(::_pbi::VerifyUTF8(str, "maarpc.CustomActionRunParam.task"));
         } else
           goto handle_unusual;
         continue;
@@ -8186,11 +8201,11 @@ const char* CustomActionRunParam::_InternalParse(const char* ptr, ::_pbi::ParseC
           auto str = _internal_mutable_param();
           ptr = ::_pbi::InlineGreedyStringParser(str, ptr, ctx);
           CHK_(ptr);
-          CHK_(::_pbi::VerifyUTF8(str, "maa.CustomActionRunParam.param"));
+          CHK_(::_pbi::VerifyUTF8(str, "maarpc.CustomActionRunParam.param"));
         } else
           goto handle_unusual;
         continue;
-      // optional .maa.Rect box = 4;
+      // optional .maarpc.Rect box = 4;
       case 4:
         if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 34)) {
           ptr = ctx->ParseMessage(_internal_mutable_box(), ptr);
@@ -8204,7 +8219,7 @@ const char* CustomActionRunParam::_InternalParse(const char* ptr, ::_pbi::ParseC
           auto str = _internal_mutable_detail();
           ptr = ::_pbi::InlineGreedyStringParser(str, ptr, ctx);
           CHK_(ptr);
-          CHK_(::_pbi::VerifyUTF8(str, "maa.CustomActionRunParam.detail"));
+          CHK_(::_pbi::VerifyUTF8(str, "maarpc.CustomActionRunParam.detail"));
         } else
           goto handle_unusual;
         continue;
@@ -8234,11 +8249,11 @@ failure:
 
 uint8_t* CustomActionRunParam::_InternalSerialize(
     uint8_t* target, ::PROTOBUF_NAMESPACE_ID::io::EpsCopyOutputStream* stream) const {
-  // @@protoc_insertion_point(serialize_to_array_start:maa.CustomActionRunParam)
+  // @@protoc_insertion_point(serialize_to_array_start:maarpc.CustomActionRunParam)
   uint32_t cached_has_bits = 0;
   (void) cached_has_bits;
 
-  // optional .maa.Handle context = 1;
+  // optional .maarpc.Handle context = 1;
   if (_internal_has_context()) {
     target = ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::
       InternalWriteMessage(1, _Internal::context(this),
@@ -8250,7 +8265,7 @@ uint8_t* CustomActionRunParam::_InternalSerialize(
     ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::VerifyUtf8String(
       this->_internal_task().data(), static_cast<int>(this->_internal_task().length()),
       ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::SERIALIZE,
-      "maa.CustomActionRunParam.task");
+      "maarpc.CustomActionRunParam.task");
     target = stream->WriteStringMaybeAliased(
         2, this->_internal_task(), target);
   }
@@ -8260,12 +8275,12 @@ uint8_t* CustomActionRunParam::_InternalSerialize(
     ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::VerifyUtf8String(
       this->_internal_param().data(), static_cast<int>(this->_internal_param().length()),
       ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::SERIALIZE,
-      "maa.CustomActionRunParam.param");
+      "maarpc.CustomActionRunParam.param");
     target = stream->WriteStringMaybeAliased(
         3, this->_internal_param(), target);
   }
 
-  // optional .maa.Rect box = 4;
+  // optional .maarpc.Rect box = 4;
   if (_internal_has_box()) {
     target = ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::
       InternalWriteMessage(4, _Internal::box(this),
@@ -8277,7 +8292,7 @@ uint8_t* CustomActionRunParam::_InternalSerialize(
     ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::VerifyUtf8String(
       this->_internal_detail().data(), static_cast<int>(this->_internal_detail().length()),
       ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::SERIALIZE,
-      "maa.CustomActionRunParam.detail");
+      "maarpc.CustomActionRunParam.detail");
     target = stream->WriteStringMaybeAliased(
         5, this->_internal_detail(), target);
   }
@@ -8286,12 +8301,12 @@ uint8_t* CustomActionRunParam::_InternalSerialize(
     target = ::_pbi::WireFormat::InternalSerializeUnknownFieldsToArray(
         _internal_metadata_.unknown_fields<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(::PROTOBUF_NAMESPACE_ID::UnknownFieldSet::default_instance), target, stream);
   }
-  // @@protoc_insertion_point(serialize_to_array_end:maa.CustomActionRunParam)
+  // @@protoc_insertion_point(serialize_to_array_end:maarpc.CustomActionRunParam)
   return target;
 }
 
 size_t CustomActionRunParam::ByteSizeLong() const {
-// @@protoc_insertion_point(message_byte_size_start:maa.CustomActionRunParam)
+// @@protoc_insertion_point(message_byte_size_start:maarpc.CustomActionRunParam)
   size_t total_size = 0;
 
   uint32_t cached_has_bits = 0;
@@ -8321,14 +8336,14 @@ size_t CustomActionRunParam::ByteSizeLong() const {
           this->_internal_detail());
     }
 
-    // optional .maa.Handle context = 1;
+    // optional .maarpc.Handle context = 1;
     if (cached_has_bits & 0x00000008u) {
       total_size += 1 +
         ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::MessageSize(
           *_impl_.context_);
     }
 
-    // optional .maa.Rect box = 4;
+    // optional .maarpc.Rect box = 4;
     if (cached_has_bits & 0x00000010u) {
       total_size += 1 +
         ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::MessageSize(
@@ -8349,7 +8364,7 @@ const ::PROTOBUF_NAMESPACE_ID::Message::ClassData*CustomActionRunParam::GetClass
 void CustomActionRunParam::MergeImpl(::PROTOBUF_NAMESPACE_ID::Message& to_msg, const ::PROTOBUF_NAMESPACE_ID::Message& from_msg) {
   auto* const _this = static_cast<CustomActionRunParam*>(&to_msg);
   auto& from = static_cast<const CustomActionRunParam&>(from_msg);
-  // @@protoc_insertion_point(class_specific_merge_from_start:maa.CustomActionRunParam)
+  // @@protoc_insertion_point(class_specific_merge_from_start:maarpc.CustomActionRunParam)
   GOOGLE_DCHECK_NE(&from, _this);
   uint32_t cached_has_bits = 0;
   (void) cached_has_bits;
@@ -8366,11 +8381,11 @@ void CustomActionRunParam::MergeImpl(::PROTOBUF_NAMESPACE_ID::Message& to_msg, c
       _this->_internal_set_detail(from._internal_detail());
     }
     if (cached_has_bits & 0x00000008u) {
-      _this->_internal_mutable_context()->::maa::Handle::MergeFrom(
+      _this->_internal_mutable_context()->::maarpc::Handle::MergeFrom(
           from._internal_context());
     }
     if (cached_has_bits & 0x00000010u) {
-      _this->_internal_mutable_box()->::maa::Rect::MergeFrom(
+      _this->_internal_mutable_box()->::maarpc::Rect::MergeFrom(
           from._internal_box());
     }
   }
@@ -8378,7 +8393,7 @@ void CustomActionRunParam::MergeImpl(::PROTOBUF_NAMESPACE_ID::Message& to_msg, c
 }
 
 void CustomActionRunParam::CopyFrom(const CustomActionRunParam& from) {
-// @@protoc_insertion_point(class_specific_copy_from_start:maa.CustomActionRunParam)
+// @@protoc_insertion_point(class_specific_copy_from_start:maarpc.CustomActionRunParam)
   if (&from == this) return;
   Clear();
   MergeFrom(from);
@@ -8425,26 +8440,26 @@ void CustomActionRunParam::InternalSwap(CustomActionRunParam* other) {
 class CustomActionResponse::_Internal {
  public:
   using HasBits = decltype(std::declval<CustomActionResponse>()._impl_._has_bits_);
-  static const ::maa::Id& act(const CustomActionResponse* msg);
+  static const ::maarpc::Id& act(const CustomActionResponse* msg);
   static void set_has_act(HasBits* has_bits) {
     (*has_bits)[0] |= 1u;
   }
-  static const ::maa::Id& id(const CustomActionResponse* msg);
+  static const ::maarpc::Id& id(const CustomActionResponse* msg);
   static void set_has_id(HasBits* has_bits) {
     (*has_bits)[0] |= 2u;
   }
-  static const ::maa::CustomActionRunParam& run(const CustomActionResponse* msg);
+  static const ::maarpc::CustomActionRunParam& run(const CustomActionResponse* msg);
 };
 
-const ::maa::Id&
+const ::maarpc::Id&
 CustomActionResponse::_Internal::act(const CustomActionResponse* msg) {
   return *msg->_impl_.act_;
 }
-const ::maa::Id&
+const ::maarpc::Id&
 CustomActionResponse::_Internal::id(const CustomActionResponse* msg) {
   return *msg->_impl_.id_;
 }
-const ::maa::CustomActionRunParam&
+const ::maarpc::CustomActionRunParam&
 CustomActionResponse::_Internal::run(const CustomActionResponse* msg) {
   return *msg->_impl_.command_.run_;
 }
@@ -8456,7 +8471,7 @@ void CustomActionResponse::clear_id() {
   if (_impl_.id_ != nullptr) _impl_.id_->Clear();
   _impl_._has_bits_[0] &= ~0x00000002u;
 }
-void CustomActionResponse::set_allocated_run(::maa::CustomActionRunParam* run) {
+void CustomActionResponse::set_allocated_run(::maarpc::CustomActionRunParam* run) {
   ::PROTOBUF_NAMESPACE_ID::Arena* message_arena = GetArenaForAllocation();
   clear_command();
   if (run) {
@@ -8469,13 +8484,13 @@ void CustomActionResponse::set_allocated_run(::maa::CustomActionRunParam* run) {
     set_has_run();
     _impl_.command_.run_ = run;
   }
-  // @@protoc_insertion_point(field_set_allocated:maa.CustomActionResponse.run)
+  // @@protoc_insertion_point(field_set_allocated:maarpc.CustomActionResponse.run)
 }
 CustomActionResponse::CustomActionResponse(::PROTOBUF_NAMESPACE_ID::Arena* arena,
                          bool is_message_owned)
   : ::PROTOBUF_NAMESPACE_ID::Message(arena, is_message_owned) {
   SharedCtor(arena, is_message_owned);
-  // @@protoc_insertion_point(arena_constructor:maa.CustomActionResponse)
+  // @@protoc_insertion_point(arena_constructor:maarpc.CustomActionResponse)
 }
 CustomActionResponse::CustomActionResponse(const CustomActionResponse& from)
   : ::PROTOBUF_NAMESPACE_ID::Message() {
@@ -8490,15 +8505,15 @@ CustomActionResponse::CustomActionResponse(const CustomActionResponse& from)
 
   _internal_metadata_.MergeFrom<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(from._internal_metadata_);
   if (from._internal_has_act()) {
-    _this->_impl_.act_ = new ::maa::Id(*from._impl_.act_);
+    _this->_impl_.act_ = new ::maarpc::Id(*from._impl_.act_);
   }
   if (from._internal_has_id()) {
-    _this->_impl_.id_ = new ::maa::Id(*from._impl_.id_);
+    _this->_impl_.id_ = new ::maarpc::Id(*from._impl_.id_);
   }
   clear_has_command();
   switch (from.command_case()) {
     case kRun: {
-      _this->_internal_mutable_run()->::maa::CustomActionRunParam::MergeFrom(
+      _this->_internal_mutable_run()->::maarpc::CustomActionRunParam::MergeFrom(
           from._internal_run());
       break;
     }
@@ -8510,7 +8525,7 @@ CustomActionResponse::CustomActionResponse(const CustomActionResponse& from)
       break;
     }
   }
-  // @@protoc_insertion_point(copy_constructor:maa.CustomActionResponse)
+  // @@protoc_insertion_point(copy_constructor:maarpc.CustomActionResponse)
 }
 
 inline void CustomActionResponse::SharedCtor(
@@ -8529,7 +8544,7 @@ inline void CustomActionResponse::SharedCtor(
 }
 
 CustomActionResponse::~CustomActionResponse() {
-  // @@protoc_insertion_point(destructor:maa.CustomActionResponse)
+  // @@protoc_insertion_point(destructor:maarpc.CustomActionResponse)
   if (auto *arena = _internal_metadata_.DeleteReturnArena<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>()) {
   (void)arena;
     return;
@@ -8551,7 +8566,7 @@ void CustomActionResponse::SetCachedSize(int size) const {
 }
 
 void CustomActionResponse::clear_command() {
-// @@protoc_insertion_point(one_of_clear_start:maa.CustomActionResponse)
+// @@protoc_insertion_point(one_of_clear_start:maarpc.CustomActionResponse)
   switch (command_case()) {
     case kRun: {
       if (GetArenaForAllocation() == nullptr) {
@@ -8572,7 +8587,7 @@ void CustomActionResponse::clear_command() {
 
 
 void CustomActionResponse::Clear() {
-// @@protoc_insertion_point(message_clear_start:maa.CustomActionResponse)
+// @@protoc_insertion_point(message_clear_start:maarpc.CustomActionResponse)
   uint32_t cached_has_bits = 0;
   // Prevent compiler warnings about cached_has_bits being unused
   (void) cached_has_bits;
@@ -8600,7 +8615,7 @@ const char* CustomActionResponse::_InternalParse(const char* ptr, ::_pbi::ParseC
     uint32_t tag;
     ptr = ::_pbi::ReadTag(ptr, &tag);
     switch (tag >> 3) {
-      // optional .maa.Id act = 1;
+      // optional .maarpc.Id act = 1;
       case 1:
         if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 10)) {
           ptr = ctx->ParseMessage(_internal_mutable_act(), ptr);
@@ -8608,7 +8623,7 @@ const char* CustomActionResponse::_InternalParse(const char* ptr, ::_pbi::ParseC
         } else
           goto handle_unusual;
         continue;
-      // optional .maa.Id id = 2;
+      // optional .maarpc.Id id = 2;
       case 2:
         if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 18)) {
           ptr = ctx->ParseMessage(_internal_mutable_id(), ptr);
@@ -8616,7 +8631,7 @@ const char* CustomActionResponse::_InternalParse(const char* ptr, ::_pbi::ParseC
         } else
           goto handle_unusual;
         continue;
-      // .maa.CustomActionRunParam run = 101;
+      // .maarpc.CustomActionRunParam run = 101;
       case 101:
         if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 42)) {
           ptr = ctx->ParseMessage(_internal_mutable_run(), ptr);
@@ -8658,25 +8673,25 @@ failure:
 
 uint8_t* CustomActionResponse::_InternalSerialize(
     uint8_t* target, ::PROTOBUF_NAMESPACE_ID::io::EpsCopyOutputStream* stream) const {
-  // @@protoc_insertion_point(serialize_to_array_start:maa.CustomActionResponse)
+  // @@protoc_insertion_point(serialize_to_array_start:maarpc.CustomActionResponse)
   uint32_t cached_has_bits = 0;
   (void) cached_has_bits;
 
-  // optional .maa.Id act = 1;
+  // optional .maarpc.Id act = 1;
   if (_internal_has_act()) {
     target = ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::
       InternalWriteMessage(1, _Internal::act(this),
         _Internal::act(this).GetCachedSize(), target, stream);
   }
 
-  // optional .maa.Id id = 2;
+  // optional .maarpc.Id id = 2;
   if (_internal_has_id()) {
     target = ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::
       InternalWriteMessage(2, _Internal::id(this),
         _Internal::id(this).GetCachedSize(), target, stream);
   }
 
-  // .maa.CustomActionRunParam run = 101;
+  // .maarpc.CustomActionRunParam run = 101;
   if (_internal_has_run()) {
     target = ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::
       InternalWriteMessage(101, _Internal::run(this),
@@ -8693,12 +8708,12 @@ uint8_t* CustomActionResponse::_InternalSerialize(
     target = ::_pbi::WireFormat::InternalSerializeUnknownFieldsToArray(
         _internal_metadata_.unknown_fields<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(::PROTOBUF_NAMESPACE_ID::UnknownFieldSet::default_instance), target, stream);
   }
-  // @@protoc_insertion_point(serialize_to_array_end:maa.CustomActionResponse)
+  // @@protoc_insertion_point(serialize_to_array_end:maarpc.CustomActionResponse)
   return target;
 }
 
 size_t CustomActionResponse::ByteSizeLong() const {
-// @@protoc_insertion_point(message_byte_size_start:maa.CustomActionResponse)
+// @@protoc_insertion_point(message_byte_size_start:maarpc.CustomActionResponse)
   size_t total_size = 0;
 
   uint32_t cached_has_bits = 0;
@@ -8707,14 +8722,14 @@ size_t CustomActionResponse::ByteSizeLong() const {
 
   cached_has_bits = _impl_._has_bits_[0];
   if (cached_has_bits & 0x00000003u) {
-    // optional .maa.Id act = 1;
+    // optional .maarpc.Id act = 1;
     if (cached_has_bits & 0x00000001u) {
       total_size += 1 +
         ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::MessageSize(
           *_impl_.act_);
     }
 
-    // optional .maa.Id id = 2;
+    // optional .maarpc.Id id = 2;
     if (cached_has_bits & 0x00000002u) {
       total_size += 1 +
         ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::MessageSize(
@@ -8723,7 +8738,7 @@ size_t CustomActionResponse::ByteSizeLong() const {
 
   }
   switch (command_case()) {
-    // .maa.CustomActionRunParam run = 101;
+    // .maarpc.CustomActionRunParam run = 101;
     case kRun: {
       total_size += 2 +
         ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::MessageSize(
@@ -8752,7 +8767,7 @@ const ::PROTOBUF_NAMESPACE_ID::Message::ClassData*CustomActionResponse::GetClass
 void CustomActionResponse::MergeImpl(::PROTOBUF_NAMESPACE_ID::Message& to_msg, const ::PROTOBUF_NAMESPACE_ID::Message& from_msg) {
   auto* const _this = static_cast<CustomActionResponse*>(&to_msg);
   auto& from = static_cast<const CustomActionResponse&>(from_msg);
-  // @@protoc_insertion_point(class_specific_merge_from_start:maa.CustomActionResponse)
+  // @@protoc_insertion_point(class_specific_merge_from_start:maarpc.CustomActionResponse)
   GOOGLE_DCHECK_NE(&from, _this);
   uint32_t cached_has_bits = 0;
   (void) cached_has_bits;
@@ -8760,17 +8775,17 @@ void CustomActionResponse::MergeImpl(::PROTOBUF_NAMESPACE_ID::Message& to_msg, c
   cached_has_bits = from._impl_._has_bits_[0];
   if (cached_has_bits & 0x00000003u) {
     if (cached_has_bits & 0x00000001u) {
-      _this->_internal_mutable_act()->::maa::Id::MergeFrom(
+      _this->_internal_mutable_act()->::maarpc::Id::MergeFrom(
           from._internal_act());
     }
     if (cached_has_bits & 0x00000002u) {
-      _this->_internal_mutable_id()->::maa::Id::MergeFrom(
+      _this->_internal_mutable_id()->::maarpc::Id::MergeFrom(
           from._internal_id());
     }
   }
   switch (from.command_case()) {
     case kRun: {
-      _this->_internal_mutable_run()->::maa::CustomActionRunParam::MergeFrom(
+      _this->_internal_mutable_run()->::maarpc::CustomActionRunParam::MergeFrom(
           from._internal_run());
       break;
     }
@@ -8786,7 +8801,7 @@ void CustomActionResponse::MergeImpl(::PROTOBUF_NAMESPACE_ID::Message& to_msg, c
 }
 
 void CustomActionResponse::CopyFrom(const CustomActionResponse& from) {
-// @@protoc_insertion_point(class_specific_copy_from_start:maa.CustomActionResponse)
+// @@protoc_insertion_point(class_specific_copy_from_start:maarpc.CustomActionResponse)
   if (&from == this) return;
   Clear();
   MergeFrom(from);
@@ -8821,11 +8836,11 @@ void CustomActionResponse::InternalSwap(CustomActionResponse* other) {
 class SubmitCustomActionRequest::_Internal {
  public:
   using HasBits = decltype(std::declval<SubmitCustomActionRequest>()._impl_._has_bits_);
-  static const ::maa::Handle& handle(const SubmitCustomActionRequest* msg);
+  static const ::maarpc::Handle& handle(const SubmitCustomActionRequest* msg);
   static void set_has_handle(HasBits* has_bits) {
     (*has_bits)[0] |= 1u;
   }
-  static const ::maa::Id& id(const SubmitCustomActionRequest* msg);
+  static const ::maarpc::Id& id(const SubmitCustomActionRequest* msg);
   static void set_has_id(HasBits* has_bits) {
     (*has_bits)[0] |= 2u;
   }
@@ -8834,11 +8849,11 @@ class SubmitCustomActionRequest::_Internal {
   }
 };
 
-const ::maa::Handle&
+const ::maarpc::Handle&
 SubmitCustomActionRequest::_Internal::handle(const SubmitCustomActionRequest* msg) {
   return *msg->_impl_.handle_;
 }
-const ::maa::Id&
+const ::maarpc::Id&
 SubmitCustomActionRequest::_Internal::id(const SubmitCustomActionRequest* msg) {
   return *msg->_impl_.id_;
 }
@@ -8854,7 +8869,7 @@ SubmitCustomActionRequest::SubmitCustomActionRequest(::PROTOBUF_NAMESPACE_ID::Ar
                          bool is_message_owned)
   : ::PROTOBUF_NAMESPACE_ID::Message(arena, is_message_owned) {
   SharedCtor(arena, is_message_owned);
-  // @@protoc_insertion_point(arena_constructor:maa.SubmitCustomActionRequest)
+  // @@protoc_insertion_point(arena_constructor:maarpc.SubmitCustomActionRequest)
 }
 SubmitCustomActionRequest::SubmitCustomActionRequest(const SubmitCustomActionRequest& from)
   : ::PROTOBUF_NAMESPACE_ID::Message() {
@@ -8868,13 +8883,13 @@ SubmitCustomActionRequest::SubmitCustomActionRequest(const SubmitCustomActionReq
 
   _internal_metadata_.MergeFrom<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(from._internal_metadata_);
   if (from._internal_has_handle()) {
-    _this->_impl_.handle_ = new ::maa::Handle(*from._impl_.handle_);
+    _this->_impl_.handle_ = new ::maarpc::Handle(*from._impl_.handle_);
   }
   if (from._internal_has_id()) {
-    _this->_impl_.id_ = new ::maa::Id(*from._impl_.id_);
+    _this->_impl_.id_ = new ::maarpc::Id(*from._impl_.id_);
   }
   _this->_impl_.ok_ = from._impl_.ok_;
-  // @@protoc_insertion_point(copy_constructor:maa.SubmitCustomActionRequest)
+  // @@protoc_insertion_point(copy_constructor:maarpc.SubmitCustomActionRequest)
 }
 
 inline void SubmitCustomActionRequest::SharedCtor(
@@ -8891,7 +8906,7 @@ inline void SubmitCustomActionRequest::SharedCtor(
 }
 
 SubmitCustomActionRequest::~SubmitCustomActionRequest() {
-  // @@protoc_insertion_point(destructor:maa.SubmitCustomActionRequest)
+  // @@protoc_insertion_point(destructor:maarpc.SubmitCustomActionRequest)
   if (auto *arena = _internal_metadata_.DeleteReturnArena<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>()) {
   (void)arena;
     return;
@@ -8910,7 +8925,7 @@ void SubmitCustomActionRequest::SetCachedSize(int size) const {
 }
 
 void SubmitCustomActionRequest::Clear() {
-// @@protoc_insertion_point(message_clear_start:maa.SubmitCustomActionRequest)
+// @@protoc_insertion_point(message_clear_start:maarpc.SubmitCustomActionRequest)
   uint32_t cached_has_bits = 0;
   // Prevent compiler warnings about cached_has_bits being unused
   (void) cached_has_bits;
@@ -8938,7 +8953,7 @@ const char* SubmitCustomActionRequest::_InternalParse(const char* ptr, ::_pbi::P
     uint32_t tag;
     ptr = ::_pbi::ReadTag(ptr, &tag);
     switch (tag >> 3) {
-      // optional .maa.Handle handle = 1;
+      // optional .maarpc.Handle handle = 1;
       case 1:
         if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 10)) {
           ptr = ctx->ParseMessage(_internal_mutable_handle(), ptr);
@@ -8946,7 +8961,7 @@ const char* SubmitCustomActionRequest::_InternalParse(const char* ptr, ::_pbi::P
         } else
           goto handle_unusual;
         continue;
-      // optional .maa.Id id = 2;
+      // optional .maarpc.Id id = 2;
       case 2:
         if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 18)) {
           ptr = ctx->ParseMessage(_internal_mutable_id(), ptr);
@@ -8989,18 +9004,18 @@ failure:
 
 uint8_t* SubmitCustomActionRequest::_InternalSerialize(
     uint8_t* target, ::PROTOBUF_NAMESPACE_ID::io::EpsCopyOutputStream* stream) const {
-  // @@protoc_insertion_point(serialize_to_array_start:maa.SubmitCustomActionRequest)
+  // @@protoc_insertion_point(serialize_to_array_start:maarpc.SubmitCustomActionRequest)
   uint32_t cached_has_bits = 0;
   (void) cached_has_bits;
 
-  // optional .maa.Handle handle = 1;
+  // optional .maarpc.Handle handle = 1;
   if (_internal_has_handle()) {
     target = ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::
       InternalWriteMessage(1, _Internal::handle(this),
         _Internal::handle(this).GetCachedSize(), target, stream);
   }
 
-  // optional .maa.Id id = 2;
+  // optional .maarpc.Id id = 2;
   if (_internal_has_id()) {
     target = ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::
       InternalWriteMessage(2, _Internal::id(this),
@@ -9017,12 +9032,12 @@ uint8_t* SubmitCustomActionRequest::_InternalSerialize(
     target = ::_pbi::WireFormat::InternalSerializeUnknownFieldsToArray(
         _internal_metadata_.unknown_fields<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(::PROTOBUF_NAMESPACE_ID::UnknownFieldSet::default_instance), target, stream);
   }
-  // @@protoc_insertion_point(serialize_to_array_end:maa.SubmitCustomActionRequest)
+  // @@protoc_insertion_point(serialize_to_array_end:maarpc.SubmitCustomActionRequest)
   return target;
 }
 
 size_t SubmitCustomActionRequest::ByteSizeLong() const {
-// @@protoc_insertion_point(message_byte_size_start:maa.SubmitCustomActionRequest)
+// @@protoc_insertion_point(message_byte_size_start:maarpc.SubmitCustomActionRequest)
   size_t total_size = 0;
 
   uint32_t cached_has_bits = 0;
@@ -9031,14 +9046,14 @@ size_t SubmitCustomActionRequest::ByteSizeLong() const {
 
   cached_has_bits = _impl_._has_bits_[0];
   if (cached_has_bits & 0x00000007u) {
-    // optional .maa.Handle handle = 1;
+    // optional .maarpc.Handle handle = 1;
     if (cached_has_bits & 0x00000001u) {
       total_size += 1 +
         ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::MessageSize(
           *_impl_.handle_);
     }
 
-    // optional .maa.Id id = 2;
+    // optional .maarpc.Id id = 2;
     if (cached_has_bits & 0x00000002u) {
       total_size += 1 +
         ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::MessageSize(
@@ -9064,7 +9079,7 @@ const ::PROTOBUF_NAMESPACE_ID::Message::ClassData*SubmitCustomActionRequest::Get
 void SubmitCustomActionRequest::MergeImpl(::PROTOBUF_NAMESPACE_ID::Message& to_msg, const ::PROTOBUF_NAMESPACE_ID::Message& from_msg) {
   auto* const _this = static_cast<SubmitCustomActionRequest*>(&to_msg);
   auto& from = static_cast<const SubmitCustomActionRequest&>(from_msg);
-  // @@protoc_insertion_point(class_specific_merge_from_start:maa.SubmitCustomActionRequest)
+  // @@protoc_insertion_point(class_specific_merge_from_start:maarpc.SubmitCustomActionRequest)
   GOOGLE_DCHECK_NE(&from, _this);
   uint32_t cached_has_bits = 0;
   (void) cached_has_bits;
@@ -9072,11 +9087,11 @@ void SubmitCustomActionRequest::MergeImpl(::PROTOBUF_NAMESPACE_ID::Message& to_m
   cached_has_bits = from._impl_._has_bits_[0];
   if (cached_has_bits & 0x00000007u) {
     if (cached_has_bits & 0x00000001u) {
-      _this->_internal_mutable_handle()->::maa::Handle::MergeFrom(
+      _this->_internal_mutable_handle()->::maarpc::Handle::MergeFrom(
           from._internal_handle());
     }
     if (cached_has_bits & 0x00000002u) {
-      _this->_internal_mutable_id()->::maa::Id::MergeFrom(
+      _this->_internal_mutable_id()->::maarpc::Id::MergeFrom(
           from._internal_id());
     }
     if (cached_has_bits & 0x00000004u) {
@@ -9088,7 +9103,7 @@ void SubmitCustomActionRequest::MergeImpl(::PROTOBUF_NAMESPACE_ID::Message& to_m
 }
 
 void SubmitCustomActionRequest::CopyFrom(const SubmitCustomActionRequest& from) {
-// @@protoc_insertion_point(class_specific_copy_from_start:maa.SubmitCustomActionRequest)
+// @@protoc_insertion_point(class_specific_copy_from_start:maarpc.SubmitCustomActionRequest)
   if (&from == this) return;
   Clear();
   MergeFrom(from);
@@ -9121,7 +9136,7 @@ void SubmitCustomActionRequest::InternalSwap(SubmitCustomActionRequest* other) {
 class InstancePostTaskRequest::_Internal {
  public:
   using HasBits = decltype(std::declval<InstancePostTaskRequest>()._impl_._has_bits_);
-  static const ::maa::Handle& handle(const InstancePostTaskRequest* msg);
+  static const ::maarpc::Handle& handle(const InstancePostTaskRequest* msg);
   static void set_has_handle(HasBits* has_bits) {
     (*has_bits)[0] |= 4u;
   }
@@ -9133,7 +9148,7 @@ class InstancePostTaskRequest::_Internal {
   }
 };
 
-const ::maa::Handle&
+const ::maarpc::Handle&
 InstancePostTaskRequest::_Internal::handle(const InstancePostTaskRequest* msg) {
   return *msg->_impl_.handle_;
 }
@@ -9145,7 +9160,7 @@ InstancePostTaskRequest::InstancePostTaskRequest(::PROTOBUF_NAMESPACE_ID::Arena*
                          bool is_message_owned)
   : ::PROTOBUF_NAMESPACE_ID::Message(arena, is_message_owned) {
   SharedCtor(arena, is_message_owned);
-  // @@protoc_insertion_point(arena_constructor:maa.InstancePostTaskRequest)
+  // @@protoc_insertion_point(arena_constructor:maarpc.InstancePostTaskRequest)
 }
 InstancePostTaskRequest::InstancePostTaskRequest(const InstancePostTaskRequest& from)
   : ::PROTOBUF_NAMESPACE_ID::Message() {
@@ -9175,9 +9190,9 @@ InstancePostTaskRequest::InstancePostTaskRequest(const InstancePostTaskRequest& 
       _this->GetArenaForAllocation());
   }
   if (from._internal_has_handle()) {
-    _this->_impl_.handle_ = new ::maa::Handle(*from._impl_.handle_);
+    _this->_impl_.handle_ = new ::maarpc::Handle(*from._impl_.handle_);
   }
-  // @@protoc_insertion_point(copy_constructor:maa.InstancePostTaskRequest)
+  // @@protoc_insertion_point(copy_constructor:maarpc.InstancePostTaskRequest)
 }
 
 inline void InstancePostTaskRequest::SharedCtor(
@@ -9202,7 +9217,7 @@ inline void InstancePostTaskRequest::SharedCtor(
 }
 
 InstancePostTaskRequest::~InstancePostTaskRequest() {
-  // @@protoc_insertion_point(destructor:maa.InstancePostTaskRequest)
+  // @@protoc_insertion_point(destructor:maarpc.InstancePostTaskRequest)
   if (auto *arena = _internal_metadata_.DeleteReturnArena<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>()) {
   (void)arena;
     return;
@@ -9222,7 +9237,7 @@ void InstancePostTaskRequest::SetCachedSize(int size) const {
 }
 
 void InstancePostTaskRequest::Clear() {
-// @@protoc_insertion_point(message_clear_start:maa.InstancePostTaskRequest)
+// @@protoc_insertion_point(message_clear_start:maarpc.InstancePostTaskRequest)
   uint32_t cached_has_bits = 0;
   // Prevent compiler warnings about cached_has_bits being unused
   (void) cached_has_bits;
@@ -9251,7 +9266,7 @@ const char* InstancePostTaskRequest::_InternalParse(const char* ptr, ::_pbi::Par
     uint32_t tag;
     ptr = ::_pbi::ReadTag(ptr, &tag);
     switch (tag >> 3) {
-      // optional .maa.Handle handle = 1;
+      // optional .maarpc.Handle handle = 1;
       case 1:
         if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 10)) {
           ptr = ctx->ParseMessage(_internal_mutable_handle(), ptr);
@@ -9265,7 +9280,7 @@ const char* InstancePostTaskRequest::_InternalParse(const char* ptr, ::_pbi::Par
           auto str = _internal_mutable_task();
           ptr = ::_pbi::InlineGreedyStringParser(str, ptr, ctx);
           CHK_(ptr);
-          CHK_(::_pbi::VerifyUTF8(str, "maa.InstancePostTaskRequest.task"));
+          CHK_(::_pbi::VerifyUTF8(str, "maarpc.InstancePostTaskRequest.task"));
         } else
           goto handle_unusual;
         continue;
@@ -9275,7 +9290,7 @@ const char* InstancePostTaskRequest::_InternalParse(const char* ptr, ::_pbi::Par
           auto str = _internal_mutable_param();
           ptr = ::_pbi::InlineGreedyStringParser(str, ptr, ctx);
           CHK_(ptr);
-          CHK_(::_pbi::VerifyUTF8(str, "maa.InstancePostTaskRequest.param"));
+          CHK_(::_pbi::VerifyUTF8(str, "maarpc.InstancePostTaskRequest.param"));
         } else
           goto handle_unusual;
         continue;
@@ -9305,11 +9320,11 @@ failure:
 
 uint8_t* InstancePostTaskRequest::_InternalSerialize(
     uint8_t* target, ::PROTOBUF_NAMESPACE_ID::io::EpsCopyOutputStream* stream) const {
-  // @@protoc_insertion_point(serialize_to_array_start:maa.InstancePostTaskRequest)
+  // @@protoc_insertion_point(serialize_to_array_start:maarpc.InstancePostTaskRequest)
   uint32_t cached_has_bits = 0;
   (void) cached_has_bits;
 
-  // optional .maa.Handle handle = 1;
+  // optional .maarpc.Handle handle = 1;
   if (_internal_has_handle()) {
     target = ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::
       InternalWriteMessage(1, _Internal::handle(this),
@@ -9321,7 +9336,7 @@ uint8_t* InstancePostTaskRequest::_InternalSerialize(
     ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::VerifyUtf8String(
       this->_internal_task().data(), static_cast<int>(this->_internal_task().length()),
       ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::SERIALIZE,
-      "maa.InstancePostTaskRequest.task");
+      "maarpc.InstancePostTaskRequest.task");
     target = stream->WriteStringMaybeAliased(
         2, this->_internal_task(), target);
   }
@@ -9331,7 +9346,7 @@ uint8_t* InstancePostTaskRequest::_InternalSerialize(
     ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::VerifyUtf8String(
       this->_internal_param().data(), static_cast<int>(this->_internal_param().length()),
       ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::SERIALIZE,
-      "maa.InstancePostTaskRequest.param");
+      "maarpc.InstancePostTaskRequest.param");
     target = stream->WriteStringMaybeAliased(
         3, this->_internal_param(), target);
   }
@@ -9340,12 +9355,12 @@ uint8_t* InstancePostTaskRequest::_InternalSerialize(
     target = ::_pbi::WireFormat::InternalSerializeUnknownFieldsToArray(
         _internal_metadata_.unknown_fields<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(::PROTOBUF_NAMESPACE_ID::UnknownFieldSet::default_instance), target, stream);
   }
-  // @@protoc_insertion_point(serialize_to_array_end:maa.InstancePostTaskRequest)
+  // @@protoc_insertion_point(serialize_to_array_end:maarpc.InstancePostTaskRequest)
   return target;
 }
 
 size_t InstancePostTaskRequest::ByteSizeLong() const {
-// @@protoc_insertion_point(message_byte_size_start:maa.InstancePostTaskRequest)
+// @@protoc_insertion_point(message_byte_size_start:maarpc.InstancePostTaskRequest)
   size_t total_size = 0;
 
   uint32_t cached_has_bits = 0;
@@ -9368,7 +9383,7 @@ size_t InstancePostTaskRequest::ByteSizeLong() const {
           this->_internal_param());
     }
 
-    // optional .maa.Handle handle = 1;
+    // optional .maarpc.Handle handle = 1;
     if (cached_has_bits & 0x00000004u) {
       total_size += 1 +
         ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::MessageSize(
@@ -9389,7 +9404,7 @@ const ::PROTOBUF_NAMESPACE_ID::Message::ClassData*InstancePostTaskRequest::GetCl
 void InstancePostTaskRequest::MergeImpl(::PROTOBUF_NAMESPACE_ID::Message& to_msg, const ::PROTOBUF_NAMESPACE_ID::Message& from_msg) {
   auto* const _this = static_cast<InstancePostTaskRequest*>(&to_msg);
   auto& from = static_cast<const InstancePostTaskRequest&>(from_msg);
-  // @@protoc_insertion_point(class_specific_merge_from_start:maa.InstancePostTaskRequest)
+  // @@protoc_insertion_point(class_specific_merge_from_start:maarpc.InstancePostTaskRequest)
   GOOGLE_DCHECK_NE(&from, _this);
   uint32_t cached_has_bits = 0;
   (void) cached_has_bits;
@@ -9403,7 +9418,7 @@ void InstancePostTaskRequest::MergeImpl(::PROTOBUF_NAMESPACE_ID::Message& to_msg
       _this->_internal_set_param(from._internal_param());
     }
     if (cached_has_bits & 0x00000004u) {
-      _this->_internal_mutable_handle()->::maa::Handle::MergeFrom(
+      _this->_internal_mutable_handle()->::maarpc::Handle::MergeFrom(
           from._internal_handle());
     }
   }
@@ -9411,7 +9426,7 @@ void InstancePostTaskRequest::MergeImpl(::PROTOBUF_NAMESPACE_ID::Message& to_msg
 }
 
 void InstancePostTaskRequest::CopyFrom(const InstancePostTaskRequest& from) {
-// @@protoc_insertion_point(class_specific_copy_from_start:maa.InstancePostTaskRequest)
+// @@protoc_insertion_point(class_specific_copy_from_start:maarpc.InstancePostTaskRequest)
   if (&from == this) return;
   Clear();
   MergeFrom(from);
@@ -9449,11 +9464,11 @@ void InstancePostTaskRequest::InternalSwap(InstancePostTaskRequest* other) {
 class InstanceSetTaskParamRequest::_Internal {
  public:
   using HasBits = decltype(std::declval<InstanceSetTaskParamRequest>()._impl_._has_bits_);
-  static const ::maa::Handle& handle(const InstanceSetTaskParamRequest* msg);
+  static const ::maarpc::Handle& handle(const InstanceSetTaskParamRequest* msg);
   static void set_has_handle(HasBits* has_bits) {
     (*has_bits)[0] |= 2u;
   }
-  static const ::maa::Id& id(const InstanceSetTaskParamRequest* msg);
+  static const ::maarpc::Id& id(const InstanceSetTaskParamRequest* msg);
   static void set_has_id(HasBits* has_bits) {
     (*has_bits)[0] |= 4u;
   }
@@ -9462,11 +9477,11 @@ class InstanceSetTaskParamRequest::_Internal {
   }
 };
 
-const ::maa::Handle&
+const ::maarpc::Handle&
 InstanceSetTaskParamRequest::_Internal::handle(const InstanceSetTaskParamRequest* msg) {
   return *msg->_impl_.handle_;
 }
-const ::maa::Id&
+const ::maarpc::Id&
 InstanceSetTaskParamRequest::_Internal::id(const InstanceSetTaskParamRequest* msg) {
   return *msg->_impl_.id_;
 }
@@ -9482,7 +9497,7 @@ InstanceSetTaskParamRequest::InstanceSetTaskParamRequest(::PROTOBUF_NAMESPACE_ID
                          bool is_message_owned)
   : ::PROTOBUF_NAMESPACE_ID::Message(arena, is_message_owned) {
   SharedCtor(arena, is_message_owned);
-  // @@protoc_insertion_point(arena_constructor:maa.InstanceSetTaskParamRequest)
+  // @@protoc_insertion_point(arena_constructor:maarpc.InstanceSetTaskParamRequest)
 }
 InstanceSetTaskParamRequest::InstanceSetTaskParamRequest(const InstanceSetTaskParamRequest& from)
   : ::PROTOBUF_NAMESPACE_ID::Message() {
@@ -9504,12 +9519,12 @@ InstanceSetTaskParamRequest::InstanceSetTaskParamRequest(const InstanceSetTaskPa
       _this->GetArenaForAllocation());
   }
   if (from._internal_has_handle()) {
-    _this->_impl_.handle_ = new ::maa::Handle(*from._impl_.handle_);
+    _this->_impl_.handle_ = new ::maarpc::Handle(*from._impl_.handle_);
   }
   if (from._internal_has_id()) {
-    _this->_impl_.id_ = new ::maa::Id(*from._impl_.id_);
+    _this->_impl_.id_ = new ::maarpc::Id(*from._impl_.id_);
   }
-  // @@protoc_insertion_point(copy_constructor:maa.InstanceSetTaskParamRequest)
+  // @@protoc_insertion_point(copy_constructor:maarpc.InstanceSetTaskParamRequest)
 }
 
 inline void InstanceSetTaskParamRequest::SharedCtor(
@@ -9530,7 +9545,7 @@ inline void InstanceSetTaskParamRequest::SharedCtor(
 }
 
 InstanceSetTaskParamRequest::~InstanceSetTaskParamRequest() {
-  // @@protoc_insertion_point(destructor:maa.InstanceSetTaskParamRequest)
+  // @@protoc_insertion_point(destructor:maarpc.InstanceSetTaskParamRequest)
   if (auto *arena = _internal_metadata_.DeleteReturnArena<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>()) {
   (void)arena;
     return;
@@ -9550,7 +9565,7 @@ void InstanceSetTaskParamRequest::SetCachedSize(int size) const {
 }
 
 void InstanceSetTaskParamRequest::Clear() {
-// @@protoc_insertion_point(message_clear_start:maa.InstanceSetTaskParamRequest)
+// @@protoc_insertion_point(message_clear_start:maarpc.InstanceSetTaskParamRequest)
   uint32_t cached_has_bits = 0;
   // Prevent compiler warnings about cached_has_bits being unused
   (void) cached_has_bits;
@@ -9580,7 +9595,7 @@ const char* InstanceSetTaskParamRequest::_InternalParse(const char* ptr, ::_pbi:
     uint32_t tag;
     ptr = ::_pbi::ReadTag(ptr, &tag);
     switch (tag >> 3) {
-      // optional .maa.Handle handle = 1;
+      // optional .maarpc.Handle handle = 1;
       case 1:
         if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 10)) {
           ptr = ctx->ParseMessage(_internal_mutable_handle(), ptr);
@@ -9588,7 +9603,7 @@ const char* InstanceSetTaskParamRequest::_InternalParse(const char* ptr, ::_pbi:
         } else
           goto handle_unusual;
         continue;
-      // optional .maa.Id id = 2;
+      // optional .maarpc.Id id = 2;
       case 2:
         if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 18)) {
           ptr = ctx->ParseMessage(_internal_mutable_id(), ptr);
@@ -9602,7 +9617,7 @@ const char* InstanceSetTaskParamRequest::_InternalParse(const char* ptr, ::_pbi:
           auto str = _internal_mutable_param();
           ptr = ::_pbi::InlineGreedyStringParser(str, ptr, ctx);
           CHK_(ptr);
-          CHK_(::_pbi::VerifyUTF8(str, "maa.InstanceSetTaskParamRequest.param"));
+          CHK_(::_pbi::VerifyUTF8(str, "maarpc.InstanceSetTaskParamRequest.param"));
         } else
           goto handle_unusual;
         continue;
@@ -9632,18 +9647,18 @@ failure:
 
 uint8_t* InstanceSetTaskParamRequest::_InternalSerialize(
     uint8_t* target, ::PROTOBUF_NAMESPACE_ID::io::EpsCopyOutputStream* stream) const {
-  // @@protoc_insertion_point(serialize_to_array_start:maa.InstanceSetTaskParamRequest)
+  // @@protoc_insertion_point(serialize_to_array_start:maarpc.InstanceSetTaskParamRequest)
   uint32_t cached_has_bits = 0;
   (void) cached_has_bits;
 
-  // optional .maa.Handle handle = 1;
+  // optional .maarpc.Handle handle = 1;
   if (_internal_has_handle()) {
     target = ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::
       InternalWriteMessage(1, _Internal::handle(this),
         _Internal::handle(this).GetCachedSize(), target, stream);
   }
 
-  // optional .maa.Id id = 2;
+  // optional .maarpc.Id id = 2;
   if (_internal_has_id()) {
     target = ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::
       InternalWriteMessage(2, _Internal::id(this),
@@ -9655,7 +9670,7 @@ uint8_t* InstanceSetTaskParamRequest::_InternalSerialize(
     ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::VerifyUtf8String(
       this->_internal_param().data(), static_cast<int>(this->_internal_param().length()),
       ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::SERIALIZE,
-      "maa.InstanceSetTaskParamRequest.param");
+      "maarpc.InstanceSetTaskParamRequest.param");
     target = stream->WriteStringMaybeAliased(
         3, this->_internal_param(), target);
   }
@@ -9664,12 +9679,12 @@ uint8_t* InstanceSetTaskParamRequest::_InternalSerialize(
     target = ::_pbi::WireFormat::InternalSerializeUnknownFieldsToArray(
         _internal_metadata_.unknown_fields<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(::PROTOBUF_NAMESPACE_ID::UnknownFieldSet::default_instance), target, stream);
   }
-  // @@protoc_insertion_point(serialize_to_array_end:maa.InstanceSetTaskParamRequest)
+  // @@protoc_insertion_point(serialize_to_array_end:maarpc.InstanceSetTaskParamRequest)
   return target;
 }
 
 size_t InstanceSetTaskParamRequest::ByteSizeLong() const {
-// @@protoc_insertion_point(message_byte_size_start:maa.InstanceSetTaskParamRequest)
+// @@protoc_insertion_point(message_byte_size_start:maarpc.InstanceSetTaskParamRequest)
   size_t total_size = 0;
 
   uint32_t cached_has_bits = 0;
@@ -9685,14 +9700,14 @@ size_t InstanceSetTaskParamRequest::ByteSizeLong() const {
           this->_internal_param());
     }
 
-    // optional .maa.Handle handle = 1;
+    // optional .maarpc.Handle handle = 1;
     if (cached_has_bits & 0x00000002u) {
       total_size += 1 +
         ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::MessageSize(
           *_impl_.handle_);
     }
 
-    // optional .maa.Id id = 2;
+    // optional .maarpc.Id id = 2;
     if (cached_has_bits & 0x00000004u) {
       total_size += 1 +
         ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::MessageSize(
@@ -9713,7 +9728,7 @@ const ::PROTOBUF_NAMESPACE_ID::Message::ClassData*InstanceSetTaskParamRequest::G
 void InstanceSetTaskParamRequest::MergeImpl(::PROTOBUF_NAMESPACE_ID::Message& to_msg, const ::PROTOBUF_NAMESPACE_ID::Message& from_msg) {
   auto* const _this = static_cast<InstanceSetTaskParamRequest*>(&to_msg);
   auto& from = static_cast<const InstanceSetTaskParamRequest&>(from_msg);
-  // @@protoc_insertion_point(class_specific_merge_from_start:maa.InstanceSetTaskParamRequest)
+  // @@protoc_insertion_point(class_specific_merge_from_start:maarpc.InstanceSetTaskParamRequest)
   GOOGLE_DCHECK_NE(&from, _this);
   uint32_t cached_has_bits = 0;
   (void) cached_has_bits;
@@ -9724,11 +9739,11 @@ void InstanceSetTaskParamRequest::MergeImpl(::PROTOBUF_NAMESPACE_ID::Message& to
       _this->_internal_set_param(from._internal_param());
     }
     if (cached_has_bits & 0x00000002u) {
-      _this->_internal_mutable_handle()->::maa::Handle::MergeFrom(
+      _this->_internal_mutable_handle()->::maarpc::Handle::MergeFrom(
           from._internal_handle());
     }
     if (cached_has_bits & 0x00000004u) {
-      _this->_internal_mutable_id()->::maa::Id::MergeFrom(
+      _this->_internal_mutable_id()->::maarpc::Id::MergeFrom(
           from._internal_id());
     }
   }
@@ -9736,7 +9751,7 @@ void InstanceSetTaskParamRequest::MergeImpl(::PROTOBUF_NAMESPACE_ID::Message& to
 }
 
 void InstanceSetTaskParamRequest::CopyFrom(const InstanceSetTaskParamRequest& from) {
-// @@protoc_insertion_point(class_specific_copy_from_start:maa.InstanceSetTaskParamRequest)
+// @@protoc_insertion_point(class_specific_copy_from_start:maarpc.InstanceSetTaskParamRequest)
   if (&from == this) return;
   Clear();
   MergeFrom(from);
@@ -9775,7 +9790,7 @@ void InstanceSetTaskParamRequest::InternalSwap(InstanceSetTaskParamRequest* othe
 class SyncContextRunTaskRequest::_Internal {
  public:
   using HasBits = decltype(std::declval<SyncContextRunTaskRequest>()._impl_._has_bits_);
-  static const ::maa::Handle& handle(const SyncContextRunTaskRequest* msg);
+  static const ::maarpc::Handle& handle(const SyncContextRunTaskRequest* msg);
   static void set_has_handle(HasBits* has_bits) {
     (*has_bits)[0] |= 4u;
   }
@@ -9787,7 +9802,7 @@ class SyncContextRunTaskRequest::_Internal {
   }
 };
 
-const ::maa::Handle&
+const ::maarpc::Handle&
 SyncContextRunTaskRequest::_Internal::handle(const SyncContextRunTaskRequest* msg) {
   return *msg->_impl_.handle_;
 }
@@ -9799,7 +9814,7 @@ SyncContextRunTaskRequest::SyncContextRunTaskRequest(::PROTOBUF_NAMESPACE_ID::Ar
                          bool is_message_owned)
   : ::PROTOBUF_NAMESPACE_ID::Message(arena, is_message_owned) {
   SharedCtor(arena, is_message_owned);
-  // @@protoc_insertion_point(arena_constructor:maa.SyncContextRunTaskRequest)
+  // @@protoc_insertion_point(arena_constructor:maarpc.SyncContextRunTaskRequest)
 }
 SyncContextRunTaskRequest::SyncContextRunTaskRequest(const SyncContextRunTaskRequest& from)
   : ::PROTOBUF_NAMESPACE_ID::Message() {
@@ -9829,9 +9844,9 @@ SyncContextRunTaskRequest::SyncContextRunTaskRequest(const SyncContextRunTaskReq
       _this->GetArenaForAllocation());
   }
   if (from._internal_has_handle()) {
-    _this->_impl_.handle_ = new ::maa::Handle(*from._impl_.handle_);
+    _this->_impl_.handle_ = new ::maarpc::Handle(*from._impl_.handle_);
   }
-  // @@protoc_insertion_point(copy_constructor:maa.SyncContextRunTaskRequest)
+  // @@protoc_insertion_point(copy_constructor:maarpc.SyncContextRunTaskRequest)
 }
 
 inline void SyncContextRunTaskRequest::SharedCtor(
@@ -9856,7 +9871,7 @@ inline void SyncContextRunTaskRequest::SharedCtor(
 }
 
 SyncContextRunTaskRequest::~SyncContextRunTaskRequest() {
-  // @@protoc_insertion_point(destructor:maa.SyncContextRunTaskRequest)
+  // @@protoc_insertion_point(destructor:maarpc.SyncContextRunTaskRequest)
   if (auto *arena = _internal_metadata_.DeleteReturnArena<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>()) {
   (void)arena;
     return;
@@ -9876,7 +9891,7 @@ void SyncContextRunTaskRequest::SetCachedSize(int size) const {
 }
 
 void SyncContextRunTaskRequest::Clear() {
-// @@protoc_insertion_point(message_clear_start:maa.SyncContextRunTaskRequest)
+// @@protoc_insertion_point(message_clear_start:maarpc.SyncContextRunTaskRequest)
   uint32_t cached_has_bits = 0;
   // Prevent compiler warnings about cached_has_bits being unused
   (void) cached_has_bits;
@@ -9905,7 +9920,7 @@ const char* SyncContextRunTaskRequest::_InternalParse(const char* ptr, ::_pbi::P
     uint32_t tag;
     ptr = ::_pbi::ReadTag(ptr, &tag);
     switch (tag >> 3) {
-      // optional .maa.Handle handle = 1;
+      // optional .maarpc.Handle handle = 1;
       case 1:
         if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 10)) {
           ptr = ctx->ParseMessage(_internal_mutable_handle(), ptr);
@@ -9919,7 +9934,7 @@ const char* SyncContextRunTaskRequest::_InternalParse(const char* ptr, ::_pbi::P
           auto str = _internal_mutable_task();
           ptr = ::_pbi::InlineGreedyStringParser(str, ptr, ctx);
           CHK_(ptr);
-          CHK_(::_pbi::VerifyUTF8(str, "maa.SyncContextRunTaskRequest.task"));
+          CHK_(::_pbi::VerifyUTF8(str, "maarpc.SyncContextRunTaskRequest.task"));
         } else
           goto handle_unusual;
         continue;
@@ -9929,7 +9944,7 @@ const char* SyncContextRunTaskRequest::_InternalParse(const char* ptr, ::_pbi::P
           auto str = _internal_mutable_param();
           ptr = ::_pbi::InlineGreedyStringParser(str, ptr, ctx);
           CHK_(ptr);
-          CHK_(::_pbi::VerifyUTF8(str, "maa.SyncContextRunTaskRequest.param"));
+          CHK_(::_pbi::VerifyUTF8(str, "maarpc.SyncContextRunTaskRequest.param"));
         } else
           goto handle_unusual;
         continue;
@@ -9959,11 +9974,11 @@ failure:
 
 uint8_t* SyncContextRunTaskRequest::_InternalSerialize(
     uint8_t* target, ::PROTOBUF_NAMESPACE_ID::io::EpsCopyOutputStream* stream) const {
-  // @@protoc_insertion_point(serialize_to_array_start:maa.SyncContextRunTaskRequest)
+  // @@protoc_insertion_point(serialize_to_array_start:maarpc.SyncContextRunTaskRequest)
   uint32_t cached_has_bits = 0;
   (void) cached_has_bits;
 
-  // optional .maa.Handle handle = 1;
+  // optional .maarpc.Handle handle = 1;
   if (_internal_has_handle()) {
     target = ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::
       InternalWriteMessage(1, _Internal::handle(this),
@@ -9975,7 +9990,7 @@ uint8_t* SyncContextRunTaskRequest::_InternalSerialize(
     ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::VerifyUtf8String(
       this->_internal_task().data(), static_cast<int>(this->_internal_task().length()),
       ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::SERIALIZE,
-      "maa.SyncContextRunTaskRequest.task");
+      "maarpc.SyncContextRunTaskRequest.task");
     target = stream->WriteStringMaybeAliased(
         2, this->_internal_task(), target);
   }
@@ -9985,7 +10000,7 @@ uint8_t* SyncContextRunTaskRequest::_InternalSerialize(
     ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::VerifyUtf8String(
       this->_internal_param().data(), static_cast<int>(this->_internal_param().length()),
       ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::SERIALIZE,
-      "maa.SyncContextRunTaskRequest.param");
+      "maarpc.SyncContextRunTaskRequest.param");
     target = stream->WriteStringMaybeAliased(
         3, this->_internal_param(), target);
   }
@@ -9994,12 +10009,12 @@ uint8_t* SyncContextRunTaskRequest::_InternalSerialize(
     target = ::_pbi::WireFormat::InternalSerializeUnknownFieldsToArray(
         _internal_metadata_.unknown_fields<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(::PROTOBUF_NAMESPACE_ID::UnknownFieldSet::default_instance), target, stream);
   }
-  // @@protoc_insertion_point(serialize_to_array_end:maa.SyncContextRunTaskRequest)
+  // @@protoc_insertion_point(serialize_to_array_end:maarpc.SyncContextRunTaskRequest)
   return target;
 }
 
 size_t SyncContextRunTaskRequest::ByteSizeLong() const {
-// @@protoc_insertion_point(message_byte_size_start:maa.SyncContextRunTaskRequest)
+// @@protoc_insertion_point(message_byte_size_start:maarpc.SyncContextRunTaskRequest)
   size_t total_size = 0;
 
   uint32_t cached_has_bits = 0;
@@ -10022,7 +10037,7 @@ size_t SyncContextRunTaskRequest::ByteSizeLong() const {
           this->_internal_param());
     }
 
-    // optional .maa.Handle handle = 1;
+    // optional .maarpc.Handle handle = 1;
     if (cached_has_bits & 0x00000004u) {
       total_size += 1 +
         ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::MessageSize(
@@ -10043,7 +10058,7 @@ const ::PROTOBUF_NAMESPACE_ID::Message::ClassData*SyncContextRunTaskRequest::Get
 void SyncContextRunTaskRequest::MergeImpl(::PROTOBUF_NAMESPACE_ID::Message& to_msg, const ::PROTOBUF_NAMESPACE_ID::Message& from_msg) {
   auto* const _this = static_cast<SyncContextRunTaskRequest*>(&to_msg);
   auto& from = static_cast<const SyncContextRunTaskRequest&>(from_msg);
-  // @@protoc_insertion_point(class_specific_merge_from_start:maa.SyncContextRunTaskRequest)
+  // @@protoc_insertion_point(class_specific_merge_from_start:maarpc.SyncContextRunTaskRequest)
   GOOGLE_DCHECK_NE(&from, _this);
   uint32_t cached_has_bits = 0;
   (void) cached_has_bits;
@@ -10057,7 +10072,7 @@ void SyncContextRunTaskRequest::MergeImpl(::PROTOBUF_NAMESPACE_ID::Message& to_m
       _this->_internal_set_param(from._internal_param());
     }
     if (cached_has_bits & 0x00000004u) {
-      _this->_internal_mutable_handle()->::maa::Handle::MergeFrom(
+      _this->_internal_mutable_handle()->::maarpc::Handle::MergeFrom(
           from._internal_handle());
     }
   }
@@ -10065,7 +10080,7 @@ void SyncContextRunTaskRequest::MergeImpl(::PROTOBUF_NAMESPACE_ID::Message& to_m
 }
 
 void SyncContextRunTaskRequest::CopyFrom(const SyncContextRunTaskRequest& from) {
-// @@protoc_insertion_point(class_specific_copy_from_start:maa.SyncContextRunTaskRequest)
+// @@protoc_insertion_point(class_specific_copy_from_start:maarpc.SyncContextRunTaskRequest)
   if (&from == this) return;
   Clear();
   MergeFrom(from);
@@ -10103,7 +10118,7 @@ void SyncContextRunTaskRequest::InternalSwap(SyncContextRunTaskRequest* other) {
 class SyncContextRunRecognizerRequest::_Internal {
  public:
   using HasBits = decltype(std::declval<SyncContextRunRecognizerRequest>()._impl_._has_bits_);
-  static const ::maa::Handle& handle(const SyncContextRunRecognizerRequest* msg);
+  static const ::maarpc::Handle& handle(const SyncContextRunRecognizerRequest* msg);
   static void set_has_handle(HasBits* has_bits) {
     (*has_bits)[0] |= 4u;
   }
@@ -10113,17 +10128,17 @@ class SyncContextRunRecognizerRequest::_Internal {
   static void set_has_param(HasBits* has_bits) {
     (*has_bits)[0] |= 2u;
   }
-  static const ::maa::Handle& image(const SyncContextRunRecognizerRequest* msg);
+  static const ::maarpc::Handle& image(const SyncContextRunRecognizerRequest* msg);
   static void set_has_image(HasBits* has_bits) {
     (*has_bits)[0] |= 8u;
   }
 };
 
-const ::maa::Handle&
+const ::maarpc::Handle&
 SyncContextRunRecognizerRequest::_Internal::handle(const SyncContextRunRecognizerRequest* msg) {
   return *msg->_impl_.handle_;
 }
-const ::maa::Handle&
+const ::maarpc::Handle&
 SyncContextRunRecognizerRequest::_Internal::image(const SyncContextRunRecognizerRequest* msg) {
   return *msg->_impl_.image_;
 }
@@ -10139,7 +10154,7 @@ SyncContextRunRecognizerRequest::SyncContextRunRecognizerRequest(::PROTOBUF_NAME
                          bool is_message_owned)
   : ::PROTOBUF_NAMESPACE_ID::Message(arena, is_message_owned) {
   SharedCtor(arena, is_message_owned);
-  // @@protoc_insertion_point(arena_constructor:maa.SyncContextRunRecognizerRequest)
+  // @@protoc_insertion_point(arena_constructor:maarpc.SyncContextRunRecognizerRequest)
 }
 SyncContextRunRecognizerRequest::SyncContextRunRecognizerRequest(const SyncContextRunRecognizerRequest& from)
   : ::PROTOBUF_NAMESPACE_ID::Message() {
@@ -10170,12 +10185,12 @@ SyncContextRunRecognizerRequest::SyncContextRunRecognizerRequest(const SyncConte
       _this->GetArenaForAllocation());
   }
   if (from._internal_has_handle()) {
-    _this->_impl_.handle_ = new ::maa::Handle(*from._impl_.handle_);
+    _this->_impl_.handle_ = new ::maarpc::Handle(*from._impl_.handle_);
   }
   if (from._internal_has_image()) {
-    _this->_impl_.image_ = new ::maa::Handle(*from._impl_.image_);
+    _this->_impl_.image_ = new ::maarpc::Handle(*from._impl_.image_);
   }
-  // @@protoc_insertion_point(copy_constructor:maa.SyncContextRunRecognizerRequest)
+  // @@protoc_insertion_point(copy_constructor:maarpc.SyncContextRunRecognizerRequest)
 }
 
 inline void SyncContextRunRecognizerRequest::SharedCtor(
@@ -10201,7 +10216,7 @@ inline void SyncContextRunRecognizerRequest::SharedCtor(
 }
 
 SyncContextRunRecognizerRequest::~SyncContextRunRecognizerRequest() {
-  // @@protoc_insertion_point(destructor:maa.SyncContextRunRecognizerRequest)
+  // @@protoc_insertion_point(destructor:maarpc.SyncContextRunRecognizerRequest)
   if (auto *arena = _internal_metadata_.DeleteReturnArena<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>()) {
   (void)arena;
     return;
@@ -10222,7 +10237,7 @@ void SyncContextRunRecognizerRequest::SetCachedSize(int size) const {
 }
 
 void SyncContextRunRecognizerRequest::Clear() {
-// @@protoc_insertion_point(message_clear_start:maa.SyncContextRunRecognizerRequest)
+// @@protoc_insertion_point(message_clear_start:maarpc.SyncContextRunRecognizerRequest)
   uint32_t cached_has_bits = 0;
   // Prevent compiler warnings about cached_has_bits being unused
   (void) cached_has_bits;
@@ -10255,7 +10270,7 @@ const char* SyncContextRunRecognizerRequest::_InternalParse(const char* ptr, ::_
     uint32_t tag;
     ptr = ::_pbi::ReadTag(ptr, &tag);
     switch (tag >> 3) {
-      // optional .maa.Handle handle = 1;
+      // optional .maarpc.Handle handle = 1;
       case 1:
         if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 10)) {
           ptr = ctx->ParseMessage(_internal_mutable_handle(), ptr);
@@ -10269,7 +10284,7 @@ const char* SyncContextRunRecognizerRequest::_InternalParse(const char* ptr, ::_
           auto str = _internal_mutable_task();
           ptr = ::_pbi::InlineGreedyStringParser(str, ptr, ctx);
           CHK_(ptr);
-          CHK_(::_pbi::VerifyUTF8(str, "maa.SyncContextRunRecognizerRequest.task"));
+          CHK_(::_pbi::VerifyUTF8(str, "maarpc.SyncContextRunRecognizerRequest.task"));
         } else
           goto handle_unusual;
         continue;
@@ -10279,11 +10294,11 @@ const char* SyncContextRunRecognizerRequest::_InternalParse(const char* ptr, ::_
           auto str = _internal_mutable_param();
           ptr = ::_pbi::InlineGreedyStringParser(str, ptr, ctx);
           CHK_(ptr);
-          CHK_(::_pbi::VerifyUTF8(str, "maa.SyncContextRunRecognizerRequest.param"));
+          CHK_(::_pbi::VerifyUTF8(str, "maarpc.SyncContextRunRecognizerRequest.param"));
         } else
           goto handle_unusual;
         continue;
-      // optional .maa.Handle image = 4;
+      // optional .maarpc.Handle image = 4;
       case 4:
         if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 34)) {
           ptr = ctx->ParseMessage(_internal_mutable_image(), ptr);
@@ -10317,11 +10332,11 @@ failure:
 
 uint8_t* SyncContextRunRecognizerRequest::_InternalSerialize(
     uint8_t* target, ::PROTOBUF_NAMESPACE_ID::io::EpsCopyOutputStream* stream) const {
-  // @@protoc_insertion_point(serialize_to_array_start:maa.SyncContextRunRecognizerRequest)
+  // @@protoc_insertion_point(serialize_to_array_start:maarpc.SyncContextRunRecognizerRequest)
   uint32_t cached_has_bits = 0;
   (void) cached_has_bits;
 
-  // optional .maa.Handle handle = 1;
+  // optional .maarpc.Handle handle = 1;
   if (_internal_has_handle()) {
     target = ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::
       InternalWriteMessage(1, _Internal::handle(this),
@@ -10333,7 +10348,7 @@ uint8_t* SyncContextRunRecognizerRequest::_InternalSerialize(
     ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::VerifyUtf8String(
       this->_internal_task().data(), static_cast<int>(this->_internal_task().length()),
       ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::SERIALIZE,
-      "maa.SyncContextRunRecognizerRequest.task");
+      "maarpc.SyncContextRunRecognizerRequest.task");
     target = stream->WriteStringMaybeAliased(
         2, this->_internal_task(), target);
   }
@@ -10343,12 +10358,12 @@ uint8_t* SyncContextRunRecognizerRequest::_InternalSerialize(
     ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::VerifyUtf8String(
       this->_internal_param().data(), static_cast<int>(this->_internal_param().length()),
       ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::SERIALIZE,
-      "maa.SyncContextRunRecognizerRequest.param");
+      "maarpc.SyncContextRunRecognizerRequest.param");
     target = stream->WriteStringMaybeAliased(
         3, this->_internal_param(), target);
   }
 
-  // optional .maa.Handle image = 4;
+  // optional .maarpc.Handle image = 4;
   if (_internal_has_image()) {
     target = ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::
       InternalWriteMessage(4, _Internal::image(this),
@@ -10359,12 +10374,12 @@ uint8_t* SyncContextRunRecognizerRequest::_InternalSerialize(
     target = ::_pbi::WireFormat::InternalSerializeUnknownFieldsToArray(
         _internal_metadata_.unknown_fields<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(::PROTOBUF_NAMESPACE_ID::UnknownFieldSet::default_instance), target, stream);
   }
-  // @@protoc_insertion_point(serialize_to_array_end:maa.SyncContextRunRecognizerRequest)
+  // @@protoc_insertion_point(serialize_to_array_end:maarpc.SyncContextRunRecognizerRequest)
   return target;
 }
 
 size_t SyncContextRunRecognizerRequest::ByteSizeLong() const {
-// @@protoc_insertion_point(message_byte_size_start:maa.SyncContextRunRecognizerRequest)
+// @@protoc_insertion_point(message_byte_size_start:maarpc.SyncContextRunRecognizerRequest)
   size_t total_size = 0;
 
   uint32_t cached_has_bits = 0;
@@ -10387,14 +10402,14 @@ size_t SyncContextRunRecognizerRequest::ByteSizeLong() const {
           this->_internal_param());
     }
 
-    // optional .maa.Handle handle = 1;
+    // optional .maarpc.Handle handle = 1;
     if (cached_has_bits & 0x00000004u) {
       total_size += 1 +
         ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::MessageSize(
           *_impl_.handle_);
     }
 
-    // optional .maa.Handle image = 4;
+    // optional .maarpc.Handle image = 4;
     if (cached_has_bits & 0x00000008u) {
       total_size += 1 +
         ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::MessageSize(
@@ -10415,7 +10430,7 @@ const ::PROTOBUF_NAMESPACE_ID::Message::ClassData*SyncContextRunRecognizerReques
 void SyncContextRunRecognizerRequest::MergeImpl(::PROTOBUF_NAMESPACE_ID::Message& to_msg, const ::PROTOBUF_NAMESPACE_ID::Message& from_msg) {
   auto* const _this = static_cast<SyncContextRunRecognizerRequest*>(&to_msg);
   auto& from = static_cast<const SyncContextRunRecognizerRequest&>(from_msg);
-  // @@protoc_insertion_point(class_specific_merge_from_start:maa.SyncContextRunRecognizerRequest)
+  // @@protoc_insertion_point(class_specific_merge_from_start:maarpc.SyncContextRunRecognizerRequest)
   GOOGLE_DCHECK_NE(&from, _this);
   uint32_t cached_has_bits = 0;
   (void) cached_has_bits;
@@ -10429,11 +10444,11 @@ void SyncContextRunRecognizerRequest::MergeImpl(::PROTOBUF_NAMESPACE_ID::Message
       _this->_internal_set_param(from._internal_param());
     }
     if (cached_has_bits & 0x00000004u) {
-      _this->_internal_mutable_handle()->::maa::Handle::MergeFrom(
+      _this->_internal_mutable_handle()->::maarpc::Handle::MergeFrom(
           from._internal_handle());
     }
     if (cached_has_bits & 0x00000008u) {
-      _this->_internal_mutable_image()->::maa::Handle::MergeFrom(
+      _this->_internal_mutable_image()->::maarpc::Handle::MergeFrom(
           from._internal_image());
     }
   }
@@ -10441,7 +10456,7 @@ void SyncContextRunRecognizerRequest::MergeImpl(::PROTOBUF_NAMESPACE_ID::Message
 }
 
 void SyncContextRunRecognizerRequest::CopyFrom(const SyncContextRunRecognizerRequest& from) {
-// @@protoc_insertion_point(class_specific_copy_from_start:maa.SyncContextRunRecognizerRequest)
+// @@protoc_insertion_point(class_specific_copy_from_start:maarpc.SyncContextRunRecognizerRequest)
   if (&from == this) return;
   Clear();
   MergeFrom(from);
@@ -10485,42 +10500,33 @@ class SyncContextRunRecognizerResponse::_Internal {
  public:
   using HasBits = decltype(std::declval<SyncContextRunRecognizerResponse>()._impl_._has_bits_);
   static void set_has_match(HasBits* has_bits) {
-    (*has_bits)[0] |= 8u;
+    (*has_bits)[0] |= 4u;
   }
-  static const ::maa::Rect& box(const SyncContextRunRecognizerResponse* msg);
+  static const ::maarpc::Rect& box(const SyncContextRunRecognizerResponse* msg);
   static void set_has_box(HasBits* has_bits) {
     (*has_bits)[0] |= 2u;
   }
   static void set_has_detail(HasBits* has_bits) {
     (*has_bits)[0] |= 1u;
   }
-  static const ::maa::RpcStatus& status(const SyncContextRunRecognizerResponse* msg);
   static void set_has_status(HasBits* has_bits) {
-    (*has_bits)[0] |= 4u;
+    (*has_bits)[0] |= 8u;
   }
 };
 
-const ::maa::Rect&
+const ::maarpc::Rect&
 SyncContextRunRecognizerResponse::_Internal::box(const SyncContextRunRecognizerResponse* msg) {
   return *msg->_impl_.box_;
-}
-const ::maa::RpcStatus&
-SyncContextRunRecognizerResponse::_Internal::status(const SyncContextRunRecognizerResponse* msg) {
-  return *msg->_impl_.status_;
 }
 void SyncContextRunRecognizerResponse::clear_box() {
   if (_impl_.box_ != nullptr) _impl_.box_->Clear();
   _impl_._has_bits_[0] &= ~0x00000002u;
 }
-void SyncContextRunRecognizerResponse::clear_status() {
-  if (_impl_.status_ != nullptr) _impl_.status_->Clear();
-  _impl_._has_bits_[0] &= ~0x00000004u;
-}
 SyncContextRunRecognizerResponse::SyncContextRunRecognizerResponse(::PROTOBUF_NAMESPACE_ID::Arena* arena,
                          bool is_message_owned)
   : ::PROTOBUF_NAMESPACE_ID::Message(arena, is_message_owned) {
   SharedCtor(arena, is_message_owned);
-  // @@protoc_insertion_point(arena_constructor:maa.SyncContextRunRecognizerResponse)
+  // @@protoc_insertion_point(arena_constructor:maarpc.SyncContextRunRecognizerResponse)
 }
 SyncContextRunRecognizerResponse::SyncContextRunRecognizerResponse(const SyncContextRunRecognizerResponse& from)
   : ::PROTOBUF_NAMESPACE_ID::Message() {
@@ -10530,8 +10536,8 @@ SyncContextRunRecognizerResponse::SyncContextRunRecognizerResponse(const SyncCon
     , /*decltype(_impl_._cached_size_)*/{}
     , decltype(_impl_.detail_){}
     , decltype(_impl_.box_){nullptr}
-    , decltype(_impl_.status_){nullptr}
-    , decltype(_impl_.match_){}};
+    , decltype(_impl_.match_){}
+    , decltype(_impl_.status_){}};
 
   _internal_metadata_.MergeFrom<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(from._internal_metadata_);
   _impl_.detail_.InitDefault();
@@ -10543,13 +10549,12 @@ SyncContextRunRecognizerResponse::SyncContextRunRecognizerResponse(const SyncCon
       _this->GetArenaForAllocation());
   }
   if (from._internal_has_box()) {
-    _this->_impl_.box_ = new ::maa::Rect(*from._impl_.box_);
+    _this->_impl_.box_ = new ::maarpc::Rect(*from._impl_.box_);
   }
-  if (from._internal_has_status()) {
-    _this->_impl_.status_ = new ::maa::RpcStatus(*from._impl_.status_);
-  }
-  _this->_impl_.match_ = from._impl_.match_;
-  // @@protoc_insertion_point(copy_constructor:maa.SyncContextRunRecognizerResponse)
+  ::memcpy(&_impl_.match_, &from._impl_.match_,
+    static_cast<size_t>(reinterpret_cast<char*>(&_impl_.status_) -
+    reinterpret_cast<char*>(&_impl_.match_)) + sizeof(_impl_.status_));
+  // @@protoc_insertion_point(copy_constructor:maarpc.SyncContextRunRecognizerResponse)
 }
 
 inline void SyncContextRunRecognizerResponse::SharedCtor(
@@ -10561,8 +10566,8 @@ inline void SyncContextRunRecognizerResponse::SharedCtor(
     , /*decltype(_impl_._cached_size_)*/{}
     , decltype(_impl_.detail_){}
     , decltype(_impl_.box_){nullptr}
-    , decltype(_impl_.status_){nullptr}
     , decltype(_impl_.match_){false}
+    , decltype(_impl_.status_){false}
   };
   _impl_.detail_.InitDefault();
   #ifdef PROTOBUF_FORCE_COPY_DEFAULT_STRING
@@ -10571,7 +10576,7 @@ inline void SyncContextRunRecognizerResponse::SharedCtor(
 }
 
 SyncContextRunRecognizerResponse::~SyncContextRunRecognizerResponse() {
-  // @@protoc_insertion_point(destructor:maa.SyncContextRunRecognizerResponse)
+  // @@protoc_insertion_point(destructor:maarpc.SyncContextRunRecognizerResponse)
   if (auto *arena = _internal_metadata_.DeleteReturnArena<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>()) {
   (void)arena;
     return;
@@ -10583,7 +10588,6 @@ inline void SyncContextRunRecognizerResponse::SharedDtor() {
   GOOGLE_DCHECK(GetArenaForAllocation() == nullptr);
   _impl_.detail_.Destroy();
   if (this != internal_default_instance()) delete _impl_.box_;
-  if (this != internal_default_instance()) delete _impl_.status_;
 }
 
 void SyncContextRunRecognizerResponse::SetCachedSize(int size) const {
@@ -10591,13 +10595,13 @@ void SyncContextRunRecognizerResponse::SetCachedSize(int size) const {
 }
 
 void SyncContextRunRecognizerResponse::Clear() {
-// @@protoc_insertion_point(message_clear_start:maa.SyncContextRunRecognizerResponse)
+// @@protoc_insertion_point(message_clear_start:maarpc.SyncContextRunRecognizerResponse)
   uint32_t cached_has_bits = 0;
   // Prevent compiler warnings about cached_has_bits being unused
   (void) cached_has_bits;
 
   cached_has_bits = _impl_._has_bits_[0];
-  if (cached_has_bits & 0x00000007u) {
+  if (cached_has_bits & 0x00000003u) {
     if (cached_has_bits & 0x00000001u) {
       _impl_.detail_.ClearNonDefaultToEmpty();
     }
@@ -10605,12 +10609,10 @@ void SyncContextRunRecognizerResponse::Clear() {
       GOOGLE_DCHECK(_impl_.box_ != nullptr);
       _impl_.box_->Clear();
     }
-    if (cached_has_bits & 0x00000004u) {
-      GOOGLE_DCHECK(_impl_.status_ != nullptr);
-      _impl_.status_->Clear();
-    }
   }
-  _impl_.match_ = false;
+  ::memset(&_impl_.match_, 0, static_cast<size_t>(
+      reinterpret_cast<char*>(&_impl_.status_) -
+      reinterpret_cast<char*>(&_impl_.match_)) + sizeof(_impl_.status_));
   _impl_._has_bits_.Clear();
   _internal_metadata_.Clear<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>();
 }
@@ -10631,7 +10633,7 @@ const char* SyncContextRunRecognizerResponse::_InternalParse(const char* ptr, ::
         } else
           goto handle_unusual;
         continue;
-      // optional .maa.Rect box = 2;
+      // optional .maarpc.Rect box = 2;
       case 2:
         if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 18)) {
           ptr = ctx->ParseMessage(_internal_mutable_box(), ptr);
@@ -10645,14 +10647,15 @@ const char* SyncContextRunRecognizerResponse::_InternalParse(const char* ptr, ::
           auto str = _internal_mutable_detail();
           ptr = ::_pbi::InlineGreedyStringParser(str, ptr, ctx);
           CHK_(ptr);
-          CHK_(::_pbi::VerifyUTF8(str, "maa.SyncContextRunRecognizerResponse.detail"));
+          CHK_(::_pbi::VerifyUTF8(str, "maarpc.SyncContextRunRecognizerResponse.detail"));
         } else
           goto handle_unusual;
         continue;
-      // optional .maa.RpcStatus status = 101;
+      // optional bool status = 101;
       case 101:
-        if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 42)) {
-          ptr = ctx->ParseMessage(_internal_mutable_status(), ptr);
+        if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 40)) {
+          _Internal::set_has_status(&has_bits);
+          _impl_.status_ = ::PROTOBUF_NAMESPACE_ID::internal::ReadVarint64(&ptr);
           CHK_(ptr);
         } else
           goto handle_unusual;
@@ -10683,7 +10686,7 @@ failure:
 
 uint8_t* SyncContextRunRecognizerResponse::_InternalSerialize(
     uint8_t* target, ::PROTOBUF_NAMESPACE_ID::io::EpsCopyOutputStream* stream) const {
-  // @@protoc_insertion_point(serialize_to_array_start:maa.SyncContextRunRecognizerResponse)
+  // @@protoc_insertion_point(serialize_to_array_start:maarpc.SyncContextRunRecognizerResponse)
   uint32_t cached_has_bits = 0;
   (void) cached_has_bits;
 
@@ -10693,7 +10696,7 @@ uint8_t* SyncContextRunRecognizerResponse::_InternalSerialize(
     target = ::_pbi::WireFormatLite::WriteBoolToArray(1, this->_internal_match(), target);
   }
 
-  // optional .maa.Rect box = 2;
+  // optional .maarpc.Rect box = 2;
   if (_internal_has_box()) {
     target = ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::
       InternalWriteMessage(2, _Internal::box(this),
@@ -10705,28 +10708,27 @@ uint8_t* SyncContextRunRecognizerResponse::_InternalSerialize(
     ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::VerifyUtf8String(
       this->_internal_detail().data(), static_cast<int>(this->_internal_detail().length()),
       ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::SERIALIZE,
-      "maa.SyncContextRunRecognizerResponse.detail");
+      "maarpc.SyncContextRunRecognizerResponse.detail");
     target = stream->WriteStringMaybeAliased(
         3, this->_internal_detail(), target);
   }
 
-  // optional .maa.RpcStatus status = 101;
+  // optional bool status = 101;
   if (_internal_has_status()) {
-    target = ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::
-      InternalWriteMessage(101, _Internal::status(this),
-        _Internal::status(this).GetCachedSize(), target, stream);
+    target = stream->EnsureSpace(target);
+    target = ::_pbi::WireFormatLite::WriteBoolToArray(101, this->_internal_status(), target);
   }
 
   if (PROTOBUF_PREDICT_FALSE(_internal_metadata_.have_unknown_fields())) {
     target = ::_pbi::WireFormat::InternalSerializeUnknownFieldsToArray(
         _internal_metadata_.unknown_fields<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(::PROTOBUF_NAMESPACE_ID::UnknownFieldSet::default_instance), target, stream);
   }
-  // @@protoc_insertion_point(serialize_to_array_end:maa.SyncContextRunRecognizerResponse)
+  // @@protoc_insertion_point(serialize_to_array_end:maarpc.SyncContextRunRecognizerResponse)
   return target;
 }
 
 size_t SyncContextRunRecognizerResponse::ByteSizeLong() const {
-// @@protoc_insertion_point(message_byte_size_start:maa.SyncContextRunRecognizerResponse)
+// @@protoc_insertion_point(message_byte_size_start:maarpc.SyncContextRunRecognizerResponse)
   size_t total_size = 0;
 
   uint32_t cached_has_bits = 0;
@@ -10742,23 +10744,21 @@ size_t SyncContextRunRecognizerResponse::ByteSizeLong() const {
           this->_internal_detail());
     }
 
-    // optional .maa.Rect box = 2;
+    // optional .maarpc.Rect box = 2;
     if (cached_has_bits & 0x00000002u) {
       total_size += 1 +
         ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::MessageSize(
           *_impl_.box_);
     }
 
-    // optional .maa.RpcStatus status = 101;
+    // optional bool match = 1;
     if (cached_has_bits & 0x00000004u) {
-      total_size += 2 +
-        ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::MessageSize(
-          *_impl_.status_);
+      total_size += 1 + 1;
     }
 
-    // optional bool match = 1;
+    // optional bool status = 101;
     if (cached_has_bits & 0x00000008u) {
-      total_size += 1 + 1;
+      total_size += 2 + 1;
     }
 
   }
@@ -10775,7 +10775,7 @@ const ::PROTOBUF_NAMESPACE_ID::Message::ClassData*SyncContextRunRecognizerRespon
 void SyncContextRunRecognizerResponse::MergeImpl(::PROTOBUF_NAMESPACE_ID::Message& to_msg, const ::PROTOBUF_NAMESPACE_ID::Message& from_msg) {
   auto* const _this = static_cast<SyncContextRunRecognizerResponse*>(&to_msg);
   auto& from = static_cast<const SyncContextRunRecognizerResponse&>(from_msg);
-  // @@protoc_insertion_point(class_specific_merge_from_start:maa.SyncContextRunRecognizerResponse)
+  // @@protoc_insertion_point(class_specific_merge_from_start:maarpc.SyncContextRunRecognizerResponse)
   GOOGLE_DCHECK_NE(&from, _this);
   uint32_t cached_has_bits = 0;
   (void) cached_has_bits;
@@ -10786,15 +10786,14 @@ void SyncContextRunRecognizerResponse::MergeImpl(::PROTOBUF_NAMESPACE_ID::Messag
       _this->_internal_set_detail(from._internal_detail());
     }
     if (cached_has_bits & 0x00000002u) {
-      _this->_internal_mutable_box()->::maa::Rect::MergeFrom(
+      _this->_internal_mutable_box()->::maarpc::Rect::MergeFrom(
           from._internal_box());
     }
     if (cached_has_bits & 0x00000004u) {
-      _this->_internal_mutable_status()->::maa::RpcStatus::MergeFrom(
-          from._internal_status());
+      _this->_impl_.match_ = from._impl_.match_;
     }
     if (cached_has_bits & 0x00000008u) {
-      _this->_impl_.match_ = from._impl_.match_;
+      _this->_impl_.status_ = from._impl_.status_;
     }
     _this->_impl_._has_bits_[0] |= cached_has_bits;
   }
@@ -10802,7 +10801,7 @@ void SyncContextRunRecognizerResponse::MergeImpl(::PROTOBUF_NAMESPACE_ID::Messag
 }
 
 void SyncContextRunRecognizerResponse::CopyFrom(const SyncContextRunRecognizerResponse& from) {
-// @@protoc_insertion_point(class_specific_copy_from_start:maa.SyncContextRunRecognizerResponse)
+// @@protoc_insertion_point(class_specific_copy_from_start:maarpc.SyncContextRunRecognizerResponse)
   if (&from == this) return;
   Clear();
   MergeFrom(from);
@@ -10823,8 +10822,8 @@ void SyncContextRunRecognizerResponse::InternalSwap(SyncContextRunRecognizerResp
       &other->_impl_.detail_, rhs_arena
   );
   ::PROTOBUF_NAMESPACE_ID::internal::memswap<
-      PROTOBUF_FIELD_OFFSET(SyncContextRunRecognizerResponse, _impl_.match_)
-      + sizeof(SyncContextRunRecognizerResponse::_impl_.match_)
+      PROTOBUF_FIELD_OFFSET(SyncContextRunRecognizerResponse, _impl_.status_)
+      + sizeof(SyncContextRunRecognizerResponse::_impl_.status_)
       - PROTOBUF_FIELD_OFFSET(SyncContextRunRecognizerResponse, _impl_.box_)>(
           reinterpret_cast<char*>(&_impl_.box_),
           reinterpret_cast<char*>(&other->_impl_.box_));
@@ -10841,7 +10840,7 @@ void SyncContextRunRecognizerResponse::InternalSwap(SyncContextRunRecognizerResp
 class SyncContextRunActionRequest::_Internal {
  public:
   using HasBits = decltype(std::declval<SyncContextRunActionRequest>()._impl_._has_bits_);
-  static const ::maa::Handle& handle(const SyncContextRunActionRequest* msg);
+  static const ::maarpc::Handle& handle(const SyncContextRunActionRequest* msg);
   static void set_has_handle(HasBits* has_bits) {
     (*has_bits)[0] |= 8u;
   }
@@ -10851,7 +10850,7 @@ class SyncContextRunActionRequest::_Internal {
   static void set_has_param(HasBits* has_bits) {
     (*has_bits)[0] |= 2u;
   }
-  static const ::maa::Rect& box(const SyncContextRunActionRequest* msg);
+  static const ::maarpc::Rect& box(const SyncContextRunActionRequest* msg);
   static void set_has_box(HasBits* has_bits) {
     (*has_bits)[0] |= 16u;
   }
@@ -10860,11 +10859,11 @@ class SyncContextRunActionRequest::_Internal {
   }
 };
 
-const ::maa::Handle&
+const ::maarpc::Handle&
 SyncContextRunActionRequest::_Internal::handle(const SyncContextRunActionRequest* msg) {
   return *msg->_impl_.handle_;
 }
-const ::maa::Rect&
+const ::maarpc::Rect&
 SyncContextRunActionRequest::_Internal::box(const SyncContextRunActionRequest* msg) {
   return *msg->_impl_.box_;
 }
@@ -10880,7 +10879,7 @@ SyncContextRunActionRequest::SyncContextRunActionRequest(::PROTOBUF_NAMESPACE_ID
                          bool is_message_owned)
   : ::PROTOBUF_NAMESPACE_ID::Message(arena, is_message_owned) {
   SharedCtor(arena, is_message_owned);
-  // @@protoc_insertion_point(arena_constructor:maa.SyncContextRunActionRequest)
+  // @@protoc_insertion_point(arena_constructor:maarpc.SyncContextRunActionRequest)
 }
 SyncContextRunActionRequest::SyncContextRunActionRequest(const SyncContextRunActionRequest& from)
   : ::PROTOBUF_NAMESPACE_ID::Message() {
@@ -10920,12 +10919,12 @@ SyncContextRunActionRequest::SyncContextRunActionRequest(const SyncContextRunAct
       _this->GetArenaForAllocation());
   }
   if (from._internal_has_handle()) {
-    _this->_impl_.handle_ = new ::maa::Handle(*from._impl_.handle_);
+    _this->_impl_.handle_ = new ::maarpc::Handle(*from._impl_.handle_);
   }
   if (from._internal_has_box()) {
-    _this->_impl_.box_ = new ::maa::Rect(*from._impl_.box_);
+    _this->_impl_.box_ = new ::maarpc::Rect(*from._impl_.box_);
   }
-  // @@protoc_insertion_point(copy_constructor:maa.SyncContextRunActionRequest)
+  // @@protoc_insertion_point(copy_constructor:maarpc.SyncContextRunActionRequest)
 }
 
 inline void SyncContextRunActionRequest::SharedCtor(
@@ -10956,7 +10955,7 @@ inline void SyncContextRunActionRequest::SharedCtor(
 }
 
 SyncContextRunActionRequest::~SyncContextRunActionRequest() {
-  // @@protoc_insertion_point(destructor:maa.SyncContextRunActionRequest)
+  // @@protoc_insertion_point(destructor:maarpc.SyncContextRunActionRequest)
   if (auto *arena = _internal_metadata_.DeleteReturnArena<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>()) {
   (void)arena;
     return;
@@ -10978,7 +10977,7 @@ void SyncContextRunActionRequest::SetCachedSize(int size) const {
 }
 
 void SyncContextRunActionRequest::Clear() {
-// @@protoc_insertion_point(message_clear_start:maa.SyncContextRunActionRequest)
+// @@protoc_insertion_point(message_clear_start:maarpc.SyncContextRunActionRequest)
   uint32_t cached_has_bits = 0;
   // Prevent compiler warnings about cached_has_bits being unused
   (void) cached_has_bits;
@@ -11014,7 +11013,7 @@ const char* SyncContextRunActionRequest::_InternalParse(const char* ptr, ::_pbi:
     uint32_t tag;
     ptr = ::_pbi::ReadTag(ptr, &tag);
     switch (tag >> 3) {
-      // optional .maa.Handle handle = 1;
+      // optional .maarpc.Handle handle = 1;
       case 1:
         if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 10)) {
           ptr = ctx->ParseMessage(_internal_mutable_handle(), ptr);
@@ -11028,7 +11027,7 @@ const char* SyncContextRunActionRequest::_InternalParse(const char* ptr, ::_pbi:
           auto str = _internal_mutable_task();
           ptr = ::_pbi::InlineGreedyStringParser(str, ptr, ctx);
           CHK_(ptr);
-          CHK_(::_pbi::VerifyUTF8(str, "maa.SyncContextRunActionRequest.task"));
+          CHK_(::_pbi::VerifyUTF8(str, "maarpc.SyncContextRunActionRequest.task"));
         } else
           goto handle_unusual;
         continue;
@@ -11038,11 +11037,11 @@ const char* SyncContextRunActionRequest::_InternalParse(const char* ptr, ::_pbi:
           auto str = _internal_mutable_param();
           ptr = ::_pbi::InlineGreedyStringParser(str, ptr, ctx);
           CHK_(ptr);
-          CHK_(::_pbi::VerifyUTF8(str, "maa.SyncContextRunActionRequest.param"));
+          CHK_(::_pbi::VerifyUTF8(str, "maarpc.SyncContextRunActionRequest.param"));
         } else
           goto handle_unusual;
         continue;
-      // optional .maa.Rect box = 4;
+      // optional .maarpc.Rect box = 4;
       case 4:
         if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 34)) {
           ptr = ctx->ParseMessage(_internal_mutable_box(), ptr);
@@ -11056,7 +11055,7 @@ const char* SyncContextRunActionRequest::_InternalParse(const char* ptr, ::_pbi:
           auto str = _internal_mutable_detail();
           ptr = ::_pbi::InlineGreedyStringParser(str, ptr, ctx);
           CHK_(ptr);
-          CHK_(::_pbi::VerifyUTF8(str, "maa.SyncContextRunActionRequest.detail"));
+          CHK_(::_pbi::VerifyUTF8(str, "maarpc.SyncContextRunActionRequest.detail"));
         } else
           goto handle_unusual;
         continue;
@@ -11086,11 +11085,11 @@ failure:
 
 uint8_t* SyncContextRunActionRequest::_InternalSerialize(
     uint8_t* target, ::PROTOBUF_NAMESPACE_ID::io::EpsCopyOutputStream* stream) const {
-  // @@protoc_insertion_point(serialize_to_array_start:maa.SyncContextRunActionRequest)
+  // @@protoc_insertion_point(serialize_to_array_start:maarpc.SyncContextRunActionRequest)
   uint32_t cached_has_bits = 0;
   (void) cached_has_bits;
 
-  // optional .maa.Handle handle = 1;
+  // optional .maarpc.Handle handle = 1;
   if (_internal_has_handle()) {
     target = ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::
       InternalWriteMessage(1, _Internal::handle(this),
@@ -11102,7 +11101,7 @@ uint8_t* SyncContextRunActionRequest::_InternalSerialize(
     ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::VerifyUtf8String(
       this->_internal_task().data(), static_cast<int>(this->_internal_task().length()),
       ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::SERIALIZE,
-      "maa.SyncContextRunActionRequest.task");
+      "maarpc.SyncContextRunActionRequest.task");
     target = stream->WriteStringMaybeAliased(
         2, this->_internal_task(), target);
   }
@@ -11112,12 +11111,12 @@ uint8_t* SyncContextRunActionRequest::_InternalSerialize(
     ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::VerifyUtf8String(
       this->_internal_param().data(), static_cast<int>(this->_internal_param().length()),
       ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::SERIALIZE,
-      "maa.SyncContextRunActionRequest.param");
+      "maarpc.SyncContextRunActionRequest.param");
     target = stream->WriteStringMaybeAliased(
         3, this->_internal_param(), target);
   }
 
-  // optional .maa.Rect box = 4;
+  // optional .maarpc.Rect box = 4;
   if (_internal_has_box()) {
     target = ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::
       InternalWriteMessage(4, _Internal::box(this),
@@ -11129,7 +11128,7 @@ uint8_t* SyncContextRunActionRequest::_InternalSerialize(
     ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::VerifyUtf8String(
       this->_internal_detail().data(), static_cast<int>(this->_internal_detail().length()),
       ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::SERIALIZE,
-      "maa.SyncContextRunActionRequest.detail");
+      "maarpc.SyncContextRunActionRequest.detail");
     target = stream->WriteStringMaybeAliased(
         5, this->_internal_detail(), target);
   }
@@ -11138,12 +11137,12 @@ uint8_t* SyncContextRunActionRequest::_InternalSerialize(
     target = ::_pbi::WireFormat::InternalSerializeUnknownFieldsToArray(
         _internal_metadata_.unknown_fields<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(::PROTOBUF_NAMESPACE_ID::UnknownFieldSet::default_instance), target, stream);
   }
-  // @@protoc_insertion_point(serialize_to_array_end:maa.SyncContextRunActionRequest)
+  // @@protoc_insertion_point(serialize_to_array_end:maarpc.SyncContextRunActionRequest)
   return target;
 }
 
 size_t SyncContextRunActionRequest::ByteSizeLong() const {
-// @@protoc_insertion_point(message_byte_size_start:maa.SyncContextRunActionRequest)
+// @@protoc_insertion_point(message_byte_size_start:maarpc.SyncContextRunActionRequest)
   size_t total_size = 0;
 
   uint32_t cached_has_bits = 0;
@@ -11173,14 +11172,14 @@ size_t SyncContextRunActionRequest::ByteSizeLong() const {
           this->_internal_detail());
     }
 
-    // optional .maa.Handle handle = 1;
+    // optional .maarpc.Handle handle = 1;
     if (cached_has_bits & 0x00000008u) {
       total_size += 1 +
         ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::MessageSize(
           *_impl_.handle_);
     }
 
-    // optional .maa.Rect box = 4;
+    // optional .maarpc.Rect box = 4;
     if (cached_has_bits & 0x00000010u) {
       total_size += 1 +
         ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::MessageSize(
@@ -11201,7 +11200,7 @@ const ::PROTOBUF_NAMESPACE_ID::Message::ClassData*SyncContextRunActionRequest::G
 void SyncContextRunActionRequest::MergeImpl(::PROTOBUF_NAMESPACE_ID::Message& to_msg, const ::PROTOBUF_NAMESPACE_ID::Message& from_msg) {
   auto* const _this = static_cast<SyncContextRunActionRequest*>(&to_msg);
   auto& from = static_cast<const SyncContextRunActionRequest&>(from_msg);
-  // @@protoc_insertion_point(class_specific_merge_from_start:maa.SyncContextRunActionRequest)
+  // @@protoc_insertion_point(class_specific_merge_from_start:maarpc.SyncContextRunActionRequest)
   GOOGLE_DCHECK_NE(&from, _this);
   uint32_t cached_has_bits = 0;
   (void) cached_has_bits;
@@ -11218,11 +11217,11 @@ void SyncContextRunActionRequest::MergeImpl(::PROTOBUF_NAMESPACE_ID::Message& to
       _this->_internal_set_detail(from._internal_detail());
     }
     if (cached_has_bits & 0x00000008u) {
-      _this->_internal_mutable_handle()->::maa::Handle::MergeFrom(
+      _this->_internal_mutable_handle()->::maarpc::Handle::MergeFrom(
           from._internal_handle());
     }
     if (cached_has_bits & 0x00000010u) {
-      _this->_internal_mutable_box()->::maa::Rect::MergeFrom(
+      _this->_internal_mutable_box()->::maarpc::Rect::MergeFrom(
           from._internal_box());
     }
   }
@@ -11230,7 +11229,7 @@ void SyncContextRunActionRequest::MergeImpl(::PROTOBUF_NAMESPACE_ID::Message& to
 }
 
 void SyncContextRunActionRequest::CopyFrom(const SyncContextRunActionRequest& from) {
-// @@protoc_insertion_point(class_specific_copy_from_start:maa.SyncContextRunActionRequest)
+// @@protoc_insertion_point(class_specific_copy_from_start:maarpc.SyncContextRunActionRequest)
   if (&from == this) return;
   Clear();
   MergeFrom(from);
@@ -11277,21 +11276,21 @@ void SyncContextRunActionRequest::InternalSwap(SyncContextRunActionRequest* othe
 class SyncContextClickRequest::_Internal {
  public:
   using HasBits = decltype(std::declval<SyncContextClickRequest>()._impl_._has_bits_);
-  static const ::maa::Handle& handle(const SyncContextClickRequest* msg);
+  static const ::maarpc::Handle& handle(const SyncContextClickRequest* msg);
   static void set_has_handle(HasBits* has_bits) {
     (*has_bits)[0] |= 1u;
   }
-  static const ::maa::ClickParam& param(const SyncContextClickRequest* msg);
+  static const ::maarpc::ClickParam& param(const SyncContextClickRequest* msg);
   static void set_has_param(HasBits* has_bits) {
     (*has_bits)[0] |= 2u;
   }
 };
 
-const ::maa::Handle&
+const ::maarpc::Handle&
 SyncContextClickRequest::_Internal::handle(const SyncContextClickRequest* msg) {
   return *msg->_impl_.handle_;
 }
-const ::maa::ClickParam&
+const ::maarpc::ClickParam&
 SyncContextClickRequest::_Internal::param(const SyncContextClickRequest* msg) {
   return *msg->_impl_.param_;
 }
@@ -11307,7 +11306,7 @@ SyncContextClickRequest::SyncContextClickRequest(::PROTOBUF_NAMESPACE_ID::Arena*
                          bool is_message_owned)
   : ::PROTOBUF_NAMESPACE_ID::Message(arena, is_message_owned) {
   SharedCtor(arena, is_message_owned);
-  // @@protoc_insertion_point(arena_constructor:maa.SyncContextClickRequest)
+  // @@protoc_insertion_point(arena_constructor:maarpc.SyncContextClickRequest)
 }
 SyncContextClickRequest::SyncContextClickRequest(const SyncContextClickRequest& from)
   : ::PROTOBUF_NAMESPACE_ID::Message() {
@@ -11320,12 +11319,12 @@ SyncContextClickRequest::SyncContextClickRequest(const SyncContextClickRequest& 
 
   _internal_metadata_.MergeFrom<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(from._internal_metadata_);
   if (from._internal_has_handle()) {
-    _this->_impl_.handle_ = new ::maa::Handle(*from._impl_.handle_);
+    _this->_impl_.handle_ = new ::maarpc::Handle(*from._impl_.handle_);
   }
   if (from._internal_has_param()) {
-    _this->_impl_.param_ = new ::maa::ClickParam(*from._impl_.param_);
+    _this->_impl_.param_ = new ::maarpc::ClickParam(*from._impl_.param_);
   }
-  // @@protoc_insertion_point(copy_constructor:maa.SyncContextClickRequest)
+  // @@protoc_insertion_point(copy_constructor:maarpc.SyncContextClickRequest)
 }
 
 inline void SyncContextClickRequest::SharedCtor(
@@ -11341,7 +11340,7 @@ inline void SyncContextClickRequest::SharedCtor(
 }
 
 SyncContextClickRequest::~SyncContextClickRequest() {
-  // @@protoc_insertion_point(destructor:maa.SyncContextClickRequest)
+  // @@protoc_insertion_point(destructor:maarpc.SyncContextClickRequest)
   if (auto *arena = _internal_metadata_.DeleteReturnArena<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>()) {
   (void)arena;
     return;
@@ -11360,7 +11359,7 @@ void SyncContextClickRequest::SetCachedSize(int size) const {
 }
 
 void SyncContextClickRequest::Clear() {
-// @@protoc_insertion_point(message_clear_start:maa.SyncContextClickRequest)
+// @@protoc_insertion_point(message_clear_start:maarpc.SyncContextClickRequest)
   uint32_t cached_has_bits = 0;
   // Prevent compiler warnings about cached_has_bits being unused
   (void) cached_has_bits;
@@ -11387,7 +11386,7 @@ const char* SyncContextClickRequest::_InternalParse(const char* ptr, ::_pbi::Par
     uint32_t tag;
     ptr = ::_pbi::ReadTag(ptr, &tag);
     switch (tag >> 3) {
-      // optional .maa.Handle handle = 1;
+      // optional .maarpc.Handle handle = 1;
       case 1:
         if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 10)) {
           ptr = ctx->ParseMessage(_internal_mutable_handle(), ptr);
@@ -11395,7 +11394,7 @@ const char* SyncContextClickRequest::_InternalParse(const char* ptr, ::_pbi::Par
         } else
           goto handle_unusual;
         continue;
-      // optional .maa.ClickParam param = 2;
+      // optional .maarpc.ClickParam param = 2;
       case 2:
         if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 18)) {
           ptr = ctx->ParseMessage(_internal_mutable_param(), ptr);
@@ -11429,18 +11428,18 @@ failure:
 
 uint8_t* SyncContextClickRequest::_InternalSerialize(
     uint8_t* target, ::PROTOBUF_NAMESPACE_ID::io::EpsCopyOutputStream* stream) const {
-  // @@protoc_insertion_point(serialize_to_array_start:maa.SyncContextClickRequest)
+  // @@protoc_insertion_point(serialize_to_array_start:maarpc.SyncContextClickRequest)
   uint32_t cached_has_bits = 0;
   (void) cached_has_bits;
 
-  // optional .maa.Handle handle = 1;
+  // optional .maarpc.Handle handle = 1;
   if (_internal_has_handle()) {
     target = ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::
       InternalWriteMessage(1, _Internal::handle(this),
         _Internal::handle(this).GetCachedSize(), target, stream);
   }
 
-  // optional .maa.ClickParam param = 2;
+  // optional .maarpc.ClickParam param = 2;
   if (_internal_has_param()) {
     target = ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::
       InternalWriteMessage(2, _Internal::param(this),
@@ -11451,12 +11450,12 @@ uint8_t* SyncContextClickRequest::_InternalSerialize(
     target = ::_pbi::WireFormat::InternalSerializeUnknownFieldsToArray(
         _internal_metadata_.unknown_fields<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(::PROTOBUF_NAMESPACE_ID::UnknownFieldSet::default_instance), target, stream);
   }
-  // @@protoc_insertion_point(serialize_to_array_end:maa.SyncContextClickRequest)
+  // @@protoc_insertion_point(serialize_to_array_end:maarpc.SyncContextClickRequest)
   return target;
 }
 
 size_t SyncContextClickRequest::ByteSizeLong() const {
-// @@protoc_insertion_point(message_byte_size_start:maa.SyncContextClickRequest)
+// @@protoc_insertion_point(message_byte_size_start:maarpc.SyncContextClickRequest)
   size_t total_size = 0;
 
   uint32_t cached_has_bits = 0;
@@ -11465,14 +11464,14 @@ size_t SyncContextClickRequest::ByteSizeLong() const {
 
   cached_has_bits = _impl_._has_bits_[0];
   if (cached_has_bits & 0x00000003u) {
-    // optional .maa.Handle handle = 1;
+    // optional .maarpc.Handle handle = 1;
     if (cached_has_bits & 0x00000001u) {
       total_size += 1 +
         ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::MessageSize(
           *_impl_.handle_);
     }
 
-    // optional .maa.ClickParam param = 2;
+    // optional .maarpc.ClickParam param = 2;
     if (cached_has_bits & 0x00000002u) {
       total_size += 1 +
         ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::MessageSize(
@@ -11493,7 +11492,7 @@ const ::PROTOBUF_NAMESPACE_ID::Message::ClassData*SyncContextClickRequest::GetCl
 void SyncContextClickRequest::MergeImpl(::PROTOBUF_NAMESPACE_ID::Message& to_msg, const ::PROTOBUF_NAMESPACE_ID::Message& from_msg) {
   auto* const _this = static_cast<SyncContextClickRequest*>(&to_msg);
   auto& from = static_cast<const SyncContextClickRequest&>(from_msg);
-  // @@protoc_insertion_point(class_specific_merge_from_start:maa.SyncContextClickRequest)
+  // @@protoc_insertion_point(class_specific_merge_from_start:maarpc.SyncContextClickRequest)
   GOOGLE_DCHECK_NE(&from, _this);
   uint32_t cached_has_bits = 0;
   (void) cached_has_bits;
@@ -11501,11 +11500,11 @@ void SyncContextClickRequest::MergeImpl(::PROTOBUF_NAMESPACE_ID::Message& to_msg
   cached_has_bits = from._impl_._has_bits_[0];
   if (cached_has_bits & 0x00000003u) {
     if (cached_has_bits & 0x00000001u) {
-      _this->_internal_mutable_handle()->::maa::Handle::MergeFrom(
+      _this->_internal_mutable_handle()->::maarpc::Handle::MergeFrom(
           from._internal_handle());
     }
     if (cached_has_bits & 0x00000002u) {
-      _this->_internal_mutable_param()->::maa::ClickParam::MergeFrom(
+      _this->_internal_mutable_param()->::maarpc::ClickParam::MergeFrom(
           from._internal_param());
     }
   }
@@ -11513,7 +11512,7 @@ void SyncContextClickRequest::MergeImpl(::PROTOBUF_NAMESPACE_ID::Message& to_msg
 }
 
 void SyncContextClickRequest::CopyFrom(const SyncContextClickRequest& from) {
-// @@protoc_insertion_point(class_specific_copy_from_start:maa.SyncContextClickRequest)
+// @@protoc_insertion_point(class_specific_copy_from_start:maarpc.SyncContextClickRequest)
   if (&from == this) return;
   Clear();
   MergeFrom(from);
@@ -11546,21 +11545,21 @@ void SyncContextClickRequest::InternalSwap(SyncContextClickRequest* other) {
 class SyncContextSwipeRequest::_Internal {
  public:
   using HasBits = decltype(std::declval<SyncContextSwipeRequest>()._impl_._has_bits_);
-  static const ::maa::Handle& handle(const SyncContextSwipeRequest* msg);
+  static const ::maarpc::Handle& handle(const SyncContextSwipeRequest* msg);
   static void set_has_handle(HasBits* has_bits) {
     (*has_bits)[0] |= 1u;
   }
-  static const ::maa::SwipeParam& param(const SyncContextSwipeRequest* msg);
+  static const ::maarpc::SwipeParam& param(const SyncContextSwipeRequest* msg);
   static void set_has_param(HasBits* has_bits) {
     (*has_bits)[0] |= 2u;
   }
 };
 
-const ::maa::Handle&
+const ::maarpc::Handle&
 SyncContextSwipeRequest::_Internal::handle(const SyncContextSwipeRequest* msg) {
   return *msg->_impl_.handle_;
 }
-const ::maa::SwipeParam&
+const ::maarpc::SwipeParam&
 SyncContextSwipeRequest::_Internal::param(const SyncContextSwipeRequest* msg) {
   return *msg->_impl_.param_;
 }
@@ -11576,7 +11575,7 @@ SyncContextSwipeRequest::SyncContextSwipeRequest(::PROTOBUF_NAMESPACE_ID::Arena*
                          bool is_message_owned)
   : ::PROTOBUF_NAMESPACE_ID::Message(arena, is_message_owned) {
   SharedCtor(arena, is_message_owned);
-  // @@protoc_insertion_point(arena_constructor:maa.SyncContextSwipeRequest)
+  // @@protoc_insertion_point(arena_constructor:maarpc.SyncContextSwipeRequest)
 }
 SyncContextSwipeRequest::SyncContextSwipeRequest(const SyncContextSwipeRequest& from)
   : ::PROTOBUF_NAMESPACE_ID::Message() {
@@ -11589,12 +11588,12 @@ SyncContextSwipeRequest::SyncContextSwipeRequest(const SyncContextSwipeRequest& 
 
   _internal_metadata_.MergeFrom<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(from._internal_metadata_);
   if (from._internal_has_handle()) {
-    _this->_impl_.handle_ = new ::maa::Handle(*from._impl_.handle_);
+    _this->_impl_.handle_ = new ::maarpc::Handle(*from._impl_.handle_);
   }
   if (from._internal_has_param()) {
-    _this->_impl_.param_ = new ::maa::SwipeParam(*from._impl_.param_);
+    _this->_impl_.param_ = new ::maarpc::SwipeParam(*from._impl_.param_);
   }
-  // @@protoc_insertion_point(copy_constructor:maa.SyncContextSwipeRequest)
+  // @@protoc_insertion_point(copy_constructor:maarpc.SyncContextSwipeRequest)
 }
 
 inline void SyncContextSwipeRequest::SharedCtor(
@@ -11610,7 +11609,7 @@ inline void SyncContextSwipeRequest::SharedCtor(
 }
 
 SyncContextSwipeRequest::~SyncContextSwipeRequest() {
-  // @@protoc_insertion_point(destructor:maa.SyncContextSwipeRequest)
+  // @@protoc_insertion_point(destructor:maarpc.SyncContextSwipeRequest)
   if (auto *arena = _internal_metadata_.DeleteReturnArena<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>()) {
   (void)arena;
     return;
@@ -11629,7 +11628,7 @@ void SyncContextSwipeRequest::SetCachedSize(int size) const {
 }
 
 void SyncContextSwipeRequest::Clear() {
-// @@protoc_insertion_point(message_clear_start:maa.SyncContextSwipeRequest)
+// @@protoc_insertion_point(message_clear_start:maarpc.SyncContextSwipeRequest)
   uint32_t cached_has_bits = 0;
   // Prevent compiler warnings about cached_has_bits being unused
   (void) cached_has_bits;
@@ -11656,7 +11655,7 @@ const char* SyncContextSwipeRequest::_InternalParse(const char* ptr, ::_pbi::Par
     uint32_t tag;
     ptr = ::_pbi::ReadTag(ptr, &tag);
     switch (tag >> 3) {
-      // optional .maa.Handle handle = 1;
+      // optional .maarpc.Handle handle = 1;
       case 1:
         if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 10)) {
           ptr = ctx->ParseMessage(_internal_mutable_handle(), ptr);
@@ -11664,7 +11663,7 @@ const char* SyncContextSwipeRequest::_InternalParse(const char* ptr, ::_pbi::Par
         } else
           goto handle_unusual;
         continue;
-      // optional .maa.SwipeParam param = 2;
+      // optional .maarpc.SwipeParam param = 2;
       case 2:
         if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 18)) {
           ptr = ctx->ParseMessage(_internal_mutable_param(), ptr);
@@ -11698,18 +11697,18 @@ failure:
 
 uint8_t* SyncContextSwipeRequest::_InternalSerialize(
     uint8_t* target, ::PROTOBUF_NAMESPACE_ID::io::EpsCopyOutputStream* stream) const {
-  // @@protoc_insertion_point(serialize_to_array_start:maa.SyncContextSwipeRequest)
+  // @@protoc_insertion_point(serialize_to_array_start:maarpc.SyncContextSwipeRequest)
   uint32_t cached_has_bits = 0;
   (void) cached_has_bits;
 
-  // optional .maa.Handle handle = 1;
+  // optional .maarpc.Handle handle = 1;
   if (_internal_has_handle()) {
     target = ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::
       InternalWriteMessage(1, _Internal::handle(this),
         _Internal::handle(this).GetCachedSize(), target, stream);
   }
 
-  // optional .maa.SwipeParam param = 2;
+  // optional .maarpc.SwipeParam param = 2;
   if (_internal_has_param()) {
     target = ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::
       InternalWriteMessage(2, _Internal::param(this),
@@ -11720,12 +11719,12 @@ uint8_t* SyncContextSwipeRequest::_InternalSerialize(
     target = ::_pbi::WireFormat::InternalSerializeUnknownFieldsToArray(
         _internal_metadata_.unknown_fields<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(::PROTOBUF_NAMESPACE_ID::UnknownFieldSet::default_instance), target, stream);
   }
-  // @@protoc_insertion_point(serialize_to_array_end:maa.SyncContextSwipeRequest)
+  // @@protoc_insertion_point(serialize_to_array_end:maarpc.SyncContextSwipeRequest)
   return target;
 }
 
 size_t SyncContextSwipeRequest::ByteSizeLong() const {
-// @@protoc_insertion_point(message_byte_size_start:maa.SyncContextSwipeRequest)
+// @@protoc_insertion_point(message_byte_size_start:maarpc.SyncContextSwipeRequest)
   size_t total_size = 0;
 
   uint32_t cached_has_bits = 0;
@@ -11734,14 +11733,14 @@ size_t SyncContextSwipeRequest::ByteSizeLong() const {
 
   cached_has_bits = _impl_._has_bits_[0];
   if (cached_has_bits & 0x00000003u) {
-    // optional .maa.Handle handle = 1;
+    // optional .maarpc.Handle handle = 1;
     if (cached_has_bits & 0x00000001u) {
       total_size += 1 +
         ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::MessageSize(
           *_impl_.handle_);
     }
 
-    // optional .maa.SwipeParam param = 2;
+    // optional .maarpc.SwipeParam param = 2;
     if (cached_has_bits & 0x00000002u) {
       total_size += 1 +
         ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::MessageSize(
@@ -11762,7 +11761,7 @@ const ::PROTOBUF_NAMESPACE_ID::Message::ClassData*SyncContextSwipeRequest::GetCl
 void SyncContextSwipeRequest::MergeImpl(::PROTOBUF_NAMESPACE_ID::Message& to_msg, const ::PROTOBUF_NAMESPACE_ID::Message& from_msg) {
   auto* const _this = static_cast<SyncContextSwipeRequest*>(&to_msg);
   auto& from = static_cast<const SyncContextSwipeRequest&>(from_msg);
-  // @@protoc_insertion_point(class_specific_merge_from_start:maa.SyncContextSwipeRequest)
+  // @@protoc_insertion_point(class_specific_merge_from_start:maarpc.SyncContextSwipeRequest)
   GOOGLE_DCHECK_NE(&from, _this);
   uint32_t cached_has_bits = 0;
   (void) cached_has_bits;
@@ -11770,11 +11769,11 @@ void SyncContextSwipeRequest::MergeImpl(::PROTOBUF_NAMESPACE_ID::Message& to_msg
   cached_has_bits = from._impl_._has_bits_[0];
   if (cached_has_bits & 0x00000003u) {
     if (cached_has_bits & 0x00000001u) {
-      _this->_internal_mutable_handle()->::maa::Handle::MergeFrom(
+      _this->_internal_mutable_handle()->::maarpc::Handle::MergeFrom(
           from._internal_handle());
     }
     if (cached_has_bits & 0x00000002u) {
-      _this->_internal_mutable_param()->::maa::SwipeParam::MergeFrom(
+      _this->_internal_mutable_param()->::maarpc::SwipeParam::MergeFrom(
           from._internal_param());
     }
   }
@@ -11782,7 +11781,7 @@ void SyncContextSwipeRequest::MergeImpl(::PROTOBUF_NAMESPACE_ID::Message& to_msg
 }
 
 void SyncContextSwipeRequest::CopyFrom(const SyncContextSwipeRequest& from) {
-// @@protoc_insertion_point(class_specific_copy_from_start:maa.SyncContextSwipeRequest)
+// @@protoc_insertion_point(class_specific_copy_from_start:maarpc.SyncContextSwipeRequest)
   if (&from == this) return;
   Clear();
   MergeFrom(from);
@@ -11815,21 +11814,21 @@ void SyncContextSwipeRequest::InternalSwap(SyncContextSwipeRequest* other) {
 class SyncContextKeyRequest::_Internal {
  public:
   using HasBits = decltype(std::declval<SyncContextKeyRequest>()._impl_._has_bits_);
-  static const ::maa::Handle& handle(const SyncContextKeyRequest* msg);
+  static const ::maarpc::Handle& handle(const SyncContextKeyRequest* msg);
   static void set_has_handle(HasBits* has_bits) {
     (*has_bits)[0] |= 1u;
   }
-  static const ::maa::KeyParam& param(const SyncContextKeyRequest* msg);
+  static const ::maarpc::KeyParam& param(const SyncContextKeyRequest* msg);
   static void set_has_param(HasBits* has_bits) {
     (*has_bits)[0] |= 2u;
   }
 };
 
-const ::maa::Handle&
+const ::maarpc::Handle&
 SyncContextKeyRequest::_Internal::handle(const SyncContextKeyRequest* msg) {
   return *msg->_impl_.handle_;
 }
-const ::maa::KeyParam&
+const ::maarpc::KeyParam&
 SyncContextKeyRequest::_Internal::param(const SyncContextKeyRequest* msg) {
   return *msg->_impl_.param_;
 }
@@ -11845,7 +11844,7 @@ SyncContextKeyRequest::SyncContextKeyRequest(::PROTOBUF_NAMESPACE_ID::Arena* are
                          bool is_message_owned)
   : ::PROTOBUF_NAMESPACE_ID::Message(arena, is_message_owned) {
   SharedCtor(arena, is_message_owned);
-  // @@protoc_insertion_point(arena_constructor:maa.SyncContextKeyRequest)
+  // @@protoc_insertion_point(arena_constructor:maarpc.SyncContextKeyRequest)
 }
 SyncContextKeyRequest::SyncContextKeyRequest(const SyncContextKeyRequest& from)
   : ::PROTOBUF_NAMESPACE_ID::Message() {
@@ -11858,12 +11857,12 @@ SyncContextKeyRequest::SyncContextKeyRequest(const SyncContextKeyRequest& from)
 
   _internal_metadata_.MergeFrom<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(from._internal_metadata_);
   if (from._internal_has_handle()) {
-    _this->_impl_.handle_ = new ::maa::Handle(*from._impl_.handle_);
+    _this->_impl_.handle_ = new ::maarpc::Handle(*from._impl_.handle_);
   }
   if (from._internal_has_param()) {
-    _this->_impl_.param_ = new ::maa::KeyParam(*from._impl_.param_);
+    _this->_impl_.param_ = new ::maarpc::KeyParam(*from._impl_.param_);
   }
-  // @@protoc_insertion_point(copy_constructor:maa.SyncContextKeyRequest)
+  // @@protoc_insertion_point(copy_constructor:maarpc.SyncContextKeyRequest)
 }
 
 inline void SyncContextKeyRequest::SharedCtor(
@@ -11879,7 +11878,7 @@ inline void SyncContextKeyRequest::SharedCtor(
 }
 
 SyncContextKeyRequest::~SyncContextKeyRequest() {
-  // @@protoc_insertion_point(destructor:maa.SyncContextKeyRequest)
+  // @@protoc_insertion_point(destructor:maarpc.SyncContextKeyRequest)
   if (auto *arena = _internal_metadata_.DeleteReturnArena<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>()) {
   (void)arena;
     return;
@@ -11898,7 +11897,7 @@ void SyncContextKeyRequest::SetCachedSize(int size) const {
 }
 
 void SyncContextKeyRequest::Clear() {
-// @@protoc_insertion_point(message_clear_start:maa.SyncContextKeyRequest)
+// @@protoc_insertion_point(message_clear_start:maarpc.SyncContextKeyRequest)
   uint32_t cached_has_bits = 0;
   // Prevent compiler warnings about cached_has_bits being unused
   (void) cached_has_bits;
@@ -11925,7 +11924,7 @@ const char* SyncContextKeyRequest::_InternalParse(const char* ptr, ::_pbi::Parse
     uint32_t tag;
     ptr = ::_pbi::ReadTag(ptr, &tag);
     switch (tag >> 3) {
-      // optional .maa.Handle handle = 1;
+      // optional .maarpc.Handle handle = 1;
       case 1:
         if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 10)) {
           ptr = ctx->ParseMessage(_internal_mutable_handle(), ptr);
@@ -11933,7 +11932,7 @@ const char* SyncContextKeyRequest::_InternalParse(const char* ptr, ::_pbi::Parse
         } else
           goto handle_unusual;
         continue;
-      // optional .maa.KeyParam param = 2;
+      // optional .maarpc.KeyParam param = 2;
       case 2:
         if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 18)) {
           ptr = ctx->ParseMessage(_internal_mutable_param(), ptr);
@@ -11967,18 +11966,18 @@ failure:
 
 uint8_t* SyncContextKeyRequest::_InternalSerialize(
     uint8_t* target, ::PROTOBUF_NAMESPACE_ID::io::EpsCopyOutputStream* stream) const {
-  // @@protoc_insertion_point(serialize_to_array_start:maa.SyncContextKeyRequest)
+  // @@protoc_insertion_point(serialize_to_array_start:maarpc.SyncContextKeyRequest)
   uint32_t cached_has_bits = 0;
   (void) cached_has_bits;
 
-  // optional .maa.Handle handle = 1;
+  // optional .maarpc.Handle handle = 1;
   if (_internal_has_handle()) {
     target = ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::
       InternalWriteMessage(1, _Internal::handle(this),
         _Internal::handle(this).GetCachedSize(), target, stream);
   }
 
-  // optional .maa.KeyParam param = 2;
+  // optional .maarpc.KeyParam param = 2;
   if (_internal_has_param()) {
     target = ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::
       InternalWriteMessage(2, _Internal::param(this),
@@ -11989,12 +11988,12 @@ uint8_t* SyncContextKeyRequest::_InternalSerialize(
     target = ::_pbi::WireFormat::InternalSerializeUnknownFieldsToArray(
         _internal_metadata_.unknown_fields<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(::PROTOBUF_NAMESPACE_ID::UnknownFieldSet::default_instance), target, stream);
   }
-  // @@protoc_insertion_point(serialize_to_array_end:maa.SyncContextKeyRequest)
+  // @@protoc_insertion_point(serialize_to_array_end:maarpc.SyncContextKeyRequest)
   return target;
 }
 
 size_t SyncContextKeyRequest::ByteSizeLong() const {
-// @@protoc_insertion_point(message_byte_size_start:maa.SyncContextKeyRequest)
+// @@protoc_insertion_point(message_byte_size_start:maarpc.SyncContextKeyRequest)
   size_t total_size = 0;
 
   uint32_t cached_has_bits = 0;
@@ -12003,14 +12002,14 @@ size_t SyncContextKeyRequest::ByteSizeLong() const {
 
   cached_has_bits = _impl_._has_bits_[0];
   if (cached_has_bits & 0x00000003u) {
-    // optional .maa.Handle handle = 1;
+    // optional .maarpc.Handle handle = 1;
     if (cached_has_bits & 0x00000001u) {
       total_size += 1 +
         ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::MessageSize(
           *_impl_.handle_);
     }
 
-    // optional .maa.KeyParam param = 2;
+    // optional .maarpc.KeyParam param = 2;
     if (cached_has_bits & 0x00000002u) {
       total_size += 1 +
         ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::MessageSize(
@@ -12031,7 +12030,7 @@ const ::PROTOBUF_NAMESPACE_ID::Message::ClassData*SyncContextKeyRequest::GetClas
 void SyncContextKeyRequest::MergeImpl(::PROTOBUF_NAMESPACE_ID::Message& to_msg, const ::PROTOBUF_NAMESPACE_ID::Message& from_msg) {
   auto* const _this = static_cast<SyncContextKeyRequest*>(&to_msg);
   auto& from = static_cast<const SyncContextKeyRequest&>(from_msg);
-  // @@protoc_insertion_point(class_specific_merge_from_start:maa.SyncContextKeyRequest)
+  // @@protoc_insertion_point(class_specific_merge_from_start:maarpc.SyncContextKeyRequest)
   GOOGLE_DCHECK_NE(&from, _this);
   uint32_t cached_has_bits = 0;
   (void) cached_has_bits;
@@ -12039,11 +12038,11 @@ void SyncContextKeyRequest::MergeImpl(::PROTOBUF_NAMESPACE_ID::Message& to_msg, 
   cached_has_bits = from._impl_._has_bits_[0];
   if (cached_has_bits & 0x00000003u) {
     if (cached_has_bits & 0x00000001u) {
-      _this->_internal_mutable_handle()->::maa::Handle::MergeFrom(
+      _this->_internal_mutable_handle()->::maarpc::Handle::MergeFrom(
           from._internal_handle());
     }
     if (cached_has_bits & 0x00000002u) {
-      _this->_internal_mutable_param()->::maa::KeyParam::MergeFrom(
+      _this->_internal_mutable_param()->::maarpc::KeyParam::MergeFrom(
           from._internal_param());
     }
   }
@@ -12051,7 +12050,7 @@ void SyncContextKeyRequest::MergeImpl(::PROTOBUF_NAMESPACE_ID::Message& to_msg, 
 }
 
 void SyncContextKeyRequest::CopyFrom(const SyncContextKeyRequest& from) {
-// @@protoc_insertion_point(class_specific_copy_from_start:maa.SyncContextKeyRequest)
+// @@protoc_insertion_point(class_specific_copy_from_start:maarpc.SyncContextKeyRequest)
   if (&from == this) return;
   Clear();
   MergeFrom(from);
@@ -12084,21 +12083,21 @@ void SyncContextKeyRequest::InternalSwap(SyncContextKeyRequest* other) {
 class SyncContextTouchRequest::_Internal {
  public:
   using HasBits = decltype(std::declval<SyncContextTouchRequest>()._impl_._has_bits_);
-  static const ::maa::Handle& handle(const SyncContextTouchRequest* msg);
+  static const ::maarpc::Handle& handle(const SyncContextTouchRequest* msg);
   static void set_has_handle(HasBits* has_bits) {
     (*has_bits)[0] |= 1u;
   }
-  static const ::maa::TouchParam& param(const SyncContextTouchRequest* msg);
+  static const ::maarpc::TouchParam& param(const SyncContextTouchRequest* msg);
   static void set_has_param(HasBits* has_bits) {
     (*has_bits)[0] |= 2u;
   }
 };
 
-const ::maa::Handle&
+const ::maarpc::Handle&
 SyncContextTouchRequest::_Internal::handle(const SyncContextTouchRequest* msg) {
   return *msg->_impl_.handle_;
 }
-const ::maa::TouchParam&
+const ::maarpc::TouchParam&
 SyncContextTouchRequest::_Internal::param(const SyncContextTouchRequest* msg) {
   return *msg->_impl_.param_;
 }
@@ -12114,7 +12113,7 @@ SyncContextTouchRequest::SyncContextTouchRequest(::PROTOBUF_NAMESPACE_ID::Arena*
                          bool is_message_owned)
   : ::PROTOBUF_NAMESPACE_ID::Message(arena, is_message_owned) {
   SharedCtor(arena, is_message_owned);
-  // @@protoc_insertion_point(arena_constructor:maa.SyncContextTouchRequest)
+  // @@protoc_insertion_point(arena_constructor:maarpc.SyncContextTouchRequest)
 }
 SyncContextTouchRequest::SyncContextTouchRequest(const SyncContextTouchRequest& from)
   : ::PROTOBUF_NAMESPACE_ID::Message() {
@@ -12127,12 +12126,12 @@ SyncContextTouchRequest::SyncContextTouchRequest(const SyncContextTouchRequest& 
 
   _internal_metadata_.MergeFrom<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(from._internal_metadata_);
   if (from._internal_has_handle()) {
-    _this->_impl_.handle_ = new ::maa::Handle(*from._impl_.handle_);
+    _this->_impl_.handle_ = new ::maarpc::Handle(*from._impl_.handle_);
   }
   if (from._internal_has_param()) {
-    _this->_impl_.param_ = new ::maa::TouchParam(*from._impl_.param_);
+    _this->_impl_.param_ = new ::maarpc::TouchParam(*from._impl_.param_);
   }
-  // @@protoc_insertion_point(copy_constructor:maa.SyncContextTouchRequest)
+  // @@protoc_insertion_point(copy_constructor:maarpc.SyncContextTouchRequest)
 }
 
 inline void SyncContextTouchRequest::SharedCtor(
@@ -12148,7 +12147,7 @@ inline void SyncContextTouchRequest::SharedCtor(
 }
 
 SyncContextTouchRequest::~SyncContextTouchRequest() {
-  // @@protoc_insertion_point(destructor:maa.SyncContextTouchRequest)
+  // @@protoc_insertion_point(destructor:maarpc.SyncContextTouchRequest)
   if (auto *arena = _internal_metadata_.DeleteReturnArena<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>()) {
   (void)arena;
     return;
@@ -12167,7 +12166,7 @@ void SyncContextTouchRequest::SetCachedSize(int size) const {
 }
 
 void SyncContextTouchRequest::Clear() {
-// @@protoc_insertion_point(message_clear_start:maa.SyncContextTouchRequest)
+// @@protoc_insertion_point(message_clear_start:maarpc.SyncContextTouchRequest)
   uint32_t cached_has_bits = 0;
   // Prevent compiler warnings about cached_has_bits being unused
   (void) cached_has_bits;
@@ -12194,7 +12193,7 @@ const char* SyncContextTouchRequest::_InternalParse(const char* ptr, ::_pbi::Par
     uint32_t tag;
     ptr = ::_pbi::ReadTag(ptr, &tag);
     switch (tag >> 3) {
-      // optional .maa.Handle handle = 1;
+      // optional .maarpc.Handle handle = 1;
       case 1:
         if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 10)) {
           ptr = ctx->ParseMessage(_internal_mutable_handle(), ptr);
@@ -12202,7 +12201,7 @@ const char* SyncContextTouchRequest::_InternalParse(const char* ptr, ::_pbi::Par
         } else
           goto handle_unusual;
         continue;
-      // optional .maa.TouchParam param = 2;
+      // optional .maarpc.TouchParam param = 2;
       case 2:
         if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 18)) {
           ptr = ctx->ParseMessage(_internal_mutable_param(), ptr);
@@ -12236,18 +12235,18 @@ failure:
 
 uint8_t* SyncContextTouchRequest::_InternalSerialize(
     uint8_t* target, ::PROTOBUF_NAMESPACE_ID::io::EpsCopyOutputStream* stream) const {
-  // @@protoc_insertion_point(serialize_to_array_start:maa.SyncContextTouchRequest)
+  // @@protoc_insertion_point(serialize_to_array_start:maarpc.SyncContextTouchRequest)
   uint32_t cached_has_bits = 0;
   (void) cached_has_bits;
 
-  // optional .maa.Handle handle = 1;
+  // optional .maarpc.Handle handle = 1;
   if (_internal_has_handle()) {
     target = ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::
       InternalWriteMessage(1, _Internal::handle(this),
         _Internal::handle(this).GetCachedSize(), target, stream);
   }
 
-  // optional .maa.TouchParam param = 2;
+  // optional .maarpc.TouchParam param = 2;
   if (_internal_has_param()) {
     target = ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::
       InternalWriteMessage(2, _Internal::param(this),
@@ -12258,12 +12257,12 @@ uint8_t* SyncContextTouchRequest::_InternalSerialize(
     target = ::_pbi::WireFormat::InternalSerializeUnknownFieldsToArray(
         _internal_metadata_.unknown_fields<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(::PROTOBUF_NAMESPACE_ID::UnknownFieldSet::default_instance), target, stream);
   }
-  // @@protoc_insertion_point(serialize_to_array_end:maa.SyncContextTouchRequest)
+  // @@protoc_insertion_point(serialize_to_array_end:maarpc.SyncContextTouchRequest)
   return target;
 }
 
 size_t SyncContextTouchRequest::ByteSizeLong() const {
-// @@protoc_insertion_point(message_byte_size_start:maa.SyncContextTouchRequest)
+// @@protoc_insertion_point(message_byte_size_start:maarpc.SyncContextTouchRequest)
   size_t total_size = 0;
 
   uint32_t cached_has_bits = 0;
@@ -12272,14 +12271,14 @@ size_t SyncContextTouchRequest::ByteSizeLong() const {
 
   cached_has_bits = _impl_._has_bits_[0];
   if (cached_has_bits & 0x00000003u) {
-    // optional .maa.Handle handle = 1;
+    // optional .maarpc.Handle handle = 1;
     if (cached_has_bits & 0x00000001u) {
       total_size += 1 +
         ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::MessageSize(
           *_impl_.handle_);
     }
 
-    // optional .maa.TouchParam param = 2;
+    // optional .maarpc.TouchParam param = 2;
     if (cached_has_bits & 0x00000002u) {
       total_size += 1 +
         ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::MessageSize(
@@ -12300,7 +12299,7 @@ const ::PROTOBUF_NAMESPACE_ID::Message::ClassData*SyncContextTouchRequest::GetCl
 void SyncContextTouchRequest::MergeImpl(::PROTOBUF_NAMESPACE_ID::Message& to_msg, const ::PROTOBUF_NAMESPACE_ID::Message& from_msg) {
   auto* const _this = static_cast<SyncContextTouchRequest*>(&to_msg);
   auto& from = static_cast<const SyncContextTouchRequest&>(from_msg);
-  // @@protoc_insertion_point(class_specific_merge_from_start:maa.SyncContextTouchRequest)
+  // @@protoc_insertion_point(class_specific_merge_from_start:maarpc.SyncContextTouchRequest)
   GOOGLE_DCHECK_NE(&from, _this);
   uint32_t cached_has_bits = 0;
   (void) cached_has_bits;
@@ -12308,11 +12307,11 @@ void SyncContextTouchRequest::MergeImpl(::PROTOBUF_NAMESPACE_ID::Message& to_msg
   cached_has_bits = from._impl_._has_bits_[0];
   if (cached_has_bits & 0x00000003u) {
     if (cached_has_bits & 0x00000001u) {
-      _this->_internal_mutable_handle()->::maa::Handle::MergeFrom(
+      _this->_internal_mutable_handle()->::maarpc::Handle::MergeFrom(
           from._internal_handle());
     }
     if (cached_has_bits & 0x00000002u) {
-      _this->_internal_mutable_param()->::maa::TouchParam::MergeFrom(
+      _this->_internal_mutable_param()->::maarpc::TouchParam::MergeFrom(
           from._internal_param());
     }
   }
@@ -12320,7 +12319,7 @@ void SyncContextTouchRequest::MergeImpl(::PROTOBUF_NAMESPACE_ID::Message& to_msg
 }
 
 void SyncContextTouchRequest::CopyFrom(const SyncContextTouchRequest& from) {
-// @@protoc_insertion_point(class_specific_copy_from_start:maa.SyncContextTouchRequest)
+// @@protoc_insertion_point(class_specific_copy_from_start:maarpc.SyncContextTouchRequest)
   if (&from == this) return;
   Clear();
   MergeFrom(from);
@@ -12353,21 +12352,21 @@ void SyncContextTouchRequest::InternalSwap(SyncContextTouchRequest* other) {
 class SyncContextScreencapRequest::_Internal {
  public:
   using HasBits = decltype(std::declval<SyncContextScreencapRequest>()._impl_._has_bits_);
-  static const ::maa::Handle& handle(const SyncContextScreencapRequest* msg);
+  static const ::maarpc::Handle& handle(const SyncContextScreencapRequest* msg);
   static void set_has_handle(HasBits* has_bits) {
     (*has_bits)[0] |= 1u;
   }
-  static const ::maa::Handle& image(const SyncContextScreencapRequest* msg);
+  static const ::maarpc::Handle& image(const SyncContextScreencapRequest* msg);
   static void set_has_image(HasBits* has_bits) {
     (*has_bits)[0] |= 2u;
   }
 };
 
-const ::maa::Handle&
+const ::maarpc::Handle&
 SyncContextScreencapRequest::_Internal::handle(const SyncContextScreencapRequest* msg) {
   return *msg->_impl_.handle_;
 }
-const ::maa::Handle&
+const ::maarpc::Handle&
 SyncContextScreencapRequest::_Internal::image(const SyncContextScreencapRequest* msg) {
   return *msg->_impl_.image_;
 }
@@ -12383,7 +12382,7 @@ SyncContextScreencapRequest::SyncContextScreencapRequest(::PROTOBUF_NAMESPACE_ID
                          bool is_message_owned)
   : ::PROTOBUF_NAMESPACE_ID::Message(arena, is_message_owned) {
   SharedCtor(arena, is_message_owned);
-  // @@protoc_insertion_point(arena_constructor:maa.SyncContextScreencapRequest)
+  // @@protoc_insertion_point(arena_constructor:maarpc.SyncContextScreencapRequest)
 }
 SyncContextScreencapRequest::SyncContextScreencapRequest(const SyncContextScreencapRequest& from)
   : ::PROTOBUF_NAMESPACE_ID::Message() {
@@ -12396,12 +12395,12 @@ SyncContextScreencapRequest::SyncContextScreencapRequest(const SyncContextScreen
 
   _internal_metadata_.MergeFrom<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(from._internal_metadata_);
   if (from._internal_has_handle()) {
-    _this->_impl_.handle_ = new ::maa::Handle(*from._impl_.handle_);
+    _this->_impl_.handle_ = new ::maarpc::Handle(*from._impl_.handle_);
   }
   if (from._internal_has_image()) {
-    _this->_impl_.image_ = new ::maa::Handle(*from._impl_.image_);
+    _this->_impl_.image_ = new ::maarpc::Handle(*from._impl_.image_);
   }
-  // @@protoc_insertion_point(copy_constructor:maa.SyncContextScreencapRequest)
+  // @@protoc_insertion_point(copy_constructor:maarpc.SyncContextScreencapRequest)
 }
 
 inline void SyncContextScreencapRequest::SharedCtor(
@@ -12417,7 +12416,7 @@ inline void SyncContextScreencapRequest::SharedCtor(
 }
 
 SyncContextScreencapRequest::~SyncContextScreencapRequest() {
-  // @@protoc_insertion_point(destructor:maa.SyncContextScreencapRequest)
+  // @@protoc_insertion_point(destructor:maarpc.SyncContextScreencapRequest)
   if (auto *arena = _internal_metadata_.DeleteReturnArena<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>()) {
   (void)arena;
     return;
@@ -12436,7 +12435,7 @@ void SyncContextScreencapRequest::SetCachedSize(int size) const {
 }
 
 void SyncContextScreencapRequest::Clear() {
-// @@protoc_insertion_point(message_clear_start:maa.SyncContextScreencapRequest)
+// @@protoc_insertion_point(message_clear_start:maarpc.SyncContextScreencapRequest)
   uint32_t cached_has_bits = 0;
   // Prevent compiler warnings about cached_has_bits being unused
   (void) cached_has_bits;
@@ -12463,7 +12462,7 @@ const char* SyncContextScreencapRequest::_InternalParse(const char* ptr, ::_pbi:
     uint32_t tag;
     ptr = ::_pbi::ReadTag(ptr, &tag);
     switch (tag >> 3) {
-      // optional .maa.Handle handle = 1;
+      // optional .maarpc.Handle handle = 1;
       case 1:
         if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 10)) {
           ptr = ctx->ParseMessage(_internal_mutable_handle(), ptr);
@@ -12471,7 +12470,7 @@ const char* SyncContextScreencapRequest::_InternalParse(const char* ptr, ::_pbi:
         } else
           goto handle_unusual;
         continue;
-      // optional .maa.Handle image = 2;
+      // optional .maarpc.Handle image = 2;
       case 2:
         if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 18)) {
           ptr = ctx->ParseMessage(_internal_mutable_image(), ptr);
@@ -12505,18 +12504,18 @@ failure:
 
 uint8_t* SyncContextScreencapRequest::_InternalSerialize(
     uint8_t* target, ::PROTOBUF_NAMESPACE_ID::io::EpsCopyOutputStream* stream) const {
-  // @@protoc_insertion_point(serialize_to_array_start:maa.SyncContextScreencapRequest)
+  // @@protoc_insertion_point(serialize_to_array_start:maarpc.SyncContextScreencapRequest)
   uint32_t cached_has_bits = 0;
   (void) cached_has_bits;
 
-  // optional .maa.Handle handle = 1;
+  // optional .maarpc.Handle handle = 1;
   if (_internal_has_handle()) {
     target = ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::
       InternalWriteMessage(1, _Internal::handle(this),
         _Internal::handle(this).GetCachedSize(), target, stream);
   }
 
-  // optional .maa.Handle image = 2;
+  // optional .maarpc.Handle image = 2;
   if (_internal_has_image()) {
     target = ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::
       InternalWriteMessage(2, _Internal::image(this),
@@ -12527,12 +12526,12 @@ uint8_t* SyncContextScreencapRequest::_InternalSerialize(
     target = ::_pbi::WireFormat::InternalSerializeUnknownFieldsToArray(
         _internal_metadata_.unknown_fields<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(::PROTOBUF_NAMESPACE_ID::UnknownFieldSet::default_instance), target, stream);
   }
-  // @@protoc_insertion_point(serialize_to_array_end:maa.SyncContextScreencapRequest)
+  // @@protoc_insertion_point(serialize_to_array_end:maarpc.SyncContextScreencapRequest)
   return target;
 }
 
 size_t SyncContextScreencapRequest::ByteSizeLong() const {
-// @@protoc_insertion_point(message_byte_size_start:maa.SyncContextScreencapRequest)
+// @@protoc_insertion_point(message_byte_size_start:maarpc.SyncContextScreencapRequest)
   size_t total_size = 0;
 
   uint32_t cached_has_bits = 0;
@@ -12541,14 +12540,14 @@ size_t SyncContextScreencapRequest::ByteSizeLong() const {
 
   cached_has_bits = _impl_._has_bits_[0];
   if (cached_has_bits & 0x00000003u) {
-    // optional .maa.Handle handle = 1;
+    // optional .maarpc.Handle handle = 1;
     if (cached_has_bits & 0x00000001u) {
       total_size += 1 +
         ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::MessageSize(
           *_impl_.handle_);
     }
 
-    // optional .maa.Handle image = 2;
+    // optional .maarpc.Handle image = 2;
     if (cached_has_bits & 0x00000002u) {
       total_size += 1 +
         ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::MessageSize(
@@ -12569,7 +12568,7 @@ const ::PROTOBUF_NAMESPACE_ID::Message::ClassData*SyncContextScreencapRequest::G
 void SyncContextScreencapRequest::MergeImpl(::PROTOBUF_NAMESPACE_ID::Message& to_msg, const ::PROTOBUF_NAMESPACE_ID::Message& from_msg) {
   auto* const _this = static_cast<SyncContextScreencapRequest*>(&to_msg);
   auto& from = static_cast<const SyncContextScreencapRequest&>(from_msg);
-  // @@protoc_insertion_point(class_specific_merge_from_start:maa.SyncContextScreencapRequest)
+  // @@protoc_insertion_point(class_specific_merge_from_start:maarpc.SyncContextScreencapRequest)
   GOOGLE_DCHECK_NE(&from, _this);
   uint32_t cached_has_bits = 0;
   (void) cached_has_bits;
@@ -12577,11 +12576,11 @@ void SyncContextScreencapRequest::MergeImpl(::PROTOBUF_NAMESPACE_ID::Message& to
   cached_has_bits = from._impl_._has_bits_[0];
   if (cached_has_bits & 0x00000003u) {
     if (cached_has_bits & 0x00000001u) {
-      _this->_internal_mutable_handle()->::maa::Handle::MergeFrom(
+      _this->_internal_mutable_handle()->::maarpc::Handle::MergeFrom(
           from._internal_handle());
     }
     if (cached_has_bits & 0x00000002u) {
-      _this->_internal_mutable_image()->::maa::Handle::MergeFrom(
+      _this->_internal_mutable_image()->::maarpc::Handle::MergeFrom(
           from._internal_image());
     }
   }
@@ -12589,7 +12588,7 @@ void SyncContextScreencapRequest::MergeImpl(::PROTOBUF_NAMESPACE_ID::Message& to
 }
 
 void SyncContextScreencapRequest::CopyFrom(const SyncContextScreencapRequest& from) {
-// @@protoc_insertion_point(class_specific_copy_from_start:maa.SyncContextScreencapRequest)
+// @@protoc_insertion_point(class_specific_copy_from_start:maarpc.SyncContextScreencapRequest)
   if (&from == this) return;
   Clear();
   MergeFrom(from);
@@ -12618,139 +12617,139 @@ void SyncContextScreencapRequest::InternalSwap(SyncContextScreencapRequest* othe
 }
 
 // @@protoc_insertion_point(namespace_scope)
-}  // namespace maa
+}  // namespace maarpc
 PROTOBUF_NAMESPACE_OPEN
-template<> PROTOBUF_NOINLINE ::maa::SetGlobalOptionRequest*
-Arena::CreateMaybeMessage< ::maa::SetGlobalOptionRequest >(Arena* arena) {
-  return Arena::CreateMessageInternal< ::maa::SetGlobalOptionRequest >(arena);
+template<> PROTOBUF_NOINLINE ::maarpc::SetGlobalOptionRequest*
+Arena::CreateMaybeMessage< ::maarpc::SetGlobalOptionRequest >(Arena* arena) {
+  return Arena::CreateMessageInternal< ::maarpc::SetGlobalOptionRequest >(arena);
 }
-template<> PROTOBUF_NOINLINE ::maa::ImageInfoResponse*
-Arena::CreateMaybeMessage< ::maa::ImageInfoResponse >(Arena* arena) {
-  return Arena::CreateMessageInternal< ::maa::ImageInfoResponse >(arena);
+template<> PROTOBUF_NOINLINE ::maarpc::ImageInfoResponse*
+Arena::CreateMaybeMessage< ::maarpc::ImageInfoResponse >(Arena* arena) {
+  return Arena::CreateMessageInternal< ::maarpc::ImageInfoResponse >(arena);
 }
-template<> PROTOBUF_NOINLINE ::maa::AdbControllerRequest*
-Arena::CreateMaybeMessage< ::maa::AdbControllerRequest >(Arena* arena) {
-  return Arena::CreateMessageInternal< ::maa::AdbControllerRequest >(arena);
+template<> PROTOBUF_NOINLINE ::maarpc::AdbControllerRequest*
+Arena::CreateMaybeMessage< ::maarpc::AdbControllerRequest >(Arena* arena) {
+  return Arena::CreateMessageInternal< ::maarpc::AdbControllerRequest >(arena);
 }
-template<> PROTOBUF_NOINLINE ::maa::CustomControllerRequest*
-Arena::CreateMaybeMessage< ::maa::CustomControllerRequest >(Arena* arena) {
-  return Arena::CreateMessageInternal< ::maa::CustomControllerRequest >(arena);
+template<> PROTOBUF_NOINLINE ::maarpc::CustomControllerRequest*
+Arena::CreateMaybeMessage< ::maarpc::CustomControllerRequest >(Arena* arena) {
+  return Arena::CreateMessageInternal< ::maarpc::CustomControllerRequest >(arena);
 }
-template<> PROTOBUF_NOINLINE ::maa::CustomControllerSetOptionParam*
-Arena::CreateMaybeMessage< ::maa::CustomControllerSetOptionParam >(Arena* arena) {
-  return Arena::CreateMessageInternal< ::maa::CustomControllerSetOptionParam >(arena);
+template<> PROTOBUF_NOINLINE ::maarpc::CustomControllerSetOptionParam*
+Arena::CreateMaybeMessage< ::maarpc::CustomControllerSetOptionParam >(Arena* arena) {
+  return Arena::CreateMessageInternal< ::maarpc::CustomControllerSetOptionParam >(arena);
 }
-template<> PROTOBUF_NOINLINE ::maa::CustomControllerResponse*
-Arena::CreateMaybeMessage< ::maa::CustomControllerResponse >(Arena* arena) {
-  return Arena::CreateMessageInternal< ::maa::CustomControllerResponse >(arena);
+template<> PROTOBUF_NOINLINE ::maarpc::CustomControllerResponse*
+Arena::CreateMaybeMessage< ::maarpc::CustomControllerResponse >(Arena* arena) {
+  return Arena::CreateMessageInternal< ::maarpc::CustomControllerResponse >(arena);
 }
-template<> PROTOBUF_NOINLINE ::maa::SubmitCustomControllerRequest*
-Arena::CreateMaybeMessage< ::maa::SubmitCustomControllerRequest >(Arena* arena) {
-  return Arena::CreateMessageInternal< ::maa::SubmitCustomControllerRequest >(arena);
+template<> PROTOBUF_NOINLINE ::maarpc::SubmitCustomControllerRequest*
+Arena::CreateMaybeMessage< ::maarpc::SubmitCustomControllerRequest >(Arena* arena) {
+  return Arena::CreateMessageInternal< ::maarpc::SubmitCustomControllerRequest >(arena);
 }
-template<> PROTOBUF_NOINLINE ::maa::ControllerSetOptionRequest*
-Arena::CreateMaybeMessage< ::maa::ControllerSetOptionRequest >(Arena* arena) {
-  return Arena::CreateMessageInternal< ::maa::ControllerSetOptionRequest >(arena);
+template<> PROTOBUF_NOINLINE ::maarpc::ControllerSetOptionRequest*
+Arena::CreateMaybeMessage< ::maarpc::ControllerSetOptionRequest >(Arena* arena) {
+  return Arena::CreateMessageInternal< ::maarpc::ControllerSetOptionRequest >(arena);
 }
-template<> PROTOBUF_NOINLINE ::maa::ControllerPostClickRequest*
-Arena::CreateMaybeMessage< ::maa::ControllerPostClickRequest >(Arena* arena) {
-  return Arena::CreateMessageInternal< ::maa::ControllerPostClickRequest >(arena);
+template<> PROTOBUF_NOINLINE ::maarpc::ControllerPostClickRequest*
+Arena::CreateMaybeMessage< ::maarpc::ControllerPostClickRequest >(Arena* arena) {
+  return Arena::CreateMessageInternal< ::maarpc::ControllerPostClickRequest >(arena);
 }
-template<> PROTOBUF_NOINLINE ::maa::ControllerPostSwipeRequest*
-Arena::CreateMaybeMessage< ::maa::ControllerPostSwipeRequest >(Arena* arena) {
-  return Arena::CreateMessageInternal< ::maa::ControllerPostSwipeRequest >(arena);
+template<> PROTOBUF_NOINLINE ::maarpc::ControllerPostSwipeRequest*
+Arena::CreateMaybeMessage< ::maarpc::ControllerPostSwipeRequest >(Arena* arena) {
+  return Arena::CreateMessageInternal< ::maarpc::ControllerPostSwipeRequest >(arena);
 }
-template<> PROTOBUF_NOINLINE ::maa::ControllerPostKeyRequest*
-Arena::CreateMaybeMessage< ::maa::ControllerPostKeyRequest >(Arena* arena) {
-  return Arena::CreateMessageInternal< ::maa::ControllerPostKeyRequest >(arena);
+template<> PROTOBUF_NOINLINE ::maarpc::ControllerPostKeyRequest*
+Arena::CreateMaybeMessage< ::maarpc::ControllerPostKeyRequest >(Arena* arena) {
+  return Arena::CreateMessageInternal< ::maarpc::ControllerPostKeyRequest >(arena);
 }
-template<> PROTOBUF_NOINLINE ::maa::ControllerPostTouchRequest*
-Arena::CreateMaybeMessage< ::maa::ControllerPostTouchRequest >(Arena* arena) {
-  return Arena::CreateMessageInternal< ::maa::ControllerPostTouchRequest >(arena);
+template<> PROTOBUF_NOINLINE ::maarpc::ControllerPostTouchRequest*
+Arena::CreateMaybeMessage< ::maarpc::ControllerPostTouchRequest >(Arena* arena) {
+  return Arena::CreateMessageInternal< ::maarpc::ControllerPostTouchRequest >(arena);
 }
-template<> PROTOBUF_NOINLINE ::maa::ControllerGetImageRequest*
-Arena::CreateMaybeMessage< ::maa::ControllerGetImageRequest >(Arena* arena) {
-  return Arena::CreateMessageInternal< ::maa::ControllerGetImageRequest >(arena);
+template<> PROTOBUF_NOINLINE ::maarpc::ControllerGetImageRequest*
+Arena::CreateMaybeMessage< ::maarpc::ControllerGetImageRequest >(Arena* arena) {
+  return Arena::CreateMessageInternal< ::maarpc::ControllerGetImageRequest >(arena);
 }
-template<> PROTOBUF_NOINLINE ::maa::CustomRecognizerRequest*
-Arena::CreateMaybeMessage< ::maa::CustomRecognizerRequest >(Arena* arena) {
-  return Arena::CreateMessageInternal< ::maa::CustomRecognizerRequest >(arena);
+template<> PROTOBUF_NOINLINE ::maarpc::CustomRecognizerRequest*
+Arena::CreateMaybeMessage< ::maarpc::CustomRecognizerRequest >(Arena* arena) {
+  return Arena::CreateMessageInternal< ::maarpc::CustomRecognizerRequest >(arena);
 }
-template<> PROTOBUF_NOINLINE ::maa::CustomRecognizerAnalyzeParam*
-Arena::CreateMaybeMessage< ::maa::CustomRecognizerAnalyzeParam >(Arena* arena) {
-  return Arena::CreateMessageInternal< ::maa::CustomRecognizerAnalyzeParam >(arena);
+template<> PROTOBUF_NOINLINE ::maarpc::CustomRecognizerAnalyzeParam*
+Arena::CreateMaybeMessage< ::maarpc::CustomRecognizerAnalyzeParam >(Arena* arena) {
+  return Arena::CreateMessageInternal< ::maarpc::CustomRecognizerAnalyzeParam >(arena);
 }
-template<> PROTOBUF_NOINLINE ::maa::CustomRecognizerResponse*
-Arena::CreateMaybeMessage< ::maa::CustomRecognizerResponse >(Arena* arena) {
-  return Arena::CreateMessageInternal< ::maa::CustomRecognizerResponse >(arena);
+template<> PROTOBUF_NOINLINE ::maarpc::CustomRecognizerResponse*
+Arena::CreateMaybeMessage< ::maarpc::CustomRecognizerResponse >(Arena* arena) {
+  return Arena::CreateMessageInternal< ::maarpc::CustomRecognizerResponse >(arena);
 }
-template<> PROTOBUF_NOINLINE ::maa::CustomRecognizerAnalyzeResult*
-Arena::CreateMaybeMessage< ::maa::CustomRecognizerAnalyzeResult >(Arena* arena) {
-  return Arena::CreateMessageInternal< ::maa::CustomRecognizerAnalyzeResult >(arena);
+template<> PROTOBUF_NOINLINE ::maarpc::CustomRecognizerAnalyzeResult*
+Arena::CreateMaybeMessage< ::maarpc::CustomRecognizerAnalyzeResult >(Arena* arena) {
+  return Arena::CreateMessageInternal< ::maarpc::CustomRecognizerAnalyzeResult >(arena);
 }
-template<> PROTOBUF_NOINLINE ::maa::SubmitCustomRecognizerRequest*
-Arena::CreateMaybeMessage< ::maa::SubmitCustomRecognizerRequest >(Arena* arena) {
-  return Arena::CreateMessageInternal< ::maa::SubmitCustomRecognizerRequest >(arena);
+template<> PROTOBUF_NOINLINE ::maarpc::SubmitCustomRecognizerRequest*
+Arena::CreateMaybeMessage< ::maarpc::SubmitCustomRecognizerRequest >(Arena* arena) {
+  return Arena::CreateMessageInternal< ::maarpc::SubmitCustomRecognizerRequest >(arena);
 }
-template<> PROTOBUF_NOINLINE ::maa::CustomActionRequest*
-Arena::CreateMaybeMessage< ::maa::CustomActionRequest >(Arena* arena) {
-  return Arena::CreateMessageInternal< ::maa::CustomActionRequest >(arena);
+template<> PROTOBUF_NOINLINE ::maarpc::CustomActionRequest*
+Arena::CreateMaybeMessage< ::maarpc::CustomActionRequest >(Arena* arena) {
+  return Arena::CreateMessageInternal< ::maarpc::CustomActionRequest >(arena);
 }
-template<> PROTOBUF_NOINLINE ::maa::CustomActionRunParam*
-Arena::CreateMaybeMessage< ::maa::CustomActionRunParam >(Arena* arena) {
-  return Arena::CreateMessageInternal< ::maa::CustomActionRunParam >(arena);
+template<> PROTOBUF_NOINLINE ::maarpc::CustomActionRunParam*
+Arena::CreateMaybeMessage< ::maarpc::CustomActionRunParam >(Arena* arena) {
+  return Arena::CreateMessageInternal< ::maarpc::CustomActionRunParam >(arena);
 }
-template<> PROTOBUF_NOINLINE ::maa::CustomActionResponse*
-Arena::CreateMaybeMessage< ::maa::CustomActionResponse >(Arena* arena) {
-  return Arena::CreateMessageInternal< ::maa::CustomActionResponse >(arena);
+template<> PROTOBUF_NOINLINE ::maarpc::CustomActionResponse*
+Arena::CreateMaybeMessage< ::maarpc::CustomActionResponse >(Arena* arena) {
+  return Arena::CreateMessageInternal< ::maarpc::CustomActionResponse >(arena);
 }
-template<> PROTOBUF_NOINLINE ::maa::SubmitCustomActionRequest*
-Arena::CreateMaybeMessage< ::maa::SubmitCustomActionRequest >(Arena* arena) {
-  return Arena::CreateMessageInternal< ::maa::SubmitCustomActionRequest >(arena);
+template<> PROTOBUF_NOINLINE ::maarpc::SubmitCustomActionRequest*
+Arena::CreateMaybeMessage< ::maarpc::SubmitCustomActionRequest >(Arena* arena) {
+  return Arena::CreateMessageInternal< ::maarpc::SubmitCustomActionRequest >(arena);
 }
-template<> PROTOBUF_NOINLINE ::maa::InstancePostTaskRequest*
-Arena::CreateMaybeMessage< ::maa::InstancePostTaskRequest >(Arena* arena) {
-  return Arena::CreateMessageInternal< ::maa::InstancePostTaskRequest >(arena);
+template<> PROTOBUF_NOINLINE ::maarpc::InstancePostTaskRequest*
+Arena::CreateMaybeMessage< ::maarpc::InstancePostTaskRequest >(Arena* arena) {
+  return Arena::CreateMessageInternal< ::maarpc::InstancePostTaskRequest >(arena);
 }
-template<> PROTOBUF_NOINLINE ::maa::InstanceSetTaskParamRequest*
-Arena::CreateMaybeMessage< ::maa::InstanceSetTaskParamRequest >(Arena* arena) {
-  return Arena::CreateMessageInternal< ::maa::InstanceSetTaskParamRequest >(arena);
+template<> PROTOBUF_NOINLINE ::maarpc::InstanceSetTaskParamRequest*
+Arena::CreateMaybeMessage< ::maarpc::InstanceSetTaskParamRequest >(Arena* arena) {
+  return Arena::CreateMessageInternal< ::maarpc::InstanceSetTaskParamRequest >(arena);
 }
-template<> PROTOBUF_NOINLINE ::maa::SyncContextRunTaskRequest*
-Arena::CreateMaybeMessage< ::maa::SyncContextRunTaskRequest >(Arena* arena) {
-  return Arena::CreateMessageInternal< ::maa::SyncContextRunTaskRequest >(arena);
+template<> PROTOBUF_NOINLINE ::maarpc::SyncContextRunTaskRequest*
+Arena::CreateMaybeMessage< ::maarpc::SyncContextRunTaskRequest >(Arena* arena) {
+  return Arena::CreateMessageInternal< ::maarpc::SyncContextRunTaskRequest >(arena);
 }
-template<> PROTOBUF_NOINLINE ::maa::SyncContextRunRecognizerRequest*
-Arena::CreateMaybeMessage< ::maa::SyncContextRunRecognizerRequest >(Arena* arena) {
-  return Arena::CreateMessageInternal< ::maa::SyncContextRunRecognizerRequest >(arena);
+template<> PROTOBUF_NOINLINE ::maarpc::SyncContextRunRecognizerRequest*
+Arena::CreateMaybeMessage< ::maarpc::SyncContextRunRecognizerRequest >(Arena* arena) {
+  return Arena::CreateMessageInternal< ::maarpc::SyncContextRunRecognizerRequest >(arena);
 }
-template<> PROTOBUF_NOINLINE ::maa::SyncContextRunRecognizerResponse*
-Arena::CreateMaybeMessage< ::maa::SyncContextRunRecognizerResponse >(Arena* arena) {
-  return Arena::CreateMessageInternal< ::maa::SyncContextRunRecognizerResponse >(arena);
+template<> PROTOBUF_NOINLINE ::maarpc::SyncContextRunRecognizerResponse*
+Arena::CreateMaybeMessage< ::maarpc::SyncContextRunRecognizerResponse >(Arena* arena) {
+  return Arena::CreateMessageInternal< ::maarpc::SyncContextRunRecognizerResponse >(arena);
 }
-template<> PROTOBUF_NOINLINE ::maa::SyncContextRunActionRequest*
-Arena::CreateMaybeMessage< ::maa::SyncContextRunActionRequest >(Arena* arena) {
-  return Arena::CreateMessageInternal< ::maa::SyncContextRunActionRequest >(arena);
+template<> PROTOBUF_NOINLINE ::maarpc::SyncContextRunActionRequest*
+Arena::CreateMaybeMessage< ::maarpc::SyncContextRunActionRequest >(Arena* arena) {
+  return Arena::CreateMessageInternal< ::maarpc::SyncContextRunActionRequest >(arena);
 }
-template<> PROTOBUF_NOINLINE ::maa::SyncContextClickRequest*
-Arena::CreateMaybeMessage< ::maa::SyncContextClickRequest >(Arena* arena) {
-  return Arena::CreateMessageInternal< ::maa::SyncContextClickRequest >(arena);
+template<> PROTOBUF_NOINLINE ::maarpc::SyncContextClickRequest*
+Arena::CreateMaybeMessage< ::maarpc::SyncContextClickRequest >(Arena* arena) {
+  return Arena::CreateMessageInternal< ::maarpc::SyncContextClickRequest >(arena);
 }
-template<> PROTOBUF_NOINLINE ::maa::SyncContextSwipeRequest*
-Arena::CreateMaybeMessage< ::maa::SyncContextSwipeRequest >(Arena* arena) {
-  return Arena::CreateMessageInternal< ::maa::SyncContextSwipeRequest >(arena);
+template<> PROTOBUF_NOINLINE ::maarpc::SyncContextSwipeRequest*
+Arena::CreateMaybeMessage< ::maarpc::SyncContextSwipeRequest >(Arena* arena) {
+  return Arena::CreateMessageInternal< ::maarpc::SyncContextSwipeRequest >(arena);
 }
-template<> PROTOBUF_NOINLINE ::maa::SyncContextKeyRequest*
-Arena::CreateMaybeMessage< ::maa::SyncContextKeyRequest >(Arena* arena) {
-  return Arena::CreateMessageInternal< ::maa::SyncContextKeyRequest >(arena);
+template<> PROTOBUF_NOINLINE ::maarpc::SyncContextKeyRequest*
+Arena::CreateMaybeMessage< ::maarpc::SyncContextKeyRequest >(Arena* arena) {
+  return Arena::CreateMessageInternal< ::maarpc::SyncContextKeyRequest >(arena);
 }
-template<> PROTOBUF_NOINLINE ::maa::SyncContextTouchRequest*
-Arena::CreateMaybeMessage< ::maa::SyncContextTouchRequest >(Arena* arena) {
-  return Arena::CreateMessageInternal< ::maa::SyncContextTouchRequest >(arena);
+template<> PROTOBUF_NOINLINE ::maarpc::SyncContextTouchRequest*
+Arena::CreateMaybeMessage< ::maarpc::SyncContextTouchRequest >(Arena* arena) {
+  return Arena::CreateMessageInternal< ::maarpc::SyncContextTouchRequest >(arena);
 }
-template<> PROTOBUF_NOINLINE ::maa::SyncContextScreencapRequest*
-Arena::CreateMaybeMessage< ::maa::SyncContextScreencapRequest >(Arena* arena) {
-  return Arena::CreateMessageInternal< ::maa::SyncContextScreencapRequest >(arena);
+template<> PROTOBUF_NOINLINE ::maarpc::SyncContextScreencapRequest*
+Arena::CreateMaybeMessage< ::maarpc::SyncContextScreencapRequest >(Arena* arena) {
+  return Arena::CreateMessageInternal< ::maarpc::SyncContextScreencapRequest >(arena);
 }
 PROTOBUF_NAMESPACE_CLOSE
 

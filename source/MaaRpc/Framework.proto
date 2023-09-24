@@ -1,6 +1,6 @@
 syntax = "proto3";
 
-package maa;
+package maarpc;
 
 import "Types.proto";
 
@@ -295,7 +295,7 @@ message SyncContextRunRecognizerResponse {
   optional bool match = 1;
   optional Rect box = 2;
   optional string detail = 3;
-  optional RpcStatus status = 101;
+  optional bool status = 101;
 }
 
 message SyncContextRunActionRequest {

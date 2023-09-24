@@ -25,9 +25,9 @@
 #include <grpcpp/support/stub_options.h>
 #include <grpcpp/support/sync_stream.h>
 
-namespace maa {
+namespace maarpc {
 
-}  // namespace maa
+}  // namespace maarpc
 
 
 #endif  // GRPC_Types_2eproto__INCLUDED

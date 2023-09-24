@@ -23,7 +23,6 @@
 #include <google/protobuf/io/coded_stream.h>
 #include <google/protobuf/arena.h>
 #include <google/protobuf/arenastring.h>
-#include <google/protobuf/generated_message_bases.h>
 #include <google/protobuf/generated_message_util.h>
 #include <google/protobuf/metadata_lite.h>
 #include <google/protobuf/generated_message_reflection.h>
@@ -46,7 +45,7 @@ struct TableStruct_Types_2eproto {
   static const uint32_t offsets[];
 };
 extern const ::PROTOBUF_NAMESPACE_ID::internal::DescriptorTable descriptor_table_Types_2eproto;
-namespace maa {
+namespace maarpc {
 class BoolResponse;
 struct BoolResponseDefaultTypeInternal;
 extern BoolResponseDefaultTypeInternal _BoolResponse_default_instance_;
@@ -104,9 +103,6 @@ extern PointDefaultTypeInternal _Point_default_instance_;
 class Rect;
 struct RectDefaultTypeInternal;
 extern RectDefaultTypeInternal _Rect_default_instance_;
-class RpcStatus;
-struct RpcStatusDefaultTypeInternal;
-extern RpcStatusDefaultTypeInternal _RpcStatus_default_instance_;
 class Size;
 struct SizeDefaultTypeInternal;
 extern SizeDefaultTypeInternal _Size_default_instance_;
@@ -122,35 +118,34 @@ extern SwipeParamDefaultTypeInternal _SwipeParam_default_instance_;
 class TouchParam;
 struct TouchParamDefaultTypeInternal;
 extern TouchParamDefaultTypeInternal _TouchParam_default_instance_;
-}  // namespace maa
+}  // namespace maarpc
 PROTOBUF_NAMESPACE_OPEN
-template<> ::maa::BoolResponse* Arena::CreateMaybeMessage<::maa::BoolResponse>(Arena*);
-template<> ::maa::BufferRequest* Arena::CreateMaybeMessage<::maa::BufferRequest>(Arena*);
-template<> ::maa::BufferResponse* Arena::CreateMaybeMessage<::maa::BufferResponse>(Arena*);
-template<> ::maa::Callback* Arena::CreateMaybeMessage<::maa::Callback>(Arena*);
-template<> ::maa::ClickParam* Arena::CreateMaybeMessage<::maa::ClickParam>(Arena*);
-template<> ::maa::EmptyRequest* Arena::CreateMaybeMessage<::maa::EmptyRequest>(Arena*);
-template<> ::maa::EmptyResponse* Arena::CreateMaybeMessage<::maa::EmptyResponse>(Arena*);
-template<> ::maa::Handle* Arena::CreateMaybeMessage<::maa::Handle>(Arena*);
-template<> ::maa::HandleBufferRequest* Arena::CreateMaybeMessage<::maa::HandleBufferRequest>(Arena*);
-template<> ::maa::HandleIdRequest* Arena::CreateMaybeMessage<::maa::HandleIdRequest>(Arena*);
-template<> ::maa::HandleRequest* Arena::CreateMaybeMessage<::maa::HandleRequest>(Arena*);
-template<> ::maa::HandleResponse* Arena::CreateMaybeMessage<::maa::HandleResponse>(Arena*);
-template<> ::maa::HandleStringRequest* Arena::CreateMaybeMessage<::maa::HandleStringRequest>(Arena*);
-template<> ::maa::Id* Arena::CreateMaybeMessage<::maa::Id>(Arena*);
-template<> ::maa::IdRequest* Arena::CreateMaybeMessage<::maa::IdRequest>(Arena*);
-template<> ::maa::IdResponse* Arena::CreateMaybeMessage<::maa::IdResponse>(Arena*);
-template<> ::maa::KeyParam* Arena::CreateMaybeMessage<::maa::KeyParam>(Arena*);
-template<> ::maa::Point* Arena::CreateMaybeMessage<::maa::Point>(Arena*);
-template<> ::maa::Rect* Arena::CreateMaybeMessage<::maa::Rect>(Arena*);
-template<> ::maa::RpcStatus* Arena::CreateMaybeMessage<::maa::RpcStatus>(Arena*);
-template<> ::maa::Size* Arena::CreateMaybeMessage<::maa::Size>(Arena*);
-template<> ::maa::StatusResponse* Arena::CreateMaybeMessage<::maa::StatusResponse>(Arena*);
-template<> ::maa::StringResponse* Arena::CreateMaybeMessage<::maa::StringResponse>(Arena*);
-template<> ::maa::SwipeParam* Arena::CreateMaybeMessage<::maa::SwipeParam>(Arena*);
-template<> ::maa::TouchParam* Arena::CreateMaybeMessage<::maa::TouchParam>(Arena*);
+template<> ::maarpc::BoolResponse* Arena::CreateMaybeMessage<::maarpc::BoolResponse>(Arena*);
+template<> ::maarpc::BufferRequest* Arena::CreateMaybeMessage<::maarpc::BufferRequest>(Arena*);
+template<> ::maarpc::BufferResponse* Arena::CreateMaybeMessage<::maarpc::BufferResponse>(Arena*);
+template<> ::maarpc::Callback* Arena::CreateMaybeMessage<::maarpc::Callback>(Arena*);
+template<> ::maarpc::ClickParam* Arena::CreateMaybeMessage<::maarpc::ClickParam>(Arena*);
+template<> ::maarpc::EmptyRequest* Arena::CreateMaybeMessage<::maarpc::EmptyRequest>(Arena*);
+template<> ::maarpc::EmptyResponse* Arena::CreateMaybeMessage<::maarpc::EmptyResponse>(Arena*);
+template<> ::maarpc::Handle* Arena::CreateMaybeMessage<::maarpc::Handle>(Arena*);
+template<> ::maarpc::HandleBufferRequest* Arena::CreateMaybeMessage<::maarpc::HandleBufferRequest>(Arena*);
+template<> ::maarpc::HandleIdRequest* Arena::CreateMaybeMessage<::maarpc::HandleIdRequest>(Arena*);
+template<> ::maarpc::HandleRequest* Arena::CreateMaybeMessage<::maarpc::HandleRequest>(Arena*);
+template<> ::maarpc::HandleResponse* Arena::CreateMaybeMessage<::maarpc::HandleResponse>(Arena*);
+template<> ::maarpc::HandleStringRequest* Arena::CreateMaybeMessage<::maarpc::HandleStringRequest>(Arena*);
+template<> ::maarpc::Id* Arena::CreateMaybeMessage<::maarpc::Id>(Arena*);
+template<> ::maarpc::IdRequest* Arena::CreateMaybeMessage<::maarpc::IdRequest>(Arena*);
+template<> ::maarpc::IdResponse* Arena::CreateMaybeMessage<::maarpc::IdResponse>(Arena*);
+template<> ::maarpc::KeyParam* Arena::CreateMaybeMessage<::maarpc::KeyParam>(Arena*);
+template<> ::maarpc::Point* Arena::CreateMaybeMessage<::maarpc::Point>(Arena*);
+template<> ::maarpc::Rect* Arena::CreateMaybeMessage<::maarpc::Rect>(Arena*);
+template<> ::maarpc::Size* Arena::CreateMaybeMessage<::maarpc::Size>(Arena*);
+template<> ::maarpc::StatusResponse* Arena::CreateMaybeMessage<::maarpc::StatusResponse>(Arena*);
+template<> ::maarpc::StringResponse* Arena::CreateMaybeMessage<::maarpc::StringResponse>(Arena*);
+template<> ::maarpc::SwipeParam* Arena::CreateMaybeMessage<::maarpc::SwipeParam>(Arena*);
+template<> ::maarpc::TouchParam* Arena::CreateMaybeMessage<::maarpc::TouchParam>(Arena*);
 PROTOBUF_NAMESPACE_CLOSE
-namespace maa {
+namespace maarpc {
 
 enum Status : int {
   invalid = 0,
@@ -182,161 +177,8 @@ inline bool Status_Parse(
 }
 // ===================================================================
 
-class RpcStatus final :
-    public ::PROTOBUF_NAMESPACE_ID::Message /* @@protoc_insertion_point(class_definition:maa.RpcStatus) */ {
- public:
-  inline RpcStatus() : RpcStatus(nullptr) {}
-  ~RpcStatus() override;
-  explicit PROTOBUF_CONSTEXPR RpcStatus(::PROTOBUF_NAMESPACE_ID::internal::ConstantInitialized);
-
-  RpcStatus(const RpcStatus& from);
-  RpcStatus(RpcStatus&& from) noexcept
-    : RpcStatus() {
-    *this = ::std::move(from);
-  }
-
-  inline RpcStatus& operator=(const RpcStatus& from) {
-    CopyFrom(from);
-    return *this;
-  }
-  inline RpcStatus& operator=(RpcStatus&& from) noexcept {
-    if (this == &from) return *this;
-    if (GetOwningArena() == from.GetOwningArena()
-  #ifdef PROTOBUF_FORCE_COPY_IN_MOVE
-        && GetOwningArena() != nullptr
-  #endif  // !PROTOBUF_FORCE_COPY_IN_MOVE
-    ) {
-      InternalSwap(&from);
-    } else {
-      CopyFrom(from);
-    }
-    return *this;
-  }
-
-  static const ::PROTOBUF_NAMESPACE_ID::Descriptor* descriptor() {
-    return GetDescriptor();
-  }
-  static const ::PROTOBUF_NAMESPACE_ID::Descriptor* GetDescriptor() {
-    return default_instance().GetMetadata().descriptor;
-  }
-  static const ::PROTOBUF_NAMESPACE_ID::Reflection* GetReflection() {
-    return default_instance().GetMetadata().reflection;
-  }
-  static const RpcStatus& default_instance() {
-    return *internal_default_instance();
-  }
-  static inline const RpcStatus* internal_default_instance() {
-    return reinterpret_cast<const RpcStatus*>(
-               &_RpcStatus_default_instance_);
-  }
-  static constexpr int kIndexInFileMessages =
-    0;
-
-  friend void swap(RpcStatus& a, RpcStatus& b) {
-    a.Swap(&b);
-  }
-  inline void Swap(RpcStatus* other) {
-    if (other == this) return;
-  #ifdef PROTOBUF_FORCE_COPY_IN_SWAP
-    if (GetOwningArena() != nullptr &&
-        GetOwningArena() == other->GetOwningArena()) {
-   #else  // PROTOBUF_FORCE_COPY_IN_SWAP
-    if (GetOwningArena() == other->GetOwningArena()) {
-  #endif  // !PROTOBUF_FORCE_COPY_IN_SWAP
-      InternalSwap(other);
-    } else {
-      ::PROTOBUF_NAMESPACE_ID::internal::GenericSwap(this, other);
-    }
-  }
-  void UnsafeArenaSwap(RpcStatus* other) {
-    if (other == this) return;
-    GOOGLE_DCHECK(GetOwningArena() == other->GetOwningArena());
-    InternalSwap(other);
-  }
-
-  // implements Message ----------------------------------------------
-
-  RpcStatus* New(::PROTOBUF_NAMESPACE_ID::Arena* arena = nullptr) const final {
-    return CreateMaybeMessage<RpcStatus>(arena);
-  }
-  using ::PROTOBUF_NAMESPACE_ID::Message::CopyFrom;
-  void CopyFrom(const RpcStatus& from);
-  using ::PROTOBUF_NAMESPACE_ID::Message::MergeFrom;
-  void MergeFrom( const RpcStatus& from) {
-    RpcStatus::MergeImpl(*this, from);
-  }
-  private:
-  static void MergeImpl(::PROTOBUF_NAMESPACE_ID::Message& to_msg, const ::PROTOBUF_NAMESPACE_ID::Message& from_msg);
-  public:
-  PROTOBUF_ATTRIBUTE_REINITIALIZES void Clear() final;
-  bool IsInitialized() const final;
-
-  size_t ByteSizeLong() const final;
-  const char* _InternalParse(const char* ptr, ::PROTOBUF_NAMESPACE_ID::internal::ParseContext* ctx) final;
-  uint8_t* _InternalSerialize(
-      uint8_t* target, ::PROTOBUF_NAMESPACE_ID::io::EpsCopyOutputStream* stream) const final;
-  int GetCachedSize() const final { return _impl_._cached_size_.Get(); }
-
-  private:
-  void SharedCtor(::PROTOBUF_NAMESPACE_ID::Arena* arena, bool is_message_owned);
-  void SharedDtor();
-  void SetCachedSize(int size) const final;
-  void InternalSwap(RpcStatus* other);
-
-  private:
-  friend class ::PROTOBUF_NAMESPACE_ID::internal::AnyMetadata;
-  static ::PROTOBUF_NAMESPACE_ID::StringPiece FullMessageName() {
-    return "maa.RpcStatus";
-  }
-  protected:
-  explicit RpcStatus(::PROTOBUF_NAMESPACE_ID::Arena* arena,
-                       bool is_message_owned = false);
-  public:
-
-  static const ClassData _class_data_;
-  const ::PROTOBUF_NAMESPACE_ID::Message::ClassData*GetClassData() const final;
-
-  ::PROTOBUF_NAMESPACE_ID::Metadata GetMetadata() const final;
-
-  // nested types ----------------------------------------------------
-
-  // accessors -------------------------------------------------------
-
-  enum : int {
-    kSuccessFieldNumber = 1,
-  };
-  // optional bool success = 1;
-  bool has_success() const;
-  private:
-  bool _internal_has_success() const;
-  public:
-  void clear_success();
-  bool success() const;
-  void set_success(bool value);
-  private:
-  bool _internal_success() const;
-  void _internal_set_success(bool value);
-  public:
-
-  // @@protoc_insertion_point(class_scope:maa.RpcStatus)
- private:
-  class _Internal;
-
-  template <typename T> friend class ::PROTOBUF_NAMESPACE_ID::Arena::InternalHelper;
-  typedef void InternalArenaConstructable_;
-  typedef void DestructorSkippable_;
-  struct Impl_ {
-    ::PROTOBUF_NAMESPACE_ID::internal::HasBits<1> _has_bits_;
-    mutable ::PROTOBUF_NAMESPACE_ID::internal::CachedSize _cached_size_;
-    bool success_;
-  };
-  union { Impl_ _impl_; };
-  friend struct ::TableStruct_Types_2eproto;
-};
-// -------------------------------------------------------------------
-
 class Id final :
-    public ::PROTOBUF_NAMESPACE_ID::Message /* @@protoc_insertion_point(class_definition:maa.Id) */ {
+    public ::PROTOBUF_NAMESPACE_ID::Message /* @@protoc_insertion_point(class_definition:maarpc.Id) */ {
  public:
   inline Id() : Id(nullptr) {}
   ~Id() override;
@@ -383,7 +225,7 @@ class Id final :
                &_Id_default_instance_);
   }
   static constexpr int kIndexInFileMessages =
-    1;
+    0;
 
   friend void swap(Id& a, Id& b) {
     a.Swap(&b);
@@ -439,7 +281,7 @@ class Id final :
   private:
   friend class ::PROTOBUF_NAMESPACE_ID::internal::AnyMetadata;
   static ::PROTOBUF_NAMESPACE_ID::StringPiece FullMessageName() {
-    return "maa.Id";
+    return "maarpc.Id";
   }
   protected:
   explicit Id(::PROTOBUF_NAMESPACE_ID::Arena* arena,
@@ -471,7 +313,7 @@ class Id final :
   void _internal_set_id(uint64_t value);
   public:
 
-  // @@protoc_insertion_point(class_scope:maa.Id)
+  // @@protoc_insertion_point(class_scope:maarpc.Id)
  private:
   class _Internal;
 
@@ -489,7 +331,7 @@ class Id final :
 // -------------------------------------------------------------------
 
 class Handle final :
-    public ::PROTOBUF_NAMESPACE_ID::Message /* @@protoc_insertion_point(class_definition:maa.Handle) */ {
+    public ::PROTOBUF_NAMESPACE_ID::Message /* @@protoc_insertion_point(class_definition:maarpc.Handle) */ {
  public:
   inline Handle() : Handle(nullptr) {}
   ~Handle() override;
@@ -536,7 +378,7 @@ class Handle final :
                &_Handle_default_instance_);
   }
   static constexpr int kIndexInFileMessages =
-    2;
+    1;
 
   friend void swap(Handle& a, Handle& b) {
     a.Swap(&b);
@@ -592,7 +434,7 @@ class Handle final :
   private:
   friend class ::PROTOBUF_NAMESPACE_ID::internal::AnyMetadata;
   static ::PROTOBUF_NAMESPACE_ID::StringPiece FullMessageName() {
-    return "maa.Handle";
+    return "maarpc.Handle";
   }
   protected:
   explicit Handle(::PROTOBUF_NAMESPACE_ID::Arena* arena,
@@ -624,7 +466,7 @@ class Handle final :
   void _internal_set_handle(uint64_t value);
   public:
 
-  // @@protoc_insertion_point(class_scope:maa.Handle)
+  // @@protoc_insertion_point(class_scope:maarpc.Handle)
  private:
   class _Internal;
 
@@ -642,7 +484,7 @@ class Handle final :
 // -------------------------------------------------------------------
 
 class Point final :
-    public ::PROTOBUF_NAMESPACE_ID::Message /* @@protoc_insertion_point(class_definition:maa.Point) */ {
+    public ::PROTOBUF_NAMESPACE_ID::Message /* @@protoc_insertion_point(class_definition:maarpc.Point) */ {
  public:
   inline Point() : Point(nullptr) {}
   ~Point() override;
@@ -689,7 +531,7 @@ class Point final :
                &_Point_default_instance_);
   }
   static constexpr int kIndexInFileMessages =
-    3;
+    2;
 
   friend void swap(Point& a, Point& b) {
     a.Swap(&b);
@@ -745,7 +587,7 @@ class Point final :
   private:
   friend class ::PROTOBUF_NAMESPACE_ID::internal::AnyMetadata;
   static ::PROTOBUF_NAMESPACE_ID::StringPiece FullMessageName() {
-    return "maa.Point";
+    return "maarpc.Point";
   }
   protected:
   explicit Point(::PROTOBUF_NAMESPACE_ID::Arena* arena,
@@ -791,7 +633,7 @@ class Point final :
   void _internal_set_y(int32_t value);
   public:
 
-  // @@protoc_insertion_point(class_scope:maa.Point)
+  // @@protoc_insertion_point(class_scope:maarpc.Point)
  private:
   class _Internal;
 
@@ -810,7 +652,7 @@ class Point final :
 // -------------------------------------------------------------------
 
 class Size final :
-    public ::PROTOBUF_NAMESPACE_ID::Message /* @@protoc_insertion_point(class_definition:maa.Size) */ {
+    public ::PROTOBUF_NAMESPACE_ID::Message /* @@protoc_insertion_point(class_definition:maarpc.Size) */ {
  public:
   inline Size() : Size(nullptr) {}
   ~Size() override;
@@ -857,7 +699,7 @@ class Size final :
                &_Size_default_instance_);
   }
   static constexpr int kIndexInFileMessages =
-    4;
+    3;
 
   friend void swap(Size& a, Size& b) {
     a.Swap(&b);
@@ -913,7 +755,7 @@ class Size final :
   private:
   friend class ::PROTOBUF_NAMESPACE_ID::internal::AnyMetadata;
   static ::PROTOBUF_NAMESPACE_ID::StringPiece FullMessageName() {
-    return "maa.Size";
+    return "maarpc.Size";
   }
   protected:
   explicit Size(::PROTOBUF_NAMESPACE_ID::Arena* arena,
@@ -959,7 +801,7 @@ class Size final :
   void _internal_set_height(int32_t value);
   public:
 
-  // @@protoc_insertion_point(class_scope:maa.Size)
+  // @@protoc_insertion_point(class_scope:maarpc.Size)
  private:
   class _Internal;
 
@@ -978,7 +820,7 @@ class Size final :
 // -------------------------------------------------------------------
 
 class Rect final :
-    public ::PROTOBUF_NAMESPACE_ID::Message /* @@protoc_insertion_point(class_definition:maa.Rect) */ {
+    public ::PROTOBUF_NAMESPACE_ID::Message /* @@protoc_insertion_point(class_definition:maarpc.Rect) */ {
  public:
   inline Rect() : Rect(nullptr) {}
   ~Rect() override;
@@ -1025,7 +867,7 @@ class Rect final :
                &_Rect_default_instance_);
   }
   static constexpr int kIndexInFileMessages =
-    5;
+    4;
 
   friend void swap(Rect& a, Rect& b) {
     a.Swap(&b);
@@ -1081,7 +923,7 @@ class Rect final :
   private:
   friend class ::PROTOBUF_NAMESPACE_ID::internal::AnyMetadata;
   static ::PROTOBUF_NAMESPACE_ID::StringPiece FullMessageName() {
-    return "maa.Rect";
+    return "maarpc.Rect";
   }
   protected:
   explicit Rect(::PROTOBUF_NAMESPACE_ID::Arena* arena,
@@ -1101,43 +943,43 @@ class Rect final :
     kXyFieldNumber = 1,
     kWhFieldNumber = 2,
   };
-  // optional .maa.Point xy = 1;
+  // optional .maarpc.Point xy = 1;
   bool has_xy() const;
   private:
   bool _internal_has_xy() const;
   public:
   void clear_xy();
-  const ::maa::Point& xy() const;
-  PROTOBUF_NODISCARD ::maa::Point* release_xy();
-  ::maa::Point* mutable_xy();
-  void set_allocated_xy(::maa::Point* xy);
+  const ::maarpc::Point& xy() const;
+  PROTOBUF_NODISCARD ::maarpc::Point* release_xy();
+  ::maarpc::Point* mutable_xy();
+  void set_allocated_xy(::maarpc::Point* xy);
   private:
-  const ::maa::Point& _internal_xy() const;
-  ::maa::Point* _internal_mutable_xy();
+  const ::maarpc::Point& _internal_xy() const;
+  ::maarpc::Point* _internal_mutable_xy();
   public:
   void unsafe_arena_set_allocated_xy(
-      ::maa::Point* xy);
-  ::maa::Point* unsafe_arena_release_xy();
+      ::maarpc::Point* xy);
+  ::maarpc::Point* unsafe_arena_release_xy();
 
-  // optional .maa.Size wh = 2;
+  // optional .maarpc.Size wh = 2;
   bool has_wh() const;
   private:
   bool _internal_has_wh() const;
   public:
   void clear_wh();
-  const ::maa::Size& wh() const;
-  PROTOBUF_NODISCARD ::maa::Size* release_wh();
-  ::maa::Size* mutable_wh();
-  void set_allocated_wh(::maa::Size* wh);
+  const ::maarpc::Size& wh() const;
+  PROTOBUF_NODISCARD ::maarpc::Size* release_wh();
+  ::maarpc::Size* mutable_wh();
+  void set_allocated_wh(::maarpc::Size* wh);
   private:
-  const ::maa::Size& _internal_wh() const;
-  ::maa::Size* _internal_mutable_wh();
+  const ::maarpc::Size& _internal_wh() const;
+  ::maarpc::Size* _internal_mutable_wh();
   public:
   void unsafe_arena_set_allocated_wh(
-      ::maa::Size* wh);
-  ::maa::Size* unsafe_arena_release_wh();
+      ::maarpc::Size* wh);
+  ::maarpc::Size* unsafe_arena_release_wh();
 
-  // @@protoc_insertion_point(class_scope:maa.Rect)
+  // @@protoc_insertion_point(class_scope:maarpc.Rect)
  private:
   class _Internal;
 
@@ -1147,8 +989,8 @@ class Rect final :
   struct Impl_ {
     ::PROTOBUF_NAMESPACE_ID::internal::HasBits<1> _has_bits_;
     mutable ::PROTOBUF_NAMESPACE_ID::internal::CachedSize _cached_size_;
-    ::maa::Point* xy_;
-    ::maa::Size* wh_;
+    ::maarpc::Point* xy_;
+    ::maarpc::Size* wh_;
   };
   union { Impl_ _impl_; };
   friend struct ::TableStruct_Types_2eproto;
@@ -1156,7 +998,7 @@ class Rect final :
 // -------------------------------------------------------------------
 
 class Callback final :
-    public ::PROTOBUF_NAMESPACE_ID::Message /* @@protoc_insertion_point(class_definition:maa.Callback) */ {
+    public ::PROTOBUF_NAMESPACE_ID::Message /* @@protoc_insertion_point(class_definition:maarpc.Callback) */ {
  public:
   inline Callback() : Callback(nullptr) {}
   ~Callback() override;
@@ -1203,7 +1045,7 @@ class Callback final :
                &_Callback_default_instance_);
   }
   static constexpr int kIndexInFileMessages =
-    6;
+    5;
 
   friend void swap(Callback& a, Callback& b) {
     a.Swap(&b);
@@ -1259,7 +1101,7 @@ class Callback final :
   private:
   friend class ::PROTOBUF_NAMESPACE_ID::internal::AnyMetadata;
   static ::PROTOBUF_NAMESPACE_ID::StringPiece FullMessageName() {
-    return "maa.Callback";
+    return "maarpc.Callback";
   }
   protected:
   explicit Callback(::PROTOBUF_NAMESPACE_ID::Arena* arena,
@@ -1315,7 +1157,7 @@ class Callback final :
   std::string* _internal_mutable_detail();
   public:
 
-  // @@protoc_insertion_point(class_scope:maa.Callback)
+  // @@protoc_insertion_point(class_scope:maarpc.Callback)
  private:
   class _Internal;
 
@@ -1334,7 +1176,7 @@ class Callback final :
 // -------------------------------------------------------------------
 
 class ClickParam final :
-    public ::PROTOBUF_NAMESPACE_ID::Message /* @@protoc_insertion_point(class_definition:maa.ClickParam) */ {
+    public ::PROTOBUF_NAMESPACE_ID::Message /* @@protoc_insertion_point(class_definition:maarpc.ClickParam) */ {
  public:
   inline ClickParam() : ClickParam(nullptr) {}
   ~ClickParam() override;
@@ -1381,7 +1223,7 @@ class ClickParam final :
                &_ClickParam_default_instance_);
   }
   static constexpr int kIndexInFileMessages =
-    7;
+    6;
 
   friend void swap(ClickParam& a, ClickParam& b) {
     a.Swap(&b);
@@ -1437,7 +1279,7 @@ class ClickParam final :
   private:
   friend class ::PROTOBUF_NAMESPACE_ID::internal::AnyMetadata;
   static ::PROTOBUF_NAMESPACE_ID::StringPiece FullMessageName() {
-    return "maa.ClickParam";
+    return "maarpc.ClickParam";
   }
   protected:
   explicit ClickParam(::PROTOBUF_NAMESPACE_ID::Arena* arena,
@@ -1456,25 +1298,25 @@ class ClickParam final :
   enum : int {
     kPointFieldNumber = 1,
   };
-  // optional .maa.Point point = 1;
+  // optional .maarpc.Point point = 1;
   bool has_point() const;
   private:
   bool _internal_has_point() const;
   public:
   void clear_point();
-  const ::maa::Point& point() const;
-  PROTOBUF_NODISCARD ::maa::Point* release_point();
-  ::maa::Point* mutable_point();
-  void set_allocated_point(::maa::Point* point);
+  const ::maarpc::Point& point() const;
+  PROTOBUF_NODISCARD ::maarpc::Point* release_point();
+  ::maarpc::Point* mutable_point();
+  void set_allocated_point(::maarpc::Point* point);
   private:
-  const ::maa::Point& _internal_point() const;
-  ::maa::Point* _internal_mutable_point();
+  const ::maarpc::Point& _internal_point() const;
+  ::maarpc::Point* _internal_mutable_point();
   public:
   void unsafe_arena_set_allocated_point(
-      ::maa::Point* point);
-  ::maa::Point* unsafe_arena_release_point();
+      ::maarpc::Point* point);
+  ::maarpc::Point* unsafe_arena_release_point();
 
-  // @@protoc_insertion_point(class_scope:maa.ClickParam)
+  // @@protoc_insertion_point(class_scope:maarpc.ClickParam)
  private:
   class _Internal;
 
@@ -1484,7 +1326,7 @@ class ClickParam final :
   struct Impl_ {
     ::PROTOBUF_NAMESPACE_ID::internal::HasBits<1> _has_bits_;
     mutable ::PROTOBUF_NAMESPACE_ID::internal::CachedSize _cached_size_;
-    ::maa::Point* point_;
+    ::maarpc::Point* point_;
   };
   union { Impl_ _impl_; };
   friend struct ::TableStruct_Types_2eproto;
@@ -1492,7 +1334,7 @@ class ClickParam final :
 // -------------------------------------------------------------------
 
 class SwipeParam final :
-    public ::PROTOBUF_NAMESPACE_ID::Message /* @@protoc_insertion_point(class_definition:maa.SwipeParam) */ {
+    public ::PROTOBUF_NAMESPACE_ID::Message /* @@protoc_insertion_point(class_definition:maarpc.SwipeParam) */ {
  public:
   inline SwipeParam() : SwipeParam(nullptr) {}
   ~SwipeParam() override;
@@ -1539,7 +1381,7 @@ class SwipeParam final :
                &_SwipeParam_default_instance_);
   }
   static constexpr int kIndexInFileMessages =
-    8;
+    7;
 
   friend void swap(SwipeParam& a, SwipeParam& b) {
     a.Swap(&b);
@@ -1595,7 +1437,7 @@ class SwipeParam final :
   private:
   friend class ::PROTOBUF_NAMESPACE_ID::internal::AnyMetadata;
   static ::PROTOBUF_NAMESPACE_ID::StringPiece FullMessageName() {
-    return "maa.SwipeParam";
+    return "maarpc.SwipeParam";
   }
   protected:
   explicit SwipeParam(::PROTOBUF_NAMESPACE_ID::Arena* arena,
@@ -1616,41 +1458,41 @@ class SwipeParam final :
     kToFieldNumber = 2,
     kDurationFieldNumber = 3,
   };
-  // optional .maa.Point from = 1;
+  // optional .maarpc.Point from = 1;
   bool has_from() const;
   private:
   bool _internal_has_from() const;
   public:
   void clear_from();
-  const ::maa::Point& from() const;
-  PROTOBUF_NODISCARD ::maa::Point* release_from();
-  ::maa::Point* mutable_from();
-  void set_allocated_from(::maa::Point* from);
+  const ::maarpc::Point& from() const;
+  PROTOBUF_NODISCARD ::maarpc::Point* release_from();
+  ::maarpc::Point* mutable_from();
+  void set_allocated_from(::maarpc::Point* from);
   private:
-  const ::maa::Point& _internal_from() const;
-  ::maa::Point* _internal_mutable_from();
+  const ::maarpc::Point& _internal_from() const;
+  ::maarpc::Point* _internal_mutable_from();
   public:
   void unsafe_arena_set_allocated_from(
-      ::maa::Point* from);
-  ::maa::Point* unsafe_arena_release_from();
+      ::maarpc::Point* from);
+  ::maarpc::Point* unsafe_arena_release_from();
 
-  // optional .maa.Point to = 2;
+  // optional .maarpc.Point to = 2;
   bool has_to() const;
   private:
   bool _internal_has_to() const;
   public:
   void clear_to();
-  const ::maa::Point& to() const;
-  PROTOBUF_NODISCARD ::maa::Point* release_to();
-  ::maa::Point* mutable_to();
-  void set_allocated_to(::maa::Point* to);
+  const ::maarpc::Point& to() const;
+  PROTOBUF_NODISCARD ::maarpc::Point* release_to();
+  ::maarpc::Point* mutable_to();
+  void set_allocated_to(::maarpc::Point* to);
   private:
-  const ::maa::Point& _internal_to() const;
-  ::maa::Point* _internal_mutable_to();
+  const ::maarpc::Point& _internal_to() const;
+  ::maarpc::Point* _internal_mutable_to();
   public:
   void unsafe_arena_set_allocated_to(
-      ::maa::Point* to);
-  ::maa::Point* unsafe_arena_release_to();
+      ::maarpc::Point* to);
+  ::maarpc::Point* unsafe_arena_release_to();
 
   // optional int32 duration = 3;
   bool has_duration() const;
@@ -1665,7 +1507,7 @@ class SwipeParam final :
   void _internal_set_duration(int32_t value);
   public:
 
-  // @@protoc_insertion_point(class_scope:maa.SwipeParam)
+  // @@protoc_insertion_point(class_scope:maarpc.SwipeParam)
  private:
   class _Internal;
 
@@ -1675,8 +1517,8 @@ class SwipeParam final :
   struct Impl_ {
     ::PROTOBUF_NAMESPACE_ID::internal::HasBits<1> _has_bits_;
     mutable ::PROTOBUF_NAMESPACE_ID::internal::CachedSize _cached_size_;
-    ::maa::Point* from_;
-    ::maa::Point* to_;
+    ::maarpc::Point* from_;
+    ::maarpc::Point* to_;
     int32_t duration_;
   };
   union { Impl_ _impl_; };
@@ -1685,7 +1527,7 @@ class SwipeParam final :
 // -------------------------------------------------------------------
 
 class KeyParam final :
-    public ::PROTOBUF_NAMESPACE_ID::Message /* @@protoc_insertion_point(class_definition:maa.KeyParam) */ {
+    public ::PROTOBUF_NAMESPACE_ID::Message /* @@protoc_insertion_point(class_definition:maarpc.KeyParam) */ {
  public:
   inline KeyParam() : KeyParam(nullptr) {}
   ~KeyParam() override;
@@ -1732,7 +1574,7 @@ class KeyParam final :
                &_KeyParam_default_instance_);
   }
   static constexpr int kIndexInFileMessages =
-    9;
+    8;
 
   friend void swap(KeyParam& a, KeyParam& b) {
     a.Swap(&b);
@@ -1788,7 +1630,7 @@ class KeyParam final :
   private:
   friend class ::PROTOBUF_NAMESPACE_ID::internal::AnyMetadata;
   static ::PROTOBUF_NAMESPACE_ID::StringPiece FullMessageName() {
-    return "maa.KeyParam";
+    return "maarpc.KeyParam";
   }
   protected:
   explicit KeyParam(::PROTOBUF_NAMESPACE_ID::Arena* arena,
@@ -1820,7 +1662,7 @@ class KeyParam final :
   void _internal_set_key(int32_t value);
   public:
 
-  // @@protoc_insertion_point(class_scope:maa.KeyParam)
+  // @@protoc_insertion_point(class_scope:maarpc.KeyParam)
  private:
   class _Internal;
 
@@ -1838,7 +1680,7 @@ class KeyParam final :
 // -------------------------------------------------------------------
 
 class TouchParam final :
-    public ::PROTOBUF_NAMESPACE_ID::Message /* @@protoc_insertion_point(class_definition:maa.TouchParam) */ {
+    public ::PROTOBUF_NAMESPACE_ID::Message /* @@protoc_insertion_point(class_definition:maarpc.TouchParam) */ {
  public:
   inline TouchParam() : TouchParam(nullptr) {}
   ~TouchParam() override;
@@ -1885,7 +1727,7 @@ class TouchParam final :
                &_TouchParam_default_instance_);
   }
   static constexpr int kIndexInFileMessages =
-    10;
+    9;
 
   friend void swap(TouchParam& a, TouchParam& b) {
     a.Swap(&b);
@@ -1941,7 +1783,7 @@ class TouchParam final :
   private:
   friend class ::PROTOBUF_NAMESPACE_ID::internal::AnyMetadata;
   static ::PROTOBUF_NAMESPACE_ID::StringPiece FullMessageName() {
-    return "maa.TouchParam";
+    return "maarpc.TouchParam";
   }
   protected:
   explicit TouchParam(::PROTOBUF_NAMESPACE_ID::Arena* arena,
@@ -1962,23 +1804,23 @@ class TouchParam final :
     kContactFieldNumber = 1,
     kPressureFieldNumber = 3,
   };
-  // optional .maa.Point pos = 2;
+  // optional .maarpc.Point pos = 2;
   bool has_pos() const;
   private:
   bool _internal_has_pos() const;
   public:
   void clear_pos();
-  const ::maa::Point& pos() const;
-  PROTOBUF_NODISCARD ::maa::Point* release_pos();
-  ::maa::Point* mutable_pos();
-  void set_allocated_pos(::maa::Point* pos);
+  const ::maarpc::Point& pos() const;
+  PROTOBUF_NODISCARD ::maarpc::Point* release_pos();
+  ::maarpc::Point* mutable_pos();
+  void set_allocated_pos(::maarpc::Point* pos);
   private:
-  const ::maa::Point& _internal_pos() const;
-  ::maa::Point* _internal_mutable_pos();
+  const ::maarpc::Point& _internal_pos() const;
+  ::maarpc::Point* _internal_mutable_pos();
   public:
   void unsafe_arena_set_allocated_pos(
-      ::maa::Point* pos);
-  ::maa::Point* unsafe_arena_release_pos();
+      ::maarpc::Point* pos);
+  ::maarpc::Point* unsafe_arena_release_pos();
 
   // optional int32 contact = 1;
   bool has_contact() const;
@@ -2006,7 +1848,7 @@ class TouchParam final :
   void _internal_set_pressure(int32_t value);
   public:
 
-  // @@protoc_insertion_point(class_scope:maa.TouchParam)
+  // @@protoc_insertion_point(class_scope:maarpc.TouchParam)
  private:
   class _Internal;
 
@@ -2016,7 +1858,7 @@ class TouchParam final :
   struct Impl_ {
     ::PROTOBUF_NAMESPACE_ID::internal::HasBits<1> _has_bits_;
     mutable ::PROTOBUF_NAMESPACE_ID::internal::CachedSize _cached_size_;
-    ::maa::Point* pos_;
+    ::maarpc::Point* pos_;
     int32_t contact_;
     int32_t pressure_;
   };
@@ -2026,9 +1868,10 @@ class TouchParam final :
 // -------------------------------------------------------------------
 
 class EmptyRequest final :
-    public ::PROTOBUF_NAMESPACE_ID::internal::ZeroFieldsBase /* @@protoc_insertion_point(class_definition:maa.EmptyRequest) */ {
+    public ::PROTOBUF_NAMESPACE_ID::Message /* @@protoc_insertion_point(class_definition:maarpc.EmptyRequest) */ {
  public:
   inline EmptyRequest() : EmptyRequest(nullptr) {}
+  ~EmptyRequest() override;
   explicit PROTOBUF_CONSTEXPR EmptyRequest(::PROTOBUF_NAMESPACE_ID::internal::ConstantInitialized);
 
   EmptyRequest(const EmptyRequest& from);
@@ -2072,7 +1915,7 @@ class EmptyRequest final :
                &_EmptyRequest_default_instance_);
   }
   static constexpr int kIndexInFileMessages =
-    11;
+    10;
 
   friend void swap(EmptyRequest& a, EmptyRequest& b) {
     a.Swap(&b);
@@ -2101,20 +1944,34 @@ class EmptyRequest final :
   EmptyRequest* New(::PROTOBUF_NAMESPACE_ID::Arena* arena = nullptr) const final {
     return CreateMaybeMessage<EmptyRequest>(arena);
   }
-  using ::PROTOBUF_NAMESPACE_ID::internal::ZeroFieldsBase::CopyFrom;
-  inline void CopyFrom(const EmptyRequest& from) {
-    ::PROTOBUF_NAMESPACE_ID::internal::ZeroFieldsBase::CopyImpl(*this, from);
+  using ::PROTOBUF_NAMESPACE_ID::Message::CopyFrom;
+  void CopyFrom(const EmptyRequest& from);
+  using ::PROTOBUF_NAMESPACE_ID::Message::MergeFrom;
+  void MergeFrom( const EmptyRequest& from) {
+    EmptyRequest::MergeImpl(*this, from);
   }
-  using ::PROTOBUF_NAMESPACE_ID::internal::ZeroFieldsBase::MergeFrom;
-  void MergeFrom(const EmptyRequest& from) {
-    ::PROTOBUF_NAMESPACE_ID::internal::ZeroFieldsBase::MergeImpl(*this, from);
-  }
+  private:
+  static void MergeImpl(::PROTOBUF_NAMESPACE_ID::Message& to_msg, const ::PROTOBUF_NAMESPACE_ID::Message& from_msg);
   public:
+  PROTOBUF_ATTRIBUTE_REINITIALIZES void Clear() final;
+  bool IsInitialized() const final;
+
+  size_t ByteSizeLong() const final;
+  const char* _InternalParse(const char* ptr, ::PROTOBUF_NAMESPACE_ID::internal::ParseContext* ctx) final;
+  uint8_t* _InternalSerialize(
+      uint8_t* target, ::PROTOBUF_NAMESPACE_ID::io::EpsCopyOutputStream* stream) const final;
+  int GetCachedSize() const final { return _impl_._cached_size_.Get(); }
+
+  private:
+  void SharedCtor(::PROTOBUF_NAMESPACE_ID::Arena* arena, bool is_message_owned);
+  void SharedDtor();
+  void SetCachedSize(int size) const final;
+  void InternalSwap(EmptyRequest* other);
 
   private:
   friend class ::PROTOBUF_NAMESPACE_ID::internal::AnyMetadata;
   static ::PROTOBUF_NAMESPACE_ID::StringPiece FullMessageName() {
-    return "maa.EmptyRequest";
+    return "maarpc.EmptyRequest";
   }
   protected:
   explicit EmptyRequest(::PROTOBUF_NAMESPACE_ID::Arena* arena,
@@ -2130,7 +1987,23 @@ class EmptyRequest final :
 
   // accessors -------------------------------------------------------
 
-  // @@protoc_insertion_point(class_scope:maa.EmptyRequest)
+  enum : int {
+    kUnusedFieldNumber = 1,
+  };
+  // optional bool unused = 1;
+  bool has_unused() const;
+  private:
+  bool _internal_has_unused() const;
+  public:
+  void clear_unused();
+  bool unused() const;
+  void set_unused(bool value);
+  private:
+  bool _internal_unused() const;
+  void _internal_set_unused(bool value);
+  public:
+
+  // @@protoc_insertion_point(class_scope:maarpc.EmptyRequest)
  private:
   class _Internal;
 
@@ -2138,13 +2011,17 @@ class EmptyRequest final :
   typedef void InternalArenaConstructable_;
   typedef void DestructorSkippable_;
   struct Impl_ {
+    ::PROTOBUF_NAMESPACE_ID::internal::HasBits<1> _has_bits_;
+    mutable ::PROTOBUF_NAMESPACE_ID::internal::CachedSize _cached_size_;
+    bool unused_;
   };
+  union { Impl_ _impl_; };
   friend struct ::TableStruct_Types_2eproto;
 };
 // -------------------------------------------------------------------
 
 class IdRequest final :
-    public ::PROTOBUF_NAMESPACE_ID::Message /* @@protoc_insertion_point(class_definition:maa.IdRequest) */ {
+    public ::PROTOBUF_NAMESPACE_ID::Message /* @@protoc_insertion_point(class_definition:maarpc.IdRequest) */ {
  public:
   inline IdRequest() : IdRequest(nullptr) {}
   ~IdRequest() override;
@@ -2191,7 +2068,7 @@ class IdRequest final :
                &_IdRequest_default_instance_);
   }
   static constexpr int kIndexInFileMessages =
-    12;
+    11;
 
   friend void swap(IdRequest& a, IdRequest& b) {
     a.Swap(&b);
@@ -2247,7 +2124,7 @@ class IdRequest final :
   private:
   friend class ::PROTOBUF_NAMESPACE_ID::internal::AnyMetadata;
   static ::PROTOBUF_NAMESPACE_ID::StringPiece FullMessageName() {
-    return "maa.IdRequest";
+    return "maarpc.IdRequest";
   }
   protected:
   explicit IdRequest(::PROTOBUF_NAMESPACE_ID::Arena* arena,
@@ -2266,25 +2143,25 @@ class IdRequest final :
   enum : int {
     kIdFieldNumber = 1,
   };
-  // optional .maa.Id id = 1;
+  // optional .maarpc.Id id = 1;
   bool has_id() const;
   private:
   bool _internal_has_id() const;
   public:
   void clear_id();
-  const ::maa::Id& id() const;
-  PROTOBUF_NODISCARD ::maa::Id* release_id();
-  ::maa::Id* mutable_id();
-  void set_allocated_id(::maa::Id* id);
+  const ::maarpc::Id& id() const;
+  PROTOBUF_NODISCARD ::maarpc::Id* release_id();
+  ::maarpc::Id* mutable_id();
+  void set_allocated_id(::maarpc::Id* id);
   private:
-  const ::maa::Id& _internal_id() const;
-  ::maa::Id* _internal_mutable_id();
+  const ::maarpc::Id& _internal_id() const;
+  ::maarpc::Id* _internal_mutable_id();
   public:
   void unsafe_arena_set_allocated_id(
-      ::maa::Id* id);
-  ::maa::Id* unsafe_arena_release_id();
+      ::maarpc::Id* id);
+  ::maarpc::Id* unsafe_arena_release_id();
 
-  // @@protoc_insertion_point(class_scope:maa.IdRequest)
+  // @@protoc_insertion_point(class_scope:maarpc.IdRequest)
  private:
   class _Internal;
 
@@ -2294,7 +2171,7 @@ class IdRequest final :
   struct Impl_ {
     ::PROTOBUF_NAMESPACE_ID::internal::HasBits<1> _has_bits_;
     mutable ::PROTOBUF_NAMESPACE_ID::internal::CachedSize _cached_size_;
-    ::maa::Id* id_;
+    ::maarpc::Id* id_;
   };
   union { Impl_ _impl_; };
   friend struct ::TableStruct_Types_2eproto;
@@ -2302,7 +2179,7 @@ class IdRequest final :
 // -------------------------------------------------------------------
 
 class HandleRequest final :
-    public ::PROTOBUF_NAMESPACE_ID::Message /* @@protoc_insertion_point(class_definition:maa.HandleRequest) */ {
+    public ::PROTOBUF_NAMESPACE_ID::Message /* @@protoc_insertion_point(class_definition:maarpc.HandleRequest) */ {
  public:
   inline HandleRequest() : HandleRequest(nullptr) {}
   ~HandleRequest() override;
@@ -2349,7 +2226,7 @@ class HandleRequest final :
                &_HandleRequest_default_instance_);
   }
   static constexpr int kIndexInFileMessages =
-    13;
+    12;
 
   friend void swap(HandleRequest& a, HandleRequest& b) {
     a.Swap(&b);
@@ -2405,7 +2282,7 @@ class HandleRequest final :
   private:
   friend class ::PROTOBUF_NAMESPACE_ID::internal::AnyMetadata;
   static ::PROTOBUF_NAMESPACE_ID::StringPiece FullMessageName() {
-    return "maa.HandleRequest";
+    return "maarpc.HandleRequest";
   }
   protected:
   explicit HandleRequest(::PROTOBUF_NAMESPACE_ID::Arena* arena,
@@ -2424,25 +2301,25 @@ class HandleRequest final :
   enum : int {
     kHandleFieldNumber = 1,
   };
-  // optional .maa.Handle handle = 1;
+  // optional .maarpc.Handle handle = 1;
   bool has_handle() const;
   private:
   bool _internal_has_handle() const;
   public:
   void clear_handle();
-  const ::maa::Handle& handle() const;
-  PROTOBUF_NODISCARD ::maa::Handle* release_handle();
-  ::maa::Handle* mutable_handle();
-  void set_allocated_handle(::maa::Handle* handle);
+  const ::maarpc::Handle& handle() const;
+  PROTOBUF_NODISCARD ::maarpc::Handle* release_handle();
+  ::maarpc::Handle* mutable_handle();
+  void set_allocated_handle(::maarpc::Handle* handle);
   private:
-  const ::maa::Handle& _internal_handle() const;
-  ::maa::Handle* _internal_mutable_handle();
+  const ::maarpc::Handle& _internal_handle() const;
+  ::maarpc::Handle* _internal_mutable_handle();
   public:
   void unsafe_arena_set_allocated_handle(
-      ::maa::Handle* handle);
-  ::maa::Handle* unsafe_arena_release_handle();
+      ::maarpc::Handle* handle);
+  ::maarpc::Handle* unsafe_arena_release_handle();
 
-  // @@protoc_insertion_point(class_scope:maa.HandleRequest)
+  // @@protoc_insertion_point(class_scope:maarpc.HandleRequest)
  private:
   class _Internal;
 
@@ -2452,7 +2329,7 @@ class HandleRequest final :
   struct Impl_ {
     ::PROTOBUF_NAMESPACE_ID::internal::HasBits<1> _has_bits_;
     mutable ::PROTOBUF_NAMESPACE_ID::internal::CachedSize _cached_size_;
-    ::maa::Handle* handle_;
+    ::maarpc::Handle* handle_;
   };
   union { Impl_ _impl_; };
   friend struct ::TableStruct_Types_2eproto;
@@ -2460,7 +2337,7 @@ class HandleRequest final :
 // -------------------------------------------------------------------
 
 class BufferRequest final :
-    public ::PROTOBUF_NAMESPACE_ID::Message /* @@protoc_insertion_point(class_definition:maa.BufferRequest) */ {
+    public ::PROTOBUF_NAMESPACE_ID::Message /* @@protoc_insertion_point(class_definition:maarpc.BufferRequest) */ {
  public:
   inline BufferRequest() : BufferRequest(nullptr) {}
   ~BufferRequest() override;
@@ -2507,7 +2384,7 @@ class BufferRequest final :
                &_BufferRequest_default_instance_);
   }
   static constexpr int kIndexInFileMessages =
-    14;
+    13;
 
   friend void swap(BufferRequest& a, BufferRequest& b) {
     a.Swap(&b);
@@ -2563,7 +2440,7 @@ class BufferRequest final :
   private:
   friend class ::PROTOBUF_NAMESPACE_ID::internal::AnyMetadata;
   static ::PROTOBUF_NAMESPACE_ID::StringPiece FullMessageName() {
-    return "maa.BufferRequest";
+    return "maarpc.BufferRequest";
   }
   protected:
   explicit BufferRequest(::PROTOBUF_NAMESPACE_ID::Arena* arena,
@@ -2600,7 +2477,7 @@ class BufferRequest final :
   std::string* _internal_mutable_buffer();
   public:
 
-  // @@protoc_insertion_point(class_scope:maa.BufferRequest)
+  // @@protoc_insertion_point(class_scope:maarpc.BufferRequest)
  private:
   class _Internal;
 
@@ -2618,7 +2495,7 @@ class BufferRequest final :
 // -------------------------------------------------------------------
 
 class HandleBufferRequest final :
-    public ::PROTOBUF_NAMESPACE_ID::Message /* @@protoc_insertion_point(class_definition:maa.HandleBufferRequest) */ {
+    public ::PROTOBUF_NAMESPACE_ID::Message /* @@protoc_insertion_point(class_definition:maarpc.HandleBufferRequest) */ {
  public:
   inline HandleBufferRequest() : HandleBufferRequest(nullptr) {}
   ~HandleBufferRequest() override;
@@ -2665,7 +2542,7 @@ class HandleBufferRequest final :
                &_HandleBufferRequest_default_instance_);
   }
   static constexpr int kIndexInFileMessages =
-    15;
+    14;
 
   friend void swap(HandleBufferRequest& a, HandleBufferRequest& b) {
     a.Swap(&b);
@@ -2721,7 +2598,7 @@ class HandleBufferRequest final :
   private:
   friend class ::PROTOBUF_NAMESPACE_ID::internal::AnyMetadata;
   static ::PROTOBUF_NAMESPACE_ID::StringPiece FullMessageName() {
-    return "maa.HandleBufferRequest";
+    return "maarpc.HandleBufferRequest";
   }
   protected:
   explicit HandleBufferRequest(::PROTOBUF_NAMESPACE_ID::Arena* arena,
@@ -2759,25 +2636,25 @@ class HandleBufferRequest final :
   std::string* _internal_mutable_buffer();
   public:
 
-  // optional .maa.Handle handle = 1;
+  // optional .maarpc.Handle handle = 1;
   bool has_handle() const;
   private:
   bool _internal_has_handle() const;
   public:
   void clear_handle();
-  const ::maa::Handle& handle() const;
-  PROTOBUF_NODISCARD ::maa::Handle* release_handle();
-  ::maa::Handle* mutable_handle();
-  void set_allocated_handle(::maa::Handle* handle);
+  const ::maarpc::Handle& handle() const;
+  PROTOBUF_NODISCARD ::maarpc::Handle* release_handle();
+  ::maarpc::Handle* mutable_handle();
+  void set_allocated_handle(::maarpc::Handle* handle);
   private:
-  const ::maa::Handle& _internal_handle() const;
-  ::maa::Handle* _internal_mutable_handle();
+  const ::maarpc::Handle& _internal_handle() const;
+  ::maarpc::Handle* _internal_mutable_handle();
   public:
   void unsafe_arena_set_allocated_handle(
-      ::maa::Handle* handle);
-  ::maa::Handle* unsafe_arena_release_handle();
+      ::maarpc::Handle* handle);
+  ::maarpc::Handle* unsafe_arena_release_handle();
 
-  // @@protoc_insertion_point(class_scope:maa.HandleBufferRequest)
+  // @@protoc_insertion_point(class_scope:maarpc.HandleBufferRequest)
  private:
   class _Internal;
 
@@ -2788,7 +2665,7 @@ class HandleBufferRequest final :
     ::PROTOBUF_NAMESPACE_ID::internal::HasBits<1> _has_bits_;
     mutable ::PROTOBUF_NAMESPACE_ID::internal::CachedSize _cached_size_;
     ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr buffer_;
-    ::maa::Handle* handle_;
+    ::maarpc::Handle* handle_;
   };
   union { Impl_ _impl_; };
   friend struct ::TableStruct_Types_2eproto;
@@ -2796,7 +2673,7 @@ class HandleBufferRequest final :
 // -------------------------------------------------------------------
 
 class HandleStringRequest final :
-    public ::PROTOBUF_NAMESPACE_ID::Message /* @@protoc_insertion_point(class_definition:maa.HandleStringRequest) */ {
+    public ::PROTOBUF_NAMESPACE_ID::Message /* @@protoc_insertion_point(class_definition:maarpc.HandleStringRequest) */ {
  public:
   inline HandleStringRequest() : HandleStringRequest(nullptr) {}
   ~HandleStringRequest() override;
@@ -2843,7 +2720,7 @@ class HandleStringRequest final :
                &_HandleStringRequest_default_instance_);
   }
   static constexpr int kIndexInFileMessages =
-    16;
+    15;
 
   friend void swap(HandleStringRequest& a, HandleStringRequest& b) {
     a.Swap(&b);
@@ -2899,7 +2776,7 @@ class HandleStringRequest final :
   private:
   friend class ::PROTOBUF_NAMESPACE_ID::internal::AnyMetadata;
   static ::PROTOBUF_NAMESPACE_ID::StringPiece FullMessageName() {
-    return "maa.HandleStringRequest";
+    return "maarpc.HandleStringRequest";
   }
   protected:
   explicit HandleStringRequest(::PROTOBUF_NAMESPACE_ID::Arena* arena,
@@ -2937,25 +2814,25 @@ class HandleStringRequest final :
   std::string* _internal_mutable_str();
   public:
 
-  // optional .maa.Handle handle = 1;
+  // optional .maarpc.Handle handle = 1;
   bool has_handle() const;
   private:
   bool _internal_has_handle() const;
   public:
   void clear_handle();
-  const ::maa::Handle& handle() const;
-  PROTOBUF_NODISCARD ::maa::Handle* release_handle();
-  ::maa::Handle* mutable_handle();
-  void set_allocated_handle(::maa::Handle* handle);
+  const ::maarpc::Handle& handle() const;
+  PROTOBUF_NODISCARD ::maarpc::Handle* release_handle();
+  ::maarpc::Handle* mutable_handle();
+  void set_allocated_handle(::maarpc::Handle* handle);
   private:
-  const ::maa::Handle& _internal_handle() const;
-  ::maa::Handle* _internal_mutable_handle();
+  const ::maarpc::Handle& _internal_handle() const;
+  ::maarpc::Handle* _internal_mutable_handle();
   public:
   void unsafe_arena_set_allocated_handle(
-      ::maa::Handle* handle);
-  ::maa::Handle* unsafe_arena_release_handle();
+      ::maarpc::Handle* handle);
+  ::maarpc::Handle* unsafe_arena_release_handle();
 
-  // @@protoc_insertion_point(class_scope:maa.HandleStringRequest)
+  // @@protoc_insertion_point(class_scope:maarpc.HandleStringRequest)
  private:
   class _Internal;
 
@@ -2966,7 +2843,7 @@ class HandleStringRequest final :
     ::PROTOBUF_NAMESPACE_ID::internal::HasBits<1> _has_bits_;
     mutable ::PROTOBUF_NAMESPACE_ID::internal::CachedSize _cached_size_;
     ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr str_;
-    ::maa::Handle* handle_;
+    ::maarpc::Handle* handle_;
   };
   union { Impl_ _impl_; };
   friend struct ::TableStruct_Types_2eproto;
@@ -2974,7 +2851,7 @@ class HandleStringRequest final :
 // -------------------------------------------------------------------
 
 class HandleIdRequest final :
-    public ::PROTOBUF_NAMESPACE_ID::Message /* @@protoc_insertion_point(class_definition:maa.HandleIdRequest) */ {
+    public ::PROTOBUF_NAMESPACE_ID::Message /* @@protoc_insertion_point(class_definition:maarpc.HandleIdRequest) */ {
  public:
   inline HandleIdRequest() : HandleIdRequest(nullptr) {}
   ~HandleIdRequest() override;
@@ -3021,7 +2898,7 @@ class HandleIdRequest final :
                &_HandleIdRequest_default_instance_);
   }
   static constexpr int kIndexInFileMessages =
-    17;
+    16;
 
   friend void swap(HandleIdRequest& a, HandleIdRequest& b) {
     a.Swap(&b);
@@ -3077,7 +2954,7 @@ class HandleIdRequest final :
   private:
   friend class ::PROTOBUF_NAMESPACE_ID::internal::AnyMetadata;
   static ::PROTOBUF_NAMESPACE_ID::StringPiece FullMessageName() {
-    return "maa.HandleIdRequest";
+    return "maarpc.HandleIdRequest";
   }
   protected:
   explicit HandleIdRequest(::PROTOBUF_NAMESPACE_ID::Arena* arena,
@@ -3097,43 +2974,43 @@ class HandleIdRequest final :
     kHandleFieldNumber = 1,
     kIdFieldNumber = 2,
   };
-  // optional .maa.Handle handle = 1;
+  // optional .maarpc.Handle handle = 1;
   bool has_handle() const;
   private:
   bool _internal_has_handle() const;
   public:
   void clear_handle();
-  const ::maa::Handle& handle() const;
-  PROTOBUF_NODISCARD ::maa::Handle* release_handle();
-  ::maa::Handle* mutable_handle();
-  void set_allocated_handle(::maa::Handle* handle);
+  const ::maarpc::Handle& handle() const;
+  PROTOBUF_NODISCARD ::maarpc::Handle* release_handle();
+  ::maarpc::Handle* mutable_handle();
+  void set_allocated_handle(::maarpc::Handle* handle);
   private:
-  const ::maa::Handle& _internal_handle() const;
-  ::maa::Handle* _internal_mutable_handle();
+  const ::maarpc::Handle& _internal_handle() const;
+  ::maarpc::Handle* _internal_mutable_handle();
   public:
   void unsafe_arena_set_allocated_handle(
-      ::maa::Handle* handle);
-  ::maa::Handle* unsafe_arena_release_handle();
+      ::maarpc::Handle* handle);
+  ::maarpc::Handle* unsafe_arena_release_handle();
 
-  // optional .maa.Id id = 2;
+  // optional .maarpc.Id id = 2;
   bool has_id() const;
   private:
   bool _internal_has_id() const;
   public:
   void clear_id();
-  const ::maa::Id& id() const;
-  PROTOBUF_NODISCARD ::maa::Id* release_id();
-  ::maa::Id* mutable_id();
-  void set_allocated_id(::maa::Id* id);
+  const ::maarpc::Id& id() const;
+  PROTOBUF_NODISCARD ::maarpc::Id* release_id();
+  ::maarpc::Id* mutable_id();
+  void set_allocated_id(::maarpc::Id* id);
   private:
-  const ::maa::Id& _internal_id() const;
-  ::maa::Id* _internal_mutable_id();
+  const ::maarpc::Id& _internal_id() const;
+  ::maarpc::Id* _internal_mutable_id();
   public:
   void unsafe_arena_set_allocated_id(
-      ::maa::Id* id);
-  ::maa::Id* unsafe_arena_release_id();
+      ::maarpc::Id* id);
+  ::maarpc::Id* unsafe_arena_release_id();
 
-  // @@protoc_insertion_point(class_scope:maa.HandleIdRequest)
+  // @@protoc_insertion_point(class_scope:maarpc.HandleIdRequest)
  private:
   class _Internal;
 
@@ -3143,8 +3020,8 @@ class HandleIdRequest final :
   struct Impl_ {
     ::PROTOBUF_NAMESPACE_ID::internal::HasBits<1> _has_bits_;
     mutable ::PROTOBUF_NAMESPACE_ID::internal::CachedSize _cached_size_;
-    ::maa::Handle* handle_;
-    ::maa::Id* id_;
+    ::maarpc::Handle* handle_;
+    ::maarpc::Id* id_;
   };
   union { Impl_ _impl_; };
   friend struct ::TableStruct_Types_2eproto;
@@ -3152,7 +3029,7 @@ class HandleIdRequest final :
 // -------------------------------------------------------------------
 
 class EmptyResponse final :
-    public ::PROTOBUF_NAMESPACE_ID::Message /* @@protoc_insertion_point(class_definition:maa.EmptyResponse) */ {
+    public ::PROTOBUF_NAMESPACE_ID::Message /* @@protoc_insertion_point(class_definition:maarpc.EmptyResponse) */ {
  public:
   inline EmptyResponse() : EmptyResponse(nullptr) {}
   ~EmptyResponse() override;
@@ -3199,7 +3076,7 @@ class EmptyResponse final :
                &_EmptyResponse_default_instance_);
   }
   static constexpr int kIndexInFileMessages =
-    18;
+    17;
 
   friend void swap(EmptyResponse& a, EmptyResponse& b) {
     a.Swap(&b);
@@ -3255,7 +3132,7 @@ class EmptyResponse final :
   private:
   friend class ::PROTOBUF_NAMESPACE_ID::internal::AnyMetadata;
   static ::PROTOBUF_NAMESPACE_ID::StringPiece FullMessageName() {
-    return "maa.EmptyResponse";
+    return "maarpc.EmptyResponse";
   }
   protected:
   explicit EmptyResponse(::PROTOBUF_NAMESPACE_ID::Arena* arena,
@@ -3274,25 +3151,20 @@ class EmptyResponse final :
   enum : int {
     kStatusFieldNumber = 101,
   };
-  // optional .maa.RpcStatus status = 101;
+  // optional bool status = 101;
   bool has_status() const;
   private:
   bool _internal_has_status() const;
   public:
   void clear_status();
-  const ::maa::RpcStatus& status() const;
-  PROTOBUF_NODISCARD ::maa::RpcStatus* release_status();
-  ::maa::RpcStatus* mutable_status();
-  void set_allocated_status(::maa::RpcStatus* status);
+  bool status() const;
+  void set_status(bool value);
   private:
-  const ::maa::RpcStatus& _internal_status() const;
-  ::maa::RpcStatus* _internal_mutable_status();
+  bool _internal_status() const;
+  void _internal_set_status(bool value);
   public:
-  void unsafe_arena_set_allocated_status(
-      ::maa::RpcStatus* status);
-  ::maa::RpcStatus* unsafe_arena_release_status();
 
-  // @@protoc_insertion_point(class_scope:maa.EmptyResponse)
+  // @@protoc_insertion_point(class_scope:maarpc.EmptyResponse)
  private:
   class _Internal;
 
@@ -3302,7 +3174,7 @@ class EmptyResponse final :
   struct Impl_ {
     ::PROTOBUF_NAMESPACE_ID::internal::HasBits<1> _has_bits_;
     mutable ::PROTOBUF_NAMESPACE_ID::internal::CachedSize _cached_size_;
-    ::maa::RpcStatus* status_;
+    bool status_;
   };
   union { Impl_ _impl_; };
   friend struct ::TableStruct_Types_2eproto;
@@ -3310,7 +3182,7 @@ class EmptyResponse final :
 // -------------------------------------------------------------------
 
 class IdResponse final :
-    public ::PROTOBUF_NAMESPACE_ID::Message /* @@protoc_insertion_point(class_definition:maa.IdResponse) */ {
+    public ::PROTOBUF_NAMESPACE_ID::Message /* @@protoc_insertion_point(class_definition:maarpc.IdResponse) */ {
  public:
   inline IdResponse() : IdResponse(nullptr) {}
   ~IdResponse() override;
@@ -3357,7 +3229,7 @@ class IdResponse final :
                &_IdResponse_default_instance_);
   }
   static constexpr int kIndexInFileMessages =
-    19;
+    18;
 
   friend void swap(IdResponse& a, IdResponse& b) {
     a.Swap(&b);
@@ -3413,7 +3285,7 @@ class IdResponse final :
   private:
   friend class ::PROTOBUF_NAMESPACE_ID::internal::AnyMetadata;
   static ::PROTOBUF_NAMESPACE_ID::StringPiece FullMessageName() {
-    return "maa.IdResponse";
+    return "maarpc.IdResponse";
   }
   protected:
   explicit IdResponse(::PROTOBUF_NAMESPACE_ID::Arena* arena,
@@ -3433,43 +3305,38 @@ class IdResponse final :
     kIdFieldNumber = 1,
     kStatusFieldNumber = 101,
   };
-  // optional .maa.Id id = 1;
+  // optional .maarpc.Id id = 1;
   bool has_id() const;
   private:
   bool _internal_has_id() const;
   public:
   void clear_id();
-  const ::maa::Id& id() const;
-  PROTOBUF_NODISCARD ::maa::Id* release_id();
-  ::maa::Id* mutable_id();
-  void set_allocated_id(::maa::Id* id);
+  const ::maarpc::Id& id() const;
+  PROTOBUF_NODISCARD ::maarpc::Id* release_id();
+  ::maarpc::Id* mutable_id();
+  void set_allocated_id(::maarpc::Id* id);
   private:
-  const ::maa::Id& _internal_id() const;
-  ::maa::Id* _internal_mutable_id();
+  const ::maarpc::Id& _internal_id() const;
+  ::maarpc::Id* _internal_mutable_id();
   public:
   void unsafe_arena_set_allocated_id(
-      ::maa::Id* id);
-  ::maa::Id* unsafe_arena_release_id();
+      ::maarpc::Id* id);
+  ::maarpc::Id* unsafe_arena_release_id();
 
-  // optional .maa.RpcStatus status = 101;
+  // optional bool status = 101;
   bool has_status() const;
   private:
   bool _internal_has_status() const;
   public:
   void clear_status();
-  const ::maa::RpcStatus& status() const;
-  PROTOBUF_NODISCARD ::maa::RpcStatus* release_status();
-  ::maa::RpcStatus* mutable_status();
-  void set_allocated_status(::maa::RpcStatus* status);
+  bool status() const;
+  void set_status(bool value);
   private:
-  const ::maa::RpcStatus& _internal_status() const;
-  ::maa::RpcStatus* _internal_mutable_status();
+  bool _internal_status() const;
+  void _internal_set_status(bool value);
   public:
-  void unsafe_arena_set_allocated_status(
-      ::maa::RpcStatus* status);
-  ::maa::RpcStatus* unsafe_arena_release_status();
 
-  // @@protoc_insertion_point(class_scope:maa.IdResponse)
+  // @@protoc_insertion_point(class_scope:maarpc.IdResponse)
  private:
   class _Internal;
 
@@ -3479,8 +3346,8 @@ class IdResponse final :
   struct Impl_ {
     ::PROTOBUF_NAMESPACE_ID::internal::HasBits<1> _has_bits_;
     mutable ::PROTOBUF_NAMESPACE_ID::internal::CachedSize _cached_size_;
-    ::maa::Id* id_;
-    ::maa::RpcStatus* status_;
+    ::maarpc::Id* id_;
+    bool status_;
   };
   union { Impl_ _impl_; };
   friend struct ::TableStruct_Types_2eproto;
@@ -3488,7 +3355,7 @@ class IdResponse final :
 // -------------------------------------------------------------------
 
 class BoolResponse final :
-    public ::PROTOBUF_NAMESPACE_ID::Message /* @@protoc_insertion_point(class_definition:maa.BoolResponse) */ {
+    public ::PROTOBUF_NAMESPACE_ID::Message /* @@protoc_insertion_point(class_definition:maarpc.BoolResponse) */ {
  public:
   inline BoolResponse() : BoolResponse(nullptr) {}
   ~BoolResponse() override;
@@ -3535,7 +3402,7 @@ class BoolResponse final :
                &_BoolResponse_default_instance_);
   }
   static constexpr int kIndexInFileMessages =
-    20;
+    19;
 
   friend void swap(BoolResponse& a, BoolResponse& b) {
     a.Swap(&b);
@@ -3591,7 +3458,7 @@ class BoolResponse final :
   private:
   friend class ::PROTOBUF_NAMESPACE_ID::internal::AnyMetadata;
   static ::PROTOBUF_NAMESPACE_ID::StringPiece FullMessageName() {
-    return "maa.BoolResponse";
+    return "maarpc.BoolResponse";
   }
   protected:
   explicit BoolResponse(::PROTOBUF_NAMESPACE_ID::Arena* arena,
@@ -3608,27 +3475,9 @@ class BoolResponse final :
   // accessors -------------------------------------------------------
 
   enum : int {
-    kStatusFieldNumber = 101,
     kValueFieldNumber = 1,
+    kStatusFieldNumber = 101,
   };
-  // optional .maa.RpcStatus status = 101;
-  bool has_status() const;
-  private:
-  bool _internal_has_status() const;
-  public:
-  void clear_status();
-  const ::maa::RpcStatus& status() const;
-  PROTOBUF_NODISCARD ::maa::RpcStatus* release_status();
-  ::maa::RpcStatus* mutable_status();
-  void set_allocated_status(::maa::RpcStatus* status);
-  private:
-  const ::maa::RpcStatus& _internal_status() const;
-  ::maa::RpcStatus* _internal_mutable_status();
-  public:
-  void unsafe_arena_set_allocated_status(
-      ::maa::RpcStatus* status);
-  ::maa::RpcStatus* unsafe_arena_release_status();
-
   // optional bool value = 1;
   bool has_value() const;
   private:
@@ -3642,7 +3491,20 @@ class BoolResponse final :
   void _internal_set_value(bool value);
   public:
 
-  // @@protoc_insertion_point(class_scope:maa.BoolResponse)
+  // optional bool status = 101;
+  bool has_status() const;
+  private:
+  bool _internal_has_status() const;
+  public:
+  void clear_status();
+  bool status() const;
+  void set_status(bool value);
+  private:
+  bool _internal_status() const;
+  void _internal_set_status(bool value);
+  public:
+
+  // @@protoc_insertion_point(class_scope:maarpc.BoolResponse)
  private:
   class _Internal;
 
@@ -3652,8 +3514,8 @@ class BoolResponse final :
   struct Impl_ {
     ::PROTOBUF_NAMESPACE_ID::internal::HasBits<1> _has_bits_;
     mutable ::PROTOBUF_NAMESPACE_ID::internal::CachedSize _cached_size_;
-    ::maa::RpcStatus* status_;
     bool value_;
+    bool status_;
   };
   union { Impl_ _impl_; };
   friend struct ::TableStruct_Types_2eproto;
@@ -3661,7 +3523,7 @@ class BoolResponse final :
 // -------------------------------------------------------------------
 
 class StringResponse final :
-    public ::PROTOBUF_NAMESPACE_ID::Message /* @@protoc_insertion_point(class_definition:maa.StringResponse) */ {
+    public ::PROTOBUF_NAMESPACE_ID::Message /* @@protoc_insertion_point(class_definition:maarpc.StringResponse) */ {
  public:
   inline StringResponse() : StringResponse(nullptr) {}
   ~StringResponse() override;
@@ -3708,7 +3570,7 @@ class StringResponse final :
                &_StringResponse_default_instance_);
   }
   static constexpr int kIndexInFileMessages =
-    21;
+    20;
 
   friend void swap(StringResponse& a, StringResponse& b) {
     a.Swap(&b);
@@ -3764,7 +3626,7 @@ class StringResponse final :
   private:
   friend class ::PROTOBUF_NAMESPACE_ID::internal::AnyMetadata;
   static ::PROTOBUF_NAMESPACE_ID::StringPiece FullMessageName() {
-    return "maa.StringResponse";
+    return "maarpc.StringResponse";
   }
   protected:
   explicit StringResponse(::PROTOBUF_NAMESPACE_ID::Arena* arena,
@@ -3802,25 +3664,20 @@ class StringResponse final :
   std::string* _internal_mutable_value();
   public:
 
-  // optional .maa.RpcStatus status = 101;
+  // optional bool status = 101;
   bool has_status() const;
   private:
   bool _internal_has_status() const;
   public:
   void clear_status();
-  const ::maa::RpcStatus& status() const;
-  PROTOBUF_NODISCARD ::maa::RpcStatus* release_status();
-  ::maa::RpcStatus* mutable_status();
-  void set_allocated_status(::maa::RpcStatus* status);
+  bool status() const;
+  void set_status(bool value);
   private:
-  const ::maa::RpcStatus& _internal_status() const;
-  ::maa::RpcStatus* _internal_mutable_status();
+  bool _internal_status() const;
+  void _internal_set_status(bool value);
   public:
-  void unsafe_arena_set_allocated_status(
-      ::maa::RpcStatus* status);
-  ::maa::RpcStatus* unsafe_arena_release_status();
 
-  // @@protoc_insertion_point(class_scope:maa.StringResponse)
+  // @@protoc_insertion_point(class_scope:maarpc.StringResponse)
  private:
   class _Internal;
 
@@ -3831,7 +3688,7 @@ class StringResponse final :
     ::PROTOBUF_NAMESPACE_ID::internal::HasBits<1> _has_bits_;
     mutable ::PROTOBUF_NAMESPACE_ID::internal::CachedSize _cached_size_;
     ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr value_;
-    ::maa::RpcStatus* status_;
+    bool status_;
   };
   union { Impl_ _impl_; };
   friend struct ::TableStruct_Types_2eproto;
@@ -3839,7 +3696,7 @@ class StringResponse final :
 // -------------------------------------------------------------------
 
 class HandleResponse final :
-    public ::PROTOBUF_NAMESPACE_ID::Message /* @@protoc_insertion_point(class_definition:maa.HandleResponse) */ {
+    public ::PROTOBUF_NAMESPACE_ID::Message /* @@protoc_insertion_point(class_definition:maarpc.HandleResponse) */ {
  public:
   inline HandleResponse() : HandleResponse(nullptr) {}
   ~HandleResponse() override;
@@ -3886,7 +3743,7 @@ class HandleResponse final :
                &_HandleResponse_default_instance_);
   }
   static constexpr int kIndexInFileMessages =
-    22;
+    21;
 
   friend void swap(HandleResponse& a, HandleResponse& b) {
     a.Swap(&b);
@@ -3942,7 +3799,7 @@ class HandleResponse final :
   private:
   friend class ::PROTOBUF_NAMESPACE_ID::internal::AnyMetadata;
   static ::PROTOBUF_NAMESPACE_ID::StringPiece FullMessageName() {
-    return "maa.HandleResponse";
+    return "maarpc.HandleResponse";
   }
   protected:
   explicit HandleResponse(::PROTOBUF_NAMESPACE_ID::Arena* arena,
@@ -3962,43 +3819,38 @@ class HandleResponse final :
     kValueFieldNumber = 1,
     kStatusFieldNumber = 101,
   };
-  // optional .maa.Handle value = 1;
+  // optional .maarpc.Handle value = 1;
   bool has_value() const;
   private:
   bool _internal_has_value() const;
   public:
   void clear_value();
-  const ::maa::Handle& value() const;
-  PROTOBUF_NODISCARD ::maa::Handle* release_value();
-  ::maa::Handle* mutable_value();
-  void set_allocated_value(::maa::Handle* value);
+  const ::maarpc::Handle& value() const;
+  PROTOBUF_NODISCARD ::maarpc::Handle* release_value();
+  ::maarpc::Handle* mutable_value();
+  void set_allocated_value(::maarpc::Handle* value);
   private:
-  const ::maa::Handle& _internal_value() const;
-  ::maa::Handle* _internal_mutable_value();
+  const ::maarpc::Handle& _internal_value() const;
+  ::maarpc::Handle* _internal_mutable_value();
   public:
   void unsafe_arena_set_allocated_value(
-      ::maa::Handle* value);
-  ::maa::Handle* unsafe_arena_release_value();
+      ::maarpc::Handle* value);
+  ::maarpc::Handle* unsafe_arena_release_value();
 
-  // optional .maa.RpcStatus status = 101;
+  // optional bool status = 101;
   bool has_status() const;
   private:
   bool _internal_has_status() const;
   public:
   void clear_status();
-  const ::maa::RpcStatus& status() const;
-  PROTOBUF_NODISCARD ::maa::RpcStatus* release_status();
-  ::maa::RpcStatus* mutable_status();
-  void set_allocated_status(::maa::RpcStatus* status);
+  bool status() const;
+  void set_status(bool value);
   private:
-  const ::maa::RpcStatus& _internal_status() const;
-  ::maa::RpcStatus* _internal_mutable_status();
+  bool _internal_status() const;
+  void _internal_set_status(bool value);
   public:
-  void unsafe_arena_set_allocated_status(
-      ::maa::RpcStatus* status);
-  ::maa::RpcStatus* unsafe_arena_release_status();
 
-  // @@protoc_insertion_point(class_scope:maa.HandleResponse)
+  // @@protoc_insertion_point(class_scope:maarpc.HandleResponse)
  private:
   class _Internal;
 
@@ -4008,8 +3860,8 @@ class HandleResponse final :
   struct Impl_ {
     ::PROTOBUF_NAMESPACE_ID::internal::HasBits<1> _has_bits_;
     mutable ::PROTOBUF_NAMESPACE_ID::internal::CachedSize _cached_size_;
-    ::maa::Handle* value_;
-    ::maa::RpcStatus* status_;
+    ::maarpc::Handle* value_;
+    bool status_;
   };
   union { Impl_ _impl_; };
   friend struct ::TableStruct_Types_2eproto;
@@ -4017,7 +3869,7 @@ class HandleResponse final :
 // -------------------------------------------------------------------
 
 class BufferResponse final :
-    public ::PROTOBUF_NAMESPACE_ID::Message /* @@protoc_insertion_point(class_definition:maa.BufferResponse) */ {
+    public ::PROTOBUF_NAMESPACE_ID::Message /* @@protoc_insertion_point(class_definition:maarpc.BufferResponse) */ {
  public:
   inline BufferResponse() : BufferResponse(nullptr) {}
   ~BufferResponse() override;
@@ -4064,7 +3916,7 @@ class BufferResponse final :
                &_BufferResponse_default_instance_);
   }
   static constexpr int kIndexInFileMessages =
-    23;
+    22;
 
   friend void swap(BufferResponse& a, BufferResponse& b) {
     a.Swap(&b);
@@ -4120,7 +3972,7 @@ class BufferResponse final :
   private:
   friend class ::PROTOBUF_NAMESPACE_ID::internal::AnyMetadata;
   static ::PROTOBUF_NAMESPACE_ID::StringPiece FullMessageName() {
-    return "maa.BufferResponse";
+    return "maarpc.BufferResponse";
   }
   protected:
   explicit BufferResponse(::PROTOBUF_NAMESPACE_ID::Arena* arena,
@@ -4158,25 +4010,20 @@ class BufferResponse final :
   std::string* _internal_mutable_value();
   public:
 
-  // optional .maa.RpcStatus status = 101;
+  // optional bool status = 101;
   bool has_status() const;
   private:
   bool _internal_has_status() const;
   public:
   void clear_status();
-  const ::maa::RpcStatus& status() const;
-  PROTOBUF_NODISCARD ::maa::RpcStatus* release_status();
-  ::maa::RpcStatus* mutable_status();
-  void set_allocated_status(::maa::RpcStatus* status);
+  bool status() const;
+  void set_status(bool value);
   private:
-  const ::maa::RpcStatus& _internal_status() const;
-  ::maa::RpcStatus* _internal_mutable_status();
+  bool _internal_status() const;
+  void _internal_set_status(bool value);
   public:
-  void unsafe_arena_set_allocated_status(
-      ::maa::RpcStatus* status);
-  ::maa::RpcStatus* unsafe_arena_release_status();
 
-  // @@protoc_insertion_point(class_scope:maa.BufferResponse)
+  // @@protoc_insertion_point(class_scope:maarpc.BufferResponse)
  private:
   class _Internal;
 
@@ -4187,7 +4034,7 @@ class BufferResponse final :
     ::PROTOBUF_NAMESPACE_ID::internal::HasBits<1> _has_bits_;
     mutable ::PROTOBUF_NAMESPACE_ID::internal::CachedSize _cached_size_;
     ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr value_;
-    ::maa::RpcStatus* status_;
+    bool status_;
   };
   union { Impl_ _impl_; };
   friend struct ::TableStruct_Types_2eproto;
@@ -4195,7 +4042,7 @@ class BufferResponse final :
 // -------------------------------------------------------------------
 
 class StatusResponse final :
-    public ::PROTOBUF_NAMESPACE_ID::Message /* @@protoc_insertion_point(class_definition:maa.StatusResponse) */ {
+    public ::PROTOBUF_NAMESPACE_ID::Message /* @@protoc_insertion_point(class_definition:maarpc.StatusResponse) */ {
  public:
   inline StatusResponse() : StatusResponse(nullptr) {}
   ~StatusResponse() override;
@@ -4242,7 +4089,7 @@ class StatusResponse final :
                &_StatusResponse_default_instance_);
   }
   static constexpr int kIndexInFileMessages =
-    24;
+    23;
 
   friend void swap(StatusResponse& a, StatusResponse& b) {
     a.Swap(&b);
@@ -4298,7 +4145,7 @@ class StatusResponse final :
   private:
   friend class ::PROTOBUF_NAMESPACE_ID::internal::AnyMetadata;
   static ::PROTOBUF_NAMESPACE_ID::StringPiece FullMessageName() {
-    return "maa.StatusResponse";
+    return "maarpc.StatusResponse";
   }
   protected:
   explicit StatusResponse(::PROTOBUF_NAMESPACE_ID::Arena* arena,
@@ -4315,41 +4162,36 @@ class StatusResponse final :
   // accessors -------------------------------------------------------
 
   enum : int {
-    kStatusFieldNumber = 101,
     kValueFieldNumber = 1,
+    kStatusFieldNumber = 101,
   };
-  // optional .maa.RpcStatus status = 101;
-  bool has_status() const;
-  private:
-  bool _internal_has_status() const;
-  public:
-  void clear_status();
-  const ::maa::RpcStatus& status() const;
-  PROTOBUF_NODISCARD ::maa::RpcStatus* release_status();
-  ::maa::RpcStatus* mutable_status();
-  void set_allocated_status(::maa::RpcStatus* status);
-  private:
-  const ::maa::RpcStatus& _internal_status() const;
-  ::maa::RpcStatus* _internal_mutable_status();
-  public:
-  void unsafe_arena_set_allocated_status(
-      ::maa::RpcStatus* status);
-  ::maa::RpcStatus* unsafe_arena_release_status();
-
-  // optional .maa.Status value = 1;
+  // optional .maarpc.Status value = 1;
   bool has_value() const;
   private:
   bool _internal_has_value() const;
   public:
   void clear_value();
-  ::maa::Status value() const;
-  void set_value(::maa::Status value);
+  ::maarpc::Status value() const;
+  void set_value(::maarpc::Status value);
   private:
-  ::maa::Status _internal_value() const;
-  void _internal_set_value(::maa::Status value);
+  ::maarpc::Status _internal_value() const;
+  void _internal_set_value(::maarpc::Status value);
   public:
 
-  // @@protoc_insertion_point(class_scope:maa.StatusResponse)
+  // optional bool status = 101;
+  bool has_status() const;
+  private:
+  bool _internal_has_status() const;
+  public:
+  void clear_status();
+  bool status() const;
+  void set_status(bool value);
+  private:
+  bool _internal_status() const;
+  void _internal_set_status(bool value);
+  public:
+
+  // @@protoc_insertion_point(class_scope:maarpc.StatusResponse)
  private:
   class _Internal;
 
@@ -4359,8 +4201,8 @@ class StatusResponse final :
   struct Impl_ {
     ::PROTOBUF_NAMESPACE_ID::internal::HasBits<1> _has_bits_;
     mutable ::PROTOBUF_NAMESPACE_ID::internal::CachedSize _cached_size_;
-    ::maa::RpcStatus* status_;
     int value_;
+    bool status_;
   };
   union { Impl_ _impl_; };
   friend struct ::TableStruct_Types_2eproto;
@@ -4374,38 +4216,6 @@ class StatusResponse final :
   #pragma GCC diagnostic push
   #pragma GCC diagnostic ignored "-Wstrict-aliasing"
 #endif  // __GNUC__
-// RpcStatus
-
-// optional bool success = 1;
-inline bool RpcStatus::_internal_has_success() const {
-  bool value = (_impl_._has_bits_[0] & 0x00000001u) != 0;
-  return value;
-}
-inline bool RpcStatus::has_success() const {
-  return _internal_has_success();
-}
-inline void RpcStatus::clear_success() {
-  _impl_.success_ = false;
-  _impl_._has_bits_[0] &= ~0x00000001u;
-}
-inline bool RpcStatus::_internal_success() const {
-  return _impl_.success_;
-}
-inline bool RpcStatus::success() const {
-  // @@protoc_insertion_point(field_get:maa.RpcStatus.success)
-  return _internal_success();
-}
-inline void RpcStatus::_internal_set_success(bool value) {
-  _impl_._has_bits_[0] |= 0x00000001u;
-  _impl_.success_ = value;
-}
-inline void RpcStatus::set_success(bool value) {
-  _internal_set_success(value);
-  // @@protoc_insertion_point(field_set:maa.RpcStatus.success)
-}
-
-// -------------------------------------------------------------------
-
 // Id
 
 // optional uint64 id = 1;
@@ -4424,7 +4234,7 @@ inline uint64_t Id::_internal_id() const {
   return _impl_.id_;
 }
 inline uint64_t Id::id() const {
-  // @@protoc_insertion_point(field_get:maa.Id.id)
+  // @@protoc_insertion_point(field_get:maarpc.Id.id)
   return _internal_id();
 }
 inline void Id::_internal_set_id(uint64_t value) {
@@ -4433,7 +4243,7 @@ inline void Id::_internal_set_id(uint64_t value) {
 }
 inline void Id::set_id(uint64_t value) {
   _internal_set_id(value);
-  // @@protoc_insertion_point(field_set:maa.Id.id)
+  // @@protoc_insertion_point(field_set:maarpc.Id.id)
 }
 
 // -------------------------------------------------------------------
@@ -4456,7 +4266,7 @@ inline uint64_t Handle::_internal_handle() const {
   return _impl_.handle_;
 }
 inline uint64_t Handle::handle() const {
-  // @@protoc_insertion_point(field_get:maa.Handle.handle)
+  // @@protoc_insertion_point(field_get:maarpc.Handle.handle)
   return _internal_handle();
 }
 inline void Handle::_internal_set_handle(uint64_t value) {
@@ -4465,7 +4275,7 @@ inline void Handle::_internal_set_handle(uint64_t value) {
 }
 inline void Handle::set_handle(uint64_t value) {
   _internal_set_handle(value);
-  // @@protoc_insertion_point(field_set:maa.Handle.handle)
+  // @@protoc_insertion_point(field_set:maarpc.Handle.handle)
 }
 
 // -------------------------------------------------------------------
@@ -4488,7 +4298,7 @@ inline int32_t Point::_internal_x() const {
   return _impl_.x_;
 }
 inline int32_t Point::x() const {
-  // @@protoc_insertion_point(field_get:maa.Point.x)
+  // @@protoc_insertion_point(field_get:maarpc.Point.x)
   return _internal_x();
 }
 inline void Point::_internal_set_x(int32_t value) {
@@ -4497,7 +4307,7 @@ inline void Point::_internal_set_x(int32_t value) {
 }
 inline void Point::set_x(int32_t value) {
   _internal_set_x(value);
-  // @@protoc_insertion_point(field_set:maa.Point.x)
+  // @@protoc_insertion_point(field_set:maarpc.Point.x)
 }
 
 // optional int32 y = 2;
@@ -4516,7 +4326,7 @@ inline int32_t Point::_internal_y() const {
   return _impl_.y_;
 }
 inline int32_t Point::y() const {
-  // @@protoc_insertion_point(field_get:maa.Point.y)
+  // @@protoc_insertion_point(field_get:maarpc.Point.y)
   return _internal_y();
 }
 inline void Point::_internal_set_y(int32_t value) {
@@ -4525,7 +4335,7 @@ inline void Point::_internal_set_y(int32_t value) {
 }
 inline void Point::set_y(int32_t value) {
   _internal_set_y(value);
-  // @@protoc_insertion_point(field_set:maa.Point.y)
+  // @@protoc_insertion_point(field_set:maarpc.Point.y)
 }
 
 // -------------------------------------------------------------------
@@ -4548,7 +4358,7 @@ inline int32_t Size::_internal_width() const {
   return _impl_.width_;
 }
 inline int32_t Size::width() const {
-  // @@protoc_insertion_point(field_get:maa.Size.width)
+  // @@protoc_insertion_point(field_get:maarpc.Size.width)
   return _internal_width();
 }
 inline void Size::_internal_set_width(int32_t value) {
@@ -4557,7 +4367,7 @@ inline void Size::_internal_set_width(int32_t value) {
 }
 inline void Size::set_width(int32_t value) {
   _internal_set_width(value);
-  // @@protoc_insertion_point(field_set:maa.Size.width)
+  // @@protoc_insertion_point(field_set:maarpc.Size.width)
 }
 
 // optional int32 height = 2;
@@ -4576,7 +4386,7 @@ inline int32_t Size::_internal_height() const {
   return _impl_.height_;
 }
 inline int32_t Size::height() const {
-  // @@protoc_insertion_point(field_get:maa.Size.height)
+  // @@protoc_insertion_point(field_get:maarpc.Size.height)
   return _internal_height();
 }
 inline void Size::_internal_set_height(int32_t value) {
@@ -4585,14 +4395,14 @@ inline void Size::_internal_set_height(int32_t value) {
 }
 inline void Size::set_height(int32_t value) {
   _internal_set_height(value);
-  // @@protoc_insertion_point(field_set:maa.Size.height)
+  // @@protoc_insertion_point(field_set:maarpc.Size.height)
 }
 
 // -------------------------------------------------------------------
 
 // Rect
 
-// optional .maa.Point xy = 1;
+// optional .maarpc.Point xy = 1;
 inline bool Rect::_internal_has_xy() const {
   bool value = (_impl_._has_bits_[0] & 0x00000001u) != 0;
   PROTOBUF_ASSUME(!value || _impl_.xy_ != nullptr);
@@ -4605,17 +4415,17 @@ inline void Rect::clear_xy() {
   if (_impl_.xy_ != nullptr) _impl_.xy_->Clear();
   _impl_._has_bits_[0] &= ~0x00000001u;
 }
-inline const ::maa::Point& Rect::_internal_xy() const {
-  const ::maa::Point* p = _impl_.xy_;
-  return p != nullptr ? *p : reinterpret_cast<const ::maa::Point&>(
-      ::maa::_Point_default_instance_);
+inline const ::maarpc::Point& Rect::_internal_xy() const {
+  const ::maarpc::Point* p = _impl_.xy_;
+  return p != nullptr ? *p : reinterpret_cast<const ::maarpc::Point&>(
+      ::maarpc::_Point_default_instance_);
 }
-inline const ::maa::Point& Rect::xy() const {
-  // @@protoc_insertion_point(field_get:maa.Rect.xy)
+inline const ::maarpc::Point& Rect::xy() const {
+  // @@protoc_insertion_point(field_get:maarpc.Rect.xy)
   return _internal_xy();
 }
 inline void Rect::unsafe_arena_set_allocated_xy(
-    ::maa::Point* xy) {
+    ::maarpc::Point* xy) {
   if (GetArenaForAllocation() == nullptr) {
     delete reinterpret_cast<::PROTOBUF_NAMESPACE_ID::MessageLite*>(_impl_.xy_);
   }
@@ -4625,11 +4435,11 @@ inline void Rect::unsafe_arena_set_allocated_xy(
   } else {
     _impl_._has_bits_[0] &= ~0x00000001u;
   }
-  // @@protoc_insertion_point(field_unsafe_arena_set_allocated:maa.Rect.xy)
+  // @@protoc_insertion_point(field_unsafe_arena_set_allocated:maarpc.Rect.xy)
 }
-inline ::maa::Point* Rect::release_xy() {
+inline ::maarpc::Point* Rect::release_xy() {
   _impl_._has_bits_[0] &= ~0x00000001u;
-  ::maa::Point* temp = _impl_.xy_;
+  ::maarpc::Point* temp = _impl_.xy_;
   _impl_.xy_ = nullptr;
 #ifdef PROTOBUF_FORCE_COPY_IN_RELEASE
   auto* old =  reinterpret_cast<::PROTOBUF_NAMESPACE_ID::MessageLite*>(temp);
@@ -4642,27 +4452,27 @@ inline ::maa::Point* Rect::release_xy() {
 #endif  // !PROTOBUF_FORCE_COPY_IN_RELEASE
   return temp;
 }
-inline ::maa::Point* Rect::unsafe_arena_release_xy() {
-  // @@protoc_insertion_point(field_release:maa.Rect.xy)
+inline ::maarpc::Point* Rect::unsafe_arena_release_xy() {
+  // @@protoc_insertion_point(field_release:maarpc.Rect.xy)
   _impl_._has_bits_[0] &= ~0x00000001u;
-  ::maa::Point* temp = _impl_.xy_;
+  ::maarpc::Point* temp = _impl_.xy_;
   _impl_.xy_ = nullptr;
   return temp;
 }
-inline ::maa::Point* Rect::_internal_mutable_xy() {
+inline ::maarpc::Point* Rect::_internal_mutable_xy() {
   _impl_._has_bits_[0] |= 0x00000001u;
   if (_impl_.xy_ == nullptr) {
-    auto* p = CreateMaybeMessage<::maa::Point>(GetArenaForAllocation());
+    auto* p = CreateMaybeMessage<::maarpc::Point>(GetArenaForAllocation());
     _impl_.xy_ = p;
   }
   return _impl_.xy_;
 }
-inline ::maa::Point* Rect::mutable_xy() {
-  ::maa::Point* _msg = _internal_mutable_xy();
-  // @@protoc_insertion_point(field_mutable:maa.Rect.xy)
+inline ::maarpc::Point* Rect::mutable_xy() {
+  ::maarpc::Point* _msg = _internal_mutable_xy();
+  // @@protoc_insertion_point(field_mutable:maarpc.Rect.xy)
   return _msg;
 }
-inline void Rect::set_allocated_xy(::maa::Point* xy) {
+inline void Rect::set_allocated_xy(::maarpc::Point* xy) {
   ::PROTOBUF_NAMESPACE_ID::Arena* message_arena = GetArenaForAllocation();
   if (message_arena == nullptr) {
     delete _impl_.xy_;
@@ -4679,10 +4489,10 @@ inline void Rect::set_allocated_xy(::maa::Point* xy) {
     _impl_._has_bits_[0] &= ~0x00000001u;
   }
   _impl_.xy_ = xy;
-  // @@protoc_insertion_point(field_set_allocated:maa.Rect.xy)
+  // @@protoc_insertion_point(field_set_allocated:maarpc.Rect.xy)
 }
 
-// optional .maa.Size wh = 2;
+// optional .maarpc.Size wh = 2;
 inline bool Rect::_internal_has_wh() const {
   bool value = (_impl_._has_bits_[0] & 0x00000002u) != 0;
   PROTOBUF_ASSUME(!value || _impl_.wh_ != nullptr);
@@ -4695,17 +4505,17 @@ inline void Rect::clear_wh() {
   if (_impl_.wh_ != nullptr) _impl_.wh_->Clear();
   _impl_._has_bits_[0] &= ~0x00000002u;
 }
-inline const ::maa::Size& Rect::_internal_wh() const {
-  const ::maa::Size* p = _impl_.wh_;
-  return p != nullptr ? *p : reinterpret_cast<const ::maa::Size&>(
-      ::maa::_Size_default_instance_);
+inline const ::maarpc::Size& Rect::_internal_wh() const {
+  const ::maarpc::Size* p = _impl_.wh_;
+  return p != nullptr ? *p : reinterpret_cast<const ::maarpc::Size&>(
+      ::maarpc::_Size_default_instance_);
 }
-inline const ::maa::Size& Rect::wh() const {
-  // @@protoc_insertion_point(field_get:maa.Rect.wh)
+inline const ::maarpc::Size& Rect::wh() const {
+  // @@protoc_insertion_point(field_get:maarpc.Rect.wh)
   return _internal_wh();
 }
 inline void Rect::unsafe_arena_set_allocated_wh(
-    ::maa::Size* wh) {
+    ::maarpc::Size* wh) {
   if (GetArenaForAllocation() == nullptr) {
     delete reinterpret_cast<::PROTOBUF_NAMESPACE_ID::MessageLite*>(_impl_.wh_);
   }
@@ -4715,11 +4525,11 @@ inline void Rect::unsafe_arena_set_allocated_wh(
   } else {
     _impl_._has_bits_[0] &= ~0x00000002u;
   }
-  // @@protoc_insertion_point(field_unsafe_arena_set_allocated:maa.Rect.wh)
+  // @@protoc_insertion_point(field_unsafe_arena_set_allocated:maarpc.Rect.wh)
 }
-inline ::maa::Size* Rect::release_wh() {
+inline ::maarpc::Size* Rect::release_wh() {
   _impl_._has_bits_[0] &= ~0x00000002u;
-  ::maa::Size* temp = _impl_.wh_;
+  ::maarpc::Size* temp = _impl_.wh_;
   _impl_.wh_ = nullptr;
 #ifdef PROTOBUF_FORCE_COPY_IN_RELEASE
   auto* old =  reinterpret_cast<::PROTOBUF_NAMESPACE_ID::MessageLite*>(temp);
@@ -4732,27 +4542,27 @@ inline ::maa::Size* Rect::release_wh() {
 #endif  // !PROTOBUF_FORCE_COPY_IN_RELEASE
   return temp;
 }
-inline ::maa::Size* Rect::unsafe_arena_release_wh() {
-  // @@protoc_insertion_point(field_release:maa.Rect.wh)
+inline ::maarpc::Size* Rect::unsafe_arena_release_wh() {
+  // @@protoc_insertion_point(field_release:maarpc.Rect.wh)
   _impl_._has_bits_[0] &= ~0x00000002u;
-  ::maa::Size* temp = _impl_.wh_;
+  ::maarpc::Size* temp = _impl_.wh_;
   _impl_.wh_ = nullptr;
   return temp;
 }
-inline ::maa::Size* Rect::_internal_mutable_wh() {
+inline ::maarpc::Size* Rect::_internal_mutable_wh() {
   _impl_._has_bits_[0] |= 0x00000002u;
   if (_impl_.wh_ == nullptr) {
-    auto* p = CreateMaybeMessage<::maa::Size>(GetArenaForAllocation());
+    auto* p = CreateMaybeMessage<::maarpc::Size>(GetArenaForAllocation());
     _impl_.wh_ = p;
   }
   return _impl_.wh_;
 }
-inline ::maa::Size* Rect::mutable_wh() {
-  ::maa::Size* _msg = _internal_mutable_wh();
-  // @@protoc_insertion_point(field_mutable:maa.Rect.wh)
+inline ::maarpc::Size* Rect::mutable_wh() {
+  ::maarpc::Size* _msg = _internal_mutable_wh();
+  // @@protoc_insertion_point(field_mutable:maarpc.Rect.wh)
   return _msg;
 }
-inline void Rect::set_allocated_wh(::maa::Size* wh) {
+inline void Rect::set_allocated_wh(::maarpc::Size* wh) {
   ::PROTOBUF_NAMESPACE_ID::Arena* message_arena = GetArenaForAllocation();
   if (message_arena == nullptr) {
     delete _impl_.wh_;
@@ -4769,7 +4579,7 @@ inline void Rect::set_allocated_wh(::maa::Size* wh) {
     _impl_._has_bits_[0] &= ~0x00000002u;
   }
   _impl_.wh_ = wh;
-  // @@protoc_insertion_point(field_set_allocated:maa.Rect.wh)
+  // @@protoc_insertion_point(field_set_allocated:maarpc.Rect.wh)
 }
 
 // -------------------------------------------------------------------
@@ -4789,7 +4599,7 @@ inline void Callback::clear_msg() {
   _impl_._has_bits_[0] &= ~0x00000001u;
 }
 inline const std::string& Callback::msg() const {
-  // @@protoc_insertion_point(field_get:maa.Callback.msg)
+  // @@protoc_insertion_point(field_get:maarpc.Callback.msg)
   return _internal_msg();
 }
 template <typename ArgT0, typename... ArgT>
@@ -4797,11 +4607,11 @@ inline PROTOBUF_ALWAYS_INLINE
 void Callback::set_msg(ArgT0&& arg0, ArgT... args) {
  _impl_._has_bits_[0] |= 0x00000001u;
  _impl_.msg_.Set(static_cast<ArgT0 &&>(arg0), args..., GetArenaForAllocation());
-  // @@protoc_insertion_point(field_set:maa.Callback.msg)
+  // @@protoc_insertion_point(field_set:maarpc.Callback.msg)
 }
 inline std::string* Callback::mutable_msg() {
   std::string* _s = _internal_mutable_msg();
-  // @@protoc_insertion_point(field_mutable:maa.Callback.msg)
+  // @@protoc_insertion_point(field_mutable:maarpc.Callback.msg)
   return _s;
 }
 inline const std::string& Callback::_internal_msg() const {
@@ -4816,7 +4626,7 @@ inline std::string* Callback::_internal_mutable_msg() {
   return _impl_.msg_.Mutable(GetArenaForAllocation());
 }
 inline std::string* Callback::release_msg() {
-  // @@protoc_insertion_point(field_release:maa.Callback.msg)
+  // @@protoc_insertion_point(field_release:maarpc.Callback.msg)
   if (!_internal_has_msg()) {
     return nullptr;
   }
@@ -4841,7 +4651,7 @@ inline void Callback::set_allocated_msg(std::string* msg) {
     _impl_.msg_.Set("", GetArenaForAllocation());
   }
 #endif // PROTOBUF_FORCE_COPY_DEFAULT_STRING
-  // @@protoc_insertion_point(field_set_allocated:maa.Callback.msg)
+  // @@protoc_insertion_point(field_set_allocated:maarpc.Callback.msg)
 }
 
 // optional string detail = 2;
@@ -4857,7 +4667,7 @@ inline void Callback::clear_detail() {
   _impl_._has_bits_[0] &= ~0x00000002u;
 }
 inline const std::string& Callback::detail() const {
-  // @@protoc_insertion_point(field_get:maa.Callback.detail)
+  // @@protoc_insertion_point(field_get:maarpc.Callback.detail)
   return _internal_detail();
 }
 template <typename ArgT0, typename... ArgT>
@@ -4865,11 +4675,11 @@ inline PROTOBUF_ALWAYS_INLINE
 void Callback::set_detail(ArgT0&& arg0, ArgT... args) {
  _impl_._has_bits_[0] |= 0x00000002u;
  _impl_.detail_.Set(static_cast<ArgT0 &&>(arg0), args..., GetArenaForAllocation());
-  // @@protoc_insertion_point(field_set:maa.Callback.detail)
+  // @@protoc_insertion_point(field_set:maarpc.Callback.detail)
 }
 inline std::string* Callback::mutable_detail() {
   std::string* _s = _internal_mutable_detail();
-  // @@protoc_insertion_point(field_mutable:maa.Callback.detail)
+  // @@protoc_insertion_point(field_mutable:maarpc.Callback.detail)
   return _s;
 }
 inline const std::string& Callback::_internal_detail() const {
@@ -4884,7 +4694,7 @@ inline std::string* Callback::_internal_mutable_detail() {
   return _impl_.detail_.Mutable(GetArenaForAllocation());
 }
 inline std::string* Callback::release_detail() {
-  // @@protoc_insertion_point(field_release:maa.Callback.detail)
+  // @@protoc_insertion_point(field_release:maarpc.Callback.detail)
   if (!_internal_has_detail()) {
     return nullptr;
   }
@@ -4909,14 +4719,14 @@ inline void Callback::set_allocated_detail(std::string* detail) {
     _impl_.detail_.Set("", GetArenaForAllocation());
   }
 #endif // PROTOBUF_FORCE_COPY_DEFAULT_STRING
-  // @@protoc_insertion_point(field_set_allocated:maa.Callback.detail)
+  // @@protoc_insertion_point(field_set_allocated:maarpc.Callback.detail)
 }
 
 // -------------------------------------------------------------------
 
 // ClickParam
 
-// optional .maa.Point point = 1;
+// optional .maarpc.Point point = 1;
 inline bool ClickParam::_internal_has_point() const {
   bool value = (_impl_._has_bits_[0] & 0x00000001u) != 0;
   PROTOBUF_ASSUME(!value || _impl_.point_ != nullptr);
@@ -4929,17 +4739,17 @@ inline void ClickParam::clear_point() {
   if (_impl_.point_ != nullptr) _impl_.point_->Clear();
   _impl_._has_bits_[0] &= ~0x00000001u;
 }
-inline const ::maa::Point& ClickParam::_internal_point() const {
-  const ::maa::Point* p = _impl_.point_;
-  return p != nullptr ? *p : reinterpret_cast<const ::maa::Point&>(
-      ::maa::_Point_default_instance_);
+inline const ::maarpc::Point& ClickParam::_internal_point() const {
+  const ::maarpc::Point* p = _impl_.point_;
+  return p != nullptr ? *p : reinterpret_cast<const ::maarpc::Point&>(
+      ::maarpc::_Point_default_instance_);
 }
-inline const ::maa::Point& ClickParam::point() const {
-  // @@protoc_insertion_point(field_get:maa.ClickParam.point)
+inline const ::maarpc::Point& ClickParam::point() const {
+  // @@protoc_insertion_point(field_get:maarpc.ClickParam.point)
   return _internal_point();
 }
 inline void ClickParam::unsafe_arena_set_allocated_point(
-    ::maa::Point* point) {
+    ::maarpc::Point* point) {
   if (GetArenaForAllocation() == nullptr) {
     delete reinterpret_cast<::PROTOBUF_NAMESPACE_ID::MessageLite*>(_impl_.point_);
   }
@@ -4949,11 +4759,11 @@ inline void ClickParam::unsafe_arena_set_allocated_point(
   } else {
     _impl_._has_bits_[0] &= ~0x00000001u;
   }
-  // @@protoc_insertion_point(field_unsafe_arena_set_allocated:maa.ClickParam.point)
+  // @@protoc_insertion_point(field_unsafe_arena_set_allocated:maarpc.ClickParam.point)
 }
-inline ::maa::Point* ClickParam::release_point() {
+inline ::maarpc::Point* ClickParam::release_point() {
   _impl_._has_bits_[0] &= ~0x00000001u;
-  ::maa::Point* temp = _impl_.point_;
+  ::maarpc::Point* temp = _impl_.point_;
   _impl_.point_ = nullptr;
 #ifdef PROTOBUF_FORCE_COPY_IN_RELEASE
   auto* old =  reinterpret_cast<::PROTOBUF_NAMESPACE_ID::MessageLite*>(temp);
@@ -4966,27 +4776,27 @@ inline ::maa::Point* ClickParam::release_point() {
 #endif  // !PROTOBUF_FORCE_COPY_IN_RELEASE
   return temp;
 }
-inline ::maa::Point* ClickParam::unsafe_arena_release_point() {
-  // @@protoc_insertion_point(field_release:maa.ClickParam.point)
+inline ::maarpc::Point* ClickParam::unsafe_arena_release_point() {
+  // @@protoc_insertion_point(field_release:maarpc.ClickParam.point)
   _impl_._has_bits_[0] &= ~0x00000001u;
-  ::maa::Point* temp = _impl_.point_;
+  ::maarpc::Point* temp = _impl_.point_;
   _impl_.point_ = nullptr;
   return temp;
 }
-inline ::maa::Point* ClickParam::_internal_mutable_point() {
+inline ::maarpc::Point* ClickParam::_internal_mutable_point() {
   _impl_._has_bits_[0] |= 0x00000001u;
   if (_impl_.point_ == nullptr) {
-    auto* p = CreateMaybeMessage<::maa::Point>(GetArenaForAllocation());
+    auto* p = CreateMaybeMessage<::maarpc::Point>(GetArenaForAllocation());
     _impl_.point_ = p;
   }
   return _impl_.point_;
 }
-inline ::maa::Point* ClickParam::mutable_point() {
-  ::maa::Point* _msg = _internal_mutable_point();
-  // @@protoc_insertion_point(field_mutable:maa.ClickParam.point)
+inline ::maarpc::Point* ClickParam::mutable_point() {
+  ::maarpc::Point* _msg = _internal_mutable_point();
+  // @@protoc_insertion_point(field_mutable:maarpc.ClickParam.point)
   return _msg;
 }
-inline void ClickParam::set_allocated_point(::maa::Point* point) {
+inline void ClickParam::set_allocated_point(::maarpc::Point* point) {
   ::PROTOBUF_NAMESPACE_ID::Arena* message_arena = GetArenaForAllocation();
   if (message_arena == nullptr) {
     delete _impl_.point_;
@@ -5003,14 +4813,14 @@ inline void ClickParam::set_allocated_point(::maa::Point* point) {
     _impl_._has_bits_[0] &= ~0x00000001u;
   }
   _impl_.point_ = point;
-  // @@protoc_insertion_point(field_set_allocated:maa.ClickParam.point)
+  // @@protoc_insertion_point(field_set_allocated:maarpc.ClickParam.point)
 }
 
 // -------------------------------------------------------------------
 
 // SwipeParam
 
-// optional .maa.Point from = 1;
+// optional .maarpc.Point from = 1;
 inline bool SwipeParam::_internal_has_from() const {
   bool value = (_impl_._has_bits_[0] & 0x00000001u) != 0;
   PROTOBUF_ASSUME(!value || _impl_.from_ != nullptr);
@@ -5023,17 +4833,17 @@ inline void SwipeParam::clear_from() {
   if (_impl_.from_ != nullptr) _impl_.from_->Clear();
   _impl_._has_bits_[0] &= ~0x00000001u;
 }
-inline const ::maa::Point& SwipeParam::_internal_from() const {
-  const ::maa::Point* p = _impl_.from_;
-  return p != nullptr ? *p : reinterpret_cast<const ::maa::Point&>(
-      ::maa::_Point_default_instance_);
+inline const ::maarpc::Point& SwipeParam::_internal_from() const {
+  const ::maarpc::Point* p = _impl_.from_;
+  return p != nullptr ? *p : reinterpret_cast<const ::maarpc::Point&>(
+      ::maarpc::_Point_default_instance_);
 }
-inline const ::maa::Point& SwipeParam::from() const {
-  // @@protoc_insertion_point(field_get:maa.SwipeParam.from)
+inline const ::maarpc::Point& SwipeParam::from() const {
+  // @@protoc_insertion_point(field_get:maarpc.SwipeParam.from)
   return _internal_from();
 }
 inline void SwipeParam::unsafe_arena_set_allocated_from(
-    ::maa::Point* from) {
+    ::maarpc::Point* from) {
   if (GetArenaForAllocation() == nullptr) {
     delete reinterpret_cast<::PROTOBUF_NAMESPACE_ID::MessageLite*>(_impl_.from_);
   }
@@ -5043,11 +4853,11 @@ inline void SwipeParam::unsafe_arena_set_allocated_from(
   } else {
     _impl_._has_bits_[0] &= ~0x00000001u;
   }
-  // @@protoc_insertion_point(field_unsafe_arena_set_allocated:maa.SwipeParam.from)
+  // @@protoc_insertion_point(field_unsafe_arena_set_allocated:maarpc.SwipeParam.from)
 }
-inline ::maa::Point* SwipeParam::release_from() {
+inline ::maarpc::Point* SwipeParam::release_from() {
   _impl_._has_bits_[0] &= ~0x00000001u;
-  ::maa::Point* temp = _impl_.from_;
+  ::maarpc::Point* temp = _impl_.from_;
   _impl_.from_ = nullptr;
 #ifdef PROTOBUF_FORCE_COPY_IN_RELEASE
   auto* old =  reinterpret_cast<::PROTOBUF_NAMESPACE_ID::MessageLite*>(temp);
@@ -5060,27 +4870,27 @@ inline ::maa::Point* SwipeParam::release_from() {
 #endif  // !PROTOBUF_FORCE_COPY_IN_RELEASE
   return temp;
 }
-inline ::maa::Point* SwipeParam::unsafe_arena_release_from() {
-  // @@protoc_insertion_point(field_release:maa.SwipeParam.from)
+inline ::maarpc::Point* SwipeParam::unsafe_arena_release_from() {
+  // @@protoc_insertion_point(field_release:maarpc.SwipeParam.from)
   _impl_._has_bits_[0] &= ~0x00000001u;
-  ::maa::Point* temp = _impl_.from_;
+  ::maarpc::Point* temp = _impl_.from_;
   _impl_.from_ = nullptr;
   return temp;
 }
-inline ::maa::Point* SwipeParam::_internal_mutable_from() {
+inline ::maarpc::Point* SwipeParam::_internal_mutable_from() {
   _impl_._has_bits_[0] |= 0x00000001u;
   if (_impl_.from_ == nullptr) {
-    auto* p = CreateMaybeMessage<::maa::Point>(GetArenaForAllocation());
+    auto* p = CreateMaybeMessage<::maarpc::Point>(GetArenaForAllocation());
     _impl_.from_ = p;
   }
   return _impl_.from_;
 }
-inline ::maa::Point* SwipeParam::mutable_from() {
-  ::maa::Point* _msg = _internal_mutable_from();
-  // @@protoc_insertion_point(field_mutable:maa.SwipeParam.from)
+inline ::maarpc::Point* SwipeParam::mutable_from() {
+  ::maarpc::Point* _msg = _internal_mutable_from();
+  // @@protoc_insertion_point(field_mutable:maarpc.SwipeParam.from)
   return _msg;
 }
-inline void SwipeParam::set_allocated_from(::maa::Point* from) {
+inline void SwipeParam::set_allocated_from(::maarpc::Point* from) {
   ::PROTOBUF_NAMESPACE_ID::Arena* message_arena = GetArenaForAllocation();
   if (message_arena == nullptr) {
     delete _impl_.from_;
@@ -5097,10 +4907,10 @@ inline void SwipeParam::set_allocated_from(::maa::Point* from) {
     _impl_._has_bits_[0] &= ~0x00000001u;
   }
   _impl_.from_ = from;
-  // @@protoc_insertion_point(field_set_allocated:maa.SwipeParam.from)
+  // @@protoc_insertion_point(field_set_allocated:maarpc.SwipeParam.from)
 }
 
-// optional .maa.Point to = 2;
+// optional .maarpc.Point to = 2;
 inline bool SwipeParam::_internal_has_to() const {
   bool value = (_impl_._has_bits_[0] & 0x00000002u) != 0;
   PROTOBUF_ASSUME(!value || _impl_.to_ != nullptr);
@@ -5113,17 +4923,17 @@ inline void SwipeParam::clear_to() {
   if (_impl_.to_ != nullptr) _impl_.to_->Clear();
   _impl_._has_bits_[0] &= ~0x00000002u;
 }
-inline const ::maa::Point& SwipeParam::_internal_to() const {
-  const ::maa::Point* p = _impl_.to_;
-  return p != nullptr ? *p : reinterpret_cast<const ::maa::Point&>(
-      ::maa::_Point_default_instance_);
+inline const ::maarpc::Point& SwipeParam::_internal_to() const {
+  const ::maarpc::Point* p = _impl_.to_;
+  return p != nullptr ? *p : reinterpret_cast<const ::maarpc::Point&>(
+      ::maarpc::_Point_default_instance_);
 }
-inline const ::maa::Point& SwipeParam::to() const {
-  // @@protoc_insertion_point(field_get:maa.SwipeParam.to)
+inline const ::maarpc::Point& SwipeParam::to() const {
+  // @@protoc_insertion_point(field_get:maarpc.SwipeParam.to)
   return _internal_to();
 }
 inline void SwipeParam::unsafe_arena_set_allocated_to(
-    ::maa::Point* to) {
+    ::maarpc::Point* to) {
   if (GetArenaForAllocation() == nullptr) {
     delete reinterpret_cast<::PROTOBUF_NAMESPACE_ID::MessageLite*>(_impl_.to_);
   }
@@ -5133,11 +4943,11 @@ inline void SwipeParam::unsafe_arena_set_allocated_to(
   } else {
     _impl_._has_bits_[0] &= ~0x00000002u;
   }
-  // @@protoc_insertion_point(field_unsafe_arena_set_allocated:maa.SwipeParam.to)
+  // @@protoc_insertion_point(field_unsafe_arena_set_allocated:maarpc.SwipeParam.to)
 }
-inline ::maa::Point* SwipeParam::release_to() {
+inline ::maarpc::Point* SwipeParam::release_to() {
   _impl_._has_bits_[0] &= ~0x00000002u;
-  ::maa::Point* temp = _impl_.to_;
+  ::maarpc::Point* temp = _impl_.to_;
   _impl_.to_ = nullptr;
 #ifdef PROTOBUF_FORCE_COPY_IN_RELEASE
   auto* old =  reinterpret_cast<::PROTOBUF_NAMESPACE_ID::MessageLite*>(temp);
@@ -5150,27 +4960,27 @@ inline ::maa::Point* SwipeParam::release_to() {
 #endif  // !PROTOBUF_FORCE_COPY_IN_RELEASE
   return temp;
 }
-inline ::maa::Point* SwipeParam::unsafe_arena_release_to() {
-  // @@protoc_insertion_point(field_release:maa.SwipeParam.to)
+inline ::maarpc::Point* SwipeParam::unsafe_arena_release_to() {
+  // @@protoc_insertion_point(field_release:maarpc.SwipeParam.to)
   _impl_._has_bits_[0] &= ~0x00000002u;
-  ::maa::Point* temp = _impl_.to_;
+  ::maarpc::Point* temp = _impl_.to_;
   _impl_.to_ = nullptr;
   return temp;
 }
-inline ::maa::Point* SwipeParam::_internal_mutable_to() {
+inline ::maarpc::Point* SwipeParam::_internal_mutable_to() {
   _impl_._has_bits_[0] |= 0x00000002u;
   if (_impl_.to_ == nullptr) {
-    auto* p = CreateMaybeMessage<::maa::Point>(GetArenaForAllocation());
+    auto* p = CreateMaybeMessage<::maarpc::Point>(GetArenaForAllocation());
     _impl_.to_ = p;
   }
   return _impl_.to_;
 }
-inline ::maa::Point* SwipeParam::mutable_to() {
-  ::maa::Point* _msg = _internal_mutable_to();
-  // @@protoc_insertion_point(field_mutable:maa.SwipeParam.to)
+inline ::maarpc::Point* SwipeParam::mutable_to() {
+  ::maarpc::Point* _msg = _internal_mutable_to();
+  // @@protoc_insertion_point(field_mutable:maarpc.SwipeParam.to)
   return _msg;
 }
-inline void SwipeParam::set_allocated_to(::maa::Point* to) {
+inline void SwipeParam::set_allocated_to(::maarpc::Point* to) {
   ::PROTOBUF_NAMESPACE_ID::Arena* message_arena = GetArenaForAllocation();
   if (message_arena == nullptr) {
     delete _impl_.to_;
@@ -5187,7 +4997,7 @@ inline void SwipeParam::set_allocated_to(::maa::Point* to) {
     _impl_._has_bits_[0] &= ~0x00000002u;
   }
   _impl_.to_ = to;
-  // @@protoc_insertion_point(field_set_allocated:maa.SwipeParam.to)
+  // @@protoc_insertion_point(field_set_allocated:maarpc.SwipeParam.to)
 }
 
 // optional int32 duration = 3;
@@ -5206,7 +5016,7 @@ inline int32_t SwipeParam::_internal_duration() const {
   return _impl_.duration_;
 }
 inline int32_t SwipeParam::duration() const {
-  // @@protoc_insertion_point(field_get:maa.SwipeParam.duration)
+  // @@protoc_insertion_point(field_get:maarpc.SwipeParam.duration)
   return _internal_duration();
 }
 inline void SwipeParam::_internal_set_duration(int32_t value) {
@@ -5215,7 +5025,7 @@ inline void SwipeParam::_internal_set_duration(int32_t value) {
 }
 inline void SwipeParam::set_duration(int32_t value) {
   _internal_set_duration(value);
-  // @@protoc_insertion_point(field_set:maa.SwipeParam.duration)
+  // @@protoc_insertion_point(field_set:maarpc.SwipeParam.duration)
 }
 
 // -------------------------------------------------------------------
@@ -5238,7 +5048,7 @@ inline int32_t KeyParam::_internal_key() const {
   return _impl_.key_;
 }
 inline int32_t KeyParam::key() const {
-  // @@protoc_insertion_point(field_get:maa.KeyParam.key)
+  // @@protoc_insertion_point(field_get:maarpc.KeyParam.key)
   return _internal_key();
 }
 inline void KeyParam::_internal_set_key(int32_t value) {
@@ -5247,7 +5057,7 @@ inline void KeyParam::_internal_set_key(int32_t value) {
 }
 inline void KeyParam::set_key(int32_t value) {
   _internal_set_key(value);
-  // @@protoc_insertion_point(field_set:maa.KeyParam.key)
+  // @@protoc_insertion_point(field_set:maarpc.KeyParam.key)
 }
 
 // -------------------------------------------------------------------
@@ -5270,7 +5080,7 @@ inline int32_t TouchParam::_internal_contact() const {
   return _impl_.contact_;
 }
 inline int32_t TouchParam::contact() const {
-  // @@protoc_insertion_point(field_get:maa.TouchParam.contact)
+  // @@protoc_insertion_point(field_get:maarpc.TouchParam.contact)
   return _internal_contact();
 }
 inline void TouchParam::_internal_set_contact(int32_t value) {
@@ -5279,10 +5089,10 @@ inline void TouchParam::_internal_set_contact(int32_t value) {
 }
 inline void TouchParam::set_contact(int32_t value) {
   _internal_set_contact(value);
-  // @@protoc_insertion_point(field_set:maa.TouchParam.contact)
+  // @@protoc_insertion_point(field_set:maarpc.TouchParam.contact)
 }
 
-// optional .maa.Point pos = 2;
+// optional .maarpc.Point pos = 2;
 inline bool TouchParam::_internal_has_pos() const {
   bool value = (_impl_._has_bits_[0] & 0x00000001u) != 0;
   PROTOBUF_ASSUME(!value || _impl_.pos_ != nullptr);
@@ -5295,17 +5105,17 @@ inline void TouchParam::clear_pos() {
   if (_impl_.pos_ != nullptr) _impl_.pos_->Clear();
   _impl_._has_bits_[0] &= ~0x00000001u;
 }
-inline const ::maa::Point& TouchParam::_internal_pos() const {
-  const ::maa::Point* p = _impl_.pos_;
-  return p != nullptr ? *p : reinterpret_cast<const ::maa::Point&>(
-      ::maa::_Point_default_instance_);
+inline const ::maarpc::Point& TouchParam::_internal_pos() const {
+  const ::maarpc::Point* p = _impl_.pos_;
+  return p != nullptr ? *p : reinterpret_cast<const ::maarpc::Point&>(
+      ::maarpc::_Point_default_instance_);
 }
-inline const ::maa::Point& TouchParam::pos() const {
-  // @@protoc_insertion_point(field_get:maa.TouchParam.pos)
+inline const ::maarpc::Point& TouchParam::pos() const {
+  // @@protoc_insertion_point(field_get:maarpc.TouchParam.pos)
   return _internal_pos();
 }
 inline void TouchParam::unsafe_arena_set_allocated_pos(
-    ::maa::Point* pos) {
+    ::maarpc::Point* pos) {
   if (GetArenaForAllocation() == nullptr) {
     delete reinterpret_cast<::PROTOBUF_NAMESPACE_ID::MessageLite*>(_impl_.pos_);
   }
@@ -5315,11 +5125,11 @@ inline void TouchParam::unsafe_arena_set_allocated_pos(
   } else {
     _impl_._has_bits_[0] &= ~0x00000001u;
   }
-  // @@protoc_insertion_point(field_unsafe_arena_set_allocated:maa.TouchParam.pos)
+  // @@protoc_insertion_point(field_unsafe_arena_set_allocated:maarpc.TouchParam.pos)
 }
-inline ::maa::Point* TouchParam::release_pos() {
+inline ::maarpc::Point* TouchParam::release_pos() {
   _impl_._has_bits_[0] &= ~0x00000001u;
-  ::maa::Point* temp = _impl_.pos_;
+  ::maarpc::Point* temp = _impl_.pos_;
   _impl_.pos_ = nullptr;
 #ifdef PROTOBUF_FORCE_COPY_IN_RELEASE
   auto* old =  reinterpret_cast<::PROTOBUF_NAMESPACE_ID::MessageLite*>(temp);
@@ -5332,27 +5142,27 @@ inline ::maa::Point* TouchParam::release_pos() {
 #endif  // !PROTOBUF_FORCE_COPY_IN_RELEASE
   return temp;
 }
-inline ::maa::Point* TouchParam::unsafe_arena_release_pos() {
-  // @@protoc_insertion_point(field_release:maa.TouchParam.pos)
+inline ::maarpc::Point* TouchParam::unsafe_arena_release_pos() {
+  // @@protoc_insertion_point(field_release:maarpc.TouchParam.pos)
   _impl_._has_bits_[0] &= ~0x00000001u;
-  ::maa::Point* temp = _impl_.pos_;
+  ::maarpc::Point* temp = _impl_.pos_;
   _impl_.pos_ = nullptr;
   return temp;
 }
-inline ::maa::Point* TouchParam::_internal_mutable_pos() {
+inline ::maarpc::Point* TouchParam::_internal_mutable_pos() {
   _impl_._has_bits_[0] |= 0x00000001u;
   if (_impl_.pos_ == nullptr) {
-    auto* p = CreateMaybeMessage<::maa::Point>(GetArenaForAllocation());
+    auto* p = CreateMaybeMessage<::maarpc::Point>(GetArenaForAllocation());
     _impl_.pos_ = p;
   }
   return _impl_.pos_;
 }
-inline ::maa::Point* TouchParam::mutable_pos() {
-  ::maa::Point* _msg = _internal_mutable_pos();
-  // @@protoc_insertion_point(field_mutable:maa.TouchParam.pos)
+inline ::maarpc::Point* TouchParam::mutable_pos() {
+  ::maarpc::Point* _msg = _internal_mutable_pos();
+  // @@protoc_insertion_point(field_mutable:maarpc.TouchParam.pos)
   return _msg;
 }
-inline void TouchParam::set_allocated_pos(::maa::Point* pos) {
+inline void TouchParam::set_allocated_pos(::maarpc::Point* pos) {
   ::PROTOBUF_NAMESPACE_ID::Arena* message_arena = GetArenaForAllocation();
   if (message_arena == nullptr) {
     delete _impl_.pos_;
@@ -5369,7 +5179,7 @@ inline void TouchParam::set_allocated_pos(::maa::Point* pos) {
     _impl_._has_bits_[0] &= ~0x00000001u;
   }
   _impl_.pos_ = pos;
-  // @@protoc_insertion_point(field_set_allocated:maa.TouchParam.pos)
+  // @@protoc_insertion_point(field_set_allocated:maarpc.TouchParam.pos)
 }
 
 // optional int32 pressure = 3;
@@ -5388,7 +5198,7 @@ inline int32_t TouchParam::_internal_pressure() const {
   return _impl_.pressure_;
 }
 inline int32_t TouchParam::pressure() const {
-  // @@protoc_insertion_point(field_get:maa.TouchParam.pressure)
+  // @@protoc_insertion_point(field_get:maarpc.TouchParam.pressure)
   return _internal_pressure();
 }
 inline void TouchParam::_internal_set_pressure(int32_t value) {
@@ -5397,18 +5207,46 @@ inline void TouchParam::_internal_set_pressure(int32_t value) {
 }
 inline void TouchParam::set_pressure(int32_t value) {
   _internal_set_pressure(value);
-  // @@protoc_insertion_point(field_set:maa.TouchParam.pressure)
+  // @@protoc_insertion_point(field_set:maarpc.TouchParam.pressure)
 }
 
 // -------------------------------------------------------------------
 
 // EmptyRequest
 
+// optional bool unused = 1;
+inline bool EmptyRequest::_internal_has_unused() const {
+  bool value = (_impl_._has_bits_[0] & 0x00000001u) != 0;
+  return value;
+}
+inline bool EmptyRequest::has_unused() const {
+  return _internal_has_unused();
+}
+inline void EmptyRequest::clear_unused() {
+  _impl_.unused_ = false;
+  _impl_._has_bits_[0] &= ~0x00000001u;
+}
+inline bool EmptyRequest::_internal_unused() const {
+  return _impl_.unused_;
+}
+inline bool EmptyRequest::unused() const {
+  // @@protoc_insertion_point(field_get:maarpc.EmptyRequest.unused)
+  return _internal_unused();
+}
+inline void EmptyRequest::_internal_set_unused(bool value) {
+  _impl_._has_bits_[0] |= 0x00000001u;
+  _impl_.unused_ = value;
+}
+inline void EmptyRequest::set_unused(bool value) {
+  _internal_set_unused(value);
+  // @@protoc_insertion_point(field_set:maarpc.EmptyRequest.unused)
+}
+
 // -------------------------------------------------------------------
 
 // IdRequest
 
-// optional .maa.Id id = 1;
+// optional .maarpc.Id id = 1;
 inline bool IdRequest::_internal_has_id() const {
   bool value = (_impl_._has_bits_[0] & 0x00000001u) != 0;
   PROTOBUF_ASSUME(!value || _impl_.id_ != nullptr);
@@ -5421,17 +5259,17 @@ inline void IdRequest::clear_id() {
   if (_impl_.id_ != nullptr) _impl_.id_->Clear();
   _impl_._has_bits_[0] &= ~0x00000001u;
 }
-inline const ::maa::Id& IdRequest::_internal_id() const {
-  const ::maa::Id* p = _impl_.id_;
-  return p != nullptr ? *p : reinterpret_cast<const ::maa::Id&>(
-      ::maa::_Id_default_instance_);
+inline const ::maarpc::Id& IdRequest::_internal_id() const {
+  const ::maarpc::Id* p = _impl_.id_;
+  return p != nullptr ? *p : reinterpret_cast<const ::maarpc::Id&>(
+      ::maarpc::_Id_default_instance_);
 }
-inline const ::maa::Id& IdRequest::id() const {
-  // @@protoc_insertion_point(field_get:maa.IdRequest.id)
+inline const ::maarpc::Id& IdRequest::id() const {
+  // @@protoc_insertion_point(field_get:maarpc.IdRequest.id)
   return _internal_id();
 }
 inline void IdRequest::unsafe_arena_set_allocated_id(
-    ::maa::Id* id) {
+    ::maarpc::Id* id) {
   if (GetArenaForAllocation() == nullptr) {
     delete reinterpret_cast<::PROTOBUF_NAMESPACE_ID::MessageLite*>(_impl_.id_);
   }
@@ -5441,11 +5279,11 @@ inline void IdRequest::unsafe_arena_set_allocated_id(
   } else {
     _impl_._has_bits_[0] &= ~0x00000001u;
   }
-  // @@protoc_insertion_point(field_unsafe_arena_set_allocated:maa.IdRequest.id)
+  // @@protoc_insertion_point(field_unsafe_arena_set_allocated:maarpc.IdRequest.id)
 }
-inline ::maa::Id* IdRequest::release_id() {
+inline ::maarpc::Id* IdRequest::release_id() {
   _impl_._has_bits_[0] &= ~0x00000001u;
-  ::maa::Id* temp = _impl_.id_;
+  ::maarpc::Id* temp = _impl_.id_;
   _impl_.id_ = nullptr;
 #ifdef PROTOBUF_FORCE_COPY_IN_RELEASE
   auto* old =  reinterpret_cast<::PROTOBUF_NAMESPACE_ID::MessageLite*>(temp);
@@ -5458,27 +5296,27 @@ inline ::maa::Id* IdRequest::release_id() {
 #endif  // !PROTOBUF_FORCE_COPY_IN_RELEASE
   return temp;
 }
-inline ::maa::Id* IdRequest::unsafe_arena_release_id() {
-  // @@protoc_insertion_point(field_release:maa.IdRequest.id)
+inline ::maarpc::Id* IdRequest::unsafe_arena_release_id() {
+  // @@protoc_insertion_point(field_release:maarpc.IdRequest.id)
   _impl_._has_bits_[0] &= ~0x00000001u;
-  ::maa::Id* temp = _impl_.id_;
+  ::maarpc::Id* temp = _impl_.id_;
   _impl_.id_ = nullptr;
   return temp;
 }
-inline ::maa::Id* IdRequest::_internal_mutable_id() {
+inline ::maarpc::Id* IdRequest::_internal_mutable_id() {
   _impl_._has_bits_[0] |= 0x00000001u;
   if (_impl_.id_ == nullptr) {
-    auto* p = CreateMaybeMessage<::maa::Id>(GetArenaForAllocation());
+    auto* p = CreateMaybeMessage<::maarpc::Id>(GetArenaForAllocation());
     _impl_.id_ = p;
   }
   return _impl_.id_;
 }
-inline ::maa::Id* IdRequest::mutable_id() {
-  ::maa::Id* _msg = _internal_mutable_id();
-  // @@protoc_insertion_point(field_mutable:maa.IdRequest.id)
+inline ::maarpc::Id* IdRequest::mutable_id() {
+  ::maarpc::Id* _msg = _internal_mutable_id();
+  // @@protoc_insertion_point(field_mutable:maarpc.IdRequest.id)
   return _msg;
 }
-inline void IdRequest::set_allocated_id(::maa::Id* id) {
+inline void IdRequest::set_allocated_id(::maarpc::Id* id) {
   ::PROTOBUF_NAMESPACE_ID::Arena* message_arena = GetArenaForAllocation();
   if (message_arena == nullptr) {
     delete _impl_.id_;
@@ -5495,14 +5333,14 @@ inline void IdRequest::set_allocated_id(::maa::Id* id) {
     _impl_._has_bits_[0] &= ~0x00000001u;
   }
   _impl_.id_ = id;
-  // @@protoc_insertion_point(field_set_allocated:maa.IdRequest.id)
+  // @@protoc_insertion_point(field_set_allocated:maarpc.IdRequest.id)
 }
 
 // -------------------------------------------------------------------
 
 // HandleRequest
 
-// optional .maa.Handle handle = 1;
+// optional .maarpc.Handle handle = 1;
 inline bool HandleRequest::_internal_has_handle() const {
   bool value = (_impl_._has_bits_[0] & 0x00000001u) != 0;
   PROTOBUF_ASSUME(!value || _impl_.handle_ != nullptr);
@@ -5515,17 +5353,17 @@ inline void HandleRequest::clear_handle() {
   if (_impl_.handle_ != nullptr) _impl_.handle_->Clear();
   _impl_._has_bits_[0] &= ~0x00000001u;
 }
-inline const ::maa::Handle& HandleRequest::_internal_handle() const {
-  const ::maa::Handle* p = _impl_.handle_;
-  return p != nullptr ? *p : reinterpret_cast<const ::maa::Handle&>(
-      ::maa::_Handle_default_instance_);
+inline const ::maarpc::Handle& HandleRequest::_internal_handle() const {
+  const ::maarpc::Handle* p = _impl_.handle_;
+  return p != nullptr ? *p : reinterpret_cast<const ::maarpc::Handle&>(
+      ::maarpc::_Handle_default_instance_);
 }
-inline const ::maa::Handle& HandleRequest::handle() const {
-  // @@protoc_insertion_point(field_get:maa.HandleRequest.handle)
+inline const ::maarpc::Handle& HandleRequest::handle() const {
+  // @@protoc_insertion_point(field_get:maarpc.HandleRequest.handle)
   return _internal_handle();
 }
 inline void HandleRequest::unsafe_arena_set_allocated_handle(
-    ::maa::Handle* handle) {
+    ::maarpc::Handle* handle) {
   if (GetArenaForAllocation() == nullptr) {
     delete reinterpret_cast<::PROTOBUF_NAMESPACE_ID::MessageLite*>(_impl_.handle_);
   }
@@ -5535,11 +5373,11 @@ inline void HandleRequest::unsafe_arena_set_allocated_handle(
   } else {
     _impl_._has_bits_[0] &= ~0x00000001u;
   }
-  // @@protoc_insertion_point(field_unsafe_arena_set_allocated:maa.HandleRequest.handle)
+  // @@protoc_insertion_point(field_unsafe_arena_set_allocated:maarpc.HandleRequest.handle)
 }
-inline ::maa::Handle* HandleRequest::release_handle() {
+inline ::maarpc::Handle* HandleRequest::release_handle() {
   _impl_._has_bits_[0] &= ~0x00000001u;
-  ::maa::Handle* temp = _impl_.handle_;
+  ::maarpc::Handle* temp = _impl_.handle_;
   _impl_.handle_ = nullptr;
 #ifdef PROTOBUF_FORCE_COPY_IN_RELEASE
   auto* old =  reinterpret_cast<::PROTOBUF_NAMESPACE_ID::MessageLite*>(temp);
@@ -5552,27 +5390,27 @@ inline ::maa::Handle* HandleRequest::release_handle() {
 #endif  // !PROTOBUF_FORCE_COPY_IN_RELEASE
   return temp;
 }
-inline ::maa::Handle* HandleRequest::unsafe_arena_release_handle() {
-  // @@protoc_insertion_point(field_release:maa.HandleRequest.handle)
+inline ::maarpc::Handle* HandleRequest::unsafe_arena_release_handle() {
+  // @@protoc_insertion_point(field_release:maarpc.HandleRequest.handle)
   _impl_._has_bits_[0] &= ~0x00000001u;
-  ::maa::Handle* temp = _impl_.handle_;
+  ::maarpc::Handle* temp = _impl_.handle_;
   _impl_.handle_ = nullptr;
   return temp;
 }
-inline ::maa::Handle* HandleRequest::_internal_mutable_handle() {
+inline ::maarpc::Handle* HandleRequest::_internal_mutable_handle() {
   _impl_._has_bits_[0] |= 0x00000001u;
   if (_impl_.handle_ == nullptr) {
-    auto* p = CreateMaybeMessage<::maa::Handle>(GetArenaForAllocation());
+    auto* p = CreateMaybeMessage<::maarpc::Handle>(GetArenaForAllocation());
     _impl_.handle_ = p;
   }
   return _impl_.handle_;
 }
-inline ::maa::Handle* HandleRequest::mutable_handle() {
-  ::maa::Handle* _msg = _internal_mutable_handle();
-  // @@protoc_insertion_point(field_mutable:maa.HandleRequest.handle)
+inline ::maarpc::Handle* HandleRequest::mutable_handle() {
+  ::maarpc::Handle* _msg = _internal_mutable_handle();
+  // @@protoc_insertion_point(field_mutable:maarpc.HandleRequest.handle)
   return _msg;
 }
-inline void HandleRequest::set_allocated_handle(::maa::Handle* handle) {
+inline void HandleRequest::set_allocated_handle(::maarpc::Handle* handle) {
   ::PROTOBUF_NAMESPACE_ID::Arena* message_arena = GetArenaForAllocation();
   if (message_arena == nullptr) {
     delete _impl_.handle_;
@@ -5589,7 +5427,7 @@ inline void HandleRequest::set_allocated_handle(::maa::Handle* handle) {
     _impl_._has_bits_[0] &= ~0x00000001u;
   }
   _impl_.handle_ = handle;
-  // @@protoc_insertion_point(field_set_allocated:maa.HandleRequest.handle)
+  // @@protoc_insertion_point(field_set_allocated:maarpc.HandleRequest.handle)
 }
 
 // -------------------------------------------------------------------
@@ -5609,7 +5447,7 @@ inline void BufferRequest::clear_buffer() {
   _impl_._has_bits_[0] &= ~0x00000001u;
 }
 inline const std::string& BufferRequest::buffer() const {
-  // @@protoc_insertion_point(field_get:maa.BufferRequest.buffer)
+  // @@protoc_insertion_point(field_get:maarpc.BufferRequest.buffer)
   return _internal_buffer();
 }
 template <typename ArgT0, typename... ArgT>
@@ -5617,11 +5455,11 @@ inline PROTOBUF_ALWAYS_INLINE
 void BufferRequest::set_buffer(ArgT0&& arg0, ArgT... args) {
  _impl_._has_bits_[0] |= 0x00000001u;
  _impl_.buffer_.SetBytes(static_cast<ArgT0 &&>(arg0), args..., GetArenaForAllocation());
-  // @@protoc_insertion_point(field_set:maa.BufferRequest.buffer)
+  // @@protoc_insertion_point(field_set:maarpc.BufferRequest.buffer)
 }
 inline std::string* BufferRequest::mutable_buffer() {
   std::string* _s = _internal_mutable_buffer();
-  // @@protoc_insertion_point(field_mutable:maa.BufferRequest.buffer)
+  // @@protoc_insertion_point(field_mutable:maarpc.BufferRequest.buffer)
   return _s;
 }
 inline const std::string& BufferRequest::_internal_buffer() const {
@@ -5636,7 +5474,7 @@ inline std::string* BufferRequest::_internal_mutable_buffer() {
   return _impl_.buffer_.Mutable(GetArenaForAllocation());
 }
 inline std::string* BufferRequest::release_buffer() {
-  // @@protoc_insertion_point(field_release:maa.BufferRequest.buffer)
+  // @@protoc_insertion_point(field_release:maarpc.BufferRequest.buffer)
   if (!_internal_has_buffer()) {
     return nullptr;
   }
@@ -5661,14 +5499,14 @@ inline void BufferRequest::set_allocated_buffer(std::string* buffer) {
     _impl_.buffer_.Set("", GetArenaForAllocation());
   }
 #endif // PROTOBUF_FORCE_COPY_DEFAULT_STRING
-  // @@protoc_insertion_point(field_set_allocated:maa.BufferRequest.buffer)
+  // @@protoc_insertion_point(field_set_allocated:maarpc.BufferRequest.buffer)
 }
 
 // -------------------------------------------------------------------
 
 // HandleBufferRequest
 
-// optional .maa.Handle handle = 1;
+// optional .maarpc.Handle handle = 1;
 inline bool HandleBufferRequest::_internal_has_handle() const {
   bool value = (_impl_._has_bits_[0] & 0x00000002u) != 0;
   PROTOBUF_ASSUME(!value || _impl_.handle_ != nullptr);
@@ -5681,17 +5519,17 @@ inline void HandleBufferRequest::clear_handle() {
   if (_impl_.handle_ != nullptr) _impl_.handle_->Clear();
   _impl_._has_bits_[0] &= ~0x00000002u;
 }
-inline const ::maa::Handle& HandleBufferRequest::_internal_handle() const {
-  const ::maa::Handle* p = _impl_.handle_;
-  return p != nullptr ? *p : reinterpret_cast<const ::maa::Handle&>(
-      ::maa::_Handle_default_instance_);
+inline const ::maarpc::Handle& HandleBufferRequest::_internal_handle() const {
+  const ::maarpc::Handle* p = _impl_.handle_;
+  return p != nullptr ? *p : reinterpret_cast<const ::maarpc::Handle&>(
+      ::maarpc::_Handle_default_instance_);
 }
-inline const ::maa::Handle& HandleBufferRequest::handle() const {
-  // @@protoc_insertion_point(field_get:maa.HandleBufferRequest.handle)
+inline const ::maarpc::Handle& HandleBufferRequest::handle() const {
+  // @@protoc_insertion_point(field_get:maarpc.HandleBufferRequest.handle)
   return _internal_handle();
 }
 inline void HandleBufferRequest::unsafe_arena_set_allocated_handle(
-    ::maa::Handle* handle) {
+    ::maarpc::Handle* handle) {
   if (GetArenaForAllocation() == nullptr) {
     delete reinterpret_cast<::PROTOBUF_NAMESPACE_ID::MessageLite*>(_impl_.handle_);
   }
@@ -5701,11 +5539,11 @@ inline void HandleBufferRequest::unsafe_arena_set_allocated_handle(
   } else {
     _impl_._has_bits_[0] &= ~0x00000002u;
   }
-  // @@protoc_insertion_point(field_unsafe_arena_set_allocated:maa.HandleBufferRequest.handle)
+  // @@protoc_insertion_point(field_unsafe_arena_set_allocated:maarpc.HandleBufferRequest.handle)
 }
-inline ::maa::Handle* HandleBufferRequest::release_handle() {
+inline ::maarpc::Handle* HandleBufferRequest::release_handle() {
   _impl_._has_bits_[0] &= ~0x00000002u;
-  ::maa::Handle* temp = _impl_.handle_;
+  ::maarpc::Handle* temp = _impl_.handle_;
   _impl_.handle_ = nullptr;
 #ifdef PROTOBUF_FORCE_COPY_IN_RELEASE
   auto* old =  reinterpret_cast<::PROTOBUF_NAMESPACE_ID::MessageLite*>(temp);
@@ -5718,27 +5556,27 @@ inline ::maa::Handle* HandleBufferRequest::release_handle() {
 #endif  // !PROTOBUF_FORCE_COPY_IN_RELEASE
   return temp;
 }
-inline ::maa::Handle* HandleBufferRequest::unsafe_arena_release_handle() {
-  // @@protoc_insertion_point(field_release:maa.HandleBufferRequest.handle)
+inline ::maarpc::Handle* HandleBufferRequest::unsafe_arena_release_handle() {
+  // @@protoc_insertion_point(field_release:maarpc.HandleBufferRequest.handle)
   _impl_._has_bits_[0] &= ~0x00000002u;
-  ::maa::Handle* temp = _impl_.handle_;
+  ::maarpc::Handle* temp = _impl_.handle_;
   _impl_.handle_ = nullptr;
   return temp;
 }
-inline ::maa::Handle* HandleBufferRequest::_internal_mutable_handle() {
+inline ::maarpc::Handle* HandleBufferRequest::_internal_mutable_handle() {
   _impl_._has_bits_[0] |= 0x00000002u;
   if (_impl_.handle_ == nullptr) {
-    auto* p = CreateMaybeMessage<::maa::Handle>(GetArenaForAllocation());
+    auto* p = CreateMaybeMessage<::maarpc::Handle>(GetArenaForAllocation());
     _impl_.handle_ = p;
   }
   return _impl_.handle_;
 }
-inline ::maa::Handle* HandleBufferRequest::mutable_handle() {
-  ::maa::Handle* _msg = _internal_mutable_handle();
-  // @@protoc_insertion_point(field_mutable:maa.HandleBufferRequest.handle)
+inline ::maarpc::Handle* HandleBufferRequest::mutable_handle() {
+  ::maarpc::Handle* _msg = _internal_mutable_handle();
+  // @@protoc_insertion_point(field_mutable:maarpc.HandleBufferRequest.handle)
   return _msg;
 }
-inline void HandleBufferRequest::set_allocated_handle(::maa::Handle* handle) {
+inline void HandleBufferRequest::set_allocated_handle(::maarpc::Handle* handle) {
   ::PROTOBUF_NAMESPACE_ID::Arena* message_arena = GetArenaForAllocation();
   if (message_arena == nullptr) {
     delete _impl_.handle_;
@@ -5755,7 +5593,7 @@ inline void HandleBufferRequest::set_allocated_handle(::maa::Handle* handle) {
     _impl_._has_bits_[0] &= ~0x00000002u;
   }
   _impl_.handle_ = handle;
-  // @@protoc_insertion_point(field_set_allocated:maa.HandleBufferRequest.handle)
+  // @@protoc_insertion_point(field_set_allocated:maarpc.HandleBufferRequest.handle)
 }
 
 // optional bytes buffer = 2;
@@ -5771,7 +5609,7 @@ inline void HandleBufferRequest::clear_buffer() {
   _impl_._has_bits_[0] &= ~0x00000001u;
 }
 inline const std::string& HandleBufferRequest::buffer() const {
-  // @@protoc_insertion_point(field_get:maa.HandleBufferRequest.buffer)
+  // @@protoc_insertion_point(field_get:maarpc.HandleBufferRequest.buffer)
   return _internal_buffer();
 }
 template <typename ArgT0, typename... ArgT>
@@ -5779,11 +5617,11 @@ inline PROTOBUF_ALWAYS_INLINE
 void HandleBufferRequest::set_buffer(ArgT0&& arg0, ArgT... args) {
  _impl_._has_bits_[0] |= 0x00000001u;
  _impl_.buffer_.SetBytes(static_cast<ArgT0 &&>(arg0), args..., GetArenaForAllocation());
-  // @@protoc_insertion_point(field_set:maa.HandleBufferRequest.buffer)
+  // @@protoc_insertion_point(field_set:maarpc.HandleBufferRequest.buffer)
 }
 inline std::string* HandleBufferRequest::mutable_buffer() {
   std::string* _s = _internal_mutable_buffer();
-  // @@protoc_insertion_point(field_mutable:maa.HandleBufferRequest.buffer)
+  // @@protoc_insertion_point(field_mutable:maarpc.HandleBufferRequest.buffer)
   return _s;
 }
 inline const std::string& HandleBufferRequest::_internal_buffer() const {
@@ -5798,7 +5636,7 @@ inline std::string* HandleBufferRequest::_internal_mutable_buffer() {
   return _impl_.buffer_.Mutable(GetArenaForAllocation());
 }
 inline std::string* HandleBufferRequest::release_buffer() {
-  // @@protoc_insertion_point(field_release:maa.HandleBufferRequest.buffer)
+  // @@protoc_insertion_point(field_release:maarpc.HandleBufferRequest.buffer)
   if (!_internal_has_buffer()) {
     return nullptr;
   }
@@ -5823,14 +5661,14 @@ inline void HandleBufferRequest::set_allocated_buffer(std::string* buffer) {
     _impl_.buffer_.Set("", GetArenaForAllocation());
   }
 #endif // PROTOBUF_FORCE_COPY_DEFAULT_STRING
-  // @@protoc_insertion_point(field_set_allocated:maa.HandleBufferRequest.buffer)
+  // @@protoc_insertion_point(field_set_allocated:maarpc.HandleBufferRequest.buffer)
 }
 
 // -------------------------------------------------------------------
 
 // HandleStringRequest
 
-// optional .maa.Handle handle = 1;
+// optional .maarpc.Handle handle = 1;
 inline bool HandleStringRequest::_internal_has_handle() const {
   bool value = (_impl_._has_bits_[0] & 0x00000002u) != 0;
   PROTOBUF_ASSUME(!value || _impl_.handle_ != nullptr);
@@ -5843,17 +5681,17 @@ inline void HandleStringRequest::clear_handle() {
   if (_impl_.handle_ != nullptr) _impl_.handle_->Clear();
   _impl_._has_bits_[0] &= ~0x00000002u;
 }
-inline const ::maa::Handle& HandleStringRequest::_internal_handle() const {
-  const ::maa::Handle* p = _impl_.handle_;
-  return p != nullptr ? *p : reinterpret_cast<const ::maa::Handle&>(
-      ::maa::_Handle_default_instance_);
+inline const ::maarpc::Handle& HandleStringRequest::_internal_handle() const {
+  const ::maarpc::Handle* p = _impl_.handle_;
+  return p != nullptr ? *p : reinterpret_cast<const ::maarpc::Handle&>(
+      ::maarpc::_Handle_default_instance_);
 }
-inline const ::maa::Handle& HandleStringRequest::handle() const {
-  // @@protoc_insertion_point(field_get:maa.HandleStringRequest.handle)
+inline const ::maarpc::Handle& HandleStringRequest::handle() const {
+  // @@protoc_insertion_point(field_get:maarpc.HandleStringRequest.handle)
   return _internal_handle();
 }
 inline void HandleStringRequest::unsafe_arena_set_allocated_handle(
-    ::maa::Handle* handle) {
+    ::maarpc::Handle* handle) {
   if (GetArenaForAllocation() == nullptr) {
     delete reinterpret_cast<::PROTOBUF_NAMESPACE_ID::MessageLite*>(_impl_.handle_);
   }
@@ -5863,11 +5701,11 @@ inline void HandleStringRequest::unsafe_arena_set_allocated_handle(
   } else {
     _impl_._has_bits_[0] &= ~0x00000002u;
   }
-  // @@protoc_insertion_point(field_unsafe_arena_set_allocated:maa.HandleStringRequest.handle)
+  // @@protoc_insertion_point(field_unsafe_arena_set_allocated:maarpc.HandleStringRequest.handle)
 }
-inline ::maa::Handle* HandleStringRequest::release_handle() {
+inline ::maarpc::Handle* HandleStringRequest::release_handle() {
   _impl_._has_bits_[0] &= ~0x00000002u;
-  ::maa::Handle* temp = _impl_.handle_;
+  ::maarpc::Handle* temp = _impl_.handle_;
   _impl_.handle_ = nullptr;
 #ifdef PROTOBUF_FORCE_COPY_IN_RELEASE
   auto* old =  reinterpret_cast<::PROTOBUF_NAMESPACE_ID::MessageLite*>(temp);
@@ -5880,27 +5718,27 @@ inline ::maa::Handle* HandleStringRequest::release_handle() {
 #endif  // !PROTOBUF_FORCE_COPY_IN_RELEASE
   return temp;
 }
-inline ::maa::Handle* HandleStringRequest::unsafe_arena_release_handle() {
-  // @@protoc_insertion_point(field_release:maa.HandleStringRequest.handle)
+inline ::maarpc::Handle* HandleStringRequest::unsafe_arena_release_handle() {
+  // @@protoc_insertion_point(field_release:maarpc.HandleStringRequest.handle)
   _impl_._has_bits_[0] &= ~0x00000002u;
-  ::maa::Handle* temp = _impl_.handle_;
+  ::maarpc::Handle* temp = _impl_.handle_;
   _impl_.handle_ = nullptr;
   return temp;
 }
-inline ::maa::Handle* HandleStringRequest::_internal_mutable_handle() {
+inline ::maarpc::Handle* HandleStringRequest::_internal_mutable_handle() {
   _impl_._has_bits_[0] |= 0x00000002u;
   if (_impl_.handle_ == nullptr) {
-    auto* p = CreateMaybeMessage<::maa::Handle>(GetArenaForAllocation());
+    auto* p = CreateMaybeMessage<::maarpc::Handle>(GetArenaForAllocation());
     _impl_.handle_ = p;
   }
   return _impl_.handle_;
 }
-inline ::maa::Handle* HandleStringRequest::mutable_handle() {
-  ::maa::Handle* _msg = _internal_mutable_handle();
-  // @@protoc_insertion_point(field_mutable:maa.HandleStringRequest.handle)
+inline ::maarpc::Handle* HandleStringRequest::mutable_handle() {
+  ::maarpc::Handle* _msg = _internal_mutable_handle();
+  // @@protoc_insertion_point(field_mutable:maarpc.HandleStringRequest.handle)
   return _msg;
 }
-inline void HandleStringRequest::set_allocated_handle(::maa::Handle* handle) {
+inline void HandleStringRequest::set_allocated_handle(::maarpc::Handle* handle) {
   ::PROTOBUF_NAMESPACE_ID::Arena* message_arena = GetArenaForAllocation();
   if (message_arena == nullptr) {
     delete _impl_.handle_;
@@ -5917,7 +5755,7 @@ inline void HandleStringRequest::set_allocated_handle(::maa::Handle* handle) {
     _impl_._has_bits_[0] &= ~0x00000002u;
   }
   _impl_.handle_ = handle;
-  // @@protoc_insertion_point(field_set_allocated:maa.HandleStringRequest.handle)
+  // @@protoc_insertion_point(field_set_allocated:maarpc.HandleStringRequest.handle)
 }
 
 // optional string str = 2;
@@ -5933,7 +5771,7 @@ inline void HandleStringRequest::clear_str() {
   _impl_._has_bits_[0] &= ~0x00000001u;
 }
 inline const std::string& HandleStringRequest::str() const {
-  // @@protoc_insertion_point(field_get:maa.HandleStringRequest.str)
+  // @@protoc_insertion_point(field_get:maarpc.HandleStringRequest.str)
   return _internal_str();
 }
 template <typename ArgT0, typename... ArgT>
@@ -5941,11 +5779,11 @@ inline PROTOBUF_ALWAYS_INLINE
 void HandleStringRequest::set_str(ArgT0&& arg0, ArgT... args) {
  _impl_._has_bits_[0] |= 0x00000001u;
  _impl_.str_.Set(static_cast<ArgT0 &&>(arg0), args..., GetArenaForAllocation());
-  // @@protoc_insertion_point(field_set:maa.HandleStringRequest.str)
+  // @@protoc_insertion_point(field_set:maarpc.HandleStringRequest.str)
 }
 inline std::string* HandleStringRequest::mutable_str() {
   std::string* _s = _internal_mutable_str();
-  // @@protoc_insertion_point(field_mutable:maa.HandleStringRequest.str)
+  // @@protoc_insertion_point(field_mutable:maarpc.HandleStringRequest.str)
   return _s;
 }
 inline const std::string& HandleStringRequest::_internal_str() const {
@@ -5960,7 +5798,7 @@ inline std::string* HandleStringRequest::_internal_mutable_str() {
   return _impl_.str_.Mutable(GetArenaForAllocation());
 }
 inline std::string* HandleStringRequest::release_str() {
-  // @@protoc_insertion_point(field_release:maa.HandleStringRequest.str)
+  // @@protoc_insertion_point(field_release:maarpc.HandleStringRequest.str)
   if (!_internal_has_str()) {
     return nullptr;
   }
@@ -5985,14 +5823,14 @@ inline void HandleStringRequest::set_allocated_str(std::string* str) {
     _impl_.str_.Set("", GetArenaForAllocation());
   }
 #endif // PROTOBUF_FORCE_COPY_DEFAULT_STRING
-  // @@protoc_insertion_point(field_set_allocated:maa.HandleStringRequest.str)
+  // @@protoc_insertion_point(field_set_allocated:maarpc.HandleStringRequest.str)
 }
 
 // -------------------------------------------------------------------
 
 // HandleIdRequest
 
-// optional .maa.Handle handle = 1;
+// optional .maarpc.Handle handle = 1;
 inline bool HandleIdRequest::_internal_has_handle() const {
   bool value = (_impl_._has_bits_[0] & 0x00000001u) != 0;
   PROTOBUF_ASSUME(!value || _impl_.handle_ != nullptr);
@@ -6005,17 +5843,17 @@ inline void HandleIdRequest::clear_handle() {
   if (_impl_.handle_ != nullptr) _impl_.handle_->Clear();
   _impl_._has_bits_[0] &= ~0x00000001u;
 }
-inline const ::maa::Handle& HandleIdRequest::_internal_handle() const {
-  const ::maa::Handle* p = _impl_.handle_;
-  return p != nullptr ? *p : reinterpret_cast<const ::maa::Handle&>(
-      ::maa::_Handle_default_instance_);
+inline const ::maarpc::Handle& HandleIdRequest::_internal_handle() const {
+  const ::maarpc::Handle* p = _impl_.handle_;
+  return p != nullptr ? *p : reinterpret_cast<const ::maarpc::Handle&>(
+      ::maarpc::_Handle_default_instance_);
 }
-inline const ::maa::Handle& HandleIdRequest::handle() const {
-  // @@protoc_insertion_point(field_get:maa.HandleIdRequest.handle)
+inline const ::maarpc::Handle& HandleIdRequest::handle() const {
+  // @@protoc_insertion_point(field_get:maarpc.HandleIdRequest.handle)
   return _internal_handle();
 }
 inline void HandleIdRequest::unsafe_arena_set_allocated_handle(
-    ::maa::Handle* handle) {
+    ::maarpc::Handle* handle) {
   if (GetArenaForAllocation() == nullptr) {
     delete reinterpret_cast<::PROTOBUF_NAMESPACE_ID::MessageLite*>(_impl_.handle_);
   }
@@ -6025,11 +5863,11 @@ inline void HandleIdRequest::unsafe_arena_set_allocated_handle(
   } else {
     _impl_._has_bits_[0] &= ~0x00000001u;
   }
-  // @@protoc_insertion_point(field_unsafe_arena_set_allocated:maa.HandleIdRequest.handle)
+  // @@protoc_insertion_point(field_unsafe_arena_set_allocated:maarpc.HandleIdRequest.handle)
 }
-inline ::maa::Handle* HandleIdRequest::release_handle() {
+inline ::maarpc::Handle* HandleIdRequest::release_handle() {
   _impl_._has_bits_[0] &= ~0x00000001u;
-  ::maa::Handle* temp = _impl_.handle_;
+  ::maarpc::Handle* temp = _impl_.handle_;
   _impl_.handle_ = nullptr;
 #ifdef PROTOBUF_FORCE_COPY_IN_RELEASE
   auto* old =  reinterpret_cast<::PROTOBUF_NAMESPACE_ID::MessageLite*>(temp);
@@ -6042,27 +5880,27 @@ inline ::maa::Handle* HandleIdRequest::release_handle() {
 #endif  // !PROTOBUF_FORCE_COPY_IN_RELEASE
   return temp;
 }
-inline ::maa::Handle* HandleIdRequest::unsafe_arena_release_handle() {
-  // @@protoc_insertion_point(field_release:maa.HandleIdRequest.handle)
+inline ::maarpc::Handle* HandleIdRequest::unsafe_arena_release_handle() {
+  // @@protoc_insertion_point(field_release:maarpc.HandleIdRequest.handle)
   _impl_._has_bits_[0] &= ~0x00000001u;
-  ::maa::Handle* temp = _impl_.handle_;
+  ::maarpc::Handle* temp = _impl_.handle_;
   _impl_.handle_ = nullptr;
   return temp;
 }
-inline ::maa::Handle* HandleIdRequest::_internal_mutable_handle() {
+inline ::maarpc::Handle* HandleIdRequest::_internal_mutable_handle() {
   _impl_._has_bits_[0] |= 0x00000001u;
   if (_impl_.handle_ == nullptr) {
-    auto* p = CreateMaybeMessage<::maa::Handle>(GetArenaForAllocation());
+    auto* p = CreateMaybeMessage<::maarpc::Handle>(GetArenaForAllocation());
     _impl_.handle_ = p;
   }
   return _impl_.handle_;
 }
-inline ::maa::Handle* HandleIdRequest::mutable_handle() {
-  ::maa::Handle* _msg = _internal_mutable_handle();
-  // @@protoc_insertion_point(field_mutable:maa.HandleIdRequest.handle)
+inline ::maarpc::Handle* HandleIdRequest::mutable_handle() {
+  ::maarpc::Handle* _msg = _internal_mutable_handle();
+  // @@protoc_insertion_point(field_mutable:maarpc.HandleIdRequest.handle)
   return _msg;
 }
-inline void HandleIdRequest::set_allocated_handle(::maa::Handle* handle) {
+inline void HandleIdRequest::set_allocated_handle(::maarpc::Handle* handle) {
   ::PROTOBUF_NAMESPACE_ID::Arena* message_arena = GetArenaForAllocation();
   if (message_arena == nullptr) {
     delete _impl_.handle_;
@@ -6079,10 +5917,10 @@ inline void HandleIdRequest::set_allocated_handle(::maa::Handle* handle) {
     _impl_._has_bits_[0] &= ~0x00000001u;
   }
   _impl_.handle_ = handle;
-  // @@protoc_insertion_point(field_set_allocated:maa.HandleIdRequest.handle)
+  // @@protoc_insertion_point(field_set_allocated:maarpc.HandleIdRequest.handle)
 }
 
-// optional .maa.Id id = 2;
+// optional .maarpc.Id id = 2;
 inline bool HandleIdRequest::_internal_has_id() const {
   bool value = (_impl_._has_bits_[0] & 0x00000002u) != 0;
   PROTOBUF_ASSUME(!value || _impl_.id_ != nullptr);
@@ -6095,17 +5933,17 @@ inline void HandleIdRequest::clear_id() {
   if (_impl_.id_ != nullptr) _impl_.id_->Clear();
   _impl_._has_bits_[0] &= ~0x00000002u;
 }
-inline const ::maa::Id& HandleIdRequest::_internal_id() const {
-  const ::maa::Id* p = _impl_.id_;
-  return p != nullptr ? *p : reinterpret_cast<const ::maa::Id&>(
-      ::maa::_Id_default_instance_);
+inline const ::maarpc::Id& HandleIdRequest::_internal_id() const {
+  const ::maarpc::Id* p = _impl_.id_;
+  return p != nullptr ? *p : reinterpret_cast<const ::maarpc::Id&>(
+      ::maarpc::_Id_default_instance_);
 }
-inline const ::maa::Id& HandleIdRequest::id() const {
-  // @@protoc_insertion_point(field_get:maa.HandleIdRequest.id)
+inline const ::maarpc::Id& HandleIdRequest::id() const {
+  // @@protoc_insertion_point(field_get:maarpc.HandleIdRequest.id)
   return _internal_id();
 }
 inline void HandleIdRequest::unsafe_arena_set_allocated_id(
-    ::maa::Id* id) {
+    ::maarpc::Id* id) {
   if (GetArenaForAllocation() == nullptr) {
     delete reinterpret_cast<::PROTOBUF_NAMESPACE_ID::MessageLite*>(_impl_.id_);
   }
@@ -6115,11 +5953,11 @@ inline void HandleIdRequest::unsafe_arena_set_allocated_id(
   } else {
     _impl_._has_bits_[0] &= ~0x00000002u;
   }
-  // @@protoc_insertion_point(field_unsafe_arena_set_allocated:maa.HandleIdRequest.id)
+  // @@protoc_insertion_point(field_unsafe_arena_set_allocated:maarpc.HandleIdRequest.id)
 }
-inline ::maa::Id* HandleIdRequest::release_id() {
+inline ::maarpc::Id* HandleIdRequest::release_id() {
   _impl_._has_bits_[0] &= ~0x00000002u;
-  ::maa::Id* temp = _impl_.id_;
+  ::maarpc::Id* temp = _impl_.id_;
   _impl_.id_ = nullptr;
 #ifdef PROTOBUF_FORCE_COPY_IN_RELEASE
   auto* old =  reinterpret_cast<::PROTOBUF_NAMESPACE_ID::MessageLite*>(temp);
@@ -6132,27 +5970,27 @@ inline ::maa::Id* HandleIdRequest::release_id() {
 #endif  // !PROTOBUF_FORCE_COPY_IN_RELEASE
   return temp;
 }
-inline ::maa::Id* HandleIdRequest::unsafe_arena_release_id() {
-  // @@protoc_insertion_point(field_release:maa.HandleIdRequest.id)
+inline ::maarpc::Id* HandleIdRequest::unsafe_arena_release_id() {
+  // @@protoc_insertion_point(field_release:maarpc.HandleIdRequest.id)
   _impl_._has_bits_[0] &= ~0x00000002u;
-  ::maa::Id* temp = _impl_.id_;
+  ::maarpc::Id* temp = _impl_.id_;
   _impl_.id_ = nullptr;
   return temp;
 }
-inline ::maa::Id* HandleIdRequest::_internal_mutable_id() {
+inline ::maarpc::Id* HandleIdRequest::_internal_mutable_id() {
   _impl_._has_bits_[0] |= 0x00000002u;
   if (_impl_.id_ == nullptr) {
-    auto* p = CreateMaybeMessage<::maa::Id>(GetArenaForAllocation());
+    auto* p = CreateMaybeMessage<::maarpc::Id>(GetArenaForAllocation());
     _impl_.id_ = p;
   }
   return _impl_.id_;
 }
-inline ::maa::Id* HandleIdRequest::mutable_id() {
-  ::maa::Id* _msg = _internal_mutable_id();
-  // @@protoc_insertion_point(field_mutable:maa.HandleIdRequest.id)
+inline ::maarpc::Id* HandleIdRequest::mutable_id() {
+  ::maarpc::Id* _msg = _internal_mutable_id();
+  // @@protoc_insertion_point(field_mutable:maarpc.HandleIdRequest.id)
   return _msg;
 }
-inline void HandleIdRequest::set_allocated_id(::maa::Id* id) {
+inline void HandleIdRequest::set_allocated_id(::maarpc::Id* id) {
   ::PROTOBUF_NAMESPACE_ID::Arena* message_arena = GetArenaForAllocation();
   if (message_arena == nullptr) {
     delete _impl_.id_;
@@ -6169,108 +6007,46 @@ inline void HandleIdRequest::set_allocated_id(::maa::Id* id) {
     _impl_._has_bits_[0] &= ~0x00000002u;
   }
   _impl_.id_ = id;
-  // @@protoc_insertion_point(field_set_allocated:maa.HandleIdRequest.id)
+  // @@protoc_insertion_point(field_set_allocated:maarpc.HandleIdRequest.id)
 }
 
 // -------------------------------------------------------------------
 
 // EmptyResponse
 
-// optional .maa.RpcStatus status = 101;
+// optional bool status = 101;
 inline bool EmptyResponse::_internal_has_status() const {
   bool value = (_impl_._has_bits_[0] & 0x00000001u) != 0;
-  PROTOBUF_ASSUME(!value || _impl_.status_ != nullptr);
   return value;
 }
 inline bool EmptyResponse::has_status() const {
   return _internal_has_status();
 }
 inline void EmptyResponse::clear_status() {
-  if (_impl_.status_ != nullptr) _impl_.status_->Clear();
+  _impl_.status_ = false;
   _impl_._has_bits_[0] &= ~0x00000001u;
 }
-inline const ::maa::RpcStatus& EmptyResponse::_internal_status() const {
-  const ::maa::RpcStatus* p = _impl_.status_;
-  return p != nullptr ? *p : reinterpret_cast<const ::maa::RpcStatus&>(
-      ::maa::_RpcStatus_default_instance_);
-}
-inline const ::maa::RpcStatus& EmptyResponse::status() const {
-  // @@protoc_insertion_point(field_get:maa.EmptyResponse.status)
-  return _internal_status();
-}
-inline void EmptyResponse::unsafe_arena_set_allocated_status(
-    ::maa::RpcStatus* status) {
-  if (GetArenaForAllocation() == nullptr) {
-    delete reinterpret_cast<::PROTOBUF_NAMESPACE_ID::MessageLite*>(_impl_.status_);
-  }
-  _impl_.status_ = status;
-  if (status) {
-    _impl_._has_bits_[0] |= 0x00000001u;
-  } else {
-    _impl_._has_bits_[0] &= ~0x00000001u;
-  }
-  // @@protoc_insertion_point(field_unsafe_arena_set_allocated:maa.EmptyResponse.status)
-}
-inline ::maa::RpcStatus* EmptyResponse::release_status() {
-  _impl_._has_bits_[0] &= ~0x00000001u;
-  ::maa::RpcStatus* temp = _impl_.status_;
-  _impl_.status_ = nullptr;
-#ifdef PROTOBUF_FORCE_COPY_IN_RELEASE
-  auto* old =  reinterpret_cast<::PROTOBUF_NAMESPACE_ID::MessageLite*>(temp);
-  temp = ::PROTOBUF_NAMESPACE_ID::internal::DuplicateIfNonNull(temp);
-  if (GetArenaForAllocation() == nullptr) { delete old; }
-#else  // PROTOBUF_FORCE_COPY_IN_RELEASE
-  if (GetArenaForAllocation() != nullptr) {
-    temp = ::PROTOBUF_NAMESPACE_ID::internal::DuplicateIfNonNull(temp);
-  }
-#endif  // !PROTOBUF_FORCE_COPY_IN_RELEASE
-  return temp;
-}
-inline ::maa::RpcStatus* EmptyResponse::unsafe_arena_release_status() {
-  // @@protoc_insertion_point(field_release:maa.EmptyResponse.status)
-  _impl_._has_bits_[0] &= ~0x00000001u;
-  ::maa::RpcStatus* temp = _impl_.status_;
-  _impl_.status_ = nullptr;
-  return temp;
-}
-inline ::maa::RpcStatus* EmptyResponse::_internal_mutable_status() {
-  _impl_._has_bits_[0] |= 0x00000001u;
-  if (_impl_.status_ == nullptr) {
-    auto* p = CreateMaybeMessage<::maa::RpcStatus>(GetArenaForAllocation());
-    _impl_.status_ = p;
-  }
+inline bool EmptyResponse::_internal_status() const {
   return _impl_.status_;
 }
-inline ::maa::RpcStatus* EmptyResponse::mutable_status() {
-  ::maa::RpcStatus* _msg = _internal_mutable_status();
-  // @@protoc_insertion_point(field_mutable:maa.EmptyResponse.status)
-  return _msg;
+inline bool EmptyResponse::status() const {
+  // @@protoc_insertion_point(field_get:maarpc.EmptyResponse.status)
+  return _internal_status();
 }
-inline void EmptyResponse::set_allocated_status(::maa::RpcStatus* status) {
-  ::PROTOBUF_NAMESPACE_ID::Arena* message_arena = GetArenaForAllocation();
-  if (message_arena == nullptr) {
-    delete _impl_.status_;
-  }
-  if (status) {
-    ::PROTOBUF_NAMESPACE_ID::Arena* submessage_arena =
-        ::PROTOBUF_NAMESPACE_ID::Arena::InternalGetOwningArena(status);
-    if (message_arena != submessage_arena) {
-      status = ::PROTOBUF_NAMESPACE_ID::internal::GetOwnedMessage(
-          message_arena, status, submessage_arena);
-    }
-    _impl_._has_bits_[0] |= 0x00000001u;
-  } else {
-    _impl_._has_bits_[0] &= ~0x00000001u;
-  }
-  _impl_.status_ = status;
-  // @@protoc_insertion_point(field_set_allocated:maa.EmptyResponse.status)
+inline void EmptyResponse::_internal_set_status(bool value) {
+  _impl_._has_bits_[0] |= 0x00000001u;
+  _impl_.status_ = value;
+}
+inline void EmptyResponse::set_status(bool value) {
+  _internal_set_status(value);
+  // @@protoc_insertion_point(field_set:maarpc.EmptyResponse.status)
 }
 
 // -------------------------------------------------------------------
 
 // IdResponse
 
-// optional .maa.Id id = 1;
+// optional .maarpc.Id id = 1;
 inline bool IdResponse::_internal_has_id() const {
   bool value = (_impl_._has_bits_[0] & 0x00000001u) != 0;
   PROTOBUF_ASSUME(!value || _impl_.id_ != nullptr);
@@ -6283,17 +6059,17 @@ inline void IdResponse::clear_id() {
   if (_impl_.id_ != nullptr) _impl_.id_->Clear();
   _impl_._has_bits_[0] &= ~0x00000001u;
 }
-inline const ::maa::Id& IdResponse::_internal_id() const {
-  const ::maa::Id* p = _impl_.id_;
-  return p != nullptr ? *p : reinterpret_cast<const ::maa::Id&>(
-      ::maa::_Id_default_instance_);
+inline const ::maarpc::Id& IdResponse::_internal_id() const {
+  const ::maarpc::Id* p = _impl_.id_;
+  return p != nullptr ? *p : reinterpret_cast<const ::maarpc::Id&>(
+      ::maarpc::_Id_default_instance_);
 }
-inline const ::maa::Id& IdResponse::id() const {
-  // @@protoc_insertion_point(field_get:maa.IdResponse.id)
+inline const ::maarpc::Id& IdResponse::id() const {
+  // @@protoc_insertion_point(field_get:maarpc.IdResponse.id)
   return _internal_id();
 }
 inline void IdResponse::unsafe_arena_set_allocated_id(
-    ::maa::Id* id) {
+    ::maarpc::Id* id) {
   if (GetArenaForAllocation() == nullptr) {
     delete reinterpret_cast<::PROTOBUF_NAMESPACE_ID::MessageLite*>(_impl_.id_);
   }
@@ -6303,11 +6079,11 @@ inline void IdResponse::unsafe_arena_set_allocated_id(
   } else {
     _impl_._has_bits_[0] &= ~0x00000001u;
   }
-  // @@protoc_insertion_point(field_unsafe_arena_set_allocated:maa.IdResponse.id)
+  // @@protoc_insertion_point(field_unsafe_arena_set_allocated:maarpc.IdResponse.id)
 }
-inline ::maa::Id* IdResponse::release_id() {
+inline ::maarpc::Id* IdResponse::release_id() {
   _impl_._has_bits_[0] &= ~0x00000001u;
-  ::maa::Id* temp = _impl_.id_;
+  ::maarpc::Id* temp = _impl_.id_;
   _impl_.id_ = nullptr;
 #ifdef PROTOBUF_FORCE_COPY_IN_RELEASE
   auto* old =  reinterpret_cast<::PROTOBUF_NAMESPACE_ID::MessageLite*>(temp);
@@ -6320,27 +6096,27 @@ inline ::maa::Id* IdResponse::release_id() {
 #endif  // !PROTOBUF_FORCE_COPY_IN_RELEASE
   return temp;
 }
-inline ::maa::Id* IdResponse::unsafe_arena_release_id() {
-  // @@protoc_insertion_point(field_release:maa.IdResponse.id)
+inline ::maarpc::Id* IdResponse::unsafe_arena_release_id() {
+  // @@protoc_insertion_point(field_release:maarpc.IdResponse.id)
   _impl_._has_bits_[0] &= ~0x00000001u;
-  ::maa::Id* temp = _impl_.id_;
+  ::maarpc::Id* temp = _impl_.id_;
   _impl_.id_ = nullptr;
   return temp;
 }
-inline ::maa::Id* IdResponse::_internal_mutable_id() {
+inline ::maarpc::Id* IdResponse::_internal_mutable_id() {
   _impl_._has_bits_[0] |= 0x00000001u;
   if (_impl_.id_ == nullptr) {
-    auto* p = CreateMaybeMessage<::maa::Id>(GetArenaForAllocation());
+    auto* p = CreateMaybeMessage<::maarpc::Id>(GetArenaForAllocation());
     _impl_.id_ = p;
   }
   return _impl_.id_;
 }
-inline ::maa::Id* IdResponse::mutable_id() {
-  ::maa::Id* _msg = _internal_mutable_id();
-  // @@protoc_insertion_point(field_mutable:maa.IdResponse.id)
+inline ::maarpc::Id* IdResponse::mutable_id() {
+  ::maarpc::Id* _msg = _internal_mutable_id();
+  // @@protoc_insertion_point(field_mutable:maarpc.IdResponse.id)
   return _msg;
 }
-inline void IdResponse::set_allocated_id(::maa::Id* id) {
+inline void IdResponse::set_allocated_id(::maarpc::Id* id) {
   ::PROTOBUF_NAMESPACE_ID::Arena* message_arena = GetArenaForAllocation();
   if (message_arena == nullptr) {
     delete _impl_.id_;
@@ -6357,97 +6133,35 @@ inline void IdResponse::set_allocated_id(::maa::Id* id) {
     _impl_._has_bits_[0] &= ~0x00000001u;
   }
   _impl_.id_ = id;
-  // @@protoc_insertion_point(field_set_allocated:maa.IdResponse.id)
+  // @@protoc_insertion_point(field_set_allocated:maarpc.IdResponse.id)
 }
 
-// optional .maa.RpcStatus status = 101;
+// optional bool status = 101;
 inline bool IdResponse::_internal_has_status() const {
   bool value = (_impl_._has_bits_[0] & 0x00000002u) != 0;
-  PROTOBUF_ASSUME(!value || _impl_.status_ != nullptr);
   return value;
 }
 inline bool IdResponse::has_status() const {
   return _internal_has_status();
 }
 inline void IdResponse::clear_status() {
-  if (_impl_.status_ != nullptr) _impl_.status_->Clear();
+  _impl_.status_ = false;
   _impl_._has_bits_[0] &= ~0x00000002u;
 }
-inline const ::maa::RpcStatus& IdResponse::_internal_status() const {
-  const ::maa::RpcStatus* p = _impl_.status_;
-  return p != nullptr ? *p : reinterpret_cast<const ::maa::RpcStatus&>(
-      ::maa::_RpcStatus_default_instance_);
-}
-inline const ::maa::RpcStatus& IdResponse::status() const {
-  // @@protoc_insertion_point(field_get:maa.IdResponse.status)
-  return _internal_status();
-}
-inline void IdResponse::unsafe_arena_set_allocated_status(
-    ::maa::RpcStatus* status) {
-  if (GetArenaForAllocation() == nullptr) {
-    delete reinterpret_cast<::PROTOBUF_NAMESPACE_ID::MessageLite*>(_impl_.status_);
-  }
-  _impl_.status_ = status;
-  if (status) {
-    _impl_._has_bits_[0] |= 0x00000002u;
-  } else {
-    _impl_._has_bits_[0] &= ~0x00000002u;
-  }
-  // @@protoc_insertion_point(field_unsafe_arena_set_allocated:maa.IdResponse.status)
-}
-inline ::maa::RpcStatus* IdResponse::release_status() {
-  _impl_._has_bits_[0] &= ~0x00000002u;
-  ::maa::RpcStatus* temp = _impl_.status_;
-  _impl_.status_ = nullptr;
-#ifdef PROTOBUF_FORCE_COPY_IN_RELEASE
-  auto* old =  reinterpret_cast<::PROTOBUF_NAMESPACE_ID::MessageLite*>(temp);
-  temp = ::PROTOBUF_NAMESPACE_ID::internal::DuplicateIfNonNull(temp);
-  if (GetArenaForAllocation() == nullptr) { delete old; }
-#else  // PROTOBUF_FORCE_COPY_IN_RELEASE
-  if (GetArenaForAllocation() != nullptr) {
-    temp = ::PROTOBUF_NAMESPACE_ID::internal::DuplicateIfNonNull(temp);
-  }
-#endif  // !PROTOBUF_FORCE_COPY_IN_RELEASE
-  return temp;
-}
-inline ::maa::RpcStatus* IdResponse::unsafe_arena_release_status() {
-  // @@protoc_insertion_point(field_release:maa.IdResponse.status)
-  _impl_._has_bits_[0] &= ~0x00000002u;
-  ::maa::RpcStatus* temp = _impl_.status_;
-  _impl_.status_ = nullptr;
-  return temp;
-}
-inline ::maa::RpcStatus* IdResponse::_internal_mutable_status() {
-  _impl_._has_bits_[0] |= 0x00000002u;
-  if (_impl_.status_ == nullptr) {
-    auto* p = CreateMaybeMessage<::maa::RpcStatus>(GetArenaForAllocation());
-    _impl_.status_ = p;
-  }
+inline bool IdResponse::_internal_status() const {
   return _impl_.status_;
 }
-inline ::maa::RpcStatus* IdResponse::mutable_status() {
-  ::maa::RpcStatus* _msg = _internal_mutable_status();
-  // @@protoc_insertion_point(field_mutable:maa.IdResponse.status)
-  return _msg;
+inline bool IdResponse::status() const {
+  // @@protoc_insertion_point(field_get:maarpc.IdResponse.status)
+  return _internal_status();
 }
-inline void IdResponse::set_allocated_status(::maa::RpcStatus* status) {
-  ::PROTOBUF_NAMESPACE_ID::Arena* message_arena = GetArenaForAllocation();
-  if (message_arena == nullptr) {
-    delete _impl_.status_;
-  }
-  if (status) {
-    ::PROTOBUF_NAMESPACE_ID::Arena* submessage_arena =
-        ::PROTOBUF_NAMESPACE_ID::Arena::InternalGetOwningArena(status);
-    if (message_arena != submessage_arena) {
-      status = ::PROTOBUF_NAMESPACE_ID::internal::GetOwnedMessage(
-          message_arena, status, submessage_arena);
-    }
-    _impl_._has_bits_[0] |= 0x00000002u;
-  } else {
-    _impl_._has_bits_[0] &= ~0x00000002u;
-  }
-  _impl_.status_ = status;
-  // @@protoc_insertion_point(field_set_allocated:maa.IdResponse.status)
+inline void IdResponse::_internal_set_status(bool value) {
+  _impl_._has_bits_[0] |= 0x00000002u;
+  _impl_.status_ = value;
+}
+inline void IdResponse::set_status(bool value) {
+  _internal_set_status(value);
+  // @@protoc_insertion_point(field_set:maarpc.IdResponse.status)
 }
 
 // -------------------------------------------------------------------
@@ -6456,7 +6170,7 @@ inline void IdResponse::set_allocated_status(::maa::RpcStatus* status) {
 
 // optional bool value = 1;
 inline bool BoolResponse::_internal_has_value() const {
-  bool value = (_impl_._has_bits_[0] & 0x00000002u) != 0;
+  bool value = (_impl_._has_bits_[0] & 0x00000001u) != 0;
   return value;
 }
 inline bool BoolResponse::has_value() const {
@@ -6464,112 +6178,50 @@ inline bool BoolResponse::has_value() const {
 }
 inline void BoolResponse::clear_value() {
   _impl_.value_ = false;
-  _impl_._has_bits_[0] &= ~0x00000002u;
+  _impl_._has_bits_[0] &= ~0x00000001u;
 }
 inline bool BoolResponse::_internal_value() const {
   return _impl_.value_;
 }
 inline bool BoolResponse::value() const {
-  // @@protoc_insertion_point(field_get:maa.BoolResponse.value)
+  // @@protoc_insertion_point(field_get:maarpc.BoolResponse.value)
   return _internal_value();
 }
 inline void BoolResponse::_internal_set_value(bool value) {
-  _impl_._has_bits_[0] |= 0x00000002u;
+  _impl_._has_bits_[0] |= 0x00000001u;
   _impl_.value_ = value;
 }
 inline void BoolResponse::set_value(bool value) {
   _internal_set_value(value);
-  // @@protoc_insertion_point(field_set:maa.BoolResponse.value)
+  // @@protoc_insertion_point(field_set:maarpc.BoolResponse.value)
 }
 
-// optional .maa.RpcStatus status = 101;
+// optional bool status = 101;
 inline bool BoolResponse::_internal_has_status() const {
-  bool value = (_impl_._has_bits_[0] & 0x00000001u) != 0;
-  PROTOBUF_ASSUME(!value || _impl_.status_ != nullptr);
+  bool value = (_impl_._has_bits_[0] & 0x00000002u) != 0;
   return value;
 }
 inline bool BoolResponse::has_status() const {
   return _internal_has_status();
 }
 inline void BoolResponse::clear_status() {
-  if (_impl_.status_ != nullptr) _impl_.status_->Clear();
-  _impl_._has_bits_[0] &= ~0x00000001u;
+  _impl_.status_ = false;
+  _impl_._has_bits_[0] &= ~0x00000002u;
 }
-inline const ::maa::RpcStatus& BoolResponse::_internal_status() const {
-  const ::maa::RpcStatus* p = _impl_.status_;
-  return p != nullptr ? *p : reinterpret_cast<const ::maa::RpcStatus&>(
-      ::maa::_RpcStatus_default_instance_);
-}
-inline const ::maa::RpcStatus& BoolResponse::status() const {
-  // @@protoc_insertion_point(field_get:maa.BoolResponse.status)
-  return _internal_status();
-}
-inline void BoolResponse::unsafe_arena_set_allocated_status(
-    ::maa::RpcStatus* status) {
-  if (GetArenaForAllocation() == nullptr) {
-    delete reinterpret_cast<::PROTOBUF_NAMESPACE_ID::MessageLite*>(_impl_.status_);
-  }
-  _impl_.status_ = status;
-  if (status) {
-    _impl_._has_bits_[0] |= 0x00000001u;
-  } else {
-    _impl_._has_bits_[0] &= ~0x00000001u;
-  }
-  // @@protoc_insertion_point(field_unsafe_arena_set_allocated:maa.BoolResponse.status)
-}
-inline ::maa::RpcStatus* BoolResponse::release_status() {
-  _impl_._has_bits_[0] &= ~0x00000001u;
-  ::maa::RpcStatus* temp = _impl_.status_;
-  _impl_.status_ = nullptr;
-#ifdef PROTOBUF_FORCE_COPY_IN_RELEASE
-  auto* old =  reinterpret_cast<::PROTOBUF_NAMESPACE_ID::MessageLite*>(temp);
-  temp = ::PROTOBUF_NAMESPACE_ID::internal::DuplicateIfNonNull(temp);
-  if (GetArenaForAllocation() == nullptr) { delete old; }
-#else  // PROTOBUF_FORCE_COPY_IN_RELEASE
-  if (GetArenaForAllocation() != nullptr) {
-    temp = ::PROTOBUF_NAMESPACE_ID::internal::DuplicateIfNonNull(temp);
-  }
-#endif  // !PROTOBUF_FORCE_COPY_IN_RELEASE
-  return temp;
-}
-inline ::maa::RpcStatus* BoolResponse::unsafe_arena_release_status() {
-  // @@protoc_insertion_point(field_release:maa.BoolResponse.status)
-  _impl_._has_bits_[0] &= ~0x00000001u;
-  ::maa::RpcStatus* temp = _impl_.status_;
-  _impl_.status_ = nullptr;
-  return temp;
-}
-inline ::maa::RpcStatus* BoolResponse::_internal_mutable_status() {
-  _impl_._has_bits_[0] |= 0x00000001u;
-  if (_impl_.status_ == nullptr) {
-    auto* p = CreateMaybeMessage<::maa::RpcStatus>(GetArenaForAllocation());
-    _impl_.status_ = p;
-  }
+inline bool BoolResponse::_internal_status() const {
   return _impl_.status_;
 }
-inline ::maa::RpcStatus* BoolResponse::mutable_status() {
-  ::maa::RpcStatus* _msg = _internal_mutable_status();
-  // @@protoc_insertion_point(field_mutable:maa.BoolResponse.status)
-  return _msg;
+inline bool BoolResponse::status() const {
+  // @@protoc_insertion_point(field_get:maarpc.BoolResponse.status)
+  return _internal_status();
 }
-inline void BoolResponse::set_allocated_status(::maa::RpcStatus* status) {
-  ::PROTOBUF_NAMESPACE_ID::Arena* message_arena = GetArenaForAllocation();
-  if (message_arena == nullptr) {
-    delete _impl_.status_;
-  }
-  if (status) {
-    ::PROTOBUF_NAMESPACE_ID::Arena* submessage_arena =
-        ::PROTOBUF_NAMESPACE_ID::Arena::InternalGetOwningArena(status);
-    if (message_arena != submessage_arena) {
-      status = ::PROTOBUF_NAMESPACE_ID::internal::GetOwnedMessage(
-          message_arena, status, submessage_arena);
-    }
-    _impl_._has_bits_[0] |= 0x00000001u;
-  } else {
-    _impl_._has_bits_[0] &= ~0x00000001u;
-  }
-  _impl_.status_ = status;
-  // @@protoc_insertion_point(field_set_allocated:maa.BoolResponse.status)
+inline void BoolResponse::_internal_set_status(bool value) {
+  _impl_._has_bits_[0] |= 0x00000002u;
+  _impl_.status_ = value;
+}
+inline void BoolResponse::set_status(bool value) {
+  _internal_set_status(value);
+  // @@protoc_insertion_point(field_set:maarpc.BoolResponse.status)
 }
 
 // -------------------------------------------------------------------
@@ -6589,7 +6241,7 @@ inline void StringResponse::clear_value() {
   _impl_._has_bits_[0] &= ~0x00000001u;
 }
 inline const std::string& StringResponse::value() const {
-  // @@protoc_insertion_point(field_get:maa.StringResponse.value)
+  // @@protoc_insertion_point(field_get:maarpc.StringResponse.value)
   return _internal_value();
 }
 template <typename ArgT0, typename... ArgT>
@@ -6597,11 +6249,11 @@ inline PROTOBUF_ALWAYS_INLINE
 void StringResponse::set_value(ArgT0&& arg0, ArgT... args) {
  _impl_._has_bits_[0] |= 0x00000001u;
  _impl_.value_.Set(static_cast<ArgT0 &&>(arg0), args..., GetArenaForAllocation());
-  // @@protoc_insertion_point(field_set:maa.StringResponse.value)
+  // @@protoc_insertion_point(field_set:maarpc.StringResponse.value)
 }
 inline std::string* StringResponse::mutable_value() {
   std::string* _s = _internal_mutable_value();
-  // @@protoc_insertion_point(field_mutable:maa.StringResponse.value)
+  // @@protoc_insertion_point(field_mutable:maarpc.StringResponse.value)
   return _s;
 }
 inline const std::string& StringResponse::_internal_value() const {
@@ -6616,7 +6268,7 @@ inline std::string* StringResponse::_internal_mutable_value() {
   return _impl_.value_.Mutable(GetArenaForAllocation());
 }
 inline std::string* StringResponse::release_value() {
-  // @@protoc_insertion_point(field_release:maa.StringResponse.value)
+  // @@protoc_insertion_point(field_release:maarpc.StringResponse.value)
   if (!_internal_has_value()) {
     return nullptr;
   }
@@ -6641,104 +6293,42 @@ inline void StringResponse::set_allocated_value(std::string* value) {
     _impl_.value_.Set("", GetArenaForAllocation());
   }
 #endif // PROTOBUF_FORCE_COPY_DEFAULT_STRING
-  // @@protoc_insertion_point(field_set_allocated:maa.StringResponse.value)
+  // @@protoc_insertion_point(field_set_allocated:maarpc.StringResponse.value)
 }
 
-// optional .maa.RpcStatus status = 101;
+// optional bool status = 101;
 inline bool StringResponse::_internal_has_status() const {
   bool value = (_impl_._has_bits_[0] & 0x00000002u) != 0;
-  PROTOBUF_ASSUME(!value || _impl_.status_ != nullptr);
   return value;
 }
 inline bool StringResponse::has_status() const {
   return _internal_has_status();
 }
 inline void StringResponse::clear_status() {
-  if (_impl_.status_ != nullptr) _impl_.status_->Clear();
+  _impl_.status_ = false;
   _impl_._has_bits_[0] &= ~0x00000002u;
 }
-inline const ::maa::RpcStatus& StringResponse::_internal_status() const {
-  const ::maa::RpcStatus* p = _impl_.status_;
-  return p != nullptr ? *p : reinterpret_cast<const ::maa::RpcStatus&>(
-      ::maa::_RpcStatus_default_instance_);
-}
-inline const ::maa::RpcStatus& StringResponse::status() const {
-  // @@protoc_insertion_point(field_get:maa.StringResponse.status)
-  return _internal_status();
-}
-inline void StringResponse::unsafe_arena_set_allocated_status(
-    ::maa::RpcStatus* status) {
-  if (GetArenaForAllocation() == nullptr) {
-    delete reinterpret_cast<::PROTOBUF_NAMESPACE_ID::MessageLite*>(_impl_.status_);
-  }
-  _impl_.status_ = status;
-  if (status) {
-    _impl_._has_bits_[0] |= 0x00000002u;
-  } else {
-    _impl_._has_bits_[0] &= ~0x00000002u;
-  }
-  // @@protoc_insertion_point(field_unsafe_arena_set_allocated:maa.StringResponse.status)
-}
-inline ::maa::RpcStatus* StringResponse::release_status() {
-  _impl_._has_bits_[0] &= ~0x00000002u;
-  ::maa::RpcStatus* temp = _impl_.status_;
-  _impl_.status_ = nullptr;
-#ifdef PROTOBUF_FORCE_COPY_IN_RELEASE
-  auto* old =  reinterpret_cast<::PROTOBUF_NAMESPACE_ID::MessageLite*>(temp);
-  temp = ::PROTOBUF_NAMESPACE_ID::internal::DuplicateIfNonNull(temp);
-  if (GetArenaForAllocation() == nullptr) { delete old; }
-#else  // PROTOBUF_FORCE_COPY_IN_RELEASE
-  if (GetArenaForAllocation() != nullptr) {
-    temp = ::PROTOBUF_NAMESPACE_ID::internal::DuplicateIfNonNull(temp);
-  }
-#endif  // !PROTOBUF_FORCE_COPY_IN_RELEASE
-  return temp;
-}
-inline ::maa::RpcStatus* StringResponse::unsafe_arena_release_status() {
-  // @@protoc_insertion_point(field_release:maa.StringResponse.status)
-  _impl_._has_bits_[0] &= ~0x00000002u;
-  ::maa::RpcStatus* temp = _impl_.status_;
-  _impl_.status_ = nullptr;
-  return temp;
-}
-inline ::maa::RpcStatus* StringResponse::_internal_mutable_status() {
-  _impl_._has_bits_[0] |= 0x00000002u;
-  if (_impl_.status_ == nullptr) {
-    auto* p = CreateMaybeMessage<::maa::RpcStatus>(GetArenaForAllocation());
-    _impl_.status_ = p;
-  }
+inline bool StringResponse::_internal_status() const {
   return _impl_.status_;
 }
-inline ::maa::RpcStatus* StringResponse::mutable_status() {
-  ::maa::RpcStatus* _msg = _internal_mutable_status();
-  // @@protoc_insertion_point(field_mutable:maa.StringResponse.status)
-  return _msg;
+inline bool StringResponse::status() const {
+  // @@protoc_insertion_point(field_get:maarpc.StringResponse.status)
+  return _internal_status();
 }
-inline void StringResponse::set_allocated_status(::maa::RpcStatus* status) {
-  ::PROTOBUF_NAMESPACE_ID::Arena* message_arena = GetArenaForAllocation();
-  if (message_arena == nullptr) {
-    delete _impl_.status_;
-  }
-  if (status) {
-    ::PROTOBUF_NAMESPACE_ID::Arena* submessage_arena =
-        ::PROTOBUF_NAMESPACE_ID::Arena::InternalGetOwningArena(status);
-    if (message_arena != submessage_arena) {
-      status = ::PROTOBUF_NAMESPACE_ID::internal::GetOwnedMessage(
-          message_arena, status, submessage_arena);
-    }
-    _impl_._has_bits_[0] |= 0x00000002u;
-  } else {
-    _impl_._has_bits_[0] &= ~0x00000002u;
-  }
-  _impl_.status_ = status;
-  // @@protoc_insertion_point(field_set_allocated:maa.StringResponse.status)
+inline void StringResponse::_internal_set_status(bool value) {
+  _impl_._has_bits_[0] |= 0x00000002u;
+  _impl_.status_ = value;
+}
+inline void StringResponse::set_status(bool value) {
+  _internal_set_status(value);
+  // @@protoc_insertion_point(field_set:maarpc.StringResponse.status)
 }
 
 // -------------------------------------------------------------------
 
 // HandleResponse
 
-// optional .maa.Handle value = 1;
+// optional .maarpc.Handle value = 1;
 inline bool HandleResponse::_internal_has_value() const {
   bool value = (_impl_._has_bits_[0] & 0x00000001u) != 0;
   PROTOBUF_ASSUME(!value || _impl_.value_ != nullptr);
@@ -6751,17 +6341,17 @@ inline void HandleResponse::clear_value() {
   if (_impl_.value_ != nullptr) _impl_.value_->Clear();
   _impl_._has_bits_[0] &= ~0x00000001u;
 }
-inline const ::maa::Handle& HandleResponse::_internal_value() const {
-  const ::maa::Handle* p = _impl_.value_;
-  return p != nullptr ? *p : reinterpret_cast<const ::maa::Handle&>(
-      ::maa::_Handle_default_instance_);
+inline const ::maarpc::Handle& HandleResponse::_internal_value() const {
+  const ::maarpc::Handle* p = _impl_.value_;
+  return p != nullptr ? *p : reinterpret_cast<const ::maarpc::Handle&>(
+      ::maarpc::_Handle_default_instance_);
 }
-inline const ::maa::Handle& HandleResponse::value() const {
-  // @@protoc_insertion_point(field_get:maa.HandleResponse.value)
+inline const ::maarpc::Handle& HandleResponse::value() const {
+  // @@protoc_insertion_point(field_get:maarpc.HandleResponse.value)
   return _internal_value();
 }
 inline void HandleResponse::unsafe_arena_set_allocated_value(
-    ::maa::Handle* value) {
+    ::maarpc::Handle* value) {
   if (GetArenaForAllocation() == nullptr) {
     delete reinterpret_cast<::PROTOBUF_NAMESPACE_ID::MessageLite*>(_impl_.value_);
   }
@@ -6771,11 +6361,11 @@ inline void HandleResponse::unsafe_arena_set_allocated_value(
   } else {
     _impl_._has_bits_[0] &= ~0x00000001u;
   }
-  // @@protoc_insertion_point(field_unsafe_arena_set_allocated:maa.HandleResponse.value)
+  // @@protoc_insertion_point(field_unsafe_arena_set_allocated:maarpc.HandleResponse.value)
 }
-inline ::maa::Handle* HandleResponse::release_value() {
+inline ::maarpc::Handle* HandleResponse::release_value() {
   _impl_._has_bits_[0] &= ~0x00000001u;
-  ::maa::Handle* temp = _impl_.value_;
+  ::maarpc::Handle* temp = _impl_.value_;
   _impl_.value_ = nullptr;
 #ifdef PROTOBUF_FORCE_COPY_IN_RELEASE
   auto* old =  reinterpret_cast<::PROTOBUF_NAMESPACE_ID::MessageLite*>(temp);
@@ -6788,27 +6378,27 @@ inline ::maa::Handle* HandleResponse::release_value() {
 #endif  // !PROTOBUF_FORCE_COPY_IN_RELEASE
   return temp;
 }
-inline ::maa::Handle* HandleResponse::unsafe_arena_release_value() {
-  // @@protoc_insertion_point(field_release:maa.HandleResponse.value)
+inline ::maarpc::Handle* HandleResponse::unsafe_arena_release_value() {
+  // @@protoc_insertion_point(field_release:maarpc.HandleResponse.value)
   _impl_._has_bits_[0] &= ~0x00000001u;
-  ::maa::Handle* temp = _impl_.value_;
+  ::maarpc::Handle* temp = _impl_.value_;
   _impl_.value_ = nullptr;
   return temp;
 }
-inline ::maa::Handle* HandleResponse::_internal_mutable_value() {
+inline ::maarpc::Handle* HandleResponse::_internal_mutable_value() {
   _impl_._has_bits_[0] |= 0x00000001u;
   if (_impl_.value_ == nullptr) {
-    auto* p = CreateMaybeMessage<::maa::Handle>(GetArenaForAllocation());
+    auto* p = CreateMaybeMessage<::maarpc::Handle>(GetArenaForAllocation());
     _impl_.value_ = p;
   }
   return _impl_.value_;
 }
-inline ::maa::Handle* HandleResponse::mutable_value() {
-  ::maa::Handle* _msg = _internal_mutable_value();
-  // @@protoc_insertion_point(field_mutable:maa.HandleResponse.value)
+inline ::maarpc::Handle* HandleResponse::mutable_value() {
+  ::maarpc::Handle* _msg = _internal_mutable_value();
+  // @@protoc_insertion_point(field_mutable:maarpc.HandleResponse.value)
   return _msg;
 }
-inline void HandleResponse::set_allocated_value(::maa::Handle* value) {
+inline void HandleResponse::set_allocated_value(::maarpc::Handle* value) {
   ::PROTOBUF_NAMESPACE_ID::Arena* message_arena = GetArenaForAllocation();
   if (message_arena == nullptr) {
     delete _impl_.value_;
@@ -6825,97 +6415,35 @@ inline void HandleResponse::set_allocated_value(::maa::Handle* value) {
     _impl_._has_bits_[0] &= ~0x00000001u;
   }
   _impl_.value_ = value;
-  // @@protoc_insertion_point(field_set_allocated:maa.HandleResponse.value)
+  // @@protoc_insertion_point(field_set_allocated:maarpc.HandleResponse.value)
 }
 
-// optional .maa.RpcStatus status = 101;
+// optional bool status = 101;
 inline bool HandleResponse::_internal_has_status() const {
   bool value = (_impl_._has_bits_[0] & 0x00000002u) != 0;
-  PROTOBUF_ASSUME(!value || _impl_.status_ != nullptr);
   return value;
 }
 inline bool HandleResponse::has_status() const {
   return _internal_has_status();
 }
 inline void HandleResponse::clear_status() {
-  if (_impl_.status_ != nullptr) _impl_.status_->Clear();
+  _impl_.status_ = false;
   _impl_._has_bits_[0] &= ~0x00000002u;
 }
-inline const ::maa::RpcStatus& HandleResponse::_internal_status() const {
-  const ::maa::RpcStatus* p = _impl_.status_;
-  return p != nullptr ? *p : reinterpret_cast<const ::maa::RpcStatus&>(
-      ::maa::_RpcStatus_default_instance_);
-}
-inline const ::maa::RpcStatus& HandleResponse::status() const {
-  // @@protoc_insertion_point(field_get:maa.HandleResponse.status)
-  return _internal_status();
-}
-inline void HandleResponse::unsafe_arena_set_allocated_status(
-    ::maa::RpcStatus* status) {
-  if (GetArenaForAllocation() == nullptr) {
-    delete reinterpret_cast<::PROTOBUF_NAMESPACE_ID::MessageLite*>(_impl_.status_);
-  }
-  _impl_.status_ = status;
-  if (status) {
-    _impl_._has_bits_[0] |= 0x00000002u;
-  } else {
-    _impl_._has_bits_[0] &= ~0x00000002u;
-  }
-  // @@protoc_insertion_point(field_unsafe_arena_set_allocated:maa.HandleResponse.status)
-}
-inline ::maa::RpcStatus* HandleResponse::release_status() {
-  _impl_._has_bits_[0] &= ~0x00000002u;
-  ::maa::RpcStatus* temp = _impl_.status_;
-  _impl_.status_ = nullptr;
-#ifdef PROTOBUF_FORCE_COPY_IN_RELEASE
-  auto* old =  reinterpret_cast<::PROTOBUF_NAMESPACE_ID::MessageLite*>(temp);
-  temp = ::PROTOBUF_NAMESPACE_ID::internal::DuplicateIfNonNull(temp);
-  if (GetArenaForAllocation() == nullptr) { delete old; }
-#else  // PROTOBUF_FORCE_COPY_IN_RELEASE
-  if (GetArenaForAllocation() != nullptr) {
-    temp = ::PROTOBUF_NAMESPACE_ID::internal::DuplicateIfNonNull(temp);
-  }
-#endif  // !PROTOBUF_FORCE_COPY_IN_RELEASE
-  return temp;
-}
-inline ::maa::RpcStatus* HandleResponse::unsafe_arena_release_status() {
-  // @@protoc_insertion_point(field_release:maa.HandleResponse.status)
-  _impl_._has_bits_[0] &= ~0x00000002u;
-  ::maa::RpcStatus* temp = _impl_.status_;
-  _impl_.status_ = nullptr;
-  return temp;
-}
-inline ::maa::RpcStatus* HandleResponse::_internal_mutable_status() {
-  _impl_._has_bits_[0] |= 0x00000002u;
-  if (_impl_.status_ == nullptr) {
-    auto* p = CreateMaybeMessage<::maa::RpcStatus>(GetArenaForAllocation());
-    _impl_.status_ = p;
-  }
+inline bool HandleResponse::_internal_status() const {
   return _impl_.status_;
 }
-inline ::maa::RpcStatus* HandleResponse::mutable_status() {
-  ::maa::RpcStatus* _msg = _internal_mutable_status();
-  // @@protoc_insertion_point(field_mutable:maa.HandleResponse.status)
-  return _msg;
+inline bool HandleResponse::status() const {
+  // @@protoc_insertion_point(field_get:maarpc.HandleResponse.status)
+  return _internal_status();
 }
-inline void HandleResponse::set_allocated_status(::maa::RpcStatus* status) {
-  ::PROTOBUF_NAMESPACE_ID::Arena* message_arena = GetArenaForAllocation();
-  if (message_arena == nullptr) {
-    delete _impl_.status_;
-  }
-  if (status) {
-    ::PROTOBUF_NAMESPACE_ID::Arena* submessage_arena =
-        ::PROTOBUF_NAMESPACE_ID::Arena::InternalGetOwningArena(status);
-    if (message_arena != submessage_arena) {
-      status = ::PROTOBUF_NAMESPACE_ID::internal::GetOwnedMessage(
-          message_arena, status, submessage_arena);
-    }
-    _impl_._has_bits_[0] |= 0x00000002u;
-  } else {
-    _impl_._has_bits_[0] &= ~0x00000002u;
-  }
-  _impl_.status_ = status;
-  // @@protoc_insertion_point(field_set_allocated:maa.HandleResponse.status)
+inline void HandleResponse::_internal_set_status(bool value) {
+  _impl_._has_bits_[0] |= 0x00000002u;
+  _impl_.status_ = value;
+}
+inline void HandleResponse::set_status(bool value) {
+  _internal_set_status(value);
+  // @@protoc_insertion_point(field_set:maarpc.HandleResponse.status)
 }
 
 // -------------------------------------------------------------------
@@ -6935,7 +6463,7 @@ inline void BufferResponse::clear_value() {
   _impl_._has_bits_[0] &= ~0x00000001u;
 }
 inline const std::string& BufferResponse::value() const {
-  // @@protoc_insertion_point(field_get:maa.BufferResponse.value)
+  // @@protoc_insertion_point(field_get:maarpc.BufferResponse.value)
   return _internal_value();
 }
 template <typename ArgT0, typename... ArgT>
@@ -6943,11 +6471,11 @@ inline PROTOBUF_ALWAYS_INLINE
 void BufferResponse::set_value(ArgT0&& arg0, ArgT... args) {
  _impl_._has_bits_[0] |= 0x00000001u;
  _impl_.value_.SetBytes(static_cast<ArgT0 &&>(arg0), args..., GetArenaForAllocation());
-  // @@protoc_insertion_point(field_set:maa.BufferResponse.value)
+  // @@protoc_insertion_point(field_set:maarpc.BufferResponse.value)
 }
 inline std::string* BufferResponse::mutable_value() {
   std::string* _s = _internal_mutable_value();
-  // @@protoc_insertion_point(field_mutable:maa.BufferResponse.value)
+  // @@protoc_insertion_point(field_mutable:maarpc.BufferResponse.value)
   return _s;
 }
 inline const std::string& BufferResponse::_internal_value() const {
@@ -6962,7 +6490,7 @@ inline std::string* BufferResponse::_internal_mutable_value() {
   return _impl_.value_.Mutable(GetArenaForAllocation());
 }
 inline std::string* BufferResponse::release_value() {
-  // @@protoc_insertion_point(field_release:maa.BufferResponse.value)
+  // @@protoc_insertion_point(field_release:maarpc.BufferResponse.value)
   if (!_internal_has_value()) {
     return nullptr;
   }
@@ -6987,106 +6515,44 @@ inline void BufferResponse::set_allocated_value(std::string* value) {
     _impl_.value_.Set("", GetArenaForAllocation());
   }
 #endif // PROTOBUF_FORCE_COPY_DEFAULT_STRING
-  // @@protoc_insertion_point(field_set_allocated:maa.BufferResponse.value)
+  // @@protoc_insertion_point(field_set_allocated:maarpc.BufferResponse.value)
 }
 
-// optional .maa.RpcStatus status = 101;
+// optional bool status = 101;
 inline bool BufferResponse::_internal_has_status() const {
   bool value = (_impl_._has_bits_[0] & 0x00000002u) != 0;
-  PROTOBUF_ASSUME(!value || _impl_.status_ != nullptr);
   return value;
 }
 inline bool BufferResponse::has_status() const {
   return _internal_has_status();
 }
 inline void BufferResponse::clear_status() {
-  if (_impl_.status_ != nullptr) _impl_.status_->Clear();
+  _impl_.status_ = false;
   _impl_._has_bits_[0] &= ~0x00000002u;
 }
-inline const ::maa::RpcStatus& BufferResponse::_internal_status() const {
-  const ::maa::RpcStatus* p = _impl_.status_;
-  return p != nullptr ? *p : reinterpret_cast<const ::maa::RpcStatus&>(
-      ::maa::_RpcStatus_default_instance_);
-}
-inline const ::maa::RpcStatus& BufferResponse::status() const {
-  // @@protoc_insertion_point(field_get:maa.BufferResponse.status)
-  return _internal_status();
-}
-inline void BufferResponse::unsafe_arena_set_allocated_status(
-    ::maa::RpcStatus* status) {
-  if (GetArenaForAllocation() == nullptr) {
-    delete reinterpret_cast<::PROTOBUF_NAMESPACE_ID::MessageLite*>(_impl_.status_);
-  }
-  _impl_.status_ = status;
-  if (status) {
-    _impl_._has_bits_[0] |= 0x00000002u;
-  } else {
-    _impl_._has_bits_[0] &= ~0x00000002u;
-  }
-  // @@protoc_insertion_point(field_unsafe_arena_set_allocated:maa.BufferResponse.status)
-}
-inline ::maa::RpcStatus* BufferResponse::release_status() {
-  _impl_._has_bits_[0] &= ~0x00000002u;
-  ::maa::RpcStatus* temp = _impl_.status_;
-  _impl_.status_ = nullptr;
-#ifdef PROTOBUF_FORCE_COPY_IN_RELEASE
-  auto* old =  reinterpret_cast<::PROTOBUF_NAMESPACE_ID::MessageLite*>(temp);
-  temp = ::PROTOBUF_NAMESPACE_ID::internal::DuplicateIfNonNull(temp);
-  if (GetArenaForAllocation() == nullptr) { delete old; }
-#else  // PROTOBUF_FORCE_COPY_IN_RELEASE
-  if (GetArenaForAllocation() != nullptr) {
-    temp = ::PROTOBUF_NAMESPACE_ID::internal::DuplicateIfNonNull(temp);
-  }
-#endif  // !PROTOBUF_FORCE_COPY_IN_RELEASE
-  return temp;
-}
-inline ::maa::RpcStatus* BufferResponse::unsafe_arena_release_status() {
-  // @@protoc_insertion_point(field_release:maa.BufferResponse.status)
-  _impl_._has_bits_[0] &= ~0x00000002u;
-  ::maa::RpcStatus* temp = _impl_.status_;
-  _impl_.status_ = nullptr;
-  return temp;
-}
-inline ::maa::RpcStatus* BufferResponse::_internal_mutable_status() {
-  _impl_._has_bits_[0] |= 0x00000002u;
-  if (_impl_.status_ == nullptr) {
-    auto* p = CreateMaybeMessage<::maa::RpcStatus>(GetArenaForAllocation());
-    _impl_.status_ = p;
-  }
+inline bool BufferResponse::_internal_status() const {
   return _impl_.status_;
 }
-inline ::maa::RpcStatus* BufferResponse::mutable_status() {
-  ::maa::RpcStatus* _msg = _internal_mutable_status();
-  // @@protoc_insertion_point(field_mutable:maa.BufferResponse.status)
-  return _msg;
+inline bool BufferResponse::status() const {
+  // @@protoc_insertion_point(field_get:maarpc.BufferResponse.status)
+  return _internal_status();
 }
-inline void BufferResponse::set_allocated_status(::maa::RpcStatus* status) {
-  ::PROTOBUF_NAMESPACE_ID::Arena* message_arena = GetArenaForAllocation();
-  if (message_arena == nullptr) {
-    delete _impl_.status_;
-  }
-  if (status) {
-    ::PROTOBUF_NAMESPACE_ID::Arena* submessage_arena =
-        ::PROTOBUF_NAMESPACE_ID::Arena::InternalGetOwningArena(status);
-    if (message_arena != submessage_arena) {
-      status = ::PROTOBUF_NAMESPACE_ID::internal::GetOwnedMessage(
-          message_arena, status, submessage_arena);
-    }
-    _impl_._has_bits_[0] |= 0x00000002u;
-  } else {
-    _impl_._has_bits_[0] &= ~0x00000002u;
-  }
-  _impl_.status_ = status;
-  // @@protoc_insertion_point(field_set_allocated:maa.BufferResponse.status)
+inline void BufferResponse::_internal_set_status(bool value) {
+  _impl_._has_bits_[0] |= 0x00000002u;
+  _impl_.status_ = value;
+}
+inline void BufferResponse::set_status(bool value) {
+  _internal_set_status(value);
+  // @@protoc_insertion_point(field_set:maarpc.BufferResponse.status)
 }
 
 // -------------------------------------------------------------------
 
 // StatusResponse
 
-// optional .maa.Status value = 1;
+// optional .maarpc.Status value = 1;
 inline bool StatusResponse::_internal_has_value() const {
-  bool value = (_impl_._has_bits_[0] & 0x00000002u) != 0;
+  bool value = (_impl_._has_bits_[0] & 0x00000001u) != 0;
   return value;
 }
 inline bool StatusResponse::has_value() const {
@@ -7094,112 +6560,50 @@ inline bool StatusResponse::has_value() const {
 }
 inline void StatusResponse::clear_value() {
   _impl_.value_ = 0;
-  _impl_._has_bits_[0] &= ~0x00000002u;
+  _impl_._has_bits_[0] &= ~0x00000001u;
 }
-inline ::maa::Status StatusResponse::_internal_value() const {
-  return static_cast< ::maa::Status >(_impl_.value_);
+inline ::maarpc::Status StatusResponse::_internal_value() const {
+  return static_cast< ::maarpc::Status >(_impl_.value_);
 }
-inline ::maa::Status StatusResponse::value() const {
-  // @@protoc_insertion_point(field_get:maa.StatusResponse.value)
+inline ::maarpc::Status StatusResponse::value() const {
+  // @@protoc_insertion_point(field_get:maarpc.StatusResponse.value)
   return _internal_value();
 }
-inline void StatusResponse::_internal_set_value(::maa::Status value) {
-  _impl_._has_bits_[0] |= 0x00000002u;
+inline void StatusResponse::_internal_set_value(::maarpc::Status value) {
+  _impl_._has_bits_[0] |= 0x00000001u;
   _impl_.value_ = value;
 }
-inline void StatusResponse::set_value(::maa::Status value) {
+inline void StatusResponse::set_value(::maarpc::Status value) {
   _internal_set_value(value);
-  // @@protoc_insertion_point(field_set:maa.StatusResponse.value)
+  // @@protoc_insertion_point(field_set:maarpc.StatusResponse.value)
 }
 
-// optional .maa.RpcStatus status = 101;
+// optional bool status = 101;
 inline bool StatusResponse::_internal_has_status() const {
-  bool value = (_impl_._has_bits_[0] & 0x00000001u) != 0;
-  PROTOBUF_ASSUME(!value || _impl_.status_ != nullptr);
+  bool value = (_impl_._has_bits_[0] & 0x00000002u) != 0;
   return value;
 }
 inline bool StatusResponse::has_status() const {
   return _internal_has_status();
 }
 inline void StatusResponse::clear_status() {
-  if (_impl_.status_ != nullptr) _impl_.status_->Clear();
-  _impl_._has_bits_[0] &= ~0x00000001u;
+  _impl_.status_ = false;
+  _impl_._has_bits_[0] &= ~0x00000002u;
 }
-inline const ::maa::RpcStatus& StatusResponse::_internal_status() const {
-  const ::maa::RpcStatus* p = _impl_.status_;
-  return p != nullptr ? *p : reinterpret_cast<const ::maa::RpcStatus&>(
-      ::maa::_RpcStatus_default_instance_);
-}
-inline const ::maa::RpcStatus& StatusResponse::status() const {
-  // @@protoc_insertion_point(field_get:maa.StatusResponse.status)
-  return _internal_status();
-}
-inline void StatusResponse::unsafe_arena_set_allocated_status(
-    ::maa::RpcStatus* status) {
-  if (GetArenaForAllocation() == nullptr) {
-    delete reinterpret_cast<::PROTOBUF_NAMESPACE_ID::MessageLite*>(_impl_.status_);
-  }
-  _impl_.status_ = status;
-  if (status) {
-    _impl_._has_bits_[0] |= 0x00000001u;
-  } else {
-    _impl_._has_bits_[0] &= ~0x00000001u;
-  }
-  // @@protoc_insertion_point(field_unsafe_arena_set_allocated:maa.StatusResponse.status)
-}
-inline ::maa::RpcStatus* StatusResponse::release_status() {
-  _impl_._has_bits_[0] &= ~0x00000001u;
-  ::maa::RpcStatus* temp = _impl_.status_;
-  _impl_.status_ = nullptr;
-#ifdef PROTOBUF_FORCE_COPY_IN_RELEASE
-  auto* old =  reinterpret_cast<::PROTOBUF_NAMESPACE_ID::MessageLite*>(temp);
-  temp = ::PROTOBUF_NAMESPACE_ID::internal::DuplicateIfNonNull(temp);
-  if (GetArenaForAllocation() == nullptr) { delete old; }
-#else  // PROTOBUF_FORCE_COPY_IN_RELEASE
-  if (GetArenaForAllocation() != nullptr) {
-    temp = ::PROTOBUF_NAMESPACE_ID::internal::DuplicateIfNonNull(temp);
-  }
-#endif  // !PROTOBUF_FORCE_COPY_IN_RELEASE
-  return temp;
-}
-inline ::maa::RpcStatus* StatusResponse::unsafe_arena_release_status() {
-  // @@protoc_insertion_point(field_release:maa.StatusResponse.status)
-  _impl_._has_bits_[0] &= ~0x00000001u;
-  ::maa::RpcStatus* temp = _impl_.status_;
-  _impl_.status_ = nullptr;
-  return temp;
-}
-inline ::maa::RpcStatus* StatusResponse::_internal_mutable_status() {
-  _impl_._has_bits_[0] |= 0x00000001u;
-  if (_impl_.status_ == nullptr) {
-    auto* p = CreateMaybeMessage<::maa::RpcStatus>(GetArenaForAllocation());
-    _impl_.status_ = p;
-  }
+inline bool StatusResponse::_internal_status() const {
   return _impl_.status_;
 }
-inline ::maa::RpcStatus* StatusResponse::mutable_status() {
-  ::maa::RpcStatus* _msg = _internal_mutable_status();
-  // @@protoc_insertion_point(field_mutable:maa.StatusResponse.status)
-  return _msg;
+inline bool StatusResponse::status() const {
+  // @@protoc_insertion_point(field_get:maarpc.StatusResponse.status)
+  return _internal_status();
 }
-inline void StatusResponse::set_allocated_status(::maa::RpcStatus* status) {
-  ::PROTOBUF_NAMESPACE_ID::Arena* message_arena = GetArenaForAllocation();
-  if (message_arena == nullptr) {
-    delete _impl_.status_;
-  }
-  if (status) {
-    ::PROTOBUF_NAMESPACE_ID::Arena* submessage_arena =
-        ::PROTOBUF_NAMESPACE_ID::Arena::InternalGetOwningArena(status);
-    if (message_arena != submessage_arena) {
-      status = ::PROTOBUF_NAMESPACE_ID::internal::GetOwnedMessage(
-          message_arena, status, submessage_arena);
-    }
-    _impl_._has_bits_[0] |= 0x00000001u;
-  } else {
-    _impl_._has_bits_[0] &= ~0x00000001u;
-  }
-  _impl_.status_ = status;
-  // @@protoc_insertion_point(field_set_allocated:maa.StatusResponse.status)
+inline void StatusResponse::_internal_set_status(bool value) {
+  _impl_._has_bits_[0] |= 0x00000002u;
+  _impl_.status_ = value;
+}
+inline void StatusResponse::set_status(bool value) {
+  _internal_set_status(value);
+  // @@protoc_insertion_point(field_set:maarpc.StatusResponse.status)
 }
 
 #ifdef __GNUC__
@@ -7251,19 +6655,17 @@ inline void StatusResponse::set_allocated_status(::maa::RpcStatus* status) {
 
 // -------------------------------------------------------------------
 
-// -------------------------------------------------------------------
-
 
 // @@protoc_insertion_point(namespace_scope)
 
-}  // namespace maa
+}  // namespace maarpc
 
 PROTOBUF_NAMESPACE_OPEN
 
-template <> struct is_proto_enum< ::maa::Status> : ::std::true_type {};
+template <> struct is_proto_enum< ::maarpc::Status> : ::std::true_type {};
 template <>
-inline const EnumDescriptor* GetEnumDescriptor< ::maa::Status>() {
-  return ::maa::Status_descriptor();
+inline const EnumDescriptor* GetEnumDescriptor< ::maarpc::Status>() {
+  return ::maarpc::Status_descriptor();
 }
 
 PROTOBUF_NAMESPACE_CLOSE
