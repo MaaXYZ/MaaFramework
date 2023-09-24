@@ -33,9 +33,9 @@ int BoostIO::call_command(const std::vector<std::string>& cmd, bool recv_by_sock
     std::vector<std::string> rcmd(cmd.begin() + 1, cmd.end());
 
     boost::process::ipstream pout;
-    boost::process::child proc(exec, boost::process::args(rcmd),
-                               boost::process::std_in<boost::process::null, boost::process::std_out> pout,
-                               boost::process::std_err > boost::process::null);
+    boost::process::child proc(
+        exec, boost::process::args(rcmd), boost::process::std_in<boost::process::null, boost::process::std_out> pout,
+        boost::process::std_err > boost::process::null, boost::process::windows::create_no_window);
 
     const auto start_time = std::chrono::steady_clock::now();
     auto terminate = [&]() -> bool {
@@ -116,9 +116,11 @@ std::shared_ptr<IOHandler> BoostIO::interactive_shell(const std::vector<std::str
 
     std::shared_ptr<boost::process::child> proc(
         want_stderr ? new boost::process::child(boost::process::search_path(cmd[0]), boost::process::args(rcmd),
-                                                boost::process::std_in<*pin, boost::process::std_err> * pout)
+                                                boost::process::std_in<*pin, boost::process::std_err> * pout,
+                                                boost::process::windows::create_no_window)
                     : new boost::process::child(boost::process::search_path(cmd[0]), boost::process::args(rcmd),
-                                                boost::process::std_in<*pin, boost::process::std_out> * pout));
+                                                boost::process::std_in<*pin, boost::process::std_out> * pout,
+                                                boost::process::windows::create_no_window));
 
     return std::make_shared<IOHandlerBoostStream>(pout, pin, proc);
 }
