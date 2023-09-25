@@ -17,11 +17,6 @@ void VisionBase::set_image(const cv::Mat& image)
     init_debug_draw();
 }
 
-void VisionBase::set_cache(const cv::Rect& cache)
-{
-    cache_ = cache;
-}
-
 void VisionBase::set_name(std::string name)
 {
     name_ = std::move(name);

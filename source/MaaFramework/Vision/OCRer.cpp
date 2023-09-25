@@ -34,10 +34,6 @@ OCRer::ResultsVec OCRer::analyze() const
 
 OCRer::ResultsVec OCRer::foreach_rois() const
 {
-    if (!cache_.empty()) {
-        return { predict_only_rec(cache_) };
-    }
-
     if (param_.roi.empty()) {
         cv::Rect roi(0, 0, image_.cols, image_.rows);
         return predict(roi);

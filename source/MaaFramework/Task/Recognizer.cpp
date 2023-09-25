@@ -24,10 +24,6 @@ std::optional<Recognizer::Result> Recognizer::recognize(const cv::Mat& image, co
         LogError << "Status not binded";
         return std::nullopt;
     }
-    cv::Rect cache {};
-    if (task_data.cache) {
-        cache = status()->get_pipeline_rec_box(task_data.name);
-    }
 
     std::optional<Result> result;
     switch (task_data.rec_type) {
@@ -36,15 +32,15 @@ std::optional<Recognizer::Result> Recognizer::recognize(const cv::Mat& image, co
         break;
 
     case Type::TemplateMatch:
-        result = template_match(image, std::get<TemplateMatcherParam>(task_data.rec_param), cache, task_data.name);
+        result = template_match(image, std::get<TemplateMatcherParam>(task_data.rec_param), task_data.name);
         break;
 
     case Type::ColorMatch:
-        result = color_match(image, std::get<ColorMatcherParam>(task_data.rec_param), cache, task_data.name);
+        result = color_match(image, std::get<ColorMatcherParam>(task_data.rec_param), task_data.name);
         break;
 
     case Type::OCR:
-        result = ocr(image, std::get<OCRerParam>(task_data.rec_param), cache, task_data.name);
+        result = ocr(image, std::get<OCRerParam>(task_data.rec_param), task_data.name);
         break;
 
     case Type::Classify:
@@ -56,7 +52,7 @@ std::optional<Recognizer::Result> Recognizer::recognize(const cv::Mat& image, co
         break;
 
     case Type::Custom:
-        result = custom_recognize(image, std::get<CustomRecognizerParam>(task_data.rec_param), cache, task_data.name);
+        result = custom_recognize(image, std::get<CustomRecognizerParam>(task_data.rec_param), task_data.name);
         break;
 
     default:
@@ -83,7 +79,7 @@ std::optional<Recognizer::Result> Recognizer::direct_hit()
 
 std::optional<Recognizer::Result> Recognizer::template_match(const cv::Mat& image,
                                                              const MAA_VISION_NS::TemplateMatcherParam& param,
-                                                             const cv::Rect& cache, const std::string& name)
+                                                             const std::string& name)
 {
     using namespace MAA_VISION_NS;
 
@@ -96,7 +92,6 @@ std::optional<Recognizer::Result> Recognizer::template_match(const cv::Mat& imag
     matcher.set_image(image);
     matcher.set_name(name);
     matcher.set_param(param);
-    matcher.set_cache(cache);
 
     std::vector<std::shared_ptr<cv::Mat>> templates;
     for (const auto& path : param.template_paths) {
@@ -124,7 +119,7 @@ std::optional<Recognizer::Result> Recognizer::template_match(const cv::Mat& imag
 
 std::optional<Recognizer::Result> Recognizer::color_match(const cv::Mat& image,
                                                           const MAA_VISION_NS::ColorMatcherParam& param,
-                                                          const cv::Rect& cache, const std::string& name)
+                                                          const std::string& name)
 {
     using namespace MAA_VISION_NS;
 
@@ -137,7 +132,6 @@ std::optional<Recognizer::Result> Recognizer::color_match(const cv::Mat& image,
     matcher.set_image(image);
     matcher.set_name(name);
     matcher.set_param(param);
-    matcher.set_cache(cache);
 
     auto ret = matcher.analyze();
     if (ret.empty()) {
@@ -153,7 +147,7 @@ std::optional<Recognizer::Result> Recognizer::color_match(const cv::Mat& image,
 }
 
 std::optional<Recognizer::Result> Recognizer::ocr(const cv::Mat& image, const MAA_VISION_NS::OCRerParam& param,
-                                                  const cv::Rect& cache, const std::string& name)
+                                                  const std::string& name)
 {
     using namespace MAA_VISION_NS;
 
@@ -166,7 +160,6 @@ std::optional<Recognizer::Result> Recognizer::ocr(const cv::Mat& image, const MA
     ocrer.set_image(image);
     ocrer.set_name(name);
     ocrer.set_param(param);
-    ocrer.set_cache(cache);
 
     auto det_session = resource()->ocr_res().deter(param.model);
     auto rec_session = resource()->ocr_res().recer(param.model);
@@ -254,11 +247,9 @@ std::optional<Recognizer::Result> Recognizer::detect(const cv::Mat& image, const
 
 std::optional<Recognizer::Result> Recognizer::custom_recognize(const cv::Mat& image,
                                                                const MAA_VISION_NS::CustomRecognizerParam& param,
-                                                               const cv::Rect& cache, const std::string& name)
+                                                               const std::string& name)
 {
     using namespace MAA_VISION_NS;
-
-    std::ignore = cache;
 
     if (!inst_) {
         LogError << "Instance not binded";

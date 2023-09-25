@@ -41,10 +41,6 @@ Detector::ResultsVec Detector::analyze() const
 
 Detector::ResultsVec Detector::foreach_rois() const
 {
-    if (!cache_.empty()) {
-        return detect(cache_);
-    }
-
     if (param_.roi.empty()) {
         return detect(cv::Rect(0, 0, image_.cols, image_.rows));
     }

@@ -38,10 +38,6 @@ ColorMatcher::ResultsVec ColorMatcher::analyze() const
 
 ColorMatcher::ResultsVec ColorMatcher::foreach_rois(const ColorMatcherParam::Range& range, bool connected) const
 {
-    if (!cache_.empty()) {
-        return { color_match(cache_, range, connected) };
-    }
-
     if (param_.roi.empty()) {
         return { color_match(cv::Rect(0, 0, image_.cols, image_.rows), range, connected) };
     }

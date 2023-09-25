@@ -57,10 +57,6 @@ Matcher::ResultsVec Matcher::foreach_rois(const cv::Mat& templ) const
         return {};
     }
 
-    if (!cache_.empty()) {
-        return match_and_postproc(cache_, templ);
-    }
-
     if (param_.roi.empty()) {
         return match_and_postproc(cv::Rect(0, 0, image_.cols, image_.rows), templ);
     }
