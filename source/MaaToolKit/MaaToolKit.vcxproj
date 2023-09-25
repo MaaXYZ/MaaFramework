@@ -15,7 +15,8 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="API\MaaToolKitAPI.cpp" />
+    <ClCompile Include="API\MaaToolKitConfig.cpp" />
+    <ClCompile Include="API\MaaToolKitDevice.cpp" />
     <ClCompile Include="Config\Config.cpp" />
     <ClCompile Include="Config\ConfigMgr.cpp" />
     <ClCompile Include="Config\Task.cpp" />
