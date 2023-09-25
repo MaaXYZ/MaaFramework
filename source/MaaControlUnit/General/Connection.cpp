@@ -20,8 +20,8 @@ bool Connection::connect()
         return false;
     }
 
-    constexpr std::array<std::string_view, 4> kUnavailableFlag = { "error", "cannot", "refused", "unable to connect" };
-    for (const auto& flag : kUnavailableFlag) {
+    constexpr std::array<std::string_view, 4> kErrorFlag = { "error", "cannot", "refused", "unable to connect" };
+    for (const auto& flag : kErrorFlag) {
         if (cmd_ret->find(flag) != std::string::npos) {
             LogInfo << "unable to connect";
             return false;
