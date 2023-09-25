@@ -11,13 +11,6 @@ std::ostream& operator<<(std::ostream& os, const DeviceMgr::Emulator& emulator)
     return os;
 }
 
-std::ostream& operator<<(std::ostream& os, const Device& device)
-{
-    os << VAR_RAW(device.name) << VAR_RAW(device.adb_path) << VAR_RAW(device.adb_serial)
-       << VAR_RAW(device.adb_controller_type) << VAR_RAW(device.adb_config);
-    return os;
-}
-
 size_t DeviceMgr::find_device()
 {
     LogFunc;
