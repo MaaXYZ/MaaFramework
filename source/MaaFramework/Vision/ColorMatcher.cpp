@@ -90,6 +90,7 @@ ColorMatcher::ResultsVec ColorMatcher::color_match(const cv::Rect& roi, const Co
         cv::Rect box = bounding + roi.tl();
 
         Result res { .box = box, .score = count };
+        results.emplace_back(std::move(res));
     }
 
     draw_result(roi, color, bin, results);
