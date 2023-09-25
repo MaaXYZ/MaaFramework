@@ -14,6 +14,7 @@ extern "C"
     MaaStringView MAA_TOOLKIT_API MaaToolKitGetDeviceAdbSerial(MaaSize index);
     MaaAdbControllerType MAA_TOOLKIT_API MaaToolKitGetDeviceAdbControllerType(MaaSize index);
     MaaStringView MAA_TOOLKIT_API MaaToolKitGetDeviceAdbConfig(MaaSize index);
-    #ifdef __cplusplus
+
+#ifdef __cplusplus
 }
 #endif
