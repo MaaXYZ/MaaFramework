@@ -1,7 +1,5 @@
 #pragma once
 
-#include <stdint.h>
-
 #include "MaaFramework/MaaDef.h"
 
 struct MaaToolKitConfigAPI;
