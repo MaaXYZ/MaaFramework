@@ -16,14 +16,19 @@ bool Connection::connect()
     auto cmd_ret = command(connect_argv_.gen(argv_replace_), false, 60LL * 1000);
 
     if (!cmd_ret) {
+        LogInfo << "run command failed";
         return false;
     }
 
-    if (cmd_ret->find("error") != std::string::npos || cmd_ret->find("cannot") != std::string::npos ||
-        cmd_ret->find("refused") != std::string::npos) {
-        return false;
+    constexpr std::array<std::string_view, 4> kUnavailableFlag = { "error", "cannot", "refused", "unable to connect" };
+    for (const auto& flag : kUnavailableFlag) {
+        if (cmd_ret->find(flag) != std::string::npos) {
+            LogInfo << "unable to connect";
+            return false;
+        }
     }
 
+    LogInfo << "connected";
     return true;
 }
 
