@@ -60,41 +60,45 @@ ColorMatcher::ResultsVec ColorMatcher::color_match(const cv::Rect& roi, const Co
     cv::Mat bin;
     cv::inRange(color, range.first, range.second, bin);
 
-    ResultsVec results;
-
-    if (connected) {
-        cv::Mat labels, stats, centroids;
-        int number = cv::connectedComponentsWithStats(bin, labels, stats, centroids, 8, CV_16U);
-        for (int i = 1; i < number; ++i) {
-            // int center_x = centroids.at<double>(i, 0);
-            // int center_y = centroids.at<double>(i, 1);
-
-            int x = stats.at<int>(i, cv::CC_STAT_LEFT);
-            int y = stats.at<int>(i, cv::CC_STAT_TOP);
-            int width = stats.at<int>(i, cv::CC_STAT_WIDTH);
-            int height = stats.at<int>(i, cv::CC_STAT_HEIGHT);
-
-            cv::Rect box(x, y, width, height);
-            // int count = stats.at<int>(i, cv::CC_STAT_AREA);
-            int count = cv::countNonZero(bin(box));
-
-            Result res { .box = box, .score = count };
-            results.emplace_back(std::move(res));
-        }
-
-        results = NMS(std::move(results), 1.0);
-    }
-    else {
-        int count = cv::countNonZero(bin);
-        cv::Rect bounding = cv::boundingRect(bin);
-        cv::Rect box = bounding + roi.tl();
-
-        Result res { .box = box, .score = count };
-        results.emplace_back(std::move(res));
-    }
+    ResultsVec results = connected ? count_non_zero_with_connected(bin, roi.tl()) : count_non_zero(bin, roi.tl());
 
     draw_result(roi, color, bin, results);
     return results;
+}
+
+ColorMatcher::ResultsVec ColorMatcher::count_non_zero(const cv::Mat& bin, const cv::Point& tl) const
+{
+    int count = cv::countNonZero(bin);
+    cv::Rect bounding = cv::boundingRect(bin);
+    cv::Rect box = bounding + tl;
+
+    return { Result { .box = box, .score = count } };
+}
+
+ColorMatcher::ResultsVec ColorMatcher::count_non_zero_with_connected(const cv::Mat& bin, const cv::Point& tl) const
+{
+    ResultsVec results;
+
+    cv::Mat labels, stats, centroids;
+    int number = cv::connectedComponentsWithStats(bin, labels, stats, centroids, 8, CV_16U);
+    for (int i = 1; i < number; ++i) {
+        // int center_x = centroids.at<double>(i, 0);
+        // int center_y = centroids.at<double>(i, 1);
+
+        int x = stats.at<int>(i, cv::CC_STAT_LEFT);
+        int y = stats.at<int>(i, cv::CC_STAT_TOP);
+        int width = stats.at<int>(i, cv::CC_STAT_WIDTH);
+        int height = stats.at<int>(i, cv::CC_STAT_HEIGHT);
+
+        cv::Rect bounding = cv::Rect(x, y, width, height);
+        // int count = stats.at<int>(i, cv::CC_STAT_AREA);
+        int count = cv::countNonZero(bin(bounding));
+
+        Result res { .box = bounding + tl, .score = count };
+        results.emplace_back(std::move(res));
+    }
+
+    return NMS(std::move(results), 1.0);
 }
 
 void ColorMatcher::draw_result(const cv::Rect& roi, const cv::Mat& color, const cv::Mat& bin,
