@@ -1,6 +1,6 @@
 #pragma once
 #include "ControllerMgr.h"
-#include "MaaFramework/MaaCustomController.h"
+#include "MaaFramework/Instance/MaaCustomController.h"
 
 MAA_CTRL_NS_BEGIN
 

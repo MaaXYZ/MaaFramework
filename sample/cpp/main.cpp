@@ -5,7 +5,7 @@
 #include <iostream>
 #include <string>
 
-#include "MaaFramework/MaaCustomRecognizer.h"
+#include "MaaFramework/Task/MaaCustomRecognizer.h"
 #include "MaaToolKit/MaaToolKitAPI.h"
 
 #ifdef _WIN32

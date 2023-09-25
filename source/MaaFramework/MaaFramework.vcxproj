@@ -15,13 +15,19 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\..\include\MaaFramework\Task\MaaCustomAction.h" />
+    <ClInclude Include="..\..\include\MaaFramework\Task\MaaCustomRecognizer.h" />
+    <ClInclude Include="..\..\include\MaaFramework\Task\MaaSyncContext.h" />
+    <ClInclude Include="..\..\include\MaaFramework\Instance\MaaController.h" />
+    <ClInclude Include="..\..\include\MaaFramework\Instance\MaaCustomController.h" />
+    <ClInclude Include="..\..\include\MaaFramework\Instance\MaaInstance.h" />
+    <ClInclude Include="..\..\include\MaaFramework\Instance\MaaResource.h" />
     <ClInclude Include="..\..\include\MaaFramework\MaaAPI.h" />
-    <ClInclude Include="..\..\include\MaaFramework\MaaCustomAction.h" />
-    <ClInclude Include="..\..\include\MaaFramework\MaaCustomController.h" />
-    <ClInclude Include="..\..\include\MaaFramework\MaaCustomRecognizer.h" />
     <ClInclude Include="..\..\include\MaaFramework\MaaDef.h" />
     <ClInclude Include="..\..\include\MaaFramework\MaaMsg.h" />
     <ClInclude Include="..\..\include\MaaFramework\MaaPort.h" />
+    <ClInclude Include="..\..\include\MaaFramework\Utility\MaaBuffer.h" />
+    <ClInclude Include="..\..\include\MaaFramework\Utility\MaaUtility.h" />
     <ClInclude Include="API\MaaTypes.h" />
     <ClInclude Include="Base\MessageNotifier.hpp" />
     <ClInclude Include="Buffer\ImageBuffer.hpp" />
@@ -77,12 +83,17 @@
     <ClInclude Include="Vision\Detector.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="API\MaaBuffer.cpp" />
+    <ClCompile Include="API\MaaController.cpp" />
+    <ClCompile Include="API\MaaInstance.cpp" />
+    <ClCompile Include="API\MaaResource.cpp" />
+    <ClCompile Include="API\MaaSyncContext.cpp" />
+    <ClCompile Include="API\MaaUtility.cpp" />
     <ClCompile Include="Controller\AdbController.cpp" />
     <ClCompile Include="Controller\ControllerMgr.cpp" />
     <ClCompile Include="Controller\CustomController.cpp" />
     <ClCompile Include="Controller\CustomThriftController.cpp" />
     <ClCompile Include="Instance\InstanceMgr.cpp" />
-    <ClCompile Include="API\MaaAPI.cpp" />
     <ClCompile Include="Instance\InstanceStatus.cpp" />
     <ClCompile Include="Option\GlobalOptionMgr.cpp" />
     <ClCompile Include="Resource\OCRResMgr.cpp" />
