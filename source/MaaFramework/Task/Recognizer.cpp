@@ -61,8 +61,8 @@ std::optional<Recognizer::Result> Recognizer::recognize(const cv::Mat& image, co
     }
 
     if (result) {
-        status()->set_pipeline_rec_box(task_data.name, result->box);
-        status()->set_pipeline_rec_detail(task_data.name, result->detail);
+        status()->set_rec_box(task_data.name, result->box);
+        status()->set_rec_detail(task_data.name, result->detail);
     }
 
     if (task_data.inverse) {
