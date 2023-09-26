@@ -36,7 +36,7 @@ service Instance {
   rpc bind_controller(HandleHandleRequest) returns (EmptyResponse);
   rpc inited(HandleRequest) returns (BoolResponse);
 
-  rpc post_task(InstancePostTaskRequest) returns (IdResponse);
+  rpc post_task(InstancePostTaskRequest) returns (IIdResponse);
   rpc set_task_param(InstanceSetTaskParamRequest) returns (EmptyResponse);
 
   rpc status(HandleIIdRequest) returns (StatusResponse);

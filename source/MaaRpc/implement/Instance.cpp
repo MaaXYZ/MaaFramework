@@ -154,7 +154,7 @@ Status InstanceImpl::inited(ServerContext* context, const ::maarpc::HandleReques
 }
 
 Status InstanceImpl::post_task(ServerContext* context, const ::maarpc::InstancePostTaskRequest* request,
-                               ::maarpc::IdResponse* response)
+                               ::maarpc::IIdResponse* response)
 {
     std::ignore = context;
 
@@ -173,6 +173,7 @@ Status InstanceImpl::set_task_param(ServerContext* context, const ::maarpc::Inst
                                     ::maarpc::EmptyResponse* response)
 {
     std::ignore = context;
+    std::ignore = response;
 
     MAA_GRPC_REQUIRED(handle)
     MAA_GRPC_REQUIRED(id)

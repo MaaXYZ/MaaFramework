@@ -42,7 +42,7 @@ struct InstanceImpl final : public ::maarpc::Instance::Service
     ::grpc::Status inited(::grpc::ServerContext* context, const ::maarpc::HandleRequest* request,
                           ::maarpc::BoolResponse* response) override;
     ::grpc::Status post_task(::grpc::ServerContext* context, const ::maarpc::InstancePostTaskRequest* request,
-                             ::maarpc::IdResponse* response) override;
+                             ::maarpc::IIdResponse* response) override;
     ::grpc::Status set_task_param(::grpc::ServerContext* context, const ::maarpc::InstanceSetTaskParamRequest* request,
                                   ::maarpc::EmptyResponse* response) override;
     ::grpc::Status status(::grpc::ServerContext* context, const ::maarpc::HandleIIdRequest* request,
