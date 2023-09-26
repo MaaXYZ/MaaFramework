@@ -40,7 +40,7 @@ public:
     ::grpc::Status status(::grpc::ServerContext* context, const ::maarpc::HandleIIdRequest* request,
                           ::maarpc::StatusResponse* response) override;
     ::grpc::Status wait(::grpc::ServerContext* context, const ::maarpc::HandleIIdRequest* request,
-                        ::maarpc::EmptyResponse* response) override;
+                        ::maarpc::StatusResponse* response) override;
     ::grpc::Status connected(::grpc::ServerContext* context, const ::maarpc::HandleRequest* request,
                              ::maarpc::BoolResponse* response) override;
     ::grpc::Status image(::grpc::ServerContext* context, const ::maarpc::ControllerGetImageRequest* request,

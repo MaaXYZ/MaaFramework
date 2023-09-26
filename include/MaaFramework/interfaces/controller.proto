@@ -14,11 +14,12 @@ message AdbControllerRequest {
 }
 
 message ControllerSetOptionRequest {
+  optional string handle = 1;
   oneof option {
-    int32 long_side = 1;
-    int32 short_side = 2;
-    string def_package_entry = 3;
-    string def_package = 4;
+    int32 long_side = 101;
+    int32 short_side = 102;
+    string def_package_entry = 103;
+    string def_package = 104;
   }
 }
 
@@ -67,7 +68,7 @@ service Controller {
   rpc post_screencap(HandleRequest) returns (IIdResponse);
 
   rpc status(HandleIIdRequest) returns (StatusResponse);
-  rpc wait(HandleIIdRequest) returns (EmptyResponse);
+  rpc wait(HandleIIdRequest) returns (StatusResponse);
   rpc connected(HandleRequest) returns (BoolResponse);
 
   rpc image(ControllerGetImageRequest) returns (EmptyResponse);

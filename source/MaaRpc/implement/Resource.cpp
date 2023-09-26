@@ -20,9 +20,7 @@ Status ResourceImpl::create(ServerContext* context, const ::maarpc::IdRequest* r
     auto id = make_uuid();
     auto handle = MaaResourceCreate(CallbackImpl, cbState);
 
-    std::unique_lock<std::mutex> lock(handles_mtx);
-    handles[id] = handle;
-    lock.unlock();
+    MAA_GRPC_SET_HANDLE
 
     response->set_handle(id);
 
@@ -37,14 +35,9 @@ Status ResourceImpl::destroy(ServerContext* context, const ::maarpc::HandleReque
 
     MAA_GRPC_REQUIRED(handle)
 
-    std::unique_lock<std::mutex> lock(handles_mtx);
-    auto id = request->handle();
-    if (!handles.contains(id)) {
-        return Status(NOT_FOUND, "handle not exists");
-    }
-    auto handle = handles[id];
+    MAA_GRPC_GET_HANDLE_BEGIN
     handles.erase(id);
-    lock.unlock();
+    MAA_GRPC_GET_HANDLE_END
 
     MaaResourceDestroy(handle);
 
@@ -57,14 +50,9 @@ Status ResourceImpl::post_path(ServerContext* context, const ::maarpc::HandleStr
     std::ignore = context;
 
     MAA_GRPC_REQUIRED(handle)
+    MAA_GRPC_REQUIRED(str)
 
-    std::unique_lock<std::mutex> lock(handles_mtx);
-    auto id = request->handle();
-    if (!handles.contains(id)) {
-        return Status(NOT_FOUND, "handle not exists");
-    }
-    auto handle = handles[id];
-    lock.unlock();
+    MAA_GRPC_GET_HANDLE
 
     response->set_id(MaaResourcePostPath(handle, request->str().c_str()));
 
@@ -79,13 +67,7 @@ Status ResourceImpl::status(ServerContext* context, const ::maarpc::HandleIIdReq
     MAA_GRPC_REQUIRED(id)
     MAA_GRPC_REQUIRED(handle)
 
-    std::unique_lock<std::mutex> lock(handles_mtx);
-    auto id = request->handle();
-    if (!handles.contains(id)) {
-        return Status(NOT_FOUND, "handle not exists");
-    }
-    auto handle = handles[id];
-    lock.unlock();
+    MAA_GRPC_GET_HANDLE
 
     response->set_status(MaaResourceStatus(handle, request->id()));
 
@@ -100,13 +82,7 @@ Status ResourceImpl::wait(ServerContext* context, const ::maarpc::HandleIIdReque
     MAA_GRPC_REQUIRED(id)
     MAA_GRPC_REQUIRED(handle)
 
-    std::unique_lock<std::mutex> lock(handles_mtx);
-    auto id = request->handle();
-    if (!handles.contains(id)) {
-        return Status(NOT_FOUND, "handle not exists");
-    }
-    auto handle = handles[id];
-    lock.unlock();
+    MAA_GRPC_GET_HANDLE
 
     response->set_status(MaaResourceWait(handle, request->id()));
 
@@ -120,13 +96,7 @@ Status ResourceImpl::loaded(ServerContext* context, const ::maarpc::HandleReques
 
     MAA_GRPC_REQUIRED(handle)
 
-    std::unique_lock<std::mutex> lock(handles_mtx);
-    auto id = request->handle();
-    if (!handles.contains(id)) {
-        return Status(NOT_FOUND, "handle not exists");
-    }
-    auto handle = handles[id];
-    lock.unlock();
+    MAA_GRPC_GET_HANDLE
 
     response->set_bool_(MaaResourceLoaded(handle));
 
@@ -140,13 +110,7 @@ Status ResourceImpl::hash(ServerContext* context, const ::maarpc::HandleRequest*
 
     MAA_GRPC_REQUIRED(handle)
 
-    std::unique_lock<std::mutex> lock(handles_mtx);
-    auto id = request->handle();
-    if (!handles.contains(id)) {
-        return Status(NOT_FOUND, "handle not exists");
-    }
-    auto handle = handles[id];
-    lock.unlock();
+    MAA_GRPC_GET_HANDLE
 
     auto sb = MaaCreateStringBuffer();
     if (MaaResourceGetHash(handle, sb)) {
