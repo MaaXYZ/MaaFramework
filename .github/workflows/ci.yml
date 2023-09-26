@@ -90,6 +90,7 @@ jobs:
 
       - name: Build MAA
         run: |
+          cmd /C update-proto.bat
           cmake --preset "${{ matrix.arch == 'x86_64' && 'MSVC 2022' || 'MSVC 2022 ARM' }}" -DMAADEPS_TRIPLET="maa-${{ matrix.arch == 'x86_64' && 'x64' || 'arm64' }}-windows" -DMAA_HASH_VERSION='${{ needs.meta.outputs.tag }}'
 
           cmake --build build --preset "${{ matrix.arch == 'x86_64' && 'MSVC 2022' || 'MSVC 2022 ARM' }} - Release" -j 16
@@ -162,6 +163,7 @@ jobs:
           CC: ${{ matrix.arch == 'x86_64' && 'ccache gcc' || 'ccache aarch64-linux-gnu-gcc' }}
           CXX: ${{ matrix.arch == 'x86_64' && 'ccache g++' || 'ccache aarch64-linux-gnu-g++' }}
         run: |
+          bash update-proto.sh
           cmake --preset 'NinjaMulti' \
             -DMAADEPS_TRIPLET='maa-${{ matrix.arch == 'x86_64' && 'x64' || 'arm64' }}-linux' \
             -DMAA_HASH_VERSION='${{ needs.meta.outputs.tag }}'
@@ -226,6 +228,7 @@ jobs:
           CC: "/usr/local/opt/llvm/bin/clang"
           CXX: "/usr/local/opt/llvm/bin/clang++"
         run: |
+          bash update-proto.sh
           cmake --preset 'NinjaMulti' \
             -DMAADEPS_TRIPLET='maa-${{ matrix.arch == 'x86_64' && 'x64' || 'arm64' }}-osx' \
             -DMAA_HASH_VERSION='${{ needs.meta.outputs.tag }}'
@@ -273,7 +276,6 @@ jobs:
           name: MAA-nupkgs
           path: "pkgs/nupkgs/*.nupkg"
 
-
   release:
     if: ${{ needs.meta.outputs.is_release == 'true' }}
     needs: [meta, windows, ubuntu, macos, nuget_pack]
@@ -299,7 +301,7 @@ jobs:
           for f in *; do
             (cd $f && zip -r ../$f-${{ needs.meta.outputs.tag }}.zip .)
           done
-      
+
       - uses: softprops/action-gh-release@v1
         with:
           files: assets/*.zip
