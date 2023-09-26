@@ -1,0 +1,75 @@
+syntax = "proto3";
+
+package maarpc;
+
+import "types.proto";
+import "custom.controller.proto";
+
+message AdbControllerRequest {
+  optional Id callback = 1;
+  optional string adb_path = 2;
+  optional string adb_serial = 3;
+  optional uint32 adb_type = 4;
+  optional string adb_config = 5;
+}
+
+message ControllerSetOptionRequest {
+  oneof option {
+    int32 long_side = 1;
+    int32 short_side = 2;
+    string def_package_entry = 3;
+    string def_package = 4;
+  }
+}
+
+message ControllerPostClickRequest {
+  optional Handle handle = 1;
+  optional ClickParam param = 2;
+}
+
+message ControllerPostSwipeRequest {
+  optional Handle handle = 1;
+  optional SwipeParam param = 2;
+}
+
+message ControllerPostKeyRequest {
+  optional Handle handle = 1;
+  optional KeyParam param = 2;
+}
+
+message ControllerPostTouchRequest {
+  optional Handle handle = 1;
+  optional TouchParam param = 2;
+}
+
+message ControllerGetImageRequest {
+  optional Handle handle = 1;
+  optional Handle image = 2;
+}
+
+service MaaFrameworkController {
+  rpc create_adb(AdbControllerRequest) returns (HandleResponse);
+  rpc destroy(HandleRequest) returns (EmptyResponse);
+
+  rpc create_custom(CustomControllerRequest)
+      returns (stream CustomControllerResponse);
+  rpc submit_custom_controller(SubmitCustomControllerRequest)
+      returns (EmptyResponse);
+
+  rpc set_option(ControllerSetOptionRequest) returns (EmptyResponse);
+  rpc post_connection(HandleRequest) returns (IdResponse);
+  rpc post_click(ControllerPostClickRequest) returns (IdResponse);
+  rpc post_swipe(ControllerPostSwipeRequest) returns (IdResponse);
+  rpc post_press_key(ControllerPostKeyRequest) returns (IdResponse);
+  rpc post_touch_down(ControllerPostTouchRequest) returns (IdResponse);
+  rpc post_touch_move(ControllerPostTouchRequest) returns (IdResponse);
+  rpc post_touch_up(ControllerPostTouchRequest) returns (IdResponse);
+  rpc post_screencap(HandleRequest) returns (IdResponse);
+
+  rpc status(HandleIdRequest) returns (StatusResponse);
+  rpc wait(HandleIdRequest) returns (EmptyResponse);
+  rpc connected(HandleRequest) returns (BoolResponse);
+
+  rpc image(ControllerGetImageRequest) returns (EmptyResponse);
+  rpc uuid(HandleRequest) returns (StringResponse);
+}

@@ -9,14 +9,11 @@ fi
 PROTOC="./MaaDeps/vcpkg/installed/${TRIPLET}/tools/protobuf/protoc"
 GRPC_PLUGIN="./MaaDeps/vcpkg/installed/${TRIPLET}/tools/grpc/grpc_cpp_plugin"
 
-INDIR="./source/MaaRpc"
+INDIR="./include/MaaFramework/interfaces"
 OUTDIR="./source/MaaRpc/generated"
 
-function BUILD {
-  echo "PROCESSING ${INDIR}/$1"
-  ${PROTOC} --proto_path=${INDIR} "${INDIR}/$1" --cpp_out=${OUTDIR}
-  ${PROTOC} --proto_path=${INDIR} "${INDIR}/$1" --grpc_out=${OUTDIR} --plugin=protoc-gen-grpc=${GRPC_PLUGIN}
-}
-
-BUILD "Types.proto"
-BUILD "Framework.proto"
+for src in ${INDIR}/*.proto; do
+  echo "PROCESSING ${src}"
+  ${PROTOC} --proto_path=${INDIR} "${src}" --cpp_out=${OUTDIR}
+  ${PROTOC} --proto_path=${INDIR} "${src}" --grpc_out=${OUTDIR} --plugin=protoc-gen-grpc=${GRPC_PLUGIN}
+done

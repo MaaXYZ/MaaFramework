@@ -1,0 +1,17 @@
+syntax = "proto3";
+
+package maarpc;
+
+import "types.proto";
+
+service MaaFrameworkResource {
+  rpc create(IdRequest) returns (HandleResponse);
+  rpc destroy(HandleRequest) returns (EmptyResponse);
+
+  rpc post_path(HandleStringRequest) returns (IdResponse);
+
+  rpc status(HandleIdRequest) returns (StatusResponse);
+  rpc wait(HandleIdRequest) returns (StatusResponse);
+  rpc loaded(HandleRequest) returns (BoolResponse);
+  rpc hash(HandleRequest) returns (StringResponse);
+}

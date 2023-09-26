@@ -1,0 +1,34 @@
+syntax = "proto3";
+
+package maarpc;
+
+import "types.proto";
+
+message CustomActionRequest {
+  optional Handle handle = 1;
+  optional string name = 2;
+  optional Id act = 3;
+}
+
+message CustomActionRunParam {
+  optional Handle context = 1;
+  optional string task = 2;
+  optional string param = 3;
+  optional Rect box = 4;
+  optional string detail = 5;
+}
+
+message CustomActionResponse {
+  optional Id act = 1;
+  optional Id id = 2;
+  oneof command {
+    CustomActionRunParam run = 101;
+    bool stop = 102; // void
+  }
+}
+
+message SubmitCustomActionRequest {
+  optional Handle handle = 1;
+  optional Id id = 2;
+  optional bool ok = 3;
+}
