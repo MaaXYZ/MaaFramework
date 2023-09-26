@@ -1,4 +1,4 @@
-file(GLOB_RECURSE maa_src *.cpp *.h *.hpp ../include/MaaFramework/*.h)
+file(GLOB_RECURSE maa_src *.cpp *.h *.hpp ../include ../../include/MaaFramework)
 
 add_library(MaaFramework SHARED ${maa_src})
 
@@ -32,7 +32,7 @@ install(TARGETS MaaFramework
 install(DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/../../include/MaaFramework" DESTINATION "include" PATTERN "interfaces" EXCLUDE)
 install(DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/../../include/MaaFramework/interfaces" DESTINATION "share")
 
-source_group(TREE ${CMAKE_SOURCE_DIR} FILES ${maa_src})
+source_group(TREE ${CMAKE_CURRENT_SOURCE_DIR} FILES ${maa_src})
 
 if (WIN32)
   add_custom_command(TARGET MaaFramework POST_BUILD

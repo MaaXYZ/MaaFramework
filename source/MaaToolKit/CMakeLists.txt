@@ -1,4 +1,4 @@
-file(GLOB_RECURSE maa_toolkit_src *.h *.hpp *.cpp ../include)
+file(GLOB_RECURSE maa_toolkit_src *.cpp *.h *.hpp ../include ../../include/MaaToolKit)
 
 add_library(MaaToolKit SHARED ${maa_toolkit_src})
 
@@ -19,4 +19,4 @@ install(TARGETS MaaToolKit
 )
 install(DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/../../include/MaaToolKit" DESTINATION "include")
 
-source_group(TREE ${CMAKE_SOURCE_DIR} FILES ${maa_toolkit_src})
+source_group(TREE ${CMAKE_CURRENT_SOURCE_DIR} FILES ${maa_toolkit_src})
