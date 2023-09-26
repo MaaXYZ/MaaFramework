@@ -1,4 +1,4 @@
-file(GLOB_RECURSE maa_utils_src *.h *.hpp *.cpp ../include/Utils/*.hpp)
+file(GLOB_RECURSE maa_utils_src *.h *.hpp *.cpp ../include)
 
 add_library(MaaUtils SHARED ${maa_utils_src})
 target_include_directories(MaaUtils
@@ -15,4 +15,4 @@ install(TARGETS MaaUtils
     ARCHIVE DESTINATION lib
 )
 
-source_group(TREE ${CMAKE_SOURCE_DIR} FILES ${maa_utils_src})
+source_group(TREE ${CMAKE_CURRENT_SOURCE_DIR} FILES ${maa_utils_src})

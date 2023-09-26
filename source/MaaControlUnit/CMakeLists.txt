@@ -1,4 +1,4 @@
-file(GLOB_RECURSE maa_control_unit_src *.h *.hpp *.cpp ../include/ControlUnit/*.h)
+file(GLOB_RECURSE maa_control_unit_src *.h *.hpp *.cpp ../include)
 
 add_library(MaaControlUnit SHARED ${maa_control_unit_src})
 
@@ -23,4 +23,4 @@ install(TARGETS MaaControlUnit
     ARCHIVE DESTINATION lib
 )
 
-source_group(TREE ${CMAKE_SOURCE_DIR} FILES ${maa_control_unit_src})
+source_group(TREE ${CMAKE_CURRENT_SOURCE_DIR} FILES ${maa_control_unit_src})
