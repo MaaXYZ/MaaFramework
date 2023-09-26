@@ -11,7 +11,7 @@ message SyncContextRunTaskRequest {
 }
 
 message SyncContextRunRecognizerRequest {
-  optional string ctx_handle = 1;
+  optional string handle = 1;
   optional string task = 2;
   optional string param = 3;
   optional string image_handle = 4;
@@ -53,7 +53,7 @@ message SyncContextTouchRequest {
 
 message SyncContextScreencapRequest {
   optional string handle = 1;
-  optional string image = 2;
+  optional string image_handle = 2;
 }
 
 service SyncContext {
