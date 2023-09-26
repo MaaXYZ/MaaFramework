@@ -2,13 +2,10 @@ file(GLOB_RECURSE maa_src *.cpp *.h *.hpp ../include/MaaFramework/*.h)
 
 add_library(MaaFramework SHARED ${maa_src})
 
-file(GLOB MaaFramework_PUBLIC_HEADERS ${CMAKE_CURRENT_SOURCE_DIR}/../../include/MaaFramework/*.h)
 set(MaaFramework_INCLUDE ${CMAKE_CURRENT_SOURCE_DIR}/../../include/MaaFramework)
 
 target_include_directories(MaaFramework INTERFACE ../../include PRIVATE .  ../include ../../include ${MaaThriftController_INCLUDE_DIRS})
-set_target_properties(MaaFramework PROPERTIES
-    PUBLIC_HEADER "${MaaFramework_PUBLIC_HEADERS}"
-)
+
 target_compile_definitions(MaaFramework PRIVATE MAA_FRAMEWORK_EXPORTS)
 
 target_link_libraries(MaaFramework MaaControlUnit MaaUtils)
@@ -30,9 +27,10 @@ endif(WITH_THRIFT)
 install(TARGETS MaaFramework
     RUNTIME DESTINATION bin
     LIBRARY DESTINATION bin
-    PUBLIC_HEADER DESTINATION include/MaaFramework
     ARCHIVE DESTINATION lib
 )
+install(DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/../../include/MaaFramework" DESTINATION "include" PATTERN "interfaces" EXCLUDE)
+install(DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/../../include/MaaFramework/interfaces" DESTINATION "share")
 
 source_group(TREE ${CMAKE_SOURCE_DIR} FILES ${maa_src})
 
