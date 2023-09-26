@@ -34,10 +34,6 @@ OCRer::ResultsVec OCRer::analyze() const
 
 OCRer::ResultsVec OCRer::foreach_rois() const
 {
-    if (!cache_.empty()) {
-        return { predict_only_rec(cache_) };
-    }
-
     if (param_.roi.empty()) {
         cv::Rect roi(0, 0, image_.cols, image_.rows);
         return predict(roi);
@@ -68,12 +64,14 @@ OCRer::ResultsVec OCRer::predict_det_and_rec(const cv::Rect& roi) const
     bool ret = ocrer_->Predict(image_roi, &ocr_result);
     if (!ret) {
         LogWarn << "inferencer return false" << VAR(ocrer_) << VAR(image_) << VAR(roi) << VAR(image_roi);
+        draw_result(roi, {});
         return {};
     }
     if (ocr_result.boxes.size() != ocr_result.text.size() || ocr_result.text.size() != ocr_result.rec_scores.size()) {
-        LogError << "wrong ocr_result size" << VAR(ocr_result.boxes) << VAR(ocr_result.boxes.size())
-                 << VAR(ocr_result.text) << VAR(ocr_result.text.size()) << VAR(ocr_result.rec_scores)
-                 << VAR(ocr_result.rec_scores.size());
+        LogWarn << "wrong ocr_result size" << VAR(ocr_result.boxes) << VAR(ocr_result.boxes.size())
+                << VAR(ocr_result.text) << VAR(ocr_result.text.size()) << VAR(ocr_result.rec_scores)
+                << VAR(ocr_result.rec_scores.size());
+        draw_result(roi, {});
         return {};
     }
 
@@ -113,6 +111,7 @@ OCRer::Result OCRer::predict_only_rec(const cv::Rect& roi) const
     bool ret = recer_->Predict(image_roi, &rec_text, &rec_score);
     if (!ret) {
         LogWarn << "recer_ return false" << VAR(recer_) << VAR(image_) << VAR(roi) << VAR(image_roi);
+        draw_result(roi, {});
         return {};
     }
 

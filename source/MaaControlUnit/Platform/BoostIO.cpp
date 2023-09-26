@@ -5,6 +5,12 @@
 #include "Utils/Logger.h"
 #include "Utils/Platform.h"
 
+#ifdef _WIN32
+#define BOOST_CREATE_NO_WINDOW , boost::process::windows::create_no_window
+#else
+#define BOOST_CREATE_NO_WINDOW
+#endif
+
 MAA_CTRL_UNIT_NS_BEGIN
 
 BoostIO::BoostIO() : ios_(std::make_shared<boost::asio::io_context>()), server_sock_(*ios_)
@@ -35,7 +41,7 @@ int BoostIO::call_command(const std::vector<std::string>& cmd, bool recv_by_sock
     boost::process::ipstream pout;
     boost::process::child proc(exec, boost::process::args(rcmd),
                                boost::process::std_in<boost::process::null, boost::process::std_out> pout,
-                               boost::process::std_err > boost::process::null);
+                               boost::process::std_err > boost::process::null BOOST_CREATE_NO_WINDOW);
 
     const auto start_time = std::chrono::steady_clock::now();
     auto terminate = [&]() -> bool {
@@ -116,9 +122,11 @@ std::shared_ptr<IOHandler> BoostIO::interactive_shell(const std::vector<std::str
 
     std::shared_ptr<boost::process::child> proc(
         want_stderr ? new boost::process::child(boost::process::search_path(cmd[0]), boost::process::args(rcmd),
-                                                boost::process::std_in<*pin, boost::process::std_err> * pout)
+                                                boost::process::std_in<*pin, boost::process::std_err> *
+                                                    pout BOOST_CREATE_NO_WINDOW)
                     : new boost::process::child(boost::process::search_path(cmd[0]), boost::process::args(rcmd),
-                                                boost::process::std_in<*pin, boost::process::std_out> * pout));
+                                                boost::process::std_in<*pin, boost::process::std_out> *
+                                                    pout BOOST_CREATE_NO_WINDOW));
 
     return std::make_shared<IOHandlerBoostStream>(pout, pin, proc);
 }

@@ -193,7 +193,7 @@ cv::Rect Actuator::get_target_rect(const MAA_RES_NS::Action::Target target, cons
         raw = cur_box;
         break;
     case Target::Type::PreTask:
-        raw = status()->get_pipeline_rec_box(std::get<std::string>(target.param));
+        raw = status()->get_rec_box(std::get<std::string>(target.param));
         break;
     case Target::Type::Region:
         raw = std::get<cv::Rect>(target.param);

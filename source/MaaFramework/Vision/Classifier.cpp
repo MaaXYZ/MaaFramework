@@ -41,10 +41,6 @@ Classifier::ResultsVec Classifier::analyze() const
 
 Classifier::ResultsVec Classifier::foreach_rois() const
 {
-    if (!cache_.empty()) {
-        return { classify(cache_) };
-    }
-
     if (param_.roi.empty()) {
         return { classify(cv::Rect(0, 0, image_.cols, image_.rows)) };
     }

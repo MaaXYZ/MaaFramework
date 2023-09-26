@@ -199,7 +199,7 @@ std::string SyncContext::task_result(const std::string& task_name) const
         return {};
     }
 
-    return status()->get_pipeline_task_result(task_name).to_string();
+    return status()->get_task_result(task_name).to_string();
 }
 
 MAA_TASK_NS_END

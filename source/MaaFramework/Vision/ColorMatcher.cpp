@@ -4,6 +4,7 @@
 
 #include "Utils/Format.hpp"
 #include "Utils/Logger.h"
+#include "VisionUtils.hpp"
 
 MAA_VISION_NS_BEGIN
 
@@ -37,25 +38,21 @@ ColorMatcher::ResultsVec ColorMatcher::analyze() const
 
 ColorMatcher::ResultsVec ColorMatcher::foreach_rois(const ColorMatcherParam::Range& range, bool connected) const
 {
-    if (!cache_.empty()) {
-        return { color_match(cache_, range, connected) };
-    }
-
     if (param_.roi.empty()) {
         return { color_match(cv::Rect(0, 0, image_.cols, image_.rows), range, connected) };
     }
 
-    ResultsVec res;
+    ResultsVec results;
     for (const cv::Rect& roi : param_.roi) {
-        Result temp = color_match(roi, range, connected);
-        res.emplace_back(std::move(temp));
+        ResultsVec res = color_match(roi, range, connected);
+        results.insert(results.end(), std::make_move_iterator(res.begin()), std::make_move_iterator(res.end()));
     }
 
-    return res;
+    return results;
 }
 
-ColorMatcher::Result ColorMatcher::color_match(const cv::Rect& roi, const ColorMatcherParam::Range& range,
-                                               bool connected) const
+ColorMatcher::ResultsVec ColorMatcher::color_match(const cv::Rect& roi, const ColorMatcherParam::Range& range,
+                                                   bool connected) const
 {
     cv::Mat image = image_with_roi(roi);
     cv::Mat color;
@@ -63,21 +60,49 @@ ColorMatcher::Result ColorMatcher::color_match(const cv::Rect& roi, const ColorM
     cv::Mat bin;
     cv::inRange(color, range.first, range.second, bin);
 
-    // TODO: 做连通域计算
-    std::ignore = connected;
+    ResultsVec results = connected ? count_non_zero_with_connected(bin, roi.tl()) : count_non_zero(bin, roi.tl());
 
-    int count = cv::countNonZero(bin);
-    cv::Rect bounding = cv::boundingRect(bin);
-    cv::Rect box = bounding + roi.tl();
-    cv::Mat dst = bin(bounding);
-
-    Result res { .box = box, .count = count, .dst = dst };
-
-    draw_result(roi, color, res);
-    return res;
+    draw_result(roi, color, bin, results);
+    return results;
 }
 
-void ColorMatcher::draw_result(const cv::Rect& roi, const cv::Mat& color, const Result& res) const
+ColorMatcher::ResultsVec ColorMatcher::count_non_zero(const cv::Mat& bin, const cv::Point& tl) const
+{
+    int count = cv::countNonZero(bin);
+    cv::Rect bounding = cv::boundingRect(bin);
+    cv::Rect box = bounding + tl;
+
+    return { Result { .box = box, .score = count } };
+}
+
+ColorMatcher::ResultsVec ColorMatcher::count_non_zero_with_connected(const cv::Mat& bin, const cv::Point& tl) const
+{
+    ResultsVec results;
+
+    cv::Mat labels, stats, centroids;
+    int number = cv::connectedComponentsWithStats(bin, labels, stats, centroids, 8, CV_16U);
+    for (int i = 1; i < number; ++i) {
+        // int center_x = centroids.at<double>(i, 0);
+        // int center_y = centroids.at<double>(i, 1);
+
+        int x = stats.at<int>(i, cv::CC_STAT_LEFT);
+        int y = stats.at<int>(i, cv::CC_STAT_TOP);
+        int width = stats.at<int>(i, cv::CC_STAT_WIDTH);
+        int height = stats.at<int>(i, cv::CC_STAT_HEIGHT);
+
+        cv::Rect bounding = cv::Rect(x, y, width, height);
+        // int count = stats.at<int>(i, cv::CC_STAT_AREA);
+        int count = cv::countNonZero(bin(bounding));
+
+        Result res { .box = bounding + tl, .score = count };
+        results.emplace_back(std::move(res));
+    }
+
+    return NMS(std::move(results), 1.0);
+}
+
+void ColorMatcher::draw_result(const cv::Rect& roi, const cv::Mat& color, const cv::Mat& bin,
+                               const ResultsVec& results) const
 {
     if (!debug_draw_) {
         return;
@@ -85,24 +110,33 @@ void ColorMatcher::draw_result(const cv::Rect& roi, const cv::Mat& color, const 
 
     cv::Mat image_draw = draw_roi(roi);
     const auto color_draw = cv::Scalar(0, 0, 255);
-    cv::rectangle(image_draw, res.box, color_draw, 1);
 
-    std::string flag =
-        MAA_FMT::format("Cnt: {}, [{}, {}, {}, {}]", res.count, res.box.x, res.box.y, res.box.width, res.box.height);
-    cv::putText(image_draw, flag, cv::Point(res.box.x, res.box.y - 5), cv::FONT_HERSHEY_PLAIN, 1.2, color_draw, 1);
+    for (size_t i = 0; i < results.size(); ++i) {
+        const auto& res = results[i];
+        cv::rectangle(image_draw, res.box, color_draw, 1);
+
+        std::string flag = MAA_FMT::format("{}: {}, [{}, {}, {}, {}]", i, res.score, res.box.x, res.box.y,
+                                           res.box.width, res.box.height);
+        cv::putText(image_draw, flag, cv::Point(res.box.x, res.box.y - 5), cv::FONT_HERSHEY_PLAIN, 1.2, color_draw, 1);
+        if (i > 10 && res.score < 100) {
+            // 太多了画不下，反正后面的也是没用的
+            LogDebug << "too many results, skip drawing" << VAR(results.size());
+            break;
+        }
+    }
 
     int raw_width = image_.cols;
-    cv::copyMakeBorder(image_draw, image_draw, 0, 0, 0, color.cols + res.dst.cols, cv::BORDER_CONSTANT,
+    cv::copyMakeBorder(image_draw, image_draw, 0, 0, 0, color.cols + bin.cols, cv::BORDER_CONSTANT,
                        cv::Scalar(0, 0, 0));
     cv::Mat draw_color_roi = image_draw(cv::Rect(raw_width, 0, color.cols, color.rows));
     color.copyTo(draw_color_roi);
 
-    cv::Mat draw_bin_roi = image_draw(cv::Rect(raw_width + color.cols, 0, res.dst.cols, res.dst.rows));
+    cv::Mat draw_bin_roi = image_draw(cv::Rect(raw_width + color.cols, 0, bin.cols, bin.rows));
     cv::Mat three_channel_bin;
-    cv::cvtColor(res.dst, three_channel_bin, cv::COLOR_GRAY2BGR);
+    cv::cvtColor(bin, three_channel_bin, cv::COLOR_GRAY2BGR);
     three_channel_bin.copyTo(draw_bin_roi);
 
-    cv::line(image_draw, cv::Point(raw_width + color.cols, 0), res.box.tl(), color_draw, 1);
+    // cv::line(image_draw, cv::Point(raw_width + color.cols, 0), res.box.tl(), color_draw, 1);
 
     if (save_draw_) {
         save_image(image_draw);
@@ -114,7 +148,7 @@ void ColorMatcher::filter(ResultsVec& results, int count) const
     for (auto iter = results.begin(); iter != results.end();) {
         auto& res = *iter;
 
-        if (res.count < count) {
+        if (res.score < count) {
             iter = results.erase(iter);
             continue;
         }

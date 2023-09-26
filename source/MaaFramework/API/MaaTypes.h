@@ -1,6 +1,5 @@
 #pragma once
 
-#include "Conf/Conf.h"
 #include "MaaFramework/MaaDef.h"
 #include "Utils/NoWarningCVMat.hpp"
 

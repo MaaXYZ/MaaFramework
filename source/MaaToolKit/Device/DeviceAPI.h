@@ -3,6 +3,7 @@
 #include <string>
 #include <string_view>
 #include <vector>
+#include <ostream>
 
 #include "Conf/Conf.h"
 #include "MaaToolKit/MaaToolKitDef.h"
@@ -15,6 +16,17 @@ struct Device
     MaaAdbControllerType adb_controller_type = MaaAdbControllerType_Invalid;
     std::string adb_config;
 };
+
+inline std::ostream& operator<<(std::ostream& os, const Device& device)
+{
+#define VAR_TMP(x) "[" << #x << "=" << (x) << "] "
+
+    os << VAR_TMP(device.name) << VAR_TMP(device.adb_path) << VAR_TMP(device.adb_serial)
+       << VAR_TMP(device.adb_controller_type) << VAR_TMP(device.adb_config);
+    return os;
+
+#undef VAR_TMP
+}
 
 struct MaaToolKitDeviceMgrAPI
 {

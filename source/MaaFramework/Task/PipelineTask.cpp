@@ -108,7 +108,7 @@ PipelineTask::RunningResult PipelineTask::find_first_and_run(const std::vector<s
     const std::string& name = result.task_data.name;
     LogInfo << "Task hit:" << name << VAR(result.rec_result.box);
 
-    uint64_t run_times = status()->get_pipeline_run_times(name);
+    uint64_t run_times = status()->get_run_times(name);
 
     json::value detail = {
         { "id", task_id_ },
@@ -122,7 +122,7 @@ PipelineTask::RunningResult PipelineTask::find_first_and_run(const std::vector<s
         { "status", "Hit" },
     };
 
-    status()->set_pipeline_task_result(name, detail);
+    status()->set_task_result(name, detail);
     if (result.task_data.focus) {
         notify(MaaMsg_Task_Focus_Hit, detail);
     }
@@ -131,7 +131,7 @@ PipelineTask::RunningResult PipelineTask::find_first_and_run(const std::vector<s
         LogInfo << "Task runout:" << name;
 
         detail["status"] = "Runout";
-        status()->set_pipeline_task_result(name, detail);
+        status()->set_task_result(name, detail);
         if (result.task_data.focus) {
             notify(MaaMsg_Task_Focus_Runout, detail);
         }
@@ -146,7 +146,7 @@ PipelineTask::RunningResult PipelineTask::find_first_and_run(const std::vector<s
     detail["status"] = "Completed";
     detail["last_time"] = format_now();
     detail["run_times"] = run_times + 1;
-    status()->set_pipeline_task_result(name, detail);
+    status()->set_task_result(name, detail);
     if (result.task_data.focus) {
         notify(MaaMsg_Task_Focus_Completed, detail);
     }

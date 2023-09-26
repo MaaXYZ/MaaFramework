@@ -14,8 +14,6 @@
 
 MAA_TOOLKIT_DEVICE_NS_BEGIN
 
-std::ostream& operator<<(std::ostream& os, const Device& device);
-
 class DeviceMgr : public MaaToolKitDeviceMgrAPI
 {
 public:

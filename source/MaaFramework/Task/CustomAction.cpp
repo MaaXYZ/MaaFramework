@@ -2,7 +2,7 @@
 
 #include "Utils/NoWarningCV.hpp"
 
-#include "MaaFramework/MaaCustomAction.h"
+#include "MaaFramework/Task/MaaCustomAction.h"
 #include "SyncContext.h"
 #include "Utils/Logger.h"
 

@@ -225,11 +225,6 @@ bool PipelineResMgr::parse_task(const std::string& name, const json::value& inpu
         return false;
     }
 
-    if (!get_and_check_value(input, "cache", data.cache, default_value.cache)) {
-        LogError << "failed to get_and_check_value cache" << VAR(input);
-        return false;
-    }
-
     if (!parse_action(input, data.action_type, data.action_param, default_value.action_type,
                       default_value.action_param)) {
         LogError << "failed to parse_action" << VAR(input);

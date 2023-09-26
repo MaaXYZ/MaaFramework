@@ -122,8 +122,6 @@ struct TaskData
     Recognition::Type rec_type = Recognition::Type::DirectHit;
     Recognition::Param rec_param = MAA_VISION_NS::DirectHitParam {};
 
-    bool cache = false;
-
     Action::Type action_type = Action::Type::DoNothing;
     Action::Param action_param;
     NextList next;

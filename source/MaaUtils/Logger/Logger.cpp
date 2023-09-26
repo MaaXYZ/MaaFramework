@@ -8,7 +8,7 @@
 #include <io.h>
 #endif
 
-#pragma message("MAA_VERSION: " MAA_VERSION)
+#pragma message("MaaUtils MAA_VERSION: " MAA_VERSION)
 
 MAA_NS_BEGIN
 

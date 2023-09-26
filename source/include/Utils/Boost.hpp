@@ -14,6 +14,9 @@ MAA_SUPPRESS_BOOST_WARNINGS_BEGIN
 #include <boost/asio.hpp>
 #include <boost/beast.hpp>
 #include <boost/process.hpp>
+#ifdef _WIN32
+#include <boost/process/windows.hpp>
+#endif
 #include <boost/url.hpp>
 #include <boost/uuid/uuid.hpp>
 #include <boost/uuid/uuid_generators.hpp>

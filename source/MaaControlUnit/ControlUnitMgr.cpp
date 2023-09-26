@@ -19,7 +19,7 @@
 #include "Screencap/RawWithGzip.h"
 #include "Utils/Logger.h"
 
-#pragma message("MAA_VERSION: " MAA_VERSION)
+#pragma message("MaaControlUnit MAA_VERSION: " MAA_VERSION)
 
 MAA_CTRL_UNIT_NS_BEGIN
 

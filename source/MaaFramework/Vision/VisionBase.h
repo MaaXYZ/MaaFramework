@@ -9,7 +9,6 @@ class VisionBase
 {
 public:
     void set_image(const cv::Mat& image);
-    void set_cache(const cv::Rect& cache);
     void set_name(std::string name);
 
 protected:
@@ -21,7 +20,6 @@ protected:
 
 protected:
     cv::Mat image_ {};
-    cv::Rect cache_ {};
     std::string name_;
 
     bool debug_draw_ = false;
