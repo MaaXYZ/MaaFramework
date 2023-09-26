@@ -249,7 +249,7 @@ Status ControllerImpl::post_screencap(::grpc::ServerContext* context, const ::ma
 
     MAA_GRPC_GET_HANDLE
 
-    response->set_id(MaaControllerPostConnection(handle));
+    response->set_id(MaaControllerPostScreencap(handle));
 
     return Status::OK;
 }
