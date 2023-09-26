@@ -8,10 +8,10 @@ service Resource {
   rpc create(IdRequest) returns (HandleResponse);
   rpc destroy(HandleRequest) returns (EmptyResponse);
 
-  rpc post_path(HandleStringRequest) returns (IdResponse);
+  rpc post_path(HandleStringRequest) returns (IIdResponse);
 
-  rpc status(HandleIdRequest) returns (StatusResponse);
-  rpc wait(HandleIdRequest) returns (StatusResponse);
+  rpc status(HandleIIdRequest) returns (StatusResponse);
+  rpc wait(HandleIIdRequest) returns (StatusResponse);
   rpc loaded(HandleRequest) returns (BoolResponse);
   rpc hash(HandleRequest) returns (StringResponse);
 }

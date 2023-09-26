@@ -8,25 +8,27 @@ Status ControllerImpl::create_adb(::grpc::ServerContext* context, const ::maarpc
 {
     std::ignore = context;
 
-    MAA_GRPC_REQUIRED(callback)
+    MAA_GRPC_REQUIRED(id)
     MAA_GRPC_REQUIRED(adb_path)
     MAA_GRPC_REQUIRED(adb_serial)
     MAA_GRPC_REQUIRED(adb_type)
     MAA_GRPC_REQUIRED(adb_config)
 
-    auto cbId = request->callback().id();
+    auto cbId = request->id();
     auto cbState = uImpl->get(cbId);
     if (!cbState) {
         return Status(NOT_FOUND, "id not exists");
     }
 
-    std::unique_lock<std::mutex> lock(handles_mtx);
-    auto id = ctrl_id_counter++;
-    handles[id] = MaaAdbControllerCreate(request->adb_path().c_str(), request->adb_serial().c_str(),
+    auto id = make_uuid();
+    auto handle = MaaAdbControllerCreate(request->adb_path().c_str(), request->adb_serial().c_str(),
                                          request->adb_type(), request->adb_config().c_str(), CallbackImpl, cbState);
+
+    std::unique_lock<std::mutex> lock(handles_mtx);
+    handles[id] = handle;
     lock.unlock();
 
-    response->mutable_value()->set_handle(id);
+    response->set_handle(id);
 
     return Status::OK;
 }
@@ -40,7 +42,7 @@ Status ControllerImpl::destroy(::grpc::ServerContext* context, const ::maarpc::H
     MAA_GRPC_REQUIRED(handle)
 
     std::unique_lock<std::mutex> lock(handles_mtx);
-    auto id = request->handle().handle();
+    auto id = request->handle();
     if (!handles.contains(id)) {
         return Status(NOT_FOUND, "handle not exists");
     }
@@ -85,7 +87,7 @@ Status ControllerImpl::set_option(::grpc::ServerContext* context, const ::maarpc
 }
 
 Status ControllerImpl::post_connection(::grpc::ServerContext* context, const ::maarpc::HandleRequest* request,
-                                       ::maarpc::IdResponse* response)
+                                       ::maarpc::IIdResponse* response)
 {
     std::ignore = context;
     std::ignore = request;
@@ -95,7 +97,7 @@ Status ControllerImpl::post_connection(::grpc::ServerContext* context, const ::m
 }
 
 Status ControllerImpl::post_click(::grpc::ServerContext* context, const ::maarpc::ControllerPostClickRequest* request,
-                                  ::maarpc::IdResponse* response)
+                                  ::maarpc::IIdResponse* response)
 {
     std::ignore = context;
     std::ignore = request;
@@ -105,7 +107,7 @@ Status ControllerImpl::post_click(::grpc::ServerContext* context, const ::maarpc
 }
 
 Status ControllerImpl::post_swipe(::grpc::ServerContext* context, const ::maarpc::ControllerPostSwipeRequest* request,
-                                  ::maarpc::IdResponse* response)
+                                  ::maarpc::IIdResponse* response)
 {
     std::ignore = context;
     std::ignore = request;
@@ -115,7 +117,7 @@ Status ControllerImpl::post_swipe(::grpc::ServerContext* context, const ::maarpc
 }
 
 Status ControllerImpl::post_press_key(::grpc::ServerContext* context, const ::maarpc::ControllerPostKeyRequest* request,
-                                      ::maarpc::IdResponse* response)
+                                      ::maarpc::IIdResponse* response)
 {
     std::ignore = context;
     std::ignore = request;
@@ -126,7 +128,7 @@ Status ControllerImpl::post_press_key(::grpc::ServerContext* context, const ::ma
 
 Status ControllerImpl::post_touch_down(::grpc::ServerContext* context,
                                        const ::maarpc::ControllerPostTouchRequest* request,
-                                       ::maarpc::IdResponse* response)
+                                       ::maarpc::IIdResponse* response)
 {
     std::ignore = context;
     std::ignore = request;
@@ -137,7 +139,7 @@ Status ControllerImpl::post_touch_down(::grpc::ServerContext* context,
 
 Status ControllerImpl::post_touch_move(::grpc::ServerContext* context,
                                        const ::maarpc::ControllerPostTouchRequest* request,
-                                       ::maarpc::IdResponse* response)
+                                       ::maarpc::IIdResponse* response)
 {
     std::ignore = context;
     std::ignore = request;
@@ -148,7 +150,7 @@ Status ControllerImpl::post_touch_move(::grpc::ServerContext* context,
 
 Status ControllerImpl::post_touch_up(::grpc::ServerContext* context,
                                      const ::maarpc::ControllerPostTouchRequest* request,
-                                     ::maarpc::IdResponse* response)
+                                     ::maarpc::IIdResponse* response)
 {
     std::ignore = context;
     std::ignore = request;
@@ -158,7 +160,7 @@ Status ControllerImpl::post_touch_up(::grpc::ServerContext* context,
 }
 
 Status ControllerImpl::post_screencap(::grpc::ServerContext* context, const ::maarpc::HandleRequest* request,
-                                      ::maarpc::IdResponse* response)
+                                      ::maarpc::IIdResponse* response)
 {
     std::ignore = context;
     std::ignore = request;
@@ -167,7 +169,7 @@ Status ControllerImpl::post_screencap(::grpc::ServerContext* context, const ::ma
     return Status(UNIMPLEMENTED, "");
 }
 
-Status ControllerImpl::status(::grpc::ServerContext* context, const ::maarpc::HandleIdRequest* request,
+Status ControllerImpl::status(::grpc::ServerContext* context, const ::maarpc::HandleIIdRequest* request,
                               ::maarpc::StatusResponse* response)
 {
     std::ignore = context;
@@ -177,7 +179,7 @@ Status ControllerImpl::status(::grpc::ServerContext* context, const ::maarpc::Ha
     return Status(UNIMPLEMENTED, "");
 }
 
-Status ControllerImpl::wait(::grpc::ServerContext* context, const ::maarpc::HandleIdRequest* request,
+Status ControllerImpl::wait(::grpc::ServerContext* context, const ::maarpc::HandleIIdRequest* request,
                             ::maarpc::EmptyResponse* response)
 {
     std::ignore = context;

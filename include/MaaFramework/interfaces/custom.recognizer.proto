@@ -5,21 +5,21 @@ package maarpc;
 import "types.proto";
 
 message CustomRecognizerRequest {
-  optional Handle handle = 1;
+  optional string handle = 1;
   optional string name = 2;
-  optional Id reco = 3;
+  optional string reco_id = 3;
 }
 
 message CustomRecognizerAnalyzeParam {
-  optional Handle context = 1;
-  optional Handle image = 2;
+  optional string context = 1;
+  optional string image_handle = 2;
   optional string task = 3;
   optional string param = 4;
 }
 
 message CustomRecognizerResponse {
-  optional Id reco = 1;
-  optional Id id = 2;
+  optional string reco_id = 1;
+  optional string cmd_id = 2;
   oneof command { CustomRecognizerAnalyzeParam analyze = 101; }
 }
 
@@ -30,8 +30,8 @@ message CustomRecognizerAnalyzeResult {
 }
 
 message SubmitCustomRecognizerRequest {
-  optional Handle handle = 1;
-  optional Id id = 2;
+  optional string handle = 1;
+  optional string cmd_id = 2;
   optional bool ok = 3;
   oneof result { CustomRecognizerAnalyzeResult analyze = 101; }
 }

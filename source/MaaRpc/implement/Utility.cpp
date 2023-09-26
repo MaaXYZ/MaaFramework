@@ -1,8 +1,16 @@
 #include "Utility.h"
 #include "MaaFramework/MaaAPI.h"
 #include "macro.h"
+#include <boost/uuid/uuid_generators.hpp>
+#include <boost/uuid/uuid_io.hpp>
 
 using namespace ::grpc;
+
+auto uuid_generator = boost::uuids::random_generator();
+std::string make_uuid()
+{
+    return boost::uuids::to_string(uuid_generator());
+}
 
 void CallbackImpl(MaaStringView msg, MaaStringView detail, MaaCallbackTransparentArg arg)
 {
@@ -16,7 +24,7 @@ void CallbackImpl(MaaStringView msg, MaaStringView detail, MaaCallbackTransparen
     state->write.release();
 }
 
-UtilityImpl::CallbackState* UtilityImpl::get(uint64_t id)
+UtilityImpl::CallbackState* UtilityImpl::get(const std::string& id)
 {
     std::lock_guard<std::mutex> lock(state_mtx);
     if (states.contains(id)) {
@@ -33,7 +41,7 @@ Status UtilityImpl::version(ServerContext* context, const ::maarpc::EmptyRequest
     std::ignore = context;
     std::ignore = request;
 
-    response->set_value(MaaVersion());
+    response->set_str(MaaVersion());
 
     return Status::OK;
 }
@@ -75,14 +83,13 @@ Status UtilityImpl::set_global_option(ServerContext* context, const ::maarpc::Se
     return Status(ABORTED, "protobuf `oneof` state invalid");
 }
 
-Status UtilityImpl::acquire_callback_id(ServerContext* context, const ::maarpc::EmptyRequest* request,
-                                        ::maarpc::IdResponse* response)
+Status UtilityImpl::acquire_id(ServerContext* context, const ::maarpc::EmptyRequest* request,
+                               ::maarpc::IdResponse* response)
 {
     std::ignore = context;
     std::ignore = request;
 
-    auto id = callback_id_counter++;
-    response->mutable_id()->set_id(id);
+    response->set_id(make_uuid());
 
     return Status::OK;
 }
@@ -94,7 +101,7 @@ Status UtilityImpl::register_callback(ServerContext* context, const ::maarpc::Id
 
     MAA_GRPC_REQUIRED(id)
 
-    auto id = request->id().id();
+    auto id = request->id();
 
     std::unique_lock<std::mutex> lock(state_mtx);
     if (states.contains(id)) {
@@ -124,7 +131,7 @@ Status UtilityImpl::unregister_callback(ServerContext* context, const ::maarpc::
 
     MAA_GRPC_REQUIRED(id)
 
-    auto id = request->id().id();
+    auto id = request->id();
 
     std::unique_lock<std::mutex> lock(state_mtx);
     if (!states.contains(id)) {
@@ -139,14 +146,4 @@ Status UtilityImpl::unregister_callback(ServerContext* context, const ::maarpc::
     pstate->finish.release();
 
     return Status::OK;
-}
-
-Status UtilityImpl::acquire_custom_controller_id(ServerContext* context, const ::maarpc::EmptyRequest* request,
-                                                 ::maarpc::IdResponse* response)
-{
-    std::ignore = context;
-    std::ignore = request;
-    std::ignore = response;
-
-    return Status(UNIMPLEMENTED, "");
 }

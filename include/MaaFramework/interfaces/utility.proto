@@ -15,9 +15,8 @@ service Utility {
   rpc version(EmptyRequest) returns (StringResponse);
   rpc set_global_option(SetGlobalOptionRequest) returns (EmptyResponse);
 
-  rpc acquire_callback_id(EmptyRequest) returns (IdResponse);
+  rpc acquire_id(EmptyRequest) returns (IdResponse);
+
   rpc register_callback(IdRequest) returns (stream Callback);
   rpc unregister_callback(IdRequest) returns (EmptyResponse);
-
-  rpc acquire_custom_controller_id(EmptyRequest) returns (IdResponse);
 }

@@ -6,7 +6,7 @@ import "types.proto";
 import "custom.controller.proto";
 
 message AdbControllerRequest {
-  optional Id callback = 1;
+  optional string id = 1;
   optional string adb_path = 2;
   optional string adb_serial = 3;
   optional uint32 adb_type = 4;
@@ -23,28 +23,28 @@ message ControllerSetOptionRequest {
 }
 
 message ControllerPostClickRequest {
-  optional Handle handle = 1;
+  optional string handle = 1;
   optional ClickParam param = 2;
 }
 
 message ControllerPostSwipeRequest {
-  optional Handle handle = 1;
+  optional string handle = 1;
   optional SwipeParam param = 2;
 }
 
 message ControllerPostKeyRequest {
-  optional Handle handle = 1;
+  optional string handle = 1;
   optional KeyParam param = 2;
 }
 
 message ControllerPostTouchRequest {
-  optional Handle handle = 1;
+  optional string handle = 1;
   optional TouchParam param = 2;
 }
 
 message ControllerGetImageRequest {
-  optional Handle handle = 1;
-  optional Handle image = 2;
+  optional string handle = 1;
+  optional string image_handle = 2;
 }
 
 service Controller {
@@ -57,17 +57,17 @@ service Controller {
       returns (EmptyResponse);
 
   rpc set_option(ControllerSetOptionRequest) returns (EmptyResponse);
-  rpc post_connection(HandleRequest) returns (IdResponse);
-  rpc post_click(ControllerPostClickRequest) returns (IdResponse);
-  rpc post_swipe(ControllerPostSwipeRequest) returns (IdResponse);
-  rpc post_press_key(ControllerPostKeyRequest) returns (IdResponse);
-  rpc post_touch_down(ControllerPostTouchRequest) returns (IdResponse);
-  rpc post_touch_move(ControllerPostTouchRequest) returns (IdResponse);
-  rpc post_touch_up(ControllerPostTouchRequest) returns (IdResponse);
-  rpc post_screencap(HandleRequest) returns (IdResponse);
+  rpc post_connection(HandleRequest) returns (IIdResponse);
+  rpc post_click(ControllerPostClickRequest) returns (IIdResponse);
+  rpc post_swipe(ControllerPostSwipeRequest) returns (IIdResponse);
+  rpc post_press_key(ControllerPostKeyRequest) returns (IIdResponse);
+  rpc post_touch_down(ControllerPostTouchRequest) returns (IIdResponse);
+  rpc post_touch_move(ControllerPostTouchRequest) returns (IIdResponse);
+  rpc post_touch_up(ControllerPostTouchRequest) returns (IIdResponse);
+  rpc post_screencap(HandleRequest) returns (IIdResponse);
 
-  rpc status(HandleIdRequest) returns (StatusResponse);
-  rpc wait(HandleIdRequest) returns (EmptyResponse);
+  rpc status(HandleIIdRequest) returns (StatusResponse);
+  rpc wait(HandleIIdRequest) returns (EmptyResponse);
   rpc connected(HandleRequest) returns (BoolResponse);
 
   rpc image(ControllerGetImageRequest) returns (EmptyResponse);

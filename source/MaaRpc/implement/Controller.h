@@ -22,24 +22,24 @@ public:
     ::grpc::Status set_option(::grpc::ServerContext* context, const ::maarpc::ControllerSetOptionRequest* request,
                               ::maarpc::EmptyResponse* response) override;
     ::grpc::Status post_connection(::grpc::ServerContext* context, const ::maarpc::HandleRequest* request,
-                                   ::maarpc::IdResponse* response) override;
+                                   ::maarpc::IIdResponse* response) override;
     ::grpc::Status post_click(::grpc::ServerContext* context, const ::maarpc::ControllerPostClickRequest* request,
-                              ::maarpc::IdResponse* response) override;
+                              ::maarpc::IIdResponse* response) override;
     ::grpc::Status post_swipe(::grpc::ServerContext* context, const ::maarpc::ControllerPostSwipeRequest* request,
-                              ::maarpc::IdResponse* response) override;
+                              ::maarpc::IIdResponse* response) override;
     ::grpc::Status post_press_key(::grpc::ServerContext* context, const ::maarpc::ControllerPostKeyRequest* request,
-                                  ::maarpc::IdResponse* response) override;
+                                  ::maarpc::IIdResponse* response) override;
     ::grpc::Status post_touch_down(::grpc::ServerContext* context, const ::maarpc::ControllerPostTouchRequest* request,
-                                   ::maarpc::IdResponse* response) override;
+                                   ::maarpc::IIdResponse* response) override;
     ::grpc::Status post_touch_move(::grpc::ServerContext* context, const ::maarpc::ControllerPostTouchRequest* request,
-                                   ::maarpc::IdResponse* response) override;
+                                   ::maarpc::IIdResponse* response) override;
     ::grpc::Status post_touch_up(::grpc::ServerContext* context, const ::maarpc::ControllerPostTouchRequest* request,
-                                 ::maarpc::IdResponse* response) override;
+                                 ::maarpc::IIdResponse* response) override;
     ::grpc::Status post_screencap(::grpc::ServerContext* context, const ::maarpc::HandleRequest* request,
-                                  ::maarpc::IdResponse* response) override;
-    ::grpc::Status status(::grpc::ServerContext* context, const ::maarpc::HandleIdRequest* request,
+                                  ::maarpc::IIdResponse* response) override;
+    ::grpc::Status status(::grpc::ServerContext* context, const ::maarpc::HandleIIdRequest* request,
                           ::maarpc::StatusResponse* response) override;
-    ::grpc::Status wait(::grpc::ServerContext* context, const ::maarpc::HandleIdRequest* request,
+    ::grpc::Status wait(::grpc::ServerContext* context, const ::maarpc::HandleIIdRequest* request,
                         ::maarpc::EmptyResponse* response) override;
     ::grpc::Status connected(::grpc::ServerContext* context, const ::maarpc::HandleRequest* request,
                              ::maarpc::BoolResponse* response) override;
@@ -50,7 +50,6 @@ public:
 
 private:
     UtilityImpl* uImpl;
-    std::atomic<uint64_t> ctrl_id_counter { 0 };
-    std::map<uint64_t, MaaControllerHandle> handles;
+    std::map<std::string, MaaControllerHandle> handles;
     std::mutex handles_mtx;
 };

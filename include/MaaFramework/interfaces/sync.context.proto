@@ -5,16 +5,16 @@ package maarpc;
 import "types.proto";
 
 message SyncContextRunTaskRequest {
-  optional Handle handle = 1;
+  optional string handle = 1;
   optional string task = 2;
   optional string param = 3;
 }
 
 message SyncContextRunRecognizerRequest {
-  optional Handle handle = 1;
+  optional string ctx_handle = 1;
   optional string task = 2;
   optional string param = 3;
-  optional Handle image = 4;
+  optional string image_handle = 4;
 }
 
 message SyncContextRunRecognizerResponse {
@@ -24,7 +24,7 @@ message SyncContextRunRecognizerResponse {
 }
 
 message SyncContextRunActionRequest {
-  optional Handle handle = 1;
+  optional string handle = 1;
   optional string task = 2;
   optional string param = 3;
   optional Rect box = 4;
@@ -32,28 +32,28 @@ message SyncContextRunActionRequest {
 }
 
 message SyncContextClickRequest {
-  optional Handle handle = 1;
+  optional string handle = 1;
   optional ClickParam param = 2;
 }
 
 message SyncContextSwipeRequest {
-  optional Handle handle = 1;
+  optional string handle = 1;
   optional SwipeParam param = 2;
 }
 
 message SyncContextKeyRequest {
-  optional Handle handle = 1;
+  optional string handle = 1;
   optional KeyParam param = 2;
 }
 
 message SyncContextTouchRequest {
-  optional Handle handle = 1;
+  optional string handle = 1;
   optional TouchParam param = 2;
 }
 
 message SyncContextScreencapRequest {
-  optional Handle handle = 1;
-  optional Handle image = 2;
+  optional string handle = 1;
+  optional string image = 2;
 }
 
 service SyncContext {

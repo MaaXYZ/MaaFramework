@@ -5,8 +5,8 @@ package maarpc;
 import "types.proto";
 
 message CustomControllerRequest {
-  optional Id callback = 1;
-  optional Id ctrl = 2;
+  optional string id = 1;
+  optional string ctrl_id = 2;
 }
 
 message CustomControllerSetOptionParam {
@@ -15,8 +15,8 @@ message CustomControllerSetOptionParam {
 }
 
 message CustomControllerResponse {
-  optional Id ctrl = 1;
-  optional Id id = 2;
+  optional string ctrl_id = 1;
+  optional string cmd_id = 2;
   oneof command {
     bool connect = 101; // void
     ClickParam click = 102;
@@ -28,7 +28,7 @@ message CustomControllerResponse {
     string start = 108;
     string stop = 109;
     bool resolution = 110; // void
-    Handle image = 111;
+    string image = 111;
     bool uuid = 112; // void
 
     CustomControllerSetOptionParam set_option = 200;
@@ -36,8 +36,8 @@ message CustomControllerResponse {
 }
 
 message SubmitCustomControllerRequest {
-  optional Handle handle = 1;
-  optional Id id = 2;
+  optional string handle = 1;
+  optional string cmd_id = 2;
   optional bool ok = 3;
   oneof result {
     Size resolution = 101;

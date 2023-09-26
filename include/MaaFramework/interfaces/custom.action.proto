@@ -5,13 +5,13 @@ package maarpc;
 import "types.proto";
 
 message CustomActionRequest {
-  optional Handle handle = 1;
+  optional string handle = 1;
   optional string name = 2;
-  optional Id act = 3;
+  optional string act_id = 3;
 }
 
 message CustomActionRunParam {
-  optional Handle context = 1;
+  optional string context = 1;
   optional string task = 2;
   optional string param = 3;
   optional Rect box = 4;
@@ -19,8 +19,8 @@ message CustomActionRunParam {
 }
 
 message CustomActionResponse {
-  optional Id act = 1;
-  optional Id id = 2;
+  optional string act_id = 1;
+  optional string cmd_id = 2;
   oneof command {
     CustomActionRunParam run = 101;
     bool stop = 102; // void
@@ -28,7 +28,7 @@ message CustomActionResponse {
 }
 
 message SubmitCustomActionRequest {
-  optional Handle handle = 1;
-  optional Id id = 2;
+  optional string handle = 1;
+  optional string cmd_id = 2;
   optional bool ok = 3;
 }

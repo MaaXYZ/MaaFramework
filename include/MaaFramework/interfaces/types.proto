@@ -2,8 +2,6 @@ syntax = "proto3";
 
 package maarpc;
 
-message Id { optional uint64 id = 1; }
-message Handle { optional uint64 handle = 1; }
 message Point {
   optional int32 x = 1;
   optional int32 y = 2;
@@ -35,26 +33,31 @@ message TouchParam {
 }
 
 message EmptyRequest { optional bool unused = 1; }
-message IdRequest { optional Id id = 1; }
-message HandleRequest { optional Handle handle = 1; }
+message IdRequest { optional string id = 1; }
+message HandleRequest { optional string handle = 1; }
 message BufferRequest { optional bytes buffer = 1; }
 message HandleBufferRequest {
-  optional Handle handle = 1;
+  optional string handle = 1;
   optional bytes buffer = 2;
 }
 message HandleStringRequest {
-  optional Handle handle = 1;
+  optional string handle = 1;
   optional string str = 2;
 }
 message HandleIdRequest {
-  optional Handle handle = 1;
-  optional Id id = 2;
+  optional string handle = 1;
+  optional string id = 2;
+}
+message HandleIIdRequest {
+  optional string handle = 1;
+  optional uint64 id = 2;
 }
 
 message EmptyResponse { optional bool void = 1; }
-message IdResponse { optional Id id = 1; }
-message BoolResponse { optional bool value = 1; }
-message StringResponse { optional string value = 1; }
-message HandleResponse { optional Handle value = 1; }
-message BufferResponse { optional bytes value = 1; }
-message StatusResponse { optional int32 value = 1; }
+message IdResponse { optional string id = 1; }
+message IIdResponse { optional uint64 id = 1; }
+message BoolResponse { optional bool bool = 1; }
+message StringResponse { optional string str = 1; }
+message HandleResponse { optional string handle = 1; }
+message BufferResponse { optional bytes buf = 1; }
+message StatusResponse { optional int32 status = 1; }

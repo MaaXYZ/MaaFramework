@@ -17,25 +17,23 @@ public:
         ::grpc::ServerWriter<::maarpc::Callback>* writer { nullptr };
     };
 
-    CallbackState* get(uint64_t id);
+    CallbackState* get(const std::string& id);
 
     ::grpc::Status version(::grpc::ServerContext* context, const ::maarpc::EmptyRequest* request,
                            ::maarpc::StringResponse* response) override;
     ::grpc::Status set_global_option(::grpc::ServerContext* context, const ::maarpc::SetGlobalOptionRequest* request,
                                      ::maarpc::EmptyResponse* response) override;
-    ::grpc::Status acquire_callback_id(::grpc::ServerContext* context, const ::maarpc::EmptyRequest* request,
-                                       ::maarpc::IdResponse* response) override;
+    ::grpc::Status acquire_id(::grpc::ServerContext* context, const ::maarpc::EmptyRequest* request,
+                              ::maarpc::IdResponse* response) override;
     ::grpc::Status register_callback(::grpc::ServerContext* context, const ::maarpc::IdRequest* request,
                                      ::grpc::ServerWriter<::maarpc::Callback>* writer) override;
     ::grpc::Status unregister_callback(::grpc::ServerContext* context, const ::maarpc::IdRequest* request,
                                        ::maarpc::EmptyResponse* response) override;
-    ::grpc::Status acquire_custom_controller_id(::grpc::ServerContext* context, const ::maarpc::EmptyRequest* request,
-                                                ::maarpc::IdResponse* response) override;
 
 private:
-    std::atomic<uint64_t> callback_id_counter { 0 };
-    std::map<uint64_t, CallbackState*> states;
+    std::map<std::string, CallbackState*> states;
     std::mutex state_mtx;
 };
 
+extern std::string make_uuid();
 extern void CallbackImpl(MaaStringView msg, MaaStringView detail, MaaCallbackTransparentArg arg);

@@ -7,14 +7,14 @@ import "custom.recognizer.proto";
 import "custom.action.proto";
 
 message InstancePostTaskRequest {
-  optional Handle handle = 1;
+  optional string handle = 1;
   optional string task = 2;
   optional string param = 3;
 }
 
 message InstanceSetTaskParamRequest {
-  optional Handle handle = 1;
-  optional Id id = 2;
+  optional string handle = 1;
+  optional string id = 2;
   optional string param = 3;
 }
 
