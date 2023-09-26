@@ -41,7 +41,7 @@ struct ControllerImpl final : public ::maarpc::Controller::Service
                         ::maarpc::StatusResponse* response) override;
     ::grpc::Status connected(::grpc::ServerContext* context, const ::maarpc::HandleRequest* request,
                              ::maarpc::BoolResponse* response) override;
-    ::grpc::Status image(::grpc::ServerContext* context, const ::maarpc::ControllerGetImageRequest* request,
+    ::grpc::Status image(::grpc::ServerContext* context, const ::maarpc::HandleHandleRequest* request,
                          ::maarpc::EmptyResponse* response) override;
     ::grpc::Status uuid(::grpc::ServerContext* context, const ::maarpc::HandleRequest* request,
                         ::maarpc::StringResponse* response) override;

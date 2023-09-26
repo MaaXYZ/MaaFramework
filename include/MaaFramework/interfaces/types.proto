@@ -40,6 +40,10 @@ message HandleBufferRequest {
   optional string handle = 1;
   optional bytes buffer = 2;
 }
+message HandleHandleRequest {
+  optional string handle = 1;
+  optional string another_handle = 2;
+}
 message HandleStringRequest {
   optional string handle = 1;
   optional string str = 2;

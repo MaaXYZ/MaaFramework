@@ -14,7 +14,7 @@ message InstancePostTaskRequest {
 
 message InstanceSetTaskParamRequest {
   optional string handle = 1;
-  optional string id = 2;
+  optional uint64 id = 2;
   optional string param = 3;
 }
 
@@ -32,15 +32,15 @@ service Instance {
   rpc unregister_custom_action(HandleStringRequest) returns (EmptyResponse);
   rpc clear_custom_action(HandleRequest) returns (EmptyResponse);
 
-  rpc bind_resource(HandleRequest) returns (EmptyResponse);
-  rpc bind_controller(HandleRequest) returns (EmptyResponse);
+  rpc bind_resource(HandleHandleRequest) returns (EmptyResponse);
+  rpc bind_controller(HandleHandleRequest) returns (EmptyResponse);
   rpc inited(HandleRequest) returns (BoolResponse);
 
   rpc post_task(InstancePostTaskRequest) returns (IdResponse);
   rpc set_task_param(InstanceSetTaskParamRequest) returns (EmptyResponse);
 
-  rpc status(HandleIdRequest) returns (StatusResponse);
-  rpc wait(HandleIdRequest) returns (EmptyResponse);
+  rpc status(HandleIIdRequest) returns (StatusResponse);
+  rpc wait(HandleIIdRequest) returns (StatusResponse);
   rpc all_finished(HandleRequest) returns (BoolResponse);
 
   rpc stop(HandleRequest) returns (EmptyResponse);

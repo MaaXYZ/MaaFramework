@@ -259,8 +259,8 @@ Status ControllerImpl::status(::grpc::ServerContext* context, const ::maarpc::Ha
 {
     std::ignore = context;
 
-    MAA_GRPC_REQUIRED(id)
     MAA_GRPC_REQUIRED(handle)
+    MAA_GRPC_REQUIRED(id)
 
     MAA_GRPC_GET_HANDLE
 
@@ -274,8 +274,8 @@ Status ControllerImpl::wait(::grpc::ServerContext* context, const ::maarpc::Hand
 {
     std::ignore = context;
 
-    MAA_GRPC_REQUIRED(id)
     MAA_GRPC_REQUIRED(handle)
+    MAA_GRPC_REQUIRED(id)
 
     MAA_GRPC_GET_HANDLE
 
@@ -298,17 +298,17 @@ Status ControllerImpl::connected(::grpc::ServerContext* context, const ::maarpc:
     return Status::OK;
 }
 
-Status ControllerImpl::image(::grpc::ServerContext* context, const ::maarpc::ControllerGetImageRequest* request,
+Status ControllerImpl::image(::grpc::ServerContext* context, const ::maarpc::HandleHandleRequest* request,
                              ::maarpc::EmptyResponse* response)
 {
     std::ignore = context;
     std::ignore = response;
 
     MAA_GRPC_REQUIRED(handle)
-    MAA_GRPC_REQUIRED(image_handle)
+    MAA_GRPC_REQUIRED(another_handle)
 
     MAA_GRPC_GET_HANDLE
-    MAA_GRPC_GET_HANDLE_FROM(iImpl, image_handle, image_handle)
+    MAA_GRPC_GET_HANDLE_FROM(iImpl, image_handle, another_handle)
 
     if (MaaControllerGetImage(handle, image_handle)) {
         return Status::OK;

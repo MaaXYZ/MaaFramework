@@ -43,11 +43,6 @@ message ControllerPostTouchRequest {
   optional TouchParam param = 2;
 }
 
-message ControllerGetImageRequest {
-  optional string handle = 1;
-  optional string image_handle = 2;
-}
-
 service Controller {
   rpc create_adb(AdbControllerRequest) returns (HandleResponse);
   rpc destroy(HandleRequest) returns (EmptyResponse);
@@ -69,6 +64,6 @@ service Controller {
   rpc wait(HandleIIdRequest) returns (StatusResponse);
   rpc connected(HandleRequest) returns (BoolResponse);
 
-  rpc image(ControllerGetImageRequest) returns (EmptyResponse);
+  rpc image(HandleHandleRequest) returns (EmptyResponse);
   rpc uuid(HandleRequest) returns (StringResponse);
 }

@@ -61,8 +61,8 @@ Status ResourceImpl::status(ServerContext* context, const ::maarpc::HandleIIdReq
 {
     std::ignore = context;
 
-    MAA_GRPC_REQUIRED(id)
     MAA_GRPC_REQUIRED(handle)
+    MAA_GRPC_REQUIRED(id)
 
     MAA_GRPC_GET_HANDLE
 
@@ -76,8 +76,8 @@ Status ResourceImpl::wait(ServerContext* context, const ::maarpc::HandleIIdReque
 {
     std::ignore = context;
 
-    MAA_GRPC_REQUIRED(id)
     MAA_GRPC_REQUIRED(handle)
+    MAA_GRPC_REQUIRED(id)
 
     MAA_GRPC_GET_HANDLE
 

@@ -36,17 +36,16 @@ Status SyncContextImpl::run_recognizer(ServerContext* context, const ::maarpc::S
     MAA_GRPC_GET_HANDLE
     MAA_GRPC_GET_HANDLE_FROM(iImpl, image_handle, image_handle)
 
-    auto box_handle = MaaCreateRectBuffer();
+    MaaRect box;
     auto dt_handle = MaaCreateStringBuffer();
 
-    if (MaaSyncContextRunRecognizer(handle, image_handle, request->task().c_str(), request->param().c_str(), box_handle,
+    if (MaaSyncContextRunRecognizer(handle, image_handle, request->task().c_str(), request->param().c_str(), &box,
                                     dt_handle)) {
 
-        response->mutable_box()->mutable_xy()->set_x(MaaGetRectX(box_handle));
-        response->mutable_box()->mutable_xy()->set_y(MaaGetRectY(box_handle));
-        response->mutable_box()->mutable_wh()->set_width(MaaGetRectW(box_handle));
-        response->mutable_box()->mutable_wh()->set_height(MaaGetRectH(box_handle));
-        MaaDestroyRectBuffer(box_handle);
+        response->mutable_box()->mutable_xy()->set_x(box.x);
+        response->mutable_box()->mutable_xy()->set_y(box.y);
+        response->mutable_box()->mutable_wh()->set_width(box.width);
+        response->mutable_box()->mutable_wh()->set_height(box.height);
 
         std::string detail(MaaGetString(dt_handle), MaaGetStringSize(dt_handle));
         MaaDestroyStringBuffer(dt_handle);
@@ -55,7 +54,6 @@ Status SyncContextImpl::run_recognizer(ServerContext* context, const ::maarpc::S
         return Status::OK;
     }
     else {
-        MaaDestroyRectBuffer(box_handle);
         MaaDestroyStringBuffer(dt_handle);
         return Status(UNKNOWN, "MaaSyncContextRunRecognizer failed");
     }
@@ -75,18 +73,13 @@ Status SyncContextImpl::run_action(ServerContext* context, const ::maarpc::SyncC
 
     MAA_GRPC_GET_HANDLE
 
-    auto box_handle = MaaCreateRectBuffer();
-    MaaSetRectX(box_handle, request->box().xy().x());
-    MaaSetRectY(box_handle, request->box().xy().y());
-    MaaSetRectW(box_handle, request->box().wh().width());
-    MaaSetRectH(box_handle, request->box().wh().height());
-    if (MaaSyncContextRunAction(handle, request->task().c_str(), request->param().c_str(), box_handle,
+    MaaRect box { request->box().xy().x(), request->box().xy().y(), request->box().wh().width(),
+                  request->box().wh().height() };
+    if (MaaSyncContextRunAction(handle, request->task().c_str(), request->param().c_str(), &box,
                                 request->detail().c_str())) {
-        MaaDestroyRectBuffer(box_handle);
         return Status::OK;
     }
     else {
-        MaaDestroyRectBuffer(box_handle);
         return Status(UNKNOWN, "MaaSyncContextRunAction failed");
     }
 }
