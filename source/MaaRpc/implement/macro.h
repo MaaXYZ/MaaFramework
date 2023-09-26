@@ -10,21 +10,29 @@
         return Status(INVALID_ARGUMENT, #name " not provided");     \
     }
 
-#define MAA_GRPC_GET_HANDLE_BEGIN                          \
-    decltype(handles)::mapped_type handle = nullptr;       \
+#define MAA_GRPC_GET_HANDLE                                \
+    decltype(handles)::HandleType handle = nullptr;        \
     {                                                      \
         auto id = request->handle();                       \
-        std::unique_lock<std::mutex> lock(handles_mtx);    \
-        if (!handles.contains(id)) {                       \
+        if (!handles.get(id, handle)) {                    \
             return Status(NOT_FOUND, "handle not exists"); \
         }                                                  \
-        handle = handles[id];
+    }
 
-#define MAA_GRPC_GET_HANDLE_END }
+#define MAA_GRPC_GET_HANDLE_FROM(impl, name, field)         \
+    decltype(impl->handles)::HandleType name = nullptr;     \
+    {                                                       \
+        auto id = request->field();                         \
+        if (!impl->handles.get(id, name)) {                 \
+            return Status(NOT_FOUND, #field " not exists"); \
+        }                                                   \
+    }
 
-#define MAA_GRPC_GET_HANDLE MAA_GRPC_GET_HANDLE_BEGIN MAA_GRPC_GET_HANDLE_END
-#define MAA_GRPC_SET_HANDLE                             \
-    {                                                   \
-        std::unique_lock<std::mutex> lock(handles_mtx); \
-        handles[id] = handle;                           \
+#define MAA_GRPC_DEL_HANDLE                                \
+    decltype(handles)::HandleType handle = nullptr;        \
+    {                                                      \
+        auto id = request->handle();                       \
+        if (!handles.del(id, handle)) {                    \
+            return Status(NOT_FOUND, "handle not exists"); \
+        }                                                  \
     }

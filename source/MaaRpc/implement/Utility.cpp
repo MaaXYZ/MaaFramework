@@ -24,17 +24,6 @@ void CallbackImpl(MaaStringView msg, MaaStringView detail, MaaCallbackTransparen
     state->write.release();
 }
 
-UtilityImpl::CallbackState* UtilityImpl::get(const std::string& id)
-{
-    std::lock_guard<std::mutex> lock(state_mtx);
-    if (states.contains(id)) {
-        return states[id];
-    }
-    else {
-        return nullptr;
-    }
-}
-
 Status UtilityImpl::version(ServerContext* context, const ::maarpc::EmptyRequest* request,
                             ::maarpc::StringResponse* response)
 {
@@ -58,7 +47,7 @@ Status UtilityImpl::set_global_option(ServerContext* context, const ::maarpc::Se
     case ::maarpc::SetGlobalOptionRequest::OptionCase::kLogging:
         if (request->has_logging()) {
             auto logging = request->logging();
-            if (MaaSetGlobalOption(MaaGlobalOption_Logging, const_cast<char*>(logging.c_str()), logging.size())) {
+            if (MaaSetGlobalOption(MaaGlobalOption_Logging, logging.data(), logging.size())) {
                 return Status::OK;
             }
             else {
@@ -103,22 +92,17 @@ Status UtilityImpl::register_callback(ServerContext* context, const ::maarpc::Id
 
     auto id = request->id();
 
-    std::unique_lock<std::mutex> lock(state_mtx);
-    if (states.contains(id)) {
+    if (states.has(id)) {
         return Status(ALREADY_EXISTS, "id already registered");
     }
 
-    auto& pstate = states[id];
-    pstate = new CallbackState;
-
-    auto& state = *pstate;
+    CallbackState state;
     state.writer = writer;
-    lock.unlock();
+
+    states.add(id, &state);
 
     state.finish.acquire();
     state.write.acquire(); // 等待callback完成
-
-    delete &state; // pstate此时已经被erase了
 
     return Status::OK;
 }
@@ -133,15 +117,11 @@ Status UtilityImpl::unregister_callback(ServerContext* context, const ::maarpc::
 
     auto id = request->id();
 
-    std::unique_lock<std::mutex> lock(state_mtx);
-    if (!states.contains(id)) {
+    CallbackState* pstate;
+
+    if (!states.del(id, pstate)) {
         return Status(NOT_FOUND, "id not exists");
     }
-
-    auto pstate = states[id];
-    states.erase(id);
-
-    lock.unlock();
 
     pstate->finish.release();
 

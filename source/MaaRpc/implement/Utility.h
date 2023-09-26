@@ -1,23 +1,19 @@
 #pragma once
 
-#include "MaaFramework/MaaAPI.h"
+#include "AtomicMap.h"
+#include "MaaFramework/Utility/MaaUtility.h"
 #include "utility.grpc.pb.h"
 
-#include <atomic>
-#include <map>
 #include <semaphore>
 
-class UtilityImpl final : public ::maarpc::Utility::Service
+struct UtilityImpl final : public ::maarpc::Utility::Service
 {
-public:
     struct CallbackState
     {
         std::binary_semaphore write { 1 };
         std::binary_semaphore finish { 0 };
         ::grpc::ServerWriter<::maarpc::Callback>* writer { nullptr };
     };
-
-    CallbackState* get(const std::string& id);
 
     ::grpc::Status version(::grpc::ServerContext* context, const ::maarpc::EmptyRequest* request,
                            ::maarpc::StringResponse* response) override;
@@ -30,9 +26,7 @@ public:
     ::grpc::Status unregister_callback(::grpc::ServerContext* context, const ::maarpc::IdRequest* request,
                                        ::maarpc::EmptyResponse* response) override;
 
-private:
-    std::map<std::string, CallbackState*> states;
-    std::mutex state_mtx;
+    AtomicMap<CallbackState*> states;
 };
 
 extern std::string make_uuid();

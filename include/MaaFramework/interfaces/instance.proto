@@ -22,16 +22,13 @@ service Instance {
   rpc create(IdRequest) returns (HandleResponse);
   rpc destroy(HandleRequest) returns (EmptyResponse);
 
-  rpc register_custom_recognizer(CustomRecognizerRequest)
+  rpc register_custom_recognizer(stream CustomRecognizerRequest)
       returns (stream CustomRecognizerResponse);
-  rpc submit_custom_recognizer(SubmitCustomRecognizerRequest)
-      returns (EmptyResponse);
   rpc unregister_custom_recognizer(HandleStringRequest) returns (EmptyResponse);
   rpc clear_custom_recognizer(HandleRequest) returns (EmptyResponse);
 
-  rpc register_custom_action(CustomActionRequest)
+  rpc register_custom_action(stream CustomActionRequest)
       returns (stream CustomActionResponse);
-  rpc submit_custom_action(SubmitCustomActionRequest) returns (EmptyResponse);
   rpc unregister_custom_action(HandleStringRequest) returns (EmptyResponse);
   rpc clear_custom_action(HandleRequest) returns (EmptyResponse);
 

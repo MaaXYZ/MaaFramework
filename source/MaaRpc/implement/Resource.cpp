@@ -12,15 +12,14 @@ Status ResourceImpl::create(ServerContext* context, const ::maarpc::IdRequest* r
     MAA_GRPC_REQUIRED(id)
 
     auto cbId = request->id();
-    auto cbState = uImpl->get(cbId);
-    if (!cbState) {
+    UtilityImpl::CallbackState* cbState;
+
+    if (!uImpl->states.get(cbId, cbState)) {
         return Status(NOT_FOUND, "id not exists");
     }
 
     auto id = make_uuid();
-    auto handle = MaaResourceCreate(CallbackImpl, cbState);
-
-    MAA_GRPC_SET_HANDLE
+    handles.add(id, MaaResourceCreate(CallbackImpl, cbState));
 
     response->set_handle(id);
 
@@ -35,9 +34,7 @@ Status ResourceImpl::destroy(ServerContext* context, const ::maarpc::HandleReque
 
     MAA_GRPC_REQUIRED(handle)
 
-    MAA_GRPC_GET_HANDLE_BEGIN
-    handles.erase(id);
-    MAA_GRPC_GET_HANDLE_END
+    MAA_GRPC_DEL_HANDLE
 
     MaaResourceDestroy(handle);
 

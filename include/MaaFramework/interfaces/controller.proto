@@ -52,10 +52,8 @@ service Controller {
   rpc create_adb(AdbControllerRequest) returns (HandleResponse);
   rpc destroy(HandleRequest) returns (EmptyResponse);
 
-  rpc create_custom(CustomControllerRequest)
+  rpc create_custom(stream CustomControllerRequest)
       returns (stream CustomControllerResponse);
-  rpc submit_custom_controller(SubmitCustomControllerRequest)
-      returns (EmptyResponse);
 
   rpc set_option(ControllerSetOptionRequest) returns (EmptyResponse);
   rpc post_connection(HandleRequest) returns (IIdResponse);

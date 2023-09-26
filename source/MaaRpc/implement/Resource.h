@@ -1,13 +1,12 @@
 #pragma once
 
+#include "AtomicMap.h"
+#include "MaaFramework/Instance/MaaResource.h"
 #include "Utility.h"
 #include "resource.grpc.pb.h"
 
-#include <map>
-
-class ResourceImpl final : public ::maarpc::Resource::Service
+struct ResourceImpl final : public ::maarpc::Resource::Service
 {
-public:
     ResourceImpl(UtilityImpl* impl) : uImpl(impl) {}
 
     ::grpc::Status create(::grpc::ServerContext* context, const ::maarpc::IdRequest* request,
@@ -25,8 +24,6 @@ public:
     ::grpc::Status hash(::grpc::ServerContext* context, const ::maarpc::HandleRequest* request,
                         ::maarpc::StringResponse* response) override;
 
-private:
     UtilityImpl* uImpl;
-    std::map<std::string, MaaResourceHandle> handles;
-    std::mutex handles_mtx;
+    AtomicMap<MaaResourceHandle> handles;
 };

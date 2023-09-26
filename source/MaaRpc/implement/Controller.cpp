@@ -1,4 +1,5 @@
 #include "Controller.h"
+#include "MaaFramework/Utility/MaaBuffer.h"
 #include "macro.h"
 
 using namespace ::grpc;
@@ -15,16 +16,14 @@ Status ControllerImpl::create_adb(::grpc::ServerContext* context, const ::maarpc
     MAA_GRPC_REQUIRED(adb_config)
 
     auto cbId = request->id();
-    auto cbState = uImpl->get(cbId);
-    if (!cbState) {
+    UtilityImpl::CallbackState* cbState;
+    if (!uImpl->states.get(cbId, cbState)) {
         return Status(NOT_FOUND, "id not exists");
     }
 
     auto id = make_uuid();
-    auto handle = MaaAdbControllerCreate(request->adb_path().c_str(), request->adb_serial().c_str(),
-                                         request->adb_type(), request->adb_config().c_str(), CallbackImpl, cbState);
-
-    MAA_GRPC_SET_HANDLE
+    handles.add(id, MaaAdbControllerCreate(request->adb_path().c_str(), request->adb_serial().c_str(),
+                                           request->adb_type(), request->adb_config().c_str(), CallbackImpl, cbState));
 
     response->set_handle(id);
 
@@ -39,32 +38,19 @@ Status ControllerImpl::destroy(::grpc::ServerContext* context, const ::maarpc::H
 
     MAA_GRPC_REQUIRED(handle)
 
-    MAA_GRPC_GET_HANDLE_BEGIN
-    handles.erase(id);
-    MAA_GRPC_GET_HANDLE_END
+    MAA_GRPC_DEL_HANDLE
 
     MaaControllerDestroy(handle);
 
     return Status::OK;
 }
 
-Status ControllerImpl::create_custom(::grpc::ServerContext* context, const ::maarpc::CustomControllerRequest* request,
-                                     ::grpc::ServerWriter<::maarpc::CustomControllerResponse>* writer)
+Status ControllerImpl::create_custom(
+    ServerContext* context,
+    ServerReaderWriter<::maarpc::CustomControllerResponse, ::maarpc::CustomControllerRequest>* stream)
 {
     std::ignore = context;
-    std::ignore = request;
-    std::ignore = writer;
-
-    return Status(UNIMPLEMENTED, "");
-}
-
-Status ControllerImpl::submit_custom_controller(::grpc::ServerContext* context,
-                                                const ::maarpc::SubmitCustomControllerRequest* request,
-                                                ::maarpc::EmptyResponse* response)
-{
-    std::ignore = context;
-    std::ignore = request;
-    std::ignore = response;
+    std::ignore = stream;
 
     return Status(UNIMPLEMENTED, "");
 }
@@ -106,8 +92,7 @@ Status ControllerImpl::set_option(::grpc::ServerContext* context, const ::maarpc
     case ::maarpc::ControllerSetOptionRequest::kDefPackageEntry:
         if (request->has_def_package_entry()) {
             auto entry = request->def_package_entry();
-            if (MaaControllerSetOption(handle, MaaCtrlOption_DefaultAppPackageEntry, const_cast<char*>(entry.c_str()),
-                                       entry.size())) {
+            if (MaaControllerSetOption(handle, MaaCtrlOption_DefaultAppPackageEntry, entry.data(), entry.size())) {
                 return Status::OK;
             }
             else {
@@ -118,8 +103,7 @@ Status ControllerImpl::set_option(::grpc::ServerContext* context, const ::maarpc
     case ::maarpc::ControllerSetOptionRequest::kDefPackage:
         if (request->has_def_package()) {
             auto entry = request->def_package();
-            if (MaaControllerSetOption(handle, MaaCtrlOption_DefaultAppPackage, const_cast<char*>(entry.c_str()),
-                                       entry.size())) {
+            if (MaaControllerSetOption(handle, MaaCtrlOption_DefaultAppPackage, entry.data(), entry.size())) {
                 return Status::OK;
             }
             else {
@@ -318,10 +302,20 @@ Status ControllerImpl::image(::grpc::ServerContext* context, const ::maarpc::Con
                              ::maarpc::EmptyResponse* response)
 {
     std::ignore = context;
-    std::ignore = request;
     std::ignore = response;
 
-    return Status(UNIMPLEMENTED, "");
+    MAA_GRPC_REQUIRED(handle)
+    MAA_GRPC_REQUIRED(image_handle)
+
+    MAA_GRPC_GET_HANDLE
+    MAA_GRPC_GET_HANDLE_FROM(iImpl, image_handle, image_handle)
+
+    if (MaaControllerGetImage(handle, image_handle)) {
+        return Status::OK;
+    }
+    else {
+        return Status(UNKNOWN, "MaaControllerGetImage failed");
+    }
 }
 
 Status ControllerImpl::uuid(::grpc::ServerContext* context, const ::maarpc::HandleRequest* request,

@@ -4,14 +4,31 @@ package maarpc;
 
 import "types.proto";
 
-message CustomControllerRequest {
+message CustomControllerSetOptionParam {
+  optional int32 key = 1;
+  optional string value = 2;
+}
+
+message CustomControllerInit {
   optional string id = 1;
   optional string ctrl_id = 2;
 }
 
-message CustomControllerSetOptionParam {
-  optional int32 key = 1;
-  optional string value = 2;
+message CustomControllerSubmit {
+  optional string handle = 1;
+  optional string cmd_id = 2;
+  optional bool ok = 3;
+  oneof result {
+    Size resolution = 101;
+    string uuid = 102;
+  }
+}
+
+message CustomControllerRequest {
+  oneof payload {
+    CustomControllerInit init = 1;
+    CustomControllerSubmit submit = 2;
+  }
 }
 
 message CustomControllerResponse {
@@ -32,15 +49,5 @@ message CustomControllerResponse {
     bool uuid = 112; // void
 
     CustomControllerSetOptionParam set_option = 200;
-  }
-}
-
-message SubmitCustomControllerRequest {
-  optional string handle = 1;
-  optional string cmd_id = 2;
-  optional bool ok = 3;
-  oneof result {
-    Size resolution = 101;
-    string uuid = 102;
   }
 }
