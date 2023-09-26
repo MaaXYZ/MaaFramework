@@ -166,10 +166,12 @@ Status ResourceImpl::hash(ServerContext* context, const ::maarpc::HandleRequest*
     auto sb = MaaCreateStringBuffer();
     if (MaaResourceGetHash(handle, sb)) {
         std::string hash(MaaGetString(sb), MaaGetStringSize(sb));
+        MaaDestroyStringBuffer(sb);
         response->set_value(hash);
         return Status::OK;
     }
     else {
+        MaaDestroyStringBuffer(sb);
         return Status(UNKNOWN, "MaaResourceGetHash failed");
     }
 }

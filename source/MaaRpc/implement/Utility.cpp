@@ -41,6 +41,7 @@ Status UtilityImpl::set_global_option(ServerContext* context, const ::maarpc::Se
                                       ::maarpc::EmptyResponse* response)
 {
     std::ignore = context;
+    std::ignore = response;
 
     switch (request->option_case()) {
     case ::maarpc::SetGlobalOptionRequest::OptionCase::kLogging:
@@ -64,6 +65,8 @@ Status UtilityImpl::set_global_option(ServerContext* context, const ::maarpc::Se
                 return Status(UNKNOWN, "MaaSetGlobalOption failed");
             }
         }
+        break;
+    default:
         break;
     }
     return Status(ABORTED, "protobuf `oneof` state invalid");
