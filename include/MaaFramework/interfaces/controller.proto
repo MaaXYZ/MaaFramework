@@ -47,7 +47,7 @@ message ControllerGetImageRequest {
   optional Handle image = 2;
 }
 
-service MaaFrameworkController {
+service Controller {
   rpc create_adb(AdbControllerRequest) returns (HandleResponse);
   rpc destroy(HandleRequest) returns (EmptyResponse);
 

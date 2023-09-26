@@ -4,7 +4,7 @@ package maarpc;
 
 import "types.proto";
 
-service MaaFrameworkResource {
+service Resource {
   rpc create(IdRequest) returns (HandleResponse);
   rpc destroy(HandleRequest) returns (EmptyResponse);
 

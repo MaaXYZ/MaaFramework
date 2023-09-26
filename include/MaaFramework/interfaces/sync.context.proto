@@ -21,7 +21,6 @@ message SyncContextRunRecognizerResponse {
   optional bool match = 1;
   optional Rect box = 2;
   optional string detail = 3;
-  optional RpcStatus status = 101;
 }
 
 message SyncContextRunActionRequest {
@@ -57,7 +56,7 @@ message SyncContextScreencapRequest {
   optional Handle image = 2;
 }
 
-service MaaFrameworkSyncContext {
+service SyncContext {
   rpc run_task(SyncContextRunTaskRequest) returns (EmptyResponse);
   rpc run_recognizer(SyncContextRunRecognizerRequest)
       returns (SyncContextRunRecognizerResponse);

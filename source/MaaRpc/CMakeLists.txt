@@ -11,6 +11,4 @@ target_link_libraries(MaaRPC
         gRPC::grpc++
 )
 
-install(FILES ${maa_proto} DESTINATION share)
-
 source_group(TREE ${CMAKE_SOURCE_DIR} FILES ${maa_proto_src} ${maa_rpc_src})
