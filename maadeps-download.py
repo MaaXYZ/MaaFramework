@@ -102,12 +102,12 @@ def main():
     # if len(sys.argv) == 1:
     #     print(f"to specify another triplet, run `{sys.argv[0]} <target triplet>`")
     #     print(f"e.g. `{sys.argv[0]} x64-windows`")
-    req = urllib.request.Request("https://api.github.com/repos/MaaAssistantArknights/MaaDeps/releases")
+    req = urllib.request.Request("https://api.github.com/repos/MaaAssistantArknights/MaaDeps/releases/latest")
     token = os.environ.get("GH_TOKEN", os.environ.get("GITHUB_TOKEN", None))
     if token:
         req.add_header("Authorization", f"Bearer {token}")
     resp = retry_urlopen(req).read()
-    releases = json.loads(resp)
+    release = json.loads(resp)
     def split_asset_name(name: str):
         *remainder, component_suffix = name.rsplit('-', 1)
         component = component_suffix.split(".", 1)[0]
@@ -118,16 +118,13 @@ def main():
         return None, None
     devel_asset = None
     runtime_asset = None
-    for release in releases:
-        for asset in release["assets"]:
-            target, component = split_asset_name(asset["name"])
-            if target == target_triplet:
-                if component == 'devel':
-                    devel_asset = asset
-                elif component == 'runtime':
-                    runtime_asset = asset
-        if devel_asset and runtime_asset:
-            break
+    for asset in release["assets"]:
+        target, component = split_asset_name(asset["name"])
+        if target == target_triplet:
+            if component == 'devel':
+                devel_asset = asset
+            elif component == 'runtime':
+                runtime_asset = asset
     if devel_asset and runtime_asset:
         print("found assets:")
         print("    " + devel_asset["name"])
