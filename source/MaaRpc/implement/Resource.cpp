@@ -1,5 +1,6 @@
 #include "Resource.h"
 #include "MaaFramework/MaaAPI.h"
+#include "macro.h"
 
 using namespace ::grpc;
 
@@ -8,9 +9,7 @@ Status ResourceImpl::create(ServerContext* context, const ::maarpc::IdRequest* r
 {
     std::ignore = context;
 
-    if (!request->has_id()) {
-        return Status(INVALID_ARGUMENT, "id not provided");
-    }
+    MAA_GRPC_REQUIRED(id)
 
     auto cbId = request->id().id();
     auto cbState = uImpl->get(cbId);
@@ -34,9 +33,7 @@ Status ResourceImpl::destroy(ServerContext* context, const ::maarpc::HandleReque
     std::ignore = context;
     std::ignore = response;
 
-    if (!request->has_handle()) {
-        return Status(INVALID_ARGUMENT, "handle not provided");
-    }
+    MAA_GRPC_REQUIRED(handle)
 
     std::unique_lock<std::mutex> lock(handles_mtx);
     auto id = request->handle().handle();
@@ -57,9 +54,7 @@ Status ResourceImpl::post_path(ServerContext* context, const ::maarpc::HandleStr
 {
     std::ignore = context;
 
-    if (!request->has_handle()) {
-        return Status(INVALID_ARGUMENT, "handle not provided");
-    }
+    MAA_GRPC_REQUIRED(handle)
 
     std::unique_lock<std::mutex> lock(handles_mtx);
     auto id = request->handle().handle();
@@ -79,12 +74,8 @@ Status ResourceImpl::status(ServerContext* context, const ::maarpc::HandleIdRequ
 {
     std::ignore = context;
 
-    if (!request->has_handle()) {
-        return Status(INVALID_ARGUMENT, "handle not provided");
-    }
-    if (!request->has_id()) {
-        return Status(INVALID_ARGUMENT, "id not provided");
-    }
+    MAA_GRPC_REQUIRED(id)
+    MAA_GRPC_REQUIRED(handle)
 
     std::unique_lock<std::mutex> lock(handles_mtx);
     auto id = request->handle().handle();
@@ -104,12 +95,8 @@ Status ResourceImpl::wait(ServerContext* context, const ::maarpc::HandleIdReques
 {
     std::ignore = context;
 
-    if (!request->has_handle()) {
-        return Status(INVALID_ARGUMENT, "handle not provided");
-    }
-    if (!request->has_id()) {
-        return Status(INVALID_ARGUMENT, "id not provided");
-    }
+    MAA_GRPC_REQUIRED(id)
+    MAA_GRPC_REQUIRED(handle)
 
     std::unique_lock<std::mutex> lock(handles_mtx);
     auto id = request->handle().handle();
@@ -129,9 +116,7 @@ Status ResourceImpl::loaded(ServerContext* context, const ::maarpc::HandleReques
 {
     std::ignore = context;
 
-    if (!request->has_handle()) {
-        return Status(INVALID_ARGUMENT, "handle not provided");
-    }
+    MAA_GRPC_REQUIRED(handle)
 
     std::unique_lock<std::mutex> lock(handles_mtx);
     auto id = request->handle().handle();
@@ -151,9 +136,7 @@ Status ResourceImpl::hash(ServerContext* context, const ::maarpc::HandleRequest*
 {
     std::ignore = context;
 
-    if (!request->has_handle()) {
-        return Status(INVALID_ARGUMENT, "handle not provided");
-    }
+    MAA_GRPC_REQUIRED(handle)
 
     std::unique_lock<std::mutex> lock(handles_mtx);
     auto id = request->handle().handle();

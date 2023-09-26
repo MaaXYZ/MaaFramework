@@ -1,5 +1,6 @@
 #include "Utility.h"
 #include "MaaFramework/MaaAPI.h"
+#include "macro.h"
 
 using namespace ::grpc;
 
@@ -42,6 +43,8 @@ Status UtilityImpl::set_global_option(ServerContext* context, const ::maarpc::Se
 {
     std::ignore = context;
     std::ignore = response;
+
+    MAA_GRPC_REQUIRED_OPTION(option, SetGlobalOptionRequest)
 
     switch (request->option_case()) {
     case ::maarpc::SetGlobalOptionRequest::OptionCase::kLogging:
@@ -89,9 +92,7 @@ Status UtilityImpl::register_callback(ServerContext* context, const ::maarpc::Id
 {
     std::ignore = context;
 
-    if (!request->has_id()) {
-        return Status(INVALID_ARGUMENT, "id not provided");
-    }
+    MAA_GRPC_REQUIRED(id)
 
     auto id = request->id().id();
 
@@ -121,9 +122,7 @@ Status UtilityImpl::unregister_callback(ServerContext* context, const ::maarpc::
     std::ignore = context;
     std::ignore = response;
 
-    if (!request->has_id()) {
-        return Status(INVALID_ARGUMENT, "id not provided");
-    }
+    MAA_GRPC_REQUIRED(id)
 
     auto id = request->id().id();
 
