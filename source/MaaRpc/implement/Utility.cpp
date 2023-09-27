@@ -41,7 +41,7 @@ Status UtilityImpl::set_global_option(ServerContext* context, const ::maarpc::Se
     std::ignore = context;
     std::ignore = response;
 
-    MAA_GRPC_REQUIRED_OPTION(option, SetGlobalOptionRequest)
+    MAA_GRPC_REQUIRED_CASE(option, OPTION)
 
     switch (request->option_case()) {
     case ::maarpc::SetGlobalOptionRequest::OptionCase::kLogging:

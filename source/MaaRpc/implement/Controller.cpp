@@ -52,6 +52,15 @@ Status ControllerImpl::create_custom(
     std::ignore = context;
     std::ignore = stream;
 
+    ::maarpc::CustomControllerRequest requestData;
+    auto request = &requestData;
+
+    if (!stream->Read(request)) {
+        return Status(FAILED_PRECONDITION, "custom controller cannot read init");
+    }
+
+    MAA_GRPC_REQUIRED_CASE_AS(payload, Init)
+
     return Status(UNIMPLEMENTED, "");
 }
 
@@ -62,7 +71,7 @@ Status ControllerImpl::set_option(::grpc::ServerContext* context, const ::maarpc
     std::ignore = response;
 
     MAA_GRPC_REQUIRED(handle)
-    MAA_GRPC_REQUIRED_OPTION(option, ControllerSetOptionRequest)
+    MAA_GRPC_REQUIRED_CASE(option, OPTION)
 
     MAA_GRPC_GET_HANDLE
 
