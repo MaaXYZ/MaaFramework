@@ -7,9 +7,9 @@
 
 MAA_CTRL_NS_BEGIN
 
-CustomController::CustomController(MaaCustomControllerHandle handle, MaaControllerCallback callback,
-                                   MaaCallbackTransparentArg callback_arg)
-    : ControllerMgr(callback, callback_arg), handle_(handle)
+CustomController::CustomController(MaaCustomControllerHandle handle, MaaTransparentArg handle_arg,
+                                   MaaControllerCallback callback, MaaCallbackTransparentArg callback_arg)
+    : ControllerMgr(callback, callback_arg), handle_(handle), handle_arg_(handle_arg)
 {}
 
 std::string CustomController::get_uuid() const
@@ -22,7 +22,7 @@ std::string CustomController::get_uuid() const
     }
 
     StringBuffer buffer;
-    MaaBool ret = handle_->get_uuid(&buffer);
+    MaaBool ret = handle_->get_uuid(&buffer, handle_arg_);
     if (!ret) {
         LogError << "failed to get_uuid" << VAR(ret);
         return {};
@@ -39,7 +39,7 @@ bool CustomController::_connect()
         return false;
     }
 
-    return handle_->connect();
+    return handle_->connect(handle_arg_);
 }
 
 std::pair<int, int> CustomController::_get_resolution() const
@@ -50,7 +50,7 @@ std::pair<int, int> CustomController::_get_resolution() const
         return {};
     }
     int width = 0, height = 0;
-    handle_->get_resolution(&width, &height);
+    handle_->get_resolution(&width, &height, handle_arg_);
     return { width, height };
 }
 
@@ -63,7 +63,7 @@ bool CustomController::_click(ClickParam param)
         return false;
     }
 
-    return handle_->click(param.x, param.y);
+    return handle_->click(param.x, param.y, handle_arg_);
 }
 
 bool CustomController::_swipe(SwipeParam param)
@@ -75,7 +75,7 @@ bool CustomController::_swipe(SwipeParam param)
         LogError << "handle_ or handle_->swipe is nullptr";
         return false;
     }
-    return handle_->swipe(param.x1, param.y1, param.x2, param.y2, param.duration);
+    return handle_->swipe(param.x1, param.y1, param.x2, param.y2, param.duration, handle_arg_);
 }
 
 bool CustomController::_touch_down(TouchParam param)
@@ -88,7 +88,7 @@ bool CustomController::_touch_down(TouchParam param)
         return false;
     }
 
-    return handle_->touch_down(param.contact, param.x, param.y, param.pressure);
+    return handle_->touch_down(param.contact, param.x, param.y, param.pressure, handle_arg_);
 }
 
 bool CustomController::_touch_move(TouchParam param)
@@ -101,7 +101,7 @@ bool CustomController::_touch_move(TouchParam param)
         return false;
     }
 
-    return handle_->touch_move(param.contact, param.x, param.y, param.pressure);
+    return handle_->touch_move(param.contact, param.x, param.y, param.pressure, handle_arg_);
 }
 
 bool CustomController::_touch_up(TouchParam param)
@@ -113,7 +113,7 @@ bool CustomController::_touch_up(TouchParam param)
         return false;
     }
 
-    return handle_->touch_up(param.contact);
+    return handle_->touch_up(param.contact, handle_arg_);
 }
 
 bool CustomController::_press_key(PressKeyParam param)
@@ -125,7 +125,7 @@ bool CustomController::_press_key(PressKeyParam param)
         return false;
     }
 
-    return handle_->press_key(param.keycode);
+    return handle_->press_key(param.keycode, handle_arg_);
 }
 
 cv::Mat CustomController::_screencap()
@@ -138,7 +138,7 @@ cv::Mat CustomController::_screencap()
     }
 
     ImageBuffer buffer;
-    MaaBool ret = handle_->get_image(&buffer);
+    MaaBool ret = handle_->get_image(&buffer, handle_arg_);
     if (!ret) {
         LogError << "failed to get_image" << VAR(ret);
         return {};
@@ -156,7 +156,7 @@ bool CustomController::_start_app(AppParam param)
         return false;
     }
 
-    return handle_->start_app(param.package.c_str());
+    return handle_->start_app(param.package.c_str(), handle_arg_);
 }
 
 bool CustomController::_stop_app(AppParam param)
@@ -168,7 +168,7 @@ bool CustomController::_stop_app(AppParam param)
         return false;
     }
 
-    return handle_->stop_app(param.package.c_str());
+    return handle_->stop_app(param.package.c_str(), handle_arg_);
 }
 
 MAA_CTRL_NS_END

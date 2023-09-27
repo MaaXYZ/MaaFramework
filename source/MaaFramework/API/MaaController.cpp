@@ -24,17 +24,17 @@ MaaControllerHandle MaaAdbControllerCreate(MaaStringView adb_path, MaaStringView
     return new MAA_CTRL_NS::AdbController(adb_path, address, std::move(unit_mgr), callback, callback_arg);
 }
 
-MaaControllerHandle MaaCustomControllerCreate(MaaCustomControllerHandle handle, MaaControllerCallback callback,
-                                              MaaCallbackTransparentArg callback_arg)
+MaaControllerHandle MaaCustomControllerCreate(MaaCustomControllerHandle handle, MaaTransparentArg handle_arg,
+                                              MaaControllerCallback callback, MaaCallbackTransparentArg callback_arg)
 {
-    LogFunc << VAR(handle) << VAR_VOIDP(callback) << VAR_VOIDP(callback_arg);
+    LogFunc << VAR(handle) << VAR(handle_arg) << VAR_VOIDP(callback) << VAR_VOIDP(callback_arg);
 
     if (!handle) {
         LogError << "handle is null";
         return nullptr;
     }
 
-    return new MAA_CTRL_NS::CustomController(handle, callback, callback_arg);
+    return new MAA_CTRL_NS::CustomController(handle, handle_arg, callback, callback_arg);
 }
 
 MaaControllerHandle MaaThriftControllerCreate(MaaStringView param, MaaControllerCallback callback,

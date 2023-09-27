@@ -119,9 +119,10 @@ enum MaaAdbControllerTypeEnum
     MaaAdbControllerType_Screencap_Mask = 0xFF0000,
 };
 
-typedef void* MaaCallbackTransparentArg;
+typedef void* MaaTransparentArg;
+typedef MaaTransparentArg MaaCallbackTransparentArg;
 
-typedef void (*MaaAPICallback)(MaaStringView msg, MaaStringView details_json, MaaCallbackTransparentArg callback_arg);
+typedef void (*MaaAPICallback)(MaaStringView msg, MaaStringView details_json, MaaTransparentArg callback_arg);
 typedef MaaAPICallback MaaResourceCallback;
 typedef MaaAPICallback MaaControllerCallback;
 typedef MaaAPICallback MaaInstanceCallback;
