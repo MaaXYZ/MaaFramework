@@ -2,6 +2,7 @@
 
 #include <map>
 #include <mutex>
+#include <string>
 
 template <typename Handle>
 struct AtomicMap
