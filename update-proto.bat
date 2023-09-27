@@ -3,7 +3,7 @@
 set PROTOC=.\MaaDeps\vcpkg\installed\x64-windows\tools\protobuf\protoc
 set GRPC_PLUGIN=.\MaaDeps\vcpkg\installed\x64-windows\tools\grpc\grpc_cpp_plugin.exe
 
-set INDIR=.\include\MaaFramework\interfaces
+set INDIR=.\include\Interface\proto
 set OUTDIR=.\source\MaaRpc\generated
 
 for %%s in (%INDIR%\*.proto) do (

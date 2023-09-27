@@ -59,7 +59,9 @@ Status ControllerImpl::create_custom(
         return Status(FAILED_PRECONDITION, "custom controller cannot read init");
     }
 
-    MAA_GRPC_REQUIRED_CASE_AS(payload, Init)
+    MAA_GRPC_REQUIRED_CASE_AS(result, Init)
+
+    // MaaCustomControllerCreate()
 
     return Status(UNIMPLEMENTED, "");
 }

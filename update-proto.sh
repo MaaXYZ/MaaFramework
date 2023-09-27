@@ -9,7 +9,7 @@ fi
 PROTOC="./MaaDeps/vcpkg/installed/${TRIPLET}/tools/protobuf/protoc"
 GRPC_PLUGIN="./MaaDeps/vcpkg/installed/${TRIPLET}/tools/grpc/grpc_cpp_plugin"
 
-INDIR="./include/MaaFramework/interfaces"
+INDIR="./include/Interface/proto"
 OUTDIR="./source/MaaRpc/generated"
 
 for src in ${INDIR}/*.proto; do
