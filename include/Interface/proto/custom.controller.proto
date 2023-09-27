@@ -12,7 +12,7 @@ message CustomControllerSetOptionParam {
 message CustomControllerRequest {
   optional bool ok = 1;
   oneof result {
-    bool init = 101;
+    string init = 101;
 
     Size resolution = 201;
     string uuid = 202;

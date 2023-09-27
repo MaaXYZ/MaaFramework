@@ -384,17 +384,22 @@ class CustomControllerRequest final :
   void _internal_set_ok(bool value);
   public:
 
-  // bool init = 101;
+  // string init = 101;
   bool has_init() const;
   private:
   bool _internal_has_init() const;
   public:
   void clear_init();
-  bool init() const;
-  void set_init(bool value);
+  const std::string& init() const;
+  template <typename ArgT0 = const std::string&, typename... ArgT>
+  void set_init(ArgT0&& arg0, ArgT... args);
+  std::string* mutable_init();
+  PROTOBUF_NODISCARD std::string* release_init();
+  void set_allocated_init(std::string* init);
   private:
-  bool _internal_init() const;
-  void _internal_set_init(bool value);
+  const std::string& _internal_init() const;
+  inline PROTOBUF_ALWAYS_INLINE void _internal_set_init(const std::string& value);
+  std::string* _internal_mutable_init();
   public:
 
   // .maarpc.Size resolution = 201;
@@ -455,7 +460,7 @@ class CustomControllerRequest final :
     union ResultUnion {
       constexpr ResultUnion() : _constinit_{} {}
         ::PROTOBUF_NAMESPACE_ID::internal::ConstantInitialized _constinit_;
-      bool init_;
+      ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr init_;
       ::maarpc::Size* resolution_;
       ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr uuid_;
     } result_;
@@ -1049,7 +1054,7 @@ inline void CustomControllerRequest::set_ok(bool value) {
   // @@protoc_insertion_point(field_set:maarpc.CustomControllerRequest.ok)
 }
 
-// bool init = 101;
+// string init = 101;
 inline bool CustomControllerRequest::_internal_has_init() const {
   return result_case() == kInit;
 }
@@ -1061,30 +1066,69 @@ inline void CustomControllerRequest::set_has_init() {
 }
 inline void CustomControllerRequest::clear_init() {
   if (_internal_has_init()) {
-    _impl_.result_.init_ = false;
+    _impl_.result_.init_.Destroy();
     clear_has_result();
   }
 }
-inline bool CustomControllerRequest::_internal_init() const {
-  if (_internal_has_init()) {
-    return _impl_.result_.init_;
-  }
-  return false;
-}
-inline void CustomControllerRequest::_internal_set_init(bool value) {
-  if (!_internal_has_init()) {
-    clear_result();
-    set_has_init();
-  }
-  _impl_.result_.init_ = value;
-}
-inline bool CustomControllerRequest::init() const {
+inline const std::string& CustomControllerRequest::init() const {
   // @@protoc_insertion_point(field_get:maarpc.CustomControllerRequest.init)
   return _internal_init();
 }
-inline void CustomControllerRequest::set_init(bool value) {
-  _internal_set_init(value);
+template <typename ArgT0, typename... ArgT>
+inline void CustomControllerRequest::set_init(ArgT0&& arg0, ArgT... args) {
+  if (!_internal_has_init()) {
+    clear_result();
+    set_has_init();
+    _impl_.result_.init_.InitDefault();
+  }
+  _impl_.result_.init_.Set( static_cast<ArgT0 &&>(arg0), args..., GetArenaForAllocation());
   // @@protoc_insertion_point(field_set:maarpc.CustomControllerRequest.init)
+}
+inline std::string* CustomControllerRequest::mutable_init() {
+  std::string* _s = _internal_mutable_init();
+  // @@protoc_insertion_point(field_mutable:maarpc.CustomControllerRequest.init)
+  return _s;
+}
+inline const std::string& CustomControllerRequest::_internal_init() const {
+  if (_internal_has_init()) {
+    return _impl_.result_.init_.Get();
+  }
+  return ::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited();
+}
+inline void CustomControllerRequest::_internal_set_init(const std::string& value) {
+  if (!_internal_has_init()) {
+    clear_result();
+    set_has_init();
+    _impl_.result_.init_.InitDefault();
+  }
+  _impl_.result_.init_.Set(value, GetArenaForAllocation());
+}
+inline std::string* CustomControllerRequest::_internal_mutable_init() {
+  if (!_internal_has_init()) {
+    clear_result();
+    set_has_init();
+    _impl_.result_.init_.InitDefault();
+  }
+  return _impl_.result_.init_.Mutable(      GetArenaForAllocation());
+}
+inline std::string* CustomControllerRequest::release_init() {
+  // @@protoc_insertion_point(field_release:maarpc.CustomControllerRequest.init)
+  if (_internal_has_init()) {
+    clear_has_result();
+    return _impl_.result_.init_.Release();
+  } else {
+    return nullptr;
+  }
+}
+inline void CustomControllerRequest::set_allocated_init(std::string* init) {
+  if (has_result()) {
+    clear_result();
+  }
+  if (init != nullptr) {
+    set_has_init();
+    _impl_.result_.init_.InitAllocated(init, GetArenaForAllocation());
+  }
+  // @@protoc_insertion_point(field_set_allocated:maarpc.CustomControllerRequest.init)
 }
 
 // .maarpc.Size resolution = 201;

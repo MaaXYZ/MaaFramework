@@ -11,7 +11,7 @@
     }
 
 #define MAA_GRPC_REQUIRED_CASE_AS(name, case)                                              \
-    if (request->name##_case() == std::remove_pointer<decltype(request)>::type::k##case) { \
+    if (request->name##_case() != std::remove_pointer<decltype(request)>::type::k##case) { \
         return Status(INVALID_ARGUMENT, #name " should be " #case);                        \
     }
 

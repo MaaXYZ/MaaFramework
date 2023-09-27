@@ -136,7 +136,7 @@ const char descriptor_table_protodef_custom_2econtroller_2eproto[] PROTOBUF_SECT
   ".proto\"X\n\036CustomControllerSetOptionParam"
   "\022\020\n\003key\030\001 \001(\005H\000\210\001\001\022\022\n\005value\030\002 \001(\tH\001\210\001\001B\006"
   "\n\004_keyB\010\n\006_value\"\201\001\n\027CustomControllerReq"
-  "uest\022\017\n\002ok\030\001 \001(\010H\001\210\001\001\022\016\n\004init\030e \001(\010H\000\022#\n"
+  "uest\022\017\n\002ok\030\001 \001(\010H\001\210\001\001\022\016\n\004init\030e \001(\tH\000\022#\n"
   "\nresolution\030\311\001 \001(\0132\014.maarpc.SizeH\000\022\017\n\004uu"
   "id\030\312\001 \001(\tH\000B\010\n\006resultB\005\n\003_ok\"\322\003\n\030CustomC"
   "ontrollerResponse\022\016\n\004init\030e \001(\tH\000\022\022\n\007con"
@@ -543,7 +543,7 @@ void CustomControllerRequest::clear_result() {
 // @@protoc_insertion_point(one_of_clear_start:maarpc.CustomControllerRequest)
   switch (result_case()) {
     case kInit: {
-      // No need to clear
+      _impl_.result_.init_.Destroy();
       break;
     }
     case kResolution: {
@@ -592,11 +592,13 @@ const char* CustomControllerRequest::_InternalParse(const char* ptr, ::_pbi::Par
         } else
           goto handle_unusual;
         continue;
-      // bool init = 101;
+      // string init = 101;
       case 101:
-        if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 40)) {
-          _internal_set_init(::PROTOBUF_NAMESPACE_ID::internal::ReadVarint64(&ptr));
+        if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 42)) {
+          auto str = _internal_mutable_init();
+          ptr = ::_pbi::InlineGreedyStringParser(str, ptr, ctx);
           CHK_(ptr);
+          CHK_(::_pbi::VerifyUTF8(str, "maarpc.CustomControllerRequest.init"));
         } else
           goto handle_unusual;
         continue;
@@ -654,10 +656,14 @@ uint8_t* CustomControllerRequest::_InternalSerialize(
     target = ::_pbi::WireFormatLite::WriteBoolToArray(1, this->_internal_ok(), target);
   }
 
-  // bool init = 101;
+  // string init = 101;
   if (_internal_has_init()) {
-    target = stream->EnsureSpace(target);
-    target = ::_pbi::WireFormatLite::WriteBoolToArray(101, this->_internal_init(), target);
+    ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::VerifyUtf8String(
+      this->_internal_init().data(), static_cast<int>(this->_internal_init().length()),
+      ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::SERIALIZE,
+      "maarpc.CustomControllerRequest.init");
+    target = stream->WriteStringMaybeAliased(
+        101, this->_internal_init(), target);
   }
 
   // .maarpc.Size resolution = 201;
@@ -700,9 +706,11 @@ size_t CustomControllerRequest::ByteSizeLong() const {
   }
 
   switch (result_case()) {
-    // bool init = 101;
+    // string init = 101;
     case kInit: {
-      total_size += 2 + 1;
+      total_size += 2 +
+        ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::StringSize(
+          this->_internal_init());
       break;
     }
     // .maarpc.Size resolution = 201;

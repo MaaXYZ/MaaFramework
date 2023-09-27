@@ -55,6 +55,12 @@ struct AtomicMap
         }
     }
 
+    bool del(const std::string& id)
+    {
+        Handle _;
+        return del(id, _);
+    }
+
     bool find(Handle handle, std::string& id)
     {
         std::unique_lock<std::mutex> lock(mtx);

@@ -1,4 +1,5 @@
 #include "Controller.h"
+#include "MaaFramework/Instance/MaaCustomController.h"
 #include "MaaFramework/Utility/MaaBuffer.h"
 #include "macro.h"
 
@@ -42,15 +43,250 @@ Status ControllerImpl::destroy(::grpc::ServerContext* context, const ::maarpc::H
 
     MaaControllerDestroy(handle);
 
+    CustomControllerInfo* info;
+    if (infos.del(request->handle(), info)) {
+        info->finish.release();
+    }
+
     return Status::OK;
 }
+
+static MaaBool _set_option(MaaCtrlOption key, MaaStringView value, MaaTransparentArg arg)
+{
+    auto info = reinterpret_cast<ControllerImpl::CustomControllerInfo*>(arg);
+    auto stream = info->stream;
+
+    ::maarpc::CustomControllerResponse response;
+    response.mutable_set_option()->set_key(key);
+    response.mutable_set_option()->set_value(value);
+    stream->Write(response);
+
+    ::maarpc::CustomControllerRequest request;
+    stream->Read(&request);
+
+    return request.ok();
+}
+
+static MaaBool _connect(MaaTransparentArg arg)
+{
+    auto info = reinterpret_cast<ControllerImpl::CustomControllerInfo*>(arg);
+    auto stream = info->stream;
+
+    ::maarpc::CustomControllerResponse response;
+    response.set_connect(true);
+    stream->Write(response);
+
+    ::maarpc::CustomControllerRequest request;
+    stream->Read(&request);
+
+    return request.ok();
+}
+
+static MaaBool _click(int32_t x, int32_t y, MaaTransparentArg arg)
+{
+    auto info = reinterpret_cast<ControllerImpl::CustomControllerInfo*>(arg);
+    auto stream = info->stream;
+
+    ::maarpc::CustomControllerResponse response;
+    response.mutable_click()->mutable_point()->set_x(x);
+    response.mutable_click()->mutable_point()->set_x(y);
+    stream->Write(response);
+
+    ::maarpc::CustomControllerRequest request;
+    stream->Read(&request);
+
+    return request.ok();
+}
+
+static MaaBool _swipe(int32_t x1, int32_t y1, int32_t x2, int32_t y2, int32_t duration, MaaTransparentArg arg)
+{
+    auto info = reinterpret_cast<ControllerImpl::CustomControllerInfo*>(arg);
+    auto stream = info->stream;
+
+    ::maarpc::CustomControllerResponse response;
+    response.mutable_swipe()->mutable_from()->set_x(x1);
+    response.mutable_swipe()->mutable_from()->set_x(y1);
+    response.mutable_swipe()->mutable_to()->set_x(x2);
+    response.mutable_swipe()->mutable_to()->set_x(y2);
+    response.mutable_swipe()->set_duration(duration);
+    stream->Write(response);
+
+    ::maarpc::CustomControllerRequest request;
+    stream->Read(&request);
+
+    return request.ok();
+}
+
+static MaaBool _press_key(int32_t key, MaaTransparentArg arg)
+{
+    auto info = reinterpret_cast<ControllerImpl::CustomControllerInfo*>(arg);
+    auto stream = info->stream;
+
+    ::maarpc::CustomControllerResponse response;
+    response.mutable_key()->set_key(key);
+    stream->Write(response);
+
+    ::maarpc::CustomControllerRequest request;
+    stream->Read(&request);
+
+    return request.ok();
+}
+
+static MaaBool _touch_down(int32_t contact, int32_t x, int32_t y, int32_t pressure, MaaTransparentArg arg)
+{
+    auto info = reinterpret_cast<ControllerImpl::CustomControllerInfo*>(arg);
+    auto stream = info->stream;
+
+    ::maarpc::CustomControllerResponse response;
+    response.mutable_touch_down()->set_contact(contact);
+    response.mutable_touch_down()->mutable_pos()->set_x(x);
+    response.mutable_touch_down()->mutable_pos()->set_y(y);
+    response.mutable_touch_down()->set_pressure(pressure);
+    stream->Write(response);
+
+    ::maarpc::CustomControllerRequest request;
+    stream->Read(&request);
+
+    return request.ok();
+}
+
+static MaaBool _touch_move(int32_t contact, int32_t x, int32_t y, int32_t pressure, MaaTransparentArg arg)
+{
+    auto info = reinterpret_cast<ControllerImpl::CustomControllerInfo*>(arg);
+    auto stream = info->stream;
+
+    ::maarpc::CustomControllerResponse response;
+    response.mutable_touch_move()->set_contact(contact);
+    response.mutable_touch_move()->mutable_pos()->set_x(x);
+    response.mutable_touch_move()->mutable_pos()->set_y(y);
+    response.mutable_touch_move()->set_pressure(pressure);
+    stream->Write(response);
+
+    ::maarpc::CustomControllerRequest request;
+    stream->Read(&request);
+
+    return request.ok();
+}
+
+static MaaBool _touch_up(int32_t contact, MaaTransparentArg arg)
+{
+    auto info = reinterpret_cast<ControllerImpl::CustomControllerInfo*>(arg);
+    auto stream = info->stream;
+
+    ::maarpc::CustomControllerResponse response;
+    response.mutable_touch_up()->set_contact(contact);
+    stream->Write(response);
+
+    ::maarpc::CustomControllerRequest request;
+    stream->Read(&request);
+
+    return request.ok();
+}
+
+static MaaBool _start_app(MaaStringView entry, MaaTransparentArg arg)
+{
+    auto info = reinterpret_cast<ControllerImpl::CustomControllerInfo*>(arg);
+    auto stream = info->stream;
+
+    ::maarpc::CustomControllerResponse response;
+    response.set_start(entry);
+    stream->Write(response);
+
+    ::maarpc::CustomControllerRequest request;
+    stream->Read(&request);
+
+    return request.ok();
+}
+
+static MaaBool _stop_app(MaaStringView entry, MaaTransparentArg arg)
+{
+    auto info = reinterpret_cast<ControllerImpl::CustomControllerInfo*>(arg);
+    auto stream = info->stream;
+
+    ::maarpc::CustomControllerResponse response;
+    response.set_stop(entry);
+    stream->Write(response);
+
+    ::maarpc::CustomControllerRequest request;
+    stream->Read(&request);
+
+    return request.ok();
+}
+
+static MaaBool _get_resolution(int32_t* width, int32_t* height, MaaTransparentArg arg)
+{
+    auto info = reinterpret_cast<ControllerImpl::CustomControllerInfo*>(arg);
+    auto stream = info->stream;
+
+    ::maarpc::CustomControllerResponse response;
+    response.set_resolution(true);
+    stream->Write(response);
+
+    ::maarpc::CustomControllerRequest request;
+    stream->Read(&request);
+
+    if (request.result_case() != ::maarpc::CustomControllerRequest::kResolution) {
+        return false;
+    }
+
+    *width = request.resolution().width();
+    *height = request.resolution().height();
+
+    return request.ok();
+}
+
+static MaaBool _get_image(MaaImageBufferHandle buffer, MaaTransparentArg arg)
+{
+    auto info = reinterpret_cast<ControllerImpl::CustomControllerInfo*>(arg);
+    auto stream = info->stream;
+
+    ::maarpc::CustomControllerResponse response;
+
+    auto id = make_uuid();
+    info->iImpl->handles.add(id, buffer);
+    response.set_image(id);
+
+    stream->Write(response);
+
+    ::maarpc::CustomControllerRequest request;
+    stream->Read(&request);
+
+    info->iImpl->handles.del(id);
+
+    return request.ok();
+}
+
+static MaaBool _get_uuid(MaaStringBufferHandle buffer, MaaTransparentArg arg)
+{
+    auto info = reinterpret_cast<ControllerImpl::CustomControllerInfo*>(arg);
+    auto stream = info->stream;
+
+    ::maarpc::CustomControllerResponse response;
+    response.set_uuid(true);
+    stream->Write(response);
+
+    ::maarpc::CustomControllerRequest request;
+    stream->Read(&request);
+
+    if (request.result_case() != ::maarpc::CustomControllerRequest::kUuid) {
+        return false;
+    }
+
+    const auto& str = request.uuid();
+    MaaSetStringEx(buffer, str.c_str(), str.size());
+
+    return request.ok();
+}
+
+static MaaCustomControllerAPI customControllerApi = { _set_option,     _connect,   _click,     _swipe,     _touch_down,
+                                                      _touch_move,     _touch_up,  _press_key, _start_app, _stop_app,
+                                                      _get_resolution, _get_image, _get_uuid };
 
 Status ControllerImpl::create_custom(
     ServerContext* context,
     ServerReaderWriter<::maarpc::CustomControllerResponse, ::maarpc::CustomControllerRequest>* stream)
 {
     std::ignore = context;
-    std::ignore = stream;
 
     ::maarpc::CustomControllerRequest requestData;
     auto request = &requestData;
@@ -61,9 +297,26 @@ Status ControllerImpl::create_custom(
 
     MAA_GRPC_REQUIRED_CASE_AS(result, Init)
 
-    // MaaCustomControllerCreate()
+    auto cbId = request->init();
+    UtilityImpl::CallbackState* cbState;
+    if (!uImpl->states.get(cbId, cbState)) {
+        return Status(NOT_FOUND, "id not exists");
+    }
 
-    return Status(UNIMPLEMENTED, "");
+    CustomControllerInfo info { stream, iImpl };
+
+    auto id = make_uuid();
+
+    ::maarpc::CustomControllerResponse response;
+    response.set_init(id);
+    stream->Write(response);
+
+    handles.add(id, MaaCustomControllerCreate(&customControllerApi, &info, CallbackImpl, cbState));
+    infos.add(id, &info);
+
+    info.finish.acquire();
+
+    return Status::OK;
 }
 
 Status ControllerImpl::set_option(::grpc::ServerContext* context, const ::maarpc::ControllerSetOptionRequest* request,

@@ -6,8 +6,17 @@
 #include "Utility.h"
 #include "controller.grpc.pb.h"
 
+#include <semaphore>
+
 struct ControllerImpl final : public ::maarpc::Controller::Service
 {
+    struct CustomControllerInfo
+    {
+        ::grpc::ServerReaderWriter<::maarpc::CustomControllerResponse, ::maarpc::CustomControllerRequest>* stream;
+        ImageImpl* iImpl;
+        std::binary_semaphore finish { 0 };
+    };
+
     ControllerImpl(UtilityImpl* uimpl, ImageImpl* iimpl) : uImpl(uimpl), iImpl(iimpl) {}
 
     ::grpc::Status create_adb(::grpc::ServerContext* context, const ::maarpc::AdbControllerRequest* request,
@@ -49,4 +58,5 @@ struct ControllerImpl final : public ::maarpc::Controller::Service
     UtilityImpl* uImpl;
     ImageImpl* iImpl;
     AtomicMap<MaaControllerHandle> handles;
+    AtomicMap<CustomControllerInfo*> infos;
 };
