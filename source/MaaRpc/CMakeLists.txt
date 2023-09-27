@@ -8,7 +8,7 @@ target_include_directories(MaaRPC PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/generated)
 target_link_libraries(MaaRPC
     PUBLIC
         MaaToolKit
-        protobuf::libprotobuf-lite
+        protobuf::libprotobuf
         gRPC::grpc++
 )
 
