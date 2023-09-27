@@ -443,6 +443,3 @@ enc_temp_folder/*
 install
 
 .DS_Store
-
-source/MaaRpc/generated/*.h
-source/MaaRpc/generated/*.cc
