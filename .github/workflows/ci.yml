@@ -71,6 +71,24 @@ jobs:
       fail-fast: false
 
     steps:
+      - name: Windows runner hack
+        shell: cmd
+        run: |
+          dir d:\a
+          cd ..
+          mkdir C:\MaaFramework
+          rmdir MaaFramework
+          mklink /j MaaFramework C:\MaaFramework
+          dism /Online /Disable-Feature /FeatureName:Windows-Defender /Remove /NoRestart /Quiet
+          cd .
+
+      - name: Windows runner hack (2)
+        uses: al-cheb/configure-pagefile-action@v1.3
+        with:
+          minimum-size: 16GB
+          maximum-size: 16GB
+          disk-root: "D:"
+
       - uses: actions/checkout@v3
         with:
           submodules: true
