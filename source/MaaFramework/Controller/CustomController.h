@@ -7,7 +7,7 @@ MAA_CTRL_NS_BEGIN
 class CustomController : public ControllerMgr
 {
 public:
-    CustomController(MaaCustomControllerHandle handle, MaaControllerCallback callback,
+    CustomController(MaaCustomControllerHandle handle, MaaTransparentArg handle_arg, MaaControllerCallback callback,
                      MaaCallbackTransparentArg callback_arg);
     virtual ~CustomController() override = default;
 
@@ -28,6 +28,7 @@ protected:
 
 private:
     MaaCustomControllerHandle handle_ = nullptr;
+    MaaTransparentArg handle_arg_ = nullptr;
 };
 
 MAA_CTRL_NS_END
