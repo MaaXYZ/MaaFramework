@@ -36,6 +36,7 @@ message EmptyRequest { optional bool unused = 1; }
 message IdRequest { optional string id = 1; }
 message HandleRequest { optional string handle = 1; }
 message BufferRequest { optional bytes buffer = 1; }
+message StringRequest { optional string str = 1; }
 message HandleBufferRequest {
   optional string handle = 1;
   optional bytes buffer = 2;
@@ -56,10 +57,15 @@ message HandleIIdRequest {
   optional string handle = 1;
   optional uint64 id = 2;
 }
+message KeyValueRequest {
+  optional string key = 1;
+  optional string value = 2;
+}
 
 message EmptyResponse { optional bool void = 1; }
 message IdResponse { optional string id = 1; }
 message IIdResponse { optional uint64 id = 1; }
+message SizeResponse { optional uint64 size = 1; }
 message BoolResponse { optional bool bool = 1; }
 message StringResponse { optional string str = 1; }
 message HandleResponse { optional string handle = 1; }

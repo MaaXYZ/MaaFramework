@@ -99,6 +99,9 @@ extern IdResponseDefaultTypeInternal _IdResponse_default_instance_;
 class KeyParam;
 struct KeyParamDefaultTypeInternal;
 extern KeyParamDefaultTypeInternal _KeyParam_default_instance_;
+class KeyValueRequest;
+struct KeyValueRequestDefaultTypeInternal;
+extern KeyValueRequestDefaultTypeInternal _KeyValueRequest_default_instance_;
 class Point;
 struct PointDefaultTypeInternal;
 extern PointDefaultTypeInternal _Point_default_instance_;
@@ -108,9 +111,15 @@ extern RectDefaultTypeInternal _Rect_default_instance_;
 class Size;
 struct SizeDefaultTypeInternal;
 extern SizeDefaultTypeInternal _Size_default_instance_;
+class SizeResponse;
+struct SizeResponseDefaultTypeInternal;
+extern SizeResponseDefaultTypeInternal _SizeResponse_default_instance_;
 class StatusResponse;
 struct StatusResponseDefaultTypeInternal;
 extern StatusResponseDefaultTypeInternal _StatusResponse_default_instance_;
+class StringRequest;
+struct StringRequestDefaultTypeInternal;
+extern StringRequestDefaultTypeInternal _StringRequest_default_instance_;
 class StringResponse;
 struct StringResponseDefaultTypeInternal;
 extern StringResponseDefaultTypeInternal _StringResponse_default_instance_;
@@ -140,10 +149,13 @@ template<> ::maarpc::IIdResponse* Arena::CreateMaybeMessage<::maarpc::IIdRespons
 template<> ::maarpc::IdRequest* Arena::CreateMaybeMessage<::maarpc::IdRequest>(Arena*);
 template<> ::maarpc::IdResponse* Arena::CreateMaybeMessage<::maarpc::IdResponse>(Arena*);
 template<> ::maarpc::KeyParam* Arena::CreateMaybeMessage<::maarpc::KeyParam>(Arena*);
+template<> ::maarpc::KeyValueRequest* Arena::CreateMaybeMessage<::maarpc::KeyValueRequest>(Arena*);
 template<> ::maarpc::Point* Arena::CreateMaybeMessage<::maarpc::Point>(Arena*);
 template<> ::maarpc::Rect* Arena::CreateMaybeMessage<::maarpc::Rect>(Arena*);
 template<> ::maarpc::Size* Arena::CreateMaybeMessage<::maarpc::Size>(Arena*);
+template<> ::maarpc::SizeResponse* Arena::CreateMaybeMessage<::maarpc::SizeResponse>(Arena*);
 template<> ::maarpc::StatusResponse* Arena::CreateMaybeMessage<::maarpc::StatusResponse>(Arena*);
+template<> ::maarpc::StringRequest* Arena::CreateMaybeMessage<::maarpc::StringRequest>(Arena*);
 template<> ::maarpc::StringResponse* Arena::CreateMaybeMessage<::maarpc::StringResponse>(Arena*);
 template<> ::maarpc::SwipeParam* Arena::CreateMaybeMessage<::maarpc::SwipeParam>(Arena*);
 template<> ::maarpc::TouchParam* Arena::CreateMaybeMessage<::maarpc::TouchParam>(Arena*);
@@ -2163,6 +2175,164 @@ class BufferRequest final :
 };
 // -------------------------------------------------------------------
 
+class StringRequest final :
+    public ::PROTOBUF_NAMESPACE_ID::Message /* @@protoc_insertion_point(class_definition:maarpc.StringRequest) */ {
+ public:
+  inline StringRequest() : StringRequest(nullptr) {}
+  ~StringRequest() override;
+  explicit PROTOBUF_CONSTEXPR StringRequest(::PROTOBUF_NAMESPACE_ID::internal::ConstantInitialized);
+
+  StringRequest(const StringRequest& from);
+  StringRequest(StringRequest&& from) noexcept
+    : StringRequest() {
+    *this = ::std::move(from);
+  }
+
+  inline StringRequest& operator=(const StringRequest& from) {
+    CopyFrom(from);
+    return *this;
+  }
+  inline StringRequest& operator=(StringRequest&& from) noexcept {
+    if (this == &from) return *this;
+    if (GetOwningArena() == from.GetOwningArena()
+  #ifdef PROTOBUF_FORCE_COPY_IN_MOVE
+        && GetOwningArena() != nullptr
+  #endif  // !PROTOBUF_FORCE_COPY_IN_MOVE
+    ) {
+      InternalSwap(&from);
+    } else {
+      CopyFrom(from);
+    }
+    return *this;
+  }
+
+  static const ::PROTOBUF_NAMESPACE_ID::Descriptor* descriptor() {
+    return GetDescriptor();
+  }
+  static const ::PROTOBUF_NAMESPACE_ID::Descriptor* GetDescriptor() {
+    return default_instance().GetMetadata().descriptor;
+  }
+  static const ::PROTOBUF_NAMESPACE_ID::Reflection* GetReflection() {
+    return default_instance().GetMetadata().reflection;
+  }
+  static const StringRequest& default_instance() {
+    return *internal_default_instance();
+  }
+  static inline const StringRequest* internal_default_instance() {
+    return reinterpret_cast<const StringRequest*>(
+               &_StringRequest_default_instance_);
+  }
+  static constexpr int kIndexInFileMessages =
+    12;
+
+  friend void swap(StringRequest& a, StringRequest& b) {
+    a.Swap(&b);
+  }
+  inline void Swap(StringRequest* other) {
+    if (other == this) return;
+  #ifdef PROTOBUF_FORCE_COPY_IN_SWAP
+    if (GetOwningArena() != nullptr &&
+        GetOwningArena() == other->GetOwningArena()) {
+   #else  // PROTOBUF_FORCE_COPY_IN_SWAP
+    if (GetOwningArena() == other->GetOwningArena()) {
+  #endif  // !PROTOBUF_FORCE_COPY_IN_SWAP
+      InternalSwap(other);
+    } else {
+      ::PROTOBUF_NAMESPACE_ID::internal::GenericSwap(this, other);
+    }
+  }
+  void UnsafeArenaSwap(StringRequest* other) {
+    if (other == this) return;
+    GOOGLE_DCHECK(GetOwningArena() == other->GetOwningArena());
+    InternalSwap(other);
+  }
+
+  // implements Message ----------------------------------------------
+
+  StringRequest* New(::PROTOBUF_NAMESPACE_ID::Arena* arena = nullptr) const final {
+    return CreateMaybeMessage<StringRequest>(arena);
+  }
+  using ::PROTOBUF_NAMESPACE_ID::Message::CopyFrom;
+  void CopyFrom(const StringRequest& from);
+  using ::PROTOBUF_NAMESPACE_ID::Message::MergeFrom;
+  void MergeFrom( const StringRequest& from) {
+    StringRequest::MergeImpl(*this, from);
+  }
+  private:
+  static void MergeImpl(::PROTOBUF_NAMESPACE_ID::Message& to_msg, const ::PROTOBUF_NAMESPACE_ID::Message& from_msg);
+  public:
+  PROTOBUF_ATTRIBUTE_REINITIALIZES void Clear() final;
+  bool IsInitialized() const final;
+
+  size_t ByteSizeLong() const final;
+  const char* _InternalParse(const char* ptr, ::PROTOBUF_NAMESPACE_ID::internal::ParseContext* ctx) final;
+  uint8_t* _InternalSerialize(
+      uint8_t* target, ::PROTOBUF_NAMESPACE_ID::io::EpsCopyOutputStream* stream) const final;
+  int GetCachedSize() const final { return _impl_._cached_size_.Get(); }
+
+  private:
+  void SharedCtor(::PROTOBUF_NAMESPACE_ID::Arena* arena, bool is_message_owned);
+  void SharedDtor();
+  void SetCachedSize(int size) const final;
+  void InternalSwap(StringRequest* other);
+
+  private:
+  friend class ::PROTOBUF_NAMESPACE_ID::internal::AnyMetadata;
+  static ::PROTOBUF_NAMESPACE_ID::StringPiece FullMessageName() {
+    return "maarpc.StringRequest";
+  }
+  protected:
+  explicit StringRequest(::PROTOBUF_NAMESPACE_ID::Arena* arena,
+                       bool is_message_owned = false);
+  public:
+
+  static const ClassData _class_data_;
+  const ::PROTOBUF_NAMESPACE_ID::Message::ClassData*GetClassData() const final;
+
+  ::PROTOBUF_NAMESPACE_ID::Metadata GetMetadata() const final;
+
+  // nested types ----------------------------------------------------
+
+  // accessors -------------------------------------------------------
+
+  enum : int {
+    kStrFieldNumber = 1,
+  };
+  // optional string str = 1;
+  bool has_str() const;
+  private:
+  bool _internal_has_str() const;
+  public:
+  void clear_str();
+  const std::string& str() const;
+  template <typename ArgT0 = const std::string&, typename... ArgT>
+  void set_str(ArgT0&& arg0, ArgT... args);
+  std::string* mutable_str();
+  PROTOBUF_NODISCARD std::string* release_str();
+  void set_allocated_str(std::string* str);
+  private:
+  const std::string& _internal_str() const;
+  inline PROTOBUF_ALWAYS_INLINE void _internal_set_str(const std::string& value);
+  std::string* _internal_mutable_str();
+  public:
+
+  // @@protoc_insertion_point(class_scope:maarpc.StringRequest)
+ private:
+  class _Internal;
+
+  template <typename T> friend class ::PROTOBUF_NAMESPACE_ID::Arena::InternalHelper;
+  typedef void InternalArenaConstructable_;
+  typedef void DestructorSkippable_;
+  struct Impl_ {
+    ::PROTOBUF_NAMESPACE_ID::internal::HasBits<1> _has_bits_;
+    mutable ::PROTOBUF_NAMESPACE_ID::internal::CachedSize _cached_size_;
+    ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr str_;
+  };
+  union { Impl_ _impl_; };
+  friend struct ::TableStruct_types_2eproto;
+};
+// -------------------------------------------------------------------
+
 class HandleBufferRequest final :
     public ::PROTOBUF_NAMESPACE_ID::Message /* @@protoc_insertion_point(class_definition:maarpc.HandleBufferRequest) */ {
  public:
@@ -2211,7 +2381,7 @@ class HandleBufferRequest final :
                &_HandleBufferRequest_default_instance_);
   }
   static constexpr int kIndexInFileMessages =
-    12;
+    13;
 
   friend void swap(HandleBufferRequest& a, HandleBufferRequest& b) {
     a.Swap(&b);
@@ -2389,7 +2559,7 @@ class HandleHandleRequest final :
                &_HandleHandleRequest_default_instance_);
   }
   static constexpr int kIndexInFileMessages =
-    13;
+    14;
 
   friend void swap(HandleHandleRequest& a, HandleHandleRequest& b) {
     a.Swap(&b);
@@ -2567,7 +2737,7 @@ class HandleStringRequest final :
                &_HandleStringRequest_default_instance_);
   }
   static constexpr int kIndexInFileMessages =
-    14;
+    15;
 
   friend void swap(HandleStringRequest& a, HandleStringRequest& b) {
     a.Swap(&b);
@@ -2745,7 +2915,7 @@ class HandleIdRequest final :
                &_HandleIdRequest_default_instance_);
   }
   static constexpr int kIndexInFileMessages =
-    15;
+    16;
 
   friend void swap(HandleIdRequest& a, HandleIdRequest& b) {
     a.Swap(&b);
@@ -2923,7 +3093,7 @@ class HandleIIdRequest final :
                &_HandleIIdRequest_default_instance_);
   }
   static constexpr int kIndexInFileMessages =
-    16;
+    17;
 
   friend void swap(HandleIIdRequest& a, HandleIIdRequest& b) {
     a.Swap(&b);
@@ -3048,6 +3218,184 @@ class HandleIIdRequest final :
 };
 // -------------------------------------------------------------------
 
+class KeyValueRequest final :
+    public ::PROTOBUF_NAMESPACE_ID::Message /* @@protoc_insertion_point(class_definition:maarpc.KeyValueRequest) */ {
+ public:
+  inline KeyValueRequest() : KeyValueRequest(nullptr) {}
+  ~KeyValueRequest() override;
+  explicit PROTOBUF_CONSTEXPR KeyValueRequest(::PROTOBUF_NAMESPACE_ID::internal::ConstantInitialized);
+
+  KeyValueRequest(const KeyValueRequest& from);
+  KeyValueRequest(KeyValueRequest&& from) noexcept
+    : KeyValueRequest() {
+    *this = ::std::move(from);
+  }
+
+  inline KeyValueRequest& operator=(const KeyValueRequest& from) {
+    CopyFrom(from);
+    return *this;
+  }
+  inline KeyValueRequest& operator=(KeyValueRequest&& from) noexcept {
+    if (this == &from) return *this;
+    if (GetOwningArena() == from.GetOwningArena()
+  #ifdef PROTOBUF_FORCE_COPY_IN_MOVE
+        && GetOwningArena() != nullptr
+  #endif  // !PROTOBUF_FORCE_COPY_IN_MOVE
+    ) {
+      InternalSwap(&from);
+    } else {
+      CopyFrom(from);
+    }
+    return *this;
+  }
+
+  static const ::PROTOBUF_NAMESPACE_ID::Descriptor* descriptor() {
+    return GetDescriptor();
+  }
+  static const ::PROTOBUF_NAMESPACE_ID::Descriptor* GetDescriptor() {
+    return default_instance().GetMetadata().descriptor;
+  }
+  static const ::PROTOBUF_NAMESPACE_ID::Reflection* GetReflection() {
+    return default_instance().GetMetadata().reflection;
+  }
+  static const KeyValueRequest& default_instance() {
+    return *internal_default_instance();
+  }
+  static inline const KeyValueRequest* internal_default_instance() {
+    return reinterpret_cast<const KeyValueRequest*>(
+               &_KeyValueRequest_default_instance_);
+  }
+  static constexpr int kIndexInFileMessages =
+    18;
+
+  friend void swap(KeyValueRequest& a, KeyValueRequest& b) {
+    a.Swap(&b);
+  }
+  inline void Swap(KeyValueRequest* other) {
+    if (other == this) return;
+  #ifdef PROTOBUF_FORCE_COPY_IN_SWAP
+    if (GetOwningArena() != nullptr &&
+        GetOwningArena() == other->GetOwningArena()) {
+   #else  // PROTOBUF_FORCE_COPY_IN_SWAP
+    if (GetOwningArena() == other->GetOwningArena()) {
+  #endif  // !PROTOBUF_FORCE_COPY_IN_SWAP
+      InternalSwap(other);
+    } else {
+      ::PROTOBUF_NAMESPACE_ID::internal::GenericSwap(this, other);
+    }
+  }
+  void UnsafeArenaSwap(KeyValueRequest* other) {
+    if (other == this) return;
+    GOOGLE_DCHECK(GetOwningArena() == other->GetOwningArena());
+    InternalSwap(other);
+  }
+
+  // implements Message ----------------------------------------------
+
+  KeyValueRequest* New(::PROTOBUF_NAMESPACE_ID::Arena* arena = nullptr) const final {
+    return CreateMaybeMessage<KeyValueRequest>(arena);
+  }
+  using ::PROTOBUF_NAMESPACE_ID::Message::CopyFrom;
+  void CopyFrom(const KeyValueRequest& from);
+  using ::PROTOBUF_NAMESPACE_ID::Message::MergeFrom;
+  void MergeFrom( const KeyValueRequest& from) {
+    KeyValueRequest::MergeImpl(*this, from);
+  }
+  private:
+  static void MergeImpl(::PROTOBUF_NAMESPACE_ID::Message& to_msg, const ::PROTOBUF_NAMESPACE_ID::Message& from_msg);
+  public:
+  PROTOBUF_ATTRIBUTE_REINITIALIZES void Clear() final;
+  bool IsInitialized() const final;
+
+  size_t ByteSizeLong() const final;
+  const char* _InternalParse(const char* ptr, ::PROTOBUF_NAMESPACE_ID::internal::ParseContext* ctx) final;
+  uint8_t* _InternalSerialize(
+      uint8_t* target, ::PROTOBUF_NAMESPACE_ID::io::EpsCopyOutputStream* stream) const final;
+  int GetCachedSize() const final { return _impl_._cached_size_.Get(); }
+
+  private:
+  void SharedCtor(::PROTOBUF_NAMESPACE_ID::Arena* arena, bool is_message_owned);
+  void SharedDtor();
+  void SetCachedSize(int size) const final;
+  void InternalSwap(KeyValueRequest* other);
+
+  private:
+  friend class ::PROTOBUF_NAMESPACE_ID::internal::AnyMetadata;
+  static ::PROTOBUF_NAMESPACE_ID::StringPiece FullMessageName() {
+    return "maarpc.KeyValueRequest";
+  }
+  protected:
+  explicit KeyValueRequest(::PROTOBUF_NAMESPACE_ID::Arena* arena,
+                       bool is_message_owned = false);
+  public:
+
+  static const ClassData _class_data_;
+  const ::PROTOBUF_NAMESPACE_ID::Message::ClassData*GetClassData() const final;
+
+  ::PROTOBUF_NAMESPACE_ID::Metadata GetMetadata() const final;
+
+  // nested types ----------------------------------------------------
+
+  // accessors -------------------------------------------------------
+
+  enum : int {
+    kKeyFieldNumber = 1,
+    kValueFieldNumber = 2,
+  };
+  // optional string key = 1;
+  bool has_key() const;
+  private:
+  bool _internal_has_key() const;
+  public:
+  void clear_key();
+  const std::string& key() const;
+  template <typename ArgT0 = const std::string&, typename... ArgT>
+  void set_key(ArgT0&& arg0, ArgT... args);
+  std::string* mutable_key();
+  PROTOBUF_NODISCARD std::string* release_key();
+  void set_allocated_key(std::string* key);
+  private:
+  const std::string& _internal_key() const;
+  inline PROTOBUF_ALWAYS_INLINE void _internal_set_key(const std::string& value);
+  std::string* _internal_mutable_key();
+  public:
+
+  // optional string value = 2;
+  bool has_value() const;
+  private:
+  bool _internal_has_value() const;
+  public:
+  void clear_value();
+  const std::string& value() const;
+  template <typename ArgT0 = const std::string&, typename... ArgT>
+  void set_value(ArgT0&& arg0, ArgT... args);
+  std::string* mutable_value();
+  PROTOBUF_NODISCARD std::string* release_value();
+  void set_allocated_value(std::string* value);
+  private:
+  const std::string& _internal_value() const;
+  inline PROTOBUF_ALWAYS_INLINE void _internal_set_value(const std::string& value);
+  std::string* _internal_mutable_value();
+  public:
+
+  // @@protoc_insertion_point(class_scope:maarpc.KeyValueRequest)
+ private:
+  class _Internal;
+
+  template <typename T> friend class ::PROTOBUF_NAMESPACE_ID::Arena::InternalHelper;
+  typedef void InternalArenaConstructable_;
+  typedef void DestructorSkippable_;
+  struct Impl_ {
+    ::PROTOBUF_NAMESPACE_ID::internal::HasBits<1> _has_bits_;
+    mutable ::PROTOBUF_NAMESPACE_ID::internal::CachedSize _cached_size_;
+    ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr key_;
+    ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr value_;
+  };
+  union { Impl_ _impl_; };
+  friend struct ::TableStruct_types_2eproto;
+};
+// -------------------------------------------------------------------
+
 class EmptyResponse final :
     public ::PROTOBUF_NAMESPACE_ID::Message /* @@protoc_insertion_point(class_definition:maarpc.EmptyResponse) */ {
  public:
@@ -3096,7 +3444,7 @@ class EmptyResponse final :
                &_EmptyResponse_default_instance_);
   }
   static constexpr int kIndexInFileMessages =
-    17;
+    19;
 
   friend void swap(EmptyResponse& a, EmptyResponse& b) {
     a.Swap(&b);
@@ -3249,7 +3597,7 @@ class IdResponse final :
                &_IdResponse_default_instance_);
   }
   static constexpr int kIndexInFileMessages =
-    18;
+    20;
 
   friend void swap(IdResponse& a, IdResponse& b) {
     a.Swap(&b);
@@ -3407,7 +3755,7 @@ class IIdResponse final :
                &_IIdResponse_default_instance_);
   }
   static constexpr int kIndexInFileMessages =
-    19;
+    21;
 
   friend void swap(IIdResponse& a, IIdResponse& b) {
     a.Swap(&b);
@@ -3512,6 +3860,159 @@ class IIdResponse final :
 };
 // -------------------------------------------------------------------
 
+class SizeResponse final :
+    public ::PROTOBUF_NAMESPACE_ID::Message /* @@protoc_insertion_point(class_definition:maarpc.SizeResponse) */ {
+ public:
+  inline SizeResponse() : SizeResponse(nullptr) {}
+  ~SizeResponse() override;
+  explicit PROTOBUF_CONSTEXPR SizeResponse(::PROTOBUF_NAMESPACE_ID::internal::ConstantInitialized);
+
+  SizeResponse(const SizeResponse& from);
+  SizeResponse(SizeResponse&& from) noexcept
+    : SizeResponse() {
+    *this = ::std::move(from);
+  }
+
+  inline SizeResponse& operator=(const SizeResponse& from) {
+    CopyFrom(from);
+    return *this;
+  }
+  inline SizeResponse& operator=(SizeResponse&& from) noexcept {
+    if (this == &from) return *this;
+    if (GetOwningArena() == from.GetOwningArena()
+  #ifdef PROTOBUF_FORCE_COPY_IN_MOVE
+        && GetOwningArena() != nullptr
+  #endif  // !PROTOBUF_FORCE_COPY_IN_MOVE
+    ) {
+      InternalSwap(&from);
+    } else {
+      CopyFrom(from);
+    }
+    return *this;
+  }
+
+  static const ::PROTOBUF_NAMESPACE_ID::Descriptor* descriptor() {
+    return GetDescriptor();
+  }
+  static const ::PROTOBUF_NAMESPACE_ID::Descriptor* GetDescriptor() {
+    return default_instance().GetMetadata().descriptor;
+  }
+  static const ::PROTOBUF_NAMESPACE_ID::Reflection* GetReflection() {
+    return default_instance().GetMetadata().reflection;
+  }
+  static const SizeResponse& default_instance() {
+    return *internal_default_instance();
+  }
+  static inline const SizeResponse* internal_default_instance() {
+    return reinterpret_cast<const SizeResponse*>(
+               &_SizeResponse_default_instance_);
+  }
+  static constexpr int kIndexInFileMessages =
+    22;
+
+  friend void swap(SizeResponse& a, SizeResponse& b) {
+    a.Swap(&b);
+  }
+  inline void Swap(SizeResponse* other) {
+    if (other == this) return;
+  #ifdef PROTOBUF_FORCE_COPY_IN_SWAP
+    if (GetOwningArena() != nullptr &&
+        GetOwningArena() == other->GetOwningArena()) {
+   #else  // PROTOBUF_FORCE_COPY_IN_SWAP
+    if (GetOwningArena() == other->GetOwningArena()) {
+  #endif  // !PROTOBUF_FORCE_COPY_IN_SWAP
+      InternalSwap(other);
+    } else {
+      ::PROTOBUF_NAMESPACE_ID::internal::GenericSwap(this, other);
+    }
+  }
+  void UnsafeArenaSwap(SizeResponse* other) {
+    if (other == this) return;
+    GOOGLE_DCHECK(GetOwningArena() == other->GetOwningArena());
+    InternalSwap(other);
+  }
+
+  // implements Message ----------------------------------------------
+
+  SizeResponse* New(::PROTOBUF_NAMESPACE_ID::Arena* arena = nullptr) const final {
+    return CreateMaybeMessage<SizeResponse>(arena);
+  }
+  using ::PROTOBUF_NAMESPACE_ID::Message::CopyFrom;
+  void CopyFrom(const SizeResponse& from);
+  using ::PROTOBUF_NAMESPACE_ID::Message::MergeFrom;
+  void MergeFrom( const SizeResponse& from) {
+    SizeResponse::MergeImpl(*this, from);
+  }
+  private:
+  static void MergeImpl(::PROTOBUF_NAMESPACE_ID::Message& to_msg, const ::PROTOBUF_NAMESPACE_ID::Message& from_msg);
+  public:
+  PROTOBUF_ATTRIBUTE_REINITIALIZES void Clear() final;
+  bool IsInitialized() const final;
+
+  size_t ByteSizeLong() const final;
+  const char* _InternalParse(const char* ptr, ::PROTOBUF_NAMESPACE_ID::internal::ParseContext* ctx) final;
+  uint8_t* _InternalSerialize(
+      uint8_t* target, ::PROTOBUF_NAMESPACE_ID::io::EpsCopyOutputStream* stream) const final;
+  int GetCachedSize() const final { return _impl_._cached_size_.Get(); }
+
+  private:
+  void SharedCtor(::PROTOBUF_NAMESPACE_ID::Arena* arena, bool is_message_owned);
+  void SharedDtor();
+  void SetCachedSize(int size) const final;
+  void InternalSwap(SizeResponse* other);
+
+  private:
+  friend class ::PROTOBUF_NAMESPACE_ID::internal::AnyMetadata;
+  static ::PROTOBUF_NAMESPACE_ID::StringPiece FullMessageName() {
+    return "maarpc.SizeResponse";
+  }
+  protected:
+  explicit SizeResponse(::PROTOBUF_NAMESPACE_ID::Arena* arena,
+                       bool is_message_owned = false);
+  public:
+
+  static const ClassData _class_data_;
+  const ::PROTOBUF_NAMESPACE_ID::Message::ClassData*GetClassData() const final;
+
+  ::PROTOBUF_NAMESPACE_ID::Metadata GetMetadata() const final;
+
+  // nested types ----------------------------------------------------
+
+  // accessors -------------------------------------------------------
+
+  enum : int {
+    kSizeFieldNumber = 1,
+  };
+  // optional uint64 size = 1;
+  bool has_size() const;
+  private:
+  bool _internal_has_size() const;
+  public:
+  void clear_size();
+  uint64_t size() const;
+  void set_size(uint64_t value);
+  private:
+  uint64_t _internal_size() const;
+  void _internal_set_size(uint64_t value);
+  public:
+
+  // @@protoc_insertion_point(class_scope:maarpc.SizeResponse)
+ private:
+  class _Internal;
+
+  template <typename T> friend class ::PROTOBUF_NAMESPACE_ID::Arena::InternalHelper;
+  typedef void InternalArenaConstructable_;
+  typedef void DestructorSkippable_;
+  struct Impl_ {
+    ::PROTOBUF_NAMESPACE_ID::internal::HasBits<1> _has_bits_;
+    mutable ::PROTOBUF_NAMESPACE_ID::internal::CachedSize _cached_size_;
+    uint64_t size_;
+  };
+  union { Impl_ _impl_; };
+  friend struct ::TableStruct_types_2eproto;
+};
+// -------------------------------------------------------------------
+
 class BoolResponse final :
     public ::PROTOBUF_NAMESPACE_ID::Message /* @@protoc_insertion_point(class_definition:maarpc.BoolResponse) */ {
  public:
@@ -3560,7 +4061,7 @@ class BoolResponse final :
                &_BoolResponse_default_instance_);
   }
   static constexpr int kIndexInFileMessages =
-    20;
+    23;
 
   friend void swap(BoolResponse& a, BoolResponse& b) {
     a.Swap(&b);
@@ -3713,7 +4214,7 @@ class StringResponse final :
                &_StringResponse_default_instance_);
   }
   static constexpr int kIndexInFileMessages =
-    21;
+    24;
 
   friend void swap(StringResponse& a, StringResponse& b) {
     a.Swap(&b);
@@ -3871,7 +4372,7 @@ class HandleResponse final :
                &_HandleResponse_default_instance_);
   }
   static constexpr int kIndexInFileMessages =
-    22;
+    25;
 
   friend void swap(HandleResponse& a, HandleResponse& b) {
     a.Swap(&b);
@@ -4029,7 +4530,7 @@ class BufferResponse final :
                &_BufferResponse_default_instance_);
   }
   static constexpr int kIndexInFileMessages =
-    23;
+    26;
 
   friend void swap(BufferResponse& a, BufferResponse& b) {
     a.Swap(&b);
@@ -4187,7 +4688,7 @@ class StatusResponse final :
                &_StatusResponse_default_instance_);
   }
   static constexpr int kIndexInFileMessages =
-    24;
+    27;
 
   friend void swap(StatusResponse& a, StatusResponse& b) {
     a.Swap(&b);
@@ -5479,6 +5980,78 @@ inline void BufferRequest::set_allocated_buffer(std::string* buffer) {
 
 // -------------------------------------------------------------------
 
+// StringRequest
+
+// optional string str = 1;
+inline bool StringRequest::_internal_has_str() const {
+  bool value = (_impl_._has_bits_[0] & 0x00000001u) != 0;
+  return value;
+}
+inline bool StringRequest::has_str() const {
+  return _internal_has_str();
+}
+inline void StringRequest::clear_str() {
+  _impl_.str_.ClearToEmpty();
+  _impl_._has_bits_[0] &= ~0x00000001u;
+}
+inline const std::string& StringRequest::str() const {
+  // @@protoc_insertion_point(field_get:maarpc.StringRequest.str)
+  return _internal_str();
+}
+template <typename ArgT0, typename... ArgT>
+inline PROTOBUF_ALWAYS_INLINE
+void StringRequest::set_str(ArgT0&& arg0, ArgT... args) {
+ _impl_._has_bits_[0] |= 0x00000001u;
+ _impl_.str_.Set(static_cast<ArgT0 &&>(arg0), args..., GetArenaForAllocation());
+  // @@protoc_insertion_point(field_set:maarpc.StringRequest.str)
+}
+inline std::string* StringRequest::mutable_str() {
+  std::string* _s = _internal_mutable_str();
+  // @@protoc_insertion_point(field_mutable:maarpc.StringRequest.str)
+  return _s;
+}
+inline const std::string& StringRequest::_internal_str() const {
+  return _impl_.str_.Get();
+}
+inline void StringRequest::_internal_set_str(const std::string& value) {
+  _impl_._has_bits_[0] |= 0x00000001u;
+  _impl_.str_.Set(value, GetArenaForAllocation());
+}
+inline std::string* StringRequest::_internal_mutable_str() {
+  _impl_._has_bits_[0] |= 0x00000001u;
+  return _impl_.str_.Mutable(GetArenaForAllocation());
+}
+inline std::string* StringRequest::release_str() {
+  // @@protoc_insertion_point(field_release:maarpc.StringRequest.str)
+  if (!_internal_has_str()) {
+    return nullptr;
+  }
+  _impl_._has_bits_[0] &= ~0x00000001u;
+  auto* p = _impl_.str_.Release();
+#ifdef PROTOBUF_FORCE_COPY_DEFAULT_STRING
+  if (_impl_.str_.IsDefault()) {
+    _impl_.str_.Set("", GetArenaForAllocation());
+  }
+#endif // PROTOBUF_FORCE_COPY_DEFAULT_STRING
+  return p;
+}
+inline void StringRequest::set_allocated_str(std::string* str) {
+  if (str != nullptr) {
+    _impl_._has_bits_[0] |= 0x00000001u;
+  } else {
+    _impl_._has_bits_[0] &= ~0x00000001u;
+  }
+  _impl_.str_.SetAllocated(str, GetArenaForAllocation());
+#ifdef PROTOBUF_FORCE_COPY_DEFAULT_STRING
+  if (_impl_.str_.IsDefault()) {
+    _impl_.str_.Set("", GetArenaForAllocation());
+  }
+#endif // PROTOBUF_FORCE_COPY_DEFAULT_STRING
+  // @@protoc_insertion_point(field_set_allocated:maarpc.StringRequest.str)
+}
+
+// -------------------------------------------------------------------
+
 // HandleBufferRequest
 
 // optional string handle = 1;
@@ -6139,6 +6712,146 @@ inline void HandleIIdRequest::set_id(uint64_t value) {
 
 // -------------------------------------------------------------------
 
+// KeyValueRequest
+
+// optional string key = 1;
+inline bool KeyValueRequest::_internal_has_key() const {
+  bool value = (_impl_._has_bits_[0] & 0x00000001u) != 0;
+  return value;
+}
+inline bool KeyValueRequest::has_key() const {
+  return _internal_has_key();
+}
+inline void KeyValueRequest::clear_key() {
+  _impl_.key_.ClearToEmpty();
+  _impl_._has_bits_[0] &= ~0x00000001u;
+}
+inline const std::string& KeyValueRequest::key() const {
+  // @@protoc_insertion_point(field_get:maarpc.KeyValueRequest.key)
+  return _internal_key();
+}
+template <typename ArgT0, typename... ArgT>
+inline PROTOBUF_ALWAYS_INLINE
+void KeyValueRequest::set_key(ArgT0&& arg0, ArgT... args) {
+ _impl_._has_bits_[0] |= 0x00000001u;
+ _impl_.key_.Set(static_cast<ArgT0 &&>(arg0), args..., GetArenaForAllocation());
+  // @@protoc_insertion_point(field_set:maarpc.KeyValueRequest.key)
+}
+inline std::string* KeyValueRequest::mutable_key() {
+  std::string* _s = _internal_mutable_key();
+  // @@protoc_insertion_point(field_mutable:maarpc.KeyValueRequest.key)
+  return _s;
+}
+inline const std::string& KeyValueRequest::_internal_key() const {
+  return _impl_.key_.Get();
+}
+inline void KeyValueRequest::_internal_set_key(const std::string& value) {
+  _impl_._has_bits_[0] |= 0x00000001u;
+  _impl_.key_.Set(value, GetArenaForAllocation());
+}
+inline std::string* KeyValueRequest::_internal_mutable_key() {
+  _impl_._has_bits_[0] |= 0x00000001u;
+  return _impl_.key_.Mutable(GetArenaForAllocation());
+}
+inline std::string* KeyValueRequest::release_key() {
+  // @@protoc_insertion_point(field_release:maarpc.KeyValueRequest.key)
+  if (!_internal_has_key()) {
+    return nullptr;
+  }
+  _impl_._has_bits_[0] &= ~0x00000001u;
+  auto* p = _impl_.key_.Release();
+#ifdef PROTOBUF_FORCE_COPY_DEFAULT_STRING
+  if (_impl_.key_.IsDefault()) {
+    _impl_.key_.Set("", GetArenaForAllocation());
+  }
+#endif // PROTOBUF_FORCE_COPY_DEFAULT_STRING
+  return p;
+}
+inline void KeyValueRequest::set_allocated_key(std::string* key) {
+  if (key != nullptr) {
+    _impl_._has_bits_[0] |= 0x00000001u;
+  } else {
+    _impl_._has_bits_[0] &= ~0x00000001u;
+  }
+  _impl_.key_.SetAllocated(key, GetArenaForAllocation());
+#ifdef PROTOBUF_FORCE_COPY_DEFAULT_STRING
+  if (_impl_.key_.IsDefault()) {
+    _impl_.key_.Set("", GetArenaForAllocation());
+  }
+#endif // PROTOBUF_FORCE_COPY_DEFAULT_STRING
+  // @@protoc_insertion_point(field_set_allocated:maarpc.KeyValueRequest.key)
+}
+
+// optional string value = 2;
+inline bool KeyValueRequest::_internal_has_value() const {
+  bool value = (_impl_._has_bits_[0] & 0x00000002u) != 0;
+  return value;
+}
+inline bool KeyValueRequest::has_value() const {
+  return _internal_has_value();
+}
+inline void KeyValueRequest::clear_value() {
+  _impl_.value_.ClearToEmpty();
+  _impl_._has_bits_[0] &= ~0x00000002u;
+}
+inline const std::string& KeyValueRequest::value() const {
+  // @@protoc_insertion_point(field_get:maarpc.KeyValueRequest.value)
+  return _internal_value();
+}
+template <typename ArgT0, typename... ArgT>
+inline PROTOBUF_ALWAYS_INLINE
+void KeyValueRequest::set_value(ArgT0&& arg0, ArgT... args) {
+ _impl_._has_bits_[0] |= 0x00000002u;
+ _impl_.value_.Set(static_cast<ArgT0 &&>(arg0), args..., GetArenaForAllocation());
+  // @@protoc_insertion_point(field_set:maarpc.KeyValueRequest.value)
+}
+inline std::string* KeyValueRequest::mutable_value() {
+  std::string* _s = _internal_mutable_value();
+  // @@protoc_insertion_point(field_mutable:maarpc.KeyValueRequest.value)
+  return _s;
+}
+inline const std::string& KeyValueRequest::_internal_value() const {
+  return _impl_.value_.Get();
+}
+inline void KeyValueRequest::_internal_set_value(const std::string& value) {
+  _impl_._has_bits_[0] |= 0x00000002u;
+  _impl_.value_.Set(value, GetArenaForAllocation());
+}
+inline std::string* KeyValueRequest::_internal_mutable_value() {
+  _impl_._has_bits_[0] |= 0x00000002u;
+  return _impl_.value_.Mutable(GetArenaForAllocation());
+}
+inline std::string* KeyValueRequest::release_value() {
+  // @@protoc_insertion_point(field_release:maarpc.KeyValueRequest.value)
+  if (!_internal_has_value()) {
+    return nullptr;
+  }
+  _impl_._has_bits_[0] &= ~0x00000002u;
+  auto* p = _impl_.value_.Release();
+#ifdef PROTOBUF_FORCE_COPY_DEFAULT_STRING
+  if (_impl_.value_.IsDefault()) {
+    _impl_.value_.Set("", GetArenaForAllocation());
+  }
+#endif // PROTOBUF_FORCE_COPY_DEFAULT_STRING
+  return p;
+}
+inline void KeyValueRequest::set_allocated_value(std::string* value) {
+  if (value != nullptr) {
+    _impl_._has_bits_[0] |= 0x00000002u;
+  } else {
+    _impl_._has_bits_[0] &= ~0x00000002u;
+  }
+  _impl_.value_.SetAllocated(value, GetArenaForAllocation());
+#ifdef PROTOBUF_FORCE_COPY_DEFAULT_STRING
+  if (_impl_.value_.IsDefault()) {
+    _impl_.value_.Set("", GetArenaForAllocation());
+  }
+#endif // PROTOBUF_FORCE_COPY_DEFAULT_STRING
+  // @@protoc_insertion_point(field_set_allocated:maarpc.KeyValueRequest.value)
+}
+
+// -------------------------------------------------------------------
+
 // EmptyResponse
 
 // optional bool void = 1;
@@ -6271,6 +6984,38 @@ inline void IIdResponse::_internal_set_id(uint64_t value) {
 inline void IIdResponse::set_id(uint64_t value) {
   _internal_set_id(value);
   // @@protoc_insertion_point(field_set:maarpc.IIdResponse.id)
+}
+
+// -------------------------------------------------------------------
+
+// SizeResponse
+
+// optional uint64 size = 1;
+inline bool SizeResponse::_internal_has_size() const {
+  bool value = (_impl_._has_bits_[0] & 0x00000001u) != 0;
+  return value;
+}
+inline bool SizeResponse::has_size() const {
+  return _internal_has_size();
+}
+inline void SizeResponse::clear_size() {
+  _impl_.size_ = uint64_t{0u};
+  _impl_._has_bits_[0] &= ~0x00000001u;
+}
+inline uint64_t SizeResponse::_internal_size() const {
+  return _impl_.size_;
+}
+inline uint64_t SizeResponse::size() const {
+  // @@protoc_insertion_point(field_get:maarpc.SizeResponse.size)
+  return _internal_size();
+}
+inline void SizeResponse::_internal_set_size(uint64_t value) {
+  _impl_._has_bits_[0] |= 0x00000001u;
+  _impl_.size_ = value;
+}
+inline void SizeResponse::set_size(uint64_t value) {
+  _internal_set_size(value);
+  // @@protoc_insertion_point(field_set:maarpc.SizeResponse.size)
 }
 
 // -------------------------------------------------------------------
@@ -6556,6 +7301,12 @@ inline void StatusResponse::set_status(int32_t value) {
 #ifdef __GNUC__
   #pragma GCC diagnostic pop
 #endif  // __GNUC__
+// -------------------------------------------------------------------
+
+// -------------------------------------------------------------------
+
+// -------------------------------------------------------------------
+
 // -------------------------------------------------------------------
 
 // -------------------------------------------------------------------
