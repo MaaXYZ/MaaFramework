@@ -25,10 +25,10 @@ extern "C"
         MaaBool (*start_app)(MaaStringView package_name, MaaTransparentArg arg);
         MaaBool (*stop_app)(MaaStringView package_name, MaaTransparentArg arg);
 
-        MaaBool (*get_resolution)(int32_t* width, int32_t* height, MaaTransparentArg arg);
+        MaaBool (*get_resolution)(MaaTransparentArg arg, /* out */ int32_t* width, /* out */ int32_t* height);
 
-        MaaBool (*get_image)(/* out */ MaaImageBufferHandle buffer, MaaTransparentArg arg);
-        MaaBool (*get_uuid)(/* out */ MaaStringBufferHandle buffer, MaaTransparentArg arg);
+        MaaBool (*get_image)(MaaTransparentArg arg, /* out */ MaaImageBufferHandle buffer);
+        MaaBool (*get_uuid)(MaaTransparentArg arg, /* out */ MaaStringBufferHandle buffer);
     };
 
 #ifdef __cplusplus
