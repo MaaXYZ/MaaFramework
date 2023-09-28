@@ -35,8 +35,8 @@ CustomRecognizer::ResultsVec CustomRecognizer::analyze() const
     MaaRect maa_box { 0 };
     StringBuffer detail_buffer;
 
-    bool ret = recognizer_->analyze(&sync_ctx, &image_buffer, name_.c_str(), custom_param_str.c_str(), &maa_box,
-                                    &detail_buffer, recognizer_arg_);
+    bool ret = recognizer_->analyze(&sync_ctx, &image_buffer, name_.c_str(), custom_param_str.c_str(), recognizer_arg_,
+                                    &maa_box, &detail_buffer);
 
     cv::Rect box { maa_box.x, maa_box.y, maa_box.width, maa_box.height };
     std::string detail(detail_buffer.data(), detail_buffer.size());

@@ -22,7 +22,7 @@ std::string CustomController::get_uuid() const
     }
 
     StringBuffer buffer;
-    MaaBool ret = handle_->get_uuid(&buffer, handle_arg_);
+    MaaBool ret = handle_->get_uuid(handle_arg_, &buffer);
     if (!ret) {
         LogError << "failed to get_uuid" << VAR(ret);
         return {};
@@ -50,7 +50,7 @@ std::pair<int, int> CustomController::_get_resolution() const
         return {};
     }
     int width = 0, height = 0;
-    handle_->get_resolution(&width, &height, handle_arg_);
+    handle_->get_resolution(handle_arg_, &width, &height);
     return { width, height };
 }
 
@@ -138,7 +138,7 @@ cv::Mat CustomController::_screencap()
     }
 
     ImageBuffer buffer;
-    MaaBool ret = handle_->get_image(&buffer, handle_arg_);
+    MaaBool ret = handle_->get_image(handle_arg_, &buffer);
     if (!ret) {
         LogError << "failed to get_image" << VAR(ret);
         return {};

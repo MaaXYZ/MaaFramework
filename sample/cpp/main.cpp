@@ -65,7 +65,7 @@ int main([[maybe_unused]] int argc, char** argv)
 }
 
 MaaBool my_analyze(MaaSyncContextHandle sync_context, const MaaImageBufferHandle image, MaaStringView task_name,
-                   MaaStringView custom_recognition_param,
+                   MaaStringView custom_recognition_param, MaaTransparentArg arg,
                    /*out*/ MaaRectHandle out_box,
                    /*out*/ MaaStringBufferHandle detail_buff)
 {
@@ -110,5 +110,5 @@ MaaCustomRecognizerAPI my_recognizer;
 void register_my_recognizer(MaaInstanceHandle maa_handle)
 {
     my_recognizer.analyze = my_analyze;
-    MaaRegisterCustomRecognizer(maa_handle, "MyRec", &my_recognizer);
+    MaaRegisterCustomRecognizer(maa_handle, "MyRec", &my_recognizer, nullptr);
 }
