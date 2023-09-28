@@ -1,7 +1,7 @@
 [submodule "MaaDeps"]
 	path = MaaDeps
 	url = https://github.com/MaaAssistantArknights/MaaDeps.git
-  branch = grpc
+	branch = grpc
 [submodule "assets/config/MaaAgentBinary"]
 	path = assets/config/MaaAgentBinary
 	url = https://github.com/MaaAssistantArknights/MaaAgentBinary.git

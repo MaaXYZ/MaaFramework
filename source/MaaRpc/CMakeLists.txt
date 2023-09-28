@@ -1,7 +1,6 @@
 file(GLOB maa_proto ../../include/Interface/proto/*.proto)
 file(GLOB maa_proto_src generated/*.h generated/*.cc)
 file(GLOB maa_rpc_src implement/*.h implement/*.cpp API/*.cpp)
-file(GLOB maa_rpc_cli_src cli/*.cpp)
 
 add_library(MaaRpc SHARED ${maa_proto_src} ${maa_rpc_src})
 target_compile_definitions(MaaRpc PRIVATE MAA_RPC_EXPORTS)
@@ -14,7 +13,4 @@ target_link_libraries(MaaRpc
 )
 source_group(TREE ${CMAKE_SOURCE_DIR} FILES ${maa_proto_src} ${maa_rpc_src})
 
-add_executable(MaaRpcCli ${maa_rpc_cli_src})
-target_include_directories(MaaRpcCli PRIVATE ../../include)
-target_link_libraries(MaaRpcCli MaaRpc)
-source_group(TREE ${CMAKE_SOURCE_DIR} FILES ${maa_rpc_cli_src})
+add_subdirectory(cli)
