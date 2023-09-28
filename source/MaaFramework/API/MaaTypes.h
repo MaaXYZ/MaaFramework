@@ -69,10 +69,12 @@ public:
     virtual MaaTaskId post_task(std::string entry, std::string_view param) = 0;
     virtual bool set_task_param(MaaTaskId task_id, std::string_view param) = 0;
 
-    virtual bool register_custom_recognizer(std::string name, MaaCustomRecognizerHandle handle) = 0;
+    virtual bool register_custom_recognizer(std::string name, MaaCustomRecognizerHandle handle,
+                                            MaaTransparentArg handle_arg) = 0;
     virtual bool unregister_custom_recognizer(std::string name) = 0;
     virtual void clear_custom_recognizer() = 0;
-    virtual bool register_custom_action(std::string name, MaaCustomActionHandle handle) = 0;
+    virtual bool register_custom_action(std::string name, MaaCustomActionHandle handle,
+                                        MaaTransparentArg handle_arg) = 0;
     virtual bool unregister_custom_action(std::string name) = 0;
     virtual void clear_custom_action() = 0;
 

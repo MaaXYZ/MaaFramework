@@ -27,10 +27,12 @@ public: // from MaaInstanceAPI
     virtual MaaTaskId post_task(std::string entry, std::string_view param) override;
     virtual bool set_task_param(MaaTaskId task_id, std::string_view param) override;
 
-    virtual bool register_custom_recognizer(std::string name, MaaCustomRecognizerHandle handle) override;
+    virtual bool register_custom_recognizer(std::string name, MaaCustomRecognizerHandle handle,
+                                            MaaTransparentArg handle_arg) override;
     virtual bool unregister_custom_recognizer(std::string name) override;
     virtual void clear_custom_recognizer() override;
-    virtual bool register_custom_action(std::string name, MaaCustomActionHandle handle) override;
+    virtual bool register_custom_action(std::string name, MaaCustomActionHandle handle,
+                                        MaaTransparentArg handle_arg) override;
     virtual bool unregister_custom_action(std::string name) override;
     virtual void clear_custom_action() override;
 

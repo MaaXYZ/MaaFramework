@@ -29,13 +29,14 @@ class CustomRecognizer : public VisionBase
     using ResultsVec = std::vector<Result>;
 
 public:
-    CustomRecognizer(MaaCustomRecognizerHandle handle, InstanceInternalAPI* inst);
+    CustomRecognizer(MaaCustomRecognizerHandle handle, MaaTransparentArg handle_arg, InstanceInternalAPI* inst);
 
     void set_param(CustomRecognizerParam param) { param_ = std::move(param); }
     ResultsVec analyze() const;
 
 private:
     MaaCustomRecognizerHandle recognizer_ = nullptr;
+    MaaTransparentArg recognizer_arg_ = nullptr;
     InstanceInternalAPI* inst_ = nullptr;
 
     CustomRecognizerParam param_;

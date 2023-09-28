@@ -9,8 +9,9 @@
 
 MAA_VISION_NS_BEGIN
 
-CustomRecognizer::CustomRecognizer(MaaCustomRecognizerHandle handle, InstanceInternalAPI* inst)
-    : VisionBase(), recognizer_(handle), inst_(inst)
+CustomRecognizer::CustomRecognizer(MaaCustomRecognizerHandle handle, MaaTransparentArg handle_arg,
+                                   InstanceInternalAPI* inst)
+    : VisionBase(), recognizer_(handle), recognizer_arg_(handle_arg), inst_(inst)
 {}
 
 CustomRecognizer::ResultsVec CustomRecognizer::analyze() const
@@ -35,7 +36,7 @@ CustomRecognizer::ResultsVec CustomRecognizer::analyze() const
     StringBuffer detail_buffer;
 
     bool ret = recognizer_->analyze(&sync_ctx, &image_buffer, name_.c_str(), custom_param_str.c_str(), &maa_box,
-                                    &detail_buffer);
+                                    &detail_buffer, recognizer_arg_);
 
     cv::Rect box { maa_box.x, maa_box.y, maa_box.width, maa_box.height };
     std::string detail(detail_buffer.data(), detail_buffer.size());
