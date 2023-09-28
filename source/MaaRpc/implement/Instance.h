@@ -5,13 +5,31 @@
 #include "Controller.h"
 #include "MaaFramework/Instance/MaaInstance.h"
 #include "Resource.h"
+#include "SyncContext.h"
 #include "Utility.h"
 #include "instance.grpc.pb.h"
 
 struct InstanceImpl final : public ::maarpc::Instance::Service
 {
-    InstanceImpl(UtilityImpl* uimpl, ImageImpl* iimpl, ResourceImpl* rimpl, ControllerImpl* cimpl)
-        : uImpl(uimpl), iImpl(iimpl), rImpl(rimpl), cImpl(cimpl)
+    struct CustomRecognizerInfo
+    {
+        std::string name;
+        ::grpc::ServerReaderWriter<::maarpc::CustomRecognizerResponse, ::maarpc::CustomRecognizerRequest>* stream;
+        ImageImpl* iImpl;
+        SyncContextImpl* sImpl;
+        std::binary_semaphore finish { 0 };
+    };
+    struct CustomActionInfo
+    {
+        std::string name;
+        ::grpc::ServerReaderWriter<::maarpc::CustomActionResponse, ::maarpc::CustomActionRequest>* stream;
+        SyncContextImpl* sImpl;
+        std::binary_semaphore finish { 0 };
+    };
+
+    InstanceImpl(UtilityImpl* uimpl, ImageImpl* iimpl, ResourceImpl* rimpl, ControllerImpl* cimpl,
+                 SyncContextImpl* simpl)
+        : uImpl(uimpl), iImpl(iimpl), rImpl(rimpl), cImpl(cimpl), sImpl(simpl)
     {}
 
     ::grpc::Status create(::grpc::ServerContext* context, const ::maarpc::IdRequest* request,
@@ -62,5 +80,10 @@ struct InstanceImpl final : public ::maarpc::Instance::Service
     ImageImpl* iImpl;
     ResourceImpl* rImpl;
     ControllerImpl* cImpl;
+    SyncContextImpl* sImpl;
     AtomicMap<MaaInstanceHandle> handles;
+    AtomicMap<CustomRecognizerInfo*> recos;
+    AtomicMap<MaaInstanceHandle, CustomRecognizerInfo*> recoIdx;
+    AtomicMap<CustomActionInfo*> actions;
+    AtomicMap<MaaInstanceHandle, CustomActionInfo*> actionIdx;
 };

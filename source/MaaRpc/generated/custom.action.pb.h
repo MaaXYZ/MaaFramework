@@ -196,7 +196,6 @@ class CustomActionInit final :
   enum : int {
     kHandleFieldNumber = 1,
     kNameFieldNumber = 2,
-    kActIdFieldNumber = 3,
   };
   // optional string handle = 1;
   bool has_handle() const;
@@ -234,24 +233,6 @@ class CustomActionInit final :
   std::string* _internal_mutable_name();
   public:
 
-  // optional string act_id = 3;
-  bool has_act_id() const;
-  private:
-  bool _internal_has_act_id() const;
-  public:
-  void clear_act_id();
-  const std::string& act_id() const;
-  template <typename ArgT0 = const std::string&, typename... ArgT>
-  void set_act_id(ArgT0&& arg0, ArgT... args);
-  std::string* mutable_act_id();
-  PROTOBUF_NODISCARD std::string* release_act_id();
-  void set_allocated_act_id(std::string* act_id);
-  private:
-  const std::string& _internal_act_id() const;
-  inline PROTOBUF_ALWAYS_INLINE void _internal_set_act_id(const std::string& value);
-  std::string* _internal_mutable_act_id();
-  public:
-
   // @@protoc_insertion_point(class_scope:maarpc.CustomActionInit)
  private:
   class _Internal;
@@ -264,7 +245,6 @@ class CustomActionInit final :
     mutable ::PROTOBUF_NAMESPACE_ID::internal::CachedSize _cached_size_;
     ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr handle_;
     ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr name_;
-    ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr act_id_;
   };
   union { Impl_ _impl_; };
   friend struct ::TableStruct_custom_2eaction_2eproto;
@@ -507,10 +487,9 @@ class CustomActionRequest final :
   static const CustomActionRequest& default_instance() {
     return *internal_default_instance();
   }
-  enum PayloadCase {
-    kInit = 1,
-    kSubmit = 2,
-    PAYLOAD_NOT_SET = 0,
+  enum ResultCase {
+    kInit = 101,
+    RESULT_NOT_SET = 0,
   };
 
   static inline const CustomActionRequest* internal_default_instance() {
@@ -591,10 +570,23 @@ class CustomActionRequest final :
   // accessors -------------------------------------------------------
 
   enum : int {
-    kInitFieldNumber = 1,
-    kSubmitFieldNumber = 2,
+    kOkFieldNumber = 1,
+    kInitFieldNumber = 101,
   };
-  // .maarpc.CustomActionInit init = 1;
+  // optional bool ok = 1;
+  bool has_ok() const;
+  private:
+  bool _internal_has_ok() const;
+  public:
+  void clear_ok();
+  bool ok() const;
+  void set_ok(bool value);
+  private:
+  bool _internal_ok() const;
+  void _internal_set_ok(bool value);
+  public:
+
+  // .maarpc.CustomActionInit init = 101;
   bool has_init() const;
   private:
   bool _internal_has_init() const;
@@ -612,46 +604,28 @@ class CustomActionRequest final :
       ::maarpc::CustomActionInit* init);
   ::maarpc::CustomActionInit* unsafe_arena_release_init();
 
-  // .maarpc.CustomActionSubmit submit = 2;
-  bool has_submit() const;
-  private:
-  bool _internal_has_submit() const;
-  public:
-  void clear_submit();
-  const ::maarpc::CustomActionSubmit& submit() const;
-  PROTOBUF_NODISCARD ::maarpc::CustomActionSubmit* release_submit();
-  ::maarpc::CustomActionSubmit* mutable_submit();
-  void set_allocated_submit(::maarpc::CustomActionSubmit* submit);
-  private:
-  const ::maarpc::CustomActionSubmit& _internal_submit() const;
-  ::maarpc::CustomActionSubmit* _internal_mutable_submit();
-  public:
-  void unsafe_arena_set_allocated_submit(
-      ::maarpc::CustomActionSubmit* submit);
-  ::maarpc::CustomActionSubmit* unsafe_arena_release_submit();
-
-  void clear_payload();
-  PayloadCase payload_case() const;
+  void clear_result();
+  ResultCase result_case() const;
   // @@protoc_insertion_point(class_scope:maarpc.CustomActionRequest)
  private:
   class _Internal;
   void set_has_init();
-  void set_has_submit();
 
-  inline bool has_payload() const;
-  inline void clear_has_payload();
+  inline bool has_result() const;
+  inline void clear_has_result();
 
   template <typename T> friend class ::PROTOBUF_NAMESPACE_ID::Arena::InternalHelper;
   typedef void InternalArenaConstructable_;
   typedef void DestructorSkippable_;
   struct Impl_ {
-    union PayloadUnion {
-      constexpr PayloadUnion() : _constinit_{} {}
+    ::PROTOBUF_NAMESPACE_ID::internal::HasBits<1> _has_bits_;
+    mutable ::PROTOBUF_NAMESPACE_ID::internal::CachedSize _cached_size_;
+    bool ok_;
+    union ResultUnion {
+      constexpr ResultUnion() : _constinit_{} {}
         ::PROTOBUF_NAMESPACE_ID::internal::ConstantInitialized _constinit_;
       ::maarpc::CustomActionInit* init_;
-      ::maarpc::CustomActionSubmit* submit_;
-    } payload_;
-    mutable ::PROTOBUF_NAMESPACE_ID::internal::CachedSize _cached_size_;
+    } result_;
     uint32_t _oneof_case_[1];
 
   };
@@ -1025,47 +999,9 @@ class CustomActionResponse final :
   // accessors -------------------------------------------------------
 
   enum : int {
-    kActIdFieldNumber = 1,
-    kCmdIdFieldNumber = 2,
     kRunFieldNumber = 101,
     kStopFieldNumber = 102,
   };
-  // optional string act_id = 1;
-  bool has_act_id() const;
-  private:
-  bool _internal_has_act_id() const;
-  public:
-  void clear_act_id();
-  const std::string& act_id() const;
-  template <typename ArgT0 = const std::string&, typename... ArgT>
-  void set_act_id(ArgT0&& arg0, ArgT... args);
-  std::string* mutable_act_id();
-  PROTOBUF_NODISCARD std::string* release_act_id();
-  void set_allocated_act_id(std::string* act_id);
-  private:
-  const std::string& _internal_act_id() const;
-  inline PROTOBUF_ALWAYS_INLINE void _internal_set_act_id(const std::string& value);
-  std::string* _internal_mutable_act_id();
-  public:
-
-  // optional string cmd_id = 2;
-  bool has_cmd_id() const;
-  private:
-  bool _internal_has_cmd_id() const;
-  public:
-  void clear_cmd_id();
-  const std::string& cmd_id() const;
-  template <typename ArgT0 = const std::string&, typename... ArgT>
-  void set_cmd_id(ArgT0&& arg0, ArgT... args);
-  std::string* mutable_cmd_id();
-  PROTOBUF_NODISCARD std::string* release_cmd_id();
-  void set_allocated_cmd_id(std::string* cmd_id);
-  private:
-  const std::string& _internal_cmd_id() const;
-  inline PROTOBUF_ALWAYS_INLINE void _internal_set_cmd_id(const std::string& value);
-  std::string* _internal_mutable_cmd_id();
-  public:
-
   // .maarpc.CustomActionRunParam run = 101;
   bool has_run() const;
   private:
@@ -1112,16 +1048,13 @@ class CustomActionResponse final :
   typedef void InternalArenaConstructable_;
   typedef void DestructorSkippable_;
   struct Impl_ {
-    ::PROTOBUF_NAMESPACE_ID::internal::HasBits<1> _has_bits_;
-    mutable ::PROTOBUF_NAMESPACE_ID::internal::CachedSize _cached_size_;
-    ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr act_id_;
-    ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr cmd_id_;
     union CommandUnion {
       constexpr CommandUnion() : _constinit_{} {}
         ::PROTOBUF_NAMESPACE_ID::internal::ConstantInitialized _constinit_;
       ::maarpc::CustomActionRunParam* run_;
       bool stop_;
     } command_;
+    mutable ::PROTOBUF_NAMESPACE_ID::internal::CachedSize _cached_size_;
     uint32_t _oneof_case_[1];
 
   };
@@ -1273,74 +1206,6 @@ inline void CustomActionInit::set_allocated_name(std::string* name) {
   }
 #endif // PROTOBUF_FORCE_COPY_DEFAULT_STRING
   // @@protoc_insertion_point(field_set_allocated:maarpc.CustomActionInit.name)
-}
-
-// optional string act_id = 3;
-inline bool CustomActionInit::_internal_has_act_id() const {
-  bool value = (_impl_._has_bits_[0] & 0x00000004u) != 0;
-  return value;
-}
-inline bool CustomActionInit::has_act_id() const {
-  return _internal_has_act_id();
-}
-inline void CustomActionInit::clear_act_id() {
-  _impl_.act_id_.ClearToEmpty();
-  _impl_._has_bits_[0] &= ~0x00000004u;
-}
-inline const std::string& CustomActionInit::act_id() const {
-  // @@protoc_insertion_point(field_get:maarpc.CustomActionInit.act_id)
-  return _internal_act_id();
-}
-template <typename ArgT0, typename... ArgT>
-inline PROTOBUF_ALWAYS_INLINE
-void CustomActionInit::set_act_id(ArgT0&& arg0, ArgT... args) {
- _impl_._has_bits_[0] |= 0x00000004u;
- _impl_.act_id_.Set(static_cast<ArgT0 &&>(arg0), args..., GetArenaForAllocation());
-  // @@protoc_insertion_point(field_set:maarpc.CustomActionInit.act_id)
-}
-inline std::string* CustomActionInit::mutable_act_id() {
-  std::string* _s = _internal_mutable_act_id();
-  // @@protoc_insertion_point(field_mutable:maarpc.CustomActionInit.act_id)
-  return _s;
-}
-inline const std::string& CustomActionInit::_internal_act_id() const {
-  return _impl_.act_id_.Get();
-}
-inline void CustomActionInit::_internal_set_act_id(const std::string& value) {
-  _impl_._has_bits_[0] |= 0x00000004u;
-  _impl_.act_id_.Set(value, GetArenaForAllocation());
-}
-inline std::string* CustomActionInit::_internal_mutable_act_id() {
-  _impl_._has_bits_[0] |= 0x00000004u;
-  return _impl_.act_id_.Mutable(GetArenaForAllocation());
-}
-inline std::string* CustomActionInit::release_act_id() {
-  // @@protoc_insertion_point(field_release:maarpc.CustomActionInit.act_id)
-  if (!_internal_has_act_id()) {
-    return nullptr;
-  }
-  _impl_._has_bits_[0] &= ~0x00000004u;
-  auto* p = _impl_.act_id_.Release();
-#ifdef PROTOBUF_FORCE_COPY_DEFAULT_STRING
-  if (_impl_.act_id_.IsDefault()) {
-    _impl_.act_id_.Set("", GetArenaForAllocation());
-  }
-#endif // PROTOBUF_FORCE_COPY_DEFAULT_STRING
-  return p;
-}
-inline void CustomActionInit::set_allocated_act_id(std::string* act_id) {
-  if (act_id != nullptr) {
-    _impl_._has_bits_[0] |= 0x00000004u;
-  } else {
-    _impl_._has_bits_[0] &= ~0x00000004u;
-  }
-  _impl_.act_id_.SetAllocated(act_id, GetArenaForAllocation());
-#ifdef PROTOBUF_FORCE_COPY_DEFAULT_STRING
-  if (_impl_.act_id_.IsDefault()) {
-    _impl_.act_id_.Set("", GetArenaForAllocation());
-  }
-#endif // PROTOBUF_FORCE_COPY_DEFAULT_STRING
-  // @@protoc_insertion_point(field_set_allocated:maarpc.CustomActionInit.act_id)
 }
 
 // -------------------------------------------------------------------
@@ -1515,9 +1380,37 @@ inline void CustomActionSubmit::set_ok(bool value) {
 
 // CustomActionRequest
 
-// .maarpc.CustomActionInit init = 1;
+// optional bool ok = 1;
+inline bool CustomActionRequest::_internal_has_ok() const {
+  bool value = (_impl_._has_bits_[0] & 0x00000001u) != 0;
+  return value;
+}
+inline bool CustomActionRequest::has_ok() const {
+  return _internal_has_ok();
+}
+inline void CustomActionRequest::clear_ok() {
+  _impl_.ok_ = false;
+  _impl_._has_bits_[0] &= ~0x00000001u;
+}
+inline bool CustomActionRequest::_internal_ok() const {
+  return _impl_.ok_;
+}
+inline bool CustomActionRequest::ok() const {
+  // @@protoc_insertion_point(field_get:maarpc.CustomActionRequest.ok)
+  return _internal_ok();
+}
+inline void CustomActionRequest::_internal_set_ok(bool value) {
+  _impl_._has_bits_[0] |= 0x00000001u;
+  _impl_.ok_ = value;
+}
+inline void CustomActionRequest::set_ok(bool value) {
+  _internal_set_ok(value);
+  // @@protoc_insertion_point(field_set:maarpc.CustomActionRequest.ok)
+}
+
+// .maarpc.CustomActionInit init = 101;
 inline bool CustomActionRequest::_internal_has_init() const {
-  return payload_case() == kInit;
+  return result_case() == kInit;
 }
 inline bool CustomActionRequest::has_init() const {
   return _internal_has_init();
@@ -1528,20 +1421,20 @@ inline void CustomActionRequest::set_has_init() {
 inline void CustomActionRequest::clear_init() {
   if (_internal_has_init()) {
     if (GetArenaForAllocation() == nullptr) {
-      delete _impl_.payload_.init_;
+      delete _impl_.result_.init_;
     }
-    clear_has_payload();
+    clear_has_result();
   }
 }
 inline ::maarpc::CustomActionInit* CustomActionRequest::release_init() {
   // @@protoc_insertion_point(field_release:maarpc.CustomActionRequest.init)
   if (_internal_has_init()) {
-    clear_has_payload();
-    ::maarpc::CustomActionInit* temp = _impl_.payload_.init_;
+    clear_has_result();
+    ::maarpc::CustomActionInit* temp = _impl_.result_.init_;
     if (GetArenaForAllocation() != nullptr) {
       temp = ::PROTOBUF_NAMESPACE_ID::internal::DuplicateIfNonNull(temp);
     }
-    _impl_.payload_.init_ = nullptr;
+    _impl_.result_.init_ = nullptr;
     return temp;
   } else {
     return nullptr;
@@ -1549,7 +1442,7 @@ inline ::maarpc::CustomActionInit* CustomActionRequest::release_init() {
 }
 inline const ::maarpc::CustomActionInit& CustomActionRequest::_internal_init() const {
   return _internal_has_init()
-      ? *_impl_.payload_.init_
+      ? *_impl_.result_.init_
       : reinterpret_cast< ::maarpc::CustomActionInit&>(::maarpc::_CustomActionInit_default_instance_);
 }
 inline const ::maarpc::CustomActionInit& CustomActionRequest::init() const {
@@ -1559,29 +1452,29 @@ inline const ::maarpc::CustomActionInit& CustomActionRequest::init() const {
 inline ::maarpc::CustomActionInit* CustomActionRequest::unsafe_arena_release_init() {
   // @@protoc_insertion_point(field_unsafe_arena_release:maarpc.CustomActionRequest.init)
   if (_internal_has_init()) {
-    clear_has_payload();
-    ::maarpc::CustomActionInit* temp = _impl_.payload_.init_;
-    _impl_.payload_.init_ = nullptr;
+    clear_has_result();
+    ::maarpc::CustomActionInit* temp = _impl_.result_.init_;
+    _impl_.result_.init_ = nullptr;
     return temp;
   } else {
     return nullptr;
   }
 }
 inline void CustomActionRequest::unsafe_arena_set_allocated_init(::maarpc::CustomActionInit* init) {
-  clear_payload();
+  clear_result();
   if (init) {
     set_has_init();
-    _impl_.payload_.init_ = init;
+    _impl_.result_.init_ = init;
   }
   // @@protoc_insertion_point(field_unsafe_arena_set_allocated:maarpc.CustomActionRequest.init)
 }
 inline ::maarpc::CustomActionInit* CustomActionRequest::_internal_mutable_init() {
   if (!_internal_has_init()) {
-    clear_payload();
+    clear_result();
     set_has_init();
-    _impl_.payload_.init_ = CreateMaybeMessage< ::maarpc::CustomActionInit >(GetArenaForAllocation());
+    _impl_.result_.init_ = CreateMaybeMessage< ::maarpc::CustomActionInit >(GetArenaForAllocation());
   }
-  return _impl_.payload_.init_;
+  return _impl_.result_.init_;
 }
 inline ::maarpc::CustomActionInit* CustomActionRequest::mutable_init() {
   ::maarpc::CustomActionInit* _msg = _internal_mutable_init();
@@ -1589,88 +1482,14 @@ inline ::maarpc::CustomActionInit* CustomActionRequest::mutable_init() {
   return _msg;
 }
 
-// .maarpc.CustomActionSubmit submit = 2;
-inline bool CustomActionRequest::_internal_has_submit() const {
-  return payload_case() == kSubmit;
+inline bool CustomActionRequest::has_result() const {
+  return result_case() != RESULT_NOT_SET;
 }
-inline bool CustomActionRequest::has_submit() const {
-  return _internal_has_submit();
+inline void CustomActionRequest::clear_has_result() {
+  _impl_._oneof_case_[0] = RESULT_NOT_SET;
 }
-inline void CustomActionRequest::set_has_submit() {
-  _impl_._oneof_case_[0] = kSubmit;
-}
-inline void CustomActionRequest::clear_submit() {
-  if (_internal_has_submit()) {
-    if (GetArenaForAllocation() == nullptr) {
-      delete _impl_.payload_.submit_;
-    }
-    clear_has_payload();
-  }
-}
-inline ::maarpc::CustomActionSubmit* CustomActionRequest::release_submit() {
-  // @@protoc_insertion_point(field_release:maarpc.CustomActionRequest.submit)
-  if (_internal_has_submit()) {
-    clear_has_payload();
-    ::maarpc::CustomActionSubmit* temp = _impl_.payload_.submit_;
-    if (GetArenaForAllocation() != nullptr) {
-      temp = ::PROTOBUF_NAMESPACE_ID::internal::DuplicateIfNonNull(temp);
-    }
-    _impl_.payload_.submit_ = nullptr;
-    return temp;
-  } else {
-    return nullptr;
-  }
-}
-inline const ::maarpc::CustomActionSubmit& CustomActionRequest::_internal_submit() const {
-  return _internal_has_submit()
-      ? *_impl_.payload_.submit_
-      : reinterpret_cast< ::maarpc::CustomActionSubmit&>(::maarpc::_CustomActionSubmit_default_instance_);
-}
-inline const ::maarpc::CustomActionSubmit& CustomActionRequest::submit() const {
-  // @@protoc_insertion_point(field_get:maarpc.CustomActionRequest.submit)
-  return _internal_submit();
-}
-inline ::maarpc::CustomActionSubmit* CustomActionRequest::unsafe_arena_release_submit() {
-  // @@protoc_insertion_point(field_unsafe_arena_release:maarpc.CustomActionRequest.submit)
-  if (_internal_has_submit()) {
-    clear_has_payload();
-    ::maarpc::CustomActionSubmit* temp = _impl_.payload_.submit_;
-    _impl_.payload_.submit_ = nullptr;
-    return temp;
-  } else {
-    return nullptr;
-  }
-}
-inline void CustomActionRequest::unsafe_arena_set_allocated_submit(::maarpc::CustomActionSubmit* submit) {
-  clear_payload();
-  if (submit) {
-    set_has_submit();
-    _impl_.payload_.submit_ = submit;
-  }
-  // @@protoc_insertion_point(field_unsafe_arena_set_allocated:maarpc.CustomActionRequest.submit)
-}
-inline ::maarpc::CustomActionSubmit* CustomActionRequest::_internal_mutable_submit() {
-  if (!_internal_has_submit()) {
-    clear_payload();
-    set_has_submit();
-    _impl_.payload_.submit_ = CreateMaybeMessage< ::maarpc::CustomActionSubmit >(GetArenaForAllocation());
-  }
-  return _impl_.payload_.submit_;
-}
-inline ::maarpc::CustomActionSubmit* CustomActionRequest::mutable_submit() {
-  ::maarpc::CustomActionSubmit* _msg = _internal_mutable_submit();
-  // @@protoc_insertion_point(field_mutable:maarpc.CustomActionRequest.submit)
-  return _msg;
-}
-
-inline bool CustomActionRequest::has_payload() const {
-  return payload_case() != PAYLOAD_NOT_SET;
-}
-inline void CustomActionRequest::clear_has_payload() {
-  _impl_._oneof_case_[0] = PAYLOAD_NOT_SET;
-}
-inline CustomActionRequest::PayloadCase CustomActionRequest::payload_case() const {
-  return CustomActionRequest::PayloadCase(_impl_._oneof_case_[0]);
+inline CustomActionRequest::ResultCase CustomActionRequest::result_case() const {
+  return CustomActionRequest::ResultCase(_impl_._oneof_case_[0]);
 }
 // -------------------------------------------------------------------
 
@@ -2038,142 +1857,6 @@ inline void CustomActionRunParam::set_allocated_detail(std::string* detail) {
 // -------------------------------------------------------------------
 
 // CustomActionResponse
-
-// optional string act_id = 1;
-inline bool CustomActionResponse::_internal_has_act_id() const {
-  bool value = (_impl_._has_bits_[0] & 0x00000001u) != 0;
-  return value;
-}
-inline bool CustomActionResponse::has_act_id() const {
-  return _internal_has_act_id();
-}
-inline void CustomActionResponse::clear_act_id() {
-  _impl_.act_id_.ClearToEmpty();
-  _impl_._has_bits_[0] &= ~0x00000001u;
-}
-inline const std::string& CustomActionResponse::act_id() const {
-  // @@protoc_insertion_point(field_get:maarpc.CustomActionResponse.act_id)
-  return _internal_act_id();
-}
-template <typename ArgT0, typename... ArgT>
-inline PROTOBUF_ALWAYS_INLINE
-void CustomActionResponse::set_act_id(ArgT0&& arg0, ArgT... args) {
- _impl_._has_bits_[0] |= 0x00000001u;
- _impl_.act_id_.Set(static_cast<ArgT0 &&>(arg0), args..., GetArenaForAllocation());
-  // @@protoc_insertion_point(field_set:maarpc.CustomActionResponse.act_id)
-}
-inline std::string* CustomActionResponse::mutable_act_id() {
-  std::string* _s = _internal_mutable_act_id();
-  // @@protoc_insertion_point(field_mutable:maarpc.CustomActionResponse.act_id)
-  return _s;
-}
-inline const std::string& CustomActionResponse::_internal_act_id() const {
-  return _impl_.act_id_.Get();
-}
-inline void CustomActionResponse::_internal_set_act_id(const std::string& value) {
-  _impl_._has_bits_[0] |= 0x00000001u;
-  _impl_.act_id_.Set(value, GetArenaForAllocation());
-}
-inline std::string* CustomActionResponse::_internal_mutable_act_id() {
-  _impl_._has_bits_[0] |= 0x00000001u;
-  return _impl_.act_id_.Mutable(GetArenaForAllocation());
-}
-inline std::string* CustomActionResponse::release_act_id() {
-  // @@protoc_insertion_point(field_release:maarpc.CustomActionResponse.act_id)
-  if (!_internal_has_act_id()) {
-    return nullptr;
-  }
-  _impl_._has_bits_[0] &= ~0x00000001u;
-  auto* p = _impl_.act_id_.Release();
-#ifdef PROTOBUF_FORCE_COPY_DEFAULT_STRING
-  if (_impl_.act_id_.IsDefault()) {
-    _impl_.act_id_.Set("", GetArenaForAllocation());
-  }
-#endif // PROTOBUF_FORCE_COPY_DEFAULT_STRING
-  return p;
-}
-inline void CustomActionResponse::set_allocated_act_id(std::string* act_id) {
-  if (act_id != nullptr) {
-    _impl_._has_bits_[0] |= 0x00000001u;
-  } else {
-    _impl_._has_bits_[0] &= ~0x00000001u;
-  }
-  _impl_.act_id_.SetAllocated(act_id, GetArenaForAllocation());
-#ifdef PROTOBUF_FORCE_COPY_DEFAULT_STRING
-  if (_impl_.act_id_.IsDefault()) {
-    _impl_.act_id_.Set("", GetArenaForAllocation());
-  }
-#endif // PROTOBUF_FORCE_COPY_DEFAULT_STRING
-  // @@protoc_insertion_point(field_set_allocated:maarpc.CustomActionResponse.act_id)
-}
-
-// optional string cmd_id = 2;
-inline bool CustomActionResponse::_internal_has_cmd_id() const {
-  bool value = (_impl_._has_bits_[0] & 0x00000002u) != 0;
-  return value;
-}
-inline bool CustomActionResponse::has_cmd_id() const {
-  return _internal_has_cmd_id();
-}
-inline void CustomActionResponse::clear_cmd_id() {
-  _impl_.cmd_id_.ClearToEmpty();
-  _impl_._has_bits_[0] &= ~0x00000002u;
-}
-inline const std::string& CustomActionResponse::cmd_id() const {
-  // @@protoc_insertion_point(field_get:maarpc.CustomActionResponse.cmd_id)
-  return _internal_cmd_id();
-}
-template <typename ArgT0, typename... ArgT>
-inline PROTOBUF_ALWAYS_INLINE
-void CustomActionResponse::set_cmd_id(ArgT0&& arg0, ArgT... args) {
- _impl_._has_bits_[0] |= 0x00000002u;
- _impl_.cmd_id_.Set(static_cast<ArgT0 &&>(arg0), args..., GetArenaForAllocation());
-  // @@protoc_insertion_point(field_set:maarpc.CustomActionResponse.cmd_id)
-}
-inline std::string* CustomActionResponse::mutable_cmd_id() {
-  std::string* _s = _internal_mutable_cmd_id();
-  // @@protoc_insertion_point(field_mutable:maarpc.CustomActionResponse.cmd_id)
-  return _s;
-}
-inline const std::string& CustomActionResponse::_internal_cmd_id() const {
-  return _impl_.cmd_id_.Get();
-}
-inline void CustomActionResponse::_internal_set_cmd_id(const std::string& value) {
-  _impl_._has_bits_[0] |= 0x00000002u;
-  _impl_.cmd_id_.Set(value, GetArenaForAllocation());
-}
-inline std::string* CustomActionResponse::_internal_mutable_cmd_id() {
-  _impl_._has_bits_[0] |= 0x00000002u;
-  return _impl_.cmd_id_.Mutable(GetArenaForAllocation());
-}
-inline std::string* CustomActionResponse::release_cmd_id() {
-  // @@protoc_insertion_point(field_release:maarpc.CustomActionResponse.cmd_id)
-  if (!_internal_has_cmd_id()) {
-    return nullptr;
-  }
-  _impl_._has_bits_[0] &= ~0x00000002u;
-  auto* p = _impl_.cmd_id_.Release();
-#ifdef PROTOBUF_FORCE_COPY_DEFAULT_STRING
-  if (_impl_.cmd_id_.IsDefault()) {
-    _impl_.cmd_id_.Set("", GetArenaForAllocation());
-  }
-#endif // PROTOBUF_FORCE_COPY_DEFAULT_STRING
-  return p;
-}
-inline void CustomActionResponse::set_allocated_cmd_id(std::string* cmd_id) {
-  if (cmd_id != nullptr) {
-    _impl_._has_bits_[0] |= 0x00000002u;
-  } else {
-    _impl_._has_bits_[0] &= ~0x00000002u;
-  }
-  _impl_.cmd_id_.SetAllocated(cmd_id, GetArenaForAllocation());
-#ifdef PROTOBUF_FORCE_COPY_DEFAULT_STRING
-  if (_impl_.cmd_id_.IsDefault()) {
-    _impl_.cmd_id_.Set("", GetArenaForAllocation());
-  }
-#endif // PROTOBUF_FORCE_COPY_DEFAULT_STRING
-  // @@protoc_insertion_point(field_set_allocated:maarpc.CustomActionResponse.cmd_id)
-}
 
 // .maarpc.CustomActionRunParam run = 101;
 inline bool CustomActionResponse::_internal_has_run() const {

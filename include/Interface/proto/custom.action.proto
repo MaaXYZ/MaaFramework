@@ -7,7 +7,6 @@ import "types.proto";
 message CustomActionInit {
   optional string handle = 1;
   optional string name = 2;
-  optional string act_id = 3;
 }
 
 message CustomActionSubmit {
@@ -17,10 +16,8 @@ message CustomActionSubmit {
 }
 
 message CustomActionRequest {
-  oneof payload {
-    CustomActionInit init = 1;
-    CustomActionSubmit submit = 2;
-  }
+  optional bool ok = 1;
+  oneof result { CustomActionInit init = 101; }
 }
 
 message CustomActionRunParam {
@@ -32,8 +29,6 @@ message CustomActionRunParam {
 }
 
 message CustomActionResponse {
-  optional string act_id = 1;
-  optional string cmd_id = 2;
   oneof command {
     CustomActionRunParam run = 101;
     bool stop = 102; // void

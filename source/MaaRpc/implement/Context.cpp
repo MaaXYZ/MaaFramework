@@ -18,7 +18,7 @@ Context::Context()
     resourceImpl = new ResourceImpl(utilityImpl);
     controllerImpl = new ControllerImpl(utilityImpl, imageImpl);
     syncctxImpl = new SyncContextImpl(imageImpl);
-    instanceImpl = new InstanceImpl(utilityImpl, imageImpl, resourceImpl, controllerImpl);
+    instanceImpl = new InstanceImpl(utilityImpl, imageImpl, resourceImpl, controllerImpl, syncctxImpl);
     deviceImpl = new DeviceImpl();
     configImpl = new ConfigImpl();
 }

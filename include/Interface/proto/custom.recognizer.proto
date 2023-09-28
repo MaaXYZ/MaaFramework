@@ -7,7 +7,6 @@ import "types.proto";
 message CustomRecognizerInit {
   optional string handle = 1;
   optional string name = 2;
-  optional string reco_id = 3;
 }
 
 message CustomRecognizerAnalyzeResult {
@@ -16,17 +15,11 @@ message CustomRecognizerAnalyzeResult {
   optional string detail = 3;
 }
 
-message CustomRecognizerSubmit {
-  optional string handle = 1;
-  optional string cmd_id = 2;
-  optional bool ok = 3;
-  oneof result { CustomRecognizerAnalyzeResult analyze = 101; }
-}
-
 message CustomRecognizerRequest {
-  oneof payload {
-    CustomRecognizerInit init = 1;
-    CustomRecognizerSubmit submit = 2;
+  optional bool ok = 1;
+  oneof result {
+    CustomRecognizerInit init = 101;
+    CustomRecognizerAnalyzeResult analyze = 201;
   }
 }
 
@@ -38,7 +31,5 @@ message CustomRecognizerAnalyzeParam {
 }
 
 message CustomRecognizerResponse {
-  optional string reco_id = 1;
-  optional string cmd_id = 2;
   oneof command { CustomRecognizerAnalyzeParam analyze = 101; }
 }

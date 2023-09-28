@@ -61,9 +61,6 @@ extern CustomRecognizerRequestDefaultTypeInternal _CustomRecognizerRequest_defau
 class CustomRecognizerResponse;
 struct CustomRecognizerResponseDefaultTypeInternal;
 extern CustomRecognizerResponseDefaultTypeInternal _CustomRecognizerResponse_default_instance_;
-class CustomRecognizerSubmit;
-struct CustomRecognizerSubmitDefaultTypeInternal;
-extern CustomRecognizerSubmitDefaultTypeInternal _CustomRecognizerSubmit_default_instance_;
 }  // namespace maarpc
 PROTOBUF_NAMESPACE_OPEN
 template<> ::maarpc::CustomRecognizerAnalyzeParam* Arena::CreateMaybeMessage<::maarpc::CustomRecognizerAnalyzeParam>(Arena*);
@@ -71,7 +68,6 @@ template<> ::maarpc::CustomRecognizerAnalyzeResult* Arena::CreateMaybeMessage<::
 template<> ::maarpc::CustomRecognizerInit* Arena::CreateMaybeMessage<::maarpc::CustomRecognizerInit>(Arena*);
 template<> ::maarpc::CustomRecognizerRequest* Arena::CreateMaybeMessage<::maarpc::CustomRecognizerRequest>(Arena*);
 template<> ::maarpc::CustomRecognizerResponse* Arena::CreateMaybeMessage<::maarpc::CustomRecognizerResponse>(Arena*);
-template<> ::maarpc::CustomRecognizerSubmit* Arena::CreateMaybeMessage<::maarpc::CustomRecognizerSubmit>(Arena*);
 PROTOBUF_NAMESPACE_CLOSE
 namespace maarpc {
 
@@ -200,7 +196,6 @@ class CustomRecognizerInit final :
   enum : int {
     kHandleFieldNumber = 1,
     kNameFieldNumber = 2,
-    kRecoIdFieldNumber = 3,
   };
   // optional string handle = 1;
   bool has_handle() const;
@@ -238,24 +233,6 @@ class CustomRecognizerInit final :
   std::string* _internal_mutable_name();
   public:
 
-  // optional string reco_id = 3;
-  bool has_reco_id() const;
-  private:
-  bool _internal_has_reco_id() const;
-  public:
-  void clear_reco_id();
-  const std::string& reco_id() const;
-  template <typename ArgT0 = const std::string&, typename... ArgT>
-  void set_reco_id(ArgT0&& arg0, ArgT... args);
-  std::string* mutable_reco_id();
-  PROTOBUF_NODISCARD std::string* release_reco_id();
-  void set_allocated_reco_id(std::string* reco_id);
-  private:
-  const std::string& _internal_reco_id() const;
-  inline PROTOBUF_ALWAYS_INLINE void _internal_set_reco_id(const std::string& value);
-  std::string* _internal_mutable_reco_id();
-  public:
-
   // @@protoc_insertion_point(class_scope:maarpc.CustomRecognizerInit)
  private:
   class _Internal;
@@ -268,7 +245,6 @@ class CustomRecognizerInit final :
     mutable ::PROTOBUF_NAMESPACE_ID::internal::CachedSize _cached_size_;
     ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr handle_;
     ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr name_;
-    ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr reco_id_;
   };
   union { Impl_ _impl_; };
   friend struct ::TableStruct_custom_2erecognizer_2eproto;
@@ -468,236 +444,6 @@ class CustomRecognizerAnalyzeResult final :
 };
 // -------------------------------------------------------------------
 
-class CustomRecognizerSubmit final :
-    public ::PROTOBUF_NAMESPACE_ID::Message /* @@protoc_insertion_point(class_definition:maarpc.CustomRecognizerSubmit) */ {
- public:
-  inline CustomRecognizerSubmit() : CustomRecognizerSubmit(nullptr) {}
-  ~CustomRecognizerSubmit() override;
-  explicit PROTOBUF_CONSTEXPR CustomRecognizerSubmit(::PROTOBUF_NAMESPACE_ID::internal::ConstantInitialized);
-
-  CustomRecognizerSubmit(const CustomRecognizerSubmit& from);
-  CustomRecognizerSubmit(CustomRecognizerSubmit&& from) noexcept
-    : CustomRecognizerSubmit() {
-    *this = ::std::move(from);
-  }
-
-  inline CustomRecognizerSubmit& operator=(const CustomRecognizerSubmit& from) {
-    CopyFrom(from);
-    return *this;
-  }
-  inline CustomRecognizerSubmit& operator=(CustomRecognizerSubmit&& from) noexcept {
-    if (this == &from) return *this;
-    if (GetOwningArena() == from.GetOwningArena()
-  #ifdef PROTOBUF_FORCE_COPY_IN_MOVE
-        && GetOwningArena() != nullptr
-  #endif  // !PROTOBUF_FORCE_COPY_IN_MOVE
-    ) {
-      InternalSwap(&from);
-    } else {
-      CopyFrom(from);
-    }
-    return *this;
-  }
-
-  static const ::PROTOBUF_NAMESPACE_ID::Descriptor* descriptor() {
-    return GetDescriptor();
-  }
-  static const ::PROTOBUF_NAMESPACE_ID::Descriptor* GetDescriptor() {
-    return default_instance().GetMetadata().descriptor;
-  }
-  static const ::PROTOBUF_NAMESPACE_ID::Reflection* GetReflection() {
-    return default_instance().GetMetadata().reflection;
-  }
-  static const CustomRecognizerSubmit& default_instance() {
-    return *internal_default_instance();
-  }
-  enum ResultCase {
-    kAnalyze = 101,
-    RESULT_NOT_SET = 0,
-  };
-
-  static inline const CustomRecognizerSubmit* internal_default_instance() {
-    return reinterpret_cast<const CustomRecognizerSubmit*>(
-               &_CustomRecognizerSubmit_default_instance_);
-  }
-  static constexpr int kIndexInFileMessages =
-    2;
-
-  friend void swap(CustomRecognizerSubmit& a, CustomRecognizerSubmit& b) {
-    a.Swap(&b);
-  }
-  inline void Swap(CustomRecognizerSubmit* other) {
-    if (other == this) return;
-  #ifdef PROTOBUF_FORCE_COPY_IN_SWAP
-    if (GetOwningArena() != nullptr &&
-        GetOwningArena() == other->GetOwningArena()) {
-   #else  // PROTOBUF_FORCE_COPY_IN_SWAP
-    if (GetOwningArena() == other->GetOwningArena()) {
-  #endif  // !PROTOBUF_FORCE_COPY_IN_SWAP
-      InternalSwap(other);
-    } else {
-      ::PROTOBUF_NAMESPACE_ID::internal::GenericSwap(this, other);
-    }
-  }
-  void UnsafeArenaSwap(CustomRecognizerSubmit* other) {
-    if (other == this) return;
-    GOOGLE_DCHECK(GetOwningArena() == other->GetOwningArena());
-    InternalSwap(other);
-  }
-
-  // implements Message ----------------------------------------------
-
-  CustomRecognizerSubmit* New(::PROTOBUF_NAMESPACE_ID::Arena* arena = nullptr) const final {
-    return CreateMaybeMessage<CustomRecognizerSubmit>(arena);
-  }
-  using ::PROTOBUF_NAMESPACE_ID::Message::CopyFrom;
-  void CopyFrom(const CustomRecognizerSubmit& from);
-  using ::PROTOBUF_NAMESPACE_ID::Message::MergeFrom;
-  void MergeFrom( const CustomRecognizerSubmit& from) {
-    CustomRecognizerSubmit::MergeImpl(*this, from);
-  }
-  private:
-  static void MergeImpl(::PROTOBUF_NAMESPACE_ID::Message& to_msg, const ::PROTOBUF_NAMESPACE_ID::Message& from_msg);
-  public:
-  PROTOBUF_ATTRIBUTE_REINITIALIZES void Clear() final;
-  bool IsInitialized() const final;
-
-  size_t ByteSizeLong() const final;
-  const char* _InternalParse(const char* ptr, ::PROTOBUF_NAMESPACE_ID::internal::ParseContext* ctx) final;
-  uint8_t* _InternalSerialize(
-      uint8_t* target, ::PROTOBUF_NAMESPACE_ID::io::EpsCopyOutputStream* stream) const final;
-  int GetCachedSize() const final { return _impl_._cached_size_.Get(); }
-
-  private:
-  void SharedCtor(::PROTOBUF_NAMESPACE_ID::Arena* arena, bool is_message_owned);
-  void SharedDtor();
-  void SetCachedSize(int size) const final;
-  void InternalSwap(CustomRecognizerSubmit* other);
-
-  private:
-  friend class ::PROTOBUF_NAMESPACE_ID::internal::AnyMetadata;
-  static ::PROTOBUF_NAMESPACE_ID::StringPiece FullMessageName() {
-    return "maarpc.CustomRecognizerSubmit";
-  }
-  protected:
-  explicit CustomRecognizerSubmit(::PROTOBUF_NAMESPACE_ID::Arena* arena,
-                       bool is_message_owned = false);
-  public:
-
-  static const ClassData _class_data_;
-  const ::PROTOBUF_NAMESPACE_ID::Message::ClassData*GetClassData() const final;
-
-  ::PROTOBUF_NAMESPACE_ID::Metadata GetMetadata() const final;
-
-  // nested types ----------------------------------------------------
-
-  // accessors -------------------------------------------------------
-
-  enum : int {
-    kHandleFieldNumber = 1,
-    kCmdIdFieldNumber = 2,
-    kOkFieldNumber = 3,
-    kAnalyzeFieldNumber = 101,
-  };
-  // optional string handle = 1;
-  bool has_handle() const;
-  private:
-  bool _internal_has_handle() const;
-  public:
-  void clear_handle();
-  const std::string& handle() const;
-  template <typename ArgT0 = const std::string&, typename... ArgT>
-  void set_handle(ArgT0&& arg0, ArgT... args);
-  std::string* mutable_handle();
-  PROTOBUF_NODISCARD std::string* release_handle();
-  void set_allocated_handle(std::string* handle);
-  private:
-  const std::string& _internal_handle() const;
-  inline PROTOBUF_ALWAYS_INLINE void _internal_set_handle(const std::string& value);
-  std::string* _internal_mutable_handle();
-  public:
-
-  // optional string cmd_id = 2;
-  bool has_cmd_id() const;
-  private:
-  bool _internal_has_cmd_id() const;
-  public:
-  void clear_cmd_id();
-  const std::string& cmd_id() const;
-  template <typename ArgT0 = const std::string&, typename... ArgT>
-  void set_cmd_id(ArgT0&& arg0, ArgT... args);
-  std::string* mutable_cmd_id();
-  PROTOBUF_NODISCARD std::string* release_cmd_id();
-  void set_allocated_cmd_id(std::string* cmd_id);
-  private:
-  const std::string& _internal_cmd_id() const;
-  inline PROTOBUF_ALWAYS_INLINE void _internal_set_cmd_id(const std::string& value);
-  std::string* _internal_mutable_cmd_id();
-  public:
-
-  // optional bool ok = 3;
-  bool has_ok() const;
-  private:
-  bool _internal_has_ok() const;
-  public:
-  void clear_ok();
-  bool ok() const;
-  void set_ok(bool value);
-  private:
-  bool _internal_ok() const;
-  void _internal_set_ok(bool value);
-  public:
-
-  // .maarpc.CustomRecognizerAnalyzeResult analyze = 101;
-  bool has_analyze() const;
-  private:
-  bool _internal_has_analyze() const;
-  public:
-  void clear_analyze();
-  const ::maarpc::CustomRecognizerAnalyzeResult& analyze() const;
-  PROTOBUF_NODISCARD ::maarpc::CustomRecognizerAnalyzeResult* release_analyze();
-  ::maarpc::CustomRecognizerAnalyzeResult* mutable_analyze();
-  void set_allocated_analyze(::maarpc::CustomRecognizerAnalyzeResult* analyze);
-  private:
-  const ::maarpc::CustomRecognizerAnalyzeResult& _internal_analyze() const;
-  ::maarpc::CustomRecognizerAnalyzeResult* _internal_mutable_analyze();
-  public:
-  void unsafe_arena_set_allocated_analyze(
-      ::maarpc::CustomRecognizerAnalyzeResult* analyze);
-  ::maarpc::CustomRecognizerAnalyzeResult* unsafe_arena_release_analyze();
-
-  void clear_result();
-  ResultCase result_case() const;
-  // @@protoc_insertion_point(class_scope:maarpc.CustomRecognizerSubmit)
- private:
-  class _Internal;
-  void set_has_analyze();
-
-  inline bool has_result() const;
-  inline void clear_has_result();
-
-  template <typename T> friend class ::PROTOBUF_NAMESPACE_ID::Arena::InternalHelper;
-  typedef void InternalArenaConstructable_;
-  typedef void DestructorSkippable_;
-  struct Impl_ {
-    ::PROTOBUF_NAMESPACE_ID::internal::HasBits<1> _has_bits_;
-    mutable ::PROTOBUF_NAMESPACE_ID::internal::CachedSize _cached_size_;
-    ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr handle_;
-    ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr cmd_id_;
-    bool ok_;
-    union ResultUnion {
-      constexpr ResultUnion() : _constinit_{} {}
-        ::PROTOBUF_NAMESPACE_ID::internal::ConstantInitialized _constinit_;
-      ::maarpc::CustomRecognizerAnalyzeResult* analyze_;
-    } result_;
-    uint32_t _oneof_case_[1];
-
-  };
-  union { Impl_ _impl_; };
-  friend struct ::TableStruct_custom_2erecognizer_2eproto;
-};
-// -------------------------------------------------------------------
-
 class CustomRecognizerRequest final :
     public ::PROTOBUF_NAMESPACE_ID::Message /* @@protoc_insertion_point(class_definition:maarpc.CustomRecognizerRequest) */ {
  public:
@@ -741,10 +487,10 @@ class CustomRecognizerRequest final :
   static const CustomRecognizerRequest& default_instance() {
     return *internal_default_instance();
   }
-  enum PayloadCase {
-    kInit = 1,
-    kSubmit = 2,
-    PAYLOAD_NOT_SET = 0,
+  enum ResultCase {
+    kInit = 101,
+    kAnalyze = 201,
+    RESULT_NOT_SET = 0,
   };
 
   static inline const CustomRecognizerRequest* internal_default_instance() {
@@ -752,7 +498,7 @@ class CustomRecognizerRequest final :
                &_CustomRecognizerRequest_default_instance_);
   }
   static constexpr int kIndexInFileMessages =
-    3;
+    2;
 
   friend void swap(CustomRecognizerRequest& a, CustomRecognizerRequest& b) {
     a.Swap(&b);
@@ -825,10 +571,24 @@ class CustomRecognizerRequest final :
   // accessors -------------------------------------------------------
 
   enum : int {
-    kInitFieldNumber = 1,
-    kSubmitFieldNumber = 2,
+    kOkFieldNumber = 1,
+    kInitFieldNumber = 101,
+    kAnalyzeFieldNumber = 201,
   };
-  // .maarpc.CustomRecognizerInit init = 1;
+  // optional bool ok = 1;
+  bool has_ok() const;
+  private:
+  bool _internal_has_ok() const;
+  public:
+  void clear_ok();
+  bool ok() const;
+  void set_ok(bool value);
+  private:
+  bool _internal_ok() const;
+  void _internal_set_ok(bool value);
+  public:
+
+  // .maarpc.CustomRecognizerInit init = 101;
   bool has_init() const;
   private:
   bool _internal_has_init() const;
@@ -846,46 +606,48 @@ class CustomRecognizerRequest final :
       ::maarpc::CustomRecognizerInit* init);
   ::maarpc::CustomRecognizerInit* unsafe_arena_release_init();
 
-  // .maarpc.CustomRecognizerSubmit submit = 2;
-  bool has_submit() const;
+  // .maarpc.CustomRecognizerAnalyzeResult analyze = 201;
+  bool has_analyze() const;
   private:
-  bool _internal_has_submit() const;
+  bool _internal_has_analyze() const;
   public:
-  void clear_submit();
-  const ::maarpc::CustomRecognizerSubmit& submit() const;
-  PROTOBUF_NODISCARD ::maarpc::CustomRecognizerSubmit* release_submit();
-  ::maarpc::CustomRecognizerSubmit* mutable_submit();
-  void set_allocated_submit(::maarpc::CustomRecognizerSubmit* submit);
+  void clear_analyze();
+  const ::maarpc::CustomRecognizerAnalyzeResult& analyze() const;
+  PROTOBUF_NODISCARD ::maarpc::CustomRecognizerAnalyzeResult* release_analyze();
+  ::maarpc::CustomRecognizerAnalyzeResult* mutable_analyze();
+  void set_allocated_analyze(::maarpc::CustomRecognizerAnalyzeResult* analyze);
   private:
-  const ::maarpc::CustomRecognizerSubmit& _internal_submit() const;
-  ::maarpc::CustomRecognizerSubmit* _internal_mutable_submit();
+  const ::maarpc::CustomRecognizerAnalyzeResult& _internal_analyze() const;
+  ::maarpc::CustomRecognizerAnalyzeResult* _internal_mutable_analyze();
   public:
-  void unsafe_arena_set_allocated_submit(
-      ::maarpc::CustomRecognizerSubmit* submit);
-  ::maarpc::CustomRecognizerSubmit* unsafe_arena_release_submit();
+  void unsafe_arena_set_allocated_analyze(
+      ::maarpc::CustomRecognizerAnalyzeResult* analyze);
+  ::maarpc::CustomRecognizerAnalyzeResult* unsafe_arena_release_analyze();
 
-  void clear_payload();
-  PayloadCase payload_case() const;
+  void clear_result();
+  ResultCase result_case() const;
   // @@protoc_insertion_point(class_scope:maarpc.CustomRecognizerRequest)
  private:
   class _Internal;
   void set_has_init();
-  void set_has_submit();
+  void set_has_analyze();
 
-  inline bool has_payload() const;
-  inline void clear_has_payload();
+  inline bool has_result() const;
+  inline void clear_has_result();
 
   template <typename T> friend class ::PROTOBUF_NAMESPACE_ID::Arena::InternalHelper;
   typedef void InternalArenaConstructable_;
   typedef void DestructorSkippable_;
   struct Impl_ {
-    union PayloadUnion {
-      constexpr PayloadUnion() : _constinit_{} {}
+    ::PROTOBUF_NAMESPACE_ID::internal::HasBits<1> _has_bits_;
+    mutable ::PROTOBUF_NAMESPACE_ID::internal::CachedSize _cached_size_;
+    bool ok_;
+    union ResultUnion {
+      constexpr ResultUnion() : _constinit_{} {}
         ::PROTOBUF_NAMESPACE_ID::internal::ConstantInitialized _constinit_;
       ::maarpc::CustomRecognizerInit* init_;
-      ::maarpc::CustomRecognizerSubmit* submit_;
-    } payload_;
-    mutable ::PROTOBUF_NAMESPACE_ID::internal::CachedSize _cached_size_;
+      ::maarpc::CustomRecognizerAnalyzeResult* analyze_;
+    } result_;
     uint32_t _oneof_case_[1];
 
   };
@@ -942,7 +704,7 @@ class CustomRecognizerAnalyzeParam final :
                &_CustomRecognizerAnalyzeParam_default_instance_);
   }
   static constexpr int kIndexInFileMessages =
-    4;
+    3;
 
   friend void swap(CustomRecognizerAnalyzeParam& a, CustomRecognizerAnalyzeParam& b) {
     a.Swap(&b);
@@ -1165,7 +927,7 @@ class CustomRecognizerResponse final :
                &_CustomRecognizerResponse_default_instance_);
   }
   static constexpr int kIndexInFileMessages =
-    5;
+    4;
 
   friend void swap(CustomRecognizerResponse& a, CustomRecognizerResponse& b) {
     a.Swap(&b);
@@ -1238,46 +1000,8 @@ class CustomRecognizerResponse final :
   // accessors -------------------------------------------------------
 
   enum : int {
-    kRecoIdFieldNumber = 1,
-    kCmdIdFieldNumber = 2,
     kAnalyzeFieldNumber = 101,
   };
-  // optional string reco_id = 1;
-  bool has_reco_id() const;
-  private:
-  bool _internal_has_reco_id() const;
-  public:
-  void clear_reco_id();
-  const std::string& reco_id() const;
-  template <typename ArgT0 = const std::string&, typename... ArgT>
-  void set_reco_id(ArgT0&& arg0, ArgT... args);
-  std::string* mutable_reco_id();
-  PROTOBUF_NODISCARD std::string* release_reco_id();
-  void set_allocated_reco_id(std::string* reco_id);
-  private:
-  const std::string& _internal_reco_id() const;
-  inline PROTOBUF_ALWAYS_INLINE void _internal_set_reco_id(const std::string& value);
-  std::string* _internal_mutable_reco_id();
-  public:
-
-  // optional string cmd_id = 2;
-  bool has_cmd_id() const;
-  private:
-  bool _internal_has_cmd_id() const;
-  public:
-  void clear_cmd_id();
-  const std::string& cmd_id() const;
-  template <typename ArgT0 = const std::string&, typename... ArgT>
-  void set_cmd_id(ArgT0&& arg0, ArgT... args);
-  std::string* mutable_cmd_id();
-  PROTOBUF_NODISCARD std::string* release_cmd_id();
-  void set_allocated_cmd_id(std::string* cmd_id);
-  private:
-  const std::string& _internal_cmd_id() const;
-  inline PROTOBUF_ALWAYS_INLINE void _internal_set_cmd_id(const std::string& value);
-  std::string* _internal_mutable_cmd_id();
-  public:
-
   // .maarpc.CustomRecognizerAnalyzeParam analyze = 101;
   bool has_analyze() const;
   private:
@@ -1310,15 +1034,12 @@ class CustomRecognizerResponse final :
   typedef void InternalArenaConstructable_;
   typedef void DestructorSkippable_;
   struct Impl_ {
-    ::PROTOBUF_NAMESPACE_ID::internal::HasBits<1> _has_bits_;
-    mutable ::PROTOBUF_NAMESPACE_ID::internal::CachedSize _cached_size_;
-    ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr reco_id_;
-    ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr cmd_id_;
     union CommandUnion {
       constexpr CommandUnion() : _constinit_{} {}
         ::PROTOBUF_NAMESPACE_ID::internal::ConstantInitialized _constinit_;
       ::maarpc::CustomRecognizerAnalyzeParam* analyze_;
     } command_;
+    mutable ::PROTOBUF_NAMESPACE_ID::internal::CachedSize _cached_size_;
     uint32_t _oneof_case_[1];
 
   };
@@ -1470,74 +1191,6 @@ inline void CustomRecognizerInit::set_allocated_name(std::string* name) {
   }
 #endif // PROTOBUF_FORCE_COPY_DEFAULT_STRING
   // @@protoc_insertion_point(field_set_allocated:maarpc.CustomRecognizerInit.name)
-}
-
-// optional string reco_id = 3;
-inline bool CustomRecognizerInit::_internal_has_reco_id() const {
-  bool value = (_impl_._has_bits_[0] & 0x00000004u) != 0;
-  return value;
-}
-inline bool CustomRecognizerInit::has_reco_id() const {
-  return _internal_has_reco_id();
-}
-inline void CustomRecognizerInit::clear_reco_id() {
-  _impl_.reco_id_.ClearToEmpty();
-  _impl_._has_bits_[0] &= ~0x00000004u;
-}
-inline const std::string& CustomRecognizerInit::reco_id() const {
-  // @@protoc_insertion_point(field_get:maarpc.CustomRecognizerInit.reco_id)
-  return _internal_reco_id();
-}
-template <typename ArgT0, typename... ArgT>
-inline PROTOBUF_ALWAYS_INLINE
-void CustomRecognizerInit::set_reco_id(ArgT0&& arg0, ArgT... args) {
- _impl_._has_bits_[0] |= 0x00000004u;
- _impl_.reco_id_.Set(static_cast<ArgT0 &&>(arg0), args..., GetArenaForAllocation());
-  // @@protoc_insertion_point(field_set:maarpc.CustomRecognizerInit.reco_id)
-}
-inline std::string* CustomRecognizerInit::mutable_reco_id() {
-  std::string* _s = _internal_mutable_reco_id();
-  // @@protoc_insertion_point(field_mutable:maarpc.CustomRecognizerInit.reco_id)
-  return _s;
-}
-inline const std::string& CustomRecognizerInit::_internal_reco_id() const {
-  return _impl_.reco_id_.Get();
-}
-inline void CustomRecognizerInit::_internal_set_reco_id(const std::string& value) {
-  _impl_._has_bits_[0] |= 0x00000004u;
-  _impl_.reco_id_.Set(value, GetArenaForAllocation());
-}
-inline std::string* CustomRecognizerInit::_internal_mutable_reco_id() {
-  _impl_._has_bits_[0] |= 0x00000004u;
-  return _impl_.reco_id_.Mutable(GetArenaForAllocation());
-}
-inline std::string* CustomRecognizerInit::release_reco_id() {
-  // @@protoc_insertion_point(field_release:maarpc.CustomRecognizerInit.reco_id)
-  if (!_internal_has_reco_id()) {
-    return nullptr;
-  }
-  _impl_._has_bits_[0] &= ~0x00000004u;
-  auto* p = _impl_.reco_id_.Release();
-#ifdef PROTOBUF_FORCE_COPY_DEFAULT_STRING
-  if (_impl_.reco_id_.IsDefault()) {
-    _impl_.reco_id_.Set("", GetArenaForAllocation());
-  }
-#endif // PROTOBUF_FORCE_COPY_DEFAULT_STRING
-  return p;
-}
-inline void CustomRecognizerInit::set_allocated_reco_id(std::string* reco_id) {
-  if (reco_id != nullptr) {
-    _impl_._has_bits_[0] |= 0x00000004u;
-  } else {
-    _impl_._has_bits_[0] &= ~0x00000004u;
-  }
-  _impl_.reco_id_.SetAllocated(reco_id, GetArenaForAllocation());
-#ifdef PROTOBUF_FORCE_COPY_DEFAULT_STRING
-  if (_impl_.reco_id_.IsDefault()) {
-    _impl_.reco_id_.Set("", GetArenaForAllocation());
-  }
-#endif // PROTOBUF_FORCE_COPY_DEFAULT_STRING
-  // @@protoc_insertion_point(field_set_allocated:maarpc.CustomRecognizerInit.reco_id)
 }
 
 // -------------------------------------------------------------------
@@ -1729,262 +1382,39 @@ inline void CustomRecognizerAnalyzeResult::set_allocated_detail(std::string* det
 
 // -------------------------------------------------------------------
 
-// CustomRecognizerSubmit
+// CustomRecognizerRequest
 
-// optional string handle = 1;
-inline bool CustomRecognizerSubmit::_internal_has_handle() const {
+// optional bool ok = 1;
+inline bool CustomRecognizerRequest::_internal_has_ok() const {
   bool value = (_impl_._has_bits_[0] & 0x00000001u) != 0;
   return value;
 }
-inline bool CustomRecognizerSubmit::has_handle() const {
-  return _internal_has_handle();
-}
-inline void CustomRecognizerSubmit::clear_handle() {
-  _impl_.handle_.ClearToEmpty();
-  _impl_._has_bits_[0] &= ~0x00000001u;
-}
-inline const std::string& CustomRecognizerSubmit::handle() const {
-  // @@protoc_insertion_point(field_get:maarpc.CustomRecognizerSubmit.handle)
-  return _internal_handle();
-}
-template <typename ArgT0, typename... ArgT>
-inline PROTOBUF_ALWAYS_INLINE
-void CustomRecognizerSubmit::set_handle(ArgT0&& arg0, ArgT... args) {
- _impl_._has_bits_[0] |= 0x00000001u;
- _impl_.handle_.Set(static_cast<ArgT0 &&>(arg0), args..., GetArenaForAllocation());
-  // @@protoc_insertion_point(field_set:maarpc.CustomRecognizerSubmit.handle)
-}
-inline std::string* CustomRecognizerSubmit::mutable_handle() {
-  std::string* _s = _internal_mutable_handle();
-  // @@protoc_insertion_point(field_mutable:maarpc.CustomRecognizerSubmit.handle)
-  return _s;
-}
-inline const std::string& CustomRecognizerSubmit::_internal_handle() const {
-  return _impl_.handle_.Get();
-}
-inline void CustomRecognizerSubmit::_internal_set_handle(const std::string& value) {
-  _impl_._has_bits_[0] |= 0x00000001u;
-  _impl_.handle_.Set(value, GetArenaForAllocation());
-}
-inline std::string* CustomRecognizerSubmit::_internal_mutable_handle() {
-  _impl_._has_bits_[0] |= 0x00000001u;
-  return _impl_.handle_.Mutable(GetArenaForAllocation());
-}
-inline std::string* CustomRecognizerSubmit::release_handle() {
-  // @@protoc_insertion_point(field_release:maarpc.CustomRecognizerSubmit.handle)
-  if (!_internal_has_handle()) {
-    return nullptr;
-  }
-  _impl_._has_bits_[0] &= ~0x00000001u;
-  auto* p = _impl_.handle_.Release();
-#ifdef PROTOBUF_FORCE_COPY_DEFAULT_STRING
-  if (_impl_.handle_.IsDefault()) {
-    _impl_.handle_.Set("", GetArenaForAllocation());
-  }
-#endif // PROTOBUF_FORCE_COPY_DEFAULT_STRING
-  return p;
-}
-inline void CustomRecognizerSubmit::set_allocated_handle(std::string* handle) {
-  if (handle != nullptr) {
-    _impl_._has_bits_[0] |= 0x00000001u;
-  } else {
-    _impl_._has_bits_[0] &= ~0x00000001u;
-  }
-  _impl_.handle_.SetAllocated(handle, GetArenaForAllocation());
-#ifdef PROTOBUF_FORCE_COPY_DEFAULT_STRING
-  if (_impl_.handle_.IsDefault()) {
-    _impl_.handle_.Set("", GetArenaForAllocation());
-  }
-#endif // PROTOBUF_FORCE_COPY_DEFAULT_STRING
-  // @@protoc_insertion_point(field_set_allocated:maarpc.CustomRecognizerSubmit.handle)
-}
-
-// optional string cmd_id = 2;
-inline bool CustomRecognizerSubmit::_internal_has_cmd_id() const {
-  bool value = (_impl_._has_bits_[0] & 0x00000002u) != 0;
-  return value;
-}
-inline bool CustomRecognizerSubmit::has_cmd_id() const {
-  return _internal_has_cmd_id();
-}
-inline void CustomRecognizerSubmit::clear_cmd_id() {
-  _impl_.cmd_id_.ClearToEmpty();
-  _impl_._has_bits_[0] &= ~0x00000002u;
-}
-inline const std::string& CustomRecognizerSubmit::cmd_id() const {
-  // @@protoc_insertion_point(field_get:maarpc.CustomRecognizerSubmit.cmd_id)
-  return _internal_cmd_id();
-}
-template <typename ArgT0, typename... ArgT>
-inline PROTOBUF_ALWAYS_INLINE
-void CustomRecognizerSubmit::set_cmd_id(ArgT0&& arg0, ArgT... args) {
- _impl_._has_bits_[0] |= 0x00000002u;
- _impl_.cmd_id_.Set(static_cast<ArgT0 &&>(arg0), args..., GetArenaForAllocation());
-  // @@protoc_insertion_point(field_set:maarpc.CustomRecognizerSubmit.cmd_id)
-}
-inline std::string* CustomRecognizerSubmit::mutable_cmd_id() {
-  std::string* _s = _internal_mutable_cmd_id();
-  // @@protoc_insertion_point(field_mutable:maarpc.CustomRecognizerSubmit.cmd_id)
-  return _s;
-}
-inline const std::string& CustomRecognizerSubmit::_internal_cmd_id() const {
-  return _impl_.cmd_id_.Get();
-}
-inline void CustomRecognizerSubmit::_internal_set_cmd_id(const std::string& value) {
-  _impl_._has_bits_[0] |= 0x00000002u;
-  _impl_.cmd_id_.Set(value, GetArenaForAllocation());
-}
-inline std::string* CustomRecognizerSubmit::_internal_mutable_cmd_id() {
-  _impl_._has_bits_[0] |= 0x00000002u;
-  return _impl_.cmd_id_.Mutable(GetArenaForAllocation());
-}
-inline std::string* CustomRecognizerSubmit::release_cmd_id() {
-  // @@protoc_insertion_point(field_release:maarpc.CustomRecognizerSubmit.cmd_id)
-  if (!_internal_has_cmd_id()) {
-    return nullptr;
-  }
-  _impl_._has_bits_[0] &= ~0x00000002u;
-  auto* p = _impl_.cmd_id_.Release();
-#ifdef PROTOBUF_FORCE_COPY_DEFAULT_STRING
-  if (_impl_.cmd_id_.IsDefault()) {
-    _impl_.cmd_id_.Set("", GetArenaForAllocation());
-  }
-#endif // PROTOBUF_FORCE_COPY_DEFAULT_STRING
-  return p;
-}
-inline void CustomRecognizerSubmit::set_allocated_cmd_id(std::string* cmd_id) {
-  if (cmd_id != nullptr) {
-    _impl_._has_bits_[0] |= 0x00000002u;
-  } else {
-    _impl_._has_bits_[0] &= ~0x00000002u;
-  }
-  _impl_.cmd_id_.SetAllocated(cmd_id, GetArenaForAllocation());
-#ifdef PROTOBUF_FORCE_COPY_DEFAULT_STRING
-  if (_impl_.cmd_id_.IsDefault()) {
-    _impl_.cmd_id_.Set("", GetArenaForAllocation());
-  }
-#endif // PROTOBUF_FORCE_COPY_DEFAULT_STRING
-  // @@protoc_insertion_point(field_set_allocated:maarpc.CustomRecognizerSubmit.cmd_id)
-}
-
-// optional bool ok = 3;
-inline bool CustomRecognizerSubmit::_internal_has_ok() const {
-  bool value = (_impl_._has_bits_[0] & 0x00000004u) != 0;
-  return value;
-}
-inline bool CustomRecognizerSubmit::has_ok() const {
+inline bool CustomRecognizerRequest::has_ok() const {
   return _internal_has_ok();
 }
-inline void CustomRecognizerSubmit::clear_ok() {
+inline void CustomRecognizerRequest::clear_ok() {
   _impl_.ok_ = false;
-  _impl_._has_bits_[0] &= ~0x00000004u;
+  _impl_._has_bits_[0] &= ~0x00000001u;
 }
-inline bool CustomRecognizerSubmit::_internal_ok() const {
+inline bool CustomRecognizerRequest::_internal_ok() const {
   return _impl_.ok_;
 }
-inline bool CustomRecognizerSubmit::ok() const {
-  // @@protoc_insertion_point(field_get:maarpc.CustomRecognizerSubmit.ok)
+inline bool CustomRecognizerRequest::ok() const {
+  // @@protoc_insertion_point(field_get:maarpc.CustomRecognizerRequest.ok)
   return _internal_ok();
 }
-inline void CustomRecognizerSubmit::_internal_set_ok(bool value) {
-  _impl_._has_bits_[0] |= 0x00000004u;
+inline void CustomRecognizerRequest::_internal_set_ok(bool value) {
+  _impl_._has_bits_[0] |= 0x00000001u;
   _impl_.ok_ = value;
 }
-inline void CustomRecognizerSubmit::set_ok(bool value) {
+inline void CustomRecognizerRequest::set_ok(bool value) {
   _internal_set_ok(value);
-  // @@protoc_insertion_point(field_set:maarpc.CustomRecognizerSubmit.ok)
+  // @@protoc_insertion_point(field_set:maarpc.CustomRecognizerRequest.ok)
 }
 
-// .maarpc.CustomRecognizerAnalyzeResult analyze = 101;
-inline bool CustomRecognizerSubmit::_internal_has_analyze() const {
-  return result_case() == kAnalyze;
-}
-inline bool CustomRecognizerSubmit::has_analyze() const {
-  return _internal_has_analyze();
-}
-inline void CustomRecognizerSubmit::set_has_analyze() {
-  _impl_._oneof_case_[0] = kAnalyze;
-}
-inline void CustomRecognizerSubmit::clear_analyze() {
-  if (_internal_has_analyze()) {
-    if (GetArenaForAllocation() == nullptr) {
-      delete _impl_.result_.analyze_;
-    }
-    clear_has_result();
-  }
-}
-inline ::maarpc::CustomRecognizerAnalyzeResult* CustomRecognizerSubmit::release_analyze() {
-  // @@protoc_insertion_point(field_release:maarpc.CustomRecognizerSubmit.analyze)
-  if (_internal_has_analyze()) {
-    clear_has_result();
-    ::maarpc::CustomRecognizerAnalyzeResult* temp = _impl_.result_.analyze_;
-    if (GetArenaForAllocation() != nullptr) {
-      temp = ::PROTOBUF_NAMESPACE_ID::internal::DuplicateIfNonNull(temp);
-    }
-    _impl_.result_.analyze_ = nullptr;
-    return temp;
-  } else {
-    return nullptr;
-  }
-}
-inline const ::maarpc::CustomRecognizerAnalyzeResult& CustomRecognizerSubmit::_internal_analyze() const {
-  return _internal_has_analyze()
-      ? *_impl_.result_.analyze_
-      : reinterpret_cast< ::maarpc::CustomRecognizerAnalyzeResult&>(::maarpc::_CustomRecognizerAnalyzeResult_default_instance_);
-}
-inline const ::maarpc::CustomRecognizerAnalyzeResult& CustomRecognizerSubmit::analyze() const {
-  // @@protoc_insertion_point(field_get:maarpc.CustomRecognizerSubmit.analyze)
-  return _internal_analyze();
-}
-inline ::maarpc::CustomRecognizerAnalyzeResult* CustomRecognizerSubmit::unsafe_arena_release_analyze() {
-  // @@protoc_insertion_point(field_unsafe_arena_release:maarpc.CustomRecognizerSubmit.analyze)
-  if (_internal_has_analyze()) {
-    clear_has_result();
-    ::maarpc::CustomRecognizerAnalyzeResult* temp = _impl_.result_.analyze_;
-    _impl_.result_.analyze_ = nullptr;
-    return temp;
-  } else {
-    return nullptr;
-  }
-}
-inline void CustomRecognizerSubmit::unsafe_arena_set_allocated_analyze(::maarpc::CustomRecognizerAnalyzeResult* analyze) {
-  clear_result();
-  if (analyze) {
-    set_has_analyze();
-    _impl_.result_.analyze_ = analyze;
-  }
-  // @@protoc_insertion_point(field_unsafe_arena_set_allocated:maarpc.CustomRecognizerSubmit.analyze)
-}
-inline ::maarpc::CustomRecognizerAnalyzeResult* CustomRecognizerSubmit::_internal_mutable_analyze() {
-  if (!_internal_has_analyze()) {
-    clear_result();
-    set_has_analyze();
-    _impl_.result_.analyze_ = CreateMaybeMessage< ::maarpc::CustomRecognizerAnalyzeResult >(GetArenaForAllocation());
-  }
-  return _impl_.result_.analyze_;
-}
-inline ::maarpc::CustomRecognizerAnalyzeResult* CustomRecognizerSubmit::mutable_analyze() {
-  ::maarpc::CustomRecognizerAnalyzeResult* _msg = _internal_mutable_analyze();
-  // @@protoc_insertion_point(field_mutable:maarpc.CustomRecognizerSubmit.analyze)
-  return _msg;
-}
-
-inline bool CustomRecognizerSubmit::has_result() const {
-  return result_case() != RESULT_NOT_SET;
-}
-inline void CustomRecognizerSubmit::clear_has_result() {
-  _impl_._oneof_case_[0] = RESULT_NOT_SET;
-}
-inline CustomRecognizerSubmit::ResultCase CustomRecognizerSubmit::result_case() const {
-  return CustomRecognizerSubmit::ResultCase(_impl_._oneof_case_[0]);
-}
-// -------------------------------------------------------------------
-
-// CustomRecognizerRequest
-
-// .maarpc.CustomRecognizerInit init = 1;
+// .maarpc.CustomRecognizerInit init = 101;
 inline bool CustomRecognizerRequest::_internal_has_init() const {
-  return payload_case() == kInit;
+  return result_case() == kInit;
 }
 inline bool CustomRecognizerRequest::has_init() const {
   return _internal_has_init();
@@ -1995,20 +1425,20 @@ inline void CustomRecognizerRequest::set_has_init() {
 inline void CustomRecognizerRequest::clear_init() {
   if (_internal_has_init()) {
     if (GetArenaForAllocation() == nullptr) {
-      delete _impl_.payload_.init_;
+      delete _impl_.result_.init_;
     }
-    clear_has_payload();
+    clear_has_result();
   }
 }
 inline ::maarpc::CustomRecognizerInit* CustomRecognizerRequest::release_init() {
   // @@protoc_insertion_point(field_release:maarpc.CustomRecognizerRequest.init)
   if (_internal_has_init()) {
-    clear_has_payload();
-    ::maarpc::CustomRecognizerInit* temp = _impl_.payload_.init_;
+    clear_has_result();
+    ::maarpc::CustomRecognizerInit* temp = _impl_.result_.init_;
     if (GetArenaForAllocation() != nullptr) {
       temp = ::PROTOBUF_NAMESPACE_ID::internal::DuplicateIfNonNull(temp);
     }
-    _impl_.payload_.init_ = nullptr;
+    _impl_.result_.init_ = nullptr;
     return temp;
   } else {
     return nullptr;
@@ -2016,7 +1446,7 @@ inline ::maarpc::CustomRecognizerInit* CustomRecognizerRequest::release_init() {
 }
 inline const ::maarpc::CustomRecognizerInit& CustomRecognizerRequest::_internal_init() const {
   return _internal_has_init()
-      ? *_impl_.payload_.init_
+      ? *_impl_.result_.init_
       : reinterpret_cast< ::maarpc::CustomRecognizerInit&>(::maarpc::_CustomRecognizerInit_default_instance_);
 }
 inline const ::maarpc::CustomRecognizerInit& CustomRecognizerRequest::init() const {
@@ -2026,29 +1456,29 @@ inline const ::maarpc::CustomRecognizerInit& CustomRecognizerRequest::init() con
 inline ::maarpc::CustomRecognizerInit* CustomRecognizerRequest::unsafe_arena_release_init() {
   // @@protoc_insertion_point(field_unsafe_arena_release:maarpc.CustomRecognizerRequest.init)
   if (_internal_has_init()) {
-    clear_has_payload();
-    ::maarpc::CustomRecognizerInit* temp = _impl_.payload_.init_;
-    _impl_.payload_.init_ = nullptr;
+    clear_has_result();
+    ::maarpc::CustomRecognizerInit* temp = _impl_.result_.init_;
+    _impl_.result_.init_ = nullptr;
     return temp;
   } else {
     return nullptr;
   }
 }
 inline void CustomRecognizerRequest::unsafe_arena_set_allocated_init(::maarpc::CustomRecognizerInit* init) {
-  clear_payload();
+  clear_result();
   if (init) {
     set_has_init();
-    _impl_.payload_.init_ = init;
+    _impl_.result_.init_ = init;
   }
   // @@protoc_insertion_point(field_unsafe_arena_set_allocated:maarpc.CustomRecognizerRequest.init)
 }
 inline ::maarpc::CustomRecognizerInit* CustomRecognizerRequest::_internal_mutable_init() {
   if (!_internal_has_init()) {
-    clear_payload();
+    clear_result();
     set_has_init();
-    _impl_.payload_.init_ = CreateMaybeMessage< ::maarpc::CustomRecognizerInit >(GetArenaForAllocation());
+    _impl_.result_.init_ = CreateMaybeMessage< ::maarpc::CustomRecognizerInit >(GetArenaForAllocation());
   }
-  return _impl_.payload_.init_;
+  return _impl_.result_.init_;
 }
 inline ::maarpc::CustomRecognizerInit* CustomRecognizerRequest::mutable_init() {
   ::maarpc::CustomRecognizerInit* _msg = _internal_mutable_init();
@@ -2056,88 +1486,88 @@ inline ::maarpc::CustomRecognizerInit* CustomRecognizerRequest::mutable_init() {
   return _msg;
 }
 
-// .maarpc.CustomRecognizerSubmit submit = 2;
-inline bool CustomRecognizerRequest::_internal_has_submit() const {
-  return payload_case() == kSubmit;
+// .maarpc.CustomRecognizerAnalyzeResult analyze = 201;
+inline bool CustomRecognizerRequest::_internal_has_analyze() const {
+  return result_case() == kAnalyze;
 }
-inline bool CustomRecognizerRequest::has_submit() const {
-  return _internal_has_submit();
+inline bool CustomRecognizerRequest::has_analyze() const {
+  return _internal_has_analyze();
 }
-inline void CustomRecognizerRequest::set_has_submit() {
-  _impl_._oneof_case_[0] = kSubmit;
+inline void CustomRecognizerRequest::set_has_analyze() {
+  _impl_._oneof_case_[0] = kAnalyze;
 }
-inline void CustomRecognizerRequest::clear_submit() {
-  if (_internal_has_submit()) {
+inline void CustomRecognizerRequest::clear_analyze() {
+  if (_internal_has_analyze()) {
     if (GetArenaForAllocation() == nullptr) {
-      delete _impl_.payload_.submit_;
+      delete _impl_.result_.analyze_;
     }
-    clear_has_payload();
+    clear_has_result();
   }
 }
-inline ::maarpc::CustomRecognizerSubmit* CustomRecognizerRequest::release_submit() {
-  // @@protoc_insertion_point(field_release:maarpc.CustomRecognizerRequest.submit)
-  if (_internal_has_submit()) {
-    clear_has_payload();
-    ::maarpc::CustomRecognizerSubmit* temp = _impl_.payload_.submit_;
+inline ::maarpc::CustomRecognizerAnalyzeResult* CustomRecognizerRequest::release_analyze() {
+  // @@protoc_insertion_point(field_release:maarpc.CustomRecognizerRequest.analyze)
+  if (_internal_has_analyze()) {
+    clear_has_result();
+    ::maarpc::CustomRecognizerAnalyzeResult* temp = _impl_.result_.analyze_;
     if (GetArenaForAllocation() != nullptr) {
       temp = ::PROTOBUF_NAMESPACE_ID::internal::DuplicateIfNonNull(temp);
     }
-    _impl_.payload_.submit_ = nullptr;
+    _impl_.result_.analyze_ = nullptr;
     return temp;
   } else {
     return nullptr;
   }
 }
-inline const ::maarpc::CustomRecognizerSubmit& CustomRecognizerRequest::_internal_submit() const {
-  return _internal_has_submit()
-      ? *_impl_.payload_.submit_
-      : reinterpret_cast< ::maarpc::CustomRecognizerSubmit&>(::maarpc::_CustomRecognizerSubmit_default_instance_);
+inline const ::maarpc::CustomRecognizerAnalyzeResult& CustomRecognizerRequest::_internal_analyze() const {
+  return _internal_has_analyze()
+      ? *_impl_.result_.analyze_
+      : reinterpret_cast< ::maarpc::CustomRecognizerAnalyzeResult&>(::maarpc::_CustomRecognizerAnalyzeResult_default_instance_);
 }
-inline const ::maarpc::CustomRecognizerSubmit& CustomRecognizerRequest::submit() const {
-  // @@protoc_insertion_point(field_get:maarpc.CustomRecognizerRequest.submit)
-  return _internal_submit();
+inline const ::maarpc::CustomRecognizerAnalyzeResult& CustomRecognizerRequest::analyze() const {
+  // @@protoc_insertion_point(field_get:maarpc.CustomRecognizerRequest.analyze)
+  return _internal_analyze();
 }
-inline ::maarpc::CustomRecognizerSubmit* CustomRecognizerRequest::unsafe_arena_release_submit() {
-  // @@protoc_insertion_point(field_unsafe_arena_release:maarpc.CustomRecognizerRequest.submit)
-  if (_internal_has_submit()) {
-    clear_has_payload();
-    ::maarpc::CustomRecognizerSubmit* temp = _impl_.payload_.submit_;
-    _impl_.payload_.submit_ = nullptr;
+inline ::maarpc::CustomRecognizerAnalyzeResult* CustomRecognizerRequest::unsafe_arena_release_analyze() {
+  // @@protoc_insertion_point(field_unsafe_arena_release:maarpc.CustomRecognizerRequest.analyze)
+  if (_internal_has_analyze()) {
+    clear_has_result();
+    ::maarpc::CustomRecognizerAnalyzeResult* temp = _impl_.result_.analyze_;
+    _impl_.result_.analyze_ = nullptr;
     return temp;
   } else {
     return nullptr;
   }
 }
-inline void CustomRecognizerRequest::unsafe_arena_set_allocated_submit(::maarpc::CustomRecognizerSubmit* submit) {
-  clear_payload();
-  if (submit) {
-    set_has_submit();
-    _impl_.payload_.submit_ = submit;
+inline void CustomRecognizerRequest::unsafe_arena_set_allocated_analyze(::maarpc::CustomRecognizerAnalyzeResult* analyze) {
+  clear_result();
+  if (analyze) {
+    set_has_analyze();
+    _impl_.result_.analyze_ = analyze;
   }
-  // @@protoc_insertion_point(field_unsafe_arena_set_allocated:maarpc.CustomRecognizerRequest.submit)
+  // @@protoc_insertion_point(field_unsafe_arena_set_allocated:maarpc.CustomRecognizerRequest.analyze)
 }
-inline ::maarpc::CustomRecognizerSubmit* CustomRecognizerRequest::_internal_mutable_submit() {
-  if (!_internal_has_submit()) {
-    clear_payload();
-    set_has_submit();
-    _impl_.payload_.submit_ = CreateMaybeMessage< ::maarpc::CustomRecognizerSubmit >(GetArenaForAllocation());
+inline ::maarpc::CustomRecognizerAnalyzeResult* CustomRecognizerRequest::_internal_mutable_analyze() {
+  if (!_internal_has_analyze()) {
+    clear_result();
+    set_has_analyze();
+    _impl_.result_.analyze_ = CreateMaybeMessage< ::maarpc::CustomRecognizerAnalyzeResult >(GetArenaForAllocation());
   }
-  return _impl_.payload_.submit_;
+  return _impl_.result_.analyze_;
 }
-inline ::maarpc::CustomRecognizerSubmit* CustomRecognizerRequest::mutable_submit() {
-  ::maarpc::CustomRecognizerSubmit* _msg = _internal_mutable_submit();
-  // @@protoc_insertion_point(field_mutable:maarpc.CustomRecognizerRequest.submit)
+inline ::maarpc::CustomRecognizerAnalyzeResult* CustomRecognizerRequest::mutable_analyze() {
+  ::maarpc::CustomRecognizerAnalyzeResult* _msg = _internal_mutable_analyze();
+  // @@protoc_insertion_point(field_mutable:maarpc.CustomRecognizerRequest.analyze)
   return _msg;
 }
 
-inline bool CustomRecognizerRequest::has_payload() const {
-  return payload_case() != PAYLOAD_NOT_SET;
+inline bool CustomRecognizerRequest::has_result() const {
+  return result_case() != RESULT_NOT_SET;
 }
-inline void CustomRecognizerRequest::clear_has_payload() {
-  _impl_._oneof_case_[0] = PAYLOAD_NOT_SET;
+inline void CustomRecognizerRequest::clear_has_result() {
+  _impl_._oneof_case_[0] = RESULT_NOT_SET;
 }
-inline CustomRecognizerRequest::PayloadCase CustomRecognizerRequest::payload_case() const {
-  return CustomRecognizerRequest::PayloadCase(_impl_._oneof_case_[0]);
+inline CustomRecognizerRequest::ResultCase CustomRecognizerRequest::result_case() const {
+  return CustomRecognizerRequest::ResultCase(_impl_._oneof_case_[0]);
 }
 // -------------------------------------------------------------------
 
@@ -2419,142 +1849,6 @@ inline void CustomRecognizerAnalyzeParam::set_allocated_param(std::string* param
 
 // CustomRecognizerResponse
 
-// optional string reco_id = 1;
-inline bool CustomRecognizerResponse::_internal_has_reco_id() const {
-  bool value = (_impl_._has_bits_[0] & 0x00000001u) != 0;
-  return value;
-}
-inline bool CustomRecognizerResponse::has_reco_id() const {
-  return _internal_has_reco_id();
-}
-inline void CustomRecognizerResponse::clear_reco_id() {
-  _impl_.reco_id_.ClearToEmpty();
-  _impl_._has_bits_[0] &= ~0x00000001u;
-}
-inline const std::string& CustomRecognizerResponse::reco_id() const {
-  // @@protoc_insertion_point(field_get:maarpc.CustomRecognizerResponse.reco_id)
-  return _internal_reco_id();
-}
-template <typename ArgT0, typename... ArgT>
-inline PROTOBUF_ALWAYS_INLINE
-void CustomRecognizerResponse::set_reco_id(ArgT0&& arg0, ArgT... args) {
- _impl_._has_bits_[0] |= 0x00000001u;
- _impl_.reco_id_.Set(static_cast<ArgT0 &&>(arg0), args..., GetArenaForAllocation());
-  // @@protoc_insertion_point(field_set:maarpc.CustomRecognizerResponse.reco_id)
-}
-inline std::string* CustomRecognizerResponse::mutable_reco_id() {
-  std::string* _s = _internal_mutable_reco_id();
-  // @@protoc_insertion_point(field_mutable:maarpc.CustomRecognizerResponse.reco_id)
-  return _s;
-}
-inline const std::string& CustomRecognizerResponse::_internal_reco_id() const {
-  return _impl_.reco_id_.Get();
-}
-inline void CustomRecognizerResponse::_internal_set_reco_id(const std::string& value) {
-  _impl_._has_bits_[0] |= 0x00000001u;
-  _impl_.reco_id_.Set(value, GetArenaForAllocation());
-}
-inline std::string* CustomRecognizerResponse::_internal_mutable_reco_id() {
-  _impl_._has_bits_[0] |= 0x00000001u;
-  return _impl_.reco_id_.Mutable(GetArenaForAllocation());
-}
-inline std::string* CustomRecognizerResponse::release_reco_id() {
-  // @@protoc_insertion_point(field_release:maarpc.CustomRecognizerResponse.reco_id)
-  if (!_internal_has_reco_id()) {
-    return nullptr;
-  }
-  _impl_._has_bits_[0] &= ~0x00000001u;
-  auto* p = _impl_.reco_id_.Release();
-#ifdef PROTOBUF_FORCE_COPY_DEFAULT_STRING
-  if (_impl_.reco_id_.IsDefault()) {
-    _impl_.reco_id_.Set("", GetArenaForAllocation());
-  }
-#endif // PROTOBUF_FORCE_COPY_DEFAULT_STRING
-  return p;
-}
-inline void CustomRecognizerResponse::set_allocated_reco_id(std::string* reco_id) {
-  if (reco_id != nullptr) {
-    _impl_._has_bits_[0] |= 0x00000001u;
-  } else {
-    _impl_._has_bits_[0] &= ~0x00000001u;
-  }
-  _impl_.reco_id_.SetAllocated(reco_id, GetArenaForAllocation());
-#ifdef PROTOBUF_FORCE_COPY_DEFAULT_STRING
-  if (_impl_.reco_id_.IsDefault()) {
-    _impl_.reco_id_.Set("", GetArenaForAllocation());
-  }
-#endif // PROTOBUF_FORCE_COPY_DEFAULT_STRING
-  // @@protoc_insertion_point(field_set_allocated:maarpc.CustomRecognizerResponse.reco_id)
-}
-
-// optional string cmd_id = 2;
-inline bool CustomRecognizerResponse::_internal_has_cmd_id() const {
-  bool value = (_impl_._has_bits_[0] & 0x00000002u) != 0;
-  return value;
-}
-inline bool CustomRecognizerResponse::has_cmd_id() const {
-  return _internal_has_cmd_id();
-}
-inline void CustomRecognizerResponse::clear_cmd_id() {
-  _impl_.cmd_id_.ClearToEmpty();
-  _impl_._has_bits_[0] &= ~0x00000002u;
-}
-inline const std::string& CustomRecognizerResponse::cmd_id() const {
-  // @@protoc_insertion_point(field_get:maarpc.CustomRecognizerResponse.cmd_id)
-  return _internal_cmd_id();
-}
-template <typename ArgT0, typename... ArgT>
-inline PROTOBUF_ALWAYS_INLINE
-void CustomRecognizerResponse::set_cmd_id(ArgT0&& arg0, ArgT... args) {
- _impl_._has_bits_[0] |= 0x00000002u;
- _impl_.cmd_id_.Set(static_cast<ArgT0 &&>(arg0), args..., GetArenaForAllocation());
-  // @@protoc_insertion_point(field_set:maarpc.CustomRecognizerResponse.cmd_id)
-}
-inline std::string* CustomRecognizerResponse::mutable_cmd_id() {
-  std::string* _s = _internal_mutable_cmd_id();
-  // @@protoc_insertion_point(field_mutable:maarpc.CustomRecognizerResponse.cmd_id)
-  return _s;
-}
-inline const std::string& CustomRecognizerResponse::_internal_cmd_id() const {
-  return _impl_.cmd_id_.Get();
-}
-inline void CustomRecognizerResponse::_internal_set_cmd_id(const std::string& value) {
-  _impl_._has_bits_[0] |= 0x00000002u;
-  _impl_.cmd_id_.Set(value, GetArenaForAllocation());
-}
-inline std::string* CustomRecognizerResponse::_internal_mutable_cmd_id() {
-  _impl_._has_bits_[0] |= 0x00000002u;
-  return _impl_.cmd_id_.Mutable(GetArenaForAllocation());
-}
-inline std::string* CustomRecognizerResponse::release_cmd_id() {
-  // @@protoc_insertion_point(field_release:maarpc.CustomRecognizerResponse.cmd_id)
-  if (!_internal_has_cmd_id()) {
-    return nullptr;
-  }
-  _impl_._has_bits_[0] &= ~0x00000002u;
-  auto* p = _impl_.cmd_id_.Release();
-#ifdef PROTOBUF_FORCE_COPY_DEFAULT_STRING
-  if (_impl_.cmd_id_.IsDefault()) {
-    _impl_.cmd_id_.Set("", GetArenaForAllocation());
-  }
-#endif // PROTOBUF_FORCE_COPY_DEFAULT_STRING
-  return p;
-}
-inline void CustomRecognizerResponse::set_allocated_cmd_id(std::string* cmd_id) {
-  if (cmd_id != nullptr) {
-    _impl_._has_bits_[0] |= 0x00000002u;
-  } else {
-    _impl_._has_bits_[0] &= ~0x00000002u;
-  }
-  _impl_.cmd_id_.SetAllocated(cmd_id, GetArenaForAllocation());
-#ifdef PROTOBUF_FORCE_COPY_DEFAULT_STRING
-  if (_impl_.cmd_id_.IsDefault()) {
-    _impl_.cmd_id_.Set("", GetArenaForAllocation());
-  }
-#endif // PROTOBUF_FORCE_COPY_DEFAULT_STRING
-  // @@protoc_insertion_point(field_set_allocated:maarpc.CustomRecognizerResponse.cmd_id)
-}
-
 // .maarpc.CustomRecognizerAnalyzeParam analyze = 101;
 inline bool CustomRecognizerResponse::_internal_has_analyze() const {
   return command_case() == kAnalyze;
@@ -2641,8 +1935,6 @@ inline CustomRecognizerResponse::CommandCase CustomRecognizerResponse::command_c
 #ifdef __GNUC__
   #pragma GCC diagnostic pop
 #endif  // __GNUC__
-// -------------------------------------------------------------------
-
 // -------------------------------------------------------------------
 
 // -------------------------------------------------------------------

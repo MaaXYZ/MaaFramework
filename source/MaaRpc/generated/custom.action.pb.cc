@@ -26,8 +26,7 @@ PROTOBUF_CONSTEXPR CustomActionInit::CustomActionInit(
     /*decltype(_impl_._has_bits_)*/{}
   , /*decltype(_impl_._cached_size_)*/{}
   , /*decltype(_impl_.handle_)*/{&::_pbi::fixed_address_empty_string, ::_pbi::ConstantInitialized{}}
-  , /*decltype(_impl_.name_)*/{&::_pbi::fixed_address_empty_string, ::_pbi::ConstantInitialized{}}
-  , /*decltype(_impl_.act_id_)*/{&::_pbi::fixed_address_empty_string, ::_pbi::ConstantInitialized{}}} {}
+  , /*decltype(_impl_.name_)*/{&::_pbi::fixed_address_empty_string, ::_pbi::ConstantInitialized{}}} {}
 struct CustomActionInitDefaultTypeInternal {
   PROTOBUF_CONSTEXPR CustomActionInitDefaultTypeInternal()
       : _instance(::_pbi::ConstantInitialized{}) {}
@@ -55,8 +54,10 @@ struct CustomActionSubmitDefaultTypeInternal {
 PROTOBUF_ATTRIBUTE_NO_DESTROY PROTOBUF_CONSTINIT PROTOBUF_ATTRIBUTE_INIT_PRIORITY1 CustomActionSubmitDefaultTypeInternal _CustomActionSubmit_default_instance_;
 PROTOBUF_CONSTEXPR CustomActionRequest::CustomActionRequest(
     ::_pbi::ConstantInitialized): _impl_{
-    /*decltype(_impl_.payload_)*/{}
+    /*decltype(_impl_._has_bits_)*/{}
   , /*decltype(_impl_._cached_size_)*/{}
+  , /*decltype(_impl_.ok_)*/false
+  , /*decltype(_impl_.result_)*/{}
   , /*decltype(_impl_._oneof_case_)*/{}} {}
 struct CustomActionRequestDefaultTypeInternal {
   PROTOBUF_CONSTEXPR CustomActionRequestDefaultTypeInternal()
@@ -87,11 +88,8 @@ struct CustomActionRunParamDefaultTypeInternal {
 PROTOBUF_ATTRIBUTE_NO_DESTROY PROTOBUF_CONSTINIT PROTOBUF_ATTRIBUTE_INIT_PRIORITY1 CustomActionRunParamDefaultTypeInternal _CustomActionRunParam_default_instance_;
 PROTOBUF_CONSTEXPR CustomActionResponse::CustomActionResponse(
     ::_pbi::ConstantInitialized): _impl_{
-    /*decltype(_impl_._has_bits_)*/{}
+    /*decltype(_impl_.command_)*/{}
   , /*decltype(_impl_._cached_size_)*/{}
-  , /*decltype(_impl_.act_id_)*/{&::_pbi::fixed_address_empty_string, ::_pbi::ConstantInitialized{}}
-  , /*decltype(_impl_.cmd_id_)*/{&::_pbi::fixed_address_empty_string, ::_pbi::ConstantInitialized{}}
-  , /*decltype(_impl_.command_)*/{}
   , /*decltype(_impl_._oneof_case_)*/{}} {}
 struct CustomActionResponseDefaultTypeInternal {
   PROTOBUF_CONSTEXPR CustomActionResponseDefaultTypeInternal()
@@ -116,10 +114,8 @@ const uint32_t TableStruct_custom_2eaction_2eproto::offsets[] PROTOBUF_SECTION_V
   ~0u,  // no _inlined_string_donated_
   PROTOBUF_FIELD_OFFSET(::maarpc::CustomActionInit, _impl_.handle_),
   PROTOBUF_FIELD_OFFSET(::maarpc::CustomActionInit, _impl_.name_),
-  PROTOBUF_FIELD_OFFSET(::maarpc::CustomActionInit, _impl_.act_id_),
   0,
   1,
-  2,
   PROTOBUF_FIELD_OFFSET(::maarpc::CustomActionSubmit, _impl_._has_bits_),
   PROTOBUF_FIELD_OFFSET(::maarpc::CustomActionSubmit, _internal_metadata_),
   ~0u,  // no _extensions_
@@ -132,15 +128,17 @@ const uint32_t TableStruct_custom_2eaction_2eproto::offsets[] PROTOBUF_SECTION_V
   0,
   1,
   2,
-  ~0u,  // no _has_bits_
+  PROTOBUF_FIELD_OFFSET(::maarpc::CustomActionRequest, _impl_._has_bits_),
   PROTOBUF_FIELD_OFFSET(::maarpc::CustomActionRequest, _internal_metadata_),
   ~0u,  // no _extensions_
   PROTOBUF_FIELD_OFFSET(::maarpc::CustomActionRequest, _impl_._oneof_case_[0]),
   ~0u,  // no _weak_field_map_
   ~0u,  // no _inlined_string_donated_
+  PROTOBUF_FIELD_OFFSET(::maarpc::CustomActionRequest, _impl_.ok_),
   ::_pbi::kInvalidFieldOffsetTag,
-  ::_pbi::kInvalidFieldOffsetTag,
-  PROTOBUF_FIELD_OFFSET(::maarpc::CustomActionRequest, _impl_.payload_),
+  PROTOBUF_FIELD_OFFSET(::maarpc::CustomActionRequest, _impl_.result_),
+  0,
+  ~0u,
   PROTOBUF_FIELD_OFFSET(::maarpc::CustomActionRunParam, _impl_._has_bits_),
   PROTOBUF_FIELD_OFFSET(::maarpc::CustomActionRunParam, _internal_metadata_),
   ~0u,  // no _extensions_
@@ -157,28 +155,22 @@ const uint32_t TableStruct_custom_2eaction_2eproto::offsets[] PROTOBUF_SECTION_V
   2,
   4,
   3,
-  PROTOBUF_FIELD_OFFSET(::maarpc::CustomActionResponse, _impl_._has_bits_),
+  ~0u,  // no _has_bits_
   PROTOBUF_FIELD_OFFSET(::maarpc::CustomActionResponse, _internal_metadata_),
   ~0u,  // no _extensions_
   PROTOBUF_FIELD_OFFSET(::maarpc::CustomActionResponse, _impl_._oneof_case_[0]),
   ~0u,  // no _weak_field_map_
   ~0u,  // no _inlined_string_donated_
-  PROTOBUF_FIELD_OFFSET(::maarpc::CustomActionResponse, _impl_.act_id_),
-  PROTOBUF_FIELD_OFFSET(::maarpc::CustomActionResponse, _impl_.cmd_id_),
   ::_pbi::kInvalidFieldOffsetTag,
   ::_pbi::kInvalidFieldOffsetTag,
   PROTOBUF_FIELD_OFFSET(::maarpc::CustomActionResponse, _impl_.command_),
-  0,
-  1,
-  ~0u,
-  ~0u,
 };
 static const ::_pbi::MigrationSchema schemas[] PROTOBUF_SECTION_VARIABLE(protodesc_cold) = {
-  { 0, 9, -1, sizeof(::maarpc::CustomActionInit)},
-  { 12, 21, -1, sizeof(::maarpc::CustomActionSubmit)},
-  { 24, -1, -1, sizeof(::maarpc::CustomActionRequest)},
+  { 0, 8, -1, sizeof(::maarpc::CustomActionInit)},
+  { 10, 19, -1, sizeof(::maarpc::CustomActionSubmit)},
+  { 22, 31, -1, sizeof(::maarpc::CustomActionRequest)},
   { 33, 44, -1, sizeof(::maarpc::CustomActionRunParam)},
-  { 49, 60, -1, sizeof(::maarpc::CustomActionResponse)},
+  { 49, -1, -1, sizeof(::maarpc::CustomActionResponse)},
 };
 
 static const ::_pb::Message* const file_default_instances[] = {
@@ -191,31 +183,28 @@ static const ::_pb::Message* const file_default_instances[] = {
 
 const char descriptor_table_protodef_custom_2eaction_2eproto[] PROTOBUF_SECTION_VARIABLE(protodesc_cold) =
   "\n\023custom.action.proto\022\006maarpc\032\013types.pro"
-  "to\"n\n\020CustomActionInit\022\023\n\006handle\030\001 \001(\tH\000"
-  "\210\001\001\022\021\n\004name\030\002 \001(\tH\001\210\001\001\022\023\n\006act_id\030\003 \001(\tH\002"
-  "\210\001\001B\t\n\007_handleB\007\n\005_nameB\t\n\007_act_id\"l\n\022Cu"
-  "stomActionSubmit\022\023\n\006handle\030\001 \001(\tH\000\210\001\001\022\023\n"
-  "\006cmd_id\030\002 \001(\tH\001\210\001\001\022\017\n\002ok\030\003 \001(\010H\002\210\001\001B\t\n\007_"
-  "handleB\t\n\007_cmd_idB\005\n\003_ok\"x\n\023CustomAction"
-  "Request\022(\n\004init\030\001 \001(\0132\030.maarpc.CustomAct"
-  "ionInitH\000\022,\n\006submit\030\002 \001(\0132\032.maarpc.Custo"
-  "mActionSubmitH\000B\t\n\007payload\"\272\001\n\024CustomAct"
-  "ionRunParam\022\024\n\007context\030\001 \001(\tH\000\210\001\001\022\021\n\004tas"
-  "k\030\002 \001(\tH\001\210\001\001\022\022\n\005param\030\003 \001(\tH\002\210\001\001\022\036\n\003box\030"
-  "\004 \001(\0132\014.maarpc.RectH\003\210\001\001\022\023\n\006detail\030\005 \001(\t"
-  "H\004\210\001\001B\n\n\010_contextB\007\n\005_taskB\010\n\006_paramB\006\n\004"
-  "_boxB\t\n\007_detail\"\236\001\n\024CustomActionResponse"
-  "\022\023\n\006act_id\030\001 \001(\tH\001\210\001\001\022\023\n\006cmd_id\030\002 \001(\tH\002\210"
-  "\001\001\022+\n\003run\030e \001(\0132\034.maarpc.CustomActionRun"
-  "ParamH\000\022\016\n\004stop\030f \001(\010H\000B\t\n\007commandB\t\n\007_a"
-  "ct_idB\t\n\007_cmd_idb\006proto3"
+  "to\"N\n\020CustomActionInit\022\023\n\006handle\030\001 \001(\tH\000"
+  "\210\001\001\022\021\n\004name\030\002 \001(\tH\001\210\001\001B\t\n\007_handleB\007\n\005_na"
+  "me\"l\n\022CustomActionSubmit\022\023\n\006handle\030\001 \001(\t"
+  "H\000\210\001\001\022\023\n\006cmd_id\030\002 \001(\tH\001\210\001\001\022\017\n\002ok\030\003 \001(\010H\002"
+  "\210\001\001B\t\n\007_handleB\t\n\007_cmd_idB\005\n\003_ok\"a\n\023Cust"
+  "omActionRequest\022\017\n\002ok\030\001 \001(\010H\001\210\001\001\022(\n\004init"
+  "\030e \001(\0132\030.maarpc.CustomActionInitH\000B\010\n\006re"
+  "sultB\005\n\003_ok\"\272\001\n\024CustomActionRunParam\022\024\n\007"
+  "context\030\001 \001(\tH\000\210\001\001\022\021\n\004task\030\002 \001(\tH\001\210\001\001\022\022\n"
+  "\005param\030\003 \001(\tH\002\210\001\001\022\036\n\003box\030\004 \001(\0132\014.maarpc."
+  "RectH\003\210\001\001\022\023\n\006detail\030\005 \001(\tH\004\210\001\001B\n\n\010_conte"
+  "xtB\007\n\005_taskB\010\n\006_paramB\006\n\004_boxB\t\n\007_detail"
+  "\"^\n\024CustomActionResponse\022+\n\003run\030e \001(\0132\034."
+  "maarpc.CustomActionRunParamH\000\022\016\n\004stop\030f "
+  "\001(\010H\000B\t\n\007commandb\006proto3"
   ;
 static const ::_pbi::DescriptorTable* const descriptor_table_custom_2eaction_2eproto_deps[1] = {
   &::descriptor_table_types_2eproto,
 };
 static ::_pbi::once_flag descriptor_table_custom_2eaction_2eproto_once;
 const ::_pbi::DescriptorTable descriptor_table_custom_2eaction_2eproto = {
-    false, false, 744, descriptor_table_protodef_custom_2eaction_2eproto,
+    false, false, 624, descriptor_table_protodef_custom_2eaction_2eproto,
     "custom.action.proto",
     &descriptor_table_custom_2eaction_2eproto_once, descriptor_table_custom_2eaction_2eproto_deps, 1, 5,
     schemas, file_default_instances, TableStruct_custom_2eaction_2eproto::offsets,
@@ -241,9 +230,6 @@ class CustomActionInit::_Internal {
   static void set_has_name(HasBits* has_bits) {
     (*has_bits)[0] |= 2u;
   }
-  static void set_has_act_id(HasBits* has_bits) {
-    (*has_bits)[0] |= 4u;
-  }
 };
 
 CustomActionInit::CustomActionInit(::PROTOBUF_NAMESPACE_ID::Arena* arena,
@@ -259,8 +245,7 @@ CustomActionInit::CustomActionInit(const CustomActionInit& from)
       decltype(_impl_._has_bits_){from._impl_._has_bits_}
     , /*decltype(_impl_._cached_size_)*/{}
     , decltype(_impl_.handle_){}
-    , decltype(_impl_.name_){}
-    , decltype(_impl_.act_id_){}};
+    , decltype(_impl_.name_){}};
 
   _internal_metadata_.MergeFrom<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(from._internal_metadata_);
   _impl_.handle_.InitDefault();
@@ -279,14 +264,6 @@ CustomActionInit::CustomActionInit(const CustomActionInit& from)
     _this->_impl_.name_.Set(from._internal_name(), 
       _this->GetArenaForAllocation());
   }
-  _impl_.act_id_.InitDefault();
-  #ifdef PROTOBUF_FORCE_COPY_DEFAULT_STRING
-    _impl_.act_id_.Set("", GetArenaForAllocation());
-  #endif // PROTOBUF_FORCE_COPY_DEFAULT_STRING
-  if (from._internal_has_act_id()) {
-    _this->_impl_.act_id_.Set(from._internal_act_id(), 
-      _this->GetArenaForAllocation());
-  }
   // @@protoc_insertion_point(copy_constructor:maarpc.CustomActionInit)
 }
 
@@ -299,7 +276,6 @@ inline void CustomActionInit::SharedCtor(
     , /*decltype(_impl_._cached_size_)*/{}
     , decltype(_impl_.handle_){}
     , decltype(_impl_.name_){}
-    , decltype(_impl_.act_id_){}
   };
   _impl_.handle_.InitDefault();
   #ifdef PROTOBUF_FORCE_COPY_DEFAULT_STRING
@@ -308,10 +284,6 @@ inline void CustomActionInit::SharedCtor(
   _impl_.name_.InitDefault();
   #ifdef PROTOBUF_FORCE_COPY_DEFAULT_STRING
     _impl_.name_.Set("", GetArenaForAllocation());
-  #endif // PROTOBUF_FORCE_COPY_DEFAULT_STRING
-  _impl_.act_id_.InitDefault();
-  #ifdef PROTOBUF_FORCE_COPY_DEFAULT_STRING
-    _impl_.act_id_.Set("", GetArenaForAllocation());
   #endif // PROTOBUF_FORCE_COPY_DEFAULT_STRING
 }
 
@@ -328,7 +300,6 @@ inline void CustomActionInit::SharedDtor() {
   GOOGLE_DCHECK(GetArenaForAllocation() == nullptr);
   _impl_.handle_.Destroy();
   _impl_.name_.Destroy();
-  _impl_.act_id_.Destroy();
 }
 
 void CustomActionInit::SetCachedSize(int size) const {
@@ -342,15 +313,12 @@ void CustomActionInit::Clear() {
   (void) cached_has_bits;
 
   cached_has_bits = _impl_._has_bits_[0];
-  if (cached_has_bits & 0x00000007u) {
+  if (cached_has_bits & 0x00000003u) {
     if (cached_has_bits & 0x00000001u) {
       _impl_.handle_.ClearNonDefaultToEmpty();
     }
     if (cached_has_bits & 0x00000002u) {
       _impl_.name_.ClearNonDefaultToEmpty();
-    }
-    if (cached_has_bits & 0x00000004u) {
-      _impl_.act_id_.ClearNonDefaultToEmpty();
     }
   }
   _impl_._has_bits_.Clear();
@@ -381,16 +349,6 @@ const char* CustomActionInit::_InternalParse(const char* ptr, ::_pbi::ParseConte
           ptr = ::_pbi::InlineGreedyStringParser(str, ptr, ctx);
           CHK_(ptr);
           CHK_(::_pbi::VerifyUTF8(str, "maarpc.CustomActionInit.name"));
-        } else
-          goto handle_unusual;
-        continue;
-      // optional string act_id = 3;
-      case 3:
-        if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 26)) {
-          auto str = _internal_mutable_act_id();
-          ptr = ::_pbi::InlineGreedyStringParser(str, ptr, ctx);
-          CHK_(ptr);
-          CHK_(::_pbi::VerifyUTF8(str, "maarpc.CustomActionInit.act_id"));
         } else
           goto handle_unusual;
         continue;
@@ -444,16 +402,6 @@ uint8_t* CustomActionInit::_InternalSerialize(
         2, this->_internal_name(), target);
   }
 
-  // optional string act_id = 3;
-  if (_internal_has_act_id()) {
-    ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::VerifyUtf8String(
-      this->_internal_act_id().data(), static_cast<int>(this->_internal_act_id().length()),
-      ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::SERIALIZE,
-      "maarpc.CustomActionInit.act_id");
-    target = stream->WriteStringMaybeAliased(
-        3, this->_internal_act_id(), target);
-  }
-
   if (PROTOBUF_PREDICT_FALSE(_internal_metadata_.have_unknown_fields())) {
     target = ::_pbi::WireFormat::InternalSerializeUnknownFieldsToArray(
         _internal_metadata_.unknown_fields<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(::PROTOBUF_NAMESPACE_ID::UnknownFieldSet::default_instance), target, stream);
@@ -471,7 +419,7 @@ size_t CustomActionInit::ByteSizeLong() const {
   (void) cached_has_bits;
 
   cached_has_bits = _impl_._has_bits_[0];
-  if (cached_has_bits & 0x00000007u) {
+  if (cached_has_bits & 0x00000003u) {
     // optional string handle = 1;
     if (cached_has_bits & 0x00000001u) {
       total_size += 1 +
@@ -484,13 +432,6 @@ size_t CustomActionInit::ByteSizeLong() const {
       total_size += 1 +
         ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::StringSize(
           this->_internal_name());
-    }
-
-    // optional string act_id = 3;
-    if (cached_has_bits & 0x00000004u) {
-      total_size += 1 +
-        ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::StringSize(
-          this->_internal_act_id());
     }
 
   }
@@ -513,15 +454,12 @@ void CustomActionInit::MergeImpl(::PROTOBUF_NAMESPACE_ID::Message& to_msg, const
   (void) cached_has_bits;
 
   cached_has_bits = from._impl_._has_bits_[0];
-  if (cached_has_bits & 0x00000007u) {
+  if (cached_has_bits & 0x00000003u) {
     if (cached_has_bits & 0x00000001u) {
       _this->_internal_set_handle(from._internal_handle());
     }
     if (cached_has_bits & 0x00000002u) {
       _this->_internal_set_name(from._internal_name());
-    }
-    if (cached_has_bits & 0x00000004u) {
-      _this->_internal_set_act_id(from._internal_act_id());
     }
   }
   _this->_internal_metadata_.MergeFrom<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(from._internal_metadata_);
@@ -551,10 +489,6 @@ void CustomActionInit::InternalSwap(CustomActionInit* other) {
   ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr::InternalSwap(
       &_impl_.name_, lhs_arena,
       &other->_impl_.name_, rhs_arena
-  );
-  ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr::InternalSwap(
-      &_impl_.act_id_, lhs_arena,
-      &other->_impl_.act_id_, rhs_arena
   );
 }
 
@@ -879,21 +813,20 @@ void CustomActionSubmit::InternalSwap(CustomActionSubmit* other) {
 
 class CustomActionRequest::_Internal {
  public:
+  using HasBits = decltype(std::declval<CustomActionRequest>()._impl_._has_bits_);
+  static void set_has_ok(HasBits* has_bits) {
+    (*has_bits)[0] |= 1u;
+  }
   static const ::maarpc::CustomActionInit& init(const CustomActionRequest* msg);
-  static const ::maarpc::CustomActionSubmit& submit(const CustomActionRequest* msg);
 };
 
 const ::maarpc::CustomActionInit&
 CustomActionRequest::_Internal::init(const CustomActionRequest* msg) {
-  return *msg->_impl_.payload_.init_;
-}
-const ::maarpc::CustomActionSubmit&
-CustomActionRequest::_Internal::submit(const CustomActionRequest* msg) {
-  return *msg->_impl_.payload_.submit_;
+  return *msg->_impl_.result_.init_;
 }
 void CustomActionRequest::set_allocated_init(::maarpc::CustomActionInit* init) {
   ::PROTOBUF_NAMESPACE_ID::Arena* message_arena = GetArenaForAllocation();
-  clear_payload();
+  clear_result();
   if (init) {
     ::PROTOBUF_NAMESPACE_ID::Arena* submessage_arena =
       ::PROTOBUF_NAMESPACE_ID::Arena::InternalGetOwningArena(init);
@@ -902,24 +835,9 @@ void CustomActionRequest::set_allocated_init(::maarpc::CustomActionInit* init) {
           message_arena, init, submessage_arena);
     }
     set_has_init();
-    _impl_.payload_.init_ = init;
+    _impl_.result_.init_ = init;
   }
   // @@protoc_insertion_point(field_set_allocated:maarpc.CustomActionRequest.init)
-}
-void CustomActionRequest::set_allocated_submit(::maarpc::CustomActionSubmit* submit) {
-  ::PROTOBUF_NAMESPACE_ID::Arena* message_arena = GetArenaForAllocation();
-  clear_payload();
-  if (submit) {
-    ::PROTOBUF_NAMESPACE_ID::Arena* submessage_arena =
-      ::PROTOBUF_NAMESPACE_ID::Arena::InternalGetOwningArena(submit);
-    if (message_arena != submessage_arena) {
-      submit = ::PROTOBUF_NAMESPACE_ID::internal::GetOwnedMessage(
-          message_arena, submit, submessage_arena);
-    }
-    set_has_submit();
-    _impl_.payload_.submit_ = submit;
-  }
-  // @@protoc_insertion_point(field_set_allocated:maarpc.CustomActionRequest.submit)
 }
 CustomActionRequest::CustomActionRequest(::PROTOBUF_NAMESPACE_ID::Arena* arena,
                          bool is_message_owned)
@@ -931,24 +849,22 @@ CustomActionRequest::CustomActionRequest(const CustomActionRequest& from)
   : ::PROTOBUF_NAMESPACE_ID::Message() {
   CustomActionRequest* const _this = this; (void)_this;
   new (&_impl_) Impl_{
-      decltype(_impl_.payload_){}
+      decltype(_impl_._has_bits_){from._impl_._has_bits_}
     , /*decltype(_impl_._cached_size_)*/{}
+    , decltype(_impl_.ok_){}
+    , decltype(_impl_.result_){}
     , /*decltype(_impl_._oneof_case_)*/{}};
 
   _internal_metadata_.MergeFrom<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(from._internal_metadata_);
-  clear_has_payload();
-  switch (from.payload_case()) {
+  _this->_impl_.ok_ = from._impl_.ok_;
+  clear_has_result();
+  switch (from.result_case()) {
     case kInit: {
       _this->_internal_mutable_init()->::maarpc::CustomActionInit::MergeFrom(
           from._internal_init());
       break;
     }
-    case kSubmit: {
-      _this->_internal_mutable_submit()->::maarpc::CustomActionSubmit::MergeFrom(
-          from._internal_submit());
-      break;
-    }
-    case PAYLOAD_NOT_SET: {
+    case RESULT_NOT_SET: {
       break;
     }
   }
@@ -960,11 +876,13 @@ inline void CustomActionRequest::SharedCtor(
   (void)arena;
   (void)is_message_owned;
   new (&_impl_) Impl_{
-      decltype(_impl_.payload_){}
+      decltype(_impl_._has_bits_){}
     , /*decltype(_impl_._cached_size_)*/{}
+    , decltype(_impl_.ok_){false}
+    , decltype(_impl_.result_){}
     , /*decltype(_impl_._oneof_case_)*/{}
   };
-  clear_has_payload();
+  clear_has_result();
 }
 
 CustomActionRequest::~CustomActionRequest() {
@@ -978,8 +896,8 @@ CustomActionRequest::~CustomActionRequest() {
 
 inline void CustomActionRequest::SharedDtor() {
   GOOGLE_DCHECK(GetArenaForAllocation() == nullptr);
-  if (has_payload()) {
-    clear_payload();
+  if (has_result()) {
+    clear_result();
   }
 }
 
@@ -987,26 +905,20 @@ void CustomActionRequest::SetCachedSize(int size) const {
   _impl_._cached_size_.Set(size);
 }
 
-void CustomActionRequest::clear_payload() {
+void CustomActionRequest::clear_result() {
 // @@protoc_insertion_point(one_of_clear_start:maarpc.CustomActionRequest)
-  switch (payload_case()) {
+  switch (result_case()) {
     case kInit: {
       if (GetArenaForAllocation() == nullptr) {
-        delete _impl_.payload_.init_;
+        delete _impl_.result_.init_;
       }
       break;
     }
-    case kSubmit: {
-      if (GetArenaForAllocation() == nullptr) {
-        delete _impl_.payload_.submit_;
-      }
-      break;
-    }
-    case PAYLOAD_NOT_SET: {
+    case RESULT_NOT_SET: {
       break;
     }
   }
-  _impl_._oneof_case_[0] = PAYLOAD_NOT_SET;
+  _impl_._oneof_case_[0] = RESULT_NOT_SET;
 }
 
 
@@ -1016,28 +928,32 @@ void CustomActionRequest::Clear() {
   // Prevent compiler warnings about cached_has_bits being unused
   (void) cached_has_bits;
 
-  clear_payload();
+  _impl_.ok_ = false;
+  clear_result();
+  _impl_._has_bits_.Clear();
   _internal_metadata_.Clear<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>();
 }
 
 const char* CustomActionRequest::_InternalParse(const char* ptr, ::_pbi::ParseContext* ctx) {
 #define CHK_(x) if (PROTOBUF_PREDICT_FALSE(!(x))) goto failure
+  _Internal::HasBits has_bits{};
   while (!ctx->Done(&ptr)) {
     uint32_t tag;
     ptr = ::_pbi::ReadTag(ptr, &tag);
     switch (tag >> 3) {
-      // .maarpc.CustomActionInit init = 1;
+      // optional bool ok = 1;
       case 1:
-        if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 10)) {
-          ptr = ctx->ParseMessage(_internal_mutable_init(), ptr);
+        if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 8)) {
+          _Internal::set_has_ok(&has_bits);
+          _impl_.ok_ = ::PROTOBUF_NAMESPACE_ID::internal::ReadVarint64(&ptr);
           CHK_(ptr);
         } else
           goto handle_unusual;
         continue;
-      // .maarpc.CustomActionSubmit submit = 2;
-      case 2:
-        if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 18)) {
-          ptr = ctx->ParseMessage(_internal_mutable_submit(), ptr);
+      // .maarpc.CustomActionInit init = 101;
+      case 101:
+        if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 42)) {
+          ptr = ctx->ParseMessage(_internal_mutable_init(), ptr);
           CHK_(ptr);
         } else
           goto handle_unusual;
@@ -1058,6 +974,7 @@ const char* CustomActionRequest::_InternalParse(const char* ptr, ::_pbi::ParseCo
     CHK_(ptr != nullptr);
   }  // while
 message_done:
+  _impl_._has_bits_.Or(has_bits);
   return ptr;
 failure:
   ptr = nullptr;
@@ -1071,18 +988,17 @@ uint8_t* CustomActionRequest::_InternalSerialize(
   uint32_t cached_has_bits = 0;
   (void) cached_has_bits;
 
-  // .maarpc.CustomActionInit init = 1;
-  if (_internal_has_init()) {
-    target = ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::
-      InternalWriteMessage(1, _Internal::init(this),
-        _Internal::init(this).GetCachedSize(), target, stream);
+  // optional bool ok = 1;
+  if (_internal_has_ok()) {
+    target = stream->EnsureSpace(target);
+    target = ::_pbi::WireFormatLite::WriteBoolToArray(1, this->_internal_ok(), target);
   }
 
-  // .maarpc.CustomActionSubmit submit = 2;
-  if (_internal_has_submit()) {
+  // .maarpc.CustomActionInit init = 101;
+  if (_internal_has_init()) {
     target = ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::
-      InternalWriteMessage(2, _Internal::submit(this),
-        _Internal::submit(this).GetCachedSize(), target, stream);
+      InternalWriteMessage(101, _Internal::init(this),
+        _Internal::init(this).GetCachedSize(), target, stream);
   }
 
   if (PROTOBUF_PREDICT_FALSE(_internal_metadata_.have_unknown_fields())) {
@@ -1101,22 +1017,21 @@ size_t CustomActionRequest::ByteSizeLong() const {
   // Prevent compiler warnings about cached_has_bits being unused
   (void) cached_has_bits;
 
-  switch (payload_case()) {
-    // .maarpc.CustomActionInit init = 1;
+  // optional bool ok = 1;
+  cached_has_bits = _impl_._has_bits_[0];
+  if (cached_has_bits & 0x00000001u) {
+    total_size += 1 + 1;
+  }
+
+  switch (result_case()) {
+    // .maarpc.CustomActionInit init = 101;
     case kInit: {
-      total_size += 1 +
+      total_size += 2 +
         ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::MessageSize(
-          *_impl_.payload_.init_);
+          *_impl_.result_.init_);
       break;
     }
-    // .maarpc.CustomActionSubmit submit = 2;
-    case kSubmit: {
-      total_size += 1 +
-        ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::MessageSize(
-          *_impl_.payload_.submit_);
-      break;
-    }
-    case PAYLOAD_NOT_SET: {
+    case RESULT_NOT_SET: {
       break;
     }
   }
@@ -1138,18 +1053,16 @@ void CustomActionRequest::MergeImpl(::PROTOBUF_NAMESPACE_ID::Message& to_msg, co
   uint32_t cached_has_bits = 0;
   (void) cached_has_bits;
 
-  switch (from.payload_case()) {
+  if (from._internal_has_ok()) {
+    _this->_internal_set_ok(from._internal_ok());
+  }
+  switch (from.result_case()) {
     case kInit: {
       _this->_internal_mutable_init()->::maarpc::CustomActionInit::MergeFrom(
           from._internal_init());
       break;
     }
-    case kSubmit: {
-      _this->_internal_mutable_submit()->::maarpc::CustomActionSubmit::MergeFrom(
-          from._internal_submit());
-      break;
-    }
-    case PAYLOAD_NOT_SET: {
+    case RESULT_NOT_SET: {
       break;
     }
   }
@@ -1170,7 +1083,9 @@ bool CustomActionRequest::IsInitialized() const {
 void CustomActionRequest::InternalSwap(CustomActionRequest* other) {
   using std::swap;
   _internal_metadata_.InternalSwap(&other->_internal_metadata_);
-  swap(_impl_.payload_, other->_impl_.payload_);
+  swap(_impl_._has_bits_[0], other->_impl_._has_bits_[0]);
+  swap(_impl_.ok_, other->_impl_.ok_);
+  swap(_impl_.result_, other->_impl_.result_);
   swap(_impl_._oneof_case_[0], other->_impl_._oneof_case_[0]);
 }
 
@@ -1622,13 +1537,6 @@ void CustomActionRunParam::InternalSwap(CustomActionRunParam* other) {
 
 class CustomActionResponse::_Internal {
  public:
-  using HasBits = decltype(std::declval<CustomActionResponse>()._impl_._has_bits_);
-  static void set_has_act_id(HasBits* has_bits) {
-    (*has_bits)[0] |= 1u;
-  }
-  static void set_has_cmd_id(HasBits* has_bits) {
-    (*has_bits)[0] |= 2u;
-  }
   static const ::maarpc::CustomActionRunParam& run(const CustomActionResponse* msg);
 };
 
@@ -1661,30 +1569,11 @@ CustomActionResponse::CustomActionResponse(const CustomActionResponse& from)
   : ::PROTOBUF_NAMESPACE_ID::Message() {
   CustomActionResponse* const _this = this; (void)_this;
   new (&_impl_) Impl_{
-      decltype(_impl_._has_bits_){from._impl_._has_bits_}
+      decltype(_impl_.command_){}
     , /*decltype(_impl_._cached_size_)*/{}
-    , decltype(_impl_.act_id_){}
-    , decltype(_impl_.cmd_id_){}
-    , decltype(_impl_.command_){}
     , /*decltype(_impl_._oneof_case_)*/{}};
 
   _internal_metadata_.MergeFrom<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(from._internal_metadata_);
-  _impl_.act_id_.InitDefault();
-  #ifdef PROTOBUF_FORCE_COPY_DEFAULT_STRING
-    _impl_.act_id_.Set("", GetArenaForAllocation());
-  #endif // PROTOBUF_FORCE_COPY_DEFAULT_STRING
-  if (from._internal_has_act_id()) {
-    _this->_impl_.act_id_.Set(from._internal_act_id(), 
-      _this->GetArenaForAllocation());
-  }
-  _impl_.cmd_id_.InitDefault();
-  #ifdef PROTOBUF_FORCE_COPY_DEFAULT_STRING
-    _impl_.cmd_id_.Set("", GetArenaForAllocation());
-  #endif // PROTOBUF_FORCE_COPY_DEFAULT_STRING
-  if (from._internal_has_cmd_id()) {
-    _this->_impl_.cmd_id_.Set(from._internal_cmd_id(), 
-      _this->GetArenaForAllocation());
-  }
   clear_has_command();
   switch (from.command_case()) {
     case kRun: {
@@ -1708,21 +1597,10 @@ inline void CustomActionResponse::SharedCtor(
   (void)arena;
   (void)is_message_owned;
   new (&_impl_) Impl_{
-      decltype(_impl_._has_bits_){}
+      decltype(_impl_.command_){}
     , /*decltype(_impl_._cached_size_)*/{}
-    , decltype(_impl_.act_id_){}
-    , decltype(_impl_.cmd_id_){}
-    , decltype(_impl_.command_){}
     , /*decltype(_impl_._oneof_case_)*/{}
   };
-  _impl_.act_id_.InitDefault();
-  #ifdef PROTOBUF_FORCE_COPY_DEFAULT_STRING
-    _impl_.act_id_.Set("", GetArenaForAllocation());
-  #endif // PROTOBUF_FORCE_COPY_DEFAULT_STRING
-  _impl_.cmd_id_.InitDefault();
-  #ifdef PROTOBUF_FORCE_COPY_DEFAULT_STRING
-    _impl_.cmd_id_.Set("", GetArenaForAllocation());
-  #endif // PROTOBUF_FORCE_COPY_DEFAULT_STRING
   clear_has_command();
 }
 
@@ -1737,8 +1615,6 @@ CustomActionResponse::~CustomActionResponse() {
 
 inline void CustomActionResponse::SharedDtor() {
   GOOGLE_DCHECK(GetArenaForAllocation() == nullptr);
-  _impl_.act_id_.Destroy();
-  _impl_.cmd_id_.Destroy();
   if (has_command()) {
     clear_command();
   }
@@ -1775,47 +1651,16 @@ void CustomActionResponse::Clear() {
   // Prevent compiler warnings about cached_has_bits being unused
   (void) cached_has_bits;
 
-  cached_has_bits = _impl_._has_bits_[0];
-  if (cached_has_bits & 0x00000003u) {
-    if (cached_has_bits & 0x00000001u) {
-      _impl_.act_id_.ClearNonDefaultToEmpty();
-    }
-    if (cached_has_bits & 0x00000002u) {
-      _impl_.cmd_id_.ClearNonDefaultToEmpty();
-    }
-  }
   clear_command();
-  _impl_._has_bits_.Clear();
   _internal_metadata_.Clear<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>();
 }
 
 const char* CustomActionResponse::_InternalParse(const char* ptr, ::_pbi::ParseContext* ctx) {
 #define CHK_(x) if (PROTOBUF_PREDICT_FALSE(!(x))) goto failure
-  _Internal::HasBits has_bits{};
   while (!ctx->Done(&ptr)) {
     uint32_t tag;
     ptr = ::_pbi::ReadTag(ptr, &tag);
     switch (tag >> 3) {
-      // optional string act_id = 1;
-      case 1:
-        if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 10)) {
-          auto str = _internal_mutable_act_id();
-          ptr = ::_pbi::InlineGreedyStringParser(str, ptr, ctx);
-          CHK_(ptr);
-          CHK_(::_pbi::VerifyUTF8(str, "maarpc.CustomActionResponse.act_id"));
-        } else
-          goto handle_unusual;
-        continue;
-      // optional string cmd_id = 2;
-      case 2:
-        if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 18)) {
-          auto str = _internal_mutable_cmd_id();
-          ptr = ::_pbi::InlineGreedyStringParser(str, ptr, ctx);
-          CHK_(ptr);
-          CHK_(::_pbi::VerifyUTF8(str, "maarpc.CustomActionResponse.cmd_id"));
-        } else
-          goto handle_unusual;
-        continue;
       // .maarpc.CustomActionRunParam run = 101;
       case 101:
         if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 42)) {
@@ -1848,7 +1693,6 @@ const char* CustomActionResponse::_InternalParse(const char* ptr, ::_pbi::ParseC
     CHK_(ptr != nullptr);
   }  // while
 message_done:
-  _impl_._has_bits_.Or(has_bits);
   return ptr;
 failure:
   ptr = nullptr;
@@ -1861,26 +1705,6 @@ uint8_t* CustomActionResponse::_InternalSerialize(
   // @@protoc_insertion_point(serialize_to_array_start:maarpc.CustomActionResponse)
   uint32_t cached_has_bits = 0;
   (void) cached_has_bits;
-
-  // optional string act_id = 1;
-  if (_internal_has_act_id()) {
-    ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::VerifyUtf8String(
-      this->_internal_act_id().data(), static_cast<int>(this->_internal_act_id().length()),
-      ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::SERIALIZE,
-      "maarpc.CustomActionResponse.act_id");
-    target = stream->WriteStringMaybeAliased(
-        1, this->_internal_act_id(), target);
-  }
-
-  // optional string cmd_id = 2;
-  if (_internal_has_cmd_id()) {
-    ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::VerifyUtf8String(
-      this->_internal_cmd_id().data(), static_cast<int>(this->_internal_cmd_id().length()),
-      ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::SERIALIZE,
-      "maarpc.CustomActionResponse.cmd_id");
-    target = stream->WriteStringMaybeAliased(
-        2, this->_internal_cmd_id(), target);
-  }
 
   // .maarpc.CustomActionRunParam run = 101;
   if (_internal_has_run()) {
@@ -1911,23 +1735,6 @@ size_t CustomActionResponse::ByteSizeLong() const {
   // Prevent compiler warnings about cached_has_bits being unused
   (void) cached_has_bits;
 
-  cached_has_bits = _impl_._has_bits_[0];
-  if (cached_has_bits & 0x00000003u) {
-    // optional string act_id = 1;
-    if (cached_has_bits & 0x00000001u) {
-      total_size += 1 +
-        ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::StringSize(
-          this->_internal_act_id());
-    }
-
-    // optional string cmd_id = 2;
-    if (cached_has_bits & 0x00000002u) {
-      total_size += 1 +
-        ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::StringSize(
-          this->_internal_cmd_id());
-    }
-
-  }
   switch (command_case()) {
     // .maarpc.CustomActionRunParam run = 101;
     case kRun: {
@@ -1963,15 +1770,6 @@ void CustomActionResponse::MergeImpl(::PROTOBUF_NAMESPACE_ID::Message& to_msg, c
   uint32_t cached_has_bits = 0;
   (void) cached_has_bits;
 
-  cached_has_bits = from._impl_._has_bits_[0];
-  if (cached_has_bits & 0x00000003u) {
-    if (cached_has_bits & 0x00000001u) {
-      _this->_internal_set_act_id(from._internal_act_id());
-    }
-    if (cached_has_bits & 0x00000002u) {
-      _this->_internal_set_cmd_id(from._internal_cmd_id());
-    }
-  }
   switch (from.command_case()) {
     case kRun: {
       _this->_internal_mutable_run()->::maarpc::CustomActionRunParam::MergeFrom(
@@ -2002,18 +1800,7 @@ bool CustomActionResponse::IsInitialized() const {
 
 void CustomActionResponse::InternalSwap(CustomActionResponse* other) {
   using std::swap;
-  auto* lhs_arena = GetArenaForAllocation();
-  auto* rhs_arena = other->GetArenaForAllocation();
   _internal_metadata_.InternalSwap(&other->_internal_metadata_);
-  swap(_impl_._has_bits_[0], other->_impl_._has_bits_[0]);
-  ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr::InternalSwap(
-      &_impl_.act_id_, lhs_arena,
-      &other->_impl_.act_id_, rhs_arena
-  );
-  ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr::InternalSwap(
-      &_impl_.cmd_id_, lhs_arena,
-      &other->_impl_.cmd_id_, rhs_arena
-  );
   swap(_impl_.command_, other->_impl_.command_);
   swap(_impl_._oneof_case_[0], other->_impl_._oneof_case_[0]);
 }
