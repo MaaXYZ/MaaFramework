@@ -213,7 +213,7 @@ static MaaBool _stop_app(MaaStringView entry, MaaTransparentArg arg)
     return request.ok();
 }
 
-static MaaBool _get_resolution(int32_t* width, int32_t* height, MaaTransparentArg arg)
+static MaaBool _get_resolution(MaaTransparentArg arg, int32_t* width, int32_t* height)
 {
     auto info = reinterpret_cast<ControllerImpl::CustomControllerInfo*>(arg);
     auto stream = info->stream;
@@ -235,7 +235,7 @@ static MaaBool _get_resolution(int32_t* width, int32_t* height, MaaTransparentAr
     return request.ok();
 }
 
-static MaaBool _get_image(MaaImageBufferHandle buffer, MaaTransparentArg arg)
+static MaaBool _get_image(MaaTransparentArg arg, MaaImageBufferHandle buffer)
 {
     auto info = reinterpret_cast<ControllerImpl::CustomControllerInfo*>(arg);
     auto stream = info->stream;
@@ -256,7 +256,7 @@ static MaaBool _get_image(MaaImageBufferHandle buffer, MaaTransparentArg arg)
     return request.ok();
 }
 
-static MaaBool _get_uuid(MaaStringBufferHandle buffer, MaaTransparentArg arg)
+static MaaBool _get_uuid(MaaTransparentArg arg, MaaStringBufferHandle buffer)
 {
     auto info = reinterpret_cast<ControllerImpl::CustomControllerInfo*>(arg);
     auto stream = info->stream;
@@ -278,9 +278,9 @@ static MaaBool _get_uuid(MaaStringBufferHandle buffer, MaaTransparentArg arg)
     return request.ok();
 }
 
-static MaaCustomControllerAPI customControllerApi = { _set_option,     _connect,   _click,     _swipe,     _touch_down,
-                                                      _touch_move,     _touch_up,  _press_key, _start_app, _stop_app,
-                                                      _get_resolution, _get_image, _get_uuid };
+static MaaCustomControllerAPI customControllerApi = { _set_option,     _connect,    _click,    _swipe,     _press_key,
+                                                      _touch_down,     _touch_move, _touch_up, _start_app, _stop_app,
+                                                      _get_resolution, _get_image,  _get_uuid };
 
 Status ControllerImpl::create_custom(
     ServerContext* context,

@@ -43,8 +43,8 @@ Status InstanceImpl::destroy(ServerContext* context, const ::maarpc::HandleReque
 }
 
 static MaaBool _analyze(MaaSyncContextHandle sync_context, const MaaImageBufferHandle image, MaaStringView task_name,
-                        MaaStringView custom_recognition_param, MaaRectHandle out_box,
-                        MaaStringBufferHandle detail_buff, MaaTransparentArg arg)
+                        MaaStringView custom_recognition_param, MaaTransparentArg arg, MaaRectHandle out_box,
+                        MaaStringBufferHandle detail_buff)
 {
     auto info = reinterpret_cast<InstanceImpl::CustomRecognizerInfo*>(arg);
     auto stream = info->stream;
