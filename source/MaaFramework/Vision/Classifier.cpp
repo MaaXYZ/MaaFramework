@@ -1,6 +1,6 @@
 #include "Classifier.h"
 
-#include <onnxruntime/core/session/onnxruntime_cxx_api.h>
+#include <onnxruntime/onnxruntime_cxx_api.h>
 
 #include "Utils/NoWarningCV.hpp"
 #include "Utils/Ranges.hpp"
