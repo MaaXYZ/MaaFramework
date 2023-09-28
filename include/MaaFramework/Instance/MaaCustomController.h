@@ -15,12 +15,11 @@ extern "C"
         MaaBool (*connect)(MaaTransparentArg arg);
         MaaBool (*click)(int32_t x, int32_t y, MaaTransparentArg arg);
         MaaBool (*swipe)(int32_t x1, int32_t y1, int32_t x2, int32_t y2, int32_t duration, MaaTransparentArg arg);
+        MaaBool (*press_key)(int32_t keycode, MaaTransparentArg arg);
 
         MaaBool (*touch_down)(int32_t contact, int32_t x, int32_t y, int32_t pressure, MaaTransparentArg arg);
         MaaBool (*touch_move)(int32_t contact, int32_t x, int32_t y, int32_t pressure, MaaTransparentArg arg);
         MaaBool (*touch_up)(int32_t contact, MaaTransparentArg arg);
-
-        MaaBool (*press_key)(int32_t keycode, MaaTransparentArg arg);
 
         MaaBool (*start_app)(MaaStringView package_name, MaaTransparentArg arg);
         MaaBool (*stop_app)(MaaStringView package_name, MaaTransparentArg arg);
