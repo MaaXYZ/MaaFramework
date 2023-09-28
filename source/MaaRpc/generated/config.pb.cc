@@ -29,22 +29,18 @@ static constexpr ::_pbi::MigrationSchema* schemas = nullptr;
 static constexpr ::_pb::Message* const* file_default_instances = nullptr;
 
 const char descriptor_table_protodef_config_2eproto[] PROTOBUF_SECTION_VARIABLE(protodesc_cold) =
-  "\n\014config.proto\022\006maarpc\032\013types.proto2\252\002\n\006"
-  "Config\0223\n\004init\022\024.maarpc.EmptyRequest\032\025.m"
-  "aarpc.EmptyResponse\0225\n\006uninit\022\024.maarpc.E"
-  "mptyRequest\032\025.maarpc.EmptyResponse\022;\n\nge"
-  "t_custom\022\025.maarpc.StringRequest\032\026.maarpc"
-  ".StringResponse\022<\n\nset_custom\022\027.maarpc.K"
-  "eyValueRequest\032\025.maarpc.EmptyResponse\0229\n"
-  "\013config_size\022\024.maarpc.EmptyRequest\032\024.maa"
-  "rpc.SizeResponseb\006proto3"
+  "\n\014config.proto\022\006maarpc\032\013types.proto2t\n\006C"
+  "onfig\0223\n\004init\022\024.maarpc.EmptyRequest\032\025.ma"
+  "arpc.EmptyResponse\0225\n\006uninit\022\024.maarpc.Em"
+  "ptyRequest\032\025.maarpc.EmptyResponseb\006proto"
+  "3"
   ;
 static const ::_pbi::DescriptorTable* const descriptor_table_config_2eproto_deps[1] = {
   &::descriptor_table_types_2eproto,
 };
 static ::_pbi::once_flag descriptor_table_config_2eproto_once;
 const ::_pbi::DescriptorTable descriptor_table_config_2eproto = {
-    false, false, 344, descriptor_table_protodef_config_2eproto,
+    false, false, 161, descriptor_table_protodef_config_2eproto,
     "config.proto",
     &descriptor_table_config_2eproto_once, descriptor_table_config_2eproto_deps, 1, 0,
     schemas, file_default_instances, TableStruct_config_2eproto::offsets,

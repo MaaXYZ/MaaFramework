@@ -12,6 +12,7 @@ struct ControllerImpl;
 struct SyncContextImpl;
 struct InstanceImpl;
 struct DeviceImpl;
+struct ConfigImpl;
 
 struct Context
 {
@@ -29,4 +30,5 @@ struct Context
     SyncContextImpl* syncctxImpl;
     InstanceImpl* instanceImpl;
     DeviceImpl* deviceImpl;
+    ConfigImpl* configImpl;
 };

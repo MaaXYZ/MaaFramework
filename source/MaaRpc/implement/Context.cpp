@@ -1,4 +1,5 @@
 #include "Buffer.h"
+#include "Config.h"
 #include "Controller.h"
 #include "Device.h"
 #include "Instance.h"
@@ -19,10 +20,12 @@ Context::Context()
     syncctxImpl = new SyncContextImpl(imageImpl);
     instanceImpl = new InstanceImpl(utilityImpl, imageImpl, resourceImpl, controllerImpl);
     deviceImpl = new DeviceImpl();
+    configImpl = new ConfigImpl();
 }
 
 Context::~Context()
 {
+    delete configImpl;
     delete deviceImpl;
     delete instanceImpl;
     delete syncctxImpl;
@@ -41,4 +44,5 @@ void Context::regService(::grpc::ServerBuilder& builder)
     builder.RegisterService(syncctxImpl);
     builder.RegisterService(instanceImpl);
     builder.RegisterService(deviceImpl);
+    builder.RegisterService(configImpl);
 }

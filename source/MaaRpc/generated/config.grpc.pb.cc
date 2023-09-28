@@ -24,9 +24,6 @@ namespace maarpc {
 static const char* Config_method_names[] = {
   "/maarpc.Config/init",
   "/maarpc.Config/uninit",
-  "/maarpc.Config/get_custom",
-  "/maarpc.Config/set_custom",
-  "/maarpc.Config/config_size",
 };
 
 std::unique_ptr< Config::Stub> Config::NewStub(const std::shared_ptr< ::grpc::ChannelInterface>& channel, const ::grpc::StubOptions& options) {
@@ -38,9 +35,6 @@ std::unique_ptr< Config::Stub> Config::NewStub(const std::shared_ptr< ::grpc::Ch
 Config::Stub::Stub(const std::shared_ptr< ::grpc::ChannelInterface>& channel, const ::grpc::StubOptions& options)
   : channel_(channel), rpcmethod_init_(Config_method_names[0], options.suffix_for_stats(),::grpc::internal::RpcMethod::NORMAL_RPC, channel)
   , rpcmethod_uninit_(Config_method_names[1], options.suffix_for_stats(),::grpc::internal::RpcMethod::NORMAL_RPC, channel)
-  , rpcmethod_get_custom_(Config_method_names[2], options.suffix_for_stats(),::grpc::internal::RpcMethod::NORMAL_RPC, channel)
-  , rpcmethod_set_custom_(Config_method_names[3], options.suffix_for_stats(),::grpc::internal::RpcMethod::NORMAL_RPC, channel)
-  , rpcmethod_config_size_(Config_method_names[4], options.suffix_for_stats(),::grpc::internal::RpcMethod::NORMAL_RPC, channel)
   {}
 
 ::grpc::Status Config::Stub::init(::grpc::ClientContext* context, const ::maarpc::EmptyRequest& request, ::maarpc::EmptyResponse* response) {
@@ -89,75 +83,6 @@ void Config::Stub::async::uninit(::grpc::ClientContext* context, const ::maarpc:
   return result;
 }
 
-::grpc::Status Config::Stub::get_custom(::grpc::ClientContext* context, const ::maarpc::StringRequest& request, ::maarpc::StringResponse* response) {
-  return ::grpc::internal::BlockingUnaryCall< ::maarpc::StringRequest, ::maarpc::StringResponse, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(channel_.get(), rpcmethod_get_custom_, context, request, response);
-}
-
-void Config::Stub::async::get_custom(::grpc::ClientContext* context, const ::maarpc::StringRequest* request, ::maarpc::StringResponse* response, std::function<void(::grpc::Status)> f) {
-  ::grpc::internal::CallbackUnaryCall< ::maarpc::StringRequest, ::maarpc::StringResponse, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(stub_->channel_.get(), stub_->rpcmethod_get_custom_, context, request, response, std::move(f));
-}
-
-void Config::Stub::async::get_custom(::grpc::ClientContext* context, const ::maarpc::StringRequest* request, ::maarpc::StringResponse* response, ::grpc::ClientUnaryReactor* reactor) {
-  ::grpc::internal::ClientCallbackUnaryFactory::Create< ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(stub_->channel_.get(), stub_->rpcmethod_get_custom_, context, request, response, reactor);
-}
-
-::grpc::ClientAsyncResponseReader< ::maarpc::StringResponse>* Config::Stub::PrepareAsyncget_customRaw(::grpc::ClientContext* context, const ::maarpc::StringRequest& request, ::grpc::CompletionQueue* cq) {
-  return ::grpc::internal::ClientAsyncResponseReaderHelper::Create< ::maarpc::StringResponse, ::maarpc::StringRequest, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(channel_.get(), cq, rpcmethod_get_custom_, context, request);
-}
-
-::grpc::ClientAsyncResponseReader< ::maarpc::StringResponse>* Config::Stub::Asyncget_customRaw(::grpc::ClientContext* context, const ::maarpc::StringRequest& request, ::grpc::CompletionQueue* cq) {
-  auto* result =
-    this->PrepareAsyncget_customRaw(context, request, cq);
-  result->StartCall();
-  return result;
-}
-
-::grpc::Status Config::Stub::set_custom(::grpc::ClientContext* context, const ::maarpc::KeyValueRequest& request, ::maarpc::EmptyResponse* response) {
-  return ::grpc::internal::BlockingUnaryCall< ::maarpc::KeyValueRequest, ::maarpc::EmptyResponse, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(channel_.get(), rpcmethod_set_custom_, context, request, response);
-}
-
-void Config::Stub::async::set_custom(::grpc::ClientContext* context, const ::maarpc::KeyValueRequest* request, ::maarpc::EmptyResponse* response, std::function<void(::grpc::Status)> f) {
-  ::grpc::internal::CallbackUnaryCall< ::maarpc::KeyValueRequest, ::maarpc::EmptyResponse, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(stub_->channel_.get(), stub_->rpcmethod_set_custom_, context, request, response, std::move(f));
-}
-
-void Config::Stub::async::set_custom(::grpc::ClientContext* context, const ::maarpc::KeyValueRequest* request, ::maarpc::EmptyResponse* response, ::grpc::ClientUnaryReactor* reactor) {
-  ::grpc::internal::ClientCallbackUnaryFactory::Create< ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(stub_->channel_.get(), stub_->rpcmethod_set_custom_, context, request, response, reactor);
-}
-
-::grpc::ClientAsyncResponseReader< ::maarpc::EmptyResponse>* Config::Stub::PrepareAsyncset_customRaw(::grpc::ClientContext* context, const ::maarpc::KeyValueRequest& request, ::grpc::CompletionQueue* cq) {
-  return ::grpc::internal::ClientAsyncResponseReaderHelper::Create< ::maarpc::EmptyResponse, ::maarpc::KeyValueRequest, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(channel_.get(), cq, rpcmethod_set_custom_, context, request);
-}
-
-::grpc::ClientAsyncResponseReader< ::maarpc::EmptyResponse>* Config::Stub::Asyncset_customRaw(::grpc::ClientContext* context, const ::maarpc::KeyValueRequest& request, ::grpc::CompletionQueue* cq) {
-  auto* result =
-    this->PrepareAsyncset_customRaw(context, request, cq);
-  result->StartCall();
-  return result;
-}
-
-::grpc::Status Config::Stub::config_size(::grpc::ClientContext* context, const ::maarpc::EmptyRequest& request, ::maarpc::SizeResponse* response) {
-  return ::grpc::internal::BlockingUnaryCall< ::maarpc::EmptyRequest, ::maarpc::SizeResponse, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(channel_.get(), rpcmethod_config_size_, context, request, response);
-}
-
-void Config::Stub::async::config_size(::grpc::ClientContext* context, const ::maarpc::EmptyRequest* request, ::maarpc::SizeResponse* response, std::function<void(::grpc::Status)> f) {
-  ::grpc::internal::CallbackUnaryCall< ::maarpc::EmptyRequest, ::maarpc::SizeResponse, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(stub_->channel_.get(), stub_->rpcmethod_config_size_, context, request, response, std::move(f));
-}
-
-void Config::Stub::async::config_size(::grpc::ClientContext* context, const ::maarpc::EmptyRequest* request, ::maarpc::SizeResponse* response, ::grpc::ClientUnaryReactor* reactor) {
-  ::grpc::internal::ClientCallbackUnaryFactory::Create< ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(stub_->channel_.get(), stub_->rpcmethod_config_size_, context, request, response, reactor);
-}
-
-::grpc::ClientAsyncResponseReader< ::maarpc::SizeResponse>* Config::Stub::PrepareAsyncconfig_sizeRaw(::grpc::ClientContext* context, const ::maarpc::EmptyRequest& request, ::grpc::CompletionQueue* cq) {
-  return ::grpc::internal::ClientAsyncResponseReaderHelper::Create< ::maarpc::SizeResponse, ::maarpc::EmptyRequest, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(channel_.get(), cq, rpcmethod_config_size_, context, request);
-}
-
-::grpc::ClientAsyncResponseReader< ::maarpc::SizeResponse>* Config::Stub::Asyncconfig_sizeRaw(::grpc::ClientContext* context, const ::maarpc::EmptyRequest& request, ::grpc::CompletionQueue* cq) {
-  auto* result =
-    this->PrepareAsyncconfig_sizeRaw(context, request, cq);
-  result->StartCall();
-  return result;
-}
-
 Config::Service::Service() {
   AddMethod(new ::grpc::internal::RpcServiceMethod(
       Config_method_names[0],
@@ -179,36 +104,6 @@ Config::Service::Service() {
              ::maarpc::EmptyResponse* resp) {
                return service->uninit(ctx, req, resp);
              }, this)));
-  AddMethod(new ::grpc::internal::RpcServiceMethod(
-      Config_method_names[2],
-      ::grpc::internal::RpcMethod::NORMAL_RPC,
-      new ::grpc::internal::RpcMethodHandler< Config::Service, ::maarpc::StringRequest, ::maarpc::StringResponse, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(
-          [](Config::Service* service,
-             ::grpc::ServerContext* ctx,
-             const ::maarpc::StringRequest* req,
-             ::maarpc::StringResponse* resp) {
-               return service->get_custom(ctx, req, resp);
-             }, this)));
-  AddMethod(new ::grpc::internal::RpcServiceMethod(
-      Config_method_names[3],
-      ::grpc::internal::RpcMethod::NORMAL_RPC,
-      new ::grpc::internal::RpcMethodHandler< Config::Service, ::maarpc::KeyValueRequest, ::maarpc::EmptyResponse, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(
-          [](Config::Service* service,
-             ::grpc::ServerContext* ctx,
-             const ::maarpc::KeyValueRequest* req,
-             ::maarpc::EmptyResponse* resp) {
-               return service->set_custom(ctx, req, resp);
-             }, this)));
-  AddMethod(new ::grpc::internal::RpcServiceMethod(
-      Config_method_names[4],
-      ::grpc::internal::RpcMethod::NORMAL_RPC,
-      new ::grpc::internal::RpcMethodHandler< Config::Service, ::maarpc::EmptyRequest, ::maarpc::SizeResponse, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(
-          [](Config::Service* service,
-             ::grpc::ServerContext* ctx,
-             const ::maarpc::EmptyRequest* req,
-             ::maarpc::SizeResponse* resp) {
-               return service->config_size(ctx, req, resp);
-             }, this)));
 }
 
 Config::Service::~Service() {
@@ -222,27 +117,6 @@ Config::Service::~Service() {
 }
 
 ::grpc::Status Config::Service::uninit(::grpc::ServerContext* context, const ::maarpc::EmptyRequest* request, ::maarpc::EmptyResponse* response) {
-  (void) context;
-  (void) request;
-  (void) response;
-  return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
-}
-
-::grpc::Status Config::Service::get_custom(::grpc::ServerContext* context, const ::maarpc::StringRequest* request, ::maarpc::StringResponse* response) {
-  (void) context;
-  (void) request;
-  (void) response;
-  return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
-}
-
-::grpc::Status Config::Service::set_custom(::grpc::ServerContext* context, const ::maarpc::KeyValueRequest* request, ::maarpc::EmptyResponse* response) {
-  (void) context;
-  (void) request;
-  (void) response;
-  return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
-}
-
-::grpc::Status Config::Service::config_size(::grpc::ServerContext* context, const ::maarpc::EmptyRequest* request, ::maarpc::SizeResponse* response) {
   (void) context;
   (void) request;
   (void) response;

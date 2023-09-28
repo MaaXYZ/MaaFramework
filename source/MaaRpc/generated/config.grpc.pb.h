@@ -49,27 +49,6 @@ class Config final {
     std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::maarpc::EmptyResponse>> PrepareAsyncuninit(::grpc::ClientContext* context, const ::maarpc::EmptyRequest& request, ::grpc::CompletionQueue* cq) {
       return std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::maarpc::EmptyResponse>>(PrepareAsyncuninitRaw(context, request, cq));
     }
-    virtual ::grpc::Status get_custom(::grpc::ClientContext* context, const ::maarpc::StringRequest& request, ::maarpc::StringResponse* response) = 0;
-    std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::maarpc::StringResponse>> Asyncget_custom(::grpc::ClientContext* context, const ::maarpc::StringRequest& request, ::grpc::CompletionQueue* cq) {
-      return std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::maarpc::StringResponse>>(Asyncget_customRaw(context, request, cq));
-    }
-    std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::maarpc::StringResponse>> PrepareAsyncget_custom(::grpc::ClientContext* context, const ::maarpc::StringRequest& request, ::grpc::CompletionQueue* cq) {
-      return std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::maarpc::StringResponse>>(PrepareAsyncget_customRaw(context, request, cq));
-    }
-    virtual ::grpc::Status set_custom(::grpc::ClientContext* context, const ::maarpc::KeyValueRequest& request, ::maarpc::EmptyResponse* response) = 0;
-    std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::maarpc::EmptyResponse>> Asyncset_custom(::grpc::ClientContext* context, const ::maarpc::KeyValueRequest& request, ::grpc::CompletionQueue* cq) {
-      return std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::maarpc::EmptyResponse>>(Asyncset_customRaw(context, request, cq));
-    }
-    std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::maarpc::EmptyResponse>> PrepareAsyncset_custom(::grpc::ClientContext* context, const ::maarpc::KeyValueRequest& request, ::grpc::CompletionQueue* cq) {
-      return std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::maarpc::EmptyResponse>>(PrepareAsyncset_customRaw(context, request, cq));
-    }
-    virtual ::grpc::Status config_size(::grpc::ClientContext* context, const ::maarpc::EmptyRequest& request, ::maarpc::SizeResponse* response) = 0;
-    std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::maarpc::SizeResponse>> Asyncconfig_size(::grpc::ClientContext* context, const ::maarpc::EmptyRequest& request, ::grpc::CompletionQueue* cq) {
-      return std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::maarpc::SizeResponse>>(Asyncconfig_sizeRaw(context, request, cq));
-    }
-    std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::maarpc::SizeResponse>> PrepareAsyncconfig_size(::grpc::ClientContext* context, const ::maarpc::EmptyRequest& request, ::grpc::CompletionQueue* cq) {
-      return std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::maarpc::SizeResponse>>(PrepareAsyncconfig_sizeRaw(context, request, cq));
-    }
     class async_interface {
      public:
       virtual ~async_interface() {}
@@ -77,12 +56,6 @@ class Config final {
       virtual void init(::grpc::ClientContext* context, const ::maarpc::EmptyRequest* request, ::maarpc::EmptyResponse* response, ::grpc::ClientUnaryReactor* reactor) = 0;
       virtual void uninit(::grpc::ClientContext* context, const ::maarpc::EmptyRequest* request, ::maarpc::EmptyResponse* response, std::function<void(::grpc::Status)>) = 0;
       virtual void uninit(::grpc::ClientContext* context, const ::maarpc::EmptyRequest* request, ::maarpc::EmptyResponse* response, ::grpc::ClientUnaryReactor* reactor) = 0;
-      virtual void get_custom(::grpc::ClientContext* context, const ::maarpc::StringRequest* request, ::maarpc::StringResponse* response, std::function<void(::grpc::Status)>) = 0;
-      virtual void get_custom(::grpc::ClientContext* context, const ::maarpc::StringRequest* request, ::maarpc::StringResponse* response, ::grpc::ClientUnaryReactor* reactor) = 0;
-      virtual void set_custom(::grpc::ClientContext* context, const ::maarpc::KeyValueRequest* request, ::maarpc::EmptyResponse* response, std::function<void(::grpc::Status)>) = 0;
-      virtual void set_custom(::grpc::ClientContext* context, const ::maarpc::KeyValueRequest* request, ::maarpc::EmptyResponse* response, ::grpc::ClientUnaryReactor* reactor) = 0;
-      virtual void config_size(::grpc::ClientContext* context, const ::maarpc::EmptyRequest* request, ::maarpc::SizeResponse* response, std::function<void(::grpc::Status)>) = 0;
-      virtual void config_size(::grpc::ClientContext* context, const ::maarpc::EmptyRequest* request, ::maarpc::SizeResponse* response, ::grpc::ClientUnaryReactor* reactor) = 0;
     };
     typedef class async_interface experimental_async_interface;
     virtual class async_interface* async() { return nullptr; }
@@ -92,12 +65,6 @@ class Config final {
     virtual ::grpc::ClientAsyncResponseReaderInterface< ::maarpc::EmptyResponse>* PrepareAsyncinitRaw(::grpc::ClientContext* context, const ::maarpc::EmptyRequest& request, ::grpc::CompletionQueue* cq) = 0;
     virtual ::grpc::ClientAsyncResponseReaderInterface< ::maarpc::EmptyResponse>* AsyncuninitRaw(::grpc::ClientContext* context, const ::maarpc::EmptyRequest& request, ::grpc::CompletionQueue* cq) = 0;
     virtual ::grpc::ClientAsyncResponseReaderInterface< ::maarpc::EmptyResponse>* PrepareAsyncuninitRaw(::grpc::ClientContext* context, const ::maarpc::EmptyRequest& request, ::grpc::CompletionQueue* cq) = 0;
-    virtual ::grpc::ClientAsyncResponseReaderInterface< ::maarpc::StringResponse>* Asyncget_customRaw(::grpc::ClientContext* context, const ::maarpc::StringRequest& request, ::grpc::CompletionQueue* cq) = 0;
-    virtual ::grpc::ClientAsyncResponseReaderInterface< ::maarpc::StringResponse>* PrepareAsyncget_customRaw(::grpc::ClientContext* context, const ::maarpc::StringRequest& request, ::grpc::CompletionQueue* cq) = 0;
-    virtual ::grpc::ClientAsyncResponseReaderInterface< ::maarpc::EmptyResponse>* Asyncset_customRaw(::grpc::ClientContext* context, const ::maarpc::KeyValueRequest& request, ::grpc::CompletionQueue* cq) = 0;
-    virtual ::grpc::ClientAsyncResponseReaderInterface< ::maarpc::EmptyResponse>* PrepareAsyncset_customRaw(::grpc::ClientContext* context, const ::maarpc::KeyValueRequest& request, ::grpc::CompletionQueue* cq) = 0;
-    virtual ::grpc::ClientAsyncResponseReaderInterface< ::maarpc::SizeResponse>* Asyncconfig_sizeRaw(::grpc::ClientContext* context, const ::maarpc::EmptyRequest& request, ::grpc::CompletionQueue* cq) = 0;
-    virtual ::grpc::ClientAsyncResponseReaderInterface< ::maarpc::SizeResponse>* PrepareAsyncconfig_sizeRaw(::grpc::ClientContext* context, const ::maarpc::EmptyRequest& request, ::grpc::CompletionQueue* cq) = 0;
   };
   class Stub final : public StubInterface {
    public:
@@ -116,27 +83,6 @@ class Config final {
     std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::maarpc::EmptyResponse>> PrepareAsyncuninit(::grpc::ClientContext* context, const ::maarpc::EmptyRequest& request, ::grpc::CompletionQueue* cq) {
       return std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::maarpc::EmptyResponse>>(PrepareAsyncuninitRaw(context, request, cq));
     }
-    ::grpc::Status get_custom(::grpc::ClientContext* context, const ::maarpc::StringRequest& request, ::maarpc::StringResponse* response) override;
-    std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::maarpc::StringResponse>> Asyncget_custom(::grpc::ClientContext* context, const ::maarpc::StringRequest& request, ::grpc::CompletionQueue* cq) {
-      return std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::maarpc::StringResponse>>(Asyncget_customRaw(context, request, cq));
-    }
-    std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::maarpc::StringResponse>> PrepareAsyncget_custom(::grpc::ClientContext* context, const ::maarpc::StringRequest& request, ::grpc::CompletionQueue* cq) {
-      return std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::maarpc::StringResponse>>(PrepareAsyncget_customRaw(context, request, cq));
-    }
-    ::grpc::Status set_custom(::grpc::ClientContext* context, const ::maarpc::KeyValueRequest& request, ::maarpc::EmptyResponse* response) override;
-    std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::maarpc::EmptyResponse>> Asyncset_custom(::grpc::ClientContext* context, const ::maarpc::KeyValueRequest& request, ::grpc::CompletionQueue* cq) {
-      return std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::maarpc::EmptyResponse>>(Asyncset_customRaw(context, request, cq));
-    }
-    std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::maarpc::EmptyResponse>> PrepareAsyncset_custom(::grpc::ClientContext* context, const ::maarpc::KeyValueRequest& request, ::grpc::CompletionQueue* cq) {
-      return std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::maarpc::EmptyResponse>>(PrepareAsyncset_customRaw(context, request, cq));
-    }
-    ::grpc::Status config_size(::grpc::ClientContext* context, const ::maarpc::EmptyRequest& request, ::maarpc::SizeResponse* response) override;
-    std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::maarpc::SizeResponse>> Asyncconfig_size(::grpc::ClientContext* context, const ::maarpc::EmptyRequest& request, ::grpc::CompletionQueue* cq) {
-      return std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::maarpc::SizeResponse>>(Asyncconfig_sizeRaw(context, request, cq));
-    }
-    std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::maarpc::SizeResponse>> PrepareAsyncconfig_size(::grpc::ClientContext* context, const ::maarpc::EmptyRequest& request, ::grpc::CompletionQueue* cq) {
-      return std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::maarpc::SizeResponse>>(PrepareAsyncconfig_sizeRaw(context, request, cq));
-    }
     class async final :
       public StubInterface::async_interface {
      public:
@@ -144,12 +90,6 @@ class Config final {
       void init(::grpc::ClientContext* context, const ::maarpc::EmptyRequest* request, ::maarpc::EmptyResponse* response, ::grpc::ClientUnaryReactor* reactor) override;
       void uninit(::grpc::ClientContext* context, const ::maarpc::EmptyRequest* request, ::maarpc::EmptyResponse* response, std::function<void(::grpc::Status)>) override;
       void uninit(::grpc::ClientContext* context, const ::maarpc::EmptyRequest* request, ::maarpc::EmptyResponse* response, ::grpc::ClientUnaryReactor* reactor) override;
-      void get_custom(::grpc::ClientContext* context, const ::maarpc::StringRequest* request, ::maarpc::StringResponse* response, std::function<void(::grpc::Status)>) override;
-      void get_custom(::grpc::ClientContext* context, const ::maarpc::StringRequest* request, ::maarpc::StringResponse* response, ::grpc::ClientUnaryReactor* reactor) override;
-      void set_custom(::grpc::ClientContext* context, const ::maarpc::KeyValueRequest* request, ::maarpc::EmptyResponse* response, std::function<void(::grpc::Status)>) override;
-      void set_custom(::grpc::ClientContext* context, const ::maarpc::KeyValueRequest* request, ::maarpc::EmptyResponse* response, ::grpc::ClientUnaryReactor* reactor) override;
-      void config_size(::grpc::ClientContext* context, const ::maarpc::EmptyRequest* request, ::maarpc::SizeResponse* response, std::function<void(::grpc::Status)>) override;
-      void config_size(::grpc::ClientContext* context, const ::maarpc::EmptyRequest* request, ::maarpc::SizeResponse* response, ::grpc::ClientUnaryReactor* reactor) override;
      private:
       friend class Stub;
       explicit async(Stub* stub): stub_(stub) { }
@@ -165,17 +105,8 @@ class Config final {
     ::grpc::ClientAsyncResponseReader< ::maarpc::EmptyResponse>* PrepareAsyncinitRaw(::grpc::ClientContext* context, const ::maarpc::EmptyRequest& request, ::grpc::CompletionQueue* cq) override;
     ::grpc::ClientAsyncResponseReader< ::maarpc::EmptyResponse>* AsyncuninitRaw(::grpc::ClientContext* context, const ::maarpc::EmptyRequest& request, ::grpc::CompletionQueue* cq) override;
     ::grpc::ClientAsyncResponseReader< ::maarpc::EmptyResponse>* PrepareAsyncuninitRaw(::grpc::ClientContext* context, const ::maarpc::EmptyRequest& request, ::grpc::CompletionQueue* cq) override;
-    ::grpc::ClientAsyncResponseReader< ::maarpc::StringResponse>* Asyncget_customRaw(::grpc::ClientContext* context, const ::maarpc::StringRequest& request, ::grpc::CompletionQueue* cq) override;
-    ::grpc::ClientAsyncResponseReader< ::maarpc::StringResponse>* PrepareAsyncget_customRaw(::grpc::ClientContext* context, const ::maarpc::StringRequest& request, ::grpc::CompletionQueue* cq) override;
-    ::grpc::ClientAsyncResponseReader< ::maarpc::EmptyResponse>* Asyncset_customRaw(::grpc::ClientContext* context, const ::maarpc::KeyValueRequest& request, ::grpc::CompletionQueue* cq) override;
-    ::grpc::ClientAsyncResponseReader< ::maarpc::EmptyResponse>* PrepareAsyncset_customRaw(::grpc::ClientContext* context, const ::maarpc::KeyValueRequest& request, ::grpc::CompletionQueue* cq) override;
-    ::grpc::ClientAsyncResponseReader< ::maarpc::SizeResponse>* Asyncconfig_sizeRaw(::grpc::ClientContext* context, const ::maarpc::EmptyRequest& request, ::grpc::CompletionQueue* cq) override;
-    ::grpc::ClientAsyncResponseReader< ::maarpc::SizeResponse>* PrepareAsyncconfig_sizeRaw(::grpc::ClientContext* context, const ::maarpc::EmptyRequest& request, ::grpc::CompletionQueue* cq) override;
     const ::grpc::internal::RpcMethod rpcmethod_init_;
     const ::grpc::internal::RpcMethod rpcmethod_uninit_;
-    const ::grpc::internal::RpcMethod rpcmethod_get_custom_;
-    const ::grpc::internal::RpcMethod rpcmethod_set_custom_;
-    const ::grpc::internal::RpcMethod rpcmethod_config_size_;
   };
   static std::unique_ptr<Stub> NewStub(const std::shared_ptr< ::grpc::ChannelInterface>& channel, const ::grpc::StubOptions& options = ::grpc::StubOptions());
 
@@ -185,9 +116,6 @@ class Config final {
     virtual ~Service();
     virtual ::grpc::Status init(::grpc::ServerContext* context, const ::maarpc::EmptyRequest* request, ::maarpc::EmptyResponse* response);
     virtual ::grpc::Status uninit(::grpc::ServerContext* context, const ::maarpc::EmptyRequest* request, ::maarpc::EmptyResponse* response);
-    virtual ::grpc::Status get_custom(::grpc::ServerContext* context, const ::maarpc::StringRequest* request, ::maarpc::StringResponse* response);
-    virtual ::grpc::Status set_custom(::grpc::ServerContext* context, const ::maarpc::KeyValueRequest* request, ::maarpc::EmptyResponse* response);
-    virtual ::grpc::Status config_size(::grpc::ServerContext* context, const ::maarpc::EmptyRequest* request, ::maarpc::SizeResponse* response);
   };
   template <class BaseClass>
   class WithAsyncMethod_init : public BaseClass {
@@ -229,67 +157,7 @@ class Config final {
       ::grpc::Service::RequestAsyncUnary(1, context, request, response, new_call_cq, notification_cq, tag);
     }
   };
-  template <class BaseClass>
-  class WithAsyncMethod_get_custom : public BaseClass {
-   private:
-    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
-   public:
-    WithAsyncMethod_get_custom() {
-      ::grpc::Service::MarkMethodAsync(2);
-    }
-    ~WithAsyncMethod_get_custom() override {
-      BaseClassMustBeDerivedFromService(this);
-    }
-    // disable synchronous version of this method
-    ::grpc::Status get_custom(::grpc::ServerContext* /*context*/, const ::maarpc::StringRequest* /*request*/, ::maarpc::StringResponse* /*response*/) override {
-      abort();
-      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
-    }
-    void Requestget_custom(::grpc::ServerContext* context, ::maarpc::StringRequest* request, ::grpc::ServerAsyncResponseWriter< ::maarpc::StringResponse>* response, ::grpc::CompletionQueue* new_call_cq, ::grpc::ServerCompletionQueue* notification_cq, void *tag) {
-      ::grpc::Service::RequestAsyncUnary(2, context, request, response, new_call_cq, notification_cq, tag);
-    }
-  };
-  template <class BaseClass>
-  class WithAsyncMethod_set_custom : public BaseClass {
-   private:
-    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
-   public:
-    WithAsyncMethod_set_custom() {
-      ::grpc::Service::MarkMethodAsync(3);
-    }
-    ~WithAsyncMethod_set_custom() override {
-      BaseClassMustBeDerivedFromService(this);
-    }
-    // disable synchronous version of this method
-    ::grpc::Status set_custom(::grpc::ServerContext* /*context*/, const ::maarpc::KeyValueRequest* /*request*/, ::maarpc::EmptyResponse* /*response*/) override {
-      abort();
-      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
-    }
-    void Requestset_custom(::grpc::ServerContext* context, ::maarpc::KeyValueRequest* request, ::grpc::ServerAsyncResponseWriter< ::maarpc::EmptyResponse>* response, ::grpc::CompletionQueue* new_call_cq, ::grpc::ServerCompletionQueue* notification_cq, void *tag) {
-      ::grpc::Service::RequestAsyncUnary(3, context, request, response, new_call_cq, notification_cq, tag);
-    }
-  };
-  template <class BaseClass>
-  class WithAsyncMethod_config_size : public BaseClass {
-   private:
-    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
-   public:
-    WithAsyncMethod_config_size() {
-      ::grpc::Service::MarkMethodAsync(4);
-    }
-    ~WithAsyncMethod_config_size() override {
-      BaseClassMustBeDerivedFromService(this);
-    }
-    // disable synchronous version of this method
-    ::grpc::Status config_size(::grpc::ServerContext* /*context*/, const ::maarpc::EmptyRequest* /*request*/, ::maarpc::SizeResponse* /*response*/) override {
-      abort();
-      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
-    }
-    void Requestconfig_size(::grpc::ServerContext* context, ::maarpc::EmptyRequest* request, ::grpc::ServerAsyncResponseWriter< ::maarpc::SizeResponse>* response, ::grpc::CompletionQueue* new_call_cq, ::grpc::ServerCompletionQueue* notification_cq, void *tag) {
-      ::grpc::Service::RequestAsyncUnary(4, context, request, response, new_call_cq, notification_cq, tag);
-    }
-  };
-  typedef WithAsyncMethod_init<WithAsyncMethod_uninit<WithAsyncMethod_get_custom<WithAsyncMethod_set_custom<WithAsyncMethod_config_size<Service > > > > > AsyncService;
+  typedef WithAsyncMethod_init<WithAsyncMethod_uninit<Service > > AsyncService;
   template <class BaseClass>
   class WithCallbackMethod_init : public BaseClass {
    private:
@@ -344,88 +212,7 @@ class Config final {
     virtual ::grpc::ServerUnaryReactor* uninit(
       ::grpc::CallbackServerContext* /*context*/, const ::maarpc::EmptyRequest* /*request*/, ::maarpc::EmptyResponse* /*response*/)  { return nullptr; }
   };
-  template <class BaseClass>
-  class WithCallbackMethod_get_custom : public BaseClass {
-   private:
-    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
-   public:
-    WithCallbackMethod_get_custom() {
-      ::grpc::Service::MarkMethodCallback(2,
-          new ::grpc::internal::CallbackUnaryHandler< ::maarpc::StringRequest, ::maarpc::StringResponse>(
-            [this](
-                   ::grpc::CallbackServerContext* context, const ::maarpc::StringRequest* request, ::maarpc::StringResponse* response) { return this->get_custom(context, request, response); }));}
-    void SetMessageAllocatorFor_get_custom(
-        ::grpc::MessageAllocator< ::maarpc::StringRequest, ::maarpc::StringResponse>* allocator) {
-      ::grpc::internal::MethodHandler* const handler = ::grpc::Service::GetHandler(2);
-      static_cast<::grpc::internal::CallbackUnaryHandler< ::maarpc::StringRequest, ::maarpc::StringResponse>*>(handler)
-              ->SetMessageAllocator(allocator);
-    }
-    ~WithCallbackMethod_get_custom() override {
-      BaseClassMustBeDerivedFromService(this);
-    }
-    // disable synchronous version of this method
-    ::grpc::Status get_custom(::grpc::ServerContext* /*context*/, const ::maarpc::StringRequest* /*request*/, ::maarpc::StringResponse* /*response*/) override {
-      abort();
-      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
-    }
-    virtual ::grpc::ServerUnaryReactor* get_custom(
-      ::grpc::CallbackServerContext* /*context*/, const ::maarpc::StringRequest* /*request*/, ::maarpc::StringResponse* /*response*/)  { return nullptr; }
-  };
-  template <class BaseClass>
-  class WithCallbackMethod_set_custom : public BaseClass {
-   private:
-    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
-   public:
-    WithCallbackMethod_set_custom() {
-      ::grpc::Service::MarkMethodCallback(3,
-          new ::grpc::internal::CallbackUnaryHandler< ::maarpc::KeyValueRequest, ::maarpc::EmptyResponse>(
-            [this](
-                   ::grpc::CallbackServerContext* context, const ::maarpc::KeyValueRequest* request, ::maarpc::EmptyResponse* response) { return this->set_custom(context, request, response); }));}
-    void SetMessageAllocatorFor_set_custom(
-        ::grpc::MessageAllocator< ::maarpc::KeyValueRequest, ::maarpc::EmptyResponse>* allocator) {
-      ::grpc::internal::MethodHandler* const handler = ::grpc::Service::GetHandler(3);
-      static_cast<::grpc::internal::CallbackUnaryHandler< ::maarpc::KeyValueRequest, ::maarpc::EmptyResponse>*>(handler)
-              ->SetMessageAllocator(allocator);
-    }
-    ~WithCallbackMethod_set_custom() override {
-      BaseClassMustBeDerivedFromService(this);
-    }
-    // disable synchronous version of this method
-    ::grpc::Status set_custom(::grpc::ServerContext* /*context*/, const ::maarpc::KeyValueRequest* /*request*/, ::maarpc::EmptyResponse* /*response*/) override {
-      abort();
-      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
-    }
-    virtual ::grpc::ServerUnaryReactor* set_custom(
-      ::grpc::CallbackServerContext* /*context*/, const ::maarpc::KeyValueRequest* /*request*/, ::maarpc::EmptyResponse* /*response*/)  { return nullptr; }
-  };
-  template <class BaseClass>
-  class WithCallbackMethod_config_size : public BaseClass {
-   private:
-    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
-   public:
-    WithCallbackMethod_config_size() {
-      ::grpc::Service::MarkMethodCallback(4,
-          new ::grpc::internal::CallbackUnaryHandler< ::maarpc::EmptyRequest, ::maarpc::SizeResponse>(
-            [this](
-                   ::grpc::CallbackServerContext* context, const ::maarpc::EmptyRequest* request, ::maarpc::SizeResponse* response) { return this->config_size(context, request, response); }));}
-    void SetMessageAllocatorFor_config_size(
-        ::grpc::MessageAllocator< ::maarpc::EmptyRequest, ::maarpc::SizeResponse>* allocator) {
-      ::grpc::internal::MethodHandler* const handler = ::grpc::Service::GetHandler(4);
-      static_cast<::grpc::internal::CallbackUnaryHandler< ::maarpc::EmptyRequest, ::maarpc::SizeResponse>*>(handler)
-              ->SetMessageAllocator(allocator);
-    }
-    ~WithCallbackMethod_config_size() override {
-      BaseClassMustBeDerivedFromService(this);
-    }
-    // disable synchronous version of this method
-    ::grpc::Status config_size(::grpc::ServerContext* /*context*/, const ::maarpc::EmptyRequest* /*request*/, ::maarpc::SizeResponse* /*response*/) override {
-      abort();
-      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
-    }
-    virtual ::grpc::ServerUnaryReactor* config_size(
-      ::grpc::CallbackServerContext* /*context*/, const ::maarpc::EmptyRequest* /*request*/, ::maarpc::SizeResponse* /*response*/)  { return nullptr; }
-  };
-  typedef WithCallbackMethod_init<WithCallbackMethod_uninit<WithCallbackMethod_get_custom<WithCallbackMethod_set_custom<WithCallbackMethod_config_size<Service > > > > > CallbackService;
+  typedef WithCallbackMethod_init<WithCallbackMethod_uninit<Service > > CallbackService;
   typedef CallbackService ExperimentalCallbackService;
   template <class BaseClass>
   class WithGenericMethod_init : public BaseClass {
@@ -457,57 +244,6 @@ class Config final {
     }
     // disable synchronous version of this method
     ::grpc::Status uninit(::grpc::ServerContext* /*context*/, const ::maarpc::EmptyRequest* /*request*/, ::maarpc::EmptyResponse* /*response*/) override {
-      abort();
-      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
-    }
-  };
-  template <class BaseClass>
-  class WithGenericMethod_get_custom : public BaseClass {
-   private:
-    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
-   public:
-    WithGenericMethod_get_custom() {
-      ::grpc::Service::MarkMethodGeneric(2);
-    }
-    ~WithGenericMethod_get_custom() override {
-      BaseClassMustBeDerivedFromService(this);
-    }
-    // disable synchronous version of this method
-    ::grpc::Status get_custom(::grpc::ServerContext* /*context*/, const ::maarpc::StringRequest* /*request*/, ::maarpc::StringResponse* /*response*/) override {
-      abort();
-      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
-    }
-  };
-  template <class BaseClass>
-  class WithGenericMethod_set_custom : public BaseClass {
-   private:
-    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
-   public:
-    WithGenericMethod_set_custom() {
-      ::grpc::Service::MarkMethodGeneric(3);
-    }
-    ~WithGenericMethod_set_custom() override {
-      BaseClassMustBeDerivedFromService(this);
-    }
-    // disable synchronous version of this method
-    ::grpc::Status set_custom(::grpc::ServerContext* /*context*/, const ::maarpc::KeyValueRequest* /*request*/, ::maarpc::EmptyResponse* /*response*/) override {
-      abort();
-      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
-    }
-  };
-  template <class BaseClass>
-  class WithGenericMethod_config_size : public BaseClass {
-   private:
-    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
-   public:
-    WithGenericMethod_config_size() {
-      ::grpc::Service::MarkMethodGeneric(4);
-    }
-    ~WithGenericMethod_config_size() override {
-      BaseClassMustBeDerivedFromService(this);
-    }
-    // disable synchronous version of this method
-    ::grpc::Status config_size(::grpc::ServerContext* /*context*/, const ::maarpc::EmptyRequest* /*request*/, ::maarpc::SizeResponse* /*response*/) override {
       abort();
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
@@ -553,66 +289,6 @@ class Config final {
     }
   };
   template <class BaseClass>
-  class WithRawMethod_get_custom : public BaseClass {
-   private:
-    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
-   public:
-    WithRawMethod_get_custom() {
-      ::grpc::Service::MarkMethodRaw(2);
-    }
-    ~WithRawMethod_get_custom() override {
-      BaseClassMustBeDerivedFromService(this);
-    }
-    // disable synchronous version of this method
-    ::grpc::Status get_custom(::grpc::ServerContext* /*context*/, const ::maarpc::StringRequest* /*request*/, ::maarpc::StringResponse* /*response*/) override {
-      abort();
-      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
-    }
-    void Requestget_custom(::grpc::ServerContext* context, ::grpc::ByteBuffer* request, ::grpc::ServerAsyncResponseWriter< ::grpc::ByteBuffer>* response, ::grpc::CompletionQueue* new_call_cq, ::grpc::ServerCompletionQueue* notification_cq, void *tag) {
-      ::grpc::Service::RequestAsyncUnary(2, context, request, response, new_call_cq, notification_cq, tag);
-    }
-  };
-  template <class BaseClass>
-  class WithRawMethod_set_custom : public BaseClass {
-   private:
-    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
-   public:
-    WithRawMethod_set_custom() {
-      ::grpc::Service::MarkMethodRaw(3);
-    }
-    ~WithRawMethod_set_custom() override {
-      BaseClassMustBeDerivedFromService(this);
-    }
-    // disable synchronous version of this method
-    ::grpc::Status set_custom(::grpc::ServerContext* /*context*/, const ::maarpc::KeyValueRequest* /*request*/, ::maarpc::EmptyResponse* /*response*/) override {
-      abort();
-      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
-    }
-    void Requestset_custom(::grpc::ServerContext* context, ::grpc::ByteBuffer* request, ::grpc::ServerAsyncResponseWriter< ::grpc::ByteBuffer>* response, ::grpc::CompletionQueue* new_call_cq, ::grpc::ServerCompletionQueue* notification_cq, void *tag) {
-      ::grpc::Service::RequestAsyncUnary(3, context, request, response, new_call_cq, notification_cq, tag);
-    }
-  };
-  template <class BaseClass>
-  class WithRawMethod_config_size : public BaseClass {
-   private:
-    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
-   public:
-    WithRawMethod_config_size() {
-      ::grpc::Service::MarkMethodRaw(4);
-    }
-    ~WithRawMethod_config_size() override {
-      BaseClassMustBeDerivedFromService(this);
-    }
-    // disable synchronous version of this method
-    ::grpc::Status config_size(::grpc::ServerContext* /*context*/, const ::maarpc::EmptyRequest* /*request*/, ::maarpc::SizeResponse* /*response*/) override {
-      abort();
-      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
-    }
-    void Requestconfig_size(::grpc::ServerContext* context, ::grpc::ByteBuffer* request, ::grpc::ServerAsyncResponseWriter< ::grpc::ByteBuffer>* response, ::grpc::CompletionQueue* new_call_cq, ::grpc::ServerCompletionQueue* notification_cq, void *tag) {
-      ::grpc::Service::RequestAsyncUnary(4, context, request, response, new_call_cq, notification_cq, tag);
-    }
-  };
-  template <class BaseClass>
   class WithRawCallbackMethod_init : public BaseClass {
    private:
     void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
@@ -654,72 +330,6 @@ class Config final {
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
     virtual ::grpc::ServerUnaryReactor* uninit(
-      ::grpc::CallbackServerContext* /*context*/, const ::grpc::ByteBuffer* /*request*/, ::grpc::ByteBuffer* /*response*/)  { return nullptr; }
-  };
-  template <class BaseClass>
-  class WithRawCallbackMethod_get_custom : public BaseClass {
-   private:
-    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
-   public:
-    WithRawCallbackMethod_get_custom() {
-      ::grpc::Service::MarkMethodRawCallback(2,
-          new ::grpc::internal::CallbackUnaryHandler< ::grpc::ByteBuffer, ::grpc::ByteBuffer>(
-            [this](
-                   ::grpc::CallbackServerContext* context, const ::grpc::ByteBuffer* request, ::grpc::ByteBuffer* response) { return this->get_custom(context, request, response); }));
-    }
-    ~WithRawCallbackMethod_get_custom() override {
-      BaseClassMustBeDerivedFromService(this);
-    }
-    // disable synchronous version of this method
-    ::grpc::Status get_custom(::grpc::ServerContext* /*context*/, const ::maarpc::StringRequest* /*request*/, ::maarpc::StringResponse* /*response*/) override {
-      abort();
-      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
-    }
-    virtual ::grpc::ServerUnaryReactor* get_custom(
-      ::grpc::CallbackServerContext* /*context*/, const ::grpc::ByteBuffer* /*request*/, ::grpc::ByteBuffer* /*response*/)  { return nullptr; }
-  };
-  template <class BaseClass>
-  class WithRawCallbackMethod_set_custom : public BaseClass {
-   private:
-    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
-   public:
-    WithRawCallbackMethod_set_custom() {
-      ::grpc::Service::MarkMethodRawCallback(3,
-          new ::grpc::internal::CallbackUnaryHandler< ::grpc::ByteBuffer, ::grpc::ByteBuffer>(
-            [this](
-                   ::grpc::CallbackServerContext* context, const ::grpc::ByteBuffer* request, ::grpc::ByteBuffer* response) { return this->set_custom(context, request, response); }));
-    }
-    ~WithRawCallbackMethod_set_custom() override {
-      BaseClassMustBeDerivedFromService(this);
-    }
-    // disable synchronous version of this method
-    ::grpc::Status set_custom(::grpc::ServerContext* /*context*/, const ::maarpc::KeyValueRequest* /*request*/, ::maarpc::EmptyResponse* /*response*/) override {
-      abort();
-      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
-    }
-    virtual ::grpc::ServerUnaryReactor* set_custom(
-      ::grpc::CallbackServerContext* /*context*/, const ::grpc::ByteBuffer* /*request*/, ::grpc::ByteBuffer* /*response*/)  { return nullptr; }
-  };
-  template <class BaseClass>
-  class WithRawCallbackMethod_config_size : public BaseClass {
-   private:
-    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
-   public:
-    WithRawCallbackMethod_config_size() {
-      ::grpc::Service::MarkMethodRawCallback(4,
-          new ::grpc::internal::CallbackUnaryHandler< ::grpc::ByteBuffer, ::grpc::ByteBuffer>(
-            [this](
-                   ::grpc::CallbackServerContext* context, const ::grpc::ByteBuffer* request, ::grpc::ByteBuffer* response) { return this->config_size(context, request, response); }));
-    }
-    ~WithRawCallbackMethod_config_size() override {
-      BaseClassMustBeDerivedFromService(this);
-    }
-    // disable synchronous version of this method
-    ::grpc::Status config_size(::grpc::ServerContext* /*context*/, const ::maarpc::EmptyRequest* /*request*/, ::maarpc::SizeResponse* /*response*/) override {
-      abort();
-      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
-    }
-    virtual ::grpc::ServerUnaryReactor* config_size(
       ::grpc::CallbackServerContext* /*context*/, const ::grpc::ByteBuffer* /*request*/, ::grpc::ByteBuffer* /*response*/)  { return nullptr; }
   };
   template <class BaseClass>
@@ -776,90 +386,9 @@ class Config final {
     // replace default version of method with streamed unary
     virtual ::grpc::Status Streameduninit(::grpc::ServerContext* context, ::grpc::ServerUnaryStreamer< ::maarpc::EmptyRequest,::maarpc::EmptyResponse>* server_unary_streamer) = 0;
   };
-  template <class BaseClass>
-  class WithStreamedUnaryMethod_get_custom : public BaseClass {
-   private:
-    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
-   public:
-    WithStreamedUnaryMethod_get_custom() {
-      ::grpc::Service::MarkMethodStreamed(2,
-        new ::grpc::internal::StreamedUnaryHandler<
-          ::maarpc::StringRequest, ::maarpc::StringResponse>(
-            [this](::grpc::ServerContext* context,
-                   ::grpc::ServerUnaryStreamer<
-                     ::maarpc::StringRequest, ::maarpc::StringResponse>* streamer) {
-                       return this->Streamedget_custom(context,
-                         streamer);
-                  }));
-    }
-    ~WithStreamedUnaryMethod_get_custom() override {
-      BaseClassMustBeDerivedFromService(this);
-    }
-    // disable regular version of this method
-    ::grpc::Status get_custom(::grpc::ServerContext* /*context*/, const ::maarpc::StringRequest* /*request*/, ::maarpc::StringResponse* /*response*/) override {
-      abort();
-      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
-    }
-    // replace default version of method with streamed unary
-    virtual ::grpc::Status Streamedget_custom(::grpc::ServerContext* context, ::grpc::ServerUnaryStreamer< ::maarpc::StringRequest,::maarpc::StringResponse>* server_unary_streamer) = 0;
-  };
-  template <class BaseClass>
-  class WithStreamedUnaryMethod_set_custom : public BaseClass {
-   private:
-    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
-   public:
-    WithStreamedUnaryMethod_set_custom() {
-      ::grpc::Service::MarkMethodStreamed(3,
-        new ::grpc::internal::StreamedUnaryHandler<
-          ::maarpc::KeyValueRequest, ::maarpc::EmptyResponse>(
-            [this](::grpc::ServerContext* context,
-                   ::grpc::ServerUnaryStreamer<
-                     ::maarpc::KeyValueRequest, ::maarpc::EmptyResponse>* streamer) {
-                       return this->Streamedset_custom(context,
-                         streamer);
-                  }));
-    }
-    ~WithStreamedUnaryMethod_set_custom() override {
-      BaseClassMustBeDerivedFromService(this);
-    }
-    // disable regular version of this method
-    ::grpc::Status set_custom(::grpc::ServerContext* /*context*/, const ::maarpc::KeyValueRequest* /*request*/, ::maarpc::EmptyResponse* /*response*/) override {
-      abort();
-      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
-    }
-    // replace default version of method with streamed unary
-    virtual ::grpc::Status Streamedset_custom(::grpc::ServerContext* context, ::grpc::ServerUnaryStreamer< ::maarpc::KeyValueRequest,::maarpc::EmptyResponse>* server_unary_streamer) = 0;
-  };
-  template <class BaseClass>
-  class WithStreamedUnaryMethod_config_size : public BaseClass {
-   private:
-    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
-   public:
-    WithStreamedUnaryMethod_config_size() {
-      ::grpc::Service::MarkMethodStreamed(4,
-        new ::grpc::internal::StreamedUnaryHandler<
-          ::maarpc::EmptyRequest, ::maarpc::SizeResponse>(
-            [this](::grpc::ServerContext* context,
-                   ::grpc::ServerUnaryStreamer<
-                     ::maarpc::EmptyRequest, ::maarpc::SizeResponse>* streamer) {
-                       return this->Streamedconfig_size(context,
-                         streamer);
-                  }));
-    }
-    ~WithStreamedUnaryMethod_config_size() override {
-      BaseClassMustBeDerivedFromService(this);
-    }
-    // disable regular version of this method
-    ::grpc::Status config_size(::grpc::ServerContext* /*context*/, const ::maarpc::EmptyRequest* /*request*/, ::maarpc::SizeResponse* /*response*/) override {
-      abort();
-      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
-    }
-    // replace default version of method with streamed unary
-    virtual ::grpc::Status Streamedconfig_size(::grpc::ServerContext* context, ::grpc::ServerUnaryStreamer< ::maarpc::EmptyRequest,::maarpc::SizeResponse>* server_unary_streamer) = 0;
-  };
-  typedef WithStreamedUnaryMethod_init<WithStreamedUnaryMethod_uninit<WithStreamedUnaryMethod_get_custom<WithStreamedUnaryMethod_set_custom<WithStreamedUnaryMethod_config_size<Service > > > > > StreamedUnaryService;
+  typedef WithStreamedUnaryMethod_init<WithStreamedUnaryMethod_uninit<Service > > StreamedUnaryService;
   typedef Service SplitStreamedService;
-  typedef WithStreamedUnaryMethod_init<WithStreamedUnaryMethod_uninit<WithStreamedUnaryMethod_get_custom<WithStreamedUnaryMethod_set_custom<WithStreamedUnaryMethod_config_size<Service > > > > > StreamedService;
+  typedef WithStreamedUnaryMethod_init<WithStreamedUnaryMethod_uninit<Service > > StreamedService;
 };
 
 }  // namespace maarpc
