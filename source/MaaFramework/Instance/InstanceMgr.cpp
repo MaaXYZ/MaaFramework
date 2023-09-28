@@ -134,15 +134,16 @@ bool InstanceMgr::set_task_param(MaaTaskId task_id, std::string_view param)
     return ret;
 }
 
-bool InstanceMgr::register_custom_recognizer(std::string name, MaaCustomRecognizerHandle handle)
+bool InstanceMgr::register_custom_recognizer(std::string name, MaaCustomRecognizerHandle handle,
+                                             MaaTransparentArg handle_arg)
 {
-    LogInfo << VAR(name) << VAR_VOIDP(handle);
+    LogInfo << VAR(name) << VAR_VOIDP(handle) << VAR_VOIDP(handle_arg);
     if (!handle) {
         LogError << "Invalid handle";
         return false;
     }
 
-    auto recognizer_ptr = std::make_shared<MAA_VISION_NS::CustomRecognizer>(handle, this);
+    auto recognizer_ptr = std::make_shared<MAA_VISION_NS::CustomRecognizer>(handle, handle_arg, this);
     return custom_recognizers_.insert_or_assign(std::move(name), std::move(recognizer_ptr)).second;
 }
 
@@ -158,14 +159,14 @@ void InstanceMgr::clear_custom_recognizer()
     custom_recognizers_.clear();
 }
 
-bool InstanceMgr::register_custom_action(std::string name, MaaCustomActionHandle handle)
+bool InstanceMgr::register_custom_action(std::string name, MaaCustomActionHandle handle, MaaTransparentArg handle_arg)
 {
-    LogInfo << VAR(name) << VAR_VOIDP(handle);
+    LogInfo << VAR(name) << VAR_VOIDP(handle) << VAR_VOIDP(handle_arg);
     if (!handle) {
         LogError << "Invalid handle";
         return false;
     }
-    auto action_ptr = std::make_shared<MAA_TASK_NS::CustomAction>(handle, this);
+    auto action_ptr = std::make_shared<MAA_TASK_NS::CustomAction>(handle, handle_arg, this);
     return custom_actions_.insert_or_assign(std::move(name), std::move(action_ptr)).second;
 }
 

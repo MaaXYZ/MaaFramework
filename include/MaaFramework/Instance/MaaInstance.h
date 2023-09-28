@@ -18,12 +18,13 @@ extern "C"
     MaaBool MAA_FRAMEWORK_API MaaInited(MaaInstanceHandle inst);
 
     MaaBool MAA_FRAMEWORK_API MaaRegisterCustomRecognizer(MaaInstanceHandle inst, MaaStringView name,
-                                                          MaaCustomRecognizerHandle recognizer);
+                                                          MaaCustomRecognizerHandle recognizer,
+                                                          MaaTransparentArg recognizer_arg);
     MaaBool MAA_FRAMEWORK_API MaaUnregisterCustomRecognizer(MaaInstanceHandle inst, MaaStringView name);
     MaaBool MAA_FRAMEWORK_API MaaClearCustomRecognizer(MaaInstanceHandle inst);
 
     MaaBool MAA_FRAMEWORK_API MaaRegisterCustomAction(MaaInstanceHandle inst, MaaStringView name,
-                                                      MaaCustomActionHandle action);
+                                                      MaaCustomActionHandle action, MaaTransparentArg action_arg);
     MaaBool MAA_FRAMEWORK_API MaaUnregisterCustomAction(MaaInstanceHandle inst, MaaStringView name);
     MaaBool MAA_FRAMEWORK_API MaaClearCustomAction(MaaInstanceHandle inst);
 

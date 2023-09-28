@@ -70,16 +70,17 @@ MaaBool MaaInited(MaaInstanceHandle inst)
     return inst->inited();
 }
 
-MaaBool MaaRegisterCustomRecognizer(MaaInstanceHandle inst, MaaStringView name, MaaCustomRecognizerHandle recognizer)
+MaaBool MaaRegisterCustomRecognizer(MaaInstanceHandle inst, MaaStringView name, MaaCustomRecognizerHandle recognizer,
+                                    MaaTransparentArg recognizer_arg)
 {
-    LogFunc << VAR_VOIDP(inst) << VAR(name) << VAR_VOIDP(recognizer);
+    LogFunc << VAR_VOIDP(inst) << VAR(name) << VAR_VOIDP(recognizer) << VAR_VOIDP(recognizer_arg);
 
     if (!inst) {
         LogError << "handle is null";
         return false;
     }
 
-    return inst->register_custom_recognizer(name, recognizer);
+    return inst->register_custom_recognizer(name, recognizer, recognizer_arg);
 }
 
 MaaBool MaaUnregisterCustomRecognizer(MaaInstanceHandle inst, MaaStringView name)
@@ -107,16 +108,17 @@ MaaBool MaaClearCustomRecognizer(MaaInstanceHandle inst)
     return true;
 }
 
-MaaBool MaaRegisterCustomAction(MaaInstanceHandle inst, MaaStringView name, MaaCustomActionHandle action)
+MaaBool MaaRegisterCustomAction(MaaInstanceHandle inst, MaaStringView name, MaaCustomActionHandle action,
+                                MaaTransparentArg action_arg)
 {
-    LogFunc << VAR_VOIDP(inst) << VAR(name) << VAR_VOIDP(action);
+    LogFunc << VAR_VOIDP(inst) << VAR(name) << VAR_VOIDP(action) << VAR_VOIDP(action_arg);
 
     if (!inst) {
         LogError << "handle is null";
         return false;
     }
 
-    return inst->register_custom_action(name, action);
+    return inst->register_custom_action(name, action, action_arg);
 }
 
 MaaBool MaaUnregisterCustomAction(MaaInstanceHandle inst, MaaStringView name)

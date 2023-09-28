@@ -11,9 +11,9 @@ extern "C"
     struct MaaCustomActionAPI
     {
         MaaBool (*run)(MaaSyncContextHandle sync_context, MaaStringView task_name, MaaStringView custom_action_param,
-                       MaaRectHandle cur_box, MaaStringView cur_rec_detail);
+                       MaaRectHandle cur_box, MaaStringView cur_rec_detail, MaaTransparentArg arg);
 
-        void (*stop)(void);
+        void (*stop)(MaaTransparentArg arg);
     };
 
 #ifdef __cplusplus
