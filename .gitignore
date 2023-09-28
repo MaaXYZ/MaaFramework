@@ -443,3 +443,6 @@ enc_temp_folder/*
 install
 
 .DS_Store
+
+source/MaaRpc/generated
+!source/MaaRpc/generated/.gitkeep
