@@ -17,38 +17,23 @@
   <ItemGroup>
     <ClCompile Include="API\MaaToolKitConfig.cpp" />
     <ClCompile Include="API\MaaToolKitDevice.cpp" />
-    <ClCompile Include="Config\Config.cpp" />
     <ClCompile Include="Config\ConfigMgr.cpp" />
-    <ClCompile Include="Config\Task.cpp" />
     <ClCompile Include="Device\DeviceMgr.cpp" />
     <ClCompile Include="Device\DeviceMgrLinux.cpp" />
     <ClCompile Include="Device\DeviceMgrMacOS.cpp" />
     <ClCompile Include="Device\DeviceMgrWin32.cpp" />
-    <ClCompile Include="Server\ApiDispatcher.cpp" />
-    <ClCompile Include="Server\Framework\Controller.cpp" />
-    <ClCompile Include="Server\Framework\Init.cpp" />
-    <ClCompile Include="Server\HttpServer.cpp" />
-    <ClCompile Include="Server\RequestResponse.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\include\MaaToolKit\MaaToolKitAPI.h" />
     <ClInclude Include="..\..\include\MaaToolKit\MaaToolKitDef.h" />
-    <ClInclude Include="Config\Config.h" />
     <ClInclude Include="Config\ConfigAPI.h" />
     <ClInclude Include="Config\ConfigMgr.h" />
-    <ClInclude Include="Config\Task.h" />
     <ClInclude Include="Device\AdbConfigDef.hpp" />
     <ClInclude Include="Device\DeviceAPI.h" />
     <ClInclude Include="Device\DeviceMgr.h" />
     <ClInclude Include="Device\DeviceMgrLinux.h" />
     <ClInclude Include="Device\DeviceMgrMacOS.h" />
     <ClInclude Include="Device\DeviceMgrWin32.h" />
-    <ClInclude Include="Server\ApiDispatcher.h" />
-    <ClInclude Include="Server\Framework\Controller.h" />
-    <ClInclude Include="Server\Framework\Init.h" />
-    <ClInclude Include="Server\HttpServer.h" />
-    <ClInclude Include="Server\JsonValidator.hpp" />
-    <ClInclude Include="Server\RequestResponse.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>16.0</VCProjectVersion>

@@ -17,7 +17,6 @@ bool ConfigMgr::init()
     LogFunc << VAR(kConfigPath);
 
     if (!std::filesystem::exists(kConfigPath)) {
-        generate_default_config();
         dump();
     }
 
@@ -35,124 +34,6 @@ bool ConfigMgr::uninit()
     LogFunc;
 
     return dump();
-}
-
-std::string_view ConfigMgr::get_custom_info(std::string_view key) const
-{
-    auto find_it = custom_info_.find(std::string(key));
-    if (find_it == custom_info_.end()) {
-        LogError << "Key not found" << VAR(key) << VAR(custom_info_);
-        return std::string_view();
-    }
-    return find_it->second;
-}
-
-void ConfigMgr::set_custom_info(std::string key, std::string value)
-{
-    LogInfo << VAR(key) << VAR(value);
-    custom_info_.insert_or_assign(std::move(key), std::move(value));
-}
-
-size_t ConfigMgr::config_size() const
-{
-    return config_vec_.size();
-}
-
-MaaToolKitConfigHandle ConfigMgr::config_by_index(size_t index)
-{
-    if (index >= config_vec_.size()) {
-        LogError << "Out of range" << VAR(index) << VAR(config_vec_.size());
-        return nullptr;
-    }
-    return config_vec_[index].get();
-}
-
-MaaToolKitConfigHandle ConfigMgr::current()
-{
-    auto find_it = config_map_.find(current_);
-    if (find_it == config_map_.end()) {
-        LogError << "Current not found" << VAR(current_) << VAR(config_map_);
-        return nullptr;
-    }
-
-    return find_it->second.get();
-}
-
-MaaToolKitConfigHandle ConfigMgr::add_config(std::string_view config_name, MaaToolKitConfigHandle copy_from)
-{
-    LogInfo << VAR(config_name) << VAR_VOIDP(copy_from);
-
-    if (config_name.empty()) {
-        LogError << "Name is empty";
-        return nullptr;
-    }
-
-    std::string str_config_name(config_name);
-    if (config_map_.contains(str_config_name)) {
-        LogError << "Config name already exists" << VAR(config_name) << VAR(config_map_);
-        return nullptr;
-    }
-
-    Config new_config;
-    if (auto cast = dynamic_cast<Config*>(copy_from); cast) {
-        new_config = *cast;
-    }
-    new_config.set_name(config_name);
-
-    auto new_config_ptr = std::make_shared<Config>(std::move(new_config));
-    auto& ref = config_vec_.emplace_back(new_config_ptr);
-    config_map_.emplace(std::move(str_config_name), new_config_ptr);
-
-    LogDebug << VAR(config_name) << VAR(new_config_ptr) << VAR(*new_config_ptr) << VAR(config_vec_) << VAR(config_map_);
-
-    return ref.get();
-}
-
-bool ConfigMgr::del_config(std::string_view config_name)
-{
-    LogInfo << VAR(config_name);
-
-    if (config_name.empty()) {
-        LogError << "Name is empty";
-        return false;
-    }
-
-    std::string str_config_name(config_name);
-    bool removed = config_map_.erase(str_config_name) > 0;
-    if (!removed) {
-        LogError << "Config name not found in map" << VAR(config_name) << VAR(config_map_);
-        return false;
-    }
-    auto find_it =
-        MAA_RNS::ranges::find_if(config_vec_, [&](const auto& config) { return config->get_name() == config_name; });
-    if (find_it == config_vec_.end()) {
-        LogError << "Config name not found in vec" << VAR(config_name) << VAR(config_vec_);
-        return false;
-    }
-    config_vec_.erase(find_it);
-
-    LogDebug << VAR(config_name) << VAR(config_vec_) << VAR(config_map_);
-    return true;
-}
-
-bool ConfigMgr::set_current_config(std::string_view config_name)
-{
-    LogInfo << VAR(config_name);
-
-    if (config_name.empty()) {
-        LogError << "Name is empty";
-        return false;
-    }
-
-    std::string str_config_name(config_name);
-    auto find_it = config_map_.find(str_config_name);
-    if (find_it == config_map_.end()) {
-        LogError << "Config not found" << VAR(config_vec_) << VAR(config_map_);
-        return false;
-    }
-
-    current_ = config_name;
-    return true;
 }
 
 bool ConfigMgr::load()
@@ -177,18 +58,6 @@ bool ConfigMgr::load()
         return false;
     }
 
-    auto& config = json[kConfigKey];
-    if (!parse_config(config)) {
-        LogError << "Failed to parse config:" << VAR(config);
-        return false;
-    }
-
-    auto& current = json[kCurrentKey];
-    if (!parse_current(current)) {
-        LogError << "Failed to parse current:" << VAR(current);
-        return false;
-    }
-
     return true;
 }
 
@@ -206,54 +75,6 @@ bool ConfigMgr::parse_and_apply_policy(const json::value& policy_json)
     return true;
 }
 
-bool ConfigMgr::parse_config(const json::value& config_json)
-{
-    LogFunc << VAR(config_json);
-
-    config_vec_.clear();
-    config_map_.clear();
-
-    if (!config_json.is_array()) {
-        LogError << "Json is not an array:" << VAR(config_json);
-        return false;
-    }
-
-    for (const auto& jconfig : config_json.as_array()) {
-        Config config;
-        if (!config.from_json(jconfig)) {
-            LogError << "Failed to parse config:" << jconfig;
-            return false;
-        }
-        std::string name(config.get_name());
-        insert(std::move(name), std::move(config));
-    }
-
-    LogInfo << VAR(config_vec_) << VAR(config_map_);
-    return true;
-}
-
-bool ConfigMgr::parse_current(const json::value& current_json)
-{
-    LogFunc << VAR(current_json);
-
-    if (!current_json.is_string()) {
-        LogError << "Json is not a string:" << VAR(current_json);
-        return false;
-    }
-
-    current_ = current_json.as_string();
-    return true;
-}
-
-void ConfigMgr::generate_default_config()
-{
-    LogInfo;
-
-    Config config;
-    config.set_name(kConfigDefaultName);
-    insert(kConfigDefaultName, std::move(config));
-}
-
 json::value ConfigMgr::to_json() const
 {
     json::value root;
@@ -261,12 +82,6 @@ json::value ConfigMgr::to_json() const
         { kPolicyLoggging, policy_logging_ },
         { kPolicyDebugMode, policy_debug_mode_ },
     };
-    json::array& jconfig = root[kConfigKey].as_array();
-    for (const auto& config : config_map_ | MAA_RNS::views::values) {
-        jconfig.emplace_back(config->to_json());
-    }
-    root[kCurrentKey] = current_;
-    root[kCustomInfoKey] = json::object(custom_info_);
 
     return root;
 }
@@ -290,26 +105,6 @@ bool ConfigMgr::save(const json::value& root) const
     }
     ofs << root;
     return true;
-}
-
-void ConfigMgr::insert(std::string name, Config config)
-{
-    LogInfo << VAR(name) << VAR(config);
-
-    auto config_ptr = std::make_shared<Config>(std::move(config));
-
-    auto map_it = config_map_.find(name);
-    if (map_it != config_map_.end()) {
-        auto vec_it =
-            MaaRangesNS::ranges::find_if(config_vec_, [&](const auto& ptr) { return ptr->get_name() == name; });
-        *vec_it = config_ptr;
-
-        map_it->second = std::move(config_ptr);
-    }
-    else {
-        config_vec_.emplace_back(config_ptr);
-        config_map_.emplace(std::move(name), std::move(config_ptr));
-    }
 }
 
 MAA_TOOLKIT_CONFIG_NS_END

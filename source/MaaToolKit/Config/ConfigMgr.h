@@ -6,8 +6,9 @@
 #include <utility>
 #include <vector>
 
+#include <meojson/json.hpp>
+
 #include "Conf/Conf.h"
-#include "Config.h"
 #include "ConfigAPI.h"
 #include "Utils/SingletonHolder.hpp"
 
@@ -25,14 +26,8 @@ public:
 
 public:
     inline static const std::string kPolicyKey = "policy";
-    inline static const std::string kConfigKey = "config";
-    inline static const std::string kCurrentKey = "current";
-    inline static const std::string kCustomInfoKey = "custom";
-
     inline static const std::string kPolicyLoggging = "logging";
     inline static const std::string kPolicyDebugMode = "debug_mode";
-
-    inline static const std::string kConfigDefaultName = "Default";
 
 public:
     virtual ~ConfigMgr() noexcept override = default;
@@ -41,38 +36,17 @@ public: // from MaaToolKitConfigMgrAPI
     virtual bool init() override;
     virtual bool uninit() override;
 
-    virtual std::string_view get_custom_info(std::string_view key) const override;
-    virtual void set_custom_info(std::string key, std::string value) override;
-
-    virtual size_t config_size() const override;
-    virtual MaaToolKitConfigHandle config_by_index(size_t index) override;
-    virtual MaaToolKitConfigHandle current() override;
-
-    virtual MaaToolKitConfigHandle add_config(std::string_view config_name, MaaToolKitConfigHandle copy_from) override;
-    virtual bool del_config(std::string_view config_name) override;
-    virtual bool set_current_config(std::string_view config_name) override;
-
 private:
     ConfigMgr() = default;
 
     bool load();
     bool parse_and_apply_policy(const json::value& policy_json);
-    bool parse_config(const json::value& config_json);
-    bool parse_current(const json::value& current_json);
-
-    void generate_default_config();
 
     json::value to_json() const;
     bool dump() const;
     bool save(const json::value& root) const;
-    void insert(std::string name, Config config);
 
 private:
-    std::vector<std::shared_ptr<Config>> config_vec_; // for C API
-    std::map<std::string, std::shared_ptr<Config>> config_map_;
-    std::string current_ = kConfigDefaultName;
-    std::map<std::string, std::string> custom_info_;
-
     bool policy_logging_ = true;
     bool policy_debug_mode_ = false;
 };
