@@ -107,14 +107,14 @@ void Classifier::draw_result(const Result& res) const
     }
 
     cv::Mat image_draw = draw_roi(res.box);
-    cv::Point pt(res.box.x + res.box.width + 5, res.box.y);
+    cv::Point pt(res.box.x + res.box.width + 5, res.box.y + 20);
 
     for (size_t i = 0; i != param_.cls_size; ++i) {
-        const auto color = i == res.cls_index ? cv::Scalar(0, 255, 0) : cv::Scalar(0, 0, 255);
+        const auto color = i == res.cls_index ? cv::Scalar(0, 0, 255) : cv::Scalar(255, 0, 0);
         std::string text =
             MAA_FMT::format("{} {}: prob {:.3f}, raw {:.3f}", i, param_.labels[i], res.probs[i], res.raw[i]);
         cv::putText(image_draw, text, pt, cv::FONT_HERSHEY_PLAIN, 1.2, color, 1);
-        pt.y += 10;
+        pt.y += 20;
     }
 
     if (save_draw_) {
