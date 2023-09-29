@@ -56,7 +56,7 @@ private:
     };
 
 private:
-    RunningResult find_first_and_run(const std::vector<std::string>& list, std::chrono::milliseconds find_timeout,
+    RunningResult find_first_and_run(const std::vector<std::string>& list, std::chrono::milliseconds timeout,
                                      /*out*/ MAA_RES_NS::TaskData& found_data);
     std::optional<HitResult> find_first(const std::vector<std::string>& list);
     RunningResult run_task(const HitResult& hits);

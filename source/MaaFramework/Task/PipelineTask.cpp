@@ -77,8 +77,8 @@ bool PipelineTask::set_param(const json::value& param)
 }
 
 PipelineTask::RunningResult PipelineTask::find_first_and_run(const std::vector<std::string>& list,
-                                                             std::chrono::milliseconds find_timeout,
-                                                             /*out*/ MAA_RES_NS::TaskData& task_data)
+                                                             std::chrono::milliseconds timeout,
+                                                             /*out*/ MAA_RES_NS::TaskData& found_data)
 {
     HitResult hits;
 
@@ -90,7 +90,7 @@ PipelineTask::RunningResult PipelineTask::find_first_and_run(const std::vector<s
             break;
         }
 
-        if (std::chrono::steady_clock::now() - start_time > find_timeout) {
+        if (std::chrono::steady_clock::now() - start_time > timeout) {
             return RunningResult::Timeout;
         }
         if (need_exit()) {
@@ -101,7 +101,7 @@ PipelineTask::RunningResult PipelineTask::find_first_and_run(const std::vector<s
 
     auto run_ret = run_task(hits);
 
-    task_data = std::move(hits.task_data);
+    found_data = std::move(hits.task_data);
 
     return run_ret;
 }
