@@ -92,45 +92,54 @@ Detector::ResultsVec Detector::detect(const cv::Rect& roi) const
     // center_y0, center_y1, ..... center_y8399
     // w0, w1, ..... w8399
     // h0, h1, ..... h8399
-    // conf0, conf1, ..... conf8399
-    // 如果后面要做多分类，可能得再看下怎么改（我也不知道shape会变成啥样）
+    // cls1: conf0, conf1, ..... conf8399
+    // cls2: conf0, conf1, ..... conf8399
+    // cls3: conf0, conf1, ..... conf8399
+    // ......
     std::vector<std::vector<float>> output(output_shape[1]);
     for (int64_t i = 0; i < output_shape[1]; i++) {
         output[i] = std::vector<float>(raw_output + i * output_shape[2], raw_output + (i + 1) * output_shape[2]);
     }
 
-    ResultsVec raw_results;
-    const auto& conf_vec = output.back();
-    for (size_t i = 0; i < conf_vec.size(); ++i) {
-        float score = conf_vec[i];
-        constexpr float kThreshold = 0.3f;
-        if (score < kThreshold) {
-            continue;
+    ResultsVec all_nms_results;
+
+    const size_t output_size = output.back().size();
+    for (size_t i = 0; i < output_size; ++i) {
+        ResultsVec raw_results;
+
+        constexpr size_t kConfidenceIndex = 4;
+        for (size_t j = kConfidenceIndex; j < output.size(); ++j) {
+            float score = output[j][i];
+            constexpr float kThreshold = 0.3f;
+            if (score < kThreshold) {
+                continue;
+            }
+
+            int center_x = static_cast<int>(output[0][i]);
+            int center_y = static_cast<int>(output[1][i]);
+            int w = static_cast<int>(output[2][i]);
+            int h = static_cast<int>(output[3][i]);
+
+            int x = center_x - w / 2;
+            int y = center_y - h / 2;
+            cv::Rect box { x, y, w, h };
+
+            Result res;
+            res.cls_index = j - kConfidenceIndex;
+            res.label = param_.labels[res.cls_index];
+            res.box = box;
+            res.score = score;
+
+            raw_results.emplace_back(std::move(res));
         }
-
-        int center_x = static_cast<int>(output[0][i]);
-        int center_y = static_cast<int>(output[1][i]);
-        int w = static_cast<int>(output[2][i]);
-        int h = static_cast<int>(output[3][i]);
-
-        int x = center_x - w / 2;
-        int y = center_y - h / 2;
-        cv::Rect box { x, y, w, h };
-
-        Result res;
-        // TODO: cls_index 可能不对，随手写的，没测过，需要看下 onnx 输出的 shape
-        res.cls_index = static_cast<int>(output[4][i]);
-        res.label = param_.labels[res.cls_index];
-        res.box = box;
-        res.score = score;
-
-        raw_results.emplace_back(std::move(res));
+        auto nms_results = NMS(std::move(raw_results));
+        all_nms_results.insert(all_nms_results.end(), std::make_move_iterator(nms_results.begin()),
+                               std::make_move_iterator(nms_results.end()));
     }
 
-    auto nms_results = NMS(std::move(raw_results));
-    draw_result(roi, nms_results);
+    draw_result(roi, all_nms_results);
 
-    return nms_results;
+    return all_nms_results;
 }
 
 void Detector::filter(ResultsVec& results, const std::vector<size_t>& expected) const
