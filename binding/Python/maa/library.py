@@ -6,7 +6,7 @@ import platform
 from typing import Union
 
 
-class library:
+class Library:
     @classmethod
     def open(cls, path: Union[pathlib.Path, str], toolkit: bool = True) -> bool:
         """

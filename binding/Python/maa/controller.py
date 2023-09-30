@@ -1,30 +1,36 @@
 import ctypes
+import json
 from abc import ABC
-from typing import Callable, Any
+from typing import Optional, Any, Dict
 
-from .define import maa_api_callback, maa_bool, maa_id, maa_status
-from .library import library
+from .define import MaaApiCallback, MaaBool, MaaId, MaaStatus
+from .library import Library
+from .callback_agent import CallbackAgent, Callback
 
 
-class controller(ABC):
-    def __init__(self):
+class Controller(ABC):
+    _handle: ctypes.c_void_p
+    _callback_agent: CallbackAgent
+
+    def __init__(self, callback: Optional[Callback] = None, callback_arg: Any = None):
         """
         Base class for all controllers.
         """
 
-        if not library.initialized:
+        if not Library.initialized:
             raise RuntimeError("Library not initialized, please call `library.open()` first.")
         
         self._set_api_properties()
-        self._handle = None
+
+        self._callback_agent = CallbackAgent(callback, callback_arg)
 
 
     def __del__(self):
         """
         Destructor for the controller.
         """
-        if self._handle is not None:
-            library.framework.MaaControllerDestroy(self._handle)
+        if self._handle:
+            Library.framework.MaaControllerDestroy(self._handle)
             self._handle = None
 
 
@@ -35,21 +41,21 @@ class controller(ABC):
         :return: True if the connection was successful, False otherwise.
         """
 
-        cid = self.post_connect()
-        return self.wait(cid) == maa_status.success
+        cid = self.post_connection()
+        return self.wait(cid) == MaaStatus.success
 
 
-    def post_connect(self) -> int:
+    def post_connection(self) -> int:
         """
         Async post a connection to the controller.
 
         :return: The connection ID.
         """
         
-        return library.framework.MaaControllerPostConnection(self._handle)
+        return Library.framework.MaaControllerPostConnection(self._handle)
     
 
-    def status(self, connection_id: int) -> maa_status:
+    def status(self, connection_id: int) -> MaaStatus:
         """
         Get the status of a connection.
 
@@ -57,10 +63,10 @@ class controller(ABC):
         :return: The status of the connection.
         """
 
-        return maa_status(library.framework.MaaControllerStatus(self._handle, connection_id))
+        return MaaStatus(Library.framework.MaaControllerStatus(self._handle, connection_id))
 
 
-    def wait(self, connection_id: int) -> maa_status:
+    def wait(self, connection_id: int) -> MaaStatus:
         """
         Wait for a connection to complete.
 
@@ -68,7 +74,7 @@ class controller(ABC):
         :return: The status of the connection.
         """
 
-        return maa_status(library.framework.MaaControllerWait(self._handle, connection_id))
+        return MaaStatus(Library.framework.MaaControllerWait(self._handle, connection_id))
     
 
     def connected(self) -> bool:
@@ -78,8 +84,7 @@ class controller(ABC):
         :return: True if the controller is connected, False otherwise.
         """
 
-        ret = library.framework.MaaControllerConnected(self._handle)
-        return True if ret else False
+        return bool(Library.framework.MaaControllerConnected(self._handle))
 
 
     def _set_api_properties(self):
@@ -87,41 +92,27 @@ class controller(ABC):
         Set the API properties for the controller.
         """
 
-        library.framework.MaaControllerDestroy.restype = None
-        library.framework.MaaControllerDestroy.argtypes = [ctypes.c_void_p]
+        Library.framework.MaaControllerDestroy.restype = None
+        Library.framework.MaaControllerDestroy.argtypes = [ctypes.c_void_p]
 
-        library.framework.MaaControllerSetOption.restype = maa_bool
-        library.framework.MaaControllerSetOption.argtypes = [ctypes.c_void_p, ctypes.c_int32, ctypes.c_void_p, ctypes.c_uint64]
+        Library.framework.MaaControllerSetOption.restype = MaaBool
+        Library.framework.MaaControllerSetOption.argtypes = [ctypes.c_void_p, ctypes.c_int32, ctypes.c_void_p, ctypes.c_uint64]
 
-        library.framework.MaaControllerPostConnection.restype = maa_id
-        library.framework.MaaControllerPostConnection.argtypes = [ctypes.c_void_p]
+        Library.framework.MaaControllerPostConnection.restype = MaaId
+        Library.framework.MaaControllerPostConnection.argtypes = [ctypes.c_void_p]
 
-        library.framework.MaaControllerStatus.restype = ctypes.c_int32
-        library.framework.MaaControllerStatus.argtypes = [ctypes.c_void_p, maa_id]
+        Library.framework.MaaControllerStatus.restype = ctypes.c_int32
+        Library.framework.MaaControllerStatus.argtypes = [ctypes.c_void_p, MaaId]
 
-        library.framework.MaaControllerWait.restype = ctypes.c_int32
-        library.framework.MaaControllerWait.argtypes = [ctypes.c_void_p, maa_id]
+        Library.framework.MaaControllerWait.restype = ctypes.c_int32
+        Library.framework.MaaControllerWait.argtypes = [ctypes.c_void_p, MaaId]
         
-        library.framework.MaaControllerConnected.restype = maa_bool
-        library.framework.MaaControllerConnected.argtypes = [ctypes.c_void_p]
+        Library.framework.MaaControllerConnected.restype = MaaBool
+        Library.framework.MaaControllerConnected.argtypes = [ctypes.c_void_p]
 
 
-    def _controller_callback(msg: ctypes.c_char_p, details_json: ctypes.c_char_p, callback_arg: ctypes.c_void_p):
-        if not callback_arg:
-            return
-        
-        self: controller = ctypes.cast(callback_arg, ctypes.py_object).value
-        if not self._callback:
-            return
-        
-        self._callback(msg.decode('utf-8'), details_json.decode('utf-8'), self._callback_arg)
-
-    def _self_to_void_p(self):
-        return ctypes.c_void_p.from_buffer(ctypes.py_object(self))
-
-
-class adb_controller(controller):
-    default_config = {
+class AdbController(Controller):
+    DEFAULT_CONFIG = {
         "prebuilt": {
             "minicap": {
                 "root": "./MaaAgentBinary/minicap",
@@ -316,8 +307,8 @@ class adb_controller(controller):
         }
     }
 
-    def __init__(self, adb_path: str, address: str, controller_type: int = 65793, config: str = default_config,
-                 callback: Callable = None, callback_arg: Any = None):
+    def __init__(self, adb_path: str, address: str, controller_type: int = 65793, config: Dict[str, Any] = DEFAULT_CONFIG,
+                 callback: Optional[Callback] = None, callback_arg: Any = None):
         """
         ADB controller.
 
@@ -332,17 +323,17 @@ class adb_controller(controller):
         super().__init__()
         self._set_adb_api_properties()
 
-        self._callback = callback
-        self._callback_arg = callback_arg
-
-        self._handle = library.framework.MaaAdbControllerCreate(
+        self._handle = Library.framework.MaaAdbControllerCreate(
             adb_path.encode('utf-8'),
             address.encode('utf-8'),
             controller_type,
-            config.encode('utf-8'),
-            self._controller_callback,
-            self._self_to_void_p(),
+            json.dumps(config).encode('utf-8'),
+            self._callback_agent.c_callback(),
+            self._callback_agent.c_callback_arg()
         )
+
+        if not self._handle:
+            raise RuntimeError("Failed to create ADB controller.")
 
 
     def _set_adb_api_properties(self):
@@ -350,5 +341,5 @@ class adb_controller(controller):
         Set the API properties for the ADB controller.
         """
 
-        library.framework.MaaAdbControllerCreate.restype = ctypes.c_void_p
-        library.framework.MaaAdbControllerCreate.argtypes = [ctypes.c_char_p, ctypes.c_char_p, ctypes.c_int32, ctypes.c_char_p, maa_api_callback, ctypes.c_void_p]
+        Library.framework.MaaAdbControllerCreate.restype = ctypes.c_void_p
+        Library.framework.MaaAdbControllerCreate.argtypes = [ctypes.c_char_p, ctypes.c_char_p, ctypes.c_int32, ctypes.c_char_p, MaaApiCallback, ctypes.c_void_p]
