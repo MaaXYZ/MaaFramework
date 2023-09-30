@@ -3,6 +3,7 @@ import json
 from typing import Union, Optional, Any
 
 from .define import MaaApiCallback, MaaBool, MaaId, MaaStatus
+from .common import Status
 from .library import Library
 from .callback_agent import CallbackAgent, Callback
 from .controller import Controller
@@ -88,7 +89,7 @@ class MaaInstance:
             json.dumps(param).encode('utf-8'))
     
 
-    def status(self, id: int) -> MaaStatus:
+    def status(self, id: int) -> Status:
         """
         Get the status of the given id.
 
@@ -96,10 +97,10 @@ class MaaInstance:
         :return: The status of the given id.
         """
 
-        return MaaStatus(Library.framework.MaaTaskStatus(self._handle, id))
+        return Status(Library.framework.MaaTaskStatus(self._handle, id))
     
 
-    def wait(self, id: int) -> MaaStatus:
+    def wait(self, id: int) -> Status:
         """
         Wait for the given id to complete.
 
@@ -107,7 +108,7 @@ class MaaInstance:
         :return: The status of the given id.
         """
 
-        return MaaStatus(Library.framework.MaaWaitTask(self._handle, id))
+        return Status(Library.framework.MaaWaitTask(self._handle, id))
     
 
     def all_finished(self) -> bool:

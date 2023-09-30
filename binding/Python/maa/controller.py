@@ -4,6 +4,7 @@ from abc import ABC
 from typing import Optional, Any, Dict
 
 from .define import MaaApiCallback, MaaBool, MaaId, MaaStatus
+from .common import Status
 from .library import Library
 from .callback_agent import CallbackAgent, Callback
 
@@ -42,7 +43,7 @@ class Controller(ABC):
         """
 
         cid = self.post_connection()
-        return self.wait(cid) == MaaStatus.success
+        return self.wait(cid) == Status.success
 
 
     def post_connection(self) -> int:
@@ -55,7 +56,7 @@ class Controller(ABC):
         return Library.framework.MaaControllerPostConnection(self._handle)
     
 
-    def status(self, connection_id: int) -> MaaStatus:
+    def status(self, connection_id: int) -> Status:
         """
         Get the status of a connection.
 
@@ -63,10 +64,10 @@ class Controller(ABC):
         :return: The status of the connection.
         """
 
-        return MaaStatus(Library.framework.MaaControllerStatus(self._handle, connection_id))
+        return Status(Library.framework.MaaControllerStatus(self._handle, connection_id))
 
 
-    def wait(self, connection_id: int) -> MaaStatus:
+    def wait(self, connection_id: int) -> Status:
         """
         Wait for a connection to complete.
 
@@ -74,7 +75,7 @@ class Controller(ABC):
         :return: The status of the connection.
         """
 
-        return MaaStatus(Library.framework.MaaControllerWait(self._handle, connection_id))
+        return Status(Library.framework.MaaControllerWait(self._handle, connection_id))
     
 
     def connected(self) -> bool:
@@ -101,10 +102,10 @@ class Controller(ABC):
         Library.framework.MaaControllerPostConnection.restype = MaaId
         Library.framework.MaaControllerPostConnection.argtypes = [ctypes.c_void_p]
 
-        Library.framework.MaaControllerStatus.restype = ctypes.c_int32
+        Library.framework.MaaControllerStatus.restype = MaaStatus
         Library.framework.MaaControllerStatus.argtypes = [ctypes.c_void_p, MaaId]
 
-        Library.framework.MaaControllerWait.restype = ctypes.c_int32
+        Library.framework.MaaControllerWait.restype = MaaStatus
         Library.framework.MaaControllerWait.argtypes = [ctypes.c_void_p, MaaId]
         
         Library.framework.MaaControllerConnected.restype = MaaBool

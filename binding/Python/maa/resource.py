@@ -3,6 +3,7 @@ import pathlib
 from typing import Union, Optional, Any
 
 from .define import MaaApiCallback, MaaBool, MaaId, MaaStatus
+from .common import Status
 from .library import Library
 from .callback_agent import CallbackAgent, Callback
 
@@ -42,7 +43,7 @@ class Resource:
         """
 
         rid = self.post_path(path)
-        return self.wait(rid) == MaaStatus.success
+        return self.wait(rid) == Status.success
     
 
     def post_path(self, path: Union[pathlib.Path, str]) -> int:
@@ -56,7 +57,7 @@ class Resource:
         return Library.framework.MaaResourcePostPath(self._handle, str(path).encode('utf-8'))
     
 
-    def status(self, id: int) -> MaaStatus:
+    def status(self, id: int) -> Status:
         """
         Get the status of the given id.
 
@@ -64,10 +65,10 @@ class Resource:
         :return: The status of the given id.
         """
 
-        return MaaStatus(Library.framework.MaaResourceStatus(self._handle, id))
+        return Status(Library.framework.MaaResourceStatus(self._handle, id))
     
     
-    def wait(self, id: int) -> MaaStatus:
+    def wait(self, id: int) -> Status:
         """
         Wait for the given id to complete.
 
@@ -75,7 +76,7 @@ class Resource:
         :return: The status of the given id.
         """
 
-        return MaaStatus(Library.framework.MaaResourceWait(self._handle, id))
+        return Status(Library.framework.MaaResourceWait(self._handle, id))
     
 
     def loaded(self) -> bool:
