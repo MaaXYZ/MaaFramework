@@ -1,7 +1,7 @@
 from maa.library import Library
 from maa.resource import Resource
 from maa.controller import AdbController
-from maa.instance import MaaInstance
+from maa.instance import Instance
 
 if __name__ == '__main__':
 
@@ -15,7 +15,7 @@ if __name__ == '__main__':
     ctrl_id = controller.post_connection()
     controller.wait(ctrl_id)
 
-    maa_instance = MaaInstance()
+    maa_instance = Instance()
     maa_instance.bind(resource, controller)
 
     if not maa_instance.inited():

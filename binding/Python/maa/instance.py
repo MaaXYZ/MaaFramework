@@ -10,7 +10,7 @@ from .controller import Controller
 from .resource import Resource
 
 
-class MaaInstance:
+class Instance:
     _callback_agent: CallbackAgent
     _handle: ctypes.c_void_p
 
