@@ -94,10 +94,16 @@ class Resource:
 
         return bool(Library.framework.MaaResourceLoaded(self._handle))
 
-    def _set_api_properties(self):
+    _api_properties_initialized: bool = False
+
+    @staticmethod
+    def _set_api_properties():
         """
         Set the API properties for this resource.
         """
+        if Resource._api_properties_initialized:
+            return
+        Resource._api_properties_initialized = True
 
         Library.framework.MaaResourceCreate.restype = ctypes.c_void_p
         Library.framework.MaaResourceCreate.argtypes = [MaaApiCallback, ctypes.c_void_p]

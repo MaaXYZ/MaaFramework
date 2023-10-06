@@ -130,10 +130,16 @@ class Maa:
 
         return bool(Library.framework.MaaStop(self._handle))
 
-    def _set_api_properties(self):
+    _api_properties_initialized: bool = False
+
+    @staticmethod
+    def _set_api_properties():
         """
         Set the API properties.
         """
+        if Maa._api_properties_initialized:
+            return
+        Maa._api_properties_initialized = True
 
         Library.framework.MaaCreate.restype = ctypes.c_void_p
         Library.framework.MaaCreate.argtypes = [MaaApiCallback, ctypes.c_void_p]

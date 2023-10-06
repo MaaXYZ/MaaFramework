@@ -85,10 +85,16 @@ class Controller(ABC):
 
         return bool(Library.framework.MaaControllerConnected(self._handle))
 
-    def _set_api_properties(self):
+    _api_properties_initialized: bool = False
+
+    @staticmethod
+    def _set_api_properties():
         """
         Set the API properties for the controller.
         """
+        if Controller._api_properties_initialized:
+            return
+        Controller._api_properties_initialized = True
 
         Library.framework.MaaControllerDestroy.restype = None
         Library.framework.MaaControllerDestroy.argtypes = [ctypes.c_void_p]
