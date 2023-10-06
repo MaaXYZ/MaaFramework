@@ -37,6 +37,13 @@ class Maa:
         if not self._handle:
             raise RuntimeError("Failed to create resource.")
 
+    def __del__(self):
+        """
+        Destroy the MAA task manager.
+        """
+        if self._handle:
+            Library.framework.MaaDestroy(self._handle)
+
     def bind(self, resource: Resource, controller: Controller) -> bool:
         """
         Bind the resource and controller to the instance.

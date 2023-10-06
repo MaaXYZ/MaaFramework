@@ -35,6 +35,13 @@ class Resource:
         if not self._handle:
             raise RuntimeError("Failed to create resource.")
 
+    def __del__(self):
+        """
+        Destroy the resource object.
+        """
+        if self._handle:
+            Library.framework.MaaResourceDestroy(self._handle)
+
     def load(self, path: Union[pathlib.Path, str]) -> bool:
         """
         Sync load the given path to the resource.
