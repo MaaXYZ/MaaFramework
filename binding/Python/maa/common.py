@@ -1,5 +1,6 @@
 from enum import Enum
 
+
 class Status(Enum):
     invalid = 0
     pending = 1000

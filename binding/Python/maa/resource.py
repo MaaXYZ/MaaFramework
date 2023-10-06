@@ -21,18 +21,19 @@ class Resource:
         """
 
         if not Library.initialized:
-            raise RuntimeError("Library not initialized, please call `library.open()` first.")
-        
+            raise RuntimeError(
+                "Library not initialized, please call `library.open()` first."
+            )
+
         self._set_api_properties()
 
         self._callback_agent = CallbackAgent(callback, callback_arg)
         self._handle = Library.framework.MaaResourceCreate(
-            self._callback_agent.c_callback(),
-            self._callback_agent.c_callback_arg())
-        
+            self._callback_agent.c_callback(), self._callback_agent.c_callback_arg()
+        )
+
         if not self._handle:
             raise RuntimeError("Failed to create resource.")
-
 
     def load(self, path: Union[pathlib.Path, str]) -> bool:
         """
@@ -44,7 +45,6 @@ class Resource:
 
         rid = self.post_path(path)
         return self.wait(rid) == Status.success
-    
 
     def post_path(self, path: Union[pathlib.Path, str]) -> int:
         """
@@ -54,8 +54,9 @@ class Resource:
         :return: The id of the posted path.
         """
 
-        return Library.framework.MaaResourcePostPath(self._handle, str(path).encode('utf-8'))
-    
+        return Library.framework.MaaResourcePostPath(
+            self._handle, str(path).encode("utf-8")
+        )
 
     def status(self, id: int) -> Status:
         """
@@ -66,8 +67,7 @@ class Resource:
         """
 
         return Status(Library.framework.MaaResourceStatus(self._handle, id))
-    
-    
+
     def wait(self, id: int) -> Status:
         """
         Wait for the given id to complete.
@@ -77,7 +77,6 @@ class Resource:
         """
 
         return Status(Library.framework.MaaResourceWait(self._handle, id))
-    
 
     def loaded(self) -> bool:
         """
@@ -87,7 +86,6 @@ class Resource:
         """
 
         return bool(Library.framework.MaaResourceLoaded(self._handle))
-
 
     def _set_api_properties(self):
         """
@@ -101,7 +99,10 @@ class Resource:
         Library.framework.MaaResourceDestroy.argtypes = [ctypes.c_void_p]
 
         Library.framework.MaaResourcePostPath.restype = MaaId
-        Library.framework.MaaResourcePostPath.argtypes = [ctypes.c_void_p, ctypes.c_char_p]
+        Library.framework.MaaResourcePostPath.argtypes = [
+            ctypes.c_void_p,
+            ctypes.c_char_p,
+        ]
 
         Library.framework.MaaResourceStatus.restype = MaaStatus
         Library.framework.MaaResourceStatus.argtypes = [ctypes.c_void_p, MaaId]
@@ -111,4 +112,3 @@ class Resource:
 
         Library.framework.MaaResourceLoaded.restype = MaaBool
         Library.framework.MaaResourceLoaded.argtypes = [ctypes.c_void_p]
-        

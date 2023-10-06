@@ -10,31 +10,32 @@ from .controller import Controller
 from .resource import Resource
 
 
-class Instance:
+class Maa:
     _callback_agent: CallbackAgent
     _handle: ctypes.c_void_p
 
     def __init__(self, callback: Optional[Callback] = None, callback_arg: Any = None):
         """
-        Create a new MAA instance.
+        Create a new MAA task manager.
 
         :param callback: The callback function.
         :param callback_arg: The callback argument.
         """
 
         if not Library.initialized:
-            raise RuntimeError("Library not initialized, please call `library.open()` first.")
-        
+            raise RuntimeError(
+                "Library not initialized, please call `library.open()` first."
+            )
+
         self._set_api_properties()
 
         self._callback_agent = CallbackAgent(callback, callback_arg)
         self._handle = Library.framework.MaaCreate(
-            self._callback_agent.c_callback(),
-            self._callback_agent.c_callback_arg())
-        
+            self._callback_agent.c_callback(), self._callback_agent.c_callback_arg()
+        )
+
         if not self._handle:
             raise RuntimeError("Failed to create resource.")
-
 
     def bind(self, resource: Resource, controller: Controller) -> bool:
         """
@@ -45,9 +46,9 @@ class Instance:
         :return: True if the resource and controller were successfully bound, False otherwise.
         """
 
-        return Library.framework.MaaBindResource(self._handle, resource._handle) and \
-            Library.framework.MaaBindController(self._handle, controller._handle)
-
+        return Library.framework.MaaBindResource(
+            self._handle, resource._handle
+        ) and Library.framework.MaaBindController(self._handle, controller._handle)
 
     def inited(self) -> bool:
         """
@@ -57,7 +58,6 @@ class Instance:
         """
 
         return Library.framework.MaaInited(self._handle)
-    
 
     def post_task(self, task_type: str, param: Any = {}) -> int:
         """
@@ -69,10 +69,8 @@ class Instance:
         """
 
         return Library.framework.MaaPostTask(
-            self._handle,
-            task_type.encode('utf-8'),
-            json.dumps(param).encode('utf-8'))
-
+            self._handle, task_type.encode("utf-8"), json.dumps(param).encode("utf-8")
+        )
 
     def set_task_param(self, id: int, param: Any) -> bool:
         """
@@ -84,10 +82,8 @@ class Instance:
         """
 
         return Library.framework.MaaSetTaskParam(
-            self._handle,
-            id,
-            json.dumps(param).encode('utf-8'))
-    
+            self._handle, id, json.dumps(param).encode("utf-8")
+        )
 
     def status(self, id: int) -> Status:
         """
@@ -98,7 +94,6 @@ class Instance:
         """
 
         return Status(Library.framework.MaaTaskStatus(self._handle, id))
-    
 
     def wait(self, id: int) -> Status:
         """
@@ -109,7 +104,6 @@ class Instance:
         """
 
         return Status(Library.framework.MaaWaitTask(self._handle, id))
-    
 
     def all_finished(self) -> bool:
         """
@@ -119,7 +113,6 @@ class Instance:
         """
 
         return bool(Library.framework.MaaTaskAllFinished(self._handle))
-    
 
     def stop(self) -> bool:
         """
@@ -129,7 +122,6 @@ class Instance:
         """
 
         return bool(Library.framework.MaaStop(self._handle))
-
 
     def _set_api_properties(self):
         """
@@ -146,16 +138,27 @@ class Instance:
         Library.framework.MaaBindResource.argtypes = [ctypes.c_void_p, ctypes.c_void_p]
 
         Library.framework.MaaBindController.restype = MaaBool
-        Library.framework.MaaBindController.argtypes = [ctypes.c_void_p, ctypes.c_void_p]
+        Library.framework.MaaBindController.argtypes = [
+            ctypes.c_void_p,
+            ctypes.c_void_p,
+        ]
 
         Library.framework.MaaInited.restype = MaaBool
         Library.framework.MaaInited.argtypes = [ctypes.c_void_p]
 
         Library.framework.MaaPostTask.restype = MaaId
-        Library.framework.MaaPostTask.argtypes = [ctypes.c_void_p, ctypes.c_char_p, ctypes.c_char_p]
+        Library.framework.MaaPostTask.argtypes = [
+            ctypes.c_void_p,
+            ctypes.c_char_p,
+            ctypes.c_char_p,
+        ]
 
         Library.framework.MaaSetTaskParam.restype = MaaBool
-        Library.framework.MaaSetTaskParam.argtypes = [ctypes.c_void_p, MaaId, ctypes.c_char_p]
+        Library.framework.MaaSetTaskParam.argtypes = [
+            ctypes.c_void_p,
+            MaaId,
+            ctypes.c_char_p,
+        ]
 
         Library.framework.MaaTaskStatus.restype = MaaStatus
         Library.framework.MaaTaskStatus.argtypes = [ctypes.c_void_p, MaaId]

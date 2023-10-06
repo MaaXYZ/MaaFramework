@@ -19,12 +19,13 @@ class Controller(ABC):
         """
 
         if not Library.initialized:
-            raise RuntimeError("Library not initialized, please call `library.open()` first.")
-        
+            raise RuntimeError(
+                "Library not initialized, please call `library.open()` first."
+            )
+
         self._set_api_properties()
 
         self._callback_agent = CallbackAgent(callback, callback_arg)
-
 
     def __del__(self):
         """
@@ -33,7 +34,6 @@ class Controller(ABC):
         if self._handle:
             Library.framework.MaaControllerDestroy(self._handle)
             self._handle = None
-
 
     def connect(self) -> bool:
         """
@@ -45,16 +45,14 @@ class Controller(ABC):
         cid = self.post_connection()
         return self.wait(cid) == Status.success
 
-
     def post_connection(self) -> int:
         """
         Async post a connection to the controller.
 
         :return: The connection ID.
         """
-        
+
         return Library.framework.MaaControllerPostConnection(self._handle)
-    
 
     def status(self, connection_id: int) -> Status:
         """
@@ -64,8 +62,9 @@ class Controller(ABC):
         :return: The status of the connection.
         """
 
-        return Status(Library.framework.MaaControllerStatus(self._handle, connection_id))
-
+        return Status(
+            Library.framework.MaaControllerStatus(self._handle, connection_id)
+        )
 
     def wait(self, connection_id: int) -> Status:
         """
@@ -76,7 +75,6 @@ class Controller(ABC):
         """
 
         return Status(Library.framework.MaaControllerWait(self._handle, connection_id))
-    
 
     def connected(self) -> bool:
         """
@@ -87,7 +85,6 @@ class Controller(ABC):
 
         return bool(Library.framework.MaaControllerConnected(self._handle))
 
-
     def _set_api_properties(self):
         """
         Set the API properties for the controller.
@@ -97,7 +94,12 @@ class Controller(ABC):
         Library.framework.MaaControllerDestroy.argtypes = [ctypes.c_void_p]
 
         Library.framework.MaaControllerSetOption.restype = MaaBool
-        Library.framework.MaaControllerSetOption.argtypes = [ctypes.c_void_p, ctypes.c_int32, ctypes.c_void_p, ctypes.c_uint64]
+        Library.framework.MaaControllerSetOption.argtypes = [
+            ctypes.c_void_p,
+            ctypes.c_int32,
+            ctypes.c_void_p,
+            ctypes.c_uint64,
+        ]
 
         Library.framework.MaaControllerPostConnection.restype = MaaId
         Library.framework.MaaControllerPostConnection.argtypes = [ctypes.c_void_p]
@@ -107,7 +109,7 @@ class Controller(ABC):
 
         Library.framework.MaaControllerWait.restype = MaaStatus
         Library.framework.MaaControllerWait.argtypes = [ctypes.c_void_p, MaaId]
-        
+
         Library.framework.MaaControllerConnected.restype = MaaBool
         Library.framework.MaaControllerConnected.argtypes = [ctypes.c_void_p]
 
@@ -117,92 +119,64 @@ class AdbController(Controller):
         "prebuilt": {
             "minicap": {
                 "root": "./MaaAgentBinary/minicap",
-                "arch": [
-                    "x86",
-                    "armeabi-v7a",
-                    "armeabi"
-                ],
-                "sdk": [
-                    31, 29, 28, 27, 26, 25, 24, 23, 22, 21, 19, 18, 17, 16, 15, 14
-                ]
+                "arch": ["x86", "armeabi-v7a", "armeabi"],
+                "sdk": [31, 29, 28, 27, 26, 25, 24, 23, 22, 21, 19, 18, 17, 16, 15, 14],
             },
             "minitouch": {
                 "root": "./MaaAgentBinary/minitouch",
-                "arch": [
-                    "x86_64",
-                    "x86",
-                    "arm64-v8a",
-                    "armeabi-v7a",
-                    "armeabi"
-                ]
+                "arch": ["x86_64", "x86", "arm64-v8a", "armeabi-v7a", "armeabi"],
             },
             "maatouch": {
                 "root": "./MaaAgentBinary/maatouch",
-                "package": "com.shxyke.MaaTouch.App"
-            }
+                "package": "com.shxyke.MaaTouch.App",
+            },
         },
         "command": {
-            "Devices": [
-                "{ADB}",
-                "devices"
-            ],
-            "Connect": [
-                "{ADB}",
-                "connect",
-                "{ADB_SERIAL}"
-            ],
-            "KillServer": [
-                "{ADB}",
-                "kill-server"
-            ],
+            "Devices": ["{ADB}", "devices"],
+            "Connect": ["{ADB}", "connect", "{ADB_SERIAL}"],
+            "KillServer": ["{ADB}", "kill-server"],
             "UUID": [
                 "{ADB}",
                 "-s",
                 "{ADB_SERIAL}",
                 "shell",
-                "settings get secure android_id"
+                "settings get secure android_id",
             ],
             "Resolution": [
                 "{ADB}",
                 "-s",
                 "{ADB_SERIAL}",
                 "shell",
-                "dumpsys window displays | grep -o -E cur=+[^\\ ]+ | grep -o -E [0-9]+"
+                "dumpsys window displays | grep -o -E cur=+[^\\ ]+ | grep -o -E [0-9]+",
             ],
             "StartApp": [
                 "{ADB}",
                 "-s",
                 "{ADB_SERIAL}",
                 "shell",
-                "am start -n {INTENT}"
+                "am start -n {INTENT}",
             ],
             "StopApp": [
                 "{ADB}",
                 "-s",
                 "{ADB_SERIAL}",
                 "shell",
-                "am force-stop {INTENT}"
+                "am force-stop {INTENT}",
             ],
-            "Click": [
-                "{ADB}",
-                "-s",
-                "{ADB_SERIAL}",
-                "shell",
-                "input tap {X} {Y}"
-            ],
+            "Click": ["{ADB}", "-s", "{ADB_SERIAL}", "shell", "input tap {X} {Y}"],
             "Swipe": [
                 "{ADB}",
                 "-s",
                 "{ADB_SERIAL}",
                 "shell",
-                "input swipe {X1} {Y1} {X2} {Y2} {DURATION}"
+                "input swipe {X1} {Y1} {X2} {Y2} {DURATION}",
             ],
             "PressKey": [
                 "{ADB}",
                 "-s",
                 "{ADB_SERIAL}",
                 "shell",
-                "input keyevent {KEY}"
+                "input keyevent {KEY}",
             ],
             "ForwardSocket": [
                 "{ADB}",
@@ -210,42 +184,42 @@ class AdbController(Controller):
                 "{ADB_SERIAL}",
                 "forward",
                 "tcp:{FOWARD_PORT}",
-                "localabstract:{LOCAL_SOCKET}"
+                "localabstract:{LOCAL_SOCKET}",
             ],
             "NetcatAddress": [
                 "{ADB}",
                 "-s",
                 "{ADB_SERIAL}",
                 "shell",
-                "cat /proc/net/arp | grep : "
+                "cat /proc/net/arp | grep : ",
             ],
             "ScreencapRawByNetcat": [
                 "{ADB}",
                 "-s",
                 "{ADB_SERIAL}",
                 "exec-out",
-                "screencap | nc -w 3 {NETCAT_ADDRESS} {NETCAT_PORT}"
+                "screencap | nc -w 3 {NETCAT_ADDRESS} {NETCAT_PORT}",
             ],
             "ScreencapRawWithGzip": [
                 "{ADB}",
                 "-s",
                 "{ADB_SERIAL}",
                 "exec-out",
-                "screencap | gzip -1"
+                "screencap | gzip -1",
             ],
             "ScreencapEncode": [
                 "{ADB}",
                 "-s",
                 "{ADB_SERIAL}",
                 "exec-out",
-                "screencap -p"
+                "screencap -p",
             ],
             "ScreencapEncodeToFile": [
                 "{ADB}",
                 "-s",
                 "{ADB_SERIAL}",
                 "shell",
-                "screencap -p > \"/data/local/tmp/{TEMP_FILE}\""
+                'screencap -p > "/data/local/tmp/{TEMP_FILE}"',
             ],
             "PullFile": [
                 "{ADB}",
@@ -253,28 +227,28 @@ class AdbController(Controller):
                 "{ADB_SERIAL}",
                 "pull",
                 "/data/local/tmp/{TEMP_FILE}",
-                "{DST_PATH}"
+                "{DST_PATH}",
             ],
             "Abilist": [
                 "{ADB}",
                 "-s",
                 "{ADB_SERIAL}",
                 "shell",
-                "getprop ro.product.cpu.abilist | tr -d '\n\r'"
+                "getprop ro.product.cpu.abilist | tr -d '\n\r'",
             ],
             "SDK": [
                 "{ADB}",
                 "-s",
                 "{ADB_SERIAL}",
                 "shell",
-                "getprop ro.build.version.sdk | tr -d '\n\r'"
+                "getprop ro.build.version.sdk | tr -d '\n\r'",
             ],
             "Orientation": [
                 "{ADB}",
                 "-s",
                 "{ADB_SERIAL}",
                 "shell",
-                "dumpsys input | grep SurfaceOrientation | grep -m 1 -o -E [0-9]"
+                "dumpsys input | grep SurfaceOrientation | grep -m 1 -o -E [0-9]",
             ],
             "PushBin": [
                 "{ADB}",
@@ -282,34 +256,41 @@ class AdbController(Controller):
                 "{ADB_SERIAL}",
                 "push",
                 "{BIN_PATH}",
-                "/data/local/tmp/{BIN_WORKING_FILE}"
+                "/data/local/tmp/{BIN_WORKING_FILE}",
             ],
             "ChmodBin": [
                 "{ADB}",
                 "-s",
                 "{ADB_SERIAL}",
                 "shell",
-                "chmod 700 \"/data/local/tmp/{BIN_WORKING_FILE}\""
+                'chmod 700 "/data/local/tmp/{BIN_WORKING_FILE}"',
             ],
             "InvokeBin": [
                 "{ADB}",
                 "-s",
                 "{ADB_SERIAL}",
                 "shell",
-                "export LD_LIBRARY_PATH=/data/local/tmp/; \"/data/local/tmp/{BIN_WORKING_FILE}\" {BIN_EXTRA_PARAMS}"
+                'export LD_LIBRARY_PATH=/data/local/tmp/; "/data/local/tmp/{BIN_WORKING_FILE}" {BIN_EXTRA_PARAMS}',
             ],
             "InvokeApp": [
                 "{ADB}",
                 "-s",
                 "{ADB_SERIAL}",
                 "shell",
-                "export CLASSPATH=\"/data/local/tmp/{APP_WORKING_FILE}\"; app_process /data/local/tmp {PACKAGE_NAME}"
-            ]
-        }
+                'export CLASSPATH="/data/local/tmp/{APP_WORKING_FILE}"; app_process /data/local/tmp {PACKAGE_NAME}',
+            ],
+        },
     }
 
-    def __init__(self, adb_path: str, address: str, controller_type: int = 65793, config: Dict[str, Any] = DEFAULT_CONFIG,
-                 callback: Optional[Callback] = None, callback_arg: Any = None):
+    def __init__(
+        self,
+        adb_path: str,
+        address: str,
+        controller_type: int = 65793,
+        config: Dict[str, Any] = DEFAULT_CONFIG,
+        callback: Optional[Callback] = None,
+        callback_arg: Any = None,
+    ):
         """
         ADB controller.
 
@@ -325,17 +306,16 @@ class AdbController(Controller):
         self._set_adb_api_properties()
 
         self._handle = Library.framework.MaaAdbControllerCreate(
-            adb_path.encode('utf-8'),
-            address.encode('utf-8'),
+            adb_path.encode("utf-8"),
+            address.encode("utf-8"),
             controller_type,
-            json.dumps(config).encode('utf-8'),
+            json.dumps(config).encode("utf-8"),
             self._callback_agent.c_callback(),
-            self._callback_agent.c_callback_arg()
+            self._callback_agent.c_callback_arg(),
         )
 
         if not self._handle:
             raise RuntimeError("Failed to create ADB controller.")
-
 
     def _set_adb_api_properties(self):
         """
@@ -343,4 +323,11 @@ class AdbController(Controller):
         """
 
         Library.framework.MaaAdbControllerCreate.restype = ctypes.c_void_p
-        Library.framework.MaaAdbControllerCreate.argtypes = [ctypes.c_char_p, ctypes.c_char_p, ctypes.c_int32, ctypes.c_char_p, MaaApiCallback, ctypes.c_void_p]
+        Library.framework.MaaAdbControllerCreate.argtypes = [
+            ctypes.c_char_p,
+            ctypes.c_char_p,
+            ctypes.c_int32,
+            ctypes.c_char_p,
+            MaaApiCallback,
+            ctypes.c_void_p,
+        ]
