@@ -20,39 +20,38 @@ bool PipelineTask::run()
 {
     LogFunc << VAR(entry_);
 
-    if (!resource()) {
-        LogError << "Resource not binded";
-        return false;
-    }
-
-    auto cur_task = data_mgr_.get_task_data(entry_);
-    cur_task_name_ = cur_task.name;
     std::vector<std::string> next_list = { entry_ };
     std::stack<std::string> breakpoints_stack;
     std::string pre_breakpoint;
 
     RunningResult ret = RunningResult::Success;
+
+    auto timeout = data_mgr_.get_task_data(entry_).timeout;
     while (!next_list.empty() && !need_exit()) {
-        ret = find_first_and_run(next_list, cur_task.timeout, cur_task);
-        cur_task_name_ = cur_task.name;
+        TaskData new_hits;
+        ret = find_first_and_run(next_list, timeout, new_hits);
+
+        cur_task_name_ = new_hits.name;
+        timeout = new_hits.timeout;
 
         switch (ret) {
         case RunningResult::Success:
-            next_list = cur_task.next;
+            next_list = new_hits.next;
             break;
         case RunningResult::Timeout:
-            next_list = cur_task.timeout_next;
+            next_list = new_hits.timeout_next;
             break;
         case RunningResult::Runout:
-            next_list = cur_task.runout_next;
+            next_list = new_hits.runout_next;
             break;
         case RunningResult::Interrupted:
+            LogInfo << "Task interrupted:" << new_hits.name;
             return true;
         default:
             break;
         }
 
-        if (cur_task.is_sub) {
+        if (new_hits.is_sub) {
             breakpoints_stack.emplace(pre_breakpoint);
             LogInfo << "breakpoints add" << pre_breakpoint;
         }
@@ -65,7 +64,7 @@ bool PipelineTask::run()
             LogInfo << "breakpoints pop" << VAR(top_bp) << VAR(next_list);
         }
         else {
-            pre_breakpoint = cur_task.name;
+            pre_breakpoint = new_hits.name;
         }
     }
 
@@ -78,84 +77,36 @@ bool PipelineTask::set_param(const json::value& param)
 }
 
 PipelineTask::RunningResult PipelineTask::find_first_and_run(const std::vector<std::string>& list,
-                                                             std::chrono::milliseconds find_timeout,
+                                                             std::chrono::milliseconds timeout,
                                                              /*out*/ MAA_RES_NS::TaskData& found_data)
 {
-    if (!status()) {
-        LogError << "Status not binded";
-        return RunningResult::InternalError;
-    }
-    RecognitionResult result;
+    HitResult hits;
 
     auto start_time = std::chrono::steady_clock::now();
     while (true) {
         auto find_opt = find_first(list);
         if (find_opt) {
-            result = *std::move(find_opt);
+            hits = *std::move(find_opt);
             break;
         }
 
-        if (std::chrono::steady_clock::now() - start_time > find_timeout) {
+        if (std::chrono::steady_clock::now() - start_time > timeout) {
             return RunningResult::Timeout;
         }
         if (need_exit()) {
             return RunningResult::Interrupted;
         }
     }
-    if (need_exit()) {
-        return RunningResult::Interrupted;
-    }
-    const std::string& name = result.task_data.name;
-    LogInfo << "Task hit:" << name << VAR(result.rec_result.box);
+    LogInfo << "Task hit:" << hits.task_data.name << hits.rec_result.box;
 
-    uint64_t run_times = status()->get_run_times(name);
+    auto run_ret = run_task(hits);
 
-    json::value detail = {
-        { "id", task_id_ },
-        { "entry", entry() },
-        { "name", name },
-        { "hash", resource() ? resource()->get_hash() : std::string() },
-        { "uuid", controller() ? controller()->get_uuid() : std::string() },
-        { "recognition", result.rec_result.detail },
-        { "run_times", run_times },
-        { "last_time", format_now() },
-        { "status", "Hit" },
-    };
+    found_data = std::move(hits.task_data);
 
-    status()->set_task_result(name, detail);
-    if (result.task_data.focus) {
-        notify(MaaMsg_Task_Focus_Hit, detail);
-    }
-
-    if (result.task_data.times_limit <= run_times) {
-        LogInfo << "Task runout:" << name;
-
-        detail["status"] = "Runout";
-        status()->set_task_result(name, detail);
-        if (result.task_data.focus) {
-            notify(MaaMsg_Task_Focus_Runout, detail);
-        }
-
-        found_data = std::move(result.task_data);
-        return RunningResult::Runout;
-    }
-
-    auto ret = actuator_.run(result.rec_result, result.task_data);
-    status()->increase_pipeline_run_times(name);
-
-    detail["status"] = "Completed";
-    detail["last_time"] = format_now();
-    detail["run_times"] = run_times + 1;
-    status()->set_task_result(name, detail);
-    if (result.task_data.focus) {
-        notify(MaaMsg_Task_Focus_Completed, detail);
-    }
-
-    found_data = std::move(result.task_data);
-    return ret ? RunningResult::Success : RunningResult::Interrupted;
+    return run_ret;
 }
 
-std::optional<PipelineTask::RecognitionResult> PipelineTask::find_first(const std::vector<std::string>& list)
+std::optional<PipelineTask::HitResult> PipelineTask::find_first(const std::vector<std::string>& list)
 {
     if (!controller()) {
         LogError << "Controller not binded";
@@ -178,9 +129,66 @@ std::optional<PipelineTask::RecognitionResult> PipelineTask::find_first(const st
         if (!rec_opt) {
             continue;
         }
-        return RecognitionResult { .rec_result = *std::move(rec_opt), .task_data = task_data };
+        return HitResult { .rec_result = *std::move(rec_opt), .task_data = task_data };
     }
     return std::nullopt;
+}
+
+PipelineTask::RunningResult PipelineTask::run_task(const HitResult& hits)
+{
+    if (!status()) {
+        LogError << "Status not binded";
+        return RunningResult::InternalError;
+    }
+
+    if (need_exit()) {
+        return RunningResult::Interrupted;
+    }
+
+    const std::string& name = hits.task_data.name;
+    uint64_t run_times = status()->get_run_times(name);
+
+    json::value detail = {
+        { "id", task_id_ },
+        { "entry", entry() },
+        { "name", name },
+        { "hash", resource() ? resource()->get_hash() : std::string() },
+        { "uuid", controller() ? controller()->get_uuid() : std::string() },
+        { "recognition", hits.rec_result.detail },
+        { "run_times", run_times },
+        { "last_time", format_now() },
+        { "status", "Hit" },
+    };
+
+    status()->set_task_result(name, detail);
+    if (hits.task_data.focus) {
+        notify(MaaMsg_Task_Focus_Hit, detail);
+    }
+
+    if (hits.task_data.times_limit <= run_times) {
+        LogInfo << "Task runout:" << name;
+
+        detail["status"] = "Runout";
+        status()->set_task_result(name, detail);
+        if (hits.task_data.focus) {
+            notify(MaaMsg_Task_Focus_Runout, detail);
+        }
+
+        return RunningResult::Runout;
+    }
+
+    auto ret = actuator_.run(hits.rec_result, hits.task_data);
+    status()->increase_pipeline_run_times(name);
+
+    detail["status"] = "Completed";
+    detail["last_time"] = format_now();
+    detail["run_times"] = run_times + 1;
+    status()->set_task_result(name, detail);
+    if (hits.task_data.focus) {
+        notify(MaaMsg_Task_Focus_Completed, detail);
+    }
+
+    return ret ? RunningResult::Success : RunningResult::Interrupted;
 }
 
 MAA_TASK_NS_END

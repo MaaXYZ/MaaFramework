@@ -49,16 +49,17 @@ private:
         InternalError,
     };
 
-    struct RecognitionResult
+    struct HitResult
     {
         Recognizer::Result rec_result;
         MAA_RES_NS::TaskData task_data;
     };
 
 private:
-    RunningResult find_first_and_run(const std::vector<std::string>& list, std::chrono::milliseconds find_timeout,
+    RunningResult find_first_and_run(const std::vector<std::string>& list, std::chrono::milliseconds timeout,
                                      /*out*/ MAA_RES_NS::TaskData& found_data);
-    std::optional<RecognitionResult> find_first(const std::vector<std::string>& list);
+    std::optional<HitResult> find_first(const std::vector<std::string>& list);
+    RunningResult run_task(const HitResult& hits);
 
 private:
     MAA_RES_NS::ResourceMgr* resource() { return inst_ ? inst_->inter_resource() : nullptr; }
