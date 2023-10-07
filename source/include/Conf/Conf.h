@@ -24,7 +24,7 @@
 
 #define MAA_SUPPRESS_BOOST_WARNINGS_BEGIN \
     MAA_DO_PRAGMA(warning(push))          \
-    MAA_DO_PRAGMA(warning(disable : 4702 4244))
+    MAA_DO_PRAGMA(warning(disable : 4702 4244 4297))
 #define MAA_SUPPRESS_BOOST_WARNINGS_END MAA_DO_PRAGMA(warning(pop))
 #elif defined(__clang__)
 #define MAA_SUPPRESS_CV_WARNINGS_BEGIN                                               \

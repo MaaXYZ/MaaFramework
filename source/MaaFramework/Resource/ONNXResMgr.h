@@ -6,7 +6,7 @@
 #include <filesystem>
 #include <memory>
 
-#include <onnxruntime/core/session/onnxruntime_cxx_api.h>
+#include <onnxruntime/onnxruntime_cxx_api.h>
 
 MAA_RES_NS_BEGIN
 
