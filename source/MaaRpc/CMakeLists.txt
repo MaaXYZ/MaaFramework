@@ -14,3 +14,4 @@ target_link_libraries(MaaRpc
 source_group(TREE ${CMAKE_SOURCE_DIR} FILES ${maa_proto_src} ${maa_rpc_src})
 
 add_subdirectory(cli)
+add_subdirectory(test)

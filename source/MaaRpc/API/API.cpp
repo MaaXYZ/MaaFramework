@@ -3,6 +3,7 @@
 #include <grpcpp/server_builder.h>
 
 static std::unique_ptr<grpc::Server> server;
+static std::unique_ptr<Context> context;
 
 void MaaRpcStart(MaaStringView address)
 {
@@ -12,12 +13,12 @@ void MaaRpcStart(MaaStringView address)
 
     std::string server_address(address);
 
-    Context context;
+    context =std::make_unique<Context>();
 
     grpc::ServerBuilder builder;
     builder.AddListeningPort(server_address, grpc::InsecureServerCredentials());
 
-    context.regService(builder);
+    context->regService(builder);
 
     server = builder.BuildAndStart();
 }
@@ -27,6 +28,8 @@ void MaaRpcStop()
     if (server) {
         server->Shutdown();
     }
+    server = nullptr;
+    context = nullptr;
 }
 
 void MaaRpcWait()
