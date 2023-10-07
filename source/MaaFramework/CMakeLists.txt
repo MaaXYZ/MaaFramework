@@ -12,7 +12,7 @@ target_link_libraries(MaaFramework MaaControlUnit MaaUtils)
 if(WITH_THRIFT)
     target_link_libraries(MaaFramework MaaThriftController)
 endif(WITH_THRIFT)
-target_link_libraries(MaaFramework ${OpenCV_LIBS} MaaDerpLearning ONNXRuntime::ONNXRuntime HeaderOnlyLibraries)
+target_link_libraries(MaaFramework ${OpenCV_LIBS} fastdeploy_ppocr ONNXRuntime::ONNXRuntime HeaderOnlyLibraries)
 
 # clang 15之后有ranges
 # if (CMAKE_CXX_COMPILER_ID MATCHES ".*Clang")
