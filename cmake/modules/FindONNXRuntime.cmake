@@ -1,4 +1,4 @@
-find_path(ONNXRuntime_INCLUDE_DIR NAMES onnxruntime/core/session/onnxruntime_c_api.h)
+find_path(ONNXRuntime_INCLUDE_DIR NAMES onnxruntime/onnxruntime_c_api.h)
 
 find_library(ONNXRuntime_LIBRARY_IMP NAMES onnxruntime)
 
