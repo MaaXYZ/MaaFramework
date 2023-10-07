@@ -8,7 +8,7 @@ target_include_directories(MaaToolKit INTERFACE ../../include PRIVATE . ../inclu
 
 target_compile_definitions(MaaToolKit PRIVATE MAA_TOOLKIT_EXPORTS)
 
-target_link_libraries(MaaToolKit MaaFramework MaaUtils MaaControlUnit HeaderOnlyLibraries Boost::system Boost::url)
+target_link_libraries(MaaToolKit MaaFramework MaaUtils MaaControlUnit HeaderOnlyLibraries Boost::system)
 
 add_dependencies(MaaToolKit MaaFramework MaaUtils MaaControlUnit)
 
