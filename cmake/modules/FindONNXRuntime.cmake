@@ -4,7 +4,7 @@ find_library(ONNXRuntime_LIBRARY_IMP NAMES onnxruntime)
 
 if (WIN32)
     get_filename_component(ONNXRuntime_PATH_LIB ${ONNXRuntime_LIBRARY_IMP} DIRECTORY)
-    find_file(ONNXRuntime_LIBRARY NAMES onnxruntime_maa.dll PATHS "${ONNXRuntime_PATH_LIB}/../lib")
+    find_file(ONNXRuntime_LIBRARY NAMES onnxruntime_maa.dll PATHS "${ONNXRuntime_PATH_LIB}/../bin")
 else ()
     set(ONNXRuntime_LIBRARY ${ONNXRuntime_LIBRARY_IMP})
 endif (WIN32)
