@@ -444,5 +444,5 @@ install
 
 .DS_Store
 
-source/MaaRpc/generated
-!source/MaaRpc/generated/.gitkeep
+source/MaaRpc/generated/*.h
+source/MaaRpc/generated/*.cc
