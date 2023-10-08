@@ -11,7 +11,6 @@ target_compile_definitions(MaaUtils PRIVATE MAA_UTILS_EXPORTS)
 install(TARGETS MaaUtils
     RUNTIME DESTINATION bin
     LIBRARY DESTINATION bin
-    PUBLIC_HEADER DESTINATION include
     ARCHIVE DESTINATION lib
 )
 

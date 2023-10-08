@@ -27,9 +27,9 @@ target_link_libraries(MaaRpc
 install(TARGETS MaaRpc
     RUNTIME DESTINATION bin
     LIBRARY DESTINATION bin
-    PUBLIC_HEADER DESTINATION include
     ARCHIVE DESTINATION lib
 )
+install(DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/../../include/MaaRpc" DESTINATION "include")
 
 source_group(TREE ${CMAKE_SOURCE_DIR} FILES ${maa_rpc_src})
 
