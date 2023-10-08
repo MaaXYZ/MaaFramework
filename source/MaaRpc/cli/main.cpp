@@ -2,6 +2,7 @@
 #include <csignal>
 #include <iostream>
 #include <mutex>
+#include <string>
 
 std::mutex quit;
 bool quite = false;
@@ -33,7 +34,7 @@ int main(int argc, char* argv[])
             quite = true;
         }
         else if (opt.starts_with("-p=")) {
-            port = atoi(opt.c_str() + 3);
+            port = std::stoi(opt.substr(3));
         }
         else if (opt.starts_with("-h=")) {
             host = opt.substr(3);
