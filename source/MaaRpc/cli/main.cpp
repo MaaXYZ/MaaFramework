@@ -1,23 +1,28 @@
-#include "MaaRpc/MaaRpc.h"
+
+#include <condition_variable>
 #include <csignal>
 #include <iostream>
 #include <mutex>
 #include <string>
 
-std::mutex quit;
-bool quite = false;
+#include "MaaRpc/MaaRpc.h"
+
+std::mutex mutex;
+std::condition_variable cv;
+bool quiet = false;
 
 void sig_handler(int)
 {
-    if (!quite) {
+    if (!quiet) {
         std::cout << "Quit from interrupt" << std::endl;
     }
-    quit.unlock();
+    std::unique_lock<std::mutex> lock(mutex);
+    cv.notify_all();
 }
 
 int main(int argc, char* argv[])
 {
-    std::string host = "0.0.0.0";
+    std::string host = "localhost";
     int port = 8080;
 
     for (int i = 1; i < argc; i++) {
@@ -31,7 +36,7 @@ int main(int argc, char* argv[])
             return 0;
         }
         else if (opt == "-q") {
-            quite = true;
+            quiet = true;
         }
         else if (opt.starts_with("-p=")) {
             port = std::stoi(opt.substr(3));
@@ -47,10 +52,14 @@ int main(int argc, char* argv[])
     std::string server_address(host + ":" + std::to_string(port));
     MaaRpcStart(server_address.c_str());
     signal(SIGINT, sig_handler);
-    quit.lock();
-    if (!quite) {
+
+    std::unique_lock<std::mutex> lock(mutex);
+    if (!quiet) {
         std::cout << "Server listening on " << server_address << std::endl;
     }
-    quit.lock();
+    cv.wait(lock);
+
     MaaRpcStop();
+
+    return 0;
 }
