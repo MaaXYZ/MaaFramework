@@ -13,7 +13,7 @@ void MaaRpcStart(MaaStringView address)
 
     std::string server_address(address);
 
-    context =std::make_unique<Context>();
+    context = std::make_unique<Context>();
 
     grpc::ServerBuilder builder;
     builder.AddListeningPort(server_address, grpc::InsecureServerCredentials());
