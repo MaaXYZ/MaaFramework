@@ -5,6 +5,7 @@ file(GLOB maa_proto_src generated/*.h generated/*.cc)
 file(GLOB maa_rpc_src implement/*.h implement/*.cpp API/*.cpp)
 
 add_library(MaaRpcProto ${maa_proto_src})
+set_property(TARGET MaaRpcProto PROPERTY POSITION_INDEPENDENT_CODE ON)
 target_link_libraries(MaaRpcProto
     PUBLIC
         protobuf::libprotobuf
