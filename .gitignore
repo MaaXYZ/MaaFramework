@@ -446,3 +446,4 @@ install
 
 source/MaaRpc/generated/*.h
 source/MaaRpc/generated/*.cc
+source/MaaRpc/generated/*.timestamp

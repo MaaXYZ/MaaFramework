@@ -1,3 +1,5 @@
+include(scripts/gen.cmake)
+
 file(GLOB maa_proto ../../include/Interface/proto/*.proto)
 file(GLOB maa_proto_src generated/*.h generated/*.cc)
 file(GLOB maa_rpc_src implement/*.h implement/*.cpp API/*.cpp)
