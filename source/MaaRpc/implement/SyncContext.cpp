@@ -41,7 +41,6 @@ Status SyncContextImpl::run_recognizer(ServerContext* context, const ::maarpc::S
 
     if (MaaSyncContextRunRecognizer(handle, image_handle, request->task().c_str(), request->param().c_str(), &box,
                                     dt_handle)) {
-
         response->mutable_box()->mutable_xy()->set_x(box.x);
         response->mutable_box()->mutable_xy()->set_y(box.y);
         response->mutable_box()->mutable_wh()->set_width(box.width);

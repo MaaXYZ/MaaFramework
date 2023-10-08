@@ -1,6 +1,6 @@
 #include "Buffer.h"
-#include "Utility.h"
 #include "Macro.h"
+#include "Utility.h"
 
 using namespace ::grpc;
 

@@ -15,29 +15,29 @@
         return Status(INVALID_ARGUMENT, #name " should be " #case);                        \
     }
 
-#define MAA_GRPC_GET_HANDLE                                \
-    std::decay_t<decltype(handles())>::HandleType handle = nullptr;  \
-    {                                                      \
-        auto id = request->handle();                       \
-        if (!handles().get(id, handle)) {                  \
-            return Status(NOT_FOUND, "handle not exists"); \
-        }                                                  \
+#define MAA_GRPC_GET_HANDLE                                         \
+    std::decay_t<decltype(handles())>::HandleType handle = nullptr; \
+    {                                                               \
+        auto id = request->handle();                                \
+        if (!handles().get(id, handle)) {                           \
+            return Status(NOT_FOUND, "handle not exists");          \
+        }                                                           \
     }
 
-#define MAA_GRPC_GET_HANDLE_FROM(impl, name, field)           \
+#define MAA_GRPC_GET_HANDLE_FROM(impl, name, field)                     \
     std::decay_t<decltype(impl->handles())>::HandleType name = nullptr; \
-    {                                                         \
-        auto id = request->field();                           \
-        if (!impl->handles().get(id, name)) {                 \
-            return Status(NOT_FOUND, #field " not exists");   \
-        }                                                     \
+    {                                                                   \
+        auto id = request->field();                                     \
+        if (!impl->handles().get(id, name)) {                           \
+            return Status(NOT_FOUND, #field " not exists");             \
+        }                                                               \
     }
 
-#define MAA_GRPC_DEL_HANDLE                                \
-    std::decay_t<decltype(handles())>::HandleType handle = nullptr;  \
-    {                                                      \
-        auto id = request->handle();                       \
-        if (!handles().del(id, handle)) {                  \
-            return Status(NOT_FOUND, "handle not exists"); \
-        }                                                  \
+#define MAA_GRPC_DEL_HANDLE                                         \
+    std::decay_t<decltype(handles())>::HandleType handle = nullptr; \
+    {                                                               \
+        auto id = request->handle();                                \
+        if (!handles().del(id, handle)) {                           \
+            return Status(NOT_FOUND, "handle not exists");          \
+        }                                                           \
     }
