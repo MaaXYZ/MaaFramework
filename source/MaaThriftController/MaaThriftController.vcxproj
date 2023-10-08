@@ -15,7 +15,7 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
-    <CustomBuild Include="..\..\include\MaaFramework\interfaces\ThriftController.thrift">
+    <CustomBuild Include="..\..\include\Interface\ThriftController.thrift">
       <FileType>Document</FileType>
       <Command>mkdir "$(OutDirFullPath)$(ProjectName)"
 ..\..\MaaDeps\vcpkg\installed\maa-$(PreferredToolArchitecture)-windows\tools\thrift\thrift.exe --gen cpp:no_skeleton --out "$(OutDirFullPath)$(ProjectName)" "%(FullPath)"</Command>
