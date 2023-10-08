@@ -1,7 +1,7 @@
 #include "Controller.h"
 #include "MaaFramework/Instance/MaaCustomController.h"
 #include "MaaFramework/Utility/MaaBuffer.h"
-#include "macro.h"
+#include "Macro.h"
 
 using namespace ::grpc;
 

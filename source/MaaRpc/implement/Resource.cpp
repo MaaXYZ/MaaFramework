@@ -1,6 +1,6 @@
 #include "Resource.h"
 #include "MaaFramework/MaaAPI.h"
-#include "macro.h"
+#include "Macro.h"
 
 using namespace ::grpc;
 

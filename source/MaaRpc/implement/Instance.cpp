@@ -1,7 +1,7 @@
 #include "Instance.h"
 #include "MaaFramework/Task/MaaCustomAction.h"
 #include "MaaFramework/Task/MaaCustomRecognizer.h"
-#include "macro.h"
+#include "Macro.h"
 
 using namespace ::grpc;
 
