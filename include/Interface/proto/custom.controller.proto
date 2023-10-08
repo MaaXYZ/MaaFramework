@@ -1,0 +1,40 @@
+syntax = "proto3";
+
+package maarpc;
+
+import "types.proto";
+
+message CustomControllerSetOptionParam {
+  optional int32 key = 1;
+  optional string value = 2;
+}
+
+message CustomControllerRequest {
+  optional bool ok = 1;
+  oneof result {
+    string init = 101;
+
+    Size resolution = 201;
+    string uuid = 202;
+  }
+}
+
+message CustomControllerResponse {
+  oneof command {
+    string init = 101; // handle
+
+    bool connect = 201; // void
+    ClickParam click = 202;
+    SwipeParam swipe = 203;
+    KeyParam key = 204;
+    TouchParam touch_down = 205;
+    TouchParam touch_move = 206;
+    TouchParam touch_up = 207;
+    string start = 208;
+    string stop = 209;
+    bool resolution = 210; // void
+    string image = 211;
+    bool uuid = 212; // void
+    CustomControllerSetOptionParam set_option = 213;
+  }
+}

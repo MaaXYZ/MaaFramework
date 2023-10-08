@@ -1,0 +1,35 @@
+syntax = "proto3";
+
+package maarpc;
+
+import "types.proto";
+
+message CustomRecognizerInit {
+  optional string handle = 1;
+  optional string name = 2;
+}
+
+message CustomRecognizerAnalyzeResult {
+  optional bool match = 1;
+  optional Rect box = 2;
+  optional string detail = 3;
+}
+
+message CustomRecognizerRequest {
+  optional bool ok = 1;
+  oneof result {
+    CustomRecognizerInit init = 101;
+    CustomRecognizerAnalyzeResult analyze = 201;
+  }
+}
+
+message CustomRecognizerAnalyzeParam {
+  optional string context = 1;
+  optional string image_handle = 2;
+  optional string task = 3;
+  optional string param = 4;
+}
+
+message CustomRecognizerResponse {
+  oneof command { CustomRecognizerAnalyzeParam analyze = 101; }
+}

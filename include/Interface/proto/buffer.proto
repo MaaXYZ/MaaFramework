@@ -1,0 +1,20 @@
+syntax = "proto3";
+
+package maarpc;
+
+import "types.proto";
+
+message ImageInfoResponse {
+  optional int32 type = 1;
+  optional Size size = 2;
+}
+
+service Image {
+  rpc create(EmptyRequest) returns (HandleResponse);
+  rpc destroy(HandleRequest) returns (EmptyResponse);
+  rpc is_empty(HandleRequest) returns (BoolResponse);
+  rpc clear(HandleRequest) returns (EmptyResponse);
+  rpc info(HandleRequest) returns (ImageInfoResponse);
+  rpc encoded(HandleRequest) returns (BufferResponse);
+  rpc set_encoded(HandleBufferRequest) returns (BoolResponse);
+}

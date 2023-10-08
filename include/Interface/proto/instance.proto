@@ -1,0 +1,50 @@
+syntax = "proto3";
+
+package maarpc;
+
+import "types.proto";
+import "custom.recognizer.proto";
+import "custom.action.proto";
+
+message InstancePostTaskRequest {
+  optional string handle = 1;
+  optional string task = 2;
+  optional string param = 3;
+}
+
+message InstanceSetTaskParamRequest {
+  optional string handle = 1;
+  optional uint64 id = 2;
+  optional string param = 3;
+}
+
+service Instance {
+  rpc create(IdRequest) returns (HandleResponse);
+  rpc destroy(HandleRequest) returns (EmptyResponse);
+
+  rpc register_custom_recognizer(stream CustomRecognizerRequest)
+      returns (stream CustomRecognizerResponse);
+  rpc unregister_custom_recognizer(HandleStringRequest) returns (EmptyResponse);
+  rpc clear_custom_recognizer(HandleRequest) returns (EmptyResponse);
+
+  rpc register_custom_action(stream CustomActionRequest)
+      returns (stream CustomActionResponse);
+  rpc unregister_custom_action(HandleStringRequest) returns (EmptyResponse);
+  rpc clear_custom_action(HandleRequest) returns (EmptyResponse);
+
+  rpc bind_resource(HandleHandleRequest) returns (EmptyResponse);
+  rpc bind_controller(HandleHandleRequest) returns (EmptyResponse);
+  rpc inited(HandleRequest) returns (BoolResponse);
+
+  rpc post_task(InstancePostTaskRequest) returns (IIdResponse);
+  rpc set_task_param(InstanceSetTaskParamRequest) returns (EmptyResponse);
+
+  rpc status(HandleIIdRequest) returns (StatusResponse);
+  rpc wait(HandleIIdRequest) returns (StatusResponse);
+  rpc all_finished(HandleRequest) returns (BoolResponse);
+
+  rpc stop(HandleRequest) returns (EmptyResponse);
+
+  rpc resource(HandleRequest) returns (HandleRequest);
+  rpc controller(HandleRequest) returns (HandleRequest);
+}

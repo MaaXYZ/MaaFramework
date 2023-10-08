@@ -19,7 +19,6 @@ add_dependencies(MaaControlUnit MaaUtils)
 install(TARGETS MaaControlUnit
     RUNTIME DESTINATION bin
     LIBRARY DESTINATION bin
-    PUBLIC_HEADER DESTINATION include
     ARCHIVE DESTINATION lib
 )
 

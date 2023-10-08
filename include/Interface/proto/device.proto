@@ -1,0 +1,20 @@
+syntax = "proto3";
+
+package maarpc;
+
+import "types.proto";
+
+message DeviceInfo {
+  optional string name = 1;
+  optional string adb_path = 2;
+  optional string adb_serial = 3;
+  optional int32 adb_type = 4;
+  optional string adb_config = 5;
+}
+
+message DeviceInfosResponse { repeated DeviceInfo info = 1; }
+
+service Device {
+  rpc find(EmptyRequest) returns (DeviceInfosResponse);
+  rpc find_with_adb(StringRequest) returns (DeviceInfosResponse);
+}

@@ -1,0 +1,17 @@
+syntax = "proto3";
+
+package maarpc;
+
+import "types.proto";
+
+service Resource {
+  rpc create(IdRequest) returns (HandleResponse);
+  rpc destroy(HandleRequest) returns (EmptyResponse);
+
+  rpc post_path(HandleStringRequest) returns (IIdResponse);
+
+  rpc status(HandleIIdRequest) returns (StatusResponse);
+  rpc wait(HandleIIdRequest) returns (StatusResponse);
+  rpc loaded(HandleRequest) returns (BoolResponse);
+  rpc hash(HandleRequest) returns (StringResponse);
+}

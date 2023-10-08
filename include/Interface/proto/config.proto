@@ -1,0 +1,10 @@
+syntax = "proto3";
+
+package maarpc;
+
+import "types.proto";
+
+service Config {
+  rpc init(EmptyRequest) returns (EmptyResponse);
+  rpc uninit(EmptyRequest) returns (EmptyResponse);
+}
