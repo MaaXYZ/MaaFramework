@@ -12,37 +12,23 @@
 #include "Context.h"
 
 Context::Context()
-{
-    utility_impl = new UtilityImpl();
-    image_impl = new ImageImpl();
-    resource_impl = new ResourceImpl(utility_impl);
-    controller_impl = new ControllerImpl(utility_impl, image_impl);
-    syncctx_impl = new SyncContextImpl(image_impl);
-    instance_impl = new InstanceImpl(utility_impl, image_impl, resource_impl, controller_impl, syncctx_impl);
-    device_impl = new DeviceImpl();
-    config_impl = new ConfigImpl();
-}
+    : utility_impl_(std::make_shared<UtilityImpl>()), image_impl_(std::make_shared<ImageImpl>()),
+      resource_impl_(std::make_shared<ResourceImpl>(utility_impl_)),
+      controller_impl_(std::make_shared<ControllerImpl>(utility_impl_, image_impl_)),
+      syncctx_impl_(std::make_shared<SyncContextImpl>(image_impl_)),
+      instance_impl_(
+          std::make_shared<InstanceImpl>(utility_impl_, image_impl_, resource_impl_, controller_impl_, syncctx_impl_)),
+      device_impl_(std::make_shared<DeviceImpl>()), config_impl_(std::make_shared<ConfigImpl>())
+{}
 
-Context::~Context()
+void Context::reg_service(::grpc::ServerBuilder& builder)
 {
-    delete config_impl;
-    delete device_impl;
-    delete instance_impl;
-    delete syncctx_impl;
-    delete controller_impl;
-    delete resource_impl;
-    delete image_impl;
-    delete utility_impl;
-}
-
-void Context::regService(::grpc::ServerBuilder& builder)
-{
-    builder.RegisterService(utility_impl);
-    builder.RegisterService(image_impl);
-    builder.RegisterService(resource_impl);
-    builder.RegisterService(controller_impl);
-    builder.RegisterService(syncctx_impl);
-    builder.RegisterService(instance_impl);
-    builder.RegisterService(device_impl);
-    builder.RegisterService(config_impl);
+    builder.RegisterService(utility_impl_.get());
+    builder.RegisterService(image_impl_.get());
+    builder.RegisterService(resource_impl_.get());
+    builder.RegisterService(controller_impl_.get());
+    builder.RegisterService(syncctx_impl_.get());
+    builder.RegisterService(instance_impl_.get());
+    builder.RegisterService(device_impl_.get());
+    builder.RegisterService(config_impl_.get());
 }

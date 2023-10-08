@@ -1,34 +1,38 @@
 #pragma once
 
+#include <memory>
+
 namespace grpc
 {
 class ServerBuilder;
 }
 
-struct UtilityImpl;
-struct ImageImpl;
-struct ResourceImpl;
-struct ControllerImpl;
-struct SyncContextImpl;
-struct InstanceImpl;
-struct DeviceImpl;
-struct ConfigImpl;
+class UtilityImpl;
+class ImageImpl;
+class ResourceImpl;
+class ControllerImpl;
+class SyncContextImpl;
+class InstanceImpl;
+class DeviceImpl;
+class ConfigImpl;
 
-struct Context
+class Context
 {
+public:
     Context();
     Context(const Context&) = delete;
-    ~Context();
+    ~Context() = default;
     Context& operator=(const Context&) = delete;
 
-    void regService(::grpc::ServerBuilder& builder);
+    void reg_service(::grpc::ServerBuilder& builder);
 
-    UtilityImpl* utility_impl;
-    ImageImpl* image_impl;
-    ResourceImpl* resource_impl;
-    ControllerImpl* controller_impl;
-    SyncContextImpl* syncctx_impl;
-    InstanceImpl* instance_impl;
-    DeviceImpl* device_impl;
-    ConfigImpl* config_impl;
+private:
+    std::shared_ptr<UtilityImpl> utility_impl_ = nullptr;
+    std::shared_ptr<ImageImpl> image_impl_ = nullptr;
+    std::shared_ptr<ResourceImpl> resource_impl_ = nullptr;
+    std::shared_ptr<ControllerImpl> controller_impl_ = nullptr;
+    std::shared_ptr<SyncContextImpl> syncctx_impl_ = nullptr;
+    std::shared_ptr<InstanceImpl> instance_impl_ = nullptr;
+    std::shared_ptr<DeviceImpl> device_impl_ = nullptr;
+    std::shared_ptr<ConfigImpl> config_impl_ = nullptr;
 };

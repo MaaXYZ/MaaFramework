@@ -8,16 +8,20 @@
 
 #include <semaphore>
 
-struct ControllerImpl final : public ::maarpc::Controller::Service
+class ControllerImpl final : public ::maarpc::Controller::Service
 {
+public:
     struct CustomControllerInfo
     {
         ::grpc::ServerReaderWriter<::maarpc::CustomControllerResponse, ::maarpc::CustomControllerRequest>* stream;
-        ImageImpl* image_impl;
+        std::shared_ptr<ImageImpl> image_impl = nullptr;
         std::binary_semaphore finish { 0 };
     };
 
-    ControllerImpl(UtilityImpl* uimpl, ImageImpl* iimpl) : utility_impl(uimpl), image_impl(iimpl) {}
+public:
+    ControllerImpl(std::shared_ptr<UtilityImpl> uimpl, std::shared_ptr<ImageImpl> iimpl)
+        : utility_impl_(std::move(uimpl)), image_impl_(std::move(iimpl))
+    {}
 
     ::grpc::Status create_adb(::grpc::ServerContext* context, const ::maarpc::AdbControllerRequest* request,
                               ::maarpc::HandleResponse* response) override;
@@ -55,8 +59,11 @@ struct ControllerImpl final : public ::maarpc::Controller::Service
     ::grpc::Status uuid(::grpc::ServerContext* context, const ::maarpc::HandleRequest* request,
                         ::maarpc::StringResponse* response) override;
 
-    UtilityImpl* utility_impl;
-    ImageImpl* image_impl;
-    AtomicMap<MaaControllerHandle> handles;
-    AtomicMap<CustomControllerInfo*> infos;
+    AtomicMap<MaaControllerHandle>& handles() { return handles_; }
+
+private:
+    std::shared_ptr<UtilityImpl> utility_impl_ = nullptr;
+    std::shared_ptr<ImageImpl> image_impl_ = nullptr;
+    AtomicMap<MaaControllerHandle> handles_;
+    AtomicMap<std::shared_ptr<CustomControllerInfo>> infos_;
 };

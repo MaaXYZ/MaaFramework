@@ -11,7 +11,7 @@ Status ImageImpl::create(ServerContext* context, const ::maarpc::EmptyRequest* r
     std::ignore = request;
 
     auto id = make_uuid();
-    handles.add(id, MaaCreateImageBuffer());
+    handles_.add(id, MaaCreateImageBuffer());
 
     response->set_handle(id);
 

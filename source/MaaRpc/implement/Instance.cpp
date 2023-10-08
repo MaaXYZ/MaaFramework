@@ -12,15 +12,15 @@ Status InstanceImpl::create(ServerContext* context, const ::maarpc::IdRequest* r
 
     MAA_GRPC_REQUIRED(id)
 
-    auto cbId = request->id();
-    UtilityImpl::CallbackState* cbState;
+    auto cb_id = request->id();
+    std::shared_ptr<UtilityImpl::CallbackState> cb_state = nullptr;
 
-    if (!utility_impl->states.get(cbId, cbState)) {
+    if (!utility_impl_->states().get(cb_id, cb_state)) {
         return Status(NOT_FOUND, "id not exists");
     }
 
     auto id = make_uuid();
-    handles.add(id, MaaCreate(CallbackImpl, cbState));
+    handles_.add(id, MaaCreate(callback_impl, cb_state.get()));
 
     response->set_handle(id);
 
@@ -43,20 +43,20 @@ Status InstanceImpl::destroy(ServerContext* context, const ::maarpc::HandleReque
 }
 
 static MaaBool _analyze(MaaSyncContextHandle sync_context, const MaaImageBufferHandle image, MaaStringView task_name,
-                        MaaStringView custom_recognition_param, MaaTransparentArg arg, MaaRectHandle out_box,
+                        MaaStringView custom_recognition_param, MaaTransparentArg recognizer_arg, MaaRectHandle out_box,
                         MaaStringBufferHandle detail_buff)
 {
-    auto info = reinterpret_cast<InstanceImpl::CustomRecognizerInfo*>(arg);
+    auto info = reinterpret_cast<InstanceImpl::CustomRecognizerInfo*>(recognizer_arg);
     auto stream = info->stream;
 
     ::maarpc::CustomRecognizerResponse response;
 
     auto sid = make_uuid();
-    info->syncctx_impl->handles.add(sid, sync_context);
+    info->syncctx_impl->handles().add(sid, sync_context);
     response.mutable_analyze()->set_context(sid);
 
     auto iid = make_uuid();
-    info->image_impl->handles.add(iid, image);
+    info->image_impl->handles().add(iid, image);
     response.mutable_analyze()->set_image_handle(iid);
 
     response.mutable_analyze()->set_task(task_name);
@@ -67,8 +67,8 @@ static MaaBool _analyze(MaaSyncContextHandle sync_context, const MaaImageBufferH
     ::maarpc::CustomRecognizerRequest request;
     stream->Read(&request);
 
-    info->syncctx_impl->handles.del(sid);
-    info->image_impl->handles.del(iid);
+    info->syncctx_impl->handles().del(sid);
+    info->image_impl->handles().del(iid);
 
     if (request.result_case() != ::maarpc::CustomRecognizerRequest::kAnalyze) {
         return false;
@@ -86,7 +86,7 @@ static MaaBool _analyze(MaaSyncContextHandle sync_context, const MaaImageBufferH
     return request.ok() && request.analyze().match();
 }
 
-static MaaCustomRecognizerAPI customRecognizerApi = { _analyze };
+static MaaCustomRecognizerAPI custom_recognizer_api = { _analyze };
 
 Status InstanceImpl::register_custom_recognizer(
     ServerContext* context,
@@ -94,8 +94,8 @@ Status InstanceImpl::register_custom_recognizer(
 {
     std::ignore = context;
 
-    ::maarpc::CustomRecognizerRequest requestData;
-    auto request = &requestData;
+    ::maarpc::CustomRecognizerRequest request_data;
+    auto request = &request_data;
 
     if (!stream->Read(request)) {
         return Status(FAILED_PRECONDITION, "custom recognizer cannot read init");
@@ -105,17 +105,17 @@ Status InstanceImpl::register_custom_recognizer(
 
     MAA_GRPC_GET_HANDLE_FROM(this, handle, init().handle)
 
-    CustomRecognizerInfo info { request->init().name(), stream, image_impl, syncctx_impl };
+    auto info = std::make_shared<CustomRecognizerInfo>(request->init().name(), stream, image_impl_, syncctx_impl_);
 
     ::maarpc::CustomRecognizerResponse response;
     stream->Write(response);
 
-    MaaRegisterCustomRecognizer(handle, request->init().name().c_str(), &customRecognizerApi, &info);
+    MaaRegisterCustomRecognizer(handle, request->init().name().c_str(), &custom_recognizer_api, info.get());
 
-    recos.add(request->init().name(), &info);
-    recoIdx.add(&info, handle);
+    recos_.add(request->init().name(), info);
+    reco_idx_.add(info, handle);
 
-    info.finish.acquire();
+    info->finish.acquire();
 
     return Status::OK;
 }
@@ -133,9 +133,9 @@ Status InstanceImpl::unregister_custom_recognizer(ServerContext* context, const 
 
     MaaUnregisterCustomRecognizer(handle, request->str().c_str());
 
-    CustomRecognizerInfo* info = nullptr;
-    if (recos.get(request->str(), info)) {
-        recoIdx.del(info);
+    std::shared_ptr<CustomRecognizerInfo> info = nullptr;
+    if (recos_.get(request->str(), info)) {
+        reco_idx_.del(info);
         info->finish.release();
     }
 
@@ -154,11 +154,11 @@ Status InstanceImpl::clear_custom_recognizer(ServerContext* context, const ::maa
 
     MaaClearCustomRecognizer(handle);
 
-    std::vector<CustomRecognizerInfo*> infos;
-    if (recoIdx.find_all(handle, infos)) {
-        for (auto info : infos) {
-            recoIdx.del(info);
-            recos.del(info->name);
+    std::vector<std::shared_ptr<CustomRecognizerInfo>> infos;
+    if (reco_idx_.find_all(handle, infos)) {
+        for (auto& info : infos) {
+            reco_idx_.del(info);
+            recos_.del(info->name);
             info->finish.release();
         }
     }
@@ -167,15 +167,15 @@ Status InstanceImpl::clear_custom_recognizer(ServerContext* context, const ::maa
 }
 
 static MaaBool _run(MaaSyncContextHandle sync_context, MaaStringView task_name, MaaStringView custom_action_param,
-                    MaaRectHandle cur_box, MaaStringView cur_rec_detail, MaaTransparentArg arg)
+                    MaaRectHandle cur_box, MaaStringView cur_rec_detail, MaaTransparentArg action_arg)
 {
-    auto info = reinterpret_cast<InstanceImpl::CustomActionInfo*>(arg);
+    auto info = reinterpret_cast<InstanceImpl::CustomActionInfo*>(action_arg);
     auto stream = info->stream;
 
     ::maarpc::CustomActionResponse response;
 
     auto sid = make_uuid();
-    info->syncctx_impl->handles.add(sid, sync_context);
+    info->syncctx_impl->handles().add(sid, sync_context);
     response.mutable_run()->set_context(sid);
 
     response.mutable_run()->set_task(task_name);
@@ -193,7 +193,7 @@ static MaaBool _run(MaaSyncContextHandle sync_context, MaaStringView task_name, 
     ::maarpc::CustomActionRequest request;
     stream->Read(&request);
 
-    info->syncctx_impl->handles.del(sid);
+    info->syncctx_impl->handles().del(sid);
 
     return request.ok();
 }
@@ -213,7 +213,7 @@ static void _stop(MaaTransparentArg arg)
     stream->Read(&request);
 }
 
-static MaaCustomActionAPI customActionApi = { _run, _stop };
+static MaaCustomActionAPI custom_action_api = { _run, _stop };
 
 Status InstanceImpl::register_custom_action(
     ServerContext* context, ServerReaderWriter<::maarpc::CustomActionResponse, ::maarpc::CustomActionRequest>* stream)
@@ -231,17 +231,17 @@ Status InstanceImpl::register_custom_action(
 
     MAA_GRPC_GET_HANDLE_FROM(this, handle, init().handle)
 
-    CustomActionInfo info { request->init().name(), stream, syncctx_impl };
+    auto info = std::make_shared<CustomActionInfo>(request->init().name(), stream, syncctx_impl_);
 
     ::maarpc::CustomActionResponse response;
     stream->Write(response);
 
-    MaaRegisterCustomAction(handle, request->init().name().c_str(), &customActionApi, &info);
+    MaaRegisterCustomAction(handle, request->init().name().c_str(), &custom_action_api, info.get());
 
-    actions.add(request->init().name(), &info);
-    actionIdx.add(&info, handle);
+    actions_.add(request->init().name(), info);
+    action_idx_.add(info, handle);
 
-    info.finish.acquire();
+    info->finish.acquire();
 
     return Status::OK;
 }
@@ -259,9 +259,9 @@ Status InstanceImpl::unregister_custom_action(ServerContext* context, const ::ma
 
     MaaUnregisterCustomAction(handle, request->str().c_str());
 
-    CustomActionInfo* info = nullptr;
-    if (actions.get(request->str(), info)) {
-        actionIdx.del(info);
+    std::shared_ptr<CustomActionInfo> info = nullptr;
+    if (actions_.get(request->str(), info)) {
+        action_idx_.del(info);
         info->finish.release();
     }
 
@@ -280,11 +280,11 @@ Status InstanceImpl::clear_custom_action(ServerContext* context, const ::maarpc:
 
     MaaClearCustomAction(handle);
 
-    std::vector<CustomActionInfo*> infos;
-    if (actionIdx.find_all(handle, infos)) {
-        for (auto info : infos) {
-            actionIdx.del(info);
-            actions.del(info->name);
+    std::vector<std::shared_ptr<CustomActionInfo>> infos;
+    if (action_idx_.find_all(handle, infos)) {
+        for (auto& info : infos) {
+            action_idx_.del(info);
+            actions_.del(info->name);
             info->finish.release();
         }
     }
@@ -302,7 +302,7 @@ Status InstanceImpl::bind_resource(ServerContext* context, const ::maarpc::Handl
     MAA_GRPC_REQUIRED(another_handle)
 
     MAA_GRPC_GET_HANDLE
-    MAA_GRPC_GET_HANDLE_FROM(resource_impl, res_handle, another_handle)
+    MAA_GRPC_GET_HANDLE_FROM(resource_impl_, res_handle, another_handle)
 
     if (MaaBindResource(handle, res_handle)) {
         return Status::OK;
@@ -322,7 +322,7 @@ Status InstanceImpl::bind_controller(ServerContext* context, const ::maarpc::Han
     MAA_GRPC_REQUIRED(another_handle)
 
     MAA_GRPC_GET_HANDLE
-    MAA_GRPC_GET_HANDLE_FROM(controller_impl, ctrl_handle, another_handle)
+    MAA_GRPC_GET_HANDLE_FROM(controller_impl_, ctrl_handle, another_handle)
 
     if (MaaBindController(handle, ctrl_handle)) {
         return Status::OK;
@@ -454,7 +454,7 @@ Status InstanceImpl::resource(ServerContext* context, const ::maarpc::HandleRequ
     MAA_GRPC_GET_HANDLE
 
     std::string id;
-    if (resource_impl->handles.find(MaaGetResource(handle), id)) {
+    if (resource_impl_->handles().find(MaaGetResource(handle), id)) {
         response->set_handle(id);
         return Status::OK;
     }
@@ -473,7 +473,7 @@ Status InstanceImpl::controller(ServerContext* context, const ::maarpc::HandleRe
     MAA_GRPC_GET_HANDLE
 
     std::string id;
-    if (controller_impl->handles.find(MaaGetController(handle), id)) {
+    if (controller_impl_->handles().find(MaaGetController(handle), id)) {
         response->set_handle(id);
         return Status::OK;
     }

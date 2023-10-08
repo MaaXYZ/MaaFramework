@@ -4,10 +4,12 @@
 #include "MaaFramework/Utility/MaaUtility.h"
 #include "utility.grpc.pb.h"
 
+#include <memory>
 #include <semaphore>
 
-struct UtilityImpl final : public ::maarpc::Utility::Service
+class UtilityImpl final : public ::maarpc::Utility::Service
 {
+public:
     struct CallbackState
     {
         std::binary_semaphore write { 1 };
@@ -15,6 +17,7 @@ struct UtilityImpl final : public ::maarpc::Utility::Service
         ::grpc::ServerWriter<::maarpc::Callback>* writer { nullptr };
     };
 
+public:
     ::grpc::Status version(::grpc::ServerContext* context, const ::maarpc::EmptyRequest* request,
                            ::maarpc::StringResponse* response) override;
     ::grpc::Status set_global_option(::grpc::ServerContext* context, const ::maarpc::SetGlobalOptionRequest* request,
@@ -26,8 +29,11 @@ struct UtilityImpl final : public ::maarpc::Utility::Service
     ::grpc::Status unregister_callback(::grpc::ServerContext* context, const ::maarpc::IdRequest* request,
                                        ::maarpc::EmptyResponse* response) override;
 
-    AtomicMap<CallbackState*> states;
+    AtomicMap<std::shared_ptr<CallbackState>>& states() { return states_; }
+
+private:
+    AtomicMap<std::shared_ptr<CallbackState>> states_;
 };
 
 extern std::string make_uuid();
-extern void CallbackImpl(MaaStringView msg, MaaStringView detail, MaaCallbackTransparentArg arg);
+extern void callback_impl(MaaStringView msg, MaaStringView detail, MaaCallbackTransparentArg arg);

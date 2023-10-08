@@ -9,27 +9,31 @@
 #include "Utility.h"
 #include "instance.grpc.pb.h"
 
-struct InstanceImpl final : public ::maarpc::Instance::Service
+class InstanceImpl final : public ::maarpc::Instance::Service
 {
+public:
     struct CustomRecognizerInfo
     {
         std::string name;
         ::grpc::ServerReaderWriter<::maarpc::CustomRecognizerResponse, ::maarpc::CustomRecognizerRequest>* stream;
-        ImageImpl* image_impl;
-        SyncContextImpl* syncctx_impl;
+        std::shared_ptr<ImageImpl> image_impl = nullptr;
+        std::shared_ptr<SyncContextImpl> syncctx_impl = nullptr;
         std::binary_semaphore finish { 0 };
     };
     struct CustomActionInfo
     {
         std::string name;
         ::grpc::ServerReaderWriter<::maarpc::CustomActionResponse, ::maarpc::CustomActionRequest>* stream;
-        SyncContextImpl* syncctx_impl;
+        std::shared_ptr<SyncContextImpl> syncctx_impl;
         std::binary_semaphore finish { 0 };
     };
 
-    InstanceImpl(UtilityImpl* uimpl, ImageImpl* iimpl, ResourceImpl* rimpl, ControllerImpl* cimpl,
-                 SyncContextImpl* simpl)
-        : utility_impl(uimpl), image_impl(iimpl), resource_impl(rimpl), controller_impl(cimpl), syncctx_impl(simpl)
+public:
+    InstanceImpl(std::shared_ptr<UtilityImpl> uimpl, std::shared_ptr<ImageImpl> iimpl,
+                 std::shared_ptr<ResourceImpl> rimpl, std::shared_ptr<ControllerImpl> cimpl,
+                 std::shared_ptr<SyncContextImpl> simpl)
+        : utility_impl_(std::move(uimpl)), image_impl_(std::move(iimpl)), resource_impl_(std::move(rimpl)),
+          controller_impl_(std::move(cimpl)), syncctx_impl_(std::move(simpl))
     {}
 
     ::grpc::Status create(::grpc::ServerContext* context, const ::maarpc::IdRequest* request,
@@ -76,14 +80,18 @@ struct InstanceImpl final : public ::maarpc::Instance::Service
     ::grpc::Status controller(::grpc::ServerContext* context, const ::maarpc::HandleRequest* request,
                               ::maarpc::HandleRequest* response) override;
 
-    UtilityImpl* utility_impl;
-    ImageImpl* image_impl;
-    ResourceImpl* resource_impl;
-    ControllerImpl* controller_impl;
-    SyncContextImpl* syncctx_impl;
-    AtomicMap<MaaInstanceHandle> handles;
-    AtomicMap<CustomRecognizerInfo*> recos;
-    AtomicMap<MaaInstanceHandle, CustomRecognizerInfo*> recoIdx;
-    AtomicMap<CustomActionInfo*> actions;
-    AtomicMap<MaaInstanceHandle, CustomActionInfo*> actionIdx;
+    AtomicMap<MaaInstanceHandle>& handles() { return handles_; }
+
+private:
+    std::shared_ptr<UtilityImpl> utility_impl_ = nullptr;
+    std::shared_ptr<ImageImpl> image_impl_ = nullptr;
+    std::shared_ptr<ResourceImpl> resource_impl_ = nullptr;
+    std::shared_ptr<ControllerImpl> controller_impl_ = nullptr;
+    std::shared_ptr<SyncContextImpl> syncctx_impl_ = nullptr;
+
+    AtomicMap<MaaInstanceHandle> handles_;
+    AtomicMap<std::shared_ptr<CustomRecognizerInfo>> recos_;
+    AtomicMap<MaaInstanceHandle, std::shared_ptr<CustomRecognizerInfo>> reco_idx_;
+    AtomicMap<std::shared_ptr<CustomActionInfo>> actions_;
+    AtomicMap<MaaInstanceHandle, std::shared_ptr<CustomActionInfo>> action_idx_;
 };

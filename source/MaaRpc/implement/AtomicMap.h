@@ -6,55 +6,54 @@
 #include <vector>
 
 template <typename Handle, typename Key = std::string>
-struct AtomicMap
+class AtomicMap
 {
+public:
     using KeyType = Key;
     using HandleType = Handle;
 
-    std::map<Key, Handle> handlers;
-    std::mutex mtx;
-
     bool add(const Key& id, Handle handle)
     {
-        std::unique_lock<std::mutex> lock(mtx);
-        if (handlers.contains(id)) {
+        std::unique_lock<std::mutex> lock(mtx_);
+        if (handlers_.contains(id)) {
             return false;
         }
-        else {
-            handlers[id] = handle;
-            return true;
-        }
+
+        handlers_.emplace(id, handle);
+        return true;
     }
 
-    bool has(const Key& id)
+    bool has(const Key& id) const
     {
-        std::unique_lock<std::mutex> lock(mtx);
-        return handlers.contains(id);
+        std::unique_lock<std::mutex> lock(mtx_);
+        return handlers_.contains(id);
     }
 
-    bool get(const Key& id, Handle& handle)
+    bool get(const Key& id, Handle& handle) const
     {
-        std::unique_lock<std::mutex> lock(mtx);
-        if (!handlers.contains(id)) {
+        std::unique_lock<std::mutex> lock(mtx_);
+
+        auto iter = handlers_.find(id);
+        if (iter == handlers_.end()) {
             return false;
         }
-        else {
-            handle = handlers[id];
-            return true;
-        }
+
+        handle = iter->second;
+        return true;
     }
 
     bool del(const Key& id, Handle& handle)
     {
-        std::unique_lock<std::mutex> lock(mtx);
-        if (!handlers.contains(id)) {
+        std::unique_lock<std::mutex> lock(mtx_);
+
+        auto iter = handlers_.find(id);
+        if (iter == handlers_.end()) {
             return false;
         }
-        else {
-            handle = handlers[id];
-            handlers.erase(id);
-            return true;
-        }
+
+        handle = iter->second;
+        handlers_.erase(iter);
+        return true;
     }
 
     bool del(const Key& id)
@@ -63,10 +62,10 @@ struct AtomicMap
         return del(id, _);
     }
 
-    bool find(Handle handle, Key& id)
+    bool find(Handle handle, Key& id) const
     {
-        std::unique_lock<std::mutex> lock(mtx);
-        for (const auto& pr : handlers) {
+        std::unique_lock<std::mutex> lock(mtx_);
+        for (const auto& pr : handlers_) {
             if (pr.second == handle) {
                 id = pr.first;
                 return true;
@@ -75,16 +74,20 @@ struct AtomicMap
         return false;
     }
 
-    bool find_all(Handle handle, std::vector<Key>& id)
+    bool find_all(Handle handle, std::vector<Key>& ids) const
     {
-        id.clear();
+        ids.clear();
 
-        std::unique_lock<std::mutex> lock(mtx);
-        for (const auto& pr : handlers) {
+        std::unique_lock<std::mutex> lock(mtx_);
+        for (const auto& pr : handlers_) {
             if (pr.second == handle) {
-                id.push_back(pr.first);
+                ids.push_back(pr.first);
             }
         }
-        return id.size() > 0;
+        return !ids.empty();
     }
+
+private:
+    std::map<Key, Handle> handlers_;
+    mutable std::mutex mtx_;
 };

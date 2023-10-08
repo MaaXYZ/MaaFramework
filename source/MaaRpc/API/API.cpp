@@ -2,8 +2,8 @@
 #include "MaaRpc/MaaRpc.h"
 #include <grpcpp/server_builder.h>
 
-static std::unique_ptr<grpc::Server> server;
-static std::unique_ptr<Context> context;
+static std::unique_ptr<grpc::Server> server = nullptr;
+static std::unique_ptr<Context> context = nullptr;
 
 void MaaRpcStart(MaaStringView address)
 {
@@ -18,7 +18,7 @@ void MaaRpcStart(MaaStringView address)
     grpc::ServerBuilder builder;
     builder.AddListeningPort(server_address, grpc::InsecureServerCredentials());
 
-    context->regService(builder);
+    context->reg_service(builder);
 
     server = builder.BuildAndStart();
 }

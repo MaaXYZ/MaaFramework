@@ -16,15 +16,16 @@ Status ControllerImpl::create_adb(::grpc::ServerContext* context, const ::maarpc
     MAA_GRPC_REQUIRED(adb_type)
     MAA_GRPC_REQUIRED(adb_config)
 
-    auto cbId = request->id();
-    UtilityImpl::CallbackState* cbState;
-    if (!utility_impl->states.get(cbId, cbState)) {
+    auto cb_id = request->id();
+    std::shared_ptr<UtilityImpl::CallbackState> cb_state = nullptr;
+    if (!utility_impl_->states().get(cb_id, cb_state)) {
         return Status(NOT_FOUND, "id not exists");
     }
 
     auto id = make_uuid();
-    handles.add(id, MaaAdbControllerCreate(request->adb_path().c_str(), request->adb_serial().c_str(),
-                                           request->adb_type(), request->adb_config().c_str(), CallbackImpl, cbState));
+    handles_.add(id,
+                 MaaAdbControllerCreate(request->adb_path().c_str(), request->adb_serial().c_str(), request->adb_type(),
+                                        request->adb_config().c_str(), callback_impl, cb_state.get()));
 
     response->set_handle(id);
 
@@ -43,8 +44,8 @@ Status ControllerImpl::destroy(::grpc::ServerContext* context, const ::maarpc::H
 
     MaaControllerDestroy(handle);
 
-    CustomControllerInfo* info;
-    if (infos.del(request->handle(), info)) {
+    std::shared_ptr<CustomControllerInfo> info = nullptr;
+    if (infos_.del(request->handle(), info)) {
         info->finish.release();
     }
 
@@ -243,7 +244,7 @@ static MaaBool _get_image(MaaTransparentArg arg, MaaImageBufferHandle buffer)
     ::maarpc::CustomControllerResponse response;
 
     auto id = make_uuid();
-    info->image_impl->handles.add(id, buffer);
+    info->image_impl->handles().add(id, buffer);
     response.set_image(id);
 
     stream->Write(response);
@@ -251,7 +252,7 @@ static MaaBool _get_image(MaaTransparentArg arg, MaaImageBufferHandle buffer)
     ::maarpc::CustomControllerRequest request;
     stream->Read(&request);
 
-    info->image_impl->handles.del(id);
+    info->image_impl->handles().del(id);
 
     return request.ok();
 }
@@ -278,9 +279,9 @@ static MaaBool _get_uuid(MaaTransparentArg arg, MaaStringBufferHandle buffer)
     return request.ok();
 }
 
-static MaaCustomControllerAPI customControllerApi = { _set_option,     _connect,    _click,    _swipe,     _press_key,
-                                                      _touch_down,     _touch_move, _touch_up, _start_app, _stop_app,
-                                                      _get_resolution, _get_image,  _get_uuid };
+static MaaCustomControllerAPI custom_controller_api = { _set_option,     _connect,    _click,    _swipe,     _press_key,
+                                                        _touch_down,     _touch_move, _touch_up, _start_app, _stop_app,
+                                                        _get_resolution, _get_image,  _get_uuid };
 
 Status ControllerImpl::create_custom(
     ServerContext* context,
@@ -288,8 +289,8 @@ Status ControllerImpl::create_custom(
 {
     std::ignore = context;
 
-    ::maarpc::CustomControllerRequest requestData;
-    auto request = &requestData;
+    ::maarpc::CustomControllerRequest request_data;
+    auto request = &request_data;
 
     if (!stream->Read(request)) {
         return Status(FAILED_PRECONDITION, "custom controller cannot read init");
@@ -298,12 +299,12 @@ Status ControllerImpl::create_custom(
     MAA_GRPC_REQUIRED_CASE_AS(result, Init)
 
     auto cbId = request->init();
-    UtilityImpl::CallbackState* cbState;
-    if (!utility_impl->states.get(cbId, cbState)) {
+    std::shared_ptr<UtilityImpl::CallbackState> cb_state = nullptr;
+    if (!utility_impl_->states().get(cbId, cb_state)) {
         return Status(NOT_FOUND, "id not exists");
     }
 
-    CustomControllerInfo info { stream, image_impl };
+    auto info = std::make_shared<CustomControllerInfo>(stream, image_impl_);
 
     auto id = make_uuid();
 
@@ -311,10 +312,10 @@ Status ControllerImpl::create_custom(
     response.set_init(id);
     stream->Write(response);
 
-    handles.add(id, MaaCustomControllerCreate(&customControllerApi, &info, CallbackImpl, cbState));
-    infos.add(id, &info);
+    handles_.add(id, MaaCustomControllerCreate(&custom_controller_api, &info, callback_impl, cb_state.get()));
+    infos_.add(id, info);
 
-    info.finish.acquire();
+    info->finish.acquire();
 
     return Status::OK;
 }
@@ -572,7 +573,7 @@ Status ControllerImpl::image(::grpc::ServerContext* context, const ::maarpc::Han
     MAA_GRPC_REQUIRED(another_handle)
 
     MAA_GRPC_GET_HANDLE
-    MAA_GRPC_GET_HANDLE_FROM(image_impl, image_handle, another_handle)
+    MAA_GRPC_GET_HANDLE_FROM(image_impl_, image_handle, another_handle)
 
     if (MaaControllerGetImage(handle, image_handle)) {
         return Status::OK;

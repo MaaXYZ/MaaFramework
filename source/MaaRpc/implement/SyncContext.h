@@ -5,9 +5,10 @@
 #include "MaaFramework/Task/MaaSyncContext.h"
 #include "sync.context.grpc.pb.h"
 
-struct SyncContextImpl final : public ::maarpc::SyncContext::Service
+class SyncContextImpl final : public ::maarpc::SyncContext::Service
 {
-    SyncContextImpl(ImageImpl* iimpl) : image_impl(iimpl) {}
+public:
+    SyncContextImpl(std::shared_ptr<ImageImpl> iimpl) : image_impl_(std::move(iimpl)) {}
 
     ::grpc::Status run_task(::grpc::ServerContext* context, const ::maarpc::SyncContextRunTaskRequest* request,
                             ::maarpc::EmptyResponse* response) override;
@@ -33,6 +34,9 @@ struct SyncContextImpl final : public ::maarpc::SyncContext::Service
     ::grpc::Status task_result(::grpc::ServerContext* context, const ::maarpc::HandleStringRequest* request,
                                ::maarpc::StringResponse* response) override;
 
-    ImageImpl* image_impl;
-    AtomicMap<MaaSyncContextHandle> handles;
+    AtomicMap<MaaSyncContextHandle>& handles() { return handles_; }
+
+private:
+    std::shared_ptr<ImageImpl> image_impl_ = nullptr;
+    AtomicMap<MaaSyncContextHandle> handles_;
 };

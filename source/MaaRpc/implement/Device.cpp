@@ -9,16 +9,16 @@ Status DeviceImpl::find(ServerContext* context, const ::maarpc::EmptyRequest* re
     std::ignore = context;
     std::ignore = request;
 
-    std::unique_lock<std::mutex> lock(mtx);
+    std::unique_lock<std::mutex> lock(mtx_);
 
     auto size = MaaToolKitFindDevice();
 
-    auto infos = response->mutable_info();
-    infos->Clear();
+    auto infos_ = response->mutable_info();
+    infos_->Clear();
     // infos->Reserve(size);
 
     for (uint64_t i = 0; i < size; i++) {
-        auto info = infos->Add();
+        auto info = infos_->Add();
         info->set_name(MaaToolKitGetDeviceName(i));
         info->set_adb_path(MaaToolKitGetDeviceAdbPath(i));
         info->set_adb_serial(MaaToolKitGetDeviceAdbSerial(i));
@@ -36,16 +36,16 @@ Status DeviceImpl::find_with_adb(ServerContext* context, const ::maarpc::StringR
 
     auto adb = request->str();
 
-    std::unique_lock<std::mutex> lock(mtx);
+    std::unique_lock<std::mutex> lock(mtx_);
 
     auto size = MaaToolKitFindDeviceWithAdb(adb.c_str());
 
-    auto infos = response->mutable_info();
-    infos->Clear();
+    auto infos_ = response->mutable_info();
+    infos_->Clear();
     // infos->Reserve(size);
 
     for (uint64_t i = 0; i < size; i++) {
-        auto info = infos->Add();
+        auto info = infos_->Add();
         info->set_name(MaaToolKitGetDeviceName(i));
         info->set_adb_path(MaaToolKitGetDeviceAdbPath(i));
         info->set_adb_serial(MaaToolKitGetDeviceAdbSerial(i));

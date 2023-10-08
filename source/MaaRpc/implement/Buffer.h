@@ -4,8 +4,9 @@
 #include "MaaFramework/Utility/MaaBuffer.h"
 #include "buffer.grpc.pb.h"
 
-struct ImageImpl final : public ::maarpc::Image::Service
+class ImageImpl final : public ::maarpc::Image::Service
 {
+public:
     ::grpc::Status create(::grpc::ServerContext* context, const ::maarpc::EmptyRequest* request,
                           ::maarpc::HandleResponse* response) override;
     ::grpc::Status destroy(::grpc::ServerContext* context, const ::maarpc::HandleRequest* request,
@@ -21,5 +22,8 @@ struct ImageImpl final : public ::maarpc::Image::Service
     ::grpc::Status set_encoded(::grpc::ServerContext* context, const ::maarpc::HandleBufferRequest* request,
                                ::maarpc::BoolResponse* response) override;
 
-    AtomicMap<MaaImageBufferHandle> handles;
+    AtomicMap<MaaImageBufferHandle>& handles() { return handles_; }
+
+private:
+    AtomicMap<MaaImageBufferHandle> handles_;
 };

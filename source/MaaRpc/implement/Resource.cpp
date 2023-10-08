@@ -11,15 +11,15 @@ Status ResourceImpl::create(ServerContext* context, const ::maarpc::IdRequest* r
 
     MAA_GRPC_REQUIRED(id)
 
-    auto cbId = request->id();
-    UtilityImpl::CallbackState* cbState;
+    auto cb_id = request->id();
+    std::shared_ptr<UtilityImpl::CallbackState> cb_state = nullptr;
 
-    if (!utility_impl->states.get(cbId, cbState)) {
+    if (!utility_impl_->states().get(cb_id, cb_state)) {
         return Status(NOT_FOUND, "id not exists");
     }
 
     auto id = make_uuid();
-    handles.add(id, MaaResourceCreate(CallbackImpl, cbState));
+    handles_.add(id, MaaResourceCreate(callback_impl, cb_state.get()));
 
     response->set_handle(id);
 

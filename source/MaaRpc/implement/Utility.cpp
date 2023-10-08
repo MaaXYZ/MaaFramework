@@ -12,7 +12,7 @@ std::string make_uuid()
     return boost::uuids::to_string(uuid_generator());
 }
 
-void CallbackImpl(MaaStringView msg, MaaStringView detail, MaaCallbackTransparentArg arg)
+void callback_impl(MaaStringView msg, MaaStringView detail, MaaCallbackTransparentArg arg)
 {
     ::maarpc::Callback cb;
     cb.set_msg(msg);
@@ -92,17 +92,17 @@ Status UtilityImpl::register_callback(ServerContext* context, const ::maarpc::Id
 
     auto id = request->id();
 
-    if (states.has(id)) {
+    if (states_.has(id)) {
         return Status(ALREADY_EXISTS, "id already registered");
     }
 
-    CallbackState state;
-    state.writer = writer;
+    auto state = std::make_shared<CallbackState>();
+    state->writer = writer;
 
-    states.add(id, &state);
+    states_.add(id, state);
 
-    state.finish.acquire();
-    state.write.acquire(); // 等待callback完成
+    state->finish.acquire();
+    state->write.acquire(); // 等待callback完成
 
     return Status::OK;
 }
@@ -117,13 +117,12 @@ Status UtilityImpl::unregister_callback(ServerContext* context, const ::maarpc::
 
     auto id = request->id();
 
-    CallbackState* pstate;
-
-    if (!states.del(id, pstate)) {
+    std::shared_ptr<CallbackState> state = nullptr;
+    if (!states_.del(id, state)) {
         return Status(NOT_FOUND, "id not exists");
     }
 
-    pstate->finish.release();
+    state->finish.release();
 
     return Status::OK;
 }
