@@ -60,7 +60,8 @@ bool AdbController::_connect()
     };
 
     bool connected = unit_mgr_->connection_obj()->connect();
-    if (!connected) {
+    bool is_remote = address_.find(':') != std::string::npos;
+    if (!connected && is_remote) {
         notifier.notify(MaaMsg_Controller_ConnectFailed, details | json::object { { "why", "ConnectFailed" } });
         LogError << "failed to connect";
         return false;
