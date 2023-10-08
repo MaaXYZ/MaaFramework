@@ -7,7 +7,7 @@
 
 struct ResourceImpl final : public ::maarpc::Resource::Service
 {
-    ResourceImpl(UtilityImpl* impl) : uImpl(impl) {}
+    ResourceImpl(UtilityImpl* impl) : utility_impl(impl) {}
 
     ::grpc::Status create(::grpc::ServerContext* context, const ::maarpc::IdRequest* request,
                           ::maarpc::HandleResponse* response) override;
@@ -24,6 +24,6 @@ struct ResourceImpl final : public ::maarpc::Resource::Service
     ::grpc::Status hash(::grpc::ServerContext* context, const ::maarpc::HandleRequest* request,
                         ::maarpc::StringResponse* response) override;
 
-    UtilityImpl* uImpl;
+    UtilityImpl* utility_impl;
     AtomicMap<MaaResourceHandle> handles;
 };

@@ -14,7 +14,7 @@ Status ResourceImpl::create(ServerContext* context, const ::maarpc::IdRequest* r
     auto cbId = request->id();
     UtilityImpl::CallbackState* cbState;
 
-    if (!uImpl->states.get(cbId, cbState)) {
+    if (!utility_impl->states.get(cbId, cbState)) {
         return Status(NOT_FOUND, "id not exists");
     }
 

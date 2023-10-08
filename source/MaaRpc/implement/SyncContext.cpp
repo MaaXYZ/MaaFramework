@@ -34,7 +34,7 @@ Status SyncContextImpl::run_recognizer(ServerContext* context, const ::maarpc::S
     MAA_GRPC_REQUIRED(image_handle)
 
     MAA_GRPC_GET_HANDLE
-    MAA_GRPC_GET_HANDLE_FROM(iImpl, image_handle, image_handle)
+    MAA_GRPC_GET_HANDLE_FROM(image_impl, image_handle, image_handle)
 
     MaaRect box;
     auto dt_handle = MaaCreateStringBuffer();
@@ -221,7 +221,7 @@ Status SyncContextImpl::screencap(ServerContext* context, const ::maarpc::SyncCo
     MAA_GRPC_REQUIRED(image_handle)
 
     MAA_GRPC_GET_HANDLE
-    MAA_GRPC_GET_HANDLE_FROM(iImpl, image_handle, image_handle)
+    MAA_GRPC_GET_HANDLE_FROM(image_impl, image_handle, image_handle)
 
     if (MaaSyncContextScreencap(handle, image_handle)) {
         return Status::OK;

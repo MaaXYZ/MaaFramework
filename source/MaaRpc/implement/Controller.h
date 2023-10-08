@@ -13,11 +13,11 @@ struct ControllerImpl final : public ::maarpc::Controller::Service
     struct CustomControllerInfo
     {
         ::grpc::ServerReaderWriter<::maarpc::CustomControllerResponse, ::maarpc::CustomControllerRequest>* stream;
-        ImageImpl* iImpl;
+        ImageImpl* image_impl;
         std::binary_semaphore finish { 0 };
     };
 
-    ControllerImpl(UtilityImpl* uimpl, ImageImpl* iimpl) : uImpl(uimpl), iImpl(iimpl) {}
+    ControllerImpl(UtilityImpl* uimpl, ImageImpl* iimpl) : utility_impl(uimpl), image_impl(iimpl) {}
 
     ::grpc::Status create_adb(::grpc::ServerContext* context, const ::maarpc::AdbControllerRequest* request,
                               ::maarpc::HandleResponse* response) override;
@@ -55,8 +55,8 @@ struct ControllerImpl final : public ::maarpc::Controller::Service
     ::grpc::Status uuid(::grpc::ServerContext* context, const ::maarpc::HandleRequest* request,
                         ::maarpc::StringResponse* response) override;
 
-    UtilityImpl* uImpl;
-    ImageImpl* iImpl;
+    UtilityImpl* utility_impl;
+    ImageImpl* image_impl;
     AtomicMap<MaaControllerHandle> handles;
     AtomicMap<CustomControllerInfo*> infos;
 };

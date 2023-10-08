@@ -23,12 +23,12 @@ struct Context
 
     void regService(::grpc::ServerBuilder& builder);
 
-    UtilityImpl* utilityImpl;
-    ImageImpl* imageImpl;
-    ResourceImpl* resourceImpl;
-    ControllerImpl* controllerImpl;
-    SyncContextImpl* syncctxImpl;
-    InstanceImpl* instanceImpl;
-    DeviceImpl* deviceImpl;
-    ConfigImpl* configImpl;
+    UtilityImpl* utility_impl;
+    ImageImpl* image_impl;
+    ResourceImpl* resource_impl;
+    ControllerImpl* controller_impl;
+    SyncContextImpl* syncctx_impl;
+    InstanceImpl* instance_impl;
+    DeviceImpl* device_impl;
+    ConfigImpl* config_impl;
 };

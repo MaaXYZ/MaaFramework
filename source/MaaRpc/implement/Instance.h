@@ -15,21 +15,21 @@ struct InstanceImpl final : public ::maarpc::Instance::Service
     {
         std::string name;
         ::grpc::ServerReaderWriter<::maarpc::CustomRecognizerResponse, ::maarpc::CustomRecognizerRequest>* stream;
-        ImageImpl* iImpl;
-        SyncContextImpl* sImpl;
+        ImageImpl* image_impl;
+        SyncContextImpl* syncctx_impl;
         std::binary_semaphore finish { 0 };
     };
     struct CustomActionInfo
     {
         std::string name;
         ::grpc::ServerReaderWriter<::maarpc::CustomActionResponse, ::maarpc::CustomActionRequest>* stream;
-        SyncContextImpl* sImpl;
+        SyncContextImpl* syncctx_impl;
         std::binary_semaphore finish { 0 };
     };
 
     InstanceImpl(UtilityImpl* uimpl, ImageImpl* iimpl, ResourceImpl* rimpl, ControllerImpl* cimpl,
                  SyncContextImpl* simpl)
-        : uImpl(uimpl), iImpl(iimpl), rImpl(rimpl), cImpl(cimpl), sImpl(simpl)
+        : utility_impl(uimpl), image_impl(iimpl), resource_impl(rimpl), controller_impl(cimpl), syncctx_impl(simpl)
     {}
 
     ::grpc::Status create(::grpc::ServerContext* context, const ::maarpc::IdRequest* request,
@@ -76,11 +76,11 @@ struct InstanceImpl final : public ::maarpc::Instance::Service
     ::grpc::Status controller(::grpc::ServerContext* context, const ::maarpc::HandleRequest* request,
                               ::maarpc::HandleRequest* response) override;
 
-    UtilityImpl* uImpl;
-    ImageImpl* iImpl;
-    ResourceImpl* rImpl;
-    ControllerImpl* cImpl;
-    SyncContextImpl* sImpl;
+    UtilityImpl* utility_impl;
+    ImageImpl* image_impl;
+    ResourceImpl* resource_impl;
+    ControllerImpl* controller_impl;
+    SyncContextImpl* syncctx_impl;
     AtomicMap<MaaInstanceHandle> handles;
     AtomicMap<CustomRecognizerInfo*> recos;
     AtomicMap<MaaInstanceHandle, CustomRecognizerInfo*> recoIdx;

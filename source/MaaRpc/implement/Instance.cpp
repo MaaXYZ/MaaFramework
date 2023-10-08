@@ -15,7 +15,7 @@ Status InstanceImpl::create(ServerContext* context, const ::maarpc::IdRequest* r
     auto cbId = request->id();
     UtilityImpl::CallbackState* cbState;
 
-    if (!uImpl->states.get(cbId, cbState)) {
+    if (!utility_impl->states.get(cbId, cbState)) {
         return Status(NOT_FOUND, "id not exists");
     }
 
@@ -52,11 +52,11 @@ static MaaBool _analyze(MaaSyncContextHandle sync_context, const MaaImageBufferH
     ::maarpc::CustomRecognizerResponse response;
 
     auto sid = make_uuid();
-    info->sImpl->handles.add(sid, sync_context);
+    info->syncctx_impl->handles.add(sid, sync_context);
     response.mutable_analyze()->set_context(sid);
 
     auto iid = make_uuid();
-    info->iImpl->handles.add(iid, image);
+    info->image_impl->handles.add(iid, image);
     response.mutable_analyze()->set_image_handle(iid);
 
     response.mutable_analyze()->set_task(task_name);
@@ -67,8 +67,8 @@ static MaaBool _analyze(MaaSyncContextHandle sync_context, const MaaImageBufferH
     ::maarpc::CustomRecognizerRequest request;
     stream->Read(&request);
 
-    info->sImpl->handles.del(sid);
-    info->iImpl->handles.del(iid);
+    info->syncctx_impl->handles.del(sid);
+    info->image_impl->handles.del(iid);
 
     if (request.result_case() != ::maarpc::CustomRecognizerRequest::kAnalyze) {
         return false;
@@ -105,7 +105,7 @@ Status InstanceImpl::register_custom_recognizer(
 
     MAA_GRPC_GET_HANDLE_FROM(this, handle, init().handle)
 
-    CustomRecognizerInfo info { request->init().name(), stream, iImpl, sImpl };
+    CustomRecognizerInfo info { request->init().name(), stream, image_impl, syncctx_impl };
 
     ::maarpc::CustomRecognizerResponse response;
     stream->Write(response);
@@ -175,7 +175,7 @@ static MaaBool _run(MaaSyncContextHandle sync_context, MaaStringView task_name, 
     ::maarpc::CustomActionResponse response;
 
     auto sid = make_uuid();
-    info->sImpl->handles.add(sid, sync_context);
+    info->syncctx_impl->handles.add(sid, sync_context);
     response.mutable_run()->set_context(sid);
 
     response.mutable_run()->set_task(task_name);
@@ -193,7 +193,7 @@ static MaaBool _run(MaaSyncContextHandle sync_context, MaaStringView task_name, 
     ::maarpc::CustomActionRequest request;
     stream->Read(&request);
 
-    info->sImpl->handles.del(sid);
+    info->syncctx_impl->handles.del(sid);
 
     return request.ok();
 }
@@ -231,7 +231,7 @@ Status InstanceImpl::register_custom_action(
 
     MAA_GRPC_GET_HANDLE_FROM(this, handle, init().handle)
 
-    CustomActionInfo info { request->init().name(), stream, sImpl };
+    CustomActionInfo info { request->init().name(), stream, syncctx_impl };
 
     ::maarpc::CustomActionResponse response;
     stream->Write(response);
@@ -302,7 +302,7 @@ Status InstanceImpl::bind_resource(ServerContext* context, const ::maarpc::Handl
     MAA_GRPC_REQUIRED(another_handle)
 
     MAA_GRPC_GET_HANDLE
-    MAA_GRPC_GET_HANDLE_FROM(rImpl, res_handle, another_handle)
+    MAA_GRPC_GET_HANDLE_FROM(resource_impl, res_handle, another_handle)
 
     if (MaaBindResource(handle, res_handle)) {
         return Status::OK;
@@ -322,7 +322,7 @@ Status InstanceImpl::bind_controller(ServerContext* context, const ::maarpc::Han
     MAA_GRPC_REQUIRED(another_handle)
 
     MAA_GRPC_GET_HANDLE
-    MAA_GRPC_GET_HANDLE_FROM(cImpl, ctrl_handle, another_handle)
+    MAA_GRPC_GET_HANDLE_FROM(controller_impl, ctrl_handle, another_handle)
 
     if (MaaBindController(handle, ctrl_handle)) {
         return Status::OK;
@@ -454,7 +454,7 @@ Status InstanceImpl::resource(ServerContext* context, const ::maarpc::HandleRequ
     MAA_GRPC_GET_HANDLE
 
     std::string id;
-    if (rImpl->handles.find(MaaGetResource(handle), id)) {
+    if (resource_impl->handles.find(MaaGetResource(handle), id)) {
         response->set_handle(id);
         return Status::OK;
     }
@@ -473,7 +473,7 @@ Status InstanceImpl::controller(ServerContext* context, const ::maarpc::HandleRe
     MAA_GRPC_GET_HANDLE
 
     std::string id;
-    if (cImpl->handles.find(MaaGetController(handle), id)) {
+    if (controller_impl->handles.find(MaaGetController(handle), id)) {
         response->set_handle(id);
         return Status::OK;
     }

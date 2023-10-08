@@ -7,7 +7,7 @@
 
 struct SyncContextImpl final : public ::maarpc::SyncContext::Service
 {
-    SyncContextImpl(ImageImpl* iimpl) : iImpl(iimpl) {}
+    SyncContextImpl(ImageImpl* iimpl) : image_impl(iimpl) {}
 
     ::grpc::Status run_task(::grpc::ServerContext* context, const ::maarpc::SyncContextRunTaskRequest* request,
                             ::maarpc::EmptyResponse* response) override;
@@ -33,6 +33,6 @@ struct SyncContextImpl final : public ::maarpc::SyncContext::Service
     ::grpc::Status task_result(::grpc::ServerContext* context, const ::maarpc::HandleStringRequest* request,
                                ::maarpc::StringResponse* response) override;
 
-    ImageImpl* iImpl;
+    ImageImpl* image_impl;
     AtomicMap<MaaSyncContextHandle> handles;
 };
