@@ -15,7 +15,7 @@ Status DeviceImpl::find(ServerContext* context, const ::maarpc::EmptyRequest* re
 
     auto infos = response->mutable_info();
     infos->Clear();
-    infos->Reserve(size);
+    // infos->Reserve(size);
 
     for (uint64_t i = 0; i < size; i++) {
         auto info = infos->Add();
@@ -42,7 +42,7 @@ Status DeviceImpl::find_with_adb(ServerContext* context, const ::maarpc::StringR
 
     auto infos = response->mutable_info();
     infos->Clear();
-    infos->Reserve(size);
+    // infos->Reserve(size);
 
     for (uint64_t i = 0; i < size; i++) {
         auto info = infos->Add();
