@@ -199,6 +199,49 @@ jobs:
           name: MAA-linux-${{ matrix.arch }}
           path: "install"
 
+  windows-debug:
+    needs: meta
+    runs-on: windows-latest
+    strategy:
+      matrix:
+        arch: [x86_64]
+      fail-fast: false
+
+    steps:
+      - name: Windows runner hack
+        shell: cmd
+        run: |
+          dir d:\a
+          cd ..
+          mkdir C:\MaaFramework
+          rmdir MaaFramework
+          mklink /j MaaFramework C:\MaaFramework
+          dism /Online /Disable-Feature /FeatureName:Windows-Defender /Remove /NoRestart /Quiet
+          cd .
+
+      - name: Windows runner hack (2)
+        uses: al-cheb/configure-pagefile-action@v1.3
+        with:
+          minimum-size: 16GB
+          maximum-size: 16GB
+          disk-root: "D:"
+
+      - uses: actions/checkout@v3
+        with:
+          submodules: true
+
+      - name: Bootstrap MaaDeps
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          python3 maadeps-download.py x64-windows
+
+      - name: Build MAA
+        run: |
+          cmake --preset "MSVC 2022" -DMAADEPS_TRIPLET="maa-x64-windows" -DMAA_HASH_VERSION='${{ needs.meta.outputs.tag }}'
+
+          cmake --build build --preset "MSVC 2022 - Debug" -j 16
+
   macos:
     needs: meta
     runs-on: macos-latest
