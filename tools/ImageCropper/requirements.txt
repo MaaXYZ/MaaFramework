@@ -1,1 +1,2 @@
-opencv-python~=4.5.3
+adbutils~=1.2.15
+opencv_python~=4.7.0.68

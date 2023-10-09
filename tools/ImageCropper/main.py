@@ -1,122 +1,313 @@
 import cv2
 import os
+import sys
+import numpy as np
+from adbutils import adb
+from datetime import datetime
+from roimage import Roimage
 
+# 初始化设备参数
+device = None
+device_serial = None
+# device_serial = "127.0.0.1:16384"
 
-print("Usage:\n"
-      "Put the 16:9 images under ./src, and run this script, it will be auto converted to 720p.\n"
-      "Drag mouse to select ROI, press 'S' to save, press 'Q' to quit.\n"
-      "The cropped images will be saved in ./dst\n")
+# 初始化标准化参数 (常量)
+std_long_side: int = 1280
+std_short_side: int = 720
+std_ratio = std_long_side / std_short_side
+std_target: str = 'std_short_side'
+# std_target: str = 'std_long_side'
 
+# ROI 放大方法
+def amplify(rect: list[int]) -> list[int]:
+    x, y, w, h = rect
+    return [x - 50, y - 50, w + 100, h + 100]
 
-# 初始化参考点列表和布尔值标志：是否正在执行裁剪
-refPt = []
-cropping = False
+# -----------------------------------------------
 
+#TODO
+#4. 添加颜色匹配方法
 
-# 点击并裁剪ROI区域
+print("Usage: python3 main.py [device serial]\n"
+     f"Current target size is based on {std_target}: {locals().get(std_target)}.\n"
+      "Put the images under ./src, and run this script, it will be auto converted to target size.\n"
+      "Hold down the left mouse button, drag mouse to select a ROI.\n"
+      "Hold down the right mouse button, drag mouse to move the image.\n"
+      "Use the mouse wheel to zoom the image.\n"
+      "press 'S' or 'ENTER' to save ROIs.\n"
+      "press 'C' to save a standardized screenshot.\n"
+      "press 'R' to output only the ROI ranges, not save.\n"
+      "press 'Z' or 'DELETE' or 'BACKSPACE' to remove the latest ROI.\n"
+      "press '0' ~ '9' to resize the window.\n"
+      "press 'Q' or 'ESC' to quit.\n"
+      "The cropped images will be saved in ./dst.\n")
+
+# 解析命令行参数
+if len(sys.argv) > 1:
+    device_serial = sys.argv[1]
+    print(adb.connect(device_serial))
+if device_serial is not None:
+    device = adb.device(device_serial)
+else:
+    device_list = adb.device_list()
+    if len(device_list):
+        for i, d in enumerate(device_list):
+            print(i, '|', d)
+        i = input("Please select the device (ENTER to pass): ")
+        if len(i) == 1 and 0 <= int(i) < len(device_list):
+            device = device_list[int(i)]
+
+# 初始化 Roi
+std_roimage: Roimage = Roimage(std_long_side, std_short_side) # 标准化截图
+win_roimage: Roimage = Roimage(0, 0, 0, 0, std_roimage)       # 相对 std_roimage ，窗口显示的区域
+crop_list: list[Roimage] = []                                 # 相对 std_roimage ，需要裁剪的区域
+
+# 初始化参数
+win_name = "image"  # 窗口名
+trackbars_name = "trackbars" # 轨迹条窗口名
+file_name = "image" # 文件名
+files = [f for f in os.listdir("./src") if f.endswith('.png')]
+
+# -----------------------------------------------
+
+# OpenCV 鼠标回调
 # -events 鼠标事件（如按下鼠标左键，释放鼠标左键，鼠标移动等）
 # -x x坐标
 # -y y坐标
 # -flages params 其他参数
-def click_and_crop(event, x, y, flags, param):
-    # 获取全局变量的引用
-    global refPt, cropping
+def mouse(event, x, y, flags, param) -> None:
+    global crop_end
+    crop_end = Roimage(0, 0, x, y, win_roimage).getRoiInRoot()
+    crop(event, x, y, flags, param)
+    zoom(event, x, y, flags, param)
+    move(event, x, y, flags, param)
+    show_roi(crop_end)
 
-    # 如果鼠标左被单击，记录（x,y）坐标并显示裁剪正在进行
-    if event == cv2.EVENT_LBUTTONDOWN:
-        refPt = [(x, y)]
-        cropping = True
-    # 检测鼠标左键是否释放
-    elif event == cv2.EVENT_LBUTTONUP:
-        # 记录结束（x,y）坐标，并显示裁剪结束
-        refPt.append((x, y))
-        cropping = False
+# 显示 Roi
+trackbars_img = np.ones((100, 400, 3), dtype=np.uint8) * 255
+def show_roi(roi: Roimage):
+    trackbars_img.fill(255)
+    cv2.putText(trackbars_img, f'{roi.rectangle}', (0, 60), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 0), 2)
+    cv2.imshow(trackbars_name, trackbars_img)
 
-        draw = image.copy()
-        cv2.rectangle(draw, refPt[0], refPt[1], (0, 255, 0), 2)
-        cv2.imshow("image", draw)
+# 计算绘图四边形坐标
+# -rectPts 相对于 std_roimage 的两点坐标 ((left,top),(right,bottom))
+def count_draw_coordinate(rectPts):
+    z = win_roimage.zoom
+    x, y = win_roimage.point
+    return ((int(rectPts[0][0]*z-x), int(rectPts[0][1]*z-y)), (int(rectPts[1][0]*z-x), int(rectPts[1][1]*z-y)))
 
+# 绘图
+# -rois 相对于 std_roimage 的 crop_roimage 列表
+def draw(rois: list[Roimage]) -> None:
+    img = win_roimage.image.copy()
+    for roi in rois:
+        pt1, pt2 = count_draw_coordinate(roi.rectanglePoints)
+        cv2.rectangle(img, pt1, pt2, (0, 255, 0), 2)
+    cv2.imshow(win_name, img)
 
-std_long_side: int = 1280
-std_short_side: int = 720
-std_ratio = std_long_side / std_short_side
+# 左键裁剪ROI区域
+crop_start: Roimage | None = None # 相对 win_roimage ，正在裁剪的区域
+crop_end = Roimage(0, 0, 0, 0, win_roimage).getRoiInRoot()
+def crop(event, x, y, flags, param) -> None:
+    global crop_start, crop_end
+    if event == cv2.EVENT_LBUTTONDOWN: # 按下左键
+        # 记录（x,y）坐标
+        crop_start = Roimage(0, 0, x, y, win_roimage)
+    elif crop_start is not None and (event == cv2.EVENT_LBUTTONUP or (event == cv2.EVENT_MOUSEMOVE and (flags & cv2.EVENT_FLAG_LBUTTON))): # 释放左键 或 按住左键拖曳
+        # 修正（x,y）坐标
+        w, h = win_roimage.size
+        x = max(0, min(w - 1, x))
+        y = max(0, min(h - 1, y))
+        # 记录（x,y）坐标
+        crop_end = crop_start.getCropRoi(x, y).getRoiInRoot()
+        # 绘图
+        rois: list[Roimage] = crop_list.copy()
+        rois.append(crop_end)
+        draw(rois)
+        # 保存 crop Roi
+        if event == cv2.EVENT_LBUTTONUP:
+            crop_list.append(crop_end.copy(std_roimage))
+            crop_start = None
 
-cv2.namedWindow("image", cv2.WINDOW_NORMAL)
-cv2.setMouseCallback("image", click_and_crop)
+# 计算缩放倍数
+# -flag 鼠标滚轮上移或下移的标识
+# -zoom 缩放倍数
+# -step 缩放系数，滚轮每步缩放0.1
+def count_zoom(flag, zoom: float, step: float = 0.1):
+    if flag > 0:  # 滚轮上移
+        zoom += step
+        if zoom > 3:  # 最多只能放大到 g_image 三倍大
+            zoom = 3
+    else:  # 滚轮下移
+        zoom -= step
+        if zoom < 1:  # 最多只能缩小到 g_image 大小
+            zoom = 1
+    return zoom
 
-for filename in os.listdir("./src"):
-    if not filename.endswith(".png"):
+# 滚轮放大
+def zoom(event, x, y, flags, param) -> None:
+    global win_roimage
+    if event == cv2.EVENT_MOUSEWHEEL:  # 滚轮
+        z = count_zoom(flags, win_roimage.zoom)
+        wx, wy, w, h = win_roimage.rectangle
+        x = int((wx + x) * z / win_roimage.zoom - x)
+        y = int((wy + y) * z / win_roimage.zoom - y)
+        win_roimage = Roimage(w, h, x, y, win_roimage.parent, z)
+        draw(crop_list)
+
+# 计算移动后的坐标
+# -pt0 win_roimage 的原始坐标
+# -pt1 鼠标按下右键时的坐标
+# -pt2 鼠标当前坐标
+def count_move_coordinate(pt0, pt1, pt2):
+    return (pt0[0] + pt1[0] - pt2[0], pt0[1] + pt1[1] - pt2[1])
+
+# 右键拖曳
+move_start = (0, 0)
+move_start_roi = (0, 0)
+def move(event, x, y, flags, param) -> None:
+    global move_start, move_start_roi, win_roimage
+    if event == cv2.EVENT_RBUTTONDOWN:
+        move_start = (x, y)
+        move_start_roi = win_roimage.point
+    elif event == cv2.EVENT_RBUTTONUP or (event == cv2.EVENT_MOUSEMOVE and (flags & cv2.EVENT_FLAG_RBUTTON)):
+        x, y = count_move_coordinate(move_start_roi, move_start, (x, y))
+        win_roimage = Roimage(win_roimage.width, win_roimage.height, x, y, std_roimage, win_roimage.zoom)
+        draw(crop_list)
+
+# 轨迹条回调
+# -pos 轨迹条位置
+def trackbar_change(pos) -> None:
+    pos = pos / 100 # get a scaling factor from trackbar pos
+    w = int(std_roimage.width * pos) # scale w
+    h = int(std_roimage.height * pos) # scale h
+    cv2.resizeWindow(win_name, w, h) # resize window
+
+# 标准化图片
+# -image 被标准化的图片
+def getStdSize(image) -> tuple[int, int]:
+    # https://github.com/MaaAssistantArknights/MaaFramework/blob/main/source/MaaFramework/Controller/ControllerMgr.cpp
+    # bool ControllerMgr::check_and_calc_target_image_size(const cv::Mat& raw)
+    cur_height, cur_width, _ = image.shape
+    scale = cur_width / cur_height
+    if std_target == 'std_short_side':
+        if cur_width > cur_height:
+            width = std_short_side * scale
+            height = std_short_side
+        else:
+            width = std_short_side
+            height = std_short_side / scale
+    else:
+        # std_target == 'std_long_side'
+        if cur_width > cur_height:
+            width = std_long_side
+            height = std_long_side / scale
+        else:
+            width = std_long_side * scale
+            height = std_long_side
+    return (int(width), int(height))
+
+# 读取文件
+# -file 文件名
+def readfile(file: str):
+    print("src:", f"{os.getcwd()}\src\{file}")
+    return cv2.imread("./src/" + file)
+
+# 截图
+def screenshot():
+    if device is None:
+        return None
+    print("Screenshot in progress...")
+    image = np.array(device.screenshot().convert('RGB'))
+    image = cv2.cvtColor(image, cv2.COLOR_RGB2BGR)
+    print("Screenshot completed.")
+    return image
+
+# 获取标准化的 Roimage
+def getStdRoimage() -> Roimage | None:
+    global file_name
+    if len(files):
+        file_name = files.pop(0)
+        image = readfile(file_name)
+        file_name = file_name.split(".")[0]
+    else:
+        image = screenshot()
+        file_name = datetime.now().strftime('%H%M%S') # '%Y%m%d%H%M%S'
+    if image is None:
+        return None
+    width, height = getStdSize(image)
+    roimage = Roimage(width, height)
+    roimage.image = cv2.resize(image, roimage.size, interpolation=cv2.INTER_AREA)
+    return roimage
+
+# 获取放大后的 Roi 四边形
+# -roi: 需要放大的 Roi
+def getAmplifiedRoiRectangle(roi: Roimage) -> list[int]:
+    x, y, w, h = amplify(roi.rectangle)
+    return Roimage(w, h, x, y, roi.parent).rectangle
+
+# 初始化 cv2 窗口
+cv2.namedWindow(win_name, cv2.WINDOW_NORMAL)
+cv2.setMouseCallback(win_name, mouse)
+cv2.namedWindow(trackbars_name, cv2.WINDOW_NORMAL)
+cv2.createTrackbar('Scale', trackbars_name, 100, 200, trackbar_change)
+
+cropping = False
+while True:
+    if not cropping:
+        std_roimage = getStdRoimage()
+        if std_roimage is None:
+            break
+        win_roimage = Roimage(0, 0, 0, 0, std_roimage)
+        crop_list.clear()
+    draw(crop_list)
+
+    key = cv2.waitKey(0) & 0xFF
+    cropping = True
+# q Q esc
+    if key in [ord("q"), ord("Q"), 27]:
+        break
+# 0
+    if key == 48:
+        cv2.setTrackbarPos('Scale', trackbars_name, 100)
+        continue
+# 1 ~ 5
+    if key in range(49,54):
+        cv2.setTrackbarPos('Scale', trackbars_name, 100 + 15 * (key - 48))
+        continue
+# 6 ~ 9
+    if key in range(54,58):
+        cv2.setTrackbarPos('Scale', trackbars_name, 100 - 15 * (58 - key))
+        continue
+# z Z delete backspace
+    if key in [ord("z"), ord("Z"), 0, 8]:
+        if len(crop_list):
+            crop_list.pop()
         continue
 
-    print("src:", filename)
-    image = cv2.imread("./src/" + filename)
-
-
-    if image.shape[1] > image.shape[0]: # landscape
-        cur_ratio = image.shape[1] / image.shape[0]
-        if cur_ratio >= std_ratio:  # 说明是宽屏或默认16:9，按照高度计算缩放
-            dsize_width: int = (int)(cur_ratio * std_short_side)
-            dsize_height: int = std_short_side
-        else:                       # 否则可能是偏正方形的屏幕，按宽度计算
-            dsize_width: int = std_long_side
-            dsize_height: int = (int)(std_long_side / cur_ratio)
-    else:                               # portrait
-        cur_ratio = image.shape[0] / image.shape[1]
-        if cur_ratio >= std_ratio:  # 说明是宽屏或默认16:9，按照高度计算缩放
-            dsize_width: int = std_short_side
-            dsize_height: int = (int)(std_short_side * cur_ratio)
-        else:                       # 否则可能是偏正方形的屏幕，按宽度计算
-            dsize_width: int = (int)(std_long_side / cur_ratio)
-            dsize_height: int = std_long_side
-
-    dsize = (dsize_width, dsize_height)
-    image = cv2.resize(image, dsize, interpolation=cv2.INTER_AREA)
-
-    while True:
-        cv2.imshow("image", image)
-        key = cv2.waitKey(0) & 0xFF
-        if key == ord("s"):
-            break
-        elif key == ord("q"):
-            exit()
-
-    # 如果参考点列表里有俩个点，则裁剪区域并展示
-    if len(refPt) == 2:
-        if refPt[0][0] > refPt[1][0] or refPt[0][1] > refPt[1][1]:
-            refPt[0], refPt[1] = refPt[1], refPt[0]
-        left = refPt[0][0]
-        right = refPt[1][0]
-        top = refPt[0][1]
-        bottom = refPt[1][1]
-
-        roi = image[top:bottom, left:right]
-
-        horizontal_expansion = 100
-        vertical_expansion = 100
-
-        filename_x: int = (int)(left - horizontal_expansion / 2)
-        if filename_x < 0:
-            filename_x = 0
-        filename_y: int = (int)(top - vertical_expansion / 2)
-        if filename_y < 0:
-            filename_y = 0
-        filename_w: int = (right - left) + horizontal_expansion
-        if filename_x + filename_w > dsize_width:
-            filename_w = dsize_width - filename_x
-        filename_h: int = (bottom - top) + vertical_expansion
-        if filename_y + filename_h > dsize_height:
-            filename_h = dsize_height - filename_y
-
-        dst_filename: str = f'{filename}_{filename_x},{filename_y},{filename_w},{filename_h}.png'
-        print('dst:', dst_filename)
-
-        print(f"original roi: {left}, {top}, {right - left}, {bottom - top}, \n"
-              f"amplified roi: {filename_x}, {filename_y}, {filename_w}, {filename_h}\n\n")
-
-        cv2.imwrite('./dst/' + dst_filename, roi)
-
-    refPt = []
     cropping = False
+    needSave = True
+# r R
+    if key in [ord("r"), ord("R")]:
+        needSave = False
+# c C
+    elif key in [ord("c"), ord("C")]:
+        crop_list.append(Roimage(0, 0, 0, 0, std_roimage))
+# s S enter
+    elif key not in [ord("s"), ord("S"), ord("\r"), ord("\n")]:
+        continue
 
-# 关闭所有打开的窗口
+    for roi in crop_list:
+        print("\n")
+        if needSave:
+            x1,y1,w1,h1 = roi.rectangle
+            x2,y2,w2,h2 = getAmplifiedRoiRectangle(roi)
+            dst_filename: str = f'{file_name}_{x1}_{y1}_{w1}_{h1}__{x2}_{y2}_{w2}_{h2}.png'
+            print(f"dst: {os.getcwd()}\dst\{dst_filename}")
+            cv2.imwrite('./dst/' + dst_filename, roi.image)
+        print(f"original roi: {roi.rectangle}\n"
+              f"amplified roi: {getAmplifiedRoiRectangle(roi)}"
+               "\n")
+
 cv2.destroyAllWindows()
