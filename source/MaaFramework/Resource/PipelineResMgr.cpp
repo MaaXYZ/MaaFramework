@@ -1,6 +1,7 @@
 #include "PipelineResMgr.h"
 
 #include "Utils/Logger.h"
+#include "Utils/StringMisc.hpp"
 #include "Vision/VisionTypes.h"
 
 #include <tuple>
@@ -50,28 +51,29 @@ bool PipelineResMgr::load_all_json(const std::filesystem::path& path)
     }
 
     bool loaded = false;
-    if (std::filesystem::is_directory(path)) {
-        for (auto& entry : std::filesystem::recursive_directory_iterator(path)) {
-            if (!entry.is_regular_file() || entry.path().extension() != ".json") {
-                continue;
-            }
-            loaded = open_and_parse_file(entry.path());
-            if (!loaded) {
-                LogError << "open_and_parse_file failed" << VAR(entry.path());
-                return false;
-            }
-        }
+    if (!std::filesystem::is_directory(path)) {
+        LogError << "path is not directory" << VAR(path);
+        return false;
     }
-    else if (std::filesystem::is_regular_file(path) && path.extension() == ".json") {
-        loaded = open_and_parse_file(path);
+
+    for (auto& entry : std::filesystem::recursive_directory_iterator(path)) {
+        auto& entry_path = entry.path();
+        if (!entry.is_regular_file()) {
+            LogWarn << "entry is not regular file, skip" << VAR(entry_path);
+            continue;
+        }
+        auto ext = path_to_utf8_string(entry_path.extension());
+        tolowers_(ext);
+        if (ext != ".json") {
+            LogWarn << "entry is not *.json, skip" << VAR(entry_path) << VAR(ext);
+            continue;
+        }
+
+        loaded &= open_and_parse_file(entry_path);
         if (!loaded) {
-            LogError << "open_and_parse_file failed" << VAR(path);
+            LogError << "open_and_parse_file failed" << VAR(entry_path);
             return false;
         }
-    }
-    else {
-        LogError << "path is not directory or regular file";
-        return false;
     }
 
     return loaded;
