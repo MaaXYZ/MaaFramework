@@ -104,9 +104,12 @@ Status InstanceImpl::register_custom_recognizer(
 
     MAA_GRPC_GET_HANDLE_FROM(this, handle, init().handle)
 
-    // build error on macOS
-    // auto info = std::make_shared<CustomRecognizerInfo>(request->init().name(), stream, image_impl_, syncctx_impl_);
+#if defined(__APPLE__) && defined(__clang__) && __clang_major__ < 16
     std::shared_ptr<CustomRecognizerInfo> info(new CustomRecognizerInfo{ request->init().name(), stream, image_impl_, syncctx_impl_ });
+#else
+    // build error of Apple clang version 15.0.0 (clang-1500.0.40.1) on macOS 
+    auto info = std::make_shared<CustomRecognizerInfo>(request->init().name(), stream, image_impl_, syncctx_impl_);
+#endif
 
     ::maarpc::CustomRecognizerResponse response;
     stream->Write(response);
@@ -232,9 +235,12 @@ Status InstanceImpl::register_custom_action(
 
     MAA_GRPC_GET_HANDLE_FROM(this, handle, init().handle)
 
-    // build error on macOS
-    // auto info = std::make_shared<CustomActionInfo>(request->init().name(), stream, syncctx_impl_);
+#if defined(__APPLE__) && defined(__clang__) && __clang_major__ < 16
     std::shared_ptr<CustomActionInfo> info(new CustomActionInfo{ request->init().name(), stream, syncctx_impl_ });
+#else
+    // build error of Apple clang version 15.0.0 (clang-1500.0.40.1) on macOS 
+    auto info = std::make_shared<CustomActionInfo>(request->init().name(), stream, syncctx_impl_);
+#endif
     
     ::maarpc::CustomActionResponse response;
     stream->Write(response);

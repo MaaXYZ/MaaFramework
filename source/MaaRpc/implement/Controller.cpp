@@ -303,9 +303,12 @@ Status ControllerImpl::create_custom(
         return Status(NOT_FOUND, "id not exists");
     }
 
-    // build error on macOS
-    // auto info = std::make_shared<CustomControllerInfo>(stream, image_impl_);
+#if defined(__APPLE__) && defined(__clang__) && __clang_major__ < 16
     std::shared_ptr<CustomControllerInfo> info(new CustomControllerInfo{ stream, image_impl_ });
+#else
+    // build error of Apple clang version 15.0.0 (clang-1500.0.40.1) on macOS 
+    auto info = std::make_shared<CustomControllerInfo>(stream, image_impl_);
+#endif
     
     auto id = make_uuid();
 
