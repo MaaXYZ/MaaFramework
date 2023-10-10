@@ -71,6 +71,7 @@
     <ClInclude Include="Utils\StringMisc.hpp" />
     <ClInclude Include="Utils\TempPath.hpp" />
     <ClInclude Include="Utils\Time.hpp" />
+    <ClInclude Include="Vision\FeatureMatcher.h" />
     <ClInclude Include="Vision\NeuralNetworkClassifier.h" />
     <ClInclude Include="Vision\ColorMatcher.h" />
     <ClInclude Include="Vision\TemplateComparator.h" />
@@ -107,6 +108,7 @@
     <ClCompile Include="Task\Recognizer.cpp" />
     <ClCompile Include="Task\SyncContext.cpp" />
     <ClCompile Include="Task\PipelineTask.cpp" />
+    <ClCompile Include="Vision\FeatureMatcher.cpp" />
     <ClCompile Include="Vision\NeuralNetworkClassifier.cpp" />
     <ClCompile Include="Vision\ColorMatcher.cpp" />
     <ClCompile Include="Vision\TemplateComparator.cpp" />
