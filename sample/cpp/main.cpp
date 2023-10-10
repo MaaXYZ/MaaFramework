@@ -1,11 +1,9 @@
-#include "MaaFramework/MaaAPI.h"
-
 #include <array>
 #include <filesystem>
 #include <iostream>
 #include <string>
 
-#include "MaaFramework/Task/MaaCustomRecognizer.h"
+#include "MaaFramework/MaaAPI.h"
 #include "MaaToolKit/MaaToolKitAPI.h"
 
 #ifdef _WIN32

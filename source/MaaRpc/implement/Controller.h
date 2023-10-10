@@ -2,7 +2,7 @@
 
 #include "AtomicMap.h"
 #include "Buffer.h"
-#include "MaaFramework/Instance/MaaController.h"
+#include "MaaFramework/MaaDef.h"
 #include "Utility.h"
 #include "controller.grpc.pb.h"
 
@@ -13,7 +13,7 @@ class ControllerImpl final : public ::maarpc::Controller::Service
 public:
     struct CustomControllerInfo
     {
-        ::grpc::ServerReaderWriter<::maarpc::CustomControllerResponse, ::maarpc::CustomControllerRequest>* stream;
+        ::grpc::ServerReaderWriter<::maarpc::CustomControllerResponse, ::maarpc::CustomControllerRequest>* stream = nullptr;
         std::shared_ptr<ImageImpl> image_impl = nullptr;
         std::binary_semaphore finish { 0 };
     };

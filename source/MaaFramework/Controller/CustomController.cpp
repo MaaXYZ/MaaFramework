@@ -4,6 +4,7 @@
 #include "Buffer/StringBuffer.hpp"
 #include "Utils/Logger.h"
 #include "Utils/NoWarningCV.hpp"
+#include "MaaFramework/Instance/MaaCustomController.h"
 
 MAA_CTRL_NS_BEGIN
 

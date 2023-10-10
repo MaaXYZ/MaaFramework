@@ -1,6 +1,7 @@
 #include "Utility.h"
 #include "MaaFramework/MaaAPI.h"
 #include "Macro.h"
+
 #include <boost/uuid/uuid_generators.hpp>
 #include <boost/uuid/uuid_io.hpp>
 

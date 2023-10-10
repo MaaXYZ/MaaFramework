@@ -5,7 +5,7 @@
 #include <meojson/json.hpp>
 
 #include "Instance/InstanceInternalAPI.hpp"
-#include "MaaFramework/Task/MaaCustomRecognizer.h"
+#include "MaaFramework/MaaDef.h"
 #include "VisionBase.h"
 #include "VisionTypes.h"
 

@@ -1,7 +1,7 @@
 #pragma once
 
 #include "AtomicMap.h"
-#include "MaaFramework/Utility/MaaBuffer.h"
+#include "MaaFramework/MaaDef.h"
 #include "buffer.grpc.pb.h"
 
 class ImageImpl final : public ::maarpc::Image::Service

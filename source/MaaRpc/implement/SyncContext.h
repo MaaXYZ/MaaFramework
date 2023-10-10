@@ -2,7 +2,7 @@
 
 #include "AtomicMap.h"
 #include "Buffer.h"
-#include "MaaFramework/Task/MaaSyncContext.h"
+#include "MaaFramework/MaaDef.h"
 #include "sync.context.grpc.pb.h"
 
 class SyncContextImpl final : public ::maarpc::SyncContext::Service

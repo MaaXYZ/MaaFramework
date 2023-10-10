@@ -1,4 +1,5 @@
 #include "Config.h"
+#include "MaaToolKit/MaaToolKitAPI.h"
 
 using namespace ::grpc;
 

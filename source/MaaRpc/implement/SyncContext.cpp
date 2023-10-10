@@ -1,5 +1,6 @@
 #include "SyncContext.h"
 #include "Macro.h"
+#include "MaaFramework/MaaAPI.h"
 
 using namespace ::grpc;
 

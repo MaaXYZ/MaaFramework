@@ -30,13 +30,11 @@ endif ()
 
 if (APPLE)
     set(CMAKE_INSTALL_RPATH "@loader_path;@executable_path")
-    if ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang")
-        add_compile_definitions(MAA_USE_FMTLIB)
-        add_compile_options("-Wno-deprecated-declarations") # supress tmpnam
-        if ("${MAADEPS_TRIPLET}" STREQUAL "maa-arm64-osx")
-            add_compile_options("-arch;arm64")
-            add_link_options("-arch;arm64")
-        endif ()
+    add_compile_definitions(MAA_USE_FMTLIB)
+    add_compile_options("-Wno-deprecated-declarations") # supress tmpnam
+    if ("${MAADEPS_TRIPLET}" STREQUAL "maa-arm64-osx")
+        add_compile_options("-arch;arm64")
+        add_link_options("-arch;arm64")
     endif ()
 elseif (UNIX)
     set(CMAKE_INSTALL_RPATH "$ORIGIN")

@@ -1,4 +1,5 @@
 #include "Device.h"
+#include "MaaToolKit/MaaToolKitAPI.h"
 #include "Macro.h"
 
 using namespace ::grpc;

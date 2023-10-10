@@ -3,7 +3,7 @@
 #include "AtomicMap.h"
 #include "Buffer.h"
 #include "Controller.h"
-#include "MaaFramework/Instance/MaaInstance.h"
+#include "MaaFramework/MaaDef.h"
 #include "Resource.h"
 #include "SyncContext.h"
 #include "Utility.h"
@@ -15,7 +15,7 @@ public:
     struct CustomRecognizerInfo
     {
         std::string name;
-        ::grpc::ServerReaderWriter<::maarpc::CustomRecognizerResponse, ::maarpc::CustomRecognizerRequest>* stream;
+        ::grpc::ServerReaderWriter<::maarpc::CustomRecognizerResponse, ::maarpc::CustomRecognizerRequest>* stream = nullptr;
         std::shared_ptr<ImageImpl> image_impl = nullptr;
         std::shared_ptr<SyncContextImpl> syncctx_impl = nullptr;
         std::binary_semaphore finish { 0 };
@@ -23,8 +23,8 @@ public:
     struct CustomActionInfo
     {
         std::string name;
-        ::grpc::ServerReaderWriter<::maarpc::CustomActionResponse, ::maarpc::CustomActionRequest>* stream;
-        std::shared_ptr<SyncContextImpl> syncctx_impl;
+        ::grpc::ServerReaderWriter<::maarpc::CustomActionResponse, ::maarpc::CustomActionRequest>* stream = nullptr;
+        std::shared_ptr<SyncContextImpl> syncctx_impl = nullptr;
         std::binary_semaphore finish { 0 };
     };
 

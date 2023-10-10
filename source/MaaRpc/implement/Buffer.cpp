@@ -1,5 +1,6 @@
 #include "Buffer.h"
 #include "Macro.h"
+#include "MaaFramework/MaaAPI.h"
 #include "Utility.h"
 
 using namespace ::grpc;

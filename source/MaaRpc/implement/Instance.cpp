@@ -1,6 +1,5 @@
 #include "Instance.h"
-#include "MaaFramework/Task/MaaCustomAction.h"
-#include "MaaFramework/Task/MaaCustomRecognizer.h"
+#include "MaaFramework/MaaAPI.h"
 #include "Macro.h"
 
 using namespace ::grpc;
@@ -105,7 +104,9 @@ Status InstanceImpl::register_custom_recognizer(
 
     MAA_GRPC_GET_HANDLE_FROM(this, handle, init().handle)
 
-    auto info = std::make_shared<CustomRecognizerInfo>(request->init().name(), stream, image_impl_, syncctx_impl_);
+    // build error on macOS
+    // auto info = std::make_shared<CustomRecognizerInfo>(request->init().name(), stream, image_impl_, syncctx_impl_);
+    std::shared_ptr<CustomRecognizerInfo> info(new CustomRecognizerInfo{ request->init().name(), stream, image_impl_, syncctx_impl_ });
 
     ::maarpc::CustomRecognizerResponse response;
     stream->Write(response);
@@ -231,8 +232,10 @@ Status InstanceImpl::register_custom_action(
 
     MAA_GRPC_GET_HANDLE_FROM(this, handle, init().handle)
 
-    auto info = std::make_shared<CustomActionInfo>(request->init().name(), stream, syncctx_impl_);
-
+    // build error on macOS
+    // auto info = std::make_shared<CustomActionInfo>(request->init().name(), stream, syncctx_impl_);
+    std::shared_ptr<CustomActionInfo> info(new CustomActionInfo{ request->init().name(), stream, syncctx_impl_ });
+    
     ::maarpc::CustomActionResponse response;
     stream->Write(response);
 

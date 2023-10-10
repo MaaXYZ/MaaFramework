@@ -1,7 +1,7 @@
 #pragma once
 
 #include "AtomicMap.h"
-#include "MaaFramework/Utility/MaaUtility.h"
+#include "MaaFramework/MaaDef.h"
 #include "utility.grpc.pb.h"
 
 #include <memory>

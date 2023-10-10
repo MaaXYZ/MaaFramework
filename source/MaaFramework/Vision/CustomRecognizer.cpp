@@ -4,6 +4,7 @@
 
 #include "Buffer/ImageBuffer.hpp"
 #include "Buffer/StringBuffer.hpp"
+#include "MaaFramework/Task/MaaCustomRecognizer.h"
 #include "Task/SyncContext.h"
 #include "Utils/Logger.h"
 

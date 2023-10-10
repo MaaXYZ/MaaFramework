@@ -1,6 +1,5 @@
 #include "Controller.h"
-#include "MaaFramework/Instance/MaaCustomController.h"
-#include "MaaFramework/Utility/MaaBuffer.h"
+#include "MaaFramework/MaaAPI.h"
 #include "Macro.h"
 
 using namespace ::grpc;
@@ -304,8 +303,10 @@ Status ControllerImpl::create_custom(
         return Status(NOT_FOUND, "id not exists");
     }
 
-    auto info = std::make_shared<CustomControllerInfo>(stream, image_impl_);
-
+    // build error on macOS
+    // auto info = std::make_shared<CustomControllerInfo>(stream, image_impl_);
+    std::shared_ptr<CustomControllerInfo> info(new CustomControllerInfo{ stream, image_impl_ });
+    
     auto id = make_uuid();
 
     ::maarpc::CustomControllerResponse response;
