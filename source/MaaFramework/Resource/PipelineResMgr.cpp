@@ -15,12 +15,20 @@ bool PipelineResMgr::load(const std::filesystem::path& path, bool is_base)
     if (is_base) {
         clear();
     }
+
     paths_.emplace_back(path);
 
-    bool loaded = load_all_json(path);
-    loaded &= check_all_next_list();
+    if (!load_all_json(path)) {
+        LogError << "load_all_json failed" << VAR(path);
+        return false;
+    }
 
-    return loaded;
+    if (!check_all_next_list()) {
+        LogError << "check_all_next_list failed" << VAR(path);
+        return false;
+    }
+
+    return true;
 }
 
 void PipelineResMgr::clear()
@@ -50,18 +58,25 @@ bool PipelineResMgr::load_all_json(const std::filesystem::path& path)
         return false;
     }
 
-    bool loaded = false;
     if (!std::filesystem::is_directory(path)) {
         LogError << "path is not directory" << VAR(path);
         return false;
     }
 
+    bool loaded = false;
+
+    std::set<std::string> existing_keys;
     for (auto& entry : std::filesystem::recursive_directory_iterator(path)) {
         auto& entry_path = entry.path();
+        if (entry.is_directory()) {
+            LogDebug << "entry is directory" << VAR(entry_path);
+            continue;
+        }
         if (!entry.is_regular_file()) {
             LogWarn << "entry is not regular file, skip" << VAR(entry_path);
             continue;
         }
+
         auto ext = path_to_utf8_string(entry_path.extension());
         tolowers_(ext);
         if (ext != ".json") {
@@ -69,17 +84,19 @@ bool PipelineResMgr::load_all_json(const std::filesystem::path& path)
             continue;
         }
 
-        loaded &= open_and_parse_file(entry_path);
-        if (!loaded) {
+        bool parsed = open_and_parse_file(entry_path, existing_keys);
+        if (!parsed) {
             LogError << "open_and_parse_file failed" << VAR(entry_path);
             return false;
         }
+
+        loaded = true;
     }
 
     return loaded;
 }
 
-bool PipelineResMgr::open_and_parse_file(const std::filesystem::path& path)
+bool PipelineResMgr::open_and_parse_file(const std::filesystem::path& path, std::set<std::string>& existing_keys)
 {
     LogFunc << VAR(path);
 
@@ -88,9 +105,11 @@ bool PipelineResMgr::open_and_parse_file(const std::filesystem::path& path)
         LogError << "json::open failed" << VAR(path);
         return false;
     }
+    const auto& json = *json_opt;
 
     TaskDataMap cur_data_map;
-    if (!parse_config(*json_opt, cur_data_map, task_data_map_)) {
+    if (!parse_config(json, cur_data_map, existing_keys, task_data_map_)) {
+        LogError << "parse_config failed" << VAR(path) << VAR(json);
         return false;
     }
 
@@ -126,7 +145,8 @@ bool PipelineResMgr::check_next_list(const TaskData::NextList& next_list) const
     return true;
 }
 
-bool PipelineResMgr::parse_config(const json::value& input, TaskDataMap& output, const TaskDataMap& default_value)
+bool PipelineResMgr::parse_config(const json::value& input, TaskDataMap& output, std::set<std::string>& existing_keys,
+                                  const TaskDataMap& default_value)
 {
     if (!input.is_object()) {
         LogError << "json is not object";
@@ -136,6 +156,11 @@ bool PipelineResMgr::parse_config(const json::value& input, TaskDataMap& output,
     TaskDataMap data_map;
 
     for (const auto& [key, value] : input.as_object()) {
+        if (existing_keys.contains(key)) {
+            LogError << "key already exists" << VAR(key);
+            return false;
+        }
+
         TaskData task_data;
         const auto& default_task_data = default_value.contains(key) ? default_value.at(key) : TaskData {};
         bool ret = parse_task(key, value, task_data, default_task_data);
@@ -144,6 +169,7 @@ bool PipelineResMgr::parse_config(const json::value& input, TaskDataMap& output,
             return false;
         }
         data_map.insert_or_assign(key, task_data);
+        existing_keys.emplace(key);
     }
 
     output = std::move(data_map);

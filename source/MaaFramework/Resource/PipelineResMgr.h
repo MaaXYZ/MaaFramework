@@ -3,6 +3,7 @@
 #include "Utils/NonCopyable.hpp"
 
 #include <filesystem>
+#include <set>
 #include <unordered_map>
 
 #include <meojson/json.hpp>
@@ -27,7 +28,8 @@ public:
     const TaskDataMap& get_task_data_map() const { return task_data_map_; }
 
 public:
-    static bool parse_config(const json::value& input, TaskDataMap& output, const TaskDataMap& default_value);
+    static bool parse_config(const json::value& input, TaskDataMap& output, std::set<std::string>& existing_keys,
+                             const TaskDataMap& default_value);
     static bool parse_task(const std::string& name, const json::value& input, TaskData& output,
                            const TaskData& default_value);
 
@@ -73,7 +75,7 @@ public:
 
 private:
     bool load_all_json(const std::filesystem::path& path);
-    bool open_and_parse_file(const std::filesystem::path& path);
+    bool open_and_parse_file(const std::filesystem::path& path, std::set<std::string>& existing_keys);
     bool check_all_next_list() const;
     bool check_next_list(const TaskData::NextList& next_list) const;
 
