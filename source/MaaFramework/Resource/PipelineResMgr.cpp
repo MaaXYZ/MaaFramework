@@ -340,8 +340,8 @@ bool PipelineResMgr::parse_recognition(const json::value& input, Recognition::Ty
         { "DirectHit", Type::DirectHit },
         { "TemplateMatch", Type::TemplateMatch },
         { "OCR", Type::OCR },
-        { "Classify", Type::Classify },
-        { "Detect", Type::Detect },
+        { "NeuralNetworkClassify", Type::NeuralNetworkClassify },
+        { "NeuralNetworkDetect", Type::NeuralNetworkDetect },
         { "ColorMatch", Type::ColorMatch },
         { "Custom", Type::Custom },
     };
@@ -366,15 +366,17 @@ bool PipelineResMgr::parse_recognition(const json::value& input, Recognition::Ty
                                             same_type ? std::get<TemplateMatcherParam>(default_param)
                                                       : TemplateMatcherParam {});
 
-    case Type::Classify:
-        out_param = ClassifierParam {};
-        return parse_classifier_param(input, std::get<ClassifierParam>(out_param),
-                                      same_type ? std::get<ClassifierParam>(default_param) : ClassifierParam {});
+    case Type::NeuralNetworkClassify:
+        out_param = NeuralNetworkClassifierParam {};
+        return parse_nn_classifier_param(input, std::get<NeuralNetworkClassifierParam>(out_param),
+                                         same_type ? std::get<NeuralNetworkClassifierParam>(default_param)
+                                                   : NeuralNetworkClassifierParam {});
 
-    case Type::Detect:
-        out_param = DetectorParam {};
-        return parse_detector_param(input, std::get<DetectorParam>(out_param),
-                                    same_type ? std::get<DetectorParam>(default_param) : DetectorParam {});
+    case Type::NeuralNetworkDetect:
+        out_param = NeuralNetworkDetectorParam {};
+        return parse_nn_detector_param(input, std::get<NeuralNetworkDetectorParam>(out_param),
+                                       same_type ? std::get<NeuralNetworkDetectorParam>(default_param)
+                                                 : NeuralNetworkDetectorParam {});
 
     case Type::OCR:
         out_param = OCRerParam {};
@@ -531,8 +533,9 @@ bool PipelineResMgr::parse_custom_recognizer_param(const json::value& input,
     return true;
 }
 
-bool PipelineResMgr::parse_classifier_param(const json::value& input, MAA_VISION_NS::ClassifierParam& output,
-                                            const MAA_VISION_NS::ClassifierParam& default_value)
+bool PipelineResMgr::parse_nn_classifier_param(const json::value& input,
+                                               MAA_VISION_NS::NeuralNetworkClassifierParam& output,
+                                               const MAA_VISION_NS::NeuralNetworkClassifierParam& default_value)
 {
     if (!parse_roi(input, output.roi, default_value.roi)) {
         LogError << "failed to parse_roi" << VAR(input);
@@ -566,8 +569,9 @@ bool PipelineResMgr::parse_classifier_param(const json::value& input, MAA_VISION
     return true;
 }
 
-bool PipelineResMgr::parse_detector_param(const json::value& input, MAA_VISION_NS::DetectorParam& output,
-                                          const MAA_VISION_NS::DetectorParam& default_value)
+bool PipelineResMgr::parse_nn_detector_param(const json::value& input,
+                                             MAA_VISION_NS::NeuralNetworkDetectorParam& output,
+                                             const MAA_VISION_NS::NeuralNetworkDetectorParam& default_value)
 {
     if (!parse_roi(input, output.roi, default_value.roi)) {
         LogError << "failed to parse_roi" << VAR(input);
@@ -603,7 +607,8 @@ bool PipelineResMgr::parse_detector_param(const json::value& input, MAA_VISION_N
         return false;
     }
     if (output.thresholds.empty()) {
-        output.thresholds = std::vector(output.expected.size(), MAA_VISION_NS::DetectorParam::kDefaultThreshold);
+        output.thresholds =
+            std::vector(output.expected.size(), MAA_VISION_NS::NeuralNetworkDetectorParam::kDefaultThreshold);
     }
     else if (output.expected.size() != output.thresholds.size()) {
         LogError << "templates.size() != thresholds.size()" << VAR(output.expected.size())

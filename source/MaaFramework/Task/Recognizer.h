@@ -37,11 +37,10 @@ private:
                                          const std::string& name);
     std::optional<Result> color_match(const cv::Mat& image, const MAA_VISION_NS::ColorMatcherParam& param,
                                       const std::string& name);
-    std::optional<Result> ocr(const cv::Mat& image, const MAA_VISION_NS::OCRerParam& param,
-                              const std::string& name);
-    std::optional<Result> classify(const cv::Mat& image, const MAA_VISION_NS::ClassifierParam& param,
+    std::optional<Result> ocr(const cv::Mat& image, const MAA_VISION_NS::OCRerParam& param, const std::string& name);
+    std::optional<Result> classify(const cv::Mat& image, const MAA_VISION_NS::NeuralNetworkClassifierParam& param,
                                    const std::string& name);
-    std::optional<Result> detect(const cv::Mat& image, const MAA_VISION_NS::DetectorParam& param,
+    std::optional<Result> detect(const cv::Mat& image, const MAA_VISION_NS::NeuralNetworkDetectorParam& param,
                                  const std::string& name);
     std::optional<Result> custom_recognize(const cv::Mat& image, const MAA_VISION_NS::CustomRecognizerParam& param,
                                            const std::string& name);

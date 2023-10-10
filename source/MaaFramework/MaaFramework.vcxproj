@@ -71,16 +71,16 @@
     <ClInclude Include="Utils\StringMisc.hpp" />
     <ClInclude Include="Utils\TempPath.hpp" />
     <ClInclude Include="Utils\Time.hpp" />
-    <ClInclude Include="Vision\Classifier.h" />
+    <ClInclude Include="Vision\NeuralNetworkClassifier.h" />
     <ClInclude Include="Vision\ColorMatcher.h" />
-    <ClInclude Include="Vision\Comparator.h" />
+    <ClInclude Include="Vision\TemplateComparator.h" />
     <ClInclude Include="Vision\CustomRecognizer.h" />
-    <ClInclude Include="Vision\Matcher.h" />
+    <ClInclude Include="Vision\TemplateMatcher.h" />
     <ClInclude Include="Vision\OCRer.h" />
     <ClInclude Include="Vision\VisionTypes.h" />
     <ClInclude Include="Vision\VisionUtils.hpp" />
     <ClInclude Include="Vision\VisionBase.h" />
-    <ClInclude Include="Vision\Detector.h" />
+    <ClInclude Include="Vision\NeuralNetworkDetector.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="API\MaaBuffer.cpp" />
@@ -107,14 +107,14 @@
     <ClCompile Include="Task\Recognizer.cpp" />
     <ClCompile Include="Task\SyncContext.cpp" />
     <ClCompile Include="Task\PipelineTask.cpp" />
-    <ClCompile Include="Vision\Classifier.cpp" />
+    <ClCompile Include="Vision\NeuralNetworkClassifier.cpp" />
     <ClCompile Include="Vision\ColorMatcher.cpp" />
-    <ClCompile Include="Vision\Comparator.cpp" />
+    <ClCompile Include="Vision\TemplateComparator.cpp" />
     <ClCompile Include="Vision\CustomRecognizer.cpp" />
-    <ClCompile Include="Vision\Matcher.cpp" />
+    <ClCompile Include="Vision\TemplateMatcher.cpp" />
     <ClCompile Include="Vision\OCRer.cpp" />
     <ClCompile Include="Vision\VisionBase.cpp" />
-    <ClCompile Include="Vision\Detector.cpp" />
+    <ClCompile Include="Vision\NeuralNetworkDetector.cpp" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>16.0</VCProjectVersion>

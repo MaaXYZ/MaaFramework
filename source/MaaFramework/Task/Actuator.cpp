@@ -4,7 +4,7 @@
 #include "Instance/InstanceStatus.h"
 #include "Task/CustomAction.h"
 #include "Utils/Logger.h"
-#include "Vision/Comparator.h"
+#include "Vision/TemplateComparator.h"
 
 MAA_TASK_NS_BEGIN
 
@@ -105,7 +105,7 @@ void Actuator::wait_freezes(const MAA_RES_NS::WaitFreezesParam& param, const cv:
 
     cv::Rect target = get_target_rect(param.target, cur_box);
 
-    Comparator comp;
+    TemplateComparator comp;
     comp.set_param({
         .roi = { target },
         .threshold = param.threshold,

@@ -42,7 +42,7 @@ struct OCRerParam
     std::vector<std::pair<std::string, std::string>> replace;
 };
 
-struct CompParam
+struct TemplateComparatorParam
 {
     std::vector<cv::Rect> roi;
     double threshold = 0.0;
@@ -55,7 +55,7 @@ struct CustomRecognizerParam
     json::value custom_param;
 };
 
-struct ClassifierParam
+struct NeuralNetworkClassifierParam
 {
     size_t cls_size = 0;
     std::vector<std::string> labels; // only for output and debug
@@ -65,7 +65,7 @@ struct ClassifierParam
     std::vector</*index*/ size_t> expected;
 };
 
-struct DetectorParam
+struct NeuralNetworkDetectorParam
 {
     enum class Net
     {

@@ -1,4 +1,4 @@
-#include "Matcher.h"
+#include "TemplateMatcher.h"
 
 #include "Utils/Logger.h"
 #include "Utils/NoWarningCV.hpp"
@@ -7,7 +7,7 @@
 
 MAA_VISION_NS_BEGIN
 
-Matcher::ResultsVec Matcher::analyze() const
+TemplateMatcher::ResultsVec TemplateMatcher::analyze() const
 {
     if (templates_.empty()) {
         LogError << name_ << "templates is empty" << VAR(param_.template_paths);
@@ -50,7 +50,7 @@ Matcher::ResultsVec Matcher::analyze() const
     return all_results;
 }
 
-Matcher::ResultsVec Matcher::foreach_rois(const cv::Mat& templ) const
+TemplateMatcher::ResultsVec TemplateMatcher::foreach_rois(const cv::Mat& templ) const
 {
     if (templ.empty()) {
         LogWarn << name_ << "template is empty" << VAR(param_.template_paths) << VAR(templ);
@@ -70,7 +70,7 @@ Matcher::ResultsVec Matcher::foreach_rois(const cv::Mat& templ) const
     return results;
 }
 
-Matcher::ResultsVec Matcher::match_and_postproc(const cv::Rect& roi, const cv::Mat& templ) const
+TemplateMatcher::ResultsVec TemplateMatcher::match_and_postproc(const cv::Rect& roi, const cv::Mat& templ) const
 {
     cv::Mat image = image_with_roi(roi);
     cv::Mat matched = match_template(image, templ, param_.method, param_.green_mask);
@@ -113,7 +113,7 @@ Matcher::ResultsVec Matcher::match_and_postproc(const cv::Rect& roi, const cv::M
     return nms_results;
 }
 
-void Matcher::draw_result(const cv::Rect& roi, const cv::Mat& templ, const ResultsVec& results) const
+void TemplateMatcher::draw_result(const cv::Rect& roi, const cv::Mat& templ, const ResultsVec& results) const
 {
     if (!debug_draw_) {
         return;
@@ -145,7 +145,7 @@ void Matcher::draw_result(const cv::Rect& roi, const cv::Mat& templ, const Resul
     }
 }
 
-void Matcher::filter(ResultsVec& results, double threshold) const
+void TemplateMatcher::filter(ResultsVec& results, double threshold) const
 {
     for (auto iter = results.begin(); iter != results.end();) {
         auto& res = *iter;

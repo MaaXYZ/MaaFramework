@@ -43,10 +43,10 @@ public:
                                   const MAA_VISION_NS::OCRerParam& default_value);
     static bool parse_custom_recognizer_param(const json::value& input, MAA_VISION_NS::CustomRecognizerParam& output,
                                               const MAA_VISION_NS::CustomRecognizerParam& default_value);
-    static bool parse_classifier_param(const json::value& input, MAA_VISION_NS::ClassifierParam& output,
-                                       const MAA_VISION_NS::ClassifierParam& default_value);
-    static bool parse_detector_param(const json::value& input, MAA_VISION_NS::DetectorParam& output,
-                                     const MAA_VISION_NS::DetectorParam& default_value);
+    static bool parse_nn_classifier_param(const json::value& input, MAA_VISION_NS::NeuralNetworkClassifierParam& output,
+                                          const MAA_VISION_NS::NeuralNetworkClassifierParam& default_value);
+    static bool parse_nn_detector_param(const json::value& input, MAA_VISION_NS::NeuralNetworkDetectorParam& output,
+                                        const MAA_VISION_NS::NeuralNetworkDetectorParam& default_value);
     static bool parse_color_matcher_param(const json::value& input, MAA_VISION_NS::ColorMatcherParam& output,
                                           const MAA_VISION_NS::ColorMatcherParam& default_value);
 

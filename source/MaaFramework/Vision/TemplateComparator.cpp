@@ -1,4 +1,4 @@
-#include "Comparator.h"
+#include "TemplateComparator.h"
 
 #include "Utils/Logger.h"
 #include "Utils/NoWarningCV.hpp"
@@ -6,7 +6,7 @@
 
 MAA_VISION_NS_BEGIN
 
-Comparator::ResultsVec Comparator::analyze(const cv::Mat& lhs, const cv::Mat& rhs) const
+TemplateComparator::ResultsVec TemplateComparator::analyze(const cv::Mat& lhs, const cv::Mat& rhs) const
 {
     if (lhs.size() != rhs.size()) {
         LogError << "lhs.size() != rhs.size()" << VAR(lhs) << VAR(rhs);
@@ -28,7 +28,7 @@ Comparator::ResultsVec Comparator::analyze(const cv::Mat& lhs, const cv::Mat& rh
     return results;
 }
 
-Comparator::ResultsVec Comparator::foreach_rois(const cv::Mat& lhs, const cv::Mat& rhs) const
+TemplateComparator::ResultsVec TemplateComparator::foreach_rois(const cv::Mat& lhs, const cv::Mat& rhs) const
 {
     auto method = param_.method;
 
@@ -50,7 +50,7 @@ Comparator::ResultsVec Comparator::foreach_rois(const cv::Mat& lhs, const cv::Ma
     return results;
 }
 
-void Comparator::filter(ResultsVec& results, double threshold) const
+void TemplateComparator::filter(ResultsVec& results, double threshold) const
 {
     for (auto iter = results.begin(); iter != results.end();) {
         auto& res = *iter;
@@ -63,7 +63,7 @@ void Comparator::filter(ResultsVec& results, double threshold) const
     }
 }
 
-double Comparator::comp(const cv::Mat& lhs, const cv::Mat& rhs, int method)
+double TemplateComparator::comp(const cv::Mat& lhs, const cv::Mat& rhs, int method)
 {
     cv::Mat matched = match_template(lhs, rhs, method, false);
     if (matched.empty()) {

@@ -24,15 +24,16 @@ enum class Type
     DirectHit,
     TemplateMatch,
     OCR,
-    Classify,
-    Detect,
+    NeuralNetworkClassify,
+    NeuralNetworkDetect,
     ColorMatch,
     Custom,
 };
 
 using Param = std::variant<std::monostate, MAA_VISION_NS::DirectHitParam, MAA_VISION_NS::TemplateMatcherParam,
-                           MAA_VISION_NS::OCRerParam, MAA_VISION_NS::ClassifierParam, MAA_VISION_NS::DetectorParam,
-                           MAA_VISION_NS::ColorMatcherParam, MAA_VISION_NS::CustomRecognizerParam>;
+                           MAA_VISION_NS::OCRerParam, MAA_VISION_NS::NeuralNetworkClassifierParam,
+                           MAA_VISION_NS::NeuralNetworkDetectorParam, MAA_VISION_NS::ColorMatcherParam,
+                           MAA_VISION_NS::CustomRecognizerParam>;
 } // namespace Recognition
 
 namespace Action

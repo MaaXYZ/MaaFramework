@@ -3,12 +3,12 @@
 #include "Instance/InstanceStatus.h"
 #include "Resource/ResourceMgr.h"
 #include "Utils/Logger.h"
-#include "Vision/Classifier.h"
 #include "Vision/ColorMatcher.h"
 #include "Vision/CustomRecognizer.h"
-#include "Vision/Detector.h"
-#include "Vision/Matcher.h"
+#include "Vision/NeuralNetworkClassifier.h"
+#include "Vision/NeuralNetworkDetector.h"
 #include "Vision/OCRer.h"
+#include "Vision/TemplateMatcher.h"
 #include "Vision/VisionUtils.hpp"
 
 MAA_TASK_NS_BEGIN
@@ -43,12 +43,12 @@ std::optional<Recognizer::Result> Recognizer::recognize(const cv::Mat& image, co
         result = ocr(image, std::get<OCRerParam>(task_data.rec_param), task_data.name);
         break;
 
-    case Type::Classify:
-        result = classify(image, std::get<ClassifierParam>(task_data.rec_param), task_data.name);
+    case Type::NeuralNetworkClassify:
+        result = classify(image, std::get<NeuralNetworkClassifierParam>(task_data.rec_param), task_data.name);
         break;
 
-    case Type::Detect:
-        result = detect(image, std::get<DetectorParam>(task_data.rec_param), task_data.name);
+    case Type::NeuralNetworkDetect:
+        result = detect(image, std::get<NeuralNetworkDetectorParam>(task_data.rec_param), task_data.name);
         break;
 
     case Type::Custom:
@@ -88,7 +88,7 @@ std::optional<Recognizer::Result> Recognizer::template_match(const cv::Mat& imag
         return std::nullopt;
     }
 
-    Matcher matcher;
+    TemplateMatcher matcher;
     matcher.set_image(image);
     matcher.set_name(name);
     matcher.set_param(param);
@@ -183,7 +183,7 @@ std::optional<Recognizer::Result> Recognizer::ocr(const cv::Mat& image, const MA
 }
 
 std::optional<Recognizer::Result> Recognizer::classify(const cv::Mat& image,
-                                                       const MAA_VISION_NS::ClassifierParam& param,
+                                                       const MAA_VISION_NS::NeuralNetworkClassifierParam& param,
                                                        const std::string& name)
 {
     using namespace MAA_VISION_NS;
@@ -193,7 +193,7 @@ std::optional<Recognizer::Result> Recognizer::classify(const cv::Mat& image,
         return std::nullopt;
     }
 
-    Classifier classifier;
+    NeuralNetworkClassifier classifier;
     classifier.set_image(image);
     classifier.set_name(name);
     classifier.set_param(param);
@@ -214,7 +214,8 @@ std::optional<Recognizer::Result> Recognizer::classify(const cv::Mat& image,
     return Result { .box = box, .detail = std::move(detail) };
 }
 
-std::optional<Recognizer::Result> Recognizer::detect(const cv::Mat& image, const MAA_VISION_NS::DetectorParam& param,
+std::optional<Recognizer::Result> Recognizer::detect(const cv::Mat& image,
+                                                     const MAA_VISION_NS::NeuralNetworkDetectorParam& param,
                                                      const std::string& name)
 {
     using namespace MAA_VISION_NS;
@@ -224,7 +225,7 @@ std::optional<Recognizer::Result> Recognizer::detect(const cv::Mat& image, const
         return std::nullopt;
     }
 
-    Detector detector;
+    NeuralNetworkDetector detector;
     detector.set_image(image);
     detector.set_name(name);
     detector.set_param(param);

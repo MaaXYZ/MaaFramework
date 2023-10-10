@@ -1,4 +1,4 @@
-#include "Classifier.h"
+#include "NeuralNetworkClassifier.h"
 
 #include <onnxruntime/onnxruntime_cxx_api.h>
 
@@ -8,7 +8,7 @@
 
 MAA_VISION_NS_BEGIN
 
-Classifier::ResultsVec Classifier::analyze() const
+NeuralNetworkClassifier::ResultsVec NeuralNetworkClassifier::analyze() const
 {
     LogFunc << name_;
 
@@ -39,7 +39,7 @@ Classifier::ResultsVec Classifier::analyze() const
     return results;
 }
 
-Classifier::ResultsVec Classifier::foreach_rois() const
+NeuralNetworkClassifier::ResultsVec NeuralNetworkClassifier::foreach_rois() const
 {
     if (param_.roi.empty()) {
         return { classify(cv::Rect(0, 0, image_.cols, image_.rows)) };
@@ -54,7 +54,7 @@ Classifier::ResultsVec Classifier::foreach_rois() const
     return results;
 }
 
-Classifier::Result Classifier::classify(const cv::Rect& roi) const
+NeuralNetworkClassifier::Result NeuralNetworkClassifier::classify(const cv::Rect& roi) const
 {
     if (!session_) {
         LogError << "OrtSession not loaded";
@@ -100,7 +100,7 @@ Classifier::Result Classifier::classify(const cv::Rect& roi) const
     return result;
 }
 
-void Classifier::draw_result(const Result& res) const
+void NeuralNetworkClassifier::draw_result(const Result& res) const
 {
     if (!debug_draw_) {
         return;
@@ -122,7 +122,7 @@ void Classifier::draw_result(const Result& res) const
     }
 }
 
-void Classifier::filter(ResultsVec& results, const std::vector<size_t>& expected) const
+void NeuralNetworkClassifier::filter(ResultsVec& results, const std::vector<size_t>& expected) const
 {
     if (expected.empty()) {
         return;

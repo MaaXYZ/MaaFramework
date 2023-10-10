@@ -1,4 +1,4 @@
-#include "Detector.h"
+#include "NeuralNetworkDetector.h"
 
 #include <onnxruntime/onnxruntime_cxx_api.h>
 
@@ -8,7 +8,7 @@
 
 MAA_VISION_NS_BEGIN
 
-Detector::ResultsVec Detector::analyze() const
+NeuralNetworkDetector::ResultsVec NeuralNetworkDetector::analyze() const
 {
     LogFunc << name_;
 
@@ -39,7 +39,7 @@ Detector::ResultsVec Detector::analyze() const
     return results;
 }
 
-Detector::ResultsVec Detector::foreach_rois() const
+NeuralNetworkDetector::ResultsVec NeuralNetworkDetector::foreach_rois() const
 {
     if (param_.roi.empty()) {
         return detect(cv::Rect(0, 0, image_.cols, image_.rows));
@@ -54,7 +54,7 @@ Detector::ResultsVec Detector::foreach_rois() const
     return results;
 }
 
-Detector::ResultsVec Detector::detect(const cv::Rect& roi) const
+NeuralNetworkDetector::ResultsVec NeuralNetworkDetector::detect(const cv::Rect& roi) const
 {
     if (!session_) {
         LogError << "OrtSession not loaded";
@@ -142,7 +142,7 @@ Detector::ResultsVec Detector::detect(const cv::Rect& roi) const
     return all_nms_results;
 }
 
-void Detector::filter(ResultsVec& results, const std::vector<size_t>& expected) const
+void NeuralNetworkDetector::filter(ResultsVec& results, const std::vector<size_t>& expected) const
 {
     if (expected.empty()) {
         return;
@@ -154,7 +154,7 @@ void Detector::filter(ResultsVec& results, const std::vector<size_t>& expected) 
     results.erase(it, results.end());
 }
 
-void Detector::draw_result(const cv::Rect& roi, const ResultsVec& results) const
+void NeuralNetworkDetector::draw_result(const cv::Rect& roi, const ResultsVec& results) const
 {
     if (!debug_draw_) {
         return;

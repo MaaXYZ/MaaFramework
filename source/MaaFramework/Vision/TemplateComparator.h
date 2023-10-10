@@ -4,7 +4,7 @@
 
 MAA_VISION_NS_BEGIN
 
-class Comparator
+class TemplateComparator
 {
 public:
     struct Result
@@ -23,9 +23,9 @@ public:
     using ResultsVec = std::vector<Result>;
 
 public:
-    Comparator() = default;
+    TemplateComparator() = default;
 
-    void set_param(CompParam param) { param_ = std::move(param); }
+    void set_param(TemplateComparatorParam param) { param_ = std::move(param); }
     ResultsVec analyze(const cv::Mat& lhs, const cv::Mat& rhs) const;
 
 private:
@@ -34,20 +34,20 @@ private:
 
     static double comp(const cv::Mat& lhs, const cv::Mat& rhs, int method);
 
-    CompParam param_;
+    TemplateComparatorParam param_;
 };
 
 MAA_VISION_NS_END
 
 MAA_NS_BEGIN
 
-inline std::ostream& operator<<(std::ostream& os, const MAA_VISION_NS::Comparator::Result& res)
+inline std::ostream& operator<<(std::ostream& os, const MAA_VISION_NS::TemplateComparator::Result& res)
 {
     os << res.to_json().to_string();
     return os;
 }
 
-inline std::ostream& operator<<(std::ostream& os, const MAA_VISION_NS::Comparator::ResultsVec& resutls)
+inline std::ostream& operator<<(std::ostream& os, const MAA_VISION_NS::TemplateComparator::ResultsVec& resutls)
 {
     json::array root;
     for (const auto& res : resutls) {
