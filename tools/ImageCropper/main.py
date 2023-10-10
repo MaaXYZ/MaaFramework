@@ -251,6 +251,7 @@ def getAmplifiedRoiRectangle(roi: Roimage) -> list[int]:
 cv2.namedWindow(win_name, cv2.WINDOW_NORMAL)
 cv2.setMouseCallback(win_name, mouse)
 cv2.namedWindow(trackbars_name, cv2.WINDOW_NORMAL)
+cv2.setWindowProperty(trackbars_name, cv2.WND_PROP_TOPMOST, 1)
 cv2.createTrackbar('Scale', trackbars_name, 100, 200, trackbar_change)
 
 cropping = False
