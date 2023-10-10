@@ -9,12 +9,6 @@ message CustomActionInit {
   optional string name = 2;
 }
 
-message CustomActionSubmit {
-  optional string handle = 1;
-  optional string cmd_id = 2;
-  optional bool ok = 3;
-}
-
 message CustomActionRequest {
   optional bool ok = 1;
   oneof result { CustomActionInit init = 101; }
