@@ -267,6 +267,10 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+      - uses: actions/checkout@v3
+        with:
+          submodules: false
+
       - name: Prepare sample
         run: |
           mkdir -p install.sample
