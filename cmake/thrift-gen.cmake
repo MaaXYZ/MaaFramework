@@ -6,7 +6,7 @@ macro(GENERATE_THRIFT_LIB LIB_NAME FILENAME OUTPUTDIR SOURCES)
     execute_process(COMMAND ${THRIFT_COMPILER} --gen cpp:no_skeleton -out ${OUTPUTDIR} ${FILENAME}
                     RESULT_VARIABLE CMD_RESULT)
     if(CMD_RESULT)
-        message("Error generating ${FILENAME} with generator ${GENERATOR}")
+        message(FATAL_ERROR "Error generating ${FILENAME} with generator ${GENERATOR}")
     endif()
     file(GLOB_RECURSE GENERATED_SOURCES ${OUTPUTDIR}/*.cpp)
     add_library(${LIB_NAME} STATIC ${GENERATED_SOURCES})
