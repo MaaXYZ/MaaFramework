@@ -46,9 +46,3 @@
 #else
 #define MAA_RPC_API MAA_DLL_IMPORT
 #endif
-
-#ifdef MAA_BINDING_EXTRA_EXPORTS
-#define MAA_EXTRA_API MAA_DLL_EXPORT
-#else
-#define MAA_EXTRA_API MAA_DLL_IMPORT
-#endif

@@ -4,12 +4,12 @@ add_compile_definitions("$<$<CONFIG:Debug>:${debug_comp_defs}>")
 set(rel_debug_comp_defs "MAA_DEBUG")
 add_compile_definitions("$<$<CONFIG:DebWithRelDeps>:${rel_debug_comp_defs}>")
 
-if (MSVC)
+if(MSVC)
     add_compile_options("/utf-8")
     add_compile_options("/MP")
     add_compile_options("/W4;/WX;/Gy;/permissive-;/sdl")
-    add_compile_options("/wd4127")  # conditional expression is constant
-    add_compile_options("/wd4251")  # export dll with templates
+    add_compile_options("/wd4127") # conditional expression is constant
+    add_compile_options("/wd4251") # export dll with templates
 
     set(rel_debug_comp_options "/Od")
     add_compile_options("$<$<CONFIG:DebWithRelDeps>:${rel_debug_comp_options}>")
@@ -18,27 +18,35 @@ if (MSVC)
     add_link_options("$<$<CONFIG:Release>:${release_link_options}>")
 
     set(CMAKE_MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Debug>:Debug>DLL")
-else ()
+else()
     add_compile_options("-Wall;-Werror;-Wextra;-Wpedantic;-Wno-missing-field-initializers")
-    if (CMAKE_CXX_COMPILER_ID MATCHES "GNU" AND CMAKE_CXX_COMPILER_VERSION VERSION_LESS 13)
+    if(CMAKE_CXX_COMPILER_ID MATCHES "GNU" AND CMAKE_CXX_COMPILER_VERSION VERSION_LESS 13)
         add_compile_options("-Wno-restrict")
     endif()
 
     set(rel_debug_comp_options "-O0")
     add_compile_options("$<$<CONFIG:DebWithRelDeps>:${rel_debug_comp_options}>")
-endif ()
+endif()
 
-if (APPLE)
+if(APPLE)
     set(CMAKE_INSTALL_RPATH "@loader_path;@executable_path")
     add_compile_definitions(MAA_USE_FMTLIB)
     add_compile_options("-Wno-deprecated-declarations") # supress tmpnam
-    if ("${MAADEPS_TRIPLET}" STREQUAL "maa-arm64-osx")
+    if("${MAADEPS_TRIPLET}" STREQUAL "maa-arm64-osx")
         add_compile_options("-arch;arm64")
         add_link_options("-arch;arm64")
-    endif ()
-elseif (UNIX)
+    endif()
+elseif(UNIX)
     set(CMAKE_INSTALL_RPATH "$ORIGIN")
-endif ()
+endif()
+
+if(WITH_THRIFT)
+    add_compile_definitions(WITH_THRIFT)
+endif(WITH_THRIFT)
+
+if(WITH_GRPC)
+    add_compile_definitions(WITH_GRPC)
+endif(WITH_GRPC)
 
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)

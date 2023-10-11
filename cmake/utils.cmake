@@ -4,7 +4,10 @@ function(download_and_decompress url filename sha256_checksum decompress_dir)
     endif()
     if(NOT EXISTS ${filename} OR NOT CHECKSUM_VARIABLE STREQUAL sha256_checksum)
         message("Downloading file from ${url} to ${filename} ...")
-        file(DOWNLOAD ${url} "${filename}.tmp" SHOW_PROGRESS EXPECTED_HASH SHA256=${sha256_checksum})
+        file(
+            DOWNLOAD ${url} "${filename}.tmp"
+            SHOW_PROGRESS
+            EXPECTED_HASH SHA256=${sha256_checksum})
         file(RENAME "${filename}.tmp" ${filename})
     endif()
     if(NOT EXISTS ${decompress_dir})
@@ -15,16 +18,32 @@ function(download_and_decompress url filename sha256_checksum decompress_dir)
 endfunction()
 
 function(get_osx_architecture)
-    if (CMAKE_OSX_ARCHITECTURES STREQUAL "arm64")
-        set(CURRENT_OSX_ARCH "arm64" PARENT_SCOPE)
+    if(CMAKE_OSX_ARCHITECTURES STREQUAL "arm64")
+        set(CURRENT_OSX_ARCH
+            "arm64"
+            PARENT_SCOPE)
     elseif(CMAKE_OSX_ARCHITECTURES STREQUAL "x86_64")
-        set(CURRENT_OSX_ARCH "x86_64" PARENT_SCOPE)
+        set(CURRENT_OSX_ARCH
+            "x86_64"
+            PARENT_SCOPE)
     else()
-        set(CURRENT_OSX_ARCH ${CMAKE_HOST_SYSTEM_PROCESSOR} PARENT_SCOPE)
+        set(CURRENT_OSX_ARCH
+            ${CMAKE_HOST_SYSTEM_PROCESSOR}
+            PARENT_SCOPE)
     endif()
 endfunction()
 
-if (APPLE)
+if(APPLE)
     set(CMAKE_OSX_DEPLOYMENT_TARGET 12.0)
     get_osx_architecture()
-endif (APPLE)
+endif(APPLE)
+
+if(WIN32)
+    set(MAADEPS_HOST_TRIPLET "x64-windows")
+elseif(APPLE)
+    set(MAADEPS_HOST_TRIPLET "x64-osx")
+else()
+    set(MAADEPS_HOST_TRIPLET "x64-linux")
+endif()
+set(MAADEPS_HOST_TOOLS ${PROJECT_SOURCE_DIR}/MaaDeps/vcpkg/installed/${MAADEPS_HOST_TRIPLET}/tools)
+set(MAADEPS_TARGET_TOOLS ${PROJECT_SOURCE_DIR}/MaaDeps/vcpkg/installed/${MAADEPS_TRIPLET}/tools)

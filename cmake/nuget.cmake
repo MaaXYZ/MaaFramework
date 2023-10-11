@@ -12,10 +12,12 @@ set(CPACK_NUGET_PACKAGE_DESCRIPTION "A software automation testing framework bas
 set(CPACK_NUGET_PACKAGE_AUTHORS "MaaAssistantArknights Team")
 set(CPACK_NUGET_PACKAGE_TITLE "MAA Framework")
 set(CPACK_NUGET_PACKAGE_LICENSE_EXPRESSION "LGPL-2.1-only")
-set(CPACK_NUGET_PACKAGE_ICONURL "https://cdn.jsdelivr.net/gh/MaaAssistantArknights/design@main/logo/maa-logo_512x512.png")
-# set(CPACK_NUGET_PACKAGE_ICON "icon.png")
-# set(CPACK_NUGET_PACKAGE_DESCRIPTION_SUMMARY "A software automation testing framework based on image recognition.")
-set(CPACK_NUGET_PACKAGE_RELEASE_NOTES "Release notes are at https://github.com/MaaAssistantArknights/MaaFramework/releases.")
+set(CPACK_NUGET_PACKAGE_ICONURL
+    "https://cdn.jsdelivr.net/gh/MaaAssistantArknights/design@main/logo/maa-logo_512x512.png")
+# set(CPACK_NUGET_PACKAGE_ICON "icon.png") set(CPACK_NUGET_PACKAGE_DESCRIPTION_SUMMARY "A software automation testing
+# framework based on image recognition.")
+set(CPACK_NUGET_PACKAGE_RELEASE_NOTES
+    "Release notes are at https://github.com/MaaAssistantArknights/MaaFramework/releases.")
 set(CPACK_NUGET_PACKAGE_COPYRIGHT "Copyright 2021-${current_year} © MistEO and Contributors. All rights reserved.")
 set(CPACK_NUGET_PACKAGE_TAGS "MAA native C++ computer-vision")
 
