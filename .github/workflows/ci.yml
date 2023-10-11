@@ -263,6 +263,25 @@ jobs:
           name: MAA-macos-${{ matrix.arch }}
           path: "install"
 
+  sample_bindings:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Prepare sample
+        run: |
+          mkdir -p install.sample
+          cp -r binding install.sample
+          cp -r sample install.sample
+          rm -r install.sample/sample/cpp
+          mkdir install.sample/sample/cpp
+          cp sample/cpp/main.cpp install.sample/sample/cpp/
+
+      - uses: actions/upload-artifact@v3
+        if: always()
+        with:
+          name: MAA-samples-bindings
+          path: "install.sample"
+
   nuget_pack:
     needs: [meta, windows, ubuntu, macos]
     runs-on: ubuntu-latest
