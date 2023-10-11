@@ -40,37 +40,23 @@ FeatureMatcher::ResultsVec FeatureMatcher::foreach_rois(const cv::Mat& templ) co
         return {};
     }
 
-    auto matcher = create_matcher(templ);
+    auto [keypoints, descriptors] = detect(templ, param_.green_mask);
+    auto matcher = create_matcher(keypoints, descriptors);
 
     if (param_.roi.empty()) {
-        return match(cv::Rect(0, 0, image_.cols, image_.rows), matcher);
+        return match(matcher, keypoints, cv::Rect(0, 0, image_.cols, image_.rows));
     }
 
     ResultsVec results;
     for (const cv::Rect& roi : param_.roi) {
-        ResultsVec res = match(roi, matcher);
+        ResultsVec res = match(matcher, keypoints, roi);
         results.insert(results.end(), std::make_move_iterator(res.begin()), std::make_move_iterator(res.end()));
     }
 
     return results;
 }
 
-cv::FlannBasedMatcher FeatureMatcher::create_matcher(const cv::Mat& templ) const
-{
-    std::vector<cv::KeyPoint> keypoints_1;
-    cv::Mat descriptors_1;
-    detect(templ, param_.green_mask, keypoints_1, descriptors_1);
-
-    std::vector<cv::Mat> train_desc(1, descriptors_1);
-    cv::FlannBasedMatcher matcher;
-    matcher.add(train_desc);
-    matcher.train();
-
-    return matcher;
-}
-
-void FeatureMatcher::detect(const cv::Mat& image, bool green_mask, std::vector<cv::KeyPoint>& keypoints,
-                            cv::Mat& descriptors) const
+std::pair<std::vector<cv::KeyPoint>, cv::Mat> FeatureMatcher::detect(const cv::Mat& image, bool green_mask) const
 {
     auto detector = cv::xfeatures2d::SURF::create(param_.hessian);
 
@@ -80,33 +66,80 @@ void FeatureMatcher::detect(const cv::Mat& image, bool green_mask, std::vector<c
         mask = ~mask;
     }
 
+    std::vector<cv::KeyPoint> keypoints;
+    cv::Mat descriptors;
     detector->detectAndCompute(image, mask, keypoints, descriptors);
+
+    return std::make_pair(std::move(keypoints), std::move(descriptors));
 }
 
-FeatureMatcher::ResultsVec FeatureMatcher::match(const cv::Rect& roi, cv::FlannBasedMatcher& matcher) const
+cv::FlannBasedMatcher FeatureMatcher::create_matcher(const std::vector<cv::KeyPoint>& keypoints,
+                                                     const cv::Mat& descriptors) const
 {
-    cv::Mat image = image_with_roi(roi);
-    std::vector<cv::KeyPoint> keypoints_2;
-    cv::Mat descriptors_2;
-    detect(image, false, keypoints_2, descriptors_2);
+    std::ignore = keypoints;
+
+    std::vector<cv::Mat> train_desc(1, descriptors);
+    cv::FlannBasedMatcher matcher;
+    matcher.add(train_desc);
+    matcher.train();
+
+    return matcher;
+}
+
+FeatureMatcher::ResultsVec FeatureMatcher::match(cv::FlannBasedMatcher& matcher,
+                                                 const std::vector<cv::KeyPoint>& keypoints_1,
+                                                 const cv::Rect& roi_2) const
+{
+    auto image_2 = image_with_roi(roi_2);
+    auto [keypoints_2, descriptors_2] = detect(image_2, false);
 
     std::vector<std::vector<cv::DMatch>> match_points;
     matcher.knnMatch(descriptors_2, match_points, 2);
 
-    ResultsVec results;
+    std::vector<cv::DMatch> good_matches;
+    std::vector<cv::Point> good_points;
     for (const auto& point : match_points) {
         if (point.size() != 2) {
             continue;
         }
 
-        if (point[0].distance < param_.distance_ratio * point[1].distance) {
-            // TODO
+        double threshold = param_.distance_ratio * point[0].distance;
+        if (point[1].distance > threshold) {
+            continue;
         }
+        good_matches.emplace_back(point[1]);
+
+        cv::Point pt = keypoints_2[point[1].queryIdx].pt;
+        good_points.emplace_back(pt);
+    }
+
+    draw_result(*template_, keypoints_1, roi_2, keypoints_2, good_matches);
+
+    return {};
+}
+
+void FeatureMatcher::draw_result(const cv::Mat& templ, const std::vector<cv::KeyPoint>& keypoints_1,
+                                 const cv::Rect& roi, const std::vector<cv::KeyPoint>& keypoints_2,
+                                 const std::vector<cv::DMatch>& good_matches) const
+{
+    if (!debug_draw_) {
+        return;
+    }
+
+    cv::Mat image_draw = draw_roi(roi);
+    // const auto color = cv::Scalar(0, 0, 255);
+
+    cv::drawMatches(templ, keypoints_1, image_draw, keypoints_2, good_matches, image_draw);
+
+    if (save_draw_) {
+        save_image(image_draw);
     }
 }
 
-void FeatureMatcher::draw_result(const cv::Rect& roi, const ResultsVec& results) const {}
-
-void FeatureMatcher::filter(ResultsVec& results, int count) const {}
+void FeatureMatcher::filter(ResultsVec& results, int count) const
+{
+    std::ignore = results;
+    std::ignore = count;
+}
 
 MAA_VISION_NS_END

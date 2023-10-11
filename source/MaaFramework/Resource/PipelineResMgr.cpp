@@ -339,6 +339,7 @@ bool PipelineResMgr::parse_recognition(const json::value& input, Recognition::Ty
         { kDefaultRecognitionFlag, default_type },
         { "DirectHit", Type::DirectHit },
         { "TemplateMatch", Type::TemplateMatch },
+        { "FeatureMatch", Type::FeatureMatch },
         { "OCR", Type::OCR },
         { "NeuralNetworkClassify", Type::NeuralNetworkClassify },
         { "NeuralNetworkDetect", Type::NeuralNetworkDetect },
@@ -365,6 +366,12 @@ bool PipelineResMgr::parse_recognition(const json::value& input, Recognition::Ty
         return parse_template_matcher_param(input, std::get<TemplateMatcherParam>(out_param),
                                             same_type ? std::get<TemplateMatcherParam>(default_param)
                                                       : TemplateMatcherParam {});
+
+    case Type::FeatureMatch:
+        out_param = FeatureMatcherParam {};
+        return parse_feature_matcher_param(input, std::get<FeatureMatcherParam>(out_param),
+                                           same_type ? std::get<FeatureMatcherParam>(default_param)
+                                                     : FeatureMatcherParam {});
 
     case Type::NeuralNetworkClassify:
         out_param = NeuralNetworkClassifierParam {};
@@ -450,6 +457,42 @@ bool PipelineResMgr::parse_template_matcher_param(const json::value& input, MAA_
 
     if (!get_and_check_value(input, "green_mask", output.green_mask, default_value.green_mask)) {
         LogError << "failed to get_and_check_value green_mask" << VAR(input);
+        return false;
+    }
+
+    return true;
+}
+
+bool PipelineResMgr::parse_feature_matcher_param(const json::value& input, MAA_VISION_NS::FeatureMatcherParam& output,
+                                                 const MAA_VISION_NS::FeatureMatcherParam& default_value)
+{
+    if (!parse_roi(input, output.roi, default_value.roi)) {
+        LogError << "failed to parse_roi" << VAR(input);
+        return false;
+    }
+
+    if (!get_and_check_value(input, "template", output.template_path, default_value.template_path)) {
+        LogError << "failed to get_and_check_value template_path" << VAR(input);
+        return false;
+    }
+
+    if (!get_and_check_value(input, "green_mask", output.green_mask, default_value.green_mask)) {
+        LogError << "failed to get_and_check_value green_mask" << VAR(input);
+        return false;
+    }
+
+    if (!get_and_check_value(input, "hessian", output.hessian, default_value.hessian)) {
+        LogError << "failed to get_and_check_value hessian" << VAR(input);
+        return false;
+    }
+
+    if (!get_and_check_value(input, "distance_ratio", output.distance_ratio, default_value.distance_ratio)) {
+        LogError << "failed to get_and_check_value hessian" << VAR(input);
+        return false;
+    }
+
+    if (!get_and_check_value(input, "count", output.count, default_value.count)) {
+        LogError << "failed to get_and_check_value hessian" << VAR(input);
         return false;
     }
 

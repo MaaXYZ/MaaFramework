@@ -111,7 +111,7 @@ struct FeatureMatcherParam
 
     inline static constexpr Detector kDefaultDetector = Detector::SURF;
     inline static constexpr Matcher kDefaultMatcher = Matcher::KNN;
-    inline static constexpr int kDefaultHessianThreshold = 100;
+    inline static constexpr double kDefaultHessianThreshold = 100.0;
     inline static constexpr double kDefaultDistanceRatio = 0.6;
     inline static constexpr int kDefaultCount = 4;
 
@@ -120,7 +120,7 @@ struct FeatureMatcherParam
     bool green_mask = false;
 
     Detector detector = kDefaultDetector;
-    int hessian = kDefaultHessianThreshold;
+    double hessian = kDefaultHessianThreshold;
 
     Matcher matcher = kDefaultMatcher;
 
