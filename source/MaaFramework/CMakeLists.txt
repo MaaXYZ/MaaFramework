@@ -28,9 +28,9 @@ target_link_libraries(MaaFramework ${OpenCV_LIBS} fastdeploy_ppocr ONNXRuntime::
 # target_link_libraries(MaaFramework range-v3::range-v3) endif ()
 
 add_dependencies(MaaFramework MaaControlUnit MaaUtils)
-if(WITH_THRIFT)
+if(WITH_THRIFT AND NOT MAA_CROSSCOMPILE)
     add_dependencies(MaaFramework MaaThriftController)
-endif(WITH_THRIFT)
+endif(WITH_THRIFT AND NOT MAA_CROSSCOMPILE)
 
 install(
     TARGETS MaaFramework
