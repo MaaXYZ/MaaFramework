@@ -13,6 +13,10 @@ option(BUILD_SAMPLE "build a demo" OFF)
 option(WITH_THRIFT "build with thrift" ON)
 option(WITH_GRPC "build with protobuf and grpc" ON)
 
+if(USE_MAADEPS)
+    include(${PROJECT_SOURCE_DIR}/MaaDeps/maadeps.cmake)
+endif()
+
 # Basic compile and link configuration
 include(${PROJECT_SOURCE_DIR}/cmake/config.cmake)
 include(${PROJECT_SOURCE_DIR}/cmake/utils.cmake)
@@ -25,9 +29,6 @@ if(WITH_GRPC)
     include(${PROJECT_SOURCE_DIR}/cmake/grpc-gen.cmake)
 endif()
 
-if(USE_MAADEPS)
-    include(${PROJECT_SOURCE_DIR}/MaaDeps/maadeps.cmake)
-endif()
 find_package(OpenCV REQUIRED COMPONENTS core imgproc imgcodecs)
 find_package(Boost REQUIRED COMPONENTS system)
 find_package(ZLIB REQUIRED)
@@ -37,7 +38,7 @@ if(WITH_THRIFT)
     find_package(Thrift CONFIG REQUIRED)
 endif()
 if(WITH_GRPC)
-    find_package(protobuf CONFIG) # protoc cannot been found on arm
+    find_package(protobuf CONFIG REQUIRED)
     find_package(gRPC CONFIG REQUIRED)
 endif()
 
