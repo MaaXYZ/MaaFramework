@@ -19,9 +19,9 @@ target_include_directories(
 target_compile_definitions(MaaFramework PRIVATE MAA_FRAMEWORK_EXPORTS)
 
 target_link_libraries(MaaFramework MaaControlUnit MaaUtils)
-if(WITH_THRIFT)
+if(WITH_THRIFT AND NOT MAA_CROSSCOMPILE)
     target_link_libraries(MaaFramework MaaThriftController)
-endif(WITH_THRIFT)
+endif(WITH_THRIFT AND NOT MAA_CROSSCOMPILE)
 target_link_libraries(MaaFramework ${OpenCV_LIBS} fastdeploy_ppocr ONNXRuntime::ONNXRuntime HeaderOnlyLibraries)
 
 # clang 15之后有ranges if (CMAKE_CXX_COMPILER_ID MATCHES ".*Clang") find_package(range-v3 REQUIRED)

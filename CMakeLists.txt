@@ -25,9 +25,11 @@ include(${PROJECT_SOURCE_DIR}/cmake/version.cmake)
 
 if(WITH_THRIFT AND NOT MAA_CROSSCOMPILE)
     include(${PROJECT_SOURCE_DIR}/cmake/thrift-gen.cmake)
+    add_compile_definitions(WITH_THRIFT)
 endif()
 if(WITH_GRPC)
     include(${PROJECT_SOURCE_DIR}/cmake/grpc-gen.cmake)
+    add_compile_definitions(WITH_GRPC)
 endif()
 
 find_package(OpenCV REQUIRED COMPONENTS core imgproc imgcodecs)

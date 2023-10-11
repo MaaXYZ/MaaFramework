@@ -40,14 +40,6 @@ elseif(UNIX)
     set(CMAKE_INSTALL_RPATH "$ORIGIN")
 endif()
 
-if(WITH_THRIFT)
-    add_compile_definitions(WITH_THRIFT)
-endif(WITH_THRIFT)
-
-if(WITH_GRPC)
-    add_compile_definitions(WITH_GRPC)
-endif(WITH_GRPC)
-
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
