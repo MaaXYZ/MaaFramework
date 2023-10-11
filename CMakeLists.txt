@@ -37,7 +37,7 @@ if(WITH_THRIFT)
     find_package(Thrift CONFIG REQUIRED)
 endif()
 if(WITH_GRPC)
-    find_package(protobuf CONFIG REQUIRED)
+    find_package(protobuf CONFIG) # protoc cannot been found on arm
     find_package(gRPC CONFIG REQUIRED)
 endif()
 
