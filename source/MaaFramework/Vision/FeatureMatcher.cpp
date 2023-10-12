@@ -130,7 +130,7 @@ FeatureMatcher::ResultsVec FeatureMatcher::match(cv::FlannBasedMatcher& matcher,
     LogDebug << name_ << "Match:" << VAR(good_matches.size()) << VAR(match_points.size()) << VAR(param_.distance_ratio);
 
     ResultsVec results;
-    if (!good_matches.empty()) {
+    if (good_matches.size() >= 4) {
         cv::Mat H = cv::findHomography(obj, scene, cv::RANSAC);
 
         std::array<cv::Point2d, 4> obj_corners = { cv::Point2d(0, 0), cv::Point2d(template_->cols, 0),

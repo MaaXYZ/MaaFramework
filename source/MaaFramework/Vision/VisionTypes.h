@@ -113,7 +113,7 @@ struct FeatureMatcherParam
     inline static constexpr Matcher kDefaultMatcher = Matcher::KNN;
     inline static constexpr double kDefaultHessianThreshold = 100.0;
     inline static constexpr double kDefaultDistanceRatio = 0.6;
-    inline static constexpr int kDefaultCount = 5;
+    inline static constexpr int kDefaultCount = 4;
 
     std::vector<cv::Rect> roi;
     std::string template_path;
