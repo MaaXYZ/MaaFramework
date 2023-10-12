@@ -120,13 +120,11 @@ jobs:
           rm -rf install/bin/msvc-debug
 
           cp -r docs install
-          
+
           cp -r binding install
 
           cp -r sample install
-          rm -r install/sample/cpp
-          mkdir install/sample/cpp
-          cp sample/cpp/*.cpp sample/cpp/*.h sample/cpp/*.hpp install/sample/cpp/
+          rm -r install/sample/cpp/*.vcxproj install/sample/cpp/CMakeLists.txt
 
       - uses: actions/upload-artifact@v3
         if: always()
@@ -201,13 +199,11 @@ jobs:
           cmake --install build --prefix install
 
           cp -r docs install
-          
+
           cp -r binding install
 
           cp -r sample install
-          rm -r install/sample/cpp
-          mkdir install/sample/cpp
-          cp sample/cpp/*.cpp sample/cpp/*.h sample/cpp/*.hpp install/sample/cpp/
+          rm -r install/sample/cpp/*.vcxproj install/sample/cpp/CMakeLists.txt
 
       - uses: actions/upload-artifact@v3
         if: always()
@@ -273,20 +269,17 @@ jobs:
           cmake --install build --prefix install
 
           cp -r docs install
-          
+
           cp -r binding install
 
           cp -r sample install
-          rm -r install/sample/cpp
-          mkdir install/sample/cpp
-          cp sample/cpp/*.cpp sample/cpp/*.h sample/cpp/*.hpp install/sample/cpp/
+          rm -r install/sample/cpp/*.vcxproj install/sample/cpp/CMakeLists.txt
 
       - uses: actions/upload-artifact@v3
         if: always()
         with:
           name: MAA-macos-${{ matrix.arch }}
           path: "install"
-
 
   nuget_pack:
     needs: [meta, windows, ubuntu, macos]
