@@ -1,5 +1,6 @@
 #include "PipelineResMgr.h"
 
+#include "Utils/Codec.h"
 #include "Utils/Logger.h"
 #include "Utils/StringMisc.hpp"
 #include "Vision/VisionTypes.h"
@@ -474,10 +475,15 @@ bool PipelineResMgr::parse_ocrer_param(const json::value& input, MAA_VISION_NS::
         return false;
     }
 
-    if (!get_and_check_value_or_array(input, "text", output.text, default_value.text)) {
+    std::vector<std::string> u8_text;
+    std::vector<std::string> u8_default_text;
+    MAA_RNS::ranges::transform(default_value.text, std::back_inserter(u8_default_text), from_u16);
+
+    if (!get_and_check_value_or_array(input, "text", u8_text, u8_default_text)) {
         LogError << "failed to get_and_check_value_or_array text" << VAR(input);
         return false;
     }
+    MAA_RNS::ranges::transform(u8_text, std::back_inserter(output.text), to_u16);
 
     if (auto replace_opt = input.find("replace")) {
         if (!replace_opt->is_array()) {
@@ -501,7 +507,7 @@ bool PipelineResMgr::parse_ocrer_param(const json::value& input, MAA_VISION_NS::
                 LogError << "replace pair is not string" << VAR(input);
                 return false;
             }
-            output.replace.emplace_back(std::make_pair(first.as_string(), second.as_string()));
+            output.replace.emplace_back(to_u16(first.as_string()), to_u16(second.as_string()));
         }
     }
     else {

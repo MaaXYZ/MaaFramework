@@ -2,6 +2,7 @@
 
 #include <regex>
 
+#include "Utils/Codec.h"
 #include "Utils/ImageIo.h"
 #include "Utils/Logger.h"
 #include "Utils/Ranges.hpp"
@@ -9,9 +10,19 @@
 
 MAA_VISION_NS_BEGIN
 
+json::value OCRer::Result::to_json() const
+{
+    json::value root;
+    root["text"] = from_u16(text);
+    root["box"] = json::array({ box.x, box.y, box.width, box.height });
+    root["score"] = score;
+    return root;
+}
+
 std::ostream& operator<<(std::ostream& os, const OCRer::Result& res)
 {
-    os << VAR_RAW(res.text) << VAR_RAW(res.box) << VAR_RAW(res.score);
+    auto u8str = from_u16(res.text);
+    os << VAR_RAW(u8str) << VAR_RAW(res.box) << VAR_RAW(res.score);
     return os;
 }
 
@@ -89,7 +100,7 @@ OCRer::ResultsVec OCRer::predict_det_and_rec(const cv::Rect& roi) const
 
         cv::Rect my_box(left + roi.x, top + roi.y, right - left, bottom - top);
         results.emplace_back(
-            Result { .text = std::move(ocr_result.text.at(i)), .box = my_box, .score = ocr_result.rec_scores.at(i) });
+            Result { .text = to_u16(ocr_result.text.at(i)), .box = my_box, .score = ocr_result.rec_scores.at(i) });
     }
 
     draw_result(roi, results);
@@ -100,7 +111,7 @@ OCRer::ResultsVec OCRer::predict_det_and_rec(const cv::Rect& roi) const
 OCRer::Result OCRer::predict_only_rec(const cv::Rect& roi) const
 {
     if (!recer_) {
-        LogError << "resource()->ocr_res().recer() is null";
+        LogError << "recer_ is null";
         return {};
     }
     auto image_roi = image_with_roi(roi);
@@ -115,7 +126,7 @@ OCRer::Result OCRer::predict_only_rec(const cv::Rect& roi) const
         return {};
     }
 
-    Result result { .text = std::move(rec_text), .box = roi, .score = rec_score };
+    Result result { .text = to_u16(rec_text), .box = roi, .score = rec_score };
     draw_result(roi, { result });
 
     return result;
@@ -143,7 +154,7 @@ void OCRer::draw_result(const cv::Rect& roi, const ResultsVec& results) const
     }
 }
 
-void OCRer::postproc_and_filter(ResultsVec& results, const std::vector<std::string>& expected) const
+void OCRer::postproc_and_filter(ResultsVec& results, const std::vector<std::wstring>& expected) const
 {
     for (auto iter = results.begin(); iter != results.end();) {
         auto& res = *iter;
@@ -167,19 +178,19 @@ void OCRer::postproc_trim_(Result& res) const
 
 void OCRer::postproc_replace_(Result& res) const
 {
-    for (const auto& [regex, new_str] : param_.replace) {
-        res.text = std::regex_replace(res.text, std::regex(regex), new_str);
+    for (const auto& [regex, format] : param_.replace) {
+        res.text = std::regex_replace(res.text, std::wregex(regex), format);
     }
 }
 
-bool OCRer::filter_by_required(const Result& res, const std::vector<std::string>& expected) const
+bool OCRer::filter_by_required(const Result& res, const std::vector<std::wstring>& expected) const
 {
     if (expected.empty()) {
         return true;
     }
 
-    for (const auto& text : expected) {
-        if (std::regex_search(res.text, std::regex(text))) {
+    for (const auto& regex : expected) {
+        if (std::regex_search(res.text, std::wregex(regex))) {
             return true;
         }
     }

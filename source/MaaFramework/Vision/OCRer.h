@@ -21,18 +21,11 @@ class OCRer : public VisionBase
 public:
     struct Result
     {
-        std::string text;
+        std::wstring text;
         cv::Rect box {};
         double score = 0.0;
 
-        json::value to_json() const
-        {
-            json::value root;
-            root["text"] = text;
-            root["box"] = json::array({ box.x, box.y, box.width, box.height });
-            root["score"] = score;
-            return root;
-        }
+        json::value to_json() const;
     };
     using ResultsVec = std::vector<Result>;
 
@@ -55,10 +48,10 @@ private:
     Result predict_only_rec(const cv::Rect& roi) const;
     void draw_result(const cv::Rect& roi, const ResultsVec& results) const;
 
-    void postproc_and_filter(ResultsVec& results, const std::vector<std::string>& expected) const;
+    void postproc_and_filter(ResultsVec& results, const std::vector<std::wstring>& expected) const;
     void postproc_trim_(Result& res) const;
     void postproc_replace_(Result& res) const;
-    bool filter_by_required(const Result& res, const std::vector<std::string>& expected) const;
+    bool filter_by_required(const Result& res, const std::vector<std::wstring>& expected) const;
 
     OCRerParam param_;
     std::shared_ptr<fastdeploy::vision::ocr::DBDetector> deter_ = nullptr;

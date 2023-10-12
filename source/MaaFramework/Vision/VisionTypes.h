@@ -38,8 +38,8 @@ struct OCRerParam
     std::string model;
     bool only_rec = false;
     std::vector<cv::Rect> roi;
-    std::vector<std::string> text;
-    std::vector<std::pair<std::string, std::string>> replace;
+    std::vector<std::wstring> text;
+    std::vector<std::pair<std::wstring, std::wstring>> replace;
 };
 
 struct TemplateComparatorParam
