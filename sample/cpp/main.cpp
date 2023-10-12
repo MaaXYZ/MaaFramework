@@ -51,7 +51,7 @@ int main([[maybe_unused]] int argc, char** argv)
 
     register_my_recognizer(maa_handle);
 
-    auto task_id = MaaPostTask(maa_handle, "MyTask", MaaTaskParam_Empty);
+    auto task_id = MaaPostTask(maa_handle, "VisonTest", MaaTaskParam_Empty);
     MaaWaitTask(maa_handle, task_id);
 
     MaaDestroy(maa_handle);

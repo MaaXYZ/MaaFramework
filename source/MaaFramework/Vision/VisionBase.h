@@ -15,7 +15,7 @@ protected:
     cv::Mat image_with_roi(const cv::Rect& roi) const;
 
 protected:
-    cv::Mat draw_roi(const cv::Rect& roi) const;
+    cv::Mat draw_roi(const cv::Rect& roi, const cv::Mat& base = cv::Mat()) const;
     void save_image(const cv::Mat& image) const;
 
 protected:

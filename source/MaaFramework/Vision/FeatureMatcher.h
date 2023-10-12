@@ -42,12 +42,14 @@ public:
 private:
     ResultsVec foreach_rois(const cv::Mat& templ) const;
     std::pair<std::vector<cv::KeyPoint>, cv::Mat> detect(const cv::Mat& image, bool green_mask) const;
+    std::pair<std::vector<cv::KeyPoint>, cv::Mat> detect(const cv::Mat& image, const cv::Rect& roi) const;
     cv::FlannBasedMatcher create_matcher(const std::vector<cv::KeyPoint>& keypoints, const cv::Mat& descriptors) const;
 
     ResultsVec match(cv::FlannBasedMatcher& matcher, const std::vector<cv::KeyPoint>& keypoints_1,
                      const cv::Rect& roi_2) const;
     void draw_result(const cv::Mat& templ, const std::vector<cv::KeyPoint>& keypoints_1, const cv::Rect& roi,
-                     const std::vector<cv::KeyPoint>& keypoints_2, const std::vector<cv::DMatch>& good_matches) const;
+                     const std::vector<cv::KeyPoint>& keypoints_2, const std::vector<cv::DMatch>& good_matches,
+                     ResultsVec& results) const;
     void filter(ResultsVec& results, int count) const;
 
     FeatureMatcherParam param_;
