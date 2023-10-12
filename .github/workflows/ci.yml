@@ -126,6 +126,8 @@ jobs:
           cp -r sample install
           rm -r install/sample/cpp/*.vcxproj install/sample/cpp/CMakeLists.txt
 
+          cp -r LICENSE.md install
+
       - uses: actions/upload-artifact@v3
         if: always()
         with:
@@ -205,6 +207,8 @@ jobs:
           cp -r sample install
           rm -r install/sample/cpp/*.vcxproj install/sample/cpp/CMakeLists.txt
 
+          cp -r LICENSE.md install
+
       - uses: actions/upload-artifact@v3
         if: always()
         with:
@@ -274,6 +278,8 @@ jobs:
 
           cp -r sample install
           rm -r install/sample/cpp/*.vcxproj install/sample/cpp/CMakeLists.txt
+
+          cp -r LICENSE.md install
 
       - uses: actions/upload-artifact@v3
         if: always()
