@@ -127,23 +127,28 @@ FeatureMatcher::ResultsVec FeatureMatcher::match(cv::FlannBasedMatcher& matcher,
         scene.emplace_back(keypoints_2[point[0].queryIdx].pt);
     }
 
-    cv::Mat H = cv::findHomography(obj, scene, cv::RANSAC);
+    LogDebug << name_ << "Match:" << VAR(good_matches.size()) << VAR(match_points.size()) << VAR(param_.distance_ratio);
 
-    std::vector<cv::Point2d> obj_corners = { cv::Point2d(0, 0), cv::Point2d(template_->cols, 0),
-                                             cv::Point2d(template_->cols, template_->rows),
-                                             cv::Point2d(0, template_->rows) };
-    std::vector<cv::Point2d> scene_corners(4);
-    cv::perspectiveTransform(obj_corners, scene_corners, H);
+    ResultsVec results;
+    if (!good_matches.empty()) {
+        cv::Mat H = cv::findHomography(obj, scene, cv::RANSAC);
 
-    double x = std::min({ scene_corners[0].x, scene_corners[1].x, scene_corners[2].x, scene_corners[3].x });
-    double y = std::min({ scene_corners[0].y, scene_corners[1].y, scene_corners[2].y, scene_corners[3].y });
-    double w = std::max({ scene_corners[0].x, scene_corners[1].x, scene_corners[2].x, scene_corners[3].x }) - x;
-    double h = std::max({ scene_corners[0].y, scene_corners[1].y, scene_corners[2].y, scene_corners[3].y }) - y;
-    cv::Rect box { static_cast<int>(x), static_cast<int>(y), static_cast<int>(w), static_cast<int>(h) };
+        std::array<cv::Point2d, 4> obj_corners = { cv::Point2d(0, 0), cv::Point2d(template_->cols, 0),
+                                                   cv::Point2d(template_->cols, template_->rows),
+                                                   cv::Point2d(0, template_->rows) };
+        std::array<cv::Point2d, 4> scene_corners;
+        cv::perspectiveTransform(obj_corners, scene_corners, H);
 
-    size_t count = MAA_RNS::ranges::count_if(scene, [&box](const auto& point) { return box.contains(point); });
+        double x = std::min({ scene_corners[0].x, scene_corners[1].x, scene_corners[2].x, scene_corners[3].x });
+        double y = std::min({ scene_corners[0].y, scene_corners[1].y, scene_corners[2].y, scene_corners[3].y });
+        double w = std::max({ scene_corners[0].x, scene_corners[1].x, scene_corners[2].x, scene_corners[3].x }) - x;
+        double h = std::max({ scene_corners[0].y, scene_corners[1].y, scene_corners[2].y, scene_corners[3].y }) - y;
+        cv::Rect box { static_cast<int>(x), static_cast<int>(y), static_cast<int>(w), static_cast<int>(h) };
 
-    ResultsVec results { Result { .box = box, .count = static_cast<int>(count) } };
+        size_t count = MAA_RNS::ranges::count_if(scene, [&box](const auto& point) { return box.contains(point); });
+
+        results.emplace_back(Result { .box = box, .count = static_cast<int>(count) });
+    }
 
     draw_result(*template_, keypoints_1, roi_2, keypoints_2, good_matches, results);
 
