@@ -117,8 +117,16 @@ jobs:
         if: always()
         run: |
           cmake --install build --prefix install
-          cp -r docs install
           rm -rf install/bin/msvc-debug
+
+          cp -r docs install
+          
+          cp -r binding install
+
+          cp -r sample install
+          rm -r install/sample/cpp
+          mkdir install/sample/cpp
+          cp sample/cpp/*.cpp sample/cpp/*.h sample/cpp/*.hpp install/sample/cpp/
 
       - uses: actions/upload-artifact@v3
         if: always()
@@ -191,7 +199,15 @@ jobs:
         if: always()
         run: |
           cmake --install build --prefix install
+
           cp -r docs install
+          
+          cp -r binding install
+
+          cp -r sample install
+          rm -r install/sample/cpp
+          mkdir install/sample/cpp
+          cp sample/cpp/*.cpp sample/cpp/*.h sample/cpp/*.hpp install/sample/cpp/
 
       - uses: actions/upload-artifact@v3
         if: always()
@@ -255,7 +271,15 @@ jobs:
         if: always()
         run: |
           cmake --install build --prefix install
+
           cp -r docs install
+          
+          cp -r binding install
+
+          cp -r sample install
+          rm -r install/sample/cpp
+          mkdir install/sample/cpp
+          cp sample/cpp/*.cpp sample/cpp/*.h sample/cpp/*.hpp install/sample/cpp/
 
       - uses: actions/upload-artifact@v3
         if: always()
@@ -263,28 +287,6 @@ jobs:
           name: MAA-macos-${{ matrix.arch }}
           path: "install"
 
-  sample_bindings:
-    runs-on: ubuntu-latest
-
-    steps:
-      - uses: actions/checkout@v3
-        with:
-          submodules: false
-
-      - name: Prepare sample
-        run: |
-          mkdir -p install.sample
-          cp -r binding install.sample
-          cp -r sample install.sample
-          rm -r install.sample/sample/cpp
-          mkdir install.sample/sample/cpp
-          cp sample/cpp/main.cpp install.sample/sample/cpp/
-
-      - uses: actions/upload-artifact@v3
-        if: always()
-        with:
-          name: MAA-samples-bindings
-          path: "install.sample"
 
   nuget_pack:
     needs: [meta, windows, ubuntu, macos]
