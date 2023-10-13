@@ -174,8 +174,8 @@ void FeatureMatcher::draw_result(const cv::Mat& templ, const std::vector<cv::Key
         const auto& res = results.at(i);
         cv::rectangle(image_draw, res.box, color, 1);
 
-        std::string flag = MAA_FMT::format("{}: {}, [{}, {}, {}, {}]", i, res.count, res.box.x, res.box.y,
-                                           res.box.width, res.box.height);
+        std::string flag = MAA_FMT::format("Cnt: {}, [{}, {}, {}, {}]", res.count, res.box.x, res.box.y, res.box.width,
+                                           res.box.height);
         cv::putText(image_draw, flag, cv::Point(res.box.x, res.box.y - 5), cv::FONT_HERSHEY_PLAIN, 1.2, color, 1);
     }
 
