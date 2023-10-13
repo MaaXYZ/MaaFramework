@@ -33,7 +33,7 @@ public:
 
 private:
     ResultsVec foreach_rois(const cv::Mat& templ) const;
-    ResultsVec match_and_postproc(const cv::Rect& roi, const cv::Mat& templ) const;
+    ResultsVec match(const cv::Rect& roi, const cv::Mat& templ) const;
     void draw_result(const cv::Rect& roi, const cv::Mat& templ, const ResultsVec& results) const;
 
     void filter(ResultsVec& results, double threshold) const;

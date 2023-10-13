@@ -97,4 +97,35 @@ struct ColorMatcherParam
     bool connected = false; // 是否计算连通域
 };
 
+struct FeatureMatcherParam
+{
+    enum Detector
+    {
+        SURF,
+        // TODO: ORB, SIFT, ...
+    };
+    enum Matcher
+    {
+        KNN,
+    };
+
+    inline static constexpr Detector kDefaultDetector = Detector::SURF;
+    inline static constexpr Matcher kDefaultMatcher = Matcher::KNN;
+    inline static constexpr double kDefaultHessianThreshold = 100.0;
+    inline static constexpr double kDefaultDistanceRatio = 0.6;
+    inline static constexpr int kDefaultCount = 4;
+
+    std::vector<cv::Rect> roi;
+    std::string template_path;
+    bool green_mask = false;
+
+    Detector detector = kDefaultDetector;
+    double hessian = kDefaultHessianThreshold;
+
+    Matcher matcher = kDefaultMatcher;
+
+    double distance_ratio = kDefaultDistanceRatio;
+    int count = kDefaultCount;
+};
+
 MAA_VISION_NS_END

@@ -35,6 +35,8 @@ private:
     std::optional<Result> direct_hit();
     std::optional<Result> template_match(const cv::Mat& image, const MAA_VISION_NS::TemplateMatcherParam& param,
                                          const std::string& name);
+    std::optional<Result> feature_match(const cv::Mat& image, const MAA_VISION_NS::FeatureMatcherParam& param,
+                                        const std::string& name);
     std::optional<Result> color_match(const cv::Mat& image, const MAA_VISION_NS::ColorMatcherParam& param,
                                       const std::string& name);
     std::optional<Result> ocr(const cv::Mat& image, const MAA_VISION_NS::OCRerParam& param, const std::string& name);

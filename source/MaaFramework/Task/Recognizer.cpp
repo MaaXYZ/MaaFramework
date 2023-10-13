@@ -5,6 +5,7 @@
 #include "Utils/Logger.h"
 #include "Vision/ColorMatcher.h"
 #include "Vision/CustomRecognizer.h"
+#include "Vision/FeatureMatcher.h"
 #include "Vision/NeuralNetworkClassifier.h"
 #include "Vision/NeuralNetworkDetector.h"
 #include "Vision/OCRer.h"
@@ -33,6 +34,10 @@ std::optional<Recognizer::Result> Recognizer::recognize(const cv::Mat& image, co
 
     case Type::TemplateMatch:
         result = template_match(image, std::get<TemplateMatcherParam>(task_data.rec_param), task_data.name);
+        break;
+
+    case Type::FeatureMatch:
+        result = feature_match(image, std::get<FeatureMatcherParam>(task_data.rec_param), task_data.name);
         break;
 
     case Type::ColorMatch:
@@ -103,6 +108,38 @@ std::optional<Recognizer::Result> Recognizer::template_match(const cv::Mat& imag
         templates.emplace_back(std::move(templ));
     }
     matcher.set_templates(std::move(templates));
+
+    auto ret = matcher.analyze();
+    if (ret.empty()) {
+        return std::nullopt;
+    }
+
+    const cv::Rect& box = ret.front().box;
+    json::array detail;
+    for (const auto& res : ret) {
+        detail.emplace_back(res.to_json());
+    }
+    return Result { .box = box, .detail = detail.to_string() };
+}
+
+std::optional<Recognizer::Result> Recognizer::feature_match(const cv::Mat& image,
+                                                            const MAA_VISION_NS::FeatureMatcherParam& param,
+                                                            const std::string& name)
+{
+    using namespace MAA_VISION_NS;
+
+    if (!resource()) {
+        LogError << "Resource not binded";
+        return std::nullopt;
+    }
+
+    FeatureMatcher matcher;
+    matcher.set_image(image);
+    matcher.set_name(name);
+    matcher.set_param(param);
+
+    std::shared_ptr<cv::Mat> templ = resource()->template_res().image(param.template_path);
+    matcher.set_template(std::move(templ));
 
     auto ret = matcher.analyze();
     if (ret.empty()) {

@@ -28,9 +28,9 @@ cv::Mat VisionBase::image_with_roi(const cv::Rect& roi) const
     return image_(roi_corrected);
 }
 
-cv::Mat VisionBase::draw_roi(const cv::Rect& roi) const
+cv::Mat VisionBase::draw_roi(const cv::Rect& roi, const cv::Mat& base) const
 {
-    cv::Mat image_draw = image_.clone();
+    cv::Mat image_draw = base.empty() ? image_.clone() : base;
     const cv::Scalar color(0, 255, 0);
 
     cv::putText(image_draw, name_, cv::Point(5, image_.rows - 5), cv::FONT_HERSHEY_SIMPLEX, 1, color, 2);

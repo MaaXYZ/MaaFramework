@@ -58,19 +58,19 @@ TemplateMatcher::ResultsVec TemplateMatcher::foreach_rois(const cv::Mat& templ) 
     }
 
     if (param_.roi.empty()) {
-        return match_and_postproc(cv::Rect(0, 0, image_.cols, image_.rows), templ);
+        return match(cv::Rect(0, 0, image_.cols, image_.rows), templ);
     }
 
     ResultsVec results;
     for (const cv::Rect& roi : param_.roi) {
-        ResultsVec res = match_and_postproc(roi, templ);
+        ResultsVec res = match(roi, templ);
         results.insert(results.end(), std::make_move_iterator(res.begin()), std::make_move_iterator(res.end()));
     }
 
     return results;
 }
 
-TemplateMatcher::ResultsVec TemplateMatcher::match_and_postproc(const cv::Rect& roi, const cv::Mat& templ) const
+TemplateMatcher::ResultsVec TemplateMatcher::match(const cv::Rect& roi, const cv::Mat& templ) const
 {
     cv::Mat image = image_with_roi(roi);
     cv::Mat matched = match_template(image, templ, param_.method, param_.green_mask);
