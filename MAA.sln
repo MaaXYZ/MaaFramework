@@ -1,4 +1,3 @@
-
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.6.33723.286
@@ -24,8 +23,6 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "MaaControlUnit", "source\Ma
 	ProjectSection(ProjectDependencies) = postProject
 		{27862F0F-109D-40C8-B48B-9461D15222E3} = {27862F0F-109D-40C8-B48B-9461D15222E3}
 	EndProjectSection
-EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "MaaThriftController", "source\MaaThriftController\MaaThriftController.vcxproj", "{8238EDB1-19BF-4E3B-AF5B-016120D59D7B}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "MaaUtils", "source\MaaUtils\MaaUtils.vcxproj", "{27862F0F-109D-40C8-B48B-9461D15222E3}"
 EndProject
@@ -60,12 +57,6 @@ Global
 		{DD48546D-48D4-4C84-BAC4-6126D0B5BFB3}.DebWithRelDeps|x64.Build.0 = DebWithRelDeps|x64
 		{DD48546D-48D4-4C84-BAC4-6126D0B5BFB3}.Release|x64.ActiveCfg = Release|x64
 		{DD48546D-48D4-4C84-BAC4-6126D0B5BFB3}.Release|x64.Build.0 = Release|x64
-		{8238EDB1-19BF-4E3B-AF5B-016120D59D7B}.Debug|x64.ActiveCfg = Debug|x64
-		{8238EDB1-19BF-4E3B-AF5B-016120D59D7B}.Debug|x64.Build.0 = Debug|x64
-		{8238EDB1-19BF-4E3B-AF5B-016120D59D7B}.DebWithRelDeps|x64.ActiveCfg = DebWithRelDeps|x64
-		{8238EDB1-19BF-4E3B-AF5B-016120D59D7B}.DebWithRelDeps|x64.Build.0 = DebWithRelDeps|x64
-		{8238EDB1-19BF-4E3B-AF5B-016120D59D7B}.Release|x64.ActiveCfg = Release|x64
-		{8238EDB1-19BF-4E3B-AF5B-016120D59D7B}.Release|x64.Build.0 = Release|x64
 		{27862F0F-109D-40C8-B48B-9461D15222E3}.Debug|x64.ActiveCfg = Debug|x64
 		{27862F0F-109D-40C8-B48B-9461D15222E3}.Debug|x64.Build.0 = Debug|x64
 		{27862F0F-109D-40C8-B48B-9461D15222E3}.DebWithRelDeps|x64.ActiveCfg = DebWithRelDeps|x64
