@@ -41,12 +41,19 @@ public:
 
 private:
     ResultsVec foreach_rois(const cv::Mat& templ) const;
-    std::pair<std::vector<cv::KeyPoint>, cv::Mat> detect(const cv::Mat& image, bool green_mask) const;
-    std::pair<std::vector<cv::KeyPoint>, cv::Mat> detect(const cv::Mat& image, const cv::Rect& roi) const;
-    cv::FlannBasedMatcher create_matcher(const std::vector<cv::KeyPoint>& keypoints, const cv::Mat& descriptors) const;
+    ResultsVec match_roi(const std::vector<cv::KeyPoint>& keypoints_1, const cv::Mat& descriptors_1,
+                         const cv::Rect& roi_2) const;
 
-    ResultsVec match(cv::FlannBasedMatcher& matcher, const std::vector<cv::KeyPoint>& keypoints_1,
-                     const cv::Rect& roi_2) const;
+    cv::Ptr<cv::Feature2D> create_detector() const;
+    std::pair<std::vector<cv::KeyPoint>, cv::Mat> detect(const cv::Mat& image, const cv::Mat& mask) const;
+
+    cv::Ptr<cv::DescriptorMatcher> create_matcher() const;
+    std::vector<std::vector<cv::DMatch>> match(const cv::Mat& descriptors_1, const cv::Mat& descriptors_2) const;
+
+    ResultsVec postproc(const std::vector<std::vector<cv::DMatch>>& match_points,
+                        const std::vector<cv::KeyPoint>& keypoints_1, const std::vector<cv::KeyPoint>& keypoints_2,
+                        const cv::Rect& roi_2) const;
+
     void draw_result(const cv::Mat& templ, const std::vector<cv::KeyPoint>& keypoints_1, const cv::Rect& roi,
                      const std::vector<cv::KeyPoint>& keypoints_2, const std::vector<cv::DMatch>& good_matches,
                      ResultsVec& results) const;

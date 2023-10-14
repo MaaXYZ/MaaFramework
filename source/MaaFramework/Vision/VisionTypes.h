@@ -11,6 +11,10 @@
 
 #include "Utils/NoWarningCVMat.hpp"
 
+#if __has_include(<opencv2/xfeatures2d.hpp>)
+#define MAA_VISION_HAS_XFEATURES2D
+#endif
+
 namespace Ort
 {
 struct Session;
@@ -101,17 +105,22 @@ struct FeatureMatcherParam
 {
     enum Detector
     {
+        SIFT,
         SURF,
-        // TODO: ORB, SIFT, ...
-    };
-    enum Matcher
-    {
-        KNN,
+        ORB,
+        BRISK,
+        KAZE,
+        AKAZE,
     };
 
-    inline static constexpr Detector kDefaultDetector = Detector::SURF;
-    inline static constexpr Matcher kDefaultMatcher = Matcher::KNN;
-    inline static constexpr double kDefaultHessianThreshold = 100.0;
+    // enum Matcher
+    //{
+    //     FLANN,
+    //     BRUTEFORCE,
+    // };
+
+    inline static constexpr Detector kDefaultDetector = Detector::SIFT;
+    // inline static constexpr Matcher kDefaultMatcher = Matcher::FLANN;
     inline static constexpr double kDefaultDistanceRatio = 0.6;
     inline static constexpr int kDefaultCount = 4;
 
@@ -120,9 +129,7 @@ struct FeatureMatcherParam
     bool green_mask = false;
 
     Detector detector = kDefaultDetector;
-    double hessian = kDefaultHessianThreshold;
-
-    Matcher matcher = kDefaultMatcher;
+    // Matcher matcher = kDefaultMatcher;
 
     double distance_ratio = kDefaultDistanceRatio;
     int count = kDefaultCount;

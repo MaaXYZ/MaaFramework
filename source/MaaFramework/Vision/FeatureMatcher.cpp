@@ -1,11 +1,15 @@
 #include "FeatureMatcher.h"
 
 MAA_SUPPRESS_CV_WARNINGS_BEGIN
+#include <opencv2/features2d.hpp>
 #include <opencv2/opencv.hpp>
+#ifdef MAA_VISION_HAS_XFEATURES2D
 #include <opencv2/xfeatures2d.hpp>
+#endif
 MAA_SUPPRESS_CV_WARNINGS_END
 
 #include "Utils/Logger.h"
+#include "VisionUtils.hpp"
 
 MAA_VISION_NS_BEGIN
 
@@ -40,30 +44,66 @@ FeatureMatcher::ResultsVec FeatureMatcher::foreach_rois(const cv::Mat& templ) co
         return {};
     }
 
-    auto [keypoints, descriptors] = detect(templ, param_.green_mask);
-    auto matcher = create_matcher(keypoints, descriptors);
+    auto [keypoints_1, descriptors_1] = detect(templ, create_mask(templ, param_.green_mask));
 
     if (param_.roi.empty()) {
-        return match(matcher, keypoints, cv::Rect(0, 0, image_.cols, image_.rows));
+        cv::Rect roi = cv::Rect(0, 0, image_.cols, image_.rows);
+        return match_roi(keypoints_1, descriptors_1, roi);
     }
 
     ResultsVec results;
     for (const cv::Rect& roi : param_.roi) {
-        ResultsVec res = match(matcher, keypoints, roi);
+        ResultsVec res = match_roi(keypoints_1, descriptors_1, roi);
         results.insert(results.end(), std::make_move_iterator(res.begin()), std::make_move_iterator(res.end()));
     }
 
     return results;
 }
 
-std::pair<std::vector<cv::KeyPoint>, cv::Mat> FeatureMatcher::detect(const cv::Mat& image, bool green_mask) const
+FeatureMatcher::ResultsVec FeatureMatcher::match_roi(const std::vector<cv::KeyPoint>& keypoints_1,
+                                                     const cv::Mat& descriptors_1, const cv::Rect& roi_2) const
 {
-    auto detector = cv::xfeatures2d::SURF::create(param_.hessian);
+    if (roi_2.empty()) {
+        LogError << name_ << "roi_2 is empty";
+        return {};
+    }
 
-    cv::Mat mask = cv::Mat::ones(image.size(), CV_8UC1);
-    if (green_mask) {
-        cv::inRange(image, cv::Scalar(0, 255, 0), cv::Scalar(0, 255, 0), mask);
-        mask = ~mask;
+    auto [keypoints_2, descriptors_2] = detect(image_, create_mask(image_, roi_2));
+
+    auto match_points = match(descriptors_1, descriptors_2);
+
+    return postproc(match_points, keypoints_1, keypoints_2, roi_2);
+}
+
+cv::Ptr<cv::Feature2D> FeatureMatcher::create_detector() const
+{
+    switch (param_.detector) {
+    case FeatureMatcherParam::Detector::SIFT:
+        return cv::SIFT::create();
+    case FeatureMatcherParam::Detector::ORB:
+        return cv::ORB::create();
+    case FeatureMatcherParam::Detector::BRISK:
+        return cv::BRISK::create();
+    case FeatureMatcherParam::Detector::KAZE:
+        return cv::KAZE::create();
+    case FeatureMatcherParam::Detector::AKAZE:
+        return cv::AKAZE::create();
+#ifdef MAA_VISION_HAS_XFEATURES2D
+    case FeatureMatcherParam::Detector::SURF:
+        return cv::xfeatures2d::SURF::create();
+#endif
+    }
+
+    LogError << name_ << "Unknown detector" << VAR(static_cast<int>(param_.detector));
+    return nullptr;
+}
+
+std::pair<std::vector<cv::KeyPoint>, cv::Mat> FeatureMatcher::detect(const cv::Mat& image, const cv::Mat& mask) const
+{
+    auto detector = create_detector();
+    if (!detector) {
+        LogError << name_ << "detector is empty";
+        return {};
     }
 
     std::vector<cv::KeyPoint> keypoints;
@@ -73,42 +113,52 @@ std::pair<std::vector<cv::KeyPoint>, cv::Mat> FeatureMatcher::detect(const cv::M
     return std::make_pair(std::move(keypoints), std::move(descriptors));
 }
 
-std::pair<std::vector<cv::KeyPoint>, cv::Mat> FeatureMatcher::detect(const cv::Mat& image, const cv::Rect& roi) const
+cv::Ptr<cv::DescriptorMatcher> FeatureMatcher::create_matcher() const
 {
-    auto detector = cv::xfeatures2d::SURF::create(param_.hessian);
+    switch (param_.detector) {
+    case FeatureMatcherParam::Detector::SIFT:
+    case FeatureMatcherParam::Detector::SURF:
+    case FeatureMatcherParam::Detector::KAZE:
+        return cv::FlannBasedMatcher::create();
 
-    cv::Mat mask = cv::Mat::zeros(image.size(), CV_8UC1);
-    mask(roi) = 255;
+    case FeatureMatcherParam::Detector::ORB:
+    case FeatureMatcherParam::Detector::BRISK:
+    case FeatureMatcherParam::Detector::AKAZE:
+        return cv::BFMatcher::create(cv::NORM_HAMMING);
+    }
 
-    std::vector<cv::KeyPoint> keypoints;
-    cv::Mat descriptors;
-    detector->detectAndCompute(image, mask, keypoints, descriptors);
-
-    return std::make_pair(std::move(keypoints), std::move(descriptors));
+    LogError << name_ << "Unknown detector" << VAR(static_cast<int>(param_.detector));
+    return nullptr;
 }
 
-cv::FlannBasedMatcher FeatureMatcher::create_matcher(const std::vector<cv::KeyPoint>& keypoints,
-                                                     const cv::Mat& descriptors) const
+std::vector<std::vector<cv::DMatch>> FeatureMatcher::match(const cv::Mat& descriptors_1,
+                                                           const cv::Mat& descriptors_2) const
 {
-    std::ignore = keypoints;
+    if (descriptors_1.empty() || descriptors_2.empty()) {
+        LogWarn << name_ << "descriptors is empty";
+        return {};
+    }
 
-    std::vector<cv::Mat> train_desc(1, descriptors);
-    cv::FlannBasedMatcher matcher;
-    matcher.add(train_desc);
-    matcher.train();
+    auto matcher = create_matcher();
+    if (!matcher) {
+        LogError << name_ << "matcher is empty";
+        return {};
+    }
 
-    return matcher;
-}
-
-FeatureMatcher::ResultsVec FeatureMatcher::match(cv::FlannBasedMatcher& matcher,
-                                                 const std::vector<cv::KeyPoint>& keypoints_1,
-                                                 const cv::Rect& roi_2) const
-{
-    auto [keypoints_2, descriptors_2] = detect(image_, roi_2);
+    std::vector<cv::Mat> train_desc(1, descriptors_1);
+    matcher->add(train_desc);
+    matcher->train();
 
     std::vector<std::vector<cv::DMatch>> match_points;
-    matcher.knnMatch(descriptors_2, match_points, 2);
+    matcher->knnMatch(descriptors_2, match_points, 2);
+    return match_points;
+}
 
+FeatureMatcher::ResultsVec FeatureMatcher::postproc(const std::vector<std::vector<cv::DMatch>>& match_points,
+                                                    const std::vector<cv::KeyPoint>& keypoints_1,
+                                                    const std::vector<cv::KeyPoint>& keypoints_2,
+                                                    const cv::Rect& roi_2) const
+{
     std::vector<cv::DMatch> good_matches;
     std::vector<cv::Point2d> obj;
     std::vector<cv::Point2d> scene;
