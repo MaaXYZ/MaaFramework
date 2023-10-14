@@ -175,22 +175,21 @@ inline cv::Rect correct_roi(const cv::Rect& roi, const cv::Mat& image)
     return res;
 }
 
-inline cv::Mat match_template(const cv::Mat& image, const cv::Mat& templ, int method, bool green_mask)
+inline cv::Mat create_mask(const cv::Mat& image, bool green_mask)
 {
-    if (templ.cols > image.cols || templ.rows > image.rows) {
-        LogError << "templ size is too large" << VAR(image) << VAR(templ);
-        return {};
-    }
-
-    cv::Mat mask = cv::Mat::ones(templ.size(), CV_8UC1);
+    cv::Mat mask = cv::Mat::ones(image.size(), CV_8UC1);
     if (green_mask) {
-        cv::inRange(templ, cv::Scalar(0, 255, 0), cv::Scalar(0, 255, 0), mask);
+        cv::inRange(image, cv::Scalar(0, 255, 0), cv::Scalar(0, 255, 0), mask);
         mask = ~mask;
     }
+    return mask;
+}
 
-    cv::Mat matched;
-    cv::matchTemplate(image, templ, matched, method, mask);
-    return matched;
+inline cv::Mat create_mask(const cv::Mat& image, const cv::Rect& roi)
+{
+    cv::Mat mask = cv::Mat::zeros(image.size(), CV_8UC1);
+    mask(roi) = 255;
+    return mask;
 }
 
 MAA_VISION_NS_END

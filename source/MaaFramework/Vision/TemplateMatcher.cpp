@@ -73,10 +73,14 @@ TemplateMatcher::ResultsVec TemplateMatcher::foreach_rois(const cv::Mat& templ) 
 TemplateMatcher::ResultsVec TemplateMatcher::match(const cv::Rect& roi, const cv::Mat& templ) const
 {
     cv::Mat image = image_with_roi(roi);
-    cv::Mat matched = match_template(image, templ, param_.method, param_.green_mask);
-    if (matched.empty()) {
+
+    if (templ.cols > image.cols || templ.rows > image.rows) {
+        LogError << "templ size is too large" << VAR(image) << VAR(templ);
         return {};
     }
+
+    cv::Mat matched;
+    cv::matchTemplate(image, templ, matched, param_.method, create_mask(templ, param_.green_mask));
 
     ResultsVec raw_results;
     Result max_result;

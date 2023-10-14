@@ -329,7 +329,7 @@ bool PipelineResMgr::parse_recognition(const json::value& input, Recognition::Ty
     using namespace Recognition;
     using namespace MAA_VISION_NS;
 
-    static const std::string kDefaultRecognitionFlag = "DefaultRecognitionFlag";
+    static const std::string kDefaultRecognitionFlag = "Default";
     std::string rec_type_name;
     if (!get_and_check_value(input, "recognition", rec_type_name, kDefaultRecognitionFlag)) {
         LogError << "failed to get_and_check_value recognition" << VAR(input);
@@ -467,6 +467,8 @@ bool PipelineResMgr::parse_template_matcher_param(const json::value& input, MAA_
 bool PipelineResMgr::parse_feature_matcher_param(const json::value& input, MAA_VISION_NS::FeatureMatcherParam& output,
                                                  const MAA_VISION_NS::FeatureMatcherParam& default_value)
 {
+    using namespace MAA_VISION_NS;
+
     if (!parse_roi(input, output.roi, default_value.roi)) {
         LogError << "failed to parse_roi" << VAR(input);
         return false;
@@ -482,18 +484,44 @@ bool PipelineResMgr::parse_feature_matcher_param(const json::value& input, MAA_V
         return false;
     }
 
-    if (!get_and_check_value(input, "hessian", output.hessian, default_value.hessian)) {
-        LogError << "failed to get_and_check_value hessian" << VAR(input);
+    static const std::string kDefaultDetectorFlag = "Default";
+    std::string detector;
+    if (!get_and_check_value(input, "detector", detector, kDefaultDetectorFlag)) {
+        LogError << "failed to get_and_check_value detector" << VAR(input);
         return false;
     }
+    const std::unordered_map<std::string, FeatureMatcherParam::Detector> kDetectorMap = {
+        { kDefaultDetectorFlag, default_value.detector },  { "SIFT", FeatureMatcherParam::Detector::SIFT },
+        { "SURF", FeatureMatcherParam::Detector::SURF },   { "ORB", FeatureMatcherParam::Detector::ORB },
+        { "BRISK", FeatureMatcherParam::Detector::BRISK }, { "KAZE", FeatureMatcherParam::Detector::KAZE },
+        { "AKAZE", FeatureMatcherParam::Detector::AKAZE },
+    };
+    auto detector_iter = kDetectorMap.find(detector);
+    if (detector_iter == kDetectorMap.end()) {
+        LogError << "detector not found" << VAR(detector);
+        return false;
+    }
+    output.detector = detector_iter->second;
+
+#ifndef MAA_VISION_HAS_XFEATURES2D
+    if (output.detector == FeatureMatcherParam::Detector::SURF) {
+        LogError << "MAA build without xfeatures2d, SURF is not supported" << VAR(input);
+        return false;
+    }
+#endif
+
+    // if (!get_and_check_value(input, "detector_param", output.detector_param, default_value.detector_param)) {
+    //     LogError << "failed to get_and_check_value detector_param" << VAR(input);
+    //     return false;
+    // }
 
     if (!get_and_check_value(input, "distance_ratio", output.distance_ratio, default_value.distance_ratio)) {
-        LogError << "failed to get_and_check_value hessian" << VAR(input);
+        LogError << "failed to get_and_check_value distance_ratio" << VAR(input);
         return false;
     }
 
     if (!get_and_check_value(input, "count", output.count, default_value.count)) {
-        LogError << "failed to get_and_check_value hessian" << VAR(input);
+        LogError << "failed to get_and_check_value count" << VAR(input);
         return false;
     }
 
@@ -823,7 +851,7 @@ bool PipelineResMgr::parse_action(const json::value& input, Action::Type& out_ty
 {
     using namespace Action;
 
-    static const std::string kDefaultActionFlag = "DefaultActionFlag";
+    static const std::string kDefaultActionFlag = "Default";
     std::string act_type_name;
     if (!get_and_check_value(input, "action", act_type_name, kDefaultActionFlag)) {
         LogError << "failed to get_and_check_value action" << VAR(input);

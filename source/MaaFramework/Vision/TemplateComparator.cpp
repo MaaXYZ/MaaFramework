@@ -65,10 +65,8 @@ void TemplateComparator::filter(ResultsVec& results, double threshold) const
 
 double TemplateComparator::comp(const cv::Mat& lhs, const cv::Mat& rhs, int method)
 {
-    cv::Mat matched = match_template(lhs, rhs, method, false);
-    if (matched.empty()) {
-        return 0.0;
-    }
+    cv::Mat matched;
+    cv::matchTemplate(lhs, rhs, matched, method);
 
     double min_val = 0.0, max_val = 0.0;
     cv::Point min_loc {}, max_loc {};
