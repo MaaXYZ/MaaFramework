@@ -51,9 +51,12 @@ inline std::string ansi_to_utf8(std::string_view ansi_str)
         // error
         return std::string(ansi_str);
     }
-
-    const char* src_str = ansi_str.data();
-    size_t src_len = ::strlen(src_str) + 1;
+    // NOTE: 对 std::string_view 使用 strlen 结果可能非预期
+    // const char* src_str = ansi_str.data();
+    // size_t src_len = ::strlen(src_str) + 1;
+    
+    const char* from = utf8_str.data();
+    size_t len = utf8_str.length();
     size_t dst_len = src_len * 2; // ensure sufficient space
 
     std::unique_ptr<char[], std::default_delete<char[]>> utf8 = std::make_unique<char[]>(dst_len);
@@ -96,9 +99,9 @@ inline std::string utf8_to_ansi(std::string_view utf8_str)
     std::string strTemp(sz_ansi);
 
     delete[] wsz_ansi;
-    wsz_ansi = nullptr;
+    // wsz_ansi = nullptr; // 无效代码
     delete[] sz_ansi;
-    sz_ansi = nullptr;
+    // sz_ansi = nullptr; // 无效代码
 
     return strTemp;
 #elif defined(__linux__)
@@ -107,9 +110,11 @@ inline std::string utf8_to_ansi(std::string_view utf8_str)
         // error
         return std::string(utf8_str);
     }
-
-    const char* src_str = utf8_str.data();
-    size_t src_len = ::strlen(src_str) + 1;
+    // NOTE: 对 std::string_view 使用 strlen 结果可能非预期
+    // const char* src_str = utf8_str.data();
+    // size_t src_len = ::strlen(src_str) + 1;
+    const char* from = utf8_str.data();
+    size_t src_len = utf8_str.length();
     size_t dst_len = src_len * 2;
 
     std::unique_ptr<char[], std::default_delete<char[]>> ansi = std::make_unique<char[]>(dst_len);
@@ -136,6 +141,7 @@ template <typename _ = void>
 inline std::string utf8_to_unicode_escape(std::string_view utf8_str)
 {
 #ifdef _WIN32
+    // FIXME: 由于历史原因，在 Win32 平台下的 wchar_t 采用 UTF-16 编码，和 Linux 等平台使用 UCS-4 不一致，这段代码很可能有问题
     const char* src_str = utf8_str.data();
     int len = MultiByteToWideChar(CP_UTF8, 0, src_str, -1, nullptr, 0);
     const std::size_t wstr_length = static_cast<std::size_t>(len) + 1U;
@@ -143,16 +149,12 @@ inline std::string utf8_to_unicode_escape(std::string_view utf8_str)
     memset(wstr, 0, sizeof(wstr[0]) * wstr_length);
     MultiByteToWideChar(CP_UTF8, 0, src_str, -1, wstr, len);
 
-    std::string unicode_escape_str = {};
-    constinit static char hexcode[] = "0123456789abcdef";
+    std::string unicode_escape_str;
+    unicode_escape_str.reserve(len * 6);
     for (const wchar_t* pchr = wstr; *pchr; ++pchr) {
         const wchar_t& chr = *pchr;
         if (chr > 255) {
-            unicode_escape_str += "\\u";
-            unicode_escape_str.push_back(hexcode[chr >> 12]);
-            unicode_escape_str.push_back(hexcode[(chr >> 8) & 15]);
-            unicode_escape_str.push_back(hexcode[(chr >> 4) & 15]);
-            unicode_escape_str.push_back(hexcode[chr & 15]);
+            unicode_escape_str += MAA_FMT::format("\\u{:04x}", (std::uint32_t)chr);
         }
         else {
             unicode_escape_str.push_back(chr & 255);
@@ -166,24 +168,26 @@ inline std::string utf8_to_unicode_escape(std::string_view utf8_str)
 #elif defined(__linux__)
     auto locale = setlocale(LC_ALL, "");
 
+    // const char* from = utf8_str.data();
+    // size_t len = strlen(from) + 1;
+
+    // NOTE: string_view 末尾不一定是 \0，所以取 data() 后 strlen 会得到非预期结果
+
     const char* from = utf8_str.data();
-    size_t len = strlen(from) + 1;
+    size_t len = utf8_str.length();
 
     std::unique_ptr<wchar_t[], std::default_delete<wchar_t[]>> to = std::make_unique<wchar_t[]>(len);
+
     mbstowcs(to.get(), from, len);
 
-    setlocale(LC_ALL, locale);
+    setlocale(LC_ALL, locale); // TODO: 只设置一次 LC_ALL
 
-    std::string unicode_escape_str = {};
-    constinit static char hexcode[] = "0123456789abcdef";
+    std::string unicode_escape_str;
+    unicode_escape_str.reserve(len * 6);
     for (const wchar_t* pchr = to.get(); *pchr; ++pchr) {
         const wchar_t& chr = *pchr;
         if (chr > 255) {
-            unicode_escape_str += "\\u";
-            unicode_escape_str.push_back(hexcode[chr >> 12]);
-            unicode_escape_str.push_back(hexcode[(chr >> 8) & 15]);
-            unicode_escape_str.push_back(hexcode[(chr >> 4) & 15]);
-            unicode_escape_str.push_back(hexcode[chr & 15]);
+            unicode_escape_str += MAA_FMT::format("\\u{:04x}", (std::uint32_t)chr);
         }
         else {
             unicode_escape_str.push_back(chr & 255);
@@ -191,6 +195,31 @@ inline std::string utf8_to_unicode_escape(std::string_view utf8_str)
     }
 
     return unicode_escape_str;
+#elif sizeof(wchar_t) == 4
+    // fallback: 当 wchar_t 采用 UCS-4 编码时，wchar_t 的对应值即为 Unicode 码
+    const std::codecvt<wchar_t, char, std::mbstate_t>& cvt =
+        std::use_facet<std::codecvt<wchar_t, char, std::mbstate_t>>(
+            std::locale("C.UTF-8")); // FIXME: 应当在程序开头设置 locale，此处则应使用 std::locale()...
+    std::mbstate_t mb {};
+    std::wstring to(utf8_str.length(), L'\0'); // t.size() <= utf8_str.size()
+    const char* from_next;
+    wchar_t* to_next;
+    std::codecvt_base::result result =
+        cvt.in(mb, &utf8_str[0], &utf8_str[utf8_str.length()], from_next, &to[0], &to[to.length()], to_next);
+    if (result != std::codecvt_base::ok) {
+        return std::string(utf8_str); // error
+    }
+    to.resize(to_next - &to[0]); // 或许这一句是不必要的...但是嘛，优雅第一
+    std::string unicode_escape_str;
+    unicode_escape_str.reserve(len * 6);
+    for (const wchar_t& chr : to) {
+        if (chr > 255) {
+            unicode_escape_str += MAA_FMT::format("\\u{:04x}", (std::uint32_t)chr);
+        }
+        else {
+            unicode_escape_str.push_back(chr & 255);
+        }
+    }
 #else
     return std::string(utf8_str);
 #endif
