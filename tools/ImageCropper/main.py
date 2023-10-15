@@ -2,6 +2,7 @@ import cv2
 import os
 import sys
 import numpy as np
+import colormatcher
 from adbutils import adb
 from datetime import datetime
 from roimage import Roimage
@@ -23,10 +24,18 @@ def amplify(rect: list[int]) -> list[int]:
     x, y, w, h = rect
     return [x - 50, y - 50, w + 100, h + 100]
 
-# -----------------------------------------------
+# 获取图片各像素和图片主要颜色的距离
+def matchColor(image) -> tuple[int, list[tuple[list[int]]]]:
+    # framework ColorMatch common method:
+    #   4.COLOR_BGR2RGB 40.COLOR_BGR2HSV 6.COLOR_BGR2GRAY
+    # colormatcher method:
+    #   1.Simple 2.RGBDistance
+    method = cv2.COLOR_BGR2RGB
+    reverse = cv2.COLOR_RGB2BGR # 不需要逆转时为None
+    cluster_colors = colormatcher.kmeansClusterColors(image, method)
+    return method, reverse, colormatcher.RGBDistance(cluster_colors)
 
-#TODO
-#4. 添加颜色匹配方法
+# -----------------------------------------------
 
 print("Usage: python3 main.py [device serial]\n"
      f"Current target size is based on {std_target}: {locals().get(std_target)}.\n"
@@ -35,8 +44,9 @@ print("Usage: python3 main.py [device serial]\n"
       "Hold down the right mouse button, drag mouse to move the image.\n"
       "Use the mouse wheel to zoom the image.\n"
       "press 'S' or 'ENTER' to save ROIs.\n"
-      "press 'C' to save a standardized screenshot.\n"
+      "press 'F' to save a full standardized screenshot.\n"
       "press 'R' to output only the ROI ranges, not save.\n"
+      "press 'c' or 'C' (with connected) to output the ROI ranges and colors, not save.\n"
       "press 'Z' or 'DELETE' or 'BACKSPACE' to remove the latest ROI.\n"
       "press '0' ~ '9' to resize the window.\n"
       "press 'Q' or 'ESC' to quit.\n"
@@ -289,26 +299,70 @@ while True:
 
     cropping = False
     needSave = True
+    needColorMatch = False
+    mains = []
 # r R
     if key in [ord("r"), ord("R")]:
         needSave = False
 # c C
-    elif key in [ord("c"), ord("C")]:
+    elif key in [ord("c")]:
+        needSave = False
+        needColorMatch = True
+        connected = False
+    elif key in [ord("C")]:
+        needSave = False
+        needColorMatch = True
+        connected = True
+# f F
+    elif key in [ord("f"), ord("F")]:
         crop_list.append(Roimage(0, 0, 0, 0, std_roimage))
 # s S enter
     elif key not in [ord("s"), ord("S"), ord("\r"), ord("\n")]:
         continue
 
     for roi in crop_list:
-        print("\n")
+        print("")
+        img = roi.image
+
         if needSave:
             x1,y1,w1,h1 = roi.rectangle
             x2,y2,w2,h2 = getAmplifiedRoiRectangle(roi)
             dst_filename: str = f'{file_name}_{x1}_{y1}_{w1}_{h1}__{x2}_{y2}_{w2}_{h2}.png'
             print(f"dst: {os.getcwd()}\dst\{dst_filename}")
             cv2.imwrite('./dst/' + dst_filename, roi.image)
+
         print(f"original roi: {roi.rectangle}\n"
-              f"amplified roi: {getAmplifiedRoiRectangle(roi)}"
-               "\n")
+              f"amplified roi: {getAmplifiedRoiRectangle(roi)}")
+
+        if needColorMatch:
+            method, reverse, colors = matchColor(img)
+            ret = { "recognition": "ColorMatch", "roi": [], "method": method, "lower": [], "upper": [], "count": [], "connected": connected }
+            mainColors = []
+            for center, lower, upper in colors:
+                count = colormatcher.getCount(img, lower, upper, connected, method)
+                ret["lower"].append(lower)
+                ret["upper"].append(upper)
+                ret["count"].append(count)
+                mainColor = np.zeros((80, 200, 3), dtype=np.uint8)
+                mainColor[:28, :] = lower
+                mainColor[28: 58, :] = upper
+                mainColor[58:, :] = center
+                if reverse is not None:
+                    mainColor = cv2.cvtColor(mainColor, reverse)
+                cv2.putText(mainColor, f'{lower}', (0, 20), cv2.FONT_HERSHEY_SIMPLEX, .75, (0, 0, 0), 2)
+                cv2.putText(mainColor, f'{upper}', (0, 50), cv2.FONT_HERSHEY_SIMPLEX, .75, (255, 255, 255), 2)
+                cv2.putText(mainColor, f'{count}', (66, 76), cv2.FONT_HERSHEY_SIMPLEX, .75, (127, 127, 127), 2)
+                mainColors.append(mainColor)
+            mains.append(cv2.hconcat(mainColors))
+            cv2.namedWindow('MainColors', cv2.WINDOW_NORMAL)
+            cv2.imshow('MainColors', cv2.vconcat(mains))
+            print(f"ColorMatch: {ret}"
+                  .replace("'", '"')
+                  .replace("False", "false")
+                  .replace("True", "true"))
+        else:
+            cv2.destroyWindow('MainColors')
+
+        print("")
 
 cv2.destroyAllWindows()
