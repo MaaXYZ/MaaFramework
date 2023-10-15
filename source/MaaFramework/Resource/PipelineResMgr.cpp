@@ -157,8 +157,20 @@ bool PipelineResMgr::parse_config(const json::value& input, TaskDataMap& output,
     TaskDataMap data_map;
 
     for (const auto& [key, value] : input.as_object()) {
+        if (key.empty()) {
+            LogError << "key is empty" << VAR(key);
+            return false;
+        }
+        if (key.starts_with('$')) {
+            LogInfo << "key starts with '$', skip" << VAR(key);
+            continue;
+        }
         if (existing_keys.contains(key)) {
             LogError << "key already exists" << VAR(key);
+            return false;
+        }
+        if (!value.is_object()) {
+            LogError << "value is not object" << VAR(key) << VAR(value);
             return false;
         }
 
