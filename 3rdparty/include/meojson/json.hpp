@@ -306,6 +306,7 @@ public:
 
     void clear() noexcept;
     bool erase(size_t pos);
+    bool erase(iterator iter);
 
     iterator begin() noexcept;
     iterator end() noexcept;
@@ -419,6 +420,7 @@ public:
 
     void clear() noexcept;
     bool erase(const string_t& key);
+    bool erase(iterator iter);
 
     iterator begin() noexcept;
     iterator end() noexcept;
@@ -1367,7 +1369,13 @@ MEOJSON_INLINE void basic_array<string_t>::clear() noexcept
 template <typename string_t>
 MEOJSON_INLINE bool basic_array<string_t>::erase(size_t pos)
 {
-    return _array_data.erase(pos) != _array_data.end();
+    return erase(_array_data.begin() + pos);
+}
+
+template <typename string_t>
+MEOJSON_INLINE bool basic_array<string_t>::erase(iterator iter)
+{
+    return _array_data.erase(iter) != _array_data.end();
 }
 
 template <typename string_t>
@@ -1691,6 +1699,12 @@ template <typename string_t>
 MEOJSON_INLINE bool basic_object<string_t>::erase(const string_t& key)
 {
     return _object_data.erase(key) > 0 ? true : false;
+}
+
+template <typename string_t>
+MEOJSON_INLINE bool basic_object<string_t>::erase(iterator iter)
+{
+    return _object_data.erase(iter) != _object_data.end();
 }
 
 template <typename string_t>
