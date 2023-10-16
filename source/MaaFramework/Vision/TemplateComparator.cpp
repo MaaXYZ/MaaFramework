@@ -52,15 +52,9 @@ TemplateComparator::ResultsVec TemplateComparator::foreach_rois(const cv::Mat& l
 
 void TemplateComparator::filter(ResultsVec& results, double threshold) const
 {
-    for (auto iter = results.begin(); iter != results.end();) {
-        auto& res = *iter;
-
-        if (res.score < threshold) {
-            iter = results.erase(iter);
-            continue;
-        }
-        ++iter;
-    }
+    auto remove_iter =
+        std::remove_if(results.begin(), results.end(), [threshold](const auto& res) { return res.score < threshold; });
+    results.erase(remove_iter, results.end());
 }
 
 double TemplateComparator::comp(const cv::Mat& lhs, const cv::Mat& rhs, int method)

@@ -98,9 +98,11 @@ OCRer::ResultsVec OCRer::predict_det_and_rec(const cv::Rect& roi) const
         auto [left, right] = MAA_RNS::ranges::minmax(x_collect);
         auto [top, bottom] = MAA_RNS::ranges::minmax(y_collect);
 
+        auto text = to_u16(ocr_result.text.at(i));
         cv::Rect my_box(left + roi.x, top + roi.y, right - left, bottom - top);
-        results.emplace_back(
-            Result { .text = to_u16(ocr_result.text.at(i)), .box = my_box, .score = ocr_result.rec_scores.at(i) });
+        auto score = ocr_result.rec_scores.at(i);
+
+        results.emplace_back(Result { .text = std::move(text), .box = my_box, .score = score });
     }
 
     draw_result(roi, results);
@@ -126,7 +128,8 @@ OCRer::Result OCRer::predict_only_rec(const cv::Rect& roi) const
         return {};
     }
 
-    Result result { .text = to_u16(rec_text), .box = roi, .score = rec_score };
+    auto text = to_u16(rec_text);
+    Result result { .text = std::move(text), .box = roi, .score = rec_score };
     draw_result(roi, { result });
 
     return result;

@@ -151,15 +151,9 @@ void TemplateMatcher::draw_result(const cv::Rect& roi, const cv::Mat& templ, con
 
 void TemplateMatcher::filter(ResultsVec& results, double threshold) const
 {
-    for (auto iter = results.begin(); iter != results.end();) {
-        auto& res = *iter;
-
-        if (res.score < threshold) {
-            iter = results.erase(iter);
-            continue;
-        }
-        ++iter;
-    }
+    auto remove_iter =
+        std::remove_if(results.begin(), results.end(), [threshold](const auto& res) { return res.score < threshold; });
+    results.erase(remove_iter, results.end());
 }
 
 MAA_VISION_NS_END

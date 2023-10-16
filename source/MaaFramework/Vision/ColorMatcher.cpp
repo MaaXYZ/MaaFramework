@@ -145,15 +145,9 @@ void ColorMatcher::draw_result(const cv::Rect& roi, const cv::Mat& color, const 
 
 void ColorMatcher::filter(ResultsVec& results, int count) const
 {
-    for (auto iter = results.begin(); iter != results.end();) {
-        auto& res = *iter;
-
-        if (res.score < count) {
-            iter = results.erase(iter);
-            continue;
-        }
-        ++iter;
-    }
+    auto remove_iter =
+        std::remove_if(results.begin(), results.end(), [count](const auto& res) { return res.score < count; });
+    results.erase(remove_iter, results.end());
 }
 
 MAA_VISION_NS_END
