@@ -107,7 +107,7 @@ std::optional<std::string> InvokeApp::invoke_bin_stdout(const std::string& extra
     return command(invoke_bin_argv_.gen(argv_replace_));
 }
 
-std::shared_ptr<IOHandler> InvokeApp::invoke_bin(const std::string& extra)
+std::shared_ptr<IOHandler> InvokeApp::invoke_bin(const std::string& extra, bool wants_stderr)
 {
     LogFunc;
 
@@ -118,7 +118,7 @@ std::shared_ptr<IOHandler> InvokeApp::invoke_bin(const std::string& extra)
 
     merge_replacement({ { "{BIN_WORKING_FILE}", tempname_ }, { "{BIN_EXTRA_PARAMS}", extra } });
     LogInfo << invoke_bin_argv_.gen(argv_replace_);
-    auto cmd_ret = io_ptr_->interactive_shell(invoke_bin_argv_.gen(argv_replace_), true);
+    auto cmd_ret = io_ptr_->interactive_shell(invoke_bin_argv_.gen(argv_replace_), wants_stderr);
 
     return cmd_ret;
 }

@@ -47,15 +47,20 @@ bool MinicapStream::init(int swidth, int sheight)
     }
 
     std::string outputBuffer;
-    while (true) {
+    int i = 50;
+    while (--i) {
         auto res = process_handle_->read(5);
         if (res.length() > 0) {
-            LogInfo << "minicap stderr:" << res;
+            LogInfo << "minicap stdout:" << res;
             outputBuffer.append(res);
         }
         if (outputBuffer.find("Allocating") != std::string::npos) {
             break;
         }
+    }
+
+    if (i == 0) {
+        return false;
     }
 
     auto serial_host = argv_replace_["{ADB_SERIAL}"];
@@ -65,9 +70,8 @@ bool MinicapStream::init(int swidth, int sheight)
         local = serial_host.substr(0, shp);
     }
 
-    LogInfo << "minicap try listen at:" << local;
+    LogInfo << "minicap try connect to:" << local;
 
-    // stream_handle_ = io_ptr_->tcp("172.27.176.1", 1313);
     stream_handle_ = io_ptr_->tcp(local, 1313);
 
     if (!stream_handle_) {

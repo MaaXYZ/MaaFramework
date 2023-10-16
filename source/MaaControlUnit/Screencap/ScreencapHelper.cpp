@@ -144,6 +144,16 @@ std::optional<cv::Mat> ScreencapHelper::decode_png(const std::string& buffer)
     return decode(buffer);
 }
 
+std::optional<cv::Mat> ScreencapHelper::trunc_decode_jpg(const std::string& buffer)
+{
+    auto pos = buffer.find("\xFF\xD8\xFF");
+    auto truncbuf = buffer.substr(pos);
+    if (!check_head_tail(truncbuf, "\xFF\xD8\xFF", "\xFF\xD9")) {
+        return std::nullopt;
+    }
+    return decode(truncbuf);
+}
+
 std::optional<cv::Mat> ScreencapHelper::decode_jpg(const std::string& buffer)
 {
     if (!check_head_tail(buffer, "\xFF\xD8\xFF", "\xFF\xD9")) {

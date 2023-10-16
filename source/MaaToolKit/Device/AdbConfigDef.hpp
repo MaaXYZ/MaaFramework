@@ -193,7 +193,7 @@ inline static const json::value kAdbConfig = R"(
             "-s",
             "{ADB_SERIAL}",
             "shell",
-            "export LD_LIBRARY_PATH=/data/local/tmp/; \"/data/local/tmp/{BIN_WORKING_FILE}\" {BIN_EXTRA_PARAMS}"
+            "export LD_LIBRARY_PATH=/data/local/tmp/; \"/data/local/tmp/{BIN_WORKING_FILE}\" {BIN_EXTRA_PARAMS} 2>&1"
         ],
         "InvokeApp": [
             "{ADB}",
