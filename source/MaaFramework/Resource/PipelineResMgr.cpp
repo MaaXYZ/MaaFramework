@@ -414,6 +414,7 @@ bool PipelineResMgr::parse_recognition(const json::value& input, Recognition::Ty
                                              same_type ? std::get<CustomRecognizerParam>(default_param)
                                                        : CustomRecognizerParam {});
     default:
+        LogError << "Unknown recognition" << VAR(static_cast<int>(out_type));
         return false;
     }
 
@@ -1099,6 +1100,7 @@ bool PipelineResMgr::parse_action_target(const json::value& input, const std::st
         output.type = Target::Type::Region;
         cv::Rect rect {};
         if (!parse_rect(*param_opt, rect)) {
+            LogError << "Target::Type::Region failed to parse_rect" << VAR(*param_opt);
             return false;
         }
         output.param = rect;
@@ -1113,6 +1115,7 @@ bool PipelineResMgr::parse_action_target(const json::value& input, const std::st
     }
     else if (offset_opt->is_array()) {
         if (!parse_rect(*offset_opt, output.offset)) {
+            LogError << "failed to parse_rect" << key + "_offset" << VAR(*offset_opt);
             return false;
         }
     }
