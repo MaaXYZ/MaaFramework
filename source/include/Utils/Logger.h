@@ -112,6 +112,9 @@ public:
             if constexpr (std::same_as<std::filesystem::path, std::decay_t<T>>) {
                 return path_to_utf8_string(std::forward<T>(value));
             }
+            else if constexpr (std::same_as<std::wstring, std::decay_t<T>>) {
+                return from_u16(std::forward<T>(value));
+            }
             else if constexpr (has_stream_insertion_operator<T>) {
                 return std::forward<T>(value);
             }
