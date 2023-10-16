@@ -78,15 +78,25 @@ OCRer::ResultsVec OCRer::predict_det_and_rec(const cv::Rect& roi) const
         draw_result(roi, {});
         return {};
     }
-    if (ocr_result.boxes.size() != ocr_result.text.size() || ocr_result.text.size() != ocr_result.rec_scores.size()) {
-        LogWarn << "wrong ocr_result size" << VAR(ocr_result.boxes) << VAR(ocr_result.boxes.size())
-                << VAR(ocr_result.text) << VAR(ocr_result.text.size()) << VAR(ocr_result.rec_scores)
-                << VAR(ocr_result.rec_scores.size());
-        draw_result(roi, {});
-        return {};
-    }
 
     ResultsVec results;
+
+    if (ocr_result.boxes.size() != ocr_result.text.size() || ocr_result.text.size() != ocr_result.rec_scores.size()) {
+        LogWarn << "Wrong ocr_result size" << VAR(ocr_result.boxes) << VAR(ocr_result.text)
+                << VAR(ocr_result.rec_scores);
+
+        if (ocr_result.boxes.empty() && ocr_result.text.size() == 1 && ocr_result.rec_scores.size() == 1) {
+            if (auto raw_text = ocr_result.text.front(); !raw_text.empty()) {
+                // 这种情况是 det 模型没出结果，整个 ROI 直接被送给了 rec 模型。凑合用吧（
+                auto text = to_u16(raw_text);
+                auto score = ocr_result.rec_scores.front();
+                results.emplace_back(Result { .text = std::move(text), .box = roi, .score = score });
+            }
+        }
+
+        draw_result(roi, results);
+        return results;
+    }
 
     for (size_t i = 0; i != ocr_result.text.size(); ++i) {
         // the raw_box rect like ↓
