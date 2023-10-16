@@ -6,6 +6,7 @@
 #include "Resource.h"
 #include "SyncContext.h"
 #include "Utility.h"
+#include "Utils/Logger.h"
 
 #include <grpcpp/server_builder.h>
 

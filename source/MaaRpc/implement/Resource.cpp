@@ -1,12 +1,14 @@
 #include "Resource.h"
 #include "MaaFramework/MaaAPI.h"
 #include "Macro.h"
+#include "Utils/Logger.h"
 
 using namespace ::grpc;
 
 Status ResourceImpl::create(ServerContext* context, const ::maarpc::IdRequest* request,
                             ::maarpc::HandleResponse* response)
 {
+    LogFunc;
     std::ignore = context;
 
     MAA_GRPC_REQUIRED(id)
@@ -29,6 +31,7 @@ Status ResourceImpl::create(ServerContext* context, const ::maarpc::IdRequest* r
 Status ResourceImpl::destroy(ServerContext* context, const ::maarpc::HandleRequest* request,
                              ::maarpc::EmptyResponse* response)
 {
+    LogFunc;
     std::ignore = context;
     std::ignore = response;
 
@@ -44,6 +47,7 @@ Status ResourceImpl::destroy(ServerContext* context, const ::maarpc::HandleReque
 Status ResourceImpl::post_path(ServerContext* context, const ::maarpc::HandleStringRequest* request,
                                ::maarpc::IIdResponse* response)
 {
+    LogFunc;
     std::ignore = context;
 
     MAA_GRPC_REQUIRED(handle)
@@ -59,6 +63,7 @@ Status ResourceImpl::post_path(ServerContext* context, const ::maarpc::HandleStr
 Status ResourceImpl::status(ServerContext* context, const ::maarpc::HandleIIdRequest* request,
                             ::maarpc::StatusResponse* response)
 {
+    LogFunc;
     std::ignore = context;
 
     MAA_GRPC_REQUIRED(handle)
@@ -74,6 +79,7 @@ Status ResourceImpl::status(ServerContext* context, const ::maarpc::HandleIIdReq
 Status ResourceImpl::wait(ServerContext* context, const ::maarpc::HandleIIdRequest* request,
                           ::maarpc::StatusResponse* response)
 {
+    LogFunc;
     std::ignore = context;
 
     MAA_GRPC_REQUIRED(handle)
@@ -89,6 +95,7 @@ Status ResourceImpl::wait(ServerContext* context, const ::maarpc::HandleIIdReque
 Status ResourceImpl::loaded(ServerContext* context, const ::maarpc::HandleRequest* request,
                             ::maarpc::BoolResponse* response)
 {
+    LogFunc;
     std::ignore = context;
 
     MAA_GRPC_REQUIRED(handle)
@@ -103,6 +110,7 @@ Status ResourceImpl::loaded(ServerContext* context, const ::maarpc::HandleReques
 Status ResourceImpl::hash(ServerContext* context, const ::maarpc::HandleRequest* request,
                           ::maarpc::StringResponse* response)
 {
+    LogFunc;
     std::ignore = context;
 
     MAA_GRPC_REQUIRED(handle)

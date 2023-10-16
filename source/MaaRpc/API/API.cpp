@@ -26,7 +26,8 @@ void MaaRpcStart(MaaStringView address)
 void MaaRpcStop()
 {
     if (server) {
-        server->Shutdown();
+        using namespace std::chrono_literals;
+        server->Shutdown(std::chrono::system_clock::now() + 3s);
     }
     server = nullptr;
     context = nullptr;

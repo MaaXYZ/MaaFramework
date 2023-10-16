@@ -1,11 +1,13 @@
 #include "Config.h"
 #include "MaaToolKit/MaaToolKitAPI.h"
+#include "Utils/Logger.h"
 
 using namespace ::grpc;
 
 Status ConfigImpl::init(ServerContext* context, const ::maarpc::EmptyRequest* request,
                         ::maarpc::EmptyResponse* response)
 {
+    LogFunc;
     std::ignore = context;
     std::ignore = request;
     std::ignore = response;
@@ -21,6 +23,7 @@ Status ConfigImpl::init(ServerContext* context, const ::maarpc::EmptyRequest* re
 Status ConfigImpl::uninit(ServerContext* context, const ::maarpc::EmptyRequest* request,
                           ::maarpc::EmptyResponse* response)
 {
+    LogFunc;
     std::ignore = context;
     std::ignore = request;
     std::ignore = response;

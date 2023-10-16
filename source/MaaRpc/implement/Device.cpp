@@ -1,12 +1,14 @@
 #include "Device.h"
 #include "MaaToolKit/MaaToolKitAPI.h"
 #include "Macro.h"
+#include "Utils/Logger.h"
 
 using namespace ::grpc;
 
 Status DeviceImpl::find(ServerContext* context, const ::maarpc::EmptyRequest* request,
                         ::maarpc::DeviceInfosResponse* response)
 {
+    LogFunc;
     std::ignore = context;
     std::ignore = request;
 
@@ -33,6 +35,7 @@ Status DeviceImpl::find(ServerContext* context, const ::maarpc::EmptyRequest* re
 Status DeviceImpl::find_with_adb(ServerContext* context, const ::maarpc::StringRequest* request,
                                  ::maarpc::DeviceInfosResponse* response)
 {
+    LogFunc;
     std::ignore = context;
 
     auto adb = request->str();

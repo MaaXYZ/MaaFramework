@@ -1,13 +1,15 @@
 #include "Buffer.h"
-#include "Macro.h"
 #include "MaaFramework/MaaAPI.h"
+#include "Macro.h"
 #include "Utility.h"
+#include "Utils/Logger.h"
 
 using namespace ::grpc;
 
 Status ImageImpl::create(ServerContext* context, const ::maarpc::EmptyRequest* request,
                          ::maarpc::HandleResponse* response)
 {
+    LogFunc;
     std::ignore = context;
     std::ignore = request;
 
@@ -22,6 +24,7 @@ Status ImageImpl::create(ServerContext* context, const ::maarpc::EmptyRequest* r
 Status ImageImpl::destroy(ServerContext* context, const ::maarpc::HandleRequest* request,
                           ::maarpc::EmptyResponse* response)
 {
+    LogFunc;
     std::ignore = context;
     std::ignore = response;
 
@@ -37,6 +40,7 @@ Status ImageImpl::destroy(ServerContext* context, const ::maarpc::HandleRequest*
 Status ImageImpl::is_empty(ServerContext* context, const ::maarpc::HandleRequest* request,
                            ::maarpc::BoolResponse* response)
 {
+    LogFunc;
     std::ignore = context;
 
     MAA_GRPC_REQUIRED(handle)
@@ -51,6 +55,7 @@ Status ImageImpl::is_empty(ServerContext* context, const ::maarpc::HandleRequest
 Status ImageImpl::clear(ServerContext* context, const ::maarpc::HandleRequest* request,
                         ::maarpc::EmptyResponse* response)
 {
+    LogFunc;
     std::ignore = context;
     std::ignore = response;
 
@@ -66,6 +71,7 @@ Status ImageImpl::clear(ServerContext* context, const ::maarpc::HandleRequest* r
 Status ImageImpl::info(ServerContext* context, const ::maarpc::HandleRequest* request,
                        ::maarpc::ImageInfoResponse* response)
 {
+    LogFunc;
     std::ignore = context;
 
     MAA_GRPC_REQUIRED(handle)
@@ -82,6 +88,7 @@ Status ImageImpl::info(ServerContext* context, const ::maarpc::HandleRequest* re
 Status ImageImpl::encoded(ServerContext* context, const ::maarpc::HandleRequest* request,
                           ::maarpc::BufferResponse* response)
 {
+    LogFunc;
     std::ignore = context;
 
     MAA_GRPC_REQUIRED(handle)
@@ -101,6 +108,7 @@ Status ImageImpl::encoded(ServerContext* context, const ::maarpc::HandleRequest*
 Status ImageImpl::set_encoded(ServerContext* context, const ::maarpc::HandleBufferRequest* request,
                               ::maarpc::BoolResponse* response)
 {
+    LogFunc;
     std::ignore = context;
     std::ignore = response;
 

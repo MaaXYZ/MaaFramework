@@ -1,12 +1,14 @@
 #include "Instance.h"
 #include "MaaFramework/MaaAPI.h"
 #include "Macro.h"
+#include "Utils/Logger.h"
 
 using namespace ::grpc;
 
 Status InstanceImpl::create(ServerContext* context, const ::maarpc::IdRequest* request,
                             ::maarpc::HandleResponse* response)
 {
+    LogFunc;
     std::ignore = context;
 
     MAA_GRPC_REQUIRED(id)
@@ -29,6 +31,7 @@ Status InstanceImpl::create(ServerContext* context, const ::maarpc::IdRequest* r
 Status InstanceImpl::destroy(ServerContext* context, const ::maarpc::HandleRequest* request,
                              ::maarpc::EmptyResponse* response)
 {
+    LogFunc;
     std::ignore = context;
     std::ignore = response;
 
@@ -91,6 +94,7 @@ Status InstanceImpl::register_custom_recognizer(
     ServerContext* context,
     ServerReaderWriter<::maarpc::CustomRecognizerResponse, ::maarpc::CustomRecognizerRequest>* stream)
 {
+    LogFunc;
     std::ignore = context;
 
     ::maarpc::CustomRecognizerRequest request_data;
@@ -105,9 +109,10 @@ Status InstanceImpl::register_custom_recognizer(
     MAA_GRPC_GET_HANDLE_FROM(this, handle, init().handle)
 
 #if defined(__APPLE__) && defined(__clang__) && __clang_major__ < 16
-    std::shared_ptr<CustomRecognizerInfo> info(new CustomRecognizerInfo{ request->init().name(), stream, image_impl_, syncctx_impl_ });
+    std::shared_ptr<CustomRecognizerInfo> info(
+        new CustomRecognizerInfo { request->init().name(), stream, image_impl_, syncctx_impl_ });
 #else
-    // build error of Apple clang version 15.0.0 (clang-1500.0.40.1) on macOS 
+    // build error of Apple clang version 15.0.0 (clang-1500.0.40.1) on macOS
     auto info = std::make_shared<CustomRecognizerInfo>(request->init().name(), stream, image_impl_, syncctx_impl_);
 #endif
 
@@ -127,6 +132,7 @@ Status InstanceImpl::register_custom_recognizer(
 Status InstanceImpl::unregister_custom_recognizer(ServerContext* context, const ::maarpc::HandleStringRequest* request,
                                                   ::maarpc::EmptyResponse* response)
 {
+    LogFunc;
     std::ignore = context;
     std::ignore = response;
 
@@ -149,6 +155,7 @@ Status InstanceImpl::unregister_custom_recognizer(ServerContext* context, const 
 Status InstanceImpl::clear_custom_recognizer(ServerContext* context, const ::maarpc::HandleRequest* request,
                                              ::maarpc::EmptyResponse* response)
 {
+    LogFunc;
     std::ignore = context;
     std::ignore = response;
 
@@ -222,6 +229,7 @@ static MaaCustomActionAPI custom_action_api = { _run, _stop };
 Status InstanceImpl::register_custom_action(
     ServerContext* context, ServerReaderWriter<::maarpc::CustomActionResponse, ::maarpc::CustomActionRequest>* stream)
 {
+    LogFunc;
     std::ignore = context;
 
     ::maarpc::CustomActionRequest requestData;
@@ -236,12 +244,12 @@ Status InstanceImpl::register_custom_action(
     MAA_GRPC_GET_HANDLE_FROM(this, handle, init().handle)
 
 #if defined(__APPLE__) && defined(__clang__) && __clang_major__ < 16
-    std::shared_ptr<CustomActionInfo> info(new CustomActionInfo{ request->init().name(), stream, syncctx_impl_ });
+    std::shared_ptr<CustomActionInfo> info(new CustomActionInfo { request->init().name(), stream, syncctx_impl_ });
 #else
-    // build error of Apple clang version 15.0.0 (clang-1500.0.40.1) on macOS 
+    // build error of Apple clang version 15.0.0 (clang-1500.0.40.1) on macOS
     auto info = std::make_shared<CustomActionInfo>(request->init().name(), stream, syncctx_impl_);
 #endif
-    
+
     ::maarpc::CustomActionResponse response;
     stream->Write(response);
 
@@ -258,6 +266,7 @@ Status InstanceImpl::register_custom_action(
 Status InstanceImpl::unregister_custom_action(ServerContext* context, const ::maarpc::HandleStringRequest* request,
                                               ::maarpc::EmptyResponse* response)
 {
+    LogFunc;
     std::ignore = context;
     std::ignore = response;
 
@@ -280,6 +289,7 @@ Status InstanceImpl::unregister_custom_action(ServerContext* context, const ::ma
 Status InstanceImpl::clear_custom_action(ServerContext* context, const ::maarpc::HandleRequest* request,
                                          ::maarpc::EmptyResponse* response)
 {
+    LogFunc;
     std::ignore = context;
     std::ignore = response;
 
@@ -304,6 +314,7 @@ Status InstanceImpl::clear_custom_action(ServerContext* context, const ::maarpc:
 Status InstanceImpl::bind_resource(ServerContext* context, const ::maarpc::HandleHandleRequest* request,
                                    ::maarpc::EmptyResponse* response)
 {
+    LogFunc;
     std::ignore = context;
     std::ignore = response;
 
@@ -324,6 +335,7 @@ Status InstanceImpl::bind_resource(ServerContext* context, const ::maarpc::Handl
 Status InstanceImpl::bind_controller(ServerContext* context, const ::maarpc::HandleHandleRequest* request,
                                      ::maarpc::EmptyResponse* response)
 {
+    LogFunc;
     std::ignore = context;
     std::ignore = response;
 
@@ -344,6 +356,7 @@ Status InstanceImpl::bind_controller(ServerContext* context, const ::maarpc::Han
 Status InstanceImpl::inited(ServerContext* context, const ::maarpc::HandleRequest* request,
                             ::maarpc::BoolResponse* response)
 {
+    LogFunc;
     std::ignore = context;
 
     MAA_GRPC_REQUIRED(handle)
@@ -358,6 +371,7 @@ Status InstanceImpl::inited(ServerContext* context, const ::maarpc::HandleReques
 Status InstanceImpl::post_task(ServerContext* context, const ::maarpc::InstancePostTaskRequest* request,
                                ::maarpc::IIdResponse* response)
 {
+    LogFunc;
     std::ignore = context;
 
     MAA_GRPC_REQUIRED(handle)
@@ -374,6 +388,7 @@ Status InstanceImpl::post_task(ServerContext* context, const ::maarpc::InstanceP
 Status InstanceImpl::set_task_param(ServerContext* context, const ::maarpc::InstanceSetTaskParamRequest* request,
                                     ::maarpc::EmptyResponse* response)
 {
+    LogFunc;
     std::ignore = context;
     std::ignore = response;
 
@@ -394,6 +409,7 @@ Status InstanceImpl::set_task_param(ServerContext* context, const ::maarpc::Inst
 Status InstanceImpl::status(ServerContext* context, const ::maarpc::HandleIIdRequest* request,
                             ::maarpc::StatusResponse* response)
 {
+    LogFunc;
     std::ignore = context;
 
     MAA_GRPC_REQUIRED(handle)
@@ -409,6 +425,7 @@ Status InstanceImpl::status(ServerContext* context, const ::maarpc::HandleIIdReq
 Status InstanceImpl::wait(ServerContext* context, const ::maarpc::HandleIIdRequest* request,
                           ::maarpc::StatusResponse* response)
 {
+    LogFunc;
     std::ignore = context;
 
     MAA_GRPC_REQUIRED(handle)
@@ -424,6 +441,7 @@ Status InstanceImpl::wait(ServerContext* context, const ::maarpc::HandleIIdReque
 Status InstanceImpl::all_finished(ServerContext* context, const ::maarpc::HandleRequest* request,
                                   ::maarpc::BoolResponse* response)
 {
+    LogFunc;
     std::ignore = context;
 
     MAA_GRPC_REQUIRED(handle)
@@ -438,6 +456,7 @@ Status InstanceImpl::all_finished(ServerContext* context, const ::maarpc::Handle
 Status InstanceImpl::stop(ServerContext* context, const ::maarpc::HandleRequest* request,
                           ::maarpc::EmptyResponse* response)
 {
+    LogFunc;
     std::ignore = context;
     std::ignore = response;
 
@@ -456,6 +475,7 @@ Status InstanceImpl::stop(ServerContext* context, const ::maarpc::HandleRequest*
 Status InstanceImpl::resource(ServerContext* context, const ::maarpc::HandleRequest* request,
                               ::maarpc::HandleRequest* response)
 {
+    LogFunc;
     std::ignore = context;
 
     MAA_GRPC_REQUIRED(handle)
@@ -475,6 +495,7 @@ Status InstanceImpl::resource(ServerContext* context, const ::maarpc::HandleRequ
 Status InstanceImpl::controller(ServerContext* context, const ::maarpc::HandleRequest* request,
                                 ::maarpc::HandleRequest* response)
 {
+    LogFunc;
     std::ignore = context;
 
     MAA_GRPC_REQUIRED(handle)

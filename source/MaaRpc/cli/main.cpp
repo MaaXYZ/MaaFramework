@@ -59,7 +59,9 @@ int main(int argc, char* argv[])
     }
     cv.wait(lock);
 
+    std::cout << "Start stopping" << std::endl;
     MaaRpcStop();
 
+    std::cout << "Exit" << std::endl;
     return 0;
 }

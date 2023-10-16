@@ -10,7 +10,7 @@ target_include_directories(
     MaaRpc
     INTERFACE ../../include
     PRIVATE . ../include ../../include ${CMAKE_CURRENT_SOURCE_DIR}/generated)
-target_link_libraries(MaaRpc PUBLIC MaaRpcProto MaaToolKit protobuf::libprotobuf gRPC::grpc++)
+target_link_libraries(MaaRpc PUBLIC MaaRpcProto MaaUtils MaaToolKit protobuf::libprotobuf gRPC::grpc++)
 
 install(
     TARGETS MaaRpc

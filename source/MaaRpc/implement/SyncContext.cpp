@@ -1,12 +1,14 @@
 #include "SyncContext.h"
-#include "Macro.h"
 #include "MaaFramework/MaaAPI.h"
+#include "Macro.h"
+#include "Utils/Logger.h"
 
 using namespace ::grpc;
 
 Status SyncContextImpl::run_task(ServerContext* context, const ::maarpc::SyncContextRunTaskRequest* request,
                                  ::maarpc::EmptyResponse* response)
 {
+    LogFunc;
     std::ignore = context;
     std::ignore = response;
 
@@ -27,6 +29,7 @@ Status SyncContextImpl::run_task(ServerContext* context, const ::maarpc::SyncCon
 Status SyncContextImpl::run_recognizer(ServerContext* context, const ::maarpc::SyncContextRunRecognizerRequest* request,
                                        ::maarpc::SyncContextRunRecognizerResponse* response)
 {
+    LogFunc;
     std::ignore = context;
 
     MAA_GRPC_REQUIRED(handle)
@@ -62,6 +65,7 @@ Status SyncContextImpl::run_recognizer(ServerContext* context, const ::maarpc::S
 Status SyncContextImpl::run_action(ServerContext* context, const ::maarpc::SyncContextRunActionRequest* request,
                                    ::maarpc::EmptyResponse* response)
 {
+    LogFunc;
     std::ignore = context;
     std::ignore = response;
 
@@ -87,6 +91,7 @@ Status SyncContextImpl::run_action(ServerContext* context, const ::maarpc::SyncC
 Status SyncContextImpl::click(ServerContext* context, const ::maarpc::SyncContextClickRequest* request,
                               ::maarpc::EmptyRequest* response)
 {
+    LogFunc;
     std::ignore = context;
     std::ignore = response;
 
@@ -108,6 +113,7 @@ Status SyncContextImpl::click(ServerContext* context, const ::maarpc::SyncContex
 Status SyncContextImpl::swipe(ServerContext* context, const ::maarpc::SyncContextSwipeRequest* request,
                               ::maarpc::EmptyRequest* response)
 {
+    LogFunc;
     std::ignore = context;
     std::ignore = response;
 
@@ -130,6 +136,7 @@ Status SyncContextImpl::swipe(ServerContext* context, const ::maarpc::SyncContex
 Status SyncContextImpl::key(ServerContext* context, const ::maarpc::SyncContextKeyRequest* request,
                             ::maarpc::EmptyRequest* response)
 {
+    LogFunc;
     std::ignore = context;
     std::ignore = response;
 
@@ -151,6 +158,7 @@ Status SyncContextImpl::key(ServerContext* context, const ::maarpc::SyncContextK
 Status SyncContextImpl::touch_down(ServerContext* context, const ::maarpc::SyncContextTouchRequest* request,
                                    ::maarpc::EmptyRequest* response)
 {
+    LogFunc;
     std::ignore = context;
     std::ignore = response;
 
@@ -172,6 +180,7 @@ Status SyncContextImpl::touch_down(ServerContext* context, const ::maarpc::SyncC
 Status SyncContextImpl::touch_move(ServerContext* context, const ::maarpc::SyncContextTouchRequest* request,
                                    ::maarpc::EmptyRequest* response)
 {
+    LogFunc;
     std::ignore = context;
     std::ignore = response;
 
@@ -193,6 +202,7 @@ Status SyncContextImpl::touch_move(ServerContext* context, const ::maarpc::SyncC
 Status SyncContextImpl::touch_up(ServerContext* context, const ::maarpc::SyncContextTouchRequest* request,
                                  ::maarpc::EmptyRequest* response)
 {
+    LogFunc;
     std::ignore = context;
     std::ignore = response;
 
@@ -214,6 +224,7 @@ Status SyncContextImpl::touch_up(ServerContext* context, const ::maarpc::SyncCon
 Status SyncContextImpl::screencap(ServerContext* context, const ::maarpc::SyncContextScreencapRequest* request,
                                   ::maarpc::EmptyResponse* response)
 {
+    LogFunc;
     std::ignore = context;
     std::ignore = response;
 
@@ -234,6 +245,7 @@ Status SyncContextImpl::screencap(ServerContext* context, const ::maarpc::SyncCo
 Status SyncContextImpl::task_result(ServerContext* context, const ::maarpc::HandleStringRequest* request,
                                     ::maarpc::StringResponse* response)
 {
+    LogFunc;
     std::ignore = context;
 
     MAA_GRPC_REQUIRED(handle)

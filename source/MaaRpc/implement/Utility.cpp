@@ -1,6 +1,7 @@
 #include "Utility.h"
 #include "MaaFramework/MaaAPI.h"
 #include "Macro.h"
+#include "Utils/Logger.h"
 
 #include <boost/uuid/uuid_generators.hpp>
 #include <boost/uuid/uuid_io.hpp>
@@ -28,6 +29,7 @@ void callback_impl(MaaStringView msg, MaaStringView detail, MaaCallbackTranspare
 Status UtilityImpl::version(ServerContext* context, const ::maarpc::EmptyRequest* request,
                             ::maarpc::StringResponse* response)
 {
+    LogFunc;
     std::ignore = context;
     std::ignore = request;
 
@@ -39,6 +41,7 @@ Status UtilityImpl::version(ServerContext* context, const ::maarpc::EmptyRequest
 Status UtilityImpl::set_global_option(ServerContext* context, const ::maarpc::SetGlobalOptionRequest* request,
                                       ::maarpc::EmptyResponse* response)
 {
+    LogFunc;
     std::ignore = context;
     std::ignore = response;
 
@@ -76,6 +79,7 @@ Status UtilityImpl::set_global_option(ServerContext* context, const ::maarpc::Se
 Status UtilityImpl::acquire_id(ServerContext* context, const ::maarpc::EmptyRequest* request,
                                ::maarpc::IdResponse* response)
 {
+    LogFunc;
     std::ignore = context;
     std::ignore = request;
 
@@ -87,7 +91,7 @@ Status UtilityImpl::acquire_id(ServerContext* context, const ::maarpc::EmptyRequ
 Status UtilityImpl::register_callback(ServerContext* context, const ::maarpc::IdRequest* request,
                                       ServerWriter<::maarpc::Callback>* writer)
 {
-    std::ignore = context;
+    LogFunc;
 
     MAA_GRPC_REQUIRED(id)
 
@@ -102,8 +106,17 @@ Status UtilityImpl::register_callback(ServerContext* context, const ::maarpc::Id
 
     states_.add(id, state);
 
-    state->finish.acquire();
-    state->write.acquire(); // 等待callback完成
+    while (true) {
+        using namespace std::chrono_literals;
+        if (state->finish.try_acquire_for(2s)) {
+            break;
+        }
+        if (context->IsCancelled()) {
+            return Status::CANCELLED;
+        }
+    }
+    // 等待callback完成
+    state->write.acquire();
 
     return Status::OK;
 }
@@ -111,6 +124,7 @@ Status UtilityImpl::register_callback(ServerContext* context, const ::maarpc::Id
 Status UtilityImpl::unregister_callback(ServerContext* context, const ::maarpc::IdRequest* request,
                                         ::maarpc::EmptyResponse* response)
 {
+    LogFunc;
     std::ignore = context;
     std::ignore = response;
 
