@@ -88,9 +88,12 @@ cv::Ptr<cv::Feature2D> FeatureMatcher::create_detector() const
         return cv::KAZE::create();
     case FeatureMatcherParam::Detector::AKAZE:
         return cv::AKAZE::create();
-#ifdef MAA_VISION_HAS_XFEATURES2D
     case FeatureMatcherParam::Detector::SURF:
+#ifdef MAA_VISION_HAS_XFEATURES2D
         return cv::xfeatures2d::SURF::create();
+#else
+        LogError << name_ << "SURF not enabled";
+        return nullptr;
 #endif
     }
 
