@@ -24,14 +24,14 @@ def amplify(rect: list[int]) -> list[int]:
     x, y, w, h = rect
     return [x - 50, y - 50, w + 100, h + 100]
 
-# 获取图片各像素和图片主要颜色的距离
+# 颜色匹配方法
 def matchColor(image) -> tuple[int, list[tuple[list[int]]]]:
     # framework ColorMatch common method:
     #   4.COLOR_BGR2RGB 40.COLOR_BGR2HSV 6.COLOR_BGR2GRAY
     # colormatcher method:
     #   1.Simple 2.RGBDistance
     method = cv2.COLOR_BGR2RGB
-    reverse = cv2.COLOR_RGB2BGR # 不需要逆转时为None
+    reverse = cv2.COLOR_RGB2BGR # 不需要逆转时为None，用于显示 'MainColors'
     cluster_colors = colormatcher.kmeansClusterColors(image, method)
     return method, reverse, colormatcher.RGBDistance(cluster_colors)
 

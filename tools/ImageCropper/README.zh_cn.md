@@ -12,7 +12,7 @@ pip install -r requirements.txt
 
 ## 使用
 
-0. 调整脚本中的 `标准化参数` 和 `ROI 放大方法`
+0. 调整脚本中的 `标准化参数` `ROI 放大方法` `颜色匹配方法`
 1. 如果有截图，需预先保存到 `./src/` 路径下
 2. 运行 `start.bat` 或 `python main.py [device serial]` ，设备地址为可选
 3. 在弹窗中左键选择目标区域，滚轮缩放图片，右键移动图片

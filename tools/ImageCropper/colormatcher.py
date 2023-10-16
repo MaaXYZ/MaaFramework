@@ -150,7 +150,7 @@ def RGBDistance(cluster_colors, threshold: int = 50) -> list[tuple[list[int]]]:
     Args:
         cluster_colors
             方法 clusterColors() 返回的结果
-        threshold: int = 40
+        threshold: int = 50
             阈值 0 - 765 (255 * 3)
     
     Return:
