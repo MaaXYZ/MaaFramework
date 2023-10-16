@@ -833,24 +833,33 @@ bool PipelineResMgr::parse_roi(const json::value& input, std::vector<cv::Rect>& 
         output = default_value;
         return true;
     }
-
-    cv::Rect single_roi {};
-    if (parse_rect(*roi_opt, single_roi)) {
-        output = { single_roi };
-        return true;
-    }
-
     if (!roi_opt->is_array()) {
         LogError << "roi is not array" << VAR(input);
         return false;
     }
-
     auto& roi_array = roi_opt->as_array();
+    if (roi_array.empty()) {
+        LogError << "roi array is empty" << VAR(input);
+        return false;
+    }
+
+    if (roi_array.at(0).is_number()) {
+        cv::Rect single_roi {};
+        if (parse_rect(*roi_opt, single_roi)) {
+            output = { single_roi };
+            return true;
+        }
+        else {
+            LogError << "failed to parse_rect for single_roi" << VAR(roi_array);
+            return false;
+        }
+    }
+
     output.clear();
     for (const auto& roi_item : roi_array) {
         cv::Rect roi {};
         if (!parse_rect(roi_item, roi)) {
-            LogError << "failed to parse_rect" << VAR(roi_item);
+            LogError << "failed to parse_rect for multi_roi" << VAR(roi_item) << VAR(roi_array);
             return false;
         }
         output.emplace_back(roi);
