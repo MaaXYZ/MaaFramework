@@ -91,9 +91,11 @@ PipelineTask::RunningResult PipelineTask::find_first_and_run(const std::vector<s
         }
 
         if (std::chrono::steady_clock::now() - start_time > timeout) {
+            LogInfo << "Task timeout" << VAR(cur_task_name_) << VAR(timeout);
             return RunningResult::Timeout;
         }
         if (need_exit()) {
+            LogInfo << "Task interrupted" << VAR(cur_task_name_);
             return RunningResult::Interrupted;
         }
     }
@@ -142,6 +144,7 @@ PipelineTask::RunningResult PipelineTask::run_task(const HitResult& hits)
     }
 
     if (need_exit()) {
+        LogInfo << "Task interrupted" << VAR(cur_task_name_);
         return RunningResult::Interrupted;
     }
 
