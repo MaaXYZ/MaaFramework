@@ -26,13 +26,12 @@ bool PipelineTask::run()
 
     RunningResult ret = RunningResult::Success;
 
-    auto timeout = data_mgr_.get_task_data(entry_).timeout;
+    TaskData new_hits = data_mgr_.get_task_data(entry_);
     while (!next_list.empty() && !need_exit()) {
-        TaskData new_hits;
+        auto timeout = new_hits.timeout;
         ret = find_first_and_run(next_list, timeout, new_hits);
 
         cur_task_name_ = new_hits.name;
-        timeout = new_hits.timeout;
 
         switch (ret) {
         case RunningResult::Success:
