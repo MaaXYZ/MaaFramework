@@ -28,7 +28,7 @@ public:
     void clear_task_result();
 
     uint64_t get_run_times(const std::string& task) const;
-    void increase_pipeline_run_times(const std::string& task, int times = 1);
+    void increase_run_times(const std::string& task, int times = 1);
     void clear_run_times();
 
     void clear()

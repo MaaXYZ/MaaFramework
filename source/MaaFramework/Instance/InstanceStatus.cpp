@@ -79,7 +79,7 @@ uint64_t InstanceStatus::get_run_times(const std::string& task) const
     return it->second;
 }
 
-void InstanceStatus::increase_pipeline_run_times(const std::string& task, int times)
+void InstanceStatus::increase_run_times(const std::string& task, int times)
 {
     run_times_map_[task] += times;
 }

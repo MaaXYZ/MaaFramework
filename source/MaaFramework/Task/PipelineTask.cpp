@@ -180,7 +180,7 @@ PipelineTask::RunningResult PipelineTask::run_task(const HitResult& hits)
     }
 
     auto ret = actuator_.run(hits.rec_result, hits.task_data);
-    status()->increase_pipeline_run_times(name);
+    status()->increase_run_times(name);
 
     detail["status"] = "Completed";
     detail["last_time"] = format_now();
