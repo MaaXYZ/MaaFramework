@@ -2,6 +2,8 @@
 
 #include "UnitBase.h"
 
+#include <filesystem>
+
 MAA_CTRL_UNIT_NS_BEGIN
 
 class InvokeApp : public UnitBase
