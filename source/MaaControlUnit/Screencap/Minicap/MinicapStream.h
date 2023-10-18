@@ -10,6 +10,8 @@ MAA_CTRL_UNIT_NS_BEGIN
 class MinicapStream : public MinicapBase
 {
 public:
+    using MinicapBase::MinicapBase;
+
     virtual ~MinicapStream() override;
 
 public: // from UnitBase

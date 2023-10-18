@@ -113,9 +113,10 @@ std::shared_ptr<DeviceListAPI> create_adb_device_list_obj(MaaStringView adb_path
 }
 
 std::shared_ptr<ControlUnitAPI> create_adb_controller_unit(MaaStringView adb_path, MaaStringView adb_serial,
-                                                           MaaAdbControllerType type, MaaStringView config)
+                                                           MaaAdbControllerType type, MaaStringView config,
+                                                           MaaStringView agent_path)
 {
-    LogFunc << VAR(adb_path) << VAR(adb_serial) << VAR(type) << VAR(config);
+    LogFunc << VAR(adb_path) << VAR(adb_serial) << VAR(type) << VAR(config) << VAR(agent_path);
 
     std::shared_ptr<TouchInputBase> touch_unit = nullptr;
     std::shared_ptr<KeyInputBase> key_unit = nullptr;
@@ -127,6 +128,11 @@ std::shared_ptr<ControlUnitAPI> create_adb_controller_unit(MaaStringView adb_pat
 
     std::shared_ptr<MaatouchInput> maatouch_unit = nullptr;
 
+    auto agent_stdpath = path(agent_path);
+    auto minitouch_path = agent_stdpath / path("minitouch");
+    auto maatouch_path = agent_stdpath / path("maatouch");
+    auto minicap_path = agent_stdpath / path("minicap");
+
     switch (touch_type) {
     case MaaAdbControllerType_Touch_Adb:
         LogInfo << "touch_type: TapTouchInput";
@@ -134,12 +140,20 @@ std::shared_ptr<ControlUnitAPI> create_adb_controller_unit(MaaStringView adb_pat
         break;
     case MaaAdbControllerType_Touch_MiniTouch:
         LogInfo << "touch_type: MinitouchInput";
-        touch_unit = std::make_shared<MinitouchInput>();
+        if (!std::filesystem::exists(minitouch_path)) {
+            LogError << "minitouch path not exists" << VAR(minitouch_path);
+            return nullptr;
+        }
+        touch_unit = std::make_shared<MinitouchInput>(minitouch_path);
         break;
     case MaaAdbControllerType_Touch_MaaTouch:
         LogInfo << "touch_type: MaatouchInput";
+        if (!std::filesystem::exists(maatouch_path)) {
+            LogError << "maatouch path not exists" << VAR(maatouch_path);
+            return nullptr;
+        }
         if (!maatouch_unit) {
-            maatouch_unit = std::make_shared<MaatouchInput>();
+            maatouch_unit = std::make_shared<MaatouchInput>(maatouch_path);
         }
         touch_unit = maatouch_unit;
         break;
@@ -155,8 +169,12 @@ std::shared_ptr<ControlUnitAPI> create_adb_controller_unit(MaaStringView adb_pat
         break;
     case MaaAdbControllerType_Key_MaaTouch:
         LogInfo << "key_type: MaatouchInput";
+        if (!std::filesystem::exists(maatouch_path)) {
+            LogError << "maatouch path not exists" << VAR(maatouch_path);
+            return nullptr;
+        }
         if (!maatouch_unit) {
-            maatouch_unit = std::make_shared<MaatouchInput>();
+            maatouch_unit = std::make_shared<MaatouchInput>(maatouch_path);
         }
         key_unit = maatouch_unit;
         break;
@@ -168,7 +186,11 @@ std::shared_ptr<ControlUnitAPI> create_adb_controller_unit(MaaStringView adb_pat
     switch (screencap_type) {
     case MaaAdbControllerType_Screencap_FastestWay:
         LogInfo << "screencap_type: ScreencapFastestWay";
-        screencap_unit = std::make_shared<ScreencapFastestWay>();
+        if (!std::filesystem::exists(minicap_path)) {
+            LogError << "minicap path not exists" << VAR(minicap_path);
+            return nullptr;
+        }
+        screencap_unit = std::make_shared<ScreencapFastestWay>(minicap_path);
         break;
     case MaaAdbControllerType_Screencap_RawByNetcat:
         LogInfo << "screencap_type: ScreencapRawByNetcat";
@@ -188,11 +210,19 @@ std::shared_ptr<ControlUnitAPI> create_adb_controller_unit(MaaStringView adb_pat
         break;
     case MaaAdbControllerType_Screencap_MinicapDirect:
         LogInfo << "screencap_type: MinicapDirect";
-        screencap_unit = std::make_shared<MinicapDirect>();
+        if (!std::filesystem::exists(minicap_path)) {
+            LogError << "minicap path not exists" << VAR(minicap_path);
+            return nullptr;
+        }
+        screencap_unit = std::make_shared<MinicapDirect>(minicap_path);
         break;
     case MaaAdbControllerType_Screencap_MinicapStream:
         LogInfo << "screencap_type: MinicapStream";
-        screencap_unit = std::make_shared<MinicapStream>();
+        if (!std::filesystem::exists(minicap_path)) {
+            LogError << "minicap path not exists" << VAR(minicap_path);
+            return nullptr;
+        }
+        screencap_unit = std::make_shared<MinicapStream>(minicap_path);
         break;
     default:
         LogError << "Unknown screencap type" << VAR(screencap_type);
@@ -237,6 +267,8 @@ std::shared_ptr<ControlUnitAPI> create_adb_controller_unit(MaaStringView adb_pat
 std::shared_ptr<ConnectionAPI> create_adb_connection(MaaStringView adb_path, MaaStringView adb_serial,
                                                      MaaAdbControllerType type, MaaStringView config)
 {
+    LogFunc << VAR(adb_path) << VAR(adb_serial) << VAR(type) << VAR(config);
+
     std::ignore = type;
 
     auto json_opt = json::parse(std::string_view(config));
@@ -270,6 +302,8 @@ std::shared_ptr<ConnectionAPI> create_adb_connection(MaaStringView adb_path, Maa
 std::shared_ptr<DeviceInfoAPI> create_adb_device_info(MaaStringView adb_path, MaaStringView adb_serial,
                                                       MaaAdbControllerType type, MaaStringView config)
 {
+    LogFunc << VAR(adb_path) << VAR(adb_serial) << VAR(type) << VAR(config);
+
     std::ignore = type;
 
     auto json_opt = json::parse(std::string_view(config));
@@ -303,6 +337,8 @@ std::shared_ptr<DeviceInfoAPI> create_adb_device_info(MaaStringView adb_path, Ma
 std::shared_ptr<ActivityAPI> create_adb_activity(MaaStringView adb_path, MaaStringView adb_serial,
                                                  MaaAdbControllerType type, MaaStringView config)
 {
+    LogFunc << VAR(adb_path) << VAR(adb_serial) << VAR(type) << VAR(config);
+
     std::ignore = type;
 
     auto json_opt = json::parse(std::string_view(config));
@@ -334,13 +370,20 @@ std::shared_ptr<ActivityAPI> create_adb_activity(MaaStringView adb_path, MaaStri
 }
 
 std::shared_ptr<TouchInputAPI> create_adb_touch_input(MaaStringView adb_path, MaaStringView adb_serial,
-                                                      MaaAdbControllerType type, MaaStringView config)
+                                                      MaaAdbControllerType type, MaaStringView config,
+                                                      MaaStringView agent_path)
 {
+    LogFunc << VAR(adb_path) << VAR(adb_serial) << VAR(type) << VAR(config) << VAR(agent_path);
+
     auto json_opt = json::parse(std::string_view(config));
     if (!json_opt) {
         LogError << "Parse config failed, invalid config:" << config;
         return nullptr;
     }
+
+    auto agent_stdpath = path(agent_path);
+    auto minitouch_path = agent_stdpath / path("minitouch");
+    auto maatouch_path = agent_stdpath / path("maatouch");
 
     std::shared_ptr<TouchInputBase> touch_unit = nullptr;
     switch (type & MaaAdbControllerType_Touch_Mask) {
@@ -350,11 +393,19 @@ std::shared_ptr<TouchInputAPI> create_adb_touch_input(MaaStringView adb_path, Ma
         break;
     case MaaAdbControllerType_Touch_MiniTouch:
         LogInfo << "touch_type: MinitouchInput";
-        touch_unit = std::make_shared<MinitouchInput>();
+        if (!std::filesystem::exists(minitouch_path)) {
+            LogError << "minitouch path not exists" << VAR(minitouch_path);
+            return nullptr;
+        }
+        touch_unit = std::make_shared<MinitouchInput>(minitouch_path);
         break;
     case MaaAdbControllerType_Touch_MaaTouch:
         LogInfo << "touch_type: MaatouchInput";
-        touch_unit = std::make_shared<MaatouchInput>();
+        if (!std::filesystem::exists(maatouch_path)) {
+            LogError << "maatouch path not exists" << VAR(maatouch_path);
+            return nullptr;
+        }
+        touch_unit = std::make_shared<MaatouchInput>(maatouch_path);
         break;
     default:
         LogError << "Unknown touch input type" << VAR(type);
@@ -382,13 +433,18 @@ std::shared_ptr<TouchInputAPI> create_adb_touch_input(MaaStringView adb_path, Ma
 }
 
 std::shared_ptr<KeyInputAPI> create_adb_key_input(MaaStringView adb_path, MaaStringView adb_serial,
-                                                  MaaAdbControllerType type, MaaStringView config)
+                                                  MaaAdbControllerType type, MaaStringView config,
+                                                  MaaStringView agent_path)
 {
+    LogFunc << VAR(adb_path) << VAR(adb_serial) << VAR(type) << VAR(config) << VAR(agent_path);
+
     auto json_opt = json::parse(std::string_view(config));
     if (!json_opt) {
         LogError << "Parse config failed, invalid config:" << config;
         return nullptr;
     }
+    auto agent_stdpath = path(agent_path);
+    auto maatouch_path = agent_stdpath / path("maatouch");
 
     std::shared_ptr<KeyInputBase> key_unit = nullptr;
     switch (type & MaaAdbControllerType_Key_Mask) {
@@ -398,7 +454,11 @@ std::shared_ptr<KeyInputAPI> create_adb_key_input(MaaStringView adb_path, MaaStr
         break;
     case MaaAdbControllerType_Key_MaaTouch:
         LogInfo << "key_type: MaatouchInput";
-        key_unit = std::make_shared<MaatouchInput>();
+        if (!std::filesystem::exists(maatouch_path)) {
+            LogError << "maatouch path not exists" << VAR(maatouch_path);
+            return nullptr;
+        }
+        key_unit = std::make_shared<MaatouchInput>(maatouch_path);
         break;
     default:
         LogError << "Unknown key input type" << VAR(type);
@@ -426,19 +486,29 @@ std::shared_ptr<KeyInputAPI> create_adb_key_input(MaaStringView adb_path, MaaStr
 }
 
 std::shared_ptr<ScreencapAPI> create_adb_screencap(MaaStringView adb_path, MaaStringView adb_serial,
-                                                   MaaAdbControllerType type, MaaStringView config)
+                                                   MaaAdbControllerType type, MaaStringView config,
+                                                   MaaStringView agent_path)
 {
+    LogFunc << VAR(adb_path) << VAR(adb_serial) << VAR(type) << VAR(config) << VAR(agent_path);
+
     auto json_opt = json::parse(std::string_view(config));
     if (!json_opt) {
         LogError << "Parse config failed, invalid config:" << config;
         return nullptr;
     }
 
+    auto agent_stdpath = path(agent_path);
+    auto minicap_path = agent_stdpath / path("minicap");
+
     std::shared_ptr<ScreencapBase> screencap_unit = nullptr;
     switch (type & MaaAdbControllerType_Screencap_Mask) {
     case MaaAdbControllerType_Screencap_FastestWay:
         LogInfo << "screencap_type: ScreencapFastestWay";
-        screencap_unit = std::make_shared<ScreencapFastestWay>();
+        if (!std::filesystem::exists(minicap_path)) {
+            LogError << "minicap path not exists" << VAR(minicap_path);
+            return nullptr;
+        }
+        screencap_unit = std::make_shared<ScreencapFastestWay>(minicap_path);
         break;
     case MaaAdbControllerType_Screencap_RawByNetcat:
         LogInfo << "screencap_type: ScreencapRawByNetcat";
@@ -458,11 +528,19 @@ std::shared_ptr<ScreencapAPI> create_adb_screencap(MaaStringView adb_path, MaaSt
         break;
     case MaaAdbControllerType_Screencap_MinicapDirect:
         LogInfo << "screencap_type: MinicapDirect";
-        screencap_unit = std::make_shared<MinicapDirect>();
+        if (!std::filesystem::exists(minicap_path)) {
+            LogError << "minicap path not exists" << VAR(minicap_path);
+            return nullptr;
+        }
+        screencap_unit = std::make_shared<MinicapDirect>(minicap_path);
         break;
     case MaaAdbControllerType_Screencap_MinicapStream:
         LogInfo << "screencap_type: MinicapStream";
-        screencap_unit = std::make_shared<MinicapStream>();
+        if (!std::filesystem::exists(minicap_path)) {
+            LogError << "minicap path not exists" << VAR(minicap_path);
+            return nullptr;
+        }
+        screencap_unit = std::make_shared<MinicapStream>(minicap_path);
         break;
     default:
         LogError << "Unknown screencap type" << VAR(type);

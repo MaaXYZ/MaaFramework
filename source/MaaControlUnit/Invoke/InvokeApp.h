@@ -2,6 +2,8 @@
 
 #include "UnitBase.h"
 
+#include <filesystem>
+
 MAA_CTRL_UNIT_NS_BEGIN
 
 class InvokeApp : public UnitBase
@@ -17,7 +19,7 @@ public:
 
     std::optional<std::vector<std::string>> abilist();
     std::optional<int> sdk();
-    bool push(const std::string& path);
+    bool push(const std::filesystem::path& path);
     bool chmod();
 
     std::optional<std::string> invoke_bin_stdout(const std::string& extra);
