@@ -106,6 +106,12 @@ Status UtilityImpl::register_callback(ServerContext* context, const ::maarpc::Id
 
     states_.add(id, state);
 
+    {
+        ::maarpc::Callback cb;
+        cb.set_msg("Rpc.Inited");
+        state->writer->Write(cb);
+    }
+
     while (true) {
         using namespace std::chrono_literals;
         if (state->finish.try_acquire_for(2s)) {
