@@ -59,7 +59,7 @@ std::optional<int> InvokeApp::sdk()
     return atoi(cmd_ret.value().c_str());
 }
 
-bool InvokeApp::push(const std::string& path)
+bool InvokeApp::push(const std::filesystem::path& path)
 {
     LogFunc;
 
@@ -68,7 +68,7 @@ bool InvokeApp::push(const std::string& path)
         return false;
     }
 
-    std::string absolute_path = path_to_crt_string(std::filesystem::absolute(MAA_NS::path(path)));
+    std::string absolute_path = path_to_crt_string(std::filesystem::absolute(path));
     merge_replacement({ { "{BIN_PATH}", absolute_path }, { "{BIN_WORKING_FILE}", tempname_ } });
     auto cmd_ret = command(push_bin_argv_.gen(argv_replace_));
 

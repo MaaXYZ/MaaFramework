@@ -13,7 +13,6 @@ inline static const json::value kAdbConfig = R"(
 {
     "prebuilt": {
         "minicap": {
-            "root": "./MaaAgentBinary/minicap",
             "arch": [
                 "x86",
                 "armeabi-v7a",
@@ -24,7 +23,6 @@ inline static const json::value kAdbConfig = R"(
             ]
         },
         "minitouch": {
-            "root": "./MaaAgentBinary/minitouch",
             "arch": [
                 "x86_64",
                 "x86",
@@ -34,7 +32,6 @@ inline static const json::value kAdbConfig = R"(
             ]
         },
         "maatouch": {
-            "root": "./MaaAgentBinary/maatouch",
             "package": "com.shxyke.MaaTouch.App"
         }
     },

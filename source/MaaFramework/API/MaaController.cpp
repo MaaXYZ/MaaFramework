@@ -13,9 +13,21 @@ MaaControllerHandle MaaAdbControllerCreate(MaaStringView adb_path, MaaStringView
                                            MaaStringView config, MaaControllerCallback callback,
                                            MaaCallbackTransparentArg callback_arg)
 {
-    LogFunc << VAR(adb_path) << VAR(address) << VAR_VOIDP(callback) << VAR_VOIDP(callback_arg);
+    LogWarn << "This API" << __FUNCTION__
+            << "is about to be deprecated, and we recommend using MaaAdbControllerCreateV2 instead.";
 
-    auto unit_mgr = MAA_CTRL_UNIT_NS::create_adb_controller_unit(adb_path, address, type, config);
+    constexpr std::string_view kDefaultAgentPath = "./MaaAgentBinary";
+    return MaaAdbControllerCreateV2(adb_path, address, type, kDefaultAgentPath.data(), config, callback, callback_arg);
+}
+
+MaaControllerHandle MaaAdbControllerCreateV2(MaaStringView adb_path, MaaStringView address, MaaAdbControllerType type,
+                                             MaaStringView agent_path, MaaStringView config,
+                                             MaaControllerCallback callback, MaaCallbackTransparentArg callback_arg)
+{
+    LogFunc << VAR(adb_path) << VAR(address) << VAR(type) << VAR(agent_path) << VAR_VOIDP(callback)
+            << VAR_VOIDP(callback_arg);
+
+    auto unit_mgr = MAA_CTRL_UNIT_NS::create_adb_controller_unit(adb_path, address, type, agent_path, config);
     if (!unit_mgr) {
         LogError << "Failed to create controller unit";
         return nullptr;

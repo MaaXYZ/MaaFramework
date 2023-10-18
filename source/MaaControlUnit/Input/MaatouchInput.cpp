@@ -24,20 +24,6 @@ bool MaatouchInput::parse(const json::value& config)
     }
 
     {
-        auto opt = mopt->find<json::value>("root");
-        if (!opt) {
-            LogError << "Cannot find entry prebuilt.maatouch.root";
-            return false;
-        }
-
-        if (!opt->is_string()) {
-            return false;
-        }
-
-        root_ = opt->as_string();
-    }
-
-    {
         auto opt = mopt->find<json::value>("package");
         if (!opt) {
             LogError << "Cannot find entry prebuilt.maatouch.package";
@@ -62,9 +48,8 @@ bool MaatouchInput::init(int swidth, int sheight, int orientation)
         return false;
     }
 
-    auto bin = MAA_FMT::format("{}/universal/maatouch", root_);
-
-    if (!invoke_app_->push(bin)) {
+    const auto bin_path = agent_path_ / MAA_NS::path("universal") / MAA_NS::path("maatouch");
+    if (!invoke_app_->push(bin_path)) {
         return false;
     }
 

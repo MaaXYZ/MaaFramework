@@ -8,15 +8,15 @@
 
 MAA_CTRL_UNIT_NS_BEGIN
 
-ScreencapFastestWay::ScreencapFastestWay()
+ScreencapFastestWay::ScreencapFastestWay(const std::filesystem::path& minicap_path)
 {
     units_ = {
         { Method::RawByNetcat, std::make_shared<ScreencapRawByNetcat>() },
         { Method::RawWithGzip, std::make_shared<ScreencapRawWithGzip>() },
         { Method::Encode, std::make_shared<ScreencapEncode>() },
         { Method::EncodeToFileAndPull, std::make_shared<ScreencapEncodeToFileAndPull>() },
-        { Method::MinicapDirect, std::make_shared<MinicapDirect>() },
-        { Method::MinicapStream, std::make_shared<MinicapStream>() },
+        { Method::MinicapDirect, std::make_shared<MinicapDirect>(minicap_path) },
+        { Method::MinicapStream, std::make_shared<MinicapStream>(minicap_path) },
     };
 
     for (auto pair : units_) {

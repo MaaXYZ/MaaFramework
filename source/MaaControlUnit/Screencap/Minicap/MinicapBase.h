@@ -2,6 +2,8 @@
 
 #include "UnitBase.h"
 
+#include <filesystem>
+
 #include "../ScreencapHelper.h"
 #include "Invoke/InvokeApp.h"
 
@@ -10,7 +12,7 @@ MAA_CTRL_UNIT_NS_BEGIN
 class MinicapBase : public ScreencapBase
 {
 public:
-    MinicapBase()
+    MinicapBase(std::filesystem::path agent_path) : agent_path_(std::move(agent_path))
     {
         children_.emplace_back(binary_);
         children_.emplace_back(library_);
@@ -30,7 +32,7 @@ protected:
     std::shared_ptr<InvokeApp> library_ = std::make_shared<InvokeApp>();
 
 private:
-    std::string root_;
+    std::filesystem::path agent_path_;
     std::vector<std::string> arch_list_;
     std::vector<int> sdk_list_;
 };

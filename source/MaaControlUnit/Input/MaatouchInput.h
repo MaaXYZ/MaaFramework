@@ -2,6 +2,8 @@
 
 #include "UnitBase.h"
 
+#include <filesystem>
+
 #include "Invoke/InvokeApp.h"
 
 MAA_CTRL_UNIT_NS_BEGIN
@@ -9,7 +11,7 @@ MAA_CTRL_UNIT_NS_BEGIN
 class MaatouchInput : public TouchInputBase, public KeyInputBase
 {
 public:
-    MaatouchInput()
+    MaatouchInput(std::filesystem::path agent_path) : agent_path_(std::move(agent_path))
     {
         TouchInputBase::children_.emplace_back(invoke_app_);
         KeyInputBase::children_.emplace_back(invoke_app_);
@@ -60,7 +62,7 @@ private:
     std::shared_ptr<InvokeApp> invoke_app_ = std::make_shared<InvokeApp>();
     std::shared_ptr<IOHandler> shell_handler_ = nullptr;
 
-    std::string root_;
+    std::filesystem::path agent_path_;
     std::string package_name_;
     int screen_width_ = 0;
     int screen_height_ = 0;

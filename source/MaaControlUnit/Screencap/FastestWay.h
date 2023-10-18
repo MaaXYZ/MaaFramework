@@ -24,7 +24,7 @@ public:
     };
 
 public:
-    ScreencapFastestWay();
+    ScreencapFastestWay(const std::filesystem::path& minicap_path);
     virtual ~ScreencapFastestWay() override = default;
 
 public: // from UnitBase

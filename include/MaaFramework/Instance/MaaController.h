@@ -8,10 +8,13 @@ extern "C"
 {
 #endif
 
-    MaaControllerHandle MAA_FRAMEWORK_API MaaAdbControllerCreate(MaaStringView adb_path, MaaStringView address,
-                                                                 MaaAdbControllerType type, MaaStringView config,
-                                                                 MaaControllerCallback callback,
-                                                                 MaaCallbackTransparentArg callback_arg);
+    /* Deprecated, please use MaaAdbControllerCreateV2 */ MaaControllerHandle MAA_FRAMEWORK_API MaaAdbControllerCreate(
+        MaaStringView adb_path, MaaStringView address, MaaAdbControllerType type, MaaStringView config,
+        MaaControllerCallback callback, MaaCallbackTransparentArg callback_arg);
+    MaaControllerHandle MAA_FRAMEWORK_API MaaAdbControllerCreateV2(MaaStringView adb_path, MaaStringView address,
+                                                                   MaaAdbControllerType type, MaaStringView agent_path,
+                                                                   MaaStringView config, MaaControllerCallback callback,
+                                                                   MaaCallbackTransparentArg callback_arg);
     MaaControllerHandle MAA_FRAMEWORK_API MaaCustomControllerCreate(MaaCustomControllerHandle handle,
                                                                     MaaTransparentArg handle_arg,
                                                                     MaaControllerCallback callback,

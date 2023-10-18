@@ -2,6 +2,8 @@
 
 #include "UnitBase.h"
 
+#include <filesystem>
+
 #include "Invoke/InvokeApp.h"
 
 MAA_CTRL_UNIT_NS_BEGIN
@@ -9,7 +11,10 @@ MAA_CTRL_UNIT_NS_BEGIN
 class MinitouchInput : public TouchInputBase
 {
 public:
-    MinitouchInput() { children_.emplace_back(invoke_app_); }
+    MinitouchInput(std::filesystem::path agent_path) : agent_path_(std::move(agent_path))
+    {
+        children_.emplace_back(invoke_app_);
+    }
     virtual ~MinitouchInput() override = default;
 
 public: // from UnitBase
@@ -51,7 +56,7 @@ private:
     std::shared_ptr<InvokeApp> invoke_app_ = std::make_shared<InvokeApp>();
     std::shared_ptr<IOHandler> shell_handler_ = nullptr;
 
-    std::string root_;
+    std::filesystem::path agent_path_;
     std::vector<std::string> arch_list_;
     int screen_width_ = 0;
     int screen_height_ = 0;
