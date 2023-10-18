@@ -1,33 +1,36 @@
+<!-- markdownlint-disable MD033 MD041 -->
+<p align="center">
+    <img alt="LOGO" src="https://cdn.jsdelivr.net/gh/MaaAssistantArknights/design@main/logo/maa-logo_512x512.png" width="256" height="256" />
+</p>
+
 <div align="center">
 
-<img alt="LOGO" src="https://cdn.jsdelivr.net/gh/MaaAssistantArknights/design@main/logo/maa-logo_512x512.png" width="256" height="256" />
+# MaaFramework
 
-# MAA Framework
-
-<br>
-
-一款软件自动化测试框架，基于图像识别技术，模拟点击控制，一键完成设定好的测试任务
+<!-- prettier-ignore-start -->
+<!-- markdownlint-disable-next-line MD036 -->
+_✨ 基于图像识别的跨平台软件自动化测试框架 ✨_
+<!-- prettier-ignore-end -->
 
 </div>
 
-<br>
+<p align="center">
+    <img alt="license" src="https://img.shields.io/github/license/MaaAssistantArknights/MaaFramework">
+    <img alt="C++" src="https://img.shields.io/badge/C++-20-%2300599C?logo=cplusplus">
+    <img alt="platform" src="https://img.shields.io/badge/platform-Windows%20%7C%20Linux%20%7C%20macOS-blueviolet">
+    <img alt="commit" src="https://img.shields.io/github/commit-activity/m/MaaAssistantArknights/MaaFramework?color=%23ff69b4">
+    <img alt="stars" src="https://img.shields.io/github/stars/MaaAssistantArknights/MaaFramework?style=social">
+</p>
 
-## 拆库及解耦
+## 简介
 
-- [MaaFramework](https://github.com/MaaAssistantArknights/MaaFramework/tree/main/include/MaaFramework)  
-  技术栈：C++ / Vision  
-  通用 图像识别 + 控制 框架，~~Json 解释器~~，不涉及具体待测软件业务逻辑  
-  目前整体架构已基本完成，更多功能持续更新中！
+**MaaFramework** 是基于图像识别技术，运用 [MAA](https://github.com/MaaAssistantArknights/MaaAssistantArknights) 的开发经验，去芜存菁、完全解耦重写的一款软件自动化测试框架。
 
-- [MaaToolKit](https://github.com/MaaAssistantArknights/MaaFramework/tree/main/include/MaaToolKit)  
-  技术栈：C++ / Utils / RPC / ......  
-  平台相关上层业务，~~也就是现在每个 UI 都写了一遍的逻辑~~  
-  Http / WS APIs, 模拟器控制、端口查找、定时任务、版本更新、资源下载……  
-  正在开发中，欢迎加入我们_(:з」∠)_
+低代码的同时却拥有高扩展性，旨在打造一款丰富、领先、且便捷实用的开源库，助力开发者轻松编写出更好的测试程序，并推广普及。
 
-- MaaXXX  
-  技术栈：取决于您自己！  
-  待测软件业务逻辑，Pipeline，自定义识别器、自定义操作等
+## 快速开始
+
+请参考 []
 
 ## 最佳实践
 
