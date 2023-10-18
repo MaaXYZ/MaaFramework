@@ -27,7 +27,7 @@ MaaControllerHandle MaaAdbControllerCreateV2(MaaStringView adb_path, MaaStringVi
     LogFunc << VAR(adb_path) << VAR(address) << VAR(type) << VAR(agent_path) << VAR_VOIDP(callback)
             << VAR_VOIDP(callback_arg);
 
-    auto unit_mgr = MAA_CTRL_UNIT_NS::create_adb_controller_unit(adb_path, address, type, agent_path, config);
+    auto unit_mgr = MAA_CTRL_UNIT_NS::create_adb_controller_unit(adb_path, address, type, config, agent_path);
     if (!unit_mgr) {
         LogError << "Failed to create controller unit";
         return nullptr;

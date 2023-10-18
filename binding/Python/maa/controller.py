@@ -309,6 +309,7 @@ class AdbController(Controller):
         super().__init__()
         self._set_adb_api_properties()
 
+        self._callback_agent = CallbackAgent(callback, callback_arg)
         self._handle = Library.framework.MaaAdbControllerCreateV2(
             adb_path.encode("utf-8"),
             address.encode("utf-8"),
