@@ -51,7 +51,7 @@ bool MinitouchInput::parse(const json::value& config)
 
 bool MinitouchInput::init(int swidth, int sheight, int orientation)
 {
-    LogFunc;
+    LogFunc << VAR(swidth) << VAR(sheight) << VAR(orientation);
 
     if (!invoke_app_->init()) {
         return false;
@@ -83,15 +83,9 @@ bool MinitouchInput::init(int swidth, int sheight, int orientation)
 
 bool MinitouchInput::set_wh(int swidth, int sheight, int orientation)
 {
-    auto start_time = std::chrono::steady_clock::now();
-    bool timeout = false;
-    auto check_time = [&]() {
-        timeout = duration_since(start_time) > std::chrono::seconds(10);
-        return !timeout;
-    };
+    LogFunc << VAR(swidth) << VAR(sheight) << VAR(orientation);
 
-    constexpr std::string_view kMinitouchArgs = "-i";
-    shell_handler_ = invoke_app_->invoke_bin(std::string(kMinitouchArgs));
+    shell_handler_ = invoke_app_->invoke_bin("-i");
     if (!shell_handler_) {
         return false;
     }

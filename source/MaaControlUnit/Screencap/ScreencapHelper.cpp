@@ -16,6 +16,8 @@ MAA_CTRL_UNIT_NS_BEGIN
 
 bool ScreencapHelper::set_wh(int w, int h)
 {
+    LogFunc << VAR(w) << VAR(h);
+
     width_ = w;
     height_ = h;
 

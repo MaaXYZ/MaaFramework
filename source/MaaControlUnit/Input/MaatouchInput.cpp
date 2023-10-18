@@ -42,7 +42,7 @@ bool MaatouchInput::parse(const json::value& config)
 
 bool MaatouchInput::init(int swidth, int sheight, int orientation)
 {
-    LogFunc;
+    LogFunc << VAR(swidth) << VAR(sheight) << VAR(orientation);
 
     if (!invoke_app_->init()) {
         return false;
@@ -62,12 +62,7 @@ bool MaatouchInput::init(int swidth, int sheight, int orientation)
 
 bool MaatouchInput::set_wh(int swidth, int sheight, int orientation)
 {
-    auto start_time = std::chrono::steady_clock::now();
-    bool timeout = false;
-    auto check_time = [&]() {
-        timeout = duration_since(start_time) > std::chrono::seconds(10);
-        return !timeout;
-    };
+    LogFunc << VAR(swidth) << VAR(sheight) << VAR(orientation);
 
     shell_handler_ = invoke_app_->invoke_app(package_name_);
     if (!shell_handler_) {
@@ -79,6 +74,8 @@ bool MaatouchInput::set_wh(int swidth, int sheight, int orientation)
 
 bool MaatouchInput::press_key(int key)
 {
+    LogInfo << VAR(key);
+
     if (!shell_handler_) {
         return false;
     }

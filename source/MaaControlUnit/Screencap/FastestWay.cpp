@@ -58,7 +58,7 @@ void ScreencapFastestWay::deinit()
 
 bool ScreencapFastestWay::set_wh(int swidth, int sheight)
 {
-    LogFunc;
+    LogFunc << VAR(swidth) << VAR(sheight);
 
     for (auto pair : units_) {
         pair.second->set_wh(swidth, sheight);
