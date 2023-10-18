@@ -5,13 +5,13 @@ from maa.maa import Maa
 
 
 if __name__ == "__main__":
-    Library.open("../../x64/Debug")
+    Library.open("bin")
 
     resource = Resource()
-    res_id = resource.post_path("../../x64/Debug/resource")
+    res_id = resource.post_path("share/resource/")
     resource.wait(res_id)
 
-    controller = AdbController("adb", "127.0.0.1:16416")
+    controller = AdbController("adb", "127.0.0.1:16416", agent_path = "share/MaaAgentBinary/")
     ctrl_id = controller.post_connection()
     controller.wait(ctrl_id)
 
@@ -22,5 +22,5 @@ if __name__ == "__main__":
         print("Failed to init MAA.")
         exit()
 
-    task_id = maa_inst.post_task("MyTask", {})
+    task_id = maa_inst.post_task("StartUpAndClickButton", {})
     maa_inst.wait(task_id)

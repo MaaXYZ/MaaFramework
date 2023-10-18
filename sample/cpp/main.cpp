@@ -24,44 +24,46 @@ int main([[maybe_unused]] int argc, char** argv)
     }
 
     auto cur_dir = std::filesystem::path(argv[0]).parent_path();
-    auto agent_path = cur_dir / "MaaAgentBinary";
 
     const int kIndex = 0; // for demo, we just use the first device
+    auto agent_path = cur_dir / "share" / "MaaAgentBinary";
     auto controller_handle =
         MaaAdbControllerCreateV2(MaaToolKitGetDeviceAdbPath(kIndex), MaaToolKitGetDeviceAdbSerial(kIndex),
                                  MaaToolKitGetDeviceAdbControllerType(kIndex), MaaToolKitGetDeviceAdbConfig(kIndex),
                                  agent_path.string().c_str(), nullptr, nullptr);
     auto ctrl_id = MaaControllerPostConnection(controller_handle);
-    MaaControllerWait(controller_handle, ctrl_id);
 
     auto resource_handle = MaaResourceCreate(nullptr, nullptr);
-    auto resource_dir = cur_dir / "resource";
+    auto resource_dir = cur_dir / "share" / "resource";
     auto res_id = MaaResourcePostPath(resource_handle, resource_dir.string().c_str());
+
+    MaaControllerWait(controller_handle, ctrl_id);
     MaaResourceWait(resource_handle, res_id);
 
     auto maa_handle = MaaCreate(nullptr, nullptr);
     MaaBindResource(maa_handle, resource_handle);
     MaaBindController(maa_handle, controller_handle);
 
-    if (!MaaInited(maa_handle)) {
-        std::cout << "Failed to init MAA" << std::endl;
-
+    auto destroy = [&]() {
         MaaDestroy(maa_handle);
         MaaResourceDestroy(resource_handle);
         MaaControllerDestroy(controller_handle);
         MaaToolKitUninit();
-        return 0;
+    };
+
+    if (!MaaInited(maa_handle)) {
+        std::cout << "Failed to init MAA" << std::endl;
+
+        destroy();
+        return -1;
     }
 
     register_my_recognizer(maa_handle);
 
-    auto task_id = MaaPostTask(maa_handle, "VisonTest", MaaTaskParam_Empty);
+    auto task_id = MaaPostTask(maa_handle, "StartUpAndClickButton", MaaTaskParam_Empty);
     MaaWaitTask(maa_handle, task_id);
 
-    MaaDestroy(maa_handle);
-    MaaResourceDestroy(resource_handle);
-    MaaControllerDestroy(controller_handle);
-    MaaToolKitUninit();
+    destroy();
 
     return 0;
 }
