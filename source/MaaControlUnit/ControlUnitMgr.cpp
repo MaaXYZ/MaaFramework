@@ -116,7 +116,7 @@ std::shared_ptr<ControlUnitAPI> create_adb_controller_unit(MaaStringView adb_pat
                                                            MaaAdbControllerType type, MaaStringView agent_path,
                                                            MaaStringView config)
 {
-    LogFunc << VAR(adb_path) << VAR(adb_serial) << VAR(type) << VAR(config);
+    LogFunc << VAR(adb_path) << VAR(adb_serial) << VAR(type) << VAR(agent_path) << VAR(config);
 
     std::shared_ptr<TouchInputBase> touch_unit = nullptr;
     std::shared_ptr<KeyInputBase> key_unit = nullptr;
@@ -267,6 +267,8 @@ std::shared_ptr<ControlUnitAPI> create_adb_controller_unit(MaaStringView adb_pat
 std::shared_ptr<ConnectionAPI> create_adb_connection(MaaStringView adb_path, MaaStringView adb_serial,
                                                      MaaAdbControllerType type, MaaStringView config)
 {
+    LogFunc << VAR(adb_path) << VAR(adb_serial) << VAR(type) << VAR(config);
+
     std::ignore = type;
 
     auto json_opt = json::parse(std::string_view(config));
@@ -300,6 +302,8 @@ std::shared_ptr<ConnectionAPI> create_adb_connection(MaaStringView adb_path, Maa
 std::shared_ptr<DeviceInfoAPI> create_adb_device_info(MaaStringView adb_path, MaaStringView adb_serial,
                                                       MaaAdbControllerType type, MaaStringView config)
 {
+    LogFunc << VAR(adb_path) << VAR(adb_serial) << VAR(type) << VAR(config);
+
     std::ignore = type;
 
     auto json_opt = json::parse(std::string_view(config));
@@ -333,6 +337,8 @@ std::shared_ptr<DeviceInfoAPI> create_adb_device_info(MaaStringView adb_path, Ma
 std::shared_ptr<ActivityAPI> create_adb_activity(MaaStringView adb_path, MaaStringView adb_serial,
                                                  MaaAdbControllerType type, MaaStringView config)
 {
+    LogFunc << VAR(adb_path) << VAR(adb_serial) << VAR(type) << VAR(config);
+
     std::ignore = type;
 
     auto json_opt = json::parse(std::string_view(config));
@@ -367,6 +373,8 @@ std::shared_ptr<TouchInputAPI> create_adb_touch_input(MaaStringView adb_path, Ma
                                                       MaaAdbControllerType type, MaaStringView agent_path,
                                                       MaaStringView config)
 {
+    LogFunc << VAR(adb_path) << VAR(adb_serial) << VAR(type) << VAR(agent_path) << VAR(config);
+
     auto json_opt = json::parse(std::string_view(config));
     if (!json_opt) {
         LogError << "Parse config failed, invalid config:" << config;
@@ -428,6 +436,8 @@ std::shared_ptr<KeyInputAPI> create_adb_key_input(MaaStringView adb_path, MaaStr
                                                   MaaAdbControllerType type, MaaStringView agent_path,
                                                   MaaStringView config)
 {
+    LogFunc << VAR(adb_path) << VAR(adb_serial) << VAR(type) << VAR(agent_path) << VAR(config);
+
     auto json_opt = json::parse(std::string_view(config));
     if (!json_opt) {
         LogError << "Parse config failed, invalid config:" << config;
@@ -479,6 +489,8 @@ std::shared_ptr<ScreencapAPI> create_adb_screencap(MaaStringView adb_path, MaaSt
                                                    MaaAdbControllerType type, MaaStringView agent_path,
                                                    MaaStringView config)
 {
+    LogFunc << VAR(adb_path) << VAR(adb_serial) << VAR(type) << VAR(agent_path) << VAR(config);
+
     auto json_opt = json::parse(std::string_view(config));
     if (!json_opt) {
         LogError << "Parse config failed, invalid config:" << config;
