@@ -113,10 +113,10 @@ std::shared_ptr<DeviceListAPI> create_adb_device_list_obj(MaaStringView adb_path
 }
 
 std::shared_ptr<ControlUnitAPI> create_adb_controller_unit(MaaStringView adb_path, MaaStringView adb_serial,
-                                                           MaaAdbControllerType type, MaaStringView agent_path,
-                                                           MaaStringView config)
+                                                           MaaAdbControllerType type, MaaStringView config,
+                                                           MaaStringView agent_path)
 {
-    LogFunc << VAR(adb_path) << VAR(adb_serial) << VAR(type) << VAR(agent_path) << VAR(config);
+    LogFunc << VAR(adb_path) << VAR(adb_serial) << VAR(type) << VAR(config) << VAR(agent_path);
 
     std::shared_ptr<TouchInputBase> touch_unit = nullptr;
     std::shared_ptr<KeyInputBase> key_unit = nullptr;
@@ -370,10 +370,10 @@ std::shared_ptr<ActivityAPI> create_adb_activity(MaaStringView adb_path, MaaStri
 }
 
 std::shared_ptr<TouchInputAPI> create_adb_touch_input(MaaStringView adb_path, MaaStringView adb_serial,
-                                                      MaaAdbControllerType type, MaaStringView agent_path,
-                                                      MaaStringView config)
+                                                      MaaAdbControllerType type, MaaStringView config,
+                                                      MaaStringView agent_path)
 {
-    LogFunc << VAR(adb_path) << VAR(adb_serial) << VAR(type) << VAR(agent_path) << VAR(config);
+    LogFunc << VAR(adb_path) << VAR(adb_serial) << VAR(type) << VAR(config) << VAR(agent_path);
 
     auto json_opt = json::parse(std::string_view(config));
     if (!json_opt) {
@@ -433,10 +433,10 @@ std::shared_ptr<TouchInputAPI> create_adb_touch_input(MaaStringView adb_path, Ma
 }
 
 std::shared_ptr<KeyInputAPI> create_adb_key_input(MaaStringView adb_path, MaaStringView adb_serial,
-                                                  MaaAdbControllerType type, MaaStringView agent_path,
-                                                  MaaStringView config)
+                                                  MaaAdbControllerType type, MaaStringView config,
+                                                  MaaStringView agent_path)
 {
-    LogFunc << VAR(adb_path) << VAR(adb_serial) << VAR(type) << VAR(agent_path) << VAR(config);
+    LogFunc << VAR(adb_path) << VAR(adb_serial) << VAR(type) << VAR(config) << VAR(agent_path);
 
     auto json_opt = json::parse(std::string_view(config));
     if (!json_opt) {
@@ -486,10 +486,10 @@ std::shared_ptr<KeyInputAPI> create_adb_key_input(MaaStringView adb_path, MaaStr
 }
 
 std::shared_ptr<ScreencapAPI> create_adb_screencap(MaaStringView adb_path, MaaStringView adb_serial,
-                                                   MaaAdbControllerType type, MaaStringView agent_path,
-                                                   MaaStringView config)
+                                                   MaaAdbControllerType type, MaaStringView config,
+                                                   MaaStringView agent_path)
 {
-    LogFunc << VAR(adb_path) << VAR(adb_serial) << VAR(type) << VAR(agent_path) << VAR(config);
+    LogFunc << VAR(adb_path) << VAR(adb_serial) << VAR(type) << VAR(config) << VAR(agent_path);
 
     auto json_opt = json::parse(std::string_view(config));
     if (!json_opt) {

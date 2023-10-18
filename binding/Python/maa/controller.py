@@ -124,16 +124,13 @@ class AdbController(Controller):
     DEFAULT_CONFIG = {
         "prebuilt": {
             "minicap": {
-                "root": "./MaaAgentBinary/minicap",
                 "arch": ["x86", "armeabi-v7a", "armeabi"],
                 "sdk": [31, 29, 28, 27, 26, 25, 24, 23, 22, 21, 19, 18, 17, 16, 15, 14],
             },
             "minitouch": {
-                "root": "./MaaAgentBinary/minitouch",
                 "arch": ["x86_64", "x86", "arm64-v8a", "armeabi-v7a", "armeabi"],
             },
             "maatouch": {
-                "root": "./MaaAgentBinary/maatouch",
                 "package": "com.shxyke.MaaTouch.App",
             },
         },
@@ -294,6 +291,7 @@ class AdbController(Controller):
         address: str,
         controller_type: int = 65793,
         config: Dict[str, Any] = DEFAULT_CONFIG,
+        agent_path: str = "./MaaAgentBinary",
         callback: Optional[Callback] = None,
         callback_arg: Any = None,
     ):
@@ -311,11 +309,12 @@ class AdbController(Controller):
         super().__init__()
         self._set_adb_api_properties()
 
-        self._handle = Library.framework.MaaAdbControllerCreate(
+        self._handle = Library.framework.MaaAdbControllerCreateV2(
             adb_path.encode("utf-8"),
             address.encode("utf-8"),
             controller_type,
             json.dumps(config).encode("utf-8"),
+            agent_path.encode("utf-8"),
             self._callback_agent.c_callback(),
             self._callback_agent.c_callback_arg(),
         )
@@ -328,11 +327,12 @@ class AdbController(Controller):
         Set the API properties for the ADB controller.
         """
 
-        Library.framework.MaaAdbControllerCreate.restype = ctypes.c_void_p
-        Library.framework.MaaAdbControllerCreate.argtypes = [
+        Library.framework.MaaAdbControllerCreateV2.restype = ctypes.c_void_p
+        Library.framework.MaaAdbControllerCreateV2.argtypes = [
             ctypes.c_char_p,
             ctypes.c_char_p,
             ctypes.c_int32,
+            ctypes.c_char_p,
             ctypes.c_char_p,
             MaaApiCallback,
             ctypes.c_void_p,

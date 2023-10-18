@@ -21,7 +21,7 @@ MaaControllerHandle MaaAdbControllerCreate(MaaStringView adb_path, MaaStringView
 }
 
 MaaControllerHandle MaaAdbControllerCreateV2(MaaStringView adb_path, MaaStringView address, MaaAdbControllerType type,
-                                             MaaStringView agent_path, MaaStringView config,
+                                             MaaStringView config, MaaStringView agent_path,
                                              MaaControllerCallback callback, MaaCallbackTransparentArg callback_arg)
 {
     LogFunc << VAR(adb_path) << VAR(address) << VAR(type) << VAR(agent_path) << VAR_VOIDP(callback)

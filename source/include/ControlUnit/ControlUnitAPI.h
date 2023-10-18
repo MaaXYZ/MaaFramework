@@ -122,8 +122,8 @@ std::shared_ptr<DeviceListAPI> MAA_CONTROL_UNIT_API create_adb_device_list_obj(M
 std::shared_ptr<ControlUnitAPI> MAA_CONTROL_UNIT_API create_adb_controller_unit(MaaStringView adb_path,
                                                                                 MaaStringView adb_serial,
                                                                                 MaaAdbControllerType type,
-                                                                                MaaStringView agent_path,
-                                                                                MaaStringView config);
+                                                                                MaaStringView config,
+                                                                                MaaStringView agent_path);
 std::shared_ptr<ConnectionAPI> MAA_CONTROL_UNIT_API create_adb_connection(MaaStringView adb_path,
                                                                           MaaStringView adb_serial,
                                                                           MaaAdbControllerType type,
@@ -137,14 +137,14 @@ std::shared_ptr<ActivityAPI> MAA_CONTROL_UNIT_API create_adb_activity(MaaStringV
 std::shared_ptr<TouchInputAPI> MAA_CONTROL_UNIT_API create_adb_touch_input(MaaStringView adb_path,
                                                                            MaaStringView adb_serial,
                                                                            MaaAdbControllerType type,
-                                                                           MaaStringView agent_path,
-                                                                           MaaStringView config);
+                                                                           MaaStringView config,
+                                                                           MaaStringView agent_path);
 std::shared_ptr<KeyInputAPI> MAA_CONTROL_UNIT_API create_adb_key_input(MaaStringView adb_path, MaaStringView adb_serial,
-                                                                       MaaAdbControllerType type,
-                                                                       MaaStringView agent_path, MaaStringView config);
+                                                                       MaaAdbControllerType type, MaaStringView config,
+                                                                       MaaStringView agent_path);
 std::shared_ptr<ScreencapAPI> MAA_CONTROL_UNIT_API create_adb_screencap(MaaStringView adb_path,
                                                                         MaaStringView adb_serial,
-                                                                        MaaAdbControllerType type,
-                                                                        MaaStringView agent_path, MaaStringView config);
+                                                                        MaaAdbControllerType type, MaaStringView config,
+                                                                        MaaStringView agent_path);
 
 MAA_CTRL_UNIT_NS_END
