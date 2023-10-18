@@ -48,7 +48,7 @@ bool MaatouchInput::init(int swidth, int sheight, int orientation)
         return false;
     }
 
-    const auto bin_path = agent_path_ / MAA_NS::path("universal") / MAA_NS::path("maatouch");
+    const auto bin_path = agent_path_ / path("universal") / path("maatouch");
     if (!invoke_app_->push(bin_path)) {
         return false;
     }

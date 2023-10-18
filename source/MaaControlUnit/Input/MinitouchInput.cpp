@@ -69,7 +69,7 @@ bool MinitouchInput::init(int swidth, int sheight, int orientation)
     }
     const std::string& target_arch = *arch_iter;
 
-    const auto bin_path = agent_path_ / MAA_NS::path(target_arch) / MAA_NS::path("minitouch");
+    const auto bin_path = agent_path_ / path(target_arch) / path("minitouch");
     if (!invoke_app_->push(bin_path)) {
         return false;
     }

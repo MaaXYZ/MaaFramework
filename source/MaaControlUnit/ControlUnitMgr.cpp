@@ -128,10 +128,10 @@ std::shared_ptr<ControlUnitAPI> create_adb_controller_unit(MaaStringView adb_pat
 
     std::shared_ptr<MaatouchInput> maatouch_unit = nullptr;
 
-    auto agent_stdpath = MAA_NS::path(agent_path);
-    auto minitouch_path = agent_stdpath / MAA_NS::path("minitouch");
-    auto maatouch_path = agent_stdpath / MAA_NS::path("maatouch");
-    auto minicap_path = agent_stdpath / MAA_NS::path("minicap");
+    auto agent_stdpath = path(agent_path);
+    auto minitouch_path = agent_stdpath / path("minitouch");
+    auto maatouch_path = agent_stdpath / path("maatouch");
+    auto minicap_path = agent_stdpath / path("minicap");
 
     switch (touch_type) {
     case MaaAdbControllerType_Touch_Adb:
@@ -381,9 +381,9 @@ std::shared_ptr<TouchInputAPI> create_adb_touch_input(MaaStringView adb_path, Ma
         return nullptr;
     }
 
-    auto agent_stdpath = MAA_NS::path(agent_path);
-    auto minitouch_path = agent_stdpath / MAA_NS::path("minitouch");
-    auto maatouch_path = agent_stdpath / MAA_NS::path("maatouch");
+    auto agent_stdpath = path(agent_path);
+    auto minitouch_path = agent_stdpath / path("minitouch");
+    auto maatouch_path = agent_stdpath / path("maatouch");
 
     std::shared_ptr<TouchInputBase> touch_unit = nullptr;
     switch (type & MaaAdbControllerType_Touch_Mask) {
@@ -443,8 +443,8 @@ std::shared_ptr<KeyInputAPI> create_adb_key_input(MaaStringView adb_path, MaaStr
         LogError << "Parse config failed, invalid config:" << config;
         return nullptr;
     }
-    auto agent_stdpath = MAA_NS::path(agent_path);
-    auto maatouch_path = agent_stdpath / MAA_NS::path("maatouch");
+    auto agent_stdpath = path(agent_path);
+    auto maatouch_path = agent_stdpath / path("maatouch");
 
     std::shared_ptr<KeyInputBase> key_unit = nullptr;
     switch (type & MaaAdbControllerType_Key_Mask) {
@@ -497,8 +497,8 @@ std::shared_ptr<ScreencapAPI> create_adb_screencap(MaaStringView adb_path, MaaSt
         return nullptr;
     }
 
-    auto agent_stdpath = MAA_NS::path(agent_path);
-    auto minicap_path = agent_stdpath / MAA_NS::path("minicap");
+    auto agent_stdpath = path(agent_path);
+    auto minicap_path = agent_stdpath / path("minicap");
 
     std::shared_ptr<ScreencapBase> screencap_unit = nullptr;
     switch (type & MaaAdbControllerType_Screencap_Mask) {
