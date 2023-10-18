@@ -1,33 +1,39 @@
+<!-- markdownlint-disable MD033 MD041 -->
+<p align="center">
+    <img alt="LOGO" src="https://cdn.jsdelivr.net/gh/MaaAssistantArknights/design@main/logo/maa-logo_512x512.png" width="256" height="256" />
+</p>
+
 <div align="center">
 
-<img alt="LOGO" src="https://cdn.jsdelivr.net/gh/MaaAssistantArknights/design@main/logo/maa-logo_512x512.png" width="256" height="256" />
+# MaaFramework
 
-# MAA Framework
-
-<br>
-
-一款软件自动化测试框架，基于图像识别技术，模拟点击控制，一键完成设定好的测试任务
+<!-- prettier-ignore-start -->
+<!-- markdownlint-disable-next-line MD036 -->
+_✨ 基于图像识别的跨平台软件自动化测试框架 ✨_
+<!-- prettier-ignore-end -->
 
 </div>
 
-<br>
+<p align="center">
+    <img alt="license" src="https://img.shields.io/github/license/MaaAssistantArknights/MaaFramework">
+    <img alt="C++" src="https://img.shields.io/badge/C++-20-%2300599C?logo=cplusplus">
+    <img alt="platform" src="https://img.shields.io/badge/platform-Windows%20%7C%20Linux%20%7C%20macOS-blueviolet">
+    <img alt="commit" src="https://img.shields.io/github/commit-activity/m/MaaAssistantArknights/MaaFramework?color=%23ff69b4">
+    <img alt="stars" src="https://img.shields.io/github/stars/MaaAssistantArknights/MaaFramework?style=social">
+</p>
 
-## 拆库及解耦
+## 简介
 
-- [MaaFramework](https://github.com/MaaAssistantArknights/MaaFramework/tree/main/include/MaaFramework)  
-  技术栈：C++ / Vision  
-  通用 图像识别 + 控制 框架，~~Json 解释器~~，不涉及具体待测软件业务逻辑  
-  目前整体架构已基本完成，更多功能持续更新中！
+**MaaFramework** 是基于图像识别技术、运用 [MAA](https://github.com/MaaAssistantArknights/MaaAssistantArknights) 开发经验去芜存菁、完全重写的新一代软件自动化测试框架。
 
-- [MaaToolKit](https://github.com/MaaAssistantArknights/MaaFramework/tree/main/include/MaaToolKit)  
-  技术栈：C++ / Utils / RPC / ......  
-  平台相关上层业务，~~也就是现在每个 UI 都写了一遍的逻辑~~  
-  Http / WS APIs, 模拟器控制、端口查找、定时任务、版本更新、资源下载……  
-  正在开发中，欢迎加入我们_(:з」∠)_
+低代码的同时仍拥有高扩展性，旨在打造一款丰富、领先、且实用的开源库，助力开发者轻松编写出更好的测试程序，并推广普及。
 
-- MaaXXX  
-  技术栈：取决于您自己！  
-  待测软件业务逻辑，Pipeline，自定义识别器、自定义操作等
+## 即刻开始
+
+- [快速开始](docs/zh_cn/1.1-快速开始.md)
+- [集成文档](docs/zh_cn/2.1-集成文档.md)
+- [回调协议](docs/zh_cn/2.2-回调协议.md)
+- [Pipeline 协议](docs/zh_cn/3.1-任务流水线协议.md)
 
 ## 最佳实践
 
@@ -57,18 +63,20 @@ MAA 正计划建设为一类项目，而非舟的单一软件。
 
 同时，我们也非常欢迎在上方的最佳实践列表中添加上您的项目！
 
-## How to build
+## 许可证
 
-1. Download pre-built third-party libraries.
-  
-    ```bash
-    python maadeps-download.py
-    ```
+`MaaFramework` 采用 [`LGPL-3.0`](./LICENSE.md) 许可证进行开源。
 
-2. Build with MAA.sln or cmake.
+## 本地构建
 
-## 相关资源
+请参考 [CI](https://github.com/MaaAssistantArknights/MaaFramework/blob/main/.github/workflows/ci.yml).
 
-- [OCR ONNX 模型](https://github.com/MaaAssistantArknights/MaaCommonAssets/tree/main/OCR)
-- [Pipeline 编辑器](https://github.com/MaaAssistantArknights/MaaJsonViewer)
-- [控制器代理（已在 release 中内置）](https://github.com/MaaAssistantArknights/MaaAgentBinary)
+## 鸣谢
+
+### 开发者
+
+感谢以下开发者对 MaaFramework 作出的贡献：
+
+<a href="https://github.com/MaaAssistantArknights/MaaFramework/graphs/contributors">
+  <img src="https://contrib.rocks/image?repo=MaaAssistantArknights/MaaFramework&max=1000" />
+</a>
