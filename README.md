@@ -28,9 +28,13 @@ _✨ 基于图像识别的跨平台软件自动化测试框架 ✨_
 
 低代码的同时仍拥有高扩展性，旨在打造一款丰富、领先、且便捷实用的开源库，助力开发者轻松编写出更好的测试程序，并推广普及。
 
-## 快速开始
+## 即刻开始
 
-请参考 []
+1. 下载 Release 包
+2. 准备资源文件
+3. 编写集成代码
+
+请参考 [快速开始](docs/zh_cn/1.1-快速开始.md)
 
 ## 最佳实践
 
@@ -60,18 +64,20 @@ MAA 正计划建设为一类项目，而非舟的单一软件。
 
 同时，我们也非常欢迎在上方的最佳实践列表中添加上您的项目！
 
-## How to build
+## 许可证
 
-1. Download pre-built third-party libraries.
-  
-    ```bash
-    python maadeps-download.py
-    ```
+`MaaFramework` 采用 [`LGPL-3.0`](./LICENSE.md) 许可证进行开源。
 
-2. Build with MAA.sln or cmake.
+## 本地构建
 
-## 相关资源
+请参考 [CI](https://github.com/MaaAssistantArknights/MaaFramework/blob/main/.github/workflows/ci.yml).
 
-- [OCR ONNX 模型](https://github.com/MaaAssistantArknights/MaaCommonAssets/tree/main/OCR)
-- [Pipeline 编辑器](https://github.com/MaaAssistantArknights/MaaJsonViewer)
-- [控制器代理（已在 release 中内置）](https://github.com/MaaAssistantArknights/MaaAgentBinary)
+## 鸣谢
+
+### 开发者
+
+感谢以下开发者对 MaaFramework 作出的贡献：
+
+<a href="https://github.com/MaaAssistantArknights/MaaFramework/graphs/contributors">
+  <img src="https://contrib.rocks/image?repo=MaaAssistantArknights/MaaFramework&max=1000" />
+</a>
