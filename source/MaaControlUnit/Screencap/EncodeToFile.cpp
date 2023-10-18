@@ -15,11 +15,8 @@ bool ScreencapEncodeToFileAndPull::parse(const json::value& config)
 
 bool ScreencapEncodeToFileAndPull::init(int swidth, int sheight)
 {
-    set_wh(swidth, sheight);
-
     tempname_ = now_filestem();
-
-    return true;
+    return set_wh(swidth, sheight);
 }
 
 std::optional<cv::Mat> ScreencapEncodeToFileAndPull::screencap()

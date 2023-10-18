@@ -15,7 +15,7 @@ public: // from UnitBase
 public: // from TouchInputAPI
     virtual bool init(int swidth, int sheight, int orientation) override;
     virtual void deinit() override {}
-    virtual void set_wh(int swidth, int sheight, int orientation) override;
+    virtual bool set_wh(int swidth, int sheight, int orientation) override;
 
     virtual bool click(int x, int y) override;
     virtual bool swipe(int x1, int y1, int x2, int y2, int duration) override;

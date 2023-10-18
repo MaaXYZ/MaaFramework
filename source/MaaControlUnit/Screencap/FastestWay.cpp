@@ -56,12 +56,15 @@ void ScreencapFastestWay::deinit()
     method_ = Method::UnknownYet;
 }
 
-void ScreencapFastestWay::set_wh(int swidth, int sheight)
+bool ScreencapFastestWay::set_wh(int swidth, int sheight)
 {
     LogFunc;
+
     for (auto pair : units_) {
         pair.second->set_wh(swidth, sheight);
     }
+
+    return true;
 }
 
 std::optional<cv::Mat> ScreencapFastestWay::screencap()

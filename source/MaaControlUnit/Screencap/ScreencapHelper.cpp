@@ -14,10 +14,12 @@
 
 MAA_CTRL_UNIT_NS_BEGIN
 
-void ScreencapHelper::set_wh(int w, int h)
+bool ScreencapHelper::set_wh(int w, int h)
 {
     width_ = w;
     height_ = h;
+
+    return true;
 }
 
 std::optional<cv::Mat> ScreencapHelper::process_data(

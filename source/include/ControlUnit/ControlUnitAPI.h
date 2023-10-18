@@ -58,7 +58,7 @@ public:
 
     virtual bool init(int swidth, int sheight, int orientation) = 0;
     virtual void deinit() = 0;
-    virtual void set_wh(int swidth, int sheight, int orientation) = 0;
+    virtual bool set_wh(int swidth, int sheight, int orientation) = 0;
 
     virtual bool click(int x, int y) = 0;
     virtual bool swipe(int x1, int y1, int x2, int y2, int duration) = 0;
@@ -85,7 +85,7 @@ public:
 
     virtual bool init(int swidth, int sheight) = 0;
     virtual void deinit() = 0;
-    virtual void set_wh(int swidth, int sheight) = 0;
+    virtual bool set_wh(int swidth, int sheight) = 0;
 
     virtual std::optional<cv::Mat> screencap() = 0;
 };

@@ -108,8 +108,8 @@ bool MinicapBase::init(int swidth, int sheight)
 
     // TODO: 确认低版本是否使用minicap-nopie
     const auto bin_path = agent_path_ / path(target_arch) / path("bin") / path("minicap");
-    const auto lib_path = agent_path_ / path(target_arch) / path("lib") /
-                          path(MAA_FMT::format("android-{}", fit_sdk)) / path("minicap.so");
+    const auto lib_path = agent_path_ / path(target_arch) / path("lib") / path(MAA_FMT::format("android-{}", fit_sdk)) /
+                          path("minicap.so");
     if (!binary_->push(bin_path) || !library_->push(lib_path)) {
         return false;
     }
@@ -118,8 +118,7 @@ bool MinicapBase::init(int swidth, int sheight)
         return false;
     }
 
-    set_wh(swidth, sheight);
-    return true;
+    return set_wh(swidth, sheight);
 }
 
 MAA_CTRL_UNIT_NS_END

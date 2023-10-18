@@ -64,7 +64,7 @@ public:
     virtual ~ScreencapBase() override = default;
 
 public:
-    virtual void set_wh(int swidth, int sheight) override { screencap_helper_.set_wh(swidth, sheight); }
+    virtual bool set_wh(int swidth, int sheight) override { return screencap_helper_.set_wh(swidth, sheight); }
 
 protected:
     ScreencapHelper screencap_helper_;

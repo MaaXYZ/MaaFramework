@@ -11,8 +11,7 @@ bool ScreencapEncode::parse(const json::value& config)
 
 bool ScreencapEncode::init(int swidth, int sheight)
 {
-    set_wh(swidth, sheight);
-    return true;
+    return set_wh(swidth, sheight);
 }
 
 std::optional<cv::Mat> ScreencapEncode::screencap()

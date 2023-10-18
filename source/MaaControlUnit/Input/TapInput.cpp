@@ -13,15 +13,16 @@ bool TapTouchInput::parse(const json::value& config)
 
 bool TapTouchInput::init(int swidth, int sheight, int orientation)
 {
+    return set_wh(swidth, sheight, orientation);
+}
+
+bool TapTouchInput::set_wh(int swidth, int sheight, int orientation)
+{
     std::ignore = swidth;
     std::ignore = sheight;
     std::ignore = orientation;
-    return true;
-}
 
-void TapTouchInput::set_wh(int swidth, int sheight, int orientation)
-{
-    init(swidth, sheight, orientation);
+    return true;
 }
 
 bool TapTouchInput::click(int x, int y)

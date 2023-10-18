@@ -23,6 +23,7 @@
     <ClInclude Include="General\DeviceList.h" />
     <ClInclude Include="Input\MaatouchInput.h" />
     <ClInclude Include="Input\MinitouchInput.h" />
+    <ClInclude Include="Input\MtouchHelper.h" />
     <ClInclude Include="Input\TapInput.h" />
     <ClInclude Include="Platform\BoostIO.h" />
     <ClInclude Include="Platform\PlatformFactory.h" />
@@ -48,6 +49,7 @@
     <ClCompile Include="General\DeviceList.cpp" />
     <ClCompile Include="Input\MaatouchInput.cpp" />
     <ClCompile Include="Input\MinitouchInput.cpp" />
+    <ClCompile Include="Input\MtouchHelper.cpp" />
     <ClCompile Include="Input\TapInput.cpp" />
     <ClCompile Include="Platform\BoostIO.cpp" />
     <ClCompile Include="Screencap\Encode.cpp" />

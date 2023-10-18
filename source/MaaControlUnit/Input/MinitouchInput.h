@@ -1,6 +1,6 @@
 #pragma once
 
-#include "UnitBase.h"
+#include "MtouchHelper.h"
 
 #include <filesystem>
 
@@ -8,7 +8,7 @@
 
 MAA_CTRL_UNIT_NS_BEGIN
 
-class MinitouchInput : public TouchInputBase
+class MinitouchInput : public MtouchHelper
 {
 public:
     MinitouchInput(std::filesystem::path agent_path) : agent_path_(std::move(agent_path))
@@ -23,18 +23,15 @@ public: // from UnitBase
 public: // from TouchInputAPI
     virtual bool init(int swidth, int sheight, int orientation) override;
     virtual void deinit() override {}
-    virtual void set_wh(int swidth, int sheight, int orientation) override;
+    virtual bool set_wh(int swidth, int sheight, int orientation) override;
 
-    virtual bool click(int x, int y) override;
-    virtual bool swipe(int x1, int y1, int x2, int y2, int duration) override;
-
-    virtual bool touch_down(int contact, int x, int y, int pressure) override;
-    virtual bool touch_move(int contact, int x, int y, int pressure) override;
-    virtual bool touch_up(int contact) override;
+protected: // from MtouchHelper
+    virtual std::pair<int, int> screen_to_touch(int x, int y) override { return _screen_to_touch(x, y); }
+    virtual std::pair<int, int> screen_to_touch(double x, double y) override { return _screen_to_touch(x, y); }
 
 private:
     template <typename T1, typename T2>
-    inline std::pair<int, int> screen_to_touch(T1 x, T2 y)
+    inline std::pair<int, int> _screen_to_touch(T1 x, T2 y)
     {
         auto make_pair = [](double x, double y) {
             return std::make_pair(static_cast<int>(round(x)), static_cast<int>(round(y)));
@@ -53,19 +50,8 @@ private:
         }
     }
 
-    std::shared_ptr<InvokeApp> invoke_app_ = std::make_shared<InvokeApp>();
-    std::shared_ptr<IOHandler> shell_handler_ = nullptr;
-
     std::filesystem::path agent_path_;
     std::vector<std::string> arch_list_;
-    int screen_width_ = 0;
-    int screen_height_ = 0;
-    int touch_width_ = 0;
-    int touch_height_ = 0;
-    double xscale_ = 0;
-    double yscale_ = 0;
-    int press_ = 0;
-    int orientation_ = 0;
 };
 
 MAA_CTRL_UNIT_NS_END

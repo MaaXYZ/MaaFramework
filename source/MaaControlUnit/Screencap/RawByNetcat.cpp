@@ -12,7 +12,7 @@ bool ScreencapRawByNetcat::parse(const json::value& config)
 
 bool ScreencapRawByNetcat::init(int swidth, int sheight)
 {
-    set_wh(swidth, sheight);
+    LogFunc;
 
     if (!io_ptr_) {
         LogError << "io_ptr is nullptr";
@@ -38,7 +38,7 @@ bool ScreencapRawByNetcat::init(int swidth, int sheight)
     }
     netcat_port_ = prt.value();
 
-    return true;
+    return set_wh(swidth, sheight);
 }
 
 void ScreencapRawByNetcat::deinit()

@@ -33,7 +33,7 @@ public: // from UnitBase
 public: // from ScreencapAPI
     virtual bool init(int swidth, int sheight) override;
     virtual void deinit() override;
-    virtual void set_wh(int swidth, int sheight) override;
+    virtual bool set_wh(int swidth, int sheight) override;
 
     virtual std::optional<cv::Mat> screencap() override;
 

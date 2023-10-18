@@ -12,7 +12,7 @@ MAA_CTRL_UNIT_NS_BEGIN
 class ScreencapHelper
 {
 public:
-    void set_wh(int w, int h);
+    bool set_wh(int w, int h);
     int get_w() const { return width_; }
     int get_h() const { return height_; }
 
