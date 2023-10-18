@@ -103,7 +103,7 @@ struct ColorMatcherParam
 
 struct FeatureMatcherParam
 {
-    enum Detector
+    enum class Detector
     {
         SIFT,
         SURF,
@@ -113,7 +113,7 @@ struct FeatureMatcherParam
         AKAZE,
     };
 
-    // enum Matcher
+    // enum class Matcher
     //{
     //     FLANN,
     //     BRUTEFORCE,
