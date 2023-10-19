@@ -33,14 +33,7 @@ template <typename T>
 std::ostream& operator<<(std::ostream& os, const std::optional<T>& v);
 
 template <typename T>
-concept has_stream_insertion_operator = requires { std::declval<std::ostream&>() << std::declval<T>(); };
-template <typename T>
-concept has_value_type = requires { typename std::decay_t<T>::value_type; };
-template <typename T>
-concept has_key_mapped_type = requires {
-                                  typename std::decay_t<T>::key_type;
-                                  typename std::decay_t<T>::mapped_type;
-                              };
+concept has_output_operator = requires { std::declval<std::ostream&>() << std::declval<T>(); };
 
 class MAA_UTILS_API Logger
 {
@@ -115,7 +108,7 @@ public:
             else if constexpr (std::same_as<std::wstring, std::decay_t<T>>) {
                 return from_u16(std::forward<T>(value));
             }
-            else if constexpr (has_stream_insertion_operator<T>) {
+            else if constexpr (has_output_operator<T>) {
                 return std::forward<T>(value);
             }
             else if constexpr (std::is_constructible_v<json::array, T>) {
@@ -124,54 +117,8 @@ public:
             else if constexpr (std::is_constructible_v<json::object, T>) {
                 return json::object(std::forward<T>(value));
             }
-            else if constexpr (MAA_RNS::ranges::input_range<T> && has_value_type<T> && !has_key_mapped_type<T>) {
-                using value_type = typename std::decay_t<T>::value_type;
-                using value_stream_type = decltype(to_stream(std::declval<value_type>()));
-
-                json::value jtmp;
-                for (auto&& val : value) {
-                    if constexpr (std::is_constructible_v<json::value, value_stream_type>) {
-                        jtmp.emplace(to_stream(std::forward<decltype(val)>(val)));
-                    }
-                    else {
-                        std::stringstream val_ss;
-                        val_ss << to_stream(std::forward<decltype(val)>(val));
-                        jtmp.emplace(std::move(val_ss).str());
-                    }
-                }
-                return jtmp;
-            }
-            else if constexpr (MAA_RNS::ranges::input_range<T> && has_value_type<T> && has_key_mapped_type<T>) {
-                using key_type = typename std::decay_t<T>::key_type;
-                using key_stream_type = decltype(to_stream(std::declval<key_type>()));
-                using mapped_type = typename std::decay_t<T>::mapped_type;
-                using mapped_stream_type = decltype(to_stream(std::declval<mapped_type>()));
-
-                json::value jtmp;
-                for (auto&& [key, val] : value) {
-                    json::object::key_type strkey;
-                    if constexpr (std::is_constructible_v<json::object::key_type, key_stream_type>) {
-                        strkey = to_stream(key);
-                    }
-                    else {
-                        std::stringstream key_ss;
-                        key_ss << to_stream(key);
-                        strkey = std::move(key_ss).str();
-                    }
-
-                    if constexpr (std::is_constructible_v<json::value, mapped_stream_type>) {
-                        jtmp.emplace(std::move(strkey), to_stream(std::forward<decltype(val)>(val)));
-                    }
-                    else {
-                        std::stringstream val_ss;
-                        val_ss << to_stream(std::forward<decltype(val)>(val));
-                        jtmp.emplace(std::move(strkey), std::move(val_ss).str());
-                    }
-                }
-                return jtmp;
-            }
             else {
-                static_assert(!sizeof(T), "Unsupported type");
+                return json::serialize<true>(std::forward<T>(value));
             }
         }
 

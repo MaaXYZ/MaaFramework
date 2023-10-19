@@ -48,14 +48,10 @@ private:
     std::shared_ptr<Ort::Session> session_ = nullptr;
 };
 
-MAA_VISION_NS_END
-
-MAA_NS_BEGIN
-
 inline std::ostream& operator<<(std::ostream& os, const MAA_VISION_NS::NeuralNetworkDetector::Result& res)
 {
     os << res.to_json().to_string();
     return os;
 }
 
-MAA_NS_END
+MAA_VISION_NS_END

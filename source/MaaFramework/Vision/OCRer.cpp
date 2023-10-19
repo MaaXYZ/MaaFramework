@@ -19,13 +19,6 @@ json::value OCRer::Result::to_json() const
     return root;
 }
 
-std::ostream& operator<<(std::ostream& os, const OCRer::Result& res)
-{
-    auto u8str = from_u16(res.text);
-    os << VAR_RAW(u8str) << VAR_RAW(res.box) << VAR_RAW(res.score);
-    return os;
-}
-
 OCRer::ResultsVec OCRer::analyze() const
 {
     auto start_time = std::chrono::steady_clock::now();

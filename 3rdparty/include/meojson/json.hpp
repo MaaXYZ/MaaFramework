@@ -2528,11 +2528,13 @@ MEOJSON_INLINE const basic_value<string_t> invalid_value()
 
 namespace _serialization_helper
 {
-    template <typename T>
+    template <typename char_t, typename T>
     class has_output_operator
     {
+        using ostringstream_t = std::basic_ostringstream<char_t, std::char_traits<char_t>, std::allocator<char_t>>;
+
         template <typename U>
-        static auto test(int) -> decltype(std::declval<std::ostream&>() << std::declval<U>(), std::true_type());
+        static auto test(int) -> decltype(std::declval<ostringstream_t&>() << std::declval<U>(), std::true_type());
 
         template <typename U>
         static std::false_type test(...);
@@ -2566,17 +2568,12 @@ namespace _serialization_helper
     template <typename input_t, typename string_t>
     MEOJSON_INLINE string_t to_stream_string(input_t&& arg)
     {
-        if constexpr (has_output_operator<input_t>::value) {
-            using char_t = typename string_t::value_type;
-            using stringstream_t = std::basic_stringstream<char_t, std::char_traits<char_t>, std::allocator<char_t>>;
+        using char_t = typename string_t::value_type;
+        using ostringstream_t = std::basic_ostringstream<char_t, std::char_traits<char_t>, std::allocator<char_t>>;
 
-            stringstream_t ss;
-            ss << std::forward<input_t>(arg);
-            return std::move(ss).str();
-        }
-        else {
-            static_assert(!sizeof(input_t), "Unable to convert type to string, there is no operator <<.");
-        }
+        ostringstream_t os;
+        os << std::forward<input_t>(arg);
+        return std::move(os).str();
     }
 
     template <bool loose, typename input_t, typename string_t>

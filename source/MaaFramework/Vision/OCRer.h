@@ -59,24 +59,10 @@ private:
     std::shared_ptr<fastdeploy::pipeline::PPOCRv3> ocrer_ = nullptr;
 };
 
-MAA_VISION_NS_END
-
-MAA_NS_BEGIN
-
 inline std::ostream& operator<<(std::ostream& os, const MAA_VISION_NS::OCRer::Result& res)
 {
     os << res.to_json().to_string();
     return os;
 }
 
-inline std::ostream& operator<<(std::ostream& os, const MAA_VISION_NS::OCRer::ResultsVec& resutls)
-{
-    json::array root;
-    for (const auto& res : resutls) {
-        root.emplace_back(res.to_json());
-    }
-    os << root.to_string();
-    return os;
-}
-
-MAA_NS_END
+MAA_VISION_NS_END
