@@ -9,7 +9,6 @@ MAA_CTRL_UNIT_NS_BEGIN
 class MtouchHelper : public TouchInputBase
 {
 public:
-    MtouchHelper() { children_.emplace_back(invoke_app_); }
     virtual ~MtouchHelper() override = default;
 
 public: // from TouchInputAPI
@@ -25,7 +24,6 @@ protected:
     virtual std::pair<int, int> screen_to_touch(int x, int y) = 0;
     virtual std::pair<int, int> screen_to_touch(double x, double y) = 0;
 
-    std::shared_ptr<InvokeApp> invoke_app_ = std::make_shared<InvokeApp>();
     std::shared_ptr<IOHandler> shell_handler_ = nullptr;
 
     int screen_width_ = 0;

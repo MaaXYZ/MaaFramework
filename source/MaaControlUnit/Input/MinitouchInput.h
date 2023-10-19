@@ -52,6 +52,7 @@ private:
 
     std::filesystem::path agent_path_;
     std::vector<std::string> arch_list_;
+    std::shared_ptr<InvokeApp> invoke_app_ = std::make_shared<InvokeApp>();
 };
 
 MAA_CTRL_UNIT_NS_END
