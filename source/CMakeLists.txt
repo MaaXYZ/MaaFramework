@@ -1,5 +1,5 @@
 add_subdirectory(MaaUtils)
-add_subdirectory(MaaControlUnit)
+add_subdirectory(MaaAdbControlUnit)
 if(WITH_THRIFT AND NOT MAA_CROSSCOMPILE)
     add_subdirectory(MaaThriftController)
 endif(WITH_THRIFT AND NOT MAA_CROSSCOMPILE)
