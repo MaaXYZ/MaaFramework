@@ -99,33 +99,35 @@ public:
         }
 
     private:
-        template <typename T>
-        decltype(auto) to_stream(T&& value)
+        struct string_converter
         {
-            if constexpr (std::same_as<std::filesystem::path, std::decay_t<T>>) {
-                return path_to_utf8_string(std::forward<T>(value));
+            template <typename T>
+            std::string operator()(T&& value) const
+            {
+                if constexpr (std::same_as<std::filesystem::path, std::decay_t<T>>) {
+                    return path_to_utf8_string(std::forward<T>(value));
+                }
+                else if constexpr (std::same_as<std::wstring, std::decay_t<T>>) {
+                    return from_u16(std::forward<T>(value));
+                }
+                else if constexpr (std::is_constructible_v<std::string, T>) {
+                    return std::string(std::forward<T>(value));
+                }
+                else if constexpr (has_output_operator<T>) {
+                    std::stringstream ss;
+                    ss << std::forward<T>(value);
+                    return std::move(ss).str();
+                }
+                else {
+                    return json::serialize<true>(std::forward<T>(value), *this).dumps(4);
+                }
             }
-            else if constexpr (std::same_as<std::wstring, std::decay_t<T>>) {
-                return from_u16(std::forward<T>(value));
-            }
-            else if constexpr (has_output_operator<T>) {
-                return std::forward<T>(value);
-            }
-            else if constexpr (std::is_constructible_v<json::array, T>) {
-                return json::array(std::forward<T>(value));
-            }
-            else if constexpr (std::is_constructible_v<json::object, T>) {
-                return json::object(std::forward<T>(value));
-            }
-            else {
-                return json::serialize<true>(std::forward<T>(value));
-            }
-        }
+        };
 
         template <typename T>
         void stream(T&& value)
         {
-            auto&& content = to_stream(std::forward<T>(value));
+            auto&& content = string_converter()(std::forward<T>(value));
 
 #ifdef MAA_DEBUG
             cout_buffer_ << content << sep_.str;
