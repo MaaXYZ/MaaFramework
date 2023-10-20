@@ -2577,21 +2577,22 @@ namespace _serialization_helper
         using char_t = typename string_t::value_type;
         using ostringstream_t = std::basic_ostringstream<char_t, std::char_traits<char_t>, std::allocator<char_t>>;
 
-        static constexpr bool stream = loose;
-
         template <typename input_t>
         string_t operator()(input_t&& arg) const
         {
             if constexpr (std::is_constructible_v<string_t, input_t>) {
                 return string_t(std::forward<input_t>(arg));
             }
-            else if constexpr (stream && has_output_operator<char_t, input_t>::value) {
+            else if constexpr (!loose) {
+                static_assert(!sizeof(input_t), "Unable to convert type to string.");
+            }
+            else if constexpr (has_output_operator<char_t, input_t>::value) {
                 ostringstream_t os;
                 os << std::forward<input_t>(arg);
                 return std::move(os).str();
             }
             else {
-                static_assert(!sizeof(input_t), "Unable to convert type to string.");
+                return serialize<loose, input_t, string_t>(std::forward<input_t>(arg), *this).dumps();
             }
         }
     };
