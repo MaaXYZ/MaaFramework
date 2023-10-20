@@ -10,12 +10,14 @@
 std::mutex mutex;
 std::condition_variable cv;
 bool quiet = false;
+bool quit = false;
 
 void sig_handler(int)
 {
     if (!quiet) {
         std::cout << "Quit from interrupt" << std::endl;
     }
+    quit = true;
     std::unique_lock<std::mutex> lock(mutex);
     cv.notify_all();
 }
@@ -57,7 +59,7 @@ int main(int argc, char* argv[])
     if (!quiet) {
         std::cout << "Server listening on " << server_address << std::endl;
     }
-    cv.wait(lock);
+    cv.wait(lock, []() { return quit; });
 
     std::cout << "Start stopping" << std::endl;
     MaaRpcStop();

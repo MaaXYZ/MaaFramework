@@ -17,7 +17,7 @@ MaaControllerHandle MaaAdbControllerCreate(MaaStringView adb_path, MaaStringView
             << "is about to be deprecated, and we recommend using MaaAdbControllerCreateV2 instead.";
 
     constexpr std::string_view kDefaultAgentPath = "./MaaAgentBinary";
-    return MaaAdbControllerCreateV2(adb_path, address, type, kDefaultAgentPath.data(), config, callback, callback_arg);
+    return MaaAdbControllerCreateV2(adb_path, address, type, config, kDefaultAgentPath.data(), callback, callback_arg);
 }
 
 MaaControllerHandle MaaAdbControllerCreateV2(MaaStringView adb_path, MaaStringView address, MaaAdbControllerType type,
