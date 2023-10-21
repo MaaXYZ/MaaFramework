@@ -4,7 +4,7 @@
 
 #include <cstdint>
 
-MAA_CTRL_UNIT_NS_BEGIN
+MAA_ADB_CTRL_UNIT_NS_BEGIN
 
 #pragma pack(push, 1)
 
@@ -30,4 +30,4 @@ struct MinicapHeader
 
 #pragma pack(pop)
 
-MAA_CTRL_UNIT_NS_END
+MAA_ADB_CTRL_UNIT_NS_END

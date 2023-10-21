@@ -2,7 +2,7 @@
 
 #include "UnitBase.h"
 
-MAA_CTRL_UNIT_NS_BEGIN
+MAA_ADB_CTRL_UNIT_NS_BEGIN
 
 class DeviceInfo : public DeviceInfoBase
 {
@@ -32,4 +32,4 @@ private:
     int orientation_ = -1;
 };
 
-MAA_CTRL_UNIT_NS_END
+MAA_ADB_CTRL_UNIT_NS_END

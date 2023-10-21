@@ -2,7 +2,7 @@
 
 #include "UnitBase.h"
 
-MAA_CTRL_UNIT_NS_BEGIN
+MAA_ADB_CTRL_UNIT_NS_BEGIN
 
 class DeviceList : public DeviceListBase
 {
@@ -24,4 +24,4 @@ private:
     Devices devices_;
 };
 
-MAA_CTRL_UNIT_NS_END
+MAA_ADB_CTRL_UNIT_NS_END

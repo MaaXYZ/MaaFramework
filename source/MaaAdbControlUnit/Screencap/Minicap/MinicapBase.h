@@ -7,7 +7,7 @@
 #include "../ScreencapHelper.h"
 #include "Invoke/InvokeApp.h"
 
-MAA_CTRL_UNIT_NS_BEGIN
+MAA_ADB_CTRL_UNIT_NS_BEGIN
 
 class MinicapBase : public ScreencapBase
 {
@@ -37,4 +37,4 @@ private:
     std::vector<int> sdk_list_;
 };
 
-MAA_CTRL_UNIT_NS_END
+MAA_ADB_CTRL_UNIT_NS_END

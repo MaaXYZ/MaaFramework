@@ -4,7 +4,7 @@
 #include "Utils/Ranges.hpp"
 #include "Utils/StringMisc.hpp"
 
-MAA_CTRL_UNIT_NS_BEGIN
+MAA_ADB_CTRL_UNIT_NS_BEGIN
 
 bool DeviceList::parse(const json::value& config)
 {
@@ -50,4 +50,4 @@ DeviceList::Devices DeviceList::get_devices() const
     return devices_;
 }
 
-MAA_CTRL_UNIT_NS_END
+MAA_ADB_CTRL_UNIT_NS_END

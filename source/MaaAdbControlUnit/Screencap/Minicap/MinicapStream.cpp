@@ -5,7 +5,7 @@
 #include "Utils/Logger.h"
 #include "Utils/NoWarningCV.hpp"
 
-MAA_CTRL_UNIT_NS_BEGIN
+MAA_ADB_CTRL_UNIT_NS_BEGIN
 
 MinicapStream::~MinicapStream()
 {
@@ -187,4 +187,4 @@ void MinicapStream::working_thread()
     }
 }
 
-MAA_CTRL_UNIT_NS_END
+MAA_ADB_CTRL_UNIT_NS_END

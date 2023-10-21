@@ -1,10 +1,10 @@
 #pragma once
 
-#include "ControlUnit/ControlUnitAPI.h"
+#include "ControlUnit/AdbControlUnitAPI.h"
 
 #include "UnitBase.h"
 
-MAA_CTRL_UNIT_NS_BEGIN
+MAA_ADB_CTRL_UNIT_NS_BEGIN
 
 class ControlUnitMgr : public ControlUnitAPI
 {
@@ -40,4 +40,4 @@ private:
     std::shared_ptr<ScreencapBase> screencap_ = nullptr;
 };
 
-MAA_CTRL_UNIT_NS_END
+MAA_ADB_CTRL_UNIT_NS_END

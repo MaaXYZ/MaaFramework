@@ -113,11 +113,11 @@
 
 /* MaaControlUnit */
 
-#define MAA_CTRL_UNIT_NS MAA_CTRL_NS::UnitNs
-#define MAA_CTRL_UNIT_NS_BEGIN \
-    namespace MAA_CTRL_UNIT_NS \
+#define MAA_ADB_CTRL_UNIT_NS MAA_CTRL_NS::AdbUnitNs
+#define MAA_ADB_CTRL_UNIT_NS_BEGIN \
+    namespace MAA_ADB_CTRL_UNIT_NS \
     {
-#define MAA_CTRL_UNIT_NS_END }
+#define MAA_ADB_CTRL_UNIT_NS_END }
 
 /* MaaToolKit */
 

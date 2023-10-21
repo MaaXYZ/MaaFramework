@@ -4,7 +4,7 @@
 
 #include "ScreencapHelper.h"
 
-MAA_CTRL_UNIT_NS_BEGIN
+MAA_ADB_CTRL_UNIT_NS_BEGIN
 
 class ScreencapRawWithGzip : public ScreencapBase
 {
@@ -24,4 +24,4 @@ private:
     Argv screencap_raw_with_gzip_argv_;
 };
 
-MAA_CTRL_UNIT_NS_END
+MAA_ADB_CTRL_UNIT_NS_END

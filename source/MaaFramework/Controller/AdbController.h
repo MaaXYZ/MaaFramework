@@ -1,7 +1,7 @@
 #pragma once
 #include "ControllerMgr.h"
 
-#include "ControlUnit/ControlUnitAPI.h"
+#include "ControlUnit/AdbControlUnitAPI.h"
 
 #include <memory>
 
@@ -10,8 +10,9 @@ MAA_CTRL_NS_BEGIN
 class AdbController : public ControllerMgr
 {
 public:
-    AdbController(std::string adb_path, std::string address, std::shared_ptr<MAA_CTRL_UNIT_NS::ControlUnitAPI> unit_mgr,
-                  MaaControllerCallback callback, MaaCallbackTransparentArg callback_arg);
+    AdbController(std::string adb_path, std::string address,
+                  std::shared_ptr<MAA_ADB_CTRL_UNIT_NS::ControlUnitAPI> unit_mgr, MaaControllerCallback callback,
+                  MaaCallbackTransparentArg callback_arg);
     virtual ~AdbController() override;
 
     virtual std::string get_uuid() const override;
@@ -35,7 +36,7 @@ private:
     std::string adb_path_;
     std::string address_;
     std::pair<int, int> resolution_ = { 0, 0 };
-    std::shared_ptr<MAA_CTRL_UNIT_NS::ControlUnitAPI> unit_mgr_ = nullptr;
+    std::shared_ptr<MAA_ADB_CTRL_UNIT_NS::ControlUnitAPI> unit_mgr_ = nullptr;
 };
 
 MAA_CTRL_NS_END

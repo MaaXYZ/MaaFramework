@@ -2,12 +2,12 @@
 
 #include <meojson/json.hpp>
 
-#include "ControlUnit/ControlUnitAPI.h"
+#include "ControlUnit/AdbControlUnitAPI.h"
 #include "Platform/PlatformIO.h"
 #include "Screencap/ScreencapHelper.h"
 #include "Utils/ArgvWrapper.hpp"
 
-MAA_CTRL_UNIT_NS_BEGIN
+MAA_ADB_CTRL_UNIT_NS_BEGIN
 
 class UnitBase
 {
@@ -82,4 +82,4 @@ public:
     virtual ~KeyInputBase() override = default;
 };
 
-MAA_CTRL_UNIT_NS_END
+MAA_ADB_CTRL_UNIT_NS_END

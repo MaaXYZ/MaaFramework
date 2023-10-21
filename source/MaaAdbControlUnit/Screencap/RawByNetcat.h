@@ -4,7 +4,7 @@
 
 #include "ScreencapHelper.h"
 
-MAA_CTRL_UNIT_NS_BEGIN
+MAA_ADB_CTRL_UNIT_NS_BEGIN
 
 class ScreencapRawByNetcat : public ScreencapBase
 {
@@ -30,4 +30,4 @@ private:
     uint16_t netcat_port_ = 0;
 };
 
-MAA_CTRL_UNIT_NS_END
+MAA_ADB_CTRL_UNIT_NS_END

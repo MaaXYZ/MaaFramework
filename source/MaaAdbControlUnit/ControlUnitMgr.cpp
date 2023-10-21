@@ -21,7 +21,7 @@
 
 #pragma message("MaaControlUnit MAA_VERSION: " MAA_VERSION)
 
-MAA_CTRL_UNIT_NS_BEGIN
+MAA_ADB_CTRL_UNIT_NS_BEGIN
 
 bool ControlUnitMgr::parse(const json::value& config)
 {
@@ -81,7 +81,7 @@ void ControlUnitMgr::set_replacement(const std::map<std::string, std::string>& r
     }
 }
 
-std::shared_ptr<DeviceListAPI> create_adb_device_list_obj(MaaStringView adb_path, MaaStringView config)
+std::shared_ptr<DeviceListAPI> create_device_list_obj(MaaStringView adb_path, MaaStringView config)
 {
     LogFunc << VAR(adb_path) << VAR(config);
 
@@ -112,9 +112,9 @@ std::shared_ptr<DeviceListAPI> create_adb_device_list_obj(MaaStringView adb_path
     return device_list_mgr;
 }
 
-std::shared_ptr<ControlUnitAPI> create_adb_controller_unit(MaaStringView adb_path, MaaStringView adb_serial,
-                                                           MaaAdbControllerType type, MaaStringView config,
-                                                           MaaStringView agent_path)
+std::shared_ptr<ControlUnitAPI> create_controller_unit(MaaStringView adb_path, MaaStringView adb_serial,
+                                                       MaaAdbControllerType type, MaaStringView config,
+                                                       MaaStringView agent_path)
 {
     LogFunc << VAR(adb_path) << VAR(adb_serial) << VAR(type) << VAR(config) << VAR(agent_path);
 
@@ -264,8 +264,8 @@ std::shared_ptr<ControlUnitAPI> create_adb_controller_unit(MaaStringView adb_pat
     return unit_mgr;
 }
 
-std::shared_ptr<ConnectionAPI> create_adb_connection(MaaStringView adb_path, MaaStringView adb_serial,
-                                                     MaaAdbControllerType type, MaaStringView config)
+std::shared_ptr<ConnectionAPI> create_connection(MaaStringView adb_path, MaaStringView adb_serial,
+                                                 MaaAdbControllerType type, MaaStringView config)
 {
     LogFunc << VAR(adb_path) << VAR(adb_serial) << VAR(type) << VAR(config);
 
@@ -299,8 +299,8 @@ std::shared_ptr<ConnectionAPI> create_adb_connection(MaaStringView adb_path, Maa
     return connection;
 }
 
-std::shared_ptr<DeviceInfoAPI> create_adb_device_info(MaaStringView adb_path, MaaStringView adb_serial,
-                                                      MaaAdbControllerType type, MaaStringView config)
+std::shared_ptr<DeviceInfoAPI> create_device_info(MaaStringView adb_path, MaaStringView adb_serial,
+                                                  MaaAdbControllerType type, MaaStringView config)
 {
     LogFunc << VAR(adb_path) << VAR(adb_serial) << VAR(type) << VAR(config);
 
@@ -334,8 +334,8 @@ std::shared_ptr<DeviceInfoAPI> create_adb_device_info(MaaStringView adb_path, Ma
     return device_info;
 }
 
-std::shared_ptr<ActivityAPI> create_adb_activity(MaaStringView adb_path, MaaStringView adb_serial,
-                                                 MaaAdbControllerType type, MaaStringView config)
+std::shared_ptr<ActivityAPI> create_activity(MaaStringView adb_path, MaaStringView adb_serial,
+                                             MaaAdbControllerType type, MaaStringView config)
 {
     LogFunc << VAR(adb_path) << VAR(adb_serial) << VAR(type) << VAR(config);
 
@@ -369,9 +369,9 @@ std::shared_ptr<ActivityAPI> create_adb_activity(MaaStringView adb_path, MaaStri
     return activity;
 }
 
-std::shared_ptr<TouchInputAPI> create_adb_touch_input(MaaStringView adb_path, MaaStringView adb_serial,
-                                                      MaaAdbControllerType type, MaaStringView config,
-                                                      MaaStringView agent_path)
+std::shared_ptr<TouchInputAPI> create_touch_input(MaaStringView adb_path, MaaStringView adb_serial,
+                                                  MaaAdbControllerType type, MaaStringView config,
+                                                  MaaStringView agent_path)
 {
     LogFunc << VAR(adb_path) << VAR(adb_serial) << VAR(type) << VAR(config) << VAR(agent_path);
 
@@ -432,9 +432,8 @@ std::shared_ptr<TouchInputAPI> create_adb_touch_input(MaaStringView adb_path, Ma
     return touch_unit;
 }
 
-std::shared_ptr<KeyInputAPI> create_adb_key_input(MaaStringView adb_path, MaaStringView adb_serial,
-                                                  MaaAdbControllerType type, MaaStringView config,
-                                                  MaaStringView agent_path)
+std::shared_ptr<KeyInputAPI> create_key_input(MaaStringView adb_path, MaaStringView adb_serial,
+                                              MaaAdbControllerType type, MaaStringView config, MaaStringView agent_path)
 {
     LogFunc << VAR(adb_path) << VAR(adb_serial) << VAR(type) << VAR(config) << VAR(agent_path);
 
@@ -485,9 +484,9 @@ std::shared_ptr<KeyInputAPI> create_adb_key_input(MaaStringView adb_path, MaaStr
     return key_unit;
 }
 
-std::shared_ptr<ScreencapAPI> create_adb_screencap(MaaStringView adb_path, MaaStringView adb_serial,
-                                                   MaaAdbControllerType type, MaaStringView config,
-                                                   MaaStringView agent_path)
+std::shared_ptr<ScreencapAPI> create_screencap(MaaStringView adb_path, MaaStringView adb_serial,
+                                               MaaAdbControllerType type, MaaStringView config,
+                                               MaaStringView agent_path)
 {
     LogFunc << VAR(adb_path) << VAR(adb_serial) << VAR(type) << VAR(config) << VAR(agent_path);
 
@@ -567,4 +566,4 @@ std::shared_ptr<ScreencapAPI> create_adb_screencap(MaaStringView adb_path, MaaSt
     return screencap_unit;
 }
 
-MAA_CTRL_UNIT_NS_END
+MAA_ADB_CTRL_UNIT_NS_END

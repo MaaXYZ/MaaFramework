@@ -2,7 +2,7 @@
 
 #include "Utils/Logger.h"
 
-MAA_CTRL_UNIT_NS_BEGIN
+MAA_ADB_CTRL_UNIT_NS_BEGIN
 
 bool Activity::parse(const json::value& config)
 {
@@ -29,4 +29,4 @@ bool Activity::stop(const std::string& intent)
     return cmd_ret.has_value();
 }
 
-MAA_CTRL_UNIT_NS_END
+MAA_ADB_CTRL_UNIT_NS_END

@@ -2,7 +2,7 @@
 
 #include "Utils/Logger.h"
 
-MAA_CTRL_UNIT_NS_BEGIN
+MAA_ADB_CTRL_UNIT_NS_BEGIN
 
 bool DeviceInfo::parse(const json::value& config)
 {
@@ -69,4 +69,4 @@ std::optional<int> DeviceInfo::request_orientation()
     return orientation_;
 }
 
-MAA_CTRL_UNIT_NS_END
+MAA_ADB_CTRL_UNIT_NS_END

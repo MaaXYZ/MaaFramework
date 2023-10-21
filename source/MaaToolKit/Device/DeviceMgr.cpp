@@ -1,6 +1,6 @@
 #include "DeviceMgr.h"
 
-#include "ControlUnit/ControlUnitAPI.h"
+#include "ControlUnit/AdbControlUnitAPI.h"
 #include "Utils/Logger.h"
 
 MAA_TOOLKIT_DEVICE_NS_BEGIN
@@ -38,9 +38,9 @@ std::vector<std::string> DeviceMgr::request_adb_serials(const std::filesystem::p
 
     std::string str_adb = path_to_utf8_string(adb_path);
     std::string str_config = adb_config.to_string();
-    auto mgr = MAA_CTRL_UNIT_NS::create_adb_device_list_obj(str_adb.c_str(), str_config.c_str());
+    auto mgr = MAA_ADB_CTRL_UNIT_NS::create_device_list_obj(str_adb.c_str(), str_config.c_str());
     if (!mgr) {
-        LogError << "Failed to create_adb_device_list_obj" << VAR(str_adb) << VAR(str_config);
+        LogError << "Failed to create_device_list_obj" << VAR(str_adb) << VAR(str_config);
         return {};
     }
 
@@ -59,9 +59,9 @@ bool DeviceMgr::request_adb_connect(const std::filesystem::path& adb_path, const
 
     std::string str_adb = path_to_utf8_string(adb_path);
     std::string str_config = adb_config.to_string();
-    auto mgr = MAA_CTRL_UNIT_NS::create_adb_connection(str_adb.c_str(), serial.c_str(), 0, str_config.c_str());
+    auto mgr = MAA_ADB_CTRL_UNIT_NS::create_connection(str_adb.c_str(), serial.c_str(), 0, str_config.c_str());
     if (!mgr) {
-        LogError << "Failed to create_adb_connection" << VAR(str_adb) << VAR(serial) << VAR(str_config);
+        LogError << "Failed to create_connection" << VAR(str_adb) << VAR(serial) << VAR(str_config);
         return false;
     }
 

@@ -33,6 +33,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "MaaToolKit", "source\MaaToo
 		{DD48546D-48D4-4C84-BAC4-6126D0B5BFB3} = {DD48546D-48D4-4C84-BAC4-6126D0B5BFB3}
 	EndProjectSection
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "MaaDebuggingControlUnit", "source\MaaDebuggingControlUnit\MaaDebuggingControlUnit.vcxproj", "{E750209E-FE9B-4897-875A-61BFA73F51F3}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
@@ -69,6 +71,12 @@ Global
 		{56FC5B20-B981-4737-80B5-EFA6701CD2F0}.DebWithRelDeps|x64.Build.0 = DebWithRelDeps|x64
 		{56FC5B20-B981-4737-80B5-EFA6701CD2F0}.Release|x64.ActiveCfg = Release|x64
 		{56FC5B20-B981-4737-80B5-EFA6701CD2F0}.Release|x64.Build.0 = Release|x64
+		{E750209E-FE9B-4897-875A-61BFA73F51F3}.Debug|x64.ActiveCfg = Debug|x64
+		{E750209E-FE9B-4897-875A-61BFA73F51F3}.Debug|x64.Build.0 = Debug|x64
+		{E750209E-FE9B-4897-875A-61BFA73F51F3}.DebWithRelDeps|x64.ActiveCfg = DebWithRelDeps|x64
+		{E750209E-FE9B-4897-875A-61BFA73F51F3}.DebWithRelDeps|x64.Build.0 = DebWithRelDeps|x64
+		{E750209E-FE9B-4897-875A-61BFA73F51F3}.Release|x64.ActiveCfg = Release|x64
+		{E750209E-FE9B-4897-875A-61BFA73F51F3}.Release|x64.Build.0 = Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

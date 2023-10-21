@@ -2,7 +2,7 @@
 
 #include "UnitBase.h"
 
-MAA_CTRL_UNIT_NS_BEGIN
+MAA_ADB_CTRL_UNIT_NS_BEGIN
 
 class Activity : public ActivityBase
 {
@@ -21,4 +21,4 @@ private:
     Argv stop_app_argv_;
 };
 
-MAA_CTRL_UNIT_NS_END
+MAA_ADB_CTRL_UNIT_NS_END

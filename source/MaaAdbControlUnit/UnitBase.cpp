@@ -3,7 +3,7 @@
 #include "UnitBase.h"
 #include "Utils/Logger.h"
 
-MAA_CTRL_UNIT_NS_BEGIN
+MAA_ADB_CTRL_UNIT_NS_BEGIN
 
 void UnitBase::set_io(std::shared_ptr<PlatformIO> io_ptr)
 {
@@ -90,4 +90,4 @@ std::optional<std::string> UnitBase::command(const Argv::value& cmd, bool recv_b
     return recv_by_socket ? sock_data : pipe_data;
 }
 
-MAA_CTRL_UNIT_NS_END
+MAA_ADB_CTRL_UNIT_NS_END
