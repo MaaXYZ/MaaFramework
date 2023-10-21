@@ -102,6 +102,11 @@ public:
         struct string_converter
         {
             template <typename T>
+            static constexpr bool is_convertible =
+                std::same_as<std::filesystem::path, std::decay_t<T>> || std::same_as<std::wstring, std::decay_t<T>> ||
+                has_output_operator<T>;
+
+            template <typename T>
             std::string operator()(T&& value) const
             {
                 if constexpr (std::same_as<std::filesystem::path, std::decay_t<T>>) {

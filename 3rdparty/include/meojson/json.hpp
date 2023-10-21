@@ -2578,6 +2578,10 @@ namespace _serialization_helper
         using ostringstream_t = std::basic_ostringstream<char_t, std::char_traits<char_t>, std::allocator<char_t>>;
 
         template <typename input_t>
+        static constexpr bool is_convertible =
+            std::is_constructible_v<string_t, input_t> || (loose && has_output_operator<char_t, input_t>::value);
+
+        template <typename input_t>
         string_t operator()(input_t&& arg) const
         {
             if constexpr (std::is_constructible_v<string_t, input_t>) {
@@ -2596,7 +2600,21 @@ namespace _serialization_helper
             }
         }
     };
-}
+
+    template <typename T>
+    void unable_to_serialize()
+    {
+        static_assert(!sizeof(T), "Unable to serialize T. "
+                                  "You can define the conversion of T to json, or overload operator<< for it. "
+                                  "See T below: "
+#ifdef _MSC_VER
+                      __FUNCSIG__
+#else
+                      __PRETTY_FUNCTION__
+#endif
+        );
+    }
+} // namespace _serialization_helper
 
 template <bool loose, typename any_t, typename string_t, typename string_converter_t>
 MEOJSON_INLINE basic_value<string_t> serialize(any_t&& arg, string_converter_t&& string_converter)
@@ -2612,12 +2630,16 @@ MEOJSON_INLINE basic_value<string_t> serialize(any_t&& arg, string_converter_t&&
     else if constexpr (std::is_constructible_v<basic_object<string_t>, any_t>) {
         return basic_object<string_t>(std::forward<any_t>(arg));
     }
+    else if constexpr (std::decay_t<string_converter_t>::template is_convertible<any_t>) {
+        return string_converter(std::forward<any_t>(arg));
+    }
     else if constexpr (is_sequence_container<std::decay_t<any_t>>) {
         basic_value<string_t> result;
         for (auto&& val : arg) {
             using value_t = decltype(val);
 
-            result.emplace(serialize<loose, value_t, string_t>(std::forward<value_t>(val), string_converter));
+            result.emplace(serialize<loose, value_t, string_t>(std::forward<value_t>(val),
+                                                               std::forward<string_converter_t>(string_converter)));
         }
         return result;
     }
@@ -2628,12 +2650,13 @@ MEOJSON_INLINE basic_value<string_t> serialize(any_t&& arg, string_converter_t&&
             using value_t = decltype(val);
 
             result.emplace(string_converter(std::forward<key_t>(key)),
-                           serialize<loose, value_t, string_t>(std::forward<value_t>(val), string_converter));
+                           serialize<loose, value_t, string_t>(std::forward<value_t>(val),
+                                                               std::forward<string_converter_t>(string_converter)));
         }
         return result;
     }
     else {
-        return string_converter(std::forward<any_t>(arg));
+        unable_to_serialize<any_t>();
     }
 }
 
