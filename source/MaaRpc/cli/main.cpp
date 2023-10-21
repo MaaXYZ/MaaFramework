@@ -9,6 +9,7 @@
 
 std::mutex mutex;
 std::condition_variable cv;
+bool mi = false;
 bool quiet = false;
 bool quit = false;
 
@@ -40,6 +41,9 @@ int main(int argc, char* argv[])
         else if (opt == "-q") {
             quiet = true;
         }
+        else if (opt == "-mi") {
+            mi = true;
+        }
         else if (opt.starts_with("-p=")) {
             port = std::stoi(opt.substr(3));
         }
@@ -57,13 +61,28 @@ int main(int argc, char* argv[])
 
     std::unique_lock<std::mutex> lock(mutex);
     if (!quiet) {
-        std::cout << "Server listening on " << server_address << std::endl;
+        if (mi) {
+            std::cout << "[MAARPC]START|" << server_address << std::endl;
+        }
+        else {
+            std::cout << "Server listening on " << server_address << std::endl;
+        }
     }
     cv.wait(lock, []() { return quit; });
 
-    std::cout << "Start stopping" << std::endl;
+    if (mi) {
+        std::cout << "[MAARPC]STOP" << std::endl;
+    }
+    else {
+        std::cout << "Start stopping" << std::endl;
+    }
     MaaRpcStop();
 
-    std::cout << "Exit" << std::endl;
+    if (mi) {
+        std::cout << "[MAARPC]EXIT" << std::endl;
+    }
+    else {
+        std::cout << "Exit" << std::endl;
+    }
     return 0;
 }
