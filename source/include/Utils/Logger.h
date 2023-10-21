@@ -110,9 +110,6 @@ public:
                 else if constexpr (std::same_as<std::wstring, std::decay_t<T>>) {
                     return from_u16(std::forward<T>(value));
                 }
-                else if constexpr (std::is_constructible_v<std::string, T>) {
-                    return std::string(std::forward<T>(value));
-                }
                 else if constexpr (has_output_operator<T>) {
                     std::stringstream ss;
                     ss << std::forward<T>(value);
