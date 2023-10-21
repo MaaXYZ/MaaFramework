@@ -2607,9 +2607,9 @@ namespace _serialization_helper
         static_assert(!sizeof(T), "Unable to serialize T. "
                                   "You can define the conversion of T to json, or overload operator<< for it.");
 #ifdef _MSC_VER
-        static_assert(!sizeof(T), "See T below: "__FUNCSIG__);
+        static_assert(!sizeof(T), "See T below: " __FUNCSIG__);
 #else
-        // static_assert(!sizeof(T), "See T below: "__PRETTY_FUNCTION__);
+        // static_assert(!sizeof(T), "See T below: " __PRETTY_FUNCTION__);
 #endif
     }
 } // namespace _serialization_helper
