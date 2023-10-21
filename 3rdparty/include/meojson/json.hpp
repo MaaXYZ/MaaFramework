@@ -2605,14 +2605,12 @@ namespace _serialization_helper
     void unable_to_serialize()
     {
         static_assert(!sizeof(T), "Unable to serialize T. "
-                                  "You can define the conversion of T to json, or overload operator<< for it. "
-                                  "See T below: "
+                                  "You can define the conversion of T to json, or overload operator<< for it.");
 #ifdef _MSC_VER
-                      __FUNCSIG__
+        static_assert(!sizeof(T), "See T below: "__FUNCSIG__);
 #else
-                      __PRETTY_FUNCTION__
+        // static_assert(!sizeof(T), "See T below: "__PRETTY_FUNCTION__);
 #endif
-        );
     }
 } // namespace _serialization_helper
 
