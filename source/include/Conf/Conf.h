@@ -119,6 +119,12 @@
     {
 #define MAA_ADB_CTRL_UNIT_NS_END }
 
+#define MAA_DBG_CTRL_UNIT_NS MAA_CTRL_NS::DbgUnitNs
+#define MAA_DBG_CTRL_UNIT_NS_BEGIN \
+    namespace MAA_DBG_CTRL_UNIT_NS \
+    {
+#define MAA_DBG_CTRL_UNIT_NS_END }
+
 /* MaaToolKit */
 
 #define MAA_TOOLKIT_NS MAA_NS::ToolKitNS
