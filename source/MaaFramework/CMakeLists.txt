@@ -20,13 +20,13 @@ target_compile_definitions(MaaFramework PRIVATE MAA_FRAMEWORK_EXPORTS)
 
 target_link_libraries(MaaFramework MaaUtils)
 if (WITH_ADB_CONTROLLER)
-    target_link_libraries(MaaFramework MaaAdbController)
+    target_link_libraries(MaaFramework MaaAdbControlUnit)
 endif(WITH_ADB_CONTROLLER)
 if(WITH_THRIFT_CONTROLLER AND NOT MAA_CROSSCOMPILE)
     target_link_libraries(MaaFramework MaaThriftController)
 endif(WITH_THRIFT_CONTROLLER AND NOT MAA_CROSSCOMPILE)
 if (WITH_DEBUGGING_CONTROLLER)
-    target_link_libraries(MaaFramework MaaDebuggingController)
+    target_link_libraries(MaaFramework MaaDebuggingControlUnit)
 endif(WITH_DEBUGGING_CONTROLLER)
 target_link_libraries(MaaFramework ${OpenCV_LIBS} fastdeploy_ppocr ONNXRuntime::ONNXRuntime HeaderOnlyLibraries)
 
@@ -36,13 +36,13 @@ target_link_libraries(MaaFramework ${OpenCV_LIBS} fastdeploy_ppocr ONNXRuntime::
 add_dependencies(MaaFramework MaaUtils)
 
 if (WITH_ADB_CONTROLLER)
-    add_dependencies(MaaFramework MaaAdbController)
+    add_dependencies(MaaFramework MaaAdbControlUnit)
 endif(WITH_ADB_CONTROLLER)
 if(WITH_THRIFT_CONTROLLER AND NOT MAA_CROSSCOMPILE)
     add_dependencies(MaaFramework MaaThriftController)
 endif(WITH_THRIFT_CONTROLLER AND NOT MAA_CROSSCOMPILE)
 if (WITH_DEBUGGING_CONTROLLER)
-    add_dependencies(MaaFramework MaaDebuggingController)
+    add_dependencies(MaaFramework MaaDebuggingControlUnit)
 endif(WITH_DEBUGGING_CONTROLLER)
 
 install(
