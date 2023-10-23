@@ -302,7 +302,7 @@ jobs:
           path: assets
 
       - name: Nuget Pack
-        working-directory: pkgs/nupkgs
+        working-directory: tools/nupkgs
         run: |
           tag=${{ needs.meta.outputs.tag }}
           nuget pack Maa.Framework.Runtimes.nuspec \
@@ -313,7 +313,7 @@ jobs:
         if: always()
         with:
           name: MAA-nupkgs
-          path: "pkgs/nupkgs/*.nupkg"
+          path: "tools/nupkgs/*.nupkg"
 
   release:
     if: ${{ needs.meta.outputs.is_release == 'true' }}
