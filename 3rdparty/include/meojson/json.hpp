@@ -532,6 +532,10 @@ protected:
 
 template <typename parsing_t>
 auto parse(const parsing_t& content);
+
+template <typename char_t>
+auto parse(char_t* content);
+
 template <typename istream_t,
           typename = std::enable_if_t<std::is_base_of_v<std::basic_istream<typename istream_t::char_type>, istream_t>>>
 auto parse(istream_t& istream, bool check_bom);
@@ -2370,6 +2374,12 @@ MEOJSON_INLINE auto parse(const parsing_t& content)
 {
     using string_t = std::basic_string<typename parsing_t::value_type>;
     return parser<string_t, parsing_t>::parse(content);
+}
+
+template <typename char_t>
+MEOJSON_INLINE auto parse(char_t* content)
+{
+    return parse(std::basic_string_view<std::decay_t<char_t>> { content });
 }
 
 template <typename istream_t, typename _>

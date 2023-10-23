@@ -6,25 +6,27 @@
 
 MAA_DBG_CTRL_UNIT_NS_BEGIN
 
-ReadIndex::ReadIndex(std::filesystem::path indexfile) : indexfile_(std::move(indexfile)) {}
+ReadIndex::ReadIndex(std::filesystem::path root) : root_(std::move(root)) {}
 
 bool ReadIndex::init(int swidth, int sheight)
 {
-    LogInfo << VAR(indexfile_) << VAR(swidth) << VAR(sheight);
+    LogInfo << VAR(root_) << VAR(swidth) << VAR(sheight);
 
     swidth_ = swidth;
     sheight_ = sheight;
     filepaths_.clear();
     index_ = 0;
 
-    if (!std::filesystem::exists(indexfile_)) {
-        LogError << "indexfile not exist" << VAR(indexfile_);
+    if (!std::filesystem::exists(root_)) {
+        LogError << "root not exist" << VAR(root_);
         return false;
     }
 
-    std::ifstream ifs(indexfile_);
+    auto imagelist = root_ / "imagelist.txt";
+
+    std::ifstream ifs(imagelist);
     if (!ifs.is_open()) {
-        LogError << "open indexfile failed" << VAR(indexfile_);
+        LogError << "open root failed" << VAR(root_);
         return false;
     }
 
@@ -39,7 +41,7 @@ bool ReadIndex::init(int swidth, int sheight)
             image_path = line;
         }
         else {
-            image_path = indexfile_.parent_path() / line;
+            image_path = imagelist.parent_path() / line;
         }
         if (!std::filesystem::exists(image_path)) {
             LogError << "image not exist" << VAR(image_path);

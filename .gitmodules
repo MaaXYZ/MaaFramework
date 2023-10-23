@@ -4,3 +4,7 @@
 [submodule "assets/config/MaaAgentBinary"]
 	path = assets/config/MaaAgentBinary
 	url = https://github.com/MaaAssistantArknights/MaaAgentBinary.git
+[submodule "test/TestingSet"]
+	path = test/TestingSet
+	url = https://github.com/MaaAssistantArknights/MaaFwTestingSet.git
+	branch = master

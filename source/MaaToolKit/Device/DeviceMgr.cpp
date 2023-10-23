@@ -36,6 +36,8 @@ std::vector<std::string> DeviceMgr::request_adb_serials(const std::filesystem::p
 {
     LogFunc << VAR(adb_path);
 
+#ifdef WITH_ADB_CONTROLLER
+
     std::string str_adb = path_to_utf8_string(adb_path);
     std::string str_config = adb_config.to_string();
     auto mgr = MAA_ADB_CTRL_UNIT_NS::create_device_list_obj(str_adb.c_str(), str_config.c_str());
@@ -50,12 +52,21 @@ std::vector<std::string> DeviceMgr::request_adb_serials(const std::filesystem::p
     }
 
     return *devices_opt;
+
+#else
+
+    std::ignore = adb_config;
+    return {};
+
+#endif
 }
 
 bool DeviceMgr::request_adb_connect(const std::filesystem::path& adb_path, const std::string& serial,
                                     const json::value& adb_config) const
 {
     LogFunc << VAR(adb_path) << VAR(serial);
+
+#ifdef WITH_ADB_CONTROLLER
 
     std::string str_adb = path_to_utf8_string(adb_path);
     std::string str_config = adb_config.to_string();
@@ -66,6 +77,13 @@ bool DeviceMgr::request_adb_connect(const std::filesystem::path& adb_path, const
     }
 
     return mgr->connect();
+
+#else
+
+    std::ignore = adb_config;
+    return false;
+
+#endif
 }
 
 std::vector<std::string> DeviceMgr::check_available_adb_serials(const std::filesystem::path& adb_path,

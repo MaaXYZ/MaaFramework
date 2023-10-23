@@ -13,10 +13,11 @@ MAA_DBG_CTRL_UNIT_NS_BEGIN
 std::shared_ptr<ControlUnitAPI> create_controller_unit(MaaStringView read_path, MaaStringView wirte_path,
                                                        MaaDebuggingControllerType type, MaaStringView config)
 {
-    LogFunc << VAR(read_path) << VAR(wirte_path) << VAR(type);
+    LogFunc << VAR(read_path) << VAR(wirte_path) << VAR(type) << VAR(config);
 
     auto filepath = MAA_NS::path(read_path);
     std::ignore = wirte_path;
+    json::value jconfig = json::parse(config).value_or(json::object());
 
     std::shared_ptr<ScreencapAPI> screencap_unit = nullptr;
     auto screencap_type = type & MaaDebuggingControllerType_Screencap_Mask;
@@ -28,9 +29,9 @@ std::shared_ptr<ControlUnitAPI> create_controller_unit(MaaStringView read_path, 
     }
 
     auto device_info_unit = std::make_shared<VirtualInfo>(filepath);
-    bool parsed = device_info_unit->parse(config);
+    bool parsed = device_info_unit->parse(jconfig);
     if (!parsed) {
-        LogError << "failed to parse config" << VAR(config);
+        LogError << "failed to parse config" << VAR(jconfig);
         return nullptr;
     }
 

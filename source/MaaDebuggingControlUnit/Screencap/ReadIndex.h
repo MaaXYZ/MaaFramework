@@ -9,7 +9,7 @@ MAA_DBG_CTRL_UNIT_NS_BEGIN
 class ReadIndex : public ScreencapAPI
 {
 public:
-    ReadIndex(std::filesystem::path indexfile);
+    ReadIndex(std::filesystem::path root);
     virtual ~ReadIndex() override = default;
 
 public: // from ScreencapAPI
@@ -21,7 +21,7 @@ private:
     int swidth_ = 0;
     int sheight_ = 0;
 
-    std::filesystem::path indexfile_;
+    std::filesystem::path root_;
     std::vector<std::filesystem::path> filepaths_;
     size_t index_ = 0;
 };

@@ -18,9 +18,15 @@ target_include_directories(
 
 target_compile_definitions(MaaToolKit PRIVATE MAA_TOOLKIT_EXPORTS)
 
-target_link_libraries(MaaToolKit MaaFramework MaaUtils MaaAdbControlUnit HeaderOnlyLibraries Boost::system)
+target_link_libraries(MaaToolKit MaaFramework MaaUtils HeaderOnlyLibraries Boost::system)
+if (WITH_ADB_CONTROLLER)
+    target_link_libraries(MaaFramework MaaAdbControlUnit)
+endif(WITH_ADB_CONTROLLER)
 
-add_dependencies(MaaToolKit MaaFramework MaaUtils MaaAdbControlUnit)
+add_dependencies(MaaToolKit MaaFramework MaaUtils)
+if (WITH_ADB_CONTROLLER)
+    add_dependencies(MaaFramework MaaAdbControlUnit)
+endif(WITH_ADB_CONTROLLER)
 
 install(
     TARGETS MaaToolKit

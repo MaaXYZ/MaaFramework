@@ -42,6 +42,8 @@ MaaControllerHandle MaaAdbControllerCreateV2(MaaStringView adb_path, MaaStringVi
 
 #pragma message("The build without adb controller")
 
+    std::ignore = config;
+
     LogError << "The build without adb controller";
     return nullptr;
 
@@ -105,6 +107,8 @@ MaaControllerHandle MaaDebuggingControllerCreate(MaaStringView read_path, MaaStr
 #else
 
 #pragma message("The build without debugging controller")
+
+    std::ignore = config;
 
     LogError << "The build without debugging controller";
     return nullptr;
