@@ -121,8 +121,6 @@ jobs:
 
           cp -r docs install
 
-          cp -r binding install
-
           cp -r sample install
           rm -r install/sample/cpp/*.vcxproj install/sample/cpp/CMakeLists.txt
 
@@ -202,8 +200,6 @@ jobs:
 
           cp -r docs install
 
-          cp -r binding install
-
           cp -r sample install
           rm -r install/sample/cpp/*.vcxproj install/sample/cpp/CMakeLists.txt
 
@@ -273,8 +269,6 @@ jobs:
           cmake --install build --prefix install
 
           cp -r docs install
-
-          cp -r binding install
 
           cp -r sample install
           rm -r install/sample/cpp/*.vcxproj install/sample/cpp/CMakeLists.txt

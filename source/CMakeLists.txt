@@ -16,3 +16,5 @@ add_subdirectory(MaaToolKit)
 if(WITH_GRPC)
     add_subdirectory(MaaRpc)
 endif(WITH_GRPC)
+
+add_subdirectory(binding)
