@@ -18,6 +18,7 @@ install(
     TARGETS MaaAdbControlUnit
     RUNTIME DESTINATION bin
     LIBRARY DESTINATION bin
-    ARCHIVE DESTINATION lib)
+    #ARCHIVE DESTINATION lib
+    )
 
 source_group(TREE ${CMAKE_CURRENT_SOURCE_DIR} FILES ${maa_adb_control_unit_src})
