@@ -1,6 +1,6 @@
 #pragma once
 
-#ifdef WITH_THRIFT
+#ifdef WITH_THRIFT_CONTROLLER
 
 #include "ControllerMgr.h"
 
@@ -45,4 +45,4 @@ private:
 
 MAA_CTRL_NS_END
 
-#endif // WITH_THRIFT
+#endif // WITH_THRIFT_CONTROLLER
