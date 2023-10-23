@@ -13,7 +13,7 @@ extern "C"
         MaaBool (*analyze)(MaaSyncContextHandle sync_context, const MaaImageBufferHandle image, MaaStringView task_name,
                            MaaStringView custom_recognition_param, MaaTransparentArg recognizer_arg,
                            /*out*/ MaaRectHandle out_box,
-                           /*out*/ MaaStringBufferHandle detail_buff);
+                           /*out*/ MaaStringBufferHandle out_detail);
     };
 
 #ifdef __cplusplus

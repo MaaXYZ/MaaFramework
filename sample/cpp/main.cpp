@@ -71,7 +71,7 @@ int main([[maybe_unused]] int argc, char** argv)
 MaaBool my_analyze(MaaSyncContextHandle sync_context, const MaaImageBufferHandle image, MaaStringView task_name,
                    MaaStringView custom_recognition_param, MaaTransparentArg arg,
                    /*out*/ MaaRectHandle out_box,
-                   /*out*/ MaaStringBufferHandle detail_buff)
+                   /*out*/ MaaStringBufferHandle out_detail)
 {
     /* Get image */
 
@@ -101,7 +101,7 @@ MaaBool my_analyze(MaaSyncContextHandle sync_context, const MaaImageBufferHandle
     out_box->height = my_box[3];
 
     // Step 2: output anything you want
-    MaaSetString(detail_buff,
+    MaaSetString(out_detail,
                  "Balabala, this string will be used by MaaCustomActionAPI and MaaSyncContextGetTaskResult. "
                  "And for compatibility, I recommend you use json.");
 

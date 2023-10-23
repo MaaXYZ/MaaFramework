@@ -4,23 +4,23 @@
 #include "Buffer/StringBuffer.hpp"
 #include "Utils/Logger.h"
 
-MaaBool MaaSyncContextRunTask(MaaSyncContextHandle sync_context, MaaStringView task, MaaStringView param)
+MaaBool MaaSyncContextRunTask(MaaSyncContextHandle sync_context, MaaStringView task_name, MaaStringView param)
 {
-    LogFunc << VAR_VOIDP(sync_context) << VAR(task) << VAR(param);
+    LogFunc << VAR_VOIDP(sync_context) << VAR(task_name) << VAR(param);
 
     if (!sync_context) {
         LogError << "handle is null";
         return false;
     }
 
-    return sync_context->run_task(task, param);
+    return sync_context->run_task(task_name, param);
 }
 
-MaaBool MaaSyncContextRunRecognizer(MaaSyncContextHandle sync_context, MaaImageBufferHandle image, MaaStringView task,
-                                    MaaStringView task_param, MaaRectHandle out_box, MaaStringBufferHandle detail_buff)
+MaaBool MaaSyncContextRunRecognizer(MaaSyncContextHandle sync_context, MaaImageBufferHandle image, MaaStringView task_name,
+                                    MaaStringView task_param, MaaRectHandle out_box, MaaStringBufferHandle out_detail)
 {
-    LogFunc << VAR_VOIDP(sync_context) << VAR(image) << VAR(task) << VAR(task_param) << VAR(out_box)
-            << VAR(detail_buff);
+    LogFunc << VAR_VOIDP(sync_context) << VAR(image) << VAR(task_name) << VAR(task_param) << VAR(out_box)
+            << VAR(out_detail);
 
     if (!sync_context || !image) {
         LogError << "handle is null";
@@ -30,7 +30,7 @@ MaaBool MaaSyncContextRunRecognizer(MaaSyncContextHandle sync_context, MaaImageB
     cv::Rect cvbox {};
     std::string detail;
 
-    bool ret = sync_context->run_recognizer(image->get(), task, task_param, cvbox, detail);
+    bool ret = sync_context->run_recognizer(image->get(), task_name, task_param, cvbox, detail);
 
     if (out_box) {
         out_box->x = cvbox.x;
@@ -38,17 +38,17 @@ MaaBool MaaSyncContextRunRecognizer(MaaSyncContextHandle sync_context, MaaImageB
         out_box->width = cvbox.width;
         out_box->height = cvbox.height;
     }
-    if (detail_buff) {
-        detail_buff->set(std::move(detail));
+    if (out_detail) {
+        out_detail->set(std::move(detail));
     }
 
     return ret;
 }
 
-MaaBool MaaSyncContextRunAction(MaaSyncContextHandle sync_context, MaaStringView task, MaaStringView task_param,
+MaaBool MaaSyncContextRunAction(MaaSyncContextHandle sync_context, MaaStringView task_name, MaaStringView task_param,
                                 MaaRectHandle cur_box, MaaStringView cur_rec_detail)
 {
-    LogFunc << VAR_VOIDP(sync_context) << VAR(task) << VAR(task_param) << VAR(cur_box) << VAR(cur_rec_detail);
+    LogFunc << VAR_VOIDP(sync_context) << VAR(task_name) << VAR(task_param) << VAR(cur_box) << VAR(cur_rec_detail);
 
     if (!sync_context) {
         LogError << "handle is null";
@@ -63,7 +63,7 @@ MaaBool MaaSyncContextRunAction(MaaSyncContextHandle sync_context, MaaStringView
         cvbox.height = cur_box->height;
     }
 
-    bool ret = sync_context->run_action(task, task_param, cvbox, cur_rec_detail);
+    bool ret = sync_context->run_action(task_name, task_param, cvbox, cur_rec_detail);
     return ret;
 }
 
@@ -161,16 +161,16 @@ MaaBool MaaSyncContextScreencap(MaaSyncContextHandle sync_context, MaaImageBuffe
     return true;
 }
 
-MaaBool MaaSyncContextGetTaskResult(MaaSyncContextHandle sync_context, MaaStringView task, MaaStringBufferHandle buffer)
+MaaBool MaaSyncContextGetTaskResult(MaaSyncContextHandle sync_context, MaaStringView task_name, MaaStringBufferHandle buffer)
 {
-    LogFunc << VAR_VOIDP(sync_context) << VAR(task) << VAR(buffer);
+    LogFunc << VAR_VOIDP(sync_context) << VAR(task_name) << VAR(buffer);
 
     if (!sync_context || !buffer) {
         LogError << "handle is null";
         return false;
     }
 
-    auto res = sync_context->task_result(task);
+    auto res = sync_context->task_result(task_name);
     if (res.empty()) {
         LogError << "res is empty";
         return false;
