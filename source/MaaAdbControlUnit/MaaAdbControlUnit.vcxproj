@@ -15,7 +15,7 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\include\ControlUnit\ControlUnitAPI.h" />
+    <ClInclude Include="..\include\ControlUnit\AdbControlUnitAPI.h" />
     <ClInclude Include="ControlUnitMgr.h" />
     <ClInclude Include="General\Activity.h" />
     <ClInclude Include="General\Connection.h" />

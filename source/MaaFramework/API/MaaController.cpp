@@ -6,6 +6,7 @@
 #include "Controller/AdbController.h"
 #include "Controller/CustomController.h"
 #include "Controller/CustomThriftController.h"
+#include "Controller/DebuggingController.h"
 #include "Utils/Logger.h"
 #include "Utils/Platform.h"
 
@@ -27,6 +28,8 @@ MaaControllerHandle MaaAdbControllerCreateV2(MaaStringView adb_path, MaaStringVi
     LogFunc << VAR(adb_path) << VAR(address) << VAR(type) << VAR(agent_path) << VAR_VOIDP(callback)
             << VAR_VOIDP(callback_arg);
 
+#ifdef WITH_ADB_CONTROLLER
+
     auto unit_mgr = MAA_ADB_CTRL_UNIT_NS::create_controller_unit(adb_path, address, type, config, agent_path);
     if (!unit_mgr) {
         LogError << "Failed to create controller unit";
@@ -34,6 +37,15 @@ MaaControllerHandle MaaAdbControllerCreateV2(MaaStringView adb_path, MaaStringVi
     }
 
     return new MAA_CTRL_NS::AdbController(adb_path, address, std::move(unit_mgr), callback, callback_arg);
+
+#else
+
+#pragma message("The build without adb controller")
+
+    LogError << "The build without adb controller";
+    return nullptr;
+
+#endif // WITH_ADB_CONTROLLER
 }
 
 MaaControllerHandle MaaCustomControllerCreate(MaaCustomControllerHandle handle, MaaTransparentArg handle_arg,
@@ -54,7 +66,7 @@ MaaControllerHandle MaaThriftControllerCreate(MaaStringView param, MaaController
 {
     LogFunc << VAR(param) << VAR_VOIDP(callback) << VAR_VOIDP(callback_arg);
 
-#ifdef WITH_THRIFT
+#ifdef WITH_THRIFT_CONTROLLER
 
     try {
         return new MAA_CTRL_NS::CustomThriftController(param, callback, callback_arg);
@@ -66,12 +78,38 @@ MaaControllerHandle MaaThriftControllerCreate(MaaStringView param, MaaController
 
 #else
 
-#pragma message("The build without thrift")
+#pragma message("The build without thrift controller")
 
-    LogError << "The build without thrift";
+    LogError << "The build without thrift controller";
     return nullptr;
 
-#endif // WITH_THRIFT
+#endif // WITH_THRIFT_CONTROLLER
+}
+
+MaaControllerHandle MaaDebuggingControllerCreate(MaaStringView read_path, MaaStringView write_path,
+                                                 MaaDebuggingControllerType type, MaaStringView config,
+                                                 MaaControllerCallback callback, MaaCallbackTransparentArg callback_arg)
+{
+    LogFunc << VAR(read_path) << VAR(write_path) << VAR(type) << VAR_VOIDP(callback) << VAR_VOIDP(callback_arg);
+
+#ifdef WITH_DEBUGGING_CONTROLLER
+
+    auto unit_mgr = MAA_DBG_CTRL_UNIT_NS::create_controller_unit(read_path, write_path, type, config);
+    if (!unit_mgr) {
+        LogError << "Failed to create controller unit";
+        return nullptr;
+    }
+
+    return new MAA_CTRL_NS::DebuggingController(read_path, write_path, std::move(unit_mgr), callback, callback_arg);
+
+#else
+
+#pragma message("The build without debugging controller")
+
+    LogError << "The build without debugging controller";
+    return nullptr;
+
+#endif // WITH_DEBUGGING_CONTROLLER
 }
 
 void MaaControllerDestroy(MaaControllerHandle ctrl)

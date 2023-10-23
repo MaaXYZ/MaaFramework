@@ -22,6 +22,9 @@ extern "C"
                                                                     MaaCallbackTransparentArg callback_arg);
     MaaControllerHandle MAA_FRAMEWORK_API MaaThriftControllerCreate(MaaStringView param, MaaControllerCallback callback,
                                                                     MaaCallbackTransparentArg callback_arg);
+    MaaControllerHandle MAA_FRAMEWORK_API MaaDebuggingControllerCreate(
+        MaaStringView read_path, MaaStringView write_path, MaaDebuggingControllerType type, MaaStringView config,
+        MaaControllerCallback callback, MaaCallbackTransparentArg callback_arg);
 
     void MAA_FRAMEWORK_API MaaControllerDestroy(MaaControllerHandle ctrl);
 

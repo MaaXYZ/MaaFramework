@@ -1,18 +1,19 @@
 #pragma once
-
-#ifdef WITH_THRIFT_CONTROLLER
-
 #include "ControllerMgr.h"
 
-#include "ThriftController.h"
+#include "ControlUnit/DebuggingControlUnitAPI.h"
+
+#include <memory>
 
 MAA_CTRL_NS_BEGIN
 
-class CustomThriftController : public ControllerMgr
+class DebuggingController : public ControllerMgr
 {
 public:
-    CustomThriftController(const std::string& param, MaaControllerCallback callback, void* callback_arg);
-    virtual ~CustomThriftController() override;
+    DebuggingController(std::string read_path, std::string write_path,
+                        std::shared_ptr<MAA_DBG_CTRL_UNIT_NS::ControlUnitAPI> unit_mgr, MaaControllerCallback callback,
+                        MaaCallbackTransparentArg callback_arg);
+    virtual ~DebuggingController() override;
 
     virtual std::string get_uuid() const override;
 
@@ -30,19 +31,10 @@ protected:
     virtual bool _stop_app(AppParam param) override;
 
 private:
-    std::shared_ptr<ThriftController::ThriftControllerClient> client_ = nullptr;
-    std::shared_ptr<apache::thrift::transport::TTransport> transport_ = nullptr;
+    std::string read_path_;
+    std::string write_path_;
 
-    enum ThriftControllerTypeEnum
-    {
-        // param format should be "host:port"
-        MaaThriftControllerType_Socket = 1,
-
-        // param should be unix domain socket path
-        MaaThriftControllerType_UnixDomainSocket = 2,
-    };
+    std::shared_ptr<MAA_DBG_CTRL_UNIT_NS::ControlUnitAPI> unit_mgr_ = nullptr;
 };
 
 MAA_CTRL_NS_END
-
-#endif // WITH_THRIFT_CONTROLLER
