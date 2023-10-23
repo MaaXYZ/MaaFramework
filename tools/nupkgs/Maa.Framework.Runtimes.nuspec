@@ -6,7 +6,7 @@
     <title>MAA Framework Runtimes</title>
     <authors>MAA Team</authors>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
-    <license type="expression">LGPL-2.1-only</license>
+    <license type="expression">LGPL-3.0-only</license>
     <!--iconUrl is deprecated. Use icon instead.-->
     <iconUrl>https://cdn.jsdelivr.net/gh/MaaAssistantArknights/design@main/logo/maa-logo_128x128.png</iconUrl>
     <!--readme-->
