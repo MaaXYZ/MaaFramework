@@ -5,10 +5,10 @@ file(
     *.h
     *.hpp)
     
-add_executable(testing ${testing_src})
+add_executable(Testing ${testing_src})
 
-target_link_libraries(testing MaaFramework)
+target_link_libraries(Testing MaaFramework)
 
-add_dependencies(testing MaaFramework)
+add_dependencies(Testing MaaFramework)
 
-install(TARGETS testing RUNTIME DESTINATION bin)
+install(TARGETS Testing RUNTIME DESTINATION bin)
