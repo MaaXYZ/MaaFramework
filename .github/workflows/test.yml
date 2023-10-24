@@ -1,0 +1,252 @@
+name: test
+
+on:
+  push:
+    branches:
+      - "**"
+    paths:
+      - ".github/workflows/test.yml"
+      - "3rdparty/include/**"
+      - "MaaDeps/**"
+      - "include/**"
+      - "source/**"
+      - "cmake/**"
+      - "CMakeLists.txt"
+      - "test/**"
+      - "*.sln"
+
+  pull_request:
+    branches:
+      - "**"
+    paths:
+      - ".github/workflows/test.yml"
+      - "3rdparty/include/**"
+      - "MaaDeps/**"
+      - "include/**"
+      - "source/**"
+      - "cmake/**"
+      - "CMakeLists.txt"
+      - "test/**"
+      - "*.sln"
+  workflow_dispatch:
+
+jobs:
+  meta:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+      - id: set_tag
+        run: |
+          is_release=${{ startsWith(github.ref, 'refs/tags/v') }}
+          tag=$(git describe --tags --match "v*" ${{ github.ref }} || true)
+          if [[ $tag != v* ]]; then
+            tag=$(curl -sX GET "https://api.github.com/repos/MaaAssistantArknights/MaaFramework/releases/latest" --header 'authorization: Bearer ${{ secrets.GITHUB_TOKEN }}' | awk '/tag_name/{print $4}' FS='["]')
+            if [[ $tag != v* ]]; then
+              tag="v0.0.0"
+            fi
+            tag=$(date "+$tag-%y%m%d-$(git rev-parse --short HEAD)")
+          fi
+          if ! $($is_release) ; then
+            prefix=${tag%-*-*}
+            suffix=${tag#$prefix-}
+            tag="$prefix-ci.$suffix"
+          fi
+
+          echo tag=$tag | tee -a $GITHUB_OUTPUT
+          echo is_release=$is_release | tee -a $GITHUB_OUTPUT
+    outputs:
+      tag: ${{ steps.set_tag.outputs.tag }}
+      is_release: ${{ steps.set_tag.outputs.is_release }}
+
+  windows:
+    needs: meta
+    runs-on: windows-latest
+    strategy:
+      matrix:
+        arch: [aarch64, x86_64]
+      fail-fast: false
+
+    steps:
+      - name: Windows runner hack
+        shell: cmd
+        run: |
+          dir d:\a
+          cd ..
+          mkdir C:\MaaFramework
+          rmdir MaaFramework
+          mklink /j MaaFramework C:\MaaFramework
+          dism /Online /Disable-Feature /FeatureName:Windows-Defender /Remove /NoRestart /Quiet
+          cd .
+
+      - name: Windows runner hack (2)
+        uses: al-cheb/configure-pagefile-action@v1.3
+        with:
+          minimum-size: 16GB
+          maximum-size: 16GB
+          disk-root: "D:"
+
+      - uses: actions/checkout@v3
+        with:
+          submodules: true
+
+      - name: Bootstrap MaaDeps
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          python3 maadeps-download.py ${{ matrix.arch == 'x86_64' && 'x64' || 'arm64' }}-windows
+
+      - name: Build MAA
+        run: |
+          cmake --preset "${{ matrix.arch == 'x86_64' && 'MSVC 2022' || 'MSVC 2022 ARM' }}" -DMAADEPS_TRIPLET="maa-${{ matrix.arch == 'x86_64' && 'x64' || 'arm64' }}-windows" -DMAA_HASH_VERSION='${{ needs.meta.outputs.tag }}' -DWITH_ADB_CONTROLLER=OFF -DWITH_THRIFT_CONTROLLER=OFF -DWITH_GRPC=OFF -DBUILD_TESTING=ON
+
+          cmake --build build --preset "${{ matrix.arch == 'x86_64' && 'MSVC 2022' || 'MSVC 2022 ARM' }} - Debug" -j 16
+
+      - name: Install
+        shell: bash
+        run: |
+          cmake --install build --prefix install
+
+      - name: Run Testing
+        shell: bash
+        run: |
+          ./install/bin/Testing.exe ./install/test
+
+      - uses: actions/upload-artifact@v3
+        if: always()
+        with:
+          name: MAA-win-${{ matrix.arch }}-test-log
+          path: "install/bin/debug"
+
+  ubuntu:
+    needs: meta
+    runs-on: ubuntu-latest
+    container: archlinux:base-devel
+    strategy:
+      matrix:
+        arch: [aarch64, x86_64]
+      fail-fast: false
+
+    steps:
+      # maybe should explicitly update some pkg instead of all?
+      - name: Update system
+        run: |
+          pacman -Syu --noconfirm
+
+      - name: Install dep
+        run: |
+          pacman -Sy
+          pacman -S --noconfirm cmake python ccache ninja git
+
+      # https://github.com/MaaAssistantArknights/MaaFramework/actions/runs/5643408179/job/15285186255
+      - uses: actions/checkout@v3
+        with:
+          submodules: true
+
+      - name: Install cross compile toolchains
+        if: ${{ matrix.arch != 'x86_64' }}
+        run: |
+          pacman -Sy
+          pacman -S --noconfirm aarch64-linux-gnu-gcc
+
+      - name: Setup ccache
+        uses: Chocobo1/setup-ccache-action@v1
+        with:
+          remove_stale_cache: false
+
+      - name: Bootstrap MaaDeps
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          python3 maadeps-download.py ${{ matrix.arch == 'x86_64' && 'x64' || 'arm64' }}-linux
+
+      - name: Build MAA
+        env:
+          CC: ${{ matrix.arch == 'x86_64' && 'ccache gcc' || 'ccache aarch64-linux-gnu-gcc' }}
+          CXX: ${{ matrix.arch == 'x86_64' && 'ccache g++' || 'ccache aarch64-linux-gnu-g++' }}
+        run: |
+          cmake --preset 'NinjaMulti' \
+            -DMAADEPS_TRIPLET='maa-${{ matrix.arch == 'x86_64' && 'x64' || 'arm64' }}-linux' \
+            -DMAA_HASH_VERSION='${{ needs.meta.outputs.tag }}' \
+            -DWITH_ADB_CONTROLLER=OFF -DWITH_THRIFT_CONTROLLER=OFF -DWITH_GRPC=OFF -DBUILD_TESTING=ON
+
+          cmake --build build --preset 'NinjaMulti - Debug' -j 16
+
+      - name: Install
+        shell: bash
+        run: |
+          cmake --install build --prefix install
+
+      - name: Run Testing
+        shell: bash
+        run: |
+          ./install/bin/Testing ./install/test
+
+      - uses: actions/upload-artifact@v3
+        if: always()
+        with:
+          name: MAA-win-${{ matrix.arch }}-test-log
+          path: "install/bin/debug"
+
+  macos:
+    needs: meta
+    runs-on: macos-latest
+    strategy:
+      matrix:
+        arch: [aarch64, x86_64]
+      fail-fast: false
+
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          submodules: true
+
+      - name: Install dep
+        run: |
+          brew install cmake python ninja
+        # ccache?
+
+      - name: Download fmtlib
+        run: |
+          sh 3rdparty/fetch-fmt.sh
+
+      - name: Install compiler
+        run: |
+          brew install llvm
+        # 16
+
+      - name: Bootstrap MaaDeps
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          python3 maadeps-download.py ${{ matrix.arch == 'x86_64' && 'x64' || 'arm64' }}-osx
+
+      - name: Build MAA
+        env:
+          CC: "/usr/local/opt/llvm/bin/clang"
+          CXX: "/usr/local/opt/llvm/bin/clang++"
+        run: |
+          cmake --preset 'NinjaMulti' \
+            -DMAADEPS_TRIPLET='maa-${{ matrix.arch == 'x86_64' && 'x64' || 'arm64' }}-osx' \
+            -DMAA_HASH_VERSION='${{ needs.meta.outputs.tag }}' \
+            -DWITH_ADB_CONTROLLER=OFF -DWITH_THRIFT_CONTROLLER=OFF -DWITH_GRPC=OFF -DBUILD_TESTING=ON
+
+          cmake --build build --preset 'NinjaMulti - Debug' -j 16
+
+      - name: Install
+        shell: bash
+        if: always()
+        run: |
+          cmake --install build --prefix install
+
+      - name: Run Testing
+        shell: bash
+        run: |
+          ./install/bin/Testing ./install/test
+
+      - uses: actions/upload-artifact@v3
+        if: always()
+        with:
+          name: MAA-win-${{ matrix.arch }}-test-log
+          path: "install/bin/debug"
