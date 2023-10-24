@@ -101,7 +101,7 @@ jobs:
         run: |
           cmake --preset "${{ matrix.arch == 'x86_64' && 'MSVC 2022' || 'MSVC 2022 ARM' }}" -DMAADEPS_TRIPLET="maa-${{ matrix.arch == 'x86_64' && 'x64' || 'arm64' }}-windows" -DMAA_HASH_VERSION='${{ needs.meta.outputs.tag }}' -DWITH_ADB_CONTROLLER=OFF -DWITH_THRIFT_CONTROLLER=OFF -DWITH_GRPC=OFF -DBUILD_TESTING=ON
 
-          cmake --build build --preset "${{ matrix.arch == 'x86_64' && 'MSVC 2022' || 'MSVC 2022 ARM' }} - Debug" -j 16
+          cmake --build build --preset "${{ matrix.arch == 'x86_64' && 'MSVC 2022' || 'MSVC 2022 ARM' }} - Release" -j 16
 
       - name: Install
         shell: bash
@@ -171,7 +171,7 @@ jobs:
             -DMAA_HASH_VERSION='${{ needs.meta.outputs.tag }}' \
             -DWITH_ADB_CONTROLLER=OFF -DWITH_THRIFT_CONTROLLER=OFF -DWITH_GRPC=OFF -DBUILD_TESTING=ON
 
-          cmake --build build --preset 'NinjaMulti - Debug' -j 16
+          cmake --build build --preset 'NinjaMulti - Release' -j 16
 
       - name: Install
         shell: bash
@@ -232,7 +232,7 @@ jobs:
             -DMAA_HASH_VERSION='${{ needs.meta.outputs.tag }}' \
             -DWITH_ADB_CONTROLLER=OFF -DWITH_THRIFT_CONTROLLER=OFF -DWITH_GRPC=OFF -DBUILD_TESTING=ON
 
-          cmake --build build --preset 'NinjaMulti - Debug' -j 16
+          cmake --build build --preset 'NinjaMulti - Release' -j 16
 
       - name: Install
         shell: bash
