@@ -4,6 +4,7 @@
 #include <iostream>
 #include <mutex>
 #include <string>
+#include <thread>
 
 #include "MaaRpc/MaaRpc.h"
 
@@ -12,16 +13,6 @@ std::condition_variable cv;
 bool mi = false;
 bool quiet = false;
 bool quit = false;
-
-void sig_handler(int)
-{
-    if (!quiet) {
-        std::cout << "Quit from interrupt" << std::endl;
-    }
-    quit = true;
-    std::unique_lock<std::mutex> lock(mutex);
-    cv.notify_all();
-}
 
 int main(int argc, char* argv[])
 {
@@ -57,7 +48,6 @@ int main(int argc, char* argv[])
     }
     std::string server_address(host + ":" + std::to_string(port));
     MaaRpcStart(server_address.c_str());
-    signal(SIGINT, sig_handler);
 
     std::unique_lock<std::mutex> lock(mutex);
     if (!quiet) {
@@ -68,6 +58,15 @@ int main(int argc, char* argv[])
             std::cout << "Server listening on " << server_address << std::endl;
         }
     }
+
+    std::thread wait_enter([]() {
+        std::string row;
+        std::getline(std::cin, row);
+        quit = true;
+        std::unique_lock<std::mutex> lock(mutex);
+        cv.notify_all();
+    });
+
     cv.wait(lock, []() { return quit; });
 
     if (mi) {
@@ -84,5 +83,6 @@ int main(int argc, char* argv[])
     else {
         std::cout << "Exit" << std::endl;
     }
+    wait_enter.join();
     return 0;
 }
