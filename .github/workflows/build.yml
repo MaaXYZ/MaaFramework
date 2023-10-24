@@ -1,4 +1,4 @@
-name: ci
+name: build
 
 on:
   push:
@@ -7,7 +7,7 @@ on:
     branches:
       - "**"
     paths:
-      - ".github/workflows/ci.yml"
+      - ".github/workflows/build.yml"
       - "3rdparty/include/**"
       - "MaaDeps/**"
       - "include/**"
@@ -21,7 +21,7 @@ on:
     branches:
       - "**"
     paths:
-      - ".github/workflows/ci.yml"
+      - ".github/workflows/build.yml"
       - "3rdparty/include/**"
       - "MaaDeps/**"
       - "include/**"
