@@ -6,10 +6,10 @@
 
 #include "MaaFramework/MaaAPI.h"
 
-bool pipeline_smoking(const std::filesystem::path& cur_dir)
+bool pipeline_smoking(const std::filesystem::path& testset_dir)
 {
-    auto testing_path = cur_dir.parent_path() / "test" / "PipelineSmoking";
-    auto result_path = cur_dir / "debug";
+    auto testing_path = testset_dir / "PipelineSmoking";
+    auto result_path = testset_dir / "debug";
     json::value debug_config = { { "device_info", json::object {
                                                       { "uuid", testing_path.string() },
                                                       { "screen_width", 1280 },
@@ -25,7 +25,7 @@ bool pipeline_smoking(const std::filesystem::path& cur_dir)
     auto ctrl_id = MaaControllerPostConnection(controller_handle);
 
     auto resource_handle = MaaResourceCreate(nullptr, nullptr);
-    auto resource_dir = cur_dir.parent_path() / "test" / "PipelineSmoking" / "resource";
+    auto resource_dir = testset_dir / "PipelineSmoking" / "resource";
     auto res_id = MaaResourcePostPath(resource_handle, resource_dir.string().c_str());
 
     MaaControllerWait(controller_handle, ctrl_id);

@@ -55,22 +55,24 @@ bool ReadIndex::init(int swidth, int sheight)
 
 std::optional<cv::Mat> ReadIndex::screencap()
 {
+    auto start_time = std::chrono::steady_clock::now();
+
     if (index_ >= filepaths_.size()) {
         LogInfo << "index_ >= filepaths_.size(), reset index_ to 0";
         index_ = 0;
     }
 
     auto image_path = filepaths_[index_++];
-    LogInfo << VAR(image_path);
-
-    LogInfo << "read image" << VAR(image_path);
+    LogInfo << "Read image" << VAR(image_path);
     auto image = imread(image_path);
     if (image.empty()) {
-        LogError << "read image failed" << VAR(image_path);
+        LogError << "Read image failed" << VAR(image_path);
         return std::nullopt;
     }
 
     cv::resize(image, image, cv::Size(swidth_, sheight_));
+    std::this_thread::sleep_until(start_time + std::chrono::milliseconds(100));
+
     return image;
 }
 

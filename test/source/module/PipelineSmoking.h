@@ -1,3 +1,3 @@
 #include <filesystem>
 
-bool pipeline_smoking(const std::filesystem::path& cur_dir);
+bool pipeline_smoking(const std::filesystem::path& testset_dir);
