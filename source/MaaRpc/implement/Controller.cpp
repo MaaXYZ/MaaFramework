@@ -24,9 +24,17 @@ Status ControllerImpl::create_adb(::grpc::ServerContext* context, const ::maarpc
     }
 
     auto id = make_uuid();
-    handles_.add(id,
-                 MaaAdbControllerCreate(request->adb_path().c_str(), request->adb_serial().c_str(), request->adb_type(),
-                                        request->adb_config().c_str(), callback_impl, cb_state.get()));
+
+    if (request->has_agent_path()) {
+        handles_.add(id, MaaAdbControllerCreateV2(request->adb_path().c_str(), request->adb_serial().c_str(),
+                                                  request->adb_type(), request->adb_config().c_str(),
+                                                  request->agent_path().c_str(), callback_impl, cb_state.get()));
+    }
+    else {
+        handles_.add(id, MaaAdbControllerCreate(request->adb_path().c_str(), request->adb_serial().c_str(),
+                                                request->adb_type(), request->adb_config().c_str(), callback_impl,
+                                                cb_state.get()));
+    }
 
     response->set_handle(id);
 

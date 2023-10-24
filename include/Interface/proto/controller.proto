@@ -11,6 +11,7 @@ message AdbControllerRequest {
   optional string adb_serial = 3;
   optional uint32 adb_type = 4;
   optional string adb_config = 5;
+  optional string agent_path = 6;
 }
 
 message ControllerSetOptionRequest {
