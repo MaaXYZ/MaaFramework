@@ -1,34 +1,32 @@
-name: ci
+name: test
 
 on:
   push:
-    tags:
-      - "v*"
     branches:
       - "**"
     paths:
-      - ".github/workflows/ci.yml"
+      - ".github/workflows/test.yml"
       - "3rdparty/include/**"
       - "MaaDeps/**"
       - "include/**"
       - "source/**"
-      - "sample/**"
       - "cmake/**"
       - "CMakeLists.txt"
+      - "test/**"
       - "*.sln"
 
   pull_request:
     branches:
       - "**"
     paths:
-      - ".github/workflows/ci.yml"
+      - ".github/workflows/test.yml"
       - "3rdparty/include/**"
       - "MaaDeps/**"
       - "include/**"
       - "source/**"
-      - "sample/**"
       - "cmake/**"
       - "CMakeLists.txt"
+      - "test/**"
       - "*.sln"
   workflow_dispatch:
 
@@ -67,7 +65,7 @@ jobs:
     runs-on: windows-latest
     strategy:
       matrix:
-        arch: [aarch64, x86_64]
+        arch: [x86_64]
       fail-fast: false
 
     steps:
@@ -91,14 +89,7 @@ jobs:
 
       - uses: actions/checkout@v3
         with:
-          submodules: true
-
-      # Download host arch tools for Thrift of CustomThriftController
-      - name: Download host tools from MaaDeps
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: |
-          python3 maadeps-download.py x64-windows
+          submodules: recursive
 
       - name: Bootstrap MaaDeps
         env:
@@ -108,29 +99,25 @@ jobs:
 
       - name: Build MAA
         run: |
-          cmake --preset "${{ matrix.arch == 'x86_64' && 'MSVC 2022' || 'MSVC 2022 ARM' }}" -DMAADEPS_TRIPLET="maa-${{ matrix.arch == 'x86_64' && 'x64' || 'arm64' }}-windows" -DMAA_HASH_VERSION='${{ needs.meta.outputs.tag }}'
+          cmake --preset "${{ matrix.arch == 'x86_64' && 'MSVC 2022' || 'MSVC 2022 ARM' }}" -DMAADEPS_TRIPLET="maa-${{ matrix.arch == 'x86_64' && 'x64' || 'arm64' }}-windows" -DMAA_HASH_VERSION='${{ needs.meta.outputs.tag }}' -DWITH_ADB_CONTROLLER=OFF -DWITH_THRIFT_CONTROLLER=OFF -DWITH_GRPC=OFF -DBUILD_TESTING=ON
 
           cmake --build build --preset "${{ matrix.arch == 'x86_64' && 'MSVC 2022' || 'MSVC 2022 ARM' }} - Release" -j 16
 
       - name: Install
         shell: bash
-        if: always()
         run: |
           cmake --install build --prefix install
-          rm -rf install/bin/msvc-debug
 
-          cp -r docs install
-
-          cp -r sample install
-          rm -r install/sample/cpp/*.vcxproj install/sample/cpp/CMakeLists.txt
-
-          cp -r LICENSE.md install
+      - name: Run Testing
+        shell: bash
+        run: |
+          ./install/bin/Testing.exe ./install/test
 
       - uses: actions/upload-artifact@v3
         if: always()
         with:
-          name: MAA-win-${{ matrix.arch }}
-          path: "install"
+          name: MAA-win-${{ matrix.arch }}-test-log
+          path: "install/bin/debug"
 
   ubuntu:
     needs: meta
@@ -138,7 +125,7 @@ jobs:
     container: archlinux:base-devel
     strategy:
       matrix:
-        arch: [aarch64, x86_64]
+        arch: [x86_64]
       fail-fast: false
 
     steps:
@@ -155,7 +142,7 @@ jobs:
       # https://github.com/MaaAssistantArknights/MaaFramework/actions/runs/5643408179/job/15285186255
       - uses: actions/checkout@v3
         with:
-          submodules: true
+          submodules: recursive
 
       - name: Install cross compile toolchains
         if: ${{ matrix.arch != 'x86_64' }}
@@ -167,13 +154,6 @@ jobs:
         uses: Chocobo1/setup-ccache-action@v1
         with:
           remove_stale_cache: false
-
-      # Download host arch tools for Thrift of CustomThriftController
-      - name: Download host tools from MaaDeps
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: |
-          python3 maadeps-download.py x64-linux
 
       - name: Bootstrap MaaDeps
         env:
@@ -188,41 +168,39 @@ jobs:
         run: |
           cmake --preset 'NinjaMulti' \
             -DMAADEPS_TRIPLET='maa-${{ matrix.arch == 'x86_64' && 'x64' || 'arm64' }}-linux' \
-            -DMAA_HASH_VERSION='${{ needs.meta.outputs.tag }}'
+            -DMAA_HASH_VERSION='${{ needs.meta.outputs.tag }}' \
+            -DWITH_ADB_CONTROLLER=OFF -DWITH_THRIFT_CONTROLLER=OFF -DWITH_GRPC=OFF -DBUILD_TESTING=ON
 
           cmake --build build --preset 'NinjaMulti - Release' -j 16
 
       - name: Install
         shell: bash
-        if: always()
         run: |
           cmake --install build --prefix install
 
-          cp -r docs install
-
-          cp -r sample install
-          rm -r install/sample/cpp/*.vcxproj install/sample/cpp/CMakeLists.txt
-
-          cp -r LICENSE.md install
+      - name: Run Testing
+        shell: bash
+        run: |
+          ./install/bin/Testing ./install/test
 
       - uses: actions/upload-artifact@v3
         if: always()
         with:
-          name: MAA-linux-${{ matrix.arch }}
-          path: "install"
+          name: MAA-linux-${{ matrix.arch }}-test-log
+          path: "install/bin/debug"
 
   macos:
     needs: meta
     runs-on: macos-latest
     strategy:
       matrix:
-        arch: [aarch64, x86_64]
+        arch: [x86_64]
       fail-fast: false
 
     steps:
       - uses: actions/checkout@v3
         with:
-          submodules: true
+          submodules: recursive
 
       - name: Install dep
         run: |
@@ -238,13 +216,6 @@ jobs:
           brew install llvm
         # 16
 
-      # Download host arch tools for Thrift of CustomThriftController
-      - name: Download host tools from MaaDeps
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: |
-          python3 maadeps-download.py x64-osx
-
       - name: Bootstrap MaaDeps
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -258,7 +229,8 @@ jobs:
         run: |
           cmake --preset 'NinjaMulti' \
             -DMAADEPS_TRIPLET='maa-${{ matrix.arch == 'x86_64' && 'x64' || 'arm64' }}-osx' \
-            -DMAA_HASH_VERSION='${{ needs.meta.outputs.tag }}'
+            -DMAA_HASH_VERSION='${{ needs.meta.outputs.tag }}' \
+            -DWITH_ADB_CONTROLLER=OFF -DWITH_THRIFT_CONTROLLER=OFF -DWITH_GRPC=OFF -DBUILD_TESTING=ON
 
           cmake --build build --preset 'NinjaMulti - Release' -j 16
 
@@ -268,74 +240,13 @@ jobs:
         run: |
           cmake --install build --prefix install
 
-          cp -r docs install
-
-          cp -r sample install
-          rm -r install/sample/cpp/*.vcxproj install/sample/cpp/CMakeLists.txt
-
-          cp -r LICENSE.md install
+      - name: Run Testing
+        shell: bash
+        run: |
+          ./install/bin/Testing ./install/test
 
       - uses: actions/upload-artifact@v3
         if: always()
         with:
-          name: MAA-macos-${{ matrix.arch }}
-          path: "install"
-
-  nuget_pack:
-    needs: [meta, windows, ubuntu, macos]
-    runs-on: ubuntu-latest
-    env:
-      NUGET_PACKAGE_ID: Maa.Framework.Runtimes # need ${{ secrets.NuGetAPIKey }}
-
-    steps:
-      - uses: nuget/setup-nuget@v1
-
-      - uses: actions/checkout@v3
-      - uses: actions/download-artifact@v3
-        with:
-          path: assets
-
-      - name: Nuget Pack
-        working-directory: tools/nupkgs
-        run: |
-          tag=${{ needs.meta.outputs.tag }}
-          nuget pack Maa.Framework.Runtimes.nuspec \
-            -Verbosity detailed \
-            -Properties "id=$NUGET_PACKAGE_ID;version=${tag#v};year=$(date +%Y);branch=$(git rev-parse --abbrev-ref HEAD);commit=$(git rev-parse HEAD);docs_path=../../docs;assets_path=../../assets"
-
-      - uses: actions/upload-artifact@v3
-        if: always()
-        with:
-          name: MAA-nupkgs
-          path: "tools/nupkgs/*.nupkg"
-
-  release:
-    if: ${{ needs.meta.outputs.is_release == 'true' }}
-    needs: [meta, windows, ubuntu, macos, nuget_pack]
-    runs-on: ubuntu-latest
-    env:
-      NUGET_PACKAGE_SOURCE: https://api.nuget.org/v3/index.json # https://apiint.nugettest.org/v3/index.json
-
-    steps:
-      - uses: actions/download-artifact@v3
-        with:
-          path: assets
-
-      - name: Publish Nupkgs
-        run: |
-          nuget push assets/MAA-nupkgs/*.nupkg \
-            -ApiKey ${{ secrets.NuGetAPIKey }} \
-            -Source $NUGET_PACKAGE_SOURCE \
-            -SkipDuplicate
-          rm -r assets/MAA-nupkgs
-
-      - run: |
-          cd assets
-          for f in *; do
-            (cd $f && zip -r ../$f-${{ needs.meta.outputs.tag }}.zip .)
-          done
-
-      - uses: softprops/action-gh-release@v1
-        with:
-          files: assets/*.zip
-          tag_name: ${{ needs.meta.outputs.tag }}
+          name: MAA-macos-${{ matrix.arch }}-test-log
+          path: "install/bin/debug"
