@@ -65,7 +65,7 @@ jobs:
     runs-on: windows-latest
     strategy:
       matrix:
-        arch: [aarch64, x86_64]
+        arch: [x86_64]
       fail-fast: false
 
     steps:
@@ -125,7 +125,7 @@ jobs:
     container: archlinux:base-devel
     strategy:
       matrix:
-        arch: [aarch64, x86_64]
+        arch: [x86_64]
       fail-fast: false
 
     steps:
@@ -186,7 +186,7 @@ jobs:
       - uses: actions/upload-artifact@v3
         if: always()
         with:
-          name: MAA-win-${{ matrix.arch }}-test-log
+          name: MAA-linux-${{ matrix.arch }}-test-log
           path: "install/bin/debug"
 
   macos:
@@ -194,7 +194,7 @@ jobs:
     runs-on: macos-latest
     strategy:
       matrix:
-        arch: [aarch64, x86_64]
+        arch: [x86_64]
       fail-fast: false
 
     steps:
@@ -248,5 +248,5 @@ jobs:
       - uses: actions/upload-artifact@v3
         if: always()
         with:
-          name: MAA-win-${{ matrix.arch }}-test-log
+          name: MAA-macos-${{ matrix.arch }}-test-log
           path: "install/bin/debug"
