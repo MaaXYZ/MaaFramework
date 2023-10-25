@@ -6,28 +6,24 @@ on:
       - "**"
     paths:
       - ".github/workflows/test.yml"
-      - "3rdparty/include/**"
-      - "MaaDeps/**"
+      - "3rdparty/**"
+      - "cmake/**"
       - "include/**"
       - "source/**"
-      - "cmake/**"
       - "CMakeLists.txt"
       - "test/**"
-      - "*.sln"
 
   pull_request:
     branches:
       - "**"
     paths:
       - ".github/workflows/test.yml"
-      - "3rdparty/include/**"
-      - "MaaDeps/**"
+      - "3rdparty/**"
+      - "cmake/**"
       - "include/**"
       - "source/**"
-      - "cmake/**"
       - "CMakeLists.txt"
       - "test/**"
-      - "*.sln"
   workflow_dispatch:
 
 jobs:

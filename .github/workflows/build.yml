@@ -8,28 +8,22 @@ on:
       - "**"
     paths:
       - ".github/workflows/build.yml"
-      - "3rdparty/include/**"
-      - "MaaDeps/**"
+      - "3rdparty/**"
+      - "cmake/**"
       - "include/**"
       - "source/**"
-      - "sample/**"
-      - "cmake/**"
       - "CMakeLists.txt"
-      - "*.sln"
 
   pull_request:
     branches:
       - "**"
     paths:
       - ".github/workflows/build.yml"
-      - "3rdparty/include/**"
-      - "MaaDeps/**"
+      - "3rdparty/**"
+      - "cmake/**"
       - "include/**"
       - "source/**"
-      - "sample/**"
-      - "cmake/**"
       - "CMakeLists.txt"
-      - "*.sln"
   workflow_dispatch:
 
 jobs:
