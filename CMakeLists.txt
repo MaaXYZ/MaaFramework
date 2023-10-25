@@ -17,7 +17,8 @@ option(BUILD_SAMPLE "build a demo" OFF)
 option(BUILD_TESTING "build testing" OFF)
 
 if(USE_MAADEPS)
-    include(${PROJECT_SOURCE_DIR}/MaaDeps/maadeps.cmake)
+    set(MAA_DEPS_DIR ${PROJECT_SOURCE_DIR}/3rdparty/MaaDeps)
+    include(${MAA_DEPS_DIR}/maadeps.cmake)
 endif()
 
 # Basic compile and link configuration
@@ -55,7 +56,6 @@ if(WITH_GRPC)
     find_package(gRPC CONFIG REQUIRED)
 endif()
 
-add_subdirectory(assets)
 add_subdirectory(3rdparty)
 add_subdirectory(source)
 
