@@ -69,7 +69,7 @@ MAA 正计划建设为一类项目，而非舟的单一软件。
 
 ## 本地构建
 
-请参考 [CI](https://github.com/MaaAssistantArknights/MaaFramework/blob/main/.github/workflows/ci.yml).
+请参考 [Build CI](https://github.com/MaaAssistantArknights/MaaFramework/blob/main/.github/workflows/build.yml).
 
 ## 鸣谢
 
