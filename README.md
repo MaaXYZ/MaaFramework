@@ -69,7 +69,42 @@ MAA 正计划建设为一类项目，而非舟的单一软件。
 
 ## 本地构建
 
-请参考 [Build CI](https://github.com/MaaAssistantArknights/MaaFramework/blob/main/.github/workflows/build.yml).
+1. 下载 MaaDeps prebuilt
+
+    ```sh
+    python3 tools/maadeps-download.py
+    ```
+
+2. _(macOS only)_ 下载 fmt
+
+    ```sh
+    sh tools/fetch-fmt.sh
+    ```
+
+3. 配置 cmake
+
+    - Windows  
+
+    ```bash
+    cmake --preset "MSVC 2022"
+    ```
+
+    - Linux / macOS
+
+    ```bash
+    cmake --preset "NinjaMulti"
+    ```
+
+4. 使用 cmake 构建工程
+
+    ```bash
+    cmake --build build --config Release
+    cmake --install build --prefix install
+    ```
+
+生成的二进制及相关文件在 `install` 目录下
+
+详情请参考 [Build CI](https://github.com/MaaAssistantArknights/MaaFramework/blob/main/.github/workflows/build.yml).
 
 ## 鸣谢
 
