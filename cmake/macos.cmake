@@ -11,7 +11,7 @@ if(BUILD_XCFRAMEWORK)
         COMMAND rm -rf OpenCV.xcframework
         COMMAND
             xcodebuild -create-xcframework -library
-            "${PROJECT_SOURCE_DIR}/MaaDeps/runtime/${MAADEPS_TRIPLET}/libopencv_world4.407.dylib" -output
+            "${MAA_DEPS_DIR}/runtime/${MAADEPS_TRIPLET}/libopencv_world4.408.dylib" -output
             OpenCV.xcframework)
 
     add_custom_command(
@@ -19,7 +19,7 @@ if(BUILD_XCFRAMEWORK)
         COMMAND rm -rf ONNXRuntime.xcframework
         COMMAND
             xcodebuild -create-xcframework -library
-            "${PROJECT_SOURCE_DIR}/MaaDeps/runtime/${MAADEPS_TRIPLET}/libonnxruntime.1.14.1.dylib" -output
+            "${MAA_DEPS_DIR}/runtime/${MAADEPS_TRIPLET}/libonnxruntime.1.16.0.dylib" -output
             ONNXRuntime.xcframework)
 
     add_custom_command(
@@ -27,7 +27,7 @@ if(BUILD_XCFRAMEWORK)
         COMMAND rm -rf fastdeploy_ppocr.xcframework
         COMMAND
             xcodebuild -create-xcframework -library
-            "${PROJECT_SOURCE_DIR}/MaaDeps/runtime/${MAADEPS_TRIPLET}/libfastdeploy_ppocr.dylib" -output
+            "${MAA_DEPS_DIR}/runtime/${MAADEPS_TRIPLET}/libfastdeploy_ppocr.dylib" -output
             fastdeploy_ppocr.xcframework)
 
     add_custom_target(MaaXCFramework ALL DEPENDS MaaFramework MaaFramework.xcframework OpenCV.xcframework

@@ -98,13 +98,13 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          python3 maadeps-download.py x64-windows
+          python3 tools/maadeps-download.py x64-windows
 
       - name: Bootstrap MaaDeps
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          python3 maadeps-download.py ${{ matrix.arch == 'x86_64' && 'x64' || 'arm64' }}-windows
+          python3 tools/maadeps-download.py ${{ matrix.arch == 'x86_64' && 'x64' || 'arm64' }}-windows
 
       - name: Build MAA
         run: |
@@ -122,7 +122,6 @@ jobs:
           cp -r docs install
 
           cp -r sample install
-          rm -r install/sample/cpp/*.vcxproj install/sample/cpp/CMakeLists.txt
 
           cp -r LICENSE.md install
 
@@ -173,13 +172,13 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          python3 maadeps-download.py x64-linux
+          python3 tools/maadeps-download.py x64-linux
 
       - name: Bootstrap MaaDeps
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          python3 maadeps-download.py ${{ matrix.arch == 'x86_64' && 'x64' || 'arm64' }}-linux
+          python3 tools/maadeps-download.py ${{ matrix.arch == 'x86_64' && 'x64' || 'arm64' }}-linux
 
       - name: Build MAA
         env:
@@ -201,7 +200,6 @@ jobs:
           cp -r docs install
 
           cp -r sample install
-          rm -r install/sample/cpp/*.vcxproj install/sample/cpp/CMakeLists.txt
 
           cp -r LICENSE.md install
 
@@ -231,7 +229,7 @@ jobs:
 
       - name: Download fmtlib
         run: |
-          sh 3rdparty/fetch-fmt.sh
+          sh tools/fetch-fmt.sh
 
       - name: Install compiler
         run: |
@@ -243,13 +241,13 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          python3 maadeps-download.py x64-osx
+          python3 tools/maadeps-download.py x64-osx
 
       - name: Bootstrap MaaDeps
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          python3 maadeps-download.py ${{ matrix.arch == 'x86_64' && 'x64' || 'arm64' }}-osx
+          python3 tools/maadeps-download.py ${{ matrix.arch == 'x86_64' && 'x64' || 'arm64' }}-osx
 
       - name: Build MAA
         env:
@@ -271,7 +269,6 @@ jobs:
           cp -r docs install
 
           cp -r sample install
-          rm -r install/sample/cpp/*.vcxproj install/sample/cpp/CMakeLists.txt
 
           cp -r LICENSE.md install
 

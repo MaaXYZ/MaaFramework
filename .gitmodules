@@ -1,10 +1,9 @@
-[submodule "MaaDeps"]
-	path = MaaDeps
-	url = https://github.com/MaaAssistantArknights/MaaDeps.git
-[submodule "assets/config/MaaAgentBinary"]
-	path = assets/config/MaaAgentBinary
-	url = https://github.com/MaaAssistantArknights/MaaAgentBinary.git
+[submodule "3rdparty/MaaDeps"]
+	path = 3rdparty/MaaDeps
+	url = https://github.com/MaaAssistantArknights/MaaDeps
+[submodule "3rdparty/MaaAgentBinary"]
+	path = 3rdparty/MaaAgentBinary
+	url = https://github.com/MaaAssistantArknights/MaaAgentBinary
 [submodule "test/TestingSet"]
 	path = test/TestingSet
 	url = https://github.com/MaaAssistantArknights/MaaFwTestingSet.git
-	branch = master

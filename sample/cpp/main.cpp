@@ -23,10 +23,8 @@ int main([[maybe_unused]] int argc, char** argv)
         return 0;
     }
 
-    auto cur_dir = std::filesystem::path(argv[0]).parent_path();
-
     const int kIndex = 0; // for demo, we just use the first device
-    auto agent_path = cur_dir / "share" / "MaaAgentBinary";
+    auto agent_path = "share" / "MaaAgentBinary";
     auto controller_handle =
         MaaAdbControllerCreateV2(MaaToolKitGetDeviceAdbPath(kIndex), MaaToolKitGetDeviceAdbSerial(kIndex),
                                  MaaToolKitGetDeviceAdbControllerType(kIndex), MaaToolKitGetDeviceAdbConfig(kIndex),
@@ -34,7 +32,7 @@ int main([[maybe_unused]] int argc, char** argv)
     auto ctrl_id = MaaControllerPostConnection(controller_handle);
 
     auto resource_handle = MaaResourceCreate(nullptr, nullptr);
-    auto resource_dir = cur_dir / "share" / "resource";
+    auto resource_dir = "my_resource";
     auto res_id = MaaResourcePostPath(resource_handle, resource_dir.string().c_str());
 
     MaaControllerWait(controller_handle, ctrl_id);
