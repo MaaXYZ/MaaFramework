@@ -128,6 +128,20 @@ protected:
     MessageNotifier<MaaControllerCallback> notifier;
 
 private:
+    bool handle_connect();
+    bool handle_click(const ClickParam& param);
+    bool handle_swipe(const SwipeParam& param);
+    bool handle_touch_down(const TouchParam& param);
+    bool handle_touch_move(const TouchParam& param);
+    bool handle_touch_up(const TouchParam& param);
+    bool handle_press_key(const PressKeyParam& param);
+    bool handle_screencap();
+    bool handle_start_app(const AppParam& param);
+    bool handle_stop_app(const AppParam& param);
+
+    void append_recording(json::value info, const std::chrono::steady_clock::time_point& start_time, bool success);
+
+private:
     static cv::Point rand_point(const cv::Rect& r);
 
     bool run_action(typename AsyncRunner<Action>::Id id, Action action);
@@ -141,6 +155,7 @@ private: // options
     bool set_image_target_short_side(MaaOptionValue value, MaaOptionValueSize val_size);
     bool set_default_app_package_entry(MaaOptionValue value, MaaOptionValueSize val_size);
     bool set_default_app_package(MaaOptionValue value, MaaOptionValueSize val_size);
+    bool set_recording(MaaOptionValue value, MaaOptionValueSize val_size);
 
 private:
     // InstanceInternalAPI* inst_ = nullptr;
@@ -159,6 +174,9 @@ private:
 
     std::string default_app_package_entry_;
     std::string default_app_package_;
+
+    bool recording_ = false;
+    std::filesystem::path recording_path_;
 
     std::set<AsyncRunner<Action>::Id> post_ids_;
     std::mutex post_ids_mutex_;

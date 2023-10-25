@@ -80,6 +80,10 @@ enum MaaCtrlOptionEnum
     // For StopApp
     // value: string, eg: "com.hypergryph.arknights"; val_size: string length
     MaaCtrlOption_DefaultAppPackage = 4,
+
+    // Dump all screenshots and actions
+    // value: bool, eg: true; val_size: sizeof(bool)
+    MaaCtrlOption_Recording = 5,
 };
 
 typedef MaaOption MaaInstOption;

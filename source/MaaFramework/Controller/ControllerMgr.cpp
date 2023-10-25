@@ -1,7 +1,9 @@
 #include "ControllerMgr.h"
 
 #include "MaaFramework/MaaMsg.h"
+#include "Option/GlobalOptionMgr.h"
 #include "Resource/ResourceMgr.h"
+#include "Utils/ImageIo.h"
 #include "Utils/NoWarningCV.hpp"
 
 #include <tuple>
@@ -42,6 +44,9 @@ bool ControllerMgr::set_option(MaaCtrlOption key, MaaOptionValue value, MaaOptio
         return set_default_app_package_entry(value, val_size);
     case MaaCtrlOption_DefaultAppPackage:
         return set_default_app_package(value, val_size);
+
+    case MaaCtrlOption_Recording:
+        return set_recording(value, val_size);
 
     default:
         LogError << "Unknown key" << VAR(key) << VAR(value);
@@ -223,6 +228,227 @@ bool ControllerMgr::stop_app(const std::string& package)
     return status(id) == MaaStatus_Success;
 }
 
+bool ControllerMgr::handle_connect()
+{
+    std::chrono::steady_clock::time_point start_time;
+    if (recording_) {
+        start_time = std::chrono::steady_clock::now();
+    }
+
+    connected_ = _connect();
+
+    if (recording_) {
+        json::value info {
+            { "type", "connect" },
+            { "success", connected_ },
+        };
+        append_recording(std::move(info), start_time, connected_);
+    }
+
+    return connected_;
+}
+
+bool ControllerMgr::handle_click(const ClickParam& param)
+{
+    std::chrono::steady_clock::time_point start_time;
+    if (recording_) {
+        start_time = std::chrono::steady_clock::now();
+    }
+
+    bool ret = _click(param);
+
+    if (recording_) {
+        json::value info = {
+            { "type", "click" },
+            { "x", param.x },
+            { "y", param.y },
+        };
+        append_recording(std::move(info), start_time, ret);
+    }
+
+    return ret;
+}
+
+bool ControllerMgr::handle_swipe(const SwipeParam& param)
+{
+    std::chrono::steady_clock::time_point start_time;
+    if (recording_) {
+        start_time = std::chrono::steady_clock::now();
+    }
+
+    bool ret = _swipe(param);
+
+    if (recording_) {
+        json::value info = {
+            { "type", "swipe" }, { "x1", param.x1 }, { "y1", param.y1 },
+            { "x2", param.x2 },  { "y2", param.y2 }, { "duration", param.duration },
+        };
+        append_recording(std::move(info), start_time, ret);
+    }
+
+    return ret;
+}
+
+bool ControllerMgr::handle_touch_down(const TouchParam& param)
+{
+    std::chrono::steady_clock::time_point start_time;
+    if (recording_) {
+        start_time = std::chrono::steady_clock::now();
+    }
+
+    bool ret = _touch_down(param);
+
+    if (recording_) {
+        json::value info = {
+            { "type", "touch_down" }, { "contact", param.contact },   { "x", param.x },
+            { "y", param.y },         { "pressure", param.pressure },
+        };
+        append_recording(std::move(info), start_time, ret);
+    }
+
+    return ret;
+}
+
+bool ControllerMgr::handle_touch_move(const TouchParam& param)
+{
+    std::chrono::steady_clock::time_point start_time;
+    if (recording_) {
+        start_time = std::chrono::steady_clock::now();
+    }
+
+    bool ret = _touch_move(param);
+
+    if (recording_) {
+        json::value info = {
+            { "type", "touch_move" }, { "contact", param.contact },   { "x", param.x },
+            { "y", param.y },         { "pressure", param.pressure },
+        };
+        append_recording(std::move(info), start_time, ret);
+    }
+
+    return ret;
+}
+
+bool ControllerMgr::handle_touch_up(const TouchParam& param)
+{
+    std::chrono::steady_clock::time_point start_time;
+    if (recording_) {
+        start_time = std::chrono::steady_clock::now();
+    }
+
+    bool ret = _touch_up(param);
+
+    if (recording_) {
+        json::value info = {
+            { "type", "touch_up" },
+            { "contact", param.contact },
+        };
+        append_recording(std::move(info), start_time, ret);
+    }
+
+    return ret;
+}
+
+bool ControllerMgr::handle_press_key(const PressKeyParam& param)
+{
+    std::chrono::steady_clock::time_point start_time;
+    if (recording_) {
+        start_time = std::chrono::steady_clock::now();
+    }
+
+    bool ret = _press_key(param);
+
+    if (recording_) {
+        json::value info = {
+            { "type", "press_key" },
+            { "keycode", param.keycode },
+        };
+        append_recording(std::move(info), start_time, ret);
+    }
+
+    return ret;
+}
+
+bool ControllerMgr::handle_screencap()
+{
+    std::chrono::steady_clock::time_point start_time;
+    if (recording_) {
+        start_time = std::chrono::steady_clock::now();
+    }
+
+    bool ret = postproc_screenshot(_screencap());
+
+    if (recording_) {
+        auto image_relative_path = path("Screenshot") / path(now_filestem() + ".png");
+        auto image_path = recording_path_.parent_path() / image_relative_path;
+        MAA_NS::imwrite(image_path, image_);
+
+        json::value info = {
+            { "type", "screencap" },
+            { "path", path_to_utf8_string(image_relative_path) },
+        };
+        append_recording(std::move(info), start_time, ret);
+    }
+
+    return ret;
+}
+
+bool ControllerMgr::handle_start_app(const AppParam& param)
+{
+    std::chrono::steady_clock::time_point start_time;
+    if (recording_) {
+        start_time = std::chrono::steady_clock::now();
+    }
+
+    bool ret = _start_app(param);
+    clear_target_image_size();
+
+    if (recording_) {
+        json::value info = {
+            { "type", "start_app" },
+            { "package", param.package },
+        };
+        append_recording(std::move(info), start_time, ret);
+    }
+    return ret;
+}
+
+bool ControllerMgr::handle_stop_app(const AppParam& param)
+{
+    std::chrono::steady_clock::time_point start_time;
+    if (recording_) {
+        start_time = std::chrono::steady_clock::now();
+    }
+
+    bool ret = _stop_app(param);
+    clear_target_image_size();
+
+    if (recording_) {
+        json::value info = {
+            { "type", "stop_app" },
+            { "package", param.package },
+        };
+        append_recording(std::move(info), start_time, ret);
+    }
+    return ret;
+}
+
+void ControllerMgr::append_recording(json::value info, const std::chrono::steady_clock::time_point& start_time,
+                                     bool success)
+{
+    if (!recording_) {
+        return;
+    }
+
+    info["time"] = start_time.time_since_epoch().count();
+    info["cost"] = duration_since(start_time).count();
+    info["success"] = success;
+
+    std::ofstream ofs(recording_path_, std::ios::app);
+    ofs << info.to_string() << "\n";
+    ofs.close();
+}
+
 cv::Point ControllerMgr::rand_point(const cv::Rect& r)
 {
     int x = 0, y = 0;
@@ -268,42 +494,39 @@ bool ControllerMgr::run_action(typename AsyncRunner<Action>::Id id, Action actio
 
     switch (action.type) {
     case Action::Type::connect:
-        ret = _connect();
-        connected_ = ret;
+        ret = handle_connect();
         break;
 
     case Action::Type::click:
-        ret = _click(std::get<ClickParam>(action.param));
+        ret = handle_click(std::get<ClickParam>(action.param));
         break;
     case Action::Type::swipe:
-        ret = _swipe(std::get<SwipeParam>(action.param));
+        ret = handle_swipe(std::get<SwipeParam>(action.param));
         break;
 
     case Action::Type::touch_down:
-        ret = _touch_down(std::get<TouchParam>(action.param));
+        ret = handle_touch_down(std::get<TouchParam>(action.param));
         break;
     case Action::Type::touch_move:
-        ret = _touch_move(std::get<TouchParam>(action.param));
+        ret = handle_touch_move(std::get<TouchParam>(action.param));
         break;
     case Action::Type::touch_up:
-        ret = _touch_up(std::get<TouchParam>(action.param));
+        ret = handle_touch_up(std::get<TouchParam>(action.param));
         break;
 
     case Action::Type::press_key:
-        ret = _press_key(std::get<PressKeyParam>(action.param));
+        ret = handle_press_key(std::get<PressKeyParam>(action.param));
         break;
 
     case Action::Type::screencap:
-        ret = postproc_screenshot(_screencap());
+        ret = handle_screencap();
         break;
 
     case Action::Type::start_app:
-        ret = _start_app(std::get<AppParam>(action.param));
-        clear_target_image_size();
+        ret = handle_start_app(std::get<AppParam>(action.param));
         break;
     case Action::Type::stop_app:
-        ret = _stop_app(std::get<AppParam>(action.param));
-        clear_target_image_size();
+        ret = handle_stop_app(std::get<AppParam>(action.param));
         break;
 
     default:
@@ -449,6 +672,21 @@ bool ControllerMgr::set_default_app_package(MaaOptionValue value, MaaOptionValue
 {
     std::string_view package(reinterpret_cast<char*>(value), val_size);
     default_app_package_ = package;
+    return true;
+}
+
+bool ControllerMgr::set_recording(MaaOptionValue value, MaaOptionValueSize val_size)
+{
+    if (val_size != sizeof(recording_)) {
+        LogError << "invalid value size: " << val_size;
+        return false;
+    }
+    recording_ = *reinterpret_cast<bool*>(value);
+
+    auto recording_dir = GlobalOptionMgr::get_instance().logging_path() / "Recording";
+    std::filesystem::create_directories(recording_dir);
+    recording_path_ = recording_dir / MAA_FMT::format("MaaRecording_{}.txt", now_filestem());
+
     return true;
 }
 
