@@ -8,7 +8,7 @@ import time
 from pathlib import Path
 import shutil
 
-basedir = Path(__file__).parent
+basedir = Path(__file__).parent.parent
 
 def detect_host_triplet():
     import platform
