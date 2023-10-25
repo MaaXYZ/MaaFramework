@@ -122,7 +122,6 @@ jobs:
           cp -r docs install
 
           cp -r sample install
-          rm -r install/sample/cpp/*.vcxproj install/sample/cpp/CMakeLists.txt
 
           cp -r LICENSE.md install
 
@@ -201,7 +200,6 @@ jobs:
           cp -r docs install
 
           cp -r sample install
-          rm -r install/sample/cpp/*.vcxproj install/sample/cpp/CMakeLists.txt
 
           cp -r LICENSE.md install
 
@@ -271,7 +269,6 @@ jobs:
           cp -r docs install
 
           cp -r sample install
-          rm -r install/sample/cpp/*.vcxproj install/sample/cpp/CMakeLists.txt
 
           cp -r LICENSE.md install
 

@@ -8,10 +8,10 @@ if __name__ == "__main__":
     Library.open("bin")
 
     resource = Resource()
-    res_id = resource.post_path("share/resource/")
+    res_id = resource.post_path("my_resource")
     resource.wait(res_id)
 
-    controller = AdbController("adb", "127.0.0.1:16416", agent_path = "share/MaaAgentBinary/")
+    controller = AdbController("adb", "127.0.0.1:16416", agent_path = "share/MaaAgentBinary")
     ctrl_id = controller.post_connection()
     controller.wait(ctrl_id)
 
