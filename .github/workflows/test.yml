@@ -114,7 +114,13 @@ jobs:
       - uses: actions/upload-artifact@v3
         if: always()
         with:
-          name: MAA-win-${{ matrix.arch }}-test-log
+          name: MAA-win-${{ matrix.arch }}-text_log
+          path: "install/bin/debug/*.log"
+
+      - uses: actions/upload-artifact@v3
+        if: always()
+        with:
+          name: MAA-win-${{ matrix.arch }}-full_log
           path: "install/bin/debug"
 
   ubuntu:
@@ -186,7 +192,13 @@ jobs:
       - uses: actions/upload-artifact@v3
         if: always()
         with:
-          name: MAA-linux-${{ matrix.arch }}-test-log
+          name: MAA-linux-${{ matrix.arch }}-text_log
+          path: "install/bin/debug/*.log"
+
+      - uses: actions/upload-artifact@v3
+        if: always()
+        with:
+          name: MAA-linux-${{ matrix.arch }}-full_log
           path: "install/bin/debug"
 
   macos:
@@ -250,5 +262,11 @@ jobs:
       - uses: actions/upload-artifact@v3
         if: always()
         with:
-          name: MAA-macos-${{ matrix.arch }}-test-log
+          name: MAA-macos-${{ matrix.arch }}-text_log
+          path: "install/bin/debug/*.log"
+
+      - uses: actions/upload-artifact@v3
+        if: always()
+        with:
+          name: MAA-macos-${{ matrix.arch }}-full_log
           path: "install/bin/debug"

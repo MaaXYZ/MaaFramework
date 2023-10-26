@@ -2,22 +2,12 @@
 
 #include <regex>
 
-#include "Utils/Codec.h"
 #include "Utils/ImageIo.h"
 #include "Utils/Logger.h"
 #include "Utils/Ranges.hpp"
 #include "Utils/StringMisc.hpp"
 
 MAA_VISION_NS_BEGIN
-
-json::value OCRer::Result::to_json() const
-{
-    json::value root;
-    root["text"] = from_u16(text);
-    root["box"] = json::array({ box.x, box.y, box.width, box.height });
-    root["score"] = score;
-    return root;
-}
 
 OCRer::ResultsVec OCRer::analyze() const
 {

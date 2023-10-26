@@ -12,7 +12,7 @@ public:
         cv::Rect box {};
         double score = 0.0;
 
-        json::value to_json() const
+        operator json::value() const
         {
             json::value root;
             root["box"] = json::array({ box.x, box.y, box.width, box.height });
@@ -36,11 +36,5 @@ private:
 
     TemplateComparatorParam param_;
 };
-
-inline std::ostream& operator<<(std::ostream& os, const MAA_VISION_NS::TemplateComparator::Result& res)
-{
-    os << res.to_json().to_string();
-    return os;
-}
 
 MAA_VISION_NS_END

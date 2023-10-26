@@ -99,7 +99,7 @@ public:
         }
 
     private:
-        struct string_converter
+        struct MAA_UTILS_API StringConverter
         {
             template <typename T>
             static constexpr bool is_convertible =
@@ -121,15 +121,15 @@ public:
                     return std::move(ss).str();
                 }
                 else {
-                    return json::serialize<true>(std::forward<T>(value), *this).dumps(4);
+                    return json::serialize<true>(std::forward<T>(value), *this).to_string();
                 }
             }
-        };
+        } string_converter_;
 
         template <typename T>
         void stream(T&& value)
         {
-            auto&& content = string_converter()(std::forward<T>(value));
+            auto&& content = string_converter_(std::forward<T>(value));
 
 #ifdef MAA_DEBUG
             cout_buffer_ << content << sep_.str;
