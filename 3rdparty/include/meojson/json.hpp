@@ -268,8 +268,9 @@ public:
 
     explicit basic_array(const basic_value<string_t>& val);
     explicit basic_array(basic_value<string_t>&& val);
-    template <typename array_t, typename _ = std::enable_if_t<
-                                    std::is_constructible_v<value_type, typename std::decay_t<array_t>::value_type>>>
+
+    template <typename array_t, typename _ = std::enable_if_t<std::is_constructible_v<
+                                    value_type, decltype(std::declval<array_t>().begin().operator*())>>>
     basic_array(array_t arr) : _array_data(std::make_move_iterator(arr.begin()), std::make_move_iterator(arr.end()))
     {}
 
@@ -380,12 +381,10 @@ public:
     basic_object(std::initializer_list<value_type> init_list);
     explicit basic_object(const basic_value<string_t>& val);
     explicit basic_object(basic_value<string_t>&& val);
-    template <typename map_t, typename _ = std::enable_if_t<
-                                  std::is_constructible_v<value_type, typename std::decay_t<map_t>::value_type>>>
-    basic_object(map_t map)
-    {
-        _object_data.insert(std::make_move_iterator(map.begin()), std::make_move_iterator(map.end()));
-    }
+    template <typename map_t, typename _ = std::enable_if_t<std::is_constructible_v<
+                                  value_type, decltype(std::declval<map_t>().begin().operator*())>>>
+    basic_object(map_t map) : _object_data(std::make_move_iterator(map.begin()), std::make_move_iterator(map.end()))
+    {}
 
     ~basic_object() = default;
 
@@ -1665,10 +1664,9 @@ MEOJSON_INLINE basic_object<string_t>::basic_object(raw_object&& raw_obj) : _obj
 
 template <typename string_t>
 MEOJSON_INLINE basic_object<string_t>::basic_object(std::initializer_list<value_type> init_list)
+    : _object_data(std::make_move_iterator(init_list.begin()), std::make_move_iterator(init_list.end()))
 {
-    for (const auto& [key, val] : init_list) {
-        emplace(key, val);
-    }
+    ;
 }
 
 template <typename string_t>
@@ -2564,7 +2562,9 @@ namespace _serialization_helper
     constexpr bool is_container = false;
     template <typename T>
     constexpr bool is_container<
-        T, void_t<typename T::value_type, decltype(std::declval<T>().begin()), decltype(std::declval<T>().end())>> =
+        T, void_t<typename T::value_type, decltype(std::declval<T>().begin()), decltype(std::declval<T>().end()),
+                  std::enable_if_t<std::is_same_v<typename T::value_type,
+                                                  std::decay_t<decltype(std::declval<T>().begin().operator*())>>>>> =
         true;
 
     // something like a map
@@ -2613,12 +2613,14 @@ namespace _serialization_helper
     void unable_to_serialize()
     {
         static_assert(!sizeof(T), "Unable to serialize T. "
-                                  "You can define the conversion of T to json, or overload operator<< for it.");
+                                  "You can define the conversion of T to json, or overload operator<< for it. "
 #ifdef _MSC_VER
-        static_assert(!sizeof(T), "See T below: " __FUNCSIG__);
+                                  "See T below: " __FUNCSIG__
 #else
-        // static_assert(!sizeof(T), "See T below: " __PRETTY_FUNCTION__);
+        //"See T below: " __PRETTY_FUNCTION__
+
 #endif
+        );
     }
 } // namespace _serialization_helper
 

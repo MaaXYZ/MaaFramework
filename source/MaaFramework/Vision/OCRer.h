@@ -26,7 +26,7 @@ public:
         cv::Rect box {};
         double score = 0.0;
 
-        operator json::value()
+        operator json::value() const
         {
             json::value root;
             root["text"] = from_u16(text);
