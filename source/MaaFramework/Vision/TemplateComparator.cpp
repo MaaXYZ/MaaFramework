@@ -17,14 +17,14 @@ TemplateComparator::ResultsVec TemplateComparator::analyze(const cv::Mat& lhs, c
 
     ResultsVec results = foreach_rois(lhs, rhs);
 
-    auto costs = duration_since(start_time);
-    LogDebug << "Raw:" << VAR(results) << VAR(costs);
+    auto cost = duration_since(start_time);
+    LogDebug << "Raw:" << VAR(results) << VAR(cost);
 
     double threshold = param_.threshold;
     filter(results, threshold);
 
-    costs = duration_since(start_time);
-    LogDebug << "Proc:" << VAR(results) << VAR(threshold) << VAR(costs);
+    cost = duration_since(start_time);
+    LogDebug << "Proc:" << VAR(results) << VAR(threshold) << VAR(cost);
     return results;
 }
 

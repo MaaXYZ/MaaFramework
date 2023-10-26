@@ -18,16 +18,16 @@ ColorMatcher::ResultsVec ColorMatcher::analyze() const
         bool connected = param_.connected;
         ResultsVec results = foreach_rois(range, connected);
 
-        auto costs = duration_since(start_time);
+        auto cost = duration_since(start_time);
         LogDebug << name_ << "Raw:" << VAR(results) << VAR(range.first) << VAR(range.second) << VAR(connected)
-                 << VAR(costs);
+                 << VAR(cost);
 
         int count = param_.count;
         filter(results, count);
 
-        costs = duration_since(start_time);
+        cost = duration_since(start_time);
         LogDebug << name_ << "Filter:" << VAR(results) << VAR(range.first) << VAR(range.second) << VAR(count)
-                 << VAR(connected) << VAR(costs);
+                 << VAR(connected) << VAR(cost);
 
         all_results.insert(all_results.end(), std::make_move_iterator(results.begin()),
                            std::make_move_iterator(results.end()));

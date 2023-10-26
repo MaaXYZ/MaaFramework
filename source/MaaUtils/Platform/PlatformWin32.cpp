@@ -221,7 +221,7 @@ std::set<ProcessInfo> list_processes()
         HANDLE process = OpenProcess(PROCESS_QUERY_INFORMATION | PROCESS_VM_READ, FALSE, pid);
         if (process == nullptr) {
             auto error = GetLastError();
-            LogError << "Failed to OpenProcess" << VAR(error) << VAR(pid);
+            LogWarn << "Failed to OpenProcess" << VAR(error) << VAR(pid);
             continue;
         }
 
@@ -229,7 +229,7 @@ std::set<ProcessInfo> list_processes()
         DWORD mod_read = 0;
         if (!EnumProcessModules(process, &mod, sizeof(mod), &mod_read)) {
             auto error = GetLastError();
-            LogError << "Failed to EnumProcessModules" << VAR(error) << VAR(pid);
+            LogWarn << "Failed to EnumProcessModules" << VAR(error) << VAR(pid);
             CloseHandle(process);
             continue;
         }

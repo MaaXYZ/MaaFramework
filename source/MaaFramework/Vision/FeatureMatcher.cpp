@@ -25,14 +25,14 @@ FeatureMatcher::ResultsVec FeatureMatcher::analyze() const
     auto start_time = std::chrono::steady_clock::now();
     ResultsVec results = foreach_rois(templ);
 
-    auto costs = duration_since(start_time);
-    LogDebug << name_ << "Raw:" << VAR(results) << VAR(param_.template_path) << VAR(costs);
+    auto cost = duration_since(start_time);
+    LogDebug << name_ << "Raw:" << VAR(results) << VAR(param_.template_path) << VAR(cost);
 
     int count = param_.count;
     filter(results, count);
 
-    costs = duration_since(start_time);
-    LogDebug << name_ << "Filter:" << VAR(results) << VAR(param_.template_path) << VAR(count) << VAR(costs);
+    cost = duration_since(start_time);
+    LogDebug << name_ << "Filter:" << VAR(results) << VAR(param_.template_path) << VAR(count) << VAR(cost);
 
     return results;
 }

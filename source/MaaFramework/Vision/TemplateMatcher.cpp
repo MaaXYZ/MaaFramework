@@ -33,15 +33,15 @@ TemplateMatcher::ResultsVec TemplateMatcher::analyze() const
         auto start_time = std::chrono::steady_clock::now();
         ResultsVec results = foreach_rois(templ);
 
-        auto costs = duration_since(start_time);
+        auto cost = duration_since(start_time);
         const std::string& path = param_.template_paths.at(i);
-        LogDebug << name_ << "Raw:" << VAR(results) << VAR(path) << VAR(costs);
+        LogDebug << name_ << "Raw:" << VAR(results) << VAR(path) << VAR(cost);
 
         double threshold = param_.thresholds.at(i);
         filter(results, threshold);
 
-        costs = duration_since(start_time);
-        LogDebug << name_ << "Filter:" << VAR(results) << VAR(path) << VAR(threshold) << VAR(costs);
+        cost = duration_since(start_time);
+        LogDebug << name_ << "Filter:" << VAR(results) << VAR(path) << VAR(threshold) << VAR(cost);
 
         all_results.insert(all_results.end(), std::make_move_iterator(results.begin()),
                            std::make_move_iterator(results.end()));

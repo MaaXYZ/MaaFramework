@@ -42,8 +42,8 @@ CustomRecognizer::ResultsVec CustomRecognizer::analyze() const
     cv::Rect box { maa_box.x, maa_box.y, maa_box.width, maa_box.height };
     std::string detail(detail_buffer.data(), detail_buffer.size());
 
-    auto costs = duration_since(start_time);
-    LogDebug << VAR(ret) << VAR(box) << VAR(detail) << VAR(costs);
+    auto cost = duration_since(start_time);
+    LogDebug << VAR(ret) << VAR(box) << VAR(detail) << VAR(cost);
 
     if (!ret) {
         return {};
