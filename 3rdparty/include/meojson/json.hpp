@@ -46,14 +46,6 @@ using wvalue = basic_value<std::wstring>;
 using warray = basic_array<std::wstring>;
 using wobject = basic_object<std::wstring>;
 
-using u16value = basic_value<std::u16string>;
-using u16array = basic_array<std::u16string>;
-using u16object = basic_object<std::u16string>;
-
-using u32value = basic_value<std::u32string>;
-using u32array = basic_array<std::u32string>;
-using u32object = basic_object<std::u32string>;
-
 // *********************************
 // *      basic_value declare      *
 // *********************************
@@ -107,7 +99,19 @@ public:
     template <typename... args_t>
     basic_value(value_type type, args_t&&... args);
 
-    template <typename value_t, typename _ = std::enable_if_t<!std::is_convertible_v<value_t, basic_value<string_t>>>>
+    template <typename collection_t,
+              std::enable_if_t<std::is_constructible_v<typename basic_array<string_t>::value_type,
+                                                       utils::range_value_t<collection_t>>,
+                               bool> = true>
+    basic_value(collection_t&& collection) : basic_value(basic_array<string_t>(std::forward<collection_t>(collection)))
+    {}
+    template <typename map_t, std::enable_if_t<std::is_constructible_v<typename basic_object<string_t>::value_type,
+                                                                       utils::range_value_t<map_t>>,
+                                               bool> = true>
+    basic_value(map_t&& map) : basic_value(basic_object<string_t>(std::forward<map_t>(map)))
+    {}
+
+    template <typename value_t, std::enable_if_t<!std::is_convertible_v<value_t, basic_value<string_t>>, bool> = true>
     basic_value(value_t) = delete;
 
     // I don't know if you want to convert char to string or number, so I delete these constructors.
@@ -557,23 +561,15 @@ namespace literals
 {
     value operator""_json(const char* str, size_t len);
     wvalue operator""_json(const wchar_t* str, size_t len);
-    u16value operator""_json(const char16_t* str, size_t len);
-    u32value operator""_json(const char32_t* str, size_t len);
 
     value operator""_jvalue(const char* str, size_t len);
     wvalue operator""_jvalue(const wchar_t* str, size_t len);
-    u16value operator""_jvalue(const char16_t* str, size_t len);
-    u32value operator""_jvalue(const char32_t* str, size_t len);
 
     array operator""_jarray(const char* str, size_t len);
     warray operator""_jarray(const wchar_t* str, size_t len);
-    u16array operator""_jarray(const char16_t* str, size_t len);
-    u32array operator""_jarray(const char32_t* str, size_t len);
 
     object operator""_jobject(const char* str, size_t len);
     wobject operator""_jobject(const wchar_t* str, size_t len);
-    u16object operator""_jobject(const char16_t* str, size_t len);
-    u32object operator""_jobject(const char32_t* str, size_t len);
 }
 
 template <typename string_t = default_string_t>
@@ -610,6 +606,20 @@ static constexpr string_t null_string()
     return { 'n', 'u', 'l', 'l' };
 }
 
+template <typename string_t, typename any_t>
+inline string_t to_template_string(any_t&& arg)
+{
+    if constexpr (std::is_same_v<string_t, std::string>) {
+        return std::to_string(std::forward<any_t>(arg));
+    }
+    else if constexpr (std::is_same_v<string_t, std::wstring>) {
+        return std::to_wstring(std::forward<any_t>(arg));
+    }
+    else {
+        static_assert(!sizeof(any_t), "Unsupported type");
+    }
+}
+
 template <typename string_t>
 static constexpr string_t unescape_string(const string_t& str);
 
@@ -630,45 +640,48 @@ MEOJSON_INLINE basic_value<string_t>::basic_value(bool b)
 {}
 
 template <typename string_t>
-MEOJSON_INLINE basic_value<string_t>::basic_value(int num) : _type(value_type::number), _raw_data(std::to_string(num))
+MEOJSON_INLINE basic_value<string_t>::basic_value(int num)
+    : _type(value_type::number), _raw_data(to_template_string<string_t>(num))
 {}
 
 template <typename string_t>
 MEOJSON_INLINE basic_value<string_t>::basic_value(unsigned num)
-    : _type(value_type::number), _raw_data(std::to_string(num))
+    : _type(value_type::number), _raw_data(to_template_string<string_t>(num))
 {}
 
 template <typename string_t>
-MEOJSON_INLINE basic_value<string_t>::basic_value(long num) : _type(value_type::number), _raw_data(std::to_string(num))
+MEOJSON_INLINE basic_value<string_t>::basic_value(long num)
+    : _type(value_type::number), _raw_data(to_template_string<string_t>(num))
 {}
 
 template <typename string_t>
 MEOJSON_INLINE basic_value<string_t>::basic_value(unsigned long num)
-    : _type(value_type::number), _raw_data(std::to_string(num))
+    : _type(value_type::number), _raw_data(to_template_string<string_t>(num))
 {}
 
 template <typename string_t>
 MEOJSON_INLINE basic_value<string_t>::basic_value(long long num)
-    : _type(value_type::number), _raw_data(std::to_string(num))
+    : _type(value_type::number), _raw_data(to_template_string<string_t>(num))
 {}
 
 template <typename string_t>
 MEOJSON_INLINE basic_value<string_t>::basic_value(unsigned long long num)
-    : _type(value_type::number), _raw_data(std::to_string(num))
+    : _type(value_type::number), _raw_data(to_template_string<string_t>(num))
 {}
 
 template <typename string_t>
-MEOJSON_INLINE basic_value<string_t>::basic_value(float num) : _type(value_type::number), _raw_data(std::to_string(num))
+MEOJSON_INLINE basic_value<string_t>::basic_value(float num)
+    : _type(value_type::number), _raw_data(to_template_string<string_t>(num))
 {}
 
 template <typename string_t>
 MEOJSON_INLINE basic_value<string_t>::basic_value(double num)
-    : _type(value_type::number), _raw_data(std::to_string(num))
+    : _type(value_type::number), _raw_data(to_template_string<string_t>(num))
 {}
 
 template <typename string_t>
 MEOJSON_INLINE basic_value<string_t>::basic_value(long double num)
-    : _type(value_type::number), _raw_data(std::to_string(num))
+    : _type(value_type::number), _raw_data(to_template_string<string_t>(num))
 {}
 
 template <typename string_t>
@@ -2406,14 +2419,6 @@ namespace literals
     {
         return operator""_jvalue(str, len);
     }
-    MEOJSON_INLINE u16value operator""_json(const char16_t* str, size_t len)
-    {
-        return operator""_jvalue(str, len);
-    }
-    MEOJSON_INLINE u32value operator""_json(const char32_t* str, size_t len)
-    {
-        return operator""_jvalue(str, len);
-    }
 
     MEOJSON_INLINE value operator""_jvalue(const char* str, size_t len)
     {
@@ -2422,14 +2427,6 @@ namespace literals
     MEOJSON_INLINE wvalue operator""_jvalue(const wchar_t* str, size_t len)
     {
         return parse(std::wstring_view(str, len)).value_or(wvalue());
-    }
-    MEOJSON_INLINE u16value operator""_jvalue(const char16_t* str, size_t len)
-    {
-        return parse(std::u16string_view(str, len)).value_or(u16value());
-    }
-    MEOJSON_INLINE u32value operator""_jvalue(const char32_t* str, size_t len)
-    {
-        return parse(std::u32string_view(str, len)).value_or(u32value());
     }
 
     MEOJSON_INLINE array operator""_jarray(const char* str, size_t len)
@@ -2442,16 +2439,6 @@ namespace literals
         auto val = parse(std::wstring_view(str, len)).value_or(wvalue());
         return val.is_array() ? val.as_array() : warray();
     }
-    MEOJSON_INLINE u16array operator""_jarray(const char16_t* str, size_t len)
-    {
-        auto val = parse(std::u16string_view(str, len)).value_or(u16value());
-        return val.is_array() ? val.as_array() : u16array();
-    }
-    MEOJSON_INLINE u32array operator""_jarray(const char32_t* str, size_t len)
-    {
-        auto val = parse(std::u32string_view(str, len)).value_or(u32value());
-        return val.is_array() ? val.as_array() : u32array();
-    }
 
     MEOJSON_INLINE object operator""_jobject(const char* str, size_t len)
     {
@@ -2462,16 +2449,6 @@ namespace literals
     {
         auto val = parse(std::wstring_view(str, len)).value_or(wvalue());
         return val.is_object() ? val.as_object() : wobject();
-    }
-    MEOJSON_INLINE u16object operator""_jobject(const char16_t* str, size_t len)
-    {
-        auto val = parse(std::u16string_view(str, len)).value_or(u16value());
-        return val.is_object() ? val.as_object() : u16object();
-    }
-    MEOJSON_INLINE u32object operator""_jobject(const char32_t* str, size_t len)
-    {
-        auto val = parse(std::u32string_view(str, len)).value_or(u32value());
-        return val.is_object() ? val.as_object() : u32object();
     }
 } // namespace literals
 
