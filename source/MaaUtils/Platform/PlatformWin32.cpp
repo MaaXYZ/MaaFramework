@@ -177,7 +177,7 @@ os_string args_to_cmd(const std::vector<os_string_view>& args)
 
 std::vector<os_string> cmd_to_args(const os_string& cmd)
 {
-    int argc;
+    int argc = 0;
     std::vector<os_string> res;
 
     auto result = CommandLineToArgvW(cmd.c_str(), &argc);
