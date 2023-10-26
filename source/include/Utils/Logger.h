@@ -99,7 +99,7 @@ public:
         }
 
     private:
-        struct StringConverter
+        struct MAA_UTILS_API StringConverter
         {
             template <typename T>
             static constexpr bool is_convertible =
