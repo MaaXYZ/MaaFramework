@@ -121,7 +121,7 @@ public:
                     return std::move(ss).str();
                 }
                 else {
-                    return json::serialize<true>(std::forward<T>(value), *this).dumps(4);
+                    return json::serialize<true>(std::forward<T>(value), *this).to_string();
                 }
             }
         } string_converter_;
