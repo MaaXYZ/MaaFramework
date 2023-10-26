@@ -11,6 +11,7 @@ MAA_SUPPRESS_CV_WARNINGS_BEGIN
 #include "fastdeploy/vision/ocr/ppocr/recognizer.h"
 MAA_SUPPRESS_CV_WARNINGS_END
 
+#include "Utils/Codec.h"
 #include "VisionBase.h"
 #include "VisionTypes.h"
 
@@ -25,7 +26,14 @@ public:
         cv::Rect box {};
         double score = 0.0;
 
-        json::value to_json() const;
+        operator json::value()
+        {
+            json::value root;
+            root["text"] = from_u16(text);
+            root["box"] = json::array({ box.x, box.y, box.width, box.height });
+            root["score"] = score;
+            return root;
+        }
     };
     using ResultsVec = std::vector<Result>;
 
@@ -58,11 +66,5 @@ private:
     std::shared_ptr<fastdeploy::vision::ocr::Recognizer> recer_ = nullptr;
     std::shared_ptr<fastdeploy::pipeline::PPOCRv3> ocrer_ = nullptr;
 };
-
-inline std::ostream& operator<<(std::ostream& os, const MAA_VISION_NS::OCRer::Result& res)
-{
-    os << res.to_json().to_string();
-    return os;
-}
 
 MAA_VISION_NS_END

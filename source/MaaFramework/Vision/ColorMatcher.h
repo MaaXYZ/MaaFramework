@@ -13,7 +13,7 @@ public:
         cv::Rect box {};
         int score = 0;
 
-        json::value to_json() const
+        operator json::value() const
         {
             json::value root;
             root["box"] = json::array({ box.x, box.y, box.width, box.height });
@@ -38,11 +38,5 @@ private:
 
     ColorMatcherParam param_;
 };
-
-inline std::ostream& operator<<(std::ostream& os, const MAA_VISION_NS::ColorMatcher::Result& res)
-{
-    os << res.to_json().to_string();
-    return os;
-}
 
 MAA_VISION_NS_END

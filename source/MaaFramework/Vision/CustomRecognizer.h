@@ -18,7 +18,7 @@ class CustomRecognizer : public VisionBase
         cv::Rect box {};
         json::value detail;
 
-        json::value to_json() const
+        operator json::value() const
         {
             json::value root;
             root["box"] = json::array({ box.x, box.y, box.width, box.height });
