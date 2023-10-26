@@ -266,17 +266,17 @@ public:
     basic_array() = default;
     basic_array(const basic_array<string_t>& rhs) = default;
     basic_array(basic_array<string_t>&& rhs) noexcept = default;
-    basic_array(const raw_array& arr);
-    basic_array(raw_array&& arr) noexcept;
     basic_array(std::initializer_list<value_type> init_list);
     basic_array(typename raw_array::size_type size);
 
     explicit basic_array(const basic_value<string_t>& val);
     explicit basic_array(basic_value<string_t>&& val);
 
-    template <typename array_t, typename _ = std::enable_if_t<
-                                    std::is_constructible_v<value_type, typename array_t::iterator::value_type>>>
-    basic_array(array_t arr) : _array_data(std::make_move_iterator(arr.begin()), std::make_move_iterator(arr.end()))
+    template <
+        typename collection_t,
+        typename _ = std::enable_if_t<std::is_constructible_v<value_type, typename collection_t::iterator::value_type>>>
+    basic_array(collection_t arr)
+        : _array_data(std::make_move_iterator(arr.begin()), std::make_move_iterator(arr.end()))
     {}
 
     ~basic_array() noexcept = default;
@@ -381,8 +381,6 @@ public:
     basic_object() = default;
     basic_object(const basic_object<string_t>& rhs) = default;
     basic_object(basic_object<string_t>&& rhs) noexcept = default;
-    basic_object(const raw_object& raw_obj);
-    basic_object(raw_object&& raw_obj);
     basic_object(std::initializer_list<value_type> init_list);
     explicit basic_object(const basic_value<string_t>& val);
     explicit basic_object(basic_value<string_t>&& val);
@@ -1335,18 +1333,6 @@ MEOJSON_INLINE typename basic_value<string_t>::var_t basic_value<string_t>::deep
 // ******************************
 
 template <typename string_t>
-MEOJSON_INLINE basic_array<string_t>::basic_array(const raw_array& arr) : _array_data(arr)
-{
-    ;
-}
-
-template <typename string_t>
-MEOJSON_INLINE basic_array<string_t>::basic_array(raw_array&& arr) noexcept : _array_data(std::move(arr))
-{
-    ;
-}
-
-template <typename string_t>
 MEOJSON_INLINE basic_array<string_t>::basic_array(std::initializer_list<value_type> init_list) : _array_data(init_list)
 {
     ;
@@ -1654,18 +1640,6 @@ MEOJSON_INLINE bool basic_array<string_t>::operator==(const basic_array<string_t
 // *******************************
 // *      basic_object impl      *
 // *******************************
-
-template <typename string_t>
-MEOJSON_INLINE basic_object<string_t>::basic_object(const raw_object& raw_obj) : _object_data(raw_obj)
-{
-    ;
-}
-
-template <typename string_t>
-MEOJSON_INLINE basic_object<string_t>::basic_object(raw_object&& raw_obj) : _object_data(std::move(raw_obj))
-{
-    ;
-}
 
 template <typename string_t>
 MEOJSON_INLINE basic_object<string_t>::basic_object(std::initializer_list<value_type> init_list)
