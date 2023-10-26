@@ -100,6 +100,12 @@ public:
     template <typename value_t, typename _ = std::enable_if_t<!std::is_convertible_v<value_t, basic_value<string_t>>>>
     basic_value(value_t) = delete;
 
+    basic_value(char) = delete;
+    basic_value(unsigned char) = delete;
+    basic_value(char16_t) = delete;
+    basic_value(char32_t) = delete;
+    basic_value(wchar_t) = delete;
+
     ~basic_value();
 
     bool valid() const noexcept { return _type != value_type::invalid; }
@@ -269,8 +275,8 @@ public:
     explicit basic_array(const basic_value<string_t>& val);
     explicit basic_array(basic_value<string_t>&& val);
 
-    template <typename array_t, typename _ = std::enable_if_t<std::is_constructible_v<
-                                    value_type, decltype(std::declval<array_t>().begin().operator*())>>>
+    template <typename array_t, typename _ = std::enable_if_t<
+                                    std::is_constructible_v<value_type, typename array_t::iterator::value_type>>>
     basic_array(array_t arr) : _array_data(std::make_move_iterator(arr.begin()), std::make_move_iterator(arr.end()))
     {}
 
@@ -381,8 +387,8 @@ public:
     basic_object(std::initializer_list<value_type> init_list);
     explicit basic_object(const basic_value<string_t>& val);
     explicit basic_object(basic_value<string_t>&& val);
-    template <typename map_t, typename _ = std::enable_if_t<std::is_constructible_v<
-                                  value_type, decltype(std::declval<map_t>().begin().operator*())>>>
+    template <typename map_t,
+              typename _ = std::enable_if_t<std::is_constructible_v<value_type, typename map_t::iterator::value_type>>>
     basic_object(map_t map) : _object_data(std::make_move_iterator(map.begin()), std::make_move_iterator(map.end()))
     {}
 
@@ -2565,17 +2571,15 @@ namespace _serialization_helper
         is_container<T, void_t<typename T::value_type, typename T::iterator, typename T::iterator::value_type>> =
             std::is_same_v<typename T::value_type, typename T::iterator::value_type>;
 
-    // something like a map
     template <typename T, typename = void>
-    constexpr bool is_associative_container = false;
+    constexpr bool is_map = false;
     template <typename T>
-    constexpr bool is_associative_container<T, void_t<typename T::key_type, typename T::mapped_type>> = is_container<T>;
+    constexpr bool is_map<T, void_t<typename T::key_type, typename T::mapped_type>> = is_container<T>;
 
-    // something like a vector
     template <typename T, typename = void>
-    constexpr bool is_sequence_container = false;
+    constexpr bool is_collection = false;
     template <typename T>
-    constexpr bool is_sequence_container<T> = is_container<T> && !is_associative_container<T>;
+    constexpr bool is_collection<T> = is_container<T> && !is_map<T>;
 
     template <bool loose, typename string_t>
     struct string_converter
@@ -2639,7 +2643,7 @@ MEOJSON_INLINE basic_value<string_t> serialize(any_t&& arg, string_converter_t&&
     else if constexpr (std::decay_t<string_converter_t>::template is_convertible<any_t>) {
         return string_converter(std::forward<any_t>(arg));
     }
-    else if constexpr (is_sequence_container<std::decay_t<any_t>>) {
+    else if constexpr (is_collection<std::decay_t<any_t>>) {
         basic_value<string_t> result;
         for (auto&& val : arg) {
             using value_t = decltype(val);
@@ -2649,7 +2653,7 @@ MEOJSON_INLINE basic_value<string_t> serialize(any_t&& arg, string_converter_t&&
         }
         return result;
     }
-    else if constexpr (is_associative_container<std::decay_t<any_t>>) {
+    else if constexpr (is_map<std::decay_t<any_t>>) {
         basic_value<string_t> result;
         for (auto&& [key, val] : arg) {
             using key_t = decltype(key);
