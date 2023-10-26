@@ -18,6 +18,17 @@
 
 namespace json
 {
+namespace utils
+{
+    template <typename T>
+    using iterator_t = decltype(std::declval<T&>().begin());
+    template <typename T>
+    using remove_cvref_t = std::remove_cv_t<std::remove_reference_t<T>>;
+    template <typename T>
+    using iter_value_t = typename std::iterator_traits<remove_cvref_t<T>>::value_type;
+    template <typename R>
+    using range_value_t = iter_value_t<iterator_t<R>>;
+}
 template <typename string_t>
 class basic_value;
 template <typename string_t>
@@ -273,8 +284,7 @@ public:
     explicit basic_array(basic_value<string_t>&& val);
 
     template <typename collection_t,
-              typename _ = std::enable_if_t<std::is_constructible_v<
-                  value_type, typename std::iterator_traits<typename collection_t::iterator>::value_type>>>
+              typename = std::enable_if_t<std::is_constructible_v<value_type, utils::range_value_t<collection_t>>>>
     basic_array(collection_t arr)
         : _array_data(std::make_move_iterator(arr.begin()), std::make_move_iterator(arr.end()))
     {}
@@ -384,8 +394,8 @@ public:
     basic_object(std::initializer_list<value_type> init_list);
     explicit basic_object(const basic_value<string_t>& val);
     explicit basic_object(basic_value<string_t>&& val);
-    template <typename map_t, typename _ = std::enable_if_t<std::is_constructible_v<
-                                  value_type, typename std::iterator_traits<typename map_t::iterator>::value_type>>>
+    template <typename map_t,
+              typename = std::enable_if_t<std::is_constructible_v<value_type, utils::range_value_t<map_t>>>>
     basic_object(map_t map) : _object_data(std::make_move_iterator(map.begin()), std::make_move_iterator(map.end()))
     {}
 
@@ -609,9 +619,7 @@ MEOJSON_INLINE basic_value<string_t>::basic_value() = default;
 template <typename string_t>
 MEOJSON_INLINE basic_value<string_t>::basic_value(const basic_value<string_t>& rhs)
     : _type(rhs._type), _raw_data(deep_copy(rhs._raw_data))
-{
-    ;
-}
+{}
 
 template <typename string_t>
 MEOJSON_INLINE basic_value<string_t>::basic_value(basic_value<string_t>&& rhs) noexcept = default;
@@ -619,104 +627,74 @@ MEOJSON_INLINE basic_value<string_t>::basic_value(basic_value<string_t>&& rhs) n
 template <typename string_t>
 MEOJSON_INLINE basic_value<string_t>::basic_value(bool b)
     : _type(value_type::boolean), _raw_data(string_t(b ? true_string<string_t>() : false_string<string_t>()))
-{
-    ;
-}
+{}
 
 template <typename string_t>
 MEOJSON_INLINE basic_value<string_t>::basic_value(int num) : _type(value_type::number), _raw_data(std::to_string(num))
-{
-    ;
-}
+{}
 
 template <typename string_t>
 MEOJSON_INLINE basic_value<string_t>::basic_value(unsigned num)
     : _type(value_type::number), _raw_data(std::to_string(num))
-{
-    ;
-}
+{}
 
 template <typename string_t>
 MEOJSON_INLINE basic_value<string_t>::basic_value(long num) : _type(value_type::number), _raw_data(std::to_string(num))
-{
-    ;
-}
+{}
 
 template <typename string_t>
 MEOJSON_INLINE basic_value<string_t>::basic_value(unsigned long num)
     : _type(value_type::number), _raw_data(std::to_string(num))
-{
-    ;
-}
+{}
 
 template <typename string_t>
 MEOJSON_INLINE basic_value<string_t>::basic_value(long long num)
     : _type(value_type::number), _raw_data(std::to_string(num))
-{
-    ;
-}
+{}
 
 template <typename string_t>
 MEOJSON_INLINE basic_value<string_t>::basic_value(unsigned long long num)
     : _type(value_type::number), _raw_data(std::to_string(num))
-{
-    ;
-}
+{}
 
 template <typename string_t>
 MEOJSON_INLINE basic_value<string_t>::basic_value(float num) : _type(value_type::number), _raw_data(std::to_string(num))
-{
-    ;
-}
+{}
 
 template <typename string_t>
 MEOJSON_INLINE basic_value<string_t>::basic_value(double num)
     : _type(value_type::number), _raw_data(std::to_string(num))
-{
-    ;
-}
+{}
 
 template <typename string_t>
 MEOJSON_INLINE basic_value<string_t>::basic_value(long double num)
     : _type(value_type::number), _raw_data(std::to_string(num))
-{
-    ;
-}
+{}
 
 template <typename string_t>
 MEOJSON_INLINE basic_value<string_t>::basic_value(const char_t* str)
     : _type(value_type::string), _raw_data(string_t(str))
-{
-    ;
-}
+{}
 
 template <typename string_t>
 MEOJSON_INLINE basic_value<string_t>::basic_value(string_t str) : _type(value_type::string), _raw_data(std::move(str))
-{
-    ;
-}
+{}
 
 template <typename string_t>
 MEOJSON_INLINE basic_value<string_t>::basic_value(basic_array<string_t> arr)
     : _type(value_type::array), _raw_data(std::make_unique<basic_array<string_t>>(std::move(arr)))
-{
-    ;
-}
+{}
 
 template <typename string_t>
 MEOJSON_INLINE basic_value<string_t>::basic_value(basic_object<string_t> obj)
     : _type(value_type::object), _raw_data(std::make_unique<basic_object<string_t>>(std::move(obj)))
-{
-    ;
-}
+{}
 
 template <typename string_t>
 MEOJSON_INLINE basic_value<string_t>::basic_value(
     std::initializer_list<typename basic_object<string_t>::value_type> init_list)
     : _type(value_type::object), _raw_data(std::make_unique<basic_object<string_t>>(init_list))
-{
-    ;
-}
+{}
 
 // for Pimpl
 template <typename string_t>
@@ -1334,29 +1312,21 @@ MEOJSON_INLINE typename basic_value<string_t>::var_t basic_value<string_t>::deep
 
 template <typename string_t>
 MEOJSON_INLINE basic_array<string_t>::basic_array(std::initializer_list<value_type> init_list) : _array_data(init_list)
-{
-    ;
-}
+{}
 
 template <typename string_t>
 MEOJSON_INLINE basic_array<string_t>::basic_array(typename raw_array::size_type size) : _array_data(size)
-{
-    ;
-}
+{}
 
 template <typename string_t>
 MEOJSON_INLINE basic_array<string_t>::basic_array(const basic_value<string_t>& val)
     : basic_array<string_t>(val.as_array())
-{
-    ;
-}
+{}
 
 template <typename string_t>
 MEOJSON_INLINE basic_array<string_t>::basic_array(basic_value<string_t>&& val)
     : basic_array<string_t>(std::move(val.as_array()))
-{
-    ;
-}
+{}
 
 template <typename string_t>
 MEOJSON_INLINE void basic_array<string_t>::clear() noexcept
@@ -1644,23 +1614,17 @@ MEOJSON_INLINE bool basic_array<string_t>::operator==(const basic_array<string_t
 template <typename string_t>
 MEOJSON_INLINE basic_object<string_t>::basic_object(std::initializer_list<value_type> init_list)
     : _object_data(std::make_move_iterator(init_list.begin()), std::make_move_iterator(init_list.end()))
-{
-    ;
-}
+{}
 
 template <typename string_t>
 MEOJSON_INLINE basic_object<string_t>::basic_object(const basic_value<string_t>& val)
     : basic_object<string_t>(val.as_object())
-{
-    ;
-}
+{}
 
 template <typename string_t>
 MEOJSON_INLINE basic_object<string_t>::basic_object(basic_value<string_t>&& val)
     : basic_object<string_t>(std::move(val.as_object()))
-{
-    ;
-}
+{}
 
 template <typename string_t>
 MEOJSON_INLINE bool basic_object<string_t>::contains(const string_t& key) const
@@ -2534,20 +2498,16 @@ namespace _serialization_helper
         static constexpr bool value = decltype(test<T>(0))::value;
     };
 
-    template <typename...>
-    using void_t = void;
-
     template <typename T, typename = void>
     constexpr bool is_container = false;
     template <typename T>
-    constexpr bool is_container<T, void_t<typename T::value_type, typename T::iterator,
-                                          typename std::iterator_traits<typename T::iterator>::value_type>> =
-        std::is_same_v<typename T::value_type, typename std::iterator_traits<typename T::iterator>::value_type>;
+    constexpr bool is_container<T, std::void_t<typename T::value_type, utils::range_value_t<T>>> =
+        std::is_same_v<typename T::value_type, utils::range_value_t<T>>;
 
     template <typename T, typename = void>
     constexpr bool is_map = false;
     template <typename T>
-    constexpr bool is_map<T, void_t<typename T::key_type, typename T::mapped_type>> = is_container<T>;
+    constexpr bool is_map<T, std::void_t<typename T::key_type, typename T::mapped_type>> = is_container<T>;
 
     template <typename T, typename = void>
     constexpr bool is_collection = false;
