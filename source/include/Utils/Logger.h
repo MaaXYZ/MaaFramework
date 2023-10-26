@@ -233,7 +233,7 @@ public:
         return stream(level::trace, std::forward<args_t>(args)...);
     }
     template <typename... args_t>
-    auto debug([[maybe_unused]] args_t&&... args)
+    auto debug(args_t&&... args)
     {
         return stream(level::debug, std::forward<args_t>(args)...);
     }
