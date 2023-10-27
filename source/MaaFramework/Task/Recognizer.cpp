@@ -109,17 +109,14 @@ std::optional<Recognizer::Result> Recognizer::template_match(const cv::Mat& imag
     }
     matcher.set_templates(std::move(templates));
 
-    auto ret = matcher.analyze();
-    if (ret.empty()) {
+    auto results = matcher.analyze();
+    if (results.empty()) {
         return std::nullopt;
     }
 
-    const cv::Rect& box = ret.front().box;
-    json::array detail;
-    for (const auto& res : ret) {
-        detail.emplace_back(res);
-    }
-    return Result { .box = box, .detail = detail.to_string() };
+    const cv::Rect& box = results.front().box;
+    auto detail = json::serialize<false>(results);
+    return Result { .box = box, .detail = std::move(detail) };
 }
 
 std::optional<Recognizer::Result> Recognizer::feature_match(const cv::Mat& image,
@@ -141,17 +138,14 @@ std::optional<Recognizer::Result> Recognizer::feature_match(const cv::Mat& image
     std::shared_ptr<cv::Mat> templ = resource()->template_res().image(param.template_path);
     matcher.set_template(std::move(templ));
 
-    auto ret = matcher.analyze();
-    if (ret.empty()) {
+    auto results = matcher.analyze();
+    if (results.empty()) {
         return std::nullopt;
     }
 
-    const cv::Rect& box = ret.front().box;
-    json::array detail;
-    for (const auto& res : ret) {
-        detail.emplace_back(res);
-    }
-    return Result { .box = box, .detail = detail.to_string() };
+    const cv::Rect& box = results.front().box;
+    auto detail = json::serialize<false>(results);
+    return Result { .box = box, .detail = std::move(detail) };
 }
 
 std::optional<Recognizer::Result> Recognizer::color_match(const cv::Mat& image,
@@ -170,17 +164,14 @@ std::optional<Recognizer::Result> Recognizer::color_match(const cv::Mat& image,
     matcher.set_name(name);
     matcher.set_param(param);
 
-    auto ret = matcher.analyze();
-    if (ret.empty()) {
+    auto results = matcher.analyze();
+    if (results.empty()) {
         return std::nullopt;
     }
 
-    const cv::Rect& box = ret.front().box;
-    json::array detail;
-    for (const auto& res : ret) {
-        detail.emplace_back(res);
-    }
-    return Result { .box = box, .detail = detail.to_string() };
+    const cv::Rect& box = results.front().box;
+    auto detail = json::serialize<false>(results);
+    return Result { .box = box, .detail = std::move(detail) };
 }
 
 std::optional<Recognizer::Result> Recognizer::ocr(const cv::Mat& image, const MAA_VISION_NS::OCRerParam& param,
@@ -203,19 +194,16 @@ std::optional<Recognizer::Result> Recognizer::ocr(const cv::Mat& image, const MA
     auto ocr_session = resource()->ocr_res().ocrer(param.model);
     ocrer.set_session(std::move(det_session), std::move(rec_session), std::move(ocr_session));
 
-    auto ret = ocrer.analyze();
-    if (ret.empty()) {
+    auto results = ocrer.analyze();
+    if (results.empty()) {
         return std::nullopt;
     }
 
     // TODO: sort by required regex.
     // sort_by_required_(res, param.text);
 
-    const cv::Rect& box = ret.front().box;
-    json::array detail;
-    for (const auto& res : ret) {
-        detail.emplace_back(res);
-    }
+    const cv::Rect& box = results.front().box;
+    auto detail = json::serialize<false>(results);
     return Result { .box = box, .detail = std::move(detail) };
 }
 
@@ -238,14 +226,14 @@ std::optional<Recognizer::Result> Recognizer::classify(const cv::Mat& image,
     auto session = resource()->onnx_res().classifier(param.model);
     classifier.set_session(std::move(session));
 
-    auto ret = classifier.analyze();
-    if (ret.empty()) {
+    auto results = classifier.analyze();
+    if (results.empty()) {
         return std::nullopt;
     }
 
-    const cv::Rect& box = ret.front().box;
+    const cv::Rect& box = results.front().box;
     json::array detail;
-    for (const auto& res : ret) {
+    for (const auto& res : results) {
         detail.emplace_back(res);
     }
     return Result { .box = box, .detail = std::move(detail) };
@@ -270,16 +258,13 @@ std::optional<Recognizer::Result> Recognizer::detect(const cv::Mat& image,
     auto session = resource()->onnx_res().detector(param.model);
     detector.set_session(std::move(session));
 
-    auto ret = detector.analyze();
-    if (ret.empty()) {
+    auto results = detector.analyze();
+    if (results.empty()) {
         return std::nullopt;
     }
 
-    const cv::Rect& box = ret.front().box;
-    json::array detail;
-    for (const auto& res : ret) {
-        detail.emplace_back(res);
-    }
+    const cv::Rect& box = results.front().box;
+    auto detail = json::serialize<false>(results);
     return Result { .box = box, .detail = std::move(detail) };
 }
 
@@ -303,17 +288,13 @@ std::optional<Recognizer::Result> Recognizer::custom_recognize(const cv::Mat& im
     recognizer->set_param(param);
     recognizer->set_name(name);
 
-    auto ret = recognizer->analyze();
-    if (ret.empty()) {
+    auto results = recognizer->analyze();
+    if (results.empty()) {
         return std::nullopt;
     }
 
-    const cv::Rect& box = ret.front().box;
-    json::array detail;
-    for (const auto& res : ret) {
-        detail.emplace_back(res);
-    }
-
+    const cv::Rect& box = results.front().box;
+    auto detail = json::serialize<false>(results);
     return Result { .box = box, .detail = std::move(detail) };
 }
 
