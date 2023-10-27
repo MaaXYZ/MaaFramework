@@ -53,6 +53,7 @@ struct Action
 {
     enum class Type
     {
+        invalid,
         connect,
         click,
         swipe,
@@ -63,7 +64,7 @@ struct Action
         screencap,
         start_app,
         stop_app,
-    } type;
+    } type = Type::invalid;
 
     Param param;
 };

@@ -1,0 +1,5 @@
+#include "ReplayRecording.h"
+
+MAA_DBG_CTRL_UNIT_NS_BEGIN
+
+MAA_DBG_CTRL_UNIT_NS_END

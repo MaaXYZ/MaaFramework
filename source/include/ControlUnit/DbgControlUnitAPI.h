@@ -19,7 +19,6 @@ public:
 
     virtual std::string get_uuid() const = 0;
     virtual cv::Size get_resolution() const = 0;
-    virtual int get_orientation() const = 0;
 
     virtual bool start(const std::string& intent) = 0;
     virtual bool stop(const std::string& intent) = 0;
@@ -36,7 +35,8 @@ public:
     virtual std::optional<cv::Mat> screencap() = 0;
 };
 
-std::shared_ptr<ControllerAPI> MAA_CONTROL_UNIT_API create_controller(MaaStringView read_path, MaaStringView write_path,
-                                                                      MaaDbgControllerType type, MaaStringView config);
+std::shared_ptr<ControllerAPI> MAA_CONTROL_UNIT_API create_controller(MaaDbgControllerType type,
+                                                                      MaaStringView read_path, MaaStringView write_path,
+                                                                      MaaStringView config);
 
 MAA_DBG_CTRL_UNIT_NS_END
