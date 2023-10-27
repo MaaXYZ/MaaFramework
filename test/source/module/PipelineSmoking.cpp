@@ -19,8 +19,8 @@ bool pipeline_smoking(const std::filesystem::path& testset_dir)
     auto config = debug_config.dumps(4);
 
     auto controller_handle =
-        MaaDebuggingControllerCreate(testing_path.string().c_str(), result_path.string().c_str(),
-                                     MaaDebuggingControllerType_Screencap_ReadIndex, config.c_str(), nullptr, nullptr);
+        MaaDbgControllerCreate(testing_path.string().c_str(), result_path.string().c_str(),
+                                     MaaDbgControllerType_Screencap_ReadIndex, config.c_str(), nullptr, nullptr);
 
     auto ctrl_id = MaaControllerPostConnection(controller_handle);
 

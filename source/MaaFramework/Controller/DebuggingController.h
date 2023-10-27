@@ -1,7 +1,7 @@
 #pragma once
 #include "ControllerMgr.h"
 
-#include "ControlUnit/DebuggingControlUnitAPI.h"
+#include "ControlUnit/DbgControlUnitAPI.h"
 
 #include <memory>
 
@@ -11,7 +11,7 @@ class DebuggingController : public ControllerMgr
 {
 public:
     DebuggingController(std::string read_path, std::string write_path,
-                        std::shared_ptr<MAA_DBG_CTRL_UNIT_NS::ControlUnitAPI> unit_mgr, MaaControllerCallback callback,
+                        std::shared_ptr<MAA_DBG_CTRL_UNIT_NS::ControllerAPI> controller, MaaControllerCallback callback,
                         MaaCallbackTransparentArg callback_arg);
     virtual ~DebuggingController() override;
 
@@ -34,7 +34,7 @@ private:
     std::string read_path_;
     std::string write_path_;
 
-    std::shared_ptr<MAA_DBG_CTRL_UNIT_NS::ControlUnitAPI> unit_mgr_ = nullptr;
+    std::shared_ptr<MAA_DBG_CTRL_UNIT_NS::ControllerAPI> controller_ = nullptr;
 };
 
 MAA_CTRL_NS_END

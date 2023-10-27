@@ -9,13 +9,12 @@
 MAA_CTRL_NS_BEGIN
 
 DebuggingController::DebuggingController(std::string read_path, std::string write_path,
-                                         std::shared_ptr<MAA_DBG_CTRL_UNIT_NS::ControlUnitAPI> unit_mgr,
+                                         std::shared_ptr<MAA_DBG_CTRL_UNIT_NS::ControllerAPI> controller,
                                          MaaControllerCallback callback, MaaCallbackTransparentArg callback_arg)
     : ControllerMgr(callback, callback_arg), read_path_(std::move(read_path)), write_path_(std::move(write_path)),
-      unit_mgr_(std::move(unit_mgr))
+      controller_(std::move(controller))
 {
-    LogDebug << VAR(read_path_) << VAR(write_path_) << VAR(unit_mgr_) << VAR(unit_mgr_->device_info_obj())
-             << VAR(unit_mgr_->screencap_obj());
+    LogDebug << VAR(read_path_) << VAR(write_path_) << VAR(controller_);
 }
 
 DebuggingController::~DebuggingController() {}
@@ -27,84 +26,173 @@ std::string DebuggingController::get_uuid() const
 
 bool DebuggingController::_connect()
 {
-    if (!unit_mgr_ || !unit_mgr_->device_info_obj() || !unit_mgr_->screencap_obj()
-        /*|| !unit_mgr_->touch_input_obj() || !unit_mgr_->key_input_obj()*/) {
-        LogError << "unit is nullptr" << VAR(unit_mgr_) << VAR(unit_mgr_->device_info_obj())
-                 << VAR(unit_mgr_->screencap_obj());
+    LogFunc;
+
+    if (!controller_) {
+        LogError << "controller is nullptr" << VAR(controller_);
         return false;
     }
 
-    auto [screen_width, screen_height] = unit_mgr_->device_info_obj()->get_resolution();
-    unit_mgr_->screencap_obj()->init(screen_width, screen_height);
+    if (!controller_->connect()) {
+        LogError << "controller connect failed";
+        return false;
+    }
 
     return true;
 }
 
 std::pair<int, int> DebuggingController::_get_resolution() const
 {
-    auto [screen_width, screen_height] = unit_mgr_->device_info_obj()->get_resolution();
+    if (!controller_) {
+        LogError << "controller is nullptr" << VAR(controller_);
+        return { 0, 0 };
+    }
+
+    auto [screen_width, screen_height] = controller_->get_resolution();
     return { screen_width, screen_height };
 }
 
 bool DebuggingController::_click(ClickParam param)
 {
-    std::ignore = param;
+    if (!controller_) {
+        LogError << "controller is nullptr" << VAR(controller_);
+        return false;
+    }
+
+    if (!controller_->click(param.x, param.y)) {
+        LogError << "controller click failed" << VAR(param.x) << VAR(param.y);
+        return false;
+    }
+
     return true;
 }
 
 bool DebuggingController::_swipe(SwipeParam param)
 {
-    std::ignore = param;
+    if (!controller_) {
+        LogError << "controller is nullptr" << VAR(controller_);
+        return false;
+    }
+
+    if (!controller_->swipe(param.x1, param.y1, param.x2, param.y2, param.duration)) {
+        LogError << "controller swipe failed" << VAR(param.x1) << VAR(param.y1) << VAR(param.x2) << VAR(param.y2)
+                 << VAR(param.duration);
+        return false;
+    }
+
     return true;
 }
 
 bool DebuggingController::_touch_down(TouchParam param)
 {
-    std::ignore = param;
+    if (!controller_) {
+        LogError << "controller is nullptr" << VAR(controller_);
+        return false;
+    }
+
+    if (!controller_->touch_down(param.contact, param.x, param.y, param.pressure)) {
+        LogError << "controller touch_down failed" << VAR(param.contact) << VAR(param.x) << VAR(param.y)
+                 << VAR(param.pressure);
+        return false;
+    }
+
     return true;
 }
 
 bool DebuggingController::_touch_move(TouchParam param)
 {
-    std::ignore = param;
+    if (!controller_) {
+        LogError << "controller is nullptr" << VAR(controller_);
+        return false;
+    }
+
+    if (!controller_->touch_move(param.contact, param.x, param.y, param.pressure)) {
+        LogError << "controller touch_move failed" << VAR(param.contact) << VAR(param.x) << VAR(param.y)
+                 << VAR(param.pressure);
+        return false;
+    }
+
     return true;
 }
 
 bool DebuggingController::_touch_up(TouchParam param)
 {
-    std::ignore = param;
+    if (!controller_) {
+        LogError << "controller is nullptr" << VAR(controller_);
+        return false;
+    }
+
+    if (!controller_->touch_up(param.contact)) {
+        LogError << "controller touch_up failed" << VAR(param.contact);
+        return false;
+    }
+
     return true;
 }
 
 bool DebuggingController::_press_key(PressKeyParam param)
 {
-    std::ignore = param;
+    if (!controller_) {
+        LogError << "controller is nullptr" << VAR(controller_);
+        return false;
+    }
+
+    if (!controller_->press_key(param.keycode)) {
+        LogError << "controller press_key failed" << VAR(param.keycode);
+        return false;
+    }
+
     return true;
 }
 
 cv::Mat DebuggingController::_screencap()
 {
-    if (!unit_mgr_ || !unit_mgr_->screencap_obj()) {
-        LogError << "unit is nullptr" << VAR(unit_mgr_) << VAR(unit_mgr_->screencap_obj());
+    if (!controller_) {
+        LogError << "controller is nullptr" << VAR(controller_);
         return {};
     }
 
-    auto ret = unit_mgr_->screencap_obj()->screencap();
-    if (!ret) {
-        return cv::Mat();
+    auto opt_mat = controller_->screencap();
+    if (!opt_mat) {
+        LogError << "controller screencap failed";
+        return {};
     }
-    return std::move(ret.value());
+
+    if (opt_mat->empty()) {
+        LogError << "controller screencap empty";
+        return {};
+    }
+
+    return *opt_mat;
 }
 
 bool DebuggingController::_start_app(AppParam param)
 {
-    std::ignore = param;
+    if (!controller_) {
+        LogError << "controller is nullptr" << VAR(controller_);
+        return false;
+    }
+
+    if (!controller_->start(param.package)) {
+        LogError << "controller start failed" << VAR(param.package);
+        return false;
+    }
+
     return true;
 }
 
 bool DebuggingController::_stop_app(AppParam param)
 {
-    std::ignore = param;
+    if (!controller_) {
+        LogError << "controller is nullptr" << VAR(controller_);
+        return false;
+    }
+
+    if (!controller_->stop(param.package)) {
+        LogError << "controller stop failed" << VAR(param.package);
+        return false;
+    }
+
     return true;
 }
 

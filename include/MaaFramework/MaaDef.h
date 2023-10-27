@@ -123,22 +123,13 @@ enum MaaAdbControllerTypeEnum
     MaaAdbControllerType_Screencap_Mask = 0xFF0000,
 };
 
-typedef int32_t MaaDebuggingControllerType;
-enum MaaDebuggingControllerTypeEnum
+typedef int32_t MaaDbgControllerType;
+enum MaaDbgControllerTypeEnum
 {
-    MaaDebuggingController_Invalid = 0,
+    MaaDbgController_Invalid = 0,
 
-    MaaDebuggingControllerType_Touch_Ignore = 1,
-    MaaDebuggingControllerType_Touch_Mask = 0xFF,
-
-    MaaDebuggingControllerType_Key_Ignore = 1 << 8,
-    MaaDebuggingControllerType_Key_Mask = 0xFF00,
-
-    MaaDebuggingControllerType_Input_Preset_Ignore =
-        MaaDebuggingControllerType_Touch_Ignore | MaaDebuggingControllerType_Key_Ignore,
-
-    MaaDebuggingControllerType_Screencap_ReadIndex = 1 << 16,
-    MaaDebuggingControllerType_Screencap_Mask = 0xFF0000,
+    MaaDbgControllerType_ReadImageAgainAndAgain = 1,
+    MaaDbgControllerType_ReplayRecording = 2,
 };
 
 typedef void* MaaTransparentArg;

@@ -88,15 +88,15 @@ MaaControllerHandle MaaThriftControllerCreate(MaaStringView param, MaaController
 #endif // WITH_THRIFT_CONTROLLER
 }
 
-MaaControllerHandle MaaDebuggingControllerCreate(MaaStringView read_path, MaaStringView write_path,
-                                                 MaaDebuggingControllerType type, MaaStringView config,
-                                                 MaaControllerCallback callback, MaaCallbackTransparentArg callback_arg)
+MaaControllerHandle MaaDbgControllerCreate(MaaStringView read_path, MaaStringView write_path, MaaDbgControllerType type,
+                                           MaaStringView config, MaaControllerCallback callback,
+                                           MaaCallbackTransparentArg callback_arg)
 {
     LogFunc << VAR(read_path) << VAR(write_path) << VAR(type) << VAR_VOIDP(callback) << VAR_VOIDP(callback_arg);
 
-#ifdef WITH_DEBUGGING_CONTROLLER
+#ifdef WITH_DBG_CONTROLLER
 
-    auto unit_mgr = MAA_DBG_CTRL_UNIT_NS::create_controller_unit(read_path, write_path, type, config);
+    auto unit_mgr = MAA_DBG_CTRL_UNIT_NS::create_controller(read_path, write_path, type, config);
     if (!unit_mgr) {
         LogError << "Failed to create controller unit";
         return nullptr;
@@ -113,7 +113,7 @@ MaaControllerHandle MaaDebuggingControllerCreate(MaaStringView read_path, MaaStr
     LogError << "The build without debugging controller";
     return nullptr;
 
-#endif // WITH_DEBUGGING_CONTROLLER
+#endif // WITH_DBG_CONTROLLER
 }
 
 void MaaControllerDestroy(MaaControllerHandle ctrl)
