@@ -47,7 +47,17 @@ int main(int argc, char* argv[])
         }
     }
     std::string server_address(host + ":" + std::to_string(port));
-    MaaRpcStart(server_address.c_str());
+    if (!MaaRpcStart(server_address.c_str())) {
+        if (!quiet) {
+            if (mi) {
+                std::cout << "[MAARPC]ERROR" << std::endl;
+            }
+            else {
+                std::cout << "Server failed to listen on " << server_address << std::endl;
+            }
+        }
+        return 1;
+    }
 
     std::unique_lock<std::mutex> lock(mutex);
     if (!quiet) {

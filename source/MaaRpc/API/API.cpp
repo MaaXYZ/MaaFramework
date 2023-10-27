@@ -5,7 +5,7 @@
 static std::unique_ptr<grpc::Server> server = nullptr;
 static std::unique_ptr<Context> context = nullptr;
 
-void MaaRpcStart(MaaStringView address)
+MaaBool MaaRpcStart(MaaStringView address)
 {
     if (server) {
         server->Shutdown();
@@ -21,6 +21,12 @@ void MaaRpcStart(MaaStringView address)
     context->reg_service(builder);
 
     server = builder.BuildAndStart();
+    if (server) {
+        return 1;
+    }
+    else {
+        return 0;
+    }
 }
 
 void MaaRpcStop()
