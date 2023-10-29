@@ -5,6 +5,7 @@
 
 #include <meojson/json.hpp>
 
+#include "Utils/ImageIo.h"
 #include "Utils/Logger.h"
 
 MAA_DBG_CTRL_UNIT_NS_BEGIN
@@ -27,6 +28,7 @@ std::optional<Recording> RecordParser::parse(const std::filesystem::path& path)
     Recording recording;
 
     std::string line;
+    auto dir = path.parent_path();
     while (std::getline(ifs, line)) {
         if (line.empty()) {
             continue;
@@ -39,19 +41,31 @@ std::optional<Recording> RecordParser::parse(const std::filesystem::path& path)
         }
 
         auto& record_json = json_opt.value();
-        auto record_opt = parse_record(record_json);
+        auto record_opt = parse_record(record_json, dir);
         if (!record_opt) {
             LogError << "Failed to parse record:" << line;
             return std::nullopt;
         }
 
+        auto& record = record_opt.value();
+
+        if (record.action.type == Record::Action::Type::connect) {
+            auto& param = std::get<Record::ConnectParam>(record.action.param);
+            recording.version = param.version;
+            recording.device_info.uuid = param.uuid;
+            recording.device_info.resolution = param.resolution;
+        }
+
         recording.records.emplace_back(std::move(record_opt.value()));
     }
+
+    return recording;
 }
 
-std::optional<Record> RecordParser::parse_record(const json::value& record_json)
+std::optional<Record> RecordParser::parse_record(const json::value& record_json, const std::filesystem::path& dir)
 {
     Record record;
+    record.raw_data = record_json;
     record.timestamp = record_json.get("timestamp", 0);
     record.success = record_json.get("success", false);
     record.cost = record_json.get("cost", 0);
@@ -72,6 +86,248 @@ std::optional<Record> RecordParser::parse_record(const json::value& record_json)
     }
 
     record.action.type = it->second;
+
+    std::optional<Record::Param> action_opt;
+    switch (record.action.type) {
+    case Record::Action::Type::connect:
+        action_opt = parse_connect(record_json);
+        break;
+    case Record::Action::Type::click:
+        action_opt = parse_click(record_json);
+        break;
+    case Record::Action::Type::swipe:
+        action_opt = parse_swipe(record_json);
+        break;
+    case Record::Action::Type::touch_down:
+    case Record::Action::Type::touch_move:
+    case Record::Action::Type::touch_up:
+        action_opt = parse_touch(record_json);
+        break;
+    case Record::Action::Type::press_key:
+        action_opt = parse_press_key(record_json);
+        break;
+    case Record::Action::Type::screencap:
+        action_opt = parse_screencap(record_json, dir);
+        break;
+    case Record::Action::Type::start_app:
+    case Record::Action::Type::stop_app:
+        action_opt = parse_app(record_json);
+        break;
+    }
+
+    if (!action_opt) {
+        LogError << "Failed to parse action:" << VAR(type_str) << VAR(record_json);
+        return std::nullopt;
+    }
+
+    record.action.param = std::move(action_opt.value());
+    return record;
+}
+
+std::optional<Record::Param> RecordParser::parse_connect(const json::value& record_json)
+{
+    Record::ConnectParam result;
+
+    auto resolution_opt = record_json.find("resolution");
+    if (!resolution_opt) {
+        LogError << "Failed to find resolution:" << VAR(record_json);
+        return std::nullopt;
+    }
+    if (auto width_opt = resolution_opt->find<int>("width")) {
+        result.resolution.width = *width_opt;
+    }
+    else {
+        LogError << "Failed to find resolution.width:" << VAR(record_json);
+        return std::nullopt;
+    }
+    if (auto height_opt = resolution_opt->find<int>("height")) {
+        result.resolution.height = *height_opt;
+    }
+    else {
+        LogError << "Failed to find resolution.height:" << VAR(record_json);
+        return std::nullopt;
+    }
+
+    if (auto version_opt = record_json.find<std::string>("version")) {
+        result.version = *version_opt;
+    }
+    else {
+        LogError << "Failed to find version:" << VAR(record_json);
+        return std::nullopt;
+    }
+
+    if (auto uuid_opt = record_json.find<std::string>("uuid")) {
+        result.uuid = *uuid_opt;
+    }
+    else {
+        LogError << "Failed to find uuid:" << VAR(record_json);
+        return std::nullopt;
+    }
+
+    return result;
+}
+
+std::optional<Record::Param> RecordParser::parse_click(const json::value& record_json)
+{
+    Record::ClickParam result;
+
+    if (auto x_opt = record_json.find<int>("x")) {
+        result.x = *x_opt;
+    }
+    else {
+        LogError << "Failed to find x:" << VAR(record_json);
+        return std::nullopt;
+    }
+
+    if (auto y_opt = record_json.find<int>("y")) {
+        result.y = *y_opt;
+    }
+    else {
+        LogError << "Failed to find y:" << VAR(record_json);
+        return std::nullopt;
+    }
+
+    return result;
+}
+
+std::optional<Record::Param> RecordParser::parse_swipe(const json::value& record_json)
+{
+    Record::SwipeParam result;
+
+    if (auto x1_opt = record_json.find<int>("x1")) {
+        result.x1 = *x1_opt;
+    }
+    else {
+        LogError << "Failed to find x1:" << VAR(record_json);
+        return std::nullopt;
+    }
+
+    if (auto y1_opt = record_json.find<int>("y1")) {
+        result.y1 = *y1_opt;
+    }
+    else {
+        LogError << "Failed to find y1:" << VAR(record_json);
+        return std::nullopt;
+    }
+
+    if (auto x2_opt = record_json.find<int>("x2")) {
+        result.x2 = *x2_opt;
+    }
+    else {
+        LogError << "Failed to find x2:" << VAR(record_json);
+        return std::nullopt;
+    }
+
+    if (auto y2_opt = record_json.find<int>("y2")) {
+        result.y2 = *y2_opt;
+    }
+    else {
+        LogError << "Failed to find y2:" << VAR(record_json);
+        return std::nullopt;
+    }
+
+    if (auto duration_opt = record_json.find<int>("duration")) {
+        result.duration = *duration_opt;
+    }
+    else {
+        LogError << "Failed to find duration:" << VAR(record_json);
+        return std::nullopt;
+    }
+
+    return result;
+}
+
+std::optional<Record::Param> RecordParser::parse_touch(const json::value& record_json)
+{
+    Record::TouchParam result;
+
+    if (auto contact_opt = record_json.find<int>("contact")) {
+        result.contact = *contact_opt;
+    }
+    else {
+        LogError << "Failed to find contact:" << VAR(record_json);
+        return std::nullopt;
+    }
+
+    if (auto x_opt = record_json.find<int>("x")) {
+        result.x = *x_opt;
+    }
+    else {
+        LogError << "Failed to find x:" << VAR(record_json);
+        return std::nullopt;
+    }
+
+    if (auto y_opt = record_json.find<int>("y")) {
+        result.y = *y_opt;
+    }
+    else {
+        LogError << "Failed to find y:" << VAR(record_json);
+        return std::nullopt;
+    }
+
+    if (auto pressure_opt = record_json.find<int>("pressure")) {
+        result.pressure = *pressure_opt;
+    }
+    else {
+        LogError << "Failed to find pressure:" << VAR(record_json);
+        return std::nullopt;
+    }
+
+    return result;
+}
+
+std::optional<Record::Param> RecordParser::parse_press_key(const json::value& record_json)
+{
+    Record::PressKeyParam result;
+
+    if (auto keycode_opt = record_json.find<int>("keycode")) {
+        result.keycode = *keycode_opt;
+    }
+    else {
+        LogError << "Failed to find keycode:" << VAR(record_json);
+        return std::nullopt;
+    }
+
+    return result;
+}
+
+std::optional<Record::Param> RecordParser::parse_screencap(const json::value& record_json,
+                                                           const std::filesystem::path& dir)
+{
+    Record::ScreencapParam result;
+
+    if (auto path_opt = record_json.find<std::string>("path")) {
+        result.path = MAA_NS::path(*path_opt);
+    }
+    else {
+        LogError << "Failed to find path:" << VAR(record_json);
+        return std::nullopt;
+    }
+
+    auto fullpath = dir / result.path;
+    if (!std::filesystem::exists(fullpath)) {
+        LogError << "File not found:" << VAR(fullpath);
+        return std::nullopt;
+    }
+
+    result.image = imread(fullpath);
+
+    return result;
+}
+
+std::optional<Record::Param> RecordParser::parse_app(const json::value& record_json)
+{
+    Record::AppParam result;
+
+    if (auto package_opt = record_json.find<std::string>("package")) {
+        result.package = *package_opt;
+    }
+    else {
+        LogError << "Failed to find package:" << VAR(record_json);
+        return std::nullopt;
+    }
+
+    return result;
 }
 
 MAA_DBG_CTRL_UNIT_NS_END

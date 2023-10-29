@@ -158,6 +158,11 @@ cv::Mat ControllerMgr::get_image() const
     return image_;
 }
 
+std::string ControllerMgr::get_uuid() const
+{
+    return _get_uuid();
+}
+
 void ControllerMgr::on_stop()
 {
     action_runner_->release();
@@ -240,9 +245,11 @@ bool ControllerMgr::handle_connect()
     connected_ = _connect();
 
     if (recording()) {
+        auto [res_w, res_h] = _get_resolution();
         json::value info {
-            { "type", "connect" },
-            { "success", connected_ },
+            { "type", "connect" },      { "success", connected_ },
+            { "uuid", _get_uuid() },    { "resolution", { { "width", res_w }, { "height", res_h } } },
+            { "version", MAA_VERSION },
         };
         append_recording(std::move(info), start_time, connected_);
     }
@@ -378,12 +385,13 @@ bool ControllerMgr::handle_screencap()
         start_time = std::chrono::steady_clock::now();
     }
 
-    bool ret = postproc_screenshot(_screencap());
+    cv::Mat raw_image = _screencap();
+    bool ret = postproc_screenshot(raw_image);
 
     if (recording()) {
         auto image_relative_path = path("Screenshot") / path(now_filestem() + ".png");
         auto image_path = recording_path_.parent_path() / image_relative_path;
-        MAA_NS::imwrite(image_path, image_);
+        MAA_NS::imwrite(image_path, raw_image);
 
         json::value info = {
             { "type", "screencap" },

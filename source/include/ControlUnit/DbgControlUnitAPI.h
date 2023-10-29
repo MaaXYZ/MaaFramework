@@ -15,13 +15,12 @@ public:
     virtual ~ControllerAPI() = default;
 
     virtual bool connect() = 0;
-    virtual bool kill_server() = 0;
 
-    virtual std::string get_uuid() const = 0;
-    virtual cv::Size get_resolution() const = 0;
+    virtual std::string uuid() const = 0;
+    virtual cv::Size resolution() const = 0;
 
-    virtual bool start(const std::string& intent) = 0;
-    virtual bool stop(const std::string& intent) = 0;
+    virtual bool start_app(const std::string& intent) = 0;
+    virtual bool stop_app(const std::string& intent) = 0;
 
     virtual bool click(int x, int y) = 0;
     virtual bool swipe(int x1, int y1, int x2, int y2, int duration) = 0;

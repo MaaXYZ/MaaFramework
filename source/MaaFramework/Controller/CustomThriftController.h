@@ -14,10 +14,9 @@ public:
     CustomThriftController(const std::string& param, MaaControllerCallback callback, void* callback_arg);
     virtual ~CustomThriftController() override;
 
-    virtual std::string get_uuid() const override;
-
 protected:
     virtual bool _connect() override;
+    virtual std::string _get_uuid() const override;
     virtual std::pair<int, int> _get_resolution() const override;
     virtual bool _click(ClickParam param) override;
     virtual bool _swipe(SwipeParam param) override;

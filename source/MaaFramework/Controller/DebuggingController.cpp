@@ -19,11 +19,6 @@ DebuggingController::DebuggingController(std::string read_path, std::string writ
 
 DebuggingController::~DebuggingController() {}
 
-std::string DebuggingController::get_uuid() const
-{
-    return read_path_;
-}
-
 bool DebuggingController::_connect()
 {
     LogFunc;
@@ -41,6 +36,16 @@ bool DebuggingController::_connect()
     return true;
 }
 
+std::string DebuggingController::_get_uuid() const
+{
+    if (!controller_) {
+        LogError << "controller is nullptr" << VAR(controller_);
+        return {};
+    }
+
+    return controller_->uuid();
+}
+
 std::pair<int, int> DebuggingController::_get_resolution() const
 {
     if (!controller_) {
@@ -48,7 +53,7 @@ std::pair<int, int> DebuggingController::_get_resolution() const
         return { 0, 0 };
     }
 
-    auto [screen_width, screen_height] = controller_->get_resolution();
+    auto [screen_width, screen_height] = controller_->resolution();
     return { screen_width, screen_height };
 }
 
@@ -173,7 +178,7 @@ bool DebuggingController::_start_app(AppParam param)
         return false;
     }
 
-    if (!controller_->start(param.package)) {
+    if (!controller_->start_app(param.package)) {
         LogError << "controller start failed" << VAR(param.package);
         return false;
     }
@@ -188,7 +193,7 @@ bool DebuggingController::_stop_app(AppParam param)
         return false;
     }
 
-    if (!controller_->stop(param.package)) {
+    if (!controller_->stop_app(param.package)) {
         LogError << "controller stop failed" << VAR(param.package);
         return false;
     }

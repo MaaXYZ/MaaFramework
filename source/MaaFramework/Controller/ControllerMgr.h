@@ -95,7 +95,7 @@ public:
     virtual MaaBool connected() const override;
 
     virtual cv::Mat get_image() const override;
-    virtual std::string get_uuid() const override = 0;
+    virtual std::string get_uuid() const override;
 
     virtual void on_stop() override;
 
@@ -114,6 +114,7 @@ public:
 
 protected:
     virtual bool _connect() = 0;
+    virtual std::string _get_uuid() const = 0;
     virtual std::pair<int, int> _get_resolution() const = 0;
     virtual bool _click(ClickParam param) = 0;
     virtual bool _swipe(SwipeParam param) = 0;

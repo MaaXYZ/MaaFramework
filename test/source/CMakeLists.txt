@@ -9,6 +9,6 @@ add_executable(Testing ${testing_src})
 
 target_link_libraries(Testing MaaFramework)
 
-add_dependencies(Testing MaaFramework)
+add_dependencies(Testing MaaFramework PipelineSmokingResource)
 
 install(TARGETS Testing RUNTIME DESTINATION bin)

@@ -2,6 +2,7 @@
 
 #include <meojson/json.hpp>
 
+#include "ReplayRecording/ReplayRecordingMgr.h"
 #include "Utils/Logger.h"
 
 MAA_DBG_CTRL_UNIT_NS_BEGIN
@@ -22,9 +23,10 @@ std::shared_ptr<ControllerAPI> create_controller(MaaDbgControllerType type, MaaS
 
     switch (type) {
     case MaaDbgControllerType_ReadImageAgainAndAgain:
+        // TODO
         return nullptr;
     case MaaDbgControllerType_ReplayRecording:
-        return nullptr;
+        return create_replay_recording(read_stdpath);
     }
 
     return nullptr;

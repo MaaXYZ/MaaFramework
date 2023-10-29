@@ -21,6 +21,12 @@ struct DeviceInfo
 
 struct Record
 {
+    struct ConnectParam
+    {
+        std::string uuid;
+        cv::Size resolution;
+        std::string version;
+    };
     struct ClickParam
     {
         int x = 0;
@@ -55,8 +61,8 @@ struct Record
         cv::Mat image;
     };
 
-    using Param =
-        std::variant<std::monostate, ClickParam, SwipeParam, TouchParam, PressKeyParam, AppParam, ScreencapParam>;
+    using Param = std::variant<std::monostate, ConnectParam, ClickParam, SwipeParam, TouchParam, PressKeyParam,
+                               AppParam, ScreencapParam>;
 
     struct Action
     {
@@ -82,12 +88,54 @@ struct Record
     Action action;
     bool success = false;
     int cost = 0;
+    json::value raw_data;
 };
 
 struct Recording
 {
+    std::string version;
     DeviceInfo device_info;
     std::vector<Record> records;
 };
+
+inline std::ostream& operator<<(std::ostream& os, Record::Action::Type type)
+{
+    switch (type) {
+    case Record::Action::Type::invalid:
+        os << "invalid";
+        break;
+    case Record::Action::Type::connect:
+        os << "connect";
+        break;
+    case Record::Action::Type::click:
+        os << "click";
+        break;
+    case Record::Action::Type::swipe:
+        os << "swipe";
+        break;
+    case Record::Action::Type::touch_down:
+        os << "touch_down";
+        break;
+    case Record::Action::Type::touch_move:
+        os << "touch_move";
+        break;
+    case Record::Action::Type::touch_up:
+        os << "touch_up";
+        break;
+    case Record::Action::Type::press_key:
+        os << "press_key";
+        break;
+    case Record::Action::Type::screencap:
+        os << "screencap";
+        break;
+    case Record::Action::Type::start_app:
+        os << "start_app";
+        break;
+    case Record::Action::Type::stop_app:
+        os << "stop_app";
+        break;
+    }
+    return os;
+}
 
 MAA_DBG_CTRL_UNIT_NS_END
