@@ -72,6 +72,9 @@ bool ConfigMgr::parse_and_apply_policy(const json::value& policy_json)
     policy_debug_mode_ = policy_json.get(kPolicyDebugMode, policy_debug_mode_);
     MaaSetGlobalOption(MaaGlobalOption_DebugMode, &policy_debug_mode_, sizeof(policy_debug_mode_));
 
+    policy_recording_ = policy_json.get(kPolicyRecording, policy_recording_);
+    MaaSetGlobalOption(MaaGlobalOption_Recording, &policy_recording_, sizeof(policy_recording_));
+
     return true;
 }
 
@@ -81,6 +84,7 @@ json::value ConfigMgr::to_json() const
     root[kPolicyKey] = {
         { kPolicyLoggging, policy_logging_ },
         { kPolicyDebugMode, policy_debug_mode_ },
+        { kPolicyRecording, policy_recording_ },
     };
 
     return root;

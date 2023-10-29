@@ -140,6 +140,8 @@ private:
     bool handle_start_app(const AppParam& param);
     bool handle_stop_app(const AppParam& param);
 
+    bool recording() const;
+    void init_recording();
     void append_recording(json::value info, const std::chrono::steady_clock::time_point& start_time, bool success);
 
 private:

@@ -231,13 +231,15 @@ bool ControllerMgr::stop_app(const std::string& package)
 bool ControllerMgr::handle_connect()
 {
     std::chrono::steady_clock::time_point start_time;
-    if (recording_) {
+    if (recording()) {
         start_time = std::chrono::steady_clock::now();
+
+        init_recording();
     }
 
     connected_ = _connect();
 
-    if (recording_) {
+    if (recording()) {
         json::value info {
             { "type", "connect" },
             { "success", connected_ },
@@ -251,13 +253,13 @@ bool ControllerMgr::handle_connect()
 bool ControllerMgr::handle_click(const ClickParam& param)
 {
     std::chrono::steady_clock::time_point start_time;
-    if (recording_) {
+    if (recording()) {
         start_time = std::chrono::steady_clock::now();
     }
 
     bool ret = _click(param);
 
-    if (recording_) {
+    if (recording()) {
         json::value info = {
             { "type", "click" },
             { "x", param.x },
@@ -272,13 +274,13 @@ bool ControllerMgr::handle_click(const ClickParam& param)
 bool ControllerMgr::handle_swipe(const SwipeParam& param)
 {
     std::chrono::steady_clock::time_point start_time;
-    if (recording_) {
+    if (recording()) {
         start_time = std::chrono::steady_clock::now();
     }
 
     bool ret = _swipe(param);
 
-    if (recording_) {
+    if (recording()) {
         json::value info = {
             { "type", "swipe" }, { "x1", param.x1 }, { "y1", param.y1 },
             { "x2", param.x2 },  { "y2", param.y2 }, { "duration", param.duration },
@@ -292,13 +294,13 @@ bool ControllerMgr::handle_swipe(const SwipeParam& param)
 bool ControllerMgr::handle_touch_down(const TouchParam& param)
 {
     std::chrono::steady_clock::time_point start_time;
-    if (recording_) {
+    if (recording()) {
         start_time = std::chrono::steady_clock::now();
     }
 
     bool ret = _touch_down(param);
 
-    if (recording_) {
+    if (recording()) {
         json::value info = {
             { "type", "touch_down" }, { "contact", param.contact },   { "x", param.x },
             { "y", param.y },         { "pressure", param.pressure },
@@ -312,13 +314,13 @@ bool ControllerMgr::handle_touch_down(const TouchParam& param)
 bool ControllerMgr::handle_touch_move(const TouchParam& param)
 {
     std::chrono::steady_clock::time_point start_time;
-    if (recording_) {
+    if (recording()) {
         start_time = std::chrono::steady_clock::now();
     }
 
     bool ret = _touch_move(param);
 
-    if (recording_) {
+    if (recording()) {
         json::value info = {
             { "type", "touch_move" }, { "contact", param.contact },   { "x", param.x },
             { "y", param.y },         { "pressure", param.pressure },
@@ -332,13 +334,13 @@ bool ControllerMgr::handle_touch_move(const TouchParam& param)
 bool ControllerMgr::handle_touch_up(const TouchParam& param)
 {
     std::chrono::steady_clock::time_point start_time;
-    if (recording_) {
+    if (recording()) {
         start_time = std::chrono::steady_clock::now();
     }
 
     bool ret = _touch_up(param);
 
-    if (recording_) {
+    if (recording()) {
         json::value info = {
             { "type", "touch_up" },
             { "contact", param.contact },
@@ -352,13 +354,13 @@ bool ControllerMgr::handle_touch_up(const TouchParam& param)
 bool ControllerMgr::handle_press_key(const PressKeyParam& param)
 {
     std::chrono::steady_clock::time_point start_time;
-    if (recording_) {
+    if (recording()) {
         start_time = std::chrono::steady_clock::now();
     }
 
     bool ret = _press_key(param);
 
-    if (recording_) {
+    if (recording()) {
         json::value info = {
             { "type", "press_key" },
             { "keycode", param.keycode },
@@ -372,13 +374,13 @@ bool ControllerMgr::handle_press_key(const PressKeyParam& param)
 bool ControllerMgr::handle_screencap()
 {
     std::chrono::steady_clock::time_point start_time;
-    if (recording_) {
+    if (recording()) {
         start_time = std::chrono::steady_clock::now();
     }
 
     bool ret = postproc_screenshot(_screencap());
 
-    if (recording_) {
+    if (recording()) {
         auto image_relative_path = path("Screenshot") / path(now_filestem() + ".png");
         auto image_path = recording_path_.parent_path() / image_relative_path;
         MAA_NS::imwrite(image_path, image_);
@@ -396,14 +398,14 @@ bool ControllerMgr::handle_screencap()
 bool ControllerMgr::handle_start_app(const AppParam& param)
 {
     std::chrono::steady_clock::time_point start_time;
-    if (recording_) {
+    if (recording()) {
         start_time = std::chrono::steady_clock::now();
     }
 
     bool ret = _start_app(param);
     clear_target_image_size();
 
-    if (recording_) {
+    if (recording()) {
         json::value info = {
             { "type", "start_app" },
             { "package", param.package },
@@ -416,14 +418,14 @@ bool ControllerMgr::handle_start_app(const AppParam& param)
 bool ControllerMgr::handle_stop_app(const AppParam& param)
 {
     std::chrono::steady_clock::time_point start_time;
-    if (recording_) {
+    if (recording()) {
         start_time = std::chrono::steady_clock::now();
     }
 
     bool ret = _stop_app(param);
     clear_target_image_size();
 
-    if (recording_) {
+    if (recording()) {
         json::value info = {
             { "type", "stop_app" },
             { "package", param.package },
@@ -433,10 +435,22 @@ bool ControllerMgr::handle_stop_app(const AppParam& param)
     return ret;
 }
 
+bool ControllerMgr::recording() const
+{
+    return recording_ || GlobalOptionMgr::get_instance().recording();
+}
+
+void ControllerMgr::init_recording()
+{
+    auto recording_dir = GlobalOptionMgr::get_instance().logging_path() / "Recording";
+    std::filesystem::create_directories(recording_dir);
+    recording_path_ = recording_dir / MAA_FMT::format("MaaRecording_{}.txt", now_filestem());
+}
+
 void ControllerMgr::append_recording(json::value info, const std::chrono::steady_clock::time_point& start_time,
                                      bool success)
 {
-    if (!recording_) {
+    if (!recording()) {
         return;
     }
 
@@ -682,10 +696,6 @@ bool ControllerMgr::set_recording(MaaOptionValue value, MaaOptionValueSize val_s
         return false;
     }
     recording_ = *reinterpret_cast<bool*>(value);
-
-    auto recording_dir = GlobalOptionMgr::get_instance().logging_path() / "Recording";
-    std::filesystem::create_directories(recording_dir);
-    recording_path_ = recording_dir / MAA_FMT::format("MaaRecording_{}.txt", now_filestem());
 
     return true;
 }
