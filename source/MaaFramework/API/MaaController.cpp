@@ -96,7 +96,7 @@ MaaControllerHandle MaaDbgControllerCreate(MaaStringView read_path, MaaStringVie
 
 #ifdef WITH_DBG_CONTROLLER
 
-    auto unit_mgr = MAA_DBG_CTRL_UNIT_NS::create_controller(read_path, write_path, type, config);
+    auto unit_mgr = MAA_DBG_CTRL_UNIT_NS::create_controller(type, read_path, write_path, config);
     if (!unit_mgr) {
         LogError << "Failed to create controller unit";
         return nullptr;

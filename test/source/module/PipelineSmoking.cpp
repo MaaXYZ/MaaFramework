@@ -8,19 +8,12 @@
 
 bool pipeline_smoking(const std::filesystem::path& testset_dir)
 {
-    auto testing_path = testset_dir / "PipelineSmoking";
+    auto testing_path = testset_dir / "PipelineSmoking" / "MaaRecording.txt";
     auto result_path = testset_dir / "debug";
-    json::value debug_config = { { "device_info", json::object {
-                                                      { "uuid", testing_path.string() },
-                                                      { "screen_width", 1280 },
-                                                      { "screen_height", 720 },
-                                                      { "orientation", 0 },
-                                                  } } };
-    auto config = debug_config.dumps(4);
 
     auto controller_handle =
         MaaDbgControllerCreate(testing_path.string().c_str(), result_path.string().c_str(),
-                                     MaaDbgControllerType_Screencap_ReadIndex, config.c_str(), nullptr, nullptr);
+                               MaaDbgControllerType_ReplayRecording, MaaTaskParam_Empty, nullptr, nullptr);
 
     auto ctrl_id = MaaControllerPostConnection(controller_handle);
 

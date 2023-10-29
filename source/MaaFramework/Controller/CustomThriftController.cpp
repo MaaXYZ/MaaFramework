@@ -81,20 +81,6 @@ CustomThriftController::~CustomThriftController()
     }
 }
 
-std::string CustomThriftController::get_uuid() const
-{
-    LogFunc;
-
-    if (!client_ || !transport_->isOpen()) {
-        LogError << "client_ is nullptr or transport_ is not open";
-        return {};
-    }
-
-    std::string uuid;
-    client_->get_uuid(uuid);
-    return uuid;
-}
-
 bool CustomThriftController::_connect()
 {
     try {
@@ -106,6 +92,20 @@ bool CustomThriftController::_connect()
     }
 
     return client_->connect();
+}
+
+std::string CustomThriftController::_get_uuid() const
+{
+    LogFunc;
+
+    if (!client_ || !transport_->isOpen()) {
+        LogError << "client_ is nullptr or transport_ is not open";
+        return {};
+    }
+
+    std::string uuid;
+    client_->get_uuid(uuid);
+    return uuid;
 }
 
 std::pair<int, int> CustomThriftController::_get_resolution() const

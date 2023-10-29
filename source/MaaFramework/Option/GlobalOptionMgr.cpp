@@ -14,6 +14,8 @@ bool GlobalOptionMgr::set_option(MaaGlobalOption key, MaaOptionValue value, MaaO
         return set_logging(value, val_size);
     case MaaGlobalOption_DebugMode:
         return set_debug_mode(value, val_size);
+    case MaaGlobalOption_Recording:
+        return set_recording(value, val_size);
     default:
         LogError << "Unknown key" << VAR(key) << VAR(value);
         return false;
@@ -46,6 +48,22 @@ bool GlobalOptionMgr::set_debug_mode(MaaOptionValue value, MaaOptionValueSize va
     debug_mode_ = *reinterpret_cast<const bool*>(value);
 
     LogInfo << "Set debug mode" << VAR(debug_mode_);
+
+    return true;
+}
+
+bool GlobalOptionMgr::set_recording(MaaOptionValue value, MaaOptionValueSize val_size)
+{
+    LogFunc;
+
+    if (val_size != sizeof(bool)) {
+        LogError << "Invalid value size" << VAR(val_size);
+        return false;
+    }
+
+    recording_ = *reinterpret_cast<const bool*>(value);
+
+    LogInfo << "Set recording" << VAR(recording_);
 
     return true;
 }

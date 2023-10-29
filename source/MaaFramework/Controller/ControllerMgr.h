@@ -53,6 +53,7 @@ struct Action
 {
     enum class Type
     {
+        invalid,
         connect,
         click,
         swipe,
@@ -63,7 +64,7 @@ struct Action
         screencap,
         start_app,
         stop_app,
-    } type;
+    } type = Type::invalid;
 
     Param param;
 };
@@ -94,7 +95,7 @@ public:
     virtual MaaBool connected() const override;
 
     virtual cv::Mat get_image() const override;
-    virtual std::string get_uuid() const override = 0;
+    virtual std::string get_uuid() const override;
 
     virtual void on_stop() override;
 
@@ -113,6 +114,7 @@ public:
 
 protected:
     virtual bool _connect() = 0;
+    virtual std::string _get_uuid() const = 0;
     virtual std::pair<int, int> _get_resolution() const = 0;
     virtual bool _click(ClickParam param) = 0;
     virtual bool _swipe(SwipeParam param) = 0;
@@ -139,6 +141,8 @@ private:
     bool handle_start_app(const AppParam& param);
     bool handle_stop_app(const AppParam& param);
 
+    bool recording() const;
+    void init_recording();
     void append_recording(json::value info, const std::chrono::steady_clock::time_point& start_time, bool success);
 
 private:

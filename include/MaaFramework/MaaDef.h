@@ -52,6 +52,11 @@ enum MaaGlobalOptionEnum
 
     // value: bool, eg: true; val_size: sizeof(bool)
     MaaGlobalOption_DebugMode = 2,
+
+    // Dump all screenshots and actions
+    // this option will || with MaaCtrlOption_Recording
+    // value: bool, eg: true; val_size: sizeof(bool)
+    MaaGlobalOption_Recording = 3,
 };
 
 typedef MaaOption MaaResOption;
@@ -82,6 +87,7 @@ enum MaaCtrlOptionEnum
     MaaCtrlOption_DefaultAppPackage = 4,
 
     // Dump all screenshots and actions
+    // this option will || with MaaGlobalOption_Recording
     // value: bool, eg: true; val_size: sizeof(bool)
     MaaCtrlOption_Recording = 5,
 };

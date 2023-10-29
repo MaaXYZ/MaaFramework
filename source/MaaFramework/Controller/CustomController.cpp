@@ -2,9 +2,9 @@
 
 #include "Buffer/ImageBuffer.hpp"
 #include "Buffer/StringBuffer.hpp"
+#include "MaaFramework/Instance/MaaCustomController.h"
 #include "Utils/Logger.h"
 #include "Utils/NoWarningCV.hpp"
-#include "MaaFramework/Instance/MaaCustomController.h"
 
 MAA_CTRL_NS_BEGIN
 
@@ -13,7 +13,19 @@ CustomController::CustomController(MaaCustomControllerHandle handle, MaaTranspar
     : ControllerMgr(callback, callback_arg), handle_(handle), handle_arg_(handle_arg)
 {}
 
-std::string CustomController::get_uuid() const
+bool CustomController::_connect()
+{
+    LogFunc << VAR_VOIDP(handle_) << VAR_VOIDP(handle_->connect);
+
+    if (!handle_ || !handle_->connect) {
+        LogError << "handle_ or handle_->connect is nullptr";
+        return false;
+    }
+
+    return handle_->connect(handle_arg_);
+}
+
+std::string CustomController::_get_uuid() const
 {
     LogFunc << VAR_VOIDP(handle_) << VAR_VOIDP(handle_->get_uuid);
 
@@ -29,18 +41,6 @@ std::string CustomController::get_uuid() const
         return {};
     }
     return buffer.get();
-}
-
-bool CustomController::_connect()
-{
-    LogFunc << VAR_VOIDP(handle_) << VAR_VOIDP(handle_->connect);
-
-    if (!handle_ || !handle_->connect) {
-        LogError << "handle_ or handle_->connect is nullptr";
-        return false;
-    }
-
-    return handle_->connect(handle_arg_);
 }
 
 std::pair<int, int> CustomController::_get_resolution() const

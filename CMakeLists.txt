@@ -64,7 +64,7 @@ if(BUILD_SAMPLE)
 endif()
 if (BUILD_TESTING)
     add_subdirectory(test/source)
-    add_subdirectory(test/TestingSet)
+    add_subdirectory(test/TestingDataSet)
 endif()
 
 if(USE_MAADEPS)

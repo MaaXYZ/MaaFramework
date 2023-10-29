@@ -33,16 +33,6 @@ AdbController::~AdbController()
     }
 }
 
-std::string AdbController::get_uuid() const
-{
-    if (!unit_mgr_ || !unit_mgr_->device_info_obj()) {
-        LogError << "unit is nullptr" << VAR(unit_mgr_) << VAR(unit_mgr_->device_info_obj());
-        return {};
-    }
-
-    return unit_mgr_->device_info_obj()->get_uuid();
-}
-
 bool AdbController::_connect()
 {
     if (!unit_mgr_ || !unit_mgr_->connection_obj() || !unit_mgr_->device_info_obj() || !unit_mgr_->screencap_obj() ||
@@ -110,6 +100,16 @@ bool AdbController::_connect()
     notifier.notify(MaaMsg_Controller_ConnectSuccess, details);
 
     return true;
+}
+
+std::string AdbController::_get_uuid() const
+{
+    if (!unit_mgr_ || !unit_mgr_->device_info_obj()) {
+        LogError << "unit is nullptr" << VAR(unit_mgr_) << VAR(unit_mgr_->device_info_obj());
+        return {};
+    }
+
+    return unit_mgr_->device_info_obj()->get_uuid();
 }
 
 std::pair<int, int> AdbController::_get_resolution() const
