@@ -30,7 +30,7 @@ std::string MAA_UTILS_API from_osstring(os_string_view os_str);
 
 inline std::filesystem::path path(std::string_view utf8_str)
 {
-    return std::filesystem::path(to_osstring(utf8_str));
+    return std::filesystem::path(to_osstring(utf8_str)).make_preferred();
 }
 std::string MAA_UTILS_API path_to_utf8_string(const std::filesystem::path& path);
 std::string MAA_UTILS_API path_to_ansi_string(const std::filesystem::path& path);
