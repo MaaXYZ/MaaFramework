@@ -113,6 +113,9 @@ std::optional<Record> RecordParser::parse_record(const json::value& record_json,
     case Record::Action::Type::stop_app:
         action_opt = parse_app(record_json);
         break;
+    default:
+        LogError << "Invalid type:" << VAR(record.action.type);
+        return std::nullopt;
     }
 
     if (!action_opt) {

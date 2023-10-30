@@ -134,6 +134,9 @@ inline std::ostream& operator<<(std::ostream& os, Record::Action::Type type)
     case Record::Action::Type::stop_app:
         os << "stop_app";
         break;
+    default:
+        os << "Unknown Record::Action::Type" << static_cast<int>(type);
+        break;
     }
     return os;
 }
