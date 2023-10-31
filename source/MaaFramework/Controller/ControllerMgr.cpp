@@ -199,7 +199,10 @@ bool ControllerMgr::press_key(int keycode)
 cv::Mat ControllerMgr::screencap()
 {
     std::unique_lock<std::mutex> lock(image_mutex_);
-    action_runner_->post({ .type = Action::Type::screencap }, true);
+    auto id = action_runner_->post({ .type = Action::Type::screencap }, true);
+    if (wait(id) != MaaStatus_Success) {
+        return {};
+    }
     return image_.clone();
 }
 
@@ -585,6 +588,7 @@ std::pair<int, int> ControllerMgr::preproc_touch_point(int x, int y)
 bool ControllerMgr::postproc_screenshot(const cv::Mat& raw)
 {
     if (raw.empty()) {
+        image_ = {};
         LogError << "Empty screenshot";
         return false;
     }
@@ -595,6 +599,7 @@ bool ControllerMgr::postproc_screenshot(const cv::Mat& raw)
     }
 
     if (!check_and_calc_target_image_size(raw)) {
+        image_ = {};
         LogError << "Invalid target image size";
         return false;
     }
