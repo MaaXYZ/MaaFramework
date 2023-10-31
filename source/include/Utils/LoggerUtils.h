@@ -171,7 +171,7 @@ private:
     std::ofstream& stream_;
     const level lv_ = level::fatal;
     const bool stdout_ = false;
-    const StringConverter string_converter_;
+    const StringConverter string_converter_ {};
 
     separator sep_ = separator::space;
     std::stringstream buffer_;
