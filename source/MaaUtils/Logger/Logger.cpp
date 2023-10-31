@@ -10,17 +10,17 @@
 
 #pragma message("MaaUtils MAA_VERSION: " MAA_VERSION)
 
-MAA_NS_BEGIN
+MAA_LOG_NS_BEGIN
 
-constexpr Logger::separator Logger::separator::none("");
-constexpr Logger::separator Logger::separator::space(" ");
-constexpr Logger::separator Logger::separator::tab("\t");
-constexpr Logger::separator Logger::separator::newline("\n");
-constexpr Logger::separator Logger::separator::comma(",");
+constexpr separator separator::none("");
+constexpr separator separator::space(" ");
+constexpr separator separator::tab("\t");
+constexpr separator separator::newline("\n");
+constexpr separator separator::comma(",");
 
 static constexpr std::string_view kSplitLine = "-----------------------------";
 
-std::string Logger::LogStream::stdout_string()
+std::string LogStream::stdout_string()
 {
     std::string color;
 
@@ -39,11 +39,11 @@ std::string Logger::LogStream::stdout_string()
     case level::trace:
         break;
     }
-    
+
     return color + utf8_to_crt(buffer_.str()) + "\033[0m";
 }
 
-std::string_view Logger::LogStream::level_str()
+std::string_view LogStream::level_str()
 {
     switch (lv_) {
     case level::fatal:
@@ -179,9 +179,9 @@ void Logger::log_proc_info()
     internal_dbg() << kSplitLine;
 }
 
-Logger::LogStream Logger::internal_dbg()
+LogStream Logger::internal_dbg()
 {
     return debug("Logger");
 }
 
-MAA_NS_END
+MAA_LOG_NS_END

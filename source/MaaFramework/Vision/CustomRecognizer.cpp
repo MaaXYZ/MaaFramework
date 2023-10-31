@@ -17,7 +17,7 @@ CustomRecognizer::CustomRecognizer(MaaCustomRecognizerHandle handle, MaaTranspar
 
 CustomRecognizer::ResultsVec CustomRecognizer::analyze() const
 {
-    LogFunc << VAR_VOIDP(recognizer_) << VAR(recognizer_->analyze) << VAR(param_.custom_param);
+    LogFunc << VAR_VOIDP(recognizer_) << VAR_VOIDP(recognizer_->analyze) << VAR(param_.custom_param);
 
     if (!recognizer_ || !recognizer_->analyze) {
         LogError << "Recognizer is null";

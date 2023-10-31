@@ -85,6 +85,12 @@
     {
 #define MAA_PLATFORM_NS_END }
 
+#define MAA_LOG_NS MAA_NS::LogNS
+#define MAA_LOG_NS_BEGIN \
+    namespace MAA_LOG_NS \
+    {
+#define MAA_LOG_NS_END }
+
 /* MaaFramwork */
 
 #define MAA_RES_NS MAA_NS::ResourceNS
