@@ -54,7 +54,7 @@ bool CarouselImage::connect()
     LogInfo << VAR(images_.size());
 
     if (images_.empty()) {
-        LogError << "no image" << VAR(path);
+        LogError << "no image" << VAR(path_);
         return false;
     }
 
@@ -127,7 +127,7 @@ bool CarouselImage::press_key(int key)
 std::optional<cv::Mat> CarouselImage::screencap()
 {
     if (images_.empty()) {
-        LogError << "no image" << VAR(path);
+        LogError << "no image" << VAR(path_);
         return std::nullopt;
     }
 
