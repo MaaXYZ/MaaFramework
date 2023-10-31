@@ -103,7 +103,8 @@ MaaBool my_analyze(MaaSyncContextHandle sync_context, const MaaImageBufferHandle
                  "Balabala, this string will be used by MaaCustomActionAPI and MaaSyncContextGetTaskResult. "
                  "And for compatibility, I recommend you use json.");
 
-    // Finally, don't forget to return a true!
+    // Finally, if this task is hit and you want to execute the action and next of this task,
+    // don't forget to return true!
     return true;
 }
 
