@@ -76,10 +76,10 @@ std::optional<std::string> UnitBase::command(const Argv::value& cmd, bool recv_b
     LogDebug << VAR(scmd) << VAR(ret) << VAR(pipe_data.size()) << VAR(sock_data.size()) << VAR(duration);
 
     if (!pipe_data.empty() && pipe_data.size() < 4096) {
-        LogDebug << Logger::separator::newline << "stdout output:" << pipe_data;
+        LogDebug << MAA_LOG_NS::separator::newline << "stdout output:" << pipe_data;
     }
     if (recv_by_socket && !sock_data.empty() && sock_data.size() < 4096) {
-        LogDebug << Logger::separator::newline << "socket output:" << sock_data;
+        LogDebug << MAA_LOG_NS::separator::newline << "socket output:" << sock_data;
     }
 
     if (ret != 0) {

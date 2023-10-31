@@ -310,7 +310,7 @@ bool InstanceMgr::run_task(TaskId id, TaskPtr task_ptr)
 
     status_.clear();
 
-    Logger::get_instance().flush();
+    MAA_LOG_NS::Logger::get_instance().flush();
 
     return ret;
 }

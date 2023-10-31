@@ -33,7 +33,7 @@ bool GlobalOptionMgr::set_log_dir(MaaOptionValue value, MaaOptionValueSize val_s
 
     LogInfo << "Set log path" << VAR(log_dir_);
 
-    Logger::get_instance().start_logging(log_dir_);
+    MAA_LOG_NS::Logger::get_instance().start_logging(log_dir_);
 
     return true;
 }
@@ -83,7 +83,7 @@ bool GlobalOptionMgr::set_stdout_level(MaaOptionValue value, MaaOptionValueSize 
 
     LogInfo << "Set log stdout level" << VAR(level);
 
-    Logger::get_instance().set_stdout_level(level);
+    MAA_LOG_NS::Logger::get_instance().set_stdout_level(level);
 
     return true;
 }
