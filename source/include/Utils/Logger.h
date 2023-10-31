@@ -74,7 +74,6 @@ public:
         LogStream(std::mutex& m, std::ofstream& s, level lv, bool std_out, args_t&&... args)
             : mutex_(m), stream_(s), lv_(lv), stdout_(std_out)
         {
-            stream(std::boolalpha);
             stream_props(std::forward<args_t>(args)...);
         }
         LogStream(const LogStream&) = delete;
@@ -84,10 +83,9 @@ public:
             std::unique_lock<std::mutex> lock(mutex_);
 
             if (stdout_) {
-                stdout_buf_ << "\033[0m";
-                std::cout << utf8_to_crt(stdout_buf_.str()) << std::endl;
+                std::cout << stdout_string() << std::endl;
             }
-            stream_ << std::move(ofs_buffer_).str() << std::endl;
+            stream_ << std::move(buffer_).str() << std::endl;
         }
 
         template <typename T>
@@ -121,6 +119,9 @@ public:
                 }
                 else if constexpr (has_output_operator<T>) {
                     std::stringstream ss;
+                    if constexpr (std::same_as<bool, std::decay_t<T>>) {
+                        ss << std::boolalpha;
+                    }
                     ss << std::forward<T>(value);
                     return std::move(ss).str();
                 }
@@ -135,19 +136,12 @@ public:
         {
             auto&& content = string_converter_(std::forward<T>(value));
 
-            if (stdout_) {
-                stdout_buf_ << content << sep_.str;
-            }
-            ofs_buffer_ << std::forward<decltype(content)>(content) << sep_.str;
+            buffer_ << std::forward<decltype(content)>(content) << sep_.str;
         }
 
         template <typename... args_t>
         void stream_props(args_t&&... args)
         {
-            if (stdout_) {
-                print_color();
-            }
-
 #ifdef _WIN32
             int pid = _getpid();
 #else
@@ -162,7 +156,7 @@ public:
             stream(props);
         }
 
-        void print_color();
+        std::string stdout_string();
         constexpr std::string_view level_str();
 
     private:
@@ -172,8 +166,7 @@ public:
         const bool stdout_ = false;
 
         separator sep_ = separator::space;
-        std::stringstream stdout_buf_;
-        std::stringstream ofs_buffer_;
+        std::stringstream buffer_;
     };
 
 public:
@@ -186,19 +179,14 @@ public:
     Logger& operator=(Logger&&) = delete;
 
     template <typename... args_t>
-    auto trace(args_t&&... args)
+    auto fatal(args_t&&... args)
     {
-        return stream(level::trace, std::forward<args_t>(args)...);
+        return stream(level::fatal, std::forward<args_t>(args)...);
     }
     template <typename... args_t>
-    auto debug(args_t&&... args)
+    auto error(args_t&&... args)
     {
-        return stream(level::debug, std::forward<args_t>(args)...);
-    }
-    template <typename... args_t>
-    auto info(args_t&&... args)
-    {
-        return stream(level::info, std::forward<args_t>(args)...);
+        return stream(level::error, std::forward<args_t>(args)...);
     }
     template <typename... args_t>
     auto warn(args_t&&... args)
@@ -206,9 +194,19 @@ public:
         return stream(level::warn, std::forward<args_t>(args)...);
     }
     template <typename... args_t>
-    auto error(args_t&&... args)
+    auto info(args_t&&... args)
     {
-        return stream(level::error, std::forward<args_t>(args)...);
+        return stream(level::info, std::forward<args_t>(args)...);
+    }
+    template <typename... args_t>
+    auto debug(args_t&&... args)
+    {
+        return stream(level::debug, std::forward<args_t>(args)...);
+    }
+    template <typename... args_t>
+    auto trace(args_t&&... args)
+    {
+        return stream(level::trace, std::forward<args_t>(args)...);
     }
 
     void start_logging(std::filesystem::path dir);
@@ -318,11 +316,12 @@ inline constexpr std::string_view pertty_file(std::string_view file)
 #endif
 #define LOG_ARGS MAA_FILE, MAA_LINE, MAA_FUNCTION
 
-#define LogTrace MAA_NS::Logger::get_instance().trace(LOG_ARGS)
-#define LogDebug MAA_NS::Logger::get_instance().debug(LOG_ARGS)
-#define LogInfo MAA_NS::Logger::get_instance().info(LOG_ARGS)
-#define LogWarn MAA_NS::Logger::get_instance().warn(LOG_ARGS)
+#define LogFatal MAA_NS::Logger::get_instance().fatal(LOG_ARGS)
 #define LogError MAA_NS::Logger::get_instance().error(LOG_ARGS)
+#define LogWarn MAA_NS::Logger::get_instance().warn(LOG_ARGS)
+#define LogInfo MAA_NS::Logger::get_instance().info(LOG_ARGS)
+#define LogDebug MAA_NS::Logger::get_instance().debug(LOG_ARGS)
+#define LogTrace MAA_NS::Logger::get_instance().trace(LOG_ARGS)
 
 #define _Cat_(a, b) a##b
 #define _Cat(a, b) _Cat_(a, b)

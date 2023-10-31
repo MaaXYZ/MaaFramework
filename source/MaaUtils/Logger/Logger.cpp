@@ -20,9 +20,9 @@ constexpr Logger::separator Logger::separator::comma(",");
 
 static constexpr std::string_view kSplitLine = "-----------------------------";
 
-void Logger::LogStream::print_color()
+std::string Logger::LogStream::stdout_string()
 {
-    std::string_view color;
+    std::string color;
 
     switch (lv_) {
     case level::fatal:
@@ -39,7 +39,8 @@ void Logger::LogStream::print_color()
     case level::trace:
         break;
     }
-    stdout_buf_ << color;
+    
+    return color + utf8_to_crt(buffer_.str()) + "\033[0m";
 }
 
 constexpr std::string_view Logger::LogStream::level_str()
