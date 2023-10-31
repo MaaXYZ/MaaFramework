@@ -46,6 +46,9 @@ bool PipelineTask::run()
         case RunningResult::Interrupted:
             LogInfo << "Task interrupted:" << new_hits.name;
             return true;
+        case RunningResult::InternalError:
+            LogInfo << "Task InternalError:" << new_hits.name;
+            return false;
         default:
             break;
         }
@@ -190,7 +193,7 @@ PipelineTask::RunningResult PipelineTask::run_task(const HitResult& hits)
         notify(MaaMsg_Task_Focus_Completed, detail);
     }
 
-    return ret ? RunningResult::Success : RunningResult::Interrupted;
+    return ret ? RunningResult::Success : RunningResult::InternalError;
 }
 
 MAA_TASK_NS_END

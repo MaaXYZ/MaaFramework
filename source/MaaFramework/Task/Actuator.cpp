@@ -18,31 +18,35 @@ bool Actuator::run(const Recognizer::Result& rec_result, const TaskData& task_da
     wait_freezes(task_data.pre_wait_freezes, rec_result.box);
     sleep(task_data.pre_delay);
 
+    bool ret = false;
     switch (task_data.action_type) {
     case Type::DoNothing:
+        ret = true;
         break;
     case Type::Click:
-        click(std::get<ClickParam>(task_data.action_param), rec_result.box);
+        ret = click(std::get<ClickParam>(task_data.action_param), rec_result.box);
         break;
     case Type::Swipe:
-        swipe(std::get<SwipeParam>(task_data.action_param), rec_result.box);
+        ret = swipe(std::get<SwipeParam>(task_data.action_param), rec_result.box);
         break;
     case Type::Key:
-        press_key(std::get<KeyParam>(task_data.action_param));
+        ret = press_key(std::get<KeyParam>(task_data.action_param));
         break;
     case Type::StartApp:
-        start_app(std::get<AppParam>(task_data.action_param));
+        ret = start_app(std::get<AppParam>(task_data.action_param));
         break;
     case Type::StopApp:
-        stop_app(std::get<AppParam>(task_data.action_param));
+        ret = stop_app(std::get<AppParam>(task_data.action_param));
         break;
     case Type::Custom:
-        custom_action(task_data.name, std::get<CustomParam>(task_data.action_param), rec_result.box, rec_result.detail);
+        ret = custom_action(task_data.name, std::get<CustomParam>(task_data.action_param), rec_result.box,
+                            rec_result.detail);
         break;
     case Type::StopTask:
         LogInfo << "Action: StopTask";
         return false;
     default:
+        ret = false;
         LogError << "Unknown action" << VAR(static_cast<int>(task_data.action_type));
         break;
     }
@@ -50,43 +54,45 @@ bool Actuator::run(const Recognizer::Result& rec_result, const TaskData& task_da
     wait_freezes(task_data.post_wait_freezes, rec_result.box);
     sleep(task_data.post_delay);
 
-    return true;
+    return ret;
 }
 
-void Actuator::click(const MAA_RES_NS::Action::ClickParam& param, const cv::Rect& cur_box)
+bool Actuator::click(const MAA_RES_NS::Action::ClickParam& param, const cv::Rect& cur_box)
 {
     if (!controller()) {
         LogError << "Controller is null";
-        return;
+        return false;
     }
 
     cv::Rect rect = get_target_rect(param.target, cur_box);
 
-    controller()->click(rect);
+    return controller()->click(rect);
 }
 
-void Actuator::swipe(const MAA_RES_NS::Action::SwipeParam& param, const cv::Rect& cur_box)
+bool Actuator::swipe(const MAA_RES_NS::Action::SwipeParam& param, const cv::Rect& cur_box)
 {
     if (!controller()) {
         LogError << "Controller is null";
-        return;
+        return false;
     }
 
     cv::Rect begin = get_target_rect(param.begin, cur_box);
     cv::Rect end = get_target_rect(param.end, cur_box);
 
-    controller()->swipe(begin, end, param.duration);
+    return controller()->swipe(begin, end, param.duration);
 }
 
-void Actuator::press_key(const MAA_RES_NS::Action::KeyParam& param)
+bool Actuator::press_key(const MAA_RES_NS::Action::KeyParam& param)
 {
     if (!controller()) {
         LogError << "Controller is null";
-        return;
+        return false;
     }
+    bool ret = true;
     for (const auto& key : param.keys) {
-        controller()->press_key(key);
+        ret &= controller()->press_key(key);
     }
+    return ret;
 }
 
 void Actuator::wait_freezes(const MAA_RES_NS::WaitFreezesParam& param, const cv::Rect& cur_box)
@@ -130,52 +136,48 @@ void Actuator::wait_freezes(const MAA_RES_NS::WaitFreezesParam& param, const cv:
     }
 }
 
-void Actuator::start_app(const MAA_RES_NS::Action::AppParam& param)
+bool Actuator::start_app(const MAA_RES_NS::Action::AppParam& param)
 {
     if (!controller()) {
         LogError << "Controller is null";
-        return;
+        return false;
     }
     using namespace MAA_VISION_NS;
 
     if (param.package.empty()) {
-        controller()->start_app();
+        return controller()->start_app();
     }
-    else {
-        controller()->start_app(param.package);
-    }
+    return controller()->start_app(param.package);
 }
 
-void Actuator::stop_app(const MAA_RES_NS::Action::AppParam& param)
+bool Actuator::stop_app(const MAA_RES_NS::Action::AppParam& param)
 {
     if (!controller()) {
         LogError << "Controller is null";
-        return;
+        return false;
     }
     using namespace MAA_VISION_NS;
 
     if (param.package.empty()) {
-        controller()->stop_app();
+        return controller()->stop_app();
     }
-    else {
-        controller()->stop_app(param.package);
-    }
+    return controller()->stop_app(param.package);
 }
 
-void Actuator::custom_action(const std::string& task_name, const MAA_RES_NS::Action::CustomParam& param,
+bool Actuator::custom_action(const std::string& task_name, const MAA_RES_NS::Action::CustomParam& param,
                              const cv::Rect& cur_box, const json::value& cur_rec_detail)
 {
     if (!inst_) {
         LogError << "Inst is null";
-        return;
+        return false;
     }
     auto action = inst_->custom_action(param.name);
     if (!action) {
         LogError << "Custom task not found" << VAR(param.name);
-        return;
+        return false;
     }
 
-    action->run(task_name, param, cur_box, cur_rec_detail);
+    return action->run(task_name, param, cur_box, cur_rec_detail);
 }
 
 cv::Rect Actuator::get_target_rect(const MAA_RES_NS::Action::Target target, const cv::Rect& cur_box)
