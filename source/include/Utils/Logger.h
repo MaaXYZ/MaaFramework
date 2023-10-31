@@ -134,9 +134,7 @@ public:
         template <typename T>
         void stream(T&& value)
         {
-            auto&& content = string_converter_(std::forward<T>(value));
-
-            buffer_ << std::forward<decltype(content)>(content) << sep_.str;
+            buffer_ << string_converter_(std::forward<T>(value)) << sep_.str;
         }
 
         template <typename... args_t>

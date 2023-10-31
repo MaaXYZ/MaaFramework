@@ -51,7 +51,7 @@ Status UtilityImpl::set_global_option(ServerContext* context, const ::maarpc::Se
     case ::maarpc::SetGlobalOptionRequest::OptionCase::kLogging:
         if (request->has_logging()) {
             auto logging = request->logging();
-            if (MaaSetGlobalOption(MaaGlobalOption_Logging, logging.data(), logging.size())) {
+            if (MaaSetGlobalOption(MaaGlobalOption_LogDir, logging.data(), logging.size())) {
                 return Status::OK;
             }
             else {
