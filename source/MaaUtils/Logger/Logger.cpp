@@ -25,17 +25,18 @@ void Logger::LogStream::print_color()
     std::string_view color;
 
     switch (lv_) {
-    case level::trace:
-    case level::debug:
-        break;
-    case level::info:
-        color = "\033[32m";
+    case level::fatal:
+    case level::error:
+        color = "\033[31m";
         break;
     case level::warn:
         color = "\033[33m";
         break;
-    case level::error:
-        color = "\033[31m";
+    case level::info:
+        color = "\033[32m";
+        break;
+    case level::debug:
+    case level::trace:
         break;
     }
     stdout_buf_ << color;
