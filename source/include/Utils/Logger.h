@@ -72,7 +72,7 @@ public:
     public:
         template <typename... args_t>
         LogStream(std::mutex& m, std::ofstream& s, level lv, bool std_out, args_t&&... args)
-            : mutex_(m), lv_(lv), stdout_(std_out), stream_(s)
+            : mutex_(m), stream_(s), lv_(lv), stdout_(std_out)
         {
             stream(std::boolalpha);
             stream_props(std::forward<args_t>(args)...);
@@ -87,7 +87,7 @@ public:
                 stdout_buf_ << "\033[0m";
                 std::cout << utf8_to_crt(stdout_buf_.str()) << std::endl;
             }
-            stream_ << std::move(buffer_).str() << std::endl;
+            stream_ << std::move(ofs_buffer_).str() << std::endl;
         }
 
         template <typename T>
@@ -138,7 +138,7 @@ public:
             if (stdout_) {
                 stdout_buf_ << content << sep_.str;
             }
-            buffer_ << std::forward<decltype(content)>(content) << sep_.str;
+            ofs_buffer_ << std::forward<decltype(content)>(content) << sep_.str;
         }
 
         template <typename... args_t>
@@ -168,12 +168,12 @@ public:
     private:
         std::mutex& mutex_;
         std::ofstream& stream_;
-        level lv_ = level::error;
-        bool stdout_ = false;
-        separator sep_ = separator::space;
+        const level lv_ = level::error;
+        const bool stdout_ = false;
 
+        separator sep_ = separator::space;
         std::stringstream stdout_buf_;
-        std::stringstream buffer_;
+        std::stringstream ofs_buffer_;
     };
 
 public:
