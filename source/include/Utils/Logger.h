@@ -117,11 +117,13 @@ public:
                 else if constexpr (std::same_as<std::wstring, std::decay_t<T>>) {
                     return from_u16(std::forward<T>(value));
                 }
+                else if constexpr (has_output_operator<T> && std::same_as<bool, std::decay_t<T>>) {
+                    std::stringstream ss;
+                    ss << std::boolalpha << std::forward<T>(value);
+                    return std::move(ss).str();
+                }
                 else if constexpr (has_output_operator<T>) {
                     std::stringstream ss;
-                    if constexpr (std::same_as<bool, std::decay_t<T>>) {
-                        ss << std::boolalpha;
-                    }
                     ss << std::forward<T>(value);
                     return std::move(ss).str();
                 }
