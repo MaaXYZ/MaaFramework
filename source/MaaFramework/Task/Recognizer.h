@@ -32,7 +32,7 @@ public:
     std::optional<Result> recognize(const cv::Mat& image, const TaskData& task_data);
 
 private:
-    std::optional<Result> direct_hit();
+    std::optional<Result> direct_hit(const std::string& name);
     std::optional<Result> template_match(const cv::Mat& image, const MAA_VISION_NS::TemplateMatcherParam& param,
                                          const std::string& name);
     std::optional<Result> feature_match(const cv::Mat& image, const MAA_VISION_NS::FeatureMatcherParam& param,

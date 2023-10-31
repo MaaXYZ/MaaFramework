@@ -29,7 +29,7 @@ std::optional<Recognizer::Result> Recognizer::recognize(const cv::Mat& image, co
     std::optional<Result> result;
     switch (task_data.rec_type) {
     case Type::DirectHit:
-        result = direct_hit();
+        result = direct_hit(task_data.name);
         break;
 
     case Type::TemplateMatch:
@@ -77,8 +77,9 @@ std::optional<Recognizer::Result> Recognizer::recognize(const cv::Mat& image, co
     return result;
 }
 
-std::optional<Recognizer::Result> Recognizer::direct_hit()
+std::optional<Recognizer::Result> Recognizer::direct_hit(const std::string& name)
 {
+    LogDebug << name;
     return Result { .box = cv::Rect(), .detail = json::array() };
 }
 
