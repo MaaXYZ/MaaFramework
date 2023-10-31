@@ -47,7 +47,7 @@ bool PipelineTask::run()
             LogInfo << "Task interrupted:" << new_hits.name;
             return true;
         case RunningResult::InternalError:
-            LogInfo << "Task InternalError:" << new_hits.name;
+            LogError << "Task InternalError:" << new_hits.name;
             return false;
         default:
             break;

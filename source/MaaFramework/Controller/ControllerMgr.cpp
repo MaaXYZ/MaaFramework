@@ -176,7 +176,7 @@ bool ControllerMgr::click(const cv::Rect& r)
 bool ControllerMgr::click(const cv::Point& p)
 {
     auto id = post_click(p.x, p.y);
-    return status(id) == MaaStatus_Success;
+    return wait(id) == MaaStatus_Success;
 }
 
 bool ControllerMgr::swipe(const cv::Rect& r1, const cv::Rect& r2, int duration)
@@ -187,13 +187,13 @@ bool ControllerMgr::swipe(const cv::Rect& r1, const cv::Rect& r2, int duration)
 bool ControllerMgr::swipe(const cv::Point& p1, const cv::Point& p2, int duration)
 {
     auto id = post_swipe(p1.x, p1.y, p2.x, p2.y, duration);
-    return status(id) == MaaStatus_Success;
+    return wait(id) == MaaStatus_Success;
 }
 
 bool ControllerMgr::press_key(int keycode)
 {
     auto id = post_press_key(keycode);
-    return status(id) == MaaStatus_Success;
+    return wait(id) == MaaStatus_Success;
 }
 
 cv::Mat ControllerMgr::screencap()
@@ -224,13 +224,13 @@ bool ControllerMgr::stop_app()
 bool ControllerMgr::start_app(const std::string& package)
 {
     auto id = action_runner_->post({ .type = Action::Type::start_app, .param = AppParam { .package = package } }, true);
-    return status(id) == MaaStatus_Success;
+    return wait(id) == MaaStatus_Success;
 }
 
 bool ControllerMgr::stop_app(const std::string& package)
 {
     auto id = action_runner_->post({ .type = Action::Type::stop_app, .param = AppParam { .package = package } }, true);
-    return status(id) == MaaStatus_Success;
+    return wait(id) == MaaStatus_Success;
 }
 
 bool ControllerMgr::handle_connect()
