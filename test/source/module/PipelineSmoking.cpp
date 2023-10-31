@@ -42,9 +42,9 @@ bool pipeline_smoking(const std::filesystem::path& testset_dir)
     }
 
     auto task_id = MaaPostTask(maa_handle, "Wilderness", MaaTaskParam_Empty);
-    MaaWaitTask(maa_handle, task_id);
+    auto status = MaaWaitTask(maa_handle, task_id);
 
     destroy();
 
-    return true;
+    return status == MaaStatus_Success;
 }
