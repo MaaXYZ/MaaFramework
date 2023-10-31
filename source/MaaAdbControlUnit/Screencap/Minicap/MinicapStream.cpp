@@ -57,6 +57,8 @@ bool MinicapStream::init(int swidth, int sheight)
         if (outputBuffer.find("Allocating") != std::string::npos) {
             break;
         }
+        using namespace std::chrono_literals;
+        std::this_thread::sleep_for(100ms);
     }
 
     if (i == 0) {
