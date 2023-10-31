@@ -47,7 +47,7 @@ void VisionBase::save_image(const cv::Mat& image) const
     std::string filename = MAA_FMT::format("{}_{}.png", name_, now_filestem());
     auto filepath = GlobalOptionMgr::get_instance().log_dir() / "Vision" / filename;
     MAA_NS::imwrite(filepath, image);
-    LogInfo << "save image to" << filepath;
+    LogDebug << "save image to" << filepath;
 }
 
 void VisionBase::init_debug_draw()
