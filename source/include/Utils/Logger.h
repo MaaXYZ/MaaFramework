@@ -65,89 +65,6 @@ struct MAA_UTILS_API separator
     std::string_view str;
 };
 
-class LogStream;
-
-class MAA_UTILS_API Logger
-{
-public:
-    static constexpr std::string_view kLogFilename = "maa.log";
-    static constexpr std::string_view kLogbakFilename = "maa.bak.log";
-
-public:
-    static Logger& get_instance();
-    ~Logger() { close(); }
-
-    Logger(const Logger&) = delete;
-    Logger(Logger&&) = delete;
-    Logger& operator=(const Logger&) = delete;
-    Logger& operator=(Logger&&) = delete;
-
-    template <typename... args_t>
-    auto fatal(args_t&&... args)
-    {
-        return stream(level::fatal, std::forward<args_t>(args)...);
-    }
-    template <typename... args_t>
-    auto error(args_t&&... args)
-    {
-        return stream(level::error, std::forward<args_t>(args)...);
-    }
-    template <typename... args_t>
-    auto warn(args_t&&... args)
-    {
-        return stream(level::warn, std::forward<args_t>(args)...);
-    }
-    template <typename... args_t>
-    auto info(args_t&&... args)
-    {
-        return stream(level::info, std::forward<args_t>(args)...);
-    }
-    template <typename... args_t>
-    auto debug(args_t&&... args)
-    {
-        return stream(level::debug, std::forward<args_t>(args)...);
-    }
-    template <typename... args_t>
-    auto trace(args_t&&... args)
-    {
-        return stream(level::trace, std::forward<args_t>(args)...);
-    }
-
-    void start_logging(std::filesystem::path dir);
-    void set_stdout_level(MaaLoggingLevel level);
-    void flush();
-
-private:
-    template <typename... args_t>
-    LogStream stream(level lv, args_t&&... args)
-    {
-        bool std_out = static_cast<int>(lv) <= stdout_level_;
-        return LogStream(trace_mutex_, ofs_, lv, std_out, std::forward<args_t>(args)...);
-    }
-
-private:
-    Logger() = default;
-
-    void reinit();
-    bool rotate();
-    void open();
-    void close();
-    void log_proc_info();
-
-    LogStream internal_dbg();
-
-private:
-    std::filesystem::path log_dir_;
-    std::filesystem::path log_path_;
-#ifdef MAA_DEBUG
-    MaaLoggingLevel stdout_level_ = MaaLoggingLevel_All;
-#else
-    MaaLoggingLevel stdout_level_ = MaaLoggingLevel_Error;
-#endif
-    std::ofstream ofs_;
-    std::mutex trace_mutex_;
-};
-
 struct StringConverter
 {
     template <typename T>
@@ -252,6 +169,87 @@ private:
 
     separator sep_ = separator::space;
     std::stringstream buffer_;
+};
+
+class MAA_UTILS_API Logger
+{
+public:
+    static constexpr std::string_view kLogFilename = "maa.log";
+    static constexpr std::string_view kLogbakFilename = "maa.bak.log";
+
+public:
+    static Logger& get_instance();
+    ~Logger() { close(); }
+
+    Logger(const Logger&) = delete;
+    Logger(Logger&&) = delete;
+    Logger& operator=(const Logger&) = delete;
+    Logger& operator=(Logger&&) = delete;
+
+    template <typename... args_t>
+    auto fatal(args_t&&... args)
+    {
+        return stream(level::fatal, std::forward<args_t>(args)...);
+    }
+    template <typename... args_t>
+    auto error(args_t&&... args)
+    {
+        return stream(level::error, std::forward<args_t>(args)...);
+    }
+    template <typename... args_t>
+    auto warn(args_t&&... args)
+    {
+        return stream(level::warn, std::forward<args_t>(args)...);
+    }
+    template <typename... args_t>
+    auto info(args_t&&... args)
+    {
+        return stream(level::info, std::forward<args_t>(args)...);
+    }
+    template <typename... args_t>
+    auto debug(args_t&&... args)
+    {
+        return stream(level::debug, std::forward<args_t>(args)...);
+    }
+    template <typename... args_t>
+    auto trace(args_t&&... args)
+    {
+        return stream(level::trace, std::forward<args_t>(args)...);
+    }
+
+    void start_logging(std::filesystem::path dir);
+    void set_stdout_level(MaaLoggingLevel level);
+    void flush();
+
+private:
+    template <typename... args_t>
+    LogStream stream(level lv, args_t&&... args)
+    {
+        bool std_out = static_cast<int>(lv) <= stdout_level_;
+        return LogStream(trace_mutex_, ofs_, lv, std_out, std::forward<args_t>(args)...);
+    }
+
+private:
+    Logger() = default;
+
+    void reinit();
+    bool rotate();
+    void open();
+    void close();
+    void log_proc_info();
+
+    LogStream internal_dbg();
+
+private:
+    std::filesystem::path log_dir_;
+    std::filesystem::path log_path_;
+#ifdef MAA_DEBUG
+    MaaLoggingLevel stdout_level_ = MaaLoggingLevel_All;
+#else
+    MaaLoggingLevel stdout_level_ = MaaLoggingLevel_Error;
+#endif
+    std::ofstream ofs_;
+    std::mutex trace_mutex_;
 };
 
 class ScopeEnterHelper
