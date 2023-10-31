@@ -2,6 +2,7 @@
 
 #include <meojson/json.hpp>
 
+#include "CarouselImage/CarouselImage.h"
 #include "ReplayRecording/ReplayRecordingMgr.h"
 #include "Utils/Logger.h"
 
@@ -22,9 +23,8 @@ std::shared_ptr<ControllerAPI> create_controller(MaaDbgControllerType type, MaaS
     auto write_stdpath = MAA_NS::path(write_path);
 
     switch (type) {
-    case MaaDbgControllerType_ReadImageAgainAndAgain:
-        // TODO
-        return nullptr;
+    case MaaDbgControllerType_CarouselImage:
+        return std::make_shared<CarouselImage>(read_stdpath);
     case MaaDbgControllerType_ReplayRecording:
         return create_replay_recording(read_stdpath);
     }

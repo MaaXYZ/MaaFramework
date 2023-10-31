@@ -1,9 +1,5 @@
 #include "PipelineSmoking.h"
 
-#include <iostream>
-
-#include <meojson/json.hpp>
-
 #include "MaaFramework/MaaAPI.h"
 
 bool pipeline_smoking(const std::filesystem::path& testset_dir)
@@ -35,8 +31,6 @@ bool pipeline_smoking(const std::filesystem::path& testset_dir)
     };
 
     if (!MaaInited(maa_handle)) {
-        std::cout << __FUNCTION__ << " | Failed to init" << std::endl;
-
         destroy();
         return false;
     }

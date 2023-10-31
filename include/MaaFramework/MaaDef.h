@@ -149,7 +149,7 @@ enum MaaDbgControllerTypeEnum
 {
     MaaDbgController_Invalid = 0,
 
-    MaaDbgControllerType_ReadImageAgainAndAgain = 1,
+    MaaDbgControllerType_CarouselImage = 1,
     MaaDbgControllerType_ReplayRecording = 2,
 };
 

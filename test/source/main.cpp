@@ -1,6 +1,7 @@
 #include <filesystem>
 
 #include "module/PipelineSmoking.h"
+#include "module/RunWithoutFile.h"
 
 #include "MaaFramework/MaaAPI.h"
 
@@ -19,7 +20,12 @@ int main([[maybe_unused]] int argc, char** argv)
     MaaLoggingLevel lv = MaaLoggingLevel_Info;
     MaaSetGlobalOption(MaaGlobalOption_StdoutLevel, &lv, sizeof(lv));
 
-    bool ret = pipeline_smoking(testset_dir);
+    if (!run_without_file(testset_dir / "PipelineSmoking" / "Screenshot")) {
+        return -1;
+    }
+    if (!pipeline_smoking(testset_dir)) {
+        return -1;
+    }
 
-    return ret ? 0 : -1;
+    return 0;
 }
