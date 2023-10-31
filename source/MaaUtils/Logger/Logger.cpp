@@ -43,7 +43,7 @@ std::string Logger::LogStream::stdout_string()
     return color + utf8_to_crt(buffer_.str()) + "\033[0m";
 }
 
-constexpr std::string_view Logger::LogStream::level_str()
+std::string_view Logger::LogStream::level_str()
 {
     switch (lv_) {
     case level::fatal:

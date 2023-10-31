@@ -157,7 +157,7 @@ public:
         }
 
         std::string stdout_string();
-        constexpr std::string_view level_str();
+        std::string_view level_str();
 
     private:
         std::mutex& mutex_;
