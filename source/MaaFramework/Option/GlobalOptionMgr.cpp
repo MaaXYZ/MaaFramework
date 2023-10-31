@@ -10,28 +10,30 @@ bool GlobalOptionMgr::set_option(MaaGlobalOption key, MaaOptionValue value, MaaO
     LogFunc << VAR(key) << VAR_VOIDP(value) << VAR(val_size);
 
     switch (key) {
-    case MaaGlobalOption_Logging:
-        return set_logging(value, val_size);
+    case MaaGlobalOption_LogDir:
+        return set_log_dir(value, val_size);
     case MaaGlobalOption_DebugMode:
         return set_debug_mode(value, val_size);
     case MaaGlobalOption_Recording:
         return set_recording(value, val_size);
+    case MaaGlobalOption_StdoutLevel:
+        return set_stdout_level(value, val_size);
     default:
         LogError << "Unknown key" << VAR(key) << VAR(value);
         return false;
     }
 }
 
-bool GlobalOptionMgr::set_logging(MaaOptionValue value, MaaOptionValueSize val_size)
+bool GlobalOptionMgr::set_log_dir(MaaOptionValue value, MaaOptionValueSize val_size)
 {
     LogFunc;
 
     std::string_view str_path(reinterpret_cast<const char*>(value), val_size);
-    logging_path_ = MAA_NS::path(str_path);
+    log_dir_ = MAA_NS::path(str_path);
 
-    LogInfo << "Set logging path" << VAR(logging_path_);
+    LogInfo << "Set log path" << VAR(log_dir_);
 
-    Logger::get_instance().start_logging(logging_path_);
+    Logger::get_instance().start_logging(log_dir_);
 
     return true;
 }
@@ -64,6 +66,24 @@ bool GlobalOptionMgr::set_recording(MaaOptionValue value, MaaOptionValueSize val
     recording_ = *reinterpret_cast<const bool*>(value);
 
     LogInfo << "Set recording" << VAR(recording_);
+
+    return true;
+}
+
+bool GlobalOptionMgr::set_stdout_level(MaaOptionValue value, MaaOptionValueSize val_size)
+{
+    LogFunc;
+
+    if (val_size != sizeof(MaaLoggingLevel)) {
+        LogError << "Invalid value size" << VAR(val_size);
+        return false;
+    }
+
+    MaaLoggingLevel level = *reinterpret_cast<const MaaLoggingLevel*>(value);
+
+    LogInfo << "Set log stdout level" << VAR(level);
+
+    Logger::get_instance().set_stdout_level(level);
 
     return true;
 }

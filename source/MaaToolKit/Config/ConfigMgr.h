@@ -29,6 +29,7 @@ public:
     inline static const std::string kPolicyLoggging = "logging";
     inline static const std::string kPolicyDebugMode = "debug_mode";
     inline static const std::string kPolicyRecording = "recording";
+    inline static const std::string kPolicyStdoutLevel = "stdout_level";
 
 public:
     virtual ~ConfigMgr() noexcept override = default;
@@ -51,6 +52,7 @@ private:
     bool policy_logging_ = true;
     bool policy_debug_mode_ = false;
     bool policy_recording_ = false;
+    MaaLoggingLevel policy_stdout_level_ = MaaLoggingLevel_Error;
 };
 
 MAA_TOOLKIT_CONFIG_NS_END

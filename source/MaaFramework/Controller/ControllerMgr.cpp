@@ -453,7 +453,7 @@ bool ControllerMgr::recording() const
 
 void ControllerMgr::init_recording()
 {
-    auto recording_dir = GlobalOptionMgr::get_instance().logging_path() / "Recording";
+    auto recording_dir = GlobalOptionMgr::get_instance().log_dir() / "Recording";
     std::filesystem::create_directories(recording_dir);
     recording_path_ = recording_dir / MAA_FMT::format("MaaRecording_{}.txt", now_filestem());
 }
@@ -588,7 +588,7 @@ std::pair<int, int> ControllerMgr::preproc_touch_point(int x, int y)
 bool ControllerMgr::postproc_screenshot(const cv::Mat& raw)
 {
     if (raw.empty()) {
-        image_ = {};
+        image_ = cv::Mat();
         LogError << "Empty screenshot";
         return false;
     }
@@ -599,7 +599,7 @@ bool ControllerMgr::postproc_screenshot(const cv::Mat& raw)
     }
 
     if (!check_and_calc_target_image_size(raw)) {
-        image_ = {};
+        image_ = cv::Mat();
         LogError << "Invalid target image size";
         return false;
     }

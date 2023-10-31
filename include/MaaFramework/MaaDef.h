@@ -31,6 +31,18 @@ enum MaaStatusEnum
     MaaStatus_Failed = 4000,
     // MaaStatus_Timeout = 5000,
 };
+typedef int32_t MaaLoggingLevel;
+enum MaaLoggingLevelEunm
+{
+    MaaLoggingLevel_Off = 0,
+    MaaLoggingLevel_Fatal = 1,
+    MaaLoggingLevel_Error = 2,
+    MaaLoggingLevel_Warn = 3,
+    MaaLoggingLevel_Info = 4,
+    MaaLoggingLevel_Debug = 5,
+    MaaLoggingLevel_Trace = 6,
+    MaaLoggingLevel_All = 7,
+};
 
 typedef int64_t MaaId;
 typedef MaaId MaaCtrlId;
@@ -48,7 +60,7 @@ enum MaaGlobalOptionEnum
     MaaGlobalOption_Invalid = 0,
 
     // value: string, log dir, eg: "C:\\Users\\Administrator\\Desktop\\log"; val_size: string length
-    MaaGlobalOption_Logging = 1,
+    MaaGlobalOption_LogDir = 1,
 
     // value: bool, eg: true; val_size: sizeof(bool)
     MaaGlobalOption_DebugMode = 2,
@@ -57,6 +69,9 @@ enum MaaGlobalOptionEnum
     // this option will || with MaaCtrlOption_Recording
     // value: bool, eg: true; val_size: sizeof(bool)
     MaaGlobalOption_Recording = 3,
+
+    // value: MaaLoggingLevel, val_size: sizeof(MaaLoggingLevel), default by MaaLoggingLevel_Error
+    MaaGlobalOption_StdoutLevel = 4,
 };
 
 typedef MaaOption MaaResOption;

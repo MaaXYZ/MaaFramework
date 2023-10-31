@@ -67,13 +67,16 @@ bool ConfigMgr::parse_and_apply_policy(const json::value& policy_json)
 
     policy_logging_ = policy_json.get(kPolicyLoggging, policy_logging_);
     std::string logging_dir = path_to_utf8_string(policy_logging_ ? kDebugDir : "");
-    MaaSetGlobalOption(MaaGlobalOption_Logging, (void*)logging_dir.c_str(), logging_dir.size());
+    MaaSetGlobalOption(MaaGlobalOption_LogDir, (void*)logging_dir.c_str(), logging_dir.size());
 
     policy_debug_mode_ = policy_json.get(kPolicyDebugMode, policy_debug_mode_);
     MaaSetGlobalOption(MaaGlobalOption_DebugMode, &policy_debug_mode_, sizeof(policy_debug_mode_));
 
     policy_recording_ = policy_json.get(kPolicyRecording, policy_recording_);
     MaaSetGlobalOption(MaaGlobalOption_Recording, &policy_recording_, sizeof(policy_recording_));
+
+    policy_stdout_level_ = policy_json.get(kPolicyStdoutLevel, policy_stdout_level_);
+    MaaSetGlobalOption(MaaGlobalOption_StdoutLevel, &policy_stdout_level_, sizeof(policy_stdout_level_));
 
     return true;
 }
@@ -85,6 +88,7 @@ json::value ConfigMgr::to_json() const
         { kPolicyLoggging, policy_logging_ },
         { kPolicyDebugMode, policy_debug_mode_ },
         { kPolicyRecording, policy_recording_ },
+        { kPolicyStdoutLevel, policy_stdout_level_ },
     };
 
     return root;

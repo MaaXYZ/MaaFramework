@@ -12,7 +12,53 @@
 
 MAA_NS_BEGIN
 
+constexpr Logger::separator Logger::separator::none("");
+constexpr Logger::separator Logger::separator::space(" ");
+constexpr Logger::separator Logger::separator::tab("\t");
+constexpr Logger::separator Logger::separator::newline("\n");
+constexpr Logger::separator Logger::separator::comma(",");
+
 static constexpr std::string_view kSplitLine = "-----------------------------";
+
+void Logger::LogStream::print_color()
+{
+    std::string_view color;
+
+    switch (lv_) {
+    case level::trace:
+    case level::debug:
+        break;
+    case level::info:
+        color = "\033[32m";
+        break;
+    case level::warn:
+        color = "\033[33m";
+        break;
+    case level::error:
+        color = "\033[31m";
+        break;
+    }
+    stdout_buf_ << color;
+}
+
+constexpr std::string_view Logger::LogStream::level_str()
+{
+    switch (lv_) {
+    case level::fatal:
+        return "FTL";
+    case level::error:
+        return "ERR";
+    case level::warn:
+        return "WRN";
+    case level::info:
+        return "INF";
+    case level::debug:
+        return "DBG";
+    case level::trace:
+        return "TRC";
+    }
+    return "NoLV";
+}
 
 Logger& Logger::get_instance()
 {
@@ -25,6 +71,11 @@ void Logger::start_logging(std::filesystem::path dir)
     log_dir_ = std::move(dir);
     log_path_ = log_dir_ / kLogFilename;
     reinit();
+}
+
+void Logger::set_stdout_level(MaaLoggingLevel level)
+{
+    stdout_level_ = level;
 }
 
 void Logger::flush()

@@ -16,6 +16,7 @@
 #include <meojson/json.hpp>
 
 #include "Conf/Conf.h"
+#include "MaaFramework/MaaDef.h"
 #include "MaaFramework/MaaPort.h"
 
 #include "Format.hpp"
@@ -44,14 +45,15 @@ public:
 public:
     enum class level
     {
-        trace,
-        debug,
-        info,
-        warn,
-        error,
+        fatal = MaaLoggingLevel_Fatal,
+        error = MaaLoggingLevel_Error,
+        warn = MaaLoggingLevel_Warn,
+        info = MaaLoggingLevel_Info,
+        debug = MaaLoggingLevel_Debug,
+        trace = MaaLoggingLevel_Trace,
     };
 
-    struct separator
+    struct MAA_UTILS_API separator
     {
         constexpr separator(std::string_view s) noexcept : str(s) {}
 
@@ -69,10 +71,11 @@ public:
     {
     public:
         template <typename... args_t>
-        LogStream(std::mutex& m, std::ofstream& s, level lv, args_t&&... args) : mutex_(m), stream_(s)
+        LogStream(std::mutex& m, std::ofstream& s, level lv, bool std_out, args_t&&... args)
+            : mutex_(m), lv_(lv), stdout_(std_out), stream_(s)
         {
             stream(std::boolalpha);
-            stream_props(lv, std::forward<args_t>(args)...);
+            stream_props(std::forward<args_t>(args)...);
         }
         LogStream(const LogStream&) = delete;
         LogStream(LogStream&&) noexcept = default;
@@ -80,9 +83,10 @@ public:
         {
             std::unique_lock<std::mutex> lock(mutex_);
 
-#ifdef MAA_DEBUG
-            std::cout << utf8_to_crt(cout_buffer_.str()) << "\033[0m" << std::endl;
-#endif
+            if (stdout_) {
+                stdout_buf_ << "\033[0m";
+                std::cout << utf8_to_crt(stdout_buf_.str()) << std::endl;
+            }
             stream_ << std::move(buffer_).str() << std::endl;
         }
 
@@ -131,18 +135,18 @@ public:
         {
             auto&& content = string_converter_(std::forward<T>(value));
 
-#ifdef MAA_DEBUG
-            cout_buffer_ << content << sep_.str;
-#endif
+            if (stdout_) {
+                stdout_buf_ << content << sep_.str;
+            }
             buffer_ << std::forward<decltype(content)>(content) << sep_.str;
         }
 
         template <typename... args_t>
-        void stream_props(level lv, args_t&&... args)
+        void stream_props(args_t&&... args)
         {
-#ifdef MAA_DEBUG
-            print_color(lv);
-#endif
+            if (stdout_) {
+                print_color();
+            }
 
 #ifdef _WIN32
             int pid = _getpid();
@@ -151,71 +155,25 @@ public:
 #endif
             auto tid = static_cast<unsigned short>(std::hash<std::thread::id> {}(std::this_thread::get_id()));
 
-            std::string props = MAA_FMT::format("[{}][{}][Px{}][Tx{}]", format_now(), level_str(lv), pid, tid);
+            std::string props = MAA_FMT::format("[{}][{}][Px{}][Tx{}]", format_now(), level_str(), pid, tid);
             for (auto&& arg : { args... }) {
                 props += MAA_FMT::format("[{}]", arg);
             }
             stream(props);
         }
 
-#ifdef MAA_DEBUG
-        void print_color(level lv)
-        {
-            std::string_view color;
-
-            switch (lv) {
-            case level::trace:
-            case level::debug:
-                break;
-            case level::info:
-                color = "\033[32m";
-                break;
-            case level::warn:
-                color = "\033[33m";
-                break;
-            case level::error:
-                color = "\033[31m";
-                break;
-            }
-            cout_buffer_ << color;
-        }
-#endif
-
-        constexpr std::string_view level_str(level lv)
-        {
-            switch (lv) {
-            case level::trace:
-                return "TRC";
-            case level::debug:
-                return "DBG";
-            case level::info:
-                return "INF";
-            case level::warn:
-                return "WRN";
-            case level::error:
-                return "ERR";
-            }
-            return "NoLV";
-        }
+        void print_color();
+        constexpr std::string_view level_str();
 
     private:
         std::mutex& mutex_;
         std::ofstream& stream_;
+        level lv_ = level::error;
+        bool stdout_ = false;
         separator sep_ = separator::space;
 
+        std::stringstream stdout_buf_;
         std::stringstream buffer_;
-        std::stringstream cout_buffer_;
-    };
-
-    class MAA_UTILS_API FakeStream
-    {
-    public:
-        template <typename T>
-        FakeStream& operator<<(T&& value)
-        {
-            std::ignore = std::forward<T>(value);
-            return *this;
-        }
     };
 
 public:
@@ -254,13 +212,15 @@ public:
     }
 
     void start_logging(std::filesystem::path dir);
+    void set_stdout_level(MaaLoggingLevel level);
     void flush();
 
 private:
     template <typename... args_t>
     LogStream stream(level lv, args_t&&... args)
     {
-        return LogStream(trace_mutex_, ofs_, lv, std::forward<args_t>(args)...);
+        bool std_out = static_cast<int>(lv) <= stdout_level_;
+        return LogStream(trace_mutex_, ofs_, lv, std_out, std::forward<args_t>(args)...);
     }
 
 private:
@@ -277,15 +237,14 @@ private:
 private:
     std::filesystem::path log_dir_;
     std::filesystem::path log_path_;
+#ifdef MAA_DEBUG
+    MaaLoggingLevel stdout_level_ = MaaLoggingLevel_All;
+#else
+    MaaLoggingLevel stdout_level_ = MaaLoggingLevel_Error;
+#endif
     std::ofstream ofs_;
     std::mutex trace_mutex_;
 };
-
-inline constexpr Logger::separator Logger::separator::none("");
-inline constexpr Logger::separator Logger::separator::space(" ");
-inline constexpr Logger::separator Logger::separator::tab("\t");
-inline constexpr Logger::separator Logger::separator::newline("\n");
-inline constexpr Logger::separator Logger::separator::comma(",");
 
 namespace LogUtils
 {

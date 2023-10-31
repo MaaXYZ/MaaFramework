@@ -19,7 +19,7 @@ public:
     bool set_option(MaaGlobalOption key, MaaOptionValue value, MaaOptionValueSize val_size);
 
 public:
-    const std::filesystem::path& logging_path() const { return logging_path_; }
+    const std::filesystem::path& log_dir() const { return log_dir_; }
     bool debug_mode() const { return debug_mode_; }
     bool recording() const { return recording_; }
 
@@ -27,12 +27,13 @@ private:
     GlobalOptionMgr() = default;
 
 private:
-    bool set_logging(MaaOptionValue value, MaaOptionValueSize val_size);
+    bool set_log_dir(MaaOptionValue value, MaaOptionValueSize val_size);
     bool set_debug_mode(MaaOptionValue value, MaaOptionValueSize val_size);
     bool set_recording(MaaOptionValue value, MaaOptionValueSize val_size);
+    bool set_stdout_level(MaaOptionValue value, MaaOptionValueSize val_size);
 
 private:
-    std::filesystem::path logging_path_;
+    std::filesystem::path log_dir_;
     bool debug_mode_ = false;
     bool recording_ = false;
 };
