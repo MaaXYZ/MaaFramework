@@ -2,4 +2,4 @@
 
 #include <filesystem>
 
-bool run_without_file(const std::filesystem::path& image_dir);
+bool run_without_file(const std::filesystem::path& testset_dir);
