@@ -104,12 +104,12 @@ jobs:
         run: |
           cmake --install build --prefix install
 
-      - name: Run Testing
+      - name: Run PipelineTesting
         # TODO: qemu for aarch64
         if: ${{matrix.arch == 'x86_64'}}
         shell: bash
         run: |
-          ./install/bin/Testing.exe ./install/test
+          ./install/bin/PipelineTesting.exe ./install/test
 
       - uses: actions/upload-artifact@v3
         if: always()
@@ -182,12 +182,12 @@ jobs:
         run: |
           cmake --install build --prefix install
 
-      - name: Run Testing
+      - name: Run PipelineTesting
         # TODO: qemu for aarch64
         if: ${{matrix.arch == 'x86_64'}}
         shell: bash
         run: |
-          ./install/bin/Testing ./install/test
+          ./install/bin/PipelineTesting ./install/test
 
       - uses: actions/upload-artifact@v3
         if: always()
@@ -252,12 +252,12 @@ jobs:
         run: |
           cmake --install build --prefix install
 
-      - name: Run Testing
+      - name: Run PipelineTesting
         # TODO: qemu for aarch64
         if: ${{matrix.arch == 'x86_64'}}
         shell: bash
         run: |
-          ./install/bin/Testing ./install/test
+          ./install/bin/PipelineTesting ./install/test
 
       - uses: actions/upload-artifact@v3
         if: always()
