@@ -95,7 +95,7 @@ jobs:
 
       - name: Build MAA
         run: |
-          cmake --preset "${{ matrix.arch == 'x86_64' && 'MSVC 2022' || 'MSVC 2022 ARM' }}" -DMAADEPS_TRIPLET="maa-${{ matrix.arch == 'x86_64' && 'x64' || 'arm64' }}-windows" -DMAA_HASH_VERSION='${{ needs.meta.outputs.tag }}' -DWITH_ADB_CONTROLLER=OFF -DWITH_THRIFT_CONTROLLER=OFF -DWITH_GRPC=OFF -DBUILD_TESTING=ON
+          cmake --preset "${{ matrix.arch == 'x86_64' && 'MSVC 2022' || 'MSVC 2022 ARM' }}" -DMAADEPS_TRIPLET="maa-${{ matrix.arch == 'x86_64' && 'x64' || 'arm64' }}-windows" -DMAA_HASH_VERSION='${{ needs.meta.outputs.tag }}' -DWITH_ADB_CONTROLLER=OFF -DWITH_THRIFT_CONTROLLER=OFF -DWITH_GRPC=OFF -DBUILD_PIPELINE_TESTING=ON
 
           cmake --build build --preset "${{ matrix.arch == 'x86_64' && 'MSVC 2022' || 'MSVC 2022 ARM' }} - Release" -j 16
 
@@ -173,7 +173,7 @@ jobs:
           cmake --preset 'NinjaMulti' \
             -DMAADEPS_TRIPLET='maa-${{ matrix.arch == 'x86_64' && 'x64' || 'arm64' }}-linux' \
             -DMAA_HASH_VERSION='${{ needs.meta.outputs.tag }}' \
-            -DWITH_ADB_CONTROLLER=OFF -DWITH_THRIFT_CONTROLLER=OFF -DWITH_GRPC=OFF -DBUILD_TESTING=ON
+            -DWITH_ADB_CONTROLLER=OFF -DWITH_THRIFT_CONTROLLER=OFF -DWITH_GRPC=OFF -DBUILD_PIPELINE_TESTING=ON
 
           cmake --build build --preset 'NinjaMulti - Release' -j 16
 
@@ -242,7 +242,7 @@ jobs:
           cmake --preset 'NinjaMulti' \
             -DMAADEPS_TRIPLET='maa-${{ matrix.arch == 'x86_64' && 'x64' || 'arm64' }}-osx' \
             -DMAA_HASH_VERSION='${{ needs.meta.outputs.tag }}' \
-            -DWITH_ADB_CONTROLLER=OFF -DWITH_THRIFT_CONTROLLER=OFF -DWITH_GRPC=OFF -DBUILD_TESTING=ON
+            -DWITH_ADB_CONTROLLER=OFF -DWITH_THRIFT_CONTROLLER=OFF -DWITH_GRPC=OFF -DBUILD_PIPELINE_TESTING=ON
 
           cmake --build build --preset 'NinjaMulti - Release' -j 16
 
