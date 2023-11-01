@@ -117,9 +117,7 @@ void NeuralNetworkClassifier::draw_result(const Result& res) const
         pt.y += 20;
     }
 
-    if (save_draw_) {
-        save_image(image_draw);
-    }
+    handle_draw(image_draw);
 }
 
 void NeuralNetworkClassifier::filter(ResultsVec& results, const std::vector<size_t>& expected) const

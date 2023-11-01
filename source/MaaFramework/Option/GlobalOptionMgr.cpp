@@ -18,6 +18,8 @@ bool GlobalOptionMgr::set_option(MaaGlobalOption key, MaaOptionValue value, MaaO
         return set_recording(value, val_size);
     case MaaGlobalOption_StdoutLevel:
         return set_stdout_level(value, val_size);
+    case MaaGlobalOption_ShowDraw:
+        return set_show_draw(value, val_size);
     default:
         LogError << "Unknown key" << VAR(key) << VAR(value);
         return false;
@@ -50,6 +52,22 @@ bool GlobalOptionMgr::set_save_draw(MaaOptionValue value, MaaOptionValueSize val
     save_draw_ = *reinterpret_cast<const bool*>(value);
 
     LogInfo << "Set save draw" << VAR(save_draw_);
+
+    return true;
+}
+
+bool GlobalOptionMgr::set_show_draw(MaaOptionValue value, MaaOptionValueSize val_size)
+{
+    LogFunc;
+
+    if (val_size != sizeof(bool)) {
+        LogError << "Invalid value size" << VAR(val_size);
+        return false;
+    }
+
+    show_draw_ = *reinterpret_cast<const bool*>(value);
+
+    LogInfo << "Set show_draw" << VAR(show_draw_);
 
     return true;
 }

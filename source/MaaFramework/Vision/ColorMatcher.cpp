@@ -138,9 +138,7 @@ void ColorMatcher::draw_result(const cv::Rect& roi, const cv::Mat& color, const 
 
     // cv::line(image_draw, cv::Point(raw_width + color.cols, 0), res.box.tl(), color_draw, 1);
 
-    if (save_draw_) {
-        save_image(image_draw);
-    }
+    handle_draw(image_draw);
 }
 
 void ColorMatcher::filter(ResultsVec& results, int count) const

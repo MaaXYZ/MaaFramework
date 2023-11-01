@@ -72,6 +72,9 @@ enum MaaGlobalOptionEnum
 
     // value: MaaLoggingLevel, val_size: sizeof(MaaLoggingLevel), default by MaaLoggingLevel_Error
     MaaGlobalOption_StdoutLevel = 4,
+
+    // value: bool, eg: true; val_size: sizeof(bool)
+    MaaGlobalOption_ShowDraw = 5,
 };
 
 typedef MaaOption MaaResOption;

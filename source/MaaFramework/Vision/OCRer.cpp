@@ -145,9 +145,7 @@ void OCRer::draw_result(const cv::Rect& roi, const ResultsVec& results) const
         cv::putText(image_draw, flag, cv::Point(my_box.x, my_box.y - 5), cv::FONT_HERSHEY_PLAIN, 1.2, color, 1);
     }
 
-    if (save_draw_) {
-        save_image(image_draw);
-    }
+    handle_draw(image_draw);
 }
 
 void OCRer::postproc_and_filter(ResultsVec& results, const std::vector<std::wstring>& expected) const

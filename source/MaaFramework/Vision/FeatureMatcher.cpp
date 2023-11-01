@@ -232,9 +232,7 @@ void FeatureMatcher::draw_result(const cv::Mat& templ, const std::vector<cv::Key
         cv::putText(image_draw, flag, cv::Point(res.box.x, res.box.y - 5), cv::FONT_HERSHEY_PLAIN, 1.2, color, 1);
     }
 
-    if (save_draw_) {
-        save_image(image_draw);
-    }
+    handle_draw(image_draw);
 }
 
 void FeatureMatcher::filter(ResultsVec& results, int count) const

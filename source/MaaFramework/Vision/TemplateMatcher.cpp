@@ -144,9 +144,7 @@ void TemplateMatcher::draw_result(const cv::Rect& roi, const cv::Mat& templ, con
         cv::line(image_draw, cv::Point(raw_width, 0), results.front().box.tl(), color, 1);
     }
 
-    if (save_draw_) {
-        save_image(image_draw);
-    }
+    handle_draw(image_draw);
 }
 
 void TemplateMatcher::filter(ResultsVec& results, double threshold) const
