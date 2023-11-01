@@ -67,7 +67,11 @@ MAA 正计划建设为一类项目，而非舟的单一软件。
 
 `MaaFramework` 采用 [`LGPL-3.0`](./LICENSE.md) 许可证进行开源。
 
-## 本地构建
+## 开发
+
+使用 Codespaces (Dev Container) 一键配置基础开发环境 (Ninja、Cmake、g++-13)：
+
+[![Open in GitHub Codespaces](https://github.com/codespaces/badge.svg)](https://github.com/codespaces/new?hide_repo_select=true&ref=master&repo=632024122)
 
 1. 下载 MaaDeps prebuilt
 
