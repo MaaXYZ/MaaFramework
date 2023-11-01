@@ -36,9 +36,6 @@ public:
     void set_taskid(int64_t id) { task_id_ = id; }
     bool set_param(const json::value& param);
 
-    Recognizer& recognizer() { return recognizer_; }
-    Actuator& actuator() { return actuator_; }
-
 private:
     enum class RunningResult
     {

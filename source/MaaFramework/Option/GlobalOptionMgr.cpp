@@ -12,8 +12,8 @@ bool GlobalOptionMgr::set_option(MaaGlobalOption key, MaaOptionValue value, MaaO
     switch (key) {
     case MaaGlobalOption_LogDir:
         return set_log_dir(value, val_size);
-    case MaaGlobalOption_DebugMode:
-        return set_debug_mode(value, val_size);
+    case MaaGlobalOption_SaveDraw:
+        return set_save_draw(value, val_size);
     case MaaGlobalOption_Recording:
         return set_recording(value, val_size);
     case MaaGlobalOption_StdoutLevel:
@@ -31,14 +31,14 @@ bool GlobalOptionMgr::set_log_dir(MaaOptionValue value, MaaOptionValueSize val_s
     std::string_view str_path(reinterpret_cast<const char*>(value), val_size);
     log_dir_ = MAA_NS::path(str_path);
 
-    LogInfo << "Set log path" << VAR(log_dir_);
+    LogInfo << "Set log dir" << VAR(log_dir_);
 
     MAA_LOG_NS::Logger::get_instance().start_logging(log_dir_);
 
     return true;
 }
 
-bool GlobalOptionMgr::set_debug_mode(MaaOptionValue value, MaaOptionValueSize val_size)
+bool GlobalOptionMgr::set_save_draw(MaaOptionValue value, MaaOptionValueSize val_size)
 {
     LogFunc;
 
@@ -47,9 +47,9 @@ bool GlobalOptionMgr::set_debug_mode(MaaOptionValue value, MaaOptionValueSize va
         return false;
     }
 
-    debug_mode_ = *reinterpret_cast<const bool*>(value);
+    save_draw_ = *reinterpret_cast<const bool*>(value);
 
-    LogInfo << "Set debug mode" << VAR(debug_mode_);
+    LogInfo << "Set save draw" << VAR(save_draw_);
 
     return true;
 }

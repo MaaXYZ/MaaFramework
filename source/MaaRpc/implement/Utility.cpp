@@ -62,7 +62,7 @@ Status UtilityImpl::set_global_option(ServerContext* context, const ::maarpc::Se
     case ::maarpc::SetGlobalOptionRequest::OptionCase::kDebugMode:
         if (request->has_debug_mode()) {
             MaaBool mode = request->debug_mode() ? 1 : 0;
-            if (MaaSetGlobalOption(MaaGlobalOption_DebugMode, &mode, 1)) {
+            if (MaaSetGlobalOption(MaaGlobalOption_SaveDraw, &mode, 1)) {
                 return Status::OK;
             }
             else {

@@ -63,7 +63,7 @@ enum MaaGlobalOptionEnum
     MaaGlobalOption_LogDir = 1,
 
     // value: bool, eg: true; val_size: sizeof(bool)
-    MaaGlobalOption_DebugMode = 2,
+    MaaGlobalOption_SaveDraw = 2,
 
     // Dump all screenshots and actions
     // this option will || with MaaCtrlOption_Recording

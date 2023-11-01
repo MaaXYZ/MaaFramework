@@ -52,7 +52,7 @@ void VisionBase::save_image(const cv::Mat& image) const
 
 void VisionBase::init_debug_draw()
 {
-    save_draw_ = GlobalOptionMgr::get_instance().debug_mode();
+    save_draw_ = GlobalOptionMgr::get_instance().save_draw();
 
     if (save_draw_) {
         debug_draw_ = true;
