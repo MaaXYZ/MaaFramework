@@ -48,10 +48,10 @@ Status UtilityImpl::set_global_option(ServerContext* context, const ::maarpc::Se
     MAA_GRPC_REQUIRED_CASE(option, OPTION)
 
     switch (request->option_case()) {
-    case ::maarpc::SetGlobalOptionRequest::OptionCase::kLogging:
-        if (request->has_logging()) {
-            auto logging = request->logging();
-            if (MaaSetGlobalOption(MaaGlobalOption_LogDir, logging.data(), logging.size())) {
+    case ::maarpc::SetGlobalOptionRequest::OptionCase::kLogDir:
+        if (request->has_log_dir()) {
+            std::string log_dir = request->log_dir();
+            if (MaaSetGlobalOption(MaaGlobalOption_LogDir, log_dir.data(), log_dir.size())) {
                 return Status::OK;
             }
             else {
@@ -59,10 +59,43 @@ Status UtilityImpl::set_global_option(ServerContext* context, const ::maarpc::Se
             }
         }
         break;
-    case ::maarpc::SetGlobalOptionRequest::OptionCase::kDebugMode:
-        if (request->has_debug_mode()) {
-            MaaBool mode = request->debug_mode() ? 1 : 0;
-            if (MaaSetGlobalOption(MaaGlobalOption_SaveDraw, &mode, 1)) {
+    case ::maarpc::SetGlobalOptionRequest::OptionCase::kSaveDraw:
+        if (request->has_save_draw()) {
+            bool mode = request->save_draw();
+            if (MaaSetGlobalOption(MaaGlobalOption_SaveDraw, &mode, sizeof(mode))) {
+                return Status::OK;
+            }
+            else {
+                return Status(UNKNOWN, "MaaSetGlobalOption failed");
+            }
+        }
+        break;
+    case ::maarpc::SetGlobalOptionRequest::OptionCase::kRecording:
+        if (request->has_recording()) {
+            bool mode = request->recording();
+            if (MaaSetGlobalOption(MaaGlobalOption_Recording, &mode, sizeof(mode))) {
+                return Status::OK;
+            }
+            else {
+                return Status(UNKNOWN, "MaaSetGlobalOption failed");
+            }
+        }
+        break;
+    case ::maarpc::SetGlobalOptionRequest::OptionCase::kStdoutLevel:
+        if (request->has_stdout_level()) {
+            int32_t level = request->stdout_level();
+            if (MaaSetGlobalOption(MaaGlobalOption_StdoutLevel, &level, sizeof(level))) {
+                return Status::OK;
+            }
+            else {
+                return Status(UNKNOWN, "MaaSetGlobalOption failed");
+            }
+        }
+        break;
+    case ::maarpc::SetGlobalOptionRequest::OptionCase::kShowDraw:
+        if (request->has_show_draw()) {
+            bool mode = request->show_draw();
+            if (MaaSetGlobalOption(MaaGlobalOption_ShowDraw, &mode, sizeof(mode))) {
                 return Status::OK;
             }
             else {
