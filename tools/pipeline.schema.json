@@ -15,10 +15,11 @@
           "enum": [
             "DirectHit",
             "TemplateMatch",
+            "FeatureMatch",
             "ColorMatch",
             "OCR",
-            "Classify",
-            "Detect",
+            "NeuralNetworkClassify",
+            "NeuralNetworkDetect",
             "Custom"
           ],
           "default": "DirectHit"
@@ -294,6 +295,26 @@
               }
             },
             {
+              "$comment": "FeatureMatch",
+              "if": {
+                "required": [
+                  "recognition"
+                ],
+                "properties": {
+                  "recognition": {
+                    "enum": [
+                      "FeatureMatch"
+                    ]
+                  }
+                }
+              },
+              "then": {
+                "required": [
+                  "template"
+                ]
+              }
+            },
+            {
               "$comment": "ColorMatch",
               "if": {
                 "required": [
@@ -347,7 +368,7 @@
               }
             },
             {
-              "$comment": "Classify",
+              "$comment": "NeuralNetworkClassify",
               "if": {
                 "required": [
                   "recognition"
@@ -355,7 +376,7 @@
                 "properties": {
                   "recognition": {
                     "enum": [
-                      "Classify"
+                      "NeuralNetworkClassify"
                     ]
                   }
                 }
@@ -376,7 +397,7 @@
               }
             },
             {
-              "$comment": "Detect",
+              "$comment": "NeuralNetworkDetect",
               "if": {
                 "required": [
                   "recognition"
@@ -384,7 +405,7 @@
                 "properties": {
                   "recognition": {
                     "enum": [
-                      "Detect"
+                      "NeuralNetworkDetect"
                     ]
                   }
                 }
@@ -440,7 +461,7 @@
                 ]
               }
             }
-          ] 
+          ]
         },
         "action": {
           "oneOf": [
@@ -680,7 +701,7 @@
         {
           "type": "object",
           "properties": {
-            "time": { 
+            "time": {
               "description": "连续 time 毫秒 画面 没有较大变化 才会退出动作。可选，默认 1。",
               "type": "integer",
               "minimum": 0,
