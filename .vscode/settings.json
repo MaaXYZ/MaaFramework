@@ -1,8 +1,8 @@
 {
     "json.schemas": [
         {
-            "fileMatch": ["/assets/resource/pipeline/*.json"],
-            "url": "/assets/resource/pipeline.schema.json"
+            "fileMatch": ["/sample/resource/pipeline/*.json"],
+            "url": "/tools/pipeline.schema.json"
         }
     ],
     "C_Cpp.autoAddFileAssociations": false
