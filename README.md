@@ -22,6 +22,12 @@ _✨ 基于图像识别的跨平台软件自动化测试框架 ✨_
     <img alt="stars" src="https://img.shields.io/github/stars/MaaAssistantArknights/MaaFramework?style=social">
 </p>
 
+<div align="center">
+
+[English](./README_en.md) | [简体中文](./README.md)
+
+</div>
+
 ## 简介
 
 **MaaFramework** 是基于图像识别技术、运用 [MAA](https://github.com/MaaAssistantArknights/MaaAssistantArknights) 开发经验去芜存菁、完全重写的新一代软件自动化测试框架。
