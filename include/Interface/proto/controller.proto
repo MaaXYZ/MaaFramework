@@ -3,7 +3,6 @@ syntax = "proto3";
 package maarpc;
 
 import "types.proto";
-import "custom.controller.proto";
 
 service Controller {
   rpc create_adb(AdbControllerRequest) returns (HandleResponse);
