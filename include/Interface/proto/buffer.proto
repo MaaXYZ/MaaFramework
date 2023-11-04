@@ -4,11 +4,6 @@ package maarpc;
 
 import "types.proto";
 
-message ImageInfoResponse {
-  optional int32 type = 1;
-  optional Size size = 2;
-}
-
 service Image {
   rpc create(EmptyRequest) returns (HandleResponse);
   rpc destroy(HandleRequest) returns (EmptyResponse);

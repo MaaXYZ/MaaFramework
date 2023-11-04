@@ -4,16 +4,6 @@ package maarpc;
 
 import "types.proto";
 
-message SetGlobalOptionRequest {
-  oneof option {
-    string log_dir = 1;
-    bool save_draw = 2;
-    bool recording = 3;
-    int32 stdout_level = 4;
-    bool show_draw = 5;
-  }
-}
-
 service Utility {
   rpc version(EmptyRequest) returns (StringResponse);
   rpc set_global_option(SetGlobalOptionRequest) returns (EmptyResponse);
