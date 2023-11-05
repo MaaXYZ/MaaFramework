@@ -28,26 +28,28 @@ MaaControllerHandle MaaAdbControllerCreateV2(MaaStringView adb_path, MaaStringVi
     LogFunc << VAR(adb_path) << VAR(address) << VAR(type) << VAR(agent_path) << VAR_VOIDP(callback)
             << VAR_VOIDP(callback_arg);
 
-#ifdef WITH_ADB_CONTROLLER
+    bool loaded = MAA_CTRL_NS::AdbController::load_library(MAA_NS::path("MaaAdbControlUnit"));
+    if (!loaded) {
+        LogError << "Failed to load library MaaAdbControlUnit";
+        return nullptr;
+    }
 
-    auto unit_mgr = MAA_ADB_CTRL_UNIT_NS::create_controller_unit(adb_path, address, type, config, agent_path);
+    using create_controller_unit_t = std::shared_ptr<MAA_ADB_CTRL_UNIT_NS::ControlUnitAPI> (*)(
+        MaaStringView, MaaStringView, MaaAdbControllerType, MaaStringView, MaaStringView);
+    auto create_func = MAA_CTRL_NS::AdbController::get_function<create_controller_unit_t>("create_controller_unit");
+    if (!create_func) {
+        LogError << "Failed to get function create_controller_unit";
+        return nullptr;
+    }
+
+    auto unit_mgr = create_func(adb_path, address, type, config, agent_path);
+
     if (!unit_mgr) {
         LogError << "Failed to create controller unit";
         return nullptr;
     }
 
     return new MAA_CTRL_NS::AdbController(adb_path, address, std::move(unit_mgr), callback, callback_arg);
-
-#else
-
-#pragma message("The build without adb controller")
-
-    std::ignore = config;
-
-    LogError << "The build without adb controller";
-    return nullptr;
-
-#endif // WITH_ADB_CONTROLLER
 }
 
 MaaControllerHandle MaaCustomControllerCreate(MaaCustomControllerHandle handle, MaaTransparentArg handle_arg,
@@ -94,26 +96,27 @@ MaaControllerHandle MaaDbgControllerCreate(MaaStringView read_path, MaaStringVie
 {
     LogFunc << VAR(read_path) << VAR(write_path) << VAR(type) << VAR_VOIDP(callback) << VAR_VOIDP(callback_arg);
 
-#ifdef WITH_DBG_CONTROLLER
+    bool loaded = MAA_CTRL_NS::DebuggingController::load_library(MAA_NS::path("MaaDbgControlUnit"));
+    if (!loaded) {
+        LogError << "Failed to load library MaaDbgControlUnit";
+        return nullptr;
+    }
 
-    auto unit_mgr = MAA_DBG_CTRL_UNIT_NS::create_controller(type, read_path, write_path, config);
+    using create_controller_unit_t = std::shared_ptr<MAA_DBG_CTRL_UNIT_NS::ControllerAPI> (*)(
+        MaaStringView, MaaStringView, MaaDbgControllerType, MaaStringView);
+    auto create_func = MAA_CTRL_NS::DebuggingController::get_function<create_controller_unit_t>("create_controller");
+    if (!create_func) {
+        LogError << "Failed to get function create_controller";
+        return nullptr;
+    }
+
+    auto unit_mgr = create_func(read_path, write_path, type, config);
     if (!unit_mgr) {
         LogError << "Failed to create controller unit";
         return nullptr;
     }
 
     return new MAA_CTRL_NS::DebuggingController(read_path, write_path, std::move(unit_mgr), callback, callback_arg);
-
-#else
-
-#pragma message("The build without debugging controller")
-
-    std::ignore = config;
-
-    LogError << "The build without debugging controller";
-    return nullptr;
-
-#endif // WITH_DBG_CONTROLLER
 }
 
 void MaaControllerDestroy(MaaControllerHandle ctrl)
