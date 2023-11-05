@@ -9,7 +9,7 @@ macro(GENERATE_THRIFT_LIB LIB_NAME FILENAME OUTPUTDIR SOURCES)
         message(FATAL_ERROR "Error generating ${FILENAME} with generator ${GENERATOR}")
     endif()
     file(GLOB_RECURSE GENERATED_SOURCES ${OUTPUTDIR}/*.cpp)
-    add_library(${LIB_NAME} STATIC ${GENERATED_SOURCES})
+    add_library(${LIB_NAME} SHARED ${GENERATED_SOURCES})
     set_target_properties(${LIB_NAME} PROPERTIES POSITION_INDEPENDENT_CODE ON)
     target_link_libraries(${LIB_NAME} thrift::thrift)
     set(${LIB_NAME}_INCLUDE_DIRS

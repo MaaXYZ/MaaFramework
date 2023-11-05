@@ -8,11 +8,11 @@
 
 MAA_CTRL_NS_BEGIN
 
-class CustomThriftController : public ControllerMgr
+class ThriftController : public ControllerMgr
 {
 public:
-    CustomThriftController(const std::string& param, MaaControllerCallback callback, void* callback_arg);
-    virtual ~CustomThriftController() override;
+    ThriftController(const std::string& param, MaaControllerCallback callback, void* callback_arg);
+    virtual ~ThriftController() override;
 
 protected:
     virtual bool _connect() override;

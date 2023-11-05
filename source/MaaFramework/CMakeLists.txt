@@ -14,7 +14,7 @@ set(MaaFramework_INCLUDE ${CMAKE_CURRENT_SOURCE_DIR}/../../include/MaaFramework)
 target_include_directories(
     MaaFramework
     INTERFACE ../../include
-    PRIVATE . ../include ../../include ${MaaThriftController_INCLUDE_DIRS})
+    PRIVATE . ../include ../../include ${MaaThriftControlUnit_INCLUDE_DIRS})
 
 target_compile_definitions(MaaFramework PRIVATE MAA_FRAMEWORK_EXPORTS)
 
@@ -23,7 +23,7 @@ if (WITH_ADB_CONTROLLER)
     target_link_libraries(MaaFramework MaaAdbControlUnit)
 endif(WITH_ADB_CONTROLLER)
 if(WITH_THRIFT_CONTROLLER AND NOT MAA_CROSSCOMPILE)
-    target_link_libraries(MaaFramework MaaThriftController)
+    target_link_libraries(MaaFramework MaaThriftControlUnit)
 endif(WITH_THRIFT_CONTROLLER AND NOT MAA_CROSSCOMPILE)
 if (WITH_DBG_CONTROLLER)
     target_link_libraries(MaaFramework MaaDbgControlUnit)
@@ -39,7 +39,7 @@ if (WITH_ADB_CONTROLLER)
     add_dependencies(MaaFramework MaaAdbControlUnit)
 endif(WITH_ADB_CONTROLLER)
 if(WITH_THRIFT_CONTROLLER AND NOT MAA_CROSSCOMPILE)
-    add_dependencies(MaaFramework MaaThriftController)
+    add_dependencies(MaaFramework MaaThriftControlUnit)
 endif(WITH_THRIFT_CONTROLLER AND NOT MAA_CROSSCOMPILE)
 if (WITH_DBG_CONTROLLER)
     add_dependencies(MaaFramework MaaDbgControlUnit)
