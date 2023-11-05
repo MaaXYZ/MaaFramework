@@ -5,8 +5,8 @@
 #include "ControlUnit/AdbControlUnitAPI.h"
 #include "Controller/AdbController.h"
 #include "Controller/CustomController.h"
-#include "Controller/CustomThriftController.h"
 #include "Controller/DebuggingController.h"
+#include "Controller/ThriftController.h"
 #include "Utils/Logger.h"
 #include "Utils/Platform.h"
 
@@ -71,7 +71,7 @@ MaaControllerHandle MaaThriftControllerCreate(MaaStringView param, MaaController
 #ifdef WITH_THRIFT_CONTROLLER
 
     try {
-        return new MAA_CTRL_NS::CustomThriftController(param, callback, callback_arg);
+        return new MAA_CTRL_NS::ThriftController(param, callback, callback_arg);
     }
     catch (const std::exception& e) {
         LogError << "Failed to create thrift controller: " << e.what();

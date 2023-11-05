@@ -87,7 +87,7 @@ jobs:
         with:
           submodules: true
 
-      # Download host arch tools for Thrift of CustomThriftController
+      # Download host arch tools for Thrift of ThriftControlUnit
       - name: Download host tools from MaaDeps
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -161,7 +161,7 @@ jobs:
         with:
           remove_stale_cache: false
 
-      # Download host arch tools for Thrift of CustomThriftController
+      # Download host arch tools for Thrift of ThriftControlUnit
       - name: Download host tools from MaaDeps
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -230,7 +230,7 @@ jobs:
           brew install llvm
         # 16
 
-      # Download host arch tools for Thrift of CustomThriftController
+      # Download host arch tools for Thrift of ThriftControlUnit
       - name: Download host tools from MaaDeps
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

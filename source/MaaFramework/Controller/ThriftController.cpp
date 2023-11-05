@@ -1,6 +1,6 @@
 #ifdef WITH_THRIFT_CONTROLLER
 
-#include "CustomThriftController.h"
+#include "ThriftController.h"
 
 #ifdef _MSC_VER
 #pragma warning(push)
@@ -18,7 +18,7 @@
 
 MAA_CTRL_NS_BEGIN
 
-CustomThriftController::CustomThriftController(const std::string& param_str, MaaControllerCallback callback,
+ThriftController::ThriftController(const std::string& param_str, MaaControllerCallback callback,
                                                void* callback_arg)
     : ControllerMgr(callback, callback_arg)
 {
@@ -74,14 +74,14 @@ CustomThriftController::CustomThriftController(const std::string& param_str, Maa
     client_ = std::make_shared<ThriftController::ThriftControllerClient>(protocol);
 }
 
-CustomThriftController::~CustomThriftController()
+ThriftController::~ThriftController()
 {
     if (transport_) {
         transport_->close();
     }
 }
 
-bool CustomThriftController::_connect()
+bool ThriftController::_connect()
 {
     try {
         transport_->open();
@@ -94,7 +94,7 @@ bool CustomThriftController::_connect()
     return client_->connect();
 }
 
-std::string CustomThriftController::_get_uuid() const
+std::string ThriftController::_get_uuid() const
 {
     LogFunc;
 
@@ -108,7 +108,7 @@ std::string CustomThriftController::_get_uuid() const
     return uuid;
 }
 
-std::pair<int, int> CustomThriftController::_get_resolution() const
+std::pair<int, int> ThriftController::_get_resolution() const
 {
     LogFunc;
 
@@ -122,7 +122,7 @@ std::pair<int, int> CustomThriftController::_get_resolution() const
     return { resolution.width, resolution.height };
 }
 
-bool CustomThriftController::_click(ClickParam param)
+bool ThriftController::_click(ClickParam param)
 {
     LogFunc << VAR(param.x) << VAR(param.y);
 
@@ -138,7 +138,7 @@ bool CustomThriftController::_click(ClickParam param)
     return client_->click(thrift_param);
 }
 
-bool CustomThriftController::_swipe(SwipeParam param)
+bool ThriftController::_swipe(SwipeParam param)
 {
     LogFunc << VAR(param.x1) << VAR(param.x2) << VAR(param.y1) << VAR(param.y2) << VAR(param.duration);
 
@@ -155,7 +155,7 @@ bool CustomThriftController::_swipe(SwipeParam param)
     return client_->swipe(thrift_param);
 }
 
-bool CustomThriftController::_touch_down(TouchParam param)
+bool ThriftController::_touch_down(TouchParam param)
 {
     LogFunc << VAR(param.contact) << VAR(param.x) << VAR(param.y) << VAR(param.pressure);
 
@@ -173,7 +173,7 @@ bool CustomThriftController::_touch_down(TouchParam param)
     return client_->touch_down(thrift_param);
 }
 
-bool CustomThriftController::_touch_move(TouchParam param)
+bool ThriftController::_touch_move(TouchParam param)
 {
     LogFunc << VAR(param.contact) << VAR(param.x) << VAR(param.y) << VAR(param.pressure);
 
@@ -191,7 +191,7 @@ bool CustomThriftController::_touch_move(TouchParam param)
     return client_->touch_move(thrift_param);
 }
 
-bool CustomThriftController::_touch_up(TouchParam param)
+bool ThriftController::_touch_up(TouchParam param)
 {
     LogFunc << VAR(param.contact);
 
@@ -206,7 +206,7 @@ bool CustomThriftController::_touch_up(TouchParam param)
     return client_->touch_up(thrift_param);
 }
 
-bool CustomThriftController::_press_key(PressKeyParam param)
+bool ThriftController::_press_key(PressKeyParam param)
 {
     LogFunc;
 
@@ -221,7 +221,7 @@ bool CustomThriftController::_press_key(PressKeyParam param)
     return client_->press_key(thrift_param);
 }
 
-cv::Mat CustomThriftController::_screencap()
+cv::Mat ThriftController::_screencap()
 {
     LogFunc;
 
@@ -244,7 +244,7 @@ cv::Mat CustomThriftController::_screencap()
     return out_mat;
 }
 
-bool CustomThriftController::_start_app(AppParam param)
+bool ThriftController::_start_app(AppParam param)
 {
     LogFunc << VAR(param.package);
 
@@ -256,7 +256,7 @@ bool CustomThriftController::_start_app(AppParam param)
     return client_->start_game(param.package);
 }
 
-bool CustomThriftController::_stop_app(AppParam param)
+bool ThriftController::_stop_app(AppParam param)
 {
     LogFunc << VAR(param.package);
 

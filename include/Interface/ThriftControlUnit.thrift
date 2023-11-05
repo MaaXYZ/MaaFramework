@@ -1,4 +1,4 @@
-namespace cpp ThriftController
+namespace cpp ThriftControlUnit
 
 struct Point {
   1: i32 x,
@@ -36,7 +36,7 @@ struct CustomImage {
   3: binary data,
 }
 
-service ThriftController {
+service ThriftControlUnit {
   bool set_option(1: string key, 2: string value),
 
   bool connect(),
