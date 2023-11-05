@@ -1,5 +1,7 @@
 #pragma once
+
 #include "ControllerMgr.h"
+#include "Utils/LibraryHolder.h"
 
 #include "ControlUnit/AdbControlUnitAPI.h"
 
@@ -7,7 +9,7 @@
 
 MAA_CTRL_NS_BEGIN
 
-class AdbController : public ControllerMgr
+class AdbController : public ControllerMgr, public LibraryHolder<AdbController>
 {
 public:
     AdbController(std::string adb_path, std::string address,

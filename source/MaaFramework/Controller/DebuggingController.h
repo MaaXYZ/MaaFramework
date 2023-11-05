@@ -2,12 +2,13 @@
 #include "ControllerMgr.h"
 
 #include "ControlUnit/DbgControlUnitAPI.h"
+#include "Utils/LibraryHolder.h"
 
 #include <memory>
 
 MAA_CTRL_NS_BEGIN
 
-class DebuggingController : public ControllerMgr
+class DebuggingController : public ControllerMgr, public LibraryHolder<DebuggingController>
 {
 public:
     DebuggingController(std::string read_path, std::string write_path,
