@@ -14,7 +14,7 @@ public:
     {
         std::binary_semaphore write { 1 };
         std::binary_semaphore finish { 0 };
-        ::grpc::ServerWriter<::maarpc::Callback>* writer { nullptr };
+        ::grpc::ServerReaderWriter<::maarpc::Callback, ::maarpc::CallbackRequest>* stream { nullptr };
     };
 
 public:
@@ -24,8 +24,8 @@ public:
                                      ::maarpc::EmptyResponse* response) override;
     ::grpc::Status acquire_id(::grpc::ServerContext* context, const ::maarpc::EmptyRequest* request,
                               ::maarpc::IdResponse* response) override;
-    ::grpc::Status register_callback(::grpc::ServerContext* context, const ::maarpc::IdRequest* request,
-                                     ::grpc::ServerWriter<::maarpc::Callback>* writer) override;
+    ::grpc::Status register_callback(::grpc::ServerContext* context,
+                                     ::grpc::ServerReaderWriter<::maarpc::Callback, ::maarpc::CallbackRequest>* stream);
     ::grpc::Status unregister_callback(::grpc::ServerContext* context, const ::maarpc::IdRequest* request,
                                        ::maarpc::EmptyResponse* response) override;
 

@@ -22,7 +22,10 @@ void callback_impl(MaaStringView msg, MaaStringView detail, MaaCallbackTranspare
 
     auto* state = reinterpret_cast<UtilityImpl::CallbackState*>(arg);
     state->write.acquire();
-    state->writer->Write(cb);
+    state->stream->Write(cb);
+
+    ::maarpc::CallbackRequest br;
+    state->stream->Read(&br);
     state->write.release();
 }
 
@@ -121,28 +124,37 @@ Status UtilityImpl::acquire_id(ServerContext* context, const ::maarpc::EmptyRequ
     return Status::OK;
 }
 
-Status UtilityImpl::register_callback(ServerContext* context, const ::maarpc::IdRequest* request,
-                                      ServerWriter<::maarpc::Callback>* writer)
+Status UtilityImpl::register_callback(ServerContext* context,
+                                      ServerReaderWriter<::maarpc::Callback, ::maarpc::CallbackRequest>* stream)
 {
     LogFunc;
 
-    MAA_GRPC_REQUIRED(id)
+    ::maarpc::CallbackRequest request_data;
+    auto request = &request_data;
 
-    auto id = request->id();
+    if (!stream->Read(request)) {
+        return Status(FAILED_PRECONDITION, "register callback cannot read init");
+    }
+
+    MAA_GRPC_REQUIRED_CASE_AS(result, Init)
+
+    MAA_GRPC_REQUIRED_OF(id, (&request->init()))
+
+    auto id = request->init().id();
 
     if (states_.has(id)) {
         return Status(ALREADY_EXISTS, "id already registered");
     }
 
     auto state = std::make_shared<CallbackState>();
-    state->writer = writer;
+    state->stream = stream;
 
     states_.add(id, state);
 
     {
         ::maarpc::Callback cb;
         cb.set_msg("Rpc.Inited");
-        state->writer->Write(cb);
+        state->stream->Write(cb);
     }
 
     while (true) {

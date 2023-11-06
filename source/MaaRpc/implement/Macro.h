@@ -15,6 +15,11 @@
         return Status(INVALID_ARGUMENT, #name " should be " #case);                        \
     }
 
+#define MAA_GRPC_REQUIRED_OF(name, req)                         \
+    if (!req->has_##name()) {                                   \
+        return Status(INVALID_ARGUMENT, #name " not provided"); \
+    }
+
 #define MAA_GRPC_GET_HANDLE                                         \
     std::decay_t<decltype(handles())>::HandleType handle = nullptr; \
     {                                                               \

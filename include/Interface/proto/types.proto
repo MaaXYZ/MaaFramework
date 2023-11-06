@@ -307,3 +307,8 @@ message SetGlobalOptionRequest {
     bool show_draw = 5;
   }
 }
+
+message CallbackRequest {
+  optional bool ok = 1;
+  oneof result { IdRequest init = 101; }
+}
