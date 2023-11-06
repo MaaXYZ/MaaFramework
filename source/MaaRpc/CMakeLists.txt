@@ -20,3 +20,7 @@ install(
 install(DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/../../include/MaaRpc" DESTINATION "include")
 
 source_group(TREE ${CMAKE_SOURCE_DIR} FILES ${maa_proto_src} ${maa_rpc_src})
+
+if(BUILD_GRPC_CLI)
+    add_subdirectory(cli)
+endif(BUILD_GRPC_CLI)
