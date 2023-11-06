@@ -22,7 +22,7 @@ public:
     static bool load_library(const std::filesystem::path& libname);
 
     template <typename FuncT>
-    static FuncT get_function(const std::string& func_name);
+    static std::optional<boost::function<FuncT>> get_function(const std::string& func_name);
 
 private:
     static void unload_library();
@@ -112,18 +112,18 @@ inline void LibraryHolder<T>::unload_library()
 
 template <typename T>
 template <typename FuncT>
-inline FuncT LibraryHolder<T>::get_function(const std::string& func_name)
+inline std::optional<boost::function<FuncT>> LibraryHolder<T>::get_function(const std::string& func_name)
 {
     LogFunc << VAR(func_name);
 
     if (!module_.is_loaded()) {
         LogError << "LibraryHolder not loaded";
-        return nullptr;
+        return std::nullopt;
     }
 
     if (!module_.has(func_name)) {
         LogError << "Failed to find exported function" << VAR(func_name);
-        return nullptr;
+        return std::nullopt;
     }
 
     return module_.get<FuncT>(func_name);
