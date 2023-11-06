@@ -81,27 +81,32 @@ void ControlUnitMgr::set_replacement(const std::map<std::string, std::string>& r
     }
 }
 
-std::shared_ptr<DeviceListAPI> create_device_list_obj(MaaStringView adb_path, MaaStringView config)
+void create_device_list_obj(std::shared_ptr<DeviceListAPI>* result, MaaStringView adb_path, MaaStringView config)
 {
-    LogFunc << VAR(adb_path) << VAR(config);
+    LogFunc << VAR(result) << VAR(adb_path) << VAR(config);
+
+    if (!result) {
+        return;
+    }
+    *result = nullptr;
 
     auto device_list_mgr = std::make_shared<DeviceList>();
 
     auto json_opt = json::parse(std::string_view(config));
     if (!json_opt) {
         LogError << "Parse config failed, invalid config:" << config;
-        return nullptr;
+        return;
     }
     bool parsed = device_list_mgr->parse(*json_opt);
     if (!parsed) {
         LogError << "Parse json failed, invalid json:" << *json_opt;
-        return nullptr;
+        return;
     }
 
     auto platform_io = PlatformFactory::create();
     if (!platform_io) {
         LogError << "Create platform io failed";
-        return nullptr;
+        return;
     }
     device_list_mgr->set_io(platform_io);
 
@@ -109,14 +114,19 @@ std::shared_ptr<DeviceListAPI> create_device_list_obj(MaaStringView adb_path, Ma
         { "{ADB}", adb_path },
     });
 
-    return device_list_mgr;
+    *result = device_list_mgr;
 }
 
-std::shared_ptr<ControlUnitAPI> create_controller_unit(MaaStringView adb_path, MaaStringView adb_serial,
-                                                       MaaAdbControllerType type, MaaStringView config,
-                                                       MaaStringView agent_path)
+void create_controller_unit(std::shared_ptr<ControlUnitAPI>* result, MaaStringView adb_path, MaaStringView adb_serial,
+                            MaaAdbControllerType type, MaaStringView config, MaaStringView agent_path)
 {
-    LogFunc << VAR(adb_path) << VAR(adb_serial) << VAR(type) << VAR(config) << VAR(agent_path);
+    LogFunc << VAR(result) << VAR(adb_path) << VAR(adb_serial) << VAR(type) << VAR(config) << VAR(agent_path);
+
+    if (!result) {
+        return;
+    }
+
+    *result = nullptr;
 
     std::shared_ptr<TouchInputBase> touch_unit = nullptr;
     std::shared_ptr<KeyInputBase> key_unit = nullptr;
@@ -142,7 +152,7 @@ std::shared_ptr<ControlUnitAPI> create_controller_unit(MaaStringView adb_path, M
         LogInfo << "touch_type: MinitouchInput";
         if (!std::filesystem::exists(minitouch_path)) {
             LogError << "minitouch path not exists" << VAR(minitouch_path);
-            return nullptr;
+            return;
         }
         touch_unit = std::make_shared<MinitouchInput>(minitouch_path);
         break;
@@ -150,7 +160,7 @@ std::shared_ptr<ControlUnitAPI> create_controller_unit(MaaStringView adb_path, M
         LogInfo << "touch_type: MaatouchInput";
         if (!std::filesystem::exists(maatouch_path)) {
             LogError << "maatouch path not exists" << VAR(maatouch_path);
-            return nullptr;
+            return;
         }
         if (!maatouch_unit) {
             maatouch_unit = std::make_shared<MaatouchInput>(maatouch_path);
@@ -159,7 +169,7 @@ std::shared_ptr<ControlUnitAPI> create_controller_unit(MaaStringView adb_path, M
         break;
     default:
         LogError << "Unknown touch input type" << VAR(touch_type);
-        return nullptr;
+        return;
     }
 
     switch (key_type) {
@@ -171,7 +181,7 @@ std::shared_ptr<ControlUnitAPI> create_controller_unit(MaaStringView adb_path, M
         LogInfo << "key_type: MaatouchInput";
         if (!std::filesystem::exists(maatouch_path)) {
             LogError << "maatouch path not exists" << VAR(maatouch_path);
-            return nullptr;
+            return;
         }
         if (!maatouch_unit) {
             maatouch_unit = std::make_shared<MaatouchInput>(maatouch_path);
@@ -180,7 +190,7 @@ std::shared_ptr<ControlUnitAPI> create_controller_unit(MaaStringView adb_path, M
         break;
     default:
         LogError << "Unknown key input type" << VAR(key_type);
-        return nullptr;
+        return;
     }
 
     switch (screencap_type) {
@@ -188,7 +198,7 @@ std::shared_ptr<ControlUnitAPI> create_controller_unit(MaaStringView adb_path, M
         LogInfo << "screencap_type: ScreencapFastestWay";
         if (!std::filesystem::exists(minicap_path)) {
             LogError << "minicap path not exists" << VAR(minicap_path);
-            return nullptr;
+            return;
         }
         screencap_unit = std::make_shared<ScreencapFastestWay>(minicap_path);
         break;
@@ -212,7 +222,7 @@ std::shared_ptr<ControlUnitAPI> create_controller_unit(MaaStringView adb_path, M
         LogInfo << "screencap_type: MinicapDirect";
         if (!std::filesystem::exists(minicap_path)) {
             LogError << "minicap path not exists" << VAR(minicap_path);
-            return nullptr;
+            return;
         }
         screencap_unit = std::make_shared<MinicapDirect>(minicap_path);
         break;
@@ -220,13 +230,13 @@ std::shared_ptr<ControlUnitAPI> create_controller_unit(MaaStringView adb_path, M
         LogInfo << "screencap_type: MinicapStream";
         if (!std::filesystem::exists(minicap_path)) {
             LogError << "minicap path not exists" << VAR(minicap_path);
-            return nullptr;
+            return;
         }
         screencap_unit = std::make_shared<MinicapStream>(minicap_path);
         break;
     default:
         LogError << "Unknown screencap type" << VAR(screencap_type);
-        return nullptr;
+        return;
     }
 
     auto unit_mgr = std::make_shared<ControlUnitMgr>();
@@ -241,18 +251,18 @@ std::shared_ptr<ControlUnitAPI> create_controller_unit(MaaStringView adb_path, M
     auto json_opt = json::parse(std::string_view(config));
     if (!json_opt) {
         LogError << "Parse config failed, invalid config:" << config;
-        return nullptr;
+        return;
     }
     bool parsed = unit_mgr->parse(*json_opt);
     if (!parsed) {
         LogError << "Parse json failed, invalid json:" << *json_opt;
-        return nullptr;
+        return;
     }
 
     auto platform_io = PlatformFactory::create();
     if (!platform_io) {
         LogError << "Create platform io failed";
-        return nullptr;
+        return;
     }
     unit_mgr->set_io(platform_io);
 
@@ -261,20 +271,26 @@ std::shared_ptr<ControlUnitAPI> create_controller_unit(MaaStringView adb_path, M
         { "{ADB_SERIAL}", adb_serial },
     });
 
-    return unit_mgr;
+    *result = unit_mgr;
 }
 
-std::shared_ptr<ConnectionAPI> create_connection(MaaStringView adb_path, MaaStringView adb_serial,
-                                                 MaaAdbControllerType type, MaaStringView config)
+void create_connection(std::shared_ptr<ConnectionAPI>* result, MaaStringView adb_path, MaaStringView adb_serial,
+                       MaaAdbControllerType type, MaaStringView config)
 {
-    LogFunc << VAR(adb_path) << VAR(adb_serial) << VAR(type) << VAR(config);
+    LogFunc << VAR(result) << VAR(adb_path) << VAR(adb_serial) << VAR(type) << VAR(config);
 
     std::ignore = type;
+
+    if (!result) {
+        return;
+    }
+
+    *result = nullptr;
 
     auto json_opt = json::parse(std::string_view(config));
     if (!json_opt) {
         LogError << "Parse config failed, invalid config:" << config;
-        return nullptr;
+        return;
     }
 
     auto connection = std::make_shared<Connection>();
@@ -282,13 +298,13 @@ std::shared_ptr<ConnectionAPI> create_connection(MaaStringView adb_path, MaaStri
     bool parsed = connection->parse(*json_opt);
     if (!parsed) {
         LogError << "Parse json failed, invalid json:" << *json_opt;
-        return nullptr;
+        return;
     }
 
     auto platform_io = PlatformFactory::create();
     if (!platform_io) {
         LogError << "Create platform io failed";
-        return nullptr;
+        return;
     }
     connection->set_io(platform_io);
     connection->set_replacement({
@@ -296,20 +312,26 @@ std::shared_ptr<ConnectionAPI> create_connection(MaaStringView adb_path, MaaStri
         { "{ADB_SERIAL}", adb_serial },
     });
 
-    return connection;
+    *result = connection;
 }
 
-std::shared_ptr<DeviceInfoAPI> create_device_info(MaaStringView adb_path, MaaStringView adb_serial,
-                                                  MaaAdbControllerType type, MaaStringView config)
+void create_device_info(std::shared_ptr<DeviceInfoAPI>* result, MaaStringView adb_path, MaaStringView adb_serial,
+                        MaaAdbControllerType type, MaaStringView config)
 {
-    LogFunc << VAR(adb_path) << VAR(adb_serial) << VAR(type) << VAR(config);
+    LogFunc << VAR(result) << VAR(adb_path) << VAR(adb_serial) << VAR(type) << VAR(config);
 
     std::ignore = type;
+
+    if (!result) {
+        return;
+    }
+
+    *result = nullptr;
 
     auto json_opt = json::parse(std::string_view(config));
     if (!json_opt) {
         LogError << "Parse config failed, invalid config:" << config;
-        return nullptr;
+        return;
     }
 
     auto device_info = std::make_shared<DeviceInfo>();
@@ -317,13 +339,13 @@ std::shared_ptr<DeviceInfoAPI> create_device_info(MaaStringView adb_path, MaaStr
     bool parsed = device_info->parse(*json_opt);
     if (!parsed) {
         LogError << "Parse json failed, invalid json:" << *json_opt;
-        return nullptr;
+        return;
     }
 
     auto platform_io = PlatformFactory::create();
     if (!platform_io) {
         LogError << "Create platform io failed";
-        return nullptr;
+        return;
     }
     device_info->set_io(platform_io);
     device_info->set_replacement({
@@ -331,20 +353,26 @@ std::shared_ptr<DeviceInfoAPI> create_device_info(MaaStringView adb_path, MaaStr
         { "{ADB_SERIAL}", adb_serial },
     });
 
-    return device_info;
+    *result = device_info;
 }
 
-std::shared_ptr<ActivityAPI> create_activity(MaaStringView adb_path, MaaStringView adb_serial,
-                                             MaaAdbControllerType type, MaaStringView config)
+void create_activity(std::shared_ptr<ActivityAPI>* result, MaaStringView adb_path, MaaStringView adb_serial,
+                     MaaAdbControllerType type, MaaStringView config)
 {
-    LogFunc << VAR(adb_path) << VAR(adb_serial) << VAR(type) << VAR(config);
+    LogFunc << VAR(result) << VAR(adb_path) << VAR(adb_serial) << VAR(type) << VAR(config);
 
     std::ignore = type;
+
+    if (!result) {
+        return;
+    }
+
+    *result = nullptr;
 
     auto json_opt = json::parse(std::string_view(config));
     if (!json_opt) {
         LogError << "Parse config failed, invalid config:" << config;
-        return nullptr;
+        return;
     }
 
     auto activity = std::make_shared<Activity>();
@@ -352,13 +380,13 @@ std::shared_ptr<ActivityAPI> create_activity(MaaStringView adb_path, MaaStringVi
     bool parsed = activity->parse(*json_opt);
     if (!parsed) {
         LogError << "Parse json failed, invalid json:" << *json_opt;
-        return nullptr;
+        return;
     }
 
     auto platform_io = PlatformFactory::create();
     if (!platform_io) {
         LogError << "Create platform io failed";
-        return nullptr;
+        return;
     }
     activity->set_io(platform_io);
     activity->set_replacement({
@@ -366,19 +394,24 @@ std::shared_ptr<ActivityAPI> create_activity(MaaStringView adb_path, MaaStringVi
         { "{ADB_SERIAL}", adb_serial },
     });
 
-    return activity;
+    *result = activity;
 }
 
-std::shared_ptr<TouchInputAPI> create_touch_input(MaaStringView adb_path, MaaStringView adb_serial,
-                                                  MaaAdbControllerType type, MaaStringView config,
-                                                  MaaStringView agent_path)
+void create_touch_input(std::shared_ptr<TouchInputAPI>* result, MaaStringView adb_path, MaaStringView adb_serial,
+                        MaaAdbControllerType type, MaaStringView config, MaaStringView agent_path)
 {
-    LogFunc << VAR(adb_path) << VAR(adb_serial) << VAR(type) << VAR(config) << VAR(agent_path);
+    LogFunc << VAR(result) << VAR(adb_path) << VAR(adb_serial) << VAR(type) << VAR(config) << VAR(agent_path);
+
+    if (!result) {
+        return;
+    }
+
+    *result = nullptr;
 
     auto json_opt = json::parse(std::string_view(config));
     if (!json_opt) {
         LogError << "Parse config failed, invalid config:" << config;
-        return nullptr;
+        return;
     }
 
     auto agent_stdpath = path(agent_path);
@@ -395,7 +428,7 @@ std::shared_ptr<TouchInputAPI> create_touch_input(MaaStringView adb_path, MaaStr
         LogInfo << "touch_type: MinitouchInput";
         if (!std::filesystem::exists(minitouch_path)) {
             LogError << "minitouch path not exists" << VAR(minitouch_path);
-            return nullptr;
+            return;
         }
         touch_unit = std::make_shared<MinitouchInput>(minitouch_path);
         break;
@@ -403,25 +436,25 @@ std::shared_ptr<TouchInputAPI> create_touch_input(MaaStringView adb_path, MaaStr
         LogInfo << "touch_type: MaatouchInput";
         if (!std::filesystem::exists(maatouch_path)) {
             LogError << "maatouch path not exists" << VAR(maatouch_path);
-            return nullptr;
+            return;
         }
         touch_unit = std::make_shared<MaatouchInput>(maatouch_path);
         break;
     default:
         LogError << "Unknown touch input type" << VAR(type);
-        return nullptr;
+        return;
     }
 
     bool parsed = touch_unit->parse(*json_opt);
     if (!parsed) {
         LogError << "Parse json failed, invalid json:" << *json_opt;
-        return nullptr;
+        return;
     }
 
     auto platform_io = PlatformFactory::create();
     if (!platform_io) {
         LogError << "Create platform io failed";
-        return nullptr;
+        return;
     }
     touch_unit->set_io(platform_io);
     touch_unit->set_replacement({
@@ -429,18 +462,24 @@ std::shared_ptr<TouchInputAPI> create_touch_input(MaaStringView adb_path, MaaStr
         { "{ADB_SERIAL}", adb_serial },
     });
 
-    return touch_unit;
+    *result = touch_unit;
 }
 
-std::shared_ptr<KeyInputAPI> create_key_input(MaaStringView adb_path, MaaStringView adb_serial,
-                                              MaaAdbControllerType type, MaaStringView config, MaaStringView agent_path)
+void create_key_input(std::shared_ptr<KeyInputAPI>* result, MaaStringView adb_path, MaaStringView adb_serial,
+                      MaaAdbControllerType type, MaaStringView config, MaaStringView agent_path)
 {
-    LogFunc << VAR(adb_path) << VAR(adb_serial) << VAR(type) << VAR(config) << VAR(agent_path);
+    LogFunc << VAR(result) << VAR(adb_path) << VAR(adb_serial) << VAR(type) << VAR(config) << VAR(agent_path);
+
+    if (!result) {
+        return;
+    }
+
+    *result = nullptr;
 
     auto json_opt = json::parse(std::string_view(config));
     if (!json_opt) {
         LogError << "Parse config failed, invalid config:" << config;
-        return nullptr;
+        return;
     }
     auto agent_stdpath = path(agent_path);
     auto maatouch_path = agent_stdpath / path("maatouch");
@@ -455,25 +494,25 @@ std::shared_ptr<KeyInputAPI> create_key_input(MaaStringView adb_path, MaaStringV
         LogInfo << "key_type: MaatouchInput";
         if (!std::filesystem::exists(maatouch_path)) {
             LogError << "maatouch path not exists" << VAR(maatouch_path);
-            return nullptr;
+            return;
         }
         key_unit = std::make_shared<MaatouchInput>(maatouch_path);
         break;
     default:
         LogError << "Unknown key input type" << VAR(type);
-        return nullptr;
+        return;
     }
 
     bool parsed = key_unit->parse(*json_opt);
     if (!parsed) {
         LogError << "Parse json failed, invalid json:" << *json_opt;
-        return nullptr;
+        return;
     }
 
     auto platform_io = PlatformFactory::create();
     if (!platform_io) {
         LogError << "Create platform io failed";
-        return nullptr;
+        return;
     }
     key_unit->set_io(platform_io);
     key_unit->set_replacement({
@@ -481,19 +520,24 @@ std::shared_ptr<KeyInputAPI> create_key_input(MaaStringView adb_path, MaaStringV
         { "{ADB_SERIAL}", adb_serial },
     });
 
-    return key_unit;
+    *result = key_unit;
 }
 
-std::shared_ptr<ScreencapAPI> create_screencap(MaaStringView adb_path, MaaStringView adb_serial,
-                                               MaaAdbControllerType type, MaaStringView config,
-                                               MaaStringView agent_path)
+void create_screencap(std::shared_ptr<ScreencapAPI>* result, MaaStringView adb_path, MaaStringView adb_serial,
+                      MaaAdbControllerType type, MaaStringView config, MaaStringView agent_path)
 {
-    LogFunc << VAR(adb_path) << VAR(adb_serial) << VAR(type) << VAR(config) << VAR(agent_path);
+    LogFunc << VAR(result) << VAR(adb_path) << VAR(adb_serial) << VAR(type) << VAR(config) << VAR(agent_path);
+
+    if (!result) {
+        return;
+    }
+
+    *result = nullptr;
 
     auto json_opt = json::parse(std::string_view(config));
     if (!json_opt) {
         LogError << "Parse config failed, invalid config:" << config;
-        return nullptr;
+        return;
     }
 
     auto agent_stdpath = path(agent_path);
@@ -505,7 +549,7 @@ std::shared_ptr<ScreencapAPI> create_screencap(MaaStringView adb_path, MaaString
         LogInfo << "screencap_type: ScreencapFastestWay";
         if (!std::filesystem::exists(minicap_path)) {
             LogError << "minicap path not exists" << VAR(minicap_path);
-            return nullptr;
+            return;
         }
         screencap_unit = std::make_shared<ScreencapFastestWay>(minicap_path);
         break;
@@ -529,7 +573,7 @@ std::shared_ptr<ScreencapAPI> create_screencap(MaaStringView adb_path, MaaString
         LogInfo << "screencap_type: MinicapDirect";
         if (!std::filesystem::exists(minicap_path)) {
             LogError << "minicap path not exists" << VAR(minicap_path);
-            return nullptr;
+            return;
         }
         screencap_unit = std::make_shared<MinicapDirect>(minicap_path);
         break;
@@ -537,25 +581,25 @@ std::shared_ptr<ScreencapAPI> create_screencap(MaaStringView adb_path, MaaString
         LogInfo << "screencap_type: MinicapStream";
         if (!std::filesystem::exists(minicap_path)) {
             LogError << "minicap path not exists" << VAR(minicap_path);
-            return nullptr;
+            return;
         }
         screencap_unit = std::make_shared<MinicapStream>(minicap_path);
         break;
     default:
         LogError << "Unknown screencap type" << VAR(type);
-        return nullptr;
+        return;
     }
 
     bool parsed = screencap_unit->parse(*json_opt);
     if (!parsed) {
         LogError << "Parse json failed, invalid json:" << *json_opt;
-        return nullptr;
+        return;
     }
 
     auto platform_io = PlatformFactory::create();
     if (!platform_io) {
         LogError << "Create platform io failed";
-        return nullptr;
+        return;
     }
     screencap_unit->set_io(platform_io);
     screencap_unit->set_replacement({
@@ -563,7 +607,7 @@ std::shared_ptr<ScreencapAPI> create_screencap(MaaStringView adb_path, MaaString
         { "{ADB_SERIAL}", adb_serial },
     });
 
-    return screencap_unit;
+    *result = screencap_unit;
 }
 
 MAA_ADB_CTRL_UNIT_NS_END

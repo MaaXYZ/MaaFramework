@@ -34,15 +34,16 @@ MaaControllerHandle MaaAdbControllerCreateV2(MaaStringView adb_path, MaaStringVi
         return nullptr;
     }
 
-    using create_controller_unit_t = std::shared_ptr<MAA_ADB_CTRL_UNIT_NS::ControlUnitAPI> (*)(
-        MaaStringView, MaaStringView, MaaAdbControllerType, MaaStringView, MaaStringView);
+    using create_controller_unit_t = void (*)(std::shared_ptr<MAA_ADB_CTRL_UNIT_NS::ControlUnitAPI>*, MaaStringView,
+                                              MaaStringView, MaaAdbControllerType, MaaStringView, MaaStringView);
     auto create_func = MAA_CTRL_NS::AdbController::get_function<create_controller_unit_t>("create_controller_unit");
     if (!create_func) {
         LogError << "Failed to get function create_controller_unit";
         return nullptr;
     }
 
-    auto unit_mgr = create_func(adb_path, address, type, config, agent_path);
+    std::shared_ptr<MAA_ADB_CTRL_UNIT_NS::ControlUnitAPI> unit_mgr;
+    create_func(&unit_mgr, adb_path, address, type, config, agent_path);
 
     if (!unit_mgr) {
         LogError << "Failed to create controller unit";
