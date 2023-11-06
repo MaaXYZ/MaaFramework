@@ -24,8 +24,9 @@ public:
                                      ::maarpc::EmptyResponse* response) override;
     ::grpc::Status acquire_id(::grpc::ServerContext* context, const ::maarpc::EmptyRequest* request,
                               ::maarpc::IdResponse* response) override;
-    ::grpc::Status register_callback(::grpc::ServerContext* context,
-                                     ::grpc::ServerReaderWriter<::maarpc::Callback, ::maarpc::CallbackRequest>* stream);
+    ::grpc::Status register_callback(
+        ::grpc::ServerContext* context,
+        ::grpc::ServerReaderWriter<::maarpc::Callback, ::maarpc::CallbackRequest>* stream) override;
     ::grpc::Status unregister_callback(::grpc::ServerContext* context, const ::maarpc::IdRequest* request,
                                        ::maarpc::EmptyResponse* response) override;
 
