@@ -18,8 +18,7 @@
 
 MAA_CTRL_NS_BEGIN
 
-ThriftController::ThriftController(const std::string& param_str, MaaControllerCallback callback,
-                                               void* callback_arg)
+ThriftController::ThriftController(const std::string& param_str, MaaControllerCallback callback, void* callback_arg)
     : ControllerMgr(callback, callback_arg)
 {
     LogDebug << VAR(param_str);
@@ -71,7 +70,7 @@ ThriftController::ThriftController(const std::string& param_str, MaaControllerCa
     transport_ = std::make_shared<transport::TBufferedTransport>(socket);
     auto protocol = std::make_shared<protocol::TBinaryProtocol>(transport_);
 
-    client_ = std::make_shared<ThriftController::ThriftControllerClient>(protocol);
+    client_ = std::make_shared<ThriftControlUnit::ThriftControlUnitClient>(protocol);
 }
 
 ThriftController::~ThriftController()
@@ -117,7 +116,7 @@ std::pair<int, int> ThriftController::_get_resolution() const
         return {};
     }
 
-    ThriftController::Size resolution;
+    ThriftControlUnit::Size resolution;
     client_->get_resolution(resolution);
     return { resolution.width, resolution.height };
 }
@@ -131,7 +130,7 @@ bool ThriftController::_click(ClickParam param)
         return false;
     }
 
-    ThriftController::ClickParam thrift_param;
+    ThriftControlUnit::ClickParam thrift_param;
     thrift_param.point.x = param.x;
     thrift_param.point.y = param.y;
 
@@ -146,7 +145,7 @@ bool ThriftController::_swipe(SwipeParam param)
         LogError << "client_ is nullptr or transport_ is not open";
         return false;
     }
-    ThriftController::SwipeParam thrift_param;
+    ThriftControlUnit::SwipeParam thrift_param;
     thrift_param.point1.x = param.x1;
     thrift_param.point1.y = param.y1;
     thrift_param.point2.x = param.x2;
@@ -164,7 +163,7 @@ bool ThriftController::_touch_down(TouchParam param)
         return false;
     }
 
-    ThriftController::TouchParam thrift_param;
+    ThriftControlUnit::TouchParam thrift_param;
     thrift_param.contact = param.contact;
     thrift_param.point.x = param.x;
     thrift_param.point.y = param.y;
@@ -182,7 +181,7 @@ bool ThriftController::_touch_move(TouchParam param)
         return false;
     }
 
-    ThriftController::TouchParam thrift_param;
+    ThriftControlUnit::TouchParam thrift_param;
     thrift_param.contact = param.contact;
     thrift_param.point.x = param.x;
     thrift_param.point.y = param.y;
@@ -200,7 +199,7 @@ bool ThriftController::_touch_up(TouchParam param)
         return false;
     }
 
-    ThriftController::TouchParam thrift_param;
+    ThriftControlUnit::TouchParam thrift_param;
     thrift_param.contact = param.contact;
 
     return client_->touch_up(thrift_param);
@@ -215,7 +214,7 @@ bool ThriftController::_press_key(PressKeyParam param)
         return false;
     }
 
-    ThriftController::PressKeyParam thrift_param;
+    ThriftControlUnit::PressKeyParam thrift_param;
     thrift_param.keycode = param.keycode;
 
     return client_->press_key(thrift_param);
@@ -230,7 +229,7 @@ cv::Mat ThriftController::_screencap()
         return {};
     }
 
-    ThriftController::CustomImage img;
+    ThriftControlUnit::CustomImage img;
     client_->screencap(img);
     if (img.data.empty()) {
         LogError << "client_->screencap() return empty buffer";
