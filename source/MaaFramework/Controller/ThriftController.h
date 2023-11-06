@@ -4,7 +4,7 @@
 
 #include "ControllerMgr.h"
 
-#include "ThriftController.h"
+#include "ThriftControlUnit.h"
 
 MAA_CTRL_NS_BEGIN
 
@@ -29,7 +29,7 @@ protected:
     virtual bool _stop_app(AppParam param) override;
 
 private:
-    std::shared_ptr<ThriftController::ThriftControllerClient> client_ = nullptr;
+    std::shared_ptr<ThriftControlUnit::ThriftControlUnitClient> client_ = nullptr;
     std::shared_ptr<apache::thrift::transport::TTransport> transport_ = nullptr;
 
     enum ThriftControllerTypeEnum
