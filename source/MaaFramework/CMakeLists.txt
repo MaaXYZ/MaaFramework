@@ -1,13 +1,7 @@
-file(
-    GLOB_RECURSE
-    maa_src
-    *.cpp
-    *.h
-    *.hpp
-    ../include
-    ../../include/MaaFramework)
+file(GLOB_RECURSE maa_framework_src *.h *.hpp *.cpp)
+file(GLOB_RECURSE maa_framework_header ../../include/MaaFramework/*)
 
-add_library(MaaFramework SHARED ${maa_src})
+add_library(MaaFramework SHARED ${maa_framework_src} ${maa_framework_header})
 
 set(MaaFramework_INCLUDE ${CMAKE_CURRENT_SOURCE_DIR}/../../include/MaaFramework)
 
@@ -53,7 +47,7 @@ install(
 install(DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/../../include/MaaFramework" DESTINATION "include")
 install(DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/../../include/Interface" DESTINATION "share")
 
-source_group(TREE ${CMAKE_CURRENT_SOURCE_DIR} FILES ${maa_src})
+source_group(TREE ${CMAKE_CURRENT_SOURCE_DIR} FILES ${maa_framework_src})
 
 if(WIN32)
     add_custom_command(

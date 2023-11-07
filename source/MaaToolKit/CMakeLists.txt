@@ -1,13 +1,8 @@
-file(
-    GLOB_RECURSE
-    maa_toolkit_src
-    *.cpp
-    *.h
-    *.hpp
-    ../include
-    ../../include/MaaToolKit)
+file(GLOB_RECURSE maa_toolkit_src *.h *.hpp *.cpp)
+file(GLOB_RECURSE maa_toolkit_header ../../include/MaaToolKit/*)
 
-add_library(MaaToolKit SHARED ${maa_toolkit_src})
+
+add_library(MaaToolKit SHARED ${maa_toolkit_src} ${maa_toolkit_header})
 
 set(MaaToolKit_INCLUDE ${CMAKE_CURRENT_SOURCE_DIR}/../../include/MaaToolKit)
 

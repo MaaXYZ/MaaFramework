@@ -2,9 +2,10 @@ generate_grpc_lib(MaaRpcProto ${CMAKE_SOURCE_DIR}/include/Interface/proto ${CMAK
                   maa_proto_src)
 
 file(GLOB maa_proto ../../include/Interface/proto/*.proto)
-file(GLOB maa_rpc_src implement/*.h implement/*.cpp API/*.cpp)
+file(GLOB maa_rpc_src implement/* implement/* API/*)
+file(GLOB maa_rpc_header ../../include/MaaRpc/*)
 
-add_library(MaaRpc SHARED ${maa_rpc_src})
+add_library(MaaRpc SHARED ${maa_rpc_src} ${maa_rpc_header})
 target_compile_definitions(MaaRpc PRIVATE MAA_RPC_EXPORTS)
 target_include_directories(
     MaaRpc
@@ -19,7 +20,7 @@ install(
     ARCHIVE DESTINATION lib)
 install(DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/../../include/MaaRpc" DESTINATION "include")
 
-source_group(TREE ${CMAKE_SOURCE_DIR} FILES ${maa_proto_src} ${maa_rpc_src})
+source_group(TREE ${CMAKE_CURRENT_SOURCE_DIR} FILES ${maa_rpc_src})
 
 if(BUILD_GRPC_CLI)
     add_subdirectory(cli)

@@ -1,6 +1,7 @@
-file(GLOB_RECURSE maa_adb_control_unit_src *.h *.hpp *.cpp ../include)
+file(GLOB_RECURSE maa_adb_control_unit_src *.h *.hpp *.cpp)
+file(GLOB_RECURSE maa_adb_control_unit_header ../include/ControlUnit/AdbControlUnitAPI.h)
 
-add_library(MaaAdbControlUnit SHARED ${maa_adb_control_unit_src})
+add_library(MaaAdbControlUnit SHARED ${maa_adb_control_unit_src} ${maa_adb_control_unit_header})
 
 target_include_directories(MaaAdbControlUnit PRIVATE ${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_CURRENT_SOURCE_DIR}/../include
                                                   ${CMAKE_CURRENT_SOURCE_DIR}/../../include)
