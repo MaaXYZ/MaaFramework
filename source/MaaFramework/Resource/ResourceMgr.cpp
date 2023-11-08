@@ -40,6 +40,7 @@ MaaResId ResourceMgr::post_path(std::filesystem::path path)
     LogInfo << VAR(path);
 
     loaded_ = false;
+    hash_cache_.clear();
 
     if (!res_loader_) {
         LogError << "res_loader_ is nullptr";
@@ -73,15 +74,39 @@ MaaBool ResourceMgr::loaded() const
     return loaded_;
 }
 
+// https://stackoverflow.com/questions/20511347/a-good-hash-function-for-a-vector
+size_t vec_hash(const std::vector<size_t>& vec)
+{
+    size_t seed = vec.size();
+    for (auto x : vec) {
+        x = ((x >> 16) ^ x) * 0x45d9f3b;
+        x = ((x >> 16) ^ x) * 0x45d9f3b;
+        x = (x >> 16) ^ x;
+        seed ^= x + 0x9e3779b9 + (seed << 6) + (seed >> 2);
+    }
+    return seed;
+}
+
 std::string ResourceMgr::get_hash() const
 {
-    std::string splicing;
-    for (const auto& p : paths_) {
-        splicing += path_to_utf8_string(p);
+    if (!hash_cache_.empty()) {
+        return hash_cache_;
     }
-    constexpr std::hash<std::string> kHasher;
-    size_t hash = kHasher(splicing);
-    return std::to_string(hash);
+
+    std::vector<size_t> filesizes;
+    for (const auto& p : paths_) {
+        for (const auto& entry : std::filesystem::recursive_directory_iterator(p)) {
+            if (!entry.is_regular_file()) {
+                continue;
+            }
+            filesizes.emplace_back(entry.file_size());
+        }
+    }
+    size_t hash = vec_hash(filesizes);
+    LogInfo << VAR(hash);
+
+    hash_cache_ = std::to_string(hash);
+    return hash_cache_;
 }
 
 std::vector<std::string> ResourceMgr::get_task_list() const
