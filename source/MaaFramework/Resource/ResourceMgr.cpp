@@ -75,7 +75,13 @@ MaaBool ResourceMgr::loaded() const
 
 std::string ResourceMgr::get_hash() const
 {
-    return std::string();
+    std::string splicing;
+    for (const auto& p : paths_) {
+        splicing += path_to_utf8_string(p);
+    }
+    constexpr std::hash<std::string> kHasher;
+    size_t hash = kHasher(splicing);
+    return std::to_string(hash);
 }
 
 std::vector<std::string> ResourceMgr::get_task_list() const
