@@ -192,14 +192,14 @@ cv::Mat SyncContext::screencap()
     return ctrl->get_image();
 }
 
-std::string SyncContext::task_result(const std::string& task_name) const
+json::value SyncContext::task_result(const std::string& task_name) const
 {
     if (!status()) {
         LogError << "Instance status is null";
         return {};
     }
 
-    return status()->get_task_result(task_name).to_string();
+    return status()->get_task_result(task_name);
 }
 
 MAA_TASK_NS_END

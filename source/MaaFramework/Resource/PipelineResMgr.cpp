@@ -146,6 +146,12 @@ bool PipelineResMgr::check_next_list(const TaskData::NextList& next_list) const
     return true;
 }
 
+std::vector<std::string> PipelineResMgr::get_task_list() const
+{
+    auto k = task_data_map_ | MAA_RNS::views::keys;
+    return std::vector(k.begin(), k.end());
+}
+
 bool PipelineResMgr::parse_config(const json::value& input, TaskDataMap& output, std::set<std::string>& existing_keys,
                                   const TaskDataMap& default_value)
 {

@@ -27,7 +27,7 @@ public:
     virtual MaaBool loaded() const override;
 
     virtual std::string get_hash() const override;
-    virtual std::string get_task_list() const override;
+    virtual std::vector<std::string> get_task_list() const override;
 
 public:
     const auto& pipeline_res() const { return pipeline_res_; }

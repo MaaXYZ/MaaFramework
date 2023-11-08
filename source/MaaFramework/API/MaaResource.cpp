@@ -116,6 +116,6 @@ MaaBool MAA_FRAMEWORK_API MaaResourceGetTaskList(MaaResourceHandle res, /* out *
         return false;
     }
 
-    buffer->set(std::move(list));
+    buffer->set(json::array(list).to_string());
     return true;
 }

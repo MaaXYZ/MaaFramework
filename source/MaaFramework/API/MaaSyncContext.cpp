@@ -170,12 +170,12 @@ MaaBool MaaSyncContextGetTaskResult(MaaSyncContextHandle sync_context, MaaString
         return false;
     }
 
-    auto res = sync_context->task_result(task_name);
+    json::value res = sync_context->task_result(task_name);
     if (res.empty()) {
         LogError << "res is empty";
         return false;
     }
 
-    buffer->set(std::move(res));
+    buffer->set(res.to_string());
     return true;
 }

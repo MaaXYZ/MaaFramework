@@ -78,13 +78,9 @@ std::string ResourceMgr::get_hash() const
     return std::string();
 }
 
-std::string ResourceMgr::get_task_list() const
+std::vector<std::string> ResourceMgr::get_task_list() const
 {
-    json::array names = {};
-    for (const auto& kv : pipeline_res_.get_task_data_map()) {
-        names.push_back(kv.first);
-    }
-    return names.to_string();
+    return pipeline_res_.get_task_list();
 }
 
 bool ResourceMgr::run_load(typename AsyncRunner<std::filesystem::path>::Id id, std::filesystem::path path)

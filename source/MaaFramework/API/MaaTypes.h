@@ -1,12 +1,15 @@
 #pragma once
 
-#include "MaaFramework/MaaDef.h"
-#include "Utils/NoWarningCVMat.hpp"
 
 #include <filesystem>
 #include <string>
 #include <string_view>
 #include <vector>
+
+#include <meojson/json.hpp>
+
+#include "MaaFramework/MaaDef.h"
+#include "Utils/NoWarningCVMat.hpp"
 
 struct MaaInstanceSink
 {
@@ -28,7 +31,7 @@ public:
     virtual MaaBool loaded() const = 0;
 
     virtual std::string get_hash() const = 0;
-    virtual std::string get_task_list() const = 0;
+    virtual std::vector<std::string> get_task_list() const = 0;
 };
 
 struct MaaControllerAPI : public MaaInstanceSink
@@ -108,7 +111,7 @@ public:
     virtual bool touch_move(int contact, int x, int y, int pressure) = 0;
     virtual bool touch_up(int contact) = 0;
 
-    virtual std::string task_result(const std::string& task_name) const = 0;
+    virtual json::value task_result(const std::string& task_name) const = 0;
 
     virtual MaaInstanceHandle instance() = 0;
     virtual MaaResourceHandle resource() = 0;
