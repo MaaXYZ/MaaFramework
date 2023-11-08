@@ -102,3 +102,20 @@ MaaBool MaaResourceGetHash(MaaResourceHandle res, MaaStringBufferHandle buffer)
     buffer->set(std::move(hash));
     return true;
 }
+
+MaaBool MAA_FRAMEWORK_API MaaResourceGetTaskList(MaaResourceHandle res, /* out */ MaaStringBufferHandle buffer)
+{
+    if (!res || !buffer) {
+        LogError << "handle is null";
+        return false;
+    }
+
+    auto list = res->get_task_list();
+    if (list.empty()) {
+        LogError << "list is empty";
+        return false;
+    }
+
+    buffer->set(std::move(list));
+    return true;
+}

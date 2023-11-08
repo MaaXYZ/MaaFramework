@@ -24,6 +24,8 @@ public:
                           ::maarpc::BoolResponse* response) override;
     ::grpc::Status hash(::grpc::ServerContext* context, const ::maarpc::HandleRequest* request,
                         ::maarpc::StringResponse* response) override;
+    ::grpc::Status task_list(::grpc::ServerContext* context, const ::maarpc::HandleRequest* request,
+                             ::maarpc::StringResponse* response) override;
 
     AtomicMap<MaaResourceHandle>& handles() { return handles_; }
 

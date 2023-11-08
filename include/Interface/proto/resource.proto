@@ -13,5 +13,7 @@ service Resource {
   rpc status(HandleIIdRequest) returns (StatusResponse);
   rpc wait(HandleIIdRequest) returns (StatusResponse);
   rpc loaded(HandleRequest) returns (BoolResponse);
+
   rpc hash(HandleRequest) returns (StringResponse);
+  rpc task_list(HandleRequest) returns (StringResponse);
 }

@@ -28,6 +28,7 @@ public:
     virtual MaaBool loaded() const = 0;
 
     virtual std::string get_hash() const = 0;
+    virtual std::string get_task_list() const = 0;
 };
 
 struct MaaControllerAPI : public MaaInstanceSink
