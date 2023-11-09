@@ -4,7 +4,7 @@
 
 #include <tuple>
 
-MAA_ADB_CTRL_UNIT_NS_BEGIN
+MAA_CTRL_UNIT_NS_BEGIN
 
 bool TapTouchInput::parse(const json::value& config)
 {
@@ -84,4 +84,4 @@ bool TapKeyInput::press_key(int key)
     return cmd_ret.has_value() && cmd_ret.value().empty();
 }
 
-MAA_ADB_CTRL_UNIT_NS_END
+MAA_CTRL_UNIT_NS_END

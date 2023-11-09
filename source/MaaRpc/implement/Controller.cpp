@@ -224,7 +224,7 @@ static MaaBool _stop_app(MaaStringView entry, MaaTransparentArg arg)
     return request.ok();
 }
 
-static MaaBool _get_resolution(MaaTransparentArg arg, int32_t* width, int32_t* height)
+static MaaBool _request_resolution(MaaTransparentArg arg, int32_t* width, int32_t* height)
 {
     auto info = reinterpret_cast<ControllerImpl::CustomControllerInfo*>(arg);
     auto stream = info->stream;
@@ -267,7 +267,7 @@ static MaaBool _get_image(MaaTransparentArg arg, MaaImageBufferHandle buffer)
     return request.ok();
 }
 
-static MaaBool _get_uuid(MaaTransparentArg arg, MaaStringBufferHandle buffer)
+static MaaBool _request_uuid(MaaTransparentArg arg, MaaStringBufferHandle buffer)
 {
     auto info = reinterpret_cast<ControllerImpl::CustomControllerInfo*>(arg);
     auto stream = info->stream;
@@ -291,7 +291,7 @@ static MaaBool _get_uuid(MaaTransparentArg arg, MaaStringBufferHandle buffer)
 
 static MaaCustomControllerAPI custom_controller_api = { _set_option,     _connect,    _click,    _swipe,     _press_key,
                                                         _touch_down,     _touch_move, _touch_up, _start_app, _stop_app,
-                                                        _get_resolution, _get_image,  _get_uuid };
+                                                        _request_resolution, _get_image,  _request_uuid };
 
 Status ControllerImpl::create_custom(
     ServerContext* context,

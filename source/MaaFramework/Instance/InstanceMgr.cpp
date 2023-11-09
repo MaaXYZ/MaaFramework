@@ -1,6 +1,6 @@
 #include "InstanceMgr.h"
 
-#include "Controller/ControllerMgr.h"
+#include "Controller/ControllerAgent.h"
 #include "MaaFramework/MaaMsg.h"
 #include "Resource/ResourceMgr.h"
 #include "Task/CustomAction.h"
@@ -245,9 +245,9 @@ MAA_RES_NS::ResourceMgr* InstanceMgr::inter_resource()
     return dynamic_cast<MAA_RES_NS::ResourceMgr*>(resource());
 }
 
-MAA_CTRL_NS::ControllerMgr* InstanceMgr::inter_controller()
+MAA_CTRL_NS::ControllerAgent* InstanceMgr::inter_controller()
 {
-    return dynamic_cast<MAA_CTRL_NS::ControllerMgr*>(controller());
+    return dynamic_cast<MAA_CTRL_NS::ControllerAgent*>(controller());
 }
 
 InstanceStatus* InstanceMgr::inter_status()

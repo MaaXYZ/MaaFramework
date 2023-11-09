@@ -4,7 +4,7 @@
 
 #include "BoostIO.h"
 
-MAA_ADB_CTRL_UNIT_NS_BEGIN
+MAA_CTRL_UNIT_NS_BEGIN
 
 using NativeIO = BoostIO;
 
@@ -14,4 +14,4 @@ public:
     static std::shared_ptr<PlatformIO> create() { return std::make_shared<NativeIO>(); }
 };
 
-MAA_ADB_CTRL_UNIT_NS_END
+MAA_CTRL_UNIT_NS_END

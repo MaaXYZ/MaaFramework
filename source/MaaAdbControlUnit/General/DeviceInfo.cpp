@@ -2,7 +2,7 @@
 
 #include "Utils/Logger.h"
 
-MAA_ADB_CTRL_UNIT_NS_BEGIN
+MAA_CTRL_UNIT_NS_BEGIN
 
 bool DeviceInfo::parse(const json::value& config)
 {
@@ -23,11 +23,10 @@ std::optional<std::string> DeviceInfo::request_uuid()
     auto& uuid_str = cmd_ret.value();
     std::erase_if(uuid_str, [](char c) { return !std::isdigit(c) && !std::isalpha(c); });
 
-    uuid_ = std::move(uuid_str);
-    return uuid_;
+    return uuid_str;
 }
 
-std::optional<DeviceResolution> DeviceInfo::request_resolution()
+std::optional<std::pair<int, int>> DeviceInfo::request_resolution()
 {
     LogFunc;
 
@@ -37,9 +36,11 @@ std::optional<DeviceResolution> DeviceInfo::request_resolution()
         return std::nullopt;
     }
 
+    int width = 0, height = 0;
+
     std::istringstream iss(cmd_ret.value());
-    iss >> resolution_.width >> resolution_.height;
-    return resolution_;
+    iss >> width >> height;
+    return std::make_pair(width, height);
 }
 
 std::optional<int> DeviceInfo::request_orientation()
@@ -61,12 +62,10 @@ std::optional<int> DeviceInfo::request_orientation()
     int ori = s.front() - '0';
 
     if (!(ori >= 0 && ori <= 3)) {
-        orientation_ = -1;
         return std::nullopt;
     }
 
-    orientation_ = ori;
-    return orientation_;
+    return ori;
 }
 
-MAA_ADB_CTRL_UNIT_NS_END
+MAA_CTRL_UNIT_NS_END

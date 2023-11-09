@@ -11,7 +11,7 @@
 #define BOOST_CREATE_NO_WINDOW
 #endif
 
-MAA_ADB_CTRL_UNIT_NS_BEGIN
+MAA_CTRL_UNIT_NS_BEGIN
 
 BoostIO::BoostIO() : ios_(std::make_shared<boost::asio::io_context>()), server_sock_(*ios_)
 {
@@ -320,4 +320,4 @@ std::string IOHandlerBoostStream::read(unsigned timeout_sec, size_t expect)
     return result;
 }
 
-MAA_ADB_CTRL_UNIT_NS_END
+MAA_CTRL_UNIT_NS_END

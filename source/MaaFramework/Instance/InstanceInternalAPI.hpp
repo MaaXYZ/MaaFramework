@@ -13,7 +13,7 @@ class ResourceMgr;
 MAA_RES_NS_END
 
 MAA_CTRL_NS_BEGIN
-class ControllerMgr;
+class ControllerAgent;
 MAA_CTRL_NS_END
 
 MAA_NS_BEGIN
@@ -36,7 +36,7 @@ struct InstanceInternalAPI : public NonCopyable
 {
 public:
     virtual MAA_RES_NS::ResourceMgr* inter_resource() = 0;
-    virtual MAA_CTRL_NS::ControllerMgr* inter_controller() = 0;
+    virtual MAA_CTRL_NS::ControllerAgent* inter_controller() = 0;
     virtual InstanceStatus* inter_status() = 0;
     virtual void notify(std::string_view msg, const json::value& details = json::value()) = 0;
     virtual MAA_VISION_NS::CustomRecognizerPtr custom_recognizer(const std::string& name) = 0;

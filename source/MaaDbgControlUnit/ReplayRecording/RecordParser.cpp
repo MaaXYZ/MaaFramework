@@ -8,7 +8,7 @@
 #include "Utils/ImageIo.h"
 #include "Utils/Logger.h"
 
-MAA_DBG_CTRL_UNIT_NS_BEGIN
+MAA_CTRL_UNIT_NS_BEGIN
 
 std::optional<Recording> RecordParser::parse(const std::filesystem::path& path)
 {
@@ -333,4 +333,4 @@ std::optional<Record::Param> RecordParser::parse_app(const json::value& record_j
     return result;
 }
 
-MAA_DBG_CTRL_UNIT_NS_END
+MAA_CTRL_UNIT_NS_END

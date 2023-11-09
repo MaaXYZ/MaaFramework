@@ -11,7 +11,7 @@
 
 #include <meojson/json.hpp>
 
-MAA_DBG_CTRL_UNIT_NS_BEGIN
+MAA_CTRL_UNIT_NS_BEGIN
 
 struct DeviceInfo
 {
@@ -141,4 +141,4 @@ inline std::ostream& operator<<(std::ostream& os, Record::Action::Type type)
     return os;
 }
 
-MAA_DBG_CTRL_UNIT_NS_END
+MAA_CTRL_UNIT_NS_END

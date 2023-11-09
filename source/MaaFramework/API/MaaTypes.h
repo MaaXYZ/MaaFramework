@@ -1,6 +1,5 @@
 #pragma once
 
-
 #include <filesystem>
 #include <string>
 #include <string_view>
@@ -55,8 +54,9 @@ public:
     virtual MaaStatus wait(MaaCtrlId ctrl_id) const = 0;
     virtual MaaBool connected() const = 0;
 
-    virtual cv::Mat get_image() const = 0;
-    virtual std::string get_uuid() const = 0;
+    virtual cv::Mat get_image() = 0;
+    virtual std::string get_uuid() = 0;
+    virtual std::pair<int, int> get_resolution() = 0;
 };
 
 struct MaaInstanceAPI

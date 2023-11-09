@@ -7,7 +7,7 @@
 #include <array>
 #include <cmath>
 
-MAA_ADB_CTRL_UNIT_NS_BEGIN
+MAA_CTRL_UNIT_NS_BEGIN
 
 bool MtouchHelper::read_info(int swidth, int sheight, int orientation)
 {
@@ -230,4 +230,4 @@ bool MtouchHelper::touch_up(int contact)
     return ret;
 }
 
-MAA_ADB_CTRL_UNIT_NS_END
+MAA_CTRL_UNIT_NS_END

@@ -1,4 +1,4 @@
-namespace cpp ThriftControlUnit
+namespace cpp ThriftController
 
 struct Point {
   1: i32 x,
@@ -31,15 +31,20 @@ struct Size {
 }
 
 struct CustomImage {
-  1: Size size,
-  2: i32 type,
-  3: binary data,
+  1: binary png_data,
 }
 
-service ThriftControlUnit {
-  bool set_option(1: string key, 2: string value),
-
+service ThriftController {
   bool connect(),
+
+  string request_uuid(),
+  Size request_resolution(),
+
+  bool start_app(1: string entry),
+  bool stop_app(1: string entry),
+
+  CustomImage screencap(),
+
   bool click(1: ClickParam param),
   bool swipe(1: SwipeParam param),
   
@@ -48,12 +53,4 @@ service ThriftControlUnit {
   bool touch_up(1: TouchParam param),
 
   bool press_key(1: PressKeyParam param),
-
-  bool start_game(1: string activity),
-  bool stop_game(1: string activity),
-
-  Size get_resolution(),
-
-  string get_uuid(),
-  CustomImage screencap(),
 }

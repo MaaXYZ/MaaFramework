@@ -1,6 +1,6 @@
 #include "Actuator.h"
 
-#include "Controller/ControllerMgr.h"
+#include "Controller/ControllerAgent.h"
 #include "Instance/InstanceStatus.h"
 #include "Task/CustomAction.h"
 #include "Utils/Logger.h"

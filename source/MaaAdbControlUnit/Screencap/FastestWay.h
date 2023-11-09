@@ -7,7 +7,7 @@
 #include "RawByNetcat.h"
 #include "RawWithGzip.h"
 
-MAA_ADB_CTRL_UNIT_NS_BEGIN
+MAA_CTRL_UNIT_NS_BEGIN
 
 class ScreencapFastestWay : public ScreencapBase
 {
@@ -46,4 +46,4 @@ private:
 
 std::ostream& operator<<(std::ostream& os, ScreencapFastestWay::Method m);
 
-MAA_ADB_CTRL_UNIT_NS_END
+MAA_CTRL_UNIT_NS_END

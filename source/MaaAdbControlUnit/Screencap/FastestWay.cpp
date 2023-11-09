@@ -6,7 +6,7 @@
 
 #include <unordered_set>
 
-MAA_ADB_CTRL_UNIT_NS_BEGIN
+MAA_CTRL_UNIT_NS_BEGIN
 
 ScreencapFastestWay::ScreencapFastestWay(const std::filesystem::path& minicap_path)
 {
@@ -157,4 +157,4 @@ std::ostream& operator<<(std::ostream& os, ScreencapFastestWay::Method m)
     return os;
 }
 
-MAA_ADB_CTRL_UNIT_NS_END
+MAA_CTRL_UNIT_NS_END

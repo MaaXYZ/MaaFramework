@@ -1,17 +1,20 @@
-generate_grpc_lib(MaaRpcProto ${CMAKE_SOURCE_DIR}/include/Interface/proto ${CMAKE_CURRENT_SOURCE_DIR}/generated
-                  maa_proto_src)
+generate_grpc_lib(
+    RpcProto
+    ${CMAKE_SOURCE_DIR}/include/Interface/proto
+    ${CMAKE_CURRENT_BINARY_DIR}/generated
+    maa_rpc_proto_src)
 
-file(GLOB maa_proto ../../include/Interface/proto/*.proto)
-file(GLOB maa_rpc_src implement/* implement/* API/*)
-file(GLOB maa_rpc_header ../../include/MaaRpc/*)
+file(GLOB_RECURSE maa_rpc_src implement/* implement/* API/*)
+file(GLOB_RECURSE maa_rpc_header ../../include/MaaRpc/*)
 
 add_library(MaaRpc SHARED ${maa_rpc_src} ${maa_rpc_header})
 target_compile_definitions(MaaRpc PRIVATE MAA_RPC_EXPORTS)
 target_include_directories(
     MaaRpc
     INTERFACE ../../include
-    PRIVATE . ../include ../../include ${CMAKE_CURRENT_SOURCE_DIR}/generated)
-target_link_libraries(MaaRpc PUBLIC MaaRpcProto MaaUtils MaaToolKit protobuf::libprotobuf gRPC::grpc++)
+    PRIVATE . ../include ../../include 
+    ${CMAKE_CURRENT_BINARY_DIR})
+target_link_libraries(MaaRpc PUBLIC RpcProto MaaUtils MaaToolKit protobuf::libprotobuf gRPC::grpc++)
 
 install(
     TARGETS MaaRpc

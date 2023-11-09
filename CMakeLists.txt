@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.24)
-project(MAA)
+project(MaaFw)
 
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_LIST_DIR}/cmake/modules")
 
@@ -9,12 +9,16 @@ set(CMAKE_MAP_IMPORTED_CONFIG_DebWithRelDeps "DebWithRelDeps;Release;")
 set(Boost_NO_WARN_NEW_VERSIONS 1)
 
 option(USE_MAADEPS "use third-party libraries built by MaaDeps" ON)
+
 option(WITH_ADB_CONTROLLER "build with adb controller" ON)
 option(WITH_THRIFT_CONTROLLER "build with thrift controller" ON)
 option(WITH_DBG_CONTROLLER "build with debugging controller" ON)
 option(WITH_GRPC "build with protobuf and grpc" ON)
+
 option(BUILD_GRPC_CLI "build grpc CLI exec" ON)
+
 option(BUILD_SAMPLE "build a demo" OFF)
+
 option(BUILD_PIPELINE_TESTING "build pipeline testing" OFF)
 option(BUILD_GRPC_TESTING "build grpc testing" OFF)
 

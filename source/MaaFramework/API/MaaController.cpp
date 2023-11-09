@@ -2,17 +2,15 @@
 
 #include "Buffer/ImageBuffer.hpp"
 #include "Buffer/StringBuffer.hpp"
-#include "ControlUnit/AdbControlUnitAPI.h"
-#include "Controller/AdbController.h"
-#include "Controller/CustomController.h"
-#include "Controller/DebuggingController.h"
-#include "Controller/ThriftController.h"
+#include "Controller/ControlUnitLibraryHolder.h"
+#include "Controller/CustomControllerAgent.h"
+#include "Controller/GeneralControllerAgent.h"
 #include "Utils/Logger.h"
 #include "Utils/Platform.h"
 
-MaaControllerHandle MaaAdbControllerCreate(MaaStringView adb_path, MaaStringView address, MaaAdbControllerType type,
-                                           MaaStringView config, MaaControllerCallback callback,
-                                           MaaCallbackTransparentArg callback_arg)
+MaaControllerHandle MaaAdbControllerCreate( //
+    MaaStringView adb_path, MaaStringView address, MaaAdbControllerType type, MaaStringView config,
+    MaaControllerCallback callback, MaaCallbackTransparentArg callback_arg)
 {
     LogWarn << "This API" << __FUNCTION__
             << "is about to be deprecated, and we recommend using MaaAdbControllerCreateV2 instead.";
@@ -21,40 +19,27 @@ MaaControllerHandle MaaAdbControllerCreate(MaaStringView adb_path, MaaStringView
     return MaaAdbControllerCreateV2(adb_path, address, type, config, kDefaultAgentPath.data(), callback, callback_arg);
 }
 
-MaaControllerHandle MaaAdbControllerCreateV2(MaaStringView adb_path, MaaStringView address, MaaAdbControllerType type,
-                                             MaaStringView config, MaaStringView agent_path,
-                                             MaaControllerCallback callback, MaaCallbackTransparentArg callback_arg)
+MaaControllerHandle MaaAdbControllerCreateV2( //
+    MaaStringView adb_path, MaaStringView address, MaaAdbControllerType type, MaaStringView config,
+    MaaStringView agent_path, MaaControllerCallback callback, MaaCallbackTransparentArg callback_arg)
 {
     LogFunc << VAR(adb_path) << VAR(address) << VAR(type) << VAR(agent_path) << VAR_VOIDP(callback)
             << VAR_VOIDP(callback_arg);
 
-    bool loaded = MAA_CTRL_NS::AdbController::load_library(MAA_NS::path("MaaAdbControlUnit"));
-    if (!loaded) {
-        LogError << "Failed to load library MaaAdbControlUnit";
+    auto control_unit = MAA_CTRL_NS::AdbControlUnitLibraryHolder::create_control_unit(
+        adb_path, address, type, config, agent_path, callback, callback_arg);
+
+    if (!control_unit) {
+        LogError << "Failed to create control unit";
         return nullptr;
     }
 
-    using create_controller_unit_t = void(std::shared_ptr<MAA_ADB_CTRL_UNIT_NS::ControlUnitAPI>*, MaaStringView,
-                                          MaaStringView, MaaAdbControllerType, MaaStringView, MaaStringView);
-    auto create_func = MAA_CTRL_NS::AdbController::get_function<create_controller_unit_t>("create_controller_unit");
-    if (!create_func) {
-        LogError << "Failed to get function create_controller_unit";
-        return nullptr;
-    }
-
-    std::shared_ptr<MAA_ADB_CTRL_UNIT_NS::ControlUnitAPI> unit_mgr;
-    create_func(&unit_mgr, adb_path, address, type, config, agent_path);
-
-    if (!unit_mgr) {
-        LogError << "Failed to create controller unit";
-        return nullptr;
-    }
-
-    return new MAA_CTRL_NS::AdbController(adb_path, address, std::move(unit_mgr), callback, callback_arg);
+    return new MAA_CTRL_NS::GeneralControllerAgent(std::move(control_unit), callback, callback_arg);
 }
 
-MaaControllerHandle MaaCustomControllerCreate(MaaCustomControllerHandle handle, MaaTransparentArg handle_arg,
-                                              MaaControllerCallback callback, MaaCallbackTransparentArg callback_arg)
+MaaControllerHandle MaaCustomControllerCreate( //
+    MaaCustomControllerHandle handle, MaaTransparentArg handle_arg, MaaControllerCallback callback,
+    MaaCallbackTransparentArg callback_arg)
 {
     LogFunc << VAR(handle) << VAR(handle_arg) << VAR_VOIDP(callback) << VAR_VOIDP(callback_arg);
 
@@ -63,61 +48,44 @@ MaaControllerHandle MaaCustomControllerCreate(MaaCustomControllerHandle handle, 
         return nullptr;
     }
 
-    return new MAA_CTRL_NS::CustomController(handle, handle_arg, callback, callback_arg);
+    return new MAA_CTRL_NS::CustomControllerAgent(handle, handle_arg, callback, callback_arg);
 }
 
-MaaControllerHandle MaaThriftControllerCreate(MaaStringView param, MaaControllerCallback callback,
-                                              MaaCallbackTransparentArg callback_arg)
+MaaControllerHandle MaaThriftControllerCreate( //
+    MaaThriftControllerType type, MaaStringView host, int32_t port, MaaStringView config,
+    MaaControllerCallback callback, MaaCallbackTransparentArg callback_arg)
 {
-    LogFunc << VAR(param) << VAR_VOIDP(callback) << VAR_VOIDP(callback_arg);
+    LogFunc << VAR(type) << VAR(host) << VAR(type) << VAR(port) << VAR_VOIDP(callback) << VAR_VOIDP(callback_arg);
 
-#ifdef WITH_THRIFT_CONTROLLER
+    std::ignore = config;
 
-    try {
-        return new MAA_CTRL_NS::ThriftController(param, callback, callback_arg);
-    }
-    catch (const std::exception& e) {
-        LogError << "Failed to create thrift controller: " << e.what();
+    auto control_unit = MAA_CTRL_NS::ThriftControlUnitLibraryHolder::create_control_unit(type, host, port, config);
+
+    if (!control_unit) {
+        LogError << "Failed to create control unit";
         return nullptr;
     }
 
-#else
-
-#pragma message("The build without thrift controller")
-
-    LogError << "The build without thrift controller";
-    return nullptr;
-
-#endif // WITH_THRIFT_CONTROLLER
+    return new MAA_CTRL_NS::GeneralControllerAgent(std::move(control_unit), callback, callback_arg);
 }
 
-MaaControllerHandle MaaDbgControllerCreate(MaaStringView read_path, MaaStringView write_path, MaaDbgControllerType type,
-                                           MaaStringView config, MaaControllerCallback callback,
-                                           MaaCallbackTransparentArg callback_arg)
+MaaControllerHandle MaaDbgControllerCreate( //
+    MaaStringView read_path, MaaStringView write_path, MaaDbgControllerType type, MaaStringView config,
+    MaaControllerCallback callback, MaaCallbackTransparentArg callback_arg)
 {
     LogFunc << VAR(read_path) << VAR(write_path) << VAR(type) << VAR_VOIDP(callback) << VAR_VOIDP(callback_arg);
 
-    bool loaded = MAA_CTRL_NS::DebuggingController::load_library(MAA_NS::path("MaaDbgControlUnit"));
-    if (!loaded) {
-        LogError << "Failed to load library MaaDbgControlUnit";
+    std::ignore = write_path;
+    std::ignore = config;
+
+    auto control_unit = MAA_CTRL_NS::DbgControlUnitLibraryHolder::create_control_unit(type, read_path);
+
+    if (!control_unit) {
+        LogError << "Failed to create control unit";
         return nullptr;
     }
 
-    using create_controller_unit_t = std::shared_ptr<MAA_DBG_CTRL_UNIT_NS::ControllerAPI>(
-        MaaStringView, MaaStringView, MaaDbgControllerType, MaaStringView);
-    auto create_func = MAA_CTRL_NS::DebuggingController::get_function<create_controller_unit_t>("create_controller");
-    if (!create_func) {
-        LogError << "Failed to get function create_controller";
-        return nullptr;
-    }
-
-    auto unit_mgr = create_func(read_path, write_path, type, config);
-    if (!unit_mgr) {
-        LogError << "Failed to create controller unit";
-        return nullptr;
-    }
-
-    return new MAA_CTRL_NS::DebuggingController(read_path, write_path, std::move(unit_mgr), callback, callback_arg);
+    return new MAA_CTRL_NS::GeneralControllerAgent(std::move(control_unit), callback, callback_arg);
 }
 
 void MaaControllerDestroy(MaaControllerHandle ctrl)

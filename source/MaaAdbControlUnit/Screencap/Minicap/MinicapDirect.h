@@ -2,7 +2,7 @@
 
 #include "MinicapBase.h"
 
-MAA_ADB_CTRL_UNIT_NS_BEGIN
+MAA_CTRL_UNIT_NS_BEGIN
 
 class MinicapDirect : public MinicapBase
 {
@@ -15,4 +15,4 @@ public: // from ScreencapAPI
     virtual std::optional<cv::Mat> screencap() override;
 };
 
-MAA_ADB_CTRL_UNIT_NS_END
+MAA_CTRL_UNIT_NS_END

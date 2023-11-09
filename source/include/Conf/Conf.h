@@ -105,6 +105,12 @@
     {
 #define MAA_CTRL_NS_END }
 
+#define MAA_CTRL_UNIT_NS MAA_NS::CtrlUnitNs
+#define MAA_CTRL_UNIT_NS_BEGIN \
+    namespace MAA_CTRL_UNIT_NS \
+    {
+#define MAA_CTRL_UNIT_NS_END }
+
 #define MAA_VISION_NS MAA_NS::VisionNS
 #define MAA_VISION_NS_BEGIN \
     namespace MAA_VISION_NS \
@@ -116,20 +122,6 @@
     namespace MAA_TASK_NS \
     {
 #define MAA_TASK_NS_END }
-
-/* MaaControlUnit */
-
-#define MAA_ADB_CTRL_UNIT_NS MAA_CTRL_NS::AdbUnitNs
-#define MAA_ADB_CTRL_UNIT_NS_BEGIN \
-    namespace MAA_ADB_CTRL_UNIT_NS \
-    {
-#define MAA_ADB_CTRL_UNIT_NS_END }
-
-#define MAA_DBG_CTRL_UNIT_NS MAA_CTRL_NS::DbgUnitNs
-#define MAA_DBG_CTRL_UNIT_NS_BEGIN \
-    namespace MAA_DBG_CTRL_UNIT_NS \
-    {
-#define MAA_DBG_CTRL_UNIT_NS_END }
 
 /* MaaToolKit */
 
@@ -150,9 +142,3 @@
     namespace MAA_TOOLKIT_CONFIG_NS \
     {
 #define MAA_TOOLKIT_CONFIG_NS_END }
-
-#define MAA_TOOLKIT_SERVER_NS MAA_TOOLKIT_NS::ServerNS
-#define MAA_TOOLKIT_SERVER_NS_BEGIN \
-    namespace MAA_TOOLKIT_SERVER_NS \
-    {
-#define MAA_TOOLKIT_SERVER_NS_END }

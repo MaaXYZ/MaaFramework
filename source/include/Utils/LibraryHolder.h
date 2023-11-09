@@ -58,26 +58,20 @@ inline bool LibraryHolder<T>::load_library(const std::filesystem::path& libname)
         return true;
     }
 
-    // auto fullpath = boost::dll::program_location().parent_path() / libname;
-
-    // std::string s_fullpath = path_to_crt_string(fullpath);
-    // LogInfo << "Loading library" << VAR(s_fullpath);
-
-    std::string s_libname = path_to_crt_string(libname);
-    LogInfo << "Loading library" << VAR(s_libname);
+    LogInfo << "Loading library" << VAR(libname);
 
     boost::dll::fs::error_code ec;
-    module_.load(s_libname, ec,
+    module_.load(libname, ec,
                  boost::dll::load_mode::append_decorations | boost::dll::load_mode::search_system_folders);
 
     if (ec.value() != boost::system::errc::success) {
         auto message = ec.message();
-        LogError << "Failed to load library" << VAR(s_libname) << VAR(message);
+        LogError << "Failed to load library" << VAR(libname) << VAR(message);
         return false;
     }
 
     if (!module_.is_loaded()) {
-        LogError << "Failed to load library" << VAR(s_libname);
+        LogError << "Failed to load library" << VAR(libname);
         return false;
     }
 

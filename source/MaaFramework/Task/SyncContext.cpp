@@ -2,7 +2,7 @@
 
 #include <meojson/json.hpp>
 
-#include "Controller/ControllerMgr.h"
+#include "Controller/ControllerAgent.h"
 #include "Instance/InstanceStatus.h"
 #include "PipelineTask.h"
 #include "Utils/Logger.h"

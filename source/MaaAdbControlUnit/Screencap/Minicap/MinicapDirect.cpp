@@ -4,7 +4,7 @@
 #include "Utils/Logger.h"
 #include "Utils/NoWarningCV.hpp"
 
-MAA_ADB_CTRL_UNIT_NS_BEGIN
+MAA_CTRL_UNIT_NS_BEGIN
 
 std::optional<cv::Mat> MinicapDirect::screencap()
 {
@@ -20,4 +20,4 @@ std::optional<cv::Mat> MinicapDirect::screencap()
     return screencap_helper_.process_data(
         res.value(), std::bind(&ScreencapHelper::trunc_decode_jpg, &screencap_helper_, std::placeholders::_1));
 }
-MAA_ADB_CTRL_UNIT_NS_END
+MAA_CTRL_UNIT_NS_END

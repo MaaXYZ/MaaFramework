@@ -2,7 +2,7 @@
 
 #include "Utils/Logger.h"
 
-MAA_ADB_CTRL_UNIT_NS_BEGIN
+MAA_CTRL_UNIT_NS_BEGIN
 
 bool ScreencapRawByNetcat::parse(const json::value& config)
 {
@@ -91,4 +91,4 @@ std::optional<std::string> ScreencapRawByNetcat::request_netcat_address()
     }
 }
 
-MAA_ADB_CTRL_UNIT_NS_END
+MAA_CTRL_UNIT_NS_END

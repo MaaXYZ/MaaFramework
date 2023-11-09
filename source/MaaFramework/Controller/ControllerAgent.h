@@ -71,12 +71,12 @@ struct Action
 
 std::ostream& operator<<(std::ostream& os, const Action& action);
 
-class ControllerMgr : public MaaControllerAPI
+class ControllerAgent : public MaaControllerAPI
 {
 public:
-    ControllerMgr(MaaControllerCallback callback, MaaCallbackTransparentArg callback_arg);
+    ControllerAgent(MaaControllerCallback callback, MaaCallbackTransparentArg callback_arg);
 
-    virtual ~ControllerMgr() override;
+    virtual ~ControllerAgent() override;
 
     virtual bool set_option(MaaCtrlOption key, MaaOptionValue value, MaaOptionValueSize val_size) override;
 
@@ -94,8 +94,9 @@ public:
     virtual MaaStatus wait(MaaCtrlId ctrl_id) const override;
     virtual MaaBool connected() const override;
 
-    virtual cv::Mat get_image() const override;
-    virtual std::string get_uuid() const override;
+    virtual cv::Mat get_image() override;
+    virtual std::string get_uuid() override;
+    virtual std::pair<int, int> get_resolution() override;
 
     virtual void on_stop() override;
 
@@ -114,17 +115,17 @@ public:
 
 protected:
     virtual bool _connect() = 0;
-    virtual std::string _get_uuid() const = 0;
-    virtual std::pair<int, int> _get_resolution() const = 0;
+    virtual std::optional<std::string> _request_uuid() = 0;
+    virtual std::optional<std::pair<int, int>> _request_resolution() = 0;
+    virtual bool _start_app(AppParam param) = 0;
+    virtual bool _stop_app(AppParam param) = 0;
+    virtual std::optional<cv::Mat> _screencap() = 0;
     virtual bool _click(ClickParam param) = 0;
     virtual bool _swipe(SwipeParam param) = 0;
     virtual bool _touch_down(TouchParam param) = 0;
     virtual bool _touch_move(TouchParam param) = 0;
     virtual bool _touch_up(TouchParam param) = 0;
     virtual bool _press_key(PressKeyParam param) = 0;
-    virtual cv::Mat _screencap() = 0;
-    virtual bool _start_app(AppParam param) = 0;
-    virtual bool _stop_app(AppParam param) = 0;
 
 protected:
     MessageNotifier<MaaControllerCallback> notifier;
@@ -153,6 +154,8 @@ private:
     bool postproc_screenshot(const cv::Mat& raw);
     bool check_and_calc_target_image_size(const cv::Mat& raw);
     void clear_target_image_size();
+    bool request_uuid();
+    bool request_resolution();
 
 private: // options
     bool set_image_target_long_side(MaaOptionValue value, MaaOptionValueSize val_size);
@@ -175,6 +178,9 @@ private:
     int image_target_short_side_ = 720;
     int image_target_width_ = 0;
     int image_target_height_ = 0;
+
+    std::string uuid_cache_;
+    std::pair<int, int> resolution_cache_ = { 0, 0 };
 
     std::string default_app_package_entry_;
     std::string default_app_package_;

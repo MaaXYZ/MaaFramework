@@ -1,10 +1,10 @@
 #pragma once
 
-#include "UnitBase.h"
+#include "Base/UnitBase.h"
 
 #include "ScreencapHelper.h"
 
-MAA_ADB_CTRL_UNIT_NS_BEGIN
+MAA_CTRL_UNIT_NS_BEGIN
 
 class ScreencapEncode : public ScreencapBase
 {
@@ -24,4 +24,4 @@ private:
     Argv screencap_encode_argv_;
 };
 
-MAA_ADB_CTRL_UNIT_NS_END
+MAA_CTRL_UNIT_NS_END

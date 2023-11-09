@@ -12,7 +12,7 @@
 #pragma warning(pop)
 #endif
 
-MAA_ADB_CTRL_UNIT_NS_BEGIN
+MAA_CTRL_UNIT_NS_BEGIN
 
 bool ScreencapHelper::set_wh(int w, int h)
 {
@@ -220,4 +220,4 @@ bool ScreencapHelper::check_head_tail(std::string_view input, std::string_view h
     return true;
 }
 
-MAA_ADB_CTRL_UNIT_NS_END
+MAA_CTRL_UNIT_NS_END
