@@ -4,14 +4,9 @@
 #include <mutex>
 #include <type_traits>
 
-#ifdef _WIN32
-#include "SafeWindows.hpp"
-#else
-#include <dlfcn.h>
-#endif
-
 #include "Conf/Conf.h"
 #include "NonCopyable.hpp"
+#include "Utils/Boost.hpp"
 #include "Utils/Logger.h"
 
 MAA_NS_BEGIN
@@ -27,7 +22,7 @@ public:
     static bool load_library(const std::filesystem::path& libname);
 
     template <typename FuncT>
-    static FuncT get_function(const std::string& func_name);
+    static boost::function<FuncT> get_function(const std::string& func_name);
 
 private:
     static void unload_library();
@@ -36,11 +31,7 @@ private:
     inline static std::filesystem::path libname_;
     inline static int ref_count_ = 0;
 
-#ifdef _WIN32
-    inline static HMODULE module_ = nullptr;
-#else
-    inline static void* module_ = nullptr;
-#endif
+    inline static boost::dll::shared_library module_;
 };
 
 template <typename T>
@@ -56,7 +47,7 @@ inline bool LibraryHolder<T>::load_library(const std::filesystem::path& libname)
 {
     LogFunc << VAR(libname);
 
-    if (module_) {
+    if (module_.is_loaded()) {
         if (libname_ != libname) {
             LogError << "already loaded with different library" << VAR(libname_) << VAR(libname);
             return false;
@@ -67,16 +58,25 @@ inline bool LibraryHolder<T>::load_library(const std::filesystem::path& libname)
         return true;
     }
 
+    // auto fullpath = boost::dll::program_location().parent_path() / libname;
+
+    // std::string s_fullpath = path_to_crt_string(fullpath);
+    // LogInfo << "Loading library" << VAR(s_fullpath);
+
     std::string s_libname = path_to_crt_string(libname);
     LogInfo << "Loading library" << VAR(s_libname);
 
-#ifdef _WIN32
-    module_ = LoadLibrary(s_libname.c_str());
-#else
-    module_ = dlopen(libname_.c_str(), RTLD_LAZY);
-#endif
+    boost::dll::fs::error_code ec;
+    module_.load(s_libname, ec,
+                 boost::dll::load_mode::append_decorations | boost::dll::load_mode::search_system_folders);
 
-    if (module_ == nullptr) {
+    if (ec.value() != boost::system::errc::success) {
+        auto message = ec.message();
+        LogError << "Failed to load library" << VAR(s_libname) << VAR(message);
+        return false;
+    }
+
+    if (!module_.is_loaded()) {
         LogError << "Failed to load library" << VAR(s_libname);
         return false;
     }
@@ -91,7 +91,7 @@ inline void LibraryHolder<T>::unload_library()
 {
     LogFunc << VAR(libname_);
 
-    if (module_ == nullptr) {
+    if (!module_.is_loaded()) {
         LogDebug << "LibraryHolder already unloaded";
         return;
     }
@@ -104,40 +104,29 @@ inline void LibraryHolder<T>::unload_library()
 
     LogInfo << "Unloading library" << VAR(libname_);
 
-#ifdef _WIN32
-    FreeLibrary(module_);
-#else
-    dlclose(module_);
-#endif
+    module_.unload();
 
-    module_ = nullptr;
     libname_.clear();
     ref_count_ = 0;
 }
 
 template <typename T>
 template <typename FuncT>
-inline FuncT LibraryHolder<T>::get_function(const std::string& func_name)
+inline boost::function<FuncT> LibraryHolder<T>::get_function(const std::string& func_name)
 {
     LogFunc << VAR(func_name);
 
-    if (module_ == nullptr) {
+    if (!module_.is_loaded()) {
         LogError << "LibraryHolder not loaded";
-        return nullptr;
+        return {};
     }
 
-#ifdef _WIN32
-    FARPROC proc_address = GetProcAddress(module_, func_name.c_str());
-#else
-    void* proc_address = dlsym(module_, func_name.c_str());
-#endif
-
-    if (proc_address == nullptr) {
-        LogError << "Failed to get function address" << VAR(func_name);
-        return nullptr;
+    if (!module_.has(func_name)) {
+        LogError << "Failed to find exported function" << VAR(func_name);
+        return {};
     }
 
-    return reinterpret_cast<FuncT>(proc_address);
+    return module_.get<FuncT>(func_name);
 }
 
 MAA_NS_END

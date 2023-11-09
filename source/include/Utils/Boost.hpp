@@ -9,6 +9,7 @@
 #endif
 
 #define BOOST_PROCESS_USE_STD_FS 1
+#define BOOST_DLL_USE_STD_FS 1
 
 MAA_SUPPRESS_BOOST_WARNINGS_BEGIN
 #include <boost/asio.hpp>
@@ -16,6 +17,7 @@ MAA_SUPPRESS_BOOST_WARNINGS_BEGIN
 #ifdef _WIN32
 #include <boost/process/windows.hpp>
 #endif
+#include <boost/dll.hpp>
 #include <boost/uuid/uuid.hpp>
 #include <boost/uuid/uuid_generators.hpp>
 #include <boost/uuid/uuid_io.hpp>
