@@ -16,9 +16,10 @@ template <typename T>
 class LibraryHolder
 {
 public:
-    virtual ~LibraryHolder();
+    virtual ~LibraryHolder() = default;
 
     static bool load_library(const std::filesystem::path& libname);
+    static void unload_library();
 
     template <typename FuncT>
     static boost::function<FuncT> get_function(const std::string& func_name);
@@ -27,23 +28,12 @@ protected:
     LibraryHolder() = default;
 
 private:
-    static void unload_library();
-
-private:
     inline static std::filesystem::path libname_;
     inline static int ref_count_ = 0;
     inline static std::mutex mutex_;
 
     inline static boost::dll::shared_library module_;
 };
-
-template <typename T>
-inline LibraryHolder<T>::~LibraryHolder()
-{
-    LogFunc;
-
-    unload_library();
-}
 
 template <typename T>
 inline bool LibraryHolder<T>::load_library(const std::filesystem::path& libname)

@@ -12,7 +12,7 @@ bool check_version(const std::string& func_name)
         return false;
     }
     auto version = version_func();
-    LogInfo << "Version:" << version;
+    LogInfo << typeid(ControlUnitT).name() << "Library version:" << version;
 
     if (std::strcmp(version, MAA_VERSION) != 0) {
         LogWarn << "ControlUnit and MaaFramework are not same version,"
@@ -58,7 +58,12 @@ std::shared_ptr<MAA_CTRL_UNIT_NS::ControlUnitAPI> AdbControlUnitLibraryHolder::c
         return nullptr;
     }
 
-    return std::shared_ptr<MAA_CTRL_UNIT_NS::ControlUnitAPI>(control_unit_handle, destroy_control_unit_func);
+    auto destroy_control_unit = [destroy_control_unit_func](MaaControlUnitHandle handle) {
+        destroy_control_unit_func(handle);
+        unload_library();
+    };
+
+    return std::shared_ptr<MAA_CTRL_UNIT_NS::ControlUnitAPI>(control_unit_handle, destroy_control_unit);
 }
 
 std::shared_ptr<MAA_CTRL_UNIT_NS::ControlUnitAPI> DbgControlUnitLibraryHolder::create_control_unit(
@@ -94,7 +99,12 @@ std::shared_ptr<MAA_CTRL_UNIT_NS::ControlUnitAPI> DbgControlUnitLibraryHolder::c
         return nullptr;
     }
 
-    return std::shared_ptr<MAA_CTRL_UNIT_NS::ControlUnitAPI>(control_unit_handle, destroy_control_unit_func);
+    auto destroy_control_unit = [destroy_control_unit_func](MaaControlUnitHandle handle) {
+        destroy_control_unit_func(handle);
+        unload_library();
+    };
+
+    return std::shared_ptr<MAA_CTRL_UNIT_NS::ControlUnitAPI>(control_unit_handle, destroy_control_unit);
 }
 
 std::shared_ptr<MAA_CTRL_UNIT_NS::ControlUnitAPI> ThriftControlUnitLibraryHolder::create_control_unit(
@@ -130,7 +140,12 @@ std::shared_ptr<MAA_CTRL_UNIT_NS::ControlUnitAPI> ThriftControlUnitLibraryHolder
         return nullptr;
     }
 
-    return std::shared_ptr<MAA_CTRL_UNIT_NS::ControlUnitAPI>(control_unit_handle, destroy_control_unit_func);
+    auto destroy_control_unit = [destroy_control_unit_func](MaaControlUnitHandle handle) {
+        destroy_control_unit_func(handle);
+        unload_library();
+    };
+
+    return std::shared_ptr<MAA_CTRL_UNIT_NS::ControlUnitAPI>(control_unit_handle, destroy_control_unit);
 }
 
 MAA_CTRL_NS_END
