@@ -7,7 +7,7 @@
 #include <array>
 #include <cmath>
 
-MAA_ADB_CTRL_UNIT_NS_BEGIN
+MAA_CTRL_UNIT_NS_BEGIN
 
 bool MinitouchInput::parse(const json::value& config)
 {
@@ -93,4 +93,4 @@ bool MinitouchInput::set_wh(int swidth, int sheight, int orientation)
     return read_info(swidth, sheight, orientation);
 }
 
-MAA_ADB_CTRL_UNIT_NS_END
+MAA_CTRL_UNIT_NS_END

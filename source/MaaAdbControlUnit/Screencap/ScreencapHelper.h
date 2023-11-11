@@ -7,7 +7,7 @@
 #include "Conf/Conf.h"
 #include "Utils/NoWarningCVMat.hpp"
 
-MAA_ADB_CTRL_UNIT_NS_BEGIN
+MAA_CTRL_UNIT_NS_BEGIN
 
 class ScreencapHelper
 {
@@ -42,4 +42,4 @@ private:
     } end_of_line_ = EndOfLine::UnknownYet;
 };
 
-MAA_ADB_CTRL_UNIT_NS_END
+MAA_CTRL_UNIT_NS_END

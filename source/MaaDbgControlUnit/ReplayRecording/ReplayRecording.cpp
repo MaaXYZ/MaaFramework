@@ -2,7 +2,13 @@
 
 #include "Utils/Logger.h"
 
-MAA_DBG_CTRL_UNIT_NS_BEGIN
+MAA_CTRL_UNIT_NS_BEGIN
+
+bool ReplayRecording::find_device(std::vector<std::string>& devices)
+{
+    std::ignore = devices;
+    return true;
+}
 
 bool ReplayRecording::connect()
 {
@@ -22,6 +28,19 @@ bool ReplayRecording::connect()
     sleep(record.cost);
     ++record_index_;
     return record.success;
+}
+
+bool ReplayRecording::request_uuid(std::string& uuid)
+{
+    uuid = recording_.device_info.uuid;
+    return true;
+}
+
+bool ReplayRecording::request_resolution(int& width, int& height)
+{
+    width = recording_.device_info.resolution.width;
+    height = recording_.device_info.resolution.height;
+    return true;
 }
 
 bool ReplayRecording::start_app(const std::string& intent)
@@ -76,6 +95,31 @@ bool ReplayRecording::stop_app(const std::string& intent)
     sleep(record.cost);
     ++record_index_;
     return record.success;
+}
+
+bool ReplayRecording::screencap(cv::Mat& image)
+{
+    LogInfo;
+
+    if (record_index_ >= recording_.records.size()) {
+        LogError << "record index out of range" << VAR(record_index_) << VAR(recording_.records.size());
+        return false;
+    }
+
+    const Record& record = recording_.records.at(record_index_);
+
+    if (record.action.type != Record::Action::Type::screencap) {
+        LogError << "record type is not screencap" << VAR(record.action.type) << VAR(record.raw_data);
+        return false;
+    }
+
+    auto param = std::get<Record::ScreencapParam>(record.action.param);
+
+    sleep(record.cost);
+    ++record_index_;
+
+    image = record.success ? param.image : cv::Mat();
+    return true;
 }
 
 bool ReplayRecording::click(int x, int y)
@@ -251,33 +295,10 @@ bool ReplayRecording::press_key(int key)
     return record.success;
 }
 
-std::optional<cv::Mat> ReplayRecording::screencap()
-{
-    LogInfo;
-
-    if (record_index_ >= recording_.records.size()) {
-        LogError << "record index out of range" << VAR(record_index_) << VAR(recording_.records.size());
-        return std::nullopt;
-    }
-
-    const Record& record = recording_.records.at(record_index_);
-
-    if (record.action.type != Record::Action::Type::screencap) {
-        LogError << "record type is not screencap" << VAR(record.action.type) << VAR(record.raw_data);
-        return std::nullopt;
-    }
-
-    auto param = std::get<Record::ScreencapParam>(record.action.param);
-
-    sleep(record.cost);
-    ++record_index_;
-    return record.success ? param.image : cv::Mat();
-}
-
 void ReplayRecording::sleep(int ms)
 {
     LogTrace << VAR(ms);
     std::this_thread::sleep_for(std::chrono::milliseconds(ms));
 }
 
-MAA_DBG_CTRL_UNIT_NS_END
+MAA_CTRL_UNIT_NS_END

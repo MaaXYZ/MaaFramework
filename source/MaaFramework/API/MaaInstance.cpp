@@ -3,8 +3,6 @@
 #include "Instance/InstanceMgr.h"
 #include "Utils/Logger.h"
 
-#pragma message("MaaFramework MAA_VERSION: " MAA_VERSION)
-
 MaaInstanceHandle MaaCreate(MaaInstanceCallback callback, MaaCallbackTransparentArg callback_arg)
 {
     LogFunc << VAR_VOIDP(callback) << VAR_VOIDP(callback_arg);

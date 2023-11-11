@@ -2,7 +2,7 @@
 
 #include "Utils/Logger.h"
 
-MAA_ADB_CTRL_UNIT_NS_BEGIN
+MAA_CTRL_UNIT_NS_BEGIN
 
 bool Connection::parse(const json::value& config)
 {
@@ -39,4 +39,4 @@ bool Connection::kill_server()
     return command(kill_server_argv_.gen(argv_replace_), false, 60LL * 1000).has_value();
 }
 
-MAA_ADB_CTRL_UNIT_NS_END
+MAA_CTRL_UNIT_NS_END

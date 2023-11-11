@@ -7,7 +7,7 @@
 #include <array>
 #include <cmath>
 
-MAA_ADB_CTRL_UNIT_NS_BEGIN
+MAA_CTRL_UNIT_NS_BEGIN
 
 bool MaatouchInput::parse(const json::value& config)
 {
@@ -91,4 +91,4 @@ bool MaatouchInput::press_key(int key)
     return ret;
 }
 
-MAA_ADB_CTRL_UNIT_NS_END
+MAA_CTRL_UNIT_NS_END

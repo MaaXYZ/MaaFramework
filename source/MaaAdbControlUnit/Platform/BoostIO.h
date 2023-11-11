@@ -7,7 +7,7 @@
 #include "Utils/NonCopyable.hpp"
 #include "Utils/SingletonHolder.hpp"
 
-MAA_ADB_CTRL_UNIT_NS_BEGIN
+MAA_CTRL_UNIT_NS_BEGIN
 
 class BoostIO : public PlatformIO
 {
@@ -71,4 +71,4 @@ private:
     std::shared_ptr<boost::process::child> proc_;
 };
 
-MAA_ADB_CTRL_UNIT_NS_END
+MAA_CTRL_UNIT_NS_END

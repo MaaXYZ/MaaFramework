@@ -8,21 +8,11 @@ set(MaaFramework_INCLUDE ${CMAKE_CURRENT_SOURCE_DIR}/../../include/MaaFramework)
 target_include_directories(
     MaaFramework
     INTERFACE ../../include
-    PRIVATE . ../include ../../include ${MaaThriftController_INCLUDE_DIRS})
+    PRIVATE . ../include ../../include)
 
 target_compile_definitions(MaaFramework PRIVATE MAA_FRAMEWORK_EXPORTS)
 
-target_link_libraries(MaaFramework MaaUtils)
-if (WITH_ADB_CONTROLLER)
-    target_link_libraries(MaaFramework MaaAdbControlUnit)
-endif(WITH_ADB_CONTROLLER)
-if(WITH_THRIFT_CONTROLLER AND NOT MAA_CROSSCOMPILE)
-    target_link_libraries(MaaFramework MaaThriftController)
-endif(WITH_THRIFT_CONTROLLER AND NOT MAA_CROSSCOMPILE)
-if (WITH_DBG_CONTROLLER)
-    target_link_libraries(MaaFramework MaaDbgControlUnit)
-endif(WITH_DBG_CONTROLLER)
-target_link_libraries(MaaFramework ${OpenCV_LIBS} fastdeploy_ppocr ONNXRuntime::ONNXRuntime HeaderOnlyLibraries)
+target_link_libraries(MaaFramework MaaUtils ${OpenCV_LIBS} fastdeploy_ppocr ONNXRuntime::ONNXRuntime HeaderOnlyLibraries)
 
 # clang 15之后有ranges if (CMAKE_CXX_COMPILER_ID MATCHES ".*Clang") find_package(range-v3 REQUIRED)
 # target_link_libraries(MaaFramework range-v3::range-v3) endif ()
@@ -33,7 +23,7 @@ if (WITH_ADB_CONTROLLER)
     add_dependencies(MaaFramework MaaAdbControlUnit)
 endif(WITH_ADB_CONTROLLER)
 if(WITH_THRIFT_CONTROLLER AND NOT MAA_CROSSCOMPILE)
-    add_dependencies(MaaFramework MaaThriftController)
+    add_dependencies(MaaFramework MaaThriftControlUnit)
 endif(WITH_THRIFT_CONTROLLER AND NOT MAA_CROSSCOMPILE)
 if (WITH_DBG_CONTROLLER)
     add_dependencies(MaaFramework MaaDbgControlUnit)

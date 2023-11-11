@@ -1,8 +1,8 @@
 #pragma once
 
-#include "UnitBase.h"
+#include "Base/UnitBase.h"
 
-MAA_ADB_CTRL_UNIT_NS_BEGIN
+MAA_CTRL_UNIT_NS_BEGIN
 
 class TapTouchInput : public TouchInputBase
 {
@@ -44,4 +44,4 @@ private:
     Argv press_key_argv_;
 };
 
-MAA_ADB_CTRL_UNIT_NS_END
+MAA_CTRL_UNIT_NS_END

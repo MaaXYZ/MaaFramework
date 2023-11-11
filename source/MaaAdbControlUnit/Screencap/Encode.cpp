@@ -2,7 +2,7 @@
 
 #include "Utils/Logger.h"
 
-MAA_ADB_CTRL_UNIT_NS_BEGIN
+MAA_CTRL_UNIT_NS_BEGIN
 
 bool ScreencapEncode::parse(const json::value& config)
 {
@@ -31,4 +31,4 @@ std::optional<cv::Mat> ScreencapEncode::screencap()
         cmd_ret.value(), std::bind(&ScreencapHelper::decode_png, &screencap_helper_, std::placeholders::_1));
 }
 
-MAA_ADB_CTRL_UNIT_NS_END
+MAA_CTRL_UNIT_NS_END

@@ -1,4 +1,4 @@
-#include "ControllerMgr.h"
+#include "ControllerAgent.h"
 
 #include "MaaFramework/MaaMsg.h"
 #include "Option/GlobalOptionMgr.h"
@@ -10,18 +10,18 @@
 
 MAA_CTRL_NS_BEGIN
 
-std::minstd_rand ControllerMgr::rand_engine_(std::random_device {}());
+std::minstd_rand ControllerAgent::rand_engine_(std::random_device {}());
 
-ControllerMgr::ControllerMgr(MaaControllerCallback callback, MaaCallbackTransparentArg callback_arg)
+ControllerAgent::ControllerAgent(MaaControllerCallback callback, MaaCallbackTransparentArg callback_arg)
     : notifier(callback, callback_arg)
 {
     LogFunc << VAR_VOIDP(callback) << VAR_VOIDP(callback_arg);
 
     action_runner_ = std::make_unique<AsyncRunner<Action>>(
-        std::bind(&ControllerMgr::run_action, this, std::placeholders::_1, std::placeholders::_2));
+        std::bind(&ControllerAgent::run_action, this, std::placeholders::_1, std::placeholders::_2));
 }
 
-ControllerMgr::~ControllerMgr()
+ControllerAgent::~ControllerAgent()
 {
     LogFunc;
 
@@ -30,7 +30,7 @@ ControllerMgr::~ControllerMgr()
     }
 }
 
-bool ControllerMgr::set_option(MaaCtrlOption key, MaaOptionValue value, MaaOptionValueSize val_size)
+bool ControllerAgent::set_option(MaaCtrlOption key, MaaOptionValue value, MaaOptionValueSize val_size)
 {
     LogInfo << VAR(key) << VAR(value) << VAR(val_size);
 
@@ -54,7 +54,7 @@ bool ControllerMgr::set_option(MaaCtrlOption key, MaaOptionValue value, MaaOptio
     }
 }
 
-MaaCtrlId ControllerMgr::post_connection()
+MaaCtrlId ControllerAgent::post_connection()
 {
     auto id = action_runner_->post({ .type = Action::Type::connect });
     std::unique_lock lock { post_ids_mutex_ };
@@ -62,7 +62,7 @@ MaaCtrlId ControllerMgr::post_connection()
     return id;
 }
 
-MaaCtrlId ControllerMgr::post_click(int x, int y)
+MaaCtrlId ControllerAgent::post_click(int x, int y)
 {
     auto [xx, yy] = preproc_touch_point(x, y);
     ClickParam param { .x = xx, .y = yy };
@@ -72,7 +72,7 @@ MaaCtrlId ControllerMgr::post_click(int x, int y)
     return id;
 }
 
-MaaCtrlId ControllerMgr::post_swipe(int x1, int y1, int x2, int y2, int duration)
+MaaCtrlId ControllerAgent::post_swipe(int x1, int y1, int x2, int y2, int duration)
 {
     auto [xx1, yy1] = preproc_touch_point(x1, y1);
     auto [xx2, yy2] = preproc_touch_point(x2, y2);
@@ -83,7 +83,7 @@ MaaCtrlId ControllerMgr::post_swipe(int x1, int y1, int x2, int y2, int duration
     return id;
 }
 
-MaaCtrlId ControllerMgr::post_press_key(int keycode)
+MaaCtrlId ControllerAgent::post_press_key(int keycode)
 {
     PressKeyParam param { .keycode = keycode };
     auto id = action_runner_->post({ .type = Action::Type::press_key, .param = std::move(param) });
@@ -92,7 +92,7 @@ MaaCtrlId ControllerMgr::post_press_key(int keycode)
     return id;
 }
 
-MaaCtrlId ControllerMgr::post_screencap()
+MaaCtrlId ControllerAgent::post_screencap()
 {
     auto id = action_runner_->post({ .type = Action::Type::screencap });
     std::unique_lock lock { post_ids_mutex_ };
@@ -100,7 +100,7 @@ MaaCtrlId ControllerMgr::post_screencap()
     return id;
 }
 
-MaaCtrlId ControllerMgr::post_touch_down(int contact, int x, int y, int pressure)
+MaaCtrlId ControllerAgent::post_touch_down(int contact, int x, int y, int pressure)
 {
     auto [xx, yy] = preproc_touch_point(x, y);
     TouchParam param { .contact = contact, .x = xx, .y = yy, .pressure = pressure };
@@ -110,7 +110,7 @@ MaaCtrlId ControllerMgr::post_touch_down(int contact, int x, int y, int pressure
     return id;
 }
 
-MaaCtrlId ControllerMgr::post_touch_move(int contact, int x, int y, int pressure)
+MaaCtrlId ControllerAgent::post_touch_move(int contact, int x, int y, int pressure)
 {
     auto [xx, yy] = preproc_touch_point(x, y);
     TouchParam param { .contact = contact, .x = xx, .y = yy, .pressure = pressure };
@@ -120,7 +120,7 @@ MaaCtrlId ControllerMgr::post_touch_move(int contact, int x, int y, int pressure
     return id;
 }
 
-MaaCtrlId ControllerMgr::post_touch_up(int contact)
+MaaCtrlId ControllerAgent::post_touch_up(int contact)
 {
     TouchParam param { .contact = contact };
     auto id = action_runner_->post({ .type = Action::Type::touch_up, .param = std::move(param) });
@@ -129,7 +129,7 @@ MaaCtrlId ControllerMgr::post_touch_up(int contact)
     return id;
 }
 
-MaaStatus ControllerMgr::status(MaaCtrlId ctrl_id) const
+MaaStatus ControllerAgent::status(MaaCtrlId ctrl_id) const
 {
     if (!action_runner_) {
         LogError << "action_runner_ is nullptr";
@@ -138,7 +138,7 @@ MaaStatus ControllerMgr::status(MaaCtrlId ctrl_id) const
     return action_runner_->status(ctrl_id);
 }
 
-MaaStatus ControllerMgr::wait(MaaCtrlId ctrl_id) const
+MaaStatus ControllerAgent::wait(MaaCtrlId ctrl_id) const
 {
     if (!action_runner_) {
         LogError << "action_runner_ is nullptr";
@@ -148,55 +148,66 @@ MaaStatus ControllerMgr::wait(MaaCtrlId ctrl_id) const
     return action_runner_->status(ctrl_id);
 }
 
-MaaBool ControllerMgr::connected() const
+MaaBool ControllerAgent::connected() const
 {
     return connected_;
 }
 
-cv::Mat ControllerMgr::get_image() const
+cv::Mat ControllerAgent::get_image()
 {
     return image_;
 }
 
-std::string ControllerMgr::get_uuid() const
+std::string ControllerAgent::get_uuid()
 {
-    return _get_uuid();
+    if (uuid_cache_.empty()) {
+        request_uuid();
+    }
+    return uuid_cache_;
 }
 
-void ControllerMgr::on_stop()
+std::pair<int, int> ControllerAgent::get_resolution()
+{
+    if (resolution_cache_.first == 0 || resolution_cache_.second == 0) {
+        request_resolution();
+    }
+    return resolution_cache_;
+}
+
+void ControllerAgent::on_stop()
 {
     action_runner_->release();
 }
 
-bool ControllerMgr::click(const cv::Rect& r)
+bool ControllerAgent::click(const cv::Rect& r)
 {
     return click(rand_point(r));
 }
 
-bool ControllerMgr::click(const cv::Point& p)
+bool ControllerAgent::click(const cv::Point& p)
 {
     auto id = post_click(p.x, p.y);
     return wait(id) == MaaStatus_Success;
 }
 
-bool ControllerMgr::swipe(const cv::Rect& r1, const cv::Rect& r2, int duration)
+bool ControllerAgent::swipe(const cv::Rect& r1, const cv::Rect& r2, int duration)
 {
     return swipe(rand_point(r1), rand_point(r2), duration);
 }
 
-bool ControllerMgr::swipe(const cv::Point& p1, const cv::Point& p2, int duration)
+bool ControllerAgent::swipe(const cv::Point& p1, const cv::Point& p2, int duration)
 {
     auto id = post_swipe(p1.x, p1.y, p2.x, p2.y, duration);
     return wait(id) == MaaStatus_Success;
 }
 
-bool ControllerMgr::press_key(int keycode)
+bool ControllerAgent::press_key(int keycode)
 {
     auto id = post_press_key(keycode);
     return wait(id) == MaaStatus_Success;
 }
 
-cv::Mat ControllerMgr::screencap()
+cv::Mat ControllerAgent::screencap()
 {
     std::unique_lock<std::mutex> lock(image_mutex_);
     auto id = action_runner_->post({ .type = Action::Type::screencap }, true);
@@ -206,7 +217,7 @@ cv::Mat ControllerMgr::screencap()
     return image_.clone();
 }
 
-bool ControllerMgr::start_app()
+bool ControllerAgent::start_app()
 {
     if (default_app_package_entry_.empty()) {
         LogError << "default_app_package_entry_ is empty";
@@ -215,7 +226,7 @@ bool ControllerMgr::start_app()
     return start_app(default_app_package_entry_);
 }
 
-bool ControllerMgr::stop_app()
+bool ControllerAgent::stop_app()
 {
     if (default_app_package_.empty()) {
         LogError << "default_app_package_ is empty";
@@ -224,19 +235,19 @@ bool ControllerMgr::stop_app()
     return stop_app(default_app_package_);
 }
 
-bool ControllerMgr::start_app(const std::string& package)
+bool ControllerAgent::start_app(const std::string& package)
 {
     auto id = action_runner_->post({ .type = Action::Type::start_app, .param = AppParam { .package = package } }, true);
     return wait(id) == MaaStatus_Success;
 }
 
-bool ControllerMgr::stop_app(const std::string& package)
+bool ControllerAgent::stop_app(const std::string& package)
 {
     auto id = action_runner_->post({ .type = Action::Type::stop_app, .param = AppParam { .package = package } }, true);
     return wait(id) == MaaStatus_Success;
 }
 
-bool ControllerMgr::handle_connect()
+bool ControllerAgent::handle_connect()
 {
     std::chrono::steady_clock::time_point start_time;
     if (recording()) {
@@ -247,11 +258,15 @@ bool ControllerMgr::handle_connect()
 
     connected_ = _connect();
 
+    request_uuid();
+    request_resolution();
+
     if (recording()) {
-        auto [res_w, res_h] = _get_resolution();
         json::value info {
-            { "type", "connect" },      { "success", connected_ },
-            { "uuid", _get_uuid() },    { "resolution", { { "width", res_w }, { "height", res_h } } },
+            { "type", "connect" },
+            { "success", connected_ },
+            { "uuid", get_uuid() },
+            { "resolution", { { "width", get_resolution().first }, { "height", get_resolution().second } } },
             { "version", MAA_VERSION },
         };
         append_recording(std::move(info), start_time, connected_);
@@ -260,7 +275,7 @@ bool ControllerMgr::handle_connect()
     return connected_;
 }
 
-bool ControllerMgr::handle_click(const ClickParam& param)
+bool ControllerAgent::handle_click(const ClickParam& param)
 {
     std::chrono::steady_clock::time_point start_time;
     if (recording()) {
@@ -281,7 +296,7 @@ bool ControllerMgr::handle_click(const ClickParam& param)
     return ret;
 }
 
-bool ControllerMgr::handle_swipe(const SwipeParam& param)
+bool ControllerAgent::handle_swipe(const SwipeParam& param)
 {
     std::chrono::steady_clock::time_point start_time;
     if (recording()) {
@@ -301,7 +316,7 @@ bool ControllerMgr::handle_swipe(const SwipeParam& param)
     return ret;
 }
 
-bool ControllerMgr::handle_touch_down(const TouchParam& param)
+bool ControllerAgent::handle_touch_down(const TouchParam& param)
 {
     std::chrono::steady_clock::time_point start_time;
     if (recording()) {
@@ -321,7 +336,7 @@ bool ControllerMgr::handle_touch_down(const TouchParam& param)
     return ret;
 }
 
-bool ControllerMgr::handle_touch_move(const TouchParam& param)
+bool ControllerAgent::handle_touch_move(const TouchParam& param)
 {
     std::chrono::steady_clock::time_point start_time;
     if (recording()) {
@@ -341,7 +356,7 @@ bool ControllerMgr::handle_touch_move(const TouchParam& param)
     return ret;
 }
 
-bool ControllerMgr::handle_touch_up(const TouchParam& param)
+bool ControllerAgent::handle_touch_up(const TouchParam& param)
 {
     std::chrono::steady_clock::time_point start_time;
     if (recording()) {
@@ -361,7 +376,7 @@ bool ControllerMgr::handle_touch_up(const TouchParam& param)
     return ret;
 }
 
-bool ControllerMgr::handle_press_key(const PressKeyParam& param)
+bool ControllerAgent::handle_press_key(const PressKeyParam& param)
 {
     std::chrono::steady_clock::time_point start_time;
     if (recording()) {
@@ -381,14 +396,20 @@ bool ControllerMgr::handle_press_key(const PressKeyParam& param)
     return ret;
 }
 
-bool ControllerMgr::handle_screencap()
+bool ControllerAgent::handle_screencap()
 {
     std::chrono::steady_clock::time_point start_time;
     if (recording()) {
         start_time = std::chrono::steady_clock::now();
     }
 
-    cv::Mat raw_image = _screencap();
+    auto opt = _screencap();
+    if (!opt) {
+        LogError << "controller screencap failed";
+        return false;
+    }
+
+    cv::Mat raw_image = std::move(*opt);
     bool ret = postproc_screenshot(raw_image);
 
     if (recording()) {
@@ -406,7 +427,7 @@ bool ControllerMgr::handle_screencap()
     return ret;
 }
 
-bool ControllerMgr::handle_start_app(const AppParam& param)
+bool ControllerAgent::handle_start_app(const AppParam& param)
 {
     std::chrono::steady_clock::time_point start_time;
     if (recording()) {
@@ -414,7 +435,7 @@ bool ControllerMgr::handle_start_app(const AppParam& param)
     }
 
     bool ret = _start_app(param);
-    clear_target_image_size();
+    request_resolution();
 
     if (recording()) {
         json::value info = {
@@ -426,7 +447,7 @@ bool ControllerMgr::handle_start_app(const AppParam& param)
     return ret;
 }
 
-bool ControllerMgr::handle_stop_app(const AppParam& param)
+bool ControllerAgent::handle_stop_app(const AppParam& param)
 {
     std::chrono::steady_clock::time_point start_time;
     if (recording()) {
@@ -434,7 +455,7 @@ bool ControllerMgr::handle_stop_app(const AppParam& param)
     }
 
     bool ret = _stop_app(param);
-    clear_target_image_size();
+    request_resolution();
 
     if (recording()) {
         json::value info = {
@@ -446,20 +467,20 @@ bool ControllerMgr::handle_stop_app(const AppParam& param)
     return ret;
 }
 
-bool ControllerMgr::recording() const
+bool ControllerAgent::recording() const
 {
     return recording_ || GlobalOptionMgr::get_instance().recording();
 }
 
-void ControllerMgr::init_recording()
+void ControllerAgent::init_recording()
 {
     auto recording_dir = GlobalOptionMgr::get_instance().log_dir() / "Recording";
     std::filesystem::create_directories(recording_dir);
     recording_path_ = recording_dir / MAA_FMT::format("MaaRecording_{}.txt", now_filestem());
 }
 
-void ControllerMgr::append_recording(json::value info, const std::chrono::steady_clock::time_point& start_time,
-                                     bool success)
+void ControllerAgent::append_recording(json::value info, const std::chrono::steady_clock::time_point& start_time,
+                                       bool success)
 {
     if (!recording()) {
         return;
@@ -474,7 +495,7 @@ void ControllerMgr::append_recording(json::value info, const std::chrono::steady
     ofs.close();
 }
 
-cv::Point ControllerMgr::rand_point(const cv::Rect& r)
+cv::Point ControllerAgent::rand_point(const cv::Rect& r)
 {
     int x = 0, y = 0;
 
@@ -497,7 +518,7 @@ cv::Point ControllerMgr::rand_point(const cv::Rect& r)
     return { x, y };
 }
 
-bool ControllerMgr::run_action(typename AsyncRunner<Action>::Id id, Action action)
+bool ControllerAgent::run_action(typename AsyncRunner<Action>::Id id, Action action)
 {
     // LogFunc << VAR(id) << VAR(action);
 
@@ -566,9 +587,9 @@ bool ControllerMgr::run_action(typename AsyncRunner<Action>::Id id, Action actio
     return ret;
 }
 
-std::pair<int, int> ControllerMgr::preproc_touch_point(int x, int y)
+std::pair<int, int> ControllerAgent::preproc_touch_point(int x, int y)
 {
-    auto [res_w, res_h] = _get_resolution();
+    auto [res_w, res_h] = get_resolution();
 
     if (image_target_width_ == 0 || image_target_height_ == 0) {
         // 正常来说连接完后都会截个图测试，那时候就会走到 check_and_calc_target_image_size，这里不应该是 0
@@ -585,7 +606,7 @@ std::pair<int, int> ControllerMgr::preproc_touch_point(int x, int y)
     return { proced_x, proced_y };
 }
 
-bool ControllerMgr::postproc_screenshot(const cv::Mat& raw)
+bool ControllerAgent::postproc_screenshot(const cv::Mat& raw)
 {
     if (raw.empty()) {
         image_ = cv::Mat();
@@ -593,7 +614,7 @@ bool ControllerMgr::postproc_screenshot(const cv::Mat& raw)
         return false;
     }
 
-    auto [res_w, res_h] = _get_resolution();
+    auto [res_w, res_h] = get_resolution();
     if (raw.cols != res_w || raw.rows != res_h) {
         LogWarn << "Invalid resolution" << VAR(raw.cols) << VAR(raw.rows) << VAR(res_w) << VAR(res_h);
     }
@@ -608,7 +629,7 @@ bool ControllerMgr::postproc_screenshot(const cv::Mat& raw)
     return !image_.empty();
 }
 
-bool ControllerMgr::check_and_calc_target_image_size(const cv::Mat& raw)
+bool ControllerAgent::check_and_calc_target_image_size(const cv::Mat& raw)
 {
     if (image_target_width_ != 0 && image_target_height_ != 0) {
         return true;
@@ -652,13 +673,42 @@ bool ControllerMgr::check_and_calc_target_image_size(const cv::Mat& raw)
     return true;
 }
 
-void ControllerMgr::clear_target_image_size()
+void ControllerAgent::clear_target_image_size()
 {
     image_target_width_ = 0;
     image_target_height_ = 0;
 }
 
-bool ControllerMgr::set_image_target_long_side(MaaOptionValue value, MaaOptionValueSize val_size)
+bool ControllerAgent::request_uuid()
+{
+    uuid_cache_.clear();
+
+    auto uuid_opt = _request_uuid();
+    if (!uuid_opt) {
+        LogError << "controller request uuid failed";
+        return false;
+    }
+    uuid_cache_ = *uuid_opt;
+    return true;
+}
+
+bool ControllerAgent::request_resolution()
+{
+    clear_target_image_size();
+
+    resolution_cache_ = { 0, 0 };
+
+    auto resolution_opt = _request_resolution();
+    if (!resolution_opt) {
+        LogError << "controller request resolution failed";
+        return false;
+    }
+    resolution_cache_ = *resolution_opt;
+
+    return true;
+}
+
+bool ControllerAgent::set_image_target_long_side(MaaOptionValue value, MaaOptionValueSize val_size)
 {
     if (val_size != sizeof(image_target_long_side_)) {
         LogError << "invalid value size: " << val_size;
@@ -673,7 +723,7 @@ bool ControllerMgr::set_image_target_long_side(MaaOptionValue value, MaaOptionVa
     return true;
 }
 
-bool ControllerMgr::set_image_target_short_side(MaaOptionValue value, MaaOptionValueSize val_size)
+bool ControllerAgent::set_image_target_short_side(MaaOptionValue value, MaaOptionValueSize val_size)
 {
     if (val_size != sizeof(image_target_short_side_)) {
         LogError << "invalid value size: " << val_size;
@@ -688,21 +738,21 @@ bool ControllerMgr::set_image_target_short_side(MaaOptionValue value, MaaOptionV
     return true;
 }
 
-bool ControllerMgr::set_default_app_package_entry(MaaOptionValue value, MaaOptionValueSize val_size)
+bool ControllerAgent::set_default_app_package_entry(MaaOptionValue value, MaaOptionValueSize val_size)
 {
     std::string_view package(reinterpret_cast<char*>(value), val_size);
     default_app_package_entry_ = package;
     return true;
 }
 
-bool ControllerMgr::set_default_app_package(MaaOptionValue value, MaaOptionValueSize val_size)
+bool ControllerAgent::set_default_app_package(MaaOptionValue value, MaaOptionValueSize val_size)
 {
     std::string_view package(reinterpret_cast<char*>(value), val_size);
     default_app_package_ = package;
     return true;
 }
 
-bool ControllerMgr::set_recording(MaaOptionValue value, MaaOptionValueSize val_size)
+bool ControllerAgent::set_recording(MaaOptionValue value, MaaOptionValueSize val_size)
 {
     if (val_size != sizeof(recording_)) {
         LogError << "invalid value size: " << val_size;

@@ -5,7 +5,7 @@
 #include <condition_variable>
 #include <thread>
 
-MAA_ADB_CTRL_UNIT_NS_BEGIN
+MAA_CTRL_UNIT_NS_BEGIN
 
 class MinicapStream : public MinicapBase
 {
@@ -39,4 +39,4 @@ private:
     std::shared_ptr<IOHandler> stream_handle_;
 };
 
-MAA_ADB_CTRL_UNIT_NS_END
+MAA_CTRL_UNIT_NS_END

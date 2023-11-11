@@ -4,7 +4,7 @@
 #include "Buffer.h"
 #include "MaaFramework/MaaDef.h"
 #include "Utility.h"
-#include "controller.grpc.pb.h"
+#include "generated/controller.grpc.pb.h"
 
 #include <semaphore>
 
@@ -13,7 +13,8 @@ class ControllerImpl final : public ::maarpc::Controller::Service
 public:
     struct CustomControllerInfo
     {
-        ::grpc::ServerReaderWriter<::maarpc::CustomControllerResponse, ::maarpc::CustomControllerRequest>* stream = nullptr;
+        ::grpc::ServerReaderWriter<::maarpc::CustomControllerResponse, ::maarpc::CustomControllerRequest>* stream =
+            nullptr;
         std::shared_ptr<ImageImpl> image_impl = nullptr;
         std::binary_semaphore finish { 0 };
     };

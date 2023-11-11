@@ -434,16 +434,7 @@ FodyWeavers.xsd
 .idea/
 *.sln.iml
 
-enc_temp_folder/*
-
-# Nuke
-.nuke/temp/*
-
-# test install dir
-install
-
+# chore
 .DS_Store
-
-source/MaaRpc/generated/*.h
-source/MaaRpc/generated/*.cc
-source/MaaRpc/generated/*.timestamp
+.nuke/temp/*
+enc_temp_folder/*

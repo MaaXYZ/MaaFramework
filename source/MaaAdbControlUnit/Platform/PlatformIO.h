@@ -7,7 +7,7 @@
 
 #include "Conf/Conf.h"
 
-MAA_ADB_CTRL_UNIT_NS_BEGIN
+MAA_CTRL_UNIT_NS_BEGIN
 
 class IOHandler;
 
@@ -38,4 +38,4 @@ public:
     virtual std::string read(unsigned timeout_sec, size_t expect) = 0;
 };
 
-MAA_ADB_CTRL_UNIT_NS_END
+MAA_CTRL_UNIT_NS_END

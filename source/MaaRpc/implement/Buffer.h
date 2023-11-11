@@ -2,7 +2,7 @@
 
 #include "AtomicMap.h"
 #include "MaaFramework/MaaDef.h"
-#include "buffer.grpc.pb.h"
+#include "generated/buffer.grpc.pb.h"
 
 class ImageImpl final : public ::maarpc::Image::Service
 {

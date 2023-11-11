@@ -1,5 +1,5 @@
 file(GLOB_RECURSE maa_dbg_control_unit_src *.h *.hpp *.cpp)
-file(GLOB_RECURSE maa_dbg_control_unit_header ../include/ControlUnit/DbgControlUnitAPI.h)
+file(GLOB_RECURSE maa_dbg_control_unit_header ../include/ControlUnit/DbgControlUnitAPI.h ../include/ControlUnit/ControlUnitAPI.h)
 
 add_library(MaaDbgControlUnit SHARED ${maa_dbg_control_unit_src} ${maa_dbg_control_unit_header})
 

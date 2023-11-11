@@ -1,10 +1,10 @@
 #pragma once
 
-#include "UnitBase.h"
+#include "Base/UnitBase.h"
 
-MAA_ADB_CTRL_UNIT_NS_BEGIN
+MAA_CTRL_UNIT_NS_BEGIN
 
-class Connection : public ConnectionBase
+class Connection : public UnitBase
 {
 public:
     virtual ~Connection() override = default;
@@ -12,13 +12,13 @@ public:
 public: // from UnitBase
     virtual bool parse(const json::value& config) override;
 
-public: // from ConnectionAPI
-    virtual bool connect() override;
-    virtual bool kill_server() override;
+public:
+    bool connect();
+    bool kill_server();
 
 private:
     Argv connect_argv_;
     Argv kill_server_argv_;
 };
 
-MAA_ADB_CTRL_UNIT_NS_END
+MAA_CTRL_UNIT_NS_END

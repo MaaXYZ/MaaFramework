@@ -6,7 +6,7 @@
 
 #include "Record.h"
 
-MAA_DBG_CTRL_UNIT_NS_BEGIN
+MAA_CTRL_UNIT_NS_BEGIN
 
 class RecordParser
 {
@@ -25,4 +25,4 @@ private:
     static std::optional<Record::Param> parse_app(const json::value& record_json);
 };
 
-MAA_DBG_CTRL_UNIT_NS_END
+MAA_CTRL_UNIT_NS_END

@@ -23,6 +23,8 @@ macro(GENERATE_GRPC_LIB LIB_NAME IN_DIR OUT_DIR GEN_SRCS)
     set(${LIB_NAME}_INCLUDE_DIRS ${OUT_DIR})
     set(${GEN_SRCS} ${SRCS})
     
+    set_target_properties(${LIB_NAME} PROPERTIES FOLDER "Generated")
+    
     source_group("generated" FILES ${SRCS})
     source_group("proto" FILES ${PROTOS})
 endmacro()

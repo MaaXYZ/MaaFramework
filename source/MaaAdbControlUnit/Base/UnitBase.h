@@ -7,7 +7,7 @@
 #include "Screencap/ScreencapHelper.h"
 #include "Utils/ArgvWrapper.hpp"
 
-MAA_ADB_CTRL_UNIT_NS_BEGIN
+MAA_CTRL_UNIT_NS_BEGIN
 
 class UnitBase
 {
@@ -34,52 +34,47 @@ protected:
     Argv::replacement argv_replace_;
 };
 
-class DeviceListBase : public DeviceListAPI, public UnitBase
-{
-public:
-    virtual ~DeviceListBase() override = default;
-};
-
-class ConnectionBase : public ConnectionAPI, public UnitBase
-{
-public:
-    virtual ~ConnectionBase() override = default;
-};
-
-class ActivityBase : public ActivityAPI, public UnitBase
-{
-public:
-    virtual ~ActivityBase() override = default;
-};
-
-class DeviceInfoBase : public DeviceInfoAPI, public UnitBase
-{
-public:
-    virtual ~DeviceInfoBase() override = default;
-};
-
-class ScreencapBase : public ScreencapAPI, public UnitBase
+class ScreencapBase : public UnitBase
 {
 public:
     virtual ~ScreencapBase() override = default;
 
 public:
-    virtual bool set_wh(int swidth, int sheight) override { return screencap_helper_.set_wh(swidth, sheight); }
+    virtual bool init(int swidth, int sheight) = 0;
+    virtual void deinit() = 0;
+    virtual bool set_wh(int swidth, int sheight) { return screencap_helper_.set_wh(swidth, sheight); }
+
+    virtual std::optional<cv::Mat> screencap() = 0;
 
 protected:
     ScreencapHelper screencap_helper_;
 };
 
-class TouchInputBase : public TouchInputAPI, virtual public UnitBase
+class TouchInputBase : virtual public UnitBase
 {
 public:
     virtual ~TouchInputBase() override = default;
+
+public:
+    virtual bool init(int swidth, int sheight, int orientation) = 0;
+    virtual void deinit() = 0;
+    virtual bool set_wh(int swidth, int sheight, int orientation) = 0;
+
+    virtual bool click(int x, int y) = 0;
+    virtual bool swipe(int x1, int y1, int x2, int y2, int duration) = 0;
+
+    virtual bool touch_down(int contact, int x, int y, int pressure) = 0;
+    virtual bool touch_move(int contact, int x, int y, int pressure) = 0;
+    virtual bool touch_up(int contact) = 0;
 };
 
-class KeyInputBase : public KeyInputAPI, virtual public UnitBase
+class KeyInputBase : virtual public UnitBase
 {
 public:
     virtual ~KeyInputBase() override = default;
+
+public:
+    virtual bool press_key(int key) = 0;
 };
 
-MAA_ADB_CTRL_UNIT_NS_END
+MAA_CTRL_UNIT_NS_END

@@ -4,7 +4,7 @@
 #include "Utils/Platform.h"
 #include "Utils/Time.hpp"
 
-MAA_ADB_CTRL_UNIT_NS_BEGIN
+MAA_CTRL_UNIT_NS_BEGIN
 
 bool InvokeApp::parse(const json::value& config)
 {
@@ -139,4 +139,4 @@ std::shared_ptr<IOHandler> InvokeApp::invoke_app(const std::string& package)
     return cmd_ret;
 }
 
-MAA_ADB_CTRL_UNIT_NS_END
+MAA_CTRL_UNIT_NS_END

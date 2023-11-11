@@ -1,10 +1,10 @@
 #pragma once
 
-#include "UnitBase.h"
+#include "Base/UnitBase.h"
 
 #include "ScreencapHelper.h"
 
-MAA_ADB_CTRL_UNIT_NS_BEGIN
+MAA_CTRL_UNIT_NS_BEGIN
 
 class ScreencapRawByNetcat : public ScreencapBase
 {
@@ -30,4 +30,4 @@ private:
     uint16_t netcat_port_ = 0;
 };
 
-MAA_ADB_CTRL_UNIT_NS_END
+MAA_CTRL_UNIT_NS_END

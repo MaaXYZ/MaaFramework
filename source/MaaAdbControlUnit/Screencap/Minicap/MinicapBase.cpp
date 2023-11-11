@@ -7,7 +7,7 @@
 
 #include <array>
 
-MAA_ADB_CTRL_UNIT_NS_BEGIN
+MAA_CTRL_UNIT_NS_BEGIN
 
 bool MinicapBase::parse(const json::value& config)
 {
@@ -121,4 +121,4 @@ bool MinicapBase::init(int swidth, int sheight)
     return set_wh(swidth, sheight);
 }
 
-MAA_ADB_CTRL_UNIT_NS_END
+MAA_CTRL_UNIT_NS_END

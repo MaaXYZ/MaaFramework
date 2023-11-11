@@ -47,7 +47,7 @@ public: // from MaaInstanceAPI
 
 public: // from InstanceInternalAPI
     virtual MAA_RES_NS::ResourceMgr* inter_resource() override;
-    virtual MAA_CTRL_NS::ControllerMgr* inter_controller() override;
+    virtual MAA_CTRL_NS::ControllerAgent* inter_controller() override;
     virtual InstanceStatus* inter_status() override;
     virtual void notify(std::string_view msg, const json::value& details = json::value()) override;
     virtual MAA_VISION_NS::CustomRecognizerPtr custom_recognizer(const std::string& name) override;

@@ -5,7 +5,7 @@
 #include "Utils/NoWarningCV.hpp"
 #include "Utils/Time.hpp"
 
-MAA_ADB_CTRL_UNIT_NS_BEGIN
+MAA_CTRL_UNIT_NS_BEGIN
 
 bool ScreencapEncodeToFileAndPull::parse(const json::value& config)
 {
@@ -44,4 +44,4 @@ std::optional<cv::Mat> ScreencapEncodeToFileAndPull::screencap()
     return imread(dst_path);
 }
 
-MAA_ADB_CTRL_UNIT_NS_END
+MAA_CTRL_UNIT_NS_END

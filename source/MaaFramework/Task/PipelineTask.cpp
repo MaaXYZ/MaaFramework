@@ -2,7 +2,7 @@
 
 #include <sstream>
 
-#include "Controller/ControllerMgr.h"
+#include "Controller/ControllerAgent.h"
 #include "Instance/InstanceStatus.h"
 #include "MaaFramework/MaaMsg.h"
 #include "Resource/ResourceMgr.h"

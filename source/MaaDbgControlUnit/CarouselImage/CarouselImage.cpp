@@ -4,16 +4,12 @@
 #include "Utils/Logger.h"
 #include "Utils/StringMisc.hpp"
 
-MAA_DBG_CTRL_UNIT_NS_BEGIN
+MAA_CTRL_UNIT_NS_BEGIN
 
-std::string CarouselImage::uuid() const
+bool CarouselImage::find_device(std::vector<std::string>& devices)
 {
-    return path_to_utf8_string(path_);
-}
-
-cv::Size CarouselImage::resolution() const
-{
-    return resolution_;
+    std::ignore = devices;
+    return true;
 }
 
 bool CarouselImage::connect()
@@ -62,6 +58,19 @@ bool CarouselImage::connect()
     return true;
 }
 
+bool CarouselImage::request_uuid(std::string& uuid)
+{
+    uuid = path_to_utf8_string(path_);
+    return true;
+}
+
+bool CarouselImage::request_resolution(int& width, int& height)
+{
+    width = resolution_.width;
+    height = resolution_.height;
+    return true;
+}
+
 bool CarouselImage::start_app(const std::string& intent)
 {
     std::ignore = intent;
@@ -71,6 +80,21 @@ bool CarouselImage::start_app(const std::string& intent)
 bool CarouselImage::stop_app(const std::string& intent)
 {
     std::ignore = intent;
+    return true;
+}
+
+bool CarouselImage::screencap(cv::Mat& image)
+{
+    if (images_.empty()) {
+        LogError << "no image" << VAR(path_);
+        return false;
+    }
+
+    if (image_index_ >= images_.size()) {
+        image_index_ = 0;
+    }
+
+    image = images_.at(image_index_++);
     return true;
 }
 
@@ -124,18 +148,4 @@ bool CarouselImage::press_key(int key)
     return true;
 }
 
-std::optional<cv::Mat> CarouselImage::screencap()
-{
-    if (images_.empty()) {
-        LogError << "no image" << VAR(path_);
-        return std::nullopt;
-    }
-
-    if (image_index_ >= images_.size()) {
-        image_index_ = 0;
-    }
-
-    return images_.at(image_index_++);
-}
-
-MAA_DBG_CTRL_UNIT_NS_END
+MAA_CTRL_UNIT_NS_END

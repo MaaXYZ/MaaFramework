@@ -1,6 +1,6 @@
 #include "DeviceMgr.h"
 
-#include "ControlUnit/AdbControlUnitAPI.h"
+#include "Utils/ControlUnitLibraryHolder.h"
 #include "Utils/Logger.h"
 
 MAA_TOOLKIT_DEVICE_NS_BEGIN
@@ -36,29 +36,26 @@ std::vector<std::string> DeviceMgr::request_adb_serials(const std::filesystem::p
 {
     LogFunc << VAR(adb_path);
 
-#ifdef WITH_ADB_CONTROLLER
-
     std::string str_adb = path_to_utf8_string(adb_path);
     std::string str_config = adb_config.to_string();
-    auto mgr = MAA_ADB_CTRL_UNIT_NS::create_device_list_obj(str_adb.c_str(), str_config.c_str());
-    if (!mgr) {
-        LogError << "Failed to create_device_list_obj" << VAR(str_adb) << VAR(str_config);
+
+    auto control_unit = MAA_CTRL_NS::AdbControlUnitLibraryHolder::create_control_unit(
+        str_adb.c_str(), "", 0, str_config.c_str(), "", nullptr, nullptr);
+
+    if (!control_unit) {
+        LogError << "Failed to create control unit";
         return {};
     }
 
-    auto devices_opt = mgr->request_devices();
-    if (!devices_opt) {
+    std::vector<std::string> devices;
+    auto found = control_unit->find_device(devices);
+
+    if (!found) {
+        LogError << "Failed to find_device";
         return {};
     }
 
-    return *devices_opt;
-
-#else
-
-    std::ignore = adb_config;
-    return {};
-
-#endif
+    return devices;
 }
 
 bool DeviceMgr::request_adb_connect(const std::filesystem::path& adb_path, const std::string& serial,
@@ -66,24 +63,26 @@ bool DeviceMgr::request_adb_connect(const std::filesystem::path& adb_path, const
 {
     LogFunc << VAR(adb_path) << VAR(serial);
 
-#ifdef WITH_ADB_CONTROLLER
-
     std::string str_adb = path_to_utf8_string(adb_path);
+    std::string str_serial = serial;
     std::string str_config = adb_config.to_string();
-    auto mgr = MAA_ADB_CTRL_UNIT_NS::create_connection(str_adb.c_str(), serial.c_str(), 0, str_config.c_str());
-    if (!mgr) {
-        LogError << "Failed to create_connection" << VAR(str_adb) << VAR(serial) << VAR(str_config);
+
+    auto control_unit = MAA_CTRL_NS::AdbControlUnitLibraryHolder::create_control_unit(
+        str_adb.c_str(), str_serial.c_str(), 0, str_config.c_str(), "", nullptr, nullptr);
+
+    if (!control_unit) {
+        LogError << "Failed to create control unit";
         return false;
     }
 
-    return mgr->connect();
+    auto connected = control_unit->connect();
 
-#else
+    if (!connected) {
+        LogError << "Failed to connect";
+        return false;
+    }
 
-    std::ignore = adb_config;
-    return false;
-
-#endif
+    return true;
 }
 
 std::vector<std::string> DeviceMgr::check_available_adb_serials(const std::filesystem::path& adb_path,

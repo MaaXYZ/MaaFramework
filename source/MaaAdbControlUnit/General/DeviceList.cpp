@@ -4,18 +4,17 @@
 #include "Utils/Ranges.hpp"
 #include "Utils/StringMisc.hpp"
 
-MAA_ADB_CTRL_UNIT_NS_BEGIN
+MAA_CTRL_UNIT_NS_BEGIN
 
 bool DeviceList::parse(const json::value& config)
 {
     return parse_argv("Devices", config, devices_argv_);
 }
 
-std::optional<DeviceList::Devices> DeviceList::request_devices()
+std::optional<std::vector<std::string>> DeviceList::request_devices()
 {
     LogFunc;
 
-    devices_.clear();
     auto cmd_ret = command(devices_argv_.gen(argv_replace_));
 
     if (!cmd_ret) {
@@ -33,21 +32,17 @@ std::optional<DeviceList::Devices> DeviceList::request_devices()
     }
     lines.erase(lines.begin()); // remove "List of devices attached"
 
+    std::vector<std::string> devices;
     for (auto&& line : lines) {
         if (line.find("device") == std::string::npos) {
             continue;
         }
         string_trim_(line);
-        devices_.emplace_back(string_split(line, '\t')[0]);
+        devices.emplace_back(string_split(line, '\t')[0]);
     }
-    LogInfo << VAR(devices_);
+    LogInfo << VAR(devices);
 
-    return devices_;
+    return devices;
 }
 
-DeviceList::Devices DeviceList::get_devices() const
-{
-    return devices_;
-}
-
-MAA_ADB_CTRL_UNIT_NS_END
+MAA_CTRL_UNIT_NS_END

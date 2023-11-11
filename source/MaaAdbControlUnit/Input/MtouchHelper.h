@@ -1,10 +1,10 @@
 #pragma once
 
-#include "UnitBase.h"
+#include "Base/UnitBase.h"
 
 #include "Invoke/InvokeApp.h"
 
-MAA_ADB_CTRL_UNIT_NS_BEGIN
+MAA_CTRL_UNIT_NS_BEGIN
 
 class MtouchHelper : public TouchInputBase
 {
@@ -36,4 +36,4 @@ protected:
     int orientation_ = 0;
 };
 
-MAA_ADB_CTRL_UNIT_NS_END
+MAA_CTRL_UNIT_NS_END

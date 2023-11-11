@@ -1,7 +1,7 @@
 #pragma once
 
 #include "MaaToolKit/MaaToolKitAPI.h"
-#include "config.grpc.pb.h"
+#include "generated/config.grpc.pb.h"
 
 class ConfigImpl final : public ::maarpc::Config::Service
 {

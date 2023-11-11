@@ -6,30 +6,41 @@
 #include "ReplayRecording/ReplayRecordingMgr.h"
 #include "Utils/Logger.h"
 
-MAA_DBG_CTRL_UNIT_NS_BEGIN
-
-std::shared_ptr<ControllerAPI> create_controller(MaaDbgControllerType type, MaaStringView read_path,
-                                                 MaaStringView write_path, MaaStringView config)
+MaaStringView get_version()
 {
-    LogFunc << VAR(type) << VAR(read_path) << VAR(write_path) << VAR(config);
+#pragma message("MaaDbgControlUnit MAA_VERSION: " MAA_VERSION)
 
-    auto config_parsed = json::parse(config);
-    if (!config_parsed) {
-        LogError << "Failed to parse config" << VAR(config);
-        return nullptr;
-    }
+    return MAA_VERSION;
+}
+
+MaaControlUnitHandle create_control_unit(MaaDbgControllerType type, MaaStringView read_path)
+{
+    LogFunc << VAR(type) << VAR(read_path);
 
     auto read_stdpath = MAA_NS::path(read_path);
-    auto write_stdpath = MAA_NS::path(write_path);
+
+    MaaControlUnitHandle handle = nullptr;
 
     switch (type) {
     case MaaDbgControllerType_CarouselImage:
-        return std::make_shared<CarouselImage>(read_stdpath);
+        handle = new MAA_CTRL_UNIT_NS::CarouselImage(read_stdpath);
+        break;
+
     case MaaDbgControllerType_ReplayRecording:
-        return create_replay_recording(read_stdpath);
+        handle = MAA_CTRL_UNIT_NS::create_replay_recording(read_stdpath);
+        break;
     }
 
-    return nullptr;
+    LogDebug << VAR_VOIDP(handle);
+
+    return handle;
 }
 
-MAA_DBG_CTRL_UNIT_NS_END
+void destroy_control_unit(MaaControlUnitHandle handle)
+{
+    LogFunc << VAR_VOIDP(handle);
+
+    if (handle) {
+        delete handle;
+    }
+}

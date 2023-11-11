@@ -8,21 +8,24 @@ extern "C"
 {
 #endif
 
-    /* Deprecated, please use MaaAdbControllerCreateV2 */ MaaControllerHandle MAA_FRAMEWORK_API MaaAdbControllerCreate(
+    // Deprecated, please use MaaAdbControllerCreateV2
+    MaaControllerHandle MAA_FRAMEWORK_API MaaAdbControllerCreate( //
         MaaStringView adb_path, MaaStringView address, MaaAdbControllerType type, MaaStringView config,
         MaaControllerCallback callback, MaaCallbackTransparentArg callback_arg);
-    MaaControllerHandle MAA_FRAMEWORK_API MaaAdbControllerCreateV2(MaaStringView adb_path, MaaStringView address,
-                                                                   MaaAdbControllerType type, MaaStringView config,
-                                                                   MaaStringView agent_path,
-                                                                   MaaControllerCallback callback,
-                                                                   MaaCallbackTransparentArg callback_arg);
-    MaaControllerHandle MAA_FRAMEWORK_API MaaCustomControllerCreate(MaaCustomControllerHandle handle,
-                                                                    MaaTransparentArg handle_arg,
-                                                                    MaaControllerCallback callback,
-                                                                    MaaCallbackTransparentArg callback_arg);
-    MaaControllerHandle MAA_FRAMEWORK_API MaaThriftControllerCreate(MaaStringView param, MaaControllerCallback callback,
-                                                                    MaaCallbackTransparentArg callback_arg);
-    MaaControllerHandle MAA_FRAMEWORK_API MaaDbgControllerCreate(
+
+    MaaControllerHandle MAA_FRAMEWORK_API MaaAdbControllerCreateV2( //
+        MaaStringView adb_path, MaaStringView address, MaaAdbControllerType type, MaaStringView config,
+        MaaStringView agent_path, MaaControllerCallback callback, MaaCallbackTransparentArg callback_arg);
+
+    MaaControllerHandle MAA_FRAMEWORK_API MaaCustomControllerCreate( //
+        MaaCustomControllerHandle handle, MaaTransparentArg handle_arg, MaaControllerCallback callback,
+        MaaCallbackTransparentArg callback_arg);
+
+    MaaControllerHandle MAA_FRAMEWORK_API MaaThriftControllerCreate( //
+        MaaThriftControllerType type, MaaStringView host, int32_t port, MaaStringView config,
+        MaaControllerCallback callback, MaaCallbackTransparentArg callback_arg);
+
+    MaaControllerHandle MAA_FRAMEWORK_API MaaDbgControllerCreate( //
         MaaStringView read_path, MaaStringView write_path, MaaDbgControllerType type, MaaStringView config,
         MaaControllerCallback callback, MaaCallbackTransparentArg callback_arg);
 

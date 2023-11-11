@@ -132,8 +132,8 @@ message CustomControllerRequest {
   oneof result {
     string init = 101;
 
-    Size resolution = 201;
-    string uuid = 202;
+    string uuid = 201;
+    Size resolution = 202;
   }
 }
 
@@ -142,18 +142,17 @@ message CustomControllerResponse {
     string init = 101; // handle
 
     bool connect = 201; // void
-    ClickParam click = 202;
-    SwipeParam swipe = 203;
-    KeyParam key = 204;
-    TouchParam touch_down = 205;
-    TouchParam touch_move = 206;
-    TouchParam touch_up = 207;
-    string start = 208;
-    string stop = 209;
-    bool resolution = 210; // void
-    string image = 211;
-    bool uuid = 212; // void
-    CustomControllerSetOptionParam set_option = 213;
+    bool request_uuid = 202; // void
+    bool request_resolution = 203; // void
+    string start_app = 301;
+    string stop_app = 302;
+    string screencap = 401;
+    ClickParam click = 501;
+    SwipeParam swipe = 502;
+    TouchParam touch_down = 601;
+    TouchParam touch_move = 602;
+    TouchParam touch_up = 603;
+    KeyParam press_key = 701;
   }
 }
 

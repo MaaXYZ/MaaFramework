@@ -156,6 +156,15 @@ enum MaaDbgControllerTypeEnum
     MaaDbgControllerType_ReplayRecording = 2,
 };
 
+typedef int32_t MaaThriftControllerType;
+enum MaaThriftControllerTypeEnum
+{
+    MaaThriftController_Invalid = 0,
+
+    MaaThriftControllerType_Socket = 1,
+    MaaThriftControllerType_UnixDomainSocket = 2,
+};
+
 typedef void* MaaTransparentArg;
 typedef MaaTransparentArg MaaCallbackTransparentArg;
 
