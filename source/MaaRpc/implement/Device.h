@@ -1,7 +1,7 @@
 #pragma once
 
 #include "MaaToolKit/Device/MaaToolKitDevice.h"
-#include "device.grpc.pb.h"
+#include "generated/device.grpc.pb.h"
 
 class DeviceImpl final : public ::maarpc::Device::Service
 {

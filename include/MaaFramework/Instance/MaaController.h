@@ -18,7 +18,7 @@ extern "C"
         MaaStringView agent_path, MaaControllerCallback callback, MaaCallbackTransparentArg callback_arg);
 
     MaaControllerHandle MAA_FRAMEWORK_API MaaCustomControllerCreate( //
-        MaaCustomActionHandle handle, MaaTransparentArg handle_arg, MaaControllerCallback callback,
+        MaaCustomControllerHandle handle, MaaTransparentArg handle_arg, MaaControllerCallback callback,
         MaaCallbackTransparentArg callback_arg);
 
     MaaControllerHandle MAA_FRAMEWORK_API MaaThriftControllerCreate( //

@@ -132,8 +132,8 @@ message CustomControllerRequest {
   oneof result {
     string init = 101;
 
-    Size resolution = 201;
-    string uuid = 202;
+    string uuid = 201;
+    Size resolution = 202;
   }
 }
 

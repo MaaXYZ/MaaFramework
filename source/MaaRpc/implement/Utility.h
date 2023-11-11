@@ -2,7 +2,7 @@
 
 #include "AtomicMap.h"
 #include "MaaFramework/MaaDef.h"
-#include "utility.grpc.pb.h"
+#include "generated/utility.grpc.pb.h"
 
 #include <memory>
 #include <semaphore>

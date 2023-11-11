@@ -3,7 +3,7 @@
 #include "AtomicMap.h"
 #include "MaaFramework/MaaDef.h"
 #include "Utility.h"
-#include "resource.grpc.pb.h"
+#include "generated/resource.grpc.pb.h"
 
 class ResourceImpl final : public ::maarpc::Resource::Service
 {

@@ -7,7 +7,7 @@
 #include "Resource.h"
 #include "SyncContext.h"
 #include "Utility.h"
-#include "instance.grpc.pb.h"
+#include "generated/instance.grpc.pb.h"
 
 class InstanceImpl final : public ::maarpc::Instance::Service
 {
@@ -15,7 +15,8 @@ public:
     struct CustomRecognizerInfo
     {
         std::string name;
-        ::grpc::ServerReaderWriter<::maarpc::CustomRecognizerResponse, ::maarpc::CustomRecognizerRequest>* stream = nullptr;
+        ::grpc::ServerReaderWriter<::maarpc::CustomRecognizerResponse, ::maarpc::CustomRecognizerRequest>* stream =
+            nullptr;
         std::shared_ptr<ImageImpl> image_impl = nullptr;
         std::shared_ptr<SyncContextImpl> syncctx_impl = nullptr;
         std::binary_semaphore finish { 0 };

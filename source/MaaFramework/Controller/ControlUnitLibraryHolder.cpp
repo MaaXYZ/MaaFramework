@@ -6,7 +6,7 @@ template <typename ControlUnitT>
 bool check_version(const std::string& func_name)
 {
     using get_version_t = MaaStringView(void);
-    auto version_func = ControlUnitT::get_function<get_version_t>(func_name);
+    auto version_func = ControlUnitT::template get_function<get_version_t>(func_name);
     if (!version_func) {
         LogError << "Failed to get function get_version";
         return false;
