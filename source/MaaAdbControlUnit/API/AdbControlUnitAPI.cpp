@@ -74,8 +74,8 @@ MaaControlUnitHandle create_control_unit( //
         touch_unit = maatouch_unit;
         break;
     default:
-        LogError << "Unknown touch input type" << VAR(touch_type);
-        return nullptr;
+        LogWarn << "Unknown touch input type" << VAR(touch_type);
+        break;
     }
 
     switch (key_type) {
@@ -95,8 +95,8 @@ MaaControlUnitHandle create_control_unit( //
         key_unit = maatouch_unit;
         break;
     default:
-        LogError << "Unknown key input type" << VAR(key_type);
-        return nullptr;
+        LogWarn << "Unknown key input type" << VAR(key_type);
+        break;
     }
 
     switch (screencap_type) {
@@ -141,8 +141,8 @@ MaaControlUnitHandle create_control_unit( //
         screencap_unit = std::make_shared<MinicapStream>(minicap_path);
         break;
     default:
-        LogError << "Unknown screencap type" << VAR(screencap_type);
-        return nullptr;
+        LogWarn << "Unknown screencap type" << VAR(screencap_type);
+        break;
     }
 
     auto unit_mgr = std::make_unique<ControlUnitMgr>(MAA_NS::path(adb_path), adb_serial, callback, callback_arg);
@@ -151,14 +151,14 @@ MaaControlUnitHandle create_control_unit( //
     unit_mgr->set_key_input_obj(key_unit);
     unit_mgr->set_screencap_obj(screencap_unit);
 
-    auto json_opt = json::parse(std::string_view(config));
+    auto json_opt = json::parse(config);
     if (!json_opt) {
         LogError << "Parse config failed, invalid config:" << config;
         return nullptr;
     }
     bool parsed = unit_mgr->parse(*json_opt);
     if (!parsed) {
-        LogError << "Parse json failed, invalid json:" << *json_opt;
+        LogError << "unit_mgr->parse failed, invalid json:" << *json_opt;
         return nullptr;
     }
 

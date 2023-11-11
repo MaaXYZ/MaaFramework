@@ -2,9 +2,9 @@
 
 #include "Buffer/ImageBuffer.hpp"
 #include "Buffer/StringBuffer.hpp"
-#include "Controller/ControlUnitLibraryHolder.h"
 #include "Controller/CustomControllerAgent.h"
 #include "Controller/GeneralControllerAgent.h"
+#include "Utils/ControlUnitLibraryHolder.h"
 #include "Utils/Logger.h"
 #include "Utils/Platform.h"
 

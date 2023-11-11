@@ -9,7 +9,7 @@
 
 MAA_CTRL_NS_BEGIN
 
-class AdbControlUnitLibraryHolder : public LibraryHolder<AdbControlUnitLibraryHolder>
+class MAA_UTILS_API AdbControlUnitLibraryHolder : public LibraryHolder<AdbControlUnitLibraryHolder>
 {
 public:
     static std::shared_ptr<MAA_CTRL_UNIT_NS::ControlUnitAPI> create_control_unit( //
@@ -23,7 +23,7 @@ private:
     inline static const std::string destroy_func_name_ = "destroy_control_unit";
 };
 
-class DbgControlUnitLibraryHolder : public LibraryHolder<DbgControlUnitLibraryHolder>
+class MAA_UTILS_API DbgControlUnitLibraryHolder : public LibraryHolder<DbgControlUnitLibraryHolder>
 {
 public:
     static std::shared_ptr<MAA_CTRL_UNIT_NS::ControlUnitAPI> create_control_unit( //
@@ -36,7 +36,7 @@ private:
     inline static const std::string destroy_func_name_ = "destroy_control_unit";
 };
 
-class ThriftControlUnitLibraryHolder : public LibraryHolder<ThriftControlUnitLibraryHolder>
+class MAA_UTILS_API ThriftControlUnitLibraryHolder : public LibraryHolder<ThriftControlUnitLibraryHolder>
 {
 public:
     static std::shared_ptr<MAA_CTRL_UNIT_NS::ControlUnitAPI> create_control_unit( //

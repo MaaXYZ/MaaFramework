@@ -26,11 +26,6 @@ bool ControlUnitMgr::find_device(std::vector<std::string>& devices)
 
 bool ControlUnitMgr::connect()
 {
-    if (!screencap_ || !touch_input_ || !key_input_) {
-        LogError << "sub unit is null" << VAR(screencap_) << VAR(touch_input_) << VAR(key_input_);
-        return false;
-    }
-
     json::value details = {
         { "adb", path_to_utf8_string(adb_path_) },
         { "address", adb_serial_ },
@@ -69,23 +64,33 @@ bool ControlUnitMgr::connect()
 
     notifier.notify(MaaMsg_Controller_ResolutionGot, details);
 
-    if (screencap_->init(width, height)) {
-        notifier.notify(MaaMsg_Controller_ScreencapInitFailed, details);
-        notifier.notify(MaaMsg_Controller_ConnectFailed, details | json::object { { "why", "ScreencapInitFailed" } });
-        LogError << "failed to init screencap";
-        return false;
-    }
-    notifier.notify(MaaMsg_Controller_ScreencapInited, details);
-
-    if (touch_input_->init(width, height, orientation)) {
-        notifier.notify(MaaMsg_Controller_TouchInputInitFailed, details);
-        notifier.notify(MaaMsg_Controller_ConnectFailed, details | json::object { { "why", "TouchInputInitFailed" } });
-        LogError << "failed to init touch_input";
-        return false;
-    }
-    notifier.notify(MaaMsg_Controller_TouchInputInited, details);
-
     notifier.notify(MaaMsg_Controller_ConnectSuccess, details);
+
+    if (screencap_) {
+        if (screencap_->init(width, height)) {
+            LogError << "failed to init screencap";
+            notifier.notify(MaaMsg_Controller_ScreencapInitFailed, details);
+            return false;
+        }
+        notifier.notify(MaaMsg_Controller_ScreencapInited, details);
+    }
+    else {
+        LogWarn << "screencap_ is null";
+        notifier.notify(MaaMsg_Controller_ScreencapInitFailed, details);
+    }
+
+    if (touch_input_) {
+        if (touch_input_->init(width, height, orientation)) {
+            LogError << "failed to init touch_input";
+            notifier.notify(MaaMsg_Controller_TouchInputInitFailed, details);
+            return false;
+        }
+        notifier.notify(MaaMsg_Controller_TouchInputInited, details);
+    }
+    else {
+        LogWarn << "touch_input_ is null";
+        notifier.notify(MaaMsg_Controller_TouchInputInitFailed, details);
+    }
 
     return true;
 }
@@ -209,9 +214,17 @@ bool ControlUnitMgr::parse(const json::value& config)
     ret &= activity_.parse(config);
     ret &= device_list_.parse(config);
 
-    ret &= screencap_ && screencap_->parse(config);
-    ret &= touch_input_ && touch_input_->parse(config);
-    ret &= key_input_ && key_input_->parse(config);
+    if (screencap_) {
+        ret &= screencap_->parse(config);
+    }
+
+    if (touch_input_) {
+        ret &= touch_input_->parse(config);
+    }
+
+    if (key_input_) {
+        ret &= key_input_->parse(config);
+    }
 
     return ret;
 }

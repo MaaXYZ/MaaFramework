@@ -7,6 +7,8 @@ extern "C"
 {
 #endif
 
+    /* For AdbController */
+
     MaaSize MAA_TOOLKIT_API MaaToolKitFindDevice();
     MaaSize MAA_TOOLKIT_API MaaToolKitFindDeviceWithAdb(MaaStringView adb_path);
     MaaStringView MAA_TOOLKIT_API MaaToolKitGetDeviceName(MaaSize index);

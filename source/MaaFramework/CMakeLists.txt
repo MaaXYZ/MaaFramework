@@ -8,12 +8,11 @@ set(MaaFramework_INCLUDE ${CMAKE_CURRENT_SOURCE_DIR}/../../include/MaaFramework)
 target_include_directories(
     MaaFramework
     INTERFACE ../../include
-    PRIVATE . ../include ../../include ${MaaThriftControlUnit_INCLUDE_DIRS})
+    PRIVATE . ../include ../../include)
 
 target_compile_definitions(MaaFramework PRIVATE MAA_FRAMEWORK_EXPORTS)
 
-target_link_libraries(MaaFramework MaaUtils)
-target_link_libraries(MaaFramework ${OpenCV_LIBS} fastdeploy_ppocr ONNXRuntime::ONNXRuntime HeaderOnlyLibraries)
+target_link_libraries(MaaFramework MaaUtils ${OpenCV_LIBS} fastdeploy_ppocr ONNXRuntime::ONNXRuntime HeaderOnlyLibraries)
 
 # clang 15之后有ranges if (CMAKE_CXX_COMPILER_ID MATCHES ".*Clang") find_package(range-v3 REQUIRED)
 # target_link_libraries(MaaFramework range-v3::range-v3) endif ()

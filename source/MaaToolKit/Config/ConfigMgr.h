@@ -52,7 +52,12 @@ private:
     bool policy_logging_ = true;
     bool policy_save_draw_ = false;
     bool policy_recording_ = false;
+
+#ifdef MAA_DEBUG
+    MaaLoggingLevel policy_stdout_level_ = MaaLoggingLevel_All;
+#else
     MaaLoggingLevel policy_stdout_level_ = MaaLoggingLevel_Error;
+#endif
 };
 
 MAA_TOOLKIT_CONFIG_NS_END

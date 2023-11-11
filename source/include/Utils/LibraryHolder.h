@@ -13,16 +13,18 @@ MAA_NS_BEGIN
 
 // template for ref_count
 template <typename T>
-class LibraryHolder : public NonCopyable
+class LibraryHolder
 {
 public:
-    LibraryHolder() = default;
     virtual ~LibraryHolder();
 
     static bool load_library(const std::filesystem::path& libname);
 
     template <typename FuncT>
     static boost::function<FuncT> get_function(const std::string& func_name);
+
+protected:
+    LibraryHolder() = default;
 
 private:
     static void unload_library();
@@ -61,8 +63,7 @@ inline bool LibraryHolder<T>::load_library(const std::filesystem::path& libname)
     LogInfo << "Loading library" << VAR(libname);
 
     boost::dll::fs::error_code ec;
-    module_.load(libname, ec,
-                 boost::dll::load_mode::append_decorations | boost::dll::load_mode::search_system_folders);
+    module_.load(libname, ec, boost::dll::load_mode::append_decorations | boost::dll::load_mode::search_system_folders);
 
     if (ec.value() != boost::system::errc::success) {
         auto message = ec.message();
