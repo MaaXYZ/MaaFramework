@@ -438,3 +438,4 @@ FodyWeavers.xsd
 .DS_Store
 .nuke/temp/*
 enc_temp_folder/*
+install
