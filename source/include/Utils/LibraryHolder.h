@@ -32,6 +32,7 @@ private:
 private:
     inline static std::filesystem::path libname_;
     inline static int ref_count_ = 0;
+    inline static std::mutex mutex_;
 
     inline static boost::dll::shared_library module_;
 };
@@ -48,6 +49,8 @@ template <typename T>
 inline bool LibraryHolder<T>::load_library(const std::filesystem::path& libname)
 {
     LogFunc << VAR(libname);
+
+    std::unique_lock<std::mutex> lock(mutex_);
 
     if (module_.is_loaded()) {
         if (libname_ != libname) {
@@ -86,6 +89,8 @@ inline void LibraryHolder<T>::unload_library()
 {
     LogFunc << VAR(libname_);
 
+    std::unique_lock<std::mutex> lock(mutex_);
+
     if (!module_.is_loaded()) {
         LogDebug << "LibraryHolder already unloaded";
         return;
@@ -110,6 +115,8 @@ template <typename FuncT>
 inline boost::function<FuncT> LibraryHolder<T>::get_function(const std::string& func_name)
 {
     LogFunc << VAR(func_name);
+
+    std::unique_lock<std::mutex> lock(mutex_);
 
     if (!module_.is_loaded()) {
         LogError << "LibraryHolder not loaded";
