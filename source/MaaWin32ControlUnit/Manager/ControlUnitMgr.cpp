@@ -16,31 +16,57 @@ bool ControlUnitMgr::find_device(std::vector<std::string>& devices)
     std::ignore = devices;
 
     // TODO
-    return false;
+    return true;
 }
 
 bool ControlUnitMgr::connect()
 {
-    // TODO
+    if (!hWnd_) {
+        LogError << "hWnd_ is nullptr";
+        return false;
+    }
 
-    return false;
+    if (!IsWindow(hWnd_)) {
+        LogError << "hWnd_ is invalid";
+        return false;
+    }
+
+    if (IsIconic(hWnd_)) {
+        LogError << "hWnd_ is minimized";
+        return false;
+    }
+
+    return true;
 }
 
 bool ControlUnitMgr::request_uuid(std::string& uuid)
 {
-    std::ignore = uuid;
+    if (!hWnd_) {
+        LogError << "hWnd_ is nullptr";
+        return false;
+    }
 
-    // TODO
-    return false;
+    uuid = std::to_string(reinterpret_cast<uintptr_t>(hWnd_));
+    return true;
 }
 
 bool ControlUnitMgr::request_resolution(int& width, int& height)
 {
-    std::ignore = width;
-    std::ignore = height;
+    if (!hWnd_) {
+        LogError << "hWnd_ is nullptr";
+        return false;
+    }
 
-    // TODO
-    return false;
+    RECT rect;
+    if (!GetClientRect(hWnd_, &rect)) {
+        LogError << "failed to GetClientRect";
+        return false;
+    }
+
+    width = rect.right - rect.left;
+    height = rect.bottom - rect.top;
+
+    return true;
 }
 
 bool ControlUnitMgr::start_app(const std::string& intent)

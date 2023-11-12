@@ -3,6 +3,7 @@
 #include <source_location>
 
 #include "LoggerUtils.h"
+#include "ScopeLeave.hpp"
 
 MAA_LOG_NS_BEGIN
 
@@ -87,13 +88,13 @@ private:
     std::mutex trace_mutex_;
 };
 
-class ScopeEnterHelper
+class LogScopeEnterHelper
 {
 public:
     template <typename... args_t>
-    ScopeEnterHelper(args_t&&... args) : stream_(Logger::get_instance().debug(std::forward<args_t>(args)...))
+    LogScopeEnterHelper(args_t&&... args) : stream_(Logger::get_instance().debug(std::forward<args_t>(args)...))
     {}
-    ~ScopeEnterHelper() { stream_ << "| enter"; }
+    ~LogScopeEnterHelper() { stream_ << "| enter"; }
 
     LogStream& operator()() { return stream_; }
 
@@ -102,11 +103,11 @@ private:
 };
 
 template <typename... args_t>
-class ScopeLeaveHelper
+class LogScopeLeaveHelper
 {
 public:
-    ScopeLeaveHelper(args_t&&... args) : args_(std::forward<args_t>(args)...) {}
-    ~ScopeLeaveHelper()
+    LogScopeLeaveHelper(args_t&&... args) : args_(std::forward<args_t>(args)...) {}
+    ~LogScopeLeaveHelper()
     {
         std::apply([](auto&&... args) { return Logger::get_instance().debug(std::forward<decltype(args)>(args)...); },
                    std::move(args_))
@@ -146,14 +147,9 @@ MAA_LOG_NS_END
 #define LogDebug MAA_LOG_NS::Logger::get_instance().debug(LOG_ARGS)
 #define LogTrace MAA_LOG_NS::Logger::get_instance().trace(LOG_ARGS)
 
-#define _Cat_(a, b) a##b
-#define _Cat(a, b) _Cat_(a, b)
-#define _CatVarNameWithLine(Var) _Cat(Var, __LINE__)
-#define LogScopeHeplerName _CatVarNameWithLine(log_scope_)
-
-#define LogFunc                                                \
-    MAA_LOG_NS::ScopeLeaveHelper LogScopeHeplerName(LOG_ARGS); \
-    MAA_LOG_NS::ScopeEnterHelper(LOG_ARGS)()
+#define LogFunc                                                   \
+    MAA_LOG_NS::LogScopeLeaveHelper ScopeHelperVarName(LOG_ARGS); \
+    MAA_LOG_NS::LogScopeEnterHelper(LOG_ARGS)()
 
 #define VAR_RAW(x) "[" << #x << "=" << (x) << "] "
 #define VAR(x) MAA_LOG_NS::separator::none << VAR_RAW(x) << MAA_LOG_NS::separator::space

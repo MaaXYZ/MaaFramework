@@ -2,16 +2,16 @@
 
 #include "ControlUnit/ControlUnitAPI.h"
 
-#include <filesystem>
-
 #include "Base/UnitBase.h"
+#include "Utils/SafeWindows.hpp"
 
 MAA_CTRL_UNIT_NS_BEGIN
 
-class SendMessageToucher : public TouchInputBase
+class SendMessageInput : public TouchInputBase, public KeyInputBase
 {
 public:
-    virtual ~SendMessageToucher() override = default;
+    SendMessageInput(HWND hwnd) : hwnd_(hwnd) {}
+    virtual ~SendMessageInput() override = default;
 
 public: // from TouchInputBase
     virtual bool click(int x, int y) override;
@@ -20,6 +20,12 @@ public: // from TouchInputBase
     virtual bool touch_down(int contact, int x, int y, int pressure) override;
     virtual bool touch_move(int contact, int x, int y, int pressure) override;
     virtual bool touch_up(int contact) override;
+
+public: // from KeyInputBase
+    virtual bool press_key(int key) override;
+
+private:
+    HWND hwnd_ = nullptr;
 };
 
 MAA_CTRL_UNIT_NS_END

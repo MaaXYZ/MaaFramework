@@ -174,8 +174,10 @@ enum MaaWin32ControllerTypeEnum
     MaaWin32ControllerType_Touch_SendMessage = 1,
     MaaWin32ControllerType_Touch_Mask = 0xFF,
 
+    MaaWin32ControllerType_Key_SendMessage = 1 << 8,
     MaaWin32ControllerType_Key_Mask = 0xFF00,
 
+    MaaWin32ControllerType_Screencap_HWND = 1 << 16,
     MaaWin32ControllerType_Screencap_Mask = 0xFF0000,
 };
 #endif

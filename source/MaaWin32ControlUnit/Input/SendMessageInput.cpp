@@ -1,8 +1,8 @@
-#include "SendMessageToucher.h"
+#include "SendMessageInput.h"
 
 MAA_CTRL_UNIT_NS_BEGIN
 
-bool SendMessageToucher::click(int x, int y)
+bool SendMessageInput::click(int x, int y)
 {
     // TODO
     std::ignore = x;
@@ -11,7 +11,7 @@ bool SendMessageToucher::click(int x, int y)
     return false;
 }
 
-bool SendMessageToucher::swipe(int x1, int y1, int x2, int y2, int duration)
+bool SendMessageInput::swipe(int x1, int y1, int x2, int y2, int duration)
 {
     // TODO
     std::ignore = x1;
@@ -23,7 +23,7 @@ bool SendMessageToucher::swipe(int x1, int y1, int x2, int y2, int duration)
     return false;
 }
 
-bool SendMessageToucher::touch_down(int contact, int x, int y, int pressure)
+bool SendMessageInput::touch_down(int contact, int x, int y, int pressure)
 {
     // TODO
     std::ignore = contact;
@@ -34,7 +34,7 @@ bool SendMessageToucher::touch_down(int contact, int x, int y, int pressure)
     return false;
 }
 
-bool SendMessageToucher::touch_move(int contact, int x, int y, int pressure)
+bool SendMessageInput::touch_move(int contact, int x, int y, int pressure)
 {
     // TODO
     std::ignore = contact;
@@ -45,10 +45,18 @@ bool SendMessageToucher::touch_move(int contact, int x, int y, int pressure)
     return false;
 }
 
-bool SendMessageToucher::touch_up(int contact)
+bool SendMessageInput::touch_up(int contact)
 {
     // TODO
     std::ignore = contact;
+
+    return false;
+}
+
+bool SendMessageInput::press_key(int key)
+{
+    // TODO
+    std::ignore = key;
 
     return false;
 }

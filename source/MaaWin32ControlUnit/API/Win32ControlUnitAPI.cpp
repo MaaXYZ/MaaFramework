@@ -1,8 +1,9 @@
 #include "ControlUnit/Win32ControlUnitAPI.h"
 
 #include "Base/UnitBase.h"
+#include "Input/SendMessageInput.h"
 #include "Manager/ControlUnitMgr.h"
-#include "Touch/SendMessageToucher.h"
+#include "Screencap/HwndScreencap.h"
 #include "Utils/Logger.h"
 #include "Utils/SafeWindows.hpp"
 
@@ -32,15 +33,27 @@ MaaControlUnitHandle create_control_unit( //
 
     auto touch_type = type & MaaWin32ControllerType_Touch_Mask;
     // auto key_type = type & MaaWin32ControllerType_Key_Mask;
-    // auto screencap_type = type & MaaWin32ControllerType_Screencap_Mask;
+    auto screencap_type = type & MaaWin32ControllerType_Screencap_Mask;
 
     switch (touch_type) {
     case MaaWin32ControllerType_Touch_SendMessage:
         LogInfo << "touch_type: SendMessage";
-        touch_unit = std::make_shared<SendMessageToucher>();
+        touch_unit = std::make_shared<SendMessageInput>(h_wnd);
         break;
+
     default:
         LogWarn << "Unknown touch input type" << VAR(touch_type);
+        break;
+    }
+
+    switch (screencap_type) {
+    case MaaWin32ControllerType_Screencap_HWND:
+        LogInfo << "screencap_type: HWND";
+        screencap_unit = std::make_shared<HwndScreencap>(h_wnd);
+        break;
+
+    default:
+        LogWarn << "Unknown screencap input type" << VAR(screencap_type);
         break;
     }
 

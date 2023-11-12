@@ -42,6 +42,13 @@ MaaControllerHandle MaaWin32ControllerCreate( //
 {
     LogFunc << VAR_VOIDP(hWnd) << VAR(type) << VAR_VOIDP(callback) << VAR_VOIDP(callback_arg);
 
+#ifndef _WIN32
+
+    LogError << "This API" << __FUNCTION__ << "is only available on Windows";
+    return nullptr;
+
+#else
+
     if (!hWnd) {
         LogError << "hWnd is nullptr";
         return nullptr;
@@ -56,6 +63,8 @@ MaaControllerHandle MaaWin32ControllerCreate( //
     }
 
     return new MAA_CTRL_NS::GeneralControllerAgent(std::move(control_unit), callback, callback_arg);
+
+#endif
 }
 
 MaaControllerHandle MaaCustomControllerCreate( //
