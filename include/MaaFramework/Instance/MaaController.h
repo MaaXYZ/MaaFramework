@@ -13,6 +13,10 @@ extern "C"
         MaaStringView adb_path, MaaStringView address, MaaAdbControllerType type, MaaStringView config,
         MaaControllerCallback callback, MaaCallbackTransparentArg callback_arg);
 
+    MaaControllerHandle MAA_FRAMEWORK_API MaaWin32ControllerCreate( //
+        void* hWnd, MaaWin32ControllerType type, MaaControllerCallback callback,
+        MaaCallbackTransparentArg callback_arg);
+
     MaaControllerHandle MAA_FRAMEWORK_API MaaAdbControllerCreateV2( //
         MaaStringView adb_path, MaaStringView address, MaaAdbControllerType type, MaaStringView config,
         MaaStringView agent_path, MaaControllerCallback callback, MaaCallbackTransparentArg callback_arg);

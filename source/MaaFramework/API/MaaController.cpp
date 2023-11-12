@@ -37,6 +37,27 @@ MaaControllerHandle MaaAdbControllerCreateV2( //
     return new MAA_CTRL_NS::GeneralControllerAgent(std::move(control_unit), callback, callback_arg);
 }
 
+MaaControllerHandle MaaWin32ControllerCreate( //
+    void* hWnd, MaaWin32ControllerType type, MaaControllerCallback callback, MaaCallbackTransparentArg callback_arg)
+{
+    LogFunc << VAR_VOIDP(hWnd) << VAR(type) << VAR_VOIDP(callback) << VAR_VOIDP(callback_arg);
+
+    if (!hWnd) {
+        LogError << "hWnd is nullptr";
+        return nullptr;
+    }
+
+    auto control_unit =
+        MAA_CTRL_NS::Win32ControlUnitLibraryHolder::create_control_unit(hWnd, type, callback, callback_arg);
+
+    if (!control_unit) {
+        LogError << "Failed to create control unit";
+        return nullptr;
+    }
+
+    return new MAA_CTRL_NS::GeneralControllerAgent(std::move(control_unit), callback, callback_arg);
+}
+
 MaaControllerHandle MaaCustomControllerCreate( //
     MaaCustomControllerHandle handle, MaaTransparentArg handle_arg, MaaControllerCallback callback,
     MaaCallbackTransparentArg callback_arg)

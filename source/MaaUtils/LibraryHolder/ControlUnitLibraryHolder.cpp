@@ -66,6 +66,53 @@ std::shared_ptr<MAA_CTRL_UNIT_NS::ControlUnitAPI> AdbControlUnitLibraryHolder::c
     return std::shared_ptr<MAA_CTRL_UNIT_NS::ControlUnitAPI>(control_unit_handle, destroy_control_unit);
 }
 
+std::shared_ptr<MAA_CTRL_UNIT_NS::ControlUnitAPI> Win32ControlUnitLibraryHolder::create_control_unit(
+    void* hWnd, MaaWin32ControllerType type, MaaControllerCallback callback, MaaCallbackTransparentArg callback_arg)
+{
+    if (!hWnd) {
+        LogError << "hWnd is nullptr";
+        return nullptr;
+    }
+
+    if (!load_library(libname_)) {
+        LogError << "Failed to load library" << VAR(libname_);
+        return nullptr;
+    }
+
+    check_version<Win32ControlUnitLibraryHolder>(version_func_name_);
+
+    using create_control_unit_t =
+        MaaControlUnitHandle(void*, MaaWin32ControllerType, MaaControllerCallback, MaaCallbackTransparentArg);
+
+    using destroy_control_unit_t = void(MaaControlUnitHandle);
+
+    auto create_control_unit_func = get_function<create_control_unit_t>(create_func_name_);
+    if (!create_control_unit_func) {
+        LogError << "Failed to get function create_control_unit";
+        return nullptr;
+    }
+
+    auto destroy_control_unit_func = get_function<destroy_control_unit_t>(destroy_func_name_);
+    if (!destroy_control_unit_func) {
+        LogError << "Failed to get function destroy_control_unit";
+        return nullptr;
+    }
+
+    auto control_unit_handle = create_control_unit_func(hWnd, type, callback, callback_arg);
+
+    if (!control_unit_handle) {
+        LogError << "Failed to create control unit";
+        return nullptr;
+    }
+
+    auto destroy_control_unit = [destroy_control_unit_func](MaaControlUnitHandle handle) {
+        destroy_control_unit_func(handle);
+        unload_library();
+    };
+
+    return std::shared_ptr<MAA_CTRL_UNIT_NS::ControlUnitAPI>(control_unit_handle, destroy_control_unit);
+}
+
 std::shared_ptr<MAA_CTRL_UNIT_NS::ControlUnitAPI> DbgControlUnitLibraryHolder::create_control_unit(
     MaaDbgControllerType type, MaaStringView read_path)
 {

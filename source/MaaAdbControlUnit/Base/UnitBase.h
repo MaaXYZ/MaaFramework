@@ -2,10 +2,10 @@
 
 #include <meojson/json.hpp>
 
+#include "Base/ArgvWrapper.hpp"
 #include "ControlUnit/AdbControlUnitAPI.h"
 #include "Platform/PlatformIO.h"
 #include "Screencap/ScreencapHelper.h"
-#include "Utils/ArgvWrapper.hpp"
 
 MAA_CTRL_UNIT_NS_BEGIN
 

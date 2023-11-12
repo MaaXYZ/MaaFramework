@@ -165,6 +165,21 @@ enum MaaThriftControllerTypeEnum
     MaaThriftControllerType_UnixDomainSocket = 2,
 };
 
+#ifdef _WIN32
+typedef int32_t MaaWin32ControllerType;
+enum MaaWin32ControllerTypeEnum
+{
+    MaaWin32Controller_Invalid = 0,
+
+    MaaWin32ControllerType_Touch_SendMessage = 1,
+    MaaWin32ControllerType_Touch_Mask = 0xFF,
+
+    MaaWin32ControllerType_Key_Mask = 0xFF00,
+
+    MaaWin32ControllerType_Screencap_Mask = 0xFF0000,
+};
+#endif
+
 typedef void* MaaTransparentArg;
 typedef MaaTransparentArg MaaCallbackTransparentArg;
 

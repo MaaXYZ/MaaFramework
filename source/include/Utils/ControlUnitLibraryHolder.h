@@ -23,6 +23,20 @@ private:
     inline static const std::string destroy_func_name_ = "destroy_control_unit";
 };
 
+class MAA_UTILS_API Win32ControlUnitLibraryHolder : public LibraryHolder<Win32ControlUnitLibraryHolder>
+{
+public:
+    static std::shared_ptr<MAA_CTRL_UNIT_NS::ControlUnitAPI> create_control_unit( //
+        void* hWnd, MaaWin32ControllerType type, MaaControllerCallback callback,
+        MaaCallbackTransparentArg callback_arg);
+
+private:
+    inline static const std::filesystem::path libname_ = MAA_NS::path("MaaWin32ControlUnit");
+    inline static const std::string version_func_name_ = "get_version";
+    inline static const std::string create_func_name_ = "create_control_unit";
+    inline static const std::string destroy_func_name_ = "destroy_control_unit";
+};
+
 class MAA_UTILS_API DbgControlUnitLibraryHolder : public LibraryHolder<DbgControlUnitLibraryHolder>
 {
 public:
