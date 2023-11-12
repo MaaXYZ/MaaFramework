@@ -1,8 +1,8 @@
 #include "MaaToolKit/Device/MaaToolKitDevice.h"
 
-#include "Device/DeviceMgrLinux.h"
-#include "Device/DeviceMgrMacOS.h"
-#include "Device/DeviceMgrWin32.h"
+#include "AdbDevice/DeviceMgrLinux.h"
+#include "AdbDevice/DeviceMgrMacOS.h"
+#include "AdbDevice/DeviceMgrWin32.h"
 #include "Utils/Logger.h"
 
 #if defined(_WIN32)
