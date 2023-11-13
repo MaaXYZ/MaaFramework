@@ -95,7 +95,7 @@ jobs:
 
       - name: Build MAA
         run: |
-          cmake --preset "${{ matrix.arch == 'x86_64' && 'MSVC 2022' || 'MSVC 2022 ARM' }}" -DMAADEPS_TRIPLET="maa-${{ matrix.arch == 'x86_64' && 'x64' || 'arm64' }}-windows" -DMAA_HASH_VERSION='${{ needs.meta.outputs.tag }}' -DWITH_ADB_CONTROLLER=OFF -DWITH_THRIFT_CONTROLLER=OFF -DWITH_GRPC=OFF -DBUILD_PIPELINE_TESTING=ON
+          cmake --preset "${{ matrix.arch == 'x86_64' && 'MSVC 2022' || 'MSVC 2022 ARM' }}" -DMAADEPS_TRIPLET="maa-${{ matrix.arch == 'x86_64' && 'x64' || 'arm64' }}-windows" -DMAA_HASH_VERSION='${{ needs.meta.outputs.tag }}' -DWITH_GRPC=OFF -DBUILD_PIPELINE_TESTING=ON -DBUILD_DLOPEN_TESTING=ON
 
           cmake --build build --preset "${{ matrix.arch == 'x86_64' && 'MSVC 2022' || 'MSVC 2022 ARM' }} - Release" -j 16
 
@@ -122,6 +122,13 @@ jobs:
         with:
           name: MAA-win-${{ matrix.arch }}-full_log
           path: "install/bin/debug"
+
+      - name: Run DlopenTesting
+        # TODO: qemu for aarch64
+        if: ${{matrix.arch == 'x86_64'}}
+        shell: bash
+        run: |
+          ./install/bin/DlopenTesting
 
   ubuntu:
     needs: meta
@@ -173,7 +180,7 @@ jobs:
           cmake --preset 'NinjaMulti' \
             -DMAADEPS_TRIPLET='maa-${{ matrix.arch == 'x86_64' && 'x64' || 'arm64' }}-linux' \
             -DMAA_HASH_VERSION='${{ needs.meta.outputs.tag }}' \
-            -DWITH_ADB_CONTROLLER=OFF -DWITH_THRIFT_CONTROLLER=OFF -DWITH_GRPC=OFF -DBUILD_PIPELINE_TESTING=ON
+            -DWITH_GRPC=OFF -DBUILD_PIPELINE_TESTING=ON -DBUILD_DLOPEN_TESTING=ON
 
           cmake --build build --preset 'NinjaMulti - Release' -j 16
 
@@ -200,6 +207,14 @@ jobs:
         with:
           name: MAA-linux-${{ matrix.arch }}-full_log
           path: "install/bin/debug"
+
+      - name: Run DlopenTesting
+        # TODO: qemu for aarch64
+        if: ${{matrix.arch == 'x86_64'}}
+        shell: bash
+        run: |
+          ./install/bin/DlopenTesting
+
 
   macos:
     needs: meta
@@ -242,7 +257,7 @@ jobs:
           cmake --preset 'NinjaMulti' \
             -DMAADEPS_TRIPLET='maa-${{ matrix.arch == 'x86_64' && 'x64' || 'arm64' }}-osx' \
             -DMAA_HASH_VERSION='${{ needs.meta.outputs.tag }}' \
-            -DWITH_ADB_CONTROLLER=OFF -DWITH_THRIFT_CONTROLLER=OFF -DWITH_GRPC=OFF -DBUILD_PIPELINE_TESTING=ON
+            -DWITH_GRPC=OFF -DBUILD_PIPELINE_TESTING=ON -DBUILD_DLOPEN_TESTING=ON
 
           cmake --build build --preset 'NinjaMulti - Release' -j 16
 
@@ -270,3 +285,10 @@ jobs:
         with:
           name: MAA-macos-${{ matrix.arch }}-full_log
           path: "install/bin/debug"
+
+      - name: Run DlopenTesting
+        # TODO: qemu for aarch64
+        if: ${{matrix.arch == 'x86_64'}}
+        shell: bash
+        run: |
+          ./install/bin/DlopenTesting

@@ -209,6 +209,11 @@ bool ControlUnitMgr::parse(const json::value& config)
 {
     bool ret = true;
 
+    if (config.get("NotParse", false)) {
+        LogWarn << "NotParse";
+        return true;
+    }
+
     ret &= connection_.parse(config);
     ret &= device_info_.parse(config);
     ret &= activity_.parse(config);

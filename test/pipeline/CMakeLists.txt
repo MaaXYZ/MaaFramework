@@ -1,11 +1,11 @@
 file(
     GLOB_RECURSE
-    testing_src
+    pipeline_testing_src
     *.cpp
     *.h
     *.hpp)
     
-add_executable(PipelineTesting ${testing_src})
+add_executable(PipelineTesting ${pipeline_testing_src})
 
 target_link_libraries(PipelineTesting MaaFramework)
 

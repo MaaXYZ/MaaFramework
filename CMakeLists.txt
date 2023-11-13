@@ -23,6 +23,7 @@ option(BUILD_SAMPLE "build a demo" OFF)
 
 option(BUILD_PIPELINE_TESTING "build pipeline testing" OFF)
 option(BUILD_GRPC_TESTING "build grpc testing" OFF)
+option(BUILD_DLOPEN_TESTING "build dlopen testing" OFF)
 
 if (NOT WITH_GRPC)
     message(STATUS "grpc is disabled, disable BUILD_GRPC_CLI and BUILD_GRPC_TESTING")
@@ -85,6 +86,9 @@ if (BUILD_PIPELINE_TESTING)
 endif()
 if (BUILD_GRPC_TESTING)
     add_subdirectory(test/grpc)
+endif()
+if (BUILD_DLOPEN_TESTING)
+    add_subdirectory(test/dlopen)
 endif()
 
 if(USE_MAADEPS)
