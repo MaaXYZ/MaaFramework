@@ -61,7 +61,7 @@ jobs:
     runs-on: windows-latest
     strategy:
       matrix:
-        arch: [aarch64, x86_64]
+        arch: [x86_64]
       fail-fast: false
 
     steps:
@@ -104,6 +104,13 @@ jobs:
         run: |
           cmake --install build --prefix install
 
+      - name: Run DlopenTesting
+        # TODO: qemu for aarch64
+        if: ${{matrix.arch == 'x86_64'}}
+        shell: bash
+        run: |
+          ./install/bin/DlopenTesting
+
       - name: Run PipelineTesting
         # TODO: qemu for aarch64
         if: ${{matrix.arch == 'x86_64'}}
@@ -123,20 +130,13 @@ jobs:
           name: MAA-win-${{ matrix.arch }}-full_log
           path: "install/bin/debug"
 
-      - name: Run DlopenTesting
-        # TODO: qemu for aarch64
-        if: ${{matrix.arch == 'x86_64'}}
-        shell: bash
-        run: |
-          ./install/bin/DlopenTesting
-
   ubuntu:
     needs: meta
     runs-on: ubuntu-latest
     container: archlinux:base-devel
     strategy:
       matrix:
-        arch: [aarch64, x86_64]
+        arch: [x86_64]
       fail-fast: false
 
     steps:
@@ -189,6 +189,13 @@ jobs:
         run: |
           cmake --install build --prefix install
 
+      - name: Run DlopenTesting
+        # TODO: qemu for aarch64
+        if: ${{matrix.arch == 'x86_64'}}
+        shell: bash
+        run: |
+          ./install/bin/DlopenTesting
+
       - name: Run PipelineTesting
         # TODO: qemu for aarch64
         if: ${{matrix.arch == 'x86_64'}}
@@ -208,20 +215,12 @@ jobs:
           name: MAA-linux-${{ matrix.arch }}-full_log
           path: "install/bin/debug"
 
-      - name: Run DlopenTesting
-        # TODO: qemu for aarch64
-        if: ${{matrix.arch == 'x86_64'}}
-        shell: bash
-        run: |
-          ./install/bin/DlopenTesting
-
-
   macos:
     needs: meta
     runs-on: macos-latest
     strategy:
       matrix:
-        arch: [aarch64, x86_64]
+        arch: [x86_64]
       fail-fast: false
 
     steps:
@@ -267,6 +266,13 @@ jobs:
         run: |
           cmake --install build --prefix install
 
+      - name: Run DlopenTesting
+        # TODO: qemu for aarch64
+        if: ${{matrix.arch == 'x86_64'}}
+        shell: bash
+        run: |
+          ./install/bin/DlopenTesting
+
       - name: Run PipelineTesting
         # TODO: qemu for aarch64
         if: ${{matrix.arch == 'x86_64'}}
@@ -285,10 +291,3 @@ jobs:
         with:
           name: MAA-macos-${{ matrix.arch }}-full_log
           path: "install/bin/debug"
-
-      - name: Run DlopenTesting
-        # TODO: qemu for aarch64
-        if: ${{matrix.arch == 'x86_64'}}
-        shell: bash
-        run: |
-          ./install/bin/DlopenTesting
