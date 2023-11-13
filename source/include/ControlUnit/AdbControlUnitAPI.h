@@ -11,13 +11,13 @@ extern "C"
 {
 #endif
 
-    MaaStringView MAA_CONTROL_UNIT_API get_version();
+    MaaStringView MAA_CONTROL_UNIT_API MaaAdbControlUnitGetVersion();
 
-    MaaControlUnitHandle MAA_CONTROL_UNIT_API create_control_unit( //
+    MaaControlUnitHandle MAA_CONTROL_UNIT_API MaaAdbControlUnitCreate( //
         MaaStringView adb_path, MaaStringView adb_serial, MaaAdbControllerType type, MaaStringView config,
         MaaStringView agent_path, MaaControllerCallback callback, MaaCallbackTransparentArg callback_arg);
 
-    void MAA_CONTROL_UNIT_API destroy_control_unit(MaaControlUnitHandle handle);
+    void MAA_CONTROL_UNIT_API MaaAdbControlUnitDestroy(MaaControlUnitHandle handle);
 
 #ifdef __cplusplus
 }

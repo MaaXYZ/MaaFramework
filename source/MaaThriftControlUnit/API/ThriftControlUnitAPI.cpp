@@ -8,14 +8,14 @@
 
 using namespace MAA_CTRL_UNIT_NS;
 
-MaaStringView get_version()
+MaaStringView MaaThriftControlUnitGetVersion()
 {
 #pragma message("MaaThriftControlUnit MAA_VERSION: " MAA_VERSION)
 
     return MAA_VERSION;
 }
 
-MaaControlUnitHandle MAA_CONTROL_UNIT_API create_control_unit( //
+MaaControlUnitHandle MAA_CONTROL_UNIT_API MaaThriftControlUnitCreate( //
     MaaThriftControllerType type, MaaStringView host, int32_t port, MaaStringView config)
 {
     LogFunc << VAR(type) << VAR(host) << VAR(port) << VAR(config);
@@ -37,7 +37,7 @@ MaaControlUnitHandle MAA_CONTROL_UNIT_API create_control_unit( //
     return handle;
 }
 
-void destroy_control_unit(MaaControlUnitHandle handle)
+void MaaThriftControlUnitDestroy(MaaControlUnitHandle handle)
 {
     LogFunc << VAR_VOIDP(handle);
 

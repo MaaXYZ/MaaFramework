@@ -7,14 +7,14 @@
 #include "Utils/Logger.h"
 #include "Utils/SafeWindows.hpp"
 
-MaaStringView get_version()
+MaaStringView MaaWin32ControlUnitGetVersion()
 {
 #pragma message("MaaWin32ControlUnit MAA_VERSION: " MAA_VERSION)
 
     return MAA_VERSION;
 }
 
-MaaControlUnitHandle create_control_unit( //
+MaaControlUnitHandle MaaWin32ControlUnitCreate( //
     void* hWnd, MaaWin32ControllerType type, MaaControllerCallback callback, MaaCallbackTransparentArg callback_arg)
 {
     using namespace MAA_CTRL_UNIT_NS;
@@ -66,7 +66,7 @@ MaaControlUnitHandle create_control_unit( //
     return unit_mgr.release();
 }
 
-void destroy_control_unit(MaaControlUnitHandle handle)
+void MaaWin32ControlUnitDestroy(MaaControlUnitHandle handle)
 {
     LogFunc << VAR_VOIDP(handle);
 

@@ -5,7 +5,6 @@
 #include <type_traits>
 
 #include "Conf/Conf.h"
-#include "NonCopyable.hpp"
 #include "Utils/Boost.hpp"
 #include "Utils/Logger.h"
 

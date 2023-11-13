@@ -4,7 +4,7 @@
 #include "Buffer/StringBuffer.hpp"
 #include "Controller/CustomControllerAgent.h"
 #include "Controller/GeneralControllerAgent.h"
-#include "Utils/ControlUnitLibraryHolder.h"
+#include "LibraryHolder/ControlUnit.h"
 #include "Utils/Logger.h"
 #include "Utils/Platform.h"
 
@@ -26,8 +26,8 @@ MaaControllerHandle MaaAdbControllerCreateV2( //
     LogFunc << VAR(adb_path) << VAR(address) << VAR(type) << VAR(agent_path) << VAR_VOIDP(callback)
             << VAR_VOIDP(callback_arg);
 
-    auto control_unit = MAA_CTRL_NS::AdbControlUnitLibraryHolder::create_control_unit(
-        adb_path, address, type, config, agent_path, callback, callback_arg);
+    auto control_unit = MAA_NS::AdbControlUnitLibraryHolder::create_control_unit(adb_path, address, type, config,
+                                                                                 agent_path, callback, callback_arg);
 
     if (!control_unit) {
         LogError << "Failed to create control unit";
@@ -54,8 +54,7 @@ MaaControllerHandle MaaWin32ControllerCreate( //
         return nullptr;
     }
 
-    auto control_unit =
-        MAA_CTRL_NS::Win32ControlUnitLibraryHolder::create_control_unit(hWnd, type, callback, callback_arg);
+    auto control_unit = MAA_NS::Win32ControlUnitLibraryHolder::create_control_unit(hWnd, type, callback, callback_arg);
 
     if (!control_unit) {
         LogError << "Failed to create control unit";
@@ -89,7 +88,7 @@ MaaControllerHandle MaaThriftControllerCreate( //
 
     std::ignore = config;
 
-    auto control_unit = MAA_CTRL_NS::ThriftControlUnitLibraryHolder::create_control_unit(type, host, port, config);
+    auto control_unit = MAA_NS::ThriftControlUnitLibraryHolder::create_control_unit(type, host, port, config);
 
     if (!control_unit) {
         LogError << "Failed to create control unit";
@@ -108,7 +107,7 @@ MaaControllerHandle MaaDbgControllerCreate( //
     std::ignore = write_path;
     std::ignore = config;
 
-    auto control_unit = MAA_CTRL_NS::DbgControlUnitLibraryHolder::create_control_unit(type, read_path);
+    auto control_unit = MAA_NS::DbgControlUnitLibraryHolder::create_control_unit(type, read_path);
 
     if (!control_unit) {
         LogError << "Failed to create control unit";

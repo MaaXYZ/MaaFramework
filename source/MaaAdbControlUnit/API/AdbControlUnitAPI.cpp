@@ -18,14 +18,14 @@
 
 using MAA_NS::path;
 
-MaaStringView get_version()
+MaaStringView MaaAdbControlUnitGetVersion()
 {
 #pragma message("MaaAdbControlUnit MAA_VERSION: " MAA_VERSION)
 
     return MAA_VERSION;
 }
 
-MaaControlUnitHandle create_control_unit( //
+MaaControlUnitHandle MaaAdbControlUnitCreate( //
     MaaStringView adb_path, MaaStringView adb_serial, MaaAdbControllerType type, MaaStringView config,
     MaaStringView agent_path, MaaControllerCallback callback, MaaCallbackTransparentArg callback_arg)
 {
@@ -177,7 +177,7 @@ MaaControlUnitHandle create_control_unit( //
     return unit_mgr.release();
 }
 
-void destroy_control_unit(MaaControlUnitHandle handle)
+void MaaAdbControlUnitDestroy(MaaControlUnitHandle handle)
 {
     LogFunc << VAR_VOIDP(handle);
 

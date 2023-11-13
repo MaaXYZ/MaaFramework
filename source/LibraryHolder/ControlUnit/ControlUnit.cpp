@@ -1,12 +1,17 @@
-#include "Utils/ControlUnitLibraryHolder.h"
+#include "LibraryHolder/ControlUnit.h"
 
-MAA_CTRL_NS_BEGIN
+#include "ControlUnit/AdbControlUnitAPI.h"
+#include "ControlUnit/DbgControlUnitAPI.h"
+#include "ControlUnit/ThriftControlUnitAPI.h"
+#include "ControlUnit/Win32ControlUnitAPI.h"
+#include "Utils/Logger.h"
 
-template <typename ControlUnitT>
+MAA_NS_BEGIN
+
+template <typename ControlUnitT, typename GetVersionT>
 bool check_version(const std::string& func_name)
 {
-    using get_version_t = MaaStringView(void);
-    auto version_func = ControlUnitT::template get_function<get_version_t>(func_name);
+    auto version_func = ControlUnitT::template get_function<GetVersionT>(func_name);
     if (!version_func) {
         LogError << "Failed to get function get_version";
         return false;
@@ -30,21 +35,15 @@ std::shared_ptr<MAA_CTRL_UNIT_NS::ControlUnitAPI> AdbControlUnitLibraryHolder::c
         return nullptr;
     }
 
-    check_version<AdbControlUnitLibraryHolder>(version_func_name_);
+    check_version<AdbControlUnitLibraryHolder, decltype(MaaAdbControlUnitGetVersion)>(version_func_name_);
 
-    using create_control_unit_t = MaaControlUnitHandle( //
-        MaaStringView, MaaStringView, MaaAdbControllerType, MaaStringView, MaaStringView, MaaControllerCallback,
-        MaaCallbackTransparentArg);
-
-    using destroy_control_unit_t = void(MaaControlUnitHandle);
-
-    auto create_control_unit_func = get_function<create_control_unit_t>(create_func_name_);
+    auto create_control_unit_func = get_function<decltype(MaaAdbControlUnitCreate)>(create_func_name_);
     if (!create_control_unit_func) {
         LogError << "Failed to get function create_control_unit";
         return nullptr;
     }
 
-    auto destroy_control_unit_func = get_function<destroy_control_unit_t>(destroy_func_name_);
+    auto destroy_control_unit_func = get_function<decltype(MaaAdbControlUnitDestroy)>(destroy_func_name_);
     if (!destroy_control_unit_func) {
         LogError << "Failed to get function destroy_control_unit";
         return nullptr;
@@ -69,30 +68,20 @@ std::shared_ptr<MAA_CTRL_UNIT_NS::ControlUnitAPI> AdbControlUnitLibraryHolder::c
 std::shared_ptr<MAA_CTRL_UNIT_NS::ControlUnitAPI> Win32ControlUnitLibraryHolder::create_control_unit(
     void* hWnd, MaaWin32ControllerType type, MaaControllerCallback callback, MaaCallbackTransparentArg callback_arg)
 {
-    if (!hWnd) {
-        LogError << "hWnd is nullptr";
-        return nullptr;
-    }
-
     if (!load_library(libname_)) {
         LogError << "Failed to load library" << VAR(libname_);
         return nullptr;
     }
 
-    check_version<Win32ControlUnitLibraryHolder>(version_func_name_);
+    check_version<Win32ControlUnitLibraryHolder, decltype(MaaWin32ControlUnitGetVersion)>(version_func_name_);
 
-    using create_control_unit_t =
-        MaaControlUnitHandle(void*, MaaWin32ControllerType, MaaControllerCallback, MaaCallbackTransparentArg);
-
-    using destroy_control_unit_t = void(MaaControlUnitHandle);
-
-    auto create_control_unit_func = get_function<create_control_unit_t>(create_func_name_);
+    auto create_control_unit_func = get_function<decltype(MaaWin32ControlUnitCreate)>(create_func_name_);
     if (!create_control_unit_func) {
         LogError << "Failed to get function create_control_unit";
         return nullptr;
     }
 
-    auto destroy_control_unit_func = get_function<destroy_control_unit_t>(destroy_func_name_);
+    auto destroy_control_unit_func = get_function<decltype(MaaWin32ControlUnitDestroy)>(destroy_func_name_);
     if (!destroy_control_unit_func) {
         LogError << "Failed to get function destroy_control_unit";
         return nullptr;
@@ -121,19 +110,15 @@ std::shared_ptr<MAA_CTRL_UNIT_NS::ControlUnitAPI> DbgControlUnitLibraryHolder::c
         return nullptr;
     }
 
-    check_version<DbgControlUnitLibraryHolder>(version_func_name_);
+    check_version<DbgControlUnitLibraryHolder, decltype(MaaDbgControlUnitGetVersion)>(version_func_name_);
 
-    using create_control_unit_t = MaaControlUnitHandle(MaaDbgControllerType, MaaStringView);
-
-    using destroy_control_unit_t = void(MaaControlUnitHandle);
-
-    auto create_control_unit_func = get_function<create_control_unit_t>(create_func_name_);
+    auto create_control_unit_func = get_function<decltype(MaaDbgControlUnitCreate)>(create_func_name_);
     if (!create_control_unit_func) {
         LogError << "Failed to get function create_control_unit";
         return nullptr;
     }
 
-    auto destroy_control_unit_func = get_function<destroy_control_unit_t>(destroy_func_name_);
+    auto destroy_control_unit_func = get_function<decltype(MaaDbgControlUnitDestroy)>(destroy_func_name_);
     if (!destroy_control_unit_func) {
         LogError << "Failed to get function destroy_control_unit";
         return nullptr;
@@ -162,19 +147,15 @@ std::shared_ptr<MAA_CTRL_UNIT_NS::ControlUnitAPI> ThriftControlUnitLibraryHolder
         return nullptr;
     }
 
-    check_version<ThriftControlUnitLibraryHolder>(version_func_name_);
+    check_version<ThriftControlUnitLibraryHolder, decltype(MaaThriftControlUnitGetVersion)>(version_func_name_);
 
-    using create_control_unit_t = MaaControlUnitHandle(MaaThriftControllerType, MaaStringView, int32_t, MaaStringView);
-
-    using destroy_control_unit_t = void(MaaControlUnitHandle);
-
-    auto create_control_unit_func = get_function<create_control_unit_t>(create_func_name_);
+    auto create_control_unit_func = get_function<decltype(MaaThriftControlUnitCreate)>(create_func_name_);
     if (!create_control_unit_func) {
         LogError << "Failed to get function create_control_unit";
         return nullptr;
     }
 
-    auto destroy_control_unit_func = get_function<destroy_control_unit_t>(destroy_func_name_);
+    auto destroy_control_unit_func = get_function<decltype(MaaThriftControlUnitDestroy)>(destroy_func_name_);
     if (!destroy_control_unit_func) {
         LogError << "Failed to get function destroy_control_unit";
         return nullptr;
@@ -195,4 +176,4 @@ std::shared_ptr<MAA_CTRL_UNIT_NS::ControlUnitAPI> ThriftControlUnitLibraryHolder
     return std::shared_ptr<MAA_CTRL_UNIT_NS::ControlUnitAPI>(control_unit_handle, destroy_control_unit);
 }
 
-MAA_CTRL_NS_END
+MAA_NS_END

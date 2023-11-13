@@ -6,14 +6,14 @@
 #include "ReplayRecording/ReplayRecordingMgr.h"
 #include "Utils/Logger.h"
 
-MaaStringView get_version()
+MaaStringView MaaDbgControlUnitGetVersion()
 {
 #pragma message("MaaDbgControlUnit MAA_VERSION: " MAA_VERSION)
 
     return MAA_VERSION;
 }
 
-MaaControlUnitHandle create_control_unit(MaaDbgControllerType type, MaaStringView read_path)
+MaaControlUnitHandle MaaDbgControlUnitCreate(MaaDbgControllerType type, MaaStringView read_path)
 {
     LogFunc << VAR(type) << VAR(read_path);
 
@@ -36,7 +36,7 @@ MaaControlUnitHandle create_control_unit(MaaDbgControllerType type, MaaStringVie
     return handle;
 }
 
-void destroy_control_unit(MaaControlUnitHandle handle)
+void MaaDbgControlUnitDestroy(MaaControlUnitHandle handle)
 {
     LogFunc << VAR_VOIDP(handle);
 

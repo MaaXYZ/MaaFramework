@@ -12,25 +12,25 @@ target_include_directories(
 
 target_compile_definitions(MaaFramework PRIVATE MAA_FRAMEWORK_EXPORTS)
 
-target_link_libraries(MaaFramework MaaUtils ${OpenCV_LIBS} fastdeploy_ppocr ONNXRuntime::ONNXRuntime HeaderOnlyLibraries)
+target_link_libraries(MaaFramework MaaUtils LibraryHolder ${OpenCV_LIBS} fastdeploy_ppocr ONNXRuntime::ONNXRuntime HeaderOnlyLibraries)
 
 # clang 15之后有ranges if (CMAKE_CXX_COMPILER_ID MATCHES ".*Clang") find_package(range-v3 REQUIRED)
 # target_link_libraries(MaaFramework range-v3::range-v3) endif ()
 
-add_dependencies(MaaFramework MaaUtils)
+add_dependencies(MaaFramework MaaUtils LibraryHolder)
 
 if (WITH_ADB_CONTROLLER)
     add_dependencies(MaaFramework MaaAdbControlUnit)
-endif(WITH_ADB_CONTROLLER)
+endif()
 if (WITH_WIN32_CONTROLLER)
     add_dependencies(MaaFramework MaaWin32ControlUnit)
-endif(WITH_WIN32_CONTROLLER)
-if(WITH_THRIFT_CONTROLLER AND NOT MAA_CROSSCOMPILE)
+endif()
+if(WITH_THRIFT_CONTROLLER)
     add_dependencies(MaaFramework MaaThriftControlUnit)
-endif(WITH_THRIFT_CONTROLLER AND NOT MAA_CROSSCOMPILE)
+endif()
 if (WITH_DBG_CONTROLLER)
     add_dependencies(MaaFramework MaaDbgControlUnit)
-endif(WITH_DBG_CONTROLLER)
+endif()
 
 install(
     TARGETS MaaFramework
@@ -48,4 +48,4 @@ if(WIN32)
         POST_BUILD
         COMMAND ${CMAKE_COMMAND} -E copy $<TARGET_RUNTIME_DLLS:MaaFramework> $<TARGET_FILE_DIR:MaaFramework>
         COMMAND_EXPAND_LISTS)
-endif(WIN32)
+endif()

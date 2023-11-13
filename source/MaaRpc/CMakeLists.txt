@@ -27,4 +27,4 @@ source_group(TREE ${CMAKE_CURRENT_SOURCE_DIR} FILES ${maa_rpc_src})
 
 if(BUILD_GRPC_CLI)
     add_subdirectory(cli)
-endif(BUILD_GRPC_CLI)
+endif()

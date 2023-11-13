@@ -1,6 +1,6 @@
 #include "DeviceMgr.h"
 
-#include "Utils/ControlUnitLibraryHolder.h"
+#include "LibraryHolder/ControlUnit.h"
 #include "Utils/Logger.h"
 
 MAA_TOOLKIT_DEVICE_NS_BEGIN
@@ -39,7 +39,7 @@ std::vector<std::string> DeviceMgr::request_adb_serials(const std::filesystem::p
     std::string str_adb = path_to_utf8_string(adb_path);
     std::string str_config = adb_config.to_string();
 
-    auto control_unit = MAA_CTRL_NS::AdbControlUnitLibraryHolder::create_control_unit(
+    auto control_unit = MAA_NS::AdbControlUnitLibraryHolder::create_control_unit(
         str_adb.c_str(), "", 0, str_config.c_str(), "", nullptr, nullptr);
 
     if (!control_unit) {
@@ -67,7 +67,7 @@ bool DeviceMgr::request_adb_connect(const std::filesystem::path& adb_path, const
     std::string str_serial = serial;
     std::string str_config = adb_config.to_string();
 
-    auto control_unit = MAA_CTRL_NS::AdbControlUnitLibraryHolder::create_control_unit(
+    auto control_unit = MAA_NS::AdbControlUnitLibraryHolder::create_control_unit(
         str_adb.c_str(), str_serial.c_str(), 0, str_config.c_str(), "", nullptr, nullptr);
 
     if (!control_unit) {
