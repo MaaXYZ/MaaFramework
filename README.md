@@ -110,7 +110,7 @@ MAA 正计划建设为一类项目，而非舟的单一软件。
     cmake --install build --prefix install
     ```
 
-生成的二进制及相关文件在 `install` 目录下
+生成的二进制及相关文件在 `install` 目录下。
 
 详情请参考 [Build CI](https://github.com/MaaAssistantArknights/MaaFramework/blob/main/.github/workflows/build.yml).
 
@@ -120,7 +120,7 @@ MAA 正计划建设为一类项目，而非舟的单一软件。
 
 [![Open in GitHub Codespaces](https://github.com/codespaces/badge.svg)](https://github.com/codespaces/new?hide_repo_select=true&ref=master&repo=632024122)
 
-随后按照 [本地开发](#本地开发) 流程进行配置
+随后按照 [本地开发](#本地开发) 流程进行配置。
 
 ## 鸣谢
 
