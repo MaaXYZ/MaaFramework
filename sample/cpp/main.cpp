@@ -3,6 +3,10 @@
 #include <iostream>
 #include <string>
 
+#ifdef _WIN32
+#include <Windows.h>
+#endif
+
 #include "MaaFramework/MaaAPI.h"
 #include "MaaToolKit/MaaToolKitAPI.h"
 
@@ -12,23 +16,16 @@
 #pragma warning(disable : 4189) // local variable is initialized but not referenced
 #endif
 
+MaaControllerHandle create_adb_controller();
+MaaControllerHandle create_win32_controller();
 void register_my_recognizer(MaaInstanceHandle maa_handle);
 
 int main([[maybe_unused]] int argc, char** argv)
 {
     MaaToolKitInit();
-    auto device_size = MaaToolKitFindDevice();
-    if (device_size == 0) {
-        std::cout << "No device found" << std::endl;
-        return 0;
-    }
 
-    const int kIndex = 0; // for demo, we just use the first device
-    std::string agent_path = "share/MaaAgentBinary";
-    auto controller_handle =
-        MaaAdbControllerCreateV2(MaaToolKitGetDeviceAdbPath(kIndex), MaaToolKitGetDeviceAdbSerial(kIndex),
-                                 MaaToolKitGetDeviceAdbControllerType(kIndex), MaaToolKitGetDeviceAdbConfig(kIndex),
-                                 agent_path.c_str(), nullptr, nullptr);
+    // auto controller_handle = create_adb_controller();
+    auto controller_handle = create_win32_controller();
     auto ctrl_id = MaaControllerPostConnection(controller_handle);
 
     auto resource_handle = MaaResourceCreate(nullptr, nullptr);
@@ -49,12 +46,12 @@ int main([[maybe_unused]] int argc, char** argv)
         MaaToolKitUninit();
     };
 
-    if (!MaaInited(maa_handle)) {
-        std::cout << "Failed to init MAA" << std::endl;
+    // if (!MaaInited(maa_handle)) {
+    //     std::cout << "Failed to init MAA" << std::endl;
 
-        destroy();
-        return -1;
-    }
+    //    destroy();
+    //    return -1;
+    //}
 
     register_my_recognizer(maa_handle);
 
@@ -64,6 +61,30 @@ int main([[maybe_unused]] int argc, char** argv)
     destroy();
 
     return 0;
+}
+
+MaaControllerHandle create_adb_controller()
+{
+    auto device_size = MaaToolKitFindDevice();
+    if (device_size == 0) {
+        std::cout << "No device found" << std::endl;
+        return nullptr;
+    }
+
+    const int kIndex = 0; // for demo, we just use the first device
+    std::string agent_path = "share/MaaAgentBinary";
+    auto controller_handle = MaaAdbControllerCreateV2( //
+        MaaToolKitGetDeviceAdbPath(kIndex), MaaToolKitGetDeviceAdbSerial(kIndex),
+        MaaToolKitGetDeviceAdbControllerType(kIndex), MaaToolKitGetDeviceAdbConfig(kIndex), agent_path.c_str(), nullptr,
+        nullptr);
+    return controller_handle;
+}
+
+MaaControllerHandle create_win32_controller()
+{
+    auto hwnd = MaaToolKitGetCursorWindow();
+    auto type = MaaWin32ControllerType_Touch_SendMessage | MaaWin32ControllerType_Screencap_HWND;
+    return MaaWin32ControllerCreate(hwnd, type, nullptr, nullptr);
 }
 
 MaaBool my_analyze(MaaSyncContextHandle sync_context, const MaaImageBufferHandle image, MaaStringView task_name,

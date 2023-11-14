@@ -14,7 +14,7 @@ extern "C"
         MaaControllerCallback callback, MaaCallbackTransparentArg callback_arg);
 
     MaaControllerHandle MAA_FRAMEWORK_API MaaWin32ControllerCreate( //
-        void* hWnd, MaaWin32ControllerType type, MaaControllerCallback callback,
+        MaaWin32Hwnd hWnd, MaaWin32ControllerType type, MaaControllerCallback callback,
         MaaCallbackTransparentArg callback_arg);
 
     MaaControllerHandle MAA_FRAMEWORK_API MaaAdbControllerCreateV2( //

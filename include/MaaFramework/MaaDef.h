@@ -179,6 +179,7 @@ enum MaaWin32ControllerTypeEnum
     MaaWin32ControllerType_Screencap_HWND = 1 << 16,
     MaaWin32ControllerType_Screencap_Mask = 0xFF0000,
 };
+typedef void* MaaWin32Hwnd;
 
 typedef void* MaaTransparentArg;
 typedef MaaTransparentArg MaaCallbackTransparentArg;

@@ -38,7 +38,7 @@ MaaControllerHandle MaaAdbControllerCreateV2( //
 }
 
 MaaControllerHandle MaaWin32ControllerCreate( //
-    void* hWnd, MaaWin32ControllerType type, MaaControllerCallback callback, MaaCallbackTransparentArg callback_arg)
+    MaaWin32Hwnd hWnd, MaaWin32ControllerType type, MaaControllerCallback callback, MaaCallbackTransparentArg callback_arg)
 {
     LogFunc << VAR_VOIDP(hWnd) << VAR(type) << VAR_VOIDP(callback) << VAR_VOIDP(callback_arg);
 
