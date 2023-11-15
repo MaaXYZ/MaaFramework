@@ -3,37 +3,37 @@ file(GLOB_RECURSE maa_framework_header ../../include/MaaFramework/*)
 
 add_library(MaaFramework SHARED ${maa_framework_src} ${maa_framework_header})
 
-set(MaaFramework_INCLUDE ${CMAKE_CURRENT_SOURCE_DIR}/../../include/MaaFramework)
-
 target_include_directories(
     MaaFramework
-    INTERFACE ../../include
+    PUBLIC $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/../../include> $<INSTALL_INTERFACE:include>
     PRIVATE . ../include ../../include)
 
 target_compile_definitions(MaaFramework PRIVATE MAA_FRAMEWORK_EXPORTS)
 
-target_link_libraries(MaaFramework MaaUtils LibraryHolder ${OpenCV_LIBS} fastdeploy_ppocr ONNXRuntime::ONNXRuntime HeaderOnlyLibraries)
+target_link_libraries(MaaFramework PRIVATE MaaUtils LibraryHolder ${OpenCV_LIBS} fastdeploy_ppocr
+                                           ONNXRuntime::ONNXRuntime HeaderOnlyLibraries)
 
 # clang 15之后有ranges if (CMAKE_CXX_COMPILER_ID MATCHES ".*Clang") find_package(range-v3 REQUIRED)
 # target_link_libraries(MaaFramework range-v3::range-v3) endif ()
 
 add_dependencies(MaaFramework MaaUtils LibraryHolder)
 
-if (WITH_ADB_CONTROLLER)
+if(WITH_ADB_CONTROLLER)
     add_dependencies(MaaFramework MaaAdbControlUnit)
 endif()
-if (WITH_WIN32_CONTROLLER)
+if(WITH_WIN32_CONTROLLER)
     add_dependencies(MaaFramework MaaWin32ControlUnit)
 endif()
 if(WITH_THRIFT_CONTROLLER)
     add_dependencies(MaaFramework MaaThriftControlUnit)
 endif()
-if (WITH_DBG_CONTROLLER)
+if(WITH_DBG_CONTROLLER)
     add_dependencies(MaaFramework MaaDbgControlUnit)
 endif()
 
 install(
     TARGETS MaaFramework
+    EXPORT MaaFrameworkTargets
     RUNTIME DESTINATION bin
     LIBRARY DESTINATION bin
     ARCHIVE DESTINATION lib)
