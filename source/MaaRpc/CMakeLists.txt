@@ -11,13 +11,14 @@ add_library(MaaRpc SHARED ${maa_rpc_src} ${maa_rpc_header})
 target_compile_definitions(MaaRpc PRIVATE MAA_RPC_EXPORTS)
 target_include_directories(
     MaaRpc
-    INTERFACE ../../include
+    PUBLIC $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/../../include> $<INSTALL_INTERFACE:include>
     PRIVATE . ../include ../../include 
     ${CMAKE_CURRENT_BINARY_DIR})
-target_link_libraries(MaaRpc PUBLIC RpcProto MaaUtils MaaToolKit protobuf::libprotobuf gRPC::grpc++)
+target_link_libraries(MaaRpc PUBLIC MaaToolKit PRIVATE RpcProto MaaUtils HeaderOnlyLibraries protobuf::libprotobuf gRPC::grpc++)
 
 install(
     TARGETS MaaRpc
+    EXPORT MaaFrameworkTargets
     RUNTIME DESTINATION bin
     LIBRARY DESTINATION bin
     ARCHIVE DESTINATION lib)
