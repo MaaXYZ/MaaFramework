@@ -9,6 +9,8 @@ from pathlib import Path
 import shutil
 
 basedir = Path(__file__).parent.parent
+maadeps_dir = Path(basedir, "3rdparty", "MaaDeps")
+download_dir = Path(maadeps_dir, "tarball")
 
 def detect_host_triplet():
     import platform
@@ -129,8 +131,6 @@ def main():
         print("found assets:")
         print("    " + devel_asset["name"])
         print("    " + runtime_asset["name"])
-        maadeps_dir = Path(basedir, "3rdparty", "MaaDeps")
-        download_dir = Path(maadeps_dir, "tarball")
         download_dir.mkdir(parents=True, exist_ok=True)
         for asset in [devel_asset, runtime_asset]:
             url = asset['browser_download_url']
