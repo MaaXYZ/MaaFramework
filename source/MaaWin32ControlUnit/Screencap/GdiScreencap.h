@@ -7,16 +7,18 @@
 
 MAA_CTRL_UNIT_NS_BEGIN
 
-class HwndScreencap : public ScreencapBase
+class GdiScreencap : public ScreencapBase
 {
 public:
-    HwndScreencap(HWND hwnd) : hwnd_(hwnd) {}
-    virtual ~HwndScreencap() override = default;
+    GdiScreencap(HWND hwnd) : hwnd_(hwnd) {}
+    virtual ~GdiScreencap() override = default;
 
 public: // from TouchInputBase
     virtual std::optional<cv::Mat> screencap() override;
 
 private:
+    double window_screen_scale();
+
     HWND hwnd_;
 };
 

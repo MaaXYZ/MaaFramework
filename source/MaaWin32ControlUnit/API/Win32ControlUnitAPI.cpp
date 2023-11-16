@@ -3,7 +3,7 @@
 #include "Base/UnitBase.h"
 #include "Input/SendMessageInput.h"
 #include "Manager/ControlUnitMgr.h"
-#include "Screencap/HwndScreencap.h"
+#include "Screencap/GdiScreencap.h"
 #include "Utils/Logger.h"
 #include "Utils/SafeWindows.hpp"
 
@@ -15,7 +15,8 @@ MaaStringView MaaWin32ControlUnitGetVersion()
 }
 
 MaaControlUnitHandle MaaWin32ControlUnitCreate( //
-    void* hWnd, MaaWin32ControllerType type, MaaControllerCallback callback, MaaCallbackTransparentArg callback_arg)
+    MaaWin32Hwnd hWnd, MaaWin32ControllerType type, MaaControllerCallback callback,
+    MaaCallbackTransparentArg callback_arg)
 {
     using namespace MAA_CTRL_UNIT_NS;
 
@@ -47,9 +48,9 @@ MaaControlUnitHandle MaaWin32ControlUnitCreate( //
     }
 
     switch (screencap_type) {
-    case MaaWin32ControllerType_Screencap_HWND:
-        LogInfo << "screencap_type: HWND";
-        screencap_unit = std::make_shared<HwndScreencap>(h_wnd);
+    case MaaWin32ControllerType_Screencap_GDI:
+        LogInfo << "screencap_type: GDI";
+        screencap_unit = std::make_shared<GdiScreencap>(h_wnd);
         break;
 
     default:

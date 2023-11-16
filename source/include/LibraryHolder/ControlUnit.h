@@ -27,7 +27,7 @@ class Win32ControlUnitLibraryHolder : public LibraryHolder<Win32ControlUnitLibra
 {
 public:
     static std::shared_ptr<MAA_CTRL_UNIT_NS::ControlUnitAPI> create_control_unit( //
-        void* hWnd, MaaWin32ControllerType type, MaaControllerCallback callback,
+        MaaWin32Hwnd hWnd, MaaWin32ControllerType type, MaaControllerCallback callback,
         MaaCallbackTransparentArg callback_arg);
 
 private:

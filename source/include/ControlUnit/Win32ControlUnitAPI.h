@@ -14,7 +14,7 @@ extern "C"
     MaaStringView MAA_CONTROL_UNIT_API MaaWin32ControlUnitGetVersion();
 
     MaaControlUnitHandle MAA_CONTROL_UNIT_API MaaWin32ControlUnitCreate( //
-        void* hWnd, MaaWin32ControllerType type, MaaControllerCallback callback,
+        MaaWin32Hwnd hWnd, MaaWin32ControllerType type, MaaControllerCallback callback,
         MaaCallbackTransparentArg callback_arg);
 
     void MAA_CONTROL_UNIT_API MaaWin32ControlUnitDestroy(MaaControlUnitHandle handle);
