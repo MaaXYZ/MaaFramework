@@ -83,7 +83,7 @@ MaaControllerHandle create_adb_controller()
 MaaControllerHandle create_win32_controller()
 {
     auto hwnd = MaaToolKitGetCursorWindow();
-    auto type = MaaWin32ControllerType_Touch_SendMessage | MaaWin32ControllerType_Screencap_HWND;
+    auto type = MaaWin32ControllerType_Touch_SendMessage | MaaWin32ControllerType_Screencap_GDI;
     return MaaWin32ControllerCreate(hwnd, type, nullptr, nullptr);
 }
 
