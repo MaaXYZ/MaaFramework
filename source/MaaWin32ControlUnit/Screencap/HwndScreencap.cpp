@@ -6,6 +6,31 @@
 
 MAA_CTRL_UNIT_NS_BEGIN
 
+double get_window_screen_scale()
+{
+#ifdef _WIN32_WINNT_WIN10
+    //需要win10 1607以上版本
+    double screen_scale = GetDpiForWindow(GetDesktopWindow()) / 96.0;
+#else
+    HWND desktop_hwnd = GetDesktopWindow();
+    HMONITOR monitor_handle = MonitorFromWindow(desktop_hwnd, MONITOR_DEFAULTTONEAREST);
+
+    MONITORINFOEX miex;
+    miex.cbSize = sizeof(miex);
+    GetMonitorInfo(monitor_handle, &miex);
+    int screen_x_logical = (miex.rcMonitor.right - miex.rcMonitor.left);
+
+    DEVMODE dm;
+    dm.dmSize = sizeof(dm);
+    dm.dmDriverExtra = 0;
+    EnumDisplaySettings(miex.szDevice, ENUM_CURRENT_SETTINGS, &dm);
+    int screen_x_physical = dm.dmPelsWidth;
+
+    double screen_scale = ((double)screen_x_physical / (double)screen_x_logical);
+#endif
+    return screen_scale;
+}
+
 std::optional<cv::Mat> HwndScreencap::screencap()
 {
     if (!hwnd_) {
@@ -19,8 +44,10 @@ std::optional<cv::Mat> HwndScreencap::screencap()
         return std::nullopt;
     }
 
-    int width = rect.right - rect.left;
-    int height = rect.bottom - rect.top;
+    double screen_scale = get_window_screen_scale();
+
+    int width = static_cast<int>(screen_scale * (rect.right - rect.left));
+    int height = static_cast<int>(screen_scale * (rect.bottom - rect.top));
 
     HDC hdc = nullptr;
     HDC mem_dc = nullptr;
