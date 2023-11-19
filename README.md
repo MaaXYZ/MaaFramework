@@ -75,56 +75,11 @@ MAA 正计划建设为一类项目，而非舟的单一软件。
 
 ## 开发
 
-### 本地开发
+_请留意，仅当您准备开发 MaaFramework 本身时，才需要阅读本章节内容。若您仅希望基于 MaaFramework 开发自己的应用，则请参考 [即刻开始](#即刻开始)。_
 
-1. 下载 MaaDeps prebuilt
-
-    ```sh
-    python3 tools/maadeps-download.py
-    ```
-
-2. _(macOS only)_ 下载 fmt
-
-    ```sh
-    sh tools/fetch-fmt.sh
-    ```
-
-3. 配置 cmake
-
-    - Windows  
-
-    ```bash
-    cmake --preset "MSVC 2022"
-    ```
-
-    - Linux / macOS
-
-    ```bash
-    cmake --preset "NinjaMulti"
-    ```
-
-4. 使用 cmake 构建工程
-
-    ```bash
-    cmake --build build --config Release
-    cmake --install build --prefix install
-    ```
-
-生成的二进制及相关文件在 `install` 目录下。
-
-详情请参考 [Build CI](https://github.com/MaaAssistantArknights/MaaFramework/blob/main/.github/workflows/build.yml).
-
-### 在线开发
-
-使用 Codespaces (Dev Container) 一键配置基础开发环境 (Ninja、Cmake、g++-13)：
-
-[![Open in GitHub Codespaces](https://github.com/codespaces/badge.svg)](https://github.com/codespaces/new?hide_repo_select=true&ref=master&repo=632024122)
-
-随后按照 [本地开发](#本地开发) 流程进行配置。
+- [构建指南](docs/zh_cn/4.1-构建指南.md)
 
 ## 鸣谢
-
-### 开发者
 
 感谢以下开发者对 MaaFramework 作出的贡献：
 
