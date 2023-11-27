@@ -130,19 +130,28 @@ bool ControlUnitMgr::stop_app(const std::string& intent)
 
 bool ControlUnitMgr::screencap(cv::Mat& image)
 {
-    if (!screencap_) {
-        LogError << "screencap_ is null";
-        return false;
+    constexpr int kMaxReconnectTimes = 3;
+    constexpr int kMaxRescreencapTimes = 10;
+
+    for (int i = 0; i < kMaxReconnectTimes; ++i) {
+        for (int j = 0; j < kMaxRescreencapTimes; ++j) {
+            if (_screencap(image)) {
+                screencap_available_ = true;
+                return true;
+            }
+
+            if (!screencap_available_) {
+                // first time
+                return false;
+            }
+            LogWarn << "re-screencap";
+        }
+
+        LogWarn << "re-connect";
+        connect();
     }
 
-    auto opt = screencap_->screencap();
-    if (!opt) {
-        LogError << "failed to screencap";
-        return false;
-    }
-
-    image = std::move(opt).value();
-    return true;
+    return false;
 }
 
 bool ControlUnitMgr::click(int x, int y)
@@ -268,6 +277,24 @@ void ControlUnitMgr::set_replacement(const std::map<std::string, std::string>& r
     if (screencap_) {
         screencap_->set_replacement(replacement);
     }
+}
+
+bool ControlUnitMgr::_screencap(cv::Mat& image)
+{
+    if (!screencap_) {
+        LogError << "screencap_ is null";
+        return false;
+    }
+
+    auto opt = screencap_->screencap();
+
+    if (!opt) {
+        LogError << "failed to screencap";
+        return false;
+    }
+
+    image = std::move(opt).value();
+    return true;
 }
 
 MAA_CTRL_UNIT_NS_END

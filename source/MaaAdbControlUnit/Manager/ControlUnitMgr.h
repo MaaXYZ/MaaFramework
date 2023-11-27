@@ -52,6 +52,9 @@ public:
     void set_screencap_obj(std::shared_ptr<ScreencapBase> obj) { screencap_ = std::move(obj); }
 
 private:
+    bool _screencap(/*out*/ cv::Mat& image);
+
+private:
     std::filesystem::path adb_path_;
     std::string adb_serial_;
 
@@ -65,6 +68,8 @@ private:
     std::shared_ptr<TouchInputBase> touch_input_ = nullptr;
     std::shared_ptr<KeyInputBase> key_input_ = nullptr;
     std::shared_ptr<ScreencapBase> screencap_ = nullptr;
+
+    bool screencap_available_ = false;
 };
 
 MAA_CTRL_UNIT_NS_END
