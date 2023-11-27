@@ -11,40 +11,16 @@ MAA_CTRL_UNIT_NS_BEGIN
 
 bool MinitouchInput::parse(const json::value& config)
 {
-    auto popt = config.find<json::object>("prebuilt");
-    if (!popt) {
-        LogError << "Cannot find entry prebuilt";
+    static const json::array kDefaultArch = {
+        "x86_64", "x86", "arm64-v8a", "armeabi-v7a", "armeabi",
+    };
+    json::array jarch = config.get("prebuilt", "minitouch", "arch", kDefaultArch);
+
+    if (MAA_RNS::ranges::any_of(jarch, [](const json::value& val) { return !val.is_string(); })) {
         return false;
     }
 
-    auto mopt = popt->find<json::object>("minitouch");
-    if (!mopt) {
-        LogError << "Cannot find entry prebuilt.minitouch";
-        return false;
-    }
-
-    {
-        auto opt = mopt->find<json::value>("arch");
-        if (!opt) {
-            LogError << "Cannot find entry prebuilt.minitouch.arch";
-            return false;
-        }
-
-        const auto& value = *opt;
-        if (!value.is_array()) {
-            return false;
-        }
-
-        const auto& arr = value.as_array();
-        if (MAA_RNS::ranges::any_of(arr, [](const json::value& val) { return !val.is_string(); })) {
-            return false;
-        }
-
-        arch_list_.clear();
-        arch_list_.reserve(arr.size());
-        MAA_RNS::ranges::transform(arr, std::back_inserter(arch_list_),
-                                   [](const json::value& val) { return val.as_string(); });
-    }
+    arch_list_ = jarch.to_vector<std::string>();
 
     return invoke_app_->parse(config);
 }

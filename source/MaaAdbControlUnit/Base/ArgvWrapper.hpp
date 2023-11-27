@@ -23,26 +23,19 @@ struct ArgvWrapper
 
     Argv argv;
 
-    bool parse(const json::value& value);
+    bool parse(const json::array& arr);
     Argv gen(const std::map<string, string>& replacement) const;
 };
 
 template <typename Argv>
 requires IsSomeKindOfStringArray<Argv> && CheckArgv<Argv>
-bool ArgvWrapper<Argv>::parse(const json::value& value)
+bool ArgvWrapper<Argv>::parse(const json::array& arr)
 {
-    if (!value.is_array()) {
-        return false;
-    }
-
-    const auto& arr = value.as_array();
     if (MAA_RNS::ranges::any_of(arr, [](const json::value& val) { return !val.is_string(); })) {
         return false;
     }
 
-    argv.clear();
-    argv.reserve(arr.size());
-    MAA_RNS::ranges::transform(arr, std::back_inserter(argv), [](const json::value& val) { return val.as_string(); });
+    argv = arr.to_vector<string>();
     return true;
 }
 

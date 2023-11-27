@@ -17,7 +17,11 @@ MinicapStream::~MinicapStream()
 
 bool MinicapStream::parse(const json::value& config)
 {
-    return MinicapBase::parse(config) && parse_argv("ForwardSocket", config, forward_argv_);
+    static const json::array kDefaultForwardArgv = {
+        "{ADB}", "-s", "{ADB_SERIAL}", "forward", "tcp:{FOWARD_PORT}", "localabstract:{LOCAL_SOCKET}",
+    };
+
+    return MinicapBase::parse(config) && parse_argv("ForwardSocket", config, kDefaultForwardArgv, forward_argv_);
 }
 
 bool MinicapStream::init(int swidth, int sheight)

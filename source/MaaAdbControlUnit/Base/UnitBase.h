@@ -24,7 +24,8 @@ public:
     virtual void merge_replacement(Argv::replacement argv_replace, bool _override = true);
 
 protected:
-    static bool parse_argv(const std::string& key, const json::value& config, /*out*/ Argv& argv);
+    static bool parse_argv(const std::string& key, const json::value& config, const json::array& default_argv,
+                           /*out*/ Argv& argv);
 
     std::optional<std::string> command(const Argv::value& cmd, bool recv_by_socket = false, int64_t timeout = 20000);
 

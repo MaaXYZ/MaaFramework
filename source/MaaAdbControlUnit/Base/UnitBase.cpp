@@ -34,21 +34,12 @@ void UnitBase::merge_replacement(Argv::replacement argv_replace, bool _override)
     }
 }
 
-bool UnitBase::parse_argv(const std::string& key, const json::value& config, Argv& argv)
+bool UnitBase::parse_argv(const std::string& key, const json::value& config, const json::array& default_argv,
+                          Argv& argv)
 {
-    auto aopt = config.find<json::object>("command");
-    if (!aopt) {
-        LogError << "Cannot find argv entry";
-        return false;
-    }
+    auto jargv = config.get("command", key, default_argv);
 
-    auto opt = aopt->find<json::value>(key);
-    if (!opt) {
-        LogError << "Cannot find key" << VAR(key);
-        return false;
-    }
-
-    if (!argv.parse(*opt)) {
+    if (!argv.parse(jargv)) {
         LogError << "Parse config failed:" << VAR(key);
         return false;
     }

@@ -8,7 +8,12 @@ MAA_CTRL_UNIT_NS_BEGIN
 
 bool DeviceList::parse(const json::value& config)
 {
-    return parse_argv("Devices", config, devices_argv_);
+    static const json::array kDefaultDevicesArgv = {
+        "{ADB}",
+        "devices",
+    };
+
+    return parse_argv("Devices", config, kDefaultDevicesArgv, devices_argv_);
 }
 
 std::optional<std::vector<std::string>> DeviceList::request_devices()

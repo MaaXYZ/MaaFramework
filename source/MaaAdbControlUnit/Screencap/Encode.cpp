@@ -6,7 +6,11 @@ MAA_CTRL_UNIT_NS_BEGIN
 
 bool ScreencapEncode::parse(const json::value& config)
 {
-    return parse_argv("ScreencapEncode", config, screencap_encode_argv_);
+    static const json::array kDefaultScreencapEncodeArgv = {
+        "{ADB}", "-s", "{ADB_SERIAL}", "exec-out", "screencap -p",
+    };
+
+    return parse_argv("ScreencapEncode", config, kDefaultScreencapEncodeArgv, screencap_encode_argv_);
 }
 
 bool ScreencapEncode::init(int swidth, int sheight)

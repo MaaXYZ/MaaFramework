@@ -11,31 +11,7 @@ MAA_CTRL_UNIT_NS_BEGIN
 
 bool MaatouchInput::parse(const json::value& config)
 {
-    auto popt = config.find<json::object>("prebuilt");
-    if (!popt) {
-        LogError << "Cannot find entry prebuilt";
-        return false;
-    }
-
-    auto mopt = popt->find<json::object>("maatouch");
-    if (!mopt) {
-        LogError << "Cannot find entry prebuilt.maatouch";
-        return false;
-    }
-
-    {
-        auto opt = mopt->find<json::value>("package");
-        if (!opt) {
-            LogError << "Cannot find entry prebuilt.maatouch.package";
-            return false;
-        }
-
-        if (!opt->is_string()) {
-            return false;
-        }
-
-        package_name_ = opt->as_string();
-    }
+    package_name_ = config.get("prebuilt", "maatouch", "package", "com.shxyke.MaaTouch.App");
 
     return invoke_app_->parse(config);
 }
