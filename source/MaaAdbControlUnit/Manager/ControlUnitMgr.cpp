@@ -67,7 +67,7 @@ bool ControlUnitMgr::connect()
     notifier.notify(MaaMsg_Controller_ConnectSuccess, details);
 
     if (screencap_) {
-        if (screencap_->init(width, height)) {
+        if (!screencap_->init(width, height)) {
             LogError << "failed to init screencap";
             notifier.notify(MaaMsg_Controller_ScreencapInitFailed, details);
             return false;
@@ -80,7 +80,7 @@ bool ControlUnitMgr::connect()
     }
 
     if (touch_input_) {
-        if (touch_input_->init(width, height, orientation)) {
+        if (!touch_input_->init(width, height, orientation)) {
             LogError << "failed to init touch_input";
             notifier.notify(MaaMsg_Controller_TouchInputInitFailed, details);
             return false;

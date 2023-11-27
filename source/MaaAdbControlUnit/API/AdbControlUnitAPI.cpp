@@ -44,7 +44,7 @@ MaaControlUnitHandle MaaAdbControlUnitCreate( //
 
     std::shared_ptr<MaatouchInput> maatouch_unit = nullptr;
 
-    auto agent_stdpath = path(agent_path);
+    auto agent_stdpath = std::filesystem::absolute(path(agent_path));
     auto minitouch_path = agent_stdpath / path("minitouch");
     auto maatouch_path = agent_stdpath / path("maatouch");
     auto minicap_path = agent_stdpath / path("minicap");
