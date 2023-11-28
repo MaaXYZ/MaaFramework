@@ -51,7 +51,7 @@ std::vector<Device> DeviceMgrMacOS::find_device_impl()
             device.adb_path = path_to_utf8_string(adb_path);
             device.adb_serial = ser;
             // TODO: 根据设备情况使用不同的配置
-            device.adb_config = json::value().to_string();
+            device.adb_config = json::object().to_string();
             device.adb_controller_type =
                 check_adb_controller_type(device.adb_path, device.adb_serial, device.adb_config);
             result.emplace_back(std::move(device));
@@ -72,7 +72,7 @@ std::vector<Device> DeviceMgrMacOS::find_device_with_adb_impl(std::string_view a
         device.name = adb_path;
         device.adb_path = adb_path;
         device.adb_serial = ser;
-        device.adb_config = json::value().to_string();
+        device.adb_config = json::object().to_string();
         device.adb_controller_type = check_adb_controller_type(device.adb_path, device.adb_serial, device.adb_config);
         result.emplace_back(std::move(device));
     }
