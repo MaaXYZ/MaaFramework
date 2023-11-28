@@ -5,7 +5,6 @@
 #include <filesystem>
 #include <map>
 
-#include "AdbConfigDef.hpp"
 #include "Utils/Logger.h"
 #include "Utils/Platform.h"
 #include "Utils/Ranges.hpp"

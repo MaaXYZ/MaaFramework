@@ -9,7 +9,6 @@
 
 #include <Psapi.h>
 
-#include "AdbConfigDef.hpp"
 #include "Utils/Logger.h"
 #include "Utils/Platform.h"
 #include "Utils/Ranges.hpp"
