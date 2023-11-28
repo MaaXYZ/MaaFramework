@@ -56,8 +56,12 @@ bool MaatouchInput::press_key(int key)
         return false;
     }
 
-    bool ret = shell_handler_->write(MAA_FMT::format("k {} d\nc\n", key)) &&
-               shell_handler_->write(MAA_FMT::format("k {} u\nc\n", key));
+    // https://github.com/openstf/minitouch#writable-to-the-socket
+    static constexpr std::string_view kKeyDownFormat = "k {} d\nc\n";
+    static constexpr std::string_view kKeyUpFormat = "k {} u\nc\n";
+
+    bool ret = shell_handler_->write(MAA_FMT::format(kKeyDownFormat, key)) &&
+               shell_handler_->write(MAA_FMT::format(kKeyUpFormat, key));
 
     if (!ret) {
         LogError << "failed to write";

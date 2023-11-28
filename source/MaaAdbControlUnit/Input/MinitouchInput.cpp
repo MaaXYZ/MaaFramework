@@ -61,7 +61,9 @@ bool MinitouchInput::set_wh(int swidth, int sheight, int orientation)
 {
     LogFunc << VAR(swidth) << VAR(sheight) << VAR(orientation);
 
-    shell_handler_ = invoke_app_->invoke_bin("-i");
+    // https://github.com/openstf/minitouch#running
+    static const std::string kMinitouchUseStdin = "-i";
+    shell_handler_ = invoke_app_->invoke_bin(kMinitouchUseStdin);
     if (!shell_handler_) {
         return false;
     }

@@ -91,8 +91,8 @@ bool MtouchHelper::click(int x, int y)
 
     LogInfo << VAR(x) << VAR(y) << VAR(touch_x) << VAR(touch_y);
 
-    bool ret = shell_handler_->write(MAA_FMT::format("d {} {} {} {}\nc\n", 0, touch_x, touch_y, press_)) &&
-               shell_handler_->write(MAA_FMT::format("u {}\nc\n", 0));
+    bool ret = shell_handler_->write(MAA_FMT::format(kDownFormat, 0, touch_x, touch_y, press_)) &&
+               shell_handler_->write(MAA_FMT::format(kUpFormat, 0));
 
     if (!ret) {
         LogError << "failed to write";
@@ -130,7 +130,7 @@ bool MtouchHelper::swipe(int x1, int y1, int x2, int y2, int duration)
     auto start = std::chrono::steady_clock::now();
     auto now = start;
     bool ret = true;
-    ret &= shell_handler_->write(MAA_FMT::format("d {} {} {} {}\nc\n", 0, touch_x1, touch_y1, press_));
+    ret &= shell_handler_->write(MAA_FMT::format(kDownFormat, 0, touch_x1, touch_y1, press_));
     if (!ret) {
         LogError << "write error";
         return false;
@@ -147,7 +147,7 @@ bool MtouchHelper::swipe(int x1, int y1, int x2, int y2, int duration)
         std::this_thread::sleep_until(now + delay);
         now = std::chrono::steady_clock::now();
 
-        ret &= shell_handler_->write(MAA_FMT::format("m {} {} {} {}\nc\n", 0, tx, ty, press_));
+        ret &= shell_handler_->write(MAA_FMT::format(kMoveFormat, 0, tx, ty, press_));
         if (!ret) {
             LogWarn << "write error";
         }
@@ -155,11 +155,11 @@ bool MtouchHelper::swipe(int x1, int y1, int x2, int y2, int duration)
 
     std::this_thread::sleep_until(now + delay);
     now = std::chrono::steady_clock::now();
-    ret &= shell_handler_->write(MAA_FMT::format("m {} {} {} {}\nc\n", 0, touch_x2, touch_y2, press_));
+    ret &= shell_handler_->write(MAA_FMT::format(kMoveFormat, 0, touch_x2, touch_y2, press_));
 
     std::this_thread::sleep_until(now + delay);
     now = std::chrono::steady_clock::now();
-    ret &= shell_handler_->write(MAA_FMT::format("u {}\nc\n", 0));
+    ret &= shell_handler_->write(MAA_FMT::format(kUpFormat, 0));
 
     if (!ret) {
         LogError << "failed to write";
@@ -180,7 +180,7 @@ bool MtouchHelper::touch_down(int contact, int x, int y, int pressure)
 
     LogInfo << VAR(contact) << VAR(x) << VAR(y) << VAR(touch_x) << VAR(touch_y);
 
-    bool ret = shell_handler_->write(MAA_FMT::format("d {} {} {} {}\nc\n", contact, touch_x, touch_y, pressure));
+    bool ret = shell_handler_->write(MAA_FMT::format(kDownFormat, contact, touch_x, touch_y, pressure));
 
     if (!ret) {
         LogError << "failed to write";
@@ -201,7 +201,7 @@ bool MtouchHelper::touch_move(int contact, int x, int y, int pressure)
 
     LogInfo << VAR(contact) << VAR(x) << VAR(y) << VAR(touch_x) << VAR(touch_y);
 
-    bool ret = shell_handler_->write(MAA_FMT::format("m {} {} {} {}\nc\n", contact, touch_x, touch_y, pressure));
+    bool ret = shell_handler_->write(MAA_FMT::format(kMoveFormat, contact, touch_x, touch_y, pressure));
 
     if (!ret) {
         LogError << "failed to write";
@@ -220,7 +220,7 @@ bool MtouchHelper::touch_up(int contact)
 
     LogInfo << VAR(contact);
 
-    bool ret = shell_handler_->write(MAA_FMT::format("u {}\nc\n", contact));
+    bool ret = shell_handler_->write(MAA_FMT::format(kUpFormat, contact));
 
     if (!ret) {
         LogError << "failed to write";
