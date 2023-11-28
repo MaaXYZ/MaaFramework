@@ -86,3 +86,7 @@ Thanks to the following developers for their contributions to MaaFramework:
 <a href="https://github.com/MaaAssistantArknights/MaaFramework/graphs/contributors">
   <img src="https://contrib.rocks/image?repo=MaaAssistantArknights/MaaFramework&max=1000" />
 </a>
+
+## Discussion
+
+- QQ Group: 595990173

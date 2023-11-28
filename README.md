@@ -86,3 +86,7 @@ _请留意，仅当您准备开发 MaaFramework 本身时，才需要阅读本�
 <a href="https://github.com/MaaAssistantArknights/MaaFramework/graphs/contributors">
   <img src="https://contrib.rocks/image?repo=MaaAssistantArknights/MaaFramework&max=1000" />
 </a>
+
+## 讨论
+
+- 集成/开发交流 QQ 群: 595990173
