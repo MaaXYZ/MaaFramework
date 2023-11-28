@@ -24,8 +24,8 @@ int main([[maybe_unused]] int argc, char** argv)
 {
     MaaToolKitInit();
 
-    // auto controller_handle = create_adb_controller();
-    auto controller_handle = create_win32_controller();
+    auto controller_handle = create_adb_controller();
+    // auto controller_handle = create_win32_controller();
     auto ctrl_id = MaaControllerPostConnection(controller_handle);
 
     auto resource_handle = MaaResourceCreate(nullptr, nullptr);
@@ -46,12 +46,12 @@ int main([[maybe_unused]] int argc, char** argv)
         MaaToolKitUninit();
     };
 
-    // if (!MaaInited(maa_handle)) {
-    //     std::cout << "Failed to init MAA" << std::endl;
+    if (!MaaInited(maa_handle)) {
+        std::cout << "Failed to init MAA" << std::endl;
 
-    //    destroy();
-    //    return -1;
-    //}
+        destroy();
+        return -1;
+    }
 
     register_my_recognizer(maa_handle);
 
