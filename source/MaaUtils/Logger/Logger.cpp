@@ -112,7 +112,7 @@ bool Logger::rotate()
         ofs_.close();
     }
 
-    constexpr uintmax_t MaxLogSize = 4ULL * 1024 * 1024;
+    constexpr uintmax_t MaxLogSize = 16ULL * 1024 * 1024;
     const uintmax_t log_size = std::filesystem::file_size(log_path_);
     if (log_size < MaxLogSize) {
         return false;
