@@ -11,7 +11,8 @@ MAA_CTRL_UNIT_NS_BEGIN
 
 bool MaatouchInput::parse(const json::value& config)
 {
-    package_name_ = config.get("prebuilt", "maatouch", "package", "com.shxyke.MaaTouch.App");
+    static const std::string kDefaultPackage = "com.shxyke.MaaTouch.App";
+    package_name_ = config.get("prebuilt", "maatouch", "package", kDefaultPackage);
 
     return invoke_app_->parse(config);
 }
