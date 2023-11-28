@@ -114,6 +114,7 @@ jobs:
           rm -rf install/bin/msvc-debug
 
           cp -r docs install
+          cp README*.md install
 
           cp -r sample install
 
@@ -192,6 +193,7 @@ jobs:
           cmake --install build --prefix install
 
           cp -r docs install
+          cp README*.md install
 
           cp -r sample install
 
@@ -261,6 +263,7 @@ jobs:
           cmake --install build --prefix install
 
           cp -r docs install
+          cp README*.md install
 
           cp -r sample install
 
