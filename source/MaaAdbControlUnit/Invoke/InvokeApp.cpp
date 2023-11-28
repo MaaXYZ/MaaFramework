@@ -8,9 +8,39 @@ MAA_CTRL_UNIT_NS_BEGIN
 
 bool InvokeApp::parse(const json::value& config)
 {
-    return parse_argv("Abilist", config, abilist_argv_) && parse_argv("SDK", config, sdk_argv_) &&
-           parse_argv("PushBin", config, push_bin_argv_) && parse_argv("ChmodBin", config, chmod_bin_argv_) &&
-           parse_argv("InvokeBin", config, invoke_bin_argv_) && parse_argv("InvokeApp", config, invoke_app_argv_);
+    static const json::array kDefaultAbilistArgv = {
+        "{ADB}", "-s", "{ADB_SERIAL}", "shell", "getprop ro.product.cpu.abilist | tr -d '\n\r'",
+    };
+    static const json::array kDefaultSdkArgv = {
+        "{ADB}", "-s", "{ADB_SERIAL}", "shell", "getprop ro.build.version.sdk | tr -d '\n\r'",
+    };
+    static const json::array kDefaultPushBinArgv = {
+        "{ADB}", "-s", "{ADB_SERIAL}", "push", "{BIN_PATH}", "/data/local/tmp/{BIN_WORKING_FILE}",
+    };
+    static const json::array kDefaultChmodBinArgv = {
+        "{ADB}", "-s", "{ADB_SERIAL}", "shell", "chmod 700 \"/data/local/tmp/{BIN_WORKING_FILE}\"",
+    };
+    static const json::array kDefaultInvokeBinArgv = {
+        "{ADB}",
+        "-s",
+        "{ADB_SERIAL}",
+        "shell",
+        "export LD_LIBRARY_PATH=/data/local/tmp/; \"/data/local/tmp/{BIN_WORKING_FILE}\" {BIN_EXTRA_PARAMS} 2>&1",
+    };
+    static const json::array kDefaultInvokeAppArgv = {
+        "{ADB}",
+        "-s",
+        "{ADB_SERIAL}",
+        "shell",
+        "export CLASSPATH=\"/data/local/tmp/{APP_WORKING_FILE}\"; app_process /data/local/tmp {PACKAGE_NAME}",
+    };
+
+    return parse_argv("Abilist", config, kDefaultAbilistArgv, abilist_argv_) &&
+           parse_argv("SDK", config, kDefaultSdkArgv, sdk_argv_) &&
+           parse_argv("PushBin", config, kDefaultPushBinArgv, push_bin_argv_) &&
+           parse_argv("ChmodBin", config, kDefaultChmodBinArgv, chmod_bin_argv_) &&
+           parse_argv("InvokeBin", config, kDefaultInvokeBinArgv, invoke_bin_argv_) &&
+           parse_argv("InvokeApp", config, kDefaultInvokeAppArgv, invoke_app_argv_);
 }
 
 bool InvokeApp::init(const std::string& force_temp)

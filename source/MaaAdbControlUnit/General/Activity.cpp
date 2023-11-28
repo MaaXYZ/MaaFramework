@@ -6,7 +6,15 @@ MAA_CTRL_UNIT_NS_BEGIN
 
 bool Activity::parse(const json::value& config)
 {
-    return parse_argv("StartApp", config, start_app_argv_) && parse_argv("StopApp", config, stop_app_argv_);
+    static const json::array kDefaultStartAppArgv = {
+        "{ADB}", "-s", "{ADB_SERIAL}", "shell", "am start -n {INTENT}",
+    };
+    static const json::array kDefaultStopAppArgv = {
+        "{ADB}", "-s", "{ADB_SERIAL}", "shell", "am force-stop {INTENT}",
+    };
+
+    return parse_argv("StartApp", config, kDefaultStartAppArgv, start_app_argv_) &&
+           parse_argv("StopApp", config, kDefaultStopAppArgv, stop_app_argv_);
 }
 
 bool Activity::start_app(const std::string& intent)

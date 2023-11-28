@@ -102,10 +102,6 @@ MaaControlUnitHandle MaaAdbControlUnitCreate( //
     switch (screencap_type) {
     case MaaAdbControllerType_Screencap_FastestWay:
         LogInfo << "screencap_type: ScreencapFastestWay";
-        if (!std::filesystem::exists(minicap_path)) {
-            LogError << "minicap path not exists" << VAR(minicap_path);
-            return nullptr;
-        }
         screencap_unit = std::make_shared<ScreencapFastestWay>(minicap_path);
         break;
     case MaaAdbControllerType_Screencap_RawByNetcat:

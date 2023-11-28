@@ -6,7 +6,18 @@ MAA_CTRL_UNIT_NS_BEGIN
 
 bool Connection::parse(const json::value& config)
 {
-    return parse_argv("Connect", config, connect_argv_) && parse_argv("KillServer", config, kill_server_argv_);
+    static const json::array kDefaultConnectArgv = {
+        "{ADB}",
+        "connect",
+        "{ADB_SERIAL}",
+    };
+    static const json::array kDefaultKillServerArgv = {
+        "{ADB}",
+        "kill-server",
+    };
+
+    return parse_argv("Connect", config, kDefaultConnectArgv, connect_argv_) &&
+           parse_argv("KillServer", config, kDefaultKillServerArgv, kill_server_argv_);
 }
 
 bool Connection::connect()

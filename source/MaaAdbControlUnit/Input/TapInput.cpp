@@ -8,7 +8,15 @@ MAA_CTRL_UNIT_NS_BEGIN
 
 bool TapTouchInput::parse(const json::value& config)
 {
-    return parse_argv("Click", config, click_argv_) && parse_argv("Swipe", config, swipe_argv_);
+    static const json::array kDefaultClickArgv = {
+        "{ADB}", "-s", "{ADB_SERIAL}", "shell", "input tap {X} {Y}",
+    };
+    static const json::array kDefaultSwipeArgv = {
+        "{ADB}", "-s", "{ADB_SERIAL}", "shell", "input swipe {X1} {Y1} {X2} {Y2} {DURATION}",
+    };
+
+    return parse_argv("Click", config, kDefaultClickArgv, click_argv_) &&
+           parse_argv("Swipe", config, kDefaultSwipeArgv, swipe_argv_);
 }
 
 bool TapTouchInput::init(int swidth, int sheight, int orientation)
@@ -71,7 +79,11 @@ bool TapTouchInput::touch_up(int contact)
 
 bool TapKeyInput::parse(const json::value& config)
 {
-    return parse_argv("PressKey", config, press_key_argv_);
+    static const json::array kDefaultPressKeyArgv = {
+        "{ADB}", "-s", "{ADB_SERIAL}", "shell", "input keyevent {KEY}",
+    };
+
+    return parse_argv("PressKey", config, kDefaultPressKeyArgv, press_key_argv_);
 }
 
 bool TapKeyInput::press_key(int key)

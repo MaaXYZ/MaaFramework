@@ -15,9 +15,17 @@ ScreencapFastestWay::ScreencapFastestWay(const std::filesystem::path& minicap_pa
         { Method::RawWithGzip, std::make_shared<ScreencapRawWithGzip>() },
         { Method::Encode, std::make_shared<ScreencapEncode>() },
         { Method::EncodeToFileAndPull, std::make_shared<ScreencapEncodeToFileAndPull>() },
-        { Method::MinicapDirect, std::make_shared<MinicapDirect>(minicap_path) },
-        { Method::MinicapStream, std::make_shared<MinicapStream>(minicap_path) },
     };
+
+    if (std::filesystem::exists(minicap_path)) {
+        units_.merge(decltype(units_) {
+            { Method::MinicapDirect, std::make_shared<MinicapDirect>(minicap_path) },
+            { Method::MinicapStream, std::make_shared<MinicapStream>(minicap_path) },
+        });
+    }
+    else {
+        LogWarn << "minicap path not exists" << VAR(minicap_path);
+    }
 
     for (auto pair : units_) {
         children_.emplace_back(pair.second);

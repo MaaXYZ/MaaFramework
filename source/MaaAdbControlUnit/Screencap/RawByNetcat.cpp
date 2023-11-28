@@ -6,8 +6,16 @@ MAA_CTRL_UNIT_NS_BEGIN
 
 bool ScreencapRawByNetcat::parse(const json::value& config)
 {
-    return parse_argv("ScreencapRawByNetcat", config, screencap_raw_by_netcat_argv_) &&
-           parse_argv("NetcatAddress", config, netcat_address_argv_);
+    static const json::array kDefaultScreencapRawByNetcatArgv = {
+        "{ADB}", "-s", "{ADB_SERIAL}", "exec-out", "screencap | nc -w 3 {NETCAT_ADDRESS} {NETCAT_PORT}",
+    };
+    static const json::array kDefaultNetcatAddressArgv = {
+        "{ADB}", "-s", "{ADB_SERIAL}", "shell", "cat /proc/net/arp | grep : ",
+    };
+
+    return parse_argv("ScreencapRawByNetcat", config, kDefaultScreencapRawByNetcatArgv,
+                      screencap_raw_by_netcat_argv_) &&
+           parse_argv("NetcatAddress", config, kDefaultNetcatAddressArgv, netcat_address_argv_);
 }
 
 bool ScreencapRawByNetcat::init(int swidth, int sheight)

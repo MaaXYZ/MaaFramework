@@ -6,8 +6,19 @@ MAA_CTRL_UNIT_NS_BEGIN
 
 bool DeviceInfo::parse(const json::value& config)
 {
-    return parse_argv("UUID", config, uuid_argv_) && parse_argv("Resolution", config, resolution_argv_) &&
-           parse_argv("Orientation", config, orientation_argv_);
+    static const json::array kDefaultUuidArgv = {
+        "{ADB}", "-s", "{ADB_SERIAL}", "shell", "settings get secure android_id",
+    };
+    static const json::array kDefaultResolutionArgv = {
+        "{ADB}", "-s", "{ADB_SERIAL}", "shell", "dumpsys window displays | grep -o -E cur=+[^\\ ]+ | grep -o -E [0-9]+",
+    };
+    static const json::array kDefaultOrientationArgv = {
+        "{ADB}", "-s", "{ADB_SERIAL}", "shell", "dumpsys input | grep SurfaceOrientation | grep -m 1 -o -E [0-9]",
+    };
+
+    return parse_argv("UUID", config, kDefaultUuidArgv, uuid_argv_) &&
+           parse_argv("Resolution", config, kDefaultResolutionArgv, resolution_argv_) &&
+           parse_argv("Orientation", config, kDefaultOrientationArgv, orientation_argv_);
 }
 
 std::optional<std::string> DeviceInfo::request_uuid()

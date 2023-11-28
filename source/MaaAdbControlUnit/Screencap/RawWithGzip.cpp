@@ -6,7 +6,11 @@ MAA_CTRL_UNIT_NS_BEGIN
 
 bool ScreencapRawWithGzip::parse(const json::value& config)
 {
-    return parse_argv("ScreencapRawWithGzip", config, screencap_raw_with_gzip_argv_);
+    static const json::array kDefaultScreencapRawWithGzipArgv = {
+        "{ADB}", "-s", "{ADB_SERIAL}", "exec-out", "screencap | gzip -1",
+    };
+
+    return parse_argv("ScreencapRawWithGzip", config, kDefaultScreencapRawWithGzipArgv, screencap_raw_with_gzip_argv_);
 }
 
 bool ScreencapRawWithGzip::init(int swidth, int sheight)

@@ -11,31 +11,8 @@ MAA_CTRL_UNIT_NS_BEGIN
 
 bool MaatouchInput::parse(const json::value& config)
 {
-    auto popt = config.find<json::object>("prebuilt");
-    if (!popt) {
-        LogError << "Cannot find entry prebuilt";
-        return false;
-    }
-
-    auto mopt = popt->find<json::object>("maatouch");
-    if (!mopt) {
-        LogError << "Cannot find entry prebuilt.maatouch";
-        return false;
-    }
-
-    {
-        auto opt = mopt->find<json::value>("package");
-        if (!opt) {
-            LogError << "Cannot find entry prebuilt.maatouch.package";
-            return false;
-        }
-
-        if (!opt->is_string()) {
-            return false;
-        }
-
-        package_name_ = opt->as_string();
-    }
+    static const std::string kDefaultPackage = "com.shxyke.MaaTouch.App";
+    package_name_ = config.get("prebuilt", "maatouch", "package", kDefaultPackage);
 
     return invoke_app_->parse(config);
 }
@@ -80,8 +57,12 @@ bool MaatouchInput::press_key(int key)
         return false;
     }
 
-    bool ret = shell_handler_->write(MAA_FMT::format("k {} d\nc\n", key)) &&
-               shell_handler_->write(MAA_FMT::format("k {} u\nc\n", key));
+    // https://github.com/openstf/minitouch#writable-to-the-socket
+    static constexpr std::string_view kKeyDownFormat = "k {} d\nc\n";
+    static constexpr std::string_view kKeyUpFormat = "k {} u\nc\n";
+
+    bool ret = shell_handler_->write(MAA_FMT::format(kKeyDownFormat, key)) &&
+               shell_handler_->write(MAA_FMT::format(kKeyUpFormat, key));
 
     if (!ret) {
         LogError << "failed to write";
