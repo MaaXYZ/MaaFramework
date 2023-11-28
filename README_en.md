@@ -43,7 +43,7 @@ It offers low-code simplicity while maintaining high extensibility. The framewor
 
 ## Best Practices
 
-- [MAA1999](https://github.com/MaaAssistantArknights/MAA1999) 1999 Assistant  
+- [M9A](https://github.com/MaaAssistantArknights/M9A) 1999 Assistant  
   The 1999 Assistant, based on a brand new architecture. Image technology + simulation control, freeing your hands! Powered by MaaFramework.
 
 - [MAAIP](https://github.com/Arcelibs/MAAIP) idolypride Automation Program Based on MAA Framework Technology  

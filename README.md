@@ -43,7 +43,7 @@ _✨ 基于图像识别的跨平台软件自动化测试框架 ✨_
 
 ## 最佳实践
 
-- [MAA1999](https://github.com/MaaAssistantArknights/MAA1999) 1999 小助手  
+- [M9A](https://github.com/MaaAssistantArknights/M9A) 1999 小助手  
   基于全新架构的 亿韭韭韭 小助手。图像技术 + 模拟控制，解放双手！由 MaaFramework 强力驱动！
 
 - [MAAIP](https://github.com/Arcelibs/MAAIP) 基於 MAA 框架技術的 idolypride 自動化程序  
