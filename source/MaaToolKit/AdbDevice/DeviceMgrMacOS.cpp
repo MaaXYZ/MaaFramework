@@ -39,12 +39,12 @@ std::vector<Device> DeviceMgrMacOS::find_device_impl()
         const auto& constant = kEmulators.at(e.name);
         std::filesystem::path adb_path = get_adb_path(constant, e.process.pid);
 
-        auto serials = request_adb_serials(adb_path, kAdbConfig);
+        auto serials = request_adb_serials(adb_path, json::value());
         serials.insert(serials.end(), constant.adb_common_serials.begin(), constant.adb_common_serials.end());
         // Deduplication
         auto set = std::set<std::string>(serials.begin(), serials.end());
         serials.assign(set.begin(), set.end());
-        serials = check_available_adb_serials(adb_path, serials, kAdbConfig);
+        serials = check_available_adb_serials(adb_path, serials, json::value());
 
         for (const std::string& ser : serials) {
             Device device;
@@ -52,7 +52,7 @@ std::vector<Device> DeviceMgrMacOS::find_device_impl()
             device.adb_path = path_to_utf8_string(adb_path);
             device.adb_serial = ser;
             // TODO: 根据设备情况使用不同的配置
-            device.adb_config = kAdbConfig.to_string();
+            device.adb_config = json::value().to_string();
             device.adb_controller_type =
                 check_adb_controller_type(device.adb_path, device.adb_serial, device.adb_config);
             result.emplace_back(std::move(device));
@@ -66,14 +66,14 @@ std::vector<Device> DeviceMgrMacOS::find_device_with_adb_impl(std::string_view a
 {
     std::vector<Device> result;
 
-    auto serials = request_adb_serials(path(adb_path), kAdbConfig);
+    auto serials = request_adb_serials(path(adb_path), json::value());
 
     for (const std::string& ser : serials) {
         Device device;
         device.name = adb_path;
         device.adb_path = adb_path;
         device.adb_serial = ser;
-        device.adb_config = kAdbConfig.to_string();
+        device.adb_config = json::value().to_string();
         device.adb_controller_type = check_adb_controller_type(device.adb_path, device.adb_serial, device.adb_config);
         result.emplace_back(std::move(device));
     }
