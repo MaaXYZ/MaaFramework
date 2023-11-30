@@ -38,12 +38,12 @@ std::vector<Device> DeviceMgrMacOS::find_device_impl()
         const auto& constant = kEmulators.at(e.name);
         std::filesystem::path adb_path = get_adb_path(constant, e.process.pid);
 
-        auto serials = request_adb_serials(adb_path, json::value());
+        auto serials = request_adb_serials(adb_path, json::object());
         serials.insert(serials.end(), constant.adb_common_serials.begin(), constant.adb_common_serials.end());
         // Deduplication
         auto set = std::set<std::string>(serials.begin(), serials.end());
         serials.assign(set.begin(), set.end());
-        serials = check_available_adb_serials(adb_path, serials, json::value());
+        serials = check_available_adb_serials(adb_path, serials, json::object());
 
         for (const std::string& ser : serials) {
             Device device;
@@ -65,7 +65,7 @@ std::vector<Device> DeviceMgrMacOS::find_device_with_adb_impl(std::string_view a
 {
     std::vector<Device> result;
 
-    auto serials = request_adb_serials(path(adb_path), json::value());
+    auto serials = request_adb_serials(path(adb_path), json::object());
 
     for (const std::string& ser : serials) {
         Device device;
