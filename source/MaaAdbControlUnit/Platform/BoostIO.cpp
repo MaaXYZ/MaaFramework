@@ -30,17 +30,15 @@ int BoostIO::call_command(const std::vector<std::string>& cmd, bool recv_by_sock
         return -1;
     }
 
-    auto exec = boost::process::search_path(cmd[0]);
+    auto exec = boost::process::search_path(cmd.front());
     if (!std::filesystem::exists(exec)) {
-        LogError << "path not exists" << VAR(exec) << VAR(cmd[0]);
+        LogError << "path not exists" << VAR(exec) << VAR(cmd.front());
         return -1;
     }
-    // TODO: 想办法直接把cmd的后面塞进args
-    std::vector<std::string> rcmd(cmd.begin() + 1, cmd.end());
+    auto args = boost::process::args(std::vector(cmd.begin() + 1, cmd.end()));
 
     boost::process::ipstream pout;
-    boost::process::child proc(exec, boost::process::args(rcmd),
-                               boost::process::std_in<boost::process::null, boost::process::std_out> pout,
+    boost::process::child proc(exec, args, boost::process::std_in<boost::process::null, boost::process::std_out> pout,
                                boost::process::std_err > boost::process::null BOOST_CREATE_NO_WINDOW);
 
     const auto start_time = std::chrono::steady_clock::now();
@@ -114,19 +112,31 @@ std::shared_ptr<IOHandler> BoostIO::tcp(const std::string& target, unsigned shor
 
 std::shared_ptr<IOHandler> BoostIO::interactive_shell(const std::vector<std::string>& cmd, bool want_stderr)
 {
-    // TODO: 想办法直接把cmd的后面塞进args
-    std::vector<std::string> rcmd(cmd.begin() + 1, cmd.end());
+    if (cmd.empty()) {
+        LogError << "cmd is empty";
+        return nullptr;
+    }
 
-    std::shared_ptr<boost::process::opstream> pin(new boost::process::opstream);
-    std::shared_ptr<boost::process::ipstream> pout(new boost::process::ipstream);
+    auto pin = std::make_shared<boost::process::opstream>();
+    auto pout = std::make_shared<boost::process::ipstream>();
 
-    std::shared_ptr<boost::process::child> proc(
-        want_stderr ? new boost::process::child(boost::process::search_path(cmd[0]), boost::process::args(rcmd),
-                                                boost::process::std_in<*pin, boost::process::std_err> *
-                                                    pout BOOST_CREATE_NO_WINDOW)
-                    : new boost::process::child(boost::process::search_path(cmd[0]), boost::process::args(rcmd),
-                                                boost::process::std_in<*pin, boost::process::std_out> *
-                                                    pout BOOST_CREATE_NO_WINDOW));
+    std::shared_ptr<boost::process::child> proc = nullptr;
+
+    auto exec = boost::process::search_path(cmd.front());
+    if (!std::filesystem::exists(exec)) {
+        LogError << "path not exists" << VAR(exec) << VAR(cmd.front());
+        return nullptr;
+    }
+    auto args = boost::process::args(std::vector(cmd.begin() + 1, cmd.end()));
+
+    if (want_stderr) {
+        proc = std::make_shared<boost::process::child>(
+            exec, args, boost::process::std_in<*pin, boost::process::std_err> * pout BOOST_CREATE_NO_WINDOW);
+    }
+    else {
+        proc = std::make_shared<boost::process::child>(
+            exec, args, boost::process::std_in<*pin, boost::process::std_out> * pout BOOST_CREATE_NO_WINDOW);
+    }
 
     return std::make_shared<IOHandlerBoostStream>(pout, pin, proc);
 }

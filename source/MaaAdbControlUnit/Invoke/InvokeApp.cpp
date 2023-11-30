@@ -73,8 +73,13 @@ std::optional<int> InvokeApp::sdk()
     if (!cmd_ret) {
         return std::nullopt;
     }
+    std::string& ret = *cmd_ret;
+    string_trim_(ret);
 
-    return atoi(cmd_ret.value().c_str());
+    if (!MAA_RNS::ranges::all_of(ret, [](char c) { return std::isdigit(c); })) {
+        return std::nullopt;
+    }
+    return std::stoi(ret);
 }
 
 bool InvokeApp::push(const std::filesystem::path& path)

@@ -53,6 +53,15 @@ inline constexpr void string_replace_all_(StringT& str,
     }
 }
 
+template <typename StringT>
+requires IsSomeKindOfString<StringT>
+inline constexpr void string_replace_all_(StringT& str, const std::map<StringT, StringT>& replace_map)
+{
+    for (const auto& [from, to] : replace_map) {
+        string_replace_all_(str, from, to);
+    }
+}
+
 #ifdef MAA_USE_RANGES_RANGE_V3
 // workaround for P2210R2
 template <MAA_RNS::ranges::forward_range Rng>
@@ -109,9 +118,7 @@ requires IsSomeKindOfString<StringT>
                                                        const std::map<StringT, StringT>& replace_map)
 {
     StringT result = str;
-    for (const auto& [from, to] : replace_map) {
-        string_replace_all_(result, from, to);
-    }
+    string_replace_all_(result, replace_map);
     return result;
 }
 
