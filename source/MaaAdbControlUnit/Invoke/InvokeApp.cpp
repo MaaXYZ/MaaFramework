@@ -61,19 +61,7 @@ std::optional<std::vector<std::string>> InvokeApp::abilist()
         return std::nullopt;
     }
 
-    auto abils = cmd_ret.value();
-    std::vector<std::string> res;
-
-    while (abils.length() > 0) {
-        auto pos = abils.find(',');
-        res.push_back(abils.substr(0, pos));
-        abils = abils.substr(pos + 1);
-        if (pos == std::string::npos) {
-            break;
-        }
-    }
-
-    return res;
+    return string_split(*cmd_ret, ',');
 }
 
 std::optional<int> InvokeApp::sdk()
