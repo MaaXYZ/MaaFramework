@@ -61,8 +61,9 @@ bool MtouchHelper::read_info(int swidth, int sheight, int orientation)
 
     screen_width_ = swidth;
     screen_height_ = sheight;
-    touch_width_ = x;
-    touch_height_ = y;
+    bool landscape = screen_width_ > screen_height_;
+    touch_width_ = landscape ? std::max(x, y) : std::min(x, y);
+    touch_height_ = landscape ? std::min(x, y) : std::max(x, y);
     xscale_ = double(touch_width_) / swidth;
     yscale_ = double(touch_height_) / sheight;
     press_ = pressure;
