@@ -50,22 +50,25 @@ bool MinicapStream::init(int swidth, int sheight)
         return false;
     }
 
-    std::string outputBuffer;
-    int i = 50;
-    while (--i) {
+    bool ok = false;
+
+    std::string buffer;
+    constexpr int kMaxTry = 50;
+    for (int i = 0; i < kMaxTry; ++i) {
         auto res = process_handle_->read(5);
-        if (res.length() > 0) {
-            LogInfo << "minicap stdout:" << res;
-            outputBuffer.append(res);
+        if (!res.empty()) {
+            LogDebug << "minicap stdout:" << res;
+            buffer.append(res);
         }
-        if (outputBuffer.find("Allocating") != std::string::npos) {
+        if (buffer.find("Allocating") != std::string::npos) {
+            ok = true;
             break;
         }
         using namespace std::chrono_literals;
         std::this_thread::sleep_for(100ms);
     }
-
-    if (i == 0) {
+    if (!ok) {
+        LogError << "minicap stdout:" << buffer;
         return false;
     }
 
