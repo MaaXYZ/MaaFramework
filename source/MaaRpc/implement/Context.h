@@ -1,11 +1,15 @@
 #pragma once
 
+#include "Conf/Conf.h"
+
 #include <memory>
 
 namespace grpc
 {
 class ServerBuilder;
 }
+
+MAA_NS_BEGIN
 
 class UtilityImpl;
 class ImageImpl;
@@ -36,3 +40,5 @@ private:
     std::shared_ptr<DeviceImpl> device_impl_ = nullptr;
     std::shared_ptr<ConfigImpl> config_impl_ = nullptr;
 };
+
+MAA_NS_END

@@ -2,6 +2,8 @@
 #include "MaaToolKit/MaaToolKitAPI.h"
 #include "Utils/Logger.h"
 
+MAA_NS_BEGIN
+
 using namespace ::grpc;
 
 Status ConfigImpl::init(ServerContext* context, const ::maarpc::EmptyRequest* request,
@@ -35,3 +37,5 @@ Status ConfigImpl::uninit(ServerContext* context, const ::maarpc::EmptyRequest* 
         return Status(UNKNOWN, "MaaToolKitUninit failed");
     }
 }
+
+MAA_NS_END

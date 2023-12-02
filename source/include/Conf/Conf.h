@@ -91,8 +91,6 @@
     {
 #define MAA_LOG_NS_END }
 
-/* MaaFramwork */
-
 #define MAA_RES_NS MAA_NS::ResourceNS
 #define MAA_RES_NS_BEGIN \
     namespace MAA_RES_NS \
@@ -122,29 +120,3 @@
     namespace MAA_TASK_NS \
     {
 #define MAA_TASK_NS_END }
-
-/* MaaToolKit */
-
-#define MAA_TOOLKIT_NS MAA_NS::ToolKitNS
-#define MAA_TOOLKIT_NS_BEGIN \
-    namespace MAA_TOOLKIT_NS \
-    {
-#define MAA_TOOLKIT_NS_END }
-
-#define MAA_TOOLKIT_DEVICE_NS MAA_TOOLKIT_NS::DeviceNS
-#define MAA_TOOLKIT_DEVICE_NS_BEGIN \
-    namespace MAA_TOOLKIT_DEVICE_NS \
-    {
-#define MAA_TOOLKIT_DEVICE_NS_END }
-
-#define MAA_TOOLKIT_CONFIG_NS MAA_TOOLKIT_NS::ConfigNS
-#define MAA_TOOLKIT_CONFIG_NS_BEGIN \
-    namespace MAA_TOOLKIT_CONFIG_NS \
-    {
-#define MAA_TOOLKIT_CONFIG_NS_END }
-
-#define MAA_TOOLKIT_WIN32_NS MAA_TOOLKIT_NS::Win32NS
-#define MAA_TOOLKIT_WIN32_NS_BEGIN \
-    namespace MAA_TOOLKIT_WIN32_NS \
-    {
-#define MAA_TOOLKIT_WIN32_NS_END }

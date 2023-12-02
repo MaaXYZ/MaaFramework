@@ -8,6 +8,8 @@
 
 #include <semaphore>
 
+MAA_NS_BEGIN
+
 class ControllerImpl final : public ::maarpc::Controller::Service
 {
 public:
@@ -68,3 +70,5 @@ private:
     AtomicMap<MaaControllerHandle> handles_;
     AtomicMap<std::shared_ptr<CustomControllerInfo>> infos_;
 };
+
+MAA_NS_END

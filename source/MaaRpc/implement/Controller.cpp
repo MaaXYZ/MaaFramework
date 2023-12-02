@@ -3,6 +3,8 @@
 #include "Macro.h"
 #include "Utils/Logger.h"
 
+MAA_NS_BEGIN
+
 using namespace ::grpc;
 
 Status ControllerImpl::create_adb(::grpc::ServerContext* context, const ::maarpc::AdbControllerRequest* request,
@@ -629,3 +631,5 @@ Status ControllerImpl::uuid(::grpc::ServerContext* context, const ::maarpc::Hand
         return Status(UNKNOWN, "MaaControllerGetUUID failed");
     }
 }
+
+MAA_NS_END

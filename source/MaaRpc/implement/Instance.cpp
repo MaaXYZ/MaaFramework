@@ -3,6 +3,8 @@
 #include "Macro.h"
 #include "Utils/Logger.h"
 
+MAA_NS_BEGIN
+
 using namespace ::grpc;
 
 Status InstanceImpl::create(ServerContext* context, const ::maarpc::IdRequest* request,
@@ -511,3 +513,5 @@ Status InstanceImpl::controller(ServerContext* context, const ::maarpc::HandleRe
         return Status(NOT_FOUND, "cannot locate controller handle");
     }
 }
+
+MAA_NS_END

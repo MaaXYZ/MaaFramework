@@ -5,7 +5,7 @@
 #include "Utils/Logger.h"
 #include "Utils/Platform.h"
 
-MAA_TOOLKIT_WIN32_NS_BEGIN
+MAA_NS_BEGIN
 
 std::ostream& operator<<(std::ostream& os, const Win32WindowFinder::Window& w)
 {
@@ -85,6 +85,6 @@ std::vector<Win32WindowFinder::Window> Win32WindowFinder::list_windows() const
     return windows;
 }
 
-MAA_TOOLKIT_WIN32_NS_END
+MAA_NS_END
 
 #endif

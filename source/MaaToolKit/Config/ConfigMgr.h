@@ -12,7 +12,7 @@
 #include "ConfigAPI.h"
 #include "Utils/SingletonHolder.hpp"
 
-MAA_TOOLKIT_CONFIG_NS_BEGIN
+MAA_NS_BEGIN
 
 class ConfigMgr : public SingletonHolder<ConfigMgr>, public MaaToolKitConfigMgrAPI
 {
@@ -60,4 +60,4 @@ private:
 #endif
 };
 
-MAA_TOOLKIT_CONFIG_NS_END
+MAA_NS_END

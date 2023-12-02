@@ -5,6 +5,8 @@
 #include "Utility.h"
 #include "generated/resource.grpc.pb.h"
 
+MAA_NS_BEGIN
+
 class ResourceImpl final : public ::maarpc::Resource::Service
 {
 public:
@@ -33,3 +35,5 @@ private:
     std::shared_ptr<UtilityImpl> utility_impl_ = nullptr;
     AtomicMap<MaaResourceHandle> handles_;
 };
+
+MAA_NS_END

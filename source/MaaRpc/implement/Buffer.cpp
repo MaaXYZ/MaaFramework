@@ -4,6 +4,8 @@
 #include "Utility.h"
 #include "Utils/Logger.h"
 
+MAA_NS_BEGIN
+
 using namespace ::grpc;
 
 Status ImageImpl::create(ServerContext* context, const ::maarpc::EmptyRequest* request,
@@ -123,3 +125,5 @@ Status ImageImpl::set_encoded(ServerContext* context, const ::maarpc::HandleBuff
 
     return Status::OK;
 }
+
+MAA_NS_END

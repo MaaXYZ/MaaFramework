@@ -4,6 +4,8 @@
 #include "MaaFramework/MaaDef.h"
 #include "generated/buffer.grpc.pb.h"
 
+MAA_NS_BEGIN
+
 class ImageImpl final : public ::maarpc::Image::Service
 {
 public:
@@ -27,3 +29,5 @@ public:
 private:
     AtomicMap<MaaImageBufferHandle> handles_;
 };
+
+MAA_NS_END

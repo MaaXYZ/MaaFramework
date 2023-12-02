@@ -3,6 +3,8 @@
 #include "Macro.h"
 #include "Utils/Logger.h"
 
+MAA_NS_BEGIN
+
 using namespace ::grpc;
 
 Status ResourceImpl::create(ServerContext* context, const ::maarpc::IdRequest* request,
@@ -152,3 +154,5 @@ Status ResourceImpl::task_list(ServerContext* context, const ::maarpc::HandleReq
         return Status(UNKNOWN, "MaaResourceGetTaskList failed");
     }
 }
+
+MAA_NS_END

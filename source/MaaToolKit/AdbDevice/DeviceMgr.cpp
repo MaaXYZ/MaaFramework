@@ -3,7 +3,7 @@
 #include "LibraryHolder/ControlUnit.h"
 #include "Utils/Logger.h"
 
-MAA_TOOLKIT_DEVICE_NS_BEGIN
+MAA_NS_BEGIN
 
 std::ostream& operator<<(std::ostream& os, const DeviceMgr::Emulator& emulator)
 {
@@ -111,7 +111,7 @@ MaaAdbControllerType DeviceMgr::check_adb_controller_type(const std::filesystem:
     constexpr MaaAdbControllerType kInputType = MaaAdbControllerType_Input_Preset_Maatouch;
 
 #ifdef MAA_DEBUG
-    constexpr MaaAdbControllerType kScreencapType = MaaAdbControllerType_Screencap_RawWithGzip;
+    constexpr MaaAdbControllerType kScreencapType = MaaAdbControllerType_Screencap_FastestWay;
 #else
     // TODO: speed test
     constexpr MaaAdbControllerType kScreencapType = MaaAdbControllerType_Screencap_FastestWay;
@@ -120,4 +120,4 @@ MaaAdbControllerType DeviceMgr::check_adb_controller_type(const std::filesystem:
     return kInputType | kScreencapType;
 }
 
-MAA_TOOLKIT_DEVICE_NS_END
+MAA_NS_END

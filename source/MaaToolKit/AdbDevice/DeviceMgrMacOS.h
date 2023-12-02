@@ -6,7 +6,7 @@
 #include "DeviceMgr.h"
 #include "Utils/SingletonHolder.hpp"
 
-MAA_TOOLKIT_DEVICE_NS_BEGIN
+MAA_NS_BEGIN
 
 class DeviceMgrMacOS : public SingletonHolder<DeviceMgrMacOS>, public DeviceMgr
 {
@@ -25,6 +25,6 @@ private:
     std::vector<Emulator> find_emulators() const;
 };
 
-MAA_TOOLKIT_DEVICE_NS_END
+MAA_NS_END
 
 #endif

@@ -10,7 +10,7 @@
 #include "Utils/Platform.h"
 #include "Utils/Ranges.hpp"
 
-MAA_TOOLKIT_CONFIG_NS_BEGIN
+MAA_NS_BEGIN
 
 bool ConfigMgr::init()
 {
@@ -115,4 +115,4 @@ bool ConfigMgr::save(const json::value& root) const
     return true;
 }
 
-MAA_TOOLKIT_CONFIG_NS_END
+MAA_NS_END

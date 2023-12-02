@@ -5,6 +5,8 @@
 #include "MaaFramework/MaaDef.h"
 #include "generated/sync.context.grpc.pb.h"
 
+MAA_NS_BEGIN
+
 class SyncContextImpl final : public ::maarpc::SyncContext::Service
 {
 public:
@@ -40,3 +42,5 @@ private:
     std::shared_ptr<ImageImpl> image_impl_ = nullptr;
     AtomicMap<MaaSyncContextHandle> handles_;
 };
+
+MAA_NS_END

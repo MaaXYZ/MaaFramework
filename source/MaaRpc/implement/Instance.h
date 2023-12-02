@@ -9,6 +9,8 @@
 #include "Utility.h"
 #include "generated/instance.grpc.pb.h"
 
+MAA_NS_BEGIN
+
 class InstanceImpl final : public ::maarpc::Instance::Service
 {
 public:
@@ -96,3 +98,5 @@ private:
     AtomicMap<std::shared_ptr<CustomActionInfo>> actions_;
     AtomicMap<MaaInstanceHandle, std::shared_ptr<CustomActionInfo>> action_idx_;
 };
+
+MAA_NS_END

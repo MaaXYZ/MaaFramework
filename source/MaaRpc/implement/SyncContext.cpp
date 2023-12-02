@@ -3,6 +3,8 @@
 #include "Macro.h"
 #include "Utils/Logger.h"
 
+MAA_NS_BEGIN
+
 using namespace ::grpc;
 
 Status SyncContextImpl::run_task(ServerContext* context, const ::maarpc::SyncContextRunTaskRequest* request,
@@ -266,3 +268,5 @@ Status SyncContextImpl::task_result(ServerContext* context, const ::maarpc::Hand
         return Status(UNKNOWN, "MaaSyncContextGetTaskResult failed");
     }
 }
+
+MAA_NS_END

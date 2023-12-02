@@ -6,6 +6,8 @@
 #include <boost/uuid/uuid_generators.hpp>
 #include <boost/uuid/uuid_io.hpp>
 
+MAA_NS_BEGIN
+
 using namespace ::grpc;
 
 auto uuid_generator = boost::uuids::random_generator();
@@ -192,3 +194,5 @@ Status UtilityImpl::unregister_callback(ServerContext* context, const ::maarpc::
 
     return Status::OK;
 }
+
+MAA_NS_END
