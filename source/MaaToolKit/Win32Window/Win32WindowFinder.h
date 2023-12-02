@@ -5,7 +5,7 @@
 #include "Utils/Platform.h"
 #include "Utils/SingletonHolder.hpp"
 
-MAA_NS_BEGIN
+MAA_TOOLKIT_NS_BEGIN
 
 class Win32WindowFinder : public MaaWin32WindowAPI, public SingletonHolder<Win32WindowFinder>
 {
@@ -35,4 +35,4 @@ private:
 
 std::ostream& operator<<(std::ostream& os, const Win32WindowFinder::Window& window);
 
-MAA_NS_END
+MAA_TOOLKIT_NS_END

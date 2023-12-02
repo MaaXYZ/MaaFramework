@@ -120,3 +120,15 @@
     namespace MAA_TASK_NS \
     {
 #define MAA_TASK_NS_END }
+
+#define MAA_TOOLKIT_NS MAA_NS::ToolkitNS
+#define MAA_TOOLKIT_NS_BEGIN \
+    namespace MAA_TOOLKIT_NS \
+    {
+#define MAA_TOOLKIT_NS_END }
+
+#define MAA_RPC_NS MAA_NS::RpcNS
+#define MAA_RPC_NS_BEGIN \
+    namespace MAA_RPC_NS \
+    {
+#define MAA_RPC_NS_END }

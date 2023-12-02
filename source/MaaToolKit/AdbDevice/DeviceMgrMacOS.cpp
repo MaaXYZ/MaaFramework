@@ -9,7 +9,7 @@
 #include "Utils/Platform.h"
 #include "Utils/Ranges.hpp"
 
-MAA_NS_BEGIN
+MAA_TOOLKIT_NS_BEGIN
 
 using namespace path_literals;
 
@@ -122,6 +122,6 @@ std::filesystem::path get_adb_path(const EmulatorConstantData& emulator, os_pid 
     return {};
 }
 
-MAA_NS_END
+MAA_TOOLKIT_NS_END
 
 #endif

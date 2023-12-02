@@ -3,7 +3,7 @@
 #include "Macro.h"
 #include "Utils/Logger.h"
 
-MAA_NS_BEGIN
+MAA_RPC_NS_BEGIN
 
 using namespace ::grpc;
 
@@ -155,4 +155,4 @@ Status ResourceImpl::task_list(ServerContext* context, const ::maarpc::HandleReq
     }
 }
 
-MAA_NS_END
+MAA_RPC_NS_END

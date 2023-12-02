@@ -9,7 +9,7 @@
 #include <filesystem>
 #include <ostream>
 
-MAA_NS_BEGIN
+MAA_TOOLKIT_NS_BEGIN
 
 class DeviceMgrWin32 : public SingletonHolder<DeviceMgrWin32>, public DeviceMgr
 {
@@ -28,6 +28,6 @@ private:
     std::vector<Emulator> find_emulators() const;
 };
 
-MAA_NS_END
+MAA_TOOLKIT_NS_END
 
 #endif

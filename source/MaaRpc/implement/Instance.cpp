@@ -3,7 +3,7 @@
 #include "Macro.h"
 #include "Utils/Logger.h"
 
-MAA_NS_BEGIN
+MAA_RPC_NS_BEGIN
 
 using namespace ::grpc;
 
@@ -514,4 +514,4 @@ Status InstanceImpl::controller(ServerContext* context, const ::maarpc::HandleRe
     }
 }
 
-MAA_NS_END
+MAA_RPC_NS_END

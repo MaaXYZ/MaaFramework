@@ -7,7 +7,7 @@
 #include <string>
 #include <vector>
 
-MAA_NS_BEGIN
+MAA_RPC_NS_BEGIN
 
 template <typename Handle, typename Key = std::string>
 class AtomicMap
@@ -96,4 +96,4 @@ private:
     mutable std::mutex mtx_;
 };
 
-MAA_NS_END
+MAA_RPC_NS_END

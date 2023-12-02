@@ -6,11 +6,11 @@
 #include "Utils/Logger.h"
 
 #if defined(_WIN32)
-static MaaToolKitDeviceMgrAPI& device_mgr = MAA_NS::DeviceMgrWin32::get_instance();
+static MaaToolKitDeviceMgrAPI& device_mgr = MAA_TOOLKIT_NS::DeviceMgrWin32::get_instance();
 #elif defined(__linux__)
-static MaaToolKitDeviceMgrAPI& device_mgr = MAA_NS::DeviceMgrLinux::get_instance();
+static MaaToolKitDeviceMgrAPI& device_mgr = MAA_TOOLKIT_NS::DeviceMgrLinux::get_instance();
 #elif defined(__APPLE__)
-static MaaToolKitDeviceMgrAPI& device_mgr = MAA_NS::DeviceMgrMacOS::get_instance();
+static MaaToolKitDeviceMgrAPI& device_mgr = MAA_TOOLKIT_NS::DeviceMgrMacOS::get_instance();
 #endif
 
 MaaSize MaaToolKitFindDevice()

@@ -5,7 +5,7 @@
 #include "MaaToolKit/MaaToolKitAPI.h"
 #include "generated/config.grpc.pb.h"
 
-MAA_NS_BEGIN
+MAA_RPC_NS_BEGIN
 
 class ConfigImpl final : public ::maarpc::Config::Service
 {
@@ -16,4 +16,4 @@ public:
                           ::maarpc::EmptyResponse* response) override;
 };
 
-MAA_NS_END
+MAA_RPC_NS_END

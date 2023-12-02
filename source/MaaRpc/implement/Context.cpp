@@ -12,7 +12,7 @@
 
 #include "Context.h"
 
-MAA_NS_BEGIN
+MAA_RPC_NS_BEGIN
 
 Context::Context()
     : utility_impl_(std::make_shared<UtilityImpl>()), image_impl_(std::make_shared<ImageImpl>()),
@@ -36,4 +36,4 @@ void Context::reg_service(::grpc::ServerBuilder& builder)
     builder.RegisterService(config_impl_.get());
 }
 
-MAA_NS_END
+MAA_RPC_NS_END

@@ -7,7 +7,7 @@
 #include <memory>
 #include <semaphore>
 
-MAA_NS_BEGIN
+MAA_RPC_NS_BEGIN
 
 class UtilityImpl final : public ::maarpc::Utility::Service
 {
@@ -41,4 +41,4 @@ private:
 extern std::string make_uuid();
 extern void callback_impl(MaaStringView msg, MaaStringView detail, MaaCallbackTransparentArg arg);
 
-MAA_NS_END
+MAA_RPC_NS_END

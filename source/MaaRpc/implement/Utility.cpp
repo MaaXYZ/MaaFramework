@@ -6,7 +6,7 @@
 #include <boost/uuid/uuid_generators.hpp>
 #include <boost/uuid/uuid_io.hpp>
 
-MAA_NS_BEGIN
+MAA_RPC_NS_BEGIN
 
 using namespace ::grpc;
 
@@ -195,4 +195,4 @@ Status UtilityImpl::unregister_callback(ServerContext* context, const ::maarpc::
     return Status::OK;
 }
 
-MAA_NS_END
+MAA_RPC_NS_END

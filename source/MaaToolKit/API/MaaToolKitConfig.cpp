@@ -3,7 +3,7 @@
 #include "Config/ConfigMgr.h"
 #include "Utils/Logger.h"
 
-static MaaToolKitConfigMgrAPI& config_mgr = MAA_NS::ConfigMgr::get_instance();
+static MaaToolKitConfigMgrAPI& config_mgr = MAA_TOOLKIT_NS::ConfigMgr::get_instance();
 
 MaaBool MaaToolKitInit()
 {

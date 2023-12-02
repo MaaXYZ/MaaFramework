@@ -6,7 +6,7 @@
 #include "DeviceMgr.h"
 #include "Utils/SingletonHolder.hpp"
 
-MAA_NS_BEGIN
+MAA_TOOLKIT_NS_BEGIN
 
 class DeviceMgrLinux : public SingletonHolder<DeviceMgrLinux>, public DeviceMgr
 {
@@ -23,6 +23,6 @@ private:
     DeviceMgrLinux() = default;
 };
 
-MAA_NS_END
+MAA_TOOLKIT_NS_END
 
 #endif

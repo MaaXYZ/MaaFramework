@@ -3,7 +3,7 @@
 #include "Macro.h"
 #include "Utils/Logger.h"
 
-MAA_NS_BEGIN
+MAA_RPC_NS_BEGIN
 
 using namespace ::grpc;
 
@@ -62,4 +62,4 @@ Status DeviceImpl::find_with_adb(ServerContext* context, const ::maarpc::StringR
     return Status::OK;
 }
 
-MAA_NS_END
+MAA_RPC_NS_END

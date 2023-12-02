@@ -9,7 +9,7 @@ namespace grpc
 class ServerBuilder;
 }
 
-MAA_NS_BEGIN
+MAA_RPC_NS_BEGIN
 
 class UtilityImpl;
 class ImageImpl;
@@ -41,4 +41,4 @@ private:
     std::shared_ptr<ConfigImpl> config_impl_ = nullptr;
 };
 
-MAA_NS_END
+MAA_RPC_NS_END

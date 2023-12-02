@@ -3,7 +3,7 @@
 #include "Macro.h"
 #include "Utils/Logger.h"
 
-MAA_NS_BEGIN
+MAA_RPC_NS_BEGIN
 
 using namespace ::grpc;
 
@@ -269,4 +269,4 @@ Status SyncContextImpl::task_result(ServerContext* context, const ::maarpc::Hand
     }
 }
 
-MAA_NS_END
+MAA_RPC_NS_END

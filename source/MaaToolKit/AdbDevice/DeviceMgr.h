@@ -12,7 +12,7 @@
 
 #include <meojson/json.hpp>
 
-MAA_NS_BEGIN
+MAA_TOOLKIT_NS_BEGIN
 
 class DeviceMgr : public MaaToolKitDeviceMgrAPI
 {
@@ -51,4 +51,4 @@ private:
 
 std::ostream& operator<<(std::ostream& os, const DeviceMgr::Emulator& emulator);
 
-MAA_NS_END
+MAA_TOOLKIT_NS_END

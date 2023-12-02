@@ -9,7 +9,7 @@
 #include "Utility.h"
 #include "generated/instance.grpc.pb.h"
 
-MAA_NS_BEGIN
+MAA_RPC_NS_BEGIN
 
 class InstanceImpl final : public ::maarpc::Instance::Service
 {
@@ -99,4 +99,4 @@ private:
     AtomicMap<MaaInstanceHandle, std::shared_ptr<CustomActionInfo>> action_idx_;
 };
 
-MAA_NS_END
+MAA_RPC_NS_END

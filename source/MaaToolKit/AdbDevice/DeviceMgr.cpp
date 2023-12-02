@@ -3,7 +3,7 @@
 #include "LibraryHolder/ControlUnit.h"
 #include "Utils/Logger.h"
 
-MAA_NS_BEGIN
+MAA_TOOLKIT_NS_BEGIN
 
 std::ostream& operator<<(std::ostream& os, const DeviceMgr::Emulator& emulator)
 {
@@ -39,8 +39,8 @@ std::vector<std::string> DeviceMgr::request_adb_serials(const std::filesystem::p
     std::string str_adb = path_to_utf8_string(adb_path);
     std::string str_config = adb_config.to_string();
 
-    auto control_unit = MAA_NS::AdbControlUnitLibraryHolder::create_control_unit(
-        str_adb.c_str(), "", 0, str_config.c_str(), "", nullptr, nullptr);
+    auto control_unit = AdbControlUnitLibraryHolder::create_control_unit(str_adb.c_str(), "", 0, str_config.c_str(), "",
+                                                                         nullptr, nullptr);
 
     if (!control_unit) {
         LogError << "Failed to create control unit";
@@ -67,8 +67,8 @@ bool DeviceMgr::request_adb_connect(const std::filesystem::path& adb_path, const
     std::string str_serial = serial;
     std::string str_config = adb_config.to_string();
 
-    auto control_unit = MAA_NS::AdbControlUnitLibraryHolder::create_control_unit(
-        str_adb.c_str(), str_serial.c_str(), 0, str_config.c_str(), "", nullptr, nullptr);
+    auto control_unit = AdbControlUnitLibraryHolder::create_control_unit(str_adb.c_str(), str_serial.c_str(), 0,
+                                                                         str_config.c_str(), "", nullptr, nullptr);
 
     if (!control_unit) {
         LogError << "Failed to create control unit";
@@ -120,4 +120,4 @@ MaaAdbControllerType DeviceMgr::check_adb_controller_type(const std::filesystem:
     return kInputType | kScreencapType;
 }
 
-MAA_NS_END
+MAA_TOOLKIT_NS_END

@@ -5,7 +5,7 @@
 #include "MaaFramework/MaaDef.h"
 #include "generated/sync.context.grpc.pb.h"
 
-MAA_NS_BEGIN
+MAA_RPC_NS_BEGIN
 
 class SyncContextImpl final : public ::maarpc::SyncContext::Service
 {
@@ -43,4 +43,4 @@ private:
     AtomicMap<MaaSyncContextHandle> handles_;
 };
 
-MAA_NS_END
+MAA_RPC_NS_END

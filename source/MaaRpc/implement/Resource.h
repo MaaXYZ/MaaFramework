@@ -5,7 +5,7 @@
 #include "Utility.h"
 #include "generated/resource.grpc.pb.h"
 
-MAA_NS_BEGIN
+MAA_RPC_NS_BEGIN
 
 class ResourceImpl final : public ::maarpc::Resource::Service
 {
@@ -36,4 +36,4 @@ private:
     AtomicMap<MaaResourceHandle> handles_;
 };
 
-MAA_NS_END
+MAA_RPC_NS_END

@@ -2,7 +2,7 @@
 #include "MaaToolKit/MaaToolKitAPI.h"
 #include "Utils/Logger.h"
 
-MAA_NS_BEGIN
+MAA_RPC_NS_BEGIN
 
 using namespace ::grpc;
 
@@ -38,4 +38,4 @@ Status ConfigImpl::uninit(ServerContext* context, const ::maarpc::EmptyRequest* 
     }
 }
 
-MAA_NS_END
+MAA_RPC_NS_END

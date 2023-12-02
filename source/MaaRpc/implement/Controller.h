@@ -8,7 +8,7 @@
 
 #include <semaphore>
 
-MAA_NS_BEGIN
+MAA_RPC_NS_BEGIN
 
 class ControllerImpl final : public ::maarpc::Controller::Service
 {
@@ -71,4 +71,4 @@ private:
     AtomicMap<std::shared_ptr<CustomControllerInfo>> infos_;
 };
 
-MAA_NS_END
+MAA_RPC_NS_END

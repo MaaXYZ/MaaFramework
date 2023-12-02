@@ -4,7 +4,7 @@
 
 #include <tuple> // for std::ignore
 
-MAA_NS_BEGIN
+MAA_TOOLKIT_NS_BEGIN
 
 std::vector<Device> DeviceMgrLinux::find_device_impl()
 {
@@ -17,6 +17,6 @@ std::vector<Device> DeviceMgrLinux::find_device_with_adb_impl(std::string_view a
     return {};
 }
 
-MAA_NS_END
+MAA_TOOLKIT_NS_END
 
 #endif

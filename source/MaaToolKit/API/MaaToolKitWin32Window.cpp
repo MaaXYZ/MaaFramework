@@ -5,7 +5,7 @@
 #include "Utils/Logger.h"
 #include "Win32Window/Win32WindowFinder.h"
 
-auto& win32_mgr = MAA_NS::Win32WindowFinder::get_instance();
+auto& win32_mgr = MAA_TOOLKIT_NS::Win32WindowFinder::get_instance();
 
 MaaSize MaaToolKitFindWindow(MaaStringView class_name, MaaStringView window_name)
 {
