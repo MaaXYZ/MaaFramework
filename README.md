@@ -46,8 +46,8 @@ _✨ 基于图像识别的跨平台软件自动化测试框架 ✨_
 - [M9A](https://github.com/MaaAssistantArknights/M9A) 1999 小助手  
   基于全新架构的 亿韭韭韭 小助手。图像技术 + 模拟控制，解放双手！由 MaaFramework 强力驱动！
 
-- [MAAIP](https://github.com/Arcelibs/MAAIP) 基於 MAA 框架技術的 idolypride 自動化程序  
-  由 Github 上最火熱的 lk99 開源套件 MaaFramework 製作
+- [MAAIP2](https://github.com/Arcelibs/MAAIP2) 基於 MAA 框架技術的 idolypride 自動化程序 第二代  
+  由MaaFrameWork技術支援，結合圖像技術與模擬控制，開創智能化遊戲自動化新紀元
 
 - [MAABH3](https://github.com/MaaAssistantArknights/MAABH3) 《崩坏3》小助手 | A one-click tool for the daily tasks of Honkai Impact.  
   基于全新架构的 蹦蹦蹦 小助手。图像技术 + 模拟控制，解放双手！由 MaaFramework 强力驱动！
