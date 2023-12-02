@@ -139,7 +139,7 @@ inline static std::vector<float> image_to_tensor(const cv::Mat& image)
 inline cv::Rect correct_roi(const cv::Rect& roi, const cv::Mat& image)
 {
     if (image.empty()) {
-        LogError << "image is empty" << VAR(image);
+        LogError << "image is empty" << VAR(image.size());
         return roi;
     }
     if (roi.empty()) {

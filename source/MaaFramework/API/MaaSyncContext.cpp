@@ -16,10 +16,11 @@ MaaBool MaaSyncContextRunTask(MaaSyncContextHandle sync_context, MaaStringView t
     return sync_context->run_task(task_name, param);
 }
 
-MaaBool MaaSyncContextRunRecognizer(MaaSyncContextHandle sync_context, MaaImageBufferHandle image, MaaStringView task_name,
-                                    MaaStringView task_param, MaaRectHandle out_box, MaaStringBufferHandle out_detail)
+MaaBool MaaSyncContextRunRecognizer(MaaSyncContextHandle sync_context, MaaImageBufferHandle image,
+                                    MaaStringView task_name, MaaStringView task_param, MaaRectHandle out_box,
+                                    MaaStringBufferHandle out_detail)
 {
-    LogFunc << VAR_VOIDP(sync_context) << VAR(image) << VAR(task_name) << VAR(task_param) << VAR(out_box)
+    LogFunc << VAR_VOIDP(sync_context) << VAR_VOIDP(image) << VAR(task_name) << VAR(task_param) << VAR(out_box)
             << VAR(out_detail);
 
     if (!sync_context || !image) {
@@ -161,7 +162,8 @@ MaaBool MaaSyncContextScreencap(MaaSyncContextHandle sync_context, MaaImageBuffe
     return true;
 }
 
-MaaBool MaaSyncContextGetTaskResult(MaaSyncContextHandle sync_context, MaaStringView task_name, MaaStringBufferHandle buffer)
+MaaBool MaaSyncContextGetTaskResult(MaaSyncContextHandle sync_context, MaaStringView task_name,
+                                    MaaStringBufferHandle buffer)
 {
     LogFunc << VAR_VOIDP(sync_context) << VAR(task_name) << VAR(buffer);
 
