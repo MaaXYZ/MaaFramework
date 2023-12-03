@@ -6,7 +6,7 @@
 #include "Input/MinitouchInput.h"
 #include "Input/TapInput.h"
 #include "Manager/ControlUnitMgr.h"
-#include "Platform/PlatformFactory.h"
+#include "Platform/BoostIO.h"
 #include "Screencap/Encode.h"
 #include "Screencap/EncodeToFile.h"
 #include "Screencap/FastestWay.h"
@@ -158,7 +158,7 @@ MaaControlUnitHandle MaaAdbControlUnitCreate( //
         return nullptr;
     }
 
-    auto platform_io = PlatformFactory::create();
+    auto platform_io = std::make_shared<BoostIO>();
     if (!platform_io) {
         LogError << "Create platform io failed";
         return nullptr;
