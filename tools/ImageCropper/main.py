@@ -278,7 +278,8 @@ while True:
     cropping = True
 # q Q esc
     if key in [ord("q"), ord("Q"), 27]:
-        break
+        cv2.destroyAllWindows()
+        exit()
 # 0
     if key == 48:
         cv2.setTrackbarPos('Scale', trackbars_name, 100)
@@ -360,9 +361,11 @@ while True:
                   .replace("'", '"')
                   .replace("False", "false")
                   .replace("True", "true"))
-        else:
+        elif cv2.getWindowProperty('MainColors',cv2.WND_PROP_VISIBLE) > 0:
             cv2.destroyWindow('MainColors')
 
         print("")
 
+print("Press any key to exit...")
+cv2.waitKey(0)
 cv2.destroyAllWindows()
