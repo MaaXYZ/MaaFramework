@@ -18,7 +18,6 @@ bool ExecAgentBase::register_executor(MaaInstanceHandle handle, std::string_view
     }
 
     Executor executor {
-        .handle_uuid = handle_uuid(handle),
         .name = std::string(name),
         .exec_path = std::move(exec_path),
         .exec_params = std::move(exec_params),
@@ -45,32 +44,6 @@ bool ExecAgentBase::unregister_executor(MaaInstanceHandle handle, std::string_vi
     ret = executors_.erase(name_str) > 0 && ret;
 
     return ret;
-}
-
-std::string ExecAgentBase::handle_uuid(MaaInstanceHandle handle)
-{
-    if (!handle) {
-        return {};
-    }
-
-    for (const auto& [uuid, h] : handles_) {
-        if (h == handle) {
-            return uuid;
-        }
-    }
-
-    std::string uuid = std::to_string(reinterpret_cast<uintptr_t>(handle));
-    handles_.emplace(uuid, handle);
-    return uuid;
-}
-
-MaaInstanceHandle ExecAgentBase::uuid_handle(const std::string& uuid) const
-{
-    auto it = handles_.find(uuid);
-    if (it == handles_.end()) {
-        return nullptr;
-    }
-    return it->second;
 }
 
 MAA_TOOLKIT_NS_END
