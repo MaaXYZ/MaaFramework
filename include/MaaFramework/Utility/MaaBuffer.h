@@ -42,6 +42,8 @@ extern "C"
     int32_t MAA_FRAMEWORK_API MaaGetRectY(MaaRectHandle handle);
     int32_t MAA_FRAMEWORK_API MaaGetRectW(MaaRectHandle handle);
     int32_t MAA_FRAMEWORK_API MaaGetRectH(MaaRectHandle handle);
+
+    MaaBool MAA_FRAMEWORK_API MaaSetRect(MaaRectHandle handle, int32_t x, int32_t y, int32_t w, int32_t h);
     MaaBool MAA_FRAMEWORK_API MaaSetRectX(MaaRectHandle handle, int32_t value);
     MaaBool MAA_FRAMEWORK_API MaaSetRectY(MaaRectHandle handle, int32_t value);
     MaaBool MAA_FRAMEWORK_API MaaSetRectW(MaaRectHandle handle, int32_t value);
