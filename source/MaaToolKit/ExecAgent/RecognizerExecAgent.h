@@ -4,6 +4,7 @@
 #include "ExecAgentBase.h"
 
 #include "MaaFramework/Task/MaaCustomRecognizer.h"
+#include "Utils/NoWarningCVMat.hpp"
 #include "Utils/SingletonHolder.hpp"
 
 MAA_TOOLKIT_NS_BEGIN
@@ -19,8 +20,18 @@ protected: // from ExecAgentBase
     virtual bool unregister_for_maa_inst(MaaInstanceHandle handle, std::string_view name) override;
 
 private:
+    struct AnalyzeResult
+    {
+        cv::Rect box {};
+        std::string detail;
+    };
+    std::optional<AnalyzeResult> analyze( //
+        MaaSyncContextHandle sync_context, const cv::Mat& image, std::string_view task_name,
+        std::string_view custom_recognition_param);
+
+private:
     // for MaaCustomRecognizerAPI
-    static MaaBool recognizer_analyze( //
+    static MaaBool maa_api_analyze( //
         MaaSyncContextHandle sync_context, const MaaImageBufferHandle image, MaaStringView task_name,
         MaaStringView custom_recognition_param, MaaTransparentArg recognizer_arg,
         /*out*/ MaaRectHandle out_box,
