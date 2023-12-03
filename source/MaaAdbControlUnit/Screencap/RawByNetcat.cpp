@@ -22,16 +22,11 @@ bool ScreencapRawByNetcat::init(int swidth, int sheight)
 {
     LogFunc;
 
-    if (!io_ptr_) {
-        LogError << "io_ptr is nullptr";
+    auto addr_opt = request_netcat_address();
+    if (!addr_opt) {
         return false;
     }
-
-    auto addr = request_netcat_address();
-    if (!addr) {
-        return false;
-    }
-    netcat_address_ = addr.value();
+    netcat_address_ = std::move(*addr_opt);
 
     auto serial_host = argv_replace_["{ADB_SERIAL}"];
     auto shp = serial_host.find(':');
@@ -40,63 +35,65 @@ bool ScreencapRawByNetcat::init(int swidth, int sheight)
         local = serial_host.substr(0, shp);
     }
 
-    auto prt = io_ptr_->create_socket(local);
-    if (!prt) {
-        return false;
-    }
-    netcat_port_ = prt.value();
+    io_factory_ = std::make_shared<ServerSockIOFactory>(local, 0);
 
     return set_wh(swidth, sheight);
 }
 
 void ScreencapRawByNetcat::deinit()
 {
-    if (netcat_port_ && io_ptr_) {
-        io_ptr_->close_socket();
-    }
-
+    io_factory_ = nullptr;
     netcat_address_.clear();
-    netcat_port_ = 0;
 }
 
 std::optional<cv::Mat> ScreencapRawByNetcat::screencap()
 {
-    if (!io_ptr_) {
-        LogError << "io_ptr is nullptr";
+    if (!io_factory_) {
         return std::nullopt;
     }
 
-    merge_replacement({ { "{NETCAT_ADDRESS}", netcat_address_ }, { "{NETCAT_PORT}", std::to_string(netcat_port_) } });
-    constexpr int kTimeout = 2000; // netcat 能用的时候一般都很快，但连不上的时候会一直卡着，所以超时设短一点
-    auto cmd_ret = command(screencap_raw_by_netcat_argv_.gen(argv_replace_), true, kTimeout);
+    auto port = io_factory_->port();
+    merge_replacement({ { "{NETCAT_ADDRESS}", netcat_address_ }, { "{NETCAT_PORT}", std::to_string(port) } });
 
-    if (!cmd_ret) {
+    auto argv_opt = screencap_raw_by_netcat_argv_.gen(argv_replace_);
+    if (!argv_opt) {
+        return std::nullopt;
+    }
+
+    // netcat 能用的时候一般都很快，但连不上的时候会一直卡着，所以超时设短一点
+    using namespace std::chrono_literals;
+    constexpr auto kTimeout = 2s;
+    auto output_opt = startup_and_read_pipe(*argv_opt, kTimeout);
+    if (!output_opt) {
         return std::nullopt;
     }
 
     return screencap_helper_.process_data(
-        cmd_ret.value(), std::bind(&ScreencapHelper::decode_raw, &screencap_helper_, std::placeholders::_1));
+        *output_opt, std::bind(&ScreencapHelper::decode_raw, &screencap_helper_, std::placeholders::_1));
 }
 
 std::optional<std::string> ScreencapRawByNetcat::request_netcat_address()
 {
     LogFunc;
 
-    auto cmd_ret = command(netcat_address_argv_.gen(argv_replace_));
-
-    if (!cmd_ret) {
+    auto argv_opt = netcat_address_argv_.gen(argv_replace_);
+    if (!argv_opt) {
         return std::nullopt;
     }
 
-    auto ip = cmd_ret.value();
+    auto output_opt = startup_and_read_pipe(*argv_opt);
+    if (!output_opt) {
+        return std::nullopt;
+    }
+
+    auto& ip = *output_opt;
     auto idx = ip.find(' ');
 
-    if (idx != std::string::npos) {
-        return ip.substr(0, idx);
-    }
-    else {
+    if (idx == std::string::npos) {
         return std::nullopt;
     }
+
+    return ip.substr(0, idx);
 }
 
 MAA_CTRL_UNIT_NS_END

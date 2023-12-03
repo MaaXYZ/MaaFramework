@@ -22,10 +22,11 @@ bool MtouchHelper::read_info(int swidth, int sheight, int orientation)
     std::string info;
 
     while (check_time()) {
-        auto str = prev + shell_handler_->read(5);
+        using namespace std::chrono_literals;
+        auto str = prev + shell_handler_->read(5s);
         LogDebug << "output:" << str;
         if (str.empty()) {
-            std::this_thread::sleep_for(std::chrono::seconds(2));
+            std::this_thread::sleep_for(2s);
             continue;
         }
         auto pos = str.find('^');

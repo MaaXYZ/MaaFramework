@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Base/UnitBase.h"
+#include "Utils/IOStream/ChildPipeIOStream.h"
 
 #include <filesystem>
 
@@ -22,17 +23,17 @@ public:
     bool push(const std::filesystem::path& path);
     bool chmod();
 
-    std::optional<std::string> invoke_bin_stdout(const std::string& extra);
-    std::shared_ptr<IOHandler> invoke_bin(const std::string& extra, bool wants_stderr = false);
-    std::shared_ptr<IOHandler> invoke_app(const std::string& package);
+    std::optional<std::string> invoke_bin_and_read_pipe(const std::string& extra);
+    std::shared_ptr<ChildPipeIOStream> invoke_bin(const std::string& extra);
+    std::shared_ptr<ChildPipeIOStream> invoke_app(const std::string& package);
 
 private:
-    Argv abilist_argv_;
-    Argv sdk_argv_;
-    Argv push_bin_argv_;
-    Argv chmod_bin_argv_;
-    Argv invoke_bin_argv_;
-    Argv invoke_app_argv_;
+    ProcessArgvGenerator abilist_argv_;
+    ProcessArgvGenerator sdk_argv_;
+    ProcessArgvGenerator push_bin_argv_;
+    ProcessArgvGenerator chmod_bin_argv_;
+    ProcessArgvGenerator invoke_bin_argv_;
+    ProcessArgvGenerator invoke_app_argv_;
 
     std::string tempname_;
 };

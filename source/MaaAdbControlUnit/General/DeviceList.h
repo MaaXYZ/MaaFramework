@@ -16,7 +16,7 @@ public:
     std::optional<std::vector<std::string>> request_devices();
 
 private:
-    Argv devices_argv_;
+    ProcessArgvGenerator devices_argv_;
 };
 
 MAA_CTRL_UNIT_NS_END

@@ -25,13 +25,17 @@ std::optional<std::string> DeviceInfo::request_uuid()
 {
     LogFunc;
 
-    auto cmd_ret = command(uuid_argv_.gen(argv_replace_));
-
-    if (!cmd_ret) {
+    auto argv_opt = uuid_argv_.gen(argv_replace_);
+    if (!argv_opt) {
         return std::nullopt;
     }
 
-    auto& uuid_str = cmd_ret.value();
+    auto output_opt = startup_and_read_pipe(*argv_opt);
+    if (!output_opt) {
+        return std::nullopt;
+    }
+
+    auto& uuid_str = output_opt.value();
     std::erase_if(uuid_str, [](char c) { return !std::isdigit(c) && !std::isalpha(c); });
 
     return uuid_str;
@@ -41,15 +45,19 @@ std::optional<std::pair<int, int>> DeviceInfo::request_resolution()
 {
     LogFunc;
 
-    auto cmd_ret = command(resolution_argv_.gen(argv_replace_));
+    auto argv_opt = resolution_argv_.gen(argv_replace_);
+    if (!argv_opt) {
+        return std::nullopt;
+    }
 
-    if (!cmd_ret) {
+    auto output_opt = startup_and_read_pipe(*argv_opt);
+    if (!output_opt) {
         return std::nullopt;
     }
 
     int width = 0, height = 0;
 
-    std::istringstream iss(cmd_ret.value());
+    std::istringstream iss(output_opt.value());
     iss >> width >> height;
     return std::make_pair(width, height);
 }
@@ -58,13 +66,17 @@ std::optional<int> DeviceInfo::request_orientation()
 {
     LogFunc;
 
-    auto cmd_ret = command(orientation_argv_.gen(argv_replace_));
-
-    if (!cmd_ret) {
+    auto argv_opt = orientation_argv_.gen(argv_replace_);
+    if (!argv_opt) {
         return std::nullopt;
     }
 
-    const auto& s = cmd_ret.value();
+    auto output_opt = startup_and_read_pipe(*argv_opt);
+    if (!output_opt) {
+        return std::nullopt;
+    }
+
+    const auto& s = output_opt.value();
 
     if (s.empty()) {
         return std::nullopt;

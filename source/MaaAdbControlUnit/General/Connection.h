@@ -17,8 +17,8 @@ public:
     bool kill_server();
 
 private:
-    Argv connect_argv_;
-    Argv kill_server_argv_;
+    ProcessArgvGenerator connect_argv_;
+    ProcessArgvGenerator kill_server_argv_;
 };
 
 MAA_CTRL_UNIT_NS_END
