@@ -20,6 +20,9 @@ bool MinicapStream::parse(const json::value& config)
     static const json::array kDefaultForwardArgv = {
         "{ADB}", "-s", "{ADB_SERIAL}", "forward", "tcp:{FOWARD_PORT}", "localabstract:{LOCAL_SOCKET}",
     };
+    static constexpr int kDefaultPort = 1313;
+
+    port_ = config.get("prebuilt", "minicap", "stream", "port", kDefaultPort);
 
     return MinicapBase::parse(config) && parse_argv("ForwardSocket", config, kDefaultForwardArgv, forward_argv_);
 }
@@ -32,11 +35,15 @@ bool MinicapStream::init(int swidth, int sheight)
         return false;
     }
 
-    // TODO: 也许可以允许配置?
-    merge_replacement({ { "{FOWARD_PORT}", "1313" }, { "{LOCAL_SOCKET}", "minicap" } });
-    auto cmd_ret = command(forward_argv_.gen(argv_replace_));
+    merge_replacement({ { "{FOWARD_PORT}", std::to_string(port_) }, { "{LOCAL_SOCKET}", "minicap" } });
 
-    if (!cmd_ret) {
+    auto argv_opt = forward_argv_.gen(argv_replace_);
+    if (!argv_opt) {
+        return false;
+    }
+
+    auto output_opt = startup_and_read_pipe(*argv_opt);
+    if (!output_opt) {
         return false;
     }
 
@@ -46,7 +53,7 @@ bool MinicapStream::init(int swidth, int sheight)
     process_handle_ = binary_->invoke_bin(MAA_FMT::format("-P {}x{}@{}x{}/{}", width, height, width, height, 0));
 
     if (!process_handle_) {
-        LogError << "invoke screencap failed";
+        LogError << "invoke_bin failed";
         return false;
     }
 
@@ -55,7 +62,9 @@ bool MinicapStream::init(int swidth, int sheight)
     std::string buffer;
     constexpr int kMaxTry = 50;
     for (int i = 0; i < kMaxTry; ++i) {
-        auto res = process_handle_->read(5);
+        using namespace std::chrono_literals;
+        auto res = process_handle_->read(5s);
+
         if (!res.empty()) {
             LogDebug << "minicap stdout:" << res;
             buffer.append(res);
@@ -81,8 +90,8 @@ bool MinicapStream::init(int swidth, int sheight)
 
     LogInfo << "minicap try connect to:" << local;
 
-    stream_handle_ = io_ptr_->tcp(local, 1313);
-
+    ClientSockIOFactory io_factory(local, static_cast<unsigned short>(port_));
+    stream_handle_ = io_factory.connect();
     if (!stream_handle_) {
         return false;
     }
@@ -92,10 +101,12 @@ bool MinicapStream::init(int swidth, int sheight)
     // TODO: 解决大端底的情况
     MinicapHeader header;
 
-    if (!take_out(&header, sizeof(header))) {
-        LogError << "take_out header failed";
+    auto data = read(sizeof(header));
+    if (!data) {
+        LogError << "read header failed";
         return false;
     }
+    header = *reinterpret_cast<const MinicapHeader*>(data->data());
 
     LogInfo << VAR(header.version) << VAR(header.size) << VAR(header.pid) << VAR(header.real_width)
             << VAR(header.real_height) << VAR(header.virt_width) << VAR(header.virt_height) << VAR(header.orientation)
@@ -110,8 +121,8 @@ bool MinicapStream::init(int swidth, int sheight)
         return false;
     }
 
-    if (!take_out(nullptr, header.size - sizeof(header))) {
-        LogError << "take_out header failed";
+    if (!read(header.size - sizeof(header))) {
+        LogError << "read header failed";
         return false;
     }
 
@@ -131,33 +142,15 @@ std::optional<cv::Mat> MinicapStream::screencap()
     return image_.empty() ? std::nullopt : std::make_optional(image_.clone());
 }
 
-bool MinicapStream::read_until(std::string& buffer, size_t size)
+std::optional<std::string> MinicapStream::read(size_t count)
 {
-    // LogFunc;
+    if (!stream_handle_) {
+        LogError << "stream_handle_ is nullptr";
+        return std::nullopt;
+    }
 
     using namespace std::chrono_literals;
-    auto start = std::chrono::steady_clock::now();
-
-    while (buffer.size() < size && duration_since(start) < 5s) {
-        auto ret = stream_handle_->read(2, size - buffer.size());
-        buffer += std::move(ret);
-    }
-
-    return buffer.size() == size;
-}
-
-bool MinicapStream::take_out(void* out, size_t size)
-{
-    // LogFunc;
-
-    std::string buffer;
-    if (!read_until(buffer, size)) {
-        return false;
-    }
-    if (out) {
-        memcpy(out, buffer.data(), size);
-    }
-    return true;
+    return stream_handle_->read(5s, count);
 }
 
 void MinicapStream::working_thread()
@@ -165,23 +158,24 @@ void MinicapStream::working_thread()
     LogFunc;
 
     while (!quit_) {
-        uint32_t size = 0;
-        if (!take_out(&size, 4)) {
-            LogError << "take_out size failed";
+        auto size_opt = read(4);
+        if (!size_opt) {
+            LogError << "read size failed";
+            std::unique_lock<std::mutex> locker(mutex_);
+            image_ = cv::Mat();
+            continue;
+        }
+        auto size = *reinterpret_cast<const uint32_t*>(size_opt->data());
+
+        auto data_opt = read(size);
+        if (!data_opt) {
+            LogError << "read data failed";
             std::unique_lock<std::mutex> locker(mutex_);
             image_ = cv::Mat();
             continue;
         }
 
-        std::string buffer;
-        if (!read_until(buffer, size)) {
-            LogError << "read_until size failed";
-            std::unique_lock<std::mutex> locker(mutex_);
-            image_ = cv::Mat();
-            continue;
-        }
-
-        auto img_opt = screencap_helper_.decode_jpg(buffer);
+        auto img_opt = screencap_helper_.decode_jpg(*data_opt);
 
         if (!img_opt || img_opt->empty()) {
             LogError << "decode jpg failed";

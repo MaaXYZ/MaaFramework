@@ -21,8 +21,8 @@ public: // from ScreencapAPI
     virtual std::optional<cv::Mat> screencap() override;
 
 private:
-    Argv screencap_encode_to_file_argv_;
-    Argv pull_file_argv_;
+    ProcessArgvGenerator screencap_encode_to_file_argv_;
+    ProcessArgvGenerator pull_file_argv_;
 
     std::string tempname_;
 };

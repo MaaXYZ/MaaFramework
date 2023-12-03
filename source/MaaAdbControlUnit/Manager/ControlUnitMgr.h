@@ -44,8 +44,7 @@ public: // from ControlUnitAPI
 
 public:
     bool parse(const json::value& config);
-    void set_io(const std::shared_ptr<PlatformIO>& io_ptr);
-    void set_replacement(const std::map<std::string, std::string>& replacement);
+    void set_replacement(const UnitBase::Replacement& replacement);
 
     void set_touch_input_obj(std::shared_ptr<TouchInputBase> obj) { touch_input_ = std::move(obj); }
     void set_key_input_obj(std::shared_ptr<KeyInputBase> obj) { key_input_ = std::move(obj); }

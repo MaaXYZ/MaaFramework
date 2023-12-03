@@ -2,19 +2,11 @@
 #include "MaaFramework/MaaAPI.h"
 #include "Macro.h"
 #include "Utils/Logger.h"
-
-#include <boost/uuid/uuid_generators.hpp>
-#include <boost/uuid/uuid_io.hpp>
+#include "Utils/Time.hpp"
 
 MAA_RPC_NS_BEGIN
 
 using namespace ::grpc;
-
-auto uuid_generator = boost::uuids::random_generator();
-std::string make_uuid()
-{
-    return boost::uuids::to_string(uuid_generator());
-}
 
 void callback_impl(MaaStringView msg, MaaStringView detail, MaaCallbackTransparentArg arg)
 {
@@ -121,7 +113,7 @@ Status UtilityImpl::acquire_id(ServerContext* context, const ::maarpc::EmptyRequ
     std::ignore = context;
     std::ignore = request;
 
-    response->set_id(make_uuid());
+    response->set_id(format_now());
 
     return Status::OK;
 }

@@ -6,7 +6,6 @@
 #include "Input/MinitouchInput.h"
 #include "Input/TapInput.h"
 #include "Manager/ControlUnitMgr.h"
-#include "Platform/PlatformFactory.h"
 #include "Screencap/Encode.h"
 #include "Screencap/EncodeToFile.h"
 #include "Screencap/FastestWay.h"
@@ -157,13 +156,6 @@ MaaControlUnitHandle MaaAdbControlUnitCreate( //
         LogError << "unit_mgr->parse failed, invalid json:" << *json_opt;
         return nullptr;
     }
-
-    auto platform_io = PlatformFactory::create();
-    if (!platform_io) {
-        LogError << "Create platform io failed";
-        return nullptr;
-    }
-    unit_mgr->set_io(platform_io);
 
     unit_mgr->set_replacement({
         { "{ADB}", adb_path },

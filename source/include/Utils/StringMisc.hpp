@@ -43,19 +43,9 @@ inline constexpr void string_replace_all_(StringT& str, string_detail::sv_type<S
     }
 }
 
-template <typename StringT>
+template <typename StringT, typename MapT>
 requires IsSomeKindOfString<StringT>
-inline constexpr void string_replace_all_(StringT& str,
-                                          std::initializer_list<string_detail::sv_pair<StringT>> replace_pairs)
-{
-    for (auto&& [from, to] : replace_pairs) {
-        string_replace_all_(str, from, to);
-    }
-}
-
-template <typename StringT>
-requires IsSomeKindOfString<StringT>
-inline constexpr void string_replace_all_(StringT& str, const std::map<StringT, StringT>& replace_map)
+inline constexpr void string_replace_all_(StringT& str, const MapT& replace_map)
 {
     for (const auto& [from, to] : replace_map) {
         string_replace_all_(str, from, to);
@@ -102,20 +92,9 @@ requires IsSomeKindOfString<StringT>
     return result;
 }
 
-template <typename StringT>
+template <typename StringT, typename MapT>
 requires IsSomeKindOfString<StringT>
-[[nodiscard]] inline constexpr auto string_replace_all(
-    StringT&& str, std::initializer_list<string_detail::sv_pair<StringT>> replace_pairs)
-{
-    std::decay_t<StringT> result = std::forward<StringT>(str);
-    string_replace_all_(result, replace_pairs);
-    return result;
-}
-
-template <typename StringT>
-requires IsSomeKindOfString<StringT>
-[[nodiscard]] inline constexpr auto string_replace_all(const StringT& str,
-                                                       const std::map<StringT, StringT>& replace_map)
+[[nodiscard]] inline constexpr auto string_replace_all(const StringT& str, const MapT& replace_map)
 {
     StringT result = str;
     string_replace_all_(result, replace_map);

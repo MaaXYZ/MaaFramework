@@ -26,7 +26,14 @@ std::optional<RecognizerExecAgent::AnalyzeResult> RecognizerExecAgent::analyze(
     MaaSyncContextHandle sync_context, const cv::Mat& image, std::string_view task_name,
     std::string_view custom_recognition_param)
 {
-    return std::optional<AnalyzeResult>();
+    LogFunc << VAR_VOIDP(sync_context) << VAR(image.size()) << VAR(task_name) << VAR(custom_recognition_param);
+
+    auto exec_it = executors_.find(task_name.data());
+    if (exec_it == executors_.end()) {
+        LogError << "no executor found for task: " << task_name;
+        return std::nullopt;
+    }
+    auto& executor = exec_it->second;
 }
 
 MaaBool RecognizerExecAgent::maa_api_analyze( //

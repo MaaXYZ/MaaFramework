@@ -53,8 +53,7 @@ MaaBool RegisterExecutor(ExecutorType type, MaaInstanceHandle handle, MaaStringV
         LogError << "exec param json parse failed:" << exec_param_json;
         return false;
     }
-    if (!params_opt->is_array() ||
-        !MAA_RNS::ranges::all_of(params_opt->as_array(), [](const auto& v) { return v.is_string(); })) {
+    if (!params_opt->is_array() || !params_opt->all<std::string>()) {
         LogError << "exec param json is not array of string:" << exec_param_json;
         return false;
     }
