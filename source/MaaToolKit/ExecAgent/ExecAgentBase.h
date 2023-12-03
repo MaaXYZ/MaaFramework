@@ -25,12 +25,7 @@ protected:
     virtual bool unregister_for_maa_inst(MaaInstanceHandle handle, std::string_view name) = 0;
 
 protected:
-    std::string handle_uuid(MaaInstanceHandle handle);
-    MaaInstanceHandle uuid_handle(const std::string& uuid) const;
-
-protected:
     std::unordered_map</*name*/ std::string, Executor> executors_;
-    std::unordered_map</*uuid*/ std::string, MaaInstanceHandle> handles_;
 };
 
 MAA_TOOLKIT_NS_END
