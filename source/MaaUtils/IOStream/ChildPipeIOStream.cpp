@@ -1,19 +1,19 @@
-#include "PipeIOHandler.h"
+#include "ChildPipeIOStream.h"
 
 MAA_NS_BEGIN
 
-PipeIOHandler::PipeIOHandler(const std::filesystem::path& exec, const std::vector<std::string>& args)
-    : child_(exec, args, //
-             boost::process::std_in<pin_, boost::process::std_out> pout_, boost::process::std_err > pout_
+ChildPipeIOStream::ChildPipeIOStream(const std::filesystem::path& exec, const std::vector<std::string>& args)
+    : child_( //
+          exec, args, boost::process::std_out > pout_, boost::process::std_err > pout_, boost::process::std_in < pin_
 #ifdef _WIN32
-             ,
-             boost::process::windows::create_no_window
+          ,
+          boost::process::windows::create_no_window
 #endif
-             ),
+          ),
       buffer_(std::make_unique<char[]>(kBufferSize))
 {}
 
-PipeIOHandler::~PipeIOHandler()
+ChildPipeIOStream::~ChildPipeIOStream()
 {
     if (child_.running()) {
         child_.terminate();
@@ -23,7 +23,7 @@ PipeIOHandler::~PipeIOHandler()
     }
 }
 
-bool PipeIOHandler::write(const std::string& data)
+bool ChildPipeIOStream::write(std::string_view data)
 {
     if (!child_.running()) {
         return false;
@@ -33,7 +33,7 @@ bool PipeIOHandler::write(const std::string& data)
     return true;
 }
 
-std::string PipeIOHandler::read(std::chrono::milliseconds timeout, size_t max_length)
+std::string ChildPipeIOStream::read(std::chrono::milliseconds timeout, size_t count)
 {
     auto start_time = std::chrono::steady_clock::now();
     auto check_timeout = [&](const auto& start_time) -> bool {
@@ -42,8 +42,8 @@ std::string PipeIOHandler::read(std::chrono::milliseconds timeout, size_t max_le
 
     std::string result;
 
-    while (max_length > result.size() && check_timeout(start_time)) {
-        auto read_size = std::min(kBufferSize, max_length - result.size());
+    while (check_timeout(start_time) && count > result.size() && child_.running()) {
+        auto read_size = std::min(kBufferSize, count - result.size());
         auto read_num = pout_.readsome(buffer_.get(), read_size);
         if (read_num > 0) {
             result.append(buffer_.get(), read_num);
