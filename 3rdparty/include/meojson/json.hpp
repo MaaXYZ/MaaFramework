@@ -194,6 +194,8 @@ public:
         return format(indent, 0);
     }
 
+    template <typename value_t>
+    bool all() const;
     template <typename value_t, template <typename...> typename vector_t = std::vector>
     vector_t<value_t> to_vector() const;
     template <typename value_t, template <typename...> typename map_t = std::map>
@@ -313,6 +315,8 @@ public:
     {
         return format(indent, 0);
     }
+    template <typename value_t>
+    bool all() const;
     template <typename value_t, template <typename...> typename vector_t = std::vector>
     vector_t<value_t> to_vector() const;
 
@@ -425,6 +429,8 @@ public:
     {
         return format(indent, 0);
     }
+    template <typename value_t>
+    bool all() const;
     template <typename value_t, template <typename...> typename map_t = std::map>
     map_t<string_t, value_t> to_map() const;
 
@@ -488,7 +494,7 @@ private:
 // ****************************
 
 template <typename string_t = default_string_t, typename parsing_t = void,
-          typename accel_traits = packed_bytes_trait_max>
+          typename accel_traits = _packed_bytes::packed_bytes_trait_max>
 class parser
 {
 public:
@@ -1153,6 +1159,21 @@ inline string_t basic_value<string_t>::format(size_t indent, size_t indent_times
 }
 
 template <typename string_t>
+template <typename value_t>
+inline bool basic_value<string_t>::all() const
+{
+    if (is_array()) {
+        return as_array().template all<value_t>();
+    }
+    else if (is_object()) {
+        return as_object().template all<value_t>();
+    }
+    else {
+        return false;
+    }
+}
+
+template <typename string_t>
 template <typename value_t, template <typename...> typename vector_t>
 inline vector_t<value_t> basic_value<string_t>::to_vector() const
 {
@@ -1430,6 +1451,18 @@ inline string_t basic_array<string_t>::format(size_t indent, size_t indent_times
     }
     str += tail_indent + char_t(']');
     return str;
+}
+
+template <typename string_t>
+template <typename value_t>
+inline bool basic_array<string_t>::all() const
+{
+    for (const auto& elem : _array_data) {
+        if (!elem.template is<value_t>()) {
+            return false;
+        }
+    }
+    return true;
 }
 
 namespace _to_vector_helper
@@ -1770,6 +1803,18 @@ inline string_t basic_object<string_t>::format(size_t indent, size_t indent_time
     }
     str += tail_indent + char_t('}');
     return str;
+}
+
+template <typename string_t>
+template <typename value_t>
+inline bool basic_object<string_t>::all() const
+{
+    for (const auto& [_, val] : _object_data) {
+        if (!val.template is<value_t>()) {
+            return false;
+        }
+    }
+    return true;
 }
 
 template <typename string_t>
