@@ -27,7 +27,7 @@ private:
     bool take_out(void* out, size_t size);
     void working_thread();
 
-    Argv forward_argv_;
+    ProcessArgvGenerator forward_argv_;
 
     bool quit_ = true;
     std::mutex mutex_;

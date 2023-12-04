@@ -2,11 +2,12 @@
 
 #include <memory>
 
+#include "MaaFramework/MaaPort.h"
 #include "Utils/Boost.hpp"
 
 MAA_NS_BEGIN
 
-class ChildPipeIOStream
+class MAA_UTILS_API ChildPipeIOStream
 {
     static constexpr size_t kBufferSize = 128 * 1024;
 
@@ -16,7 +17,8 @@ public:
 
 public:
     bool write(std::string_view data);
-    std::string read(std::chrono::milliseconds timeout, size_t count = SIZE_MAX);
+    std::string read(std::chrono::seconds timeout, size_t count = SIZE_MAX);
+    int release();
 
 private:
     boost::process::opstream pin_;

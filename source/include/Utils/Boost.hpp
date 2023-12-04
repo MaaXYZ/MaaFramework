@@ -18,7 +18,4 @@ MAA_SUPPRESS_BOOST_WARNINGS_BEGIN
 #include <boost/process/windows.hpp>
 #endif
 #include <boost/dll.hpp>
-#include <boost/uuid/uuid.hpp>
-#include <boost/uuid/uuid_generators.hpp>
-#include <boost/uuid/uuid_io.hpp>
 MAA_SUPPRESS_BOOST_WARNINGS_END

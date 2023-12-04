@@ -1,4 +1,4 @@
-#include "ChildPipeIOStream.h"
+#include "Utils/IOStream/ChildPipeIOStream.h"
 
 MAA_NS_BEGIN
 
@@ -15,12 +15,7 @@ ChildPipeIOStream::ChildPipeIOStream(const std::filesystem::path& exec, const st
 
 ChildPipeIOStream::~ChildPipeIOStream()
 {
-    if (child_.running()) {
-        child_.terminate();
-    }
-    else {
-        child_.wait();
-    }
+    release();
 }
 
 bool ChildPipeIOStream::write(std::string_view data)
@@ -33,7 +28,7 @@ bool ChildPipeIOStream::write(std::string_view data)
     return true;
 }
 
-std::string ChildPipeIOStream::read(std::chrono::milliseconds timeout, size_t count)
+std::string ChildPipeIOStream::read(std::chrono::seconds timeout, size_t count)
 {
     auto start_time = std::chrono::steady_clock::now();
     auto check_timeout = [&](const auto& start_time) -> bool {
@@ -51,6 +46,18 @@ std::string ChildPipeIOStream::read(std::chrono::milliseconds timeout, size_t co
     }
 
     return result;
+}
+
+int ChildPipeIOStream::release()
+{
+    if (child_.running()) {
+        child_.terminate();
+    }
+    else {
+        child_.wait();
+    }
+
+    return child_.exit_code();
 }
 
 MAA_NS_END

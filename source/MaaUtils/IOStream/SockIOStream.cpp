@@ -1,12 +1,13 @@
-#include "SockIOStream.h"
+#include "Utils/IOStream/SockIOStream.h"
 
-#include "SockIOStream.h"
 #include "Utils/Logger.h"
 
 MAA_NS_BEGIN
 
 ServerSockIOFactory::ServerSockIOFactory(const std::string& address, unsigned short port) : server_acceptor_(io_ctx_)
 {
+    LogFunc << VAR(address) << VAR(port);
+
     using namespace boost::asio::ip;
 
     tcp::endpoint endpoint(address::from_string(address), port);
@@ -20,6 +21,8 @@ ServerSockIOFactory::ServerSockIOFactory(const std::string& address, unsigned sh
 
 ServerSockIOFactory::~ServerSockIOFactory()
 {
+    LogFunc;
+
     server_acceptor_.close();
 }
 
@@ -30,6 +33,8 @@ unsigned short ServerSockIOFactory::port() const
 
 std::shared_ptr<SockIOStream> ServerSockIOFactory::accept()
 {
+    LogFunc;
+
     auto sock = server_acceptor_.accept();
     if (!sock.is_open()) {
         LogError << "socket is not opened";
@@ -41,10 +46,14 @@ std::shared_ptr<SockIOStream> ServerSockIOFactory::accept()
 
 ClientSockIOFactory::ClientSockIOFactory(const std::string& address, unsigned short port)
     : endpoint_(boost::asio::ip::address::from_string(address), port)
-{}
+{
+    LogFunc << VAR(address) << VAR(port);
+}
 
 std::shared_ptr<SockIOStream> ClientSockIOFactory::connect()
 {
+    LogFunc;
+
     boost::asio::ip::tcp::socket sock(io_ctx_);
     sock.connect(endpoint_);
     if (!sock.is_open()) {
@@ -74,7 +83,7 @@ bool SockIOStream::write(std::string_view data)
     return true;
 }
 
-std::string SockIOStream::read(std::chrono::milliseconds timeout, size_t count)
+std::string SockIOStream::read(std::chrono::seconds timeout, size_t count)
 {
     auto start_time = std::chrono::steady_clock::now();
     auto check_timeout = [&](const auto& start_time) -> bool {

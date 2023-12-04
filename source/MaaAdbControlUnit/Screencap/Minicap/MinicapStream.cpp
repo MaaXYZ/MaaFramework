@@ -34,9 +34,9 @@ bool MinicapStream::init(int swidth, int sheight)
 
     // TODO: 也许可以允许配置?
     merge_replacement({ { "{FOWARD_PORT}", "1313" }, { "{LOCAL_SOCKET}", "minicap" } });
-    auto cmd_ret = command(forward_argv_.gen(argv_replace_));
+    auto output_opt = command(forward_argv_.gen(argv_replace_));
 
-    if (!cmd_ret) {
+    if (!output_opt) {
         return false;
     }
 

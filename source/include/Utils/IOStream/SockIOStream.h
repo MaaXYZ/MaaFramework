@@ -2,13 +2,14 @@
 
 #include <memory>
 
+#include "MaaFramework/MaaPort.h"
 #include "Utils/Boost.hpp"
 
 MAA_NS_BEGIN
 
-class SockIOStream;
+class MAA_UTILS_API SockIOStream;
 
-class ServerSockIOFactory
+class MAA_UTILS_API ServerSockIOFactory
 {
 public:
     ServerSockIOFactory(const std::string& address, unsigned short port);
@@ -24,7 +25,7 @@ private:
     boost::asio::ip::tcp::acceptor server_acceptor_;
 };
 
-class ClientSockIOFactory
+class MAA_UTILS_API ClientSockIOFactory
 {
 public:
     ClientSockIOFactory(const std::string& address, unsigned short port);
@@ -38,7 +39,7 @@ private:
     boost::asio::ip::tcp::endpoint endpoint_;
 };
 
-class SockIOStream
+class MAA_UTILS_API SockIOStream
 {
     static constexpr size_t kBufferSize = 128 * 1024;
 
@@ -48,7 +49,7 @@ public:
 
 public:
     bool write(std::string_view data);
-    std::string read(std::chrono::milliseconds timeout, size_t count = SIZE_MAX);
+    std::string read(std::chrono::seconds timeout, size_t count = SIZE_MAX);
 
 private:
     boost::asio::ip::tcp::socket sock_;

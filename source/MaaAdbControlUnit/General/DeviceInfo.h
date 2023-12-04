@@ -18,9 +18,9 @@ public:
     std::optional<int> request_orientation();
 
 private:
-    Argv uuid_argv_;
-    Argv resolution_argv_;
-    Argv orientation_argv_;
+    ProcessArgvGenerator uuid_argv_;
+    ProcessArgvGenerator resolution_argv_;
+    ProcessArgvGenerator orientation_argv_;
 };
 
 MAA_CTRL_UNIT_NS_END

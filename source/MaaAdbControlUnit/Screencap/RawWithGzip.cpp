@@ -25,14 +25,14 @@ std::optional<cv::Mat> ScreencapRawWithGzip::screencap()
         return std::nullopt;
     }
 
-    auto cmd_ret = command(screencap_raw_with_gzip_argv_.gen(argv_replace_));
+    auto output_opt = command(screencap_raw_with_gzip_argv_.gen(argv_replace_));
 
-    if (!cmd_ret) {
+    if (!output_opt) {
         return std::nullopt;
     }
 
     return screencap_helper_.process_data(
-        cmd_ret.value(), std::bind(&ScreencapHelper::decode_gzip, &screencap_helper_, std::placeholders::_1));
+        output_opt.value(), std::bind(&ScreencapHelper::decode_gzip, &screencap_helper_, std::placeholders::_1));
 }
 
 MAA_CTRL_UNIT_NS_END

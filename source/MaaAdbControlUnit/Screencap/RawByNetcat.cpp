@@ -68,27 +68,27 @@ std::optional<cv::Mat> ScreencapRawByNetcat::screencap()
 
     merge_replacement({ { "{NETCAT_ADDRESS}", netcat_address_ }, { "{NETCAT_PORT}", std::to_string(netcat_port_) } });
     constexpr int kTimeout = 2000; // netcat 能用的时候一般都很快，但连不上的时候会一直卡着，所以超时设短一点
-    auto cmd_ret = command(screencap_raw_by_netcat_argv_.gen(argv_replace_), true, kTimeout);
+    auto output_opt = command(screencap_raw_by_netcat_argv_.gen(argv_replace_), true, kTimeout);
 
-    if (!cmd_ret) {
+    if (!output_opt) {
         return std::nullopt;
     }
 
     return screencap_helper_.process_data(
-        cmd_ret.value(), std::bind(&ScreencapHelper::decode_raw, &screencap_helper_, std::placeholders::_1));
+        output_opt.value(), std::bind(&ScreencapHelper::decode_raw, &screencap_helper_, std::placeholders::_1));
 }
 
 std::optional<std::string> ScreencapRawByNetcat::request_netcat_address()
 {
     LogFunc;
 
-    auto cmd_ret = command(netcat_address_argv_.gen(argv_replace_));
+    auto output_opt = command(netcat_address_argv_.gen(argv_replace_));
 
-    if (!cmd_ret) {
+    if (!output_opt) {
         return std::nullopt;
     }
 
-    auto ip = cmd_ret.value();
+    auto ip = output_opt.value();
     auto idx = ip.find(' ');
 
     if (idx != std::string::npos) {

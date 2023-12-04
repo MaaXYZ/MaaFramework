@@ -1,10 +1,11 @@
 #pragma once
 
+#include <chrone>
+
 #include <meojson/json.hpp>
 
-#include "Base/ArgvWrapper.hpp"
+#include "Base/ProcessArgvGenerator.h"
 #include "ControlUnit/AdbControlUnitAPI.h"
-#include "Platform/PlatformIO.h"
 #include "Screencap/ScreencapHelper.h"
 
 MAA_CTRL_UNIT_NS_BEGIN
@@ -12,27 +13,27 @@ MAA_CTRL_UNIT_NS_BEGIN
 class UnitBase
 {
 public:
-    using Argv = ArgvWrapper<std::vector<std::string>>;
+    using Replacemenet = ProcessArgvGenerator::Replacement;
+    using ProcessArgv = ProcessArgvGenerator::ProcessArgv;
 
 public:
     virtual ~UnitBase() = default;
 
     virtual bool parse(const json::value& config) = 0;
 
-    virtual void set_io(std::shared_ptr<PlatformIO> io_ptr);
-    virtual void set_replacement(Argv::replacement argv_replace);
-    virtual void merge_replacement(Argv::replacement argv_replace, bool _override = true);
+    virtual void set_replacement(Replacemenet argv_replace);
+    virtual void merge_replacement(Replacemenet argv_replace, bool _override = true);
 
 protected:
     static bool parse_argv(const std::string& key, const json::value& config, const json::array& default_argv,
-                           /*out*/ Argv& argv);
+                           /*out*/ ProcessArgvGenerator& argv);
 
-    std::optional<std::string> command(const Argv::value& cmd, bool recv_by_socket = false, int64_t timeout = 20000);
+    std::optional<std::string> startup_and_read_pipe(const ProcessArgv& argv,
+                                                     std::chrono::seconds timeout = std::chrono::seconds(20));
 
 protected:
-    std::shared_ptr<PlatformIO> io_ptr_ = nullptr;
     std::vector<std::shared_ptr<UnitBase>> children_;
-    Argv::replacement argv_replace_;
+    Replacemenet argv_replace_;
 };
 
 class ScreencapBase : public UnitBase
