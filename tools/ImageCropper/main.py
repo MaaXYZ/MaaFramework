@@ -4,20 +4,28 @@ import sys
 import numpy as np
 import colormatcher
 from adbutils import adb
+from enum import Enum
 from datetime import datetime
 from roimage import Roimage
+
+class MaaCtrlOptionEnum(Enum):
+    MaaCtrlOption_ScreenshotTargetLongSide = 1
+    MaaCtrlOption_ScreenshotTargetShortSide = 2
+
+# 截图参数
+MaaCtrlOption: MaaCtrlOptionEnum = MaaCtrlOptionEnum.MaaCtrlOption_ScreenshotTargetShortSide
+MaaCtrlOptionValue: int = 720
+
+# 初始窗口大小 (width, height)
+# 横屏
+window_size = (1280, 720)
+# 竖屏
+# window_size = (720, 1280)
 
 # 初始化设备参数
 device = None
 device_serial = None
 # device_serial = "127.0.0.1:16384"
-
-# 初始化标准化参数 (常量)
-std_long_side: int = 1280
-std_short_side: int = 720
-std_ratio = std_long_side / std_short_side
-std_target: str = 'std_short_side'
-# std_target: str = 'std_long_side'
 
 # ROI 放大方法
 def amplify(rect: list[int]) -> list[int]:
@@ -31,14 +39,14 @@ def matchColor(image) -> tuple[int, list[tuple[list[int]]]]:
     # colormatcher method:
     #   1.Simple 2.RGBDistance
     method = cv2.COLOR_BGR2RGB
-    reverse = cv2.COLOR_RGB2BGR # 不需要逆转时为None，用于显示 'MainColors'
+    reverse = cv2.COLOR_RGB2BGR # 不需要逆转时为None，用于显示 'MainColors' 窗口
     cluster_colors = colormatcher.kmeansClusterColors(image, method)
     return method, reverse, colormatcher.RGBDistance(cluster_colors)
 
 # -----------------------------------------------
 
 print("Usage: python3 main.py [device serial]\n"
-     f"Current target size is based on {std_target}: {locals().get(std_target)}.\n"
+     f"Current target size is based on {MaaCtrlOption}: {MaaCtrlOptionValue}.\n"
       "Put the images under ./src, and run this script, it will be auto converted to target size.\n"
       "Hold down the left mouse button, drag mouse to select a ROI.\n"
       "Hold down the right mouse button, drag mouse to move the image.\n"
@@ -68,7 +76,7 @@ else:
             device = device_list[int(i)]
 
 # 初始化 Roi
-std_roimage: Roimage = Roimage(std_long_side, std_short_side) # 标准化截图
+std_roimage: Roimage = Roimage(window_size[0], window_size[1]) # 标准化截图
 win_roimage: Roimage = Roimage(0, 0, 0, 0, std_roimage)       # 相对 std_roimage ，窗口显示的区域
 crop_list: list[Roimage] = []                                 # 相对 std_roimage ，需要裁剪的区域
 
@@ -197,25 +205,25 @@ def trackbar_change(pos) -> None:
 # 标准化图片
 # -image 被标准化的图片
 def getStdSize(image) -> tuple[int, int]:
-    # https://github.com/MaaAssistantArknights/MaaFramework/blob/main/source/MaaFramework/Controller/ControllerMgr.cpp
+    # https://github.com/MaaAssistantArknights/MaaFramework/blob/main/source/MaaFramework/Controller/ControllerAgent.cpp
     # bool ControllerMgr::check_and_calc_target_image_size(const cv::Mat& raw)
     cur_height, cur_width, _ = image.shape
     scale = cur_width / cur_height
-    if std_target == 'std_short_side':
+    if MaaCtrlOption is MaaCtrlOptionEnum.MaaCtrlOption_ScreenshotTargetShortSide:
         if cur_width > cur_height:
-            width = std_short_side * scale
-            height = std_short_side
+            width = MaaCtrlOptionValue * scale
+            height = MaaCtrlOptionValue
         else:
-            width = std_short_side
-            height = std_short_side / scale
+            width = MaaCtrlOptionValue
+            height = MaaCtrlOptionValue / scale
     else:
-        # std_target == 'std_long_side'
+        # MaaCtrlOption is MaaCtrlOptionEnum.MaaCtrlOption_ScreenshotTargetLongSide
         if cur_width > cur_height:
-            width = std_long_side
-            height = std_long_side / scale
+            width = MaaCtrlOptionValue
+            height = MaaCtrlOptionValue / scale
         else:
-            width = std_long_side * scale
-            height = std_long_side
+            width = MaaCtrlOptionValue * scale
+            height = MaaCtrlOptionValue
     return (int(width), int(height))
 
 # 读取文件
@@ -278,7 +286,8 @@ while True:
     cropping = True
 # q Q esc
     if key in [ord("q"), ord("Q"), 27]:
-        break
+        cv2.destroyAllWindows()
+        exit()
 # 0
     if key == 48:
         cv2.setTrackbarPos('Scale', trackbars_name, 100)
@@ -360,9 +369,11 @@ while True:
                   .replace("'", '"')
                   .replace("False", "false")
                   .replace("True", "true"))
-        else:
+        elif cv2.getWindowProperty('MainColors',cv2.WND_PROP_VISIBLE) > 0:
             cv2.destroyWindow('MainColors')
 
         print("")
 
+print("Press any key to exit...")
+cv2.waitKey(0)
 cv2.destroyAllWindows()
