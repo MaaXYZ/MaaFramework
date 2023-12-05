@@ -83,21 +83,39 @@ bool SockIOStream::write(std::string_view data)
     return true;
 }
 
-std::string SockIOStream::read(std::chrono::seconds timeout, size_t count)
+std::string SockIOStream::read(duration_t timeout)
+{
+    return read_some(std::numeric_limits<size_t>::max(), timeout);
+}
+
+std::string SockIOStream::read_some(size_t count, duration_t timeout)
 {
     auto start_time = std::chrono::steady_clock::now();
-    auto check_timeout = [&](const auto& start_time) -> bool {
-        return timeout < std::chrono::seconds(0) || std::chrono::steady_clock::now() - start_time < timeout;
-    };
+    std::string result;
+
+    while (sock_.is_open() && result.size() < count && duration_since(start_time) < timeout) {
+        auto read_size = std::min(kBufferSize, count - result.size());
+        auto read_num = sock_.read_some(boost::asio::mutable_buffer(buffer_.get(), read_size));
+        result.append(buffer_.get(), read_num);
+    }
+
+    return result;
+}
+
+std::string SockIOStream::read_until(std::string_view delimiter, duration_t timeout)
+{
+    auto start_time = std::chrono::steady_clock::now();
 
     std::string result;
 
-    while (check_timeout(start_time) && count > result.size() && sock_.is_open()) {
-        auto read_size = std::min(kBufferSize, count - result.size());
-        auto read_num = sock_.read_some(boost::asio::mutable_buffer(buffer_.get(), read_size));
-        if (read_num > 0) {
-            result.append(buffer_.get(), read_num);
+    while (!result.ends_with(delimiter)) {
+        auto sub_timeout = timeout - duration_since<duration_t>(start_time);
+        if (sub_timeout < duration_t::zero()) {
+            break;
         }
+
+        auto sub_str = read_some(1, sub_timeout);
+        result.append(std::move(sub_str));
     }
 
     return result;
