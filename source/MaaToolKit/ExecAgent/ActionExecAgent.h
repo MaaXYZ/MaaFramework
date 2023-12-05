@@ -31,7 +31,7 @@ private:
     static void maa_api_stop(MaaTransparentArg action_arg);
 
 private:
-    MaaCustomActionAPI custom_action_;
+    MaaCustomActionAPI custom_action_ {};
 };
 
 MAA_TOOLKIT_NS_END

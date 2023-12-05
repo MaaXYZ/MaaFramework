@@ -27,6 +27,7 @@ public:
     std::string read_until(std::string_view delimiter, duration_t timeout = duration_t::max());
 
     int release();
+    bool is_open() const;
 
 private:
     boost::process::ipstream pin_;

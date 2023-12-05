@@ -3,7 +3,9 @@
 #include <functional>
 
 #include "MaaFramework/MaaAPI.h"
+#include "Utils/ImageIo.h"
 #include "Utils/Logger.h"
+#include "Utils/Time.hpp"
 
 MAA_TOOLKIT_NS_BEGIN
 
@@ -28,12 +30,29 @@ std::optional<RecognizerExecAgent::AnalyzeResult> RecognizerExecAgent::analyze(
 {
     LogFunc << VAR_VOIDP(sync_context) << VAR(image.size()) << VAR(task_name) << VAR(custom_recognition_param);
 
-    auto exec_it = executors_.find(task_name.data());
+    auto exec_it = executors_.find(std::string(task_name));
     if (exec_it == executors_.end()) {
-        LogError << "no executor found for task: " << task_name;
+        LogError << "executor not found" << VAR(task_name);
         return std::nullopt;
     }
-    auto& executor = exec_it->second;
+    auto& exec = exec_it->second;
+
+    std::string handle_arg = arg_cvt_.sync_context_to_arg(sync_context);
+    std::string image_arg = arg_cvt_.image_to_arg(exec.image_mode, image);
+
+    std::vector<std::string> extra_args = { handle_arg, image_arg, std::string(task_name),
+                                            std::string(custom_recognition_param) };
+    std::vector<std::string> args = exec.exec_args;
+    args.insert(args.end(), std::make_move_iterator(extra_args.begin()), std::make_move_iterator(extra_args.end()));
+
+    auto output_opt = run_executor(exec.text_mode, exec.exec_path, args);
+    if (!output_opt) {
+        LogError << "run_executor failed" << VAR(exec.exec_path) << VAR(exec.exec_args);
+        return std::nullopt;
+    }
+
+    // TODO: parse output to get result
+    return {};
 }
 
 MaaBool RecognizerExecAgent::maa_api_analyze( //

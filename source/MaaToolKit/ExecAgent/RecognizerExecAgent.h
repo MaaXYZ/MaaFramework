@@ -3,6 +3,9 @@
 #include "Conf/Conf.h"
 #include "ExecAgentBase.h"
 
+#include <functional>
+#include <map>
+
 #include "MaaFramework/Task/MaaCustomRecognizer.h"
 #include "Utils/NoWarningCVMat.hpp"
 #include "Utils/SingletonHolder.hpp"
@@ -38,7 +41,7 @@ private:
         /*out*/ MaaStringBufferHandle out_detail);
 
 private:
-    MaaCustomRecognizerAPI custom_recognizer_;
+    MaaCustomRecognizerAPI custom_recognizer_ {};
 };
 
 MAA_TOOLKIT_NS_END

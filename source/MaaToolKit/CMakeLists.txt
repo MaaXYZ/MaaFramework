@@ -13,7 +13,7 @@ target_compile_definitions(MaaToolKit PRIVATE MAA_TOOLKIT_EXPORTS)
 target_link_libraries(
     MaaToolKit
     PUBLIC MaaFramework
-    PRIVATE MaaUtils LibraryHolder HeaderOnlyLibraries Boost::system)
+    PRIVATE MaaUtils LibraryHolder HeaderOnlyLibraries Boost::system ${OpenCV_LIBS})
 
 add_dependencies(MaaToolKit MaaFramework MaaUtils LibraryHolder)
 

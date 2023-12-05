@@ -45,7 +45,7 @@ struct Executor
 {
     std::string name;
     std::filesystem::path exec_path;
-    std::vector<std::string> exec_params;
+    std::vector<std::string> exec_args;
     TextTransferMode text_mode;
     ImageTransferMode image_mode;
 };

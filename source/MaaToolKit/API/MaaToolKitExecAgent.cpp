@@ -43,10 +43,6 @@ MaaBool RegisterExecutor(ExecutorType type, MaaInstanceHandle handle, MaaStringV
     }
 
     auto path = MAA_NS::path(exec_path);
-    if (!std::filesystem::exists(path)) {
-        LogError << "exec path not exists:" << path;
-        return false;
-    }
 
     auto params_opt = json::parse(exec_param_json);
     if (!params_opt) {

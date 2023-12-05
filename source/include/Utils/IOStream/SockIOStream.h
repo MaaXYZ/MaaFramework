@@ -57,6 +57,8 @@ public:
     std::string read_some(size_t count, duration_t timeout = duration_t::max());
     std::string read_until(std::string_view delimiter, duration_t timeout = duration_t::max());
 
+    bool is_open() const;
+
 private:
     boost::asio::ip::tcp::socket sock_;
 

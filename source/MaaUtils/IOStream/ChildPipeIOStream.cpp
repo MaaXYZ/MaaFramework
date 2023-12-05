@@ -80,4 +80,9 @@ int ChildPipeIOStream::release()
     return child_.exit_code();
 }
 
+bool ChildPipeIOStream::is_open() const
+{
+    return pin_.is_open();
+}
+
 MAA_NS_END

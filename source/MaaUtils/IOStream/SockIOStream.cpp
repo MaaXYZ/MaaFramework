@@ -121,4 +121,9 @@ std::string SockIOStream::read_until(std::string_view delimiter, duration_t time
     return result;
 }
 
+bool SockIOStream::is_open() const
+{
+    return sock_.is_open();
+}
+
 MAA_NS_END
