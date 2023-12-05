@@ -42,6 +42,8 @@ private:
 
 class MAA_UTILS_API SockIOStream : public NonCopyButMovable
 {
+    using duration_t = std::chrono::milliseconds;
+
     static constexpr size_t kBufferSize = 128 * 1024;
 
 public:
@@ -50,7 +52,10 @@ public:
 
 public:
     bool write(std::string_view data);
-    std::string read(std::chrono::seconds timeout = std::chrono::seconds(-1), size_t count = SIZE_MAX);
+
+    std::string read(duration_t timeout = duration_t::max());
+    std::string read_some(size_t count, duration_t timeout = duration_t::max());
+    std::string read_until(std::string_view delimiter, duration_t timeout = duration_t::max());
 
 private:
     boost::asio::ip::tcp::socket sock_;

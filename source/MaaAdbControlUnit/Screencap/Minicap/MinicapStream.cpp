@@ -150,7 +150,7 @@ std::optional<std::string> MinicapStream::read(size_t count)
     }
 
     using namespace std::chrono_literals;
-    return stream_handle_->read(5s, count);
+    return stream_handle_->read_some(count, 5s);
 }
 
 void MinicapStream::working_thread()

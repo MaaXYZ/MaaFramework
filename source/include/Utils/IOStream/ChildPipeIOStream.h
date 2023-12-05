@@ -10,6 +10,8 @@ MAA_NS_BEGIN
 
 class MAA_UTILS_API ChildPipeIOStream : public NonCopyButMovable
 {
+    using duration_t = std::chrono::milliseconds;
+
     static constexpr size_t kBufferSize = 128 * 1024;
 
 public:
@@ -19,12 +21,16 @@ public:
 
 public:
     bool write(std::string_view data);
-    std::string read(std::chrono::seconds timeout = std::chrono::seconds(-1), size_t count = SIZE_MAX);
+
+    std::string read(duration_t timeout = duration_t::max());
+    std::string read_some(size_t count, duration_t timeout = duration_t::max());
+    std::string read_until(std::string_view delimiter, duration_t timeout = duration_t::max());
+
     int release();
 
 private:
-    boost::process::opstream pin_;
-    boost::process::ipstream pout_;
+    boost::process::ipstream pin_;
+    boost::process::opstream pout_;
     boost::process::child child_;
 
     std::unique_ptr<char[]> buffer_ = nullptr;
