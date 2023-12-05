@@ -26,7 +26,7 @@ bool MinicapBase::parse(const json::value& config)
     static const json::array kDefaultSdk = {
         31, 29, 28, 27, 26, 25, 24, 23, 22, 21, 19, 18, 17, 16, 15, 14,
     };
-    json::array jsdk = config.get("prebuilt", "minicap", "sdk_opt", kDefaultSdk);
+    json::array jsdk = config.get("prebuilt", "minicap", "sdk", kDefaultSdk);
     sdk_list_ = jsdk.to_vector<int>();
 
     return binary_->parse(config) && library_->parse(config);
