@@ -87,7 +87,7 @@ std::string SockIOStream::read(std::chrono::seconds timeout, size_t count)
 {
     auto start_time = std::chrono::steady_clock::now();
     auto check_timeout = [&](const auto& start_time) -> bool {
-        return std::chrono::steady_clock::now() - start_time < timeout;
+        return timeout > std::chrono::seconds(0) && std::chrono::steady_clock::now() - start_time < timeout;
     };
 
     std::string result;
