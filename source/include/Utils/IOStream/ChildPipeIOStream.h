@@ -19,7 +19,7 @@ public:
 
 public:
     bool write(std::string_view data);
-    std::string read(std::chrono::seconds timeout, size_t count = SIZE_MAX);
+    std::string read(std::chrono::seconds timeout = std::chrono::seconds(-1), size_t count = SIZE_MAX);
     int release();
 
 private:
