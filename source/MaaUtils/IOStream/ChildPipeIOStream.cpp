@@ -40,7 +40,7 @@ std::string ChildPipeIOStream::read_some(size_t count, duration_t timeout)
     auto start_time = std::chrono::steady_clock::now();
     std::string result;
 
-    while (child_.running() && result.size() < count && duration_since(start_time) < timeout) {
+    while (pin_.is_open() && result.size() < count && duration_since(start_time) < timeout) {
         auto read_size = std::min(kBufferSize, count - result.size());
         auto read_num = pin_.readsome(buffer_.get(), read_size);
         result.append(buffer_.get(), read_num);
