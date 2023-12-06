@@ -6,7 +6,8 @@ MAA_NS_BEGIN
 
 ChildPipeIOStream::ChildPipeIOStream(const std::filesystem::path& exec, const std::vector<std::string>& args)
     : child_( //
-          exec, args, boost::process::std_out > pin_, boost::process::std_err > pin_, boost::process::std_in < pout_
+          exec, args, boost::process::std_out > pin_, boost::process::std_err > boost::process::null,
+          boost::process::std_in < pout_
 #ifdef _WIN32
           ,
           boost::process::windows::create_no_window
@@ -51,7 +52,7 @@ bool ChildPipeIOStream::release()
 
 bool ChildPipeIOStream::is_open() const
 {
-    return pin_.is_open();
+    return !pin_.eof();
 }
 
 std::string ChildPipeIOStream::read_once(size_t max_count)
@@ -62,9 +63,9 @@ std::string ChildPipeIOStream::read_once(size_t max_count)
         buffer_ = std::make_unique<char[]>(kBufferSize);
     }
 
-    auto read_size = std::min(kBufferSize, max_count);
-    auto read_num = pin_.readsome(buffer_.get(), read_size);
-    return std::string(buffer_.get(), read_num);
+    size_t count = std::min(kBufferSize, max_count);
+    auto read = pin_.read(buffer_.get(), count).gcount();
+    return std::string(buffer_.get(), read);
 }
 
 MAA_NS_END

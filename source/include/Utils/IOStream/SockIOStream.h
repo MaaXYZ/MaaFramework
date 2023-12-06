@@ -44,7 +44,7 @@ private:
 class MAA_UTILS_API SockIOStream : public IOStream
 {
 public:
-    SockIOStream(boost::asio::ip::tcp::socket&& sock);
+    SockIOStream(boost::asio::ip::tcp::iostream&& ios);
     virtual ~SockIOStream() override;
 
 public:
@@ -57,7 +57,7 @@ protected:
     virtual std::string read_once(size_t max_count) override;
 
 private:
-    boost::asio::ip::tcp::socket sock_;
+    boost::asio::ip::tcp::iostream ios_;
 
     std::unique_ptr<char[]> buffer_ = nullptr;
 };

@@ -35,13 +35,14 @@ std::shared_ptr<SockIOStream> ServerSockIOFactory::accept()
 {
     LogFunc;
 
-    auto sock = server_acceptor_.accept();
-    if (!sock.is_open()) {
+    boost::asio::ip::tcp::iostream ios;
+    server_acceptor_.accept(*ios.rdbuf());
+    if (ios.eof()) {
         LogError << "socket is not opened";
         return nullptr;
     }
 
-    return std::make_shared<SockIOStream>(std::move(sock));
+    return std::make_shared<SockIOStream>(std::move(ios));
 }
 
 ClientSockIOFactory::ClientSockIOFactory(const std::string& address, unsigned short port)
@@ -54,17 +55,15 @@ std::shared_ptr<SockIOStream> ClientSockIOFactory::connect()
 {
     LogFunc;
 
-    boost::asio::ip::tcp::socket sock(io_ctx_);
-    sock.connect(endpoint_);
-    if (!sock.is_open()) {
+    boost::asio::ip::tcp::iostream ios(endpoint_);
+    if (ios.eof()) {
         LogError << "socket is not opened";
         return nullptr;
     }
-
-    return std::make_shared<SockIOStream>(std::move(sock));
+    return std::make_shared<SockIOStream>(std::move(ios));
 }
 
-SockIOStream::SockIOStream(boost::asio::ip::tcp::socket&& sock) : sock_(std::move(sock)) {}
+SockIOStream::SockIOStream(boost::asio::ip::tcp::iostream&& ios) : ios_(std::move(ios)) {}
 
 SockIOStream::~SockIOStream() {}
 
@@ -75,19 +74,19 @@ bool SockIOStream::write(std::string_view data)
         return false;
     }
 
-    sock_.write_some(boost::asio::buffer(data));
+    ios_ << data << std::endl;
     return true;
 }
 
 bool SockIOStream::release()
 {
-    sock_.close();
+    ios_.close();
     return true;
 }
 
 bool SockIOStream::is_open() const
 {
-    return sock_.is_open();
+    return !ios_.eof();
 }
 
 std::string SockIOStream::read_once(size_t max_count)
@@ -98,9 +97,9 @@ std::string SockIOStream::read_once(size_t max_count)
         buffer_ = std::make_unique<char[]>(kBufferSize);
     }
 
-    auto read_size = std::min(kBufferSize, max_count);
-    auto read_num = sock_.read_some(boost::asio::mutable_buffer(buffer_.get(), read_size));
-    return std::string(buffer_.get(), read_num);
+    size_t count = std::min(kBufferSize, max_count);
+    auto read = ios_.read(buffer_.get(), count).gcount();
+    return std::string(buffer_.get(), read);
 }
 
 MAA_NS_END
