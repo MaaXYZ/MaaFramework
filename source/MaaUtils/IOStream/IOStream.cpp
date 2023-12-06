@@ -25,17 +25,11 @@ std::string IOStream::read_some(size_t count, duration_t timeout)
 std::string IOStream::read_until(std::string_view delimiter, duration_t timeout)
 {
     auto start_time = std::chrono::steady_clock::now();
-
     std::string result;
 
-    while (!result.ends_with(delimiter)) {
-        auto sub_timeout = timeout - duration_since<duration_t>(start_time);
-        if (sub_timeout < duration_t::zero()) {
-            break;
-        }
-
-        auto sub_str = read_some(1, sub_timeout);
-        result.append(std::move(sub_str));
+    while (is_open() && !result.ends_with(delimiter) && duration_since(start_time) < timeout) {
+        auto data = read_once(1);
+        result.append(std::move(data));
     }
 
     return result;
