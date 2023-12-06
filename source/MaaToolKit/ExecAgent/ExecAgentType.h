@@ -11,7 +11,7 @@ MAA_TOOLKIT_NS_BEGIN
 
 enum class TextTransferMode
 {
-    StdIO,
+    StdIO = 1,
     FileIO,
 };
 inline std::ostream& operator<<(std::ostream& os, TextTransferMode mode)
@@ -29,7 +29,7 @@ inline std::ostream& operator<<(std::ostream& os, TextTransferMode mode)
 
 enum class ImageTransferMode
 {
-    FileIO,
+    FileIO = 1,
 };
 inline std::ostream& operator<<(std::ostream& os, ImageTransferMode mode)
 {

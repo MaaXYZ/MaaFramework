@@ -58,7 +58,7 @@ MaaBool RegisterExecutor(ExecutorType type, MaaInstanceHandle handle, MaaStringV
     TextTransferMode text_mode =
         static_cast<TextTransferMode>(MaaToolKitExecAgentArgvTransferMode_Text_Mask & argv_mode);
     ImageTransferMode image_mode =
-        static_cast<ImageTransferMode>(MaaToolKitExecAgentArgvTransferMode_Image_Mask & argv_mode);
+        static_cast<ImageTransferMode>((MaaToolKitExecAgentArgvTransferMode_Image_Mask & argv_mode) >> 8);
 
     switch (type) {
     case ExecutorType::Recognizer:
