@@ -13,23 +13,22 @@ bool ExecAgentBase::register_executor(MaaInstanceHandle handle, std::string_view
 {
     LogFunc << VAR_VOIDP(handle) << VAR(name) << VAR(exec_path) << VAR(exec_args) << VAR(text_mode) << VAR(image_mode);
 
-    bool registered = register_for_maa_inst(handle, name);
-    if (!registered) {
-        LogError << "register failed" << VAR(name);
-        return false;
+    auto [iter, inserted] = exec_data_.insert_or_assign( //
+        std::string(name), ExecData {
+                               .name = std::string(name),
+                               .exec_path = std::move(exec_path),
+                               .exec_args = std::move(exec_args),
+                               .text_mode = text_mode,
+                               .image_mode = image_mode,
+                           });
+    if (!inserted || iter == exec_data_.end()) {
+        LogError << "insert failed" << VAR(name);
     }
 
-    Executor executor {
-        .name = std::string(name),
-        .exec_path = std::move(exec_path),
-        .exec_args = std::move(exec_args),
-        .text_mode = text_mode,
-        .image_mode = image_mode,
-    };
-
-    bool inserted = executors_.try_emplace(executor.name, std::move(executor)).second;
-    if (!inserted) {
-        LogError << "executor already registered: " << executor.name;
+    bool registered = register_for_maa_inst(handle, name, iter->second);
+    if (!registered) {
+        LogError << "register failed" << VAR(name);
+        exec_data_.erase(iter);
         return false;
     }
 
@@ -40,10 +39,8 @@ bool ExecAgentBase::unregister_executor(MaaInstanceHandle handle, std::string_vi
 {
     LogFunc << VAR_VOIDP(handle) << VAR(name);
 
-    std::string name_str(name);
-
     bool ret = unregister_for_maa_inst(handle, name);
-    ret &= executors_.erase(name_str) > 0;
+    ret &= exec_data_.erase(std::string(name)) > 0;
 
     return ret;
 }

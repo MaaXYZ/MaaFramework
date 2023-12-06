@@ -14,9 +14,9 @@ RecognizerExecAgent::RecognizerExecAgent()
     custom_recognizer_.analyze = &RecognizerExecAgent::maa_api_analyze;
 }
 
-bool RecognizerExecAgent::register_for_maa_inst(MaaInstanceHandle handle, std::string_view name)
+bool RecognizerExecAgent::register_for_maa_inst(MaaInstanceHandle handle, std::string_view name, ExecData& executor)
 {
-    return MaaRegisterCustomRecognizer(handle, name.data(), &custom_recognizer_, this);
+    return MaaRegisterCustomRecognizer(handle, name.data(), &custom_recognizer_, reinterpret_cast<void*>(&executor));
 }
 
 bool RecognizerExecAgent::unregister_for_maa_inst(MaaInstanceHandle handle, std::string_view name)
@@ -25,29 +25,23 @@ bool RecognizerExecAgent::unregister_for_maa_inst(MaaInstanceHandle handle, std:
 }
 
 std::optional<RecognizerExecAgent::AnalyzeResult> RecognizerExecAgent::analyze(
-    MaaSyncContextHandle sync_context, const cv::Mat& image, std::string_view task_name,
+    ExecData& data, MaaSyncContextHandle sync_context, const cv::Mat& image, std::string_view task_name,
     std::string_view custom_recognition_param)
 {
-    LogFunc << VAR_VOIDP(sync_context) << VAR(image.size()) << VAR(task_name) << VAR(custom_recognition_param);
-
-    auto exec_it = executors_.find(std::string(task_name));
-    if (exec_it == executors_.end()) {
-        LogError << "executor not found" << VAR(task_name);
-        return std::nullopt;
-    }
-    auto& exec = exec_it->second;
+    LogFunc << VAR(data.name) << VAR_VOIDP(sync_context) << VAR(image.size()) << VAR(task_name)
+            << VAR(custom_recognition_param);
 
     std::string handle_arg = arg_cvt_.sync_context_to_arg(sync_context);
-    std::string image_arg = arg_cvt_.image_to_arg(image, exec.image_mode);
+    std::string image_arg = arg_cvt_.image_to_arg(image, data.image_mode);
 
     std::vector<std::string> extra_args = { handle_arg, image_arg, std::string(task_name),
                                             std::string(custom_recognition_param) };
-    std::vector<std::string> args = exec.exec_args;
+    std::vector<std::string> args = data.exec_args;
     args.insert(args.end(), std::make_move_iterator(extra_args.begin()), std::make_move_iterator(extra_args.end()));
 
-    auto output_opt = run_executor(exec.exec_path, args, exec.text_mode, exec.image_mode);
+    auto output_opt = run_executor(data.exec_path, args, data.text_mode, data.image_mode);
     if (!output_opt) {
-        LogError << "run_executor failed" << VAR(exec.exec_path) << VAR(exec.exec_args);
+        LogError << "run_executor failed" << VAR(data.exec_path) << VAR(data.exec_args);
         return std::nullopt;
     }
 
@@ -60,9 +54,9 @@ MaaBool RecognizerExecAgent::maa_api_analyze( //
     MaaStringView custom_recognition_param, MaaTransparentArg recognizer_arg, MaaRectHandle out_box,
     MaaStringBufferHandle out_detail)
 {
-    auto* self = static_cast<RecognizerExecAgent*>(recognizer_arg);
-    if (!self) {
-        LogError << "recognizer_arg is nullptr";
+    auto* data = static_cast<ExecData*>(recognizer_arg);
+    if (!data) {
+        LogError << "data is nullptr" << VAR(recognizer_arg);
         return false;
     }
 
@@ -72,7 +66,7 @@ MaaBool RecognizerExecAgent::maa_api_analyze( //
     int32_t type = MaaGetImageType(image);
     cv::Mat image_mat(height, width, type, raw_data);
 
-    auto result_opt = self->analyze(sync_context, image_mat, task_name, custom_recognition_param);
+    auto result_opt = get_instance().analyze(*data, sync_context, image_mat, task_name, custom_recognition_param);
 
     if (!result_opt) {
         MaaSetRect(out_box, 0, 0, 0, 0);

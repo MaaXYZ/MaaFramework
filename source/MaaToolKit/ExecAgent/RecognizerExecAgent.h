@@ -19,7 +19,7 @@ public:
     virtual ~RecognizerExecAgent() = default;
 
 protected: // from ExecAgentBase
-    virtual bool register_for_maa_inst(MaaInstanceHandle handle, std::string_view name) override;
+    virtual bool register_for_maa_inst(MaaInstanceHandle handle, std::string_view name, ExecData& executor) override;
     virtual bool unregister_for_maa_inst(MaaInstanceHandle handle, std::string_view name) override;
 
 private:
@@ -29,7 +29,7 @@ private:
         std::string detail;
     };
     std::optional<AnalyzeResult> analyze( //
-        MaaSyncContextHandle sync_context, const cv::Mat& image, std::string_view task_name,
+        ExecData& data, MaaSyncContextHandle sync_context, const cv::Mat& image, std::string_view task_name,
         std::string_view custom_recognition_param);
 
 private:

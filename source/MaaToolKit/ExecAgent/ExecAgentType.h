@@ -41,7 +41,7 @@ inline std::ostream& operator<<(std::ostream& os, ImageTransferMode mode)
     return os;
 }
 
-struct Executor
+struct ExecData
 {
     std::string name;
     std::filesystem::path exec_path;

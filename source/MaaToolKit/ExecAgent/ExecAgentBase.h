@@ -2,8 +2,9 @@
 
 #include "Conf/Conf.h"
 
+#include <map>
+#include <memory>
 #include <string_view>
-#include <unordered_map>
 
 #include "ExecAgent/ExecArgConverter.h"
 #include "ExecAgentType.h"
@@ -23,7 +24,7 @@ public:
     bool unregister_executor(MaaInstanceHandle handle, std::string_view name);
 
 protected:
-    virtual bool register_for_maa_inst(MaaInstanceHandle handle, std::string_view name) = 0;
+    virtual bool register_for_maa_inst(MaaInstanceHandle handle, std::string_view name, ExecData& executor) = 0;
     virtual bool unregister_for_maa_inst(MaaInstanceHandle handle, std::string_view name) = 0;
 
     std::optional<std::string> run_executor(const std::filesystem::path& exec_path,
@@ -31,7 +32,7 @@ protected:
                                             ImageTransferMode image_mode);
 
 protected:
-    std::unordered_map</*name*/ std::string, Executor> executors_;
+    std::map<std::string, ExecData> exec_data_;
 
     ExecArgConverter arg_cvt_;
 
