@@ -16,7 +16,7 @@ std::string IOStream::read_some(size_t count, duration_t timeout)
 
     while (is_open() && result.size() < count && duration_since(start_time) < timeout) {
         auto data = read_once(count - result.size());
-        result.append(data);
+        result.append(std::move(data));
     }
 
     return result;
