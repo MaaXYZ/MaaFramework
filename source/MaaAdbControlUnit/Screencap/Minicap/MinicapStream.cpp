@@ -50,34 +50,18 @@ bool MinicapStream::init(int swidth, int sheight)
     uint32_t width = screencap_helper_.get_w();
     uint32_t height = screencap_helper_.get_h();
 
-    process_handle_ = binary_->invoke_bin(MAA_FMT::format("-P {}x{}@{}x{}/{}", width, height, width, height, 0));
+    pipe_ios_ = binary_->invoke_bin(MAA_FMT::format("-P {}x{}@{}x{}/{}", width, height, width, height, 0));
 
-    if (!process_handle_) {
+    if (!pipe_ios_) {
         LogError << "invoke_bin failed";
         return false;
     }
 
-    bool ok = false;
-
-    std::string buffer;
-    constexpr int kMaxTry = 50;
-    for (int i = 0; i < kMaxTry; ++i) {
-        using namespace std::chrono_literals;
-        auto res = process_handle_->read(5s);
-
-        if (!res.empty()) {
-            LogDebug << "minicap stdout:" << res;
-            buffer.append(res);
-        }
-        if (buffer.find("Allocating") != std::string::npos) {
-            ok = true;
-            break;
-        }
-        using namespace std::chrono_literals;
-        std::this_thread::sleep_for(100ms);
-    }
-    if (!ok) {
-        LogError << "minicap stdout:" << buffer;
+    constexpr std::string_view kFlag = "Allocating";
+    using namespace std::chrono_literals;
+    std::string output = pipe_ios_->read_until(kFlag, 10s);
+    if (!output.ends_with(kFlag)) {
+        LogError << "read_until failed" << VAR(output);
         return false;
     }
 
@@ -88,11 +72,11 @@ bool MinicapStream::init(int swidth, int sheight)
         local = serial_host.substr(0, shp);
     }
 
-    LogInfo << "minicap try connect to:" << local;
+    LogInfo << "minicap try to connect" << VAR(local) << VAR(port_);
 
     ClientSockIOFactory io_factory(local, static_cast<unsigned short>(port_));
-    stream_handle_ = io_factory.connect();
-    if (!stream_handle_) {
+    sock_ios_ = io_factory.connect();
+    if (!sock_ios_) {
         return false;
     }
 
@@ -144,13 +128,13 @@ std::optional<cv::Mat> MinicapStream::screencap()
 
 std::optional<std::string> MinicapStream::read(size_t count)
 {
-    if (!stream_handle_) {
-        LogError << "stream_handle_ is nullptr";
+    if (!sock_ios_) {
+        LogError << "sock_ios_ is nullptr";
         return std::nullopt;
     }
 
     using namespace std::chrono_literals;
-    return stream_handle_->read_some(count, 5s);
+    return sock_ios_->read_some(count, 1s);
 }
 
 void MinicapStream::working_thread()

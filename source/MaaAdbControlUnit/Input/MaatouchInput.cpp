@@ -41,8 +41,8 @@ bool MaatouchInput::set_wh(int swidth, int sheight, int orientation)
 {
     LogFunc << VAR(swidth) << VAR(sheight) << VAR(orientation);
 
-    shell_handler_ = invoke_app_->invoke_app(package_name_);
-    if (!shell_handler_) {
+    pipe_ios_ = invoke_app_->invoke_app(package_name_);
+    if (!pipe_ios_) {
         return false;
     }
 
@@ -53,7 +53,7 @@ bool MaatouchInput::press_key(int key)
 {
     LogInfo << VAR(key);
 
-    if (!shell_handler_) {
+    if (!pipe_ios_) {
         return false;
     }
 
@@ -61,8 +61,8 @@ bool MaatouchInput::press_key(int key)
     static constexpr std::string_view kKeyDownFormat = "k {} d\nc\n";
     static constexpr std::string_view kKeyUpFormat = "k {} u\nc\n";
 
-    bool ret = shell_handler_->write(MAA_FMT::format(kKeyDownFormat, key)) &&
-               shell_handler_->write(MAA_FMT::format(kKeyUpFormat, key));
+    bool ret =
+        pipe_ios_->write(MAA_FMT::format(kKeyDownFormat, key)) && pipe_ios_->write(MAA_FMT::format(kKeyUpFormat, key));
 
     if (!ret) {
         LogError << "failed to write";

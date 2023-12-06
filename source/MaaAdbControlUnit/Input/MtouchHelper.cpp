@@ -18,16 +18,17 @@ bool MtouchHelper::read_info(int swidth, int sheight, int orientation)
         return !timeout;
     };
 
-    if (!shell_handler_) {
+    if (!pipe_ios_) {
         LogError << "shell handler not ready";
         return false;
     }
 
     using namespace std::chrono_literals;
-    std::ignore = shell_handler_->read_until("^", 5s);
-    std::string info = shell_handler_->read_until("\n", 1s);
+    std::ignore = pipe_ios_->read_until("^", 5s);
+    constexpr std::string_view kFlag = "\n";
+    std::string info = pipe_ios_->read_until(kFlag, 1s);
 
-    if (info.empty()) {
+    if (!info.ends_with(kFlag)) {
         LogError << "failed to read info";
         return false;
     }
@@ -61,7 +62,7 @@ bool MtouchHelper::read_info(int swidth, int sheight, int orientation)
 
 bool MtouchHelper::click(int x, int y)
 {
-    if (!shell_handler_) {
+    if (!pipe_ios_) {
         LogError << "shell handler not ready";
         return false;
     }
@@ -76,8 +77,8 @@ bool MtouchHelper::click(int x, int y)
 
     LogInfo << VAR(x) << VAR(y) << VAR(touch_x) << VAR(touch_y);
 
-    bool ret = shell_handler_->write(MAA_FMT::format(kDownFormat, 0, touch_x, touch_y, press_)) &&
-               shell_handler_->write(MAA_FMT::format(kUpFormat, 0));
+    bool ret = pipe_ios_->write(MAA_FMT::format(kDownFormat, 0, touch_x, touch_y, press_)) &&
+               pipe_ios_->write(MAA_FMT::format(kUpFormat, 0));
 
     if (!ret) {
         LogError << "failed to write";
@@ -89,7 +90,7 @@ bool MtouchHelper::click(int x, int y)
 
 bool MtouchHelper::swipe(int x1, int y1, int x2, int y2, int duration)
 {
-    if (!shell_handler_) {
+    if (!pipe_ios_) {
         return false;
     }
 
@@ -115,7 +116,7 @@ bool MtouchHelper::swipe(int x1, int y1, int x2, int y2, int duration)
     auto start = std::chrono::steady_clock::now();
     auto now = start;
     bool ret = true;
-    ret &= shell_handler_->write(MAA_FMT::format(kDownFormat, 0, touch_x1, touch_y1, press_));
+    ret &= pipe_ios_->write(MAA_FMT::format(kDownFormat, 0, touch_x1, touch_y1, press_));
     if (!ret) {
         LogError << "write error";
         return false;
@@ -132,7 +133,7 @@ bool MtouchHelper::swipe(int x1, int y1, int x2, int y2, int duration)
         std::this_thread::sleep_until(now + delay);
         now = std::chrono::steady_clock::now();
 
-        ret &= shell_handler_->write(MAA_FMT::format(kMoveFormat, 0, tx, ty, press_));
+        ret &= pipe_ios_->write(MAA_FMT::format(kMoveFormat, 0, tx, ty, press_));
         if (!ret) {
             LogWarn << "write error";
         }
@@ -140,11 +141,11 @@ bool MtouchHelper::swipe(int x1, int y1, int x2, int y2, int duration)
 
     std::this_thread::sleep_until(now + delay);
     now = std::chrono::steady_clock::now();
-    ret &= shell_handler_->write(MAA_FMT::format(kMoveFormat, 0, touch_x2, touch_y2, press_));
+    ret &= pipe_ios_->write(MAA_FMT::format(kMoveFormat, 0, touch_x2, touch_y2, press_));
 
     std::this_thread::sleep_until(now + delay);
     now = std::chrono::steady_clock::now();
-    ret &= shell_handler_->write(MAA_FMT::format(kUpFormat, 0));
+    ret &= pipe_ios_->write(MAA_FMT::format(kUpFormat, 0));
 
     if (!ret) {
         LogError << "failed to write";
@@ -156,7 +157,7 @@ bool MtouchHelper::swipe(int x1, int y1, int x2, int y2, int duration)
 
 bool MtouchHelper::touch_down(int contact, int x, int y, int pressure)
 {
-    if (!shell_handler_) {
+    if (!pipe_ios_) {
         LogError << "shell handler not ready";
         return false;
     }
@@ -165,7 +166,7 @@ bool MtouchHelper::touch_down(int contact, int x, int y, int pressure)
 
     LogInfo << VAR(contact) << VAR(x) << VAR(y) << VAR(touch_x) << VAR(touch_y);
 
-    bool ret = shell_handler_->write(MAA_FMT::format(kDownFormat, contact, touch_x, touch_y, pressure));
+    bool ret = pipe_ios_->write(MAA_FMT::format(kDownFormat, contact, touch_x, touch_y, pressure));
 
     if (!ret) {
         LogError << "failed to write";
@@ -177,7 +178,7 @@ bool MtouchHelper::touch_down(int contact, int x, int y, int pressure)
 
 bool MtouchHelper::touch_move(int contact, int x, int y, int pressure)
 {
-    if (!shell_handler_) {
+    if (!pipe_ios_) {
         LogError << "shell handler not ready";
         return false;
     }
@@ -186,7 +187,7 @@ bool MtouchHelper::touch_move(int contact, int x, int y, int pressure)
 
     LogInfo << VAR(contact) << VAR(x) << VAR(y) << VAR(touch_x) << VAR(touch_y);
 
-    bool ret = shell_handler_->write(MAA_FMT::format(kMoveFormat, contact, touch_x, touch_y, pressure));
+    bool ret = pipe_ios_->write(MAA_FMT::format(kMoveFormat, contact, touch_x, touch_y, pressure));
 
     if (!ret) {
         LogError << "failed to write";
@@ -198,14 +199,14 @@ bool MtouchHelper::touch_move(int contact, int x, int y, int pressure)
 
 bool MtouchHelper::touch_up(int contact)
 {
-    if (!shell_handler_) {
+    if (!pipe_ios_) {
         LogError << "shell handler not ready";
         return false;
     }
 
     LogInfo << VAR(contact);
 
-    bool ret = shell_handler_->write(MAA_FMT::format(kUpFormat, contact));
+    bool ret = pipe_ios_->write(MAA_FMT::format(kUpFormat, contact));
 
     if (!ret) {
         LogError << "failed to write";
