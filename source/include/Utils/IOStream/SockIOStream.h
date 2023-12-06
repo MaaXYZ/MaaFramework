@@ -2,6 +2,7 @@
 
 #include <memory>
 
+#include "IOStream.h"
 #include "MaaFramework/MaaPort.h"
 #include "Utils/Boost.hpp"
 #include "Utils/NonCopyable.hpp"
@@ -40,24 +41,20 @@ private:
     boost::asio::ip::tcp::endpoint endpoint_;
 };
 
-class MAA_UTILS_API SockIOStream : public NonCopyButMovable
+class MAA_UTILS_API SockIOStream : public IOStream
 {
-    using duration_t = std::chrono::milliseconds;
-
-    static constexpr size_t kBufferSize = 128 * 1024;
-
 public:
     SockIOStream(boost::asio::ip::tcp::socket&& sock);
-    ~SockIOStream();
+    virtual ~SockIOStream() override;
 
 public:
-    bool write(std::string_view data);
+    virtual bool write(std::string_view data) override;
 
-    std::string read(duration_t timeout = duration_t::max());
-    std::string read_some(size_t count, duration_t timeout = duration_t::max());
-    std::string read_until(std::string_view delimiter, duration_t timeout = duration_t::max());
+    virtual bool release() override;
+    virtual bool is_open() const override;
 
-    bool is_open() const;
+protected:
+    virtual std::string read_once(size_t max_count) override;
 
 private:
     boost::asio::ip::tcp::socket sock_;

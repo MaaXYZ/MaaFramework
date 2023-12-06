@@ -1,6 +1,6 @@
 #include "Utils/IOStream/ChildPipeIOStream.h"
 
-#include "Utils/Time.hpp"
+#include "Utils/Logger.h"
 
 MAA_NS_BEGIN
 
@@ -11,8 +11,7 @@ ChildPipeIOStream::ChildPipeIOStream(const std::filesystem::path& exec, const st
           ,
           boost::process::windows::create_no_window
 #endif
-          ),
-      buffer_(std::make_unique<char[]>(kBufferSize))
+      )
 {}
 
 ChildPipeIOStream::~ChildPipeIOStream()
@@ -22,7 +21,8 @@ ChildPipeIOStream::~ChildPipeIOStream()
 
 bool ChildPipeIOStream::write(std::string_view data)
 {
-    if (!child_.running()) {
+    if (is_open()) {
+        LogError << "not opened";
         return false;
     }
 
@@ -30,45 +30,7 @@ bool ChildPipeIOStream::write(std::string_view data)
     return true;
 }
 
-std::string ChildPipeIOStream::read(duration_t timeout)
-{
-    return read_some(std::numeric_limits<size_t>::max(), timeout);
-}
-
-std::string ChildPipeIOStream::read_some(size_t count, duration_t timeout)
-{
-    auto start_time = std::chrono::steady_clock::now();
-    std::string result;
-
-    while (pin_.is_open() && result.size() < count && duration_since(start_time) < timeout) {
-        auto read_size = std::min(kBufferSize, count - result.size());
-        auto read_num = pin_.readsome(buffer_.get(), read_size);
-        result.append(buffer_.get(), read_num);
-    }
-
-    return result;
-}
-
-std::string ChildPipeIOStream::read_until(std::string_view delimiter, duration_t timeout)
-{
-    auto start_time = std::chrono::steady_clock::now();
-
-    std::string result;
-
-    while (!result.ends_with(delimiter)) {
-        auto sub_timeout = timeout - duration_since<duration_t>(start_time);
-        if (sub_timeout < duration_t::zero()) {
-            break;
-        }
-
-        auto sub_str = read_some(1, sub_timeout);
-        result.append(std::move(sub_str));
-    }
-
-    return result;
-}
-
-int ChildPipeIOStream::release()
+bool ChildPipeIOStream::release()
 {
     if (child_.running()) {
         child_.terminate();
@@ -77,12 +39,32 @@ int ChildPipeIOStream::release()
         child_.wait();
     }
 
-    return child_.exit_code();
+    int code = child_.exit_code();
+
+    if (code != 0) {
+        LogError << "child exit with" << code;
+        return false;
+    }
+
+    return true;
 }
 
 bool ChildPipeIOStream::is_open() const
 {
     return pin_.is_open();
+}
+
+std::string ChildPipeIOStream::read_once(size_t max_count)
+{
+    constexpr size_t kBufferSize = 128 * 1024;
+
+    if (!buffer_) {
+        buffer_ = std::make_unique<char[]>(kBufferSize);
+    }
+
+    auto read_size = std::min(kBufferSize, max_count);
+    auto read_num = pin_.readsome(buffer_.get(), read_size);
+    return std::string(buffer_.get(), read_num);
 }
 
 MAA_NS_END

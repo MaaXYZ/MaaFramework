@@ -57,7 +57,7 @@ inline bool LibraryHolder<T>::load_library(const std::filesystem::path& libname)
     boost::dll::fs::error_code ec;
     module_.load(libname, ec, boost::dll::load_mode::append_decorations | boost::dll::load_mode::search_system_folders);
 
-    if (ec.value() != boost::system::errc::success) {
+    if (ec) {
         auto message = ec.message();
         LogError << "Failed to load library" << VAR(libname) << VAR(message);
         return false;

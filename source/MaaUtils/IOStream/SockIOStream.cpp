@@ -64,18 +64,14 @@ std::shared_ptr<SockIOStream> ClientSockIOFactory::connect()
     return std::make_shared<SockIOStream>(std::move(sock));
 }
 
-SockIOStream::SockIOStream(boost::asio::ip::tcp::socket&& sock)
-    : sock_(std::move(sock)), buffer_(std::make_unique<char[]>(kBufferSize))
-{}
+SockIOStream::SockIOStream(boost::asio::ip::tcp::socket&& sock) : sock_(std::move(sock)) {}
 
-SockIOStream::~SockIOStream()
-{
-    sock_.close();
-}
+SockIOStream::~SockIOStream() {}
 
 bool SockIOStream::write(std::string_view data)
 {
-    if (!sock_.is_open()) {
+    if (!is_open()) {
+        LogError << "not opened";
         return false;
     }
 
@@ -83,47 +79,28 @@ bool SockIOStream::write(std::string_view data)
     return true;
 }
 
-std::string SockIOStream::read(duration_t timeout)
+bool SockIOStream::release()
 {
-    return read_some(std::numeric_limits<size_t>::max(), timeout);
-}
-
-std::string SockIOStream::read_some(size_t count, duration_t timeout)
-{
-    auto start_time = std::chrono::steady_clock::now();
-    std::string result;
-
-    while (sock_.is_open() && result.size() < count && duration_since(start_time) < timeout) {
-        auto read_size = std::min(kBufferSize, count - result.size());
-        auto read_num = sock_.read_some(boost::asio::mutable_buffer(buffer_.get(), read_size));
-        result.append(buffer_.get(), read_num);
-    }
-
-    return result;
-}
-
-std::string SockIOStream::read_until(std::string_view delimiter, duration_t timeout)
-{
-    auto start_time = std::chrono::steady_clock::now();
-
-    std::string result;
-
-    while (!result.ends_with(delimiter)) {
-        auto sub_timeout = timeout - duration_since<duration_t>(start_time);
-        if (sub_timeout < duration_t::zero()) {
-            break;
-        }
-
-        auto sub_str = read_some(1, sub_timeout);
-        result.append(std::move(sub_str));
-    }
-
-    return result;
+    sock_.close();
+    return true;
 }
 
 bool SockIOStream::is_open() const
 {
     return sock_.is_open();
+}
+
+std::string SockIOStream::read_once(size_t max_count)
+{
+    constexpr size_t kBufferSize = 128 * 1024;
+
+    if (!buffer_) {
+        buffer_ = std::make_unique<char[]>(kBufferSize);
+    }
+
+    auto read_size = std::min(kBufferSize, max_count);
+    auto read_num = sock_.read_some(boost::asio::mutable_buffer(buffer_.get(), read_size));
+    return std::string(buffer_.get(), read_num);
 }
 
 MAA_NS_END
