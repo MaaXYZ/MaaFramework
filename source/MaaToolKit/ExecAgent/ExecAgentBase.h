@@ -8,6 +8,7 @@
 #include "ExecAgent/ExecArgConverter.h"
 #include "ExecAgentType.h"
 #include "MaaFramework/MaaDef.h"
+#include "Utils/IOStream/IOStream.h"
 
 MAA_TOOLKIT_NS_BEGIN
 
@@ -25,15 +26,17 @@ protected:
     virtual bool register_for_maa_inst(MaaInstanceHandle handle, std::string_view name) = 0;
     virtual bool unregister_for_maa_inst(MaaInstanceHandle handle, std::string_view name) = 0;
 
-    std::optional<std::string> run_executor(TextTransferMode mode, const std::filesystem::path& exec_path,
-                                            const std::vector<std::string>& exec_args);
-    std::optional<std::string> run_executor_with_stdio(const std::filesystem::path& exec_path,
-                                                       const std::vector<std::string>& exec_args);
+    std::optional<std::string> run_executor(const std::filesystem::path& exec_path,
+                                            const std::vector<std::string>& exec_args, TextTransferMode text_mode,
+                                            ImageTransferMode image_mode);
 
 protected:
     std::unordered_map</*name*/ std::string, Executor> executors_;
 
     ExecArgConverter arg_cvt_;
+
+private:
+    std::optional<std::string> handle_ipc(IOStream& ios, ImageTransferMode image_mode);
 };
 
 MAA_TOOLKIT_NS_END

@@ -44,7 +44,7 @@ bool ActionExecAgent::run(MaaSyncContextHandle sync_context, std::string_view ta
     std::vector<std::string> args = exec.exec_args;
     args.insert(args.end(), std::make_move_iterator(extra_args.begin()), std::make_move_iterator(extra_args.end()));
 
-    auto output_opt = run_executor(exec.text_mode, exec.exec_path, args);
+    auto output_opt = run_executor(exec.exec_path, args, exec.text_mode, exec.image_mode);
     if (!output_opt) {
         LogError << "run_executor failed" << VAR(exec.exec_path) << VAR(exec.exec_args);
         return false;

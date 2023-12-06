@@ -21,7 +21,7 @@ std::string ExecArgConverter::sync_context_to_arg(MaaSyncContextHandle sync_cont
     return uuid;
 }
 
-std::string ExecArgConverter::image_to_arg(ImageTransferMode mode, const cv::Mat& image)
+std::string ExecArgConverter::image_to_arg(const cv::Mat& image, ImageTransferMode mode)
 {
     switch (mode) {
     case ImageTransferMode::FileIO: {

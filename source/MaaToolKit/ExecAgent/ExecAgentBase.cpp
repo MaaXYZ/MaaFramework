@@ -43,27 +43,14 @@ bool ExecAgentBase::unregister_executor(MaaInstanceHandle handle, std::string_vi
     std::string name_str(name);
 
     bool ret = unregister_for_maa_inst(handle, name);
-    ret = executors_.erase(name_str) > 0 && ret;
+    ret &= executors_.erase(name_str) > 0;
 
     return ret;
 }
 
-std::optional<std::string> ExecAgentBase::run_executor(TextTransferMode mode, const std::filesystem::path& exec_path,
-                                                       const std::vector<std::string>& exec_args)
-{
-    switch (mode) {
-    case TextTransferMode::StdIO: {
-        return run_executor_with_stdio(exec_path, exec_args);
-    }
-    case TextTransferMode::FileIO:
-    default:
-        LogError << "not implemented";
-        return std::nullopt;
-    }
-}
-
-std::optional<std::string> ExecAgentBase::run_executor_with_stdio(const std::filesystem::path& exec_path,
-                                                                  const std::vector<std::string>& exec_args)
+std::optional<std::string> ExecAgentBase::run_executor(const std::filesystem::path& exec_path,
+                                                       const std::vector<std::string>& exec_args,
+                                                       TextTransferMode text_mode, ImageTransferMode image_mode)
 {
     auto searched_path = boost::process::search_path(exec_path);
     if (!std::filesystem::exists(searched_path)) {
@@ -71,7 +58,25 @@ std::optional<std::string> ExecAgentBase::run_executor_with_stdio(const std::fil
         return std::nullopt;
     }
 
-    ChildPipeIOStream ios(searched_path, exec_args);
+    ChildPipeIOStream child(searched_path, exec_args);
+
+    switch (text_mode) {
+    case TextTransferMode::StdIO:
+        return handle_ipc(child, image_mode);
+
+    case TextTransferMode::FileIO:
+        LogError << "not implemented";
+        return std::nullopt;
+
+    default:
+        LogError << "not implemented";
+        return std::nullopt;
+    }
+}
+
+std::optional<std::string> ExecAgentBase::handle_ipc(IOStream& ios, ImageTransferMode image_mode)
+{
+    std::ignore = image_mode;
 
     while (ios.is_open()) {
         std::string line = ios.read_until("\n");
@@ -80,9 +85,7 @@ std::optional<std::string> ExecAgentBase::run_executor_with_stdio(const std::fil
         // TODO
     }
 
-    int exit_code = ios.release();
-    if (exit_code != 0) {
-        LogError << "process exit with code:" << exit_code;
+    if (!ios.release()) {
         return std::nullopt;
     }
 
