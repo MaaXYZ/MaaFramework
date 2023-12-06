@@ -18,37 +18,20 @@ bool MtouchHelper::read_info(int swidth, int sheight, int orientation)
         return !timeout;
     };
 
-    std::string prev;
-    std::string info;
-
-    while (check_time()) {
-        using namespace std::chrono_literals;
-        auto str = prev + shell_handler_->read(5s);
-        LogDebug << "output:" << str;
-        if (str.empty()) {
-            std::this_thread::sleep_for(2s);
-            continue;
-        }
-        auto pos = str.find('^');
-        if (pos == std::string::npos) {
-            continue;
-        }
-        auto rpos = str.find('\n', pos);
-        if (rpos == std::string::npos) {
-            prev = str; // 也许还得再读点?
-            continue;
-        }
-
-        info = str.substr(pos + 1, rpos - pos - 1);
-        break;
-    }
-    if (timeout) {
-        LogError << "read info timeout";
+    if (!shell_handler_) {
+        LogError << "shell handler not ready";
         return false;
     }
 
-    LogInfo << "info:" << info;
-    string_trim_(info);
+    using namespace std::chrono_literals;
+    std::ignore = shell_handler_->read_until("^", 5s);
+    std::string info = shell_handler_->read_until("\n", 1s);
+
+    if (info.empty()) {
+        LogError << "failed to read info";
+        return false;
+    }
+    LogInfo << VAR(info);
 
     int contact = 0;
     int x = 0;

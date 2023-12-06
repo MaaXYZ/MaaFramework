@@ -24,8 +24,8 @@ ChildPipeIOStream::~ChildPipeIOStream()
 
 bool ChildPipeIOStream::write(std::string_view data)
 {
-    if (is_open()) {
-        LogError << "not opened";
+    if (!pout_.good()) {
+        LogError << "pout is not good";
         return false;
     }
 

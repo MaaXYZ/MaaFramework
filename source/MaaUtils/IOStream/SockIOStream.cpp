@@ -72,8 +72,8 @@ SockIOStream::~SockIOStream()
 
 bool SockIOStream::write(std::string_view data)
 {
-    if (!is_open()) {
-        LogError << "not opened";
+    if (!ios_.good()) {
+        LogError << "ios is not good";
         return false;
     }
 
