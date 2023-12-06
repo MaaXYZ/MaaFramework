@@ -113,7 +113,7 @@ Status UtilityImpl::acquire_id(ServerContext* context, const ::maarpc::EmptyRequ
     std::ignore = context;
     std::ignore = request;
 
-    response->set_id(format_now());
+    response->set_id(make_uuid());
 
     return Status::OK;
 }

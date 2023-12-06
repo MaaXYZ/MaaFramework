@@ -4,7 +4,6 @@
 
 #include "IOStream.h"
 #include "MaaFramework/MaaPort.h"
-#include "Utils/Boost.hpp"
 #include "Utils/NonCopyable.hpp"
 
 MAA_NS_BEGIN

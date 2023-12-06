@@ -4,6 +4,7 @@
 #include <string>
 #include <string_view>
 
+#include "BoostIO.hpp"
 #include "MaaFramework/MaaPort.h"
 #include "Utils/NonCopyable.hpp"
 

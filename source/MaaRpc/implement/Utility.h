@@ -2,6 +2,7 @@
 
 #include "AtomicMap.h"
 #include "MaaFramework/MaaDef.h"
+#include "Utils/Uuid.h"
 #include "generated/utility.grpc.pb.h"
 
 #include <memory>
@@ -38,7 +39,6 @@ private:
     AtomicMap<std::shared_ptr<CallbackState>> states_;
 };
 
-extern std::string make_uuid();
 extern void callback_impl(MaaStringView msg, MaaStringView detail, MaaCallbackTransparentArg arg);
 
 MAA_RPC_NS_END

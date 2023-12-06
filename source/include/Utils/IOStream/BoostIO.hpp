@@ -1,21 +1,15 @@
 #pragma once
 
-#include "Conf/Conf.h"
-
 #ifdef _WIN32
 #ifndef _WIN32_WINNT
-#define _WIN32_WINNT 0x0601 // Win7
+#define _WIN32_WINNT 0x0A00 // Win10
 #endif
 #endif
 
 #define BOOST_PROCESS_USE_STD_FS 1
-#define BOOST_DLL_USE_STD_FS 1
 
-MAA_SUPPRESS_BOOST_WARNINGS_BEGIN
 #include <boost/asio.hpp>
 #include <boost/process.hpp>
 #ifdef _WIN32
 #include <boost/process/windows.hpp>
 #endif
-#include <boost/dll.hpp>
-MAA_SUPPRESS_BOOST_WARNINGS_END

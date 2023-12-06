@@ -4,8 +4,11 @@
 #include <mutex>
 #include <type_traits>
 
+#define BOOST_DLL_USE_STD_FS 1
+#include <boost/dll.hpp>
+#include <boost/function.hpp>
+
 #include "Conf/Conf.h"
-#include "Utils/Boost.hpp"
 #include "Utils/Logger.h"
 
 MAA_NS_BEGIN
