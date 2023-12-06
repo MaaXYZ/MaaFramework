@@ -11,15 +11,8 @@ MAA_CTRL_UNIT_NS_BEGIN
 
 bool MtouchHelper::read_info(int swidth, int sheight, int orientation)
 {
-    auto start_time = std::chrono::steady_clock::now();
-    bool timeout = false;
-    auto check_time = [&]() {
-        timeout = duration_since(start_time) > std::chrono::seconds(10);
-        return !timeout;
-    };
-
     if (!pipe_ios_) {
-        LogError << "shell handler not ready";
+        LogError << "pipe_ios_ is nullptr";
         return false;
     }
 
@@ -63,7 +56,7 @@ bool MtouchHelper::read_info(int swidth, int sheight, int orientation)
 bool MtouchHelper::click(int x, int y)
 {
     if (!pipe_ios_) {
-        LogError << "shell handler not ready";
+        LogError << "pipe_ios_ is nullptr";
         return false;
     }
 
@@ -85,12 +78,13 @@ bool MtouchHelper::click(int x, int y)
         return false;
     }
 
-    return ret;
+    return true;
 }
 
 bool MtouchHelper::swipe(int x1, int y1, int x2, int y2, int duration)
 {
     if (!pipe_ios_) {
+        LogError << "pipe_ios_ is nullptr";
         return false;
     }
 
@@ -152,13 +146,13 @@ bool MtouchHelper::swipe(int x1, int y1, int x2, int y2, int duration)
         return false;
     }
 
-    return ret;
+    return true;
 }
 
 bool MtouchHelper::touch_down(int contact, int x, int y, int pressure)
 {
     if (!pipe_ios_) {
-        LogError << "shell handler not ready";
+        LogError << "pipe_ios_ is nullptr";
         return false;
     }
 
@@ -173,13 +167,13 @@ bool MtouchHelper::touch_down(int contact, int x, int y, int pressure)
         return false;
     }
 
-    return ret;
+    return true;
 }
 
 bool MtouchHelper::touch_move(int contact, int x, int y, int pressure)
 {
     if (!pipe_ios_) {
-        LogError << "shell handler not ready";
+        LogError << "pipe_ios_ is nullptr";
         return false;
     }
 
@@ -194,13 +188,13 @@ bool MtouchHelper::touch_move(int contact, int x, int y, int pressure)
         return false;
     }
 
-    return ret;
+    return true;
 }
 
 bool MtouchHelper::touch_up(int contact)
 {
     if (!pipe_ios_) {
-        LogError << "shell handler not ready";
+        LogError << "pipe_ios_ is nullptr";
         return false;
     }
 
@@ -213,7 +207,7 @@ bool MtouchHelper::touch_up(int contact)
         return false;
     }
 
-    return ret;
+    return true;
 }
 
 MAA_CTRL_UNIT_NS_END

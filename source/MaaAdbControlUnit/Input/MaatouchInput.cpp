@@ -54,6 +54,7 @@ bool MaatouchInput::press_key(int key)
     LogInfo << VAR(key);
 
     if (!pipe_ios_) {
+        LogError << "pipe_ios_ is nullptr";
         return false;
     }
 
@@ -69,7 +70,7 @@ bool MaatouchInput::press_key(int key)
         return false;
     }
 
-    return ret;
+    return true;
 }
 
 MAA_CTRL_UNIT_NS_END

@@ -39,8 +39,8 @@ private:
     std::condition_variable cond_;
     std::thread pull_thread_;
 
-    std::shared_ptr<ChildPipeIOStream> pipe_ios_;
-    std::shared_ptr<SockIOStream> sock_ios_;
+    std::shared_ptr<ChildPipeIOStream> pipe_ios_ = nullptr;
+    std::shared_ptr<SockIOStream> sock_ios_ = nullptr;
 };
 
 MAA_CTRL_UNIT_NS_END

@@ -42,8 +42,8 @@ bool MinicapStream::init(int swidth, int sheight)
         return false;
     }
 
-    auto output_opt = startup_and_read_pipe(*argv_opt);
-    if (!output_opt) {
+    auto startup_output_opt = startup_and_read_pipe(*argv_opt);
+    if (!startup_output_opt) {
         return false;
     }
 
@@ -53,15 +53,15 @@ bool MinicapStream::init(int swidth, int sheight)
     pipe_ios_ = binary_->invoke_bin(MAA_FMT::format("-P {}x{}@{}x{}/{}", width, height, width, height, 0));
 
     if (!pipe_ios_) {
-        LogError << "invoke_bin failed";
+        LogError << "pipe_ios_ is nullptr";
         return false;
     }
 
     constexpr std::string_view kFlag = "Allocating";
     using namespace std::chrono_literals;
-    std::string output = pipe_ios_->read_until(kFlag, 10s);
-    if (!output.ends_with(kFlag)) {
-        LogError << "read_until failed" << VAR(output);
+    std::string invoke_output = pipe_ios_->read_until(kFlag, 10s);
+    if (!invoke_output.ends_with(kFlag)) {
+        LogError << "read_until failed" << VAR(invoke_output);
         return false;
     }
 
