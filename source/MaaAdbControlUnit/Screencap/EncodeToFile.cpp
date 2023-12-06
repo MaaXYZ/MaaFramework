@@ -33,14 +33,28 @@ std::optional<cv::Mat> ScreencapEncodeToFileAndPull::screencap()
 
     merge_replacement({ { "{TEMP_FILE}", tempname_ }, { "{DST_PATH}", path_to_crt_string(dst_path) } });
 
-    auto argv_opt = screencap_encode_to_file_argv_.gen(argv_replace_);
-    if (!argv_opt) {
-        return std::nullopt;
+    {
+        auto argv_opt = screencap_encode_to_file_argv_.gen(argv_replace_);
+        if (!argv_opt) {
+            return std::nullopt;
+        }
+
+        auto output_opt = startup_and_read_pipe(*argv_opt);
+        if (!output_opt) {
+            return std::nullopt;
+        }
     }
 
-    auto output_opt = startup_and_read_pipe(*argv_opt);
-    if (!output_opt) {
-        return std::nullopt;
+    {
+        auto argv_opt = pull_file_argv_.gen(argv_replace_);
+        if (!argv_opt) {
+            return std::nullopt;
+        }
+
+        auto output_opt = startup_and_read_pipe(*argv_opt);
+        if (!output_opt) {
+            return std::nullopt;
+        }
     }
 
     auto image = imread(dst_path);

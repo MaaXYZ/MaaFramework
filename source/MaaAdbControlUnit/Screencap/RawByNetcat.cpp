@@ -1,5 +1,7 @@
 #include "RawByNetcat.h"
 
+#include "Utils/IOStream/ChildPipeIOStream.h"
+#include "Utils/IOStream/SockIOStream.h"
 #include "Utils/Logger.h"
 
 MAA_CTRL_UNIT_NS_BEGIN
@@ -59,17 +61,32 @@ std::optional<cv::Mat> ScreencapRawByNetcat::screencap()
     if (!argv_opt) {
         return std::nullopt;
     }
+    auto start_time = std::chrono::steady_clock::now();
 
-    // netcat 能用的时候一般都很快，但连不上的时候会一直卡着，所以超时设短一点
-    using namespace std::chrono_literals;
-    constexpr auto kTimeout = 2s;
-    auto output_opt = startup_and_read_pipe(*argv_opt, kTimeout);
-    if (!output_opt) {
+    auto& argv = *argv_opt;
+
+    ChildPipeIOStream child(argv.exec, argv.args);
+
+    auto ios = io_factory_->accept();
+    if (!ios) {
+        LogError << "accept failed" << VAR(argv.exec) << VAR(argv.args);
         return std::nullopt;
     }
 
+    using namespace std::chrono_literals;
+    // netcat 能用的时候一般都很快，但连不上的时候会一直卡着，所以超时设短一点
+    std::string output = ios->read(2s);
+    ios->release();
+
+    auto duration = duration_since(start_time);
+    LogDebug << VAR(argv.exec) << VAR(argv.args) << VAR(output.size()) << VAR(duration);
+
+    if (!child.release()) {
+        LogWarn << "child return error" << VAR(argv.exec) << VAR(argv.args);
+    }
+
     return screencap_helper_.process_data(
-        *output_opt, std::bind(&ScreencapHelper::decode_raw, &screencap_helper_, std::placeholders::_1));
+        output, std::bind(&ScreencapHelper::decode_raw, &screencap_helper_, std::placeholders::_1));
 }
 
 std::optional<std::string> ScreencapRawByNetcat::request_netcat_address()

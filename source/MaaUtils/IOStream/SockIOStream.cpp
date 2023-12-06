@@ -65,7 +65,10 @@ std::shared_ptr<SockIOStream> ClientSockIOFactory::connect()
 
 SockIOStream::SockIOStream(boost::asio::ip::tcp::iostream&& ios) : ios_(std::move(ios)) {}
 
-SockIOStream::~SockIOStream() {}
+SockIOStream::~SockIOStream()
+{
+    release();
+}
 
 bool SockIOStream::write(std::string_view data)
 {

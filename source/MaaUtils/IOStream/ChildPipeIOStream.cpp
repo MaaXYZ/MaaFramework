@@ -13,7 +13,9 @@ ChildPipeIOStream::ChildPipeIOStream(const std::filesystem::path& exec, const st
           boost::process::windows::create_no_window
 #endif
       )
-{}
+{
+    LogDebug << VAR(exec) << VAR(args);
+}
 
 ChildPipeIOStream::~ChildPipeIOStream()
 {
@@ -33,6 +35,12 @@ bool ChildPipeIOStream::write(std::string_view data)
 
 bool ChildPipeIOStream::release()
 {
+    auto start_time = std::chrono::steady_clock::now();
+    using namespace std::chrono_literals;
+    while (child_.running() && duration_since(start_time) < 100ms) {
+        std::this_thread::yield();
+    }
+
     if (child_.running()) {
         child_.terminate();
     }

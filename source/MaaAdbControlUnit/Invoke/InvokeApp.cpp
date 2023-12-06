@@ -99,7 +99,7 @@ bool InvokeApp::push(const std::filesystem::path& path)
     std::string absolute_path = path_to_crt_string(std::filesystem::absolute(path));
     merge_replacement({ { "{BIN_PATH}", absolute_path }, { "{BIN_WORKING_FILE}", tempname_ } });
 
-    auto argv_opt = sdk_argv_.gen(argv_replace_);
+    auto argv_opt = push_bin_argv_.gen(argv_replace_);
     if (!argv_opt) {
         return false;
     }
