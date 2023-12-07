@@ -3,6 +3,7 @@
 #include "Base/UnitBase.h"
 
 #include "Invoke/InvokeApp.h"
+#include "Utils/IOStream/ChildPipeIOStream.h"
 
 MAA_CTRL_UNIT_NS_BEGIN
 
@@ -29,7 +30,7 @@ protected:
     static constexpr std::string_view kMoveFormat = "m {} {} {} {}\nc\n";
     static constexpr std::string_view kUpFormat = "u {}\nc\n";
 
-    std::shared_ptr<IOHandler> shell_handler_ = nullptr;
+    std::shared_ptr<ChildPipeIOStream> pipe_ios_ = nullptr;
 
     int screen_width_ = 0;
     int screen_height_ = 0;

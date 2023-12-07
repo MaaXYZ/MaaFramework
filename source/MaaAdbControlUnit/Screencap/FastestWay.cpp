@@ -115,13 +115,15 @@ bool ScreencapFastestWay::speed_test()
     // MinicapStream 是直接取数据，只取一次不准
     const std::unordered_set<Method> kDropFirst = { Method::RawByNetcat, Method::MinicapStream };
 
-    for (auto pair : units_) {
+    for (auto& pair : units_) {
         if (kDropFirst.contains(pair.first)) {
+            LogDebug << "Testing" << pair.first << "drop first";
             if (!pair.second->screencap()) {
                 continue;
             }
         }
 
+        LogDebug << "Testing" << pair.first;
         auto now = std::chrono::steady_clock::now();
         if (pair.second->screencap()) {
             check(pair.first, now);

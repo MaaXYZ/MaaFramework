@@ -4,8 +4,11 @@
 #include <mutex>
 #include <type_traits>
 
+#define BOOST_DLL_USE_STD_FS 1
+#include <boost/dll.hpp>
+#include <boost/function.hpp>
+
 #include "Conf/Conf.h"
-#include "Utils/Boost.hpp"
 #include "Utils/Logger.h"
 
 MAA_NS_BEGIN
@@ -57,7 +60,7 @@ inline bool LibraryHolder<T>::load_library(const std::filesystem::path& libname)
     boost::dll::fs::error_code ec;
     module_.load(libname, ec, boost::dll::load_mode::append_decorations | boost::dll::load_mode::search_system_folders);
 
-    if (ec.value() != boost::system::errc::success) {
+    if (ec) {
         auto message = ec.message();
         LogError << "Failed to load library" << VAR(libname) << VAR(message);
         return false;

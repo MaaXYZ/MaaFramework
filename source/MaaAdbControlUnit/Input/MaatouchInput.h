@@ -22,17 +22,12 @@ public:
 public: // from UnitBase
     virtual bool parse(const json::value& config) override;
 
-    virtual void set_io(std::shared_ptr<PlatformIO> io_ptr) override
-    {
-        TouchInputBase::set_io(io_ptr);
-        KeyInputBase::set_io(io_ptr);
-    }
-    virtual void set_replacement(Argv::replacement argv_replace) override
+    virtual void set_replacement(UnitBase::Replacement argv_replace) override
     {
         TouchInputBase::set_replacement(argv_replace);
         KeyInputBase::set_replacement(argv_replace);
     }
-    virtual void merge_replacement(Argv::replacement argv_replace, bool _override = true) override
+    virtual void merge_replacement(UnitBase::Replacement argv_replace, bool _override = true) override
     {
         TouchInputBase::merge_replacement(argv_replace, _override);
         KeyInputBase::merge_replacement(argv_replace, _override);

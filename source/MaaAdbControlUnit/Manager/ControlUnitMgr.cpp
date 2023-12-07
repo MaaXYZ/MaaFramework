@@ -238,25 +238,7 @@ bool ControlUnitMgr::parse(const json::value& config)
     return ret;
 }
 
-void ControlUnitMgr::set_io(const std::shared_ptr<PlatformIO>& io_ptr)
-{
-    device_list_.set_io(io_ptr);
-    connection_.set_io(io_ptr);
-    device_info_.set_io(io_ptr);
-    activity_.set_io(io_ptr);
-
-    if (touch_input_) {
-        touch_input_->set_io(io_ptr);
-    }
-    if (key_input_) {
-        key_input_->set_io(io_ptr);
-    }
-    if (screencap_) {
-        screencap_->set_io(io_ptr);
-    }
-}
-
-void ControlUnitMgr::set_replacement(const std::map<std::string, std::string>& replacement)
+void ControlUnitMgr::set_replacement(const UnitBase::Replacement& replacement)
 {
     device_list_.set_replacement(replacement);
     connection_.set_replacement(replacement);

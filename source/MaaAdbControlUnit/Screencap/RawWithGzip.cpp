@@ -20,19 +20,18 @@ bool ScreencapRawWithGzip::init(int swidth, int sheight)
 
 std::optional<cv::Mat> ScreencapRawWithGzip::screencap()
 {
-    if (!io_ptr_) {
-        LogError << "io_ptr is nullptr";
+    auto argv_opt = screencap_raw_with_gzip_argv_.gen(argv_replace_);
+    if (!argv_opt) {
         return std::nullopt;
     }
 
-    auto cmd_ret = command(screencap_raw_with_gzip_argv_.gen(argv_replace_));
-
-    if (!cmd_ret) {
+    auto output_opt = startup_and_read_pipe(*argv_opt);
+    if (!output_opt) {
         return std::nullopt;
     }
 
     return screencap_helper_.process_data(
-        cmd_ret.value(), std::bind(&ScreencapHelper::decode_gzip, &screencap_helper_, std::placeholders::_1));
+        *output_opt, std::bind(&ScreencapHelper::decode_gzip, &screencap_helper_, std::placeholders::_1));
 }
 
 MAA_CTRL_UNIT_NS_END

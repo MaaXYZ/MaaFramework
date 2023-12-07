@@ -21,7 +21,7 @@ public: // from ScreencapAPI
     virtual std::optional<cv::Mat> screencap() override;
 
 private:
-    Argv screencap_encode_argv_;
+    ProcessArgvGenerator screencap_encode_argv_;
 };
 
 MAA_CTRL_UNIT_NS_END

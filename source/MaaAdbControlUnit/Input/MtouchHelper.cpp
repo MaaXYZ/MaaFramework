@@ -11,43 +11,21 @@ MAA_CTRL_UNIT_NS_BEGIN
 
 bool MtouchHelper::read_info(int swidth, int sheight, int orientation)
 {
-    auto start_time = std::chrono::steady_clock::now();
-    bool timeout = false;
-    auto check_time = [&]() {
-        timeout = duration_since(start_time) > std::chrono::seconds(10);
-        return !timeout;
-    };
-
-    std::string prev;
-    std::string info;
-
-    while (check_time()) {
-        auto str = prev + shell_handler_->read(5);
-        LogDebug << "output:" << str;
-        if (str.empty()) {
-            std::this_thread::sleep_for(std::chrono::seconds(2));
-            continue;
-        }
-        auto pos = str.find('^');
-        if (pos == std::string::npos) {
-            continue;
-        }
-        auto rpos = str.find('\n', pos);
-        if (rpos == std::string::npos) {
-            prev = str; // 也许还得再读点?
-            continue;
-        }
-
-        info = str.substr(pos + 1, rpos - pos - 1);
-        break;
-    }
-    if (timeout) {
-        LogError << "read info timeout";
+    if (!pipe_ios_) {
+        LogError << "pipe_ios_ is nullptr";
         return false;
     }
 
-    LogInfo << "info:" << info;
-    string_trim_(info);
+    using namespace std::chrono_literals;
+    std::ignore = pipe_ios_->read_until("^", 5s);
+    constexpr std::string_view kFlag = "\n";
+    std::string info = pipe_ios_->read_until(kFlag, 1s);
+
+    if (!info.ends_with(kFlag)) {
+        LogError << "failed to read info";
+        return false;
+    }
+    LogInfo << VAR(info);
 
     int contact = 0;
     int x = 0;
@@ -77,8 +55,8 @@ bool MtouchHelper::read_info(int swidth, int sheight, int orientation)
 
 bool MtouchHelper::click(int x, int y)
 {
-    if (!shell_handler_) {
-        LogError << "shell handler not ready";
+    if (!pipe_ios_) {
+        LogError << "pipe_ios_ is nullptr";
         return false;
     }
 
@@ -92,20 +70,21 @@ bool MtouchHelper::click(int x, int y)
 
     LogInfo << VAR(x) << VAR(y) << VAR(touch_x) << VAR(touch_y);
 
-    bool ret = shell_handler_->write(MAA_FMT::format(kDownFormat, 0, touch_x, touch_y, press_)) &&
-               shell_handler_->write(MAA_FMT::format(kUpFormat, 0));
+    bool ret = pipe_ios_->write(MAA_FMT::format(kDownFormat, 0, touch_x, touch_y, press_)) &&
+               pipe_ios_->write(MAA_FMT::format(kUpFormat, 0));
 
     if (!ret) {
         LogError << "failed to write";
         return false;
     }
 
-    return ret;
+    return true;
 }
 
 bool MtouchHelper::swipe(int x1, int y1, int x2, int y2, int duration)
 {
-    if (!shell_handler_) {
+    if (!pipe_ios_) {
+        LogError << "pipe_ios_ is nullptr";
         return false;
     }
 
@@ -131,7 +110,7 @@ bool MtouchHelper::swipe(int x1, int y1, int x2, int y2, int duration)
     auto start = std::chrono::steady_clock::now();
     auto now = start;
     bool ret = true;
-    ret &= shell_handler_->write(MAA_FMT::format(kDownFormat, 0, touch_x1, touch_y1, press_));
+    ret &= pipe_ios_->write(MAA_FMT::format(kDownFormat, 0, touch_x1, touch_y1, press_));
     if (!ret) {
         LogError << "write error";
         return false;
@@ -148,7 +127,7 @@ bool MtouchHelper::swipe(int x1, int y1, int x2, int y2, int duration)
         std::this_thread::sleep_until(now + delay);
         now = std::chrono::steady_clock::now();
 
-        ret &= shell_handler_->write(MAA_FMT::format(kMoveFormat, 0, tx, ty, press_));
+        ret &= pipe_ios_->write(MAA_FMT::format(kMoveFormat, 0, tx, ty, press_));
         if (!ret) {
             LogWarn << "write error";
         }
@@ -156,24 +135,24 @@ bool MtouchHelper::swipe(int x1, int y1, int x2, int y2, int duration)
 
     std::this_thread::sleep_until(now + delay);
     now = std::chrono::steady_clock::now();
-    ret &= shell_handler_->write(MAA_FMT::format(kMoveFormat, 0, touch_x2, touch_y2, press_));
+    ret &= pipe_ios_->write(MAA_FMT::format(kMoveFormat, 0, touch_x2, touch_y2, press_));
 
     std::this_thread::sleep_until(now + delay);
     now = std::chrono::steady_clock::now();
-    ret &= shell_handler_->write(MAA_FMT::format(kUpFormat, 0));
+    ret &= pipe_ios_->write(MAA_FMT::format(kUpFormat, 0));
 
     if (!ret) {
         LogError << "failed to write";
         return false;
     }
 
-    return ret;
+    return true;
 }
 
 bool MtouchHelper::touch_down(int contact, int x, int y, int pressure)
 {
-    if (!shell_handler_) {
-        LogError << "shell handler not ready";
+    if (!pipe_ios_) {
+        LogError << "pipe_ios_ is nullptr";
         return false;
     }
 
@@ -181,20 +160,20 @@ bool MtouchHelper::touch_down(int contact, int x, int y, int pressure)
 
     LogInfo << VAR(contact) << VAR(x) << VAR(y) << VAR(touch_x) << VAR(touch_y);
 
-    bool ret = shell_handler_->write(MAA_FMT::format(kDownFormat, contact, touch_x, touch_y, pressure));
+    bool ret = pipe_ios_->write(MAA_FMT::format(kDownFormat, contact, touch_x, touch_y, pressure));
 
     if (!ret) {
         LogError << "failed to write";
         return false;
     }
 
-    return ret;
+    return true;
 }
 
 bool MtouchHelper::touch_move(int contact, int x, int y, int pressure)
 {
-    if (!shell_handler_) {
-        LogError << "shell handler not ready";
+    if (!pipe_ios_) {
+        LogError << "pipe_ios_ is nullptr";
         return false;
     }
 
@@ -202,33 +181,33 @@ bool MtouchHelper::touch_move(int contact, int x, int y, int pressure)
 
     LogInfo << VAR(contact) << VAR(x) << VAR(y) << VAR(touch_x) << VAR(touch_y);
 
-    bool ret = shell_handler_->write(MAA_FMT::format(kMoveFormat, contact, touch_x, touch_y, pressure));
+    bool ret = pipe_ios_->write(MAA_FMT::format(kMoveFormat, contact, touch_x, touch_y, pressure));
 
     if (!ret) {
         LogError << "failed to write";
         return false;
     }
 
-    return ret;
+    return true;
 }
 
 bool MtouchHelper::touch_up(int contact)
 {
-    if (!shell_handler_) {
-        LogError << "shell handler not ready";
+    if (!pipe_ios_) {
+        LogError << "pipe_ios_ is nullptr";
         return false;
     }
 
     LogInfo << VAR(contact);
 
-    bool ret = shell_handler_->write(MAA_FMT::format(kUpFormat, contact));
+    bool ret = pipe_ios_->write(MAA_FMT::format(kUpFormat, contact));
 
     if (!ret) {
         LogError << "failed to write";
         return false;
     }
 
-    return ret;
+    return true;
 }
 
 MAA_CTRL_UNIT_NS_END

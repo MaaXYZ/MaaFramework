@@ -45,9 +45,10 @@ bool InvokeApp::parse(const json::value& config)
 
 bool InvokeApp::init(const std::string& force_temp)
 {
-    LogFunc;
-
     tempname_ = force_temp.empty() ? now_filestem() : force_temp;
+
+    LogDebug << VAR(tempname_);
+
     return true;
 }
 
@@ -55,25 +56,34 @@ std::optional<std::vector<std::string>> InvokeApp::abilist()
 {
     LogFunc;
 
-    auto cmd_ret = command(abilist_argv_.gen(argv_replace_));
-
-    if (!cmd_ret) {
+    auto argv_opt = abilist_argv_.gen(argv_replace_);
+    if (!argv_opt) {
         return std::nullopt;
     }
 
-    return string_split(*cmd_ret, ',');
+    auto output_opt = startup_and_read_pipe(*argv_opt);
+    if (!output_opt) {
+        return std::nullopt;
+    }
+
+    return string_split(*output_opt, ',');
 }
 
 std::optional<int> InvokeApp::sdk()
 {
     LogFunc;
 
-    auto cmd_ret = command(sdk_argv_.gen(argv_replace_));
-
-    if (!cmd_ret) {
+    auto argv_opt = sdk_argv_.gen(argv_replace_);
+    if (!argv_opt) {
         return std::nullopt;
     }
-    std::string& ret = *cmd_ret;
+
+    auto output_opt = startup_and_read_pipe(*argv_opt);
+    if (!output_opt) {
+        return std::nullopt;
+    }
+
+    std::string& ret = *output_opt;
     string_trim_(ret);
 
     if (!MAA_RNS::ranges::all_of(ret, [](char c) { return std::isdigit(c); })) {
@@ -84,18 +94,18 @@ std::optional<int> InvokeApp::sdk()
 
 bool InvokeApp::push(const std::filesystem::path& path)
 {
-    LogFunc;
-
-    if (!io_ptr_) {
-        LogError << "io_ptr is nullptr";
-        return false;
-    }
+    LogFunc << VAR(path);
 
     std::string absolute_path = path_to_crt_string(std::filesystem::absolute(path));
     merge_replacement({ { "{BIN_PATH}", absolute_path }, { "{BIN_WORKING_FILE}", tempname_ } });
-    auto cmd_ret = command(push_bin_argv_.gen(argv_replace_));
 
-    if (!cmd_ret) {
+    auto argv_opt = push_bin_argv_.gen(argv_replace_);
+    if (!argv_opt) {
+        return false;
+    }
+
+    auto output_opt = startup_and_read_pipe(*argv_opt);
+    if (!output_opt) {
         return false;
     }
 
@@ -106,60 +116,61 @@ bool InvokeApp::chmod()
 {
     LogFunc;
 
-    if (!io_ptr_) {
-        LogError << "io_ptr is nullptr";
+    merge_replacement({ { "{BIN_WORKING_FILE}", tempname_ } });
+
+    auto argv_opt = chmod_bin_argv_.gen(argv_replace_);
+    if (!argv_opt) {
         return false;
     }
 
-    merge_replacement({ { "{BIN_WORKING_FILE}", tempname_ } });
-    auto cmd_ret = command(chmod_bin_argv_.gen(argv_replace_));
-
-    if (!cmd_ret) {
+    auto output_opt = startup_and_read_pipe(*argv_opt);
+    if (!output_opt) {
         return false;
     }
 
     return true;
 }
 
-std::optional<std::string> InvokeApp::invoke_bin_stdout(const std::string& extra)
+std::optional<std::string> InvokeApp::invoke_bin_and_read_pipe(const std::string& extra)
 {
-    LogFunc;
+    LogFunc << VAR(extra);
 
     merge_replacement({ { "{BIN_WORKING_FILE}", tempname_ }, { "{BIN_EXTRA_PARAMS}", extra } });
-    LogInfo << invoke_bin_argv_.gen(argv_replace_);
-    return command(invoke_bin_argv_.gen(argv_replace_));
+
+    auto argv_opt = invoke_bin_argv_.gen(argv_replace_);
+    if (!argv_opt) {
+        return std::nullopt;
+    }
+
+    return startup_and_read_pipe(*argv_opt);
 }
 
-std::shared_ptr<IOHandler> InvokeApp::invoke_bin(const std::string& extra, bool wants_stderr)
+std::shared_ptr<ChildPipeIOStream> InvokeApp::invoke_bin(const std::string& extra)
 {
-    LogFunc;
+    LogFunc << VAR(extra);
 
-    if (!io_ptr_) {
-        LogError << "io_ptr is nullptr";
+    merge_replacement({ { "{BIN_WORKING_FILE}", tempname_ }, { "{BIN_EXTRA_PARAMS}", extra } });
+
+    auto argv_opt = invoke_bin_argv_.gen(argv_replace_);
+    if (!argv_opt) {
         return nullptr;
     }
 
-    merge_replacement({ { "{BIN_WORKING_FILE}", tempname_ }, { "{BIN_EXTRA_PARAMS}", extra } });
-    LogInfo << invoke_bin_argv_.gen(argv_replace_);
-    auto cmd_ret = io_ptr_->interactive_shell(invoke_bin_argv_.gen(argv_replace_), wants_stderr);
-
-    return cmd_ret;
+    return std::make_shared<ChildPipeIOStream>(argv_opt->exec, argv_opt->args);
 }
 
-std::shared_ptr<IOHandler> InvokeApp::invoke_app(const std::string& package)
+std::shared_ptr<ChildPipeIOStream> InvokeApp::invoke_app(const std::string& package)
 {
-    LogFunc;
-
-    if (!io_ptr_) {
-        LogError << "io_ptr is nullptr";
-        return nullptr;
-    }
+    LogFunc << VAR(package);
 
     merge_replacement({ { "{APP_WORKING_FILE}", tempname_ }, { "{PACKAGE_NAME}", package } });
-    LogInfo << invoke_app_argv_.gen(argv_replace_);
-    auto cmd_ret = io_ptr_->interactive_shell(invoke_app_argv_.gen(argv_replace_), false);
 
-    return cmd_ret;
+    auto argv_opt = invoke_app_argv_.gen(argv_replace_);
+    if (!argv_opt) {
+        return nullptr;
+    }
+
+    return std::make_shared<ChildPipeIOStream>(argv_opt->exec, argv_opt->args);
 }
 
 MAA_CTRL_UNIT_NS_END

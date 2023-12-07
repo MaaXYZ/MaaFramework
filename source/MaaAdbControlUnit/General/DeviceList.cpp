@@ -20,9 +20,13 @@ std::optional<std::vector<std::string>> DeviceList::request_devices()
 {
     LogFunc;
 
-    auto cmd_ret = command(devices_argv_.gen(argv_replace_));
+    auto argv_opt = devices_argv_.gen(argv_replace_);
+    if (!argv_opt) {
+        return std::nullopt;
+    }
 
-    if (!cmd_ret) {
+    auto output_opt = startup_and_read_pipe(*argv_opt);
+    if (!output_opt) {
         return std::nullopt;
     }
 
@@ -30,7 +34,7 @@ std::optional<std::vector<std::string>> DeviceList::request_devices()
     // List of devices attached
     // 127.0.0.1:16384 offline
     // 127.0.0.1:16416 device
-    auto devices_str = std::move(cmd_ret).value();
+    auto devices_str = std::move(output_opt).value();
     auto lines = string_split(devices_str, '\n');
     if (lines.empty()) {
         return {};

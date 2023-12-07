@@ -38,29 +38,24 @@ bool MinicapBase::init(int swidth, int sheight)
 {
     LogFunc;
 
-    if (!io_ptr_) {
-        LogError << "io_ptr is nullptr";
-        return false;
-    }
-
     if (!binary_->init() || !library_->init("minicap.so")) {
         return false;
     }
 
-    auto archs = binary_->abilist();
-    auto sdk = binary_->sdk();
+    auto archs_opt = binary_->abilist();
+    auto sdk_opt = binary_->sdk();
 
-    if (!archs || !sdk) {
+    if (!archs_opt || !sdk_opt) {
         return false;
     }
 
-    auto arch_iter = MAA_RNS::ranges::find_first_of(*archs, arch_list_);
-    if (arch_iter == archs->end()) {
+    auto arch_iter = MAA_RNS::ranges::find_first_of(*archs_opt, arch_list_);
+    if (arch_iter == archs_opt->end()) {
         return false;
     }
     const std::string& target_arch = *arch_iter;
 
-    auto sdk_iter = MAA_RNS::ranges::find_if(sdk_list_, [sdk](int s) { return s <= sdk.value(); });
+    auto sdk_iter = MAA_RNS::ranges::find_if(sdk_list_, [sdk_opt](int s) { return s <= sdk_opt.value(); });
     if (sdk_iter == sdk_list_.end()) {
         return false;
     }

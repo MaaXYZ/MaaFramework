@@ -29,27 +29,43 @@ bool ScreencapEncodeToFileAndPull::init(int swidth, int sheight)
 
 std::optional<cv::Mat> ScreencapEncodeToFileAndPull::screencap()
 {
-    if (!io_ptr_) {
-        LogError << "io_ptr is nullptr";
-        return std::nullopt;
-    }
-
     auto dst_path = std::filesystem::temp_directory_path() / now_filestem();
 
     merge_replacement({ { "{TEMP_FILE}", tempname_ }, { "{DST_PATH}", path_to_crt_string(dst_path) } });
-    auto cmd_ret = command(screencap_encode_to_file_argv_.gen(argv_replace_));
 
-    if (!cmd_ret) {
+    {
+        auto argv_opt = screencap_encode_to_file_argv_.gen(argv_replace_);
+        if (!argv_opt) {
+            return std::nullopt;
+        }
+
+        auto output_opt = startup_and_read_pipe(*argv_opt);
+        if (!output_opt) {
+            return std::nullopt;
+        }
+    }
+
+    {
+        auto argv_opt = pull_file_argv_.gen(argv_replace_);
+        if (!argv_opt) {
+            return std::nullopt;
+        }
+
+        auto output_opt = startup_and_read_pipe(*argv_opt);
+        if (!output_opt) {
+            return std::nullopt;
+        }
+    }
+
+    auto image = imread(dst_path);
+    std::filesystem::remove(dst_path);
+
+    if (image.empty()) {
+        LogError << "Failed to read image from" << dst_path;
         return std::nullopt;
     }
 
-    cmd_ret = command(pull_file_argv_.gen(argv_replace_));
-
-    if (!cmd_ret) {
-        return std::nullopt;
-    }
-
-    return imread(dst_path);
+    return image;
 }
 
 MAA_CTRL_UNIT_NS_END

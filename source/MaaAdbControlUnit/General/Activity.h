@@ -17,8 +17,8 @@ public:
     bool stop_app(const std::string& intent);
 
 private:
-    Argv start_app_argv_;
-    Argv stop_app_argv_;
+    ProcessArgvGenerator start_app_argv_;
+    ProcessArgvGenerator stop_app_argv_;
 };
 
 MAA_CTRL_UNIT_NS_END
