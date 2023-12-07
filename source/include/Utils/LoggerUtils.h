@@ -137,16 +137,22 @@ public:
             sep_ = std::forward<T>(value);
         }
         else {
-            stream(std::forward<T>(value));
+            stream(std::forward<T>(value), sep_);
         }
+        return *this;
+    }
+    template <typename T>
+    LogStream& operator,(T&& value)
+    {
+        stream(std::forward<T>(value), separator::none);
         return *this;
     }
 
 private:
     template <typename T>
-    void stream(T&& value)
+    void stream(T&& value, const separator& sep)
     {
-        buffer_ << string_converter_(std::forward<T>(value)) << sep_.str;
+        buffer_ << string_converter_(std::forward<T>(value)) << sep.str;
     }
 
     template <typename... args_t>
@@ -163,7 +169,7 @@ private:
         for (auto&& arg : { args... }) {
             props += MAA_FMT::format("[{}]", arg);
         }
-        stream(props);
+        stream(props, sep_);
     }
 
     std::string stdout_string();
