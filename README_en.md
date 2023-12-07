@@ -40,6 +40,7 @@ It offers low-code simplicity while maintaining high extensibility. The framewor
 - [Integration](docs/en_us/2.1-Integration.md)
 - [Callback Protocol](docs/en_us/2.2-CallbackProtocol.md)
 - [Pipeline Protocol](docs/en_us/3.1-PipelineProtocol.md)
+- [Custom Task](docs/en_us/2.3-CustomTask.md)
 
 ## Best Practices
 
