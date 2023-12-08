@@ -9,7 +9,7 @@
 
 <!-- prettier-ignore-start -->
 <!-- markdownlint-disable-next-line MD036 -->
-_✨ A cross-platform software automation testing framework based on image recognition ✨_
+_✨ A automation black-box testing framework based on image recognition ✨_
 <!-- prettier-ignore-end -->
 
 </div>
@@ -30,9 +30,9 @@ _✨ A cross-platform software automation testing framework based on image recog
 
 ## Introduction
 
-**MaaFramework** is a next-generation software automation testing framework, completely rewritten and refined based on image recognition technology and the development experience of [MAA](https://github.com/MaaAssistantArknights/MaaAssistantArknights).
+**MaaFramework** is a next-generation automation black-box testing framework, completely rewritten and refined based on image recognition technology and the development experience of [MAA](https://github.com/MaaAssistantArknights/MaaAssistantArknights).
 
-It offers low-code simplicity while maintaining high extensibility. The framework aims to create a rich, leading-edge, and practical open-source library, empowering developers to easily write better test programs and promoting widespread use.
+It offers low-code simplicity while maintaining high extensibility. The framework aims to create a rich, leading-edge, and practical open-source library, empowering developers to easily write better black-box test programs and promoting widespread use.
 
 ## Get Started
 
