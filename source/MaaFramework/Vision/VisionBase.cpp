@@ -47,12 +47,6 @@ void VisionBase::handle_draw(const cv::Mat& draw) const
     if (save_draw_) {
         save_image(draw);
     }
-    if (show_draw_) {
-        const std::string kWinName = "Draw";
-        cv::imshow(kWinName, draw);
-        cv::waitKey(0);
-        cv::destroyWindow(kWinName);
-    }
 }
 
 void VisionBase::save_image(const cv::Mat& image) const
@@ -66,10 +60,8 @@ void VisionBase::save_image(const cv::Mat& image) const
 void VisionBase::init_debug_draw()
 {
     save_draw_ = GlobalOptionMgr::get_instance().save_draw();
-    show_draw_ = GlobalOptionMgr::get_instance().show_draw();
 
-    
-    if (save_draw_ || show_draw_) {
+    if (save_draw_) {
         debug_draw_ = true;
     }
     else {

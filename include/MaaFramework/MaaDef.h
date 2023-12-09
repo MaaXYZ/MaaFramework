@@ -74,7 +74,7 @@ enum MaaGlobalOptionEnum
     MaaGlobalOption_StdoutLevel = 4,
 
     // value: bool, eg: true; val_size: sizeof(bool)
-    MaaGlobalOption_ShowDraw = 5,
+    MaaGlobalOption_ShowHitDraw = 5,
 };
 
 typedef MaaOption MaaResOption;

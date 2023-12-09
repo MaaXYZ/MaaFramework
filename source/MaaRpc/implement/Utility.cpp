@@ -89,10 +89,10 @@ Status UtilityImpl::set_global_option(ServerContext* context, const ::maarpc::Se
             }
         }
         break;
-    case ::maarpc::SetGlobalOptionRequest::OptionCase::kShowDraw:
-        if (request->has_show_draw()) {
-            bool mode = request->show_draw();
-            if (MaaSetGlobalOption(MaaGlobalOption_ShowDraw, &mode, sizeof(mode))) {
+    case ::maarpc::SetGlobalOptionRequest::OptionCase::kShowHitDraw:
+        if (request->has_show_hit_draw()) {
+            bool mode = request->show_hit_draw();
+            if (MaaSetGlobalOption(MaaGlobalOption_ShowHitDraw, &mode, sizeof(mode))) {
                 return Status::OK;
             }
             else {

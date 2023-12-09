@@ -30,7 +30,6 @@ private:
 
 private:
     bool save_draw_ = false;
-    bool show_draw_ = false;
 };
 
 MAA_VISION_NS_END

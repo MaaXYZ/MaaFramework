@@ -303,7 +303,7 @@ message SetGlobalOptionRequest {
     bool save_draw = 2;
     bool recording = 3;
     int32 stdout_level = 4;
-    bool show_draw = 5;
+    bool show_hit_draw = 5;
   }
 }
 

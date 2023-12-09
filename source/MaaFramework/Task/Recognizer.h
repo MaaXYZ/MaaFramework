@@ -47,6 +47,8 @@ private:
     std::optional<Result> custom_recognize(const cv::Mat& image, const MAA_VISION_NS::CustomRecognizerParam& param,
                                            const std::string& name);
 
+    void show_hit_draw(const cv::Mat& image, const Result& res, const std::string& task_name) const;
+
 private:
     InstanceStatus* status() { return inst_ ? inst_->inter_status() : nullptr; }
     MAA_RES_NS::ResourceMgr* resource() { return inst_ ? inst_->inter_resource() : nullptr; }

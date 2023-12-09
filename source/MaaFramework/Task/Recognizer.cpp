@@ -1,6 +1,7 @@
 #include "Recognizer.h"
 
 #include "Instance/InstanceStatus.h"
+#include "Option/GlobalOptionMgr.h"
 #include "Resource/ResourceMgr.h"
 #include "Utils/Logger.h"
 #include "Vision/ColorMatcher.h"
@@ -68,6 +69,8 @@ std::optional<Recognizer::Result> Recognizer::recognize(const cv::Mat& image, co
     if (result) {
         status()->set_rec_box(task_data.name, result->box);
         status()->set_rec_detail(task_data.name, result->detail);
+
+        show_hit_draw(image, *result, task_data.name);
     }
 
     if (task_data.inverse) {
@@ -297,6 +300,24 @@ std::optional<Recognizer::Result> Recognizer::custom_recognize(const cv::Mat& im
     const cv::Rect& box = results.front().box;
     auto detail = json::serialize<false>(results);
     return Result { .box = box, .detail = std::move(detail) };
+}
+
+void Recognizer::show_hit_draw(const cv::Mat& image, const Result& res, const std::string& task_name) const
+{
+    if (!GlobalOptionMgr::get_instance().show_hit_draw()) {
+        return;
+    }
+
+    const std::string kWinName = MAA_FMT::format("Hit: {}", task_name);
+
+    cv::Mat draw = image.clone();
+
+    const cv::Scalar color(0, 255, 0);
+    cv::rectangle(draw, res.box, color, 2);
+
+    cv::imshow(kWinName, draw);
+    cv::waitKey(0);
+    cv::destroyWindow(kWinName);
 }
 
 MAA_TASK_NS_END
