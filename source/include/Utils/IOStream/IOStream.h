@@ -5,12 +5,12 @@
 #include <string_view>
 
 #include "BoostIO.hpp"
+#include "Conf/Conf.h"
 #include "MaaFramework/MaaPort.h"
-#include "Utils/NonCopyable.hpp"
 
 MAA_NS_BEGIN
 
-class MAA_UTILS_API IOStream : public NonCopyButMovable
+class MAA_UTILS_API IOStream
 {
     using duration_t = std::chrono::milliseconds;
 

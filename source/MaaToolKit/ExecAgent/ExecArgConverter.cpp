@@ -20,6 +20,15 @@ std::string ExecArgConverter::sync_context_to_arg(MaaSyncContextHandle sync_cont
     sync_contexts_.insert_or_assign(uuid, sync_context);
     return uuid;
 }
+MaaSyncContextHandle ExecArgConverter::arg_to_sync_context(const std::string& arg) const
+{
+    auto it = sync_contexts_.find(arg);
+    if (it == sync_contexts_.end()) {
+        LogError << "sync context not found";
+        return nullptr;
+    }
+    return it->second;
+}
 
 std::string ExecArgConverter::image_to_arg(const cv::Mat& image, ImageTransferMode mode)
 {
@@ -34,16 +43,6 @@ std::string ExecArgConverter::image_to_arg(const cv::Mat& image, ImageTransferMo
         LogError << "not implemented";
         return {};
     }
-}
-
-MaaSyncContextHandle ExecArgConverter::arg_to_sync_context(const std::string& arg) const
-{
-    auto it = sync_contexts_.find(arg);
-    if (it == sync_contexts_.end()) {
-        LogError << "sync context not found";
-        return nullptr;
-    }
-    return it->second;
 }
 
 MAA_TOOLKIT_NS_END

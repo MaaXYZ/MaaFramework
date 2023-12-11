@@ -18,9 +18,9 @@ public:
 
 public:
     std::string sync_context_to_arg(MaaSyncContextHandle sync_context);
-    std::string image_to_arg(const cv::Mat& image, ImageTransferMode mode);
-
     MaaSyncContextHandle arg_to_sync_context(const std::string& arg) const;
+
+    std::string image_to_arg(const cv::Mat& image, ImageTransferMode mode);
 
 private:
     std::map<std::string, MaaSyncContextHandle> sync_contexts_;

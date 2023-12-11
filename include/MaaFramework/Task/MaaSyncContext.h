@@ -31,9 +31,9 @@ extern "C"
     MaaBool MAA_FRAMEWORK_API MaaSyncContextTouchUp(MaaSyncContextHandle sync_context, int32_t contact);
 
     MaaBool MAA_FRAMEWORK_API MaaSyncContextScreencap(MaaSyncContextHandle sync_context,
-                                                      /* out */ MaaImageBufferHandle buffer);
+                                                      /* out */ MaaImageBufferHandle out_image);
     MaaBool MAA_FRAMEWORK_API MaaSyncContextGetTaskResult(MaaSyncContextHandle sync_context, MaaStringView task_name,
-                                                          /* out */ MaaStringBufferHandle buffer);
+                                                          /* out */ MaaStringBufferHandle out_task_result);
 
 #ifdef __cplusplus
 }

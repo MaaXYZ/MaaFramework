@@ -44,6 +44,12 @@ class MAA_UTILS_API SockIOStream : public IOStream
 {
 public:
     SockIOStream(boost::asio::ip::tcp::iostream&& ios);
+
+    // NonCopyButMovable
+    // https://stackoverflow.com/questions/29289956/c11-virtual-destructors-and-auto-generation-of-move-special-functions
+    SockIOStream(const SockIOStream&) = delete;
+    SockIOStream(SockIOStream&&) = default;
+
     virtual ~SockIOStream() override;
 
 public:

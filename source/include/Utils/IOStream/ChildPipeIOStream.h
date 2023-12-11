@@ -12,7 +12,12 @@ class MAA_UTILS_API ChildPipeIOStream : public IOStream
 public:
     ChildPipeIOStream(const std::filesystem::path& exec, const std::vector<std::string>& args);
 
-    virtual ~ChildPipeIOStream();
+    // NonCopyButMovable
+    // https://stackoverflow.com/questions/29289956/c11-virtual-destructors-and-auto-generation-of-move-special-functions
+    ChildPipeIOStream(const ChildPipeIOStream&) = delete;
+    ChildPipeIOStream(ChildPipeIOStream&&) = default;
+
+    virtual ~ChildPipeIOStream() override;
 
 public:
     virtual bool write(std::string_view data) override;
