@@ -27,8 +27,9 @@ public: // from ScreencapAPI
 
 private:
     std::optional<std::string> read(size_t count);
+    void release_thread();
 
-    void working_thread();
+    void pulling();
 
     ProcessArgvGenerator forward_argv_;
     int port_ = 0;

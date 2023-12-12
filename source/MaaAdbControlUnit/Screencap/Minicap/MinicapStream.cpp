@@ -9,10 +9,7 @@ MAA_CTRL_UNIT_NS_BEGIN
 
 MinicapStream::~MinicapStream()
 {
-    quit_ = true;
-    if (pull_thread_.joinable()) {
-        pull_thread_.join();
-    }
+    release_thread();
 }
 
 bool MinicapStream::parse(const json::value& config)
@@ -30,6 +27,8 @@ bool MinicapStream::parse(const json::value& config)
 bool MinicapStream::init(int swidth, int sheight)
 {
     LogFunc;
+
+    release_thread();
 
     if (!MinicapBase::init(swidth, sheight)) {
         return false;
@@ -111,7 +110,7 @@ bool MinicapStream::init(int swidth, int sheight)
     }
 
     quit_ = false;
-    pull_thread_ = std::thread(std::bind(&MinicapStream::working_thread, this));
+    pull_thread_ = std::thread(std::bind(&MinicapStream::pulling, this));
 
     return true;
 }
@@ -137,7 +136,15 @@ std::optional<std::string> MinicapStream::read(size_t count)
     return sock_ios_->read_some(count, 1s);
 }
 
-void MinicapStream::working_thread()
+void MinicapStream::release_thread()
+{
+    quit_ = true;
+    if (pull_thread_.joinable()) {
+        pull_thread_.join();
+    }
+}
+
+void MinicapStream::pulling()
 {
     LogFunc;
 
