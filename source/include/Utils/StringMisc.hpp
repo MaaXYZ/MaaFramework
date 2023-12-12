@@ -14,11 +14,34 @@ concept IsSomeKindOfString = std::same_as<CharT, char> || std::same_as<CharT, wc
 
 template <typename StringT, typename FromT, typename ToT>
 requires IsSomeKindOfString<StringT>
-inline void string_replace_all_(StringT& str, const FromT& from, const ToT& to)
-{
-    for (size_t pos = str.find(from); pos != StringT::npos; pos = str.find(from, pos + std::size(to))) {
-        str.replace(pos, std::size(from), to);
+template <typename StringT, typename FromT, typename ToT>
+inline StringT string_replace_all_(const StringT& str, const FromT& from, const ToT& to) {
+    if (from.empty()) return str;
+
+    StringT n_string;
+    n_string.reserve(str.size()); // Reserve to avoid multiple reallocations
+
+    auto from_ptr = std::begin(from);
+    for (auto pos = std::begin(str); pos != std::end(str); ++pos) {
+        // match from the first char
+        if (*pos == *std::begin(from)) {
+            auto tmp_pos = pos;
+            for (; tmp_pos != std::end(str) && from_ptr != std::end(from); ++tmp_pos, ++from_ptr) {
+                if (*tmp_pos != *from_ptr) { break; }
+            }
+            // if iterated through all char
+            if (std::distance(pos, tmp_pos) == std::distance(std::begin(from), std::end(from))) {
+                n_string.append(std::begin(to), std::end(to)); // add 'to' new string
+                pos = tmp_pos - 1; // skip
+            } else {
+                n_string += *pos;
+            }
+            from_ptr = std::begin(from);
+        } else {
+            n_string += *pos;
+        }
     }
+    return n_string;
 }
 
 template <typename StringT, typename MapT>
