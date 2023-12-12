@@ -30,6 +30,7 @@ bool ExecAgentBase::register_executor(MaaInstanceHandle handle, std::string_view
                            });
     if (!inserted || iter == exec_data_.end()) {
         LogError << "insert failed" << VAR(name);
+        return false;
     }
 
     bool registered = register_for_maa_inst(handle, name, iter->second);
@@ -174,10 +175,7 @@ json::value ExecAgentBase::ctx_run_task(const json::value& cmd)
     }
     const std::string& task_name = *task_name_opt;
 
-    std::string task_param = cmd.get("task_param", std::string());
-    if (task_param.empty()) {
-        task_param = json::object().to_string();
-    }
+    std::string task_param = cmd.get("task_param", MaaTaskParam_Empty);
 
     bool ret = MaaSyncContextRunTask(ctx, task_name.c_str(), task_param.c_str());
 
@@ -212,10 +210,7 @@ json::value ExecAgentBase::ctx_run_recognizer(const json::value& cmd)
     }
     const std::string& task_name = *task_name_opt;
 
-    std::string task_param = cmd.get("task_param", std::string());
-    if (task_param.empty()) {
-        task_param = json::object().to_string();
-    }
+    std::string task_param = cmd.get("task_param", MaaTaskParam_Empty);
 
     auto image_buff = MaaCreateImageBuffer();
     MaaSetImageRawData(image_buff, image.data, image.cols, image.rows, image.type());
@@ -261,10 +256,7 @@ json::value ExecAgentBase::ctx_run_action(const json::value& cmd)
     }
     const std::string& task_name = *task_name_opt;
 
-    std::string task_param = cmd.get("task_param", std::string());
-    if (task_param.empty()) {
-        task_param = json::object().to_string();
-    }
+    std::string task_param = cmd.get("task_param", MaaTaskParam_Empty);
 
     auto cur_box_opt = cmd.find<json::array>("cur_box");
     if (!cur_box_opt || cur_box_opt->size() != 4 || !cur_box_opt->all<int>()) {
