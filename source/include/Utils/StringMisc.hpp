@@ -12,12 +12,15 @@ MAA_NS_BEGIN
 template <typename StringT, typename CharT = MAA_RNS::ranges::range_value_t<StringT>>
 concept IsSomeKindOfString = std::same_as<CharT, char> || std::same_as<CharT, wchar_t>;
 
-template <typename StringT, typename FromT, typename ToT>
+template <typename StringT>
+using StringViewT = std::basic_string_view<MAA_RNS::ranges::range_value_t<StringT>>;
+
+template <typename StringT>
 requires IsSomeKindOfString<StringT>
-inline void string_replace_all_(StringT& str, const FromT& from, const ToT& to)
+inline void string_replace_all_(StringT& str, StringViewT<StringT> from, StringViewT<StringT> to)
 {
-    for (size_t pos = str.find(from); pos != StringT::npos; pos = str.find(from, pos + std::size(to))) {
-        str.replace(pos, std::size(from), to);
+    for (size_t pos = str.find(from); pos != StringT::npos; pos = str.find(from, pos + to.size())) {
+        str.replace(pos, from.size(), to);
     }
 }
 
@@ -31,9 +34,9 @@ inline void string_replace_all_(StringT& str, const MapT& replace_map)
     }
 }
 
-template <typename StringT, typename FromT, typename ToT>
+template <typename StringT>
 requires IsSomeKindOfString<StringT>
-[[nodiscard]] inline auto string_replace_all(StringT&& str, const FromT& from, const ToT& to)
+[[nodiscard]] inline auto string_replace_all(StringT&& str, StringViewT<StringT> from, StringViewT<StringT> to)
 {
     // TODO: better algorithm
     std::decay_t<StringT> result = std::forward<StringT>(str);
