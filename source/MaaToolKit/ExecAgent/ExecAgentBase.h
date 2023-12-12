@@ -2,9 +2,12 @@
 
 #include "Conf/Conf.h"
 
+#include <condition_variable>
 #include <map>
 #include <memory>
+#include <mutex>
 #include <string_view>
+#include <thread>
 
 #include <meojson/json.hpp>
 
@@ -59,8 +62,16 @@ private:
     json::value invalid_json();
     json::value gen_result(bool success);
 
+    void detach_child(ChildPipeIOStream&& child);
+    void child_daemon();
+
 private:
-    std::vector<ChildPipeIOStream> detached_child_;
+    std::vector<ChildPipeIOStream> detached_children_;
+
+    bool child_daemon_quit_ = true;
+    std::mutex child_daemon_mutex_;
+    std::condition_variable child_daemon_condvar_;
+    std::thread child_daemon_thread_;
 };
 
 MAA_TOOLKIT_NS_END

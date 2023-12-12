@@ -9,8 +9,15 @@ MAA_TOOLKIT_NS_BEGIN
 
 ExecAgentBase::~ExecAgentBase()
 {
-    for (auto& child : detached_child_) {
-        child.release();
+    child_daemon_quit_ = true;
+
+    {
+        std::unique_lock<std::mutex> lock(child_daemon_mutex_);
+        child_daemon_condvar_.notify_all();
+    }
+
+    if (child_daemon_thread_.joinable()) {
+        child_daemon_thread_.join();
     }
 }
 
@@ -83,7 +90,7 @@ std::optional<json::value> ExecAgentBase::run_executor(const std::filesystem::pa
     auto& result = *result_opt;
     bool detach = result.get("detach", false);
     if (detach) {
-        detached_child_.emplace_back(std::move(child));
+        detach_child(std::move(child));
     }
     else if (!child.release()) { // join
         LogError << "join and release failed";
@@ -549,6 +556,39 @@ json::value ExecAgentBase::invalid_json()
 json::value ExecAgentBase::gen_result(bool success)
 {
     return { { "return", success } };
+}
+
+void ExecAgentBase::detach_child(ChildPipeIOStream&& child)
+{
+    std::unique_lock<std::mutex> lock(child_daemon_mutex_);
+    detached_children_.emplace_back(std::move(child));
+
+    if (!child_daemon_thread_.joinable()) { // check if thread is null
+        child_daemon_thread_ = std::thread(std::bind(&ExecAgentBase::child_daemon, this));
+    }
+}
+
+void ExecAgentBase::child_daemon()
+{
+    LogFunc;
+
+    while (!child_daemon_quit_) {
+        std::unique_lock<std::mutex> lock(child_daemon_mutex_);
+
+        for (auto iter = detached_children_.begin(); iter != detached_children_.end();) {
+            if (iter->is_open()) {
+                ++iter;
+                continue;
+            }
+
+            LogInfo << "detached child closed, exit";
+            iter->release();
+            iter = detached_children_.erase(iter);
+        }
+
+        using namespace std::chrono_literals;
+        child_daemon_condvar_.wait_for(lock, 500ms);
+    }
 }
 
 MAA_TOOLKIT_NS_END

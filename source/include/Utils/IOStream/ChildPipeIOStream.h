@@ -16,6 +16,8 @@ public:
     // https://stackoverflow.com/questions/29289956/c11-virtual-destructors-and-auto-generation-of-move-special-functions
     ChildPipeIOStream(const ChildPipeIOStream&) = delete;
     ChildPipeIOStream(ChildPipeIOStream&&) = default;
+    ChildPipeIOStream& operator=(const ChildPipeIOStream&) = delete;
+    ChildPipeIOStream& operator=(ChildPipeIOStream&&) = default;
 
     virtual ~ChildPipeIOStream() override;
 

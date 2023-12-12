@@ -14,7 +14,7 @@ ChildPipeIOStream::ChildPipeIOStream(const std::filesystem::path& exec, const st
 #endif
       )
 {
-    LogDebug << VAR(exec) << VAR(args);
+    LogDebug << VAR(exec) << VAR(args) << VAR(child_.id());
 }
 
 ChildPipeIOStream::~ChildPipeIOStream()
@@ -51,7 +51,7 @@ bool ChildPipeIOStream::release()
     int code = child_.exit_code();
 
     if (code != 0) {
-        LogError << "child exit with" << code;
+        LogError << "child exit with" << code << VAR(child_.id());
         return false;
     }
 

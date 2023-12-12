@@ -49,6 +49,8 @@ public:
     // https://stackoverflow.com/questions/29289956/c11-virtual-destructors-and-auto-generation-of-move-special-functions
     SockIOStream(const SockIOStream&) = delete;
     SockIOStream(SockIOStream&&) = default;
+    SockIOStream& operator=(const SockIOStream&) = delete;
+    SockIOStream& operator=(SockIOStream&&) = default;
 
     virtual ~SockIOStream() override;
 
