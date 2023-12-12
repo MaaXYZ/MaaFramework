@@ -229,7 +229,7 @@ void Actuator::sleep(std::chrono::milliseconds ms) const
 
     auto interval = std::min(ms, 5000ms);
 
-    LogDebug << "ready to sleep" << ms << VAR(interval);
+    LogTrace << "ready to sleep" << ms << VAR(interval);
 
     for (auto sleep_time = interval; sleep_time <= ms && !need_exit(); sleep_time += interval) {
         std::this_thread::sleep_for(interval);
@@ -238,7 +238,7 @@ void Actuator::sleep(std::chrono::milliseconds ms) const
         std::this_thread::sleep_for(ms % interval);
     }
 
-    LogDebug << "end of sleep" << ms << VAR(interval);
+    LogTrace << "end of sleep" << ms << VAR(interval);
 }
 
 MAA_TASK_NS_END

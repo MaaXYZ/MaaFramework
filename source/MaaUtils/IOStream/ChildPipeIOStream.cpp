@@ -14,7 +14,7 @@ ChildPipeIOStream::ChildPipeIOStream(const std::filesystem::path& exec, const st
 #endif
       )
 {
-    LogDebug << VAR(exec) << VAR(args) << VAR(child_.id());
+    LogTrace << VAR(exec) << VAR(args) << VAR(child_.id());
 }
 
 ChildPipeIOStream::~ChildPipeIOStream()

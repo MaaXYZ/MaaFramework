@@ -29,7 +29,7 @@ bool CustomAction::run(const std::string& task_name, const MAA_RES_NS::Action::C
 
     bool ret = action_->run(&sync_ctx, task_name.c_str(), custom_param_string.c_str(), &box,
                             cur_rec_detail_string.c_str(), action_arg_);
-    LogDebug << VAR_VOIDP(action_) << VAR_VOIDP(action_->run) << VAR(ret);
+    LogTrace << VAR_VOIDP(action_) << VAR_VOIDP(action_->run) << VAR(ret);
 
     return ret;
 }

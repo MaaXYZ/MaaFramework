@@ -31,7 +31,7 @@ MaaControlUnitHandle MaaDbgControlUnitCreate(MaaDbgControllerType type, MaaStrin
         break;
     }
 
-    LogDebug << VAR_VOIDP(handle);
+    LogTrace << VAR_VOIDP(handle);
 
     return handle;
 }

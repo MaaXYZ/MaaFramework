@@ -247,7 +247,7 @@ bool get_and_check_value_or_array(const json::value& input, const std::string& k
 bool PipelineResMgr::parse_task(const std::string& name, const json::value& input, TaskData& output,
                                 const TaskData& default_value)
 {
-    LogDebug << VAR(name);
+    LogTrace << VAR(name);
 
     TaskData data;
     data.name = name;

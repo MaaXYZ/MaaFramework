@@ -132,7 +132,7 @@ std::optional<json::value> ExecAgentBase::handle_ipc(IOStream& ios, ImageTransfe
         ios.write(write + "\n");
     }
 
-    LogDebug << VAR(result);
+    LogTrace << VAR(result);
     return result;
 }
 

@@ -46,12 +46,12 @@ inline bool LibraryHolder<T>::load_library(const std::filesystem::path& libname)
 
     if (module_.is_loaded()) {
         if (libname_ != libname) {
-            LogError << "already loaded with different library" << VAR(libname_) << VAR(libname);
+            LogError << "Already loaded with different library" << VAR(libname_) << VAR(libname);
             return false;
         }
 
         ++ref_count_;
-        LogDebug << "already loaded" << VAR(ref_count_);
+        LogDebug << "Already loaded" << VAR(ref_count_);
         return true;
     }
 

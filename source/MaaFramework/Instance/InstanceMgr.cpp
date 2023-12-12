@@ -107,7 +107,7 @@ MaaTaskId InstanceMgr::post_task(std::string entry, std::string_view param)
         return MaaInvalidId;
     }
     auto id = task_runner_->post(task_ptr);
-    LogDebug << VAR(id);
+    LogTrace << VAR(id);
 
     return id;
 }
@@ -128,7 +128,7 @@ bool InstanceMgr::set_task_param(MaaTaskId task_id, std::string_view param)
             return;
         }
         ret = task_ptr->set_param(*param_opt);
-        LogDebug << VAR(id) << VAR(ret);
+        LogTrace << VAR(id) << VAR(ret);
     });
 
     return ret;

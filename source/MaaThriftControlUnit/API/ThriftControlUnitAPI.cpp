@@ -32,7 +32,7 @@ MaaControlUnitHandle MAA_CONTROL_UNIT_API MaaThriftControlUnitCreate( //
         break;
     }
 
-    LogDebug << VAR_VOIDP(handle);
+    LogTrace << VAR_VOIDP(handle);
 
     return handle;
 }

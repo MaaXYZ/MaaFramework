@@ -26,13 +26,13 @@ FeatureMatcher::ResultsVec FeatureMatcher::analyze() const
     ResultsVec results = foreach_rois(templ);
 
     auto cost = duration_since(start_time);
-    LogDebug << name_ << "Raw:" << VAR(results) << VAR(param_.template_path) << VAR(cost);
+    LogTrace << name_ << "Raw:" << VAR(results) << VAR(param_.template_path) << VAR(cost);
 
     int count = param_.count;
     filter(results, count);
 
     cost = duration_since(start_time);
-    LogDebug << name_ << "Filter:" << VAR(results) << VAR(param_.template_path) << VAR(count) << VAR(cost);
+    LogTrace << name_ << "Filter:" << VAR(results) << VAR(param_.template_path) << VAR(count) << VAR(cost);
 
     return results;
 }
@@ -180,7 +180,7 @@ FeatureMatcher::ResultsVec FeatureMatcher::postproc(const std::vector<std::vecto
         scene.emplace_back(keypoints_2[point[0].queryIdx].pt);
     }
 
-    LogDebug << name_ << "Match:" << VAR(good_matches.size()) << VAR(match_points.size()) << VAR(param_.distance_ratio);
+    LogTrace << name_ << "Match:" << VAR(good_matches.size()) << VAR(match_points.size()) << VAR(param_.distance_ratio);
 
     ResultsVec results;
     if (good_matches.size() >= 4) {

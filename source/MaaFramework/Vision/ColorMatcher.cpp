@@ -19,14 +19,14 @@ ColorMatcher::ResultsVec ColorMatcher::analyze() const
         ResultsVec results = foreach_rois(range, connected);
 
         auto cost = duration_since(start_time);
-        LogDebug << name_ << "Raw:" << VAR(results) << VAR(range.first) << VAR(range.second) << VAR(connected)
+        LogTrace << name_ << "Raw:" << VAR(results) << VAR(range.first) << VAR(range.second) << VAR(connected)
                  << VAR(cost);
 
         int count = param_.count;
         filter(results, count);
 
         cost = duration_since(start_time);
-        LogDebug << name_ << "Filter:" << VAR(results) << VAR(range.first) << VAR(range.second) << VAR(count)
+        LogTrace << name_ << "Filter:" << VAR(results) << VAR(range.first) << VAR(range.second) << VAR(count)
                  << VAR(connected) << VAR(cost);
 
         all_results.insert(all_results.end(), std::make_move_iterator(results.begin()),

@@ -49,7 +49,7 @@ std::shared_ptr<TemplateResMgr::Image> TemplateResMgr::load(const std::string& n
             continue;
         }
 
-        LogDebug << VAR(path);
+        LogTrace << VAR(path);
         cv::Mat image = MAA_NS::imread(path);
         if (image.empty()) {
             LogError << "Failed to load image: " << path;

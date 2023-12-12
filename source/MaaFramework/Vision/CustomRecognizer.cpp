@@ -43,7 +43,7 @@ CustomRecognizer::ResultsVec CustomRecognizer::analyze() const
     std::string detail(detail_buffer.data(), detail_buffer.size());
 
     auto cost = duration_since(start_time);
-    LogDebug << VAR(ret) << VAR(box) << VAR(detail) << VAR(cost);
+    LogTrace << VAR(ret) << VAR(box) << VAR(detail) << VAR(cost);
 
     if (!ret) {
         return {};

@@ -16,13 +16,13 @@ OCRer::ResultsVec OCRer::analyze() const
     ResultsVec results = foreach_rois();
 
     auto cost = duration_since(start_time);
-    LogDebug << name_ << "Raw:" << VAR(results) << VAR(param_.model) << VAR(cost);
+    LogTrace << name_ << "Raw:" << VAR(results) << VAR(param_.model) << VAR(cost);
 
     const auto& expected = param_.text;
     postproc_and_filter(results, expected);
 
     cost = duration_since(start_time);
-    LogDebug << name_ << "Proc:" << VAR(results) << VAR(expected) << VAR(param_.model) << VAR(cost);
+    LogTrace << name_ << "Proc:" << VAR(results) << VAR(expected) << VAR(param_.model) << VAR(cost);
     return results;
 }
 

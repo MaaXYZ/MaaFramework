@@ -21,7 +21,7 @@ void InstanceStatus::set_rec_box(std::string task, cv::Rect rec)
 
 void InstanceStatus::clear_rec_box()
 {
-    LogDebug;
+    LogTrace;
 
     rec_box_map_.clear();
 }
@@ -43,7 +43,7 @@ void InstanceStatus::set_rec_detail(std::string task, json::value detail)
 
 void InstanceStatus::clear_rec_detail()
 {
-    LogDebug;
+    LogTrace;
 
     rec_detail_map_.clear();
 }
@@ -65,7 +65,7 @@ void InstanceStatus::set_task_result(std::string task, json::value result)
 
 void InstanceStatus::clear_task_result()
 {
-    LogDebug;
+    LogTrace;
 
     task_result_map_.clear();
 }
@@ -86,7 +86,7 @@ void InstanceStatus::increase_run_times(const std::string& task, int times)
 
 void InstanceStatus::clear_run_times()
 {
-    LogDebug;
+    LogTrace;
 
     run_times_map_.clear();
 }

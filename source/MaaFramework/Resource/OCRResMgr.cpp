@@ -94,7 +94,7 @@ std::shared_ptr<fastdeploy::vision::ocr::DBDetector> OCRResMgr::load_deter(const
             continue;
         }
 
-        LogDebug << VAR(model_path);
+        LogTrace << VAR(model_path);
 
         auto model = read_file<std::string>(model_path);
 
@@ -127,7 +127,7 @@ std::shared_ptr<fastdeploy::vision::ocr::Recognizer> OCRResMgr::load_recer(const
             continue;
         }
 
-        LogDebug << VAR(model_path);
+        LogTrace << VAR(model_path);
 
         auto model = read_file<std::string>(model_path);
         auto label = read_file<std::string>(label_path);

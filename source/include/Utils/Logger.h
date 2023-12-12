@@ -109,7 +109,7 @@ public:
     LogScopeLeaveHelper(args_t&&... args) : args_(std::forward<args_t>(args)...) {}
     ~LogScopeLeaveHelper()
     {
-        std::apply([](auto&&... args) { return Logger::get_instance().debug(std::forward<decltype(args)>(args)...); },
+        std::apply([](auto&&... args) { return Logger::get_instance().trace(std::forward<decltype(args)>(args)...); },
                    std::move(args_))
             << "| leave," << duration_since(start_);
     }

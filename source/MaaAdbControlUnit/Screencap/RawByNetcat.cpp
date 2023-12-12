@@ -79,7 +79,7 @@ std::optional<cv::Mat> ScreencapRawByNetcat::screencap()
     ios->release();
 
     auto duration = duration_since(start_time);
-    LogDebug << VAR(argv.exec) << VAR(argv.args) << VAR(output.size()) << VAR(duration);
+    LogTrace << VAR(argv.exec) << VAR(argv.args) << VAR(output.size()) << VAR(duration);
 
     if (!child.release()) {
         LogWarn << "child return error" << VAR(argv.exec) << VAR(argv.args);

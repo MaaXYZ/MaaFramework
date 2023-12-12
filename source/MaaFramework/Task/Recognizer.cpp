@@ -82,7 +82,7 @@ std::optional<Recognizer::Result> Recognizer::recognize(const cv::Mat& image, co
 
 std::optional<Recognizer::Result> Recognizer::direct_hit(const std::string& name)
 {
-    LogDebug << name;
+    LogTrace << name;
     return Result { .box = cv::Rect(), .detail = json::array() };
 }
 

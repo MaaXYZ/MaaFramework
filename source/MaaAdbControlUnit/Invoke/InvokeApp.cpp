@@ -47,7 +47,7 @@ bool InvokeApp::init(const std::string& force_temp)
 {
     tempname_ = force_temp.empty() ? now_filestem() : force_temp;
 
-    LogDebug << VAR(tempname_);
+    LogTrace << VAR(tempname_);
 
     return true;
 }

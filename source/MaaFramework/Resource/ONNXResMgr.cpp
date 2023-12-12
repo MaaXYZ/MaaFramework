@@ -71,7 +71,7 @@ std::shared_ptr<Ort::Session> ONNXResMgr::load(const std::string& name,
             continue;
         }
 
-        LogDebug << VAR(path);
+        LogTrace << VAR(path);
         Ort::Session session(m_env, path.c_str(), m_options);
         return std::make_shared<Ort::Session>(std::move(session));
     }
