@@ -55,7 +55,7 @@ template <typename StringT>
 requires IsSomeKindOfString<StringT>
 inline void string_trim_(StringT& str)
 {
-    auto not_space = [](auto c) -> bool { return std::isspace(c); };
+    auto not_space = [](auto c) -> bool { return !std::isspace(c); };
 
     str.erase(MAA_RNS::ranges::find_if(str | MAA_RNS::views::reverse, not_space).base(), str.end());
     str.erase(str.begin(), MAA_RNS::ranges::find_if(str, not_space));
