@@ -71,7 +71,7 @@ MaaBool my_action_run([[maybe_unused]] MaaSyncContextHandle sync_context, [[mayb
     return true;
 }
 
-MaaCustomActionAPI my_action;
+MaaCustomActionAPI my_action {};
 
 void register_my_action(MaaInstanceHandle maa_handle)
 {

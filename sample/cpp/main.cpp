@@ -126,7 +126,7 @@ MaaBool my_analyze(MaaSyncContextHandle sync_context, const MaaImageBufferHandle
     return true;
 }
 
-MaaCustomRecognizerAPI my_recognizer;
+MaaCustomRecognizerAPI my_recognizer {};
 
 void register_my_recognizer(MaaInstanceHandle maa_handle)
 {

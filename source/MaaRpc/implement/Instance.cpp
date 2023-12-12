@@ -90,7 +90,7 @@ static MaaBool _analyze(MaaSyncContextHandle sync_context, const MaaImageBufferH
     return request.ok() && request.analyze().match();
 }
 
-static MaaCustomRecognizerAPI custom_recognizer_api = { _analyze };
+static MaaCustomRecognizerAPI custom_recognizer_api = { .analyze = _analyze };
 
 Status InstanceImpl::register_custom_recognizer(
     ServerContext* context,
@@ -226,7 +226,7 @@ static void _stop(MaaTransparentArg arg)
     stream->Read(&request);
 }
 
-static MaaCustomActionAPI custom_action_api = { _run, _stop };
+static MaaCustomActionAPI custom_action_api = { .run = _run, .stop = _stop };
 
 Status InstanceImpl::register_custom_action(
     ServerContext* context, ServerReaderWriter<::maarpc::CustomActionResponse, ::maarpc::CustomActionRequest>* stream)
