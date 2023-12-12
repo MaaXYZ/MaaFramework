@@ -9,7 +9,7 @@ MAA_VISION_NS_BEGIN
 TemplateComparator::ResultsVec TemplateComparator::analyze(const cv::Mat& lhs, const cv::Mat& rhs) const
 {
     if (lhs.size() != rhs.size()) {
-        LogError << "lhs.size() != rhs.size()" << VAR(lhs) << VAR(rhs);
+        LogError << "lhs.size() != rhs.size()" << VAR(lhs.size()) << VAR(rhs.size());
         return {};
     }
 

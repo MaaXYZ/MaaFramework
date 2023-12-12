@@ -24,6 +24,11 @@
 #include "Ranges.hpp"
 #include "Time.hpp"
 
+namespace cv
+{
+class Mat;
+}
+
 MAA_LOG_NS_BEGIN
 
 #ifdef __GNUC__
@@ -81,7 +86,10 @@ struct StringConverter
     std::string operator()(T&& value) const
     {
         if constexpr (std::is_function_v<std::remove_pointer_t<std::decay_t<T>>>) {
-            static_assert(!sizeof(T), "Function type is not supported");
+            static_assert(!sizeof(T), "Function type is not supported.");
+        }
+        else if constexpr (std::same_as<cv::Mat, std::decay_t<T>>) {
+            static_assert(!sizeof(T), "cv::Mat has too much data, don't print it!");
         }
         else if constexpr (std::same_as<std::filesystem::path, std::decay_t<T>>) {
             return path_to_utf8_string(std::forward<T>(value));

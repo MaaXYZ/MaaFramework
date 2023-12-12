@@ -53,7 +53,7 @@ TemplateMatcher::ResultsVec TemplateMatcher::analyze() const
 TemplateMatcher::ResultsVec TemplateMatcher::foreach_rois(const cv::Mat& templ) const
 {
     if (templ.empty()) {
-        LogWarn << name_ << "template is empty" << VAR(param_.template_paths) << VAR(templ);
+        LogWarn << name_ << "template is empty" << VAR(param_.template_paths) << VAR(templ.size());
         return {};
     }
 

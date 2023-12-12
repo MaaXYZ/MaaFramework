@@ -57,7 +57,7 @@ OCRer::ResultsVec OCRer::predict_det_and_rec(const cv::Rect& roi) const
     fastdeploy::vision::OCRResult ocr_result;
     bool ret = ocrer_->Predict(image_roi, &ocr_result);
     if (!ret) {
-        LogWarn << "inferencer return false" << VAR(ocrer_) << VAR(image_) << VAR(roi) << VAR(image_roi);
+        LogWarn << "inferencer return false" << VAR(ocrer_) << VAR(image_.size()) << VAR(roi) << VAR(image_roi.size());
         draw_result(roi, {});
         return {};
     }
@@ -116,7 +116,7 @@ OCRer::Result OCRer::predict_only_rec(const cv::Rect& roi) const
 
     bool ret = recer_->Predict(image_roi, &rec_text, &rec_score);
     if (!ret) {
-        LogWarn << "recer_ return false" << VAR(recer_) << VAR(image_) << VAR(roi) << VAR(image_roi);
+        LogWarn << "recer_ return false" << VAR(recer_) << VAR(image_.size()) << VAR(roi) << VAR(image_roi.size());
         draw_result(roi, {});
         return {};
     }
