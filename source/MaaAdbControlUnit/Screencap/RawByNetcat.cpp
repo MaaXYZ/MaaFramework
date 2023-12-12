@@ -44,6 +44,7 @@ bool ScreencapRawByNetcat::init(int swidth, int sheight)
 
 void ScreencapRawByNetcat::deinit()
 {
+    sock_io_ = nullptr;
     io_factory_ = nullptr;
     netcat_address_.clear();
 }

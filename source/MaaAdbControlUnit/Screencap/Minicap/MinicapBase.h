@@ -24,7 +24,6 @@ public: // from UnitBase
 
 public: // from ScreencapAPI
     virtual bool init(int swidth, int sheight) override;
-    virtual void deinit() override {}
     virtual std::optional<cv::Mat> screencap() override = 0;
 
 protected:

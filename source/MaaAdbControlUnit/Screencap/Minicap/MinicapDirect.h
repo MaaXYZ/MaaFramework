@@ -12,6 +12,7 @@ public:
     virtual ~MinicapDirect() override = default;
 
 public: // from ScreencapAPI
+    virtual void deinit() override {}
     virtual std::optional<cv::Mat> screencap() override;
 };
 

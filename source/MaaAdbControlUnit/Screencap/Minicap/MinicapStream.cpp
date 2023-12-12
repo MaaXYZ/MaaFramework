@@ -118,6 +118,9 @@ bool MinicapStream::init(int swidth, int sheight)
 void MinicapStream::deinit()
 {
     release_thread();
+
+    sock_ios_ = nullptr;
+    pipe_ios_ = nullptr;
 }
 
 std::optional<cv::Mat> MinicapStream::screencap()
