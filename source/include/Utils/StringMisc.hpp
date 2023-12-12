@@ -41,9 +41,9 @@ requires IsSomeKindOfString<StringT>
 
 template <typename StringT, typename MapT>
 requires IsSomeKindOfString<StringT>
-[[nodiscard]] inline auto string_replace_all(const StringT& str, const MapT& replace_map)
+[[nodiscard]] inline auto string_replace_all(StringT&& str, const MapT& replace_map)
 {
-    StringT result = str;
+    std::decay_t<StringT> result = std::forward<StringT>(str);
     string_replace_all_(result, replace_map);
     return result;
 }
