@@ -40,7 +40,7 @@ public: // from ScreencapAPI
 private:
     bool speed_test();
 
-    std::map<Method, std::shared_ptr<ScreencapBase>> units_;
+    std::unordered_map<Method, std::shared_ptr<ScreencapBase>> units_;
     Method method_ = Method::UnknownYet;
 };
 

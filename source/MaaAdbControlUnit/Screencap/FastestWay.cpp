@@ -3,6 +3,7 @@
 #include "Utils/Format.hpp"
 #include "Utils/Logger.h"
 #include "Utils/NoWarningCV.hpp"
+#include "Utils/Ranges.hpp"
 
 #include <unordered_set>
 
@@ -27,17 +28,17 @@ ScreencapFastestWay::ScreencapFastestWay(const std::filesystem::path& minicap_pa
         LogWarn << "minicap path not exists" << VAR(minicap_path);
     }
 
-    for (auto pair : units_) {
-        children_.emplace_back(pair.second);
+    for (auto& unit : units_ | MAA_RNS::views::values) {
+        children_.emplace_back(unit);
     }
 }
 
 bool ScreencapFastestWay::parse(const json::value& config)
 {
     bool ret = false;
-    for (auto pair : units_) {
+    for (auto& unit : units_ | MAA_RNS::views::values) {
         // TODO: 也许可以考虑删除无法初始化的unit
-        ret |= pair.second->parse(config);
+        ret |= unit->parse(config);
     }
     return ret;
 }
@@ -46,8 +47,8 @@ bool ScreencapFastestWay::init(int swidth, int sheight)
 {
     LogFunc;
 
-    for (auto pair : units_) {
-        pair.second->init(swidth, sheight);
+    for (auto& unit : units_ | MAA_RNS::views::values) {
+        unit->init(swidth, sheight);
     }
 
     return speed_test();
@@ -57,8 +58,8 @@ void ScreencapFastestWay::deinit()
 {
     LogFunc;
 
-    for (auto pair : units_) {
-        pair.second->deinit();
+    for (auto& unit : units_ | MAA_RNS::views::values) {
+        unit->deinit();
     }
 
     method_ = Method::UnknownYet;
@@ -68,8 +69,8 @@ bool ScreencapFastestWay::set_wh(int swidth, int sheight)
 {
     LogFunc << VAR(swidth) << VAR(sheight);
 
-    for (auto pair : units_) {
-        pair.second->set_wh(swidth, sheight);
+    for (auto& unit : units_ | MAA_RNS::views::values) {
+        unit->set_wh(swidth, sheight);
     }
 
     return true;
@@ -115,18 +116,18 @@ bool ScreencapFastestWay::speed_test()
     // MinicapStream 是直接取数据，只取一次不准
     const std::unordered_set<Method> kDropFirst = { Method::RawByNetcat, Method::MinicapStream };
 
-    for (auto& pair : units_) {
-        if (kDropFirst.contains(pair.first)) {
-            LogDebug << "Testing" << pair.first << "drop first";
-            if (!pair.second->screencap()) {
+    for (auto& [method, unit] : units_) {
+        if (kDropFirst.contains(method)) {
+            LogDebug << "Testing" << method << "drop first";
+            if (!unit->screencap()) {
                 continue;
             }
         }
 
-        LogDebug << "Testing" << pair.first;
+        LogDebug << "Testing" << method;
         auto now = std::chrono::steady_clock::now();
-        if (pair.second->screencap()) {
-            check(pair.first, now);
+        if (unit->screencap()) {
+            check(method, now);
         }
     }
 
@@ -136,6 +137,13 @@ bool ScreencapFastestWay::speed_test()
     }
 
     LogInfo << "The fastest method is" << method_ << VAR(cost);
+    for (auto& [method, unit] : units_) {
+        if (method == method_) {
+            continue;
+        }
+        unit->deinit();
+    }
+
     return true;
 }
 

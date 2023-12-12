@@ -115,6 +115,11 @@ bool MinicapStream::init(int swidth, int sheight)
     return true;
 }
 
+void MinicapStream::deinit()
+{
+    release_thread();
+}
+
 std::optional<cv::Mat> MinicapStream::screencap()
 {
     std::unique_lock<std::mutex> locker(mutex_);
