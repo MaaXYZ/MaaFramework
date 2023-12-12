@@ -167,11 +167,12 @@ json::value ExecAgentBase::ctx_run_task(const json::value& cmd)
         return invalid_json();
     }
 
-    std::string task_name = cmd.get("task_name", std::string());
-    if (task_name.empty()) {
-        LogError << "task name empty" << VAR(cmd);
+    auto task_name_opt = cmd.find<std::string>("task_name");
+    if (!task_name_opt || task_name_opt->empty()) {
+        LogError << "no task name or not string or empty" << VAR(cmd);
         return invalid_json();
     }
+    const std::string& task_name = *task_name_opt;
 
     std::string task_param = cmd.get("task_param", std::string());
     if (task_param.empty()) {
@@ -204,11 +205,12 @@ json::value ExecAgentBase::ctx_run_recognizer(const json::value& cmd)
         return invalid_json();
     }
 
-    std::string task_name = cmd.get("task_name", std::string());
-    if (task_name.empty()) {
-        LogError << "task name empty" << VAR(cmd);
+    auto task_name_opt = cmd.find<std::string>("task_name");
+    if (!task_name_opt || task_name_opt->empty()) {
+        LogError << "no task name or not string or empty" << VAR(cmd);
         return invalid_json();
     }
+    const std::string& task_name = *task_name_opt;
 
     std::string task_param = cmd.get("task_param", std::string());
     if (task_param.empty()) {
@@ -217,12 +219,15 @@ json::value ExecAgentBase::ctx_run_recognizer(const json::value& cmd)
 
     auto image_buff = MaaCreateImageBuffer();
     MaaSetImageRawData(image_buff, image.data, image.cols, image.rows, image.type());
-    OnScopeLeave([&]() { MaaDestroyImageBuffer(image_buff); });
 
     auto out_box_buff = MaaCreateRectBuffer();
-    OnScopeLeave([&]() { MaaDestroyRectBuffer(out_box_buff); });
     auto out_detail_buff = MaaCreateStringBuffer();
-    OnScopeLeave([&]() { MaaDestroyStringBuffer(out_detail_buff); });
+
+    OnScopeLeave([&]() {
+        MaaDestroyImageBuffer(image_buff);
+        MaaDestroyRectBuffer(out_box_buff);
+        MaaDestroyStringBuffer(out_detail_buff);
+    });
 
     bool ret = MaaSyncContextRunRecognizer(ctx, image_buff, task_name.c_str(), task_param.c_str(), out_box_buff,
                                            out_detail_buff);
@@ -249,11 +254,12 @@ json::value ExecAgentBase::ctx_run_action(const json::value& cmd)
         return invalid_json();
     }
 
-    std::string task_name = cmd.get("task_name", std::string());
-    if (task_name.empty()) {
-        LogError << "task name empty" << VAR(cmd);
+    auto task_name_opt = cmd.find<std::string>("task_name");
+    if (!task_name_opt || task_name_opt->empty()) {
+        LogError << "no task name or not string or empty" << VAR(cmd);
         return invalid_json();
     }
+    const std::string& task_name = *task_name_opt;
 
     std::string task_param = cmd.get("task_param", std::string());
     if (task_param.empty()) {
@@ -504,11 +510,12 @@ json::value ExecAgentBase::ctx_get_task_result(const json::value& cmd)
         return invalid_json();
     }
 
-    std::string task_name = cmd.get("task_name", std::string());
-    if (task_name.empty()) {
-        LogError << "task name empty" << VAR(cmd);
+    auto task_name_opt = cmd.find<std::string>("task_name");
+    if (!task_name_opt || task_name_opt->empty()) {
+        LogError << "no task name or not string or empty" << VAR(cmd);
         return invalid_json();
     }
+    const std::string& task_name = *task_name_opt;
 
     auto out_task_result_buff = MaaCreateStringBuffer();
     OnScopeLeave([&]() { MaaDestroyStringBuffer(out_task_result_buff); });
