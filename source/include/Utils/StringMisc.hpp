@@ -25,6 +25,7 @@ template <typename StringT, typename MapT>
 requires IsSomeKindOfString<StringT>
 inline void string_replace_all_(StringT& str, const MapT& replace_map)
 {
+    // TODO: better algorithm
     for (const auto& [from, to] : replace_map) {
         string_replace_all_(str, from, to);
     }
@@ -34,6 +35,7 @@ template <typename StringT, typename FromT, typename ToT>
 requires IsSomeKindOfString<StringT>
 [[nodiscard]] inline auto string_replace_all(StringT&& str, const FromT& from, const ToT& to)
 {
+    // TODO: better algorithm
     std::decay_t<StringT> result = std::forward<StringT>(str);
     string_replace_all_(result, from, to);
     return result;
@@ -43,6 +45,7 @@ template <typename StringT, typename MapT>
 requires IsSomeKindOfString<StringT>
 [[nodiscard]] inline auto string_replace_all(StringT&& str, const MapT& replace_map)
 {
+    // TODO: better algorithm
     std::decay_t<StringT> result = std::forward<StringT>(str);
     string_replace_all_(result, replace_map);
     return result;
