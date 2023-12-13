@@ -172,4 +172,16 @@ bool CustomControllerAgent::_press_key(PressKeyParam param)
     return handle_->press_key(param.keycode, handle_arg_);
 }
 
+bool CustomControllerAgent::_input_text(InputTextParam param)
+{
+    LogFunc << VAR_VOIDP(handle_) << VAR_VOIDP(handle_->input_text) << VAR(param.text);
+
+    if (!handle_ || !handle_->input_text) {
+        LogError << "handle_ or handle_->input_text is nullptr";
+        return false;
+    }
+
+    return handle_->input_text(param.text.c_str(), handle_arg_);
+}
+
 MAA_CTRL_NS_END

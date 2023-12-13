@@ -42,12 +42,16 @@ struct PressKeyParam
 {
     int keycode = 0;
 };
+struct InputTextParam
+{
+    std::string text;
+};
 struct AppParam
 {
     std::string package;
 };
 
-using Param = std::variant<std::monostate, ClickParam, SwipeParam, TouchParam, PressKeyParam, AppParam>;
+using Param = std::variant<std::monostate, ClickParam, SwipeParam, TouchParam, PressKeyParam, InputTextParam, AppParam>;
 
 struct Action
 {
@@ -61,6 +65,7 @@ struct Action
         touch_move,
         touch_up,
         press_key,
+        input_text,
         screencap,
         start_app,
         stop_app,
@@ -84,6 +89,7 @@ public:
     virtual MaaCtrlId post_click(int x, int y) override;
     virtual MaaCtrlId post_swipe(int x1, int y1, int x2, int y2, int duration) override;
     virtual MaaCtrlId post_press_key(int keycode) override;
+    virtual MaaCtrlId post_input_text(std::string_view text) override;
     virtual MaaCtrlId post_screencap() override;
 
     virtual MaaCtrlId post_touch_down(int contact, int x, int y, int pressure) override;
@@ -106,6 +112,7 @@ public:
     bool swipe(const cv::Rect& r1, const cv::Rect& r2, int duration);
     bool swipe(const cv::Point& p1, const cv::Point& p2, int duration);
     bool press_key(int keycode);
+    bool input_text(const std::string& text);
     cv::Mat screencap();
 
     bool start_app();
@@ -126,6 +133,7 @@ protected:
     virtual bool _touch_move(TouchParam param) = 0;
     virtual bool _touch_up(TouchParam param) = 0;
     virtual bool _press_key(PressKeyParam param) = 0;
+    virtual bool _input_text(InputTextParam param) = 0;
 
 protected:
     MessageNotifier<MaaControllerCallback> notifier;
@@ -138,6 +146,7 @@ private:
     bool handle_touch_move(const TouchParam& param);
     bool handle_touch_up(const TouchParam& param);
     bool handle_press_key(const PressKeyParam& param);
+    bool handle_input_text(const InputTextParam& param);
     bool handle_screencap();
     bool handle_start_app(const AppParam& param);
     bool handle_stop_app(const AppParam& param);

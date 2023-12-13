@@ -92,6 +92,15 @@ MaaCtrlId ControllerAgent::post_press_key(int keycode)
     return id;
 }
 
+MaaCtrlId ControllerAgent::post_input_text(std::string_view text)
+{
+    InputTextParam param { .text = std::string(text) };
+    auto id = action_runner_->post({ .type = Action::Type::input_text, .param = std::move(param) });
+    std::unique_lock lock { post_ids_mutex_ };
+    post_ids_.emplace(id);
+    return id;
+}
+
 MaaCtrlId ControllerAgent::post_screencap()
 {
     auto id = action_runner_->post({ .type = Action::Type::screencap });
@@ -204,6 +213,12 @@ bool ControllerAgent::swipe(const cv::Point& p1, const cv::Point& p2, int durati
 bool ControllerAgent::press_key(int keycode)
 {
     auto id = post_press_key(keycode);
+    return wait(id) == MaaStatus_Success;
+}
+
+bool ControllerAgent::input_text(const std::string& text)
+{
+    auto id = post_input_text(text);
     return wait(id) == MaaStatus_Success;
 }
 
@@ -396,6 +411,26 @@ bool ControllerAgent::handle_press_key(const PressKeyParam& param)
     return ret;
 }
 
+bool ControllerAgent::handle_input_text(const InputTextParam& param)
+{
+    std::chrono::steady_clock::time_point start_time;
+    if (recording()) {
+        start_time = std::chrono::steady_clock::now();
+    }
+
+    bool ret = _input_text(param);
+
+    if (recording()) {
+        json::value info = {
+            { "type", "input_text" },
+            { "text", param.text },
+        };
+        append_recording(std::move(info), start_time, ret);
+    }
+
+    return ret;
+}
+
 bool ControllerAgent::handle_screencap()
 {
     std::chrono::steady_clock::time_point start_time;
@@ -562,6 +597,9 @@ bool ControllerAgent::run_action(typename AsyncRunner<Action>::Id id, Action act
 
     case Action::Type::press_key:
         ret = handle_press_key(std::get<PressKeyParam>(action.param));
+        break;
+    case Action::Type::input_text:
+        ret = handle_input_text(std::get<InputTextParam>(action.param));
         break;
 
     case Action::Type::screencap:

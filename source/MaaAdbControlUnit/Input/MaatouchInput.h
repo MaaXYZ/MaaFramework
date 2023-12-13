@@ -40,6 +40,7 @@ public: // from TouchInputAPI
 
 public: // from KeyInputAPI
     virtual bool press_key(int key) override;
+    virtual bool input_text(const std::string& text) override;
 
 protected: // from MtouchHelper
     virtual std::pair<int, int> screen_to_touch(int x, int y) override { return _screen_to_touch(x, y); }

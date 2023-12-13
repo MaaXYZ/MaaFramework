@@ -23,6 +23,7 @@ public: // from TouchInputBase
 
 public: // from KeyInputBase
     virtual bool press_key(int key) override;
+    virtual bool input_text(const std::string& text) override;
 
 private:
     HWND hwnd_ = nullptr;

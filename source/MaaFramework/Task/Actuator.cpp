@@ -32,6 +32,9 @@ bool Actuator::run(const Recognizer::Result& rec_result, const TaskData& task_da
     case Type::Key:
         ret = press_key(std::get<KeyParam>(task_data.action_param));
         break;
+    case Type::Text:
+        ret = input_text(std::get<TextParam>(task_data.action_param));
+        break;
     case Type::StartApp:
         ret = start_app(std::get<AppParam>(task_data.action_param));
         break;
@@ -93,6 +96,15 @@ bool Actuator::press_key(const MAA_RES_NS::Action::KeyParam& param)
         ret &= controller()->press_key(key);
     }
     return ret;
+}
+
+bool Actuator::input_text(const MAA_RES_NS::Action::TextParam& param)
+{
+    if (!controller()) {
+        LogError << "Controller is null";
+        return false;
+    }
+    return controller()->input_text(param.text);
 }
 
 void Actuator::wait_freezes(const MAA_RES_NS::WaitFreezesParam& param, const cv::Rect& cur_box)

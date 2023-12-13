@@ -52,6 +52,7 @@ private:
     json::value ctx_click(const json::value& cmd);
     json::value ctx_swipe(const json::value& cmd);
     json::value ctx_press_key(const json::value& cmd);
+    json::value ctx_input_text(const json::value& cmd);
     json::value ctx_touch_down(const json::value& cmd);
     json::value ctx_touch_move(const json::value& cmd);
     json::value ctx_touch_up(const json::value& cmd);

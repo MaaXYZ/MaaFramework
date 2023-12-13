@@ -30,6 +30,7 @@ public: // from MaaSyncContextAPI
     virtual bool click(int x, int y) override;
     virtual bool swipe(int x1, int y1, int x2, int y2, int duration) override;
     virtual bool press_key(int keycode) override;
+    virtual bool input_text(std::string_view text) override;
     virtual bool touch_down(int contact, int x, int y, int pressure) override;
     virtual bool touch_move(int contact, int x, int y, int pressure) override;
     virtual bool touch_up(int contact) override;

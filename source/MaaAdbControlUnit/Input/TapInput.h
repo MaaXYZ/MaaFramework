@@ -39,9 +39,11 @@ public: // from UnitBase
 
 public: // from KeyInputAPI
     virtual bool press_key(int key) override;
+    virtual bool input_text(const std::string& text) override;
 
 private:
     ProcessArgvGenerator press_key_argv_;
+    ProcessArgvGenerator input_text_argv_;
 };
 
 MAA_CTRL_UNIT_NS_END

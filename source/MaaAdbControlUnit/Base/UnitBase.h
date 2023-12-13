@@ -77,6 +77,7 @@ public:
 
 public:
     virtual bool press_key(int key) = 0;
+    virtual bool input_text(const std::string& text) = 0;
 };
 
 MAA_CTRL_UNIT_NS_END

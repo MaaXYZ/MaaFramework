@@ -148,4 +148,10 @@ bool CarouselImage::press_key(int key)
     return true;
 }
 
+bool CarouselImage::input_text(const std::string& text)
+{
+    std::ignore = text;
+    return true;
+}
+
 MAA_CTRL_UNIT_NS_END

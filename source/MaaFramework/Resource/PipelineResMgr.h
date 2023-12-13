@@ -62,8 +62,10 @@ public:
                             const Action::ClickParam& default_value);
     static bool parse_swipe(const json::value& input, Action::SwipeParam& output,
                             const Action::SwipeParam& default_value);
-    static bool parse_key_press(const json::value& input, Action::KeyParam& output,
+    static bool parse_press_key(const json::value& input, Action::KeyParam& output,
                                 const Action::KeyParam& default_value);
+    static bool parse_input_text(const json::value& input, Action::TextParam& output,
+                                 const Action::TextParam& default_value);
     static bool parse_app_info(const json::value& input, Action::AppParam& output,
                                const Action::AppParam& default_value);
     static bool parse_custom_action_param(const json::value& input, Action::CustomParam& output,

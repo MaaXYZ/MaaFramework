@@ -103,7 +103,7 @@ MaaBool MaaResourceGetHash(MaaResourceHandle res, MaaStringBufferHandle buffer)
     return true;
 }
 
-MaaBool MAA_FRAMEWORK_API MaaResourceGetTaskList(MaaResourceHandle res, /* out */ MaaStringBufferHandle buffer)
+MaaBool MaaResourceGetTaskList(MaaResourceHandle res, /* out */ MaaStringBufferHandle buffer)
 {
     if (!res || !buffer) {
         LogError << "handle is null";

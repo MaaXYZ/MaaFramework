@@ -37,6 +37,7 @@ public: // from ControlUnitAPI
     virtual bool touch_up(int contact) override;
 
     virtual bool press_key(int key) override;
+    virtual bool input_text(const std::string& text) override;
 
 private:
     void sleep(int ms);

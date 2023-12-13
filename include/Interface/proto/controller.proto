@@ -16,6 +16,7 @@ service Controller {
   rpc post_click(ControllerPostClickRequest) returns (IIdResponse);
   rpc post_swipe(ControllerPostSwipeRequest) returns (IIdResponse);
   rpc post_press_key(ControllerPostKeyRequest) returns (IIdResponse);
+  rpc post_input_text(ControllerInputTextRequest) returns (IIdResponse);
   rpc post_touch_down(ControllerPostTouchRequest) returns (IIdResponse);
   rpc post_touch_move(ControllerPostTouchRequest) returns (IIdResponse);
   rpc post_touch_up(ControllerPostTouchRequest) returns (IIdResponse);

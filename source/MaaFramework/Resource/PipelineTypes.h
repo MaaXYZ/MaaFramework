@@ -46,6 +46,7 @@ enum class Type
     Click,
     Swipe,
     Key,
+    Text,
     StartApp,
     StopApp,
     Custom,
@@ -88,6 +89,11 @@ struct KeyParam
     std::vector<int> keys;
 };
 
+struct TextParam
+{
+    std::string text;
+};
+
 struct AppParam
 {
     std::string package;
@@ -99,7 +105,7 @@ struct CustomParam
     json::value custom_param;
 };
 
-using Param = std::variant<std::monostate, ClickParam, SwipeParam, KeyParam, AppParam, CustomParam>;
+using Param = std::variant<std::monostate, ClickParam, SwipeParam, KeyParam, TextParam, AppParam, CustomParam>;
 } // namespace Action
 
 struct WaitFreezesParam

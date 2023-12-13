@@ -145,6 +145,7 @@ std::string ExecAgentBase::handle_command(const json::value& cmd)
         { "Click", std::bind(&ExecAgentBase::ctx_click, this, std::placeholders::_1) },
         { "Swipe", std::bind(&ExecAgentBase::ctx_swipe, this, std::placeholders::_1) },
         { "PressKey", std::bind(&ExecAgentBase::ctx_press_key, this, std::placeholders::_1) },
+        { "InputText", std::bind(&ExecAgentBase::ctx_input_text, this, std::placeholders::_1) },
         { "TouchDown", std::bind(&ExecAgentBase::ctx_touch_down, this, std::placeholders::_1) },
         { "TouchMove", std::bind(&ExecAgentBase::ctx_touch_move, this, std::placeholders::_1) },
         { "TouchUp", std::bind(&ExecAgentBase::ctx_touch_up, this, std::placeholders::_1) },
@@ -373,6 +374,25 @@ json::value ExecAgentBase::ctx_press_key(const json::value& cmd)
     }
 
     bool ret = MaaSyncContextPressKey(ctx, *keycode_opt);
+
+    return gen_result(ret);
+}
+
+json::value ExecAgentBase::ctx_input_text(const json::value& cmd)
+{
+    auto ctx = get_sync_context(cmd);
+    if (!ctx) {
+        LogError << "sync context not found" << VAR(cmd);
+        return invalid_json();
+    }
+
+    auto text_opt = cmd.find<std::string>("text");
+    if (!text_opt) {
+        LogError << "no text" << VAR(cmd);
+        return invalid_json();
+    }
+
+    bool ret = MaaSyncContextInputText(ctx, text_opt->c_str());
 
     return gen_result(ret);
 }

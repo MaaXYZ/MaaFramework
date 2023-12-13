@@ -892,6 +892,7 @@ bool PipelineResMgr::parse_action(const json::value& input, Action::Type& out_ty
         { "Click", Type::Click },
         { "Swipe", Type::Swipe },
         { "Key", Type::Key },
+        { "Text", Type::Text },
         { "StartApp", Type::StartApp },
         { "StopApp", Type::StopApp },
         { "Custom", Type::Custom },
@@ -920,9 +921,12 @@ bool PipelineResMgr::parse_action(const json::value& input, Action::Type& out_ty
 
     case Type::Key:
         out_param = KeyParam {};
-        return parse_key_press(input, std::get<KeyParam>(out_param),
+        return parse_press_key(input, std::get<KeyParam>(out_param),
                                same_type ? std::get<KeyParam>(default_param) : KeyParam {});
-
+    case Type::Text:
+        out_param = TextParam {};
+        return parse_input_text(input, std::get<TextParam>(out_param),
+                                same_type ? std::get<TextParam>(default_param) : TextParam {});
     case Type::StartApp:
     case Type::StopApp:
         out_param = AppParam {};
@@ -982,12 +986,23 @@ bool PipelineResMgr::parse_swipe(const json::value& input, Action::SwipeParam& o
     return true;
 }
 
-bool PipelineResMgr::parse_key_press(const json::value& input, Action::KeyParam& output,
+bool PipelineResMgr::parse_press_key(const json::value& input, Action::KeyParam& output,
                                      const Action::KeyParam& default_value)
 {
     // TODO: https://github.com/MaaAssistantArknights/MaaFramework/issues/24#issuecomment-1666533842
     if (!get_and_check_value_or_array(input, "key", output.keys, default_value.keys)) {
         LogError << "failed to get_and_check_value_or_array key" << VAR(input);
+        return false;
+    }
+
+    return true;
+}
+
+bool PipelineResMgr::parse_input_text(const json::value& input, Action::TextParam& output,
+                                      const Action::TextParam& default_value)
+{
+    if (!get_and_check_value(input, "text", output.text, default_value.text)) {
+        LogError << "failed to get_and_check_value text" << VAR(input);
         return false;
     }
 

@@ -43,6 +43,8 @@ public:
                               ::maarpc::IIdResponse* response) override;
     ::grpc::Status post_press_key(::grpc::ServerContext* context, const ::maarpc::ControllerPostKeyRequest* request,
                                   ::maarpc::IIdResponse* response) override;
+    ::grpc::Status post_input_text(::grpc::ServerContext* context, const ::maarpc::ControllerInputTextRequest* request,
+                                   ::maarpc::IIdResponse* response) override;
     ::grpc::Status post_touch_down(::grpc::ServerContext* context, const ::maarpc::ControllerPostTouchRequest* request,
                                    ::maarpc::IIdResponse* response) override;
     ::grpc::Status post_touch_move(::grpc::ServerContext* context, const ::maarpc::ControllerPostTouchRequest* request,

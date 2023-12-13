@@ -105,6 +105,18 @@ MaaBool MaaSyncContextPressKey(MaaSyncContextHandle sync_context, int32_t keycod
     return sync_context->press_key(keycode);
 }
 
+MaaBool MaaSyncContextInputText(MaaSyncContextHandle sync_context, MaaStringView text)
+{
+    LogFunc << VAR_VOIDP(sync_context) << VAR(text);
+
+    if (!sync_context) {
+        LogError << "handle is null";
+        return false;
+    }
+
+    return sync_context->input_text(text);
+}
+
 MaaBool MaaSyncContextTouchDown(MaaSyncContextHandle sync_context, int32_t contact, int32_t x, int32_t y,
                                 int32_t pressure)
 {

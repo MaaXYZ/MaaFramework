@@ -214,6 +214,16 @@ bool ControlUnitMgr::press_key(int key)
     return key_input_->press_key(key);
 }
 
+bool ControlUnitMgr::input_text(const std::string& text)
+{
+    if (!key_input_) {
+        LogError << "key_input_ is null";
+        return false;
+    }
+
+    return key_input_->input_text(text);
+}
+
 bool ControlUnitMgr::parse(const json::value& config)
 {
     bool ret = true;

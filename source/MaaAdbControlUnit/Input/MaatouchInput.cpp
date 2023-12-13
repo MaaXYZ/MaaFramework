@@ -1,5 +1,6 @@
 #include "MaatouchInput.h"
 
+#include "Utils/Codec.h"
 #include "Utils/Format.hpp"
 #include "Utils/Logger.h"
 #include "Utils/Ranges.hpp"
@@ -71,6 +72,22 @@ bool MaatouchInput::press_key(int key)
     }
 
     return true;
+}
+
+bool MaatouchInput::input_text(const std::string& text)
+{
+    LogInfo << VAR(text);
+
+    if (MAA_RNS::ranges::any_of(text, [](char ch) { return static_cast<unsigned char>(ch) > 127; })) {
+        LogError << "maatouch key input does not support non-ascii text, skip" << VAR(text);
+        return false;
+    }
+
+    bool ret = true;
+    for (char ch : text) {
+        ret &= press_key(ch);
+    }
+    return ret;
 }
 
 MAA_CTRL_UNIT_NS_END

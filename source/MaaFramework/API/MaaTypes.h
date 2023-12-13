@@ -44,6 +44,7 @@ public:
     virtual MaaCtrlId post_click(int x, int y) = 0;
     virtual MaaCtrlId post_swipe(int x1, int y1, int x2, int y2, int duration) = 0;
     virtual MaaCtrlId post_press_key(int keycode) = 0;
+    virtual MaaCtrlId post_input_text(std::string_view text) = 0;
     virtual MaaCtrlId post_screencap() = 0;
 
     virtual MaaCtrlId post_touch_down(int contact, int x, int y, int pressure) = 0;
@@ -105,6 +106,7 @@ public:
     virtual bool click(int x, int y) = 0;
     virtual bool swipe(int x1, int y1, int x2, int y2, int duration) = 0;
     virtual bool press_key(int keycode) = 0;
+    virtual bool input_text(std::string_view text) = 0;
     virtual cv::Mat screencap() = 0;
 
     virtual bool touch_down(int contact, int x, int y, int pressure) = 0;
