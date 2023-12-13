@@ -105,7 +105,7 @@ MaaBool MaaSyncContextPressKey(MaaSyncContextHandle sync_context, int32_t keycod
     return sync_context->press_key(keycode);
 }
 
-MaaBool MAA_FRAMEWORK_API MaaSyncContextInputText(MaaSyncContextHandle sync_context, MaaStringView text)
+MaaBool MaaSyncContextInputText(MaaSyncContextHandle sync_context, MaaStringView text)
 {
     LogFunc << VAR_VOIDP(sync_context) << VAR(text);
 
