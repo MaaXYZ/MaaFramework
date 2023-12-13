@@ -1,9 +1,33 @@
 {
     "json.schemas": [
         {
-            "fileMatch": ["/sample/resource/pipeline/*.json"],
+            "fileMatch": [
+                "/sample/resource/pipeline/*.json"
+            ],
             "url": "/tools/pipeline.schema.json"
         }
     ],
-    "C_Cpp.autoAddFileAssociations": false
+    "cpplint.excludes": [
+        "3rdparty",
+        "build"
+    ],
+    "cpplint.lintMode": "workspace",
+    "cpplint.filters": [
+        "-legal/copyright",
+        "-whitespace/line_length",
+        "-whitespace/comments",
+        "-whitespace/braces",
+        "-whitespace/newline",
+        "-whitespace/indent",
+        "-readability/braces",
+        "-readability/inheritance",
+        "-readability/todo",
+        "-build/c++11",
+        "-build/include_subdir",
+        "-build/namespaces",
+        "-build/include_what_you_use",
+        "-runtime/references",
+        "-runtime/string",
+        "-runtime/indentation_namespace"
+    ]
 }
