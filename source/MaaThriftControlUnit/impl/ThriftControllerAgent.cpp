@@ -75,7 +75,9 @@ bool ThriftControllerAgent::start_app(const std::string& intent)
         return false;
     }
 
-    return client_->start_app(intent);
+    ThriftController::AppParam param;
+    param.entry = intent;
+    return client_->start_app(param);
 }
 
 bool ThriftControllerAgent::stop_app(const std::string& intent)
@@ -87,7 +89,9 @@ bool ThriftControllerAgent::stop_app(const std::string& intent)
         return false;
     }
 
-    return client_->stop_app(intent);
+    ThriftController::AppParam param;
+    param.entry = intent;
+    return client_->stop_app(param);
 }
 
 bool ThriftControllerAgent::screencap(cv::Mat& image)
@@ -208,6 +212,21 @@ bool ThriftControllerAgent::press_key(int key)
     thrift_param.keycode = key;
 
     return client_->press_key(thrift_param);
+}
+
+bool ThriftControllerAgent::input_text(const std::string& text)
+{
+    LogFunc << VAR(text);
+
+    if (!client_ || !transport_ || !transport_->isOpen()) {
+        LogError << "client_ is nullptr or transport_ is not open";
+        return false;
+    }
+
+    ThriftController::InputTextParam thrift_param;
+    thrift_param.text = text;
+
+    return client_->input_text(thrift_param);
 }
 
 MAA_CTRL_UNIT_NS_END

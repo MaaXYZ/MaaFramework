@@ -130,4 +130,19 @@ bool SendMessageInput::press_key(int key)
     return true;
 }
 
+bool SendMessageInput::input_text(const std::string& text)
+{
+    LogInfo << VAR(text);
+
+    if (!hwnd_) {
+        LogError << "hwnd_ is nullptr";
+        return false;
+    }
+
+    auto osstr = to_osstring(text);
+    SendMessage(hwnd_, WM_SETTEXT, NULL, (LPARAM)(osstr.c_str()));
+
+    return true;
+}
+
 MAA_CTRL_UNIT_NS_END

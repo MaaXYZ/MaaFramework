@@ -91,8 +91,12 @@ bool TapKeyInput::parse(const json::value& config)
     static const json::array kDefaultPressKeyArgv = {
         "{ADB}", "-s", "{ADB_SERIAL}", "shell", "input keyevent {KEY}",
     };
+    static const json::array kDefaultInputTextArgv = {
+        "{ADB}", "-s", "{ADB_SERIAL}", "shell", "input text '{TEXT}'",
+    };
 
-    return parse_argv("PressKey", config, kDefaultPressKeyArgv, press_key_argv_);
+    return parse_argv("PressKey", config, kDefaultPressKeyArgv, press_key_argv_) &&
+           parse_argv("InputText", config, kDefaultInputTextArgv, input_text_argv_);
 }
 
 bool TapKeyInput::press_key(int key)
@@ -102,6 +106,21 @@ bool TapKeyInput::press_key(int key)
     merge_replacement({ { "{KEY}", std::to_string(key) } });
 
     auto argv_opt = press_key_argv_.gen(argv_replace_);
+    if (!argv_opt) {
+        return false;
+    }
+
+    auto output_opt = startup_and_read_pipe(*argv_opt);
+    return output_opt && output_opt->empty();
+}
+
+bool TapKeyInput::input_text(const std::string& text)
+{
+    LogInfo << VAR(text);
+
+    merge_replacement({ { "{TEXT}", text } });
+
+    auto argv_opt = input_text_argv_.gen(argv_replace_);
     if (!argv_opt) {
         return false;
     }

@@ -32,6 +32,7 @@ public: // from ControllerAPI
     virtual bool touch_up(int contact) override;
 
     virtual bool press_key(int key) override;
+    virtual bool input_text(const std::string& text) override;
 
 protected:
     std::shared_ptr<ThriftController::ThriftControllerClient> client_ = nullptr;

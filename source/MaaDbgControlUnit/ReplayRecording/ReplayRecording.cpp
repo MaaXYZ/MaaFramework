@@ -295,6 +295,34 @@ bool ReplayRecording::press_key(int key)
     return record.success;
 }
 
+bool ReplayRecording::input_text(const std::string& text)
+{
+    LogInfo << VAR(text);
+
+    if (record_index_ >= recording_.records.size()) {
+        LogError << "record index out of range" << VAR(record_index_) << VAR(recording_.records.size());
+        return false;
+    }
+
+    const Record& record = recording_.records.at(record_index_);
+
+    if (record.action.type != Record::Action::Type::input_text) {
+        LogError << "record type is not input_text" << VAR(record.action.type) << VAR(record.raw_data);
+        return false;
+    }
+
+    auto param = std::get<Record::InputTextParam>(record.action.param);
+
+    if (param.text != text) {
+        LogError << "record text is not match" << VAR(param.text) << VAR(text) << VAR(record.raw_data);
+        return false;
+    }
+
+    sleep(record.cost);
+    ++record_index_;
+    return record.success;
+}
+
 void ReplayRecording::sleep(int ms)
 {
     LogTrace << VAR(ms);

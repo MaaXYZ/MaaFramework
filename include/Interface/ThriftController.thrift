@@ -25,6 +25,14 @@ struct PressKeyParam {
   1: i32 keycode,
 }
 
+struct InputTextParam {
+  1: string text,
+}
+
+struct AppParam {
+  1: string entry,
+}
+
 struct Size {
   1: i32 width,
   2: i32 height,
@@ -40,8 +48,8 @@ service ThriftController {
   string request_uuid(),
   Size request_resolution(),
 
-  bool start_app(1: string entry),
-  bool stop_app(1: string entry),
+  bool start_app(1: AppParam param),
+  bool stop_app(1: AppParam param),
 
   CustomImage screencap(),
 
@@ -53,4 +61,5 @@ service ThriftController {
   bool touch_up(1: TouchParam param),
 
   bool press_key(1: PressKeyParam param),
+  bool input_text(1: InputTextParam param),
 }

@@ -51,6 +51,10 @@ struct Record
     {
         int keycode = 0;
     };
+    struct InputTextParam
+    {
+        std::string text;
+    };
     struct AppParam
     {
         std::string package;
@@ -62,7 +66,7 @@ struct Record
     };
 
     using Param = std::variant<std::monostate, ConnectParam, ClickParam, SwipeParam, TouchParam, PressKeyParam,
-                               AppParam, ScreencapParam>;
+                               InputTextParam, AppParam, ScreencapParam>;
 
     struct Action
     {
@@ -76,6 +80,7 @@ struct Record
             touch_move,
             touch_up,
             press_key,
+            input_text,
             screencap,
             start_app,
             stop_app,
@@ -124,6 +129,9 @@ inline std::ostream& operator<<(std::ostream& os, Record::Action::Type type)
         break;
     case Record::Action::Type::press_key:
         os << "press_key";
+        break;
+    case Record::Action::Type::input_text:
+        os << "input_text";
         break;
     case Record::Action::Type::screencap:
         os << "screencap";
