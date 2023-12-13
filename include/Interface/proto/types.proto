@@ -25,7 +25,12 @@ message SwipeParam {
   optional Point to = 2;
   optional int32 duration = 3;
 }
-message KeyParam { optional int32 key = 1; }
+message KeyParam { 
+  optional int32 key = 1;
+}
+message InputTextParam {
+  optional string text = 1;
+}
 message TouchParam {
   optional int32 contact = 1;
   optional Point pos = 2;
@@ -114,6 +119,10 @@ message ControllerPostKeyRequest {
   optional string handle = 1;
   optional KeyParam param = 2;
 }
+message ControllerInputTextRequest {
+  optional string handle = 1;
+  optional InputTextParam param = 2;
+}
 
 message ControllerPostTouchRequest {
   optional string handle = 1;
@@ -153,6 +162,7 @@ message CustomControllerResponse {
     TouchParam touch_move = 602;
     TouchParam touch_up = 603;
     KeyParam press_key = 701;
+    InputTextParam input_text = 702;
   }
 }
 
@@ -283,6 +293,10 @@ message SyncContextSwipeRequest {
 message SyncContextKeyRequest {
   optional string handle = 1;
   optional KeyParam param = 2;
+}
+message SyncContextInputTextRequest {
+  optional string handle = 1;
+  optional InputTextParam param = 2;
 }
 
 message SyncContextTouchRequest {

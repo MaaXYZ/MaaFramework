@@ -467,6 +467,25 @@ Status ControllerImpl::post_press_key(::grpc::ServerContext* context, const ::ma
     return Status::OK;
 }
 
+::grpc::Status ControllerImpl::post_input_text(::grpc::ServerContext* context,
+                                               const ::maarpc::ControllerInputTextRequest* request,
+                                               ::maarpc::IIdResponse* response)
+{
+    LogFunc;
+    std::ignore = context;
+
+    MAA_GRPC_REQUIRED(handle)
+    MAA_GRPC_REQUIRED(param)
+
+    const auto& param = request->param();
+
+    MAA_GRPC_GET_HANDLE
+
+    response->set_id(MaaControllerPostInputText(handle, param.text().c_str()));
+
+    return Status::OK;
+}
+
 Status ControllerImpl::post_touch_down(::grpc::ServerContext* context,
                                        const ::maarpc::ControllerPostTouchRequest* request,
                                        ::maarpc::IIdResponse* response)
