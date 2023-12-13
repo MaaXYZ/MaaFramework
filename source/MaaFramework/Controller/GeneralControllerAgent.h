@@ -27,6 +27,7 @@ protected:
     virtual bool _touch_move(TouchParam param) override;
     virtual bool _touch_up(TouchParam param) override;
     virtual bool _press_key(PressKeyParam param) override;
+    virtual bool _input_text(InputTextParam param) override;
 
 private:
     std::shared_ptr<MAA_CTRL_UNIT_NS::ControlUnitAPI> control_unit_ = nullptr;

@@ -23,6 +23,7 @@ extern "C"
     MaaBool MAA_FRAMEWORK_API MaaSyncContextSwipe(MaaSyncContextHandle sync_context, int32_t x1, int32_t y1, int32_t x2,
                                                   int32_t y2, int32_t duration);
     MaaBool MAA_FRAMEWORK_API MaaSyncContextPressKey(MaaSyncContextHandle sync_context, int32_t keycode);
+    MaaBool MAA_FRAMEWORK_API MaaSyncContextInputText(MaaSyncContextHandle sync_context, MaaStringView text);
 
     MaaBool MAA_FRAMEWORK_API MaaSyncContextTouchDown(MaaSyncContextHandle sync_context, int32_t contact, int32_t x,
                                                       int32_t y, int32_t pressure);

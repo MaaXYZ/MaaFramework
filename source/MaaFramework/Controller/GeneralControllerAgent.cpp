@@ -208,4 +208,19 @@ bool GeneralControllerAgent::_press_key(PressKeyParam param)
     return true;
 }
 
+bool GeneralControllerAgent::_input_text(InputTextParam param)
+{
+    if (!control_unit_) {
+        LogError << "controller is nullptr" << VAR(control_unit_);
+        return false;
+    }
+
+    if (!control_unit_->input_text(param.text)) {
+        LogError << "controller input_text failed" << VAR(param.text);
+        return false;
+    }
+
+    return true;
+}
+
 MAA_CTRL_NS_END

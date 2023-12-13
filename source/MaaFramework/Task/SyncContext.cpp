@@ -136,6 +136,20 @@ bool SyncContext::press_key(int keycode)
     return ctrl->wait(id) == MaaStatus_Success;
 }
 
+bool SyncContext::input_text(std::string_view text)
+{
+    LogFunc << VAR(text);
+
+    auto* ctrl = controller();
+    if (!ctrl) {
+        LogError << "Controller is null";
+        return false;
+    }
+
+    auto id = ctrl->post_input_text(text);
+    return ctrl->wait(id) == MaaStatus_Success;
+}
+
 bool SyncContext::touch_down(int contact, int x, int y, int pressure)
 {
     LogFunc << VAR(contact) << VAR(x) << VAR(y) << VAR(pressure);

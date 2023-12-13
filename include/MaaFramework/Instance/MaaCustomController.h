@@ -29,6 +29,7 @@ extern "C"
         MaaBool (*touch_up)(int32_t contact, MaaTransparentArg handle_arg);
 
         MaaBool (*press_key)(int32_t keycode, MaaTransparentArg handle_arg);
+        MaaBool (*input_text)(MaaStringView text, MaaTransparentArg handle_arg);
     };
 
 #ifdef __cplusplus

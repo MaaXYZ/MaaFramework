@@ -38,7 +38,8 @@ MaaControllerHandle MaaAdbControllerCreateV2( //
 }
 
 MaaControllerHandle MaaWin32ControllerCreate( //
-    MaaWin32Hwnd hWnd, MaaWin32ControllerType type, MaaControllerCallback callback, MaaCallbackTransparentArg callback_arg)
+    MaaWin32Hwnd hWnd, MaaWin32ControllerType type, MaaControllerCallback callback,
+    MaaCallbackTransparentArg callback_arg)
 {
     LogFunc << VAR_VOIDP(hWnd) << VAR(type) << VAR_VOIDP(callback) << VAR_VOIDP(callback_arg);
 
@@ -190,6 +191,18 @@ MaaCtrlId MaaControllerPostPressKey(MaaControllerHandle ctrl, int32_t keycode)
     }
 
     return ctrl->post_press_key(keycode);
+}
+
+MaaCtrlId MaaControllerPostInputText(MaaControllerHandle ctrl, MaaStringView text)
+{
+    LogFunc << VAR_VOIDP(ctrl) << VAR(text);
+
+    if (!ctrl) {
+        LogError << "handle is null";
+        return MaaInvalidId;
+    }
+
+    return ctrl->post_input_text(text);
 }
 
 MaaCtrlId MaaControllerPostTouchDown(MaaControllerHandle ctrl, int32_t contact, int32_t x, int32_t y, int32_t pressure)

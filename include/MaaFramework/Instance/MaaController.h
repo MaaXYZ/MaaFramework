@@ -43,6 +43,7 @@ extern "C"
     MaaCtrlId MAA_FRAMEWORK_API MaaControllerPostSwipe(MaaControllerHandle ctrl, int32_t x1, int32_t y1, int32_t x2,
                                                        int32_t y2, int32_t duration);
     MaaCtrlId MAA_FRAMEWORK_API MaaControllerPostPressKey(MaaControllerHandle ctrl, int32_t keycode);
+    MaaCtrlId MAA_FRAMEWORK_API MaaControllerPostInputText(MaaControllerHandle ctrl, MaaStringView text);
 
     MaaCtrlId MAA_FRAMEWORK_API MaaControllerPostTouchDown(MaaControllerHandle ctrl, int32_t contact, int32_t x,
                                                            int32_t y, int32_t pressure);
