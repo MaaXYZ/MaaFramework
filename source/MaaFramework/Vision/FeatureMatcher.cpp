@@ -237,9 +237,7 @@ void FeatureMatcher::draw_result(const cv::Mat& templ, const std::vector<cv::Key
 
 void FeatureMatcher::filter(ResultsVec& results, int count) const
 {
-    auto remove_iter =
-        std::remove_if(results.begin(), results.end(), [count](const auto& res) { return res.count < count; });
-    results.erase(remove_iter, results.end());
+    std::erase_if(results, [count](const auto& res) { return res.count < count; });
 }
 
 MAA_VISION_NS_END

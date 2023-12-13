@@ -148,10 +148,9 @@ void NeuralNetworkDetector::filter(ResultsVec& results, const std::vector<size_t
         return;
     }
 
-    auto it = std::remove_if(results.begin(), results.end(), [&](const Result& res) {
+    std::erase_if(results, [&](const Result& res) {
         return std::find(expected.begin(), expected.end(), res.cls_index) == expected.end();
     });
-    results.erase(it, results.end());
 }
 
 void NeuralNetworkDetector::draw_result(const cv::Rect& roi, const ResultsVec& results) const

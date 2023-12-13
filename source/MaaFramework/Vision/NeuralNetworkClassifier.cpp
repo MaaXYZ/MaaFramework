@@ -126,10 +126,9 @@ void NeuralNetworkClassifier::filter(ResultsVec& results, const std::vector<size
         return;
     }
 
-    auto it = std::remove_if(results.begin(), results.end(), [&](const Result& res) {
+    std::erase_if(results, [&](const Result& res) {
         return std::find(expected.begin(), expected.end(), res.cls_index) == expected.end();
     });
-    results.erase(it, results.end());
 }
 
 MAA_VISION_NS_END
