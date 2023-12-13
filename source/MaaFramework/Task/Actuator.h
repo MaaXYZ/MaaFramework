@@ -31,6 +31,7 @@ private:
     bool click(const MAA_RES_NS::Action::ClickParam& param, const cv::Rect& cur_box);
     bool swipe(const MAA_RES_NS::Action::SwipeParam& param, const cv::Rect& cur_box);
     bool press_key(const MAA_RES_NS::Action::KeyParam& param);
+    bool input_text(const MAA_RES_NS::Action::TextParam& param);
 
     bool start_app(const MAA_RES_NS::Action::AppParam& param);
     bool stop_app(const MAA_RES_NS::Action::AppParam& param);
