@@ -1,7 +1,5 @@
 #pragma once
 
-#include "Conf/Conf.h"
-
 #include <filesystem>
 #include <optional>
 #include <ostream>
@@ -16,6 +14,7 @@
 #include <sys/types.h>
 #endif
 
+#include "Conf/Conf.h"
 #include "MaaFramework/MaaPort.h"
 
 MAA_NS_BEGIN

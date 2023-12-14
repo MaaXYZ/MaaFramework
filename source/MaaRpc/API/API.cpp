@@ -1,6 +1,8 @@
-#include "../implement/Context.h"
 #include "MaaRpc/MaaRpc.h"
+
 #include <grpcpp/server_builder.h>
+
+#include "../implement/Context.h"
 
 static std::unique_ptr<grpc::Server> server = nullptr;
 static std::unique_ptr<MAA_RPC_NS::Context> context = nullptr;

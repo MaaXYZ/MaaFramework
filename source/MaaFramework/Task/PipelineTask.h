@@ -1,5 +1,6 @@
 #pragma once
 
+#include <stack>
 #include <string_view>
 
 #include <meojson/json.hpp>
@@ -12,8 +13,6 @@
 #include "Task/Actuator.h"
 #include "Task/Recognizer.h"
 #include "Task/TaskDataMgr.h"
-
-#include <stack>
 
 MAA_TASK_NS_BEGIN
 

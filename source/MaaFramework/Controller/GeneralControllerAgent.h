@@ -1,9 +1,9 @@
 #pragma once
-#include "ControllerAgent.h"
 
 #include <memory>
 
 #include "ControlUnit/ControlUnitAPI.h"
+#include "ControllerAgent.h"
 
 MAA_CTRL_NS_BEGIN
 

@@ -8,7 +8,7 @@ template <typename FuncT>
 class ScopeLeaveHelper
 {
 public:
-    ScopeLeaveHelper(FuncT func) : func_(func) {}
+    explicit ScopeLeaveHelper(FuncT func) : func_(func) {}
     ~ScopeLeaveHelper() { func_(); }
 
 private:

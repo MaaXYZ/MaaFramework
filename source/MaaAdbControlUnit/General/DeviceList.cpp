@@ -1,7 +1,8 @@
 #include "DeviceList.h"
 
+#include <ranges>
+
 #include "Utils/Logger.h"
-#include "Utils/Ranges.hpp"
 #include "Utils/StringMisc.hpp"
 
 MAA_CTRL_UNIT_NS_BEGIN

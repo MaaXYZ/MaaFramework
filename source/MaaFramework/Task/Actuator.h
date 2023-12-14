@@ -20,7 +20,7 @@ public:
     using TaskData = MAA_RES_NS::TaskData;
 
 public:
-    Actuator(InstanceInternalAPI* inst);
+    explicit Actuator(InstanceInternalAPI* inst);
 
     bool run(const Recognizer::Result& rec_result, const TaskData& task_data);
 

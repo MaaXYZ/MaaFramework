@@ -1,15 +1,15 @@
 #pragma once
 
-#include "Conf/Conf.h"
-#include "Utils/Logger.h"
-#include "Utils/NonCopyable.hpp"
-
 #include <condition_variable>
 #include <functional>
 #include <list>
 #include <mutex>
 #include <shared_mutex>
 #include <thread>
+
+#include "Conf/Conf.h"
+#include "Utils/Logger.h"
+#include "Utils/NonCopyable.hpp"
 
 MAA_NS_BEGIN
 
@@ -21,7 +21,7 @@ public:
     using ProcessFunc = std::function<bool(Id id, Item item)>;
 
 public:
-    AsyncRunner(ProcessFunc run_task);
+    explicit AsyncRunner(ProcessFunc run_task);
     virtual ~AsyncRunner();
     void release();
 

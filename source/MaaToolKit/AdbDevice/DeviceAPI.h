@@ -1,9 +1,9 @@
 #pragma once
 
+#include <ostream>
 #include <string>
 #include <string_view>
 #include <vector>
-#include <ostream>
 
 #include "Conf/Conf.h"
 #include "MaaToolKit/MaaToolKitDef.h"

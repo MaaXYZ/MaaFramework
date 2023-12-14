@@ -1,11 +1,11 @@
 #include "FastestWay.h"
 
+#include <ranges>
+#include <unordered_set>
+
 #include "Utils/Format.hpp"
 #include "Utils/Logger.h"
 #include "Utils/NoWarningCV.hpp"
-#include "Utils/Ranges.hpp"
-
-#include <unordered_set>
 
 MAA_CTRL_UNIT_NS_BEGIN
 
@@ -28,7 +28,7 @@ ScreencapFastestWay::ScreencapFastestWay(const std::filesystem::path& minicap_pa
         LogWarn << "minicap path not exists" << VAR(minicap_path);
     }
 
-    for (auto& unit : units_ | MAA_RNS::views::values) {
+    for (auto& unit : units_ | std::views::values) {
         children_.emplace_back(unit);
     }
 }
@@ -36,7 +36,7 @@ ScreencapFastestWay::ScreencapFastestWay(const std::filesystem::path& minicap_pa
 bool ScreencapFastestWay::parse(const json::value& config)
 {
     bool ret = false;
-    for (auto& unit : units_ | MAA_RNS::views::values) {
+    for (auto& unit : units_ | std::views::values) {
         // TODO: 也许可以考虑删除无法初始化的unit
         ret |= unit->parse(config);
     }
@@ -47,7 +47,7 @@ bool ScreencapFastestWay::init(int swidth, int sheight)
 {
     LogFunc;
 
-    for (auto& unit : units_ | MAA_RNS::views::values) {
+    for (auto& unit : units_ | std::views::values) {
         unit->init(swidth, sheight);
     }
 
@@ -58,7 +58,7 @@ void ScreencapFastestWay::deinit()
 {
     LogFunc;
 
-    for (auto& unit : units_ | MAA_RNS::views::values) {
+    for (auto& unit : units_ | std::views::values) {
         unit->deinit();
     }
 
@@ -69,7 +69,7 @@ bool ScreencapFastestWay::set_wh(int swidth, int sheight)
 {
     LogFunc << VAR(swidth) << VAR(sheight);
 
-    for (auto& unit : units_ | MAA_RNS::views::values) {
+    for (auto& unit : units_ | std::views::values) {
         unit->set_wh(swidth, sheight);
     }
 

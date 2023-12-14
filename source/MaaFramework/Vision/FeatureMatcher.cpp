@@ -198,7 +198,7 @@ FeatureMatcher::ResultsVec FeatureMatcher::postproc(const std::vector<std::vecto
         double h = std::max({ scene_corners[0].y, scene_corners[1].y, scene_corners[2].y, scene_corners[3].y }) - y;
         cv::Rect box { static_cast<int>(x), static_cast<int>(y), static_cast<int>(w), static_cast<int>(h) };
 
-        size_t count = MAA_RNS::ranges::count_if(scene, [&box](const auto& point) { return box.contains(point); });
+        size_t count = std::ranges::count_if(scene, [&box](const auto& point) { return box.contains(point); });
 
         results.emplace_back(Result { .box = box, .count = static_cast<int>(count) });
     }

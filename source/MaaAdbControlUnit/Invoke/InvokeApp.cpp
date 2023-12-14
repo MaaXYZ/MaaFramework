@@ -45,7 +45,7 @@ bool InvokeApp::parse(const json::value& config)
 
 bool InvokeApp::init(const std::string& force_temp)
 {
-    tempname_ = force_temp.empty() ? now_filestem() : force_temp;
+    tempname_ = force_temp.empty() ? format_now_for_filename() : force_temp;
 
     LogTrace << VAR(tempname_);
 
@@ -86,7 +86,7 @@ std::optional<int> InvokeApp::sdk()
     std::string& ret = *output_opt;
     string_trim_(ret);
 
-    if (!MAA_RNS::ranges::all_of(ret, [](char c) { return std::isdigit(c); })) {
+    if (!std::ranges::all_of(ret, [](char c) { return std::isdigit(c); })) {
         return std::nullopt;
     }
     return std::stoi(ret);

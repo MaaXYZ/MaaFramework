@@ -1,17 +1,17 @@
 #pragma once
 
-#include "ControlUnit/ControlUnitAPI.h"
-
 #include <filesystem>
 
 #include <meojson/json.hpp>
+
+#include "ControlUnit/ControlUnitAPI.h"
 
 MAA_CTRL_UNIT_NS_BEGIN
 
 class CarouselImage : public ControlUnitAPI
 {
 public:
-    CarouselImage(std::filesystem::path path) : path_(std::move(path)) {}
+    explicit CarouselImage(std::filesystem::path path) : path_(std::move(path)) {}
     virtual ~CarouselImage() = default;
 
 public: // from ControlUnitAPI

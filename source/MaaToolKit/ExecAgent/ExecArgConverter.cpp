@@ -34,7 +34,7 @@ std::string ExecArgConverter::image_to_arg(const cv::Mat& image, ImageTransferMo
 {
     switch (mode) {
     case ImageTransferMode::FileIO: {
-        auto path = std::filesystem::temp_directory_path() / now_filestem() / ".png";
+        auto path = std::filesystem::temp_directory_path() / format_now_for_filename() / ".png";
         imwrite(path, image);
         images_.push_back(path);
         return path_to_crt_string(path);

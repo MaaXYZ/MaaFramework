@@ -1,4 +1,6 @@
 #pragma once
+
+#include <stack>
 #include <string_view>
 
 #include <meojson/json.hpp>
@@ -10,14 +12,12 @@
 #include "Resource/PipelineTypes.h"
 #include "Task/TaskDataMgr.h"
 
-#include <stack>
-
 MAA_TASK_NS_BEGIN
 
 class SyncContext : public MaaSyncContextAPI, public MaaInstanceSink
 {
 public:
-    SyncContext(InstanceInternalAPI* inst);
+    explicit SyncContext(InstanceInternalAPI* inst);
     virtual ~SyncContext() override = default;
 
 public: // from MaaSyncContextAPI

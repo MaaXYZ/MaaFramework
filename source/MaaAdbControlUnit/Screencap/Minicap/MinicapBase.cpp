@@ -1,11 +1,11 @@
 #include "MinicapBase.h"
 
+#include <array>
+#include <ranges>
+
 #include "Utils/Format.hpp"
 #include "Utils/Logger.h"
 #include "Utils/NoWarningCV.hpp"
-#include "Utils/Ranges.hpp"
-
-#include <array>
 
 MAA_CTRL_UNIT_NS_BEGIN
 
@@ -18,7 +18,7 @@ bool MinicapBase::parse(const json::value& config)
     };
     json::array jarch = config.get("prebuilt", "minicap", "arch", kDefaultArch);
 
-    if (MAA_RNS::ranges::any_of(jarch, [](const json::value& val) { return !val.is_string(); })) {
+    if (std::ranges::any_of(jarch, [](const json::value& val) { return !val.is_string(); })) {
         return false;
     }
     arch_list_ = jarch.to_vector<std::string>();
@@ -49,13 +49,13 @@ bool MinicapBase::init(int swidth, int sheight)
         return false;
     }
 
-    auto arch_iter = MAA_RNS::ranges::find_first_of(*archs_opt, arch_list_);
+    auto arch_iter = std::ranges::find_first_of(*archs_opt, arch_list_);
     if (arch_iter == archs_opt->end()) {
         return false;
     }
     const std::string& target_arch = *arch_iter;
 
-    auto sdk_iter = MAA_RNS::ranges::find_if(sdk_list_, [sdk_opt](int s) { return s <= sdk_opt.value(); });
+    auto sdk_iter = std::ranges::find_if(sdk_list_, [sdk_opt](int s) { return s <= sdk_opt.value(); });
     if (sdk_iter == sdk_list_.end()) {
         return false;
     }

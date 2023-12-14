@@ -6,8 +6,6 @@
 #include "Utils/ImageIo.h"
 #include "Utils/NoWarningCV.hpp"
 
-#include <tuple>
-
 MAA_CTRL_NS_BEGIN
 
 std::minstd_rand ControllerAgent::rand_engine_(std::random_device {}());
@@ -448,7 +446,7 @@ bool ControllerAgent::handle_screencap()
     bool ret = postproc_screenshot(raw_image);
 
     if (recording()) {
-        auto image_relative_path = path("Screenshot") / path(now_filestem() + ".png");
+        auto image_relative_path = path("Screenshot") / path(format_now_for_filename() + ".png");
         auto image_path = recording_path_.parent_path() / image_relative_path;
         MAA_NS::imwrite(image_path, raw_image);
 
@@ -511,7 +509,7 @@ void ControllerAgent::init_recording()
 {
     auto recording_dir = GlobalOptionMgr::get_instance().log_dir() / "Recording";
     std::filesystem::create_directories(recording_dir);
-    recording_path_ = recording_dir / MAA_FMT::format("MaaRecording_{}.txt", now_filestem());
+    recording_path_ = recording_dir / MAA_FMT::format("MaaRecording_{}.txt", format_now_for_filename());
 }
 
 void ControllerAgent::append_recording(json::value info, const std::chrono::steady_clock::time_point& start_time,

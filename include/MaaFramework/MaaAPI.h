@@ -3,9 +3,9 @@
 #include "MaaDef.h"
 
 #include "Instance/MaaController.h"
+#include "Instance/MaaCustomController.h"
 #include "Instance/MaaInstance.h"
 #include "Instance/MaaResource.h"
-#include "Instance/MaaCustomController.h"
 
 #include "Task/MaaCustomAction.h"
 #include "Task/MaaCustomRecognizer.h"

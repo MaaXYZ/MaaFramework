@@ -5,12 +5,11 @@
 #include <cstdlib>
 #include <dlfcn.h>
 #include <fcntl.h>
+#include <libproc.h>
+#include <sys/sysctl.h>
 #include <sys/types.h>
 #include <sys/wait.h>
 #include <unistd.h>
-
-#include <libproc.h>
-#include <sys/sysctl.h>
 
 #include "Utils/Logger.h"
 

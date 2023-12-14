@@ -1,16 +1,17 @@
 #pragma once
 
-#include "Conf/Conf.h"
-#include "Utils/NonCopyable.hpp"
-
 #include <filesystem>
+
+#include "Conf/Conf.h"
 
 MAA_SUPPRESS_CV_WARNINGS_BEGIN
 #include "fastdeploy/vision/ocr/ppocr/dbdetector.h"
 #include "fastdeploy/vision/ocr/ppocr/ppocr_v3.h"
 #include "fastdeploy/vision/ocr/ppocr/recognizer.h"
 MAA_SUPPRESS_CV_WARNINGS_END
+
 #include "Utils/NoWarningCV.hpp"
+#include "Utils/NonCopyable.hpp"
 
 MAA_RES_NS_BEGIN
 

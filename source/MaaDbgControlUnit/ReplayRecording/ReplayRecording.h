@@ -1,11 +1,10 @@
 #pragma once
 
-#include "ControlUnit/ControlUnitAPI.h"
-
 #include <filesystem>
 
 #include <meojson/json.hpp>
 
+#include "ControlUnit/ControlUnitAPI.h"
 #include "Record.h"
 
 MAA_CTRL_UNIT_NS_BEGIN
@@ -13,7 +12,7 @@ MAA_CTRL_UNIT_NS_BEGIN
 class ReplayRecording : public ControlUnitAPI
 {
 public:
-    ReplayRecording(Recording recording) : recording_(std::move(recording)) {}
+    explicit ReplayRecording(Recording recording) : recording_(std::move(recording)) {}
     virtual ~ReplayRecording() = default;
 
 public: // from ControlUnitAPI

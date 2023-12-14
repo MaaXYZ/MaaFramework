@@ -1,11 +1,11 @@
 #include "MtouchHelper.h"
 
-#include "Utils/Format.hpp"
-#include "Utils/Logger.h"
-#include "Utils/Ranges.hpp"
-
 #include <array>
 #include <cmath>
+#include <ranges>
+
+#include "Utils/Format.hpp"
+#include "Utils/Logger.h"
 
 MAA_CTRL_UNIT_NS_BEGIN
 
@@ -42,8 +42,8 @@ bool MtouchHelper::read_info(int swidth, int sheight, int orientation)
     bool landscape = screen_width_ > screen_height_;
     touch_width_ = landscape ? std::max(x, y) : std::min(x, y);
     touch_height_ = landscape ? std::min(x, y) : std::max(x, y);
-    xscale_ = double(touch_width_) / swidth;
-    yscale_ = double(touch_height_) / sheight;
+    xscale_ = static_cast<double>(touch_width_) / swidth;
+    yscale_ = static_cast<double>(touch_height_) / sheight;
     press_ = pressure;
     orientation_ = orientation;
 

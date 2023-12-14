@@ -1,8 +1,7 @@
 #pragma once
 
 #include <filesystem>
-
-#include "Ranges.hpp"
+#include <ranges>
 
 MAA_NS_BEGIN
 
@@ -12,13 +11,13 @@ concept ByteValueType = std::is_integral_v<ValueType> && sizeof(ValueType) == 1;
 template <typename ContainerType>
 concept AppendableBytesContainer =
     requires(ContainerType a) {
-        requires MAA_RNS::ranges::contiguous_range<ContainerType>;
+        requires std::ranges::contiguous_range<ContainerType>;
         requires ByteValueType<typename ContainerType::value_type>;
         requires std::is_constructible_v<ContainerType>;
         requires std::is_constructible_v<ContainerType, size_t,
                                          typename ContainerType::value_type>; // std::string(count, ch),
-                                                                              // std::vector(count, value)
-        a.insert(a.end(), a.begin(), a.begin() + (size_t)1);
+        // std::vector(count, value)
+        a.insert(a.end(), a.begin(), a.begin() + 1);
         a.resize(a.size());
     };
 

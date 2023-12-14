@@ -1,8 +1,8 @@
 #pragma once
 
-#include "Conf/Conf.h"
-
 #include <memory>
+
+#include "Conf/Conf.h"
 
 namespace grpc
 {

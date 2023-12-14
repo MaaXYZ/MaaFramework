@@ -1,3 +1,7 @@
+#include "Context.h"
+
+#include <grpcpp/server_builder.h>
+
 #include "Buffer.h"
 #include "Config.h"
 #include "Controller.h"
@@ -7,10 +11,6 @@
 #include "SyncContext.h"
 #include "Utility.h"
 #include "Utils/Logger.h"
-
-#include <grpcpp/server_builder.h>
-
-#include "Context.h"
 
 MAA_RPC_NS_BEGIN
 

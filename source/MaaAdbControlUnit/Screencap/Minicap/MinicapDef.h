@@ -1,8 +1,8 @@
 #pragma once
 
-#include "Conf/Conf.h"
-
 #include <cstdint>
+
+#include "Conf/Conf.h"
 
 MAA_CTRL_UNIT_NS_BEGIN
 

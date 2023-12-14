@@ -43,7 +43,7 @@ std::shared_ptr<TemplateResMgr::Image> TemplateResMgr::load(const std::string& n
 {
     LogFunc << VAR(name) << VAR(roots_);
 
-    for (const auto& root : roots_ | MAA_RNS::views::reverse) {
+    for (const auto& root : roots_ | std::views::reverse) {
         auto path = root / MAA_NS::path(name);
         if (!std::filesystem::exists(path)) {
             continue;

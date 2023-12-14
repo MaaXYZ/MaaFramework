@@ -1,9 +1,10 @@
 #pragma once
 
+#include <ranges>
+
 #include "Conf/Conf.h"
 #include "Utils/Logger.h"
 #include "Utils/NoWarningCV.hpp"
-#include "Utils/Ranges.hpp"
 
 MAA_VISION_NS_BEGIN
 
@@ -12,7 +13,7 @@ MAA_VISION_NS_BEGIN
 template <typename ResultsVec>
 inline static void sort_by_horizontal_(ResultsVec& results)
 {
-    MAA_RNS::ranges::sort(results, [](const auto& lhs, const auto& rhs) -> bool {
+    std::ranges::sort(results, [](const auto& lhs, const auto& rhs) -> bool {
         // y 差距较小则理解为是同一排的，按x排序
         return std::abs(lhs.box.y - rhs.box.y) < 5 ? lhs.box.x < rhs.box.x : lhs.box.y < rhs.box.y;
     });
@@ -23,7 +24,7 @@ inline static void sort_by_horizontal_(ResultsVec& results)
 template <typename ResultsVec>
 inline static void sort_by_vertical_(ResultsVec& results)
 {
-    MAA_RNS::ranges::sort(results, [](const auto& lhs, const auto& rhs) -> bool {
+    std::ranges::sort(results, [](const auto& lhs, const auto& rhs) -> bool {
         // x 差距较小则理解为是同一排的，按y排序
         return std::abs(lhs.box.x - rhs.box.x) < 5 ? lhs.box.y < rhs.box.y : lhs.box.x < rhs.box.x;
     });
@@ -32,7 +33,7 @@ inline static void sort_by_vertical_(ResultsVec& results)
 template <typename ResultsVec>
 inline static void sort_by_score_(ResultsVec& results)
 {
-    MAA_RNS::ranges::sort(results, std::greater {}, std::mem_fn(&ResultsVec::value_type::score));
+    std::ranges::sort(results, std::greater {}, std::mem_fn(&ResultsVec::value_type::score));
 }
 
 template <typename ResultsVec>
@@ -44,7 +45,7 @@ inline static void sort_by_required_(ResultsVec& results, const std::vector<std:
     }
 
     // 不在 required 中的将被排在最后
-    MAA_RNS::ranges::sort(results, [&req_cache](const auto& lhs, const auto& rhs) -> bool {
+    std::ranges::sort(results, [&req_cache](const auto& lhs, const auto& rhs) -> bool {
         size_t lvalue = req_cache[lhs.text];
         size_t rvalue = req_cache[rhs.text];
         if (lvalue == 0) {
@@ -61,7 +62,7 @@ inline static void sort_by_required_(ResultsVec& results, const std::vector<std:
 template <typename ResultsVec>
 inline static ResultsVec NMS(ResultsVec results, double threshold = 0.7)
 {
-    MAA_RNS::ranges::sort(results, [](const auto& a, const auto& b) { return a.score > b.score; });
+    std::ranges::sort(results, [](const auto& a, const auto& b) { return a.score > b.score; });
 
     ResultsVec nms_results;
     for (size_t i = 0; i < results.size(); ++i) {
@@ -90,7 +91,7 @@ template <typename T>
 inline static T softmax(const T& input)
 {
     T output = input;
-    float rowmax = *MAA_RNS::ranges::max_element(output);
+    float rowmax = *std::ranges::max_element(output);
     std::vector<float> y(output.size());
     float sum = 0.0f;
     for (size_t i = 0; i != output.size(); ++i) {

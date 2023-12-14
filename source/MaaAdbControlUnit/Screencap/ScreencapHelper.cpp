@@ -106,7 +106,7 @@ std::optional<cv::Mat> ScreencapHelper::decode_raw(const std::string& buffer)
     memcpy(&im_width, data, 4);
     memcpy(&im_height, data + 4, 4);
 
-    if (int(im_width) != width_ || int(im_height) != height_) {
+    if (static_cast<int>(im_width) != width_ || static_cast<int>(im_height) != height_) {
         LogError << "screencap size image" << VAR(im_width) << VAR(im_height) << "don't match" << VAR(width_)
                  << VAR(height_);
         return std::nullopt;
@@ -165,7 +165,7 @@ std::optional<cv::Mat> ScreencapHelper::decode_jpg(const std::string& buffer)
 
 std::optional<cv::Mat> ScreencapHelper::decode(const std::string& buffer)
 {
-    cv::Mat img = cv::imdecode({ buffer.data(), int(buffer.size()) }, cv::IMREAD_COLOR);
+    cv::Mat img = cv::imdecode({ buffer.data(), static_cast<int>(buffer.size()) }, cv::IMREAD_COLOR);
     return img.empty() ? std::nullopt : std::make_optional(img);
 }
 

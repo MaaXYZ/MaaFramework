@@ -4,6 +4,7 @@
 #include <fstream>
 #include <iostream>
 #include <mutex>
+#include <ranges>
 #include <thread>
 #include <tuple>
 #include <type_traits>
@@ -21,7 +22,6 @@
 #include "Format.hpp"
 #include "Locale.hpp"
 #include "Platform.h"
-#include "Ranges.hpp"
 #include "Time.hpp"
 
 namespace cv
@@ -62,7 +62,7 @@ enum class level
 
 struct MAA_UTILS_API separator
 {
-    constexpr separator(std::string_view s) noexcept : str(s) {}
+    explicit constexpr separator(std::string_view s) noexcept : str(s) {}
 
     static const separator none;
     static const separator space;
@@ -171,7 +171,7 @@ private:
 #else
         int pid = ::getpid();
 #endif
-        auto tid = static_cast<unsigned short>(std::hash<std::thread::id> {}(std::this_thread::get_id()));
+        auto tid = static_cast<uint16_t>(std::hash<std::thread::id> {}(std::this_thread::get_id()));
 
         std::string props = MAA_FMT::format("[{}][{}][Px{}][Tx{}]", format_now(), level_str(), pid, tid);
         for (auto&& arg : { args... }) {

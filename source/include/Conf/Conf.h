@@ -1,13 +1,5 @@
 #pragma once
 
-#if !defined(MAA_USE_RANGES_STL) && !defined(MAA_USE_RANGES_RANGE_V3) && !defined(MAA_USE_RANGES_BOOST)
-#if defined(__clang__) && __clang_major__ < 15
-#define MAA_USE_RANGES_RANGE_V3
-#else
-#define MAA_USE_RANGES_STL
-#endif
-#endif
-
 #ifdef _MSC_VER
 #define MAA_DO_PRAGMA(x) __pragma(x)
 #elif defined(__GNUC__)
