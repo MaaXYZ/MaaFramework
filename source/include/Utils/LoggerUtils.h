@@ -107,15 +107,18 @@ struct StringConverter
         }
     }
 
-    std::filesystem::path dump(const cv::Mat& image) const
+    std::optional<std::filesystem::path> dump(const cv::Mat& image) const
     {
-        if (dumps_dir_.empty()) {
-            return {};
+        if (dumps_dir_.empty() || image.empty()) {
+            return std::nullopt;
         }
 
         std::string filename = MAA_FMT::format("{}-{}.png", format_now_for_filename(), make_uuid());
         auto filepath = dumps_dir_ / std::move(filename);
-        MAA_NS::imwrite(filepath, image);
+        bool ret = MAA_NS::imwrite(filepath, image);
+        if (!ret) {
+            return std::nullopt;
+        }
         return filepath;
     }
 
