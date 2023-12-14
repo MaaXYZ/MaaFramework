@@ -154,5 +154,5 @@ MAA_LOG_NS_END
 
 #define VAR_RAW(x) "[" << #x << "=" << (x) << "] "
 #define VAR(x) MAA_LOG_NS::separator::none << VAR_RAW(x) << MAA_LOG_NS::separator::space
-#define VAR_VOIDP_RAW(x) "[" << #x << "=" << static_cast<void*>(x) << "] "
+#define VAR_VOIDP_RAW(x) "[" << #x << "=" << reinterpret_cast<void*>(x) << "] "
 #define VAR_VOIDP(x) MAA_LOG_NS::separator::none << VAR_VOIDP_RAW(x) << MAA_LOG_NS::separator::space

@@ -9,9 +9,9 @@
     ],
     "cpplint.excludes": [
         "3rdparty",
-        "build"
+        "build",
+        "out"
     ],
-    "cpplint.lintMode": "workspace",
     "cpplint.filters": [
         "-legal/copyright",
         "-whitespace/line_length",
