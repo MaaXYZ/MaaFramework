@@ -114,7 +114,7 @@ void NeuralNetworkClassifier::draw_result(const Result& res) const
     for (size_t i = 0; i != param_.cls_size; ++i) {
         const auto color = i == res.cls_index ? cv::Scalar(0, 0, 255) : cv::Scalar(255, 0, 0);
         std::string text =
-            MAA_FMT::format("{} {}: prob {:.3f}, raw {:.3f}", i, param_.labels[i], res.probs[i], res.raw[i]);
+            std::format("{} {}: prob {:.3f}, raw {:.3f}", i, param_.labels[i], res.probs[i], res.raw[i]);
         cv::putText(image_draw, text, pt, cv::FONT_HERSHEY_PLAIN, 1.2, color, 1);
         pt.y += 20;
     }

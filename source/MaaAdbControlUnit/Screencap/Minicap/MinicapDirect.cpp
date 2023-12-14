@@ -1,6 +1,7 @@
 #include "MinicapDirect.h"
 
-#include "Utils/Format.hpp"
+#include <format>
+
 #include "Utils/Logger.h"
 #include "Utils/NoWarningCV.hpp"
 
@@ -12,7 +13,7 @@ std::optional<cv::Mat> MinicapDirect::screencap()
     int height = screencap_helper_.get_h();
 
     auto res =
-        binary_->invoke_bin_and_read_pipe(MAA_FMT::format("-P {}x{}@{}x{}/{} -s", width, height, width, height, 0));
+        binary_->invoke_bin_and_read_pipe(std::format("-P {}x{}@{}x{}/{} -s", width, height, width, height, 0));
 
     if (!res) {
         return std::nullopt;

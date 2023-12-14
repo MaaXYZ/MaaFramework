@@ -2,6 +2,7 @@
 
 #include <ranges>
 #include <unordered_set>
+#include <format>
 
 #include "Encode.h"
 #include "EncodeToFile.h"
@@ -9,7 +10,6 @@
 #include "Minicap/MinicapStream.h"
 #include "RawByNetcat.h"
 #include "RawWithGzip.h"
-#include "Utils/Format.hpp"
 #include "Utils/Logger.h"
 #include "Utils/NoWarningCV.hpp"
 
