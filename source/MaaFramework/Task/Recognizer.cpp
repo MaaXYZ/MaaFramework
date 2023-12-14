@@ -308,7 +308,7 @@ void Recognizer::show_hit_draw(const cv::Mat& image, const Result& res, const st
         return;
     }
 
-    const std::string kWinName = MAA_FMT::format("Hit: {}", task_name);
+    const std::string kWinName = std::format("Hit: {}", task_name);
 
     cv::Mat draw = image.clone();
 

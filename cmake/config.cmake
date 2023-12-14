@@ -30,7 +30,6 @@ endif()
 
 if(APPLE)
     set(CMAKE_INSTALL_RPATH "@loader_path;@executable_path")
-    add_compile_definitions(MAA_USE_FMTLIB)
     add_compile_options("-Wno-deprecated-declarations") # supress tmpnam
     if("${MAADEPS_TRIPLET}" STREQUAL "maa-arm64-osx")
         add_compile_options("-arch;arm64")

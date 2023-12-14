@@ -509,7 +509,7 @@ void ControllerAgent::init_recording()
 {
     auto recording_dir = GlobalOptionMgr::get_instance().log_dir() / "Recording";
     std::filesystem::create_directories(recording_dir);
-    recording_path_ = recording_dir / MAA_FMT::format("MaaRecording_{}.txt", format_now_for_filename());
+    recording_path_ = recording_dir / std::format("MaaRecording_{}.txt", format_now_for_filename());
 }
 
 void ControllerAgent::append_recording(json::value info, const std::chrono::steady_clock::time_point& start_time,

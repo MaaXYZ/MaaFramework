@@ -2,8 +2,8 @@
 
 #include <ranges>
 #include <unordered_set>
+#include <format>
 
-#include "Utils/Format.hpp"
 #include "Utils/Logger.h"
 #include "Utils/NoWarningCV.hpp"
 

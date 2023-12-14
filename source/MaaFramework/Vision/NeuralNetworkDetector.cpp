@@ -167,7 +167,7 @@ void NeuralNetworkDetector::draw_result(const cv::Rect& roi, const ResultsVec& r
 
         const auto color = cv::Scalar(0, 0, 255);
         cv::rectangle(image_draw, my_box, color, 1);
-        std::string flag = MAA_FMT::format("{} {} {:.3f}: [{}, {}, {}, {}]", res.cls_index, res.label, res.score,
+        std::string flag = std::format("{} {} {:.3f}: [{}, {}, {}, {}]", res.cls_index, res.label, res.score,
                                            my_box.x, my_box.y, my_box.width, my_box.height);
         cv::putText(image_draw, flag, cv::Point(my_box.x, my_box.y - 5), cv::FONT_HERSHEY_PLAIN, 1.2, color, 1);
     }

@@ -8,22 +8,21 @@
 
 #include <chrono>
 #include <string>
-
-#include "Utils/Format.hpp"
+#include <format>
 
 MAA_NS_BEGIN
 
 inline std::string format_now()
 {
 #ifndef __APPLE__ // Now Apple's compiler cannot build std::chrono::format. 2023/07/21
-    return MAA_FMT::format("{}", std::chrono::current_zone()->to_local(
+    return std::format("{}", std::chrono::current_zone()->to_local(
                                      std::chrono::floor<std::chrono::milliseconds>(std::chrono::system_clock::now())));
 #else
     timeval tv = {};
     gettimeofday(&tv, nullptr);
     time_t nowtime = tv.tv_sec;
     tm* tm_info = localtime(&nowtime);
-    return MAA_FMT::format("{:0>4}-{:0>2}-{:0>2} {:0>2}:{:0>2}:{:0>2}.{:0>3}", tm_info->tm_year + 1900, tm_info->tm_mon,
+    return std::format("{:0>4}-{:0>2}-{:0>2} {:0>2}:{:0>2}:{:0>2}.{:0>3}", tm_info->tm_year + 1900, tm_info->tm_mon,
                            tm_info->tm_mday, tm_info->tm_hour, tm_info->tm_min, tm_info->tm_sec, tv.tv_usec / 1000);
 #endif
 }
@@ -31,14 +30,14 @@ inline std::string format_now()
 inline std::string format_now_for_filename()
 {
 #ifndef __APPLE__ // Now Apple's compiler cannot build std::chrono::format. 2023/07/21
-    return MAA_FMT::format("{:%Y.%m.%d-%H.%M.%S}",
+    return std::format("{:%Y.%m.%d-%H.%M.%S}",
                            std::chrono::current_zone()->to_local(std::chrono::system_clock::now()));
 #else
     timeval tv = {};
     gettimeofday(&tv, nullptr);
     time_t nowtime = tv.tv_sec;
     tm* tm_info = localtime(&nowtime);
-    return MAA_FMT::format("{:0>4}.{:0>2}.{:0>2}-{:0>2}.{:0>2}.{:0>2}.{}", tm_info->tm_year + 1900, tm_info->tm_mon,
+    return std::format("{:0>4}.{:0>2}.{:0>2}-{:0>2}.{:0>2}.{:0>2}.{}", tm_info->tm_year + 1900, tm_info->tm_mon,
                            tm_info->tm_mday, tm_info->tm_hour, tm_info->tm_min, tm_info->tm_sec, tv.tv_usec);
 #endif
 }

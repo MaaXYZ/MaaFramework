@@ -3,8 +3,8 @@
 #include <array>
 #include <cmath>
 #include <ranges>
+#include <format>
 
-#include "Utils/Format.hpp"
 #include "Utils/Logger.h"
 
 MAA_CTRL_UNIT_NS_BEGIN
@@ -70,8 +70,8 @@ bool MtouchHelper::click(int x, int y)
 
     LogInfo << VAR(x) << VAR(y) << VAR(touch_x) << VAR(touch_y);
 
-    bool ret = pipe_ios_->write(MAA_FMT::format(kDownFormat, 0, touch_x, touch_y, press_)) &&
-               pipe_ios_->write(MAA_FMT::format(kUpFormat, 0));
+    bool ret = pipe_ios_->write(std::format(kDownFormat, 0, touch_x, touch_y, press_)) &&
+               pipe_ios_->write(std::format(kUpFormat, 0));
 
     if (!ret) {
         LogError << "failed to write";
@@ -110,7 +110,7 @@ bool MtouchHelper::swipe(int x1, int y1, int x2, int y2, int duration)
     auto start = std::chrono::steady_clock::now();
     auto now = start;
     bool ret = true;
-    ret &= pipe_ios_->write(MAA_FMT::format(kDownFormat, 0, touch_x1, touch_y1, press_));
+    ret &= pipe_ios_->write(std::format(kDownFormat, 0, touch_x1, touch_y1, press_));
     if (!ret) {
         LogError << "write error";
         return false;
@@ -127,7 +127,7 @@ bool MtouchHelper::swipe(int x1, int y1, int x2, int y2, int duration)
         std::this_thread::sleep_until(now + delay);
         now = std::chrono::steady_clock::now();
 
-        ret &= pipe_ios_->write(MAA_FMT::format(kMoveFormat, 0, tx, ty, press_));
+        ret &= pipe_ios_->write(std::format(kMoveFormat, 0, tx, ty, press_));
         if (!ret) {
             LogWarn << "write error";
         }
@@ -135,11 +135,11 @@ bool MtouchHelper::swipe(int x1, int y1, int x2, int y2, int duration)
 
     std::this_thread::sleep_until(now + delay);
     now = std::chrono::steady_clock::now();
-    ret &= pipe_ios_->write(MAA_FMT::format(kMoveFormat, 0, touch_x2, touch_y2, press_));
+    ret &= pipe_ios_->write(std::format(kMoveFormat, 0, touch_x2, touch_y2, press_));
 
     std::this_thread::sleep_until(now + delay);
     now = std::chrono::steady_clock::now();
-    ret &= pipe_ios_->write(MAA_FMT::format(kUpFormat, 0));
+    ret &= pipe_ios_->write(std::format(kUpFormat, 0));
 
     if (!ret) {
         LogError << "failed to write";
@@ -160,7 +160,7 @@ bool MtouchHelper::touch_down(int contact, int x, int y, int pressure)
 
     LogInfo << VAR(contact) << VAR(x) << VAR(y) << VAR(touch_x) << VAR(touch_y);
 
-    bool ret = pipe_ios_->write(MAA_FMT::format(kDownFormat, contact, touch_x, touch_y, pressure));
+    bool ret = pipe_ios_->write(std::format(kDownFormat, contact, touch_x, touch_y, pressure));
 
     if (!ret) {
         LogError << "failed to write";
@@ -181,7 +181,7 @@ bool MtouchHelper::touch_move(int contact, int x, int y, int pressure)
 
     LogInfo << VAR(contact) << VAR(x) << VAR(y) << VAR(touch_x) << VAR(touch_y);
 
-    bool ret = pipe_ios_->write(MAA_FMT::format(kMoveFormat, contact, touch_x, touch_y, pressure));
+    bool ret = pipe_ios_->write(std::format(kMoveFormat, contact, touch_x, touch_y, pressure));
 
     if (!ret) {
         LogError << "failed to write";
@@ -200,7 +200,7 @@ bool MtouchHelper::touch_up(int contact)
 
     LogInfo << VAR(contact);
 
-    bool ret = pipe_ios_->write(MAA_FMT::format(kUpFormat, contact));
+    bool ret = pipe_ios_->write(std::format(kUpFormat, contact));
 
     if (!ret) {
         LogError << "failed to write";

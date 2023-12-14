@@ -3,8 +3,8 @@
 #include <array>
 #include <cmath>
 #include <ranges>
+#include <format>
 
-#include "Utils/Format.hpp"
 #include "Utils/Logger.h"
 
 MAA_CTRL_UNIT_NS_BEGIN

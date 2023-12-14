@@ -233,14 +233,10 @@ jobs:
           brew install cmake python ninja
         # ccache?
 
-      - name: Download fmtlib
-        run: |
-          sh tools/fetch-fmt.sh
-
       - name: Install compiler
         run: |
           brew install llvm
-        # 16
+        # 17
 
       - name: Bootstrap MaaDeps
         env:

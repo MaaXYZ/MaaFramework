@@ -2,6 +2,7 @@
 
 #include <filesystem>
 #include <fstream>
+#include <format>
 #include <iostream>
 #include <mutex>
 #include <ranges>
@@ -19,14 +20,13 @@
 #include "MaaFramework/MaaDef.h"
 #include "MaaFramework/MaaPort.h"
 
-#include "Format.hpp"
 #include "Locale.hpp"
 #include "Platform.h"
 #include "Time.hpp"
 
 namespace cv
 {
-class Mat;
+    class Mat;
 }
 
 MAA_LOG_NS_BEGIN
@@ -80,7 +80,7 @@ struct StringConverter
 {
     template <typename T>
     static constexpr bool is_convertible = std::same_as<std::filesystem::path, std::decay_t<T>> ||
-                                           std::same_as<std::wstring, std::decay_t<T>> || has_output_operator<T>;
+        std::same_as<std::wstring, std::decay_t<T>> || has_output_operator<T>;
 
     template <typename T>
     std::string operator()(T&& value) const
@@ -173,9 +173,9 @@ private:
 #endif
         auto tid = static_cast<uint16_t>(std::hash<std::thread::id> {}(std::this_thread::get_id()));
 
-        std::string props = MAA_FMT::format("[{}][{}][Px{}][Tx{}]", format_now(), level_str(), pid, tid);
+        std::string props = std::format("[{}][{}][Px{}][Tx{}]", format_now(), level_str(), pid, tid);
         for (auto&& arg : { args... }) {
-            props += MAA_FMT::format("[{}]", arg);
+            props += std::format("[{}]", arg);
         }
         stream(props, sep_);
     }
@@ -188,7 +188,7 @@ private:
     std::ofstream& stream_;
     const level lv_ = level::fatal;
     const bool stdout_ = false;
-    const StringConverter string_converter_ {};
+    const StringConverter string_converter_{};
 
     separator sep_ = separator::space;
     std::stringstream buffer_;

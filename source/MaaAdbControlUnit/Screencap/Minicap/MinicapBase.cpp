@@ -2,8 +2,8 @@
 
 #include <array>
 #include <ranges>
+#include <format>
 
-#include "Utils/Format.hpp"
 #include "Utils/Logger.h"
 #include "Utils/NoWarningCV.hpp"
 
@@ -63,7 +63,7 @@ bool MinicapBase::init(int swidth, int sheight)
 
     // TODO: 确认低版本是否使用minicap-nopie
     const auto bin_path = agent_path_ / path(target_arch) / path("bin") / path("minicap");
-    const auto lib_path = agent_path_ / path(target_arch) / path("lib") / path(MAA_FMT::format("android-{}", fit_sdk)) /
+    const auto lib_path = agent_path_ / path(target_arch) / path("lib") / path(std::format("android-{}", fit_sdk)) /
                           path("minicap.so");
     if (!binary_->push(bin_path) || !library_->push(lib_path)) {
         return false;
