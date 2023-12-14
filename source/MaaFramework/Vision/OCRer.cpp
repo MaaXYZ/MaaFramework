@@ -4,7 +4,7 @@
 
 #include "Utils/ImageIo.h"
 #include "Utils/Logger.h"
-#include "Utils/Ranges.hpp"
+#include <ranges>
 #include "Utils/StringMisc.hpp"
 
 MAA_VISION_NS_BEGIN
@@ -43,7 +43,7 @@ OCRer::ResultsVec OCRer::foreach_rois() const
 
 OCRer::ResultsVec OCRer::predict(const cv::Rect& roi) const
 {
-    return param_.only_rec ? ResultsVec { predict_only_rec(roi) } : predict_det_and_rec(roi);
+    return param_.only_rec ? ResultsVec{ predict_only_rec(roi) } : predict_det_and_rec(roi);
 }
 
 OCRer::ResultsVec OCRer::predict_det_and_rec(const cv::Rect& roi) const
@@ -66,14 +66,14 @@ OCRer::ResultsVec OCRer::predict_det_and_rec(const cv::Rect& roi) const
 
     if (ocr_result.boxes.size() != ocr_result.text.size() || ocr_result.text.size() != ocr_result.rec_scores.size()) {
         LogWarn << "Wrong ocr_result size" << VAR(ocr_result.boxes) << VAR(ocr_result.text)
-                << VAR(ocr_result.rec_scores);
+            << VAR(ocr_result.rec_scores);
 
         if (ocr_result.boxes.empty() && ocr_result.text.size() == 1 && ocr_result.rec_scores.size() == 1) {
             if (auto raw_text = ocr_result.text.front(); !raw_text.empty()) {
                 // 这种情况是 det 模型没出结果，整个 ROI 直接被送给了 rec 模型。凑合用吧（
                 auto text = to_u16(raw_text);
                 auto score = ocr_result.rec_scores.front();
-                results.emplace_back(Result { .text = std::move(text), .box = roi, .score = score });
+                results.emplace_back(Result{ .text = std::move(text), .box = roi, .score = score });
             }
         }
 
@@ -88,14 +88,14 @@ OCRer::ResultsVec OCRer::predict_det_and_rec(const cv::Rect& roi) const
         const auto& raw_box = ocr_result.boxes.at(i);
         int x_collect[] = { raw_box[0], raw_box[2], raw_box[4], raw_box[6] };
         int y_collect[] = { raw_box[1], raw_box[3], raw_box[5], raw_box[7] };
-        auto [left, right] = MAA_RNS::ranges::minmax(x_collect);
-        auto [top, bottom] = MAA_RNS::ranges::minmax(y_collect);
+        auto [left, right] = std::ranges::minmax(x_collect);
+        auto [top, bottom] = std::ranges::minmax(y_collect);
 
         auto text = to_u16(ocr_result.text.at(i));
         cv::Rect my_box(left + roi.x, top + roi.y, right - left, bottom - top);
         auto score = ocr_result.rec_scores.at(i);
 
-        results.emplace_back(Result { .text = std::move(text), .box = my_box, .score = score });
+        results.emplace_back(Result{ .text = std::move(text), .box = my_box, .score = score });
     }
 
     draw_result(roi, results);
@@ -122,7 +122,7 @@ OCRer::Result OCRer::predict_only_rec(const cv::Rect& roi) const
     }
 
     auto text = to_u16(rec_text);
-    Result result { .text = std::move(text), .box = roi, .score = rec_score };
+    Result result{ .text = std::move(text), .box = roi, .score = rec_score };
     draw_result(roi, { result });
 
     return result;

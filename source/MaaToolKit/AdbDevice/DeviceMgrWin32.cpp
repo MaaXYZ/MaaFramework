@@ -11,7 +11,7 @@
 
 #include "Utils/Logger.h"
 #include "Utils/Platform.h"
-#include "Utils/Ranges.hpp"
+#include <ranges>
 
 MAA_TOOLKIT_NS_BEGIN
 
@@ -114,7 +114,7 @@ std::vector<DeviceMgrWin32::Emulator> DeviceMgrWin32::find_emulators() const
 
     auto all_processes = list_processes();
     for (const auto& process : all_processes) {
-        auto find_it = MAA_RNS::ranges::find_if(kEmulators, [&process](const auto& pair) -> bool {
+        auto find_it = std::ranges::find_if(kEmulators, [&process](const auto& pair) -> bool {
             return process.name.find(pair.second.keyword) != std::string::npos;
         });
         if (find_it == kEmulators.cend()) {

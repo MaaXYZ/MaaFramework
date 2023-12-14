@@ -148,7 +148,7 @@ bool PipelineResMgr::check_next_list(const TaskData::NextList& next_list) const
 
 std::vector<std::string> PipelineResMgr::get_task_list() const
 {
-    auto k = task_data_map_ | MAA_RNS::views::keys;
+    auto k = task_data_map_ | std::views::keys;
     return std::vector(k.begin(), k.end());
 }
 
@@ -567,13 +567,13 @@ bool PipelineResMgr::parse_ocrer_param(const json::value& input, MAA_VISION_NS::
 
     std::vector<std::string> u8_text;
     std::vector<std::string> u8_default_text;
-    MAA_RNS::ranges::transform(default_value.text, std::back_inserter(u8_default_text), from_u16);
+    std::ranges::transform(default_value.text, std::back_inserter(u8_default_text), from_u16);
 
     if (!get_and_check_value_or_array(input, "text", u8_text, u8_default_text)) {
         LogError << "failed to get_and_check_value_or_array text" << VAR(input);
         return false;
     }
-    MAA_RNS::ranges::transform(u8_text, std::back_inserter(output.text), to_u16);
+    std::ranges::transform(u8_text, std::back_inserter(output.text), to_u16);
 
     if (auto replace_opt = input.find("replace")) {
         if (!replace_opt->is_array()) {

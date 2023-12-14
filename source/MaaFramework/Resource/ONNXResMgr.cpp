@@ -4,7 +4,7 @@
 
 #include "Utils/Logger.h"
 #include "Utils/Platform.h"
-#include "Utils/Ranges.hpp"
+#include <ranges>
 
 MAA_RES_NS_BEGIN
 
@@ -65,7 +65,7 @@ std::shared_ptr<Ort::Session> ONNXResMgr::load(const std::string& name,
 {
     LogFunc << VAR(name) << VAR(roots);
 
-    for (const auto& root : roots | MAA_RNS::views::reverse) {
+    for (const auto& root : roots | std::views::reverse) {
         auto path = root / MAA_NS::path(name);
         if (!std::filesystem::exists(path)) {
             continue;

@@ -5,6 +5,7 @@
 #include <iostream>
 #include <mutex>
 #include <thread>
+#include <ranges>
 #include <tuple>
 #include <type_traits>
 
@@ -21,7 +22,6 @@
 #include "Format.hpp"
 #include "Locale.hpp"
 #include "Platform.h"
-#include "Ranges.hpp"
 #include "Time.hpp"
 
 namespace cv

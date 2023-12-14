@@ -8,7 +8,7 @@
 
 #include "Utils/Logger.h"
 #include "Utils/Platform.h"
-#include "Utils/Ranges.hpp"
+#include <ranges>
 
 MAA_TOOLKIT_NS_BEGIN
 

@@ -1,11 +1,11 @@
 #include "MinitouchInput.h"
 
-#include "Utils/Format.hpp"
-#include "Utils/Logger.h"
-#include "Utils/Ranges.hpp"
-
+#include <ranges>
 #include <array>
 #include <cmath>
+
+#include "Utils/Format.hpp"
+#include "Utils/Logger.h"
 
 MAA_CTRL_UNIT_NS_BEGIN
 
@@ -16,7 +16,7 @@ bool MinitouchInput::parse(const json::value& config)
     };
     json::array jarch = config.get("prebuilt", "minitouch", "arch", kDefaultArch);
 
-    if (MAA_RNS::ranges::any_of(jarch, [](const json::value& val) { return !val.is_string(); })) {
+    if (std::ranges::any_of(jarch, [](const json::value& val) { return !val.is_string(); })) {
         return false;
     }
 
@@ -39,7 +39,7 @@ bool MinitouchInput::init(int swidth, int sheight, int orientation)
         return false;
     }
 
-    auto arch_iter = MAA_RNS::ranges::find_first_of(*archs, arch_list_);
+    auto arch_iter = std::ranges::find_first_of(*archs, arch_list_);
     if (arch_iter == archs->end()) {
         return false;
     }

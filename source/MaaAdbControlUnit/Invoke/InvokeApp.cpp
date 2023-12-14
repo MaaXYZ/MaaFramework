@@ -86,7 +86,7 @@ std::optional<int> InvokeApp::sdk()
     std::string& ret = *output_opt;
     string_trim_(ret);
 
-    if (!MAA_RNS::ranges::all_of(ret, [](char c) { return std::isdigit(c); })) {
+    if (!std::ranges::all_of(ret, [](char c) { return std::isdigit(c); })) {
         return std::nullopt;
     }
     return std::stoi(ret);

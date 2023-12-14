@@ -3,7 +3,7 @@
 #include <onnxruntime/onnxruntime_cxx_api.h>
 
 #include "Utils/NoWarningCV.hpp"
-#include "Utils/Ranges.hpp"
+#include <ranges>
 #include "VisionUtils.hpp"
 
 MAA_VISION_NS_BEGIN
