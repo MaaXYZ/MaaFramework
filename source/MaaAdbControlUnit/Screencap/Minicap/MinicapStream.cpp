@@ -73,7 +73,7 @@ bool MinicapStream::init(int swidth, int sheight)
 
     LogInfo << "minicap try to connect" << VAR(local) << VAR(port_);
 
-    ClientSockIOFactory io_factory(local, static_cast<unsigned short>(port_));
+    ClientSockIOFactory io_factory(local, static_cast<uint16_t>(port_));
     sock_ios_ = io_factory.connect();
     if (!sock_ios_) {
         return false;

@@ -1,8 +1,8 @@
 #include "MinitouchInput.h"
 
-#include <ranges>
 #include <array>
 #include <cmath>
+#include <ranges>
 
 #include "Utils/Format.hpp"
 #include "Utils/Logger.h"

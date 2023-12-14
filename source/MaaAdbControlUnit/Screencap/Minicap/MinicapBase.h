@@ -1,10 +1,9 @@
 #pragma once
 
-#include "Base/UnitBase.h"
-
 #include <filesystem>
 
 #include "../ScreencapHelper.h"
+#include "Base/UnitBase.h"
 #include "Invoke/InvokeApp.h"
 
 MAA_CTRL_UNIT_NS_BEGIN
@@ -12,7 +11,7 @@ MAA_CTRL_UNIT_NS_BEGIN
 class MinicapBase : public ScreencapBase
 {
 public:
-    MinicapBase(std::filesystem::path agent_path) : agent_path_(std::move(agent_path))
+    explicit MinicapBase(std::filesystem::path agent_path) : agent_path_(std::move(agent_path))
     {
         children_.emplace_back(binary_);
         children_.emplace_back(library_);

@@ -1,4 +1,3 @@
-
 #include <condition_variable>
 #include <csignal>
 #include <iostream>

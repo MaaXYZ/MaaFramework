@@ -1,12 +1,13 @@
 #pragma once
 
+#include <semaphore>
+
+#include "generated/controller.grpc.pb.h"
+
 #include "AtomicMap.h"
 #include "Buffer.h"
 #include "MaaFramework/MaaDef.h"
 #include "Utility.h"
-#include "generated/controller.grpc.pb.h"
-
-#include <semaphore>
 
 MAA_RPC_NS_BEGIN
 

@@ -1,15 +1,14 @@
 #pragma once
 
-#include "Conf/Conf.h"
-
 #include <filesystem>
 #include <string>
 #include <variant>
 #include <vector>
 
-#include "Utils/NoWarningCVMat.hpp"
-
 #include <meojson/json.hpp>
+
+#include "Conf/Conf.h"
+#include "Utils/NoWarningCVMat.hpp"
 
 MAA_CTRL_UNIT_NS_BEGIN
 

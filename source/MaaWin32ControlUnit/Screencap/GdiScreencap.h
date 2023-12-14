@@ -10,7 +10,7 @@ MAA_CTRL_UNIT_NS_BEGIN
 class GdiScreencap : public ScreencapBase
 {
 public:
-    GdiScreencap(HWND hwnd) : hwnd_(hwnd) {}
+    explicit GdiScreencap(HWND hwnd) : hwnd_(hwnd) {}
     virtual ~GdiScreencap() override = default;
 
 public: // from TouchInputBase

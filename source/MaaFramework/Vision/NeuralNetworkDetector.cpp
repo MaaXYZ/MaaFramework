@@ -1,9 +1,10 @@
 #include "NeuralNetworkDetector.h"
 
+#include <ranges>
+
 #include <onnxruntime/onnxruntime_cxx_api.h>
 
 #include "Utils/NoWarningCV.hpp"
-#include <ranges>
 #include "VisionUtils.hpp"
 
 MAA_VISION_NS_BEGIN

@@ -1,12 +1,12 @@
 #pragma once
 
-#include "Conf/Conf.h"
-#include "Utils/NonCopyable.hpp"
-
 #include <filesystem>
 #include <memory>
 
 #include <onnxruntime/onnxruntime_cxx_api.h>
+
+#include "Conf/Conf.h"
+#include "Utils/NonCopyable.hpp"
 
 MAA_RES_NS_BEGIN
 

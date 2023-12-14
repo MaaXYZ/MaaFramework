@@ -2,8 +2,6 @@
 
 #include "Utils/Logger.h"
 
-#include <tuple>
-
 MAA_CTRL_UNIT_NS_BEGIN
 
 bool TapTouchInput::parse(const json::value& config)

@@ -1,9 +1,5 @@
 #pragma once
 
-#include "Conf/Conf.h"
-#include "DeviceAPI.h"
-#include "Utils/Platform.h"
-
 #include <filesystem>
 #include <ostream>
 #include <string>
@@ -11,6 +7,10 @@
 #include <vector>
 
 #include <meojson/json.hpp>
+
+#include "Conf/Conf.h"
+#include "DeviceAPI.h"
+#include "Utils/Platform.h"
 
 MAA_TOOLKIT_NS_BEGIN
 

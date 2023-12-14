@@ -1,7 +1,5 @@
 #pragma once
 
-#include "Conf/Conf.h"
-
 #include <memory>
 #include <string>
 #include <unordered_map>
@@ -9,6 +7,7 @@
 
 #include <meojson/json.hpp>
 
+#include "Conf/Conf.h"
 #include "Utils/NoWarningCVMat.hpp"
 
 #if __has_include(<opencv2/xfeatures2d.hpp>)

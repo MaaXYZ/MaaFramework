@@ -1,10 +1,9 @@
 #pragma once
 
-#include "Conf/Conf.h"
-
 #include <string_view>
 #include <vector>
 
+#include "Conf/Conf.h"
 #include "MaaToolKit/MaaToolKitDef.h"
 
 class MaaWin32WindowAPI

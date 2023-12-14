@@ -1,13 +1,13 @@
 #pragma once
 
+#include <mutex>
+
 #include "API/MaaTypes.h"
 #include "Base/AsyncRunner.hpp"
 #include "Base/MessageNotifier.hpp"
 #include "Instance/InstanceStatus.h"
 #include "InstanceInternalAPI.hpp"
 #include "Task/PipelineTask.h"
-
-#include <mutex>
 
 MAA_NS_BEGIN
 

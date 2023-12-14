@@ -1,14 +1,14 @@
 #pragma once
 
+#include <memory>
+
 #include "Logger.h"
 #include "NonCopyable.hpp"
-
-#include <memory>
 
 MAA_NS_BEGIN
 
 template <typename Callback, typename CallbackArg = MaaCallbackTransparentArg>
-    requires std::is_constructible_v<MaaAPICallback, Callback>
+requires std::is_constructible_v<MaaAPICallback, Callback>
 class MessageNotifier : public NonCopyable
 {
 public:

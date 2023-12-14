@@ -1,14 +1,13 @@
 #pragma once
 
-#include "Conf/Conf.h"
-#include "Utils/NonCopyable.hpp"
-
 #include <map>
 #include <string>
 
-#include "Utils/NoWarningCVMat.hpp"
-
 #include <meojson/json.hpp>
+
+#include "Conf/Conf.h"
+#include "Utils/NoWarningCVMat.hpp"
+#include "Utils/NonCopyable.hpp"
 
 MAA_NS_BEGIN
 

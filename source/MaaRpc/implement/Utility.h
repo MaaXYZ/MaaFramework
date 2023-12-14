@@ -1,12 +1,13 @@
 #pragma once
 
+#include <memory>
+#include <semaphore>
+
+#include "generated/utility.grpc.pb.h"
+
 #include "AtomicMap.h"
 #include "MaaFramework/MaaDef.h"
 #include "Utils/Uuid.h"
-#include "generated/utility.grpc.pb.h"
-
-#include <memory>
-#include <semaphore>
 
 MAA_RPC_NS_BEGIN
 

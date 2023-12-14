@@ -1,11 +1,10 @@
 #pragma once
 
-#include "Conf/Conf.h"
-#include "ExecAgentBase.h"
-
 #include <functional>
 #include <map>
 
+#include "Conf/Conf.h"
+#include "ExecAgentBase.h"
 #include "MaaFramework/Task/MaaCustomRecognizer.h"
 #include "Utils/NoWarningCVMat.hpp"
 #include "Utils/SingletonHolder.hpp"

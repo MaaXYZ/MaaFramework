@@ -26,7 +26,7 @@ ServerSockIOFactory::~ServerSockIOFactory()
     server_acceptor_.close();
 }
 
-unsigned short ServerSockIOFactory::port() const
+uint16_t ServerSockIOFactory::port() const
 {
     return server_acceptor_.local_endpoint().port();
 }

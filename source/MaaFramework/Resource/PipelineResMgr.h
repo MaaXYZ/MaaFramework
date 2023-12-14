@@ -1,7 +1,5 @@
 #pragma once
 
-#include "Utils/NonCopyable.hpp"
-
 #include <filesystem>
 #include <set>
 #include <unordered_map>
@@ -10,6 +8,7 @@
 
 #include "Conf/Conf.h"
 #include "PipelineTypes.h"
+#include "Utils/NonCopyable.hpp"
 
 MAA_RES_NS_BEGIN
 

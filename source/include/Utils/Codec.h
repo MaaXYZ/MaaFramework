@@ -1,9 +1,9 @@
 #pragma once
 
+#include <string>
+
 #include "Conf/Conf.h"
 #include "MaaFramework/MaaPort.h"
-
-#include <string>
 
 MAA_NS_BEGIN
 

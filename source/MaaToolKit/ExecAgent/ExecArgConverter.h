@@ -1,10 +1,9 @@
 #pragma once
 
-#include "Conf/Conf.h"
-
 #include <filesystem>
 #include <map>
 
+#include "Conf/Conf.h"
 #include "ExecAgentType.h"
 #include "MaaFramework/MaaDef.h"
 #include "Utils/NoWarningCVMat.hpp"

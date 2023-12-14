@@ -2,12 +2,12 @@
 
 #if defined(_WIN32)
 
+#include <filesystem>
+#include <ostream>
+
 #include "Conf/Conf.h"
 #include "DeviceMgr.h"
 #include "Utils/SingletonHolder.hpp"
-
-#include <filesystem>
-#include <ostream>
 
 MAA_TOOLKIT_NS_BEGIN
 

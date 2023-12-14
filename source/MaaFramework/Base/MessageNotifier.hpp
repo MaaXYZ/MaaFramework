@@ -1,9 +1,9 @@
 #pragma once
 
+#include <memory>
+
 #include "Utils/Logger.h"
 #include "Utils/NonCopyable.hpp"
-
-#include <memory>
 
 MAA_NS_BEGIN
 

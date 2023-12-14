@@ -1,15 +1,15 @@
 #pragma once
 
-#include "Utils/Format.hpp"
+#ifdef __APPLE__
+#include <fcntl.h>
+#include <sys/time.h>
+#include <time.h>
+#endif
 
 #include <chrono>
 #include <string>
 
-#ifdef __APPLE__
-#include <ctime>
-#include <fcntl.h>
-#include <sys/time.h>
-#endif
+#include "Utils/Format.hpp"
 
 MAA_NS_BEGIN
 

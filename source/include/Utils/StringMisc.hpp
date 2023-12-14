@@ -1,10 +1,10 @@
 #pragma once
 
+#include <ranges>
 #include <string>
 #include <string_view>
 #include <type_traits>
 #include <vector>
-#include <ranges>
 
 #include "Conf/Conf.h"
 
@@ -17,7 +17,7 @@ template <typename StringT>
 using StringViewT = std::basic_string_view<std::ranges::range_value_t<StringT>>;
 
 template <typename StringT>
-    requires IsSomeKindOfString<StringT>
+requires IsSomeKindOfString<StringT>
 inline void string_replace_all_(StringT& str, StringViewT<StringT> from, StringViewT<StringT> to)
 {
     for (size_t pos = str.find(from); pos != StringT::npos; pos = str.find(from, pos + to.size())) {
@@ -26,7 +26,7 @@ inline void string_replace_all_(StringT& str, StringViewT<StringT> from, StringV
 }
 
 template <typename StringT, typename MapT>
-    requires IsSomeKindOfString<StringT>
+requires IsSomeKindOfString<StringT>
 inline void string_replace_all_(StringT& str, const MapT& replace_map)
 {
     // TODO: better algorithm
@@ -36,7 +36,7 @@ inline void string_replace_all_(StringT& str, const MapT& replace_map)
 }
 
 template <typename StringT>
-    requires IsSomeKindOfString<StringT>
+requires IsSomeKindOfString<StringT>
 [[nodiscard]] inline auto string_replace_all(StringT&& str, StringViewT<StringT> from, StringViewT<StringT> to)
 {
     // TODO: better algorithm
@@ -46,7 +46,7 @@ template <typename StringT>
 }
 
 template <typename StringT, typename MapT>
-    requires IsSomeKindOfString<StringT>
+requires IsSomeKindOfString<StringT>
 [[nodiscard]] inline auto string_replace_all(StringT&& str, const MapT& replace_map)
 {
     // TODO: better algorithm
@@ -56,7 +56,7 @@ template <typename StringT, typename MapT>
 }
 
 template <typename StringT>
-    requires IsSomeKindOfString<StringT>
+requires IsSomeKindOfString<StringT>
 inline void string_trim_(StringT& str)
 {
     auto not_space = [](auto c) -> bool { return !std::isspace(c); };
@@ -66,7 +66,7 @@ inline void string_trim_(StringT& str)
 }
 
 template <typename StringT>
-    requires IsSomeKindOfString<StringT>
+requires IsSomeKindOfString<StringT>
 inline void tolowers_(StringT& str)
 {
     using CharT = std::ranges::range_value_t<StringT>;
@@ -76,7 +76,7 @@ inline void tolowers_(StringT& str)
 }
 
 template <typename StringT>
-    requires IsSomeKindOfString<StringT>
+requires IsSomeKindOfString<StringT>
 inline void touppers_(StringT& str)
 {
     using CharT = std::ranges::range_value_t<StringT>;
@@ -86,12 +86,12 @@ inline void touppers_(StringT& str)
 }
 
 template <typename StringT, typename DelimT>
-    requires IsSomeKindOfString<StringT>
+requires IsSomeKindOfString<StringT>
 [[nodiscard]] inline std::vector<StringT> string_split(const StringT& str, const DelimT& delim)
 {
     std::vector<StringT> result;
     auto views = str | std::views::split(delim) |
-        std::views::transform([](auto&& rng) { return std::basic_string_view(rng.begin(), rng.end()); });
+                 std::views::transform([](auto&& rng) { return std::basic_string_view(rng.begin(), rng.end()); });
 
     for (auto v : views) {
         result.emplace_back(v);

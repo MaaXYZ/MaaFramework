@@ -1,11 +1,11 @@
 #include "FastestWay.h"
 
+#include <ranges>
+#include <unordered_set>
+
 #include "Utils/Format.hpp"
 #include "Utils/Logger.h"
 #include "Utils/NoWarningCV.hpp"
-#include <ranges>
-
-#include <unordered_set>
 
 MAA_CTRL_UNIT_NS_BEGIN
 

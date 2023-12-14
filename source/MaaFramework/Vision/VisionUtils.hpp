@@ -1,9 +1,10 @@
 #pragma once
 
+#include <ranges>
+
 #include "Conf/Conf.h"
 #include "Utils/Logger.h"
 #include "Utils/NoWarningCV.hpp"
-#include <ranges>
 
 MAA_VISION_NS_BEGIN
 

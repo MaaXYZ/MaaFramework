@@ -6,8 +6,6 @@
 #include "Utils/ImageIo.h"
 #include "Utils/NoWarningCV.hpp"
 
-#include <tuple>
-
 MAA_CTRL_NS_BEGIN
 
 std::minstd_rand ControllerAgent::rand_engine_(std::random_device {}());

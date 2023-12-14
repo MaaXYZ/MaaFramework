@@ -1,8 +1,8 @@
 #include "MaatouchInput.h"
 
-#include <ranges>
 #include <array>
 #include <cmath>
+#include <ranges>
 
 #include "Utils/Codec.h"
 #include "Utils/Format.hpp"

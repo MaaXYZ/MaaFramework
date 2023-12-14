@@ -92,7 +92,8 @@ class LogScopeEnterHelper
 {
 public:
     template <typename... args_t>
-    LogScopeEnterHelper(args_t&&... args) : stream_(Logger::get_instance().debug(std::forward<args_t>(args)...))
+    explicit LogScopeEnterHelper(args_t&&... args)
+        : stream_(Logger::get_instance().debug(std::forward<args_t>(args)...))
     {}
     ~LogScopeEnterHelper() { stream_ << "| enter"; }
 
@@ -106,7 +107,7 @@ template <typename... args_t>
 class LogScopeLeaveHelper
 {
 public:
-    LogScopeLeaveHelper(args_t&&... args) : args_(std::forward<args_t>(args)...) {}
+    explicit LogScopeLeaveHelper(args_t&&... args) : args_(std::forward<args_t>(args)...) {}
     ~LogScopeLeaveHelper()
     {
         std::apply([](auto&&... args) { return Logger::get_instance().trace(std::forward<decltype(args)>(args)...); },
@@ -153,5 +154,5 @@ MAA_LOG_NS_END
 
 #define VAR_RAW(x) "[" << #x << "=" << (x) << "] "
 #define VAR(x) MAA_LOG_NS::separator::none << VAR_RAW(x) << MAA_LOG_NS::separator::space
-#define VAR_VOIDP_RAW(x) "[" << #x << "=" << ((void*)x) << "] "
+#define VAR_VOIDP_RAW(x) "[" << #x << "=" << static_cast<void*>(x) << "] "
 #define VAR_VOIDP(x) MAA_LOG_NS::separator::none << VAR_VOIDP_RAW(x) << MAA_LOG_NS::separator::space

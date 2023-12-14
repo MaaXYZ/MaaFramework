@@ -5,8 +5,6 @@
 #include "Utils/StringMisc.hpp"
 #include "Vision/VisionTypes.h"
 
-#include <tuple>
-
 MAA_RES_NS_BEGIN
 
 bool PipelineResMgr::load(const std::filesystem::path& path, bool is_base)

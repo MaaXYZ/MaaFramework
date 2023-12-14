@@ -1,7 +1,5 @@
 #pragma once
 
-#include "Conf/Conf.h"
-
 #include <condition_variable>
 #include <map>
 #include <memory>
@@ -11,6 +9,7 @@
 
 #include <meojson/json.hpp>
 
+#include "Conf/Conf.h"
 #include "ExecAgent/ExecArgConverter.h"
 #include "ExecAgentType.h"
 #include "MaaFramework/MaaDef.h"

@@ -1,12 +1,12 @@
 #include "OCRResMgr.h"
 
 #include <filesystem>
+#include <ranges>
 
 #include "Utils/Demangle.hpp"
 #include "Utils/File.hpp"
 #include "Utils/Logger.h"
 #include "Utils/Platform.h"
-#include <ranges>
 #include "Utils/StringMisc.hpp"
 
 MAA_RES_NS_BEGIN

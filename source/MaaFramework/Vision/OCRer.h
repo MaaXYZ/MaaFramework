@@ -1,9 +1,9 @@
 #pragma once
 
-#include "Conf/Conf.h"
-
 #include <ostream>
 #include <vector>
+
+#include "Conf/Conf.h"
 
 MAA_SUPPRESS_CV_WARNINGS_BEGIN
 #include "fastdeploy/vision/ocr/ppocr/dbdetector.h"

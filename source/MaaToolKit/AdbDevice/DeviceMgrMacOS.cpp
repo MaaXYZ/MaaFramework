@@ -4,10 +4,10 @@
 
 #include <filesystem>
 #include <map>
+#include <ranges>
 
 #include "Utils/Logger.h"
 #include "Utils/Platform.h"
-#include <ranges>
 
 MAA_TOOLKIT_NS_BEGIN
 

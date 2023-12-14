@@ -1,5 +1,7 @@
 #pragma once
 
+#include <atomic>
+
 #include "API/MaaTypes.h"
 #include "Base/AsyncRunner.hpp"
 #include "Base/MessageNotifier.hpp"
@@ -7,8 +9,6 @@
 #include "ONNXResMgr.h"
 #include "PipelineResMgr.h"
 #include "TemplateResMgr.h"
-
-#include <atomic>
 
 MAA_RES_NS_BEGIN
 

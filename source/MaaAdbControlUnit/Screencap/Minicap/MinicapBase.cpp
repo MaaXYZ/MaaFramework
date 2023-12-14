@@ -1,11 +1,11 @@
 #include "MinicapBase.h"
 
+#include <array>
+#include <ranges>
+
 #include "Utils/Format.hpp"
 #include "Utils/Logger.h"
 #include "Utils/NoWarningCV.hpp"
-#include <ranges>
-
-#include <array>
 
 MAA_CTRL_UNIT_NS_BEGIN
 

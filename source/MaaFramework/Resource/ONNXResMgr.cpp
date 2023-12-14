@@ -1,10 +1,10 @@
 #include "ONNXResMgr.h"
 
 #include <filesystem>
+#include <ranges>
 
 #include "Utils/Logger.h"
 #include "Utils/Platform.h"
-#include <ranges>
 
 MAA_RES_NS_BEGIN
 

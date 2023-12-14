@@ -1,8 +1,5 @@
 #pragma once
 
-#include "Conf/Conf.h"
-#include "Utils/NoWarningCVMat.hpp"
-
 #include <chrono>
 #include <memory>
 #include <string>
@@ -12,6 +9,8 @@
 
 #include <meojson/json.hpp>
 
+#include "Conf/Conf.h"
+#include "Utils/NoWarningCVMat.hpp"
 #include "Vision/VisionTypes.h"
 
 MAA_RES_NS_BEGIN

@@ -1,16 +1,16 @@
 #pragma once
 
-#include "API/MaaTypes.h"
-#include "Base/AsyncRunner.hpp"
-#include "Base/MessageNotifier.hpp"
-#include "Instance/InstanceInternalAPI.hpp"
-#include "Utils/NoWarningCVMat.hpp"
-
 #include <memory>
 #include <mutex>
 #include <random>
 #include <set>
 #include <variant>
+
+#include "API/MaaTypes.h"
+#include "Base/AsyncRunner.hpp"
+#include "Base/MessageNotifier.hpp"
+#include "Instance/InstanceInternalAPI.hpp"
+#include "Utils/NoWarningCVMat.hpp"
 
 MAA_RES_NS_BEGIN
 class ResourceMgr;
