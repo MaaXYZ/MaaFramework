@@ -62,7 +62,7 @@ private:
     LogStream stream(level lv, args_t&&... args)
     {
         bool std_out = static_cast<int>(lv) <= stdout_level_;
-        return LogStream(trace_mutex_, ofs_, lv, std_out, std::forward<args_t>(args)...);
+        return LogStream(trace_mutex_, ofs_, lv, std_out, log_dir_, std::forward<args_t>(args)...);
     }
 
 private:
