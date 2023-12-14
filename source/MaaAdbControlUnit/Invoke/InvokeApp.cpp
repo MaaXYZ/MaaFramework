@@ -45,7 +45,7 @@ bool InvokeApp::parse(const json::value& config)
 
 bool InvokeApp::init(const std::string& force_temp)
 {
-    tempname_ = force_temp.empty() ? now_filestem() : force_temp;
+    tempname_ = force_temp.empty() ? format_now_for_filename() : force_temp;
 
     LogTrace << VAR(tempname_);
 

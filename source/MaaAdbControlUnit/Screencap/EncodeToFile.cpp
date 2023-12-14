@@ -23,13 +23,13 @@ bool ScreencapEncodeToFileAndPull::parse(const json::value& config)
 
 bool ScreencapEncodeToFileAndPull::init(int swidth, int sheight)
 {
-    tempname_ = now_filestem();
+    tempname_ = format_now_for_filename();
     return set_wh(swidth, sheight);
 }
 
 std::optional<cv::Mat> ScreencapEncodeToFileAndPull::screencap()
 {
-    auto dst_path = std::filesystem::temp_directory_path() / now_filestem();
+    auto dst_path = std::filesystem::temp_directory_path() / format_now_for_filename();
 
     merge_replacement({ { "{TEMP_FILE}", tempname_ }, { "{DST_PATH}", path_to_crt_string(dst_path) } });
 

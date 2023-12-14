@@ -28,7 +28,7 @@ inline std::string format_now()
 #endif
 }
 
-inline std::string now_filestem()
+inline std::string format_now_for_filename()
 {
 #ifndef __APPLE__ // Now Apple's compiler cannot build std::chrono::format. 2023/07/21
     return MAA_FMT::format("{:%Y.%m.%d-%H.%M.%S}",
