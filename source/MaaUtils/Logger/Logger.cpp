@@ -72,6 +72,7 @@ void Logger::start_logging(std::filesystem::path dir)
 {
     log_dir_ = std::move(dir);
     log_path_ = log_dir_ / kLogFilename;
+    dumps_dir_ = log_dir_ / kDumpsDirname;
     reinit();
 }
 
@@ -118,12 +119,17 @@ bool Logger::rotate()
         return false;
     }
 
+    std::error_code ec;
+
     const std::filesystem::path bak_path = log_dir_ / kLogbakFilename;
-    try {
-        std::filesystem::rename(log_path_, bak_path);
+    std::filesystem::rename(log_path_, bak_path, ec);
+
+    const std::filesystem::path dumps_bak_path = log_dir_ / kDumpsbakDirname;
+    if (std::filesystem::exists(dumps_bak_path)) {
+        std::filesystem::remove_all(dumps_bak_path, ec);
     }
-    catch (...) {
-        return false;
+    if (std::filesystem::exists(dumps_dir_)) {
+        std::filesystem::rename(dumps_dir_, dumps_bak_path, ec);
     }
 
     return true;

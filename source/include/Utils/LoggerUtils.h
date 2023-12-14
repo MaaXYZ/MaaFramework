@@ -90,7 +90,7 @@ struct StringConverter
             static_assert(!sizeof(T), "Function type is not supported.");
         }
         else if constexpr (std::same_as<cv::Mat, std::decay_t<T>>) {
-            return (*this)(dumps(std::forward<T>(value)));
+            return (*this)(dump(std::forward<T>(value)));
         }
         else if constexpr (std::same_as<std::filesystem::path, std::decay_t<T>>) {
             return path_to_utf8_string(std::forward<T>(value));
@@ -106,10 +106,10 @@ struct StringConverter
         }
     }
 
-    std::filesystem::path dumps(const cv::Mat& image) const
+    std::filesystem::path dump(const cv::Mat& image) const
     {
         std::string filename = MAA_FMT::format("{}.png", format_now_for_filename());
-        auto filepath = log_dir / "image" / std::move(filename);
+        auto filepath = dumps_dir / std::move(filename);
         MAA_NS::imwrite(filepath, image);
         return filepath;
     }
@@ -125,15 +125,16 @@ struct StringConverter
         return std::move(ss).str();
     }
 
-    std::filesystem::path log_dir;
+    std::filesystem::path dumps_dir;
 };
 
 class MAA_UTILS_API LogStream
 {
 public:
     template <typename... args_t>
-    LogStream(std::mutex& m, std::ofstream& s, level lv, bool std_out, std::filesystem::path dir, args_t&&... args)
-        : mutex_(m), stream_(s), lv_(lv), stdout_(std_out), string_converter_ { std::move(dir) }
+    LogStream(std::mutex& m, std::ofstream& s, level lv, bool std_out, std::filesystem::path dumps_dir,
+              args_t&&... args)
+        : mutex_(m), stream_(s), lv_(lv), stdout_(std_out), string_converter_ { std::move(dumps_dir) }
     {
         stream_props(std::forward<args_t>(args)...);
     }

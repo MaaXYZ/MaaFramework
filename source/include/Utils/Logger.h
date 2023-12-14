@@ -12,6 +12,8 @@ class MAA_UTILS_API Logger
 public:
     static constexpr std::string_view kLogFilename = "maa.log";
     static constexpr std::string_view kLogbakFilename = "maa.bak.log";
+    static constexpr std::string_view kDumpsDirname = "dumps";
+    static constexpr std::string_view kDumpsbakDirname = "dumps.bak";
 
 public:
     static Logger& get_instance();
@@ -62,7 +64,7 @@ private:
     LogStream stream(level lv, args_t&&... args)
     {
         bool std_out = static_cast<int>(lv) <= stdout_level_;
-        return LogStream(trace_mutex_, ofs_, lv, std_out, log_dir_, std::forward<args_t>(args)...);
+        return LogStream(trace_mutex_, ofs_, lv, std_out, dumps_dir_, std::forward<args_t>(args)...);
     }
 
 private:
@@ -79,6 +81,8 @@ private:
 private:
     std::filesystem::path log_dir_;
     std::filesystem::path log_path_;
+    std::filesystem::path dumps_dir_;
+
 #ifdef MAA_DEBUG
     MaaLoggingLevel stdout_level_ = MaaLoggingLevel_All;
 #else
