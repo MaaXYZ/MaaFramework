@@ -24,6 +24,7 @@
 #include "Locale.hpp"
 #include "Platform.h"
 #include "Time.hpp"
+#include "Uuid.h"
 
 namespace cv
 {
@@ -108,8 +109,12 @@ struct StringConverter
 
     std::filesystem::path dump(const cv::Mat& image) const
     {
-        std::string filename = MAA_FMT::format("{}.png", format_now_for_filename());
-        auto filepath = dumps_dir / std::move(filename);
+        if (dumps_dir_.empty()) {
+            return {};
+        }
+
+        std::string filename = MAA_FMT::format("{}-{}.png", format_now_for_filename(), make_uuid());
+        auto filepath = dumps_dir_ / std::move(filename);
         MAA_NS::imwrite(filepath, image);
         return filepath;
     }
@@ -125,7 +130,7 @@ struct StringConverter
         return std::move(ss).str();
     }
 
-    std::filesystem::path dumps_dir;
+    const std::filesystem::path dumps_dir_;
 };
 
 class MAA_UTILS_API LogStream
