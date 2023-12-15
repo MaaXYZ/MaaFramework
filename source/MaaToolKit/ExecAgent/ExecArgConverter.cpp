@@ -30,19 +30,12 @@ MaaSyncContextHandle ExecArgConverter::arg_to_sync_context(const std::string& ar
     return it->second;
 }
 
-std::string ExecArgConverter::image_to_arg(const cv::Mat& image, ImageTransferMode mode)
+std::string ExecArgConverter::image_to_arg(const cv::Mat& image)
 {
-    switch (mode) {
-    case ImageTransferMode::FileIO: {
-        auto path = std::filesystem::temp_directory_path() / format_now_for_filename() / ".png";
-        imwrite(path, image);
-        images_.push_back(path);
-        return path_to_crt_string(path);
-    }
-    default:
-        LogError << "not implemented";
-        return {};
-    }
+    auto path = std::filesystem::temp_directory_path() / format_now_for_filename() / ".png";
+    imwrite(path, image);
+    images_.push_back(path);
+    return path_to_crt_string(path);
 }
 
 MAA_TOOLKIT_NS_END

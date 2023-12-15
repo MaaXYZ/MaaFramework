@@ -50,7 +50,6 @@ enum class Type
     StopApp,
     Custom,
     StopTask,
-    // InputText, // TODO
 };
 
 struct Target

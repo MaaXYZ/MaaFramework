@@ -29,9 +29,9 @@ std::ostream& operator<<(std::ostream& os, ExecutorType type)
 }
 
 MaaBool RegisterExecutor(ExecutorType type, MaaInstanceHandle handle, MaaStringView name, MaaStringView exec_path,
-                         MaaStringView exec_param_json, MaaToolKitExecAgentArgvTransferMode argv_mode)
+                         MaaStringView exec_param_json)
 {
-    LogFunc << VAR(type) << VAR_VOIDP(handle) << VAR(name) << VAR(exec_path) << VAR(exec_param_json) << VAR(argv_mode);
+    LogFunc << VAR(type) << VAR_VOIDP(handle) << VAR(name) << VAR(exec_path) << VAR(exec_param_json);
 
     if (!handle) {
         LogError << "handle is null";
@@ -55,18 +55,13 @@ MaaBool RegisterExecutor(ExecutorType type, MaaInstanceHandle handle, MaaStringV
     }
     auto params = params_opt->to_vector<std::string>();
 
-    TextTransferMode text_mode =
-        static_cast<TextTransferMode>(MaaToolKitExecAgentArgvTransferMode_Text_Mask & argv_mode);
-    ImageTransferMode image_mode =
-        static_cast<ImageTransferMode>((MaaToolKitExecAgentArgvTransferMode_Image_Mask & argv_mode) >> 8);
-
     switch (type) {
     case ExecutorType::Recognizer:
         return RecognizerExecAgent::get_instance().register_executor( //
-            handle, name, std::move(path), std::move(params), text_mode, image_mode);
+            handle, name, std::move(path), std::move(params));
     case ExecutorType::Action:
         return ActionExecAgent::get_instance().register_executor( //
-            handle, name, std::move(path), std::move(params), text_mode, image_mode);
+            handle, name, std::move(path), std::move(params));
     }
 
     return false;
@@ -98,10 +93,10 @@ MaaBool UnregisterExecutor(ExecutorType type, MaaInstanceHandle handle, MaaStrin
 
 MaaBool MaaToolKitRegisterCustomRecognizerExecutor( //
     MaaInstanceHandle handle, MaaStringView recognizer_name, MaaStringView recognizer_exec_path,
-    MaaStringView recognizer_exec_param_json, MaaToolKitExecAgentArgvTransferMode argv_mode)
+    MaaStringView recognizer_exec_param_json)
 {
     return RegisterExecutor(ExecutorType::Recognizer, handle, recognizer_name, recognizer_exec_path,
-                            recognizer_exec_param_json, argv_mode);
+                            recognizer_exec_param_json);
 }
 
 MaaBool MaaToolKitUnregisterCustomRecognizerExecutor(MaaInstanceHandle handle, MaaStringView recognizer_name)
@@ -111,10 +106,9 @@ MaaBool MaaToolKitUnregisterCustomRecognizerExecutor(MaaInstanceHandle handle, M
 
 MaaBool MaaToolKitRegisterCustomActionExecutor( //
     MaaInstanceHandle handle, MaaStringView action_name, MaaStringView action_exec_path,
-    MaaStringView action_exec_param_json, MaaToolKitExecAgentArgvTransferMode argv_mode)
+    MaaStringView action_exec_param_json)
 {
-    return RegisterExecutor(ExecutorType::Action, handle, action_name, action_exec_path, action_exec_param_json,
-                            argv_mode);
+    return RegisterExecutor(ExecutorType::Action, handle, action_name, action_exec_path, action_exec_param_json);
 }
 
 MaaBool MaaToolKitUnregisterCustomActionExecutor(MaaInstanceHandle handle, MaaStringView action_name)

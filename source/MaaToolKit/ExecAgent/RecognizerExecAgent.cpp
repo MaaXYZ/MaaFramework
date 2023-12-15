@@ -32,14 +32,14 @@ std::optional<RecognizerExecAgent::AnalyzeResult> RecognizerExecAgent::analyze(
             << VAR(custom_recognition_param);
 
     std::string handle_arg = arg_cvt_.sync_context_to_arg(sync_context);
-    std::string image_arg = arg_cvt_.image_to_arg(image, data.image_mode);
+    std::string image_arg = arg_cvt_.image_to_arg(image);
 
     std::vector<std::string> extra_args = { handle_arg, image_arg, std::string(task_name),
                                             std::string(custom_recognition_param) };
     std::vector<std::string> args = data.exec_args;
     args.insert(args.end(), std::make_move_iterator(extra_args.begin()), std::make_move_iterator(extra_args.end()));
 
-    auto output_opt = run_executor(data.exec_path, args, data.text_mode, data.image_mode);
+    auto output_opt = run_executor(data.exec_path, args);
     if (!output_opt) {
         LogError << "run_executor failed" << VAR(data.exec_path) << VAR(data.exec_args);
         return std::nullopt;

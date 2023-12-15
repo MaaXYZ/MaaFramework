@@ -22,18 +22,15 @@ ExecAgentBase::~ExecAgentBase()
 }
 
 bool ExecAgentBase::register_executor(MaaInstanceHandle handle, std::string_view name, std::filesystem::path exec_path,
-                                      std::vector<std::string> exec_args, TextTransferMode text_mode,
-                                      ImageTransferMode image_mode)
+                                      std::vector<std::string> exec_args)
 {
-    LogFunc << VAR_VOIDP(handle) << VAR(name) << VAR(exec_path) << VAR(exec_args) << VAR(text_mode) << VAR(image_mode);
+    LogFunc << VAR_VOIDP(handle) << VAR(name) << VAR(exec_path) << VAR(exec_args);
 
     auto [iter, inserted] = exec_data_.insert_or_assign( //
         std::string(name), ExecData {
                                .name = std::string(name),
                                .exec_path = std::move(exec_path),
                                .exec_args = std::move(exec_args),
-                               .text_mode = text_mode,
-                               .image_mode = image_mode,
                            });
     if (!inserted || iter == exec_data_.end()) {
         LogError << "insert failed" << VAR(name);
@@ -61,8 +58,7 @@ bool ExecAgentBase::unregister_executor(MaaInstanceHandle handle, std::string_vi
 }
 
 std::optional<json::value> ExecAgentBase::run_executor(const std::filesystem::path& exec_path,
-                                                       const std::vector<std::string>& exec_args,
-                                                       TextTransferMode text_mode, ImageTransferMode image_mode)
+                                                       const std::vector<std::string>& exec_args)
 {
     auto searched_path = boost::process::search_path(exec_path);
     if (!std::filesystem::exists(searched_path)) {
@@ -72,18 +68,8 @@ std::optional<json::value> ExecAgentBase::run_executor(const std::filesystem::pa
 
     ChildPipeIOStream child(searched_path, exec_args);
 
-    std::optional<json::value> result_opt = std::nullopt;
-    switch (text_mode) {
-    case TextTransferMode::StdIO:
-        result_opt = handle_ipc(child, image_mode);
-        break;
-
-    case TextTransferMode::FileIO:
-        LogError << "not implemented";
-        return std::nullopt;
-
-    default:
-        LogError << "not implemented";
+    auto result_opt = handle_ipc(child);
+    if (!result_opt) {
         return std::nullopt;
     }
 
@@ -106,10 +92,8 @@ std::optional<json::value> ExecAgentBase::run_executor(const std::filesystem::pa
     return result;
 }
 
-std::optional<json::value> ExecAgentBase::handle_ipc(IOStream& ios, ImageTransferMode image_mode)
+std::optional<json::value> ExecAgentBase::handle_ipc(IOStream& ios)
 {
-    std::ignore = image_mode;
-
     json::value result;
     while (ios.is_open()) {
         std::string line = ios.read_until("\n");
@@ -131,7 +115,11 @@ std::optional<json::value> ExecAgentBase::handle_ipc(IOStream& ios, ImageTransfe
         std::string write = handle_command(*json_opt);
         ios.write(write + "\n");
     }
-
+    
+    if (result.empty()) {
+        LogWarn << "child no result";
+        return std::nullopt;
+    }
     LogTrace << VAR(result);
     return result;
 }
@@ -516,7 +504,7 @@ json::value ExecAgentBase::ctx_screencap(const json::value& cmd)
         return invalid_json();
     }
 
-    std::string image_arg = arg_cvt_.image_to_arg(image, ImageTransferMode::FileIO);
+    std::string image_arg = arg_cvt_.image_to_arg(image);
     ret_obj |= { { "out_image", image_arg } };
     return ret_obj;
 }

@@ -23,8 +23,7 @@ public:
     virtual ~ExecAgentBase();
 
     bool register_executor(MaaInstanceHandle handle, std::string_view name, std::filesystem::path exec_path,
-                           std::vector<std::string> exec_args, TextTransferMode text_mode,
-                           ImageTransferMode image_mode);
+                           std::vector<std::string> exec_args);
     bool unregister_executor(MaaInstanceHandle handle, std::string_view name);
 
 protected:
@@ -32,8 +31,7 @@ protected:
     virtual bool unregister_for_maa_inst(MaaInstanceHandle handle, std::string_view name) = 0;
 
     std::optional<json::value> run_executor(const std::filesystem::path& exec_path,
-                                            const std::vector<std::string>& exec_args, TextTransferMode text_mode,
-                                            ImageTransferMode image_mode);
+                                            const std::vector<std::string>& exec_args);
 
 protected:
     std::map<std::string, ExecData> exec_data_;
@@ -41,7 +39,7 @@ protected:
     ExecArgConverter arg_cvt_;
 
 private:
-    std::optional<json::value> handle_ipc(IOStream& ios, ImageTransferMode image_mode);
+    std::optional<json::value> handle_ipc(IOStream& ios);
 
     std::string handle_command(const json::value& cmd);
 

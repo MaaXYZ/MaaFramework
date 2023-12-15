@@ -37,7 +37,7 @@ bool ActionExecAgent::run(ExecData& data, MaaSyncContextHandle sync_context, std
     std::vector<std::string> args = data.exec_args;
     args.insert(args.end(), std::make_move_iterator(extra_args.begin()), std::make_move_iterator(extra_args.end()));
 
-    auto output_opt = run_executor(data.exec_path, args, data.text_mode, data.image_mode);
+    auto output_opt = run_executor(data.exec_path, args);
     if (!output_opt) {
         LogError << "run_executor failed" << VAR(data.exec_path) << VAR(data.exec_args);
         return false;
