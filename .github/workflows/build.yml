@@ -251,6 +251,7 @@ jobs:
           CXX: "/usr/local/opt/llvm/bin/clang++"
         run: |
           cmake --preset 'NinjaMulti' \
+            -DCMAKE_OSX_ARCHITECTURES='${{ matrix.arch == 'x86_64' && 'x86_64' || 'arm64' }}' \
             -DMAADEPS_TRIPLET='maa-${{ matrix.arch == 'x86_64' && 'x64' || 'arm64' }}-osx' \
             -DMAA_HASH_VERSION='${{ needs.meta.outputs.tag }}'
 
