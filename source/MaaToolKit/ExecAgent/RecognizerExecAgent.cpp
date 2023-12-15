@@ -39,14 +39,24 @@ std::optional<RecognizerExecAgent::AnalyzeResult> RecognizerExecAgent::analyze(
     std::vector<std::string> args = data.exec_args;
     args.insert(args.end(), std::make_move_iterator(extra_args.begin()), std::make_move_iterator(extra_args.end()));
 
-    auto output_opt = run_executor(data.exec_path, args);
-    if (!output_opt) {
+    auto ret_opt = run_executor(data.exec_path, args);
+    if (!ret_opt) {
         LogError << "run_executor failed" << VAR(data.exec_path) << VAR(data.exec_args);
         return std::nullopt;
     }
+    auto& ret = *ret_opt;
+    LogTrace << VAR(ret);
 
-    // TODO: parse output to get result
-    return {};
+    AnalyzeResult result;
+    
+    auto jbox = ret.get("box", json::array());
+    if (jbox.all<int>() && jbox.size() == 4) {
+        result.box = cv::Rect(jbox[0].as<int>(), jbox[1].as<int>(), jbox[2].as<int>(), jbox[3].as<int>());
+    }
+    auto jdetail = ret.get("detail", json::value());
+    result.detail = jdetail.is_string() ? jdetail.as_string() : jdetail.to_string();
+
+    return result;
 }
 
 MaaBool RecognizerExecAgent::maa_api_analyze( //
