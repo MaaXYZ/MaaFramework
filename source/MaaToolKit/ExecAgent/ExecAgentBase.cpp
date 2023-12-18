@@ -115,7 +115,7 @@ std::optional<json::value> ExecAgentBase::handle_ipc(IOStream& ios)
         std::string write = handle_command(*json_opt);
         ios.write(write + "\n");
     }
-    
+
     if (result.empty()) {
         LogWarn << "child no result";
         return std::nullopt;
@@ -232,8 +232,8 @@ json::value ExecAgentBase::ctx_run_recognizer(const json::value& cmd)
                        MaaGetRectH(out_box_buff) };
     std::string out_detail = MaaGetString(out_detail_buff);
 
-    ret_obj |= { { "out_box", json::array { out_box.x, out_box.y, out_box.width, out_box.height } },
-                 { "out_detail", json::parse(out_detail).value_or(out_detail) } };
+    ret_obj |= { { "box", json::array { out_box.x, out_box.y, out_box.width, out_box.height } },
+                 { "detail", json::parse(out_detail).value_or(out_detail) } };
     return ret_obj;
 }
 
@@ -265,13 +265,9 @@ json::value ExecAgentBase::ctx_run_action(const json::value& cmd)
     MaaSetRect(cur_box_buff, j_cur_box[0].as<int>(), j_cur_box[1].as<int>(), j_cur_box[2].as<int>(),
                j_cur_box[3].as<int>());
 
-    auto cur_rec_detail_opt = cmd.find("cur_rec_detail");
-    if (!cur_rec_detail_opt) {
-        LogError << "no cur rec detail" << VAR(cmd);
-        return invalid_json();
-    }
+    auto j_cur_rec_detail = cmd.get("cur_rec_detail", json::value());
     std::string str_cur_rec_detail =
-        cur_rec_detail_opt->is_string() ? cur_rec_detail_opt->as_string() : cur_rec_detail_opt->to_string();
+        j_cur_rec_detail.is_string() ? j_cur_rec_detail.as_string() : j_cur_rec_detail.to_string();
 
     bool ret =
         MaaSyncContextRunAction(ctx, task_name.c_str(), task_param.c_str(), cur_box_buff, str_cur_rec_detail.c_str());
@@ -505,7 +501,7 @@ json::value ExecAgentBase::ctx_screencap(const json::value& cmd)
     }
 
     std::string image_arg = arg_cvt_.image_to_arg(image);
-    ret_obj |= { { "out_image", image_arg } };
+    ret_obj |= { { "image", image_arg } };
     return ret_obj;
 }
 
@@ -534,8 +530,12 @@ json::value ExecAgentBase::ctx_get_task_result(const json::value& cmd)
         return ret_obj;
     }
 
-    std::string out_task_result = MaaGetString(out_task_result_buff);
-    ret_obj |= { { "out_task_result", json::parse(out_task_result).value_or(out_task_result) } };
+    auto out_result_opt = json::parse(MaaGetString(out_task_result_buff));
+    if (!out_result_opt) {
+        LogError << "parse json failed" << VAR(MaaGetString(out_task_result_buff));
+        return ret_obj;
+    }
+    ret_obj |= { { "task_result", *out_result_opt } };
     return ret_obj;
 }
 
