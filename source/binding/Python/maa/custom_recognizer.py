@@ -55,7 +55,7 @@ class CustomRecognizer(ABC):
         custom_recognition_param = c_custom_recognition_param.decode("utf-8")
 
         success, box, detail_result = self.analyze(
-            c_context, image, task_name, custom_recognition_param, c_transparent_arg
+            c_context, image, task_name, custom_recognition_param
         )
         RectBuffer(c_out_box).set(box)
         StringBuffer(c_out_detail_result).set(detail_result)
@@ -69,7 +69,6 @@ class CustomRecognizer(ABC):
         image: numpy.ndarray,
         task_name: str,
         custom_recognition_param: str,
-        transparent_arg: Any,
     ) -> (bool, (int, int, int, int), str):
         """
         Analyze the given image.
@@ -77,7 +76,6 @@ class CustomRecognizer(ABC):
         :param image: The image to analyze.
         :param task_name: The name of the task.
         :param custom_recognition_param: The custom recognition param.
-        :param arg: The transparent arg.
 
         :return: return a tuple (success, box, detail result)
         """

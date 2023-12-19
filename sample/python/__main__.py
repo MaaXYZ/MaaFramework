@@ -7,7 +7,7 @@ from maa.custom_recognizer import CustomRecognizer
 
 class MyRecognizer(CustomRecognizer):
     def analyze(
-        self, context, image, task_name, custom_recognition_param, transparent_arg
+        self, context, image, task_name, custom_recognition_param
     ):
         return True, (0, 0, 100, 100), "Hello World!"
 
