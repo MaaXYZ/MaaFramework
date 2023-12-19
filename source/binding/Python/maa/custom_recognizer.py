@@ -43,7 +43,7 @@ class CustomRecognizer(ABC):
         c_custom_recognition_param: ctypes.c_char_p,
         c_transparent_arg: ctypes.c_void_p,
         c_out_box: ctypes.c_void_p,
-        c_out_detail_result: ctypes.c_void_p,
+        c_out_detail: ctypes.c_void_p,
     ) -> MaaBool:
         if not c_transparent_arg:
             return
@@ -54,11 +54,11 @@ class CustomRecognizer(ABC):
         task_name = c_task_name.decode("utf-8")
         custom_recognition_param = c_custom_recognition_param.decode("utf-8")
 
-        success, box, detail_result = self.analyze(
+        success, box, detail = self.analyze(
             c_context, image, task_name, custom_recognition_param
         )
         RectBuffer(c_out_box).set(box)
-        StringBuffer(c_out_detail_result).set(detail_result)
+        StringBuffer(c_out_detail).set(detail)
 
         return success
 
