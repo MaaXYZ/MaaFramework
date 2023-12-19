@@ -8,7 +8,7 @@ from .buffer import RectBuffer, StringBuffer, ImageBuffer
 
 
 class MaaCustomRecognizer(ctypes.Structure):
-    AnalyzeAPI = ctypes.CFUNCTYPE(
+    AnalyzeFunc = ctypes.CFUNCTYPE(
         MaaBool,
         ctypes.c_void_p,
         ctypes.c_void_p,
@@ -19,7 +19,7 @@ class MaaCustomRecognizer(ctypes.Structure):
         ctypes.c_void_p,
     )
     _fields_ = [
-        ("analyze", AnalyzeAPI),
+        ("analyze", AnalyzeFunc),
     ]
 
 
@@ -27,15 +27,16 @@ class CustomRecognizer(ABC):
     _handle: MaaCustomRecognizer
 
     def __init__(self):
-        self._handle = MaaCustomRecognizer()
-        self._handle.analyze = self.c_analyze()
+        self._handle = MaaCustomRecognizer(self._c_analyze_agent)
 
-    def c_analyze(self) -> MaaCustomRecognizer.AnalyzeAPI:
-        return self._c_analyze
+    def c_handle(self) -> ctypes.POINTER(MaaCustomRecognizer):
+        return ctypes.pointer(self._handle)
 
-    @MaaCustomRecognizer.AnalyzeAPI
-    def _c_analyze(
-        self,
+    def c_arg(self) -> ctypes.c_void_p:
+        return ctypes.c_void_p.from_buffer(ctypes.py_object(self))
+
+    @MaaCustomRecognizer.AnalyzeFunc
+    def _c_analyze_agent(
         c_context: ctypes.c_void_p,
         c_image: ctypes.c_void_p,
         c_task_name: ctypes.c_char_p,
@@ -44,6 +45,11 @@ class CustomRecognizer(ABC):
         c_out_box: ctypes.c_void_p,
         c_out_detail_result: ctypes.c_void_p,
     ) -> MaaBool:
+        if not c_transparent_arg:
+            return
+
+        self: CustomRecognizer = ctypes.cast(c_transparent_arg, ctypes.py_object).value
+
         image = ImageBuffer(c_image).get()
         task_name = c_task_name.decode("utf-8")
         custom_recognition_param = c_custom_recognition_param.decode("utf-8")
@@ -54,7 +60,7 @@ class CustomRecognizer(ABC):
         RectBuffer(c_out_box).set(box)
         StringBuffer(c_out_detail_result).set(detail_result)
 
-        return MaaBool(success)
+        return success
 
     @abstractmethod
     def analyze(

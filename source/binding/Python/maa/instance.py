@@ -11,7 +11,7 @@ from .resource import Resource
 from .custom_recognizer import CustomRecognizer
 
 
-class Maa:
+class Instance:
     _callback_agent: CallbackAgent
     _handle: ctypes.c_void_p
 
@@ -146,8 +146,8 @@ class Maa:
             Library.framework.MaaRegisterCustomRecognizer(
                 self._handle,
                 name.encode("utf-8"),
-                ctypes.pointer(recognizer._handle),
-                None,
+                recognizer.c_handle(),
+                recognizer.c_arg(),
             )
         )
 
@@ -158,9 +158,9 @@ class Maa:
         """
         Set the API properties.
         """
-        if Maa._api_properties_initialized:
+        if Instance._api_properties_initialized:
             return
-        Maa._api_properties_initialized = True
+        Instance._api_properties_initialized = True
 
         Library.framework.MaaCreate.restype = ctypes.c_void_p
         Library.framework.MaaCreate.argtypes = [MaaApiCallback, ctypes.c_void_p]

@@ -1,6 +1,9 @@
 import ctypes
 import numpy
+import io
 from typing import Union, Optional
+from PIL import Image
+import io
 
 from .define import MaaBool
 from .library import Library
@@ -128,13 +131,11 @@ class ImageBuffer:
             Library.framework.MaaDestroyImageBuffer(self._handle)
 
     def get(self) -> numpy.ndarray:
-        buff = Library.framework.MaaGetImageRawData(self._handle)
-        width = int(Library.framework.MaaGetImageWidth(self._handle))
-        height = int(Library.framework.MaaGetImageHeight(self._handle))
-
-        return numpy.from_buffer(
-            buff, dtype=numpy.uint8, count=height * width * 3
-        ).reshape((height, width, 3))
+        buffer = Library.framework.MaaGetImageEncoded(self._handle)
+        size = int(Library.framework.MaaGetImageEncodedSize(self._handle))
+        png_data = ctypes.string_at(buffer, size)
+        img = Image.open(io.BytesIO(png_data))
+        return numpy.array(img)
 
     def set(self, value: numpy.ndarray) -> bool:
         if not isinstance(value, numpy.ndarray):
@@ -176,17 +177,11 @@ class ImageBuffer:
         Library.framework.MaaDestroyImageBuffer.restype = None
         Library.framework.MaaDestroyImageBuffer.argtypes = [ctypes.c_void_p]
 
-        Library.framework.MaaGetImageRawData.restype = ctypes.c_void_p
-        Library.framework.MaaGetImageRawData.argtypes = [ctypes.c_void_p]
+        Library.framework.MaaGetImageEncoded.restype = ctypes.POINTER(ctypes.c_uint8)
+        Library.framework.MaaGetImageEncoded.argtypes = [ctypes.c_void_p]
 
-        Library.framework.MaaGetImageWidth.restype = ctypes.c_int32
-        Library.framework.MaaGetImageWidth.argtypes = [ctypes.c_void_p]
-
-        Library.framework.MaaGetImageHeight.restype = ctypes.c_int32
-        Library.framework.MaaGetImageHeight.argtypes = [ctypes.c_void_p]
-
-        Library.framework.MaaGetImageType.restype = ctypes.c_int32
-        Library.framework.MaaGetImageType.argtypes = [ctypes.c_void_p]
+        Library.framework.MaaGetImageEncodedSize.restype = ctypes.c_size_t
+        Library.framework.MaaGetImageEncodedSize.argtypes = [ctypes.c_void_p]
 
         Library.framework.MaaSetImageRawData.restype = MaaBool
         Library.framework.MaaSetImageRawData.argtypes = [
@@ -245,15 +240,20 @@ class RectBuffer:
 
         return numpy.array([x, y, w, h], dtype=numpy.int32)
 
-    def set(self, value: numpy.ndarray) -> bool:
-        if not isinstance(value, numpy.ndarray):
-            raise TypeError("value must be a numpy.ndarray")
-        if value.ndim != 1:
-            raise ValueError("value must be a 1D array")
-        if value.shape[0] != 4:
-            raise ValueError("value must have 4 elements")
-        if value.dtype != numpy.int32:
-            raise ValueError("value must be of type numpy.int32")
+    def set(self, value: Union[numpy.ndarray, tuple, list]) -> bool:
+        if isinstance(value, numpy.ndarray):
+            if value.ndim != 1:
+                raise ValueError("value must be a 1D array")
+            if value.shape[0] != 4:
+                raise ValueError("value must have 4 elements")
+            if value.dtype != numpy.int32:
+                raise ValueError("value must be of type numpy.int32")
+        elif isinstance(value, tuple) or isinstance(value, list):
+            if len(value) != 4:
+                raise ValueError("value must have 4 elements")
+            value = numpy.array(value, dtype=numpy.int32)
+        else:
+            raise TypeError("value must be a numpy.ndarray, tuple or list")
 
         return bool(
             Library.framework.MaaSetRect(

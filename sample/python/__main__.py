@@ -1,8 +1,17 @@
 from maa.library import Library
 from maa.resource import Resource
 from maa.controller import AdbController
-from maa.maa import Maa
+from maa.instance import Instance
 
+from maa.custom_recognizer import CustomRecognizer
+
+class MyRecognizer(CustomRecognizer):
+    def analyze(
+        self, context, image, task_name, custom_recognition_param, transparent_arg
+    ):
+        return True, (0, 0, 100, 100), "Hello World!"
+
+my_rec = MyRecognizer()
 
 if __name__ == "__main__":
     Library.open("bin")
@@ -15,12 +24,14 @@ if __name__ == "__main__":
     ctrl_id = controller.post_connection()
     controller.wait(ctrl_id)
 
-    maa_inst = Maa()
+    maa_inst = Instance()
     maa_inst.bind(resource, controller)
 
     if not maa_inst.inited():
         print("Failed to init MAA.")
         exit()
+
+    maa_inst.register_custom_recognizer("MyRec", my_rec)
 
     task_id = maa_inst.post_task("StartUpAndClickButton", {})
     maa_inst.wait(task_id)
