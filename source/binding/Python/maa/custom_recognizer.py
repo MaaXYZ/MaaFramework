@@ -1,26 +1,9 @@
 import numpy
 import ctypes
 from abc import ABC, abstractmethod
-from typing import Optional, Any
 
-from .define import MaaBool
+from .define import MaaBool, MaaCustomRecognizer
 from .buffer import RectBuffer, StringBuffer, ImageBuffer
-
-
-class MaaCustomRecognizer(ctypes.Structure):
-    AnalyzeFunc = ctypes.CFUNCTYPE(
-        MaaBool,
-        ctypes.c_void_p,
-        ctypes.c_void_p,
-        ctypes.c_char_p,
-        ctypes.c_char_p,
-        ctypes.c_void_p,
-        ctypes.c_void_p,
-        ctypes.c_void_p,
-    )
-    _fields_ = [
-        ("analyze", AnalyzeFunc),
-    ]
 
 
 class CustomRecognizer(ABC):
@@ -28,6 +11,26 @@ class CustomRecognizer(ABC):
 
     def __init__(self):
         self._handle = MaaCustomRecognizer(self._c_analyze_agent)
+
+    @abstractmethod
+    def analyze(
+        self,
+        context: ctypes.c_void_p,
+        image: numpy.ndarray,
+        task_name: str,
+        custom_recognition_param: str,
+    ) -> (bool, (int, int, int, int), str):
+        """
+        Analyze the given image.
+
+        :param image: The image to analyze.
+        :param task_name: The name of the task.
+        :param custom_recognition_param: The custom recognition param.
+
+        :return: return a tuple (success, box, detail result)
+        """
+
+        raise NotImplementedError
 
     def c_handle(self) -> ctypes.POINTER(MaaCustomRecognizer):
         return ctypes.pointer(self._handle)
@@ -61,23 +64,3 @@ class CustomRecognizer(ABC):
         StringBuffer(c_out_detail).set(detail)
 
         return success
-
-    @abstractmethod
-    def analyze(
-        self,
-        context: ctypes.c_void_p,
-        image: numpy.ndarray,
-        task_name: str,
-        custom_recognition_param: str,
-    ) -> (bool, (int, int, int, int), str):
-        """
-        Analyze the given image.
-
-        :param image: The image to analyze.
-        :param task_name: The name of the task.
-        :param custom_recognition_param: The custom recognition param.
-
-        :return: return a tuple (success, box, detail result)
-        """
-
-        raise NotImplementedError
