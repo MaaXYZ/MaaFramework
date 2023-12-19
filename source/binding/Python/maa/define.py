@@ -7,4 +7,3 @@ MaaApiCallback = ctypes.CFUNCTYPE(
 MaaBool = ctypes.c_uint8
 MaaId = ctypes.c_uint64
 MaaStatus = ctypes.c_int32
-

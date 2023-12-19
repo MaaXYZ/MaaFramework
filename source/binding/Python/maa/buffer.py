@@ -8,6 +8,7 @@ from .library import Library
 
 class StringBuffer:
     _handle: ctypes.c_void_p
+    _own: bool
 
     def __init__(self):
         if not Library.initialized:
@@ -18,11 +19,25 @@ class StringBuffer:
         self._set_api_properties()
 
         self._handle = Library.framework.MaaCreateStringBuffer()
+        self._own = True
         if not self._handle:
             raise RuntimeError("Failed to create string buffer.")
 
+    def __init__(self, c_string_handle: ctypes.c_void_p):
+        if not Library.initialized:
+            raise RuntimeError(
+                "Library not initialized, please call `library.open()` first."
+            )
+        if not c_string_handle:
+            raise ValueError("c_string_handle must not be None")
+
+        self._set_api_properties()
+
+        self._handle = c_string_handle
+        self._own = False
+
     def __del__(self):
-        if self._handle:
+        if self._handle and self._own:
             Library.framework.MaaDestroyStringBuffer(self._handle)
 
     def get(self) -> str:
@@ -80,6 +95,7 @@ class StringBuffer:
 
 class ImageBuffer:
     _handle: ctypes.c_void_p
+    _own: bool
 
     def __init__(self):
         if not Library.initialized:
@@ -90,11 +106,25 @@ class ImageBuffer:
         self._set_api_properties()
 
         self._handle = Library.framework.MaaCreateImageBuffer()
+        self._own = True
         if not self._handle:
             raise RuntimeError("Failed to create string buffer.")
 
+    def __init__(self, c_image_handle: ctypes.c_void_p):
+        if not Library.initialized:
+            raise RuntimeError(
+                "Library not initialized, please call `library.open()` first."
+            )
+        if not c_image_handle:
+            raise ValueError("c_image_handle must not be None")
+
+        self._set_api_properties()
+
+        self._handle = c_image_handle
+        self._own = False
+
     def __del__(self):
-        if self._handle:
+        if self._handle and self._own:
             Library.framework.MaaDestroyImageBuffer(self._handle)
 
     def get(self) -> numpy.ndarray:
@@ -176,6 +206,7 @@ class ImageBuffer:
 
 class RectBuffer:
     _handle: ctypes.c_void_p
+    _own: bool
 
     def __init__(self):
         if not Library.initialized:
@@ -189,8 +220,21 @@ class RectBuffer:
         if not self._handle:
             raise RuntimeError("Failed to create string buffer.")
 
+    def __init__(self, c_rect_handle: ctypes.c_void_p):
+        if not Library.initialized:
+            raise RuntimeError(
+                "Library not initialized, please call `library.open()` first."
+            )
+        if not c_rect_handle:
+            raise ValueError("c_rect_handle must not be None")
+
+        self._set_api_properties()
+
+        self._handle = c_rect_handle
+        self._own = False
+
     def __del__(self):
-        if self._handle:
+        if self._handle and self._own:
             Library.framework.MaaDestroyRectBuffer(self._handle)
 
     def get(self) -> numpy.ndarray:
@@ -211,11 +255,10 @@ class RectBuffer:
         if value.dtype != numpy.int32:
             raise ValueError("value must be of type numpy.int32")
 
-        return (
-            bool(Library.framework.MaaSetRectX(self._handle, value[0]))
-            and bool(Library.framework.MaaSetRectY(self._handle, value[1]))
-            and bool(Library.framework.MaaSetRectW(self._handle, value[2]))
-            and bool(Library.framework.MaaSetRectH(self._handle, value[3]))
+        return bool(
+            Library.framework.MaaSetRect(
+                self._handle, value[0], value[1], value[2], value[3]
+            )
         )
 
     _api_properties_initialized: bool = False
@@ -244,14 +287,11 @@ class RectBuffer:
         Library.framework.MaaGetRectH.restype = ctypes.c_int32
         Library.framework.MaaGetRectH.argtypes = [ctypes.c_void_p]
 
-        Library.framework.MaaSetRectX.restype = MaaBool
-        Library.framework.MaaSetRectX.argtypes = [ctypes.c_void_p, ctypes.c_int32]
-
-        Library.framework.MaaSetRectY.restype = MaaBool
-        Library.framework.MaaSetRectY.argtypes = [ctypes.c_void_p, ctypes.c_int32]
-
-        Library.framework.MaaSetRectW.restype = MaaBool
-        Library.framework.MaaSetRectW.argtypes = [ctypes.c_void_p, ctypes.c_int32]
-
-        Library.framework.MaaSetRectH.restype = MaaBool
-        Library.framework.MaaSetRectH.restype = MaaBool
+        Library.framework.MaaSetRect.restype = MaaBool
+        Library.framework.MaaSetRect.argtypes = [
+            ctypes.c_void_p,
+            ctypes.c_int32,
+            ctypes.c_int32,
+            ctypes.c_int32,
+            ctypes.c_int32,
+        ]

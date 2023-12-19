@@ -8,6 +8,7 @@ from .library import Library
 from .callback_agent import CallbackAgent, Callback
 from .controller import Controller
 from .resource import Resource
+from .custom_recognizer import CustomRecognizer
 
 
 class Maa:
@@ -130,6 +131,26 @@ class Maa:
 
         return bool(Library.framework.MaaStop(self._handle))
 
+    def register_custom_recognizer(
+        self, name: str, recognizer: CustomRecognizer
+    ) -> bool:
+        """
+        Register a custom recognizer.
+
+        :param name: The name of the custom recognizer.
+        :param recognizer: The custom recognizer.
+        :return: True if the custom recognizer was successfully registered, False otherwise.
+        """
+
+        return bool(
+            Library.framework.MaaRegisterCustomRecognizer(
+                self._handle,
+                name.encode("utf-8"),
+                ctypes.pointer(recognizer._handle),
+                None,
+            )
+        )
+
     _api_properties_initialized: bool = False
 
     @staticmethod
@@ -184,3 +205,11 @@ class Maa:
 
         Library.framework.MaaStop.restype = MaaBool
         Library.framework.MaaStop.argtypes = [ctypes.c_void_p]
+
+        Library.framework.MaaRegisterCustomRecognizer.restype = MaaBool
+        Library.framework.MaaRegisterCustomRecognizer.argtypes = [
+            ctypes.c_void_p,
+            ctypes.c_char_p,
+            ctypes.c_void_p,
+            ctypes.c_void_p,
+        ]
