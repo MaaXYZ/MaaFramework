@@ -31,9 +31,13 @@ bool TaskDataMgr::set_param(const json::value& param)
 
     bool ret = true;
 
-    auto diff_opt = param.find<json::object>("diff_task");
-    if (diff_opt) {
+    // 老版本是把 diff_task 单独作为一个 json field
+    // 但除了 diff_task 也没啥其他功能可以做的了，不如直接铺到 root 上
+    if (auto diff_opt = param.find<json::object>("diff_task"); diff_opt) {
         ret &= set_diff_task(*diff_opt);
+    }
+    else {
+        ret &= set_diff_task(param);
     }
 
     return ret;

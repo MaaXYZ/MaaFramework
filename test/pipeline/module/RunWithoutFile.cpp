@@ -25,10 +25,9 @@ bool run_without_file(const std::filesystem::path& testset_dir)
 
     register_my_action(maa_handle);
 
-    json::value diff_task { { "MyTask", json::object { { "action", "Custom" },
-                                                       { "custom_action", "MyAction" },
-                                                       { "custom_action_param", "abcdefg" } } } };
-    json::value task_param { { "diff_task", diff_task } };
+    json::value task_param { { "MyTask", json::object { { "action", "Custom" },
+                                                        { "custom_action", "MyAction" },
+                                                        { "custom_action_param", "abcdefg" } } } };
     std::string task_param_str = task_param.to_string();
 
     auto task_id = MaaPostTask(maa_handle, "MyTask", task_param_str.c_str());
@@ -51,12 +50,11 @@ MaaBool my_action_run([[maybe_unused]] MaaSyncContextHandle sync_context, [[mayb
     auto out_box = MaaCreateRectBuffer();
     auto out_detail = MaaCreateStringBuffer();
 
-    json::value diff_task { { "MyColorMatching", json::object {
-                                                     { "recognition", "ColorMatch" },
-                                                     { "lower", json::array { 100, 100, 100 } },
-                                                     { "upper", json::array { 255, 255, 255 } },
-                                                 } } };
-    json::value task_param { { "diff_task", diff_task } };
+    json::value task_param { { "MyColorMatching", json::object {
+                                                      { "recognition", "ColorMatch" },
+                                                      { "lower", json::array { 100, 100, 100 } },
+                                                      { "upper", json::array { 255, 255, 255 } },
+                                                  } } };
     std::string task_param_str = task_param.to_string();
 
     MaaSyncContextRunRecognizer(sync_context, image, "MyColorMatching", task_param_str.c_str(), out_box, out_detail);
