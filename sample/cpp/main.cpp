@@ -18,7 +18,8 @@
 
 MaaControllerHandle create_adb_controller();
 MaaControllerHandle create_win32_controller();
-void register_my_recognizer(MaaInstanceHandle maa_handle);
+void register_my_recognizer_by_ffi(MaaInstanceHandle maa_handle);
+void register_my_action_by_exec_agent(MaaInstanceHandle maa_handle);
 
 int main([[maybe_unused]] int argc, char** argv)
 {
@@ -53,9 +54,10 @@ int main([[maybe_unused]] int argc, char** argv)
         return -1;
     }
 
-    register_my_recognizer(maa_handle);
+    register_my_recognizer_by_ffi(maa_handle);
+    register_my_action_by_exec_agent(maa_handle);
 
-    auto task_id = MaaPostTask(maa_handle, "StartUpAndClickButton", MaaTaskParam_Empty);
+    auto task_id = MaaPostTask(maa_handle, "MyTask", MaaTaskParam_Empty);
     MaaWaitTask(maa_handle, task_id);
 
     destroy();
@@ -128,8 +130,14 @@ MaaBool my_analyze(MaaSyncContextHandle sync_context, const MaaImageBufferHandle
 
 MaaCustomRecognizerAPI my_recognizer {};
 
-void register_my_recognizer(MaaInstanceHandle maa_handle)
+void register_my_recognizer_by_ffi(MaaInstanceHandle maa_handle)
 {
     my_recognizer.analyze = my_analyze;
     MaaRegisterCustomRecognizer(maa_handle, "MyRec", &my_recognizer, nullptr);
+}
+
+void register_my_action_by_exec_agent(MaaInstanceHandle maa_handle)
+{
+    MaaToolKitRegisterCustomActionExecutor(maa_handle, "MyAction", "Python.exe",
+                                           R"(["sample\\python\\custom_task\\my_action.py"])");
 }

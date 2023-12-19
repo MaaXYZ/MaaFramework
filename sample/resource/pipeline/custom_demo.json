@@ -8,7 +8,12 @@
         "recognition": "Custom",
         "custom_recognizer": "MyRec",
         "custom_recognizer_param": {
-            "my_key": "my_value"
+            "my_rec_key": "my_rec_value"
+        },
+        "action": "Custom",
+        "custom_action": "MyAction",
+        "custom_action_param": {
+            "my_act_key": "my_act_value"
         }
     }
 }
