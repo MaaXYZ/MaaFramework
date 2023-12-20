@@ -8,6 +8,7 @@ from .common import Status
 from .library import Library
 from .callback_agent import CallbackAgent, Callback
 
+__all__ = ["AdbController"]
 
 class Controller(ABC):
     _handle: ctypes.c_void_p

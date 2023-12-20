@@ -1,1 +1,1 @@
-__all__ = ["resource", "controller", "instance", "library"]
+__all__ = ["library", "resource", "controller", "instance", "toolkit"]
