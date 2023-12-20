@@ -1,5 +1,6 @@
 import ctypes
 import json
+import asyncio
 from abc import ABC
 from typing import Optional, Any, Dict
 
@@ -37,7 +38,7 @@ class Controller(ABC):
             Library.framework.MaaControllerDestroy(self._handle)
             self._handle = None
 
-    def connect(self) -> bool:
+    async def connect(self) -> bool:
         """
         Sync connect to the controller.
 
@@ -45,7 +46,10 @@ class Controller(ABC):
         """
 
         cid = self.post_connection()
-        return self.wait(cid) == Status.success
+        while not self.status(cid).done():
+            await asyncio.sleep(0)
+
+        return self.status(cid).success()
 
     def post_connection(self) -> int:
         """

@@ -1,5 +1,6 @@
 import ctypes
 import json
+import asyncio
 from typing import Union, Optional, Any
 
 from .define import MaaApiCallback, MaaBool, MaaId, MaaStatus
@@ -68,6 +69,21 @@ class Instance:
 
         return Library.framework.MaaInited(self._handle)
 
+    async def run_task(self, task_type: str, param: Any = {}) -> bool:
+        """
+        Run a task.
+
+        :param task_type: The name of the task.
+        :param param: The param of the task.
+        :return: True if the task was successfully run, False otherwise.
+        """
+
+        tid = self.post_task(task_type, param)
+        while not self.status(tid).done():
+            await asyncio.sleep(0)
+
+        return self.status(tid).success()
+
     def post_task(self, task_type: str, param: Any = {}) -> int:
         """
         Post a task to the instance.
@@ -114,6 +130,14 @@ class Instance:
 
         return Status(Library.framework.MaaWaitTask(self._handle, id))
 
+    async def wait_all(self):
+        """
+        Wait for all tasks to complete.
+        """
+
+        while not self.all_finished():
+            await asyncio.sleep(0)
+
     def all_finished(self) -> bool:
         """
         Check if all tasks are finished.
@@ -132,9 +156,7 @@ class Instance:
 
         return bool(Library.framework.MaaStop(self._handle))
 
-    def register_recognizer(
-        self, name: str, recognizer: CustomRecognizer
-    ) -> bool:
+    def register_recognizer(self, name: str, recognizer: CustomRecognizer) -> bool:
         """
         Register a custom recognizer.
 
@@ -151,10 +173,8 @@ class Instance:
                 recognizer.c_arg(),
             )
         )
-    
-    def register_action(
-        self, name: str, action: CustomAction
-    ) -> bool:
+
+    def register_action(self, name: str, action: CustomAction) -> bool:
         """
         Register a custom action.
 

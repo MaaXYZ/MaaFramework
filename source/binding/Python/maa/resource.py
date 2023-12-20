@@ -1,5 +1,6 @@
 import ctypes
 import pathlib
+import asyncio
 from typing import Union, Optional, Any
 
 from .define import MaaApiCallback, MaaBool, MaaId, MaaStatus
@@ -42,7 +43,7 @@ class Resource:
         if self._handle:
             Library.framework.MaaResourceDestroy(self._handle)
 
-    def load(self, path: Union[pathlib.Path, str]) -> bool:
+    async def load(self, path: Union[pathlib.Path, str]) -> bool:
         """
         Sync load the given path to the resource.
 
@@ -51,7 +52,10 @@ class Resource:
         """
 
         rid = self.post_path(path)
-        return self.wait(rid) == Status.success
+        while not self.status(rid).done():
+            await asyncio.sleep(0)
+
+        return self.status(rid).success()
 
     def post_path(self, path: Union[pathlib.Path, str]) -> int:
         """

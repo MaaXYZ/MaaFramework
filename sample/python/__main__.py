@@ -7,6 +7,8 @@ from maa.toolkit import Toolkit
 from maa.custom_recognizer import CustomRecognizer
 from maa.custom_action import CustomAction
 
+import asyncio
+
 
 class MyRecognizer(CustomRecognizer):
     def analyze(
@@ -26,15 +28,15 @@ class MyAction(CustomAction):
 my_rec = MyRecognizer()
 my_act = MyAction()
 
-if __name__ == "__main__":
+
+async def main():
     version = Library.open("bin")
     print(f"MaaFw Version: {version}")
 
     Toolkit.init_config()
 
     resource = Resource()
-    res_id = resource.post_path("sample/resource")
-    resource.wait(res_id)
+    await resource.load("sample/resource")
 
     device_list = Toolkit.adb_devices()
     if not device_list:
@@ -48,8 +50,7 @@ if __name__ == "__main__":
         address=device["address"],
         agent_path="share/MaaAgentBinary",
     )
-    ctrl_id = controller.post_connection()
-    controller.wait(ctrl_id)
+    await controller.connect()
 
     maa_inst = Instance()
     maa_inst.bind(resource, controller)
@@ -61,5 +62,8 @@ if __name__ == "__main__":
     maa_inst.register_recognizer("MyRec", my_rec)
     maa_inst.register_action("MyAct", my_act)
 
-    task_id = maa_inst.post_task("StartUpAndClickButton", {})
-    maa_inst.wait(task_id)
+    await maa_inst.run_task("StartUpAndClickButton", {})
+
+
+if __name__ == "__main__":
+    asyncio.run(main())
