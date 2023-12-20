@@ -10,6 +10,7 @@ from .callback_agent import CallbackAgent, Callback
 
 __all__ = ["AdbController"]
 
+
 class Controller(ABC):
     _handle: ctypes.c_void_p
     _callback_agent: CallbackAgent
@@ -128,7 +129,7 @@ class AdbController(Controller):
         self,
         adb_path: str,
         address: str,
-        controller_type: int = 65793,
+        controller_type: int = 66051,  # MaaAdbControllerType_Input_Preset_Maatouch | MaaAdbControllerType_Screencap_FastestWay
         config: Dict[str, Any] = DEFAULT_CONFIG,
         agent_path: str = "./MaaAgentBinary",
         callback: Optional[Callback] = None,

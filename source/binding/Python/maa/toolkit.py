@@ -29,9 +29,7 @@ class Toolkit:
             name = Library.toolkit.MaaToolKitGetDeviceName(i).decode("utf-8")
             adb_path = Library.toolkit.MaaToolKitGetDeviceAdbPath(i).decode("utf-8")
             address = Library.toolkit.MaaToolKitGetDeviceAdbSerial(i).decode("utf-8")
-            controller_type = (
-                Library.toolkit.MaaToolKitGetDeviceAdbControllerType(i)
-            ).decode("utf-8")
+            controller_type = int(Library.toolkit.MaaToolKitGetDeviceAdbControllerType(i))
             config = Library.toolkit.MaaToolKitGetDeviceAdbConfig(i).decode("utf-8")
 
             devices.append(
