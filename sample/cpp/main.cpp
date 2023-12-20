@@ -91,7 +91,7 @@ MaaControllerHandle create_win32_controller()
 }
 
 MaaBool my_analyze(MaaSyncContextHandle sync_context, const MaaImageBufferHandle image, MaaStringView task_name,
-                   MaaStringView custom_recognition_param, MaaTransparentArg arg,
+                   MaaStringView custom_recognizer_param, MaaTransparentArg arg,
                    /*out*/ MaaRectHandle out_box,
                    /*out*/ MaaStringBufferHandle out_detail)
 {
