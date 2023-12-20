@@ -1,9 +1,7 @@
 import ctypes
 import numpy
-import io
 from typing import Union, Optional
 from PIL import Image
-import io
 
 from .define import MaaBool
 from .library import Library
@@ -13,31 +11,22 @@ class StringBuffer:
     _handle: ctypes.c_void_p
     _own: bool
 
-    def __init__(self):
+    def __init__(self, c_handle: Optional[ctypes.c_void_p] = None):
         if not Library.initialized:
             raise RuntimeError(
                 "Library not initialized, please call `library.open()` first."
             )
-
         self._set_api_properties()
 
-        self._handle = Library.framework.MaaCreateStringBuffer()
-        self._own = True
+        if c_handle:
+            self._handle = c_handle
+            self._own = False
+        else:
+            self._handle = Library.framework.MaaCreateStringBuffer()
+            self._own = True
+
         if not self._handle:
             raise RuntimeError("Failed to create string buffer.")
-
-    def __init__(self, c_string_handle: ctypes.c_void_p):
-        if not Library.initialized:
-            raise RuntimeError(
-                "Library not initialized, please call `library.open()` first."
-            )
-        if not c_string_handle:
-            raise ValueError("c_string_handle must not be None")
-
-        self._set_api_properties()
-
-        self._handle = c_string_handle
-        self._own = False
 
     def __del__(self):
         if self._handle and self._own:
@@ -100,7 +89,7 @@ class ImageBuffer:
     _handle: ctypes.c_void_p
     _own: bool
 
-    def __init__(self):
+    def __init__(self, c_handle: Optional[ctypes.c_void_p] = None):
         if not Library.initialized:
             raise RuntimeError(
                 "Library not initialized, please call `library.open()` first."
@@ -108,52 +97,43 @@ class ImageBuffer:
 
         self._set_api_properties()
 
-        self._handle = Library.framework.MaaCreateImageBuffer()
-        self._own = True
+        if c_handle:
+            self._handle = c_handle
+            self._own = False
+        else:
+            self._handle = Library.framework.MaaCreateImageBuffer()
+            self._own = True
+
         if not self._handle:
             raise RuntimeError("Failed to create string buffer.")
-
-    def __init__(self, c_image_handle: ctypes.c_void_p):
-        if not Library.initialized:
-            raise RuntimeError(
-                "Library not initialized, please call `library.open()` first."
-            )
-        if not c_image_handle:
-            raise ValueError("c_image_handle must not be None")
-
-        self._set_api_properties()
-
-        self._handle = c_image_handle
-        self._own = False
 
     def __del__(self):
         if self._handle and self._own:
             Library.framework.MaaDestroyImageBuffer(self._handle)
 
     def get(self) -> numpy.ndarray:
-        buffer = Library.framework.MaaGetImageEncoded(self._handle)
-        size = int(Library.framework.MaaGetImageEncodedSize(self._handle))
-        png_data = ctypes.string_at(buffer, size)
-        img = Image.open(io.BytesIO(png_data))
-        return numpy.array(img)
+        buff = Library.framework.MaaGetImageRawData(self._handle)
+        w = Library.framework.MaaGetImageWidth(self._handle)
+        h = Library.framework.MaaGetImageHeight(self._handle)
+        # t = Library.framework.MaaGetImageType(self._handle)
+        return numpy.ctypeslib.as_array(
+            ctypes.cast(buff, ctypes.POINTER(ctypes.c_uint8)), shape=(h, w, 3)
+        )
 
-    def set(self, value: numpy.ndarray) -> bool:
+    def set(self, value: Union[numpy.ndarray, Image.Image]) -> bool:
+        if isinstance(value, Image.Image):
+            value = numpy.array(value)
+
         if not isinstance(value, numpy.ndarray):
-            raise TypeError("value must be a numpy.ndarray")
-        if value.ndim != 3:
-            raise ValueError("value must be a 3D array")
-        if value.shape[2] != 3:
-            raise ValueError("value must have 3 channels")
-        if value.dtype != numpy.uint8:
-            raise ValueError("value must be of type numpy.uint8")
+            raise TypeError("value must be a numpy.ndarray or PIL.Image")
 
         return bool(
             Library.framework.MaaSetImageRawData(
                 self._handle,
-                value.ctypes.data_as(ctypes.c_void_p),
+                value.ctypes.data,
                 value.shape[1],
                 value.shape[0],
-                value.shape[2],
+                16, # CV_8UC3
             )
         )
 
@@ -177,11 +157,17 @@ class ImageBuffer:
         Library.framework.MaaDestroyImageBuffer.restype = None
         Library.framework.MaaDestroyImageBuffer.argtypes = [ctypes.c_void_p]
 
-        Library.framework.MaaGetImageEncoded.restype = ctypes.POINTER(ctypes.c_uint8)
-        Library.framework.MaaGetImageEncoded.argtypes = [ctypes.c_void_p]
+        Library.framework.MaaGetImageRawData.restype = ctypes.c_void_p
+        Library.framework.MaaGetImageRawData.argtypes = [ctypes.c_void_p]
 
-        Library.framework.MaaGetImageEncodedSize.restype = ctypes.c_size_t
-        Library.framework.MaaGetImageEncodedSize.argtypes = [ctypes.c_void_p]
+        Library.framework.MaaGetImageWidth.restype = ctypes.c_int32
+        Library.framework.MaaGetImageWidth.argtypes = [ctypes.c_void_p]
+
+        Library.framework.MaaGetImageHeight.restype = ctypes.c_int32
+        Library.framework.MaaGetImageHeight.argtypes = [ctypes.c_void_p]
+
+        Library.framework.MaaGetImageType.restype = ctypes.c_int32
+        Library.framework.MaaGetImageType.argtypes = [ctypes.c_void_p]
 
         Library.framework.MaaSetImageRawData.restype = MaaBool
         Library.framework.MaaSetImageRawData.argtypes = [
@@ -203,7 +189,7 @@ class RectBuffer:
     _handle: ctypes.c_void_p
     _own: bool
 
-    def __init__(self):
+    def __init__(self, c_handle: Optional[ctypes.c_void_p] = None):
         if not Library.initialized:
             raise RuntimeError(
                 "Library not initialized, please call `library.open()` first."
@@ -211,22 +197,15 @@ class RectBuffer:
 
         self._set_api_properties()
 
-        self._handle = Library.framework.MaaCreateRectBuffer()
+        if c_handle:
+            self._handle = c_handle
+            self._own = False
+        else:
+            self._handle = Library.framework.MaaCreateRectBuffer()
+            self._own = True
+
         if not self._handle:
-            raise RuntimeError("Failed to create string buffer.")
-
-    def __init__(self, c_rect_handle: ctypes.c_void_p):
-        if not Library.initialized:
-            raise RuntimeError(
-                "Library not initialized, please call `library.open()` first."
-            )
-        if not c_rect_handle:
-            raise ValueError("c_rect_handle must not be None")
-
-        self._set_api_properties()
-
-        self._handle = c_rect_handle
-        self._own = False
+            raise RuntimeError("Failed to create rect buffer.")
 
     def __del__(self):
         if self._handle and self._own:

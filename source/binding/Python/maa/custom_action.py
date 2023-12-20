@@ -71,7 +71,7 @@ class CustomAction(ABC):
         custom_param = c_custom_param.decode("utf-8")
 
         box = RectBuffer(c_box).get()
-        rec_detail = StringBuffer(c_rec_detail).get()
+        rec_detail = c_rec_detail.decode("utf-8")
 
         return self.run(
             c_context,
