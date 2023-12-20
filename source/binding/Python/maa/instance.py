@@ -9,6 +9,7 @@ from .callback_agent import CallbackAgent, Callback
 from .controller import Controller
 from .resource import Resource
 from .custom_recognizer import CustomRecognizer
+from .custom_action import CustomAction
 
 
 class Instance:
@@ -131,7 +132,7 @@ class Instance:
 
         return bool(Library.framework.MaaStop(self._handle))
 
-    def register_custom_recognizer(
+    def register_recognizer(
         self, name: str, recognizer: CustomRecognizer
     ) -> bool:
         """
@@ -148,6 +149,26 @@ class Instance:
                 name.encode("utf-8"),
                 recognizer.c_handle(),
                 recognizer.c_arg(),
+            )
+        )
+    
+    def register_action(
+        self, name: str, action: CustomAction
+    ) -> bool:
+        """
+        Register a custom action.
+
+        :param name: The name of the custom action.
+        :param action: The custom action.
+        :return: True if the custom action was successfully registered, False otherwise.
+        """
+
+        return bool(
+            Library.framework.MaaRegisterCustomAction(
+                self._handle,
+                name.encode("utf-8"),
+                action.c_handle(),
+                action.c_arg(),
             )
         )
 
@@ -217,6 +238,14 @@ class Instance:
 
         Library.framework.MaaRegisterCustomRecognizer.restype = MaaBool
         Library.framework.MaaRegisterCustomRecognizer.argtypes = [
+            ctypes.c_void_p,
+            ctypes.c_char_p,
+            ctypes.c_void_p,
+            ctypes.c_void_p,
+        ]
+
+        Library.framework.MaaRegisterCustomAction.restype = MaaBool
+        Library.framework.MaaRegisterCustomAction.argtypes = [
             ctypes.c_void_p,
             ctypes.c_char_p,
             ctypes.c_void_p,

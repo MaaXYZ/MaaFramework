@@ -58,8 +58,8 @@ if __name__ == "__main__":
         print("Failed to init MAA.")
         exit()
 
-    maa_inst.register_custom_recognizer("MyRec", my_rec)
-    maa_inst.register_custom_action("MyAct", my_act)
+    maa_inst.register_recognizer("MyRec", my_rec)
+    maa_inst.register_action("MyAct", my_act)
 
     task_id = maa_inst.post_task("StartUpAndClickButton", {})
     maa_inst.wait(task_id)
