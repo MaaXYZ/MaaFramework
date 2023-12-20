@@ -11,7 +11,7 @@ extern "C"
     struct MaaCustomRecognizerAPI
     {
         MaaBool (*analyze)(MaaSyncContextHandle sync_context, const MaaImageBufferHandle image, MaaStringView task_name,
-                           MaaStringView custom_recognizer_param, MaaTransparentArg recognizer_arg,
+                           MaaStringView custom_recognition_param, MaaTransparentArg recognizer_arg,
                            /*out*/ MaaRectHandle out_box,
                            /*out*/ MaaStringBufferHandle out_detail);
     };

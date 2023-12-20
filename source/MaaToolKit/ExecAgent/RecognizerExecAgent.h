@@ -29,13 +29,13 @@ private:
     };
     std::optional<AnalyzeResult> analyze( //
         ExecData& data, MaaSyncContextHandle sync_context, const cv::Mat& image, std::string_view task_name,
-        std::string_view custom_recognizer_param);
+        std::string_view custom_recognition_param);
 
 private:
     // for MaaCustomRecognizerAPI
     static MaaBool maa_api_analyze( //
         MaaSyncContextHandle sync_context, const MaaImageBufferHandle image, MaaStringView task_name,
-        MaaStringView custom_recognizer_param, MaaTransparentArg recognizer_arg,
+        MaaStringView custom_recognition_param, MaaTransparentArg recognizer_arg,
         /*out*/ MaaRectHandle out_box,
         /*out*/ MaaStringBufferHandle out_detail);
 
