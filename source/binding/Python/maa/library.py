@@ -3,12 +3,14 @@ import ctypes.util
 import pathlib
 import os
 import platform
-from typing import Union
+from typing import Union, Optional
 
 
 class Library:
     @classmethod
-    def open(cls, path: Union[pathlib.Path, str], toolkit: bool = True) -> bool:
+    def open(
+        cls, path: Union[pathlib.Path, str], toolkit: bool = True
+    ) -> Optional[str]:
         """
         Open the library at the given path.
 
@@ -56,7 +58,9 @@ class Library:
             cls.framework_libpath = ctypes.util.find_library("MaaFramework")
             cls.framework = lib_import(str(cls.framework_libpath))
 
-        cls.initialized = True
+        if not cls.framework:
+            cls.initialized = False
+            return None
 
         if toolkit:
             try:
@@ -72,4 +76,24 @@ class Library:
             cls.toolkit = None
             cls.toolkit_libpath = None
 
-        return True
+        cls.initialized = True
+
+        return cls.version()
+
+    @classmethod
+    def version(cls) -> str:
+        """
+        Get the version of the library.
+
+        :return: The version of the library.
+        """
+
+        if not cls.initialized:
+            raise RuntimeError(
+                "Library not initialized, please call `library.open()` first."
+            )
+        
+        cls.framework.MaaVersion.restype = ctypes.c_char_p
+        cls.framework.MaaVersion.argtypes = None
+
+        return cls.framework.MaaVersion().decode("utf-8")

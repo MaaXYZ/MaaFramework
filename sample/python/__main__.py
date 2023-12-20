@@ -29,7 +29,7 @@ if __name__ == "__main__":
     Library.open("bin")
 
     resource = Resource()
-    res_id = resource.post_path("my_resource")
+    res_id = resource.post_path("sample/resource")
     resource.wait(res_id)
 
     controller = AdbController(

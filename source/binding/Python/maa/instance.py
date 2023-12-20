@@ -151,6 +151,15 @@ class Instance:
             )
         )
 
+    def c_handle(self) -> ctypes.c_void_p:
+        """
+        Get the C handle of the instance.
+
+        :return: The C handle of the instance.
+        """
+
+        return self._handle
+
     _api_properties_initialized: bool = False
 
     @staticmethod

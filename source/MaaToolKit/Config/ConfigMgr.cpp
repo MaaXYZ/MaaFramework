@@ -32,7 +32,7 @@ bool ConfigMgr::uninit()
 {
     LogFunc;
 
-    return dump();
+    return true;
 }
 
 bool ConfigMgr::load()
