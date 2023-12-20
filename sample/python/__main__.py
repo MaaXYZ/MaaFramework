@@ -10,13 +10,13 @@ from maa.custom_action import CustomAction
 
 class MyRecognizer(CustomRecognizer):
     def analyze(
-        self, context, image, task_name, custom_recognition_param
+        self, context, image, task_name, custom_param
     ) -> (bool, (int, int, int, int), str):
         return True, (0, 0, 100, 100), "Hello World!"
 
 
 class MyAction(CustomAction):
-    def run(self, context, task_name, custom_param, cur_box, cur_rec_detail) -> bool:
+    def run(self, context, task_name, custom_param, box, rec_detail) -> bool:
         return True
 
     def stop(self) -> None:

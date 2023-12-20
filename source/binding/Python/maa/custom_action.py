@@ -18,8 +18,8 @@ class CustomAction(ABC):
         context: ctypes.c_void_p,
         task_name: str,
         custom_param: str,
-        cur_box: (int, int, int, int),
-        cur_rec_detail: str,
+        box: (int, int, int, int),
+        rec_detail: str,
     ) -> bool:
         """
         Run the given action.
@@ -27,8 +27,8 @@ class CustomAction(ABC):
         :param context: The context.
         :param task_name: The name of the task.
         :param custom_param: The custom action param from pipeline.
-        :param cur_box: The current box.
-        :param cur_rec_detail: The current recognition detail.
+        :param box: The current box.
+        :param rec_detail: The current recognition detail.
 
         :return: return success or not
         """
@@ -58,8 +58,8 @@ class CustomAction(ABC):
         c_context: ctypes.c_void_p,
         c_task_name: ctypes.c_char_p,
         c_custom_param: ctypes.c_char_p,
-        c_cur_box: ctypes.c_void_p,
-        c_cur_rec_detail: ctypes.c_char_p,
+        c_box: ctypes.c_void_p,
+        c_rec_detail: ctypes.c_char_p,
         c_transparent_arg: ctypes.c_void_p,
     ) -> MaaBool:
         if not c_transparent_arg:
@@ -70,15 +70,15 @@ class CustomAction(ABC):
         task_name = c_task_name.decode("utf-8")
         custom_param = c_custom_param.decode("utf-8")
 
-        cur_box = RectBuffer(c_cur_box).get()
-        cur_rec_detail = StringBuffer(c_cur_rec_detail).get()
+        box = RectBuffer(c_box).get()
+        rec_detail = StringBuffer(c_rec_detail).get()
 
         return self.run(
             c_context,
             task_name,
             custom_param,
-            cur_box,
-            cur_rec_detail,
+            box,
+            rec_detail,
         )
 
     @MaaCustomAction.StopFunc
