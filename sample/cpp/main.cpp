@@ -139,6 +139,6 @@ void register_my_recognizer_by_ffi(MaaInstanceHandle maa_handle)
 
 void register_my_action_by_exec_agent(MaaInstanceHandle maa_handle)
 {
-    MaaToolKitRegisterCustomActionExecutor(maa_handle, "MyAction", "Python.exe",
+    MaaToolKitRegisterCustomActionExecutor(maa_handle, "MyAct", "Python.exe",
                                            R"(["sample\\python\\custom_task\\my_action.py"])");
 }
