@@ -232,13 +232,13 @@ class RectBuffer:
         if self._handle and self._own:
             Library.framework.MaaDestroyRectBuffer(self._handle)
 
-    def get(self) -> numpy.ndarray:
+    def get(self) -> (int, int, int, int):
         x = Library.framework.MaaGetRectX(self._handle)
         y = Library.framework.MaaGetRectY(self._handle)
         w = Library.framework.MaaGetRectW(self._handle)
         h = Library.framework.MaaGetRectH(self._handle)
 
-        return numpy.array([x, y, w, h], dtype=numpy.int32)
+        return x, y, w, h
 
     def set(self, value: Union[numpy.ndarray, tuple, list]) -> bool:
         if isinstance(value, numpy.ndarray):
