@@ -44,8 +44,8 @@ if __name__ == "__main__":
     # for demo, we just use the first device
     device = device_list[0]
     controller = AdbController(
-        adb_path=device.adb_path,
-        address=device.address,
+        adb_path=device["adb_path"],
+        address=device["address"],
         agent_path="share/MaaAgentBinary",
     )
     ctrl_id = controller.post_connection()

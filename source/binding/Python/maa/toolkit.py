@@ -14,7 +14,7 @@ class Toolkit:
         """
         cls._set_api_properties()
 
-        return Library.framework.MaaToolKitInit()
+        return Library.toolkit.MaaToolKitInit()
 
     @classmethod
     def adb_devices(cls) -> list:
