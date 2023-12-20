@@ -2,6 +2,7 @@ from maa.library import Library
 from maa.resource import Resource
 from maa.controller import AdbController
 from maa.instance import Instance
+from maa.toolkit import Toolkit
 
 from maa.custom_recognizer import CustomRecognizer
 from maa.custom_action import CustomAction
@@ -26,14 +27,26 @@ my_rec = MyRecognizer()
 my_act = MyAction()
 
 if __name__ == "__main__":
-    Library.open("bin")
+    version = Library.open("bin")
+    print(f"MaaFw Version: {version}")
+
+    Toolkit.init_config()
 
     resource = Resource()
     res_id = resource.post_path("sample/resource")
     resource.wait(res_id)
 
+    device_list = Toolkit.adb_devices()
+    if not device_list:
+        print("No ADB device found.")
+        exit()
+
+    # for demo, we just use the first device
+    device = device_list[0]
     controller = AdbController(
-        "adb", "127.0.0.1:16416", agent_path="share/MaaAgentBinary"
+        adb_path=device.adb_path,
+        address=device.address,
+        agent_path="share/MaaAgentBinary",
     )
     ctrl_id = controller.post_connection()
     controller.wait(ctrl_id)
