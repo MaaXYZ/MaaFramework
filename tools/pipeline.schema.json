@@ -191,13 +191,13 @@
           "description": "期望的分类下标。必选",
           "$ref": "#/definitions/expected_type"
         },
-        "custom_recognizer": {
-          "description": "任务名，同 MaaRegisterCustomRecognizer 接口传入的识别器名。必选。",
+        "custom_recognition": {
+          "description": "识别器名，同 MaaRegisterCustomRecognizer 接口传入的识别器名。必选。",
           "type": "string",
           "default": ""
         },
-        "custom_recognizer_param": {
-          "description": "任务参数，任意类型，会在执行时透传。可选，默认空 json，即 {}",
+        "custom_recognition_param": {
+          "description": "识别器参数，任意类型，会在执行时透传。可选，默认空 json，即 {}",
           "default": {}
         },
         "target": {
@@ -261,12 +261,12 @@
           "default": ""
         },
         "custom_action": {
-          "description": "任务名，同 MaaRegisterCustomAction 接口传入的动作名。必选。",
+          "description": "动作名，同 MaaRegisterCustomAction 接口传入的动作名。必选。",
           "type": "string",
           "default": ""
         },
         "custom_action_param": {
-          "description": "任务参数，任意类型，通过 MaaCustomRecognizerAPI 传入 json string。可选，默认空 json，即 {}",
+          "description": "动作参数，任意类型，会在执行时透传。可选，默认空 json，即 {}",
           "default": {}
         }
       },
@@ -457,7 +457,7 @@
               },
               "then": {
                 "required": [
-                  "custom_recognizer"
+                  "custom_recognition"
                 ]
               }
             }

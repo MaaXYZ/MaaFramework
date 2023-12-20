@@ -6,8 +6,8 @@
     },
     "MyCustomRecTask": {
         "recognition": "Custom",
-        "custom_recognizer": "MyRec",
-        "custom_recognizer_param": {
+        "custom_recognition": "MyRec",
+        "custom_recognition_param": {
             "my_rec_key": "my_rec_value"
         },
         "action": "Custom",

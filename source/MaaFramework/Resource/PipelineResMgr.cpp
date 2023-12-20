@@ -347,7 +347,8 @@ bool PipelineResMgr::parse_recognition(const json::value& input, Recognition::Ty
 
     static const std::string kDefaultRecognitionFlag = "Default";
     std::string rec_type_name;
-    if (!get_and_check_value(input, "recognition", rec_type_name, kDefaultRecognitionFlag)) {
+    if (!get_and_check_value(input, "recognition", rec_type_name, kDefaultRecognitionFlag) &&
+        !get_and_check_value(input, "recognizer", rec_type_name, kDefaultRecognitionFlag)) { // for compatibility
         LogError << "failed to get_and_check_value recognition" << VAR(input);
         return false;
     }
@@ -414,7 +415,7 @@ bool PipelineResMgr::parse_recognition(const json::value& input, Recognition::Ty
 
     case Type::Custom:
         out_param = CustomRecognizerParam {};
-        return parse_custom_recognizer_param(input, std::get<CustomRecognizerParam>(out_param),
+        return parse_custom_recognition_param(input, std::get<CustomRecognizerParam>(out_param),
                                              same_type ? std::get<CustomRecognizerParam>(default_param)
                                                        : CustomRecognizerParam {});
     default:
@@ -605,24 +606,22 @@ bool PipelineResMgr::parse_ocrer_param(const json::value& input, MAA_VISION_NS::
     return true;
 }
 
-bool PipelineResMgr::parse_custom_recognizer_param(const json::value& input,
+bool PipelineResMgr::parse_custom_recognition_param(const json::value& input,
                                                    MAA_VISION_NS::CustomRecognizerParam& output,
                                                    const MAA_VISION_NS::CustomRecognizerParam& default_value)
 {
-    if (!get_and_check_value(input, "custom_recognizer", output.name, default_value.name)) {
-        LogError << "failed to get_and_check_value custom_recognizer" << VAR(input);
+    if (!get_and_check_value(input, "custom_recognition", output.name, default_value.name) &&
+        !get_and_check_value(input, "custom_recognizer", output.name, default_value.name)) {
+        LogError << "failed to get_and_check_value custom_recognition" << VAR(input);
         return false;
     }
 
     if (output.name.empty()) {
-        LogError << "custom_recognizer is empty" << VAR(input);
+        LogError << "custom_recognition is empty" << VAR(input);
         return false;
     }
 
-    auto param_opt = input.find("custom_recognizer_param");
-    if (param_opt) {
-        output.custom_param = *param_opt;
-    }
+    output.custom_param = input.get("custom_recognition_param", input.get("custom_recognizer_param", json::object()));
 
     return true;
 }
@@ -1031,10 +1030,7 @@ bool PipelineResMgr::parse_custom_action_param(const json::value& input, Action:
         return false;
     }
 
-    auto param_opt = input.find("custom_action_param");
-    if (param_opt) {
-        output.custom_param = *param_opt;
-    }
+    output.custom_param = input.get("custom_action_param", json::object());
 
     return true;
 }

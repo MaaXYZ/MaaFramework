@@ -43,7 +43,7 @@ public:
                                             const MAA_VISION_NS::FeatureMatcherParam& default_value);
     static bool parse_ocrer_param(const json::value& input, MAA_VISION_NS::OCRerParam& output,
                                   const MAA_VISION_NS::OCRerParam& default_value);
-    static bool parse_custom_recognizer_param(const json::value& input, MAA_VISION_NS::CustomRecognizerParam& output,
+    static bool parse_custom_recognition_param(const json::value& input, MAA_VISION_NS::CustomRecognizerParam& output,
                                               const MAA_VISION_NS::CustomRecognizerParam& default_value);
     static bool parse_nn_classifier_param(const json::value& input, MAA_VISION_NS::NeuralNetworkClassifierParam& output,
                                           const MAA_VISION_NS::NeuralNetworkClassifierParam& default_value);
