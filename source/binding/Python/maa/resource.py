@@ -3,8 +3,8 @@ import pathlib
 import asyncio
 from typing import Union, Optional, Any
 
-from .define import MaaApiCallback, MaaBool, MaaId, MaaStatus
-from .status import Status
+from .define import MaaApiCallback, MaaBool, MaaId
+from .future import Future
 from .library import Library
 from .callback_agent import CallbackAgent, Callback
 
@@ -45,49 +45,26 @@ class Resource:
 
     async def load(self, path: Union[pathlib.Path, str]) -> bool:
         """
-        Sync load the given path to the resource.
+        Async load the given path to the resource.
 
         :param path: The path to load.
         :return: True if the resource was successfully loaded, False otherwise.
         """
 
-        rid = self.post_path(path)
-        while not self.status(rid).done():
-            await asyncio.sleep(0)
+        await self.post_path(path).wait()
 
-        return self.status(rid).success()
-
-    def post_path(self, path: Union[pathlib.Path, str]) -> int:
+    def post_path(self, path: Union[pathlib.Path, str]) -> Future:
         """
-        Async load the given path to the resource.
+        Post a path to the resource. (load in background)
 
         :param path: The path to post.
         :return: The id of the posted path.
         """
 
-        return Library.framework.MaaResourcePostPath(
+        maaid = Library.framework.MaaResourcePostPath(
             self._handle, str(path).encode("utf-8")
         )
-
-    def status(self, id: int) -> Status:
-        """
-        Get the status of the given id.
-
-        :param id: The id.
-        :return: The status of the given id.
-        """
-
-        return Status(Library.framework.MaaResourceStatus(self._handle, id))
-
-    def wait(self, id: int) -> Status:
-        """
-        Wait for the given id to complete.
-
-        :param id: The id.
-        :return: The status of the given id.
-        """
-
-        return Status(Library.framework.MaaResourceWait(self._handle, id))
+        return Future(maaid, self._status)
 
     def loaded(self) -> bool:
         """
@@ -97,6 +74,9 @@ class Resource:
         """
 
         return bool(Library.framework.MaaResourceLoaded(self._handle))
+
+    def _status(self, id: int) -> ctypes.c_int32:
+        return Library.framework.MaaResourceStatus(self._handle, id)
 
     _api_properties_initialized: bool = False
 
@@ -121,11 +101,8 @@ class Resource:
             ctypes.c_char_p,
         ]
 
-        Library.framework.MaaResourceStatus.restype = MaaStatus
+        Library.framework.MaaResourceStatus.restype = ctypes.c_int32
         Library.framework.MaaResourceStatus.argtypes = [ctypes.c_void_p, MaaId]
-
-        Library.framework.MaaResourceWait.restype = MaaStatus
-        Library.framework.MaaResourceWait.argtypes = [ctypes.c_void_p, MaaId]
 
         Library.framework.MaaResourceLoaded.restype = MaaBool
         Library.framework.MaaResourceLoaded.argtypes = [ctypes.c_void_p]

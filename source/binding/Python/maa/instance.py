@@ -3,8 +3,8 @@ import json
 import asyncio
 from typing import Union, Optional, Any
 
-from .define import MaaApiCallback, MaaBool, MaaId, MaaStatus
-from .status import Status
+from .define import MaaApiCallback, MaaBool, MaaId
+from .future import Future
 from .library import Library
 from .callback_agent import CallbackAgent, Callback
 from .controller import Controller
@@ -71,64 +71,28 @@ class Instance:
 
     async def run_task(self, task_type: str, param: Any = {}) -> bool:
         """
-        Run a task.
+        Async run a task.
 
         :param task_type: The name of the task.
         :param param: The param of the task.
         :return: True if the task was successfully run, False otherwise.
         """
 
-        tid = self.post_task(task_type, param)
-        while not self.status(tid).done():
-            await asyncio.sleep(0)
+        await self.post_task(task_type, param).wait()
 
-        return self.status(tid).success()
-
-    def post_task(self, task_type: str, param: Any = {}) -> int:
+    def post_task(self, task_type: str, param: Any = {}) -> Future:
         """
-        Post a task to the instance.
+        Post a task to the instance. (run in background)
 
         :param task_type: The name of the task.
         :param param: The param of the task.
         :return: The id of the posted task.
         """
 
-        return Library.framework.MaaPostTask(
+        maaid = Library.framework.MaaPostTask(
             self._handle, task_type.encode("utf-8"), json.dumps(param).encode("utf-8")
         )
-
-    def set_task_param(self, id: int, param: Any) -> bool:
-        """
-        Set the param of the given task.
-
-        :param id: The id of the task.
-        :param param: The param of the task.
-        :return: True if the param was successfully set, False otherwise.
-        """
-
-        return Library.framework.MaaSetTaskParam(
-            self._handle, id, json.dumps(param).encode("utf-8")
-        )
-
-    def status(self, id: int) -> Status:
-        """
-        Get the status of the given id.
-
-        :param id: The id.
-        :return: The status of the given id.
-        """
-
-        return Status(Library.framework.MaaTaskStatus(self._handle, id))
-
-    def wait(self, id: int) -> Status:
-        """
-        Wait for the given id to complete.
-
-        :param id: The id.
-        :return: The status of the given id.
-        """
-
-        return Status(Library.framework.MaaWaitTask(self._handle, id))
+        return TaskFuture(maaid, self._status, self._set_task_param)
 
     async def wait_all(self):
         """
@@ -201,6 +165,14 @@ class Instance:
 
         return self._handle
 
+    def _status(self, id: int) -> ctypes.c_int32:
+        return Library.framework.MaaTaskStatus(self._handle, id)
+
+    def _set_task_param(self, id: int, param: Any) -> bool:
+        return Library.framework.MaaSetTaskParam(
+            self._handle, id, json.dumps(param).encode("utf-8")
+        )
+
     _api_properties_initialized: bool = False
 
     @staticmethod
@@ -244,11 +216,8 @@ class Instance:
             ctypes.c_char_p,
         ]
 
-        Library.framework.MaaTaskStatus.restype = MaaStatus
+        Library.framework.MaaTaskStatus.restype = ctypes.c_int32
         Library.framework.MaaTaskStatus.argtypes = [ctypes.c_void_p, MaaId]
-
-        Library.framework.MaaWaitTask.restype = MaaStatus
-        Library.framework.MaaWaitTask.argtypes = [ctypes.c_void_p, MaaId]
 
         Library.framework.MaaTaskAllFinished.restype = MaaBool
         Library.framework.MaaTaskAllFinished.argtypes = [ctypes.c_void_p]
@@ -271,3 +240,19 @@ class Instance:
             ctypes.c_void_p,
             ctypes.c_void_p,
         ]
+
+
+class TaskFuture(Future):
+    def __init__(self, maaid: MaaId, status_func, set_param_func):
+        super().__init__(maaid, status_func)
+        self._set_param_func = set_param_func
+
+    def set_param(self, param: Any) -> bool:
+        """
+        Set the param of the task.
+
+        :param param: The param of the task.
+        :return: True if the param was successfully set, False otherwise.
+        """
+
+        return self._set_param_func(self._mid, param)

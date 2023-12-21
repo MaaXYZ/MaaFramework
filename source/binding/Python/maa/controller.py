@@ -4,8 +4,8 @@ import asyncio
 from abc import ABC
 from typing import Optional, Any, Dict
 
-from .define import MaaApiCallback, MaaBool, MaaId, MaaStatus
-from .status import Status
+from .define import MaaApiCallback, MaaBool, MaaId
+from .future import Future
 from .library import Library
 from .callback_agent import CallbackAgent, Callback
 
@@ -40,47 +40,21 @@ class Controller(ABC):
 
     async def connect(self) -> bool:
         """
-        Sync connect to the controller.
+        Async connect to the controller.
 
         :return: True if the connection was successful, False otherwise.
         """
+        await self.post_connection().wait()
 
-        cid = self.post_connection()
-        while not self.status(cid).done():
-            await asyncio.sleep(0)
-
-        return self.status(cid).success()
-
-    def post_connection(self) -> int:
+    def post_connection(self) -> Future:
         """
-        Async post a connection to the controller.
+        Post a connection to the controller. (connect in backgroud)
 
         :return: The connection ID.
         """
 
-        return Library.framework.MaaControllerPostConnection(self._handle)
-
-    def status(self, connection_id: int) -> Status:
-        """
-        Get the status of a connection.
-
-        :param connection_id: The connection ID.
-        :return: The status of the connection.
-        """
-
-        return Status(
-            Library.framework.MaaControllerStatus(self._handle, connection_id)
-        )
-
-    def wait(self, connection_id: int) -> Status:
-        """
-        Wait for a connection to complete.
-
-        :param connection_id: The connection ID.
-        :return: The status of the connection.
-        """
-
-        return Status(Library.framework.MaaControllerWait(self._handle, connection_id))
+        maaid = Library.framework.MaaControllerPostConnection(self._handle)
+        return Future(maaid, self._status)
 
     def connected(self) -> bool:
         """
@@ -90,6 +64,9 @@ class Controller(ABC):
         """
 
         return bool(Library.framework.MaaControllerConnected(self._handle))
+
+    def _status(self, maaid: int) -> ctypes.c_int32:
+        return Library.framework.MaaControllerStatus(self._handle, maaid)
 
     _api_properties_initialized: bool = False
 
@@ -116,11 +93,8 @@ class Controller(ABC):
         Library.framework.MaaControllerPostConnection.restype = MaaId
         Library.framework.MaaControllerPostConnection.argtypes = [ctypes.c_void_p]
 
-        Library.framework.MaaControllerStatus.restype = MaaStatus
+        Library.framework.MaaControllerStatus.restype = ctypes.c_int32
         Library.framework.MaaControllerStatus.argtypes = [ctypes.c_void_p, MaaId]
-
-        Library.framework.MaaControllerWait.restype = MaaStatus
-        Library.framework.MaaControllerWait.argtypes = [ctypes.c_void_p, MaaId]
 
         Library.framework.MaaControllerConnected.restype = MaaBool
         Library.framework.MaaControllerConnected.argtypes = [ctypes.c_void_p]
