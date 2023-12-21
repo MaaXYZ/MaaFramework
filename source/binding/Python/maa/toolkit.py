@@ -1,5 +1,7 @@
 import ctypes
 import json
+import asyncio
+from dataclasses import dataclass
 
 from .library import Library
 from .define import MaaBool
@@ -17,30 +19,29 @@ class Toolkit:
         return Library.toolkit.MaaToolKitInit()
 
     @classmethod
-    def adb_devices(cls) -> list:
+    async def adb_devices(cls) -> list:
         """
         Get the adb devices.
         """
         cls._set_api_properties()
 
-        count = Library.toolkit.MaaToolKitFindDevice()
+        Library.toolkit.MaaToolKitPostFindDevice()
+
+        while not Library.toolkit.MaaToolKitIsFindDeviceCompleted():
+            await asyncio.sleep(0)
+
+        count = Library.toolkit.MaaToolKitGetDeviceCount()
         devices = []
         for i in range(count):
             name = Library.toolkit.MaaToolKitGetDeviceName(i).decode("utf-8")
             adb_path = Library.toolkit.MaaToolKitGetDeviceAdbPath(i).decode("utf-8")
             address = Library.toolkit.MaaToolKitGetDeviceAdbSerial(i).decode("utf-8")
-            controller_type = int(Library.toolkit.MaaToolKitGetDeviceAdbControllerType(i))
+            controller_type = int(
+                Library.toolkit.MaaToolKitGetDeviceAdbControllerType(i)
+            )
             config = Library.toolkit.MaaToolKitGetDeviceAdbConfig(i).decode("utf-8")
 
-            devices.append(
-                {
-                    "name": name,
-                    "adb_path": adb_path,
-                    "address": address,
-                    "controller_type": controller_type,
-                    "config": config,
-                }
-            )
+            devices.append(AdbDevice(name, adb_path, address, controller_type, config))
 
         return devices
 
@@ -105,8 +106,14 @@ class Toolkit:
         Library.toolkit.MaaToolKitUninit.restype = MaaBool
         Library.toolkit.MaaToolKitUninit.argtypes = None
 
-        Library.toolkit.MaaToolKitFindDevice.restype = ctypes.c_size_t
-        Library.toolkit.MaaToolKitFindDevice.argtypes = None
+        Library.toolkit.MaaToolKitPostFindDevice.restype = MaaBool
+        Library.toolkit.MaaToolKitPostFindDevice.argtypes = None
+
+        Library.toolkit.MaaToolKitIsFindDeviceCompleted.restype = MaaBool
+        Library.toolkit.MaaToolKitIsFindDeviceCompleted.argtypes = None
+
+        Library.toolkit.MaaToolKitGetDeviceCount.restype = ctypes.c_size_t
+        Library.toolkit.MaaToolKitGetDeviceCount.argtypes = None
 
         Library.toolkit.MaaToolKitGetDeviceName.restype = ctypes.c_char_p
         Library.toolkit.MaaToolKitGetDeviceName.argtypes = [ctypes.c_size_t]
@@ -140,3 +147,12 @@ class Toolkit:
             ctypes.c_char_p,
             ctypes.c_char_p,
         ]
+
+
+@dataclass
+class AdbDevice:
+    name: str
+    adb_path: str
+    address: str
+    controller_type: int
+    config: str

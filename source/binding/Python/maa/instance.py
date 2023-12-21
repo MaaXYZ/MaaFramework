@@ -4,7 +4,7 @@ import asyncio
 from typing import Union, Optional, Any
 
 from .define import MaaApiCallback, MaaBool, MaaId
-from .future import Future
+from .future import Future, MaaStatus
 from .library import Library
 from .callback_agent import CallbackAgent, Callback
 from .controller import Controller
@@ -111,14 +111,24 @@ class Instance:
 
         return bool(Library.framework.MaaTaskAllFinished(self._handle))
 
-    def stop(self) -> bool:
+    async def stop(self) -> bool:
+        """
+        Async stop all tasks.
+
+        :return: True if all tasks were successfully stopped, False otherwise.
+        """
+
+        await self.post_stop().wait()
+
+    def post_stop(self) -> Future:
         """
         Stop all tasks.
 
         :return: True if all tasks were successfully stopped, False otherwise.
         """
 
-        return bool(Library.framework.MaaStop(self._handle))
+        Library.framework.MaaPostStop(self._handle)
+        return Future(0, self._stop_status)
 
     def register_recognizer(self, name: str, recognizer: CustomRecognizer) -> bool:
         """
@@ -167,6 +177,9 @@ class Instance:
 
     def _status(self, id: int) -> ctypes.c_int32:
         return Library.framework.MaaTaskStatus(self._handle, id)
+
+    def _stop_status(self, id: int) -> ctypes.c_int32:
+        return MaaStatus.success if self.all_finished() else MaaStatus.running
 
     def _set_task_param(self, id: int, param: Any) -> bool:
         return Library.framework.MaaSetTaskParam(
@@ -222,8 +235,8 @@ class Instance:
         Library.framework.MaaTaskAllFinished.restype = MaaBool
         Library.framework.MaaTaskAllFinished.argtypes = [ctypes.c_void_p]
 
-        Library.framework.MaaStop.restype = MaaBool
-        Library.framework.MaaStop.argtypes = [ctypes.c_void_p]
+        Library.framework.MaaPostStop.restype = MaaBool
+        Library.framework.MaaPostStop.argtypes = [ctypes.c_void_p]
 
         Library.framework.MaaRegisterCustomRecognizer.restype = MaaBool
         Library.framework.MaaRegisterCustomRecognizer.argtypes = [

@@ -19,7 +19,7 @@ async def main():
     resource = Resource()
     await resource.load("sample/resource")
 
-    device_list = Toolkit.adb_devices()
+    device_list = await Toolkit.adb_devices()
     if not device_list:
         print("No ADB device found.")
         exit()
@@ -27,8 +27,8 @@ async def main():
     # for demo, we just use the first device
     device = device_list[0]
     controller = AdbController(
-        adb_path=device["adb_path"],
-        address=device["address"],
+        adb_path=device.adb_path,
+        address=device.address,
         agent_path="share/MaaAgentBinary",
     )
     await controller.connect()
