@@ -26,7 +26,7 @@ bool run_without_file(const std::filesystem::path& testset_dir)
     register_my_action(maa_handle);
 
     json::value task_param { { "MyTask", json::object { { "action", "Custom" },
-                                                        { "custom_action", "MyAction" },
+                                                        { "custom_action", "MyAct" },
                                                         { "custom_action_param", "abcdefg" } } } };
     std::string task_param_str = task_param.to_string();
 
@@ -74,5 +74,5 @@ MaaCustomActionAPI my_action {};
 void register_my_action(MaaInstanceHandle maa_handle)
 {
     my_action.run = my_action_run;
-    MaaRegisterCustomAction(maa_handle, "MyAction", &my_action, nullptr);
+    MaaRegisterCustomAction(maa_handle, "MyAct", &my_action, nullptr);
 }

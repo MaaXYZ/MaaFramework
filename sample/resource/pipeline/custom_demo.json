@@ -11,7 +11,7 @@
             "my_rec_key": "my_rec_value"
         },
         "action": "Custom",
-        "custom_action": "MyAction",
+        "custom_action": "MyAct",
         "custom_action_param": {
             "my_act_key": "my_act_value"
         }
