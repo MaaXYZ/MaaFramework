@@ -72,7 +72,7 @@ class Future(abc.ABC):
         return self.success()
 
     def status(self) -> Status:
-        return self._status_func(self._mid)
+        return Status(self._status_func(self._mid))
 
     def done(self) -> bool:
         return self.status().done()
