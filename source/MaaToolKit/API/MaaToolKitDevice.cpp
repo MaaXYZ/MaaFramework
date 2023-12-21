@@ -15,16 +15,53 @@ static MaaToolKitDeviceMgrAPI& device_mgr = MAA_TOOLKIT_NS::DeviceMgrMacOS::get_
 
 MaaSize MaaToolKitFindDevice()
 {
-    LogFunc;
+    LogWarn << "MaaToolKitFindDevice() is deprecated, use MaaToolKitPostFindDevice() and "
+               "MaaToolKitWaitForFindDeviceToComplete() instead.";
 
-    return device_mgr.find_device();
+    MaaToolKitPostFindDevice();
+    return MaaToolKitWaitForFindDeviceToComplete();
 }
 
 MaaSize MaaToolKitFindDeviceWithAdb(MaaStringView adb_path)
 {
+    LogWarn << "MaaToolKitFindDeviceWithAdb() is deprecated, use MaaToolKitPostFindDeviceWithAdb() "
+               "and MaaToolKitWaitForFindDeviceToComplete() instead.";
+
+    MaaToolKitPostFindDeviceWithAdb(adb_path);
+    return MaaToolKitWaitForFindDeviceToComplete();
+}
+
+MaaBool MaaToolKitPostFindDevice()
+{
     LogFunc;
 
-    return device_mgr.find_device_with_adb(adb_path);
+    return device_mgr.post_find_device();
+}
+
+MaaBool MaaToolKitPostFindDeviceWithAdb(MaaStringView adb_path)
+{
+    LogFunc;
+
+    return device_mgr.post_find_device_with_adb(adb_path);
+}
+
+MaaBool MaaToolKitIsFindDeviceCompleted()
+{
+    return device_mgr.is_find_completed();
+}
+
+MaaSize MaaToolKitWaitForFindDeviceToComplete()
+{
+    while (!MaaToolKitIsFindDeviceCompleted()) {
+        std::this_thread::yield();
+    }
+
+    return MaaToolKitGetDeviceCount();
+}
+
+MaaSize MaaToolKitGetDeviceCount()
+{
+    return device_mgr.get_devices().size();
 }
 
 MaaStringView MaaToolKitGetDeviceName(MaaSize index)

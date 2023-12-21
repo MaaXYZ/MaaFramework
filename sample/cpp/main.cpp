@@ -67,7 +67,8 @@ int main([[maybe_unused]] int argc, char** argv)
 
 MaaControllerHandle create_adb_controller()
 {
-    auto device_size = MaaToolKitFindDevice();
+    MaaToolKitPostFindDevice();
+    auto device_size = MaaToolKitWaitForFindDeviceToComplete();
     if (device_size == 0) {
         std::cout << "No device found" << std::endl;
         return nullptr;

@@ -35,6 +35,8 @@ extern "C"
     MaaStatus MAA_FRAMEWORK_API MaaWaitTask(MaaInstanceHandle inst, MaaTaskId id);
     MaaBool MAA_FRAMEWORK_API MaaTaskAllFinished(MaaInstanceHandle inst);
 
+    MaaBool MAA_FRAMEWORK_API MaaPostStop(MaaInstanceHandle inst);
+    // Deprecated, please use MaaPostStop instead.
     MaaBool MAA_FRAMEWORK_API MaaStop(MaaInstanceHandle inst);
 
     MaaResourceHandle MAA_FRAMEWORK_API MaaGetResource(MaaInstanceHandle inst);

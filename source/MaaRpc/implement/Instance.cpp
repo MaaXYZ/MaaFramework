@@ -455,8 +455,8 @@ Status InstanceImpl::all_finished(ServerContext* context, const ::maarpc::Handle
     return Status::OK;
 }
 
-Status InstanceImpl::stop(ServerContext* context, const ::maarpc::HandleRequest* request,
-                          ::maarpc::EmptyResponse* response)
+Status InstanceImpl::post_stop(ServerContext* context, const ::maarpc::HandleRequest* request,
+                               ::maarpc::EmptyResponse* response)
 {
     LogFunc;
     std::ignore = context;
@@ -466,11 +466,11 @@ Status InstanceImpl::stop(ServerContext* context, const ::maarpc::HandleRequest*
 
     MAA_GRPC_GET_HANDLE
 
-    if (MaaStop(handle)) {
+    if (MaaPostStop(handle)) {
         return Status::OK;
     }
     else {
-        return Status(UNKNOWN, "MaaStop failed");
+        return Status(UNKNOWN, "MaaPostStop failed");
     }
 }
 

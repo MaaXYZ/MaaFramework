@@ -87,7 +87,7 @@ public:
     virtual MaaStatus task_wait(MaaTaskId task_id) const = 0;
     virtual MaaBool task_all_finished() const = 0;
 
-    virtual void stop() = 0;
+    virtual void post_stop() = 0;
 
     virtual MaaResourceHandle resource() = 0;
     virtual MaaControllerHandle controller() = 0;
