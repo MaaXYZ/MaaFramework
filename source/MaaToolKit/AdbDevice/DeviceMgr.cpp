@@ -56,8 +56,10 @@ const std::vector<Device>& DeviceMgr::get_devices()
         LogError << "find_device_future_ is running";
         return devices_;
     }
+    if (find_device_future_.valid()) {
+        devices_ = find_device_future_.get();
+    }
 
-    devices_ = find_device_future_.get();
     return devices_;
 }
 
