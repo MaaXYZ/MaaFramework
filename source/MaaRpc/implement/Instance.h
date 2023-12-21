@@ -76,8 +76,8 @@ public:
                         ::maarpc::StatusResponse* response) override;
     ::grpc::Status all_finished(::grpc::ServerContext* context, const ::maarpc::HandleRequest* request,
                                 ::maarpc::BoolResponse* response) override;
-    ::grpc::Status stop(::grpc::ServerContext* context, const ::maarpc::HandleRequest* request,
-                        ::maarpc::EmptyResponse* response) override;
+    ::grpc::Status post_stop(::grpc::ServerContext* context, const ::maarpc::HandleRequest* request,
+                             ::maarpc::EmptyResponse* response) override;
     ::grpc::Status resource(::grpc::ServerContext* context, const ::maarpc::HandleRequest* request,
                             ::maarpc::HandleRequest* response) override;
     ::grpc::Status controller(::grpc::ServerContext* context, const ::maarpc::HandleRequest* request,

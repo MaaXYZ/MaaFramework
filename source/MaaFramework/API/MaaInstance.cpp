@@ -198,7 +198,7 @@ MaaBool MaaTaskAllFinished(MaaInstanceHandle inst)
     return inst->task_all_finished();
 }
 
-MaaBool MaaStop(MaaInstanceHandle inst)
+MaaBool MaaPostStop(MaaInstanceHandle inst)
 {
     LogFunc << VAR_VOIDP(inst);
 
@@ -207,7 +207,7 @@ MaaBool MaaStop(MaaInstanceHandle inst)
         return false;
     }
 
-    inst->stop();
+    inst->post_stop();
     return true;
 }
 

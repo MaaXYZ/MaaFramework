@@ -210,7 +210,7 @@ MaaBool InstanceMgr::task_all_finished() const
     return !task_runner_->running();
 }
 
-void InstanceMgr::stop()
+void InstanceMgr::post_stop()
 {
     LogFunc;
 

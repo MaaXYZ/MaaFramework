@@ -29,7 +29,7 @@ service Instance {
   rpc wait(HandleIIdRequest) returns (StatusResponse);
   rpc all_finished(HandleRequest) returns (BoolResponse);
 
-  rpc stop(HandleRequest) returns (EmptyResponse);
+  rpc post_stop(HandleRequest) returns (EmptyResponse);
 
   rpc resource(HandleRequest) returns (HandleRequest);
   rpc controller(HandleRequest) returns (HandleRequest);

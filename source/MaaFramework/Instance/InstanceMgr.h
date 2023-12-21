@@ -40,7 +40,7 @@ public: // from MaaInstanceAPI
     virtual MaaStatus task_wait(MaaTaskId task_id) const override;
     virtual MaaBool task_all_finished() const override;
 
-    virtual void stop() override;
+    virtual void post_stop() override;
 
     virtual MaaResourceHandle resource() override;
     virtual MaaControllerHandle controller() override;
