@@ -1,6 +1,7 @@
 #pragma once
 
 #include <filesystem>
+#include <future>
 #include <ostream>
 #include <string>
 #include <string_view>
@@ -26,9 +27,10 @@ public: // from MaaToolKitDeviceMgrAPI
         ProcessInfo process;
     };
 
-    virtual size_t find_device() override final;
-    virtual size_t find_device_with_adb(std::string_view adb_path) override final;
-    virtual const std::vector<Device>& get_devices() const override final { return devices_; };
+    virtual bool post_find_device() override final;
+    virtual bool post_find_device_with_adb(std::string_view adb_path) override final;
+    virtual bool is_find_completed() const override final;
+    virtual const std::vector<Device>& get_devices() override final;
 
 protected:
     virtual std::vector<Device> find_device_impl() = 0;
@@ -47,6 +49,7 @@ protected:
 
 private:
     std::vector<Device> devices_;
+    std::future<std::vector<Device>> find_device_future_;
 };
 
 std::ostream& operator<<(std::ostream& os, const DeviceMgr::Emulator& emulator);

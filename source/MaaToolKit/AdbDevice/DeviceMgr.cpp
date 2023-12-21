@@ -1,5 +1,7 @@
 #include "DeviceMgr.h"
 
+#include <future>
+
 #include "LibraryHolder/ControlUnit.h"
 #include "Utils/Logger.h"
 
@@ -11,24 +13,52 @@ std::ostream& operator<<(std::ostream& os, const DeviceMgr::Emulator& emulator)
     return os;
 }
 
-size_t DeviceMgr::find_device()
+bool DeviceMgr::post_find_device()
 {
     LogFunc;
 
-    devices_ = find_device_impl();
+    if (find_device_future_.valid()) {
+        LogError << "find_device_future_ is running";
+        return false;
+    }
 
-    LogInfo << VAR(devices_);
-    return devices_.size();
+    devices_.clear();
+    find_device_future_ = std::async(std::launch::async, [&]() { return find_device_impl(); });
+    return true;
 }
 
-size_t DeviceMgr::find_device_with_adb(std::string_view adb_path)
+bool DeviceMgr::post_find_device_with_adb(std::string_view adb_path)
 {
-    LogFunc << VAR(adb_path);
+    LogFunc;
 
-    devices_ = find_device_with_adb_impl(adb_path);
+    if (find_device_future_.valid()) {
+        LogError << "find_device_future_ is running";
+        return false;
+    }
 
-    LogInfo << VAR(devices_);
-    return devices_.size();
+    devices_.clear();
+    find_device_future_ = std::async(std::launch::async, [&]() { return find_device_with_adb_impl(adb_path); });
+    return true;
+}
+
+bool DeviceMgr::is_find_completed() const
+{
+    if (!devices_.empty() && !find_device_future_.valid()) {
+        return true;
+    }
+
+    return find_device_future_.wait_for(std::chrono::seconds(0)) == std::future_status::ready;
+}
+
+const std::vector<Device>& DeviceMgr::get_devices()
+{
+    if (!is_find_completed()) {
+        LogError << "find_device_future_ is running";
+        return devices_;
+    }
+
+    devices_ = find_device_future_.get();
+    return devices_;
 }
 
 std::vector<std::string> DeviceMgr::request_adb_serials(const std::filesystem::path& adb_path,

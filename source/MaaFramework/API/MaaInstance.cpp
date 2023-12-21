@@ -211,6 +211,12 @@ MaaBool MaaPostStop(MaaInstanceHandle inst)
     return true;
 }
 
+MaaBool MaaStop(MaaInstanceHandle inst)
+{
+    LogWarn << "Deprecated, please use MaaPostStop instead";
+    return MaaPostStop(inst);
+}
+
 MaaResourceHandle MaaGetResource(MaaInstanceHandle inst)
 {
     LogFunc << VAR_VOIDP(inst);
