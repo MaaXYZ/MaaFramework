@@ -4,7 +4,7 @@ import asyncio
 from typing import Union, Optional, Any
 
 from .define import MaaApiCallback, MaaBool, MaaId, MaaStatus
-from .common import Status
+from .status import Status
 from .library import Library
 from .callback_agent import CallbackAgent, Callback
 from .controller import Controller

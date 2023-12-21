@@ -5,7 +5,7 @@ from abc import ABC
 from typing import Optional, Any, Dict
 
 from .define import MaaApiCallback, MaaBool, MaaId, MaaStatus
-from .common import Status
+from .status import Status
 from .library import Library
 from .callback_agent import CallbackAgent, Callback
 
