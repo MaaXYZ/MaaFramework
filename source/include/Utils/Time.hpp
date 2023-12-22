@@ -1,6 +1,10 @@
 #pragma once
 
-#ifdef __APPLE__
+#if defined(__APPLE__) || defined(__ANDROID__)
+#define MAA_USE_POSIX_TIME
+#endif
+
+#ifdef MAA_USE_POSIX_TIME
 #include <fcntl.h>
 #include <sys/time.h>
 #include <time.h>
@@ -18,10 +22,9 @@ MAA_NS_BEGIN
 
 inline std::string format_now()
 {
-#ifndef __APPLE__ // Clang lacks of std::chrono::current_zone, 2024/08/24
-    return std::format(
-        "{}",
-        std::chrono::current_zone()->to_local(std::chrono::floor<std::chrono::milliseconds>(std::chrono::system_clock::now())));
+#ifndef MAA_USE_POSIX_TIME
+    return std::format("{}", std::chrono::current_zone()->to_local(
+                                     std::chrono::floor<std::chrono::milliseconds>(std::chrono::system_clock::now())));
 #else
     timeval tv = {};
     gettimeofday(&tv, nullptr);
@@ -41,8 +44,9 @@ inline std::string format_now()
 
 inline std::string format_now_for_filename()
 {
-#ifndef __APPLE__ // Clang lacks of std::chrono::current_zone, 2024/08/24
-    return std::format("{:%Y.%m.%d-%H.%M.%S}", std::chrono::current_zone()->to_local(std::chrono::system_clock::now()));
+#ifndef MAA_USE_POSIX_TIME
+    return std::format("{:%Y.%m.%d-%H.%M.%S}",
+                           std::chrono::current_zone()->to_local(std::chrono::system_clock::now()));
 #else
     timeval tv = {};
     gettimeofday(&tv, nullptr);
