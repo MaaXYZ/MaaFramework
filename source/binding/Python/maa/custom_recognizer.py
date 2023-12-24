@@ -4,6 +4,7 @@ from abc import ABC, abstractmethod
 
 from .define import MaaBool, MaaCustomRecognizer
 from .buffer import RectBuffer, StringBuffer, ImageBuffer
+from .context import SyncContext
 
 
 class CustomRecognizer(ABC):
@@ -54,12 +55,13 @@ class CustomRecognizer(ABC):
 
         self: CustomRecognizer = ctypes.cast(c_transparent_arg, ctypes.py_object).value
 
+        context = SyncContext(c_context)
         image = ImageBuffer(c_image).get()
         task_name = c_task_name.decode("utf-8")
         custom_param = c_custom_param.decode("utf-8")
 
         success, box, detail = self.analyze(
-            c_context, image, task_name, custom_param
+            context, image, task_name, custom_param
         )
         RectBuffer(c_out_box).set(box)
         StringBuffer(c_out_detail).set(detail)

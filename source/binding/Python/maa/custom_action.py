@@ -4,6 +4,7 @@ from abc import ABC, abstractmethod
 
 from .define import MaaBool, MaaCustomAction
 from .buffer import RectBuffer, StringBuffer, ImageBuffer
+from .context import SyncContext
 
 
 class CustomAction(ABC):
@@ -67,6 +68,7 @@ class CustomAction(ABC):
 
         self: CustomAction = ctypes.cast(c_transparent_arg, ctypes.py_object).value
 
+        context = SyncContext(c_context)
         task_name = c_task_name.decode("utf-8")
         custom_param = c_custom_param.decode("utf-8")
 
@@ -74,7 +76,7 @@ class CustomAction(ABC):
         rec_detail = c_rec_detail.decode("utf-8")
 
         return self.run(
-            c_context,
+            context,
             task_name,
             custom_param,
             box,
