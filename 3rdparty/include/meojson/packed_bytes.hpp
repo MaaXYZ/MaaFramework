@@ -40,7 +40,7 @@ struct packed_bytes_trait_uint64
 {
     static constexpr bool available = sizeof(void*) >= 8;
     static constexpr auto step = 8;
-    using value_type = std::enable_if_t<sizeof(void*) >= 8, uint64_t>;
+    using value_type = uint64_t;
 
     __packed_bytes_strong_inline static value_type load_unaligned(const void* ptr)
     {
@@ -121,7 +121,7 @@ struct packed_bytes_trait_uint32
 template <>
 struct packed_bytes<8>
 {
-    using traits = std::enable_if_t<packed_bytes_trait_uint64::available, packed_bytes_trait_uint64>;
+    using traits = packed_bytes_trait_uint64;
 };
 
 template <>
