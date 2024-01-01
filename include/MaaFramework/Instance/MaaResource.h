@@ -19,6 +19,10 @@ extern "C"
 
     MaaBool MAA_FRAMEWORK_API MaaResourceSetOption(MaaResourceHandle res, MaaResOption key, MaaOptionValue value,
                                                    MaaOptionValueSize val_size);
+    MaaBool MAA_FRAMEWORK_API MaaResourceSetOptionNumber(MaaResourceHandle res, MaaResOption key, int64_t value);
+    MaaBool MAA_FRAMEWORK_API MaaResourceSetOptionString(MaaResourceHandle res, MaaResOption key,
+                                                         MaaStringBufferHandle value);
+
     MaaBool MAA_FRAMEWORK_API MaaResourceGetHash(MaaResourceHandle res, /* out */ MaaStringBufferHandle buffer);
     MaaBool MAA_FRAMEWORK_API MaaResourceGetTaskList(MaaResourceHandle res, /* out */ MaaStringBufferHandle buffer);
 

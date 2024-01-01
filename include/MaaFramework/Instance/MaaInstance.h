@@ -10,8 +10,12 @@ extern "C"
 
     MaaInstanceHandle MAA_FRAMEWORK_API MaaCreate(MaaInstanceCallback callback, MaaCallbackTransparentArg callback_arg);
     void MAA_FRAMEWORK_API MaaDestroy(MaaInstanceHandle inst);
+
     MaaBool MAA_FRAMEWORK_API MaaSetOption(MaaInstanceHandle inst, MaaInstOption key, MaaOptionValue value,
                                            MaaOptionValueSize val_size);
+    MaaBool MAA_FRAMEWORK_API MaaSetOptionNumber(MaaInstanceHandle inst, MaaInstOption key, int64_t value);
+    MaaBool MAA_FRAMEWORK_API MaaSetOptionString(MaaInstanceHandle inst, MaaInstOption key,
+                                                 MaaStringBufferHandle value);
 
     MaaBool MAA_FRAMEWORK_API MaaBindResource(MaaInstanceHandle inst, MaaResourceHandle res);
     MaaBool MAA_FRAMEWORK_API MaaBindController(MaaInstanceHandle inst, MaaControllerHandle ctrl);

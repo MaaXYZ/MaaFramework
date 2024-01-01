@@ -34,6 +34,22 @@ MaaBool MaaSetOption(MaaInstanceHandle inst, MaaInstOption key, MaaOptionValue v
     return inst->set_option(key, value, val_size);
 }
 
+MaaBool MaaSetOptionNumber(MaaInstanceHandle inst, MaaInstOption key, int64_t value)
+{
+    return MaaSetOption(inst, key, &value, sizeof(value));
+}
+
+MaaBool MaaSetOptionString(MaaInstanceHandle inst, MaaInstOption key, MaaStringBufferHandle value)
+{
+    if (!value) {
+        LogError << "value is null";
+        return false;
+    }
+    MaaBool result = MaaSetOption(inst, key, const_cast<char*>(value->data()), value->size());
+    delete value;
+    return result;
+}
+
 MaaBool MaaBindResource(MaaInstanceHandle inst, MaaResourceHandle res)
 {
     LogFunc << VAR_VOIDP(inst) << VAR_VOIDP(res);
