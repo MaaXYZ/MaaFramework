@@ -37,9 +37,6 @@ extern "C"
 
     MaaBool MAA_FRAMEWORK_API MaaControllerSetOption(MaaControllerHandle ctrl, MaaCtrlOption key, MaaOptionValue value,
                                                      MaaOptionValueSize val_size);
-    MaaBool MAA_FRAMEWORK_API MaaControllerSetOptionNumber(MaaControllerHandle ctrl, MaaCtrlOption key, int64_t value);
-    MaaBool MAA_FRAMEWORK_API MaaControllerSetOptionString(MaaControllerHandle ctrl, MaaCtrlOption key,
-                                                           MaaStringBufferHandle value);
 
     MaaCtrlId MAA_FRAMEWORK_API MaaControllerPostConnection(MaaControllerHandle ctrl);
     MaaCtrlId MAA_FRAMEWORK_API MaaControllerPostClick(MaaControllerHandle ctrl, int32_t x, int32_t y);

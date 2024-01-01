@@ -86,23 +86,6 @@ MaaBool MaaResourceSetOption(MaaResourceHandle res, MaaResOption key, MaaOptionV
     return res->set_option(key, value, val_size);
 }
 
-MaaBool MAA_FRAMEWORK_API MaaResourceSetOptionNumber(MaaResourceHandle res, MaaResOption key, int64_t value)
-{
-    return MaaResourceSetOption(res, key, &value, sizeof(value));
-}
-
-MaaBool MAA_FRAMEWORK_API MaaResourceSetOptionString(MaaResourceHandle res, MaaResOption key,
-                                                     MaaStringBufferHandle value)
-{
-    if (!value) {
-        LogError << "value is null";
-        return false;
-    }
-    MaaBool result = MaaResourceSetOption(res, key, const_cast<char*>(value->data()), value->size());
-    delete value;
-    return result;
-}
-
 MaaBool MaaResourceGetHash(MaaResourceHandle res, MaaStringBufferHandle buffer)
 {
     if (!res || !buffer) {

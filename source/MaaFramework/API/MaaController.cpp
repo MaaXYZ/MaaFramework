@@ -144,22 +144,6 @@ MaaBool MaaControllerSetOption(MaaControllerHandle ctrl, MaaCtrlOption key, MaaO
     return ctrl->set_option(key, value, val_size);
 }
 
-MaaBool MaaControllerSetOptionNumber(MaaControllerHandle ctrl, MaaCtrlOption key, int64_t value)
-{
-    return MaaControllerSetOption(ctrl, key, &value, sizeof(value));
-}
-
-MaaBool MaaControllerSetOptionString(MaaControllerHandle ctrl, MaaCtrlOption key, MaaStringBufferHandle value)
-{
-    if (!value) {
-        LogError << "value is null";
-        return false;
-    }
-    MaaBool result = MaaControllerSetOption(ctrl, key, const_cast<char*>(value->data()), value->size());
-    delete value;
-    return result;
-}
-
 MaaCtrlId MaaControllerPostConnection(MaaControllerHandle ctrl)
 {
     LogFunc << VAR_VOIDP(ctrl);
