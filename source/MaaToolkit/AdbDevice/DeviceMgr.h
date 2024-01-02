@@ -15,12 +15,12 @@
 
 MAA_TOOLKIT_NS_BEGIN
 
-class DeviceMgr : public MaaToolKitDeviceMgrAPI
+class DeviceMgr : public MaaToolkitDeviceMgrAPI
 {
 public:
     virtual ~DeviceMgr() noexcept override = default;
 
-public: // from MaaToolKitDeviceMgrAPI
+public: // from MaaToolkitDeviceMgrAPI
     struct Emulator
     {
         std::string name;

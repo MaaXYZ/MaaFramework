@@ -1,4 +1,4 @@
-#include "MaaToolKit/ExecAgent/MaaToolKitExecAgent.h"
+#include "MaaToolkit/ExecAgent/MaaToolkitExecAgent.h"
 
 #include <string_view>
 
@@ -91,7 +91,7 @@ MaaBool UnregisterExecutor(ExecutorType type, MaaInstanceHandle handle, MaaStrin
     return false;
 }
 
-MaaBool MaaToolKitRegisterCustomRecognizerExecutor( //
+MaaBool MaaToolkitRegisterCustomRecognizerExecutor( //
     MaaInstanceHandle handle, MaaStringView recognizer_name, MaaStringView recognizer_exec_path,
     MaaStringView recognizer_exec_param_json)
 {
@@ -99,19 +99,19 @@ MaaBool MaaToolKitRegisterCustomRecognizerExecutor( //
                             recognizer_exec_param_json);
 }
 
-MaaBool MaaToolKitUnregisterCustomRecognizerExecutor(MaaInstanceHandle handle, MaaStringView recognizer_name)
+MaaBool MaaToolkitUnregisterCustomRecognizerExecutor(MaaInstanceHandle handle, MaaStringView recognizer_name)
 {
     return UnregisterExecutor(ExecutorType::Recognizer, handle, recognizer_name);
 }
 
-MaaBool MaaToolKitRegisterCustomActionExecutor( //
+MaaBool MaaToolkitRegisterCustomActionExecutor( //
     MaaInstanceHandle handle, MaaStringView action_name, MaaStringView action_exec_path,
     MaaStringView action_exec_param_json)
 {
     return RegisterExecutor(ExecutorType::Action, handle, action_name, action_exec_path, action_exec_param_json);
 }
 
-MaaBool MaaToolKitUnregisterCustomActionExecutor(MaaInstanceHandle handle, MaaStringView action_name)
+MaaBool MaaToolkitUnregisterCustomActionExecutor(MaaInstanceHandle handle, MaaStringView action_name)
 {
     return UnregisterExecutor(ExecutorType::Action, handle, action_name);
 }

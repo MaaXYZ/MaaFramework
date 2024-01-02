@@ -8,7 +8,7 @@
 #endif
 
 #include "MaaFramework/MaaAPI.h"
-#include "MaaToolKit/MaaToolKitAPI.h"
+#include "MaaToolkit/MaaToolkitAPI.h"
 
 #ifdef _WIN32
 // for demo, we disable some warnings
@@ -23,7 +23,7 @@ void register_my_action_by_exec_agent(MaaInstanceHandle maa_handle);
 
 int main([[maybe_unused]] int argc, char** argv)
 {
-    MaaToolKitInit();
+    MaaToolkitInit();
 
     auto controller_handle = create_adb_controller();
     // auto controller_handle = create_win32_controller();
@@ -44,7 +44,7 @@ int main([[maybe_unused]] int argc, char** argv)
         MaaDestroy(maa_handle);
         MaaResourceDestroy(resource_handle);
         MaaControllerDestroy(controller_handle);
-        MaaToolKitUninit();
+        MaaToolkitUninit();
     };
 
     if (!MaaInited(maa_handle)) {
@@ -67,8 +67,8 @@ int main([[maybe_unused]] int argc, char** argv)
 
 MaaControllerHandle create_adb_controller()
 {
-    MaaToolKitPostFindDevice();
-    auto device_size = MaaToolKitWaitForFindDeviceToComplete();
+    MaaToolkitPostFindDevice();
+    auto device_size = MaaToolkitWaitForFindDeviceToComplete();
     if (device_size == 0) {
         std::cout << "No device found" << std::endl;
         return nullptr;
@@ -77,15 +77,15 @@ MaaControllerHandle create_adb_controller()
     const int kIndex = 0; // for demo, we just use the first device
     std::string agent_path = "share/MaaAgentBinary";
     auto controller_handle = MaaAdbControllerCreateV2( //
-        MaaToolKitGetDeviceAdbPath(kIndex), MaaToolKitGetDeviceAdbSerial(kIndex),
-        MaaToolKitGetDeviceAdbControllerType(kIndex), MaaToolKitGetDeviceAdbConfig(kIndex), agent_path.c_str(), nullptr,
+        MaaToolkitGetDeviceAdbPath(kIndex), MaaToolkitGetDeviceAdbSerial(kIndex),
+        MaaToolkitGetDeviceAdbControllerType(kIndex), MaaToolkitGetDeviceAdbConfig(kIndex), agent_path.c_str(), nullptr,
         nullptr);
     return controller_handle;
 }
 
 MaaControllerHandle create_win32_controller()
 {
-    auto hwnd = MaaToolKitGetCursorWindow();
+    auto hwnd = MaaToolkitGetCursorWindow();
     auto type = MaaWin32ControllerType_Touch_SendMessage | MaaWin32ControllerType_Screencap_GDI;
     return MaaWin32ControllerCreate(hwnd, type, nullptr, nullptr);
 }
@@ -139,6 +139,6 @@ void register_my_recognizer_by_ffi(MaaInstanceHandle maa_handle)
 
 void register_my_action_by_exec_agent(MaaInstanceHandle maa_handle)
 {
-    MaaToolKitRegisterCustomActionExecutor(maa_handle, "MyAct", "Python.exe",
+    MaaToolkitRegisterCustomActionExecutor(maa_handle, "MyAct", "Python.exe",
                                            R"(["sample\\python\\exec_agent\\my_action.py"])");
 }

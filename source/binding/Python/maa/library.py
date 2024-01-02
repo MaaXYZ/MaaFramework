@@ -21,17 +21,17 @@ class Library:
         platform_values = {
             "windows": {
                 "framework_libpath": "MaaFramework.dll",
-                "toolkit_libpath": "MaaToolKit.dll",
+                "toolkit_libpath": "MaaToolkit.dll",
                 "environ_var": "PATH",
             },
             "darwin": {
                 "framework_libpath": "libMaaFramework.dylib",
-                "toolkit_libpath": "libMaaToolKit.dylib",
+                "toolkit_libpath": "libMaaToolkit.dylib",
                 "environ_var": "DYLD_LIBRARY_PATH",
             },
             "linux": {
                 "framework_libpath": "libMaaFramework.so",
-                "toolkit_libpath": "libMaaToolKit.so",
+                "toolkit_libpath": "libMaaToolkit.so",
                 "environ_var": "LD_LIBRARY_PATH",
             },
         }
@@ -70,7 +70,7 @@ class Library:
                 )
                 cls.toolkit = lib_import(str(cls.toolkit_libpath))
             except OSError:
-                cls.toolkit_libpath = ctypes.util.find_library("MaaToolKit")
+                cls.toolkit_libpath = ctypes.util.find_library("MaaToolkit")
                 cls.toolkit = lib_import(str(cls.toolkit_libpath))
         else:
             cls.toolkit = None

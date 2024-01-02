@@ -4,7 +4,7 @@
 #include <vector>
 
 #include "Conf/Conf.h"
-#include "MaaToolKit/MaaToolKitDef.h"
+#include "MaaToolkit/MaaToolkitDef.h"
 
 class MaaWin32WindowAPI
 {

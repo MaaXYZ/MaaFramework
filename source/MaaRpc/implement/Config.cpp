@@ -1,5 +1,5 @@
 #include "Config.h"
-#include "MaaToolKit/MaaToolKitAPI.h"
+#include "MaaToolkit/MaaToolkitAPI.h"
 #include "Utils/Logger.h"
 
 MAA_RPC_NS_BEGIN
@@ -14,11 +14,11 @@ Status ConfigImpl::init(ServerContext* context, const ::maarpc::EmptyRequest* re
     std::ignore = request;
     std::ignore = response;
 
-    if (MaaToolKitInit()) {
+    if (MaaToolkitInit()) {
         return Status::OK;
     }
     else {
-        return Status(UNKNOWN, "MaaToolKitInit failed");
+        return Status(UNKNOWN, "MaaToolkitInit failed");
     }
 }
 
@@ -30,11 +30,11 @@ Status ConfigImpl::uninit(ServerContext* context, const ::maarpc::EmptyRequest* 
     std::ignore = request;
     std::ignore = response;
 
-    if (MaaToolKitUninit()) {
+    if (MaaToolkitUninit()) {
         return Status::OK;
     }
     else {
-        return Status(UNKNOWN, "MaaToolKitUninit failed");
+        return Status(UNKNOWN, "MaaToolkitUninit failed");
     }
 }
 

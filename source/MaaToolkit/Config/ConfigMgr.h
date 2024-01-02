@@ -14,7 +14,7 @@
 
 MAA_TOOLKIT_NS_BEGIN
 
-class ConfigMgr : public SingletonHolder<ConfigMgr>, public MaaToolKitConfigMgrAPI
+class ConfigMgr : public SingletonHolder<ConfigMgr>, public MaaToolkitConfigMgrAPI
 {
     friend class SingletonHolder<ConfigMgr>;
 
@@ -34,7 +34,7 @@ public:
 public:
     virtual ~ConfigMgr() noexcept override = default;
 
-public: // from MaaToolKitConfigMgrAPI
+public: // from MaaToolkitConfigMgrAPI
     virtual bool init() override;
     virtual bool uninit() override;
 

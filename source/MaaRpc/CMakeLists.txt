@@ -14,7 +14,7 @@ target_include_directories(
     PUBLIC $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/../../include> $<INSTALL_INTERFACE:include>
     PRIVATE . ../include ../../include 
     ${CMAKE_CURRENT_BINARY_DIR})
-target_link_libraries(MaaRpc PUBLIC MaaToolKit PRIVATE RpcProto MaaUtils HeaderOnlyLibraries protobuf::libprotobuf gRPC::grpc++)
+target_link_libraries(MaaRpc PUBLIC MaaToolkit PRIVATE RpcProto MaaUtils HeaderOnlyLibraries protobuf::libprotobuf gRPC::grpc++)
 
 install(
     TARGETS MaaRpc

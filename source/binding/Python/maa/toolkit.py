@@ -16,7 +16,7 @@ class Toolkit:
         """
         cls._set_api_properties()
 
-        return Library.toolkit.MaaToolKitInit()
+        return Library.toolkit.MaaToolkitInit()
 
     @classmethod
     async def adb_devices(cls) -> list:
@@ -25,21 +25,21 @@ class Toolkit:
         """
         cls._set_api_properties()
 
-        Library.toolkit.MaaToolKitPostFindDevice()
+        Library.toolkit.MaaToolkitPostFindDevice()
 
-        while not Library.toolkit.MaaToolKitIsFindDeviceCompleted():
+        while not Library.toolkit.MaaToolkitIsFindDeviceCompleted():
             await asyncio.sleep(0)
 
-        count = Library.toolkit.MaaToolKitGetDeviceCount()
+        count = Library.toolkit.MaaToolkitGetDeviceCount()
         devices = []
         for i in range(count):
-            name = Library.toolkit.MaaToolKitGetDeviceName(i).decode("utf-8")
-            adb_path = Library.toolkit.MaaToolKitGetDeviceAdbPath(i).decode("utf-8")
-            address = Library.toolkit.MaaToolKitGetDeviceAdbSerial(i).decode("utf-8")
+            name = Library.toolkit.MaaToolkitGetDeviceName(i).decode("utf-8")
+            adb_path = Library.toolkit.MaaToolkitGetDeviceAdbPath(i).decode("utf-8")
+            address = Library.toolkit.MaaToolkitGetDeviceAdbSerial(i).decode("utf-8")
             controller_type = int(
-                Library.toolkit.MaaToolKitGetDeviceAdbControllerType(i)
+                Library.toolkit.MaaToolkitGetDeviceAdbControllerType(i)
             )
-            config = Library.toolkit.MaaToolKitGetDeviceAdbConfig(i).decode("utf-8")
+            config = Library.toolkit.MaaToolkitGetDeviceAdbConfig(i).decode("utf-8")
 
             devices.append(AdbDevice(name, adb_path, address, controller_type, config))
 
@@ -55,7 +55,7 @@ class Toolkit:
         cls._set_api_properties()
 
         json_argv = json.dumps(argv)
-        return Library.toolkit.MaaToolKitRegisterCustomRecognizerExecutor(
+        return Library.toolkit.MaaToolkitRegisterCustomRecognizerExecutor(
             inst.c_handle(),
             name.encode("utf-8"),
             exec_path.encode("utf-8"),
@@ -72,7 +72,7 @@ class Toolkit:
         cls._set_api_properties()
 
         json_argv = json.dumps(argv)
-        return Library.toolkit.MaaToolKitRegisterCustomActionExecutor(
+        return Library.toolkit.MaaToolkitRegisterCustomActionExecutor(
             inst.c_handle(),
             name.encode("utf-8"),
             exec_path.encode("utf-8"),
@@ -100,48 +100,48 @@ class Toolkit:
                 "Toolkit not initialized, please call `library.open()` with `toolkit=True`."
             )
 
-        Library.toolkit.MaaToolKitInit.restype = MaaBool
-        Library.toolkit.MaaToolKitInit.argtypes = None
+        Library.toolkit.MaaToolkitInit.restype = MaaBool
+        Library.toolkit.MaaToolkitInit.argtypes = None
 
-        Library.toolkit.MaaToolKitUninit.restype = MaaBool
-        Library.toolkit.MaaToolKitUninit.argtypes = None
+        Library.toolkit.MaaToolkitUninit.restype = MaaBool
+        Library.toolkit.MaaToolkitUninit.argtypes = None
 
-        Library.toolkit.MaaToolKitPostFindDevice.restype = MaaBool
-        Library.toolkit.MaaToolKitPostFindDevice.argtypes = None
+        Library.toolkit.MaaToolkitPostFindDevice.restype = MaaBool
+        Library.toolkit.MaaToolkitPostFindDevice.argtypes = None
 
-        Library.toolkit.MaaToolKitIsFindDeviceCompleted.restype = MaaBool
-        Library.toolkit.MaaToolKitIsFindDeviceCompleted.argtypes = None
+        Library.toolkit.MaaToolkitIsFindDeviceCompleted.restype = MaaBool
+        Library.toolkit.MaaToolkitIsFindDeviceCompleted.argtypes = None
 
-        Library.toolkit.MaaToolKitGetDeviceCount.restype = ctypes.c_size_t
-        Library.toolkit.MaaToolKitGetDeviceCount.argtypes = None
+        Library.toolkit.MaaToolkitGetDeviceCount.restype = ctypes.c_size_t
+        Library.toolkit.MaaToolkitGetDeviceCount.argtypes = None
 
-        Library.toolkit.MaaToolKitGetDeviceName.restype = ctypes.c_char_p
-        Library.toolkit.MaaToolKitGetDeviceName.argtypes = [ctypes.c_size_t]
+        Library.toolkit.MaaToolkitGetDeviceName.restype = ctypes.c_char_p
+        Library.toolkit.MaaToolkitGetDeviceName.argtypes = [ctypes.c_size_t]
 
-        Library.toolkit.MaaToolKitGetDeviceAdbPath.restype = ctypes.c_char_p
-        Library.toolkit.MaaToolKitGetDeviceAdbPath.argtypes = [ctypes.c_size_t]
+        Library.toolkit.MaaToolkitGetDeviceAdbPath.restype = ctypes.c_char_p
+        Library.toolkit.MaaToolkitGetDeviceAdbPath.argtypes = [ctypes.c_size_t]
 
-        Library.toolkit.MaaToolKitGetDeviceAdbSerial.restype = ctypes.c_char_p
-        Library.toolkit.MaaToolKitGetDeviceAdbSerial.argtypes = [ctypes.c_size_t]
+        Library.toolkit.MaaToolkitGetDeviceAdbSerial.restype = ctypes.c_char_p
+        Library.toolkit.MaaToolkitGetDeviceAdbSerial.argtypes = [ctypes.c_size_t]
 
-        Library.toolkit.MaaToolKitGetDeviceAdbControllerType.restype = ctypes.c_int32
-        Library.toolkit.MaaToolKitGetDeviceAdbControllerType.argtypes = [
+        Library.toolkit.MaaToolkitGetDeviceAdbControllerType.restype = ctypes.c_int32
+        Library.toolkit.MaaToolkitGetDeviceAdbControllerType.argtypes = [
             ctypes.c_size_t
         ]
 
-        Library.toolkit.MaaToolKitGetDeviceAdbConfig.restype = ctypes.c_char_p
-        Library.toolkit.MaaToolKitGetDeviceAdbConfig.argtypes = [ctypes.c_size_t]
+        Library.toolkit.MaaToolkitGetDeviceAdbConfig.restype = ctypes.c_char_p
+        Library.toolkit.MaaToolkitGetDeviceAdbConfig.argtypes = [ctypes.c_size_t]
 
-        Library.toolkit.MaaToolKitRegisterCustomRecognizerExecutor.restype = MaaBool
-        Library.toolkit.MaaToolKitRegisterCustomRecognizerExecutor.argtypes = [
+        Library.toolkit.MaaToolkitRegisterCustomRecognizerExecutor.restype = MaaBool
+        Library.toolkit.MaaToolkitRegisterCustomRecognizerExecutor.argtypes = [
             ctypes.c_void_p,
             ctypes.c_char_p,
             ctypes.c_char_p,
             ctypes.c_char_p,
         ]
 
-        Library.toolkit.MaaToolKitRegisterCustomActionExecutor.restype = MaaBool
-        Library.toolkit.MaaToolKitRegisterCustomActionExecutor.argtypes = [
+        Library.toolkit.MaaToolkitRegisterCustomActionExecutor.restype = MaaBool
+        Library.toolkit.MaaToolkitRegisterCustomActionExecutor.argtypes = [
             ctypes.c_void_p,
             ctypes.c_char_p,
             ctypes.c_char_p,

@@ -1,5 +1,5 @@
 #include "Device.h"
-#include "MaaToolKit/MaaToolKitAPI.h"
+#include "MaaToolkit/MaaToolkitAPI.h"
 #include "Macro.h"
 #include "Utils/Logger.h"
 
@@ -16,7 +16,7 @@ Status DeviceImpl::find(ServerContext* context, const ::maarpc::EmptyRequest* re
 
     std::unique_lock<std::mutex> lock(mtx_);
 
-    auto size = MaaToolKitFindDevice();
+    auto size = MaaToolkitFindDevice();
 
     auto infos_ = response->mutable_info();
     infos_->Clear();
@@ -24,11 +24,11 @@ Status DeviceImpl::find(ServerContext* context, const ::maarpc::EmptyRequest* re
 
     for (uint64_t i = 0; i < size; i++) {
         auto info = infos_->Add();
-        info->set_name(MaaToolKitGetDeviceName(i));
-        info->set_adb_path(MaaToolKitGetDeviceAdbPath(i));
-        info->set_adb_serial(MaaToolKitGetDeviceAdbSerial(i));
-        info->set_adb_type(MaaToolKitGetDeviceAdbControllerType(i));
-        info->set_adb_config(MaaToolKitGetDeviceAdbConfig(i));
+        info->set_name(MaaToolkitGetDeviceName(i));
+        info->set_adb_path(MaaToolkitGetDeviceAdbPath(i));
+        info->set_adb_serial(MaaToolkitGetDeviceAdbSerial(i));
+        info->set_adb_type(MaaToolkitGetDeviceAdbControllerType(i));
+        info->set_adb_config(MaaToolkitGetDeviceAdbConfig(i));
     }
 
     return Status::OK;
@@ -44,7 +44,7 @@ Status DeviceImpl::find_with_adb(ServerContext* context, const ::maarpc::StringR
 
     std::unique_lock<std::mutex> lock(mtx_);
 
-    auto size = MaaToolKitFindDeviceWithAdb(adb.c_str());
+    auto size = MaaToolkitFindDeviceWithAdb(adb.c_str());
 
     auto infos_ = response->mutable_info();
     infos_->Clear();
@@ -52,11 +52,11 @@ Status DeviceImpl::find_with_adb(ServerContext* context, const ::maarpc::StringR
 
     for (uint64_t i = 0; i < size; i++) {
         auto info = infos_->Add();
-        info->set_name(MaaToolKitGetDeviceName(i));
-        info->set_adb_path(MaaToolKitGetDeviceAdbPath(i));
-        info->set_adb_serial(MaaToolKitGetDeviceAdbSerial(i));
-        info->set_adb_type(MaaToolKitGetDeviceAdbControllerType(i));
-        info->set_adb_config(MaaToolKitGetDeviceAdbConfig(i));
+        info->set_name(MaaToolkitGetDeviceName(i));
+        info->set_adb_path(MaaToolkitGetDeviceAdbPath(i));
+        info->set_adb_serial(MaaToolkitGetDeviceAdbSerial(i));
+        info->set_adb_type(MaaToolkitGetDeviceAdbControllerType(i));
+        info->set_adb_config(MaaToolkitGetDeviceAdbConfig(i));
     }
 
     return Status::OK;

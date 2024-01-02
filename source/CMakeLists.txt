@@ -15,7 +15,7 @@ endif()
 
 add_subdirectory(LibraryHolder)
 add_subdirectory(MaaFramework)
-add_subdirectory(MaaToolKit)
+add_subdirectory(MaaToolkit)
 
 if(WITH_GRPC)
     add_subdirectory(MaaRpc)

@@ -6,7 +6,7 @@
 #include <vector>
 
 #include "Conf/Conf.h"
-#include "MaaToolKit/MaaToolKitDef.h"
+#include "MaaToolkit/MaaToolkitDef.h"
 
 struct Device
 {
@@ -28,9 +28,9 @@ inline std::ostream& operator<<(std::ostream& os, const Device& device)
 #undef VAR_TMP
 }
 
-struct MaaToolKitDeviceMgrAPI
+struct MaaToolkitDeviceMgrAPI
 {
-    virtual ~MaaToolKitDeviceMgrAPI() = default;
+    virtual ~MaaToolkitDeviceMgrAPI() = default;
 
     virtual bool post_find_device() = 0;
     virtual bool post_find_device_with_adb(std::string_view adb_path) = 0;

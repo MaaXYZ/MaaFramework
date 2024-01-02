@@ -2,7 +2,7 @@
 
 #include "Conf/Conf.h"
 
-#include "MaaToolKit/MaaToolKitAPI.h"
+#include "MaaToolkit/MaaToolkitAPI.h"
 #include "generated/config.grpc.pb.h"
 
 MAA_RPC_NS_BEGIN
