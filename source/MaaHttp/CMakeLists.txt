@@ -7,3 +7,12 @@ add_executable(MaaHttp ${maa_http_src})
 target_include_directories(MaaHttp PRIVATE ./../include LHG/projects/target)
 target_link_libraries(MaaHttp LHGHeaderonly Boost::system
                       MaaFramework MaaToolkit)
+
+install(
+  TARGETS MaaHttp
+  EXPORT MaaFrameworkTargets
+  RUNTIME DESTINATION bin
+  LIBRARY DESTINATION bin
+  ARCHIVE DESTINATION lib)
+
+source_group(TREE ${CMAKE_CURRENT_SOURCE_DIR} FILES ${maa_http_src})
