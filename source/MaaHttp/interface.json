@@ -1,0 +1,1714 @@
+{
+  "interface": [
+    {
+      "argument": [
+        {
+          "name": "adb_path",
+          "type": "const char *"
+        },
+        {
+          "name": "address",
+          "type": "const char *"
+        },
+        {
+          "name": "type",
+          "type": "int"
+        },
+        {
+          "name": "config",
+          "type": "const char *"
+        },
+        {
+          "name": "callback",
+          "type": "void (*)(const char *, const char *, void *)"
+        },
+        {
+          "name": "callback_arg",
+          "type": "void *"
+        }
+      ],
+      "name": "MaaAdbControllerCreate",
+      "return": "MaaControllerAPI *"
+    },
+    {
+      "argument": [
+        {
+          "name": "hWnd",
+          "type": "unsigned long long"
+        },
+        {
+          "name": "type",
+          "type": "int"
+        },
+        {
+          "name": "callback",
+          "type": "void (*)(const char *, const char *, void *)"
+        },
+        {
+          "name": "callback_arg",
+          "type": "void *"
+        }
+      ],
+      "name": "MaaWin32ControllerCreate",
+      "return": "MaaControllerAPI *"
+    },
+    {
+      "argument": [
+        {
+          "name": "adb_path",
+          "type": "const char *"
+        },
+        {
+          "name": "address",
+          "type": "const char *"
+        },
+        {
+          "name": "type",
+          "type": "int"
+        },
+        {
+          "name": "config",
+          "type": "const char *"
+        },
+        {
+          "name": "agent_path",
+          "type": "const char *"
+        },
+        {
+          "name": "callback",
+          "type": "void (*)(const char *, const char *, void *)"
+        },
+        {
+          "name": "callback_arg",
+          "type": "void *"
+        }
+      ],
+      "name": "MaaAdbControllerCreateV2",
+      "return": "MaaControllerAPI *"
+    },
+    {
+      "argument": [
+        {
+          "name": "handle",
+          "type": "MaaCustomControllerAPI *"
+        },
+        {
+          "name": "handle_arg",
+          "type": "void *"
+        },
+        {
+          "name": "callback",
+          "type": "void (*)(const char *, const char *, void *)"
+        },
+        {
+          "name": "callback_arg",
+          "type": "void *"
+        }
+      ],
+      "name": "MaaCustomControllerCreate",
+      "return": "MaaControllerAPI *"
+    },
+    {
+      "argument": [
+        {
+          "name": "type",
+          "type": "int"
+        },
+        {
+          "name": "host",
+          "type": "const char *"
+        },
+        {
+          "name": "port",
+          "type": "int"
+        },
+        {
+          "name": "config",
+          "type": "const char *"
+        },
+        {
+          "name": "callback",
+          "type": "void (*)(const char *, const char *, void *)"
+        },
+        {
+          "name": "callback_arg",
+          "type": "void *"
+        }
+      ],
+      "name": "MaaThriftControllerCreate",
+      "return": "MaaControllerAPI *"
+    },
+    {
+      "argument": [
+        {
+          "name": "read_path",
+          "type": "const char *"
+        },
+        {
+          "name": "write_path",
+          "type": "const char *"
+        },
+        {
+          "name": "type",
+          "type": "int"
+        },
+        {
+          "name": "config",
+          "type": "const char *"
+        },
+        {
+          "name": "callback",
+          "type": "void (*)(const char *, const char *, void *)"
+        },
+        {
+          "name": "callback_arg",
+          "type": "void *"
+        }
+      ],
+      "name": "MaaDbgControllerCreate",
+      "return": "MaaControllerAPI *"
+    },
+    {
+      "argument": [
+        {
+          "name": "ctrl",
+          "type": "MaaControllerAPI *"
+        }
+      ],
+      "name": "MaaControllerDestroy",
+      "return": "void"
+    },
+    {
+      "argument": [
+        {
+          "name": "ctrl",
+          "type": "MaaControllerAPI *"
+        },
+        {
+          "name": "key",
+          "type": "int"
+        },
+        {
+          "name": "value",
+          "type": "void *"
+        },
+        {
+          "name": "val_size",
+          "type": "unsigned long long"
+        }
+      ],
+      "name": "MaaControllerSetOption",
+      "return": "unsigned char"
+    },
+    {
+      "argument": [
+        {
+          "name": "ctrl",
+          "type": "MaaControllerAPI *"
+        }
+      ],
+      "name": "MaaControllerPostConnection",
+      "return": "long long"
+    },
+    {
+      "argument": [
+        {
+          "name": "ctrl",
+          "type": "MaaControllerAPI *"
+        },
+        {
+          "name": "x",
+          "type": "int"
+        },
+        {
+          "name": "y",
+          "type": "int"
+        }
+      ],
+      "name": "MaaControllerPostClick",
+      "return": "long long"
+    },
+    {
+      "argument": [
+        {
+          "name": "ctrl",
+          "type": "MaaControllerAPI *"
+        },
+        {
+          "name": "x1",
+          "type": "int"
+        },
+        {
+          "name": "y1",
+          "type": "int"
+        },
+        {
+          "name": "x2",
+          "type": "int"
+        },
+        {
+          "name": "y2",
+          "type": "int"
+        },
+        {
+          "name": "duration",
+          "type": "int"
+        }
+      ],
+      "name": "MaaControllerPostSwipe",
+      "return": "long long"
+    },
+    {
+      "argument": [
+        {
+          "name": "ctrl",
+          "type": "MaaControllerAPI *"
+        },
+        {
+          "name": "keycode",
+          "type": "int"
+        }
+      ],
+      "name": "MaaControllerPostPressKey",
+      "return": "long long"
+    },
+    {
+      "argument": [
+        {
+          "name": "ctrl",
+          "type": "MaaControllerAPI *"
+        },
+        {
+          "name": "text",
+          "type": "const char *"
+        }
+      ],
+      "name": "MaaControllerPostInputText",
+      "return": "long long"
+    },
+    {
+      "argument": [
+        {
+          "name": "ctrl",
+          "type": "MaaControllerAPI *"
+        },
+        {
+          "name": "contact",
+          "type": "int"
+        },
+        {
+          "name": "x",
+          "type": "int"
+        },
+        {
+          "name": "y",
+          "type": "int"
+        },
+        {
+          "name": "pressure",
+          "type": "int"
+        }
+      ],
+      "name": "MaaControllerPostTouchDown",
+      "return": "long long"
+    },
+    {
+      "argument": [
+        {
+          "name": "ctrl",
+          "type": "MaaControllerAPI *"
+        },
+        {
+          "name": "contact",
+          "type": "int"
+        },
+        {
+          "name": "x",
+          "type": "int"
+        },
+        {
+          "name": "y",
+          "type": "int"
+        },
+        {
+          "name": "pressure",
+          "type": "int"
+        }
+      ],
+      "name": "MaaControllerPostTouchMove",
+      "return": "long long"
+    },
+    {
+      "argument": [
+        {
+          "name": "ctrl",
+          "type": "MaaControllerAPI *"
+        },
+        {
+          "name": "contact",
+          "type": "int"
+        }
+      ],
+      "name": "MaaControllerPostTouchUp",
+      "return": "long long"
+    },
+    {
+      "argument": [
+        {
+          "name": "ctrl",
+          "type": "MaaControllerAPI *"
+        }
+      ],
+      "name": "MaaControllerPostScreencap",
+      "return": "long long"
+    },
+    {
+      "argument": [
+        {
+          "name": "ctrl",
+          "type": "MaaControllerAPI *"
+        },
+        {
+          "name": "id",
+          "type": "long long"
+        }
+      ],
+      "name": "MaaControllerStatus",
+      "return": "int"
+    },
+    {
+      "argument": [
+        {
+          "name": "ctrl",
+          "type": "MaaControllerAPI *"
+        },
+        {
+          "name": "id",
+          "type": "long long"
+        }
+      ],
+      "name": "MaaControllerWait",
+      "return": "int"
+    },
+    {
+      "argument": [
+        {
+          "name": "ctrl",
+          "type": "MaaControllerAPI *"
+        }
+      ],
+      "name": "MaaControllerConnected",
+      "return": "unsigned char"
+    },
+    {
+      "argument": [
+        {
+          "name": "ctrl",
+          "type": "MaaControllerAPI *"
+        },
+        {
+          "name": "buffer",
+          "type": "MaaImageBuffer *"
+        }
+      ],
+      "name": "MaaControllerGetImage",
+      "return": "unsigned char"
+    },
+    {
+      "argument": [
+        {
+          "name": "ctrl",
+          "type": "MaaControllerAPI *"
+        },
+        {
+          "name": "buffer",
+          "type": "MaaStringBuffer *"
+        }
+      ],
+      "name": "MaaControllerGetUUID",
+      "return": "unsigned char"
+    },
+    {
+      "argument": [
+        {
+          "name": "callback",
+          "type": "void (*)(const char *, const char *, void *)"
+        },
+        {
+          "name": "callback_arg",
+          "type": "void *"
+        }
+      ],
+      "name": "MaaCreate",
+      "return": "MaaInstanceAPI *"
+    },
+    {
+      "argument": [
+        {
+          "name": "inst",
+          "type": "MaaInstanceAPI *"
+        }
+      ],
+      "name": "MaaDestroy",
+      "return": "void"
+    },
+    {
+      "argument": [
+        {
+          "name": "inst",
+          "type": "MaaInstanceAPI *"
+        },
+        {
+          "name": "key",
+          "type": "int"
+        },
+        {
+          "name": "value",
+          "type": "void *"
+        },
+        {
+          "name": "val_size",
+          "type": "unsigned long long"
+        }
+      ],
+      "name": "MaaSetOption",
+      "return": "unsigned char"
+    },
+    {
+      "argument": [
+        {
+          "name": "inst",
+          "type": "MaaInstanceAPI *"
+        },
+        {
+          "name": "res",
+          "type": "MaaResourceAPI *"
+        }
+      ],
+      "name": "MaaBindResource",
+      "return": "unsigned char"
+    },
+    {
+      "argument": [
+        {
+          "name": "inst",
+          "type": "MaaInstanceAPI *"
+        },
+        {
+          "name": "ctrl",
+          "type": "MaaControllerAPI *"
+        }
+      ],
+      "name": "MaaBindController",
+      "return": "unsigned char"
+    },
+    {
+      "argument": [
+        {
+          "name": "inst",
+          "type": "MaaInstanceAPI *"
+        }
+      ],
+      "name": "MaaInited",
+      "return": "unsigned char"
+    },
+    {
+      "argument": [
+        {
+          "name": "inst",
+          "type": "MaaInstanceAPI *"
+        },
+        {
+          "name": "name",
+          "type": "const char *"
+        },
+        {
+          "name": "recognizer",
+          "type": "MaaCustomRecognizerAPI *"
+        },
+        {
+          "name": "recognizer_arg",
+          "type": "void *"
+        }
+      ],
+      "name": "MaaRegisterCustomRecognizer",
+      "return": "unsigned char"
+    },
+    {
+      "argument": [
+        {
+          "name": "inst",
+          "type": "MaaInstanceAPI *"
+        },
+        {
+          "name": "name",
+          "type": "const char *"
+        }
+      ],
+      "name": "MaaUnregisterCustomRecognizer",
+      "return": "unsigned char"
+    },
+    {
+      "argument": [
+        {
+          "name": "inst",
+          "type": "MaaInstanceAPI *"
+        }
+      ],
+      "name": "MaaClearCustomRecognizer",
+      "return": "unsigned char"
+    },
+    {
+      "argument": [
+        {
+          "name": "inst",
+          "type": "MaaInstanceAPI *"
+        },
+        {
+          "name": "name",
+          "type": "const char *"
+        },
+        {
+          "name": "action",
+          "type": "MaaCustomActionAPI *"
+        },
+        {
+          "name": "action_arg",
+          "type": "void *"
+        }
+      ],
+      "name": "MaaRegisterCustomAction",
+      "return": "unsigned char"
+    },
+    {
+      "argument": [
+        {
+          "name": "inst",
+          "type": "MaaInstanceAPI *"
+        },
+        {
+          "name": "name",
+          "type": "const char *"
+        }
+      ],
+      "name": "MaaUnregisterCustomAction",
+      "return": "unsigned char"
+    },
+    {
+      "argument": [
+        {
+          "name": "inst",
+          "type": "MaaInstanceAPI *"
+        }
+      ],
+      "name": "MaaClearCustomAction",
+      "return": "unsigned char"
+    },
+    {
+      "argument": [
+        {
+          "name": "inst",
+          "type": "MaaInstanceAPI *"
+        },
+        {
+          "name": "entry",
+          "type": "const char *"
+        },
+        {
+          "name": "param",
+          "type": "const char *"
+        }
+      ],
+      "name": "MaaPostTask",
+      "return": "long long"
+    },
+    {
+      "argument": [
+        {
+          "name": "inst",
+          "type": "MaaInstanceAPI *"
+        },
+        {
+          "name": "id",
+          "type": "long long"
+        },
+        {
+          "name": "param",
+          "type": "const char *"
+        }
+      ],
+      "name": "MaaSetTaskParam",
+      "return": "unsigned char"
+    },
+    {
+      "argument": [
+        {
+          "name": "inst",
+          "type": "MaaInstanceAPI *"
+        },
+        {
+          "name": "id",
+          "type": "long long"
+        }
+      ],
+      "name": "MaaTaskStatus",
+      "return": "int"
+    },
+    {
+      "argument": [
+        {
+          "name": "inst",
+          "type": "MaaInstanceAPI *"
+        },
+        {
+          "name": "id",
+          "type": "long long"
+        }
+      ],
+      "name": "MaaWaitTask",
+      "return": "int"
+    },
+    {
+      "argument": [
+        {
+          "name": "inst",
+          "type": "MaaInstanceAPI *"
+        }
+      ],
+      "name": "MaaTaskAllFinished",
+      "return": "unsigned char"
+    },
+    {
+      "argument": [
+        {
+          "name": "inst",
+          "type": "MaaInstanceAPI *"
+        }
+      ],
+      "name": "MaaPostStop",
+      "return": "unsigned char"
+    },
+    {
+      "argument": [
+        {
+          "name": "inst",
+          "type": "MaaInstanceAPI *"
+        }
+      ],
+      "name": "MaaStop",
+      "return": "unsigned char"
+    },
+    {
+      "argument": [
+        {
+          "name": "inst",
+          "type": "MaaInstanceAPI *"
+        }
+      ],
+      "name": "MaaGetResource",
+      "return": "MaaResourceAPI *"
+    },
+    {
+      "argument": [
+        {
+          "name": "inst",
+          "type": "MaaInstanceAPI *"
+        }
+      ],
+      "name": "MaaGetController",
+      "return": "MaaControllerAPI *"
+    },
+    {
+      "argument": [
+        {
+          "name": "callback",
+          "type": "void (*)(const char *, const char *, void *)"
+        },
+        {
+          "name": "callback_arg",
+          "type": "void *"
+        }
+      ],
+      "name": "MaaResourceCreate",
+      "return": "MaaResourceAPI *"
+    },
+    {
+      "argument": [
+        {
+          "name": "res",
+          "type": "MaaResourceAPI *"
+        }
+      ],
+      "name": "MaaResourceDestroy",
+      "return": "void"
+    },
+    {
+      "argument": [
+        {
+          "name": "res",
+          "type": "MaaResourceAPI *"
+        },
+        {
+          "name": "path",
+          "type": "const char *"
+        }
+      ],
+      "name": "MaaResourcePostPath",
+      "return": "long long"
+    },
+    {
+      "argument": [
+        {
+          "name": "res",
+          "type": "MaaResourceAPI *"
+        },
+        {
+          "name": "id",
+          "type": "long long"
+        }
+      ],
+      "name": "MaaResourceStatus",
+      "return": "int"
+    },
+    {
+      "argument": [
+        {
+          "name": "res",
+          "type": "MaaResourceAPI *"
+        },
+        {
+          "name": "id",
+          "type": "long long"
+        }
+      ],
+      "name": "MaaResourceWait",
+      "return": "int"
+    },
+    {
+      "argument": [
+        {
+          "name": "res",
+          "type": "MaaResourceAPI *"
+        }
+      ],
+      "name": "MaaResourceLoaded",
+      "return": "unsigned char"
+    },
+    {
+      "argument": [
+        {
+          "name": "res",
+          "type": "MaaResourceAPI *"
+        },
+        {
+          "name": "key",
+          "type": "int"
+        },
+        {
+          "name": "value",
+          "type": "void *"
+        },
+        {
+          "name": "val_size",
+          "type": "unsigned long long"
+        }
+      ],
+      "name": "MaaResourceSetOption",
+      "return": "unsigned char"
+    },
+    {
+      "argument": [
+        {
+          "name": "res",
+          "type": "MaaResourceAPI *"
+        },
+        {
+          "name": "buffer",
+          "type": "MaaStringBuffer *"
+        }
+      ],
+      "name": "MaaResourceGetHash",
+      "return": "unsigned char"
+    },
+    {
+      "argument": [
+        {
+          "name": "res",
+          "type": "MaaResourceAPI *"
+        },
+        {
+          "name": "buffer",
+          "type": "MaaStringBuffer *"
+        }
+      ],
+      "name": "MaaResourceGetTaskList",
+      "return": "unsigned char"
+    },
+    {
+      "argument": [
+        {
+          "name": "sync_context",
+          "type": "MaaSyncContextAPI *"
+        },
+        {
+          "name": "task_name",
+          "type": "const char *"
+        },
+        {
+          "name": "param",
+          "type": "const char *"
+        }
+      ],
+      "name": "MaaSyncContextRunTask",
+      "return": "unsigned char"
+    },
+    {
+      "argument": [
+        {
+          "name": "sync_context",
+          "type": "MaaSyncContextAPI *"
+        },
+        {
+          "name": "image",
+          "type": "MaaImageBuffer *"
+        },
+        {
+          "name": "task_name",
+          "type": "const char *"
+        },
+        {
+          "name": "task_param",
+          "type": "const char *"
+        },
+        {
+          "name": "out_box",
+          "type": "MaaRect *"
+        },
+        {
+          "name": "out_detail",
+          "type": "MaaStringBuffer *"
+        }
+      ],
+      "name": "MaaSyncContextRunRecognizer",
+      "return": "unsigned char"
+    },
+    {
+      "argument": [
+        {
+          "name": "sync_context",
+          "type": "MaaSyncContextAPI *"
+        },
+        {
+          "name": "task_name",
+          "type": "const char *"
+        },
+        {
+          "name": "task_param",
+          "type": "const char *"
+        },
+        {
+          "name": "cur_box",
+          "type": "MaaRect *"
+        },
+        {
+          "name": "cur_rec_detail",
+          "type": "const char *"
+        }
+      ],
+      "name": "MaaSyncContextRunAction",
+      "return": "unsigned char"
+    },
+    {
+      "argument": [
+        {
+          "name": "sync_context",
+          "type": "MaaSyncContextAPI *"
+        },
+        {
+          "name": "x",
+          "type": "int"
+        },
+        {
+          "name": "y",
+          "type": "int"
+        }
+      ],
+      "name": "MaaSyncContextClick",
+      "return": "unsigned char"
+    },
+    {
+      "argument": [
+        {
+          "name": "sync_context",
+          "type": "MaaSyncContextAPI *"
+        },
+        {
+          "name": "x1",
+          "type": "int"
+        },
+        {
+          "name": "y1",
+          "type": "int"
+        },
+        {
+          "name": "x2",
+          "type": "int"
+        },
+        {
+          "name": "y2",
+          "type": "int"
+        },
+        {
+          "name": "duration",
+          "type": "int"
+        }
+      ],
+      "name": "MaaSyncContextSwipe",
+      "return": "unsigned char"
+    },
+    {
+      "argument": [
+        {
+          "name": "sync_context",
+          "type": "MaaSyncContextAPI *"
+        },
+        {
+          "name": "keycode",
+          "type": "int"
+        }
+      ],
+      "name": "MaaSyncContextPressKey",
+      "return": "unsigned char"
+    },
+    {
+      "argument": [
+        {
+          "name": "sync_context",
+          "type": "MaaSyncContextAPI *"
+        },
+        {
+          "name": "text",
+          "type": "const char *"
+        }
+      ],
+      "name": "MaaSyncContextInputText",
+      "return": "unsigned char"
+    },
+    {
+      "argument": [
+        {
+          "name": "sync_context",
+          "type": "MaaSyncContextAPI *"
+        },
+        {
+          "name": "contact",
+          "type": "int"
+        },
+        {
+          "name": "x",
+          "type": "int"
+        },
+        {
+          "name": "y",
+          "type": "int"
+        },
+        {
+          "name": "pressure",
+          "type": "int"
+        }
+      ],
+      "name": "MaaSyncContextTouchDown",
+      "return": "unsigned char"
+    },
+    {
+      "argument": [
+        {
+          "name": "sync_context",
+          "type": "MaaSyncContextAPI *"
+        },
+        {
+          "name": "contact",
+          "type": "int"
+        },
+        {
+          "name": "x",
+          "type": "int"
+        },
+        {
+          "name": "y",
+          "type": "int"
+        },
+        {
+          "name": "pressure",
+          "type": "int"
+        }
+      ],
+      "name": "MaaSyncContextTouchMove",
+      "return": "unsigned char"
+    },
+    {
+      "argument": [
+        {
+          "name": "sync_context",
+          "type": "MaaSyncContextAPI *"
+        },
+        {
+          "name": "contact",
+          "type": "int"
+        }
+      ],
+      "name": "MaaSyncContextTouchUp",
+      "return": "unsigned char"
+    },
+    {
+      "argument": [
+        {
+          "name": "sync_context",
+          "type": "MaaSyncContextAPI *"
+        },
+        {
+          "name": "out_image",
+          "type": "MaaImageBuffer *"
+        }
+      ],
+      "name": "MaaSyncContextScreencap",
+      "return": "unsigned char"
+    },
+    {
+      "argument": [
+        {
+          "name": "sync_context",
+          "type": "MaaSyncContextAPI *"
+        },
+        {
+          "name": "task_name",
+          "type": "const char *"
+        },
+        {
+          "name": "out_task_result",
+          "type": "MaaStringBuffer *"
+        }
+      ],
+      "name": "MaaSyncContextGetTaskResult",
+      "return": "unsigned char"
+    },
+    {
+      "argument": [
+      ],
+      "name": "MaaCreateStringBuffer",
+      "return": "MaaStringBuffer *"
+    },
+    {
+      "argument": [
+        {
+          "name": "handle",
+          "type": "MaaStringBuffer *"
+        }
+      ],
+      "name": "MaaDestroyStringBuffer",
+      "return": "void"
+    },
+    {
+      "argument": [
+        {
+          "name": "handle",
+          "type": "MaaStringBuffer *"
+        }
+      ],
+      "name": "MaaIsStringEmpty",
+      "return": "unsigned char"
+    },
+    {
+      "argument": [
+        {
+          "name": "handle",
+          "type": "MaaStringBuffer *"
+        }
+      ],
+      "name": "MaaClearString",
+      "return": "unsigned char"
+    },
+    {
+      "argument": [
+        {
+          "name": "handle",
+          "type": "MaaStringBuffer *"
+        }
+      ],
+      "name": "MaaGetString",
+      "return": "const char *"
+    },
+    {
+      "argument": [
+        {
+          "name": "handle",
+          "type": "MaaStringBuffer *"
+        }
+      ],
+      "name": "MaaGetStringSize",
+      "return": "unsigned long long"
+    },
+    {
+      "argument": [
+        {
+          "name": "handle",
+          "type": "MaaStringBuffer *"
+        },
+        {
+          "name": "str",
+          "type": "const char *"
+        }
+      ],
+      "name": "MaaSetString",
+      "return": "unsigned char"
+    },
+    {
+      "argument": [
+        {
+          "name": "handle",
+          "type": "MaaStringBuffer *"
+        },
+        {
+          "name": "str",
+          "type": "const char *"
+        },
+        {
+          "name": "size",
+          "type": "unsigned long long"
+        }
+      ],
+      "name": "MaaSetStringEx",
+      "return": "unsigned char"
+    },
+    {
+      "argument": [
+      ],
+      "name": "MaaCreateImageBuffer",
+      "return": "MaaImageBuffer *"
+    },
+    {
+      "argument": [
+        {
+          "name": "handle",
+          "type": "MaaImageBuffer *"
+        }
+      ],
+      "name": "MaaDestroyImageBuffer",
+      "return": "void"
+    },
+    {
+      "argument": [
+        {
+          "name": "handle",
+          "type": "MaaImageBuffer *"
+        }
+      ],
+      "name": "MaaIsImageEmpty",
+      "return": "unsigned char"
+    },
+    {
+      "argument": [
+        {
+          "name": "handle",
+          "type": "MaaImageBuffer *"
+        }
+      ],
+      "name": "MaaClearImage",
+      "return": "unsigned char"
+    },
+    {
+      "argument": [
+        {
+          "name": "handle",
+          "type": "MaaImageBuffer *"
+        }
+      ],
+      "name": "MaaGetImageRawData",
+      "return": "void *"
+    },
+    {
+      "argument": [
+        {
+          "name": "handle",
+          "type": "MaaImageBuffer *"
+        }
+      ],
+      "name": "MaaGetImageWidth",
+      "return": "int"
+    },
+    {
+      "argument": [
+        {
+          "name": "handle",
+          "type": "MaaImageBuffer *"
+        }
+      ],
+      "name": "MaaGetImageHeight",
+      "return": "int"
+    },
+    {
+      "argument": [
+        {
+          "name": "handle",
+          "type": "MaaImageBuffer *"
+        }
+      ],
+      "name": "MaaGetImageType",
+      "return": "int"
+    },
+    {
+      "argument": [
+        {
+          "name": "handle",
+          "type": "MaaImageBuffer *"
+        },
+        {
+          "name": "data",
+          "type": "void *"
+        },
+        {
+          "name": "width",
+          "type": "int"
+        },
+        {
+          "name": "height",
+          "type": "int"
+        },
+        {
+          "name": "type",
+          "type": "int"
+        }
+      ],
+      "name": "MaaSetImageRawData",
+      "return": "unsigned char"
+    },
+    {
+      "argument": [
+        {
+          "name": "handle",
+          "type": "MaaImageBuffer *"
+        }
+      ],
+      "name": "MaaGetImageEncoded",
+      "return": "unsigned char *"
+    },
+    {
+      "argument": [
+        {
+          "name": "handle",
+          "type": "MaaImageBuffer *"
+        }
+      ],
+      "name": "MaaGetImageEncodedSize",
+      "return": "unsigned long long"
+    },
+    {
+      "argument": [
+        {
+          "name": "handle",
+          "type": "MaaImageBuffer *"
+        },
+        {
+          "name": "data",
+          "type": "unsigned char *"
+        },
+        {
+          "name": "size",
+          "type": "unsigned long long"
+        }
+      ],
+      "name": "MaaSetImageEncoded",
+      "return": "unsigned char"
+    },
+    {
+      "argument": [
+      ],
+      "name": "MaaCreateRectBuffer",
+      "return": "MaaRect *"
+    },
+    {
+      "argument": [
+        {
+          "name": "handle",
+          "type": "MaaRect *"
+        }
+      ],
+      "name": "MaaDestroyRectBuffer",
+      "return": "void"
+    },
+    {
+      "argument": [
+        {
+          "name": "handle",
+          "type": "MaaRect *"
+        }
+      ],
+      "name": "MaaGetRectX",
+      "return": "int"
+    },
+    {
+      "argument": [
+        {
+          "name": "handle",
+          "type": "MaaRect *"
+        }
+      ],
+      "name": "MaaGetRectY",
+      "return": "int"
+    },
+    {
+      "argument": [
+        {
+          "name": "handle",
+          "type": "MaaRect *"
+        }
+      ],
+      "name": "MaaGetRectW",
+      "return": "int"
+    },
+    {
+      "argument": [
+        {
+          "name": "handle",
+          "type": "MaaRect *"
+        }
+      ],
+      "name": "MaaGetRectH",
+      "return": "int"
+    },
+    {
+      "argument": [
+        {
+          "name": "handle",
+          "type": "MaaRect *"
+        },
+        {
+          "name": "x",
+          "type": "int"
+        },
+        {
+          "name": "y",
+          "type": "int"
+        },
+        {
+          "name": "w",
+          "type": "int"
+        },
+        {
+          "name": "h",
+          "type": "int"
+        }
+      ],
+      "name": "MaaSetRect",
+      "return": "unsigned char"
+    },
+    {
+      "argument": [
+        {
+          "name": "handle",
+          "type": "MaaRect *"
+        },
+        {
+          "name": "value",
+          "type": "int"
+        }
+      ],
+      "name": "MaaSetRectX",
+      "return": "unsigned char"
+    },
+    {
+      "argument": [
+        {
+          "name": "handle",
+          "type": "MaaRect *"
+        },
+        {
+          "name": "value",
+          "type": "int"
+        }
+      ],
+      "name": "MaaSetRectY",
+      "return": "unsigned char"
+    },
+    {
+      "argument": [
+        {
+          "name": "handle",
+          "type": "MaaRect *"
+        },
+        {
+          "name": "value",
+          "type": "int"
+        }
+      ],
+      "name": "MaaSetRectW",
+      "return": "unsigned char"
+    },
+    {
+      "argument": [
+        {
+          "name": "handle",
+          "type": "MaaRect *"
+        },
+        {
+          "name": "value",
+          "type": "int"
+        }
+      ],
+      "name": "MaaSetRectH",
+      "return": "unsigned char"
+    },
+    {
+      "argument": [
+      ],
+      "name": "MaaVersion",
+      "return": "const char *"
+    },
+    {
+      "argument": [
+        {
+          "name": "key",
+          "type": "int"
+        },
+        {
+          "name": "value",
+          "type": "void *"
+        },
+        {
+          "name": "val_size",
+          "type": "unsigned long long"
+        }
+      ],
+      "name": "MaaSetGlobalOption",
+      "return": "unsigned char"
+    },
+    {
+      "argument": [
+      ],
+      "name": "MaaToolkitInit",
+      "return": "unsigned char"
+    },
+    {
+      "argument": [
+      ],
+      "name": "MaaToolkitUninit",
+      "return": "unsigned char"
+    },
+    {
+      "argument": [
+      ],
+      "name": "MaaToolkitFindDevice",
+      "return": "unsigned long long"
+    },
+    {
+      "argument": [
+        {
+          "name": "adb_path",
+          "type": "const char *"
+        }
+      ],
+      "name": "MaaToolkitFindDeviceWithAdb",
+      "return": "unsigned long long"
+    },
+    {
+      "argument": [
+      ],
+      "name": "MaaToolkitPostFindDevice",
+      "return": "unsigned char"
+    },
+    {
+      "argument": [
+        {
+          "name": "adb_path",
+          "type": "const char *"
+        }
+      ],
+      "name": "MaaToolkitPostFindDeviceWithAdb",
+      "return": "unsigned char"
+    },
+    {
+      "argument": [
+      ],
+      "name": "MaaToolkitIsFindDeviceCompleted",
+      "return": "unsigned char"
+    },
+    {
+      "argument": [
+      ],
+      "name": "MaaToolkitWaitForFindDeviceToComplete",
+      "return": "unsigned long long"
+    },
+    {
+      "argument": [
+      ],
+      "name": "MaaToolkitGetDeviceCount",
+      "return": "unsigned long long"
+    },
+    {
+      "argument": [
+        {
+          "name": "index",
+          "type": "unsigned long long"
+        }
+      ],
+      "name": "MaaToolkitGetDeviceName",
+      "return": "const char *"
+    },
+    {
+      "argument": [
+        {
+          "name": "index",
+          "type": "unsigned long long"
+        }
+      ],
+      "name": "MaaToolkitGetDeviceAdbPath",
+      "return": "const char *"
+    },
+    {
+      "argument": [
+        {
+          "name": "index",
+          "type": "unsigned long long"
+        }
+      ],
+      "name": "MaaToolkitGetDeviceAdbSerial",
+      "return": "const char *"
+    },
+    {
+      "argument": [
+        {
+          "name": "index",
+          "type": "unsigned long long"
+        }
+      ],
+      "name": "MaaToolkitGetDeviceAdbControllerType",
+      "return": "int"
+    },
+    {
+      "argument": [
+        {
+          "name": "index",
+          "type": "unsigned long long"
+        }
+      ],
+      "name": "MaaToolkitGetDeviceAdbConfig",
+      "return": "const char *"
+    },
+    {
+      "argument": [
+        {
+          "name": "handle",
+          "type": "MaaInstanceAPI *"
+        },
+        {
+          "name": "recognizer_name",
+          "type": "const char *"
+        },
+        {
+          "name": "recognizer_exec_path",
+          "type": "const char *"
+        },
+        {
+          "name": "recognizer_exec_param_json",
+          "type": "const char *"
+        }
+      ],
+      "name": "MaaToolkitRegisterCustomRecognizerExecutor",
+      "return": "unsigned char"
+    },
+    {
+      "argument": [
+        {
+          "name": "handle",
+          "type": "MaaInstanceAPI *"
+        },
+        {
+          "name": "recognizer_name",
+          "type": "const char *"
+        }
+      ],
+      "name": "MaaToolkitUnregisterCustomRecognizerExecutor",
+      "return": "unsigned char"
+    },
+    {
+      "argument": [
+        {
+          "name": "handle",
+          "type": "MaaInstanceAPI *"
+        },
+        {
+          "name": "action_name",
+          "type": "const char *"
+        },
+        {
+          "name": "action_exec_path",
+          "type": "const char *"
+        },
+        {
+          "name": "action_exec_param_json",
+          "type": "const char *"
+        }
+      ],
+      "name": "MaaToolkitRegisterCustomActionExecutor",
+      "return": "unsigned char"
+    },
+    {
+      "argument": [
+        {
+          "name": "handle",
+          "type": "MaaInstanceAPI *"
+        },
+        {
+          "name": "action_name",
+          "type": "const char *"
+        }
+      ],
+      "name": "MaaToolkitUnregisterCustomActionExecutor",
+      "return": "unsigned char"
+    },
+    {
+      "argument": [
+        {
+          "name": "class_name",
+          "type": "const char *"
+        },
+        {
+          "name": "window_name",
+          "type": "const char *"
+        }
+      ],
+      "name": "MaaToolkitFindWindow",
+      "return": "unsigned long long"
+    },
+    {
+      "argument": [
+        {
+          "name": "class_name",
+          "type": "const char *"
+        },
+        {
+          "name": "window_name",
+          "type": "const char *"
+        }
+      ],
+      "name": "MaaToolkitSearchWindow",
+      "return": "unsigned long long"
+    },
+    {
+      "argument": [
+        {
+          "name": "index",
+          "type": "unsigned long long"
+        }
+      ],
+      "name": "MaaToolkitGetWindow",
+      "return": "unsigned long long"
+    },
+    {
+      "argument": [
+      ],
+      "name": "MaaToolkitGetCursorWindow",
+      "return": "unsigned long long"
+    }
+  ]
+}

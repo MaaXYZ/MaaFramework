@@ -1,0 +1,38 @@
+{
+    "callback": {
+        "void (*)(const char *, const char *, void *)": {
+            "name": "MaaAPICallback",
+            "pass": 1,
+            "self": 2,
+            "all": 3,
+            "argn": ["msg", "details_json", ""]
+        }
+    },
+    "opaque": ["MaaControllerAPI", "MaaResourceAPI", "MaaInstanceAPI", "MaaImageBuffer"],
+    "opaque_free": {
+        "MaaControllerAPI": ["MaaControllerDestroy"],
+        "MaaResourceAPI": ["MaaResourceDestroy"],
+        "MaaInstanceAPI": ["MaaDestroy"],
+        "MaaImageBuffer": ["MaaDestroyImageBuffer"]
+    },
+    "output": ["MaaStringBuffer"],
+    "remove": [
+        "MaaCustomControllerCreate",
+        "MaaSetImageRawData",
+        "MaaRegisterCustomRecognizer",
+        "MaaRegisterCustomAction",
+        "MaaUnregisterCustomRecognizer",
+        "MaaUnregisterCustomAction",
+        "/MaaSyncContext.+",
+        "/Maa.+Rect.*",
+        "/Maa.+String.+",
+        "MaaClearString",
+        "MaaGetString",
+        "MaaSetString",
+        "MaaGetImageEncodedSize",
+        "MaaGetImageRawData"
+    ],
+    "check": {
+        "const char *": "string"
+    }
+}
