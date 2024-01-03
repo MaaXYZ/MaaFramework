@@ -75,7 +75,7 @@ TemplateMatcher::ResultsVec TemplateMatcher::match(const cv::Rect& roi, const cv
     cv::Mat image = image_with_roi(roi);
 
     if (templ.cols > image.cols || templ.rows > image.rows) {
-        LogError << "templ size is too large" << VAR(image) << VAR(templ);
+        LogError << name_ << "templ size is too large" << VAR(image) << VAR(templ);
         return {};
     }
 

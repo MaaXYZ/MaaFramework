@@ -35,7 +35,6 @@ bool ControlUnitMgr::connect()
     bool is_remote = adb_serial_.find(':') != std::string::npos;
     if (!connected && is_remote) {
         notifier.notify(MaaMsg_Controller_ConnectFailed, details | json::object { { "why", "ConnectFailed" } });
-        LogError << "failed to connect";
         return false;
     }
 
@@ -43,7 +42,6 @@ bool ControlUnitMgr::connect()
     if (!uuid_opt) {
         notifier.notify(MaaMsg_Controller_UUIDGetFailed, details);
         notifier.notify(MaaMsg_Controller_ConnectFailed, details | json::object { { "why", "UUIDGetFailed" } });
-        LogError << "failed to request_uuid";
         return false;
     }
     const auto& uuid = uuid_opt.value();
@@ -55,7 +53,6 @@ bool ControlUnitMgr::connect()
     if (!resolution_opt) {
         notifier.notify(MaaMsg_Controller_ResolutionGetFailed, details);
         notifier.notify(MaaMsg_Controller_ConnectFailed, details | json::object { { "why", "ResolutionGetFailed" } });
-        LogError << "failed to request_resolution";
         return false;
     }
     auto [width, height] = *resolution_opt;

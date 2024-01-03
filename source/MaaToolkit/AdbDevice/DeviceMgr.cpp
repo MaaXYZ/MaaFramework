@@ -110,7 +110,6 @@ bool DeviceMgr::request_adb_connect(const std::filesystem::path& adb_path, const
     auto connected = control_unit->connect();
 
     if (!connected) {
-        LogError << "Failed to connect";
         return false;
     }
 
