@@ -102,6 +102,7 @@ message ControllerSetOptionRequest {
     int32 short_side = 102;
     string def_package_entry = 103;
     string def_package = 104;
+    bool recording = 105;
   }
 }
 

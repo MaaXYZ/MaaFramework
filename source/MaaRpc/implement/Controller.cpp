@@ -390,6 +390,17 @@ Status ControllerImpl::set_option(::grpc::ServerContext* context, const ::maarpc
             }
         }
         break;
+    case ::maarpc::ControllerSetOptionRequest::kRecording:
+        if (request->has_recording()) {
+            auto rec = request->recording();
+            if (MaaControllerSetOption(handle, MaaCtrlOption_Recording, &rec, sizeof(rec))) {
+                return Status::OK;
+            }
+            else {
+                return Status(UNKNOWN, "MaaControllerSetOption failed");
+            }
+        }
+        break;
     default:
         break;
     }
