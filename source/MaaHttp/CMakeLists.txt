@@ -5,8 +5,11 @@ file(GLOB_RECURSE maa_http_src wrapper.cpp LHG/projects/target/*.cpp LHG/project
 
 add_executable(MaaHttp ${maa_http_src})
 target_include_directories(MaaHttp PRIVATE ./../include LHG/projects/target)
-target_link_libraries(MaaHttp LHGHeaderonly Boost::system
-                      MaaFramework MaaToolkit)
+target_link_libraries(MaaHttp HeaderOnlyLibraries Boost::system MaaFramework MaaToolkit)
+
+if(WIN32)
+  target_compile_definitions(MaaHttp PRIVATE _WIN32_WINNT=0x0A00)
+endif()
 
 install(
   TARGETS MaaHttp
