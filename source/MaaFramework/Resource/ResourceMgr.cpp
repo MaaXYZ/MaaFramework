@@ -103,9 +103,12 @@ std::string ResourceMgr::get_hash() const
         }
     }
     size_t hash = vec_hash(filesizes);
-    LogInfo << VAR(hash);
 
-    hash_cache_ = std::to_string(hash);
+    std::stringstream ss;
+    ss << std::hex << hash;
+    hash_cache_ = std::move(ss).str();
+
+    LogInfo << VAR(hash_cache_);
     return hash_cache_;
 }
 
@@ -118,7 +121,7 @@ bool ResourceMgr::run_load(typename AsyncRunner<std::filesystem::path>::Id id, s
 {
     LogFunc << VAR(id) << VAR(path);
 
-    const json::value details = {
+    json::value details = {
         { "id", id },
         { "path", path_to_utf8_string(path) },
     };
@@ -127,6 +130,7 @@ bool ResourceMgr::run_load(typename AsyncRunner<std::filesystem::path>::Id id, s
 
     loaded_ = load(path);
 
+    details.emplace("hash", get_hash());
     notifier.notify(loaded_ ? MaaMsg_Resource_LoadingCompleted : MaaMsg_Resource_LoadingFailed, details);
 
     return loaded_;
@@ -142,6 +146,10 @@ bool ResourceMgr::load(const std::filesystem::path& path)
     LogInfo << VAR(props);
 
     bool is_base = props.get("is_base", false);
+    if (is_base) {
+        paths_.clear();
+    }
+    paths_.emplace_back(path);
 
     bool ret = pipeline_res_.load(path / "pipeline"_path, is_base);
     ret &= ocr_res_.lazy_load(path / "model"_path / "ocr"_path, is_base);
