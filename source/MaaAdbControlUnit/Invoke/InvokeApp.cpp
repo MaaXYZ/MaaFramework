@@ -6,6 +6,13 @@
 
 MAA_CTRL_UNIT_NS_BEGIN
 
+InvokeApp::~InvokeApp()
+{
+    if (pushed_) {
+        remove();
+    }
+}
+
 bool InvokeApp::parse(const json::value& config)
 {
     static const json::array kDefaultAbilistArgv = {
@@ -34,13 +41,16 @@ bool InvokeApp::parse(const json::value& config)
         "shell",
         "export CLASSPATH=\"/data/local/tmp/{APP_WORKING_FILE}\"; app_process /data/local/tmp {PACKAGE_NAME}",
     };
-
+    static const json::array kDefaultRemoveFileArgv = {
+        "{ADB}", "-s", "{ADB_SERIAL}", "shell", "rm {TO_REMOVED_FILE}",
+    };
     return parse_argv("Abilist", config, kDefaultAbilistArgv, abilist_argv_) &&
            parse_argv("SDK", config, kDefaultSdkArgv, sdk_argv_) &&
            parse_argv("PushBin", config, kDefaultPushBinArgv, push_bin_argv_) &&
            parse_argv("ChmodBin", config, kDefaultChmodBinArgv, chmod_bin_argv_) &&
            parse_argv("InvokeBin", config, kDefaultInvokeBinArgv, invoke_bin_argv_) &&
-           parse_argv("InvokeApp", config, kDefaultInvokeAppArgv, invoke_app_argv_);
+           parse_argv("InvokeApp", config, kDefaultInvokeAppArgv, invoke_app_argv_) &&
+           parse_argv("RemoveFile", config, kDefaultRemoveFileArgv, remove_file_argv_);
 }
 
 bool InvokeApp::init(const std::string& force_temp)
@@ -109,6 +119,7 @@ bool InvokeApp::push(const std::filesystem::path& path)
         return false;
     }
 
+    pushed_ = true;
     return true;
 }
 
@@ -128,6 +139,26 @@ bool InvokeApp::chmod()
         return false;
     }
 
+    return true;
+}
+
+bool InvokeApp::remove()
+{
+    LogFunc;
+
+    merge_replacement({ { "{TO_REMOVED_FILE}", tempname_ } });
+
+    auto argv_opt = remove_file_argv_.gen(argv_replace_);
+    if (!argv_opt) {
+        return false;
+    }
+
+    auto output_opt = startup_and_read_pipe(*argv_opt);
+    if (!output_opt) {
+        return false;
+    }
+
+    pushed_ = false;
     return true;
 }
 
