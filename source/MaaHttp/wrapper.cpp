@@ -2451,9 +2451,13 @@ std::optional<json::object> MaaControllerDestroy_Wrapper(json::object __param, s
 // LHG SEC BEGIN lhg.impl.MaaControllerDestroy.arg.ctrl
 // LHG SEC DEF
     auto ctrl_id = __param["ctrl"].as_string();
-    MaaControllerAPI *ctrl;
+    MaaControllerAPI *ctrl = 0;
     MaaControllerAPI__OpaqueManager.del(ctrl_id, ctrl);
 // LHG SEC END
+    if (!ctrl) {
+        __error = "ctrl not found in manager.";
+        return std::nullopt;
+    }
     MaaControllerDestroy(
         ctrl
     );
@@ -2519,6 +2523,10 @@ std::optional<json::object> MaaControllerSetOption_Wrapper(json::object __param,
     auto ctrl_id = __param["ctrl"].as_string();
     auto ctrl = MaaControllerAPI__OpaqueManager.get(ctrl_id);
 // LHG SEC END
+    if (!ctrl) {
+        __error = "ctrl not found in manager.";
+        return std::nullopt;
+    }
 // LHG SEC BEGIN lhg.impl.MaaControllerSetOption.arg.key
 // LHG SEC DEF
     auto key_temp = from_json<int>(__param["key"]);
@@ -2585,6 +2593,10 @@ std::optional<json::object> MaaControllerPostConnection_Wrapper(json::object __p
     auto ctrl_id = __param["ctrl"].as_string();
     auto ctrl = MaaControllerAPI__OpaqueManager.get(ctrl_id);
 // LHG SEC END
+    if (!ctrl) {
+        __error = "ctrl not found in manager.";
+        return std::nullopt;
+    }
     auto __return = MaaControllerPostConnection(
         ctrl
     );
@@ -2629,6 +2641,10 @@ std::optional<json::object> MaaControllerPostClick_Wrapper(json::object __param,
     auto ctrl_id = __param["ctrl"].as_string();
     auto ctrl = MaaControllerAPI__OpaqueManager.get(ctrl_id);
 // LHG SEC END
+    if (!ctrl) {
+        __error = "ctrl not found in manager.";
+        return std::nullopt;
+    }
 // LHG SEC BEGIN lhg.impl.MaaControllerPostClick.arg.x
 // LHG SEC DEF
     auto x_temp = from_json<int>(__param["x"]);
@@ -2712,6 +2728,10 @@ std::optional<json::object> MaaControllerPostSwipe_Wrapper(json::object __param,
     auto ctrl_id = __param["ctrl"].as_string();
     auto ctrl = MaaControllerAPI__OpaqueManager.get(ctrl_id);
 // LHG SEC END
+    if (!ctrl) {
+        __error = "ctrl not found in manager.";
+        return std::nullopt;
+    }
 // LHG SEC BEGIN lhg.impl.MaaControllerPostSwipe.arg.x1
 // LHG SEC DEF
     auto x1_temp = from_json<int>(__param["x1"]);
@@ -2777,6 +2797,10 @@ std::optional<json::object> MaaControllerPostPressKey_Wrapper(json::object __par
     auto ctrl_id = __param["ctrl"].as_string();
     auto ctrl = MaaControllerAPI__OpaqueManager.get(ctrl_id);
 // LHG SEC END
+    if (!ctrl) {
+        __error = "ctrl not found in manager.";
+        return std::nullopt;
+    }
 // LHG SEC BEGIN lhg.impl.MaaControllerPostPressKey.arg.keycode
 // LHG SEC DEF
     auto keycode_temp = from_json<int>(__param["keycode"]);
@@ -2818,6 +2842,10 @@ std::optional<json::object> MaaControllerPostInputText_Wrapper(json::object __pa
     auto ctrl_id = __param["ctrl"].as_string();
     auto ctrl = MaaControllerAPI__OpaqueManager.get(ctrl_id);
 // LHG SEC END
+    if (!ctrl) {
+        __error = "ctrl not found in manager.";
+        return std::nullopt;
+    }
 // LHG SEC BEGIN lhg.impl.MaaControllerPostInputText.arg.text
 // LHG SEC DEF
     auto text_temp = from_json<const char *>(__param["text"]);
@@ -2886,6 +2914,10 @@ std::optional<json::object> MaaControllerPostTouchDown_Wrapper(json::object __pa
     auto ctrl_id = __param["ctrl"].as_string();
     auto ctrl = MaaControllerAPI__OpaqueManager.get(ctrl_id);
 // LHG SEC END
+    if (!ctrl) {
+        __error = "ctrl not found in manager.";
+        return std::nullopt;
+    }
 // LHG SEC BEGIN lhg.impl.MaaControllerPostTouchDown.arg.contact
 // LHG SEC DEF
     auto contact_temp = from_json<int>(__param["contact"]);
@@ -2972,6 +3004,10 @@ std::optional<json::object> MaaControllerPostTouchMove_Wrapper(json::object __pa
     auto ctrl_id = __param["ctrl"].as_string();
     auto ctrl = MaaControllerAPI__OpaqueManager.get(ctrl_id);
 // LHG SEC END
+    if (!ctrl) {
+        __error = "ctrl not found in manager.";
+        return std::nullopt;
+    }
 // LHG SEC BEGIN lhg.impl.MaaControllerPostTouchMove.arg.contact
 // LHG SEC DEF
     auto contact_temp = from_json<int>(__param["contact"]);
@@ -3031,6 +3067,10 @@ std::optional<json::object> MaaControllerPostTouchUp_Wrapper(json::object __para
     auto ctrl_id = __param["ctrl"].as_string();
     auto ctrl = MaaControllerAPI__OpaqueManager.get(ctrl_id);
 // LHG SEC END
+    if (!ctrl) {
+        __error = "ctrl not found in manager.";
+        return std::nullopt;
+    }
 // LHG SEC BEGIN lhg.impl.MaaControllerPostTouchUp.arg.contact
 // LHG SEC DEF
     auto contact_temp = from_json<int>(__param["contact"]);
@@ -3063,6 +3103,10 @@ std::optional<json::object> MaaControllerPostScreencap_Wrapper(json::object __pa
     auto ctrl_id = __param["ctrl"].as_string();
     auto ctrl = MaaControllerAPI__OpaqueManager.get(ctrl_id);
 // LHG SEC END
+    if (!ctrl) {
+        __error = "ctrl not found in manager.";
+        return std::nullopt;
+    }
     auto __return = MaaControllerPostScreencap(
         ctrl
     );
@@ -3098,6 +3142,10 @@ std::optional<json::object> MaaControllerStatus_Wrapper(json::object __param, st
     auto ctrl_id = __param["ctrl"].as_string();
     auto ctrl = MaaControllerAPI__OpaqueManager.get(ctrl_id);
 // LHG SEC END
+    if (!ctrl) {
+        __error = "ctrl not found in manager.";
+        return std::nullopt;
+    }
 // LHG SEC BEGIN lhg.impl.MaaControllerStatus.arg.id
 // LHG SEC DEF
     auto id_temp = from_json<long long>(__param["id"]);
@@ -3139,6 +3187,10 @@ std::optional<json::object> MaaControllerWait_Wrapper(json::object __param, std:
     auto ctrl_id = __param["ctrl"].as_string();
     auto ctrl = MaaControllerAPI__OpaqueManager.get(ctrl_id);
 // LHG SEC END
+    if (!ctrl) {
+        __error = "ctrl not found in manager.";
+        return std::nullopt;
+    }
 // LHG SEC BEGIN lhg.impl.MaaControllerWait.arg.id
 // LHG SEC DEF
     auto id_temp = from_json<long long>(__param["id"]);
@@ -3171,6 +3223,10 @@ std::optional<json::object> MaaControllerConnected_Wrapper(json::object __param,
     auto ctrl_id = __param["ctrl"].as_string();
     auto ctrl = MaaControllerAPI__OpaqueManager.get(ctrl_id);
 // LHG SEC END
+    if (!ctrl) {
+        __error = "ctrl not found in manager.";
+        return std::nullopt;
+    }
     auto __return = MaaControllerConnected(
         ctrl
     );
@@ -3204,11 +3260,19 @@ std::optional<json::object> MaaControllerGetImage_Wrapper(json::object __param, 
     auto ctrl_id = __param["ctrl"].as_string();
     auto ctrl = MaaControllerAPI__OpaqueManager.get(ctrl_id);
 // LHG SEC END
+    if (!ctrl) {
+        __error = "ctrl not found in manager.";
+        return std::nullopt;
+    }
 // LHG SEC BEGIN lhg.impl.MaaControllerGetImage.arg.buffer
 // LHG SEC DEF
     auto buffer_id = __param["buffer"].as_string();
     auto buffer = MaaImageBuffer__OpaqueManager.get(buffer_id);
 // LHG SEC END
+    if (!buffer) {
+        __error = "buffer not found in manager.";
+        return std::nullopt;
+    }
     auto __return = MaaControllerGetImage(
         ctrl,
         buffer
@@ -3236,6 +3300,10 @@ std::optional<json::object> MaaControllerGetUUID_Wrapper(json::object __param, s
     auto ctrl_id = __param["ctrl"].as_string();
     auto ctrl = MaaControllerAPI__OpaqueManager.get(ctrl_id);
 // LHG SEC END
+    if (!ctrl) {
+        __error = "ctrl not found in manager.";
+        return std::nullopt;
+    }
 // LHG SEC BEGIN lhg.impl.MaaControllerGetUUID.arg.buffer
 // LHG SEC DEF
     auto buffer = output_prepare<MaaStringBuffer *>();
@@ -3296,9 +3364,13 @@ std::optional<json::object> MaaDestroy_Wrapper(json::object __param, std::string
 // LHG SEC BEGIN lhg.impl.MaaDestroy.arg.inst
 // LHG SEC DEF
     auto inst_id = __param["inst"].as_string();
-    MaaInstanceAPI *inst;
+    MaaInstanceAPI *inst = 0;
     MaaInstanceAPI__OpaqueManager.del(inst_id, inst);
 // LHG SEC END
+    if (!inst) {
+        __error = "inst not found in manager.";
+        return std::nullopt;
+    }
     MaaDestroy(
         inst
     );
@@ -3340,6 +3412,10 @@ std::optional<json::object> MaaSetOption_Wrapper(json::object __param, std::stri
     auto inst_id = __param["inst"].as_string();
     auto inst = MaaInstanceAPI__OpaqueManager.get(inst_id);
 // LHG SEC END
+    if (!inst) {
+        __error = "inst not found in manager.";
+        return std::nullopt;
+    }
 // LHG SEC BEGIN lhg.impl.MaaSetOption.arg.key
 // LHG SEC DEF
     auto key_temp = from_json<int>(__param["key"]);
@@ -3390,11 +3466,19 @@ std::optional<json::object> MaaBindResource_Wrapper(json::object __param, std::s
     auto inst_id = __param["inst"].as_string();
     auto inst = MaaInstanceAPI__OpaqueManager.get(inst_id);
 // LHG SEC END
+    if (!inst) {
+        __error = "inst not found in manager.";
+        return std::nullopt;
+    }
 // LHG SEC BEGIN lhg.impl.MaaBindResource.arg.res
 // LHG SEC DEF
     auto res_id = __param["res"].as_string();
     auto res = MaaResourceAPI__OpaqueManager.get(res_id);
 // LHG SEC END
+    if (!res) {
+        __error = "res not found in manager.";
+        return std::nullopt;
+    }
     auto __return = MaaBindResource(
         inst,
         res
@@ -3429,11 +3513,19 @@ std::optional<json::object> MaaBindController_Wrapper(json::object __param, std:
     auto inst_id = __param["inst"].as_string();
     auto inst = MaaInstanceAPI__OpaqueManager.get(inst_id);
 // LHG SEC END
+    if (!inst) {
+        __error = "inst not found in manager.";
+        return std::nullopt;
+    }
 // LHG SEC BEGIN lhg.impl.MaaBindController.arg.ctrl
 // LHG SEC DEF
     auto ctrl_id = __param["ctrl"].as_string();
     auto ctrl = MaaControllerAPI__OpaqueManager.get(ctrl_id);
 // LHG SEC END
+    if (!ctrl) {
+        __error = "ctrl not found in manager.";
+        return std::nullopt;
+    }
     auto __return = MaaBindController(
         inst,
         ctrl
@@ -3461,6 +3553,10 @@ std::optional<json::object> MaaInited_Wrapper(json::object __param, std::string 
     auto inst_id = __param["inst"].as_string();
     auto inst = MaaInstanceAPI__OpaqueManager.get(inst_id);
 // LHG SEC END
+    if (!inst) {
+        __error = "inst not found in manager.";
+        return std::nullopt;
+    }
     auto __return = MaaInited(
         inst
     );
@@ -3487,6 +3583,10 @@ std::optional<json::object> MaaClearCustomRecognizer_Wrapper(json::object __para
     auto inst_id = __param["inst"].as_string();
     auto inst = MaaInstanceAPI__OpaqueManager.get(inst_id);
 // LHG SEC END
+    if (!inst) {
+        __error = "inst not found in manager.";
+        return std::nullopt;
+    }
     auto __return = MaaClearCustomRecognizer(
         inst
     );
@@ -3513,6 +3613,10 @@ std::optional<json::object> MaaClearCustomAction_Wrapper(json::object __param, s
     auto inst_id = __param["inst"].as_string();
     auto inst = MaaInstanceAPI__OpaqueManager.get(inst_id);
 // LHG SEC END
+    if (!inst) {
+        __error = "inst not found in manager.";
+        return std::nullopt;
+    }
     auto __return = MaaClearCustomAction(
         inst
     );
@@ -3557,6 +3661,10 @@ std::optional<json::object> MaaPostTask_Wrapper(json::object __param, std::strin
     auto inst_id = __param["inst"].as_string();
     auto inst = MaaInstanceAPI__OpaqueManager.get(inst_id);
 // LHG SEC END
+    if (!inst) {
+        __error = "inst not found in manager.";
+        return std::nullopt;
+    }
 // LHG SEC BEGIN lhg.impl.MaaPostTask.arg.entry
 // LHG SEC DEF
     auto entry_temp = from_json<const char *>(__param["entry"]);
@@ -3613,6 +3721,10 @@ std::optional<json::object> MaaSetTaskParam_Wrapper(json::object __param, std::s
     auto inst_id = __param["inst"].as_string();
     auto inst = MaaInstanceAPI__OpaqueManager.get(inst_id);
 // LHG SEC END
+    if (!inst) {
+        __error = "inst not found in manager.";
+        return std::nullopt;
+    }
 // LHG SEC BEGIN lhg.impl.MaaSetTaskParam.arg.id
 // LHG SEC DEF
     auto id_temp = from_json<long long>(__param["id"]);
@@ -3660,6 +3772,10 @@ std::optional<json::object> MaaTaskStatus_Wrapper(json::object __param, std::str
     auto inst_id = __param["inst"].as_string();
     auto inst = MaaInstanceAPI__OpaqueManager.get(inst_id);
 // LHG SEC END
+    if (!inst) {
+        __error = "inst not found in manager.";
+        return std::nullopt;
+    }
 // LHG SEC BEGIN lhg.impl.MaaTaskStatus.arg.id
 // LHG SEC DEF
     auto id_temp = from_json<long long>(__param["id"]);
@@ -3701,6 +3817,10 @@ std::optional<json::object> MaaWaitTask_Wrapper(json::object __param, std::strin
     auto inst_id = __param["inst"].as_string();
     auto inst = MaaInstanceAPI__OpaqueManager.get(inst_id);
 // LHG SEC END
+    if (!inst) {
+        __error = "inst not found in manager.";
+        return std::nullopt;
+    }
 // LHG SEC BEGIN lhg.impl.MaaWaitTask.arg.id
 // LHG SEC DEF
     auto id_temp = from_json<long long>(__param["id"]);
@@ -3733,6 +3853,10 @@ std::optional<json::object> MaaTaskAllFinished_Wrapper(json::object __param, std
     auto inst_id = __param["inst"].as_string();
     auto inst = MaaInstanceAPI__OpaqueManager.get(inst_id);
 // LHG SEC END
+    if (!inst) {
+        __error = "inst not found in manager.";
+        return std::nullopt;
+    }
     auto __return = MaaTaskAllFinished(
         inst
     );
@@ -3759,6 +3883,10 @@ std::optional<json::object> MaaPostStop_Wrapper(json::object __param, std::strin
     auto inst_id = __param["inst"].as_string();
     auto inst = MaaInstanceAPI__OpaqueManager.get(inst_id);
 // LHG SEC END
+    if (!inst) {
+        __error = "inst not found in manager.";
+        return std::nullopt;
+    }
     auto __return = MaaPostStop(
         inst
     );
@@ -3785,6 +3913,10 @@ std::optional<json::object> MaaStop_Wrapper(json::object __param, std::string &_
     auto inst_id = __param["inst"].as_string();
     auto inst = MaaInstanceAPI__OpaqueManager.get(inst_id);
 // LHG SEC END
+    if (!inst) {
+        __error = "inst not found in manager.";
+        return std::nullopt;
+    }
     auto __return = MaaStop(
         inst
     );
@@ -3811,6 +3943,10 @@ std::optional<json::object> MaaGetResource_Wrapper(json::object __param, std::st
     auto inst_id = __param["inst"].as_string();
     auto inst = MaaInstanceAPI__OpaqueManager.get(inst_id);
 // LHG SEC END
+    if (!inst) {
+        __error = "inst not found in manager.";
+        return std::nullopt;
+    }
     auto __return = MaaGetResource(
         inst
     );
@@ -3837,6 +3973,10 @@ std::optional<json::object> MaaGetController_Wrapper(json::object __param, std::
     auto inst_id = __param["inst"].as_string();
     auto inst = MaaInstanceAPI__OpaqueManager.get(inst_id);
 // LHG SEC END
+    if (!inst) {
+        __error = "inst not found in manager.";
+        return std::nullopt;
+    }
     auto __return = MaaGetController(
         inst
     );
@@ -3892,9 +4032,13 @@ std::optional<json::object> MaaResourceDestroy_Wrapper(json::object __param, std
 // LHG SEC BEGIN lhg.impl.MaaResourceDestroy.arg.res
 // LHG SEC DEF
     auto res_id = __param["res"].as_string();
-    MaaResourceAPI *res;
+    MaaResourceAPI *res = 0;
     MaaResourceAPI__OpaqueManager.del(res_id, res);
 // LHG SEC END
+    if (!res) {
+        __error = "res not found in manager.";
+        return std::nullopt;
+    }
     MaaResourceDestroy(
         res
     );
@@ -3930,6 +4074,10 @@ std::optional<json::object> MaaResourcePostPath_Wrapper(json::object __param, st
     auto res_id = __param["res"].as_string();
     auto res = MaaResourceAPI__OpaqueManager.get(res_id);
 // LHG SEC END
+    if (!res) {
+        __error = "res not found in manager.";
+        return std::nullopt;
+    }
 // LHG SEC BEGIN lhg.impl.MaaResourcePostPath.arg.path
 // LHG SEC DEF
     auto path_temp = from_json<const char *>(__param["path"]);
@@ -3971,6 +4119,10 @@ std::optional<json::object> MaaResourceStatus_Wrapper(json::object __param, std:
     auto res_id = __param["res"].as_string();
     auto res = MaaResourceAPI__OpaqueManager.get(res_id);
 // LHG SEC END
+    if (!res) {
+        __error = "res not found in manager.";
+        return std::nullopt;
+    }
 // LHG SEC BEGIN lhg.impl.MaaResourceStatus.arg.id
 // LHG SEC DEF
     auto id_temp = from_json<long long>(__param["id"]);
@@ -4012,6 +4164,10 @@ std::optional<json::object> MaaResourceWait_Wrapper(json::object __param, std::s
     auto res_id = __param["res"].as_string();
     auto res = MaaResourceAPI__OpaqueManager.get(res_id);
 // LHG SEC END
+    if (!res) {
+        __error = "res not found in manager.";
+        return std::nullopt;
+    }
 // LHG SEC BEGIN lhg.impl.MaaResourceWait.arg.id
 // LHG SEC DEF
     auto id_temp = from_json<long long>(__param["id"]);
@@ -4044,6 +4200,10 @@ std::optional<json::object> MaaResourceLoaded_Wrapper(json::object __param, std:
     auto res_id = __param["res"].as_string();
     auto res = MaaResourceAPI__OpaqueManager.get(res_id);
 // LHG SEC END
+    if (!res) {
+        __error = "res not found in manager.";
+        return std::nullopt;
+    }
     auto __return = MaaResourceLoaded(
         res
     );
@@ -4085,6 +4245,10 @@ std::optional<json::object> MaaResourceSetOption_Wrapper(json::object __param, s
     auto res_id = __param["res"].as_string();
     auto res = MaaResourceAPI__OpaqueManager.get(res_id);
 // LHG SEC END
+    if (!res) {
+        __error = "res not found in manager.";
+        return std::nullopt;
+    }
 // LHG SEC BEGIN lhg.impl.MaaResourceSetOption.arg.key
 // LHG SEC DEF
     auto key_temp = from_json<int>(__param["key"]);
@@ -4128,6 +4292,10 @@ std::optional<json::object> MaaResourceGetHash_Wrapper(json::object __param, std
     auto res_id = __param["res"].as_string();
     auto res = MaaResourceAPI__OpaqueManager.get(res_id);
 // LHG SEC END
+    if (!res) {
+        __error = "res not found in manager.";
+        return std::nullopt;
+    }
 // LHG SEC BEGIN lhg.impl.MaaResourceGetHash.arg.buffer
 // LHG SEC DEF
     auto buffer = output_prepare<MaaStringBuffer *>();
@@ -4159,6 +4327,10 @@ std::optional<json::object> MaaResourceGetTaskList_Wrapper(json::object __param,
     auto res_id = __param["res"].as_string();
     auto res = MaaResourceAPI__OpaqueManager.get(res_id);
 // LHG SEC END
+    if (!res) {
+        __error = "res not found in manager.";
+        return std::nullopt;
+    }
 // LHG SEC BEGIN lhg.impl.MaaResourceGetTaskList.arg.buffer
 // LHG SEC DEF
     auto buffer = output_prepare<MaaStringBuffer *>();
@@ -4202,9 +4374,13 @@ std::optional<json::object> MaaDestroyImageBuffer_Wrapper(json::object __param, 
 // LHG SEC BEGIN lhg.impl.MaaDestroyImageBuffer.arg.handle
 // LHG SEC DEF
     auto handle_id = __param["handle"].as_string();
-    MaaImageBuffer *handle;
+    MaaImageBuffer *handle = 0;
     MaaImageBuffer__OpaqueManager.del(handle_id, handle);
 // LHG SEC END
+    if (!handle) {
+        __error = "handle not found in manager.";
+        return std::nullopt;
+    }
     MaaDestroyImageBuffer(
         handle
     );
@@ -4231,6 +4407,10 @@ std::optional<json::object> MaaIsImageEmpty_Wrapper(json::object __param, std::s
     auto handle_id = __param["handle"].as_string();
     auto handle = MaaImageBuffer__OpaqueManager.get(handle_id);
 // LHG SEC END
+    if (!handle) {
+        __error = "handle not found in manager.";
+        return std::nullopt;
+    }
     auto __return = MaaIsImageEmpty(
         handle
     );
@@ -4257,6 +4437,10 @@ std::optional<json::object> MaaClearImage_Wrapper(json::object __param, std::str
     auto handle_id = __param["handle"].as_string();
     auto handle = MaaImageBuffer__OpaqueManager.get(handle_id);
 // LHG SEC END
+    if (!handle) {
+        __error = "handle not found in manager.";
+        return std::nullopt;
+    }
     auto __return = MaaClearImage(
         handle
     );
@@ -4283,6 +4467,10 @@ std::optional<json::object> MaaGetImageWidth_Wrapper(json::object __param, std::
     auto handle_id = __param["handle"].as_string();
     auto handle = MaaImageBuffer__OpaqueManager.get(handle_id);
 // LHG SEC END
+    if (!handle) {
+        __error = "handle not found in manager.";
+        return std::nullopt;
+    }
     auto __return = MaaGetImageWidth(
         handle
     );
@@ -4309,6 +4497,10 @@ std::optional<json::object> MaaGetImageHeight_Wrapper(json::object __param, std:
     auto handle_id = __param["handle"].as_string();
     auto handle = MaaImageBuffer__OpaqueManager.get(handle_id);
 // LHG SEC END
+    if (!handle) {
+        __error = "handle not found in manager.";
+        return std::nullopt;
+    }
     auto __return = MaaGetImageHeight(
         handle
     );
@@ -4335,6 +4527,10 @@ std::optional<json::object> MaaGetImageType_Wrapper(json::object __param, std::s
     auto handle_id = __param["handle"].as_string();
     auto handle = MaaImageBuffer__OpaqueManager.get(handle_id);
 // LHG SEC END
+    if (!handle) {
+        __error = "handle not found in manager.";
+        return std::nullopt;
+    }
     auto __return = MaaGetImageType(
         handle
     );
@@ -4361,6 +4557,10 @@ std::optional<json::object> MaaGetImageEncoded_Wrapper(json::object __param, std
     auto handle_id = __param["handle"].as_string();
     auto handle = MaaImageBuffer__OpaqueManager.get(handle_id);
 // LHG SEC END
+    if (!handle) {
+        __error = "handle not found in manager.";
+        return std::nullopt;
+    }
     auto __return = MaaGetImageEncoded(
         handle
     );
@@ -4395,6 +4595,10 @@ std::optional<json::object> MaaSetImageEncoded_Wrapper(json::object __param, std
     auto handle_id = __param["handle"].as_string();
     auto handle = MaaImageBuffer__OpaqueManager.get(handle_id);
 // LHG SEC END
+    if (!handle) {
+        __error = "handle not found in manager.";
+        return std::nullopt;
+    }
 // LHG SEC BEGIN lhg.impl.MaaSetImageEncoded.arg.data
     auto data_temp = __param["data"].as_string();
     auto data = reinterpret_cast<uint8_t *>(const_cast<char *>(data_temp.c_str()));
@@ -4857,6 +5061,10 @@ std::optional<json::object> MaaToolkitRegisterCustomRecognizerExecutor_Wrapper(j
     auto handle_id = __param["handle"].as_string();
     auto handle = MaaInstanceAPI__OpaqueManager.get(handle_id);
 // LHG SEC END
+    if (!handle) {
+        __error = "handle not found in manager.";
+        return std::nullopt;
+    }
 // LHG SEC BEGIN lhg.impl.MaaToolkitRegisterCustomRecognizerExecutor.arg.recognizer_name
 // LHG SEC DEF
     auto recognizer_name_temp = from_json<const char *>(__param["recognizer_name"]);
@@ -4910,6 +5118,10 @@ std::optional<json::object> MaaToolkitUnregisterCustomRecognizerExecutor_Wrapper
     auto handle_id = __param["handle"].as_string();
     auto handle = MaaInstanceAPI__OpaqueManager.get(handle_id);
 // LHG SEC END
+    if (!handle) {
+        __error = "handle not found in manager.";
+        return std::nullopt;
+    }
 // LHG SEC BEGIN lhg.impl.MaaToolkitUnregisterCustomRecognizerExecutor.arg.recognizer_name
 // LHG SEC DEF
     auto recognizer_name_temp = from_json<const char *>(__param["recognizer_name"]);
@@ -4969,6 +5181,10 @@ std::optional<json::object> MaaToolkitRegisterCustomActionExecutor_Wrapper(json:
     auto handle_id = __param["handle"].as_string();
     auto handle = MaaInstanceAPI__OpaqueManager.get(handle_id);
 // LHG SEC END
+    if (!handle) {
+        __error = "handle not found in manager.";
+        return std::nullopt;
+    }
 // LHG SEC BEGIN lhg.impl.MaaToolkitRegisterCustomActionExecutor.arg.action_name
 // LHG SEC DEF
     auto action_name_temp = from_json<const char *>(__param["action_name"]);
@@ -5022,6 +5238,10 @@ std::optional<json::object> MaaToolkitUnregisterCustomActionExecutor_Wrapper(jso
     auto handle_id = __param["handle"].as_string();
     auto handle = MaaInstanceAPI__OpaqueManager.get(handle_id);
 // LHG SEC END
+    if (!handle) {
+        __error = "handle not found in manager.";
+        return std::nullopt;
+    }
 // LHG SEC BEGIN lhg.impl.MaaToolkitUnregisterCustomActionExecutor.arg.action_name
 // LHG SEC DEF
     auto action_name_temp = from_json<const char *>(__param["action_name"]);
