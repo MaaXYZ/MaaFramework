@@ -12,6 +12,7 @@ on:
       - "source/**"
       - "CMakeLists.txt"
       - "test/**"
+  workflow_dispatch:
 
 jobs:
   meta:

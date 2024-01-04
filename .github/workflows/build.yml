@@ -13,17 +13,6 @@ on:
       - "include/**"
       - "source/**"
       - "CMakeLists.txt"
-
-  pull_request:
-    branches:
-      - "**"
-    paths:
-      - ".github/workflows/build.yml"
-      - "3rdparty/**"
-      - "cmake/**"
-      - "include/**"
-      - "source/**"
-      - "CMakeLists.txt"
   workflow_dispatch:
 
 jobs:
