@@ -39,7 +39,7 @@ class SyncContext:
         image: numpy.ndarray,
         task_name: str,
         task_param: Any,
-    ) -> Optional(Tuple[(int, int, int, int), str]):
+    ) -> Optional[Tuple[Tuple[int, int, int, int], str]]:
         """
         Sync context run recognizer.
 
@@ -79,7 +79,7 @@ class SyncContext:
         task_param: Any,
         cur_box: (int, int, int, int),
         cur_rec_detail: str,
-    ) -> Optional(str):
+    ) -> Optional[str]:
         """
         Sync context run action.
 

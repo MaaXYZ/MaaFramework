@@ -1,6 +1,6 @@
 import ctypes
 import numpy
-from typing import Union, Optional
+from typing import Tuple, Union, Optional
 from PIL import Image
 
 from .define import MaaBool
@@ -211,7 +211,7 @@ class RectBuffer:
         if self._handle and self._own:
             Library.framework.MaaDestroyRectBuffer(self._handle)
 
-    def get(self) -> (int, int, int, int):
+    def get(self) -> Tuple[int, int, int, int]:
         x = Library.framework.MaaGetRectX(self._handle)
         y = Library.framework.MaaGetRectY(self._handle)
         w = Library.framework.MaaGetRectW(self._handle)
