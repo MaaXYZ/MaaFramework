@@ -1,6 +1,6 @@
 // clang-format off
 
-#include "Utils.h"
+#include "LHGUtils.h"
 #define LHG_PROCESS
 
 // LHG SEC BEGIN lhg.include
@@ -37,36 +37,32 @@ static lhg::callback_manager<void (*)(const char *, const char *, void *)> MaaAP
 
 static lhg::opaque_manager<MaaControllerAPI *> MaaControllerAPI__OpaqueManager;
 
-template <>
+template<>
 struct lhg::schema_t<MaaControllerAPI *>
 {
     static constexpr const char* const schema = "string@MaaControllerAPI";
 };
-
 static lhg::opaque_manager<MaaResourceAPI *> MaaResourceAPI__OpaqueManager;
 
-template <>
+template<>
 struct lhg::schema_t<MaaResourceAPI *>
 {
     static constexpr const char* const schema = "string@MaaResourceAPI";
 };
-
 static lhg::opaque_manager<MaaInstanceAPI *> MaaInstanceAPI__OpaqueManager;
 
-template <>
+template<>
 struct lhg::schema_t<MaaInstanceAPI *>
 {
     static constexpr const char* const schema = "string@MaaInstanceAPI";
 };
-
 static lhg::opaque_manager<MaaImageBuffer *> MaaImageBuffer__OpaqueManager;
 
-template <>
+template<>
 struct lhg::schema_t<MaaImageBuffer *>
 {
     static constexpr const char* const schema = "string@MaaImageBuffer";
 };
-
 json::object MaaAdbControllerCreate_HelperInput() {
     return json::object {
 // LHG SEC BEGIN lhg.helper.MaaAdbControllerCreate.input.adb_path
@@ -92,6 +88,18 @@ json::object MaaAdbControllerCreate_HelperInput() {
     };
 }
 
+json::object MaaAdbControllerCreate_HelperOutput() {
+    return json::object {
+        { "data", {
+// LHG SEC BEGIN lhg.helper.MaaAdbControllerCreate.output.return
+// LHG SEC DEF
+            { "return", lhg::schema_t<MaaControllerAPI *>::schema },
+// LHG SEC END
+        }},
+        { "error", "string" }
+    };
+}
+
 json::object MaaWin32ControllerCreate_HelperInput() {
     return json::object {
 // LHG SEC BEGIN lhg.helper.MaaWin32ControllerCreate.input.hWnd
@@ -106,6 +114,18 @@ json::object MaaWin32ControllerCreate_HelperInput() {
 // LHG SEC DEF
         { "callback", "string@MaaAPICallback" },
 // LHG SEC END
+    };
+}
+
+json::object MaaWin32ControllerCreate_HelperOutput() {
+    return json::object {
+        { "data", {
+// LHG SEC BEGIN lhg.helper.MaaWin32ControllerCreate.output.return
+// LHG SEC DEF
+            { "return", lhg::schema_t<MaaControllerAPI *>::schema },
+// LHG SEC END
+        }},
+        { "error", "string" }
     };
 }
 
@@ -138,6 +158,18 @@ json::object MaaAdbControllerCreateV2_HelperInput() {
     };
 }
 
+json::object MaaAdbControllerCreateV2_HelperOutput() {
+    return json::object {
+        { "data", {
+// LHG SEC BEGIN lhg.helper.MaaAdbControllerCreateV2.output.return
+// LHG SEC DEF
+            { "return", lhg::schema_t<MaaControllerAPI *>::schema },
+// LHG SEC END
+        }},
+        { "error", "string" }
+    };
+}
+
 json::object MaaThriftControllerCreate_HelperInput() {
     return json::object {
 // LHG SEC BEGIN lhg.helper.MaaThriftControllerCreate.input.type
@@ -160,6 +192,18 @@ json::object MaaThriftControllerCreate_HelperInput() {
 // LHG SEC DEF
         { "callback", "string@MaaAPICallback" },
 // LHG SEC END
+    };
+}
+
+json::object MaaThriftControllerCreate_HelperOutput() {
+    return json::object {
+        { "data", {
+// LHG SEC BEGIN lhg.helper.MaaThriftControllerCreate.output.return
+// LHG SEC DEF
+            { "return", lhg::schema_t<MaaControllerAPI *>::schema },
+// LHG SEC END
+        }},
+        { "error", "string" }
     };
 }
 
@@ -188,12 +232,36 @@ json::object MaaDbgControllerCreate_HelperInput() {
     };
 }
 
+json::object MaaDbgControllerCreate_HelperOutput() {
+    return json::object {
+        { "data", {
+// LHG SEC BEGIN lhg.helper.MaaDbgControllerCreate.output.return
+// LHG SEC DEF
+            { "return", lhg::schema_t<MaaControllerAPI *>::schema },
+// LHG SEC END
+        }},
+        { "error", "string" }
+    };
+}
+
 json::object MaaControllerDestroy_HelperInput() {
     return json::object {
 // LHG SEC BEGIN lhg.helper.MaaControllerDestroy.input.ctrl
 // LHG SEC DEF
         { "ctrl", "string@MaaControllerAPI" },
 // LHG SEC END
+    };
+}
+
+json::object MaaControllerDestroy_HelperOutput() {
+    return json::object {
+        { "data", {
+// LHG SEC BEGIN lhg.helper.MaaControllerDestroy.output.return
+// LHG SEC DEF
+            { "return", lhg::schema_t<void>::schema },
+// LHG SEC END
+        }},
+        { "error", "string" }
     };
 }
 
@@ -216,12 +284,36 @@ json::object MaaControllerSetOption_HelperInput() {
     };
 }
 
+json::object MaaControllerSetOption_HelperOutput() {
+    return json::object {
+        { "data", {
+// LHG SEC BEGIN lhg.helper.MaaControllerSetOption.output.return
+// LHG SEC DEF
+            { "return", lhg::schema_t<unsigned char>::schema },
+// LHG SEC END
+        }},
+        { "error", "string" }
+    };
+}
+
 json::object MaaControllerPostConnection_HelperInput() {
     return json::object {
 // LHG SEC BEGIN lhg.helper.MaaControllerPostConnection.input.ctrl
 // LHG SEC DEF
         { "ctrl", "string@MaaControllerAPI" },
 // LHG SEC END
+    };
+}
+
+json::object MaaControllerPostConnection_HelperOutput() {
+    return json::object {
+        { "data", {
+// LHG SEC BEGIN lhg.helper.MaaControllerPostConnection.output.return
+// LHG SEC DEF
+            { "return", lhg::schema_t<long long>::schema },
+// LHG SEC END
+        }},
+        { "error", "string" }
     };
 }
 
@@ -239,6 +331,18 @@ json::object MaaControllerPostClick_HelperInput() {
 // LHG SEC DEF
         { "y", lhg::schema_t<int>::schema },
 // LHG SEC END
+    };
+}
+
+json::object MaaControllerPostClick_HelperOutput() {
+    return json::object {
+        { "data", {
+// LHG SEC BEGIN lhg.helper.MaaControllerPostClick.output.return
+// LHG SEC DEF
+            { "return", lhg::schema_t<long long>::schema },
+// LHG SEC END
+        }},
+        { "error", "string" }
     };
 }
 
@@ -271,6 +375,18 @@ json::object MaaControllerPostSwipe_HelperInput() {
     };
 }
 
+json::object MaaControllerPostSwipe_HelperOutput() {
+    return json::object {
+        { "data", {
+// LHG SEC BEGIN lhg.helper.MaaControllerPostSwipe.output.return
+// LHG SEC DEF
+            { "return", lhg::schema_t<long long>::schema },
+// LHG SEC END
+        }},
+        { "error", "string" }
+    };
+}
+
 json::object MaaControllerPostPressKey_HelperInput() {
     return json::object {
 // LHG SEC BEGIN lhg.helper.MaaControllerPostPressKey.input.ctrl
@@ -284,6 +400,18 @@ json::object MaaControllerPostPressKey_HelperInput() {
     };
 }
 
+json::object MaaControllerPostPressKey_HelperOutput() {
+    return json::object {
+        { "data", {
+// LHG SEC BEGIN lhg.helper.MaaControllerPostPressKey.output.return
+// LHG SEC DEF
+            { "return", lhg::schema_t<long long>::schema },
+// LHG SEC END
+        }},
+        { "error", "string" }
+    };
+}
+
 json::object MaaControllerPostInputText_HelperInput() {
     return json::object {
 // LHG SEC BEGIN lhg.helper.MaaControllerPostInputText.input.ctrl
@@ -294,6 +422,18 @@ json::object MaaControllerPostInputText_HelperInput() {
 // LHG SEC DEF
         { "text", lhg::schema_t<const char *>::schema },
 // LHG SEC END
+    };
+}
+
+json::object MaaControllerPostInputText_HelperOutput() {
+    return json::object {
+        { "data", {
+// LHG SEC BEGIN lhg.helper.MaaControllerPostInputText.output.return
+// LHG SEC DEF
+            { "return", lhg::schema_t<long long>::schema },
+// LHG SEC END
+        }},
+        { "error", "string" }
     };
 }
 
@@ -322,6 +462,18 @@ json::object MaaControllerPostTouchDown_HelperInput() {
     };
 }
 
+json::object MaaControllerPostTouchDown_HelperOutput() {
+    return json::object {
+        { "data", {
+// LHG SEC BEGIN lhg.helper.MaaControllerPostTouchDown.output.return
+// LHG SEC DEF
+            { "return", lhg::schema_t<long long>::schema },
+// LHG SEC END
+        }},
+        { "error", "string" }
+    };
+}
+
 json::object MaaControllerPostTouchMove_HelperInput() {
     return json::object {
 // LHG SEC BEGIN lhg.helper.MaaControllerPostTouchMove.input.ctrl
@@ -347,6 +499,18 @@ json::object MaaControllerPostTouchMove_HelperInput() {
     };
 }
 
+json::object MaaControllerPostTouchMove_HelperOutput() {
+    return json::object {
+        { "data", {
+// LHG SEC BEGIN lhg.helper.MaaControllerPostTouchMove.output.return
+// LHG SEC DEF
+            { "return", lhg::schema_t<long long>::schema },
+// LHG SEC END
+        }},
+        { "error", "string" }
+    };
+}
+
 json::object MaaControllerPostTouchUp_HelperInput() {
     return json::object {
 // LHG SEC BEGIN lhg.helper.MaaControllerPostTouchUp.input.ctrl
@@ -360,12 +524,36 @@ json::object MaaControllerPostTouchUp_HelperInput() {
     };
 }
 
+json::object MaaControllerPostTouchUp_HelperOutput() {
+    return json::object {
+        { "data", {
+// LHG SEC BEGIN lhg.helper.MaaControllerPostTouchUp.output.return
+// LHG SEC DEF
+            { "return", lhg::schema_t<long long>::schema },
+// LHG SEC END
+        }},
+        { "error", "string" }
+    };
+}
+
 json::object MaaControllerPostScreencap_HelperInput() {
     return json::object {
 // LHG SEC BEGIN lhg.helper.MaaControllerPostScreencap.input.ctrl
 // LHG SEC DEF
         { "ctrl", "string@MaaControllerAPI" },
 // LHG SEC END
+    };
+}
+
+json::object MaaControllerPostScreencap_HelperOutput() {
+    return json::object {
+        { "data", {
+// LHG SEC BEGIN lhg.helper.MaaControllerPostScreencap.output.return
+// LHG SEC DEF
+            { "return", lhg::schema_t<long long>::schema },
+// LHG SEC END
+        }},
+        { "error", "string" }
     };
 }
 
@@ -382,6 +570,18 @@ json::object MaaControllerStatus_HelperInput() {
     };
 }
 
+json::object MaaControllerStatus_HelperOutput() {
+    return json::object {
+        { "data", {
+// LHG SEC BEGIN lhg.helper.MaaControllerStatus.output.return
+// LHG SEC DEF
+            { "return", lhg::schema_t<int>::schema },
+// LHG SEC END
+        }},
+        { "error", "string" }
+    };
+}
+
 json::object MaaControllerWait_HelperInput() {
     return json::object {
 // LHG SEC BEGIN lhg.helper.MaaControllerWait.input.ctrl
@@ -395,12 +595,36 @@ json::object MaaControllerWait_HelperInput() {
     };
 }
 
+json::object MaaControllerWait_HelperOutput() {
+    return json::object {
+        { "data", {
+// LHG SEC BEGIN lhg.helper.MaaControllerWait.output.return
+// LHG SEC DEF
+            { "return", lhg::schema_t<int>::schema },
+// LHG SEC END
+        }},
+        { "error", "string" }
+    };
+}
+
 json::object MaaControllerConnected_HelperInput() {
     return json::object {
 // LHG SEC BEGIN lhg.helper.MaaControllerConnected.input.ctrl
 // LHG SEC DEF
         { "ctrl", "string@MaaControllerAPI" },
 // LHG SEC END
+    };
+}
+
+json::object MaaControllerConnected_HelperOutput() {
+    return json::object {
+        { "data", {
+// LHG SEC BEGIN lhg.helper.MaaControllerConnected.output.return
+// LHG SEC DEF
+            { "return", lhg::schema_t<unsigned char>::schema },
+// LHG SEC END
+        }},
+        { "error", "string" }
     };
 }
 
@@ -417,12 +641,40 @@ json::object MaaControllerGetImage_HelperInput() {
     };
 }
 
+json::object MaaControllerGetImage_HelperOutput() {
+    return json::object {
+        { "data", {
+// LHG SEC BEGIN lhg.helper.MaaControllerGetImage.output.return
+// LHG SEC DEF
+            { "return", lhg::schema_t<unsigned char>::schema },
+// LHG SEC END
+        }},
+        { "error", "string" }
+    };
+}
+
 json::object MaaControllerGetUUID_HelperInput() {
     return json::object {
 // LHG SEC BEGIN lhg.helper.MaaControllerGetUUID.input.ctrl
 // LHG SEC DEF
         { "ctrl", "string@MaaControllerAPI" },
 // LHG SEC END
+    };
+}
+
+json::object MaaControllerGetUUID_HelperOutput() {
+    return json::object {
+        { "data", {
+// LHG SEC BEGIN lhg.helper.MaaControllerGetUUID.output.return
+// LHG SEC DEF
+            { "return", lhg::schema_t<unsigned char>::schema },
+// LHG SEC END
+// LHG SEC BEGIN lhg.helper.MaaControllerGetUUID.output.buffer
+// LHG SEC DEF
+            { "buffer", lhg::schema_t<MaaStringBuffer *>::schema },
+// LHG SEC END
+        }},
+        { "error", "string" }
     };
 }
 
@@ -435,12 +687,36 @@ json::object MaaCreate_HelperInput() {
     };
 }
 
+json::object MaaCreate_HelperOutput() {
+    return json::object {
+        { "data", {
+// LHG SEC BEGIN lhg.helper.MaaCreate.output.return
+// LHG SEC DEF
+            { "return", lhg::schema_t<MaaInstanceAPI *>::schema },
+// LHG SEC END
+        }},
+        { "error", "string" }
+    };
+}
+
 json::object MaaDestroy_HelperInput() {
     return json::object {
 // LHG SEC BEGIN lhg.helper.MaaDestroy.input.inst
 // LHG SEC DEF
         { "inst", "string@MaaInstanceAPI" },
 // LHG SEC END
+    };
+}
+
+json::object MaaDestroy_HelperOutput() {
+    return json::object {
+        { "data", {
+// LHG SEC BEGIN lhg.helper.MaaDestroy.output.return
+// LHG SEC DEF
+            { "return", lhg::schema_t<void>::schema },
+// LHG SEC END
+        }},
+        { "error", "string" }
     };
 }
 
@@ -463,6 +739,18 @@ json::object MaaSetOption_HelperInput() {
     };
 }
 
+json::object MaaSetOption_HelperOutput() {
+    return json::object {
+        { "data", {
+// LHG SEC BEGIN lhg.helper.MaaSetOption.output.return
+// LHG SEC DEF
+            { "return", lhg::schema_t<unsigned char>::schema },
+// LHG SEC END
+        }},
+        { "error", "string" }
+    };
+}
+
 json::object MaaBindResource_HelperInput() {
     return json::object {
 // LHG SEC BEGIN lhg.helper.MaaBindResource.input.inst
@@ -473,6 +761,18 @@ json::object MaaBindResource_HelperInput() {
 // LHG SEC DEF
         { "res", "string@MaaResourceAPI" },
 // LHG SEC END
+    };
+}
+
+json::object MaaBindResource_HelperOutput() {
+    return json::object {
+        { "data", {
+// LHG SEC BEGIN lhg.helper.MaaBindResource.output.return
+// LHG SEC DEF
+            { "return", lhg::schema_t<unsigned char>::schema },
+// LHG SEC END
+        }},
+        { "error", "string" }
     };
 }
 
@@ -489,12 +789,36 @@ json::object MaaBindController_HelperInput() {
     };
 }
 
+json::object MaaBindController_HelperOutput() {
+    return json::object {
+        { "data", {
+// LHG SEC BEGIN lhg.helper.MaaBindController.output.return
+// LHG SEC DEF
+            { "return", lhg::schema_t<unsigned char>::schema },
+// LHG SEC END
+        }},
+        { "error", "string" }
+    };
+}
+
 json::object MaaInited_HelperInput() {
     return json::object {
 // LHG SEC BEGIN lhg.helper.MaaInited.input.inst
 // LHG SEC DEF
         { "inst", "string@MaaInstanceAPI" },
 // LHG SEC END
+    };
+}
+
+json::object MaaInited_HelperOutput() {
+    return json::object {
+        { "data", {
+// LHG SEC BEGIN lhg.helper.MaaInited.output.return
+// LHG SEC DEF
+            { "return", lhg::schema_t<unsigned char>::schema },
+// LHG SEC END
+        }},
+        { "error", "string" }
     };
 }
 
@@ -507,12 +831,36 @@ json::object MaaClearCustomRecognizer_HelperInput() {
     };
 }
 
+json::object MaaClearCustomRecognizer_HelperOutput() {
+    return json::object {
+        { "data", {
+// LHG SEC BEGIN lhg.helper.MaaClearCustomRecognizer.output.return
+// LHG SEC DEF
+            { "return", lhg::schema_t<unsigned char>::schema },
+// LHG SEC END
+        }},
+        { "error", "string" }
+    };
+}
+
 json::object MaaClearCustomAction_HelperInput() {
     return json::object {
 // LHG SEC BEGIN lhg.helper.MaaClearCustomAction.input.inst
 // LHG SEC DEF
         { "inst", "string@MaaInstanceAPI" },
 // LHG SEC END
+    };
+}
+
+json::object MaaClearCustomAction_HelperOutput() {
+    return json::object {
+        { "data", {
+// LHG SEC BEGIN lhg.helper.MaaClearCustomAction.output.return
+// LHG SEC DEF
+            { "return", lhg::schema_t<unsigned char>::schema },
+// LHG SEC END
+        }},
+        { "error", "string" }
     };
 }
 
@@ -533,6 +881,18 @@ json::object MaaPostTask_HelperInput() {
     };
 }
 
+json::object MaaPostTask_HelperOutput() {
+    return json::object {
+        { "data", {
+// LHG SEC BEGIN lhg.helper.MaaPostTask.output.return
+// LHG SEC DEF
+            { "return", lhg::schema_t<long long>::schema },
+// LHG SEC END
+        }},
+        { "error", "string" }
+    };
+}
+
 json::object MaaSetTaskParam_HelperInput() {
     return json::object {
 // LHG SEC BEGIN lhg.helper.MaaSetTaskParam.input.inst
@@ -550,6 +910,18 @@ json::object MaaSetTaskParam_HelperInput() {
     };
 }
 
+json::object MaaSetTaskParam_HelperOutput() {
+    return json::object {
+        { "data", {
+// LHG SEC BEGIN lhg.helper.MaaSetTaskParam.output.return
+// LHG SEC DEF
+            { "return", lhg::schema_t<unsigned char>::schema },
+// LHG SEC END
+        }},
+        { "error", "string" }
+    };
+}
+
 json::object MaaTaskStatus_HelperInput() {
     return json::object {
 // LHG SEC BEGIN lhg.helper.MaaTaskStatus.input.inst
@@ -560,6 +932,18 @@ json::object MaaTaskStatus_HelperInput() {
 // LHG SEC DEF
         { "id", lhg::schema_t<long long>::schema },
 // LHG SEC END
+    };
+}
+
+json::object MaaTaskStatus_HelperOutput() {
+    return json::object {
+        { "data", {
+// LHG SEC BEGIN lhg.helper.MaaTaskStatus.output.return
+// LHG SEC DEF
+            { "return", lhg::schema_t<int>::schema },
+// LHG SEC END
+        }},
+        { "error", "string" }
     };
 }
 
@@ -576,12 +960,36 @@ json::object MaaWaitTask_HelperInput() {
     };
 }
 
+json::object MaaWaitTask_HelperOutput() {
+    return json::object {
+        { "data", {
+// LHG SEC BEGIN lhg.helper.MaaWaitTask.output.return
+// LHG SEC DEF
+            { "return", lhg::schema_t<int>::schema },
+// LHG SEC END
+        }},
+        { "error", "string" }
+    };
+}
+
 json::object MaaTaskAllFinished_HelperInput() {
     return json::object {
 // LHG SEC BEGIN lhg.helper.MaaTaskAllFinished.input.inst
 // LHG SEC DEF
         { "inst", "string@MaaInstanceAPI" },
 // LHG SEC END
+    };
+}
+
+json::object MaaTaskAllFinished_HelperOutput() {
+    return json::object {
+        { "data", {
+// LHG SEC BEGIN lhg.helper.MaaTaskAllFinished.output.return
+// LHG SEC DEF
+            { "return", lhg::schema_t<unsigned char>::schema },
+// LHG SEC END
+        }},
+        { "error", "string" }
     };
 }
 
@@ -594,12 +1002,36 @@ json::object MaaPostStop_HelperInput() {
     };
 }
 
+json::object MaaPostStop_HelperOutput() {
+    return json::object {
+        { "data", {
+// LHG SEC BEGIN lhg.helper.MaaPostStop.output.return
+// LHG SEC DEF
+            { "return", lhg::schema_t<unsigned char>::schema },
+// LHG SEC END
+        }},
+        { "error", "string" }
+    };
+}
+
 json::object MaaStop_HelperInput() {
     return json::object {
 // LHG SEC BEGIN lhg.helper.MaaStop.input.inst
 // LHG SEC DEF
         { "inst", "string@MaaInstanceAPI" },
 // LHG SEC END
+    };
+}
+
+json::object MaaStop_HelperOutput() {
+    return json::object {
+        { "data", {
+// LHG SEC BEGIN lhg.helper.MaaStop.output.return
+// LHG SEC DEF
+            { "return", lhg::schema_t<unsigned char>::schema },
+// LHG SEC END
+        }},
+        { "error", "string" }
     };
 }
 
@@ -612,12 +1044,36 @@ json::object MaaGetResource_HelperInput() {
     };
 }
 
+json::object MaaGetResource_HelperOutput() {
+    return json::object {
+        { "data", {
+// LHG SEC BEGIN lhg.helper.MaaGetResource.output.return
+// LHG SEC DEF
+            { "return", lhg::schema_t<MaaResourceAPI *>::schema },
+// LHG SEC END
+        }},
+        { "error", "string" }
+    };
+}
+
 json::object MaaGetController_HelperInput() {
     return json::object {
 // LHG SEC BEGIN lhg.helper.MaaGetController.input.inst
 // LHG SEC DEF
         { "inst", "string@MaaInstanceAPI" },
 // LHG SEC END
+    };
+}
+
+json::object MaaGetController_HelperOutput() {
+    return json::object {
+        { "data", {
+// LHG SEC BEGIN lhg.helper.MaaGetController.output.return
+// LHG SEC DEF
+            { "return", lhg::schema_t<MaaControllerAPI *>::schema },
+// LHG SEC END
+        }},
+        { "error", "string" }
     };
 }
 
@@ -630,12 +1086,36 @@ json::object MaaResourceCreate_HelperInput() {
     };
 }
 
+json::object MaaResourceCreate_HelperOutput() {
+    return json::object {
+        { "data", {
+// LHG SEC BEGIN lhg.helper.MaaResourceCreate.output.return
+// LHG SEC DEF
+            { "return", lhg::schema_t<MaaResourceAPI *>::schema },
+// LHG SEC END
+        }},
+        { "error", "string" }
+    };
+}
+
 json::object MaaResourceDestroy_HelperInput() {
     return json::object {
 // LHG SEC BEGIN lhg.helper.MaaResourceDestroy.input.res
 // LHG SEC DEF
         { "res", "string@MaaResourceAPI" },
 // LHG SEC END
+    };
+}
+
+json::object MaaResourceDestroy_HelperOutput() {
+    return json::object {
+        { "data", {
+// LHG SEC BEGIN lhg.helper.MaaResourceDestroy.output.return
+// LHG SEC DEF
+            { "return", lhg::schema_t<void>::schema },
+// LHG SEC END
+        }},
+        { "error", "string" }
     };
 }
 
@@ -652,6 +1132,18 @@ json::object MaaResourcePostPath_HelperInput() {
     };
 }
 
+json::object MaaResourcePostPath_HelperOutput() {
+    return json::object {
+        { "data", {
+// LHG SEC BEGIN lhg.helper.MaaResourcePostPath.output.return
+// LHG SEC DEF
+            { "return", lhg::schema_t<long long>::schema },
+// LHG SEC END
+        }},
+        { "error", "string" }
+    };
+}
+
 json::object MaaResourceStatus_HelperInput() {
     return json::object {
 // LHG SEC BEGIN lhg.helper.MaaResourceStatus.input.res
@@ -662,6 +1154,18 @@ json::object MaaResourceStatus_HelperInput() {
 // LHG SEC DEF
         { "id", lhg::schema_t<long long>::schema },
 // LHG SEC END
+    };
+}
+
+json::object MaaResourceStatus_HelperOutput() {
+    return json::object {
+        { "data", {
+// LHG SEC BEGIN lhg.helper.MaaResourceStatus.output.return
+// LHG SEC DEF
+            { "return", lhg::schema_t<int>::schema },
+// LHG SEC END
+        }},
+        { "error", "string" }
     };
 }
 
@@ -678,12 +1182,36 @@ json::object MaaResourceWait_HelperInput() {
     };
 }
 
+json::object MaaResourceWait_HelperOutput() {
+    return json::object {
+        { "data", {
+// LHG SEC BEGIN lhg.helper.MaaResourceWait.output.return
+// LHG SEC DEF
+            { "return", lhg::schema_t<int>::schema },
+// LHG SEC END
+        }},
+        { "error", "string" }
+    };
+}
+
 json::object MaaResourceLoaded_HelperInput() {
     return json::object {
 // LHG SEC BEGIN lhg.helper.MaaResourceLoaded.input.res
 // LHG SEC DEF
         { "res", "string@MaaResourceAPI" },
 // LHG SEC END
+    };
+}
+
+json::object MaaResourceLoaded_HelperOutput() {
+    return json::object {
+        { "data", {
+// LHG SEC BEGIN lhg.helper.MaaResourceLoaded.output.return
+// LHG SEC DEF
+            { "return", lhg::schema_t<unsigned char>::schema },
+// LHG SEC END
+        }},
+        { "error", "string" }
     };
 }
 
@@ -706,12 +1234,40 @@ json::object MaaResourceSetOption_HelperInput() {
     };
 }
 
+json::object MaaResourceSetOption_HelperOutput() {
+    return json::object {
+        { "data", {
+// LHG SEC BEGIN lhg.helper.MaaResourceSetOption.output.return
+// LHG SEC DEF
+            { "return", lhg::schema_t<unsigned char>::schema },
+// LHG SEC END
+        }},
+        { "error", "string" }
+    };
+}
+
 json::object MaaResourceGetHash_HelperInput() {
     return json::object {
 // LHG SEC BEGIN lhg.helper.MaaResourceGetHash.input.res
 // LHG SEC DEF
         { "res", "string@MaaResourceAPI" },
 // LHG SEC END
+    };
+}
+
+json::object MaaResourceGetHash_HelperOutput() {
+    return json::object {
+        { "data", {
+// LHG SEC BEGIN lhg.helper.MaaResourceGetHash.output.return
+// LHG SEC DEF
+            { "return", lhg::schema_t<unsigned char>::schema },
+// LHG SEC END
+// LHG SEC BEGIN lhg.helper.MaaResourceGetHash.output.buffer
+// LHG SEC DEF
+            { "buffer", lhg::schema_t<MaaStringBuffer *>::schema },
+// LHG SEC END
+        }},
+        { "error", "string" }
     };
 }
 
@@ -724,8 +1280,36 @@ json::object MaaResourceGetTaskList_HelperInput() {
     };
 }
 
+json::object MaaResourceGetTaskList_HelperOutput() {
+    return json::object {
+        { "data", {
+// LHG SEC BEGIN lhg.helper.MaaResourceGetTaskList.output.return
+// LHG SEC DEF
+            { "return", lhg::schema_t<unsigned char>::schema },
+// LHG SEC END
+// LHG SEC BEGIN lhg.helper.MaaResourceGetTaskList.output.buffer
+// LHG SEC DEF
+            { "buffer", lhg::schema_t<MaaStringBuffer *>::schema },
+// LHG SEC END
+        }},
+        { "error", "string" }
+    };
+}
+
 json::object MaaCreateImageBuffer_HelperInput() {
     return json::object {
+    };
+}
+
+json::object MaaCreateImageBuffer_HelperOutput() {
+    return json::object {
+        { "data", {
+// LHG SEC BEGIN lhg.helper.MaaCreateImageBuffer.output.return
+// LHG SEC DEF
+            { "return", lhg::schema_t<MaaImageBuffer *>::schema },
+// LHG SEC END
+        }},
+        { "error", "string" }
     };
 }
 
@@ -738,12 +1322,36 @@ json::object MaaDestroyImageBuffer_HelperInput() {
     };
 }
 
+json::object MaaDestroyImageBuffer_HelperOutput() {
+    return json::object {
+        { "data", {
+// LHG SEC BEGIN lhg.helper.MaaDestroyImageBuffer.output.return
+// LHG SEC DEF
+            { "return", lhg::schema_t<void>::schema },
+// LHG SEC END
+        }},
+        { "error", "string" }
+    };
+}
+
 json::object MaaIsImageEmpty_HelperInput() {
     return json::object {
 // LHG SEC BEGIN lhg.helper.MaaIsImageEmpty.input.handle
 // LHG SEC DEF
         { "handle", "string@MaaImageBuffer" },
 // LHG SEC END
+    };
+}
+
+json::object MaaIsImageEmpty_HelperOutput() {
+    return json::object {
+        { "data", {
+// LHG SEC BEGIN lhg.helper.MaaIsImageEmpty.output.return
+// LHG SEC DEF
+            { "return", lhg::schema_t<unsigned char>::schema },
+// LHG SEC END
+        }},
+        { "error", "string" }
     };
 }
 
@@ -756,12 +1364,36 @@ json::object MaaClearImage_HelperInput() {
     };
 }
 
+json::object MaaClearImage_HelperOutput() {
+    return json::object {
+        { "data", {
+// LHG SEC BEGIN lhg.helper.MaaClearImage.output.return
+// LHG SEC DEF
+            { "return", lhg::schema_t<unsigned char>::schema },
+// LHG SEC END
+        }},
+        { "error", "string" }
+    };
+}
+
 json::object MaaGetImageWidth_HelperInput() {
     return json::object {
 // LHG SEC BEGIN lhg.helper.MaaGetImageWidth.input.handle
 // LHG SEC DEF
         { "handle", "string@MaaImageBuffer" },
 // LHG SEC END
+    };
+}
+
+json::object MaaGetImageWidth_HelperOutput() {
+    return json::object {
+        { "data", {
+// LHG SEC BEGIN lhg.helper.MaaGetImageWidth.output.return
+// LHG SEC DEF
+            { "return", lhg::schema_t<int>::schema },
+// LHG SEC END
+        }},
+        { "error", "string" }
     };
 }
 
@@ -774,6 +1406,18 @@ json::object MaaGetImageHeight_HelperInput() {
     };
 }
 
+json::object MaaGetImageHeight_HelperOutput() {
+    return json::object {
+        { "data", {
+// LHG SEC BEGIN lhg.helper.MaaGetImageHeight.output.return
+// LHG SEC DEF
+            { "return", lhg::schema_t<int>::schema },
+// LHG SEC END
+        }},
+        { "error", "string" }
+    };
+}
+
 json::object MaaGetImageType_HelperInput() {
     return json::object {
 // LHG SEC BEGIN lhg.helper.MaaGetImageType.input.handle
@@ -783,12 +1427,35 @@ json::object MaaGetImageType_HelperInput() {
     };
 }
 
+json::object MaaGetImageType_HelperOutput() {
+    return json::object {
+        { "data", {
+// LHG SEC BEGIN lhg.helper.MaaGetImageType.output.return
+// LHG SEC DEF
+            { "return", lhg::schema_t<int>::schema },
+// LHG SEC END
+        }},
+        { "error", "string" }
+    };
+}
+
 json::object MaaGetImageEncoded_HelperInput() {
     return json::object {
 // LHG SEC BEGIN lhg.helper.MaaGetImageEncoded.input.handle
 // LHG SEC DEF
         { "handle", "string@MaaImageBuffer" },
 // LHG SEC END
+    };
+}
+
+json::object MaaGetImageEncoded_HelperOutput() {
+    return json::object {
+        { "data", {
+// LHG SEC BEGIN lhg.helper.MaaGetImageEncoded.output.return
+            { "return", "string@buffer" },
+// LHG SEC END
+        }},
+        { "error", "string" }
     };
 }
 
@@ -807,8 +1474,32 @@ json::object MaaSetImageEncoded_HelperInput() {
     };
 }
 
+json::object MaaSetImageEncoded_HelperOutput() {
+    return json::object {
+        { "data", {
+// LHG SEC BEGIN lhg.helper.MaaSetImageEncoded.output.return
+// LHG SEC DEF
+            { "return", lhg::schema_t<unsigned char>::schema },
+// LHG SEC END
+        }},
+        { "error", "string" }
+    };
+}
+
 json::object MaaVersion_HelperInput() {
     return json::object {
+    };
+}
+
+json::object MaaVersion_HelperOutput() {
+    return json::object {
+        { "data", {
+// LHG SEC BEGIN lhg.helper.MaaVersion.output.return
+// LHG SEC DEF
+            { "return", lhg::schema_t<const char *>::schema },
+// LHG SEC END
+        }},
+        { "error", "string" }
     };
 }
 
@@ -827,8 +1518,32 @@ json::object MaaSetGlobalOption_HelperInput() {
     };
 }
 
+json::object MaaSetGlobalOption_HelperOutput() {
+    return json::object {
+        { "data", {
+// LHG SEC BEGIN lhg.helper.MaaSetGlobalOption.output.return
+// LHG SEC DEF
+            { "return", lhg::schema_t<unsigned char>::schema },
+// LHG SEC END
+        }},
+        { "error", "string" }
+    };
+}
+
 json::object MaaToolkitInit_HelperInput() {
     return json::object {
+    };
+}
+
+json::object MaaToolkitInit_HelperOutput() {
+    return json::object {
+        { "data", {
+// LHG SEC BEGIN lhg.helper.MaaToolkitInit.output.return
+// LHG SEC DEF
+            { "return", lhg::schema_t<unsigned char>::schema },
+// LHG SEC END
+        }},
+        { "error", "string" }
     };
 }
 
@@ -837,8 +1552,32 @@ json::object MaaToolkitUninit_HelperInput() {
     };
 }
 
+json::object MaaToolkitUninit_HelperOutput() {
+    return json::object {
+        { "data", {
+// LHG SEC BEGIN lhg.helper.MaaToolkitUninit.output.return
+// LHG SEC DEF
+            { "return", lhg::schema_t<unsigned char>::schema },
+// LHG SEC END
+        }},
+        { "error", "string" }
+    };
+}
+
 json::object MaaToolkitFindDevice_HelperInput() {
     return json::object {
+    };
+}
+
+json::object MaaToolkitFindDevice_HelperOutput() {
+    return json::object {
+        { "data", {
+// LHG SEC BEGIN lhg.helper.MaaToolkitFindDevice.output.return
+// LHG SEC DEF
+            { "return", lhg::schema_t<unsigned long long>::schema },
+// LHG SEC END
+        }},
+        { "error", "string" }
     };
 }
 
@@ -851,8 +1590,32 @@ json::object MaaToolkitFindDeviceWithAdb_HelperInput() {
     };
 }
 
+json::object MaaToolkitFindDeviceWithAdb_HelperOutput() {
+    return json::object {
+        { "data", {
+// LHG SEC BEGIN lhg.helper.MaaToolkitFindDeviceWithAdb.output.return
+// LHG SEC DEF
+            { "return", lhg::schema_t<unsigned long long>::schema },
+// LHG SEC END
+        }},
+        { "error", "string" }
+    };
+}
+
 json::object MaaToolkitPostFindDevice_HelperInput() {
     return json::object {
+    };
+}
+
+json::object MaaToolkitPostFindDevice_HelperOutput() {
+    return json::object {
+        { "data", {
+// LHG SEC BEGIN lhg.helper.MaaToolkitPostFindDevice.output.return
+// LHG SEC DEF
+            { "return", lhg::schema_t<unsigned char>::schema },
+// LHG SEC END
+        }},
+        { "error", "string" }
     };
 }
 
@@ -865,8 +1628,32 @@ json::object MaaToolkitPostFindDeviceWithAdb_HelperInput() {
     };
 }
 
+json::object MaaToolkitPostFindDeviceWithAdb_HelperOutput() {
+    return json::object {
+        { "data", {
+// LHG SEC BEGIN lhg.helper.MaaToolkitPostFindDeviceWithAdb.output.return
+// LHG SEC DEF
+            { "return", lhg::schema_t<unsigned char>::schema },
+// LHG SEC END
+        }},
+        { "error", "string" }
+    };
+}
+
 json::object MaaToolkitIsFindDeviceCompleted_HelperInput() {
     return json::object {
+    };
+}
+
+json::object MaaToolkitIsFindDeviceCompleted_HelperOutput() {
+    return json::object {
+        { "data", {
+// LHG SEC BEGIN lhg.helper.MaaToolkitIsFindDeviceCompleted.output.return
+// LHG SEC DEF
+            { "return", lhg::schema_t<unsigned char>::schema },
+// LHG SEC END
+        }},
+        { "error", "string" }
     };
 }
 
@@ -875,8 +1662,32 @@ json::object MaaToolkitWaitForFindDeviceToComplete_HelperInput() {
     };
 }
 
+json::object MaaToolkitWaitForFindDeviceToComplete_HelperOutput() {
+    return json::object {
+        { "data", {
+// LHG SEC BEGIN lhg.helper.MaaToolkitWaitForFindDeviceToComplete.output.return
+// LHG SEC DEF
+            { "return", lhg::schema_t<unsigned long long>::schema },
+// LHG SEC END
+        }},
+        { "error", "string" }
+    };
+}
+
 json::object MaaToolkitGetDeviceCount_HelperInput() {
     return json::object {
+    };
+}
+
+json::object MaaToolkitGetDeviceCount_HelperOutput() {
+    return json::object {
+        { "data", {
+// LHG SEC BEGIN lhg.helper.MaaToolkitGetDeviceCount.output.return
+// LHG SEC DEF
+            { "return", lhg::schema_t<unsigned long long>::schema },
+// LHG SEC END
+        }},
+        { "error", "string" }
     };
 }
 
@@ -889,12 +1700,36 @@ json::object MaaToolkitGetDeviceName_HelperInput() {
     };
 }
 
+json::object MaaToolkitGetDeviceName_HelperOutput() {
+    return json::object {
+        { "data", {
+// LHG SEC BEGIN lhg.helper.MaaToolkitGetDeviceName.output.return
+// LHG SEC DEF
+            { "return", lhg::schema_t<const char *>::schema },
+// LHG SEC END
+        }},
+        { "error", "string" }
+    };
+}
+
 json::object MaaToolkitGetDeviceAdbPath_HelperInput() {
     return json::object {
 // LHG SEC BEGIN lhg.helper.MaaToolkitGetDeviceAdbPath.input.index
 // LHG SEC DEF
         { "index", lhg::schema_t<unsigned long long>::schema },
 // LHG SEC END
+    };
+}
+
+json::object MaaToolkitGetDeviceAdbPath_HelperOutput() {
+    return json::object {
+        { "data", {
+// LHG SEC BEGIN lhg.helper.MaaToolkitGetDeviceAdbPath.output.return
+// LHG SEC DEF
+            { "return", lhg::schema_t<const char *>::schema },
+// LHG SEC END
+        }},
+        { "error", "string" }
     };
 }
 
@@ -907,6 +1742,18 @@ json::object MaaToolkitGetDeviceAdbSerial_HelperInput() {
     };
 }
 
+json::object MaaToolkitGetDeviceAdbSerial_HelperOutput() {
+    return json::object {
+        { "data", {
+// LHG SEC BEGIN lhg.helper.MaaToolkitGetDeviceAdbSerial.output.return
+// LHG SEC DEF
+            { "return", lhg::schema_t<const char *>::schema },
+// LHG SEC END
+        }},
+        { "error", "string" }
+    };
+}
+
 json::object MaaToolkitGetDeviceAdbControllerType_HelperInput() {
     return json::object {
 // LHG SEC BEGIN lhg.helper.MaaToolkitGetDeviceAdbControllerType.input.index
@@ -916,12 +1763,36 @@ json::object MaaToolkitGetDeviceAdbControllerType_HelperInput() {
     };
 }
 
+json::object MaaToolkitGetDeviceAdbControllerType_HelperOutput() {
+    return json::object {
+        { "data", {
+// LHG SEC BEGIN lhg.helper.MaaToolkitGetDeviceAdbControllerType.output.return
+// LHG SEC DEF
+            { "return", lhg::schema_t<int>::schema },
+// LHG SEC END
+        }},
+        { "error", "string" }
+    };
+}
+
 json::object MaaToolkitGetDeviceAdbConfig_HelperInput() {
     return json::object {
 // LHG SEC BEGIN lhg.helper.MaaToolkitGetDeviceAdbConfig.input.index
 // LHG SEC DEF
         { "index", lhg::schema_t<unsigned long long>::schema },
 // LHG SEC END
+    };
+}
+
+json::object MaaToolkitGetDeviceAdbConfig_HelperOutput() {
+    return json::object {
+        { "data", {
+// LHG SEC BEGIN lhg.helper.MaaToolkitGetDeviceAdbConfig.output.return
+// LHG SEC DEF
+            { "return", lhg::schema_t<const char *>::schema },
+// LHG SEC END
+        }},
+        { "error", "string" }
     };
 }
 
@@ -946,6 +1817,18 @@ json::object MaaToolkitRegisterCustomRecognizerExecutor_HelperInput() {
     };
 }
 
+json::object MaaToolkitRegisterCustomRecognizerExecutor_HelperOutput() {
+    return json::object {
+        { "data", {
+// LHG SEC BEGIN lhg.helper.MaaToolkitRegisterCustomRecognizerExecutor.output.return
+// LHG SEC DEF
+            { "return", lhg::schema_t<unsigned char>::schema },
+// LHG SEC END
+        }},
+        { "error", "string" }
+    };
+}
+
 json::object MaaToolkitUnregisterCustomRecognizerExecutor_HelperInput() {
     return json::object {
 // LHG SEC BEGIN lhg.helper.MaaToolkitUnregisterCustomRecognizerExecutor.input.handle
@@ -956,6 +1839,18 @@ json::object MaaToolkitUnregisterCustomRecognizerExecutor_HelperInput() {
 // LHG SEC DEF
         { "recognizer_name", lhg::schema_t<const char *>::schema },
 // LHG SEC END
+    };
+}
+
+json::object MaaToolkitUnregisterCustomRecognizerExecutor_HelperOutput() {
+    return json::object {
+        { "data", {
+// LHG SEC BEGIN lhg.helper.MaaToolkitUnregisterCustomRecognizerExecutor.output.return
+// LHG SEC DEF
+            { "return", lhg::schema_t<unsigned char>::schema },
+// LHG SEC END
+        }},
+        { "error", "string" }
     };
 }
 
@@ -980,6 +1875,18 @@ json::object MaaToolkitRegisterCustomActionExecutor_HelperInput() {
     };
 }
 
+json::object MaaToolkitRegisterCustomActionExecutor_HelperOutput() {
+    return json::object {
+        { "data", {
+// LHG SEC BEGIN lhg.helper.MaaToolkitRegisterCustomActionExecutor.output.return
+// LHG SEC DEF
+            { "return", lhg::schema_t<unsigned char>::schema },
+// LHG SEC END
+        }},
+        { "error", "string" }
+    };
+}
+
 json::object MaaToolkitUnregisterCustomActionExecutor_HelperInput() {
     return json::object {
 // LHG SEC BEGIN lhg.helper.MaaToolkitUnregisterCustomActionExecutor.input.handle
@@ -990,6 +1897,18 @@ json::object MaaToolkitUnregisterCustomActionExecutor_HelperInput() {
 // LHG SEC DEF
         { "action_name", lhg::schema_t<const char *>::schema },
 // LHG SEC END
+    };
+}
+
+json::object MaaToolkitUnregisterCustomActionExecutor_HelperOutput() {
+    return json::object {
+        { "data", {
+// LHG SEC BEGIN lhg.helper.MaaToolkitUnregisterCustomActionExecutor.output.return
+// LHG SEC DEF
+            { "return", lhg::schema_t<unsigned char>::schema },
+// LHG SEC END
+        }},
+        { "error", "string" }
     };
 }
 
@@ -1006,6 +1925,18 @@ json::object MaaToolkitFindWindow_HelperInput() {
     };
 }
 
+json::object MaaToolkitFindWindow_HelperOutput() {
+    return json::object {
+        { "data", {
+// LHG SEC BEGIN lhg.helper.MaaToolkitFindWindow.output.return
+// LHG SEC DEF
+            { "return", lhg::schema_t<unsigned long long>::schema },
+// LHG SEC END
+        }},
+        { "error", "string" }
+    };
+}
+
 json::object MaaToolkitSearchWindow_HelperInput() {
     return json::object {
 // LHG SEC BEGIN lhg.helper.MaaToolkitSearchWindow.input.class_name
@@ -1016,955 +1947,6 @@ json::object MaaToolkitSearchWindow_HelperInput() {
 // LHG SEC DEF
         { "window_name", lhg::schema_t<const char *>::schema },
 // LHG SEC END
-    };
-}
-
-json::object MaaToolkitGetWindow_HelperInput() {
-    return json::object {
-// LHG SEC BEGIN lhg.helper.MaaToolkitGetWindow.input.index
-// LHG SEC DEF
-        { "index", lhg::schema_t<unsigned long long>::schema },
-// LHG SEC END
-    };
-}
-
-json::object MaaToolkitGetCursorWindow_HelperInput() {
-    return json::object {
-    };
-}
-
-json::object MaaAdbControllerCreate_HelperOutput() {
-    return json::object {
-        { "data", {
-// LHG SEC BEGIN lhg.helper.MaaAdbControllerCreate.output.return
-// LHG SEC DEF
-            { "return", lhg::schema_t<MaaControllerAPI *>::schema },
-// LHG SEC END
-        }},
-        { "error", "string" }
-    };
-}
-
-json::object MaaWin32ControllerCreate_HelperOutput() {
-    return json::object {
-        { "data", {
-// LHG SEC BEGIN lhg.helper.MaaWin32ControllerCreate.output.return
-// LHG SEC DEF
-            { "return", lhg::schema_t<MaaControllerAPI *>::schema },
-// LHG SEC END
-        }},
-        { "error", "string" }
-    };
-}
-
-json::object MaaAdbControllerCreateV2_HelperOutput() {
-    return json::object {
-        { "data", {
-// LHG SEC BEGIN lhg.helper.MaaAdbControllerCreateV2.output.return
-// LHG SEC DEF
-            { "return", lhg::schema_t<MaaControllerAPI *>::schema },
-// LHG SEC END
-        }},
-        { "error", "string" }
-    };
-}
-
-json::object MaaThriftControllerCreate_HelperOutput() {
-    return json::object {
-        { "data", {
-// LHG SEC BEGIN lhg.helper.MaaThriftControllerCreate.output.return
-// LHG SEC DEF
-            { "return", lhg::schema_t<MaaControllerAPI *>::schema },
-// LHG SEC END
-        }},
-        { "error", "string" }
-    };
-}
-
-json::object MaaDbgControllerCreate_HelperOutput() {
-    return json::object {
-        { "data", {
-// LHG SEC BEGIN lhg.helper.MaaDbgControllerCreate.output.return
-// LHG SEC DEF
-            { "return", lhg::schema_t<MaaControllerAPI *>::schema },
-// LHG SEC END
-        }},
-        { "error", "string" }
-    };
-}
-
-json::object MaaControllerDestroy_HelperOutput() {
-    return json::object {
-        { "data", {
-// LHG SEC BEGIN lhg.helper.MaaControllerDestroy.output.return
-// LHG SEC DEF
-            { "return", lhg::schema_t<void>::schema },
-// LHG SEC END
-        }},
-        { "error", "string" }
-    };
-}
-
-json::object MaaControllerSetOption_HelperOutput() {
-    return json::object {
-        { "data", {
-// LHG SEC BEGIN lhg.helper.MaaControllerSetOption.output.return
-// LHG SEC DEF
-            { "return", lhg::schema_t<unsigned char>::schema },
-// LHG SEC END
-        }},
-        { "error", "string" }
-    };
-}
-
-json::object MaaControllerPostConnection_HelperOutput() {
-    return json::object {
-        { "data", {
-// LHG SEC BEGIN lhg.helper.MaaControllerPostConnection.output.return
-// LHG SEC DEF
-            { "return", lhg::schema_t<long long>::schema },
-// LHG SEC END
-        }},
-        { "error", "string" }
-    };
-}
-
-json::object MaaControllerPostClick_HelperOutput() {
-    return json::object {
-        { "data", {
-// LHG SEC BEGIN lhg.helper.MaaControllerPostClick.output.return
-// LHG SEC DEF
-            { "return", lhg::schema_t<long long>::schema },
-// LHG SEC END
-        }},
-        { "error", "string" }
-    };
-}
-
-json::object MaaControllerPostSwipe_HelperOutput() {
-    return json::object {
-        { "data", {
-// LHG SEC BEGIN lhg.helper.MaaControllerPostSwipe.output.return
-// LHG SEC DEF
-            { "return", lhg::schema_t<long long>::schema },
-// LHG SEC END
-        }},
-        { "error", "string" }
-    };
-}
-
-json::object MaaControllerPostPressKey_HelperOutput() {
-    return json::object {
-        { "data", {
-// LHG SEC BEGIN lhg.helper.MaaControllerPostPressKey.output.return
-// LHG SEC DEF
-            { "return", lhg::schema_t<long long>::schema },
-// LHG SEC END
-        }},
-        { "error", "string" }
-    };
-}
-
-json::object MaaControllerPostInputText_HelperOutput() {
-    return json::object {
-        { "data", {
-// LHG SEC BEGIN lhg.helper.MaaControllerPostInputText.output.return
-// LHG SEC DEF
-            { "return", lhg::schema_t<long long>::schema },
-// LHG SEC END
-        }},
-        { "error", "string" }
-    };
-}
-
-json::object MaaControllerPostTouchDown_HelperOutput() {
-    return json::object {
-        { "data", {
-// LHG SEC BEGIN lhg.helper.MaaControllerPostTouchDown.output.return
-// LHG SEC DEF
-            { "return", lhg::schema_t<long long>::schema },
-// LHG SEC END
-        }},
-        { "error", "string" }
-    };
-}
-
-json::object MaaControllerPostTouchMove_HelperOutput() {
-    return json::object {
-        { "data", {
-// LHG SEC BEGIN lhg.helper.MaaControllerPostTouchMove.output.return
-// LHG SEC DEF
-            { "return", lhg::schema_t<long long>::schema },
-// LHG SEC END
-        }},
-        { "error", "string" }
-    };
-}
-
-json::object MaaControllerPostTouchUp_HelperOutput() {
-    return json::object {
-        { "data", {
-// LHG SEC BEGIN lhg.helper.MaaControllerPostTouchUp.output.return
-// LHG SEC DEF
-            { "return", lhg::schema_t<long long>::schema },
-// LHG SEC END
-        }},
-        { "error", "string" }
-    };
-}
-
-json::object MaaControllerPostScreencap_HelperOutput() {
-    return json::object {
-        { "data", {
-// LHG SEC BEGIN lhg.helper.MaaControllerPostScreencap.output.return
-// LHG SEC DEF
-            { "return", lhg::schema_t<long long>::schema },
-// LHG SEC END
-        }},
-        { "error", "string" }
-    };
-}
-
-json::object MaaControllerStatus_HelperOutput() {
-    return json::object {
-        { "data", {
-// LHG SEC BEGIN lhg.helper.MaaControllerStatus.output.return
-// LHG SEC DEF
-            { "return", lhg::schema_t<int>::schema },
-// LHG SEC END
-        }},
-        { "error", "string" }
-    };
-}
-
-json::object MaaControllerWait_HelperOutput() {
-    return json::object {
-        { "data", {
-// LHG SEC BEGIN lhg.helper.MaaControllerWait.output.return
-// LHG SEC DEF
-            { "return", lhg::schema_t<int>::schema },
-// LHG SEC END
-        }},
-        { "error", "string" }
-    };
-}
-
-json::object MaaControllerConnected_HelperOutput() {
-    return json::object {
-        { "data", {
-// LHG SEC BEGIN lhg.helper.MaaControllerConnected.output.return
-// LHG SEC DEF
-            { "return", lhg::schema_t<unsigned char>::schema },
-// LHG SEC END
-        }},
-        { "error", "string" }
-    };
-}
-
-json::object MaaControllerGetImage_HelperOutput() {
-    return json::object {
-        { "data", {
-// LHG SEC BEGIN lhg.helper.MaaControllerGetImage.output.return
-// LHG SEC DEF
-            { "return", lhg::schema_t<unsigned char>::schema },
-// LHG SEC END
-        }},
-        { "error", "string" }
-    };
-}
-
-json::object MaaControllerGetUUID_HelperOutput() {
-    return json::object {
-        { "data", {
-// LHG SEC BEGIN lhg.helper.MaaControllerGetUUID.output.return
-// LHG SEC DEF
-            { "return", lhg::schema_t<unsigned char>::schema },
-// LHG SEC END
-// LHG SEC BEGIN lhg.helper.MaaControllerGetUUID.output.buffer
-// LHG SEC DEF
-            { "buffer", lhg::schema_t<MaaStringBuffer *>::schema },
-// LHG SEC END
-        }},
-        { "error", "string" }
-    };
-}
-
-json::object MaaCreate_HelperOutput() {
-    return json::object {
-        { "data", {
-// LHG SEC BEGIN lhg.helper.MaaCreate.output.return
-// LHG SEC DEF
-            { "return", lhg::schema_t<MaaInstanceAPI *>::schema },
-// LHG SEC END
-        }},
-        { "error", "string" }
-    };
-}
-
-json::object MaaDestroy_HelperOutput() {
-    return json::object {
-        { "data", {
-// LHG SEC BEGIN lhg.helper.MaaDestroy.output.return
-// LHG SEC DEF
-            { "return", lhg::schema_t<void>::schema },
-// LHG SEC END
-        }},
-        { "error", "string" }
-    };
-}
-
-json::object MaaSetOption_HelperOutput() {
-    return json::object {
-        { "data", {
-// LHG SEC BEGIN lhg.helper.MaaSetOption.output.return
-// LHG SEC DEF
-            { "return", lhg::schema_t<unsigned char>::schema },
-// LHG SEC END
-        }},
-        { "error", "string" }
-    };
-}
-
-json::object MaaBindResource_HelperOutput() {
-    return json::object {
-        { "data", {
-// LHG SEC BEGIN lhg.helper.MaaBindResource.output.return
-// LHG SEC DEF
-            { "return", lhg::schema_t<unsigned char>::schema },
-// LHG SEC END
-        }},
-        { "error", "string" }
-    };
-}
-
-json::object MaaBindController_HelperOutput() {
-    return json::object {
-        { "data", {
-// LHG SEC BEGIN lhg.helper.MaaBindController.output.return
-// LHG SEC DEF
-            { "return", lhg::schema_t<unsigned char>::schema },
-// LHG SEC END
-        }},
-        { "error", "string" }
-    };
-}
-
-json::object MaaInited_HelperOutput() {
-    return json::object {
-        { "data", {
-// LHG SEC BEGIN lhg.helper.MaaInited.output.return
-// LHG SEC DEF
-            { "return", lhg::schema_t<unsigned char>::schema },
-// LHG SEC END
-        }},
-        { "error", "string" }
-    };
-}
-
-json::object MaaClearCustomRecognizer_HelperOutput() {
-    return json::object {
-        { "data", {
-// LHG SEC BEGIN lhg.helper.MaaClearCustomRecognizer.output.return
-// LHG SEC DEF
-            { "return", lhg::schema_t<unsigned char>::schema },
-// LHG SEC END
-        }},
-        { "error", "string" }
-    };
-}
-
-json::object MaaClearCustomAction_HelperOutput() {
-    return json::object {
-        { "data", {
-// LHG SEC BEGIN lhg.helper.MaaClearCustomAction.output.return
-// LHG SEC DEF
-            { "return", lhg::schema_t<unsigned char>::schema },
-// LHG SEC END
-        }},
-        { "error", "string" }
-    };
-}
-
-json::object MaaPostTask_HelperOutput() {
-    return json::object {
-        { "data", {
-// LHG SEC BEGIN lhg.helper.MaaPostTask.output.return
-// LHG SEC DEF
-            { "return", lhg::schema_t<long long>::schema },
-// LHG SEC END
-        }},
-        { "error", "string" }
-    };
-}
-
-json::object MaaSetTaskParam_HelperOutput() {
-    return json::object {
-        { "data", {
-// LHG SEC BEGIN lhg.helper.MaaSetTaskParam.output.return
-// LHG SEC DEF
-            { "return", lhg::schema_t<unsigned char>::schema },
-// LHG SEC END
-        }},
-        { "error", "string" }
-    };
-}
-
-json::object MaaTaskStatus_HelperOutput() {
-    return json::object {
-        { "data", {
-// LHG SEC BEGIN lhg.helper.MaaTaskStatus.output.return
-// LHG SEC DEF
-            { "return", lhg::schema_t<int>::schema },
-// LHG SEC END
-        }},
-        { "error", "string" }
-    };
-}
-
-json::object MaaWaitTask_HelperOutput() {
-    return json::object {
-        { "data", {
-// LHG SEC BEGIN lhg.helper.MaaWaitTask.output.return
-// LHG SEC DEF
-            { "return", lhg::schema_t<int>::schema },
-// LHG SEC END
-        }},
-        { "error", "string" }
-    };
-}
-
-json::object MaaTaskAllFinished_HelperOutput() {
-    return json::object {
-        { "data", {
-// LHG SEC BEGIN lhg.helper.MaaTaskAllFinished.output.return
-// LHG SEC DEF
-            { "return", lhg::schema_t<unsigned char>::schema },
-// LHG SEC END
-        }},
-        { "error", "string" }
-    };
-}
-
-json::object MaaPostStop_HelperOutput() {
-    return json::object {
-        { "data", {
-// LHG SEC BEGIN lhg.helper.MaaPostStop.output.return
-// LHG SEC DEF
-            { "return", lhg::schema_t<unsigned char>::schema },
-// LHG SEC END
-        }},
-        { "error", "string" }
-    };
-}
-
-json::object MaaStop_HelperOutput() {
-    return json::object {
-        { "data", {
-// LHG SEC BEGIN lhg.helper.MaaStop.output.return
-// LHG SEC DEF
-            { "return", lhg::schema_t<unsigned char>::schema },
-// LHG SEC END
-        }},
-        { "error", "string" }
-    };
-}
-
-json::object MaaGetResource_HelperOutput() {
-    return json::object {
-        { "data", {
-// LHG SEC BEGIN lhg.helper.MaaGetResource.output.return
-// LHG SEC DEF
-            { "return", lhg::schema_t<MaaResourceAPI *>::schema },
-// LHG SEC END
-        }},
-        { "error", "string" }
-    };
-}
-
-json::object MaaGetController_HelperOutput() {
-    return json::object {
-        { "data", {
-// LHG SEC BEGIN lhg.helper.MaaGetController.output.return
-// LHG SEC DEF
-            { "return", lhg::schema_t<MaaControllerAPI *>::schema },
-// LHG SEC END
-        }},
-        { "error", "string" }
-    };
-}
-
-json::object MaaResourceCreate_HelperOutput() {
-    return json::object {
-        { "data", {
-// LHG SEC BEGIN lhg.helper.MaaResourceCreate.output.return
-// LHG SEC DEF
-            { "return", lhg::schema_t<MaaResourceAPI *>::schema },
-// LHG SEC END
-        }},
-        { "error", "string" }
-    };
-}
-
-json::object MaaResourceDestroy_HelperOutput() {
-    return json::object {
-        { "data", {
-// LHG SEC BEGIN lhg.helper.MaaResourceDestroy.output.return
-// LHG SEC DEF
-            { "return", lhg::schema_t<void>::schema },
-// LHG SEC END
-        }},
-        { "error", "string" }
-    };
-}
-
-json::object MaaResourcePostPath_HelperOutput() {
-    return json::object {
-        { "data", {
-// LHG SEC BEGIN lhg.helper.MaaResourcePostPath.output.return
-// LHG SEC DEF
-            { "return", lhg::schema_t<long long>::schema },
-// LHG SEC END
-        }},
-        { "error", "string" }
-    };
-}
-
-json::object MaaResourceStatus_HelperOutput() {
-    return json::object {
-        { "data", {
-// LHG SEC BEGIN lhg.helper.MaaResourceStatus.output.return
-// LHG SEC DEF
-            { "return", lhg::schema_t<int>::schema },
-// LHG SEC END
-        }},
-        { "error", "string" }
-    };
-}
-
-json::object MaaResourceWait_HelperOutput() {
-    return json::object {
-        { "data", {
-// LHG SEC BEGIN lhg.helper.MaaResourceWait.output.return
-// LHG SEC DEF
-            { "return", lhg::schema_t<int>::schema },
-// LHG SEC END
-        }},
-        { "error", "string" }
-    };
-}
-
-json::object MaaResourceLoaded_HelperOutput() {
-    return json::object {
-        { "data", {
-// LHG SEC BEGIN lhg.helper.MaaResourceLoaded.output.return
-// LHG SEC DEF
-            { "return", lhg::schema_t<unsigned char>::schema },
-// LHG SEC END
-        }},
-        { "error", "string" }
-    };
-}
-
-json::object MaaResourceSetOption_HelperOutput() {
-    return json::object {
-        { "data", {
-// LHG SEC BEGIN lhg.helper.MaaResourceSetOption.output.return
-// LHG SEC DEF
-            { "return", lhg::schema_t<unsigned char>::schema },
-// LHG SEC END
-        }},
-        { "error", "string" }
-    };
-}
-
-json::object MaaResourceGetHash_HelperOutput() {
-    return json::object {
-        { "data", {
-// LHG SEC BEGIN lhg.helper.MaaResourceGetHash.output.return
-// LHG SEC DEF
-            { "return", lhg::schema_t<unsigned char>::schema },
-// LHG SEC END
-// LHG SEC BEGIN lhg.helper.MaaResourceGetHash.output.buffer
-// LHG SEC DEF
-            { "buffer", lhg::schema_t<MaaStringBuffer *>::schema },
-// LHG SEC END
-        }},
-        { "error", "string" }
-    };
-}
-
-json::object MaaResourceGetTaskList_HelperOutput() {
-    return json::object {
-        { "data", {
-// LHG SEC BEGIN lhg.helper.MaaResourceGetTaskList.output.return
-// LHG SEC DEF
-            { "return", lhg::schema_t<unsigned char>::schema },
-// LHG SEC END
-// LHG SEC BEGIN lhg.helper.MaaResourceGetTaskList.output.buffer
-// LHG SEC DEF
-            { "buffer", lhg::schema_t<MaaStringBuffer *>::schema },
-// LHG SEC END
-        }},
-        { "error", "string" }
-    };
-}
-
-json::object MaaCreateImageBuffer_HelperOutput() {
-    return json::object {
-        { "data", {
-// LHG SEC BEGIN lhg.helper.MaaCreateImageBuffer.output.return
-// LHG SEC DEF
-            { "return", lhg::schema_t<MaaImageBuffer *>::schema },
-// LHG SEC END
-        }},
-        { "error", "string" }
-    };
-}
-
-json::object MaaDestroyImageBuffer_HelperOutput() {
-    return json::object {
-        { "data", {
-// LHG SEC BEGIN lhg.helper.MaaDestroyImageBuffer.output.return
-// LHG SEC DEF
-            { "return", lhg::schema_t<void>::schema },
-// LHG SEC END
-        }},
-        { "error", "string" }
-    };
-}
-
-json::object MaaIsImageEmpty_HelperOutput() {
-    return json::object {
-        { "data", {
-// LHG SEC BEGIN lhg.helper.MaaIsImageEmpty.output.return
-// LHG SEC DEF
-            { "return", lhg::schema_t<unsigned char>::schema },
-// LHG SEC END
-        }},
-        { "error", "string" }
-    };
-}
-
-json::object MaaClearImage_HelperOutput() {
-    return json::object {
-        { "data", {
-// LHG SEC BEGIN lhg.helper.MaaClearImage.output.return
-// LHG SEC DEF
-            { "return", lhg::schema_t<unsigned char>::schema },
-// LHG SEC END
-        }},
-        { "error", "string" }
-    };
-}
-
-json::object MaaGetImageWidth_HelperOutput() {
-    return json::object {
-        { "data", {
-// LHG SEC BEGIN lhg.helper.MaaGetImageWidth.output.return
-// LHG SEC DEF
-            { "return", lhg::schema_t<int>::schema },
-// LHG SEC END
-        }},
-        { "error", "string" }
-    };
-}
-
-json::object MaaGetImageHeight_HelperOutput() {
-    return json::object {
-        { "data", {
-// LHG SEC BEGIN lhg.helper.MaaGetImageHeight.output.return
-// LHG SEC DEF
-            { "return", lhg::schema_t<int>::schema },
-// LHG SEC END
-        }},
-        { "error", "string" }
-    };
-}
-
-json::object MaaGetImageType_HelperOutput() {
-    return json::object {
-        { "data", {
-// LHG SEC BEGIN lhg.helper.MaaGetImageType.output.return
-// LHG SEC DEF
-            { "return", lhg::schema_t<int>::schema },
-// LHG SEC END
-        }},
-        { "error", "string" }
-    };
-}
-
-json::object MaaGetImageEncoded_HelperOutput() {
-    return json::object {
-        { "data", {
-// LHG SEC BEGIN lhg.helper.MaaGetImageEncoded.output.return
-            { "return", "string@buffer" },
-// LHG SEC END
-        }},
-        { "error", "string" }
-    };
-}
-
-json::object MaaSetImageEncoded_HelperOutput() {
-    return json::object {
-        { "data", {
-// LHG SEC BEGIN lhg.helper.MaaSetImageEncoded.output.return
-// LHG SEC DEF
-            { "return", lhg::schema_t<unsigned char>::schema },
-// LHG SEC END
-        }},
-        { "error", "string" }
-    };
-}
-
-json::object MaaVersion_HelperOutput() {
-    return json::object {
-        { "data", {
-// LHG SEC BEGIN lhg.helper.MaaVersion.output.return
-// LHG SEC DEF
-            { "return", lhg::schema_t<const char *>::schema },
-// LHG SEC END
-        }},
-        { "error", "string" }
-    };
-}
-
-json::object MaaSetGlobalOption_HelperOutput() {
-    return json::object {
-        { "data", {
-// LHG SEC BEGIN lhg.helper.MaaSetGlobalOption.output.return
-// LHG SEC DEF
-            { "return", lhg::schema_t<unsigned char>::schema },
-// LHG SEC END
-        }},
-        { "error", "string" }
-    };
-}
-
-json::object MaaToolkitInit_HelperOutput() {
-    return json::object {
-        { "data", {
-// LHG SEC BEGIN lhg.helper.MaaToolkitInit.output.return
-// LHG SEC DEF
-            { "return", lhg::schema_t<unsigned char>::schema },
-// LHG SEC END
-        }},
-        { "error", "string" }
-    };
-}
-
-json::object MaaToolkitUninit_HelperOutput() {
-    return json::object {
-        { "data", {
-// LHG SEC BEGIN lhg.helper.MaaToolkitUninit.output.return
-// LHG SEC DEF
-            { "return", lhg::schema_t<unsigned char>::schema },
-// LHG SEC END
-        }},
-        { "error", "string" }
-    };
-}
-
-json::object MaaToolkitFindDevice_HelperOutput() {
-    return json::object {
-        { "data", {
-// LHG SEC BEGIN lhg.helper.MaaToolkitFindDevice.output.return
-// LHG SEC DEF
-            { "return", lhg::schema_t<unsigned long long>::schema },
-// LHG SEC END
-        }},
-        { "error", "string" }
-    };
-}
-
-json::object MaaToolkitFindDeviceWithAdb_HelperOutput() {
-    return json::object {
-        { "data", {
-// LHG SEC BEGIN lhg.helper.MaaToolkitFindDeviceWithAdb.output.return
-// LHG SEC DEF
-            { "return", lhg::schema_t<unsigned long long>::schema },
-// LHG SEC END
-        }},
-        { "error", "string" }
-    };
-}
-
-json::object MaaToolkitPostFindDevice_HelperOutput() {
-    return json::object {
-        { "data", {
-// LHG SEC BEGIN lhg.helper.MaaToolkitPostFindDevice.output.return
-// LHG SEC DEF
-            { "return", lhg::schema_t<unsigned char>::schema },
-// LHG SEC END
-        }},
-        { "error", "string" }
-    };
-}
-
-json::object MaaToolkitPostFindDeviceWithAdb_HelperOutput() {
-    return json::object {
-        { "data", {
-// LHG SEC BEGIN lhg.helper.MaaToolkitPostFindDeviceWithAdb.output.return
-// LHG SEC DEF
-            { "return", lhg::schema_t<unsigned char>::schema },
-// LHG SEC END
-        }},
-        { "error", "string" }
-    };
-}
-
-json::object MaaToolkitIsFindDeviceCompleted_HelperOutput() {
-    return json::object {
-        { "data", {
-// LHG SEC BEGIN lhg.helper.MaaToolkitIsFindDeviceCompleted.output.return
-// LHG SEC DEF
-            { "return", lhg::schema_t<unsigned char>::schema },
-// LHG SEC END
-        }},
-        { "error", "string" }
-    };
-}
-
-json::object MaaToolkitWaitForFindDeviceToComplete_HelperOutput() {
-    return json::object {
-        { "data", {
-// LHG SEC BEGIN lhg.helper.MaaToolkitWaitForFindDeviceToComplete.output.return
-// LHG SEC DEF
-            { "return", lhg::schema_t<unsigned long long>::schema },
-// LHG SEC END
-        }},
-        { "error", "string" }
-    };
-}
-
-json::object MaaToolkitGetDeviceCount_HelperOutput() {
-    return json::object {
-        { "data", {
-// LHG SEC BEGIN lhg.helper.MaaToolkitGetDeviceCount.output.return
-// LHG SEC DEF
-            { "return", lhg::schema_t<unsigned long long>::schema },
-// LHG SEC END
-        }},
-        { "error", "string" }
-    };
-}
-
-json::object MaaToolkitGetDeviceName_HelperOutput() {
-    return json::object {
-        { "data", {
-// LHG SEC BEGIN lhg.helper.MaaToolkitGetDeviceName.output.return
-// LHG SEC DEF
-            { "return", lhg::schema_t<const char *>::schema },
-// LHG SEC END
-        }},
-        { "error", "string" }
-    };
-}
-
-json::object MaaToolkitGetDeviceAdbPath_HelperOutput() {
-    return json::object {
-        { "data", {
-// LHG SEC BEGIN lhg.helper.MaaToolkitGetDeviceAdbPath.output.return
-// LHG SEC DEF
-            { "return", lhg::schema_t<const char *>::schema },
-// LHG SEC END
-        }},
-        { "error", "string" }
-    };
-}
-
-json::object MaaToolkitGetDeviceAdbSerial_HelperOutput() {
-    return json::object {
-        { "data", {
-// LHG SEC BEGIN lhg.helper.MaaToolkitGetDeviceAdbSerial.output.return
-// LHG SEC DEF
-            { "return", lhg::schema_t<const char *>::schema },
-// LHG SEC END
-        }},
-        { "error", "string" }
-    };
-}
-
-json::object MaaToolkitGetDeviceAdbControllerType_HelperOutput() {
-    return json::object {
-        { "data", {
-// LHG SEC BEGIN lhg.helper.MaaToolkitGetDeviceAdbControllerType.output.return
-// LHG SEC DEF
-            { "return", lhg::schema_t<int>::schema },
-// LHG SEC END
-        }},
-        { "error", "string" }
-    };
-}
-
-json::object MaaToolkitGetDeviceAdbConfig_HelperOutput() {
-    return json::object {
-        { "data", {
-// LHG SEC BEGIN lhg.helper.MaaToolkitGetDeviceAdbConfig.output.return
-// LHG SEC DEF
-            { "return", lhg::schema_t<const char *>::schema },
-// LHG SEC END
-        }},
-        { "error", "string" }
-    };
-}
-
-json::object MaaToolkitRegisterCustomRecognizerExecutor_HelperOutput() {
-    return json::object {
-        { "data", {
-// LHG SEC BEGIN lhg.helper.MaaToolkitRegisterCustomRecognizerExecutor.output.return
-// LHG SEC DEF
-            { "return", lhg::schema_t<unsigned char>::schema },
-// LHG SEC END
-        }},
-        { "error", "string" }
-    };
-}
-
-json::object MaaToolkitUnregisterCustomRecognizerExecutor_HelperOutput() {
-    return json::object {
-        { "data", {
-// LHG SEC BEGIN lhg.helper.MaaToolkitUnregisterCustomRecognizerExecutor.output.return
-// LHG SEC DEF
-            { "return", lhg::schema_t<unsigned char>::schema },
-// LHG SEC END
-        }},
-        { "error", "string" }
-    };
-}
-
-json::object MaaToolkitRegisterCustomActionExecutor_HelperOutput() {
-    return json::object {
-        { "data", {
-// LHG SEC BEGIN lhg.helper.MaaToolkitRegisterCustomActionExecutor.output.return
-// LHG SEC DEF
-            { "return", lhg::schema_t<unsigned char>::schema },
-// LHG SEC END
-        }},
-        { "error", "string" }
-    };
-}
-
-json::object MaaToolkitUnregisterCustomActionExecutor_HelperOutput() {
-    return json::object {
-        { "data", {
-// LHG SEC BEGIN lhg.helper.MaaToolkitUnregisterCustomActionExecutor.output.return
-// LHG SEC DEF
-            { "return", lhg::schema_t<unsigned char>::schema },
-// LHG SEC END
-        }},
-        { "error", "string" }
-    };
-}
-
-json::object MaaToolkitFindWindow_HelperOutput() {
-    return json::object {
-        { "data", {
-// LHG SEC BEGIN lhg.helper.MaaToolkitFindWindow.output.return
-// LHG SEC DEF
-            { "return", lhg::schema_t<unsigned long long>::schema },
-// LHG SEC END
-        }},
-        { "error", "string" }
     };
 }
 
@@ -1980,6 +1962,15 @@ json::object MaaToolkitSearchWindow_HelperOutput() {
     };
 }
 
+json::object MaaToolkitGetWindow_HelperInput() {
+    return json::object {
+// LHG SEC BEGIN lhg.helper.MaaToolkitGetWindow.input.index
+// LHG SEC DEF
+        { "index", lhg::schema_t<unsigned long long>::schema },
+// LHG SEC END
+    };
+}
+
 json::object MaaToolkitGetWindow_HelperOutput() {
     return json::object {
         { "data", {
@@ -1989,6 +1980,11 @@ json::object MaaToolkitGetWindow_HelperOutput() {
 // LHG SEC END
         }},
         { "error", "string" }
+    };
+}
+
+json::object MaaToolkitGetCursorWindow_HelperInput() {
+    return json::object {
     };
 }
 
