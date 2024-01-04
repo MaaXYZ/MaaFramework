@@ -46,7 +46,10 @@ bool ControlUnitMgr::request_uuid(std::string& uuid)
         return false;
     }
 
-    uuid = std::to_string(reinterpret_cast<uintptr_t>(hWnd_));
+    std::stringstream ss;
+    ss << hWnd_;
+    uuid = std::move(ss).str();
+
     return true;
 }
 

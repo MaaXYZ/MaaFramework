@@ -45,7 +45,7 @@ size_t Win32WindowFinder::search_window(std::string_view class_name, std::string
 
 MaaWin32Hwnd Win32WindowFinder::get_cursor_window() const
 {
-    POINT pt;
+    POINT pt {};
     if (!GetCursorPos(&pt)) {
         return nullptr;
     }
@@ -56,6 +56,16 @@ MaaWin32Hwnd Win32WindowFinder::get_cursor_window() const
     }
 
     return reinterpret_cast<MaaWin32Hwnd>(hwnd);
+}
+
+MaaWin32Hwnd Win32WindowFinder::get_desktop_window() const
+{
+    return GetDesktopWindow();
+}
+
+MaaWin32Hwnd Win32WindowFinder::get_foreground_window() const
+{
+    return GetForegroundWindow();
 }
 
 std::vector<Win32WindowFinder::Window> Win32WindowFinder::list_windows() const
