@@ -1,7 +1,5 @@
 // clang-format off
 
-#include <optional>
-
 #include "Utils.h"
 #define LHG_PROCESS
 
@@ -2078,6 +2076,10 @@ std::optional<json::object> MaaAdbControllerCreate_Wrapper(json::object __param,
 // LHG SEC DEF
     auto callback_arg_id = __param["callback"].as_string();
     auto callback_arg = MaaAPICallback__Manager.find(callback_arg_id).get();
+    if (callback_arg) {
+        __error = "callback not found in manager";
+        return std::nullopt;
+    }
 // LHG SEC END
     auto __return = MaaAdbControllerCreate(
         adb_path,
@@ -2141,6 +2143,10 @@ std::optional<json::object> MaaWin32ControllerCreate_Wrapper(json::object __para
 // LHG SEC DEF
     auto callback_arg_id = __param["callback"].as_string();
     auto callback_arg = MaaAPICallback__Manager.find(callback_arg_id).get();
+    if (callback_arg) {
+        __error = "callback not found in manager";
+        return std::nullopt;
+    }
 // LHG SEC END
     auto __return = MaaWin32ControllerCreate(
         hWnd,
@@ -2244,6 +2250,10 @@ std::optional<json::object> MaaAdbControllerCreateV2_Wrapper(json::object __para
 // LHG SEC DEF
     auto callback_arg_id = __param["callback"].as_string();
     auto callback_arg = MaaAPICallback__Manager.find(callback_arg_id).get();
+    if (callback_arg) {
+        __error = "callback not found in manager";
+        return std::nullopt;
+    }
 // LHG SEC END
     auto __return = MaaAdbControllerCreateV2(
         adb_path,
@@ -2336,6 +2346,10 @@ std::optional<json::object> MaaThriftControllerCreate_Wrapper(json::object __par
 // LHG SEC DEF
     auto callback_arg_id = __param["callback"].as_string();
     auto callback_arg = MaaAPICallback__Manager.find(callback_arg_id).get();
+    if (callback_arg) {
+        __error = "callback not found in manager";
+        return std::nullopt;
+    }
 // LHG SEC END
     auto __return = MaaThriftControllerCreate(
         type,
@@ -2427,6 +2441,10 @@ std::optional<json::object> MaaDbgControllerCreate_Wrapper(json::object __param,
 // LHG SEC DEF
     auto callback_arg_id = __param["callback"].as_string();
     auto callback_arg = MaaAPICallback__Manager.find(callback_arg_id).get();
+    if (callback_arg) {
+        __error = "callback not found in manager";
+        return std::nullopt;
+    }
 // LHG SEC END
     auto __return = MaaDbgControllerCreate(
         read_path,
@@ -3344,6 +3362,10 @@ std::optional<json::object> MaaCreate_Wrapper(json::object __param, std::string 
 // LHG SEC DEF
     auto callback_arg_id = __param["callback"].as_string();
     auto callback_arg = MaaAPICallback__Manager.find(callback_arg_id).get();
+    if (callback_arg) {
+        __error = "callback not found in manager";
+        return std::nullopt;
+    }
 // LHG SEC END
     auto __return = MaaCreate(
         callback,
@@ -4012,6 +4034,10 @@ std::optional<json::object> MaaResourceCreate_Wrapper(json::object __param, std:
 // LHG SEC DEF
     auto callback_arg_id = __param["callback"].as_string();
     auto callback_arg = MaaAPICallback__Manager.find(callback_arg_id).get();
+    if (callback_arg) {
+        __error = "callback not found in manager";
+        return std::nullopt;
+    }
 // LHG SEC END
     auto __return = MaaResourceCreate(
         callback,
@@ -5397,6 +5423,7 @@ std::optional<json::object> MaaToolkitGetCursorWindow_Wrapper(json::object __par
 
 bool handle_request(Context& ctx, UrlSegments segs) {
     auto obj = json::parse(ctx.req_.body()).value_or(json::object {}).as_object();
+
     // callback MaaAPICallback
     if (lhg::handle_callback("MaaAPICallback", MaaAPICallback__Manager, ctx, segs, obj, [](const auto& args) {
         auto v0 = std::get<0>(args);
@@ -5405,9 +5432,32 @@ bool handle_request(Context& ctx, UrlSegments segs) {
             { "msg", v0 },
             { "details_json", v1 },
         };
+    }, [](const auto& ret) {
+        return 0;
     })) {
         return true;
     }
+
+    // opaque MaaControllerAPI
+    if (lhg::handle_opaque("MaaControllerAPI", MaaControllerAPI__OpaqueManager, ctx, segs, obj)) {
+        return true;
+    }
+
+    // opaque MaaResourceAPI
+    if (lhg::handle_opaque("MaaResourceAPI", MaaResourceAPI__OpaqueManager, ctx, segs, obj)) {
+        return true;
+    }
+
+    // opaque MaaInstanceAPI
+    if (lhg::handle_opaque("MaaInstanceAPI", MaaInstanceAPI__OpaqueManager, ctx, segs, obj)) {
+        return true;
+    }
+
+    // opaque MaaImageBuffer
+    if (lhg::handle_opaque("MaaImageBuffer", MaaImageBuffer__OpaqueManager, ctx, segs, obj)) {
+        return true;
+    }
+
     const static lhg::api_info_map wrappers = {
         { "MaaAdbControllerCreate", { &MaaAdbControllerCreate_Wrapper, &MaaAdbControllerCreate_HelperInput, &MaaAdbControllerCreate_HelperOutput } },
         { "MaaWin32ControllerCreate", { &MaaWin32ControllerCreate_Wrapper, &MaaWin32ControllerCreate_HelperInput, &MaaWin32ControllerCreate_HelperOutput } },
@@ -5493,5 +5543,21 @@ bool handle_request(Context& ctx, UrlSegments segs) {
     if (lhg::handle_api(ctx, segs, obj, wrappers)) {
         return true;
     }
+
+    if (lhg::handle_help(ctx, segs, wrappers, { "MaaControllerAPI", "MaaResourceAPI", "MaaInstanceAPI", "MaaImageBuffer" }, [](json::object& result) {
+            // MaaAPICallback
+            result["/callback/MaaAPICallback/add"] = { { "body", json::object {} }, { "response", { { "data", { { "id", "string" } } } } } };
+            result["/callback/MaaAPICallback/:id/del"] = { { "body", json::object {} }, { "response", { { "data", json::object {} }, { "error", "string" } } } };
+            result["/callback/MaaAPICallback/:id/pull"] = { { "body", json::object {} }, { "response", { { "data", json::object { { "ids", "string[]" } } }, { "error", "string" } } } };
+            result["/callback/MaaAPICallback/:id/:cid/request"] = { { "body", json::object {} }, { "response", { { "data", json::object {
+                { "msg", lhg::schema_t<decltype(std::get<0>(lhg::callback_manager<void (*)(const char *, const char *, void *)>::CallbackContext::args_type {}))>::schema },
+                { "details_json", lhg::schema_t<decltype(std::get<1>(lhg::callback_manager<void (*)(const char *, const char *, void *)>::CallbackContext::args_type {}))>::schema },
+            } }, { "error", "string" } } } };
+            result["/callback/MaaAPICallback/:id/:cid/response"] = { { "body", json::object {} }, { "response", { { "data", json::object {} }, { "error", "string" } } } };
+
+    })) {
+        return true;
+    }
+
     return false;
 }
