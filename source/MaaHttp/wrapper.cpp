@@ -5546,14 +5546,14 @@ bool handle_request(Context& ctx, UrlSegments segs) {
 
     if (lhg::handle_help(ctx, segs, wrappers, { "MaaControllerAPI", "MaaResourceAPI", "MaaInstanceAPI", "MaaImageBuffer" }, [](json::object& result) {
             // MaaAPICallback
-            result["/callback/MaaAPICallback/add"] = { { "body", json::object {} }, { "response", { { "data", { { "id", "string" } } } } } };
-            result["/callback/MaaAPICallback/:id/del"] = { { "body", json::object {} }, { "response", { { "data", json::object {} }, { "error", "string" } } } };
-            result["/callback/MaaAPICallback/:id/pull"] = { { "body", json::object {} }, { "response", { { "data", json::object { { "ids", "string[]" } } }, { "error", "string" } } } };
+            result["/callback/MaaAPICallback/add"] = json::object { { "body", json::object {} }, { "response", { { "data", { { "id", "string" } } } } } };
+            result["/callback/MaaAPICallback/:id/del"] = json::object { { "body", json::object {} }, { "response", { { "data", json::object {} }, { "error", "string" } } } };
+            result["/callback/MaaAPICallback/:id/pull"] = json::object { { "body", json::object {} }, { "response", { { "data", { { "ids", "string[]" } } } } } };
             result["/callback/MaaAPICallback/:id/:cid/request"] = { { "body", json::object {} }, { "response", { { "data", json::object {
                 { "msg", lhg::schema_t<decltype(std::get<0>(lhg::callback_manager<void (*)(const char *, const char *, void *)>::CallbackContext::args_type {}))>::schema },
                 { "details_json", lhg::schema_t<decltype(std::get<1>(lhg::callback_manager<void (*)(const char *, const char *, void *)>::CallbackContext::args_type {}))>::schema },
             } }, { "error", "string" } } } };
-            result["/callback/MaaAPICallback/:id/:cid/response"] = { { "body", json::object {} }, { "response", { { "data", json::object {} }, { "error", "string" } } } };
+            result["/callback/MaaAPICallback/:id/:cid/response"] = json::object { { "body", json::object {} }, { "response", { { "data", json::object {} }, { "error", "string" } } } };
 
     })) {
         return true;
