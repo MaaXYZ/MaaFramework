@@ -5,15 +5,22 @@
             "pass": 1,
             "self": 2,
             "all": 3,
-            "argn": ["msg", "details_json", ""]
+            "arg_name": ["msg", "details_json", ""]
         }
     },
-    "opaque": ["MaaControllerAPI", "MaaResourceAPI", "MaaInstanceAPI", "MaaImageBuffer"],
-    "opaque_free": {
-        "MaaControllerAPI": ["MaaControllerDestroy"],
-        "MaaResourceAPI": ["MaaResourceDestroy"],
-        "MaaInstanceAPI": ["MaaDestroy"],
-        "MaaImageBuffer": ["MaaDestroyImageBuffer"]
+    "opaque": {
+        "MaaControllerAPI": {
+            "free": ["MaaControllerDestroy"]
+        },
+        "MaaResourceAPI": {
+            "free": ["MaaResourceDestroy"]
+        },
+        "MaaInstanceAPI": {
+            "free": ["MaaDestroy"]
+        },
+        "MaaImageBuffer": {
+            "free": ["MaaDestroyImageBuffer"]
+        }
     },
     "output": ["MaaStringBuffer"],
     "remove": [
