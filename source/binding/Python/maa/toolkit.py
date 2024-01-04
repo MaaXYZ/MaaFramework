@@ -2,10 +2,20 @@ import ctypes
 import json
 import asyncio
 from dataclasses import dataclass
+from typing import List
 
 from .library import Library
 from .define import MaaBool
 from .instance import Instance
+
+
+@dataclass
+class AdbDevice:
+    name: str
+    adb_path: str
+    address: str
+    controller_type: int
+    config: str
 
 
 class Toolkit:
@@ -19,7 +29,7 @@ class Toolkit:
         return Library.toolkit.MaaToolkitInit()
 
     @classmethod
-    async def adb_devices(cls) -> list:
+    async def adb_devices(cls) -> List[AdbDevice]:
         """
         Get the adb devices.
         """
@@ -147,12 +157,3 @@ class Toolkit:
             ctypes.c_char_p,
             ctypes.c_char_p,
         ]
-
-
-@dataclass
-class AdbDevice:
-    name: str
-    adb_path: str
-    address: str
-    controller_type: int
-    config: str

@@ -34,7 +34,7 @@ class CustomRecognizer(ABC):
 
         raise NotImplementedError
 
-    def c_handle(self) -> ctypes.POINTER(MaaCustomRecognizer):
+    def c_handle(self) -> ctypes._Pointer(MaaCustomRecognizer):
         return ctypes.pointer(self._handle)
 
     def c_arg(self) -> ctypes.c_void_p:
