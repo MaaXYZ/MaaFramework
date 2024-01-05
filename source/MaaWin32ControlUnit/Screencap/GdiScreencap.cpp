@@ -1,7 +1,5 @@
 #include "GdiScreencap.h"
 
-#include <functional>
-
 #include "Utils/Logger.h"
 
 MAA_CTRL_UNIT_NS_BEGIN
@@ -84,17 +82,15 @@ std::optional<cv::Mat> GdiScreencap::screencap()
 
 double GdiScreencap::window_screen_scale()
 {
-    // TODO: 处理多显示器不同 DPI 的情况
-
 #ifndef MAA_WIN32_COMPATIBLE
 
     constexpr double kStandardDPI = 96.0;
     // 运行期需要 Win10 1607 以上版本
-    return GetDpiForWindow(GetDesktopWindow()) / kStandardDPI;
+    return GetDpiForWindow(hwnd_) / kStandardDPI;
 
 #else
 
-    HMONITOR monitor_handle = MonitorFromWindow(GetDesktopWindow(), MONITOR_DEFAULTTONEAREST);
+    HMONITOR monitor_handle = MonitorFromWindow(hwnd_, MONITOR_DEFAULTTONEAREST);
 
     MONITORINFOEX miex { 0 };
     miex.cbSize = sizeof(miex);

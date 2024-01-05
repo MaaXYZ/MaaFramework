@@ -7,9 +7,7 @@ target_include_directories(MaaWin32ControlUnit PRIVATE ${CMAKE_CURRENT_SOURCE_DI
                                                   ${CMAKE_CURRENT_SOURCE_DIR}/../../include)
 
 target_link_libraries(MaaWin32ControlUnit MaaUtils HeaderOnlyLibraries ${OpenCV_LIBS} ZLIB::ZLIB Boost::system)
-if(WIN32)
-    target_link_libraries(MaaWin32ControlUnit ws2_32)
-endif()
+target_link_libraries(MaaWin32ControlUnit d3d11 dxgi)
 
 target_compile_definitions(MaaWin32ControlUnit PRIVATE MAA_CONTROL_UNIT_EXPORTS)
 
