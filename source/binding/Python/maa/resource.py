@@ -3,14 +3,14 @@ import pathlib
 import asyncio
 from typing import Union, Optional, Any
 
-from .define import MaaApiCallback, MaaBool, MaaId
+from .define import *
 from .future import Future
 from .library import Library
 from .callback_agent import CallbackAgent, Callback
 
 
 class Resource:
-    _handle: ctypes.c_void_p
+    _handle: MaaResourceHandle
     _callback_agent: CallbackAgent
 
     def __init__(self, callback: Optional[Callback] = None, callback_arg: Any = None):
@@ -89,20 +89,26 @@ class Resource:
             return
         Resource._api_properties_initialized = True
 
-        Library.framework.MaaResourceCreate.restype = ctypes.c_void_p
-        Library.framework.MaaResourceCreate.argtypes = [MaaApiCallback, ctypes.c_void_p]
-
-        Library.framework.MaaResourceDestroy.restype = None
-        Library.framework.MaaResourceDestroy.argtypes = [ctypes.c_void_p]
-
-        Library.framework.MaaResourcePostPath.restype = MaaId
-        Library.framework.MaaResourcePostPath.argtypes = [
-            ctypes.c_void_p,
-            ctypes.c_char_p,
+        Library.framework.MaaResourceCreate.restype = MaaResourceHandle
+        Library.framework.MaaResourceCreate.argtypes = [
+            MaaResourceCallback,
+            MaaCallbackTransparentArg,
         ]
 
-        Library.framework.MaaResourceStatus.restype = ctypes.c_int32
-        Library.framework.MaaResourceStatus.argtypes = [ctypes.c_void_p, MaaId]
+        Library.framework.MaaResourceDestroy.restype = None
+        Library.framework.MaaResourceDestroy.argtypes = [MaaResourceHandle]
+
+        Library.framework.MaaResourcePostPath.restype = MaaResId
+        Library.framework.MaaResourcePostPath.argtypes = [
+            MaaResourceHandle,
+            MaaStringView,
+        ]
+
+        Library.framework.MaaResourceStatus.restype = MaaStatus
+        Library.framework.MaaResourceStatus.argtypes = [
+            MaaResourceHandle,
+            MaaResId,
+        ]
 
         Library.framework.MaaResourceLoaded.restype = MaaBool
-        Library.framework.MaaResourceLoaded.argtypes = [ctypes.c_void_p]
+        Library.framework.MaaResourceLoaded.argtypes = [MaaResourceHandle]

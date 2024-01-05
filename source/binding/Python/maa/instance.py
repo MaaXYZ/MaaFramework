@@ -3,8 +3,8 @@ import json
 import asyncio
 from typing import Union, Optional, Any
 
-from .define import MaaApiCallback, MaaBool, MaaId
-from .future import Future, MaaStatus
+from .define import *
+from .future import Future, MaaStatusEnum
 from .library import Library
 from .callback_agent import CallbackAgent, Callback
 from .controller import Controller
@@ -15,7 +15,7 @@ from .custom_action import CustomAction
 
 class Instance:
     _callback_agent: CallbackAgent
-    _handle: ctypes.c_void_p
+    _handle: MaaInstanceHandle
 
     def __init__(self, callback: Optional[Callback] = None, callback_arg: Any = None):
         """
@@ -179,7 +179,7 @@ class Instance:
         return Library.framework.MaaTaskStatus(self._handle, id)
 
     def _stop_status(self, id: int) -> ctypes.c_int32:
-        return MaaStatus.success if self.all_finished() else MaaStatus.running
+        return MaaStatusEnum.success if self.all_finished() else MaaStatusEnum.running
 
     def _set_task_param(self, id: int, param: Any) -> bool:
         return Library.framework.MaaSetTaskParam(
@@ -197,61 +197,70 @@ class Instance:
             return
         Instance._api_properties_initialized = True
 
-        Library.framework.MaaCreate.restype = ctypes.c_void_p
-        Library.framework.MaaCreate.argtypes = [MaaApiCallback, ctypes.c_void_p]
+        Library.framework.MaaCreate.restype = MaaInstanceHandle
+        Library.framework.MaaCreate.argtypes = [
+            MaaInstanceCallback,
+            MaaCallbackTransparentArg,
+        ]
 
         Library.framework.MaaDestroy.restype = None
-        Library.framework.MaaDestroy.argtypes = [ctypes.c_void_p]
+        Library.framework.MaaDestroy.argtypes = [MaaInstanceHandle]
 
         Library.framework.MaaBindResource.restype = MaaBool
-        Library.framework.MaaBindResource.argtypes = [ctypes.c_void_p, ctypes.c_void_p]
+        Library.framework.MaaBindResource.argtypes = [
+            MaaInstanceHandle,
+            MaaResourceHandle,
+        ]
 
         Library.framework.MaaBindController.restype = MaaBool
         Library.framework.MaaBindController.argtypes = [
-            ctypes.c_void_p,
-            ctypes.c_void_p,
+            MaaInstanceHandle,
+            MaaControllerHandle,
         ]
 
         Library.framework.MaaInited.restype = MaaBool
-        Library.framework.MaaInited.argtypes = [ctypes.c_void_p]
+        Library.framework.MaaInited.argtypes = [MaaInstanceHandle]
 
         Library.framework.MaaPostTask.restype = MaaId
         Library.framework.MaaPostTask.argtypes = [
-            ctypes.c_void_p,
-            ctypes.c_char_p,
-            ctypes.c_char_p,
+            MaaInstanceHandle,
+            MaaStringView,
+            MaaStringView,
         ]
 
         Library.framework.MaaSetTaskParam.restype = MaaBool
         Library.framework.MaaSetTaskParam.argtypes = [
-            ctypes.c_void_p,
-            MaaId,
-            ctypes.c_char_p,
+            MaaInstanceHandle,
+            MaaTaskId,
+            MaaStringView,
         ]
 
-        Library.framework.MaaTaskStatus.restype = ctypes.c_int32
-        Library.framework.MaaTaskStatus.argtypes = [ctypes.c_void_p, MaaId]
+        Library.framework.MaaTaskStatus.restype = MaaStatus
+        Library.framework.MaaTaskStatus.argtypes = [
+            MaaInstanceHandle,
+            MaaTaskId,
+        ]
 
         Library.framework.MaaTaskAllFinished.restype = MaaBool
-        Library.framework.MaaTaskAllFinished.argtypes = [ctypes.c_void_p]
+        Library.framework.MaaTaskAllFinished.argtypes = [MaaInstanceHandle]
 
         Library.framework.MaaPostStop.restype = MaaBool
-        Library.framework.MaaPostStop.argtypes = [ctypes.c_void_p]
+        Library.framework.MaaPostStop.argtypes = [MaaInstanceHandle]
 
         Library.framework.MaaRegisterCustomRecognizer.restype = MaaBool
         Library.framework.MaaRegisterCustomRecognizer.argtypes = [
-            ctypes.c_void_p,
-            ctypes.c_char_p,
-            ctypes.c_void_p,
-            ctypes.c_void_p,
+            MaaInstanceHandle,
+            MaaStringView,
+            MaaCustomRecognizerHandle,
+            MaaTransparentArg,
         ]
 
         Library.framework.MaaRegisterCustomAction.restype = MaaBool
         Library.framework.MaaRegisterCustomAction.argtypes = [
-            ctypes.c_void_p,
-            ctypes.c_char_p,
-            ctypes.c_void_p,
-            ctypes.c_void_p,
+            MaaInstanceHandle,
+            MaaStringView,
+            MaaCustomActionHandle,
+            MaaTransparentArg,
         ]
 
 

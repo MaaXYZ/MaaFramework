@@ -1,17 +1,17 @@
 import ctypes
 import numpy
-from typing import Tuple, Union, Optional
+from typing import List, Tuple, Union, Optional
 from PIL import Image
 
-from .define import MaaBool
+from .define import *
 from .library import Library
 
 
 class StringBuffer:
-    _handle: ctypes.c_void_p
+    _handle: MaaStringBufferHandle
     _own: bool
 
-    def __init__(self, c_handle: Optional[ctypes.c_void_p] = None):
+    def __init__(self, c_handle: Optional[MaaStringBufferHandle] = None):
         if not Library.initialized:
             raise RuntimeError(
                 "Library not initialized, please call `library.open()` first."
@@ -56,40 +56,40 @@ class StringBuffer:
             return
         StringBuffer._api_properties_initialized = True
 
-        Library.framework.MaaCreateStringBuffer.restype = ctypes.c_void_p
-        Library.framework.MaaCreateStringBuffer.argtypes = []
+        Library.framework.MaaCreateStringBuffer.restype = MaaStringBufferHandle
+        Library.framework.MaaCreateStringBuffer.argtypes = None
 
         Library.framework.MaaDestroyStringBuffer.restype = None
-        Library.framework.MaaDestroyStringBuffer.argtypes = [ctypes.c_void_p]
+        Library.framework.MaaDestroyStringBuffer.argtypes = [MaaStringBufferHandle]
 
         Library.framework.MaaIsStringEmpty.restype = MaaBool
-        Library.framework.MaaIsStringEmpty.argtypes = [ctypes.c_void_p]
+        Library.framework.MaaIsStringEmpty.argtypes = [MaaStringBufferHandle]
 
         Library.framework.MaaClearString.restype = MaaBool
-        Library.framework.MaaClearString.argtypes = [ctypes.c_void_p]
+        Library.framework.MaaClearString.argtypes = [MaaStringBufferHandle]
 
-        Library.framework.MaaGetString.restype = ctypes.c_char_p
-        Library.framework.MaaGetString.argtypes = [ctypes.c_void_p]
+        Library.framework.MaaGetString.restype = MaaStringView
+        Library.framework.MaaGetString.argtypes = [MaaStringBufferHandle]
 
-        Library.framework.MaaGetStringSize.restype = ctypes.c_size_t
-        Library.framework.MaaGetStringSize.argtypes = [ctypes.c_void_p]
+        Library.framework.MaaGetStringSize.restype = MaaSize
+        Library.framework.MaaGetStringSize.argtypes = [MaaStringBufferHandle]
 
         Library.framework.MaaSetString.restype = MaaBool
-        Library.framework.MaaSetString.argtypes = [ctypes.c_void_p, ctypes.c_char_p]
+        Library.framework.MaaSetString.argtypes = [MaaStringBufferHandle, MaaStringView]
 
         Library.framework.MaaSetStringEx.restype = MaaBool
         Library.framework.MaaSetStringEx.argtypes = [
-            ctypes.c_void_p,
-            ctypes.c_char_p,
-            ctypes.c_size_t,
+            MaaStringBufferHandle,
+            MaaStringView,
+            MaaSize,
         ]
 
 
 class ImageBuffer:
-    _handle: ctypes.c_void_p
+    _handle: MaaImageBufferHandle
     _own: bool
 
-    def __init__(self, c_handle: Optional[ctypes.c_void_p] = None):
+    def __init__(self, c_handle: Optional[MaaImageBufferHandle] = None):
         if not Library.initialized:
             raise RuntimeError(
                 "Library not initialized, please call `library.open()` first."
@@ -133,7 +133,7 @@ class ImageBuffer:
                 value.ctypes.data,
                 value.shape[1],
                 value.shape[0],
-                16, # CV_8UC3
+                16,  # CV_8UC3
             )
         )
 
@@ -151,45 +151,45 @@ class ImageBuffer:
             return
         ImageBuffer._api_properties_initialized = True
 
-        Library.framework.MaaCreateImageBuffer.restype = ctypes.c_void_p
+        Library.framework.MaaCreateImageBuffer.restype = MaaImageBufferHandle
         Library.framework.MaaCreateImageBuffer.argtypes = []
 
         Library.framework.MaaDestroyImageBuffer.restype = None
-        Library.framework.MaaDestroyImageBuffer.argtypes = [ctypes.c_void_p]
+        Library.framework.MaaDestroyImageBuffer.argtypes = [MaaImageBufferHandle]
 
-        Library.framework.MaaGetImageRawData.restype = ctypes.c_void_p
-        Library.framework.MaaGetImageRawData.argtypes = [ctypes.c_void_p]
+        Library.framework.MaaGetImageRawData.restype = MaaImageRawData
+        Library.framework.MaaGetImageRawData.argtypes = [MaaImageBufferHandle]
 
         Library.framework.MaaGetImageWidth.restype = ctypes.c_int32
-        Library.framework.MaaGetImageWidth.argtypes = [ctypes.c_void_p]
+        Library.framework.MaaGetImageWidth.argtypes = [MaaImageBufferHandle]
 
         Library.framework.MaaGetImageHeight.restype = ctypes.c_int32
-        Library.framework.MaaGetImageHeight.argtypes = [ctypes.c_void_p]
+        Library.framework.MaaGetImageHeight.argtypes = [MaaImageBufferHandle]
 
         Library.framework.MaaGetImageType.restype = ctypes.c_int32
-        Library.framework.MaaGetImageType.argtypes = [ctypes.c_void_p]
+        Library.framework.MaaGetImageType.argtypes = [MaaImageBufferHandle]
 
         Library.framework.MaaSetImageRawData.restype = MaaBool
         Library.framework.MaaSetImageRawData.argtypes = [
-            ctypes.c_void_p,
-            ctypes.c_void_p,
+            MaaImageBufferHandle,
+            MaaImageRawData,
             ctypes.c_int32,
             ctypes.c_int32,
             ctypes.c_int32,
         ]
 
         Library.framework.MaaIsImageEmpty.restype = MaaBool
-        Library.framework.MaaIsImageEmpty.argtypes = [ctypes.c_void_p]
+        Library.framework.MaaIsImageEmpty.argtypes = [MaaImageBufferHandle]
 
         Library.framework.MaaClearImage.restype = MaaBool
-        Library.framework.MaaClearImage.argtypes = [ctypes.c_void_p]
+        Library.framework.MaaClearImage.argtypes = [MaaImageBufferHandle]
 
 
 class RectBuffer:
-    _handle: ctypes.c_void_p
+    _handle: MaaRectHandle
     _own: bool
 
-    def __init__(self, c_handle: Optional[ctypes.c_void_p] = None):
+    def __init__(self, c_handle: Optional[MaaRectHandle] = None):
         if not Library.initialized:
             raise RuntimeError(
                 "Library not initialized, please call `library.open()` first."
@@ -219,7 +219,14 @@ class RectBuffer:
 
         return x, y, w, h
 
-    def set(self, value: Union[numpy.ndarray, tuple, list]) -> bool:
+    def set(
+        self,
+        value: Union[
+            numpy.ndarray,
+            Tuple[int, int, int, int],
+            List[int, int, int, int],
+        ],
+    ) -> bool:
         if isinstance(value, numpy.ndarray):
             if value.ndim != 1:
                 raise ValueError("value must be a 1D array")
@@ -248,27 +255,27 @@ class RectBuffer:
             return
         RectBuffer._api_properties_initialized = True
 
-        Library.framework.MaaCreateRectBuffer.restype = ctypes.c_void_p
+        Library.framework.MaaCreateRectBuffer.restype = MaaRectHandle
         Library.framework.MaaCreateRectBuffer.argtypes = []
 
         Library.framework.MaaDestroyRectBuffer.restype = None
-        Library.framework.MaaDestroyRectBuffer.argtypes = [ctypes.c_void_p]
+        Library.framework.MaaDestroyRectBuffer.argtypes = [MaaRectHandle]
 
         Library.framework.MaaGetRectX.restype = ctypes.c_int32
-        Library.framework.MaaGetRectX.argtypes = [ctypes.c_void_p]
+        Library.framework.MaaGetRectX.argtypes = [MaaRectHandle]
 
         Library.framework.MaaGetRectY.restype = ctypes.c_int32
-        Library.framework.MaaGetRectY.argtypes = [ctypes.c_void_p]
+        Library.framework.MaaGetRectY.argtypes = [MaaRectHandle]
 
         Library.framework.MaaGetRectW.restype = ctypes.c_int32
-        Library.framework.MaaGetRectW.argtypes = [ctypes.c_void_p]
+        Library.framework.MaaGetRectW.argtypes = [MaaRectHandle]
 
         Library.framework.MaaGetRectH.restype = ctypes.c_int32
-        Library.framework.MaaGetRectH.argtypes = [ctypes.c_void_p]
+        Library.framework.MaaGetRectH.argtypes = [MaaRectHandle]
 
         Library.framework.MaaSetRect.restype = MaaBool
         Library.framework.MaaSetRect.argtypes = [
-            ctypes.c_void_p,
+            MaaRectHandle,
             ctypes.c_int32,
             ctypes.c_int32,
             ctypes.c_int32,

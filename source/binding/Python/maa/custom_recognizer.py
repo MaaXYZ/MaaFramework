@@ -6,6 +6,8 @@ from .define import MaaBool, MaaCustomRecognizer
 from .buffer import RectBuffer, StringBuffer, ImageBuffer
 from .context import SyncContext
 
+# TODO: Typing
+
 
 class CustomRecognizer(ABC):
     _handle: MaaCustomRecognizer
@@ -60,9 +62,7 @@ class CustomRecognizer(ABC):
         task_name = c_task_name.decode("utf-8")
         custom_param = c_custom_param.decode("utf-8")
 
-        success, box, detail = self.analyze(
-            context, image, task_name, custom_param
-        )
+        success, box, detail = self.analyze(context, image, task_name, custom_param)
         RectBuffer(c_out_box).set(box)
         StringBuffer(c_out_detail).set(detail)
 
