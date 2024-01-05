@@ -4,8 +4,7 @@
 #define LHG_PROCESS
 
 // LHG SEC BEGIN lhg.include
-#include "MaaFramework/MaaAPI.h"
-#include "MaaToolkit/MaaToolkitAPI.h"
+#include "include.h"
 // LHG SEC END
 
 // LHG SEC BEGIN lhg.custom.global

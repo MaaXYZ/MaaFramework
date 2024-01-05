@@ -1,3 +1,5 @@
+#include <cstring>
+
 #include "extra.h"
 
 MaaBool MaaControllerSetOptionString(MaaControllerHandle ctrl, MaaCtrlOption key, MaaStringView value)
