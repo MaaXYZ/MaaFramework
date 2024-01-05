@@ -10,9 +10,11 @@
     },
     "opaque": {
         "MaaControllerAPI": {
+            "non-alloc": ["MaaGetController"],
             "free": ["MaaControllerDestroy"]
         },
         "MaaResourceAPI": {
+            "non-alloc": ["MaaGetResource"],
             "free": ["MaaResourceDestroy"]
         },
         "MaaInstanceAPI": {
