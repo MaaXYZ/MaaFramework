@@ -10,7 +10,7 @@
 
 // LHG SEC BEGIN lhg.custom.global
 namespace lhg {
-    
+
     template <>
     inline MaaStringBuffer *output_prepare<MaaStringBuffer *>() {
         return MaaCreateStringBuffer();
@@ -33,7 +33,1892 @@ namespace lhg {
 }
 // LHG SEC END
 
-static lhg::callback_manager<void (*)(const char *, const char *, void *)> MaaAPICallback__Manager;
+struct __MaaAdbControllerCreate_t {
+    struct __adb_path_t {
+        using type = const char *;
+        static constexpr size_t index = 0;
+        static constexpr const char* const name = "adb_path";
+    };
+    struct __address_t {
+        using type = const char *;
+        static constexpr size_t index = 1;
+        static constexpr const char* const name = "address";
+    };
+    struct __type_t {
+        using type = int;
+        static constexpr size_t index = 2;
+        static constexpr const char* const name = "type";
+    };
+    struct __config_t {
+        using type = const char *;
+        static constexpr size_t index = 3;
+        static constexpr const char* const name = "config";
+    };
+    struct __callback_t {
+        using type = void (*)(const char *, const char *, void *);
+        static constexpr size_t index = 4;
+        static constexpr const char* const name = "callback";
+    };
+    struct __callback_arg_t {
+        using type = void *;
+        static constexpr size_t index = 5;
+        static constexpr const char* const name = "callback_arg";
+    };
+    using arguments_t = std::tuple<__adb_path_t, __address_t, __type_t, __config_t, __callback_t, __callback_arg_t>;
+    using return_t = MaaControllerAPI *;
+};
+
+template<>
+struct lhg::is_callback<__MaaAdbControllerCreate_t::__callback_t>
+{
+    static constexpr const bool value = true;
+    static constexpr const char* const name = "MaaAPICallback";
+};
+
+template<>
+struct lhg::is_callback_context<__MaaAdbControllerCreate_t::__callback_arg_t>
+{
+    static constexpr const bool value = true;
+};
+
+namespace lhg {
+// LHG SEC BEGIN lhg.custom.MaaAdbControllerCreate
+// LHG SEC DEF
+
+// LHG SEC END
+}
+
+struct __MaaWin32ControllerCreate_t {
+    struct __hWnd_t {
+        using type = unsigned long long;
+        static constexpr size_t index = 0;
+        static constexpr const char* const name = "hWnd";
+    };
+    struct __type_t {
+        using type = int;
+        static constexpr size_t index = 1;
+        static constexpr const char* const name = "type";
+    };
+    struct __callback_t {
+        using type = void (*)(const char *, const char *, void *);
+        static constexpr size_t index = 2;
+        static constexpr const char* const name = "callback";
+    };
+    struct __callback_arg_t {
+        using type = void *;
+        static constexpr size_t index = 3;
+        static constexpr const char* const name = "callback_arg";
+    };
+    using arguments_t = std::tuple<__hWnd_t, __type_t, __callback_t, __callback_arg_t>;
+    using return_t = MaaControllerAPI *;
+};
+
+template<>
+struct lhg::is_callback<__MaaWin32ControllerCreate_t::__callback_t>
+{
+    static constexpr const bool value = true;
+    static constexpr const char* const name = "MaaAPICallback";
+};
+
+template<>
+struct lhg::is_callback_context<__MaaWin32ControllerCreate_t::__callback_arg_t>
+{
+    static constexpr const bool value = true;
+};
+
+namespace lhg {
+// LHG SEC BEGIN lhg.custom.MaaWin32ControllerCreate
+// LHG SEC DEF
+
+// LHG SEC END
+}
+
+struct __MaaAdbControllerCreateV2_t {
+    struct __adb_path_t {
+        using type = const char *;
+        static constexpr size_t index = 0;
+        static constexpr const char* const name = "adb_path";
+    };
+    struct __address_t {
+        using type = const char *;
+        static constexpr size_t index = 1;
+        static constexpr const char* const name = "address";
+    };
+    struct __type_t {
+        using type = int;
+        static constexpr size_t index = 2;
+        static constexpr const char* const name = "type";
+    };
+    struct __config_t {
+        using type = const char *;
+        static constexpr size_t index = 3;
+        static constexpr const char* const name = "config";
+    };
+    struct __agent_path_t {
+        using type = const char *;
+        static constexpr size_t index = 4;
+        static constexpr const char* const name = "agent_path";
+    };
+    struct __callback_t {
+        using type = void (*)(const char *, const char *, void *);
+        static constexpr size_t index = 5;
+        static constexpr const char* const name = "callback";
+    };
+    struct __callback_arg_t {
+        using type = void *;
+        static constexpr size_t index = 6;
+        static constexpr const char* const name = "callback_arg";
+    };
+    using arguments_t = std::tuple<__adb_path_t, __address_t, __type_t, __config_t, __agent_path_t, __callback_t, __callback_arg_t>;
+    using return_t = MaaControllerAPI *;
+};
+
+template<>
+struct lhg::is_callback<__MaaAdbControllerCreateV2_t::__callback_t>
+{
+    static constexpr const bool value = true;
+    static constexpr const char* const name = "MaaAPICallback";
+};
+
+template<>
+struct lhg::is_callback_context<__MaaAdbControllerCreateV2_t::__callback_arg_t>
+{
+    static constexpr const bool value = true;
+};
+
+namespace lhg {
+// LHG SEC BEGIN lhg.custom.MaaAdbControllerCreateV2
+// LHG SEC DEF
+
+// LHG SEC END
+}
+
+struct __MaaThriftControllerCreate_t {
+    struct __type_t {
+        using type = int;
+        static constexpr size_t index = 0;
+        static constexpr const char* const name = "type";
+    };
+    struct __host_t {
+        using type = const char *;
+        static constexpr size_t index = 1;
+        static constexpr const char* const name = "host";
+    };
+    struct __port_t {
+        using type = int;
+        static constexpr size_t index = 2;
+        static constexpr const char* const name = "port";
+    };
+    struct __config_t {
+        using type = const char *;
+        static constexpr size_t index = 3;
+        static constexpr const char* const name = "config";
+    };
+    struct __callback_t {
+        using type = void (*)(const char *, const char *, void *);
+        static constexpr size_t index = 4;
+        static constexpr const char* const name = "callback";
+    };
+    struct __callback_arg_t {
+        using type = void *;
+        static constexpr size_t index = 5;
+        static constexpr const char* const name = "callback_arg";
+    };
+    using arguments_t = std::tuple<__type_t, __host_t, __port_t, __config_t, __callback_t, __callback_arg_t>;
+    using return_t = MaaControllerAPI *;
+};
+
+template<>
+struct lhg::is_callback<__MaaThriftControllerCreate_t::__callback_t>
+{
+    static constexpr const bool value = true;
+    static constexpr const char* const name = "MaaAPICallback";
+};
+
+template<>
+struct lhg::is_callback_context<__MaaThriftControllerCreate_t::__callback_arg_t>
+{
+    static constexpr const bool value = true;
+};
+
+namespace lhg {
+// LHG SEC BEGIN lhg.custom.MaaThriftControllerCreate
+// LHG SEC DEF
+
+// LHG SEC END
+}
+
+struct __MaaDbgControllerCreate_t {
+    struct __read_path_t {
+        using type = const char *;
+        static constexpr size_t index = 0;
+        static constexpr const char* const name = "read_path";
+    };
+    struct __write_path_t {
+        using type = const char *;
+        static constexpr size_t index = 1;
+        static constexpr const char* const name = "write_path";
+    };
+    struct __type_t {
+        using type = int;
+        static constexpr size_t index = 2;
+        static constexpr const char* const name = "type";
+    };
+    struct __config_t {
+        using type = const char *;
+        static constexpr size_t index = 3;
+        static constexpr const char* const name = "config";
+    };
+    struct __callback_t {
+        using type = void (*)(const char *, const char *, void *);
+        static constexpr size_t index = 4;
+        static constexpr const char* const name = "callback";
+    };
+    struct __callback_arg_t {
+        using type = void *;
+        static constexpr size_t index = 5;
+        static constexpr const char* const name = "callback_arg";
+    };
+    using arguments_t = std::tuple<__read_path_t, __write_path_t, __type_t, __config_t, __callback_t, __callback_arg_t>;
+    using return_t = MaaControllerAPI *;
+};
+
+template<>
+struct lhg::is_callback<__MaaDbgControllerCreate_t::__callback_t>
+{
+    static constexpr const bool value = true;
+    static constexpr const char* const name = "MaaAPICallback";
+};
+
+template<>
+struct lhg::is_callback_context<__MaaDbgControllerCreate_t::__callback_arg_t>
+{
+    static constexpr const bool value = true;
+};
+
+namespace lhg {
+// LHG SEC BEGIN lhg.custom.MaaDbgControllerCreate
+// LHG SEC DEF
+
+// LHG SEC END
+}
+
+struct __MaaControllerDestroy_t {
+    struct __ctrl_t {
+        using type = MaaControllerAPI *;
+        static constexpr size_t index = 0;
+        static constexpr const char* const name = "ctrl";
+    };
+    using arguments_t = std::tuple<__ctrl_t>;
+    using return_t = void;
+};
+
+namespace lhg {
+// LHG SEC BEGIN lhg.custom.MaaControllerDestroy
+// LHG SEC DEF
+
+// LHG SEC END
+}
+
+struct __MaaControllerSetOption_t {
+    struct __ctrl_t {
+        using type = MaaControllerAPI *;
+        static constexpr size_t index = 0;
+        static constexpr const char* const name = "ctrl";
+    };
+    struct __key_t {
+        using type = int;
+        static constexpr size_t index = 1;
+        static constexpr const char* const name = "key";
+    };
+    struct __value_t {
+        using type = void *;
+        static constexpr size_t index = 2;
+        static constexpr const char* const name = "value";
+    };
+    struct __val_size_t {
+        using type = unsigned long long;
+        static constexpr size_t index = 3;
+        static constexpr const char* const name = "val_size";
+    };
+    using arguments_t = std::tuple<__ctrl_t, __key_t, __value_t, __val_size_t>;
+    using return_t = unsigned char;
+};
+
+namespace lhg {
+// LHG SEC BEGIN lhg.custom.MaaControllerSetOption
+template<>
+struct arg_schema<__MaaControllerSetOption_t::__value_t>
+{
+    static constexpr const char *const schema = "string|number|boolean";
+};
+
+template<>
+struct shown_in_schema<__MaaControllerSetOption_t::__val_size_t>
+{
+    static constexpr const bool value = false;
+};
+// LHG SEC END
+}
+
+struct __MaaControllerPostConnection_t {
+    struct __ctrl_t {
+        using type = MaaControllerAPI *;
+        static constexpr size_t index = 0;
+        static constexpr const char* const name = "ctrl";
+    };
+    using arguments_t = std::tuple<__ctrl_t>;
+    using return_t = long long;
+};
+
+namespace lhg {
+// LHG SEC BEGIN lhg.custom.MaaControllerPostConnection
+// LHG SEC DEF
+
+// LHG SEC END
+}
+
+struct __MaaControllerPostClick_t {
+    struct __ctrl_t {
+        using type = MaaControllerAPI *;
+        static constexpr size_t index = 0;
+        static constexpr const char* const name = "ctrl";
+    };
+    struct __x_t {
+        using type = int;
+        static constexpr size_t index = 1;
+        static constexpr const char* const name = "x";
+    };
+    struct __y_t {
+        using type = int;
+        static constexpr size_t index = 2;
+        static constexpr const char* const name = "y";
+    };
+    using arguments_t = std::tuple<__ctrl_t, __x_t, __y_t>;
+    using return_t = long long;
+};
+
+namespace lhg {
+// LHG SEC BEGIN lhg.custom.MaaControllerPostClick
+// LHG SEC DEF
+
+// LHG SEC END
+}
+
+struct __MaaControllerPostSwipe_t {
+    struct __ctrl_t {
+        using type = MaaControllerAPI *;
+        static constexpr size_t index = 0;
+        static constexpr const char* const name = "ctrl";
+    };
+    struct __x1_t {
+        using type = int;
+        static constexpr size_t index = 1;
+        static constexpr const char* const name = "x1";
+    };
+    struct __y1_t {
+        using type = int;
+        static constexpr size_t index = 2;
+        static constexpr const char* const name = "y1";
+    };
+    struct __x2_t {
+        using type = int;
+        static constexpr size_t index = 3;
+        static constexpr const char* const name = "x2";
+    };
+    struct __y2_t {
+        using type = int;
+        static constexpr size_t index = 4;
+        static constexpr const char* const name = "y2";
+    };
+    struct __duration_t {
+        using type = int;
+        static constexpr size_t index = 5;
+        static constexpr const char* const name = "duration";
+    };
+    using arguments_t = std::tuple<__ctrl_t, __x1_t, __y1_t, __x2_t, __y2_t, __duration_t>;
+    using return_t = long long;
+};
+
+namespace lhg {
+// LHG SEC BEGIN lhg.custom.MaaControllerPostSwipe
+// LHG SEC DEF
+
+// LHG SEC END
+}
+
+struct __MaaControllerPostPressKey_t {
+    struct __ctrl_t {
+        using type = MaaControllerAPI *;
+        static constexpr size_t index = 0;
+        static constexpr const char* const name = "ctrl";
+    };
+    struct __keycode_t {
+        using type = int;
+        static constexpr size_t index = 1;
+        static constexpr const char* const name = "keycode";
+    };
+    using arguments_t = std::tuple<__ctrl_t, __keycode_t>;
+    using return_t = long long;
+};
+
+namespace lhg {
+// LHG SEC BEGIN lhg.custom.MaaControllerPostPressKey
+// LHG SEC DEF
+
+// LHG SEC END
+}
+
+struct __MaaControllerPostInputText_t {
+    struct __ctrl_t {
+        using type = MaaControllerAPI *;
+        static constexpr size_t index = 0;
+        static constexpr const char* const name = "ctrl";
+    };
+    struct __text_t {
+        using type = const char *;
+        static constexpr size_t index = 1;
+        static constexpr const char* const name = "text";
+    };
+    using arguments_t = std::tuple<__ctrl_t, __text_t>;
+    using return_t = long long;
+};
+
+namespace lhg {
+// LHG SEC BEGIN lhg.custom.MaaControllerPostInputText
+// LHG SEC DEF
+
+// LHG SEC END
+}
+
+struct __MaaControllerPostTouchDown_t {
+    struct __ctrl_t {
+        using type = MaaControllerAPI *;
+        static constexpr size_t index = 0;
+        static constexpr const char* const name = "ctrl";
+    };
+    struct __contact_t {
+        using type = int;
+        static constexpr size_t index = 1;
+        static constexpr const char* const name = "contact";
+    };
+    struct __x_t {
+        using type = int;
+        static constexpr size_t index = 2;
+        static constexpr const char* const name = "x";
+    };
+    struct __y_t {
+        using type = int;
+        static constexpr size_t index = 3;
+        static constexpr const char* const name = "y";
+    };
+    struct __pressure_t {
+        using type = int;
+        static constexpr size_t index = 4;
+        static constexpr const char* const name = "pressure";
+    };
+    using arguments_t = std::tuple<__ctrl_t, __contact_t, __x_t, __y_t, __pressure_t>;
+    using return_t = long long;
+};
+
+namespace lhg {
+// LHG SEC BEGIN lhg.custom.MaaControllerPostTouchDown
+// LHG SEC DEF
+
+// LHG SEC END
+}
+
+struct __MaaControllerPostTouchMove_t {
+    struct __ctrl_t {
+        using type = MaaControllerAPI *;
+        static constexpr size_t index = 0;
+        static constexpr const char* const name = "ctrl";
+    };
+    struct __contact_t {
+        using type = int;
+        static constexpr size_t index = 1;
+        static constexpr const char* const name = "contact";
+    };
+    struct __x_t {
+        using type = int;
+        static constexpr size_t index = 2;
+        static constexpr const char* const name = "x";
+    };
+    struct __y_t {
+        using type = int;
+        static constexpr size_t index = 3;
+        static constexpr const char* const name = "y";
+    };
+    struct __pressure_t {
+        using type = int;
+        static constexpr size_t index = 4;
+        static constexpr const char* const name = "pressure";
+    };
+    using arguments_t = std::tuple<__ctrl_t, __contact_t, __x_t, __y_t, __pressure_t>;
+    using return_t = long long;
+};
+
+namespace lhg {
+// LHG SEC BEGIN lhg.custom.MaaControllerPostTouchMove
+// LHG SEC DEF
+
+// LHG SEC END
+}
+
+struct __MaaControllerPostTouchUp_t {
+    struct __ctrl_t {
+        using type = MaaControllerAPI *;
+        static constexpr size_t index = 0;
+        static constexpr const char* const name = "ctrl";
+    };
+    struct __contact_t {
+        using type = int;
+        static constexpr size_t index = 1;
+        static constexpr const char* const name = "contact";
+    };
+    using arguments_t = std::tuple<__ctrl_t, __contact_t>;
+    using return_t = long long;
+};
+
+namespace lhg {
+// LHG SEC BEGIN lhg.custom.MaaControllerPostTouchUp
+// LHG SEC DEF
+
+// LHG SEC END
+}
+
+struct __MaaControllerPostScreencap_t {
+    struct __ctrl_t {
+        using type = MaaControllerAPI *;
+        static constexpr size_t index = 0;
+        static constexpr const char* const name = "ctrl";
+    };
+    using arguments_t = std::tuple<__ctrl_t>;
+    using return_t = long long;
+};
+
+namespace lhg {
+// LHG SEC BEGIN lhg.custom.MaaControllerPostScreencap
+// LHG SEC DEF
+
+// LHG SEC END
+}
+
+struct __MaaControllerStatus_t {
+    struct __ctrl_t {
+        using type = MaaControllerAPI *;
+        static constexpr size_t index = 0;
+        static constexpr const char* const name = "ctrl";
+    };
+    struct __id_t {
+        using type = long long;
+        static constexpr size_t index = 1;
+        static constexpr const char* const name = "id";
+    };
+    using arguments_t = std::tuple<__ctrl_t, __id_t>;
+    using return_t = int;
+};
+
+namespace lhg {
+// LHG SEC BEGIN lhg.custom.MaaControllerStatus
+// LHG SEC DEF
+
+// LHG SEC END
+}
+
+struct __MaaControllerWait_t {
+    struct __ctrl_t {
+        using type = MaaControllerAPI *;
+        static constexpr size_t index = 0;
+        static constexpr const char* const name = "ctrl";
+    };
+    struct __id_t {
+        using type = long long;
+        static constexpr size_t index = 1;
+        static constexpr const char* const name = "id";
+    };
+    using arguments_t = std::tuple<__ctrl_t, __id_t>;
+    using return_t = int;
+};
+
+namespace lhg {
+// LHG SEC BEGIN lhg.custom.MaaControllerWait
+// LHG SEC DEF
+
+// LHG SEC END
+}
+
+struct __MaaControllerConnected_t {
+    struct __ctrl_t {
+        using type = MaaControllerAPI *;
+        static constexpr size_t index = 0;
+        static constexpr const char* const name = "ctrl";
+    };
+    using arguments_t = std::tuple<__ctrl_t>;
+    using return_t = unsigned char;
+};
+
+namespace lhg {
+// LHG SEC BEGIN lhg.custom.MaaControllerConnected
+// LHG SEC DEF
+
+// LHG SEC END
+}
+
+struct __MaaControllerGetImage_t {
+    struct __ctrl_t {
+        using type = MaaControllerAPI *;
+        static constexpr size_t index = 0;
+        static constexpr const char* const name = "ctrl";
+    };
+    struct __buffer_t {
+        using type = MaaImageBuffer *;
+        static constexpr size_t index = 1;
+        static constexpr const char* const name = "buffer";
+    };
+    using arguments_t = std::tuple<__ctrl_t, __buffer_t>;
+    using return_t = unsigned char;
+};
+
+namespace lhg {
+// LHG SEC BEGIN lhg.custom.MaaControllerGetImage
+// LHG SEC DEF
+
+// LHG SEC END
+}
+
+struct __MaaControllerGetUUID_t {
+    struct __ctrl_t {
+        using type = MaaControllerAPI *;
+        static constexpr size_t index = 0;
+        static constexpr const char* const name = "ctrl";
+    };
+    struct __buffer_t {
+        using type = MaaStringBuffer *;
+        static constexpr size_t index = 1;
+        static constexpr const char* const name = "buffer";
+    };
+    using arguments_t = std::tuple<__ctrl_t, __buffer_t>;
+    using return_t = unsigned char;
+};
+
+template<>
+struct lhg::is_output<__MaaControllerGetUUID_t::__buffer_t>
+{
+    static constexpr const bool value = true;
+};
+
+namespace lhg {
+// LHG SEC BEGIN lhg.custom.MaaControllerGetUUID
+// LHG SEC DEF
+
+// LHG SEC END
+}
+
+struct __MaaCreate_t {
+    struct __callback_t {
+        using type = void (*)(const char *, const char *, void *);
+        static constexpr size_t index = 0;
+        static constexpr const char* const name = "callback";
+    };
+    struct __callback_arg_t {
+        using type = void *;
+        static constexpr size_t index = 1;
+        static constexpr const char* const name = "callback_arg";
+    };
+    using arguments_t = std::tuple<__callback_t, __callback_arg_t>;
+    using return_t = MaaInstanceAPI *;
+};
+
+template<>
+struct lhg::is_callback<__MaaCreate_t::__callback_t>
+{
+    static constexpr const bool value = true;
+    static constexpr const char* const name = "MaaAPICallback";
+};
+
+template<>
+struct lhg::is_callback_context<__MaaCreate_t::__callback_arg_t>
+{
+    static constexpr const bool value = true;
+};
+
+namespace lhg {
+// LHG SEC BEGIN lhg.custom.MaaCreate
+// LHG SEC DEF
+
+// LHG SEC END
+}
+
+struct __MaaDestroy_t {
+    struct __inst_t {
+        using type = MaaInstanceAPI *;
+        static constexpr size_t index = 0;
+        static constexpr const char* const name = "inst";
+    };
+    using arguments_t = std::tuple<__inst_t>;
+    using return_t = void;
+};
+
+namespace lhg {
+// LHG SEC BEGIN lhg.custom.MaaDestroy
+// LHG SEC DEF
+
+// LHG SEC END
+}
+
+struct __MaaSetOption_t {
+    struct __inst_t {
+        using type = MaaInstanceAPI *;
+        static constexpr size_t index = 0;
+        static constexpr const char* const name = "inst";
+    };
+    struct __key_t {
+        using type = int;
+        static constexpr size_t index = 1;
+        static constexpr const char* const name = "key";
+    };
+    struct __value_t {
+        using type = void *;
+        static constexpr size_t index = 2;
+        static constexpr const char* const name = "value";
+    };
+    struct __val_size_t {
+        using type = unsigned long long;
+        static constexpr size_t index = 3;
+        static constexpr const char* const name = "val_size";
+    };
+    using arguments_t = std::tuple<__inst_t, __key_t, __value_t, __val_size_t>;
+    using return_t = unsigned char;
+};
+
+namespace lhg {
+// LHG SEC BEGIN lhg.custom.MaaSetOption
+template<>
+struct arg_schema<__MaaSetOption_t::__value_t>
+{
+    static constexpr const char *const schema = "string|number|boolean";
+};
+
+template<>
+struct shown_in_schema<__MaaSetOption_t::__val_size_t>
+{
+    static constexpr const bool value = false;
+};
+// LHG SEC END
+}
+
+struct __MaaBindResource_t {
+    struct __inst_t {
+        using type = MaaInstanceAPI *;
+        static constexpr size_t index = 0;
+        static constexpr const char* const name = "inst";
+    };
+    struct __res_t {
+        using type = MaaResourceAPI *;
+        static constexpr size_t index = 1;
+        static constexpr const char* const name = "res";
+    };
+    using arguments_t = std::tuple<__inst_t, __res_t>;
+    using return_t = unsigned char;
+};
+
+namespace lhg {
+// LHG SEC BEGIN lhg.custom.MaaBindResource
+// LHG SEC DEF
+
+// LHG SEC END
+}
+
+struct __MaaBindController_t {
+    struct __inst_t {
+        using type = MaaInstanceAPI *;
+        static constexpr size_t index = 0;
+        static constexpr const char* const name = "inst";
+    };
+    struct __ctrl_t {
+        using type = MaaControllerAPI *;
+        static constexpr size_t index = 1;
+        static constexpr const char* const name = "ctrl";
+    };
+    using arguments_t = std::tuple<__inst_t, __ctrl_t>;
+    using return_t = unsigned char;
+};
+
+namespace lhg {
+// LHG SEC BEGIN lhg.custom.MaaBindController
+// LHG SEC DEF
+
+// LHG SEC END
+}
+
+struct __MaaInited_t {
+    struct __inst_t {
+        using type = MaaInstanceAPI *;
+        static constexpr size_t index = 0;
+        static constexpr const char* const name = "inst";
+    };
+    using arguments_t = std::tuple<__inst_t>;
+    using return_t = unsigned char;
+};
+
+namespace lhg {
+// LHG SEC BEGIN lhg.custom.MaaInited
+// LHG SEC DEF
+
+// LHG SEC END
+}
+
+struct __MaaClearCustomRecognizer_t {
+    struct __inst_t {
+        using type = MaaInstanceAPI *;
+        static constexpr size_t index = 0;
+        static constexpr const char* const name = "inst";
+    };
+    using arguments_t = std::tuple<__inst_t>;
+    using return_t = unsigned char;
+};
+
+namespace lhg {
+// LHG SEC BEGIN lhg.custom.MaaClearCustomRecognizer
+// LHG SEC DEF
+
+// LHG SEC END
+}
+
+struct __MaaClearCustomAction_t {
+    struct __inst_t {
+        using type = MaaInstanceAPI *;
+        static constexpr size_t index = 0;
+        static constexpr const char* const name = "inst";
+    };
+    using arguments_t = std::tuple<__inst_t>;
+    using return_t = unsigned char;
+};
+
+namespace lhg {
+// LHG SEC BEGIN lhg.custom.MaaClearCustomAction
+// LHG SEC DEF
+
+// LHG SEC END
+}
+
+struct __MaaPostTask_t {
+    struct __inst_t {
+        using type = MaaInstanceAPI *;
+        static constexpr size_t index = 0;
+        static constexpr const char* const name = "inst";
+    };
+    struct __entry_t {
+        using type = const char *;
+        static constexpr size_t index = 1;
+        static constexpr const char* const name = "entry";
+    };
+    struct __param_t {
+        using type = const char *;
+        static constexpr size_t index = 2;
+        static constexpr const char* const name = "param";
+    };
+    using arguments_t = std::tuple<__inst_t, __entry_t, __param_t>;
+    using return_t = long long;
+};
+
+namespace lhg {
+// LHG SEC BEGIN lhg.custom.MaaPostTask
+// LHG SEC DEF
+
+// LHG SEC END
+}
+
+struct __MaaSetTaskParam_t {
+    struct __inst_t {
+        using type = MaaInstanceAPI *;
+        static constexpr size_t index = 0;
+        static constexpr const char* const name = "inst";
+    };
+    struct __id_t {
+        using type = long long;
+        static constexpr size_t index = 1;
+        static constexpr const char* const name = "id";
+    };
+    struct __param_t {
+        using type = const char *;
+        static constexpr size_t index = 2;
+        static constexpr const char* const name = "param";
+    };
+    using arguments_t = std::tuple<__inst_t, __id_t, __param_t>;
+    using return_t = unsigned char;
+};
+
+namespace lhg {
+// LHG SEC BEGIN lhg.custom.MaaSetTaskParam
+// LHG SEC DEF
+
+// LHG SEC END
+}
+
+struct __MaaTaskStatus_t {
+    struct __inst_t {
+        using type = MaaInstanceAPI *;
+        static constexpr size_t index = 0;
+        static constexpr const char* const name = "inst";
+    };
+    struct __id_t {
+        using type = long long;
+        static constexpr size_t index = 1;
+        static constexpr const char* const name = "id";
+    };
+    using arguments_t = std::tuple<__inst_t, __id_t>;
+    using return_t = int;
+};
+
+namespace lhg {
+// LHG SEC BEGIN lhg.custom.MaaTaskStatus
+// LHG SEC DEF
+
+// LHG SEC END
+}
+
+struct __MaaWaitTask_t {
+    struct __inst_t {
+        using type = MaaInstanceAPI *;
+        static constexpr size_t index = 0;
+        static constexpr const char* const name = "inst";
+    };
+    struct __id_t {
+        using type = long long;
+        static constexpr size_t index = 1;
+        static constexpr const char* const name = "id";
+    };
+    using arguments_t = std::tuple<__inst_t, __id_t>;
+    using return_t = int;
+};
+
+namespace lhg {
+// LHG SEC BEGIN lhg.custom.MaaWaitTask
+// LHG SEC DEF
+
+// LHG SEC END
+}
+
+struct __MaaTaskAllFinished_t {
+    struct __inst_t {
+        using type = MaaInstanceAPI *;
+        static constexpr size_t index = 0;
+        static constexpr const char* const name = "inst";
+    };
+    using arguments_t = std::tuple<__inst_t>;
+    using return_t = unsigned char;
+};
+
+namespace lhg {
+// LHG SEC BEGIN lhg.custom.MaaTaskAllFinished
+// LHG SEC DEF
+
+// LHG SEC END
+}
+
+struct __MaaPostStop_t {
+    struct __inst_t {
+        using type = MaaInstanceAPI *;
+        static constexpr size_t index = 0;
+        static constexpr const char* const name = "inst";
+    };
+    using arguments_t = std::tuple<__inst_t>;
+    using return_t = unsigned char;
+};
+
+namespace lhg {
+// LHG SEC BEGIN lhg.custom.MaaPostStop
+// LHG SEC DEF
+
+// LHG SEC END
+}
+
+struct __MaaStop_t {
+    struct __inst_t {
+        using type = MaaInstanceAPI *;
+        static constexpr size_t index = 0;
+        static constexpr const char* const name = "inst";
+    };
+    using arguments_t = std::tuple<__inst_t>;
+    using return_t = unsigned char;
+};
+
+namespace lhg {
+// LHG SEC BEGIN lhg.custom.MaaStop
+// LHG SEC DEF
+
+// LHG SEC END
+}
+
+struct __MaaGetResource_t {
+    struct __inst_t {
+        using type = MaaInstanceAPI *;
+        static constexpr size_t index = 0;
+        static constexpr const char* const name = "inst";
+    };
+    using arguments_t = std::tuple<__inst_t>;
+    using return_t = MaaResourceAPI *;
+};
+
+namespace lhg {
+// LHG SEC BEGIN lhg.custom.MaaGetResource
+// LHG SEC DEF
+
+// LHG SEC END
+}
+
+struct __MaaGetController_t {
+    struct __inst_t {
+        using type = MaaInstanceAPI *;
+        static constexpr size_t index = 0;
+        static constexpr const char* const name = "inst";
+    };
+    using arguments_t = std::tuple<__inst_t>;
+    using return_t = MaaControllerAPI *;
+};
+
+namespace lhg {
+// LHG SEC BEGIN lhg.custom.MaaGetController
+// LHG SEC DEF
+
+// LHG SEC END
+}
+
+struct __MaaResourceCreate_t {
+    struct __callback_t {
+        using type = void (*)(const char *, const char *, void *);
+        static constexpr size_t index = 0;
+        static constexpr const char* const name = "callback";
+    };
+    struct __callback_arg_t {
+        using type = void *;
+        static constexpr size_t index = 1;
+        static constexpr const char* const name = "callback_arg";
+    };
+    using arguments_t = std::tuple<__callback_t, __callback_arg_t>;
+    using return_t = MaaResourceAPI *;
+};
+
+template<>
+struct lhg::is_callback<__MaaResourceCreate_t::__callback_t>
+{
+    static constexpr const bool value = true;
+    static constexpr const char* const name = "MaaAPICallback";
+};
+
+template<>
+struct lhg::is_callback_context<__MaaResourceCreate_t::__callback_arg_t>
+{
+    static constexpr const bool value = true;
+};
+
+namespace lhg {
+// LHG SEC BEGIN lhg.custom.MaaResourceCreate
+// LHG SEC DEF
+
+// LHG SEC END
+}
+
+struct __MaaResourceDestroy_t {
+    struct __res_t {
+        using type = MaaResourceAPI *;
+        static constexpr size_t index = 0;
+        static constexpr const char* const name = "res";
+    };
+    using arguments_t = std::tuple<__res_t>;
+    using return_t = void;
+};
+
+namespace lhg {
+// LHG SEC BEGIN lhg.custom.MaaResourceDestroy
+// LHG SEC DEF
+
+// LHG SEC END
+}
+
+struct __MaaResourcePostPath_t {
+    struct __res_t {
+        using type = MaaResourceAPI *;
+        static constexpr size_t index = 0;
+        static constexpr const char* const name = "res";
+    };
+    struct __path_t {
+        using type = const char *;
+        static constexpr size_t index = 1;
+        static constexpr const char* const name = "path";
+    };
+    using arguments_t = std::tuple<__res_t, __path_t>;
+    using return_t = long long;
+};
+
+namespace lhg {
+// LHG SEC BEGIN lhg.custom.MaaResourcePostPath
+// LHG SEC DEF
+
+// LHG SEC END
+}
+
+struct __MaaResourceStatus_t {
+    struct __res_t {
+        using type = MaaResourceAPI *;
+        static constexpr size_t index = 0;
+        static constexpr const char* const name = "res";
+    };
+    struct __id_t {
+        using type = long long;
+        static constexpr size_t index = 1;
+        static constexpr const char* const name = "id";
+    };
+    using arguments_t = std::tuple<__res_t, __id_t>;
+    using return_t = int;
+};
+
+namespace lhg {
+// LHG SEC BEGIN lhg.custom.MaaResourceStatus
+// LHG SEC DEF
+
+// LHG SEC END
+}
+
+struct __MaaResourceWait_t {
+    struct __res_t {
+        using type = MaaResourceAPI *;
+        static constexpr size_t index = 0;
+        static constexpr const char* const name = "res";
+    };
+    struct __id_t {
+        using type = long long;
+        static constexpr size_t index = 1;
+        static constexpr const char* const name = "id";
+    };
+    using arguments_t = std::tuple<__res_t, __id_t>;
+    using return_t = int;
+};
+
+namespace lhg {
+// LHG SEC BEGIN lhg.custom.MaaResourceWait
+// LHG SEC DEF
+
+// LHG SEC END
+}
+
+struct __MaaResourceLoaded_t {
+    struct __res_t {
+        using type = MaaResourceAPI *;
+        static constexpr size_t index = 0;
+        static constexpr const char* const name = "res";
+    };
+    using arguments_t = std::tuple<__res_t>;
+    using return_t = unsigned char;
+};
+
+namespace lhg {
+// LHG SEC BEGIN lhg.custom.MaaResourceLoaded
+// LHG SEC DEF
+
+// LHG SEC END
+}
+
+struct __MaaResourceSetOption_t {
+    struct __res_t {
+        using type = MaaResourceAPI *;
+        static constexpr size_t index = 0;
+        static constexpr const char* const name = "res";
+    };
+    struct __key_t {
+        using type = int;
+        static constexpr size_t index = 1;
+        static constexpr const char* const name = "key";
+    };
+    struct __value_t {
+        using type = void *;
+        static constexpr size_t index = 2;
+        static constexpr const char* const name = "value";
+    };
+    struct __val_size_t {
+        using type = unsigned long long;
+        static constexpr size_t index = 3;
+        static constexpr const char* const name = "val_size";
+    };
+    using arguments_t = std::tuple<__res_t, __key_t, __value_t, __val_size_t>;
+    using return_t = unsigned char;
+};
+
+namespace lhg {
+// LHG SEC BEGIN lhg.custom.MaaResourceSetOption
+template<>
+struct arg_schema<__MaaResourceSetOption_t::__value_t>
+{
+    static constexpr const char *const schema = "string|number|boolean";
+};
+
+template<>
+struct shown_in_schema<__MaaResourceSetOption_t::__val_size_t>
+{
+    static constexpr const bool value = false;
+};
+// LHG SEC END
+}
+
+struct __MaaResourceGetHash_t {
+    struct __res_t {
+        using type = MaaResourceAPI *;
+        static constexpr size_t index = 0;
+        static constexpr const char* const name = "res";
+    };
+    struct __buffer_t {
+        using type = MaaStringBuffer *;
+        static constexpr size_t index = 1;
+        static constexpr const char* const name = "buffer";
+    };
+    using arguments_t = std::tuple<__res_t, __buffer_t>;
+    using return_t = unsigned char;
+};
+
+template<>
+struct lhg::is_output<__MaaResourceGetHash_t::__buffer_t>
+{
+    static constexpr const bool value = true;
+};
+
+namespace lhg {
+// LHG SEC BEGIN lhg.custom.MaaResourceGetHash
+// LHG SEC DEF
+
+// LHG SEC END
+}
+
+struct __MaaResourceGetTaskList_t {
+    struct __res_t {
+        using type = MaaResourceAPI *;
+        static constexpr size_t index = 0;
+        static constexpr const char* const name = "res";
+    };
+    struct __buffer_t {
+        using type = MaaStringBuffer *;
+        static constexpr size_t index = 1;
+        static constexpr const char* const name = "buffer";
+    };
+    using arguments_t = std::tuple<__res_t, __buffer_t>;
+    using return_t = unsigned char;
+};
+
+template<>
+struct lhg::is_output<__MaaResourceGetTaskList_t::__buffer_t>
+{
+    static constexpr const bool value = true;
+};
+
+namespace lhg {
+// LHG SEC BEGIN lhg.custom.MaaResourceGetTaskList
+// LHG SEC DEF
+
+// LHG SEC END
+}
+
+struct __MaaCreateImageBuffer_t {
+    using arguments_t = void;
+    using return_t = MaaImageBuffer *;
+};
+
+namespace lhg {
+// LHG SEC BEGIN lhg.custom.MaaCreateImageBuffer
+// LHG SEC DEF
+
+// LHG SEC END
+}
+
+struct __MaaDestroyImageBuffer_t {
+    struct __handle_t {
+        using type = MaaImageBuffer *;
+        static constexpr size_t index = 0;
+        static constexpr const char* const name = "handle";
+    };
+    using arguments_t = std::tuple<__handle_t>;
+    using return_t = void;
+};
+
+namespace lhg {
+// LHG SEC BEGIN lhg.custom.MaaDestroyImageBuffer
+// LHG SEC DEF
+
+// LHG SEC END
+}
+
+struct __MaaIsImageEmpty_t {
+    struct __handle_t {
+        using type = MaaImageBuffer *;
+        static constexpr size_t index = 0;
+        static constexpr const char* const name = "handle";
+    };
+    using arguments_t = std::tuple<__handle_t>;
+    using return_t = unsigned char;
+};
+
+namespace lhg {
+// LHG SEC BEGIN lhg.custom.MaaIsImageEmpty
+// LHG SEC DEF
+
+// LHG SEC END
+}
+
+struct __MaaClearImage_t {
+    struct __handle_t {
+        using type = MaaImageBuffer *;
+        static constexpr size_t index = 0;
+        static constexpr const char* const name = "handle";
+    };
+    using arguments_t = std::tuple<__handle_t>;
+    using return_t = unsigned char;
+};
+
+namespace lhg {
+// LHG SEC BEGIN lhg.custom.MaaClearImage
+// LHG SEC DEF
+
+// LHG SEC END
+}
+
+struct __MaaGetImageWidth_t {
+    struct __handle_t {
+        using type = MaaImageBuffer *;
+        static constexpr size_t index = 0;
+        static constexpr const char* const name = "handle";
+    };
+    using arguments_t = std::tuple<__handle_t>;
+    using return_t = int;
+};
+
+namespace lhg {
+// LHG SEC BEGIN lhg.custom.MaaGetImageWidth
+// LHG SEC DEF
+
+// LHG SEC END
+}
+
+struct __MaaGetImageHeight_t {
+    struct __handle_t {
+        using type = MaaImageBuffer *;
+        static constexpr size_t index = 0;
+        static constexpr const char* const name = "handle";
+    };
+    using arguments_t = std::tuple<__handle_t>;
+    using return_t = int;
+};
+
+namespace lhg {
+// LHG SEC BEGIN lhg.custom.MaaGetImageHeight
+// LHG SEC DEF
+
+// LHG SEC END
+}
+
+struct __MaaGetImageType_t {
+    struct __handle_t {
+        using type = MaaImageBuffer *;
+        static constexpr size_t index = 0;
+        static constexpr const char* const name = "handle";
+    };
+    using arguments_t = std::tuple<__handle_t>;
+    using return_t = int;
+};
+
+namespace lhg {
+// LHG SEC BEGIN lhg.custom.MaaGetImageType
+// LHG SEC DEF
+
+// LHG SEC END
+}
+
+struct __MaaGetImageEncoded_t {
+    struct __handle_t {
+        using type = MaaImageBuffer *;
+        static constexpr size_t index = 0;
+        static constexpr const char* const name = "handle";
+    };
+    using arguments_t = std::tuple<__handle_t>;
+    using return_t = unsigned char *;
+};
+
+namespace lhg {
+// LHG SEC BEGIN lhg.custom.MaaGetImageEncoded
+template<>
+struct ret_schema<__MaaGetImageEncoded_t>
+{
+    static constexpr const char* const schema = "string@buffer";
+};
+// LHG SEC END
+}
+
+struct __MaaSetImageEncoded_t {
+    struct __handle_t {
+        using type = MaaImageBuffer *;
+        static constexpr size_t index = 0;
+        static constexpr const char* const name = "handle";
+    };
+    struct __data_t {
+        using type = unsigned char *;
+        static constexpr size_t index = 1;
+        static constexpr const char* const name = "data";
+    };
+    struct __size_t {
+        using type = unsigned long long;
+        static constexpr size_t index = 2;
+        static constexpr const char* const name = "size";
+    };
+    using arguments_t = std::tuple<__handle_t, __data_t, __size_t>;
+    using return_t = unsigned char;
+};
+
+namespace lhg {
+// LHG SEC BEGIN lhg.custom.MaaSetImageEncoded
+template<>
+struct arg_schema<__MaaSetImageEncoded_t::__data_t>
+{
+    static constexpr const char *const schema = "string@buffer";
+};
+
+template<>
+struct shown_in_schema<__MaaSetImageEncoded_t::__size_t>
+{
+    static constexpr const bool value = false;
+};
+// LHG SEC END
+}
+
+struct __MaaVersion_t {
+    using arguments_t = void;
+    using return_t = const char *;
+};
+
+namespace lhg {
+// LHG SEC BEGIN lhg.custom.MaaVersion
+// LHG SEC DEF
+
+// LHG SEC END
+}
+
+struct __MaaSetGlobalOption_t {
+    struct __key_t {
+        using type = int;
+        static constexpr size_t index = 0;
+        static constexpr const char* const name = "key";
+    };
+    struct __value_t {
+        using type = void *;
+        static constexpr size_t index = 1;
+        static constexpr const char* const name = "value";
+    };
+    struct __val_size_t {
+        using type = unsigned long long;
+        static constexpr size_t index = 2;
+        static constexpr const char* const name = "val_size";
+    };
+    using arguments_t = std::tuple<__key_t, __value_t, __val_size_t>;
+    using return_t = unsigned char;
+};
+
+namespace lhg {
+// LHG SEC BEGIN lhg.custom.MaaSetGlobalOption
+template<>
+struct arg_schema<__MaaSetGlobalOption_t::__value_t>
+{
+    static constexpr const char *const schema = "string|number|boolean";
+};
+
+template<>
+struct shown_in_schema<__MaaSetGlobalOption_t::__val_size_t>
+{
+    static constexpr const bool value = false;
+};
+// LHG SEC END
+}
+
+struct __MaaToolkitInit_t {
+    using arguments_t = void;
+    using return_t = unsigned char;
+};
+
+namespace lhg {
+// LHG SEC BEGIN lhg.custom.MaaToolkitInit
+// LHG SEC DEF
+
+// LHG SEC END
+}
+
+struct __MaaToolkitUninit_t {
+    using arguments_t = void;
+    using return_t = unsigned char;
+};
+
+namespace lhg {
+// LHG SEC BEGIN lhg.custom.MaaToolkitUninit
+// LHG SEC DEF
+
+// LHG SEC END
+}
+
+struct __MaaToolkitFindDevice_t {
+    using arguments_t = void;
+    using return_t = unsigned long long;
+};
+
+namespace lhg {
+// LHG SEC BEGIN lhg.custom.MaaToolkitFindDevice
+// LHG SEC DEF
+
+// LHG SEC END
+}
+
+struct __MaaToolkitFindDeviceWithAdb_t {
+    struct __adb_path_t {
+        using type = const char *;
+        static constexpr size_t index = 0;
+        static constexpr const char* const name = "adb_path";
+    };
+    using arguments_t = std::tuple<__adb_path_t>;
+    using return_t = unsigned long long;
+};
+
+namespace lhg {
+// LHG SEC BEGIN lhg.custom.MaaToolkitFindDeviceWithAdb
+// LHG SEC DEF
+
+// LHG SEC END
+}
+
+struct __MaaToolkitPostFindDevice_t {
+    using arguments_t = void;
+    using return_t = unsigned char;
+};
+
+namespace lhg {
+// LHG SEC BEGIN lhg.custom.MaaToolkitPostFindDevice
+// LHG SEC DEF
+
+// LHG SEC END
+}
+
+struct __MaaToolkitPostFindDeviceWithAdb_t {
+    struct __adb_path_t {
+        using type = const char *;
+        static constexpr size_t index = 0;
+        static constexpr const char* const name = "adb_path";
+    };
+    using arguments_t = std::tuple<__adb_path_t>;
+    using return_t = unsigned char;
+};
+
+namespace lhg {
+// LHG SEC BEGIN lhg.custom.MaaToolkitPostFindDeviceWithAdb
+// LHG SEC DEF
+
+// LHG SEC END
+}
+
+struct __MaaToolkitIsFindDeviceCompleted_t {
+    using arguments_t = void;
+    using return_t = unsigned char;
+};
+
+namespace lhg {
+// LHG SEC BEGIN lhg.custom.MaaToolkitIsFindDeviceCompleted
+// LHG SEC DEF
+
+// LHG SEC END
+}
+
+struct __MaaToolkitWaitForFindDeviceToComplete_t {
+    using arguments_t = void;
+    using return_t = unsigned long long;
+};
+
+namespace lhg {
+// LHG SEC BEGIN lhg.custom.MaaToolkitWaitForFindDeviceToComplete
+// LHG SEC DEF
+
+// LHG SEC END
+}
+
+struct __MaaToolkitGetDeviceCount_t {
+    using arguments_t = void;
+    using return_t = unsigned long long;
+};
+
+namespace lhg {
+// LHG SEC BEGIN lhg.custom.MaaToolkitGetDeviceCount
+// LHG SEC DEF
+
+// LHG SEC END
+}
+
+struct __MaaToolkitGetDeviceName_t {
+    struct __index_t {
+        using type = unsigned long long;
+        static constexpr size_t index = 0;
+        static constexpr const char* const name = "index";
+    };
+    using arguments_t = std::tuple<__index_t>;
+    using return_t = const char *;
+};
+
+namespace lhg {
+// LHG SEC BEGIN lhg.custom.MaaToolkitGetDeviceName
+// LHG SEC DEF
+
+// LHG SEC END
+}
+
+struct __MaaToolkitGetDeviceAdbPath_t {
+    struct __index_t {
+        using type = unsigned long long;
+        static constexpr size_t index = 0;
+        static constexpr const char* const name = "index";
+    };
+    using arguments_t = std::tuple<__index_t>;
+    using return_t = const char *;
+};
+
+namespace lhg {
+// LHG SEC BEGIN lhg.custom.MaaToolkitGetDeviceAdbPath
+// LHG SEC DEF
+
+// LHG SEC END
+}
+
+struct __MaaToolkitGetDeviceAdbSerial_t {
+    struct __index_t {
+        using type = unsigned long long;
+        static constexpr size_t index = 0;
+        static constexpr const char* const name = "index";
+    };
+    using arguments_t = std::tuple<__index_t>;
+    using return_t = const char *;
+};
+
+namespace lhg {
+// LHG SEC BEGIN lhg.custom.MaaToolkitGetDeviceAdbSerial
+// LHG SEC DEF
+
+// LHG SEC END
+}
+
+struct __MaaToolkitGetDeviceAdbControllerType_t {
+    struct __index_t {
+        using type = unsigned long long;
+        static constexpr size_t index = 0;
+        static constexpr const char* const name = "index";
+    };
+    using arguments_t = std::tuple<__index_t>;
+    using return_t = int;
+};
+
+namespace lhg {
+// LHG SEC BEGIN lhg.custom.MaaToolkitGetDeviceAdbControllerType
+// LHG SEC DEF
+
+// LHG SEC END
+}
+
+struct __MaaToolkitGetDeviceAdbConfig_t {
+    struct __index_t {
+        using type = unsigned long long;
+        static constexpr size_t index = 0;
+        static constexpr const char* const name = "index";
+    };
+    using arguments_t = std::tuple<__index_t>;
+    using return_t = const char *;
+};
+
+namespace lhg {
+// LHG SEC BEGIN lhg.custom.MaaToolkitGetDeviceAdbConfig
+// LHG SEC DEF
+
+// LHG SEC END
+}
+
+struct __MaaToolkitRegisterCustomRecognizerExecutor_t {
+    struct __handle_t {
+        using type = MaaInstanceAPI *;
+        static constexpr size_t index = 0;
+        static constexpr const char* const name = "handle";
+    };
+    struct __recognizer_name_t {
+        using type = const char *;
+        static constexpr size_t index = 1;
+        static constexpr const char* const name = "recognizer_name";
+    };
+    struct __recognizer_exec_path_t {
+        using type = const char *;
+        static constexpr size_t index = 2;
+        static constexpr const char* const name = "recognizer_exec_path";
+    };
+    struct __recognizer_exec_param_json_t {
+        using type = const char *;
+        static constexpr size_t index = 3;
+        static constexpr const char* const name = "recognizer_exec_param_json";
+    };
+    using arguments_t = std::tuple<__handle_t, __recognizer_name_t, __recognizer_exec_path_t, __recognizer_exec_param_json_t>;
+    using return_t = unsigned char;
+};
+
+namespace lhg {
+// LHG SEC BEGIN lhg.custom.MaaToolkitRegisterCustomRecognizerExecutor
+// LHG SEC DEF
+
+// LHG SEC END
+}
+
+struct __MaaToolkitUnregisterCustomRecognizerExecutor_t {
+    struct __handle_t {
+        using type = MaaInstanceAPI *;
+        static constexpr size_t index = 0;
+        static constexpr const char* const name = "handle";
+    };
+    struct __recognizer_name_t {
+        using type = const char *;
+        static constexpr size_t index = 1;
+        static constexpr const char* const name = "recognizer_name";
+    };
+    using arguments_t = std::tuple<__handle_t, __recognizer_name_t>;
+    using return_t = unsigned char;
+};
+
+namespace lhg {
+// LHG SEC BEGIN lhg.custom.MaaToolkitUnregisterCustomRecognizerExecutor
+// LHG SEC DEF
+
+// LHG SEC END
+}
+
+struct __MaaToolkitRegisterCustomActionExecutor_t {
+    struct __handle_t {
+        using type = MaaInstanceAPI *;
+        static constexpr size_t index = 0;
+        static constexpr const char* const name = "handle";
+    };
+    struct __action_name_t {
+        using type = const char *;
+        static constexpr size_t index = 1;
+        static constexpr const char* const name = "action_name";
+    };
+    struct __action_exec_path_t {
+        using type = const char *;
+        static constexpr size_t index = 2;
+        static constexpr const char* const name = "action_exec_path";
+    };
+    struct __action_exec_param_json_t {
+        using type = const char *;
+        static constexpr size_t index = 3;
+        static constexpr const char* const name = "action_exec_param_json";
+    };
+    using arguments_t = std::tuple<__handle_t, __action_name_t, __action_exec_path_t, __action_exec_param_json_t>;
+    using return_t = unsigned char;
+};
+
+namespace lhg {
+// LHG SEC BEGIN lhg.custom.MaaToolkitRegisterCustomActionExecutor
+// LHG SEC DEF
+
+// LHG SEC END
+}
+
+struct __MaaToolkitUnregisterCustomActionExecutor_t {
+    struct __handle_t {
+        using type = MaaInstanceAPI *;
+        static constexpr size_t index = 0;
+        static constexpr const char* const name = "handle";
+    };
+    struct __action_name_t {
+        using type = const char *;
+        static constexpr size_t index = 1;
+        static constexpr const char* const name = "action_name";
+    };
+    using arguments_t = std::tuple<__handle_t, __action_name_t>;
+    using return_t = unsigned char;
+};
+
+namespace lhg {
+// LHG SEC BEGIN lhg.custom.MaaToolkitUnregisterCustomActionExecutor
+// LHG SEC DEF
+
+// LHG SEC END
+}
+
+struct __MaaToolkitFindWindow_t {
+    struct __class_name_t {
+        using type = const char *;
+        static constexpr size_t index = 0;
+        static constexpr const char* const name = "class_name";
+    };
+    struct __window_name_t {
+        using type = const char *;
+        static constexpr size_t index = 1;
+        static constexpr const char* const name = "window_name";
+    };
+    using arguments_t = std::tuple<__class_name_t, __window_name_t>;
+    using return_t = unsigned long long;
+};
+
+namespace lhg {
+// LHG SEC BEGIN lhg.custom.MaaToolkitFindWindow
+// LHG SEC DEF
+
+// LHG SEC END
+}
+
+struct __MaaToolkitSearchWindow_t {
+    struct __class_name_t {
+        using type = const char *;
+        static constexpr size_t index = 0;
+        static constexpr const char* const name = "class_name";
+    };
+    struct __window_name_t {
+        using type = const char *;
+        static constexpr size_t index = 1;
+        static constexpr const char* const name = "window_name";
+    };
+    using arguments_t = std::tuple<__class_name_t, __window_name_t>;
+    using return_t = unsigned long long;
+};
+
+namespace lhg {
+// LHG SEC BEGIN lhg.custom.MaaToolkitSearchWindow
+// LHG SEC DEF
+
+// LHG SEC END
+}
+
+struct __MaaToolkitGetWindow_t {
+    struct __index_t {
+        using type = unsigned long long;
+        static constexpr size_t index = 0;
+        static constexpr const char* const name = "index";
+    };
+    using arguments_t = std::tuple<__index_t>;
+    using return_t = unsigned long long;
+};
+
+namespace lhg {
+// LHG SEC BEGIN lhg.custom.MaaToolkitGetWindow
+// LHG SEC DEF
+
+// LHG SEC END
+}
+
+struct __MaaToolkitGetCursorWindow_t {
+    using arguments_t = void;
+    using return_t = unsigned long long;
+};
+
+namespace lhg {
+// LHG SEC BEGIN lhg.custom.MaaToolkitGetCursorWindow
+// LHG SEC DEF
+
+// LHG SEC END
+}
 
 static lhg::opaque_manager<MaaControllerAPI *> MaaControllerAPI__OpaqueManager;
 
@@ -42,6 +1927,20 @@ struct lhg::schema_t<MaaControllerAPI *>
 {
     static constexpr const char* const schema = "string@MaaControllerAPI";
 };
+
+template<>
+struct lhg::is_opaque<MaaControllerAPI *> {
+    static constexpr const bool value = true;
+    using type = MaaControllerAPI;
+    static lhg::opaque_manager<MaaControllerAPI *>& manager;
+};
+lhg::opaque_manager<MaaControllerAPI *>& lhg::is_opaque<MaaControllerAPI *>::manager = MaaControllerAPI__OpaqueManager;
+
+template<>
+struct lhg::is_opaque_free<MaaControllerAPI *, __MaaControllerDestroy_t> {
+    static constexpr const bool value = true;
+};
+
 static lhg::opaque_manager<MaaResourceAPI *> MaaResourceAPI__OpaqueManager;
 
 template<>
@@ -49,6 +1948,20 @@ struct lhg::schema_t<MaaResourceAPI *>
 {
     static constexpr const char* const schema = "string@MaaResourceAPI";
 };
+
+template<>
+struct lhg::is_opaque<MaaResourceAPI *> {
+    static constexpr const bool value = true;
+    using type = MaaResourceAPI;
+    static lhg::opaque_manager<MaaResourceAPI *>& manager;
+};
+lhg::opaque_manager<MaaResourceAPI *>& lhg::is_opaque<MaaResourceAPI *>::manager = MaaResourceAPI__OpaqueManager;
+
+template<>
+struct lhg::is_opaque_free<MaaResourceAPI *, __MaaResourceDestroy_t> {
+    static constexpr const bool value = true;
+};
+
 static lhg::opaque_manager<MaaInstanceAPI *> MaaInstanceAPI__OpaqueManager;
 
 template<>
@@ -56,6 +1969,20 @@ struct lhg::schema_t<MaaInstanceAPI *>
 {
     static constexpr const char* const schema = "string@MaaInstanceAPI";
 };
+
+template<>
+struct lhg::is_opaque<MaaInstanceAPI *> {
+    static constexpr const bool value = true;
+    using type = MaaInstanceAPI;
+    static lhg::opaque_manager<MaaInstanceAPI *>& manager;
+};
+lhg::opaque_manager<MaaInstanceAPI *>& lhg::is_opaque<MaaInstanceAPI *>::manager = MaaInstanceAPI__OpaqueManager;
+
+template<>
+struct lhg::is_opaque_free<MaaInstanceAPI *, __MaaDestroy_t> {
+    static constexpr const bool value = true;
+};
+
 static lhg::opaque_manager<MaaImageBuffer *> MaaImageBuffer__OpaqueManager;
 
 template<>
@@ -63,1941 +1990,660 @@ struct lhg::schema_t<MaaImageBuffer *>
 {
     static constexpr const char* const schema = "string@MaaImageBuffer";
 };
+
+template<>
+struct lhg::is_opaque<MaaImageBuffer *> {
+    static constexpr const bool value = true;
+    using type = MaaImageBuffer;
+    static lhg::opaque_manager<MaaImageBuffer *>& manager;
+};
+lhg::opaque_manager<MaaImageBuffer *>& lhg::is_opaque<MaaImageBuffer *>::manager = MaaImageBuffer__OpaqueManager;
+
+template<>
+struct lhg::is_opaque_free<MaaImageBuffer *, __MaaDestroyImageBuffer_t> {
+    static constexpr const bool value = true;
+};
+
+static lhg::callback_manager<void (*)(const char *, const char *, void *)> MaaAPICallback__Manager;
+
 json::object MaaAdbControllerCreate_HelperInput() {
-    return json::object {
-// LHG SEC BEGIN lhg.helper.MaaAdbControllerCreate.input.adb_path
-// LHG SEC DEF
-        { "adb_path", lhg::schema_t<const char *>::schema },
-// LHG SEC END
-// LHG SEC BEGIN lhg.helper.MaaAdbControllerCreate.input.address
-// LHG SEC DEF
-        { "address", lhg::schema_t<const char *>::schema },
-// LHG SEC END
-// LHG SEC BEGIN lhg.helper.MaaAdbControllerCreate.input.type
-// LHG SEC DEF
-        { "type", lhg::schema_t<int>::schema },
-// LHG SEC END
-// LHG SEC BEGIN lhg.helper.MaaAdbControllerCreate.input.config
-// LHG SEC DEF
-        { "config", lhg::schema_t<const char *>::schema },
-// LHG SEC END
-// LHG SEC BEGIN lhg.helper.MaaAdbControllerCreate.input.callback
-// LHG SEC DEF
-        { "callback", "string@MaaAPICallback" },
-// LHG SEC END
-    };
+    return lhg::input_helper<__MaaAdbControllerCreate_t>();
 }
 
 json::object MaaAdbControllerCreate_HelperOutput() {
-    return json::object {
-        { "data", {
-// LHG SEC BEGIN lhg.helper.MaaAdbControllerCreate.output.return
-// LHG SEC DEF
-            { "return", lhg::schema_t<MaaControllerAPI *>::schema },
-// LHG SEC END
-        }},
-        { "error", "string" }
-    };
+    return lhg::output_helper<__MaaAdbControllerCreate_t>();
 }
 
 json::object MaaWin32ControllerCreate_HelperInput() {
-    return json::object {
-// LHG SEC BEGIN lhg.helper.MaaWin32ControllerCreate.input.hWnd
-// LHG SEC DEF
-        { "hWnd", lhg::schema_t<unsigned long long>::schema },
-// LHG SEC END
-// LHG SEC BEGIN lhg.helper.MaaWin32ControllerCreate.input.type
-// LHG SEC DEF
-        { "type", lhg::schema_t<int>::schema },
-// LHG SEC END
-// LHG SEC BEGIN lhg.helper.MaaWin32ControllerCreate.input.callback
-// LHG SEC DEF
-        { "callback", "string@MaaAPICallback" },
-// LHG SEC END
-    };
+    return lhg::input_helper<__MaaWin32ControllerCreate_t>();
 }
 
 json::object MaaWin32ControllerCreate_HelperOutput() {
-    return json::object {
-        { "data", {
-// LHG SEC BEGIN lhg.helper.MaaWin32ControllerCreate.output.return
-// LHG SEC DEF
-            { "return", lhg::schema_t<MaaControllerAPI *>::schema },
-// LHG SEC END
-        }},
-        { "error", "string" }
-    };
+    return lhg::output_helper<__MaaWin32ControllerCreate_t>();
 }
 
 json::object MaaAdbControllerCreateV2_HelperInput() {
-    return json::object {
-// LHG SEC BEGIN lhg.helper.MaaAdbControllerCreateV2.input.adb_path
-// LHG SEC DEF
-        { "adb_path", lhg::schema_t<const char *>::schema },
-// LHG SEC END
-// LHG SEC BEGIN lhg.helper.MaaAdbControllerCreateV2.input.address
-// LHG SEC DEF
-        { "address", lhg::schema_t<const char *>::schema },
-// LHG SEC END
-// LHG SEC BEGIN lhg.helper.MaaAdbControllerCreateV2.input.type
-// LHG SEC DEF
-        { "type", lhg::schema_t<int>::schema },
-// LHG SEC END
-// LHG SEC BEGIN lhg.helper.MaaAdbControllerCreateV2.input.config
-// LHG SEC DEF
-        { "config", lhg::schema_t<const char *>::schema },
-// LHG SEC END
-// LHG SEC BEGIN lhg.helper.MaaAdbControllerCreateV2.input.agent_path
-// LHG SEC DEF
-        { "agent_path", lhg::schema_t<const char *>::schema },
-// LHG SEC END
-// LHG SEC BEGIN lhg.helper.MaaAdbControllerCreateV2.input.callback
-// LHG SEC DEF
-        { "callback", "string@MaaAPICallback" },
-// LHG SEC END
-    };
+    return lhg::input_helper<__MaaAdbControllerCreateV2_t>();
 }
 
 json::object MaaAdbControllerCreateV2_HelperOutput() {
-    return json::object {
-        { "data", {
-// LHG SEC BEGIN lhg.helper.MaaAdbControllerCreateV2.output.return
-// LHG SEC DEF
-            { "return", lhg::schema_t<MaaControllerAPI *>::schema },
-// LHG SEC END
-        }},
-        { "error", "string" }
-    };
+    return lhg::output_helper<__MaaAdbControllerCreateV2_t>();
 }
 
 json::object MaaThriftControllerCreate_HelperInput() {
-    return json::object {
-// LHG SEC BEGIN lhg.helper.MaaThriftControllerCreate.input.type
-// LHG SEC DEF
-        { "type", lhg::schema_t<int>::schema },
-// LHG SEC END
-// LHG SEC BEGIN lhg.helper.MaaThriftControllerCreate.input.host
-// LHG SEC DEF
-        { "host", lhg::schema_t<const char *>::schema },
-// LHG SEC END
-// LHG SEC BEGIN lhg.helper.MaaThriftControllerCreate.input.port
-// LHG SEC DEF
-        { "port", lhg::schema_t<int>::schema },
-// LHG SEC END
-// LHG SEC BEGIN lhg.helper.MaaThriftControllerCreate.input.config
-// LHG SEC DEF
-        { "config", lhg::schema_t<const char *>::schema },
-// LHG SEC END
-// LHG SEC BEGIN lhg.helper.MaaThriftControllerCreate.input.callback
-// LHG SEC DEF
-        { "callback", "string@MaaAPICallback" },
-// LHG SEC END
-    };
+    return lhg::input_helper<__MaaThriftControllerCreate_t>();
 }
 
 json::object MaaThriftControllerCreate_HelperOutput() {
-    return json::object {
-        { "data", {
-// LHG SEC BEGIN lhg.helper.MaaThriftControllerCreate.output.return
-// LHG SEC DEF
-            { "return", lhg::schema_t<MaaControllerAPI *>::schema },
-// LHG SEC END
-        }},
-        { "error", "string" }
-    };
+    return lhg::output_helper<__MaaThriftControllerCreate_t>();
 }
 
 json::object MaaDbgControllerCreate_HelperInput() {
-    return json::object {
-// LHG SEC BEGIN lhg.helper.MaaDbgControllerCreate.input.read_path
-// LHG SEC DEF
-        { "read_path", lhg::schema_t<const char *>::schema },
-// LHG SEC END
-// LHG SEC BEGIN lhg.helper.MaaDbgControllerCreate.input.write_path
-// LHG SEC DEF
-        { "write_path", lhg::schema_t<const char *>::schema },
-// LHG SEC END
-// LHG SEC BEGIN lhg.helper.MaaDbgControllerCreate.input.type
-// LHG SEC DEF
-        { "type", lhg::schema_t<int>::schema },
-// LHG SEC END
-// LHG SEC BEGIN lhg.helper.MaaDbgControllerCreate.input.config
-// LHG SEC DEF
-        { "config", lhg::schema_t<const char *>::schema },
-// LHG SEC END
-// LHG SEC BEGIN lhg.helper.MaaDbgControllerCreate.input.callback
-// LHG SEC DEF
-        { "callback", "string@MaaAPICallback" },
-// LHG SEC END
-    };
+    return lhg::input_helper<__MaaDbgControllerCreate_t>();
 }
 
 json::object MaaDbgControllerCreate_HelperOutput() {
-    return json::object {
-        { "data", {
-// LHG SEC BEGIN lhg.helper.MaaDbgControllerCreate.output.return
-// LHG SEC DEF
-            { "return", lhg::schema_t<MaaControllerAPI *>::schema },
-// LHG SEC END
-        }},
-        { "error", "string" }
-    };
+    return lhg::output_helper<__MaaDbgControllerCreate_t>();
 }
 
 json::object MaaControllerDestroy_HelperInput() {
-    return json::object {
-// LHG SEC BEGIN lhg.helper.MaaControllerDestroy.input.ctrl
-// LHG SEC DEF
-        { "ctrl", "string@MaaControllerAPI" },
-// LHG SEC END
-    };
+    return lhg::input_helper<__MaaControllerDestroy_t>();
 }
 
 json::object MaaControllerDestroy_HelperOutput() {
-    return json::object {
-        { "data", {
-// LHG SEC BEGIN lhg.helper.MaaControllerDestroy.output.return
-// LHG SEC DEF
-            { "return", lhg::schema_t<void>::schema },
-// LHG SEC END
-        }},
-        { "error", "string" }
-    };
+    return lhg::output_helper<__MaaControllerDestroy_t>();
 }
 
 json::object MaaControllerSetOption_HelperInput() {
-    return json::object {
-// LHG SEC BEGIN lhg.helper.MaaControllerSetOption.input.ctrl
-// LHG SEC DEF
-        { "ctrl", "string@MaaControllerAPI" },
-// LHG SEC END
-// LHG SEC BEGIN lhg.helper.MaaControllerSetOption.input.key
-// LHG SEC DEF
-        { "key", lhg::schema_t<int>::schema },
-// LHG SEC END
-// LHG SEC BEGIN lhg.helper.MaaControllerSetOption.input.value
-        { "value", "string|number|boolean" },
-// LHG SEC END
-// LHG SEC BEGIN lhg.helper.MaaControllerSetOption.input.val_size
-
-// LHG SEC END
-    };
+    return lhg::input_helper<__MaaControllerSetOption_t>();
 }
 
 json::object MaaControllerSetOption_HelperOutput() {
-    return json::object {
-        { "data", {
-// LHG SEC BEGIN lhg.helper.MaaControllerSetOption.output.return
-// LHG SEC DEF
-            { "return", lhg::schema_t<unsigned char>::schema },
-// LHG SEC END
-        }},
-        { "error", "string" }
-    };
+    return lhg::output_helper<__MaaControllerSetOption_t>();
 }
 
 json::object MaaControllerPostConnection_HelperInput() {
-    return json::object {
-// LHG SEC BEGIN lhg.helper.MaaControllerPostConnection.input.ctrl
-// LHG SEC DEF
-        { "ctrl", "string@MaaControllerAPI" },
-// LHG SEC END
-    };
+    return lhg::input_helper<__MaaControllerPostConnection_t>();
 }
 
 json::object MaaControllerPostConnection_HelperOutput() {
-    return json::object {
-        { "data", {
-// LHG SEC BEGIN lhg.helper.MaaControllerPostConnection.output.return
-// LHG SEC DEF
-            { "return", lhg::schema_t<long long>::schema },
-// LHG SEC END
-        }},
-        { "error", "string" }
-    };
+    return lhg::output_helper<__MaaControllerPostConnection_t>();
 }
 
 json::object MaaControllerPostClick_HelperInput() {
-    return json::object {
-// LHG SEC BEGIN lhg.helper.MaaControllerPostClick.input.ctrl
-// LHG SEC DEF
-        { "ctrl", "string@MaaControllerAPI" },
-// LHG SEC END
-// LHG SEC BEGIN lhg.helper.MaaControllerPostClick.input.x
-// LHG SEC DEF
-        { "x", lhg::schema_t<int>::schema },
-// LHG SEC END
-// LHG SEC BEGIN lhg.helper.MaaControllerPostClick.input.y
-// LHG SEC DEF
-        { "y", lhg::schema_t<int>::schema },
-// LHG SEC END
-    };
+    return lhg::input_helper<__MaaControllerPostClick_t>();
 }
 
 json::object MaaControllerPostClick_HelperOutput() {
-    return json::object {
-        { "data", {
-// LHG SEC BEGIN lhg.helper.MaaControllerPostClick.output.return
-// LHG SEC DEF
-            { "return", lhg::schema_t<long long>::schema },
-// LHG SEC END
-        }},
-        { "error", "string" }
-    };
+    return lhg::output_helper<__MaaControllerPostClick_t>();
 }
 
 json::object MaaControllerPostSwipe_HelperInput() {
-    return json::object {
-// LHG SEC BEGIN lhg.helper.MaaControllerPostSwipe.input.ctrl
-// LHG SEC DEF
-        { "ctrl", "string@MaaControllerAPI" },
-// LHG SEC END
-// LHG SEC BEGIN lhg.helper.MaaControllerPostSwipe.input.x1
-// LHG SEC DEF
-        { "x1", lhg::schema_t<int>::schema },
-// LHG SEC END
-// LHG SEC BEGIN lhg.helper.MaaControllerPostSwipe.input.y1
-// LHG SEC DEF
-        { "y1", lhg::schema_t<int>::schema },
-// LHG SEC END
-// LHG SEC BEGIN lhg.helper.MaaControllerPostSwipe.input.x2
-// LHG SEC DEF
-        { "x2", lhg::schema_t<int>::schema },
-// LHG SEC END
-// LHG SEC BEGIN lhg.helper.MaaControllerPostSwipe.input.y2
-// LHG SEC DEF
-        { "y2", lhg::schema_t<int>::schema },
-// LHG SEC END
-// LHG SEC BEGIN lhg.helper.MaaControllerPostSwipe.input.duration
-// LHG SEC DEF
-        { "duration", lhg::schema_t<int>::schema },
-// LHG SEC END
-    };
+    return lhg::input_helper<__MaaControllerPostSwipe_t>();
 }
 
 json::object MaaControllerPostSwipe_HelperOutput() {
-    return json::object {
-        { "data", {
-// LHG SEC BEGIN lhg.helper.MaaControllerPostSwipe.output.return
-// LHG SEC DEF
-            { "return", lhg::schema_t<long long>::schema },
-// LHG SEC END
-        }},
-        { "error", "string" }
-    };
+    return lhg::output_helper<__MaaControllerPostSwipe_t>();
 }
 
 json::object MaaControllerPostPressKey_HelperInput() {
-    return json::object {
-// LHG SEC BEGIN lhg.helper.MaaControllerPostPressKey.input.ctrl
-// LHG SEC DEF
-        { "ctrl", "string@MaaControllerAPI" },
-// LHG SEC END
-// LHG SEC BEGIN lhg.helper.MaaControllerPostPressKey.input.keycode
-// LHG SEC DEF
-        { "keycode", lhg::schema_t<int>::schema },
-// LHG SEC END
-    };
+    return lhg::input_helper<__MaaControllerPostPressKey_t>();
 }
 
 json::object MaaControllerPostPressKey_HelperOutput() {
-    return json::object {
-        { "data", {
-// LHG SEC BEGIN lhg.helper.MaaControllerPostPressKey.output.return
-// LHG SEC DEF
-            { "return", lhg::schema_t<long long>::schema },
-// LHG SEC END
-        }},
-        { "error", "string" }
-    };
+    return lhg::output_helper<__MaaControllerPostPressKey_t>();
 }
 
 json::object MaaControllerPostInputText_HelperInput() {
-    return json::object {
-// LHG SEC BEGIN lhg.helper.MaaControllerPostInputText.input.ctrl
-// LHG SEC DEF
-        { "ctrl", "string@MaaControllerAPI" },
-// LHG SEC END
-// LHG SEC BEGIN lhg.helper.MaaControllerPostInputText.input.text
-// LHG SEC DEF
-        { "text", lhg::schema_t<const char *>::schema },
-// LHG SEC END
-    };
+    return lhg::input_helper<__MaaControllerPostInputText_t>();
 }
 
 json::object MaaControllerPostInputText_HelperOutput() {
-    return json::object {
-        { "data", {
-// LHG SEC BEGIN lhg.helper.MaaControllerPostInputText.output.return
-// LHG SEC DEF
-            { "return", lhg::schema_t<long long>::schema },
-// LHG SEC END
-        }},
-        { "error", "string" }
-    };
+    return lhg::output_helper<__MaaControllerPostInputText_t>();
 }
 
 json::object MaaControllerPostTouchDown_HelperInput() {
-    return json::object {
-// LHG SEC BEGIN lhg.helper.MaaControllerPostTouchDown.input.ctrl
-// LHG SEC DEF
-        { "ctrl", "string@MaaControllerAPI" },
-// LHG SEC END
-// LHG SEC BEGIN lhg.helper.MaaControllerPostTouchDown.input.contact
-// LHG SEC DEF
-        { "contact", lhg::schema_t<int>::schema },
-// LHG SEC END
-// LHG SEC BEGIN lhg.helper.MaaControllerPostTouchDown.input.x
-// LHG SEC DEF
-        { "x", lhg::schema_t<int>::schema },
-// LHG SEC END
-// LHG SEC BEGIN lhg.helper.MaaControllerPostTouchDown.input.y
-// LHG SEC DEF
-        { "y", lhg::schema_t<int>::schema },
-// LHG SEC END
-// LHG SEC BEGIN lhg.helper.MaaControllerPostTouchDown.input.pressure
-// LHG SEC DEF
-        { "pressure", lhg::schema_t<int>::schema },
-// LHG SEC END
-    };
+    return lhg::input_helper<__MaaControllerPostTouchDown_t>();
 }
 
 json::object MaaControllerPostTouchDown_HelperOutput() {
-    return json::object {
-        { "data", {
-// LHG SEC BEGIN lhg.helper.MaaControllerPostTouchDown.output.return
-// LHG SEC DEF
-            { "return", lhg::schema_t<long long>::schema },
-// LHG SEC END
-        }},
-        { "error", "string" }
-    };
+    return lhg::output_helper<__MaaControllerPostTouchDown_t>();
 }
 
 json::object MaaControllerPostTouchMove_HelperInput() {
-    return json::object {
-// LHG SEC BEGIN lhg.helper.MaaControllerPostTouchMove.input.ctrl
-// LHG SEC DEF
-        { "ctrl", "string@MaaControllerAPI" },
-// LHG SEC END
-// LHG SEC BEGIN lhg.helper.MaaControllerPostTouchMove.input.contact
-// LHG SEC DEF
-        { "contact", lhg::schema_t<int>::schema },
-// LHG SEC END
-// LHG SEC BEGIN lhg.helper.MaaControllerPostTouchMove.input.x
-// LHG SEC DEF
-        { "x", lhg::schema_t<int>::schema },
-// LHG SEC END
-// LHG SEC BEGIN lhg.helper.MaaControllerPostTouchMove.input.y
-// LHG SEC DEF
-        { "y", lhg::schema_t<int>::schema },
-// LHG SEC END
-// LHG SEC BEGIN lhg.helper.MaaControllerPostTouchMove.input.pressure
-// LHG SEC DEF
-        { "pressure", lhg::schema_t<int>::schema },
-// LHG SEC END
-    };
+    return lhg::input_helper<__MaaControllerPostTouchMove_t>();
 }
 
 json::object MaaControllerPostTouchMove_HelperOutput() {
-    return json::object {
-        { "data", {
-// LHG SEC BEGIN lhg.helper.MaaControllerPostTouchMove.output.return
-// LHG SEC DEF
-            { "return", lhg::schema_t<long long>::schema },
-// LHG SEC END
-        }},
-        { "error", "string" }
-    };
+    return lhg::output_helper<__MaaControllerPostTouchMove_t>();
 }
 
 json::object MaaControllerPostTouchUp_HelperInput() {
-    return json::object {
-// LHG SEC BEGIN lhg.helper.MaaControllerPostTouchUp.input.ctrl
-// LHG SEC DEF
-        { "ctrl", "string@MaaControllerAPI" },
-// LHG SEC END
-// LHG SEC BEGIN lhg.helper.MaaControllerPostTouchUp.input.contact
-// LHG SEC DEF
-        { "contact", lhg::schema_t<int>::schema },
-// LHG SEC END
-    };
+    return lhg::input_helper<__MaaControllerPostTouchUp_t>();
 }
 
 json::object MaaControllerPostTouchUp_HelperOutput() {
-    return json::object {
-        { "data", {
-// LHG SEC BEGIN lhg.helper.MaaControllerPostTouchUp.output.return
-// LHG SEC DEF
-            { "return", lhg::schema_t<long long>::schema },
-// LHG SEC END
-        }},
-        { "error", "string" }
-    };
+    return lhg::output_helper<__MaaControllerPostTouchUp_t>();
 }
 
 json::object MaaControllerPostScreencap_HelperInput() {
-    return json::object {
-// LHG SEC BEGIN lhg.helper.MaaControllerPostScreencap.input.ctrl
-// LHG SEC DEF
-        { "ctrl", "string@MaaControllerAPI" },
-// LHG SEC END
-    };
+    return lhg::input_helper<__MaaControllerPostScreencap_t>();
 }
 
 json::object MaaControllerPostScreencap_HelperOutput() {
-    return json::object {
-        { "data", {
-// LHG SEC BEGIN lhg.helper.MaaControllerPostScreencap.output.return
-// LHG SEC DEF
-            { "return", lhg::schema_t<long long>::schema },
-// LHG SEC END
-        }},
-        { "error", "string" }
-    };
+    return lhg::output_helper<__MaaControllerPostScreencap_t>();
 }
 
 json::object MaaControllerStatus_HelperInput() {
-    return json::object {
-// LHG SEC BEGIN lhg.helper.MaaControllerStatus.input.ctrl
-// LHG SEC DEF
-        { "ctrl", "string@MaaControllerAPI" },
-// LHG SEC END
-// LHG SEC BEGIN lhg.helper.MaaControllerStatus.input.id
-// LHG SEC DEF
-        { "id", lhg::schema_t<long long>::schema },
-// LHG SEC END
-    };
+    return lhg::input_helper<__MaaControllerStatus_t>();
 }
 
 json::object MaaControllerStatus_HelperOutput() {
-    return json::object {
-        { "data", {
-// LHG SEC BEGIN lhg.helper.MaaControllerStatus.output.return
-// LHG SEC DEF
-            { "return", lhg::schema_t<int>::schema },
-// LHG SEC END
-        }},
-        { "error", "string" }
-    };
+    return lhg::output_helper<__MaaControllerStatus_t>();
 }
 
 json::object MaaControllerWait_HelperInput() {
-    return json::object {
-// LHG SEC BEGIN lhg.helper.MaaControllerWait.input.ctrl
-// LHG SEC DEF
-        { "ctrl", "string@MaaControllerAPI" },
-// LHG SEC END
-// LHG SEC BEGIN lhg.helper.MaaControllerWait.input.id
-// LHG SEC DEF
-        { "id", lhg::schema_t<long long>::schema },
-// LHG SEC END
-    };
+    return lhg::input_helper<__MaaControllerWait_t>();
 }
 
 json::object MaaControllerWait_HelperOutput() {
-    return json::object {
-        { "data", {
-// LHG SEC BEGIN lhg.helper.MaaControllerWait.output.return
-// LHG SEC DEF
-            { "return", lhg::schema_t<int>::schema },
-// LHG SEC END
-        }},
-        { "error", "string" }
-    };
+    return lhg::output_helper<__MaaControllerWait_t>();
 }
 
 json::object MaaControllerConnected_HelperInput() {
-    return json::object {
-// LHG SEC BEGIN lhg.helper.MaaControllerConnected.input.ctrl
-// LHG SEC DEF
-        { "ctrl", "string@MaaControllerAPI" },
-// LHG SEC END
-    };
+    return lhg::input_helper<__MaaControllerConnected_t>();
 }
 
 json::object MaaControllerConnected_HelperOutput() {
-    return json::object {
-        { "data", {
-// LHG SEC BEGIN lhg.helper.MaaControllerConnected.output.return
-// LHG SEC DEF
-            { "return", lhg::schema_t<unsigned char>::schema },
-// LHG SEC END
-        }},
-        { "error", "string" }
-    };
+    return lhg::output_helper<__MaaControllerConnected_t>();
 }
 
 json::object MaaControllerGetImage_HelperInput() {
-    return json::object {
-// LHG SEC BEGIN lhg.helper.MaaControllerGetImage.input.ctrl
-// LHG SEC DEF
-        { "ctrl", "string@MaaControllerAPI" },
-// LHG SEC END
-// LHG SEC BEGIN lhg.helper.MaaControllerGetImage.input.buffer
-// LHG SEC DEF
-        { "buffer", "string@MaaImageBuffer" },
-// LHG SEC END
-    };
+    return lhg::input_helper<__MaaControllerGetImage_t>();
 }
 
 json::object MaaControllerGetImage_HelperOutput() {
-    return json::object {
-        { "data", {
-// LHG SEC BEGIN lhg.helper.MaaControllerGetImage.output.return
-// LHG SEC DEF
-            { "return", lhg::schema_t<unsigned char>::schema },
-// LHG SEC END
-        }},
-        { "error", "string" }
-    };
+    return lhg::output_helper<__MaaControllerGetImage_t>();
 }
 
 json::object MaaControllerGetUUID_HelperInput() {
-    return json::object {
-// LHG SEC BEGIN lhg.helper.MaaControllerGetUUID.input.ctrl
-// LHG SEC DEF
-        { "ctrl", "string@MaaControllerAPI" },
-// LHG SEC END
-    };
+    return lhg::input_helper<__MaaControllerGetUUID_t>();
 }
 
 json::object MaaControllerGetUUID_HelperOutput() {
-    return json::object {
-        { "data", {
-// LHG SEC BEGIN lhg.helper.MaaControllerGetUUID.output.return
-// LHG SEC DEF
-            { "return", lhg::schema_t<unsigned char>::schema },
-// LHG SEC END
-// LHG SEC BEGIN lhg.helper.MaaControllerGetUUID.output.buffer
-// LHG SEC DEF
-            { "buffer", lhg::schema_t<MaaStringBuffer *>::schema },
-// LHG SEC END
-        }},
-        { "error", "string" }
-    };
+    return lhg::output_helper<__MaaControllerGetUUID_t>();
 }
 
 json::object MaaCreate_HelperInput() {
-    return json::object {
-// LHG SEC BEGIN lhg.helper.MaaCreate.input.callback
-// LHG SEC DEF
-        { "callback", "string@MaaAPICallback" },
-// LHG SEC END
-    };
+    return lhg::input_helper<__MaaCreate_t>();
 }
 
 json::object MaaCreate_HelperOutput() {
-    return json::object {
-        { "data", {
-// LHG SEC BEGIN lhg.helper.MaaCreate.output.return
-// LHG SEC DEF
-            { "return", lhg::schema_t<MaaInstanceAPI *>::schema },
-// LHG SEC END
-        }},
-        { "error", "string" }
-    };
+    return lhg::output_helper<__MaaCreate_t>();
 }
 
 json::object MaaDestroy_HelperInput() {
-    return json::object {
-// LHG SEC BEGIN lhg.helper.MaaDestroy.input.inst
-// LHG SEC DEF
-        { "inst", "string@MaaInstanceAPI" },
-// LHG SEC END
-    };
+    return lhg::input_helper<__MaaDestroy_t>();
 }
 
 json::object MaaDestroy_HelperOutput() {
-    return json::object {
-        { "data", {
-// LHG SEC BEGIN lhg.helper.MaaDestroy.output.return
-// LHG SEC DEF
-            { "return", lhg::schema_t<void>::schema },
-// LHG SEC END
-        }},
-        { "error", "string" }
-    };
+    return lhg::output_helper<__MaaDestroy_t>();
 }
 
 json::object MaaSetOption_HelperInput() {
-    return json::object {
-// LHG SEC BEGIN lhg.helper.MaaSetOption.input.inst
-// LHG SEC DEF
-        { "inst", "string@MaaInstanceAPI" },
-// LHG SEC END
-// LHG SEC BEGIN lhg.helper.MaaSetOption.input.key
-// LHG SEC DEF
-        { "key", lhg::schema_t<int>::schema },
-// LHG SEC END
-// LHG SEC BEGIN lhg.helper.MaaSetOption.input.value
-        { "value", "string|number|boolean" },
-// LHG SEC END
-// LHG SEC BEGIN lhg.helper.MaaSetOption.input.val_size
-
-// LHG SEC END
-    };
+    return lhg::input_helper<__MaaSetOption_t>();
 }
 
 json::object MaaSetOption_HelperOutput() {
-    return json::object {
-        { "data", {
-// LHG SEC BEGIN lhg.helper.MaaSetOption.output.return
-// LHG SEC DEF
-            { "return", lhg::schema_t<unsigned char>::schema },
-// LHG SEC END
-        }},
-        { "error", "string" }
-    };
+    return lhg::output_helper<__MaaSetOption_t>();
 }
 
 json::object MaaBindResource_HelperInput() {
-    return json::object {
-// LHG SEC BEGIN lhg.helper.MaaBindResource.input.inst
-// LHG SEC DEF
-        { "inst", "string@MaaInstanceAPI" },
-// LHG SEC END
-// LHG SEC BEGIN lhg.helper.MaaBindResource.input.res
-// LHG SEC DEF
-        { "res", "string@MaaResourceAPI" },
-// LHG SEC END
-    };
+    return lhg::input_helper<__MaaBindResource_t>();
 }
 
 json::object MaaBindResource_HelperOutput() {
-    return json::object {
-        { "data", {
-// LHG SEC BEGIN lhg.helper.MaaBindResource.output.return
-// LHG SEC DEF
-            { "return", lhg::schema_t<unsigned char>::schema },
-// LHG SEC END
-        }},
-        { "error", "string" }
-    };
+    return lhg::output_helper<__MaaBindResource_t>();
 }
 
 json::object MaaBindController_HelperInput() {
-    return json::object {
-// LHG SEC BEGIN lhg.helper.MaaBindController.input.inst
-// LHG SEC DEF
-        { "inst", "string@MaaInstanceAPI" },
-// LHG SEC END
-// LHG SEC BEGIN lhg.helper.MaaBindController.input.ctrl
-// LHG SEC DEF
-        { "ctrl", "string@MaaControllerAPI" },
-// LHG SEC END
-    };
+    return lhg::input_helper<__MaaBindController_t>();
 }
 
 json::object MaaBindController_HelperOutput() {
-    return json::object {
-        { "data", {
-// LHG SEC BEGIN lhg.helper.MaaBindController.output.return
-// LHG SEC DEF
-            { "return", lhg::schema_t<unsigned char>::schema },
-// LHG SEC END
-        }},
-        { "error", "string" }
-    };
+    return lhg::output_helper<__MaaBindController_t>();
 }
 
 json::object MaaInited_HelperInput() {
-    return json::object {
-// LHG SEC BEGIN lhg.helper.MaaInited.input.inst
-// LHG SEC DEF
-        { "inst", "string@MaaInstanceAPI" },
-// LHG SEC END
-    };
+    return lhg::input_helper<__MaaInited_t>();
 }
 
 json::object MaaInited_HelperOutput() {
-    return json::object {
-        { "data", {
-// LHG SEC BEGIN lhg.helper.MaaInited.output.return
-// LHG SEC DEF
-            { "return", lhg::schema_t<unsigned char>::schema },
-// LHG SEC END
-        }},
-        { "error", "string" }
-    };
+    return lhg::output_helper<__MaaInited_t>();
 }
 
 json::object MaaClearCustomRecognizer_HelperInput() {
-    return json::object {
-// LHG SEC BEGIN lhg.helper.MaaClearCustomRecognizer.input.inst
-// LHG SEC DEF
-        { "inst", "string@MaaInstanceAPI" },
-// LHG SEC END
-    };
+    return lhg::input_helper<__MaaClearCustomRecognizer_t>();
 }
 
 json::object MaaClearCustomRecognizer_HelperOutput() {
-    return json::object {
-        { "data", {
-// LHG SEC BEGIN lhg.helper.MaaClearCustomRecognizer.output.return
-// LHG SEC DEF
-            { "return", lhg::schema_t<unsigned char>::schema },
-// LHG SEC END
-        }},
-        { "error", "string" }
-    };
+    return lhg::output_helper<__MaaClearCustomRecognizer_t>();
 }
 
 json::object MaaClearCustomAction_HelperInput() {
-    return json::object {
-// LHG SEC BEGIN lhg.helper.MaaClearCustomAction.input.inst
-// LHG SEC DEF
-        { "inst", "string@MaaInstanceAPI" },
-// LHG SEC END
-    };
+    return lhg::input_helper<__MaaClearCustomAction_t>();
 }
 
 json::object MaaClearCustomAction_HelperOutput() {
-    return json::object {
-        { "data", {
-// LHG SEC BEGIN lhg.helper.MaaClearCustomAction.output.return
-// LHG SEC DEF
-            { "return", lhg::schema_t<unsigned char>::schema },
-// LHG SEC END
-        }},
-        { "error", "string" }
-    };
+    return lhg::output_helper<__MaaClearCustomAction_t>();
 }
 
 json::object MaaPostTask_HelperInput() {
-    return json::object {
-// LHG SEC BEGIN lhg.helper.MaaPostTask.input.inst
-// LHG SEC DEF
-        { "inst", "string@MaaInstanceAPI" },
-// LHG SEC END
-// LHG SEC BEGIN lhg.helper.MaaPostTask.input.entry
-// LHG SEC DEF
-        { "entry", lhg::schema_t<const char *>::schema },
-// LHG SEC END
-// LHG SEC BEGIN lhg.helper.MaaPostTask.input.param
-// LHG SEC DEF
-        { "param", lhg::schema_t<const char *>::schema },
-// LHG SEC END
-    };
+    return lhg::input_helper<__MaaPostTask_t>();
 }
 
 json::object MaaPostTask_HelperOutput() {
-    return json::object {
-        { "data", {
-// LHG SEC BEGIN lhg.helper.MaaPostTask.output.return
-// LHG SEC DEF
-            { "return", lhg::schema_t<long long>::schema },
-// LHG SEC END
-        }},
-        { "error", "string" }
-    };
+    return lhg::output_helper<__MaaPostTask_t>();
 }
 
 json::object MaaSetTaskParam_HelperInput() {
-    return json::object {
-// LHG SEC BEGIN lhg.helper.MaaSetTaskParam.input.inst
-// LHG SEC DEF
-        { "inst", "string@MaaInstanceAPI" },
-// LHG SEC END
-// LHG SEC BEGIN lhg.helper.MaaSetTaskParam.input.id
-// LHG SEC DEF
-        { "id", lhg::schema_t<long long>::schema },
-// LHG SEC END
-// LHG SEC BEGIN lhg.helper.MaaSetTaskParam.input.param
-// LHG SEC DEF
-        { "param", lhg::schema_t<const char *>::schema },
-// LHG SEC END
-    };
+    return lhg::input_helper<__MaaSetTaskParam_t>();
 }
 
 json::object MaaSetTaskParam_HelperOutput() {
-    return json::object {
-        { "data", {
-// LHG SEC BEGIN lhg.helper.MaaSetTaskParam.output.return
-// LHG SEC DEF
-            { "return", lhg::schema_t<unsigned char>::schema },
-// LHG SEC END
-        }},
-        { "error", "string" }
-    };
+    return lhg::output_helper<__MaaSetTaskParam_t>();
 }
 
 json::object MaaTaskStatus_HelperInput() {
-    return json::object {
-// LHG SEC BEGIN lhg.helper.MaaTaskStatus.input.inst
-// LHG SEC DEF
-        { "inst", "string@MaaInstanceAPI" },
-// LHG SEC END
-// LHG SEC BEGIN lhg.helper.MaaTaskStatus.input.id
-// LHG SEC DEF
-        { "id", lhg::schema_t<long long>::schema },
-// LHG SEC END
-    };
+    return lhg::input_helper<__MaaTaskStatus_t>();
 }
 
 json::object MaaTaskStatus_HelperOutput() {
-    return json::object {
-        { "data", {
-// LHG SEC BEGIN lhg.helper.MaaTaskStatus.output.return
-// LHG SEC DEF
-            { "return", lhg::schema_t<int>::schema },
-// LHG SEC END
-        }},
-        { "error", "string" }
-    };
+    return lhg::output_helper<__MaaTaskStatus_t>();
 }
 
 json::object MaaWaitTask_HelperInput() {
-    return json::object {
-// LHG SEC BEGIN lhg.helper.MaaWaitTask.input.inst
-// LHG SEC DEF
-        { "inst", "string@MaaInstanceAPI" },
-// LHG SEC END
-// LHG SEC BEGIN lhg.helper.MaaWaitTask.input.id
-// LHG SEC DEF
-        { "id", lhg::schema_t<long long>::schema },
-// LHG SEC END
-    };
+    return lhg::input_helper<__MaaWaitTask_t>();
 }
 
 json::object MaaWaitTask_HelperOutput() {
-    return json::object {
-        { "data", {
-// LHG SEC BEGIN lhg.helper.MaaWaitTask.output.return
-// LHG SEC DEF
-            { "return", lhg::schema_t<int>::schema },
-// LHG SEC END
-        }},
-        { "error", "string" }
-    };
+    return lhg::output_helper<__MaaWaitTask_t>();
 }
 
 json::object MaaTaskAllFinished_HelperInput() {
-    return json::object {
-// LHG SEC BEGIN lhg.helper.MaaTaskAllFinished.input.inst
-// LHG SEC DEF
-        { "inst", "string@MaaInstanceAPI" },
-// LHG SEC END
-    };
+    return lhg::input_helper<__MaaTaskAllFinished_t>();
 }
 
 json::object MaaTaskAllFinished_HelperOutput() {
-    return json::object {
-        { "data", {
-// LHG SEC BEGIN lhg.helper.MaaTaskAllFinished.output.return
-// LHG SEC DEF
-            { "return", lhg::schema_t<unsigned char>::schema },
-// LHG SEC END
-        }},
-        { "error", "string" }
-    };
+    return lhg::output_helper<__MaaTaskAllFinished_t>();
 }
 
 json::object MaaPostStop_HelperInput() {
-    return json::object {
-// LHG SEC BEGIN lhg.helper.MaaPostStop.input.inst
-// LHG SEC DEF
-        { "inst", "string@MaaInstanceAPI" },
-// LHG SEC END
-    };
+    return lhg::input_helper<__MaaPostStop_t>();
 }
 
 json::object MaaPostStop_HelperOutput() {
-    return json::object {
-        { "data", {
-// LHG SEC BEGIN lhg.helper.MaaPostStop.output.return
-// LHG SEC DEF
-            { "return", lhg::schema_t<unsigned char>::schema },
-// LHG SEC END
-        }},
-        { "error", "string" }
-    };
+    return lhg::output_helper<__MaaPostStop_t>();
 }
 
 json::object MaaStop_HelperInput() {
-    return json::object {
-// LHG SEC BEGIN lhg.helper.MaaStop.input.inst
-// LHG SEC DEF
-        { "inst", "string@MaaInstanceAPI" },
-// LHG SEC END
-    };
+    return lhg::input_helper<__MaaStop_t>();
 }
 
 json::object MaaStop_HelperOutput() {
-    return json::object {
-        { "data", {
-// LHG SEC BEGIN lhg.helper.MaaStop.output.return
-// LHG SEC DEF
-            { "return", lhg::schema_t<unsigned char>::schema },
-// LHG SEC END
-        }},
-        { "error", "string" }
-    };
+    return lhg::output_helper<__MaaStop_t>();
 }
 
 json::object MaaGetResource_HelperInput() {
-    return json::object {
-// LHG SEC BEGIN lhg.helper.MaaGetResource.input.inst
-// LHG SEC DEF
-        { "inst", "string@MaaInstanceAPI" },
-// LHG SEC END
-    };
+    return lhg::input_helper<__MaaGetResource_t>();
 }
 
 json::object MaaGetResource_HelperOutput() {
-    return json::object {
-        { "data", {
-// LHG SEC BEGIN lhg.helper.MaaGetResource.output.return
-// LHG SEC DEF
-            { "return", lhg::schema_t<MaaResourceAPI *>::schema },
-// LHG SEC END
-        }},
-        { "error", "string" }
-    };
+    return lhg::output_helper<__MaaGetResource_t>();
 }
 
 json::object MaaGetController_HelperInput() {
-    return json::object {
-// LHG SEC BEGIN lhg.helper.MaaGetController.input.inst
-// LHG SEC DEF
-        { "inst", "string@MaaInstanceAPI" },
-// LHG SEC END
-    };
+    return lhg::input_helper<__MaaGetController_t>();
 }
 
 json::object MaaGetController_HelperOutput() {
-    return json::object {
-        { "data", {
-// LHG SEC BEGIN lhg.helper.MaaGetController.output.return
-// LHG SEC DEF
-            { "return", lhg::schema_t<MaaControllerAPI *>::schema },
-// LHG SEC END
-        }},
-        { "error", "string" }
-    };
+    return lhg::output_helper<__MaaGetController_t>();
 }
 
 json::object MaaResourceCreate_HelperInput() {
-    return json::object {
-// LHG SEC BEGIN lhg.helper.MaaResourceCreate.input.callback
-// LHG SEC DEF
-        { "callback", "string@MaaAPICallback" },
-// LHG SEC END
-    };
+    return lhg::input_helper<__MaaResourceCreate_t>();
 }
 
 json::object MaaResourceCreate_HelperOutput() {
-    return json::object {
-        { "data", {
-// LHG SEC BEGIN lhg.helper.MaaResourceCreate.output.return
-// LHG SEC DEF
-            { "return", lhg::schema_t<MaaResourceAPI *>::schema },
-// LHG SEC END
-        }},
-        { "error", "string" }
-    };
+    return lhg::output_helper<__MaaResourceCreate_t>();
 }
 
 json::object MaaResourceDestroy_HelperInput() {
-    return json::object {
-// LHG SEC BEGIN lhg.helper.MaaResourceDestroy.input.res
-// LHG SEC DEF
-        { "res", "string@MaaResourceAPI" },
-// LHG SEC END
-    };
+    return lhg::input_helper<__MaaResourceDestroy_t>();
 }
 
 json::object MaaResourceDestroy_HelperOutput() {
-    return json::object {
-        { "data", {
-// LHG SEC BEGIN lhg.helper.MaaResourceDestroy.output.return
-// LHG SEC DEF
-            { "return", lhg::schema_t<void>::schema },
-// LHG SEC END
-        }},
-        { "error", "string" }
-    };
+    return lhg::output_helper<__MaaResourceDestroy_t>();
 }
 
 json::object MaaResourcePostPath_HelperInput() {
-    return json::object {
-// LHG SEC BEGIN lhg.helper.MaaResourcePostPath.input.res
-// LHG SEC DEF
-        { "res", "string@MaaResourceAPI" },
-// LHG SEC END
-// LHG SEC BEGIN lhg.helper.MaaResourcePostPath.input.path
-// LHG SEC DEF
-        { "path", lhg::schema_t<const char *>::schema },
-// LHG SEC END
-    };
+    return lhg::input_helper<__MaaResourcePostPath_t>();
 }
 
 json::object MaaResourcePostPath_HelperOutput() {
-    return json::object {
-        { "data", {
-// LHG SEC BEGIN lhg.helper.MaaResourcePostPath.output.return
-// LHG SEC DEF
-            { "return", lhg::schema_t<long long>::schema },
-// LHG SEC END
-        }},
-        { "error", "string" }
-    };
+    return lhg::output_helper<__MaaResourcePostPath_t>();
 }
 
 json::object MaaResourceStatus_HelperInput() {
-    return json::object {
-// LHG SEC BEGIN lhg.helper.MaaResourceStatus.input.res
-// LHG SEC DEF
-        { "res", "string@MaaResourceAPI" },
-// LHG SEC END
-// LHG SEC BEGIN lhg.helper.MaaResourceStatus.input.id
-// LHG SEC DEF
-        { "id", lhg::schema_t<long long>::schema },
-// LHG SEC END
-    };
+    return lhg::input_helper<__MaaResourceStatus_t>();
 }
 
 json::object MaaResourceStatus_HelperOutput() {
-    return json::object {
-        { "data", {
-// LHG SEC BEGIN lhg.helper.MaaResourceStatus.output.return
-// LHG SEC DEF
-            { "return", lhg::schema_t<int>::schema },
-// LHG SEC END
-        }},
-        { "error", "string" }
-    };
+    return lhg::output_helper<__MaaResourceStatus_t>();
 }
 
 json::object MaaResourceWait_HelperInput() {
-    return json::object {
-// LHG SEC BEGIN lhg.helper.MaaResourceWait.input.res
-// LHG SEC DEF
-        { "res", "string@MaaResourceAPI" },
-// LHG SEC END
-// LHG SEC BEGIN lhg.helper.MaaResourceWait.input.id
-// LHG SEC DEF
-        { "id", lhg::schema_t<long long>::schema },
-// LHG SEC END
-    };
+    return lhg::input_helper<__MaaResourceWait_t>();
 }
 
 json::object MaaResourceWait_HelperOutput() {
-    return json::object {
-        { "data", {
-// LHG SEC BEGIN lhg.helper.MaaResourceWait.output.return
-// LHG SEC DEF
-            { "return", lhg::schema_t<int>::schema },
-// LHG SEC END
-        }},
-        { "error", "string" }
-    };
+    return lhg::output_helper<__MaaResourceWait_t>();
 }
 
 json::object MaaResourceLoaded_HelperInput() {
-    return json::object {
-// LHG SEC BEGIN lhg.helper.MaaResourceLoaded.input.res
-// LHG SEC DEF
-        { "res", "string@MaaResourceAPI" },
-// LHG SEC END
-    };
+    return lhg::input_helper<__MaaResourceLoaded_t>();
 }
 
 json::object MaaResourceLoaded_HelperOutput() {
-    return json::object {
-        { "data", {
-// LHG SEC BEGIN lhg.helper.MaaResourceLoaded.output.return
-// LHG SEC DEF
-            { "return", lhg::schema_t<unsigned char>::schema },
-// LHG SEC END
-        }},
-        { "error", "string" }
-    };
+    return lhg::output_helper<__MaaResourceLoaded_t>();
 }
 
 json::object MaaResourceSetOption_HelperInput() {
-    return json::object {
-// LHG SEC BEGIN lhg.helper.MaaResourceSetOption.input.res
-// LHG SEC DEF
-        { "res", "string@MaaResourceAPI" },
-// LHG SEC END
-// LHG SEC BEGIN lhg.helper.MaaResourceSetOption.input.key
-// LHG SEC DEF
-        { "key", lhg::schema_t<int>::schema },
-// LHG SEC END
-// LHG SEC BEGIN lhg.helper.MaaResourceSetOption.input.value
-        { "value", "string|number|boolean" },
-// LHG SEC END
-// LHG SEC BEGIN lhg.helper.MaaResourceSetOption.input.val_size
-
-// LHG SEC END
-    };
+    return lhg::input_helper<__MaaResourceSetOption_t>();
 }
 
 json::object MaaResourceSetOption_HelperOutput() {
-    return json::object {
-        { "data", {
-// LHG SEC BEGIN lhg.helper.MaaResourceSetOption.output.return
-// LHG SEC DEF
-            { "return", lhg::schema_t<unsigned char>::schema },
-// LHG SEC END
-        }},
-        { "error", "string" }
-    };
+    return lhg::output_helper<__MaaResourceSetOption_t>();
 }
 
 json::object MaaResourceGetHash_HelperInput() {
-    return json::object {
-// LHG SEC BEGIN lhg.helper.MaaResourceGetHash.input.res
-// LHG SEC DEF
-        { "res", "string@MaaResourceAPI" },
-// LHG SEC END
-    };
+    return lhg::input_helper<__MaaResourceGetHash_t>();
 }
 
 json::object MaaResourceGetHash_HelperOutput() {
-    return json::object {
-        { "data", {
-// LHG SEC BEGIN lhg.helper.MaaResourceGetHash.output.return
-// LHG SEC DEF
-            { "return", lhg::schema_t<unsigned char>::schema },
-// LHG SEC END
-// LHG SEC BEGIN lhg.helper.MaaResourceGetHash.output.buffer
-// LHG SEC DEF
-            { "buffer", lhg::schema_t<MaaStringBuffer *>::schema },
-// LHG SEC END
-        }},
-        { "error", "string" }
-    };
+    return lhg::output_helper<__MaaResourceGetHash_t>();
 }
 
 json::object MaaResourceGetTaskList_HelperInput() {
-    return json::object {
-// LHG SEC BEGIN lhg.helper.MaaResourceGetTaskList.input.res
-// LHG SEC DEF
-        { "res", "string@MaaResourceAPI" },
-// LHG SEC END
-    };
+    return lhg::input_helper<__MaaResourceGetTaskList_t>();
 }
 
 json::object MaaResourceGetTaskList_HelperOutput() {
-    return json::object {
-        { "data", {
-// LHG SEC BEGIN lhg.helper.MaaResourceGetTaskList.output.return
-// LHG SEC DEF
-            { "return", lhg::schema_t<unsigned char>::schema },
-// LHG SEC END
-// LHG SEC BEGIN lhg.helper.MaaResourceGetTaskList.output.buffer
-// LHG SEC DEF
-            { "buffer", lhg::schema_t<MaaStringBuffer *>::schema },
-// LHG SEC END
-        }},
-        { "error", "string" }
-    };
+    return lhg::output_helper<__MaaResourceGetTaskList_t>();
 }
 
 json::object MaaCreateImageBuffer_HelperInput() {
-    return json::object {
-    };
+    return lhg::input_helper<__MaaCreateImageBuffer_t>();
 }
 
 json::object MaaCreateImageBuffer_HelperOutput() {
-    return json::object {
-        { "data", {
-// LHG SEC BEGIN lhg.helper.MaaCreateImageBuffer.output.return
-// LHG SEC DEF
-            { "return", lhg::schema_t<MaaImageBuffer *>::schema },
-// LHG SEC END
-        }},
-        { "error", "string" }
-    };
+    return lhg::output_helper<__MaaCreateImageBuffer_t>();
 }
 
 json::object MaaDestroyImageBuffer_HelperInput() {
-    return json::object {
-// LHG SEC BEGIN lhg.helper.MaaDestroyImageBuffer.input.handle
-// LHG SEC DEF
-        { "handle", "string@MaaImageBuffer" },
-// LHG SEC END
-    };
+    return lhg::input_helper<__MaaDestroyImageBuffer_t>();
 }
 
 json::object MaaDestroyImageBuffer_HelperOutput() {
-    return json::object {
-        { "data", {
-// LHG SEC BEGIN lhg.helper.MaaDestroyImageBuffer.output.return
-// LHG SEC DEF
-            { "return", lhg::schema_t<void>::schema },
-// LHG SEC END
-        }},
-        { "error", "string" }
-    };
+    return lhg::output_helper<__MaaDestroyImageBuffer_t>();
 }
 
 json::object MaaIsImageEmpty_HelperInput() {
-    return json::object {
-// LHG SEC BEGIN lhg.helper.MaaIsImageEmpty.input.handle
-// LHG SEC DEF
-        { "handle", "string@MaaImageBuffer" },
-// LHG SEC END
-    };
+    return lhg::input_helper<__MaaIsImageEmpty_t>();
 }
 
 json::object MaaIsImageEmpty_HelperOutput() {
-    return json::object {
-        { "data", {
-// LHG SEC BEGIN lhg.helper.MaaIsImageEmpty.output.return
-// LHG SEC DEF
-            { "return", lhg::schema_t<unsigned char>::schema },
-// LHG SEC END
-        }},
-        { "error", "string" }
-    };
+    return lhg::output_helper<__MaaIsImageEmpty_t>();
 }
 
 json::object MaaClearImage_HelperInput() {
-    return json::object {
-// LHG SEC BEGIN lhg.helper.MaaClearImage.input.handle
-// LHG SEC DEF
-        { "handle", "string@MaaImageBuffer" },
-// LHG SEC END
-    };
+    return lhg::input_helper<__MaaClearImage_t>();
 }
 
 json::object MaaClearImage_HelperOutput() {
-    return json::object {
-        { "data", {
-// LHG SEC BEGIN lhg.helper.MaaClearImage.output.return
-// LHG SEC DEF
-            { "return", lhg::schema_t<unsigned char>::schema },
-// LHG SEC END
-        }},
-        { "error", "string" }
-    };
+    return lhg::output_helper<__MaaClearImage_t>();
 }
 
 json::object MaaGetImageWidth_HelperInput() {
-    return json::object {
-// LHG SEC BEGIN lhg.helper.MaaGetImageWidth.input.handle
-// LHG SEC DEF
-        { "handle", "string@MaaImageBuffer" },
-// LHG SEC END
-    };
+    return lhg::input_helper<__MaaGetImageWidth_t>();
 }
 
 json::object MaaGetImageWidth_HelperOutput() {
-    return json::object {
-        { "data", {
-// LHG SEC BEGIN lhg.helper.MaaGetImageWidth.output.return
-// LHG SEC DEF
-            { "return", lhg::schema_t<int>::schema },
-// LHG SEC END
-        }},
-        { "error", "string" }
-    };
+    return lhg::output_helper<__MaaGetImageWidth_t>();
 }
 
 json::object MaaGetImageHeight_HelperInput() {
-    return json::object {
-// LHG SEC BEGIN lhg.helper.MaaGetImageHeight.input.handle
-// LHG SEC DEF
-        { "handle", "string@MaaImageBuffer" },
-// LHG SEC END
-    };
+    return lhg::input_helper<__MaaGetImageHeight_t>();
 }
 
 json::object MaaGetImageHeight_HelperOutput() {
-    return json::object {
-        { "data", {
-// LHG SEC BEGIN lhg.helper.MaaGetImageHeight.output.return
-// LHG SEC DEF
-            { "return", lhg::schema_t<int>::schema },
-// LHG SEC END
-        }},
-        { "error", "string" }
-    };
+    return lhg::output_helper<__MaaGetImageHeight_t>();
 }
 
 json::object MaaGetImageType_HelperInput() {
-    return json::object {
-// LHG SEC BEGIN lhg.helper.MaaGetImageType.input.handle
-// LHG SEC DEF
-        { "handle", "string@MaaImageBuffer" },
-// LHG SEC END
-    };
+    return lhg::input_helper<__MaaGetImageType_t>();
 }
 
 json::object MaaGetImageType_HelperOutput() {
-    return json::object {
-        { "data", {
-// LHG SEC BEGIN lhg.helper.MaaGetImageType.output.return
-// LHG SEC DEF
-            { "return", lhg::schema_t<int>::schema },
-// LHG SEC END
-        }},
-        { "error", "string" }
-    };
+    return lhg::output_helper<__MaaGetImageType_t>();
 }
 
 json::object MaaGetImageEncoded_HelperInput() {
-    return json::object {
-// LHG SEC BEGIN lhg.helper.MaaGetImageEncoded.input.handle
-// LHG SEC DEF
-        { "handle", "string@MaaImageBuffer" },
-// LHG SEC END
-    };
+    return lhg::input_helper<__MaaGetImageEncoded_t>();
 }
 
 json::object MaaGetImageEncoded_HelperOutput() {
-    return json::object {
-        { "data", {
-// LHG SEC BEGIN lhg.helper.MaaGetImageEncoded.output.return
-            { "return", "string@buffer" },
-// LHG SEC END
-        }},
-        { "error", "string" }
-    };
+    return lhg::output_helper<__MaaGetImageEncoded_t>();
 }
 
 json::object MaaSetImageEncoded_HelperInput() {
-    return json::object {
-// LHG SEC BEGIN lhg.helper.MaaSetImageEncoded.input.handle
-// LHG SEC DEF
-        { "handle", "string@MaaImageBuffer" },
-// LHG SEC END
-// LHG SEC BEGIN lhg.helper.MaaSetImageEncoded.input.data
-        { "data", "string@buffer" },
-// LHG SEC END
-// LHG SEC BEGIN lhg.helper.MaaSetImageEncoded.input.size
-
-// LHG SEC END
-    };
+    return lhg::input_helper<__MaaSetImageEncoded_t>();
 }
 
 json::object MaaSetImageEncoded_HelperOutput() {
-    return json::object {
-        { "data", {
-// LHG SEC BEGIN lhg.helper.MaaSetImageEncoded.output.return
-// LHG SEC DEF
-            { "return", lhg::schema_t<unsigned char>::schema },
-// LHG SEC END
-        }},
-        { "error", "string" }
-    };
+    return lhg::output_helper<__MaaSetImageEncoded_t>();
 }
 
 json::object MaaVersion_HelperInput() {
-    return json::object {
-    };
+    return lhg::input_helper<__MaaVersion_t>();
 }
 
 json::object MaaVersion_HelperOutput() {
-    return json::object {
-        { "data", {
-// LHG SEC BEGIN lhg.helper.MaaVersion.output.return
-// LHG SEC DEF
-            { "return", lhg::schema_t<const char *>::schema },
-// LHG SEC END
-        }},
-        { "error", "string" }
-    };
+    return lhg::output_helper<__MaaVersion_t>();
 }
 
 json::object MaaSetGlobalOption_HelperInput() {
-    return json::object {
-// LHG SEC BEGIN lhg.helper.MaaSetGlobalOption.input.key
-// LHG SEC DEF
-        { "key", lhg::schema_t<int>::schema },
-// LHG SEC END
-// LHG SEC BEGIN lhg.helper.MaaSetGlobalOption.input.value
-        { "value", "string|number|boolean" },
-// LHG SEC END
-// LHG SEC BEGIN lhg.helper.MaaSetGlobalOption.input.val_size
-
-// LHG SEC END
-    };
+    return lhg::input_helper<__MaaSetGlobalOption_t>();
 }
 
 json::object MaaSetGlobalOption_HelperOutput() {
-    return json::object {
-        { "data", {
-// LHG SEC BEGIN lhg.helper.MaaSetGlobalOption.output.return
-// LHG SEC DEF
-            { "return", lhg::schema_t<unsigned char>::schema },
-// LHG SEC END
-        }},
-        { "error", "string" }
-    };
+    return lhg::output_helper<__MaaSetGlobalOption_t>();
 }
 
 json::object MaaToolkitInit_HelperInput() {
-    return json::object {
-    };
+    return lhg::input_helper<__MaaToolkitInit_t>();
 }
 
 json::object MaaToolkitInit_HelperOutput() {
-    return json::object {
-        { "data", {
-// LHG SEC BEGIN lhg.helper.MaaToolkitInit.output.return
-// LHG SEC DEF
-            { "return", lhg::schema_t<unsigned char>::schema },
-// LHG SEC END
-        }},
-        { "error", "string" }
-    };
+    return lhg::output_helper<__MaaToolkitInit_t>();
 }
 
 json::object MaaToolkitUninit_HelperInput() {
-    return json::object {
-    };
+    return lhg::input_helper<__MaaToolkitUninit_t>();
 }
 
 json::object MaaToolkitUninit_HelperOutput() {
-    return json::object {
-        { "data", {
-// LHG SEC BEGIN lhg.helper.MaaToolkitUninit.output.return
-// LHG SEC DEF
-            { "return", lhg::schema_t<unsigned char>::schema },
-// LHG SEC END
-        }},
-        { "error", "string" }
-    };
+    return lhg::output_helper<__MaaToolkitUninit_t>();
 }
 
 json::object MaaToolkitFindDevice_HelperInput() {
-    return json::object {
-    };
+    return lhg::input_helper<__MaaToolkitFindDevice_t>();
 }
 
 json::object MaaToolkitFindDevice_HelperOutput() {
-    return json::object {
-        { "data", {
-// LHG SEC BEGIN lhg.helper.MaaToolkitFindDevice.output.return
-// LHG SEC DEF
-            { "return", lhg::schema_t<unsigned long long>::schema },
-// LHG SEC END
-        }},
-        { "error", "string" }
-    };
+    return lhg::output_helper<__MaaToolkitFindDevice_t>();
 }
 
 json::object MaaToolkitFindDeviceWithAdb_HelperInput() {
-    return json::object {
-// LHG SEC BEGIN lhg.helper.MaaToolkitFindDeviceWithAdb.input.adb_path
-// LHG SEC DEF
-        { "adb_path", lhg::schema_t<const char *>::schema },
-// LHG SEC END
-    };
+    return lhg::input_helper<__MaaToolkitFindDeviceWithAdb_t>();
 }
 
 json::object MaaToolkitFindDeviceWithAdb_HelperOutput() {
-    return json::object {
-        { "data", {
-// LHG SEC BEGIN lhg.helper.MaaToolkitFindDeviceWithAdb.output.return
-// LHG SEC DEF
-            { "return", lhg::schema_t<unsigned long long>::schema },
-// LHG SEC END
-        }},
-        { "error", "string" }
-    };
+    return lhg::output_helper<__MaaToolkitFindDeviceWithAdb_t>();
 }
 
 json::object MaaToolkitPostFindDevice_HelperInput() {
-    return json::object {
-    };
+    return lhg::input_helper<__MaaToolkitPostFindDevice_t>();
 }
 
 json::object MaaToolkitPostFindDevice_HelperOutput() {
-    return json::object {
-        { "data", {
-// LHG SEC BEGIN lhg.helper.MaaToolkitPostFindDevice.output.return
-// LHG SEC DEF
-            { "return", lhg::schema_t<unsigned char>::schema },
-// LHG SEC END
-        }},
-        { "error", "string" }
-    };
+    return lhg::output_helper<__MaaToolkitPostFindDevice_t>();
 }
 
 json::object MaaToolkitPostFindDeviceWithAdb_HelperInput() {
-    return json::object {
-// LHG SEC BEGIN lhg.helper.MaaToolkitPostFindDeviceWithAdb.input.adb_path
-// LHG SEC DEF
-        { "adb_path", lhg::schema_t<const char *>::schema },
-// LHG SEC END
-    };
+    return lhg::input_helper<__MaaToolkitPostFindDeviceWithAdb_t>();
 }
 
 json::object MaaToolkitPostFindDeviceWithAdb_HelperOutput() {
-    return json::object {
-        { "data", {
-// LHG SEC BEGIN lhg.helper.MaaToolkitPostFindDeviceWithAdb.output.return
-// LHG SEC DEF
-            { "return", lhg::schema_t<unsigned char>::schema },
-// LHG SEC END
-        }},
-        { "error", "string" }
-    };
+    return lhg::output_helper<__MaaToolkitPostFindDeviceWithAdb_t>();
 }
 
 json::object MaaToolkitIsFindDeviceCompleted_HelperInput() {
-    return json::object {
-    };
+    return lhg::input_helper<__MaaToolkitIsFindDeviceCompleted_t>();
 }
 
 json::object MaaToolkitIsFindDeviceCompleted_HelperOutput() {
-    return json::object {
-        { "data", {
-// LHG SEC BEGIN lhg.helper.MaaToolkitIsFindDeviceCompleted.output.return
-// LHG SEC DEF
-            { "return", lhg::schema_t<unsigned char>::schema },
-// LHG SEC END
-        }},
-        { "error", "string" }
-    };
+    return lhg::output_helper<__MaaToolkitIsFindDeviceCompleted_t>();
 }
 
 json::object MaaToolkitWaitForFindDeviceToComplete_HelperInput() {
-    return json::object {
-    };
+    return lhg::input_helper<__MaaToolkitWaitForFindDeviceToComplete_t>();
 }
 
 json::object MaaToolkitWaitForFindDeviceToComplete_HelperOutput() {
-    return json::object {
-        { "data", {
-// LHG SEC BEGIN lhg.helper.MaaToolkitWaitForFindDeviceToComplete.output.return
-// LHG SEC DEF
-            { "return", lhg::schema_t<unsigned long long>::schema },
-// LHG SEC END
-        }},
-        { "error", "string" }
-    };
+    return lhg::output_helper<__MaaToolkitWaitForFindDeviceToComplete_t>();
 }
 
 json::object MaaToolkitGetDeviceCount_HelperInput() {
-    return json::object {
-    };
+    return lhg::input_helper<__MaaToolkitGetDeviceCount_t>();
 }
 
 json::object MaaToolkitGetDeviceCount_HelperOutput() {
-    return json::object {
-        { "data", {
-// LHG SEC BEGIN lhg.helper.MaaToolkitGetDeviceCount.output.return
-// LHG SEC DEF
-            { "return", lhg::schema_t<unsigned long long>::schema },
-// LHG SEC END
-        }},
-        { "error", "string" }
-    };
+    return lhg::output_helper<__MaaToolkitGetDeviceCount_t>();
 }
 
 json::object MaaToolkitGetDeviceName_HelperInput() {
-    return json::object {
-// LHG SEC BEGIN lhg.helper.MaaToolkitGetDeviceName.input.index
-// LHG SEC DEF
-        { "index", lhg::schema_t<unsigned long long>::schema },
-// LHG SEC END
-    };
+    return lhg::input_helper<__MaaToolkitGetDeviceName_t>();
 }
 
 json::object MaaToolkitGetDeviceName_HelperOutput() {
-    return json::object {
-        { "data", {
-// LHG SEC BEGIN lhg.helper.MaaToolkitGetDeviceName.output.return
-// LHG SEC DEF
-            { "return", lhg::schema_t<const char *>::schema },
-// LHG SEC END
-        }},
-        { "error", "string" }
-    };
+    return lhg::output_helper<__MaaToolkitGetDeviceName_t>();
 }
 
 json::object MaaToolkitGetDeviceAdbPath_HelperInput() {
-    return json::object {
-// LHG SEC BEGIN lhg.helper.MaaToolkitGetDeviceAdbPath.input.index
-// LHG SEC DEF
-        { "index", lhg::schema_t<unsigned long long>::schema },
-// LHG SEC END
-    };
+    return lhg::input_helper<__MaaToolkitGetDeviceAdbPath_t>();
 }
 
 json::object MaaToolkitGetDeviceAdbPath_HelperOutput() {
-    return json::object {
-        { "data", {
-// LHG SEC BEGIN lhg.helper.MaaToolkitGetDeviceAdbPath.output.return
-// LHG SEC DEF
-            { "return", lhg::schema_t<const char *>::schema },
-// LHG SEC END
-        }},
-        { "error", "string" }
-    };
+    return lhg::output_helper<__MaaToolkitGetDeviceAdbPath_t>();
 }
 
 json::object MaaToolkitGetDeviceAdbSerial_HelperInput() {
-    return json::object {
-// LHG SEC BEGIN lhg.helper.MaaToolkitGetDeviceAdbSerial.input.index
-// LHG SEC DEF
-        { "index", lhg::schema_t<unsigned long long>::schema },
-// LHG SEC END
-    };
+    return lhg::input_helper<__MaaToolkitGetDeviceAdbSerial_t>();
 }
 
 json::object MaaToolkitGetDeviceAdbSerial_HelperOutput() {
-    return json::object {
-        { "data", {
-// LHG SEC BEGIN lhg.helper.MaaToolkitGetDeviceAdbSerial.output.return
-// LHG SEC DEF
-            { "return", lhg::schema_t<const char *>::schema },
-// LHG SEC END
-        }},
-        { "error", "string" }
-    };
+    return lhg::output_helper<__MaaToolkitGetDeviceAdbSerial_t>();
 }
 
 json::object MaaToolkitGetDeviceAdbControllerType_HelperInput() {
-    return json::object {
-// LHG SEC BEGIN lhg.helper.MaaToolkitGetDeviceAdbControllerType.input.index
-// LHG SEC DEF
-        { "index", lhg::schema_t<unsigned long long>::schema },
-// LHG SEC END
-    };
+    return lhg::input_helper<__MaaToolkitGetDeviceAdbControllerType_t>();
 }
 
 json::object MaaToolkitGetDeviceAdbControllerType_HelperOutput() {
-    return json::object {
-        { "data", {
-// LHG SEC BEGIN lhg.helper.MaaToolkitGetDeviceAdbControllerType.output.return
-// LHG SEC DEF
-            { "return", lhg::schema_t<int>::schema },
-// LHG SEC END
-        }},
-        { "error", "string" }
-    };
+    return lhg::output_helper<__MaaToolkitGetDeviceAdbControllerType_t>();
 }
 
 json::object MaaToolkitGetDeviceAdbConfig_HelperInput() {
-    return json::object {
-// LHG SEC BEGIN lhg.helper.MaaToolkitGetDeviceAdbConfig.input.index
-// LHG SEC DEF
-        { "index", lhg::schema_t<unsigned long long>::schema },
-// LHG SEC END
-    };
+    return lhg::input_helper<__MaaToolkitGetDeviceAdbConfig_t>();
 }
 
 json::object MaaToolkitGetDeviceAdbConfig_HelperOutput() {
-    return json::object {
-        { "data", {
-// LHG SEC BEGIN lhg.helper.MaaToolkitGetDeviceAdbConfig.output.return
-// LHG SEC DEF
-            { "return", lhg::schema_t<const char *>::schema },
-// LHG SEC END
-        }},
-        { "error", "string" }
-    };
+    return lhg::output_helper<__MaaToolkitGetDeviceAdbConfig_t>();
 }
 
 json::object MaaToolkitRegisterCustomRecognizerExecutor_HelperInput() {
-    return json::object {
-// LHG SEC BEGIN lhg.helper.MaaToolkitRegisterCustomRecognizerExecutor.input.handle
-// LHG SEC DEF
-        { "handle", "string@MaaInstanceAPI" },
-// LHG SEC END
-// LHG SEC BEGIN lhg.helper.MaaToolkitRegisterCustomRecognizerExecutor.input.recognizer_name
-// LHG SEC DEF
-        { "recognizer_name", lhg::schema_t<const char *>::schema },
-// LHG SEC END
-// LHG SEC BEGIN lhg.helper.MaaToolkitRegisterCustomRecognizerExecutor.input.recognizer_exec_path
-// LHG SEC DEF
-        { "recognizer_exec_path", lhg::schema_t<const char *>::schema },
-// LHG SEC END
-// LHG SEC BEGIN lhg.helper.MaaToolkitRegisterCustomRecognizerExecutor.input.recognizer_exec_param_json
-// LHG SEC DEF
-        { "recognizer_exec_param_json", lhg::schema_t<const char *>::schema },
-// LHG SEC END
-    };
+    return lhg::input_helper<__MaaToolkitRegisterCustomRecognizerExecutor_t>();
 }
 
 json::object MaaToolkitRegisterCustomRecognizerExecutor_HelperOutput() {
-    return json::object {
-        { "data", {
-// LHG SEC BEGIN lhg.helper.MaaToolkitRegisterCustomRecognizerExecutor.output.return
-// LHG SEC DEF
-            { "return", lhg::schema_t<unsigned char>::schema },
-// LHG SEC END
-        }},
-        { "error", "string" }
-    };
+    return lhg::output_helper<__MaaToolkitRegisterCustomRecognizerExecutor_t>();
 }
 
 json::object MaaToolkitUnregisterCustomRecognizerExecutor_HelperInput() {
-    return json::object {
-// LHG SEC BEGIN lhg.helper.MaaToolkitUnregisterCustomRecognizerExecutor.input.handle
-// LHG SEC DEF
-        { "handle", "string@MaaInstanceAPI" },
-// LHG SEC END
-// LHG SEC BEGIN lhg.helper.MaaToolkitUnregisterCustomRecognizerExecutor.input.recognizer_name
-// LHG SEC DEF
-        { "recognizer_name", lhg::schema_t<const char *>::schema },
-// LHG SEC END
-    };
+    return lhg::input_helper<__MaaToolkitUnregisterCustomRecognizerExecutor_t>();
 }
 
 json::object MaaToolkitUnregisterCustomRecognizerExecutor_HelperOutput() {
-    return json::object {
-        { "data", {
-// LHG SEC BEGIN lhg.helper.MaaToolkitUnregisterCustomRecognizerExecutor.output.return
-// LHG SEC DEF
-            { "return", lhg::schema_t<unsigned char>::schema },
-// LHG SEC END
-        }},
-        { "error", "string" }
-    };
+    return lhg::output_helper<__MaaToolkitUnregisterCustomRecognizerExecutor_t>();
 }
 
 json::object MaaToolkitRegisterCustomActionExecutor_HelperInput() {
-    return json::object {
-// LHG SEC BEGIN lhg.helper.MaaToolkitRegisterCustomActionExecutor.input.handle
-// LHG SEC DEF
-        { "handle", "string@MaaInstanceAPI" },
-// LHG SEC END
-// LHG SEC BEGIN lhg.helper.MaaToolkitRegisterCustomActionExecutor.input.action_name
-// LHG SEC DEF
-        { "action_name", lhg::schema_t<const char *>::schema },
-// LHG SEC END
-// LHG SEC BEGIN lhg.helper.MaaToolkitRegisterCustomActionExecutor.input.action_exec_path
-// LHG SEC DEF
-        { "action_exec_path", lhg::schema_t<const char *>::schema },
-// LHG SEC END
-// LHG SEC BEGIN lhg.helper.MaaToolkitRegisterCustomActionExecutor.input.action_exec_param_json
-// LHG SEC DEF
-        { "action_exec_param_json", lhg::schema_t<const char *>::schema },
-// LHG SEC END
-    };
+    return lhg::input_helper<__MaaToolkitRegisterCustomActionExecutor_t>();
 }
 
 json::object MaaToolkitRegisterCustomActionExecutor_HelperOutput() {
-    return json::object {
-        { "data", {
-// LHG SEC BEGIN lhg.helper.MaaToolkitRegisterCustomActionExecutor.output.return
-// LHG SEC DEF
-            { "return", lhg::schema_t<unsigned char>::schema },
-// LHG SEC END
-        }},
-        { "error", "string" }
-    };
+    return lhg::output_helper<__MaaToolkitRegisterCustomActionExecutor_t>();
 }
 
 json::object MaaToolkitUnregisterCustomActionExecutor_HelperInput() {
-    return json::object {
-// LHG SEC BEGIN lhg.helper.MaaToolkitUnregisterCustomActionExecutor.input.handle
-// LHG SEC DEF
-        { "handle", "string@MaaInstanceAPI" },
-// LHG SEC END
-// LHG SEC BEGIN lhg.helper.MaaToolkitUnregisterCustomActionExecutor.input.action_name
-// LHG SEC DEF
-        { "action_name", lhg::schema_t<const char *>::schema },
-// LHG SEC END
-    };
+    return lhg::input_helper<__MaaToolkitUnregisterCustomActionExecutor_t>();
 }
 
 json::object MaaToolkitUnregisterCustomActionExecutor_HelperOutput() {
-    return json::object {
-        { "data", {
-// LHG SEC BEGIN lhg.helper.MaaToolkitUnregisterCustomActionExecutor.output.return
-// LHG SEC DEF
-            { "return", lhg::schema_t<unsigned char>::schema },
-// LHG SEC END
-        }},
-        { "error", "string" }
-    };
+    return lhg::output_helper<__MaaToolkitUnregisterCustomActionExecutor_t>();
 }
 
 json::object MaaToolkitFindWindow_HelperInput() {
-    return json::object {
-// LHG SEC BEGIN lhg.helper.MaaToolkitFindWindow.input.class_name
-// LHG SEC DEF
-        { "class_name", lhg::schema_t<const char *>::schema },
-// LHG SEC END
-// LHG SEC BEGIN lhg.helper.MaaToolkitFindWindow.input.window_name
-// LHG SEC DEF
-        { "window_name", lhg::schema_t<const char *>::schema },
-// LHG SEC END
-    };
+    return lhg::input_helper<__MaaToolkitFindWindow_t>();
 }
 
 json::object MaaToolkitFindWindow_HelperOutput() {
-    return json::object {
-        { "data", {
-// LHG SEC BEGIN lhg.helper.MaaToolkitFindWindow.output.return
-// LHG SEC DEF
-            { "return", lhg::schema_t<unsigned long long>::schema },
-// LHG SEC END
-        }},
-        { "error", "string" }
-    };
+    return lhg::output_helper<__MaaToolkitFindWindow_t>();
 }
 
 json::object MaaToolkitSearchWindow_HelperInput() {
-    return json::object {
-// LHG SEC BEGIN lhg.helper.MaaToolkitSearchWindow.input.class_name
-// LHG SEC DEF
-        { "class_name", lhg::schema_t<const char *>::schema },
-// LHG SEC END
-// LHG SEC BEGIN lhg.helper.MaaToolkitSearchWindow.input.window_name
-// LHG SEC DEF
-        { "window_name", lhg::schema_t<const char *>::schema },
-// LHG SEC END
-    };
+    return lhg::input_helper<__MaaToolkitSearchWindow_t>();
 }
 
 json::object MaaToolkitSearchWindow_HelperOutput() {
-    return json::object {
-        { "data", {
-// LHG SEC BEGIN lhg.helper.MaaToolkitSearchWindow.output.return
-// LHG SEC DEF
-            { "return", lhg::schema_t<unsigned long long>::schema },
-// LHG SEC END
-        }},
-        { "error", "string" }
-    };
+    return lhg::output_helper<__MaaToolkitSearchWindow_t>();
 }
 
 json::object MaaToolkitGetWindow_HelperInput() {
-    return json::object {
-// LHG SEC BEGIN lhg.helper.MaaToolkitGetWindow.input.index
-// LHG SEC DEF
-        { "index", lhg::schema_t<unsigned long long>::schema },
-// LHG SEC END
-    };
+    return lhg::input_helper<__MaaToolkitGetWindow_t>();
 }
 
 json::object MaaToolkitGetWindow_HelperOutput() {
-    return json::object {
-        { "data", {
-// LHG SEC BEGIN lhg.helper.MaaToolkitGetWindow.output.return
-// LHG SEC DEF
-            { "return", lhg::schema_t<unsigned long long>::schema },
-// LHG SEC END
-        }},
-        { "error", "string" }
-    };
+    return lhg::output_helper<__MaaToolkitGetWindow_t>();
 }
 
 json::object MaaToolkitGetCursorWindow_HelperInput() {
-    return json::object {
-    };
+    return lhg::input_helper<__MaaToolkitGetCursorWindow_t>();
 }
 
 json::object MaaToolkitGetCursorWindow_HelperOutput() {
-    return json::object {
-        { "data", {
-// LHG SEC BEGIN lhg.helper.MaaToolkitGetCursorWindow.output.return
-// LHG SEC DEF
-            { "return", lhg::schema_t<unsigned long long>::schema },
-// LHG SEC END
-        }},
-        { "error", "string" }
-    };
+    return lhg::output_helper<__MaaToolkitGetCursorWindow_t>();
 }
 
 std::optional<json::object> MaaAdbControllerCreate_Wrapper(json::object __param, std::string &__error) {
