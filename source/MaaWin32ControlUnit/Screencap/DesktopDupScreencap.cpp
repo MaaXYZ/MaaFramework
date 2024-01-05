@@ -18,8 +18,14 @@ std::optional<cv::Mat> DesktopDupScreencap::screencap()
             uninit();
             return std::nullopt;
         }
-        // 第一张图是空的
-        std::ignore = screencap_impl();
+
+        // 前几张图片是空的
+        while (auto opt = screencap_impl()) {
+            const auto& br = *(opt->end<cv::Vec4b>() - 1);
+            if (br[3] == 255) { // only check alpha
+                break;
+            }
+        }
     }
 
     return screencap_impl();
@@ -169,7 +175,6 @@ std::optional<cv::Mat> DesktopDupScreencap::screencap_impl()
 
     if (!readable_texture_ && !init_texture(gpu_texture)) {
         LogError << "falied to init_texture";
-        uninit();
         return std::nullopt;
     }
 
@@ -184,7 +189,7 @@ std::optional<cv::Mat> DesktopDupScreencap::screencap_impl()
     OnScopeLeave([&]() { d3d_context_->Unmap(readable_texture_, 0); });
 
     cv::Mat mat(texture_desc_.Height, texture_desc_.Width, CV_8UC4, mapped.pData, mapped.RowPitch);
-    return mat;
+    return mat.clone();
 }
 
 MAA_CTRL_UNIT_NS_END
