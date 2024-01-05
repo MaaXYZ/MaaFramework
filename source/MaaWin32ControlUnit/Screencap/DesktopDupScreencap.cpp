@@ -38,7 +38,7 @@ bool DesktopDupScreencap::init()
         return false;
     }
 
-    ret = CreateDXGIFactory(__uuidof(IDXGIFactory), (void**)&dxgi_factory_);
+    ret = CreateDXGIFactory(__uuidof(IDXGIFactory), reinterpret_cast<void**>(&dxgi_factory_));
     if (FAILED(ret)) {
         LogError << "CreateDXGIFactory failed" << VAR(ret);
         return false;
