@@ -3,7 +3,8 @@
 #include "Base/UnitBase.h"
 #include "Input/SendMessageInput.h"
 #include "Manager/ControlUnitMgr.h"
-#include "Screencap/Direct3dScreencap.h"
+#include "Screencap/DesktopDupScreencap.h"
+#include "Screencap/GdiScreencap.h"
 #include "Utils/Logger.h"
 #include "Utils/SafeWindows.hpp"
 
@@ -50,7 +51,12 @@ MaaControlUnitHandle MaaWin32ControlUnitCreate( //
     switch (screencap_type) {
     case MaaWin32ControllerType_Screencap_GDI:
         LogInfo << "screencap_type: GDI";
-        screencap_unit = std::make_shared<Direct3dScreencap>(h_wnd);
+        screencap_unit = std::make_shared<GdiScreencap>(h_wnd);
+        break;
+
+    case MaaWin32ControllerType_Screencap_DXGI_DesktopDup:
+        LogInfo << "screencap_type: DXGI_DesktopDup";
+        screencap_unit = std::make_shared<DesktopDupScreencap>();
         break;
 
     default:
