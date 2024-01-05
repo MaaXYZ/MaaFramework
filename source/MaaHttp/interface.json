@@ -1709,6 +1709,102 @@
       ],
       "name": "MaaToolkitGetCursorWindow",
       "return": "unsigned long long"
+    },
+    {
+      "argument": [
+        {
+          "name": "ctrl",
+          "type": "MaaControllerAPI *"
+        },
+        {
+          "name": "key",
+          "type": "int"
+        },
+        {
+          "name": "value",
+          "type": "const char *"
+        }
+      ],
+      "name": "MaaControllerSetOptionString",
+      "return": "unsigned char"
+    },
+    {
+      "argument": [
+        {
+          "name": "ctrl",
+          "type": "MaaControllerAPI *"
+        },
+        {
+          "name": "key",
+          "type": "int"
+        },
+        {
+          "name": "value",
+          "type": "int"
+        }
+      ],
+      "name": "MaaControllerSetOptionInteger",
+      "return": "unsigned char"
+    },
+    {
+      "argument": [
+        {
+          "name": "ctrl",
+          "type": "MaaControllerAPI *"
+        },
+        {
+          "name": "key",
+          "type": "int"
+        },
+        {
+          "name": "value",
+          "type": "bool"
+        }
+      ],
+      "name": "MaaControllerSetOptionBoolean",
+      "return": "unsigned char"
+    },
+    {
+      "argument": [
+        {
+          "name": "key",
+          "type": "int"
+        },
+        {
+          "name": "value",
+          "type": "const char *"
+        }
+      ],
+      "name": "MaaSetGlobalOptionString",
+      "return": "unsigned char"
+    },
+    {
+      "argument": [
+        {
+          "name": "key",
+          "type": "int"
+        },
+        {
+          "name": "value",
+          "type": "int"
+        }
+      ],
+      "name": "MaaSetGlobalOptionInteger",
+      "return": "unsigned char"
+    },
+    {
+      "argument": [
+        {
+          "name": "key",
+          "type": "int"
+        },
+        {
+          "name": "value",
+          "type": "bool"
+        }
+      ],
+      "name": "MaaSetGlobalOptionBoolean",
+      "return": "unsigned char"
     }
   ]
 }

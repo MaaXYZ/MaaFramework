@@ -73,6 +73,7 @@ struct lhg::is_callback<__MaaAdbControllerCreate_t::__callback_t>
 {
     static constexpr const bool value = true;
     static constexpr const char* const name = "MaaAPICallback";
+    using traits = lhg::func_traits<typename __MaaAdbControllerCreate_t::__callback_t::type>;
 };
 
 template<>
@@ -118,6 +119,7 @@ struct lhg::is_callback<__MaaWin32ControllerCreate_t::__callback_t>
 {
     static constexpr const bool value = true;
     static constexpr const char* const name = "MaaAPICallback";
+    using traits = lhg::func_traits<typename __MaaWin32ControllerCreate_t::__callback_t::type>;
 };
 
 template<>
@@ -178,6 +180,7 @@ struct lhg::is_callback<__MaaAdbControllerCreateV2_t::__callback_t>
 {
     static constexpr const bool value = true;
     static constexpr const char* const name = "MaaAPICallback";
+    using traits = lhg::func_traits<typename __MaaAdbControllerCreateV2_t::__callback_t::type>;
 };
 
 template<>
@@ -233,6 +236,7 @@ struct lhg::is_callback<__MaaThriftControllerCreate_t::__callback_t>
 {
     static constexpr const bool value = true;
     static constexpr const char* const name = "MaaAPICallback";
+    using traits = lhg::func_traits<typename __MaaThriftControllerCreate_t::__callback_t::type>;
 };
 
 template<>
@@ -288,6 +292,7 @@ struct lhg::is_callback<__MaaDbgControllerCreate_t::__callback_t>
 {
     static constexpr const bool value = true;
     static constexpr const char* const name = "MaaAPICallback";
+    using traits = lhg::func_traits<typename __MaaDbgControllerCreate_t::__callback_t::type>;
 };
 
 template<>
@@ -317,47 +322,6 @@ namespace lhg {
 // LHG SEC BEGIN lhg.custom.MaaControllerDestroy
 // LHG SEC DEF
 
-// LHG SEC END
-}
-
-struct __MaaControllerSetOption_t {
-    struct __ctrl_t {
-        using type = MaaControllerAPI *;
-        static constexpr size_t index = 0;
-        static constexpr const char* const name = "ctrl";
-    };
-    struct __key_t {
-        using type = int;
-        static constexpr size_t index = 1;
-        static constexpr const char* const name = "key";
-    };
-    struct __value_t {
-        using type = void *;
-        static constexpr size_t index = 2;
-        static constexpr const char* const name = "value";
-    };
-    struct __val_size_t {
-        using type = unsigned long long;
-        static constexpr size_t index = 3;
-        static constexpr const char* const name = "val_size";
-    };
-    using arguments_t = std::tuple<__ctrl_t, __key_t, __value_t, __val_size_t>;
-    using return_t = unsigned char;
-};
-
-namespace lhg {
-// LHG SEC BEGIN lhg.custom.MaaControllerSetOption
-template<>
-struct arg_schema<__MaaControllerSetOption_t::__value_t>
-{
-    static constexpr const char *const schema = "string|number|boolean";
-};
-
-template<>
-struct shown_in_schema<__MaaControllerSetOption_t::__val_size_t>
-{
-    static constexpr const bool value = false;
-};
 // LHG SEC END
 }
 
@@ -735,6 +699,7 @@ struct lhg::is_callback<__MaaCreate_t::__callback_t>
 {
     static constexpr const bool value = true;
     static constexpr const char* const name = "MaaAPICallback";
+    using traits = lhg::func_traits<typename __MaaCreate_t::__callback_t::type>;
 };
 
 template<>
@@ -764,47 +729,6 @@ namespace lhg {
 // LHG SEC BEGIN lhg.custom.MaaDestroy
 // LHG SEC DEF
 
-// LHG SEC END
-}
-
-struct __MaaSetOption_t {
-    struct __inst_t {
-        using type = MaaInstanceAPI *;
-        static constexpr size_t index = 0;
-        static constexpr const char* const name = "inst";
-    };
-    struct __key_t {
-        using type = int;
-        static constexpr size_t index = 1;
-        static constexpr const char* const name = "key";
-    };
-    struct __value_t {
-        using type = void *;
-        static constexpr size_t index = 2;
-        static constexpr const char* const name = "value";
-    };
-    struct __val_size_t {
-        using type = unsigned long long;
-        static constexpr size_t index = 3;
-        static constexpr const char* const name = "val_size";
-    };
-    using arguments_t = std::tuple<__inst_t, __key_t, __value_t, __val_size_t>;
-    using return_t = unsigned char;
-};
-
-namespace lhg {
-// LHG SEC BEGIN lhg.custom.MaaSetOption
-template<>
-struct arg_schema<__MaaSetOption_t::__value_t>
-{
-    static constexpr const char *const schema = "string|number|boolean";
-};
-
-template<>
-struct shown_in_schema<__MaaSetOption_t::__val_size_t>
-{
-    static constexpr const bool value = false;
-};
 // LHG SEC END
 }
 
@@ -1106,6 +1030,7 @@ struct lhg::is_callback<__MaaResourceCreate_t::__callback_t>
 {
     static constexpr const bool value = true;
     static constexpr const char* const name = "MaaAPICallback";
+    using traits = lhg::func_traits<typename __MaaResourceCreate_t::__callback_t::type>;
 };
 
 template<>
@@ -1218,47 +1143,6 @@ namespace lhg {
 // LHG SEC BEGIN lhg.custom.MaaResourceLoaded
 // LHG SEC DEF
 
-// LHG SEC END
-}
-
-struct __MaaResourceSetOption_t {
-    struct __res_t {
-        using type = MaaResourceAPI *;
-        static constexpr size_t index = 0;
-        static constexpr const char* const name = "res";
-    };
-    struct __key_t {
-        using type = int;
-        static constexpr size_t index = 1;
-        static constexpr const char* const name = "key";
-    };
-    struct __value_t {
-        using type = void *;
-        static constexpr size_t index = 2;
-        static constexpr const char* const name = "value";
-    };
-    struct __val_size_t {
-        using type = unsigned long long;
-        static constexpr size_t index = 3;
-        static constexpr const char* const name = "val_size";
-    };
-    using arguments_t = std::tuple<__res_t, __key_t, __value_t, __val_size_t>;
-    using return_t = unsigned char;
-};
-
-namespace lhg {
-// LHG SEC BEGIN lhg.custom.MaaResourceSetOption
-template<>
-struct arg_schema<__MaaResourceSetOption_t::__value_t>
-{
-    static constexpr const char *const schema = "string|number|boolean";
-};
-
-template<>
-struct shown_in_schema<__MaaResourceSetOption_t::__val_size_t>
-{
-    static constexpr const bool value = false;
-};
 // LHG SEC END
 }
 
@@ -1497,42 +1381,6 @@ namespace lhg {
 // LHG SEC BEGIN lhg.custom.MaaVersion
 // LHG SEC DEF
 
-// LHG SEC END
-}
-
-struct __MaaSetGlobalOption_t {
-    struct __key_t {
-        using type = int;
-        static constexpr size_t index = 0;
-        static constexpr const char* const name = "key";
-    };
-    struct __value_t {
-        using type = void *;
-        static constexpr size_t index = 1;
-        static constexpr const char* const name = "value";
-    };
-    struct __val_size_t {
-        using type = unsigned long long;
-        static constexpr size_t index = 2;
-        static constexpr const char* const name = "val_size";
-    };
-    using arguments_t = std::tuple<__key_t, __value_t, __val_size_t>;
-    using return_t = unsigned char;
-};
-
-namespace lhg {
-// LHG SEC BEGIN lhg.custom.MaaSetGlobalOption
-template<>
-struct arg_schema<__MaaSetGlobalOption_t::__value_t>
-{
-    static constexpr const char *const schema = "string|number|boolean";
-};
-
-template<>
-struct shown_in_schema<__MaaSetGlobalOption_t::__val_size_t>
-{
-    static constexpr const bool value = false;
-};
 // LHG SEC END
 }
 
@@ -1920,6 +1768,153 @@ namespace lhg {
 // LHG SEC END
 }
 
+struct __MaaControllerSetOptionString_t {
+    struct __ctrl_t {
+        using type = MaaControllerAPI *;
+        static constexpr size_t index = 0;
+        static constexpr const char* const name = "ctrl";
+    };
+    struct __key_t {
+        using type = int;
+        static constexpr size_t index = 1;
+        static constexpr const char* const name = "key";
+    };
+    struct __value_t {
+        using type = const char *;
+        static constexpr size_t index = 2;
+        static constexpr const char* const name = "value";
+    };
+    using arguments_t = std::tuple<__ctrl_t, __key_t, __value_t>;
+    using return_t = unsigned char;
+};
+
+namespace lhg {
+// LHG SEC BEGIN lhg.custom.MaaControllerSetOptionString
+// LHG SEC DEF
+
+// LHG SEC END
+}
+
+struct __MaaControllerSetOptionInteger_t {
+    struct __ctrl_t {
+        using type = MaaControllerAPI *;
+        static constexpr size_t index = 0;
+        static constexpr const char* const name = "ctrl";
+    };
+    struct __key_t {
+        using type = int;
+        static constexpr size_t index = 1;
+        static constexpr const char* const name = "key";
+    };
+    struct __value_t {
+        using type = int;
+        static constexpr size_t index = 2;
+        static constexpr const char* const name = "value";
+    };
+    using arguments_t = std::tuple<__ctrl_t, __key_t, __value_t>;
+    using return_t = unsigned char;
+};
+
+namespace lhg {
+// LHG SEC BEGIN lhg.custom.MaaControllerSetOptionInteger
+// LHG SEC DEF
+
+// LHG SEC END
+}
+
+struct __MaaControllerSetOptionBoolean_t {
+    struct __ctrl_t {
+        using type = MaaControllerAPI *;
+        static constexpr size_t index = 0;
+        static constexpr const char* const name = "ctrl";
+    };
+    struct __key_t {
+        using type = int;
+        static constexpr size_t index = 1;
+        static constexpr const char* const name = "key";
+    };
+    struct __value_t {
+        using type = bool;
+        static constexpr size_t index = 2;
+        static constexpr const char* const name = "value";
+    };
+    using arguments_t = std::tuple<__ctrl_t, __key_t, __value_t>;
+    using return_t = unsigned char;
+};
+
+namespace lhg {
+// LHG SEC BEGIN lhg.custom.MaaControllerSetOptionBoolean
+// LHG SEC DEF
+
+// LHG SEC END
+}
+
+struct __MaaSetGlobalOptionString_t {
+    struct __key_t {
+        using type = int;
+        static constexpr size_t index = 0;
+        static constexpr const char* const name = "key";
+    };
+    struct __value_t {
+        using type = const char *;
+        static constexpr size_t index = 1;
+        static constexpr const char* const name = "value";
+    };
+    using arguments_t = std::tuple<__key_t, __value_t>;
+    using return_t = unsigned char;
+};
+
+namespace lhg {
+// LHG SEC BEGIN lhg.custom.MaaSetGlobalOptionString
+// LHG SEC DEF
+
+// LHG SEC END
+}
+
+struct __MaaSetGlobalOptionInteger_t {
+    struct __key_t {
+        using type = int;
+        static constexpr size_t index = 0;
+        static constexpr const char* const name = "key";
+    };
+    struct __value_t {
+        using type = int;
+        static constexpr size_t index = 1;
+        static constexpr const char* const name = "value";
+    };
+    using arguments_t = std::tuple<__key_t, __value_t>;
+    using return_t = unsigned char;
+};
+
+namespace lhg {
+// LHG SEC BEGIN lhg.custom.MaaSetGlobalOptionInteger
+// LHG SEC DEF
+
+// LHG SEC END
+}
+
+struct __MaaSetGlobalOptionBoolean_t {
+    struct __key_t {
+        using type = int;
+        static constexpr size_t index = 0;
+        static constexpr const char* const name = "key";
+    };
+    struct __value_t {
+        using type = bool;
+        static constexpr size_t index = 1;
+        static constexpr const char* const name = "value";
+    };
+    using arguments_t = std::tuple<__key_t, __value_t>;
+    using return_t = unsigned char;
+};
+
+namespace lhg {
+// LHG SEC BEGIN lhg.custom.MaaSetGlobalOptionBoolean
+// LHG SEC DEF
+
+// LHG SEC END
+}
+
 static lhg::opaque_manager<MaaControllerAPI *> MaaControllerAPI__OpaqueManager;
 
 template<>
@@ -2054,14 +2049,6 @@ json::object MaaControllerDestroy_HelperOutput() {
     return lhg::output_helper<__MaaControllerDestroy_t>();
 }
 
-json::object MaaControllerSetOption_HelperInput() {
-    return lhg::input_helper<__MaaControllerSetOption_t>();
-}
-
-json::object MaaControllerSetOption_HelperOutput() {
-    return lhg::output_helper<__MaaControllerSetOption_t>();
-}
-
 json::object MaaControllerPostConnection_HelperInput() {
     return lhg::input_helper<__MaaControllerPostConnection_t>();
 }
@@ -2188,14 +2175,6 @@ json::object MaaDestroy_HelperInput() {
 
 json::object MaaDestroy_HelperOutput() {
     return lhg::output_helper<__MaaDestroy_t>();
-}
-
-json::object MaaSetOption_HelperInput() {
-    return lhg::input_helper<__MaaSetOption_t>();
-}
-
-json::object MaaSetOption_HelperOutput() {
-    return lhg::output_helper<__MaaSetOption_t>();
 }
 
 json::object MaaBindResource_HelperInput() {
@@ -2358,14 +2337,6 @@ json::object MaaResourceLoaded_HelperOutput() {
     return lhg::output_helper<__MaaResourceLoaded_t>();
 }
 
-json::object MaaResourceSetOption_HelperInput() {
-    return lhg::input_helper<__MaaResourceSetOption_t>();
-}
-
-json::object MaaResourceSetOption_HelperOutput() {
-    return lhg::output_helper<__MaaResourceSetOption_t>();
-}
-
 json::object MaaResourceGetHash_HelperInput() {
     return lhg::input_helper<__MaaResourceGetHash_t>();
 }
@@ -2460,14 +2431,6 @@ json::object MaaVersion_HelperInput() {
 
 json::object MaaVersion_HelperOutput() {
     return lhg::output_helper<__MaaVersion_t>();
-}
-
-json::object MaaSetGlobalOption_HelperInput() {
-    return lhg::input_helper<__MaaSetGlobalOption_t>();
-}
-
-json::object MaaSetGlobalOption_HelperOutput() {
-    return lhg::output_helper<__MaaSetGlobalOption_t>();
 }
 
 json::object MaaToolkitInit_HelperInput() {
@@ -2644,6 +2607,54 @@ json::object MaaToolkitGetCursorWindow_HelperInput() {
 
 json::object MaaToolkitGetCursorWindow_HelperOutput() {
     return lhg::output_helper<__MaaToolkitGetCursorWindow_t>();
+}
+
+json::object MaaControllerSetOptionString_HelperInput() {
+    return lhg::input_helper<__MaaControllerSetOptionString_t>();
+}
+
+json::object MaaControllerSetOptionString_HelperOutput() {
+    return lhg::output_helper<__MaaControllerSetOptionString_t>();
+}
+
+json::object MaaControllerSetOptionInteger_HelperInput() {
+    return lhg::input_helper<__MaaControllerSetOptionInteger_t>();
+}
+
+json::object MaaControllerSetOptionInteger_HelperOutput() {
+    return lhg::output_helper<__MaaControllerSetOptionInteger_t>();
+}
+
+json::object MaaControllerSetOptionBoolean_HelperInput() {
+    return lhg::input_helper<__MaaControllerSetOptionBoolean_t>();
+}
+
+json::object MaaControllerSetOptionBoolean_HelperOutput() {
+    return lhg::output_helper<__MaaControllerSetOptionBoolean_t>();
+}
+
+json::object MaaSetGlobalOptionString_HelperInput() {
+    return lhg::input_helper<__MaaSetGlobalOptionString_t>();
+}
+
+json::object MaaSetGlobalOptionString_HelperOutput() {
+    return lhg::output_helper<__MaaSetGlobalOptionString_t>();
+}
+
+json::object MaaSetGlobalOptionInteger_HelperInput() {
+    return lhg::input_helper<__MaaSetGlobalOptionInteger_t>();
+}
+
+json::object MaaSetGlobalOptionInteger_HelperOutput() {
+    return lhg::output_helper<__MaaSetGlobalOptionInteger_t>();
+}
+
+json::object MaaSetGlobalOptionBoolean_HelperInput() {
+    return lhg::input_helper<__MaaSetGlobalOptionBoolean_t>();
+}
+
+json::object MaaSetGlobalOptionBoolean_HelperOutput() {
+    return lhg::output_helper<__MaaSetGlobalOptionBoolean_t>();
 }
 
 std::optional<json::object> MaaAdbControllerCreate_Wrapper(json::object __param, std::string &__error) {
@@ -3134,115 +3145,6 @@ std::optional<json::object> MaaControllerDestroy_Wrapper(json::object __param, s
 // LHG SEC BEGIN lhg.impl.MaaControllerDestroy.final
 // LHG SEC DEF
     return json::object { { "return", json::value(json::value::value_type::null) },  };
-// LHG SEC END
-}
-
-std::optional<json::object> MaaControllerSetOption_Wrapper(json::object __param, std::string &__error) {
-// LHG SEC BEGIN lhg.impl.MaaControllerSetOption.arg.ctrl.check
-// LHG SEC DEF
-    if (!lhg::check_var<const char*>(__param["ctrl"])) {
-        __error = "ctrl should be string@MaaControllerAPI";
-        return std::nullopt;
-    }
-// LHG SEC END
-// LHG SEC BEGIN lhg.impl.MaaControllerSetOption.arg.key.check
-// LHG SEC DEF
-    if constexpr (lhg::check_t<int>::enable) {
-        if (!lhg::check_var<int>(__param["key"])) {
-            __error = "key should be int";
-            return std::nullopt;
-        }
-    }
-// LHG SEC END
-// LHG SEC BEGIN lhg.impl.MaaControllerSetOption.arg.value.check
-    switch (__param["key"].as_integer()) {
-        case MaaCtrlOption_DefaultAppPackageEntry:
-        case MaaCtrlOption_DefaultAppPackage:
-            if (!lhg::check_var<const char *>(__param["value"])) {
-                __error = "value should be string";
-                return std::nullopt;
-            }
-            break;
-        case MaaCtrlOption_ScreenshotTargetLongSide:
-        case MaaCtrlOption_ScreenshotTargetShortSide:
-            if (!lhg::check_var<int>(__param["value"])) {
-                __error = "value should be int";
-                return std::nullopt;
-            }
-            break;
-        case MaaCtrlOption_Recording:
-            if (!lhg::check_var<bool>(__param["value"])) {
-                __error = "value should be boolean";
-                return std::nullopt;
-            }
-            break;
-        default:
-            __error = "key outside enum";
-            return std::nullopt;
-    }
-// LHG SEC END
-// LHG SEC BEGIN lhg.impl.MaaControllerSetOption.arg.val_size.check
-
-// LHG SEC END
-// LHG SEC BEGIN lhg.impl.MaaControllerSetOption.arg.ctrl
-// LHG SEC DEF
-    auto ctrl_id = __param["ctrl"].as_string();
-    auto ctrl = MaaControllerAPI__OpaqueManager.get(ctrl_id);
-// LHG SEC END
-    if (!ctrl) {
-        __error = "ctrl not found in manager.";
-        return std::nullopt;
-    }
-// LHG SEC BEGIN lhg.impl.MaaControllerSetOption.arg.key
-// LHG SEC DEF
-    auto key_temp = lhg::from_json<int>(__param["key"]);
-    auto key = lhg::from_json_fix<int>(key_temp);
-// LHG SEC END
-// LHG SEC BEGIN lhg.impl.MaaControllerSetOption.arg.value
-
-    std::string temp_str;
-    bool temp_bool;
-    int32_t temp_i32;
-    void *value = 0;
-    uint64_t val_size = 0;
-    switch (key) {
-        case MaaCtrlOption_DefaultAppPackageEntry:
-        case MaaCtrlOption_DefaultAppPackage:
-            temp_str = __param["value"].as_string();
-            value = const_cast<char *>(temp_str.c_str());
-            val_size = temp_str.size();
-            break;
-        case MaaCtrlOption_ScreenshotTargetLongSide:
-        case MaaCtrlOption_ScreenshotTargetShortSide:
-            temp_i32 = __param["value"].as_integer();
-            value = &temp_i32;
-            val_size = 4;
-            break;
-        case MaaCtrlOption_Recording:
-            temp_bool = __param["value"].as_boolean();
-            value = &temp_bool;
-            val_size = 1;
-            break;
-        default:
-            return std::nullopt;
-    }
-// LHG SEC END
-// LHG SEC BEGIN lhg.impl.MaaControllerSetOption.arg.val_size
-
-// LHG SEC END
-    auto __return = MaaControllerSetOption(
-        ctrl,
-        key,
-        value,
-        val_size
-    );
-// LHG SEC BEGIN lhg.impl.MaaControllerSetOption.return
-// LHG SEC DEF
-    auto __ret = __return;
-// LHG SEC END
-// LHG SEC BEGIN lhg.impl.MaaControllerSetOption.final
-// LHG SEC DEF
-    return json::object { { "return", lhg::to_json(__ret) },  };
 // LHG SEC END
 }
 
@@ -4054,68 +3956,6 @@ std::optional<json::object> MaaDestroy_Wrapper(json::object __param, std::string
 // LHG SEC END
 }
 
-std::optional<json::object> MaaSetOption_Wrapper(json::object __param, std::string &__error) {
-// LHG SEC BEGIN lhg.impl.MaaSetOption.arg.inst.check
-// LHG SEC DEF
-    if (!lhg::check_var<const char*>(__param["inst"])) {
-        __error = "inst should be string@MaaInstanceAPI";
-        return std::nullopt;
-    }
-// LHG SEC END
-// LHG SEC BEGIN lhg.impl.MaaSetOption.arg.key.check
-// LHG SEC DEF
-    if constexpr (lhg::check_t<int>::enable) {
-        if (!lhg::check_var<int>(__param["key"])) {
-            __error = "key should be int";
-            return std::nullopt;
-        }
-    }
-// LHG SEC END
-// LHG SEC BEGIN lhg.impl.MaaSetOption.arg.value.check
-
-// LHG SEC END
-// LHG SEC BEGIN lhg.impl.MaaSetOption.arg.val_size.check
-
-// LHG SEC END
-// LHG SEC BEGIN lhg.impl.MaaSetOption.arg.inst
-// LHG SEC DEF
-    auto inst_id = __param["inst"].as_string();
-    auto inst = MaaInstanceAPI__OpaqueManager.get(inst_id);
-// LHG SEC END
-    if (!inst) {
-        __error = "inst not found in manager.";
-        return std::nullopt;
-    }
-// LHG SEC BEGIN lhg.impl.MaaSetOption.arg.key
-// LHG SEC DEF
-    auto key_temp = lhg::from_json<int>(__param["key"]);
-    auto key = lhg::from_json_fix<int>(key_temp);
-// LHG SEC END
-// LHG SEC BEGIN lhg.impl.MaaSetOption.arg.value
-    void *value;
-    uint64_t val_size;
-    __error = "no available key";
-    return std::nullopt;
-// LHG SEC END
-// LHG SEC BEGIN lhg.impl.MaaSetOption.arg.val_size
-
-// LHG SEC END
-    auto __return = MaaSetOption(
-        inst,
-        key,
-        value,
-        val_size
-    );
-// LHG SEC BEGIN lhg.impl.MaaSetOption.return
-// LHG SEC DEF
-    auto __ret = __return;
-// LHG SEC END
-// LHG SEC BEGIN lhg.impl.MaaSetOption.final
-// LHG SEC DEF
-    return json::object { { "return", lhg::to_json(__ret) },  };
-// LHG SEC END
-}
-
 std::optional<json::object> MaaBindResource_Wrapper(json::object __param, std::string &__error) {
 // LHG SEC BEGIN lhg.impl.MaaBindResource.arg.inst.check
 // LHG SEC DEF
@@ -4891,68 +4731,6 @@ std::optional<json::object> MaaResourceLoaded_Wrapper(json::object __param, std:
 // LHG SEC END
 }
 
-std::optional<json::object> MaaResourceSetOption_Wrapper(json::object __param, std::string &__error) {
-// LHG SEC BEGIN lhg.impl.MaaResourceSetOption.arg.res.check
-// LHG SEC DEF
-    if (!lhg::check_var<const char*>(__param["res"])) {
-        __error = "res should be string@MaaResourceAPI";
-        return std::nullopt;
-    }
-// LHG SEC END
-// LHG SEC BEGIN lhg.impl.MaaResourceSetOption.arg.key.check
-// LHG SEC DEF
-    if constexpr (lhg::check_t<int>::enable) {
-        if (!lhg::check_var<int>(__param["key"])) {
-            __error = "key should be int";
-            return std::nullopt;
-        }
-    }
-// LHG SEC END
-// LHG SEC BEGIN lhg.impl.MaaResourceSetOption.arg.value.check
-
-// LHG SEC END
-// LHG SEC BEGIN lhg.impl.MaaResourceSetOption.arg.val_size.check
-
-// LHG SEC END
-// LHG SEC BEGIN lhg.impl.MaaResourceSetOption.arg.res
-// LHG SEC DEF
-    auto res_id = __param["res"].as_string();
-    auto res = MaaResourceAPI__OpaqueManager.get(res_id);
-// LHG SEC END
-    if (!res) {
-        __error = "res not found in manager.";
-        return std::nullopt;
-    }
-// LHG SEC BEGIN lhg.impl.MaaResourceSetOption.arg.key
-// LHG SEC DEF
-    auto key_temp = lhg::from_json<int>(__param["key"]);
-    auto key = lhg::from_json_fix<int>(key_temp);
-// LHG SEC END
-// LHG SEC BEGIN lhg.impl.MaaResourceSetOption.arg.value
-    void *value;
-    uint64_t val_size;
-    __error = "no available key";
-    return std::nullopt;
-// LHG SEC END
-// LHG SEC BEGIN lhg.impl.MaaResourceSetOption.arg.val_size
-
-// LHG SEC END
-    auto __return = MaaResourceSetOption(
-        res,
-        key,
-        value,
-        val_size
-    );
-// LHG SEC BEGIN lhg.impl.MaaResourceSetOption.return
-// LHG SEC DEF
-    auto __ret = __return;
-// LHG SEC END
-// LHG SEC BEGIN lhg.impl.MaaResourceSetOption.final
-// LHG SEC DEF
-    return json::object { { "return", lhg::to_json(__ret) },  };
-// LHG SEC END
-}
-
 std::optional<json::object> MaaResourceGetHash_Wrapper(json::object __param, std::string &__error) {
 // LHG SEC BEGIN lhg.impl.MaaResourceGetHash.arg.res.check
 // LHG SEC DEF
@@ -5305,97 +5083,6 @@ std::optional<json::object> MaaVersion_Wrapper(json::object __param, std::string
     auto __ret = __return;
 // LHG SEC END
 // LHG SEC BEGIN lhg.impl.MaaVersion.final
-// LHG SEC DEF
-    return json::object { { "return", lhg::to_json(__ret) },  };
-// LHG SEC END
-}
-
-std::optional<json::object> MaaSetGlobalOption_Wrapper(json::object __param, std::string &__error) {
-// LHG SEC BEGIN lhg.impl.MaaSetGlobalOption.arg.key.check
-// LHG SEC DEF
-    if constexpr (lhg::check_t<int>::enable) {
-        if (!lhg::check_var<int>(__param["key"])) {
-            __error = "key should be int";
-            return std::nullopt;
-        }
-    }
-// LHG SEC END
-// LHG SEC BEGIN lhg.impl.MaaSetGlobalOption.arg.value.check
-    switch (__param["key"].as_integer()) {
-        case MaaGlobalOption_LogDir:
-            if (!lhg::check_var<const char *>(__param["value"])) {
-                __error = "value should be string";
-                return std::nullopt;
-            }
-            break;
-        case MaaGlobalOption_StdoutLevel:
-            if (!lhg::check_var<int>(__param["value"])) {
-                __error = "value should be int";
-                return std::nullopt;
-            }
-            break;
-        case MaaGlobalOption_SaveDraw:
-        case MaaGlobalOption_Recording:
-        case MaaGlobalOption_ShowHitDraw:
-            if (!lhg::check_var<bool>(__param["value"])) {
-                __error = "value should be boolean";
-                return std::nullopt;
-            }
-            break;
-        default:
-            __error = "key outside enum";
-            return std::nullopt;
-    }
-// LHG SEC END
-// LHG SEC BEGIN lhg.impl.MaaSetGlobalOption.arg.val_size.check
-
-// LHG SEC END
-// LHG SEC BEGIN lhg.impl.MaaSetGlobalOption.arg.key
-// LHG SEC DEF
-    auto key_temp = lhg::from_json<int>(__param["key"]);
-    auto key = lhg::from_json_fix<int>(key_temp);
-// LHG SEC END
-// LHG SEC BEGIN lhg.impl.MaaSetGlobalOption.arg.value
-    std::string temp_str;
-    bool temp_bool;
-    int32_t temp_i32;
-    void *value = 0;
-    uint64_t val_size = 0;
-    switch (key) {
-        case MaaGlobalOption_LogDir:
-            temp_str = __param["value"].as_string();
-            value = const_cast<char *>(temp_str.c_str());
-            val_size = temp_str.size();
-            break;
-        case MaaGlobalOption_StdoutLevel:
-            temp_i32 = __param["value"].as_integer();
-            value = &temp_i32;
-            val_size = 4;
-            break;
-        case MaaGlobalOption_SaveDraw:
-        case MaaGlobalOption_Recording:
-        case MaaGlobalOption_ShowHitDraw:
-            temp_bool = __param["value"].as_boolean();
-            value = &temp_bool;
-            val_size = 1;
-            break;
-        default:
-            return std::nullopt;
-    }
-// LHG SEC END
-// LHG SEC BEGIN lhg.impl.MaaSetGlobalOption.arg.val_size
-
-// LHG SEC END
-    auto __return = MaaSetGlobalOption(
-        key,
-        value,
-        val_size
-    );
-// LHG SEC BEGIN lhg.impl.MaaSetGlobalOption.return
-// LHG SEC DEF
-    auto __ret = __return;
-// LHG SEC END
-// LHG SEC BEGIN lhg.impl.MaaSetGlobalOption.final
 // LHG SEC DEF
     return json::object { { "return", lhg::to_json(__ret) },  };
 // LHG SEC END
@@ -6063,6 +5750,315 @@ std::optional<json::object> MaaToolkitGetCursorWindow_Wrapper(json::object __par
 // LHG SEC END
 }
 
+std::optional<json::object> MaaControllerSetOptionString_Wrapper(json::object __param, std::string &__error) {
+// LHG SEC BEGIN lhg.impl.MaaControllerSetOptionString.arg.ctrl.check
+// LHG SEC DEF
+    if (!lhg::check_var<const char*>(__param["ctrl"])) {
+        __error = "ctrl should be string@MaaControllerAPI";
+        return std::nullopt;
+    }
+// LHG SEC END
+// LHG SEC BEGIN lhg.impl.MaaControllerSetOptionString.arg.key.check
+// LHG SEC DEF
+    if constexpr (lhg::check_t<int>::enable) {
+        if (!lhg::check_var<int>(__param["key"])) {
+            __error = "key should be int";
+            return std::nullopt;
+        }
+    }
+// LHG SEC END
+// LHG SEC BEGIN lhg.impl.MaaControllerSetOptionString.arg.value.check
+// LHG SEC DEF
+    if constexpr (lhg::check_t<const char *>::enable) {
+        if (!lhg::check_var<const char *>(__param["value"])) {
+            __error = "value should be string";
+            return std::nullopt;
+        }
+    }
+// LHG SEC END
+// LHG SEC BEGIN lhg.impl.MaaControllerSetOptionString.arg.ctrl
+// LHG SEC DEF
+    auto ctrl_id = __param["ctrl"].as_string();
+    auto ctrl = MaaControllerAPI__OpaqueManager.get(ctrl_id);
+// LHG SEC END
+    if (!ctrl) {
+        __error = "ctrl not found in manager.";
+        return std::nullopt;
+    }
+// LHG SEC BEGIN lhg.impl.MaaControllerSetOptionString.arg.key
+// LHG SEC DEF
+    auto key_temp = lhg::from_json<int>(__param["key"]);
+    auto key = lhg::from_json_fix<int>(key_temp);
+// LHG SEC END
+// LHG SEC BEGIN lhg.impl.MaaControllerSetOptionString.arg.value
+// LHG SEC DEF
+    auto value_temp = lhg::from_json<const char *>(__param["value"]);
+    auto value = lhg::from_json_fix<const char *>(value_temp);
+// LHG SEC END
+    auto __return = MaaControllerSetOptionString(
+        ctrl,
+        key,
+        value
+    );
+// LHG SEC BEGIN lhg.impl.MaaControllerSetOptionString.return
+// LHG SEC DEF
+    auto __ret = __return;
+// LHG SEC END
+// LHG SEC BEGIN lhg.impl.MaaControllerSetOptionString.final
+// LHG SEC DEF
+    return json::object { { "return", lhg::to_json(__ret) },  };
+// LHG SEC END
+}
+
+std::optional<json::object> MaaControllerSetOptionInteger_Wrapper(json::object __param, std::string &__error) {
+// LHG SEC BEGIN lhg.impl.MaaControllerSetOptionInteger.arg.ctrl.check
+// LHG SEC DEF
+    if (!lhg::check_var<const char*>(__param["ctrl"])) {
+        __error = "ctrl should be string@MaaControllerAPI";
+        return std::nullopt;
+    }
+// LHG SEC END
+// LHG SEC BEGIN lhg.impl.MaaControllerSetOptionInteger.arg.key.check
+// LHG SEC DEF
+    if constexpr (lhg::check_t<int>::enable) {
+        if (!lhg::check_var<int>(__param["key"])) {
+            __error = "key should be int";
+            return std::nullopt;
+        }
+    }
+// LHG SEC END
+// LHG SEC BEGIN lhg.impl.MaaControllerSetOptionInteger.arg.value.check
+// LHG SEC DEF
+    if constexpr (lhg::check_t<int>::enable) {
+        if (!lhg::check_var<int>(__param["value"])) {
+            __error = "value should be int";
+            return std::nullopt;
+        }
+    }
+// LHG SEC END
+// LHG SEC BEGIN lhg.impl.MaaControllerSetOptionInteger.arg.ctrl
+// LHG SEC DEF
+    auto ctrl_id = __param["ctrl"].as_string();
+    auto ctrl = MaaControllerAPI__OpaqueManager.get(ctrl_id);
+// LHG SEC END
+    if (!ctrl) {
+        __error = "ctrl not found in manager.";
+        return std::nullopt;
+    }
+// LHG SEC BEGIN lhg.impl.MaaControllerSetOptionInteger.arg.key
+// LHG SEC DEF
+    auto key_temp = lhg::from_json<int>(__param["key"]);
+    auto key = lhg::from_json_fix<int>(key_temp);
+// LHG SEC END
+// LHG SEC BEGIN lhg.impl.MaaControllerSetOptionInteger.arg.value
+// LHG SEC DEF
+    auto value_temp = lhg::from_json<int>(__param["value"]);
+    auto value = lhg::from_json_fix<int>(value_temp);
+// LHG SEC END
+    auto __return = MaaControllerSetOptionInteger(
+        ctrl,
+        key,
+        value
+    );
+// LHG SEC BEGIN lhg.impl.MaaControllerSetOptionInteger.return
+// LHG SEC DEF
+    auto __ret = __return;
+// LHG SEC END
+// LHG SEC BEGIN lhg.impl.MaaControllerSetOptionInteger.final
+// LHG SEC DEF
+    return json::object { { "return", lhg::to_json(__ret) },  };
+// LHG SEC END
+}
+
+std::optional<json::object> MaaControllerSetOptionBoolean_Wrapper(json::object __param, std::string &__error) {
+// LHG SEC BEGIN lhg.impl.MaaControllerSetOptionBoolean.arg.ctrl.check
+// LHG SEC DEF
+    if (!lhg::check_var<const char*>(__param["ctrl"])) {
+        __error = "ctrl should be string@MaaControllerAPI";
+        return std::nullopt;
+    }
+// LHG SEC END
+// LHG SEC BEGIN lhg.impl.MaaControllerSetOptionBoolean.arg.key.check
+// LHG SEC DEF
+    if constexpr (lhg::check_t<int>::enable) {
+        if (!lhg::check_var<int>(__param["key"])) {
+            __error = "key should be int";
+            return std::nullopt;
+        }
+    }
+// LHG SEC END
+// LHG SEC BEGIN lhg.impl.MaaControllerSetOptionBoolean.arg.value.check
+// LHG SEC DEF
+    if constexpr (lhg::check_t<bool>::enable) {
+        if (!lhg::check_var<bool>(__param["value"])) {
+            __error = "value should be bool";
+            return std::nullopt;
+        }
+    }
+// LHG SEC END
+// LHG SEC BEGIN lhg.impl.MaaControllerSetOptionBoolean.arg.ctrl
+// LHG SEC DEF
+    auto ctrl_id = __param["ctrl"].as_string();
+    auto ctrl = MaaControllerAPI__OpaqueManager.get(ctrl_id);
+// LHG SEC END
+    if (!ctrl) {
+        __error = "ctrl not found in manager.";
+        return std::nullopt;
+    }
+// LHG SEC BEGIN lhg.impl.MaaControllerSetOptionBoolean.arg.key
+// LHG SEC DEF
+    auto key_temp = lhg::from_json<int>(__param["key"]);
+    auto key = lhg::from_json_fix<int>(key_temp);
+// LHG SEC END
+// LHG SEC BEGIN lhg.impl.MaaControllerSetOptionBoolean.arg.value
+// LHG SEC DEF
+    auto value_temp = lhg::from_json<bool>(__param["value"]);
+    auto value = lhg::from_json_fix<bool>(value_temp);
+// LHG SEC END
+    auto __return = MaaControllerSetOptionBoolean(
+        ctrl,
+        key,
+        value
+    );
+// LHG SEC BEGIN lhg.impl.MaaControllerSetOptionBoolean.return
+// LHG SEC DEF
+    auto __ret = __return;
+// LHG SEC END
+// LHG SEC BEGIN lhg.impl.MaaControllerSetOptionBoolean.final
+// LHG SEC DEF
+    return json::object { { "return", lhg::to_json(__ret) },  };
+// LHG SEC END
+}
+
+std::optional<json::object> MaaSetGlobalOptionString_Wrapper(json::object __param, std::string &__error) {
+// LHG SEC BEGIN lhg.impl.MaaSetGlobalOptionString.arg.key.check
+// LHG SEC DEF
+    if constexpr (lhg::check_t<int>::enable) {
+        if (!lhg::check_var<int>(__param["key"])) {
+            __error = "key should be int";
+            return std::nullopt;
+        }
+    }
+// LHG SEC END
+// LHG SEC BEGIN lhg.impl.MaaSetGlobalOptionString.arg.value.check
+// LHG SEC DEF
+    if constexpr (lhg::check_t<const char *>::enable) {
+        if (!lhg::check_var<const char *>(__param["value"])) {
+            __error = "value should be string";
+            return std::nullopt;
+        }
+    }
+// LHG SEC END
+// LHG SEC BEGIN lhg.impl.MaaSetGlobalOptionString.arg.key
+// LHG SEC DEF
+    auto key_temp = lhg::from_json<int>(__param["key"]);
+    auto key = lhg::from_json_fix<int>(key_temp);
+// LHG SEC END
+// LHG SEC BEGIN lhg.impl.MaaSetGlobalOptionString.arg.value
+// LHG SEC DEF
+    auto value_temp = lhg::from_json<const char *>(__param["value"]);
+    auto value = lhg::from_json_fix<const char *>(value_temp);
+// LHG SEC END
+    auto __return = MaaSetGlobalOptionString(
+        key,
+        value
+    );
+// LHG SEC BEGIN lhg.impl.MaaSetGlobalOptionString.return
+// LHG SEC DEF
+    auto __ret = __return;
+// LHG SEC END
+// LHG SEC BEGIN lhg.impl.MaaSetGlobalOptionString.final
+// LHG SEC DEF
+    return json::object { { "return", lhg::to_json(__ret) },  };
+// LHG SEC END
+}
+
+std::optional<json::object> MaaSetGlobalOptionInteger_Wrapper(json::object __param, std::string &__error) {
+// LHG SEC BEGIN lhg.impl.MaaSetGlobalOptionInteger.arg.key.check
+// LHG SEC DEF
+    if constexpr (lhg::check_t<int>::enable) {
+        if (!lhg::check_var<int>(__param["key"])) {
+            __error = "key should be int";
+            return std::nullopt;
+        }
+    }
+// LHG SEC END
+// LHG SEC BEGIN lhg.impl.MaaSetGlobalOptionInteger.arg.value.check
+// LHG SEC DEF
+    if constexpr (lhg::check_t<int>::enable) {
+        if (!lhg::check_var<int>(__param["value"])) {
+            __error = "value should be int";
+            return std::nullopt;
+        }
+    }
+// LHG SEC END
+// LHG SEC BEGIN lhg.impl.MaaSetGlobalOptionInteger.arg.key
+// LHG SEC DEF
+    auto key_temp = lhg::from_json<int>(__param["key"]);
+    auto key = lhg::from_json_fix<int>(key_temp);
+// LHG SEC END
+// LHG SEC BEGIN lhg.impl.MaaSetGlobalOptionInteger.arg.value
+// LHG SEC DEF
+    auto value_temp = lhg::from_json<int>(__param["value"]);
+    auto value = lhg::from_json_fix<int>(value_temp);
+// LHG SEC END
+    auto __return = MaaSetGlobalOptionInteger(
+        key,
+        value
+    );
+// LHG SEC BEGIN lhg.impl.MaaSetGlobalOptionInteger.return
+// LHG SEC DEF
+    auto __ret = __return;
+// LHG SEC END
+// LHG SEC BEGIN lhg.impl.MaaSetGlobalOptionInteger.final
+// LHG SEC DEF
+    return json::object { { "return", lhg::to_json(__ret) },  };
+// LHG SEC END
+}
+
+std::optional<json::object> MaaSetGlobalOptionBoolean_Wrapper(json::object __param, std::string &__error) {
+// LHG SEC BEGIN lhg.impl.MaaSetGlobalOptionBoolean.arg.key.check
+// LHG SEC DEF
+    if constexpr (lhg::check_t<int>::enable) {
+        if (!lhg::check_var<int>(__param["key"])) {
+            __error = "key should be int";
+            return std::nullopt;
+        }
+    }
+// LHG SEC END
+// LHG SEC BEGIN lhg.impl.MaaSetGlobalOptionBoolean.arg.value.check
+// LHG SEC DEF
+    if constexpr (lhg::check_t<bool>::enable) {
+        if (!lhg::check_var<bool>(__param["value"])) {
+            __error = "value should be bool";
+            return std::nullopt;
+        }
+    }
+// LHG SEC END
+// LHG SEC BEGIN lhg.impl.MaaSetGlobalOptionBoolean.arg.key
+// LHG SEC DEF
+    auto key_temp = lhg::from_json<int>(__param["key"]);
+    auto key = lhg::from_json_fix<int>(key_temp);
+// LHG SEC END
+// LHG SEC BEGIN lhg.impl.MaaSetGlobalOptionBoolean.arg.value
+// LHG SEC DEF
+    auto value_temp = lhg::from_json<bool>(__param["value"]);
+    auto value = lhg::from_json_fix<bool>(value_temp);
+// LHG SEC END
+    auto __return = MaaSetGlobalOptionBoolean(
+        key,
+        value
+    );
+// LHG SEC BEGIN lhg.impl.MaaSetGlobalOptionBoolean.return
+// LHG SEC DEF
+    auto __ret = __return;
+// LHG SEC END
+// LHG SEC BEGIN lhg.impl.MaaSetGlobalOptionBoolean.final
+// LHG SEC DEF
+    return json::object { { "return", lhg::to_json(__ret) },  };
+// LHG SEC END
+}
+
 bool handle_request(Context& ctx, UrlSegments segs) {
     auto obj = json::parse(ctx.req_.body()).value_or(json::object {}).as_object();
 
@@ -6107,7 +6103,6 @@ bool handle_request(Context& ctx, UrlSegments segs) {
         { "MaaThriftControllerCreate", { &MaaThriftControllerCreate_Wrapper, &MaaThriftControllerCreate_HelperInput, &MaaThriftControllerCreate_HelperOutput } },
         { "MaaDbgControllerCreate", { &MaaDbgControllerCreate_Wrapper, &MaaDbgControllerCreate_HelperInput, &MaaDbgControllerCreate_HelperOutput } },
         { "MaaControllerDestroy", { &MaaControllerDestroy_Wrapper, &MaaControllerDestroy_HelperInput, &MaaControllerDestroy_HelperOutput } },
-        { "MaaControllerSetOption", { &MaaControllerSetOption_Wrapper, &MaaControllerSetOption_HelperInput, &MaaControllerSetOption_HelperOutput } },
         { "MaaControllerPostConnection", { &MaaControllerPostConnection_Wrapper, &MaaControllerPostConnection_HelperInput, &MaaControllerPostConnection_HelperOutput } },
         { "MaaControllerPostClick", { &MaaControllerPostClick_Wrapper, &MaaControllerPostClick_HelperInput, &MaaControllerPostClick_HelperOutput } },
         { "MaaControllerPostSwipe", { &MaaControllerPostSwipe_Wrapper, &MaaControllerPostSwipe_HelperInput, &MaaControllerPostSwipe_HelperOutput } },
@@ -6124,7 +6119,6 @@ bool handle_request(Context& ctx, UrlSegments segs) {
         { "MaaControllerGetUUID", { &MaaControllerGetUUID_Wrapper, &MaaControllerGetUUID_HelperInput, &MaaControllerGetUUID_HelperOutput } },
         { "MaaCreate", { &MaaCreate_Wrapper, &MaaCreate_HelperInput, &MaaCreate_HelperOutput } },
         { "MaaDestroy", { &MaaDestroy_Wrapper, &MaaDestroy_HelperInput, &MaaDestroy_HelperOutput } },
-        { "MaaSetOption", { &MaaSetOption_Wrapper, &MaaSetOption_HelperInput, &MaaSetOption_HelperOutput } },
         { "MaaBindResource", { &MaaBindResource_Wrapper, &MaaBindResource_HelperInput, &MaaBindResource_HelperOutput } },
         { "MaaBindController", { &MaaBindController_Wrapper, &MaaBindController_HelperInput, &MaaBindController_HelperOutput } },
         { "MaaInited", { &MaaInited_Wrapper, &MaaInited_HelperInput, &MaaInited_HelperOutput } },
@@ -6145,7 +6139,6 @@ bool handle_request(Context& ctx, UrlSegments segs) {
         { "MaaResourceStatus", { &MaaResourceStatus_Wrapper, &MaaResourceStatus_HelperInput, &MaaResourceStatus_HelperOutput } },
         { "MaaResourceWait", { &MaaResourceWait_Wrapper, &MaaResourceWait_HelperInput, &MaaResourceWait_HelperOutput } },
         { "MaaResourceLoaded", { &MaaResourceLoaded_Wrapper, &MaaResourceLoaded_HelperInput, &MaaResourceLoaded_HelperOutput } },
-        { "MaaResourceSetOption", { &MaaResourceSetOption_Wrapper, &MaaResourceSetOption_HelperInput, &MaaResourceSetOption_HelperOutput } },
         { "MaaResourceGetHash", { &MaaResourceGetHash_Wrapper, &MaaResourceGetHash_HelperInput, &MaaResourceGetHash_HelperOutput } },
         { "MaaResourceGetTaskList", { &MaaResourceGetTaskList_Wrapper, &MaaResourceGetTaskList_HelperInput, &MaaResourceGetTaskList_HelperOutput } },
         { "MaaCreateImageBuffer", { &MaaCreateImageBuffer_Wrapper, &MaaCreateImageBuffer_HelperInput, &MaaCreateImageBuffer_HelperOutput } },
@@ -6158,7 +6151,6 @@ bool handle_request(Context& ctx, UrlSegments segs) {
         { "MaaGetImageEncoded", { &MaaGetImageEncoded_Wrapper, &MaaGetImageEncoded_HelperInput, &MaaGetImageEncoded_HelperOutput } },
         { "MaaSetImageEncoded", { &MaaSetImageEncoded_Wrapper, &MaaSetImageEncoded_HelperInput, &MaaSetImageEncoded_HelperOutput } },
         { "MaaVersion", { &MaaVersion_Wrapper, &MaaVersion_HelperInput, &MaaVersion_HelperOutput } },
-        { "MaaSetGlobalOption", { &MaaSetGlobalOption_Wrapper, &MaaSetGlobalOption_HelperInput, &MaaSetGlobalOption_HelperOutput } },
         { "MaaToolkitInit", { &MaaToolkitInit_Wrapper, &MaaToolkitInit_HelperInput, &MaaToolkitInit_HelperOutput } },
         { "MaaToolkitUninit", { &MaaToolkitUninit_Wrapper, &MaaToolkitUninit_HelperInput, &MaaToolkitUninit_HelperOutput } },
         { "MaaToolkitFindDevice", { &MaaToolkitFindDevice_Wrapper, &MaaToolkitFindDevice_HelperInput, &MaaToolkitFindDevice_HelperOutput } },
@@ -6181,6 +6173,12 @@ bool handle_request(Context& ctx, UrlSegments segs) {
         { "MaaToolkitSearchWindow", { &MaaToolkitSearchWindow_Wrapper, &MaaToolkitSearchWindow_HelperInput, &MaaToolkitSearchWindow_HelperOutput } },
         { "MaaToolkitGetWindow", { &MaaToolkitGetWindow_Wrapper, &MaaToolkitGetWindow_HelperInput, &MaaToolkitGetWindow_HelperOutput } },
         { "MaaToolkitGetCursorWindow", { &MaaToolkitGetCursorWindow_Wrapper, &MaaToolkitGetCursorWindow_HelperInput, &MaaToolkitGetCursorWindow_HelperOutput } },
+        { "MaaControllerSetOptionString", { &MaaControllerSetOptionString_Wrapper, &MaaControllerSetOptionString_HelperInput, &MaaControllerSetOptionString_HelperOutput } },
+        { "MaaControllerSetOptionInteger", { &MaaControllerSetOptionInteger_Wrapper, &MaaControllerSetOptionInteger_HelperInput, &MaaControllerSetOptionInteger_HelperOutput } },
+        { "MaaControllerSetOptionBoolean", { &MaaControllerSetOptionBoolean_Wrapper, &MaaControllerSetOptionBoolean_HelperInput, &MaaControllerSetOptionBoolean_HelperOutput } },
+        { "MaaSetGlobalOptionString", { &MaaSetGlobalOptionString_Wrapper, &MaaSetGlobalOptionString_HelperInput, &MaaSetGlobalOptionString_HelperOutput } },
+        { "MaaSetGlobalOptionInteger", { &MaaSetGlobalOptionInteger_Wrapper, &MaaSetGlobalOptionInteger_HelperInput, &MaaSetGlobalOptionInteger_HelperOutput } },
+        { "MaaSetGlobalOptionBoolean", { &MaaSetGlobalOptionBoolean_Wrapper, &MaaSetGlobalOptionBoolean_HelperInput, &MaaSetGlobalOptionBoolean_HelperOutput } },
     };
     if (lhg::handle_api(ctx, segs, obj, wrappers)) {
         return true;

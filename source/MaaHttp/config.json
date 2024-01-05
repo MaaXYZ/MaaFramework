@@ -37,7 +37,11 @@
         "MaaGetString",
         "MaaSetString",
         "MaaGetImageEncodedSize",
-        "MaaGetImageRawData"
+        "MaaGetImageRawData",
+        "MaaControllerSetOption",
+        "MaaResourceSetOption",
+        "MaaSetOption",
+        "MaaSetGlobalOption"
     ],
     "check": {
         "const char *": "string"

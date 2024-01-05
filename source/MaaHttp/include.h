@@ -6,3 +6,4 @@ typedef unsigned long long size_t;
 
 #include "MaaFramework/MaaAPI.h"
 #include "MaaToolkit/MaaToolkitAPI.h"
+#include "extra.h"
