@@ -34,57 +34,57 @@ namespace lhg {
 
 static lhg::callback_manager<void (*)(const char *, const char *, void *)> MaaAPICallback__Manager;
 
-struct __MaaAdbControllerCreate_t {
-    struct __adb_path_t {
+struct MaaAdbControllerCreate__ft {
+    struct adb_path__at {
         using type = const char *;
         static constexpr size_t index = 0;
         static constexpr const char* const name = "adb_path";
     };
-    struct __address_t {
+    struct address__at {
         using type = const char *;
         static constexpr size_t index = 1;
         static constexpr const char* const name = "address";
     };
-    struct __type_t {
+    struct type__at {
         using type = int;
         static constexpr size_t index = 2;
         static constexpr const char* const name = "type";
     };
-    struct __config_t {
+    struct config__at {
         using type = const char *;
         static constexpr size_t index = 3;
         static constexpr const char* const name = "config";
     };
-    struct __callback_t {
+    struct callback__at {
         using type = void (*)(const char *, const char *, void *);
         static constexpr size_t index = 4;
         static constexpr const char* const name = "callback";
     };
-    struct __callback_arg_t {
+    struct callback_arg__at {
         using type = void *;
         static constexpr size_t index = 5;
         static constexpr const char* const name = "callback_arg";
     };
-    using arguments_t = std::tuple<__adb_path_t, __address_t, __type_t, __config_t, __callback_t, __callback_arg_t>;
+    using arguments_t = std::tuple<adb_path__at, address__at, type__at, config__at, callback__at, callback_arg__at>;
     using return_t = MaaControllerAPI *;
 };
 
 template<>
-struct lhg::is_callback<__MaaAdbControllerCreate_t::__callback_t>
+struct lhg::is_callback<MaaAdbControllerCreate__ft::callback__at>
 {
     static constexpr const bool value = true;
     static constexpr const char* const name = "MaaAPICallback";
     static constexpr const size_t context = 2;
-    using traits = lhg::func_traits<typename __MaaAdbControllerCreate_t::__callback_t::type>;
+    using traits = lhg::func_traits<typename MaaAdbControllerCreate__ft::callback__at::type>;
     static decltype(MaaAPICallback__Manager) &manager; 
 };
-decltype(MaaAPICallback__Manager)& lhg::is_callback<__MaaAdbControllerCreate_t::__callback_t>::manager = MaaAPICallback__Manager;
+decltype(MaaAPICallback__Manager)& lhg::is_callback<MaaAdbControllerCreate__ft::callback__at>::manager = MaaAPICallback__Manager;
 
 template<>
-struct lhg::is_callback_context<__MaaAdbControllerCreate_t::__callback_arg_t>
+struct lhg::is_callback_context<MaaAdbControllerCreate__ft::callback_arg__at>
 {
     static constexpr const bool value = true;
-    using callback_arg_tag = __MaaAdbControllerCreate_t::__callback_t;
+    using callback_arg_tag = MaaAdbControllerCreate__ft::callback__at;
 };
 
 namespace lhg {
@@ -94,47 +94,47 @@ namespace lhg {
 // LHG SEC END
 }
 
-struct __MaaWin32ControllerCreate_t {
-    struct __hWnd_t {
+struct MaaWin32ControllerCreate__ft {
+    struct hWnd__at {
         using type = unsigned long long;
         static constexpr size_t index = 0;
         static constexpr const char* const name = "hWnd";
     };
-    struct __type_t {
+    struct type__at {
         using type = int;
         static constexpr size_t index = 1;
         static constexpr const char* const name = "type";
     };
-    struct __callback_t {
+    struct callback__at {
         using type = void (*)(const char *, const char *, void *);
         static constexpr size_t index = 2;
         static constexpr const char* const name = "callback";
     };
-    struct __callback_arg_t {
+    struct callback_arg__at {
         using type = void *;
         static constexpr size_t index = 3;
         static constexpr const char* const name = "callback_arg";
     };
-    using arguments_t = std::tuple<__hWnd_t, __type_t, __callback_t, __callback_arg_t>;
+    using arguments_t = std::tuple<hWnd__at, type__at, callback__at, callback_arg__at>;
     using return_t = MaaControllerAPI *;
 };
 
 template<>
-struct lhg::is_callback<__MaaWin32ControllerCreate_t::__callback_t>
+struct lhg::is_callback<MaaWin32ControllerCreate__ft::callback__at>
 {
     static constexpr const bool value = true;
     static constexpr const char* const name = "MaaAPICallback";
     static constexpr const size_t context = 2;
-    using traits = lhg::func_traits<typename __MaaWin32ControllerCreate_t::__callback_t::type>;
+    using traits = lhg::func_traits<typename MaaWin32ControllerCreate__ft::callback__at::type>;
     static decltype(MaaAPICallback__Manager) &manager; 
 };
-decltype(MaaAPICallback__Manager)& lhg::is_callback<__MaaWin32ControllerCreate_t::__callback_t>::manager = MaaAPICallback__Manager;
+decltype(MaaAPICallback__Manager)& lhg::is_callback<MaaWin32ControllerCreate__ft::callback__at>::manager = MaaAPICallback__Manager;
 
 template<>
-struct lhg::is_callback_context<__MaaWin32ControllerCreate_t::__callback_arg_t>
+struct lhg::is_callback_context<MaaWin32ControllerCreate__ft::callback_arg__at>
 {
     static constexpr const bool value = true;
-    using callback_arg_tag = __MaaWin32ControllerCreate_t::__callback_t;
+    using callback_arg_tag = MaaWin32ControllerCreate__ft::callback__at;
 };
 
 namespace lhg {
@@ -144,62 +144,62 @@ namespace lhg {
 // LHG SEC END
 }
 
-struct __MaaAdbControllerCreateV2_t {
-    struct __adb_path_t {
+struct MaaAdbControllerCreateV2__ft {
+    struct adb_path__at {
         using type = const char *;
         static constexpr size_t index = 0;
         static constexpr const char* const name = "adb_path";
     };
-    struct __address_t {
+    struct address__at {
         using type = const char *;
         static constexpr size_t index = 1;
         static constexpr const char* const name = "address";
     };
-    struct __type_t {
+    struct type__at {
         using type = int;
         static constexpr size_t index = 2;
         static constexpr const char* const name = "type";
     };
-    struct __config_t {
+    struct config__at {
         using type = const char *;
         static constexpr size_t index = 3;
         static constexpr const char* const name = "config";
     };
-    struct __agent_path_t {
+    struct agent_path__at {
         using type = const char *;
         static constexpr size_t index = 4;
         static constexpr const char* const name = "agent_path";
     };
-    struct __callback_t {
+    struct callback__at {
         using type = void (*)(const char *, const char *, void *);
         static constexpr size_t index = 5;
         static constexpr const char* const name = "callback";
     };
-    struct __callback_arg_t {
+    struct callback_arg__at {
         using type = void *;
         static constexpr size_t index = 6;
         static constexpr const char* const name = "callback_arg";
     };
-    using arguments_t = std::tuple<__adb_path_t, __address_t, __type_t, __config_t, __agent_path_t, __callback_t, __callback_arg_t>;
+    using arguments_t = std::tuple<adb_path__at, address__at, type__at, config__at, agent_path__at, callback__at, callback_arg__at>;
     using return_t = MaaControllerAPI *;
 };
 
 template<>
-struct lhg::is_callback<__MaaAdbControllerCreateV2_t::__callback_t>
+struct lhg::is_callback<MaaAdbControllerCreateV2__ft::callback__at>
 {
     static constexpr const bool value = true;
     static constexpr const char* const name = "MaaAPICallback";
     static constexpr const size_t context = 2;
-    using traits = lhg::func_traits<typename __MaaAdbControllerCreateV2_t::__callback_t::type>;
+    using traits = lhg::func_traits<typename MaaAdbControllerCreateV2__ft::callback__at::type>;
     static decltype(MaaAPICallback__Manager) &manager; 
 };
-decltype(MaaAPICallback__Manager)& lhg::is_callback<__MaaAdbControllerCreateV2_t::__callback_t>::manager = MaaAPICallback__Manager;
+decltype(MaaAPICallback__Manager)& lhg::is_callback<MaaAdbControllerCreateV2__ft::callback__at>::manager = MaaAPICallback__Manager;
 
 template<>
-struct lhg::is_callback_context<__MaaAdbControllerCreateV2_t::__callback_arg_t>
+struct lhg::is_callback_context<MaaAdbControllerCreateV2__ft::callback_arg__at>
 {
     static constexpr const bool value = true;
-    using callback_arg_tag = __MaaAdbControllerCreateV2_t::__callback_t;
+    using callback_arg_tag = MaaAdbControllerCreateV2__ft::callback__at;
 };
 
 namespace lhg {
@@ -209,57 +209,57 @@ namespace lhg {
 // LHG SEC END
 }
 
-struct __MaaThriftControllerCreate_t {
-    struct __type_t {
+struct MaaThriftControllerCreate__ft {
+    struct type__at {
         using type = int;
         static constexpr size_t index = 0;
         static constexpr const char* const name = "type";
     };
-    struct __host_t {
+    struct host__at {
         using type = const char *;
         static constexpr size_t index = 1;
         static constexpr const char* const name = "host";
     };
-    struct __port_t {
+    struct port__at {
         using type = int;
         static constexpr size_t index = 2;
         static constexpr const char* const name = "port";
     };
-    struct __config_t {
+    struct config__at {
         using type = const char *;
         static constexpr size_t index = 3;
         static constexpr const char* const name = "config";
     };
-    struct __callback_t {
+    struct callback__at {
         using type = void (*)(const char *, const char *, void *);
         static constexpr size_t index = 4;
         static constexpr const char* const name = "callback";
     };
-    struct __callback_arg_t {
+    struct callback_arg__at {
         using type = void *;
         static constexpr size_t index = 5;
         static constexpr const char* const name = "callback_arg";
     };
-    using arguments_t = std::tuple<__type_t, __host_t, __port_t, __config_t, __callback_t, __callback_arg_t>;
+    using arguments_t = std::tuple<type__at, host__at, port__at, config__at, callback__at, callback_arg__at>;
     using return_t = MaaControllerAPI *;
 };
 
 template<>
-struct lhg::is_callback<__MaaThriftControllerCreate_t::__callback_t>
+struct lhg::is_callback<MaaThriftControllerCreate__ft::callback__at>
 {
     static constexpr const bool value = true;
     static constexpr const char* const name = "MaaAPICallback";
     static constexpr const size_t context = 2;
-    using traits = lhg::func_traits<typename __MaaThriftControllerCreate_t::__callback_t::type>;
+    using traits = lhg::func_traits<typename MaaThriftControllerCreate__ft::callback__at::type>;
     static decltype(MaaAPICallback__Manager) &manager; 
 };
-decltype(MaaAPICallback__Manager)& lhg::is_callback<__MaaThriftControllerCreate_t::__callback_t>::manager = MaaAPICallback__Manager;
+decltype(MaaAPICallback__Manager)& lhg::is_callback<MaaThriftControllerCreate__ft::callback__at>::manager = MaaAPICallback__Manager;
 
 template<>
-struct lhg::is_callback_context<__MaaThriftControllerCreate_t::__callback_arg_t>
+struct lhg::is_callback_context<MaaThriftControllerCreate__ft::callback_arg__at>
 {
     static constexpr const bool value = true;
-    using callback_arg_tag = __MaaThriftControllerCreate_t::__callback_t;
+    using callback_arg_tag = MaaThriftControllerCreate__ft::callback__at;
 };
 
 namespace lhg {
@@ -269,57 +269,57 @@ namespace lhg {
 // LHG SEC END
 }
 
-struct __MaaDbgControllerCreate_t {
-    struct __read_path_t {
+struct MaaDbgControllerCreate__ft {
+    struct read_path__at {
         using type = const char *;
         static constexpr size_t index = 0;
         static constexpr const char* const name = "read_path";
     };
-    struct __write_path_t {
+    struct write_path__at {
         using type = const char *;
         static constexpr size_t index = 1;
         static constexpr const char* const name = "write_path";
     };
-    struct __type_t {
+    struct type__at {
         using type = int;
         static constexpr size_t index = 2;
         static constexpr const char* const name = "type";
     };
-    struct __config_t {
+    struct config__at {
         using type = const char *;
         static constexpr size_t index = 3;
         static constexpr const char* const name = "config";
     };
-    struct __callback_t {
+    struct callback__at {
         using type = void (*)(const char *, const char *, void *);
         static constexpr size_t index = 4;
         static constexpr const char* const name = "callback";
     };
-    struct __callback_arg_t {
+    struct callback_arg__at {
         using type = void *;
         static constexpr size_t index = 5;
         static constexpr const char* const name = "callback_arg";
     };
-    using arguments_t = std::tuple<__read_path_t, __write_path_t, __type_t, __config_t, __callback_t, __callback_arg_t>;
+    using arguments_t = std::tuple<read_path__at, write_path__at, type__at, config__at, callback__at, callback_arg__at>;
     using return_t = MaaControllerAPI *;
 };
 
 template<>
-struct lhg::is_callback<__MaaDbgControllerCreate_t::__callback_t>
+struct lhg::is_callback<MaaDbgControllerCreate__ft::callback__at>
 {
     static constexpr const bool value = true;
     static constexpr const char* const name = "MaaAPICallback";
     static constexpr const size_t context = 2;
-    using traits = lhg::func_traits<typename __MaaDbgControllerCreate_t::__callback_t::type>;
+    using traits = lhg::func_traits<typename MaaDbgControllerCreate__ft::callback__at::type>;
     static decltype(MaaAPICallback__Manager) &manager; 
 };
-decltype(MaaAPICallback__Manager)& lhg::is_callback<__MaaDbgControllerCreate_t::__callback_t>::manager = MaaAPICallback__Manager;
+decltype(MaaAPICallback__Manager)& lhg::is_callback<MaaDbgControllerCreate__ft::callback__at>::manager = MaaAPICallback__Manager;
 
 template<>
-struct lhg::is_callback_context<__MaaDbgControllerCreate_t::__callback_arg_t>
+struct lhg::is_callback_context<MaaDbgControllerCreate__ft::callback_arg__at>
 {
     static constexpr const bool value = true;
-    using callback_arg_tag = __MaaDbgControllerCreate_t::__callback_t;
+    using callback_arg_tag = MaaDbgControllerCreate__ft::callback__at;
 };
 
 namespace lhg {
@@ -329,13 +329,13 @@ namespace lhg {
 // LHG SEC END
 }
 
-struct __MaaControllerDestroy_t {
-    struct __ctrl_t {
+struct MaaControllerDestroy__ft {
+    struct ctrl__at {
         using type = MaaControllerAPI *;
         static constexpr size_t index = 0;
         static constexpr const char* const name = "ctrl";
     };
-    using arguments_t = std::tuple<__ctrl_t>;
+    using arguments_t = std::tuple<ctrl__at>;
     using return_t = void;
 };
 
@@ -346,13 +346,13 @@ namespace lhg {
 // LHG SEC END
 }
 
-struct __MaaControllerPostConnection_t {
-    struct __ctrl_t {
+struct MaaControllerPostConnection__ft {
+    struct ctrl__at {
         using type = MaaControllerAPI *;
         static constexpr size_t index = 0;
         static constexpr const char* const name = "ctrl";
     };
-    using arguments_t = std::tuple<__ctrl_t>;
+    using arguments_t = std::tuple<ctrl__at>;
     using return_t = long long;
 };
 
@@ -363,23 +363,23 @@ namespace lhg {
 // LHG SEC END
 }
 
-struct __MaaControllerPostClick_t {
-    struct __ctrl_t {
+struct MaaControllerPostClick__ft {
+    struct ctrl__at {
         using type = MaaControllerAPI *;
         static constexpr size_t index = 0;
         static constexpr const char* const name = "ctrl";
     };
-    struct __x_t {
+    struct x__at {
         using type = int;
         static constexpr size_t index = 1;
         static constexpr const char* const name = "x";
     };
-    struct __y_t {
+    struct y__at {
         using type = int;
         static constexpr size_t index = 2;
         static constexpr const char* const name = "y";
     };
-    using arguments_t = std::tuple<__ctrl_t, __x_t, __y_t>;
+    using arguments_t = std::tuple<ctrl__at, x__at, y__at>;
     using return_t = long long;
 };
 
@@ -390,38 +390,38 @@ namespace lhg {
 // LHG SEC END
 }
 
-struct __MaaControllerPostSwipe_t {
-    struct __ctrl_t {
+struct MaaControllerPostSwipe__ft {
+    struct ctrl__at {
         using type = MaaControllerAPI *;
         static constexpr size_t index = 0;
         static constexpr const char* const name = "ctrl";
     };
-    struct __x1_t {
+    struct x1__at {
         using type = int;
         static constexpr size_t index = 1;
         static constexpr const char* const name = "x1";
     };
-    struct __y1_t {
+    struct y1__at {
         using type = int;
         static constexpr size_t index = 2;
         static constexpr const char* const name = "y1";
     };
-    struct __x2_t {
+    struct x2__at {
         using type = int;
         static constexpr size_t index = 3;
         static constexpr const char* const name = "x2";
     };
-    struct __y2_t {
+    struct y2__at {
         using type = int;
         static constexpr size_t index = 4;
         static constexpr const char* const name = "y2";
     };
-    struct __duration_t {
+    struct duration__at {
         using type = int;
         static constexpr size_t index = 5;
         static constexpr const char* const name = "duration";
     };
-    using arguments_t = std::tuple<__ctrl_t, __x1_t, __y1_t, __x2_t, __y2_t, __duration_t>;
+    using arguments_t = std::tuple<ctrl__at, x1__at, y1__at, x2__at, y2__at, duration__at>;
     using return_t = long long;
 };
 
@@ -432,18 +432,18 @@ namespace lhg {
 // LHG SEC END
 }
 
-struct __MaaControllerPostPressKey_t {
-    struct __ctrl_t {
+struct MaaControllerPostPressKey__ft {
+    struct ctrl__at {
         using type = MaaControllerAPI *;
         static constexpr size_t index = 0;
         static constexpr const char* const name = "ctrl";
     };
-    struct __keycode_t {
+    struct keycode__at {
         using type = int;
         static constexpr size_t index = 1;
         static constexpr const char* const name = "keycode";
     };
-    using arguments_t = std::tuple<__ctrl_t, __keycode_t>;
+    using arguments_t = std::tuple<ctrl__at, keycode__at>;
     using return_t = long long;
 };
 
@@ -454,18 +454,18 @@ namespace lhg {
 // LHG SEC END
 }
 
-struct __MaaControllerPostInputText_t {
-    struct __ctrl_t {
+struct MaaControllerPostInputText__ft {
+    struct ctrl__at {
         using type = MaaControllerAPI *;
         static constexpr size_t index = 0;
         static constexpr const char* const name = "ctrl";
     };
-    struct __text_t {
+    struct text__at {
         using type = const char *;
         static constexpr size_t index = 1;
         static constexpr const char* const name = "text";
     };
-    using arguments_t = std::tuple<__ctrl_t, __text_t>;
+    using arguments_t = std::tuple<ctrl__at, text__at>;
     using return_t = long long;
 };
 
@@ -476,33 +476,33 @@ namespace lhg {
 // LHG SEC END
 }
 
-struct __MaaControllerPostTouchDown_t {
-    struct __ctrl_t {
+struct MaaControllerPostTouchDown__ft {
+    struct ctrl__at {
         using type = MaaControllerAPI *;
         static constexpr size_t index = 0;
         static constexpr const char* const name = "ctrl";
     };
-    struct __contact_t {
+    struct contact__at {
         using type = int;
         static constexpr size_t index = 1;
         static constexpr const char* const name = "contact";
     };
-    struct __x_t {
+    struct x__at {
         using type = int;
         static constexpr size_t index = 2;
         static constexpr const char* const name = "x";
     };
-    struct __y_t {
+    struct y__at {
         using type = int;
         static constexpr size_t index = 3;
         static constexpr const char* const name = "y";
     };
-    struct __pressure_t {
+    struct pressure__at {
         using type = int;
         static constexpr size_t index = 4;
         static constexpr const char* const name = "pressure";
     };
-    using arguments_t = std::tuple<__ctrl_t, __contact_t, __x_t, __y_t, __pressure_t>;
+    using arguments_t = std::tuple<ctrl__at, contact__at, x__at, y__at, pressure__at>;
     using return_t = long long;
 };
 
@@ -513,33 +513,33 @@ namespace lhg {
 // LHG SEC END
 }
 
-struct __MaaControllerPostTouchMove_t {
-    struct __ctrl_t {
+struct MaaControllerPostTouchMove__ft {
+    struct ctrl__at {
         using type = MaaControllerAPI *;
         static constexpr size_t index = 0;
         static constexpr const char* const name = "ctrl";
     };
-    struct __contact_t {
+    struct contact__at {
         using type = int;
         static constexpr size_t index = 1;
         static constexpr const char* const name = "contact";
     };
-    struct __x_t {
+    struct x__at {
         using type = int;
         static constexpr size_t index = 2;
         static constexpr const char* const name = "x";
     };
-    struct __y_t {
+    struct y__at {
         using type = int;
         static constexpr size_t index = 3;
         static constexpr const char* const name = "y";
     };
-    struct __pressure_t {
+    struct pressure__at {
         using type = int;
         static constexpr size_t index = 4;
         static constexpr const char* const name = "pressure";
     };
-    using arguments_t = std::tuple<__ctrl_t, __contact_t, __x_t, __y_t, __pressure_t>;
+    using arguments_t = std::tuple<ctrl__at, contact__at, x__at, y__at, pressure__at>;
     using return_t = long long;
 };
 
@@ -550,18 +550,18 @@ namespace lhg {
 // LHG SEC END
 }
 
-struct __MaaControllerPostTouchUp_t {
-    struct __ctrl_t {
+struct MaaControllerPostTouchUp__ft {
+    struct ctrl__at {
         using type = MaaControllerAPI *;
         static constexpr size_t index = 0;
         static constexpr const char* const name = "ctrl";
     };
-    struct __contact_t {
+    struct contact__at {
         using type = int;
         static constexpr size_t index = 1;
         static constexpr const char* const name = "contact";
     };
-    using arguments_t = std::tuple<__ctrl_t, __contact_t>;
+    using arguments_t = std::tuple<ctrl__at, contact__at>;
     using return_t = long long;
 };
 
@@ -572,13 +572,13 @@ namespace lhg {
 // LHG SEC END
 }
 
-struct __MaaControllerPostScreencap_t {
-    struct __ctrl_t {
+struct MaaControllerPostScreencap__ft {
+    struct ctrl__at {
         using type = MaaControllerAPI *;
         static constexpr size_t index = 0;
         static constexpr const char* const name = "ctrl";
     };
-    using arguments_t = std::tuple<__ctrl_t>;
+    using arguments_t = std::tuple<ctrl__at>;
     using return_t = long long;
 };
 
@@ -589,18 +589,18 @@ namespace lhg {
 // LHG SEC END
 }
 
-struct __MaaControllerStatus_t {
-    struct __ctrl_t {
+struct MaaControllerStatus__ft {
+    struct ctrl__at {
         using type = MaaControllerAPI *;
         static constexpr size_t index = 0;
         static constexpr const char* const name = "ctrl";
     };
-    struct __id_t {
+    struct id__at {
         using type = long long;
         static constexpr size_t index = 1;
         static constexpr const char* const name = "id";
     };
-    using arguments_t = std::tuple<__ctrl_t, __id_t>;
+    using arguments_t = std::tuple<ctrl__at, id__at>;
     using return_t = int;
 };
 
@@ -611,18 +611,18 @@ namespace lhg {
 // LHG SEC END
 }
 
-struct __MaaControllerWait_t {
-    struct __ctrl_t {
+struct MaaControllerWait__ft {
+    struct ctrl__at {
         using type = MaaControllerAPI *;
         static constexpr size_t index = 0;
         static constexpr const char* const name = "ctrl";
     };
-    struct __id_t {
+    struct id__at {
         using type = long long;
         static constexpr size_t index = 1;
         static constexpr const char* const name = "id";
     };
-    using arguments_t = std::tuple<__ctrl_t, __id_t>;
+    using arguments_t = std::tuple<ctrl__at, id__at>;
     using return_t = int;
 };
 
@@ -633,13 +633,13 @@ namespace lhg {
 // LHG SEC END
 }
 
-struct __MaaControllerConnected_t {
-    struct __ctrl_t {
+struct MaaControllerConnected__ft {
+    struct ctrl__at {
         using type = MaaControllerAPI *;
         static constexpr size_t index = 0;
         static constexpr const char* const name = "ctrl";
     };
-    using arguments_t = std::tuple<__ctrl_t>;
+    using arguments_t = std::tuple<ctrl__at>;
     using return_t = unsigned char;
 };
 
@@ -650,18 +650,18 @@ namespace lhg {
 // LHG SEC END
 }
 
-struct __MaaControllerGetImage_t {
-    struct __ctrl_t {
+struct MaaControllerGetImage__ft {
+    struct ctrl__at {
         using type = MaaControllerAPI *;
         static constexpr size_t index = 0;
         static constexpr const char* const name = "ctrl";
     };
-    struct __buffer_t {
+    struct buffer__at {
         using type = MaaImageBuffer *;
         static constexpr size_t index = 1;
         static constexpr const char* const name = "buffer";
     };
-    using arguments_t = std::tuple<__ctrl_t, __buffer_t>;
+    using arguments_t = std::tuple<ctrl__at, buffer__at>;
     using return_t = unsigned char;
 };
 
@@ -672,23 +672,23 @@ namespace lhg {
 // LHG SEC END
 }
 
-struct __MaaControllerGetUUID_t {
-    struct __ctrl_t {
+struct MaaControllerGetUUID__ft {
+    struct ctrl__at {
         using type = MaaControllerAPI *;
         static constexpr size_t index = 0;
         static constexpr const char* const name = "ctrl";
     };
-    struct __buffer_t {
+    struct buffer__at {
         using type = MaaStringBuffer *;
         static constexpr size_t index = 1;
         static constexpr const char* const name = "buffer";
     };
-    using arguments_t = std::tuple<__ctrl_t, __buffer_t>;
+    using arguments_t = std::tuple<ctrl__at, buffer__at>;
     using return_t = unsigned char;
 };
 
 template<>
-struct lhg::is_output<__MaaControllerGetUUID_t::__buffer_t>
+struct lhg::is_output<MaaControllerGetUUID__ft::buffer__at>
 {
     static constexpr const bool value = true;
 };
@@ -700,37 +700,37 @@ namespace lhg {
 // LHG SEC END
 }
 
-struct __MaaCreate_t {
-    struct __callback_t {
+struct MaaCreate__ft {
+    struct callback__at {
         using type = void (*)(const char *, const char *, void *);
         static constexpr size_t index = 0;
         static constexpr const char* const name = "callback";
     };
-    struct __callback_arg_t {
+    struct callback_arg__at {
         using type = void *;
         static constexpr size_t index = 1;
         static constexpr const char* const name = "callback_arg";
     };
-    using arguments_t = std::tuple<__callback_t, __callback_arg_t>;
+    using arguments_t = std::tuple<callback__at, callback_arg__at>;
     using return_t = MaaInstanceAPI *;
 };
 
 template<>
-struct lhg::is_callback<__MaaCreate_t::__callback_t>
+struct lhg::is_callback<MaaCreate__ft::callback__at>
 {
     static constexpr const bool value = true;
     static constexpr const char* const name = "MaaAPICallback";
     static constexpr const size_t context = 2;
-    using traits = lhg::func_traits<typename __MaaCreate_t::__callback_t::type>;
+    using traits = lhg::func_traits<typename MaaCreate__ft::callback__at::type>;
     static decltype(MaaAPICallback__Manager) &manager; 
 };
-decltype(MaaAPICallback__Manager)& lhg::is_callback<__MaaCreate_t::__callback_t>::manager = MaaAPICallback__Manager;
+decltype(MaaAPICallback__Manager)& lhg::is_callback<MaaCreate__ft::callback__at>::manager = MaaAPICallback__Manager;
 
 template<>
-struct lhg::is_callback_context<__MaaCreate_t::__callback_arg_t>
+struct lhg::is_callback_context<MaaCreate__ft::callback_arg__at>
 {
     static constexpr const bool value = true;
-    using callback_arg_tag = __MaaCreate_t::__callback_t;
+    using callback_arg_tag = MaaCreate__ft::callback__at;
 };
 
 namespace lhg {
@@ -740,13 +740,13 @@ namespace lhg {
 // LHG SEC END
 }
 
-struct __MaaDestroy_t {
-    struct __inst_t {
+struct MaaDestroy__ft {
+    struct inst__at {
         using type = MaaInstanceAPI *;
         static constexpr size_t index = 0;
         static constexpr const char* const name = "inst";
     };
-    using arguments_t = std::tuple<__inst_t>;
+    using arguments_t = std::tuple<inst__at>;
     using return_t = void;
 };
 
@@ -757,18 +757,18 @@ namespace lhg {
 // LHG SEC END
 }
 
-struct __MaaBindResource_t {
-    struct __inst_t {
+struct MaaBindResource__ft {
+    struct inst__at {
         using type = MaaInstanceAPI *;
         static constexpr size_t index = 0;
         static constexpr const char* const name = "inst";
     };
-    struct __res_t {
+    struct res__at {
         using type = MaaResourceAPI *;
         static constexpr size_t index = 1;
         static constexpr const char* const name = "res";
     };
-    using arguments_t = std::tuple<__inst_t, __res_t>;
+    using arguments_t = std::tuple<inst__at, res__at>;
     using return_t = unsigned char;
 };
 
@@ -779,18 +779,18 @@ namespace lhg {
 // LHG SEC END
 }
 
-struct __MaaBindController_t {
-    struct __inst_t {
+struct MaaBindController__ft {
+    struct inst__at {
         using type = MaaInstanceAPI *;
         static constexpr size_t index = 0;
         static constexpr const char* const name = "inst";
     };
-    struct __ctrl_t {
+    struct ctrl__at {
         using type = MaaControllerAPI *;
         static constexpr size_t index = 1;
         static constexpr const char* const name = "ctrl";
     };
-    using arguments_t = std::tuple<__inst_t, __ctrl_t>;
+    using arguments_t = std::tuple<inst__at, ctrl__at>;
     using return_t = unsigned char;
 };
 
@@ -801,13 +801,13 @@ namespace lhg {
 // LHG SEC END
 }
 
-struct __MaaInited_t {
-    struct __inst_t {
+struct MaaInited__ft {
+    struct inst__at {
         using type = MaaInstanceAPI *;
         static constexpr size_t index = 0;
         static constexpr const char* const name = "inst";
     };
-    using arguments_t = std::tuple<__inst_t>;
+    using arguments_t = std::tuple<inst__at>;
     using return_t = unsigned char;
 };
 
@@ -818,13 +818,13 @@ namespace lhg {
 // LHG SEC END
 }
 
-struct __MaaClearCustomRecognizer_t {
-    struct __inst_t {
+struct MaaClearCustomRecognizer__ft {
+    struct inst__at {
         using type = MaaInstanceAPI *;
         static constexpr size_t index = 0;
         static constexpr const char* const name = "inst";
     };
-    using arguments_t = std::tuple<__inst_t>;
+    using arguments_t = std::tuple<inst__at>;
     using return_t = unsigned char;
 };
 
@@ -835,13 +835,13 @@ namespace lhg {
 // LHG SEC END
 }
 
-struct __MaaClearCustomAction_t {
-    struct __inst_t {
+struct MaaClearCustomAction__ft {
+    struct inst__at {
         using type = MaaInstanceAPI *;
         static constexpr size_t index = 0;
         static constexpr const char* const name = "inst";
     };
-    using arguments_t = std::tuple<__inst_t>;
+    using arguments_t = std::tuple<inst__at>;
     using return_t = unsigned char;
 };
 
@@ -852,23 +852,23 @@ namespace lhg {
 // LHG SEC END
 }
 
-struct __MaaPostTask_t {
-    struct __inst_t {
+struct MaaPostTask__ft {
+    struct inst__at {
         using type = MaaInstanceAPI *;
         static constexpr size_t index = 0;
         static constexpr const char* const name = "inst";
     };
-    struct __entry_t {
+    struct entry__at {
         using type = const char *;
         static constexpr size_t index = 1;
         static constexpr const char* const name = "entry";
     };
-    struct __param_t {
+    struct param__at {
         using type = const char *;
         static constexpr size_t index = 2;
         static constexpr const char* const name = "param";
     };
-    using arguments_t = std::tuple<__inst_t, __entry_t, __param_t>;
+    using arguments_t = std::tuple<inst__at, entry__at, param__at>;
     using return_t = long long;
 };
 
@@ -879,23 +879,23 @@ namespace lhg {
 // LHG SEC END
 }
 
-struct __MaaSetTaskParam_t {
-    struct __inst_t {
+struct MaaSetTaskParam__ft {
+    struct inst__at {
         using type = MaaInstanceAPI *;
         static constexpr size_t index = 0;
         static constexpr const char* const name = "inst";
     };
-    struct __id_t {
+    struct id__at {
         using type = long long;
         static constexpr size_t index = 1;
         static constexpr const char* const name = "id";
     };
-    struct __param_t {
+    struct param__at {
         using type = const char *;
         static constexpr size_t index = 2;
         static constexpr const char* const name = "param";
     };
-    using arguments_t = std::tuple<__inst_t, __id_t, __param_t>;
+    using arguments_t = std::tuple<inst__at, id__at, param__at>;
     using return_t = unsigned char;
 };
 
@@ -906,18 +906,18 @@ namespace lhg {
 // LHG SEC END
 }
 
-struct __MaaTaskStatus_t {
-    struct __inst_t {
+struct MaaTaskStatus__ft {
+    struct inst__at {
         using type = MaaInstanceAPI *;
         static constexpr size_t index = 0;
         static constexpr const char* const name = "inst";
     };
-    struct __id_t {
+    struct id__at {
         using type = long long;
         static constexpr size_t index = 1;
         static constexpr const char* const name = "id";
     };
-    using arguments_t = std::tuple<__inst_t, __id_t>;
+    using arguments_t = std::tuple<inst__at, id__at>;
     using return_t = int;
 };
 
@@ -928,18 +928,18 @@ namespace lhg {
 // LHG SEC END
 }
 
-struct __MaaWaitTask_t {
-    struct __inst_t {
+struct MaaWaitTask__ft {
+    struct inst__at {
         using type = MaaInstanceAPI *;
         static constexpr size_t index = 0;
         static constexpr const char* const name = "inst";
     };
-    struct __id_t {
+    struct id__at {
         using type = long long;
         static constexpr size_t index = 1;
         static constexpr const char* const name = "id";
     };
-    using arguments_t = std::tuple<__inst_t, __id_t>;
+    using arguments_t = std::tuple<inst__at, id__at>;
     using return_t = int;
 };
 
@@ -950,13 +950,13 @@ namespace lhg {
 // LHG SEC END
 }
 
-struct __MaaTaskAllFinished_t {
-    struct __inst_t {
+struct MaaTaskAllFinished__ft {
+    struct inst__at {
         using type = MaaInstanceAPI *;
         static constexpr size_t index = 0;
         static constexpr const char* const name = "inst";
     };
-    using arguments_t = std::tuple<__inst_t>;
+    using arguments_t = std::tuple<inst__at>;
     using return_t = unsigned char;
 };
 
@@ -967,13 +967,13 @@ namespace lhg {
 // LHG SEC END
 }
 
-struct __MaaPostStop_t {
-    struct __inst_t {
+struct MaaPostStop__ft {
+    struct inst__at {
         using type = MaaInstanceAPI *;
         static constexpr size_t index = 0;
         static constexpr const char* const name = "inst";
     };
-    using arguments_t = std::tuple<__inst_t>;
+    using arguments_t = std::tuple<inst__at>;
     using return_t = unsigned char;
 };
 
@@ -984,13 +984,13 @@ namespace lhg {
 // LHG SEC END
 }
 
-struct __MaaStop_t {
-    struct __inst_t {
+struct MaaStop__ft {
+    struct inst__at {
         using type = MaaInstanceAPI *;
         static constexpr size_t index = 0;
         static constexpr const char* const name = "inst";
     };
-    using arguments_t = std::tuple<__inst_t>;
+    using arguments_t = std::tuple<inst__at>;
     using return_t = unsigned char;
 };
 
@@ -1001,13 +1001,13 @@ namespace lhg {
 // LHG SEC END
 }
 
-struct __MaaGetResource_t {
-    struct __inst_t {
+struct MaaGetResource__ft {
+    struct inst__at {
         using type = MaaInstanceAPI *;
         static constexpr size_t index = 0;
         static constexpr const char* const name = "inst";
     };
-    using arguments_t = std::tuple<__inst_t>;
+    using arguments_t = std::tuple<inst__at>;
     using return_t = MaaResourceAPI *;
 };
 
@@ -1018,13 +1018,13 @@ namespace lhg {
 // LHG SEC END
 }
 
-struct __MaaGetController_t {
-    struct __inst_t {
+struct MaaGetController__ft {
+    struct inst__at {
         using type = MaaInstanceAPI *;
         static constexpr size_t index = 0;
         static constexpr const char* const name = "inst";
     };
-    using arguments_t = std::tuple<__inst_t>;
+    using arguments_t = std::tuple<inst__at>;
     using return_t = MaaControllerAPI *;
 };
 
@@ -1035,37 +1035,37 @@ namespace lhg {
 // LHG SEC END
 }
 
-struct __MaaResourceCreate_t {
-    struct __callback_t {
+struct MaaResourceCreate__ft {
+    struct callback__at {
         using type = void (*)(const char *, const char *, void *);
         static constexpr size_t index = 0;
         static constexpr const char* const name = "callback";
     };
-    struct __callback_arg_t {
+    struct callback_arg__at {
         using type = void *;
         static constexpr size_t index = 1;
         static constexpr const char* const name = "callback_arg";
     };
-    using arguments_t = std::tuple<__callback_t, __callback_arg_t>;
+    using arguments_t = std::tuple<callback__at, callback_arg__at>;
     using return_t = MaaResourceAPI *;
 };
 
 template<>
-struct lhg::is_callback<__MaaResourceCreate_t::__callback_t>
+struct lhg::is_callback<MaaResourceCreate__ft::callback__at>
 {
     static constexpr const bool value = true;
     static constexpr const char* const name = "MaaAPICallback";
     static constexpr const size_t context = 2;
-    using traits = lhg::func_traits<typename __MaaResourceCreate_t::__callback_t::type>;
+    using traits = lhg::func_traits<typename MaaResourceCreate__ft::callback__at::type>;
     static decltype(MaaAPICallback__Manager) &manager; 
 };
-decltype(MaaAPICallback__Manager)& lhg::is_callback<__MaaResourceCreate_t::__callback_t>::manager = MaaAPICallback__Manager;
+decltype(MaaAPICallback__Manager)& lhg::is_callback<MaaResourceCreate__ft::callback__at>::manager = MaaAPICallback__Manager;
 
 template<>
-struct lhg::is_callback_context<__MaaResourceCreate_t::__callback_arg_t>
+struct lhg::is_callback_context<MaaResourceCreate__ft::callback_arg__at>
 {
     static constexpr const bool value = true;
-    using callback_arg_tag = __MaaResourceCreate_t::__callback_t;
+    using callback_arg_tag = MaaResourceCreate__ft::callback__at;
 };
 
 namespace lhg {
@@ -1075,13 +1075,13 @@ namespace lhg {
 // LHG SEC END
 }
 
-struct __MaaResourceDestroy_t {
-    struct __res_t {
+struct MaaResourceDestroy__ft {
+    struct res__at {
         using type = MaaResourceAPI *;
         static constexpr size_t index = 0;
         static constexpr const char* const name = "res";
     };
-    using arguments_t = std::tuple<__res_t>;
+    using arguments_t = std::tuple<res__at>;
     using return_t = void;
 };
 
@@ -1092,18 +1092,18 @@ namespace lhg {
 // LHG SEC END
 }
 
-struct __MaaResourcePostPath_t {
-    struct __res_t {
+struct MaaResourcePostPath__ft {
+    struct res__at {
         using type = MaaResourceAPI *;
         static constexpr size_t index = 0;
         static constexpr const char* const name = "res";
     };
-    struct __path_t {
+    struct path__at {
         using type = const char *;
         static constexpr size_t index = 1;
         static constexpr const char* const name = "path";
     };
-    using arguments_t = std::tuple<__res_t, __path_t>;
+    using arguments_t = std::tuple<res__at, path__at>;
     using return_t = long long;
 };
 
@@ -1114,18 +1114,18 @@ namespace lhg {
 // LHG SEC END
 }
 
-struct __MaaResourceStatus_t {
-    struct __res_t {
+struct MaaResourceStatus__ft {
+    struct res__at {
         using type = MaaResourceAPI *;
         static constexpr size_t index = 0;
         static constexpr const char* const name = "res";
     };
-    struct __id_t {
+    struct id__at {
         using type = long long;
         static constexpr size_t index = 1;
         static constexpr const char* const name = "id";
     };
-    using arguments_t = std::tuple<__res_t, __id_t>;
+    using arguments_t = std::tuple<res__at, id__at>;
     using return_t = int;
 };
 
@@ -1136,18 +1136,18 @@ namespace lhg {
 // LHG SEC END
 }
 
-struct __MaaResourceWait_t {
-    struct __res_t {
+struct MaaResourceWait__ft {
+    struct res__at {
         using type = MaaResourceAPI *;
         static constexpr size_t index = 0;
         static constexpr const char* const name = "res";
     };
-    struct __id_t {
+    struct id__at {
         using type = long long;
         static constexpr size_t index = 1;
         static constexpr const char* const name = "id";
     };
-    using arguments_t = std::tuple<__res_t, __id_t>;
+    using arguments_t = std::tuple<res__at, id__at>;
     using return_t = int;
 };
 
@@ -1158,13 +1158,13 @@ namespace lhg {
 // LHG SEC END
 }
 
-struct __MaaResourceLoaded_t {
-    struct __res_t {
+struct MaaResourceLoaded__ft {
+    struct res__at {
         using type = MaaResourceAPI *;
         static constexpr size_t index = 0;
         static constexpr const char* const name = "res";
     };
-    using arguments_t = std::tuple<__res_t>;
+    using arguments_t = std::tuple<res__at>;
     using return_t = unsigned char;
 };
 
@@ -1175,23 +1175,23 @@ namespace lhg {
 // LHG SEC END
 }
 
-struct __MaaResourceGetHash_t {
-    struct __res_t {
+struct MaaResourceGetHash__ft {
+    struct res__at {
         using type = MaaResourceAPI *;
         static constexpr size_t index = 0;
         static constexpr const char* const name = "res";
     };
-    struct __buffer_t {
+    struct buffer__at {
         using type = MaaStringBuffer *;
         static constexpr size_t index = 1;
         static constexpr const char* const name = "buffer";
     };
-    using arguments_t = std::tuple<__res_t, __buffer_t>;
+    using arguments_t = std::tuple<res__at, buffer__at>;
     using return_t = unsigned char;
 };
 
 template<>
-struct lhg::is_output<__MaaResourceGetHash_t::__buffer_t>
+struct lhg::is_output<MaaResourceGetHash__ft::buffer__at>
 {
     static constexpr const bool value = true;
 };
@@ -1203,23 +1203,23 @@ namespace lhg {
 // LHG SEC END
 }
 
-struct __MaaResourceGetTaskList_t {
-    struct __res_t {
+struct MaaResourceGetTaskList__ft {
+    struct res__at {
         using type = MaaResourceAPI *;
         static constexpr size_t index = 0;
         static constexpr const char* const name = "res";
     };
-    struct __buffer_t {
+    struct buffer__at {
         using type = MaaStringBuffer *;
         static constexpr size_t index = 1;
         static constexpr const char* const name = "buffer";
     };
-    using arguments_t = std::tuple<__res_t, __buffer_t>;
+    using arguments_t = std::tuple<res__at, buffer__at>;
     using return_t = unsigned char;
 };
 
 template<>
-struct lhg::is_output<__MaaResourceGetTaskList_t::__buffer_t>
+struct lhg::is_output<MaaResourceGetTaskList__ft::buffer__at>
 {
     static constexpr const bool value = true;
 };
@@ -1231,7 +1231,7 @@ namespace lhg {
 // LHG SEC END
 }
 
-struct __MaaCreateImageBuffer_t {
+struct MaaCreateImageBuffer__ft {
     using arguments_t = void;
     using return_t = MaaImageBuffer *;
 };
@@ -1243,13 +1243,13 @@ namespace lhg {
 // LHG SEC END
 }
 
-struct __MaaDestroyImageBuffer_t {
-    struct __handle_t {
+struct MaaDestroyImageBuffer__ft {
+    struct handle__at {
         using type = MaaImageBuffer *;
         static constexpr size_t index = 0;
         static constexpr const char* const name = "handle";
     };
-    using arguments_t = std::tuple<__handle_t>;
+    using arguments_t = std::tuple<handle__at>;
     using return_t = void;
 };
 
@@ -1260,13 +1260,13 @@ namespace lhg {
 // LHG SEC END
 }
 
-struct __MaaIsImageEmpty_t {
-    struct __handle_t {
+struct MaaIsImageEmpty__ft {
+    struct handle__at {
         using type = MaaImageBuffer *;
         static constexpr size_t index = 0;
         static constexpr const char* const name = "handle";
     };
-    using arguments_t = std::tuple<__handle_t>;
+    using arguments_t = std::tuple<handle__at>;
     using return_t = unsigned char;
 };
 
@@ -1277,13 +1277,13 @@ namespace lhg {
 // LHG SEC END
 }
 
-struct __MaaClearImage_t {
-    struct __handle_t {
+struct MaaClearImage__ft {
+    struct handle__at {
         using type = MaaImageBuffer *;
         static constexpr size_t index = 0;
         static constexpr const char* const name = "handle";
     };
-    using arguments_t = std::tuple<__handle_t>;
+    using arguments_t = std::tuple<handle__at>;
     using return_t = unsigned char;
 };
 
@@ -1294,13 +1294,13 @@ namespace lhg {
 // LHG SEC END
 }
 
-struct __MaaGetImageWidth_t {
-    struct __handle_t {
+struct MaaGetImageWidth__ft {
+    struct handle__at {
         using type = MaaImageBuffer *;
         static constexpr size_t index = 0;
         static constexpr const char* const name = "handle";
     };
-    using arguments_t = std::tuple<__handle_t>;
+    using arguments_t = std::tuple<handle__at>;
     using return_t = int;
 };
 
@@ -1311,13 +1311,13 @@ namespace lhg {
 // LHG SEC END
 }
 
-struct __MaaGetImageHeight_t {
-    struct __handle_t {
+struct MaaGetImageHeight__ft {
+    struct handle__at {
         using type = MaaImageBuffer *;
         static constexpr size_t index = 0;
         static constexpr const char* const name = "handle";
     };
-    using arguments_t = std::tuple<__handle_t>;
+    using arguments_t = std::tuple<handle__at>;
     using return_t = int;
 };
 
@@ -1328,13 +1328,13 @@ namespace lhg {
 // LHG SEC END
 }
 
-struct __MaaGetImageType_t {
-    struct __handle_t {
+struct MaaGetImageType__ft {
+    struct handle__at {
         using type = MaaImageBuffer *;
         static constexpr size_t index = 0;
         static constexpr const char* const name = "handle";
     };
-    using arguments_t = std::tuple<__handle_t>;
+    using arguments_t = std::tuple<handle__at>;
     using return_t = int;
 };
 
@@ -1345,63 +1345,63 @@ namespace lhg {
 // LHG SEC END
 }
 
-struct __MaaGetImageEncoded_t {
-    struct __handle_t {
+struct MaaGetImageEncoded__ft {
+    struct handle__at {
         using type = MaaImageBuffer *;
         static constexpr size_t index = 0;
         static constexpr const char* const name = "handle";
     };
-    using arguments_t = std::tuple<__handle_t>;
+    using arguments_t = std::tuple<handle__at>;
     using return_t = unsigned char *;
 };
 
 namespace lhg {
 // LHG SEC BEGIN lhg.custom.MaaGetImageEncoded.tag
 template<>
-struct ret_schema<__MaaGetImageEncoded_t>
+struct ret_schema<MaaGetImageEncoded__ft>
 {
     static constexpr const char* const schema = "string@buffer";
 };
 // LHG SEC END
 }
 
-struct __MaaSetImageEncoded_t {
-    struct __handle_t {
+struct MaaSetImageEncoded__ft {
+    struct handle__at {
         using type = MaaImageBuffer *;
         static constexpr size_t index = 0;
         static constexpr const char* const name = "handle";
     };
-    struct __data_t {
+    struct data__at {
         using type = unsigned char *;
         static constexpr size_t index = 1;
         static constexpr const char* const name = "data";
     };
-    struct __size_t {
+    struct size__at {
         using type = unsigned long long;
         static constexpr size_t index = 2;
         static constexpr const char* const name = "size";
     };
-    using arguments_t = std::tuple<__handle_t, __data_t, __size_t>;
+    using arguments_t = std::tuple<handle__at, data__at, size__at>;
     using return_t = unsigned char;
 };
 
 namespace lhg {
 // LHG SEC BEGIN lhg.custom.MaaSetImageEncoded.tag
 template<>
-struct arg_schema<__MaaSetImageEncoded_t::__data_t>
+struct arg_schema<MaaSetImageEncoded__ft::data__at>
 {
     static constexpr const char *const schema = "string@buffer";
 };
 
 template<>
-struct shown_in_schema<__MaaSetImageEncoded_t::__size_t>
+struct shown_in_schema<MaaSetImageEncoded__ft::size__at>
 {
     static constexpr const bool value = false;
 };
 // LHG SEC END
 }
 
-struct __MaaVersion_t {
+struct MaaVersion__ft {
     using arguments_t = void;
     using return_t = const char *;
 };
@@ -1413,7 +1413,7 @@ namespace lhg {
 // LHG SEC END
 }
 
-struct __MaaToolkitInit_t {
+struct MaaToolkitInit__ft {
     using arguments_t = void;
     using return_t = unsigned char;
 };
@@ -1425,7 +1425,7 @@ namespace lhg {
 // LHG SEC END
 }
 
-struct __MaaToolkitUninit_t {
+struct MaaToolkitUninit__ft {
     using arguments_t = void;
     using return_t = unsigned char;
 };
@@ -1437,7 +1437,7 @@ namespace lhg {
 // LHG SEC END
 }
 
-struct __MaaToolkitFindDevice_t {
+struct MaaToolkitFindDevice__ft {
     using arguments_t = void;
     using return_t = unsigned long long;
 };
@@ -1449,13 +1449,13 @@ namespace lhg {
 // LHG SEC END
 }
 
-struct __MaaToolkitFindDeviceWithAdb_t {
-    struct __adb_path_t {
+struct MaaToolkitFindDeviceWithAdb__ft {
+    struct adb_path__at {
         using type = const char *;
         static constexpr size_t index = 0;
         static constexpr const char* const name = "adb_path";
     };
-    using arguments_t = std::tuple<__adb_path_t>;
+    using arguments_t = std::tuple<adb_path__at>;
     using return_t = unsigned long long;
 };
 
@@ -1466,7 +1466,7 @@ namespace lhg {
 // LHG SEC END
 }
 
-struct __MaaToolkitPostFindDevice_t {
+struct MaaToolkitPostFindDevice__ft {
     using arguments_t = void;
     using return_t = unsigned char;
 };
@@ -1478,13 +1478,13 @@ namespace lhg {
 // LHG SEC END
 }
 
-struct __MaaToolkitPostFindDeviceWithAdb_t {
-    struct __adb_path_t {
+struct MaaToolkitPostFindDeviceWithAdb__ft {
+    struct adb_path__at {
         using type = const char *;
         static constexpr size_t index = 0;
         static constexpr const char* const name = "adb_path";
     };
-    using arguments_t = std::tuple<__adb_path_t>;
+    using arguments_t = std::tuple<adb_path__at>;
     using return_t = unsigned char;
 };
 
@@ -1495,7 +1495,7 @@ namespace lhg {
 // LHG SEC END
 }
 
-struct __MaaToolkitIsFindDeviceCompleted_t {
+struct MaaToolkitIsFindDeviceCompleted__ft {
     using arguments_t = void;
     using return_t = unsigned char;
 };
@@ -1507,7 +1507,7 @@ namespace lhg {
 // LHG SEC END
 }
 
-struct __MaaToolkitWaitForFindDeviceToComplete_t {
+struct MaaToolkitWaitForFindDeviceToComplete__ft {
     using arguments_t = void;
     using return_t = unsigned long long;
 };
@@ -1519,7 +1519,7 @@ namespace lhg {
 // LHG SEC END
 }
 
-struct __MaaToolkitGetDeviceCount_t {
+struct MaaToolkitGetDeviceCount__ft {
     using arguments_t = void;
     using return_t = unsigned long long;
 };
@@ -1531,13 +1531,13 @@ namespace lhg {
 // LHG SEC END
 }
 
-struct __MaaToolkitGetDeviceName_t {
-    struct __index_t {
+struct MaaToolkitGetDeviceName__ft {
+    struct index__at {
         using type = unsigned long long;
         static constexpr size_t index = 0;
         static constexpr const char* const name = "index";
     };
-    using arguments_t = std::tuple<__index_t>;
+    using arguments_t = std::tuple<index__at>;
     using return_t = const char *;
 };
 
@@ -1548,13 +1548,13 @@ namespace lhg {
 // LHG SEC END
 }
 
-struct __MaaToolkitGetDeviceAdbPath_t {
-    struct __index_t {
+struct MaaToolkitGetDeviceAdbPath__ft {
+    struct index__at {
         using type = unsigned long long;
         static constexpr size_t index = 0;
         static constexpr const char* const name = "index";
     };
-    using arguments_t = std::tuple<__index_t>;
+    using arguments_t = std::tuple<index__at>;
     using return_t = const char *;
 };
 
@@ -1565,13 +1565,13 @@ namespace lhg {
 // LHG SEC END
 }
 
-struct __MaaToolkitGetDeviceAdbSerial_t {
-    struct __index_t {
+struct MaaToolkitGetDeviceAdbSerial__ft {
+    struct index__at {
         using type = unsigned long long;
         static constexpr size_t index = 0;
         static constexpr const char* const name = "index";
     };
-    using arguments_t = std::tuple<__index_t>;
+    using arguments_t = std::tuple<index__at>;
     using return_t = const char *;
 };
 
@@ -1582,13 +1582,13 @@ namespace lhg {
 // LHG SEC END
 }
 
-struct __MaaToolkitGetDeviceAdbControllerType_t {
-    struct __index_t {
+struct MaaToolkitGetDeviceAdbControllerType__ft {
+    struct index__at {
         using type = unsigned long long;
         static constexpr size_t index = 0;
         static constexpr const char* const name = "index";
     };
-    using arguments_t = std::tuple<__index_t>;
+    using arguments_t = std::tuple<index__at>;
     using return_t = int;
 };
 
@@ -1599,13 +1599,13 @@ namespace lhg {
 // LHG SEC END
 }
 
-struct __MaaToolkitGetDeviceAdbConfig_t {
-    struct __index_t {
+struct MaaToolkitGetDeviceAdbConfig__ft {
+    struct index__at {
         using type = unsigned long long;
         static constexpr size_t index = 0;
         static constexpr const char* const name = "index";
     };
-    using arguments_t = std::tuple<__index_t>;
+    using arguments_t = std::tuple<index__at>;
     using return_t = const char *;
 };
 
@@ -1616,28 +1616,28 @@ namespace lhg {
 // LHG SEC END
 }
 
-struct __MaaToolkitRegisterCustomRecognizerExecutor_t {
-    struct __handle_t {
+struct MaaToolkitRegisterCustomRecognizerExecutor__ft {
+    struct handle__at {
         using type = MaaInstanceAPI *;
         static constexpr size_t index = 0;
         static constexpr const char* const name = "handle";
     };
-    struct __recognizer_name_t {
+    struct recognizer_name__at {
         using type = const char *;
         static constexpr size_t index = 1;
         static constexpr const char* const name = "recognizer_name";
     };
-    struct __recognizer_exec_path_t {
+    struct recognizer_exec_path__at {
         using type = const char *;
         static constexpr size_t index = 2;
         static constexpr const char* const name = "recognizer_exec_path";
     };
-    struct __recognizer_exec_param_json_t {
+    struct recognizer_exec_param_json__at {
         using type = const char *;
         static constexpr size_t index = 3;
         static constexpr const char* const name = "recognizer_exec_param_json";
     };
-    using arguments_t = std::tuple<__handle_t, __recognizer_name_t, __recognizer_exec_path_t, __recognizer_exec_param_json_t>;
+    using arguments_t = std::tuple<handle__at, recognizer_name__at, recognizer_exec_path__at, recognizer_exec_param_json__at>;
     using return_t = unsigned char;
 };
 
@@ -1648,18 +1648,18 @@ namespace lhg {
 // LHG SEC END
 }
 
-struct __MaaToolkitUnregisterCustomRecognizerExecutor_t {
-    struct __handle_t {
+struct MaaToolkitUnregisterCustomRecognizerExecutor__ft {
+    struct handle__at {
         using type = MaaInstanceAPI *;
         static constexpr size_t index = 0;
         static constexpr const char* const name = "handle";
     };
-    struct __recognizer_name_t {
+    struct recognizer_name__at {
         using type = const char *;
         static constexpr size_t index = 1;
         static constexpr const char* const name = "recognizer_name";
     };
-    using arguments_t = std::tuple<__handle_t, __recognizer_name_t>;
+    using arguments_t = std::tuple<handle__at, recognizer_name__at>;
     using return_t = unsigned char;
 };
 
@@ -1670,28 +1670,28 @@ namespace lhg {
 // LHG SEC END
 }
 
-struct __MaaToolkitRegisterCustomActionExecutor_t {
-    struct __handle_t {
+struct MaaToolkitRegisterCustomActionExecutor__ft {
+    struct handle__at {
         using type = MaaInstanceAPI *;
         static constexpr size_t index = 0;
         static constexpr const char* const name = "handle";
     };
-    struct __action_name_t {
+    struct action_name__at {
         using type = const char *;
         static constexpr size_t index = 1;
         static constexpr const char* const name = "action_name";
     };
-    struct __action_exec_path_t {
+    struct action_exec_path__at {
         using type = const char *;
         static constexpr size_t index = 2;
         static constexpr const char* const name = "action_exec_path";
     };
-    struct __action_exec_param_json_t {
+    struct action_exec_param_json__at {
         using type = const char *;
         static constexpr size_t index = 3;
         static constexpr const char* const name = "action_exec_param_json";
     };
-    using arguments_t = std::tuple<__handle_t, __action_name_t, __action_exec_path_t, __action_exec_param_json_t>;
+    using arguments_t = std::tuple<handle__at, action_name__at, action_exec_path__at, action_exec_param_json__at>;
     using return_t = unsigned char;
 };
 
@@ -1702,18 +1702,18 @@ namespace lhg {
 // LHG SEC END
 }
 
-struct __MaaToolkitUnregisterCustomActionExecutor_t {
-    struct __handle_t {
+struct MaaToolkitUnregisterCustomActionExecutor__ft {
+    struct handle__at {
         using type = MaaInstanceAPI *;
         static constexpr size_t index = 0;
         static constexpr const char* const name = "handle";
     };
-    struct __action_name_t {
+    struct action_name__at {
         using type = const char *;
         static constexpr size_t index = 1;
         static constexpr const char* const name = "action_name";
     };
-    using arguments_t = std::tuple<__handle_t, __action_name_t>;
+    using arguments_t = std::tuple<handle__at, action_name__at>;
     using return_t = unsigned char;
 };
 
@@ -1724,18 +1724,18 @@ namespace lhg {
 // LHG SEC END
 }
 
-struct __MaaToolkitFindWindow_t {
-    struct __class_name_t {
+struct MaaToolkitFindWindow__ft {
+    struct class_name__at {
         using type = const char *;
         static constexpr size_t index = 0;
         static constexpr const char* const name = "class_name";
     };
-    struct __window_name_t {
+    struct window_name__at {
         using type = const char *;
         static constexpr size_t index = 1;
         static constexpr const char* const name = "window_name";
     };
-    using arguments_t = std::tuple<__class_name_t, __window_name_t>;
+    using arguments_t = std::tuple<class_name__at, window_name__at>;
     using return_t = unsigned long long;
 };
 
@@ -1746,18 +1746,18 @@ namespace lhg {
 // LHG SEC END
 }
 
-struct __MaaToolkitSearchWindow_t {
-    struct __class_name_t {
+struct MaaToolkitSearchWindow__ft {
+    struct class_name__at {
         using type = const char *;
         static constexpr size_t index = 0;
         static constexpr const char* const name = "class_name";
     };
-    struct __window_name_t {
+    struct window_name__at {
         using type = const char *;
         static constexpr size_t index = 1;
         static constexpr const char* const name = "window_name";
     };
-    using arguments_t = std::tuple<__class_name_t, __window_name_t>;
+    using arguments_t = std::tuple<class_name__at, window_name__at>;
     using return_t = unsigned long long;
 };
 
@@ -1768,13 +1768,13 @@ namespace lhg {
 // LHG SEC END
 }
 
-struct __MaaToolkitGetWindow_t {
-    struct __index_t {
+struct MaaToolkitGetWindow__ft {
+    struct index__at {
         using type = unsigned long long;
         static constexpr size_t index = 0;
         static constexpr const char* const name = "index";
     };
-    using arguments_t = std::tuple<__index_t>;
+    using arguments_t = std::tuple<index__at>;
     using return_t = unsigned long long;
 };
 
@@ -1785,7 +1785,7 @@ namespace lhg {
 // LHG SEC END
 }
 
-struct __MaaToolkitGetCursorWindow_t {
+struct MaaToolkitGetCursorWindow__ft {
     using arguments_t = void;
     using return_t = unsigned long long;
 };
@@ -1797,23 +1797,23 @@ namespace lhg {
 // LHG SEC END
 }
 
-struct __MaaControllerSetOptionString_t {
-    struct __ctrl_t {
+struct MaaControllerSetOptionString__ft {
+    struct ctrl__at {
         using type = MaaControllerAPI *;
         static constexpr size_t index = 0;
         static constexpr const char* const name = "ctrl";
     };
-    struct __key_t {
+    struct key__at {
         using type = int;
         static constexpr size_t index = 1;
         static constexpr const char* const name = "key";
     };
-    struct __value_t {
+    struct value__at {
         using type = const char *;
         static constexpr size_t index = 2;
         static constexpr const char* const name = "value";
     };
-    using arguments_t = std::tuple<__ctrl_t, __key_t, __value_t>;
+    using arguments_t = std::tuple<ctrl__at, key__at, value__at>;
     using return_t = unsigned char;
 };
 
@@ -1824,23 +1824,23 @@ namespace lhg {
 // LHG SEC END
 }
 
-struct __MaaControllerSetOptionInteger_t {
-    struct __ctrl_t {
+struct MaaControllerSetOptionInteger__ft {
+    struct ctrl__at {
         using type = MaaControllerAPI *;
         static constexpr size_t index = 0;
         static constexpr const char* const name = "ctrl";
     };
-    struct __key_t {
+    struct key__at {
         using type = int;
         static constexpr size_t index = 1;
         static constexpr const char* const name = "key";
     };
-    struct __value_t {
+    struct value__at {
         using type = int;
         static constexpr size_t index = 2;
         static constexpr const char* const name = "value";
     };
-    using arguments_t = std::tuple<__ctrl_t, __key_t, __value_t>;
+    using arguments_t = std::tuple<ctrl__at, key__at, value__at>;
     using return_t = unsigned char;
 };
 
@@ -1851,23 +1851,23 @@ namespace lhg {
 // LHG SEC END
 }
 
-struct __MaaControllerSetOptionBoolean_t {
-    struct __ctrl_t {
+struct MaaControllerSetOptionBoolean__ft {
+    struct ctrl__at {
         using type = MaaControllerAPI *;
         static constexpr size_t index = 0;
         static constexpr const char* const name = "ctrl";
     };
-    struct __key_t {
+    struct key__at {
         using type = int;
         static constexpr size_t index = 1;
         static constexpr const char* const name = "key";
     };
-    struct __value_t {
+    struct value__at {
         using type = bool;
         static constexpr size_t index = 2;
         static constexpr const char* const name = "value";
     };
-    using arguments_t = std::tuple<__ctrl_t, __key_t, __value_t>;
+    using arguments_t = std::tuple<ctrl__at, key__at, value__at>;
     using return_t = unsigned char;
 };
 
@@ -1878,18 +1878,18 @@ namespace lhg {
 // LHG SEC END
 }
 
-struct __MaaSetGlobalOptionString_t {
-    struct __key_t {
+struct MaaSetGlobalOptionString__ft {
+    struct key__at {
         using type = int;
         static constexpr size_t index = 0;
         static constexpr const char* const name = "key";
     };
-    struct __value_t {
+    struct value__at {
         using type = const char *;
         static constexpr size_t index = 1;
         static constexpr const char* const name = "value";
     };
-    using arguments_t = std::tuple<__key_t, __value_t>;
+    using arguments_t = std::tuple<key__at, value__at>;
     using return_t = unsigned char;
 };
 
@@ -1900,18 +1900,18 @@ namespace lhg {
 // LHG SEC END
 }
 
-struct __MaaSetGlobalOptionInteger_t {
-    struct __key_t {
+struct MaaSetGlobalOptionInteger__ft {
+    struct key__at {
         using type = int;
         static constexpr size_t index = 0;
         static constexpr const char* const name = "key";
     };
-    struct __value_t {
+    struct value__at {
         using type = int;
         static constexpr size_t index = 1;
         static constexpr const char* const name = "value";
     };
-    using arguments_t = std::tuple<__key_t, __value_t>;
+    using arguments_t = std::tuple<key__at, value__at>;
     using return_t = unsigned char;
 };
 
@@ -1922,18 +1922,18 @@ namespace lhg {
 // LHG SEC END
 }
 
-struct __MaaSetGlobalOptionBoolean_t {
-    struct __key_t {
+struct MaaSetGlobalOptionBoolean__ft {
+    struct key__at {
         using type = int;
         static constexpr size_t index = 0;
         static constexpr const char* const name = "key";
     };
-    struct __value_t {
+    struct value__at {
         using type = bool;
         static constexpr size_t index = 1;
         static constexpr const char* const name = "value";
     };
-    using arguments_t = std::tuple<__key_t, __value_t>;
+    using arguments_t = std::tuple<key__at, value__at>;
     using return_t = unsigned char;
 };
 
@@ -1962,12 +1962,12 @@ struct lhg::is_opaque<MaaControllerAPI *> {
 lhg::opaque_manager<MaaControllerAPI *>& lhg::is_opaque<MaaControllerAPI *>::manager = MaaControllerAPI__OpaqueManager;
 
 template<>
-struct lhg::is_opaque_free<MaaControllerAPI *, __MaaControllerDestroy_t> {
+struct lhg::is_opaque_free<MaaControllerAPI *, MaaControllerDestroy__ft> {
     static constexpr const bool value = true;
 };
 
 template<>
-struct lhg::is_opaque_non_alloc<MaaControllerAPI *, __MaaGetController_t> {
+struct lhg::is_opaque_non_alloc<MaaControllerAPI *, MaaGetController__ft> {
     static constexpr const bool value = true;
 };
 
@@ -1989,12 +1989,12 @@ struct lhg::is_opaque<MaaResourceAPI *> {
 lhg::opaque_manager<MaaResourceAPI *>& lhg::is_opaque<MaaResourceAPI *>::manager = MaaResourceAPI__OpaqueManager;
 
 template<>
-struct lhg::is_opaque_free<MaaResourceAPI *, __MaaResourceDestroy_t> {
+struct lhg::is_opaque_free<MaaResourceAPI *, MaaResourceDestroy__ft> {
     static constexpr const bool value = true;
 };
 
 template<>
-struct lhg::is_opaque_non_alloc<MaaResourceAPI *, __MaaGetResource_t> {
+struct lhg::is_opaque_non_alloc<MaaResourceAPI *, MaaGetResource__ft> {
     static constexpr const bool value = true;
 };
 
@@ -2016,7 +2016,7 @@ struct lhg::is_opaque<MaaInstanceAPI *> {
 lhg::opaque_manager<MaaInstanceAPI *>& lhg::is_opaque<MaaInstanceAPI *>::manager = MaaInstanceAPI__OpaqueManager;
 
 template<>
-struct lhg::is_opaque_free<MaaInstanceAPI *, __MaaDestroy_t> {
+struct lhg::is_opaque_free<MaaInstanceAPI *, MaaDestroy__ft> {
     static constexpr const bool value = true;
 };
 
@@ -2038,7 +2038,7 @@ struct lhg::is_opaque<MaaImageBuffer *> {
 lhg::opaque_manager<MaaImageBuffer *>& lhg::is_opaque<MaaImageBuffer *>::manager = MaaImageBuffer__OpaqueManager;
 
 template<>
-struct lhg::is_opaque_free<MaaImageBuffer *, __MaaDestroyImageBuffer_t> {
+struct lhg::is_opaque_free<MaaImageBuffer *, MaaDestroyImageBuffer__ft> {
     static constexpr const bool value = true;
 };
 
@@ -2047,16 +2047,16 @@ struct lhg::is_opaque_free<MaaImageBuffer *, __MaaDestroyImageBuffer_t> {
 
 // LHG SEC END
 std::optional<json::object> MaaAdbControllerCreate_Wrapper(json::object __param, std::string &__error) {
-    if (!lhg::perform_check<__MaaAdbControllerCreate_t>(__param, __error)) {
+    if (!lhg::perform_check<MaaAdbControllerCreate__ft>(__param, __error)) {
         return std::nullopt;
     }
 
-    typename lhg::arg_set<__MaaAdbControllerCreate_t>::temp_type __temp;
-    typename lhg::arg_set<__MaaAdbControllerCreate_t>::call_type __call;
-    if (!lhg::perform_input<__MaaAdbControllerCreate_t>(__temp, __param, __error)) {
+    typename lhg::arg_set<MaaAdbControllerCreate__ft>::temp_type __temp;
+    typename lhg::arg_set<MaaAdbControllerCreate__ft>::call_type __call;
+    if (!lhg::perform_input<MaaAdbControllerCreate__ft>(__temp, __param, __error)) {
         return std::nullopt;
     }
-    if (!lhg::perform_input_fix<__MaaAdbControllerCreate_t>(__call, __temp, __param, __error)) {
+    if (!lhg::perform_input_fix<MaaAdbControllerCreate__ft>(__call, __temp, __param, __error)) {
         return std::nullopt;
     }
 
@@ -2065,7 +2065,7 @@ std::optional<json::object> MaaAdbControllerCreate_Wrapper(json::object __param,
 // LHG SEC DEF
     auto __ret = __return;
 // LHG SEC END
-    return lhg::perform_output<__MaaAdbControllerCreate_t>(__call, __ret);
+    return lhg::perform_output<MaaAdbControllerCreate__ft>(__call, __ret);
 }
 
 // LHG SEC BEGIN lhg.custom.MaaWin32ControllerCreate.func
@@ -2073,16 +2073,16 @@ std::optional<json::object> MaaAdbControllerCreate_Wrapper(json::object __param,
 
 // LHG SEC END
 std::optional<json::object> MaaWin32ControllerCreate_Wrapper(json::object __param, std::string &__error) {
-    if (!lhg::perform_check<__MaaWin32ControllerCreate_t>(__param, __error)) {
+    if (!lhg::perform_check<MaaWin32ControllerCreate__ft>(__param, __error)) {
         return std::nullopt;
     }
 
-    typename lhg::arg_set<__MaaWin32ControllerCreate_t>::temp_type __temp;
-    typename lhg::arg_set<__MaaWin32ControllerCreate_t>::call_type __call;
-    if (!lhg::perform_input<__MaaWin32ControllerCreate_t>(__temp, __param, __error)) {
+    typename lhg::arg_set<MaaWin32ControllerCreate__ft>::temp_type __temp;
+    typename lhg::arg_set<MaaWin32ControllerCreate__ft>::call_type __call;
+    if (!lhg::perform_input<MaaWin32ControllerCreate__ft>(__temp, __param, __error)) {
         return std::nullopt;
     }
-    if (!lhg::perform_input_fix<__MaaWin32ControllerCreate_t>(__call, __temp, __param, __error)) {
+    if (!lhg::perform_input_fix<MaaWin32ControllerCreate__ft>(__call, __temp, __param, __error)) {
         return std::nullopt;
     }
 
@@ -2091,7 +2091,7 @@ std::optional<json::object> MaaWin32ControllerCreate_Wrapper(json::object __para
 // LHG SEC DEF
     auto __ret = __return;
 // LHG SEC END
-    return lhg::perform_output<__MaaWin32ControllerCreate_t>(__call, __ret);
+    return lhg::perform_output<MaaWin32ControllerCreate__ft>(__call, __ret);
 }
 
 // LHG SEC BEGIN lhg.custom.MaaAdbControllerCreateV2.func
@@ -2099,16 +2099,16 @@ std::optional<json::object> MaaWin32ControllerCreate_Wrapper(json::object __para
 
 // LHG SEC END
 std::optional<json::object> MaaAdbControllerCreateV2_Wrapper(json::object __param, std::string &__error) {
-    if (!lhg::perform_check<__MaaAdbControllerCreateV2_t>(__param, __error)) {
+    if (!lhg::perform_check<MaaAdbControllerCreateV2__ft>(__param, __error)) {
         return std::nullopt;
     }
 
-    typename lhg::arg_set<__MaaAdbControllerCreateV2_t>::temp_type __temp;
-    typename lhg::arg_set<__MaaAdbControllerCreateV2_t>::call_type __call;
-    if (!lhg::perform_input<__MaaAdbControllerCreateV2_t>(__temp, __param, __error)) {
+    typename lhg::arg_set<MaaAdbControllerCreateV2__ft>::temp_type __temp;
+    typename lhg::arg_set<MaaAdbControllerCreateV2__ft>::call_type __call;
+    if (!lhg::perform_input<MaaAdbControllerCreateV2__ft>(__temp, __param, __error)) {
         return std::nullopt;
     }
-    if (!lhg::perform_input_fix<__MaaAdbControllerCreateV2_t>(__call, __temp, __param, __error)) {
+    if (!lhg::perform_input_fix<MaaAdbControllerCreateV2__ft>(__call, __temp, __param, __error)) {
         return std::nullopt;
     }
 
@@ -2117,7 +2117,7 @@ std::optional<json::object> MaaAdbControllerCreateV2_Wrapper(json::object __para
 // LHG SEC DEF
     auto __ret = __return;
 // LHG SEC END
-    return lhg::perform_output<__MaaAdbControllerCreateV2_t>(__call, __ret);
+    return lhg::perform_output<MaaAdbControllerCreateV2__ft>(__call, __ret);
 }
 
 // LHG SEC BEGIN lhg.custom.MaaThriftControllerCreate.func
@@ -2125,16 +2125,16 @@ std::optional<json::object> MaaAdbControllerCreateV2_Wrapper(json::object __para
 
 // LHG SEC END
 std::optional<json::object> MaaThriftControllerCreate_Wrapper(json::object __param, std::string &__error) {
-    if (!lhg::perform_check<__MaaThriftControllerCreate_t>(__param, __error)) {
+    if (!lhg::perform_check<MaaThriftControllerCreate__ft>(__param, __error)) {
         return std::nullopt;
     }
 
-    typename lhg::arg_set<__MaaThriftControllerCreate_t>::temp_type __temp;
-    typename lhg::arg_set<__MaaThriftControllerCreate_t>::call_type __call;
-    if (!lhg::perform_input<__MaaThriftControllerCreate_t>(__temp, __param, __error)) {
+    typename lhg::arg_set<MaaThriftControllerCreate__ft>::temp_type __temp;
+    typename lhg::arg_set<MaaThriftControllerCreate__ft>::call_type __call;
+    if (!lhg::perform_input<MaaThriftControllerCreate__ft>(__temp, __param, __error)) {
         return std::nullopt;
     }
-    if (!lhg::perform_input_fix<__MaaThriftControllerCreate_t>(__call, __temp, __param, __error)) {
+    if (!lhg::perform_input_fix<MaaThriftControllerCreate__ft>(__call, __temp, __param, __error)) {
         return std::nullopt;
     }
 
@@ -2143,7 +2143,7 @@ std::optional<json::object> MaaThriftControllerCreate_Wrapper(json::object __par
 // LHG SEC DEF
     auto __ret = __return;
 // LHG SEC END
-    return lhg::perform_output<__MaaThriftControllerCreate_t>(__call, __ret);
+    return lhg::perform_output<MaaThriftControllerCreate__ft>(__call, __ret);
 }
 
 // LHG SEC BEGIN lhg.custom.MaaDbgControllerCreate.func
@@ -2151,16 +2151,16 @@ std::optional<json::object> MaaThriftControllerCreate_Wrapper(json::object __par
 
 // LHG SEC END
 std::optional<json::object> MaaDbgControllerCreate_Wrapper(json::object __param, std::string &__error) {
-    if (!lhg::perform_check<__MaaDbgControllerCreate_t>(__param, __error)) {
+    if (!lhg::perform_check<MaaDbgControllerCreate__ft>(__param, __error)) {
         return std::nullopt;
     }
 
-    typename lhg::arg_set<__MaaDbgControllerCreate_t>::temp_type __temp;
-    typename lhg::arg_set<__MaaDbgControllerCreate_t>::call_type __call;
-    if (!lhg::perform_input<__MaaDbgControllerCreate_t>(__temp, __param, __error)) {
+    typename lhg::arg_set<MaaDbgControllerCreate__ft>::temp_type __temp;
+    typename lhg::arg_set<MaaDbgControllerCreate__ft>::call_type __call;
+    if (!lhg::perform_input<MaaDbgControllerCreate__ft>(__temp, __param, __error)) {
         return std::nullopt;
     }
-    if (!lhg::perform_input_fix<__MaaDbgControllerCreate_t>(__call, __temp, __param, __error)) {
+    if (!lhg::perform_input_fix<MaaDbgControllerCreate__ft>(__call, __temp, __param, __error)) {
         return std::nullopt;
     }
 
@@ -2169,7 +2169,7 @@ std::optional<json::object> MaaDbgControllerCreate_Wrapper(json::object __param,
 // LHG SEC DEF
     auto __ret = __return;
 // LHG SEC END
-    return lhg::perform_output<__MaaDbgControllerCreate_t>(__call, __ret);
+    return lhg::perform_output<MaaDbgControllerCreate__ft>(__call, __ret);
 }
 
 // LHG SEC BEGIN lhg.custom.MaaControllerDestroy.func
@@ -2177,16 +2177,16 @@ std::optional<json::object> MaaDbgControllerCreate_Wrapper(json::object __param,
 
 // LHG SEC END
 std::optional<json::object> MaaControllerDestroy_Wrapper(json::object __param, std::string &__error) {
-    if (!lhg::perform_check<__MaaControllerDestroy_t>(__param, __error)) {
+    if (!lhg::perform_check<MaaControllerDestroy__ft>(__param, __error)) {
         return std::nullopt;
     }
 
-    typename lhg::arg_set<__MaaControllerDestroy_t>::temp_type __temp;
-    typename lhg::arg_set<__MaaControllerDestroy_t>::call_type __call;
-    if (!lhg::perform_input<__MaaControllerDestroy_t>(__temp, __param, __error)) {
+    typename lhg::arg_set<MaaControllerDestroy__ft>::temp_type __temp;
+    typename lhg::arg_set<MaaControllerDestroy__ft>::call_type __call;
+    if (!lhg::perform_input<MaaControllerDestroy__ft>(__temp, __param, __error)) {
         return std::nullopt;
     }
-    if (!lhg::perform_input_fix<__MaaControllerDestroy_t>(__call, __temp, __param, __error)) {
+    if (!lhg::perform_input_fix<MaaControllerDestroy__ft>(__call, __temp, __param, __error)) {
         return std::nullopt;
     }
 
@@ -2195,7 +2195,7 @@ std::optional<json::object> MaaControllerDestroy_Wrapper(json::object __param, s
 // LHG SEC DEF
     int __ret = 0;
 // LHG SEC END
-    return lhg::perform_output<__MaaControllerDestroy_t>(__call, __ret);
+    return lhg::perform_output<MaaControllerDestroy__ft>(__call, __ret);
 }
 
 // LHG SEC BEGIN lhg.custom.MaaControllerPostConnection.func
@@ -2203,16 +2203,16 @@ std::optional<json::object> MaaControllerDestroy_Wrapper(json::object __param, s
 
 // LHG SEC END
 std::optional<json::object> MaaControllerPostConnection_Wrapper(json::object __param, std::string &__error) {
-    if (!lhg::perform_check<__MaaControllerPostConnection_t>(__param, __error)) {
+    if (!lhg::perform_check<MaaControllerPostConnection__ft>(__param, __error)) {
         return std::nullopt;
     }
 
-    typename lhg::arg_set<__MaaControllerPostConnection_t>::temp_type __temp;
-    typename lhg::arg_set<__MaaControllerPostConnection_t>::call_type __call;
-    if (!lhg::perform_input<__MaaControllerPostConnection_t>(__temp, __param, __error)) {
+    typename lhg::arg_set<MaaControllerPostConnection__ft>::temp_type __temp;
+    typename lhg::arg_set<MaaControllerPostConnection__ft>::call_type __call;
+    if (!lhg::perform_input<MaaControllerPostConnection__ft>(__temp, __param, __error)) {
         return std::nullopt;
     }
-    if (!lhg::perform_input_fix<__MaaControllerPostConnection_t>(__call, __temp, __param, __error)) {
+    if (!lhg::perform_input_fix<MaaControllerPostConnection__ft>(__call, __temp, __param, __error)) {
         return std::nullopt;
     }
 
@@ -2221,7 +2221,7 @@ std::optional<json::object> MaaControllerPostConnection_Wrapper(json::object __p
 // LHG SEC DEF
     auto __ret = __return;
 // LHG SEC END
-    return lhg::perform_output<__MaaControllerPostConnection_t>(__call, __ret);
+    return lhg::perform_output<MaaControllerPostConnection__ft>(__call, __ret);
 }
 
 // LHG SEC BEGIN lhg.custom.MaaControllerPostClick.func
@@ -2229,16 +2229,16 @@ std::optional<json::object> MaaControllerPostConnection_Wrapper(json::object __p
 
 // LHG SEC END
 std::optional<json::object> MaaControllerPostClick_Wrapper(json::object __param, std::string &__error) {
-    if (!lhg::perform_check<__MaaControllerPostClick_t>(__param, __error)) {
+    if (!lhg::perform_check<MaaControllerPostClick__ft>(__param, __error)) {
         return std::nullopt;
     }
 
-    typename lhg::arg_set<__MaaControllerPostClick_t>::temp_type __temp;
-    typename lhg::arg_set<__MaaControllerPostClick_t>::call_type __call;
-    if (!lhg::perform_input<__MaaControllerPostClick_t>(__temp, __param, __error)) {
+    typename lhg::arg_set<MaaControllerPostClick__ft>::temp_type __temp;
+    typename lhg::arg_set<MaaControllerPostClick__ft>::call_type __call;
+    if (!lhg::perform_input<MaaControllerPostClick__ft>(__temp, __param, __error)) {
         return std::nullopt;
     }
-    if (!lhg::perform_input_fix<__MaaControllerPostClick_t>(__call, __temp, __param, __error)) {
+    if (!lhg::perform_input_fix<MaaControllerPostClick__ft>(__call, __temp, __param, __error)) {
         return std::nullopt;
     }
 
@@ -2247,7 +2247,7 @@ std::optional<json::object> MaaControllerPostClick_Wrapper(json::object __param,
 // LHG SEC DEF
     auto __ret = __return;
 // LHG SEC END
-    return lhg::perform_output<__MaaControllerPostClick_t>(__call, __ret);
+    return lhg::perform_output<MaaControllerPostClick__ft>(__call, __ret);
 }
 
 // LHG SEC BEGIN lhg.custom.MaaControllerPostSwipe.func
@@ -2255,16 +2255,16 @@ std::optional<json::object> MaaControllerPostClick_Wrapper(json::object __param,
 
 // LHG SEC END
 std::optional<json::object> MaaControllerPostSwipe_Wrapper(json::object __param, std::string &__error) {
-    if (!lhg::perform_check<__MaaControllerPostSwipe_t>(__param, __error)) {
+    if (!lhg::perform_check<MaaControllerPostSwipe__ft>(__param, __error)) {
         return std::nullopt;
     }
 
-    typename lhg::arg_set<__MaaControllerPostSwipe_t>::temp_type __temp;
-    typename lhg::arg_set<__MaaControllerPostSwipe_t>::call_type __call;
-    if (!lhg::perform_input<__MaaControllerPostSwipe_t>(__temp, __param, __error)) {
+    typename lhg::arg_set<MaaControllerPostSwipe__ft>::temp_type __temp;
+    typename lhg::arg_set<MaaControllerPostSwipe__ft>::call_type __call;
+    if (!lhg::perform_input<MaaControllerPostSwipe__ft>(__temp, __param, __error)) {
         return std::nullopt;
     }
-    if (!lhg::perform_input_fix<__MaaControllerPostSwipe_t>(__call, __temp, __param, __error)) {
+    if (!lhg::perform_input_fix<MaaControllerPostSwipe__ft>(__call, __temp, __param, __error)) {
         return std::nullopt;
     }
 
@@ -2273,7 +2273,7 @@ std::optional<json::object> MaaControllerPostSwipe_Wrapper(json::object __param,
 // LHG SEC DEF
     auto __ret = __return;
 // LHG SEC END
-    return lhg::perform_output<__MaaControllerPostSwipe_t>(__call, __ret);
+    return lhg::perform_output<MaaControllerPostSwipe__ft>(__call, __ret);
 }
 
 // LHG SEC BEGIN lhg.custom.MaaControllerPostPressKey.func
@@ -2281,16 +2281,16 @@ std::optional<json::object> MaaControllerPostSwipe_Wrapper(json::object __param,
 
 // LHG SEC END
 std::optional<json::object> MaaControllerPostPressKey_Wrapper(json::object __param, std::string &__error) {
-    if (!lhg::perform_check<__MaaControllerPostPressKey_t>(__param, __error)) {
+    if (!lhg::perform_check<MaaControllerPostPressKey__ft>(__param, __error)) {
         return std::nullopt;
     }
 
-    typename lhg::arg_set<__MaaControllerPostPressKey_t>::temp_type __temp;
-    typename lhg::arg_set<__MaaControllerPostPressKey_t>::call_type __call;
-    if (!lhg::perform_input<__MaaControllerPostPressKey_t>(__temp, __param, __error)) {
+    typename lhg::arg_set<MaaControllerPostPressKey__ft>::temp_type __temp;
+    typename lhg::arg_set<MaaControllerPostPressKey__ft>::call_type __call;
+    if (!lhg::perform_input<MaaControllerPostPressKey__ft>(__temp, __param, __error)) {
         return std::nullopt;
     }
-    if (!lhg::perform_input_fix<__MaaControllerPostPressKey_t>(__call, __temp, __param, __error)) {
+    if (!lhg::perform_input_fix<MaaControllerPostPressKey__ft>(__call, __temp, __param, __error)) {
         return std::nullopt;
     }
 
@@ -2299,7 +2299,7 @@ std::optional<json::object> MaaControllerPostPressKey_Wrapper(json::object __par
 // LHG SEC DEF
     auto __ret = __return;
 // LHG SEC END
-    return lhg::perform_output<__MaaControllerPostPressKey_t>(__call, __ret);
+    return lhg::perform_output<MaaControllerPostPressKey__ft>(__call, __ret);
 }
 
 // LHG SEC BEGIN lhg.custom.MaaControllerPostInputText.func
@@ -2307,16 +2307,16 @@ std::optional<json::object> MaaControllerPostPressKey_Wrapper(json::object __par
 
 // LHG SEC END
 std::optional<json::object> MaaControllerPostInputText_Wrapper(json::object __param, std::string &__error) {
-    if (!lhg::perform_check<__MaaControllerPostInputText_t>(__param, __error)) {
+    if (!lhg::perform_check<MaaControllerPostInputText__ft>(__param, __error)) {
         return std::nullopt;
     }
 
-    typename lhg::arg_set<__MaaControllerPostInputText_t>::temp_type __temp;
-    typename lhg::arg_set<__MaaControllerPostInputText_t>::call_type __call;
-    if (!lhg::perform_input<__MaaControllerPostInputText_t>(__temp, __param, __error)) {
+    typename lhg::arg_set<MaaControllerPostInputText__ft>::temp_type __temp;
+    typename lhg::arg_set<MaaControllerPostInputText__ft>::call_type __call;
+    if (!lhg::perform_input<MaaControllerPostInputText__ft>(__temp, __param, __error)) {
         return std::nullopt;
     }
-    if (!lhg::perform_input_fix<__MaaControllerPostInputText_t>(__call, __temp, __param, __error)) {
+    if (!lhg::perform_input_fix<MaaControllerPostInputText__ft>(__call, __temp, __param, __error)) {
         return std::nullopt;
     }
 
@@ -2325,7 +2325,7 @@ std::optional<json::object> MaaControllerPostInputText_Wrapper(json::object __pa
 // LHG SEC DEF
     auto __ret = __return;
 // LHG SEC END
-    return lhg::perform_output<__MaaControllerPostInputText_t>(__call, __ret);
+    return lhg::perform_output<MaaControllerPostInputText__ft>(__call, __ret);
 }
 
 // LHG SEC BEGIN lhg.custom.MaaControllerPostTouchDown.func
@@ -2333,16 +2333,16 @@ std::optional<json::object> MaaControllerPostInputText_Wrapper(json::object __pa
 
 // LHG SEC END
 std::optional<json::object> MaaControllerPostTouchDown_Wrapper(json::object __param, std::string &__error) {
-    if (!lhg::perform_check<__MaaControllerPostTouchDown_t>(__param, __error)) {
+    if (!lhg::perform_check<MaaControllerPostTouchDown__ft>(__param, __error)) {
         return std::nullopt;
     }
 
-    typename lhg::arg_set<__MaaControllerPostTouchDown_t>::temp_type __temp;
-    typename lhg::arg_set<__MaaControllerPostTouchDown_t>::call_type __call;
-    if (!lhg::perform_input<__MaaControllerPostTouchDown_t>(__temp, __param, __error)) {
+    typename lhg::arg_set<MaaControllerPostTouchDown__ft>::temp_type __temp;
+    typename lhg::arg_set<MaaControllerPostTouchDown__ft>::call_type __call;
+    if (!lhg::perform_input<MaaControllerPostTouchDown__ft>(__temp, __param, __error)) {
         return std::nullopt;
     }
-    if (!lhg::perform_input_fix<__MaaControllerPostTouchDown_t>(__call, __temp, __param, __error)) {
+    if (!lhg::perform_input_fix<MaaControllerPostTouchDown__ft>(__call, __temp, __param, __error)) {
         return std::nullopt;
     }
 
@@ -2351,7 +2351,7 @@ std::optional<json::object> MaaControllerPostTouchDown_Wrapper(json::object __pa
 // LHG SEC DEF
     auto __ret = __return;
 // LHG SEC END
-    return lhg::perform_output<__MaaControllerPostTouchDown_t>(__call, __ret);
+    return lhg::perform_output<MaaControllerPostTouchDown__ft>(__call, __ret);
 }
 
 // LHG SEC BEGIN lhg.custom.MaaControllerPostTouchMove.func
@@ -2359,16 +2359,16 @@ std::optional<json::object> MaaControllerPostTouchDown_Wrapper(json::object __pa
 
 // LHG SEC END
 std::optional<json::object> MaaControllerPostTouchMove_Wrapper(json::object __param, std::string &__error) {
-    if (!lhg::perform_check<__MaaControllerPostTouchMove_t>(__param, __error)) {
+    if (!lhg::perform_check<MaaControllerPostTouchMove__ft>(__param, __error)) {
         return std::nullopt;
     }
 
-    typename lhg::arg_set<__MaaControllerPostTouchMove_t>::temp_type __temp;
-    typename lhg::arg_set<__MaaControllerPostTouchMove_t>::call_type __call;
-    if (!lhg::perform_input<__MaaControllerPostTouchMove_t>(__temp, __param, __error)) {
+    typename lhg::arg_set<MaaControllerPostTouchMove__ft>::temp_type __temp;
+    typename lhg::arg_set<MaaControllerPostTouchMove__ft>::call_type __call;
+    if (!lhg::perform_input<MaaControllerPostTouchMove__ft>(__temp, __param, __error)) {
         return std::nullopt;
     }
-    if (!lhg::perform_input_fix<__MaaControllerPostTouchMove_t>(__call, __temp, __param, __error)) {
+    if (!lhg::perform_input_fix<MaaControllerPostTouchMove__ft>(__call, __temp, __param, __error)) {
         return std::nullopt;
     }
 
@@ -2377,7 +2377,7 @@ std::optional<json::object> MaaControllerPostTouchMove_Wrapper(json::object __pa
 // LHG SEC DEF
     auto __ret = __return;
 // LHG SEC END
-    return lhg::perform_output<__MaaControllerPostTouchMove_t>(__call, __ret);
+    return lhg::perform_output<MaaControllerPostTouchMove__ft>(__call, __ret);
 }
 
 // LHG SEC BEGIN lhg.custom.MaaControllerPostTouchUp.func
@@ -2385,16 +2385,16 @@ std::optional<json::object> MaaControllerPostTouchMove_Wrapper(json::object __pa
 
 // LHG SEC END
 std::optional<json::object> MaaControllerPostTouchUp_Wrapper(json::object __param, std::string &__error) {
-    if (!lhg::perform_check<__MaaControllerPostTouchUp_t>(__param, __error)) {
+    if (!lhg::perform_check<MaaControllerPostTouchUp__ft>(__param, __error)) {
         return std::nullopt;
     }
 
-    typename lhg::arg_set<__MaaControllerPostTouchUp_t>::temp_type __temp;
-    typename lhg::arg_set<__MaaControllerPostTouchUp_t>::call_type __call;
-    if (!lhg::perform_input<__MaaControllerPostTouchUp_t>(__temp, __param, __error)) {
+    typename lhg::arg_set<MaaControllerPostTouchUp__ft>::temp_type __temp;
+    typename lhg::arg_set<MaaControllerPostTouchUp__ft>::call_type __call;
+    if (!lhg::perform_input<MaaControllerPostTouchUp__ft>(__temp, __param, __error)) {
         return std::nullopt;
     }
-    if (!lhg::perform_input_fix<__MaaControllerPostTouchUp_t>(__call, __temp, __param, __error)) {
+    if (!lhg::perform_input_fix<MaaControllerPostTouchUp__ft>(__call, __temp, __param, __error)) {
         return std::nullopt;
     }
 
@@ -2403,7 +2403,7 @@ std::optional<json::object> MaaControllerPostTouchUp_Wrapper(json::object __para
 // LHG SEC DEF
     auto __ret = __return;
 // LHG SEC END
-    return lhg::perform_output<__MaaControllerPostTouchUp_t>(__call, __ret);
+    return lhg::perform_output<MaaControllerPostTouchUp__ft>(__call, __ret);
 }
 
 // LHG SEC BEGIN lhg.custom.MaaControllerPostScreencap.func
@@ -2411,16 +2411,16 @@ std::optional<json::object> MaaControllerPostTouchUp_Wrapper(json::object __para
 
 // LHG SEC END
 std::optional<json::object> MaaControllerPostScreencap_Wrapper(json::object __param, std::string &__error) {
-    if (!lhg::perform_check<__MaaControllerPostScreencap_t>(__param, __error)) {
+    if (!lhg::perform_check<MaaControllerPostScreencap__ft>(__param, __error)) {
         return std::nullopt;
     }
 
-    typename lhg::arg_set<__MaaControllerPostScreencap_t>::temp_type __temp;
-    typename lhg::arg_set<__MaaControllerPostScreencap_t>::call_type __call;
-    if (!lhg::perform_input<__MaaControllerPostScreencap_t>(__temp, __param, __error)) {
+    typename lhg::arg_set<MaaControllerPostScreencap__ft>::temp_type __temp;
+    typename lhg::arg_set<MaaControllerPostScreencap__ft>::call_type __call;
+    if (!lhg::perform_input<MaaControllerPostScreencap__ft>(__temp, __param, __error)) {
         return std::nullopt;
     }
-    if (!lhg::perform_input_fix<__MaaControllerPostScreencap_t>(__call, __temp, __param, __error)) {
+    if (!lhg::perform_input_fix<MaaControllerPostScreencap__ft>(__call, __temp, __param, __error)) {
         return std::nullopt;
     }
 
@@ -2429,7 +2429,7 @@ std::optional<json::object> MaaControllerPostScreencap_Wrapper(json::object __pa
 // LHG SEC DEF
     auto __ret = __return;
 // LHG SEC END
-    return lhg::perform_output<__MaaControllerPostScreencap_t>(__call, __ret);
+    return lhg::perform_output<MaaControllerPostScreencap__ft>(__call, __ret);
 }
 
 // LHG SEC BEGIN lhg.custom.MaaControllerStatus.func
@@ -2437,16 +2437,16 @@ std::optional<json::object> MaaControllerPostScreencap_Wrapper(json::object __pa
 
 // LHG SEC END
 std::optional<json::object> MaaControllerStatus_Wrapper(json::object __param, std::string &__error) {
-    if (!lhg::perform_check<__MaaControllerStatus_t>(__param, __error)) {
+    if (!lhg::perform_check<MaaControllerStatus__ft>(__param, __error)) {
         return std::nullopt;
     }
 
-    typename lhg::arg_set<__MaaControllerStatus_t>::temp_type __temp;
-    typename lhg::arg_set<__MaaControllerStatus_t>::call_type __call;
-    if (!lhg::perform_input<__MaaControllerStatus_t>(__temp, __param, __error)) {
+    typename lhg::arg_set<MaaControllerStatus__ft>::temp_type __temp;
+    typename lhg::arg_set<MaaControllerStatus__ft>::call_type __call;
+    if (!lhg::perform_input<MaaControllerStatus__ft>(__temp, __param, __error)) {
         return std::nullopt;
     }
-    if (!lhg::perform_input_fix<__MaaControllerStatus_t>(__call, __temp, __param, __error)) {
+    if (!lhg::perform_input_fix<MaaControllerStatus__ft>(__call, __temp, __param, __error)) {
         return std::nullopt;
     }
 
@@ -2455,7 +2455,7 @@ std::optional<json::object> MaaControllerStatus_Wrapper(json::object __param, st
 // LHG SEC DEF
     auto __ret = __return;
 // LHG SEC END
-    return lhg::perform_output<__MaaControllerStatus_t>(__call, __ret);
+    return lhg::perform_output<MaaControllerStatus__ft>(__call, __ret);
 }
 
 // LHG SEC BEGIN lhg.custom.MaaControllerWait.func
@@ -2463,16 +2463,16 @@ std::optional<json::object> MaaControllerStatus_Wrapper(json::object __param, st
 
 // LHG SEC END
 std::optional<json::object> MaaControllerWait_Wrapper(json::object __param, std::string &__error) {
-    if (!lhg::perform_check<__MaaControllerWait_t>(__param, __error)) {
+    if (!lhg::perform_check<MaaControllerWait__ft>(__param, __error)) {
         return std::nullopt;
     }
 
-    typename lhg::arg_set<__MaaControllerWait_t>::temp_type __temp;
-    typename lhg::arg_set<__MaaControllerWait_t>::call_type __call;
-    if (!lhg::perform_input<__MaaControllerWait_t>(__temp, __param, __error)) {
+    typename lhg::arg_set<MaaControllerWait__ft>::temp_type __temp;
+    typename lhg::arg_set<MaaControllerWait__ft>::call_type __call;
+    if (!lhg::perform_input<MaaControllerWait__ft>(__temp, __param, __error)) {
         return std::nullopt;
     }
-    if (!lhg::perform_input_fix<__MaaControllerWait_t>(__call, __temp, __param, __error)) {
+    if (!lhg::perform_input_fix<MaaControllerWait__ft>(__call, __temp, __param, __error)) {
         return std::nullopt;
     }
 
@@ -2481,7 +2481,7 @@ std::optional<json::object> MaaControllerWait_Wrapper(json::object __param, std:
 // LHG SEC DEF
     auto __ret = __return;
 // LHG SEC END
-    return lhg::perform_output<__MaaControllerWait_t>(__call, __ret);
+    return lhg::perform_output<MaaControllerWait__ft>(__call, __ret);
 }
 
 // LHG SEC BEGIN lhg.custom.MaaControllerConnected.func
@@ -2489,16 +2489,16 @@ std::optional<json::object> MaaControllerWait_Wrapper(json::object __param, std:
 
 // LHG SEC END
 std::optional<json::object> MaaControllerConnected_Wrapper(json::object __param, std::string &__error) {
-    if (!lhg::perform_check<__MaaControllerConnected_t>(__param, __error)) {
+    if (!lhg::perform_check<MaaControllerConnected__ft>(__param, __error)) {
         return std::nullopt;
     }
 
-    typename lhg::arg_set<__MaaControllerConnected_t>::temp_type __temp;
-    typename lhg::arg_set<__MaaControllerConnected_t>::call_type __call;
-    if (!lhg::perform_input<__MaaControllerConnected_t>(__temp, __param, __error)) {
+    typename lhg::arg_set<MaaControllerConnected__ft>::temp_type __temp;
+    typename lhg::arg_set<MaaControllerConnected__ft>::call_type __call;
+    if (!lhg::perform_input<MaaControllerConnected__ft>(__temp, __param, __error)) {
         return std::nullopt;
     }
-    if (!lhg::perform_input_fix<__MaaControllerConnected_t>(__call, __temp, __param, __error)) {
+    if (!lhg::perform_input_fix<MaaControllerConnected__ft>(__call, __temp, __param, __error)) {
         return std::nullopt;
     }
 
@@ -2507,7 +2507,7 @@ std::optional<json::object> MaaControllerConnected_Wrapper(json::object __param,
 // LHG SEC DEF
     auto __ret = __return;
 // LHG SEC END
-    return lhg::perform_output<__MaaControllerConnected_t>(__call, __ret);
+    return lhg::perform_output<MaaControllerConnected__ft>(__call, __ret);
 }
 
 // LHG SEC BEGIN lhg.custom.MaaControllerGetImage.func
@@ -2515,16 +2515,16 @@ std::optional<json::object> MaaControllerConnected_Wrapper(json::object __param,
 
 // LHG SEC END
 std::optional<json::object> MaaControllerGetImage_Wrapper(json::object __param, std::string &__error) {
-    if (!lhg::perform_check<__MaaControllerGetImage_t>(__param, __error)) {
+    if (!lhg::perform_check<MaaControllerGetImage__ft>(__param, __error)) {
         return std::nullopt;
     }
 
-    typename lhg::arg_set<__MaaControllerGetImage_t>::temp_type __temp;
-    typename lhg::arg_set<__MaaControllerGetImage_t>::call_type __call;
-    if (!lhg::perform_input<__MaaControllerGetImage_t>(__temp, __param, __error)) {
+    typename lhg::arg_set<MaaControllerGetImage__ft>::temp_type __temp;
+    typename lhg::arg_set<MaaControllerGetImage__ft>::call_type __call;
+    if (!lhg::perform_input<MaaControllerGetImage__ft>(__temp, __param, __error)) {
         return std::nullopt;
     }
-    if (!lhg::perform_input_fix<__MaaControllerGetImage_t>(__call, __temp, __param, __error)) {
+    if (!lhg::perform_input_fix<MaaControllerGetImage__ft>(__call, __temp, __param, __error)) {
         return std::nullopt;
     }
 
@@ -2533,7 +2533,7 @@ std::optional<json::object> MaaControllerGetImage_Wrapper(json::object __param, 
 // LHG SEC DEF
     auto __ret = __return;
 // LHG SEC END
-    return lhg::perform_output<__MaaControllerGetImage_t>(__call, __ret);
+    return lhg::perform_output<MaaControllerGetImage__ft>(__call, __ret);
 }
 
 // LHG SEC BEGIN lhg.custom.MaaControllerGetUUID.func
@@ -2541,16 +2541,16 @@ std::optional<json::object> MaaControllerGetImage_Wrapper(json::object __param, 
 
 // LHG SEC END
 std::optional<json::object> MaaControllerGetUUID_Wrapper(json::object __param, std::string &__error) {
-    if (!lhg::perform_check<__MaaControllerGetUUID_t>(__param, __error)) {
+    if (!lhg::perform_check<MaaControllerGetUUID__ft>(__param, __error)) {
         return std::nullopt;
     }
 
-    typename lhg::arg_set<__MaaControllerGetUUID_t>::temp_type __temp;
-    typename lhg::arg_set<__MaaControllerGetUUID_t>::call_type __call;
-    if (!lhg::perform_input<__MaaControllerGetUUID_t>(__temp, __param, __error)) {
+    typename lhg::arg_set<MaaControllerGetUUID__ft>::temp_type __temp;
+    typename lhg::arg_set<MaaControllerGetUUID__ft>::call_type __call;
+    if (!lhg::perform_input<MaaControllerGetUUID__ft>(__temp, __param, __error)) {
         return std::nullopt;
     }
-    if (!lhg::perform_input_fix<__MaaControllerGetUUID_t>(__call, __temp, __param, __error)) {
+    if (!lhg::perform_input_fix<MaaControllerGetUUID__ft>(__call, __temp, __param, __error)) {
         return std::nullopt;
     }
 
@@ -2559,7 +2559,7 @@ std::optional<json::object> MaaControllerGetUUID_Wrapper(json::object __param, s
 // LHG SEC DEF
     auto __ret = __return;
 // LHG SEC END
-    return lhg::perform_output<__MaaControllerGetUUID_t>(__call, __ret);
+    return lhg::perform_output<MaaControllerGetUUID__ft>(__call, __ret);
 }
 
 // LHG SEC BEGIN lhg.custom.MaaCreate.func
@@ -2567,16 +2567,16 @@ std::optional<json::object> MaaControllerGetUUID_Wrapper(json::object __param, s
 
 // LHG SEC END
 std::optional<json::object> MaaCreate_Wrapper(json::object __param, std::string &__error) {
-    if (!lhg::perform_check<__MaaCreate_t>(__param, __error)) {
+    if (!lhg::perform_check<MaaCreate__ft>(__param, __error)) {
         return std::nullopt;
     }
 
-    typename lhg::arg_set<__MaaCreate_t>::temp_type __temp;
-    typename lhg::arg_set<__MaaCreate_t>::call_type __call;
-    if (!lhg::perform_input<__MaaCreate_t>(__temp, __param, __error)) {
+    typename lhg::arg_set<MaaCreate__ft>::temp_type __temp;
+    typename lhg::arg_set<MaaCreate__ft>::call_type __call;
+    if (!lhg::perform_input<MaaCreate__ft>(__temp, __param, __error)) {
         return std::nullopt;
     }
-    if (!lhg::perform_input_fix<__MaaCreate_t>(__call, __temp, __param, __error)) {
+    if (!lhg::perform_input_fix<MaaCreate__ft>(__call, __temp, __param, __error)) {
         return std::nullopt;
     }
 
@@ -2585,7 +2585,7 @@ std::optional<json::object> MaaCreate_Wrapper(json::object __param, std::string 
 // LHG SEC DEF
     auto __ret = __return;
 // LHG SEC END
-    return lhg::perform_output<__MaaCreate_t>(__call, __ret);
+    return lhg::perform_output<MaaCreate__ft>(__call, __ret);
 }
 
 // LHG SEC BEGIN lhg.custom.MaaDestroy.func
@@ -2593,16 +2593,16 @@ std::optional<json::object> MaaCreate_Wrapper(json::object __param, std::string 
 
 // LHG SEC END
 std::optional<json::object> MaaDestroy_Wrapper(json::object __param, std::string &__error) {
-    if (!lhg::perform_check<__MaaDestroy_t>(__param, __error)) {
+    if (!lhg::perform_check<MaaDestroy__ft>(__param, __error)) {
         return std::nullopt;
     }
 
-    typename lhg::arg_set<__MaaDestroy_t>::temp_type __temp;
-    typename lhg::arg_set<__MaaDestroy_t>::call_type __call;
-    if (!lhg::perform_input<__MaaDestroy_t>(__temp, __param, __error)) {
+    typename lhg::arg_set<MaaDestroy__ft>::temp_type __temp;
+    typename lhg::arg_set<MaaDestroy__ft>::call_type __call;
+    if (!lhg::perform_input<MaaDestroy__ft>(__temp, __param, __error)) {
         return std::nullopt;
     }
-    if (!lhg::perform_input_fix<__MaaDestroy_t>(__call, __temp, __param, __error)) {
+    if (!lhg::perform_input_fix<MaaDestroy__ft>(__call, __temp, __param, __error)) {
         return std::nullopt;
     }
 
@@ -2611,7 +2611,7 @@ std::optional<json::object> MaaDestroy_Wrapper(json::object __param, std::string
 // LHG SEC DEF
     int __ret = 0;
 // LHG SEC END
-    return lhg::perform_output<__MaaDestroy_t>(__call, __ret);
+    return lhg::perform_output<MaaDestroy__ft>(__call, __ret);
 }
 
 // LHG SEC BEGIN lhg.custom.MaaBindResource.func
@@ -2619,16 +2619,16 @@ std::optional<json::object> MaaDestroy_Wrapper(json::object __param, std::string
 
 // LHG SEC END
 std::optional<json::object> MaaBindResource_Wrapper(json::object __param, std::string &__error) {
-    if (!lhg::perform_check<__MaaBindResource_t>(__param, __error)) {
+    if (!lhg::perform_check<MaaBindResource__ft>(__param, __error)) {
         return std::nullopt;
     }
 
-    typename lhg::arg_set<__MaaBindResource_t>::temp_type __temp;
-    typename lhg::arg_set<__MaaBindResource_t>::call_type __call;
-    if (!lhg::perform_input<__MaaBindResource_t>(__temp, __param, __error)) {
+    typename lhg::arg_set<MaaBindResource__ft>::temp_type __temp;
+    typename lhg::arg_set<MaaBindResource__ft>::call_type __call;
+    if (!lhg::perform_input<MaaBindResource__ft>(__temp, __param, __error)) {
         return std::nullopt;
     }
-    if (!lhg::perform_input_fix<__MaaBindResource_t>(__call, __temp, __param, __error)) {
+    if (!lhg::perform_input_fix<MaaBindResource__ft>(__call, __temp, __param, __error)) {
         return std::nullopt;
     }
 
@@ -2637,7 +2637,7 @@ std::optional<json::object> MaaBindResource_Wrapper(json::object __param, std::s
 // LHG SEC DEF
     auto __ret = __return;
 // LHG SEC END
-    return lhg::perform_output<__MaaBindResource_t>(__call, __ret);
+    return lhg::perform_output<MaaBindResource__ft>(__call, __ret);
 }
 
 // LHG SEC BEGIN lhg.custom.MaaBindController.func
@@ -2645,16 +2645,16 @@ std::optional<json::object> MaaBindResource_Wrapper(json::object __param, std::s
 
 // LHG SEC END
 std::optional<json::object> MaaBindController_Wrapper(json::object __param, std::string &__error) {
-    if (!lhg::perform_check<__MaaBindController_t>(__param, __error)) {
+    if (!lhg::perform_check<MaaBindController__ft>(__param, __error)) {
         return std::nullopt;
     }
 
-    typename lhg::arg_set<__MaaBindController_t>::temp_type __temp;
-    typename lhg::arg_set<__MaaBindController_t>::call_type __call;
-    if (!lhg::perform_input<__MaaBindController_t>(__temp, __param, __error)) {
+    typename lhg::arg_set<MaaBindController__ft>::temp_type __temp;
+    typename lhg::arg_set<MaaBindController__ft>::call_type __call;
+    if (!lhg::perform_input<MaaBindController__ft>(__temp, __param, __error)) {
         return std::nullopt;
     }
-    if (!lhg::perform_input_fix<__MaaBindController_t>(__call, __temp, __param, __error)) {
+    if (!lhg::perform_input_fix<MaaBindController__ft>(__call, __temp, __param, __error)) {
         return std::nullopt;
     }
 
@@ -2663,7 +2663,7 @@ std::optional<json::object> MaaBindController_Wrapper(json::object __param, std:
 // LHG SEC DEF
     auto __ret = __return;
 // LHG SEC END
-    return lhg::perform_output<__MaaBindController_t>(__call, __ret);
+    return lhg::perform_output<MaaBindController__ft>(__call, __ret);
 }
 
 // LHG SEC BEGIN lhg.custom.MaaInited.func
@@ -2671,16 +2671,16 @@ std::optional<json::object> MaaBindController_Wrapper(json::object __param, std:
 
 // LHG SEC END
 std::optional<json::object> MaaInited_Wrapper(json::object __param, std::string &__error) {
-    if (!lhg::perform_check<__MaaInited_t>(__param, __error)) {
+    if (!lhg::perform_check<MaaInited__ft>(__param, __error)) {
         return std::nullopt;
     }
 
-    typename lhg::arg_set<__MaaInited_t>::temp_type __temp;
-    typename lhg::arg_set<__MaaInited_t>::call_type __call;
-    if (!lhg::perform_input<__MaaInited_t>(__temp, __param, __error)) {
+    typename lhg::arg_set<MaaInited__ft>::temp_type __temp;
+    typename lhg::arg_set<MaaInited__ft>::call_type __call;
+    if (!lhg::perform_input<MaaInited__ft>(__temp, __param, __error)) {
         return std::nullopt;
     }
-    if (!lhg::perform_input_fix<__MaaInited_t>(__call, __temp, __param, __error)) {
+    if (!lhg::perform_input_fix<MaaInited__ft>(__call, __temp, __param, __error)) {
         return std::nullopt;
     }
 
@@ -2689,7 +2689,7 @@ std::optional<json::object> MaaInited_Wrapper(json::object __param, std::string 
 // LHG SEC DEF
     auto __ret = __return;
 // LHG SEC END
-    return lhg::perform_output<__MaaInited_t>(__call, __ret);
+    return lhg::perform_output<MaaInited__ft>(__call, __ret);
 }
 
 // LHG SEC BEGIN lhg.custom.MaaClearCustomRecognizer.func
@@ -2697,16 +2697,16 @@ std::optional<json::object> MaaInited_Wrapper(json::object __param, std::string 
 
 // LHG SEC END
 std::optional<json::object> MaaClearCustomRecognizer_Wrapper(json::object __param, std::string &__error) {
-    if (!lhg::perform_check<__MaaClearCustomRecognizer_t>(__param, __error)) {
+    if (!lhg::perform_check<MaaClearCustomRecognizer__ft>(__param, __error)) {
         return std::nullopt;
     }
 
-    typename lhg::arg_set<__MaaClearCustomRecognizer_t>::temp_type __temp;
-    typename lhg::arg_set<__MaaClearCustomRecognizer_t>::call_type __call;
-    if (!lhg::perform_input<__MaaClearCustomRecognizer_t>(__temp, __param, __error)) {
+    typename lhg::arg_set<MaaClearCustomRecognizer__ft>::temp_type __temp;
+    typename lhg::arg_set<MaaClearCustomRecognizer__ft>::call_type __call;
+    if (!lhg::perform_input<MaaClearCustomRecognizer__ft>(__temp, __param, __error)) {
         return std::nullopt;
     }
-    if (!lhg::perform_input_fix<__MaaClearCustomRecognizer_t>(__call, __temp, __param, __error)) {
+    if (!lhg::perform_input_fix<MaaClearCustomRecognizer__ft>(__call, __temp, __param, __error)) {
         return std::nullopt;
     }
 
@@ -2715,7 +2715,7 @@ std::optional<json::object> MaaClearCustomRecognizer_Wrapper(json::object __para
 // LHG SEC DEF
     auto __ret = __return;
 // LHG SEC END
-    return lhg::perform_output<__MaaClearCustomRecognizer_t>(__call, __ret);
+    return lhg::perform_output<MaaClearCustomRecognizer__ft>(__call, __ret);
 }
 
 // LHG SEC BEGIN lhg.custom.MaaClearCustomAction.func
@@ -2723,16 +2723,16 @@ std::optional<json::object> MaaClearCustomRecognizer_Wrapper(json::object __para
 
 // LHG SEC END
 std::optional<json::object> MaaClearCustomAction_Wrapper(json::object __param, std::string &__error) {
-    if (!lhg::perform_check<__MaaClearCustomAction_t>(__param, __error)) {
+    if (!lhg::perform_check<MaaClearCustomAction__ft>(__param, __error)) {
         return std::nullopt;
     }
 
-    typename lhg::arg_set<__MaaClearCustomAction_t>::temp_type __temp;
-    typename lhg::arg_set<__MaaClearCustomAction_t>::call_type __call;
-    if (!lhg::perform_input<__MaaClearCustomAction_t>(__temp, __param, __error)) {
+    typename lhg::arg_set<MaaClearCustomAction__ft>::temp_type __temp;
+    typename lhg::arg_set<MaaClearCustomAction__ft>::call_type __call;
+    if (!lhg::perform_input<MaaClearCustomAction__ft>(__temp, __param, __error)) {
         return std::nullopt;
     }
-    if (!lhg::perform_input_fix<__MaaClearCustomAction_t>(__call, __temp, __param, __error)) {
+    if (!lhg::perform_input_fix<MaaClearCustomAction__ft>(__call, __temp, __param, __error)) {
         return std::nullopt;
     }
 
@@ -2741,7 +2741,7 @@ std::optional<json::object> MaaClearCustomAction_Wrapper(json::object __param, s
 // LHG SEC DEF
     auto __ret = __return;
 // LHG SEC END
-    return lhg::perform_output<__MaaClearCustomAction_t>(__call, __ret);
+    return lhg::perform_output<MaaClearCustomAction__ft>(__call, __ret);
 }
 
 // LHG SEC BEGIN lhg.custom.MaaPostTask.func
@@ -2749,16 +2749,16 @@ std::optional<json::object> MaaClearCustomAction_Wrapper(json::object __param, s
 
 // LHG SEC END
 std::optional<json::object> MaaPostTask_Wrapper(json::object __param, std::string &__error) {
-    if (!lhg::perform_check<__MaaPostTask_t>(__param, __error)) {
+    if (!lhg::perform_check<MaaPostTask__ft>(__param, __error)) {
         return std::nullopt;
     }
 
-    typename lhg::arg_set<__MaaPostTask_t>::temp_type __temp;
-    typename lhg::arg_set<__MaaPostTask_t>::call_type __call;
-    if (!lhg::perform_input<__MaaPostTask_t>(__temp, __param, __error)) {
+    typename lhg::arg_set<MaaPostTask__ft>::temp_type __temp;
+    typename lhg::arg_set<MaaPostTask__ft>::call_type __call;
+    if (!lhg::perform_input<MaaPostTask__ft>(__temp, __param, __error)) {
         return std::nullopt;
     }
-    if (!lhg::perform_input_fix<__MaaPostTask_t>(__call, __temp, __param, __error)) {
+    if (!lhg::perform_input_fix<MaaPostTask__ft>(__call, __temp, __param, __error)) {
         return std::nullopt;
     }
 
@@ -2767,7 +2767,7 @@ std::optional<json::object> MaaPostTask_Wrapper(json::object __param, std::strin
 // LHG SEC DEF
     auto __ret = __return;
 // LHG SEC END
-    return lhg::perform_output<__MaaPostTask_t>(__call, __ret);
+    return lhg::perform_output<MaaPostTask__ft>(__call, __ret);
 }
 
 // LHG SEC BEGIN lhg.custom.MaaSetTaskParam.func
@@ -2775,16 +2775,16 @@ std::optional<json::object> MaaPostTask_Wrapper(json::object __param, std::strin
 
 // LHG SEC END
 std::optional<json::object> MaaSetTaskParam_Wrapper(json::object __param, std::string &__error) {
-    if (!lhg::perform_check<__MaaSetTaskParam_t>(__param, __error)) {
+    if (!lhg::perform_check<MaaSetTaskParam__ft>(__param, __error)) {
         return std::nullopt;
     }
 
-    typename lhg::arg_set<__MaaSetTaskParam_t>::temp_type __temp;
-    typename lhg::arg_set<__MaaSetTaskParam_t>::call_type __call;
-    if (!lhg::perform_input<__MaaSetTaskParam_t>(__temp, __param, __error)) {
+    typename lhg::arg_set<MaaSetTaskParam__ft>::temp_type __temp;
+    typename lhg::arg_set<MaaSetTaskParam__ft>::call_type __call;
+    if (!lhg::perform_input<MaaSetTaskParam__ft>(__temp, __param, __error)) {
         return std::nullopt;
     }
-    if (!lhg::perform_input_fix<__MaaSetTaskParam_t>(__call, __temp, __param, __error)) {
+    if (!lhg::perform_input_fix<MaaSetTaskParam__ft>(__call, __temp, __param, __error)) {
         return std::nullopt;
     }
 
@@ -2793,7 +2793,7 @@ std::optional<json::object> MaaSetTaskParam_Wrapper(json::object __param, std::s
 // LHG SEC DEF
     auto __ret = __return;
 // LHG SEC END
-    return lhg::perform_output<__MaaSetTaskParam_t>(__call, __ret);
+    return lhg::perform_output<MaaSetTaskParam__ft>(__call, __ret);
 }
 
 // LHG SEC BEGIN lhg.custom.MaaTaskStatus.func
@@ -2801,16 +2801,16 @@ std::optional<json::object> MaaSetTaskParam_Wrapper(json::object __param, std::s
 
 // LHG SEC END
 std::optional<json::object> MaaTaskStatus_Wrapper(json::object __param, std::string &__error) {
-    if (!lhg::perform_check<__MaaTaskStatus_t>(__param, __error)) {
+    if (!lhg::perform_check<MaaTaskStatus__ft>(__param, __error)) {
         return std::nullopt;
     }
 
-    typename lhg::arg_set<__MaaTaskStatus_t>::temp_type __temp;
-    typename lhg::arg_set<__MaaTaskStatus_t>::call_type __call;
-    if (!lhg::perform_input<__MaaTaskStatus_t>(__temp, __param, __error)) {
+    typename lhg::arg_set<MaaTaskStatus__ft>::temp_type __temp;
+    typename lhg::arg_set<MaaTaskStatus__ft>::call_type __call;
+    if (!lhg::perform_input<MaaTaskStatus__ft>(__temp, __param, __error)) {
         return std::nullopt;
     }
-    if (!lhg::perform_input_fix<__MaaTaskStatus_t>(__call, __temp, __param, __error)) {
+    if (!lhg::perform_input_fix<MaaTaskStatus__ft>(__call, __temp, __param, __error)) {
         return std::nullopt;
     }
 
@@ -2819,7 +2819,7 @@ std::optional<json::object> MaaTaskStatus_Wrapper(json::object __param, std::str
 // LHG SEC DEF
     auto __ret = __return;
 // LHG SEC END
-    return lhg::perform_output<__MaaTaskStatus_t>(__call, __ret);
+    return lhg::perform_output<MaaTaskStatus__ft>(__call, __ret);
 }
 
 // LHG SEC BEGIN lhg.custom.MaaWaitTask.func
@@ -2827,16 +2827,16 @@ std::optional<json::object> MaaTaskStatus_Wrapper(json::object __param, std::str
 
 // LHG SEC END
 std::optional<json::object> MaaWaitTask_Wrapper(json::object __param, std::string &__error) {
-    if (!lhg::perform_check<__MaaWaitTask_t>(__param, __error)) {
+    if (!lhg::perform_check<MaaWaitTask__ft>(__param, __error)) {
         return std::nullopt;
     }
 
-    typename lhg::arg_set<__MaaWaitTask_t>::temp_type __temp;
-    typename lhg::arg_set<__MaaWaitTask_t>::call_type __call;
-    if (!lhg::perform_input<__MaaWaitTask_t>(__temp, __param, __error)) {
+    typename lhg::arg_set<MaaWaitTask__ft>::temp_type __temp;
+    typename lhg::arg_set<MaaWaitTask__ft>::call_type __call;
+    if (!lhg::perform_input<MaaWaitTask__ft>(__temp, __param, __error)) {
         return std::nullopt;
     }
-    if (!lhg::perform_input_fix<__MaaWaitTask_t>(__call, __temp, __param, __error)) {
+    if (!lhg::perform_input_fix<MaaWaitTask__ft>(__call, __temp, __param, __error)) {
         return std::nullopt;
     }
 
@@ -2845,7 +2845,7 @@ std::optional<json::object> MaaWaitTask_Wrapper(json::object __param, std::strin
 // LHG SEC DEF
     auto __ret = __return;
 // LHG SEC END
-    return lhg::perform_output<__MaaWaitTask_t>(__call, __ret);
+    return lhg::perform_output<MaaWaitTask__ft>(__call, __ret);
 }
 
 // LHG SEC BEGIN lhg.custom.MaaTaskAllFinished.func
@@ -2853,16 +2853,16 @@ std::optional<json::object> MaaWaitTask_Wrapper(json::object __param, std::strin
 
 // LHG SEC END
 std::optional<json::object> MaaTaskAllFinished_Wrapper(json::object __param, std::string &__error) {
-    if (!lhg::perform_check<__MaaTaskAllFinished_t>(__param, __error)) {
+    if (!lhg::perform_check<MaaTaskAllFinished__ft>(__param, __error)) {
         return std::nullopt;
     }
 
-    typename lhg::arg_set<__MaaTaskAllFinished_t>::temp_type __temp;
-    typename lhg::arg_set<__MaaTaskAllFinished_t>::call_type __call;
-    if (!lhg::perform_input<__MaaTaskAllFinished_t>(__temp, __param, __error)) {
+    typename lhg::arg_set<MaaTaskAllFinished__ft>::temp_type __temp;
+    typename lhg::arg_set<MaaTaskAllFinished__ft>::call_type __call;
+    if (!lhg::perform_input<MaaTaskAllFinished__ft>(__temp, __param, __error)) {
         return std::nullopt;
     }
-    if (!lhg::perform_input_fix<__MaaTaskAllFinished_t>(__call, __temp, __param, __error)) {
+    if (!lhg::perform_input_fix<MaaTaskAllFinished__ft>(__call, __temp, __param, __error)) {
         return std::nullopt;
     }
 
@@ -2871,7 +2871,7 @@ std::optional<json::object> MaaTaskAllFinished_Wrapper(json::object __param, std
 // LHG SEC DEF
     auto __ret = __return;
 // LHG SEC END
-    return lhg::perform_output<__MaaTaskAllFinished_t>(__call, __ret);
+    return lhg::perform_output<MaaTaskAllFinished__ft>(__call, __ret);
 }
 
 // LHG SEC BEGIN lhg.custom.MaaPostStop.func
@@ -2879,16 +2879,16 @@ std::optional<json::object> MaaTaskAllFinished_Wrapper(json::object __param, std
 
 // LHG SEC END
 std::optional<json::object> MaaPostStop_Wrapper(json::object __param, std::string &__error) {
-    if (!lhg::perform_check<__MaaPostStop_t>(__param, __error)) {
+    if (!lhg::perform_check<MaaPostStop__ft>(__param, __error)) {
         return std::nullopt;
     }
 
-    typename lhg::arg_set<__MaaPostStop_t>::temp_type __temp;
-    typename lhg::arg_set<__MaaPostStop_t>::call_type __call;
-    if (!lhg::perform_input<__MaaPostStop_t>(__temp, __param, __error)) {
+    typename lhg::arg_set<MaaPostStop__ft>::temp_type __temp;
+    typename lhg::arg_set<MaaPostStop__ft>::call_type __call;
+    if (!lhg::perform_input<MaaPostStop__ft>(__temp, __param, __error)) {
         return std::nullopt;
     }
-    if (!lhg::perform_input_fix<__MaaPostStop_t>(__call, __temp, __param, __error)) {
+    if (!lhg::perform_input_fix<MaaPostStop__ft>(__call, __temp, __param, __error)) {
         return std::nullopt;
     }
 
@@ -2897,7 +2897,7 @@ std::optional<json::object> MaaPostStop_Wrapper(json::object __param, std::strin
 // LHG SEC DEF
     auto __ret = __return;
 // LHG SEC END
-    return lhg::perform_output<__MaaPostStop_t>(__call, __ret);
+    return lhg::perform_output<MaaPostStop__ft>(__call, __ret);
 }
 
 // LHG SEC BEGIN lhg.custom.MaaStop.func
@@ -2905,16 +2905,16 @@ std::optional<json::object> MaaPostStop_Wrapper(json::object __param, std::strin
 
 // LHG SEC END
 std::optional<json::object> MaaStop_Wrapper(json::object __param, std::string &__error) {
-    if (!lhg::perform_check<__MaaStop_t>(__param, __error)) {
+    if (!lhg::perform_check<MaaStop__ft>(__param, __error)) {
         return std::nullopt;
     }
 
-    typename lhg::arg_set<__MaaStop_t>::temp_type __temp;
-    typename lhg::arg_set<__MaaStop_t>::call_type __call;
-    if (!lhg::perform_input<__MaaStop_t>(__temp, __param, __error)) {
+    typename lhg::arg_set<MaaStop__ft>::temp_type __temp;
+    typename lhg::arg_set<MaaStop__ft>::call_type __call;
+    if (!lhg::perform_input<MaaStop__ft>(__temp, __param, __error)) {
         return std::nullopt;
     }
-    if (!lhg::perform_input_fix<__MaaStop_t>(__call, __temp, __param, __error)) {
+    if (!lhg::perform_input_fix<MaaStop__ft>(__call, __temp, __param, __error)) {
         return std::nullopt;
     }
 
@@ -2923,7 +2923,7 @@ std::optional<json::object> MaaStop_Wrapper(json::object __param, std::string &_
 // LHG SEC DEF
     auto __ret = __return;
 // LHG SEC END
-    return lhg::perform_output<__MaaStop_t>(__call, __ret);
+    return lhg::perform_output<MaaStop__ft>(__call, __ret);
 }
 
 // LHG SEC BEGIN lhg.custom.MaaGetResource.func
@@ -2931,16 +2931,16 @@ std::optional<json::object> MaaStop_Wrapper(json::object __param, std::string &_
 
 // LHG SEC END
 std::optional<json::object> MaaGetResource_Wrapper(json::object __param, std::string &__error) {
-    if (!lhg::perform_check<__MaaGetResource_t>(__param, __error)) {
+    if (!lhg::perform_check<MaaGetResource__ft>(__param, __error)) {
         return std::nullopt;
     }
 
-    typename lhg::arg_set<__MaaGetResource_t>::temp_type __temp;
-    typename lhg::arg_set<__MaaGetResource_t>::call_type __call;
-    if (!lhg::perform_input<__MaaGetResource_t>(__temp, __param, __error)) {
+    typename lhg::arg_set<MaaGetResource__ft>::temp_type __temp;
+    typename lhg::arg_set<MaaGetResource__ft>::call_type __call;
+    if (!lhg::perform_input<MaaGetResource__ft>(__temp, __param, __error)) {
         return std::nullopt;
     }
-    if (!lhg::perform_input_fix<__MaaGetResource_t>(__call, __temp, __param, __error)) {
+    if (!lhg::perform_input_fix<MaaGetResource__ft>(__call, __temp, __param, __error)) {
         return std::nullopt;
     }
 
@@ -2949,7 +2949,7 @@ std::optional<json::object> MaaGetResource_Wrapper(json::object __param, std::st
 // LHG SEC DEF
     auto __ret = __return;
 // LHG SEC END
-    return lhg::perform_output<__MaaGetResource_t>(__call, __ret);
+    return lhg::perform_output<MaaGetResource__ft>(__call, __ret);
 }
 
 // LHG SEC BEGIN lhg.custom.MaaGetController.func
@@ -2957,16 +2957,16 @@ std::optional<json::object> MaaGetResource_Wrapper(json::object __param, std::st
 
 // LHG SEC END
 std::optional<json::object> MaaGetController_Wrapper(json::object __param, std::string &__error) {
-    if (!lhg::perform_check<__MaaGetController_t>(__param, __error)) {
+    if (!lhg::perform_check<MaaGetController__ft>(__param, __error)) {
         return std::nullopt;
     }
 
-    typename lhg::arg_set<__MaaGetController_t>::temp_type __temp;
-    typename lhg::arg_set<__MaaGetController_t>::call_type __call;
-    if (!lhg::perform_input<__MaaGetController_t>(__temp, __param, __error)) {
+    typename lhg::arg_set<MaaGetController__ft>::temp_type __temp;
+    typename lhg::arg_set<MaaGetController__ft>::call_type __call;
+    if (!lhg::perform_input<MaaGetController__ft>(__temp, __param, __error)) {
         return std::nullopt;
     }
-    if (!lhg::perform_input_fix<__MaaGetController_t>(__call, __temp, __param, __error)) {
+    if (!lhg::perform_input_fix<MaaGetController__ft>(__call, __temp, __param, __error)) {
         return std::nullopt;
     }
 
@@ -2975,7 +2975,7 @@ std::optional<json::object> MaaGetController_Wrapper(json::object __param, std::
 // LHG SEC DEF
     auto __ret = __return;
 // LHG SEC END
-    return lhg::perform_output<__MaaGetController_t>(__call, __ret);
+    return lhg::perform_output<MaaGetController__ft>(__call, __ret);
 }
 
 // LHG SEC BEGIN lhg.custom.MaaResourceCreate.func
@@ -2983,16 +2983,16 @@ std::optional<json::object> MaaGetController_Wrapper(json::object __param, std::
 
 // LHG SEC END
 std::optional<json::object> MaaResourceCreate_Wrapper(json::object __param, std::string &__error) {
-    if (!lhg::perform_check<__MaaResourceCreate_t>(__param, __error)) {
+    if (!lhg::perform_check<MaaResourceCreate__ft>(__param, __error)) {
         return std::nullopt;
     }
 
-    typename lhg::arg_set<__MaaResourceCreate_t>::temp_type __temp;
-    typename lhg::arg_set<__MaaResourceCreate_t>::call_type __call;
-    if (!lhg::perform_input<__MaaResourceCreate_t>(__temp, __param, __error)) {
+    typename lhg::arg_set<MaaResourceCreate__ft>::temp_type __temp;
+    typename lhg::arg_set<MaaResourceCreate__ft>::call_type __call;
+    if (!lhg::perform_input<MaaResourceCreate__ft>(__temp, __param, __error)) {
         return std::nullopt;
     }
-    if (!lhg::perform_input_fix<__MaaResourceCreate_t>(__call, __temp, __param, __error)) {
+    if (!lhg::perform_input_fix<MaaResourceCreate__ft>(__call, __temp, __param, __error)) {
         return std::nullopt;
     }
 
@@ -3001,7 +3001,7 @@ std::optional<json::object> MaaResourceCreate_Wrapper(json::object __param, std:
 // LHG SEC DEF
     auto __ret = __return;
 // LHG SEC END
-    return lhg::perform_output<__MaaResourceCreate_t>(__call, __ret);
+    return lhg::perform_output<MaaResourceCreate__ft>(__call, __ret);
 }
 
 // LHG SEC BEGIN lhg.custom.MaaResourceDestroy.func
@@ -3009,16 +3009,16 @@ std::optional<json::object> MaaResourceCreate_Wrapper(json::object __param, std:
 
 // LHG SEC END
 std::optional<json::object> MaaResourceDestroy_Wrapper(json::object __param, std::string &__error) {
-    if (!lhg::perform_check<__MaaResourceDestroy_t>(__param, __error)) {
+    if (!lhg::perform_check<MaaResourceDestroy__ft>(__param, __error)) {
         return std::nullopt;
     }
 
-    typename lhg::arg_set<__MaaResourceDestroy_t>::temp_type __temp;
-    typename lhg::arg_set<__MaaResourceDestroy_t>::call_type __call;
-    if (!lhg::perform_input<__MaaResourceDestroy_t>(__temp, __param, __error)) {
+    typename lhg::arg_set<MaaResourceDestroy__ft>::temp_type __temp;
+    typename lhg::arg_set<MaaResourceDestroy__ft>::call_type __call;
+    if (!lhg::perform_input<MaaResourceDestroy__ft>(__temp, __param, __error)) {
         return std::nullopt;
     }
-    if (!lhg::perform_input_fix<__MaaResourceDestroy_t>(__call, __temp, __param, __error)) {
+    if (!lhg::perform_input_fix<MaaResourceDestroy__ft>(__call, __temp, __param, __error)) {
         return std::nullopt;
     }
 
@@ -3027,7 +3027,7 @@ std::optional<json::object> MaaResourceDestroy_Wrapper(json::object __param, std
 // LHG SEC DEF
     int __ret = 0;
 // LHG SEC END
-    return lhg::perform_output<__MaaResourceDestroy_t>(__call, __ret);
+    return lhg::perform_output<MaaResourceDestroy__ft>(__call, __ret);
 }
 
 // LHG SEC BEGIN lhg.custom.MaaResourcePostPath.func
@@ -3035,16 +3035,16 @@ std::optional<json::object> MaaResourceDestroy_Wrapper(json::object __param, std
 
 // LHG SEC END
 std::optional<json::object> MaaResourcePostPath_Wrapper(json::object __param, std::string &__error) {
-    if (!lhg::perform_check<__MaaResourcePostPath_t>(__param, __error)) {
+    if (!lhg::perform_check<MaaResourcePostPath__ft>(__param, __error)) {
         return std::nullopt;
     }
 
-    typename lhg::arg_set<__MaaResourcePostPath_t>::temp_type __temp;
-    typename lhg::arg_set<__MaaResourcePostPath_t>::call_type __call;
-    if (!lhg::perform_input<__MaaResourcePostPath_t>(__temp, __param, __error)) {
+    typename lhg::arg_set<MaaResourcePostPath__ft>::temp_type __temp;
+    typename lhg::arg_set<MaaResourcePostPath__ft>::call_type __call;
+    if (!lhg::perform_input<MaaResourcePostPath__ft>(__temp, __param, __error)) {
         return std::nullopt;
     }
-    if (!lhg::perform_input_fix<__MaaResourcePostPath_t>(__call, __temp, __param, __error)) {
+    if (!lhg::perform_input_fix<MaaResourcePostPath__ft>(__call, __temp, __param, __error)) {
         return std::nullopt;
     }
 
@@ -3053,7 +3053,7 @@ std::optional<json::object> MaaResourcePostPath_Wrapper(json::object __param, st
 // LHG SEC DEF
     auto __ret = __return;
 // LHG SEC END
-    return lhg::perform_output<__MaaResourcePostPath_t>(__call, __ret);
+    return lhg::perform_output<MaaResourcePostPath__ft>(__call, __ret);
 }
 
 // LHG SEC BEGIN lhg.custom.MaaResourceStatus.func
@@ -3061,16 +3061,16 @@ std::optional<json::object> MaaResourcePostPath_Wrapper(json::object __param, st
 
 // LHG SEC END
 std::optional<json::object> MaaResourceStatus_Wrapper(json::object __param, std::string &__error) {
-    if (!lhg::perform_check<__MaaResourceStatus_t>(__param, __error)) {
+    if (!lhg::perform_check<MaaResourceStatus__ft>(__param, __error)) {
         return std::nullopt;
     }
 
-    typename lhg::arg_set<__MaaResourceStatus_t>::temp_type __temp;
-    typename lhg::arg_set<__MaaResourceStatus_t>::call_type __call;
-    if (!lhg::perform_input<__MaaResourceStatus_t>(__temp, __param, __error)) {
+    typename lhg::arg_set<MaaResourceStatus__ft>::temp_type __temp;
+    typename lhg::arg_set<MaaResourceStatus__ft>::call_type __call;
+    if (!lhg::perform_input<MaaResourceStatus__ft>(__temp, __param, __error)) {
         return std::nullopt;
     }
-    if (!lhg::perform_input_fix<__MaaResourceStatus_t>(__call, __temp, __param, __error)) {
+    if (!lhg::perform_input_fix<MaaResourceStatus__ft>(__call, __temp, __param, __error)) {
         return std::nullopt;
     }
 
@@ -3079,7 +3079,7 @@ std::optional<json::object> MaaResourceStatus_Wrapper(json::object __param, std:
 // LHG SEC DEF
     auto __ret = __return;
 // LHG SEC END
-    return lhg::perform_output<__MaaResourceStatus_t>(__call, __ret);
+    return lhg::perform_output<MaaResourceStatus__ft>(__call, __ret);
 }
 
 // LHG SEC BEGIN lhg.custom.MaaResourceWait.func
@@ -3087,16 +3087,16 @@ std::optional<json::object> MaaResourceStatus_Wrapper(json::object __param, std:
 
 // LHG SEC END
 std::optional<json::object> MaaResourceWait_Wrapper(json::object __param, std::string &__error) {
-    if (!lhg::perform_check<__MaaResourceWait_t>(__param, __error)) {
+    if (!lhg::perform_check<MaaResourceWait__ft>(__param, __error)) {
         return std::nullopt;
     }
 
-    typename lhg::arg_set<__MaaResourceWait_t>::temp_type __temp;
-    typename lhg::arg_set<__MaaResourceWait_t>::call_type __call;
-    if (!lhg::perform_input<__MaaResourceWait_t>(__temp, __param, __error)) {
+    typename lhg::arg_set<MaaResourceWait__ft>::temp_type __temp;
+    typename lhg::arg_set<MaaResourceWait__ft>::call_type __call;
+    if (!lhg::perform_input<MaaResourceWait__ft>(__temp, __param, __error)) {
         return std::nullopt;
     }
-    if (!lhg::perform_input_fix<__MaaResourceWait_t>(__call, __temp, __param, __error)) {
+    if (!lhg::perform_input_fix<MaaResourceWait__ft>(__call, __temp, __param, __error)) {
         return std::nullopt;
     }
 
@@ -3105,7 +3105,7 @@ std::optional<json::object> MaaResourceWait_Wrapper(json::object __param, std::s
 // LHG SEC DEF
     auto __ret = __return;
 // LHG SEC END
-    return lhg::perform_output<__MaaResourceWait_t>(__call, __ret);
+    return lhg::perform_output<MaaResourceWait__ft>(__call, __ret);
 }
 
 // LHG SEC BEGIN lhg.custom.MaaResourceLoaded.func
@@ -3113,16 +3113,16 @@ std::optional<json::object> MaaResourceWait_Wrapper(json::object __param, std::s
 
 // LHG SEC END
 std::optional<json::object> MaaResourceLoaded_Wrapper(json::object __param, std::string &__error) {
-    if (!lhg::perform_check<__MaaResourceLoaded_t>(__param, __error)) {
+    if (!lhg::perform_check<MaaResourceLoaded__ft>(__param, __error)) {
         return std::nullopt;
     }
 
-    typename lhg::arg_set<__MaaResourceLoaded_t>::temp_type __temp;
-    typename lhg::arg_set<__MaaResourceLoaded_t>::call_type __call;
-    if (!lhg::perform_input<__MaaResourceLoaded_t>(__temp, __param, __error)) {
+    typename lhg::arg_set<MaaResourceLoaded__ft>::temp_type __temp;
+    typename lhg::arg_set<MaaResourceLoaded__ft>::call_type __call;
+    if (!lhg::perform_input<MaaResourceLoaded__ft>(__temp, __param, __error)) {
         return std::nullopt;
     }
-    if (!lhg::perform_input_fix<__MaaResourceLoaded_t>(__call, __temp, __param, __error)) {
+    if (!lhg::perform_input_fix<MaaResourceLoaded__ft>(__call, __temp, __param, __error)) {
         return std::nullopt;
     }
 
@@ -3131,7 +3131,7 @@ std::optional<json::object> MaaResourceLoaded_Wrapper(json::object __param, std:
 // LHG SEC DEF
     auto __ret = __return;
 // LHG SEC END
-    return lhg::perform_output<__MaaResourceLoaded_t>(__call, __ret);
+    return lhg::perform_output<MaaResourceLoaded__ft>(__call, __ret);
 }
 
 // LHG SEC BEGIN lhg.custom.MaaResourceGetHash.func
@@ -3139,16 +3139,16 @@ std::optional<json::object> MaaResourceLoaded_Wrapper(json::object __param, std:
 
 // LHG SEC END
 std::optional<json::object> MaaResourceGetHash_Wrapper(json::object __param, std::string &__error) {
-    if (!lhg::perform_check<__MaaResourceGetHash_t>(__param, __error)) {
+    if (!lhg::perform_check<MaaResourceGetHash__ft>(__param, __error)) {
         return std::nullopt;
     }
 
-    typename lhg::arg_set<__MaaResourceGetHash_t>::temp_type __temp;
-    typename lhg::arg_set<__MaaResourceGetHash_t>::call_type __call;
-    if (!lhg::perform_input<__MaaResourceGetHash_t>(__temp, __param, __error)) {
+    typename lhg::arg_set<MaaResourceGetHash__ft>::temp_type __temp;
+    typename lhg::arg_set<MaaResourceGetHash__ft>::call_type __call;
+    if (!lhg::perform_input<MaaResourceGetHash__ft>(__temp, __param, __error)) {
         return std::nullopt;
     }
-    if (!lhg::perform_input_fix<__MaaResourceGetHash_t>(__call, __temp, __param, __error)) {
+    if (!lhg::perform_input_fix<MaaResourceGetHash__ft>(__call, __temp, __param, __error)) {
         return std::nullopt;
     }
 
@@ -3157,7 +3157,7 @@ std::optional<json::object> MaaResourceGetHash_Wrapper(json::object __param, std
 // LHG SEC DEF
     auto __ret = __return;
 // LHG SEC END
-    return lhg::perform_output<__MaaResourceGetHash_t>(__call, __ret);
+    return lhg::perform_output<MaaResourceGetHash__ft>(__call, __ret);
 }
 
 // LHG SEC BEGIN lhg.custom.MaaResourceGetTaskList.func
@@ -3165,16 +3165,16 @@ std::optional<json::object> MaaResourceGetHash_Wrapper(json::object __param, std
 
 // LHG SEC END
 std::optional<json::object> MaaResourceGetTaskList_Wrapper(json::object __param, std::string &__error) {
-    if (!lhg::perform_check<__MaaResourceGetTaskList_t>(__param, __error)) {
+    if (!lhg::perform_check<MaaResourceGetTaskList__ft>(__param, __error)) {
         return std::nullopt;
     }
 
-    typename lhg::arg_set<__MaaResourceGetTaskList_t>::temp_type __temp;
-    typename lhg::arg_set<__MaaResourceGetTaskList_t>::call_type __call;
-    if (!lhg::perform_input<__MaaResourceGetTaskList_t>(__temp, __param, __error)) {
+    typename lhg::arg_set<MaaResourceGetTaskList__ft>::temp_type __temp;
+    typename lhg::arg_set<MaaResourceGetTaskList__ft>::call_type __call;
+    if (!lhg::perform_input<MaaResourceGetTaskList__ft>(__temp, __param, __error)) {
         return std::nullopt;
     }
-    if (!lhg::perform_input_fix<__MaaResourceGetTaskList_t>(__call, __temp, __param, __error)) {
+    if (!lhg::perform_input_fix<MaaResourceGetTaskList__ft>(__call, __temp, __param, __error)) {
         return std::nullopt;
     }
 
@@ -3183,7 +3183,7 @@ std::optional<json::object> MaaResourceGetTaskList_Wrapper(json::object __param,
 // LHG SEC DEF
     auto __ret = __return;
 // LHG SEC END
-    return lhg::perform_output<__MaaResourceGetTaskList_t>(__call, __ret);
+    return lhg::perform_output<MaaResourceGetTaskList__ft>(__call, __ret);
 }
 
 // LHG SEC BEGIN lhg.custom.MaaCreateImageBuffer.func
@@ -3191,16 +3191,16 @@ std::optional<json::object> MaaResourceGetTaskList_Wrapper(json::object __param,
 
 // LHG SEC END
 std::optional<json::object> MaaCreateImageBuffer_Wrapper(json::object __param, std::string &__error) {
-    if (!lhg::perform_check<__MaaCreateImageBuffer_t>(__param, __error)) {
+    if (!lhg::perform_check<MaaCreateImageBuffer__ft>(__param, __error)) {
         return std::nullopt;
     }
 
-    typename lhg::arg_set<__MaaCreateImageBuffer_t>::temp_type __temp;
-    typename lhg::arg_set<__MaaCreateImageBuffer_t>::call_type __call;
-    if (!lhg::perform_input<__MaaCreateImageBuffer_t>(__temp, __param, __error)) {
+    typename lhg::arg_set<MaaCreateImageBuffer__ft>::temp_type __temp;
+    typename lhg::arg_set<MaaCreateImageBuffer__ft>::call_type __call;
+    if (!lhg::perform_input<MaaCreateImageBuffer__ft>(__temp, __param, __error)) {
         return std::nullopt;
     }
-    if (!lhg::perform_input_fix<__MaaCreateImageBuffer_t>(__call, __temp, __param, __error)) {
+    if (!lhg::perform_input_fix<MaaCreateImageBuffer__ft>(__call, __temp, __param, __error)) {
         return std::nullopt;
     }
 
@@ -3209,7 +3209,7 @@ std::optional<json::object> MaaCreateImageBuffer_Wrapper(json::object __param, s
 // LHG SEC DEF
     auto __ret = __return;
 // LHG SEC END
-    return lhg::perform_output<__MaaCreateImageBuffer_t>(__call, __ret);
+    return lhg::perform_output<MaaCreateImageBuffer__ft>(__call, __ret);
 }
 
 // LHG SEC BEGIN lhg.custom.MaaDestroyImageBuffer.func
@@ -3217,16 +3217,16 @@ std::optional<json::object> MaaCreateImageBuffer_Wrapper(json::object __param, s
 
 // LHG SEC END
 std::optional<json::object> MaaDestroyImageBuffer_Wrapper(json::object __param, std::string &__error) {
-    if (!lhg::perform_check<__MaaDestroyImageBuffer_t>(__param, __error)) {
+    if (!lhg::perform_check<MaaDestroyImageBuffer__ft>(__param, __error)) {
         return std::nullopt;
     }
 
-    typename lhg::arg_set<__MaaDestroyImageBuffer_t>::temp_type __temp;
-    typename lhg::arg_set<__MaaDestroyImageBuffer_t>::call_type __call;
-    if (!lhg::perform_input<__MaaDestroyImageBuffer_t>(__temp, __param, __error)) {
+    typename lhg::arg_set<MaaDestroyImageBuffer__ft>::temp_type __temp;
+    typename lhg::arg_set<MaaDestroyImageBuffer__ft>::call_type __call;
+    if (!lhg::perform_input<MaaDestroyImageBuffer__ft>(__temp, __param, __error)) {
         return std::nullopt;
     }
-    if (!lhg::perform_input_fix<__MaaDestroyImageBuffer_t>(__call, __temp, __param, __error)) {
+    if (!lhg::perform_input_fix<MaaDestroyImageBuffer__ft>(__call, __temp, __param, __error)) {
         return std::nullopt;
     }
 
@@ -3235,7 +3235,7 @@ std::optional<json::object> MaaDestroyImageBuffer_Wrapper(json::object __param, 
 // LHG SEC DEF
     int __ret = 0;
 // LHG SEC END
-    return lhg::perform_output<__MaaDestroyImageBuffer_t>(__call, __ret);
+    return lhg::perform_output<MaaDestroyImageBuffer__ft>(__call, __ret);
 }
 
 // LHG SEC BEGIN lhg.custom.MaaIsImageEmpty.func
@@ -3243,16 +3243,16 @@ std::optional<json::object> MaaDestroyImageBuffer_Wrapper(json::object __param, 
 
 // LHG SEC END
 std::optional<json::object> MaaIsImageEmpty_Wrapper(json::object __param, std::string &__error) {
-    if (!lhg::perform_check<__MaaIsImageEmpty_t>(__param, __error)) {
+    if (!lhg::perform_check<MaaIsImageEmpty__ft>(__param, __error)) {
         return std::nullopt;
     }
 
-    typename lhg::arg_set<__MaaIsImageEmpty_t>::temp_type __temp;
-    typename lhg::arg_set<__MaaIsImageEmpty_t>::call_type __call;
-    if (!lhg::perform_input<__MaaIsImageEmpty_t>(__temp, __param, __error)) {
+    typename lhg::arg_set<MaaIsImageEmpty__ft>::temp_type __temp;
+    typename lhg::arg_set<MaaIsImageEmpty__ft>::call_type __call;
+    if (!lhg::perform_input<MaaIsImageEmpty__ft>(__temp, __param, __error)) {
         return std::nullopt;
     }
-    if (!lhg::perform_input_fix<__MaaIsImageEmpty_t>(__call, __temp, __param, __error)) {
+    if (!lhg::perform_input_fix<MaaIsImageEmpty__ft>(__call, __temp, __param, __error)) {
         return std::nullopt;
     }
 
@@ -3261,7 +3261,7 @@ std::optional<json::object> MaaIsImageEmpty_Wrapper(json::object __param, std::s
 // LHG SEC DEF
     auto __ret = __return;
 // LHG SEC END
-    return lhg::perform_output<__MaaIsImageEmpty_t>(__call, __ret);
+    return lhg::perform_output<MaaIsImageEmpty__ft>(__call, __ret);
 }
 
 // LHG SEC BEGIN lhg.custom.MaaClearImage.func
@@ -3269,16 +3269,16 @@ std::optional<json::object> MaaIsImageEmpty_Wrapper(json::object __param, std::s
 
 // LHG SEC END
 std::optional<json::object> MaaClearImage_Wrapper(json::object __param, std::string &__error) {
-    if (!lhg::perform_check<__MaaClearImage_t>(__param, __error)) {
+    if (!lhg::perform_check<MaaClearImage__ft>(__param, __error)) {
         return std::nullopt;
     }
 
-    typename lhg::arg_set<__MaaClearImage_t>::temp_type __temp;
-    typename lhg::arg_set<__MaaClearImage_t>::call_type __call;
-    if (!lhg::perform_input<__MaaClearImage_t>(__temp, __param, __error)) {
+    typename lhg::arg_set<MaaClearImage__ft>::temp_type __temp;
+    typename lhg::arg_set<MaaClearImage__ft>::call_type __call;
+    if (!lhg::perform_input<MaaClearImage__ft>(__temp, __param, __error)) {
         return std::nullopt;
     }
-    if (!lhg::perform_input_fix<__MaaClearImage_t>(__call, __temp, __param, __error)) {
+    if (!lhg::perform_input_fix<MaaClearImage__ft>(__call, __temp, __param, __error)) {
         return std::nullopt;
     }
 
@@ -3287,7 +3287,7 @@ std::optional<json::object> MaaClearImage_Wrapper(json::object __param, std::str
 // LHG SEC DEF
     auto __ret = __return;
 // LHG SEC END
-    return lhg::perform_output<__MaaClearImage_t>(__call, __ret);
+    return lhg::perform_output<MaaClearImage__ft>(__call, __ret);
 }
 
 // LHG SEC BEGIN lhg.custom.MaaGetImageWidth.func
@@ -3295,16 +3295,16 @@ std::optional<json::object> MaaClearImage_Wrapper(json::object __param, std::str
 
 // LHG SEC END
 std::optional<json::object> MaaGetImageWidth_Wrapper(json::object __param, std::string &__error) {
-    if (!lhg::perform_check<__MaaGetImageWidth_t>(__param, __error)) {
+    if (!lhg::perform_check<MaaGetImageWidth__ft>(__param, __error)) {
         return std::nullopt;
     }
 
-    typename lhg::arg_set<__MaaGetImageWidth_t>::temp_type __temp;
-    typename lhg::arg_set<__MaaGetImageWidth_t>::call_type __call;
-    if (!lhg::perform_input<__MaaGetImageWidth_t>(__temp, __param, __error)) {
+    typename lhg::arg_set<MaaGetImageWidth__ft>::temp_type __temp;
+    typename lhg::arg_set<MaaGetImageWidth__ft>::call_type __call;
+    if (!lhg::perform_input<MaaGetImageWidth__ft>(__temp, __param, __error)) {
         return std::nullopt;
     }
-    if (!lhg::perform_input_fix<__MaaGetImageWidth_t>(__call, __temp, __param, __error)) {
+    if (!lhg::perform_input_fix<MaaGetImageWidth__ft>(__call, __temp, __param, __error)) {
         return std::nullopt;
     }
 
@@ -3313,7 +3313,7 @@ std::optional<json::object> MaaGetImageWidth_Wrapper(json::object __param, std::
 // LHG SEC DEF
     auto __ret = __return;
 // LHG SEC END
-    return lhg::perform_output<__MaaGetImageWidth_t>(__call, __ret);
+    return lhg::perform_output<MaaGetImageWidth__ft>(__call, __ret);
 }
 
 // LHG SEC BEGIN lhg.custom.MaaGetImageHeight.func
@@ -3321,16 +3321,16 @@ std::optional<json::object> MaaGetImageWidth_Wrapper(json::object __param, std::
 
 // LHG SEC END
 std::optional<json::object> MaaGetImageHeight_Wrapper(json::object __param, std::string &__error) {
-    if (!lhg::perform_check<__MaaGetImageHeight_t>(__param, __error)) {
+    if (!lhg::perform_check<MaaGetImageHeight__ft>(__param, __error)) {
         return std::nullopt;
     }
 
-    typename lhg::arg_set<__MaaGetImageHeight_t>::temp_type __temp;
-    typename lhg::arg_set<__MaaGetImageHeight_t>::call_type __call;
-    if (!lhg::perform_input<__MaaGetImageHeight_t>(__temp, __param, __error)) {
+    typename lhg::arg_set<MaaGetImageHeight__ft>::temp_type __temp;
+    typename lhg::arg_set<MaaGetImageHeight__ft>::call_type __call;
+    if (!lhg::perform_input<MaaGetImageHeight__ft>(__temp, __param, __error)) {
         return std::nullopt;
     }
-    if (!lhg::perform_input_fix<__MaaGetImageHeight_t>(__call, __temp, __param, __error)) {
+    if (!lhg::perform_input_fix<MaaGetImageHeight__ft>(__call, __temp, __param, __error)) {
         return std::nullopt;
     }
 
@@ -3339,7 +3339,7 @@ std::optional<json::object> MaaGetImageHeight_Wrapper(json::object __param, std:
 // LHG SEC DEF
     auto __ret = __return;
 // LHG SEC END
-    return lhg::perform_output<__MaaGetImageHeight_t>(__call, __ret);
+    return lhg::perform_output<MaaGetImageHeight__ft>(__call, __ret);
 }
 
 // LHG SEC BEGIN lhg.custom.MaaGetImageType.func
@@ -3347,16 +3347,16 @@ std::optional<json::object> MaaGetImageHeight_Wrapper(json::object __param, std:
 
 // LHG SEC END
 std::optional<json::object> MaaGetImageType_Wrapper(json::object __param, std::string &__error) {
-    if (!lhg::perform_check<__MaaGetImageType_t>(__param, __error)) {
+    if (!lhg::perform_check<MaaGetImageType__ft>(__param, __error)) {
         return std::nullopt;
     }
 
-    typename lhg::arg_set<__MaaGetImageType_t>::temp_type __temp;
-    typename lhg::arg_set<__MaaGetImageType_t>::call_type __call;
-    if (!lhg::perform_input<__MaaGetImageType_t>(__temp, __param, __error)) {
+    typename lhg::arg_set<MaaGetImageType__ft>::temp_type __temp;
+    typename lhg::arg_set<MaaGetImageType__ft>::call_type __call;
+    if (!lhg::perform_input<MaaGetImageType__ft>(__temp, __param, __error)) {
         return std::nullopt;
     }
-    if (!lhg::perform_input_fix<__MaaGetImageType_t>(__call, __temp, __param, __error)) {
+    if (!lhg::perform_input_fix<MaaGetImageType__ft>(__call, __temp, __param, __error)) {
         return std::nullopt;
     }
 
@@ -3365,7 +3365,7 @@ std::optional<json::object> MaaGetImageType_Wrapper(json::object __param, std::s
 // LHG SEC DEF
     auto __ret = __return;
 // LHG SEC END
-    return lhg::perform_output<__MaaGetImageType_t>(__call, __ret);
+    return lhg::perform_output<MaaGetImageType__ft>(__call, __ret);
 }
 
 // LHG SEC BEGIN lhg.custom.MaaGetImageEncoded.func
@@ -3373,16 +3373,16 @@ std::optional<json::object> MaaGetImageType_Wrapper(json::object __param, std::s
 
 // LHG SEC END
 std::optional<json::object> MaaGetImageEncoded_Wrapper(json::object __param, std::string &__error) {
-    if (!lhg::perform_check<__MaaGetImageEncoded_t>(__param, __error)) {
+    if (!lhg::perform_check<MaaGetImageEncoded__ft>(__param, __error)) {
         return std::nullopt;
     }
 
-    typename lhg::arg_set<__MaaGetImageEncoded_t>::temp_type __temp;
-    typename lhg::arg_set<__MaaGetImageEncoded_t>::call_type __call;
-    if (!lhg::perform_input<__MaaGetImageEncoded_t>(__temp, __param, __error)) {
+    typename lhg::arg_set<MaaGetImageEncoded__ft>::temp_type __temp;
+    typename lhg::arg_set<MaaGetImageEncoded__ft>::call_type __call;
+    if (!lhg::perform_input<MaaGetImageEncoded__ft>(__temp, __param, __error)) {
         return std::nullopt;
     }
-    if (!lhg::perform_input_fix<__MaaGetImageEncoded_t>(__call, __temp, __param, __error)) {
+    if (!lhg::perform_input_fix<MaaGetImageEncoded__ft>(__call, __temp, __param, __error)) {
         return std::nullopt;
     }
 
@@ -3390,12 +3390,12 @@ std::optional<json::object> MaaGetImageEncoded_Wrapper(json::object __param, std
 // LHG SEC BEGIN lhg.impl.MaaGetImageEncoded.return
     std::string __ret(reinterpret_cast<char*>(__return), MaaGetImageEncodedSize(std::get<0>(__call)));
 // LHG SEC END
-    return lhg::perform_output<__MaaGetImageEncoded_t>(__call, __ret);
+    return lhg::perform_output<MaaGetImageEncoded__ft>(__call, __ret);
 }
 
 // LHG SEC BEGIN lhg.custom.MaaSetImageEncoded.func
 template<>
-inline bool lhg::perform_check_entry<__MaaSetImageEncoded_t::__data_t>(json::object& __param, std::string& __error) {
+inline bool lhg::perform_check_entry<MaaSetImageEncoded__ft::data__at>(json::object& __param, std::string& __error) {
     if (!lhg::check_var<const char *>(__param["data"])) {
         __error = "data should be string@buffer";
         return false;
@@ -3404,56 +3404,56 @@ inline bool lhg::perform_check_entry<__MaaSetImageEncoded_t::__data_t>(json::obj
 }
 
 template<>
-inline bool lhg::perform_check_entry<__MaaSetImageEncoded_t::__size_t>(json::object& __param, std::string& __error) {
+inline bool lhg::perform_check_entry<MaaSetImageEncoded__ft::size__at>(json::object& __param, std::string& __error) {
     return true;
 }
 
 template<>
-struct lhg::temp_arg_t<__MaaSetImageEncoded_t::__data_t> {
+struct lhg::temp_arg_t<MaaSetImageEncoded__ft::data__at> {
     using type = std::string;
 };
 
 template<>
-struct lhg::temp_arg_t<__MaaSetImageEncoded_t::__size_t> {
+struct lhg::temp_arg_t<MaaSetImageEncoded__ft::size__at> {
     using type = std::monostate;
 };
 
 template<>
-inline bool lhg::perform_input_entry<__MaaSetImageEncoded_t, __MaaSetImageEncoded_t::__data_t>(typename lhg::arg_set<__MaaSetImageEncoded_t>::temp_type& temp_data, json::object __param, std::string& __error) {
-    std::get<__MaaSetImageEncoded_t::__data_t::index>(temp_data) = __param[__MaaSetImageEncoded_t::__data_t::name].as_string();
+inline bool lhg::perform_input_entry<MaaSetImageEncoded__ft, MaaSetImageEncoded__ft::data__at>(typename lhg::arg_set<MaaSetImageEncoded__ft>::temp_type& temp_data, json::object __param, std::string& __error) {
+    std::get<MaaSetImageEncoded__ft::data__at::index>(temp_data) = __param[MaaSetImageEncoded__ft::data__at::name].as_string();
     return true;
 }
 
 template<>
-inline bool lhg::perform_input_entry<__MaaSetImageEncoded_t, __MaaSetImageEncoded_t::__size_t>(typename lhg::arg_set<__MaaSetImageEncoded_t>::temp_type& temp_data, json::object __param, std::string& __error) {
+inline bool lhg::perform_input_entry<MaaSetImageEncoded__ft, MaaSetImageEncoded__ft::size__at>(typename lhg::arg_set<MaaSetImageEncoded__ft>::temp_type& temp_data, json::object __param, std::string& __error) {
     return true;
 }
 
 template<>
-inline bool lhg::perform_input_fix_entry<__MaaSetImageEncoded_t, __MaaSetImageEncoded_t::__data_t>(typename lhg::arg_set<__MaaSetImageEncoded_t>::call_type& data, typename lhg::arg_set<__MaaSetImageEncoded_t>::temp_type& temp_data, json::object __param, std::string& __error) {
-    const auto &str = std::get<__MaaSetImageEncoded_t::__data_t::index>(temp_data);
-    std::get<__MaaSetImageEncoded_t::__data_t::index>(data) = reinterpret_cast<uint8_t *>(const_cast<char *>(str.c_str()));
+inline bool lhg::perform_input_fix_entry<MaaSetImageEncoded__ft, MaaSetImageEncoded__ft::data__at>(typename lhg::arg_set<MaaSetImageEncoded__ft>::call_type& data, typename lhg::arg_set<MaaSetImageEncoded__ft>::temp_type& temp_data, json::object __param, std::string& __error) {
+    const auto &str = std::get<MaaSetImageEncoded__ft::data__at::index>(temp_data);
+    std::get<MaaSetImageEncoded__ft::data__at::index>(data) = reinterpret_cast<uint8_t *>(const_cast<char *>(str.c_str()));
     return true;
 }
 
 template<>
-inline bool lhg::perform_input_fix_entry<__MaaSetImageEncoded_t, __MaaSetImageEncoded_t::__size_t>(typename lhg::arg_set<__MaaSetImageEncoded_t>::call_type& data, typename lhg::arg_set<__MaaSetImageEncoded_t>::temp_type& temp_data, json::object __param, std::string& __error) {
-    const auto &str = std::get<__MaaSetImageEncoded_t::__data_t::index>(temp_data);
-    std::get<__MaaSetImageEncoded_t::__size_t::index>(data) = str.size();
+inline bool lhg::perform_input_fix_entry<MaaSetImageEncoded__ft, MaaSetImageEncoded__ft::size__at>(typename lhg::arg_set<MaaSetImageEncoded__ft>::call_type& data, typename lhg::arg_set<MaaSetImageEncoded__ft>::temp_type& temp_data, json::object __param, std::string& __error) {
+    const auto &str = std::get<MaaSetImageEncoded__ft::data__at::index>(temp_data);
+    std::get<MaaSetImageEncoded__ft::size__at::index>(data) = str.size();
     return true;
 }
 // LHG SEC END
 std::optional<json::object> MaaSetImageEncoded_Wrapper(json::object __param, std::string &__error) {
-    if (!lhg::perform_check<__MaaSetImageEncoded_t>(__param, __error)) {
+    if (!lhg::perform_check<MaaSetImageEncoded__ft>(__param, __error)) {
         return std::nullopt;
     }
 
-    typename lhg::arg_set<__MaaSetImageEncoded_t>::temp_type __temp;
-    typename lhg::arg_set<__MaaSetImageEncoded_t>::call_type __call;
-    if (!lhg::perform_input<__MaaSetImageEncoded_t>(__temp, __param, __error)) {
+    typename lhg::arg_set<MaaSetImageEncoded__ft>::temp_type __temp;
+    typename lhg::arg_set<MaaSetImageEncoded__ft>::call_type __call;
+    if (!lhg::perform_input<MaaSetImageEncoded__ft>(__temp, __param, __error)) {
         return std::nullopt;
     }
-    if (!lhg::perform_input_fix<__MaaSetImageEncoded_t>(__call, __temp, __param, __error)) {
+    if (!lhg::perform_input_fix<MaaSetImageEncoded__ft>(__call, __temp, __param, __error)) {
         return std::nullopt;
     }
 
@@ -3462,7 +3462,7 @@ std::optional<json::object> MaaSetImageEncoded_Wrapper(json::object __param, std
 // LHG SEC DEF
     auto __ret = __return;
 // LHG SEC END
-    return lhg::perform_output<__MaaSetImageEncoded_t>(__call, __ret);
+    return lhg::perform_output<MaaSetImageEncoded__ft>(__call, __ret);
 }
 
 // LHG SEC BEGIN lhg.custom.MaaVersion.func
@@ -3470,16 +3470,16 @@ std::optional<json::object> MaaSetImageEncoded_Wrapper(json::object __param, std
 
 // LHG SEC END
 std::optional<json::object> MaaVersion_Wrapper(json::object __param, std::string &__error) {
-    if (!lhg::perform_check<__MaaVersion_t>(__param, __error)) {
+    if (!lhg::perform_check<MaaVersion__ft>(__param, __error)) {
         return std::nullopt;
     }
 
-    typename lhg::arg_set<__MaaVersion_t>::temp_type __temp;
-    typename lhg::arg_set<__MaaVersion_t>::call_type __call;
-    if (!lhg::perform_input<__MaaVersion_t>(__temp, __param, __error)) {
+    typename lhg::arg_set<MaaVersion__ft>::temp_type __temp;
+    typename lhg::arg_set<MaaVersion__ft>::call_type __call;
+    if (!lhg::perform_input<MaaVersion__ft>(__temp, __param, __error)) {
         return std::nullopt;
     }
-    if (!lhg::perform_input_fix<__MaaVersion_t>(__call, __temp, __param, __error)) {
+    if (!lhg::perform_input_fix<MaaVersion__ft>(__call, __temp, __param, __error)) {
         return std::nullopt;
     }
 
@@ -3488,7 +3488,7 @@ std::optional<json::object> MaaVersion_Wrapper(json::object __param, std::string
 // LHG SEC DEF
     auto __ret = __return;
 // LHG SEC END
-    return lhg::perform_output<__MaaVersion_t>(__call, __ret);
+    return lhg::perform_output<MaaVersion__ft>(__call, __ret);
 }
 
 // LHG SEC BEGIN lhg.custom.MaaToolkitInit.func
@@ -3496,16 +3496,16 @@ std::optional<json::object> MaaVersion_Wrapper(json::object __param, std::string
 
 // LHG SEC END
 std::optional<json::object> MaaToolkitInit_Wrapper(json::object __param, std::string &__error) {
-    if (!lhg::perform_check<__MaaToolkitInit_t>(__param, __error)) {
+    if (!lhg::perform_check<MaaToolkitInit__ft>(__param, __error)) {
         return std::nullopt;
     }
 
-    typename lhg::arg_set<__MaaToolkitInit_t>::temp_type __temp;
-    typename lhg::arg_set<__MaaToolkitInit_t>::call_type __call;
-    if (!lhg::perform_input<__MaaToolkitInit_t>(__temp, __param, __error)) {
+    typename lhg::arg_set<MaaToolkitInit__ft>::temp_type __temp;
+    typename lhg::arg_set<MaaToolkitInit__ft>::call_type __call;
+    if (!lhg::perform_input<MaaToolkitInit__ft>(__temp, __param, __error)) {
         return std::nullopt;
     }
-    if (!lhg::perform_input_fix<__MaaToolkitInit_t>(__call, __temp, __param, __error)) {
+    if (!lhg::perform_input_fix<MaaToolkitInit__ft>(__call, __temp, __param, __error)) {
         return std::nullopt;
     }
 
@@ -3514,7 +3514,7 @@ std::optional<json::object> MaaToolkitInit_Wrapper(json::object __param, std::st
 // LHG SEC DEF
     auto __ret = __return;
 // LHG SEC END
-    return lhg::perform_output<__MaaToolkitInit_t>(__call, __ret);
+    return lhg::perform_output<MaaToolkitInit__ft>(__call, __ret);
 }
 
 // LHG SEC BEGIN lhg.custom.MaaToolkitUninit.func
@@ -3522,16 +3522,16 @@ std::optional<json::object> MaaToolkitInit_Wrapper(json::object __param, std::st
 
 // LHG SEC END
 std::optional<json::object> MaaToolkitUninit_Wrapper(json::object __param, std::string &__error) {
-    if (!lhg::perform_check<__MaaToolkitUninit_t>(__param, __error)) {
+    if (!lhg::perform_check<MaaToolkitUninit__ft>(__param, __error)) {
         return std::nullopt;
     }
 
-    typename lhg::arg_set<__MaaToolkitUninit_t>::temp_type __temp;
-    typename lhg::arg_set<__MaaToolkitUninit_t>::call_type __call;
-    if (!lhg::perform_input<__MaaToolkitUninit_t>(__temp, __param, __error)) {
+    typename lhg::arg_set<MaaToolkitUninit__ft>::temp_type __temp;
+    typename lhg::arg_set<MaaToolkitUninit__ft>::call_type __call;
+    if (!lhg::perform_input<MaaToolkitUninit__ft>(__temp, __param, __error)) {
         return std::nullopt;
     }
-    if (!lhg::perform_input_fix<__MaaToolkitUninit_t>(__call, __temp, __param, __error)) {
+    if (!lhg::perform_input_fix<MaaToolkitUninit__ft>(__call, __temp, __param, __error)) {
         return std::nullopt;
     }
 
@@ -3540,7 +3540,7 @@ std::optional<json::object> MaaToolkitUninit_Wrapper(json::object __param, std::
 // LHG SEC DEF
     auto __ret = __return;
 // LHG SEC END
-    return lhg::perform_output<__MaaToolkitUninit_t>(__call, __ret);
+    return lhg::perform_output<MaaToolkitUninit__ft>(__call, __ret);
 }
 
 // LHG SEC BEGIN lhg.custom.MaaToolkitFindDevice.func
@@ -3548,16 +3548,16 @@ std::optional<json::object> MaaToolkitUninit_Wrapper(json::object __param, std::
 
 // LHG SEC END
 std::optional<json::object> MaaToolkitFindDevice_Wrapper(json::object __param, std::string &__error) {
-    if (!lhg::perform_check<__MaaToolkitFindDevice_t>(__param, __error)) {
+    if (!lhg::perform_check<MaaToolkitFindDevice__ft>(__param, __error)) {
         return std::nullopt;
     }
 
-    typename lhg::arg_set<__MaaToolkitFindDevice_t>::temp_type __temp;
-    typename lhg::arg_set<__MaaToolkitFindDevice_t>::call_type __call;
-    if (!lhg::perform_input<__MaaToolkitFindDevice_t>(__temp, __param, __error)) {
+    typename lhg::arg_set<MaaToolkitFindDevice__ft>::temp_type __temp;
+    typename lhg::arg_set<MaaToolkitFindDevice__ft>::call_type __call;
+    if (!lhg::perform_input<MaaToolkitFindDevice__ft>(__temp, __param, __error)) {
         return std::nullopt;
     }
-    if (!lhg::perform_input_fix<__MaaToolkitFindDevice_t>(__call, __temp, __param, __error)) {
+    if (!lhg::perform_input_fix<MaaToolkitFindDevice__ft>(__call, __temp, __param, __error)) {
         return std::nullopt;
     }
 
@@ -3566,7 +3566,7 @@ std::optional<json::object> MaaToolkitFindDevice_Wrapper(json::object __param, s
 // LHG SEC DEF
     auto __ret = __return;
 // LHG SEC END
-    return lhg::perform_output<__MaaToolkitFindDevice_t>(__call, __ret);
+    return lhg::perform_output<MaaToolkitFindDevice__ft>(__call, __ret);
 }
 
 // LHG SEC BEGIN lhg.custom.MaaToolkitFindDeviceWithAdb.func
@@ -3574,16 +3574,16 @@ std::optional<json::object> MaaToolkitFindDevice_Wrapper(json::object __param, s
 
 // LHG SEC END
 std::optional<json::object> MaaToolkitFindDeviceWithAdb_Wrapper(json::object __param, std::string &__error) {
-    if (!lhg::perform_check<__MaaToolkitFindDeviceWithAdb_t>(__param, __error)) {
+    if (!lhg::perform_check<MaaToolkitFindDeviceWithAdb__ft>(__param, __error)) {
         return std::nullopt;
     }
 
-    typename lhg::arg_set<__MaaToolkitFindDeviceWithAdb_t>::temp_type __temp;
-    typename lhg::arg_set<__MaaToolkitFindDeviceWithAdb_t>::call_type __call;
-    if (!lhg::perform_input<__MaaToolkitFindDeviceWithAdb_t>(__temp, __param, __error)) {
+    typename lhg::arg_set<MaaToolkitFindDeviceWithAdb__ft>::temp_type __temp;
+    typename lhg::arg_set<MaaToolkitFindDeviceWithAdb__ft>::call_type __call;
+    if (!lhg::perform_input<MaaToolkitFindDeviceWithAdb__ft>(__temp, __param, __error)) {
         return std::nullopt;
     }
-    if (!lhg::perform_input_fix<__MaaToolkitFindDeviceWithAdb_t>(__call, __temp, __param, __error)) {
+    if (!lhg::perform_input_fix<MaaToolkitFindDeviceWithAdb__ft>(__call, __temp, __param, __error)) {
         return std::nullopt;
     }
 
@@ -3592,7 +3592,7 @@ std::optional<json::object> MaaToolkitFindDeviceWithAdb_Wrapper(json::object __p
 // LHG SEC DEF
     auto __ret = __return;
 // LHG SEC END
-    return lhg::perform_output<__MaaToolkitFindDeviceWithAdb_t>(__call, __ret);
+    return lhg::perform_output<MaaToolkitFindDeviceWithAdb__ft>(__call, __ret);
 }
 
 // LHG SEC BEGIN lhg.custom.MaaToolkitPostFindDevice.func
@@ -3600,16 +3600,16 @@ std::optional<json::object> MaaToolkitFindDeviceWithAdb_Wrapper(json::object __p
 
 // LHG SEC END
 std::optional<json::object> MaaToolkitPostFindDevice_Wrapper(json::object __param, std::string &__error) {
-    if (!lhg::perform_check<__MaaToolkitPostFindDevice_t>(__param, __error)) {
+    if (!lhg::perform_check<MaaToolkitPostFindDevice__ft>(__param, __error)) {
         return std::nullopt;
     }
 
-    typename lhg::arg_set<__MaaToolkitPostFindDevice_t>::temp_type __temp;
-    typename lhg::arg_set<__MaaToolkitPostFindDevice_t>::call_type __call;
-    if (!lhg::perform_input<__MaaToolkitPostFindDevice_t>(__temp, __param, __error)) {
+    typename lhg::arg_set<MaaToolkitPostFindDevice__ft>::temp_type __temp;
+    typename lhg::arg_set<MaaToolkitPostFindDevice__ft>::call_type __call;
+    if (!lhg::perform_input<MaaToolkitPostFindDevice__ft>(__temp, __param, __error)) {
         return std::nullopt;
     }
-    if (!lhg::perform_input_fix<__MaaToolkitPostFindDevice_t>(__call, __temp, __param, __error)) {
+    if (!lhg::perform_input_fix<MaaToolkitPostFindDevice__ft>(__call, __temp, __param, __error)) {
         return std::nullopt;
     }
 
@@ -3618,7 +3618,7 @@ std::optional<json::object> MaaToolkitPostFindDevice_Wrapper(json::object __para
 // LHG SEC DEF
     auto __ret = __return;
 // LHG SEC END
-    return lhg::perform_output<__MaaToolkitPostFindDevice_t>(__call, __ret);
+    return lhg::perform_output<MaaToolkitPostFindDevice__ft>(__call, __ret);
 }
 
 // LHG SEC BEGIN lhg.custom.MaaToolkitPostFindDeviceWithAdb.func
@@ -3626,16 +3626,16 @@ std::optional<json::object> MaaToolkitPostFindDevice_Wrapper(json::object __para
 
 // LHG SEC END
 std::optional<json::object> MaaToolkitPostFindDeviceWithAdb_Wrapper(json::object __param, std::string &__error) {
-    if (!lhg::perform_check<__MaaToolkitPostFindDeviceWithAdb_t>(__param, __error)) {
+    if (!lhg::perform_check<MaaToolkitPostFindDeviceWithAdb__ft>(__param, __error)) {
         return std::nullopt;
     }
 
-    typename lhg::arg_set<__MaaToolkitPostFindDeviceWithAdb_t>::temp_type __temp;
-    typename lhg::arg_set<__MaaToolkitPostFindDeviceWithAdb_t>::call_type __call;
-    if (!lhg::perform_input<__MaaToolkitPostFindDeviceWithAdb_t>(__temp, __param, __error)) {
+    typename lhg::arg_set<MaaToolkitPostFindDeviceWithAdb__ft>::temp_type __temp;
+    typename lhg::arg_set<MaaToolkitPostFindDeviceWithAdb__ft>::call_type __call;
+    if (!lhg::perform_input<MaaToolkitPostFindDeviceWithAdb__ft>(__temp, __param, __error)) {
         return std::nullopt;
     }
-    if (!lhg::perform_input_fix<__MaaToolkitPostFindDeviceWithAdb_t>(__call, __temp, __param, __error)) {
+    if (!lhg::perform_input_fix<MaaToolkitPostFindDeviceWithAdb__ft>(__call, __temp, __param, __error)) {
         return std::nullopt;
     }
 
@@ -3644,7 +3644,7 @@ std::optional<json::object> MaaToolkitPostFindDeviceWithAdb_Wrapper(json::object
 // LHG SEC DEF
     auto __ret = __return;
 // LHG SEC END
-    return lhg::perform_output<__MaaToolkitPostFindDeviceWithAdb_t>(__call, __ret);
+    return lhg::perform_output<MaaToolkitPostFindDeviceWithAdb__ft>(__call, __ret);
 }
 
 // LHG SEC BEGIN lhg.custom.MaaToolkitIsFindDeviceCompleted.func
@@ -3652,16 +3652,16 @@ std::optional<json::object> MaaToolkitPostFindDeviceWithAdb_Wrapper(json::object
 
 // LHG SEC END
 std::optional<json::object> MaaToolkitIsFindDeviceCompleted_Wrapper(json::object __param, std::string &__error) {
-    if (!lhg::perform_check<__MaaToolkitIsFindDeviceCompleted_t>(__param, __error)) {
+    if (!lhg::perform_check<MaaToolkitIsFindDeviceCompleted__ft>(__param, __error)) {
         return std::nullopt;
     }
 
-    typename lhg::arg_set<__MaaToolkitIsFindDeviceCompleted_t>::temp_type __temp;
-    typename lhg::arg_set<__MaaToolkitIsFindDeviceCompleted_t>::call_type __call;
-    if (!lhg::perform_input<__MaaToolkitIsFindDeviceCompleted_t>(__temp, __param, __error)) {
+    typename lhg::arg_set<MaaToolkitIsFindDeviceCompleted__ft>::temp_type __temp;
+    typename lhg::arg_set<MaaToolkitIsFindDeviceCompleted__ft>::call_type __call;
+    if (!lhg::perform_input<MaaToolkitIsFindDeviceCompleted__ft>(__temp, __param, __error)) {
         return std::nullopt;
     }
-    if (!lhg::perform_input_fix<__MaaToolkitIsFindDeviceCompleted_t>(__call, __temp, __param, __error)) {
+    if (!lhg::perform_input_fix<MaaToolkitIsFindDeviceCompleted__ft>(__call, __temp, __param, __error)) {
         return std::nullopt;
     }
 
@@ -3670,7 +3670,7 @@ std::optional<json::object> MaaToolkitIsFindDeviceCompleted_Wrapper(json::object
 // LHG SEC DEF
     auto __ret = __return;
 // LHG SEC END
-    return lhg::perform_output<__MaaToolkitIsFindDeviceCompleted_t>(__call, __ret);
+    return lhg::perform_output<MaaToolkitIsFindDeviceCompleted__ft>(__call, __ret);
 }
 
 // LHG SEC BEGIN lhg.custom.MaaToolkitWaitForFindDeviceToComplete.func
@@ -3678,16 +3678,16 @@ std::optional<json::object> MaaToolkitIsFindDeviceCompleted_Wrapper(json::object
 
 // LHG SEC END
 std::optional<json::object> MaaToolkitWaitForFindDeviceToComplete_Wrapper(json::object __param, std::string &__error) {
-    if (!lhg::perform_check<__MaaToolkitWaitForFindDeviceToComplete_t>(__param, __error)) {
+    if (!lhg::perform_check<MaaToolkitWaitForFindDeviceToComplete__ft>(__param, __error)) {
         return std::nullopt;
     }
 
-    typename lhg::arg_set<__MaaToolkitWaitForFindDeviceToComplete_t>::temp_type __temp;
-    typename lhg::arg_set<__MaaToolkitWaitForFindDeviceToComplete_t>::call_type __call;
-    if (!lhg::perform_input<__MaaToolkitWaitForFindDeviceToComplete_t>(__temp, __param, __error)) {
+    typename lhg::arg_set<MaaToolkitWaitForFindDeviceToComplete__ft>::temp_type __temp;
+    typename lhg::arg_set<MaaToolkitWaitForFindDeviceToComplete__ft>::call_type __call;
+    if (!lhg::perform_input<MaaToolkitWaitForFindDeviceToComplete__ft>(__temp, __param, __error)) {
         return std::nullopt;
     }
-    if (!lhg::perform_input_fix<__MaaToolkitWaitForFindDeviceToComplete_t>(__call, __temp, __param, __error)) {
+    if (!lhg::perform_input_fix<MaaToolkitWaitForFindDeviceToComplete__ft>(__call, __temp, __param, __error)) {
         return std::nullopt;
     }
 
@@ -3696,7 +3696,7 @@ std::optional<json::object> MaaToolkitWaitForFindDeviceToComplete_Wrapper(json::
 // LHG SEC DEF
     auto __ret = __return;
 // LHG SEC END
-    return lhg::perform_output<__MaaToolkitWaitForFindDeviceToComplete_t>(__call, __ret);
+    return lhg::perform_output<MaaToolkitWaitForFindDeviceToComplete__ft>(__call, __ret);
 }
 
 // LHG SEC BEGIN lhg.custom.MaaToolkitGetDeviceCount.func
@@ -3704,16 +3704,16 @@ std::optional<json::object> MaaToolkitWaitForFindDeviceToComplete_Wrapper(json::
 
 // LHG SEC END
 std::optional<json::object> MaaToolkitGetDeviceCount_Wrapper(json::object __param, std::string &__error) {
-    if (!lhg::perform_check<__MaaToolkitGetDeviceCount_t>(__param, __error)) {
+    if (!lhg::perform_check<MaaToolkitGetDeviceCount__ft>(__param, __error)) {
         return std::nullopt;
     }
 
-    typename lhg::arg_set<__MaaToolkitGetDeviceCount_t>::temp_type __temp;
-    typename lhg::arg_set<__MaaToolkitGetDeviceCount_t>::call_type __call;
-    if (!lhg::perform_input<__MaaToolkitGetDeviceCount_t>(__temp, __param, __error)) {
+    typename lhg::arg_set<MaaToolkitGetDeviceCount__ft>::temp_type __temp;
+    typename lhg::arg_set<MaaToolkitGetDeviceCount__ft>::call_type __call;
+    if (!lhg::perform_input<MaaToolkitGetDeviceCount__ft>(__temp, __param, __error)) {
         return std::nullopt;
     }
-    if (!lhg::perform_input_fix<__MaaToolkitGetDeviceCount_t>(__call, __temp, __param, __error)) {
+    if (!lhg::perform_input_fix<MaaToolkitGetDeviceCount__ft>(__call, __temp, __param, __error)) {
         return std::nullopt;
     }
 
@@ -3722,7 +3722,7 @@ std::optional<json::object> MaaToolkitGetDeviceCount_Wrapper(json::object __para
 // LHG SEC DEF
     auto __ret = __return;
 // LHG SEC END
-    return lhg::perform_output<__MaaToolkitGetDeviceCount_t>(__call, __ret);
+    return lhg::perform_output<MaaToolkitGetDeviceCount__ft>(__call, __ret);
 }
 
 // LHG SEC BEGIN lhg.custom.MaaToolkitGetDeviceName.func
@@ -3730,16 +3730,16 @@ std::optional<json::object> MaaToolkitGetDeviceCount_Wrapper(json::object __para
 
 // LHG SEC END
 std::optional<json::object> MaaToolkitGetDeviceName_Wrapper(json::object __param, std::string &__error) {
-    if (!lhg::perform_check<__MaaToolkitGetDeviceName_t>(__param, __error)) {
+    if (!lhg::perform_check<MaaToolkitGetDeviceName__ft>(__param, __error)) {
         return std::nullopt;
     }
 
-    typename lhg::arg_set<__MaaToolkitGetDeviceName_t>::temp_type __temp;
-    typename lhg::arg_set<__MaaToolkitGetDeviceName_t>::call_type __call;
-    if (!lhg::perform_input<__MaaToolkitGetDeviceName_t>(__temp, __param, __error)) {
+    typename lhg::arg_set<MaaToolkitGetDeviceName__ft>::temp_type __temp;
+    typename lhg::arg_set<MaaToolkitGetDeviceName__ft>::call_type __call;
+    if (!lhg::perform_input<MaaToolkitGetDeviceName__ft>(__temp, __param, __error)) {
         return std::nullopt;
     }
-    if (!lhg::perform_input_fix<__MaaToolkitGetDeviceName_t>(__call, __temp, __param, __error)) {
+    if (!lhg::perform_input_fix<MaaToolkitGetDeviceName__ft>(__call, __temp, __param, __error)) {
         return std::nullopt;
     }
 
@@ -3748,7 +3748,7 @@ std::optional<json::object> MaaToolkitGetDeviceName_Wrapper(json::object __param
 // LHG SEC DEF
     auto __ret = __return;
 // LHG SEC END
-    return lhg::perform_output<__MaaToolkitGetDeviceName_t>(__call, __ret);
+    return lhg::perform_output<MaaToolkitGetDeviceName__ft>(__call, __ret);
 }
 
 // LHG SEC BEGIN lhg.custom.MaaToolkitGetDeviceAdbPath.func
@@ -3756,16 +3756,16 @@ std::optional<json::object> MaaToolkitGetDeviceName_Wrapper(json::object __param
 
 // LHG SEC END
 std::optional<json::object> MaaToolkitGetDeviceAdbPath_Wrapper(json::object __param, std::string &__error) {
-    if (!lhg::perform_check<__MaaToolkitGetDeviceAdbPath_t>(__param, __error)) {
+    if (!lhg::perform_check<MaaToolkitGetDeviceAdbPath__ft>(__param, __error)) {
         return std::nullopt;
     }
 
-    typename lhg::arg_set<__MaaToolkitGetDeviceAdbPath_t>::temp_type __temp;
-    typename lhg::arg_set<__MaaToolkitGetDeviceAdbPath_t>::call_type __call;
-    if (!lhg::perform_input<__MaaToolkitGetDeviceAdbPath_t>(__temp, __param, __error)) {
+    typename lhg::arg_set<MaaToolkitGetDeviceAdbPath__ft>::temp_type __temp;
+    typename lhg::arg_set<MaaToolkitGetDeviceAdbPath__ft>::call_type __call;
+    if (!lhg::perform_input<MaaToolkitGetDeviceAdbPath__ft>(__temp, __param, __error)) {
         return std::nullopt;
     }
-    if (!lhg::perform_input_fix<__MaaToolkitGetDeviceAdbPath_t>(__call, __temp, __param, __error)) {
+    if (!lhg::perform_input_fix<MaaToolkitGetDeviceAdbPath__ft>(__call, __temp, __param, __error)) {
         return std::nullopt;
     }
 
@@ -3774,7 +3774,7 @@ std::optional<json::object> MaaToolkitGetDeviceAdbPath_Wrapper(json::object __pa
 // LHG SEC DEF
     auto __ret = __return;
 // LHG SEC END
-    return lhg::perform_output<__MaaToolkitGetDeviceAdbPath_t>(__call, __ret);
+    return lhg::perform_output<MaaToolkitGetDeviceAdbPath__ft>(__call, __ret);
 }
 
 // LHG SEC BEGIN lhg.custom.MaaToolkitGetDeviceAdbSerial.func
@@ -3782,16 +3782,16 @@ std::optional<json::object> MaaToolkitGetDeviceAdbPath_Wrapper(json::object __pa
 
 // LHG SEC END
 std::optional<json::object> MaaToolkitGetDeviceAdbSerial_Wrapper(json::object __param, std::string &__error) {
-    if (!lhg::perform_check<__MaaToolkitGetDeviceAdbSerial_t>(__param, __error)) {
+    if (!lhg::perform_check<MaaToolkitGetDeviceAdbSerial__ft>(__param, __error)) {
         return std::nullopt;
     }
 
-    typename lhg::arg_set<__MaaToolkitGetDeviceAdbSerial_t>::temp_type __temp;
-    typename lhg::arg_set<__MaaToolkitGetDeviceAdbSerial_t>::call_type __call;
-    if (!lhg::perform_input<__MaaToolkitGetDeviceAdbSerial_t>(__temp, __param, __error)) {
+    typename lhg::arg_set<MaaToolkitGetDeviceAdbSerial__ft>::temp_type __temp;
+    typename lhg::arg_set<MaaToolkitGetDeviceAdbSerial__ft>::call_type __call;
+    if (!lhg::perform_input<MaaToolkitGetDeviceAdbSerial__ft>(__temp, __param, __error)) {
         return std::nullopt;
     }
-    if (!lhg::perform_input_fix<__MaaToolkitGetDeviceAdbSerial_t>(__call, __temp, __param, __error)) {
+    if (!lhg::perform_input_fix<MaaToolkitGetDeviceAdbSerial__ft>(__call, __temp, __param, __error)) {
         return std::nullopt;
     }
 
@@ -3800,7 +3800,7 @@ std::optional<json::object> MaaToolkitGetDeviceAdbSerial_Wrapper(json::object __
 // LHG SEC DEF
     auto __ret = __return;
 // LHG SEC END
-    return lhg::perform_output<__MaaToolkitGetDeviceAdbSerial_t>(__call, __ret);
+    return lhg::perform_output<MaaToolkitGetDeviceAdbSerial__ft>(__call, __ret);
 }
 
 // LHG SEC BEGIN lhg.custom.MaaToolkitGetDeviceAdbControllerType.func
@@ -3808,16 +3808,16 @@ std::optional<json::object> MaaToolkitGetDeviceAdbSerial_Wrapper(json::object __
 
 // LHG SEC END
 std::optional<json::object> MaaToolkitGetDeviceAdbControllerType_Wrapper(json::object __param, std::string &__error) {
-    if (!lhg::perform_check<__MaaToolkitGetDeviceAdbControllerType_t>(__param, __error)) {
+    if (!lhg::perform_check<MaaToolkitGetDeviceAdbControllerType__ft>(__param, __error)) {
         return std::nullopt;
     }
 
-    typename lhg::arg_set<__MaaToolkitGetDeviceAdbControllerType_t>::temp_type __temp;
-    typename lhg::arg_set<__MaaToolkitGetDeviceAdbControllerType_t>::call_type __call;
-    if (!lhg::perform_input<__MaaToolkitGetDeviceAdbControllerType_t>(__temp, __param, __error)) {
+    typename lhg::arg_set<MaaToolkitGetDeviceAdbControllerType__ft>::temp_type __temp;
+    typename lhg::arg_set<MaaToolkitGetDeviceAdbControllerType__ft>::call_type __call;
+    if (!lhg::perform_input<MaaToolkitGetDeviceAdbControllerType__ft>(__temp, __param, __error)) {
         return std::nullopt;
     }
-    if (!lhg::perform_input_fix<__MaaToolkitGetDeviceAdbControllerType_t>(__call, __temp, __param, __error)) {
+    if (!lhg::perform_input_fix<MaaToolkitGetDeviceAdbControllerType__ft>(__call, __temp, __param, __error)) {
         return std::nullopt;
     }
 
@@ -3826,7 +3826,7 @@ std::optional<json::object> MaaToolkitGetDeviceAdbControllerType_Wrapper(json::o
 // LHG SEC DEF
     auto __ret = __return;
 // LHG SEC END
-    return lhg::perform_output<__MaaToolkitGetDeviceAdbControllerType_t>(__call, __ret);
+    return lhg::perform_output<MaaToolkitGetDeviceAdbControllerType__ft>(__call, __ret);
 }
 
 // LHG SEC BEGIN lhg.custom.MaaToolkitGetDeviceAdbConfig.func
@@ -3834,16 +3834,16 @@ std::optional<json::object> MaaToolkitGetDeviceAdbControllerType_Wrapper(json::o
 
 // LHG SEC END
 std::optional<json::object> MaaToolkitGetDeviceAdbConfig_Wrapper(json::object __param, std::string &__error) {
-    if (!lhg::perform_check<__MaaToolkitGetDeviceAdbConfig_t>(__param, __error)) {
+    if (!lhg::perform_check<MaaToolkitGetDeviceAdbConfig__ft>(__param, __error)) {
         return std::nullopt;
     }
 
-    typename lhg::arg_set<__MaaToolkitGetDeviceAdbConfig_t>::temp_type __temp;
-    typename lhg::arg_set<__MaaToolkitGetDeviceAdbConfig_t>::call_type __call;
-    if (!lhg::perform_input<__MaaToolkitGetDeviceAdbConfig_t>(__temp, __param, __error)) {
+    typename lhg::arg_set<MaaToolkitGetDeviceAdbConfig__ft>::temp_type __temp;
+    typename lhg::arg_set<MaaToolkitGetDeviceAdbConfig__ft>::call_type __call;
+    if (!lhg::perform_input<MaaToolkitGetDeviceAdbConfig__ft>(__temp, __param, __error)) {
         return std::nullopt;
     }
-    if (!lhg::perform_input_fix<__MaaToolkitGetDeviceAdbConfig_t>(__call, __temp, __param, __error)) {
+    if (!lhg::perform_input_fix<MaaToolkitGetDeviceAdbConfig__ft>(__call, __temp, __param, __error)) {
         return std::nullopt;
     }
 
@@ -3852,7 +3852,7 @@ std::optional<json::object> MaaToolkitGetDeviceAdbConfig_Wrapper(json::object __
 // LHG SEC DEF
     auto __ret = __return;
 // LHG SEC END
-    return lhg::perform_output<__MaaToolkitGetDeviceAdbConfig_t>(__call, __ret);
+    return lhg::perform_output<MaaToolkitGetDeviceAdbConfig__ft>(__call, __ret);
 }
 
 // LHG SEC BEGIN lhg.custom.MaaToolkitRegisterCustomRecognizerExecutor.func
@@ -3860,16 +3860,16 @@ std::optional<json::object> MaaToolkitGetDeviceAdbConfig_Wrapper(json::object __
 
 // LHG SEC END
 std::optional<json::object> MaaToolkitRegisterCustomRecognizerExecutor_Wrapper(json::object __param, std::string &__error) {
-    if (!lhg::perform_check<__MaaToolkitRegisterCustomRecognizerExecutor_t>(__param, __error)) {
+    if (!lhg::perform_check<MaaToolkitRegisterCustomRecognizerExecutor__ft>(__param, __error)) {
         return std::nullopt;
     }
 
-    typename lhg::arg_set<__MaaToolkitRegisterCustomRecognizerExecutor_t>::temp_type __temp;
-    typename lhg::arg_set<__MaaToolkitRegisterCustomRecognizerExecutor_t>::call_type __call;
-    if (!lhg::perform_input<__MaaToolkitRegisterCustomRecognizerExecutor_t>(__temp, __param, __error)) {
+    typename lhg::arg_set<MaaToolkitRegisterCustomRecognizerExecutor__ft>::temp_type __temp;
+    typename lhg::arg_set<MaaToolkitRegisterCustomRecognizerExecutor__ft>::call_type __call;
+    if (!lhg::perform_input<MaaToolkitRegisterCustomRecognizerExecutor__ft>(__temp, __param, __error)) {
         return std::nullopt;
     }
-    if (!lhg::perform_input_fix<__MaaToolkitRegisterCustomRecognizerExecutor_t>(__call, __temp, __param, __error)) {
+    if (!lhg::perform_input_fix<MaaToolkitRegisterCustomRecognizerExecutor__ft>(__call, __temp, __param, __error)) {
         return std::nullopt;
     }
 
@@ -3878,7 +3878,7 @@ std::optional<json::object> MaaToolkitRegisterCustomRecognizerExecutor_Wrapper(j
 // LHG SEC DEF
     auto __ret = __return;
 // LHG SEC END
-    return lhg::perform_output<__MaaToolkitRegisterCustomRecognizerExecutor_t>(__call, __ret);
+    return lhg::perform_output<MaaToolkitRegisterCustomRecognizerExecutor__ft>(__call, __ret);
 }
 
 // LHG SEC BEGIN lhg.custom.MaaToolkitUnregisterCustomRecognizerExecutor.func
@@ -3886,16 +3886,16 @@ std::optional<json::object> MaaToolkitRegisterCustomRecognizerExecutor_Wrapper(j
 
 // LHG SEC END
 std::optional<json::object> MaaToolkitUnregisterCustomRecognizerExecutor_Wrapper(json::object __param, std::string &__error) {
-    if (!lhg::perform_check<__MaaToolkitUnregisterCustomRecognizerExecutor_t>(__param, __error)) {
+    if (!lhg::perform_check<MaaToolkitUnregisterCustomRecognizerExecutor__ft>(__param, __error)) {
         return std::nullopt;
     }
 
-    typename lhg::arg_set<__MaaToolkitUnregisterCustomRecognizerExecutor_t>::temp_type __temp;
-    typename lhg::arg_set<__MaaToolkitUnregisterCustomRecognizerExecutor_t>::call_type __call;
-    if (!lhg::perform_input<__MaaToolkitUnregisterCustomRecognizerExecutor_t>(__temp, __param, __error)) {
+    typename lhg::arg_set<MaaToolkitUnregisterCustomRecognizerExecutor__ft>::temp_type __temp;
+    typename lhg::arg_set<MaaToolkitUnregisterCustomRecognizerExecutor__ft>::call_type __call;
+    if (!lhg::perform_input<MaaToolkitUnregisterCustomRecognizerExecutor__ft>(__temp, __param, __error)) {
         return std::nullopt;
     }
-    if (!lhg::perform_input_fix<__MaaToolkitUnregisterCustomRecognizerExecutor_t>(__call, __temp, __param, __error)) {
+    if (!lhg::perform_input_fix<MaaToolkitUnregisterCustomRecognizerExecutor__ft>(__call, __temp, __param, __error)) {
         return std::nullopt;
     }
 
@@ -3904,7 +3904,7 @@ std::optional<json::object> MaaToolkitUnregisterCustomRecognizerExecutor_Wrapper
 // LHG SEC DEF
     auto __ret = __return;
 // LHG SEC END
-    return lhg::perform_output<__MaaToolkitUnregisterCustomRecognizerExecutor_t>(__call, __ret);
+    return lhg::perform_output<MaaToolkitUnregisterCustomRecognizerExecutor__ft>(__call, __ret);
 }
 
 // LHG SEC BEGIN lhg.custom.MaaToolkitRegisterCustomActionExecutor.func
@@ -3912,16 +3912,16 @@ std::optional<json::object> MaaToolkitUnregisterCustomRecognizerExecutor_Wrapper
 
 // LHG SEC END
 std::optional<json::object> MaaToolkitRegisterCustomActionExecutor_Wrapper(json::object __param, std::string &__error) {
-    if (!lhg::perform_check<__MaaToolkitRegisterCustomActionExecutor_t>(__param, __error)) {
+    if (!lhg::perform_check<MaaToolkitRegisterCustomActionExecutor__ft>(__param, __error)) {
         return std::nullopt;
     }
 
-    typename lhg::arg_set<__MaaToolkitRegisterCustomActionExecutor_t>::temp_type __temp;
-    typename lhg::arg_set<__MaaToolkitRegisterCustomActionExecutor_t>::call_type __call;
-    if (!lhg::perform_input<__MaaToolkitRegisterCustomActionExecutor_t>(__temp, __param, __error)) {
+    typename lhg::arg_set<MaaToolkitRegisterCustomActionExecutor__ft>::temp_type __temp;
+    typename lhg::arg_set<MaaToolkitRegisterCustomActionExecutor__ft>::call_type __call;
+    if (!lhg::perform_input<MaaToolkitRegisterCustomActionExecutor__ft>(__temp, __param, __error)) {
         return std::nullopt;
     }
-    if (!lhg::perform_input_fix<__MaaToolkitRegisterCustomActionExecutor_t>(__call, __temp, __param, __error)) {
+    if (!lhg::perform_input_fix<MaaToolkitRegisterCustomActionExecutor__ft>(__call, __temp, __param, __error)) {
         return std::nullopt;
     }
 
@@ -3930,7 +3930,7 @@ std::optional<json::object> MaaToolkitRegisterCustomActionExecutor_Wrapper(json:
 // LHG SEC DEF
     auto __ret = __return;
 // LHG SEC END
-    return lhg::perform_output<__MaaToolkitRegisterCustomActionExecutor_t>(__call, __ret);
+    return lhg::perform_output<MaaToolkitRegisterCustomActionExecutor__ft>(__call, __ret);
 }
 
 // LHG SEC BEGIN lhg.custom.MaaToolkitUnregisterCustomActionExecutor.func
@@ -3938,16 +3938,16 @@ std::optional<json::object> MaaToolkitRegisterCustomActionExecutor_Wrapper(json:
 
 // LHG SEC END
 std::optional<json::object> MaaToolkitUnregisterCustomActionExecutor_Wrapper(json::object __param, std::string &__error) {
-    if (!lhg::perform_check<__MaaToolkitUnregisterCustomActionExecutor_t>(__param, __error)) {
+    if (!lhg::perform_check<MaaToolkitUnregisterCustomActionExecutor__ft>(__param, __error)) {
         return std::nullopt;
     }
 
-    typename lhg::arg_set<__MaaToolkitUnregisterCustomActionExecutor_t>::temp_type __temp;
-    typename lhg::arg_set<__MaaToolkitUnregisterCustomActionExecutor_t>::call_type __call;
-    if (!lhg::perform_input<__MaaToolkitUnregisterCustomActionExecutor_t>(__temp, __param, __error)) {
+    typename lhg::arg_set<MaaToolkitUnregisterCustomActionExecutor__ft>::temp_type __temp;
+    typename lhg::arg_set<MaaToolkitUnregisterCustomActionExecutor__ft>::call_type __call;
+    if (!lhg::perform_input<MaaToolkitUnregisterCustomActionExecutor__ft>(__temp, __param, __error)) {
         return std::nullopt;
     }
-    if (!lhg::perform_input_fix<__MaaToolkitUnregisterCustomActionExecutor_t>(__call, __temp, __param, __error)) {
+    if (!lhg::perform_input_fix<MaaToolkitUnregisterCustomActionExecutor__ft>(__call, __temp, __param, __error)) {
         return std::nullopt;
     }
 
@@ -3956,7 +3956,7 @@ std::optional<json::object> MaaToolkitUnregisterCustomActionExecutor_Wrapper(jso
 // LHG SEC DEF
     auto __ret = __return;
 // LHG SEC END
-    return lhg::perform_output<__MaaToolkitUnregisterCustomActionExecutor_t>(__call, __ret);
+    return lhg::perform_output<MaaToolkitUnregisterCustomActionExecutor__ft>(__call, __ret);
 }
 
 // LHG SEC BEGIN lhg.custom.MaaToolkitFindWindow.func
@@ -3964,16 +3964,16 @@ std::optional<json::object> MaaToolkitUnregisterCustomActionExecutor_Wrapper(jso
 
 // LHG SEC END
 std::optional<json::object> MaaToolkitFindWindow_Wrapper(json::object __param, std::string &__error) {
-    if (!lhg::perform_check<__MaaToolkitFindWindow_t>(__param, __error)) {
+    if (!lhg::perform_check<MaaToolkitFindWindow__ft>(__param, __error)) {
         return std::nullopt;
     }
 
-    typename lhg::arg_set<__MaaToolkitFindWindow_t>::temp_type __temp;
-    typename lhg::arg_set<__MaaToolkitFindWindow_t>::call_type __call;
-    if (!lhg::perform_input<__MaaToolkitFindWindow_t>(__temp, __param, __error)) {
+    typename lhg::arg_set<MaaToolkitFindWindow__ft>::temp_type __temp;
+    typename lhg::arg_set<MaaToolkitFindWindow__ft>::call_type __call;
+    if (!lhg::perform_input<MaaToolkitFindWindow__ft>(__temp, __param, __error)) {
         return std::nullopt;
     }
-    if (!lhg::perform_input_fix<__MaaToolkitFindWindow_t>(__call, __temp, __param, __error)) {
+    if (!lhg::perform_input_fix<MaaToolkitFindWindow__ft>(__call, __temp, __param, __error)) {
         return std::nullopt;
     }
 
@@ -3982,7 +3982,7 @@ std::optional<json::object> MaaToolkitFindWindow_Wrapper(json::object __param, s
 // LHG SEC DEF
     auto __ret = __return;
 // LHG SEC END
-    return lhg::perform_output<__MaaToolkitFindWindow_t>(__call, __ret);
+    return lhg::perform_output<MaaToolkitFindWindow__ft>(__call, __ret);
 }
 
 // LHG SEC BEGIN lhg.custom.MaaToolkitSearchWindow.func
@@ -3990,16 +3990,16 @@ std::optional<json::object> MaaToolkitFindWindow_Wrapper(json::object __param, s
 
 // LHG SEC END
 std::optional<json::object> MaaToolkitSearchWindow_Wrapper(json::object __param, std::string &__error) {
-    if (!lhg::perform_check<__MaaToolkitSearchWindow_t>(__param, __error)) {
+    if (!lhg::perform_check<MaaToolkitSearchWindow__ft>(__param, __error)) {
         return std::nullopt;
     }
 
-    typename lhg::arg_set<__MaaToolkitSearchWindow_t>::temp_type __temp;
-    typename lhg::arg_set<__MaaToolkitSearchWindow_t>::call_type __call;
-    if (!lhg::perform_input<__MaaToolkitSearchWindow_t>(__temp, __param, __error)) {
+    typename lhg::arg_set<MaaToolkitSearchWindow__ft>::temp_type __temp;
+    typename lhg::arg_set<MaaToolkitSearchWindow__ft>::call_type __call;
+    if (!lhg::perform_input<MaaToolkitSearchWindow__ft>(__temp, __param, __error)) {
         return std::nullopt;
     }
-    if (!lhg::perform_input_fix<__MaaToolkitSearchWindow_t>(__call, __temp, __param, __error)) {
+    if (!lhg::perform_input_fix<MaaToolkitSearchWindow__ft>(__call, __temp, __param, __error)) {
         return std::nullopt;
     }
 
@@ -4008,7 +4008,7 @@ std::optional<json::object> MaaToolkitSearchWindow_Wrapper(json::object __param,
 // LHG SEC DEF
     auto __ret = __return;
 // LHG SEC END
-    return lhg::perform_output<__MaaToolkitSearchWindow_t>(__call, __ret);
+    return lhg::perform_output<MaaToolkitSearchWindow__ft>(__call, __ret);
 }
 
 // LHG SEC BEGIN lhg.custom.MaaToolkitGetWindow.func
@@ -4016,16 +4016,16 @@ std::optional<json::object> MaaToolkitSearchWindow_Wrapper(json::object __param,
 
 // LHG SEC END
 std::optional<json::object> MaaToolkitGetWindow_Wrapper(json::object __param, std::string &__error) {
-    if (!lhg::perform_check<__MaaToolkitGetWindow_t>(__param, __error)) {
+    if (!lhg::perform_check<MaaToolkitGetWindow__ft>(__param, __error)) {
         return std::nullopt;
     }
 
-    typename lhg::arg_set<__MaaToolkitGetWindow_t>::temp_type __temp;
-    typename lhg::arg_set<__MaaToolkitGetWindow_t>::call_type __call;
-    if (!lhg::perform_input<__MaaToolkitGetWindow_t>(__temp, __param, __error)) {
+    typename lhg::arg_set<MaaToolkitGetWindow__ft>::temp_type __temp;
+    typename lhg::arg_set<MaaToolkitGetWindow__ft>::call_type __call;
+    if (!lhg::perform_input<MaaToolkitGetWindow__ft>(__temp, __param, __error)) {
         return std::nullopt;
     }
-    if (!lhg::perform_input_fix<__MaaToolkitGetWindow_t>(__call, __temp, __param, __error)) {
+    if (!lhg::perform_input_fix<MaaToolkitGetWindow__ft>(__call, __temp, __param, __error)) {
         return std::nullopt;
     }
 
@@ -4034,7 +4034,7 @@ std::optional<json::object> MaaToolkitGetWindow_Wrapper(json::object __param, st
 // LHG SEC DEF
     auto __ret = __return;
 // LHG SEC END
-    return lhg::perform_output<__MaaToolkitGetWindow_t>(__call, __ret);
+    return lhg::perform_output<MaaToolkitGetWindow__ft>(__call, __ret);
 }
 
 // LHG SEC BEGIN lhg.custom.MaaToolkitGetCursorWindow.func
@@ -4042,16 +4042,16 @@ std::optional<json::object> MaaToolkitGetWindow_Wrapper(json::object __param, st
 
 // LHG SEC END
 std::optional<json::object> MaaToolkitGetCursorWindow_Wrapper(json::object __param, std::string &__error) {
-    if (!lhg::perform_check<__MaaToolkitGetCursorWindow_t>(__param, __error)) {
+    if (!lhg::perform_check<MaaToolkitGetCursorWindow__ft>(__param, __error)) {
         return std::nullopt;
     }
 
-    typename lhg::arg_set<__MaaToolkitGetCursorWindow_t>::temp_type __temp;
-    typename lhg::arg_set<__MaaToolkitGetCursorWindow_t>::call_type __call;
-    if (!lhg::perform_input<__MaaToolkitGetCursorWindow_t>(__temp, __param, __error)) {
+    typename lhg::arg_set<MaaToolkitGetCursorWindow__ft>::temp_type __temp;
+    typename lhg::arg_set<MaaToolkitGetCursorWindow__ft>::call_type __call;
+    if (!lhg::perform_input<MaaToolkitGetCursorWindow__ft>(__temp, __param, __error)) {
         return std::nullopt;
     }
-    if (!lhg::perform_input_fix<__MaaToolkitGetCursorWindow_t>(__call, __temp, __param, __error)) {
+    if (!lhg::perform_input_fix<MaaToolkitGetCursorWindow__ft>(__call, __temp, __param, __error)) {
         return std::nullopt;
     }
 
@@ -4060,7 +4060,7 @@ std::optional<json::object> MaaToolkitGetCursorWindow_Wrapper(json::object __par
 // LHG SEC DEF
     auto __ret = __return;
 // LHG SEC END
-    return lhg::perform_output<__MaaToolkitGetCursorWindow_t>(__call, __ret);
+    return lhg::perform_output<MaaToolkitGetCursorWindow__ft>(__call, __ret);
 }
 
 // LHG SEC BEGIN lhg.custom.MaaControllerSetOptionString.func
@@ -4068,16 +4068,16 @@ std::optional<json::object> MaaToolkitGetCursorWindow_Wrapper(json::object __par
 
 // LHG SEC END
 std::optional<json::object> MaaControllerSetOptionString_Wrapper(json::object __param, std::string &__error) {
-    if (!lhg::perform_check<__MaaControllerSetOptionString_t>(__param, __error)) {
+    if (!lhg::perform_check<MaaControllerSetOptionString__ft>(__param, __error)) {
         return std::nullopt;
     }
 
-    typename lhg::arg_set<__MaaControllerSetOptionString_t>::temp_type __temp;
-    typename lhg::arg_set<__MaaControllerSetOptionString_t>::call_type __call;
-    if (!lhg::perform_input<__MaaControllerSetOptionString_t>(__temp, __param, __error)) {
+    typename lhg::arg_set<MaaControllerSetOptionString__ft>::temp_type __temp;
+    typename lhg::arg_set<MaaControllerSetOptionString__ft>::call_type __call;
+    if (!lhg::perform_input<MaaControllerSetOptionString__ft>(__temp, __param, __error)) {
         return std::nullopt;
     }
-    if (!lhg::perform_input_fix<__MaaControllerSetOptionString_t>(__call, __temp, __param, __error)) {
+    if (!lhg::perform_input_fix<MaaControllerSetOptionString__ft>(__call, __temp, __param, __error)) {
         return std::nullopt;
     }
 
@@ -4086,7 +4086,7 @@ std::optional<json::object> MaaControllerSetOptionString_Wrapper(json::object __
 // LHG SEC DEF
     auto __ret = __return;
 // LHG SEC END
-    return lhg::perform_output<__MaaControllerSetOptionString_t>(__call, __ret);
+    return lhg::perform_output<MaaControllerSetOptionString__ft>(__call, __ret);
 }
 
 // LHG SEC BEGIN lhg.custom.MaaControllerSetOptionInteger.func
@@ -4094,16 +4094,16 @@ std::optional<json::object> MaaControllerSetOptionString_Wrapper(json::object __
 
 // LHG SEC END
 std::optional<json::object> MaaControllerSetOptionInteger_Wrapper(json::object __param, std::string &__error) {
-    if (!lhg::perform_check<__MaaControllerSetOptionInteger_t>(__param, __error)) {
+    if (!lhg::perform_check<MaaControllerSetOptionInteger__ft>(__param, __error)) {
         return std::nullopt;
     }
 
-    typename lhg::arg_set<__MaaControllerSetOptionInteger_t>::temp_type __temp;
-    typename lhg::arg_set<__MaaControllerSetOptionInteger_t>::call_type __call;
-    if (!lhg::perform_input<__MaaControllerSetOptionInteger_t>(__temp, __param, __error)) {
+    typename lhg::arg_set<MaaControllerSetOptionInteger__ft>::temp_type __temp;
+    typename lhg::arg_set<MaaControllerSetOptionInteger__ft>::call_type __call;
+    if (!lhg::perform_input<MaaControllerSetOptionInteger__ft>(__temp, __param, __error)) {
         return std::nullopt;
     }
-    if (!lhg::perform_input_fix<__MaaControllerSetOptionInteger_t>(__call, __temp, __param, __error)) {
+    if (!lhg::perform_input_fix<MaaControllerSetOptionInteger__ft>(__call, __temp, __param, __error)) {
         return std::nullopt;
     }
 
@@ -4112,7 +4112,7 @@ std::optional<json::object> MaaControllerSetOptionInteger_Wrapper(json::object _
 // LHG SEC DEF
     auto __ret = __return;
 // LHG SEC END
-    return lhg::perform_output<__MaaControllerSetOptionInteger_t>(__call, __ret);
+    return lhg::perform_output<MaaControllerSetOptionInteger__ft>(__call, __ret);
 }
 
 // LHG SEC BEGIN lhg.custom.MaaControllerSetOptionBoolean.func
@@ -4120,16 +4120,16 @@ std::optional<json::object> MaaControllerSetOptionInteger_Wrapper(json::object _
 
 // LHG SEC END
 std::optional<json::object> MaaControllerSetOptionBoolean_Wrapper(json::object __param, std::string &__error) {
-    if (!lhg::perform_check<__MaaControllerSetOptionBoolean_t>(__param, __error)) {
+    if (!lhg::perform_check<MaaControllerSetOptionBoolean__ft>(__param, __error)) {
         return std::nullopt;
     }
 
-    typename lhg::arg_set<__MaaControllerSetOptionBoolean_t>::temp_type __temp;
-    typename lhg::arg_set<__MaaControllerSetOptionBoolean_t>::call_type __call;
-    if (!lhg::perform_input<__MaaControllerSetOptionBoolean_t>(__temp, __param, __error)) {
+    typename lhg::arg_set<MaaControllerSetOptionBoolean__ft>::temp_type __temp;
+    typename lhg::arg_set<MaaControllerSetOptionBoolean__ft>::call_type __call;
+    if (!lhg::perform_input<MaaControllerSetOptionBoolean__ft>(__temp, __param, __error)) {
         return std::nullopt;
     }
-    if (!lhg::perform_input_fix<__MaaControllerSetOptionBoolean_t>(__call, __temp, __param, __error)) {
+    if (!lhg::perform_input_fix<MaaControllerSetOptionBoolean__ft>(__call, __temp, __param, __error)) {
         return std::nullopt;
     }
 
@@ -4138,7 +4138,7 @@ std::optional<json::object> MaaControllerSetOptionBoolean_Wrapper(json::object _
 // LHG SEC DEF
     auto __ret = __return;
 // LHG SEC END
-    return lhg::perform_output<__MaaControllerSetOptionBoolean_t>(__call, __ret);
+    return lhg::perform_output<MaaControllerSetOptionBoolean__ft>(__call, __ret);
 }
 
 // LHG SEC BEGIN lhg.custom.MaaSetGlobalOptionString.func
@@ -4146,16 +4146,16 @@ std::optional<json::object> MaaControllerSetOptionBoolean_Wrapper(json::object _
 
 // LHG SEC END
 std::optional<json::object> MaaSetGlobalOptionString_Wrapper(json::object __param, std::string &__error) {
-    if (!lhg::perform_check<__MaaSetGlobalOptionString_t>(__param, __error)) {
+    if (!lhg::perform_check<MaaSetGlobalOptionString__ft>(__param, __error)) {
         return std::nullopt;
     }
 
-    typename lhg::arg_set<__MaaSetGlobalOptionString_t>::temp_type __temp;
-    typename lhg::arg_set<__MaaSetGlobalOptionString_t>::call_type __call;
-    if (!lhg::perform_input<__MaaSetGlobalOptionString_t>(__temp, __param, __error)) {
+    typename lhg::arg_set<MaaSetGlobalOptionString__ft>::temp_type __temp;
+    typename lhg::arg_set<MaaSetGlobalOptionString__ft>::call_type __call;
+    if (!lhg::perform_input<MaaSetGlobalOptionString__ft>(__temp, __param, __error)) {
         return std::nullopt;
     }
-    if (!lhg::perform_input_fix<__MaaSetGlobalOptionString_t>(__call, __temp, __param, __error)) {
+    if (!lhg::perform_input_fix<MaaSetGlobalOptionString__ft>(__call, __temp, __param, __error)) {
         return std::nullopt;
     }
 
@@ -4164,7 +4164,7 @@ std::optional<json::object> MaaSetGlobalOptionString_Wrapper(json::object __para
 // LHG SEC DEF
     auto __ret = __return;
 // LHG SEC END
-    return lhg::perform_output<__MaaSetGlobalOptionString_t>(__call, __ret);
+    return lhg::perform_output<MaaSetGlobalOptionString__ft>(__call, __ret);
 }
 
 // LHG SEC BEGIN lhg.custom.MaaSetGlobalOptionInteger.func
@@ -4172,16 +4172,16 @@ std::optional<json::object> MaaSetGlobalOptionString_Wrapper(json::object __para
 
 // LHG SEC END
 std::optional<json::object> MaaSetGlobalOptionInteger_Wrapper(json::object __param, std::string &__error) {
-    if (!lhg::perform_check<__MaaSetGlobalOptionInteger_t>(__param, __error)) {
+    if (!lhg::perform_check<MaaSetGlobalOptionInteger__ft>(__param, __error)) {
         return std::nullopt;
     }
 
-    typename lhg::arg_set<__MaaSetGlobalOptionInteger_t>::temp_type __temp;
-    typename lhg::arg_set<__MaaSetGlobalOptionInteger_t>::call_type __call;
-    if (!lhg::perform_input<__MaaSetGlobalOptionInteger_t>(__temp, __param, __error)) {
+    typename lhg::arg_set<MaaSetGlobalOptionInteger__ft>::temp_type __temp;
+    typename lhg::arg_set<MaaSetGlobalOptionInteger__ft>::call_type __call;
+    if (!lhg::perform_input<MaaSetGlobalOptionInteger__ft>(__temp, __param, __error)) {
         return std::nullopt;
     }
-    if (!lhg::perform_input_fix<__MaaSetGlobalOptionInteger_t>(__call, __temp, __param, __error)) {
+    if (!lhg::perform_input_fix<MaaSetGlobalOptionInteger__ft>(__call, __temp, __param, __error)) {
         return std::nullopt;
     }
 
@@ -4190,7 +4190,7 @@ std::optional<json::object> MaaSetGlobalOptionInteger_Wrapper(json::object __par
 // LHG SEC DEF
     auto __ret = __return;
 // LHG SEC END
-    return lhg::perform_output<__MaaSetGlobalOptionInteger_t>(__call, __ret);
+    return lhg::perform_output<MaaSetGlobalOptionInteger__ft>(__call, __ret);
 }
 
 // LHG SEC BEGIN lhg.custom.MaaSetGlobalOptionBoolean.func
@@ -4198,16 +4198,16 @@ std::optional<json::object> MaaSetGlobalOptionInteger_Wrapper(json::object __par
 
 // LHG SEC END
 std::optional<json::object> MaaSetGlobalOptionBoolean_Wrapper(json::object __param, std::string &__error) {
-    if (!lhg::perform_check<__MaaSetGlobalOptionBoolean_t>(__param, __error)) {
+    if (!lhg::perform_check<MaaSetGlobalOptionBoolean__ft>(__param, __error)) {
         return std::nullopt;
     }
 
-    typename lhg::arg_set<__MaaSetGlobalOptionBoolean_t>::temp_type __temp;
-    typename lhg::arg_set<__MaaSetGlobalOptionBoolean_t>::call_type __call;
-    if (!lhg::perform_input<__MaaSetGlobalOptionBoolean_t>(__temp, __param, __error)) {
+    typename lhg::arg_set<MaaSetGlobalOptionBoolean__ft>::temp_type __temp;
+    typename lhg::arg_set<MaaSetGlobalOptionBoolean__ft>::call_type __call;
+    if (!lhg::perform_input<MaaSetGlobalOptionBoolean__ft>(__temp, __param, __error)) {
         return std::nullopt;
     }
-    if (!lhg::perform_input_fix<__MaaSetGlobalOptionBoolean_t>(__call, __temp, __param, __error)) {
+    if (!lhg::perform_input_fix<MaaSetGlobalOptionBoolean__ft>(__call, __temp, __param, __error)) {
         return std::nullopt;
     }
 
@@ -4216,7 +4216,7 @@ std::optional<json::object> MaaSetGlobalOptionBoolean_Wrapper(json::object __par
 // LHG SEC DEF
     auto __ret = __return;
 // LHG SEC END
-    return lhg::perform_output<__MaaSetGlobalOptionBoolean_t>(__call, __ret);
+    return lhg::perform_output<MaaSetGlobalOptionBoolean__ft>(__call, __ret);
 }
 
 bool handle_request(Context& ctx, UrlSegments segs) {
@@ -4257,88 +4257,88 @@ bool handle_request(Context& ctx, UrlSegments segs) {
     }
 
     const static lhg::api_info_map wrappers = {
-        { "MaaAdbControllerCreate", { &MaaAdbControllerCreate_Wrapper, &lhg::input_helper<__MaaAdbControllerCreate_t>, &lhg::output_helper<__MaaAdbControllerCreate_t> } },
-        { "MaaWin32ControllerCreate", { &MaaWin32ControllerCreate_Wrapper, &lhg::input_helper<__MaaWin32ControllerCreate_t>, &lhg::output_helper<__MaaWin32ControllerCreate_t> } },
-        { "MaaAdbControllerCreateV2", { &MaaAdbControllerCreateV2_Wrapper, &lhg::input_helper<__MaaAdbControllerCreateV2_t>, &lhg::output_helper<__MaaAdbControllerCreateV2_t> } },
-        { "MaaThriftControllerCreate", { &MaaThriftControllerCreate_Wrapper, &lhg::input_helper<__MaaThriftControllerCreate_t>, &lhg::output_helper<__MaaThriftControllerCreate_t> } },
-        { "MaaDbgControllerCreate", { &MaaDbgControllerCreate_Wrapper, &lhg::input_helper<__MaaDbgControllerCreate_t>, &lhg::output_helper<__MaaDbgControllerCreate_t> } },
-        { "MaaControllerDestroy", { &MaaControllerDestroy_Wrapper, &lhg::input_helper<__MaaControllerDestroy_t>, &lhg::output_helper<__MaaControllerDestroy_t> } },
-        { "MaaControllerPostConnection", { &MaaControllerPostConnection_Wrapper, &lhg::input_helper<__MaaControllerPostConnection_t>, &lhg::output_helper<__MaaControllerPostConnection_t> } },
-        { "MaaControllerPostClick", { &MaaControllerPostClick_Wrapper, &lhg::input_helper<__MaaControllerPostClick_t>, &lhg::output_helper<__MaaControllerPostClick_t> } },
-        { "MaaControllerPostSwipe", { &MaaControllerPostSwipe_Wrapper, &lhg::input_helper<__MaaControllerPostSwipe_t>, &lhg::output_helper<__MaaControllerPostSwipe_t> } },
-        { "MaaControllerPostPressKey", { &MaaControllerPostPressKey_Wrapper, &lhg::input_helper<__MaaControllerPostPressKey_t>, &lhg::output_helper<__MaaControllerPostPressKey_t> } },
-        { "MaaControllerPostInputText", { &MaaControllerPostInputText_Wrapper, &lhg::input_helper<__MaaControllerPostInputText_t>, &lhg::output_helper<__MaaControllerPostInputText_t> } },
-        { "MaaControllerPostTouchDown", { &MaaControllerPostTouchDown_Wrapper, &lhg::input_helper<__MaaControllerPostTouchDown_t>, &lhg::output_helper<__MaaControllerPostTouchDown_t> } },
-        { "MaaControllerPostTouchMove", { &MaaControllerPostTouchMove_Wrapper, &lhg::input_helper<__MaaControllerPostTouchMove_t>, &lhg::output_helper<__MaaControllerPostTouchMove_t> } },
-        { "MaaControllerPostTouchUp", { &MaaControllerPostTouchUp_Wrapper, &lhg::input_helper<__MaaControllerPostTouchUp_t>, &lhg::output_helper<__MaaControllerPostTouchUp_t> } },
-        { "MaaControllerPostScreencap", { &MaaControllerPostScreencap_Wrapper, &lhg::input_helper<__MaaControllerPostScreencap_t>, &lhg::output_helper<__MaaControllerPostScreencap_t> } },
-        { "MaaControllerStatus", { &MaaControllerStatus_Wrapper, &lhg::input_helper<__MaaControllerStatus_t>, &lhg::output_helper<__MaaControllerStatus_t> } },
-        { "MaaControllerWait", { &MaaControllerWait_Wrapper, &lhg::input_helper<__MaaControllerWait_t>, &lhg::output_helper<__MaaControllerWait_t> } },
-        { "MaaControllerConnected", { &MaaControllerConnected_Wrapper, &lhg::input_helper<__MaaControllerConnected_t>, &lhg::output_helper<__MaaControllerConnected_t> } },
-        { "MaaControllerGetImage", { &MaaControllerGetImage_Wrapper, &lhg::input_helper<__MaaControllerGetImage_t>, &lhg::output_helper<__MaaControllerGetImage_t> } },
-        { "MaaControllerGetUUID", { &MaaControllerGetUUID_Wrapper, &lhg::input_helper<__MaaControllerGetUUID_t>, &lhg::output_helper<__MaaControllerGetUUID_t> } },
-        { "MaaCreate", { &MaaCreate_Wrapper, &lhg::input_helper<__MaaCreate_t>, &lhg::output_helper<__MaaCreate_t> } },
-        { "MaaDestroy", { &MaaDestroy_Wrapper, &lhg::input_helper<__MaaDestroy_t>, &lhg::output_helper<__MaaDestroy_t> } },
-        { "MaaBindResource", { &MaaBindResource_Wrapper, &lhg::input_helper<__MaaBindResource_t>, &lhg::output_helper<__MaaBindResource_t> } },
-        { "MaaBindController", { &MaaBindController_Wrapper, &lhg::input_helper<__MaaBindController_t>, &lhg::output_helper<__MaaBindController_t> } },
-        { "MaaInited", { &MaaInited_Wrapper, &lhg::input_helper<__MaaInited_t>, &lhg::output_helper<__MaaInited_t> } },
-        { "MaaClearCustomRecognizer", { &MaaClearCustomRecognizer_Wrapper, &lhg::input_helper<__MaaClearCustomRecognizer_t>, &lhg::output_helper<__MaaClearCustomRecognizer_t> } },
-        { "MaaClearCustomAction", { &MaaClearCustomAction_Wrapper, &lhg::input_helper<__MaaClearCustomAction_t>, &lhg::output_helper<__MaaClearCustomAction_t> } },
-        { "MaaPostTask", { &MaaPostTask_Wrapper, &lhg::input_helper<__MaaPostTask_t>, &lhg::output_helper<__MaaPostTask_t> } },
-        { "MaaSetTaskParam", { &MaaSetTaskParam_Wrapper, &lhg::input_helper<__MaaSetTaskParam_t>, &lhg::output_helper<__MaaSetTaskParam_t> } },
-        { "MaaTaskStatus", { &MaaTaskStatus_Wrapper, &lhg::input_helper<__MaaTaskStatus_t>, &lhg::output_helper<__MaaTaskStatus_t> } },
-        { "MaaWaitTask", { &MaaWaitTask_Wrapper, &lhg::input_helper<__MaaWaitTask_t>, &lhg::output_helper<__MaaWaitTask_t> } },
-        { "MaaTaskAllFinished", { &MaaTaskAllFinished_Wrapper, &lhg::input_helper<__MaaTaskAllFinished_t>, &lhg::output_helper<__MaaTaskAllFinished_t> } },
-        { "MaaPostStop", { &MaaPostStop_Wrapper, &lhg::input_helper<__MaaPostStop_t>, &lhg::output_helper<__MaaPostStop_t> } },
-        { "MaaStop", { &MaaStop_Wrapper, &lhg::input_helper<__MaaStop_t>, &lhg::output_helper<__MaaStop_t> } },
-        { "MaaGetResource", { &MaaGetResource_Wrapper, &lhg::input_helper<__MaaGetResource_t>, &lhg::output_helper<__MaaGetResource_t> } },
-        { "MaaGetController", { &MaaGetController_Wrapper, &lhg::input_helper<__MaaGetController_t>, &lhg::output_helper<__MaaGetController_t> } },
-        { "MaaResourceCreate", { &MaaResourceCreate_Wrapper, &lhg::input_helper<__MaaResourceCreate_t>, &lhg::output_helper<__MaaResourceCreate_t> } },
-        { "MaaResourceDestroy", { &MaaResourceDestroy_Wrapper, &lhg::input_helper<__MaaResourceDestroy_t>, &lhg::output_helper<__MaaResourceDestroy_t> } },
-        { "MaaResourcePostPath", { &MaaResourcePostPath_Wrapper, &lhg::input_helper<__MaaResourcePostPath_t>, &lhg::output_helper<__MaaResourcePostPath_t> } },
-        { "MaaResourceStatus", { &MaaResourceStatus_Wrapper, &lhg::input_helper<__MaaResourceStatus_t>, &lhg::output_helper<__MaaResourceStatus_t> } },
-        { "MaaResourceWait", { &MaaResourceWait_Wrapper, &lhg::input_helper<__MaaResourceWait_t>, &lhg::output_helper<__MaaResourceWait_t> } },
-        { "MaaResourceLoaded", { &MaaResourceLoaded_Wrapper, &lhg::input_helper<__MaaResourceLoaded_t>, &lhg::output_helper<__MaaResourceLoaded_t> } },
-        { "MaaResourceGetHash", { &MaaResourceGetHash_Wrapper, &lhg::input_helper<__MaaResourceGetHash_t>, &lhg::output_helper<__MaaResourceGetHash_t> } },
-        { "MaaResourceGetTaskList", { &MaaResourceGetTaskList_Wrapper, &lhg::input_helper<__MaaResourceGetTaskList_t>, &lhg::output_helper<__MaaResourceGetTaskList_t> } },
-        { "MaaCreateImageBuffer", { &MaaCreateImageBuffer_Wrapper, &lhg::input_helper<__MaaCreateImageBuffer_t>, &lhg::output_helper<__MaaCreateImageBuffer_t> } },
-        { "MaaDestroyImageBuffer", { &MaaDestroyImageBuffer_Wrapper, &lhg::input_helper<__MaaDestroyImageBuffer_t>, &lhg::output_helper<__MaaDestroyImageBuffer_t> } },
-        { "MaaIsImageEmpty", { &MaaIsImageEmpty_Wrapper, &lhg::input_helper<__MaaIsImageEmpty_t>, &lhg::output_helper<__MaaIsImageEmpty_t> } },
-        { "MaaClearImage", { &MaaClearImage_Wrapper, &lhg::input_helper<__MaaClearImage_t>, &lhg::output_helper<__MaaClearImage_t> } },
-        { "MaaGetImageWidth", { &MaaGetImageWidth_Wrapper, &lhg::input_helper<__MaaGetImageWidth_t>, &lhg::output_helper<__MaaGetImageWidth_t> } },
-        { "MaaGetImageHeight", { &MaaGetImageHeight_Wrapper, &lhg::input_helper<__MaaGetImageHeight_t>, &lhg::output_helper<__MaaGetImageHeight_t> } },
-        { "MaaGetImageType", { &MaaGetImageType_Wrapper, &lhg::input_helper<__MaaGetImageType_t>, &lhg::output_helper<__MaaGetImageType_t> } },
-        { "MaaGetImageEncoded", { &MaaGetImageEncoded_Wrapper, &lhg::input_helper<__MaaGetImageEncoded_t>, &lhg::output_helper<__MaaGetImageEncoded_t> } },
-        { "MaaSetImageEncoded", { &MaaSetImageEncoded_Wrapper, &lhg::input_helper<__MaaSetImageEncoded_t>, &lhg::output_helper<__MaaSetImageEncoded_t> } },
-        { "MaaVersion", { &MaaVersion_Wrapper, &lhg::input_helper<__MaaVersion_t>, &lhg::output_helper<__MaaVersion_t> } },
-        { "MaaToolkitInit", { &MaaToolkitInit_Wrapper, &lhg::input_helper<__MaaToolkitInit_t>, &lhg::output_helper<__MaaToolkitInit_t> } },
-        { "MaaToolkitUninit", { &MaaToolkitUninit_Wrapper, &lhg::input_helper<__MaaToolkitUninit_t>, &lhg::output_helper<__MaaToolkitUninit_t> } },
-        { "MaaToolkitFindDevice", { &MaaToolkitFindDevice_Wrapper, &lhg::input_helper<__MaaToolkitFindDevice_t>, &lhg::output_helper<__MaaToolkitFindDevice_t> } },
-        { "MaaToolkitFindDeviceWithAdb", { &MaaToolkitFindDeviceWithAdb_Wrapper, &lhg::input_helper<__MaaToolkitFindDeviceWithAdb_t>, &lhg::output_helper<__MaaToolkitFindDeviceWithAdb_t> } },
-        { "MaaToolkitPostFindDevice", { &MaaToolkitPostFindDevice_Wrapper, &lhg::input_helper<__MaaToolkitPostFindDevice_t>, &lhg::output_helper<__MaaToolkitPostFindDevice_t> } },
-        { "MaaToolkitPostFindDeviceWithAdb", { &MaaToolkitPostFindDeviceWithAdb_Wrapper, &lhg::input_helper<__MaaToolkitPostFindDeviceWithAdb_t>, &lhg::output_helper<__MaaToolkitPostFindDeviceWithAdb_t> } },
-        { "MaaToolkitIsFindDeviceCompleted", { &MaaToolkitIsFindDeviceCompleted_Wrapper, &lhg::input_helper<__MaaToolkitIsFindDeviceCompleted_t>, &lhg::output_helper<__MaaToolkitIsFindDeviceCompleted_t> } },
-        { "MaaToolkitWaitForFindDeviceToComplete", { &MaaToolkitWaitForFindDeviceToComplete_Wrapper, &lhg::input_helper<__MaaToolkitWaitForFindDeviceToComplete_t>, &lhg::output_helper<__MaaToolkitWaitForFindDeviceToComplete_t> } },
-        { "MaaToolkitGetDeviceCount", { &MaaToolkitGetDeviceCount_Wrapper, &lhg::input_helper<__MaaToolkitGetDeviceCount_t>, &lhg::output_helper<__MaaToolkitGetDeviceCount_t> } },
-        { "MaaToolkitGetDeviceName", { &MaaToolkitGetDeviceName_Wrapper, &lhg::input_helper<__MaaToolkitGetDeviceName_t>, &lhg::output_helper<__MaaToolkitGetDeviceName_t> } },
-        { "MaaToolkitGetDeviceAdbPath", { &MaaToolkitGetDeviceAdbPath_Wrapper, &lhg::input_helper<__MaaToolkitGetDeviceAdbPath_t>, &lhg::output_helper<__MaaToolkitGetDeviceAdbPath_t> } },
-        { "MaaToolkitGetDeviceAdbSerial", { &MaaToolkitGetDeviceAdbSerial_Wrapper, &lhg::input_helper<__MaaToolkitGetDeviceAdbSerial_t>, &lhg::output_helper<__MaaToolkitGetDeviceAdbSerial_t> } },
-        { "MaaToolkitGetDeviceAdbControllerType", { &MaaToolkitGetDeviceAdbControllerType_Wrapper, &lhg::input_helper<__MaaToolkitGetDeviceAdbControllerType_t>, &lhg::output_helper<__MaaToolkitGetDeviceAdbControllerType_t> } },
-        { "MaaToolkitGetDeviceAdbConfig", { &MaaToolkitGetDeviceAdbConfig_Wrapper, &lhg::input_helper<__MaaToolkitGetDeviceAdbConfig_t>, &lhg::output_helper<__MaaToolkitGetDeviceAdbConfig_t> } },
-        { "MaaToolkitRegisterCustomRecognizerExecutor", { &MaaToolkitRegisterCustomRecognizerExecutor_Wrapper, &lhg::input_helper<__MaaToolkitRegisterCustomRecognizerExecutor_t>, &lhg::output_helper<__MaaToolkitRegisterCustomRecognizerExecutor_t> } },
-        { "MaaToolkitUnregisterCustomRecognizerExecutor", { &MaaToolkitUnregisterCustomRecognizerExecutor_Wrapper, &lhg::input_helper<__MaaToolkitUnregisterCustomRecognizerExecutor_t>, &lhg::output_helper<__MaaToolkitUnregisterCustomRecognizerExecutor_t> } },
-        { "MaaToolkitRegisterCustomActionExecutor", { &MaaToolkitRegisterCustomActionExecutor_Wrapper, &lhg::input_helper<__MaaToolkitRegisterCustomActionExecutor_t>, &lhg::output_helper<__MaaToolkitRegisterCustomActionExecutor_t> } },
-        { "MaaToolkitUnregisterCustomActionExecutor", { &MaaToolkitUnregisterCustomActionExecutor_Wrapper, &lhg::input_helper<__MaaToolkitUnregisterCustomActionExecutor_t>, &lhg::output_helper<__MaaToolkitUnregisterCustomActionExecutor_t> } },
-        { "MaaToolkitFindWindow", { &MaaToolkitFindWindow_Wrapper, &lhg::input_helper<__MaaToolkitFindWindow_t>, &lhg::output_helper<__MaaToolkitFindWindow_t> } },
-        { "MaaToolkitSearchWindow", { &MaaToolkitSearchWindow_Wrapper, &lhg::input_helper<__MaaToolkitSearchWindow_t>, &lhg::output_helper<__MaaToolkitSearchWindow_t> } },
-        { "MaaToolkitGetWindow", { &MaaToolkitGetWindow_Wrapper, &lhg::input_helper<__MaaToolkitGetWindow_t>, &lhg::output_helper<__MaaToolkitGetWindow_t> } },
-        { "MaaToolkitGetCursorWindow", { &MaaToolkitGetCursorWindow_Wrapper, &lhg::input_helper<__MaaToolkitGetCursorWindow_t>, &lhg::output_helper<__MaaToolkitGetCursorWindow_t> } },
-        { "MaaControllerSetOptionString", { &MaaControllerSetOptionString_Wrapper, &lhg::input_helper<__MaaControllerSetOptionString_t>, &lhg::output_helper<__MaaControllerSetOptionString_t> } },
-        { "MaaControllerSetOptionInteger", { &MaaControllerSetOptionInteger_Wrapper, &lhg::input_helper<__MaaControllerSetOptionInteger_t>, &lhg::output_helper<__MaaControllerSetOptionInteger_t> } },
-        { "MaaControllerSetOptionBoolean", { &MaaControllerSetOptionBoolean_Wrapper, &lhg::input_helper<__MaaControllerSetOptionBoolean_t>, &lhg::output_helper<__MaaControllerSetOptionBoolean_t> } },
-        { "MaaSetGlobalOptionString", { &MaaSetGlobalOptionString_Wrapper, &lhg::input_helper<__MaaSetGlobalOptionString_t>, &lhg::output_helper<__MaaSetGlobalOptionString_t> } },
-        { "MaaSetGlobalOptionInteger", { &MaaSetGlobalOptionInteger_Wrapper, &lhg::input_helper<__MaaSetGlobalOptionInteger_t>, &lhg::output_helper<__MaaSetGlobalOptionInteger_t> } },
-        { "MaaSetGlobalOptionBoolean", { &MaaSetGlobalOptionBoolean_Wrapper, &lhg::input_helper<__MaaSetGlobalOptionBoolean_t>, &lhg::output_helper<__MaaSetGlobalOptionBoolean_t> } },
+        { "MaaAdbControllerCreate", { &MaaAdbControllerCreate_Wrapper, &lhg::input_helper<MaaAdbControllerCreate__ft>, &lhg::output_helper<MaaAdbControllerCreate__ft> } },
+        { "MaaWin32ControllerCreate", { &MaaWin32ControllerCreate_Wrapper, &lhg::input_helper<MaaWin32ControllerCreate__ft>, &lhg::output_helper<MaaWin32ControllerCreate__ft> } },
+        { "MaaAdbControllerCreateV2", { &MaaAdbControllerCreateV2_Wrapper, &lhg::input_helper<MaaAdbControllerCreateV2__ft>, &lhg::output_helper<MaaAdbControllerCreateV2__ft> } },
+        { "MaaThriftControllerCreate", { &MaaThriftControllerCreate_Wrapper, &lhg::input_helper<MaaThriftControllerCreate__ft>, &lhg::output_helper<MaaThriftControllerCreate__ft> } },
+        { "MaaDbgControllerCreate", { &MaaDbgControllerCreate_Wrapper, &lhg::input_helper<MaaDbgControllerCreate__ft>, &lhg::output_helper<MaaDbgControllerCreate__ft> } },
+        { "MaaControllerDestroy", { &MaaControllerDestroy_Wrapper, &lhg::input_helper<MaaControllerDestroy__ft>, &lhg::output_helper<MaaControllerDestroy__ft> } },
+        { "MaaControllerPostConnection", { &MaaControllerPostConnection_Wrapper, &lhg::input_helper<MaaControllerPostConnection__ft>, &lhg::output_helper<MaaControllerPostConnection__ft> } },
+        { "MaaControllerPostClick", { &MaaControllerPostClick_Wrapper, &lhg::input_helper<MaaControllerPostClick__ft>, &lhg::output_helper<MaaControllerPostClick__ft> } },
+        { "MaaControllerPostSwipe", { &MaaControllerPostSwipe_Wrapper, &lhg::input_helper<MaaControllerPostSwipe__ft>, &lhg::output_helper<MaaControllerPostSwipe__ft> } },
+        { "MaaControllerPostPressKey", { &MaaControllerPostPressKey_Wrapper, &lhg::input_helper<MaaControllerPostPressKey__ft>, &lhg::output_helper<MaaControllerPostPressKey__ft> } },
+        { "MaaControllerPostInputText", { &MaaControllerPostInputText_Wrapper, &lhg::input_helper<MaaControllerPostInputText__ft>, &lhg::output_helper<MaaControllerPostInputText__ft> } },
+        { "MaaControllerPostTouchDown", { &MaaControllerPostTouchDown_Wrapper, &lhg::input_helper<MaaControllerPostTouchDown__ft>, &lhg::output_helper<MaaControllerPostTouchDown__ft> } },
+        { "MaaControllerPostTouchMove", { &MaaControllerPostTouchMove_Wrapper, &lhg::input_helper<MaaControllerPostTouchMove__ft>, &lhg::output_helper<MaaControllerPostTouchMove__ft> } },
+        { "MaaControllerPostTouchUp", { &MaaControllerPostTouchUp_Wrapper, &lhg::input_helper<MaaControllerPostTouchUp__ft>, &lhg::output_helper<MaaControllerPostTouchUp__ft> } },
+        { "MaaControllerPostScreencap", { &MaaControllerPostScreencap_Wrapper, &lhg::input_helper<MaaControllerPostScreencap__ft>, &lhg::output_helper<MaaControllerPostScreencap__ft> } },
+        { "MaaControllerStatus", { &MaaControllerStatus_Wrapper, &lhg::input_helper<MaaControllerStatus__ft>, &lhg::output_helper<MaaControllerStatus__ft> } },
+        { "MaaControllerWait", { &MaaControllerWait_Wrapper, &lhg::input_helper<MaaControllerWait__ft>, &lhg::output_helper<MaaControllerWait__ft> } },
+        { "MaaControllerConnected", { &MaaControllerConnected_Wrapper, &lhg::input_helper<MaaControllerConnected__ft>, &lhg::output_helper<MaaControllerConnected__ft> } },
+        { "MaaControllerGetImage", { &MaaControllerGetImage_Wrapper, &lhg::input_helper<MaaControllerGetImage__ft>, &lhg::output_helper<MaaControllerGetImage__ft> } },
+        { "MaaControllerGetUUID", { &MaaControllerGetUUID_Wrapper, &lhg::input_helper<MaaControllerGetUUID__ft>, &lhg::output_helper<MaaControllerGetUUID__ft> } },
+        { "MaaCreate", { &MaaCreate_Wrapper, &lhg::input_helper<MaaCreate__ft>, &lhg::output_helper<MaaCreate__ft> } },
+        { "MaaDestroy", { &MaaDestroy_Wrapper, &lhg::input_helper<MaaDestroy__ft>, &lhg::output_helper<MaaDestroy__ft> } },
+        { "MaaBindResource", { &MaaBindResource_Wrapper, &lhg::input_helper<MaaBindResource__ft>, &lhg::output_helper<MaaBindResource__ft> } },
+        { "MaaBindController", { &MaaBindController_Wrapper, &lhg::input_helper<MaaBindController__ft>, &lhg::output_helper<MaaBindController__ft> } },
+        { "MaaInited", { &MaaInited_Wrapper, &lhg::input_helper<MaaInited__ft>, &lhg::output_helper<MaaInited__ft> } },
+        { "MaaClearCustomRecognizer", { &MaaClearCustomRecognizer_Wrapper, &lhg::input_helper<MaaClearCustomRecognizer__ft>, &lhg::output_helper<MaaClearCustomRecognizer__ft> } },
+        { "MaaClearCustomAction", { &MaaClearCustomAction_Wrapper, &lhg::input_helper<MaaClearCustomAction__ft>, &lhg::output_helper<MaaClearCustomAction__ft> } },
+        { "MaaPostTask", { &MaaPostTask_Wrapper, &lhg::input_helper<MaaPostTask__ft>, &lhg::output_helper<MaaPostTask__ft> } },
+        { "MaaSetTaskParam", { &MaaSetTaskParam_Wrapper, &lhg::input_helper<MaaSetTaskParam__ft>, &lhg::output_helper<MaaSetTaskParam__ft> } },
+        { "MaaTaskStatus", { &MaaTaskStatus_Wrapper, &lhg::input_helper<MaaTaskStatus__ft>, &lhg::output_helper<MaaTaskStatus__ft> } },
+        { "MaaWaitTask", { &MaaWaitTask_Wrapper, &lhg::input_helper<MaaWaitTask__ft>, &lhg::output_helper<MaaWaitTask__ft> } },
+        { "MaaTaskAllFinished", { &MaaTaskAllFinished_Wrapper, &lhg::input_helper<MaaTaskAllFinished__ft>, &lhg::output_helper<MaaTaskAllFinished__ft> } },
+        { "MaaPostStop", { &MaaPostStop_Wrapper, &lhg::input_helper<MaaPostStop__ft>, &lhg::output_helper<MaaPostStop__ft> } },
+        { "MaaStop", { &MaaStop_Wrapper, &lhg::input_helper<MaaStop__ft>, &lhg::output_helper<MaaStop__ft> } },
+        { "MaaGetResource", { &MaaGetResource_Wrapper, &lhg::input_helper<MaaGetResource__ft>, &lhg::output_helper<MaaGetResource__ft> } },
+        { "MaaGetController", { &MaaGetController_Wrapper, &lhg::input_helper<MaaGetController__ft>, &lhg::output_helper<MaaGetController__ft> } },
+        { "MaaResourceCreate", { &MaaResourceCreate_Wrapper, &lhg::input_helper<MaaResourceCreate__ft>, &lhg::output_helper<MaaResourceCreate__ft> } },
+        { "MaaResourceDestroy", { &MaaResourceDestroy_Wrapper, &lhg::input_helper<MaaResourceDestroy__ft>, &lhg::output_helper<MaaResourceDestroy__ft> } },
+        { "MaaResourcePostPath", { &MaaResourcePostPath_Wrapper, &lhg::input_helper<MaaResourcePostPath__ft>, &lhg::output_helper<MaaResourcePostPath__ft> } },
+        { "MaaResourceStatus", { &MaaResourceStatus_Wrapper, &lhg::input_helper<MaaResourceStatus__ft>, &lhg::output_helper<MaaResourceStatus__ft> } },
+        { "MaaResourceWait", { &MaaResourceWait_Wrapper, &lhg::input_helper<MaaResourceWait__ft>, &lhg::output_helper<MaaResourceWait__ft> } },
+        { "MaaResourceLoaded", { &MaaResourceLoaded_Wrapper, &lhg::input_helper<MaaResourceLoaded__ft>, &lhg::output_helper<MaaResourceLoaded__ft> } },
+        { "MaaResourceGetHash", { &MaaResourceGetHash_Wrapper, &lhg::input_helper<MaaResourceGetHash__ft>, &lhg::output_helper<MaaResourceGetHash__ft> } },
+        { "MaaResourceGetTaskList", { &MaaResourceGetTaskList_Wrapper, &lhg::input_helper<MaaResourceGetTaskList__ft>, &lhg::output_helper<MaaResourceGetTaskList__ft> } },
+        { "MaaCreateImageBuffer", { &MaaCreateImageBuffer_Wrapper, &lhg::input_helper<MaaCreateImageBuffer__ft>, &lhg::output_helper<MaaCreateImageBuffer__ft> } },
+        { "MaaDestroyImageBuffer", { &MaaDestroyImageBuffer_Wrapper, &lhg::input_helper<MaaDestroyImageBuffer__ft>, &lhg::output_helper<MaaDestroyImageBuffer__ft> } },
+        { "MaaIsImageEmpty", { &MaaIsImageEmpty_Wrapper, &lhg::input_helper<MaaIsImageEmpty__ft>, &lhg::output_helper<MaaIsImageEmpty__ft> } },
+        { "MaaClearImage", { &MaaClearImage_Wrapper, &lhg::input_helper<MaaClearImage__ft>, &lhg::output_helper<MaaClearImage__ft> } },
+        { "MaaGetImageWidth", { &MaaGetImageWidth_Wrapper, &lhg::input_helper<MaaGetImageWidth__ft>, &lhg::output_helper<MaaGetImageWidth__ft> } },
+        { "MaaGetImageHeight", { &MaaGetImageHeight_Wrapper, &lhg::input_helper<MaaGetImageHeight__ft>, &lhg::output_helper<MaaGetImageHeight__ft> } },
+        { "MaaGetImageType", { &MaaGetImageType_Wrapper, &lhg::input_helper<MaaGetImageType__ft>, &lhg::output_helper<MaaGetImageType__ft> } },
+        { "MaaGetImageEncoded", { &MaaGetImageEncoded_Wrapper, &lhg::input_helper<MaaGetImageEncoded__ft>, &lhg::output_helper<MaaGetImageEncoded__ft> } },
+        { "MaaSetImageEncoded", { &MaaSetImageEncoded_Wrapper, &lhg::input_helper<MaaSetImageEncoded__ft>, &lhg::output_helper<MaaSetImageEncoded__ft> } },
+        { "MaaVersion", { &MaaVersion_Wrapper, &lhg::input_helper<MaaVersion__ft>, &lhg::output_helper<MaaVersion__ft> } },
+        { "MaaToolkitInit", { &MaaToolkitInit_Wrapper, &lhg::input_helper<MaaToolkitInit__ft>, &lhg::output_helper<MaaToolkitInit__ft> } },
+        { "MaaToolkitUninit", { &MaaToolkitUninit_Wrapper, &lhg::input_helper<MaaToolkitUninit__ft>, &lhg::output_helper<MaaToolkitUninit__ft> } },
+        { "MaaToolkitFindDevice", { &MaaToolkitFindDevice_Wrapper, &lhg::input_helper<MaaToolkitFindDevice__ft>, &lhg::output_helper<MaaToolkitFindDevice__ft> } },
+        { "MaaToolkitFindDeviceWithAdb", { &MaaToolkitFindDeviceWithAdb_Wrapper, &lhg::input_helper<MaaToolkitFindDeviceWithAdb__ft>, &lhg::output_helper<MaaToolkitFindDeviceWithAdb__ft> } },
+        { "MaaToolkitPostFindDevice", { &MaaToolkitPostFindDevice_Wrapper, &lhg::input_helper<MaaToolkitPostFindDevice__ft>, &lhg::output_helper<MaaToolkitPostFindDevice__ft> } },
+        { "MaaToolkitPostFindDeviceWithAdb", { &MaaToolkitPostFindDeviceWithAdb_Wrapper, &lhg::input_helper<MaaToolkitPostFindDeviceWithAdb__ft>, &lhg::output_helper<MaaToolkitPostFindDeviceWithAdb__ft> } },
+        { "MaaToolkitIsFindDeviceCompleted", { &MaaToolkitIsFindDeviceCompleted_Wrapper, &lhg::input_helper<MaaToolkitIsFindDeviceCompleted__ft>, &lhg::output_helper<MaaToolkitIsFindDeviceCompleted__ft> } },
+        { "MaaToolkitWaitForFindDeviceToComplete", { &MaaToolkitWaitForFindDeviceToComplete_Wrapper, &lhg::input_helper<MaaToolkitWaitForFindDeviceToComplete__ft>, &lhg::output_helper<MaaToolkitWaitForFindDeviceToComplete__ft> } },
+        { "MaaToolkitGetDeviceCount", { &MaaToolkitGetDeviceCount_Wrapper, &lhg::input_helper<MaaToolkitGetDeviceCount__ft>, &lhg::output_helper<MaaToolkitGetDeviceCount__ft> } },
+        { "MaaToolkitGetDeviceName", { &MaaToolkitGetDeviceName_Wrapper, &lhg::input_helper<MaaToolkitGetDeviceName__ft>, &lhg::output_helper<MaaToolkitGetDeviceName__ft> } },
+        { "MaaToolkitGetDeviceAdbPath", { &MaaToolkitGetDeviceAdbPath_Wrapper, &lhg::input_helper<MaaToolkitGetDeviceAdbPath__ft>, &lhg::output_helper<MaaToolkitGetDeviceAdbPath__ft> } },
+        { "MaaToolkitGetDeviceAdbSerial", { &MaaToolkitGetDeviceAdbSerial_Wrapper, &lhg::input_helper<MaaToolkitGetDeviceAdbSerial__ft>, &lhg::output_helper<MaaToolkitGetDeviceAdbSerial__ft> } },
+        { "MaaToolkitGetDeviceAdbControllerType", { &MaaToolkitGetDeviceAdbControllerType_Wrapper, &lhg::input_helper<MaaToolkitGetDeviceAdbControllerType__ft>, &lhg::output_helper<MaaToolkitGetDeviceAdbControllerType__ft> } },
+        { "MaaToolkitGetDeviceAdbConfig", { &MaaToolkitGetDeviceAdbConfig_Wrapper, &lhg::input_helper<MaaToolkitGetDeviceAdbConfig__ft>, &lhg::output_helper<MaaToolkitGetDeviceAdbConfig__ft> } },
+        { "MaaToolkitRegisterCustomRecognizerExecutor", { &MaaToolkitRegisterCustomRecognizerExecutor_Wrapper, &lhg::input_helper<MaaToolkitRegisterCustomRecognizerExecutor__ft>, &lhg::output_helper<MaaToolkitRegisterCustomRecognizerExecutor__ft> } },
+        { "MaaToolkitUnregisterCustomRecognizerExecutor", { &MaaToolkitUnregisterCustomRecognizerExecutor_Wrapper, &lhg::input_helper<MaaToolkitUnregisterCustomRecognizerExecutor__ft>, &lhg::output_helper<MaaToolkitUnregisterCustomRecognizerExecutor__ft> } },
+        { "MaaToolkitRegisterCustomActionExecutor", { &MaaToolkitRegisterCustomActionExecutor_Wrapper, &lhg::input_helper<MaaToolkitRegisterCustomActionExecutor__ft>, &lhg::output_helper<MaaToolkitRegisterCustomActionExecutor__ft> } },
+        { "MaaToolkitUnregisterCustomActionExecutor", { &MaaToolkitUnregisterCustomActionExecutor_Wrapper, &lhg::input_helper<MaaToolkitUnregisterCustomActionExecutor__ft>, &lhg::output_helper<MaaToolkitUnregisterCustomActionExecutor__ft> } },
+        { "MaaToolkitFindWindow", { &MaaToolkitFindWindow_Wrapper, &lhg::input_helper<MaaToolkitFindWindow__ft>, &lhg::output_helper<MaaToolkitFindWindow__ft> } },
+        { "MaaToolkitSearchWindow", { &MaaToolkitSearchWindow_Wrapper, &lhg::input_helper<MaaToolkitSearchWindow__ft>, &lhg::output_helper<MaaToolkitSearchWindow__ft> } },
+        { "MaaToolkitGetWindow", { &MaaToolkitGetWindow_Wrapper, &lhg::input_helper<MaaToolkitGetWindow__ft>, &lhg::output_helper<MaaToolkitGetWindow__ft> } },
+        { "MaaToolkitGetCursorWindow", { &MaaToolkitGetCursorWindow_Wrapper, &lhg::input_helper<MaaToolkitGetCursorWindow__ft>, &lhg::output_helper<MaaToolkitGetCursorWindow__ft> } },
+        { "MaaControllerSetOptionString", { &MaaControllerSetOptionString_Wrapper, &lhg::input_helper<MaaControllerSetOptionString__ft>, &lhg::output_helper<MaaControllerSetOptionString__ft> } },
+        { "MaaControllerSetOptionInteger", { &MaaControllerSetOptionInteger_Wrapper, &lhg::input_helper<MaaControllerSetOptionInteger__ft>, &lhg::output_helper<MaaControllerSetOptionInteger__ft> } },
+        { "MaaControllerSetOptionBoolean", { &MaaControllerSetOptionBoolean_Wrapper, &lhg::input_helper<MaaControllerSetOptionBoolean__ft>, &lhg::output_helper<MaaControllerSetOptionBoolean__ft> } },
+        { "MaaSetGlobalOptionString", { &MaaSetGlobalOptionString_Wrapper, &lhg::input_helper<MaaSetGlobalOptionString__ft>, &lhg::output_helper<MaaSetGlobalOptionString__ft> } },
+        { "MaaSetGlobalOptionInteger", { &MaaSetGlobalOptionInteger_Wrapper, &lhg::input_helper<MaaSetGlobalOptionInteger__ft>, &lhg::output_helper<MaaSetGlobalOptionInteger__ft> } },
+        { "MaaSetGlobalOptionBoolean", { &MaaSetGlobalOptionBoolean_Wrapper, &lhg::input_helper<MaaSetGlobalOptionBoolean__ft>, &lhg::output_helper<MaaSetGlobalOptionBoolean__ft> } },
     };
     if (lhg::handle_api(ctx, segs, obj, wrappers)) {
         return true;
