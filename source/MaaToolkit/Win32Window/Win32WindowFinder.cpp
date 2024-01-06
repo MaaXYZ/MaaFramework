@@ -2,6 +2,7 @@
 
 #include "Win32WindowFinder.h"
 
+#include "Utils/Codec.h"
 #include "Utils/Logger.h"
 #include "Utils/Platform.h"
 
@@ -77,15 +78,15 @@ std::vector<Win32WindowFinder::Window> Win32WindowFinder::list_windows() const
             continue;
         }
 
-        std::string class_name(256, '\0');
-        GetClassName(hwnd, class_name.data(), static_cast<int>(class_name.size()));
+        std::wstring class_name(256, '\0');
+        GetClassNameW(hwnd, class_name.data(), static_cast<int>(class_name.size()));
 
-        std::string window_name(256, '\0');
-        GetWindowText(hwnd, window_name.data(), static_cast<int>(window_name.size()));
+        std::wstring window_name(256, '\0');
+        GetWindowTextW(hwnd, window_name.data(), static_cast<int>(window_name.size()));
 
         windows.emplace_back(Window { .hwnd = reinterpret_cast<MaaWin32Hwnd>(hwnd),
-                                      .class_name = std::move(class_name),
-                                      .window_name = std::move(window_name) });
+                                      .class_name = from_u16(class_name),
+                                      .window_name = from_u16(window_name) });
     }
 
 #ifdef MAA_DEBUG
