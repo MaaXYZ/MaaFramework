@@ -134,9 +134,10 @@ class Toolkit:
         Library.toolkit.MaaToolkitGetDeviceAdbSerial.restype = MaaStringView
         Library.toolkit.MaaToolkitGetDeviceAdbSerial.argtypes = [MaaSize]
 
-        Library.toolkit.MaaToolkitGetDeviceAdbControllerType.restype = [
-            MaaAdbControllerType,
-        ]
+        Library.toolkit.MaaToolkitGetDeviceAdbControllerType.restype = (
+            MaaAdbControllerType
+        )
+
         Library.toolkit.MaaToolkitGetDeviceAdbControllerType.argtypes = [MaaSize]
 
         Library.toolkit.MaaToolkitGetDeviceAdbConfig.restype = MaaStringView

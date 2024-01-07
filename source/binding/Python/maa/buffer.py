@@ -224,7 +224,7 @@ class RectBuffer:
         value: Union[
             numpy.ndarray,
             Tuple[int, int, int, int],
-            List[int, int, int, int],
+            List[int],
         ],
     ) -> bool:
         if isinstance(value, numpy.ndarray):

@@ -49,7 +49,7 @@ class CustomAction(ABC):
 
         raise NotImplementedError
 
-    def c_handle(self) -> ctypes._Pointer[MaaCustomAction]:
+    def c_handle(self) -> ctypes.POINTER(MaaCustomAction):
         return ctypes.pointer(self._handle)
 
     def c_arg(self) -> ctypes.c_void_p:
