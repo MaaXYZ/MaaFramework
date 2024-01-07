@@ -2,7 +2,7 @@ import ctypes
 import numpy
 import json
 
-from typing import Any, Optional, Tuple
+from typing import Any, Dict, Optional, Tuple
 
 from .library import Library
 from .define import MaaBool
@@ -38,7 +38,7 @@ class SyncContext:
         self,
         image: numpy.ndarray,
         task_name: str,
-        task_param: Any,
+        task_param: Dict,
     ) -> Optional[Tuple[Tuple[int, int, int, int], str]]:
         """
         Sync context run recognizer.
@@ -76,7 +76,7 @@ class SyncContext:
     def run_action(
         self,
         task_name: str,
-        task_param: Any,
+        task_param: Dict,
         cur_box: (int, int, int, int),
         cur_rec_detail: str,
     ) -> Optional[str]:

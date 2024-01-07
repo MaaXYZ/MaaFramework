@@ -1,7 +1,7 @@
 import ctypes
 import json
 import asyncio
-from typing import Union, Optional, Any
+from typing import Dict, Union, Optional, Any
 
 from .define import *
 from .future import Future, MaaStatusEnum
@@ -69,7 +69,7 @@ class Instance:
 
         return Library.framework.MaaInited(self._handle)
 
-    async def run_task(self, task_type: str, param: Any = {}) -> bool:
+    async def run_task(self, task_type: str, param: Dict = {}) -> bool:
         """
         Async run a task.
 
@@ -181,7 +181,7 @@ class Instance:
     def _stop_status(self, id: int) -> ctypes.c_int32:
         return MaaStatusEnum.success if self.all_finished() else MaaStatusEnum.running
 
-    def _set_task_param(self, id: int, param: Any) -> bool:
+    def _set_task_param(self, id: int, param: Dict) -> bool:
         return Library.framework.MaaSetTaskParam(
             self._handle, id, json.dumps(param).encode("utf-8")
         )
