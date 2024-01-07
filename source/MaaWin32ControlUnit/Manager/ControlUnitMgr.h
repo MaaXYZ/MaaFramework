@@ -45,7 +45,7 @@ public:
     void set_screencap_obj(std::shared_ptr<ScreencapBase> obj) { screencap_ = std::move(obj); }
 
 private:
-    HWND hWnd_ = nullptr;
+    HWND hwnd_ = nullptr;
 
     MessageNotifier<MaaControllerCallback> notifier;
 

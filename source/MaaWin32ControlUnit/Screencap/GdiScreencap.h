@@ -13,13 +13,11 @@ public:
     explicit GdiScreencap(HWND hwnd) : hwnd_(hwnd) {}
     virtual ~GdiScreencap() override = default;
 
-public: // from TouchInputBase
+public: // from ScreencapBase
     virtual std::optional<cv::Mat> screencap() override;
 
 private:
-    double window_screen_scale();
-
-    HWND hwnd_;
+    HWND hwnd_ = nullptr;
 };
 
 MAA_CTRL_UNIT_NS_END
