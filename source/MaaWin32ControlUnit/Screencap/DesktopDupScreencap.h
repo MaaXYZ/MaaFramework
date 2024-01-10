@@ -13,7 +13,7 @@ public:
     DesktopDupScreencap() = default;
     virtual ~DesktopDupScreencap() override;
 
-public: // from TouchInputBase
+public: // from ScreencapBase
     virtual std::optional<cv::Mat> screencap() override;
 
 private:

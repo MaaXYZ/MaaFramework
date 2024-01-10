@@ -178,6 +178,7 @@ enum MaaWin32ControllerTypeEnum
 
     MaaWin32ControllerType_Screencap_GDI = 1 << 16,
     MaaWin32ControllerType_Screencap_DXGI_DesktopDup = 2 << 16,
+    // MaaWin32ControllerType_Screencap_DXGI_BackBuffer = 3 << 16,
     MaaWin32ControllerType_Screencap_Mask = 0xFF0000,
 };
 typedef void* MaaWin32Hwnd;

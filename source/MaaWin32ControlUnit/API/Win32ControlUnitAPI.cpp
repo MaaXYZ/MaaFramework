@@ -3,6 +3,7 @@
 #include "Base/UnitBase.h"
 #include "Input/SendMessageInput.h"
 #include "Manager/ControlUnitMgr.h"
+// #include "Screencap/BackBufferScreencap.h"
 #include "Screencap/DesktopDupScreencap.h"
 #include "Screencap/GdiScreencap.h"
 #include "Utils/Logger.h"
@@ -58,6 +59,12 @@ MaaControlUnitHandle MaaWin32ControlUnitCreate( //
         LogInfo << "screencap_type: DXGI_DesktopDup";
         screencap_unit = std::make_shared<DesktopDupScreencap>();
         break;
+
+        // Not work
+        // case MaaWin32ControllerType_Screencap_DXGI_BackBuffer:
+        //     LogInfo << "screencap_type: DXGI_BackBuffer";
+        //     screencap_unit = std::make_shared<BackBufferScreencap>(h_wnd);
+        //     break;
 
     default:
         LogWarn << "Unknown screencap input type" << VAR(screencap_type);

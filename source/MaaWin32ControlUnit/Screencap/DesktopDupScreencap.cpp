@@ -25,6 +25,7 @@ std::optional<cv::Mat> DesktopDupScreencap::screencap()
             if (br[3] == 255) { // only check alpha
                 break;
             }
+            LogTrace << "blank image, continue";
         }
     }
 
@@ -163,7 +164,7 @@ std::optional<cv::Mat> DesktopDupScreencap::screencap_impl()
     ID3D11Texture2D* gpu_texture = nullptr;
     ret = desktop_resource->QueryInterface(__uuidof(ID3D11Texture2D), reinterpret_cast<void**>(&gpu_texture));
     if (FAILED(ret)) {
-        LogError << "QueryInterface failed" << VAR(ret);
+        LogError << "QueryInterface ID3D11Texture2D failed" << VAR(ret);
         return std::nullopt;
     }
     OnScopeLeave([&]() {
