@@ -24,7 +24,8 @@ inline cv::Mat imread(const std::string& utf8_path, int flags = cv::IMREAD_COLOR
 
 inline bool imwrite(const std::filesystem::path& path, cv::InputArray img)
 {
-    if (path.has_parent_path() && !std::filesystem::create_directories(path.parent_path())) {
+    if (path.has_parent_path() && !std::filesystem::exists(path.parent_path())
+        && !std::filesystem::create_directories(path.parent_path())) {
         return false;
     }
 
