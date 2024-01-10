@@ -1,3 +1,4 @@
+from typing import Tuple
 from maa.library import Library
 from maa.resource import Resource
 from maa.controller import AdbController
@@ -49,7 +50,7 @@ async def main():
 class MyRecognizer(CustomRecognizer):
     def analyze(
         self, context, image, task_name, custom_param
-    ) -> (bool, (int, int, int, int), str):
+    ) -> Tuple[bool, Tuple[int, int, int, int], str]:
         return True, (0, 0, 100, 100), "Hello World!"
 
 

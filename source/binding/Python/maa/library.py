@@ -5,6 +5,8 @@ import os
 import platform
 from typing import Union, Optional
 
+from .define import MaaStringView
+
 
 class Library:
     @classmethod
@@ -93,7 +95,7 @@ class Library:
                 "Library not initialized, please call `library.open()` first."
             )
         
-        cls.framework.MaaVersion.restype = ctypes.c_char_p
+        cls.framework.MaaVersion.restype = MaaStringView
         cls.framework.MaaVersion.argtypes = None
 
         return cls.framework.MaaVersion().decode("utf-8")

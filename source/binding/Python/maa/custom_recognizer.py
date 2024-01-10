@@ -1,3 +1,4 @@
+from typing import Tuple
 import numpy
 import ctypes
 from abc import ABC, abstractmethod
@@ -5,6 +6,8 @@ from abc import ABC, abstractmethod
 from .define import MaaBool, MaaCustomRecognizer
 from .buffer import RectBuffer, StringBuffer, ImageBuffer
 from .context import SyncContext
+
+# TODO: Typing
 
 
 class CustomRecognizer(ABC):
@@ -16,11 +19,11 @@ class CustomRecognizer(ABC):
     @abstractmethod
     def analyze(
         self,
-        context: ctypes.c_void_p,
+        context: SyncContext,
         image: numpy.ndarray,
         task_name: str,
         custom_param: str,
-    ) -> (bool, (int, int, int, int), str):
+    ) -> Tuple[bool, Tuple[int, int, int, int], str]:
         """
         Analyze the given image.
 
@@ -34,7 +37,7 @@ class CustomRecognizer(ABC):
 
         raise NotImplementedError
 
-    def c_handle(self) -> ctypes._Pointer(MaaCustomRecognizer):
+    def c_handle(self) -> ctypes.POINTER(MaaCustomRecognizer):
         return ctypes.pointer(self._handle)
 
     def c_arg(self) -> ctypes.c_void_p:
@@ -60,9 +63,7 @@ class CustomRecognizer(ABC):
         task_name = c_task_name.decode("utf-8")
         custom_param = c_custom_param.decode("utf-8")
 
-        success, box, detail = self.analyze(
-            context, image, task_name, custom_param
-        )
+        success, box, detail = self.analyze(context, image, task_name, custom_param)
         RectBuffer(c_out_box).set(box)
         StringBuffer(c_out_detail).set(detail)
 

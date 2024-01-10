@@ -3,14 +3,14 @@ import asyncio
 import ctypes
 from typing import Union
 
-from .define import MaaStatus, MaaId
+from .define import MaaStatus, MaaStatusEnum, MaaId
 
 
 class Status:
-    _status: MaaStatus
+    _status: MaaStatusEnum
 
-    def __init__(self, status: Union[ctypes.c_int32, MaaStatus]):
-        self._status = MaaStatus(status)
+    def __init__(self, status: Union[MaaStatus, MaaStatusEnum]):
+        self._status = MaaStatusEnum(status)
 
     def done(self) -> bool:
         """
@@ -19,7 +19,7 @@ class Status:
         :return: True if the status is done, False otherwise.
         """
 
-        return self._status in [MaaStatus.success, MaaStatus.failure]
+        return self._status in [MaaStatusEnum.success, MaaStatusEnum.failure]
 
     def success(self) -> bool:
         """
@@ -28,7 +28,7 @@ class Status:
         :return: True if the status is success, False otherwise.
         """
 
-        return self._status == MaaStatus.success
+        return self._status == MaaStatusEnum.success
 
     def failure(self) -> bool:
         """
@@ -37,7 +37,7 @@ class Status:
         :return: True if the status is failure, False otherwise.
         """
 
-        return self._status == MaaStatus.failure
+        return self._status == MaaStatusEnum.failure
 
     def pending(self) -> bool:
         """
@@ -46,7 +46,7 @@ class Status:
         :return: True if the status is pending, False otherwise.
         """
 
-        return self._status == MaaStatus.pending
+        return self._status == MaaStatusEnum.pending
 
     def running(self) -> bool:
         """
@@ -55,7 +55,7 @@ class Status:
         :return: True if the status is running, False otherwise.
         """
 
-        return self._status == MaaStatus.running
+        return self._status == MaaStatusEnum.running
 
 
 class Future(abc.ABC):
