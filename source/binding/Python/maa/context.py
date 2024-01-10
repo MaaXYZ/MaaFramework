@@ -77,7 +77,7 @@ class SyncContext:
         self,
         task_name: str,
         task_param: Dict,
-        cur_box: (int, int, int, int),
+        cur_box: Tuple[int, int, int, int],
         cur_rec_detail: str,
     ) -> Optional[str]:
         """
