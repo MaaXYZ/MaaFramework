@@ -33,9 +33,7 @@ std::optional<cv::Mat> FramePoolScreencap::screencap()
         return std::nullopt;
     }
 
-    using namespace winrt::Windows::Graphics::DirectX;
-
-    auto access = frame.Surface().as<Direct3D11::IDirect3DDxgiInterfaceAccess>();
+    auto access = frame.Surface().as<Windows::Graphics::DirectX::Direct3D11::IDirect3DDxgiInterfaceAccess>();
 
     winrt::com_ptr<ID3D11Texture2D> texture = nullptr;
     HRESULT ret = access->GetInterface(winrt::guid_of<ID3D11Texture2D>(), texture.put_void());
@@ -60,7 +58,6 @@ std::optional<cv::Mat> FramePoolScreencap::screencap()
 
 bool FramePoolScreencap::init()
 {
-
     LogFunc;
 
     if (!hwnd_) {
@@ -118,8 +115,17 @@ bool FramePoolScreencap::init()
         return false;
     }
 
+    winrt::com_ptr<IDXGIDevice> dxgi_device = d3d_device_.as<IDXGIDevice>();
+
+    winrt::com_ptr<::IInspectable> inspectable = nullptr;
+    ret = CreateDirect3D11DeviceFromDXGIDevice(dxgi_device.get(), inspectable.put());
+    if (FAILED(ret)) {
+        LogError << "CreateDirect3D11DeviceFromDXGIDevice failed" << VAR(ret);
+        return false;
+    }
+
     cap_frame_pool_ = Direct3D11CaptureFramePool::Create(
-        d3d_device_.as<Direct3D11::IDirect3DDevice>(), DirectXPixelFormat::B8G8R8A8UIntNormalized, 2, cap_item_.Size());
+        inspectable.as<Direct3D11::IDirect3DDevice>(), DirectXPixelFormat::B8G8R8A8UIntNormalized, 1, cap_item_.Size());
 
     if (!cap_frame_pool_) {
         LogError << "Direct3D11CaptureFramePool::Create failed";
