@@ -34,8 +34,19 @@ std::optional<cv::Mat> BackBufferScreencap::screencap()
         LogError << "GetBuffer failed" << VAR(ret);
         return std::nullopt;
     }
+    OnScopeLeave([&]() {
+        if (back_buffer) {
+            back_buffer->Release();
+            back_buffer = nullptr;
+        }
+    });
 
-    d3d_context_->CopyResource(readable_texture_, readable_texture_);
+    if (!readable_texture_ && !init_texture(back_buffer)) {
+        LogError << "falied to init_texture";
+        return std::nullopt;
+    }
+
+    d3d_context_->CopyResource(readable_texture_, back_buffer);
 
     D3D11_MAPPED_SUBRESOURCE mapped { 0 };
     ret = d3d_context_->Map(readable_texture_, 0, D3D11_MAP_READ, 0, &mapped);
@@ -46,7 +57,6 @@ std::optional<cv::Mat> BackBufferScreencap::screencap()
     OnScopeLeave([&]() { d3d_context_->Unmap(readable_texture_, 0); });
 
     cv::Mat mat(texture_desc_.Height, texture_desc_.Width, CV_8UC4, mapped.pData, mapped.RowPitch);
-
     return mat.clone();
 }
 
@@ -61,13 +71,14 @@ bool BackBufferScreencap::init()
     swap_chain_desc.BufferDesc.Width = 0;  // auto detect
     swap_chain_desc.BufferDesc.Height = 0; // auto detect
     swap_chain_desc.BufferDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
-    // sd.BufferDesc.RefreshRate.Numerator = 60;
-    // sd.BufferDesc.RefreshRate.Denominator = 1;
+    swap_chain_desc.BufferDesc.RefreshRate.Numerator = 0;
+    swap_chain_desc.BufferDesc.RefreshRate.Denominator = 0;
     swap_chain_desc.BufferUsage = DXGI_USAGE_BACK_BUFFER;
     swap_chain_desc.OutputWindow = hwnd_;
     swap_chain_desc.SampleDesc.Count = 1;
     swap_chain_desc.SampleDesc.Quality = 0;
     swap_chain_desc.Windowed = is_fullscreen(hwnd_) ? FALSE : TRUE;
+    swap_chain_desc.SwapEffect = DXGI_SWAP_EFFECT_SEQUENTIAL;
 
     ret = D3D11CreateDeviceAndSwapChain(nullptr, D3D_DRIVER_TYPE_HARDWARE, nullptr, 0, nullptr, 0, D3D11_SDK_VERSION,
                                         &swap_chain_desc, &dxgi_swap_chain_, &d3d_device_, nullptr, &d3d_context_);
@@ -76,18 +87,26 @@ bool BackBufferScreencap::init()
         LogError << "D3D11CreateDeviceAndSwapChain failed" << VAR(ret);
         return false;
     }
-    dxgi_swap_chain_->GetDesc(&swap_chain_desc);
 
-    texture_desc_.Width = swap_chain_desc.BufferDesc.Width;
-    texture_desc_.Height = swap_chain_desc.BufferDesc.Height;
-    texture_desc_.Format = swap_chain_desc.BufferDesc.Format;
-    texture_desc_.SampleDesc = swap_chain_desc.SampleDesc;
-    texture_desc_.MipLevels = 1;
-    texture_desc_.ArraySize = 1;
+    return true;
+}
+
+bool BackBufferScreencap::init_texture(ID3D11Texture2D* gpu_texture)
+{
+    LogFunc;
+
+    if (!d3d_device_ || !gpu_texture) {
+        LogError << "handle is null" << VAR_VOIDP(d3d_device_) << VAR_VOIDP(gpu_texture);
+        return false;
+    }
+
+    gpu_texture->GetDesc(&texture_desc_); // basic info
+
+    texture_desc_.BindFlags = 0;
+    texture_desc_.CPUAccessFlags = D3D11_CPU_ACCESS_READ | D3D11_CPU_ACCESS_WRITE;
     texture_desc_.Usage = D3D11_USAGE_STAGING;
-    texture_desc_.CPUAccessFlags = D3D11_CPU_ACCESS_READ;
 
-    ret = d3d_device_->CreateTexture2D(&texture_desc_, nullptr, &readable_texture_);
+    HRESULT ret = d3d_device_->CreateTexture2D(&texture_desc_, NULL, &readable_texture_);
     if (FAILED(ret)) {
         LogError << "CreateTexture2D failed" << VAR(ret);
         return false;

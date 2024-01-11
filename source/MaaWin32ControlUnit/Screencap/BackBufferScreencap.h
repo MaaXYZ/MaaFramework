@@ -20,6 +20,7 @@ public: // from ScreencapBase
 
 private:
     bool init();
+    bool init_texture(ID3D11Texture2D* gpu_texture);
     void uninit();
 
     HWND hwnd_ = nullptr;
