@@ -23,6 +23,7 @@ private:
     bool init_texture(ID3D11Texture2D* gpu_texture);
     void uninit();
 
+private:
     HWND hwnd_ = nullptr;
 
     ID3D11Device* d3d_device_ = nullptr;

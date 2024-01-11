@@ -1,7 +1,6 @@
 #include "BackBufferScreencap.h"
 
 #include "HwndUtils.hpp"
-#include "Utils/ImageIo.h"
 #include "Utils/Logger.h"
 
 MAA_CTRL_UNIT_NS_BEGIN
@@ -13,11 +12,6 @@ BackBufferScreencap::~BackBufferScreencap()
 
 std::optional<cv::Mat> BackBufferScreencap::screencap()
 {
-    if (!hwnd_) {
-        LogError << "hwnd_ is nullptr";
-        return std::nullopt;
-    }
-
     if (!dxgi_swap_chain_) {
         if (!init()) {
             LogError << "init failed";
@@ -64,6 +58,11 @@ bool BackBufferScreencap::init()
 {
     LogFunc;
 
+    if (!hwnd_) {
+        LogError << "hwnd_ is nullptr";
+        return false;
+    }
+
     HRESULT ret = S_OK;
 
     DXGI_SWAP_CHAIN_DESC swap_chain_desc = {};
@@ -73,7 +72,7 @@ bool BackBufferScreencap::init()
     swap_chain_desc.BufferDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
     swap_chain_desc.BufferDesc.RefreshRate.Numerator = 0;
     swap_chain_desc.BufferDesc.RefreshRate.Denominator = 0;
-    swap_chain_desc.BufferUsage = DXGI_USAGE_BACK_BUFFER;
+    swap_chain_desc.BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT;
     swap_chain_desc.OutputWindow = hwnd_;
     swap_chain_desc.SampleDesc.Count = 1;
     swap_chain_desc.SampleDesc.Quality = 0;
