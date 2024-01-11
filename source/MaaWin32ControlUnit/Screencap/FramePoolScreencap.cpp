@@ -33,6 +33,29 @@ std::optional<cv::Mat> FramePoolScreencap::screencap()
         return std::nullopt;
     }
 
+    using namespace winrt::Windows::Graphics::DirectX;
+
+    auto access = frame.Surface().as<Direct3D11::IDirect3DDxgiInterfaceAccess>();
+
+    winrt::com_ptr<ID3D11Texture2D> texture = nullptr;
+    HRESULT ret = access->GetInterface(winrt::guid_of<ID3D11Texture2D>(), texture.put_void());
+    if (FAILED(ret)) {
+        LogError << "GetInterface ID3D11Texture2D failed" << VAR(ret);
+        return std::nullopt;
+    }
+
+    d3d_context_->CopyResource(readable_texture_.get(), texture.get());
+
+    D3D11_MAPPED_SUBRESOURCE mapped { 0 };
+    ret = d3d_context_->Map(readable_texture_.get(), 0, D3D11_MAP_READ, 0, &mapped);
+    if (FAILED(ret)) {
+        LogError << "Map failed" << VAR(ret);
+        return std::nullopt;
+    }
+    OnScopeLeave([&]() { d3d_context_->Unmap(readable_texture_.get(), 0); });
+
+    cv::Mat mat(texture_desc_.Height, texture_desc_.Width, CV_8UC4, mapped.pData, mapped.RowPitch);
+    return mat.clone();
 }
 
 bool FramePoolScreencap::init()
@@ -76,9 +99,9 @@ bool FramePoolScreencap::init()
         return false;
     }
 
-    D3D11_TEXTURE2D_DESC texture_desc = {
-        .Width = cap_item_.Size().Width,
-        .Height = cap_item_.Size().Height,
+    texture_desc_ = D3D11_TEXTURE2D_DESC {
+        .Width = static_cast<UINT>(cap_item_.Size().Width),
+        .Height = static_cast<UINT>(cap_item_.Size().Height),
         .MipLevels = 1,
         .ArraySize = 1,
         .Format = DXGI_FORMAT_B8G8R8A8_UNORM,
@@ -89,7 +112,7 @@ bool FramePoolScreencap::init()
         .MiscFlags = 0,
     };
 
-    ret = d3d_device_->CreateTexture2D(&texture_desc, NULL, readable_texture_.put());
+    ret = d3d_device_->CreateTexture2D(&texture_desc_, NULL, readable_texture_.put());
     if (FAILED(ret)) {
         LogError << "CreateTexture2D failed" << VAR(ret);
         return false;
