@@ -67,7 +67,7 @@ MaaControlUnitHandle MaaWin32ControlUnitCreate( //
         //     screencap_unit = std::make_shared<BackBufferScreencap>(h_wnd);
         //     break;
 
-#ifdef MAA_FRAMEPOOL_SCREENCAP_AVAILABLE
+#if MAA_FRAMEPOOL_SCREENCAP_AVAILABLE
     case MaaWin32ControllerType_Screencap_DXGI_FramePool:
         LogInfo << "screencap_type: DXGI_FramePool";
         screencap_unit = std::make_shared<FramePoolScreencap>(h_wnd);

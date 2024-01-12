@@ -1,6 +1,6 @@
 #include "FramePoolScreencap.h"
 
-#ifdef MAA_FRAMEPOOL_SCREENCAP_AVAILABLE
+#if MAA_FRAMEPOOL_SCREENCAP_AVAILABLE
 
 #include <windows.graphics.capture.interop.h>
 #include <windows.graphics.directx.direct3d11.interop.h>
