@@ -2,6 +2,7 @@
 
 #include "LHGUtils.h"
 #define LHG_PROCESS
+#define LHG_BUILD
 
 // LHG SEC BEGIN lhg.include
 #include "include.h"

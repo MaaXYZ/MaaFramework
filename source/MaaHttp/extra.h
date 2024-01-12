@@ -2,7 +2,7 @@
 
 #include "MaaFramework/MaaAPI.h"
 
-#ifdef LHG_PROCESS
+#if defined(LHG_PROCESS) && !defined(LHG_BUILD)
 #define FAKE_IMPORT MAA_FRAMEWORK_API
 #else
 #define FAKE_IMPORT
