@@ -41,10 +41,8 @@ inline std::pair<int, int> window_size(HWND hwnd)
         return { 0, 0 };
     }
 
-    double screen_scale = 1.0; // window_scale(hwnd);
-
-    int width = static_cast<int>(screen_scale * (rect.right - rect.left));
-    int height = static_cast<int>(screen_scale * (rect.bottom - rect.top));
+    int width = rect.right - rect.left;
+    int height = rect.bottom - rect.top;
 
     return { width, height };
 }
