@@ -25,7 +25,7 @@ std::optional<cv::Mat> DesktopDupScreencap::screencap()
             if (br[3] == 255) { // only check alpha
                 break;
             }
-            LogTrace << "blank image, continue";
+            LogWarn << "blank image, continue";
         }
     }
 

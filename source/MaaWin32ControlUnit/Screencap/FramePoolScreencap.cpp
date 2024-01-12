@@ -1,5 +1,7 @@
 #include "FramePoolScreencap.h"
 
+#ifdef MAA_FRAMEPOOL_SCREENCAP_AVAILABLE
+
 #include <windows.graphics.capture.interop.h>
 #include <windows.graphics.directx.direct3d11.interop.h>
 
@@ -28,8 +30,12 @@ std::optional<cv::Mat> FramePoolScreencap::screencap()
     }
 
     winrt::Windows::Graphics::Capture::Direct3D11CaptureFrame frame = nullptr;
-    while (!frame) {
+    while (true) {
         frame = cap_frame_pool_.TryGetNextFrame();
+        if (frame) {
+            break;
+        }
+        LogWarn << "frame is null, continue";
     }
 
     auto access = frame.Surface().as<Windows::Graphics::DirectX::Direct3D11::IDirect3DDxgiInterfaceAccess>();
@@ -143,3 +149,5 @@ bool FramePoolScreencap::init()
 void FramePoolScreencap::uninit() {}
 
 MAA_CTRL_UNIT_NS_END
+
+#endif

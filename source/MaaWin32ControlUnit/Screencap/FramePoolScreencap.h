@@ -1,5 +1,15 @@
 #pragma once
 
+#include <sdkddkver.h>
+
+#if WDK_NTDDI_VERSION >= 0x0A00000B // NTDDI_WIN10_CO
+#define MAA_FRAMEPOOL_SCREENCAP_AVAILABLE
+#else
+static_assert(false, "Windows 10 SDK 10.0.22000.0 or higher is required");
+#endif
+
+#ifdef MAA_FRAMEPOOL_SCREENCAP_AVAILABLE
+
 #include "ControlUnit/ControlUnitAPI.h"
 
 #include "Base/UnitBase.h"
@@ -38,3 +48,5 @@ private:
 };
 
 MAA_CTRL_UNIT_NS_END
+
+#endif
