@@ -57,8 +57,16 @@ std::optional<cv::Mat> FramePoolScreencap::screencap()
     }
     OnScopeLeave([&]() { d3d_context_->Unmap(readable_texture_.get(), 0); });
 
-    cv::Mat mat(texture_desc_.Height, texture_desc_.Width, CV_8UC4, mapped.pData, mapped.RowPitch);
-    return mat.clone();
+    cv::Mat raw(texture_desc_.Height, texture_desc_.Width, CV_8UC4, mapped.pData, mapped.RowPitch);
+
+    std::vector<cv::Mat> channels;
+    cv::split(raw, channels);
+    cv::Mat alpha_bin;
+    cv::threshold(channels.back(), alpha_bin, 254, 255, cv::THRESH_BINARY);
+
+    cv::Rect boundary = cv::boundingRect(alpha_bin);
+    cv::Mat image = raw(boundary);
+    return image.clone();
 }
 
 bool FramePoolScreencap::init()
@@ -73,7 +81,7 @@ bool FramePoolScreencap::init()
     HRESULT ret = S_OK;
 
     DXGI_SWAP_CHAIN_DESC swap_chain_desc = {};
-    swap_chain_desc.BufferCount = 2;
+    swap_chain_desc.BufferCount = 1;
     swap_chain_desc.BufferDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
     swap_chain_desc.BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT;
     swap_chain_desc.OutputWindow = hwnd_;
