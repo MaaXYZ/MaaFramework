@@ -72,24 +72,21 @@ bool DesktopDupScreencap::init()
     return true;
 }
 
-bool DesktopDupScreencap::init_texture(ID3D11Texture2D* gpu_texture)
+bool DesktopDupScreencap::init_texture(ID3D11Texture2D* raw_texture)
 {
     LogFunc;
 
-    if (!d3d_device_ || !gpu_texture) {
-        LogError << "handle is null" << VAR_VOIDP(d3d_device_) << VAR_VOIDP(gpu_texture);
+    if (!d3d_device_ || !raw_texture) {
+        LogError << "handle is null" << VAR_VOIDP(d3d_device_) << VAR_VOIDP(raw_texture);
         return false;
     }
 
-    gpu_texture->GetDesc(&texture_desc_); // basic info
+    raw_texture->GetDesc(&texture_desc_); // basic info
 
-    texture_desc_.Usage = D3D11_USAGE_STAGING;
-    texture_desc_.CPUAccessFlags = D3D11_CPU_ACCESS_READ;
     texture_desc_.BindFlags = 0;
     texture_desc_.MiscFlags = 0;
-    texture_desc_.MipLevels = 1;
-    texture_desc_.ArraySize = 1;
-    texture_desc_.SampleDesc.Count = 1;
+    texture_desc_.CPUAccessFlags = D3D11_CPU_ACCESS_READ | D3D11_CPU_ACCESS_WRITE;
+    texture_desc_.Usage = D3D11_USAGE_STAGING;
 
     HRESULT ret = d3d_device_->CreateTexture2D(&texture_desc_, NULL, &readable_texture_);
     if (FAILED(ret)) {
@@ -161,25 +158,25 @@ std::optional<cv::Mat> DesktopDupScreencap::screencap_impl()
         }
     });
 
-    ID3D11Texture2D* gpu_texture = nullptr;
-    ret = desktop_resource->QueryInterface(__uuidof(ID3D11Texture2D), reinterpret_cast<void**>(&gpu_texture));
+    ID3D11Texture2D* raw_texture = nullptr;
+    ret = desktop_resource->QueryInterface(__uuidof(ID3D11Texture2D), reinterpret_cast<void**>(&raw_texture));
     if (FAILED(ret)) {
         LogError << "QueryInterface ID3D11Texture2D failed" << VAR(ret);
         return std::nullopt;
     }
     OnScopeLeave([&]() {
-        if (gpu_texture) {
-            gpu_texture->Release();
-            gpu_texture = nullptr;
+        if (raw_texture) {
+            raw_texture->Release();
+            raw_texture = nullptr;
         }
     });
 
-    if (!readable_texture_ && !init_texture(gpu_texture)) {
+    if (!readable_texture_ && !init_texture(raw_texture)) {
         LogError << "falied to init_texture";
         return std::nullopt;
     }
 
-    d3d_context_->CopyResource(readable_texture_, gpu_texture);
+    d3d_context_->CopyResource(readable_texture_, raw_texture);
 
     D3D11_MAPPED_SUBRESOURCE mapped { 0 };
     ret = d3d_context_->Map(readable_texture_, 0, D3D11_MAP_READ, 0, &mapped);

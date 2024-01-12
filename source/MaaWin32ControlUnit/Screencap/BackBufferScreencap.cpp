@@ -90,18 +90,19 @@ bool BackBufferScreencap::init()
     return true;
 }
 
-bool BackBufferScreencap::init_texture(ID3D11Texture2D* gpu_texture)
+bool BackBufferScreencap::init_texture(ID3D11Texture2D* raw_texture)
 {
     LogFunc;
 
-    if (!d3d_device_ || !gpu_texture) {
-        LogError << "handle is null" << VAR_VOIDP(d3d_device_) << VAR_VOIDP(gpu_texture);
+    if (!d3d_device_ || !raw_texture) {
+        LogError << "handle is null" << VAR_VOIDP(d3d_device_) << VAR_VOIDP(raw_texture);
         return false;
     }
 
-    gpu_texture->GetDesc(&texture_desc_); // basic info
+    raw_texture->GetDesc(&texture_desc_);
 
     texture_desc_.BindFlags = 0;
+    texture_desc_.MiscFlags = 0;
     texture_desc_.CPUAccessFlags = D3D11_CPU_ACCESS_READ | D3D11_CPU_ACCESS_WRITE;
     texture_desc_.Usage = D3D11_USAGE_STAGING;
 

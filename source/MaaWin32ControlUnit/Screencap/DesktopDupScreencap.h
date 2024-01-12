@@ -18,7 +18,7 @@ public: // from ScreencapBase
 
 private:
     bool init();
-    bool init_texture(ID3D11Texture2D* gpu_texture);
+    bool init_texture(ID3D11Texture2D* raw_texture);
     void uninit();
     std::optional<cv::Mat> screencap_impl();
 

@@ -31,6 +31,7 @@ public: // from ScreencapBase
 
 private:
     bool init();
+    bool init_texture(winrt::com_ptr<ID3D11Texture2D> raw_texture);
     void uninit();
 
 private:

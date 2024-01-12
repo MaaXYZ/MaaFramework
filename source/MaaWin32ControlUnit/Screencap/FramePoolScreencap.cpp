@@ -47,6 +47,10 @@ std::optional<cv::Mat> FramePoolScreencap::screencap()
         return std::nullopt;
     }
 
+    if (!readable_texture_ && !init_texture(texture)) {
+        LogError << "falied to init_texture";
+        return std::nullopt;
+    }
     d3d_context_->CopyResource(readable_texture_.get(), texture.get());
 
     D3D11_MAPPED_SUBRESOURCE mapped { 0 };
@@ -62,7 +66,7 @@ std::optional<cv::Mat> FramePoolScreencap::screencap()
     std::vector<cv::Mat> channels;
     cv::split(raw, channels);
     cv::Mat alpha_bin;
-    cv::threshold(channels.back(), alpha_bin, 254, 255, cv::THRESH_BINARY);
+    cv::threshold(channels.back(), alpha_bin, UCHAR_MAX - 1, UCHAR_MAX, cv::THRESH_BINARY);
 
     cv::Rect boundary = cv::boundingRect(alpha_bin);
     cv::Mat image = raw(boundary);
@@ -106,25 +110,6 @@ bool FramePoolScreencap::init()
         return false;
     }
 
-    texture_desc_ = D3D11_TEXTURE2D_DESC {
-        .Width = static_cast<UINT>(cap_item_.Size().Width),
-        .Height = static_cast<UINT>(cap_item_.Size().Height),
-        .MipLevels = 1,
-        .ArraySize = 1,
-        .Format = DXGI_FORMAT_B8G8R8A8_UNORM,
-        .SampleDesc = { 1, 0 },
-        .Usage = D3D11_USAGE_STAGING,
-        .BindFlags = 0,
-        .CPUAccessFlags = D3D11_CPU_ACCESS_READ,
-        .MiscFlags = 0,
-    };
-
-    ret = d3d_device_->CreateTexture2D(&texture_desc_, NULL, readable_texture_.put());
-    if (FAILED(ret)) {
-        LogError << "CreateTexture2D failed" << VAR(ret);
-        return false;
-    }
-
     winrt::com_ptr<IDXGIDevice> dxgi_device = d3d_device_.as<IDXGIDevice>();
 
     winrt::com_ptr<IInspectable> inspectable = nullptr;
@@ -155,6 +140,31 @@ bool FramePoolScreencap::init()
 }
 
 void FramePoolScreencap::uninit() {}
+
+bool FramePoolScreencap::init_texture(winrt::com_ptr<ID3D11Texture2D> raw_texture)
+{
+    LogFunc;
+
+    if (!d3d_device_ || !raw_texture) {
+        LogError << "handle is null";
+        return false;
+    }
+
+    raw_texture->GetDesc(&texture_desc_);
+
+    texture_desc_.BindFlags = 0;
+    texture_desc_.MiscFlags = 0;
+    texture_desc_.CPUAccessFlags = D3D11_CPU_ACCESS_READ | D3D11_CPU_ACCESS_WRITE;
+    texture_desc_.Usage = D3D11_USAGE_STAGING;
+
+    HRESULT ret = d3d_device_->CreateTexture2D(&texture_desc_, NULL, readable_texture_.put());
+    if (FAILED(ret)) {
+        LogError << "CreateTexture2D failed" << VAR(ret);
+        return false;
+    }
+
+    return true;
+}
 
 MAA_CTRL_UNIT_NS_END
 
