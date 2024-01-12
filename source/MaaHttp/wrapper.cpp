@@ -26,7 +26,7 @@ namespace lhg {
     template <>
     struct schema_t<MaaStringBuffer *>
     {
-        static constexpr const char* const schema = "string";
+        static constexpr const char* const schema = "{ \"type\": \"string\" }";
     };
 
 }
@@ -1360,7 +1360,7 @@ namespace lhg {
 template<>
 struct ret_schema<MaaGetImageEncoded__ft>
 {
-    static constexpr const char* const schema = "string@buffer";
+    static constexpr const char* const schema = "{ \"type\": \"string\", \"title\": \"buffer\" }";
 };
 // LHG SEC END
 }
@@ -1390,7 +1390,7 @@ namespace lhg {
 template<>
 struct arg_schema<MaaSetImageEncoded__ft::data__at>
 {
-    static constexpr const char *const schema = "string@buffer";
+    static constexpr const char *const schema = "{ \"type\": \"string\", \"title\": \"buffer\" }";
 };
 
 template<>
@@ -1949,7 +1949,7 @@ static lhg::opaque_manager<MaaControllerAPI *> MaaControllerAPI__OpaqueManager;
 template<>
 struct lhg::schema_t<MaaControllerAPI *>
 {
-    static constexpr const char* const schema = "string@MaaControllerAPI";
+    static constexpr const char* const schema = "{\"type\":\"string\",\"title\":\"MaaControllerAPI\"}";
 };
 
 template<>
@@ -1976,7 +1976,7 @@ static lhg::opaque_manager<MaaResourceAPI *> MaaResourceAPI__OpaqueManager;
 template<>
 struct lhg::schema_t<MaaResourceAPI *>
 {
-    static constexpr const char* const schema = "string@MaaResourceAPI";
+    static constexpr const char* const schema = "{\"type\":\"string\",\"title\":\"MaaResourceAPI\"}";
 };
 
 template<>
@@ -2003,7 +2003,7 @@ static lhg::opaque_manager<MaaInstanceAPI *> MaaInstanceAPI__OpaqueManager;
 template<>
 struct lhg::schema_t<MaaInstanceAPI *>
 {
-    static constexpr const char* const schema = "string@MaaInstanceAPI";
+    static constexpr const char* const schema = "{\"type\":\"string\",\"title\":\"MaaInstanceAPI\"}";
 };
 
 template<>
@@ -2025,7 +2025,7 @@ static lhg::opaque_manager<MaaImageBuffer *> MaaImageBuffer__OpaqueManager;
 template<>
 struct lhg::schema_t<MaaImageBuffer *>
 {
-    static constexpr const char* const schema = "string@MaaImageBuffer";
+    static constexpr const char* const schema = "{\"type\":\"string\",\"title\":\"MaaImageBuffer\"}";
 };
 
 template<>
@@ -4345,15 +4345,13 @@ bool handle_request(Context& ctx, UrlSegments segs) {
     }
 
     if (lhg::handle_help(ctx, segs, wrappers, { "MaaControllerAPI", "MaaResourceAPI", "MaaInstanceAPI", "MaaImageBuffer" }, [](json::object& result) {
+        using lhg::wrap_oper;
             // MaaAPICallback
-            result["/callback/MaaAPICallback/add"] = json::object { { "body", json::object {} }, { "response", { { "data", { { "id", "string" } } } } } };
-            result["/callback/MaaAPICallback/:id/del"] = json::object { { "body", json::object {} }, { "response", { { "data", json::object {} }, { "error", "string" } } } };
-            result["/callback/MaaAPICallback/:id/pull"] = json::object { { "body", json::object {} }, { "response", { { "data", { { "ids", "string[]" } } } } } };
-            result["/callback/MaaAPICallback/:id/:cid/request"] = { { "body", json::object {} }, { "response", { { "data", json::object {
-                { "msg", lhg::schema_t<decltype(std::get<0>(lhg::callback_manager<void (*)(const char *, const char *, void *)>::CallbackContext::args_type {}))>::schema },
-                { "details_json", lhg::schema_t<decltype(std::get<1>(lhg::callback_manager<void (*)(const char *, const char *, void *)>::CallbackContext::args_type {}))>::schema },
-            } }, { "error", "string" } } } };
-            result["/callback/MaaAPICallback/:id/:cid/response"] = json::object { { "body", json::object {} }, { "response", { { "data", json::object {} }, { "error", "string" } } } };
+        result["/callback/MaaAPICallback/add"] = wrap_oper({}, json::object { { "type", "object" }, { "properties", { { "data", { { "type", "object" }, { "properties", { { "id", { { "type", "string" } } } } } } } } } });
+        result["/callback/MaaAPICallback/{id}/del"] = wrap_oper({}, json::object { { "type", "object" }, { "properties", { { "data", json::object {} }, { "error", { { "type", "string" } } } } } });
+        result["/callback/MaaAPICallback/{id}/pull"] = json::object { { "type", "object" }, { "properties", { { "data", { { "type", "object" }, { "properties", { { "ids", { { "type", "array" }, { "items", { { "type", "string" } } } } } } } } } } } };
+        result["/callback/MaaAPICallback/{id}/{cid}/request"] = wrap_oper({}, json::object { { "type", "object" }, { "properties", { { "data", { { "type", "object" }, { "properties", { { "msg", json::parse(lhg::schema_t<decltype(std::get<0>(lhg::callback_manager<void (*)(const char *, const char *, void *)>::CallbackContext::args_type {}))>::schema).value() }, { "details_json", json::parse(lhg::schema_t<decltype(std::get<1>(lhg::callback_manager<void (*)(const char *, const char *, void *)>::CallbackContext::args_type {}))>::schema).value() } } } } }, { "error", { { "type", "string" } } } } } });
+        result["/callback/MaaAPICallback/{id}/{cid}/response"] = wrap_oper(json::object {}, json::object { { "data", json::object {} }, { "error", { { "type", "string" } } } });
 
     })) {
         return true;
