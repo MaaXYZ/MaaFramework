@@ -27,10 +27,9 @@ std::optional<cv::Mat> FramePoolScreencap::screencap()
         }
     }
 
-    auto frame = cap_frame_pool_.TryGetNextFrame();
-    if (frame == nullptr) {
-        LogError << "TryGetNextFrame failed";
-        return std::nullopt;
+    winrt::Windows::Graphics::Capture::Direct3D11CaptureFrame frame = nullptr;
+    while (!frame) {
+        frame = cap_frame_pool_.TryGetNextFrame();
     }
 
     auto access = frame.Surface().as<Windows::Graphics::DirectX::Direct3D11::IDirect3DDxgiInterfaceAccess>();
@@ -84,10 +83,7 @@ bool FramePoolScreencap::init()
         return false;
     }
 
-    using namespace winrt::Windows::Graphics::Capture;
-    using namespace winrt::Windows::Graphics::DirectX;
-
-    auto activation_factory = winrt::get_activation_factory<GraphicsCaptureItem>();
+    auto activation_factory = winrt::get_activation_factory<winrt::Windows::Graphics::Capture::GraphicsCaptureItem>();
     auto interop_factory = activation_factory.as<IGraphicsCaptureItemInterop>();
     ret = interop_factory->CreateForWindow(
         hwnd_, winrt::guid_of<ABI::Windows::Graphics::Capture::IGraphicsCaptureItem>(), winrt::put_abi(cap_item_));
@@ -117,15 +113,16 @@ bool FramePoolScreencap::init()
 
     winrt::com_ptr<IDXGIDevice> dxgi_device = d3d_device_.as<IDXGIDevice>();
 
-    winrt::com_ptr<::IInspectable> inspectable = nullptr;
+    winrt::com_ptr<IInspectable> inspectable = nullptr;
     ret = CreateDirect3D11DeviceFromDXGIDevice(dxgi_device.get(), inspectable.put());
     if (FAILED(ret)) {
         LogError << "CreateDirect3D11DeviceFromDXGIDevice failed" << VAR(ret);
         return false;
     }
 
-    cap_frame_pool_ = Direct3D11CaptureFramePool::Create(
-        inspectable.as<Direct3D11::IDirect3DDevice>(), DirectXPixelFormat::B8G8R8A8UIntNormalized, 1, cap_item_.Size());
+    cap_frame_pool_ = winrt::Windows::Graphics::Capture::Direct3D11CaptureFramePool::Create(
+        inspectable.as<winrt::Windows::Graphics::DirectX::Direct3D11::IDirect3DDevice>(),
+        winrt::Windows::Graphics::DirectX::DirectXPixelFormat::B8G8R8A8UIntNormalized, 1, cap_item_.Size());
 
     if (!cap_frame_pool_) {
         LogError << "Direct3D11CaptureFramePool::Create failed";
