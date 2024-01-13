@@ -4346,14 +4346,7 @@ bool handle_request(Context& ctx, UrlSegments segs) {
     }
 
     if (lhg::handle_help(ctx, segs, wrappers, { "MaaControllerAPI", "MaaResourceAPI", "MaaInstanceAPI", "MaaImageBuffer" }, [](json::object& result) {
-        using lhg::wrap_oper;
-            // MaaAPICallback
-        result["/callback/MaaAPICallback/add"] = wrap_oper({}, json::object { { "type", "object" }, { "properties", { { "data", { { "type", "object" }, { "properties", { { "id", { { "type", "string" } } } } } } } } } });
-        result["/callback/MaaAPICallback/{id}/del"] = wrap_oper({}, json::object { { "type", "object" }, { "properties", { { "data", json::object {} }, { "error", { { "type", "string" } } } } } });
-        result["/callback/MaaAPICallback/{id}/pull"] = json::object { { "type", "object" }, { "properties", { { "data", { { "type", "object" }, { "properties", { { "ids", { { "type", "array" }, { "items", { { "type", "string" } } } } } } } } } } } };
-        result["/callback/MaaAPICallback/{id}/{cid}/request"] = wrap_oper({}, json::object { { "type", "object" }, { "properties", { { "data", { { "type", "object" }, { "properties", { { "msg", json::parse(lhg::schema_t<decltype(std::get<0>(lhg::callback_manager<void (*)(const char *, const char *, void *)>::CallbackContext::args_type {}))>::schema).value() }, { "details_json", json::parse(lhg::schema_t<decltype(std::get<1>(lhg::callback_manager<void (*)(const char *, const char *, void *)>::CallbackContext::args_type {}))>::schema).value() } } } } }, { "error", { { "type", "string" } } } } } });
-        result["/callback/MaaAPICallback/{id}/{cid}/response"] = wrap_oper(json::object {}, json::object { { "data", json::object {} }, { "error", { { "type", "string" } } } });
-
+        lhg::help_callback("MaaAPICallback", result, json::object { { "msg", json::parse(lhg::schema_t<decltype(std::get<0>(lhg::callback_manager<void (*)(const char *, const char *, void *)>::CallbackContext::args_type {}))>::schema).value() }, { "details_json", json::parse(lhg::schema_t<decltype(std::get<1>(lhg::callback_manager<void (*)(const char *, const char *, void *)>::CallbackContext::args_type {}))>::schema).value() } }, std::nullopt);
     })) {
         return true;
     }
