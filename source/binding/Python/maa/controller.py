@@ -4,7 +4,7 @@ import asyncio
 from abc import ABC
 from typing import Optional, Any, Dict
 
-from .define import MaaApiCallback, MaaBool, MaaId
+from .define import *
 from .future import Future
 from .library import Library
 from .callback_agent import CallbackAgent, Callback
@@ -13,7 +13,7 @@ __all__ = ["AdbController"]
 
 
 class Controller(ABC):
-    _handle: ctypes.c_void_p
+    _handle: MaaControllerHandle
     _callback_agent: CallbackAgent
 
     def __init__(self, callback: Optional[Callback] = None, callback_arg: Any = None):
@@ -80,24 +80,27 @@ class Controller(ABC):
         Controller._api_properties_initialized = True
 
         Library.framework.MaaControllerDestroy.restype = None
-        Library.framework.MaaControllerDestroy.argtypes = [ctypes.c_void_p]
+        Library.framework.MaaControllerDestroy.argtypes = [MaaControllerHandle]
 
         Library.framework.MaaControllerSetOption.restype = MaaBool
         Library.framework.MaaControllerSetOption.argtypes = [
-            ctypes.c_void_p,
-            ctypes.c_int32,
-            ctypes.c_void_p,
-            ctypes.c_uint64,
+            MaaControllerHandle,
+            MaaCtrlOption,
+            MaaOptionValue,
+            MaaOptionValueSize,
         ]
 
-        Library.framework.MaaControllerPostConnection.restype = MaaId
-        Library.framework.MaaControllerPostConnection.argtypes = [ctypes.c_void_p]
+        Library.framework.MaaControllerPostConnection.restype = MaaCtrlId
+        Library.framework.MaaControllerPostConnection.argtypes = [MaaControllerHandle]
 
-        Library.framework.MaaControllerStatus.restype = ctypes.c_int32
-        Library.framework.MaaControllerStatus.argtypes = [ctypes.c_void_p, MaaId]
+        Library.framework.MaaControllerStatus.restype = MaaStatus
+        Library.framework.MaaControllerStatus.argtypes = [
+            MaaControllerHandle,
+            MaaCtrlId,
+        ]
 
         Library.framework.MaaControllerConnected.restype = MaaBool
-        Library.framework.MaaControllerConnected.argtypes = [ctypes.c_void_p]
+        Library.framework.MaaControllerConnected.argtypes = [MaaControllerHandle]
 
 
 class AdbController(Controller):
@@ -146,13 +149,13 @@ class AdbController(Controller):
         Set the API properties for the ADB controller.
         """
 
-        Library.framework.MaaAdbControllerCreateV2.restype = ctypes.c_void_p
+        Library.framework.MaaAdbControllerCreateV2.restype = MaaControllerHandle
         Library.framework.MaaAdbControllerCreateV2.argtypes = [
-            ctypes.c_char_p,
-            ctypes.c_char_p,
-            ctypes.c_int32,
-            ctypes.c_char_p,
-            ctypes.c_char_p,
-            MaaApiCallback,
-            ctypes.c_void_p,
+            MaaStringView,
+            MaaStringView,
+            MaaAdbControllerType,
+            MaaStringView,
+            MaaStringView,
+            MaaControllerCallback,
+            MaaCallbackTransparentArg,
         ]

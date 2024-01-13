@@ -30,6 +30,18 @@ MaaWin32Hwnd Win32WindowFinder::get_cursor_window() const
     return nullptr;
 }
 
+MaaWin32Hwnd Win32WindowFinder::get_desktop_window() const
+{
+    LogError << "Not implemented";
+    return nullptr;
+}
+
+MaaWin32Hwnd Win32WindowFinder::get_foreground_window() const
+{
+    LogError << "Not implemented";
+    return nullptr;
+}
+
 std::vector<Win32WindowFinder::Window> Win32WindowFinder::list_windows() const
 {
     LogError << "Not implemented";

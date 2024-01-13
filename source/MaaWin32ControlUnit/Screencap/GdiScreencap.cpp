@@ -1,7 +1,6 @@
 #include "GdiScreencap.h"
 
-#include <functional>
-
+#include "HwndUtils.hpp"
 #include "Utils/Logger.h"
 
 MAA_CTRL_UNIT_NS_BEGIN
@@ -12,17 +11,6 @@ std::optional<cv::Mat> GdiScreencap::screencap()
         LogError << "hwnd_ is nullptr";
         return std::nullopt;
     }
-
-    RECT rect { 0 };
-    if (!GetClientRect(hwnd_, &rect)) {
-        LogError << "GetClientRect failed, error code: " << GetLastError();
-        return std::nullopt;
-    }
-
-    double screen_scale = window_screen_scale();
-
-    int width = static_cast<int>(screen_scale * (rect.right - rect.left));
-    int height = static_cast<int>(screen_scale * (rect.bottom - rect.top));
 
     HDC hdc = nullptr;
     HDC mem_dc = nullptr;
@@ -56,6 +44,8 @@ std::optional<cv::Mat> GdiScreencap::screencap()
         return std::nullopt;
     }
 
+    auto [width, height] = window_size(hwnd_);
+
     bitmap = CreateCompatibleBitmap(hdc, width, height);
     if (!bitmap) {
         LogError << "CreateCompatibleBitmap failed, error code: " << GetLastError();
@@ -80,35 +70,6 @@ std::optional<cv::Mat> GdiScreencap::screencap()
     }
 
     return mat;
-}
-
-double GdiScreencap::window_screen_scale()
-{
-    // TODO: 处理多显示器不同 DPI 的情况
-
-#ifndef MAA_WIN32_COMPATIBLE
-
-    constexpr double kStandardDPI = 96.0;
-    // 运行期需要 Win10 1607 以上版本
-    return GetDpiForWindow(GetDesktopWindow()) / kStandardDPI;
-
-#else
-
-    HMONITOR monitor_handle = MonitorFromWindow(GetDesktopWindow(), MONITOR_DEFAULTTONEAREST);
-
-    MONITORINFOEX miex { 0 };
-    miex.cbSize = sizeof(miex);
-    GetMonitorInfo(monitor_handle, &miex);
-    LONG screen_x_logical = miex.rcMonitor.right - miex.rcMonitor.left;
-
-    DEVMODE dm { 0 };
-    dm.dmSize = sizeof(dm);
-    EnumDisplaySettings(miex.szDevice, ENUM_CURRENT_SETTINGS, &dm);
-    DWORD screen_x_physical = dm.dmPelsWidth;
-
-    return static_cast<double>(screen_x_physical) / static_cast<double>(screen_x_logical);
-
-#endif
 }
 
 MAA_CTRL_UNIT_NS_END

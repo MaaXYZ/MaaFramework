@@ -95,6 +95,11 @@ std::string ResourceMgr::get_hash() const
 
     std::vector<size_t> filesizes;
     for (const auto& p : paths_) {
+        if (!std::filesystem::exists(p) || !std::filesystem::is_directory(p)) {
+            LogError << "path not exists or not a directory" << VAR(p);
+            continue;
+        }
+
         for (const auto& entry : std::filesystem::recursive_directory_iterator(p)) {
             if (!entry.is_regular_file()) {
                 continue;

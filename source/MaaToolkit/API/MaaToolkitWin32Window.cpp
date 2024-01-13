@@ -32,3 +32,17 @@ MaaWin32Hwnd MaaToolkitGetCursorWindow()
 
     return win32_mgr.get_cursor_window();
 }
+
+MaaWin32Hwnd MaaToolkitGetDesktopWindow()
+{
+    LogInfo;
+
+    return win32_mgr.get_desktop_window();
+}
+
+MaaWin32Hwnd MaaToolkitGetForegroundWindow()
+{
+    LogInfo;
+
+    return win32_mgr.get_foreground_window();
+}

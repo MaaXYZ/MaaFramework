@@ -2,7 +2,7 @@ import ctypes
 import numpy
 import json
 
-from typing import Any, Optional, Tuple
+from typing import Any, Dict, Optional, Tuple
 
 from .library import Library
 from .define import MaaBool
@@ -10,9 +10,9 @@ from .buffer import *
 
 
 class SyncContext:
-    _handle: ctypes.c_void_p
+    _handle: MaaSyncContextHandle
 
-    def __init__(self, handle: ctypes.c_void_p):
+    def __init__(self, handle: MaaSyncContextHandle):
         self._set_api_properties()
 
         self._handle = handle
@@ -38,8 +38,8 @@ class SyncContext:
         self,
         image: numpy.ndarray,
         task_name: str,
-        task_param: Any,
-    ) -> Optional(Tuple[(int, int, int, int), str]):
+        task_param: Dict,
+    ) -> Optional[Tuple[Tuple[int, int, int, int], str]]:
         """
         Sync context run recognizer.
 
@@ -76,10 +76,10 @@ class SyncContext:
     def run_action(
         self,
         task_name: str,
-        task_param: Any,
-        cur_box: (int, int, int, int),
+        task_param: Dict,
+        cur_box: Tuple[int, int, int, int],
         cur_rec_detail: str,
-    ) -> Optional(str):
+    ) -> Optional[str]:
         """
         Sync context run action.
 
@@ -242,40 +242,40 @@ class SyncContext:
 
         Library.framework.MaaSyncContextRunTask.restype = MaaBool
         Library.framework.MaaSyncContextRunTask.argtypes = [
-            ctypes.c_void_p,
-            ctypes.c_char_p,
-            ctypes.c_char_p,
+            MaaSyncContextHandle,
+            MaaStringView,
+            MaaStringView,
         ]
 
         Library.framework.MaaSyncContextRunRecognizer.restype = MaaBool
         Library.framework.MaaSyncContextRunRecognizer.argtypes = [
-            ctypes.c_void_p,
-            ctypes.c_void_p,
-            ctypes.c_char_p,
-            ctypes.c_char_p,
-            ctypes.c_void_p,
-            ctypes.c_void_p,
+            MaaSyncContextHandle,
+            MaaStringBufferHandle,
+            MaaStringView,
+            MaaStringView,
+            MaaRectHandle,
+            MaaStringBufferHandle,
         ]
 
         Library.framework.MaaSyncContextRunAction.restype = MaaBool
         Library.framework.MaaSyncContextRunAction.argtypes = [
-            ctypes.c_void_p,
-            ctypes.c_char_p,
-            ctypes.c_char_p,
-            ctypes.c_void_p,
-            ctypes.c_char_p,
+            MaaSyncContextHandle,
+            MaaStringView,
+            MaaStringView,
+            MaaRectHandle,
+            MaaStringBufferHandle,
         ]
 
         Library.framework.MaaSyncContextClick.restype = MaaBool
         Library.framework.MaaSyncContextClick.argtypes = [
-            ctypes.c_void_p,
+            MaaSyncContextHandle,
             ctypes.c_int32,
             ctypes.c_int32,
         ]
 
         Library.framework.MaaSyncContextSwipe.restype = MaaBool
         Library.framework.MaaSyncContextSwipe.argtypes = [
-            ctypes.c_void_p,
+            MaaSyncContextHandle,
             ctypes.c_int32,
             ctypes.c_int32,
             ctypes.c_int32,
@@ -285,19 +285,19 @@ class SyncContext:
 
         Library.framework.MaaSyncContextPressKey.restype = MaaBool
         Library.framework.MaaSyncContextPressKey.argtypes = [
-            ctypes.c_void_p,
+            MaaSyncContextHandle,
             ctypes.c_int32,
         ]
 
         Library.framework.MaaSyncContextInputText.restype = MaaBool
         Library.framework.MaaSyncContextInputText.argtypes = [
-            ctypes.c_void_p,
-            ctypes.c_char_p,
+            MaaSyncContextHandle,
+            MaaStringView,
         ]
 
         Library.framework.MaaSyncContextTouchDown.restype = MaaBool
         Library.framework.MaaSyncContextTouchDown.argtypes = [
-            ctypes.c_void_p,
+            MaaSyncContextHandle,
             ctypes.c_int32,
             ctypes.c_int32,
             ctypes.c_int32,
@@ -306,7 +306,7 @@ class SyncContext:
 
         Library.framework.MaaSyncContextTouchMove.restype = MaaBool
         Library.framework.MaaSyncContextTouchMove.argtypes = [
-            ctypes.c_void_p,
+            MaaSyncContextHandle,
             ctypes.c_int32,
             ctypes.c_int32,
             ctypes.c_int32,
@@ -315,19 +315,19 @@ class SyncContext:
 
         Library.framework.MaaSyncContextTouchUp.restype = MaaBool
         Library.framework.MaaSyncContextTouchUp.argtypes = [
-            ctypes.c_void_p,
+            MaaSyncContextHandle,
             ctypes.c_int32,
         ]
 
         Library.framework.MaaSyncContextScreencap.restype = MaaBool
         Library.framework.MaaSyncContextScreencap.argtypes = [
-            ctypes.c_void_p,
-            ctypes.c_void_p,
+            MaaSyncContextHandle,
+            MaaImageBufferHandle,
         ]
 
         Library.framework.MaaSyncContextGetTaskResult.restype = MaaBool
         Library.framework.MaaSyncContextGetTaskResult.argtypes = [
-            ctypes.c_void_p,
-            ctypes.c_char_p,
-            ctypes.c_void_p,
+            MaaSyncContextHandle,
+            MaaStringView,
+            MaaStringBufferHandle,
         ]

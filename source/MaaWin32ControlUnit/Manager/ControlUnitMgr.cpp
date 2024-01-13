@@ -3,12 +3,13 @@
 #include <meojson/json.hpp>
 
 #include "MaaFramework/MaaMsg.h"
+#include "Screencap/HwndUtils.hpp"
 #include "Utils/Logger.h"
 
 MAA_CTRL_UNIT_NS_BEGIN
 
 ControlUnitMgr::ControlUnitMgr(HWND hWnd, MaaControllerCallback callback, MaaCallbackTransparentArg callback_arg)
-    : hWnd_(hWnd), notifier(callback, callback_arg)
+    : hwnd_(hWnd), notifier(callback, callback_arg)
 {}
 
 bool ControlUnitMgr::find_device(std::vector<std::string>& devices)
@@ -21,18 +22,18 @@ bool ControlUnitMgr::find_device(std::vector<std::string>& devices)
 
 bool ControlUnitMgr::connect()
 {
-    if (!hWnd_) {
-        LogError << "hWnd_ is nullptr";
+    if (!hwnd_) {
+        LogError << "hwnd_ is nullptr";
         return false;
     }
 
-    if (!IsWindow(hWnd_)) {
-        LogError << "hWnd_ is invalid";
+    if (!IsWindow(hwnd_)) {
+        LogError << "hwnd_ is invalid";
         return false;
     }
 
-    if (IsIconic(hWnd_)) {
-        LogError << "hWnd_ is minimized";
+    if (IsIconic(hwnd_)) {
+        LogError << "hwnd_ is minimized";
         return false;
     }
 
@@ -41,31 +42,26 @@ bool ControlUnitMgr::connect()
 
 bool ControlUnitMgr::request_uuid(std::string& uuid)
 {
-    if (!hWnd_) {
-        LogError << "hWnd_ is nullptr";
+    if (!hwnd_) {
+        LogError << "hwnd_ is nullptr";
         return false;
     }
 
-    uuid = std::to_string(reinterpret_cast<uintptr_t>(hWnd_));
+    std::stringstream ss;
+    ss << hwnd_;
+    uuid = std::move(ss).str();
+
     return true;
 }
 
 bool ControlUnitMgr::request_resolution(int& width, int& height)
 {
-    if (!hWnd_) {
-        LogError << "hWnd_ is nullptr";
+    if (!hwnd_) {
+        LogError << "hwnd_ is nullptr";
         return false;
     }
 
-    RECT rect;
-    if (!GetClientRect(hWnd_, &rect)) {
-        LogError << "failed to GetClientRect";
-        return false;
-    }
-
-    width = rect.right - rect.left;
-    height = rect.bottom - rect.top;
-
+    std::tie(width, height) = window_size(hwnd_);
     return true;
 }
 
@@ -99,6 +95,7 @@ bool ControlUnitMgr::screencap(cv::Mat& image)
     }
 
     image = std::move(opt).value();
+
     return true;
 }
 

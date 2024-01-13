@@ -25,6 +25,8 @@ public:
     virtual std::vector<MaaWin32Hwnd> found_window() const override { return windows_; }
 
     virtual MaaWin32Hwnd get_cursor_window() const override;
+    virtual MaaWin32Hwnd get_desktop_window() const override;
+    virtual MaaWin32Hwnd get_foreground_window() const override;
 
 private:
     std::vector<Window> list_windows() const;

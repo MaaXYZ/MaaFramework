@@ -3,6 +3,9 @@
 #include "Base/UnitBase.h"
 #include "Input/SendMessageInput.h"
 #include "Manager/ControlUnitMgr.h"
+// #include "Screencap/BackBufferScreencap.h"
+#include "Screencap/DesktopDupScreencap.h"
+#include "Screencap/FramePoolScreencap.h"
 #include "Screencap/GdiScreencap.h"
 #include "Utils/Logger.h"
 #include "Utils/SafeWindows.hpp"
@@ -52,6 +55,24 @@ MaaControlUnitHandle MaaWin32ControlUnitCreate( //
         LogInfo << "screencap_type: GDI";
         screencap_unit = std::make_shared<GdiScreencap>(h_wnd);
         break;
+
+    case MaaWin32ControllerType_Screencap_DXGI_DesktopDup:
+        LogInfo << "screencap_type: DXGI_DesktopDup";
+        screencap_unit = std::make_shared<DesktopDupScreencap>();
+        break;
+
+        // Not work
+        // case MaaWin32ControllerType_Screencap_DXGI_BackBuffer:
+        //     LogInfo << "screencap_type: DXGI_BackBuffer";
+        //     screencap_unit = std::make_shared<BackBufferScreencap>(h_wnd);
+        //     break;
+
+#if MAA_FRAMEPOOL_SCREENCAP_AVAILABLE
+    case MaaWin32ControllerType_Screencap_DXGI_FramePool:
+        LogInfo << "screencap_type: DXGI_FramePool";
+        screencap_unit = std::make_shared<FramePoolScreencap>(h_wnd);
+        break;
+#endif
 
     default:
         LogWarn << "Unknown screencap input type" << VAR(screencap_type);

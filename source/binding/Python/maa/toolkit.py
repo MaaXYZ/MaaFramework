@@ -2,10 +2,20 @@ import ctypes
 import json
 import asyncio
 from dataclasses import dataclass
+from typing import List
 
 from .library import Library
-from .define import MaaBool
+from .define import *
 from .instance import Instance
+
+
+@dataclass
+class AdbDevice:
+    name: str
+    adb_path: str
+    address: str
+    controller_type: int
+    config: str
 
 
 class Toolkit:
@@ -19,7 +29,7 @@ class Toolkit:
         return Library.toolkit.MaaToolkitInit()
 
     @classmethod
-    async def adb_devices(cls) -> list:
+    async def adb_devices(cls) -> List[AdbDevice]:
         """
         Get the adb devices.
         """
@@ -112,47 +122,39 @@ class Toolkit:
         Library.toolkit.MaaToolkitIsFindDeviceCompleted.restype = MaaBool
         Library.toolkit.MaaToolkitIsFindDeviceCompleted.argtypes = None
 
-        Library.toolkit.MaaToolkitGetDeviceCount.restype = ctypes.c_size_t
+        Library.toolkit.MaaToolkitGetDeviceCount.restype = MaaSize
         Library.toolkit.MaaToolkitGetDeviceCount.argtypes = None
 
-        Library.toolkit.MaaToolkitGetDeviceName.restype = ctypes.c_char_p
-        Library.toolkit.MaaToolkitGetDeviceName.argtypes = [ctypes.c_size_t]
+        Library.toolkit.MaaToolkitGetDeviceName.restype = MaaStringView
+        Library.toolkit.MaaToolkitGetDeviceName.argtypes = [MaaSize]
 
-        Library.toolkit.MaaToolkitGetDeviceAdbPath.restype = ctypes.c_char_p
-        Library.toolkit.MaaToolkitGetDeviceAdbPath.argtypes = [ctypes.c_size_t]
+        Library.toolkit.MaaToolkitGetDeviceAdbPath.restype = MaaStringView
+        Library.toolkit.MaaToolkitGetDeviceAdbPath.argtypes = [MaaSize]
 
-        Library.toolkit.MaaToolkitGetDeviceAdbSerial.restype = ctypes.c_char_p
-        Library.toolkit.MaaToolkitGetDeviceAdbSerial.argtypes = [ctypes.c_size_t]
+        Library.toolkit.MaaToolkitGetDeviceAdbSerial.restype = MaaStringView
+        Library.toolkit.MaaToolkitGetDeviceAdbSerial.argtypes = [MaaSize]
 
-        Library.toolkit.MaaToolkitGetDeviceAdbControllerType.restype = ctypes.c_int32
-        Library.toolkit.MaaToolkitGetDeviceAdbControllerType.argtypes = [
-            ctypes.c_size_t
-        ]
+        Library.toolkit.MaaToolkitGetDeviceAdbControllerType.restype = (
+            MaaAdbControllerType
+        )
 
-        Library.toolkit.MaaToolkitGetDeviceAdbConfig.restype = ctypes.c_char_p
-        Library.toolkit.MaaToolkitGetDeviceAdbConfig.argtypes = [ctypes.c_size_t]
+        Library.toolkit.MaaToolkitGetDeviceAdbControllerType.argtypes = [MaaSize]
+
+        Library.toolkit.MaaToolkitGetDeviceAdbConfig.restype = MaaStringView
+        Library.toolkit.MaaToolkitGetDeviceAdbConfig.argtypes = [MaaSize]
 
         Library.toolkit.MaaToolkitRegisterCustomRecognizerExecutor.restype = MaaBool
         Library.toolkit.MaaToolkitRegisterCustomRecognizerExecutor.argtypes = [
-            ctypes.c_void_p,
-            ctypes.c_char_p,
-            ctypes.c_char_p,
-            ctypes.c_char_p,
+            MaaInstanceHandle,
+            MaaStringView,
+            MaaStringView,
+            MaaStringView,
         ]
 
         Library.toolkit.MaaToolkitRegisterCustomActionExecutor.restype = MaaBool
         Library.toolkit.MaaToolkitRegisterCustomActionExecutor.argtypes = [
-            ctypes.c_void_p,
-            ctypes.c_char_p,
-            ctypes.c_char_p,
-            ctypes.c_char_p,
+            MaaInstanceHandle,
+            MaaStringView,
+            MaaStringView,
+            MaaStringView,
         ]
-
-
-@dataclass
-class AdbDevice:
-    name: str
-    adb_path: str
-    address: str
-    controller_type: int
-    config: str

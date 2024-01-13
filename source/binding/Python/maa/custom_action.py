@@ -6,6 +6,7 @@ from .define import MaaBool, MaaCustomAction
 from .buffer import RectBuffer, StringBuffer, ImageBuffer
 from .context import SyncContext
 
+# TODO: Typing
 
 class CustomAction(ABC):
     _handle: MaaCustomAction
