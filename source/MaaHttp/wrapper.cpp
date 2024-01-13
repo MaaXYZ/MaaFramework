@@ -1798,6 +1798,30 @@ namespace lhg {
 // LHG SEC END
 }
 
+struct MaaToolkitGetDesktopWindow__ft {
+    using arguments_t = void;
+    using return_t = unsigned long long;
+};
+
+namespace lhg {
+// LHG SEC BEGIN lhg.custom.MaaToolkitGetDesktopWindow.tag
+// LHG SEC DEF
+
+// LHG SEC END
+}
+
+struct MaaToolkitGetForegroundWindow__ft {
+    using arguments_t = void;
+    using return_t = unsigned long long;
+};
+
+namespace lhg {
+// LHG SEC BEGIN lhg.custom.MaaToolkitGetForegroundWindow.tag
+// LHG SEC DEF
+
+// LHG SEC END
+}
+
 struct MaaControllerSetOptionString__ft {
     struct ctrl__at {
         using type = MaaControllerAPI *;
@@ -4064,6 +4088,58 @@ std::optional<json::object> MaaToolkitGetCursorWindow_Wrapper(json::object __par
     return lhg::perform_output<MaaToolkitGetCursorWindow__ft>(__call, __ret);
 }
 
+// LHG SEC BEGIN lhg.custom.MaaToolkitGetDesktopWindow.func
+// LHG SEC DEF
+
+// LHG SEC END
+std::optional<json::object> MaaToolkitGetDesktopWindow_Wrapper(json::object __param, std::string &__error) {
+    if (!lhg::perform_check<MaaToolkitGetDesktopWindow__ft>(__param, __error)) {
+        return std::nullopt;
+    }
+
+    typename lhg::arg_set<MaaToolkitGetDesktopWindow__ft>::temp_type __temp;
+    typename lhg::arg_set<MaaToolkitGetDesktopWindow__ft>::call_type __call;
+    if (!lhg::perform_input<MaaToolkitGetDesktopWindow__ft>(__temp, __param, __error)) {
+        return std::nullopt;
+    }
+    if (!lhg::perform_input_fix<MaaToolkitGetDesktopWindow__ft>(__call, __temp, __param, __error)) {
+        return std::nullopt;
+    }
+
+    auto __return = MaaToolkitGetDesktopWindow();
+// LHG SEC BEGIN lhg.impl.MaaToolkitGetDesktopWindow.return
+// LHG SEC DEF
+    auto __ret = __return;
+// LHG SEC END
+    return lhg::perform_output<MaaToolkitGetDesktopWindow__ft>(__call, __ret);
+}
+
+// LHG SEC BEGIN lhg.custom.MaaToolkitGetForegroundWindow.func
+// LHG SEC DEF
+
+// LHG SEC END
+std::optional<json::object> MaaToolkitGetForegroundWindow_Wrapper(json::object __param, std::string &__error) {
+    if (!lhg::perform_check<MaaToolkitGetForegroundWindow__ft>(__param, __error)) {
+        return std::nullopt;
+    }
+
+    typename lhg::arg_set<MaaToolkitGetForegroundWindow__ft>::temp_type __temp;
+    typename lhg::arg_set<MaaToolkitGetForegroundWindow__ft>::call_type __call;
+    if (!lhg::perform_input<MaaToolkitGetForegroundWindow__ft>(__temp, __param, __error)) {
+        return std::nullopt;
+    }
+    if (!lhg::perform_input_fix<MaaToolkitGetForegroundWindow__ft>(__call, __temp, __param, __error)) {
+        return std::nullopt;
+    }
+
+    auto __return = MaaToolkitGetForegroundWindow();
+// LHG SEC BEGIN lhg.impl.MaaToolkitGetForegroundWindow.return
+// LHG SEC DEF
+    auto __ret = __return;
+// LHG SEC END
+    return lhg::perform_output<MaaToolkitGetForegroundWindow__ft>(__call, __ret);
+}
+
 // LHG SEC BEGIN lhg.custom.MaaControllerSetOptionString.func
 // LHG SEC DEF
 
@@ -4334,6 +4410,8 @@ bool handle_request(Context& ctx, UrlSegments segs) {
         { "MaaToolkitSearchWindow", { &MaaToolkitSearchWindow_Wrapper, &lhg::input_helper<MaaToolkitSearchWindow__ft>, &lhg::output_helper<MaaToolkitSearchWindow__ft> } },
         { "MaaToolkitGetWindow", { &MaaToolkitGetWindow_Wrapper, &lhg::input_helper<MaaToolkitGetWindow__ft>, &lhg::output_helper<MaaToolkitGetWindow__ft> } },
         { "MaaToolkitGetCursorWindow", { &MaaToolkitGetCursorWindow_Wrapper, &lhg::input_helper<MaaToolkitGetCursorWindow__ft>, &lhg::output_helper<MaaToolkitGetCursorWindow__ft> } },
+        { "MaaToolkitGetDesktopWindow", { &MaaToolkitGetDesktopWindow_Wrapper, &lhg::input_helper<MaaToolkitGetDesktopWindow__ft>, &lhg::output_helper<MaaToolkitGetDesktopWindow__ft> } },
+        { "MaaToolkitGetForegroundWindow", { &MaaToolkitGetForegroundWindow_Wrapper, &lhg::input_helper<MaaToolkitGetForegroundWindow__ft>, &lhg::output_helper<MaaToolkitGetForegroundWindow__ft> } },
         { "MaaControllerSetOptionString", { &MaaControllerSetOptionString_Wrapper, &lhg::input_helper<MaaControllerSetOptionString__ft>, &lhg::output_helper<MaaControllerSetOptionString__ft> } },
         { "MaaControllerSetOptionInteger", { &MaaControllerSetOptionInteger_Wrapper, &lhg::input_helper<MaaControllerSetOptionInteger__ft>, &lhg::output_helper<MaaControllerSetOptionInteger__ft> } },
         { "MaaControllerSetOptionBoolean", { &MaaControllerSetOptionBoolean_Wrapper, &lhg::input_helper<MaaControllerSetOptionBoolean__ft>, &lhg::output_helper<MaaControllerSetOptionBoolean__ft> } },

@@ -1712,6 +1712,18 @@
     },
     {
       "argument": [
+      ],
+      "name": "MaaToolkitGetDesktopWindow",
+      "return": "unsigned long long"
+    },
+    {
+      "argument": [
+      ],
+      "name": "MaaToolkitGetForegroundWindow",
+      "return": "unsigned long long"
+    },
+    {
+      "argument": [
         {
           "name": "ctrl",
           "type": "MaaControllerAPI *"
