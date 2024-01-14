@@ -1361,7 +1361,7 @@ namespace lhg {
 template<>
 struct ret_schema<MaaGetImageEncoded__ft>
 {
-    static constexpr const char* const schema = "{ \"type\": \"string\", \"title\": \"buffer\" }";
+    static constexpr const char* const schema = "{ \"type\": \"string\" }";
 };
 // LHG SEC END
 }
@@ -1391,7 +1391,7 @@ namespace lhg {
 template<>
 struct arg_schema<MaaSetImageEncoded__ft::data__at>
 {
-    static constexpr const char *const schema = "{ \"type\": \"string\", \"title\": \"buffer\" }";
+    static constexpr const char *const schema = "{ \"type\": \"string\" }";
 };
 
 template<>
@@ -3422,7 +3422,7 @@ std::optional<json::object> MaaGetImageEncoded_Wrapper(json::object __param, std
 template<>
 inline bool lhg::perform_check_entry<MaaSetImageEncoded__ft::data__at>(json::object& __param, std::string& __error) {
     if (!lhg::check_var<const char *>(__param["data"])) {
-        __error = "data should be string@buffer";
+        __error = "data should be string";
         return false;
     }
     return true;
