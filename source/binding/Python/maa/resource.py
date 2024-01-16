@@ -43,7 +43,7 @@ class Resource:
         if self._handle:
             Library.framework.MaaResourceDestroy(self._handle)
 
-    async def load(self, path: Union[pathlib.Path, str] = "resource") -> bool:
+    async def load(self, path: Union[pathlib.Path, str]) -> bool:
         """
         Async load the given path to the resource.
 

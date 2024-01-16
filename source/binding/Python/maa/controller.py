@@ -110,7 +110,7 @@ class AdbController(Controller):
     def __init__(
         self,
         address: str,
-        adb_path: str = "adb",
+        adb_path: str,
         type: MaaAdbControllerType = (
             MaaAdbControllerTypeEnum.Input_Preset_Maatouch
             | MaaAdbControllerTypeEnum.Screencap_FastestWay
@@ -168,7 +168,7 @@ class AdbController(Controller):
 class DbgController(Controller):
     def __init__(
         self,
-        read_path: str = "debug/controller",
+        read_path: str,
         write_path: str = "",
         type: MaaDbgControllerType = MaaDbgControllerTypeEnum.CarouselImage,
         config: Dict[str, Any] = {},

@@ -11,7 +11,7 @@ from .define import MaaStringView
 class Library:
     @classmethod
     def open(
-        cls, path: Union[pathlib.Path, str] = "bin", toolkit: bool = True
+        cls, path: Union[pathlib.Path, str], toolkit: bool = True
     ) -> Optional[str]:
         """
         Open the library at the given path.
