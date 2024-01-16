@@ -34,7 +34,7 @@ class Instance:
 
         self._callback_agent = CallbackAgent(callback, callback_arg)
         self._handle = Library.framework.MaaCreate(
-            self._callback_agent.c_callback(), self._callback_agent.c_callback_arg()
+            self._callback_agent.c_callback, self._callback_agent.c_callback_arg
         )
 
         if not self._handle:
@@ -60,6 +60,7 @@ class Instance:
             self._handle, resource._handle
         ) and Library.framework.MaaBindController(self._handle, controller._handle)
 
+    @property
     def inited(self) -> bool:
         """
         Check if the instance is inited.
@@ -143,8 +144,8 @@ class Instance:
             Library.framework.MaaRegisterCustomRecognizer(
                 self._handle,
                 name.encode("utf-8"),
-                recognizer.c_handle(),
-                recognizer.c_arg(),
+                recognizer.c_handle,
+                recognizer.c_arg,
             )
         )
 
@@ -161,11 +162,12 @@ class Instance:
             Library.framework.MaaRegisterCustomAction(
                 self._handle,
                 name.encode("utf-8"),
-                action.c_handle(),
-                action.c_arg(),
+                action.c_handle,
+                action.c_arg,
             )
         )
 
+    @property
     def c_handle(self) -> ctypes.c_void_p:
         """
         Get the C handle of the instance.

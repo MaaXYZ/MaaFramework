@@ -191,6 +191,24 @@ class _Framework:
         callback: MaaControllerCallback,
         callback_arg: MaaCallbackTransparentArg,
     ) -> MaaControllerHandle: ...
+    # DbgController
+    @staticmethod
+    def MaaDbgControllerCreate(
+        read_path: MaaStringView,
+        write_path: MaaStringView,
+        type: MaaDbgControllerType,
+        config: MaaStringView,
+        callback: MaaControllerCallback,
+        callback_arg: MaaCallbackTransparentArg,
+    ) -> MaaControllerHandle: ...
+    # Win32Controller
+    @staticmethod
+    def MaaWin32ControllerCreate(
+        hWnd: MaaWin32Hwnd,
+        type: MaaWin32ControllerType,
+        callback: MaaControllerCallback,
+        callback_arg: MaaCallbackTransparentArg,
+    ) -> MaaControllerHandle: ...
 
     # instance.py
     @staticmethod
@@ -310,6 +328,7 @@ class _Toolkit:
 
 class Library:
     framework: _Framework
+    initialized: bool
     toolkit: _Toolkit
 
     @classmethod

@@ -11,7 +11,7 @@ from .define import MaaStringView
 class Library:
     @classmethod
     def open(
-        cls, path: Union[pathlib.Path, str], toolkit: bool = True
+        cls, path: Union[pathlib.Path, str] = "bin", toolkit: bool = True
     ) -> Optional[str]:
         """
         Open the library at the given path.
@@ -94,7 +94,7 @@ class Library:
             raise RuntimeError(
                 "Library not initialized, please call `library.open()` first."
             )
-        
+
         cls.framework.MaaVersion.restype = MaaStringView
         cls.framework.MaaVersion.argtypes = None
 

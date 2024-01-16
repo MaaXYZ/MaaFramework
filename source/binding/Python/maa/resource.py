@@ -30,7 +30,7 @@ class Resource:
 
         self._callback_agent = CallbackAgent(callback, callback_arg)
         self._handle = Library.framework.MaaResourceCreate(
-            self._callback_agent.c_callback(), self._callback_agent.c_callback_arg()
+            self._callback_agent.c_callback, self._callback_agent.c_callback_arg
         )
 
         if not self._handle:
@@ -43,7 +43,7 @@ class Resource:
         if self._handle:
             Library.framework.MaaResourceDestroy(self._handle)
 
-    async def load(self, path: Union[pathlib.Path, str]) -> bool:
+    async def load(self, path: Union[pathlib.Path, str] = "resource") -> bool:
         """
         Async load the given path to the resource.
 

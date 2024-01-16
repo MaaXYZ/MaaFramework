@@ -2,7 +2,7 @@ import ctypes
 import numpy
 import json
 
-from typing import Any, Dict, Optional, Tuple
+from typing import Dict, Optional, Tuple
 
 from .library import Library
 from .define import MaaBool
@@ -38,8 +38,8 @@ class SyncContext:
         self,
         image: numpy.ndarray,
         task_name: str,
-        task_param: Dict,
-    ) -> Optional[Tuple[Tuple[int, int, int, int], str]]:
+        task_param: Dict = {},
+    ) -> Optional[Tuple[Rect, str]]:
         """
         Sync context run recognizer.
 
@@ -47,7 +47,7 @@ class SyncContext:
         :param task_name: task name
         :param task_param: task param
 
-        :return: (x, y, width, height), detail
+        :return: rect, detail
         """
 
         image_buffer = ImageBuffer()
@@ -58,11 +58,11 @@ class SyncContext:
 
         ret = Library.framework.MaaSyncContextRunRecognizer(
             self._handle,
-            image_buffer.c_handle(),
+            image_buffer.c_handle,
             task_name.encode("utf-8"),
             json.dumps(task_param).encode("utf-8"),
-            rect_buffer.c_handle(),
-            detail_buffer.c_handle(),
+            rect_buffer.c_handle,
+            detail_buffer.c_handle,
         )
 
         if not ret:
@@ -77,7 +77,7 @@ class SyncContext:
         self,
         task_name: str,
         task_param: Dict,
-        cur_box: Tuple[int, int, int, int],
+        cur_box: (int, int, int, int),
         cur_rec_detail: str,
     ) -> Optional[str]:
         """

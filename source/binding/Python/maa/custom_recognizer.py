@@ -3,11 +3,9 @@ import numpy
 import ctypes
 from abc import ABC, abstractmethod
 
-from .define import MaaBool, MaaCustomRecognizer
+from .define import *
 from .buffer import RectBuffer, StringBuffer, ImageBuffer
 from .context import SyncContext
-
-# TODO: Typing
 
 
 class CustomRecognizer(ABC):
@@ -23,7 +21,7 @@ class CustomRecognizer(ABC):
         image: numpy.ndarray,
         task_name: str,
         custom_param: str,
-    ) -> Tuple[bool, Tuple[int, int, int, int], str]:
+    ) -> Tuple[bool, Union[Rect, List[int], Tuple[int, int, int, int]], str]:
         """
         Analyze the given image.
 
@@ -37,21 +35,23 @@ class CustomRecognizer(ABC):
 
         raise NotImplementedError
 
+    @property
     def c_handle(self) -> ctypes.POINTER(MaaCustomRecognizer):
         return ctypes.pointer(self._handle)
 
+    @property
     def c_arg(self) -> ctypes.c_void_p:
         return ctypes.c_void_p.from_buffer(ctypes.py_object(self))
 
     @MaaCustomRecognizer.AnalyzeFunc
     def _c_analyze_agent(
-        c_context: ctypes.c_void_p,
-        c_image: ctypes.c_void_p,
-        c_task_name: ctypes.c_char_p,
-        c_custom_param: ctypes.c_char_p,
-        c_transparent_arg: ctypes.c_void_p,
-        c_out_box: ctypes.c_void_p,
-        c_out_detail: ctypes.c_void_p,
+        c_context: MaaSyncContextHandle,
+        c_image: MaaImageBufferHandle,
+        c_task_name: MaaStringView,
+        c_custom_param: MaaStringView,
+        c_transparent_arg: MaaTransparentArg,
+        c_out_box: MaaRectHandle,
+        c_out_detail: MaaStringBufferHandle,
     ) -> MaaBool:
         if not c_transparent_arg:
             return

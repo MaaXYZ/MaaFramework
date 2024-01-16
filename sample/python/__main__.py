@@ -1,4 +1,5 @@
-from typing import Tuple
+from typing import List, Tuple, Union
+from maa.define import Rect
 from maa.library import Library
 from maa.resource import Resource
 from maa.controller import AdbController
@@ -12,7 +13,7 @@ import asyncio
 
 
 async def main():
-    version = Library.open("bin")
+    version = Library.open()
     print(f"MaaFw Version: {version}")
 
     Toolkit.init_config()
@@ -30,27 +31,26 @@ async def main():
     controller = AdbController(
         adb_path=device.adb_path,
         address=device.address,
-        agent_path="share/MaaAgentBinary",
     )
     await controller.connect()
 
     maa_inst = Instance()
     maa_inst.bind(resource, controller)
 
-    if not maa_inst.inited():
+    if not maa_inst.inited:
         print("Failed to init MAA.")
         exit()
 
     maa_inst.register_recognizer("MyRec", my_rec)
     maa_inst.register_action("MyAct", my_act)
 
-    await maa_inst.run_task("StartUpAndClickButton", {})
+    await maa_inst.run_task("StartUpAndClickButton")
 
 
 class MyRecognizer(CustomRecognizer):
     def analyze(
         self, context, image, task_name, custom_param
-    ) -> Tuple[bool, Tuple[int, int, int, int], str]:
+    ) -> Tuple[bool, Union[Rect, List[int], Tuple[int, int, int, int]], str]:
         return True, (0, 0, 100, 100), "Hello World!"
 
 

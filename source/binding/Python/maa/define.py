@@ -1,5 +1,8 @@
+# from __future__ import annotations
 import ctypes
+from dataclasses import dataclass
 from enum import Enum
+from typing import List, Tuple, Union
 
 
 MaaApiCallback = ctypes.CFUNCTYPE(
@@ -17,51 +20,13 @@ class MaaStatusEnum(Enum):
     failure = 4000
 
 
-class MaaCustomRecognizer(ctypes.Structure):
-    AnalyzeFunc = ctypes.CFUNCTYPE(
-        MaaBool,
-        ctypes.c_void_p,
-        ctypes.c_void_p,
-        ctypes.c_char_p,
-        ctypes.c_char_p,
-        ctypes.c_void_p,
-        ctypes.c_void_p,
-        ctypes.c_void_p,
-    )
-    _fields_ = [
-        ("analyze", AnalyzeFunc),
-    ]
-
-
-class MaaCustomAction(ctypes.Structure):
-    RunFunc = ctypes.CFUNCTYPE(
-        MaaBool,
-        ctypes.c_void_p,
-        ctypes.c_char_p,
-        ctypes.c_char_p,
-        ctypes.c_void_p,
-        ctypes.c_char_p,
-        ctypes.c_void_p,
-    )
-    StopFunc = ctypes.CFUNCTYPE(
-        None,
-        ctypes.c_void_p,
-    )
-    _fields_ = [
-        ("action", RunFunc),
-        ("stop", StopFunc),
-    ]
-
-
-# TODO: tidy
-
 MaaOptionValueSize = ctypes.c_uint64
 MaaOptionValue = ctypes.c_void_p
 
 MaaOption = ctypes.c_int32
 MaaCtrlOption = MaaOption
 
-
+# TODO: 封装一下?
 class MaaCtrlOptionEnum:
     Invalid: MaaCtrlOption = 0
 
@@ -148,3 +113,115 @@ MaaCustomActionHandle = ctypes.c_void_p
 
 MaaResourceCallback = MaaApiCallback
 MaaResId = MaaId
+
+
+@dataclass
+class Rect:
+    x: int = 0
+    y: int = 0
+    w: int = 0
+    h: int = 0
+
+    def __add__(
+        self,
+        other: Union[
+            "Rect",
+            Tuple[int, int, int, int],
+            List[int],
+        ],
+    ):
+        if (
+            isinstance(other, Rect)
+            or isinstance(other, tuple)
+            or (isinstance(other, list) and len(other) == 4)
+        ):
+            x1, y1, w1, h1 = self
+            x2, y2, w2, h2 = other
+            return Rect(
+                x1 + x2,
+                y1 + y2,
+                w1 + w2,
+                h1 + h2,
+            )
+
+        raise TypeError(f"Cannot add {type(other).__name__} to Rect")
+
+    def __iter__(self):
+        yield self.x
+        yield self.y
+        yield self.w
+        yield self.h
+
+    def __getitem__(self, key):
+        return self.roi[key]
+
+    @property
+    def roi(self):
+        return list(self)
+
+
+MaaDbgControllerType = ctypes.c_int32
+
+
+class MaaDbgControllerTypeEnum:
+    Invalid: MaaAdbControllerType = 0
+    CarouselImage: MaaAdbControllerType = 1
+    ReplayRecording: MaaAdbControllerType = 2
+
+
+MaaWin32ControllerType = ctypes.c_int32
+
+
+class MaaWin32ControllerTypeEnum:
+    Invalid = 0
+
+    Touch_SendMessage: MaaWin32ControllerType = 1
+    Touch_Mask: MaaWin32ControllerType = 0xFF
+
+    Key_SendMessage: MaaWin32ControllerType = 1 << 8
+    Key_Mask: MaaWin32ControllerType = 0xFF00
+
+    Screencap_GDI: MaaWin32ControllerType = 1 << 16
+    Screencap_DXGI_DesktopDup: MaaWin32ControllerType = 2 << 16
+    # Screencap_DXGI_BackBuffer = 3 << 16
+    Screencap_DXGI_FramePool: MaaWin32ControllerType = 4 << 16
+    Screencap_Mask: MaaWin32ControllerType = 0xFF0000
+
+
+MaaWin32Hwnd = ctypes.c_void_p
+
+
+class MaaCustomRecognizer(ctypes.Structure):
+    AnalyzeFunc = ctypes.CFUNCTYPE(
+        MaaBool,
+        MaaSyncContextHandle,
+        MaaImageBufferHandle,
+        MaaStringView,
+        MaaStringView,
+        MaaTransparentArg,
+        MaaRectHandle,
+        MaaStringBufferHandle,
+    )
+    _fields_ = [
+        ("analyze", AnalyzeFunc),
+    ]
+
+
+class MaaCustomAction(ctypes.Structure):
+    RunFunc = ctypes.CFUNCTYPE(
+        MaaBool,
+        MaaSyncContextHandle,
+        MaaStringView,
+        MaaStringView,
+        MaaRectHandle,
+        MaaStringView,
+        MaaTransparentArg,
+    )
+    StopFunc = ctypes.CFUNCTYPE(
+        None,
+        MaaTransparentArg,
+    )
+    _fields_ = [
+        ("action", RunFunc),
+        ("stop", StopFunc),
+    ]

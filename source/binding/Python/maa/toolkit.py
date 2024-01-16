@@ -66,7 +66,7 @@ class Toolkit:
 
         json_argv = json.dumps(argv)
         return Library.toolkit.MaaToolkitRegisterCustomRecognizerExecutor(
-            inst.c_handle(),
+            inst.c_handle,
             name.encode("utf-8"),
             exec_path.encode("utf-8"),
             json_argv.encode("utf-8"),
@@ -158,3 +158,5 @@ class Toolkit:
             MaaStringView,
             MaaStringView,
         ]
+
+        # TODO: Win32
