@@ -4,6 +4,8 @@ from dataclasses import dataclass
 from enum import Enum
 from typing import List, Tuple, Union
 
+import numpy
+
 
 MaaApiCallback = ctypes.CFUNCTYPE(
     None, ctypes.c_char_p, ctypes.c_char_p, ctypes.c_void_p
@@ -25,6 +27,7 @@ MaaOptionValue = ctypes.c_void_p
 
 MaaOption = ctypes.c_int32
 MaaCtrlOption = MaaOption
+
 
 # TODO: 封装一下?
 class MaaCtrlOptionEnum:
@@ -159,6 +162,13 @@ class Rect:
     def roi(self):
         return list(self)
 
+
+RectType = Union[
+    Rect,
+    List[int],
+    numpy.ndarray,
+    Tuple[int, int, int, int],
+]
 
 MaaDbgControllerType = ctypes.c_int32
 

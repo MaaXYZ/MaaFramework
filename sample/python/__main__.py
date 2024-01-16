@@ -1,5 +1,5 @@
 from typing import List, Tuple, Union
-from maa.define import Rect
+from maa.define import RectType
 from maa.library import Library
 from maa.resource import Resource
 from maa.controller import AdbController
@@ -50,7 +50,7 @@ async def main():
 class MyRecognizer(CustomRecognizer):
     def analyze(
         self, context, image, task_name, custom_param
-    ) -> Tuple[bool, Union[Rect, List[int], Tuple[int, int, int, int]], str]:
+    ) -> Tuple[bool, RectType, str]:
         return True, (0, 0, 100, 100), "Hello World!"
 
 

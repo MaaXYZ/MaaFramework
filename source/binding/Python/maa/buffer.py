@@ -235,12 +235,7 @@ class RectBuffer:
 
     def set(
         self,
-        value: Union[
-            Rect,
-            List[int],
-            numpy.ndarray,
-            Tuple[int, int, int, int],
-        ],
+        value: RectType,
     ) -> bool:
         if isinstance(value, numpy.ndarray):
             if value.ndim != 1:

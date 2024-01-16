@@ -21,7 +21,7 @@ class CustomRecognizer(ABC):
         image: numpy.ndarray,
         task_name: str,
         custom_param: str,
-    ) -> Tuple[bool, Union[Rect, List[int], Tuple[int, int, int, int]], str]:
+    ) -> Tuple[bool, RectType, str]:
         """
         Analyze the given image.
 
