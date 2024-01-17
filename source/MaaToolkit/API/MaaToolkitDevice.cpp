@@ -61,30 +61,30 @@ MaaSize MaaToolkitWaitForFindDeviceToComplete()
 
 MaaSize MaaToolkitGetDeviceCount()
 {
-    return device_mgr.get_devices().size();
+    return device_mgr.get_devices().value_or(std::vector<Device> {}).size();
 }
 
 MaaStringView MaaToolkitGetDeviceName(MaaSize index)
 {
-    return device_mgr.get_devices().at(index).name.c_str();
+    return device_mgr.get_devices()->at(index).name.c_str();
 }
 
 MaaStringView MaaToolkitGetDeviceAdbPath(MaaSize index)
 {
-    return device_mgr.get_devices().at(index).adb_path.c_str();
+    return device_mgr.get_devices()->at(index).adb_path.c_str();
 }
 
 MaaStringView MaaToolkitGetDeviceAdbSerial(MaaSize index)
 {
-    return device_mgr.get_devices().at(index).adb_serial.c_str();
+    return device_mgr.get_devices()->at(index).adb_serial.c_str();
 }
 
 MaaAdbControllerType MaaToolkitGetDeviceAdbControllerType(MaaSize index)
 {
-    return device_mgr.get_devices().at(index).adb_controller_type;
+    return device_mgr.get_devices()->at(index).adb_controller_type;
 }
 
 MaaStringView MaaToolkitGetDeviceAdbConfig(MaaSize index)
 {
-    return device_mgr.get_devices().at(index).adb_config.c_str();
+    return device_mgr.get_devices()->at(index).adb_config.c_str();
 }
