@@ -1,13 +1,21 @@
+from ctypes import c_int32
 import json
 from abc import ABC
 from typing import Any, Dict, Optional
 
+from .custom_controller import CustomControllerAgent
 from .callback_agent import Callback, CallbackAgent
 from .define import *
 from .future import Future
 from .library import Library
 
-__all__ = ["AdbController", "DbgController", "Win32Controller"]
+__all__ = [
+    "AdbController",
+    "DbgController",
+    "Win32Controller",
+    "ThriftController",
+    "CustomController",
+]
 
 
 class Controller(ABC):
@@ -247,4 +255,78 @@ class Win32Controller(Controller):
         ]
 
 
-# TODO: ThriftController
+class ThriftController(Controller):
+    def __init__(
+        self,
+        type: MaaThriftControllerType,
+        host: str,
+        port: int,
+        config: Dict[str, Any],
+        callback: Optional[Callback] = None,
+        callback_arg: Any = None,
+    ):
+        super().__init__()
+        self._set_thrift_api_properties()
+
+        self._callback_agent = CallbackAgent(callback, callback_arg)
+        self._handle = Library.framework.MaaThriftControllerCreate(
+            type,
+            host.encode("utf-8"),
+            port,
+            json.dumps(config).encode("utf-8"),
+            self._callback_agent.c_callback,
+            self._callback_agent.c_callback_arg,
+        )
+
+        if not self._handle:
+            raise RuntimeError("Failed to create Thrift controller.")
+
+    def _set_thrift_api_properties(self):
+        """
+        Set the API properties for the Thrift controller.
+        """
+
+        Library.framework.MaaThriftControllerCreate.restype = MaaControllerHandle
+        Library.framework.MaaThriftControllerCreate.argtypes = [
+            MaaThriftControllerType,
+            MaaStringView,
+            c_int32,
+            MaaStringView,
+            MaaControllerCallback,
+            MaaCallbackTransparentArg,
+        ]
+
+
+class CustomContorller(Controller):
+    def __init__(
+        self,
+        custom_controller: CustomControllerAgent,
+        callback: Optional[Callback] = None,
+        callback_arg: Any = None,
+    ):
+        super().__init__()
+        self._set_custom_api_properties()
+
+        self._callback_agent = CallbackAgent(callback, callback_arg)
+        self._handle = Library.framework.MaaCustomControllerCreate(
+            custom_controller.c_handle,
+            custom_controller.c_arg,
+            MaaControllerCallback,
+            MaaCallbackTransparentArg,
+        )
+
+        if not self._handle:
+            raise RuntimeError("Failed to create Custom controller.")
+
+    def _set_custom_api_properties(self):
+        """
+        Set the API properties for the Custom controller.
+        """
+
+        Library.framework.MaaCustomControllerCreate.restype = MaaControllerHandle
+        Library.framework.MaaCustomControllerCreate.argtypes = [
+            MaaCustomActionHandle,
+            MaaTransparentArg,
+            MaaControllerCallback,
+            MaaCallbackTransparentArg,
+        ]

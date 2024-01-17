@@ -235,3 +235,112 @@ class MaaCustomAction(ctypes.Structure):
         ("action", RunFunc),
         ("stop", StopFunc),
     ]
+
+
+c_int32_p = ctypes.POINTER(ctypes.c_int32)
+
+
+class MaaCustomControllerAPI(ctypes.Structure):
+    ConnectFunc = ctypes.CFUNCTYPE(
+        MaaBool,
+        MaaTransparentArg,
+    )
+    RequestUuidFunc = ctypes.CFUNCTYPE(
+        MaaBool,
+        MaaTransparentArg,
+        MaaStringBufferHandle,
+    )
+    RequestResolutionFunc = ctypes.CFUNCTYPE(
+        MaaBool,
+        MaaTransparentArg,
+        c_int32_p,
+        c_int32_p,
+    )
+    StartAppFunc = ctypes.CFUNCTYPE(
+        MaaBool,
+        MaaStringView,
+        MaaTransparentArg,
+    )
+    StopAppFunc = ctypes.CFUNCTYPE(
+        MaaBool,
+        MaaStringView,
+        MaaTransparentArg,
+    )
+    ScreencapFunc = ctypes.CFUNCTYPE(
+        MaaBool,
+        MaaTransparentArg,
+        MaaImageBufferHandle,
+    )
+    ClickFunc = ctypes.CFUNCTYPE(
+        MaaBool,
+        ctypes.c_int32,
+        ctypes.c_int32,
+        MaaTransparentArg,
+    )
+    SwipeFunc = ctypes.CFUNCTYPE(
+        MaaBool,
+        ctypes.c_int32,
+        ctypes.c_int32,
+        ctypes.c_int32,
+        ctypes.c_int32,
+        ctypes.c_int32,
+        MaaTransparentArg,
+    )
+    TouchDownFunc = ctypes.CFUNCTYPE(
+        MaaBool,
+        ctypes.c_int32,
+        ctypes.c_int32,
+        ctypes.c_int32,
+        ctypes.c_int32,
+        MaaTransparentArg,
+    )
+    TouchMoveFunc = ctypes.CFUNCTYPE(
+        MaaBool,
+        ctypes.c_int32,
+        ctypes.c_int32,
+        ctypes.c_int32,
+        ctypes.c_int32,
+        MaaTransparentArg,
+    )
+    TouchUpFunc = ctypes.CFUNCTYPE(
+        MaaBool,
+        ctypes.c_int32,
+        MaaTransparentArg,
+    )
+    PressKeyFunc = ctypes.CFUNCTYPE(
+        MaaBool,
+        ctypes.c_int32,
+        MaaTransparentArg,
+    )
+    InputTextFunc = ctypes.CFUNCTYPE(
+        MaaBool,
+        MaaStringView,
+        MaaTransparentArg,
+    )
+    _fields_ = [
+        ("connect", ConnectFunc),
+        ("request_uuid", RequestUuidFunc),
+        ("request_resolution", RequestResolutionFunc),
+        ("start_app", StartAppFunc),
+        ("stop_app", StopAppFunc),
+        ("screencap", ScreencapFunc),
+        ("click", ClickFunc),
+        ("swipe", SwipeFunc),
+        ("touch_down", TouchDownFunc),
+        ("touch_move", TouchMoveFunc),
+        ("touch_up", TouchUpFunc),
+        ("press_key", [PressKeyFunc]),
+        ("input_text", InputTextFunc),
+    ]
+
+
+MaaCustomControllerHandle = ctypes.POINTER(MaaCustomControllerAPI)
+
+
+MaaThriftControllerType = ctypes.c_int32
+
+
+class MaaThriftControllerTypeEnum:
+    Invalid: MaaThriftControllerType = 0
+    Socket: MaaThriftControllerType = 1
+    UnixDomainSocket: MaaThriftControllerType = 2
