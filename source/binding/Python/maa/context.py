@@ -39,7 +39,7 @@ class SyncContext:
         image: numpy.ndarray,
         task_name: str,
         task_param: Dict = {},
-    ) -> Optional[Tuple[Rect, str]]:
+    ) -> Tuple[bool, Rect, str]:
         """
         Sync context run recognizer.
 
@@ -65,13 +65,7 @@ class SyncContext:
             detail_buffer.c_handle,
         )
 
-        if not ret:
-            return None
-
-        return (
-            rect_buffer.get(),
-            detail_buffer.get(),
-        )
+        return (ret, rect_buffer.get(), detail_buffer.get())
 
     def run_action(
         self,

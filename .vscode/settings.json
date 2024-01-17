@@ -29,5 +29,8 @@
         "-runtime/references",
         "-runtime/string",
         "-runtime/indentation_namespace"
+    ],
+    "python.analysis.extraPaths": [
+        "./source/binding/Python"
     ]
 }
