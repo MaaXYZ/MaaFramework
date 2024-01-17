@@ -22,7 +22,7 @@ bool DeviceMgr::post_find_device()
         return false;
     }
 
-    devices_.clear();
+    devices_ = std::nullopt;
     find_device_future_ = std::async(std::launch::async, [&]() { return find_device_impl(); });
     return true;
 }
@@ -36,24 +36,30 @@ bool DeviceMgr::post_find_device_with_adb(std::string_view adb_path)
         return false;
     }
 
-    devices_.clear();
+    devices_ = std::nullopt;
     find_device_future_ = std::async(std::launch::async, [&]() { return find_device_with_adb_impl(adb_path); });
     return true;
 }
 
 bool DeviceMgr::is_find_completed() const
 {
-    if (!devices_.empty() && !find_device_future_.valid()) {
+    if (devices_.has_value()) {
         return true;
+    }
+    
+    if (!find_device_future_.valid()) {
+        LogError << "find_device_future_ is not running";
+        return false;
     }
 
     return find_device_future_.wait_for(std::chrono::seconds(0)) == std::future_status::ready;
 }
 
-const std::vector<Device>& DeviceMgr::get_devices()
+const std::optional<std::vector<Device>>& DeviceMgr::get_devices()
 {
     if (!is_find_completed()) {
         LogError << "find_device_future_ is running";
+        devices_ = std::nullopt;
         return devices_;
     }
     if (find_device_future_.valid()) {

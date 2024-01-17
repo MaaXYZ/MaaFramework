@@ -30,7 +30,7 @@ public: // from MaaToolkitDeviceMgrAPI
     virtual bool post_find_device() override final;
     virtual bool post_find_device_with_adb(std::string_view adb_path) override final;
     virtual bool is_find_completed() const override final;
-    virtual const std::vector<Device>& get_devices() override final;
+    virtual const std::optional<std::vector<Device>>& get_devices() override final;
 
 protected:
     virtual std::vector<Device> find_device_impl() = 0;
@@ -48,7 +48,7 @@ protected:
                                                    const json::value& adb_config) const;
 
 private:
-    std::vector<Device> devices_;
+    std::optional<std::vector<Device>> devices_;
     std::future<std::vector<Device>> find_device_future_;
 };
 

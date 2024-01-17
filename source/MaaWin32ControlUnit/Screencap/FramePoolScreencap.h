@@ -13,9 +13,8 @@ static_assert(false, "Windows 10 SDK 10.0.22000.0 or higher is required");
 
 #if MAA_FRAMEPOOL_SCREENCAP_AVAILABLE
 
-#include "ControlUnit/ControlUnitAPI.h"
-
 #include "Base/UnitBase.h"
+
 #include "SafeDXGI.hpp"
 
 #include <winrt/Windows.Graphics.Capture.h>
