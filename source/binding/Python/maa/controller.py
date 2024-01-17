@@ -109,8 +109,8 @@ class Controller(ABC):
 class AdbController(Controller):
     def __init__(
         self,
-        address: str,
         adb_path: str,
+        address: str,
         type: MaaAdbControllerType = (
             MaaAdbControllerTypeEnum.Input_Preset_Maatouch
             | MaaAdbControllerTypeEnum.Screencap_FastestWay
