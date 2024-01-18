@@ -4,13 +4,46 @@
 
 MAA_NS_BEGIN
 
+#ifdef _WIN32
+struct prevent_inherit : boost::process::extend::handler
+{
+    template <typename Char, typename Sequence>
+    void on_setup(boost::process::extend::windows_executor<Char, Sequence>& exec)
+    {
+        SIZE_T size;
+        InitializeProcThreadAttributeList(NULL, 1, 0, &size);
+        auto attrlist = reinterpret_cast<LPPROC_THREAD_ATTRIBUTE_LIST>(HeapAlloc(GetProcessHeap(), 0, size));
+        InitializeProcThreadAttributeList(attrlist, 1, 0, &size);
+        HANDLE empty[1];
+        UpdateProcThreadAttribute(attrlist, 0, PROC_THREAD_ATTRIBUTE_HANDLE_LIST, empty, 0, NULL, NULL);
+        exec.startup_info_ex.lpAttributeList = attrlist;
+    }
+
+    template <typename Char, typename Sequence>
+    void on_error(boost::process::extend::windows_executor<Char, Sequence>& exec, const std::error_code&) const
+    {
+        if (exec.startup_info_ex.lpAttributeList) {
+            HeapFree(GetProcessHeap(), 0, exec.startup_info_ex.lpAttributeList);
+        }
+    }
+
+    template <typename Char, typename Sequence>
+    void on_success(boost::process::extend::windows_executor<Char, Sequence>& exec) const
+    {
+        if (exec.startup_info_ex.lpAttributeList) {
+            HeapFree(GetProcessHeap(), 0, exec.startup_info_ex.lpAttributeList);
+        }
+    }
+};
+#endif
+
 ChildPipeIOStream::ChildPipeIOStream(const std::filesystem::path& exec, const std::vector<std::string>& args)
     : child_( //
           exec, args, boost::process::std_out > pin_, boost::process::std_err > boost::process::null,
           boost::process::std_in < pout_
 #ifdef _WIN32
           ,
-          boost::process::windows::create_no_window
+          prevent_inherit(), boost::process::windows::create_no_window
 #endif
       )
 {
