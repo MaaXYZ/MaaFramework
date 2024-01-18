@@ -6,6 +6,9 @@ file(GLOB_RECURSE maa_http_src wrapper.cpp extra.cpp extra.h include.h LHG/proje
 add_executable(MaaHttp ${maa_http_src})
 target_include_directories(MaaHttp PRIVATE ./../include LHG/projects/target)
 target_link_libraries(MaaHttp LHGHeaderonly Boost::system MaaFramework MaaToolkit)
+if (APPLE)
+  target_include_directories(MaaHttp PRIVATE ./../../3rdparty/include)
+endif ()
 
 if(APPLE)
   target_compile_definitions(MaaHttp PRIVATE LHG_USE_FMTLIB)
