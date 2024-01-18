@@ -11,5 +11,6 @@
 #include <boost/asio.hpp>
 #include <boost/process.hpp>
 #ifdef _WIN32
+#include <boost/process/extend.hpp>
 #include <boost/process/windows.hpp>
 #endif
