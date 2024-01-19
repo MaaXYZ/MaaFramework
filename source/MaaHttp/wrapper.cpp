@@ -6,6 +6,7 @@
 
 // LHG SEC BEGIN lhg.include
 #include "include.h"
+#include "base64.hpp"
 // LHG SEC END
 
 // LHG SEC BEGIN lhg.custom.global
@@ -3413,7 +3414,7 @@ std::optional<json::object> MaaGetImageEncoded_Wrapper(json::object __param, std
 
     auto __return = std::apply(MaaGetImageEncoded, __call);
 // LHG SEC BEGIN lhg.impl.MaaGetImageEncoded.return
-    std::string __ret(reinterpret_cast<char*>(__return), MaaGetImageEncodedSize(std::get<0>(__call)));
+    std::string __ret(base64::to_base64(std::string_view(reinterpret_cast<char*>(__return), MaaGetImageEncodedSize(std::get<0>(__call)))));
 // LHG SEC END
     return lhg::perform_output<MaaGetImageEncoded__ft>(__call, __ret);
 }
@@ -3445,7 +3446,7 @@ struct lhg::temp_arg_t<MaaSetImageEncoded__ft::size__at> {
 
 template<>
 inline bool lhg::perform_input_entry<MaaSetImageEncoded__ft, MaaSetImageEncoded__ft::data__at>(typename lhg::arg_set<MaaSetImageEncoded__ft>::temp_type& temp_data, json::object __param, std::string& __error) {
-    std::get<MaaSetImageEncoded__ft::data__at::index>(temp_data) = __param[MaaSetImageEncoded__ft::data__at::name].as_string();
+    std::get<MaaSetImageEncoded__ft::data__at::index>(temp_data) = base64::from_base64(__param[MaaSetImageEncoded__ft::data__at::name].as_string());
     return true;
 }
 
