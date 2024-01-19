@@ -329,7 +329,7 @@ class MaaCustomControllerAPI(ctypes.Structure):
         ("touch_down", TouchDownFunc),
         ("touch_move", TouchMoveFunc),
         ("touch_up", TouchUpFunc),
-        ("press_key", [PressKeyFunc]),
+        ("press_key", PressKeyFunc),
         ("input_text", InputTextFunc),
     ]
 
