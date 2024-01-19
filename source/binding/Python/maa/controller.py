@@ -77,9 +77,28 @@ class Controller(ABC):
 
     _api_properties_initialized: bool = False
 
-    # TODO: set_option
-    # def set_option(self, key: MaaCtrlOptionEnum, value: MaaOptionValue):
-    #     pass
+    # TODO: 进一步优化 set_option？
+    def set_option(self, key: MaaCtrlOptionEnum, value: MaaOptionValue) -> bool:
+        if (
+            key == MaaCtrlOptionEnum.ScreenshotTargetLongSide
+            or key == MaaCtrlOptionEnum.ScreenshotTargetShortSide
+        ):
+            size = ctypes.sizeof(ctypes.c_int32)
+        elif (
+            key == MaaCtrlOptionEnum.DefaultAppPackage
+            or key == MaaCtrlOptionEnum.DefaultAppPackageEntry
+        ):
+            size = ctypes.sizeof(ctypes.c_bool)
+        elif key == MaaCtrlOptionEnum.Recording:
+            size = ctypes.sizeof(ctypes.c_bool)
+        elif key == MaaCtrlOptionEnum.Invalid:
+            size = 0
+        else:
+            raise ValueError(f"Unsupported option: {key}")
+
+        return bool(
+            Library.framework.MaaControllerSetOption(self._handle, key, ctypes.pointer(value), size)
+        )
 
     @staticmethod
     def _set_api_properties():

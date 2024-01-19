@@ -29,7 +29,6 @@ MaaOption = ctypes.c_int32
 MaaCtrlOption = MaaOption
 
 
-# TODO: 封装一下?
 class MaaCtrlOptionEnum:
     Invalid: MaaCtrlOption = 0
 
