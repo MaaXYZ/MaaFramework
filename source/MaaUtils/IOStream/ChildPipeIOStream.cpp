@@ -10,11 +10,11 @@ struct prevent_inherit : boost::process::extend::handler
     template <typename Char, typename Sequence>
     void on_setup(boost::process::extend::windows_executor<Char, Sequence>& exec)
     {
-        SIZE_T size;
+        SIZE_T size = 0;
         InitializeProcThreadAttributeList(NULL, 1, 0, &size);
         auto attrlist = reinterpret_cast<LPPROC_THREAD_ATTRIBUTE_LIST>(HeapAlloc(GetProcessHeap(), 0, size));
         InitializeProcThreadAttributeList(attrlist, 1, 0, &size);
-        HANDLE empty[1];
+        HANDLE empty[1] = {};
         UpdateProcThreadAttribute(attrlist, 0, PROC_THREAD_ATTRIBUTE_HANDLE_LIST, empty, 0, NULL, NULL);
         exec.startup_info_ex.lpAttributeList = attrlist;
     }

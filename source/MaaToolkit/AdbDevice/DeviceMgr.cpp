@@ -48,7 +48,6 @@ bool DeviceMgr::is_find_completed() const
     }
     
     if (!find_device_future_.valid()) {
-        LogError << "find_device_future_ is not running";
         return false;
     }
 

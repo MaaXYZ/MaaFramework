@@ -61,7 +61,11 @@ MaaSize MaaToolkitWaitForFindDeviceToComplete()
 
 MaaSize MaaToolkitGetDeviceCount()
 {
-    return device_mgr.get_devices().value_or(std::vector<Device> {}).size();
+    auto devices = device_mgr.get_devices();
+    if (!devices) {
+        return 0;
+    }
+    return devices->size();
 }
 
 MaaStringView MaaToolkitGetDeviceName(MaaSize index)
