@@ -1,15 +1,21 @@
-import ctypes
+from ctypes import c_int32
 import json
-import asyncio
 from abc import ABC
-from typing import Optional, Any, Dict
+from typing import Any, Dict, Optional
 
+from .custom_controller import CustomControllerAgent
+from .callback_agent import Callback, CallbackAgent
 from .define import *
 from .future import Future
 from .library import Library
-from .callback_agent import CallbackAgent, Callback
 
-__all__ = ["AdbController"]
+__all__ = [
+    "AdbController",
+    "DbgController",
+    "Win32Controller",
+    "ThriftController",
+    "CustomController",
+]
 
 
 class Controller(ABC):
@@ -56,6 +62,7 @@ class Controller(ABC):
         maaid = Library.framework.MaaControllerPostConnection(self._handle)
         return Future(maaid, self._status)
 
+    @property
     def connected(self) -> bool:
         """
         Check if the controller is connected.
@@ -65,10 +72,33 @@ class Controller(ABC):
 
         return bool(Library.framework.MaaControllerConnected(self._handle))
 
-    def _status(self, maaid: int) -> ctypes.c_int32:
+    def _status(self, maaid: int) -> MaaStatus:
         return Library.framework.MaaControllerStatus(self._handle, maaid)
 
     _api_properties_initialized: bool = False
+
+    # TODO: 进一步优化 set_option？
+    def set_option(self, key: MaaCtrlOptionEnum, value: MaaOptionValue) -> bool:
+        if (
+            key == MaaCtrlOptionEnum.ScreenshotTargetLongSide
+            or key == MaaCtrlOptionEnum.ScreenshotTargetShortSide
+        ):
+            size = ctypes.sizeof(ctypes.c_int32)
+        elif (
+            key == MaaCtrlOptionEnum.DefaultAppPackage
+            or key == MaaCtrlOptionEnum.DefaultAppPackageEntry
+        ):
+            size = ctypes.sizeof(ctypes.c_bool)
+        elif key == MaaCtrlOptionEnum.Recording:
+            size = ctypes.sizeof(ctypes.c_bool)
+        elif key == MaaCtrlOptionEnum.Invalid:
+            size = 0
+        else:
+            raise ValueError(f"Unsupported option: {key}")
+
+        return bool(
+            Library.framework.MaaControllerSetOption(self._handle, key, ctypes.pointer(value), size)
+        )
 
     @staticmethod
     def _set_api_properties():
@@ -104,15 +134,16 @@ class Controller(ABC):
 
 
 class AdbController(Controller):
-    DEFAULT_CONFIG = {}
-
     def __init__(
         self,
         adb_path: str,
         address: str,
-        controller_type: int = 66051,  # MaaAdbControllerType_Input_Preset_Maatouch | MaaAdbControllerType_Screencap_FastestWay
-        config: Dict[str, Any] = DEFAULT_CONFIG,
-        agent_path: str = "./MaaAgentBinary",
+        type: MaaAdbControllerType = (
+            MaaAdbControllerTypeEnum.Input_Preset_Maatouch
+            | MaaAdbControllerTypeEnum.Screencap_FastestWay
+        ),
+        config: Dict[str, Any] = {},
+        agent_path: str = "share/MaaAgentBinary",
         callback: Optional[Callback] = None,
         callback_arg: Any = None,
     ):
@@ -134,11 +165,11 @@ class AdbController(Controller):
         self._handle = Library.framework.MaaAdbControllerCreateV2(
             adb_path.encode("utf-8"),
             address.encode("utf-8"),
-            controller_type,
+            type,
             json.dumps(config).encode("utf-8"),
             agent_path.encode("utf-8"),
-            self._callback_agent.c_callback(),
-            self._callback_agent.c_callback_arg(),
+            self._callback_agent.c_callback,
+            self._callback_agent.c_callback_arg,
         )
 
         if not self._handle:
@@ -156,6 +187,165 @@ class AdbController(Controller):
             MaaAdbControllerType,
             MaaStringView,
             MaaStringView,
+            MaaControllerCallback,
+            MaaCallbackTransparentArg,
+        ]
+
+
+class DbgController(Controller):
+    def __init__(
+        self,
+        read_path: str,
+        write_path: str = "",
+        type: MaaDbgControllerType = MaaDbgControllerTypeEnum.CarouselImage,
+        config: Dict[str, Any] = {},
+        callback: Optional[Callback] = None,
+        callback_arg: Any = None,
+    ):
+        super().__init__()
+        self._set_dbg_api_properties()
+
+        self._callback_agent = CallbackAgent(callback, callback_arg)
+        self._handle = Library.framework.MaaDbgControllerCreate(
+            read_path.encode("utf-8"),
+            write_path.encode("utf-8"),
+            type,
+            json.dumps(config).encode("utf-8"),
+            self._callback_agent.c_callback,
+            self._callback_agent.c_callback_arg,
+        )
+
+        if not self._handle:
+            raise RuntimeError("Failed to create DBG controller.")
+
+    def _set_dbg_api_properties(self):
+        """
+        Set the API properties for the DBG controller.
+        """
+
+        Library.framework.MaaDbgControllerCreate.restype = MaaControllerHandle
+        Library.framework.MaaDbgControllerCreate.argtypes = [
+            MaaStringView,
+            MaaStringView,
+            MaaDbgControllerType,
+            MaaStringView,
+            MaaControllerCallback,
+            MaaCallbackTransparentArg,
+        ]
+
+
+class Win32Controller(Controller):
+    def __init__(
+        self,
+        hWnd: MaaWin32Hwnd,
+        type: MaaWin32ControllerType = (
+            MaaWin32ControllerTypeEnum.Key_SendMessage
+            | MaaWin32ControllerTypeEnum.Touch_SendMessage
+            | MaaWin32ControllerTypeEnum.Screencap_DXGI_DesktopDup
+        ),
+        callback: Optional[Callback] = None,
+        callback_arg: Any = None,
+    ):
+        super().__init__()
+        self._set_dbg_api_properties()
+
+        self._callback_agent = CallbackAgent(callback, callback_arg)
+        self._handle = Library.framework.MaaWin32ControllerCreate(
+            hWnd,
+            type,
+            self._callback_agent.c_callback,
+            self._callback_agent.c_callback_arg,
+        )
+
+        if not self._handle:
+            raise RuntimeError("Failed to create Win32 controller.")
+
+    def _set_dbg_api_properties(self):
+        """
+        Set the API properties for the Win32 controller.
+        """
+
+        Library.framework.MaaWin32ControllerCreate.restype = MaaControllerHandle
+        Library.framework.MaaWin32ControllerCreate.argtypes = [
+            MaaWin32Hwnd,
+            MaaWin32ControllerType,
+            MaaControllerCallback,
+            MaaCallbackTransparentArg,
+        ]
+
+
+class ThriftController(Controller):
+    def __init__(
+        self,
+        type: MaaThriftControllerType,
+        host: str,
+        port: int,
+        config: Dict[str, Any],
+        callback: Optional[Callback] = None,
+        callback_arg: Any = None,
+    ):
+        super().__init__()
+        self._set_thrift_api_properties()
+
+        self._callback_agent = CallbackAgent(callback, callback_arg)
+        self._handle = Library.framework.MaaThriftControllerCreate(
+            type,
+            host.encode("utf-8"),
+            port,
+            json.dumps(config).encode("utf-8"),
+            self._callback_agent.c_callback,
+            self._callback_agent.c_callback_arg,
+        )
+
+        if not self._handle:
+            raise RuntimeError("Failed to create Thrift controller.")
+
+    def _set_thrift_api_properties(self):
+        """
+        Set the API properties for the Thrift controller.
+        """
+
+        Library.framework.MaaThriftControllerCreate.restype = MaaControllerHandle
+        Library.framework.MaaThriftControllerCreate.argtypes = [
+            MaaThriftControllerType,
+            MaaStringView,
+            c_int32,
+            MaaStringView,
+            MaaControllerCallback,
+            MaaCallbackTransparentArg,
+        ]
+
+
+class CustomContorller(Controller):
+    def __init__(
+        self,
+        custom_controller: CustomControllerAgent,
+        callback: Optional[Callback] = None,
+        callback_arg: Any = None,
+    ):
+        super().__init__()
+        self._set_custom_api_properties()
+
+        self._callback_agent = CallbackAgent(callback, callback_arg)
+        self._handle = Library.framework.MaaCustomControllerCreate(
+            custom_controller.c_handle,
+            custom_controller.c_arg,
+            MaaControllerCallback,
+            MaaCallbackTransparentArg,
+        )
+
+        if not self._handle:
+            raise RuntimeError("Failed to create Custom controller.")
+
+    def _set_custom_api_properties(self):
+        """
+        Set the API properties for the Custom controller.
+        """
+
+        Library.framework.MaaCustomControllerCreate.restype = MaaControllerHandle
+        Library.framework.MaaCustomControllerCreate.argtypes = [
+            MaaCustomActionHandle,
+            MaaTransparentArg,
             MaaControllerCallback,
             MaaCallbackTransparentArg,
         ]

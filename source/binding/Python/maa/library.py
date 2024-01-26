@@ -94,7 +94,7 @@ class Library:
             raise RuntimeError(
                 "Library not initialized, please call `library.open()` first."
             )
-        
+
         cls.framework.MaaVersion.restype = MaaStringView
         cls.framework.MaaVersion.argtypes = None
 

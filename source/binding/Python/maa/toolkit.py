@@ -66,7 +66,7 @@ class Toolkit:
 
         json_argv = json.dumps(argv)
         return Library.toolkit.MaaToolkitRegisterCustomRecognizerExecutor(
-            inst.c_handle(),
+            inst.c_handle,
             name.encode("utf-8"),
             exec_path.encode("utf-8"),
             json_argv.encode("utf-8"),
@@ -90,6 +90,48 @@ class Toolkit:
         )
 
     _api_properties_initialized: bool = False
+
+    # TODO: 进一步封装 Win32Hwnd 系列函数？
+
+    @classmethod
+    def find_window(cls, class_name: str, window_name: str) -> MaaWin32Hwnd:
+        cls._set_api_properties()
+
+        return Library.toolkit.MaaToolkitFindWindow(
+            class_name.encode("utf-8"), window_name.encode("utf-8")
+        )
+
+    @classmethod
+    def search_window(cls, class_name: str, window_name: str) -> MaaWin32Hwnd:
+        cls._set_api_properties()
+
+        return Library.toolkit.MaaToolkitSearchWindow(
+            class_name.encode("utf-8"), window_name.encode("utf-8")
+        )
+
+    @classmethod
+    def get_window(cls, index: int) -> MaaWin32Hwnd:
+        cls._set_api_properties()
+
+        return Library.toolkit.MaaToolkitGetWindow(index)
+
+    @classmethod
+    def get_cursor_window(cls) -> MaaWin32Hwnd:
+        cls._set_api_properties()
+
+        return Library.toolkit.MaaToolkitGetCursorWindow()
+
+    @classmethod
+    def get_desktop_window(cls) -> MaaWin32Hwnd:
+        cls._set_api_properties()
+
+        return Library.toolkit.MaaToolkitGetDesktopWindow()
+
+    @classmethod
+    def get_foreground_window(cls) -> MaaWin32Hwnd:
+        cls._set_api_properties()
+
+        return Library.toolkit.MaaToolkitGetForegroundWindow()
 
     @staticmethod
     def _set_api_properties():
@@ -158,3 +200,27 @@ class Toolkit:
             MaaStringView,
             MaaStringView,
         ]
+
+        Library.toolkit.MaaToolkitFindWindow.restype = MaaWin32Hwnd
+        Library.toolkit.MaaToolkitFindWindow.argtypes = [
+            MaaStringView,
+            MaaStringView,
+        ]
+
+        Library.toolkit.MaaToolkitSearchWindow.restype = MaaWin32Hwnd
+        Library.toolkit.MaaToolkitSearchWindow.argtypes = [
+            MaaStringView,
+            MaaStringView,
+        ]
+
+        Library.toolkit.MaaToolkitGetWindow.restype = MaaWin32Hwnd
+        Library.toolkit.MaaToolkitGetWindow.argtypes = [MaaSize]
+
+        Library.toolkit.MaaToolkitGetCursorWindow.restype = MaaWin32Hwnd
+        Library.toolkit.MaaToolkitGetCursorWindow.argtypes = []
+
+        Library.toolkit.MaaToolkitGetDesktopWindow.restype = MaaWin32Hwnd
+        Library.toolkit.MaaToolkitGetDesktopWindow.argtypes = []
+
+        Library.toolkit.MaaToolkitGetForegroundWindow.restype = MaaWin32Hwnd
+        Library.toolkit.MaaToolkitGetForegroundWindow.argtypes = []

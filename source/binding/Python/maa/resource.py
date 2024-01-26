@@ -30,7 +30,7 @@ class Resource:
 
         self._callback_agent = CallbackAgent(callback, callback_arg)
         self._handle = Library.framework.MaaResourceCreate(
-            self._callback_agent.c_callback(), self._callback_agent.c_callback_arg()
+            self._callback_agent.c_callback, self._callback_agent.c_callback_arg
         )
 
         if not self._handle:

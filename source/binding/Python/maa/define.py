@@ -1,5 +1,10 @@
+# from __future__ import annotations
 import ctypes
+from dataclasses import dataclass
 from enum import Enum
+from typing import List, Tuple, Union
+
+import numpy
 
 
 MaaApiCallback = ctypes.CFUNCTYPE(
@@ -16,44 +21,6 @@ class MaaStatusEnum(Enum):
     success = 3000
     failure = 4000
 
-
-class MaaCustomRecognizer(ctypes.Structure):
-    AnalyzeFunc = ctypes.CFUNCTYPE(
-        MaaBool,
-        ctypes.c_void_p,
-        ctypes.c_void_p,
-        ctypes.c_char_p,
-        ctypes.c_char_p,
-        ctypes.c_void_p,
-        ctypes.c_void_p,
-        ctypes.c_void_p,
-    )
-    _fields_ = [
-        ("analyze", AnalyzeFunc),
-    ]
-
-
-class MaaCustomAction(ctypes.Structure):
-    RunFunc = ctypes.CFUNCTYPE(
-        MaaBool,
-        ctypes.c_void_p,
-        ctypes.c_char_p,
-        ctypes.c_char_p,
-        ctypes.c_void_p,
-        ctypes.c_char_p,
-        ctypes.c_void_p,
-    )
-    StopFunc = ctypes.CFUNCTYPE(
-        None,
-        ctypes.c_void_p,
-    )
-    _fields_ = [
-        ("action", RunFunc),
-        ("stop", StopFunc),
-    ]
-
-
-# TODO: tidy
 
 MaaOptionValueSize = ctypes.c_uint64
 MaaOptionValue = ctypes.c_void_p
@@ -148,3 +115,231 @@ MaaCustomActionHandle = ctypes.c_void_p
 
 MaaResourceCallback = MaaApiCallback
 MaaResId = MaaId
+
+
+@dataclass
+class Rect:
+    x: int = 0
+    y: int = 0
+    w: int = 0
+    h: int = 0
+
+    def __add__(
+        self,
+        other: Union[
+            "Rect",
+            Tuple[int, int, int, int],
+            List[int],
+        ],
+    ):
+        if (
+            isinstance(other, Rect)
+            or isinstance(other, tuple)
+            or (isinstance(other, list) and len(other) == 4)
+        ):
+            x1, y1, w1, h1 = self
+            x2, y2, w2, h2 = other
+            return Rect(
+                x1 + x2,
+                y1 + y2,
+                w1 + w2,
+                h1 + h2,
+            )
+
+        raise TypeError(f"Cannot add {type(other).__name__} to Rect")
+
+    def __iter__(self):
+        yield self.x
+        yield self.y
+        yield self.w
+        yield self.h
+
+    def __getitem__(self, key):
+        return self.roi[key]
+
+    @property
+    def roi(self):
+        return list(self)
+
+
+RectType = Union[
+    Rect,
+    List[int],
+    numpy.ndarray,
+    Tuple[int, int, int, int],
+]
+
+MaaDbgControllerType = ctypes.c_int32
+
+
+class MaaDbgControllerTypeEnum:
+    Invalid: MaaAdbControllerType = 0
+    CarouselImage: MaaAdbControllerType = 1
+    ReplayRecording: MaaAdbControllerType = 2
+
+
+MaaWin32ControllerType = ctypes.c_int32
+
+
+class MaaWin32ControllerTypeEnum:
+    Invalid = 0
+
+    Touch_SendMessage: MaaWin32ControllerType = 1
+    Touch_Mask: MaaWin32ControllerType = 0xFF
+
+    Key_SendMessage: MaaWin32ControllerType = 1 << 8
+    Key_Mask: MaaWin32ControllerType = 0xFF00
+
+    Screencap_GDI: MaaWin32ControllerType = 1 << 16
+    Screencap_DXGI_DesktopDup: MaaWin32ControllerType = 2 << 16
+    # Screencap_DXGI_BackBuffer = 3 << 16
+    Screencap_DXGI_FramePool: MaaWin32ControllerType = 4 << 16
+    Screencap_Mask: MaaWin32ControllerType = 0xFF0000
+
+
+MaaWin32Hwnd = ctypes.c_void_p
+
+
+class MaaCustomRecognizer(ctypes.Structure):
+    AnalyzeFunc = ctypes.CFUNCTYPE(
+        MaaBool,
+        MaaSyncContextHandle,
+        MaaImageBufferHandle,
+        MaaStringView,
+        MaaStringView,
+        MaaTransparentArg,
+        MaaRectHandle,
+        MaaStringBufferHandle,
+    )
+    _fields_ = [
+        ("analyze", AnalyzeFunc),
+    ]
+
+
+class MaaCustomAction(ctypes.Structure):
+    RunFunc = ctypes.CFUNCTYPE(
+        MaaBool,
+        MaaSyncContextHandle,
+        MaaStringView,
+        MaaStringView,
+        MaaRectHandle,
+        MaaStringView,
+        MaaTransparentArg,
+    )
+    StopFunc = ctypes.CFUNCTYPE(
+        None,
+        MaaTransparentArg,
+    )
+    _fields_ = [
+        ("action", RunFunc),
+        ("stop", StopFunc),
+    ]
+
+
+c_int32_p = ctypes.POINTER(ctypes.c_int32)
+
+
+class MaaCustomControllerAPI(ctypes.Structure):
+    ConnectFunc = ctypes.CFUNCTYPE(
+        MaaBool,
+        MaaTransparentArg,
+    )
+    RequestUuidFunc = ctypes.CFUNCTYPE(
+        MaaBool,
+        MaaTransparentArg,
+        MaaStringBufferHandle,
+    )
+    RequestResolutionFunc = ctypes.CFUNCTYPE(
+        MaaBool,
+        MaaTransparentArg,
+        c_int32_p,
+        c_int32_p,
+    )
+    StartAppFunc = ctypes.CFUNCTYPE(
+        MaaBool,
+        MaaStringView,
+        MaaTransparentArg,
+    )
+    StopAppFunc = ctypes.CFUNCTYPE(
+        MaaBool,
+        MaaStringView,
+        MaaTransparentArg,
+    )
+    ScreencapFunc = ctypes.CFUNCTYPE(
+        MaaBool,
+        MaaTransparentArg,
+        MaaImageBufferHandle,
+    )
+    ClickFunc = ctypes.CFUNCTYPE(
+        MaaBool,
+        ctypes.c_int32,
+        ctypes.c_int32,
+        MaaTransparentArg,
+    )
+    SwipeFunc = ctypes.CFUNCTYPE(
+        MaaBool,
+        ctypes.c_int32,
+        ctypes.c_int32,
+        ctypes.c_int32,
+        ctypes.c_int32,
+        ctypes.c_int32,
+        MaaTransparentArg,
+    )
+    TouchDownFunc = ctypes.CFUNCTYPE(
+        MaaBool,
+        ctypes.c_int32,
+        ctypes.c_int32,
+        ctypes.c_int32,
+        ctypes.c_int32,
+        MaaTransparentArg,
+    )
+    TouchMoveFunc = ctypes.CFUNCTYPE(
+        MaaBool,
+        ctypes.c_int32,
+        ctypes.c_int32,
+        ctypes.c_int32,
+        ctypes.c_int32,
+        MaaTransparentArg,
+    )
+    TouchUpFunc = ctypes.CFUNCTYPE(
+        MaaBool,
+        ctypes.c_int32,
+        MaaTransparentArg,
+    )
+    PressKeyFunc = ctypes.CFUNCTYPE(
+        MaaBool,
+        ctypes.c_int32,
+        MaaTransparentArg,
+    )
+    InputTextFunc = ctypes.CFUNCTYPE(
+        MaaBool,
+        MaaStringView,
+        MaaTransparentArg,
+    )
+    _fields_ = [
+        ("connect", ConnectFunc),
+        ("request_uuid", RequestUuidFunc),
+        ("request_resolution", RequestResolutionFunc),
+        ("start_app", StartAppFunc),
+        ("stop_app", StopAppFunc),
+        ("screencap", ScreencapFunc),
+        ("click", ClickFunc),
+        ("swipe", SwipeFunc),
+        ("touch_down", TouchDownFunc),
+        ("touch_move", TouchMoveFunc),
+        ("touch_up", TouchUpFunc),
+        ("press_key", PressKeyFunc),
+        ("input_text", InputTextFunc),
+    ]
+
+
+MaaCustomControllerHandle = ctypes.POINTER(MaaCustomControllerAPI)
+
+
+MaaThriftControllerType = ctypes.c_int32
+
+
+class MaaThriftControllerTypeEnum:
+    Invalid: MaaThriftControllerType = 0
+    Socket: MaaThriftControllerType = 1
+    UnixDomainSocket: MaaThriftControllerType = 2

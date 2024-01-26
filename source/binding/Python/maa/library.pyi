@@ -191,6 +191,42 @@ class _Framework:
         callback: MaaControllerCallback,
         callback_arg: MaaCallbackTransparentArg,
     ) -> MaaControllerHandle: ...
+    # DbgController
+    @staticmethod
+    def MaaDbgControllerCreate(
+        read_path: MaaStringView,
+        write_path: MaaStringView,
+        type: MaaDbgControllerType,
+        config: MaaStringView,
+        callback: MaaControllerCallback,
+        callback_arg: MaaCallbackTransparentArg,
+    ) -> MaaControllerHandle: ...
+    # Win32Controller
+    @staticmethod
+    def MaaWin32ControllerCreate(
+        hWnd: MaaWin32Hwnd,
+        type: MaaWin32ControllerType,
+        callback: MaaControllerCallback,
+        callback_arg: MaaCallbackTransparentArg,
+    ) -> MaaControllerHandle: ...
+    # ThriftController
+    @staticmethod
+    def MaaThriftControllerCreate(
+        type: MaaThriftControllerType,
+        host: MaaStringView,
+        port: c_int32,
+        config: MaaStringView,
+        callback: MaaControllerCallback,
+        callback_arg: MaaCallbackTransparentArg,
+    ) -> MaaControllerHandle: ...
+    # CustomContorller
+    @staticmethod
+    def MaaCustomControllerCreate(
+        handle: MaaCustomControllerHandle,
+        handle_arg: MaaTransparentArg,
+        callback: MaaControllerCallback,
+        callback_arg: MaaCallbackTransparentArg,
+    ) -> MaaControllerHandle: ...
 
     # instance.py
     @staticmethod
@@ -307,9 +343,26 @@ class _Toolkit:
         action_exec_path: MaaStringView,
         action_ex: MaaStringView,
     ) -> MaaBool: ...
+    @staticmethod
+    def MaaToolkitFindWindow(
+        class_name: MaaStringView, window_name: MaaStringView
+    ) -> MaaWin32Hwnd: ...
+    @staticmethod
+    def MaaToolkitSearchWindow(
+        class_name: MaaStringView, window_name: MaaStringView
+    ) -> MaaWin32Hwnd: ...
+    @staticmethod
+    def MaaToolkitGetWindow(index: MaaSize) -> MaaWin32Hwnd: ...
+    @staticmethod
+    def MaaToolkitGetCursorWindow() -> MaaWin32Hwnd: ...
+    @staticmethod
+    def MaaToolkitGetDesktopWindow() -> MaaWin32Hwnd: ...
+    @staticmethod
+    def MaaToolkitGetForegroundWindow() -> MaaWin32Hwnd: ...
 
 class Library:
     framework: _Framework
+    initialized: bool
     toolkit: _Toolkit
 
     @classmethod
