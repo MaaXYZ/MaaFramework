@@ -94,7 +94,7 @@ class Toolkit:
     # TODO: 进一步封装 Win32Hwnd 系列函数？
 
     @classmethod
-    def find_window(cls, class_name: str, window_name: str) -> MaaWin32Hwnd:
+    def find_window(cls, class_name: str, window_name: str) -> MaaSize:
         cls._set_api_properties()
 
         return Library.toolkit.MaaToolkitFindWindow(
@@ -102,7 +102,7 @@ class Toolkit:
         )
 
     @classmethod
-    def search_window(cls, class_name: str, window_name: str) -> MaaWin32Hwnd:
+    def search_window(cls, class_name: str, window_name: str) -> MaaSize:
         cls._set_api_properties()
 
         return Library.toolkit.MaaToolkitSearchWindow(
@@ -201,13 +201,13 @@ class Toolkit:
             MaaStringView,
         ]
 
-        Library.toolkit.MaaToolkitFindWindow.restype = MaaWin32Hwnd
+        Library.toolkit.MaaToolkitFindWindow.restype = MaaSize
         Library.toolkit.MaaToolkitFindWindow.argtypes = [
             MaaStringView,
             MaaStringView,
         ]
 
-        Library.toolkit.MaaToolkitSearchWindow.restype = MaaWin32Hwnd
+        Library.toolkit.MaaToolkitSearchWindow.restype = MaaSize
         Library.toolkit.MaaToolkitSearchWindow.argtypes = [
             MaaStringView,
             MaaStringView,
