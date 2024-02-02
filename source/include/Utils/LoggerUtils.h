@@ -116,7 +116,7 @@ public:
 
     template <typename T>
     requires(std::is_function_v<std::remove_pointer_t<std::decay_t<T>>>)
-    std::string operator()(T&& value) const
+    void operator()(T&&) const
     {
         static_assert(!sizeof(T), "Function type is not supported.");
     }
