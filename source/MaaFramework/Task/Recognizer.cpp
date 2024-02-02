@@ -119,8 +119,7 @@ std::optional<Recognizer::Result> Recognizer::template_match(const cv::Mat& imag
     }
 
     const cv::Rect& box = results.front().box;
-    auto detail = json::serialize<false>(results);
-    return Result { .box = box, .detail = std::move(detail) };
+    return Result { .box = box, .detail = std::move(results) };
 }
 
 std::optional<Recognizer::Result> Recognizer::feature_match(const cv::Mat& image,
@@ -148,8 +147,7 @@ std::optional<Recognizer::Result> Recognizer::feature_match(const cv::Mat& image
     }
 
     const cv::Rect& box = results.front().box;
-    auto detail = json::serialize<false>(results);
-    return Result { .box = box, .detail = std::move(detail) };
+    return Result { .box = box, .detail = std::move(results) };
 }
 
 std::optional<Recognizer::Result> Recognizer::color_match(const cv::Mat& image,
@@ -174,8 +172,7 @@ std::optional<Recognizer::Result> Recognizer::color_match(const cv::Mat& image,
     }
 
     const cv::Rect& box = results.front().box;
-    auto detail = json::serialize<false>(results);
-    return Result { .box = box, .detail = std::move(detail) };
+    return Result { .box = box, .detail = std::move(results) };
 }
 
 std::optional<Recognizer::Result> Recognizer::ocr(const cv::Mat& image, const MAA_VISION_NS::OCRerParam& param,
@@ -207,8 +204,7 @@ std::optional<Recognizer::Result> Recognizer::ocr(const cv::Mat& image, const MA
     // sort_by_required_(res, param.text);
 
     const cv::Rect& box = results.front().box;
-    auto detail = json::serialize<false>(results);
-    return Result { .box = box, .detail = std::move(detail) };
+    return Result { .box = box, .detail = std::move(results) };
 }
 
 std::optional<Recognizer::Result> Recognizer::classify(const cv::Mat& image,
@@ -236,11 +232,7 @@ std::optional<Recognizer::Result> Recognizer::classify(const cv::Mat& image,
     }
 
     const cv::Rect& box = results.front().box;
-    json::array detail;
-    for (const auto& res : results) {
-        detail.emplace_back(res);
-    }
-    return Result { .box = box, .detail = std::move(detail) };
+    return Result { .box = box, .detail = std::move(results) };
 }
 
 std::optional<Recognizer::Result> Recognizer::detect(const cv::Mat& image,
@@ -268,8 +260,7 @@ std::optional<Recognizer::Result> Recognizer::detect(const cv::Mat& image,
     }
 
     const cv::Rect& box = results.front().box;
-    auto detail = json::serialize<false>(results);
-    return Result { .box = box, .detail = std::move(detail) };
+    return Result { .box = box, .detail = std::move(results) };
 }
 
 std::optional<Recognizer::Result> Recognizer::custom_recognize(const cv::Mat& image,
@@ -298,8 +289,7 @@ std::optional<Recognizer::Result> Recognizer::custom_recognize(const cv::Mat& im
     }
 
     const cv::Rect& box = results.front().box;
-    auto detail = json::serialize<false>(results);
-    return Result { .box = box, .detail = std::move(detail) };
+    return Result { .box = box, .detail = std::move(results) };
 }
 
 void Recognizer::show_hit_draw(const cv::Mat& image, const Result& res, const std::string& task_name) const

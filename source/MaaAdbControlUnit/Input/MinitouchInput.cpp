@@ -16,11 +16,11 @@ bool MinitouchInput::parse(const json::value& config)
     };
     json::array jarch = config.get("prebuilt", "minitouch", "arch", kDefaultArch);
 
-    if (std::ranges::any_of(jarch, [](const json::value& val) { return !val.is_string(); })) {
+    if (!jarch.all<std::string>()) {
         return false;
     }
 
-    arch_list_ = jarch.to_vector<std::string>();
+    arch_list_ = jarch.as_collection<std::string>();
 
     return invoke_app_->parse(config);
 }
