@@ -67,15 +67,15 @@ struct MAA_UTILS_API separator
 template <typename T>
 concept has_output_operator = requires { std::declval<std::ostream&>() << std::declval<T>(); };
 
-class JsonSerializer
+class StringConverter
 {
 public:
-    JsonSerializer(std::filesystem::path dumps_dir) : dumps_dir_(std::move(dumps_dir)) {}
+    StringConverter(std::filesystem::path dumps_dir) : dumps_dir_(std::move(dumps_dir)) {}
 
 public:
-    json::value operator()(const std::filesystem::path& path) const { return path_to_utf8_string(path); }
-    json::value operator()(const std::wstring& wstr) const { return from_u16(wstr); }
-    json::value operator()(const cv::Mat& image) const
+    std::string operator()(const std::filesystem::path& path) const { return path_to_utf8_string(path); }
+    std::string operator()(const std::wstring& wstr) const { return from_u16(wstr); }
+    std::string operator()(const cv::Mat& image) const
     {
         if (dumps_dir_.empty()) {
             return "Not logging";
@@ -94,7 +94,7 @@ public:
     }
 
     template <typename T>
-    json::value operator()(std::optional<T>&& value) const
+    std::string operator()(std::optional<T>&& value) const
     {
         if (!value) {
             return nullptr;
@@ -104,7 +104,7 @@ public:
 
     template <typename T>
     requires has_output_operator<T>
-    json::value operator()(T&& value) const
+    std::string operator()(T&& value) const
     {
         std::stringstream ss;
         if constexpr (std::same_as<bool, std::decay_t<T>>) {
@@ -116,7 +116,7 @@ public:
 
     template <typename T>
     requires(std::is_function_v<std::remove_pointer_t<std::decay_t<T>>>)
-    json::value operator()(T&& value) const
+    std::string operator()(T&& value) const
     {
         static_assert(!sizeof(T), "Function type is not supported.");
     }
@@ -125,13 +125,16 @@ private:
     const std::filesystem::path dumps_dir_;
 };
 
+template <typename T>
+concept string_convertible = requires { std::declval<StringConverter>()(std::declval<T>()); };
+
 class MAA_UTILS_API LogStream
 {
 public:
     template <typename... args_t>
     LogStream(std::mutex& m, std::ofstream& s, level lv, bool std_out, std::filesystem::path dumps_dir,
               args_t&&... args)
-        : mutex_(m), stream_(s), lv_(lv), stdout_(std_out), json_serializer_(std::move(dumps_dir))
+        : mutex_(m), stream_(s), lv_(lv), stdout_(std_out), string_converter_(std::move(dumps_dir))
     {
         stream_props(std::forward<args_t>(args)...);
     }
@@ -169,7 +172,12 @@ private:
     template <typename T>
     void stream(T&& value, const separator& sep)
     {
-        buffer_ << json::serialize(std::forward<T>(value), json_serializer_).dumps() << sep.str;
+        if constexpr (string_convertible<T>) {
+            buffer_ << string_converter_(std::forward<T>(value)) << sep.str;
+        }
+        else {
+            buffer_ << json::serialize(std::forward<T>(value), string_converter_).dumps() << sep.str;
+        }
     }
 
     template <typename... args_t>
@@ -197,7 +205,7 @@ private:
     std::ofstream& stream_;
     const level lv_ = level::fatal;
     const bool stdout_ = false;
-    const JsonSerializer json_serializer_;
+    const StringConverter string_converter_;
 
     separator sep_ = separator::space;
     std::stringstream buffer_;

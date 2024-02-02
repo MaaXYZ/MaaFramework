@@ -18,16 +18,16 @@ bool MinicapBase::parse(const json::value& config)
     };
     json::array jarch = config.get("prebuilt", "minicap", "arch", kDefaultArch);
 
-    if (std::ranges::any_of(jarch, [](const json::value& val) { return !val.is_string(); })) {
+    if (!jarch.all<std::string>()) {
         return false;
     }
-    arch_list_ = jarch.to_vector<std::string>();
+    arch_list_ = jarch.as_collection<std::string>();
 
     static const json::array kDefaultSdk = {
         31, 29, 28, 27, 26, 25, 24, 23, 22, 21, 19, 18, 17, 16, 15, 14,
     };
     json::array jsdk = config.get("prebuilt", "minicap", "sdk", kDefaultSdk);
-    sdk_list_ = jsdk.to_vector<int>();
+    sdk_list_ = jsdk.as_collection<int>();
 
     return binary_->parse(config) && library_->parse(config);
 }

@@ -76,10 +76,12 @@ public:
     basic_value(map_t&& map) : basic_value(basic_object<string_t>(std::forward<map_t>(map)))
     {}
 
-    template <typename jsonization_t, std::enable_if_t<_utils::has_to_json_in_member<jsonization_t>::value, bool> = true>
+    template <typename jsonization_t,
+              std::enable_if_t<_utils::has_to_json_in_member<jsonization_t>::value, bool> = true>
     basic_value(const jsonization_t& jsonization) : basic_value(jsonization.to_json())
     {}
-    template <typename jsonization_t, std::enable_if_t<_utils::has_to_json_in_global<jsonization_t>::value, bool> = true>
+    template <typename jsonization_t,
+              std::enable_if_t<_utils::has_to_json_in_global<jsonization_t>::value, bool> = true>
     basic_value(const jsonization_t& jsonization) : basic_value(to_json(jsonization))
     {}
 
@@ -368,6 +370,9 @@ inline bool basic_value<string_t>::is() const noexcept
     else if constexpr (std::is_arithmetic_v<value_t>) {
         return is_number();
     }
+    else if constexpr (std::is_constructible_v<string_t, value_t>) {
+        return is_string();
+    }
     else if constexpr (std::is_same_v<basic_array<string_t>, value_t>) {
         return is_array();
     }
@@ -380,9 +385,6 @@ inline bool basic_value<string_t>::is() const noexcept
     else if constexpr (_utils::is_map<value_t>) {
         return is_object() && std::is_constructible_v<string_t, typename value_t::key_type> &&
                all<typename value_t::mapped_type>();
-    }
-    else if constexpr (std::is_constructible_v<string_t, value_t>) {
-        return is_string();
     }
     else if constexpr (_utils::has_check_json_in_member<value_t, string_t>::value) {
         return value_t().check_json(*this);
