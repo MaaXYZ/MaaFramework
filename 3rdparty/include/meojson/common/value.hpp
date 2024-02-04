@@ -65,24 +65,26 @@ public:
     basic_value(value_type type, args_t&&... args);
 
     template <typename collection_t,
-              std::enable_if_t<std::is_constructible_v<typename basic_array<string_t>::value_type,
-                                                       _utils::range_value_t<collection_t>>,
+              std::enable_if_t<_utils::is_collection<collection_t> &&
+                                   std::is_constructible_v<typename basic_array<string_t>::value_type,
+                                                           _utils::range_value_t<collection_t>>,
                                bool> = true>
     basic_value(collection_t&& collection) : basic_value(basic_array<string_t>(std::forward<collection_t>(collection)))
     {}
-    template <typename map_t, std::enable_if_t<std::is_constructible_v<typename basic_object<string_t>::value_type,
-                                                                       _utils::range_value_t<map_t>>,
+    template <typename map_t, std::enable_if_t<_utils::is_map<map_t> &&
+                                                   std::is_constructible_v<typename basic_object<string_t>::value_type,
+                                                                           _utils::range_value_t<map_t>>,
                                                bool> = true>
     basic_value(map_t&& map) : basic_value(basic_object<string_t>(std::forward<map_t>(map)))
     {}
 
     template <typename jsonization_t,
               std::enable_if_t<_utils::has_to_json_in_member<jsonization_t>::value, bool> = true>
-    basic_value(const jsonization_t& jsonization) : basic_value(jsonization.to_json())
+    basic_value(const jsonization_t& value) : basic_value(value.to_json())
     {}
     template <typename jsonization_t,
-              std::enable_if_t<_utils::has_to_json_in_global<jsonization_t>::value, bool> = true>
-    basic_value(const jsonization_t& jsonization) : basic_value(to_json(jsonization))
+              std::enable_if_t<_utils::has_to_json_in_templ_spec<jsonization_t>::value, bool> = true>
+    basic_value(const jsonization_t& value) : basic_value(ext::jsonization<jsonization_t>().to_json(value))
     {}
 
     template <typename value_t, std::enable_if_t<!std::is_convertible_v<value_t, basic_value<string_t>>, bool> = true>
@@ -167,6 +169,16 @@ public:
 
     basic_value<string_t>& operator=(const basic_value<string_t>& rhs);
     basic_value<string_t>& operator=(basic_value<string_t>&&) noexcept;
+    template <typename value_t, std::enable_if_t<std::is_convertible_v<value_t, basic_value<string_t>>, bool> = true>
+    basic_value<string_t>& operator=(const value_t& rhs)
+    {
+        return *this = basic_value<string_t>(rhs);
+    }
+    template <typename value_t, std::enable_if_t<std::is_convertible_v<value_t, basic_value<string_t>>, bool> = true>
+    basic_value<string_t>& operator=(value_t&& rhs)
+    {
+        return *this = basic_value<string_t>(std::move(rhs));
+    }
 
     bool operator==(const basic_value<string_t>& rhs) const;
     bool operator!=(const basic_value<string_t>& rhs) const { return !(*this == rhs); }
@@ -208,13 +220,13 @@ public:
     explicit operator basic_object<string_t>() const { return as_object(); }
 
     template <typename value_t, template <typename...> typename collection_t = std::vector,
-              typename _ = std::enable_if_t<_utils::is_collection<collection_t<value_t>>>>
+              std::enable_if_t<_utils::is_collection<collection_t<value_t>>, bool> = true>
     explicit operator collection_t<value_t>() const
     {
         return as_collection<value_t, collection_t>();
     }
     template <typename value_t, template <typename...> typename map_t = std::map,
-              typename _ = std::enable_if_t<_utils::is_map<map_t<string_t, value_t>>>>
+              std::enable_if_t<_utils::is_map<map_t<string_t, value_t>>, bool> = true>
     explicit operator map_t<string_t, value_t>() const
     {
         return as_map<value_t, map_t>();
@@ -223,18 +235,18 @@ public:
               std::enable_if_t<_utils::has_from_json_in_member<jsonization_t, string_t>::value, bool> = true>
     explicit operator jsonization_t() const
     {
-        jsonization_t dst;
+        jsonization_t dst {};
         if (!dst.from_json(*this)) {
             throw exception("Wrong JSON");
         }
         return dst;
     }
     template <typename jsonization_t,
-              std::enable_if_t<_utils::has_from_json_in_global<jsonization_t, string_t>::value, bool> = true>
+              std::enable_if_t<_utils::has_from_json_in_templ_spec<jsonization_t, string_t>::value, bool> = true>
     explicit operator jsonization_t() const
     {
-        jsonization_t dst;
-        if (!from_json(*this, dst)) {
+        jsonization_t dst {};
+        if (!ext::jsonization<jsonization_t>().from_json(*this, dst)) {
             throw exception("Wrong JSON");
         }
         return dst;
@@ -389,8 +401,8 @@ inline bool basic_value<string_t>::is() const noexcept
     else if constexpr (_utils::has_check_json_in_member<value_t, string_t>::value) {
         return value_t().check_json(*this);
     }
-    else if constexpr (_utils::has_check_json_in_global<value_t, string_t>::value) {
-        return check_json(*this, value_t());
+    else if constexpr (_utils::has_check_json_in_templ_spec<value_t, string_t>::value) {
+        return ext::jsonization<value_t>().check_json(*this);
     }
     else {
         static_assert(!sizeof(value_t), "Unsupported type");
@@ -963,8 +975,8 @@ inline typename basic_value<string_t>::var_t basic_value<string_t>::deep_copy(co
 template <typename ostream_t, typename string_t,
           typename std_ostream_t =
               std::basic_ostream<typename string_t::value_type, std::char_traits<typename string_t::value_type>>,
-          typename enable_t = typename std::enable_if_t<std::is_same_v<std_ostream_t, ostream_t> ||
-                                                        std::is_base_of_v<std_ostream_t, ostream_t>>>
+          typename =
+              std::enable_if_t<std::is_same_v<std_ostream_t, ostream_t> || std::is_base_of_v<std_ostream_t, ostream_t>>>
 ostream_t& operator<<(ostream_t& out, const basic_value<string_t>& val)
 {
     out << val.format();

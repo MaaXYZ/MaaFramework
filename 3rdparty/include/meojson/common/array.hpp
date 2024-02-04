@@ -38,15 +38,19 @@ public:
     // explicit basic_array(basic_value<string_t>&& val);
 
     template <typename collection_t,
-              typename = std::enable_if_t<std::is_constructible_v<value_type, _utils::range_value_t<collection_t>>>>
+              std::enable_if_t<_utils::is_collection<collection_t> &&
+                                   std::is_constructible_v<value_type, _utils::range_value_t<collection_t>>,
+                               bool> = true>
     basic_array(collection_t arr)
         : _array_data(std::make_move_iterator(arr.begin()), std::make_move_iterator(arr.end()))
     {}
-    template <typename jsonization_t, std::enable_if_t<_utils::has_to_json_in_member<jsonization_t>::value, bool> = true>
-    basic_array(const jsonization_t& jsonization) : basic_array(jsonization.to_json())
+    template <typename jsonization_t,
+              std::enable_if_t<_utils::has_to_json_in_member<jsonization_t>::value, bool> = true>
+    basic_array(const jsonization_t& value) : basic_array(value.to_json())
     {}
-    template <typename jsonization_t, std::enable_if_t<_utils::has_to_json_in_global<jsonization_t>::value, bool> = true>
-    basic_array(const jsonization_t& jsonization) : basic_array(to_json(jsonization))
+    template <typename jsonization_t,
+              std::enable_if_t<_utils::has_to_json_in_templ_spec<jsonization_t>::value, bool> = true>
+    basic_array(const jsonization_t& value) : basic_array(ext::jsonization<jsonization_t>().to_json(value))
     {}
 
     ~basic_array() noexcept = default;
@@ -111,6 +115,33 @@ public:
 
     bool operator==(const basic_array<string_t>& rhs) const;
     bool operator!=(const basic_array<string_t>& rhs) const { return !(*this == rhs); }
+
+    template <typename value_t, template <typename...> typename collection_t = std::vector,
+              std::enable_if_t<_utils::is_collection<collection_t<value_t>>, bool> = true>
+    explicit operator collection_t<value_t>() const
+    {
+        return as_collection<value_t, collection_t>();
+    }
+    template <typename jsonization_t,
+              std::enable_if_t<_utils::has_from_json_in_member<jsonization_t, string_t>::value, bool> = true>
+    explicit operator jsonization_t() const
+    {
+        jsonization_t dst {};
+        if (!dst.from_json(*this)) {
+            throw exception("Wrong JSON");
+        }
+        return dst;
+    }
+    template <typename jsonization_t,
+              std::enable_if_t<_utils::has_from_json_in_templ_spec<jsonization_t, string_t>::value, bool> = true>
+    explicit operator jsonization_t() const
+    {
+        jsonization_t dst {};
+        if (!ext::jsonization<jsonization_t>().from_json(*this, dst)) {
+            throw exception("Wrong JSON");
+        }
+        return dst;
+    }
 
 private:
     template <typename... key_then_default_value_t, size_t... keys_indexes_t>
