@@ -5,6 +5,7 @@
 
 #include <onnxruntime/onnxruntime_cxx_api.h>
 
+#include "Utils/JsonExt.hpp"
 #include "VisionBase.h"
 #include "VisionTypes.h"
 
@@ -22,17 +23,7 @@ public:
         std::vector<float> raw;
         std::vector<float> probs;
 
-        operator json::value() const
-        {
-            json::value root;
-            root["cls_index"] = cls_index;
-            root["label"] = label;
-            root["box"] = json::array({ box.x, box.y, box.width, box.height });
-            root["score"] = score;
-            root["raw"] = json::array(raw);
-            root["probs"] = json::array(probs);
-            return root;
-        }
+        MEO_JSONIZATION(cls_index, label, box, score, raw, probs);
     };
     using ResultsVec = std::vector<Result>;
 

@@ -376,6 +376,12 @@ inline bool basic_value<string_t>::is() const noexcept
     if constexpr (std::is_same_v<basic_value<string_t>, value_t>) {
         return true;
     }
+    else if constexpr (_utils::has_check_json_in_member<value_t, string_t>::value) {
+        return value_t().check_json(*this);
+    }
+    else if constexpr (_utils::has_check_json_in_templ_spec<value_t, string_t>::value) {
+        return ext::jsonization<value_t>().check_json(*this);
+    }
     else if constexpr (std::is_same_v<bool, value_t>) {
         return is_boolean();
     }
@@ -397,12 +403,6 @@ inline bool basic_value<string_t>::is() const noexcept
     else if constexpr (_utils::is_map<value_t>) {
         return is_object() && std::is_constructible_v<string_t, typename value_t::key_type> &&
                all<typename value_t::mapped_type>();
-    }
-    else if constexpr (_utils::has_check_json_in_member<value_t, string_t>::value) {
-        return value_t().check_json(*this);
-    }
-    else if constexpr (_utils::has_check_json_in_templ_spec<value_t, string_t>::value) {
-        return ext::jsonization<value_t>().check_json(*this);
     }
     else {
         static_assert(!sizeof(value_t), "Unsupported type");
@@ -691,6 +691,20 @@ inline value_t basic_value<string_t>::as() const
 {
     if constexpr (std::is_same_v<basic_value<string_t>, value_t>) {
         return *this;
+    }
+    else if constexpr (_utils::has_from_json_in_member<value_t, string_t>::value) {
+        value_t dst {};
+        if (!dst.from_json(*this)) {
+            throw exception("Wrong JSON");
+        }
+        return dst;
+    }
+    else if constexpr (_utils::has_from_json_in_templ_spec<value_t, string_t>::value) {
+        value_t dst {};
+        if (!ext::jsonization<value_t>().from_json(*this, dst)) {
+            throw exception("Wrong JSON");
+        }
+        return dst;
     }
     else {
         return static_cast<value_t>(*this);

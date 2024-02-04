@@ -12,6 +12,7 @@ MAA_SUPPRESS_CV_WARNINGS_BEGIN
 MAA_SUPPRESS_CV_WARNINGS_END
 
 #include "Utils/Codec.h"
+#include "Utils/JsonExt.hpp"
 #include "VisionBase.h"
 #include "VisionTypes.h"
 
@@ -26,14 +27,7 @@ public:
         cv::Rect box {};
         double score = 0.0;
 
-        operator json::value() const
-        {
-            json::value root;
-            root["text"] = from_u16(text);
-            root["box"] = json::array({ box.x, box.y, box.width, box.height });
-            root["score"] = score;
-            return root;
-        }
+        MEO_JSONIZATION(text, box, score);
     };
     using ResultsVec = std::vector<Result>;
 

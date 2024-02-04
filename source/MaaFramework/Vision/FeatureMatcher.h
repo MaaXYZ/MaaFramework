@@ -9,6 +9,7 @@ MAA_SUPPRESS_CV_WARNINGS_BEGIN
 #include <opencv2/features2d.hpp>
 MAA_SUPPRESS_CV_WARNINGS_END
 
+#include "Utils/JsonExt.hpp"
 #include "VisionBase.h"
 #include "VisionTypes.h"
 
@@ -22,13 +23,7 @@ public:
         cv::Rect box {};
         int count = 0;
 
-        operator json::value() const
-        {
-            json::value root;
-            root["box"] = json::array({ box.x, box.y, box.width, box.height });
-            root["count"] = count;
-            return root;
-        }
+        MEO_JSONIZATION(box, count);
     };
 
     using ResultsVec = std::vector<Result>;

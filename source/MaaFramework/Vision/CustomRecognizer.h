@@ -2,10 +2,9 @@
 
 #include <vector>
 
-#include <meojson/json.hpp>
-
 #include "Instance/InstanceInternalAPI.hpp"
 #include "MaaFramework/MaaDef.h"
+#include "Utils/JsonExt.hpp"
 #include "VisionBase.h"
 #include "VisionTypes.h"
 
@@ -18,13 +17,7 @@ class CustomRecognizer : public VisionBase
         cv::Rect box {};
         json::value detail;
 
-        operator json::value() const
-        {
-            json::value root;
-            root["box"] = json::array({ box.x, box.y, box.width, box.height });
-            root["detail"] = detail;
-            return root;
-        }
+        MEO_JSONIZATION(box, detail);
     };
     using ResultsVec = std::vector<Result>;
 
