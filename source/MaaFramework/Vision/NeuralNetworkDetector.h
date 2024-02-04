@@ -5,6 +5,7 @@
 
 #include <onnxruntime/onnxruntime_cxx_api.h>
 
+#include "Utils/JsonExt.hpp"
 #include "VisionBase.h"
 #include "VisionTypes.h"
 
@@ -20,15 +21,7 @@ public:
         cv::Rect box {};
         double score = 0.0;
 
-        operator json::value() const
-        {
-            json::value root;
-            root["cls_index"] = cls_index;
-            root["label"] = label;
-            root["box"] = json::array({ box.x, box.y, box.width, box.height });
-            root["score"] = score;
-            return root;
-        }
+        MEO_JSONIZATION(cls_index, label, box, score);
     };
     using ResultsVec = std::vector<Result>;
 

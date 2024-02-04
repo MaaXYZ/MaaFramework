@@ -87,6 +87,34 @@ inline static ResultsVec NMS(ResultsVec results, double threshold = 0.7)
     return nms_results;
 }
 
+template <typename ResultsVec>
+inline static ResultsVec NMS_for_count(ResultsVec results, double threshold = 0.7)
+{
+    std::ranges::sort(results, [](const auto& a, const auto& b) { return a.count > b.count; });
+
+    ResultsVec nms_results;
+    for (size_t i = 0; i < results.size(); ++i) {
+        const auto& res1 = results[i];
+        if (res1.count == 0) {
+            continue;
+        }
+        auto res1_box = res1.box;
+        nms_results.emplace_back(std::move(res1));
+
+        for (size_t j = i + 1; j < results.size(); ++j) {
+            auto& res2 = results[j];
+            if (res2.count == 0) {
+                continue;
+            }
+            int iou_area = (res1_box & res2.box).area();
+            if (iou_area >= threshold * res2.box.area()) {
+                res2.count = 0;
+            }
+        }
+    }
+    return nms_results;
+}
+
 template <typename T>
 inline static T softmax(const T& input)
 {

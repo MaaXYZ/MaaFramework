@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Conf/Conf.h"
+#include "Utils/JsonExt.hpp"
 #include "Utils/NoWarningCVMat.hpp"
 
 MAA_VISION_NS_BEGIN
