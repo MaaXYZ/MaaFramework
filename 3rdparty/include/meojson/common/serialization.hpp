@@ -136,7 +136,7 @@ bool deserialize(const basic_value<string_t>& in, out_t& out, const deserializer
         }
         for (auto&& j_elem : in.as_array()) {
             using elem_t = typename out_t::value_type;
-            elem_t elem;
+            elem_t elem {};
             if (!deserialize<elem_t, deserializer_t, string_t>(j_elem, elem, deserializer)) {
                 return false;
             }
@@ -155,7 +155,7 @@ bool deserialize(const basic_value<string_t>& in, out_t& out, const deserializer
         }
         for (auto&& [key, j_elem] : in.as_object()) {
             using elem_t = typename out_t::value_type;
-            elem_t elem;
+            elem_t elem {};
             if (!deserialize<elem_t, deserializer_t, string_t>(j_elem, elem, deserializer)) {
                 return false;
             }

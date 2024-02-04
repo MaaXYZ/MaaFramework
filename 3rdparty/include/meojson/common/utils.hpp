@@ -23,6 +23,18 @@ using warray = basic_array<std::wstring>;
 using wobject = basic_object<std::wstring>;
 }
 
+namespace json::ext
+{
+template <typename T>
+class jsonization
+{
+public:
+    // json::value to_json(const T&) const;
+    // bool check_json(const json::value&) const;
+    // bool from_json(const json::value&, T&) const;
+};
+}
+
 namespace json::_utils
 {
 template <typename T>
@@ -64,10 +76,10 @@ public:
 };
 
 template <typename T>
-class has_to_json_in_global
+class has_to_json_in_templ_spec
 {
     template <typename U>
-    static auto test(int) -> decltype(to_json(std::declval<U>()), std::true_type());
+    static auto test(int) -> decltype(std::declval<ext::jsonization<U>>().to_json(std::declval<U>()), std::true_type());
 
     template <typename U>
     static std::false_type test(...);
@@ -91,11 +103,12 @@ public:
 };
 
 template <typename T, typename string_t>
-class has_check_json_in_global
+class has_check_json_in_templ_spec
 {
     template <typename U>
     static auto test(int)
-        -> decltype(check_json(std::declval<json::basic_value<string_t>>(), std::declval<U>()), std::true_type());
+        -> decltype(std::declval<ext::jsonization<U>>().check_json(std::declval<json::basic_value<string_t>>()),
+                    std::true_type());
 
     template <typename U>
     static std::false_type test(...);
@@ -119,11 +132,13 @@ public:
 };
 
 template <typename T, typename string_t>
-class has_from_json_in_global
+class has_from_json_in_templ_spec
 {
     template <typename U>
     static auto test(int)
-        -> decltype(from_json(std::declval<json::basic_value<string_t>>(), std::declval<U&>()), std::true_type());
+        -> decltype(std::declval<ext::jsonization<U>>().from_json(std::declval<json::basic_value<string_t>>(),
+                                                                  std::declval<U&>()),
+                    std::true_type());
 
     template <typename U>
     static std::false_type test(...);
@@ -137,7 +152,7 @@ static constexpr string_t unescape_string(const string_t& str)
 {
     using char_t = typename string_t::value_type;
 
-    string_t result;
+    string_t result {};
     auto cur = str.cbegin();
     auto end = str.cend();
     auto no_escape_beg = cur;
@@ -211,4 +226,4 @@ string_t to_basic_string(any_t&& arg)
         static_assert(!sizeof(any_t), "Unsupported type");
     }
 }
-} // namespace json::utils
+} // namespace json::_utils
