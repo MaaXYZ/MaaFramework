@@ -1,0 +1,115 @@
+{
+    "resource": [
+        {
+            "name": "official",
+            "path": [
+                "{PROJECT_DIR}/resource/base"
+            ]
+        },
+        {
+            "name": "bilibili",
+            "path": [
+                "{PROJECT_DIR}/resource/base",
+                "{PROJECT_DIR}/resource/bilibili"
+            ]
+        }
+    ],
+    "entry": [
+        {
+            "task": "StartUp"
+        },
+        {
+            "task": "Awards"
+        },
+        {
+            "task": "Combat",
+            "option": [
+                "combat_stage",
+                "combat_times"
+            ]
+        }
+    ],
+    "executor": [
+        {
+            "type": "Recognizer",
+            "exec_name": "StageDropRecognition",
+            "exec_path": "Python",
+            "exec_param": [
+                "{PROJECT_DIR}/exec_agent/StageDropRecognition/main.py"
+            ]
+        }
+    ],
+    "option": [
+        {
+            "name": "combat_stage",
+            "case": [
+                {
+                    "name": "3-9",
+                    "param": {
+                        "EnterTheShow": {
+                            "next": "MainChapter_3"
+                        },
+                        "TargetStageName": {
+                            "text": "09"
+                        },
+                        "StageDifficulty": {
+                            "next": "StageDifficulty_Hard"
+                        }
+                    }
+                },
+                {
+                    "name": "4-20",
+                    "param": {
+                        "EnterTheShow": {
+                            "next": "MainChapter_4"
+                        },
+                        "TargetStageName": {
+                            "text": "20"
+                        },
+                        "StageDifficulty": {
+                            "next": "StageDifficulty_Hard"
+                        }
+                    }
+                }
+            ]
+        },
+        {
+            "name": "combat_times",
+            "default": "x1",
+            "case": [
+                {
+                    "name": "x1",
+                    "param": {
+                        "SetReplaysTimes": {
+                            "text": "1"
+                        }
+                    }
+                },
+                {
+                    "name": "x2",
+                    "param": {
+                        "SetReplaysTimes": {
+                            "text": "2"
+                        }
+                    }
+                },
+                {
+                    "name": "x3",
+                    "param": {
+                        "SetReplaysTimes": {
+                            "text": "3"
+                        }
+                    }
+                },
+                {
+                    "name": "x4",
+                    "param": {
+                        "SetReplaysTimes": {
+                            "text": "4"
+                        }
+                    }
+                }
+            ]
+        }
+    ]
+}
