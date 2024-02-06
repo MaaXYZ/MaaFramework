@@ -72,7 +72,7 @@ ColorMatcher::ResultsVec ColorMatcher::count_non_zero(const cv::Mat& bin, const 
     cv::Rect bounding = cv::boundingRect(bin);
     cv::Rect box = bounding + tl;
 
-    return { Result { .box = box, .score = count } };
+    return { Result { .box = box, .count = count } };
 }
 
 ColorMatcher::ResultsVec ColorMatcher::count_non_zero_with_connected(const cv::Mat& bin, const cv::Point& tl) const
@@ -94,11 +94,11 @@ ColorMatcher::ResultsVec ColorMatcher::count_non_zero_with_connected(const cv::M
         // int count = stats.at<int>(i, cv::CC_STAT_AREA);
         int count = cv::countNonZero(bin(bounding));
 
-        Result res { .box = bounding + tl, .score = count };
+        Result res { .box = bounding + tl, .count = count };
         results.emplace_back(std::move(res));
     }
 
-    return NMS(std::move(results), 1.0);
+    return NMS_for_count(std::move(results), 0.7);
 }
 
 void ColorMatcher::draw_result(const cv::Rect& roi, const cv::Mat& color, const cv::Mat& bin,
@@ -115,10 +115,10 @@ void ColorMatcher::draw_result(const cv::Rect& roi, const cv::Mat& color, const 
         const auto& res = results[i];
         cv::rectangle(image_draw, res.box, color_draw, 1);
 
-        std::string flag = MAA_FMT::format("{}: {}, [{}, {}, {}, {}]", i, res.score, res.box.x, res.box.y,
+        std::string flag = MAA_FMT::format("{}: {}, [{}, {}, {}, {}]", i, res.count, res.box.x, res.box.y,
                                            res.box.width, res.box.height);
         cv::putText(image_draw, flag, cv::Point(res.box.x, res.box.y - 5), cv::FONT_HERSHEY_PLAIN, 1.2, color_draw, 1);
-        if (i > 10 && res.score < 100) {
+        if (i > 10 && res.count < 100) {
             // 太多了画不下，反正后面的也是没用的
             LogDebug << "too many results, skip drawing" << VAR(results.size());
             break;
@@ -143,7 +143,7 @@ void ColorMatcher::draw_result(const cv::Rect& roi, const cv::Mat& color, const 
 
 void ColorMatcher::filter(ResultsVec& results, int count) const
 {
-    std::erase_if(results, [count](const auto& res) { return res.score < count; });
+    std::erase_if(results, [count](const auto& res) { return res.count < count; });
 }
 
 MAA_VISION_NS_END

@@ -14,6 +14,7 @@ if (WITH_DBG_CONTROLLER)
 endif()
 
 add_subdirectory(LibraryHolder)
+add_subdirectory(ProjectInterface)
 add_subdirectory(MaaFramework)
 add_subdirectory(MaaToolkit)
 

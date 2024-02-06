@@ -1,5 +1,6 @@
 #pragma once
 
+#include "Utils/JsonExt.hpp"
 #include "VisionBase.h"
 #include "VisionTypes.h"
 
@@ -11,15 +12,9 @@ public:
     struct Result
     {
         cv::Rect box {};
-        int score = 0;
+        int count = 0;
 
-        operator json::value() const
-        {
-            json::value root;
-            root["box"] = json::array({ box.x, box.y, box.width, box.height });
-            root["count"] = score;
-            return root;
-        }
+        MEO_JSONIZATION(box, count);
     };
     using ResultsVec = std::vector<Result>;
 

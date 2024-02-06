@@ -13,7 +13,7 @@ std::optional<ProcessArgvGenerator> ProcessArgvGenerator::create(const json::arr
         return std::nullopt;
     }
 
-    auto raw = arr.to_vector<std::string>();
+    auto raw = arr.as_collection<std::string>();
     if (raw.empty()) {
         LogError << "array is empty";
         return std::nullopt;

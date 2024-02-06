@@ -1,5 +1,6 @@
 #pragma once
 
+#include "Utils/JsonExt.hpp"
 #include "VisionTypes.h"
 
 MAA_VISION_NS_BEGIN
@@ -12,13 +13,7 @@ public:
         cv::Rect box {};
         double score = 0.0;
 
-        operator json::value() const
-        {
-            json::value root;
-            root["box"] = json::array({ box.x, box.y, box.width, box.height });
-            root["score"] = score;
-            return root;
-        }
+        MEO_JSONIZATION(box, score);
     };
     using ResultsVec = std::vector<Result>;
 

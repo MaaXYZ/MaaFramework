@@ -49,11 +49,11 @@ MaaBool RegisterExecutor(ExecutorType type, MaaInstanceHandle handle, MaaStringV
         LogError << "exec param json parse failed:" << exec_param_json;
         return false;
     }
-    if (!params_opt->is_array() || !params_opt->all<std::string>()) {
+    if (!params_opt->is<std::vector<std::string>>()) {
         LogError << "exec param json is not array of string:" << exec_param_json;
         return false;
     }
-    auto params = params_opt->to_vector<std::string>();
+    auto params = params_opt->as<std::vector<std::string>>();
 
     switch (type) {
     case ExecutorType::Recognizer:
