@@ -1,8 +1,8 @@
 #pragma once
 
 #include <string>
-#include <vector>
 #include <unordered_map>
+#include <vector>
 
 #include <meojson/json.hpp>
 
@@ -23,7 +23,7 @@ struct Option
     struct Case
     {
         std::string name;
-        json::value param;
+        json::object param;
 
         MEO_JSONIZATION(name, param);
     };
@@ -38,7 +38,7 @@ struct Option
 struct Entry
 {
     std::string name;
-    json::value param;
+    json::object param;
     std::vector<Option> options;
 
     MEO_JSONIZATION(name, MEO_OPT param, MEO_OPT options);
@@ -91,11 +91,15 @@ struct RuntimeParam
     struct Task
     {
         std::string entry;
-        json::value param;
+        json::object param;
+
+        MEO_JSONIZATION(entry, MEO_OPT param);
     };
     std::vector<std::string> resource_path;
     std::vector<Task> task;
     std::vector<Executor> executor;
+
+    MEO_JSONIZATION(resource_path, task, MEO_OPT executor);
 };
 
 MAA_PROJECT_INTERFACE_NS_END

@@ -14,15 +14,19 @@ public:
     bool load(const std::filesystem::path& project_dir);
     void save();
 
-    void check_config();
-    void select_resource();
+    std::optional<MAA_PROJECT_INTERFACE_NS::RuntimeParam> generate_runtime() const;
 
-    const auto& get_runtime() const { return runtime_; }
+    const auto& interface_data() const { return data_; }
+
+    const auto& configuration() const { return config_; }
+    auto& configuration() { return config_; }
 
 private:
+    std::optional<MAA_PROJECT_INTERFACE_NS::RuntimeParam::Task> generate_runtime_task(
+        const MAA_PROJECT_INTERFACE_NS::Configuration::Task& config_task) const;
+
     std::filesystem::path project_dir_;
 
     MAA_PROJECT_INTERFACE_NS::InterfaceData data_;
     MAA_PROJECT_INTERFACE_NS::Configuration config_;
-    MAA_PROJECT_INTERFACE_NS::RuntimeParam runtime_;
 };

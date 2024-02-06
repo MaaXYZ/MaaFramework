@@ -13,7 +13,10 @@ class Parser
 {
 public:
     static std::optional<InterfaceData> parse_interface(const std::filesystem::path& path);
+    static std::optional<InterfaceData> parse_interface(const json::value& json);
+    static std::optional<Configuration> parse_config(const std::filesystem::path& path);
     static std::optional<Configuration> parse_config(const json::value& json);
+    static void check_configuration(const InterfaceData& data, Configuration& config);
 };
 
 MAA_PROJECT_INTERFACE_NS_END

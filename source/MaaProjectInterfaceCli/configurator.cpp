@@ -3,23 +3,29 @@
 #include <ranges>
 
 #include "ProjectInterface/Parser.h"
+#include "Utils/Logger.h"
+#include "Utils/Platform.h"
 
 using namespace MAA_PROJECT_INTERFACE_NS;
 
 bool Configurator::load(const std::filesystem::path& project_dir)
 {
+    LogFunc << VAR(project_dir);
+
     auto data_opt = Parser::parse_interface(project_dir / kInterfaceFilename);
     if (!data_opt) {
+        LogError << "Failed to parse interface.json";
         return false;
     }
     data_ = *data_opt;
+    if (data_.resource.empty()) {
+        LogError << "Resource is empty";
+        return false;
+    }
 
     Configuration config;
-    auto cfg_json_opt = json::open(project_dir / kConfigFilename);
-    if (cfg_json_opt) {
-        if (auto cfg_opt = Parser::parse_config(*cfg_json_opt)) {
-            config = *cfg_opt;
-        }
+    if (auto cfg_opt = Parser::parse_config(project_dir / kConfigFilename)) {
+        config = *cfg_opt;
     }
 
     project_dir_ = project_dir;
@@ -31,29 +37,67 @@ void Configurator::save()
     std::ofstream(project_dir_ / kInterfaceFilename) << config_.to_json();
 }
 
-void Configurator::check_config()
+std::optional<RuntimeParam> Configurator::generate_runtime() const
 {
+    RuntimeParam runtime;
+
     auto resource_iter =
         std::ranges::find_if(data_.resource, [&](const auto& resource) { return resource.name == config_.resource; });
 
     if (resource_iter == data_.resource.end()) {
-        select_resource();
-    }
-    else {
-        runtime_.resource_path = resource_iter->path;
+        LogWarn << "Resource not found";
+        return std::nullopt;
     }
 
-    for (const auto& config_task : config_.task) {}
+    runtime.resource_path = resource_iter->path;
 
-    runtime_.executor = data_.executor;
+    for (const auto& config_task : config_.task) {
+        auto task_opt = generate_runtime_task(config_task);
+        if (!task_opt) {
+            LogWarn << "Task not found, ignore" << VAR(config_task.name);
+            continue;
+        }
+        runtime.task.emplace_back(*std::move(task_opt));
+    }
+
+    runtime.executor = data_.executor;
+
+    LogTrace << VAR(runtime);
+    return runtime;
 }
 
-void Configurator::select_resource()
+std::optional<RuntimeParam::Task> Configurator::generate_runtime_task(const Configuration::Task& config_task) const
 {
-    Resource res;
+    auto data_iter = std::ranges::find_if(data_.entry, [&](const auto& task) { return task.name == config_task.name; });
+    if (data_iter == data_.entry.end()) {
+        LogWarn << "Task not found, remove" << VAR(config_task.name);
+        return std::nullopt;
+    }
+    const Entry& data_entry = *data_iter;
 
-    // TODO
+    RuntimeParam::Task result { .entry = data_entry.name, .param = data_entry.param };
 
-    config_.resource = res.name;
-    runtime_.resource_path = res.path;
+    for (const auto& [config_option, config_option_value] : config_task.option) {
+        auto data_option_iter =
+            std::ranges::find_if(data_entry.options, [&](const auto& opt) { return opt.name == config_option; });
+        if (data_option_iter == data_entry.options.end()) {
+            LogWarn << "Option not found, remove" << VAR(config_task.name) << VAR(config_option);
+            return std::nullopt;
+        }
+        const Option& data_option = *data_option_iter;
+
+        auto case_iter =
+            std::ranges::find_if(data_option.cases, [&](const auto& c) { return c.name == config_option_value; });
+        if (case_iter == data_option.cases.end()) {
+            LogWarn << "Case not found, remove" << VAR(config_task.name) << VAR(config_option)
+                    << VAR(config_option_value);
+            return std::nullopt;
+        }
+        const Option::Case& data_case = *case_iter;
+
+        // data_case first, duplicate keys will be overwritten by data_case.param
+        result.param = data_case.param | std::move(result.param);
+    }
+
+    return result;
 }
