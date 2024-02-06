@@ -92,6 +92,9 @@ struct loader
 };
 } // namespace json::_jsonization_helper
 
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wgnu-zero-variadic-macro-arguments"
+
 namespace json::_private_macro
 {
 #define _MEOJSON_STRINGIZE(arg) _MEOJSON_STRINGIZE1(arg)
@@ -230,3 +233,5 @@ namespace json::_private_macro
     _MEOJSON_EXPAND(MEO_FROMJSON(__VA_ARGS__))
 
 #define MEO_OPT json::_jsonization_helper::next_is_optional_t {},
+
+#pragma clang diagnostic pop // -Wgnu-zero-variadic-macro-arguments
