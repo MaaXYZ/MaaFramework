@@ -16,13 +16,13 @@
     ],
     "entry": [
         {
-            "task": "StartUp"
+            "name": "StartUp"
         },
         {
-            "task": "Awards"
+            "name": "Awards"
         },
         {
-            "task": "Combat",
+            "name": "Combat",
             "option": [
                 "combat_stage",
                 "combat_times"

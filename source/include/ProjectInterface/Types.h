@@ -2,6 +2,7 @@
 
 #include <string>
 #include <vector>
+#include <unordered_map>
 
 #include <meojson/json.hpp>
 
@@ -37,11 +38,10 @@ struct Option
 struct Entry
 {
     std::string name;
-    std::string task;
     json::value param;
     std::vector<Option> options;
 
-    MEO_JSONIZATION(name, task, MEO_OPT param, MEO_OPT options);
+    MEO_JSONIZATION(name, MEO_OPT param, MEO_OPT options);
 };
 
 struct Executor
@@ -68,6 +68,34 @@ struct InterfaceData
     std::vector<Executor> executor;
 
     MEO_JSONIZATION(resource, entry, MEO_OPT executor);
+};
+
+struct Configuration
+{
+    struct Task
+    {
+        std::string name;
+        std::unordered_map<std::string, std::string> option;
+
+        MEO_JSONIZATION(name, MEO_OPT option);
+    };
+
+    std::string resource;
+    std::vector<Task> task;
+
+    MEO_JSONIZATION(resource, task);
+};
+
+struct RuntimeParam
+{
+    struct Task
+    {
+        std::string entry;
+        json::value param;
+    };
+    std::vector<std::string> resource_path;
+    std::vector<Task> task;
+    std::vector<Executor> executor;
 };
 
 MAA_PROJECT_INTERFACE_NS_END
