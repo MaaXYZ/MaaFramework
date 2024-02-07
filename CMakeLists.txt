@@ -8,6 +8,9 @@ set(CMAKE_MAP_IMPORTED_CONFIG_DebWithRelDeps "DebWithRelDeps;Release;")
 
 set(Boost_NO_WARN_NEW_VERSIONS 1)
 
+set(CMAKE_CXX_STANDARD 20)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+
 option(USE_MAADEPS "use third-party libraries built by MaaDeps" ON)
 
 option(WITH_ADB_CONTROLLER "build with adb controller" ON)
