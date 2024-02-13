@@ -22,4 +22,4 @@ MAA_NS_END
 #define _CatVarNameWithLine(Var) _Cat(Var, __LINE__)
 #define ScopeHelperVarName _CatVarNameWithLine(_scope_)
 
-#define OnScopeLeave(func) ScopeLeaveHelper ScopeHelperVarName(func)
+#define OnScopeLeave(func) MAA_NS::ScopeLeaveHelper ScopeHelperVarName(func)

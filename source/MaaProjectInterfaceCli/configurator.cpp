@@ -5,6 +5,7 @@
 #include "ProjectInterface/Parser.h"
 #include "Utils/Logger.h"
 #include "Utils/Platform.h"
+#include "Utils/StringMisc.hpp"
 
 using namespace MAA_PROJECT_INTERFACE_NS;
 
@@ -54,6 +55,8 @@ void Configurator::save()
 
 std::optional<RuntimeParam> Configurator::generate_runtime() const
 {
+    constexpr std::string_view kProjectDir = "{PROJECT_DIR}";
+
     RuntimeParam runtime;
 
     auto resource_iter =
@@ -64,7 +67,10 @@ std::optional<RuntimeParam> Configurator::generate_runtime() const
         return std::nullopt;
     }
 
-    runtime.resource_path = resource_iter->path;
+    for (const auto& path_string : resource_iter->path) {
+        auto dst = MaaNS::string_replace_all(path_string, kProjectDir, MaaNS::path_to_utf8_string(project_dir_));
+        runtime.resource_path.emplace_back(dst);
+    }
 
     for (const auto& config_task : config_.task) {
         auto task_opt = generate_runtime_task(config_task);
@@ -77,6 +83,19 @@ std::optional<RuntimeParam> Configurator::generate_runtime() const
 
     runtime.recognizer = data_.recognizer;
     runtime.action = data_.action;
+    for (auto& [name, executor] : runtime.recognizer) {
+        for (auto& param : executor.exec_param) {
+            MaaNS::string_replace_all_(param, kProjectDir, MaaNS::path_to_utf8_string(project_dir_));
+        }
+    }
+    for (auto& [name, executor] : runtime.action) {
+        for (auto& param : executor.exec_param) {
+            MaaNS::string_replace_all_(param, kProjectDir, MaaNS::path_to_utf8_string(project_dir_));
+        }
+    }
+
+    runtime.adb_param = config_.adb_param;
+    runtime.adb_param.agent_path = MaaNS::path_to_utf8_string(project_dir_ / "MaaAgentBinary");
 
     LogTrace << VAR(runtime);
     return runtime;

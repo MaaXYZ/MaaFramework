@@ -2,6 +2,7 @@
 
 #include <unordered_set>
 
+#include "MaaToolkit/Device/MaaToolkitDevice.h"
 #include "Utils/Logger.h"
 #include "Utils/Platform.h"
 
@@ -33,6 +34,7 @@ void clear_screen()
 
 void Interactor::interact_for_first_time_use()
 {
+    select_adb();
     select_resource();
     add_task();
 }
@@ -60,11 +62,13 @@ void Interactor::interact()
     }
 
     while (true) {
+        print_config();
         if (interact_once()) {
             break;
         }
         config_.save();
     }
+    print_config();
 }
 
 std::optional<MAA_PROJECT_INTERFACE_NS::RuntimeParam> Interactor::generate_runtime() const
@@ -72,21 +76,34 @@ std::optional<MAA_PROJECT_INTERFACE_NS::RuntimeParam> Interactor::generate_runti
     return config_.generate_runtime();
 }
 
-bool Interactor::interact_once()
+void Interactor::print_config() const
 {
     clear_screen();
     std::cout << "\n### Current configuration ###\n\n";
+
+    std::cout << "Controller:\n\n";
+    std::cout << "\t"
+              << MaaNS::utf8_to_crt(std::format("ADB\n\t\t{}\n\t\t{}",
+                                                MaaNS::path_to_utf8_string(config_.configuration().adb_param.adb_path),
+                                                config_.configuration().adb_param.address))
+              << "\n\n";
+
     std::cout << "Resource:\n\n";
     std::cout << "\t" << MaaNS::utf8_to_crt(config_.configuration().resource) << "\n\n";
+
     std::cout << "Tasks:\n\n";
     print_config_tasks(false);
+}
 
+bool Interactor::interact_once()
+{
     std::cout << "\n\n### Select action ###\n\n";
     std::cout << "\t1. Add task\n";
     std::cout << "\t2. Delete task\n";
     std::cout << "\t3. Move task\n";
-    std::cout << "\t4. Switch resource\n";
-    std::cout << "\t5. Run tasks\n";
+    std::cout << "\t4. Switch controller\n";
+    std::cout << "\t5. Switch resource\n";
+    std::cout << "\t6. Run tasks\n";
     std::cout << "\n";
 
     int action = input(6);
@@ -102,13 +119,84 @@ bool Interactor::interact_once()
         move_task();
         break;
     case 4:
-        select_resource();
+        // TODO: win32
+        select_adb();
         break;
     case 5:
+        select_resource();
+        break;
+    case 6:
         return true;
     }
 
     return false;
+}
+
+void Interactor::select_adb()
+{
+    std::cout << "\n\n\n";
+    std::cout << "### Select ADB ###\n\n";
+
+    std::cout << "\t1. Auto detect\n";
+    std::cout << "\t2. Manual input\n";
+    std::cout << "\n";
+
+    int action = input(2);
+
+    switch (action) {
+    case 1:
+        select_adb_auto_detect();
+        break;
+
+    case 2:
+        select_adb_manual_input();
+        break;
+    }
+}
+
+void Interactor::select_adb_auto_detect()
+{
+    std::cout << "\nFinding device...\n\n";
+
+    MaaToolkitFindDevice();
+    auto size = MaaToolkitWaitForFindDeviceToComplete();
+    if (size == 0) {
+        std::cout << "\nNo device found!\n";
+        select_adb();
+        return;
+    }
+
+    std::cout << "## Select Device ##\n\n";
+
+    for (size_t i = 0; i < size; ++i) {
+        std::string name = MaaToolkitGetDeviceName(i);
+        std::string path = MaaToolkitGetDeviceAdbPath(i);
+        std::string address = MaaToolkitGetDeviceAdbSerial(i);
+
+        std::cout << MaaNS::utf8_to_crt(std::format("\t{}. {}\n\t\t{}\n\t\t{}\n", i + 1, name, path, address));
+    }
+    std::cout << "\n";
+
+    int index = input(size) - 1;
+    auto& adb_param = config_.configuration().adb_param;
+
+    adb_param.adb_path = MaaToolkitGetDeviceAdbPath(index);
+    adb_param.address = MaaToolkitGetDeviceAdbSerial(index);
+    adb_param.type = MaaToolkitGetDeviceAdbControllerType(index);
+    adb_param.config = MaaToolkitGetDeviceAdbConfig(index);
+}
+
+void Interactor::select_adb_manual_input()
+{
+    std::cout << "Please input ADB path: ";
+    std::string adb_path;
+    std::cin >> adb_path;
+    config_.configuration().adb_param.adb_path = adb_path;
+
+    std::cout << "Please input ADB address: ";
+    std::string adb_address;
+    std::cin >> adb_address;
+    config_.configuration().adb_param.address = adb_address;
 }
 
 void Interactor::select_resource()
