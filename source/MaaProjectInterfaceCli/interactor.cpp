@@ -7,7 +7,7 @@
 #include "Utils/Platform.h"
 
 // return [1, size]
-int input(size_t size, std::string_view prompt = "Please input")
+int input(int size, std::string_view prompt = "Please input")
 {
     std::cout << std::format("{} [1-{}]: ", prompt, size);
     int value = 0;
