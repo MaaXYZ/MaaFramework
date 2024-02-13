@@ -7,10 +7,10 @@
 #include "Utils/Platform.h"
 
 // return [1, size]
-int input(int size, std::string_view prompt = "Please input")
+int input(size_t size, std::string_view prompt = "Please input")
 {
     std::cout << std::format("{} [1-{}]: ", prompt, size);
-    int value = 0;
+    size_t value = 0;
 
     while (true) {
         std::cin >> value;
@@ -20,7 +20,7 @@ int input(int size, std::string_view prompt = "Please input")
         std::cout << std::format("Invalid value, {} [1-{}]: ", prompt, size);
     }
 
-    return value;
+    return static_cast<int>(value);
 }
 
 void clear_screen()
