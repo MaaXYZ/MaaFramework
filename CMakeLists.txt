@@ -15,9 +15,9 @@ option(WITH_THRIFT_CONTROLLER "build with thrift controller" ON)
 option(WITH_DBG_CONTROLLER "build with debugging controller" ON)
 option(WITH_WIN32_CONTROLLER "build with win32 controller" ON)
 
-option(WITH_GRPC "build with protobuf and grpc" ON)
+option(WITH_GRPC "build with protobuf and grpc" OFF)
 
-option(BUILD_GRPC_CLI "build grpc CLI exec" ON)
+option(BUILD_GRPC_CLI "build grpc CLI exec" OFF)
 
 option(BUILD_SAMPLE "build a demo" OFF)
 

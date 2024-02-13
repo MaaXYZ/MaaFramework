@@ -1,50 +1,78 @@
 {
     "resource": [
         {
-            "name": "official",
+            "name": "Official",
             "path": [
                 "{PROJECT_DIR}/resource/base"
             ]
         },
         {
-            "name": "bilibili",
+            "name": "Bilibili",
             "path": [
                 "{PROJECT_DIR}/resource/base",
                 "{PROJECT_DIR}/resource/bilibili"
             ]
         }
     ],
-    "entry": [
+    "task": [
         {
-            "task": "StartUp"
+            "name": "启动游戏",
+            "entry": "StartUp"
         },
         {
-            "task": "Awards"
+            "name": "收取荒原",
+            "entry": "Wilderness"
         },
         {
-            "task": "Combat",
+            "name": "每日心相（意志解析）",
+            "entry": "Psychube"
+        },
+        {
+            "name": "常规作战",
+            "entry": "Combat",
             "option": [
-                "combat_stage",
-                "combat_times"
+                "作战关卡",
+                "复现次数",
+                "刷完全部体力",
+                "吃全部临期糖"
             ]
+        },
+        {
+            "name": "活动：绿湖噩梦 17 艰难（活动已结束）",
+            "entry": "ANightmareAtGreenLake",
+            "option": [
+                "复现次数",
+                "刷完全部体力",
+                "吃全部临期糖"
+            ],
+            "param": {
+                "EnterTheShow": {
+                    "next": "ANightmareAtGreenLake"
+                },
+                "TargetStageName": {
+                    "text": "17"
+                },
+                "StageDifficulty": {
+                    "next": "ActivityStageDifficulty"
+                }
+            }
+        },
+        {
+            "name": "领取奖励",
+            "entry": "Awards"
+        },
+        {
+            "name": "关闭游戏",
+            "entry": "Close1999"
         }
     ],
-    "executor": [
-        {
-            "type": "Recognizer",
-            "exec_name": "StageDropRecognition",
-            "exec_path": "Python",
-            "exec_param": [
-                "{PROJECT_DIR}/exec_agent/StageDropRecognition/main.py"
-            ]
-        }
-    ],
-    "option": [
-        {
-            "name": "combat_stage",
-            "case": [
+    "recognizer": {},
+    "action": {},
+    "option": {
+        "作战关卡": {
+            "cases": [
                 {
-                    "name": "3-9",
+                    "name": "3-9 厄险（百灵百验鸟）",
                     "param": {
                         "EnterTheShow": {
                             "next": "MainChapter_3"
@@ -58,7 +86,7 @@
                     }
                 },
                 {
-                    "name": "4-20",
+                    "name": "4-20 厄险（双头形骨架）",
                     "param": {
                         "EnterTheShow": {
                             "next": "MainChapter_4"
@@ -73,10 +101,8 @@
                 }
             ]
         },
-        {
-            "name": "combat_times",
-            "default": "x1",
-            "case": [
+        "复现次数": {
+            "cases": [
                 {
                     "name": "x1",
                     "param": {
@@ -110,6 +136,46 @@
                     }
                 }
             ]
+        },
+        "刷完全部体力": {
+            "cases": [
+                {
+                    "name": "Yes",
+                    "param": {
+                        "AllIn": {
+                            "enabled": true
+                        }
+                    }
+                },
+                {
+                    "name": "No",
+                    "param": {
+                        "AllIn": {
+                            "enabled": false
+                        }
+                    }
+                }
+            ]
+        },
+        "吃全部临期糖": {
+            "cases": [
+                {
+                    "name": "Yes",
+                    "param": {
+                        "EatCandyWithin24H": {
+                            "enabled": true
+                        }
+                    }
+                },
+                {
+                    "name": "No",
+                    "param": {
+                        "EatCandyWithin24H": {
+                            "enabled": false
+                        }
+                    }
+                }
+            ]
         }
-    ]
+    }
 }
