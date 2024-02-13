@@ -17,24 +17,39 @@ bool Configurator::load(const std::filesystem::path& project_dir)
         LogError << "Failed to parse interface.json";
         return false;
     }
-    data_ = *data_opt;
+    data_ = *std::move(data_opt);
     if (data_.resource.empty()) {
         LogError << "Resource is empty";
         return false;
     }
 
-    Configuration config;
     if (auto cfg_opt = Parser::parse_config(project_dir / kConfigFilename)) {
-        config = *cfg_opt;
+        config_ = *std::move(cfg_opt);
+        first_time_use_ = false;
+    }
+    else {
+        first_time_use_ = true;
     }
 
     project_dir_ = project_dir;
     return true;
 }
 
+bool Configurator::check_configuration()
+{
+    LogFunc;
+
+    if (first_time_use_) {
+        return true;
+    }
+
+    return Parser::check_configuration(data_, config_);
+}
+
 void Configurator::save()
 {
-    std::ofstream(project_dir_ / kInterfaceFilename) << config_.to_json();
+    std::ofstream ofs(project_dir_ / kConfigFilename);
+    ofs << config_.to_json();
 }
 
 std::optional<RuntimeParam> Configurator::generate_runtime() const
@@ -60,7 +75,8 @@ std::optional<RuntimeParam> Configurator::generate_runtime() const
         runtime.task.emplace_back(*std::move(task_opt));
     }
 
-    runtime.executor = data_.executor;
+    runtime.recognizer = data_.recognizer;
+    runtime.action = data_.action;
 
     LogTrace << VAR(runtime);
     return runtime;
@@ -68,36 +84,41 @@ std::optional<RuntimeParam> Configurator::generate_runtime() const
 
 std::optional<RuntimeParam::Task> Configurator::generate_runtime_task(const Configuration::Task& config_task) const
 {
-    auto data_iter = std::ranges::find_if(data_.entry, [&](const auto& task) { return task.name == config_task.name; });
-    if (data_iter == data_.entry.end()) {
-        LogWarn << "Task not found, remove" << VAR(config_task.name);
-        return std::nullopt;
-    }
-    const Entry& data_entry = *data_iter;
+    // TODO
 
-    RuntimeParam::Task result { .entry = data_entry.name, .param = data_entry.param };
+    std::ignore = config_task;
+    return std::nullopt;
 
-    for (const auto& [config_option, config_option_value] : config_task.option) {
-        auto data_option_iter =
-            std::ranges::find_if(data_entry.options, [&](const auto& opt) { return opt.name == config_option; });
-        if (data_option_iter == data_entry.options.end()) {
-            LogWarn << "Option not found, remove" << VAR(config_task.name) << VAR(config_option);
-            return std::nullopt;
-        }
-        const Option& data_option = *data_option_iter;
+    // auto data_iter = std::ranges::find_if(data_.entry, [&](const auto& task) { return task.name == config_task.name;
+    // }); if (data_iter == data_.entry.end()) {
+    //     LogWarn << "Task not found, remove" << VAR(config_task.name);
+    //     return std::nullopt;
+    // }
+    // const Entry& data_entry = *data_iter;
 
-        auto case_iter =
-            std::ranges::find_if(data_option.cases, [&](const auto& c) { return c.name == config_option_value; });
-        if (case_iter == data_option.cases.end()) {
-            LogWarn << "Case not found, remove" << VAR(config_task.name) << VAR(config_option)
-                    << VAR(config_option_value);
-            return std::nullopt;
-        }
-        const Option::Case& data_case = *case_iter;
+    // RuntimeParam::Task result { .entry = data_entry.name, .param = data_entry.param };
 
-        // data_case first, duplicate keys will be overwritten by data_case.param
-        result.param = data_case.param | std::move(result.param);
-    }
+    // for (const auto& [config_option, config_option_value] : config_task.option) {
+    //     auto data_option_iter =
+    //         std::ranges::find_if(data_entry.option, [&](const auto& opt) { return opt.name == config_option; });
+    //     if (data_option_iter == data_entry.option.end()) {
+    //         LogWarn << "Option not found, remove" << VAR(config_task.name) << VAR(config_option);
+    //         return std::nullopt;
+    //     }
+    //     const Option& data_option = *data_option_iter;
 
-    return result;
+    //    auto case_iter =
+    //        std::ranges::find_if(data_option.cases, [&](const auto& c) { return c.name == config_option_value; });
+    //    if (case_iter == data_option.cases.end()) {
+    //        LogWarn << "Case not found, remove" << VAR(config_task.name) << VAR(config_option)
+    //                << VAR(config_option_value);
+    //        return std::nullopt;
+    //    }
+    //    const Option::Case& data_case = *case_iter;
+
+    //    // data_case first, duplicate keys will be overwritten by data_case.param
+    //    result.param = data_case.param | std::move(result.param);
+    //}
+
+    // return result;
 }

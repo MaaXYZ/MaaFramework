@@ -8,10 +8,11 @@
 class Configurator
 {
     static constexpr std::string_view kInterfaceFilename = "interface.json";
-    static constexpr std::string_view kConfigFilename = "config/config.json";
+    static constexpr std::string_view kConfigFilename = "config.json";
 
 public:
     bool load(const std::filesystem::path& project_dir);
+    bool check_configuration();
     void save();
 
     std::optional<MAA_PROJECT_INTERFACE_NS::RuntimeParam> generate_runtime() const;
@@ -20,6 +21,7 @@ public:
 
     const auto& configuration() const { return config_; }
     auto& configuration() { return config_; }
+    bool is_first_time_use() const { return first_time_use_; }
 
 private:
     std::optional<MAA_PROJECT_INTERFACE_NS::RuntimeParam::Task> generate_runtime_task(
@@ -28,5 +30,6 @@ private:
     std::filesystem::path project_dir_;
 
     MAA_PROJECT_INTERFACE_NS::InterfaceData data_;
+    bool first_time_use_ = false;
     MAA_PROJECT_INTERFACE_NS::Configuration config_;
 };

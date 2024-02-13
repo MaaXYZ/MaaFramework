@@ -26,7 +26,19 @@ std::optional<InterfaceData> Parser::parse_interface(const json::value& json)
         return std::nullopt;
     }
 
-    return json.as<InterfaceData>();
+    auto data = json.as<InterfaceData>();
+
+    // check option for task
+    for (auto& task : data.task) {
+        for (auto& option : task.option) {
+            if (!data.option.contains(option)) {
+                LogError << "Option not found" << VAR(option);
+                return std::nullopt;
+            }
+        }
+    }
+
+    return data;
 }
 
 std::optional<Configuration> Parser::parse_config(const std::filesystem::path& path)
@@ -35,7 +47,7 @@ std::optional<Configuration> Parser::parse_config(const std::filesystem::path& p
 
     auto json_opt = json::open(path);
     if (!json_opt) {
-        LogError << "failed to parse" << path;
+        LogWarn << "failed to parse" << path;
         return std::nullopt;
     }
 
@@ -56,6 +68,13 @@ std::optional<Configuration> Parser::parse_config(const json::value& json)
     return json.as<Configuration>();
 }
 
-void Parser::check_configuration(const InterfaceData& data, Configuration& config) {}
+bool Parser::check_configuration(const InterfaceData& data, Configuration& config)
+{
+    // TODO
+    std::ignore = data;
+    std::ignore = config;
+
+    return true;
+}
 
 MAA_PROJECT_INTERFACE_NS_END
