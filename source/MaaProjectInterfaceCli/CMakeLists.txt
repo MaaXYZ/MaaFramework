@@ -11,3 +11,8 @@ target_link_libraries(MaaPiCli ProjectInterface MaaUtils MaaFramework MaaToolkit
 add_dependencies(MaaPiCli ProjectInterface MaaUtils MaaFramework MaaToolkit)
 
 source_group(TREE ${CMAKE_CURRENT_SOURCE_DIR} FILES ${maa_pi_cli_src})
+
+install(TARGETS MaaPiCli
+    RUNTIME DESTINATION bin
+    LIBRARY DESTINATION bin
+)
