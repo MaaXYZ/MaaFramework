@@ -6,7 +6,7 @@
 #include "interactor.h"
 #include "runner.h"
 
-void pause()
+void mpause()
 {
     std::cout << "\nPress Enter to continue...";
     std::cin.get();
@@ -21,7 +21,7 @@ int main(int argc, char** argv)
 
     Interactor interactor;
     if (!interactor.load(project_dir)) {
-        pause();
+        mpause();
         return -1;
     }
 
@@ -43,16 +43,16 @@ int main(int argc, char** argv)
 
     auto runtime_opt = interactor.generate_runtime();
     if (!runtime_opt) {
-        pause();
+        mpause();
         return -1;
     }
 
     bool ret = Runner::run(*runtime_opt);
     if (!ret) {
-        pause();
+        mpause();
         return -1;
     }
 
-    pause();
+    mpause();
     return 0;
 }
