@@ -91,10 +91,11 @@ struct RuntimeParam
 {
     struct Task
     {
+        std::string name;
         std::string entry;
         json::object param;
 
-        MEO_JSONIZATION(entry, param);
+        MEO_JSONIZATION(name, entry, param);
     };
 
     std::vector<std::string> resource_path;

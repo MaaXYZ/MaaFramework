@@ -5,15 +5,14 @@
 class Interactor
 {
 public:
-    const auto& configurator() const { return config_; }
-
     bool load(const std::filesystem::path& project_dir);
     void interact();
+    std::optional<MAA_PROJECT_INTERFACE_NS::RuntimeParam> generate_runtime() const;
 
 private:
     void interact_for_first_time_use();
 
-    void interact_once();
+    bool interact_once();
     void select_resource();
     void add_task();
     void edit_task();

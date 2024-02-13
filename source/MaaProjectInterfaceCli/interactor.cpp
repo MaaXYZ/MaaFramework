@@ -60,12 +60,19 @@ void Interactor::interact()
     }
 
     while (true) {
-        interact_once();
+        if (interact_once()) {
+            break;
+        }
         config_.save();
     }
 }
 
-void Interactor::interact_once()
+std::optional<MAA_PROJECT_INTERFACE_NS::RuntimeParam> Interactor::generate_runtime() const
+{
+    return config_.generate_runtime();
+}
+
+bool Interactor::interact_once()
 {
     clear_screen();
     std::cout << "\n### Current configuration ###\n\n";
@@ -98,9 +105,10 @@ void Interactor::interact_once()
         select_resource();
         break;
     case 5:
-        // run_tasks();
-        break;
+        return true;
     }
+
+    return false;
 }
 
 void Interactor::select_resource()

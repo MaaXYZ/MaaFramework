@@ -18,5 +18,7 @@ int main(int argc, char** argv)
 
     interactor.interact();
 
+    auto runtime = interactor.generate_runtime();
+
     return 0;
 }
