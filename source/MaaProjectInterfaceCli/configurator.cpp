@@ -49,6 +49,8 @@ bool Configurator::check_configuration()
 
 void Configurator::save()
 {
+    std::filesystem::create_directories((project_dir_ / kConfigFilename).parent_path());
+
     std::ofstream ofs(project_dir_ / kConfigFilename);
     ofs << config_.to_json();
 }

@@ -1,9 +1,16 @@
 #include <filesystem>
+#include <iostream>
 
 #include "Utils/Platform.h"
 
 #include "interactor.h"
 #include "runner.h"
+
+void pause()
+{
+    std::cout << "\nPress Enter to continue...";
+    std::cin.get();
+}
 
 int main(int argc, char** argv)
 {
@@ -14,6 +21,7 @@ int main(int argc, char** argv)
 
     Interactor interactor;
     if (!interactor.load(project_dir)) {
+        pause();
         return -1;
     }
 
@@ -35,13 +43,16 @@ int main(int argc, char** argv)
 
     auto runtime_opt = interactor.generate_runtime();
     if (!runtime_opt) {
+        pause();
         return -1;
     }
 
     bool ret = Runner::run(*runtime_opt);
     if (!ret) {
+        pause();
         return -1;
     }
 
+    pause();
     return 0;
 }

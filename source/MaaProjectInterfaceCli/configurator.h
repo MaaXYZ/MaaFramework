@@ -8,7 +8,7 @@
 class Configurator
 {
     static constexpr std::string_view kInterfaceFilename = "interface.json";
-    static constexpr std::string_view kConfigFilename = "config.json";
+    static constexpr std::string_view kConfigFilename = "config/config.json";
 
 public:
     bool load(const std::filesystem::path& project_dir);

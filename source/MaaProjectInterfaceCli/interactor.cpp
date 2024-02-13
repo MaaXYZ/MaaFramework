@@ -35,6 +35,8 @@ void clear_screen()
 
 void Interactor::interact_for_first_time_use()
 {
+    std::cout << "Welcome to use Maa Project Interface CLI!";
+
     select_adb();
     select_resource();
     add_task();
@@ -80,7 +82,7 @@ std::optional<MAA_PROJECT_INTERFACE_NS::RuntimeParam> Interactor::generate_runti
 void Interactor::print_config() const
 {
     clear_screen();
-    std::cout << "\n### Current configuration ###\n\n";
+    std::cout << "### Current configuration ###\n\n";
 
     std::cout << "Controller:\n\n";
     std::cout << "\t"
@@ -99,11 +101,11 @@ void Interactor::print_config() const
 bool Interactor::interact_once()
 {
     std::cout << "\n\n### Select action ###\n\n";
-    std::cout << "\t1. Add task\n";
-    std::cout << "\t2. Delete task\n";
-    std::cout << "\t3. Move task\n";
-    std::cout << "\t4. Switch controller\n";
-    std::cout << "\t5. Switch resource\n";
+    std::cout << "\t1. Switch controller\n";
+    std::cout << "\t2. Switch resource\n";
+    std::cout << "\t3. Add task\n";
+    std::cout << "\t4. Move task\n";
+    std::cout << "\t5. Delete task\n";
     std::cout << "\t6. Run tasks\n";
     std::cout << "\n";
 
@@ -111,20 +113,20 @@ bool Interactor::interact_once()
 
     switch (action) {
     case 1:
-        add_task();
-        break;
-    case 2:
-        delete_task();
-        break;
-    case 3:
-        move_task();
-        break;
-    case 4:
         // TODO: win32
         select_adb();
         break;
-    case 5:
+    case 2:
         select_resource();
+        break;
+    case 3:
+        add_task();
+        break;
+    case 4:
+        move_task();
+        break;
+    case 5:
+        delete_task();
         break;
     case 6:
         return true;
@@ -135,7 +137,7 @@ bool Interactor::interact_once()
 
 void Interactor::select_adb()
 {
-    std::cout << "\n\n\n";
+    std::cout << "\n\n";
     std::cout << "### Select ADB ###\n\n";
 
     std::cout << "\t1. Auto detect\n";
@@ -212,7 +214,7 @@ void Interactor::select_resource()
 
     int index = 0;
     if (all_resources.size() != 1) {
-        std::cout << "\n\n\n";
+        std::cout << "\n\n";
         std::cout << "### Select resource ###\n\n";
         for (size_t i = 0; i < all_resources.size(); ++i) {
             std::cout << MaaNS::utf8_to_crt(MAA_FMT::format("\t{}. {}\n", i + 1, all_resources[i].name));
@@ -221,7 +223,7 @@ void Interactor::select_resource()
         index = input(all_resources.size()) - 1;
     }
     else {
-        std::cout << "\n\n\n";
+        std::cout << "\n\n";
         std::cout << "### Only one resource, use it ###\n\n";
         index = 0;
     }
@@ -240,7 +242,7 @@ void Interactor::add_task()
         return;
     }
 
-    std::cout << "\n\n\n";
+    std::cout << "\n\n";
     std::cout << "### Add task ###\n\n";
     for (size_t i = 0; i < all_data_tasks.size(); ++i) {
         std::cout << MaaNS::utf8_to_crt(MAA_FMT::format("\t{}. {}\n", i + 1, all_data_tasks[i].name));
@@ -262,7 +264,7 @@ void Interactor::add_task()
             config_options.emplace_back(Configuration::Option { option_name, opt.default_case });
             continue;
         }
-        std::cout << MaaNS::utf8_to_crt(MAA_FMT::format("\n\n\n## Input option for \"{}\" ##\n\n", option_name));
+        std::cout << MaaNS::utf8_to_crt(MAA_FMT::format("\n\n## Input option for \"{}\" ##\n\n", option_name));
         for (size_t i = 0; i < opt.cases.size(); ++i) {
             std::cout << MaaNS::utf8_to_crt(MAA_FMT::format("\t{}. {}\n", i + 1, opt.cases[i].name));
         }
@@ -291,7 +293,7 @@ void Interactor::delete_task()
         return;
     }
 
-    std::cout << "\n\n\n### Delete task ###\n\n";
+    std::cout << "\n\n### Delete task ###\n\n";
 
     print_config_tasks();
 
@@ -310,7 +312,7 @@ void Interactor::move_task()
         return;
     }
 
-    std::cout << "\n\n\n### Move task ###\n\n";
+    std::cout << "\n\n### Move task ###\n\n";
 
     print_config_tasks(true);
 
