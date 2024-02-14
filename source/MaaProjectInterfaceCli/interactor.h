@@ -13,6 +13,7 @@ public:
 private:
     void interact_for_first_time_use();
 
+    void welcome() const;
     bool interact_once();
     void select_adb();
     void select_adb_auto_detect();

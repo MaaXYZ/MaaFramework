@@ -20,6 +20,7 @@ int input(size_t size, std::string_view prompt = "Please input")
         }
         std::cout << MAA_FMT::format("Invalid value, {} [1-{}]: ", prompt, size);
     }
+    std::cout << "\n";
 
     return static_cast<int>(value);
 }
@@ -35,8 +36,7 @@ void clear_screen()
 
 void Interactor::interact_for_first_time_use()
 {
-    std::cout << "Welcome to use Maa Project Interface CLI!";
-
+    welcome();
     select_adb();
     select_resource();
     add_task();
@@ -51,7 +51,7 @@ bool Interactor::load(const std::filesystem::path& project_dir)
     }
 
     if (!config_.check_configuration()) {
-        std::cout << "\n### The interface has changed and incompatible configurations have been deleted. ###\n\n";
+        std::cout << "### The interface has changed and incompatible configurations have been deleted. ###\n\n";
     }
 
     return true;
@@ -71,7 +71,6 @@ void Interactor::interact()
         }
         config_.save();
     }
-    print_config();
 }
 
 std::optional<MAA_PROJECT_INTERFACE_NS::RuntimeParam> Interactor::generate_runtime() const
@@ -82,6 +81,7 @@ std::optional<MAA_PROJECT_INTERFACE_NS::RuntimeParam> Interactor::generate_runti
 void Interactor::print_config() const
 {
     clear_screen();
+    welcome();
     std::cout << "### Current configuration ###\n\n";
 
     std::cout << "Controller:\n\n";
@@ -98,9 +98,14 @@ void Interactor::print_config() const
     print_config_tasks(false);
 }
 
+void Interactor::welcome() const
+{
+    std::cout << "Welcome to use Maa Project Interface CLI!\n\n";
+}
+
 bool Interactor::interact_once()
 {
-    std::cout << "\n\n### Select action ###\n\n";
+    std::cout << "### Select action ###\n\n";
     std::cout << "\t1. Switch controller\n";
     std::cout << "\t2. Switch resource\n";
     std::cout << "\t3. Add task\n";
@@ -137,7 +142,6 @@ bool Interactor::interact_once()
 
 void Interactor::select_adb()
 {
-    std::cout << "\n\n";
     std::cout << "### Select ADB ###\n\n";
 
     std::cout << "\t1. Auto detect\n";
@@ -159,12 +163,12 @@ void Interactor::select_adb()
 
 void Interactor::select_adb_auto_detect()
 {
-    std::cout << "\nFinding device...\n\n";
+    std::cout << "Finding device...\n\n";
 
     MaaToolkitFindDevice();
     auto size = MaaToolkitWaitForFindDeviceToComplete();
     if (size == 0) {
-        std::cout << "\nNo device found!\n";
+        std::cout << "No device found!\n\n";
         select_adb();
         return;
     }
@@ -195,11 +199,13 @@ void Interactor::select_adb_manual_input()
     std::string adb_path;
     std::cin >> adb_path;
     config_.configuration().adb_param.adb_path = adb_path;
+    std::cout << "\n";
 
     std::cout << "Please input ADB address: ";
     std::string adb_address;
     std::cin >> adb_address;
     config_.configuration().adb_param.address = adb_address;
+    std::cout << "\n";
 }
 
 void Interactor::select_resource()
@@ -214,7 +220,6 @@ void Interactor::select_resource()
 
     int index = 0;
     if (all_resources.size() != 1) {
-        std::cout << "\n\n";
         std::cout << "### Select resource ###\n\n";
         for (size_t i = 0; i < all_resources.size(); ++i) {
             std::cout << MaaNS::utf8_to_crt(MAA_FMT::format("\t{}. {}\n", i + 1, all_resources[i].name));
@@ -223,7 +228,6 @@ void Interactor::select_resource()
         index = input(all_resources.size()) - 1;
     }
     else {
-        std::cout << "\n\n";
         std::cout << "### Only one resource, use it ###\n\n";
         index = 0;
     }
@@ -242,7 +246,6 @@ void Interactor::add_task()
         return;
     }
 
-    std::cout << "\n\n";
     std::cout << "### Add task ###\n\n";
     for (size_t i = 0; i < all_data_tasks.size(); ++i) {
         std::cout << MaaNS::utf8_to_crt(MAA_FMT::format("\t{}. {}\n", i + 1, all_data_tasks[i].name));
@@ -293,7 +296,7 @@ void Interactor::delete_task()
         return;
     }
 
-    std::cout << "\n\n### Delete task ###\n\n";
+    std::cout << "### Delete task ###\n\n";
 
     print_config_tasks();
 
@@ -312,7 +315,7 @@ void Interactor::move_task()
         return;
     }
 
-    std::cout << "\n\n### Move task ###\n\n";
+    std::cout << "### Move task ###\n\n";
 
     print_config_tasks(true);
 
