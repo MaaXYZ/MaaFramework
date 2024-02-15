@@ -10,6 +10,7 @@
 
 #include <Psapi.h>
 
+#include "Utils/IOStream/BoostIO.hpp"
 #include "Utils/Logger.h"
 #include "Utils/Platform.h"
 
@@ -86,6 +87,18 @@ std::vector<Device> DeviceMgrWin32::find_device_impl()
             result.emplace_back(std::move(device));
         }
     }
+
+    auto env_adb = boost::process::search_path("adb");
+
+    if (std::filesystem::exists(env_adb)) {
+        auto env_adb_devices = find_device_with_adb_impl(path_to_utf8_string(env_adb));
+        result.insert(result.end(), std::make_move_iterator(env_adb_devices.begin()),
+                      std::make_move_iterator(env_adb_devices.end()));
+    }
+
+    // 去重
+    std::sort(result.begin(), result.end());
+    result.erase(std::unique(result.begin(), result.end()), result.end());
 
     return result;
 }
