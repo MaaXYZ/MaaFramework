@@ -81,23 +81,27 @@ class MaaAdbControllerTypeEnum:
     Touch_Adb: MaaAdbControllerType = 1
     Touch_MiniTouch: MaaAdbControllerType = 2
     Touch_MaaTouch: MaaAdbControllerType = 3
+    Touch_AutoDetect: MaaAdbControllerType = 0xFF - 1
     Touch_Mask: MaaAdbControllerType = 0xFF
 
     Key_Adb: MaaAdbControllerType = 1 << 8
     Key_MaaTouch: MaaAdbControllerType = 2 << 8
+    Key_AutoDetect: MaaAdbControllerType = 0xFF00 - (1 << 8)
     Key_Mask: MaaAdbControllerType = 0xFF00
 
     Input_Preset_Adb: MaaAdbControllerType = Touch_Adb | Key_Adb
     Input_Preset_Minitouch: MaaAdbControllerType = Touch_MiniTouch | Key_Adb
     Input_Preset_Maatouch: MaaAdbControllerType = Touch_MaaTouch | Key_MaaTouch
+    Input_Preset_AutoDetect: MaaAdbControllerType = Touch_AutoDetect | Key_AutoDetect
 
-    Screencap_FastestWay: MaaAdbControllerType = 1 << 16
     Screencap_RawByNetcat: MaaAdbControllerType = 2 << 16
     Screencap_RawWithGzip: MaaAdbControllerType = 3 << 16
     Screencap_Encode: MaaAdbControllerType = 4 << 16
     Screencap_EncodeToFile: MaaAdbControllerType = 5 << 16
     Screencap_MinicapDirect: MaaAdbControllerType = 6 << 16
     Screencap_MinicapStream: MaaAdbControllerType = 7 << 16
+    Screencap_FastestLosslessWay: MaaAdbControllerType = 0xFF0000 - (2 << 16)
+    Screencap_FastestWay: MaaAdbControllerType = 0xFF0000 - (1 << 16)
     Screencap_Mask: MaaAdbControllerType = 0xFF0000
 
 

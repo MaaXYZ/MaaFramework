@@ -139,7 +139,7 @@ class AdbController(Controller):
         adb_path: str,
         address: str,
         type: MaaAdbControllerType = (
-            MaaAdbControllerTypeEnum.Input_Preset_Maatouch
+            MaaAdbControllerTypeEnum.Input_Preset_AutoDetect
             | MaaAdbControllerTypeEnum.Screencap_FastestWay
         ),
         config: Dict[str, Any] = {},
