@@ -15,6 +15,8 @@ private:
 
     void welcome() const;
     bool interact_once();
+
+    void select_controller();
     void select_adb();
     void select_adb_auto_detect();
     void select_adb_manual_input();

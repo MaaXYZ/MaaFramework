@@ -37,7 +37,7 @@ void clear_screen()
 void Interactor::interact_for_first_time_use()
 {
     welcome();
-    select_adb();
+    select_controller();
     select_resource();
     add_task();
 }
@@ -86,9 +86,10 @@ void Interactor::print_config() const
 
     std::cout << "Controller:\n\n";
     std::cout << "\t"
-              << MaaNS::utf8_to_crt(MAA_FMT::format(
-                     "ADB\n\t\t{}\n\t\t{}", MaaNS::path_to_utf8_string(config_.configuration().adb_param.adb_path),
-                     config_.configuration().adb_param.address))
+              << MaaNS::utf8_to_crt(
+                     MAA_FMT::format("{}\n\t\t{}\n\t\t{}", config_.configuration().controller.name,
+                                     MaaNS::path_to_utf8_string(config_.configuration().controller.adb_path),
+                                     config_.configuration().controller.address))
               << "\n\n";
 
     std::cout << "Resource:\n\n";
@@ -118,8 +119,7 @@ bool Interactor::interact_once()
 
     switch (action) {
     case 1:
-        // TODO: win32
-        select_adb();
+        select_controller();
         break;
     case 2:
         select_resource();
@@ -138,6 +138,42 @@ bool Interactor::interact_once()
     }
 
     return false;
+}
+
+void Interactor::select_controller()
+{
+    using namespace MAA_PROJECT_INTERFACE_NS;
+
+    const auto& all_controllers = config_.interface_data().controller;
+    if (all_controllers.empty()) {
+        LogError << "Controller is empty";
+        return;
+    }
+
+    int index = 0;
+    if (all_controllers.size() != 1) {
+        std::cout << "### Select controller ###\n\n";
+        for (size_t i = 0; i < all_controllers.size(); ++i) {
+            std::cout << MaaNS::utf8_to_crt(MAA_FMT::format("\t{}. {}\n", i + 1, all_controllers[i].name));
+        }
+        std::cout << "\n";
+        index = input(all_controllers.size()) - 1;
+    }
+    else {
+        index = 0;
+    }
+    const auto& controller = all_controllers[index];
+
+    if (controller.type == "Adb") {
+        select_adb();
+    }
+    else if (controller.type == "Win32") {
+        // TODO: Win32
+    }
+    else {
+        LogError << "Unknown controller type" << VAR(controller.type);
+    }
+    config_.configuration().controller.name = controller.name;
 }
 
 void Interactor::select_adb()
@@ -185,12 +221,10 @@ void Interactor::select_adb_auto_detect()
     std::cout << "\n";
 
     int index = input(size) - 1;
-    auto& adb_param = config_.configuration().adb_param;
+    auto& adb_param = config_.configuration().controller;
 
     adb_param.adb_path = MaaToolkitGetDeviceAdbPath(index);
     adb_param.address = MaaToolkitGetDeviceAdbSerial(index);
-    adb_param.type = MaaToolkitGetDeviceAdbControllerType(index);
-    adb_param.config = MaaToolkitGetDeviceAdbConfig(index);
 }
 
 void Interactor::select_adb_manual_input()
@@ -198,13 +232,13 @@ void Interactor::select_adb_manual_input()
     std::cout << "Please input ADB path: ";
     std::string adb_path;
     std::cin >> adb_path;
-    config_.configuration().adb_param.adb_path = adb_path;
+    config_.configuration().controller.adb_path = adb_path;
     std::cout << "\n";
 
     std::cout << "Please input ADB address: ";
     std::string adb_address;
     std::cin >> adb_address;
-    config_.configuration().adb_param.address = adb_address;
+    config_.configuration().controller.address = adb_address;
     std::cout << "\n";
 }
 
@@ -228,7 +262,6 @@ void Interactor::select_resource()
         index = input(all_resources.size()) - 1;
     }
     else {
-        std::cout << "### Only one resource, use it ###\n\n";
         index = 0;
     }
     const auto& resource = all_resources[index];

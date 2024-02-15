@@ -18,7 +18,7 @@ bool Runner::run(const MAA_PROJECT_INTERFACE_NS::RuntimeParam& param)
     auto maa_handle = MaaCreate(&Runner::on_maafw_notify, nullptr);
 
     auto controller_handle = MaaAdbControllerCreateV2(param.adb_param.adb_path.c_str(), param.adb_param.address.c_str(),
-                                                      param.adb_param.type, param.adb_param.config.c_str(),
+                                                      param.adb_param.controller_type, param.adb_param.config.c_str(),
                                                       param.adb_param.agent_path.c_str(), nullptr, nullptr);
     auto resource_handle = MaaResourceCreate(nullptr, nullptr);
 

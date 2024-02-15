@@ -1,4 +1,13 @@
 {
+    "controller": [
+        {
+            "name": "ADB 默认方式",
+            "type": "Adb",
+            "touch": 254,
+            "key": 65024,
+            "screencap": 16646144
+        }
+    ],
     "resource": [
         {
             "name": "Official",
@@ -66,8 +75,21 @@
             "entry": "Close1999"
         }
     ],
-    "recognizer": {},
-    "action": {},
+    "recognizer": {
+        "StageDropsRecognizer": {
+            "exec_path": "Python",
+            "exec_param": [
+                "{PROJECT_DIR}/exec_agent/StageDropsRecognizer/__main__.py",
+                "my_custom_args"
+            ]
+        }
+    },
+    "action": {
+        "StageDropsUploador": {
+            "exec_path": "{PROJECT_DIR}/exec_agent/StageDropsUploador.exe",
+            "exec_param": []
+        }
+    },
     "option": {
         "作战关卡": {
             "cases": [

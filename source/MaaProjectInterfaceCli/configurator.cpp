@@ -96,7 +96,18 @@ std::optional<RuntimeParam> Configurator::generate_runtime() const
         }
     }
 
-    runtime.adb_param = config_.adb_param;
+    auto controller_iter = std::ranges::find_if(
+        data_.controller, [&](const auto& controller) { return controller.name == config_.controller.name; });
+    if (controller_iter == data_.controller.end()) {
+        LogWarn << "Controller not found" << VAR(config_.controller.name);
+        return std::nullopt;
+    }
+    runtime.adb_param.controller_type = controller_iter->touch | controller_iter->key | controller_iter->screencap;
+    runtime.adb_param.config = controller_iter->config.to_string();
+
+    runtime.adb_param.name = config_.controller.name;
+    runtime.adb_param.adb_path = config_.controller.adb_path;
+    runtime.adb_param.address = config_.controller.address;
     runtime.adb_param.agent_path = MaaNS::path_to_utf8_string(project_dir_ / "MaaAgentBinary");
 
     LogTrace << VAR(runtime);
