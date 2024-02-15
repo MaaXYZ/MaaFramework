@@ -46,7 +46,7 @@ bool DeviceMgr::is_find_completed() const
     if (devices_.has_value()) {
         return true;
     }
-    
+
     if (!find_device_future_.valid()) {
         return false;
     }
@@ -143,8 +143,7 @@ MaaAdbControllerType DeviceMgr::check_adb_controller_type(const std::filesystem:
     std::ignore = adb_serial;
     std::ignore = adb_config;
 
-    // TODO: 判断触控方式是否支持
-    constexpr MaaAdbControllerType kInputType = MaaAdbControllerType_Input_Preset_Maatouch;
+    constexpr MaaAdbControllerType kInputType = MaaAdbControllerType_Input_Preset_AutoDetect;
     constexpr MaaAdbControllerType kScreencapType = MaaAdbControllerType_Screencap_FastestWay;
 
     return kInputType | kScreencapType;

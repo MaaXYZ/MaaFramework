@@ -4,17 +4,34 @@
 
 MAA_CTRL_UNIT_NS_BEGIN
 
-class TapTouchInput : public TouchInputBase
+class AutoDetectInput : public TouchInputBase, public KeyInputBase
 {
 public:
-    virtual ~TapTouchInput() override = default;
+    enum class TouchMethod
+    {
+        UnknownYet,
+        Maatouch,
+        Minitouch,
+        AdbTap,
+    };
+
+    enum class KeyMethod
+    {
+        UnknownYet,
+        Maatouch,
+        AdbKey,
+    };
+
+public:
+    AutoDetectInput(const std::filesystem::path& maatouch_path, const std::filesystem::path& minitouch_path);
+    virtual ~AutoDetectInput() override = default;
 
 public: // from UnitBase
     virtual bool parse(const json::value& config) override;
 
 public: // from TouchInputAPI
     virtual bool init(int swidth, int sheight, int orientation) override;
-    virtual void deinit() override {}
+    virtual void deinit() override;
     virtual bool set_wh(int swidth, int sheight, int orientation) override;
 
     virtual bool click(int x, int y) override;
@@ -24,26 +41,17 @@ public: // from TouchInputAPI
     virtual bool touch_move(int contact, int x, int y, int pressure) override;
     virtual bool touch_up(int contact) override;
 
-private:
-    ProcessArgvGenerator click_argv_;
-    ProcessArgvGenerator swipe_argv_;
-};
-
-class TapKeyInput : public KeyInputBase
-{
-public:
-    virtual ~TapKeyInput() override = default;
-
-public: // from UnitBase
-    virtual bool parse(const json::value& config) override;
-
 public: // from KeyInputAPI
+    virtual bool init() override;
     virtual bool press_key(int key) override;
     virtual bool input_text(const std::string& text) override;
 
 private:
-    ProcessArgvGenerator press_key_argv_;
-    ProcessArgvGenerator input_text_argv_;
+    std::vector<std::pair<TouchMethod, std::shared_ptr<TouchInputBase>>> touch_units_;
+    std::vector<std::pair<KeyMethod, std::shared_ptr<KeyInputBase>>> key_units_;
+
+    std::shared_ptr<TouchInputBase> available_touch_ = nullptr;
+    std::shared_ptr<KeyInputBase> available_key_ = nullptr;
 };
 
 MAA_CTRL_UNIT_NS_END

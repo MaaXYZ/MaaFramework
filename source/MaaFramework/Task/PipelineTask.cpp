@@ -114,7 +114,7 @@ std::optional<PipelineTask::HitResult> PipelineTask::find_first(const std::vecto
 {
     if (!controller()) {
         LogError << "Controller not binded";
-        return std::nullopt;
+        std::abort();
     }
 
     LogFunc << VAR(cur_task_name_) << VAR(list);

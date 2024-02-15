@@ -3,13 +3,19 @@
 #include <ranges>
 #include <unordered_set>
 
+#include "Encode.h"
+#include "EncodeToFile.h"
+#include "Minicap/MinicapDirect.h"
+#include "Minicap/MinicapStream.h"
+#include "RawByNetcat.h"
+#include "RawWithGzip.h"
 #include "Utils/Format.hpp"
 #include "Utils/Logger.h"
 #include "Utils/NoWarningCV.hpp"
 
 MAA_CTRL_UNIT_NS_BEGIN
 
-ScreencapFastestWay::ScreencapFastestWay(const std::filesystem::path& minicap_path)
+ScreencapFastestWay::ScreencapFastestWay(const std::filesystem::path& minicap_path, bool lossless)
 {
     units_ = {
         { Method::RawByNetcat, std::make_shared<ScreencapRawByNetcat>() },
@@ -18,14 +24,16 @@ ScreencapFastestWay::ScreencapFastestWay(const std::filesystem::path& minicap_pa
         { Method::EncodeToFileAndPull, std::make_shared<ScreencapEncodeToFileAndPull>() },
     };
 
-    if (std::filesystem::exists(minicap_path)) {
-        units_.merge(decltype(units_) {
-            { Method::MinicapDirect, std::make_shared<MinicapDirect>(minicap_path) },
-            { Method::MinicapStream, std::make_shared<MinicapStream>(minicap_path) },
-        });
-    }
-    else {
-        LogWarn << "minicap path not exists" << VAR(minicap_path);
+    if (!lossless) {
+        if (std::filesystem::exists(minicap_path)) {
+            units_.merge(decltype(units_) {
+                { Method::MinicapDirect, std::make_shared<MinicapDirect>(minicap_path) },
+                { Method::MinicapStream, std::make_shared<MinicapStream>(minicap_path) },
+            });
+        }
+        else {
+            LogWarn << "minicap path not exists" << VAR(minicap_path);
+        }
     }
 
     for (auto& unit : units_ | std::views::values) {

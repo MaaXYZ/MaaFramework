@@ -50,6 +50,11 @@ bool MaatouchInput::set_wh(int swidth, int sheight, int orientation)
     return read_info(swidth, sheight, orientation);
 }
 
+bool MaatouchInput::init()
+{
+    return touch_width_ > 0 && touch_height_ > 0;
+}
+
 bool MaatouchInput::press_key(int key)
 {
     LogInfo << VAR(key);

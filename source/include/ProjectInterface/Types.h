@@ -67,7 +67,8 @@ struct AdbControllerParam
 {
     std::string adb_path;
     std::string address;
-    MaaAdbControllerType type = MaaAdbControllerType_Input_Preset_Maatouch | MaaAdbControllerType_Screencap_FastestWay;
+    MaaAdbControllerType type =
+        MaaAdbControllerType_Input_Preset_AutoDetect | MaaAdbControllerType_Screencap_FastestWay;
     std::string config;
     std::string agent_path;
 

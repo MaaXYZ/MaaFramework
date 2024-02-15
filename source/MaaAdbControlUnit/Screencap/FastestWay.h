@@ -1,11 +1,6 @@
 #pragma once
 
-#include "Encode.h"
-#include "EncodeToFile.h"
-#include "Minicap/MinicapDirect.h"
-#include "Minicap/MinicapStream.h"
-#include "RawByNetcat.h"
-#include "RawWithGzip.h"
+#include "Base/UnitBase.h"
 
 MAA_CTRL_UNIT_NS_BEGIN
 
@@ -24,7 +19,7 @@ public:
     };
 
 public:
-    explicit ScreencapFastestWay(const std::filesystem::path& minicap_path);
+    ScreencapFastestWay(const std::filesystem::path& minicap_path, bool lossless);
     virtual ~ScreencapFastestWay() override = default;
 
 public: // from UnitBase

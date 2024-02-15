@@ -75,6 +75,9 @@ class KeyInputBase : virtual public UnitBase
 public:
     virtual ~KeyInputBase() override = default;
 
+    virtual bool init() = 0;
+    virtual void deinit() = 0;
+
 public:
     virtual bool press_key(int key) = 0;
     virtual bool input_text(const std::string& text) = 0;

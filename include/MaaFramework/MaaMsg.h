@@ -38,6 +38,8 @@
 #define MaaMsg_Controller_ScreencapInitFailed ("Controller.ScreencapInitFailed")
 #define MaaMsg_Controller_TouchInputInited ("Controller.TouchinputInited")
 #define MaaMsg_Controller_TouchInputInitFailed ("Controller.TouchinputInitFailed")
+#define MaaMsg_Controller_KeyInputInited ("Controller.KeyinputInited")
+#define MaaMsg_Controller_KeyInputInitFailed ("Controller.KeyinputInitFailed")
 
 /* {
         uuid: string,
