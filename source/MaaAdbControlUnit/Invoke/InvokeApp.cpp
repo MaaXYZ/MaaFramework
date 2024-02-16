@@ -42,7 +42,7 @@ bool InvokeApp::parse(const json::value& config)
         "export CLASSPATH=\"/data/local/tmp/{APP_WORKING_FILE}\"; app_process /data/local/tmp {PACKAGE_NAME}",
     };
     static const json::array kDefaultRemoveFileArgv = {
-        "{ADB}", "-s", "{ADB_SERIAL}", "shell", "rm {TO_REMOVED_FILE}",
+        "{ADB}", "-s", "{ADB_SERIAL}", "shell", "rm \"/data/local/tmp/{TO_REMOVED_FILE}\"",
     };
     return parse_argv("Abilist", config, kDefaultAbilistArgv, abilist_argv_) &&
            parse_argv("SDK", config, kDefaultSdkArgv, sdk_argv_) &&
