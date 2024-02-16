@@ -82,12 +82,10 @@ class MaaAdbControllerTypeEnum:
     Touch_MiniTouch: MaaAdbControllerType = 2
     Touch_MaaTouch: MaaAdbControllerType = 3
     Touch_AutoDetect: MaaAdbControllerType = 0xFF - 1
-    Touch_Mask: MaaAdbControllerType = 0xFF
 
     Key_Adb: MaaAdbControllerType = 1 << 8
     Key_MaaTouch: MaaAdbControllerType = 2 << 8
     Key_AutoDetect: MaaAdbControllerType = 0xFF00 - (1 << 8)
-    Key_Mask: MaaAdbControllerType = 0xFF00
 
     Input_Preset_Adb: MaaAdbControllerType = Touch_Adb | Key_Adb
     Input_Preset_Minitouch: MaaAdbControllerType = Touch_MiniTouch | Key_Adb
@@ -102,7 +100,6 @@ class MaaAdbControllerTypeEnum:
     Screencap_MinicapStream: MaaAdbControllerType = 7 << 16
     Screencap_FastestLosslessWay: MaaAdbControllerType = 0xFF0000 - (2 << 16)
     Screencap_FastestWay: MaaAdbControllerType = 0xFF0000 - (1 << 16)
-    Screencap_Mask: MaaAdbControllerType = 0xFF0000
 
 
 MaaControllerCallback = MaaApiCallback
@@ -189,16 +186,13 @@ class MaaWin32ControllerTypeEnum:
     Invalid = 0
 
     Touch_SendMessage: MaaWin32ControllerType = 1
-    Touch_Mask: MaaWin32ControllerType = 0xFF
 
     Key_SendMessage: MaaWin32ControllerType = 1 << 8
-    Key_Mask: MaaWin32ControllerType = 0xFF00
 
     Screencap_GDI: MaaWin32ControllerType = 1 << 16
     Screencap_DXGI_DesktopDup: MaaWin32ControllerType = 2 << 16
     # Screencap_DXGI_BackBuffer = 3 << 16
     Screencap_DXGI_FramePool: MaaWin32ControllerType = 4 << 16
-    Screencap_Mask: MaaWin32ControllerType = 0xFF0000
 
 
 MaaWin32Hwnd = ctypes.c_void_p

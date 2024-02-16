@@ -172,21 +172,21 @@ enum MaaThriftControllerTypeEnum
 };
 
 typedef int32_t MaaWin32ControllerType;
+#define MaaWin32ControllerType_Touch_Mask 0xFF
+#define MaaWin32ControllerType_Key_Mask 0xFF00
+#define MaaWin32ControllerType_Screencap_Mask 0xFF0000
 enum MaaWin32ControllerTypeEnum
 {
     MaaWin32Controller_Invalid = 0,
 
     MaaWin32ControllerType_Touch_SendMessage = 1,
-    MaaWin32ControllerType_Touch_Mask = 0xFF,
 
     MaaWin32ControllerType_Key_SendMessage = 1 << 8,
-    MaaWin32ControllerType_Key_Mask = 0xFF00,
 
     MaaWin32ControllerType_Screencap_GDI = 1 << 16,
     MaaWin32ControllerType_Screencap_DXGI_DesktopDup = 2 << 16,
     // MaaWin32ControllerType_Screencap_DXGI_BackBuffer = 3 << 16,
     MaaWin32ControllerType_Screencap_DXGI_FramePool = 4 << 16,
-    MaaWin32ControllerType_Screencap_Mask = 0xFF0000,
 };
 typedef void* MaaWin32Hwnd;
 
