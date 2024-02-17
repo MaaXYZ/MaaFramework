@@ -47,10 +47,16 @@ template <typename R>
 using range_value_t = iter_value_t<iterator_t<R>>;
 
 template <typename T, typename = void>
+constexpr bool is_string = false;
+template <typename T>
+constexpr bool is_string<T, std::void_t<typename T::traits_type>> =
+    std::is_same_v<typename T::traits_type, std::char_traits<typename T::value_type>>;
+
+template <typename T, typename = void>
 constexpr bool is_container = false;
 template <typename T>
 constexpr bool is_container<T, std::void_t<typename T::value_type, range_value_t<T>>> =
-    std::is_same_v<typename T::value_type, range_value_t<T>>;
+    std::is_same_v<typename T::value_type, range_value_t<T>> && !is_string<T>;
 
 template <typename T, typename = void>
 constexpr bool is_map = false;
