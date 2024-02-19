@@ -39,7 +39,7 @@ MaaResId ResourceMgr::post_path(std::filesystem::path path)
 {
     LogInfo << VAR(path);
 
-    loaded_ = false;
+    valid_ = false;
     hash_cache_.clear();
 
     if (!res_loader_) {
@@ -69,9 +69,9 @@ MaaStatus ResourceMgr::wait(MaaResId res_id) const
     return res_loader_->status(res_id);
 }
 
-MaaBool ResourceMgr::loaded() const
+MaaBool ResourceMgr::valid() const
 {
-    return loaded_;
+    return valid_;
 }
 
 // https://stackoverflow.com/questions/20511347/a-good-hash-function-for-a-vector
@@ -133,12 +133,12 @@ bool ResourceMgr::run_load(typename AsyncRunner<std::filesystem::path>::Id id, s
 
     notifier.notify(MaaMsg_Resource_StartLoading, details);
 
-    loaded_ = load(path);
+    valid_ = load(path);
 
     details.emplace("hash", get_hash());
-    notifier.notify(loaded_ ? MaaMsg_Resource_LoadingCompleted : MaaMsg_Resource_LoadingFailed, details);
+    notifier.notify(valid_ ? MaaMsg_Resource_LoadingCompleted : MaaMsg_Resource_LoadingFailed, details);
 
-    return loaded_;
+    return valid_;
 }
 
 bool ResourceMgr::load(const std::filesystem::path& path)

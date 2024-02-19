@@ -62,7 +62,7 @@ bool PipelineResMgr::load_all_json(const std::filesystem::path& path)
         return false;
     }
 
-    bool loaded = false;
+    bool valid = false;
 
     std::set<std::string> existing_keys;
     for (auto& entry : std::filesystem::recursive_directory_iterator(path)) {
@@ -89,10 +89,10 @@ bool PipelineResMgr::load_all_json(const std::filesystem::path& path)
             return false;
         }
 
-        loaded = true;
+        valid = true;
     }
 
-    return loaded;
+    return valid;
 }
 
 bool PipelineResMgr::open_and_parse_file(const std::filesystem::path& path, std::set<std::string>& existing_keys)
@@ -416,8 +416,8 @@ bool PipelineResMgr::parse_recognition(const json::value& input, Recognition::Ty
     case Type::Custom:
         out_param = CustomRecognizerParam {};
         return parse_custom_recognition_param(input, std::get<CustomRecognizerParam>(out_param),
-                                             same_type ? std::get<CustomRecognizerParam>(default_param)
-                                                       : CustomRecognizerParam {});
+                                              same_type ? std::get<CustomRecognizerParam>(default_param)
+                                                        : CustomRecognizerParam {});
     default:
         LogError << "Unknown recognition" << VAR(static_cast<int>(out_type));
         return false;
@@ -607,8 +607,8 @@ bool PipelineResMgr::parse_ocrer_param(const json::value& input, MAA_VISION_NS::
 }
 
 bool PipelineResMgr::parse_custom_recognition_param(const json::value& input,
-                                                   MAA_VISION_NS::CustomRecognizerParam& output,
-                                                   const MAA_VISION_NS::CustomRecognizerParam& default_value)
+                                                    MAA_VISION_NS::CustomRecognizerParam& output,
+                                                    const MAA_VISION_NS::CustomRecognizerParam& default_value)
 {
     if (!get_and_check_value(input, "custom_recognition", output.name, default_value.name) &&
         !get_and_check_value(input, "custom_recognizer", output.name, default_value.name)) {

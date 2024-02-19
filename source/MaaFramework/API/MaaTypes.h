@@ -27,7 +27,7 @@ public:
     virtual MaaResId post_path(std::filesystem::path path) = 0;
     virtual MaaStatus status(MaaResId res_id) const = 0;
     virtual MaaStatus wait(MaaResId res_id) const = 0;
-    virtual MaaBool loaded() const = 0;
+    virtual MaaBool valid() const = 0;
 
     virtual std::string get_hash() const = 0;
     virtual std::vector<std::string> get_task_list() const = 0;

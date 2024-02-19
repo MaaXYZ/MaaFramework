@@ -37,8 +37,8 @@ bool InstanceMgr::bind_resource(MaaResourceAPI* resource)
         return false;
     }
 
-    if (!resource->loaded()) {
-        LogWarn << "Resource not loaded";
+    if (!resource->valid()) {
+        LogWarn << "Resource not valid";
     }
 
     if (resource_) {
@@ -72,7 +72,7 @@ bool InstanceMgr::bind_controller(MaaControllerAPI* controller)
 
 bool InstanceMgr::inited() const
 {
-    return resource_ && controller_ && resource_->loaded() && controller_->connected();
+    return resource_ && controller_ && resource_->valid() && controller_->connected();
 }
 
 bool InstanceMgr::set_option(MaaInstOption key, MaaOptionValue value, MaaOptionValueSize val_size)
