@@ -451,7 +451,6 @@ bool PipelineResMgr::parse_template_matcher_param(const json::value& input, MAA_
                                    MAA_VISION_NS::ResultOrderBy::Horizontal,
                                    MAA_VISION_NS::ResultOrderBy::Vertical,
                                    MAA_VISION_NS::ResultOrderBy::Score,
-                                   MAA_VISION_NS::ResultOrderBy::Area,
                                    MAA_VISION_NS::ResultOrderBy::Random,
                                })) {
         LogError << "failed to parse_order_of_result" << VAR(input);
@@ -680,7 +679,6 @@ bool PipelineResMgr::parse_nn_classifier_param(const json::value& input,
                                    MAA_VISION_NS::ResultOrderBy::Horizontal,
                                    MAA_VISION_NS::ResultOrderBy::Vertical,
                                    MAA_VISION_NS::ResultOrderBy::Score,
-                                   MAA_VISION_NS::ResultOrderBy::Area,
                                    MAA_VISION_NS::ResultOrderBy::Random,
                                })) {
         LogError << "failed to parse_order_of_result" << VAR(input);
