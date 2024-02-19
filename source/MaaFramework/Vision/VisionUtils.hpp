@@ -1,5 +1,6 @@
 #pragma once
 
+#include <random>
 #include <ranges>
 
 #include "Conf/Conf.h"
@@ -37,6 +38,26 @@ inline static void sort_by_score_(ResultsVec& results)
 }
 
 template <typename ResultsVec>
+inline static void sort_by_count_(ResultsVec& results)
+{
+    std::ranges::sort(results, std::greater {}, std::mem_fn(&ResultsVec::value_type::count));
+}
+
+template <typename ResultsVec>
+inline static void sort_by_area_(ResultsVec& results)
+{
+    std::ranges::sort(results,
+                      [](const auto& lhs, const auto& rhs) -> bool { return lhs.box.area() < rhs.box.area(); });
+}
+
+template <typename ResultsVec>
+inline static void sort_by_random_(ResultsVec& results)
+{
+    static std::default_random_engine rand_engine(std::random_device {}());
+    std::ranges::shuffle(results, rand_engine);
+}
+
+template <typename ResultsVec>
 inline static void sort_by_required_(ResultsVec& results, const std::vector<std::string>& required)
 {
     std::unordered_map<std::string, size_t> req_cache;
@@ -56,6 +77,17 @@ inline static void sort_by_required_(ResultsVec& results, const std::vector<std:
         }
         return lvalue < rvalue;
     });
+}
+
+inline static std::optional<size_t> pythonic_index(size_t total, int index)
+{
+    if (index >= 0 && static_cast<uint32_t>(index) < total) {
+        return index;
+    }
+    if (index < 0 && static_cast<uint32_t>(-index) <= total) {
+        return total + index;
+    }
+    return std::nullopt;
 }
 
 // Non-Maximum Suppression

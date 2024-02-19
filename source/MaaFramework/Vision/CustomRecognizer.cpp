@@ -15,13 +15,13 @@ CustomRecognizer::CustomRecognizer(MaaCustomRecognizerHandle handle, MaaTranspar
     : VisionBase(), recognizer_(handle), recognizer_arg_(handle_arg), inst_(inst)
 {}
 
-CustomRecognizer::ResultsVec CustomRecognizer::analyze() const
+std::optional<CustomRecognizer::Result> CustomRecognizer::analyze() const
 {
     LogFunc << VAR_VOIDP(recognizer_) << VAR_VOIDP(recognizer_->analyze) << VAR(param_.custom_param);
 
     if (!recognizer_ || !recognizer_->analyze) {
         LogError << "Recognizer is null";
-        return {};
+        return std::nullopt;
     }
 
     auto start_time = std::chrono::steady_clock::now();
@@ -46,13 +46,11 @@ CustomRecognizer::ResultsVec CustomRecognizer::analyze() const
     LogTrace << VAR(ret) << VAR(box) << VAR(detail) << VAR(cost);
 
     if (!ret) {
-        return {};
+        return std::nullopt;
     }
 
     auto jdetail = json::parse(detail).value_or(detail);
-    return {
-        Result { .box = box, .detail = std::move(jdetail) },
-    };
+    return Result { .box = box, .detail = std::move(jdetail) };
 }
 
 MAA_VISION_NS_END

@@ -8,7 +8,7 @@
 
 MAA_VISION_NS_BEGIN
 
-ColorMatcher::ResultsVec ColorMatcher::analyze() const
+std::pair<ColorMatcher::ResultsVec, size_t> ColorMatcher::analyze() const
 {
     ResultsVec all_results;
 
@@ -33,7 +33,10 @@ ColorMatcher::ResultsVec ColorMatcher::analyze() const
                            std::make_move_iterator(results.end()));
     }
 
-    return all_results;
+    sort(all_results);
+    size_t index = preferred_index(all_results);
+
+    return { all_results, index };
 }
 
 ColorMatcher::ResultsVec ColorMatcher::foreach_rois(const ColorMatcherParam::Range& range, bool connected) const
@@ -144,6 +147,40 @@ void ColorMatcher::draw_result(const cv::Rect& roi, const cv::Mat& color, const 
 void ColorMatcher::filter(ResultsVec& results, int count) const
 {
     std::erase_if(results, [count](const auto& res) { return res.count < count; });
+}
+
+void ColorMatcher::sort(ResultsVec& results) const
+{
+    switch (param_.order_by) {
+    case ResultOrderBy::Horizontal:
+        sort_by_horizontal_(results);
+        break;
+    case ResultOrderBy::Vertical:
+        sort_by_vertical_(results);
+        break;
+    case ResultOrderBy::Score:
+        sort_by_count_(results);
+        break;
+    case ResultOrderBy::Area:
+        sort_by_area_(results);
+        break;
+    case ResultOrderBy::Random:
+        sort_by_random_(results);
+        break;
+    default:
+        LogError << "Not supported order by" << VAR(param_.order_by);
+        break;
+    }
+}
+
+size_t ColorMatcher::preferred_index(const ResultsVec& results) const
+{
+    auto index_opt = pythonic_index(results.size(), param_.result_index);
+    if (!index_opt) {
+        return SIZE_MAX;
+    }
+
+    return *index_opt;
 }
 
 MAA_VISION_NS_END

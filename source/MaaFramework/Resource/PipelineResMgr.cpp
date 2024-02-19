@@ -445,6 +445,19 @@ bool PipelineResMgr::parse_template_matcher_param(const json::value& input, MAA_
         return false;
     }
 
+    if (!parse_order_of_result(input, output.order_by, output.result_index, default_value.order_by,
+                               default_value.result_index,
+                               {
+                                   MAA_VISION_NS::ResultOrderBy::Horizontal,
+                                   MAA_VISION_NS::ResultOrderBy::Vertical,
+                                   MAA_VISION_NS::ResultOrderBy::Score,
+                                   MAA_VISION_NS::ResultOrderBy::Area,
+                                   MAA_VISION_NS::ResultOrderBy::Random,
+                               })) {
+        LogError << "failed to parse_order_of_result" << VAR(input);
+        return false;
+    }
+
     if (!get_and_check_value_or_array(input, "template", output.template_paths, default_value.template_paths)) {
         LogError << "failed to get_and_check_value_or_array templates" << VAR(input);
         return false;
@@ -489,6 +502,19 @@ bool PipelineResMgr::parse_feature_matcher_param(const json::value& input, MAA_V
 
     if (!parse_roi(input, output.roi, default_value.roi)) {
         LogError << "failed to parse_roi" << VAR(input);
+        return false;
+    }
+
+    if (!parse_order_of_result(input, output.order_by, output.result_index, default_value.order_by,
+                               default_value.result_index,
+                               {
+                                   MAA_VISION_NS::ResultOrderBy::Horizontal,
+                                   MAA_VISION_NS::ResultOrderBy::Vertical,
+                                   MAA_VISION_NS::ResultOrderBy::Score,
+                                   MAA_VISION_NS::ResultOrderBy::Area,
+                                   MAA_VISION_NS::ResultOrderBy::Random,
+                               })) {
+        LogError << "failed to parse_order_of_result" << VAR(input);
         return false;
     }
 
@@ -551,6 +577,19 @@ bool PipelineResMgr::parse_ocrer_param(const json::value& input, MAA_VISION_NS::
 {
     if (!parse_roi(input, output.roi, default_value.roi)) {
         LogError << "failed to parse_roi" << VAR(input);
+        return false;
+    }
+
+    if (!parse_order_of_result(input, output.order_by, output.result_index, default_value.order_by,
+                               default_value.result_index,
+                               {
+                                   MAA_VISION_NS::ResultOrderBy::Horizontal,
+                                   MAA_VISION_NS::ResultOrderBy::Vertical,
+                                   MAA_VISION_NS::ResultOrderBy::Area,
+                                   MAA_VISION_NS::ResultOrderBy::Length,
+                                   MAA_VISION_NS::ResultOrderBy::Random,
+                               })) {
+        LogError << "failed to parse_order_of_result" << VAR(input);
         return false;
     }
 
@@ -635,6 +674,19 @@ bool PipelineResMgr::parse_nn_classifier_param(const json::value& input,
         return false;
     }
 
+    if (!parse_order_of_result(input, output.order_by, output.result_index, default_value.order_by,
+                               default_value.result_index,
+                               {
+                                   MAA_VISION_NS::ResultOrderBy::Horizontal,
+                                   MAA_VISION_NS::ResultOrderBy::Vertical,
+                                   MAA_VISION_NS::ResultOrderBy::Score,
+                                   MAA_VISION_NS::ResultOrderBy::Area,
+                                   MAA_VISION_NS::ResultOrderBy::Random,
+                               })) {
+        LogError << "failed to parse_order_of_result" << VAR(input);
+        return false;
+    }
+
     if (!get_and_check_value(input, "cls_size", output.cls_size, default_value.cls_size)) {
         LogError << "failed to get_and_check_value cls_size" << VAR(input);
         return false;
@@ -668,6 +720,19 @@ bool PipelineResMgr::parse_nn_detector_param(const json::value& input,
 {
     if (!parse_roi(input, output.roi, default_value.roi)) {
         LogError << "failed to parse_roi" << VAR(input);
+        return false;
+    }
+
+    if (!parse_order_of_result(input, output.order_by, output.result_index, default_value.order_by,
+                               default_value.result_index,
+                               {
+                                   MAA_VISION_NS::ResultOrderBy::Horizontal,
+                                   MAA_VISION_NS::ResultOrderBy::Vertical,
+                                   MAA_VISION_NS::ResultOrderBy::Score,
+                                   MAA_VISION_NS::ResultOrderBy::Area,
+                                   MAA_VISION_NS::ResultOrderBy::Random,
+                               })) {
+        LogError << "failed to parse_order_of_result" << VAR(input);
         return false;
     }
 
@@ -869,6 +934,47 @@ bool PipelineResMgr::parse_roi(const json::value& input, std::vector<cv::Rect>& 
     }
 
     return !output.empty();
+}
+
+bool PipelineResMgr::parse_order_of_result(const json::value& input, MAA_VISION_NS::ResultOrderBy& output,
+                                           int& output_index, const MAA_VISION_NS::ResultOrderBy& default_value,
+                                           int default_index,
+                                           const std::unordered_set<MAA_VISION_NS::ResultOrderBy>& valid_values)
+{
+    static const std::string kDefaultOrderFlag = "Default";
+    std::string order;
+    if (!get_and_check_value(input, "order", order, kDefaultOrderFlag)) {
+        LogError << "failed to get_and_check_value order" << VAR(input);
+        return false;
+    }
+
+    const std::unordered_map<std::string, MAA_VISION_NS::ResultOrderBy> kOrderMap = {
+        { kDefaultOrderFlag, default_value },
+        { "Horizontal", MAA_VISION_NS::ResultOrderBy::Horizontal },
+        { "Vertical", MAA_VISION_NS::ResultOrderBy::Vertical },
+        { "Score", MAA_VISION_NS::ResultOrderBy::Score },
+        { "Area", MAA_VISION_NS::ResultOrderBy::Area },
+        { "Length", MAA_VISION_NS::ResultOrderBy::Length },
+        { "Random", MAA_VISION_NS::ResultOrderBy::Random },
+        { "Expected", MAA_VISION_NS::ResultOrderBy::Expected },
+    };
+    auto order_iter = kOrderMap.find(order);
+    if (order_iter == kOrderMap.end()) {
+        LogError << "order not found" << VAR(order);
+        return false;
+    }
+    if (!valid_values.contains(order_iter->second)) {
+        LogError << "current recognition not support order" << VAR(order);
+        return false;
+    }
+    output = order_iter->second;
+
+    if (!get_and_check_value(input, "index", output_index, default_index)) {
+        LogError << "failed to get_and_check_value index" << VAR(input);
+        return false;
+    }
+
+    return true;
 }
 
 bool PipelineResMgr::parse_action(const json::value& input, Action::Type& out_type, Action::Param& out_param,

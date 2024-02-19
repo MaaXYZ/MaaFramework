@@ -41,7 +41,7 @@ public:
         ocrer_ = std::move(ocrer);
     }
     void set_param(OCRerParam param) { param_ = std::move(param); }
-    ResultsVec analyze() const;
+    std::pair<ResultsVec, size_t> analyze() const;
 
 private:
     ResultsVec foreach_rois() const;
@@ -54,6 +54,8 @@ private:
     void postproc_trim_(Result& res) const;
     void postproc_replace_(Result& res) const;
     bool filter_by_required(const Result& res, const std::vector<std::wstring>& expected) const;
+    void sort(ResultsVec& results) const;
+    size_t preferred_index(const ResultsVec& results) const;
 
     OCRerParam param_;
     std::shared_ptr<fastdeploy::vision::ocr::DBDetector> deter_ = nullptr;

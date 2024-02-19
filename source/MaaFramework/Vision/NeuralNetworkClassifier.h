@@ -30,7 +30,7 @@ public:
 public:
     void set_param(NeuralNetworkClassifierParam param) { param_ = std::move(param); }
     void set_session(std::shared_ptr<Ort::Session> session) { session_ = std::move(session); }
-    ResultsVec analyze() const;
+    std::pair<ResultsVec, size_t> analyze() const;
 
 private:
     ResultsVec foreach_rois() const;
@@ -38,6 +38,8 @@ private:
     void draw_result(const Result& res) const;
 
     void filter(ResultsVec& results, const std::vector<size_t>& expected) const;
+    void sort(ResultsVec& results) const;
+    size_t preferred_index(const ResultsVec& results) const;
 
     NeuralNetworkClassifierParam param_;
     std::shared_ptr<Ort::Session> session_ = nullptr;

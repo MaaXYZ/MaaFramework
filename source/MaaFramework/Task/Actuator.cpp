@@ -131,10 +131,20 @@ void Actuator::wait_freezes(const MAA_RES_NS::WaitFreezesParam& param, const cv:
     });
 
     cv::Mat pre_image = controller()->screencap();
+    if (need_to_stop()) {
+        LogInfo << "Task interrupted";
+        return;
+    }
+
     auto pre_time = std::chrono::steady_clock::now();
 
-    while (!need_to_stop()) {
+    while (true) {
         cv::Mat cur_image = controller()->screencap();
+        if (need_to_stop()) {
+            LogInfo << "Task interrupted";
+            return;
+        }
+
         auto ret = comp.analyze(pre_image, cur_image);
         if (ret.empty()) {
             pre_image = cur_image;

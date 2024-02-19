@@ -7,7 +7,7 @@
 
 MAA_VISION_NS_BEGIN
 
-TemplateMatcher::ResultsVec TemplateMatcher::analyze() const
+std::pair<TemplateMatcher::ResultsVec, size_t> TemplateMatcher::analyze() const
 {
     if (templates_.empty()) {
         LogError << name_ << "templates is empty" << VAR(param_.template_paths);
@@ -47,7 +47,10 @@ TemplateMatcher::ResultsVec TemplateMatcher::analyze() const
                            std::make_move_iterator(results.end()));
     }
 
-    return all_results;
+    sort(all_results);
+    size_t index = preferred_index(all_results);
+
+    return { all_results, index };
 }
 
 TemplateMatcher::ResultsVec TemplateMatcher::foreach_rois(const cv::Mat& templ) const
@@ -150,6 +153,40 @@ void TemplateMatcher::draw_result(const cv::Rect& roi, const cv::Mat& templ, con
 void TemplateMatcher::filter(ResultsVec& results, double threshold) const
 {
     std::erase_if(results, [threshold](const auto& res) { return res.score < threshold; });
+}
+
+void TemplateMatcher::sort(ResultsVec& results) const
+{
+    switch (param_.order_by) {
+    case ResultOrderBy::Horizontal:
+        sort_by_horizontal_(results);
+        break;
+    case ResultOrderBy::Vertical:
+        sort_by_vertical_(results);
+        break;
+    case ResultOrderBy::Score:
+        sort_by_score_(results);
+        break;
+    case ResultOrderBy::Area:
+        sort_by_area_(results);
+        break;
+    case ResultOrderBy::Random:
+        sort_by_random_(results);
+        break;
+    default:
+        LogError << "Not supported order by" << VAR(param_.order_by);
+        break;
+    }
+}
+
+size_t TemplateMatcher::preferred_index(const ResultsVec& results) const
+{
+    auto index_opt = pythonic_index(results.size(), param_.result_index);
+    if (!index_opt) {
+        return SIZE_MAX;
+    }
+
+    return *index_opt;
 }
 
 MAA_VISION_NS_END

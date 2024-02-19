@@ -32,7 +32,7 @@ public:
     void set_template(std::shared_ptr<cv::Mat> templ) { template_ = std::move(templ); }
     void set_param(FeatureMatcherParam param) { param_ = std::move(param); }
 
-    ResultsVec analyze() const;
+    std::pair<ResultsVec, size_t> analyze() const;
 
 private:
     ResultsVec foreach_rois(const cv::Mat& templ) const;
@@ -53,6 +53,8 @@ private:
                      const std::vector<cv::KeyPoint>& keypoints_2, const std::vector<cv::DMatch>& good_matches,
                      ResultsVec& results) const;
     void filter(ResultsVec& results, int count) const;
+    void sort(ResultsVec& results) const;
+    size_t preferred_index(const ResultsVec& results) const;
 
     FeatureMatcherParam param_;
     std::shared_ptr<cv::Mat> template_;
