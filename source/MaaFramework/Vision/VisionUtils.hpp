@@ -81,10 +81,10 @@ inline static void sort_by_required_(ResultsVec& results, const std::vector<std:
 
 inline static std::optional<size_t> pythonic_index(size_t total, int index)
 {
-    if (index >= 0 && index < total) {
+    if (index >= 0 && static_cast<uint32_t>(index) < total) {
         return index;
     }
-    if (index < 0 && -index <= total) {
+    if (index < 0 && static_cast<uint32_t>(-index) <= total) {
         return total + index;
     }
     return std::nullopt;
