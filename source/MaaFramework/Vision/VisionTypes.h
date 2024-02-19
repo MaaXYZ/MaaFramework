@@ -185,6 +185,9 @@ inline std::ostream& operator<<(std::ostream& os, const ResultOrderBy& order_by)
     case ResultOrderBy::Random:
         os << "Random";
         break;
+    case ResultOrderBy::Expected:
+        os << "Expected";
+        break;
     }
     return os;
 }
