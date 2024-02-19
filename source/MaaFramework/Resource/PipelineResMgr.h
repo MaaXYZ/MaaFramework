@@ -3,6 +3,7 @@
 #include <filesystem>
 #include <set>
 #include <unordered_map>
+#include <unordered_set>
 
 #include <meojson/json.hpp>
 
@@ -44,7 +45,7 @@ public:
     static bool parse_ocrer_param(const json::value& input, MAA_VISION_NS::OCRerParam& output,
                                   const MAA_VISION_NS::OCRerParam& default_value);
     static bool parse_custom_recognition_param(const json::value& input, MAA_VISION_NS::CustomRecognizerParam& output,
-                                              const MAA_VISION_NS::CustomRecognizerParam& default_value);
+                                               const MAA_VISION_NS::CustomRecognizerParam& default_value);
     static bool parse_nn_classifier_param(const json::value& input, MAA_VISION_NS::NeuralNetworkClassifierParam& output,
                                           const MAA_VISION_NS::NeuralNetworkClassifierParam& default_value);
     static bool parse_nn_detector_param(const json::value& input, MAA_VISION_NS::NeuralNetworkDetectorParam& output,
@@ -54,6 +55,9 @@ public:
 
     static bool parse_roi(const json::value& input, std::vector<cv::Rect>& output,
                           const std::vector<cv::Rect>& default_value);
+    static bool parse_order_of_result(const json::value& input, MAA_VISION_NS::ResultOrderBy& output, int& output_index,
+                                      const MAA_VISION_NS::ResultOrderBy& default_value, int default_index,
+                                      const std::unordered_set<MAA_VISION_NS::ResultOrderBy>& valid_values);
 
     static bool parse_action(const json::value& input, Action::Type& out_type, Action::Param& out_param,
                              const Action::Type& default_type, const Action::Param& default_param);

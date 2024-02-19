@@ -113,12 +113,12 @@ std::optional<Recognizer::Result> Recognizer::template_match(const cv::Mat& imag
     }
     matcher.set_templates(std::move(templates));
 
-    auto results = matcher.analyze();
-    if (results.empty()) {
+    auto [results, index] = matcher.analyze();
+    if (index >= results.size()) {
         return std::nullopt;
     }
 
-    const cv::Rect& box = results.front().box;
+    const cv::Rect& box = results[index].box;
     return Result { .box = box, .detail = std::move(results) };
 }
 
@@ -141,12 +141,12 @@ std::optional<Recognizer::Result> Recognizer::feature_match(const cv::Mat& image
     std::shared_ptr<cv::Mat> templ = resource()->template_res().image(param.template_path);
     matcher.set_template(std::move(templ));
 
-    auto results = matcher.analyze();
-    if (results.empty()) {
+    auto [results, index] = matcher.analyze();
+    if (index >= results.size()) {
         return std::nullopt;
     }
 
-    const cv::Rect& box = results.front().box;
+    const cv::Rect& box = results[index].box;
     return Result { .box = box, .detail = std::move(results) };
 }
 
@@ -166,12 +166,12 @@ std::optional<Recognizer::Result> Recognizer::color_match(const cv::Mat& image,
     matcher.set_name(name);
     matcher.set_param(param);
 
-    auto results = matcher.analyze();
-    if (results.empty()) {
+    auto [results, index] = matcher.analyze();
+    if (index >= results.size()) {
         return std::nullopt;
     }
 
-    const cv::Rect& box = results.front().box;
+    const cv::Rect& box = results[index].box;
     return Result { .box = box, .detail = std::move(results) };
 }
 
@@ -195,15 +195,12 @@ std::optional<Recognizer::Result> Recognizer::ocr(const cv::Mat& image, const MA
     auto ocr_session = resource()->ocr_res().ocrer(param.model);
     ocrer.set_session(std::move(det_session), std::move(rec_session), std::move(ocr_session));
 
-    auto results = ocrer.analyze();
-    if (results.empty()) {
+    auto [results, index] = ocrer.analyze();
+    if (index >= results.size()) {
         return std::nullopt;
     }
 
-    // TODO: sort by required regex.
-    // sort_by_required_(res, param.text);
-
-    const cv::Rect& box = results.front().box;
+    const cv::Rect& box = results[index].box;
     return Result { .box = box, .detail = std::move(results) };
 }
 
@@ -226,12 +223,12 @@ std::optional<Recognizer::Result> Recognizer::classify(const cv::Mat& image,
     auto session = resource()->onnx_res().classifier(param.model);
     classifier.set_session(std::move(session));
 
-    auto results = classifier.analyze();
-    if (results.empty()) {
+    auto [results, index] = classifier.analyze();
+    if (index >= results.size()) {
         return std::nullopt;
     }
 
-    const cv::Rect& box = results.front().box;
+    const cv::Rect& box = results[index].box;
     return Result { .box = box, .detail = std::move(results) };
 }
 
@@ -254,12 +251,12 @@ std::optional<Recognizer::Result> Recognizer::detect(const cv::Mat& image,
     auto session = resource()->onnx_res().detector(param.model);
     detector.set_session(std::move(session));
 
-    auto results = detector.analyze();
-    if (results.empty()) {
+    auto [results, index] = detector.analyze();
+    if (index >= results.size()) {
         return std::nullopt;
     }
 
-    const cv::Rect& box = results.front().box;
+    const cv::Rect& box = results[index].box;
     return Result { .box = box, .detail = std::move(results) };
 }
 
@@ -283,13 +280,13 @@ std::optional<Recognizer::Result> Recognizer::custom_recognize(const cv::Mat& im
     recognizer->set_param(param);
     recognizer->set_name(name);
 
-    auto results = recognizer->analyze();
-    if (results.empty()) {
+    auto result_opt = recognizer->analyze();
+    if (!result_opt) {
         return std::nullopt;
     }
 
-    const cv::Rect& box = results.front().box;
-    return Result { .box = box, .detail = std::move(results) };
+    const cv::Rect& box = result_opt->box;
+    return Result { .box = box, .detail = std::move(*result_opt) };
 }
 
 void Recognizer::show_hit_draw(const cv::Mat& image, const Result& res, const std::string& task_name) const

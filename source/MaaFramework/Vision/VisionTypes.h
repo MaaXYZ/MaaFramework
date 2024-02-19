@@ -1,6 +1,7 @@
 #pragma once
 
 #include <memory>
+#include <ostream>
 #include <string>
 #include <unordered_map>
 #include <vector>
@@ -21,6 +22,17 @@ struct Session;
 
 MAA_VISION_NS_BEGIN
 
+enum class ResultOrderBy
+{
+    Horizontal,
+    Vertical,
+    Score,
+    Area,
+    Length, // for OCR
+    Random,
+    Expected, // TODO
+};
+
 struct DirectHitParam
 {};
 
@@ -34,6 +46,9 @@ struct TemplateMatcherParam
     std::vector<double> thresholds;
     int method = kDefaultMethod;
     bool green_mask = false;
+
+    ResultOrderBy order_by = ResultOrderBy::Horizontal;
+    int result_index = 0;
 };
 
 struct OCRerParam
@@ -43,6 +58,9 @@ struct OCRerParam
     std::vector<cv::Rect> roi;
     std::vector<std::wstring> text;
     std::vector<std::pair<std::wstring, std::wstring>> replace;
+
+    ResultOrderBy order_by = ResultOrderBy::Horizontal;
+    int result_index = 0;
 };
 
 struct TemplateComparatorParam
@@ -65,7 +83,10 @@ struct NeuralNetworkClassifierParam
     std::string model;
 
     std::vector<cv::Rect> roi;
-    std::vector</*index*/ size_t> expected;
+    std::vector</*result_index*/ size_t> expected;
+
+    ResultOrderBy order_by = ResultOrderBy::Horizontal;
+    int result_index = 0;
 };
 
 struct NeuralNetworkDetectorParam
@@ -83,8 +104,11 @@ struct NeuralNetworkDetectorParam
     Net net = kDefaultNet;
 
     std::vector<cv::Rect> roi;
-    std::vector</*index*/ size_t> expected;
+    std::vector</*result_index*/ size_t> expected;
     std::vector<double> thresholds;
+
+    ResultOrderBy order_by = ResultOrderBy::Horizontal;
+    int result_index = 0;
 };
 
 struct ColorMatcherParam
@@ -98,6 +122,9 @@ struct ColorMatcherParam
     int count = kDefaultCount;
     int method = kDefaultMethod;
     bool connected = false; // 是否计算连通域
+
+    ResultOrderBy order_by = ResultOrderBy::Horizontal;
+    int result_index = 0;
 };
 
 struct FeatureMatcherParam
@@ -132,6 +159,34 @@ struct FeatureMatcherParam
 
     double distance_ratio = kDefaultDistanceRatio;
     int count = kDefaultCount;
+
+    ResultOrderBy order_by = ResultOrderBy::Horizontal;
+    int result_index = 0;
 };
+
+inline std::ostream& operator<<(std::ostream& os, const ResultOrderBy& order_by)
+{
+    switch (order_by) {
+    case ResultOrderBy::Horizontal:
+        os << "Horizontal";
+        break;
+    case ResultOrderBy::Vertical:
+        os << "Vertical";
+        break;
+    case ResultOrderBy::Score:
+        os << "Score";
+        break;
+    case ResultOrderBy::Area:
+        os << "Area";
+        break;
+    case ResultOrderBy::Length:
+        os << "Length";
+        break;
+    case ResultOrderBy::Random:
+        os << "Random";
+        break;
+    }
+    return os;
+}
 
 MAA_VISION_NS_END

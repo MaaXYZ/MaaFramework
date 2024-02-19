@@ -24,7 +24,7 @@ public:
 public:
     void set_templates(std::vector<std::shared_ptr<cv::Mat>> templates) { templates_ = std::move(templates); }
     void set_param(TemplateMatcherParam param) { param_ = std::move(param); }
-    ResultsVec analyze() const;
+    std::pair<ResultsVec, size_t> analyze() const;
 
 private:
     ResultsVec foreach_rois(const cv::Mat& templ) const;
@@ -32,6 +32,8 @@ private:
     void draw_result(const cv::Rect& roi, const cv::Mat& templ, const ResultsVec& results) const;
 
     void filter(ResultsVec& results, double threshold) const;
+    void sort(ResultsVec& results) const;
+    size_t preferred_index(const ResultsVec& results) const;
 
     TemplateMatcherParam param_;
     std::vector<std::shared_ptr<cv::Mat>> templates_;

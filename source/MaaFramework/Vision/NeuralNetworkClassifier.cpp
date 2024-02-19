@@ -8,7 +8,7 @@
 
 MAA_VISION_NS_BEGIN
 
-NeuralNetworkClassifier::ResultsVec NeuralNetworkClassifier::analyze() const
+std::pair<NeuralNetworkClassifier::ResultsVec, size_t> NeuralNetworkClassifier::analyze() const
 {
     LogFunc << name_;
 
@@ -36,7 +36,9 @@ NeuralNetworkClassifier::ResultsVec NeuralNetworkClassifier::analyze() const
     cost = duration_since(start_time);
     LogTrace << name_ << "Filter:" << VAR(results) << VAR(expected) << VAR(cost);
 
-    return results;
+    sort(results);
+    size_t index = preferred_index(results);
+    return { results, index };
 }
 
 NeuralNetworkClassifier::ResultsVec NeuralNetworkClassifier::foreach_rois() const
@@ -129,6 +131,40 @@ void NeuralNetworkClassifier::filter(ResultsVec& results, const std::vector<size
     std::erase_if(results, [&](const Result& res) {
         return std::find(expected.begin(), expected.end(), res.cls_index) == expected.end();
     });
+}
+
+void NeuralNetworkClassifier::sort(ResultsVec& results) const
+{
+    switch (param_.order_by) {
+    case ResultOrderBy::Horizontal:
+        sort_by_horizontal_(results);
+        break;
+    case ResultOrderBy::Vertical:
+        sort_by_vertical_(results);
+        break;
+    case ResultOrderBy::Score:
+        sort_by_score_(results);
+        break;
+    case ResultOrderBy::Area:
+        sort_by_area_(results);
+        break;
+    case ResultOrderBy::Random:
+        sort_by_random_(results);
+        break;
+    default:
+        LogError << "Not supported order by" << VAR(param_.order_by);
+        break;
+    }
+}
+
+size_t NeuralNetworkClassifier::preferred_index(const ResultsVec& results) const
+{
+    auto index_opt = pythonic_index(results.size(), param_.result_index);
+    if (!index_opt) {
+        return SIZE_MAX;
+    }
+
+    return *index_opt;
 }
 
 MAA_VISION_NS_END

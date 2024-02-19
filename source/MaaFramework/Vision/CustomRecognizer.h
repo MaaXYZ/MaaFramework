@@ -19,13 +19,12 @@ class CustomRecognizer : public VisionBase
 
         MEO_JSONIZATION(box, detail);
     };
-    using ResultsVec = std::vector<Result>;
 
 public:
     CustomRecognizer(MaaCustomRecognizerHandle handle, MaaTransparentArg handle_arg, InstanceInternalAPI* inst);
 
     void set_param(CustomRecognizerParam param) { param_ = std::move(param); }
-    ResultsVec analyze() const;
+    std::optional<Result> analyze() const;
 
 private:
     MaaCustomRecognizerHandle recognizer_ = nullptr;

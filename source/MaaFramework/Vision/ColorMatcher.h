@@ -20,7 +20,7 @@ public:
 
 public:
     void set_param(ColorMatcherParam param) { param_ = std::move(param); }
-    ResultsVec analyze() const;
+    std::pair<ResultsVec, size_t> analyze() const;
 
 private:
     ResultsVec foreach_rois(const ColorMatcherParam::Range& range, bool connected) const;
@@ -30,6 +30,8 @@ private:
     void draw_result(const cv::Rect& roi, const cv::Mat& color, const cv::Mat& bin, const ResultsVec& results) const;
 
     void filter(ResultsVec& results, int count) const;
+    void sort(ResultsVec& results) const;
+    size_t preferred_index(const ResultsVec& results) const;
 
     ColorMatcherParam param_;
 };
