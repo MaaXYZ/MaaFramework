@@ -1,6 +1,6 @@
 {
-	"name": "MaaFramework-Ubuntu22.04",
-	"build": {
-		"dockerfile": "Dockerfile"
-	}
+    "name": "MaaFramework-Ubuntu22.04",
+    "build": {
+        "dockerfile": "Dockerfile"
+    }
 }
