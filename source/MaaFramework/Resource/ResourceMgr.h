@@ -52,7 +52,7 @@ private:
 private:
     std::vector<std::filesystem::path> paths_;
     mutable std::string hash_cache_;
-    std::atomic_bool loaded_ = false;
+    std::atomic_bool loaded_ = true;
 
     std::unique_ptr<AsyncRunner<std::filesystem::path>> res_loader_ = nullptr;
     MessageNotifier<MaaResourceCallback> notifier;
