@@ -9,25 +9,23 @@
 
 MAA_VISION_NS_BEGIN
 
-// | 1 2 3 4 |
-// | 5 6 7 8 |
+// | 1 3 5 7 |
+// | 2 4 6 8 |
 template <typename ResultsVec>
 inline static void sort_by_horizontal_(ResultsVec& results)
 {
     std::ranges::sort(results, [](const auto& lhs, const auto& rhs) -> bool {
-        // y 差距较小则理解为是同一排的，按x排序
-        return std::abs(lhs.box.y - rhs.box.y) < 5 ? lhs.box.x < rhs.box.x : lhs.box.y < rhs.box.y;
+        return lhs.box.x == rhs.box.x ? lhs.box.y < rhs.box.y : lhs.box.x < rhs.box.x;
     });
 }
 
-// | 1 3 5 7 |
-// | 2 4 6 8 |
+// | 1 2 3 4 |
+// | 5 6 7 8 |
 template <typename ResultsVec>
 inline static void sort_by_vertical_(ResultsVec& results)
 {
     std::ranges::sort(results, [](const auto& lhs, const auto& rhs) -> bool {
-        // x 差距较小则理解为是同一排的，按y排序
-        return std::abs(lhs.box.x - rhs.box.x) < 5 ? lhs.box.y < rhs.box.y : lhs.box.x < rhs.box.x;
+        return lhs.box.y == rhs.box.y ? lhs.box.x < rhs.box.x : lhs.box.y < rhs.box.y;
     });
 }
 
@@ -47,7 +45,7 @@ template <typename ResultsVec>
 inline static void sort_by_area_(ResultsVec& results)
 {
     std::ranges::sort(results,
-                      [](const auto& lhs, const auto& rhs) -> bool { return lhs.box.area() < rhs.box.area(); });
+                      [](const auto& lhs, const auto& rhs) -> bool { return lhs.box.area() > rhs.box.area(); });
 }
 
 template <typename ResultsVec>

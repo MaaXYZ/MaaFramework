@@ -217,7 +217,7 @@ void OCRer::sort(ResultsVec& results) const
         break;
     case ResultOrderBy::Length:
         std::ranges::sort(results,
-                          [](const auto& lhs, const auto& rhs) -> bool { return lhs.box.area() < rhs.box.area(); });
+                          [](const auto& lhs, const auto& rhs) -> bool { return lhs.text.size() > rhs.text.size(); });
         break;
 
     default:
