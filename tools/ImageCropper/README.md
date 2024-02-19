@@ -17,7 +17,7 @@ python -m pip install -r requirements.txt
 0. 根据 `MaaControllerSetOption` 的使用情况，调整脚本中的 `截图参数` 和 `初始窗口大小`
 1. 如果有预先准备好的截图，需保存到 `./src/` 路径下
 2. 运行 `start.bat` 或 `python main.py [device serial]` ，设备地址为可选
-    - 根据提示 `Please select the device (ENTER to pass): ` ，选择 adb 已连接设备（按 ENTER 跳过选择）
+    - 根据提示 `Please select the device (ENTER to pass):` ，选择 adb 已连接设备（按 ENTER 跳过选择）
     - 如果没有该提示，请使用 `python main.py [device serial]` 连接设备
 3. 在弹窗中左键选择目标区域，滚轮缩放图片，右键移动图片
 4. 使用快捷键操作：
