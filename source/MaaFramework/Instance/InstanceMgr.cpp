@@ -88,6 +88,13 @@ MaaTaskId InstanceMgr::post_task(std::string entry, std::string_view param)
 {
     LogInfo << VAR(entry) << VAR(param);
 
+#ifndef MAA_DEBUG
+    if (!inited()) {
+        LogError << "Instance not inited";
+        return MaaInvalidId;
+    }
+#endif
+
     TaskPtr task_ptr = std::make_shared<TaskNS::PipelineTask>(std::move(entry), this);
 
     auto param_opt = json::parse(param);

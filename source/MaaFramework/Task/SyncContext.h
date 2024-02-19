@@ -43,12 +43,12 @@ public: // from MaaSyncContextAPI
     virtual MaaControllerHandle controller() override { return instance() ? instance()->controller() : nullptr; }
 
 public: // from MaaInstanceSink
-    virtual void on_stop() override { need_exit_ = true; }
+    virtual void on_stop() override { need_to_stop_ = true; }
 
 private:
     InstanceStatus* status() const { return inst_ ? inst_->inter_status() : nullptr; }
 
-    bool need_exit_ = false;
+    bool need_to_stop_ = false;
     InstanceInternalAPI* inst_ = nullptr;
 };
 

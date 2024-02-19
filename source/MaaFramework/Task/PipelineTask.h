@@ -26,7 +26,7 @@ public:
     virtual ~PipelineTask() override = default;
 
 public: // from MaaInstanceSink
-    virtual void on_stop() override { need_exit_ = true; }
+    virtual void on_stop() override { need_to_stop_ = true; }
 
 public:
     const std::string& entry() const { return entry_; }
@@ -66,10 +66,10 @@ private:
         if (inst_) inst_->notify(msg, detail);
     }
 
-    bool need_exit() const { return need_exit_; }
+    bool need_to_stop() const { return need_to_stop_; }
 
 private:
-    bool need_exit_ = false;
+    bool need_to_stop_ = false;
     InstanceInternalAPI* inst_ = nullptr;
 
     int64_t task_id_ = 0;

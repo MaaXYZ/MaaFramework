@@ -25,7 +25,7 @@ public:
     bool run(const Recognizer::Result& rec_result, const TaskData& task_data);
 
 public: // from MaaInstanceSink
-    virtual void on_stop() override { need_exit_ = true; }
+    virtual void on_stop() override { need_to_stop_ = true; }
 
 private:
     bool click(const MAA_RES_NS::Action::ClickParam& param, const cv::Rect& cur_box);
@@ -45,12 +45,12 @@ private:
 private:
     MAA_CTRL_NS::ControllerAgent* controller() { return inst_ ? inst_->inter_controller() : nullptr; }
     InstanceStatus* status() { return inst_ ? inst_->inter_status() : nullptr; }
-    bool need_exit() const { return need_exit_; }
+    bool need_to_stop() const { return need_to_stop_; }
     void sleep(unsigned ms) const;
     void sleep(std::chrono::milliseconds ms) const;
 
 private:
-    bool need_exit_ = false;
+    bool need_to_stop_ = false;
     InstanceInternalAPI* inst_ = nullptr;
 };
 
