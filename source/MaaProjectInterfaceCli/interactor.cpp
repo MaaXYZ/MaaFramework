@@ -1,16 +1,16 @@
 #include "interactor.h"
 
+#include <format>
 #include <unordered_set>
 
 #include "MaaToolkit/Device/MaaToolkitDevice.h"
-#include "Utils/Format.hpp"
 #include "Utils/Logger.h"
 #include "Utils/Platform.h"
 
 // return [1, size]
 int input(size_t size, std::string_view prompt = "Please input")
 {
-    std::cout << MAA_FMT::format("{} [1-{}]: ", prompt, size);
+    std::cout << std::format("{} [1-{}]: ", prompt, size);
     size_t value = 0;
 
     while (true) {
@@ -18,7 +18,7 @@ int input(size_t size, std::string_view prompt = "Please input")
         if (value > 0 && value <= size) {
             break;
         }
-        std::cout << MAA_FMT::format("Invalid value, {} [1-{}]: ", prompt, size);
+        std::cout << std::format("Invalid value, {} [1-{}]: ", prompt, size);
     }
     std::cout << "\n";
 
@@ -86,10 +86,9 @@ void Interactor::print_config() const
 
     std::cout << "Controller:\n\n";
     std::cout << "\t"
-              << MaaNS::utf8_to_crt(
-                     MAA_FMT::format("{}\n\t\t{}\n\t\t{}", config_.configuration().controller.name,
-                                     MaaNS::path_to_utf8_string(config_.configuration().controller.adb_path),
-                                     config_.configuration().controller.address))
+              << MaaNS::utf8_to_crt(std::format("{}\n\t\t{}\n\t\t{}", config_.configuration().controller.name,
+                                                MaaNS::path_to_utf8_string(config_.configuration().controller.adb_path),
+                                                config_.configuration().controller.address))
               << "\n\n";
 
     std::cout << "Resource:\n\n";
@@ -154,7 +153,7 @@ void Interactor::select_controller()
     if (all_controllers.size() != 1) {
         std::cout << "### Select controller ###\n\n";
         for (size_t i = 0; i < all_controllers.size(); ++i) {
-            std::cout << MaaNS::utf8_to_crt(MAA_FMT::format("\t{}. {}\n", i + 1, all_controllers[i].name));
+            std::cout << MaaNS::utf8_to_crt(std::format("\t{}. {}\n", i + 1, all_controllers[i].name));
         }
         std::cout << "\n";
         index = input(all_controllers.size()) - 1;
@@ -216,7 +215,7 @@ void Interactor::select_adb_auto_detect()
         std::string path = MaaToolkitGetDeviceAdbPath(i);
         std::string address = MaaToolkitGetDeviceAdbSerial(i);
 
-        std::cout << MaaNS::utf8_to_crt(MAA_FMT::format("\t{}. {}\n\t\t{}\n\t\t{}\n", i + 1, name, path, address));
+        std::cout << MaaNS::utf8_to_crt(std::format("\t{}. {}\n\t\t{}\n\t\t{}\n", i + 1, name, path, address));
     }
     std::cout << "\n";
 
@@ -256,7 +255,7 @@ void Interactor::select_resource()
     if (all_resources.size() != 1) {
         std::cout << "### Select resource ###\n\n";
         for (size_t i = 0; i < all_resources.size(); ++i) {
-            std::cout << MaaNS::utf8_to_crt(MAA_FMT::format("\t{}. {}\n", i + 1, all_resources[i].name));
+            std::cout << MaaNS::utf8_to_crt(std::format("\t{}. {}\n", i + 1, all_resources[i].name));
         }
         std::cout << "\n";
         index = input(all_resources.size()) - 1;
@@ -281,7 +280,7 @@ void Interactor::add_task()
 
     std::cout << "### Add task ###\n\n";
     for (size_t i = 0; i < all_data_tasks.size(); ++i) {
-        std::cout << MaaNS::utf8_to_crt(MAA_FMT::format("\t{}. {}\n", i + 1, all_data_tasks[i].name));
+        std::cout << MaaNS::utf8_to_crt(std::format("\t{}. {}\n", i + 1, all_data_tasks[i].name));
     }
     std::cout << "\n";
     int input_index = input(all_data_tasks.size()) - 1;
@@ -300,9 +299,9 @@ void Interactor::add_task()
             config_options.emplace_back(Configuration::Option { option_name, opt.default_case });
             continue;
         }
-        std::cout << MaaNS::utf8_to_crt(MAA_FMT::format("\n\n## Input option for \"{}\" ##\n\n", option_name));
+        std::cout << MaaNS::utf8_to_crt(std::format("\n\n## Input option for \"{}\" ##\n\n", option_name));
         for (size_t i = 0; i < opt.cases.size(); ++i) {
-            std::cout << MaaNS::utf8_to_crt(MAA_FMT::format("\t{}. {}\n", i + 1, opt.cases[i].name));
+            std::cout << MaaNS::utf8_to_crt(std::format("\t{}. {}\n", i + 1, opt.cases[i].name));
         }
         std::cout << "\n";
 
@@ -367,10 +366,10 @@ void Interactor::print_config_tasks(bool with_index) const
     for (size_t i = 0; i < all_config_tasks.size(); ++i) {
         const auto& task = all_config_tasks[i];
         if (with_index) {
-            std::cout << MaaNS::utf8_to_crt(MAA_FMT::format("\t{}. {}\n", i + 1, task.name));
+            std::cout << MaaNS::utf8_to_crt(std::format("\t{}. {}\n", i + 1, task.name));
         }
         else {
-            std::cout << MaaNS::utf8_to_crt(MAA_FMT::format("\t- {}\n", task.name));
+            std::cout << MaaNS::utf8_to_crt(std::format("\t- {}\n", task.name));
         }
 
         for (const auto& [key, value] : task.option) {

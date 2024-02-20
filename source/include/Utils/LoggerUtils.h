@@ -1,6 +1,7 @@
 #pragma once
 
 #include <filesystem>
+#include <format>
 #include <fstream>
 #include <iostream>
 #include <mutex>
@@ -20,7 +21,6 @@
 #include "MaaFramework/MaaPort.h"
 
 #include "Codec.h"
-#include "Format.hpp"
 #include "ImageIo.h"
 #include "Locale.hpp"
 #include "Platform.h"
@@ -84,7 +84,7 @@ public:
             return "Empty image";
         }
 
-        std::string filename = MAA_FMT::format("{}-{}.png", format_now_for_filename(), make_uuid());
+        std::string filename = std::format("{}-{}.png", format_now_for_filename(), make_uuid());
         auto filepath = dumps_dir_ / std::move(filename);
         bool ret = MAA_NS::imwrite(filepath, image);
         if (!ret) {
@@ -190,9 +190,9 @@ private:
 #endif
         auto tid = static_cast<uint16_t>(std::hash<std::thread::id> {}(std::this_thread::get_id()));
 
-        std::string props = MAA_FMT::format("[{}][{}][Px{}][Tx{}]", format_now(), level_str(), pid, tid);
+        std::string props = std::format("[{}][{}][Px{}][Tx{}]", format_now(), level_str(), pid, tid);
         for (auto&& arg : { args... }) {
-            props += MAA_FMT::format("[{}]", arg);
+            props += std::format("[{}]", arg);
         }
         stream(props, sep_);
     }

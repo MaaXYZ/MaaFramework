@@ -1,5 +1,6 @@
 #include "FastestWay.h"
 
+#include <format>
 #include <ranges>
 #include <unordered_set>
 
@@ -9,7 +10,6 @@
 #include "Minicap/MinicapStream.h"
 #include "RawByNetcat.h"
 #include "RawWithGzip.h"
-#include "Utils/Format.hpp"
 #include "Utils/Logger.h"
 #include "Utils/NoWarningCV.hpp"
 

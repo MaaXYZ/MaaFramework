@@ -8,7 +8,6 @@
 #include "MaaFramework/MaaAPI.h"
 #include "MaaToolkit/MaaToolkitAPI.h"
 
-#include "Utils/Format.hpp"
 #include "Utils/ScopeLeave.hpp"
 
 bool Runner::run(const MAA_PROJECT_INTERFACE_NS::RuntimeParam& param)
@@ -77,5 +76,5 @@ void Runner::on_maafw_notify(MaaStringView msg, MaaStringView details_json, MaaT
     std::ignore = callback_arg;
 
     std::string entry = json::parse(details_json).value_or(json::value())["entry"].as_string();
-    std::cout << MAA_FMT::format("on_maafw_notify: {} {}", msg, entry) << std::endl;
+    std::cout << std::format("on_maafw_notify: {} {}", msg, entry) << std::endl;
 }

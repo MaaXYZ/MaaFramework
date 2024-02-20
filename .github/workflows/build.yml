@@ -212,11 +212,15 @@ jobs:
 
   macos:
     needs: meta
-    runs-on: macos-latest
     strategy:
       matrix:
-        arch: [aarch64, x86_64]
+        include:
+          - os: macos-12
+            arch: x86_64
+          - os: macos-14
+            arch: aarch64
       fail-fast: false
+    runs-on: ${{ matrix.os }}
 
     steps:
       - uses: actions/checkout@v3
@@ -228,14 +232,10 @@ jobs:
           brew install cmake python ninja
         # ccache?
 
-      - name: Download fmtlib
-        run: |
-          sh tools/fetch-fmt.sh
-
       - name: Install compiler
         run: |
           brew install llvm
-        # 16
+        # 17
 
       # Download host arch tools for Thrift of ThriftControlUnit
       - name: Download host tools from MaaDeps
@@ -250,13 +250,28 @@ jobs:
         run: |
           python3 tools/maadeps-download.py ${{ matrix.arch == 'x86_64' && 'x64' || 'arm64' }}-osx
 
-      - name: Build MAA
+      - name: Build MAA for x86_64
+        if: ${{ matrix.arch == 'x86_64' }}
         env:
           CC: "/usr/local/opt/llvm/bin/clang"
           CXX: "/usr/local/opt/llvm/bin/clang++"
+          LDFLAGS: "-L/usr/local/opt/llvm/lib/c++ -Wl,-rpath,/usr/local/opt/llvm/lib/c++"
         run: |
           cmake --preset 'NinjaMulti' \
             -DCMAKE_OSX_ARCHITECTURES='${{ matrix.arch == 'x86_64' && 'x86_64' || 'arm64' }}' \
+            -DMAADEPS_TRIPLET='maa-${{ matrix.arch == 'x86_64' && 'x64' || 'arm64' }}-osx' \
+            -DMAA_HASH_VERSION='${{ needs.meta.outputs.tag }}'
+
+          cmake --build build --preset 'NinjaMulti - Release' -j 16
+
+      - name: Build MAA for aarch64
+        if: ${{ matrix.arch == 'aarch64' }}
+        env:
+          CC: "/opt/homebrew/opt/llvm/bin/clang"
+          CXX: "/opt/homebrew/opt/llvm/bin/clang++"
+          LDFLAGS: "-L/opt/homebrew/opt/llvm/lib/c++ -Wl,-rpath,/opt/homebrew/opt/llvm/lib/c++"
+        run: |
+          cmake --preset 'NinjaMulti' \
             -DMAADEPS_TRIPLET='maa-${{ matrix.arch == 'x86_64' && 'x64' || 'arm64' }}-osx' \
             -DMAA_HASH_VERSION='${{ needs.meta.outputs.tag }}'
 

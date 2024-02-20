@@ -1,7 +1,8 @@
 #include "MinicapStream.h"
-#include "MinicapDef.h"
 
-#include "Utils/Format.hpp"
+#include <format>
+
+#include "MinicapDef.h"
 #include "Utils/Logger.h"
 #include "Utils/NoWarningCV.hpp"
 
@@ -49,7 +50,7 @@ bool MinicapStream::init(int swidth, int sheight)
     uint32_t width = screencap_helper_.get_w();
     uint32_t height = screencap_helper_.get_h();
 
-    pipe_ios_ = binary_->invoke_bin(MAA_FMT::format("-P {}x{}@{}x{}/{}", width, height, width, height, 0));
+    pipe_ios_ = binary_->invoke_bin(std::format("-P {}x{}@{}x{}/{}", width, height, width, height, 0));
 
     if (!pipe_ios_) {
         LogError << "pipe_ios_ is nullptr";

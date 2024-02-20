@@ -238,14 +238,10 @@ jobs:
           brew install cmake python ninja
         # ccache?
 
-      - name: Download fmtlib
-        run: |
-          sh tools/fetch-fmt.sh
-
       - name: Install compiler
         run: |
           brew install llvm
-        # 16
+        # 17
 
       - name: Bootstrap MaaDeps
         env:
@@ -257,6 +253,7 @@ jobs:
         env:
           CC: "/usr/local/opt/llvm/bin/clang"
           CXX: "/usr/local/opt/llvm/bin/clang++"
+          LDFLAGS: "-L/usr/local/opt/llvm/lib/c++ -Wl,-rpath,/usr/local/opt/llvm/lib/c++"
         run: |
           cmake --preset 'NinjaMulti' \
             -DCMAKE_OSX_ARCHITECTURES='${{ matrix.arch == 'x86_64' && 'x86_64' || 'arm64' }}' \

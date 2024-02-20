@@ -2,10 +2,10 @@
 
 #include <array>
 #include <cmath>
+#include <format>
 #include <ranges>
 
 #include "Utils/Codec.h"
-#include "Utils/Format.hpp"
 #include "Utils/Logger.h"
 
 MAA_CTRL_UNIT_NS_BEGIN
@@ -68,8 +68,7 @@ bool MaatouchInput::press_key(int key)
     static constexpr std::string_view kKeyDownFormat = "k {} d\nc\n";
     static constexpr std::string_view kKeyUpFormat = "k {} u\nc\n";
 
-    bool ret =
-        pipe_ios_->write(MAA_FMT::format(kKeyDownFormat, key)) && pipe_ios_->write(MAA_FMT::format(kKeyUpFormat, key));
+    bool ret = pipe_ios_->write(std::format(kKeyDownFormat, key)) && pipe_ios_->write(std::format(kKeyUpFormat, key));
 
     if (!ret) {
         LogError << "failed to write";

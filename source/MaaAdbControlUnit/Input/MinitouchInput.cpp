@@ -2,9 +2,9 @@
 
 #include <array>
 #include <cmath>
+#include <format>
 #include <ranges>
 
-#include "Utils/Format.hpp"
 #include "Utils/Logger.h"
 
 MAA_CTRL_UNIT_NS_BEGIN

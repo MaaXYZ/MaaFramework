@@ -1,12 +1,12 @@
 #include "AutoDetectInput.h"
 
+#include <format>
 #include <ranges>
 #include <unordered_set>
 
 #include "AdbInput.h"
 #include "MaatouchInput.h"
 #include "MinitouchInput.h"
-#include "Utils/Format.hpp"
 #include "Utils/Logger.h"
 
 MAA_CTRL_UNIT_NS_BEGIN
