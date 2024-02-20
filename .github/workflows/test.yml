@@ -126,6 +126,7 @@ jobs:
       - name: Run Python testing
         shell: bash
         run: |
+          python3 -m pip install -r ./source/binding/Python/requirements.txt
           python3 ./test/python/binding_test.py
 
       - uses: actions/upload-artifact@v3
@@ -216,6 +217,7 @@ jobs:
       - name: Run Python testing
         shell: bash
         run: |
+          python3 -m pip install -r ./source/binding/Python/requirements.txt
           python3 ./test/python/binding_test.py
 
       - uses: actions/upload-artifact@v3
@@ -296,6 +298,7 @@ jobs:
       - name: Run Python testing
         shell: bash
         run: |
+          python3 -m pip install -r ./source/binding/Python/requirements.txt
           python3 ./test/python/binding_test.py
 
       - uses: actions/upload-artifact@v3
