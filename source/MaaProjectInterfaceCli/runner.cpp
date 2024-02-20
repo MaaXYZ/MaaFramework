@@ -12,8 +12,6 @@
 
 bool Runner::run(const MAA_PROJECT_INTERFACE_NS::RuntimeParam& param)
 {
-    MaaToolkitInit();
-
     auto maa_handle = MaaCreate(&Runner::on_maafw_notify, nullptr);
 
     auto controller_handle = MaaAdbControllerCreateV2(param.adb_param.adb_path.c_str(), param.adb_param.address.c_str(),
@@ -46,7 +44,6 @@ bool Runner::run(const MAA_PROJECT_INTERFACE_NS::RuntimeParam& param)
         MaaDestroy(maa_handle);
         MaaResourceDestroy(resource_handle);
         MaaControllerDestroy(controller_handle);
-        MaaToolkitUninit();
     });
 
     for (const auto& [name, executor] : param.recognizer) {

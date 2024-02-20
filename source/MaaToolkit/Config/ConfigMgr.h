@@ -19,10 +19,8 @@ class ConfigMgr : public SingletonHolder<ConfigMgr>, public MaaToolkitConfigMgrA
     friend class SingletonHolder<ConfigMgr>;
 
 public:
-    // TODO: linux 可能要区分下放到家目录之类的
-    inline static const std::filesystem::path kUserDir = ".";
-    inline static const std::filesystem::path kConfigPath = kUserDir / "config" / "maa_toolkit.json";
-    inline static const std::filesystem::path kDebugDir = kUserDir / "debug";
+    inline static const std::filesystem::path kConfigPath = "config/maa_toolkit.json";
+    inline static const std::filesystem::path kDebugDir = "debug";
 
 public:
     inline static const std::string kPolicyKey = "policy";
@@ -47,6 +45,10 @@ private:
     json::value to_json() const;
     bool dump() const;
     bool save(const json::value& root) const;
+
+private:
+    std::filesystem::path config_path_;
+    std::filesystem::path debug_dir_;
 
 private:
     bool policy_logging_ = true;

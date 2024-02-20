@@ -7,52 +7,7 @@
 #include "ControlUnit/ThriftControlUnitAPI.h"
 #include "ControlUnit/Win32ControlUnitAPI.h"
 #include "Utils/Logger.h"
-
-static std::filesystem::path library_dir;
-
-#ifdef _WIN32
-#include "Utils/SafeWindows.hpp"
-
-void init_library_path(HINSTANCE hinstDLL)
-{
-    char buffer[MAX_PATH + 1] = { 0 };
-    GetModuleFileName(hinstDLL, buffer, MAX_PATH);
-    library_dir = MAA_NS::path(buffer).parent_path();
-}
-
-// https://learn.microsoft.com/zh-cn/windows/win32/dlls/dllmain
-BOOL WINAPI DllMain(HINSTANCE hinstDLL, // handle to DLL module
-                    DWORD fdwReason,    // reason for calling function
-                    LPVOID lpvReserved) // reserved
-{
-    // Perform actions based on the reason for calling.
-    switch (fdwReason) {
-    case DLL_PROCESS_ATTACH:
-        // Initialize once for each new process.
-        // Return FALSE to fail DLL load.
-        init_library_path(hinstDLL);
-        break;
-
-    case DLL_THREAD_ATTACH:
-        // Do thread-specific initialization.
-        break;
-
-    case DLL_THREAD_DETACH:
-        // Do thread-specific cleanup.
-        break;
-
-    case DLL_PROCESS_DETACH:
-
-        if (lpvReserved != nullptr) {
-            break; // do not do cleanup if process termination scenario
-        }
-
-        // Perform any necessary cleanup.
-        break;
-    }
-    return TRUE; // Successful DLL_PROCESS_ATTACH.
-}
-#endif
+#include "Utils/AppRuntime.h"
 
 MAA_NS_BEGIN
 
@@ -78,8 +33,8 @@ std::shared_ptr<MAA_CTRL_UNIT_NS::ControlUnitAPI> AdbControlUnitLibraryHolder::c
     MaaStringView adb_path, MaaStringView adb_serial, MaaAdbControllerType type, MaaStringView config,
     MaaStringView agent_path, MaaControllerCallback callback, MaaCallbackTransparentArg callback_arg)
 {
-    if (!load_library(library_dir / libname_)) {
-        LogError << "Failed to load library" << VAR(library_dir) << VAR(libname_);
+    if (!load_library(app_dir() / libname_)) {
+        LogError << "Failed to load library" << VAR(app_dir()) << VAR(libname_);
         return nullptr;
     }
 
@@ -117,8 +72,8 @@ std::shared_ptr<MAA_CTRL_UNIT_NS::ControlUnitAPI> Win32ControlUnitLibraryHolder:
     MaaWin32Hwnd hWnd, MaaWin32ControllerType type, MaaControllerCallback callback,
     MaaCallbackTransparentArg callback_arg)
 {
-    if (!load_library(library_dir / libname_)) {
-        LogError << "Failed to load library" << VAR(library_dir) << VAR(libname_);
+    if (!load_library(app_dir() / libname_)) {
+        LogError << "Failed to load library" << VAR(app_dir()) << VAR(libname_);
         return nullptr;
     }
 
@@ -154,8 +109,8 @@ std::shared_ptr<MAA_CTRL_UNIT_NS::ControlUnitAPI> Win32ControlUnitLibraryHolder:
 std::shared_ptr<MAA_CTRL_UNIT_NS::ControlUnitAPI> DbgControlUnitLibraryHolder::create_control_unit(
     MaaDbgControllerType type, MaaStringView read_path)
 {
-    if (!load_library(library_dir / libname_)) {
-        LogError << "Failed to load library" << VAR(library_dir) << VAR(libname_);
+    if (!load_library(app_dir() / libname_)) {
+        LogError << "Failed to load library" << VAR(app_dir()) << VAR(libname_);
         return nullptr;
     }
 
@@ -191,8 +146,8 @@ std::shared_ptr<MAA_CTRL_UNIT_NS::ControlUnitAPI> DbgControlUnitLibraryHolder::c
 std::shared_ptr<MAA_CTRL_UNIT_NS::ControlUnitAPI> ThriftControlUnitLibraryHolder::create_control_unit(
     MaaThriftControllerType type, MaaStringView host, int32_t port, MaaStringView config)
 {
-    if (!load_library(library_dir / libname_)) {
-        LogError << "Failed to load library" << VAR(library_dir) << VAR(libname_);
+    if (!load_library(app_dir() / libname_)) {
+        LogError << "Failed to load library" << VAR(app_dir()) << VAR(libname_);
         return nullptr;
     }
 

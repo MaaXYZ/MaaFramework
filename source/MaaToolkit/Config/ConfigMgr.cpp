@@ -8,14 +8,18 @@
 #include "MaaFramework/MaaAPI.h"
 #include "Utils/Logger.h"
 #include "Utils/Platform.h"
+#include "Utils/AppRuntime.h"
 
 MAA_TOOLKIT_NS_BEGIN
 
 bool ConfigMgr::init()
 {
-    LogFunc << VAR(kConfigPath);
+    LogFunc << VAR(app_dir());
 
-    if (!std::filesystem::exists(kConfigPath)) {
+    config_path_ = app_dir() / kConfigPath;
+    debug_dir_ = app_dir() / kDebugDir;
+
+    if (!std::filesystem::exists(config_path_)) {
         dump();
     }
 
@@ -37,11 +41,11 @@ bool ConfigMgr::uninit()
 
 bool ConfigMgr::load()
 {
-    LogFunc << VAR(kConfigPath);
+    LogFunc << VAR(config_path_);
 
-    auto json_opt = json::open(kConfigPath);
+    auto json_opt = json::open(config_path_);
     if (!json_opt) {
-        LogError << "Failed to open json file:" << kConfigPath;
+        LogError << "Failed to open json file:" << config_path_;
         return false;
     }
 
@@ -65,7 +69,7 @@ bool ConfigMgr::parse_and_apply_policy(const json::value& policy_json)
     LogFunc << VAR(policy_json);
 
     policy_logging_ = policy_json.get(kPolicyLoggging, policy_logging_);
-    std::string logging_dir = policy_logging_ ? path_to_utf8_string(kDebugDir) : "";
+    std::string logging_dir = policy_logging_ ? path_to_utf8_string(debug_dir_) : "";
     MaaSetGlobalOption(MaaGlobalOption_LogDir, static_cast<void*>(logging_dir.data()), logging_dir.size());
 
     policy_save_draw_ = policy_json.get(kPolicySaveDraw, policy_save_draw_);
@@ -104,10 +108,10 @@ bool ConfigMgr::save(const json::value& root) const
 {
     LogInfo;
 
-    std::filesystem::create_directories(kConfigPath.parent_path());
-    std::ofstream ofs(kConfigPath, std::ios::out);
+    std::filesystem::create_directories(config_path_.parent_path());
+    std::ofstream ofs(config_path_, std::ios::out);
     if (!ofs.is_open()) {
-        LogError << "Failed to open config file:" << kConfigPath;
+        LogError << "Failed to open config file:" << config_path_;
         return false;
     }
     ofs << root;
