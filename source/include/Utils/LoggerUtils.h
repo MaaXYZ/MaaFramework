@@ -208,4 +208,8 @@ private:
     const bool stdout_ = false;
     const StringConverter string_converter_;
 
+    separator sep_ = separator::space;
     std::stringstream buffer_;
+};
+
+MAA_LOG_NS_END

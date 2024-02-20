@@ -30,7 +30,6 @@ endif()
 
 if(APPLE)
     set(CMAKE_INSTALL_RPATH "@loader_path;@executable_path")
-    add_compile_options("-Wno-deprecated-declarations") # supress tmpnam
 elseif(UNIX)
     set(CMAKE_INSTALL_RPATH "$ORIGIN")
 endif()
