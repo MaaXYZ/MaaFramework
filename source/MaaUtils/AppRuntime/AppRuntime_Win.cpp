@@ -13,15 +13,14 @@ const std::filesystem::path& app_dir()
     return s_app_dir_cache;
 }
 
-MAA_NS_END
-
-
 void init_app_dir(HINSTANCE hinstDLL)
 {
     char buffer[MAX_PATH + 1] = { 0 };
     GetModuleFileName(hinstDLL, buffer, MAX_PATH);
-    MAA_NS::s_app_dir_cache = MAA_NS::path(buffer).parent_path();
+    s_app_dir_cache = MAA_NS::path(buffer).parent_path();
 }
+
+MAA_NS_END
 
 // https://learn.microsoft.com/zh-cn/windows/win32/dlls/dllmain
 BOOL WINAPI DllMain(HINSTANCE hinstDLL, // handle to DLL module
@@ -33,7 +32,7 @@ BOOL WINAPI DllMain(HINSTANCE hinstDLL, // handle to DLL module
     case DLL_PROCESS_ATTACH:
         // Initialize once for each new process.
         // Return FALSE to fail DLL load.
-        init_app_dir(hinstDLL);
+        MAA_NS::init_app_dir(hinstDLL);
         break;
 
     case DLL_THREAD_ATTACH:
