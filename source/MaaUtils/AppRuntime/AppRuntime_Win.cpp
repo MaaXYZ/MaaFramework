@@ -1,5 +1,4 @@
 #ifdef _WIN32
-
 #include "Utils/AppRuntime.h"
 
 #include "Utils/Platform.h"
