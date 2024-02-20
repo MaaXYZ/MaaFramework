@@ -3,7 +3,7 @@
 
 #include "MaaToolkit/MaaToolkitAPI.h"
 #include "Utils/Platform.h"
-#include "Utils/AppRuntime.h"
+#include "Utils/Runtime.h"
 
 #include "interactor.h"
 #include "runner.h"
@@ -20,7 +20,7 @@ int main(int argc, char** argv)
 
     Interactor interactor;
 
-    if (!interactor.load(MAA_NS::app_dir())) {
+    if (!interactor.load(MAA_NS::library_dir())) {
         mpause();
         return -1;
     }

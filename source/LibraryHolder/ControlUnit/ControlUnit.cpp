@@ -7,7 +7,7 @@
 #include "ControlUnit/ThriftControlUnitAPI.h"
 #include "ControlUnit/Win32ControlUnitAPI.h"
 #include "Utils/Logger.h"
-#include "Utils/AppRuntime.h"
+#include "Utils/Runtime.h"
 
 MAA_NS_BEGIN
 
@@ -33,8 +33,8 @@ std::shared_ptr<MAA_CTRL_UNIT_NS::ControlUnitAPI> AdbControlUnitLibraryHolder::c
     MaaStringView adb_path, MaaStringView adb_serial, MaaAdbControllerType type, MaaStringView config,
     MaaStringView agent_path, MaaControllerCallback callback, MaaCallbackTransparentArg callback_arg)
 {
-    if (!load_library(app_dir() / libname_)) {
-        LogError << "Failed to load library" << VAR(app_dir()) << VAR(libname_);
+    if (!load_library(library_dir() / libname_)) {
+        LogError << "Failed to load library" << VAR(library_dir()) << VAR(libname_);
         return nullptr;
     }
 
@@ -72,8 +72,8 @@ std::shared_ptr<MAA_CTRL_UNIT_NS::ControlUnitAPI> Win32ControlUnitLibraryHolder:
     MaaWin32Hwnd hWnd, MaaWin32ControllerType type, MaaControllerCallback callback,
     MaaCallbackTransparentArg callback_arg)
 {
-    if (!load_library(app_dir() / libname_)) {
-        LogError << "Failed to load library" << VAR(app_dir()) << VAR(libname_);
+    if (!load_library(library_dir() / libname_)) {
+        LogError << "Failed to load library" << VAR(library_dir()) << VAR(libname_);
         return nullptr;
     }
 
@@ -109,8 +109,8 @@ std::shared_ptr<MAA_CTRL_UNIT_NS::ControlUnitAPI> Win32ControlUnitLibraryHolder:
 std::shared_ptr<MAA_CTRL_UNIT_NS::ControlUnitAPI> DbgControlUnitLibraryHolder::create_control_unit(
     MaaDbgControllerType type, MaaStringView read_path)
 {
-    if (!load_library(app_dir() / libname_)) {
-        LogError << "Failed to load library" << VAR(app_dir()) << VAR(libname_);
+    if (!load_library(library_dir() / libname_)) {
+        LogError << "Failed to load library" << VAR(library_dir()) << VAR(libname_);
         return nullptr;
     }
 
@@ -146,8 +146,8 @@ std::shared_ptr<MAA_CTRL_UNIT_NS::ControlUnitAPI> DbgControlUnitLibraryHolder::c
 std::shared_ptr<MAA_CTRL_UNIT_NS::ControlUnitAPI> ThriftControlUnitLibraryHolder::create_control_unit(
     MaaThriftControllerType type, MaaStringView host, int32_t port, MaaStringView config)
 {
-    if (!load_library(app_dir() / libname_)) {
-        LogError << "Failed to load library" << VAR(app_dir()) << VAR(libname_);
+    if (!load_library(library_dir() / libname_)) {
+        LogError << "Failed to load library" << VAR(library_dir()) << VAR(libname_);
         return nullptr;
     }
 

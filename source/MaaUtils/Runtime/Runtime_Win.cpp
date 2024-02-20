@@ -1,23 +1,23 @@
 #ifdef _WIN32
-#include "Utils/AppRuntime.h"
+#include "Utils/Runtime.h"
 
 #include "Utils/Platform.h"
 #include "Utils/SafeWindows.hpp"
 
 MAA_NS_BEGIN
 
-static std::filesystem::path s_app_dir_cache;
+static std::filesystem::path s_library_dir_cache;
 
-const std::filesystem::path& app_dir()
+const std::filesystem::path& library_dir()
 {
-    return s_app_dir_cache;
+    return s_library_dir_cache;
 }
 
-void init_app_dir(HINSTANCE hinstDLL)
+void init_library_dir(HINSTANCE hinstDLL)
 {
     char buffer[MAX_PATH + 1] = { 0 };
     GetModuleFileName(hinstDLL, buffer, MAX_PATH);
-    s_app_dir_cache = MAA_NS::path(buffer).parent_path();
+    s_library_dir_cache = MAA_NS::path(buffer).parent_path();
 }
 
 MAA_NS_END
@@ -32,7 +32,7 @@ BOOL WINAPI DllMain(HINSTANCE hinstDLL, // handle to DLL module
     case DLL_PROCESS_ATTACH:
         // Initialize once for each new process.
         // Return FALSE to fail DLL load.
-        MAA_NS::init_app_dir(hinstDLL);
+        MAA_NS::init_library_dir(hinstDLL);
         break;
 
     case DLL_THREAD_ATTACH:

@@ -8,16 +8,16 @@
 #include "MaaFramework/MaaAPI.h"
 #include "Utils/Logger.h"
 #include "Utils/Platform.h"
-#include "Utils/AppRuntime.h"
+#include "Utils/Runtime.h"
 
 MAA_TOOLKIT_NS_BEGIN
 
 bool ConfigMgr::init()
 {
-    LogFunc << VAR(app_dir());
+    LogFunc << VAR(library_dir());
 
-    config_path_ = app_dir() / kConfigPath;
-    debug_dir_ = app_dir() / kDebugDir;
+    config_path_ = library_dir() / kConfigPath;
+    debug_dir_ = library_dir() / kDebugDir;
 
     if (!std::filesystem::exists(config_path_)) {
         dump();
