@@ -5,18 +5,23 @@
 #include "Utils/Platform.h"
 #include "Utils/SafeWindows.hpp"
 
-static std::filesystem::path app_dir_cache;
+MAA_NS_BEGIN
+
+static std::filesystem::path s_app_dir_cache;
 
 const std::filesystem::path& app_dir()
 {
-    return app_dir_cache;
+    return s_app_dir_cache;
 }
+
+MAA_NS_END
+
 
 void init_app_dir(HINSTANCE hinstDLL)
 {
     char buffer[MAX_PATH + 1] = { 0 };
     GetModuleFileName(hinstDLL, buffer, MAX_PATH);
-    app_dir_cache = MAA_NS::path(buffer).parent_path();
+    MAA_NS::s_app_dir_cache = MAA_NS::path(buffer).parent_path();
 }
 
 // https://learn.microsoft.com/zh-cn/windows/win32/dlls/dllmain
