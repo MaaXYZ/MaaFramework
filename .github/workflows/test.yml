@@ -123,6 +123,11 @@ jobs:
         run: |
           ./install/bin/PipelineTesting.exe ./install/test
 
+      - name: Run Python testing
+        shell: bash
+        run: |
+          python3 ./test/python/binding_test.py
+
       - uses: actions/upload-artifact@v3
         if: always()
         with:
@@ -208,6 +213,11 @@ jobs:
         run: |
           ./install/bin/PipelineTesting ./install/test
 
+      - name: Run Python testing
+        shell: bash
+        run: |
+          python3 ./test/python/binding_test.py
+
       - uses: actions/upload-artifact@v3
         if: always()
         with:
@@ -282,6 +292,11 @@ jobs:
         shell: bash
         run: |
           ./install/bin/PipelineTesting ./install/test
+
+      - name: Run Python testing
+        shell: bash
+        run: |
+          python3 ./test/python/binding_test.py
 
       - uses: actions/upload-artifact@v3
         if: always()
