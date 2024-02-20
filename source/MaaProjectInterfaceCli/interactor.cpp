@@ -1,7 +1,7 @@
 #include "interactor.h"
 
-#include <unordered_set>
 #include <format>
+#include <unordered_set>
 
 #include "MaaToolkit/Device/MaaToolkitDevice.h"
 #include "Utils/Logger.h"
@@ -86,10 +86,9 @@ void Interactor::print_config() const
 
     std::cout << "Controller:\n\n";
     std::cout << "\t"
-              << MaaNS::utf8_to_crt(
-                     std::format("{}\n\t\t{}\n\t\t{}", config_.configuration().controller.name,
-                                     MaaNS::path_to_utf8_string(config_.configuration().controller.adb_path),
-                                     config_.configuration().controller.address))
+              << MaaNS::utf8_to_crt(std::format("{}\n\t\t{}\n\t\t{}", config_.configuration().controller.name,
+                                                MaaNS::path_to_utf8_string(config_.configuration().controller.adb_path),
+                                                config_.configuration().controller.address))
               << "\n\n";
 
     std::cout << "Resource:\n\n";

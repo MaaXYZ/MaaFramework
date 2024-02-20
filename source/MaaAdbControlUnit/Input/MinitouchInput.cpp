@@ -2,8 +2,8 @@
 
 #include <array>
 #include <cmath>
-#include <ranges>
 #include <format>
+#include <ranges>
 
 #include "Utils/Logger.h"
 

@@ -1,8 +1,8 @@
 #include "FastestWay.h"
 
+#include <format>
 #include <ranges>
 #include <unordered_set>
-#include <format>
 
 #include "Encode.h"
 #include "EncodeToFile.h"

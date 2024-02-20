@@ -1,8 +1,8 @@
 #include "AutoDetectInput.h"
 
+#include <format>
 #include <ranges>
 #include <unordered_set>
-#include <format>
 
 #include "AdbInput.h"
 #include "MaatouchInput.h"

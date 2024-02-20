@@ -1,15 +1,14 @@
 #pragma once
 
 #include <filesystem>
-#include <fstream>
 #include <format>
+#include <fstream>
 #include <iostream>
 #include <mutex>
 #include <ranges>
 #include <thread>
 #include <tuple>
 #include <type_traits>
-#include <format>
 
 #if defined(__APPLE__) || defined(__linux__)
 #include <unistd.h>
@@ -30,7 +29,7 @@
 
 namespace cv
 {
-    class Mat;
+class Mat;
 }
 
 MAA_LOG_NS_BEGIN

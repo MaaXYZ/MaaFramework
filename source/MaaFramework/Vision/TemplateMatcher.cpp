@@ -134,7 +134,7 @@ void TemplateMatcher::draw_result(const cv::Rect& roi, const cv::Mat& templ, con
         cv::rectangle(image_draw, res.box, color, 1);
 
         std::string flag = std::format("{}: {:.3f}, [{}, {}, {}, {}]", i, res.score, res.box.x, res.box.y,
-                                           res.box.width, res.box.height);
+                                       res.box.width, res.box.height);
         cv::putText(image_draw, flag, cv::Point(res.box.x, res.box.y - 5), cv::FONT_HERSHEY_PLAIN, 1.2, color, 1);
     }
 

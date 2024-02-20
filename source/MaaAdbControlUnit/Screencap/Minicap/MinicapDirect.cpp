@@ -12,8 +12,7 @@ std::optional<cv::Mat> MinicapDirect::screencap()
     int width = screencap_helper_.get_w();
     int height = screencap_helper_.get_h();
 
-    auto res =
-        binary_->invoke_bin_and_read_pipe(std::format("-P {}x{}@{}x{}/{} -s", width, height, width, height, 0));
+    auto res = binary_->invoke_bin_and_read_pipe(std::format("-P {}x{}@{}x{}/{} -s", width, height, width, height, 0));
 
     if (!res) {
         return std::nullopt;
