@@ -1,7 +1,8 @@
 from ctypes import c_int32
-import json
 from abc import ABC
-from typing import Any, Dict, Optional
+from typing import Any, Dict, Optional, Union
+from pathlib import Path
+import json
 
 from .custom_controller import CustomControllerAgent
 from .callback_agent import Callback, CallbackAgent
@@ -136,14 +137,14 @@ class Controller(ABC):
 class AdbController(Controller):
     def __init__(
         self,
-        adb_path: str,
+        adb_path: Union[str, Path],
         address: str,
         type: MaaAdbControllerType = (
             MaaAdbControllerTypeEnum.Input_Preset_AutoDetect
             | MaaAdbControllerTypeEnum.Screencap_FastestWay
         ),
         config: Dict[str, Any] = {},
-        agent_path: str = "share/MaaAgentBinary",
+        agent_path: Union[str, Path] = "share/MaaAgentBinary",
         callback: Optional[Callback] = None,
         callback_arg: Any = None,
     ):
@@ -163,11 +164,11 @@ class AdbController(Controller):
 
         self._callback_agent = CallbackAgent(callback, callback_arg)
         self._handle = Library.framework.MaaAdbControllerCreateV2(
-            adb_path.encode("utf-8"),
+            str(adb_path).encode("utf-8"),
             address.encode("utf-8"),
             type,
             json.dumps(config).encode("utf-8"),
-            agent_path.encode("utf-8"),
+            str(agent_path).encode("utf-8"),
             self._callback_agent.c_callback,
             self._callback_agent.c_callback_arg,
         )
@@ -195,8 +196,8 @@ class AdbController(Controller):
 class DbgController(Controller):
     def __init__(
         self,
-        read_path: str,
-        write_path: str = "",
+        read_path: Union[str, Path],
+        write_path: Union[str, Path] = "",
         type: MaaDbgControllerType = MaaDbgControllerTypeEnum.CarouselImage,
         config: Dict[str, Any] = {},
         callback: Optional[Callback] = None,
@@ -207,8 +208,8 @@ class DbgController(Controller):
 
         self._callback_agent = CallbackAgent(callback, callback_arg)
         self._handle = Library.framework.MaaDbgControllerCreate(
-            read_path.encode("utf-8"),
-            write_path.encode("utf-8"),
+            str(read_path).encode("utf-8"),
+            str(write_path).encode("utf-8"),
             type,
             json.dumps(config).encode("utf-8"),
             self._callback_agent.c_callback,
