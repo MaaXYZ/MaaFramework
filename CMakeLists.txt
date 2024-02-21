@@ -7,6 +7,7 @@ set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 set(CMAKE_MAP_IMPORTED_CONFIG_DebWithRelDeps "DebWithRelDeps;Release;")
 
 set(Boost_NO_WARN_NEW_VERSIONS 1)
+set(CMAKE_EXPORT_COMPILE_COMMANDS 1)
 
 option(USE_MAADEPS "use third-party libraries built by MaaDeps" ON)
 

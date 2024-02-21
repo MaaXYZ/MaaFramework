@@ -21,30 +21,12 @@ class Library:
         """
 
         platform_values = {
-            "windows": {
-                "framework_libpath": "MaaFramework.dll",
-                "toolkit_libpath": "MaaToolkit.dll",
-                "environ_var": "PATH",
-            },
-            "darwin": {
-                "framework_libpath": "libMaaFramework.dylib",
-                "toolkit_libpath": "libMaaToolkit.dylib",
-                "environ_var": "DYLD_LIBRARY_PATH",
-            },
-            "linux": {
-                "framework_libpath": "libMaaFramework.so",
-                "toolkit_libpath": "libMaaToolkit.so",
-                "environ_var": "LD_LIBRARY_PATH",
-            },
+            "windows": ("MaaFramework.dll", "MaaToolkit.dll"),
+            "darwin": ("libMaaFramework.dylib", "libMaaToolkit.dylib"),
+            "linux": ("libMaaFramework.so", "libMaaToolkit.so"),
         }
 
         platform_type = platform.system().lower()
-        environ_var = platform_values[platform_type]["environ_var"]
-        environ = os.environ[environ_var]
-        try:
-            environ += os.pathsep + str(path)
-        except KeyError:
-            environ = str(path)
 
         if platform_type == "windows":
             lib_import = ctypes.WinDLL
@@ -53,7 +35,7 @@ class Library:
 
         try:
             cls.framework_libpath = (
-                pathlib.Path(path) / platform_values[platform_type]["framework_libpath"]
+                pathlib.Path(path) / platform_values[platform_type][0]
             )
             cls.framework = lib_import(str(cls.framework_libpath))
         except OSError:
@@ -67,8 +49,7 @@ class Library:
         if toolkit:
             try:
                 cls.toolkit_libpath = (
-                    pathlib.Path(path)
-                    / platform_values[platform_type]["toolkit_libpath"]
+                    pathlib.Path(path) / platform_values[platform_type][1]
                 )
                 cls.toolkit = lib_import(str(cls.toolkit_libpath))
             except OSError:

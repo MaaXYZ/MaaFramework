@@ -111,6 +111,12 @@ jobs:
         run: |
           ./install/bin/PipelineTesting.exe ./install/test
 
+      - name: Run Python testing
+        shell: bash
+        run: |
+          python3 -m pip install -r ./source/binding/Python/requirements.txt
+          python3 ./test/python/binding_test.py
+
       - uses: actions/upload-artifact@v3
         if: always()
         with:
@@ -141,7 +147,7 @@ jobs:
       - name: Install dep
         run: |
           pacman -Sy
-          pacman -S --noconfirm cmake python ccache ninja git
+          pacman -S --noconfirm cmake python python-pip ccache ninja git
 
       # https://github.com/MaaAssistantArknights/MaaFramework/actions/runs/5643408179/job/15285186255
       - uses: actions/checkout@v3
@@ -195,6 +201,14 @@ jobs:
         shell: bash
         run: |
           ./install/bin/PipelineTesting ./install/test
+
+      - name: Run Python testing
+        shell: bash
+        run: |
+          python3 -m venv .venv
+          source .venv/bin/activate
+          python3 -m pip install -r ./source/binding/Python/requirements.txt
+          python3 ./test/python/binding_test.py
 
       - uses: actions/upload-artifact@v3
         if: always()
@@ -270,6 +284,12 @@ jobs:
         shell: bash
         run: |
           ./install/bin/PipelineTesting ./install/test
+
+      - name: Run Python testing
+        shell: bash
+        run: |
+          python3 -m pip install -r ./source/binding/Python/requirements.txt
+          python3 ./test/python/binding_test.py
 
       - uses: actions/upload-artifact@v3
         if: always()
