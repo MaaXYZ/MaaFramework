@@ -4,7 +4,7 @@ import sys
 import asyncio
 
 if len(sys.argv) < 2:
-    print("Usage: python binding_test.py install_dir")
+    print("Usage: python binding_test.py <install_dir>")
     sys.exit(1)
 
 install_dir = Path(sys.argv[1]).resolve()
