@@ -1,7 +1,9 @@
 #include <filesystem>
 #include <iostream>
 
+#include "MaaToolkit/MaaToolkitAPI.h"
 #include "Utils/Platform.h"
+#include "Utils/Runtime.h"
 
 #include "interactor.h"
 #include "runner.h"
@@ -14,13 +16,11 @@ void mpause()
 
 int main(int argc, char** argv)
 {
-    std::ignore = argc;
-
-    auto app_path = MaaNS::path(argv[0]);
-    auto project_dir = app_path.parent_path();
+    MaaToolkitInit();
 
     Interactor interactor;
-    if (!interactor.load(project_dir)) {
+
+    if (!interactor.load(MAA_NS::library_dir())) {
         mpause();
         return -1;
     }
