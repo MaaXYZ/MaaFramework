@@ -24,7 +24,7 @@ public:
 
     virtual MaaStatus status(MaaResId res_id) const override;
     virtual MaaStatus wait(MaaResId res_id) const override;
-    virtual MaaBool loaded() const override;
+    virtual MaaBool valid() const override;
 
     virtual std::string get_hash() const override;
     virtual std::vector<std::string> get_task_list() const override;
@@ -52,7 +52,7 @@ private:
 private:
     std::vector<std::filesystem::path> paths_;
     mutable std::string hash_cache_;
-    std::atomic_bool loaded_ = false;
+    std::atomic_bool valid_ = true;
 
     std::unique_ptr<AsyncRunner<std::filesystem::path>> res_loader_ = nullptr;
     MessageNotifier<MaaResourceCallback> notifier;

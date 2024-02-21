@@ -1,5 +1,6 @@
 #pragma once
 
+#include "Utils/JsonExt.hpp"
 #include "VisionBase.h"
 #include "VisionTypes.h"
 
@@ -11,21 +12,15 @@ public:
     struct Result
     {
         cv::Rect box {};
-        int score = 0;
+        int count = 0;
 
-        operator json::value() const
-        {
-            json::value root;
-            root["box"] = json::array({ box.x, box.y, box.width, box.height });
-            root["count"] = score;
-            return root;
-        }
+        MEO_JSONIZATION(box, count);
     };
     using ResultsVec = std::vector<Result>;
 
 public:
     void set_param(ColorMatcherParam param) { param_ = std::move(param); }
-    ResultsVec analyze() const;
+    std::pair<ResultsVec, size_t> analyze() const;
 
 private:
     ResultsVec foreach_rois(const ColorMatcherParam::Range& range, bool connected) const;
@@ -35,6 +30,8 @@ private:
     void draw_result(const cv::Rect& roi, const cv::Mat& color, const cv::Mat& bin, const ResultsVec& results) const;
 
     void filter(ResultsVec& results, int count) const;
+    void sort(ResultsVec& results) const;
+    size_t preferred_index(const ResultsVec& results) const;
 
     ColorMatcherParam param_;
 };

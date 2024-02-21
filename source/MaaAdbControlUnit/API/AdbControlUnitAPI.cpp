@@ -2,9 +2,10 @@
 
 #include <meojson/json.hpp>
 
+#include "Input/AdbInput.h"
+#include "Input/AutoDetectInput.h"
 #include "Input/MaatouchInput.h"
 #include "Input/MinitouchInput.h"
-#include "Input/TapInput.h"
 #include "Manager/ControlUnitMgr.h"
 #include "Screencap/Encode.h"
 #include "Screencap/EncodeToFile.h"
@@ -42,6 +43,7 @@ MaaControlUnitHandle MaaAdbControlUnitCreate( //
     auto screencap_type = type & MaaAdbControllerType_Screencap_Mask;
 
     std::shared_ptr<MaatouchInput> maatouch_unit = nullptr;
+    std::shared_ptr<AutoDetectInput> auto_detect_unit = nullptr;
 
     auto agent_stdpath = std::filesystem::absolute(path(agent_path));
     auto minitouch_path = agent_stdpath / path("minitouch");
@@ -50,9 +52,10 @@ MaaControlUnitHandle MaaAdbControlUnitCreate( //
 
     switch (touch_type) {
     case MaaAdbControllerType_Touch_Adb:
-        LogInfo << "touch_type: TapTouchInput";
-        touch_unit = std::make_shared<TapTouchInput>();
+        LogInfo << "touch_type: AdbTapInput";
+        touch_unit = std::make_shared<AdbTapInput>();
         break;
+
     case MaaAdbControllerType_Touch_MiniTouch:
         LogInfo << "touch_type: MinitouchInput";
         if (!std::filesystem::exists(minitouch_path)) {
@@ -61,6 +64,7 @@ MaaControlUnitHandle MaaAdbControlUnitCreate( //
         }
         touch_unit = std::make_shared<MinitouchInput>(minitouch_path);
         break;
+
     case MaaAdbControllerType_Touch_MaaTouch:
         LogInfo << "touch_type: MaatouchInput";
         if (!std::filesystem::exists(maatouch_path)) {
@@ -72,6 +76,15 @@ MaaControlUnitHandle MaaAdbControlUnitCreate( //
         }
         touch_unit = maatouch_unit;
         break;
+
+    case MaaAdbControllerType_Touch_AutoDetect:
+        LogInfo << "touch_type: AutoDetect";
+        if (!auto_detect_unit) {
+            auto_detect_unit = std::make_shared<AutoDetectInput>(maatouch_path, minitouch_path);
+        }
+        touch_unit = auto_detect_unit;
+        break;
+
     default:
         LogWarn << "Unknown touch input type" << VAR(touch_type);
         break;
@@ -79,9 +92,10 @@ MaaControlUnitHandle MaaAdbControlUnitCreate( //
 
     switch (key_type) {
     case MaaAdbControllerType_Key_Adb:
-        LogInfo << "key_type: TapKeyInput";
-        key_unit = std::make_shared<TapKeyInput>();
+        LogInfo << "key_type: AdbKeyInput";
+        key_unit = std::make_shared<AdbKeyInput>();
         break;
+
     case MaaAdbControllerType_Key_MaaTouch:
         LogInfo << "key_type: MaatouchInput";
         if (!std::filesystem::exists(maatouch_path)) {
@@ -93,32 +107,41 @@ MaaControlUnitHandle MaaAdbControlUnitCreate( //
         }
         key_unit = maatouch_unit;
         break;
+
+    case MaaAdbControllerType_Key_AutoDetect:
+        LogInfo << "key_type: AutoDetect";
+        if (!auto_detect_unit) {
+            auto_detect_unit = std::make_shared<AutoDetectInput>(maatouch_path, minitouch_path);
+        }
+        key_unit = auto_detect_unit;
+        break;
+
     default:
         LogWarn << "Unknown key input type" << VAR(key_type);
         break;
     }
 
     switch (screencap_type) {
-    case MaaAdbControllerType_Screencap_FastestWay:
-        LogInfo << "screencap_type: ScreencapFastestWay";
-        screencap_unit = std::make_shared<ScreencapFastestWay>(minicap_path);
-        break;
     case MaaAdbControllerType_Screencap_RawByNetcat:
         LogInfo << "screencap_type: ScreencapRawByNetcat";
         screencap_unit = std::make_shared<ScreencapRawByNetcat>();
         break;
+
     case MaaAdbControllerType_Screencap_RawWithGzip:
         LogInfo << "screencap_type: ScreencapRawWithGzip";
         screencap_unit = std::make_shared<ScreencapRawWithGzip>();
         break;
+
     case MaaAdbControllerType_Screencap_Encode:
         LogInfo << "screencap_type: ScreencapEncode";
         screencap_unit = std::make_shared<ScreencapEncode>();
         break;
+
     case MaaAdbControllerType_Screencap_EncodeToFile:
         LogInfo << "screencap_type: ScreencapEncodeToFile";
         screencap_unit = std::make_shared<ScreencapEncodeToFileAndPull>();
         break;
+
     case MaaAdbControllerType_Screencap_MinicapDirect:
         LogInfo << "screencap_type: MinicapDirect";
         if (!std::filesystem::exists(minicap_path)) {
@@ -127,6 +150,7 @@ MaaControlUnitHandle MaaAdbControlUnitCreate( //
         }
         screencap_unit = std::make_shared<MinicapDirect>(minicap_path);
         break;
+
     case MaaAdbControllerType_Screencap_MinicapStream:
         LogInfo << "screencap_type: MinicapStream";
         if (!std::filesystem::exists(minicap_path)) {
@@ -135,6 +159,18 @@ MaaControlUnitHandle MaaAdbControlUnitCreate( //
         }
         screencap_unit = std::make_shared<MinicapStream>(minicap_path);
         break;
+
+    case MaaAdbControllerType_Screencap_FastestWay_Compatible:
+    case MaaAdbControllerType_Screencap_FastestWay:
+        LogInfo << "screencap_type: ScreencapFastestWay";
+        screencap_unit = std::make_shared<ScreencapFastestWay>(minicap_path, false);
+        break;
+
+    case MaaAdbControllerType_Screencap_FastestLosslessWay:
+        LogInfo << "screencap_type: ScreencapFastestWay Lossless";
+        screencap_unit = std::make_shared<ScreencapFastestWay>(minicap_path, true);
+        break;
+
     default:
         LogWarn << "Unknown screencap type" << VAR(screencap_type);
         break;

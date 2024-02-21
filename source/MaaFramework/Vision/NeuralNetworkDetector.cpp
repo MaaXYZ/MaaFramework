@@ -9,7 +9,7 @@
 
 MAA_VISION_NS_BEGIN
 
-NeuralNetworkDetector::ResultsVec NeuralNetworkDetector::analyze() const
+std::pair<NeuralNetworkDetector::ResultsVec, size_t> NeuralNetworkDetector::analyze() const
 {
     LogFunc << name_;
 
@@ -37,7 +37,9 @@ NeuralNetworkDetector::ResultsVec NeuralNetworkDetector::analyze() const
     cost = duration_since(start_time);
     LogTrace << name_ << "Filter:" << VAR(results) << VAR(expected) << VAR(cost);
 
-    return results;
+    sort(results);
+    size_t index = preferred_index(results);
+    return { results, index };
 }
 
 NeuralNetworkDetector::ResultsVec NeuralNetworkDetector::foreach_rois() const
@@ -167,12 +169,46 @@ void NeuralNetworkDetector::draw_result(const cv::Rect& roi, const ResultsVec& r
 
         const auto color = cv::Scalar(0, 0, 255);
         cv::rectangle(image_draw, my_box, color, 1);
-        std::string flag = MAA_FMT::format("{} {} {:.3f}: [{}, {}, {}, {}]", res.cls_index, res.label, res.score,
-                                           my_box.x, my_box.y, my_box.width, my_box.height);
+        std::string flag = std::format("{} {} {:.3f}: [{}, {}, {}, {}]", res.cls_index, res.label, res.score, my_box.x,
+                                       my_box.y, my_box.width, my_box.height);
         cv::putText(image_draw, flag, cv::Point(my_box.x, my_box.y - 5), cv::FONT_HERSHEY_PLAIN, 1.2, color, 1);
     }
 
     handle_draw(image_draw);
+}
+
+void NeuralNetworkDetector::sort(ResultsVec& results) const
+{
+    switch (param_.order_by) {
+    case ResultOrderBy::Horizontal:
+        sort_by_horizontal_(results);
+        break;
+    case ResultOrderBy::Vertical:
+        sort_by_vertical_(results);
+        break;
+    case ResultOrderBy::Score:
+        sort_by_score_(results);
+        break;
+    case ResultOrderBy::Area:
+        sort_by_area_(results);
+        break;
+    case ResultOrderBy::Random:
+        sort_by_random_(results);
+        break;
+    default:
+        LogError << "Not supported order by" << VAR(param_.order_by);
+        break;
+    }
+}
+
+size_t NeuralNetworkDetector::preferred_index(const ResultsVec& results) const
+{
+    auto index_opt = pythonic_index(results.size(), param_.result_index);
+    if (!index_opt) {
+        return SIZE_MAX;
+    }
+
+    return *index_opt;
 }
 
 MAA_VISION_NS_END

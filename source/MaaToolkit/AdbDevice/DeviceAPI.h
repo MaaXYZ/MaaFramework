@@ -15,6 +15,30 @@ struct Device
     std::string adb_serial;
     MaaAdbControllerType adb_controller_type = MaaAdbControllerType_Invalid;
     std::string adb_config;
+
+    bool operator<(const Device& rhs) const
+    {
+        if (name != rhs.name) {
+            return name < rhs.name;
+        }
+        else if (adb_path != rhs.adb_path) {
+            return adb_path < rhs.adb_path;
+        }
+        else if (adb_serial != rhs.adb_serial) {
+            return adb_serial < rhs.adb_serial;
+        }
+        else if (adb_controller_type != rhs.adb_controller_type) {
+            return adb_controller_type < rhs.adb_controller_type;
+        }
+        else {
+            return adb_config < rhs.adb_config;
+        }
+    }
+    bool operator==(const Device& rhs) const
+    {
+        return name == rhs.name && adb_path == rhs.adb_path && adb_serial == rhs.adb_serial &&
+               adb_controller_type == rhs.adb_controller_type && adb_config == rhs.adb_config;
+    }
 };
 
 inline std::ostream& operator<<(std::ostream& os, const Device& device)

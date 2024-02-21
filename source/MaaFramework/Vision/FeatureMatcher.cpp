@@ -13,7 +13,7 @@ MAA_SUPPRESS_CV_WARNINGS_END
 
 MAA_VISION_NS_BEGIN
 
-FeatureMatcher::ResultsVec FeatureMatcher::analyze() const
+std::pair<FeatureMatcher::ResultsVec, size_t> FeatureMatcher::analyze() const
 {
     if (!template_) {
         LogError << name_ << "template_ is empty" << VAR(param_.template_path);
@@ -34,7 +34,10 @@ FeatureMatcher::ResultsVec FeatureMatcher::analyze() const
     cost = duration_since(start_time);
     LogTrace << name_ << "Filter:" << VAR(results) << VAR(param_.template_path) << VAR(count) << VAR(cost);
 
-    return results;
+    sort(results);
+    size_t index = preferred_index(results);
+
+    return { results, index };
 }
 
 FeatureMatcher::ResultsVec FeatureMatcher::foreach_rois(const cv::Mat& templ) const
@@ -227,8 +230,8 @@ void FeatureMatcher::draw_result(const cv::Mat& templ, const std::vector<cv::Key
         const auto& res = results.at(i);
         cv::rectangle(image_draw, res.box, color, 1);
 
-        std::string flag = MAA_FMT::format("Cnt: {}, [{}, {}, {}, {}]", res.count, res.box.x, res.box.y, res.box.width,
-                                           res.box.height);
+        std::string flag =
+            std::format("Cnt: {}, [{}, {}, {}, {}]", res.count, res.box.x, res.box.y, res.box.width, res.box.height);
         cv::putText(image_draw, flag, cv::Point(res.box.x, res.box.y - 5), cv::FONT_HERSHEY_PLAIN, 1.2, color, 1);
     }
 
@@ -238,6 +241,40 @@ void FeatureMatcher::draw_result(const cv::Mat& templ, const std::vector<cv::Key
 void FeatureMatcher::filter(ResultsVec& results, int count) const
 {
     std::erase_if(results, [count](const auto& res) { return res.count < count; });
+}
+
+void FeatureMatcher::sort(ResultsVec& results) const
+{
+    switch (param_.order_by) {
+    case ResultOrderBy::Horizontal:
+        sort_by_horizontal_(results);
+        break;
+    case ResultOrderBy::Vertical:
+        sort_by_vertical_(results);
+        break;
+    case ResultOrderBy::Score:
+        sort_by_count_(results);
+        break;
+    case ResultOrderBy::Area:
+        sort_by_area_(results);
+        break;
+    case ResultOrderBy::Random:
+        sort_by_random_(results);
+        break;
+    default:
+        LogError << "Not supported order by" << VAR(param_.order_by);
+        break;
+    }
+}
+
+size_t FeatureMatcher::preferred_index(const ResultsVec& results) const
+{
+    auto index_opt = pythonic_index(results.size(), param_.result_index);
+    if (!index_opt) {
+        return SIZE_MAX;
+    }
+
+    return *index_opt;
 }
 
 MAA_VISION_NS_END

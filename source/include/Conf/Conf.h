@@ -119,6 +119,12 @@
     {
 #define MAA_TOOLKIT_NS_END }
 
+#define MAA_PROJECT_INTERFACE_NS MAA_NS::ProjectInterfaceNS
+#define MAA_PROJECT_INTERFACE_NS_BEGIN \
+    namespace MAA_PROJECT_INTERFACE_NS \
+    {
+#define MAA_PROJECT_INTERFACE_NS_END }
+
 #define MAA_RPC_NS MAA_NS::RpcNS
 #define MAA_RPC_NS_BEGIN \
     namespace MAA_RPC_NS \

@@ -2,9 +2,9 @@
 
 #include <array>
 #include <cmath>
+#include <format>
 #include <ranges>
 
-#include "Utils/Format.hpp"
 #include "Utils/Logger.h"
 
 MAA_CTRL_UNIT_NS_BEGIN
@@ -16,11 +16,11 @@ bool MinitouchInput::parse(const json::value& config)
     };
     json::array jarch = config.get("prebuilt", "minitouch", "arch", kDefaultArch);
 
-    if (std::ranges::any_of(jarch, [](const json::value& val) { return !val.is_string(); })) {
+    if (!jarch.all<std::string>()) {
         return false;
     }
 
-    arch_list_ = jarch.to_vector<std::string>();
+    arch_list_ = jarch.as_collection<std::string>();
 
     return invoke_app_->parse(config);
 }

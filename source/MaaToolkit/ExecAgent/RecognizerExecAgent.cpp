@@ -48,10 +48,10 @@ std::optional<RecognizerExecAgent::AnalyzeResult> RecognizerExecAgent::analyze(
     LogTrace << VAR(ret);
 
     AnalyzeResult result;
-    
-    auto jbox = ret.get("box", json::array());
-    if (jbox.all<int>() && jbox.size() == 4) {
-        result.box = cv::Rect(jbox[0].as<int>(), jbox[1].as<int>(), jbox[2].as<int>(), jbox[3].as<int>());
+
+    auto box_vec = ret.get("box", std::vector<int>());
+    if (box_vec.size() == 4) {
+        result.box = cv::Rect(box_vec[0], box_vec[1], box_vec[2], box_vec[3]);
     }
     auto jdetail = ret.get("detail", json::value());
     result.detail = jdetail.is_string() ? jdetail.as_string() : jdetail.to_string();

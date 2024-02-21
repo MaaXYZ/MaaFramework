@@ -119,6 +119,9 @@ enum MaaInstOptionEnum
 #define MaaTaskParam_Empty "{}"
 
 typedef int32_t MaaAdbControllerType;
+#define MaaAdbControllerType_Touch_Mask 0xFF
+#define MaaAdbControllerType_Key_Mask 0xFF00
+#define MaaAdbControllerType_Screencap_Mask 0xFF0000
 enum MaaAdbControllerTypeEnum
 {
     MaaAdbControllerType_Invalid = 0,
@@ -126,25 +129,28 @@ enum MaaAdbControllerTypeEnum
     MaaAdbControllerType_Touch_Adb = 1,
     MaaAdbControllerType_Touch_MiniTouch = 2,
     MaaAdbControllerType_Touch_MaaTouch = 3,
-    MaaAdbControllerType_Touch_Mask = 0xFF,
+    MaaAdbControllerType_Touch_AutoDetect = MaaAdbControllerType_Touch_Mask - 1,
 
     MaaAdbControllerType_Key_Adb = 1 << 8,
     MaaAdbControllerType_Key_MaaTouch = 2 << 8,
-    MaaAdbControllerType_Key_Mask = 0xFF00,
+    MaaAdbControllerType_Key_AutoDetect = MaaAdbControllerType_Key_Mask - (1 << 8),
 
     MaaAdbControllerType_Input_Preset_Adb = MaaAdbControllerType_Touch_Adb | MaaAdbControllerType_Key_Adb,
     MaaAdbControllerType_Input_Preset_Minitouch = MaaAdbControllerType_Touch_MiniTouch | MaaAdbControllerType_Key_Adb,
     MaaAdbControllerType_Input_Preset_Maatouch =
         MaaAdbControllerType_Touch_MaaTouch | MaaAdbControllerType_Key_MaaTouch,
+    MaaAdbControllerType_Input_Preset_AutoDetect =
+        MaaAdbControllerType_Touch_AutoDetect | MaaAdbControllerType_Key_AutoDetect,
 
-    MaaAdbControllerType_Screencap_FastestWay = 1 << 16,
+    /* Deprecated */ MaaAdbControllerType_Screencap_FastestWay_Compatible = 1 << 16,
     MaaAdbControllerType_Screencap_RawByNetcat = 2 << 16,
     MaaAdbControllerType_Screencap_RawWithGzip = 3 << 16,
     MaaAdbControllerType_Screencap_Encode = 4 << 16,
     MaaAdbControllerType_Screencap_EncodeToFile = 5 << 16,
     MaaAdbControllerType_Screencap_MinicapDirect = 6 << 16,
     MaaAdbControllerType_Screencap_MinicapStream = 7 << 16,
-    MaaAdbControllerType_Screencap_Mask = 0xFF0000,
+    MaaAdbControllerType_Screencap_FastestLosslessWay = MaaAdbControllerType_Screencap_Mask - (2 << 16),
+    MaaAdbControllerType_Screencap_FastestWay = MaaAdbControllerType_Screencap_Mask - (1 << 16),
 };
 
 typedef int32_t MaaDbgControllerType;
@@ -166,21 +172,21 @@ enum MaaThriftControllerTypeEnum
 };
 
 typedef int32_t MaaWin32ControllerType;
+#define MaaWin32ControllerType_Touch_Mask 0xFF
+#define MaaWin32ControllerType_Key_Mask 0xFF00
+#define MaaWin32ControllerType_Screencap_Mask 0xFF0000
 enum MaaWin32ControllerTypeEnum
 {
     MaaWin32Controller_Invalid = 0,
 
     MaaWin32ControllerType_Touch_SendMessage = 1,
-    MaaWin32ControllerType_Touch_Mask = 0xFF,
 
     MaaWin32ControllerType_Key_SendMessage = 1 << 8,
-    MaaWin32ControllerType_Key_Mask = 0xFF00,
 
     MaaWin32ControllerType_Screencap_GDI = 1 << 16,
     MaaWin32ControllerType_Screencap_DXGI_DesktopDup = 2 << 16,
     // MaaWin32ControllerType_Screencap_DXGI_BackBuffer = 3 << 16,
     MaaWin32ControllerType_Screencap_DXGI_FramePool = 4 << 16,
-    MaaWin32ControllerType_Screencap_Mask = 0xFF0000,
 };
 #ifdef LHG_PROCESS
 typedef size_t MaaWin32Hwnd;

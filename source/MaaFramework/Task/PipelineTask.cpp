@@ -27,7 +27,7 @@ bool PipelineTask::run()
     RunningResult ret = RunningResult::Success;
 
     TaskData new_hits = data_mgr_.get_task_data(entry_);
-    while (!next_list.empty() && !need_exit()) {
+    while (!next_list.empty() && !need_to_stop()) {
         auto timeout = new_hits.timeout;
         ret = find_first_and_run(next_list, timeout, new_hits);
 
@@ -96,10 +96,6 @@ PipelineTask::RunningResult PipelineTask::find_first_and_run(const std::vector<s
             LogInfo << "Task timeout" << VAR(cur_task_name_) << VAR(timeout);
             return RunningResult::Timeout;
         }
-        if (need_exit()) {
-            LogInfo << "Task interrupted" << VAR(cur_task_name_);
-            return RunningResult::Interrupted;
-        }
     }
     LogInfo << "Task hit:" << hits.task_data.name << hits.rec_result.box;
 
@@ -116,10 +112,19 @@ std::optional<PipelineTask::HitResult> PipelineTask::find_first(const std::vecto
         LogError << "Controller not binded";
         return std::nullopt;
     }
+    if (need_to_stop()) {
+        LogInfo << "Task interrupted" << VAR(cur_task_name_);
+        return std::nullopt;
+    }
 
     LogFunc << VAR(cur_task_name_) << VAR(list);
 
     cv::Mat image = controller()->screencap();
+
+    if (need_to_stop()) {
+        LogInfo << "Task interrupted" << VAR(cur_task_name_);
+        return std::nullopt;
+    }
 
     for (const std::string& name : list) {
         LogDebug << "recognize:" << name;
@@ -145,7 +150,7 @@ PipelineTask::RunningResult PipelineTask::run_task(const HitResult& hits)
         return RunningResult::InternalError;
     }
 
-    if (need_exit()) {
+    if (need_to_stop()) {
         LogInfo << "Task interrupted" << VAR(cur_task_name_);
         return RunningResult::Interrupted;
     }

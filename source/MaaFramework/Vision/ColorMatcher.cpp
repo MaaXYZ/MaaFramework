@@ -1,14 +1,14 @@
 #include "ColorMatcher.h"
 
-#include "Utils/NoWarningCV.hpp"
+#include <format>
 
-#include "Utils/Format.hpp"
 #include "Utils/Logger.h"
+#include "Utils/NoWarningCV.hpp"
 #include "VisionUtils.hpp"
 
 MAA_VISION_NS_BEGIN
 
-ColorMatcher::ResultsVec ColorMatcher::analyze() const
+std::pair<ColorMatcher::ResultsVec, size_t> ColorMatcher::analyze() const
 {
     ResultsVec all_results;
 
@@ -33,7 +33,10 @@ ColorMatcher::ResultsVec ColorMatcher::analyze() const
                            std::make_move_iterator(results.end()));
     }
 
-    return all_results;
+    sort(all_results);
+    size_t index = preferred_index(all_results);
+
+    return { all_results, index };
 }
 
 ColorMatcher::ResultsVec ColorMatcher::foreach_rois(const ColorMatcherParam::Range& range, bool connected) const
@@ -72,7 +75,7 @@ ColorMatcher::ResultsVec ColorMatcher::count_non_zero(const cv::Mat& bin, const 
     cv::Rect bounding = cv::boundingRect(bin);
     cv::Rect box = bounding + tl;
 
-    return { Result { .box = box, .score = count } };
+    return { Result { .box = box, .count = count } };
 }
 
 ColorMatcher::ResultsVec ColorMatcher::count_non_zero_with_connected(const cv::Mat& bin, const cv::Point& tl) const
@@ -94,11 +97,11 @@ ColorMatcher::ResultsVec ColorMatcher::count_non_zero_with_connected(const cv::M
         // int count = stats.at<int>(i, cv::CC_STAT_AREA);
         int count = cv::countNonZero(bin(bounding));
 
-        Result res { .box = bounding + tl, .score = count };
+        Result res { .box = bounding + tl, .count = count };
         results.emplace_back(std::move(res));
     }
 
-    return NMS(std::move(results), 1.0);
+    return NMS_for_count(std::move(results), 0.7);
 }
 
 void ColorMatcher::draw_result(const cv::Rect& roi, const cv::Mat& color, const cv::Mat& bin,
@@ -115,10 +118,10 @@ void ColorMatcher::draw_result(const cv::Rect& roi, const cv::Mat& color, const 
         const auto& res = results[i];
         cv::rectangle(image_draw, res.box, color_draw, 1);
 
-        std::string flag = MAA_FMT::format("{}: {}, [{}, {}, {}, {}]", i, res.score, res.box.x, res.box.y,
-                                           res.box.width, res.box.height);
+        std::string flag =
+            std::format("{}: {}, [{}, {}, {}, {}]", i, res.count, res.box.x, res.box.y, res.box.width, res.box.height);
         cv::putText(image_draw, flag, cv::Point(res.box.x, res.box.y - 5), cv::FONT_HERSHEY_PLAIN, 1.2, color_draw, 1);
-        if (i > 10 && res.score < 100) {
+        if (i > 10 && res.count < 100) {
             // 太多了画不下，反正后面的也是没用的
             LogDebug << "too many results, skip drawing" << VAR(results.size());
             break;
@@ -143,7 +146,41 @@ void ColorMatcher::draw_result(const cv::Rect& roi, const cv::Mat& color, const 
 
 void ColorMatcher::filter(ResultsVec& results, int count) const
 {
-    std::erase_if(results, [count](const auto& res) { return res.score < count; });
+    std::erase_if(results, [count](const auto& res) { return res.count < count; });
+}
+
+void ColorMatcher::sort(ResultsVec& results) const
+{
+    switch (param_.order_by) {
+    case ResultOrderBy::Horizontal:
+        sort_by_horizontal_(results);
+        break;
+    case ResultOrderBy::Vertical:
+        sort_by_vertical_(results);
+        break;
+    case ResultOrderBy::Score:
+        sort_by_count_(results);
+        break;
+    case ResultOrderBy::Area:
+        sort_by_area_(results);
+        break;
+    case ResultOrderBy::Random:
+        sort_by_random_(results);
+        break;
+    default:
+        LogError << "Not supported order by" << VAR(param_.order_by);
+        break;
+    }
+}
+
+size_t ColorMatcher::preferred_index(const ResultsVec& results) const
+{
+    auto index_opt = pythonic_index(results.size(), param_.result_index);
+    if (!index_opt) {
+        return SIZE_MAX;
+    }
+
+    return *index_opt;
 }
 
 MAA_VISION_NS_END

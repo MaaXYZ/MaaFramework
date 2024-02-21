@@ -71,7 +71,7 @@ MaaBool MaaResourceLoaded(MaaResourceHandle res)
         return false;
     }
 
-    return res->loaded();
+    return res->valid();
 }
 
 MaaBool MaaResourceSetOption(MaaResourceHandle res, MaaResOption key, MaaOptionValue value, MaaOptionValueSize val_size)

@@ -5,6 +5,7 @@
 
 #include <onnxruntime/onnxruntime_cxx_api.h>
 
+#include "Utils/JsonExt.hpp"
 #include "VisionBase.h"
 #include "VisionTypes.h"
 
@@ -20,22 +21,14 @@ public:
         cv::Rect box {};
         double score = 0.0;
 
-        operator json::value() const
-        {
-            json::value root;
-            root["cls_index"] = cls_index;
-            root["label"] = label;
-            root["box"] = json::array({ box.x, box.y, box.width, box.height });
-            root["score"] = score;
-            return root;
-        }
+        MEO_JSONIZATION(cls_index, label, box, score);
     };
     using ResultsVec = std::vector<Result>;
 
 public:
     void set_session(std::shared_ptr<Ort::Session> session) { session_ = std::move(session); }
     void set_param(NeuralNetworkDetectorParam param) { param_ = std::move(param); }
-    ResultsVec analyze() const;
+    std::pair<ResultsVec, size_t> analyze() const;
 
 private:
     ResultsVec foreach_rois() const;
@@ -43,6 +36,8 @@ private:
     void draw_result(const cv::Rect& roi, const ResultsVec& results) const;
 
     void filter(ResultsVec& results, const std::vector<size_t>& expected) const;
+    void sort(ResultsVec& results) const;
+    size_t preferred_index(const ResultsVec& results) const;
 
     NeuralNetworkDetectorParam param_;
     std::shared_ptr<Ort::Session> session_ = nullptr;

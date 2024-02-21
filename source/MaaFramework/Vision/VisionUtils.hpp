@@ -1,5 +1,6 @@
 #pragma once
 
+#include <random>
 #include <ranges>
 
 #include "Conf/Conf.h"
@@ -8,25 +9,23 @@
 
 MAA_VISION_NS_BEGIN
 
-// | 1 2 3 4 |
-// | 5 6 7 8 |
+// | 1 3 5 7 |
+// | 2 4 6 8 |
 template <typename ResultsVec>
 inline static void sort_by_horizontal_(ResultsVec& results)
 {
     std::ranges::sort(results, [](const auto& lhs, const auto& rhs) -> bool {
-        // y 差距较小则理解为是同一排的，按x排序
-        return std::abs(lhs.box.y - rhs.box.y) < 5 ? lhs.box.x < rhs.box.x : lhs.box.y < rhs.box.y;
+        return lhs.box.x == rhs.box.x ? lhs.box.y < rhs.box.y : lhs.box.x < rhs.box.x;
     });
 }
 
-// | 1 3 5 7 |
-// | 2 4 6 8 |
+// | 1 2 3 4 |
+// | 5 6 7 8 |
 template <typename ResultsVec>
 inline static void sort_by_vertical_(ResultsVec& results)
 {
     std::ranges::sort(results, [](const auto& lhs, const auto& rhs) -> bool {
-        // x 差距较小则理解为是同一排的，按y排序
-        return std::abs(lhs.box.x - rhs.box.x) < 5 ? lhs.box.y < rhs.box.y : lhs.box.x < rhs.box.x;
+        return lhs.box.y == rhs.box.y ? lhs.box.x < rhs.box.x : lhs.box.y < rhs.box.y;
     });
 }
 
@@ -34,6 +33,26 @@ template <typename ResultsVec>
 inline static void sort_by_score_(ResultsVec& results)
 {
     std::ranges::sort(results, std::greater {}, std::mem_fn(&ResultsVec::value_type::score));
+}
+
+template <typename ResultsVec>
+inline static void sort_by_count_(ResultsVec& results)
+{
+    std::ranges::sort(results, std::greater {}, std::mem_fn(&ResultsVec::value_type::count));
+}
+
+template <typename ResultsVec>
+inline static void sort_by_area_(ResultsVec& results)
+{
+    std::ranges::sort(results,
+                      [](const auto& lhs, const auto& rhs) -> bool { return lhs.box.area() > rhs.box.area(); });
+}
+
+template <typename ResultsVec>
+inline static void sort_by_random_(ResultsVec& results)
+{
+    static std::default_random_engine rand_engine(std::random_device {}());
+    std::ranges::shuffle(results, rand_engine);
 }
 
 template <typename ResultsVec>
@@ -56,6 +75,17 @@ inline static void sort_by_required_(ResultsVec& results, const std::vector<std:
         }
         return lvalue < rvalue;
     });
+}
+
+inline static std::optional<size_t> pythonic_index(size_t total, int index)
+{
+    if (index >= 0 && static_cast<uint32_t>(index) < total) {
+        return index;
+    }
+    if (index < 0 && static_cast<uint32_t>(-index) <= total) {
+        return total + index;
+    }
+    return std::nullopt;
 }
 
 // Non-Maximum Suppression
@@ -81,6 +111,34 @@ inline static ResultsVec NMS(ResultsVec results, double threshold = 0.7)
             int iou_area = (res1_box & res2.box).area();
             if (iou_area >= threshold * res2.box.area()) {
                 res2.score = 0;
+            }
+        }
+    }
+    return nms_results;
+}
+
+template <typename ResultsVec>
+inline static ResultsVec NMS_for_count(ResultsVec results, double threshold = 0.7)
+{
+    std::ranges::sort(results, [](const auto& a, const auto& b) { return a.count > b.count; });
+
+    ResultsVec nms_results;
+    for (size_t i = 0; i < results.size(); ++i) {
+        const auto& res1 = results[i];
+        if (res1.count == 0) {
+            continue;
+        }
+        auto res1_box = res1.box;
+        nms_results.emplace_back(std::move(res1));
+
+        for (size_t j = i + 1; j < results.size(); ++j) {
+            auto& res2 = results[j];
+            if (res2.count == 0) {
+                continue;
+            }
+            int iou_area = (res1_box & res2.box).area();
+            if (iou_area >= threshold * res2.box.area()) {
+                res2.count = 0;
             }
         }
     }

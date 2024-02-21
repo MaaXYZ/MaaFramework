@@ -1,6 +1,6 @@
 generate_grpc_lib(
     RpcProto
-    ${CMAKE_SOURCE_DIR}/include/Interface/proto
+    ${CMAKE_SOURCE_DIR}/include/MaaRpc/proto
     ${CMAKE_CURRENT_BINARY_DIR}/generated
     maa_rpc_proto_src)
 

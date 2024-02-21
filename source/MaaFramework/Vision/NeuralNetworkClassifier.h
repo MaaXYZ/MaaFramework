@@ -5,6 +5,7 @@
 
 #include <onnxruntime/onnxruntime_cxx_api.h>
 
+#include "Utils/JsonExt.hpp"
 #include "VisionBase.h"
 #include "VisionTypes.h"
 
@@ -22,24 +23,14 @@ public:
         std::vector<float> raw;
         std::vector<float> probs;
 
-        operator json::value() const
-        {
-            json::value root;
-            root["cls_index"] = cls_index;
-            root["label"] = label;
-            root["box"] = json::array({ box.x, box.y, box.width, box.height });
-            root["score"] = score;
-            root["raw"] = json::array(raw);
-            root["probs"] = json::array(probs);
-            return root;
-        }
+        MEO_JSONIZATION(cls_index, label, box, score, raw, probs);
     };
     using ResultsVec = std::vector<Result>;
 
 public:
     void set_param(NeuralNetworkClassifierParam param) { param_ = std::move(param); }
     void set_session(std::shared_ptr<Ort::Session> session) { session_ = std::move(session); }
-    ResultsVec analyze() const;
+    std::pair<ResultsVec, size_t> analyze() const;
 
 private:
     ResultsVec foreach_rois() const;
@@ -47,6 +38,8 @@ private:
     void draw_result(const Result& res) const;
 
     void filter(ResultsVec& results, const std::vector<size_t>& expected) const;
+    void sort(ResultsVec& results) const;
+    size_t preferred_index(const ResultsVec& results) const;
 
     NeuralNetworkClassifierParam param_;
     std::shared_ptr<Ort::Session> session_ = nullptr;

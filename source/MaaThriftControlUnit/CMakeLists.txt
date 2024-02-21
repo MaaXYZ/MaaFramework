@@ -1,6 +1,6 @@
 generate_thrift_lib(
     ThriftControlUnitThrift
-    ${PROJECT_SOURCE_DIR}/include/Interface/ThriftController.thrift
+    ${PROJECT_SOURCE_DIR}/include/MaaFramework/Instance/ThriftController.thrift
     ${CMAKE_CURRENT_BINARY_DIR}/generated
     maa_thrift_controlunit_thrift_src)
 

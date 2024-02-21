@@ -1,9 +1,9 @@
 #include "MinicapBase.h"
 
 #include <array>
+#include <format>
 #include <ranges>
 
-#include "Utils/Format.hpp"
 #include "Utils/Logger.h"
 #include "Utils/NoWarningCV.hpp"
 
@@ -18,16 +18,16 @@ bool MinicapBase::parse(const json::value& config)
     };
     json::array jarch = config.get("prebuilt", "minicap", "arch", kDefaultArch);
 
-    if (std::ranges::any_of(jarch, [](const json::value& val) { return !val.is_string(); })) {
+    if (!jarch.all<std::string>()) {
         return false;
     }
-    arch_list_ = jarch.to_vector<std::string>();
+    arch_list_ = jarch.as_collection<std::string>();
 
     static const json::array kDefaultSdk = {
         31, 29, 28, 27, 26, 25, 24, 23, 22, 21, 19, 18, 17, 16, 15, 14,
     };
     json::array jsdk = config.get("prebuilt", "minicap", "sdk", kDefaultSdk);
-    sdk_list_ = jsdk.to_vector<int>();
+    sdk_list_ = jsdk.as_collection<int>();
 
     return binary_->parse(config) && library_->parse(config);
 }
@@ -63,8 +63,8 @@ bool MinicapBase::init(int swidth, int sheight)
 
     // TODO: 确认低版本是否使用minicap-nopie
     const auto bin_path = agent_path_ / path(target_arch) / path("bin") / path("minicap");
-    const auto lib_path = agent_path_ / path(target_arch) / path("lib") / path(MAA_FMT::format("android-{}", fit_sdk)) /
-                          path("minicap.so");
+    const auto lib_path =
+        agent_path_ / path(target_arch) / path("lib") / path(std::format("android-{}", fit_sdk)) / path("minicap.so");
     if (!binary_->push(bin_path) || !library_->push(lib_path)) {
         return false;
     }

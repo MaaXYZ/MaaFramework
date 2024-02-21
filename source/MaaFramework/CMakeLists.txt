@@ -38,7 +38,6 @@ install(
     LIBRARY DESTINATION bin
     ARCHIVE DESTINATION lib)
 install(DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/../../include/MaaFramework" DESTINATION "include")
-install(DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/../../include/Interface" DESTINATION "share")
 
 source_group(TREE ${CMAKE_CURRENT_SOURCE_DIR} FILES ${maa_framework_src})
 

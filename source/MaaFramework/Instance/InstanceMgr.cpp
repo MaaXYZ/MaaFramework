@@ -37,8 +37,8 @@ bool InstanceMgr::bind_resource(MaaResourceAPI* resource)
         return false;
     }
 
-    if (!resource->loaded()) {
-        LogWarn << "Resource not loaded";
+    if (!resource->valid()) {
+        LogWarn << "Resource not valid";
     }
 
     if (resource_) {
@@ -72,7 +72,7 @@ bool InstanceMgr::bind_controller(MaaControllerAPI* controller)
 
 bool InstanceMgr::inited() const
 {
-    return resource_ && controller_ && resource_->loaded() && controller_->connected();
+    return resource_ && controller_ && resource_->valid() && controller_->connected();
 }
 
 bool InstanceMgr::set_option(MaaInstOption key, MaaOptionValue value, MaaOptionValueSize val_size)
@@ -87,6 +87,13 @@ bool InstanceMgr::set_option(MaaInstOption key, MaaOptionValue value, MaaOptionV
 MaaTaskId InstanceMgr::post_task(std::string entry, std::string_view param)
 {
     LogInfo << VAR(entry) << VAR(param);
+
+#ifndef MAA_DEBUG
+    if (!inited()) {
+        LogError << "Instance not inited";
+        return MaaInvalidId;
+    }
+#endif
 
     TaskPtr task_ptr = std::make_shared<TaskNS::PipelineTask>(std::move(entry), this);
 

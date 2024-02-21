@@ -12,6 +12,7 @@ MAA_SUPPRESS_CV_WARNINGS_BEGIN
 MAA_SUPPRESS_CV_WARNINGS_END
 
 #include "Utils/Codec.h"
+#include "Utils/JsonExt.hpp"
 #include "VisionBase.h"
 #include "VisionTypes.h"
 
@@ -26,14 +27,7 @@ public:
         cv::Rect box {};
         double score = 0.0;
 
-        operator json::value() const
-        {
-            json::value root;
-            root["text"] = from_u16(text);
-            root["box"] = json::array({ box.x, box.y, box.width, box.height });
-            root["score"] = score;
-            return root;
-        }
+        MEO_JSONIZATION(text, box, score);
     };
     using ResultsVec = std::vector<Result>;
 
@@ -47,7 +41,7 @@ public:
         ocrer_ = std::move(ocrer);
     }
     void set_param(OCRerParam param) { param_ = std::move(param); }
-    ResultsVec analyze() const;
+    std::pair<ResultsVec, size_t> analyze() const;
 
 private:
     ResultsVec foreach_rois() const;
@@ -60,6 +54,8 @@ private:
     void postproc_trim_(Result& res) const;
     void postproc_replace_(Result& res) const;
     bool filter_by_required(const Result& res, const std::vector<std::wstring>& expected) const;
+    void sort(ResultsVec& results) const;
+    size_t preferred_index(const ResultsVec& results) const;
 
     OCRerParam param_;
     std::shared_ptr<fastdeploy::vision::ocr::DBDetector> deter_ = nullptr;

@@ -1,0 +1,12 @@
+add_custom_target(tools ALL DEPENDS ${CMAKE_CURRENT_SOURCE_DIR})
+set_property(
+    TARGET tools
+    APPEND
+    PROPERTY ADDITIONAL_CLEAN_FILES ${CMAKE_CURRENT_SOURCE_DIR})
+set_target_properties(tools PROPERTIES FOLDER Assets)
+install(
+    DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/ImageCropper
+    DESTINATION tools)
+install(
+    FILES ${CMAKE_CURRENT_SOURCE_DIR}/pipeline.schema.json
+    DESTINATION tools)

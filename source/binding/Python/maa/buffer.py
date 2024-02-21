@@ -11,6 +11,10 @@ class StringBuffer:
     _handle: MaaStringBufferHandle
     _own: bool
 
+    @property
+    def c_handle(self) -> MaaStringBufferHandle:
+        return self._handle
+
     def __init__(self, c_handle: Optional[MaaStringBufferHandle] = None):
         if not Library.initialized:
             raise RuntimeError(
@@ -42,6 +46,7 @@ class StringBuffer:
             value = value.encode()
         return bool(Library.framework.MaaSetString(self._handle, value))
 
+    @property
     def empty(self) -> bool:
         return bool(Library.framework.MaaIsStringEmpty(self._handle))
 
@@ -88,6 +93,10 @@ class StringBuffer:
 class ImageBuffer:
     _handle: MaaImageBufferHandle
     _own: bool
+
+    @property
+    def c_handle(self) -> MaaImageBufferHandle:
+        return self._handle
 
     def __init__(self, c_handle: Optional[MaaImageBufferHandle] = None):
         if not Library.initialized:
@@ -137,6 +146,7 @@ class ImageBuffer:
             )
         )
 
+    @property
     def empty(self) -> bool:
         return bool(Library.framework.MaaIsImageEmpty(self._handle))
 
@@ -189,6 +199,10 @@ class RectBuffer:
     _handle: MaaRectHandle
     _own: bool
 
+    @property
+    def c_handle(self) -> MaaRectHandle:
+        return self._handle
+
     def __init__(self, c_handle: Optional[MaaRectHandle] = None):
         if not Library.initialized:
             raise RuntimeError(
@@ -211,21 +225,17 @@ class RectBuffer:
         if self._handle and self._own:
             Library.framework.MaaDestroyRectBuffer(self._handle)
 
-    def get(self) -> Tuple[int, int, int, int]:
+    def get(self) -> Rect:
         x = Library.framework.MaaGetRectX(self._handle)
         y = Library.framework.MaaGetRectY(self._handle)
         w = Library.framework.MaaGetRectW(self._handle)
         h = Library.framework.MaaGetRectH(self._handle)
 
-        return x, y, w, h
+        return Rect(x, y, w, h)
 
     def set(
         self,
-        value: Union[
-            numpy.ndarray,
-            Tuple[int, int, int, int],
-            List[int],
-        ],
+        value: RectType,
     ) -> bool:
         if isinstance(value, numpy.ndarray):
             if value.ndim != 1:
@@ -238,8 +248,10 @@ class RectBuffer:
             if len(value) != 4:
                 raise ValueError("value must have 4 elements")
             value = numpy.array(value, dtype=numpy.int32)
+        elif isinstance(value, Rect):
+            pass
         else:
-            raise TypeError("value must be a numpy.ndarray, tuple or list")
+            raise TypeError("value must be a Rect, numpy.ndarray, tuple or list")
 
         return bool(
             Library.framework.MaaSetRect(
