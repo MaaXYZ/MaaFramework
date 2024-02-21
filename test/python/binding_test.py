@@ -32,16 +32,19 @@ class MyRecognizer(CustomRecognizer):
         print(
             f"on MyRecognizer.analyze, image: {image.shape}, task_name: {task_name}, custom_param: {custom_param}"
         )
-        context.run_task(
-            "ColorMatch",
-            {
-                "ColorMatch": {
-                    "recognition": "ColorMatch",
-                    "lower": [100, 100, 100],
-                    "upper": [255, 255, 255],
-                }
-            },
-        )
+        entry = "ColorMatch"
+        param = {
+            "ColorMatch": {
+                "recognition": "ColorMatch",
+                "lower": [100, 100, 100],
+                "upper": [255, 255, 255],
+                "action": "Click",
+            }
+        }
+        context.run_task(entry, param)
+        context.run_action(entry, param, [114, 514, 191, 810], "RunAction Detail")
+        rec_res = context.run_recognizer(image, entry, param)
+        print(f"rec_res: {rec_res}")
         return True, (11, 4, 5, 14), "Hello World!"
 
 
@@ -51,7 +54,16 @@ class MyAction(CustomAction):
             f"on MyAction.run, task_name: {task_name}, custom_param: {custom_param}, box: {box}, rec_detail: {rec_detail}"
         )
         new_image = context.screencap()
+        print(f"new_image: {new_image.shape}")
         context.click(191, 98)
+        context.swipe(100, 200, 300, 400, 100)
+        context.input_text("Hello World!")
+        context.press_key(32)
+        context.touch_down(1, 100, 100, 0)
+        context.touch_move(1, 200, 200, 0)
+        context.touch_up(1)
+        colored = context.get_task_result("ColorMatch")
+        print(f"colored: {colored}")
         return True
 
     def stop(self) -> None:
