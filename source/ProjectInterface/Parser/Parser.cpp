@@ -37,7 +37,7 @@ std::optional<InterfaceData> Parser::parse_interface(const json::value& json)
             }
         }
     }
-
+    LogInfo << "Interface Version:" << VAR(data.version);
     return data;
 }
 

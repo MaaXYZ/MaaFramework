@@ -101,7 +101,14 @@ void Interactor::print_config() const
 
 void Interactor::welcome() const
 {
-    std::cout << "Welcome to use Maa Project Interface CLI!\n\n";
+    if (config_.interface_data().message.empty()) {
+        std::cout << "Welcome to use Maa Project Interface CLI!\n\n";
+    }
+    else {
+        std::cout << MaaNS::utf8_to_crt(config_.interface_data().message) << "\n\n";
+    }
+
+    std::cout << "Version: " << MaaNS::utf8_to_crt(config_.interface_data().version) << "\n\n";
 }
 
 bool Interactor::interact_once()
