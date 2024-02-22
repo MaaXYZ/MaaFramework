@@ -85,7 +85,7 @@ public:
         }
 
         std::string filename = std::format("{}-{}.png", format_now_for_filename(), make_uuid());
-        auto filepath = dumps_dir_ / std::move(filename);
+        auto filepath = dumps_dir_ / path(filename);
         bool ret = MAA_NS::imwrite(filepath, image);
         if (!ret) {
             return "Failed to write image";
