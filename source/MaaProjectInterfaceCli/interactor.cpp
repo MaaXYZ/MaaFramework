@@ -81,6 +81,7 @@ std::optional<MAA_PROJECT_INTERFACE_NS::RuntimeParam> Interactor::generate_runti
 void Interactor::print_config() const
 {
     clear_screen();
+
     welcome();
     std::cout << "### Current configuration ###\n\n";
 
