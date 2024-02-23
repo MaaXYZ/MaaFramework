@@ -29,7 +29,7 @@ static const std::map<std::string, EmulatorConstantData> kEmulators = {
         .adb_candidate_paths = { "adb"_path },
         .adb_common_serials = { "127.0.0.1:62001", "127.0.0.1:59865" } } },
     { "AVD",
-      { .keyword = "qemu-system", .adb_candidate_paths = { "adb"_path }, .adb_common_serials = { "127.0.0.1:5555" } } },
+      { .keyword = "qemu-system", .adb_candidate_paths = { "adb"_path }, .adb_common_serials = { "emulator-5554", "127.0.0.1:5555" } } },
 };
 
 std::vector<Device> DeviceMgrMacOS::find_device_impl()
