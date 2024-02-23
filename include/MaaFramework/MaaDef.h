@@ -188,7 +188,7 @@ enum MaaWin32ControllerTypeEnum
     // MaaWin32ControllerType_Screencap_DXGI_BackBuffer = 3 << 16,
     MaaWin32ControllerType_Screencap_DXGI_FramePool = 4 << 16,
 };
-#ifdef LHG_PROCESS
+#if defined(LHG_PROCESS) || defined(LHG_BUILD)
 typedef size_t MaaWin32Hwnd;
 #else
 typedef void* MaaWin32Hwnd;

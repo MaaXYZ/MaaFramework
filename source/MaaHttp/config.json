@@ -6,6 +6,43 @@
             "self": 2,
             "all": 3,
             "arg_name": ["msg", "details_json", ""]
+        },
+        "unsigned char (*)(MaaSyncContextAPI *, const char *, const char *, MaaRect *, const char *, void *)": {
+            "name": "CustomActionRun",
+            "pass": 1,
+            "self": 5,
+            "all": 6,
+            "arg_name": [
+                "sync_context",
+                "task_name",
+                "custom_action_param",
+                "cur_box",
+                "cur_rec_detail",
+                ""
+            ]
+        },
+        "void (*)(void *)": {
+            "name": "CustomActionStop",
+            "pass": 1,
+            "self": 0,
+            "all": 1,
+            "arg_name": [""]
+        },
+        "unsigned char (*)(MaaSyncContextAPI *, MaaImageBuffer *, const char *, const char *, void *, MaaRect *, MaaStringBuffer *)": {
+            "name": "CustomRecognizerAnalyze",
+            "pass": 1,
+            "self": 4,
+            "all": 7,
+            "arg_name": [
+                "sync_context",
+                "image",
+                "task_name",
+                "custom_recognition_param",
+                "",
+                "out_box",
+                "out_detail"
+            ],
+            "out": [5, 6]
         }
     },
     "opaque": {
@@ -22,16 +59,16 @@
         },
         "MaaImageBuffer": {
             "free": ["MaaDestroyImageBuffer"]
-        }
+        },
+        "MaaSyncContextAPI": {}
     },
     "output": ["MaaStringBuffer"],
     "remove": [
+        "MaaWin32ControllerCreate",
         "MaaCustomControllerCreate",
         "MaaSetImageRawData",
         "MaaRegisterCustomRecognizer",
         "MaaRegisterCustomAction",
-        "MaaUnregisterCustomRecognizer",
-        "MaaUnregisterCustomAction",
         "/MaaSyncContext.+",
         "/Maa.+Rect.*",
         "/Maa.+String.+",

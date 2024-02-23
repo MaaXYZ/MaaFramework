@@ -31,10 +31,21 @@ namespace lhg {
         static constexpr const char* const schema = "{ \"type\": \"string\" }";
     };
 
+    template <>
+    struct schema_t<MaaRect *>
+    {
+        static constexpr const char* const schema = "{ \"type\": \"object\", \"required\": [ \"x\", \"y\", \"width\", \"height\" ], \"properties\": { \"x\": { \"type\": \"number\" }, \"y\": { \"type\": \"number\" }, \"width\": { \"type\": \"number\" }, \"height\": { \"type\": \"number\" } } }";
+    };
 }
 // LHG SEC END
 
 static lhg::callback_manager<void (*)(const char *, const char *, void *)> MaaAPICallback__Manager;
+
+static lhg::callback_manager<unsigned char (*)(MaaSyncContextAPI *, const char *, const char *, MaaRect *, const char *, void *)> CustomActionRun__Manager;
+
+static lhg::callback_manager<void (*)(void *)> CustomActionStop__Manager;
+
+static lhg::callback_manager<unsigned char (*)(MaaSyncContextAPI *, MaaImageBuffer *, const char *, const char *, void *, MaaRect *, MaaStringBuffer *)> CustomRecognizerAnalyze__Manager;
 
 struct MaaAdbControllerCreate__ft {
     struct adb_path__at {
@@ -91,56 +102,6 @@ struct lhg::is_callback_context<MaaAdbControllerCreate__ft::callback_arg__at>
 
 namespace lhg {
 // LHG SEC BEGIN lhg.custom.MaaAdbControllerCreate.tag
-// LHG SEC DEF
-
-// LHG SEC END
-}
-
-struct MaaWin32ControllerCreate__ft {
-    struct hWnd__at {
-        using type = unsigned long long;
-        static constexpr size_t index = 0;
-        static constexpr const char* const name = "hWnd";
-    };
-    struct type__at {
-        using type = int;
-        static constexpr size_t index = 1;
-        static constexpr const char* const name = "type";
-    };
-    struct callback__at {
-        using type = void (*)(const char *, const char *, void *);
-        static constexpr size_t index = 2;
-        static constexpr const char* const name = "callback";
-    };
-    struct callback_arg__at {
-        using type = void *;
-        static constexpr size_t index = 3;
-        static constexpr const char* const name = "callback_arg";
-    };
-    using arguments_t = std::tuple<hWnd__at, type__at, callback__at, callback_arg__at>;
-    using return_t = MaaControllerAPI *;
-};
-
-template<>
-struct lhg::is_callback<MaaWin32ControllerCreate__ft::callback__at>
-{
-    static constexpr const bool value = true;
-    static constexpr const char* const name = "MaaAPICallback";
-    static constexpr const size_t context = 2;
-    using traits = lhg::func_traits<typename MaaWin32ControllerCreate__ft::callback__at::type>;
-    static decltype(MaaAPICallback__Manager) &manager; 
-};
-decltype(MaaAPICallback__Manager)& lhg::is_callback<MaaWin32ControllerCreate__ft::callback__at>::manager = MaaAPICallback__Manager;
-
-template<>
-struct lhg::is_callback_context<MaaWin32ControllerCreate__ft::callback_arg__at>
-{
-    static constexpr const bool value = true;
-    using callback_arg_tag = MaaWin32ControllerCreate__ft::callback__at;
-};
-
-namespace lhg {
-// LHG SEC BEGIN lhg.custom.MaaWin32ControllerCreate.tag
 // LHG SEC DEF
 
 // LHG SEC END
@@ -820,6 +781,28 @@ namespace lhg {
 // LHG SEC END
 }
 
+struct MaaUnregisterCustomRecognizer__ft {
+    struct inst__at {
+        using type = MaaInstanceAPI *;
+        static constexpr size_t index = 0;
+        static constexpr const char* const name = "inst";
+    };
+    struct name__at {
+        using type = const char *;
+        static constexpr size_t index = 1;
+        static constexpr const char* const name = "name";
+    };
+    using arguments_t = std::tuple<inst__at, name__at>;
+    using return_t = unsigned char;
+};
+
+namespace lhg {
+// LHG SEC BEGIN lhg.custom.MaaUnregisterCustomRecognizer.tag
+// LHG SEC DEF
+
+// LHG SEC END
+}
+
 struct MaaClearCustomRecognizer__ft {
     struct inst__at {
         using type = MaaInstanceAPI *;
@@ -832,6 +815,28 @@ struct MaaClearCustomRecognizer__ft {
 
 namespace lhg {
 // LHG SEC BEGIN lhg.custom.MaaClearCustomRecognizer.tag
+// LHG SEC DEF
+
+// LHG SEC END
+}
+
+struct MaaUnregisterCustomAction__ft {
+    struct inst__at {
+        using type = MaaInstanceAPI *;
+        static constexpr size_t index = 0;
+        static constexpr const char* const name = "inst";
+    };
+    struct name__at {
+        using type = const char *;
+        static constexpr size_t index = 1;
+        static constexpr const char* const name = "name";
+    };
+    using arguments_t = std::tuple<inst__at, name__at>;
+    using return_t = unsigned char;
+};
+
+namespace lhg {
+// LHG SEC BEGIN lhg.custom.MaaUnregisterCustomAction.tag
 // LHG SEC DEF
 
 // LHG SEC END
@@ -1970,6 +1975,134 @@ namespace lhg {
 // LHG SEC END
 }
 
+struct MaaRegisterCustomRecognizerImpl__ft {
+    struct inst__at {
+        using type = MaaInstanceAPI *;
+        static constexpr size_t index = 0;
+        static constexpr const char* const name = "inst";
+    };
+    struct name__at {
+        using type = const char *;
+        static constexpr size_t index = 1;
+        static constexpr const char* const name = "name";
+    };
+    struct analyze__at {
+        using type = unsigned char (*)(MaaSyncContextAPI *, MaaImageBuffer *, const char *, const char *, void *, MaaRect *, MaaStringBuffer *);
+        static constexpr size_t index = 2;
+        static constexpr const char* const name = "analyze";
+    };
+    struct analyze_arg__at {
+        using type = void *;
+        static constexpr size_t index = 3;
+        static constexpr const char* const name = "analyze_arg";
+    };
+    using arguments_t = std::tuple<inst__at, name__at, analyze__at, analyze_arg__at>;
+    using return_t = unsigned char;
+};
+
+template<>
+struct lhg::is_callback<MaaRegisterCustomRecognizerImpl__ft::analyze__at>
+{
+    static constexpr const bool value = true;
+    static constexpr const char* const name = "CustomRecognizerAnalyze";
+    static constexpr const size_t context = 4;
+    using traits = lhg::func_traits<typename MaaRegisterCustomRecognizerImpl__ft::analyze__at::type>;
+    static decltype(CustomRecognizerAnalyze__Manager) &manager; 
+};
+decltype(CustomRecognizerAnalyze__Manager)& lhg::is_callback<MaaRegisterCustomRecognizerImpl__ft::analyze__at>::manager = CustomRecognizerAnalyze__Manager;
+
+template<>
+struct lhg::is_callback_context<MaaRegisterCustomRecognizerImpl__ft::analyze_arg__at>
+{
+    static constexpr const bool value = true;
+    using callback_arg_tag = MaaRegisterCustomRecognizerImpl__ft::analyze__at;
+};
+
+namespace lhg {
+// LHG SEC BEGIN lhg.custom.MaaRegisterCustomRecognizerImpl.tag
+// LHG SEC DEF
+
+// LHG SEC END
+}
+
+struct MaaRegisterCustomActionImpl__ft {
+    struct inst__at {
+        using type = MaaInstanceAPI *;
+        static constexpr size_t index = 0;
+        static constexpr const char* const name = "inst";
+    };
+    struct name__at {
+        using type = const char *;
+        static constexpr size_t index = 1;
+        static constexpr const char* const name = "name";
+    };
+    struct run__at {
+        using type = unsigned char (*)(MaaSyncContextAPI *, const char *, const char *, MaaRect *, const char *, void *);
+        static constexpr size_t index = 2;
+        static constexpr const char* const name = "run";
+    };
+    struct run_arg__at {
+        using type = void *;
+        static constexpr size_t index = 3;
+        static constexpr const char* const name = "run_arg";
+    };
+    struct stop__at {
+        using type = void (*)(void *);
+        static constexpr size_t index = 4;
+        static constexpr const char* const name = "stop";
+    };
+    struct stop_arg__at {
+        using type = void *;
+        static constexpr size_t index = 5;
+        static constexpr const char* const name = "stop_arg";
+    };
+    using arguments_t = std::tuple<inst__at, name__at, run__at, run_arg__at, stop__at, stop_arg__at>;
+    using return_t = unsigned char;
+};
+
+template<>
+struct lhg::is_callback<MaaRegisterCustomActionImpl__ft::run__at>
+{
+    static constexpr const bool value = true;
+    static constexpr const char* const name = "CustomActionRun";
+    static constexpr const size_t context = 5;
+    using traits = lhg::func_traits<typename MaaRegisterCustomActionImpl__ft::run__at::type>;
+    static decltype(CustomActionRun__Manager) &manager; 
+};
+decltype(CustomActionRun__Manager)& lhg::is_callback<MaaRegisterCustomActionImpl__ft::run__at>::manager = CustomActionRun__Manager;
+
+template<>
+struct lhg::is_callback_context<MaaRegisterCustomActionImpl__ft::run_arg__at>
+{
+    static constexpr const bool value = true;
+    using callback_arg_tag = MaaRegisterCustomActionImpl__ft::run__at;
+};
+
+template<>
+struct lhg::is_callback<MaaRegisterCustomActionImpl__ft::stop__at>
+{
+    static constexpr const bool value = true;
+    static constexpr const char* const name = "CustomActionStop";
+    static constexpr const size_t context = 0;
+    using traits = lhg::func_traits<typename MaaRegisterCustomActionImpl__ft::stop__at::type>;
+    static decltype(CustomActionStop__Manager) &manager; 
+};
+decltype(CustomActionStop__Manager)& lhg::is_callback<MaaRegisterCustomActionImpl__ft::stop__at>::manager = CustomActionStop__Manager;
+
+template<>
+struct lhg::is_callback_context<MaaRegisterCustomActionImpl__ft::stop_arg__at>
+{
+    static constexpr const bool value = true;
+    using callback_arg_tag = MaaRegisterCustomActionImpl__ft::stop__at;
+};
+
+namespace lhg {
+// LHG SEC BEGIN lhg.custom.MaaRegisterCustomActionImpl.tag
+// LHG SEC DEF
+
+// LHG SEC END
+}
+
 static lhg::opaque_manager<MaaControllerAPI *> MaaControllerAPI__OpaqueManager;
 
 template<>
@@ -2068,6 +2201,23 @@ struct lhg::is_opaque_free<MaaImageBuffer *, MaaDestroyImageBuffer__ft> {
     static constexpr const bool value = true;
 };
 
+static lhg::opaque_manager<MaaSyncContextAPI *> MaaSyncContextAPI__OpaqueManager;
+
+template<>
+struct lhg::schema_t<MaaSyncContextAPI *>
+{
+    static constexpr const char* const schema = "{\"type\":\"string\",\"title\":\"MaaSyncContextAPI\"}";
+};
+
+template<>
+struct lhg::is_opaque<MaaSyncContextAPI *> {
+    static constexpr const bool value = true;
+    using type = MaaSyncContextAPI;
+    static constexpr const char* const name = "MaaSyncContextAPI";
+    static lhg::opaque_manager<MaaSyncContextAPI *>& manager;
+};
+lhg::opaque_manager<MaaSyncContextAPI *>& lhg::is_opaque<MaaSyncContextAPI *>::manager = MaaSyncContextAPI__OpaqueManager;
+
 // LHG SEC BEGIN lhg.custom.MaaAdbControllerCreate.func
 // LHG SEC DEF
 
@@ -2092,32 +2242,6 @@ std::optional<json::object> MaaAdbControllerCreate_Wrapper(json::object __param,
     auto __ret = __return;
 // LHG SEC END
     return lhg::perform_output<MaaAdbControllerCreate__ft>(__call, __ret);
-}
-
-// LHG SEC BEGIN lhg.custom.MaaWin32ControllerCreate.func
-// LHG SEC DEF
-
-// LHG SEC END
-std::optional<json::object> MaaWin32ControllerCreate_Wrapper(json::object __param, std::string &__error) {
-    if (!lhg::perform_check<MaaWin32ControllerCreate__ft>(__param, __error)) {
-        return std::nullopt;
-    }
-
-    typename lhg::arg_set<MaaWin32ControllerCreate__ft>::temp_type __temp;
-    typename lhg::arg_set<MaaWin32ControllerCreate__ft>::call_type __call;
-    if (!lhg::perform_input<MaaWin32ControllerCreate__ft>(__temp, __param, __error)) {
-        return std::nullopt;
-    }
-    if (!lhg::perform_input_fix<MaaWin32ControllerCreate__ft>(__call, __temp, __param, __error)) {
-        return std::nullopt;
-    }
-
-    auto __return = std::apply(MaaWin32ControllerCreate, __call);
-// LHG SEC BEGIN lhg.impl.MaaWin32ControllerCreate.return
-// LHG SEC DEF
-    auto __ret = __return;
-// LHG SEC END
-    return lhg::perform_output<MaaWin32ControllerCreate__ft>(__call, __ret);
 }
 
 // LHG SEC BEGIN lhg.custom.MaaAdbControllerCreateV2.func
@@ -2718,6 +2842,32 @@ std::optional<json::object> MaaInited_Wrapper(json::object __param, std::string 
     return lhg::perform_output<MaaInited__ft>(__call, __ret);
 }
 
+// LHG SEC BEGIN lhg.custom.MaaUnregisterCustomRecognizer.func
+// LHG SEC DEF
+
+// LHG SEC END
+std::optional<json::object> MaaUnregisterCustomRecognizer_Wrapper(json::object __param, std::string &__error) {
+    if (!lhg::perform_check<MaaUnregisterCustomRecognizer__ft>(__param, __error)) {
+        return std::nullopt;
+    }
+
+    typename lhg::arg_set<MaaUnregisterCustomRecognizer__ft>::temp_type __temp;
+    typename lhg::arg_set<MaaUnregisterCustomRecognizer__ft>::call_type __call;
+    if (!lhg::perform_input<MaaUnregisterCustomRecognizer__ft>(__temp, __param, __error)) {
+        return std::nullopt;
+    }
+    if (!lhg::perform_input_fix<MaaUnregisterCustomRecognizer__ft>(__call, __temp, __param, __error)) {
+        return std::nullopt;
+    }
+
+    auto __return = std::apply(MaaUnregisterCustomRecognizer, __call);
+// LHG SEC BEGIN lhg.impl.MaaUnregisterCustomRecognizer.return
+// LHG SEC DEF
+    auto __ret = __return;
+// LHG SEC END
+    return lhg::perform_output<MaaUnregisterCustomRecognizer__ft>(__call, __ret);
+}
+
 // LHG SEC BEGIN lhg.custom.MaaClearCustomRecognizer.func
 // LHG SEC DEF
 
@@ -2742,6 +2892,32 @@ std::optional<json::object> MaaClearCustomRecognizer_Wrapper(json::object __para
     auto __ret = __return;
 // LHG SEC END
     return lhg::perform_output<MaaClearCustomRecognizer__ft>(__call, __ret);
+}
+
+// LHG SEC BEGIN lhg.custom.MaaUnregisterCustomAction.func
+// LHG SEC DEF
+
+// LHG SEC END
+std::optional<json::object> MaaUnregisterCustomAction_Wrapper(json::object __param, std::string &__error) {
+    if (!lhg::perform_check<MaaUnregisterCustomAction__ft>(__param, __error)) {
+        return std::nullopt;
+    }
+
+    typename lhg::arg_set<MaaUnregisterCustomAction__ft>::temp_type __temp;
+    typename lhg::arg_set<MaaUnregisterCustomAction__ft>::call_type __call;
+    if (!lhg::perform_input<MaaUnregisterCustomAction__ft>(__temp, __param, __error)) {
+        return std::nullopt;
+    }
+    if (!lhg::perform_input_fix<MaaUnregisterCustomAction__ft>(__call, __temp, __param, __error)) {
+        return std::nullopt;
+    }
+
+    auto __return = std::apply(MaaUnregisterCustomAction, __call);
+// LHG SEC BEGIN lhg.impl.MaaUnregisterCustomAction.return
+// LHG SEC DEF
+    auto __ret = __return;
+// LHG SEC END
+    return lhg::perform_output<MaaUnregisterCustomAction__ft>(__call, __ret);
 }
 
 // LHG SEC BEGIN lhg.custom.MaaClearCustomAction.func
@@ -4297,19 +4473,186 @@ std::optional<json::object> MaaSetGlobalOptionBoolean_Wrapper(json::object __par
     return lhg::perform_output<MaaSetGlobalOptionBoolean__ft>(__call, __ret);
 }
 
+// LHG SEC BEGIN lhg.custom.MaaRegisterCustomRecognizerImpl.func
+// LHG SEC DEF
+
+// LHG SEC END
+std::optional<json::object> MaaRegisterCustomRecognizerImpl_Wrapper(json::object __param, std::string &__error) {
+    if (!lhg::perform_check<MaaRegisterCustomRecognizerImpl__ft>(__param, __error)) {
+        return std::nullopt;
+    }
+
+    typename lhg::arg_set<MaaRegisterCustomRecognizerImpl__ft>::temp_type __temp;
+    typename lhg::arg_set<MaaRegisterCustomRecognizerImpl__ft>::call_type __call;
+    if (!lhg::perform_input<MaaRegisterCustomRecognizerImpl__ft>(__temp, __param, __error)) {
+        return std::nullopt;
+    }
+    if (!lhg::perform_input_fix<MaaRegisterCustomRecognizerImpl__ft>(__call, __temp, __param, __error)) {
+        return std::nullopt;
+    }
+
+    auto __return = std::apply(MaaRegisterCustomRecognizerImpl, __call);
+// LHG SEC BEGIN lhg.impl.MaaRegisterCustomRecognizerImpl.return
+// LHG SEC DEF
+    auto __ret = __return;
+// LHG SEC END
+    return lhg::perform_output<MaaRegisterCustomRecognizerImpl__ft>(__call, __ret);
+}
+
+// LHG SEC BEGIN lhg.custom.MaaRegisterCustomActionImpl.func
+// LHG SEC DEF
+
+// LHG SEC END
+std::optional<json::object> MaaRegisterCustomActionImpl_Wrapper(json::object __param, std::string &__error) {
+    if (!lhg::perform_check<MaaRegisterCustomActionImpl__ft>(__param, __error)) {
+        return std::nullopt;
+    }
+
+    typename lhg::arg_set<MaaRegisterCustomActionImpl__ft>::temp_type __temp;
+    typename lhg::arg_set<MaaRegisterCustomActionImpl__ft>::call_type __call;
+    if (!lhg::perform_input<MaaRegisterCustomActionImpl__ft>(__temp, __param, __error)) {
+        return std::nullopt;
+    }
+    if (!lhg::perform_input_fix<MaaRegisterCustomActionImpl__ft>(__call, __temp, __param, __error)) {
+        return std::nullopt;
+    }
+
+    auto __return = std::apply(MaaRegisterCustomActionImpl, __call);
+// LHG SEC BEGIN lhg.impl.MaaRegisterCustomActionImpl.return
+// LHG SEC DEF
+    auto __ret = __return;
+// LHG SEC END
+    return lhg::perform_output<MaaRegisterCustomActionImpl__ft>(__call, __ret);
+}
+
 bool handle_request(Context& ctx, UrlSegments segs) {
     auto obj = json::parse(ctx.req_.body()).value_or(json::object {}).as_object();
 
     // callback MaaAPICallback
     if (lhg::handle_callback("MaaAPICallback", MaaAPICallback__Manager, ctx, segs, obj, [](const auto& args) {
+// LHG SEC BEGIN lhg.cb.MaaAPICallback.0
+// LHG SEC DEF
         auto v0 = std::get<0>(args);
+// LHG SEC END
+// LHG SEC BEGIN lhg.cb.MaaAPICallback.1
+// LHG SEC DEF
         auto v1 = std::get<1>(args);
+// LHG SEC END
         return json::object {
             { "msg", v0 },
             { "details_json", v1 },
         };
     }, [](const auto& ret) {
         return 0;
+    }, [](const auto& arg, const auto& res) {
+    })) {
+        return true;
+    }
+
+    // callback CustomActionRun
+    if (lhg::handle_callback("CustomActionRun", CustomActionRun__Manager, ctx, segs, obj, [](const auto& args) {
+// LHG SEC BEGIN lhg.cb.CustomActionRun.0
+        // auto v0 = std::get<0>(args);
+        std::string v0 = "sync ctx not impl";
+// LHG SEC END
+// LHG SEC BEGIN lhg.cb.CustomActionRun.1
+// LHG SEC DEF
+        auto v1 = std::get<1>(args);
+// LHG SEC END
+// LHG SEC BEGIN lhg.cb.CustomActionRun.2
+// LHG SEC DEF
+        auto v2 = std::get<2>(args);
+// LHG SEC END
+// LHG SEC BEGIN lhg.cb.CustomActionRun.3
+        MaaRectHandle v3_ = std::get<3>(args);
+        auto v3 = json::object {
+            {"x", v3_->x},
+            {"y", v3_->y},
+            {"width", v3_->width},
+            {"height", v3_->height}
+        };
+// LHG SEC END
+// LHG SEC BEGIN lhg.cb.CustomActionRun.4
+// LHG SEC DEF
+        auto v4 = std::get<4>(args);
+// LHG SEC END
+        return json::object {
+            { "sync_context", v0 },
+            { "task_name", v1 },
+            { "custom_action_param", v2 },
+            { "cur_box", v3 },
+            { "cur_rec_detail", v4 },
+        };
+    }, [](const auto& ret) -> std::optional<unsigned char> {
+        if constexpr (lhg::check_t<unsigned char>::enable) {
+            if (!lhg::check_var<unsigned char>(ret)) {
+                return std::nullopt;
+            }
+        }
+        return lhg::from_json<unsigned char>(ret);
+    }, [](const auto& arg, const auto& res) {
+    })) {
+        return true;
+    }
+
+    // callback CustomActionStop
+    if (lhg::handle_callback("CustomActionStop", CustomActionStop__Manager, ctx, segs, obj, [](const auto& args) {
+        return json::object {
+
+        };
+    }, [](const auto& ret) {
+        return 0;
+    }, [](const auto& arg, const auto& res) {
+    })) {
+        return true;
+    }
+
+    // callback CustomRecognizerAnalyze
+    if (lhg::handle_callback("CustomRecognizerAnalyze", CustomRecognizerAnalyze__Manager, ctx, segs, obj, [](const auto& args) {
+// LHG SEC BEGIN lhg.cb.CustomRecognizerAnalyze.0
+// LHG SEC DEF
+        auto v0 = std::get<0>(args);
+// LHG SEC END
+// LHG SEC BEGIN lhg.cb.CustomRecognizerAnalyze.1
+// LHG SEC DEF
+        auto v1 = std::get<1>(args);
+// LHG SEC END
+// LHG SEC BEGIN lhg.cb.CustomRecognizerAnalyze.2
+// LHG SEC DEF
+        auto v2 = std::get<2>(args);
+// LHG SEC END
+// LHG SEC BEGIN lhg.cb.CustomRecognizerAnalyze.3
+// LHG SEC DEF
+        auto v3 = std::get<3>(args);
+// LHG SEC END
+        return json::object {
+            { "sync_context", v0 },
+            { "image", v1 },
+            { "task_name", v2 },
+            { "custom_recognition_param", v3 },
+        };
+    }, [](const auto& ret) -> std::optional<unsigned char> {
+        if constexpr (lhg::check_t<unsigned char>::enable) {
+            if (!lhg::check_var<unsigned char>(ret)) {
+                return std::nullopt;
+            }
+        }
+        return lhg::from_json<unsigned char>(ret);
+    }, [](const auto& arg, const auto& res) {
+        auto _out_box = res.find("out_box");
+        auto v_out_box = std::get<5>(arg);
+// LHG SEC BEGIN lhg.callback.output.fix.5
+        auto out_box_obj = _out_box->as_object();
+        v_out_box->x = out_box_obj.find("x")->as_integer();
+        v_out_box->y = out_box_obj.find("y")->as_integer();
+        v_out_box->width = out_box_obj.find("width")->as_integer();
+        v_out_box->height = out_box_obj.find("height")->as_integer();
+// LHG SEC END
+        auto _out_detail = res.find("out_detail");
+        auto v_out_detail = std::get<6>(arg);
+// LHG SEC BEGIN lhg.callback.output.fix.6
+        MaaSetString(v_out_detail, _out_detail->as_string().c_str());
+// LHG SEC END
     })) {
         return true;
     }
@@ -4334,9 +4677,13 @@ bool handle_request(Context& ctx, UrlSegments segs) {
         return true;
     }
 
+    // opaque MaaSyncContextAPI
+    if (lhg::handle_opaque("MaaSyncContextAPI", MaaSyncContextAPI__OpaqueManager, ctx, segs, obj)) {
+        return true;
+    }
+
     const static lhg::api_info_map wrappers = {
         { "MaaAdbControllerCreate", { &MaaAdbControllerCreate_Wrapper, &lhg::input_helper<MaaAdbControllerCreate__ft>, &lhg::output_helper<MaaAdbControllerCreate__ft> } },
-        { "MaaWin32ControllerCreate", { &MaaWin32ControllerCreate_Wrapper, &lhg::input_helper<MaaWin32ControllerCreate__ft>, &lhg::output_helper<MaaWin32ControllerCreate__ft> } },
         { "MaaAdbControllerCreateV2", { &MaaAdbControllerCreateV2_Wrapper, &lhg::input_helper<MaaAdbControllerCreateV2__ft>, &lhg::output_helper<MaaAdbControllerCreateV2__ft> } },
         { "MaaThriftControllerCreate", { &MaaThriftControllerCreate_Wrapper, &lhg::input_helper<MaaThriftControllerCreate__ft>, &lhg::output_helper<MaaThriftControllerCreate__ft> } },
         { "MaaDbgControllerCreate", { &MaaDbgControllerCreate_Wrapper, &lhg::input_helper<MaaDbgControllerCreate__ft>, &lhg::output_helper<MaaDbgControllerCreate__ft> } },
@@ -4360,7 +4707,9 @@ bool handle_request(Context& ctx, UrlSegments segs) {
         { "MaaBindResource", { &MaaBindResource_Wrapper, &lhg::input_helper<MaaBindResource__ft>, &lhg::output_helper<MaaBindResource__ft> } },
         { "MaaBindController", { &MaaBindController_Wrapper, &lhg::input_helper<MaaBindController__ft>, &lhg::output_helper<MaaBindController__ft> } },
         { "MaaInited", { &MaaInited_Wrapper, &lhg::input_helper<MaaInited__ft>, &lhg::output_helper<MaaInited__ft> } },
+        { "MaaUnregisterCustomRecognizer", { &MaaUnregisterCustomRecognizer_Wrapper, &lhg::input_helper<MaaUnregisterCustomRecognizer__ft>, &lhg::output_helper<MaaUnregisterCustomRecognizer__ft> } },
         { "MaaClearCustomRecognizer", { &MaaClearCustomRecognizer_Wrapper, &lhg::input_helper<MaaClearCustomRecognizer__ft>, &lhg::output_helper<MaaClearCustomRecognizer__ft> } },
+        { "MaaUnregisterCustomAction", { &MaaUnregisterCustomAction_Wrapper, &lhg::input_helper<MaaUnregisterCustomAction__ft>, &lhg::output_helper<MaaUnregisterCustomAction__ft> } },
         { "MaaClearCustomAction", { &MaaClearCustomAction_Wrapper, &lhg::input_helper<MaaClearCustomAction__ft>, &lhg::output_helper<MaaClearCustomAction__ft> } },
         { "MaaPostTask", { &MaaPostTask_Wrapper, &lhg::input_helper<MaaPostTask__ft>, &lhg::output_helper<MaaPostTask__ft> } },
         { "MaaSetTaskParam", { &MaaSetTaskParam_Wrapper, &lhg::input_helper<MaaSetTaskParam__ft>, &lhg::output_helper<MaaSetTaskParam__ft> } },
@@ -4419,13 +4768,38 @@ bool handle_request(Context& ctx, UrlSegments segs) {
         { "MaaSetGlobalOptionString", { &MaaSetGlobalOptionString_Wrapper, &lhg::input_helper<MaaSetGlobalOptionString__ft>, &lhg::output_helper<MaaSetGlobalOptionString__ft> } },
         { "MaaSetGlobalOptionInteger", { &MaaSetGlobalOptionInteger_Wrapper, &lhg::input_helper<MaaSetGlobalOptionInteger__ft>, &lhg::output_helper<MaaSetGlobalOptionInteger__ft> } },
         { "MaaSetGlobalOptionBoolean", { &MaaSetGlobalOptionBoolean_Wrapper, &lhg::input_helper<MaaSetGlobalOptionBoolean__ft>, &lhg::output_helper<MaaSetGlobalOptionBoolean__ft> } },
+        { "MaaRegisterCustomRecognizerImpl", { &MaaRegisterCustomRecognizerImpl_Wrapper, &lhg::input_helper<MaaRegisterCustomRecognizerImpl__ft>, &lhg::output_helper<MaaRegisterCustomRecognizerImpl__ft> } },
+        { "MaaRegisterCustomActionImpl", { &MaaRegisterCustomActionImpl_Wrapper, &lhg::input_helper<MaaRegisterCustomActionImpl__ft>, &lhg::output_helper<MaaRegisterCustomActionImpl__ft> } },
     };
     if (lhg::handle_api(ctx, segs, obj, wrappers)) {
         return true;
     }
 
-    if (lhg::handle_help(ctx, segs, wrappers, { "MaaControllerAPI", "MaaResourceAPI", "MaaInstanceAPI", "MaaImageBuffer" }, [](json::object& result) {
-        lhg::help_callback("MaaAPICallback", result, json::object { { "msg", json::parse(lhg::schema_t<decltype(std::get<0>(lhg::callback_manager<void (*)(const char *, const char *, void *)>::CallbackContext::args_type {}))>::schema).value() }, { "details_json", json::parse(lhg::schema_t<decltype(std::get<1>(lhg::callback_manager<void (*)(const char *, const char *, void *)>::CallbackContext::args_type {}))>::schema).value() } }, std::nullopt);
+    if (lhg::handle_help(ctx, segs, wrappers, { "MaaControllerAPI", "MaaResourceAPI", "MaaInstanceAPI", "MaaImageBuffer", "MaaSyncContextAPI" }, [](json::object& result) {
+        lhg::help_callback("MaaAPICallback", result, json::object { { "msg", json::parse(lhg::schema_t<decltype(std::get<0>(lhg::callback_manager<void (*)(const char *, const char *, void *)>::CallbackContext::args_type {}))>::schema).value() }, { "details_json", json::parse(lhg::schema_t<decltype(std::get<1>(lhg::callback_manager<void (*)(const char *, const char *, void *)>::CallbackContext::args_type {}))>::schema).value() } },
+        std::nullopt,
+        json::object {
+
+        });
+
+        lhg::help_callback("CustomActionRun", result, json::object { { "sync_context", json::parse(lhg::schema_t<decltype(std::get<0>(lhg::callback_manager<unsigned char (*)(MaaSyncContextAPI *, const char *, const char *, MaaRect *, const char *, void *)>::CallbackContext::args_type {}))>::schema).value() }, { "task_name", json::parse(lhg::schema_t<decltype(std::get<1>(lhg::callback_manager<unsigned char (*)(MaaSyncContextAPI *, const char *, const char *, MaaRect *, const char *, void *)>::CallbackContext::args_type {}))>::schema).value() }, { "custom_action_param", json::parse(lhg::schema_t<decltype(std::get<2>(lhg::callback_manager<unsigned char (*)(MaaSyncContextAPI *, const char *, const char *, MaaRect *, const char *, void *)>::CallbackContext::args_type {}))>::schema).value() }, { "cur_box", json::parse(lhg::schema_t<decltype(std::get<3>(lhg::callback_manager<unsigned char (*)(MaaSyncContextAPI *, const char *, const char *, MaaRect *, const char *, void *)>::CallbackContext::args_type {}))>::schema).value() }, { "cur_rec_detail", json::parse(lhg::schema_t<decltype(std::get<4>(lhg::callback_manager<unsigned char (*)(MaaSyncContextAPI *, const char *, const char *, MaaRect *, const char *, void *)>::CallbackContext::args_type {}))>::schema).value() } },
+        json::parse(lhg::schema_t<unsigned char>::schema).value().as_object(),
+        json::object {
+
+        });
+
+        lhg::help_callback("CustomActionStop", result, json::object {},
+        std::nullopt,
+        json::object {
+
+        });
+
+        lhg::help_callback("CustomRecognizerAnalyze", result, json::object { { "sync_context", json::parse(lhg::schema_t<decltype(std::get<0>(lhg::callback_manager<unsigned char (*)(MaaSyncContextAPI *, MaaImageBuffer *, const char *, const char *, void *, MaaRect *, MaaStringBuffer *)>::CallbackContext::args_type {}))>::schema).value() }, { "image", json::parse(lhg::schema_t<decltype(std::get<1>(lhg::callback_manager<unsigned char (*)(MaaSyncContextAPI *, MaaImageBuffer *, const char *, const char *, void *, MaaRect *, MaaStringBuffer *)>::CallbackContext::args_type {}))>::schema).value() }, { "task_name", json::parse(lhg::schema_t<decltype(std::get<2>(lhg::callback_manager<unsigned char (*)(MaaSyncContextAPI *, MaaImageBuffer *, const char *, const char *, void *, MaaRect *, MaaStringBuffer *)>::CallbackContext::args_type {}))>::schema).value() }, { "custom_recognition_param", json::parse(lhg::schema_t<decltype(std::get<3>(lhg::callback_manager<unsigned char (*)(MaaSyncContextAPI *, MaaImageBuffer *, const char *, const char *, void *, MaaRect *, MaaStringBuffer *)>::CallbackContext::args_type {}))>::schema).value() } },
+        json::parse(lhg::schema_t<unsigned char>::schema).value().as_object(),
+        json::object {
+            { "out_box", json::parse(lhg::schema_t<decltype(std::get<5>(lhg::callback_manager<unsigned char (*)(MaaSyncContextAPI *, MaaImageBuffer *, const char *, const char *, void *, MaaRect *, MaaStringBuffer *)>::CallbackContext::args_type {}))>::schema).value() },
+            { "out_detail", json::parse(lhg::schema_t<decltype(std::get<6>(lhg::callback_manager<unsigned char (*)(MaaSyncContextAPI *, MaaImageBuffer *, const char *, const char *, void *, MaaRect *, MaaStringBuffer *)>::CallbackContext::args_type {}))>::schema).value() },
+        });
     })) {
         return true;
     }

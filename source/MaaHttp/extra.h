@@ -15,3 +15,10 @@ MaaBool FAKE_IMPORT MaaControllerSetOptionBoolean(MaaControllerHandle ctrl, MaaC
 MaaBool FAKE_IMPORT MaaSetGlobalOptionString(MaaCtrlOption key, MaaStringView value);
 MaaBool FAKE_IMPORT MaaSetGlobalOptionInteger(MaaCtrlOption key, int value);
 MaaBool FAKE_IMPORT MaaSetGlobalOptionBoolean(MaaCtrlOption key, bool value);
+
+MaaBool FAKE_IMPORT MaaRegisterCustomRecognizerImpl(MaaInstanceHandle inst, MaaStringView name,
+                                                    decltype(MaaCustomRecognizerAPI {}.analyze) analyze,
+                                                    MaaTransparentArg analyze_arg);
+MaaBool FAKE_IMPORT MaaRegisterCustomActionImpl(MaaInstanceHandle inst, MaaStringView name,
+                                                decltype(MaaCustomActionAPI {}.run) run, MaaTransparentArg run_arg,
+                                                decltype(MaaCustomActionAPI {}.stop) stop, MaaTransparentArg stop_arg);

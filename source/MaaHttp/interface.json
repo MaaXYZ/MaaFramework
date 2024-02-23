@@ -1817,6 +1817,58 @@
       ],
       "name": "MaaSetGlobalOptionBoolean",
       "return": "unsigned char"
+    },
+    {
+      "argument": [
+        {
+          "name": "inst",
+          "type": "MaaInstanceAPI *"
+        },
+        {
+          "name": "name",
+          "type": "const char *"
+        },
+        {
+          "name": "analyze",
+          "type": "unsigned char (*)(MaaSyncContextAPI *, MaaImageBuffer *, const char *, const char *, void *, MaaRect *, MaaStringBuffer *)"
+        },
+        {
+          "name": "analyze_arg",
+          "type": "void *"
+        }
+      ],
+      "name": "MaaRegisterCustomRecognizerImpl",
+      "return": "unsigned char"
+    },
+    {
+      "argument": [
+        {
+          "name": "inst",
+          "type": "MaaInstanceAPI *"
+        },
+        {
+          "name": "name",
+          "type": "const char *"
+        },
+        {
+          "name": "run",
+          "type": "unsigned char (*)(MaaSyncContextAPI *, const char *, const char *, MaaRect *, const char *, void *)"
+        },
+        {
+          "name": "run_arg",
+          "type": "void *"
+        },
+        {
+          "name": "stop",
+          "type": "void (*)(void *)"
+        },
+        {
+          "name": "stop_arg",
+          "type": "void *"
+        }
+      ],
+      "name": "MaaRegisterCustomActionImpl",
+      "return": "unsigned char"
     }
   ]
 }
