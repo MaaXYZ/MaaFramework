@@ -7,6 +7,3 @@
 [submodule "test/TestingDataSet"]
 	path = test/TestingDataSet
 	url = https://github.com/MaaAssistantArknights/MaaFrameworkTesting.git
-[submodule "source/binding/maa-framework-rs"]
-	path = source/binding/Rust
-	url = https://github.com/MaaAssistantArknights/maa-framework-rs.git
