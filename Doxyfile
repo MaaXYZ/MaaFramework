@@ -3,25 +3,6 @@
 # This file describes the settings to be used by the documentation system
 # doxygen (www.doxygen.org) for a project.
 #
-# All text after a double hash (##) is considered a comment and is placed in
-# front of the TAG it is preceding.
-#
-# All text after a single hash (#) is considered a comment and will be ignored.
-# The format is:
-# TAG = value [value, ...]
-# For lists, items can also be appended using:
-# TAG += value [value, ...]
-# Values that contain spaces should be placed between quotes (\" \").
-#
-# Note:
-#
-# Use doxygen to compare the used configuration file with the template
-# configuration file:
-# doxygen -x [configFile]
-# Use doxygen to compare the used configuration file with the template
-# configuration file without replacing the environment variables or CMake type
-# replacement variables:
-# doxygen -x_noenv [configFile]
 
 #---------------------------------------------------------------------------
 # Project related configuration options
@@ -176,106 +157,17 @@ OPTIMIZE_FOR_FORTRAN   = NO
 OPTIMIZE_OUTPUT_VHDL   = NO
 OPTIMIZE_OUTPUT_SLICE  = NO
 
-# Doxygen selects the parser to use depending on the extension of the files it
-# parses. With this tag you can assign which parser to use for a given
-# extension. Doxygen has a built-in mapping, but you can override or extend it
-# using this tag. The format is ext=language, where ext is a file extension, and
-# language is one of the parsers supported by doxygen: IDL, Java, JavaScript,
-# Csharp (C#), C, C++, Lex, D, PHP, md (Markdown), Objective-C, Python, Slice,
-# VHDL, Fortran (fixed format Fortran: FortranFixed, free formatted Fortran:
-# FortranFree, unknown formatted Fortran: Fortran. In the later case the parser
-# tries to guess whether the code is fixed or free formatted code, this is the
-# default for Fortran type files). For instance to make doxygen treat .inc files
-# as Fortran files (default is PHP), and .f files as C (default is Fortran),
-# use: inc=Fortran f=C.
-#
-# Note: For files without extension you can use no_extension as a placeholder.
-#
-# Note that for custom extensions you also need to set FILE_PATTERNS otherwise
-# the files are not read by doxygen. When specifying no_extension you should add
-# * to the FILE_PATTERNS.
-#
-# Note see also the list of default file extension mappings.
-
-EXTENSION_MAPPING      =
-
-# If the MARKDOWN_SUPPORT tag is enabled then doxygen pre-processes all comments
-# according to the Markdown format, which allows for more readable
-# documentation. See https://daringfireball.net/projects/markdown/ for details.
-# The output of markdown processing is further processed by doxygen, so you can
-# mix doxygen, HTML, and XML commands with Markdown formatting. Disable only in
-# case of backward compatibilities issues.
-# The default value is: YES.
-
 MARKDOWN_SUPPORT       = YES
-
-# When the TOC_INCLUDE_HEADINGS tag is set to a non-zero value, all headings up
-# to that level are automatically included in the table of contents, even if
-# they do not have an id attribute.
-# Note: This feature currently applies only to Markdown headings.
-# Minimum value: 0, maximum value: 99, default value: 5.
-# This tag requires that the tag MARKDOWN_SUPPORT is set to YES.
 
 TOC_INCLUDE_HEADINGS   = 5
 
-# The MARKDOWN_ID_STYLE tag can be used to specify the algorithm used to
-# generate identifiers for the Markdown headings. Note: Every identifier is
-# unique.
-# Possible values are: DOXYGEN use a fixed 'autotoc_md' string followed by a
-# sequence number starting at 0 and GITHUB use the lower case version of title
-# with any whitespace replaced by '-' and punctuation characters removed.
-# The default value is: DOXYGEN.
-# This tag requires that the tag MARKDOWN_SUPPORT is set to YES.
-
 MARKDOWN_ID_STYLE      = DOXYGEN
-
-# When enabled doxygen tries to link words that correspond to documented
-# classes, or namespaces to their corresponding documentation. Such a link can
-# be prevented in individual cases by putting a % sign in front of the word or
-# globally by setting AUTOLINK_SUPPORT to NO.
-# The default value is: YES.
 
 AUTOLINK_SUPPORT       = YES
 
-# If you use STL classes (i.e. std::string, std::vector, etc.) but do not want
-# to include (a tag file for) the STL sources as input, then you should set this
-# tag to YES in order to let doxygen match functions declarations and
-# definitions whose arguments contain STL classes (e.g. func(std::string);
-# versus func(std::string) {}). This also make the inheritance and collaboration
-# diagrams that involve STL classes more complete and accurate.
-# The default value is: NO.
-
-BUILTIN_STL_SUPPORT    = NO
-
-# If you use Microsoft's C++/CLI language, you should set this option to YES to
-# enable parsing support.
-# The default value is: NO.
+BUILTIN_STL_SUPPORT    = YES
 
 CPP_CLI_SUPPORT        = NO
-
-# Set the SIP_SUPPORT tag to YES if your project consists of sip (see:
-# https://www.riverbankcomputing.com/software/sip/intro) sources only. Doxygen
-# will parse them like normal C++ but will assume all classes use public instead
-# of private inheritance when no explicit protection keyword is present.
-# The default value is: NO.
-
-SIP_SUPPORT            = NO
-
-# For Microsoft's IDL there are propget and propput attributes to indicate
-# getter and setter methods for a property. Setting this option to YES will make
-# doxygen to replace the get and set methods by a property in the documentation.
-# This will only work if the methods are indeed getting or setting a simple
-# type. If this is not the case, or you want to show the methods anyway, you
-# should set this option to NO.
-# The default value is: YES.
-
-IDL_PROPERTY_SUPPORT   = YES
-
-# If member grouping is used in the documentation and the DISTRIBUTE_GROUP_DOC
-# tag is set to YES then doxygen will reuse the documentation of the first
-# member in the group (if any) for the other members of the group. By default
-# all members of a group must be documented explicitly.
-# The default value is: NO.
 
 DISTRIBUTE_GROUP_DOC   = YES
 
