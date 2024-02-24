@@ -1090,7 +1090,7 @@ bool PipelineResMgr::parse_swipe(const json::value& input, Action::SwipeParam& o
 bool PipelineResMgr::parse_press_key(const json::value& input, Action::KeyParam& output,
                                      const Action::KeyParam& default_value)
 {
-    // TODO: https://github.com/MaaAssistantArknights/MaaFramework/issues/24#issuecomment-1666533842
+    // TODO: https://github.com/MaaXYZ/MaaFramework/issues/24#issuecomment-1666533842
     if (!get_and_check_value_or_array(input, "key", output.keys, default_value.keys)) {
         LogError << "failed to get_and_check_value_or_array key" << VAR(input);
         return false;

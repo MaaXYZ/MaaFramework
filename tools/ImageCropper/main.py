@@ -205,7 +205,7 @@ def trackbar_change(pos) -> None:
 # 标准化图片
 # -image 被标准化的图片
 def getStdSize(image) -> tuple[int, int]:
-    # https://github.com/MaaAssistantArknights/MaaFramework/blob/main/source/MaaFramework/Controller/ControllerAgent.cpp
+    # https://github.com/MaaXYZ/MaaFramework/blob/main/source/MaaFramework/Controller/ControllerAgent.cpp
     # bool ControllerMgr::check_and_calc_target_image_size(const cv::Mat& raw)
     cur_height, cur_width, _ = image.shape
     scale = cur_width / cur_height
