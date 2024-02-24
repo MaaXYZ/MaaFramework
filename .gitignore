@@ -1,6 +1,7 @@
 # docs
 docs/node_modules
 docs/.vuepress/.temp
+docs-gen
 # Prerequisites
 *.d
 

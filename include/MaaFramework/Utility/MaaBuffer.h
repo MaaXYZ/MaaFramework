@@ -1,3 +1,12 @@
+/**
+ * @file MaaBuffer.h
+ * @author
+ * @brief Provide helpers funtions to manage, read and edit buffers.
+ *
+ * @copyright Copyright (c) 2024
+ * 
+ */
+
 #pragma once
 
 #include "../MaaDef.h"
