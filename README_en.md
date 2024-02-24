@@ -15,11 +15,11 @@ _✨ A automation black-box testing framework based on image recognition ✨_
 </div>
 
 <p align="center">
-    <img alt="license" src="https://img.shields.io/github/license/MaaAssistantArknights/MaaFramework">
+    <img alt="license" src="https://img.shields.io/github/license/MaaXYZ/MaaFramework">
     <img alt="C++" src="https://img.shields.io/badge/C++-20-%2300599C?logo=cplusplus">
     <img alt="platform" src="https://img.shields.io/badge/platform-Windows%20%7C%20Linux%20%7C%20macOS-blueviolet">
-    <img alt="commit" src="https://img.shields.io/github/commit-activity/m/MaaAssistantArknights/MaaFramework?color=%23ff69b4">
-    <img alt="stars" src="https://img.shields.io/github/stars/MaaAssistantArknights/MaaFramework?style=social">
+    <img alt="commit" src="https://img.shields.io/github/commit-activity/m/MaaXYZ/MaaFramework?color=%23ff69b4">
+    <img alt="stars" src="https://img.shields.io/github/stars/MaaXYZ/MaaFramework?style=social">
 </p>
 
 <div align="center">
@@ -44,22 +44,22 @@ It offers low-code simplicity while maintaining high extensibility. The framewor
 
 ## Best Practices
 
-- [M9A](https://github.com/MaaAssistantArknights/M9A) 1999 Assistant  
+- [M9A](https://github.com/MaaXYZ/M9A) 1999 Assistant  
   The 1999 Assistant, based on a brand new architecture. Image technology + simulation control, freeing your hands! Powered by MaaFramework.
 
 - [MAAIP](https://github.com/Arcelibs/MAAIP) idolypride Automation Program Based on MAA Framework Technology  
   Created by the hottest open-source package on Github, lk99, using MaaFramework.
 
-- [MAABH3](https://github.com/MaaAssistantArknights/MAABH3) Honkai Impact 3 Assistant  
+- [MAABH3](https://github.com/MaaXYZ/MAABH3) Honkai Impact 3 Assistant  
   A one-click tool for the daily tasks of Honkai Impact, based on a brand new architecture. Image technology + simulation control, freeing your hands! Powered by MaaFramework.
 
 - [MAALimbusCompany](https://github.com/hxdnshx/MAALimbusCompany) Limbus Company Assistant  
   Based on a brand new architecture. Image technology + simulation control, freeing your hands! Powered by MaaFramework.
 
-- [MBA](https://github.com/MaaAssistantArknights/MBA) BA Assistant  
+- [MBA](https://github.com/MaaXYZ/MBA) BA Assistant  
   A BA Assistant based on MAA's new architecture. Image technology + simulation control, no more clicking! Powered by MaaFramework.
 
-- [MAS](https://github.com/MaaAssistantArknights/MaaAssistantSkland) Skland Assistant  
+- [MAS](https://github.com/MaaXYZ/MaaAssistantSkland) Skland Assistant  
   Based on a brand new architecture. Image technology + simulation control, freeing your hands! Powered by MaaFramework.
 
 ## Eco-Building
@@ -84,8 +84,8 @@ _Please note that you only need to read this chapter if you are ready to develop
 
 Thanks to the following developers for their contributions to MaaFramework:
 
-<a href="https://github.com/MaaAssistantArknights/MaaFramework/graphs/contributors">
-  <img src="https://contrib.rocks/image?repo=MaaAssistantArknights/MaaFramework&max=1000" />
+<a href="https://github.com/MaaXYZ/MaaFramework/graphs/contributors">
+  <img src="https://contrib.rocks/image?repo=MaaXYZ/MaaFramework&max=1000" />
 </a>
 
 ## Discussion

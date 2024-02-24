@@ -1,12 +1,12 @@
 [submodule "3rdparty/MaaDeps"]
 	path = 3rdparty/MaaDeps
-	url = https://github.com/MaaAssistantArknights/MaaDeps
+	url = https://github.com/MaaXYZ/MaaDeps
 [submodule "3rdparty/MaaAgentBinary"]
 	path = 3rdparty/MaaAgentBinary
-	url = https://github.com/MaaAssistantArknights/MaaAgentBinary
+	url = https://github.com/MaaXYZ/MaaAgentBinary
 [submodule "test/TestingDataSet"]
 	path = test/TestingDataSet
-	url = https://github.com/MaaAssistantArknights/MaaFrameworkTesting.git
+	url = https://github.com/MaaXYZ/MaaFrameworkTesting.git
 [submodule "source/binding/Rust"]
 	path = source/binding/Rust
-	url = https://github.com/MaaAssistantArknights/maa-framework-rs.git
+	url = https://github.com/MaaXYZ/maa-framework-rs.git

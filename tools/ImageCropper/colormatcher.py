@@ -55,7 +55,7 @@ def getCount(img, lower, upper, connected: bool, method: int = -1) -> int:
     Return:
         int
     '''
-    # https://github.com/MaaAssistantArknights/MaaFramework/blob/main/source/MaaFramework/Vision/ColorMatcher.cpp
+    # https://github.com/MaaXYZ/MaaFramework/blob/main/source/MaaFramework/Vision/ColorMatcher.cpp
     # ColorMatcher::color_match
     if method >= 0:
         img = cv2.cvtColor(img, method)

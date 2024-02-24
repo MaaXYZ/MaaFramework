@@ -15,11 +15,11 @@ _✨ 基于图像识别的自动化黑盒测试框架 ✨_
 </div>
 
 <p align="center">
-    <img alt="license" src="https://img.shields.io/github/license/MaaAssistantArknights/MaaFramework">
+    <img alt="license" src="https://img.shields.io/github/license/MaaXYZ/MaaFramework">
     <img alt="C++" src="https://img.shields.io/badge/C++-20-%2300599C?logo=cplusplus">
     <img alt="platform" src="https://img.shields.io/badge/platform-Windows%20%7C%20Linux%20%7C%20macOS-blueviolet">
-    <img alt="commit" src="https://img.shields.io/github/commit-activity/m/MaaAssistantArknights/MaaFramework?color=%23ff69b4">
-    <img alt="stars" src="https://img.shields.io/github/stars/MaaAssistantArknights/MaaFramework?style=social">
+    <img alt="commit" src="https://img.shields.io/github/commit-activity/m/MaaXYZ/MaaFramework?color=%23ff69b4">
+    <img alt="stars" src="https://img.shields.io/github/stars/MaaXYZ/MaaFramework?style=social">
 </p>
 
 <div align="center">
@@ -44,22 +44,22 @@ _✨ 基于图像识别的自动化黑盒测试框架 ✨_
 
 ## 最佳实践
 
-- [M9A](https://github.com/MaaAssistantArknights/M9A) 1999 小助手  
+- [M9A](https://github.com/MaaXYZ/M9A) 1999 小助手  
   基于全新架构的 亿韭韭韭 小助手。图像技术 + 模拟控制，解放双手！由 MaaFramework 强力驱动！
 
 - [MAAIP](https://github.com/Arcelibs/MAAIP) 基於 MAA 框架技術的 idolypride 自動化程序  
   由 Github 上最火熱的 lk99 開源套件 MaaFramework 製作
 
-- [MAABH3](https://github.com/MaaAssistantArknights/MAABH3) 《崩坏3》小助手 | A one-click tool for the daily tasks of Honkai Impact.  
+- [MAABH3](https://github.com/MaaXYZ/MAABH3) 《崩坏3》小助手 | A one-click tool for the daily tasks of Honkai Impact.  
   基于全新架构的 蹦蹦蹦 小助手。图像技术 + 模拟控制，解放双手！由 MaaFramework 强力驱动！
 
 - [MAALimbusCompany](https://github.com/hxdnshx/MAALimbusCompany) 边狱公司 小助手  
   基于全新架构的 边狱公司 小助手。图像技术 + 模拟控制，解放双手！由 MaaFramework 强力驱动！
 
-- [MBA](https://github.com/MaaAssistantArknights/MBA) BA 小助手  
+- [MBA](https://github.com/MaaXYZ/MBA) BA 小助手  
   基于 MAA 全新架构的 BA 小助手。图像技术 + 模拟控制，解放双手，不再点点点！由 MaaFramework 强力驱动！
 
-- [MAS](https://github.com/MaaAssistantArknights/MaaAssistantSkland) 森空岛 小助手  
+- [MAS](https://github.com/MaaXYZ/MaaAssistantSkland) 森空岛 小助手  
   基于全新架构的 森空岛 小助手。图像技术 + 模拟控制，解放双手！由 MaaFramework 强力驱动！
 
 ## 生态共建
@@ -84,8 +84,8 @@ _请留意，仅当您准备开发 MaaFramework 本身时，才需要阅读本�
 
 感谢以下开发者对 MaaFramework 作出的贡献：
 
-<a href="https://github.com/MaaAssistantArknights/MaaFramework/graphs/contributors">
-  <img src="https://contrib.rocks/image?repo=MaaAssistantArknights/MaaFramework&max=1000" />
+<a href="https://github.com/MaaXYZ/MaaFramework/graphs/contributors">
+  <img src="https://contrib.rocks/image?repo=MaaXYZ/MaaFramework&max=1000" />
 </a>
 
 ## 讨论
