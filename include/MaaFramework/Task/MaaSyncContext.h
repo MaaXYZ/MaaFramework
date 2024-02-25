@@ -1,3 +1,12 @@
+/**
+ * @file MaaSyncContext.h
+ * @author
+ * @brief SyncContext is a context for running tasks, recognizers, actions, and other operations.
+ *
+ * @copyright Copyright (c) 2024
+ *
+ */
+
 #pragma once
 
 #include "../MaaDef.h"
@@ -8,14 +17,12 @@ extern "C"
 {
 #endif
 
-    /* SyncContext */
-
     MaaBool MAA_FRAMEWORK_API MaaSyncContextRunTask(MaaSyncContextHandle sync_context, MaaStringView task_name,
                                                     MaaStringView param);
     MaaBool MAA_FRAMEWORK_API MaaSyncContextRunRecognizer(MaaSyncContextHandle sync_context, MaaImageBufferHandle image,
                                                           MaaStringView task_name, MaaStringView task_param,
-                                                          /* out */ MaaRectHandle out_box,
-                                                          /* out */ MaaStringBufferHandle out_detail);
+                                                          MaaRectHandle out_box /**< [out] */,
+                                                          MaaStringBufferHandle out_detail /**< [out] */);
     MaaBool MAA_FRAMEWORK_API MaaSyncContextRunAction(MaaSyncContextHandle sync_context, MaaStringView task_name,
                                                       MaaStringView task_param, MaaRectHandle cur_box,
                                                       MaaStringView cur_rec_detail);
@@ -32,9 +39,9 @@ extern "C"
     MaaBool MAA_FRAMEWORK_API MaaSyncContextTouchUp(MaaSyncContextHandle sync_context, int32_t contact);
 
     MaaBool MAA_FRAMEWORK_API MaaSyncContextScreencap(MaaSyncContextHandle sync_context,
-                                                      /* out */ MaaImageBufferHandle out_image);
+                                                      MaaImageBufferHandle out_image /**< [out] */);
     MaaBool MAA_FRAMEWORK_API MaaSyncContextGetTaskResult(MaaSyncContextHandle sync_context, MaaStringView task_name,
-                                                          /* out */ MaaStringBufferHandle out_task_result);
+                                                          MaaStringBufferHandle out_task_result /**< [out] */);
 
 #ifdef __cplusplus
 }
