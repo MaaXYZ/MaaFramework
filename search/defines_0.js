@@ -1,0 +1,20 @@
+var searchData=
+[
+  ['maa_5fcontrol_5funit_5fapi_0',['MAA_CONTROL_UNIT_API',['../MaaPort_8h.html#a826aa33333d0528e8a238f2717265249',1,'MaaPort.h']]],
+  ['maa_5fdll_5fexport_1',['MAA_DLL_EXPORT',['../MaaPort_8h.html#a20cf214e76a3bf5d041786154513c892',1,'MaaPort.h']]],
+  ['maa_5fdll_5fimport_2',['MAA_DLL_IMPORT',['../MaaPort_8h.html#aed0af92192d8a7f6278afec3adfee80c',1,'MaaPort.h']]],
+  ['maa_5fdll_5flocal_3',['MAA_DLL_LOCAL',['../MaaPort_8h.html#a4be2819e9ef99d9befeefb94fa2afada',1,'MaaPort.h']]],
+  ['maa_5fframework_5fapi_4',['MAA_FRAMEWORK_API',['../MaaPort_8h.html#a67006334d91d228121dbba7a8bf8fe05',1,'MaaPort.h']]],
+  ['maa_5frpc_5fapi_5',['MAA_RPC_API',['../MaaPort_8h.html#a7c19101f6ca5fe6c8f217aa09a3f2863',1,'MaaPort.h']]],
+  ['maa_5ftoolkit_5fapi_6',['MAA_TOOLKIT_API',['../MaaPort_8h.html#a011c7bbd355fdfe6aa7599af52cc20ac',1,'MaaPort.h']]],
+  ['maa_5futils_5fapi_7',['MAA_UTILS_API',['../MaaPort_8h.html#aabeb9919a6a22899b3e2e224c83e90db',1,'MaaPort.h']]],
+  ['maaadbcontrollertype_5fkey_5fmask_8',['MaaAdbControllerType_Key_Mask',['../MaaDef_8h.html#a0aba12231a057e024b6f886d5ca57e42',1,'MaaDef.h']]],
+  ['maaadbcontrollertype_5fscreencap_5fmask_9',['MaaAdbControllerType_Screencap_Mask',['../MaaDef_8h.html#a60c0e9e60c279369555268de16d8f9c8',1,'MaaDef.h']]],
+  ['maaadbcontrollertype_5ftouch_5fmask_10',['MaaAdbControllerType_Touch_Mask',['../MaaDef_8h.html#a810fc320b7071d4aafd96a4df49052a6',1,'MaaDef.h']]],
+  ['maainvalidid_11',['MaaInvalidId',['../MaaDef_8h.html#a1b93c853d770a6723301f135d9e9e3bc',1,'MaaDef.h']]],
+  ['maanullsize_12',['MaaNullSize',['../MaaDef_8h.html#a9eddd2fb954b055dd2ea4d9cdd267188',1,'MaaDef.h']]],
+  ['maataskparam_5fempty_13',['MaaTaskParam_Empty',['../MaaDef_8h.html#ae77fe3e2413b89e08d7cae72f4c6320d',1,'MaaDef.h']]],
+  ['maawin32controllertype_5fkey_5fmask_14',['MaaWin32ControllerType_Key_Mask',['../MaaDef_8h.html#a0dcb911c9b2938e37cce89f794cf9edf',1,'MaaDef.h']]],
+  ['maawin32controllertype_5fscreencap_5fmask_15',['MaaWin32ControllerType_Screencap_Mask',['../MaaDef_8h.html#ae3c5ed765271da72f92ca79b20b7842c',1,'MaaDef.h']]],
+  ['maawin32controllertype_5ftouch_5fmask_16',['MaaWin32ControllerType_Touch_Mask',['../MaaDef_8h.html#af7ef816067f31da570d95a87a0a06506',1,'MaaDef.h']]]
+];
