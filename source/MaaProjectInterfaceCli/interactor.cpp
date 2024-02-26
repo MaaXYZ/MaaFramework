@@ -243,15 +243,15 @@ void Interactor::select_adb_auto_detect()
 void Interactor::select_adb_manual_input()
 {
     std::cout << "Please input ADB path: ";
-    std::string adb_path;
     std::cin.sync();
+    std::string adb_path;
     std::getline(std::cin, adb_path);
     config_.configuration().controller.adb_path = adb_path;
     std::cout << "\n";
 
     std::cout << "Please input ADB address: ";
-    std::string adb_address;
     std::cin.sync();
+    std::string adb_address;
     std::getline(std::cin, adb_address);
     config_.configuration().controller.address = adb_address;
     std::cout << "\n";
