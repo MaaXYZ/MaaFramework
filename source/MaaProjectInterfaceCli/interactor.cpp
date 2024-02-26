@@ -14,9 +14,15 @@ int input(size_t size, std::string_view prompt = "Please input")
     size_t value = 0;
 
     while (true) {
-        std::cin >> value;
-        if (value > 0 && value <= size) {
-            break;
+        std::cin.sync();
+        std::string buffer;
+        std::getline(std::cin, buffer);
+
+        if (!buffer.empty() && std::ranges::all_of(buffer, [](char c) { return std::isdigit(c); })) {
+            value = std::stoul(buffer);
+            if (value > 0 && value <= size) {
+                break;
+            }
         }
         std::cout << std::format("Invalid value, {} [1-{}]: ", prompt, size);
     }
@@ -238,13 +244,15 @@ void Interactor::select_adb_manual_input()
 {
     std::cout << "Please input ADB path: ";
     std::string adb_path;
-    std::cin >> adb_path;
+    std::cin.sync();
+    std::getline(std::cin, adb_path);
     config_.configuration().controller.adb_path = adb_path;
     std::cout << "\n";
 
     std::cout << "Please input ADB address: ";
     std::string adb_address;
-    std::cin >> adb_address;
+    std::cin.sync();
+    std::getline(std::cin, adb_address);
     config_.configuration().controller.address = adb_address;
     std::cout << "\n";
 }

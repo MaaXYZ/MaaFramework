@@ -11,6 +11,7 @@
 void mpause()
 {
     std::cout << "\nPress Enter to continue...";
+    std::cin.sync();
     std::cin.get();
 }
 
