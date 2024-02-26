@@ -18,7 +18,9 @@ MAA_CTRL_UNIT_NS_BEGIN
 ScreencapFastestWay::ScreencapFastestWay(const std::filesystem::path& minicap_path, bool lossless)
 {
     units_ = {
+#ifdef _WIN32
         { Method::RawByNetcat, std::make_shared<ScreencapRawByNetcat>() },
+#endif
         { Method::RawWithGzip, std::make_shared<ScreencapRawWithGzip>() },
         { Method::Encode, std::make_shared<ScreencapEncode>() },
         { Method::EncodeToFileAndPull, std::make_shared<ScreencapEncodeToFileAndPull>() },
