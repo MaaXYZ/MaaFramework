@@ -4,6 +4,7 @@
 #include <unordered_set>
 
 #include "MaaToolkit/Device/MaaToolkitDevice.h"
+#include "ProjectInterface/Runner.h"
 #include "Utils/Logger.h"
 #include "Utils/Platform.h"
 
@@ -53,11 +54,13 @@ bool Interactor::load(const std::filesystem::path& project_dir)
     LogFunc << VAR(project_dir);
 
     if (!config_.load(project_dir)) {
+        mpause();
         return false;
     }
 
     if (!config_.check_configuration()) {
         std::cout << "### The interface has changed and incompatible configurations have been deleted. ###\n\n";
+        mpause();
     }
 
     return true;
@@ -72,16 +75,32 @@ void Interactor::interact()
 
     while (true) {
         print_config();
-        if (interact_once()) {
+        if (!interact_once()) {
             break;
         }
         config_.save();
     }
 }
 
-std::optional<MAA_PROJECT_INTERFACE_NS::RuntimeParam> Interactor::generate_runtime() const
+bool Interactor::run()
 {
-    return config_.generate_runtime();
+    auto runtime = config_.generate_runtime();
+    if (!runtime) {
+        LogError << "Failed to generate runtime";
+        return false;
+    }
+
+    bool ret = MAA_PROJECT_INTERFACE_NS::Runner::run(runtime.value(), on_maafw_notify, this);
+
+    if (!ret) {
+        std::cout << "### Failed to run tasks ###\n\n";
+    }
+    else {
+        std::cout << "### All tasks have been completed ###\n\n";
+    }
+
+    mpause();
+    return ret;
 }
 
 void Interactor::print_config() const
@@ -108,11 +127,12 @@ void Interactor::print_config() const
 void Interactor::welcome() const
 {
     if (config_.interface_data().message.empty()) {
-        std::cout << "Welcome to use Maa Project Interface CLI!\n\n";
+        std::cout << "Welcome to use Maa Project Interface CLI!\n";
     }
     else {
-        std::cout << MaaNS::utf8_to_crt(config_.interface_data().message) << "\n\n";
+        std::cout << MaaNS::utf8_to_crt(config_.interface_data().message) << "\n";
     }
+    std::cout << "MaaFramework: " << MAA_VERSION << "\n\n";
 
     std::cout << "Version: " << MaaNS::utf8_to_crt(config_.interface_data().version) << "\n\n";
 }
@@ -126,9 +146,10 @@ bool Interactor::interact_once()
     std::cout << "\t4. Move task\n";
     std::cout << "\t5. Delete task\n";
     std::cout << "\t6. Run tasks\n";
+    std::cout << "\t7. Exit\n";
     std::cout << "\n";
 
-    int action = input(6);
+    int action = input(7);
 
     switch (action) {
     case 1:
@@ -147,10 +168,13 @@ bool Interactor::interact_once()
         delete_task();
         break;
     case 6:
-        return true;
+        run();
+        break;
+    case 7:
+        return false;
     }
 
-    return false;
+    return true;
 }
 
 void Interactor::select_controller()
@@ -393,4 +417,20 @@ void Interactor::print_config_tasks(bool with_index) const
         }
     }
     std::cout << "\n";
+}
+
+void Interactor::mpause() const
+{
+    std::cout << "\nPress Enter to continue...";
+    std::cin.sync();
+    std::cin.get();
+}
+
+void Interactor::on_maafw_notify(MaaStringView msg, MaaStringView details_json, MaaTransparentArg callback_arg)
+{
+    Interactor* pthis = static_cast<Interactor*>(callback_arg);
+    std::ignore = pthis;
+
+    std::string entry = json::parse(details_json).value_or(json::value())["entry"].as_string();
+    std::cout << MaaNS::utf8_to_crt(std::format("on_maafw_notify: {} {}", msg, entry)) << std::endl;
 }

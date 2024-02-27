@@ -3,7 +3,9 @@
 #include <filesystem>
 #include <string_view>
 
-#include "ProjectInterface/Types.h"
+#include "Types.h"
+
+MAA_PROJECT_INTERFACE_NS_BEGIN
 
 class Configurator
 {
@@ -34,3 +36,5 @@ private:
     bool first_time_use_ = false;
     MAA_PROJECT_INTERFACE_NS::Configuration config_;
 };
+
+MAA_PROJECT_INTERFACE_NS_END

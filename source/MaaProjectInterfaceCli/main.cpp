@@ -2,18 +2,9 @@
 #include <iostream>
 
 #include "MaaToolkit/MaaToolkitAPI.h"
-#include "Utils/Platform.h"
 #include "Utils/Runtime.h"
 
 #include "interactor.h"
-#include "runner.h"
-
-void mpause()
-{
-    std::cout << "\nPress Enter to continue...";
-    std::cin.sync();
-    std::cin.get();
-}
 
 int main(int argc, char** argv)
 {
@@ -22,7 +13,6 @@ int main(int argc, char** argv)
     Interactor interactor;
 
     if (!interactor.load(MAA_NS::library_dir())) {
-        mpause();
         return -1;
     }
 
@@ -37,23 +27,11 @@ int main(int argc, char** argv)
 
     if (direct) {
         interactor.print_config();
-    }
-    else {
-        interactor.interact();
+        bool ret = interactor.run();
+
+        return ret ? 0 : -1;
     }
 
-    auto runtime_opt = interactor.generate_runtime();
-    if (!runtime_opt) {
-        mpause();
-        return -1;
-    }
-
-    bool ret = Runner::run(*runtime_opt);
-    if (!ret) {
-        mpause();
-        return -1;
-    }
-
-    mpause();
+    interactor.interact();
     return 0;
 }
