@@ -1,6 +1,7 @@
 #pragma once
 
-#include "ProjectInterface/configurator.h"
+#include "MaaFramework/MaaDef.h"
+#include "ProjectInterface/Configurator.h"
 
 class Interactor
 {
