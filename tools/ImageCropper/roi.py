@@ -32,7 +32,7 @@ def typeassert(**kwargs):
         return cls
     return decorate
 
-@typeassert(width=float|int, height=float|int, x=float|int, y=float|int, zoom=float|int)
+@typeassert(width=(float, int), height=(float, int), x=(float, int), y=(float, int), zoom=(float, int))
 class Roi(object):
     def __init__(self, width: float, height: float, x: float = 0 , y: float = 0, parent: Roi = None, zoom: float = 1) -> None:
         '''感兴趣区域

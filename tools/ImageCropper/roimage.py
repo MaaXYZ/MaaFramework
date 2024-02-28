@@ -7,7 +7,7 @@ import cv2
 class Roimage(Roi):
     def __init__(self, width: float, height: float, x: float = 0 , y: float = 0, parent: Roimage = None, zoom: float = 1) -> None:
         Roi.__init__(self, width, height, x, y, parent, zoom)
-        self.__image: ndarray | None = None
+        self.__image: ndarray = None
         self.zoom_image_cache = {}
 
     @property
