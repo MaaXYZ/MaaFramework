@@ -19,7 +19,7 @@ class SyncContext:
         if not self._handle:
             raise ValueError("handle is None")
 
-    def run_task(self, task_name: str, task_param: str) -> bool:
+    def run_task(self, task_name: str, task_param: Dict = {}) -> bool:
         """
         Sync context run task.
 
@@ -30,7 +30,9 @@ class SyncContext:
         """
         return bool(
             Library.framework.MaaSyncContextRunTask(
-                self._handle, task_name.encode("utf-8"), task_param.encode("utf-8")
+                self._handle,
+                task_name.encode("utf-8"),
+                json.dumps(task_param).encode("utf-8"),
             )
         )
 
@@ -93,7 +95,7 @@ class SyncContext:
                 self._handle,
                 task_name.encode("utf-8"),
                 json.dumps(task_param).encode("utf-8"),
-                rect_buffer.c_handle(),
+                rect_buffer.c_handle,
                 cur_rec_detail.encode("utf-8"),
             )
         )
@@ -203,7 +205,7 @@ class SyncContext:
         """
         image_buffer = ImageBuffer()
         ret = Library.framework.MaaSyncContextScreencap(
-            self._handle, image_buffer.c_handle()
+            self._handle, image_buffer.c_handle
         )
         if not ret:
             return None
@@ -219,7 +221,7 @@ class SyncContext:
         """
         string_buffer = StringBuffer()
         ret = Library.framework.MaaSyncContextGetTaskResult(
-            self._handle, task_name.encode("utf-8"), string_buffer.c_handle()
+            self._handle, task_name.encode("utf-8"), string_buffer.c_handle
         )
         if not ret:
             return None

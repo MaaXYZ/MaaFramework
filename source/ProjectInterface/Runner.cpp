@@ -1,4 +1,4 @@
-#include "runner.h"
+#include "ProjectInterface/Runner.h"
 
 #include <format>
 #include <iostream>
@@ -10,14 +10,20 @@
 
 #include "Utils/ScopeLeave.hpp"
 
-bool Runner::run(const MAA_PROJECT_INTERFACE_NS::RuntimeParam& param)
-{
-    auto maa_handle = MaaCreate(&Runner::on_maafw_notify, nullptr);
+MAA_PROJECT_INTERFACE_NS_BEGIN
 
-    auto controller_handle = MaaAdbControllerCreateV2(param.adb_param.adb_path.c_str(), param.adb_param.address.c_str(),
-                                                      param.adb_param.controller_type, param.adb_param.config.c_str(),
-                                                      param.adb_param.agent_path.c_str(), nullptr, nullptr);
-    auto resource_handle = MaaResourceCreate(nullptr, nullptr);
+bool Runner::run(const MAA_PROJECT_INTERFACE_NS::RuntimeParam& param, //
+                 MaaInstanceCallback callback, MaaCallbackTransparentArg callback_arg,
+                 MaaResourceCallback resource_callback, MaaCallbackTransparentArg resource_callback_arg,
+                 MaaControllerCallback controller_callback, MaaCallbackTransparentArg controller_callback_arg)
+{
+    auto maa_handle = MaaCreate(callback, callback_arg);
+
+    auto controller_handle =
+        MaaAdbControllerCreateV2(param.adb_param.adb_path.c_str(), param.adb_param.address.c_str(),
+                                 param.adb_param.controller_type, param.adb_param.config.c_str(),
+                                 param.adb_param.agent_path.c_str(), controller_callback, controller_callback_arg);
+    auto resource_handle = MaaResourceCreate(resource_callback, resource_callback_arg);
 
     int64_t cid = MaaControllerPostConnection(controller_handle);
     int64_t rid = 0;
@@ -68,10 +74,4 @@ bool Runner::run(const MAA_PROJECT_INTERFACE_NS::RuntimeParam& param)
     return true;
 }
 
-void Runner::on_maafw_notify(MaaStringView msg, MaaStringView details_json, MaaTransparentArg callback_arg)
-{
-    std::ignore = callback_arg;
-
-    std::string entry = json::parse(details_json).value_or(json::value())["entry"].as_string();
-    std::cout << std::format("on_maafw_notify: {} {}", msg, entry) << std::endl;
-}
+MAA_PROJECT_INTERFACE_NS_END

@@ -1,3 +1,12 @@
+/**
+ * @file MaaToolkitConfig.h
+ * @author
+ * @brief Init and uninit the toolkit.
+ *
+ * @copyright Copyright (c) 2024
+ * 
+ */
+
 #pragma once
 
 #include "../MaaToolkitDef.h"

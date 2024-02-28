@@ -8,13 +8,13 @@
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
     <license type="expression">LGPL-3.0-only</license>
     <!--iconUrl is deprecated. Use icon instead.-->
-    <iconUrl>https://cdn.jsdelivr.net/gh/MaaAssistantArknights/design@main/logo/maa-logo_128x128.png</iconUrl>
+    <iconUrl>https://cdn.jsdelivr.net/gh/MaaXYZ/design@main/logo/maa-logo_128x128.png</iconUrl>
     <!--readme-->
     <description>MaaFramework is a software automation testing framework based on image recognition.</description>
-    <releaseNotes>Release notes are at https://github.com/MaaAssistantArknights/MaaFramework/releases.</releaseNotes>
+    <releaseNotes>Release notes are at https://github.com/MaaXYZ/MaaFramework/releases.</releaseNotes>
     <copyright>Copyright © 2021-$year$ MAA Team and Contributers. All rights reserved.</copyright>
     <tags>MAA native runtimes C++ computer-vision</tags>
-    <repository type="git" url="https://github.com/MaaAssistantArknights/MaaFramework/"  branch="$branch$" commit="$commit$" />
+    <repository type="git" url="https://github.com/MaaXYZ/MaaFramework/"  branch="$branch$" commit="$commit$" />
   </metadata>
   <files>
     <file src="$docs_path$\**\*.*" target="docs" />

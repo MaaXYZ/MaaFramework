@@ -2,7 +2,8 @@ import ctypes
 import json
 import asyncio
 from dataclasses import dataclass
-from typing import List
+from typing import List, Union
+from pathlib import Path
 
 from .library import Library
 from .define import *
@@ -12,7 +13,7 @@ from .instance import Instance
 @dataclass
 class AdbDevice:
     name: str
-    adb_path: str
+    adb_path: Path
     address: str
     controller_type: int
     config: str
@@ -44,7 +45,9 @@ class Toolkit:
         devices = []
         for i in range(count):
             name = Library.toolkit.MaaToolkitGetDeviceName(i).decode("utf-8")
-            adb_path = Library.toolkit.MaaToolkitGetDeviceAdbPath(i).decode("utf-8")
+            adb_path = Path(
+                Library.toolkit.MaaToolkitGetDeviceAdbPath(i).decode("utf-8")
+            )
             address = Library.toolkit.MaaToolkitGetDeviceAdbSerial(i).decode("utf-8")
             controller_type = int(
                 Library.toolkit.MaaToolkitGetDeviceAdbControllerType(i)
@@ -57,7 +60,7 @@ class Toolkit:
 
     @classmethod
     def register_recognizer_exec_agent(
-        cls, inst: Instance, name: str, exec_path: str, argv: list
+        cls, inst: Instance, name: str, exec_path: Union[str, Path], argv: list
     ) -> bool:
         """
         Register a recognizer exec agent.
@@ -68,13 +71,13 @@ class Toolkit:
         return Library.toolkit.MaaToolkitRegisterCustomRecognizerExecutor(
             inst.c_handle,
             name.encode("utf-8"),
-            exec_path.encode("utf-8"),
+            str(exec_path).encode("utf-8"),
             json_argv.encode("utf-8"),
         )
 
     @classmethod
     def register_action_exec_agent(
-        cls, inst: Instance, name: str, exec_path: str, argv: list
+        cls, inst: Instance, name: str, exec_path: Union[str, Path], argv: list
     ) -> bool:
         """
         Register a action exec agent.
@@ -85,35 +88,39 @@ class Toolkit:
         return Library.toolkit.MaaToolkitRegisterCustomActionExecutor(
             inst.c_handle(),
             name.encode("utf-8"),
-            exec_path.encode("utf-8"),
+            str(exec_path).encode("utf-8"),
             json_argv.encode("utf-8"),
         )
 
     _api_properties_initialized: bool = False
 
-    # TODO: 进一步封装 Win32Hwnd 系列函数？
-
     @classmethod
-    def find_window(cls, class_name: str, window_name: str) -> MaaSize:
+    def find_window(cls, class_name: str, window_name: str) -> List[MaaWin32Hwnd]:
         cls._set_api_properties()
 
-        return Library.toolkit.MaaToolkitFindWindow(
+        count = Library.toolkit.MaaToolkitFindWindow(
             class_name.encode("utf-8"), window_name.encode("utf-8")
         )
 
+        windows = []
+        for i in range(count):
+            windows.append(Library.toolkit.MaaToolkitGetWindow(i))
+
+        return windows
+
     @classmethod
-    def search_window(cls, class_name: str, window_name: str) -> MaaSize:
+    def search_window(cls, class_name: str, window_name: str) -> List[MaaWin32Hwnd]:
         cls._set_api_properties()
 
-        return Library.toolkit.MaaToolkitSearchWindow(
+        count = Library.toolkit.MaaToolkitSearchWindow(
             class_name.encode("utf-8"), window_name.encode("utf-8")
         )
 
-    @classmethod
-    def get_window(cls, index: int) -> MaaWin32Hwnd:
-        cls._set_api_properties()
+        windows = []
+        for i in range(count):
+            windows.append(Library.toolkit.MaaToolkitGetWindow(i))
 
-        return Library.toolkit.MaaToolkitGetWindow(index)
+        return windows
 
     @classmethod
     def get_cursor_window(cls) -> MaaWin32Hwnd:

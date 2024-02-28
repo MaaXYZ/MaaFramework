@@ -72,8 +72,11 @@ struct InterfaceData
     std::unordered_map<std::string, Option> option;
     std::unordered_map<std::string, Executor> recognizer;
     std::unordered_map<std::string, Executor> action;
+    std::string version;
+    std::string message;
 
-    MEO_JSONIZATION(MEO_OPT controller, resource, task, MEO_OPT option, MEO_OPT recognizer, MEO_OPT action);
+    MEO_JSONIZATION(MEO_OPT controller, resource, task, MEO_OPT option, MEO_OPT recognizer, MEO_OPT action,
+                    MEO_OPT version, MEO_OPT message);
 };
 
 struct Configuration

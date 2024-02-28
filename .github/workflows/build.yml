@@ -27,7 +27,7 @@ jobs:
           is_release=${{ startsWith(github.ref, 'refs/tags/v') }}
           tag=$(git describe --tags --match "v*" ${{ github.ref }} || true)
           if [[ $tag != v* ]]; then
-            tag=$(curl -sX GET "https://api.github.com/repos/MaaAssistantArknights/MaaFramework/releases/latest" --header 'authorization: Bearer ${{ secrets.GITHUB_TOKEN }}' | awk '/tag_name/{print $4}' FS='["]')
+            tag=$(curl -sX GET "https://api.github.com/repos/MaaXYZ/MaaFramework/releases/latest" --header 'authorization: Bearer ${{ secrets.GITHUB_TOKEN }}' | awk '/tag_name/{print $4}' FS='["]')
             if [[ $tag != v* ]]; then
               tag="v0.0.0"
             fi
@@ -81,13 +81,6 @@ jobs:
         with:
           sdk-version: 22621
 
-      # Download host arch tools for Thrift of ThriftControlUnit
-      - name: Download host tools from MaaDeps
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: |
-          python3 tools/maadeps-download.py x64-windows
-
       - name: Bootstrap MaaDeps
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -140,7 +133,7 @@ jobs:
           pacman -Sy
           pacman -S --noconfirm cmake python ccache ninja git
 
-      # https://github.com/MaaAssistantArknights/MaaFramework/actions/runs/5643408179/job/15285186255
+      # https://github.com/MaaXYZ/MaaFramework/actions/runs/5643408179/job/15285186255
       - uses: actions/checkout@v3
         with:
           submodules: true
@@ -155,13 +148,6 @@ jobs:
         uses: Chocobo1/setup-ccache-action@v1
         with:
           remove_stale_cache: false
-
-      # Download host arch tools for Thrift of ThriftControlUnit
-      - name: Download host tools from MaaDeps
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: |
-          python3 tools/maadeps-download.py x64-linux
 
       - name: Bootstrap MaaDeps
         env:
@@ -225,13 +211,6 @@ jobs:
         run: |
           brew install llvm
         # 17
-
-      # Download host arch tools for Thrift of ThriftControlUnit
-      - name: Download host tools from MaaDeps
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: |
-          python3 tools/maadeps-download.py x64-osx
 
       - name: Bootstrap MaaDeps
         env:

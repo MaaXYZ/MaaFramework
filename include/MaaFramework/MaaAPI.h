@@ -13,3 +13,19 @@
 
 #include "Utility/MaaBuffer.h"
 #include "Utility/MaaUtility.h"
+
+/**
+ * @mainpage MaaFramework API Reference
+ *
+ * @section intro_sec Introduction
+ *
+ * MaaFramework is a toolset used to create automated tests under various environments such as Windows and Andoroid emulators.
+ *
+ * For starter, take a look at the following pages:
+ *
+ * - MaaInstance.h
+ * - MaaController.h
+ * - MaaResource.h
+ * - MaaToolkitDevice.h
+ * 
+ */

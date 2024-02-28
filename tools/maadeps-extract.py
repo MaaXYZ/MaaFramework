@@ -45,7 +45,7 @@ def main():
     runtime = archive_dir / runtime_name
 
     if not devel.exists() or not runtime.exists():
-        print(f"""Please download {devel_name} and {runtime_name} from https://github.com/MaaAssistantArknights/MaaDeps/releases/latest, and put them into {archive_dir}""")
+        print(f"""Please download {devel_name} and {runtime_name} from https://github.com/MaaXYZ/MaaDeps/releases/latest, and put them into {archive_dir}""")
         archive_dir.mkdir(parents=True, exist_ok=True)
         return
 

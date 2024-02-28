@@ -1,3 +1,12 @@
+/**
+ * @file MaaCustomController.h
+ * @author
+ * @brief Custom controller API.
+ *
+ * @copyright Copyright (c) 2024
+ * 
+ */
+
 #pragma once
 
 #include "../MaaDef.h"
@@ -8,17 +17,29 @@ extern "C"
 {
 #endif
 
+    /**
+     * @brief The custom controller API.
+     *
+     * To create a custom controller, you need to implement this API.
+     *
+     * You do not have to implement all the functions in this API. Instead, just implement the functions you need.
+     * Do note that if an unimplemented function is called, the framework will likely crash.
+     */
     struct MaaCustomControllerAPI
     {
         MaaBool (*connect)(MaaTransparentArg handle_arg);
 
+        /// Write result to buffer.
         MaaBool (*request_uuid)(MaaTransparentArg handle_arg, /* out */ MaaStringBufferHandle buffer);
+
+        /// Write result to width and height.
         MaaBool (*request_resolution)(MaaTransparentArg handle_arg, /* out */ int32_t* width,
                                       /* out */ int32_t* height);
 
         MaaBool (*start_app)(MaaStringView intent, MaaTransparentArg handle_arg);
         MaaBool (*stop_app)(MaaStringView intent, MaaTransparentArg handle_arg);
 
+        /// Write result to buffer.
         MaaBool (*screencap)(MaaTransparentArg handle_arg, /* out */ MaaImageBufferHandle buffer);
 
         MaaBool (*click)(int32_t x, int32_t y, MaaTransparentArg handle_arg);

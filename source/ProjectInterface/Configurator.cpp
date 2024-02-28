@@ -1,4 +1,4 @@
-#include "configurator.h"
+#include "ProjectInterface/Configurator.h"
 
 #include <ranges>
 

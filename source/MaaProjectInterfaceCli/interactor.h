@@ -1,6 +1,7 @@
 #pragma once
 
-#include "configurator.h"
+#include "MaaFramework/MaaDef.h"
+#include "ProjectInterface/Configurator.h"
 
 class Interactor
 {
@@ -8,7 +9,7 @@ public:
     bool load(const std::filesystem::path& project_dir);
     void print_config() const;
     void interact();
-    std::optional<MAA_PROJECT_INTERFACE_NS::RuntimeParam> generate_runtime() const;
+    bool run();
 
 private:
     void interact_for_first_time_use();
@@ -29,6 +30,10 @@ private:
 
     void print_config_tasks(bool with_index = true) const;
 
+    void mpause() const;
+
+    static void on_maafw_notify(MaaStringView msg, MaaStringView details_json, MaaTransparentArg callback_arg);
+
 private:
-    Configurator config_;
+    MAA_PROJECT_INTERFACE_NS::Configurator config_;
 };

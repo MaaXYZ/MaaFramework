@@ -37,14 +37,6 @@ bool InstanceMgr::bind_resource(MaaResourceAPI* resource)
         return false;
     }
 
-    if (!resource->valid()) {
-        LogWarn << "Resource not valid";
-    }
-
-    if (resource_) {
-        LogWarn << "Resource already binded" << VAR_VOIDP(resource_);
-    }
-
     resource_ = resource;
     return true;
 }
@@ -56,14 +48,6 @@ bool InstanceMgr::bind_controller(MaaControllerAPI* controller)
     if (!controller) {
         LogError << "Invalid controller";
         return false;
-    }
-
-    if (!controller->connected()) {
-        LogWarn << "Controller not connected";
-    }
-
-    if (controller_) {
-        LogWarn << "Controller already binded" << VAR_VOIDP(controller_);
     }
 
     controller_ = controller;

@@ -85,7 +85,7 @@ public:
         }
 
         std::string filename = std::format("{}-{}.png", format_now_for_filename(), make_uuid());
-        auto filepath = dumps_dir_ / std::move(filename);
+        auto filepath = dumps_dir_ / path(filename);
         bool ret = MAA_NS::imwrite(filepath, image);
         if (!ret) {
             return "Failed to write image";
@@ -94,23 +94,23 @@ public:
     }
 
     template <typename T>
-    std::string operator()(std::optional<T>&& value) const
+    std::string operator()(const std::optional<T>& value) const
     {
         if (!value) {
             return nullptr;
         }
-        return this->operator()(std::forward<T>(*value));
+        return this->operator()(*value);
     }
 
     template <typename T>
     requires has_output_operator<T>
-    std::string operator()(T&& value) const
+    std::string operator()(const T& value) const
     {
         std::stringstream ss;
         if constexpr (std::same_as<bool, std::decay_t<T>>) {
             ss << std::boolalpha;
         }
-        ss << std::forward<T>(value);
+        ss << value;
         return std::move(ss).str();
     }
 
