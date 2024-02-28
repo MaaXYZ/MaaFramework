@@ -4,7 +4,7 @@
  * @brief The resource API.
  *
  * @copyright Copyright (c) 2024
- * 
+ *
  */
 
 #pragma once
@@ -19,18 +19,18 @@ extern "C"
 
     /**
      * @brief Create a resource.
-     * 
+     *
      * @param callback The callback function. See MaaAPICallback
-     * @param callback_arg 
-     * @return MaaResourceHandle 
+     * @param callback_arg
+     * @return MaaResourceHandle
      */
     MaaResourceHandle MAA_FRAMEWORK_API MaaResourceCreate(MaaResourceCallback callback,
                                                           MaaCallbackTransparentArg callback_arg);
 
     /**
      * @brief Free the resource.
-     * 
-     * @param res 
+     *
+     * @param res
      */
     void MAA_FRAMEWORK_API MaaResourceDestroy(MaaResourceHandle res);
 
@@ -45,34 +45,35 @@ extern "C"
 
     /**
      * @brief Get the loading status of a resource identified by id.
-     * 
-     * @param res 
-     * @param id 
-     * @return MaaStatus 
+     *
+     * @param res
+     * @param id
+     * @return MaaStatus
      */
     MaaStatus MAA_FRAMEWORK_API MaaResourceStatus(MaaResourceHandle res, MaaResId id);
 
     /**
      * @brief Wait for a resource to be loaded.
-     * 
-     * @param res 
-     * @param id 
-     * @return MaaStatus 
+     *
+     * @param res
+     * @param id
+     * @return MaaStatus
      */
     MaaStatus MAA_FRAMEWORK_API MaaResourceWait(MaaResourceHandle res, MaaResId id);
 
     /**
      * @brief Check if resources are loaded.
-     * 
-     * @param res 
-     * @return MaaBool 
+     *
+     * @param res
+     * @return MaaBool
      */
     MaaBool MAA_FRAMEWORK_API MaaResourceLoaded(MaaResourceHandle res);
 
     /**
      * @brief Set options for a given resource.
      *
-     * This function requires a given set of option keys and value types, otherwise this will fail. See #MaaResOptionEnum for details.
+     * This function requires a given set of option keys and value types, otherwise this will fail. See
+     * #MaaResOptionEnum for details.
      *
      * @param res The handle of the resource to set options for.
      * @param key The option key.

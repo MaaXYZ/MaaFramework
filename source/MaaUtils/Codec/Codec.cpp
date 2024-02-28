@@ -27,7 +27,7 @@ std::string from_u16(const std::wstring& u16str)
 }
 
 #if defined(__clang__)
-#pragma clang diagnostic pop    // -Wdeprecated-declarations
+#pragma clang diagnostic pop // -Wdeprecated-declarations
 #endif
 
 MAA_NS_END

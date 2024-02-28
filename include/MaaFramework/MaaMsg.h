@@ -3,10 +3,11 @@
  * @author
  * @brief Contains the callback message definitions.
  *
- * A callback consists of a message and a payload. The message is a string that indicates the type of the message. The payload is a JSON object that contains the details of the message.
+ * A callback consists of a message and a payload. The message is a string that indicates the type of the message. The
+ * payload is a JSON object that contains the details of the message.
  *
  * @copyright Copyright (c) 2024
- * 
+ *
  */
 
 #pragma once
@@ -65,7 +66,7 @@
  *         height: number
  *     }
  * }
- * 
+ *
  */
 #define MaaMsg_Controller_ResolutionGot ("Controller.ResolutionGot")
 
@@ -97,7 +98,7 @@
  * payload: {
  *     why: string
  * }
- * 
+ *
  */
 #define MaaMsg_Controller_ConnectFailed ("Controller.ConnectFailed")
 

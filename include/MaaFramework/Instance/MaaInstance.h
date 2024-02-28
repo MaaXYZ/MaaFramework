@@ -4,7 +4,7 @@
  * @brief The instance API.
  *
  * @copyright Copyright (c) 2024
- * 
+ *
  */
 
 #pragma once
@@ -22,21 +22,22 @@ extern "C"
      *
      * @param callback The callback function. See MaaAPICallback
      * @param callback_arg The callback arg that will be passed to the callback function.
-     * @return MaaInstanceHandle 
+     * @return MaaInstanceHandle
      */
     MaaInstanceHandle MAA_FRAMEWORK_API MaaCreate(MaaInstanceCallback callback, MaaCallbackTransparentArg callback_arg);
 
     /**
      * @brief Free the instance.
-     * 
-     * @param inst 
+     *
+     * @param inst
      */
     void MAA_FRAMEWORK_API MaaDestroy(MaaInstanceHandle inst);
 
     /**
      * @brief Set options for a given instance.
      *
-     * This function requires a given set of option keys and value types, otherwise this will fail. See #MaaInstOptionEnum for details.
+     * This function requires a given set of option keys and value types, otherwise this will fail. See
+     * #MaaInstOptionEnum for details.
      *
      * @param inst The handle of the instance to set options for.
      * @param key The option key.
@@ -54,7 +55,7 @@ extern "C"
      *
      * @param inst
      * @param res
-     * @return MaaBool 
+     * @return MaaBool
      */
     MaaBool MAA_FRAMEWORK_API MaaBindResource(MaaInstanceHandle inst, MaaResourceHandle res);
 
@@ -64,16 +65,16 @@ extern "C"
      * See functions in MaaController.h about how to create a controller.
      *
      * @param inst
-     * @param ctrl 
-     * @return MaaBool 
+     * @param ctrl
+     * @return MaaBool
      */
     MaaBool MAA_FRAMEWORK_API MaaBindController(MaaInstanceHandle inst, MaaControllerHandle ctrl);
 
     /**
      * @brief Check if the instance is initialized.
-     * 
-     * @param inst 
-     * @return MaaBool 
+     *
+     * @param inst
+     * @return MaaBool
      */
     MaaBool MAA_FRAMEWORK_API MaaInited(MaaInstanceHandle inst);
 
@@ -82,10 +83,10 @@ extern "C"
      *
      * See MaaCustomRecognizer.h for details about how to create a custom recognizer.
      *
-     * @param inst 
+     * @param inst
      * @param name The name of the recognizer that will be used to reference it.
-     * @param recognizer 
-     * @param recognizer_arg 
+     * @param recognizer
+     * @param recognizer_arg
      * @return MaaBool
      */
     MaaBool MAA_FRAMEWORK_API MaaRegisterCustomRecognizer(MaaInstanceHandle inst, MaaStringView name,
@@ -95,17 +96,17 @@ extern "C"
     /**
      * @brief Unregister a custom recognizer from the instance.
      *
-     * @param inst 
+     * @param inst
      * @param name The name of the recognizer when it was registered.
-     * @return MaaBool 
+     * @return MaaBool
      */
     MaaBool MAA_FRAMEWORK_API MaaUnregisterCustomRecognizer(MaaInstanceHandle inst, MaaStringView name);
 
     /**
      * @brief Clear all custom recognizers registered to the instance.
-     * 
-     * @param inst 
-     * @return MaaBool 
+     *
+     * @param inst
+     * @return MaaBool
      */
     MaaBool MAA_FRAMEWORK_API MaaClearCustomRecognizer(MaaInstanceHandle inst);
 
@@ -116,9 +117,9 @@ extern "C"
      *
      * @param inst
      * @param name The name of the action that will be used to reference it.
-     * @param action 
-     * @param action_arg 
-     * @return MaaBool 
+     * @param action
+     * @param action_arg
+     * @return MaaBool
      */
     MaaBool MAA_FRAMEWORK_API MaaRegisterCustomAction(MaaInstanceHandle inst, MaaStringView name,
                                                       MaaCustomActionHandle action, MaaTransparentArg action_arg);
@@ -128,15 +129,15 @@ extern "C"
      *
      * @param inst
      * @param name The name of the action when it was registered.
-     * @return MaaBool 
+     * @return MaaBool
      */
     MaaBool MAA_FRAMEWORK_API MaaUnregisterCustomAction(MaaInstanceHandle inst, MaaStringView name);
 
     /**
      * @brief Clear all custom actions registered to the instance.
-     * 
-     * @param inst 
-     * @return MaaBool 
+     *
+     * @param inst
+     * @return MaaBool
      */
     MaaBool MAA_FRAMEWORK_API MaaClearCustomAction(MaaInstanceHandle inst);
 
@@ -161,33 +162,33 @@ extern "C"
      * @param inst
      * @param id The id of the task.
      * @param param The parameter of the task.
-     * @return MaaBool 
+     * @return MaaBool
      */
     MaaBool MAA_FRAMEWORK_API MaaSetTaskParam(MaaInstanceHandle inst, MaaTaskId id, MaaStringView param);
 
     /**
      * @brief Get the status of a task identified by the id.
-     * 
-     * @param inst 
-     * @param id 
-     * @return MaaStatus 
+     *
+     * @param inst
+     * @param id
+     * @return MaaStatus
      */
     MaaStatus MAA_FRAMEWORK_API MaaTaskStatus(MaaInstanceHandle inst, MaaTaskId id);
 
     /**
      * @brief Wait for a task to finish.
-     * 
-     * @param inst 
-     * @param id 
-     * @return MaaStatus 
+     *
+     * @param inst
+     * @param id
+     * @return MaaStatus
      */
     MaaStatus MAA_FRAMEWORK_API MaaWaitTask(MaaInstanceHandle inst, MaaTaskId id);
 
     /**
      * @brief Wait for all tasks to finish.
-     * 
-     * @param inst 
-     * @return MaaBool 
+     *
+     * @param inst
+     * @return MaaBool
      */
     MaaBool MAA_FRAMEWORK_API MaaTaskAllFinished(MaaInstanceHandle inst);
 
@@ -195,9 +196,9 @@ extern "C"
      * @brief Post a stop signal to the instance.
      *
      * This immediately stops the instance and all its tasks.
-     * 
-     * @param inst 
-     * @return MaaBool 
+     *
+     * @param inst
+     * @return MaaBool
      */
     MaaBool MAA_FRAMEWORK_API MaaPostStop(MaaInstanceHandle inst);
 
@@ -207,16 +208,16 @@ extern "C"
     /**
      * @brief Get the resource handle of the instance.
      *
-     * @param inst 
-     * @return MaaResourceHandle 
+     * @param inst
+     * @return MaaResourceHandle
      */
     MaaResourceHandle MAA_FRAMEWORK_API MaaGetResource(MaaInstanceHandle inst);
 
     /**
      * @brief Get the controller handle of the instance.
-     * 
-     * @param inst 
-     * @return MaaControllerHandle 
+     *
+     * @param inst
+     * @return MaaControllerHandle
      */
     MaaControllerHandle MAA_FRAMEWORK_API MaaGetController(MaaInstanceHandle inst);
 

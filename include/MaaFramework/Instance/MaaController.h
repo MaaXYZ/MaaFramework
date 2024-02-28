@@ -1,7 +1,8 @@
 /**
  * @file MaaController.h
  * @author
- * @brief The controller interface. See \ref MaaControllerPostRequest for details on how to post requests to the controller.
+ * @brief The controller interface. See \ref MaaControllerPostRequest for details on how to post requests to the
+ * controller.
  *
  * @copyright Copyright (c) 2024
  *
@@ -36,8 +37,9 @@ extern "C"
 
     /**
      * @brief Create a win32 controller instance.
-     * 
-     * @param hWnd The win32 window handle to control. This can be retrieved by helpers provided in MaaToolkitWin32Window.h.
+     *
+     * @param hWnd The win32 window handle to control. This can be retrieved by helpers provided in
+     * MaaToolkitWin32Window.h.
      * @param type The type of the win32 controller. See #MaaWin32ControllerTypeEnum.
      * @param callback The callback function. See ::MaaAPICallback.
      * @param callback_arg The callback arg that will be passed to the callback function.
@@ -86,7 +88,7 @@ extern "C"
 
     /**
      * @brief Free the controller instance.
-     * 
+     *
      * @param ctrl
      */
     void MAA_FRAMEWORK_API MaaControllerDestroy(MaaControllerHandle ctrl);
@@ -94,7 +96,8 @@ extern "C"
     /**
      * @brief Set options for a given controller instance.
      *
-     * This function requires a given set of option keys and value types, otherwise this will fail. See #MaaCtrlOptionEnum for details.
+     * This function requires a given set of option keys and value types, otherwise this will fail. See
+     * #MaaCtrlOptionEnum for details.
      *
      * @param ctrl The handle of the controller instance to set options for.
      * @param key The option key.
@@ -145,18 +148,18 @@ extern "C"
 
     /**
      * @brief Wait for the request identified by the given id to complete.
-     * 
-     * @param ctrl 
-     * @param id 
+     *
+     * @param ctrl
+     * @param id
      * @return MaaStatus The status of the request.
      */
     MaaStatus MAA_FRAMEWORK_API MaaControllerWait(MaaControllerHandle ctrl, MaaCtrlId id);
 
     /**
      * @brief Check if the controller is connected.
-     * 
-     * @param ctrl 
-     * @return MaaBool 
+     *
+     * @param ctrl
+     * @return MaaBool
      */
     MaaBool MAA_FRAMEWORK_API MaaControllerConnected(MaaControllerHandle ctrl);
 

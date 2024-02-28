@@ -4,7 +4,7 @@
  * @brief The type definitions.
  *
  * @copyright Copyright (c) 2024
- * 
+ *
  */
 
 #pragma once
@@ -106,7 +106,7 @@ typedef MaaOption MaaCtrlOption;
 
 /**
  * @brief Option keys for controller instance options. See MaaControllerSetOption().
- * 
+ *
  */
 enum MaaCtrlOptionEnum
 {

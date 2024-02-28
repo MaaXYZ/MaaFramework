@@ -4,7 +4,7 @@
  * @brief Provide global functions for the framework.
  *
  * @copyright Copyright (c) 2024
- * 
+ *
  */
 
 #pragma once
@@ -19,15 +19,16 @@ extern "C"
 
     /**
      * @brief Get the version of the framework.
-     * 
-     * @return MaaStringView 
+     *
+     * @return MaaStringView
      */
     MaaStringView MAA_FRAMEWORK_API MaaVersion();
 
     /**
      * @brief Set options globally.
      *
-     * This function requires a given set of option keys and value types, otherwise this will fail. See #MaaGlobalOptionEnum for details.
+     * This function requires a given set of option keys and value types, otherwise this will fail. See
+     * #MaaGlobalOptionEnum for details.
      *
      * @param key The option key.
      * @param value The option value.

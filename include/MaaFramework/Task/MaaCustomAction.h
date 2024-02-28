@@ -2,9 +2,9 @@
  * @file MaaCustomAction.h
  * @author
  * @brief Custom action API.
- * 
+ *
  * @copyright Copyright (c) 2024
- * 
+ *
  */
 
 #pragma once

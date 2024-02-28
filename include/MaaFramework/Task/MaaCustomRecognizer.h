@@ -4,7 +4,7 @@
  * @brief Custom recognizer API.
  *
  * @copyright Copyright (c) 2024
- * 
+ *
  */
 
 #pragma once
@@ -27,7 +27,6 @@ extern "C"
      */
     struct MaaCustomRecognizerAPI
     {
-
         /// Write the recognition result to the out_box and return true if the recognition is successful.
         /// If the recognition fails, return false.
         /// You can also write details to the out_detail buffer.
