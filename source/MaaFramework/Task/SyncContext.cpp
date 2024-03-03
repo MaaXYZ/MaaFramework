@@ -44,6 +44,10 @@ bool SyncContext::run_recognizer(cv::Mat image, std::string task, std::string_vi
         LogError << "Instance is null";
         return false;
     }
+    if (image.empty()) {
+        LogError << "Image is empty";
+        return false;
+    }
 
     auto json_opt = json::parse(param);
     if (!json_opt) {

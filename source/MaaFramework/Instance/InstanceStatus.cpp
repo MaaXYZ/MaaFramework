@@ -118,10 +118,8 @@ bool InstanceStatus::cv_mat_equal(const cv::Mat& lhs, const cv::Mat& rhs)
     if (lhs.cols != rhs.cols || lhs.rows != rhs.rows || lhs.dims != rhs.dims) {
         return false;
     }
-    cv::Mat diff;
-    cv::compare(lhs, rhs, diff, cv::CMP_NE);
-    int nz = cv::countNonZero(diff);
-    return nz == 0;
+
+    return std::equal(lhs.begin<uchar>(), lhs.end<uchar>(), rhs.begin<uchar>());
 }
 
 MAA_NS_END
