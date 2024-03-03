@@ -180,7 +180,7 @@ std::optional<Recognizer::Result> Recognizer::ocr(const cv::Mat& image, const MA
 {
     using namespace MAA_VISION_NS;
 
-    if (!resource()) {
+    if (!resource() || !status()) {
         LogError << "Resource not binded";
         return std::nullopt;
     }
@@ -194,6 +194,8 @@ std::optional<Recognizer::Result> Recognizer::ocr(const cv::Mat& image, const MA
     auto rec_session = resource()->ocr_res().recer(param.model);
     auto ocr_session = resource()->ocr_res().ocrer(param.model);
     ocrer.set_session(std::move(det_session), std::move(rec_session), std::move(ocr_session));
+
+    ocrer.set_status(status());
 
     auto [results, index] = ocrer.analyze();
     if (index >= results.size()) {

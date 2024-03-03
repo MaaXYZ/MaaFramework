@@ -91,4 +91,37 @@ void InstanceStatus::clear_run_times()
     run_times_map_.clear();
 }
 
+std::optional<std::any> InstanceStatus::get_ocr_cache(const cv::Mat& image) const
+{
+    return ocr_cache_.get_cache(image);
+}
+
+void InstanceStatus::set_ocr_cache(cv::Mat image, std::any result)
+{
+    ocr_cache_.set_cache(std::move(image), std::move(result));
+}
+
+void InstanceStatus::clear_ocr_cache()
+{
+    LogTrace;
+
+    ocr_cache_.clear();
+}
+
+bool InstanceStatus::cv_mat_equal(const cv::Mat& lhs, const cv::Mat& rhs)
+{
+    // treat two empty mat as identical as well
+    if (lhs.empty() && rhs.empty()) {
+        return true;
+    }
+    // if dimensionality of two mat is not identical, these two mat is not identical
+    if (lhs.cols != rhs.cols || lhs.rows != rhs.rows || lhs.dims != rhs.dims) {
+        return false;
+    }
+    cv::Mat diff;
+    cv::compare(lhs, rhs, diff, cv::CMP_NE);
+    int nz = cv::countNonZero(diff);
+    return nz == 0;
+}
+
 MAA_NS_END

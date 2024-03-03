@@ -48,22 +48,42 @@ OCRer::ResultsVec OCRer::foreach_rois() const
 
 OCRer::ResultsVec OCRer::predict(const cv::Rect& roi) const
 {
-    return param_.only_rec ? ResultsVec { predict_only_rec(roi) } : predict_det_and_rec(roi);
+    auto image_roi = image_with_roi(roi);
+
+    if (!status_) {
+        LogError << "status_ is null";
+        return {};
+    }
+
+    ResultsVec results;
+    if (auto results_opt = status_->get_ocr_cache(image_roi)) {
+        results = std::any_cast<ResultsVec>(*std::move(results_opt));
+    }
+    else {
+        results = param_.only_rec ? ResultsVec { predict_only_rec(image_roi) } : predict_det_and_rec(image_roi);
+        status_->set_ocr_cache(image_roi, results);
+    }
+
+    std::ranges::for_each(results, [&](auto& res) {
+        res.box.x += roi.x;
+        res.box.y += roi.y;
+    });
+
+    draw_result(roi, results);
+    return results;
 }
 
-OCRer::ResultsVec OCRer::predict_det_and_rec(const cv::Rect& roi) const
+OCRer::ResultsVec OCRer::predict_det_and_rec(const cv::Mat& image_roi) const
 {
     if (!ocrer_) {
         LogError << "ocrer_ is null";
         return {};
     }
-    auto image_roi = image_with_roi(roi);
 
     fastdeploy::vision::OCRResult ocr_result;
     bool ret = ocrer_->Predict(image_roi, &ocr_result);
     if (!ret) {
-        LogWarn << "inferencer return false" << VAR(ocrer_) << VAR(image_) << VAR(roi) << VAR(image_roi);
-        draw_result(roi, {});
+        LogWarn << "inferencer return false" << VAR(ocrer_) << VAR(image_) << VAR(image_roi);
         return {};
     }
 
@@ -78,11 +98,11 @@ OCRer::ResultsVec OCRer::predict_det_and_rec(const cv::Rect& roi) const
                 // 这种情况是 det 模型没出结果，整个 ROI 直接被送给了 rec 模型。凑合用吧（
                 auto text = to_u16(raw_text);
                 auto score = ocr_result.rec_scores.front();
-                results.emplace_back(Result { .text = std::move(text), .box = roi, .score = score });
+                results.emplace_back(Result {
+                    .text = std::move(text), .box = { 0, 0, image_roi.cols, image_roi.rows }, .score = score });
             }
         }
 
-        draw_result(roi, results);
         return results;
     }
 
@@ -97,38 +117,33 @@ OCRer::ResultsVec OCRer::predict_det_and_rec(const cv::Rect& roi) const
         auto [top, bottom] = std::ranges::minmax(y_collect);
 
         auto text = to_u16(ocr_result.text.at(i));
-        cv::Rect my_box(left + roi.x, top + roi.y, right - left, bottom - top);
+        cv::Rect my_box(left, top, right - left, bottom - top);
         auto score = ocr_result.rec_scores.at(i);
 
         results.emplace_back(Result { .text = std::move(text), .box = my_box, .score = score });
     }
 
-    draw_result(roi, results);
-
     return results;
 }
 
-OCRer::Result OCRer::predict_only_rec(const cv::Rect& roi) const
+OCRer::Result OCRer::predict_only_rec(const cv::Mat& image_roi) const
 {
     if (!recer_) {
         LogError << "recer_ is null";
         return {};
     }
-    auto image_roi = image_with_roi(roi);
 
     std::string rec_text;
     float rec_score = 0;
 
     bool ret = recer_->Predict(image_roi, &rec_text, &rec_score);
     if (!ret) {
-        LogWarn << "recer_ return false" << VAR(recer_) << VAR(image_) << VAR(roi) << VAR(image_roi);
-        draw_result(roi, {});
+        LogWarn << "recer_ return false" << VAR(recer_) << VAR(image_) << VAR(image_roi);
         return {};
     }
 
     auto text = to_u16(rec_text);
-    Result result { .text = std::move(text), .box = roi, .score = rec_score };
-    draw_result(roi, { result });
+    Result result { .text = std::move(text), .box = { 0, 0, image_roi.cols, image_roi.rows }, .score = rec_score };
 
     return result;
 }
