@@ -23,7 +23,7 @@ std::optional<Recognizer::Result> Recognizer::recognize(const cv::Mat& image, co
     using namespace MAA_VISION_NS;
 
     if (!status()) {
-        LogError << "Status not binded";
+        LogError << "Status is null";
         return std::nullopt;
     }
 
@@ -181,7 +181,7 @@ std::optional<Recognizer::Result> Recognizer::ocr(const cv::Mat& image, const MA
     using namespace MAA_VISION_NS;
 
     if (!resource() || !status()) {
-        LogError << "Resource not binded";
+        LogError << "Resource not binded or status is null" << VAR(resource()) << VAR(status());
         return std::nullopt;
     }
 
