@@ -57,6 +57,7 @@ OCRer::ResultsVec OCRer::predict(const cv::Rect& roi) const
 
     ResultsVec results;
     if (auto results_opt = status_->get_ocr_cache(image_roi)) {
+        LogTrace << "Hit OCR cache" << VAR(roi);
         results = std::any_cast<ResultsVec>(*std::move(results_opt));
     }
     else {
