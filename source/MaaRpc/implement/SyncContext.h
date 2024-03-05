@@ -3,7 +3,7 @@
 #include "AtomicMap.h"
 #include "Buffer.h"
 #include "MaaFramework/MaaDef.h"
-#include "generated/sync.context.pb.h"
+#include "generated/sync.context.grpc.pb.h"
 
 MAA_RPC_NS_BEGIN
 

@@ -3,7 +3,7 @@
 #include "Conf/Conf.h"
 
 #include "MaaToolkit/Device/MaaToolkitDevice.h"
-#include "generated/device.pb.h"
+#include "generated/device.grpc.pb.h"
 
 MAA_RPC_NS_BEGIN
 

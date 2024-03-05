@@ -30,8 +30,8 @@ set(MAA_PUBLIC_INC ${CMAKE_SOURCE_DIR}/include)
 set(MAA_PRIVATE_INC ${CMAKE_SOURCE_DIR}/source/include)
 
 if(USE_MAADEPS)
-    set(MAA_DEPS_DIR ${PROJECT_SOURCE_DIR}/3rdparty/MaaDeps)
-    include(${MAA_DEPS_DIR}/maadeps.cmake)
+    set(MAADEPS_DIR ${PROJECT_SOURCE_DIR}/3rdparty/MaaDeps)
+    include(${MAADEPS_DIR}/maadeps.cmake)
 endif()
 
 # Basic compile and link configuration
