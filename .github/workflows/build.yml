@@ -275,8 +275,81 @@ jobs:
           name: MAA-macos-${{ matrix.arch }}
           path: "install"
 
+  android:
+    needs: meta
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        include:
+          - os: ubuntu
+            arch: arm64-android
+            arch_name: arm64
+            abi: arm64-v8a
+          - os: ubuntu
+            arch: arm-android
+            arch_name: arm
+            abi: armeabi-v7a
+      fail-fast: false
+
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          submodules: true
+
+      - name: Install Packages
+        run: |
+          sudo apt-get update -y
+          sudo apt-get install -y ninja-build python3-pyelftools elfutils patchelf nasm
+
+      - uses: nttld/setup-ndk@v1
+        id: setup-ndk
+        with:
+          ndk-version: r26c
+          add-to-path: false
+
+      - name: Setup ccache
+        uses: Chocobo1/setup-ccache-action@v1
+        with:
+          remove_stale_cache: false
+
+      - name: Bootstrap MaaDeps
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          python3 tools/maadeps-download.py ${{ matrix.arch }}
+
+      - name: Build MAA
+        run: |
+          cmake --preset 'NinjaMulti' \
+            -DCMAKE_TOOLCHAIN_FILE=${{ steps.setup-ndk.outputs.ndk-path}}/build/cmake/android.toolchain.cmake \
+            -DANDROID_ABI=${{ matrix.abi }} \
+            -DANDROID_PLATFORM=android-23 \
+            -DMAADEPS_TRIPLET='maa-${{ matrix.arch }}' \
+            -DMAA_HASH_VERSION='${{ needs.meta.outputs.tag }}'
+
+          cmake --build build --preset 'NinjaMulti - Release' -j 16
+
+      - name: Install
+        shell: bash
+        if: always()
+        run: |
+          cmake --install build --prefix install
+
+          cp -r docs install
+          cp README*.md install
+
+          cp -r sample install
+
+          cp -r LICENSE.md install
+
+      - uses: actions/upload-artifact@v3
+        if: always()
+        with:
+          name: MAA-android-${{ matrix.arch_name }}
+          path: "install"
+
   nuget_pack:
-    needs: [meta, windows, ubuntu, macos]
+    needs: [meta, windows, ubuntu, macos, android]
     runs-on: ubuntu-latest
     env:
       NUGET_PACKAGE_ID: Maa.Framework.Runtimes # need ${{ secrets.NuGetAPIKey }}
