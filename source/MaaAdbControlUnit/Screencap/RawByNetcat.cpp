@@ -76,7 +76,8 @@ std::optional<cv::Mat> ScreencapRawByNetcat::screencap()
 
     using namespace std::chrono_literals;
     // netcat 能用的时候一般都很快，但连不上的时候会一直卡着，所以超时设短一点
-    std::string output = ios->read(2s);
+    ios->expires_after(1s);
+    std::string output = ios->read(1s);
     ios->release();
 
     auto duration = duration_since(start_time);

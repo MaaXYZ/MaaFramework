@@ -98,6 +98,11 @@ bool SockIOStream::is_open() const
     return !ios_.eof();
 }
 
+void SockIOStream::expires_after(duration_t timeout)
+{
+    ios_.expires_after(timeout);
+}
+
 std::string SockIOStream::read_once(size_t max_count)
 {
     constexpr size_t kBufferSize = 128 * 1024;
