@@ -1,12 +1,12 @@
 file(GLOB_RECURSE maa_toolkit_src *.h *.hpp *.cpp)
-file(GLOB_RECURSE maa_toolkit_header ../../include/MaaToolkit/*)
+file(GLOB_RECURSE maa_toolkit_header ${MAA_PUBLIC_INC}/MaaToolkit/*)
 
 add_library(MaaToolkit SHARED ${maa_toolkit_src} ${maa_toolkit_header})
 
 target_include_directories(
     MaaToolkit
-    PUBLIC $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/../../include> $<INSTALL_INTERFACE:include>
-    PRIVATE . ../include ../../include)
+    PUBLIC $<BUILD_INTERFACE:${MAA_PUBLIC_INC}> $<INSTALL_INTERFACE:include>
+    PRIVATE ${CMAKE_CURRENT_SOURCE_DIR} ${MAA_PRIVATE_INC} ${MAA_PUBLIC_INC})
 
 target_compile_definitions(MaaToolkit PRIVATE MAA_TOOLKIT_EXPORTS)
 
@@ -23,6 +23,6 @@ install(
     RUNTIME DESTINATION bin
     LIBRARY DESTINATION bin
     ARCHIVE DESTINATION lib)
-install(DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/../../include/MaaToolkit" DESTINATION "include")
+install(DIRECTORY "${MAA_PUBLIC_INC}/MaaToolkit" DESTINATION "include")
 
 source_group(TREE ${CMAKE_CURRENT_SOURCE_DIR} FILES ${maa_toolkit_src})

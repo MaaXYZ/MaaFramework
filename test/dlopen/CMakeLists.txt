@@ -8,7 +8,7 @@ file(
 add_executable(DlopenTesting ${dlopen_testing_src})
 
 target_include_directories(DlopenTesting 
-    PRIVATE ${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_CURRENT_SOURCE_DIR}/../../source/include ${CMAKE_CURRENT_SOURCE_DIR}/../../include)
+    PRIVATE ${CMAKE_CURRENT_SOURCE_DIR} ${MAA_PUBLIC_INC} ${MAA_PRIVATE_INC})
 
 target_link_libraries(DlopenTesting LibraryHolder)
 
