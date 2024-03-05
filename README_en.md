@@ -44,22 +44,22 @@ It offers low-code simplicity while maintaining high extensibility. The framewor
 
 ## Best Practices
 
-- [M9A](https://github.com/MaaXYZ/M9A) 1999 Assistant  
+- [M9A](https://github.com/MaaXYZ/M9A) 1999 Assistant  ![](https://img.shields.io/badge/Python-3776AB?logo=python&logoColor=white)  
   The 1999 Assistant, based on a brand new architecture. Image technology + simulation control, freeing your hands! Powered by MaaFramework.
 
 - [MAAIP](https://github.com/Arcelibs/MAAIP) idolypride Automation Program Based on MAA Framework Technology  
   Created by the hottest open-source package on Github, lk99, using MaaFramework.
 
-- [MAABH3](https://github.com/MaaXYZ/MAABH3) Honkai Impact 3 Assistant  
+- [MAABH3](https://github.com/MaaXYZ/MAABH3) Honkai Impact 3 Assistant  ![](https://img.shields.io/badge/C%2B%2B-00599C?logo=c%2B%2B&logoColor=white)  
   A one-click tool for the daily tasks of Honkai Impact, based on a brand new architecture. Image technology + simulation control, freeing your hands! Powered by MaaFramework.
 
-- [MAALimbusCompany](https://github.com/hxdnshx/MAALimbusCompany) Limbus Company Assistant  
+- [MAALimbusCompany](https://github.com/hxdnshx/MAALimbusCompany) Limbus Company Assistant  ![](https://img.shields.io/badge/Python-3776AB?logo=python&logoColor=white)  
   Based on a brand new architecture. Image technology + simulation control, freeing your hands! Powered by MaaFramework.
 
-- [MBA](https://github.com/MaaXYZ/MBA) BA Assistant  
+- [MBA](https://github.com/MaaXYZ/MBA) BA Assistant  ![](https://img.shields.io/badge/C%23-239120?logo=csharp&logoColor=white)  
   A BA Assistant based on MAA's new architecture. Image technology + simulation control, no more clicking! Powered by MaaFramework.
 
-- [MAS](https://github.com/MaaXYZ/MaaAssistantSkland) Skland Assistant  
+- [MAS](https://github.com/MaaXYZ/MaaAssistantSkland) Skland Assistant  ![](https://img.shields.io/badge/C%2B%2B-00599C?logo=c%2B%2B&logoColor=white)  
   Based on a brand new architecture. Image technology + simulation control, freeing your hands! Powered by MaaFramework.
 
 ## Eco-Building
