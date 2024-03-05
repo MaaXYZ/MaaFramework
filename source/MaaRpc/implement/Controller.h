@@ -2,7 +2,7 @@
 
 #include <semaphore>
 
-#include "generated/controller.grpc.pb.h"
+#include "generated/controller.pb.h"
 
 #include "AtomicMap.h"
 #include "Buffer.h"

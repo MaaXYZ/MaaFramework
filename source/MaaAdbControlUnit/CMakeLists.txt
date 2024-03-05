@@ -1,10 +1,10 @@
 file(GLOB_RECURSE maa_adb_control_unit_src *.h *.hpp *.cpp)
-file(GLOB_RECURSE maa_adb_control_unit_header ../include/ControlUnit/AdbControlUnitAPI.h ../include/ControlUnit/ControlUnitAPI.h)
+file(GLOB_RECURSE maa_adb_control_unit_header ${MAA_PRIVATE_INC}/ControlUnit/AdbControlUnitAPI.h ${MAA_PRIVATE_INC}/ControlUnit/ControlUnitAPI.h)
 
 add_library(MaaAdbControlUnit SHARED ${maa_adb_control_unit_src} ${maa_adb_control_unit_header})
 
-target_include_directories(MaaAdbControlUnit PRIVATE ${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_CURRENT_SOURCE_DIR}/../include
-                                                  ${CMAKE_CURRENT_SOURCE_DIR}/../../include)
+target_include_directories(MaaAdbControlUnit
+    PRIVATE ${CMAKE_CURRENT_SOURCE_DIR} ${MAA_PRIVATE_INC} ${MAA_PUBLIC_INC})
 
 target_link_libraries(MaaAdbControlUnit MaaUtils HeaderOnlyLibraries ${OpenCV_LIBS} ZLIB::ZLIB)
 if(WIN32)

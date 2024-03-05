@@ -7,7 +7,7 @@
 #include "Resource.h"
 #include "SyncContext.h"
 #include "Utility.h"
-#include "generated/instance.grpc.pb.h"
+#include "generated/instance.pb.h"
 
 MAA_RPC_NS_BEGIN
 

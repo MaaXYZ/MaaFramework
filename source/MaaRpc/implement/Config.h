@@ -3,7 +3,7 @@
 #include "Conf/Conf.h"
 
 #include "MaaToolkit/MaaToolkitAPI.h"
-#include "generated/config.grpc.pb.h"
+#include "generated/config.pb.h"
 
 MAA_RPC_NS_BEGIN
 

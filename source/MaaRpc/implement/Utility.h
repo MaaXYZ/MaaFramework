@@ -3,7 +3,7 @@
 #include <memory>
 #include <semaphore>
 
-#include "generated/utility.grpc.pb.h"
+#include "generated/utility.pb.h"
 
 #include "AtomicMap.h"
 #include "MaaFramework/MaaDef.h"

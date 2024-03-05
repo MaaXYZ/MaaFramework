@@ -2,7 +2,8 @@
 
 #include "AtomicMap.h"
 #include "MaaFramework/MaaDef.h"
-#include "generated/buffer.grpc.pb.h"
+#include "generated/buffer.pb.h"
+#include "generated/buffer.pb.h"
 
 MAA_RPC_NS_BEGIN
 

@@ -1,19 +1,16 @@
 generate_thrift_lib(
     ThriftControlUnitThrift
-    ${PROJECT_SOURCE_DIR}/include/MaaFramework/Instance/ThriftController.thrift
+    ${MAA_PUBLIC_INC}/MaaFramework/Instance/ThriftController.thrift
     ${CMAKE_CURRENT_BINARY_DIR}/generated
     maa_thrift_controlunit_thrift_src)
 
 file(GLOB_RECURSE maa_thrift_control_unit_src *.h *.hpp *.cpp)
-file(GLOB_RECURSE maa_thrift_control_unit_header ../include/ControlUnit/ThriftControlUnitAPI.h ../include/ControlUnit/ControlUnitAPI.h)
+file(GLOB_RECURSE maa_thrift_control_unit_header ${MAA_PRIVATE_INC}/ControlUnit/ThriftControlUnitAPI.h ${MAA_PRIVATE_INC}/ControlUnit/ControlUnitAPI.h)
 
 add_library(MaaThriftControlUnit SHARED ${maa_thrift_control_unit_src} ${maa_thrift_control_unit_header})
 
-target_include_directories(MaaThriftControlUnit PRIVATE
-    ${CMAKE_CURRENT_SOURCE_DIR}
-    ${CMAKE_CURRENT_SOURCE_DIR}/../include
-    ${CMAKE_CURRENT_SOURCE_DIR}/../../include
-    ${CMAKE_CURRENT_BINARY_DIR})
+target_include_directories(MaaThriftControlUnit 
+    PRIVATE ${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_CURRENT_BINARY_DIR} ${MAA_PRIVATE_INC} ${MAA_PUBLIC_INC})
 
 target_link_libraries(MaaThriftControlUnit MaaUtils ThriftControlUnitThrift HeaderOnlyLibraries ${OpenCV_LIBS})
 
