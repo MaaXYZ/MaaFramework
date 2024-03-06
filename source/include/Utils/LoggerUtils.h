@@ -133,7 +133,7 @@ private:
 template <typename T>
 concept string_convertible = requires { std::declval<StringConverter>()(std::declval<T>()); };
 
-MAA_UTILS_API class LogStream
+class MAA_UTILS_API LogStream
 {
 public:
     template <typename... args_t>

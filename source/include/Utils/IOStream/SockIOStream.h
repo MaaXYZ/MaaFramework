@@ -8,9 +8,9 @@
 
 MAA_NS_BEGIN
 
-MAA_UTILS_API class SockIOStream;
+class MAA_UTILS_API SockIOStream;
 
-MAA_UTILS_API class ServerSockIOFactory : public NonCopyButMovable
+class MAA_UTILS_API ServerSockIOFactory : public NonCopyButMovable
 {
 public:
     ServerSockIOFactory(const std::string& address, uint16_t port);
@@ -26,7 +26,7 @@ private:
     boost::asio::ip::tcp::acceptor server_acceptor_;
 };
 
-MAA_UTILS_API class ClientSockIOFactory : public NonCopyButMovable
+class MAA_UTILS_API ClientSockIOFactory : public NonCopyButMovable
 {
 public:
     ClientSockIOFactory(const std::string& address, unsigned short port);
@@ -40,7 +40,7 @@ private:
     boost::asio::ip::tcp::endpoint endpoint_;
 };
 
-MAA_UTILS_API class SockIOStream : public IOStream
+class MAA_UTILS_API SockIOStream : public IOStream
 {
 public:
     explicit SockIOStream(boost::asio::ip::tcp::iostream&& ios);

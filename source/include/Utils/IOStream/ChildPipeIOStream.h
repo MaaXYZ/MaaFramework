@@ -7,7 +7,7 @@
 
 MAA_NS_BEGIN
 
-MAA_UTILS_API class ChildPipeIOStream : public IOStream
+class MAA_UTILS_API ChildPipeIOStream : public IOStream
 {
 public:
     ChildPipeIOStream(const std::filesystem::path& exec, const std::vector<std::string>& args);

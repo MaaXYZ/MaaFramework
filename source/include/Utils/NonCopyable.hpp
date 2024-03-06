@@ -5,7 +5,7 @@
 
 MAA_NS_BEGIN
 
-MAA_UTILS_API class NonCopyButMovable
+class MAA_UTILS_API NonCopyButMovable
 {
 public:
     NonCopyButMovable(const NonCopyButMovable&) = delete;
@@ -18,7 +18,7 @@ protected:
     NonCopyButMovable() = default;
 };
 
-MAA_UTILS_API class NonCopyable
+class MAA_UTILS_API NonCopyable
 {
 public:
     NonCopyable(const NonCopyable&) = delete;

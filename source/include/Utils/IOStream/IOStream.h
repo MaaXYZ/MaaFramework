@@ -10,7 +10,7 @@
 
 MAA_NS_BEGIN
 
-MAA_UTILS_API class IOStream
+class MAA_UTILS_API IOStream
 {
 public:
     using duration_t = std::chrono::milliseconds;
