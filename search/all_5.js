@@ -37,7 +37,7 @@ var searchData=
   ['maaadbcontrollertype_5ftouch_5fminitouch_34',['MaaAdbControllerType_Touch_MiniTouch',['../MaaDef_8h.html#a21de9ae05eae97a700f9f834fe506f47a38213a5995142a9ca8f057e1ed985bd1',1,'MaaDef.h']]],
   ['maaadbcontrollertypeenum_35',['MaaAdbControllerTypeEnum',['../MaaDef_8h.html#a21de9ae05eae97a700f9f834fe506f47',1,'MaaDef.h']]],
   ['maaapi_2eh_36',['MaaAPI.h',['../MaaAPI_8h.html',1,'']]],
-  ['maaapicallback_37',['MaaAPICallback',['../MaaDef_8h.html#a48aaee8a77c75875288cf3206d992958',1,'MaaDef.h']]],
+  ['maaapicallback_37',['MaaAPICallback',['../MaaDef_8h.html#a147654dcdaa3e645e387e6e3a4338766',1,'MaaDef.h']]],
   ['maabindcontroller_38',['MaaBindController',['../MaaInstance_8h.html#a3bf20c3e6745fd28bfdf70f3e71e0e9f',1,'MaaInstance.h']]],
   ['maabindresource_39',['MaaBindResource',['../MaaInstance_8h.html#ae58b0b097d677e5c7a37460473b46971',1,'MaaInstance.h']]],
   ['maabool_40',['MaaBool',['../MaaDef_8h.html#a2f7289f2a8e07f48c6261b52a120cdf6',1,'MaaDef.h']]],
