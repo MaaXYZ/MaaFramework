@@ -64,7 +64,13 @@ private:
     LogStream stream(level lv, args_t&&... args)
     {
         bool std_out = static_cast<int>(lv) <= stdout_level_;
-        return LogStream(trace_mutex_, ofs_, lv, std_out, dumps_dir_, std::forward<args_t>(args)...);
+        return LogStream(
+            trace_mutex_,
+            ofs_,
+            lv,
+            std_out,
+            dumps_dir_,
+            std::forward<args_t>(args)...);
     }
 
 private:
@@ -119,7 +125,9 @@ public:
     ~LogScopeLeaveHelper()
     {
         std::apply(
-            [](auto&&... args) { return Logger::get_instance().trace(std::forward<decltype(args)>(args)...); },
+            [](auto&&... args) {
+                return Logger::get_instance().trace(std::forward<decltype(args)>(args)...);
+            },
             std::move(args_))
             << "| leave," << duration_since(start_);
     }

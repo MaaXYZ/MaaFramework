@@ -10,7 +10,11 @@ bool ScreencapEncode::parse(const json::value& config)
         "{ADB}", "-s", "{ADB_SERIAL}", "exec-out", "screencap -p",
     };
 
-    return parse_argv("ScreencapEncode", config, kDefaultScreencapEncodeArgv, screencap_encode_argv_);
+    return parse_argv(
+        "ScreencapEncode",
+        config,
+        kDefaultScreencapEncodeArgv,
+        screencap_encode_argv_);
 }
 
 bool ScreencapEncode::init(int swidth, int sheight)
@@ -31,7 +35,8 @@ std::optional<cv::Mat> ScreencapEncode::screencap()
     }
 
     return screencap_helper_.process_data(
-        *output_opt, std::bind(&ScreencapHelper::decode_png, &screencap_helper_, std::placeholders::_1));
+        *output_opt,
+        std::bind(&ScreencapHelper::decode_png, &screencap_helper_, std::placeholders::_1));
 }
 
 MAA_CTRL_UNIT_NS_END

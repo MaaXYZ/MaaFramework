@@ -45,7 +45,8 @@ private:
         InternalError,
     };
 
-    struct HitResult {
+    struct HitResult
+    {
         Recognizer::Result rec_result;
         MAA_RES_NS::TaskData task_data;
     };
@@ -60,7 +61,10 @@ private:
 
 private:
     MAA_RES_NS::ResourceMgr* resource() { return inst_ ? inst_->inter_resource() : nullptr; }
-    MAA_CTRL_NS::ControllerAgent* controller() { return inst_ ? inst_->inter_controller() : nullptr; }
+    MAA_CTRL_NS::ControllerAgent* controller()
+    {
+        return inst_ ? inst_->inter_controller() : nullptr;
+    }
     InstanceStatus* status() { return inst_ ? inst_->inter_status() : nullptr; }
     void notify(std::string_view msg, json::value detail = json::value())
     {

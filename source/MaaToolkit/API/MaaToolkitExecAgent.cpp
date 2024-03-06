@@ -35,7 +35,8 @@ MaaBool RegisterExecutor(
     MaaStringView exec_path,
     MaaStringView exec_param_json)
 {
-    LogFunc << VAR(type) << VAR_VOIDP(handle) << VAR(name) << VAR(exec_path) << VAR(exec_param_json);
+    LogFunc << VAR(type) << VAR_VOIDP(handle) << VAR(name) << VAR(exec_path)
+            << VAR(exec_param_json);
 
     if (!handle) {
         LogError << "handle is null";
@@ -61,9 +62,11 @@ MaaBool RegisterExecutor(
 
     switch (type) {
     case ExecutorType::Recognizer:
-        return RecognizerExecAgent::get_instance().register_executor(handle, name, std::move(path), std::move(params));
+        return RecognizerExecAgent::get_instance()
+            .register_executor(handle, name, std::move(path), std::move(params));
     case ExecutorType::Action:
-        return ActionExecAgent::get_instance().register_executor(handle, name, std::move(path), std::move(params));
+        return ActionExecAgent::get_instance()
+            .register_executor(handle, name, std::move(path), std::move(params));
     }
 
     return false;
@@ -100,10 +103,16 @@ MaaBool MaaToolkitRegisterCustomRecognizerExecutor(
     MaaStringView recognizer_exec_param_json)
 {
     return RegisterExecutor(
-        ExecutorType::Recognizer, handle, recognizer_name, recognizer_exec_path, recognizer_exec_param_json);
+        ExecutorType::Recognizer,
+        handle,
+        recognizer_name,
+        recognizer_exec_path,
+        recognizer_exec_param_json);
 }
 
-MaaBool MaaToolkitUnregisterCustomRecognizerExecutor(MaaInstanceHandle handle, MaaStringView recognizer_name)
+MaaBool MaaToolkitUnregisterCustomRecognizerExecutor(
+    MaaInstanceHandle handle,
+    MaaStringView recognizer_name)
 {
     return UnregisterExecutor(ExecutorType::Recognizer, handle, recognizer_name);
 }
@@ -114,10 +123,16 @@ MaaBool MaaToolkitRegisterCustomActionExecutor(
     MaaStringView action_exec_path,
     MaaStringView action_exec_param_json)
 {
-    return RegisterExecutor(ExecutorType::Action, handle, action_name, action_exec_path, action_exec_param_json);
+    return RegisterExecutor(
+        ExecutorType::Action,
+        handle,
+        action_name,
+        action_exec_path,
+        action_exec_param_json);
 }
 
-MaaBool MaaToolkitUnregisterCustomActionExecutor(MaaInstanceHandle handle, MaaStringView action_name)
+MaaBool
+    MaaToolkitUnregisterCustomActionExecutor(MaaInstanceHandle handle, MaaStringView action_name)
 {
     return UnregisterExecutor(ExecutorType::Action, handle, action_name);
 }

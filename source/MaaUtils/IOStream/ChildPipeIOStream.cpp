@@ -4,7 +4,9 @@
 
 MAA_NS_BEGIN
 
-ChildPipeIOStream::ChildPipeIOStream(const std::filesystem::path& exec, const std::vector<std::string>& args)
+ChildPipeIOStream::ChildPipeIOStream(
+    const std::filesystem::path& exec,
+    const std::vector<std::string>& args)
     : child_(
         exec,
         args,

@@ -27,8 +27,8 @@ public:
     bool is_first_time_use() const { return first_time_use_; }
 
 private:
-    std::optional<MAA_PROJECT_INTERFACE_NS::RuntimeParam::Task>
-        generate_runtime_task(const MAA_PROJECT_INTERFACE_NS::Configuration::Task& config_task) const;
+    std::optional<MAA_PROJECT_INTERFACE_NS::RuntimeParam::Task> generate_runtime_task(
+        const MAA_PROJECT_INTERFACE_NS::Configuration::Task& config_task) const;
 
     std::filesystem::path project_dir_;
 

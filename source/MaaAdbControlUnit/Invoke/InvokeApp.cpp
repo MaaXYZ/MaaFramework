@@ -32,14 +32,16 @@ bool InvokeApp::parse(const json::value& config)
         "-s",
         "{ADB_SERIAL}",
         "shell",
-        "export LD_LIBRARY_PATH=/data/local/tmp/; \"/data/local/tmp/{BIN_WORKING_FILE}\" {BIN_EXTRA_PARAMS} 2>&1",
+        "export LD_LIBRARY_PATH=/data/local/tmp/; \"/data/local/tmp/{BIN_WORKING_FILE}\" "
+        "{BIN_EXTRA_PARAMS} 2>&1",
     };
     static const json::array kDefaultInvokeAppArgv = {
         "{ADB}",
         "-s",
         "{ADB_SERIAL}",
         "shell",
-        "export CLASSPATH=\"/data/local/tmp/{APP_WORKING_FILE}\"; app_process /data/local/tmp {PACKAGE_NAME}",
+        "export CLASSPATH=\"/data/local/tmp/{APP_WORKING_FILE}\"; app_process /data/local/tmp "
+        "{PACKAGE_NAME}",
     };
     static const json::array kDefaultRemoveFileArgv = {
         "{ADB}", "-s", "{ADB_SERIAL}", "shell", "rm \"/data/local/tmp/{TO_REMOVED_FILE}\"",

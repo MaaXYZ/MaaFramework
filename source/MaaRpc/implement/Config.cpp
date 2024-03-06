@@ -6,8 +6,10 @@ MAA_RPC_NS_BEGIN
 
 using namespace ::grpc;
 
-Status
-    ConfigImpl::init(ServerContext* context, const ::maarpc::EmptyRequest* request, ::maarpc::EmptyResponse* response)
+Status ConfigImpl::init(
+    ServerContext* context,
+    const ::maarpc::EmptyRequest* request,
+    ::maarpc::EmptyResponse* response)
 {
     LogFunc;
     std::ignore = context;
@@ -22,8 +24,10 @@ Status
     }
 }
 
-Status
-    ConfigImpl::uninit(ServerContext* context, const ::maarpc::EmptyRequest* request, ::maarpc::EmptyResponse* response)
+Status ConfigImpl::uninit(
+    ServerContext* context,
+    const ::maarpc::EmptyRequest* request,
+    ::maarpc::EmptyResponse* response)
 {
     LogFunc;
     std::ignore = context;

@@ -27,8 +27,14 @@ public: // from TouchInputAPI
     virtual bool set_wh(int swidth, int sheight, int orientation) override;
 
 protected: // from MtouchHelper
-    virtual std::pair<int, int> screen_to_touch(int x, int y) override { return _screen_to_touch(x, y); }
-    virtual std::pair<int, int> screen_to_touch(double x, double y) override { return _screen_to_touch(x, y); }
+    virtual std::pair<int, int> screen_to_touch(int x, int y) override
+    {
+        return _screen_to_touch(x, y);
+    }
+    virtual std::pair<int, int> screen_to_touch(double x, double y) override
+    {
+        return _screen_to_touch(x, y);
+    }
 
 private:
     template <typename T1, typename T2>

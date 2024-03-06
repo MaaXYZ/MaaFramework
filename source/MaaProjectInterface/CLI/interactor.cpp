@@ -28,7 +28,9 @@ std::vector<int> input_multi_impl(size_t size, std::string_view prompt)
             continue;
         }
 
-        if (!std::ranges::all_of(buffer, [](char c) { return std::isdigit(c) || std::isspace(c); })) {
+        if (!std::ranges::all_of(buffer, [](char c) {
+                return std::isdigit(c) || std::isspace(c);
+            })) {
             fail();
             continue;
         }
@@ -107,7 +109,8 @@ bool Interactor::load(const std::filesystem::path& project_dir)
     }
 
     if (!config_.check_configuration()) {
-        std::cout << "### The interface has changed and incompatible configurations have been deleted. ###\n\n";
+        std::cout << "### The interface has changed and incompatible configurations have been "
+                     "deleted. ###\n\n";
         mpause();
     }
 
@@ -241,7 +244,8 @@ void Interactor::select_controller()
     if (all_controllers.size() != 1) {
         std::cout << "### Select controller ###\n\n";
         for (size_t i = 0; i < all_controllers.size(); ++i) {
-            std::cout << MaaNS::utf8_to_crt(std::format("\t{}. {}\n", i + 1, all_controllers[i].name));
+            std::cout << MaaNS::utf8_to_crt(
+                std::format("\t{}. {}\n", i + 1, all_controllers[i].name));
         }
         std::cout << "\n";
         index = input(all_controllers.size()) - 1;
@@ -303,7 +307,8 @@ void Interactor::select_adb_auto_detect()
         std::string path = MaaToolkitGetDeviceAdbPath(i);
         std::string address = MaaToolkitGetDeviceAdbSerial(i);
 
-        std::cout << MaaNS::utf8_to_crt(std::format("\t{}. {}\n\t\t{}\n\t\t{}\n", i + 1, name, path, address));
+        std::cout << MaaNS::utf8_to_crt(
+            std::format("\t{}. {}\n\t\t{}\n\t\t{}\n", i + 1, name, path, address));
     }
     std::cout << "\n";
 
@@ -345,7 +350,8 @@ void Interactor::select_resource()
     if (all_resources.size() != 1) {
         std::cout << "### Select resource ###\n\n";
         for (size_t i = 0; i < all_resources.size(); ++i) {
-            std::cout << MaaNS::utf8_to_crt(std::format("\t{}. {}\n", i + 1, all_resources[i].name));
+            std::cout << MaaNS::utf8_to_crt(
+                std::format("\t{}. {}\n", i + 1, all_resources[i].name));
         }
         std::cout << "\n";
         index = input(all_resources.size()) - 1;
@@ -388,18 +394,23 @@ void Interactor::add_task()
             const auto& opt = config_.interface_data().option.at(option_name);
 
             if (!opt.default_case.empty()) {
-                config_options.emplace_back(Configuration::Option { option_name, opt.default_case });
+                config_options.emplace_back(
+                    Configuration::Option { option_name, opt.default_case });
                 continue;
             }
-            std::cout << MaaNS::utf8_to_crt(
-                std::format("\n\n## Input option of \"{}\" for \"{}\" ##\n\n", option_name, data_task.name));
+            std::cout << MaaNS::utf8_to_crt(std::format(
+                "\n\n## Input option of \"{}\" for \"{}\" ##\n\n",
+                option_name,
+                data_task.name));
             for (size_t i = 0; i < opt.cases.size(); ++i) {
-                std::cout << MaaNS::utf8_to_crt(std::format("\t{}. {}\n", i + 1, opt.cases[i].name));
+                std::cout << MaaNS::utf8_to_crt(
+                    std::format("\t{}. {}\n", i + 1, opt.cases[i].name));
             }
             std::cout << "\n";
 
             int case_index = input(opt.cases.size()) - 1;
-            config_options.emplace_back(Configuration::Option { option_name, opt.cases[case_index].name });
+            config_options.emplace_back(
+                Configuration::Option { option_name, opt.cases[case_index].name });
         }
 
         config_.configuration().task.emplace_back(
@@ -473,7 +484,8 @@ void Interactor::print_config_tasks(bool with_index) const
         }
 
         for (const auto& [key, value] : task.option) {
-            std::cout << "\t\t- " << MaaNS::utf8_to_crt(key) << ": " << MaaNS::utf8_to_crt(value) << "\n";
+            std::cout << "\t\t- " << MaaNS::utf8_to_crt(key) << ": " << MaaNS::utf8_to_crt(value)
+                      << "\n";
         }
     }
     std::cout << "\n";
@@ -486,7 +498,10 @@ void Interactor::mpause() const
     std::cin.get();
 }
 
-void Interactor::on_maafw_notify(MaaStringView msg, MaaStringView details_json, MaaTransparentArg callback_arg)
+void Interactor::on_maafw_notify(
+    MaaStringView msg,
+    MaaStringView details_json,
+    MaaTransparentArg callback_arg)
 {
     Interactor* pthis = static_cast<Interactor*>(callback_arg);
     std::ignore = pthis;

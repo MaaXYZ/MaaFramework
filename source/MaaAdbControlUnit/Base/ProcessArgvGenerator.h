@@ -15,7 +15,8 @@ class ProcessArgvGenerator
 public:
     using Replacement = std::unordered_map<std::string, std::string>;
 
-    struct ProcessArgv {
+    struct ProcessArgv
+    {
         std::filesystem::path exec;
         std::vector<std::string> args;
     };

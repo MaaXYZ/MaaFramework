@@ -122,7 +122,8 @@ bool InstanceStatus::cv_mat_equal(const cv::Mat& lhs, const cv::Mat& rhs)
     // Get a matrix with non-zero values at points where the
     // two matrices have different values
     cv::Mat diff = lhs != rhs;
-    // diff is boolean matrix so all elements are non-negative. Equal if all elements in diff are zero.
+    // diff is boolean matrix so all elements are non-negative. Equal if all elements in diff are
+    // zero.
     bool eq2 = cv::sum(diff) == cv::Scalar(0, 0, 0, 0);
     return eq2;
 }

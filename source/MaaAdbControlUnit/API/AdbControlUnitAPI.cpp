@@ -36,8 +36,8 @@ MaaControlUnitHandle MaaAdbControlUnitCreate(
 {
     using namespace MAA_CTRL_UNIT_NS;
 
-    LogFunc << VAR(adb_path) << VAR(adb_serial) << VAR(type) << VAR(config) << VAR(agent_path) << VAR_VOIDP(callback)
-            << VAR_VOIDP(callback_arg);
+    LogFunc << VAR(adb_path) << VAR(adb_serial) << VAR(type) << VAR(config) << VAR(agent_path)
+            << VAR_VOIDP(callback) << VAR_VOIDP(callback_arg);
 
     std::shared_ptr<TouchInputBase> touch_unit = nullptr;
     std::shared_ptr<KeyInputBase> key_unit = nullptr;
@@ -181,7 +181,11 @@ MaaControlUnitHandle MaaAdbControlUnitCreate(
         break;
     }
 
-    auto unit_mgr = std::make_unique<ControlUnitMgr>(MAA_NS::path(adb_path), adb_serial, callback, callback_arg);
+    auto unit_mgr = std::make_unique<ControlUnitMgr>(
+        MAA_NS::path(adb_path),
+        adb_serial,
+        callback,
+        callback_arg);
 
     unit_mgr->set_touch_input_obj(touch_unit);
     unit_mgr->set_key_input_obj(key_unit);

@@ -24,7 +24,8 @@ std::pair<TemplateMatcher::ResultsVec, size_t> TemplateMatcher::analyze() const
     for (size_t i = 0; i != templates_.size(); ++i) {
         const auto& image_ptr = templates_.at(i);
         if (!image_ptr) {
-            LogWarn << name_ << "template is empty" << VAR(param_.template_paths.at(i)) << VAR(image_ptr);
+            LogWarn << name_ << "template is empty" << VAR(param_.template_paths.at(i))
+                    << VAR(image_ptr);
             continue;
         }
 
@@ -44,7 +45,9 @@ std::pair<TemplateMatcher::ResultsVec, size_t> TemplateMatcher::analyze() const
         LogTrace << name_ << "Filter:" << VAR(results) << VAR(path) << VAR(threshold) << VAR(cost);
 
         all_results.insert(
-            all_results.end(), std::make_move_iterator(results.begin()), std::make_move_iterator(results.end()));
+            all_results.end(),
+            std::make_move_iterator(results.begin()),
+            std::make_move_iterator(results.end()));
     }
 
     sort(all_results);
@@ -67,7 +70,10 @@ TemplateMatcher::ResultsVec TemplateMatcher::foreach_rois(const cv::Mat& templ) 
     ResultsVec results;
     for (const cv::Rect& roi : param_.roi) {
         ResultsVec res = match(roi, templ);
-        results.insert(results.end(), std::make_move_iterator(res.begin()), std::make_move_iterator(res.end()));
+        results.insert(
+            results.end(),
+            std::make_move_iterator(res.begin()),
+            std::make_move_iterator(res.end()));
     }
 
     return results;
@@ -120,7 +126,10 @@ TemplateMatcher::ResultsVec TemplateMatcher::match(const cv::Rect& roi, const cv
     return nms_results;
 }
 
-void TemplateMatcher::draw_result(const cv::Rect& roi, const cv::Mat& templ, const ResultsVec& results) const
+void TemplateMatcher::draw_result(
+    const cv::Rect& roi,
+    const cv::Mat& templ,
+    const ResultsVec& results) const
 {
     if (!debug_draw_) {
         return;
@@ -134,12 +143,33 @@ void TemplateMatcher::draw_result(const cv::Rect& roi, const cv::Mat& templ, con
         cv::rectangle(image_draw, res.box, color, 1);
 
         std::string flag = std::format(
-            "{}: {:.3f}, [{}, {}, {}, {}]", i, res.score, res.box.x, res.box.y, res.box.width, res.box.height);
-        cv::putText(image_draw, flag, cv::Point(res.box.x, res.box.y - 5), cv::FONT_HERSHEY_PLAIN, 1.2, color, 1);
+            "{}: {:.3f}, [{}, {}, {}, {}]",
+            i,
+            res.score,
+            res.box.x,
+            res.box.y,
+            res.box.width,
+            res.box.height);
+        cv::putText(
+            image_draw,
+            flag,
+            cv::Point(res.box.x, res.box.y - 5),
+            cv::FONT_HERSHEY_PLAIN,
+            1.2,
+            color,
+            1);
     }
 
     int raw_width = image_.cols;
-    cv::copyMakeBorder(image_draw, image_draw, 0, 0, 0, templ.cols, cv::BORDER_CONSTANT, cv::Scalar(0, 0, 0));
+    cv::copyMakeBorder(
+        image_draw,
+        image_draw,
+        0,
+        0,
+        0,
+        templ.cols,
+        cv::BORDER_CONSTANT,
+        cv::Scalar(0, 0, 0));
     cv::Mat draw_templ_roi = image_draw(cv::Rect(raw_width, 0, templ.cols, templ.rows));
     templ.copyTo(draw_templ_roi);
 

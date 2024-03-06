@@ -112,7 +112,8 @@ PipelineTask::RunningResult PipelineTask::find_first_and_run(
     return run_ret;
 }
 
-std::optional<PipelineTask::HitResult> PipelineTask::find_first(const std::vector<std::string>& list)
+std::optional<PipelineTask::HitResult>
+    PipelineTask::find_first(const std::vector<std::string>& list)
 {
     if (!controller()) {
         LogError << "Controller not binded";

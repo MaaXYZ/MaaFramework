@@ -8,7 +8,8 @@
 #include "Conf/Conf.h"
 #include "MaaToolkit/MaaToolkitDef.h"
 
-struct Device {
+struct Device
+{
     std::string name;
     std::string adb_path;
     std::string adb_serial;
@@ -51,7 +52,8 @@ inline std::ostream& operator<<(std::ostream& os, const Device& device)
 #undef VAR_TMP
 }
 
-struct MaaToolkitDeviceMgrAPI {
+struct MaaToolkitDeviceMgrAPI
+{
     virtual ~MaaToolkitDeviceMgrAPI() = default;
 
     virtual bool post_find_device() = 0;

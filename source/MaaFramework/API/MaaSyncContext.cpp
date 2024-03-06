@@ -4,7 +4,10 @@
 #include "Buffer/StringBuffer.hpp"
 #include "Utils/Logger.h"
 
-MaaBool MaaSyncContextRunTask(MaaSyncContextHandle sync_context, MaaStringView task_name, MaaStringView param)
+MaaBool MaaSyncContextRunTask(
+    MaaSyncContextHandle sync_context,
+    MaaStringView task_name,
+    MaaStringView param)
 {
     LogFunc << VAR_VOIDP(sync_context) << VAR(task_name) << VAR(param);
 
@@ -24,8 +27,8 @@ MaaBool MaaSyncContextRunRecognizer(
     MaaRectHandle out_box,
     MaaStringBufferHandle out_detail)
 {
-    LogFunc << VAR_VOIDP(sync_context) << VAR_VOIDP(image) << VAR(task_name) << VAR(task_param) << VAR(out_box)
-            << VAR(out_detail);
+    LogFunc << VAR_VOIDP(sync_context) << VAR_VOIDP(image) << VAR(task_name) << VAR(task_param)
+            << VAR(out_box) << VAR(out_detail);
 
     if (!sync_context || !image) {
         LogError << "handle is null";
@@ -57,7 +60,8 @@ MaaBool MaaSyncContextRunAction(
     MaaRectHandle cur_box,
     MaaStringView cur_rec_detail)
 {
-    LogFunc << VAR_VOIDP(sync_context) << VAR(task_name) << VAR(task_param) << VAR(cur_box) << VAR(cur_rec_detail);
+    LogFunc << VAR_VOIDP(sync_context) << VAR(task_name) << VAR(task_param) << VAR(cur_box)
+            << VAR(cur_rec_detail);
 
     if (!sync_context) {
         LogError << "handle is null";
@@ -89,7 +93,12 @@ MaaBool MaaSyncContextClick(MaaSyncContextHandle sync_context, int32_t x, int32_
 }
 
 MaaBool MaaSyncContextSwipe(
-    MaaSyncContextHandle sync_context, int32_t x1, int32_t y1, int32_t x2, int32_t y2, int32_t duration)
+    MaaSyncContextHandle sync_context,
+    int32_t x1,
+    int32_t y1,
+    int32_t x2,
+    int32_t y2,
+    int32_t duration)
 {
     LogFunc << VAR_VOIDP(sync_context) << VAR(x1) << VAR(y1) << VAR(x2) << VAR(y2) << VAR(duration);
 
@@ -125,8 +134,12 @@ MaaBool MaaSyncContextInputText(MaaSyncContextHandle sync_context, MaaStringView
     return sync_context->input_text(text);
 }
 
-MaaBool
-    MaaSyncContextTouchDown(MaaSyncContextHandle sync_context, int32_t contact, int32_t x, int32_t y, int32_t pressure)
+MaaBool MaaSyncContextTouchDown(
+    MaaSyncContextHandle sync_context,
+    int32_t contact,
+    int32_t x,
+    int32_t y,
+    int32_t pressure)
 {
     LogFunc << VAR_VOIDP(sync_context) << VAR(contact) << VAR(x) << VAR(y) << VAR(pressure);
 
@@ -138,8 +151,12 @@ MaaBool
     return sync_context->touch_down(contact, x, y, pressure);
 }
 
-MaaBool
-    MaaSyncContextTouchMove(MaaSyncContextHandle sync_context, int32_t contact, int32_t x, int32_t y, int32_t pressure)
+MaaBool MaaSyncContextTouchMove(
+    MaaSyncContextHandle sync_context,
+    int32_t contact,
+    int32_t x,
+    int32_t y,
+    int32_t pressure)
 {
     LogFunc << VAR_VOIDP(sync_context) << VAR(contact) << VAR(x) << VAR(y) << VAR(pressure);
 
@@ -183,7 +200,9 @@ MaaBool MaaSyncContextScreencap(MaaSyncContextHandle sync_context, MaaImageBuffe
 }
 
 MaaBool MaaSyncContextGetTaskResult(
-    MaaSyncContextHandle sync_context, MaaStringView task_name, MaaStringBufferHandle out_task_result)
+    MaaSyncContextHandle sync_context,
+    MaaStringView task_name,
+    MaaStringBufferHandle out_task_result)
 {
     LogFunc << VAR_VOIDP(sync_context) << VAR(task_name) << VAR(out_task_result);
 

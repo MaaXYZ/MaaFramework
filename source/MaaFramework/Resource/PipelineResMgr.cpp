@@ -95,7 +95,9 @@ bool PipelineResMgr::load_all_json(const std::filesystem::path& path)
     return valid;
 }
 
-bool PipelineResMgr::open_and_parse_file(const std::filesystem::path& path, std::set<std::string>& existing_keys)
+bool PipelineResMgr::open_and_parse_file(
+    const std::filesystem::path& path,
+    std::set<std::string>& existing_keys)
 {
     LogFunc << VAR(path);
 
@@ -182,7 +184,8 @@ bool PipelineResMgr::parse_config(
         }
 
         TaskData task_data;
-        const auto& default_task_data = default_value.contains(key) ? default_value.at(key) : TaskData {};
+        const auto& default_task_data =
+            default_value.contains(key) ? default_value.at(key) : TaskData {};
         bool ret = parse_task(key, value, task_data, default_task_data);
         if (!ret) {
             LogError << "parse_task failed" << VAR(key) << VAR(value);
@@ -198,7 +201,11 @@ bool PipelineResMgr::parse_config(
 }
 
 template <typename OutT>
-bool get_and_check_value(const json::value& input, const std::string& key, OutT& output, const OutT& default_val)
+bool get_and_check_value(
+    const json::value& input,
+    const std::string& key,
+    OutT& output,
+    const OutT& default_val)
 {
     auto opt = input.find<OutT>(key);
     if (!opt) {
@@ -216,7 +223,10 @@ bool get_and_check_value(const json::value& input, const std::string& key, OutT&
 
 template <typename OutT>
 bool get_and_check_value_or_array(
-    const json::value& input, const std::string& key, std::vector<OutT>& output, const std::vector<OutT>& default_value)
+    const json::value& input,
+    const std::string& key,
+    std::vector<OutT>& output,
+    const std::vector<OutT>& default_value)
 {
     auto opt = input.find(key);
     if (!opt) {
@@ -246,7 +256,10 @@ bool get_and_check_value_or_array(
 }
 
 bool PipelineResMgr::parse_task(
-    const std::string& name, const json::value& input, TaskData& output, const TaskData& default_value)
+    const std::string& name,
+    const json::value& input,
+    TaskData& output,
+    const TaskData& default_value)
 {
     LogTrace << VAR(name);
 
@@ -268,13 +281,22 @@ bool PipelineResMgr::parse_task(
         return false;
     }
 
-    if (!parse_recognition(input, data.rec_type, data.rec_param, default_value.rec_type, default_value.rec_param)) {
+    if (!parse_recognition(
+            input,
+            data.rec_type,
+            data.rec_param,
+            default_value.rec_type,
+            default_value.rec_param)) {
         LogError << "failed to parse_recognition" << VAR(input);
         return false;
     }
 
     if (!parse_action(
-            input, data.action_type, data.action_param, default_value.action_type, default_value.action_param)) {
+            input,
+            data.action_type,
+            data.action_param,
+            default_value.action_type,
+            default_value.action_param)) {
         LogError << "failed to parse_action" << VAR(input);
         return false;
     }
@@ -291,7 +313,11 @@ bool PipelineResMgr::parse_task(
     }
     data.timeout = std::chrono::milliseconds(timeout);
 
-    if (!get_and_check_value_or_array(input, "timeout_next", data.timeout_next, default_value.timeout_next)) {
+    if (!get_and_check_value_or_array(
+            input,
+            "timeout_next",
+            data.timeout_next,
+            default_value.timeout_next)) {
         LogError << "failed to parse_next timeout_next" << VAR(input);
         return false;
     }
@@ -301,7 +327,11 @@ bool PipelineResMgr::parse_task(
         return false;
     }
 
-    if (!get_and_check_value_or_array(input, "runout_next", data.runout_next, default_value.runout_next)) {
+    if (!get_and_check_value_or_array(
+            input,
+            "runout_next",
+            data.runout_next,
+            default_value.runout_next)) {
         LogError << "failed to parse_next runout_next" << VAR(input);
         return false;
     }
@@ -320,13 +350,20 @@ bool PipelineResMgr::parse_task(
     }
     data.post_delay = std::chrono::milliseconds(post_delay);
 
-    if (!parse_wait_freezes_param(input, "pre_wait_freezes", data.pre_wait_freezes, default_value.pre_wait_freezes)) {
+    if (!parse_wait_freezes_param(
+            input,
+            "pre_wait_freezes",
+            data.pre_wait_freezes,
+            default_value.pre_wait_freezes)) {
         LogError << "failed to pre_wait_freezes" << VAR(input);
         return false;
     }
 
     if (!parse_wait_freezes_param(
-            input, "post_wait_freezes", data.post_wait_freezes, default_value.post_wait_freezes)) {
+            input,
+            "post_wait_freezes",
+            data.post_wait_freezes,
+            default_value.post_wait_freezes)) {
         LogError << "failed to post_wait_freezes" << VAR(input);
         return false;
     }
@@ -354,7 +391,11 @@ bool PipelineResMgr::parse_recognition(
     static const std::string kDefaultRecognitionFlag = "Default";
     std::string rec_type_name;
     if (!get_and_check_value(input, "recognition", rec_type_name, kDefaultRecognitionFlag)
-        && !get_and_check_value(input, "recognizer", rec_type_name, kDefaultRecognitionFlag)) { // for compatibility
+        && !get_and_check_value(
+            input,
+            "recognizer",
+            rec_type_name,
+            kDefaultRecognitionFlag)) { // for compatibility
         LogError << "failed to get_and_check_value recognition" << VAR(input);
         return false;
     }
@@ -383,7 +424,8 @@ bool PipelineResMgr::parse_recognition(
         out_param = DirectHitParam {};
         return true;
         // return parse_direct_hit_param(input, std::get<DirectHitParam>(out_param),
-        //                               same_type ? std::get<DirectHitParam>(default_param) : DirectHitParam {});
+        //                               same_type ? std::get<DirectHitParam>(default_param) :
+        //                               DirectHitParam {});
 
     case Type::TemplateMatch:
         out_param = TemplateMatcherParam {};
@@ -404,19 +446,23 @@ bool PipelineResMgr::parse_recognition(
         return parse_nn_classifier_param(
             input,
             std::get<NeuralNetworkClassifierParam>(out_param),
-            same_type ? std::get<NeuralNetworkClassifierParam>(default_param) : NeuralNetworkClassifierParam {});
+            same_type ? std::get<NeuralNetworkClassifierParam>(default_param)
+                      : NeuralNetworkClassifierParam {});
 
     case Type::NeuralNetworkDetect:
         out_param = NeuralNetworkDetectorParam {};
         return parse_nn_detector_param(
             input,
             std::get<NeuralNetworkDetectorParam>(out_param),
-            same_type ? std::get<NeuralNetworkDetectorParam>(default_param) : NeuralNetworkDetectorParam {});
+            same_type ? std::get<NeuralNetworkDetectorParam>(default_param)
+                      : NeuralNetworkDetectorParam {});
 
     case Type::OCR:
         out_param = OCRerParam {};
         return parse_ocrer_param(
-            input, std::get<OCRerParam>(out_param), same_type ? std::get<OCRerParam>(default_param) : OCRerParam {});
+            input,
+            std::get<OCRerParam>(out_param),
+            same_type ? std::get<OCRerParam>(default_param) : OCRerParam {});
 
     case Type::ColorMatch:
         out_param = ColorMatcherParam {};
@@ -439,7 +485,8 @@ bool PipelineResMgr::parse_recognition(
     return false;
 }
 
-// bool PipelineResMgr::parse_direct_hit_param(const json::value& input, MAA_VISION_NS::DirectHitParam& output,
+// bool PipelineResMgr::parse_direct_hit_param(const json::value& input,
+// MAA_VISION_NS::DirectHitParam& output,
 //                                             const MAA_VISION_NS::DirectHitParam& default_value)
 //{
 //     // if (!parse_roi(input, output.roi, default_value.roi)) {
@@ -476,7 +523,11 @@ bool PipelineResMgr::parse_template_matcher_param(
         return false;
     }
 
-    if (!get_and_check_value_or_array(input, "template", output.template_paths, default_value.template_paths)) {
+    if (!get_and_check_value_or_array(
+            input,
+            "template",
+            output.template_paths,
+            default_value.template_paths)) {
         LogError << "failed to get_and_check_value_or_array templates" << VAR(input);
         return false;
     }
@@ -485,14 +536,19 @@ bool PipelineResMgr::parse_template_matcher_param(
         return false;
     }
 
-    if (!get_and_check_value_or_array(input, "threshold", output.thresholds, default_value.thresholds)) {
+    if (!get_and_check_value_or_array(
+            input,
+            "threshold",
+            output.thresholds,
+            default_value.thresholds)) {
         LogError << "failed to get_and_check_value_or_array threshold" << VAR(input);
         return false;
     }
 
     if (output.thresholds.empty()) {
-        output.thresholds =
-            std::vector(output.template_paths.size(), MAA_VISION_NS::TemplateMatcherParam::kDefaultThreshold);
+        output.thresholds = std::vector(
+            output.template_paths.size(),
+            MAA_VISION_NS::TemplateMatcherParam::kDefaultThreshold);
     }
     else if (output.template_paths.size() != output.thresholds.size()) {
         LogError << "templates.size() != thresholds.size()" << VAR(output.template_paths.size())
@@ -542,7 +598,11 @@ bool PipelineResMgr::parse_feature_matcher_param(
         return false;
     }
 
-    if (!get_and_check_value(input, "template", output.template_path, default_value.template_path)) {
+    if (!get_and_check_value(
+            input,
+            "template",
+            output.template_path,
+            default_value.template_path)) {
         LogError << "failed to get_and_check_value template_path" << VAR(input);
         return false;
     }
@@ -559,9 +619,12 @@ bool PipelineResMgr::parse_feature_matcher_param(
         return false;
     }
     const std::unordered_map<std::string, FeatureMatcherParam::Detector> kDetectorMap = {
-        { kDefaultDetectorFlag, default_value.detector },  { "SIFT", FeatureMatcherParam::Detector::SIFT },
-        { "SURF", FeatureMatcherParam::Detector::SURF },   { "ORB", FeatureMatcherParam::Detector::ORB },
-        { "BRISK", FeatureMatcherParam::Detector::BRISK }, { "KAZE", FeatureMatcherParam::Detector::KAZE },
+        { kDefaultDetectorFlag, default_value.detector },
+        { "SIFT", FeatureMatcherParam::Detector::SIFT },
+        { "SURF", FeatureMatcherParam::Detector::SURF },
+        { "ORB", FeatureMatcherParam::Detector::ORB },
+        { "BRISK", FeatureMatcherParam::Detector::BRISK },
+        { "KAZE", FeatureMatcherParam::Detector::KAZE },
         { "AKAZE", FeatureMatcherParam::Detector::AKAZE },
     };
     auto detector_iter = kDetectorMap.find(detector);
@@ -578,12 +641,17 @@ bool PipelineResMgr::parse_feature_matcher_param(
     }
 #endif
 
-    // if (!get_and_check_value(input, "detector_param", output.detector_param, default_value.detector_param)) {
+    // if (!get_and_check_value(input, "detector_param", output.detector_param,
+    // default_value.detector_param)) {
     //     LogError << "failed to get_and_check_value detector_param" << VAR(input);
     //     return false;
     // }
 
-    if (!get_and_check_value(input, "distance_ratio", output.distance_ratio, default_value.distance_ratio)) {
+    if (!get_and_check_value(
+            input,
+            "distance_ratio",
+            output.distance_ratio,
+            default_value.distance_ratio)) {
         LogError << "failed to get_and_check_value distance_ratio" << VAR(input);
         return false;
     }
@@ -597,7 +665,9 @@ bool PipelineResMgr::parse_feature_matcher_param(
 }
 
 bool PipelineResMgr::parse_ocrer_param(
-    const json::value& input, MAA_VISION_NS::OCRerParam& output, const MAA_VISION_NS::OCRerParam& default_value)
+    const json::value& input,
+    MAA_VISION_NS::OCRerParam& output,
+    const MAA_VISION_NS::OCRerParam& default_value)
 {
     if (!parse_roi(input, output.roi, default_value.roi)) {
         LogError << "failed to parse_roi" << VAR(input);
@@ -689,7 +759,8 @@ bool PipelineResMgr::parse_custom_recognition_param(
         return false;
     }
 
-    output.custom_param = input.get("custom_recognition_param", input.get("custom_recognizer_param", json::object()));
+    output.custom_param =
+        input.get("custom_recognition_param", input.get("custom_recognizer_param", json::object()));
 
     return true;
 }
@@ -730,7 +801,8 @@ bool PipelineResMgr::parse_nn_classifier_param(
         return false;
     }
     if (output.labels.size() < output.cls_size) {
-        LogDebug << "labels.size() < cls_size, fill 'Unknown'" << VAR(output.labels.size()) << VAR(output.cls_size);
+        LogDebug << "labels.size() < cls_size, fill 'Unknown'" << VAR(output.labels.size())
+                 << VAR(output.cls_size);
         output.labels.resize(output.cls_size, "Unknown");
     }
 
@@ -784,7 +856,8 @@ bool PipelineResMgr::parse_nn_detector_param(
         return false;
     }
     if (output.labels.size() < output.cls_size) {
-        LogDebug << "labels.size() < cls_size, fill 'Unknown'" << VAR(output.labels.size()) << VAR(output.cls_size);
+        LogDebug << "labels.size() < cls_size, fill 'Unknown'" << VAR(output.labels.size())
+                 << VAR(output.cls_size);
         output.labels.resize(output.cls_size, "Unknown");
     }
 
@@ -798,13 +871,18 @@ bool PipelineResMgr::parse_nn_detector_param(
         return false;
     }
 
-    if (!get_and_check_value_or_array(input, "threshold", output.thresholds, default_value.thresholds)) {
+    if (!get_and_check_value_or_array(
+            input,
+            "threshold",
+            output.thresholds,
+            default_value.thresholds)) {
         LogError << "failed to get_and_check_value_or_array threshold" << VAR(input);
         return false;
     }
     if (output.thresholds.empty()) {
-        output.thresholds =
-            std::vector(output.expected.size(), MAA_VISION_NS::NeuralNetworkDetectorParam::kDefaultThreshold);
+        output.thresholds = std::vector(
+            output.expected.size(),
+            MAA_VISION_NS::NeuralNetworkDetectorParam::kDefaultThreshold);
     }
     else if (output.expected.size() != output.thresholds.size()) {
         LogError << "templates.size() != thresholds.size()" << VAR(output.expected.size())
@@ -936,7 +1014,9 @@ bool PipelineResMgr::parse_color_matcher_param(
 }
 
 bool PipelineResMgr::parse_roi(
-    const json::value& input, std::vector<cv::Rect>& output, const std::vector<cv::Rect>& default_value)
+    const json::value& input,
+    std::vector<cv::Rect>& output,
+    const std::vector<cv::Rect>& default_value)
 {
     auto roi_opt = input.find("roi");
     if (!roi_opt) {
@@ -1065,30 +1145,42 @@ bool PipelineResMgr::parse_action(
     case Type::Click:
         out_param = ClickParam {};
         return parse_click(
-            input, std::get<ClickParam>(out_param), same_type ? std::get<ClickParam>(default_param) : ClickParam {});
+            input,
+            std::get<ClickParam>(out_param),
+            same_type ? std::get<ClickParam>(default_param) : ClickParam {});
     case Type::Swipe:
         out_param = SwipeParam {};
         return parse_swipe(
-            input, std::get<SwipeParam>(out_param), same_type ? std::get<SwipeParam>(default_param) : SwipeParam {});
+            input,
+            std::get<SwipeParam>(out_param),
+            same_type ? std::get<SwipeParam>(default_param) : SwipeParam {});
 
     case Type::Key:
         out_param = KeyParam {};
         return parse_press_key(
-            input, std::get<KeyParam>(out_param), same_type ? std::get<KeyParam>(default_param) : KeyParam {});
+            input,
+            std::get<KeyParam>(out_param),
+            same_type ? std::get<KeyParam>(default_param) : KeyParam {});
     case Type::Text:
         out_param = TextParam {};
         return parse_input_text(
-            input, std::get<TextParam>(out_param), same_type ? std::get<TextParam>(default_param) : TextParam {});
+            input,
+            std::get<TextParam>(out_param),
+            same_type ? std::get<TextParam>(default_param) : TextParam {});
     case Type::StartApp:
     case Type::StopApp:
         out_param = AppParam {};
         return parse_app_info(
-            input, std::get<AppParam>(out_param), same_type ? std::get<AppParam>(default_param) : AppParam {});
+            input,
+            std::get<AppParam>(out_param),
+            same_type ? std::get<AppParam>(default_param) : AppParam {});
 
     case Type::Custom:
         out_param = CustomParam {};
         return parse_custom_action_param(
-            input, std::get<CustomParam>(out_param), same_type ? std::get<CustomParam>(default_param) : CustomParam {});
+            input,
+            std::get<CustomParam>(out_param),
+            same_type ? std::get<CustomParam>(default_param) : CustomParam {});
 
     case Type::StopTask:
         out_param = {};
@@ -1103,7 +1195,9 @@ bool PipelineResMgr::parse_action(
 }
 
 bool PipelineResMgr::parse_click(
-    const json::value& input, Action::ClickParam& output, const Action::ClickParam& default_value)
+    const json::value& input,
+    Action::ClickParam& output,
+    const Action::ClickParam& default_value)
 {
     if (!parse_action_target(input, "target", output.target, default_value.target)) {
         LogError << "failed to parse_action_target" << VAR(input);
@@ -1114,7 +1208,9 @@ bool PipelineResMgr::parse_click(
 }
 
 bool PipelineResMgr::parse_swipe(
-    const json::value& input, Action::SwipeParam& output, const Action::SwipeParam& default_value)
+    const json::value& input,
+    Action::SwipeParam& output,
+    const Action::SwipeParam& default_value)
 {
     if (!parse_action_target(input, "begin", output.begin, default_value.begin)) {
         LogError << "failed to parse_action_target begin" << VAR(input);
@@ -1125,7 +1221,8 @@ bool PipelineResMgr::parse_swipe(
         LogError << "failed to parse_action_target end" << VAR(input);
         return false;
     }
-    if (output.begin.type == Action::Target::Type::Self && output.end.type == Action::Target::Type::Self) {
+    if (output.begin.type == Action::Target::Type::Self
+        && output.end.type == Action::Target::Type::Self) {
         LogError << "not set swipe begin or end";
         return false;
     }
@@ -1139,7 +1236,9 @@ bool PipelineResMgr::parse_swipe(
 }
 
 bool PipelineResMgr::parse_press_key(
-    const json::value& input, Action::KeyParam& output, const Action::KeyParam& default_value)
+    const json::value& input,
+    Action::KeyParam& output,
+    const Action::KeyParam& default_value)
 {
     // TODO: https://github.com/MaaXYZ/MaaFramework/issues/24#issuecomment-1666533842
     if (!get_and_check_value_or_array(input, "key", output.keys, default_value.keys)) {
@@ -1151,7 +1250,9 @@ bool PipelineResMgr::parse_press_key(
 }
 
 bool PipelineResMgr::parse_input_text(
-    const json::value& input, Action::TextParam& output, const Action::TextParam& default_value)
+    const json::value& input,
+    Action::TextParam& output,
+    const Action::TextParam& default_value)
 {
     if (!get_and_check_value(input, "text", output.text, default_value.text)) {
         LogError << "failed to get_and_check_value text" << VAR(input);
@@ -1162,7 +1263,9 @@ bool PipelineResMgr::parse_input_text(
 }
 
 bool PipelineResMgr::parse_app_info(
-    const json::value& input, Action::AppParam& output, const Action::AppParam& default_value)
+    const json::value& input,
+    Action::AppParam& output,
+    const Action::AppParam& default_value)
 {
     if (!get_and_check_value(input, "package", output.package, default_value.package)) {
         LogError << "failed to get_and_check_value activity" << VAR(input);
@@ -1173,7 +1276,9 @@ bool PipelineResMgr::parse_app_info(
 }
 
 bool PipelineResMgr::parse_custom_action_param(
-    const json::value& input, Action::CustomParam& output, const Action::CustomParam& default_value)
+    const json::value& input,
+    Action::CustomParam& output,
+    const Action::CustomParam& default_value)
 {
     if (!get_and_check_value(input, "custom_action", output.name, default_value.name)) {
         LogError << "failed to get_and_check_value custom_action" << VAR(input);
@@ -1191,7 +1296,10 @@ bool PipelineResMgr::parse_custom_action_param(
 }
 
 bool PipelineResMgr::parse_wait_freezes_param(
-    const json::value& input, const std::string& key, WaitFreezesParam& output, const WaitFreezesParam& default_value)
+    const json::value& input,
+    const std::string& key,
+    WaitFreezesParam& output,
+    const WaitFreezesParam& default_value)
 {
     auto opt = input.find(key);
     if (!opt) {
@@ -1261,7 +1369,10 @@ bool PipelineResMgr::parse_rect(const json::value& input_rect, cv::Rect& output)
 }
 
 bool PipelineResMgr::parse_action_target(
-    const json::value& input, const std::string& key, Action::Target& output, const Action::Target& default_value)
+    const json::value& input,
+    const std::string& key,
+    Action::Target& output,
+    const Action::Target& default_value)
 {
     using namespace Action;
 

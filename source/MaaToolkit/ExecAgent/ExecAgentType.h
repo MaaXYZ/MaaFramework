@@ -9,7 +9,8 @@
 
 MAA_TOOLKIT_NS_BEGIN
 
-struct ExecData {
+struct ExecData
+{
     std::string name;
     std::filesystem::path exec_path;
     std::vector<std::string> exec_args;

@@ -11,7 +11,10 @@ extern "C"
     MAA_CONTROL_UNIT_API MaaStringView MaaThriftControlUnitGetVersion();
 
     MAA_CONTROL_UNIT_API MaaControlUnitHandle MaaThriftControlUnitCreate(
-        MaaThriftControllerType type, MaaStringView host, int32_t port, MaaStringView config);
+        MaaThriftControllerType type,
+        MaaStringView host,
+        int32_t port,
+        MaaStringView config);
 
     MAA_CONTROL_UNIT_API void MaaThriftControlUnitDestroy(MaaControlUnitHandle handle);
 

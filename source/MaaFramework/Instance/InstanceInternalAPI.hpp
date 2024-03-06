@@ -32,7 +32,8 @@ MAA_TASK_NS_END
 
 MAA_NS_BEGIN
 
-struct InstanceInternalAPI : public NonCopyable {
+struct InstanceInternalAPI : public NonCopyable
+{
 public:
     virtual MAA_RES_NS::ResourceMgr* inter_resource() = 0;
     virtual MAA_CTRL_NS::ControllerAgent* inter_controller() = 0;

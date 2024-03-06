@@ -8,7 +8,10 @@
 
 MAA_CTRL_UNIT_NS_BEGIN
 
-ControlUnitMgr::ControlUnitMgr(HWND hWnd, MaaControllerCallback callback, MaaCallbackTransparentArg callback_arg)
+ControlUnitMgr::ControlUnitMgr(
+    HWND hWnd,
+    MaaControllerCallback callback,
+    MaaCallbackTransparentArg callback_arg)
     : hwnd_(hWnd)
     , notifier(callback, callback_arg)
 {

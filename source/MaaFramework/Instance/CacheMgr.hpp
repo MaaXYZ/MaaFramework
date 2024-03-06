@@ -33,7 +33,8 @@ private:
 template <typename Key, typename Item, size_t CacheSize, typename Equal>
 std::optional<Item> CacheMgr<Key, Item, CacheSize, Equal>::get_cache(const Key& key) const
 {
-    auto it = std::ranges::find_if(cache_, [&](const auto& pair) { return equal_(pair.first, key); });
+    auto it =
+        std::ranges::find_if(cache_, [&](const auto& pair) { return equal_(pair.first, key); });
     if (it == cache_.end()) {
         return std::nullopt;
     }

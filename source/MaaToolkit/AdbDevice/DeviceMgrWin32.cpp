@@ -18,7 +18,8 @@ MAA_TOOLKIT_NS_BEGIN
 
 using namespace path_literals;
 
-struct EmulatorConstantData {
+struct EmulatorConstantData
+{
     std::string keyword;
     std::vector<std::filesystem::path> adb_candidate_paths;
     std::vector<std::string> adb_common_serials;
@@ -30,12 +31,18 @@ static const std::map<std::string, EmulatorConstantData> kEmulators = {
     { "BlueStacks",
       { .keyword = "HD-Player",
         .adb_candidate_paths = { "HD-Adb.exe"_path, "Engine\\ProgramFiles\\HD-Adb.exe"_path },
-        .adb_common_serials = { "127.0.0.1:5555", "127.0.0.1:5556", "127.0.0.1:5565", "127.0.0.1:5575" } } },
+        .adb_common_serials = { "127.0.0.1:5555",
+                                "127.0.0.1:5556",
+                                "127.0.0.1:5565",
+                                "127.0.0.1:5575" } } },
 
     { "LDPlayer",
       { .keyword = "dnplayer",
         .adb_candidate_paths = { "adb.exe"_path },
-        .adb_common_serials = { "emulator-5554", "emulator-5556", "127.0.0.1:5555", "127.0.0.1:5556" } } },
+        .adb_common_serials = { "emulator-5554",
+                                "emulator-5556",
+                                "127.0.0.1:5555",
+                                "127.0.0.1:5556" } } },
 
     { "Nox",
       { .keyword = "Nox",
@@ -57,7 +64,9 @@ static const std::map<std::string, EmulatorConstantData> kEmulators = {
         .adb_common_serials = { "127.0.0.1:16384", "127.0.0.1:16416" } } },
 
     { "MEmuPlayer",
-      { .keyword = "MEmu", .adb_candidate_paths = { "adb.exe"_path }, .adb_common_serials = { "127.0.0.1:21503" } } },
+      { .keyword = "MEmu",
+        .adb_candidate_paths = { "adb.exe"_path },
+        .adb_common_serials = { "127.0.0.1:21503" } } },
 };
 
 std::vector<Device> DeviceMgrWin32::find_device_impl()
@@ -70,7 +79,10 @@ std::vector<Device> DeviceMgrWin32::find_device_impl()
         std::filesystem::path adb_path = get_adb_path(constant, e.process.pid);
 
         auto serials = request_adb_serials(adb_path, json::object());
-        serials.insert(serials.end(), constant.adb_common_serials.begin(), constant.adb_common_serials.end());
+        serials.insert(
+            serials.end(),
+            constant.adb_common_serials.begin(),
+            constant.adb_common_serials.end());
         // Deduplication
         auto set = std::set<std::string>(serials.begin(), serials.end());
         serials.assign(set.begin(), set.end());
@@ -118,7 +130,8 @@ std::vector<Device> DeviceMgrWin32::find_device_with_adb_impl(std::string_view a
         device.adb_path = adb_path;
         device.adb_serial = ser;
         device.adb_config = json::object().to_string();
-        device.adb_controller_type = check_adb_controller_type(device.adb_path, device.adb_serial, device.adb_config);
+        device.adb_controller_type =
+            check_adb_controller_type(device.adb_path, device.adb_serial, device.adb_config);
         result.emplace_back(std::move(device));
     }
     return result;

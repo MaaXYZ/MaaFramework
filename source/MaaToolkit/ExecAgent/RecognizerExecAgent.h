@@ -20,11 +20,15 @@ public:
     virtual ~RecognizerExecAgent() = default;
 
 protected: // from ExecAgentBase
-    virtual bool register_for_maa_inst(MaaInstanceHandle handle, std::string_view name, ExecData& executor) override;
+    virtual bool register_for_maa_inst(
+        MaaInstanceHandle handle,
+        std::string_view name,
+        ExecData& executor) override;
     virtual bool unregister_for_maa_inst(MaaInstanceHandle handle, std::string_view name) override;
 
 private:
-    struct AnalyzeResult {
+    struct AnalyzeResult
+    {
         cv::Rect box {};
         std::string detail;
     };

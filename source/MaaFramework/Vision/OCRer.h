@@ -22,7 +22,8 @@ MAA_VISION_NS_BEGIN
 class OCRer : public VisionBase
 {
 public:
-    struct Result {
+    struct Result
+    {
         std::wstring text;
         cv::Rect box {};
         double score = 0.0;

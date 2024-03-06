@@ -14,17 +14,21 @@ MAA_RPC_NS_BEGIN
 class InstanceImpl final : public ::maarpc::Instance::Service
 {
 public:
-    struct CustomRecognizerInfo {
+    struct CustomRecognizerInfo
+    {
         std::string name;
-        ::grpc::ServerReaderWriter<::maarpc::CustomRecognizerResponse, ::maarpc::CustomRecognizerRequest>* stream =
-            nullptr;
+        ::grpc::ServerReaderWriter<
+            ::maarpc::CustomRecognizerResponse,
+            ::maarpc::CustomRecognizerRequest>* stream = nullptr;
         std::shared_ptr<ImageImpl> image_impl = nullptr;
         std::shared_ptr<SyncContextImpl> syncctx_impl = nullptr;
         std::binary_semaphore finish { 0 };
     };
-    struct CustomActionInfo {
+    struct CustomActionInfo
+    {
         std::string name;
-        ::grpc::ServerReaderWriter<::maarpc::CustomActionResponse, ::maarpc::CustomActionRequest>* stream = nullptr;
+        ::grpc::ServerReaderWriter<::maarpc::CustomActionResponse, ::maarpc::CustomActionRequest>*
+            stream = nullptr;
         std::shared_ptr<SyncContextImpl> syncctx_impl = nullptr;
         std::binary_semaphore finish { 0 };
     };
@@ -54,8 +58,9 @@ public:
         ::maarpc::EmptyResponse* response) override;
     ::grpc::Status register_custom_recognizer(
         ::grpc::ServerContext* context,
-        ::grpc::ServerReaderWriter<::maarpc::CustomRecognizerResponse, ::maarpc::CustomRecognizerRequest>* stream)
-        override;
+        ::grpc::ServerReaderWriter<
+            ::maarpc::CustomRecognizerResponse,
+            ::maarpc::CustomRecognizerRequest>* stream) override;
     ::grpc::Status unregister_custom_recognizer(
         ::grpc::ServerContext* context,
         const ::maarpc::HandleStringRequest* request,
@@ -66,7 +71,8 @@ public:
         ::maarpc::EmptyResponse* response) override;
     ::grpc::Status register_custom_action(
         ::grpc::ServerContext* context,
-        ::grpc::ServerReaderWriter<::maarpc::CustomActionResponse, ::maarpc::CustomActionRequest>* stream) override;
+        ::grpc::ServerReaderWriter<::maarpc::CustomActionResponse, ::maarpc::CustomActionRequest>*
+            stream) override;
     ::grpc::Status unregister_custom_action(
         ::grpc::ServerContext* context,
         const ::maarpc::HandleStringRequest* request,

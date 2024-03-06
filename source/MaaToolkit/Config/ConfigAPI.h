@@ -5,7 +5,8 @@
 #include "Conf/Conf.h"
 #include "MaaToolkit/MaaToolkitDef.h"
 
-struct MaaToolkitConfigMgrAPI {
+struct MaaToolkitConfigMgrAPI
+{
     virtual ~MaaToolkitConfigMgrAPI() = default;
 
     virtual bool init() = 0;

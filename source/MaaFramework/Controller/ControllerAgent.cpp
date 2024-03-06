@@ -10,13 +10,18 @@ MAA_CTRL_NS_BEGIN
 
 std::minstd_rand ControllerAgent::rand_engine_(std::random_device {}());
 
-ControllerAgent::ControllerAgent(MaaControllerCallback callback, MaaCallbackTransparentArg callback_arg)
+ControllerAgent::ControllerAgent(
+    MaaControllerCallback callback,
+    MaaCallbackTransparentArg callback_arg)
     : notifier(callback, callback_arg)
 {
     LogFunc << VAR_VOIDP(callback) << VAR_VOIDP(callback_arg);
 
-    action_runner_ = std::make_unique<AsyncRunner<Action>>(
-        std::bind(&ControllerAgent::run_action, this, std::placeholders::_1, std::placeholders::_2));
+    action_runner_ = std::make_unique<AsyncRunner<Action>>(std::bind(
+        &ControllerAgent::run_action,
+        this,
+        std::placeholders::_1,
+        std::placeholders::_2));
 }
 
 ControllerAgent::~ControllerAgent()
@@ -28,7 +33,10 @@ ControllerAgent::~ControllerAgent()
     }
 }
 
-bool ControllerAgent::set_option(MaaCtrlOption key, MaaOptionValue value, MaaOptionValueSize val_size)
+bool ControllerAgent::set_option(
+    MaaCtrlOption key,
+    MaaOptionValue value,
+    MaaOptionValueSize val_size)
 {
     LogInfo << VAR(key) << VAR(value) << VAR(val_size);
 
@@ -250,13 +258,17 @@ bool ControllerAgent::stop_app()
 
 bool ControllerAgent::start_app(const std::string& package)
 {
-    auto id = action_runner_->post({ .type = Action::Type::start_app, .param = AppParam { .package = package } }, true);
+    auto id = action_runner_->post(
+        { .type = Action::Type::start_app, .param = AppParam { .package = package } },
+        true);
     return wait(id) == MaaStatus_Success;
 }
 
 bool ControllerAgent::stop_app(const std::string& package)
 {
-    auto id = action_runner_->post({ .type = Action::Type::stop_app, .param = AppParam { .package = package } }, true);
+    auto id = action_runner_->post(
+        { .type = Action::Type::stop_app, .param = AppParam { .package = package } },
+        true);
     return wait(id) == MaaStatus_Success;
 }
 
@@ -279,7 +291,8 @@ bool ControllerAgent::handle_connect()
             { "type", "connect" },
             { "success", connected_ },
             { "uuid", get_uuid() },
-            { "resolution", { { "width", get_resolution().first }, { "height", get_resolution().second } } },
+            { "resolution",
+              { { "width", get_resolution().first }, { "height", get_resolution().second } } },
             { "version", MAA_VERSION },
         };
         append_recording(std::move(info), start_time, connected_);
@@ -509,11 +522,14 @@ void ControllerAgent::init_recording()
 {
     auto recording_dir = GlobalOptionMgr::get_instance().log_dir() / "recording";
     std::filesystem::create_directories(recording_dir);
-    recording_path_ = recording_dir / std::format("maa_recording_{}.txt", format_now_for_filename());
+    recording_path_ =
+        recording_dir / std::format("maa_recording_{}.txt", format_now_for_filename());
 }
 
 void ControllerAgent::append_recording(
-    json::value info, const std::chrono::steady_clock::time_point& start_time, bool success)
+    json::value info,
+    const std::chrono::steady_clock::time_point& start_time,
+    bool success)
 {
     if (!recording()) {
         return;
@@ -617,7 +633,9 @@ bool ControllerAgent::run_action(typename AsyncRunner<Action>::Id id, Action act
     }
 
     if (notify) {
-        notifier.notify(ret ? MaaMsg_Controller_Action_Completed : MaaMsg_Controller_Action_Failed, details);
+        notifier.notify(
+            ret ? MaaMsg_Controller_Action_Completed : MaaMsg_Controller_Action_Failed,
+            details);
     }
 
     return ret;
@@ -628,8 +646,10 @@ std::pair<int, int> ControllerAgent::preproc_touch_point(int x, int y)
     auto [res_w, res_h] = get_resolution();
 
     if (image_target_width_ == 0 || image_target_height_ == 0) {
-        // 正常来说连接完后都会截个图测试，那时候就会走到 check_and_calc_target_image_size，这里不应该是 0
-        LogError << "Invalid image target size" << VAR(image_target_width_) << VAR(image_target_height_);
+        // 正常来说连接完后都会截个图测试，那时候就会走到
+        // check_and_calc_target_image_size，这里不应该是 0
+        LogError << "Invalid image target size" << VAR(image_target_width_)
+                 << VAR(image_target_height_);
         return {};
     }
 
@@ -652,7 +672,8 @@ bool ControllerAgent::postproc_screenshot(const cv::Mat& raw)
 
     auto [res_w, res_h] = get_resolution();
     if (raw.cols != res_w || raw.rows != res_h) {
-        LogWarn << "Invalid resolution" << VAR(raw.cols) << VAR(raw.rows) << VAR(res_w) << VAR(res_h);
+        LogWarn << "Invalid resolution" << VAR(raw.cols) << VAR(raw.rows) << VAR(res_w)
+                << VAR(res_h);
     }
 
     if (!check_and_calc_target_image_size(raw)) {
@@ -679,8 +700,8 @@ bool ControllerAgent::check_and_calc_target_image_size(const cv::Mat& raw)
     int cur_width = raw.cols;
     int cur_height = raw.rows;
 
-    LogDebug << "Re-calc image target size:" << VAR(image_target_long_side_) << VAR(image_target_short_side_)
-             << VAR(cur_width) << VAR(cur_height);
+    LogDebug << "Re-calc image target size:" << VAR(image_target_long_side_)
+             << VAR(image_target_short_side_) << VAR(cur_width) << VAR(cur_height);
 
     double scale = static_cast<double>(cur_width) / cur_height;
 
@@ -774,7 +795,9 @@ bool ControllerAgent::set_image_target_short_side(MaaOptionValue value, MaaOptio
     return true;
 }
 
-bool ControllerAgent::set_default_app_package_entry(MaaOptionValue value, MaaOptionValueSize val_size)
+bool ControllerAgent::set_default_app_package_entry(
+    MaaOptionValue value,
+    MaaOptionValueSize val_size)
 {
     std::string_view package(reinterpret_cast<char*>(value), val_size);
     default_app_package_entry_ = package;

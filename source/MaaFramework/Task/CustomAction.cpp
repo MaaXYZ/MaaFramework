@@ -8,7 +8,10 @@
 
 MAA_TASK_NS_BEGIN
 
-CustomAction::CustomAction(MaaCustomActionHandle handle, MaaTransparentArg handle_arg_, InstanceInternalAPI* inst)
+CustomAction::CustomAction(
+    MaaCustomActionHandle handle,
+    MaaTransparentArg handle_arg_,
+    InstanceInternalAPI* inst)
     : action_(handle)
     , action_arg_(handle_arg_)
     , inst_(inst)
@@ -30,11 +33,19 @@ bool CustomAction::run(
 
     SyncContext sync_ctx(inst_);
     std::string custom_param_string = param.custom_param.to_string();
-    MaaRect box { .x = cur_box.x, .y = cur_box.y, .width = cur_box.width, .height = cur_box.height };
+    MaaRect box { .x = cur_box.x,
+                  .y = cur_box.y,
+                  .width = cur_box.width,
+                  .height = cur_box.height };
     std::string cur_rec_detail_string = cur_rec_detail.to_string();
 
     bool ret = action_->run(
-        &sync_ctx, task_name.c_str(), custom_param_string.c_str(), &box, cur_rec_detail_string.c_str(), action_arg_);
+        &sync_ctx,
+        task_name.c_str(),
+        custom_param_string.c_str(),
+        &box,
+        cur_rec_detail_string.c_str(),
+        action_arg_);
     LogTrace << VAR_VOIDP(action_) << VAR_VOIDP(action_->run) << VAR(ret);
 
     return ret;

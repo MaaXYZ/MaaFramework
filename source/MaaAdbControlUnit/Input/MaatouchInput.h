@@ -29,7 +29,8 @@ public: // from UnitBase
         TouchInputBase::set_replacement(argv_replace);
         KeyInputBase::set_replacement(argv_replace);
     }
-    virtual void merge_replacement(UnitBase::Replacement argv_replace, bool _override = true) override
+    virtual void
+        merge_replacement(UnitBase::Replacement argv_replace, bool _override = true) override
     {
         TouchInputBase::merge_replacement(argv_replace, _override);
         KeyInputBase::merge_replacement(argv_replace, _override);
@@ -46,14 +47,22 @@ public: // from KeyInputAPI
     virtual bool input_text(const std::string& text) override;
 
 protected: // from MtouchHelper
-    virtual std::pair<int, int> screen_to_touch(int x, int y) override { return _screen_to_touch(x, y); }
-    virtual std::pair<int, int> screen_to_touch(double x, double y) override { return _screen_to_touch(x, y); }
+    virtual std::pair<int, int> screen_to_touch(int x, int y) override
+    {
+        return _screen_to_touch(x, y);
+    }
+    virtual std::pair<int, int> screen_to_touch(double x, double y) override
+    {
+        return _screen_to_touch(x, y);
+    }
 
 private:
     template <typename T1, typename T2>
     inline std::pair<int, int> _screen_to_touch(T1 x, T2 y)
     {
-        return std::make_pair(static_cast<int>(round(x * xscale_)), static_cast<int>(round(y * yscale_)));
+        return std::make_pair(
+            static_cast<int>(round(x * xscale_)),
+            static_cast<int>(round(y * yscale_)));
     }
 
     std::filesystem::path agent_path_;

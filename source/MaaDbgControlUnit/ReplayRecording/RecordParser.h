@@ -14,7 +14,8 @@ public:
     static std::optional<Recording> parse(const std::filesystem::path& path);
 
 private:
-    static std::optional<Record> parse_record(const json::value& record_json, const std::filesystem::path& dir);
+    static std::optional<Record>
+        parse_record(const json::value& record_json, const std::filesystem::path& dir);
     static std::optional<Record::Param> parse_connect(const json::value& record_json);
     static std::optional<Record::Param> parse_click(const json::value& record_json);
     static std::optional<Record::Param> parse_swipe(const json::value& record_json);

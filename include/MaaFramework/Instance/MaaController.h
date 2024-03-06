@@ -1,8 +1,8 @@
 /**
  * @file MaaController.h
  * @author
- * @brief The controller interface. See \ref MaaControllerPostRequest for details on how to post requests to the
- * controller.
+ * @brief The controller interface. See \ref MaaControllerPostRequest for details on how to post
+ * requests to the controller.
  *
  * @copyright Copyright (c) 2024
  *
@@ -117,8 +117,8 @@ extern "C"
     /**
      * @brief Set options for a given controller instance.
      *
-     * This function requires a given set of option keys and value types, otherwise this will fail. See
-     * #MaaCtrlOptionEnum for details.
+     * This function requires a given set of option keys and value types, otherwise this will fail.
+     * See #MaaCtrlOptionEnum for details.
      *
      * @param ctrl The handle of the controller instance to set options for.
      * @param key The option key.
@@ -127,30 +127,50 @@ extern "C"
      * @return MaaBool Whether the option is set successfully.
      */
     MAA_FRAMEWORK_API MaaBool MaaControllerSetOption(
-        MaaControllerHandle ctrl, MaaCtrlOption key, MaaOptionValue value, MaaOptionValueSize val_size);
+        MaaControllerHandle ctrl,
+        MaaCtrlOption key,
+        MaaOptionValue value,
+        MaaOptionValueSize val_size);
 
     /**
      * @defgroup MaaControllerPostRequest Controller Requests
      *
-     * The following functions post their corresponding requests to the controller and return the id of the request.
+     * The following functions post their corresponding requests to the controller and return the id
+     * of the request.
      * @{
      */
 
     MAA_FRAMEWORK_API MaaCtrlId MaaControllerPostConnection(MaaControllerHandle ctrl);
 
-    MAA_FRAMEWORK_API MaaCtrlId MaaControllerPostClick(MaaControllerHandle ctrl, int32_t x, int32_t y);
+    MAA_FRAMEWORK_API MaaCtrlId
+        MaaControllerPostClick(MaaControllerHandle ctrl, int32_t x, int32_t y);
 
     MAA_FRAMEWORK_API MaaCtrlId MaaControllerPostSwipe(
-        MaaControllerHandle ctrl, int32_t x1, int32_t y1, int32_t x2, int32_t y2, int32_t duration);
-
-    MAA_FRAMEWORK_API MaaCtrlId MaaControllerPostPressKey(MaaControllerHandle ctrl, int32_t keycode);
-
-    MAA_FRAMEWORK_API MaaCtrlId MaaControllerPostInputText(MaaControllerHandle ctrl, MaaStringView text);
+        MaaControllerHandle ctrl,
+        int32_t x1,
+        int32_t y1,
+        int32_t x2,
+        int32_t y2,
+        int32_t duration);
 
     MAA_FRAMEWORK_API MaaCtrlId
-        MaaControllerPostTouchDown(MaaControllerHandle ctrl, int32_t contact, int32_t x, int32_t y, int32_t pressure);
+        MaaControllerPostPressKey(MaaControllerHandle ctrl, int32_t keycode);
+
     MAA_FRAMEWORK_API MaaCtrlId
-        MaaControllerPostTouchMove(MaaControllerHandle ctrl, int32_t contact, int32_t x, int32_t y, int32_t pressure);
+        MaaControllerPostInputText(MaaControllerHandle ctrl, MaaStringView text);
+
+    MAA_FRAMEWORK_API MaaCtrlId MaaControllerPostTouchDown(
+        MaaControllerHandle ctrl,
+        int32_t contact,
+        int32_t x,
+        int32_t y,
+        int32_t pressure);
+    MAA_FRAMEWORK_API MaaCtrlId MaaControllerPostTouchMove(
+        MaaControllerHandle ctrl,
+        int32_t contact,
+        int32_t x,
+        int32_t y,
+        int32_t pressure);
 
     MAA_FRAMEWORK_API MaaCtrlId MaaControllerPostTouchUp(MaaControllerHandle ctrl, int32_t contact);
 
@@ -192,7 +212,8 @@ extern "C"
      *
      * @return MaaBool Whether the image buffer is retrieved successfully.
      */
-    MAA_FRAMEWORK_API MaaBool MaaControllerGetImage(MaaControllerHandle ctrl, MaaImageBufferHandle buffer);
+    MAA_FRAMEWORK_API MaaBool
+        MaaControllerGetImage(MaaControllerHandle ctrl, MaaImageBufferHandle buffer);
 
     /**
      * @brief Get the UUID of the controller.
@@ -202,7 +223,8 @@ extern "C"
      *
      * @return MaaBool Whether the resolution is retrieved successfully.
      */
-    MAA_FRAMEWORK_API MaaBool MaaControllerGetUUID(MaaControllerHandle ctrl, MaaStringBufferHandle buffer);
+    MAA_FRAMEWORK_API MaaBool
+        MaaControllerGetUUID(MaaControllerHandle ctrl, MaaStringBufferHandle buffer);
 
 #ifdef __cplusplus
 }

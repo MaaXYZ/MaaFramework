@@ -63,12 +63,18 @@ bool Runner::run(
     for (const auto& [name, executor] : param.recognizer) {
         std::string exec_param = json::array(executor.exec_param).to_string();
         MaaToolkitRegisterCustomRecognizerExecutor(
-            maa_handle, name.c_str(), executor.exec_path.c_str(), exec_param.c_str());
+            maa_handle,
+            name.c_str(),
+            executor.exec_path.c_str(),
+            exec_param.c_str());
     }
     for (const auto& [name, executor] : param.action) {
         std::string exec_param = json::array(executor.exec_param).to_string();
         MaaToolkitRegisterCustomActionExecutor(
-            maa_handle, name.c_str(), executor.exec_path.c_str(), exec_param.c_str());
+            maa_handle,
+            name.c_str(),
+            executor.exec_path.c_str(),
+            exec_param.c_str());
     }
 
     int64_t tid = 0;

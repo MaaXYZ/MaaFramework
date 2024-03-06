@@ -24,7 +24,8 @@ extern "C"
      * @param callback_arg The callback arg that will be passed to the callback function.
      * @return MaaInstanceHandle
      */
-    MAA_FRAMEWORK_API MaaInstanceHandle MaaCreate(MaaInstanceCallback callback, MaaCallbackTransparentArg callback_arg);
+    MAA_FRAMEWORK_API MaaInstanceHandle
+        MaaCreate(MaaInstanceCallback callback, MaaCallbackTransparentArg callback_arg);
 
     /**
      * @brief Free the instance.
@@ -36,8 +37,8 @@ extern "C"
     /**
      * @brief Set options for a given instance.
      *
-     * This function requires a given set of option keys and value types, otherwise this will fail. See
-     * #MaaInstOptionEnum for details.
+     * This function requires a given set of option keys and value types, otherwise this will fail.
+     * See #MaaInstOptionEnum for details.
      *
      * @param inst The handle of the instance to set options for.
      * @param key The option key.
@@ -45,8 +46,11 @@ extern "C"
      * @param val_size The size of the option value.
      * @return MaaBool Whether the option is set successfully.
      */
-    MAA_FRAMEWORK_API MaaBool
-        MaaSetOption(MaaInstanceHandle inst, MaaInstOption key, MaaOptionValue value, MaaOptionValueSize val_size);
+    MAA_FRAMEWORK_API MaaBool MaaSetOption(
+        MaaInstanceHandle inst,
+        MaaInstOption key,
+        MaaOptionValue value,
+        MaaOptionValueSize val_size);
 
     /**
      * @brief Bind the instance to an initialized resource.
@@ -102,7 +106,8 @@ extern "C"
      * @param name The name of the recognizer when it was registered.
      * @return MaaBool
      */
-    MAA_FRAMEWORK_API MaaBool MaaUnregisterCustomRecognizer(MaaInstanceHandle inst, MaaStringView name);
+    MAA_FRAMEWORK_API MaaBool
+        MaaUnregisterCustomRecognizer(MaaInstanceHandle inst, MaaStringView name);
 
     /**
      * @brief Clear all custom recognizers registered to the instance.
@@ -124,7 +129,10 @@ extern "C"
      * @return MaaBool
      */
     MAA_FRAMEWORK_API MaaBool MaaRegisterCustomAction(
-        MaaInstanceHandle inst, MaaStringView name, MaaCustomActionHandle action, MaaTransparentArg action_arg);
+        MaaInstanceHandle inst,
+        MaaStringView name,
+        MaaCustomActionHandle action,
+        MaaTransparentArg action_arg);
 
     /**
      * @brief Unregister a custom action from the instance.
@@ -147,14 +155,16 @@ extern "C"
      * @brief Post a task to the instance.
      *
      * The entry should be a task specified in the instance's resources.
-     * The param takes the same form as the pipeline json and will override the set parameters in the json file.
+     * The param takes the same form as the pipeline json and will override the set parameters in
+     * the json file.
      *
      * @param inst
      * @param entry The entry of the task.
      * @param param The parameter of the task.
      * @return MaaTaskId The id of the task.
      */
-    MAA_FRAMEWORK_API MaaTaskId MaaPostTask(MaaInstanceHandle inst, MaaStringView entry, MaaStringView param);
+    MAA_FRAMEWORK_API MaaTaskId
+        MaaPostTask(MaaInstanceHandle inst, MaaStringView entry, MaaStringView param);
 
     /**
      * @brief Set the parameter of a task.
@@ -166,7 +176,8 @@ extern "C"
      * @param param The parameter of the task.
      * @return MaaBool
      */
-    MAA_FRAMEWORK_API MaaBool MaaSetTaskParam(MaaInstanceHandle inst, MaaTaskId id, MaaStringView param);
+    MAA_FRAMEWORK_API MaaBool
+        MaaSetTaskParam(MaaInstanceHandle inst, MaaTaskId id, MaaStringView param);
 
     /**
      * @brief Get the status of a task identified by the id.

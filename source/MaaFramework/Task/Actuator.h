@@ -46,7 +46,10 @@ private:
     cv::Rect get_target_rect(const MAA_RES_NS::Action::Target target, const cv::Rect& cur_box);
 
 private:
-    MAA_CTRL_NS::ControllerAgent* controller() { return inst_ ? inst_->inter_controller() : nullptr; }
+    MAA_CTRL_NS::ControllerAgent* controller()
+    {
+        return inst_ ? inst_->inter_controller() : nullptr;
+    }
     InstanceStatus* status() { return inst_ ? inst_->inter_status() : nullptr; }
     bool need_to_stop() const { return need_to_stop_; }
     void sleep(unsigned ms) const;

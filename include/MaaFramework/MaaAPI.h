@@ -19,8 +19,8 @@
  *
  * @section intro_sec Introduction
  *
- * MaaFramework is a toolset used to create automated tests under various environments such as Windows and Andoroid
- * emulators.
+ * MaaFramework is a toolset used to create automated tests under various environments such as
+ * Windows and Andoroid emulators.
  *
  * For starter, take a look at the following pages:
  *

@@ -15,7 +15,8 @@
 
 MAA_CTRL_UNIT_NS_BEGIN
 
-ThriftControllerUnixDomainSocketAgent::ThriftControllerUnixDomainSocketAgent(const std::string& path)
+ThriftControllerUnixDomainSocketAgent::ThriftControllerUnixDomainSocketAgent(
+    const std::string& path)
 {
     LogFunc << VAR(path);
 

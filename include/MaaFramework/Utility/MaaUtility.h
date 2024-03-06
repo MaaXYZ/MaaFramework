@@ -27,8 +27,8 @@ extern "C"
     /**
      * @brief Set options globally.
      *
-     * This function requires a given set of option keys and value types, otherwise this will fail. See
-     * #MaaGlobalOptionEnum for details.
+     * This function requires a given set of option keys and value types, otherwise this will fail.
+     * See #MaaGlobalOptionEnum for details.
      *
      * @param key The option key.
      * @param value The option value.

@@ -142,8 +142,8 @@ bool GeneralControllerAgent::_swipe(SwipeParam param)
     }
 
     if (!control_unit_->swipe(param.x1, param.y1, param.x2, param.y2, param.duration)) {
-        LogError << "controller swipe failed" << VAR(param.x1) << VAR(param.y1) << VAR(param.x2) << VAR(param.y2)
-                 << VAR(param.duration);
+        LogError << "controller swipe failed" << VAR(param.x1) << VAR(param.y1) << VAR(param.x2)
+                 << VAR(param.y2) << VAR(param.duration);
         return false;
     }
 
@@ -158,8 +158,8 @@ bool GeneralControllerAgent::_touch_down(TouchParam param)
     }
 
     if (!control_unit_->touch_down(param.contact, param.x, param.y, param.pressure)) {
-        LogError << "controller touch_down failed" << VAR(param.contact) << VAR(param.x) << VAR(param.y)
-                 << VAR(param.pressure);
+        LogError << "controller touch_down failed" << VAR(param.contact) << VAR(param.x)
+                 << VAR(param.y) << VAR(param.pressure);
         return false;
     }
 
@@ -174,8 +174,8 @@ bool GeneralControllerAgent::_touch_move(TouchParam param)
     }
 
     if (!control_unit_->touch_move(param.contact, param.x, param.y, param.pressure)) {
-        LogError << "controller touch_move failed" << VAR(param.contact) << VAR(param.x) << VAR(param.y)
-                 << VAR(param.pressure);
+        LogError << "controller touch_move failed" << VAR(param.contact) << VAR(param.x)
+                 << VAR(param.y) << VAR(param.pressure);
         return false;
     }
 

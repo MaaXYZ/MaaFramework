@@ -14,9 +14,11 @@ MAA_RPC_NS_BEGIN
 class ControllerImpl final : public ::maarpc::Controller::Service
 {
 public:
-    struct CustomControllerInfo {
-        ::grpc::ServerReaderWriter<::maarpc::CustomControllerResponse, ::maarpc::CustomControllerRequest>* stream =
-            nullptr;
+    struct CustomControllerInfo
+    {
+        ::grpc::ServerReaderWriter<
+            ::maarpc::CustomControllerResponse,
+            ::maarpc::CustomControllerRequest>* stream = nullptr;
         std::shared_ptr<ImageImpl> image_impl = nullptr;
         std::binary_semaphore finish { 0 };
     };
@@ -38,8 +40,9 @@ public:
         ::maarpc::EmptyResponse* response) override;
     ::grpc::Status create_custom(
         ::grpc::ServerContext* context,
-        ::grpc::ServerReaderWriter<::maarpc::CustomControllerResponse, ::maarpc::CustomControllerRequest>* stream)
-        override;
+        ::grpc::ServerReaderWriter<
+            ::maarpc::CustomControllerResponse,
+            ::maarpc::CustomControllerRequest>* stream) override;
     ::grpc::Status set_option(
         ::grpc::ServerContext* context,
         const ::maarpc::ControllerSetOptionRequest* request,

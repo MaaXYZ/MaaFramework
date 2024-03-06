@@ -24,7 +24,9 @@ void callback_impl(MaaStringView msg, MaaStringView detail, MaaCallbackTranspare
 }
 
 Status UtilityImpl::version(
-    ServerContext* context, const ::maarpc::EmptyRequest* request, ::maarpc::StringResponse* response)
+    ServerContext* context,
+    const ::maarpc::EmptyRequest* request,
+    ::maarpc::StringResponse* response)
 {
     LogFunc;
     std::ignore = context;
@@ -36,7 +38,9 @@ Status UtilityImpl::version(
 }
 
 Status UtilityImpl::set_global_option(
-    ServerContext* context, const ::maarpc::SetGlobalOptionRequest* request, ::maarpc::EmptyResponse* response)
+    ServerContext* context,
+    const ::maarpc::SetGlobalOptionRequest* request,
+    ::maarpc::EmptyResponse* response)
 {
     LogFunc;
     std::ignore = context;
@@ -107,7 +111,9 @@ Status UtilityImpl::set_global_option(
 }
 
 Status UtilityImpl::acquire_id(
-    ServerContext* context, const ::maarpc::EmptyRequest* request, ::maarpc::IdResponse* response)
+    ServerContext* context,
+    const ::maarpc::EmptyRequest* request,
+    ::maarpc::IdResponse* response)
 {
     LogFunc;
     std::ignore = context;
@@ -119,7 +125,8 @@ Status UtilityImpl::acquire_id(
 }
 
 Status UtilityImpl::register_callback(
-    ServerContext* context, ServerReaderWriter<::maarpc::Callback, ::maarpc::CallbackRequest>* stream)
+    ServerContext* context,
+    ServerReaderWriter<::maarpc::Callback, ::maarpc::CallbackRequest>* stream)
 {
     LogFunc;
 
@@ -167,7 +174,9 @@ Status UtilityImpl::register_callback(
 }
 
 Status UtilityImpl::unregister_callback(
-    ServerContext* context, const ::maarpc::IdRequest* request, ::maarpc::EmptyResponse* response)
+    ServerContext* context,
+    const ::maarpc::IdRequest* request,
+    ::maarpc::EmptyResponse* response)
 {
     LogFunc;
     std::ignore = context;

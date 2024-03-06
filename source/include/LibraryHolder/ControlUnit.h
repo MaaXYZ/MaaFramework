@@ -60,8 +60,11 @@ private:
 class ThriftControlUnitLibraryHolder : public LibraryHolder<ThriftControlUnitLibraryHolder>
 {
 public:
-    static std::shared_ptr<MAA_CTRL_UNIT_NS::ControlUnitAPI>
-        create_control_unit(MaaThriftControllerType type, MaaStringView host, int32_t port, MaaStringView config);
+    static std::shared_ptr<MAA_CTRL_UNIT_NS::ControlUnitAPI> create_control_unit(
+        MaaThriftControllerType type,
+        MaaStringView host,
+        int32_t port,
+        MaaStringView config);
 
 private:
     inline static const std::filesystem::path libname_ = MAA_NS::path("MaaThriftControlUnit");

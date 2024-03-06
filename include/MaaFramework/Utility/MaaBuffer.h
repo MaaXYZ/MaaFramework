@@ -25,7 +25,8 @@ extern "C"
     MAA_FRAMEWORK_API MaaStringView MaaGetString(MaaStringBufferHandle handle);
     MAA_FRAMEWORK_API MaaSize MaaGetStringSize(MaaStringBufferHandle handle);
     MAA_FRAMEWORK_API MaaBool MaaSetString(MaaStringBufferHandle handle, MaaStringView str);
-    MAA_FRAMEWORK_API MaaBool MaaSetStringEx(MaaStringBufferHandle handle, MaaStringView str, MaaSize size);
+    MAA_FRAMEWORK_API MaaBool
+        MaaSetStringEx(MaaStringBufferHandle handle, MaaStringView str, MaaSize size);
 
     MAA_FRAMEWORK_API MaaImageBufferHandle MaaCreateImageBuffer();
     MAA_FRAMEWORK_API void MaaDestroyImageBuffer(MaaImageBufferHandle handle);
@@ -38,12 +39,17 @@ extern "C"
     MAA_FRAMEWORK_API int32_t MaaGetImageHeight(MaaImageBufferHandle handle);
     MAA_FRAMEWORK_API int32_t MaaGetImageType(MaaImageBufferHandle handle);
     MAA_FRAMEWORK_API MaaBool MaaSetImageRawData(
-        MaaImageBufferHandle handle, MaaImageRawData data, int32_t width, int32_t height, int32_t type);
+        MaaImageBufferHandle handle,
+        MaaImageRawData data,
+        int32_t width,
+        int32_t height,
+        int32_t type);
 
     typedef uint8_t* MaaImageEncodedData;
     MAA_FRAMEWORK_API MaaImageEncodedData MaaGetImageEncoded(MaaImageBufferHandle handle);
     MAA_FRAMEWORK_API MaaSize MaaGetImageEncodedSize(MaaImageBufferHandle handle);
-    MAA_FRAMEWORK_API MaaBool MaaSetImageEncoded(MaaImageBufferHandle handle, MaaImageEncodedData data, MaaSize size);
+    MAA_FRAMEWORK_API MaaBool
+        MaaSetImageEncoded(MaaImageBufferHandle handle, MaaImageEncodedData data, MaaSize size);
 
     MAA_FRAMEWORK_API MaaRectHandle MaaCreateRectBuffer();
     MAA_FRAMEWORK_API void MaaDestroyRectBuffer(MaaRectHandle handle);
@@ -52,7 +58,8 @@ extern "C"
     MAA_FRAMEWORK_API int32_t MaaGetRectW(MaaRectHandle handle);
     MAA_FRAMEWORK_API int32_t MaaGetRectH(MaaRectHandle handle);
 
-    MAA_FRAMEWORK_API MaaBool MaaSetRect(MaaRectHandle handle, int32_t x, int32_t y, int32_t w, int32_t h);
+    MAA_FRAMEWORK_API MaaBool
+        MaaSetRect(MaaRectHandle handle, int32_t x, int32_t y, int32_t w, int32_t h);
     MAA_FRAMEWORK_API MaaBool MaaSetRectX(MaaRectHandle handle, int32_t value);
     MAA_FRAMEWORK_API MaaBool MaaSetRectY(MaaRectHandle handle, int32_t value);
     MAA_FRAMEWORK_API MaaBool MaaSetRectW(MaaRectHandle handle, int32_t value);

@@ -169,7 +169,8 @@ inline std::string utf8_to_unicode_escape(std::string_view utf8_str)
     const char* from = utf8_str.data();
     size_t len = strlen(from) + 1;
 
-    std::unique_ptr<wchar_t[], std::default_delete<wchar_t[]>> to = std::make_unique<wchar_t[]>(len);
+    std::unique_ptr<wchar_t[], std::default_delete<wchar_t[]>> to =
+        std::make_unique<wchar_t[]>(len);
     mbstowcs(to.get(), from, len);
 
     setlocale(LC_ALL, locale);

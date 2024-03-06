@@ -18,7 +18,8 @@ class Recognizer
 public:
     using TaskData = MAA_RES_NS::TaskData;
 
-    struct Result {
+    struct Result
+    {
         cv::Rect box {};
         json::value detail;
     };
@@ -31,19 +32,32 @@ public:
 
 private:
     std::optional<Result> direct_hit(const std::string& name);
+    std::optional<Result> template_match(
+        const cv::Mat& image,
+        const MAA_VISION_NS::TemplateMatcherParam& param,
+        const std::string& name);
+    std::optional<Result> feature_match(
+        const cv::Mat& image,
+        const MAA_VISION_NS::FeatureMatcherParam& param,
+        const std::string& name);
+    std::optional<Result> color_match(
+        const cv::Mat& image,
+        const MAA_VISION_NS::ColorMatcherParam& param,
+        const std::string& name);
     std::optional<Result>
-        template_match(const cv::Mat& image, const MAA_VISION_NS::TemplateMatcherParam& param, const std::string& name);
-    std::optional<Result>
-        feature_match(const cv::Mat& image, const MAA_VISION_NS::FeatureMatcherParam& param, const std::string& name);
-    std::optional<Result>
-        color_match(const cv::Mat& image, const MAA_VISION_NS::ColorMatcherParam& param, const std::string& name);
-    std::optional<Result> ocr(const cv::Mat& image, const MAA_VISION_NS::OCRerParam& param, const std::string& name);
+        ocr(const cv::Mat& image, const MAA_VISION_NS::OCRerParam& param, const std::string& name);
     std::optional<Result> classify(
-        const cv::Mat& image, const MAA_VISION_NS::NeuralNetworkClassifierParam& param, const std::string& name);
-    std::optional<Result>
-        detect(const cv::Mat& image, const MAA_VISION_NS::NeuralNetworkDetectorParam& param, const std::string& name);
+        const cv::Mat& image,
+        const MAA_VISION_NS::NeuralNetworkClassifierParam& param,
+        const std::string& name);
+    std::optional<Result> detect(
+        const cv::Mat& image,
+        const MAA_VISION_NS::NeuralNetworkDetectorParam& param,
+        const std::string& name);
     std::optional<Result> custom_recognize(
-        const cv::Mat& image, const MAA_VISION_NS::CustomRecognizerParam& param, const std::string& name);
+        const cv::Mat& image,
+        const MAA_VISION_NS::CustomRecognizerParam& param,
+        const std::string& name);
 
     void show_hit_draw(const cv::Mat& image, const Result& res, const std::string& task_name) const;
 

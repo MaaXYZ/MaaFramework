@@ -25,7 +25,9 @@ public:
     };
 
 public:
-    AutoDetectInput(const std::filesystem::path& maatouch_path, const std::filesystem::path& minitouch_path);
+    AutoDetectInput(
+        const std::filesystem::path& maatouch_path,
+        const std::filesystem::path& minitouch_path);
     virtual ~AutoDetectInput() override = default;
 
 public: // from UnitBase

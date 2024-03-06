@@ -74,8 +74,8 @@ extern "C"
     /**
      * @brief Get the device name by index.
      *
-     * @param index The 0-based index of the device. The index should not exceed the number of devices found otherwise
-     * out_of_range exception will be thrown.
+     * @param index The 0-based index of the device. The index should not exceed the number of
+     * devices found otherwise out_of_range exception will be thrown.
      * @return MaaStringView
      */
     MAA_TOOLKIT_API MaaStringView MaaToolkitGetDeviceName(MaaSize index);
@@ -83,8 +83,8 @@ extern "C"
     /**
      * @brief Get the device ADB path by index.
      *
-     * @param index The 0-based index of the device. The index should not exceed the number of devices found otherwise
-     * out_of_range exception will be thrown.
+     * @param index The 0-based index of the device. The index should not exceed the number of
+     * devices found otherwise out_of_range exception will be thrown.
      * @return MaaStringView
      */
     MAA_TOOLKIT_API MaaStringView MaaToolkitGetDeviceAdbPath(MaaSize index);
@@ -92,8 +92,8 @@ extern "C"
     /**
      * @brief Get the device ADB serial by index.
      *
-     * @param index The 0-based index of the device. The index should not exceed the number of devices found otherwise
-     * out_of_range exception will be thrown.
+     * @param index The 0-based index of the device. The index should not exceed the number of
+     * devices found otherwise out_of_range exception will be thrown.
      * @return MaaStringView
      */
     MAA_TOOLKIT_API MaaStringView MaaToolkitGetDeviceAdbSerial(MaaSize index);
@@ -101,8 +101,8 @@ extern "C"
     /**
      * @brief Get the device ADB controller type by index.
      *
-     * @param index The 0-based index of the device. The index should not exceed the number of devices found otherwise
-     * out_of_range exception will be thrown.
+     * @param index The 0-based index of the device. The index should not exceed the number of
+     * devices found otherwise out_of_range exception will be thrown.
      * @return MaaAdbControllerType
      */
     MAA_TOOLKIT_API MaaAdbControllerType MaaToolkitGetDeviceAdbControllerType(MaaSize index);
@@ -110,8 +110,8 @@ extern "C"
     /**
      * @brief Get the device ADB config by index.
      *
-     * @param index The 0-based index of the device. The index should not exceed the number of devices found otherwise
-     * out_of_range exception will be thrown.
+     * @param index The 0-based index of the device. The index should not exceed the number of
+     * devices found otherwise out_of_range exception will be thrown.
      * @return MaaStringView
      */
     MAA_TOOLKIT_API MaaStringView MaaToolkitGetDeviceAdbConfig(MaaSize index);

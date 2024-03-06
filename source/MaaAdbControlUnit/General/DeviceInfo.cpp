@@ -10,10 +10,18 @@ bool DeviceInfo::parse(const json::value& config)
         "{ADB}", "-s", "{ADB_SERIAL}", "shell", "settings get secure android_id",
     };
     static const json::array kDefaultResolutionArgv = {
-        "{ADB}", "-s", "{ADB_SERIAL}", "shell", "dumpsys window displays | grep -o -E cur=+[^\\ ]+ | grep -o -E [0-9]+",
+        "{ADB}",
+        "-s",
+        "{ADB_SERIAL}",
+        "shell",
+        "dumpsys window displays | grep -o -E cur=+[^\\ ]+ | grep -o -E [0-9]+",
     };
     static const json::array kDefaultOrientationArgv = {
-        "{ADB}", "-s", "{ADB_SERIAL}", "shell", "dumpsys input | grep SurfaceOrientation | grep -m 1 -o -E [0-9]",
+        "{ADB}",
+        "-s",
+        "{ADB_SERIAL}",
+        "shell",
+        "dumpsys input | grep SurfaceOrientation | grep -m 1 -o -E [0-9]",
     };
 
     return parse_argv("UUID", config, kDefaultUuidArgv, uuid_argv_)

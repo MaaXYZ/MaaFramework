@@ -46,7 +46,10 @@ bool Actuator::run(const Recognizer::Result& rec_result, const TaskData& task_da
         break;
     case Type::Custom:
         ret = custom_action(
-            task_data.name, std::get<CustomParam>(task_data.action_param), rec_result.box, rec_result.detail);
+            task_data.name,
+            std::get<CustomParam>(task_data.action_param),
+            rec_result.box,
+            rec_result.detail);
         break;
     case Type::StopTask:
         LogInfo << "Action: StopTask";

@@ -14,7 +14,10 @@ int main([[maybe_unused]] int argc, char** argv)
     }
 
     std::string logging_dir = (cur_dir / "debug").string();
-    MaaSetGlobalOption(MaaGlobalOption_LogDir, static_cast<void*>(logging_dir.data()), logging_dir.size());
+    MaaSetGlobalOption(
+        MaaGlobalOption_LogDir,
+        static_cast<void*>(logging_dir.data()),
+        logging_dir.size());
     bool on = true;
     MaaSetGlobalOption(MaaGlobalOption_SaveDraw, &on, sizeof(on));
     MaaLoggingLevel lv = MaaLoggingLevel_Info;

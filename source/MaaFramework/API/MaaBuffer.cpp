@@ -158,8 +158,12 @@ MaaBool MaaClearImage(MaaImageBufferHandle handle)
     return true;
 }
 
-MaaBool
-    MaaSetImageRawData(MaaImageBufferHandle handle, MaaImageRawData data, int32_t width, int32_t height, int32_t type)
+MaaBool MaaSetImageRawData(
+    MaaImageBufferHandle handle,
+    MaaImageRawData data,
+    int32_t width,
+    int32_t height,
+    int32_t type)
 {
     if (!handle || !data) {
         LogError << "handle is null";

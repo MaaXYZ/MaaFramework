@@ -17,7 +17,10 @@ public:
     virtual ~ActionExecAgent() = default;
 
 private: // from ExecAgentBase
-    virtual bool register_for_maa_inst(MaaInstanceHandle handle, std::string_view name, ExecData& executor) override;
+    virtual bool register_for_maa_inst(
+        MaaInstanceHandle handle,
+        std::string_view name,
+        ExecData& executor) override;
     virtual bool unregister_for_maa_inst(MaaInstanceHandle handle, std::string_view name) override;
 
 private:

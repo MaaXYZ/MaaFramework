@@ -20,7 +20,8 @@ Recognizer::Recognizer(InstanceInternalAPI* inst)
 {
 }
 
-std::optional<Recognizer::Result> Recognizer::recognize(const cv::Mat& image, const TaskData& task_data)
+std::optional<Recognizer::Result>
+    Recognizer::recognize(const cv::Mat& image, const TaskData& task_data)
 {
     using namespace MAA_RES_NS::Recognition;
     using namespace MAA_VISION_NS;
@@ -37,15 +38,22 @@ std::optional<Recognizer::Result> Recognizer::recognize(const cv::Mat& image, co
         break;
 
     case Type::TemplateMatch:
-        result = template_match(image, std::get<TemplateMatcherParam>(task_data.rec_param), task_data.name);
+        result = template_match(
+            image,
+            std::get<TemplateMatcherParam>(task_data.rec_param),
+            task_data.name);
         break;
 
     case Type::FeatureMatch:
-        result = feature_match(image, std::get<FeatureMatcherParam>(task_data.rec_param), task_data.name);
+        result = feature_match(
+            image,
+            std::get<FeatureMatcherParam>(task_data.rec_param),
+            task_data.name);
         break;
 
     case Type::ColorMatch:
-        result = color_match(image, std::get<ColorMatcherParam>(task_data.rec_param), task_data.name);
+        result =
+            color_match(image, std::get<ColorMatcherParam>(task_data.rec_param), task_data.name);
         break;
 
     case Type::OCR:
@@ -53,19 +61,29 @@ std::optional<Recognizer::Result> Recognizer::recognize(const cv::Mat& image, co
         break;
 
     case Type::NeuralNetworkClassify:
-        result = classify(image, std::get<NeuralNetworkClassifierParam>(task_data.rec_param), task_data.name);
+        result = classify(
+            image,
+            std::get<NeuralNetworkClassifierParam>(task_data.rec_param),
+            task_data.name);
         break;
 
     case Type::NeuralNetworkDetect:
-        result = detect(image, std::get<NeuralNetworkDetectorParam>(task_data.rec_param), task_data.name);
+        result = detect(
+            image,
+            std::get<NeuralNetworkDetectorParam>(task_data.rec_param),
+            task_data.name);
         break;
 
     case Type::Custom:
-        result = custom_recognize(image, std::get<CustomRecognizerParam>(task_data.rec_param), task_data.name);
+        result = custom_recognize(
+            image,
+            std::get<CustomRecognizerParam>(task_data.rec_param),
+            task_data.name);
         break;
 
     default:
-        LogError << "Unknown type" << VAR(static_cast<int>(task_data.rec_type)) << VAR(task_data.name);
+        LogError << "Unknown type" << VAR(static_cast<int>(task_data.rec_type))
+                 << VAR(task_data.name);
         return std::nullopt;
     }
 
@@ -77,7 +95,8 @@ std::optional<Recognizer::Result> Recognizer::recognize(const cv::Mat& image, co
     }
 
     if (task_data.inverse) {
-        LogDebug << "task_data.inverse is true, reverse the result" << VAR(task_data.name) << VAR(result.has_value());
+        LogDebug << "task_data.inverse is true, reverse the result" << VAR(task_data.name)
+                 << VAR(result.has_value());
         return result ? std::nullopt : std::make_optional(Result { .box = cv::Rect() });
     }
     return result;
@@ -90,7 +109,9 @@ std::optional<Recognizer::Result> Recognizer::direct_hit(const std::string& name
 }
 
 std::optional<Recognizer::Result> Recognizer::template_match(
-    const cv::Mat& image, const MAA_VISION_NS::TemplateMatcherParam& param, const std::string& name)
+    const cv::Mat& image,
+    const MAA_VISION_NS::TemplateMatcherParam& param,
+    const std::string& name)
 {
     using namespace MAA_VISION_NS;
 
@@ -125,7 +146,9 @@ std::optional<Recognizer::Result> Recognizer::template_match(
 }
 
 std::optional<Recognizer::Result> Recognizer::feature_match(
-    const cv::Mat& image, const MAA_VISION_NS::FeatureMatcherParam& param, const std::string& name)
+    const cv::Mat& image,
+    const MAA_VISION_NS::FeatureMatcherParam& param,
+    const std::string& name)
 {
     using namespace MAA_VISION_NS;
 
@@ -152,7 +175,9 @@ std::optional<Recognizer::Result> Recognizer::feature_match(
 }
 
 std::optional<Recognizer::Result> Recognizer::color_match(
-    const cv::Mat& image, const MAA_VISION_NS::ColorMatcherParam& param, const std::string& name)
+    const cv::Mat& image,
+    const MAA_VISION_NS::ColorMatcherParam& param,
+    const std::string& name)
 {
     using namespace MAA_VISION_NS;
 
@@ -175,8 +200,10 @@ std::optional<Recognizer::Result> Recognizer::color_match(
     return Result { .box = box, .detail = std::move(results) };
 }
 
-std::optional<Recognizer::Result>
-    Recognizer::ocr(const cv::Mat& image, const MAA_VISION_NS::OCRerParam& param, const std::string& name)
+std::optional<Recognizer::Result> Recognizer::ocr(
+    const cv::Mat& image,
+    const MAA_VISION_NS::OCRerParam& param,
+    const std::string& name)
 {
     using namespace MAA_VISION_NS;
 
@@ -207,7 +234,9 @@ std::optional<Recognizer::Result>
 }
 
 std::optional<Recognizer::Result> Recognizer::classify(
-    const cv::Mat& image, const MAA_VISION_NS::NeuralNetworkClassifierParam& param, const std::string& name)
+    const cv::Mat& image,
+    const MAA_VISION_NS::NeuralNetworkClassifierParam& param,
+    const std::string& name)
 {
     using namespace MAA_VISION_NS;
 
@@ -234,7 +263,9 @@ std::optional<Recognizer::Result> Recognizer::classify(
 }
 
 std::optional<Recognizer::Result> Recognizer::detect(
-    const cv::Mat& image, const MAA_VISION_NS::NeuralNetworkDetectorParam& param, const std::string& name)
+    const cv::Mat& image,
+    const MAA_VISION_NS::NeuralNetworkDetectorParam& param,
+    const std::string& name)
 {
     using namespace MAA_VISION_NS;
 
@@ -261,7 +292,9 @@ std::optional<Recognizer::Result> Recognizer::detect(
 }
 
 std::optional<Recognizer::Result> Recognizer::custom_recognize(
-    const cv::Mat& image, const MAA_VISION_NS::CustomRecognizerParam& param, const std::string& name)
+    const cv::Mat& image,
+    const MAA_VISION_NS::CustomRecognizerParam& param,
+    const std::string& name)
 {
     using namespace MAA_VISION_NS;
 
@@ -288,7 +321,10 @@ std::optional<Recognizer::Result> Recognizer::custom_recognize(
     return Result { .box = box, .detail = std::move(*result_opt) };
 }
 
-void Recognizer::show_hit_draw(const cv::Mat& image, const Result& res, const std::string& task_name) const
+void Recognizer::show_hit_draw(
+    const cv::Mat& image,
+    const Result& res,
+    const std::string& task_name) const
 {
     if (!GlobalOptionMgr::get_instance().show_hit_draw()) {
         return;

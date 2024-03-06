@@ -18,36 +18,50 @@ MAA_RES_NS_END
 
 MAA_CTRL_NS_BEGIN
 
-struct ClickParam {
+struct ClickParam
+{
     int x = 0;
     int y = 0;
 };
-struct SwipeParam {
+struct SwipeParam
+{
     int x1 = 0;
     int y1 = 0;
     int x2 = 0;
     int y2 = 0;
     int duration = 0;
 };
-struct TouchParam {
+struct TouchParam
+{
     int contact = 0;
     int x = 0;
     int y = 0;
     int pressure = 0;
 };
-struct PressKeyParam {
+struct PressKeyParam
+{
     int keycode = 0;
 };
-struct InputTextParam {
+struct InputTextParam
+{
     std::string text;
 };
-struct AppParam {
+struct AppParam
+{
     std::string package;
 };
 
-using Param = std::variant<std::monostate, ClickParam, SwipeParam, TouchParam, PressKeyParam, InputTextParam, AppParam>;
+using Param = std::variant<
+    std::monostate,
+    ClickParam,
+    SwipeParam,
+    TouchParam,
+    PressKeyParam,
+    InputTextParam,
+    AppParam>;
 
-struct Action {
+struct Action
+{
     enum class Type
     {
         invalid,
@@ -76,7 +90,8 @@ public:
 
     virtual ~ControllerAgent() override;
 
-    virtual bool set_option(MaaCtrlOption key, MaaOptionValue value, MaaOptionValueSize val_size) override;
+    virtual bool
+        set_option(MaaCtrlOption key, MaaOptionValue value, MaaOptionValueSize val_size) override;
 
     virtual MaaCtrlId post_connection() override;
     virtual MaaCtrlId post_click(int x, int y) override;
@@ -146,7 +161,10 @@ private:
 
     bool recording() const;
     void init_recording();
-    void append_recording(json::value info, const std::chrono::steady_clock::time_point& start_time, bool success);
+    void append_recording(
+        json::value info,
+        const std::chrono::steady_clock::time_point& start_time,
+        bool success);
 
 private:
     static cv::Point rand_point(const cv::Rect& r);

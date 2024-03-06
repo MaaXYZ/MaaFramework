@@ -5,9 +5,10 @@
         return Status(INVALID_ARGUMENT, #name " not provided"); \
     }
 
-#define MAA_GRPC_REQUIRED_CASE(name, name_cap)                                                        \
-    if (request->name##_case() == std::remove_pointer<decltype(request)>::type::name_cap##_NOT_SET) { \
-        return Status(INVALID_ARGUMENT, #name " not provided");                                       \
+#define MAA_GRPC_REQUIRED_CASE(name, name_cap)                                 \
+    if (request->name##_case()                                                 \
+        == std::remove_pointer<decltype(request)>::type::name_cap##_NOT_SET) { \
+        return Status(INVALID_ARGUMENT, #name " not provided");                \
     }
 
 #define MAA_GRPC_REQUIRED_CASE_AS(name, case)                                              \

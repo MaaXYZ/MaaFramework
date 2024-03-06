@@ -168,7 +168,9 @@ std::optional<cv::Mat> DesktopDupScreencap::screencap_impl()
     });
 
     ID3D11Texture2D* raw_texture = nullptr;
-    ret = desktop_resource->QueryInterface(__uuidof(ID3D11Texture2D), reinterpret_cast<void**>(&raw_texture));
+    ret = desktop_resource->QueryInterface(
+        __uuidof(ID3D11Texture2D),
+        reinterpret_cast<void**>(&raw_texture));
     if (FAILED(ret)) {
         LogError << "QueryInterface ID3D11Texture2D failed" << VAR(ret);
         return std::nullopt;

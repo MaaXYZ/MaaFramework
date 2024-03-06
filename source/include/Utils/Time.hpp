@@ -39,7 +39,9 @@ inline std::string format_now()
 inline std::string format_now_for_filename()
 {
 #ifndef __APPLE__ // Now Apple's compiler cannot build std::chrono::format. 2023/07/21
-    return std::format("{:%Y.%m.%d-%H.%M.%S}", std::chrono::current_zone()->to_local(std::chrono::system_clock::now()));
+    return std::format(
+        "{:%Y.%m.%d-%H.%M.%S}",
+        std::chrono::current_zone()->to_local(std::chrono::system_clock::now()));
 #else
     timeval tv = {};
     gettimeofday(&tv, nullptr);

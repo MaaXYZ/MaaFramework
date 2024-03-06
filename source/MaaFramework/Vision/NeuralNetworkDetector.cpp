@@ -22,7 +22,8 @@ std::pair<NeuralNetworkDetector::ResultsVec, size_t> NeuralNetworkDetector::anal
         return {};
     }
     if (param_.cls_size != param_.labels.size()) {
-        LogError << "cls_size != labels.size()" << VAR(param_.cls_size) << VAR(param_.labels.size());
+        LogError << "cls_size != labels.size()" << VAR(param_.cls_size)
+                 << VAR(param_.labels.size());
         return {};
     }
 
@@ -51,7 +52,10 @@ NeuralNetworkDetector::ResultsVec NeuralNetworkDetector::foreach_rois() const
     ResultsVec results;
     for (const cv::Rect& roi : param_.roi) {
         ResultsVec res = detect(roi);
-        results.insert(results.end(), std::make_move_iterator(res.begin()), std::make_move_iterator(res.end()));
+        results.insert(
+            results.end(),
+            std::make_move_iterator(res.begin()),
+            std::make_move_iterator(res.end()));
     }
 
     return results;
@@ -73,7 +77,11 @@ NeuralNetworkDetector::ResultsVec NeuralNetworkDetector::detect(const cv::Rect& 
     std::array<int64_t, 4> input_shape { kBatchSize, image.channels(), image.cols, image.rows };
 
     Ort::Value input_tensor = Ort::Value::CreateTensor<float>(
-        memory_info, input.data(), input.size(), input_shape.data(), input_shape.size());
+        memory_info,
+        input.data(),
+        input.size(),
+        input_shape.data(),
+        input_shape.size());
 
     Ort::AllocatorWithDefaultOptions allocator;
     const std::string in_0 = session_->GetInputNameAllocated(0, allocator).get();
@@ -83,7 +91,12 @@ NeuralNetworkDetector::ResultsVec NeuralNetworkDetector::detect(const cv::Rect& 
 
     Ort::RunOptions run_options;
     auto output_tensor = session_->Run(
-        run_options, input_names.data(), &input_tensor, input_names.size(), output_names.data(), output_names.size());
+        run_options,
+        input_names.data(),
+        &input_tensor,
+        input_names.size(),
+        output_names.data(),
+        output_names.size());
 
     const float* raw_output = output_tensor[0].GetTensorData<float>();
     // output_shape is { 1, 5, 8400 }
@@ -101,7 +114,9 @@ NeuralNetworkDetector::ResultsVec NeuralNetworkDetector::detect(const cv::Rect& 
     // ......
     std::vector<std::vector<float>> output(output_shape[1]);
     for (int64_t i = 0; i < output_shape[1]; i++) {
-        output[i] = std::vector<float>(raw_output + i * output_shape[2], raw_output + (i + 1) * output_shape[2]);
+        output[i] = std::vector<float>(
+            raw_output + i * output_shape[2],
+            raw_output + (i + 1) * output_shape[2]);
     }
 
     ResultsVec all_nms_results;
@@ -180,7 +195,14 @@ void NeuralNetworkDetector::draw_result(const cv::Rect& roi, const ResultsVec& r
             my_box.y,
             my_box.width,
             my_box.height);
-        cv::putText(image_draw, flag, cv::Point(my_box.x, my_box.y - 5), cv::FONT_HERSHEY_PLAIN, 1.2, color, 1);
+        cv::putText(
+            image_draw,
+            flag,
+            cv::Point(my_box.x, my_box.y - 5),
+            cv::FONT_HERSHEY_PLAIN,
+            1.2,
+            color,
+            1);
     }
 
     handle_draw(image_draw);

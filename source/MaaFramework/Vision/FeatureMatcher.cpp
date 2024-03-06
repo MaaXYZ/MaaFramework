@@ -32,7 +32,8 @@ std::pair<FeatureMatcher::ResultsVec, size_t> FeatureMatcher::analyze() const
     filter(results, count);
 
     cost = duration_since(start_time);
-    LogTrace << name_ << "Filter:" << VAR(results) << VAR(param_.template_path) << VAR(count) << VAR(cost);
+    LogTrace << name_ << "Filter:" << VAR(results) << VAR(param_.template_path) << VAR(count)
+             << VAR(cost);
 
     sort(results);
     size_t index = preferred_index(results);
@@ -57,14 +58,19 @@ FeatureMatcher::ResultsVec FeatureMatcher::foreach_rois(const cv::Mat& templ) co
     ResultsVec results;
     for (const cv::Rect& roi : param_.roi) {
         ResultsVec res = match_roi(keypoints_1, descriptors_1, roi);
-        results.insert(results.end(), std::make_move_iterator(res.begin()), std::make_move_iterator(res.end()));
+        results.insert(
+            results.end(),
+            std::make_move_iterator(res.begin()),
+            std::make_move_iterator(res.end()));
     }
 
     return results;
 }
 
 FeatureMatcher::ResultsVec FeatureMatcher::match_roi(
-    const std::vector<cv::KeyPoint>& keypoints_1, const cv::Mat& descriptors_1, const cv::Rect& roi_2) const
+    const std::vector<cv::KeyPoint>& keypoints_1,
+    const cv::Mat& descriptors_1,
+    const cv::Rect& roi_2) const
 {
     if (roi_2.empty()) {
         LogError << name_ << "roi_2 is empty";
@@ -104,7 +110,8 @@ cv::Ptr<cv::Feature2D> FeatureMatcher::create_detector() const
     return nullptr;
 }
 
-std::pair<std::vector<cv::KeyPoint>, cv::Mat> FeatureMatcher::detect(const cv::Mat& image, const cv::Mat& mask) const
+std::pair<std::vector<cv::KeyPoint>, cv::Mat>
+    FeatureMatcher::detect(const cv::Mat& image, const cv::Mat& mask) const
 {
     auto detector = create_detector();
     if (!detector) {
@@ -184,7 +191,8 @@ FeatureMatcher::ResultsVec FeatureMatcher::postproc(
         scene.emplace_back(keypoints_2[point[0].queryIdx].pt);
     }
 
-    LogTrace << name_ << "Match:" << VAR(good_matches.size()) << VAR(match_points.size()) << VAR(param_.distance_ratio);
+    LogTrace << name_ << "Match:" << VAR(good_matches.size()) << VAR(match_points.size())
+             << VAR(param_.distance_ratio);
 
     ResultsVec results;
     if (good_matches.size() >= 4) {
@@ -197,13 +205,25 @@ FeatureMatcher::ResultsVec FeatureMatcher::postproc(
         std::array<cv::Point2d, 4> scene_corners;
         cv::perspectiveTransform(obj_corners, scene_corners, H);
 
-        double x = std::min({ scene_corners[0].x, scene_corners[1].x, scene_corners[2].x, scene_corners[3].x });
-        double y = std::min({ scene_corners[0].y, scene_corners[1].y, scene_corners[2].y, scene_corners[3].y });
-        double w = std::max({ scene_corners[0].x, scene_corners[1].x, scene_corners[2].x, scene_corners[3].x }) - x;
-        double h = std::max({ scene_corners[0].y, scene_corners[1].y, scene_corners[2].y, scene_corners[3].y }) - y;
-        cv::Rect box { static_cast<int>(x), static_cast<int>(y), static_cast<int>(w), static_cast<int>(h) };
+        double x = std::min(
+            { scene_corners[0].x, scene_corners[1].x, scene_corners[2].x, scene_corners[3].x });
+        double y = std::min(
+            { scene_corners[0].y, scene_corners[1].y, scene_corners[2].y, scene_corners[3].y });
+        double w =
+            std::max(
+                { scene_corners[0].x, scene_corners[1].x, scene_corners[2].x, scene_corners[3].x })
+            - x;
+        double h =
+            std::max(
+                { scene_corners[0].y, scene_corners[1].y, scene_corners[2].y, scene_corners[3].y })
+            - y;
+        cv::Rect box { static_cast<int>(x),
+                       static_cast<int>(y),
+                       static_cast<int>(w),
+                       static_cast<int>(h) };
 
-        size_t count = std::ranges::count_if(scene, [&box](const auto& point) { return box.contains(point); });
+        size_t count =
+            std::ranges::count_if(scene, [&box](const auto& point) { return box.contains(point); });
 
         results.emplace_back(Result { .box = box, .count = static_cast<int>(count) });
     }
@@ -236,9 +256,21 @@ void FeatureMatcher::draw_result(
         const auto& res = results.at(i);
         cv::rectangle(image_draw, res.box, color, 1);
 
-        std::string flag =
-            std::format("Cnt: {}, [{}, {}, {}, {}]", res.count, res.box.x, res.box.y, res.box.width, res.box.height);
-        cv::putText(image_draw, flag, cv::Point(res.box.x, res.box.y - 5), cv::FONT_HERSHEY_PLAIN, 1.2, color, 1);
+        std::string flag = std::format(
+            "Cnt: {}, [{}, {}, {}, {}]",
+            res.count,
+            res.box.x,
+            res.box.y,
+            res.box.width,
+            res.box.height);
+        cv::putText(
+            image_draw,
+            flag,
+            cv::Point(res.box.x, res.box.y - 5),
+            cv::FONT_HERSHEY_PLAIN,
+            1.2,
+            color,
+            1);
     }
 
     handle_draw(image_draw);

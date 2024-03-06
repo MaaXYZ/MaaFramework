@@ -10,7 +10,11 @@ bool ScreencapRawWithGzip::parse(const json::value& config)
         "{ADB}", "-s", "{ADB_SERIAL}", "exec-out", "screencap | gzip -1",
     };
 
-    return parse_argv("ScreencapRawWithGzip", config, kDefaultScreencapRawWithGzipArgv, screencap_raw_with_gzip_argv_);
+    return parse_argv(
+        "ScreencapRawWithGzip",
+        config,
+        kDefaultScreencapRawWithGzipArgv,
+        screencap_raw_with_gzip_argv_);
 }
 
 bool ScreencapRawWithGzip::init(int swidth, int sheight)
@@ -31,7 +35,8 @@ std::optional<cv::Mat> ScreencapRawWithGzip::screencap()
     }
 
     return screencap_helper_.process_data(
-        *output_opt, std::bind(&ScreencapHelper::decode_gzip, &screencap_helper_, std::placeholders::_1));
+        *output_opt,
+        std::bind(&ScreencapHelper::decode_gzip, &screencap_helper_, std::placeholders::_1));
 }
 
 MAA_CTRL_UNIT_NS_END

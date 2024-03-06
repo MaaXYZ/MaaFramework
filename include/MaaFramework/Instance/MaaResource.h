@@ -72,8 +72,8 @@ extern "C"
     /**
      * @brief Set options for a given resource.
      *
-     * This function requires a given set of option keys and value types, otherwise this will fail. See
-     * #MaaResOptionEnum for details.
+     * This function requires a given set of option keys and value types, otherwise this will fail.
+     * See #MaaResOptionEnum for details.
      *
      * @param res The handle of the resource to set options for.
      * @param key The option key.
@@ -82,7 +82,10 @@ extern "C"
      * @return MaaBool Whether the option is set successfully.
      */
     MAA_FRAMEWORK_API MaaBool MaaResourceSetOption(
-        MaaResourceHandle res, MaaResOption key, MaaOptionValue value, MaaOptionValueSize val_size);
+        MaaResourceHandle res,
+        MaaResOption key,
+        MaaOptionValue value,
+        MaaOptionValueSize val_size);
 
     /**
      * @brief Get the hash of the resource.
@@ -92,7 +95,8 @@ extern "C"
      *
      * @return MaaBool
      */
-    MAA_FRAMEWORK_API MaaBool MaaResourceGetHash(MaaResourceHandle res, MaaStringBufferHandle buffer);
+    MAA_FRAMEWORK_API MaaBool
+        MaaResourceGetHash(MaaResourceHandle res, MaaStringBufferHandle buffer);
 
     /**
      * @brief Get the task list of the resource.
@@ -102,7 +106,8 @@ extern "C"
      *
      * @return MaaBool
      */
-    MAA_FRAMEWORK_API MaaBool MaaResourceGetTaskList(MaaResourceHandle res, MaaStringBufferHandle buffer);
+    MAA_FRAMEWORK_API MaaBool
+        MaaResourceGetTaskList(MaaResourceHandle res, MaaStringBufferHandle buffer);
 
 #ifdef __cplusplus
 }

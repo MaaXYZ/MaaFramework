@@ -11,7 +11,10 @@ MAA_TASK_NS_BEGIN
 class CustomAction
 {
 public:
-    CustomAction(MaaCustomActionHandle handle, MaaTransparentArg handle_arg, InstanceInternalAPI* inst);
+    CustomAction(
+        MaaCustomActionHandle handle,
+        MaaTransparentArg handle_arg,
+        InstanceInternalAPI* inst);
 
     bool
         run(const std::string& task_name,
