@@ -31,7 +31,7 @@ extern "C"
      * @param callback_arg The callback arg that will be passed to the callback function.
      * @return MaaControllerHandle The handle of the created controller instance.
      */
-    MaaControllerHandle MAA_FRAMEWORK_API MaaAdbControllerCreate(
+    MAA_FRAMEWORK_API MaaControllerHandle MaaAdbControllerCreate(
         MaaStringView adb_path,
         MaaStringView address,
         MaaAdbControllerType type,
@@ -49,7 +49,7 @@ extern "C"
      * @param callback_arg The callback arg that will be passed to the callback function.
      * @return MaaControllerHandle The handle of the created controller instance.
      */
-    MaaControllerHandle MAA_FRAMEWORK_API MaaWin32ControllerCreate(
+    MAA_FRAMEWORK_API MaaControllerHandle MaaWin32ControllerCreate(
         MaaWin32Hwnd hWnd,
         MaaWin32ControllerType type,
         MaaControllerCallback callback,
@@ -67,7 +67,7 @@ extern "C"
      * @param callback_arg The callback arg that will be passed to the callback function.
      * @return MaaControllerHandle The handle of the created controller instance.
      */
-    MaaControllerHandle MAA_FRAMEWORK_API MaaAdbControllerCreateV2(
+    MAA_FRAMEWORK_API MaaControllerHandle MaaAdbControllerCreateV2(
         MaaStringView adb_path,
         MaaStringView address,
         MaaAdbControllerType type,
@@ -85,13 +85,13 @@ extern "C"
      * @param callback_arg The callback arg that will be passed to the callback function.
      * @return MaaControllerHandle The handle of the created controller instance.
      */
-    MaaControllerHandle MAA_FRAMEWORK_API MaaCustomControllerCreate(
+    MAA_FRAMEWORK_API MaaControllerHandle MaaCustomControllerCreate(
         MaaCustomControllerHandle handle,
         MaaTransparentArg handle_arg,
         MaaControllerCallback callback,
         MaaCallbackTransparentArg callback_arg);
 
-    MaaControllerHandle MAA_FRAMEWORK_API MaaThriftControllerCreate(
+    MAA_FRAMEWORK_API MaaControllerHandle MaaThriftControllerCreate(
         MaaThriftControllerType type,
         MaaStringView host,
         int32_t port,
@@ -99,7 +99,7 @@ extern "C"
         MaaControllerCallback callback,
         MaaCallbackTransparentArg callback_arg);
 
-    MaaControllerHandle MAA_FRAMEWORK_API MaaDbgControllerCreate(
+    MAA_FRAMEWORK_API MaaControllerHandle MaaDbgControllerCreate(
         MaaStringView read_path,
         MaaStringView write_path,
         MaaDbgControllerType type,
@@ -112,7 +112,7 @@ extern "C"
      *
      * @param ctrl
      */
-    void MAA_FRAMEWORK_API MaaControllerDestroy(MaaControllerHandle ctrl);
+    MAA_FRAMEWORK_API void MaaControllerDestroy(MaaControllerHandle ctrl);
 
     /**
      * @brief Set options for a given controller instance.
@@ -126,7 +126,7 @@ extern "C"
      * @param val_size The size of the option value.
      * @return MaaBool Whether the option is set successfully.
      */
-    MaaBool MAA_FRAMEWORK_API MaaControllerSetOption(
+    MAA_FRAMEWORK_API MaaBool MaaControllerSetOption(
         MaaControllerHandle ctrl, MaaCtrlOption key, MaaOptionValue value, MaaOptionValueSize val_size);
 
     /**
@@ -136,25 +136,25 @@ extern "C"
      * @{
      */
 
-    MaaCtrlId MAA_FRAMEWORK_API MaaControllerPostConnection(MaaControllerHandle ctrl);
+    MAA_FRAMEWORK_API MaaCtrlId MaaControllerPostConnection(MaaControllerHandle ctrl);
 
-    MaaCtrlId MAA_FRAMEWORK_API MaaControllerPostClick(MaaControllerHandle ctrl, int32_t x, int32_t y);
+    MAA_FRAMEWORK_API MaaCtrlId MaaControllerPostClick(MaaControllerHandle ctrl, int32_t x, int32_t y);
 
-    MaaCtrlId MAA_FRAMEWORK_API MaaControllerPostSwipe(
+    MAA_FRAMEWORK_API MaaCtrlId MaaControllerPostSwipe(
         MaaControllerHandle ctrl, int32_t x1, int32_t y1, int32_t x2, int32_t y2, int32_t duration);
 
-    MaaCtrlId MAA_FRAMEWORK_API MaaControllerPostPressKey(MaaControllerHandle ctrl, int32_t keycode);
+    MAA_FRAMEWORK_API MaaCtrlId MaaControllerPostPressKey(MaaControllerHandle ctrl, int32_t keycode);
 
-    MaaCtrlId MAA_FRAMEWORK_API MaaControllerPostInputText(MaaControllerHandle ctrl, MaaStringView text);
+    MAA_FRAMEWORK_API MaaCtrlId MaaControllerPostInputText(MaaControllerHandle ctrl, MaaStringView text);
 
-    MaaCtrlId MAA_FRAMEWORK_API
+    MAA_FRAMEWORK_API MaaCtrlId
         MaaControllerPostTouchDown(MaaControllerHandle ctrl, int32_t contact, int32_t x, int32_t y, int32_t pressure);
-    MaaCtrlId MAA_FRAMEWORK_API
+    MAA_FRAMEWORK_API MaaCtrlId
         MaaControllerPostTouchMove(MaaControllerHandle ctrl, int32_t contact, int32_t x, int32_t y, int32_t pressure);
 
-    MaaCtrlId MAA_FRAMEWORK_API MaaControllerPostTouchUp(MaaControllerHandle ctrl, int32_t contact);
+    MAA_FRAMEWORK_API MaaCtrlId MaaControllerPostTouchUp(MaaControllerHandle ctrl, int32_t contact);
 
-    MaaCtrlId MAA_FRAMEWORK_API MaaControllerPostScreencap(MaaControllerHandle ctrl);
+    MAA_FRAMEWORK_API MaaCtrlId MaaControllerPostScreencap(MaaControllerHandle ctrl);
 
     /** @} */
 
@@ -165,7 +165,7 @@ extern "C"
      * @param id
      * @return MaaStatus The status of the request.
      */
-    MaaStatus MAA_FRAMEWORK_API MaaControllerStatus(MaaControllerHandle ctrl, MaaCtrlId id);
+    MAA_FRAMEWORK_API MaaStatus MaaControllerStatus(MaaControllerHandle ctrl, MaaCtrlId id);
 
     /**
      * @brief Wait for the request identified by the given id to complete.
@@ -174,7 +174,7 @@ extern "C"
      * @param id
      * @return MaaStatus The status of the request.
      */
-    MaaStatus MAA_FRAMEWORK_API MaaControllerWait(MaaControllerHandle ctrl, MaaCtrlId id);
+    MAA_FRAMEWORK_API MaaStatus MaaControllerWait(MaaControllerHandle ctrl, MaaCtrlId id);
 
     /**
      * @brief Check if the controller is connected.
@@ -182,7 +182,7 @@ extern "C"
      * @param ctrl
      * @return MaaBool
      */
-    MaaBool MAA_FRAMEWORK_API MaaControllerConnected(MaaControllerHandle ctrl);
+    MAA_FRAMEWORK_API MaaBool MaaControllerConnected(MaaControllerHandle ctrl);
 
     /**
      * @brief Get the image buffer of the last screencap request.
@@ -192,7 +192,7 @@ extern "C"
      *
      * @return MaaBool Whether the image buffer is retrieved successfully.
      */
-    MaaBool MAA_FRAMEWORK_API MaaControllerGetImage(MaaControllerHandle ctrl, MaaImageBufferHandle buffer);
+    MAA_FRAMEWORK_API MaaBool MaaControllerGetImage(MaaControllerHandle ctrl, MaaImageBufferHandle buffer);
 
     /**
      * @brief Get the UUID of the controller.
@@ -202,7 +202,7 @@ extern "C"
      *
      * @return MaaBool Whether the resolution is retrieved successfully.
      */
-    MaaBool MAA_FRAMEWORK_API MaaControllerGetUUID(MaaControllerHandle ctrl, MaaStringBufferHandle buffer);
+    MAA_FRAMEWORK_API MaaBool MaaControllerGetUUID(MaaControllerHandle ctrl, MaaStringBufferHandle buffer);
 
 #ifdef __cplusplus
 }

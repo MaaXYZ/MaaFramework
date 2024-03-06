@@ -7,7 +7,7 @@
 
 MAA_LOG_NS_BEGIN
 
-class MAA_UTILS_API Logger
+MAA_UTILS_API class Logger
 {
 public:
     static constexpr std::string_view kLogFilename = "maa.log";

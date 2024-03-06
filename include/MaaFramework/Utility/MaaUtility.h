@@ -22,7 +22,7 @@ extern "C"
      *
      * @return MaaStringView
      */
-    MaaStringView MAA_FRAMEWORK_API MaaVersion();
+    MAA_FRAMEWORK_API MaaStringView MaaVersion();
 
     /**
      * @brief Set options globally.
@@ -35,7 +35,7 @@ extern "C"
      * @param val_size The size of the option value.
      * @return MaaBool Whether the option is set successfully.
      */
-    MaaBool MAA_FRAMEWORK_API
+    MAA_FRAMEWORK_API MaaBool
         MaaSetGlobalOption(MaaGlobalOption key, MaaOptionValue value, MaaOptionValueSize val_size);
 
 #ifdef __cplusplus

@@ -17,7 +17,7 @@ extern "C"
      * @return MaaSize The number of windows found that match the criteria. To get the corresponding window handle, use
      * MaaToolkitGetWindow().
      */
-    MaaSize MAA_TOOLKIT_API MaaToolkitFindWindow(MaaStringView class_name, MaaStringView window_name);
+    MAA_TOOLKIT_API MaaSize MaaToolkitFindWindow(MaaStringView class_name, MaaStringView window_name);
 
     /**
      * @brief Search a win32 window by class name and window name.
@@ -29,7 +29,7 @@ extern "C"
      * @return MaaSize The number of windows found that match the criteria. To get the corresponding window handle, use
      * MaaToolkitGetWindow().
      */
-    MaaSize MAA_TOOLKIT_API MaaToolkitSearchWindow(MaaStringView class_name, MaaStringView window_name);
+    MAA_TOOLKIT_API MaaSize MaaToolkitSearchWindow(MaaStringView class_name, MaaStringView window_name);
 
     /**
      * @brief Get the window handle by index.
@@ -38,28 +38,28 @@ extern "C"
      * out_of_range exception will be thrown.
      * @return MaaWin32Hwnd The window handle.
      */
-    MaaWin32Hwnd MAA_TOOLKIT_API MaaToolkitGetWindow(MaaSize index);
+    MAA_TOOLKIT_API MaaWin32Hwnd MaaToolkitGetWindow(MaaSize index);
 
     /**
      * @brief Get the window handle of the window under the cursor. This uses the WindowFromPoint() system API.
      *
      * @return MaaWin32Hwnd The window handle.
      */
-    MaaWin32Hwnd MAA_TOOLKIT_API MaaToolkitGetCursorWindow();
+    MAA_TOOLKIT_API MaaWin32Hwnd MaaToolkitGetCursorWindow();
 
     /**
      * @brief Get the desktop window handle. This uses the GetDesktopWindow() system API.
      *
      * @return MaaWin32Hwnd The window handle.
      */
-    MaaWin32Hwnd MAA_TOOLKIT_API MaaToolkitGetDesktopWindow();
+    MAA_TOOLKIT_API MaaWin32Hwnd MaaToolkitGetDesktopWindow();
 
     /**
      * @brief Get the foreground window handle. This uses the GetForegroundWindow() system API.
      *
      * @return MaaWin32Hwnd The window handle.
      */
-    MaaWin32Hwnd MAA_TOOLKIT_API MaaToolkitGetForegroundWindow();
+    MAA_TOOLKIT_API MaaWin32Hwnd MaaToolkitGetForegroundWindow();
 
 #ifdef __cplusplus
 }

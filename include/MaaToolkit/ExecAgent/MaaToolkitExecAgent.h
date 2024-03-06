@@ -7,23 +7,21 @@ extern "C"
 {
 #endif
 
-    MaaBool MAA_TOOLKIT_API MaaToolkitRegisterCustomRecognizerExecutor(
+    MAA_TOOLKIT_API MaaBool MaaToolkitRegisterCustomRecognizerExecutor(
         MaaInstanceHandle handle,
         MaaStringView recognizer_name,
         MaaStringView recognizer_exec_path,
         MaaStringView recognizer_exec_param_json);
-    MaaBool MAA_TOOLKIT_API MaaToolkitUnregisterCustomRecognizerExecutor(
-        MaaInstanceHandle handle,
-        MaaStringView recognizer_name);
+    MAA_TOOLKIT_API MaaBool
+        MaaToolkitUnregisterCustomRecognizerExecutor(MaaInstanceHandle handle, MaaStringView recognizer_name);
 
-    MaaBool MAA_TOOLKIT_API MaaToolkitRegisterCustomActionExecutor(
+    MAA_TOOLKIT_API MaaBool MaaToolkitRegisterCustomActionExecutor(
         MaaInstanceHandle handle,
         MaaStringView action_name,
         MaaStringView action_exec_path,
         MaaStringView action_exec_param_json);
-    MaaBool MAA_TOOLKIT_API MaaToolkitUnregisterCustomActionExecutor(
-        MaaInstanceHandle handle,
-        MaaStringView action_name);
+    MAA_TOOLKIT_API MaaBool
+        MaaToolkitUnregisterCustomActionExecutor(MaaInstanceHandle handle, MaaStringView action_name);
 
 #ifdef __cplusplus
 }

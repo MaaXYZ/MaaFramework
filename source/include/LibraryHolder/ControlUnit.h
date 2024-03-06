@@ -47,9 +47,8 @@ private:
 class DbgControlUnitLibraryHolder : public LibraryHolder<DbgControlUnitLibraryHolder>
 {
 public:
-    static std::shared_ptr<MAA_CTRL_UNIT_NS::ControlUnitAPI> create_control_unit(
-        MaaDbgControllerType type,
-        MaaStringView read_path);
+    static std::shared_ptr<MAA_CTRL_UNIT_NS::ControlUnitAPI>
+        create_control_unit(MaaDbgControllerType type, MaaStringView read_path);
 
 private:
     inline static const std::filesystem::path libname_ = MAA_NS::path("MaaDbgControlUnit");
@@ -61,11 +60,8 @@ private:
 class ThriftControlUnitLibraryHolder : public LibraryHolder<ThriftControlUnitLibraryHolder>
 {
 public:
-    static std::shared_ptr<MAA_CTRL_UNIT_NS::ControlUnitAPI> create_control_unit(
-        MaaThriftControllerType type,
-        MaaStringView host,
-        int32_t port,
-        MaaStringView config);
+    static std::shared_ptr<MAA_CTRL_UNIT_NS::ControlUnitAPI>
+        create_control_unit(MaaThriftControllerType type, MaaStringView host, int32_t port, MaaStringView config);
 
 private:
     inline static const std::filesystem::path libname_ = MAA_NS::path("MaaThriftControlUnit");
