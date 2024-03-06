@@ -30,8 +30,13 @@ bool check_version(const std::string& func_name)
 }
 
 std::shared_ptr<MAA_CTRL_UNIT_NS::ControlUnitAPI> AdbControlUnitLibraryHolder::create_control_unit(
-    MaaStringView adb_path, MaaStringView adb_serial, MaaAdbControllerType type, MaaStringView config,
-    MaaStringView agent_path, MaaControllerCallback callback, MaaCallbackTransparentArg callback_arg)
+    MaaStringView adb_path,
+    MaaStringView adb_serial,
+    MaaAdbControllerType type,
+    MaaStringView config,
+    MaaStringView agent_path,
+    MaaControllerCallback callback,
+    MaaCallbackTransparentArg callback_arg)
 {
     if (!load_library(library_dir() / libname_)) {
         LogError << "Failed to load library" << VAR(library_dir()) << VAR(libname_);
@@ -52,8 +57,8 @@ std::shared_ptr<MAA_CTRL_UNIT_NS::ControlUnitAPI> AdbControlUnitLibraryHolder::c
         return nullptr;
     }
 
-    auto control_unit_handle = create_control_unit_func( //
-        adb_path, adb_serial, type, config, agent_path, callback, callback_arg);
+    auto control_unit_handle =
+        create_control_unit_func(adb_path, adb_serial, type, config, agent_path, callback, callback_arg);
 
     if (!control_unit_handle) {
         LogError << "Failed to create control unit";
@@ -69,7 +74,9 @@ std::shared_ptr<MAA_CTRL_UNIT_NS::ControlUnitAPI> AdbControlUnitLibraryHolder::c
 }
 
 std::shared_ptr<MAA_CTRL_UNIT_NS::ControlUnitAPI> Win32ControlUnitLibraryHolder::create_control_unit(
-    MaaWin32Hwnd hWnd, MaaWin32ControllerType type, MaaControllerCallback callback,
+    MaaWin32Hwnd hWnd,
+    MaaWin32ControllerType type,
+    MaaControllerCallback callback,
     MaaCallbackTransparentArg callback_arg)
 {
     if (!load_library(library_dir() / libname_)) {
@@ -106,8 +113,8 @@ std::shared_ptr<MAA_CTRL_UNIT_NS::ControlUnitAPI> Win32ControlUnitLibraryHolder:
     return std::shared_ptr<MAA_CTRL_UNIT_NS::ControlUnitAPI>(control_unit_handle, destroy_control_unit);
 }
 
-std::shared_ptr<MAA_CTRL_UNIT_NS::ControlUnitAPI> DbgControlUnitLibraryHolder::create_control_unit(
-    MaaDbgControllerType type, MaaStringView read_path)
+std::shared_ptr<MAA_CTRL_UNIT_NS::ControlUnitAPI>
+    DbgControlUnitLibraryHolder::create_control_unit(MaaDbgControllerType type, MaaStringView read_path)
 {
     if (!load_library(library_dir() / libname_)) {
         LogError << "Failed to load library" << VAR(library_dir()) << VAR(libname_);

@@ -8,8 +8,7 @@
 #include "Conf/Conf.h"
 #include "MaaToolkit/MaaToolkitDef.h"
 
-struct Device
-{
+struct Device {
     std::string name;
     std::string adb_path;
     std::string adb_serial;
@@ -36,8 +35,8 @@ struct Device
     }
     bool operator==(const Device& rhs) const
     {
-        return name == rhs.name && adb_path == rhs.adb_path && adb_serial == rhs.adb_serial &&
-               adb_controller_type == rhs.adb_controller_type && adb_config == rhs.adb_config;
+        return name == rhs.name && adb_path == rhs.adb_path && adb_serial == rhs.adb_serial
+               && adb_controller_type == rhs.adb_controller_type && adb_config == rhs.adb_config;
     }
 };
 
@@ -52,8 +51,7 @@ inline std::ostream& operator<<(std::ostream& os, const Device& device)
 #undef VAR_TMP
 }
 
-struct MaaToolkitDeviceMgrAPI
-{
+struct MaaToolkitDeviceMgrAPI {
     virtual ~MaaToolkitDeviceMgrAPI() = default;
 
     virtual bool post_find_device() = 0;

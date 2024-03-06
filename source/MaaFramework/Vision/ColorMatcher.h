@@ -9,8 +9,7 @@ MAA_VISION_NS_BEGIN
 class ColorMatcher : public VisionBase
 {
 public:
-    struct Result
-    {
+    struct Result {
         cv::Rect box {};
         int count = 0;
 

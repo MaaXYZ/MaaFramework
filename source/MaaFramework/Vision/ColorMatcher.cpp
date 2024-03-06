@@ -29,8 +29,8 @@ std::pair<ColorMatcher::ResultsVec, size_t> ColorMatcher::analyze() const
         LogTrace << name_ << "Filter:" << VAR(results) << VAR(range.first) << VAR(range.second) << VAR(count)
                  << VAR(connected) << VAR(cost);
 
-        all_results.insert(all_results.end(), std::make_move_iterator(results.begin()),
-                           std::make_move_iterator(results.end()));
+        all_results.insert(
+            all_results.end(), std::make_move_iterator(results.begin()), std::make_move_iterator(results.end()));
     }
 
     sort(all_results);
@@ -54,8 +54,8 @@ ColorMatcher::ResultsVec ColorMatcher::foreach_rois(const ColorMatcherParam::Ran
     return results;
 }
 
-ColorMatcher::ResultsVec ColorMatcher::color_match(const cv::Rect& roi, const ColorMatcherParam::Range& range,
-                                                   bool connected) const
+ColorMatcher::ResultsVec
+    ColorMatcher::color_match(const cv::Rect& roi, const ColorMatcherParam::Range& range, bool connected) const
 {
     cv::Mat image = image_with_roi(roi);
     cv::Mat color;
@@ -104,8 +104,8 @@ ColorMatcher::ResultsVec ColorMatcher::count_non_zero_with_connected(const cv::M
     return NMS_for_count(std::move(results), 0.7);
 }
 
-void ColorMatcher::draw_result(const cv::Rect& roi, const cv::Mat& color, const cv::Mat& bin,
-                               const ResultsVec& results) const
+void ColorMatcher::draw_result(
+    const cv::Rect& roi, const cv::Mat& color, const cv::Mat& bin, const ResultsVec& results) const
 {
     if (!debug_draw_) {
         return;
@@ -129,8 +129,8 @@ void ColorMatcher::draw_result(const cv::Rect& roi, const cv::Mat& color, const 
     }
 
     int raw_width = image_.cols;
-    cv::copyMakeBorder(image_draw, image_draw, 0, 0, 0, color.cols + bin.cols, cv::BORDER_CONSTANT,
-                       cv::Scalar(0, 0, 0));
+    cv::copyMakeBorder(
+        image_draw, image_draw, 0, 0, 0, color.cols + bin.cols, cv::BORDER_CONSTANT, cv::Scalar(0, 0, 0));
     cv::Mat draw_color_roi = image_draw(cv::Rect(raw_width, 0, color.cols, color.rows));
     color.copyTo(draw_color_roi);
 

@@ -7,11 +7,12 @@
 
 MAA_TOOLKIT_NS_BEGIN
 
-class Win32WindowFinder : public MaaWin32WindowAPI, public SingletonHolder<Win32WindowFinder>
+class Win32WindowFinder
+    : public MaaWin32WindowAPI
+    , public SingletonHolder<Win32WindowFinder>
 {
 public:
-    struct Window
-    {
+    struct Window {
         MaaWin32Hwnd hwnd;
         std::string class_name;
         std::string window_name;

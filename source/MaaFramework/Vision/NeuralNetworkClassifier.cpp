@@ -71,14 +71,14 @@ NeuralNetworkClassifier::Result NeuralNetworkClassifier::classify(const cv::Rect
     constexpr int64_t kBatchSize = 1;
     std::array<int64_t, 4> input_shape { kBatchSize, image.channels(), image.cols, image.rows };
 
-    Ort::Value input_tensor = Ort::Value::CreateTensor<float>(memory_info, input.data(), input.size(),
-                                                              input_shape.data(), input_shape.size());
+    Ort::Value input_tensor = Ort::Value::CreateTensor<float>(
+        memory_info, input.data(), input.size(), input_shape.data(), input_shape.size());
 
     std::vector<float> output;
     output.resize(param_.cls_size);
     std::array<int64_t, 2> output_shape { kBatchSize, static_cast<int64_t>(param_.cls_size) };
-    Ort::Value output_tensor = Ort::Value::CreateTensor<float>(memory_info, output.data(), output.size(),
-                                                               output_shape.data(), output_shape.size());
+    Ort::Value output_tensor = Ort::Value::CreateTensor<float>(
+        memory_info, output.data(), output.size(), output_shape.data(), output_shape.size());
 
     Ort::AllocatorWithDefaultOptions allocator;
     const std::string in_0 = session_->GetInputNameAllocated(0, allocator).get();

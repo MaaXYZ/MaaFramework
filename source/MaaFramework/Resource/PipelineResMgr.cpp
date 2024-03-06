@@ -123,8 +123,8 @@ bool PipelineResMgr::check_all_next_list() const
     LogFunc;
 
     for (const auto& [name, task_data] : task_data_map_) {
-        bool ret = check_next_list(task_data.next) && check_next_list(task_data.timeout_next) &&
-                   check_next_list(task_data.runout_next);
+        bool ret = check_next_list(task_data.next) && check_next_list(task_data.timeout_next)
+                   && check_next_list(task_data.runout_next);
         if (!ret) {
             LogError << "check_next_list failed" << VAR(name);
             return false;
@@ -150,8 +150,11 @@ std::vector<std::string> PipelineResMgr::get_task_list() const
     return std::vector(k.begin(), k.end());
 }
 
-bool PipelineResMgr::parse_config(const json::value& input, TaskDataMap& output, std::set<std::string>& existing_keys,
-                                  const TaskDataMap& default_value)
+bool PipelineResMgr::parse_config(
+    const json::value& input,
+    TaskDataMap& output,
+    std::set<std::string>& existing_keys,
+    const TaskDataMap& default_value)
 {
     if (!input.is_object()) {
         LogError << "json is not object";
@@ -212,8 +215,8 @@ bool get_and_check_value(const json::value& input, const std::string& key, OutT&
 }
 
 template <typename OutT>
-bool get_and_check_value_or_array(const json::value& input, const std::string& key, std::vector<OutT>& output,
-                                  const std::vector<OutT>& default_value)
+bool get_and_check_value_or_array(
+    const json::value& input, const std::string& key, std::vector<OutT>& output, const std::vector<OutT>& default_value)
 {
     auto opt = input.find(key);
     if (!opt) {
@@ -242,8 +245,8 @@ bool get_and_check_value_or_array(const json::value& input, const std::string& k
     return !output.empty();
 }
 
-bool PipelineResMgr::parse_task(const std::string& name, const json::value& input, TaskData& output,
-                                const TaskData& default_value)
+bool PipelineResMgr::parse_task(
+    const std::string& name, const json::value& input, TaskData& output, const TaskData& default_value)
 {
     LogTrace << VAR(name);
 
@@ -270,8 +273,8 @@ bool PipelineResMgr::parse_task(const std::string& name, const json::value& inpu
         return false;
     }
 
-    if (!parse_action(input, data.action_type, data.action_param, default_value.action_type,
-                      default_value.action_param)) {
+    if (!parse_action(
+            input, data.action_type, data.action_param, default_value.action_type, default_value.action_param)) {
         LogError << "failed to parse_action" << VAR(input);
         return false;
     }
@@ -322,8 +325,8 @@ bool PipelineResMgr::parse_task(const std::string& name, const json::value& inpu
         return false;
     }
 
-    if (!parse_wait_freezes_param(input, "post_wait_freezes", data.post_wait_freezes,
-                                  default_value.post_wait_freezes)) {
+    if (!parse_wait_freezes_param(
+            input, "post_wait_freezes", data.post_wait_freezes, default_value.post_wait_freezes)) {
         LogError << "failed to post_wait_freezes" << VAR(input);
         return false;
     }
@@ -338,17 +341,20 @@ bool PipelineResMgr::parse_task(const std::string& name, const json::value& inpu
     return true;
 }
 
-bool PipelineResMgr::parse_recognition(const json::value& input, Recognition::Type& out_type,
-                                       Recognition::Param& out_param, const Recognition::Type& default_type,
-                                       const Recognition::Param& default_param)
+bool PipelineResMgr::parse_recognition(
+    const json::value& input,
+    Recognition::Type& out_type,
+    Recognition::Param& out_param,
+    const Recognition::Type& default_type,
+    const Recognition::Param& default_param)
 {
     using namespace Recognition;
     using namespace MAA_VISION_NS;
 
     static const std::string kDefaultRecognitionFlag = "Default";
     std::string rec_type_name;
-    if (!get_and_check_value(input, "recognition", rec_type_name, kDefaultRecognitionFlag) &&
-        !get_and_check_value(input, "recognizer", rec_type_name, kDefaultRecognitionFlag)) { // for compatibility
+    if (!get_and_check_value(input, "recognition", rec_type_name, kDefaultRecognitionFlag)
+        && !get_and_check_value(input, "recognizer", rec_type_name, kDefaultRecognitionFlag)) { // for compatibility
         LogError << "failed to get_and_check_value recognition" << VAR(input);
         return false;
     }
@@ -381,43 +387,50 @@ bool PipelineResMgr::parse_recognition(const json::value& input, Recognition::Ty
 
     case Type::TemplateMatch:
         out_param = TemplateMatcherParam {};
-        return parse_template_matcher_param(input, std::get<TemplateMatcherParam>(out_param),
-                                            same_type ? std::get<TemplateMatcherParam>(default_param)
-                                                      : TemplateMatcherParam {});
+        return parse_template_matcher_param(
+            input,
+            std::get<TemplateMatcherParam>(out_param),
+            same_type ? std::get<TemplateMatcherParam>(default_param) : TemplateMatcherParam {});
 
     case Type::FeatureMatch:
         out_param = FeatureMatcherParam {};
-        return parse_feature_matcher_param(input, std::get<FeatureMatcherParam>(out_param),
-                                           same_type ? std::get<FeatureMatcherParam>(default_param)
-                                                     : FeatureMatcherParam {});
+        return parse_feature_matcher_param(
+            input,
+            std::get<FeatureMatcherParam>(out_param),
+            same_type ? std::get<FeatureMatcherParam>(default_param) : FeatureMatcherParam {});
 
     case Type::NeuralNetworkClassify:
         out_param = NeuralNetworkClassifierParam {};
-        return parse_nn_classifier_param(input, std::get<NeuralNetworkClassifierParam>(out_param),
-                                         same_type ? std::get<NeuralNetworkClassifierParam>(default_param)
-                                                   : NeuralNetworkClassifierParam {});
+        return parse_nn_classifier_param(
+            input,
+            std::get<NeuralNetworkClassifierParam>(out_param),
+            same_type ? std::get<NeuralNetworkClassifierParam>(default_param) : NeuralNetworkClassifierParam {});
 
     case Type::NeuralNetworkDetect:
         out_param = NeuralNetworkDetectorParam {};
-        return parse_nn_detector_param(input, std::get<NeuralNetworkDetectorParam>(out_param),
-                                       same_type ? std::get<NeuralNetworkDetectorParam>(default_param)
-                                                 : NeuralNetworkDetectorParam {});
+        return parse_nn_detector_param(
+            input,
+            std::get<NeuralNetworkDetectorParam>(out_param),
+            same_type ? std::get<NeuralNetworkDetectorParam>(default_param) : NeuralNetworkDetectorParam {});
 
     case Type::OCR:
         out_param = OCRerParam {};
-        return parse_ocrer_param(input, std::get<OCRerParam>(out_param),
-                                 same_type ? std::get<OCRerParam>(default_param) : OCRerParam {});
+        return parse_ocrer_param(
+            input, std::get<OCRerParam>(out_param), same_type ? std::get<OCRerParam>(default_param) : OCRerParam {});
 
     case Type::ColorMatch:
         out_param = ColorMatcherParam {};
-        return parse_color_matcher_param(input, std::get<ColorMatcherParam>(out_param),
-                                         same_type ? std::get<ColorMatcherParam>(default_param) : ColorMatcherParam {});
+        return parse_color_matcher_param(
+            input,
+            std::get<ColorMatcherParam>(out_param),
+            same_type ? std::get<ColorMatcherParam>(default_param) : ColorMatcherParam {});
 
     case Type::Custom:
         out_param = CustomRecognizerParam {};
-        return parse_custom_recognition_param(input, std::get<CustomRecognizerParam>(out_param),
-                                              same_type ? std::get<CustomRecognizerParam>(default_param)
-                                                        : CustomRecognizerParam {});
+        return parse_custom_recognition_param(
+            input,
+            std::get<CustomRecognizerParam>(out_param),
+            same_type ? std::get<CustomRecognizerParam>(default_param) : CustomRecognizerParam {});
     default:
         LogError << "Unknown recognition" << VAR(static_cast<int>(out_type));
         return false;
@@ -437,22 +450,28 @@ bool PipelineResMgr::parse_recognition(const json::value& input, Recognition::Ty
 //     return true;
 // }
 
-bool PipelineResMgr::parse_template_matcher_param(const json::value& input, MAA_VISION_NS::TemplateMatcherParam& output,
-                                                  const MAA_VISION_NS::TemplateMatcherParam& default_value)
+bool PipelineResMgr::parse_template_matcher_param(
+    const json::value& input,
+    MAA_VISION_NS::TemplateMatcherParam& output,
+    const MAA_VISION_NS::TemplateMatcherParam& default_value)
 {
     if (!parse_roi(input, output.roi, default_value.roi)) {
         LogError << "failed to parse_roi" << VAR(input);
         return false;
     }
 
-    if (!parse_order_of_result(input, output.order_by, output.result_index, default_value.order_by,
-                               default_value.result_index,
-                               {
-                                   MAA_VISION_NS::ResultOrderBy::Horizontal,
-                                   MAA_VISION_NS::ResultOrderBy::Vertical,
-                                   MAA_VISION_NS::ResultOrderBy::Score,
-                                   MAA_VISION_NS::ResultOrderBy::Random,
-                               })) {
+    if (!parse_order_of_result(
+            input,
+            output.order_by,
+            output.result_index,
+            default_value.order_by,
+            default_value.result_index,
+            {
+                MAA_VISION_NS::ResultOrderBy::Horizontal,
+                MAA_VISION_NS::ResultOrderBy::Vertical,
+                MAA_VISION_NS::ResultOrderBy::Score,
+                MAA_VISION_NS::ResultOrderBy::Random,
+            })) {
         LogError << "failed to parse_order_of_result" << VAR(input);
         return false;
     }
@@ -494,8 +513,10 @@ bool PipelineResMgr::parse_template_matcher_param(const json::value& input, MAA_
     return true;
 }
 
-bool PipelineResMgr::parse_feature_matcher_param(const json::value& input, MAA_VISION_NS::FeatureMatcherParam& output,
-                                                 const MAA_VISION_NS::FeatureMatcherParam& default_value)
+bool PipelineResMgr::parse_feature_matcher_param(
+    const json::value& input,
+    MAA_VISION_NS::FeatureMatcherParam& output,
+    const MAA_VISION_NS::FeatureMatcherParam& default_value)
 {
     using namespace MAA_VISION_NS;
 
@@ -504,15 +525,19 @@ bool PipelineResMgr::parse_feature_matcher_param(const json::value& input, MAA_V
         return false;
     }
 
-    if (!parse_order_of_result(input, output.order_by, output.result_index, default_value.order_by,
-                               default_value.result_index,
-                               {
-                                   MAA_VISION_NS::ResultOrderBy::Horizontal,
-                                   MAA_VISION_NS::ResultOrderBy::Vertical,
-                                   MAA_VISION_NS::ResultOrderBy::Score,
-                                   MAA_VISION_NS::ResultOrderBy::Area,
-                                   MAA_VISION_NS::ResultOrderBy::Random,
-                               })) {
+    if (!parse_order_of_result(
+            input,
+            output.order_by,
+            output.result_index,
+            default_value.order_by,
+            default_value.result_index,
+            {
+                MAA_VISION_NS::ResultOrderBy::Horizontal,
+                MAA_VISION_NS::ResultOrderBy::Vertical,
+                MAA_VISION_NS::ResultOrderBy::Score,
+                MAA_VISION_NS::ResultOrderBy::Area,
+                MAA_VISION_NS::ResultOrderBy::Random,
+            })) {
         LogError << "failed to parse_order_of_result" << VAR(input);
         return false;
     }
@@ -571,23 +596,27 @@ bool PipelineResMgr::parse_feature_matcher_param(const json::value& input, MAA_V
     return true;
 }
 
-bool PipelineResMgr::parse_ocrer_param(const json::value& input, MAA_VISION_NS::OCRerParam& output,
-                                       const MAA_VISION_NS::OCRerParam& default_value)
+bool PipelineResMgr::parse_ocrer_param(
+    const json::value& input, MAA_VISION_NS::OCRerParam& output, const MAA_VISION_NS::OCRerParam& default_value)
 {
     if (!parse_roi(input, output.roi, default_value.roi)) {
         LogError << "failed to parse_roi" << VAR(input);
         return false;
     }
 
-    if (!parse_order_of_result(input, output.order_by, output.result_index, default_value.order_by,
-                               default_value.result_index,
-                               {
-                                   MAA_VISION_NS::ResultOrderBy::Horizontal,
-                                   MAA_VISION_NS::ResultOrderBy::Vertical,
-                                   MAA_VISION_NS::ResultOrderBy::Area,
-                                   MAA_VISION_NS::ResultOrderBy::Length,
-                                   MAA_VISION_NS::ResultOrderBy::Random,
-                               })) {
+    if (!parse_order_of_result(
+            input,
+            output.order_by,
+            output.result_index,
+            default_value.order_by,
+            default_value.result_index,
+            {
+                MAA_VISION_NS::ResultOrderBy::Horizontal,
+                MAA_VISION_NS::ResultOrderBy::Vertical,
+                MAA_VISION_NS::ResultOrderBy::Area,
+                MAA_VISION_NS::ResultOrderBy::Length,
+                MAA_VISION_NS::ResultOrderBy::Random,
+            })) {
         LogError << "failed to parse_order_of_result" << VAR(input);
         return false;
     }
@@ -644,12 +673,13 @@ bool PipelineResMgr::parse_ocrer_param(const json::value& input, MAA_VISION_NS::
     return true;
 }
 
-bool PipelineResMgr::parse_custom_recognition_param(const json::value& input,
-                                                    MAA_VISION_NS::CustomRecognizerParam& output,
-                                                    const MAA_VISION_NS::CustomRecognizerParam& default_value)
+bool PipelineResMgr::parse_custom_recognition_param(
+    const json::value& input,
+    MAA_VISION_NS::CustomRecognizerParam& output,
+    const MAA_VISION_NS::CustomRecognizerParam& default_value)
 {
-    if (!get_and_check_value(input, "custom_recognition", output.name, default_value.name) &&
-        !get_and_check_value(input, "custom_recognizer", output.name, default_value.name)) {
+    if (!get_and_check_value(input, "custom_recognition", output.name, default_value.name)
+        && !get_and_check_value(input, "custom_recognizer", output.name, default_value.name)) {
         LogError << "failed to get_and_check_value custom_recognition" << VAR(input);
         return false;
     }
@@ -664,23 +694,28 @@ bool PipelineResMgr::parse_custom_recognition_param(const json::value& input,
     return true;
 }
 
-bool PipelineResMgr::parse_nn_classifier_param(const json::value& input,
-                                               MAA_VISION_NS::NeuralNetworkClassifierParam& output,
-                                               const MAA_VISION_NS::NeuralNetworkClassifierParam& default_value)
+bool PipelineResMgr::parse_nn_classifier_param(
+    const json::value& input,
+    MAA_VISION_NS::NeuralNetworkClassifierParam& output,
+    const MAA_VISION_NS::NeuralNetworkClassifierParam& default_value)
 {
     if (!parse_roi(input, output.roi, default_value.roi)) {
         LogError << "failed to parse_roi" << VAR(input);
         return false;
     }
 
-    if (!parse_order_of_result(input, output.order_by, output.result_index, default_value.order_by,
-                               default_value.result_index,
-                               {
-                                   MAA_VISION_NS::ResultOrderBy::Horizontal,
-                                   MAA_VISION_NS::ResultOrderBy::Vertical,
-                                   MAA_VISION_NS::ResultOrderBy::Score,
-                                   MAA_VISION_NS::ResultOrderBy::Random,
-                               })) {
+    if (!parse_order_of_result(
+            input,
+            output.order_by,
+            output.result_index,
+            default_value.order_by,
+            default_value.result_index,
+            {
+                MAA_VISION_NS::ResultOrderBy::Horizontal,
+                MAA_VISION_NS::ResultOrderBy::Vertical,
+                MAA_VISION_NS::ResultOrderBy::Score,
+                MAA_VISION_NS::ResultOrderBy::Random,
+            })) {
         LogError << "failed to parse_order_of_result" << VAR(input);
         return false;
     }
@@ -712,24 +747,29 @@ bool PipelineResMgr::parse_nn_classifier_param(const json::value& input,
     return true;
 }
 
-bool PipelineResMgr::parse_nn_detector_param(const json::value& input,
-                                             MAA_VISION_NS::NeuralNetworkDetectorParam& output,
-                                             const MAA_VISION_NS::NeuralNetworkDetectorParam& default_value)
+bool PipelineResMgr::parse_nn_detector_param(
+    const json::value& input,
+    MAA_VISION_NS::NeuralNetworkDetectorParam& output,
+    const MAA_VISION_NS::NeuralNetworkDetectorParam& default_value)
 {
     if (!parse_roi(input, output.roi, default_value.roi)) {
         LogError << "failed to parse_roi" << VAR(input);
         return false;
     }
 
-    if (!parse_order_of_result(input, output.order_by, output.result_index, default_value.order_by,
-                               default_value.result_index,
-                               {
-                                   MAA_VISION_NS::ResultOrderBy::Horizontal,
-                                   MAA_VISION_NS::ResultOrderBy::Vertical,
-                                   MAA_VISION_NS::ResultOrderBy::Score,
-                                   MAA_VISION_NS::ResultOrderBy::Area,
-                                   MAA_VISION_NS::ResultOrderBy::Random,
-                               })) {
+    if (!parse_order_of_result(
+            input,
+            output.order_by,
+            output.result_index,
+            default_value.order_by,
+            default_value.result_index,
+            {
+                MAA_VISION_NS::ResultOrderBy::Horizontal,
+                MAA_VISION_NS::ResultOrderBy::Vertical,
+                MAA_VISION_NS::ResultOrderBy::Score,
+                MAA_VISION_NS::ResultOrderBy::Area,
+                MAA_VISION_NS::ResultOrderBy::Random,
+            })) {
         LogError << "failed to parse_order_of_result" << VAR(input);
         return false;
     }
@@ -776,9 +816,11 @@ bool PipelineResMgr::parse_nn_detector_param(const json::value& input,
 }
 
 template <typename OutT>
-bool get_and_check_array_or_2darray(const json::value& input, const std::string& key,
-                                    std::vector<std::vector<OutT>>& output,
-                                    const std::vector<std::vector<OutT>>& default_value)
+bool get_and_check_array_or_2darray(
+    const json::value& input,
+    const std::string& key,
+    std::vector<std::vector<OutT>>& output,
+    const std::vector<std::vector<OutT>>& default_value)
 {
     auto opt = input.find(key);
     if (!opt) {
@@ -829,8 +871,10 @@ bool get_and_check_array_or_2darray(const json::value& input, const std::string&
     return !output.empty();
 }
 
-bool PipelineResMgr::parse_color_matcher_param(const json::value& input, MAA_VISION_NS::ColorMatcherParam& output,
-                                               const MAA_VISION_NS::ColorMatcherParam& default_value)
+bool PipelineResMgr::parse_color_matcher_param(
+    const json::value& input,
+    MAA_VISION_NS::ColorMatcherParam& output,
+    const MAA_VISION_NS::ColorMatcherParam& default_value)
 {
     if (!parse_roi(input, output.roi, default_value.roi)) {
         LogError << "failed to parse_roi" << VAR(input);
@@ -891,8 +935,8 @@ bool PipelineResMgr::parse_color_matcher_param(const json::value& input, MAA_VIS
     return true;
 }
 
-bool PipelineResMgr::parse_roi(const json::value& input, std::vector<cv::Rect>& output,
-                               const std::vector<cv::Rect>& default_value)
+bool PipelineResMgr::parse_roi(
+    const json::value& input, std::vector<cv::Rect>& output, const std::vector<cv::Rect>& default_value)
 {
     auto roi_opt = input.find("roi");
     if (!roi_opt) {
@@ -934,10 +978,13 @@ bool PipelineResMgr::parse_roi(const json::value& input, std::vector<cv::Rect>& 
     return !output.empty();
 }
 
-bool PipelineResMgr::parse_order_of_result(const json::value& input, MAA_VISION_NS::ResultOrderBy& output,
-                                           int& output_index, const MAA_VISION_NS::ResultOrderBy& default_value,
-                                           int default_index,
-                                           const std::unordered_set<MAA_VISION_NS::ResultOrderBy>& valid_values)
+bool PipelineResMgr::parse_order_of_result(
+    const json::value& input,
+    MAA_VISION_NS::ResultOrderBy& output,
+    int& output_index,
+    const MAA_VISION_NS::ResultOrderBy& default_value,
+    int default_index,
+    const std::unordered_set<MAA_VISION_NS::ResultOrderBy>& valid_values)
 {
     static const std::string kDefaultOrderFlag = "Default";
     std::string order;
@@ -975,8 +1022,12 @@ bool PipelineResMgr::parse_order_of_result(const json::value& input, MAA_VISION_
     return true;
 }
 
-bool PipelineResMgr::parse_action(const json::value& input, Action::Type& out_type, Action::Param& out_param,
-                                  const Action::Type& default_type, const Action::Param& default_param)
+bool PipelineResMgr::parse_action(
+    const json::value& input,
+    Action::Type& out_type,
+    Action::Param& out_param,
+    const Action::Type& default_type,
+    const Action::Param& default_param)
 {
     using namespace Action;
 
@@ -1013,31 +1064,31 @@ bool PipelineResMgr::parse_action(const json::value& input, Action::Type& out_ty
 
     case Type::Click:
         out_param = ClickParam {};
-        return parse_click(input, std::get<ClickParam>(out_param),
-                           same_type ? std::get<ClickParam>(default_param) : ClickParam {});
+        return parse_click(
+            input, std::get<ClickParam>(out_param), same_type ? std::get<ClickParam>(default_param) : ClickParam {});
     case Type::Swipe:
         out_param = SwipeParam {};
-        return parse_swipe(input, std::get<SwipeParam>(out_param),
-                           same_type ? std::get<SwipeParam>(default_param) : SwipeParam {});
+        return parse_swipe(
+            input, std::get<SwipeParam>(out_param), same_type ? std::get<SwipeParam>(default_param) : SwipeParam {});
 
     case Type::Key:
         out_param = KeyParam {};
-        return parse_press_key(input, std::get<KeyParam>(out_param),
-                               same_type ? std::get<KeyParam>(default_param) : KeyParam {});
+        return parse_press_key(
+            input, std::get<KeyParam>(out_param), same_type ? std::get<KeyParam>(default_param) : KeyParam {});
     case Type::Text:
         out_param = TextParam {};
-        return parse_input_text(input, std::get<TextParam>(out_param),
-                                same_type ? std::get<TextParam>(default_param) : TextParam {});
+        return parse_input_text(
+            input, std::get<TextParam>(out_param), same_type ? std::get<TextParam>(default_param) : TextParam {});
     case Type::StartApp:
     case Type::StopApp:
         out_param = AppParam {};
-        return parse_app_info(input, std::get<AppParam>(out_param),
-                              same_type ? std::get<AppParam>(default_param) : AppParam {});
+        return parse_app_info(
+            input, std::get<AppParam>(out_param), same_type ? std::get<AppParam>(default_param) : AppParam {});
 
     case Type::Custom:
         out_param = CustomParam {};
-        return parse_custom_action_param(input, std::get<CustomParam>(out_param),
-                                         same_type ? std::get<CustomParam>(default_param) : CustomParam {});
+        return parse_custom_action_param(
+            input, std::get<CustomParam>(out_param), same_type ? std::get<CustomParam>(default_param) : CustomParam {});
 
     case Type::StopTask:
         out_param = {};
@@ -1051,8 +1102,8 @@ bool PipelineResMgr::parse_action(const json::value& input, Action::Type& out_ty
     return false;
 }
 
-bool PipelineResMgr::parse_click(const json::value& input, Action::ClickParam& output,
-                                 const Action::ClickParam& default_value)
+bool PipelineResMgr::parse_click(
+    const json::value& input, Action::ClickParam& output, const Action::ClickParam& default_value)
 {
     if (!parse_action_target(input, "target", output.target, default_value.target)) {
         LogError << "failed to parse_action_target" << VAR(input);
@@ -1062,8 +1113,8 @@ bool PipelineResMgr::parse_click(const json::value& input, Action::ClickParam& o
     return true;
 }
 
-bool PipelineResMgr::parse_swipe(const json::value& input, Action::SwipeParam& output,
-                                 const Action::SwipeParam& default_value)
+bool PipelineResMgr::parse_swipe(
+    const json::value& input, Action::SwipeParam& output, const Action::SwipeParam& default_value)
 {
     if (!parse_action_target(input, "begin", output.begin, default_value.begin)) {
         LogError << "failed to parse_action_target begin" << VAR(input);
@@ -1087,8 +1138,8 @@ bool PipelineResMgr::parse_swipe(const json::value& input, Action::SwipeParam& o
     return true;
 }
 
-bool PipelineResMgr::parse_press_key(const json::value& input, Action::KeyParam& output,
-                                     const Action::KeyParam& default_value)
+bool PipelineResMgr::parse_press_key(
+    const json::value& input, Action::KeyParam& output, const Action::KeyParam& default_value)
 {
     // TODO: https://github.com/MaaXYZ/MaaFramework/issues/24#issuecomment-1666533842
     if (!get_and_check_value_or_array(input, "key", output.keys, default_value.keys)) {
@@ -1099,8 +1150,8 @@ bool PipelineResMgr::parse_press_key(const json::value& input, Action::KeyParam&
     return true;
 }
 
-bool PipelineResMgr::parse_input_text(const json::value& input, Action::TextParam& output,
-                                      const Action::TextParam& default_value)
+bool PipelineResMgr::parse_input_text(
+    const json::value& input, Action::TextParam& output, const Action::TextParam& default_value)
 {
     if (!get_and_check_value(input, "text", output.text, default_value.text)) {
         LogError << "failed to get_and_check_value text" << VAR(input);
@@ -1110,8 +1161,8 @@ bool PipelineResMgr::parse_input_text(const json::value& input, Action::TextPara
     return true;
 }
 
-bool PipelineResMgr::parse_app_info(const json::value& input, Action::AppParam& output,
-                                    const Action::AppParam& default_value)
+bool PipelineResMgr::parse_app_info(
+    const json::value& input, Action::AppParam& output, const Action::AppParam& default_value)
 {
     if (!get_and_check_value(input, "package", output.package, default_value.package)) {
         LogError << "failed to get_and_check_value activity" << VAR(input);
@@ -1121,8 +1172,8 @@ bool PipelineResMgr::parse_app_info(const json::value& input, Action::AppParam& 
     return true;
 }
 
-bool PipelineResMgr::parse_custom_action_param(const json::value& input, Action::CustomParam& output,
-                                               const Action::CustomParam& default_value)
+bool PipelineResMgr::parse_custom_action_param(
+    const json::value& input, Action::CustomParam& output, const Action::CustomParam& default_value)
 {
     if (!get_and_check_value(input, "custom_action", output.name, default_value.name)) {
         LogError << "failed to get_and_check_value custom_action" << VAR(input);
@@ -1139,8 +1190,8 @@ bool PipelineResMgr::parse_custom_action_param(const json::value& input, Action:
     return true;
 }
 
-bool PipelineResMgr::parse_wait_freezes_param(const json::value& input, const std::string& key,
-                                              WaitFreezesParam& output, const WaitFreezesParam& default_value)
+bool PipelineResMgr::parse_wait_freezes_param(
+    const json::value& input, const std::string& key, WaitFreezesParam& output, const WaitFreezesParam& default_value)
 {
     auto opt = input.find(key);
     if (!opt) {
@@ -1209,8 +1260,8 @@ bool PipelineResMgr::parse_rect(const json::value& input_rect, cv::Rect& output)
     return true;
 }
 
-bool PipelineResMgr::parse_action_target(const json::value& input, const std::string& key, Action::Target& output,
-                                         const Action::Target& default_value)
+bool PipelineResMgr::parse_action_target(
+    const json::value& input, const std::string& key, Action::Target& output, const Action::Target& default_value)
 {
     using namespace Action;
 

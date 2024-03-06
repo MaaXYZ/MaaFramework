@@ -35,8 +35,8 @@ extern "C"
      * @param val_size The size of the option value.
      * @return MaaBool Whether the option is set successfully.
      */
-    MaaBool MAA_FRAMEWORK_API MaaSetGlobalOption(MaaGlobalOption key, MaaOptionValue value,
-                                                 MaaOptionValueSize val_size);
+    MaaBool MAA_FRAMEWORK_API
+        MaaSetGlobalOption(MaaGlobalOption key, MaaOptionValue value, MaaOptionValueSize val_size);
 
 #ifdef __cplusplus
 }

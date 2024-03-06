@@ -51,8 +51,7 @@ using os_pid = DWORD;
 using os_pid = pid_t;
 #endif
 
-struct ProcessInfo
-{
+struct ProcessInfo {
     os_pid pid = 0;
     std::string name;
 

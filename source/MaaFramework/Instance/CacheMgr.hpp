@@ -16,7 +16,10 @@ class CacheMgr : public NonCopyable
 public:
     CacheMgr() = default;
     CacheMgr(CacheMgr&&) = default;
-    CacheMgr(Equal equal) : equal_(std::move(equal)) {}
+    CacheMgr(Equal equal)
+        : equal_(std::move(equal))
+    {
+    }
 
     std::optional<Item> get_cache(const Key& key) const;
     void set_cache(Key key, Item item);

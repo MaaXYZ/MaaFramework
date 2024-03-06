@@ -100,8 +100,8 @@ bool MinicapStream::init(int swidth, int sheight)
         return false;
     }
 
-    if (header.real_width != width || header.real_height != height || header.virt_width != width ||
-        header.virt_height != height) {
+    if (header.real_width != width || header.real_height != height || header.virt_width != width
+        || header.virt_height != height) {
         return false;
     }
 

@@ -79,8 +79,19 @@ bool BackBufferScreencap::init()
     swap_chain_desc.Windowed = is_fullscreen(hwnd_) ? FALSE : TRUE;
     swap_chain_desc.SwapEffect = DXGI_SWAP_EFFECT_SEQUENTIAL;
 
-    ret = D3D11CreateDeviceAndSwapChain(nullptr, D3D_DRIVER_TYPE_HARDWARE, nullptr, 0, nullptr, 0, D3D11_SDK_VERSION,
-                                        &swap_chain_desc, &dxgi_swap_chain_, &d3d_device_, nullptr, &d3d_context_);
+    ret = D3D11CreateDeviceAndSwapChain(
+        nullptr,
+        D3D_DRIVER_TYPE_HARDWARE,
+        nullptr,
+        0,
+        nullptr,
+        0,
+        D3D11_SDK_VERSION,
+        &swap_chain_desc,
+        &dxgi_swap_chain_,
+        &d3d_device_,
+        nullptr,
+        &d3d_context_);
 
     if (FAILED(ret)) {
         LogError << "D3D11CreateDeviceAndSwapChain failed" << VAR(ret);

@@ -35,8 +35,11 @@ private:
 
     bool start_app(const MAA_RES_NS::Action::AppParam& param);
     bool stop_app(const MAA_RES_NS::Action::AppParam& param);
-    bool custom_action(const std::string& task_name, const MAA_RES_NS::Action::CustomParam& param,
-                       const cv::Rect& cur_box, const json::value& cur_rec_detail);
+    bool custom_action(
+        const std::string& task_name,
+        const MAA_RES_NS::Action::CustomParam& param,
+        const cv::Rect& cur_box,
+        const json::value& cur_rec_detail);
 
     void wait_freezes(const MAA_RES_NS::WaitFreezesParam& param, const cv::Rect& cur_box);
 

@@ -38,8 +38,17 @@ bool DesktopDupScreencap::init()
 
     HRESULT ret = S_OK;
 
-    ret = D3D11CreateDevice(nullptr, D3D_DRIVER_TYPE_HARDWARE, nullptr, 0, nullptr, 0, D3D11_SDK_VERSION, &d3d_device_,
-                            nullptr, &d3d_context_);
+    ret = D3D11CreateDevice(
+        nullptr,
+        D3D_DRIVER_TYPE_HARDWARE,
+        nullptr,
+        0,
+        nullptr,
+        0,
+        D3D11_SDK_VERSION,
+        &d3d_device_,
+        nullptr,
+        &d3d_context_);
     if (FAILED(ret)) {
         LogError << "D3D11CreateDevice failed" << VAR(ret);
         return false;

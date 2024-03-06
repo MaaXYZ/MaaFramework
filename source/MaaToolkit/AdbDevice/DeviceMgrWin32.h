@@ -11,7 +11,9 @@
 
 MAA_TOOLKIT_NS_BEGIN
 
-class DeviceMgrWin32 : public SingletonHolder<DeviceMgrWin32>, public DeviceMgr
+class DeviceMgrWin32
+    : public SingletonHolder<DeviceMgrWin32>
+    , public DeviceMgr
 {
     friend class SingletonHolder<DeviceMgrWin32>;
 

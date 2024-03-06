@@ -28,16 +28,15 @@ enum class ResultOrderBy
     Vertical,
     Score,
     Area,
-    Length, // for OCR
+    Length,   // for OCR
     Random,
     Expected, // TODO
 };
 
-struct DirectHitParam
-{};
+struct DirectHitParam {
+};
 
-struct TemplateMatcherParam
-{
+struct TemplateMatcherParam {
     inline static constexpr double kDefaultThreshold = 0.7;
     inline static constexpr int kDefaultMethod = 5; // cv::TM_CCOEFF_NORMED
 
@@ -51,8 +50,7 @@ struct TemplateMatcherParam
     int result_index = 0;
 };
 
-struct OCRerParam
-{
+struct OCRerParam {
     std::string model;
     bool only_rec = false;
     std::vector<cv::Rect> roi;
@@ -63,21 +61,18 @@ struct OCRerParam
     int result_index = 0;
 };
 
-struct TemplateComparatorParam
-{
+struct TemplateComparatorParam {
     std::vector<cv::Rect> roi;
     double threshold = 0.0;
     int method = 0;
 };
 
-struct CustomRecognizerParam
-{
+struct CustomRecognizerParam {
     std::string name;
     json::value custom_param;
 };
 
-struct NeuralNetworkClassifierParam
-{
+struct NeuralNetworkClassifierParam {
     size_t cls_size = 0;
     std::vector<std::string> labels; // only for output and debug
     std::string model;
@@ -89,8 +84,7 @@ struct NeuralNetworkClassifierParam
     int result_index = 0;
 };
 
-struct NeuralNetworkDetectorParam
-{
+struct NeuralNetworkDetectorParam {
     enum class Net
     {
         YoloV8,
@@ -111,8 +105,7 @@ struct NeuralNetworkDetectorParam
     int result_index = 0;
 };
 
-struct ColorMatcherParam
-{
+struct ColorMatcherParam {
     inline static constexpr int kDefaultCount = 1;
     inline static constexpr int kDefaultMethod = 4; // cv::COLOR_BGR2RGB
     using Range = std::pair<std::vector<int>, std::vector<int>>;
@@ -127,8 +120,7 @@ struct ColorMatcherParam
     int result_index = 0;
 };
 
-struct FeatureMatcherParam
-{
+struct FeatureMatcherParam {
     enum class Detector
     {
         SIFT,

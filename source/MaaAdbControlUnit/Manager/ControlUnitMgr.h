@@ -15,8 +15,11 @@ MAA_CTRL_UNIT_NS_BEGIN
 class ControlUnitMgr : public ControlUnitAPI
 {
 public:
-    ControlUnitMgr(std::filesystem::path adb_path, std::string adb_serial, MaaControllerCallback callback,
-                   MaaCallbackTransparentArg callback_arg);
+    ControlUnitMgr(
+        std::filesystem::path adb_path,
+        std::string adb_serial,
+        MaaControllerCallback callback,
+        MaaCallbackTransparentArg callback_arg);
     virtual ~ControlUnitMgr() override = default;
 
 public: // from ControlUnitAPI

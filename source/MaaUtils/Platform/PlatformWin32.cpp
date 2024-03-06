@@ -24,10 +24,14 @@ std::string get_ansi_short_path(const std::filesystem::path& path)
     auto osstr = path.native();
     string_replace_all_(osstr, L"\\", L"/");
     auto shortlen = GetShortPathNameW(osstr.c_str(), short_path, MAX_PATH);
-    if (shortlen == 0) return {};
+    if (shortlen == 0) {
+        return {};
+    }
     BOOL failed = FALSE;
     auto ansilen = WideCharToMultiByte(CP_ACP, 0, short_path, shortlen, nullptr, 0, nullptr, &failed);
-    if (failed) return {};
+    if (failed) {
+        return {};
+    }
     std::string result(ansilen, 0);
     WideCharToMultiByte(CP_ACP, 0, short_path, shortlen, result.data(), ansilen, nullptr, nullptr);
     return result;
@@ -47,7 +51,9 @@ std::string path_to_crt_string(const std::filesystem::path& path)
     }
     std::string result(mbsize, 0);
     err = wcstombs_s(&mbsize, result.data(), mbsize, osstr.c_str(), osstr.size());
-    if (err != 0) return {};
+    if (err != 0) {
+        return {};
+    }
     return result.substr(0, mbsize - 1);
 }
 

@@ -18,8 +18,7 @@ MAA_TOOLKIT_NS_BEGIN
 
 using namespace path_literals;
 
-struct EmulatorConstantData
-{
+struct EmulatorConstantData {
     std::string keyword;
     std::vector<std::filesystem::path> adb_candidate_paths;
     std::vector<std::string> adb_common_serials;
@@ -46,13 +45,15 @@ static const std::map<std::string, EmulatorConstantData> kEmulators = {
     { "MuMuPlayer6",
       { .keyword = "NemuPlayer",
         .adb_candidate_paths = { "vmonitor\\bin\\adb_server.exe"_path,
-                                 "MuMu\\emulator\\nemu\\vmonitor\\bin\\adb_server.exe"_path, "adb.exe"_path },
+                                 "MuMu\\emulator\\nemu\\vmonitor\\bin\\adb_server.exe"_path,
+                                 "adb.exe"_path },
         .adb_common_serials = { "127.0.0.1:7555" } } },
 
     { "MuMuPlayer12",
       { .keyword = "MuMuPlayer",
         .adb_candidate_paths = { "vmonitor\\bin\\adb_server.exe"_path,
-                                 "MuMu\\emulator\\nemu\\vmonitor\\bin\\adb_server.exe"_path, "adb.exe"_path },
+                                 "MuMu\\emulator\\nemu\\vmonitor\\bin\\adb_server.exe"_path,
+                                 "adb.exe"_path },
         .adb_common_serials = { "127.0.0.1:16384", "127.0.0.1:16416" } } },
 
     { "MEmuPlayer",
@@ -92,8 +93,10 @@ std::vector<Device> DeviceMgrWin32::find_device_impl()
 
     if (std::filesystem::exists(env_adb)) {
         auto env_adb_devices = find_device_with_adb_impl(path_to_utf8_string(env_adb));
-        result.insert(result.end(), std::make_move_iterator(env_adb_devices.begin()),
-                      std::make_move_iterator(env_adb_devices.end()));
+        result.insert(
+            result.end(),
+            std::make_move_iterator(env_adb_devices.begin()),
+            std::make_move_iterator(env_adb_devices.end()));
     }
 
     // 去重

@@ -53,7 +53,9 @@ int input(size_t size, std::string_view prompt = "Please input")
 {
     std::cout << std::format("{} [1-{}]: ", prompt, size);
 
-    auto fail = [&]() { std::cout << std::format("Invalid value, {} [1-{}]: ", prompt, size); };
+    auto fail = [&]() {
+        std::cout << std::format("Invalid value, {} [1-{}]: ", prompt, size);
+    };
 
     int val = 0;
     while (true) {
@@ -158,9 +160,11 @@ void Interactor::print_config() const
 
     std::cout << "Controller:\n\n";
     std::cout << "\t"
-              << MaaNS::utf8_to_crt(std::format("{}\n\t\t{}\n\t\t{}", config_.configuration().controller.name,
-                                                MaaNS::path_to_utf8_string(config_.configuration().controller.adb_path),
-                                                config_.configuration().controller.address))
+              << MaaNS::utf8_to_crt(std::format(
+                     "{}\n\t\t{}\n\t\t{}",
+                     config_.configuration().controller.name,
+                     MaaNS::path_to_utf8_string(config_.configuration().controller.adb_path),
+                     config_.configuration().controller.address))
               << "\n\n";
 
     std::cout << "Resource:\n\n";

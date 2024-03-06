@@ -68,8 +68,8 @@ MaaBool MaaInited(MaaInstanceHandle inst)
     return inst->inited();
 }
 
-MaaBool MaaRegisterCustomRecognizer(MaaInstanceHandle inst, MaaStringView name, MaaCustomRecognizerHandle recognizer,
-                                    MaaTransparentArg recognizer_arg)
+MaaBool MaaRegisterCustomRecognizer(
+    MaaInstanceHandle inst, MaaStringView name, MaaCustomRecognizerHandle recognizer, MaaTransparentArg recognizer_arg)
 {
     LogFunc << VAR_VOIDP(inst) << VAR(name) << VAR_VOIDP(recognizer) << VAR_VOIDP(recognizer_arg);
 
@@ -106,8 +106,8 @@ MaaBool MaaClearCustomRecognizer(MaaInstanceHandle inst)
     return true;
 }
 
-MaaBool MaaRegisterCustomAction(MaaInstanceHandle inst, MaaStringView name, MaaCustomActionHandle action,
-                                MaaTransparentArg action_arg)
+MaaBool MaaRegisterCustomAction(
+    MaaInstanceHandle inst, MaaStringView name, MaaCustomActionHandle action, MaaTransparentArg action_arg)
 {
     LogFunc << VAR_VOIDP(inst) << VAR(name) << VAR_VOIDP(action) << VAR_VOIDP(action_arg);
 

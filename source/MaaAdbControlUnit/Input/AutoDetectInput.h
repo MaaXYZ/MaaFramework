@@ -4,7 +4,9 @@
 
 MAA_CTRL_UNIT_NS_BEGIN
 
-class AutoDetectInput : public TouchInputBase, public KeyInputBase
+class AutoDetectInput
+    : public TouchInputBase
+    , public KeyInputBase
 {
 public:
     enum class TouchMethod

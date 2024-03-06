@@ -9,7 +9,10 @@ MAA_CTRL_UNIT_NS_BEGIN
 class BackBufferScreencap : public ScreencapBase
 {
 public:
-    BackBufferScreencap(HWND hwnd) : hwnd_(hwnd) {}
+    BackBufferScreencap(HWND hwnd)
+        : hwnd_(hwnd)
+    {
+    }
     virtual ~BackBufferScreencap() override;
 
 public: // from ScreencapBase

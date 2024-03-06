@@ -31,9 +31,13 @@ extern "C"
      * @param callback_arg The callback arg that will be passed to the callback function.
      * @return MaaControllerHandle The handle of the created controller instance.
      */
-    MaaControllerHandle MAA_FRAMEWORK_API MaaAdbControllerCreate( //
-        MaaStringView adb_path, MaaStringView address, MaaAdbControllerType type, MaaStringView config,
-        MaaControllerCallback callback, MaaCallbackTransparentArg callback_arg);
+    MaaControllerHandle MAA_FRAMEWORK_API MaaAdbControllerCreate(
+        MaaStringView adb_path,
+        MaaStringView address,
+        MaaAdbControllerType type,
+        MaaStringView config,
+        MaaControllerCallback callback,
+        MaaCallbackTransparentArg callback_arg);
 
     /**
      * @brief Create a win32 controller instance.
@@ -45,8 +49,10 @@ extern "C"
      * @param callback_arg The callback arg that will be passed to the callback function.
      * @return MaaControllerHandle The handle of the created controller instance.
      */
-    MaaControllerHandle MAA_FRAMEWORK_API MaaWin32ControllerCreate( //
-        MaaWin32Hwnd hWnd, MaaWin32ControllerType type, MaaControllerCallback callback,
+    MaaControllerHandle MAA_FRAMEWORK_API MaaWin32ControllerCreate(
+        MaaWin32Hwnd hWnd,
+        MaaWin32ControllerType type,
+        MaaControllerCallback callback,
         MaaCallbackTransparentArg callback_arg);
 
     /**
@@ -61,9 +67,14 @@ extern "C"
      * @param callback_arg The callback arg that will be passed to the callback function.
      * @return MaaControllerHandle The handle of the created controller instance.
      */
-    MaaControllerHandle MAA_FRAMEWORK_API MaaAdbControllerCreateV2( //
-        MaaStringView adb_path, MaaStringView address, MaaAdbControllerType type, MaaStringView config,
-        MaaStringView agent_path, MaaControllerCallback callback, MaaCallbackTransparentArg callback_arg);
+    MaaControllerHandle MAA_FRAMEWORK_API MaaAdbControllerCreateV2(
+        MaaStringView adb_path,
+        MaaStringView address,
+        MaaAdbControllerType type,
+        MaaStringView config,
+        MaaStringView agent_path,
+        MaaControllerCallback callback,
+        MaaCallbackTransparentArg callback_arg);
 
     /**
      * @brief Create a custom controller instance.
@@ -74,17 +85,27 @@ extern "C"
      * @param callback_arg The callback arg that will be passed to the callback function.
      * @return MaaControllerHandle The handle of the created controller instance.
      */
-    MaaControllerHandle MAA_FRAMEWORK_API MaaCustomControllerCreate( //
-        MaaCustomControllerHandle handle, MaaTransparentArg handle_arg, MaaControllerCallback callback,
+    MaaControllerHandle MAA_FRAMEWORK_API MaaCustomControllerCreate(
+        MaaCustomControllerHandle handle,
+        MaaTransparentArg handle_arg,
+        MaaControllerCallback callback,
         MaaCallbackTransparentArg callback_arg);
 
-    MaaControllerHandle MAA_FRAMEWORK_API MaaThriftControllerCreate( //
-        MaaThriftControllerType type, MaaStringView host, int32_t port, MaaStringView config,
-        MaaControllerCallback callback, MaaCallbackTransparentArg callback_arg);
+    MaaControllerHandle MAA_FRAMEWORK_API MaaThriftControllerCreate(
+        MaaThriftControllerType type,
+        MaaStringView host,
+        int32_t port,
+        MaaStringView config,
+        MaaControllerCallback callback,
+        MaaCallbackTransparentArg callback_arg);
 
-    MaaControllerHandle MAA_FRAMEWORK_API MaaDbgControllerCreate( //
-        MaaStringView read_path, MaaStringView write_path, MaaDbgControllerType type, MaaStringView config,
-        MaaControllerCallback callback, MaaCallbackTransparentArg callback_arg);
+    MaaControllerHandle MAA_FRAMEWORK_API MaaDbgControllerCreate(
+        MaaStringView read_path,
+        MaaStringView write_path,
+        MaaDbgControllerType type,
+        MaaStringView config,
+        MaaControllerCallback callback,
+        MaaCallbackTransparentArg callback_arg);
 
     /**
      * @brief Free the controller instance.
@@ -105,8 +126,8 @@ extern "C"
      * @param val_size The size of the option value.
      * @return MaaBool Whether the option is set successfully.
      */
-    MaaBool MAA_FRAMEWORK_API MaaControllerSetOption(MaaControllerHandle ctrl, MaaCtrlOption key, MaaOptionValue value,
-                                                     MaaOptionValueSize val_size);
+    MaaBool MAA_FRAMEWORK_API MaaControllerSetOption(
+        MaaControllerHandle ctrl, MaaCtrlOption key, MaaOptionValue value, MaaOptionValueSize val_size);
 
     /**
      * @defgroup MaaControllerPostRequest Controller Requests
@@ -119,17 +140,17 @@ extern "C"
 
     MaaCtrlId MAA_FRAMEWORK_API MaaControllerPostClick(MaaControllerHandle ctrl, int32_t x, int32_t y);
 
-    MaaCtrlId MAA_FRAMEWORK_API MaaControllerPostSwipe(MaaControllerHandle ctrl, int32_t x1, int32_t y1, int32_t x2,
-                                                       int32_t y2, int32_t duration);
+    MaaCtrlId MAA_FRAMEWORK_API MaaControllerPostSwipe(
+        MaaControllerHandle ctrl, int32_t x1, int32_t y1, int32_t x2, int32_t y2, int32_t duration);
 
     MaaCtrlId MAA_FRAMEWORK_API MaaControllerPostPressKey(MaaControllerHandle ctrl, int32_t keycode);
 
     MaaCtrlId MAA_FRAMEWORK_API MaaControllerPostInputText(MaaControllerHandle ctrl, MaaStringView text);
 
-    MaaCtrlId MAA_FRAMEWORK_API MaaControllerPostTouchDown(MaaControllerHandle ctrl, int32_t contact, int32_t x,
-                                                           int32_t y, int32_t pressure);
-    MaaCtrlId MAA_FRAMEWORK_API MaaControllerPostTouchMove(MaaControllerHandle ctrl, int32_t contact, int32_t x,
-                                                           int32_t y, int32_t pressure);
+    MaaCtrlId MAA_FRAMEWORK_API
+        MaaControllerPostTouchDown(MaaControllerHandle ctrl, int32_t contact, int32_t x, int32_t y, int32_t pressure);
+    MaaCtrlId MAA_FRAMEWORK_API
+        MaaControllerPostTouchMove(MaaControllerHandle ctrl, int32_t contact, int32_t x, int32_t y, int32_t pressure);
 
     MaaCtrlId MAA_FRAMEWORK_API MaaControllerPostTouchUp(MaaControllerHandle ctrl, int32_t contact);
 

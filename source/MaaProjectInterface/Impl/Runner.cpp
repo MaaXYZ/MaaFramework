@@ -12,17 +12,25 @@
 
 MAA_PROJECT_INTERFACE_NS_BEGIN
 
-bool Runner::run(const MAA_PROJECT_INTERFACE_NS::RuntimeParam& param, //
-                 MaaInstanceCallback callback, MaaCallbackTransparentArg callback_arg,
-                 MaaResourceCallback resource_callback, MaaCallbackTransparentArg resource_callback_arg,
-                 MaaControllerCallback controller_callback, MaaCallbackTransparentArg controller_callback_arg)
+bool Runner::run(
+    const MAA_PROJECT_INTERFACE_NS::RuntimeParam& param, //
+    MaaInstanceCallback callback,
+    MaaCallbackTransparentArg callback_arg,
+    MaaResourceCallback resource_callback,
+    MaaCallbackTransparentArg resource_callback_arg,
+    MaaControllerCallback controller_callback,
+    MaaCallbackTransparentArg controller_callback_arg)
 {
     auto maa_handle = MaaCreate(callback, callback_arg);
 
-    auto controller_handle =
-        MaaAdbControllerCreateV2(param.adb_param.adb_path.c_str(), param.adb_param.address.c_str(),
-                                 param.adb_param.controller_type, param.adb_param.config.c_str(),
-                                 param.adb_param.agent_path.c_str(), controller_callback, controller_callback_arg);
+    auto controller_handle = MaaAdbControllerCreateV2(
+        param.adb_param.adb_path.c_str(),
+        param.adb_param.address.c_str(),
+        param.adb_param.controller_type,
+        param.adb_param.config.c_str(),
+        param.adb_param.agent_path.c_str(),
+        controller_callback,
+        controller_callback_arg);
     auto resource_handle = MaaResourceCreate(resource_callback, resource_callback_arg);
 
     int64_t cid = MaaControllerPostConnection(controller_handle);
@@ -54,13 +62,13 @@ bool Runner::run(const MAA_PROJECT_INTERFACE_NS::RuntimeParam& param, //
 
     for (const auto& [name, executor] : param.recognizer) {
         std::string exec_param = json::array(executor.exec_param).to_string();
-        MaaToolkitRegisterCustomRecognizerExecutor(maa_handle, name.c_str(), executor.exec_path.c_str(),
-                                                   exec_param.c_str());
+        MaaToolkitRegisterCustomRecognizerExecutor(
+            maa_handle, name.c_str(), executor.exec_path.c_str(), exec_param.c_str());
     }
     for (const auto& [name, executor] : param.action) {
         std::string exec_param = json::array(executor.exec_param).to_string();
-        MaaToolkitRegisterCustomActionExecutor(maa_handle, name.c_str(), executor.exec_path.c_str(),
-                                               exec_param.c_str());
+        MaaToolkitRegisterCustomActionExecutor(
+            maa_handle, name.c_str(), executor.exec_path.c_str(), exec_param.c_str());
     }
 
     int64_t tid = 0;

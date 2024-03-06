@@ -68,16 +68,16 @@ const std::optional<std::vector<Device>>& DeviceMgr::get_devices()
     return devices_;
 }
 
-std::vector<std::string> DeviceMgr::request_adb_serials(const std::filesystem::path& adb_path,
-                                                        const json::value& adb_config) const
+std::vector<std::string>
+    DeviceMgr::request_adb_serials(const std::filesystem::path& adb_path, const json::value& adb_config) const
 {
     LogFunc << VAR(adb_path);
 
     std::string str_adb = path_to_utf8_string(adb_path);
     std::string str_config = adb_config.to_string();
 
-    auto control_unit = AdbControlUnitLibraryHolder::create_control_unit(str_adb.c_str(), "", 0, str_config.c_str(), "",
-                                                                         nullptr, nullptr);
+    auto control_unit = AdbControlUnitLibraryHolder::create_control_unit(
+        str_adb.c_str(), "", 0, str_config.c_str(), "", nullptr, nullptr);
 
     if (!control_unit) {
         LogError << "Failed to create control unit";
@@ -95,8 +95,8 @@ std::vector<std::string> DeviceMgr::request_adb_serials(const std::filesystem::p
     return devices;
 }
 
-bool DeviceMgr::request_adb_connect(const std::filesystem::path& adb_path, const std::string& serial,
-                                    const json::value& adb_config) const
+bool DeviceMgr::request_adb_connect(
+    const std::filesystem::path& adb_path, const std::string& serial, const json::value& adb_config) const
 {
     LogFunc << VAR(adb_path) << VAR(serial);
 
@@ -104,8 +104,8 @@ bool DeviceMgr::request_adb_connect(const std::filesystem::path& adb_path, const
     std::string str_serial = serial;
     std::string str_config = adb_config.to_string();
 
-    auto control_unit = AdbControlUnitLibraryHolder::create_control_unit(str_adb.c_str(), str_serial.c_str(), 0,
-                                                                         str_config.c_str(), "", nullptr, nullptr);
+    auto control_unit = AdbControlUnitLibraryHolder::create_control_unit(
+        str_adb.c_str(), str_serial.c_str(), 0, str_config.c_str(), "", nullptr, nullptr);
 
     if (!control_unit) {
         LogError << "Failed to create control unit";
@@ -121,9 +121,8 @@ bool DeviceMgr::request_adb_connect(const std::filesystem::path& adb_path, const
     return true;
 }
 
-std::vector<std::string> DeviceMgr::check_available_adb_serials(const std::filesystem::path& adb_path,
-                                                                const std::vector<std::string>& serials,
-                                                                const json::value& adb_config) const
+std::vector<std::string> DeviceMgr::check_available_adb_serials(
+    const std::filesystem::path& adb_path, const std::vector<std::string>& serials, const json::value& adb_config) const
 {
     std::vector<std::string> available;
     for (const std::string& ser : serials) {
@@ -135,9 +134,8 @@ std::vector<std::string> DeviceMgr::check_available_adb_serials(const std::files
     return available;
 }
 
-MaaAdbControllerType DeviceMgr::check_adb_controller_type(const std::filesystem::path& adb_path,
-                                                          const std::string& adb_serial,
-                                                          const json::value& adb_config) const
+MaaAdbControllerType DeviceMgr::check_adb_controller_type(
+    const std::filesystem::path& adb_path, const std::string& adb_serial, const json::value& adb_config) const
 {
     std::ignore = adb_path;
     std::ignore = adb_serial;

@@ -8,10 +8,16 @@
 
 MAA_CTRL_NS_BEGIN
 
-CustomControllerAgent::CustomControllerAgent(MaaCustomControllerHandle handle, MaaTransparentArg handle_arg,
-                                             MaaControllerCallback callback, MaaCallbackTransparentArg callback_arg)
-    : ControllerAgent(callback, callback_arg), handle_(handle), handle_arg_(handle_arg)
-{}
+CustomControllerAgent::CustomControllerAgent(
+    MaaCustomControllerHandle handle,
+    MaaTransparentArg handle_arg,
+    MaaControllerCallback callback,
+    MaaCallbackTransparentArg callback_arg)
+    : ControllerAgent(callback, callback_arg)
+    , handle_(handle)
+    , handle_arg_(handle_arg)
+{
+}
 
 bool CustomControllerAgent::_connect()
 {

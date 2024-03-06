@@ -11,7 +11,8 @@ MAA_CTRL_UNIT_NS_BEGIN
 class MinitouchInput : public MtouchHelper
 {
 public:
-    explicit MinitouchInput(std::filesystem::path agent_path) : agent_path_(std::move(agent_path))
+    explicit MinitouchInput(std::filesystem::path agent_path)
+        : agent_path_(std::move(agent_path))
     {
         children_.emplace_back(invoke_app_);
     }

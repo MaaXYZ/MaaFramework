@@ -8,10 +8,13 @@
 
 MAA_CTRL_UNIT_NS_BEGIN
 
-class MaatouchInput : public MtouchHelper, public KeyInputBase
+class MaatouchInput
+    : public MtouchHelper
+    , public KeyInputBase
 {
 public:
-    explicit MaatouchInput(std::filesystem::path agent_path) : agent_path_(std::move(agent_path))
+    explicit MaatouchInput(std::filesystem::path agent_path)
+        : agent_path_(std::move(agent_path))
     {
         TouchInputBase::children_.emplace_back(invoke_app_);
         KeyInputBase::children_.emplace_back(invoke_app_);

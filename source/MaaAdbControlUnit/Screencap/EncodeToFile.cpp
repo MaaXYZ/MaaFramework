@@ -16,9 +16,9 @@ bool ScreencapEncodeToFileAndPull::parse(const json::value& config)
         "{ADB}", "-s", "{ADB_SERIAL}", "pull", "/data/local/tmp/{TEMP_FILE}", "{DST_PATH}"
     };
 
-    return parse_argv("ScreencapEncodeToFile", config, kDefaultScreencapEncodeToFileArgv,
-                      screencap_encode_to_file_argv_) &&
-           parse_argv("PullFile", config, kDefaultPullFileArgv, pull_file_argv_);
+    return parse_argv(
+               "ScreencapEncodeToFile", config, kDefaultScreencapEncodeToFileArgv, screencap_encode_to_file_argv_)
+           && parse_argv("PullFile", config, kDefaultPullFileArgv, pull_file_argv_);
 }
 
 bool ScreencapEncodeToFileAndPull::init(int swidth, int sheight)

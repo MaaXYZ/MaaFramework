@@ -10,15 +10,13 @@
 #include "MaaFramework/MaaDef.h"
 #include "Utils/NoWarningCVMat.hpp"
 
-struct MaaInstanceSink
-{
+struct MaaInstanceSink {
 public:
     virtual ~MaaInstanceSink() = default;
     virtual void on_stop() {}
 };
 
-struct MaaResourceAPI : public MaaInstanceSink
-{
+struct MaaResourceAPI : public MaaInstanceSink {
 public:
     virtual ~MaaResourceAPI() = default;
 
@@ -33,8 +31,7 @@ public:
     virtual std::vector<std::string> get_task_list() const = 0;
 };
 
-struct MaaControllerAPI : public MaaInstanceSink
-{
+struct MaaControllerAPI : public MaaInstanceSink {
 public:
     virtual ~MaaControllerAPI() = default;
 
@@ -60,8 +57,7 @@ public:
     virtual std::pair<int, int> get_resolution() = 0;
 };
 
-struct MaaInstanceAPI
-{
+struct MaaInstanceAPI {
 public:
     virtual ~MaaInstanceAPI() = default;
 
@@ -74,12 +70,12 @@ public:
     virtual MaaTaskId post_task(std::string entry, std::string_view param) = 0;
     virtual bool set_task_param(MaaTaskId task_id, std::string_view param) = 0;
 
-    virtual bool register_custom_recognizer(std::string name, MaaCustomRecognizerHandle handle,
-                                            MaaTransparentArg handle_arg) = 0;
+    virtual bool register_custom_recognizer(
+        std::string name, MaaCustomRecognizerHandle handle, MaaTransparentArg handle_arg) = 0;
     virtual bool unregister_custom_recognizer(std::string name) = 0;
     virtual void clear_custom_recognizer() = 0;
-    virtual bool register_custom_action(std::string name, MaaCustomActionHandle handle,
-                                        MaaTransparentArg handle_arg) = 0;
+    virtual bool
+        register_custom_action(std::string name, MaaCustomActionHandle handle, MaaTransparentArg handle_arg) = 0;
     virtual bool unregister_custom_action(std::string name) = 0;
     virtual void clear_custom_action() = 0;
 
@@ -93,14 +89,17 @@ public:
     virtual MaaControllerHandle controller() = 0;
 };
 
-struct MaaSyncContextAPI
-{
+struct MaaSyncContextAPI {
 public:
     virtual ~MaaSyncContextAPI() = default;
 
     virtual bool run_task(std::string task, std::string_view param) = 0;
-    virtual bool run_recognizer(cv::Mat image, std::string task, std::string_view param,
-                                /*out*/ cv::Rect& box, /*out*/ std::string& detail) = 0;
+    virtual bool run_recognizer(
+        cv::Mat image,
+        std::string task,
+        std::string_view param,
+        /*out*/ cv::Rect& box,
+        /*out*/ std::string& detail) = 0;
     virtual bool run_action(std::string task, std::string_view param, cv::Rect cur_box, std::string cur_detail) = 0;
 
     virtual bool click(int x, int y) = 0;
@@ -120,8 +119,7 @@ public:
     virtual MaaControllerHandle controller() = 0;
 };
 
-struct MaaStringBuffer
-{
+struct MaaStringBuffer {
 public:
     virtual ~MaaStringBuffer() = default;
 
@@ -136,8 +134,7 @@ public:
     virtual void set(std::string str) = 0;
 };
 
-struct MaaImageBuffer
-{
+struct MaaImageBuffer {
 public:
     virtual ~MaaImageBuffer() = default;
 

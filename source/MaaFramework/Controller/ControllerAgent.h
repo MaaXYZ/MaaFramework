@@ -18,43 +18,36 @@ MAA_RES_NS_END
 
 MAA_CTRL_NS_BEGIN
 
-struct ClickParam
-{
+struct ClickParam {
     int x = 0;
     int y = 0;
 };
-struct SwipeParam
-{
+struct SwipeParam {
     int x1 = 0;
     int y1 = 0;
     int x2 = 0;
     int y2 = 0;
     int duration = 0;
 };
-struct TouchParam
-{
+struct TouchParam {
     int contact = 0;
     int x = 0;
     int y = 0;
     int pressure = 0;
 };
-struct PressKeyParam
-{
+struct PressKeyParam {
     int keycode = 0;
 };
-struct InputTextParam
-{
+struct InputTextParam {
     std::string text;
 };
-struct AppParam
-{
+struct AppParam {
     std::string package;
 };
 
 using Param = std::variant<std::monostate, ClickParam, SwipeParam, TouchParam, PressKeyParam, InputTextParam, AppParam>;
 
-struct Action
-{
+struct Action {
     enum class Type
     {
         invalid,

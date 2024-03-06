@@ -12,8 +12,7 @@ MAA_VISION_NS_BEGIN
 class TemplateMatcher : public VisionBase
 {
 public:
-    struct Result
-    {
+    struct Result {
         cv::Rect box {};
         double score = 0.0;
 

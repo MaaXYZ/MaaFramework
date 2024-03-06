@@ -16,9 +16,9 @@ bool DeviceInfo::parse(const json::value& config)
         "{ADB}", "-s", "{ADB_SERIAL}", "shell", "dumpsys input | grep SurfaceOrientation | grep -m 1 -o -E [0-9]",
     };
 
-    return parse_argv("UUID", config, kDefaultUuidArgv, uuid_argv_) &&
-           parse_argv("Resolution", config, kDefaultResolutionArgv, resolution_argv_) &&
-           parse_argv("Orientation", config, kDefaultOrientationArgv, orientation_argv_);
+    return parse_argv("UUID", config, kDefaultUuidArgv, uuid_argv_)
+           && parse_argv("Resolution", config, kDefaultResolutionArgv, resolution_argv_)
+           && parse_argv("Orientation", config, kDefaultOrientationArgv, orientation_argv_);
 }
 
 std::optional<std::string> DeviceInfo::request_uuid()

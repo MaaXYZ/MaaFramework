@@ -5,7 +5,7 @@
 
 #ifdef _MSC_VER
 #pragma warning(push)
-#pragma warning(disable : 4068)
+#pragma warning(disable: 4068)
 #endif
 #include <gzip/decompress.hpp>
 #ifdef _MSC_VER
@@ -175,7 +175,9 @@ bool ScreencapHelper::clean_cr(std::string& buffer)
         return false;
     }
 
-    auto check = [](std::string::iterator it) { return *it == '\r' && *(it + 1) == '\n'; };
+    auto check = [](std::string::iterator it) {
+        return *it == '\r' && *(it + 1) == '\n';
+    };
 
     auto scan = buffer.end();
     for (auto it = buffer.begin(); it != buffer.end() - 1; ++it) {

@@ -272,8 +272,7 @@ extern "C"
 {
 #endif
 
-    typedef struct MaaRect
-    {
+    typedef struct MaaRect {
         int32_t x;
         int32_t y;
         int32_t width;

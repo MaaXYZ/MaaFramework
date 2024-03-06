@@ -44,13 +44,13 @@ bool InvokeApp::parse(const json::value& config)
     static const json::array kDefaultRemoveFileArgv = {
         "{ADB}", "-s", "{ADB_SERIAL}", "shell", "rm \"/data/local/tmp/{TO_REMOVED_FILE}\"",
     };
-    return parse_argv("Abilist", config, kDefaultAbilistArgv, abilist_argv_) &&
-           parse_argv("SDK", config, kDefaultSdkArgv, sdk_argv_) &&
-           parse_argv("PushBin", config, kDefaultPushBinArgv, push_bin_argv_) &&
-           parse_argv("ChmodBin", config, kDefaultChmodBinArgv, chmod_bin_argv_) &&
-           parse_argv("InvokeBin", config, kDefaultInvokeBinArgv, invoke_bin_argv_) &&
-           parse_argv("InvokeApp", config, kDefaultInvokeAppArgv, invoke_app_argv_) &&
-           parse_argv("RemoveFile", config, kDefaultRemoveFileArgv, remove_file_argv_);
+    return parse_argv("Abilist", config, kDefaultAbilistArgv, abilist_argv_)
+           && parse_argv("SDK", config, kDefaultSdkArgv, sdk_argv_)
+           && parse_argv("PushBin", config, kDefaultPushBinArgv, push_bin_argv_)
+           && parse_argv("ChmodBin", config, kDefaultChmodBinArgv, chmod_bin_argv_)
+           && parse_argv("InvokeBin", config, kDefaultInvokeBinArgv, invoke_bin_argv_)
+           && parse_argv("InvokeApp", config, kDefaultInvokeAppArgv, invoke_app_argv_)
+           && parse_argv("RemoveFile", config, kDefaultRemoveFileArgv, remove_file_argv_);
 }
 
 bool InvokeApp::init(const std::string& force_temp)

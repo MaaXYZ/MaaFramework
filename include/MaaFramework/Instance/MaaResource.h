@@ -24,8 +24,8 @@ extern "C"
      * @param callback_arg
      * @return MaaResourceHandle
      */
-    MaaResourceHandle MAA_FRAMEWORK_API MaaResourceCreate(MaaResourceCallback callback,
-                                                          MaaCallbackTransparentArg callback_arg);
+    MaaResourceHandle MAA_FRAMEWORK_API
+        MaaResourceCreate(MaaResourceCallback callback, MaaCallbackTransparentArg callback_arg);
 
     /**
      * @brief Free the resource.
@@ -81,8 +81,8 @@ extern "C"
      * @param val_size The size of the option value.
      * @return MaaBool Whether the option is set successfully.
      */
-    MaaBool MAA_FRAMEWORK_API MaaResourceSetOption(MaaResourceHandle res, MaaResOption key, MaaOptionValue value,
-                                                   MaaOptionValueSize val_size);
+    MaaBool MAA_FRAMEWORK_API MaaResourceSetOption(
+        MaaResourceHandle res, MaaResOption key, MaaOptionValue value, MaaOptionValueSize val_size);
 
     /**
      * @brief Get the hash of the resource.

@@ -512,8 +512,8 @@ void ControllerAgent::init_recording()
     recording_path_ = recording_dir / std::format("maa_recording_{}.txt", format_now_for_filename());
 }
 
-void ControllerAgent::append_recording(json::value info, const std::chrono::steady_clock::time_point& start_time,
-                                       bool success)
+void ControllerAgent::append_recording(
+    json::value info, const std::chrono::steady_clock::time_point& start_time, bool success)
 {
     if (!recording()) {
         return;

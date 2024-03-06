@@ -13,9 +13,14 @@ extern "C"
 
     MaaStringView MAA_CONTROL_UNIT_API MaaAdbControlUnitGetVersion();
 
-    MaaControlUnitHandle MAA_CONTROL_UNIT_API MaaAdbControlUnitCreate( //
-        MaaStringView adb_path, MaaStringView adb_serial, MaaAdbControllerType type, MaaStringView config,
-        MaaStringView agent_path, MaaControllerCallback callback, MaaCallbackTransparentArg callback_arg);
+    MaaControlUnitHandle MAA_CONTROL_UNIT_API MaaAdbControlUnitCreate(
+        MaaStringView adb_path,
+        MaaStringView adb_serial,
+        MaaAdbControllerType type,
+        MaaStringView config,
+        MaaStringView agent_path,
+        MaaControllerCallback callback,
+        MaaCallbackTransparentArg callback_arg);
 
     void MAA_CONTROL_UNIT_API MaaAdbControlUnitDestroy(MaaControlUnitHandle handle);
 

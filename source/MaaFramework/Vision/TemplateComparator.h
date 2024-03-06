@@ -8,8 +8,7 @@ MAA_VISION_NS_BEGIN
 class TemplateComparator
 {
 public:
-    struct Result
-    {
+    struct Result {
         cv::Rect box {};
         double score = 0.0;
 

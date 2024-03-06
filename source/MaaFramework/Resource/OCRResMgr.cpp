@@ -100,8 +100,8 @@ std::shared_ptr<fastdeploy::vision::ocr::DBDetector> OCRResMgr::load_deter(const
         auto option = option_;
         option.SetModelBuffer(model.data(), model.size(), nullptr, 0, fastdeploy::ModelFormat::ONNX);
 
-        auto det = std::make_shared<fastdeploy::vision::ocr::DBDetector>("dummy.onnx", std::string(), option,
-                                                                         fastdeploy::ModelFormat::ONNX);
+        auto det = std::make_shared<fastdeploy::vision::ocr::DBDetector>(
+            "dummy.onnx", std::string(), option, fastdeploy::ModelFormat::ONNX);
         if (!det || !det->Initialized()) {
             LogError << "Failed to load DBDetector:" << VAR(name) << VAR(det) << VAR(det->Initialized());
             return nullptr;
@@ -134,8 +134,8 @@ std::shared_ptr<fastdeploy::vision::ocr::Recognizer> OCRResMgr::load_recer(const
         auto option = option_;
         option.SetModelBuffer(model.data(), model.size(), nullptr, 0, fastdeploy::ModelFormat::ONNX);
 
-        auto rec = std::make_shared<fastdeploy::vision::ocr::Recognizer>("dummy.onnx", std::string(), label, option,
-                                                                         fastdeploy::ModelFormat::ONNX);
+        auto rec = std::make_shared<fastdeploy::vision::ocr::Recognizer>(
+            "dummy.onnx", std::string(), label, option, fastdeploy::ModelFormat::ONNX);
         if (!rec || !rec->Initialized()) {
             LogError << "Failed to load Recognizer:" << VAR(name) << VAR(rec) << VAR(rec->Initialized());
             return nullptr;

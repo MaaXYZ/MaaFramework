@@ -125,8 +125,8 @@ bool InstanceMgr::set_task_param(MaaTaskId task_id, std::string_view param)
     return ret;
 }
 
-bool InstanceMgr::register_custom_recognizer(std::string name, MaaCustomRecognizerHandle handle,
-                                             MaaTransparentArg handle_arg)
+bool InstanceMgr::register_custom_recognizer(
+    std::string name, MaaCustomRecognizerHandle handle, MaaTransparentArg handle_arg)
 {
     LogInfo << VAR(name) << VAR_VOIDP(handle) << VAR_VOIDP(handle_arg);
     if (!handle) {

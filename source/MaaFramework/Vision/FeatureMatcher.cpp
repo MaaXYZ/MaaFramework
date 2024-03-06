@@ -63,8 +63,8 @@ FeatureMatcher::ResultsVec FeatureMatcher::foreach_rois(const cv::Mat& templ) co
     return results;
 }
 
-FeatureMatcher::ResultsVec FeatureMatcher::match_roi(const std::vector<cv::KeyPoint>& keypoints_1,
-                                                     const cv::Mat& descriptors_1, const cv::Rect& roi_2) const
+FeatureMatcher::ResultsVec FeatureMatcher::match_roi(
+    const std::vector<cv::KeyPoint>& keypoints_1, const cv::Mat& descriptors_1, const cv::Rect& roi_2) const
 {
     if (roi_2.empty()) {
         LogError << name_ << "roi_2 is empty";
@@ -137,8 +137,8 @@ cv::Ptr<cv::DescriptorMatcher> FeatureMatcher::create_matcher() const
     return nullptr;
 }
 
-std::vector<std::vector<cv::DMatch>> FeatureMatcher::match(const cv::Mat& descriptors_1,
-                                                           const cv::Mat& descriptors_2) const
+std::vector<std::vector<cv::DMatch>>
+    FeatureMatcher::match(const cv::Mat& descriptors_1, const cv::Mat& descriptors_2) const
 {
     if (descriptors_1.empty() || descriptors_2.empty()) {
         LogWarn << name_ << "descriptors is empty";
@@ -160,10 +160,11 @@ std::vector<std::vector<cv::DMatch>> FeatureMatcher::match(const cv::Mat& descri
     return match_points;
 }
 
-FeatureMatcher::ResultsVec FeatureMatcher::postproc(const std::vector<std::vector<cv::DMatch>>& match_points,
-                                                    const std::vector<cv::KeyPoint>& keypoints_1,
-                                                    const std::vector<cv::KeyPoint>& keypoints_2,
-                                                    const cv::Rect& roi_2) const
+FeatureMatcher::ResultsVec FeatureMatcher::postproc(
+    const std::vector<std::vector<cv::DMatch>>& match_points,
+    const std::vector<cv::KeyPoint>& keypoints_1,
+    const std::vector<cv::KeyPoint>& keypoints_2,
+    const cv::Rect& roi_2) const
 {
     std::vector<cv::DMatch> good_matches;
     std::vector<cv::Point2d> obj;
@@ -189,7 +190,8 @@ FeatureMatcher::ResultsVec FeatureMatcher::postproc(const std::vector<std::vecto
     if (good_matches.size() >= 4) {
         cv::Mat H = cv::findHomography(obj, scene, cv::RANSAC);
 
-        std::array<cv::Point2d, 4> obj_corners = { cv::Point2d(0, 0), cv::Point2d(template_->cols, 0),
+        std::array<cv::Point2d, 4> obj_corners = { cv::Point2d(0, 0),
+                                                   cv::Point2d(template_->cols, 0),
                                                    cv::Point2d(template_->cols, template_->rows),
                                                    cv::Point2d(0, template_->rows) };
         std::array<cv::Point2d, 4> scene_corners;
@@ -211,9 +213,13 @@ FeatureMatcher::ResultsVec FeatureMatcher::postproc(const std::vector<std::vecto
     return results;
 }
 
-void FeatureMatcher::draw_result(const cv::Mat& templ, const std::vector<cv::KeyPoint>& keypoints_1,
-                                 const cv::Rect& roi, const std::vector<cv::KeyPoint>& keypoints_2,
-                                 const std::vector<cv::DMatch>& good_matches, ResultsVec& results) const
+void FeatureMatcher::draw_result(
+    const cv::Mat& templ,
+    const std::vector<cv::KeyPoint>& keypoints_1,
+    const cv::Rect& roi,
+    const std::vector<cv::KeyPoint>& keypoints_2,
+    const std::vector<cv::DMatch>& good_matches,
+    ResultsVec& results) const
 {
     if (!debug_draw_) {
         return;

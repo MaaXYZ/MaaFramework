@@ -25,7 +25,10 @@ bool RecognizerExecAgent::unregister_for_maa_inst(MaaInstanceHandle handle, std:
 }
 
 std::optional<RecognizerExecAgent::AnalyzeResult> RecognizerExecAgent::analyze(
-    ExecData& data, MaaSyncContextHandle sync_context, const cv::Mat& image, std::string_view task_name,
+    ExecData& data,
+    MaaSyncContextHandle sync_context,
+    const cv::Mat& image,
+    std::string_view task_name,
     std::string_view custom_recognition_param)
 {
     LogFunc << VAR(data.name) << VAR_VOIDP(sync_context) << VAR(image.size()) << VAR(task_name)
@@ -34,8 +37,9 @@ std::optional<RecognizerExecAgent::AnalyzeResult> RecognizerExecAgent::analyze(
     std::string handle_arg = arg_cvt_.sync_context_to_arg(sync_context);
     std::string image_arg = arg_cvt_.image_to_arg(image);
 
-    std::vector<std::string> extra_args = { handle_arg, image_arg, std::string(task_name),
-                                            std::string(custom_recognition_param) };
+    std::vector<std::string> extra_args = {
+        handle_arg, image_arg, std::string(task_name), std::string(custom_recognition_param)
+    };
     std::vector<std::string> args = data.exec_args;
     args.insert(args.end(), std::make_move_iterator(extra_args.begin()), std::make_move_iterator(extra_args.end()));
 
@@ -59,9 +63,13 @@ std::optional<RecognizerExecAgent::AnalyzeResult> RecognizerExecAgent::analyze(
     return result;
 }
 
-MaaBool RecognizerExecAgent::maa_api_analyze( //
-    MaaSyncContextHandle sync_context, const MaaImageBufferHandle image, MaaStringView task_name,
-    MaaStringView custom_recognition_param, MaaTransparentArg recognizer_arg, MaaRectHandle out_box,
+MaaBool RecognizerExecAgent::maa_api_analyze(
+    MaaSyncContextHandle sync_context,
+    const MaaImageBufferHandle image,
+    MaaStringView task_name,
+    MaaStringView custom_recognition_param,
+    MaaTransparentArg recognizer_arg,
+    MaaRectHandle out_box,
     MaaStringBufferHandle out_detail)
 {
     auto* data = static_cast<ExecData*>(recognizer_arg);

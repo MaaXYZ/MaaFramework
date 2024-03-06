@@ -11,8 +11,8 @@
 
 MAA_CTRL_UNIT_NS_BEGIN
 
-AutoDetectInput::AutoDetectInput(const std::filesystem::path& maatouch_path,
-                                 const std::filesystem::path& minitouch_path)
+AutoDetectInput::AutoDetectInput(
+    const std::filesystem::path& maatouch_path, const std::filesystem::path& minitouch_path)
 {
     if (std::filesystem::exists(maatouch_path)) {
         auto maatouch = std::make_shared<MaatouchInput>(maatouch_path);

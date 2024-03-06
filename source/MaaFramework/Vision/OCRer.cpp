@@ -232,8 +232,8 @@ void OCRer::sort(ResultsVec& results) const
         sort_by_random_(results);
         break;
     case ResultOrderBy::Length:
-        std::ranges::sort(results,
-                          [](const auto& lhs, const auto& rhs) -> bool { return lhs.text.size() > rhs.text.size(); });
+        std::ranges::sort(
+            results, [](const auto& lhs, const auto& rhs) -> bool { return lhs.text.size() > rhs.text.size(); });
         break;
 
     default:

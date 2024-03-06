@@ -8,8 +8,7 @@ MAA_CTRL_UNIT_NS_BEGIN
 
 #pragma pack(push, 1)
 
-struct MinicapHeader
-{
+struct MinicapHeader {
     enum
     {
         DUMB = 1 << 0,

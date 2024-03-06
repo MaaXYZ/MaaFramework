@@ -60,8 +60,8 @@ std::shared_ptr<Ort::Session> ONNXResMgr::detector(const std::string& name) cons
     return session;
 }
 
-std::shared_ptr<Ort::Session> ONNXResMgr::load(const std::string& name,
-                                               const std::vector<std::filesystem::path>& roots) const
+std::shared_ptr<Ort::Session>
+    ONNXResMgr::load(const std::string& name, const std::vector<std::filesystem::path>& roots) const
 {
     LogFunc << VAR(name) << VAR(roots);
 

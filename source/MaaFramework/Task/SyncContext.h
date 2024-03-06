@@ -14,7 +14,9 @@
 
 MAA_TASK_NS_BEGIN
 
-class SyncContext : public MaaSyncContextAPI, public MaaInstanceSink
+class SyncContext
+    : public MaaSyncContextAPI
+    , public MaaInstanceSink
 {
 public:
     explicit SyncContext(InstanceInternalAPI* inst);
@@ -22,10 +24,14 @@ public:
 
 public: // from MaaSyncContextAPI
     virtual bool run_task(std::string task, std::string_view param) override;
-    virtual bool run_recognizer(cv::Mat image, std::string task, std::string_view param,
-                                /*out*/ cv::Rect& box, /*out*/ std::string& detail) override;
-    virtual bool run_action(std::string task, std::string_view param, cv::Rect cur_box,
-                            std::string cur_detail) override;
+    virtual bool run_recognizer(
+        cv::Mat image,
+        std::string task,
+        std::string_view param,
+        /*out*/ cv::Rect& box,
+        /*out*/ std::string& detail) override;
+    virtual bool
+        run_action(std::string task, std::string_view param, cv::Rect cur_box, std::string cur_detail) override;
 
     virtual bool click(int x, int y) override;
     virtual bool swipe(int x1, int y1, int x2, int y2, int duration) override;

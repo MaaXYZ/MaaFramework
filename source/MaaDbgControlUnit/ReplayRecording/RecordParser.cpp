@@ -313,8 +313,8 @@ std::optional<Record::Param> RecordParser::parse_input_text(const json::value& r
     return result;
 }
 
-std::optional<Record::Param> RecordParser::parse_screencap(const json::value& record_json,
-                                                           const std::filesystem::path& dir)
+std::optional<Record::Param>
+    RecordParser::parse_screencap(const json::value& record_json, const std::filesystem::path& dir)
 {
     Record::ScreencapParam result;
 

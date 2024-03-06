@@ -13,8 +13,8 @@ bool AdbTapInput::parse(const json::value& config)
         "{ADB}", "-s", "{ADB_SERIAL}", "shell", "input swipe {X1} {Y1} {X2} {Y2} {DURATION}",
     };
 
-    return parse_argv("Click", config, kDefaultClickArgv, click_argv_) &&
-           parse_argv("Swipe", config, kDefaultSwipeArgv, swipe_argv_);
+    return parse_argv("Click", config, kDefaultClickArgv, click_argv_)
+           && parse_argv("Swipe", config, kDefaultSwipeArgv, swipe_argv_);
 }
 
 bool AdbTapInput::init(int swidth, int sheight, int orientation)
@@ -93,8 +93,8 @@ bool AdbKeyInput::parse(const json::value& config)
         "{ADB}", "-s", "{ADB_SERIAL}", "shell", "input text '{TEXT}'",
     };
 
-    return parse_argv("PressKey", config, kDefaultPressKeyArgv, press_key_argv_) &&
-           parse_argv("InputText", config, kDefaultInputTextArgv, input_text_argv_);
+    return parse_argv("PressKey", config, kDefaultPressKeyArgv, press_key_argv_)
+           && parse_argv("InputText", config, kDefaultInputTextArgv, input_text_argv_);
 }
 
 bool AdbKeyInput::press_key(int key)

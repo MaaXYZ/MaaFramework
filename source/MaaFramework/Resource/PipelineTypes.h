@@ -30,10 +30,16 @@ enum class Type
     Custom,
 };
 
-using Param = std::variant<std::monostate, MAA_VISION_NS::DirectHitParam, MAA_VISION_NS::TemplateMatcherParam,
-                           MAA_VISION_NS::FeatureMatcherParam, MAA_VISION_NS::OCRerParam,
-                           MAA_VISION_NS::NeuralNetworkClassifierParam, MAA_VISION_NS::NeuralNetworkDetectorParam,
-                           MAA_VISION_NS::ColorMatcherParam, MAA_VISION_NS::CustomRecognizerParam>;
+using Param = std::variant<
+    std::monostate,
+    MAA_VISION_NS::DirectHitParam,
+    MAA_VISION_NS::TemplateMatcherParam,
+    MAA_VISION_NS::FeatureMatcherParam,
+    MAA_VISION_NS::OCRerParam,
+    MAA_VISION_NS::NeuralNetworkClassifierParam,
+    MAA_VISION_NS::NeuralNetworkDetectorParam,
+    MAA_VISION_NS::ColorMatcherParam,
+    MAA_VISION_NS::CustomRecognizerParam>;
 } // namespace Recognition
 
 namespace Action
@@ -52,8 +58,7 @@ enum class Type
     StopTask,
 };
 
-struct Target
-{
+struct Target {
     enum class Type
     {
         Invalid = 0,
@@ -69,36 +74,30 @@ struct Target
 
 using TargetParam = std::variant<std::monostate, std::string, cv::Rect>;
 
-struct ClickParam
-{
+struct ClickParam {
     Target target;
 };
 
-struct SwipeParam
-{
+struct SwipeParam {
     Target begin;
     Target end;
 
     uint duration = 200;
 };
 
-struct KeyParam
-{
+struct KeyParam {
     std::vector<int> keys;
 };
 
-struct TextParam
-{
+struct TextParam {
     std::string text;
 };
 
-struct AppParam
-{
+struct AppParam {
     std::string package;
 };
 
-struct CustomParam
-{
+struct CustomParam {
     std::string name;
     json::value custom_param;
 };
@@ -106,8 +105,7 @@ struct CustomParam
 using Param = std::variant<std::monostate, ClickParam, SwipeParam, KeyParam, TextParam, AppParam, CustomParam>;
 } // namespace Action
 
-struct WaitFreezesParam
-{
+struct WaitFreezesParam {
     std::chrono::milliseconds time = std::chrono::milliseconds(0);
 
     Action::Target target;
@@ -116,8 +114,7 @@ struct WaitFreezesParam
     int method = MAA_VISION_NS::TemplateMatcherParam::kDefaultMethod;
 };
 
-struct TaskData
-{
+struct TaskData {
     using NextList = std::vector<std::string>;
 
     std::string name;

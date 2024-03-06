@@ -8,10 +8,14 @@
 
 MAA_CTRL_NS_BEGIN
 
-GeneralControllerAgent::GeneralControllerAgent(std::shared_ptr<MAA_CTRL_UNIT_NS::ControlUnitAPI> control_unit,
-                                               MaaControllerCallback callback, MaaCallbackTransparentArg callback_arg)
-    : ControllerAgent(callback, callback_arg), control_unit_(std::move(control_unit))
-{}
+GeneralControllerAgent::GeneralControllerAgent(
+    std::shared_ptr<MAA_CTRL_UNIT_NS::ControlUnitAPI> control_unit,
+    MaaControllerCallback callback,
+    MaaCallbackTransparentArg callback_arg)
+    : ControllerAgent(callback, callback_arg)
+    , control_unit_(std::move(control_unit))
+{
+}
 
 bool GeneralControllerAgent::_connect()
 {

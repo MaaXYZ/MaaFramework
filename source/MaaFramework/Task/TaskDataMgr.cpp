@@ -6,7 +6,10 @@
 
 MAA_TASK_NS_BEGIN
 
-TaskDataMgr::TaskDataMgr(InstanceInternalAPI* inst) : inst_(inst) {}
+TaskDataMgr::TaskDataMgr(InstanceInternalAPI* inst)
+    : inst_(inst)
+{
+}
 
 const MAA_RES_NS::TaskData& TaskDataMgr::get_task_data(const std::string& task_name)
 {

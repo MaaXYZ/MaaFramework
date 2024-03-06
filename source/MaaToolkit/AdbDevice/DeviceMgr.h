@@ -21,8 +21,7 @@ public:
     virtual ~DeviceMgr() noexcept override = default;
 
 public: // from MaaToolkitDeviceMgrAPI
-    struct Emulator
-    {
+    struct Emulator {
         std::string name;
         ProcessInfo process;
     };
@@ -37,15 +36,16 @@ protected:
     virtual std::vector<Device> find_device_with_adb_impl(std::string_view adb_path) = 0;
 
 protected:
-    std::vector<std::string> request_adb_serials(const std::filesystem::path& adb_path,
-                                                 const json::value& adb_config) const;
-    bool request_adb_connect(const std::filesystem::path& adb_path, const std::string& serial,
-                             const json::value& adb_config) const;
-    std::vector<std::string> check_available_adb_serials(const std::filesystem::path& adb_path,
-                                                         const std::vector<std::string>& serials,
-                                                         const json::value& adb_config) const;
-    MaaAdbControllerType check_adb_controller_type(const std::filesystem::path& adb_path, const std::string& adb_serial,
-                                                   const json::value& adb_config) const;
+    std::vector<std::string>
+        request_adb_serials(const std::filesystem::path& adb_path, const json::value& adb_config) const;
+    bool request_adb_connect(
+        const std::filesystem::path& adb_path, const std::string& serial, const json::value& adb_config) const;
+    std::vector<std::string> check_available_adb_serials(
+        const std::filesystem::path& adb_path,
+        const std::vector<std::string>& serials,
+        const json::value& adb_config) const;
+    MaaAdbControllerType check_adb_controller_type(
+        const std::filesystem::path& adb_path, const std::string& adb_serial, const json::value& adb_config) const;
 
 private:
     std::optional<std::vector<Device>> devices_;

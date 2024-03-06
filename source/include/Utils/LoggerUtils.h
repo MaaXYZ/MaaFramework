@@ -51,9 +51,11 @@ enum class level
     trace = MaaLoggingLevel_Trace,
 };
 
-struct MAA_UTILS_API separator
-{
-    explicit constexpr separator(std::string_view s) noexcept : str(s) {}
+struct MAA_UTILS_API separator {
+    explicit constexpr separator(std::string_view s) noexcept
+        : str(s)
+    {
+    }
 
     static const separator none;
     static const separator space;
@@ -70,7 +72,10 @@ concept has_output_operator = requires { std::declval<std::ostream&>() << std::d
 class StringConverter
 {
 public:
-    StringConverter(std::filesystem::path dumps_dir) : dumps_dir_(std::move(dumps_dir)) {}
+    StringConverter(std::filesystem::path dumps_dir)
+        : dumps_dir_(std::move(dumps_dir))
+    {
+    }
 
 public:
     std::string operator()(const std::filesystem::path& path) const { return path_to_utf8_string(path); }
@@ -132,9 +137,13 @@ class MAA_UTILS_API LogStream
 {
 public:
     template <typename... args_t>
-    LogStream(std::mutex& m, std::ofstream& s, level lv, bool std_out, std::filesystem::path dumps_dir,
-              args_t&&... args)
-        : mutex_(m), stream_(s), lv_(lv), stdout_(std_out), string_converter_(std::move(dumps_dir))
+    LogStream(
+        std::mutex& m, std::ofstream& s, level lv, bool std_out, std::filesystem::path dumps_dir, args_t&&... args)
+        : mutex_(m)
+        , stream_(s)
+        , lv_(lv)
+        , stdout_(std_out)
+        , string_converter_(std::move(dumps_dir))
     {
         stream_props(std::forward<args_t>(args)...);
     }

@@ -14,8 +14,7 @@ MAA_VISION_NS_BEGIN
 class NeuralNetworkClassifier : public VisionBase
 {
 public:
-    struct Result
-    {
+    struct Result {
         size_t cls_index = SIZE_MAX;
         std::string label;
         cv::Rect box {};

@@ -7,10 +7,16 @@
 
 MAA_CTRL_UNIT_NS_BEGIN
 
-ControlUnitMgr::ControlUnitMgr(std::filesystem::path adb_path, std::string adb_serial, MaaControllerCallback callback,
-                               MaaCallbackTransparentArg callback_arg)
-    : adb_path_(std::move(adb_path)), adb_serial_(std::move(adb_serial)), notifier(callback, callback_arg)
-{}
+ControlUnitMgr::ControlUnitMgr(
+    std::filesystem::path adb_path,
+    std::string adb_serial,
+    MaaControllerCallback callback,
+    MaaCallbackTransparentArg callback_arg)
+    : adb_path_(std::move(adb_path))
+    , adb_serial_(std::move(adb_serial))
+    , notifier(callback, callback_arg)
+{
+}
 
 bool ControlUnitMgr::find_device(std::vector<std::string>& devices)
 {

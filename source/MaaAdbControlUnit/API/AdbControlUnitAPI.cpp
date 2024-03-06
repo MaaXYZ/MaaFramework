@@ -25,9 +25,14 @@ MaaStringView MaaAdbControlUnitGetVersion()
     return MAA_VERSION;
 }
 
-MaaControlUnitHandle MaaAdbControlUnitCreate( //
-    MaaStringView adb_path, MaaStringView adb_serial, MaaAdbControllerType type, MaaStringView config,
-    MaaStringView agent_path, MaaControllerCallback callback, MaaCallbackTransparentArg callback_arg)
+MaaControlUnitHandle MaaAdbControlUnitCreate(
+    MaaStringView adb_path,
+    MaaStringView adb_serial,
+    MaaAdbControllerType type,
+    MaaStringView config,
+    MaaStringView agent_path,
+    MaaControllerCallback callback,
+    MaaCallbackTransparentArg callback_arg)
 {
     using namespace MAA_CTRL_UNIT_NS;
 

@@ -15,8 +15,7 @@ class ProcessArgvGenerator
 public:
     using Replacement = std::unordered_map<std::string, std::string>;
 
-    struct ProcessArgv
-    {
+    struct ProcessArgv {
         std::filesystem::path exec;
         std::vector<std::string> args;
     };
@@ -25,7 +24,10 @@ public:
     static std::optional<ProcessArgvGenerator> create(const json::array& arr);
 
     ProcessArgvGenerator() = default;
-    explicit ProcessArgvGenerator(std::vector<std::string> raw) : raw_(std::move(raw)) {}
+    explicit ProcessArgvGenerator(std::vector<std::string> raw)
+        : raw_(std::move(raw))
+    {
+    }
 
     std::optional<ProcessArgv> gen(const Replacement& replacement) const;
 

@@ -45,8 +45,8 @@ extern "C"
      * @param val_size The size of the option value.
      * @return MaaBool Whether the option is set successfully.
      */
-    MaaBool MAA_FRAMEWORK_API MaaSetOption(MaaInstanceHandle inst, MaaInstOption key, MaaOptionValue value,
-                                           MaaOptionValueSize val_size);
+    MaaBool MAA_FRAMEWORK_API
+        MaaSetOption(MaaInstanceHandle inst, MaaInstOption key, MaaOptionValue value, MaaOptionValueSize val_size);
 
     /**
      * @brief Bind the instance to an initialized resource.
@@ -89,9 +89,11 @@ extern "C"
      * @param recognizer_arg
      * @return MaaBool
      */
-    MaaBool MAA_FRAMEWORK_API MaaRegisterCustomRecognizer(MaaInstanceHandle inst, MaaStringView name,
-                                                          MaaCustomRecognizerHandle recognizer,
-                                                          MaaTransparentArg recognizer_arg);
+    MaaBool MAA_FRAMEWORK_API MaaRegisterCustomRecognizer(
+        MaaInstanceHandle inst,
+        MaaStringView name,
+        MaaCustomRecognizerHandle recognizer,
+        MaaTransparentArg recognizer_arg);
 
     /**
      * @brief Unregister a custom recognizer from the instance.
@@ -121,8 +123,8 @@ extern "C"
      * @param action_arg
      * @return MaaBool
      */
-    MaaBool MAA_FRAMEWORK_API MaaRegisterCustomAction(MaaInstanceHandle inst, MaaStringView name,
-                                                      MaaCustomActionHandle action, MaaTransparentArg action_arg);
+    MaaBool MAA_FRAMEWORK_API MaaRegisterCustomAction(
+        MaaInstanceHandle inst, MaaStringView name, MaaCustomActionHandle action, MaaTransparentArg action_arg);
 
     /**
      * @brief Unregister a custom action from the instance.

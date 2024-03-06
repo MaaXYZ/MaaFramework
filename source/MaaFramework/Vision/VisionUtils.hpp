@@ -44,8 +44,8 @@ inline static void sort_by_count_(ResultsVec& results)
 template <typename ResultsVec>
 inline static void sort_by_area_(ResultsVec& results)
 {
-    std::ranges::sort(results,
-                      [](const auto& lhs, const auto& rhs) -> bool { return lhs.box.area() > rhs.box.area(); });
+    std::ranges::sort(
+        results, [](const auto& lhs, const auto& rhs) -> bool { return lhs.box.area() > rhs.box.area(); });
 }
 
 template <typename ResultsVec>

@@ -45,15 +45,16 @@ private:
         InternalError,
     };
 
-    struct HitResult
-    {
+    struct HitResult {
         Recognizer::Result rec_result;
         MAA_RES_NS::TaskData task_data;
     };
 
 private:
-    RunningResult find_first_and_run(const std::vector<std::string>& list, std::chrono::milliseconds timeout,
-                                     /*out*/ MAA_RES_NS::TaskData& found_data);
+    RunningResult find_first_and_run(
+        const std::vector<std::string>& list,
+        std::chrono::milliseconds timeout,
+        /*out*/ MAA_RES_NS::TaskData& found_data);
     std::optional<HitResult> find_first(const std::vector<std::string>& list);
     RunningResult run_task(const HitResult& hits);
 
@@ -63,7 +64,9 @@ private:
     InstanceStatus* status() { return inst_ ? inst_->inter_status() : nullptr; }
     void notify(std::string_view msg, json::value detail = json::value())
     {
-        if (inst_) inst_->notify(msg, detail);
+        if (inst_) {
+            inst_->notify(msg, detail);
+        }
     }
 
     bool need_to_stop() const { return need_to_stop_; }

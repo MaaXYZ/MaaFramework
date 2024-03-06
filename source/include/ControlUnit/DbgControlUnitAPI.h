@@ -13,8 +13,9 @@ extern "C"
 
     MaaStringView MAA_CONTROL_UNIT_API MaaDbgControlUnitGetVersion();
 
-    MaaControlUnitHandle MAA_CONTROL_UNIT_API MaaDbgControlUnitCreate( //
-        MaaDbgControllerType type, MaaStringView read_path);
+    MaaControlUnitHandle MAA_CONTROL_UNIT_API MaaDbgControlUnitCreate(
+        MaaDbgControllerType type,
+        MaaStringView read_path);
 
     void MAA_CONTROL_UNIT_API MaaDbgControlUnitDestroy(MaaControlUnitHandle handle);
 

@@ -12,8 +12,7 @@ MAA_VISION_NS_BEGIN
 
 class CustomRecognizer : public VisionBase
 {
-    struct Result
-    {
+    struct Result {
         cv::Rect box {};
         json::value detail;
 

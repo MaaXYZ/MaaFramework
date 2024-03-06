@@ -4,7 +4,8 @@
 
 MAA_NS_BEGIN
 
-ServerSockIOFactory::ServerSockIOFactory(const std::string& address, unsigned short port) : server_acceptor_(io_ctx_)
+ServerSockIOFactory::ServerSockIOFactory(const std::string& address, unsigned short port)
+    : server_acceptor_(io_ctx_)
 {
     LogFunc << VAR(address) << VAR(port);
 
@@ -69,7 +70,10 @@ std::shared_ptr<SockIOStream> ClientSockIOFactory::connect()
     return std::make_shared<SockIOStream>(std::move(ios));
 }
 
-SockIOStream::SockIOStream(boost::asio::ip::tcp::iostream&& ios) : ios_(std::move(ios)) {}
+SockIOStream::SockIOStream(boost::asio::ip::tcp::iostream&& ios)
+    : ios_(std::move(ios))
+{
+}
 
 SockIOStream::~SockIOStream()
 {
