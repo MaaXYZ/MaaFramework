@@ -80,8 +80,8 @@ enum MaaGlobalOptionEnum
 
     /// Dump all screenshots and actions
     ///
-    /// Recording will evaluate to true if any of this or MaaCtrlOptionEnum::MaaCtrlOption_Recording is true.
-    /// value: bool, eg: true; val_size: sizeof(bool)
+    /// Recording will evaluate to true if any of this or MaaCtrlOptionEnum::MaaCtrlOption_Recording
+    /// is true. value: bool, eg: true; val_size: sizeof(bool)
     MaaGlobalOption_Recording = 3,
 
     /// The level of log output to stdout
@@ -112,19 +112,22 @@ enum MaaCtrlOptionEnum
 {
     MaaCtrlOption_Invalid = 0,
 
-    /// Only one of long and short side can be set, and the other is automatically scaled according to the aspect ratio.
+    /// Only one of long and short side can be set, and the other is automatically scaled according
+    /// to the aspect ratio.
     ///
     /// value: int, eg: 1920; val_size: sizeof(int)
     MaaCtrlOption_ScreenshotTargetLongSide = 1,
 
-    /// Only one of long and short side can be set, and the other is automatically scaled according to the aspect ratio.
+    /// Only one of long and short side can be set, and the other is automatically scaled according
+    /// to the aspect ratio.
     ///
     /// value: int, eg: 1080; val_size: sizeof(int)
     MaaCtrlOption_ScreenshotTargetShortSide = 2,
 
     /// For StartApp
     ///
-    /// value: string, eg: "com.hypergryph.arknights/com.u8.sdk.U8UnityContext"; val_size: string length
+    /// value: string, eg: "com.hypergryph.arknights/com.u8.sdk.U8UnityContext"; val_size: string
+    /// length
     MaaCtrlOption_DefaultAppPackageEntry = 3,
 
     /// For StopApp
@@ -134,7 +137,8 @@ enum MaaCtrlOptionEnum
 
     /// Dump all screenshots and actions
     ///
-    /// Recording will evaluate to true if any of this or MaaGlobalOptionEnum::MaaGlobalOption_Recording is true.
+    /// Recording will evaluate to true if any of this or
+    /// MaaGlobalOptionEnum::MaaGlobalOption_Recording is true.
     ///
     /// value: bool, eg: true; val_size: sizeof(bool)
     MaaCtrlOption_Recording = 5,
@@ -178,8 +182,10 @@ enum MaaAdbControllerTypeEnum
     MaaAdbControllerType_Key_MaaTouch = 2 << 8,
     MaaAdbControllerType_Key_AutoDetect = MaaAdbControllerType_Key_Mask - (1 << 8),
 
-    MaaAdbControllerType_Input_Preset_Adb = MaaAdbControllerType_Touch_Adb | MaaAdbControllerType_Key_Adb,
-    MaaAdbControllerType_Input_Preset_Minitouch = MaaAdbControllerType_Touch_MiniTouch | MaaAdbControllerType_Key_Adb,
+    MaaAdbControllerType_Input_Preset_Adb =
+        MaaAdbControllerType_Touch_Adb | MaaAdbControllerType_Key_Adb,
+    MaaAdbControllerType_Input_Preset_Minitouch =
+        MaaAdbControllerType_Touch_MiniTouch | MaaAdbControllerType_Key_Adb,
     MaaAdbControllerType_Input_Preset_Maatouch =
         MaaAdbControllerType_Touch_MaaTouch | MaaAdbControllerType_Key_MaaTouch,
     MaaAdbControllerType_Input_Preset_AutoDetect =
@@ -193,7 +199,8 @@ enum MaaAdbControllerTypeEnum
     MaaAdbControllerType_Screencap_EncodeToFile = 5 << 16,
     MaaAdbControllerType_Screencap_MinicapDirect = 6 << 16,
     MaaAdbControllerType_Screencap_MinicapStream = 7 << 16,
-    MaaAdbControllerType_Screencap_FastestLosslessWay = MaaAdbControllerType_Screencap_Mask - (2 << 16),
+    MaaAdbControllerType_Screencap_FastestLosslessWay =
+        MaaAdbControllerType_Screencap_Mask - (2 << 16),
     MaaAdbControllerType_Screencap_FastestWay = MaaAdbControllerType_Screencap_Mask - (1 << 16),
 };
 
@@ -250,7 +257,8 @@ typedef MaaTransparentArg MaaCallbackTransparentArg;
  * @param msg The message. See MaaMsg.h
  * @param details_json The details in JSON format. See doc in MaaMsg.h
  */
-typedef void (*MaaAPICallback)(MaaStringView msg, MaaStringView details_json, MaaTransparentArg callback_arg);
+typedef void (
+    *MaaAPICallback)(MaaStringView msg, MaaStringView details_json, MaaTransparentArg callback_arg);
 typedef MaaAPICallback MaaResourceCallback;
 typedef MaaAPICallback MaaControllerCallback;
 typedef MaaAPICallback MaaInstanceCallback;

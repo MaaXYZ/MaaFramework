@@ -16,8 +16,9 @@ public:
     int get_w() const { return width_; }
     int get_h() const { return height_; }
 
-    std::optional<cv::Mat> process_data(std::string& buffer,
-                                        std::function<std::optional<cv::Mat>(const std::string& buffer)> decoder);
+    std::optional<cv::Mat> process_data(
+        std::string& buffer,
+        std::function<std::optional<cv::Mat>(const std::string& buffer)> decoder);
     std::optional<cv::Mat> decode_raw(const std::string& buffer);
     std::optional<cv::Mat> decode_gzip(const std::string& buffer);
     std::optional<cv::Mat> decode_png(const std::string& buffer);

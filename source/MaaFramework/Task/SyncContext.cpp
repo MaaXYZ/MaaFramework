@@ -9,7 +9,10 @@
 
 MAA_TASK_NS_BEGIN
 
-SyncContext::SyncContext(InstanceInternalAPI* inst) : inst_(inst) {}
+SyncContext::SyncContext(InstanceInternalAPI* inst)
+    : inst_(inst)
+{
+}
 
 bool SyncContext::run_task(std::string task, std::string_view param)
 {
@@ -32,8 +35,12 @@ bool SyncContext::run_task(std::string task, std::string_view param)
     return pipeline.run();
 }
 
-bool SyncContext::run_recognizer(cv::Mat image, std::string task, std::string_view param, cv::Rect& box,
-                                 std::string& detail)
+bool SyncContext::run_recognizer(
+    cv::Mat image,
+    std::string task,
+    std::string_view param,
+    cv::Rect& box,
+    std::string& detail)
 {
     LogFunc << VAR(task) << VAR(param);
 
@@ -71,7 +78,11 @@ bool SyncContext::run_recognizer(cv::Mat image, std::string task, std::string_vi
     return true;
 }
 
-bool SyncContext::run_action(std::string task, std::string_view param, cv::Rect cur_box, std::string cur_detail)
+bool SyncContext::run_action(
+    std::string task,
+    std::string_view param,
+    cv::Rect cur_box,
+    std::string cur_detail)
 {
     LogFunc << VAR(task) << VAR(param);
 

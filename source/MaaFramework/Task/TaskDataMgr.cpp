@@ -6,7 +6,10 @@
 
 MAA_TASK_NS_BEGIN
 
-TaskDataMgr::TaskDataMgr(InstanceInternalAPI* inst) : inst_(inst) {}
+TaskDataMgr::TaskDataMgr(InstanceInternalAPI* inst)
+    : inst_(inst)
+{
+}
 
 const MAA_RES_NS::TaskData& TaskDataMgr::get_task_data(const std::string& task_name)
 {
@@ -55,7 +58,8 @@ bool TaskDataMgr::set_diff_task(const json::value& input)
     MAA_RES_NS::PipelineResMgr::TaskDataMap task_data_map;
     auto& raw_data_map = resource()->pipeline_res().get_task_data_map();
     std::set<std::string> existing_keys;
-    bool parsed = MAA_RES_NS::PipelineResMgr::parse_config(input, task_data_map, existing_keys, raw_data_map);
+    bool parsed =
+        MAA_RES_NS::PipelineResMgr::parse_config(input, task_data_map, existing_keys, raw_data_map);
     if (!parsed) {
         LogError << "Parse json failed";
         return false;

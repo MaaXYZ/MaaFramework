@@ -122,7 +122,9 @@ std::vector<std::string> ResourceMgr::get_task_list() const
     return pipeline_res_.get_task_list();
 }
 
-bool ResourceMgr::run_load(typename AsyncRunner<std::filesystem::path>::Id id, std::filesystem::path path)
+bool ResourceMgr::run_load(
+    typename AsyncRunner<std::filesystem::path>::Id id,
+    std::filesystem::path path)
 {
     LogFunc << VAR(id) << VAR(path);
 
@@ -136,7 +138,9 @@ bool ResourceMgr::run_load(typename AsyncRunner<std::filesystem::path>::Id id, s
     valid_ = load(path);
 
     details.emplace("hash", get_hash());
-    notifier.notify(valid_ ? MaaMsg_Resource_LoadingCompleted : MaaMsg_Resource_LoadingFailed, details);
+    notifier.notify(
+        valid_ ? MaaMsg_Resource_LoadingCompleted : MaaMsg_Resource_LoadingFailed,
+        details);
 
     return valid_;
 }

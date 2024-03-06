@@ -8,7 +8,9 @@
 
 MAA_TOOLKIT_NS_BEGIN
 
-class DeviceMgrLinux : public SingletonHolder<DeviceMgrLinux>, public DeviceMgr
+class DeviceMgrLinux
+    : public SingletonHolder<DeviceMgrLinux>
+    , public DeviceMgr
 {
     friend class SingletonHolder<DeviceMgrLinux>;
 

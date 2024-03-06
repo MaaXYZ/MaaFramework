@@ -15,9 +15,11 @@ class Decompressor
     std::size_t max_;
 
 public:
-    Decompressor(std::size_t max_bytes = 1000000000) // by default refuse operation if compressed data is > 1GB
+    Decompressor(std::size_t max_bytes = 1'000'000'000) // by default refuse operation if compressed
+                                                        // data is > 1GB
         : max_(max_bytes)
-    {}
+    {
+    }
 
     template <typename OutputType>
     bool decompress(OutputType& output, const char* data, std::size_t size) const
@@ -30,9 +32,9 @@ public:
         inflate_s.avail_in = 0;
         inflate_s.next_in = Z_NULL;
 
-        // The windowBits parameter is the base two logarithm of the window size (the size of the history buffer).
-        // It should be in the range 8..15 for this version of the library.
-        // Larger values of this parameter result in better compression at the expense of memory usage.
+        // The windowBits parameter is the base two logarithm of the window size (the size of the
+        // history buffer). It should be in the range 8..15 for this version of the library. Larger
+        // values of this parameter result in better compression at the expense of memory usage.
         // This range of values also changes the decoding type:
         //  -8 to -15 for raw deflate
         //  8 to 15 for zlib
@@ -50,7 +52,8 @@ public:
         inflate_s.next_in = reinterpret_cast<z_const Bytef*>(data);
 
 #ifdef DEBUG
-        // Verify if size (long type) input will fit into unsigned int, type used for zlib's avail_in
+        // Verify if size (long type) input will fit into unsigned int, type used for zlib's
+        // avail_in
         std::uint64_t size_64 = size * 2;
         if (size_64 > std::numeric_limits<unsigned int>::max()) {
             inflateEnd(&inflate_s);
@@ -60,7 +63,8 @@ public:
 #endif
         if (size > max_ || (size * 2) > max_) {
             inflateEnd(&inflate_s);
-            // throw std::runtime_error("size may use more memory than intended when decompressing");
+            // throw std::runtime_error("size may use more memory than intended when
+            // decompressing");
             return false;
         }
         inflate_s.avail_in = static_cast<unsigned int>(size);
@@ -69,8 +73,8 @@ public:
             std::size_t resize_to = size_uncompressed + 2 * size;
             if (resize_to > max_) {
                 inflateEnd(&inflate_s);
-                // throw std::runtime_error("size of output string will use more memory then intended when
-                // decompressing");
+                // throw std::runtime_error("size of output string will use more memory then
+                // intended when decompressing");
                 return false;
             }
             output.resize(resize_to);

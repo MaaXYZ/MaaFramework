@@ -52,18 +52,25 @@ private:
     };
 
 private:
-    RunningResult find_first_and_run(const std::vector<std::string>& list, std::chrono::milliseconds timeout,
-                                     /*out*/ MAA_RES_NS::TaskData& found_data);
+    RunningResult find_first_and_run(
+        const std::vector<std::string>& list,
+        std::chrono::milliseconds timeout,
+        /*out*/ MAA_RES_NS::TaskData& found_data);
     std::optional<HitResult> find_first(const std::vector<std::string>& list);
     RunningResult run_task(const HitResult& hits);
 
 private:
     MAA_RES_NS::ResourceMgr* resource() { return inst_ ? inst_->inter_resource() : nullptr; }
-    MAA_CTRL_NS::ControllerAgent* controller() { return inst_ ? inst_->inter_controller() : nullptr; }
+    MAA_CTRL_NS::ControllerAgent* controller()
+    {
+        return inst_ ? inst_->inter_controller() : nullptr;
+    }
     InstanceStatus* status() { return inst_ ? inst_->inter_status() : nullptr; }
     void notify(std::string_view msg, json::value detail = json::value())
     {
-        if (inst_) inst_->notify(msg, detail);
+        if (inst_) {
+            inst_->notify(msg, detail);
+        }
     }
 
     bool need_to_stop() const { return need_to_stop_; }

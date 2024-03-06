@@ -15,14 +15,21 @@
 MAA_RPC_NS_BEGIN
 
 Context::Context()
-    : utility_impl_(std::make_shared<UtilityImpl>()), image_impl_(std::make_shared<ImageImpl>()),
-      resource_impl_(std::make_shared<ResourceImpl>(utility_impl_)),
-      controller_impl_(std::make_shared<ControllerImpl>(utility_impl_, image_impl_)),
-      syncctx_impl_(std::make_shared<SyncContextImpl>(image_impl_)),
-      instance_impl_(
-          std::make_shared<InstanceImpl>(utility_impl_, image_impl_, resource_impl_, controller_impl_, syncctx_impl_)),
-      device_impl_(std::make_shared<DeviceImpl>()), config_impl_(std::make_shared<ConfigImpl>())
-{}
+    : utility_impl_(std::make_shared<UtilityImpl>())
+    , image_impl_(std::make_shared<ImageImpl>())
+    , resource_impl_(std::make_shared<ResourceImpl>(utility_impl_))
+    , controller_impl_(std::make_shared<ControllerImpl>(utility_impl_, image_impl_))
+    , syncctx_impl_(std::make_shared<SyncContextImpl>(image_impl_))
+    , instance_impl_(std::make_shared<InstanceImpl>(
+          utility_impl_,
+          image_impl_,
+          resource_impl_,
+          controller_impl_,
+          syncctx_impl_))
+    , device_impl_(std::make_shared<DeviceImpl>())
+    , config_impl_(std::make_shared<ConfigImpl>())
+{
+}
 
 void Context::reg_service(::grpc::ServerBuilder& builder)
 {

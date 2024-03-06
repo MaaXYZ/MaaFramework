@@ -11,7 +11,9 @@
 
 MAA_NS_BEGIN
 
-class InstanceMgr : public MaaInstanceAPI, public InstanceInternalAPI
+class InstanceMgr
+    : public MaaInstanceAPI
+    , public InstanceInternalAPI
 {
 public:
     InstanceMgr(MaaInstanceCallback callback, MaaCallbackTransparentArg callback_arg);
@@ -22,17 +24,22 @@ public: // from MaaInstanceAPI
     virtual bool bind_controller(MaaControllerAPI* controller) override;
     virtual bool inited() const override;
 
-    virtual bool set_option(MaaInstOption key, MaaOptionValue value, MaaOptionValueSize val_size) override;
+    virtual bool
+        set_option(MaaInstOption key, MaaOptionValue value, MaaOptionValueSize val_size) override;
 
     virtual MaaTaskId post_task(std::string entry, std::string_view param) override;
     virtual bool set_task_param(MaaTaskId task_id, std::string_view param) override;
 
-    virtual bool register_custom_recognizer(std::string name, MaaCustomRecognizerHandle handle,
-                                            MaaTransparentArg handle_arg) override;
+    virtual bool register_custom_recognizer(
+        std::string name,
+        MaaCustomRecognizerHandle handle,
+        MaaTransparentArg handle_arg) override;
     virtual bool unregister_custom_recognizer(std::string name) override;
     virtual void clear_custom_recognizer() override;
-    virtual bool register_custom_action(std::string name, MaaCustomActionHandle handle,
-                                        MaaTransparentArg handle_arg) override;
+    virtual bool register_custom_action(
+        std::string name,
+        MaaCustomActionHandle handle,
+        MaaTransparentArg handle_arg) override;
     virtual bool unregister_custom_action(std::string name) override;
     virtual void clear_custom_action() override;
 

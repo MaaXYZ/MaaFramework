@@ -14,7 +14,9 @@
 
 MAA_TOOLKIT_NS_BEGIN
 
-class ConfigMgr : public SingletonHolder<ConfigMgr>, public MaaToolkitConfigMgrAPI
+class ConfigMgr
+    : public SingletonHolder<ConfigMgr>
+    , public MaaToolkitConfigMgrAPI
 {
     friend class SingletonHolder<ConfigMgr>;
 

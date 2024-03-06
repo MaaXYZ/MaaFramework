@@ -32,25 +32,27 @@ bool InvokeApp::parse(const json::value& config)
         "-s",
         "{ADB_SERIAL}",
         "shell",
-        "export LD_LIBRARY_PATH=/data/local/tmp/; \"/data/local/tmp/{BIN_WORKING_FILE}\" {BIN_EXTRA_PARAMS} 2>&1",
+        "export LD_LIBRARY_PATH=/data/local/tmp/; \"/data/local/tmp/{BIN_WORKING_FILE}\" "
+        "{BIN_EXTRA_PARAMS} 2>&1",
     };
     static const json::array kDefaultInvokeAppArgv = {
         "{ADB}",
         "-s",
         "{ADB_SERIAL}",
         "shell",
-        "export CLASSPATH=\"/data/local/tmp/{APP_WORKING_FILE}\"; app_process /data/local/tmp {PACKAGE_NAME}",
+        "export CLASSPATH=\"/data/local/tmp/{APP_WORKING_FILE}\"; app_process /data/local/tmp "
+        "{PACKAGE_NAME}",
     };
     static const json::array kDefaultRemoveFileArgv = {
         "{ADB}", "-s", "{ADB_SERIAL}", "shell", "rm \"/data/local/tmp/{TO_REMOVED_FILE}\"",
     };
-    return parse_argv("Abilist", config, kDefaultAbilistArgv, abilist_argv_) &&
-           parse_argv("SDK", config, kDefaultSdkArgv, sdk_argv_) &&
-           parse_argv("PushBin", config, kDefaultPushBinArgv, push_bin_argv_) &&
-           parse_argv("ChmodBin", config, kDefaultChmodBinArgv, chmod_bin_argv_) &&
-           parse_argv("InvokeBin", config, kDefaultInvokeBinArgv, invoke_bin_argv_) &&
-           parse_argv("InvokeApp", config, kDefaultInvokeAppArgv, invoke_app_argv_) &&
-           parse_argv("RemoveFile", config, kDefaultRemoveFileArgv, remove_file_argv_);
+    return parse_argv("Abilist", config, kDefaultAbilistArgv, abilist_argv_)
+           && parse_argv("SDK", config, kDefaultSdkArgv, sdk_argv_)
+           && parse_argv("PushBin", config, kDefaultPushBinArgv, push_bin_argv_)
+           && parse_argv("ChmodBin", config, kDefaultChmodBinArgv, chmod_bin_argv_)
+           && parse_argv("InvokeBin", config, kDefaultInvokeBinArgv, invoke_bin_argv_)
+           && parse_argv("InvokeApp", config, kDefaultInvokeAppArgv, invoke_app_argv_)
+           && parse_argv("RemoveFile", config, kDefaultRemoveFileArgv, remove_file_argv_);
 }
 
 bool InvokeApp::init(const std::string& force_temp)

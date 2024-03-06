@@ -4,7 +4,9 @@
 
 MAA_CTRL_UNIT_NS_BEGIN
 
-class AutoDetectInput : public TouchInputBase, public KeyInputBase
+class AutoDetectInput
+    : public TouchInputBase
+    , public KeyInputBase
 {
 public:
     enum class TouchMethod
@@ -23,7 +25,9 @@ public:
     };
 
 public:
-    AutoDetectInput(const std::filesystem::path& maatouch_path, const std::filesystem::path& minitouch_path);
+    AutoDetectInput(
+        const std::filesystem::path& maatouch_path,
+        const std::filesystem::path& minitouch_path);
     virtual ~AutoDetectInput() override = default;
 
 public: // from UnitBase

@@ -4,15 +4,20 @@
 
 MAA_NS_BEGIN
 
-ChildPipeIOStream::ChildPipeIOStream(const std::filesystem::path& exec, const std::vector<std::string>& args)
-    : child_( //
-          exec, args, boost::process::std_out > pin_, boost::process::std_err > boost::process::null,
-          boost::process::std_in < pout_
+ChildPipeIOStream::ChildPipeIOStream(
+    const std::filesystem::path& exec,
+    const std::vector<std::string>& args)
+    : child_(
+        exec,
+        args,
+        boost::process::std_out > pin_,
+        boost::process::std_err > boost::process::null,
+        boost::process::std_in < pout_
 #ifdef _WIN32
-          ,
-          boost::process::windows::create_no_window
+        ,
+        boost::process::windows::create_no_window
 #endif
-      )
+    )
 {
     LogTrace << VAR(exec) << VAR(args) << VAR(child_.id());
 }

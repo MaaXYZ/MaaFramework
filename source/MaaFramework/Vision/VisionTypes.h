@@ -28,13 +28,14 @@ enum class ResultOrderBy
     Vertical,
     Score,
     Area,
-    Length, // for OCR
+    Length,   // for OCR
     Random,
     Expected, // TODO
 };
 
 struct DirectHitParam
-{};
+{
+};
 
 struct TemplateMatcherParam
 {

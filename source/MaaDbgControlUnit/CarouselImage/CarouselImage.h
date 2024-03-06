@@ -11,7 +11,10 @@ MAA_CTRL_UNIT_NS_BEGIN
 class CarouselImage : public ControlUnitAPI
 {
 public:
-    explicit CarouselImage(std::filesystem::path path) : path_(std::move(path)) {}
+    explicit CarouselImage(std::filesystem::path path)
+        : path_(std::move(path))
+    {
+    }
     virtual ~CarouselImage() = default;
 
 public: // from ControlUnitAPI

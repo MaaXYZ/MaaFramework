@@ -38,7 +38,8 @@ std::optional<cv::Mat> FramePoolScreencap::screencap()
         LogWarn << "frame is null, continue";
     }
 
-    auto access = frame.Surface().as<Windows::Graphics::DirectX::Direct3D11::IDirect3DDxgiInterfaceAccess>();
+    auto access =
+        frame.Surface().as<Windows::Graphics::DirectX::Direct3D11::IDirect3DDxgiInterfaceAccess>();
 
     winrt::com_ptr<ID3D11Texture2D> texture = nullptr;
     HRESULT ret = access->GetInterface(winrt::guid_of<ID3D11Texture2D>(), texture.put_void());
@@ -92,19 +93,32 @@ bool FramePoolScreencap::init()
     swap_chain_desc.SampleDesc.Count = 1;
     swap_chain_desc.Windowed = TRUE;
 
-    ret = D3D11CreateDeviceAndSwapChain(nullptr, D3D_DRIVER_TYPE_HARDWARE, nullptr, 0, nullptr, 0, D3D11_SDK_VERSION,
-                                        &swap_chain_desc, dxgi_swap_chain_.put(), d3d_device_.put(), nullptr,
-                                        d3d_context_.put());
+    ret = D3D11CreateDeviceAndSwapChain(
+        nullptr,
+        D3D_DRIVER_TYPE_HARDWARE,
+        nullptr,
+        0,
+        nullptr,
+        0,
+        D3D11_SDK_VERSION,
+        &swap_chain_desc,
+        dxgi_swap_chain_.put(),
+        d3d_device_.put(),
+        nullptr,
+        d3d_context_.put());
 
     if (FAILED(ret)) {
         LogError << "D3D11CreateDeviceAndSwapChain failed" << VAR(ret);
         return false;
     }
 
-    auto activation_factory = winrt::get_activation_factory<winrt::Windows::Graphics::Capture::GraphicsCaptureItem>();
+    auto activation_factory =
+        winrt::get_activation_factory<winrt::Windows::Graphics::Capture::GraphicsCaptureItem>();
     auto interop_factory = activation_factory.as<IGraphicsCaptureItemInterop>();
     ret = interop_factory->CreateForWindow(
-        hwnd_, winrt::guid_of<ABI::Windows::Graphics::Capture::IGraphicsCaptureItem>(), winrt::put_abi(cap_item_));
+        hwnd_,
+        winrt::guid_of<ABI::Windows::Graphics::Capture::IGraphicsCaptureItem>(),
+        winrt::put_abi(cap_item_));
     if (FAILED(ret)) {
         LogError << "CreateForWindow GraphicsCaptureItem failed" << VAR(ret);
         return false;
@@ -121,7 +135,9 @@ bool FramePoolScreencap::init()
 
     cap_frame_pool_ = winrt::Windows::Graphics::Capture::Direct3D11CaptureFramePool::Create(
         inspectable.as<winrt::Windows::Graphics::DirectX::Direct3D11::IDirect3DDevice>(),
-        winrt::Windows::Graphics::DirectX::DirectXPixelFormat::B8G8R8A8UIntNormalized, 1, cap_item_.Size());
+        winrt::Windows::Graphics::DirectX::DirectXPixelFormat::B8G8R8A8UIntNormalized,
+        1,
+        cap_item_.Size());
 
     if (!cap_frame_pool_) {
         LogError << "Direct3D11CaptureFramePool::Create failed";
@@ -139,7 +155,9 @@ bool FramePoolScreencap::init()
     return true;
 }
 
-void FramePoolScreencap::uninit() {}
+void FramePoolScreencap::uninit()
+{
+}
 
 bool FramePoolScreencap::init_texture(winrt::com_ptr<ID3D11Texture2D> raw_texture)
 {

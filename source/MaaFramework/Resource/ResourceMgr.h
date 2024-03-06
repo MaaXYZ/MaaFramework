@@ -18,7 +18,8 @@ public:
     ResourceMgr(MaaResourceCallback callback, MaaCallbackTransparentArg callback_arg);
     virtual ~ResourceMgr() override;
 
-    virtual bool set_option(MaaResOption key, MaaOptionValue value, MaaOptionValueSize val_size) override;
+    virtual bool
+        set_option(MaaResOption key, MaaOptionValue value, MaaOptionValueSize val_size) override;
 
     virtual MaaResId post_path(std::filesystem::path path) override;
 

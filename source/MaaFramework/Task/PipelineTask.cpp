@@ -13,8 +13,13 @@
 MAA_TASK_NS_BEGIN
 
 PipelineTask::PipelineTask(std::string entry, InstanceInternalAPI* inst)
-    : inst_(inst), entry_(std::move(entry)), data_mgr_(inst), recognizer_(inst), actuator_(inst)
-{}
+    : inst_(inst)
+    , entry_(std::move(entry))
+    , data_mgr_(inst)
+    , recognizer_(inst)
+    , actuator_(inst)
+{
+}
 
 bool PipelineTask::run()
 {
@@ -78,9 +83,10 @@ bool PipelineTask::set_param(const json::value& param)
     return data_mgr_.set_param(param);
 }
 
-PipelineTask::RunningResult PipelineTask::find_first_and_run(const std::vector<std::string>& list,
-                                                             std::chrono::milliseconds timeout,
-                                                             /*out*/ MAA_RES_NS::TaskData& found_data)
+PipelineTask::RunningResult PipelineTask::find_first_and_run(
+    const std::vector<std::string>& list,
+    std::chrono::milliseconds timeout,
+    /*out*/ MAA_RES_NS::TaskData& found_data)
 {
     HitResult hits;
 
@@ -106,7 +112,8 @@ PipelineTask::RunningResult PipelineTask::find_first_and_run(const std::vector<s
     return run_ret;
 }
 
-std::optional<PipelineTask::HitResult> PipelineTask::find_first(const std::vector<std::string>& list)
+std::optional<PipelineTask::HitResult>
+    PipelineTask::find_first(const std::vector<std::string>& list)
 {
     if (!controller()) {
         LogError << "Controller not binded";

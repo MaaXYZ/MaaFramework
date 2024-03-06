@@ -64,7 +64,13 @@ private:
     LogStream stream(level lv, args_t&&... args)
     {
         bool std_out = static_cast<int>(lv) <= stdout_level_;
-        return LogStream(trace_mutex_, ofs_, lv, std_out, dumps_dir_, std::forward<args_t>(args)...);
+        return LogStream(
+            trace_mutex_,
+            ofs_,
+            lv,
+            std_out,
+            dumps_dir_,
+            std::forward<args_t>(args)...);
     }
 
 private:
@@ -98,7 +104,8 @@ public:
     template <typename... args_t>
     explicit LogScopeEnterHelper(args_t&&... args)
         : stream_(Logger::get_instance().debug(std::forward<args_t>(args)...))
-    {}
+    {
+    }
     ~LogScopeEnterHelper() { stream_ << "| enter"; }
 
     LogStream& operator()() { return stream_; }
@@ -111,11 +118,17 @@ template <typename... args_t>
 class LogScopeLeaveHelper
 {
 public:
-    explicit LogScopeLeaveHelper(args_t&&... args) : args_(std::forward<args_t>(args)...) {}
+    explicit LogScopeLeaveHelper(args_t&&... args)
+        : args_(std::forward<args_t>(args)...)
+    {
+    }
     ~LogScopeLeaveHelper()
     {
-        std::apply([](auto&&... args) { return Logger::get_instance().trace(std::forward<decltype(args)>(args)...); },
-                   std::move(args_))
+        std::apply(
+            [](auto&&... args) {
+                return Logger::get_instance().trace(std::forward<decltype(args)>(args)...);
+            },
+            std::move(args_))
             << "| leave," << duration_since(start_);
     }
 

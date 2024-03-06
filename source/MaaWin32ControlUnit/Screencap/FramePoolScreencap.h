@@ -5,11 +5,11 @@
 #ifndef MAA_FRAMEPOOL_SCREENCAP_AVAILABLE
 #if WDK_NTDDI_VERSION >= 0x0A00000B // NTDDI_WIN10_CO
 #define MAA_FRAMEPOOL_SCREENCAP_AVAILABLE 1
-#else // else of WDK_NTDDI_VERSION
+#else                               // else of WDK_NTDDI_VERSION
 #define MAA_FRAMEPOOL_SCREENCAP_AVAILABLE 0
 static_assert(false, "Windows 10 SDK 10.0.22000.0 or higher is required");
-#endif // end of WDK_NTDDI_VERSION
-#endif // end of MAA_FRAMEPOOL_SCREENCAP_AVAILABLE
+#endif                              // end of WDK_NTDDI_VERSION
+#endif                              // end of MAA_FRAMEPOOL_SCREENCAP_AVAILABLE
 
 #if MAA_FRAMEPOOL_SCREENCAP_AVAILABLE
 
@@ -25,7 +25,10 @@ MAA_CTRL_UNIT_NS_BEGIN
 class FramePoolScreencap : public ScreencapBase
 {
 public:
-    FramePoolScreencap(HWND hwnd) : hwnd_(hwnd) {}
+    FramePoolScreencap(HWND hwnd)
+        : hwnd_(hwnd)
+    {
+    }
     virtual ~FramePoolScreencap() override;
 
 public: // from ScreencapBase

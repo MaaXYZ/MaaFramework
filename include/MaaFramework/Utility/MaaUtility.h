@@ -22,21 +22,21 @@ extern "C"
      *
      * @return MaaStringView
      */
-    MaaStringView MAA_FRAMEWORK_API MaaVersion();
+    MAA_FRAMEWORK_API MaaStringView MaaVersion();
 
     /**
      * @brief Set options globally.
      *
-     * This function requires a given set of option keys and value types, otherwise this will fail. See
-     * #MaaGlobalOptionEnum for details.
+     * This function requires a given set of option keys and value types, otherwise this will fail.
+     * See #MaaGlobalOptionEnum for details.
      *
      * @param key The option key.
      * @param value The option value.
      * @param val_size The size of the option value.
      * @return MaaBool Whether the option is set successfully.
      */
-    MaaBool MAA_FRAMEWORK_API MaaSetGlobalOption(MaaGlobalOption key, MaaOptionValue value,
-                                                 MaaOptionValueSize val_size);
+    MAA_FRAMEWORK_API MaaBool
+        MaaSetGlobalOption(MaaGlobalOption key, MaaOptionValue value, MaaOptionValueSize val_size);
 
 #ifdef __cplusplus
 }

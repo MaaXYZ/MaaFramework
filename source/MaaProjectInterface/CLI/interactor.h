@@ -32,7 +32,10 @@ private:
 
     void mpause() const;
 
-    static void on_maafw_notify(MaaStringView msg, MaaStringView details_json, MaaTransparentArg callback_arg);
+    static void on_maafw_notify(
+        MaaStringView msg,
+        MaaStringView details_json,
+        MaaTransparentArg callback_arg);
 
 private:
     MAA_PROJECT_INTERFACE_NS::Configurator config_;

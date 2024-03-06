@@ -7,10 +7,15 @@
 
 MAA_CTRL_UNIT_NS_BEGIN
 
-class SendMessageInput : public TouchInputBase, public KeyInputBase
+class SendMessageInput
+    : public TouchInputBase
+    , public KeyInputBase
 {
 public:
-    SendMessageInput(HWND hwnd) : hwnd_(hwnd) {}
+    SendMessageInput(HWND hwnd)
+        : hwnd_(hwnd)
+    {
+    }
     virtual ~SendMessageInput() override = default;
 
 public: // from TouchInputBase

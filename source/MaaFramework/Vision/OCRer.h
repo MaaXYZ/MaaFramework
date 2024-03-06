@@ -33,9 +33,10 @@ public:
     using ResultsVec = std::vector<Result>;
 
 public:
-    void set_session(std::shared_ptr<fastdeploy::vision::ocr::DBDetector> deter,
-                     std::shared_ptr<fastdeploy::vision::ocr::Recognizer> recer,
-                     std::shared_ptr<fastdeploy::pipeline::PPOCRv3> ocrer)
+    void set_session(
+        std::shared_ptr<fastdeploy::vision::ocr::DBDetector> deter,
+        std::shared_ptr<fastdeploy::vision::ocr::Recognizer> recer,
+        std::shared_ptr<fastdeploy::pipeline::PPOCRv3> ocrer)
     {
         deter_ = std::move(deter);
         recer_ = std::move(recer);

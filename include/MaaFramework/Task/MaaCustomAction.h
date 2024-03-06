@@ -22,13 +22,19 @@ extern "C"
      *
      * To create a custom action, you need to implement this API.
      *
-     * You do not have to implement all the functions in this API. Instead, just implement the functions you need.
-     * Do note that if an unimplemented function is called, the framework will likely crash.
+     * You do not have to implement all the functions in this API. Instead, just implement the
+     * functions you need. Do note that if an unimplemented function is called, the framework will
+     * likely crash.
      */
     struct MaaCustomActionAPI
     {
-        MaaBool (*run)(MaaSyncContextHandle sync_context, MaaStringView task_name, MaaStringView custom_action_param,
-                       MaaRectHandle cur_box, MaaStringView cur_rec_detail, MaaTransparentArg action_arg);
+        MaaBool (*run)(
+            MaaSyncContextHandle sync_context,
+            MaaStringView task_name,
+            MaaStringView custom_action_param,
+            MaaRectHandle cur_box,
+            MaaStringView cur_rec_detail,
+            MaaTransparentArg action_arg);
 
         void (*stop)(MaaTransparentArg action_arg);
     };

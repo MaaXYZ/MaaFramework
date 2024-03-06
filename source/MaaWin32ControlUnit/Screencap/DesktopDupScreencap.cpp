@@ -38,8 +38,17 @@ bool DesktopDupScreencap::init()
 
     HRESULT ret = S_OK;
 
-    ret = D3D11CreateDevice(nullptr, D3D_DRIVER_TYPE_HARDWARE, nullptr, 0, nullptr, 0, D3D11_SDK_VERSION, &d3d_device_,
-                            nullptr, &d3d_context_);
+    ret = D3D11CreateDevice(
+        nullptr,
+        D3D_DRIVER_TYPE_HARDWARE,
+        nullptr,
+        0,
+        nullptr,
+        0,
+        D3D11_SDK_VERSION,
+        &d3d_device_,
+        nullptr,
+        &d3d_context_);
     if (FAILED(ret)) {
         LogError << "D3D11CreateDevice failed" << VAR(ret);
         return false;
@@ -159,7 +168,9 @@ std::optional<cv::Mat> DesktopDupScreencap::screencap_impl()
     });
 
     ID3D11Texture2D* raw_texture = nullptr;
-    ret = desktop_resource->QueryInterface(__uuidof(ID3D11Texture2D), reinterpret_cast<void**>(&raw_texture));
+    ret = desktop_resource->QueryInterface(
+        __uuidof(ID3D11Texture2D),
+        reinterpret_cast<void**>(&raw_texture));
     if (FAILED(ret)) {
         LogError << "QueryInterface ID3D11Texture2D failed" << VAR(ret);
         return std::nullopt;

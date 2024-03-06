@@ -2,7 +2,7 @@
 
 #ifdef _MSC_VER
 #pragma warning(push)
-#pragma warning(disable : 4245 4706)
+#pragma warning(disable: 4245 4706)
 #endif
 #include <thrift/protocol/TBinaryProtocol.h>
 #include <thrift/transport/TBufferTransports.h>
@@ -15,7 +15,8 @@
 
 MAA_CTRL_UNIT_NS_BEGIN
 
-ThriftControllerUnixDomainSocketAgent::ThriftControllerUnixDomainSocketAgent(const std::string& path)
+ThriftControllerUnixDomainSocketAgent::ThriftControllerUnixDomainSocketAgent(
+    const std::string& path)
 {
     LogFunc << VAR(path);
 

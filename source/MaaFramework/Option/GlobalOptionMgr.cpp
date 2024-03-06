@@ -5,7 +5,10 @@
 
 MAA_NS_BEGIN
 
-bool GlobalOptionMgr::set_option(MaaGlobalOption key, MaaOptionValue value, MaaOptionValueSize val_size)
+bool GlobalOptionMgr::set_option(
+    MaaGlobalOption key,
+    MaaOptionValue value,
+    MaaOptionValueSize val_size)
 {
     LogFunc << VAR(key) << VAR_VOIDP(value) << VAR(val_size);
 

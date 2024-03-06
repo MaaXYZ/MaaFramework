@@ -7,8 +7,10 @@ MAA_RPC_NS_BEGIN
 
 using namespace ::grpc;
 
-Status ResourceImpl::create(ServerContext* context, const ::maarpc::IdRequest* request,
-                            ::maarpc::HandleResponse* response)
+Status ResourceImpl::create(
+    ServerContext* context,
+    const ::maarpc::IdRequest* request,
+    ::maarpc::HandleResponse* response)
 {
     LogFunc;
     std::ignore = context;
@@ -30,8 +32,10 @@ Status ResourceImpl::create(ServerContext* context, const ::maarpc::IdRequest* r
     return Status::OK;
 }
 
-Status ResourceImpl::destroy(ServerContext* context, const ::maarpc::HandleRequest* request,
-                             ::maarpc::EmptyResponse* response)
+Status ResourceImpl::destroy(
+    ServerContext* context,
+    const ::maarpc::HandleRequest* request,
+    ::maarpc::EmptyResponse* response)
 {
     LogFunc;
     std::ignore = context;
@@ -46,8 +50,10 @@ Status ResourceImpl::destroy(ServerContext* context, const ::maarpc::HandleReque
     return Status::OK;
 }
 
-Status ResourceImpl::post_path(ServerContext* context, const ::maarpc::HandleStringRequest* request,
-                               ::maarpc::IIdResponse* response)
+Status ResourceImpl::post_path(
+    ServerContext* context,
+    const ::maarpc::HandleStringRequest* request,
+    ::maarpc::IIdResponse* response)
 {
     LogFunc;
     std::ignore = context;
@@ -62,8 +68,10 @@ Status ResourceImpl::post_path(ServerContext* context, const ::maarpc::HandleStr
     return Status::OK;
 }
 
-Status ResourceImpl::status(ServerContext* context, const ::maarpc::HandleIIdRequest* request,
-                            ::maarpc::StatusResponse* response)
+Status ResourceImpl::status(
+    ServerContext* context,
+    const ::maarpc::HandleIIdRequest* request,
+    ::maarpc::StatusResponse* response)
 {
     LogFunc;
     std::ignore = context;
@@ -78,8 +86,10 @@ Status ResourceImpl::status(ServerContext* context, const ::maarpc::HandleIIdReq
     return Status::OK;
 }
 
-Status ResourceImpl::wait(ServerContext* context, const ::maarpc::HandleIIdRequest* request,
-                          ::maarpc::StatusResponse* response)
+Status ResourceImpl::wait(
+    ServerContext* context,
+    const ::maarpc::HandleIIdRequest* request,
+    ::maarpc::StatusResponse* response)
 {
     LogFunc;
     std::ignore = context;
@@ -94,8 +104,10 @@ Status ResourceImpl::wait(ServerContext* context, const ::maarpc::HandleIIdReque
     return Status::OK;
 }
 
-Status ResourceImpl::loaded(ServerContext* context, const ::maarpc::HandleRequest* request,
-                            ::maarpc::BoolResponse* response)
+Status ResourceImpl::loaded(
+    ServerContext* context,
+    const ::maarpc::HandleRequest* request,
+    ::maarpc::BoolResponse* response)
 {
     LogFunc;
     std::ignore = context;
@@ -109,8 +121,10 @@ Status ResourceImpl::loaded(ServerContext* context, const ::maarpc::HandleReques
     return Status::OK;
 }
 
-Status ResourceImpl::hash(ServerContext* context, const ::maarpc::HandleRequest* request,
-                          ::maarpc::StringResponse* response)
+Status ResourceImpl::hash(
+    ServerContext* context,
+    const ::maarpc::HandleRequest* request,
+    ::maarpc::StringResponse* response)
 {
     LogFunc;
     std::ignore = context;
@@ -132,8 +146,10 @@ Status ResourceImpl::hash(ServerContext* context, const ::maarpc::HandleRequest*
     }
 }
 
-Status ResourceImpl::task_list(ServerContext* context, const ::maarpc::HandleRequest* request,
-                               ::maarpc::StringResponse* response)
+Status ResourceImpl::task_list(
+    ServerContext* context,
+    const ::maarpc::HandleRequest* request,
+    ::maarpc::StringResponse* response)
 {
     LogFunc;
     std::ignore = context;

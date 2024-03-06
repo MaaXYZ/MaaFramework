@@ -7,6 +7,6 @@
 
 MAA_NS_BEGIN
 
-std::string MAA_UTILS_API make_uuid();
+MAA_UTILS_API std::string make_uuid();
 
 MAA_NS_END

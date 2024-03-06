@@ -41,7 +41,10 @@ OCRer::ResultsVec OCRer::foreach_rois() const
     ResultsVec results;
     for (const cv::Rect& roi : param_.roi) {
         ResultsVec res = predict(roi);
-        results.insert(results.end(), std::make_move_iterator(res.begin()), std::make_move_iterator(res.end()));
+        results.insert(
+            results.end(),
+            std::make_move_iterator(res.begin()),
+            std::make_move_iterator(res.end()));
     }
     return results;
 }
@@ -61,7 +64,8 @@ OCRer::ResultsVec OCRer::predict(const cv::Rect& roi) const
         results = std::any_cast<ResultsVec>(*std::move(results_opt));
     }
     else {
-        results = param_.only_rec ? ResultsVec { predict_only_rec(image_roi) } : predict_det_and_rec(image_roi);
+        results = param_.only_rec ? ResultsVec { predict_only_rec(image_roi) }
+                                  : predict_det_and_rec(image_roi);
         status_->set_ocr_cache(image_roi, results);
     }
 
@@ -90,17 +94,20 @@ OCRer::ResultsVec OCRer::predict_det_and_rec(const cv::Mat& image_roi) const
 
     ResultsVec results;
 
-    if (ocr_result.boxes.size() != ocr_result.text.size() || ocr_result.text.size() != ocr_result.rec_scores.size()) {
+    if (ocr_result.boxes.size() != ocr_result.text.size()
+        || ocr_result.text.size() != ocr_result.rec_scores.size()) {
         LogWarn << "Wrong ocr_result size" << VAR(ocr_result.boxes) << VAR(ocr_result.text)
                 << VAR(ocr_result.rec_scores);
 
-        if (ocr_result.boxes.empty() && ocr_result.text.size() == 1 && ocr_result.rec_scores.size() == 1) {
+        if (ocr_result.boxes.empty() && ocr_result.text.size() == 1
+            && ocr_result.rec_scores.size() == 1) {
             if (auto raw_text = ocr_result.text.front(); !raw_text.empty()) {
                 // 这种情况是 det 模型没出结果，整个 ROI 直接被送给了 rec 模型。凑合用吧（
                 auto text = to_u16(raw_text);
                 auto score = ocr_result.rec_scores.front();
-                results.emplace_back(Result {
-                    .text = std::move(text), .box = { 0, 0, image_roi.cols, image_roi.rows }, .score = score });
+                results.emplace_back(Result { .text = std::move(text),
+                                              .box = { 0, 0, image_roi.cols, image_roi.rows },
+                                              .score = score });
             }
         }
 
@@ -144,7 +151,9 @@ OCRer::Result OCRer::predict_only_rec(const cv::Mat& image_roi) const
     }
 
     auto text = to_u16(rec_text);
-    Result result { .text = std::move(text), .box = { 0, 0, image_roi.cols, image_roi.rows }, .score = rec_score };
+    Result result { .text = std::move(text),
+                    .box = { 0, 0, image_roi.cols, image_roi.rows },
+                    .score = rec_score };
 
     return result;
 }
@@ -162,14 +171,23 @@ void OCRer::draw_result(const cv::Rect& roi, const ResultsVec& results) const
 
         const auto color = cv::Scalar(0, 0, 255);
         cv::rectangle(image_draw, my_box, color, 1);
-        std::string flag = std::format("{}: [{}, {}, {}, {}]", i, my_box.x, my_box.y, my_box.width, my_box.height);
-        cv::putText(image_draw, flag, cv::Point(my_box.x, my_box.y - 5), cv::FONT_HERSHEY_PLAIN, 1.2, color, 1);
+        std::string flag =
+            std::format("{}: [{}, {}, {}, {}]", i, my_box.x, my_box.y, my_box.width, my_box.height);
+        cv::putText(
+            image_draw,
+            flag,
+            cv::Point(my_box.x, my_box.y - 5),
+            cv::FONT_HERSHEY_PLAIN,
+            1.2,
+            color,
+            1);
     }
 
     handle_draw(image_draw);
 }
 
-void OCRer::postproc_and_filter(ResultsVec& results, const std::vector<std::wstring>& expected) const
+void OCRer::postproc_and_filter(ResultsVec& results, const std::vector<std::wstring>& expected)
+    const
 {
     for (auto iter = results.begin(); iter != results.end();) {
         auto& res = *iter;
@@ -232,8 +250,9 @@ void OCRer::sort(ResultsVec& results) const
         sort_by_random_(results);
         break;
     case ResultOrderBy::Length:
-        std::ranges::sort(results,
-                          [](const auto& lhs, const auto& rhs) -> bool { return lhs.text.size() > rhs.text.size(); });
+        std::ranges::sort(results, [](const auto& lhs, const auto& rhs) -> bool {
+            return lhs.text.size() > rhs.text.size();
+        });
         break;
 
     default:

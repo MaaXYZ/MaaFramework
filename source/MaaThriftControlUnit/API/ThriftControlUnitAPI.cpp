@@ -15,8 +15,11 @@ MaaStringView MaaThriftControlUnitGetVersion()
     return MAA_VERSION;
 }
 
-MaaControlUnitHandle MAA_CONTROL_UNIT_API MaaThriftControlUnitCreate( //
-    MaaThriftControllerType type, MaaStringView host, int32_t port, MaaStringView config)
+MaaControlUnitHandle MAA_CONTROL_UNIT_API MaaThriftControlUnitCreate(
+    MaaThriftControllerType type,
+    MaaStringView host,
+    int32_t port,
+    MaaStringView config)
 {
     LogFunc << VAR(type) << VAR(host) << VAR(port) << VAR(config);
 

@@ -16,7 +16,10 @@ class CacheMgr : public NonCopyable
 public:
     CacheMgr() = default;
     CacheMgr(CacheMgr&&) = default;
-    CacheMgr(Equal equal) : equal_(std::move(equal)) {}
+    CacheMgr(Equal equal)
+        : equal_(std::move(equal))
+    {
+    }
 
     std::optional<Item> get_cache(const Key& key) const;
     void set_cache(Key key, Item item);
@@ -30,7 +33,8 @@ private:
 template <typename Key, typename Item, size_t CacheSize, typename Equal>
 std::optional<Item> CacheMgr<Key, Item, CacheSize, Equal>::get_cache(const Key& key) const
 {
-    auto it = std::ranges::find_if(cache_, [&](const auto& pair) { return equal_(pair.first, key); });
+    auto it =
+        std::ranges::find_if(cache_, [&](const auto& pair) { return equal_(pair.first, key); });
     if (it == cache_.end()) {
         return std::nullopt;
     }

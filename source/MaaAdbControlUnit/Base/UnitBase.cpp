@@ -27,8 +27,11 @@ void UnitBase::merge_replacement(Replacement argv_replace, bool _override)
     }
 }
 
-bool UnitBase::parse_argv(const std::string& key, const json::value& config, const json::array& default_argv,
-                          /*out*/ ProcessArgvGenerator& argv)
+bool UnitBase::parse_argv(
+    const std::string& key,
+    const json::value& config,
+    const json::array& default_argv,
+    /*out*/ ProcessArgvGenerator& argv)
 {
     auto jargv = config.get("command", key, default_argv);
 
@@ -42,7 +45,8 @@ bool UnitBase::parse_argv(const std::string& key, const json::value& config, con
     return true;
 }
 
-std::optional<std::string> UnitBase::startup_and_read_pipe(const ProcessArgv& argv, std::chrono::seconds timeout)
+std::optional<std::string>
+    UnitBase::startup_and_read_pipe(const ProcessArgv& argv, std::chrono::seconds timeout)
 {
     auto start_time = std::chrono::steady_clock::now();
 

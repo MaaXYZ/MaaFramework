@@ -59,7 +59,8 @@ private:
 };
 
 template <typename Item>
-inline AsyncRunner<Item>::AsyncRunner(ProcessFunc run_task) : process_(run_task)
+inline AsyncRunner<Item>::AsyncRunner(ProcessFunc run_task)
+    : process_(run_task)
 {
     // LogFunc;
 

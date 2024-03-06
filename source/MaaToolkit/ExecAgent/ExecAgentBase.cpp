@@ -21,17 +21,21 @@ ExecAgentBase::~ExecAgentBase()
     }
 }
 
-bool ExecAgentBase::register_executor(MaaInstanceHandle handle, std::string_view name, std::filesystem::path exec_path,
-                                      std::vector<std::string> exec_args)
+bool ExecAgentBase::register_executor(
+    MaaInstanceHandle handle,
+    std::string_view name,
+    std::filesystem::path exec_path,
+    std::vector<std::string> exec_args)
 {
     LogFunc << VAR_VOIDP(handle) << VAR(name) << VAR(exec_path) << VAR(exec_args);
 
-    auto [iter, inserted] = exec_data_.insert_or_assign( //
-        std::string(name), ExecData {
-                               .name = std::string(name),
-                               .exec_path = std::move(exec_path),
-                               .exec_args = std::move(exec_args),
-                           });
+    auto [iter, inserted] = exec_data_.insert_or_assign(
+        std::string(name),
+        ExecData {
+            .name = std::string(name),
+            .exec_path = std::move(exec_path),
+            .exec_args = std::move(exec_args),
+        });
     if (!inserted || iter == exec_data_.end()) {
         LogError << "insert failed" << VAR(name);
         return false;
@@ -57,8 +61,9 @@ bool ExecAgentBase::unregister_executor(MaaInstanceHandle handle, std::string_vi
     return ret;
 }
 
-std::optional<json::value> ExecAgentBase::run_executor(const std::filesystem::path& exec_path,
-                                                       const std::vector<std::string>& exec_args)
+std::optional<json::value> ExecAgentBase::run_executor(
+    const std::filesystem::path& exec_path,
+    const std::vector<std::string>& exec_args)
 {
     auto searched_path = boost::process::search_path(exec_path);
     if (!std::filesystem::exists(searched_path)) {
@@ -128,7 +133,8 @@ std::string ExecAgentBase::handle_command(const json::value& cmd)
 {
     static const std::map<std::string, std::function<json::value(const json::value&)>> cmd_map = {
         { "RunTask", std::bind(&ExecAgentBase::ctx_run_task, this, std::placeholders::_1) },
-        { "RunRecognizer", std::bind(&ExecAgentBase::ctx_run_recognizer, this, std::placeholders::_1) },
+        { "RunRecognizer",
+          std::bind(&ExecAgentBase::ctx_run_recognizer, this, std::placeholders::_1) },
         { "RunAction", std::bind(&ExecAgentBase::ctx_run_action, this, std::placeholders::_1) },
         { "Click", std::bind(&ExecAgentBase::ctx_click, this, std::placeholders::_1) },
         { "Swipe", std::bind(&ExecAgentBase::ctx_swipe, this, std::placeholders::_1) },
@@ -138,7 +144,8 @@ std::string ExecAgentBase::handle_command(const json::value& cmd)
         { "TouchMove", std::bind(&ExecAgentBase::ctx_touch_move, this, std::placeholders::_1) },
         { "TouchUp", std::bind(&ExecAgentBase::ctx_touch_up, this, std::placeholders::_1) },
         { "Screencap", std::bind(&ExecAgentBase::ctx_screencap, this, std::placeholders::_1) },
-        { "GetTaskResult", std::bind(&ExecAgentBase::ctx_get_task_result, this, std::placeholders::_1) },
+        { "GetTaskResult",
+          std::bind(&ExecAgentBase::ctx_get_task_result, this, std::placeholders::_1) },
     };
 
     auto func_opt = cmd.find<std::string>("function");
@@ -220,15 +227,22 @@ json::value ExecAgentBase::ctx_run_recognizer(const json::value& cmd)
         MaaDestroyStringBuffer(out_detail_buff);
     });
 
-    bool ret = MaaSyncContextRunRecognizer(ctx, image_buff, task_name.c_str(), task_param.c_str(), out_box_buff,
-                                           out_detail_buff);
+    bool ret = MaaSyncContextRunRecognizer(
+        ctx,
+        image_buff,
+        task_name.c_str(),
+        task_param.c_str(),
+        out_box_buff,
+        out_detail_buff);
 
     json::value ret_obj = gen_result(ret);
     if (!ret) {
         return ret_obj;
     }
 
-    cv::Rect out_box { MaaGetRectX(out_box_buff), MaaGetRectY(out_box_buff), MaaGetRectW(out_box_buff),
+    cv::Rect out_box { MaaGetRectX(out_box_buff),
+                       MaaGetRectY(out_box_buff),
+                       MaaGetRectW(out_box_buff),
                        MaaGetRectH(out_box_buff) };
     std::string out_detail = MaaGetString(out_detail_buff);
 
@@ -262,15 +276,23 @@ json::value ExecAgentBase::ctx_run_action(const json::value& cmd)
     auto& j_cur_box = *cur_box_opt;
     auto cur_box_buff = MaaCreateRectBuffer();
     OnScopeLeave([&]() { MaaDestroyRectBuffer(cur_box_buff); });
-    MaaSetRect(cur_box_buff, j_cur_box[0].as<int>(), j_cur_box[1].as<int>(), j_cur_box[2].as<int>(),
-               j_cur_box[3].as<int>());
+    MaaSetRect(
+        cur_box_buff,
+        j_cur_box[0].as<int>(),
+        j_cur_box[1].as<int>(),
+        j_cur_box[2].as<int>(),
+        j_cur_box[3].as<int>());
 
     auto j_cur_rec_detail = cmd.get("cur_rec_detail", json::value());
     std::string str_cur_rec_detail =
         j_cur_rec_detail.is_string() ? j_cur_rec_detail.as_string() : j_cur_rec_detail.to_string();
 
-    bool ret =
-        MaaSyncContextRunAction(ctx, task_name.c_str(), task_param.c_str(), cur_box_buff, str_cur_rec_detail.c_str());
+    bool ret = MaaSyncContextRunAction(
+        ctx,
+        task_name.c_str(),
+        task_param.c_str(),
+        cur_box_buff,
+        str_cur_rec_detail.c_str());
 
     return gen_result(ret);
 }

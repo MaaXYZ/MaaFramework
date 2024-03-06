@@ -30,10 +30,16 @@ enum class Type
     Custom,
 };
 
-using Param = std::variant<std::monostate, MAA_VISION_NS::DirectHitParam, MAA_VISION_NS::TemplateMatcherParam,
-                           MAA_VISION_NS::FeatureMatcherParam, MAA_VISION_NS::OCRerParam,
-                           MAA_VISION_NS::NeuralNetworkClassifierParam, MAA_VISION_NS::NeuralNetworkDetectorParam,
-                           MAA_VISION_NS::ColorMatcherParam, MAA_VISION_NS::CustomRecognizerParam>;
+using Param = std::variant<
+    std::monostate,
+    MAA_VISION_NS::DirectHitParam,
+    MAA_VISION_NS::TemplateMatcherParam,
+    MAA_VISION_NS::FeatureMatcherParam,
+    MAA_VISION_NS::OCRerParam,
+    MAA_VISION_NS::NeuralNetworkClassifierParam,
+    MAA_VISION_NS::NeuralNetworkDetectorParam,
+    MAA_VISION_NS::ColorMatcherParam,
+    MAA_VISION_NS::CustomRecognizerParam>;
 } // namespace Recognition
 
 namespace Action
@@ -103,7 +109,8 @@ struct CustomParam
     json::value custom_param;
 };
 
-using Param = std::variant<std::monostate, ClickParam, SwipeParam, KeyParam, TextParam, AppParam, CustomParam>;
+using Param = std::
+    variant<std::monostate, ClickParam, SwipeParam, KeyParam, TextParam, AppParam, CustomParam>;
 } // namespace Action
 
 struct WaitFreezesParam

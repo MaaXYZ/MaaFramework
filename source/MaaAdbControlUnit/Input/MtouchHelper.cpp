@@ -47,8 +47,8 @@ bool MtouchHelper::read_info(int swidth, int sheight, int orientation)
     press_ = pressure;
     orientation_ = orientation;
 
-    LogInfo << VAR(screen_width_) << VAR(screen_height_) << VAR(touch_width_) << VAR(touch_height_) << VAR(xscale_)
-            << VAR(yscale_) << VAR(press_) << VAR(orientation_);
+    LogInfo << VAR(screen_width_) << VAR(screen_height_) << VAR(touch_width_) << VAR(touch_height_)
+            << VAR(xscale_) << VAR(yscale_) << VAR(press_) << VAR(orientation_);
 
     return true;
 }
@@ -70,8 +70,8 @@ bool MtouchHelper::click(int x, int y)
 
     LogInfo << VAR(x) << VAR(y) << VAR(touch_x) << VAR(touch_y);
 
-    bool ret = pipe_ios_->write(std::format(kDownFormat, 0, touch_x, touch_y, press_)) &&
-               pipe_ios_->write(std::format(kUpFormat, 0));
+    bool ret = pipe_ios_->write(std::format(kDownFormat, 0, touch_x, touch_y, press_))
+               && pipe_ios_->write(std::format(kUpFormat, 0));
 
     if (!ret) {
         LogError << "failed to write";
@@ -88,8 +88,8 @@ bool MtouchHelper::swipe(int x1, int y1, int x2, int y2, int duration)
         return false;
     }
 
-    if (x1 < 0 || x1 >= screen_width_ || y1 < 0 || y1 >= screen_height_ || x2 < 0 || x2 >= screen_width_ || y2 < 0 ||
-        y2 >= screen_height_) {
+    if (x1 < 0 || x1 >= screen_width_ || y1 < 0 || y1 >= screen_height_ || x2 < 0
+        || x2 >= screen_width_ || y2 < 0 || y2 >= screen_height_) {
         LogWarn << "swipe point out of range" << VAR(x1) << VAR(y1) << VAR(x2) << VAR(y2);
         x1 = std::clamp(x1, 0, screen_width_ - 1);
         y1 = std::clamp(y1, 0, screen_height_ - 1);
@@ -104,8 +104,8 @@ bool MtouchHelper::swipe(int x1, int y1, int x2, int y2, int duration)
     auto [touch_x1, touch_y1] = screen_to_touch(x1, y1);
     auto [touch_x2, touch_y2] = screen_to_touch(x2, y2);
 
-    LogInfo << VAR(x1) << VAR(y1) << VAR(touch_x1) << VAR(touch_y1) << VAR(x2) << VAR(y2) << VAR(touch_x2)
-            << VAR(touch_y2) << VAR(duration);
+    LogInfo << VAR(x1) << VAR(y1) << VAR(touch_x1) << VAR(touch_y1) << VAR(x2) << VAR(y2)
+            << VAR(touch_x2) << VAR(touch_y2) << VAR(duration);
 
     auto start = std::chrono::steady_clock::now();
     auto now = start;

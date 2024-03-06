@@ -44,7 +44,10 @@ std::vector<Device> DeviceMgrMacOS::find_device_impl()
         std::filesystem::path adb_path = get_adb_path(constant, e.process.pid);
 
         auto serials = request_adb_serials(adb_path, json::object());
-        serials.insert(serials.end(), constant.adb_common_serials.begin(), constant.adb_common_serials.end());
+        serials.insert(
+            serials.end(),
+            constant.adb_common_serials.begin(),
+            constant.adb_common_serials.end());
         // Deduplication
         auto set = std::set<std::string>(serials.begin(), serials.end());
         serials.assign(set.begin(), set.end());
@@ -67,8 +70,10 @@ std::vector<Device> DeviceMgrMacOS::find_device_impl()
 
     if (std::filesystem::exists(env_adb)) {
         auto env_adb_devices = find_device_with_adb_impl(path_to_utf8_string(env_adb));
-        result.insert(result.end(), std::make_move_iterator(env_adb_devices.begin()),
-                      std::make_move_iterator(env_adb_devices.end()));
+        result.insert(
+            result.end(),
+            std::make_move_iterator(env_adb_devices.begin()),
+            std::make_move_iterator(env_adb_devices.end()));
     }
 
     // 去重
@@ -90,7 +95,8 @@ std::vector<Device> DeviceMgrMacOS::find_device_with_adb_impl(std::string_view a
         device.adb_path = adb_path;
         device.adb_serial = ser;
         device.adb_config = json::object().to_string();
-        device.adb_controller_type = check_adb_controller_type(device.adb_path, device.adb_serial, device.adb_config);
+        device.adb_controller_type =
+            check_adb_controller_type(device.adb_path, device.adb_serial, device.adb_config);
         result.emplace_back(std::move(device));
     }
     return result;

@@ -12,7 +12,10 @@ MAA_CTRL_UNIT_NS_BEGIN
 class ReplayRecording : public ControlUnitAPI
 {
 public:
-    explicit ReplayRecording(Recording recording) : recording_(std::move(recording)) {}
+    explicit ReplayRecording(Recording recording)
+        : recording_(std::move(recording))
+    {
+    }
     virtual ~ReplayRecording() = default;
 
 public: // from ControlUnitAPI
