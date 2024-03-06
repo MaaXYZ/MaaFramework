@@ -35,9 +35,15 @@ struct packed_bytes_trait_sse
         return _mm_cmpeq_epi8(x, _mm_set1_epi8(static_cast<char>(n)));
     }
 
-    __packed_bytes_strong_inline static value_type equal(value_type x, value_type y) { return _mm_cmpeq_epi8(x, y); }
+    __packed_bytes_strong_inline static value_type equal(value_type x, value_type y)
+    {
+        return _mm_cmpeq_epi8(x, y);
+    }
 
-    __packed_bytes_strong_inline static value_type bitwise_or(value_type a, value_type b) { return _mm_or_si128(a, b); }
+    __packed_bytes_strong_inline static value_type bitwise_or(value_type a, value_type b)
+    {
+        return _mm_or_si128(a, b);
+    }
 
     __packed_bytes_strong_inline static bool is_all_zero(value_type x)
     {
@@ -97,14 +103,20 @@ struct packed_bytes_trait_avx2
         return _mm256_cmpeq_epi8(x, _mm256_set1_epi8(static_cast<char>(n)));
     }
 
-    __packed_bytes_strong_inline static value_type equal(value_type x, value_type y) { return _mm256_cmpeq_epi8(x, y); }
+    __packed_bytes_strong_inline static value_type equal(value_type x, value_type y)
+    {
+        return _mm256_cmpeq_epi8(x, y);
+    }
 
     __packed_bytes_strong_inline static value_type bitwise_or(value_type a, value_type b)
     {
         return _mm256_or_si256(a, b);
     }
 
-    __packed_bytes_strong_inline static bool is_all_zero(value_type x) { return (bool)_mm256_testz_si256(x, x); }
+    __packed_bytes_strong_inline static bool is_all_zero(value_type x)
+    {
+        return (bool)_mm256_testz_si256(x, x);
+    }
 
     __packed_bytes_strong_inline static size_t first_nonzero_byte(value_type x)
     {

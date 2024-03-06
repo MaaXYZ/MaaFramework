@@ -20,14 +20,22 @@ namespace json::_bitops
 #if defined(__GNUC__) || defined(__clang__)
 inline constexpr int countl_zero(uint32_t x)
 {
-    if constexpr (sizeof(uint32_t) == sizeof(unsigned int)) return x == 0 ? 32 : __builtin_clz(x);
-    if constexpr (sizeof(uint32_t) == sizeof(unsigned long)) return x == 0 ? 32 : __builtin_clzl(x);
+    if constexpr (sizeof(uint32_t) == sizeof(unsigned int)) {
+        return x == 0 ? 32 : __builtin_clz(x);
+    }
+    if constexpr (sizeof(uint32_t) == sizeof(unsigned long)) {
+        return x == 0 ? 32 : __builtin_clzl(x);
+    }
     return x == 0 ? 32 : __builtin_clzll(x);
 }
 inline constexpr int countr_zero(uint32_t x)
 {
-    if constexpr (sizeof(uint32_t) == sizeof(unsigned int)) return x == 0 ? 32 : __builtin_ctz(x);
-    if constexpr (sizeof(uint32_t) == sizeof(unsigned long)) return x == 0 ? 32 : __builtin_ctzl(x);
+    if constexpr (sizeof(uint32_t) == sizeof(unsigned int)) {
+        return x == 0 ? 32 : __builtin_ctz(x);
+    }
+    if constexpr (sizeof(uint32_t) == sizeof(unsigned long)) {
+        return x == 0 ? 32 : __builtin_ctzl(x);
+    }
     return x == 0 ? 32 : __builtin_ctzll(x);
 }
 inline constexpr int countl_zero(uint64_t x)
@@ -102,7 +110,8 @@ inline int countr_one(uint64_t x)
 // no constexpr endian awareness before C++20
 inline bool is_little_endian()
 {
-    union {
+    union
+    {
         uint32_t u32;
         uint8_t u8;
     } u = { 0x01020304 };

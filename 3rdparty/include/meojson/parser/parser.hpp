@@ -15,8 +15,10 @@ namespace json
 // *      parser declare      *
 // ****************************
 
-template <typename string_t = default_string_t, typename parsing_t = void,
-          typename accel_traits = _packed_bytes::packed_bytes_trait_max>
+template <
+    typename string_t = default_string_t,
+    typename parsing_t = void,
+    typename accel_traits = _packed_bytes::packed_bytes_trait_max>
 class parser
 {
 public:
@@ -28,7 +30,12 @@ public:
     static std::optional<basic_value<string_t>> parse(const parsing_t& content);
 
 private:
-    parser(parsing_iter_t cbegin, parsing_iter_t cend) noexcept : _cur(cbegin), _end(cend) { ; }
+    parser(parsing_iter_t cbegin, parsing_iter_t cend) noexcept
+        : _cur(cbegin)
+        , _end(cend)
+    {
+        ;
+    }
 
     std::optional<basic_value<string_t>> parse();
     basic_value<string_t> parse_value();
@@ -63,8 +70,10 @@ auto parse(const parsing_t& content);
 template <typename char_t>
 auto parse(char_t* content);
 
-template <typename istream_t,
-          typename = std::enable_if_t<std::is_base_of_v<std::basic_istream<typename istream_t::char_type>, istream_t>>>
+template <
+    typename istream_t,
+    typename = std::enable_if_t<
+        std::is_base_of_v<std::basic_istream<typename istream_t::char_type>, istream_t>>>
 auto parse(istream_t& istream, bool check_bom);
 
 template <typename ifstream_t = std::ifstream, typename path_t = void>
@@ -72,17 +81,17 @@ auto open(const path_t& path, bool check_bom = false);
 
 namespace literals
 {
-    value operator""_json(const char* str, size_t len);
-    wvalue operator""_json(const wchar_t* str, size_t len);
+value operator""_json(const char* str, size_t len);
+wvalue operator""_json(const wchar_t* str, size_t len);
 
-    value operator""_jvalue(const char* str, size_t len);
-    wvalue operator""_jvalue(const wchar_t* str, size_t len);
+value operator""_jvalue(const char* str, size_t len);
+wvalue operator""_jvalue(const wchar_t* str, size_t len);
 
-    array operator""_jarray(const char* str, size_t len);
-    warray operator""_jarray(const wchar_t* str, size_t len);
+array operator""_jarray(const char* str, size_t len);
+warray operator""_jarray(const wchar_t* str, size_t len);
 
-    object operator""_jobject(const char* str, size_t len);
-    wobject operator""_jobject(const wchar_t* str, size_t len);
+object operator""_jobject(const char* str, size_t len);
+wobject operator""_jobject(const wchar_t* str, size_t len);
 }
 
 template <typename string_t = default_string_t>
@@ -93,7 +102,8 @@ const basic_value<string_t> invalid_value();
 // *************************
 
 template <typename string_t, typename parsing_t, typename accel_traits>
-inline std::optional<basic_value<string_t>> parser<string_t, parsing_t, accel_traits>::parse(const parsing_t& content)
+inline std::optional<basic_value<string_t>>
+    parser<string_t, parsing_t, accel_traits>::parse(const parsing_t& content)
 {
     return parser<string_t, parsing_t, accel_traits>(content.cbegin(), content.cend()).parse();
 }
@@ -252,7 +262,9 @@ inline basic_value<string_t> parser<string_t, parsing_t, accel_traits>::parse_st
     if (!string_opt) {
         return invalid_value<string_t>();
     }
-    return basic_value<string_t>(basic_value<string_t>::value_type::string, std::move(string_opt).value());
+    return basic_value<string_t>(
+        basic_value<string_t>::value_type::string,
+        std::move(string_opt).value());
 }
 
 template <typename string_t, typename parsing_t, typename accel_traits>
@@ -456,8 +468,10 @@ inline bool parser<string_t, parsing_t, accel_traits>::skip_string_literal_with_
     while (_end - _cur >= accel_traits::step) {
         auto pack = accel_traits::load_unaligned(&(*_cur));
         auto result = accel_traits::less(pack, 32);
-        result = accel_traits::bitwise_or(result, accel_traits::equal(pack, static_cast<uint8_t>('"')));
-        result = accel_traits::bitwise_or(result, accel_traits::equal(pack, static_cast<uint8_t>('\\')));
+        result =
+            accel_traits::bitwise_or(result, accel_traits::equal(pack, static_cast<uint8_t>('"')));
+        result =
+            accel_traits::bitwise_or(result, accel_traits::equal(pack, static_cast<uint8_t>('\\')));
 
         if (accel_traits::is_all_zero(result)) {
             _cur += accel_traits::step;
@@ -551,8 +565,8 @@ auto parse(istream_t& ifs, bool check_bom)
         static constexpr uchar Bom_1 = 0xBB;
         static constexpr uchar Bom_2 = 0xBF;
 
-        if (str.size() >= 3 && static_cast<uchar>(str.at(0)) == Bom_0 && static_cast<uchar>(str.at(1)) == Bom_1 &&
-            static_cast<uchar>(str.at(2)) == Bom_2) {
+        if (str.size() >= 3 && static_cast<uchar>(str.at(0)) == Bom_0
+            && static_cast<uchar>(str.at(1)) == Bom_1 && static_cast<uchar>(str.at(2)) == Bom_2) {
             str.assign(str.begin() + 3, str.end());
         }
     }
@@ -578,50 +592,52 @@ auto open(const path_t& filepath, bool check_bom)
 
 namespace literals
 {
-    inline value operator""_json(const char* str, size_t len)
-    {
-        return operator""_jvalue(str, len);
-    }
-    inline wvalue operator""_json(const wchar_t* str, size_t len)
-    {
-        return operator""_jvalue(str, len);
-    }
+inline value operator""_json(const char* str, size_t len)
+{
+    return operator""_jvalue(str, len);
+}
+inline wvalue operator""_json(const wchar_t* str, size_t len)
+{
+    return operator""_jvalue(str, len);
+}
 
-    inline value operator""_jvalue(const char* str, size_t len)
-    {
-        return parse(std::string_view(str, len)).value_or(value());
-    }
-    inline wvalue operator""_jvalue(const wchar_t* str, size_t len)
-    {
-        return parse(std::wstring_view(str, len)).value_or(wvalue());
-    }
+inline value operator""_jvalue(const char* str, size_t len)
+{
+    return parse(std::string_view(str, len)).value_or(value());
+}
+inline wvalue operator""_jvalue(const wchar_t* str, size_t len)
+{
+    return parse(std::wstring_view(str, len)).value_or(wvalue());
+}
 
-    inline array operator""_jarray(const char* str, size_t len)
-    {
-        auto val = parse(std::string_view(str, len)).value_or(value());
-        return val.is_array() ? val.as_array() : array();
-    }
-    inline warray operator""_jarray(const wchar_t* str, size_t len)
-    {
-        auto val = parse(std::wstring_view(str, len)).value_or(wvalue());
-        return val.is_array() ? val.as_array() : warray();
-    }
+inline array operator""_jarray(const char* str, size_t len)
+{
+    auto val = parse(std::string_view(str, len)).value_or(value());
+    return val.is_array() ? val.as_array() : array();
+}
+inline warray operator""_jarray(const wchar_t* str, size_t len)
+{
+    auto val = parse(std::wstring_view(str, len)).value_or(wvalue());
+    return val.is_array() ? val.as_array() : warray();
+}
 
-    inline object operator""_jobject(const char* str, size_t len)
-    {
-        auto val = parse(std::string_view(str, len)).value_or(value());
-        return val.is_object() ? val.as_object() : object();
-    }
-    inline wobject operator""_jobject(const wchar_t* str, size_t len)
-    {
-        auto val = parse(std::wstring_view(str, len)).value_or(wvalue());
-        return val.is_object() ? val.as_object() : wobject();
-    }
+inline object operator""_jobject(const char* str, size_t len)
+{
+    auto val = parse(std::string_view(str, len)).value_or(value());
+    return val.is_object() ? val.as_object() : object();
+}
+inline wobject operator""_jobject(const wchar_t* str, size_t len)
+{
+    auto val = parse(std::wstring_view(str, len)).value_or(wvalue());
+    return val.is_object() ? val.as_object() : wobject();
+}
 } // namespace literals
 
 template <typename string_t>
 const basic_value<string_t> invalid_value()
 {
-    return basic_value<string_t>(basic_value<string_t>::value_type::invalid, typename basic_value<string_t>::var_t());
+    return basic_value<string_t>(
+        basic_value<string_t>::value_type::invalid,
+        typename basic_value<string_t>::var_t());
 }
 } // namespace json
