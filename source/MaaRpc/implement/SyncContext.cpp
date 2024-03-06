@@ -7,8 +7,8 @@ MAA_RPC_NS_BEGIN
 
 using namespace ::grpc;
 
-Status SyncContextImpl::run_task(ServerContext* context, const ::maarpc::SyncContextRunTaskRequest* request,
-                                 ::maarpc::EmptyResponse* response)
+Status SyncContextImpl::run_task(
+    ServerContext* context, const ::maarpc::SyncContextRunTaskRequest* request, ::maarpc::EmptyResponse* response)
 {
     LogFunc;
     std::ignore = context;
@@ -28,8 +28,10 @@ Status SyncContextImpl::run_task(ServerContext* context, const ::maarpc::SyncCon
     }
 }
 
-Status SyncContextImpl::run_recognizer(ServerContext* context, const ::maarpc::SyncContextRunRecognizerRequest* request,
-                                       ::maarpc::SyncContextRunRecognizerResponse* response)
+Status SyncContextImpl::run_recognizer(
+    ServerContext* context,
+    const ::maarpc::SyncContextRunRecognizerRequest* request,
+    ::maarpc::SyncContextRunRecognizerResponse* response)
 {
     LogFunc;
     std::ignore = context;
@@ -45,8 +47,8 @@ Status SyncContextImpl::run_recognizer(ServerContext* context, const ::maarpc::S
     MaaRect box;
     auto dt_handle = MaaCreateStringBuffer();
 
-    if (MaaSyncContextRunRecognizer(handle, image_handle, request->task().c_str(), request->param().c_str(), &box,
-                                    dt_handle)) {
+    if (MaaSyncContextRunRecognizer(
+            handle, image_handle, request->task().c_str(), request->param().c_str(), &box, dt_handle)) {
         response->mutable_box()->mutable_xy()->set_x(box.x);
         response->mutable_box()->mutable_xy()->set_y(box.y);
         response->mutable_box()->mutable_wh()->set_width(box.width);
@@ -64,8 +66,8 @@ Status SyncContextImpl::run_recognizer(ServerContext* context, const ::maarpc::S
     }
 }
 
-Status SyncContextImpl::run_action(ServerContext* context, const ::maarpc::SyncContextRunActionRequest* request,
-                                   ::maarpc::EmptyResponse* response)
+Status SyncContextImpl::run_action(
+    ServerContext* context, const ::maarpc::SyncContextRunActionRequest* request, ::maarpc::EmptyResponse* response)
 {
     LogFunc;
     std::ignore = context;
@@ -79,10 +81,11 @@ Status SyncContextImpl::run_action(ServerContext* context, const ::maarpc::SyncC
 
     MAA_GRPC_GET_HANDLE
 
-    MaaRect box { request->box().xy().x(), request->box().xy().y(), request->box().wh().width(),
-                  request->box().wh().height() };
-    if (MaaSyncContextRunAction(handle, request->task().c_str(), request->param().c_str(), &box,
-                                request->detail().c_str())) {
+    MaaRect box {
+        request->box().xy().x(), request->box().xy().y(), request->box().wh().width(), request->box().wh().height()
+    };
+    if (MaaSyncContextRunAction(
+            handle, request->task().c_str(), request->param().c_str(), &box, request->detail().c_str())) {
         return Status::OK;
     }
     else {
@@ -90,8 +93,8 @@ Status SyncContextImpl::run_action(ServerContext* context, const ::maarpc::SyncC
     }
 }
 
-Status SyncContextImpl::click(ServerContext* context, const ::maarpc::SyncContextClickRequest* request,
-                              ::maarpc::EmptyRequest* response)
+Status SyncContextImpl::click(
+    ServerContext* context, const ::maarpc::SyncContextClickRequest* request, ::maarpc::EmptyRequest* response)
 {
     LogFunc;
     std::ignore = context;
@@ -112,8 +115,8 @@ Status SyncContextImpl::click(ServerContext* context, const ::maarpc::SyncContex
     }
 }
 
-Status SyncContextImpl::swipe(ServerContext* context, const ::maarpc::SyncContextSwipeRequest* request,
-                              ::maarpc::EmptyRequest* response)
+Status SyncContextImpl::swipe(
+    ServerContext* context, const ::maarpc::SyncContextSwipeRequest* request, ::maarpc::EmptyRequest* response)
 {
     LogFunc;
     std::ignore = context;
@@ -126,8 +129,8 @@ Status SyncContextImpl::swipe(ServerContext* context, const ::maarpc::SyncContex
 
     MAA_GRPC_GET_HANDLE
 
-    if (MaaSyncContextSwipe(handle, param.from().x(), param.from().y(), param.to().x(), param.to().y(),
-                            param.duration())) {
+    if (MaaSyncContextSwipe(
+            handle, param.from().x(), param.from().y(), param.to().x(), param.to().y(), param.duration())) {
         return Status::OK;
     }
     else {
@@ -135,8 +138,8 @@ Status SyncContextImpl::swipe(ServerContext* context, const ::maarpc::SyncContex
     }
 }
 
-Status SyncContextImpl::key(ServerContext* context, const ::maarpc::SyncContextKeyRequest* request,
-                            ::maarpc::EmptyRequest* response)
+Status SyncContextImpl::key(
+    ServerContext* context, const ::maarpc::SyncContextKeyRequest* request, ::maarpc::EmptyRequest* response)
 {
     LogFunc;
     std::ignore = context;
@@ -157,8 +160,8 @@ Status SyncContextImpl::key(ServerContext* context, const ::maarpc::SyncContextK
     }
 }
 
-Status SyncContextImpl::touch_down(ServerContext* context, const ::maarpc::SyncContextTouchRequest* request,
-                                   ::maarpc::EmptyRequest* response)
+Status SyncContextImpl::touch_down(
+    ServerContext* context, const ::maarpc::SyncContextTouchRequest* request, ::maarpc::EmptyRequest* response)
 {
     LogFunc;
     std::ignore = context;
@@ -179,8 +182,8 @@ Status SyncContextImpl::touch_down(ServerContext* context, const ::maarpc::SyncC
     }
 }
 
-Status SyncContextImpl::touch_move(ServerContext* context, const ::maarpc::SyncContextTouchRequest* request,
-                                   ::maarpc::EmptyRequest* response)
+Status SyncContextImpl::touch_move(
+    ServerContext* context, const ::maarpc::SyncContextTouchRequest* request, ::maarpc::EmptyRequest* response)
 {
     LogFunc;
     std::ignore = context;
@@ -201,8 +204,8 @@ Status SyncContextImpl::touch_move(ServerContext* context, const ::maarpc::SyncC
     }
 }
 
-Status SyncContextImpl::touch_up(ServerContext* context, const ::maarpc::SyncContextTouchRequest* request,
-                                 ::maarpc::EmptyRequest* response)
+Status SyncContextImpl::touch_up(
+    ServerContext* context, const ::maarpc::SyncContextTouchRequest* request, ::maarpc::EmptyRequest* response)
 {
     LogFunc;
     std::ignore = context;
@@ -223,8 +226,8 @@ Status SyncContextImpl::touch_up(ServerContext* context, const ::maarpc::SyncCon
     }
 }
 
-Status SyncContextImpl::screencap(ServerContext* context, const ::maarpc::SyncContextScreencapRequest* request,
-                                  ::maarpc::EmptyResponse* response)
+Status SyncContextImpl::screencap(
+    ServerContext* context, const ::maarpc::SyncContextScreencapRequest* request, ::maarpc::EmptyResponse* response)
 {
     LogFunc;
     std::ignore = context;
@@ -244,8 +247,8 @@ Status SyncContextImpl::screencap(ServerContext* context, const ::maarpc::SyncCo
     }
 }
 
-Status SyncContextImpl::task_result(ServerContext* context, const ::maarpc::HandleStringRequest* request,
-                                    ::maarpc::StringResponse* response)
+Status SyncContextImpl::task_result(
+    ServerContext* context, const ::maarpc::HandleStringRequest* request, ::maarpc::StringResponse* response)
 {
     LogFunc;
     std::ignore = context;

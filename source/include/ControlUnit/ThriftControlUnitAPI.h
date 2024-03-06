@@ -8,12 +8,12 @@ extern "C"
 {
 #endif
 
-    MaaStringView MAA_CONTROL_UNIT_API MaaThriftControlUnitGetVersion();
+    MAA_CONTROL_UNIT_API MaaStringView MaaThriftControlUnitGetVersion();
 
-    MaaControlUnitHandle MAA_CONTROL_UNIT_API MaaThriftControlUnitCreate( //
+    MAA_CONTROL_UNIT_API MaaControlUnitHandle MaaThriftControlUnitCreate(
         MaaThriftControllerType type, MaaStringView host, int32_t port, MaaStringView config);
 
-    void MAA_CONTROL_UNIT_API MaaThriftControlUnitDestroy(MaaControlUnitHandle handle);
+    MAA_CONTROL_UNIT_API void MaaThriftControlUnitDestroy(MaaControlUnitHandle handle);
 
 #ifdef __cplusplus
 }
