@@ -5,6 +5,7 @@
 #include "Controller/ControllerAgent.h"
 #include "Instance/InstanceStatus.h"
 #include "MaaFramework/MaaMsg.h"
+#include "Option/GlobalOptionMgr.h"
 #include "Resource/ResourceMgr.h"
 #include "Task/CustomAction.h"
 #include "Utils/ImageIo.h"
@@ -181,6 +182,9 @@ PipelineTask::RunningResult PipelineTask::run_task(const HitResult& hits)
     if (hits.task_data.focus) {
         notify(MaaMsg_Task_Focus_Hit, detail);
     }
+    if (debug_mode()) {
+        notify(MaaMsg_Task_Debug_Hit, detail);
+    }
 
     if (hits.task_data.times_limit <= run_times) {
         LogInfo << "Task runout:" << name;
@@ -189,6 +193,9 @@ PipelineTask::RunningResult PipelineTask::run_task(const HitResult& hits)
         status()->set_task_result(name, detail);
         if (hits.task_data.focus) {
             notify(MaaMsg_Task_Focus_Runout, detail);
+        }
+        if (debug_mode()) {
+            notify(MaaMsg_Task_Debug_Runout, detail);
         }
 
         return RunningResult::Runout;
@@ -204,8 +211,16 @@ PipelineTask::RunningResult PipelineTask::run_task(const HitResult& hits)
     if (hits.task_data.focus) {
         notify(MaaMsg_Task_Focus_Completed, detail);
     }
+    if (debug_mode()) {
+        notify(MaaMsg_Task_Debug_Completed, detail);
+    }
 
     return ret ? RunningResult::Success : RunningResult::InternalError;
+}
+
+bool PipelineTask::debug_mode() const
+{
+    return GlobalOptionMgr::get_instance().debug_message();
 }
 
 MAA_TASK_NS_END

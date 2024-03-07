@@ -74,6 +74,7 @@ private:
     }
 
     bool need_to_stop() const { return need_to_stop_; }
+    bool debug_mode() const;
 
 private:
     bool need_to_stop_ = false;

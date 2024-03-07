@@ -46,9 +46,10 @@ public:
         Recognition::Param& out_param,
         const Recognition::Type& default_type,
         const Recognition::Param& default_param);
-    // static bool parse_direct_hit_param(const json::value& input, MAA_VISION_NS::DirectHitParam&
-    // output,
-    //                                    const MAA_VISION_NS::DirectHitParam& default_value);
+    // static bool parse_direct_hit_param(
+    //     const json::value& input,
+    //     MAA_VISION_NS::DirectHitParam& output,
+    //     const MAA_VISION_NS::DirectHitParam& default_value);
     static bool parse_template_matcher_param(
         const json::value& input,
         MAA_VISION_NS::TemplateMatcherParam& output,
