@@ -85,6 +85,35 @@ _请留意，仅当您准备开发 MaaFramework 本身时，才需要阅读本�
 
 ## 鸣谢
 
+### 开源库
+
+- [opencv](https://github.com/opencv/opencv)  
+    Open Source Computer Vision Library
+- [fastdeploy](https://github.com/PaddlePaddle/FastDeploy)  
+    ⚡️An Easy-to-use and Fast Deep Learning Model Deployment Toolkit for ☁️Cloud 📱Mobile and 📹Edge. Including Image, Video, Text and Audio 20+ main stream scenarios and 150+ SOTA models with end-to-end optimization, multi-platform and multi-framework support.
+- [onnxruntime](https://github.com/microsoft/onnxruntime)  
+    ONNX Runtime: cross-platform, high performance ML inferencing and training accelerator
+- [boost](https://www.boost.org/)  
+    Boost provides free peer-reviewed portable C++ source libraries.
+- [meojson](https://github.com/MistEO/meojson)  
+    A modern all-platform Json/Json5 parser/serializer, which is header-only and used magic!
+- [minitouch](https://github.com/DeviceFarmer/minitouch)  
+    Minimal multitouch event producer for Android.
+- [maatouch](https://github.com/MaaAssistantArknights/MaaTouch)  
+    Android native implementation of minitouch input protocol
+- [minicap](https://github.com/DeviceFarmer/minicap)  
+    Stream real-time screen capture data out of Android devices.
+- [zlib](https://github.com/madler/zlib)  
+    A massively spiffy yet delicately unobtrusive compression library.
+- [protobuf](https://github.com/protocolbuffers/protobuf)  
+    Protocol Buffers - Google's data interchange format
+- [grpc](https://github.com/grpc/grpc)  
+    The C based gRPC (C++, Python, Ruby, Objective-C, PHP, C#)
+- [thrift](https://github.com/apache/thrift)  
+    Apache Thrift
+
+### 开发者
+
 感谢以下开发者对 MaaFramework 作出的贡献：
 
 <a href="https://github.com/MaaXYZ/MaaFramework/graphs/contributors">
