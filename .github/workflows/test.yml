@@ -253,7 +253,7 @@ jobs:
 
       - name: Install dep
         run: |
-          brew install cmake python
+          brew install cmake ninja
         # ccache?
 
       - name: Install compiler
