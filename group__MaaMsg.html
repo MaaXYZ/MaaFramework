@@ -149,6 +149,15 @@ Macros</h2></td></tr>
 <tr class="memitem:ga23a6ec2e8b32bff7931851e99d43a5d1"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__MaaMsg.html#ga23a6ec2e8b32bff7931851e99d43a5d1">MaaMsg_Task_Focus_Completed</a>&#160;&#160;&#160;(&quot;Task.Focus.Completed&quot;)</td></tr>
 <tr class="memdesc:ga23a6ec2e8b32bff7931851e99d43a5d1"><td class="mdescLeft">&#160;</td><td class="mdescRight">Message for the task focus.  <a href="group__MaaMsg.html#ga23a6ec2e8b32bff7931851e99d43a5d1">More...</a><br /></td></tr>
 <tr class="separator:ga23a6ec2e8b32bff7931851e99d43a5d1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga6524978f0790bfb73c7d8ed4490f8c87"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__MaaMsg.html#ga6524978f0790bfb73c7d8ed4490f8c87">MaaMsg_Task_Debug_Hit</a>&#160;&#160;&#160;(&quot;Task.Debug.Hit&quot;)</td></tr>
+<tr class="memdesc:ga6524978f0790bfb73c7d8ed4490f8c87"><td class="mdescLeft">&#160;</td><td class="mdescRight">Message for debug.  <a href="group__MaaMsg.html#ga6524978f0790bfb73c7d8ed4490f8c87">More...</a><br /></td></tr>
+<tr class="separator:ga6524978f0790bfb73c7d8ed4490f8c87"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga5470d34ff8324a0d4ed2eb6420794e1c"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__MaaMsg.html#ga5470d34ff8324a0d4ed2eb6420794e1c">MaaMsg_Task_Debug_Runout</a>&#160;&#160;&#160;(&quot;Task.Debug.Runout&quot;)</td></tr>
+<tr class="memdesc:ga5470d34ff8324a0d4ed2eb6420794e1c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Message for debug.  <a href="group__MaaMsg.html#ga5470d34ff8324a0d4ed2eb6420794e1c">More...</a><br /></td></tr>
+<tr class="separator:ga5470d34ff8324a0d4ed2eb6420794e1c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga8ac3f166c3470926524cd491a1986e4d"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__MaaMsg.html#ga8ac3f166c3470926524cd491a1986e4d">MaaMsg_Task_Debug_Completed</a>&#160;&#160;&#160;(&quot;Task.Debug.Completed&quot;)</td></tr>
+<tr class="memdesc:ga8ac3f166c3470926524cd491a1986e4d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Message for debug.  <a href="group__MaaMsg.html#ga8ac3f166c3470926524cd491a1986e4d">More...</a><br /></td></tr>
+<tr class="separator:ga8ac3f166c3470926524cd491a1986e4d"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <p >The ones that have no documented payload have empty payload, which is just {}. </p>
@@ -564,6 +573,57 @@ Macros</h2></td></tr>
 </div><div class="memdoc">
 
 <p>Message for the task focus. </p>
+<p >payload: { id: number, entry: string, name: string, uuid: string, hash: string, recognition: object, run_times: number, last_time: string, status: string } </p>
+
+</div>
+</div>
+<a id="ga6524978f0790bfb73c7d8ed4490f8c87" name="ga6524978f0790bfb73c7d8ed4490f8c87"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ga6524978f0790bfb73c7d8ed4490f8c87">&#9670;&#160;</a></span>MaaMsg_Task_Debug_Hit</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">#define MaaMsg_Task_Debug_Hit&#160;&#160;&#160;(&quot;Task.Debug.Hit&quot;)</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Message for debug. </p>
+<p >payload: { id: number, entry: string, name: string, uuid: string, hash: string, recognition: object, run_times: number, last_time: string, status: string } </p>
+
+</div>
+</div>
+<a id="ga5470d34ff8324a0d4ed2eb6420794e1c" name="ga5470d34ff8324a0d4ed2eb6420794e1c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ga5470d34ff8324a0d4ed2eb6420794e1c">&#9670;&#160;</a></span>MaaMsg_Task_Debug_Runout</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">#define MaaMsg_Task_Debug_Runout&#160;&#160;&#160;(&quot;Task.Debug.Runout&quot;)</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Message for debug. </p>
+<p >payload: { id: number, entry: string, name: string, uuid: string, hash: string, recognition: object, run_times: number, last_time: string, status: string } </p>
+
+</div>
+</div>
+<a id="ga8ac3f166c3470926524cd491a1986e4d" name="ga8ac3f166c3470926524cd491a1986e4d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ga8ac3f166c3470926524cd491a1986e4d">&#9670;&#160;</a></span>MaaMsg_Task_Debug_Completed</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">#define MaaMsg_Task_Debug_Completed&#160;&#160;&#160;(&quot;Task.Debug.Completed&quot;)</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Message for debug. </p>
 <p >payload: { id: number, entry: string, name: string, uuid: string, hash: string, recognition: object, run_times: number, last_time: string, status: string } </p>
 
 </div>
