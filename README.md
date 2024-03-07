@@ -44,25 +44,25 @@ _✨ 基于图像识别的自动化黑盒测试框架 ✨_
 
 ## 最佳实践
 
-- [M9A](https://github.com/MaaXYZ/M9A) 1999 小助手  ![](https://img.shields.io/badge/Python-3776AB?logo=python&logoColor=white)  
+- [M9A](https://github.com/MaaXYZ/M9A) 1999 小助手 ![python](https://img.shields.io/badge/Python-3776AB?logo=python&logoColor=white)  
   基于全新架构的 亿韭韭韭 小助手。图像技术 + 模拟控制，解放双手！由 MaaFramework 强力驱动！
 
 - [MAAIP](https://github.com/Arcelibs/MAAIP) 基於 MAA 框架技術的 idolypride 自動化程序  
   由 Github 上最火熱的 lk99 開源套件 MaaFramework 製作
 
-- [MAABH3](https://github.com/MaaXYZ/MAABH3) 《崩坏3》小助手 | A one-click tool for the daily tasks of Honkai Impact.  ![](https://img.shields.io/badge/C%2B%2B-00599C?logo=c%2B%2B&logoColor=white)  
+- [MAABH3](https://github.com/MaaXYZ/MAABH3) 《崩坏3》小助手 | A one-click tool for the daily tasks of Honkai Impact. ![cpp](https://img.shields.io/badge/C%2B%2B-00599C?logo=c%2B%2B&logoColor=white)  
   基于全新架构的 蹦蹦蹦 小助手。图像技术 + 模拟控制，解放双手！由 MaaFramework 强力驱动！
 
-- [MAALimbusCompany](https://github.com/hxdnshx/MAALimbusCompany) 边狱公司 小助手  ![](https://img.shields.io/badge/Python-3776AB?logo=python&logoColor=white)  
+- [MAALimbusCompany](https://github.com/hxdnshx/MAALimbusCompany) 边狱公司 小助手 ![python](https://img.shields.io/badge/Python-3776AB?logo=python&logoColor=white)  
   基于全新架构的 边狱公司 小助手。图像技术 + 模拟控制，解放双手！由 MaaFramework 强力驱动！
 
-- [MBA](https://github.com/MaaXYZ/MBA) BA 小助手  ![](https://img.shields.io/badge/C%23-239120?logo=csharp&logoColor=white)  
+- [MBA](https://github.com/MaaXYZ/MBA) BA 小助手 ![csharp](https://img.shields.io/badge/C%23-239120?logo=csharp&logoColor=white)  
   基于 MAA 全新架构的 BA 小助手。图像技术 + 模拟控制，解放双手，不再点点点！由 MaaFramework 强力驱动！
 
-- [MAS](https://github.com/MaaXYZ/MaaAssistantSkland) 森空岛 小助手  ![](https://img.shields.io/badge/C%2B%2B-00599C?logo=c%2B%2B&logoColor=white)  
+- [MAS](https://github.com/MaaXYZ/MaaAssistantSkland) 森空岛 小助手 ![cpp](https://img.shields.io/badge/C%2B%2B-00599C?logo=c%2B%2B&logoColor=white)  
   基于全新架构的 森空岛 小助手。图像技术 + 模拟控制，解放双手！由 MaaFramework 强力驱动！
 
-- [MRA](https://github.com/NaNExist/ResonanceAssistant) 列车长 小助手
+- [MRA](https://github.com/NaNExist/ResonanceAssistant) 列车长 小助手  
   基于全新架构的 列车长 小助手。图像技术 + 模拟控制，解放双手！由 MaaFramework 强力驱动！
 
 ## 生态共建
