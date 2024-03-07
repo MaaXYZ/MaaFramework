@@ -272,8 +272,6 @@ jobs:
         env:
           CC: "/usr/local/opt/llvm/bin/clang"
           CXX: "/usr/local/opt/llvm/bin/clang++"
-          LDFLAGS: "-L/usr/local/opt/llvm/lib"
-          CPPFLAGS: "-I/usr/local/opt/llvm/include"
         run: |
           cmake --preset 'NinjaMulti' \
             -DMAADEPS_TRIPLET='maa-${{ matrix.arch == 'x86_64' && 'x64' || 'arm64' }}-osx' \
@@ -287,8 +285,6 @@ jobs:
         env:
           CC: "/opt/homebrew/opt/llvm/bin/clang"
           CXX: "/opt/homebrew/opt/llvm/bin/clang++"
-          LDFLAGS: "-L/opt/homebrew/opt/llvm/lib"
-          CPPFLAGS: "-I/opt/homebrew/opt/llvm/include"
         run: |
           cmake --preset 'NinjaMulti' \
             -DMAADEPS_TRIPLET='maa-${{ matrix.arch == 'x86_64' && 'x64' || 'arm64' }}-osx' \
