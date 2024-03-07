@@ -11,22 +11,24 @@ target_include_directories(
 target_compile_definitions(MaaFramework PRIVATE MAA_FRAMEWORK_EXPORTS)
 
 target_link_libraries(MaaFramework PRIVATE MaaUtils LibraryHolder ${OpenCV_LIBS} fastdeploy_ppocr
-                                           ONNXRuntime::ONNXRuntime HeaderOnlyLibraries)
+    ONNXRuntime::ONNXRuntime HeaderOnlyLibraries)
 
 # clang 15之后有ranges if (CMAKE_CXX_COMPILER_ID MATCHES ".*Clang") find_package(range-v3 REQUIRED)
 # target_link_libraries(MaaFramework range-v3::range-v3) endif ()
-
 add_dependencies(MaaFramework MaaUtils LibraryHolder)
 
 if(WITH_ADB_CONTROLLER)
     add_dependencies(MaaFramework MaaAdbControlUnit)
 endif()
+
 if(WITH_WIN32_CONTROLLER)
     add_dependencies(MaaFramework MaaWin32ControlUnit)
 endif()
+
 if(WITH_THRIFT_CONTROLLER)
     add_dependencies(MaaFramework MaaThriftControlUnit)
 endif()
+
 if(WITH_DBG_CONTROLLER)
     add_dependencies(MaaFramework MaaDbgControlUnit)
 endif()
