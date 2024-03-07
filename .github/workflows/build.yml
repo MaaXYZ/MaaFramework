@@ -232,9 +232,8 @@ jobs:
       - name: Build MAA for x86_64
         if: ${{ matrix.arch == 'x86_64' }}
         env:
-          CC: "/usr/local/opt/llvm/bin/clang"
-          CXX: "/usr/local/opt/llvm/bin/clang++"
-          LDFLAGS: "-L/usr/local/opt/llvm/lib/c++ -Wl,-rpath,/usr/local/opt/llvm/lib/c++"
+            LDFLAGS: "-L/usr/local/opt/llvm/lib"
+            CPPFLAGS: "-I/usr/local/opt/llvm/include"
         run: |
           cmake --preset 'NinjaMulti' \
             -DCMAKE_OSX_ARCHITECTURES='${{ matrix.arch == 'x86_64' && 'x86_64' || 'arm64' }}' \
@@ -246,9 +245,8 @@ jobs:
       - name: Build MAA for aarch64
         if: ${{ matrix.arch == 'aarch64' }}
         env:
-          CC: "/opt/homebrew/opt/llvm/bin/clang"
-          CXX: "/opt/homebrew/opt/llvm/bin/clang++"
-          LDFLAGS: "-L/opt/homebrew/opt/llvm/lib/c++ -Wl,-rpath,/opt/homebrew/opt/llvm/lib/c++"
+            LDFLAGS: "-L/opt/homebrew/opt/llvm/lib"
+            CPPFLAGS: "-I/opt/homebrew/opt/llvm/include"
         run: |
           cmake --preset 'NinjaMulti' \
             -DMAADEPS_TRIPLET='maa-${{ matrix.arch == 'x86_64' && 'x64' || 'arm64' }}-osx' \
