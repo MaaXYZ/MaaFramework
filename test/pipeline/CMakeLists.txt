@@ -4,7 +4,7 @@ file(
     *.cpp
     *.h
     *.hpp)
-    
+
 add_executable(PipelineTesting ${pipeline_testing_src})
 
 target_link_libraries(PipelineTesting MaaFramework HeaderOnlyLibraries)

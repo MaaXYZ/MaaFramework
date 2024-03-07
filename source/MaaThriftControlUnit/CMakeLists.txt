@@ -9,7 +9,7 @@ file(GLOB_RECURSE maa_thrift_control_unit_header ${MAA_PRIVATE_INC}/ControlUnit/
 
 add_library(MaaThriftControlUnit SHARED ${maa_thrift_control_unit_src} ${maa_thrift_control_unit_header})
 
-target_include_directories(MaaThriftControlUnit 
+target_include_directories(MaaThriftControlUnit
     PRIVATE ${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_CURRENT_BINARY_DIR} ${MAA_PRIVATE_INC} ${MAA_PUBLIC_INC})
 
 target_link_libraries(MaaThriftControlUnit MaaUtils ThriftControlUnitThrift HeaderOnlyLibraries ${OpenCV_LIBS})
@@ -22,7 +22,8 @@ install(
     TARGETS MaaThriftControlUnit
     RUNTIME DESTINATION bin
     LIBRARY DESTINATION bin
-    #ARCHIVE DESTINATION lib
-    )
+
+    # ARCHIVE DESTINATION lib
+)
 
 source_group(TREE ${CMAKE_CURRENT_SOURCE_DIR} FILES ${maa_thrift_control_unit_src})

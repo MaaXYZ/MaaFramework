@@ -253,7 +253,7 @@ jobs:
 
       - name: Install dep
         run: |
-          brew install cmake python ninja
+          brew install cmake python
         # ccache?
 
       - name: Install compiler
@@ -304,15 +304,11 @@ jobs:
           cmake --install build --prefix install
 
       - name: Run DlopenTesting
-        # TODO: qemu for aarch64
-        if: ${{matrix.arch == 'x86_64'}}
         shell: bash
         run: |
           ./install/bin/DlopenTesting
 
       - name: Run PipelineTesting
-        # TODO: qemu for aarch64
-        if: ${{matrix.arch == 'x86_64'}}
         shell: bash
         run: |
           ./install/bin/PipelineTesting ./install/test
