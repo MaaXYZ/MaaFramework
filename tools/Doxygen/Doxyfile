@@ -230,7 +230,7 @@ HTML_HEADER            =
 
 HTML_FOOTER            =
 
-HTML_EXTRA_STYLESHEET  = ./doxygen-awesome.css
+HTML_EXTRA_STYLESHEET  = tools/Doxygen/doxygen-awesome.css
 
 # The HTML_EXTRA_FILES tag can be used to specify one or more extra images or
 # other source files which should be copied to the HTML output directory. Note

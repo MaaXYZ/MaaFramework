@@ -60,6 +60,8 @@ jobs:
 
       - name: Build Doxygen
         uses: mattnotmitt/doxygen-action@v1.9.5
+        with:
+          doxyfile-path: tools/Doxygen/Doxyfile
 
       - name: Deploy to GitHub Pages
         uses: peaceiris/actions-gh-pages@v3
