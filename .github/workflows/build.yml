@@ -59,33 +59,27 @@ jobs:
   ubuntu:
     needs: meta
     runs-on: ubuntu-latest
-    container: archlinux:base-devel
     strategy:
       matrix:
         arch: [aarch64, x86_64]
       fail-fast: false
 
     steps:
-      # maybe should explicitly update some pkg instead of all?
-      - name: Update system
+      - name: Install compiler
+        if: ${{ matrix.arch == 'x86_64' }}
         run: |
-          pacman -Syu --noconfirm
-
-      - name: Install dep
-        run: |
-          pacman -Sy
-          pacman -S --noconfirm cmake python ccache ninja git
-
-      # https://github.com/MaaXYZ/MaaFramework/actions/runs/5643408179/job/15285186255
-      - uses: actions/checkout@v3
-        with:
-          submodules: true
+          apt update -y
+          apt install -y gcc-13 g++-13
 
       - name: Install cross compile toolchains
         if: ${{ matrix.arch != 'x86_64' }}
         run: |
-          pacman -Sy
-          pacman -S --noconfirm aarch64-linux-gnu-gcc
+          apt update -y
+          apt install -y gcc-13-aarch64-linux-gnu g++-13-aarch64-linux-gnu
+
+      - uses: actions/checkout@v3
+        with:
+          submodules: true
 
       - name: Setup ccache
         uses: Chocobo1/setup-ccache-action@v1
@@ -100,8 +94,8 @@ jobs:
 
       - name: Build MAA
         env:
-          CC: ${{ matrix.arch == 'x86_64' && 'ccache gcc' || 'ccache aarch64-linux-gnu-gcc' }}
-          CXX: ${{ matrix.arch == 'x86_64' && 'ccache g++' || 'ccache aarch64-linux-gnu-g++' }}
+          CC: ${{ matrix.arch == 'x86_64' && 'ccache gcc-13' || 'ccache gcc-13-aarch64-linux-gnu' }}
+          CXX: ${{ matrix.arch == 'x86_64' && 'ccache g++-13' || 'ccache g++-13-aarch64-linux-gnu' }}
         run: |
           cmake --preset 'NinjaMulti' \
             -DMAADEPS_TRIPLET='maa-${{ matrix.arch == 'x86_64' && 'x64' || 'arm64' }}-linux' \
