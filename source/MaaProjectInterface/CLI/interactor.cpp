@@ -85,9 +85,9 @@ std::vector<int> input_multi(size_t size, std::string_view prompt = "Please inpu
 void clear_screen()
 {
 #ifdef _WIN32
-    system("cls");
+    std::ignore = system("cls");
 #else
-    system("clear");
+    std::ignore = system("clear");
 #endif
 }
 
