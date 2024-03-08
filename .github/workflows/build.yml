@@ -59,18 +59,13 @@ jobs:
   ubuntu:
     needs: meta
     runs-on: ubuntu-latest
+    container: gcc:13
     strategy:
       matrix:
         arch: [aarch64, x86_64]
       fail-fast: false
 
     steps:
-      - name: Install compiler
-        if: ${{ matrix.arch == 'x86_64' }}
-        run: |
-          apt update -y
-          apt install -y gcc-13 g++-13
-
       - name: Install cross compile toolchains
         if: ${{ matrix.arch != 'x86_64' }}
         run: |
