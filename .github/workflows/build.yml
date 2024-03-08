@@ -67,15 +67,15 @@ jobs:
     steps:
       - name: Install deps
         run: |
-          apt-get update -y
-          apt-get install -y cmake ninja-build
+          sudo apt-get update -y
+          sudo apt-get install -y cmake ninja-build
 
       - name: Install g++13
         run: |
-          apt-get install -y software-properties-common
-          add-apt-repository ppa:ubuntu-toolchain-r/test
-          apt-get update -y
-          apt-get install -y ${{ matrix.arch == 'x86_64' && 'gcc-13 g++-13' || 'gcc-13-aarch64-linux-gnu g++-13-aarch64-linux-gnu' }}
+          sudo apt-get install -y software-properties-common
+          sudo add-apt-repository ppa:ubuntu-toolchain-r/test
+          sudo apt-get update -y
+          sudo apt-get install -y ${{ matrix.arch == 'x86_64' && 'gcc-13 g++-13' || 'gcc-13-aarch64-linux-gnu g++-13-aarch64-linux-gnu' }}
 
       - uses: actions/checkout@v3
         with:
