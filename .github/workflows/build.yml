@@ -86,8 +86,6 @@ jobs:
         run: |
           echo "deb http://cz.archive.ubuntu.com/ubuntu mantic main" | sudo tee /etc/apt/sources.list.d/temporary-repository.list
           sudo apt-get update -y
-          sudo apt-mark unhold tzdata-bookworm
-          sudo apt-get install -y chrony=4.3-2ubuntu1
           sudo apt-get install -y gcc-13-aarch64-linux-gnu g++-13-aarch64-linux-gnu
           sudo rm /etc/apt/sources.list.d/temporary-repository.list
           sudo apt-get update -y
