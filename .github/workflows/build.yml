@@ -75,11 +75,6 @@ jobs:
         with:
           submodules: true
 
-      - name: Setup ccache
-        uses: Chocobo1/setup-ccache-action@v1
-        with:
-          remove_stale_cache: false
-
       - name: Bootstrap MaaDeps
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -88,8 +83,8 @@ jobs:
 
       - name: Build MAA
         env:
-          CC: ${{ matrix.arch == 'x86_64' && 'ccache gcc-13' || 'ccache gcc-13-aarch64-linux-gnu' }}
-          CXX: ${{ matrix.arch == 'x86_64' && 'ccache g++-13' || 'ccache g++-13-aarch64-linux-gnu' }}
+          CC: ${{ matrix.arch == 'x86_64' && 'gcc-13' || 'gcc-13-aarch64-linux-gnu' }}
+          CXX: ${{ matrix.arch == 'x86_64' && 'g++-13' || 'g++-13-aarch64-linux-gnu' }}
         run: |
           cmake --preset 'NinjaMulti' \
             -DMAADEPS_TRIPLET='maa-${{ matrix.arch == 'x86_64' && 'x64' || 'arm64' }}-linux' \
