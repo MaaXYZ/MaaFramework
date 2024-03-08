@@ -105,7 +105,7 @@ _Please note that you only need to read this chapter if you are ready to develop
   Stream real-time screen capture data out of Android devices.
 - [zlib](https://github.com/madler/zlib)  
   A massively spiffy yet delicately unobtrusive compression library.
-- [gzip-hpp](https://github.com/mapbox/gzip-hpp)
+- [gzip-hpp](https://github.com/mapbox/gzip-hpp)  
   Gzip header-only C++ library
 - [protobuf](https://github.com/protocolbuffers/protobuf)  
   Protocol Buffers - Google's data interchange format
