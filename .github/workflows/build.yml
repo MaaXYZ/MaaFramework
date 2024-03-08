@@ -65,21 +65,28 @@ jobs:
       fail-fast: false
 
     steps:
+      - uses: actions/checkout@v3
+        with:
+          submodules: true
+      
       - name: Install deps
         run: |
           sudo apt-get update -y
           sudo apt-get install -y cmake ninja-build
 
-      - name: Install g++13
+      - name: Install compiler
+        if: ${{ matrix.arch == 'x86_64' }}
         run: |
-          sudo apt-get install -y software-properties-common
           sudo add-apt-repository ppa:ubuntu-toolchain-r/test
           sudo apt-get update -y
-          sudo apt-get install -y ${{ matrix.arch == 'x86_64' && 'gcc-13 g++-13' || 'gcc-13-aarch64-linux-gnu g++-13-aarch64-linux-gnu' }}
+          sudo apt-get install -y gcc-13 g++-13
 
-      - uses: actions/checkout@v3
-        with:
-          submodules: true
+      - name: Install cross compile toolchains
+        if: ${{ matrix.arch == 'aarch64' }}
+        run: |
+          echo "deb http://cz.archive.ubuntu.com/ubuntu mantic main" | sudo tee /etc/apt/sources.list.d/temporary-repository.list
+          sudo apt-get update -y
+          sudo apt-get install -y gcc-13-aarch64-linux-gnu g++-13-aarch64-linux-gnu
 
       - name: Bootstrap MaaDeps
         env:
