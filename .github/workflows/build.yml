@@ -59,7 +59,6 @@ jobs:
   ubuntu:
     needs: meta
     runs-on: ubuntu-latest
-    container: gcc:13
     strategy:
       matrix:
         arch: [aarch64, x86_64]
@@ -70,6 +69,13 @@ jobs:
         run: |
           apt-get update -y
           apt-get install -y cmake ninja-build
+
+      - name: Install g++13
+        run: |
+          apt-get install -y software-properties-common
+          add-apt-repository ppa:ubuntu-toolchain-r/test
+          apt-get update -y
+          apt-get install -y ${{ matrix.arch == 'x86_64' && 'gcc-13 g++-13' || 'gcc-13-aarch64-linux-gnu g++-13-aarch64-linux-gnu' }}
 
       - uses: actions/checkout@v3
         with:
