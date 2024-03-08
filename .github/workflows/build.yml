@@ -69,7 +69,7 @@ jobs:
       - name: Install deps
         run: |
           apt-get update -y
-          apt-get install -y cmake
+          apt-get install -y cmake ninja-build
 
       - uses: actions/checkout@v3
         with:
