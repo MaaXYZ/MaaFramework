@@ -88,12 +88,8 @@ jobs:
           echo "deb http://cz.archive.ubuntu.com/ubuntu mantic main" | sudo tee /etc/apt/sources.list.d/temporary-repository.list
           sudo apt-get update -y
           sudo apt-get install -y gcc-13-aarch64-linux-gnu g++-13-aarch64-linux-gnu
-
-          # If you execute these commands on your own computer, please clean them.
-          # ↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓
-
-          # sudo rm /etc/apt/sources.list.d/temporary-repository.list
-          # sudo apt-get update -y
+          sudo rm /etc/apt/sources.list.d/temporary-repository.list
+          sudo apt-get update -y
 
       - name: Bootstrap MaaDeps
         env:
@@ -103,8 +99,8 @@ jobs:
 
       - name: Build MAA
         env:
-          CC: ${{ matrix.arch == 'x86_64' && 'gcc-13' || 'gcc-13-aarch64-linux-gnu' }}
-          CXX: ${{ matrix.arch == 'x86_64' && 'g++-13' || 'g++-13-aarch64-linux-gnu' }}
+          CC: ${{ matrix.arch == 'x86_64' && 'gcc-13' || 'aarch64-linux-gnu-gcc-13' }}
+          CXX: ${{ matrix.arch == 'x86_64' && 'g++-13' || 'aarch64-linux-gnu-g++-13' }}
         run: |
           cmake --preset 'NinjaMulti' \
             -DMAADEPS_TRIPLET='maa-${{ matrix.arch == 'x86_64' && 'x64' || 'arm64' }}-linux' \
