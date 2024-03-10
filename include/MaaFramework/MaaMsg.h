@@ -139,16 +139,15 @@
  * payload: {
  *     id: number,
  *     entry: string,
- *     name: string,
  *     uuid: string,
  *     hash: string,
+ *     name: string,
  *     recognition: object,
  *     run_times: number,
- *     last_time: string,
  *     status: string
  * }
  */
-#define MaaMsg_Task_Focus_Hit ("Task.Focus.Hit")
+#define MaaMsg_Task_Focus_ReadyToRun ("Task.Focus.ReadyToRun")
 #define MaaMsg_Task_Focus_Runout ("Task.Focus.Runout")
 #define MaaMsg_Task_Focus_Completed ("Task.Focus.Completed")
 /// @}
@@ -160,18 +159,21 @@
  * payload: {
  *     id: number,
  *     entry: string,
- *     name: string,
  *     uuid: string,
  *     hash: string,
+ *     name: string,
+ *     latest_hit: string,
  *     recognition: object,
  *     run_times: number,
- *     last_time: string,
  *     status: string
  * }
  */
-#define MaaMsg_Task_Debug_Hit ("Task.Debug.Hit")
+#define MaaMsg_Task_Debug_ReadyToRun ("Task.Debug.ReadyToRun")
 #define MaaMsg_Task_Debug_Runout ("Task.Debug.Runout")
 #define MaaMsg_Task_Debug_Completed ("Task.Debug.Completed")
 /// @}
+
+#define MaaMsg_Task_Debug_ListToRecognize ("Task.Debug.ListToRecognize")
+#define MaaMsg_Task_Debug_Hit ("Task.Debug.Hit")
 
 /** @} */

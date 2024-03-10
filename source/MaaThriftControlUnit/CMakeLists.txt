@@ -16,7 +16,7 @@ target_link_libraries(MaaThriftControlUnit MaaUtils ThriftControlUnitThrift Head
 
 target_compile_definitions(MaaThriftControlUnit PRIVATE MAA_CONTROL_UNIT_EXPORTS)
 
-add_dependencies(MaaThriftControlUnit MaaUtils)
+add_dependencies(ThriftControlUnitThrift MaaUtils)
 
 install(
     TARGETS MaaThriftControlUnit
