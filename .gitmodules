@@ -10,3 +10,6 @@
 [submodule "source/binding/Rust"]
 	path = source/binding/Rust
 	url = https://github.com/MaaXYZ/maa-framework-rs.git
+[submodule "tools/MaaDebugger"]
+	path = tools/MaaDebugger
+	url = https://github.com/MaaXYZ/MaaDebugger.git

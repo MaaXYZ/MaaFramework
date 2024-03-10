@@ -10,3 +10,6 @@ install(
 install(
     FILES ${CMAKE_CURRENT_SOURCE_DIR}/pipeline.schema.json
     DESTINATION tools)
+install(
+    DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/MaaDebugger
+    DESTINATION tools)
