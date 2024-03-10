@@ -1,4 +1,6 @@
 {
+    "name": "maa",
+    "header": ["include.h"],
     "callback": {
         "void (*)(const char *, const char *, void *)": {
             "name": "MaaAPICallback",
