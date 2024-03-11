@@ -18,8 +18,10 @@ set(LHG_EMBEDDED
     CACHE BOOL "make lhg work in embedded mode")
 add_subdirectory(LHG)
 
+set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
+
 set(maa_http_src main.cpp info.hpp extra.cpp extra.h include.h)
-file(GLOB_RECURSE maa_http_support_src LHG/projects/support/*.cpp LHG/projects/support/*.hpp LHG/projects/support/*.h)
+file(GLOB_RECURSE maa_http_support_src LHG/projects/support/*.hpp LHG/projects/support/*.h)
 
 add_executable(MaaHttp ${maa_http_src} ${maa_http_support_src})
 target_include_directories(MaaHttp PRIVATE ./../include LHG/projects/support)
