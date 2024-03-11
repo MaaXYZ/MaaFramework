@@ -30,6 +30,10 @@ public:
     virtual std::string get_hash() const override;
     virtual std::vector<std::string> get_task_list() const override;
 
+public: // from MaaInstanceSink
+    virtual void post_stop() override;
+    virtual MaaBool running() const override;
+
 public:
     const auto& pipeline_res() const { return pipeline_res_; }
     auto& pipeline_res() { return pipeline_res_; }
@@ -43,6 +47,10 @@ public:
 private:
     bool run_load(typename AsyncRunner<std::filesystem::path>::Id id, std::filesystem::path path);
     bool load(const std::filesystem::path& path);
+    bool check_stop();
+
+private:
+    bool need_to_stop_ = false;
 
 private:
     PipelineResMgr pipeline_res_;

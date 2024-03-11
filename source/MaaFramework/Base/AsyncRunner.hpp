@@ -19,6 +19,7 @@ class AsyncRunner : public NonCopyable
 public:
     using Id = int64_t;
     using ProcessFunc = std::function<bool(Id id, Item item)>;
+    using NotifyFunc = std::function<void(void)>;
 
 public:
     explicit AsyncRunner(ProcessFunc run_task);

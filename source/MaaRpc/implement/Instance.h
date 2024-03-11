@@ -109,7 +109,7 @@ public:
         ::grpc::ServerContext* context,
         const ::maarpc::HandleIIdRequest* request,
         ::maarpc::StatusResponse* response) override;
-    ::grpc::Status all_finished(
+    ::grpc::Status running(
         ::grpc::ServerContext* context,
         const ::maarpc::HandleRequest* request,
         ::maarpc::BoolResponse* response) override;

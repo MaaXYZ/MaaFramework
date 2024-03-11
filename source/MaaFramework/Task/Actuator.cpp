@@ -137,19 +137,11 @@ void Actuator::wait_freezes(const MAA_RES_NS::WaitFreezesParam& param, const cv:
     });
 
     cv::Mat pre_image = controller()->screencap();
-    if (need_to_stop()) {
-        LogInfo << "Task interrupted";
-        return;
-    }
 
     auto pre_time = std::chrono::steady_clock::now();
 
     while (true) {
         cv::Mat cur_image = controller()->screencap();
-        if (need_to_stop()) {
-            LogInfo << "Task interrupted";
-            return;
-        }
 
         auto ret = comp.analyze(pre_image, cur_image);
         if (ret.empty()) {
@@ -249,10 +241,6 @@ void Actuator::sleep(unsigned ms) const
 
 void Actuator::sleep(std::chrono::milliseconds ms) const
 {
-    if (need_to_stop()) {
-        return;
-    }
-
     using namespace std::chrono_literals;
 
     if (ms == 0ms) {
@@ -264,11 +252,8 @@ void Actuator::sleep(std::chrono::milliseconds ms) const
 
     LogTrace << "ready to sleep" << ms << VAR(interval);
 
-    for (auto sleep_time = interval; sleep_time <= ms && !need_to_stop(); sleep_time += interval) {
+    for (auto sleep_time = interval; sleep_time <= ms; sleep_time += interval) {
         std::this_thread::sleep_for(interval);
-    }
-    if (!need_to_stop()) {
-        std::this_thread::sleep_for(ms % interval);
     }
 
     LogTrace << "end of sleep" << ms << VAR(interval);

@@ -14,7 +14,7 @@ struct MaaInstanceSink
 {
 public:
     virtual ~MaaInstanceSink() = default;
-    virtual void on_stop() {}
+    virtual void post_stop() {}
 };
 
 struct MaaResourceAPI : public MaaInstanceSink
@@ -29,6 +29,7 @@ public:
     virtual MaaStatus status(MaaResId res_id) const = 0;
     virtual MaaStatus wait(MaaResId res_id) const = 0;
     virtual MaaBool valid() const = 0;
+    virtual MaaBool running() const = 0;
 
     virtual std::string get_hash() const = 0;
     virtual std::vector<std::string> get_task_list() const = 0;
@@ -53,6 +54,7 @@ public:
     virtual MaaCtrlId post_touch_move(int contact, int x, int y, int pressure) = 0;
     virtual MaaCtrlId post_touch_up(int contact) = 0;
 
+    virtual MaaBool running() const = 0;
     virtual MaaStatus status(MaaCtrlId ctrl_id) const = 0;
     virtual MaaStatus wait(MaaCtrlId ctrl_id) const = 0;
     virtual MaaBool connected() const = 0;
@@ -92,8 +94,8 @@ public:
 
     virtual MaaStatus task_status(MaaTaskId task_id) const = 0;
     virtual MaaStatus task_wait(MaaTaskId task_id) const = 0;
-    virtual MaaBool task_all_finished() const = 0;
 
+    virtual MaaBool running() const = 0;
     virtual void post_stop() = 0;
 
     virtual MaaResourceHandle resource() = 0;

@@ -100,17 +100,17 @@ class Instance:
         Wait for all tasks to complete.
         """
 
-        while not self.all_finished():
+        while self.running():
             await asyncio.sleep(0)
 
-    def all_finished(self) -> bool:
+    def running(self) -> bool:
         """
-        Check if all tasks are finished.
+        Is running
 
-        :return: True if all tasks are finished, False otherwise.
+        :return: True if running, False otherwise.
         """
 
-        return bool(Library.framework.MaaTaskAllFinished(self._handle))
+        return bool(Library.framework.Running(self._handle))
 
     async def stop(self) -> bool:
         """
@@ -181,7 +181,7 @@ class Instance:
         return Library.framework.MaaTaskStatus(self._handle, id)
 
     def _stop_status(self, id: int) -> ctypes.c_int32:
-        return MaaStatusEnum.success if self.all_finished() else MaaStatusEnum.running
+        return MaaStatusEnum.success if self.running() else MaaStatusEnum.running
 
     def _set_task_param(self, id: int, param: Dict) -> bool:
         return Library.framework.MaaSetTaskParam(

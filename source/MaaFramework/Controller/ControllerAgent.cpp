@@ -62,85 +62,64 @@ bool ControllerAgent::set_option(
 
 MaaCtrlId ControllerAgent::post_connection()
 {
-    auto id = action_runner_->post({ .type = Action::Type::connect });
-    std::unique_lock lock { post_ids_mutex_ };
-    post_ids_.emplace(id);
+    auto id = post_connection_impl();
+    focus_id(id);
     return id;
 }
 
 MaaCtrlId ControllerAgent::post_click(int x, int y)
 {
-    auto [xx, yy] = preproc_touch_point(x, y);
-    ClickParam param { .x = xx, .y = yy };
-    auto id = action_runner_->post({ .type = Action::Type::click, .param = std::move(param) });
-    std::unique_lock lock { post_ids_mutex_ };
-    post_ids_.emplace(id);
+    auto id = post_click_impl(x, y);
+    focus_id(id);
     return id;
 }
 
 MaaCtrlId ControllerAgent::post_swipe(int x1, int y1, int x2, int y2, int duration)
 {
-    auto [xx1, yy1] = preproc_touch_point(x1, y1);
-    auto [xx2, yy2] = preproc_touch_point(x2, y2);
-    SwipeParam param { .x1 = xx1, .y1 = yy1, .x2 = xx2, .y2 = yy2, .duration = duration };
-    auto id = action_runner_->post({ .type = Action::Type::swipe, .param = std::move(param) });
-    std::unique_lock lock { post_ids_mutex_ };
-    post_ids_.emplace(id);
+    auto id = post_swipe_impl(x1, y1, x2, y2, duration);
+    focus_id(id);
     return id;
 }
 
 MaaCtrlId ControllerAgent::post_press_key(int keycode)
 {
-    PressKeyParam param { .keycode = keycode };
-    auto id = action_runner_->post({ .type = Action::Type::press_key, .param = std::move(param) });
-    std::unique_lock lock { post_ids_mutex_ };
-    post_ids_.emplace(id);
+    auto id = post_press_key_impl(keycode);
+    focus_id(id);
     return id;
 }
 
 MaaCtrlId ControllerAgent::post_input_text(std::string_view text)
 {
-    InputTextParam param { .text = std::string(text) };
-    auto id = action_runner_->post({ .type = Action::Type::input_text, .param = std::move(param) });
-    std::unique_lock lock { post_ids_mutex_ };
-    post_ids_.emplace(id);
+    auto id = post_input_text_impl(text);
+    focus_id(id);
     return id;
 }
 
 MaaCtrlId ControllerAgent::post_screencap()
 {
-    auto id = action_runner_->post({ .type = Action::Type::screencap });
-    std::unique_lock lock { post_ids_mutex_ };
-    post_ids_.emplace(id);
+    auto id = post_screencap_impl();
+    focus_id(id);
     return id;
 }
 
 MaaCtrlId ControllerAgent::post_touch_down(int contact, int x, int y, int pressure)
 {
-    auto [xx, yy] = preproc_touch_point(x, y);
-    TouchParam param { .contact = contact, .x = xx, .y = yy, .pressure = pressure };
-    auto id = action_runner_->post({ .type = Action::Type::touch_down, .param = std::move(param) });
-    std::unique_lock lock { post_ids_mutex_ };
-    post_ids_.emplace(id);
+    auto id = post_touch_down_impl(contact, x, y, pressure);
+    focus_id(id);
     return id;
 }
 
 MaaCtrlId ControllerAgent::post_touch_move(int contact, int x, int y, int pressure)
 {
-    auto [xx, yy] = preproc_touch_point(x, y);
-    TouchParam param { .contact = contact, .x = xx, .y = yy, .pressure = pressure };
-    auto id = action_runner_->post({ .type = Action::Type::touch_move, .param = std::move(param) });
-    std::unique_lock lock { post_ids_mutex_ };
-    post_ids_.emplace(id);
+    auto id = post_touch_move_impl(contact, x, y, pressure);
+    focus_id(id);
     return id;
 }
 
 MaaCtrlId ControllerAgent::post_touch_up(int contact)
 {
-    TouchParam param { .contact = contact };
-    auto id = action_runner_->post({ .type = Action::Type::touch_up, .param = std::move(param) });
-    std::unique_lock lock { post_ids_mutex_ };
-    post_ids_.emplace(id);
+    auto id = post_touch_up_impl(contact);
+    focus_id(id);
     return id;
 }
 
@@ -159,6 +138,10 @@ MaaStatus ControllerAgent::wait(MaaCtrlId ctrl_id) const
         LogError << "action_runner_ is nullptr";
         return MaaStatus_Invalid;
     }
+    if (ctrl_id == MaaInvalidId) {
+        return MaaStatus_Invalid;
+    }
+
     action_runner_->wait(ctrl_id);
     return action_runner_->status(ctrl_id);
 }
@@ -189,9 +172,20 @@ std::pair<int, int> ControllerAgent::get_resolution()
     return resolution_cache_;
 }
 
-void ControllerAgent::on_stop()
+void ControllerAgent::post_stop()
 {
-    action_runner_->release();
+    LogFunc;
+
+    need_to_stop_ = true;
+
+    if (action_runner_ && action_runner_->running()) {
+        action_runner_->clear();
+    }
+}
+
+MaaBool ControllerAgent::running() const
+{
+    return action_runner_ && action_runner_->running();
 }
 
 bool ControllerAgent::click(const cv::Rect& r)
@@ -201,7 +195,7 @@ bool ControllerAgent::click(const cv::Rect& r)
 
 bool ControllerAgent::click(const cv::Point& p)
 {
-    auto id = post_click(p.x, p.y);
+    auto id = post_click_impl(p.x, p.y);
     return wait(id) == MaaStatus_Success;
 }
 
@@ -212,26 +206,26 @@ bool ControllerAgent::swipe(const cv::Rect& r1, const cv::Rect& r2, int duration
 
 bool ControllerAgent::swipe(const cv::Point& p1, const cv::Point& p2, int duration)
 {
-    auto id = post_swipe(p1.x, p1.y, p2.x, p2.y, duration);
+    auto id = post_swipe_impl(p1.x, p1.y, p2.x, p2.y, duration);
     return wait(id) == MaaStatus_Success;
 }
 
 bool ControllerAgent::press_key(int keycode)
 {
-    auto id = post_press_key(keycode);
+    auto id = post_press_key_impl(keycode);
     return wait(id) == MaaStatus_Success;
 }
 
 bool ControllerAgent::input_text(const std::string& text)
 {
-    auto id = post_input_text(text);
+    auto id = post_input_text_impl(text);
     return wait(id) == MaaStatus_Success;
 }
 
 cv::Mat ControllerAgent::screencap()
 {
     std::unique_lock<std::mutex> lock(image_mutex_);
-    auto id = action_runner_->post({ .type = Action::Type::screencap }, true);
+    auto id = post_screencap_impl();
     if (wait(id) != MaaStatus_Success) {
         return {};
     }
@@ -258,18 +252,94 @@ bool ControllerAgent::stop_app()
 
 bool ControllerAgent::start_app(const std::string& package)
 {
-    auto id = action_runner_->post(
-        { .type = Action::Type::start_app, .param = AppParam { .package = package } },
-        true);
+    auto id = post({ .type = Action::Type::start_app, .param = AppParam { .package = package } });
     return wait(id) == MaaStatus_Success;
 }
 
 bool ControllerAgent::stop_app(const std::string& package)
 {
-    auto id = action_runner_->post(
-        { .type = Action::Type::stop_app, .param = AppParam { .package = package } },
-        true);
+    auto id = post({ .type = Action::Type::stop_app, .param = AppParam { .package = package } });
     return wait(id) == MaaStatus_Success;
+}
+
+MaaCtrlId ControllerAgent::post(Action action)
+{
+    if (check_stop()) {
+        LogError << "stopping, ignore new post";
+        return MaaInvalidId;
+    }
+
+    if (!action_runner_) {
+        return MaaInvalidId;
+    }
+    return action_runner_->post(std::move(action));
+}
+
+void ControllerAgent::focus_id(MaaCtrlId id)
+{
+    if (id == MaaInvalidId) {
+        return;
+    }
+
+    std::unique_lock lock { focus_ids_mutex_ };
+    focus_ids_.emplace(id);
+}
+
+MaaCtrlId ControllerAgent::post_connection_impl()
+{
+    return post({ .type = Action::Type::connect });
+}
+
+MaaCtrlId ControllerAgent::post_click_impl(int x, int y)
+{
+    auto [xx, yy] = preproc_touch_point(x, y);
+    ClickParam param { .x = xx, .y = yy };
+    return post({ .type = Action::Type::click, .param = std::move(param) });
+}
+
+MaaCtrlId ControllerAgent::post_swipe_impl(int x1, int y1, int x2, int y2, int duration)
+{
+    auto [xx1, yy1] = preproc_touch_point(x1, y1);
+    auto [xx2, yy2] = preproc_touch_point(x2, y2);
+    SwipeParam param { .x1 = xx1, .y1 = yy1, .x2 = xx2, .y2 = yy2, .duration = duration };
+    return post({ .type = Action::Type::swipe, .param = std::move(param) });
+}
+
+MaaCtrlId ControllerAgent::post_press_key_impl(int keycode)
+{
+    PressKeyParam param { .keycode = keycode };
+    return post({ .type = Action::Type::press_key, .param = std::move(param) });
+}
+
+MaaCtrlId ControllerAgent::post_input_text_impl(std::string_view text)
+{
+    InputTextParam param { .text = std::string(text) };
+    return post({ .type = Action::Type::input_text, .param = std::move(param) });
+}
+
+MaaCtrlId ControllerAgent::post_screencap_impl()
+{
+    return post({ .type = Action::Type::screencap });
+}
+
+MaaCtrlId ControllerAgent::post_touch_down_impl(int contact, int x, int y, int pressure)
+{
+    auto [xx, yy] = preproc_touch_point(x, y);
+    TouchParam param { .contact = contact, .x = xx, .y = yy, .pressure = pressure };
+    return post({ .type = Action::Type::touch_down, .param = std::move(param) });
+}
+
+MaaCtrlId ControllerAgent::post_touch_move_impl(int contact, int x, int y, int pressure)
+{
+    auto [xx, yy] = preproc_touch_point(x, y);
+    TouchParam param { .contact = contact, .x = xx, .y = yy, .pressure = pressure };
+    return post({ .type = Action::Type::touch_move, .param = std::move(param) });
+}
+
+MaaCtrlId ControllerAgent::post_touch_up_impl(int contact)
+{
+    TouchParam param { .contact = contact };
+    return post({ .type = Action::Type::touch_up, .param = std::move(param) });
 }
 
 bool ControllerAgent::handle_connect()
@@ -544,6 +614,21 @@ void ControllerAgent::append_recording(
     ofs.close();
 }
 
+bool ControllerAgent::check_stop()
+{
+    if (!need_to_stop_) {
+        return true;
+    }
+
+    if (running()) {
+        LogError << "stopping, ignore new post";
+        return false;
+    }
+
+    need_to_stop_ = false;
+    return true;
+}
+
 cv::Point ControllerAgent::rand_point(const cv::Rect& r)
 {
     int x = 0, y = 0;
@@ -575,8 +660,8 @@ bool ControllerAgent::run_action(typename AsyncRunner<Action>::Id id, Action act
 
     bool notify = false;
     {
-        std::unique_lock lock { post_ids_mutex_ };
-        notify = post_ids_.erase(id) > 0;
+        std::unique_lock lock { focus_ids_mutex_ };
+        notify = focus_ids_.erase(id) > 0;
     }
 
     const json::value details = {

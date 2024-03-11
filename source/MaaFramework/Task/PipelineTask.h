@@ -26,7 +26,7 @@ public:
     virtual ~PipelineTask() override = default;
 
 public: // from MaaInstanceSink
-    virtual void on_stop() override { need_to_stop_ = true; }
+    virtual void post_stop() override { need_to_stop_ = true; }
 
 public:
     const std::string& entry() const { return entry_; }
