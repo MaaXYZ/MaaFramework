@@ -2138,5 +2138,962 @@ using __function_list = std::tuple<
 
 }
 
+template<>
+struct is_input<maa::func_type_MaaAdbControllerCreate::ret, false> {
+  constexpr static bool value = false;
+  using type = std::monostate;
+};
+template<>
+struct is_output<maa::func_type_MaaAdbControllerCreate::ret, false> {
+  constexpr static bool value = true;
+  using type = maa::func_type_MaaAdbControllerCreate::ret::type;
+};
+
+template<>
+struct is_input<maa::func_type_MaaAdbControllerCreateV2::ret, false> {
+  constexpr static bool value = false;
+  using type = std::monostate;
+};
+template<>
+struct is_output<maa::func_type_MaaAdbControllerCreateV2::ret, false> {
+  constexpr static bool value = true;
+  using type = maa::func_type_MaaAdbControllerCreateV2::ret::type;
+};
+
+template<>
+struct is_input<maa::func_type_MaaThriftControllerCreate::ret, false> {
+  constexpr static bool value = false;
+  using type = std::monostate;
+};
+template<>
+struct is_output<maa::func_type_MaaThriftControllerCreate::ret, false> {
+  constexpr static bool value = true;
+  using type = maa::func_type_MaaThriftControllerCreate::ret::type;
+};
+
+template<>
+struct is_input<maa::func_type_MaaDbgControllerCreate::ret, false> {
+  constexpr static bool value = false;
+  using type = std::monostate;
+};
+template<>
+struct is_output<maa::func_type_MaaDbgControllerCreate::ret, false> {
+  constexpr static bool value = true;
+  using type = maa::func_type_MaaDbgControllerCreate::ret::type;
+};
+
+template<>
+struct is_input<maa::func_type_MaaControllerDestroy::ret, false> {
+  constexpr static bool value = false;
+  using type = std::monostate;
+};
+template<>
+struct is_output<maa::func_type_MaaControllerDestroy::ret, false> {
+  constexpr static bool value = true;
+  using type = maa::func_type_MaaControllerDestroy::ret::type;
+};
+
+template<>
+struct is_input<maa::func_type_MaaControllerPostConnection::ret, false> {
+  constexpr static bool value = false;
+  using type = std::monostate;
+};
+template<>
+struct is_output<maa::func_type_MaaControllerPostConnection::ret, false> {
+  constexpr static bool value = true;
+  using type = maa::func_type_MaaControllerPostConnection::ret::type;
+};
+
+template<>
+struct is_input<maa::func_type_MaaControllerPostClick::ret, false> {
+  constexpr static bool value = false;
+  using type = std::monostate;
+};
+template<>
+struct is_output<maa::func_type_MaaControllerPostClick::ret, false> {
+  constexpr static bool value = true;
+  using type = maa::func_type_MaaControllerPostClick::ret::type;
+};
+
+template<>
+struct is_input<maa::func_type_MaaControllerPostSwipe::ret, false> {
+  constexpr static bool value = false;
+  using type = std::monostate;
+};
+template<>
+struct is_output<maa::func_type_MaaControllerPostSwipe::ret, false> {
+  constexpr static bool value = true;
+  using type = maa::func_type_MaaControllerPostSwipe::ret::type;
+};
+
+template<>
+struct is_input<maa::func_type_MaaControllerPostPressKey::ret, false> {
+  constexpr static bool value = false;
+  using type = std::monostate;
+};
+template<>
+struct is_output<maa::func_type_MaaControllerPostPressKey::ret, false> {
+  constexpr static bool value = true;
+  using type = maa::func_type_MaaControllerPostPressKey::ret::type;
+};
+
+template<>
+struct is_input<maa::func_type_MaaControllerPostInputText::ret, false> {
+  constexpr static bool value = false;
+  using type = std::monostate;
+};
+template<>
+struct is_output<maa::func_type_MaaControllerPostInputText::ret, false> {
+  constexpr static bool value = true;
+  using type = maa::func_type_MaaControllerPostInputText::ret::type;
+};
+
+template<>
+struct is_input<maa::func_type_MaaControllerPostTouchDown::ret, false> {
+  constexpr static bool value = false;
+  using type = std::monostate;
+};
+template<>
+struct is_output<maa::func_type_MaaControllerPostTouchDown::ret, false> {
+  constexpr static bool value = true;
+  using type = maa::func_type_MaaControllerPostTouchDown::ret::type;
+};
+
+template<>
+struct is_input<maa::func_type_MaaControllerPostTouchMove::ret, false> {
+  constexpr static bool value = false;
+  using type = std::monostate;
+};
+template<>
+struct is_output<maa::func_type_MaaControllerPostTouchMove::ret, false> {
+  constexpr static bool value = true;
+  using type = maa::func_type_MaaControllerPostTouchMove::ret::type;
+};
+
+template<>
+struct is_input<maa::func_type_MaaControllerPostTouchUp::ret, false> {
+  constexpr static bool value = false;
+  using type = std::monostate;
+};
+template<>
+struct is_output<maa::func_type_MaaControllerPostTouchUp::ret, false> {
+  constexpr static bool value = true;
+  using type = maa::func_type_MaaControllerPostTouchUp::ret::type;
+};
+
+template<>
+struct is_input<maa::func_type_MaaControllerPostScreencap::ret, false> {
+  constexpr static bool value = false;
+  using type = std::monostate;
+};
+template<>
+struct is_output<maa::func_type_MaaControllerPostScreencap::ret, false> {
+  constexpr static bool value = true;
+  using type = maa::func_type_MaaControllerPostScreencap::ret::type;
+};
+
+template<>
+struct is_input<maa::func_type_MaaControllerStatus::ret, false> {
+  constexpr static bool value = false;
+  using type = std::monostate;
+};
+template<>
+struct is_output<maa::func_type_MaaControllerStatus::ret, false> {
+  constexpr static bool value = true;
+  using type = maa::func_type_MaaControllerStatus::ret::type;
+};
+
+template<>
+struct is_input<maa::func_type_MaaControllerWait::ret, false> {
+  constexpr static bool value = false;
+  using type = std::monostate;
+};
+template<>
+struct is_output<maa::func_type_MaaControllerWait::ret, false> {
+  constexpr static bool value = true;
+  using type = maa::func_type_MaaControllerWait::ret::type;
+};
+
+template<>
+struct is_input<maa::func_type_MaaControllerConnected::ret, false> {
+  constexpr static bool value = false;
+  using type = std::monostate;
+};
+template<>
+struct is_output<maa::func_type_MaaControllerConnected::ret, false> {
+  constexpr static bool value = true;
+  using type = maa::func_type_MaaControllerConnected::ret::type;
+};
+
+template<>
+struct is_input<maa::func_type_MaaControllerGetImage::ret, false> {
+  constexpr static bool value = false;
+  using type = std::monostate;
+};
+template<>
+struct is_output<maa::func_type_MaaControllerGetImage::ret, false> {
+  constexpr static bool value = true;
+  using type = maa::func_type_MaaControllerGetImage::ret::type;
+};
+
+template<>
+struct is_input<maa::func_type_MaaControllerGetUUID::ret, false> {
+  constexpr static bool value = false;
+  using type = std::monostate;
+};
+template<>
+struct is_output<maa::func_type_MaaControllerGetUUID::ret, false> {
+  constexpr static bool value = true;
+  using type = maa::func_type_MaaControllerGetUUID::ret::type;
+};
+
+template<>
+struct is_input<maa::func_type_MaaCreate::ret, false> {
+  constexpr static bool value = false;
+  using type = std::monostate;
+};
+template<>
+struct is_output<maa::func_type_MaaCreate::ret, false> {
+  constexpr static bool value = true;
+  using type = maa::func_type_MaaCreate::ret::type;
+};
+
+template<>
+struct is_input<maa::func_type_MaaDestroy::ret, false> {
+  constexpr static bool value = false;
+  using type = std::monostate;
+};
+template<>
+struct is_output<maa::func_type_MaaDestroy::ret, false> {
+  constexpr static bool value = true;
+  using type = maa::func_type_MaaDestroy::ret::type;
+};
+
+template<>
+struct is_input<maa::func_type_MaaBindResource::ret, false> {
+  constexpr static bool value = false;
+  using type = std::monostate;
+};
+template<>
+struct is_output<maa::func_type_MaaBindResource::ret, false> {
+  constexpr static bool value = true;
+  using type = maa::func_type_MaaBindResource::ret::type;
+};
+
+template<>
+struct is_input<maa::func_type_MaaBindController::ret, false> {
+  constexpr static bool value = false;
+  using type = std::monostate;
+};
+template<>
+struct is_output<maa::func_type_MaaBindController::ret, false> {
+  constexpr static bool value = true;
+  using type = maa::func_type_MaaBindController::ret::type;
+};
+
+template<>
+struct is_input<maa::func_type_MaaInited::ret, false> {
+  constexpr static bool value = false;
+  using type = std::monostate;
+};
+template<>
+struct is_output<maa::func_type_MaaInited::ret, false> {
+  constexpr static bool value = true;
+  using type = maa::func_type_MaaInited::ret::type;
+};
+
+template<>
+struct is_input<maa::func_type_MaaUnregisterCustomRecognizer::ret, false> {
+  constexpr static bool value = false;
+  using type = std::monostate;
+};
+template<>
+struct is_output<maa::func_type_MaaUnregisterCustomRecognizer::ret, false> {
+  constexpr static bool value = true;
+  using type = maa::func_type_MaaUnregisterCustomRecognizer::ret::type;
+};
+
+template<>
+struct is_input<maa::func_type_MaaClearCustomRecognizer::ret, false> {
+  constexpr static bool value = false;
+  using type = std::monostate;
+};
+template<>
+struct is_output<maa::func_type_MaaClearCustomRecognizer::ret, false> {
+  constexpr static bool value = true;
+  using type = maa::func_type_MaaClearCustomRecognizer::ret::type;
+};
+
+template<>
+struct is_input<maa::func_type_MaaUnregisterCustomAction::ret, false> {
+  constexpr static bool value = false;
+  using type = std::monostate;
+};
+template<>
+struct is_output<maa::func_type_MaaUnregisterCustomAction::ret, false> {
+  constexpr static bool value = true;
+  using type = maa::func_type_MaaUnregisterCustomAction::ret::type;
+};
+
+template<>
+struct is_input<maa::func_type_MaaClearCustomAction::ret, false> {
+  constexpr static bool value = false;
+  using type = std::monostate;
+};
+template<>
+struct is_output<maa::func_type_MaaClearCustomAction::ret, false> {
+  constexpr static bool value = true;
+  using type = maa::func_type_MaaClearCustomAction::ret::type;
+};
+
+template<>
+struct is_input<maa::func_type_MaaPostTask::ret, false> {
+  constexpr static bool value = false;
+  using type = std::monostate;
+};
+template<>
+struct is_output<maa::func_type_MaaPostTask::ret, false> {
+  constexpr static bool value = true;
+  using type = maa::func_type_MaaPostTask::ret::type;
+};
+
+template<>
+struct is_input<maa::func_type_MaaSetTaskParam::ret, false> {
+  constexpr static bool value = false;
+  using type = std::monostate;
+};
+template<>
+struct is_output<maa::func_type_MaaSetTaskParam::ret, false> {
+  constexpr static bool value = true;
+  using type = maa::func_type_MaaSetTaskParam::ret::type;
+};
+
+template<>
+struct is_input<maa::func_type_MaaTaskStatus::ret, false> {
+  constexpr static bool value = false;
+  using type = std::monostate;
+};
+template<>
+struct is_output<maa::func_type_MaaTaskStatus::ret, false> {
+  constexpr static bool value = true;
+  using type = maa::func_type_MaaTaskStatus::ret::type;
+};
+
+template<>
+struct is_input<maa::func_type_MaaWaitTask::ret, false> {
+  constexpr static bool value = false;
+  using type = std::monostate;
+};
+template<>
+struct is_output<maa::func_type_MaaWaitTask::ret, false> {
+  constexpr static bool value = true;
+  using type = maa::func_type_MaaWaitTask::ret::type;
+};
+
+template<>
+struct is_input<maa::func_type_MaaTaskAllFinished::ret, false> {
+  constexpr static bool value = false;
+  using type = std::monostate;
+};
+template<>
+struct is_output<maa::func_type_MaaTaskAllFinished::ret, false> {
+  constexpr static bool value = true;
+  using type = maa::func_type_MaaTaskAllFinished::ret::type;
+};
+
+template<>
+struct is_input<maa::func_type_MaaPostStop::ret, false> {
+  constexpr static bool value = false;
+  using type = std::monostate;
+};
+template<>
+struct is_output<maa::func_type_MaaPostStop::ret, false> {
+  constexpr static bool value = true;
+  using type = maa::func_type_MaaPostStop::ret::type;
+};
+
+template<>
+struct is_input<maa::func_type_MaaStop::ret, false> {
+  constexpr static bool value = false;
+  using type = std::monostate;
+};
+template<>
+struct is_output<maa::func_type_MaaStop::ret, false> {
+  constexpr static bool value = true;
+  using type = maa::func_type_MaaStop::ret::type;
+};
+
+template<>
+struct is_input<maa::func_type_MaaGetResource::ret, false> {
+  constexpr static bool value = false;
+  using type = std::monostate;
+};
+template<>
+struct is_output<maa::func_type_MaaGetResource::ret, false> {
+  constexpr static bool value = true;
+  using type = maa::func_type_MaaGetResource::ret::type;
+};
+
+template<>
+struct is_input<maa::func_type_MaaGetController::ret, false> {
+  constexpr static bool value = false;
+  using type = std::monostate;
+};
+template<>
+struct is_output<maa::func_type_MaaGetController::ret, false> {
+  constexpr static bool value = true;
+  using type = maa::func_type_MaaGetController::ret::type;
+};
+
+template<>
+struct is_input<maa::func_type_MaaResourceCreate::ret, false> {
+  constexpr static bool value = false;
+  using type = std::monostate;
+};
+template<>
+struct is_output<maa::func_type_MaaResourceCreate::ret, false> {
+  constexpr static bool value = true;
+  using type = maa::func_type_MaaResourceCreate::ret::type;
+};
+
+template<>
+struct is_input<maa::func_type_MaaResourceDestroy::ret, false> {
+  constexpr static bool value = false;
+  using type = std::monostate;
+};
+template<>
+struct is_output<maa::func_type_MaaResourceDestroy::ret, false> {
+  constexpr static bool value = true;
+  using type = maa::func_type_MaaResourceDestroy::ret::type;
+};
+
+template<>
+struct is_input<maa::func_type_MaaResourcePostPath::ret, false> {
+  constexpr static bool value = false;
+  using type = std::monostate;
+};
+template<>
+struct is_output<maa::func_type_MaaResourcePostPath::ret, false> {
+  constexpr static bool value = true;
+  using type = maa::func_type_MaaResourcePostPath::ret::type;
+};
+
+template<>
+struct is_input<maa::func_type_MaaResourceStatus::ret, false> {
+  constexpr static bool value = false;
+  using type = std::monostate;
+};
+template<>
+struct is_output<maa::func_type_MaaResourceStatus::ret, false> {
+  constexpr static bool value = true;
+  using type = maa::func_type_MaaResourceStatus::ret::type;
+};
+
+template<>
+struct is_input<maa::func_type_MaaResourceWait::ret, false> {
+  constexpr static bool value = false;
+  using type = std::monostate;
+};
+template<>
+struct is_output<maa::func_type_MaaResourceWait::ret, false> {
+  constexpr static bool value = true;
+  using type = maa::func_type_MaaResourceWait::ret::type;
+};
+
+template<>
+struct is_input<maa::func_type_MaaResourceLoaded::ret, false> {
+  constexpr static bool value = false;
+  using type = std::monostate;
+};
+template<>
+struct is_output<maa::func_type_MaaResourceLoaded::ret, false> {
+  constexpr static bool value = true;
+  using type = maa::func_type_MaaResourceLoaded::ret::type;
+};
+
+template<>
+struct is_input<maa::func_type_MaaResourceGetHash::ret, false> {
+  constexpr static bool value = false;
+  using type = std::monostate;
+};
+template<>
+struct is_output<maa::func_type_MaaResourceGetHash::ret, false> {
+  constexpr static bool value = true;
+  using type = maa::func_type_MaaResourceGetHash::ret::type;
+};
+
+template<>
+struct is_input<maa::func_type_MaaResourceGetTaskList::ret, false> {
+  constexpr static bool value = false;
+  using type = std::monostate;
+};
+template<>
+struct is_output<maa::func_type_MaaResourceGetTaskList::ret, false> {
+  constexpr static bool value = true;
+  using type = maa::func_type_MaaResourceGetTaskList::ret::type;
+};
+
+template<>
+struct is_input<maa::func_type_MaaCreateImageBuffer::ret, false> {
+  constexpr static bool value = false;
+  using type = std::monostate;
+};
+template<>
+struct is_output<maa::func_type_MaaCreateImageBuffer::ret, false> {
+  constexpr static bool value = true;
+  using type = maa::func_type_MaaCreateImageBuffer::ret::type;
+};
+
+template<>
+struct is_input<maa::func_type_MaaDestroyImageBuffer::ret, false> {
+  constexpr static bool value = false;
+  using type = std::monostate;
+};
+template<>
+struct is_output<maa::func_type_MaaDestroyImageBuffer::ret, false> {
+  constexpr static bool value = true;
+  using type = maa::func_type_MaaDestroyImageBuffer::ret::type;
+};
+
+template<>
+struct is_input<maa::func_type_MaaIsImageEmpty::ret, false> {
+  constexpr static bool value = false;
+  using type = std::monostate;
+};
+template<>
+struct is_output<maa::func_type_MaaIsImageEmpty::ret, false> {
+  constexpr static bool value = true;
+  using type = maa::func_type_MaaIsImageEmpty::ret::type;
+};
+
+template<>
+struct is_input<maa::func_type_MaaClearImage::ret, false> {
+  constexpr static bool value = false;
+  using type = std::monostate;
+};
+template<>
+struct is_output<maa::func_type_MaaClearImage::ret, false> {
+  constexpr static bool value = true;
+  using type = maa::func_type_MaaClearImage::ret::type;
+};
+
+template<>
+struct is_input<maa::func_type_MaaGetImageWidth::ret, false> {
+  constexpr static bool value = false;
+  using type = std::monostate;
+};
+template<>
+struct is_output<maa::func_type_MaaGetImageWidth::ret, false> {
+  constexpr static bool value = true;
+  using type = maa::func_type_MaaGetImageWidth::ret::type;
+};
+
+template<>
+struct is_input<maa::func_type_MaaGetImageHeight::ret, false> {
+  constexpr static bool value = false;
+  using type = std::monostate;
+};
+template<>
+struct is_output<maa::func_type_MaaGetImageHeight::ret, false> {
+  constexpr static bool value = true;
+  using type = maa::func_type_MaaGetImageHeight::ret::type;
+};
+
+template<>
+struct is_input<maa::func_type_MaaGetImageType::ret, false> {
+  constexpr static bool value = false;
+  using type = std::monostate;
+};
+template<>
+struct is_output<maa::func_type_MaaGetImageType::ret, false> {
+  constexpr static bool value = true;
+  using type = maa::func_type_MaaGetImageType::ret::type;
+};
+
+template<>
+struct is_input<maa::func_type_MaaGetImageEncoded::ret, false> {
+  constexpr static bool value = false;
+  using type = std::monostate;
+};
+template<>
+struct is_output<maa::func_type_MaaGetImageEncoded::ret, false> {
+  constexpr static bool value = true;
+  using type = maa::func_type_MaaGetImageEncoded::ret::type;
+};
+
+template<>
+struct is_input<maa::func_type_MaaSetImageEncoded::ret, false> {
+  constexpr static bool value = false;
+  using type = std::monostate;
+};
+template<>
+struct is_output<maa::func_type_MaaSetImageEncoded::ret, false> {
+  constexpr static bool value = true;
+  using type = maa::func_type_MaaSetImageEncoded::ret::type;
+};
+
+template<>
+struct is_input<maa::func_type_MaaVersion::ret, false> {
+  constexpr static bool value = false;
+  using type = std::monostate;
+};
+template<>
+struct is_output<maa::func_type_MaaVersion::ret, false> {
+  constexpr static bool value = true;
+  using type = maa::func_type_MaaVersion::ret::type;
+};
+
+template<>
+struct is_input<maa::func_type_MaaToolkitInit::ret, false> {
+  constexpr static bool value = false;
+  using type = std::monostate;
+};
+template<>
+struct is_output<maa::func_type_MaaToolkitInit::ret, false> {
+  constexpr static bool value = true;
+  using type = maa::func_type_MaaToolkitInit::ret::type;
+};
+
+template<>
+struct is_input<maa::func_type_MaaToolkitUninit::ret, false> {
+  constexpr static bool value = false;
+  using type = std::monostate;
+};
+template<>
+struct is_output<maa::func_type_MaaToolkitUninit::ret, false> {
+  constexpr static bool value = true;
+  using type = maa::func_type_MaaToolkitUninit::ret::type;
+};
+
+template<>
+struct is_input<maa::func_type_MaaToolkitFindDevice::ret, false> {
+  constexpr static bool value = false;
+  using type = std::monostate;
+};
+template<>
+struct is_output<maa::func_type_MaaToolkitFindDevice::ret, false> {
+  constexpr static bool value = true;
+  using type = maa::func_type_MaaToolkitFindDevice::ret::type;
+};
+
+template<>
+struct is_input<maa::func_type_MaaToolkitFindDeviceWithAdb::ret, false> {
+  constexpr static bool value = false;
+  using type = std::monostate;
+};
+template<>
+struct is_output<maa::func_type_MaaToolkitFindDeviceWithAdb::ret, false> {
+  constexpr static bool value = true;
+  using type = maa::func_type_MaaToolkitFindDeviceWithAdb::ret::type;
+};
+
+template<>
+struct is_input<maa::func_type_MaaToolkitPostFindDevice::ret, false> {
+  constexpr static bool value = false;
+  using type = std::monostate;
+};
+template<>
+struct is_output<maa::func_type_MaaToolkitPostFindDevice::ret, false> {
+  constexpr static bool value = true;
+  using type = maa::func_type_MaaToolkitPostFindDevice::ret::type;
+};
+
+template<>
+struct is_input<maa::func_type_MaaToolkitPostFindDeviceWithAdb::ret, false> {
+  constexpr static bool value = false;
+  using type = std::monostate;
+};
+template<>
+struct is_output<maa::func_type_MaaToolkitPostFindDeviceWithAdb::ret, false> {
+  constexpr static bool value = true;
+  using type = maa::func_type_MaaToolkitPostFindDeviceWithAdb::ret::type;
+};
+
+template<>
+struct is_input<maa::func_type_MaaToolkitIsFindDeviceCompleted::ret, false> {
+  constexpr static bool value = false;
+  using type = std::monostate;
+};
+template<>
+struct is_output<maa::func_type_MaaToolkitIsFindDeviceCompleted::ret, false> {
+  constexpr static bool value = true;
+  using type = maa::func_type_MaaToolkitIsFindDeviceCompleted::ret::type;
+};
+
+template<>
+struct is_input<maa::func_type_MaaToolkitWaitForFindDeviceToComplete::ret, false> {
+  constexpr static bool value = false;
+  using type = std::monostate;
+};
+template<>
+struct is_output<maa::func_type_MaaToolkitWaitForFindDeviceToComplete::ret, false> {
+  constexpr static bool value = true;
+  using type = maa::func_type_MaaToolkitWaitForFindDeviceToComplete::ret::type;
+};
+
+template<>
+struct is_input<maa::func_type_MaaToolkitGetDeviceCount::ret, false> {
+  constexpr static bool value = false;
+  using type = std::monostate;
+};
+template<>
+struct is_output<maa::func_type_MaaToolkitGetDeviceCount::ret, false> {
+  constexpr static bool value = true;
+  using type = maa::func_type_MaaToolkitGetDeviceCount::ret::type;
+};
+
+template<>
+struct is_input<maa::func_type_MaaToolkitGetDeviceName::ret, false> {
+  constexpr static bool value = false;
+  using type = std::monostate;
+};
+template<>
+struct is_output<maa::func_type_MaaToolkitGetDeviceName::ret, false> {
+  constexpr static bool value = true;
+  using type = maa::func_type_MaaToolkitGetDeviceName::ret::type;
+};
+
+template<>
+struct is_input<maa::func_type_MaaToolkitGetDeviceAdbPath::ret, false> {
+  constexpr static bool value = false;
+  using type = std::monostate;
+};
+template<>
+struct is_output<maa::func_type_MaaToolkitGetDeviceAdbPath::ret, false> {
+  constexpr static bool value = true;
+  using type = maa::func_type_MaaToolkitGetDeviceAdbPath::ret::type;
+};
+
+template<>
+struct is_input<maa::func_type_MaaToolkitGetDeviceAdbSerial::ret, false> {
+  constexpr static bool value = false;
+  using type = std::monostate;
+};
+template<>
+struct is_output<maa::func_type_MaaToolkitGetDeviceAdbSerial::ret, false> {
+  constexpr static bool value = true;
+  using type = maa::func_type_MaaToolkitGetDeviceAdbSerial::ret::type;
+};
+
+template<>
+struct is_input<maa::func_type_MaaToolkitGetDeviceAdbControllerType::ret, false> {
+  constexpr static bool value = false;
+  using type = std::monostate;
+};
+template<>
+struct is_output<maa::func_type_MaaToolkitGetDeviceAdbControllerType::ret, false> {
+  constexpr static bool value = true;
+  using type = maa::func_type_MaaToolkitGetDeviceAdbControllerType::ret::type;
+};
+
+template<>
+struct is_input<maa::func_type_MaaToolkitGetDeviceAdbConfig::ret, false> {
+  constexpr static bool value = false;
+  using type = std::monostate;
+};
+template<>
+struct is_output<maa::func_type_MaaToolkitGetDeviceAdbConfig::ret, false> {
+  constexpr static bool value = true;
+  using type = maa::func_type_MaaToolkitGetDeviceAdbConfig::ret::type;
+};
+
+template<>
+struct is_input<maa::func_type_MaaToolkitRegisterCustomRecognizerExecutor::ret, false> {
+  constexpr static bool value = false;
+  using type = std::monostate;
+};
+template<>
+struct is_output<maa::func_type_MaaToolkitRegisterCustomRecognizerExecutor::ret, false> {
+  constexpr static bool value = true;
+  using type = maa::func_type_MaaToolkitRegisterCustomRecognizerExecutor::ret::type;
+};
+
+template<>
+struct is_input<maa::func_type_MaaToolkitUnregisterCustomRecognizerExecutor::ret, false> {
+  constexpr static bool value = false;
+  using type = std::monostate;
+};
+template<>
+struct is_output<maa::func_type_MaaToolkitUnregisterCustomRecognizerExecutor::ret, false> {
+  constexpr static bool value = true;
+  using type = maa::func_type_MaaToolkitUnregisterCustomRecognizerExecutor::ret::type;
+};
+
+template<>
+struct is_input<maa::func_type_MaaToolkitRegisterCustomActionExecutor::ret, false> {
+  constexpr static bool value = false;
+  using type = std::monostate;
+};
+template<>
+struct is_output<maa::func_type_MaaToolkitRegisterCustomActionExecutor::ret, false> {
+  constexpr static bool value = true;
+  using type = maa::func_type_MaaToolkitRegisterCustomActionExecutor::ret::type;
+};
+
+template<>
+struct is_input<maa::func_type_MaaToolkitUnregisterCustomActionExecutor::ret, false> {
+  constexpr static bool value = false;
+  using type = std::monostate;
+};
+template<>
+struct is_output<maa::func_type_MaaToolkitUnregisterCustomActionExecutor::ret, false> {
+  constexpr static bool value = true;
+  using type = maa::func_type_MaaToolkitUnregisterCustomActionExecutor::ret::type;
+};
+
+template<>
+struct is_input<maa::func_type_MaaToolkitFindWindow::ret, false> {
+  constexpr static bool value = false;
+  using type = std::monostate;
+};
+template<>
+struct is_output<maa::func_type_MaaToolkitFindWindow::ret, false> {
+  constexpr static bool value = true;
+  using type = maa::func_type_MaaToolkitFindWindow::ret::type;
+};
+
+template<>
+struct is_input<maa::func_type_MaaToolkitSearchWindow::ret, false> {
+  constexpr static bool value = false;
+  using type = std::monostate;
+};
+template<>
+struct is_output<maa::func_type_MaaToolkitSearchWindow::ret, false> {
+  constexpr static bool value = true;
+  using type = maa::func_type_MaaToolkitSearchWindow::ret::type;
+};
+
+template<>
+struct is_input<maa::func_type_MaaToolkitGetWindow::ret, false> {
+  constexpr static bool value = false;
+  using type = std::monostate;
+};
+template<>
+struct is_output<maa::func_type_MaaToolkitGetWindow::ret, false> {
+  constexpr static bool value = true;
+  using type = maa::func_type_MaaToolkitGetWindow::ret::type;
+};
+
+template<>
+struct is_input<maa::func_type_MaaToolkitGetCursorWindow::ret, false> {
+  constexpr static bool value = false;
+  using type = std::monostate;
+};
+template<>
+struct is_output<maa::func_type_MaaToolkitGetCursorWindow::ret, false> {
+  constexpr static bool value = true;
+  using type = maa::func_type_MaaToolkitGetCursorWindow::ret::type;
+};
+
+template<>
+struct is_input<maa::func_type_MaaToolkitGetDesktopWindow::ret, false> {
+  constexpr static bool value = false;
+  using type = std::monostate;
+};
+template<>
+struct is_output<maa::func_type_MaaToolkitGetDesktopWindow::ret, false> {
+  constexpr static bool value = true;
+  using type = maa::func_type_MaaToolkitGetDesktopWindow::ret::type;
+};
+
+template<>
+struct is_input<maa::func_type_MaaToolkitGetForegroundWindow::ret, false> {
+  constexpr static bool value = false;
+  using type = std::monostate;
+};
+template<>
+struct is_output<maa::func_type_MaaToolkitGetForegroundWindow::ret, false> {
+  constexpr static bool value = true;
+  using type = maa::func_type_MaaToolkitGetForegroundWindow::ret::type;
+};
+
+template<>
+struct is_input<maa::func_type_MaaControllerSetOptionString::ret, false> {
+  constexpr static bool value = false;
+  using type = std::monostate;
+};
+template<>
+struct is_output<maa::func_type_MaaControllerSetOptionString::ret, false> {
+  constexpr static bool value = true;
+  using type = maa::func_type_MaaControllerSetOptionString::ret::type;
+};
+
+template<>
+struct is_input<maa::func_type_MaaControllerSetOptionInteger::ret, false> {
+  constexpr static bool value = false;
+  using type = std::monostate;
+};
+template<>
+struct is_output<maa::func_type_MaaControllerSetOptionInteger::ret, false> {
+  constexpr static bool value = true;
+  using type = maa::func_type_MaaControllerSetOptionInteger::ret::type;
+};
+
+template<>
+struct is_input<maa::func_type_MaaControllerSetOptionBoolean::ret, false> {
+  constexpr static bool value = false;
+  using type = std::monostate;
+};
+template<>
+struct is_output<maa::func_type_MaaControllerSetOptionBoolean::ret, false> {
+  constexpr static bool value = true;
+  using type = maa::func_type_MaaControllerSetOptionBoolean::ret::type;
+};
+
+template<>
+struct is_input<maa::func_type_MaaSetGlobalOptionString::ret, false> {
+  constexpr static bool value = false;
+  using type = std::monostate;
+};
+template<>
+struct is_output<maa::func_type_MaaSetGlobalOptionString::ret, false> {
+  constexpr static bool value = true;
+  using type = maa::func_type_MaaSetGlobalOptionString::ret::type;
+};
+
+template<>
+struct is_input<maa::func_type_MaaSetGlobalOptionInteger::ret, false> {
+  constexpr static bool value = false;
+  using type = std::monostate;
+};
+template<>
+struct is_output<maa::func_type_MaaSetGlobalOptionInteger::ret, false> {
+  constexpr static bool value = true;
+  using type = maa::func_type_MaaSetGlobalOptionInteger::ret::type;
+};
+
+template<>
+struct is_input<maa::func_type_MaaSetGlobalOptionBoolean::ret, false> {
+  constexpr static bool value = false;
+  using type = std::monostate;
+};
+template<>
+struct is_output<maa::func_type_MaaSetGlobalOptionBoolean::ret, false> {
+  constexpr static bool value = true;
+  using type = maa::func_type_MaaSetGlobalOptionBoolean::ret::type;
+};
+
+template<>
+struct is_input<maa::func_type_MaaRegisterCustomRecognizerImpl::ret, false> {
+  constexpr static bool value = false;
+  using type = std::monostate;
+};
+template<>
+struct is_output<maa::func_type_MaaRegisterCustomRecognizerImpl::ret, false> {
+  constexpr static bool value = true;
+  using type = maa::func_type_MaaRegisterCustomRecognizerImpl::ret::type;
+};
+
+template<>
+struct is_input<maa::func_type_MaaRegisterCustomActionImpl::ret, false> {
+  constexpr static bool value = false;
+  using type = std::monostate;
+};
+template<>
+struct is_output<maa::func_type_MaaRegisterCustomActionImpl::ret, false> {
+  constexpr static bool value = true;
+  using type = maa::func_type_MaaRegisterCustomActionImpl::ret::type;
+};
+
 
 }
