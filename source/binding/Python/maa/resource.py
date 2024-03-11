@@ -51,7 +51,7 @@ class Resource:
         :return: True if the resource was successfully loaded, False otherwise.
         """
 
-        await self.post_path(path).wait()
+        return await self.post_path(path).wait()
 
     def post_path(self, path: Union[pathlib.Path, str]) -> Future:
         """

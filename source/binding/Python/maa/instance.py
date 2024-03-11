@@ -79,7 +79,7 @@ class Instance:
         :return: True if the task was successfully run, False otherwise.
         """
 
-        await self.post_task(task_type, param).wait()
+        return await self.post_task(task_type, param).wait()
 
     def post_task(self, task_type: str, param: Any = {}) -> Future:
         """
@@ -119,7 +119,7 @@ class Instance:
         :return: True if all tasks were successfully stopped, False otherwise.
         """
 
-        await self.post_stop().wait()
+        return await self.post_stop().wait()
 
     def post_stop(self) -> Future:
         """

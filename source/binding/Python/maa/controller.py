@@ -51,7 +51,7 @@ class Controller(ABC):
 
         :return: True if the connection was successful, False otherwise.
         """
-        await self.post_connection().wait()
+        return await self.post_connection().wait()
 
     def post_connection(self) -> Future:
         """
