@@ -3095,5 +3095,25 @@ struct is_output<maa::func_type_MaaRegisterCustomActionImpl::ret, false> {
   using type = maa::func_type_MaaRegisterCustomActionImpl::ret::type;
 };
 
+template<>
+struct type_is_handle<MaaControllerAPI *, false> {
+  constexpr static bool value = true;
+};
+template<>
+struct type_is_handle<MaaResourceAPI *, false> {
+  constexpr static bool value = true;
+};
+template<>
+struct type_is_handle<MaaInstanceAPI *, false> {
+  constexpr static bool value = true;
+};
+template<>
+struct type_is_handle<MaaImageBuffer *, false> {
+  constexpr static bool value = true;
+};
+template<>
+struct type_is_handle<MaaSyncContextAPI *, false> {
+  constexpr static bool value = true;
+};
 
 }
