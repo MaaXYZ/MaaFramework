@@ -13,3 +13,18 @@ install(
 install(
     DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/MaaDebugger
     DESTINATION tools)
+
+if(EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/MaaDebugger/README.md)
+    find_package(Python)
+
+    if(Python_FOUND AND MSVC)
+        add_custom_target(MaaDebugger ALL
+            DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/MaaDebugger)
+        add_dependencies(MaaDebugger MaaFramework MaaToolkit)
+
+        set_target_properties(MaaDebugger PROPERTIES
+            VS_DEBUGGER_COMMAND ${Python_EXECUTABLE}
+            VS_DEBUGGER_COMMAND_ARGUMENTS
+            "\"${CMAKE_CURRENT_SOURCE_DIR}/MaaDebugger/main.py\" \"${CMAKE_SOURCE_DIR}/source/binding/Python\" \"${CMAKE_BINARY_DIR}/bin/$<CONFIG>\"")
+    endif()
+endif()
