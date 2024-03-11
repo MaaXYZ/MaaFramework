@@ -1,0 +1,25 @@
+var MaaController_8h =
+[
+    [ "MaaAdbControllerCreate", "MaaController_8h.html#a654a03fe6493945be3ab9b489f032832", null ],
+    [ "MaaWin32ControllerCreate", "MaaController_8h.html#a9a6a89e475669d0b08f68f300d8c4c96", null ],
+    [ "MaaAdbControllerCreateV2", "MaaController_8h.html#a22142de0dbfc3ed0e64cbcc9e0f1a6e4", null ],
+    [ "MaaCustomControllerCreate", "MaaController_8h.html#a2544850abe36deca8099f6d138e9869c", null ],
+    [ "MaaThriftControllerCreate", "MaaController_8h.html#aacb34d0315d060d09b7be697c2ef9f43", null ],
+    [ "MaaDbgControllerCreate", "MaaController_8h.html#afa2503aa43823a84d9dc61baef09985c", null ],
+    [ "MaaControllerDestroy", "MaaController_8h.html#a91ab08a83b3c05c87015346e69de97b1", null ],
+    [ "MaaControllerSetOption", "MaaController_8h.html#ae19d88d45fa1b45212debcecb9950f55", null ],
+    [ "MaaControllerPostConnection", "group__MaaControllerPostRequest.html#ga76de3faeb3a1225181c9f0c2fa69182c", null ],
+    [ "MaaControllerPostClick", "group__MaaControllerPostRequest.html#ga9f0e5794d891682c03e40af5405b5669", null ],
+    [ "MaaControllerPostSwipe", "group__MaaControllerPostRequest.html#gaba6f10967118e3b8b7e31a19eda910b4", null ],
+    [ "MaaControllerPostPressKey", "group__MaaControllerPostRequest.html#ga010076a6743d469c82e6fa13c0468823", null ],
+    [ "MaaControllerPostInputText", "group__MaaControllerPostRequest.html#gafe85778045c6bd504edb6dc7e255520b", null ],
+    [ "MaaControllerPostTouchDown", "group__MaaControllerPostRequest.html#ga5d6c78c44e837f25dda1aa78ea5732a5", null ],
+    [ "MaaControllerPostTouchMove", "group__MaaControllerPostRequest.html#ga1336e4744d7c998543dbdba569d102de", null ],
+    [ "MaaControllerPostTouchUp", "group__MaaControllerPostRequest.html#gaee055ca7345c558b1ec4dcdd39c5bf77", null ],
+    [ "MaaControllerPostScreencap", "group__MaaControllerPostRequest.html#ga8b960a76d1a18d2c6cbcd698a748505a", null ],
+    [ "MaaControllerStatus", "MaaController_8h.html#a8bb4fde2cdfc769f35a8a787df9a8df9", null ],
+    [ "MaaControllerWait", "MaaController_8h.html#acc67cf9739cfef6f427ecd3be8b90cc6", null ],
+    [ "MaaControllerConnected", "MaaController_8h.html#ac0b2db921e02733b453e87a7f5837ac0", null ],
+    [ "MaaControllerGetImage", "MaaController_8h.html#a83ab8043759a99d9bf6950fb88f93706", null ],
+    [ "MaaControllerGetUUID", "MaaController_8h.html#a8a8eab6ea267c22241dbf0308d8c00e4", null ]
+];
