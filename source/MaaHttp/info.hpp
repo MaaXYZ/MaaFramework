@@ -3599,6 +3599,7 @@ struct callback_MaaAPICallback {
   using type = func_type_MaaAPICallback;
   using func_type = void (*)(const char *, const char *, void *);
   constexpr static size_t context = 2;
+  constexpr static const char* name = "MaaAPICallback";
 };
 
 }
@@ -3663,6 +3664,7 @@ struct callback_CustomActionRun {
   using type = func_type_CustomActionRun;
   using func_type = unsigned char (*)(MaaSyncContextAPI *, const char *, const char *, MaaRect *, const char *, void *);
   constexpr static size_t context = 5;
+  constexpr static const char* name = "CustomActionRun";
 };
 
 }
@@ -3702,6 +3704,7 @@ struct callback_CustomActionStop {
   using type = func_type_CustomActionStop;
   using func_type = void (*)(void *);
   constexpr static size_t context = 0;
+  constexpr static const char* name = "CustomActionStop";
 };
 
 }
@@ -3771,6 +3774,7 @@ struct callback_CustomRecognizerAnalyze {
   using type = func_type_CustomRecognizerAnalyze;
   using func_type = unsigned char (*)(MaaSyncContextAPI *, MaaImageBuffer *, const char *, const char *, void *, MaaRect *, MaaStringBuffer *);
   constexpr static size_t context = 4;
+  constexpr static const char* name = "CustomRecognizerAnalyze";
 };
 
 }
@@ -3791,6 +3795,17 @@ struct is_output<maa::func_type_CustomRecognizerAnalyze::ret, false> {
 
 }
 
+namespace lhg::maa {
+
+using __callback_list = std::tuple<
+  callback_MaaAPICallback,
+  callback_CustomActionRun,
+  callback_CustomActionStop,
+  callback_CustomRecognizerAnalyze
+>;
+
+}
+
 namespace lhg::call {
 
 template<>
@@ -3804,6 +3819,14 @@ namespace lhg::callback {
 template<>
 struct type_is_handle<MaaControllerAPI *, false> {
   constexpr static bool value = true;
+};
+
+}
+namespace lhg {
+
+template<>
+struct handle_name<MaaControllerAPI *> {
+  constexpr static const char* name = "MaaControllerAPI";
 };
 
 }
@@ -3824,6 +3847,14 @@ struct type_is_handle<MaaResourceAPI *, false> {
 };
 
 }
+namespace lhg {
+
+template<>
+struct handle_name<MaaResourceAPI *> {
+  constexpr static const char* name = "MaaResourceAPI";
+};
+
+}
 
 namespace lhg::call {
 
@@ -3838,6 +3869,14 @@ namespace lhg::callback {
 template<>
 struct type_is_handle<MaaInstanceAPI *, false> {
   constexpr static bool value = true;
+};
+
+}
+namespace lhg {
+
+template<>
+struct handle_name<MaaInstanceAPI *> {
+  constexpr static const char* name = "MaaInstanceAPI";
 };
 
 }
@@ -3858,6 +3897,14 @@ struct type_is_handle<MaaImageBuffer *, false> {
 };
 
 }
+namespace lhg {
+
+template<>
+struct handle_name<MaaImageBuffer *> {
+  constexpr static const char* name = "MaaImageBuffer";
+};
+
+}
 
 namespace lhg::call {
 
@@ -3873,5 +3920,19 @@ template<>
 struct type_is_handle<MaaSyncContextAPI *, false> {
   constexpr static bool value = true;
 };
+
+}
+namespace lhg {
+
+template<>
+struct handle_name<MaaSyncContextAPI *> {
+  constexpr static const char* name = "MaaSyncContextAPI";
+};
+
+}
+
+namespace lhg::maa {
+
+using __handle_list = std::tuple<MaaControllerAPI*, MaaResourceAPI*, MaaInstanceAPI*, MaaImageBuffer*, MaaSyncContextAPI*>;
 
 }

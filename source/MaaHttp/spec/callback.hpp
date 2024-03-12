@@ -1,5 +1,6 @@
 #pragma once
 
+#include "./type.hpp"
 #include "./utils.hpp"
 
 #include "MaaFramework/Utility/MaaBuffer.h"
@@ -43,5 +44,33 @@ std::string detail = value.as_string();
 MaaSetStringEx(det, detail.c_str(), detail.size());
 return true;
 __CALLBACK_DECLARE_ARG_TO_JSON_END()
+
+template <>
+struct get_context<maa::callback_CustomActionRun, true>
+{
+    using callback_tag = maa::callback_CustomActionRun;
+    using func_type = typename callback_tag::type;
+    using arg_tuple = typename func_type::args;
+    using call_arg_tuple = convert_arg_type<arg_tuple>;
+    static context_info* get(const call_arg_tuple& arg)
+    {
+        auto ptr = reinterpret_cast<pri_maa::custom_action_context*>(std::get<callback_tag::context>(arg));
+        return ptr->run.get();
+    }
+};
+
+template <>
+struct get_context<maa::callback_CustomActionStop, true>
+{
+    using callback_tag = maa::callback_CustomActionStop;
+    using func_type = typename callback_tag::type;
+    using arg_tuple = typename func_type::args;
+    using call_arg_tuple = convert_arg_type<arg_tuple>;
+    static context_info* get(const call_arg_tuple& arg)
+    {
+        auto ptr = reinterpret_cast<pri_maa::custom_action_context*>(std::get<callback_tag::context>(arg));
+        return ptr->stop.get();
+    }
+};
 
 }; // namespace lhg::callback

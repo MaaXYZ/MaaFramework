@@ -1,5 +1,6 @@
 #pragma once
 
+#include "./type.hpp"
 #include "./utils.hpp"
 
 #include "../base64.hpp"
@@ -94,9 +95,14 @@ __DECLARE_STRING_BUFFER_OUTPUT(maa::func_type_MaaControllerGetUUID, _1_buffer)
     __CALL_DECLARE_INPUT(func_tag::ctx_tag, false)                                                      \
                                                                                                         \
     __CALL_DECLARE_JSON_TO_ARG_BEGIN(func_tag, cb_tag)                                                  \
-    std::ignore = value;                                                                                \
+    std::string id = value.as_string();                                                                 \
+    auto manager = provider.get<CallbackManager<maa::callback_MaaAPICallback>, void>();                 \
+    auto ctx = manager->query(id);                                                                      \
+    if (!ctx.get()) {                                                                                   \
+        return false;                                                                                   \
+    }                                                                                                   \
     std::get<func_tag::cb_tag::index>(arg) = callback::create_callback<maa::callback_MaaAPICallback>(); \
-    std::get<func_tag::ctx_tag::index>(arg) = nullptr;                                                  \
+    std::get<func_tag::ctx_tag::index>(arg) = ctx.get();                                                \
     return true;                                                                                        \
     __DECLARE_JSON_TO_ARG_END()
 
@@ -113,21 +119,40 @@ __DECLARE_APICALLBACK(maa::func_type_MaaCreate, _0_callback, _1_callback_arg)
 __CALL_DECLARE_INPUT(maa::func_type_MaaRegisterCustomRecognizer::_3_recognizer_arg, false)
 
 __CALL_DECLARE_JSON_TO_ARG_BEGIN(maa::func_type_MaaRegisterCustomRecognizer, _2_recognizer)
-std::ignore = value;
+std::string id = value.as_string();
+auto manager = provider.get<CallbackManager<maa::callback_CustomRecognizerAnalyze>, void>();
+auto ctx = manager->query(id);
+if (!ctx.get()) {
+    return false;
+}
 MaaCustomRecognizerAPI api = { callback::create_callback<maa::callback_CustomRecognizerAnalyze>() };
 std::get<maa::func_type_MaaRegisterCustomRecognizer::_2_recognizer::index>(arg) = &api;
-std::get<maa::func_type_MaaRegisterCustomRecognizer::_3_recognizer_arg::index>(arg) = nullptr;
+std::get<maa::func_type_MaaRegisterCustomRecognizer::_3_recognizer_arg::index>(arg) = ctx.get();
 return true;
 __DECLARE_JSON_TO_ARG_END()
 
 __CALL_DECLARE_INPUT(maa::func_type_MaaRegisterCustomAction::_3_action_arg, false)
 
 __CALL_DECLARE_JSON_TO_ARG_BEGIN(maa::func_type_MaaRegisterCustomAction, _2_action)
-std::ignore = value;
+json::object ids = value.as_object();
+std::string run_id = ids["run"].as_string();
+std::string stop_id = ids["stop"].as_string();
+auto run_manager = provider.get<CallbackManager<maa::callback_CustomActionRun>, void>();
+auto run_ctx = run_manager->query(run_id);
+if (!run_ctx.get()) {
+    return false;
+}
+auto stop_manager = provider.get<CallbackManager<maa::callback_CustomActionStop>, void>();
+auto stop_ctx = stop_manager->query(stop_id);
+if (!stop_ctx.get()) {
+    return false;
+}
+auto ctx = provider.get<DataManager, void>()->alloc<pri_maa::custom_action_context>(
+    std::vector<std::string> { run_id, stop_id });
 MaaCustomActionAPI api = { callback::create_callback<maa::callback_CustomActionRun>(),
                            callback::create_callback<maa::callback_CustomActionStop>() };
 std::get<maa::func_type_MaaRegisterCustomAction::_2_action::index>(arg) = &api;
-std::get<maa::func_type_MaaRegisterCustomAction::_3_action_arg::index>(arg) = nullptr;
+std::get<maa::func_type_MaaRegisterCustomAction::_3_action_arg::index>(arg) = ctx;
 return true;
 __DECLARE_JSON_TO_ARG_END()
 
