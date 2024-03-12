@@ -11,12 +11,12 @@ extern "C"
 {
 #endif
 
-    MaaStringView MAA_CONTROL_UNIT_API MaaDbgControlUnitGetVersion();
+    MAA_CONTROL_UNIT_API MaaStringView MaaDbgControlUnitGetVersion();
 
-    MaaControlUnitHandle MAA_CONTROL_UNIT_API MaaDbgControlUnitCreate( //
-        MaaDbgControllerType type, MaaStringView read_path);
+    MAA_CONTROL_UNIT_API MaaControlUnitHandle
+        MaaDbgControlUnitCreate(MaaDbgControllerType type, MaaStringView read_path);
 
-    void MAA_CONTROL_UNIT_API MaaDbgControlUnitDestroy(MaaControlUnitHandle handle);
+    MAA_CONTROL_UNIT_API void MaaDbgControlUnitDestroy(MaaControlUnitHandle handle);
 
 #ifdef __cplusplus
 }

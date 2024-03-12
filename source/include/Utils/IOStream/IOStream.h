@@ -12,9 +12,9 @@ MAA_NS_BEGIN
 
 class MAA_UTILS_API IOStream
 {
+public:
     using duration_t = std::chrono::milliseconds;
 
-public:
     virtual ~IOStream() = default;
 
 public:
@@ -22,7 +22,8 @@ public:
 
     virtual std::string read(duration_t timeout = duration_t::max());
     virtual std::string read_some(size_t count, duration_t timeout = duration_t::max());
-    virtual std::string read_until(std::string_view delimiter, duration_t timeout = duration_t::max());
+    virtual std::string
+        read_until(std::string_view delimiter, duration_t timeout = duration_t::max());
 
     virtual bool release() = 0;
     virtual bool is_open() const = 0;

@@ -11,7 +11,10 @@ MAA_CTRL_UNIT_NS_BEGIN
 class ControlUnitMgr : public ControlUnitAPI
 {
 public:
-    ControlUnitMgr(HWND hWnd, MaaControllerCallback callback, MaaCallbackTransparentArg callback_arg);
+    ControlUnitMgr(
+        HWND hWnd,
+        MaaControllerCallback callback,
+        MaaCallbackTransparentArg callback_arg);
     virtual ~ControlUnitMgr() override = default;
 
 public: // from ControlUnitAPI

@@ -17,8 +17,10 @@ MaaStringView MaaWin32ControlUnitGetVersion()
     return MAA_VERSION;
 }
 
-MaaControlUnitHandle MaaWin32ControlUnitCreate( //
-    MaaWin32Hwnd hWnd, MaaWin32ControllerType type, MaaControllerCallback callback,
+MaaControlUnitHandle MaaWin32ControlUnitCreate(
+    MaaWin32Hwnd hWnd,
+    MaaWin32ControllerType type,
+    MaaControllerCallback callback,
     MaaCallbackTransparentArg callback_arg)
 {
     using namespace MAA_CTRL_UNIT_NS;

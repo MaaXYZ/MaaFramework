@@ -3,10 +3,11 @@
  * @author
  * @brief Contains the callback message definitions.
  *
- * A callback consists of a message and a payload. The message is a string that indicates the type of the message. The payload is a JSON object that contains the details of the message.
+ * A callback consists of a message and a payload. The message is a string that indicates the type
+ * of the message. The payload is a JSON object that contains the details of the message.
  *
  * @copyright Copyright (c) 2024
- * 
+ *
  */
 
 #pragma once
@@ -65,7 +66,7 @@
  *         height: number
  *     }
  * }
- * 
+ *
  */
 #define MaaMsg_Controller_ResolutionGot ("Controller.ResolutionGot")
 
@@ -97,7 +98,7 @@
  * payload: {
  *     why: string
  * }
- * 
+ *
  */
 #define MaaMsg_Controller_ConnectFailed ("Controller.ConnectFailed")
 
@@ -112,7 +113,6 @@
 #define MaaMsg_Controller_Action_Started ("Controller.Action.Started")
 #define MaaMsg_Controller_Action_Completed ("Controller.Action.Completed")
 #define MaaMsg_Controller_Action_Failed ("Controller.Action.Failed")
-// #define MaaMsg_Controller_Action_Stopped ("Controller.Action.Stopped")
 /// @}
 
 /**
@@ -130,7 +130,6 @@
 #define MaaMsg_Task_Started ("Task.Started")
 #define MaaMsg_Task_Completed ("Task.Completed")
 #define MaaMsg_Task_Failed ("Task.Failed")
-#define MaaMsg_Task_Stopped ("Task.Stopped")
 /// @}
 
 /**
@@ -140,17 +139,41 @@
  * payload: {
  *     id: number,
  *     entry: string,
- *     name: string,
  *     uuid: string,
  *     hash: string,
+ *     name: string,
  *     recognition: object,
  *     run_times: number,
- *     last_time: string,
  *     status: string
  * }
  */
-#define MaaMsg_Task_Focus_Hit ("Task.Focus.Hit")
+#define MaaMsg_Task_Focus_ReadyToRun ("Task.Focus.ReadyToRun")
 #define MaaMsg_Task_Focus_Runout ("Task.Focus.Runout")
 #define MaaMsg_Task_Focus_Completed ("Task.Focus.Completed")
 /// @}
+
+/**
+ * @{
+ * @brief Message for debug.
+ *
+ * payload: {
+ *     id: number,
+ *     entry: string,
+ *     uuid: string,
+ *     hash: string,
+ *     name: string,
+ *     latest_hit: string,
+ *     recognition: object,
+ *     run_times: number,
+ *     status: string
+ * }
+ */
+#define MaaMsg_Task_Debug_ReadyToRun ("Task.Debug.ReadyToRun")
+#define MaaMsg_Task_Debug_Runout ("Task.Debug.Runout")
+#define MaaMsg_Task_Debug_Completed ("Task.Debug.Completed")
+/// @}
+
+#define MaaMsg_Task_Debug_ListToRecognize ("Task.Debug.ListToRecognize")
+#define MaaMsg_Task_Debug_Hit ("Task.Debug.Hit")
+
 /** @} */

@@ -8,7 +8,9 @@
 
 MAA_TOOLKIT_NS_BEGIN
 
-class DeviceMgrMacOS : public SingletonHolder<DeviceMgrMacOS>, public DeviceMgr
+class DeviceMgrMacOS
+    : public SingletonHolder<DeviceMgrMacOS>
+    , public DeviceMgr
 {
     friend class SingletonHolder<DeviceMgrMacOS>;
 

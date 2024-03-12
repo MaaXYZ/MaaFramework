@@ -75,8 +75,15 @@ struct InterfaceData
     std::string version;
     std::string message;
 
-    MEO_JSONIZATION(MEO_OPT controller, resource, task, MEO_OPT option, MEO_OPT recognizer, MEO_OPT action,
-                    MEO_OPT version, MEO_OPT message);
+    MEO_JSONIZATION(
+        MEO_OPT controller,
+        resource,
+        task,
+        MEO_OPT option,
+        MEO_OPT recognizer,
+        MEO_OPT action,
+        MEO_OPT version,
+        MEO_OPT message);
 };
 
 struct Configuration
@@ -120,8 +127,9 @@ struct RuntimeParam
         std::string name;
         std::string adb_path;
         std::string address;
-        int32_t controller_type = MaaAdbControllerType_Touch_AutoDetect | MaaAdbControllerType_Key_AutoDetect |
-                                  MaaAdbControllerType_Screencap_FastestWay;
+        int32_t controller_type = MaaAdbControllerType_Touch_AutoDetect
+                                  | MaaAdbControllerType_Key_AutoDetect
+                                  | MaaAdbControllerType_Screencap_FastestWay;
         std::string config = json::object().dumps();
         std::string agent_path;
 

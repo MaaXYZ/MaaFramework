@@ -13,8 +13,8 @@ bool Activity::parse(const json::value& config)
         "{ADB}", "-s", "{ADB_SERIAL}", "shell", "am force-stop {INTENT}",
     };
 
-    return parse_argv("StartApp", config, kDefaultStartAppArgv, start_app_argv_) &&
-           parse_argv("StopApp", config, kDefaultStopAppArgv, stop_app_argv_);
+    return parse_argv("StartApp", config, kDefaultStartAppArgv, start_app_argv_)
+           && parse_argv("StopApp", config, kDefaultStopAppArgv, stop_app_argv_);
 }
 
 bool Activity::start_app(const std::string& intent)

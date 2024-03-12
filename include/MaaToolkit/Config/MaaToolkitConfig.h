@@ -4,7 +4,7 @@
  * @brief Init and uninit the toolkit.
  *
  * @copyright Copyright (c) 2024
- * 
+ *
  */
 
 #pragma once
@@ -16,8 +16,8 @@ extern "C"
 {
 #endif
 
-    MaaBool MAA_TOOLKIT_API MaaToolkitInit();
-    MaaBool MAA_TOOLKIT_API MaaToolkitUninit();
+    MAA_TOOLKIT_API MaaBool MaaToolkitInit();
+    MAA_TOOLKIT_API MaaBool MaaToolkitUninit();
 
 #ifdef __cplusplus
 }

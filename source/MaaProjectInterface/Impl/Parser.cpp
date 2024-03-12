@@ -83,15 +83,20 @@ bool Parser::check_configuration(const InterfaceData& data, Configuration& confi
         }
     }
 
-    auto resource_iter = std::ranges::find(data.resource, config.resource, std::mem_fn(&InterfaceData::Resource::name));
+    auto resource_iter = std::ranges::find(
+        data.resource,
+        config.resource,
+        std::mem_fn(&InterfaceData::Resource::name));
     if (resource_iter == data.resource.end()) {
         LogWarn << "Resource not found" << VAR(config.resource);
         config.resource.clear();
         return false;
     }
 
-    auto controller_iter =
-        std::ranges::find(data.controller, config.controller.name, std::mem_fn(&InterfaceData::Controller::name));
+    auto controller_iter = std::ranges::find(
+        data.controller,
+        config.controller.name,
+        std::mem_fn(&InterfaceData::Controller::name));
     if (controller_iter == data.controller.end()) {
         LogWarn << "Controller not found" << VAR(config.controller.name);
         config.controller.name.clear();
@@ -103,7 +108,8 @@ bool Parser::check_configuration(const InterfaceData& data, Configuration& confi
 
 bool Parser::check_task(const InterfaceData& data, Configuration::Task& config_task)
 {
-    auto data_iter = std::ranges::find(data.task, config_task.name, std::mem_fn(&InterfaceData::Task::name));
+    auto data_iter =
+        std::ranges::find(data.task, config_task.name, std::mem_fn(&InterfaceData::Task::name));
     if (data_iter == data.task.end()) {
         LogWarn << "Task not found" << VAR(config_task.name);
         return false;
@@ -118,10 +124,13 @@ bool Parser::check_task(const InterfaceData& data, Configuration::Task& config_t
 
         const InterfaceData::Option& data_option = option_iter->second;
 
-        auto case_iter =
-            std::ranges::find(data_option.cases, config_option.value, std::mem_fn(&InterfaceData::Option::Case::name));
+        auto case_iter = std::ranges::find(
+            data_option.cases,
+            config_option.value,
+            std::mem_fn(&InterfaceData::Option::Case::name));
         if (case_iter == data_option.cases.end()) {
-            LogWarn << "Case not found" << VAR(config_task.name) << VAR(config_option.name) << VAR(config_option.value);
+            LogWarn << "Case not found" << VAR(config_task.name) << VAR(config_option.name)
+                    << VAR(config_option.value);
             return false;
         }
     }

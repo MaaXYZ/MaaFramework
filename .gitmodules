@@ -13,3 +13,6 @@
 [submodule "source/MaaHttp/LHG"]
 	path = source/MaaHttp/LHG
 	url = https://github.com/neko-para/LibHttpGen
+[submodule "tools/MaaDebugger"]
+	path = tools/MaaDebugger
+	url = https://github.com/MaaXYZ/MaaDebugger.git

@@ -11,7 +11,8 @@ MAA_CTRL_UNIT_NS_BEGIN
 class MinitouchInput : public MtouchHelper
 {
 public:
-    explicit MinitouchInput(std::filesystem::path agent_path) : agent_path_(std::move(agent_path))
+    explicit MinitouchInput(std::filesystem::path agent_path)
+        : agent_path_(std::move(agent_path))
     {
         children_.emplace_back(invoke_app_);
     }
@@ -26,8 +27,14 @@ public: // from TouchInputAPI
     virtual bool set_wh(int swidth, int sheight, int orientation) override;
 
 protected: // from MtouchHelper
-    virtual std::pair<int, int> screen_to_touch(int x, int y) override { return _screen_to_touch(x, y); }
-    virtual std::pair<int, int> screen_to_touch(double x, double y) override { return _screen_to_touch(x, y); }
+    virtual std::pair<int, int> screen_to_touch(int x, int y) override
+    {
+        return _screen_to_touch(x, y);
+    }
+    virtual std::pair<int, int> screen_to_touch(double x, double y) override
+    {
+        return _screen_to_touch(x, y);
+    }
 
 private:
     template <typename T1, typename T2>

@@ -26,7 +26,7 @@ public:
     virtual ~PipelineTask() override = default;
 
 public: // from MaaInstanceSink
-    virtual void on_stop() override { need_to_stop_ = true; }
+    virtual void post_stop() override { need_to_stop_ = true; }
 
 public:
     const std::string& entry() const { return entry_; }
@@ -52,21 +52,31 @@ private:
     };
 
 private:
-    RunningResult find_first_and_run(const std::vector<std::string>& list, std::chrono::milliseconds timeout,
-                                     /*out*/ MAA_RES_NS::TaskData& found_data);
+    RunningResult find_first_and_run(
+        const std::vector<std::string>& list,
+        std::chrono::milliseconds timeout,
+        /*out*/ MAA_RES_NS::TaskData& found_data);
     std::optional<HitResult> find_first(const std::vector<std::string>& list);
     RunningResult run_task(const HitResult& hits);
 
 private:
     MAA_RES_NS::ResourceMgr* resource() { return inst_ ? inst_->inter_resource() : nullptr; }
-    MAA_CTRL_NS::ControllerAgent* controller() { return inst_ ? inst_->inter_controller() : nullptr; }
+    MAA_CTRL_NS::ControllerAgent* controller()
+    {
+        return inst_ ? inst_->inter_controller() : nullptr;
+    }
     InstanceStatus* status() { return inst_ ? inst_->inter_status() : nullptr; }
     void notify(std::string_view msg, json::value detail = json::value())
     {
-        if (inst_) inst_->notify(msg, detail);
+        if (inst_) {
+            inst_->notify(msg, detail);
+        }
     }
 
     bool need_to_stop() const { return need_to_stop_; }
+    bool debug_mode() const;
+    json::object basic_info();
+    std::filesystem::path dump_image(const cv::Mat& image) const;
 
 private:
     bool need_to_stop_ = false;
@@ -74,7 +84,7 @@ private:
 
     int64_t task_id_ = 0;
     std::string entry_;
-    std::string cur_task_name_;
+    std::string latest_hit_;
 
     TaskDataMgr data_mgr_;
     Recognizer recognizer_;

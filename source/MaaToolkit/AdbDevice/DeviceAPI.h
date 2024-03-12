@@ -36,8 +36,8 @@ struct Device
     }
     bool operator==(const Device& rhs) const
     {
-        return name == rhs.name && adb_path == rhs.adb_path && adb_serial == rhs.adb_serial &&
-               adb_controller_type == rhs.adb_controller_type && adb_config == rhs.adb_config;
+        return name == rhs.name && adb_path == rhs.adb_path && adb_serial == rhs.adb_serial
+               && adb_controller_type == rhs.adb_controller_type && adb_config == rhs.adb_config;
     }
 };
 

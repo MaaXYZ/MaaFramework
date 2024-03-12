@@ -37,7 +37,8 @@ inline void string_replace_all_(StringT& str, const MapT& replace_map)
 
 template <typename StringT>
 requires IsSomeKindOfString<StringT>
-[[nodiscard]] inline auto string_replace_all(StringT&& str, StringViewT<StringT> from, StringViewT<StringT> to)
+[[nodiscard]] inline auto
+    string_replace_all(StringT&& str, StringViewT<StringT> from, StringViewT<StringT> to)
 {
     // TODO: better algorithm
     std::decay_t<StringT> result = std::forward<StringT>(str);
@@ -59,7 +60,9 @@ template <typename StringT>
 requires IsSomeKindOfString<StringT>
 inline void string_trim_(StringT& str)
 {
-    auto not_space = [](auto c) -> bool { return c != 32; };
+    auto not_space = [](auto c) -> bool {
+        return c != 32;
+    };
 
     str.erase(std::ranges::find_if(str | std::views::reverse, not_space).base(), str.end());
     str.erase(str.begin(), std::ranges::find_if(str, not_space));
@@ -90,8 +93,9 @@ requires IsSomeKindOfString<StringT>
 [[nodiscard]] inline std::vector<StringT> string_split(const StringT& str, const DelimT& delim)
 {
     std::vector<StringT> result;
-    auto views = str | std::views::split(delim) |
-                 std::views::transform([](auto&& rng) { return std::basic_string_view(rng.begin(), rng.end()); });
+    auto views = str | std::views::split(delim) | std::views::transform([](auto&& rng) {
+                     return std::basic_string_view(rng.begin(), rng.end());
+                 });
 
     for (auto v : views) {
         result.emplace_back(v);

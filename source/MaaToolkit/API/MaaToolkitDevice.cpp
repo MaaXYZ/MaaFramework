@@ -15,8 +15,9 @@ static MaaToolkitDeviceMgrAPI& device_mgr = MAA_TOOLKIT_NS::DeviceMgrMacOS::get_
 
 MaaSize MaaToolkitFindDevice()
 {
-    LogWarn << "MaaToolkitFindDevice() is deprecated, use MaaToolkitPostFindDevice() and "
-               "MaaToolkitWaitForFindDeviceToComplete() instead.";
+    LogWarn << __FUNCTION__
+            << "is deprecated, use MaaToolkitPostFindDevice "
+               "and MaaToolkitWaitForFindDeviceToComplete instead";
 
     MaaToolkitPostFindDevice();
     return MaaToolkitWaitForFindDeviceToComplete();
@@ -24,8 +25,9 @@ MaaSize MaaToolkitFindDevice()
 
 MaaSize MaaToolkitFindDeviceWithAdb(MaaStringView adb_path)
 {
-    LogWarn << "MaaToolkitFindDeviceWithAdb() is deprecated, use MaaToolkitPostFindDeviceWithAdb() "
-               "and MaaToolkitWaitForFindDeviceToComplete() instead.";
+    LogWarn << __FUNCTION__
+            << "is deprecated, use MaaToolkitPostFindDeviceWithAdb "
+               "and MaaToolkitWaitForFindDeviceToComplete instead";
 
     MaaToolkitPostFindDeviceWithAdb(adb_path);
     return MaaToolkitWaitForFindDeviceToComplete();

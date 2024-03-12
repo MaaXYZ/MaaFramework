@@ -190,7 +190,7 @@ jobs:
     strategy:
       matrix:
         include:
-          - os: macos-12
+          - os: macos-13
             arch: x86_64
           - os: macos-14
             arch: aarch64
@@ -204,7 +204,7 @@ jobs:
 
       - name: Install dep
         run: |
-          brew install cmake python ninja
+          brew install cmake ninja
         # ccache?
 
       - name: Install compiler
@@ -223,10 +223,8 @@ jobs:
         env:
           CC: "/usr/local/opt/llvm/bin/clang"
           CXX: "/usr/local/opt/llvm/bin/clang++"
-          LDFLAGS: "-L/usr/local/opt/llvm/lib/c++ -Wl,-rpath,/usr/local/opt/llvm/lib/c++"
         run: |
           cmake --preset 'NinjaMulti' \
-            -DCMAKE_OSX_ARCHITECTURES='${{ matrix.arch == 'x86_64' && 'x86_64' || 'arm64' }}' \
             -DMAADEPS_TRIPLET='maa-${{ matrix.arch == 'x86_64' && 'x64' || 'arm64' }}-osx' \
             -DMAA_HASH_VERSION='${{ needs.meta.outputs.tag }}'
 
@@ -237,7 +235,6 @@ jobs:
         env:
           CC: "/opt/homebrew/opt/llvm/bin/clang"
           CXX: "/opt/homebrew/opt/llvm/bin/clang++"
-          LDFLAGS: "-L/opt/homebrew/opt/llvm/lib/c++ -Wl,-rpath,/opt/homebrew/opt/llvm/lib/c++"
         run: |
           cmake --preset 'NinjaMulti' \
             -DMAADEPS_TRIPLET='maa-${{ matrix.arch == 'x86_64' && 'x64' || 'arm64' }}-osx' \

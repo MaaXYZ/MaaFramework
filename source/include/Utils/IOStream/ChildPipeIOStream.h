@@ -31,6 +31,9 @@ protected:
     virtual std::string read_once(size_t max_count) override;
 
 private:
+    std::filesystem::path exec_;
+    std::vector<std::string> args_;
+
     boost::process::ipstream pin_;
     boost::process::opstream pout_;
     boost::process::child child_;

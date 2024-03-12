@@ -110,8 +110,9 @@ bool ThriftControllerAgent::screencap(cv::Mat& image)
         return false;
     }
 
-    image = cv::imdecode({ custom_image.png_data.data(), static_cast<int>(custom_image.png_data.size()) },
-                         cv::IMREAD_COLOR);
+    image = cv::imdecode(
+        { custom_image.png_data.data(), static_cast<int>(custom_image.png_data.size()) },
+        cv::IMREAD_COLOR);
     return true;
 }
 

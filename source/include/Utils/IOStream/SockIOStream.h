@@ -60,6 +60,8 @@ public:
     virtual bool release() override;
     virtual bool is_open() const override;
 
+    void expires_after(duration_t timeout);
+
 protected:
     virtual std::string read_once(size_t max_count) override;
 

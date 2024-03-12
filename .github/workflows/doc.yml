@@ -4,18 +4,15 @@ on:
   push:
     tags:
       - "v*"
-    branches:
-      - "**"
-    paths:
-      - ".github/workflows/doc.yml"
-      - "include/**"
-      - "Doxyfile"
 
   workflow_dispatch:
 
 jobs:
-  meta:
+
+  build:
     runs-on: ubuntu-latest
+    env:
+      VERSION: ${{ github.ref_name }}
     permissions:
       contents: write
     steps:
@@ -25,6 +22,8 @@ jobs:
 
       - name: Build Doxygen
         uses: mattnotmitt/doxygen-action@v1.9.5
+        with:
+          doxyfile-path: tools/Doxygen/Doxyfile
 
       - name: Deploy to GitHub Pages
         uses: peaceiris/actions-gh-pages@v3

@@ -22,7 +22,10 @@ public:
     using ResultsVec = std::vector<Result>;
 
 public:
-    void set_templates(std::vector<std::shared_ptr<cv::Mat>> templates) { templates_ = std::move(templates); }
+    void set_templates(std::vector<std::shared_ptr<cv::Mat>> templates)
+    {
+        templates_ = std::move(templates);
+    }
     void set_param(TemplateMatcherParam param) { param_ = std::move(param); }
     std::pair<ResultsVec, size_t> analyze() const;
 

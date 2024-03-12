@@ -36,7 +36,8 @@ size_t Win32WindowFinder::search_window(std::string_view class_name, std::string
     windows_.clear();
     for (const auto& w : windows) {
         bool same_class = class_name.empty() || w.class_name.find(class_name) != std::string::npos;
-        bool same_window = window_name.empty() || w.window_name.find(window_name) != std::string::npos;
+        bool same_window =
+            window_name.empty() || w.window_name.find(window_name) != std::string::npos;
         if (same_class && same_window) {
             windows_.emplace_back(w.hwnd);
         }

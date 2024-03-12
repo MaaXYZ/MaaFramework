@@ -11,6 +11,7 @@ MAA_SUPPRESS_CV_WARNINGS_BEGIN
 #include "fastdeploy/vision/ocr/ppocr/recognizer.h"
 MAA_SUPPRESS_CV_WARNINGS_END
 
+#include "Instance/InstanceStatus.h"
 #include "Utils/Codec.h"
 #include "Utils/JsonExt.hpp"
 #include "VisionBase.h"
@@ -32,22 +33,24 @@ public:
     using ResultsVec = std::vector<Result>;
 
 public:
-    void set_session(std::shared_ptr<fastdeploy::vision::ocr::DBDetector> deter,
-                     std::shared_ptr<fastdeploy::vision::ocr::Recognizer> recer,
-                     std::shared_ptr<fastdeploy::pipeline::PPOCRv3> ocrer)
+    void set_session(
+        std::shared_ptr<fastdeploy::vision::ocr::DBDetector> deter,
+        std::shared_ptr<fastdeploy::vision::ocr::Recognizer> recer,
+        std::shared_ptr<fastdeploy::pipeline::PPOCRv3> ocrer)
     {
         deter_ = std::move(deter);
         recer_ = std::move(recer);
         ocrer_ = std::move(ocrer);
     }
+    void set_status(InstanceStatus* status) { status_ = status; }
     void set_param(OCRerParam param) { param_ = std::move(param); }
     std::pair<ResultsVec, size_t> analyze() const;
 
 private:
     ResultsVec foreach_rois() const;
     ResultsVec predict(const cv::Rect& roi) const;
-    ResultsVec predict_det_and_rec(const cv::Rect& roi) const;
-    Result predict_only_rec(const cv::Rect& roi) const;
+    ResultsVec predict_det_and_rec(const cv::Mat& image_roi) const;
+    Result predict_only_rec(const cv::Mat& image_roi) const;
     void draw_result(const cv::Rect& roi, const ResultsVec& results) const;
 
     void postproc_and_filter(ResultsVec& results, const std::vector<std::wstring>& expected) const;
@@ -61,6 +64,8 @@ private:
     std::shared_ptr<fastdeploy::vision::ocr::DBDetector> deter_ = nullptr;
     std::shared_ptr<fastdeploy::vision::ocr::Recognizer> recer_ = nullptr;
     std::shared_ptr<fastdeploy::pipeline::PPOCRv3> ocrer_ = nullptr;
+
+    InstanceStatus* status_ = nullptr;
 };
 
 MAA_VISION_NS_END

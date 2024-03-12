@@ -21,7 +21,8 @@ std::pair<NeuralNetworkClassifier::ResultsVec, size_t> NeuralNetworkClassifier::
         return {};
     }
     if (param_.cls_size != param_.labels.size()) {
-        LogError << "cls_size != labels.size()" << VAR(param_.cls_size) << VAR(param_.labels.size());
+        LogError << "cls_size != labels.size()" << VAR(param_.cls_size)
+                 << VAR(param_.labels.size());
         return {};
     }
 
@@ -71,14 +72,22 @@ NeuralNetworkClassifier::Result NeuralNetworkClassifier::classify(const cv::Rect
     constexpr int64_t kBatchSize = 1;
     std::array<int64_t, 4> input_shape { kBatchSize, image.channels(), image.cols, image.rows };
 
-    Ort::Value input_tensor = Ort::Value::CreateTensor<float>(memory_info, input.data(), input.size(),
-                                                              input_shape.data(), input_shape.size());
+    Ort::Value input_tensor = Ort::Value::CreateTensor<float>(
+        memory_info,
+        input.data(),
+        input.size(),
+        input_shape.data(),
+        input_shape.size());
 
     std::vector<float> output;
     output.resize(param_.cls_size);
     std::array<int64_t, 2> output_shape { kBatchSize, static_cast<int64_t>(param_.cls_size) };
-    Ort::Value output_tensor = Ort::Value::CreateTensor<float>(memory_info, output.data(), output.size(),
-                                                               output_shape.data(), output_shape.size());
+    Ort::Value output_tensor = Ort::Value::CreateTensor<float>(
+        memory_info,
+        output.data(),
+        output.size(),
+        output_shape.data(),
+        output_shape.size());
 
     Ort::AllocatorWithDefaultOptions allocator;
     const std::string in_0 = session_->GetInputNameAllocated(0, allocator).get();
@@ -87,12 +96,20 @@ NeuralNetworkClassifier::Result NeuralNetworkClassifier::classify(const cv::Rect
     const std::vector output_names { out_0.c_str() };
 
     Ort::RunOptions run_options;
-    session_->Run(run_options, input_names.data(), &input_tensor, 1, output_names.data(), &output_tensor, 1);
+    session_->Run(
+        run_options,
+        input_names.data(),
+        &input_tensor,
+        1,
+        output_names.data(),
+        &output_tensor,
+        1);
 
     Result result;
     result.raw = std::move(output);
     result.probs = softmax(result.raw);
-    result.cls_index = std::max_element(result.probs.begin(), result.probs.end()) - result.probs.begin();
+    result.cls_index =
+        std::max_element(result.probs.begin(), result.probs.end()) - result.probs.begin();
     result.score = result.probs[result.cls_index];
     result.label = param_.labels[result.cls_index];
     result.box = roi;
@@ -113,7 +130,12 @@ void NeuralNetworkClassifier::draw_result(const Result& res) const
 
     for (size_t i = 0; i != param_.cls_size; ++i) {
         const auto color = i == res.cls_index ? cv::Scalar(0, 0, 255) : cv::Scalar(255, 0, 0);
-        std::string text = std::format("{} {}: prob {:.3f}, raw {:.3f}", i, param_.labels[i], res.probs[i], res.raw[i]);
+        std::string text = std::format(
+            "{} {}: prob {:.3f}, raw {:.3f}",
+            i,
+            param_.labels[i],
+            res.probs[i],
+            res.raw[i]);
         cv::putText(image_draw, text, pt, cv::FONT_HERSHEY_PLAIN, 1.2, color, 1);
         pt.y += 20;
     }

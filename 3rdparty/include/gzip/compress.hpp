@@ -8,36 +8,34 @@
 #include <stdexcept>
 #include <string>
 
-namespace gzip {
+namespace gzip
+{
 
 class Compressor
 {
     std::size_t max_;
     int level_;
 
-  public:
-    Compressor(int level = Z_DEFAULT_COMPRESSION,
-               std::size_t max_bytes = 2000000000) // by default refuse operation if uncompressed data is > 2GB
-        : max_(max_bytes),
-          level_(level)
+public:
+    Compressor(
+        int level = Z_DEFAULT_COMPRESSION,
+        std::size_t max_bytes =
+            2'000'000'000) // by default refuse operation if uncompressed data is > 2GB
+        : max_(max_bytes)
+        , level_(level)
     {
     }
 
     template <typename InputType>
-    void compress(InputType& output,
-                  const char* data,
-                  std::size_t size) const
+    void compress(InputType& output, const char* data, std::size_t size) const
     {
-
 #ifdef DEBUG
         // Verify if size input will fit into unsigned int, type used for zlib's avail_in
-        if (size > std::numeric_limits<unsigned int>::max())
-        {
+        if (size > std::numeric_limits<unsigned int>::max()) {
             throw std::runtime_error("size arg is too large to fit into unsigned int type");
         }
 #endif
-        if (size > max_)
-        {
+        if (size > max_) {
             throw std::runtime_error("size may use more memory than intended when decompressing");
         }
 
@@ -48,9 +46,9 @@ class Compressor
         deflate_s.avail_in = 0;
         deflate_s.next_in = Z_NULL;
 
-        // The windowBits parameter is the base two logarithm of the window size (the size of the history buffer).
-        // It should be in the range 8..15 for this version of the library.
-        // Larger values of this parameter result in better compression at the expense of memory usage.
+        // The windowBits parameter is the base two logarithm of the window size (the size of the
+        // history buffer). It should be in the range 8..15 for this version of the library. Larger
+        // values of this parameter result in better compression at the expense of memory usage.
         // This range of values also changes the decoding type:
         //  -8 to -15 for raw deflate
         //  8 to 15 for zlib
@@ -66,8 +64,8 @@ class Compressor
 
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wold-style-cast"
-        if (deflateInit2(&deflate_s, level_, Z_DEFLATED, window_bits, mem_level, Z_DEFAULT_STRATEGY) != Z_OK)
-        {
+        if (deflateInit2(&deflate_s, level_, Z_DEFLATED, window_bits, mem_level, Z_DEFAULT_STRATEGY)
+            != Z_OK) {
             throw std::runtime_error("deflate init failed");
         }
 #pragma GCC diagnostic pop
@@ -76,11 +74,9 @@ class Compressor
         deflate_s.avail_in = static_cast<unsigned int>(size);
 
         std::size_t size_compressed = 0;
-        do
-        {
+        do {
             size_t increase = size / 2 + 1024;
-            if (output.size() < (size_compressed + increase))
-            {
+            if (output.size() < (size_compressed + increase)) {
                 output.resize(size_compressed + increase);
             }
             // There is no way we see that "increase" would not fit in an unsigned int,
@@ -100,9 +96,7 @@ class Compressor
     }
 };
 
-inline std::string compress(const char* data,
-                            std::size_t size,
-                            int level = Z_DEFAULT_COMPRESSION)
+inline std::string compress(const char* data, std::size_t size, int level = Z_DEFAULT_COMPRESSION)
 {
     Compressor comp(level);
     std::string output;

@@ -1,6 +1,6 @@
 <!-- markdownlint-disable MD033 MD041 -->
 <p align="center">
-    <img alt="LOGO" src="https://cdn.jsdelivr.net/gh/MaaAssistantArknights/design@main/logo/maa-logo_512x512.png" width="256" height="256" />
+  <img alt="LOGO" src="https://cdn.jsdelivr.net/gh/MaaAssistantArknights/design@main/logo/maa-logo_512x512.png" width="256" height="256" />
 </p>
 
 <div align="center">
@@ -15,11 +15,11 @@ _✨ 基于图像识别的自动化黑盒测试框架 ✨_
 </div>
 
 <p align="center">
-    <img alt="license" src="https://img.shields.io/github/license/MaaXYZ/MaaFramework">
-    <img alt="C++" src="https://img.shields.io/badge/C++-20-%2300599C?logo=cplusplus">
-    <img alt="platform" src="https://img.shields.io/badge/platform-Windows%20%7C%20Linux%20%7C%20macOS-blueviolet">
-    <img alt="commit" src="https://img.shields.io/github/commit-activity/m/MaaXYZ/MaaFramework?color=%23ff69b4">
-    <img alt="stars" src="https://img.shields.io/github/stars/MaaXYZ/MaaFramework?style=social">
+  <img alt="license" src="https://img.shields.io/github/license/MaaXYZ/MaaFramework">
+  <img alt="C++" src="https://img.shields.io/badge/C++-20-%2300599C?logo=cplusplus">
+  <img alt="platform" src="https://img.shields.io/badge/platform-Windows%20%7C%20Linux%20%7C%20macOS-blueviolet">
+  <img alt="commit" src="https://img.shields.io/github/commit-activity/m/MaaXYZ/MaaFramework?color=%23ff69b4">
+  <img alt="stars" src="https://img.shields.io/github/stars/MaaXYZ/MaaFramework?style=social">
 </p>
 
 <div align="center">
@@ -44,23 +44,26 @@ _✨ 基于图像识别的自动化黑盒测试框架 ✨_
 
 ## 最佳实践
 
-- [M9A](https://github.com/MaaXYZ/M9A) 1999 小助手  
+- [M9A](https://github.com/MaaXYZ/M9A) 1999 小助手 ![python](https://img.shields.io/badge/Python-3776AB?logo=python&logoColor=white)  
   基于全新架构的 亿韭韭韭 小助手。图像技术 + 模拟控制，解放双手！由 MaaFramework 强力驱动！
 
 - [MAAIP](https://github.com/Arcelibs/MAAIP) 基於 MAA 框架技術的 idolypride 自動化程序  
   由 Github 上最火熱的 lk99 開源套件 MaaFramework 製作
 
-- [MAABH3](https://github.com/MaaXYZ/MAABH3) 《崩坏3》小助手 | A one-click tool for the daily tasks of Honkai Impact.  
+- [MAABH3](https://github.com/MaaXYZ/MAABH3) 《崩坏3》小助手 | A one-click tool for the daily tasks of Honkai Impact. ![cpp](https://img.shields.io/badge/C%2B%2B-00599C?logo=c%2B%2B&logoColor=white)  
   基于全新架构的 蹦蹦蹦 小助手。图像技术 + 模拟控制，解放双手！由 MaaFramework 强力驱动！
 
-- [MAALimbusCompany](https://github.com/hxdnshx/MAALimbusCompany) 边狱公司 小助手  
+- [MAALimbusCompany](https://github.com/hxdnshx/MAALimbusCompany) 边狱公司 小助手 ![python](https://img.shields.io/badge/Python-3776AB?logo=python&logoColor=white)  
   基于全新架构的 边狱公司 小助手。图像技术 + 模拟控制，解放双手！由 MaaFramework 强力驱动！
 
-- [MBA](https://github.com/MaaXYZ/MBA) BA 小助手  
+- [MBA](https://github.com/MaaXYZ/MBA) BA 小助手 ![csharp](https://img.shields.io/badge/C%23-239120?logo=csharp&logoColor=white)  
   基于 MAA 全新架构的 BA 小助手。图像技术 + 模拟控制，解放双手，不再点点点！由 MaaFramework 强力驱动！
 
-- [MAS](https://github.com/MaaXYZ/MaaAssistantSkland) 森空岛 小助手  
+- [MAS](https://github.com/MaaXYZ/MaaAssistantSkland) 森空岛 小助手 ![cpp](https://img.shields.io/badge/C%2B%2B-00599C?logo=c%2B%2B&logoColor=white)  
   基于全新架构的 森空岛 小助手。图像技术 + 模拟控制，解放双手！由 MaaFramework 强力驱动！
+
+- [MRA](https://github.com/NaNExist/ResonanceAssistant) 列车长 小助手  
+  基于全新架构的 列车长 小助手。图像技术 + 模拟控制，解放双手！由 MaaFramework 强力驱动！
 
 ## 生态共建
 
@@ -81,6 +84,37 @@ _请留意，仅当您准备开发 MaaFramework 本身时，才需要阅读本�
 - [构建指南](docs/zh_cn/4.1-构建指南.md)
 
 ## 鸣谢
+
+### 开源库
+
+- [opencv](https://github.com/opencv/opencv)  
+  Open Source Computer Vision Library
+- [fastdeploy](https://github.com/PaddlePaddle/FastDeploy)  
+  ⚡️An Easy-to-use and Fast Deep Learning Model Deployment Toolkit for ☁️Cloud 📱Mobile and 📹Edge. Including Image, Video, Text and Audio 20+ main stream scenarios and 150+ SOTA models with end-to-end optimization, multi-platform and multi-framework support.
+- [onnxruntime](https://github.com/microsoft/onnxruntime)  
+  ONNX Runtime: cross-platform, high performance ML inferencing and training accelerator
+- [boost](https://www.boost.org/)  
+  Boost provides free peer-reviewed portable C++ source libraries.
+- [meojson](https://github.com/MistEO/meojson)  
+  A modern all-platform Json/Json5 parser/serializer, which is header-only and used magic!
+- [minitouch](https://github.com/DeviceFarmer/minitouch)  
+  Minimal multitouch event producer for Android.
+- [maatouch](https://github.com/MaaAssistantArknights/MaaTouch)  
+  Android native implementation of minitouch input protocol
+- [minicap](https://github.com/DeviceFarmer/minicap)  
+  Stream real-time screen capture data out of Android devices.
+- [zlib](https://github.com/madler/zlib)  
+  A massively spiffy yet delicately unobtrusive compression library.
+- [gzip-hpp](https://github.com/mapbox/gzip-hpp)  
+  Gzip header-only C++ library
+- [protobuf](https://github.com/protocolbuffers/protobuf)  
+  Protocol Buffers - Google's data interchange format
+- [grpc](https://github.com/grpc/grpc)  
+  The C based gRPC (C++, Python, Ruby, Objective-C, PHP, C#)
+- [thrift](https://github.com/apache/thrift)  
+  Apache Thrift
+
+### 开发者
 
 感谢以下开发者对 MaaFramework 作出的贡献：
 

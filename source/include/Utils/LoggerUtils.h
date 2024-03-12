@@ -53,7 +53,10 @@ enum class level
 
 struct MAA_UTILS_API separator
 {
-    explicit constexpr separator(std::string_view s) noexcept : str(s) {}
+    explicit constexpr separator(std::string_view s) noexcept
+        : str(s)
+    {
+    }
 
     static const separator none;
     static const separator space;
@@ -70,10 +73,16 @@ concept has_output_operator = requires { std::declval<std::ostream&>() << std::d
 class StringConverter
 {
 public:
-    StringConverter(std::filesystem::path dumps_dir) : dumps_dir_(std::move(dumps_dir)) {}
+    StringConverter(std::filesystem::path dumps_dir)
+        : dumps_dir_(std::move(dumps_dir))
+    {
+    }
 
 public:
-    std::string operator()(const std::filesystem::path& path) const { return path_to_utf8_string(path); }
+    std::string operator()(const std::filesystem::path& path) const
+    {
+        return path_to_utf8_string(path);
+    }
     std::string operator()(const std::wstring& wstr) const { return from_u16(wstr); }
     std::string operator()(const cv::Mat& image) const
     {
@@ -132,9 +141,18 @@ class MAA_UTILS_API LogStream
 {
 public:
     template <typename... args_t>
-    LogStream(std::mutex& m, std::ofstream& s, level lv, bool std_out, std::filesystem::path dumps_dir,
-              args_t&&... args)
-        : mutex_(m), stream_(s), lv_(lv), stdout_(std_out), string_converter_(std::move(dumps_dir))
+    LogStream(
+        std::mutex& m,
+        std::ofstream& s,
+        level lv,
+        bool std_out,
+        std::filesystem::path dumps_dir,
+        args_t&&... args)
+        : mutex_(m)
+        , stream_(s)
+        , lv_(lv)
+        , stdout_(std_out)
+        , string_converter_(std::move(dumps_dir))
     {
         stream_props(std::forward<args_t>(args)...);
     }
@@ -176,7 +194,8 @@ private:
             buffer_ << string_converter_(std::forward<T>(value)) << sep.str;
         }
         else {
-            buffer_ << json::serialize(std::forward<T>(value), string_converter_).dumps() << sep.str;
+            buffer_ << json::serialize(std::forward<T>(value), string_converter_).dumps()
+                    << sep.str;
         }
     }
 
@@ -190,7 +209,8 @@ private:
 #endif
         auto tid = static_cast<uint16_t>(std::hash<std::thread::id> {}(std::this_thread::get_id()));
 
-        std::string props = std::format("[{}][{}][Px{}][Tx{}]", format_now(), level_str(), pid, tid);
+        std::string props =
+            std::format("[{}][{}][Px{}][Tx{}]", format_now(), level_str(), pid, tid);
         for (auto&& arg : { args... }) {
             props += std::format("[{}]", arg);
         }

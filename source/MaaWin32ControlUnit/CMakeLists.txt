@@ -1,10 +1,10 @@
 file(GLOB_RECURSE maa_win32_control_unit_src *.h *.hpp *.cpp)
-file(GLOB_RECURSE maa_win32_control_unit_header ../include/ControlUnit/Win32ControlUnitAPI.h ../include/ControlUnit/ControlUnitAPI.h)
+file(GLOB_RECURSE maa_win32_control_unit_header ${MAA_PRIVATE_INC}/ControlUnit/Win32ControlUnitAPI.h ${MAA_PRIVATE_INC}/ControlUnit/ControlUnitAPI.h)
 
 add_library(MaaWin32ControlUnit SHARED ${maa_win32_control_unit_src} ${maa_win32_control_unit_header})
 
-target_include_directories(MaaWin32ControlUnit PRIVATE ${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_CURRENT_SOURCE_DIR}/../include
-                                                  ${CMAKE_CURRENT_SOURCE_DIR}/../../include)
+target_include_directories(MaaWin32ControlUnit
+    PRIVATE ${CMAKE_CURRENT_SOURCE_DIR} ${MAA_PRIVATE_INC} ${MAA_PUBLIC_INC})
 
 target_link_libraries(MaaWin32ControlUnit MaaUtils HeaderOnlyLibraries ${OpenCV_LIBS} ZLIB::ZLIB Boost::system)
 target_link_libraries(MaaWin32ControlUnit d3d11 dxgi)
@@ -17,7 +17,8 @@ install(
     TARGETS MaaWin32ControlUnit
     RUNTIME DESTINATION bin
     LIBRARY DESTINATION bin
-    #ARCHIVE DESTINATION lib
-    )
+
+    # ARCHIVE DESTINATION lib
+)
 
 source_group(TREE ${CMAKE_CURRENT_SOURCE_DIR} FILES ${maa_win32_control_unit_src})

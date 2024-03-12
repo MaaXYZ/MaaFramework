@@ -27,7 +27,7 @@ service Instance {
 
   rpc status(HandleIIdRequest) returns (StatusResponse);
   rpc wait(HandleIIdRequest) returns (StatusResponse);
-  rpc all_finished(HandleRequest) returns (BoolResponse);
+  rpc running(HandleRequest) returns (BoolResponse);
 
   rpc post_stop(HandleRequest) returns (EmptyResponse);
 

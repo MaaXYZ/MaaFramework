@@ -23,8 +23,10 @@ void callback_impl(MaaStringView msg, MaaStringView detail, MaaCallbackTranspare
     state->write.release();
 }
 
-Status UtilityImpl::version(ServerContext* context, const ::maarpc::EmptyRequest* request,
-                            ::maarpc::StringResponse* response)
+Status UtilityImpl::version(
+    ServerContext* context,
+    const ::maarpc::EmptyRequest* request,
+    ::maarpc::StringResponse* response)
 {
     LogFunc;
     std::ignore = context;
@@ -35,8 +37,10 @@ Status UtilityImpl::version(ServerContext* context, const ::maarpc::EmptyRequest
     return Status::OK;
 }
 
-Status UtilityImpl::set_global_option(ServerContext* context, const ::maarpc::SetGlobalOptionRequest* request,
-                                      ::maarpc::EmptyResponse* response)
+Status UtilityImpl::set_global_option(
+    ServerContext* context,
+    const ::maarpc::SetGlobalOptionRequest* request,
+    ::maarpc::EmptyResponse* response)
 {
     LogFunc;
     std::ignore = context;
@@ -106,8 +110,10 @@ Status UtilityImpl::set_global_option(ServerContext* context, const ::maarpc::Se
     return Status(ABORTED, "protobuf `oneof` state invalid");
 }
 
-Status UtilityImpl::acquire_id(ServerContext* context, const ::maarpc::EmptyRequest* request,
-                               ::maarpc::IdResponse* response)
+Status UtilityImpl::acquire_id(
+    ServerContext* context,
+    const ::maarpc::EmptyRequest* request,
+    ::maarpc::IdResponse* response)
 {
     LogFunc;
     std::ignore = context;
@@ -118,8 +124,9 @@ Status UtilityImpl::acquire_id(ServerContext* context, const ::maarpc::EmptyRequ
     return Status::OK;
 }
 
-Status UtilityImpl::register_callback(ServerContext* context,
-                                      ServerReaderWriter<::maarpc::Callback, ::maarpc::CallbackRequest>* stream)
+Status UtilityImpl::register_callback(
+    ServerContext* context,
+    ServerReaderWriter<::maarpc::Callback, ::maarpc::CallbackRequest>* stream)
 {
     LogFunc;
 
@@ -166,8 +173,10 @@ Status UtilityImpl::register_callback(ServerContext* context,
     return Status::OK;
 }
 
-Status UtilityImpl::unregister_callback(ServerContext* context, const ::maarpc::IdRequest* request,
-                                        ::maarpc::EmptyResponse* response)
+Status UtilityImpl::unregister_callback(
+    ServerContext* context,
+    const ::maarpc::IdRequest* request,
+    ::maarpc::EmptyResponse* response)
 {
     LogFunc;
     std::ignore = context;

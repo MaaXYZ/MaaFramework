@@ -224,11 +224,15 @@ jobs:
 
   macos:
     needs: meta
-    runs-on: macos-latest
     strategy:
       matrix:
-        arch: [x86_64]
+        include:
+          - os: macos-13
+            arch: x86_64
+          - os: macos-14
+            arch: aarch64
       fail-fast: false
+    runs-on: ${{ matrix.os }}
 
     steps:
       - uses: actions/checkout@v3
@@ -237,7 +241,7 @@ jobs:
 
       - name: Install dep
         run: |
-          brew install cmake python ninja
+          brew install cmake ninja
         # ccache?
 
       - name: Install compiler
@@ -251,14 +255,26 @@ jobs:
         run: |
           python3 tools/maadeps-download.py ${{ matrix.arch == 'x86_64' && 'x64' || 'arm64' }}-osx
 
-      - name: Build MAA
+      - name: Build MAA for x86_64
+        if: ${{ matrix.arch == 'x86_64' }}
         env:
           CC: "/usr/local/opt/llvm/bin/clang"
           CXX: "/usr/local/opt/llvm/bin/clang++"
-          LDFLAGS: "-L/usr/local/opt/llvm/lib/c++ -Wl,-rpath,/usr/local/opt/llvm/lib/c++"
         run: |
           cmake --preset 'NinjaMulti' \
-            -DCMAKE_OSX_ARCHITECTURES='${{ matrix.arch == 'x86_64' && 'x86_64' || 'arm64' }}' \
+            -DMAADEPS_TRIPLET='maa-${{ matrix.arch == 'x86_64' && 'x64' || 'arm64' }}-osx' \
+            -DMAA_HASH_VERSION='${{ needs.meta.outputs.tag }}' \
+            -DWITH_GRPC=OFF -DBUILD_PIPELINE_TESTING=ON -DBUILD_DLOPEN_TESTING=ON
+
+          cmake --build build --preset 'NinjaMulti - Release' -j 16
+
+      - name: Build MAA for aarch64
+        if: ${{ matrix.arch == 'aarch64' }}
+        env:
+          CC: "/opt/homebrew/opt/llvm/bin/clang"
+          CXX: "/opt/homebrew/opt/llvm/bin/clang++"
+        run: |
+          cmake --preset 'NinjaMulti' \
             -DMAADEPS_TRIPLET='maa-${{ matrix.arch == 'x86_64' && 'x64' || 'arm64' }}-osx' \
             -DMAA_HASH_VERSION='${{ needs.meta.outputs.tag }}' \
             -DWITH_GRPC=OFF -DBUILD_PIPELINE_TESTING=ON -DBUILD_DLOPEN_TESTING=ON
@@ -272,15 +288,11 @@ jobs:
           cmake --install build --prefix install
 
       - name: Run DlopenTesting
-        # TODO: qemu for aarch64
-        if: ${{matrix.arch == 'x86_64'}}
         shell: bash
         run: |
           ./install/bin/DlopenTesting
 
       - name: Run PipelineTesting
-        # TODO: qemu for aarch64
-        if: ${{matrix.arch == 'x86_64'}}
         shell: bash
         run: |
           ./install/bin/PipelineTesting ./install/test

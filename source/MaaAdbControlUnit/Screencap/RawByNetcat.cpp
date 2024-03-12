@@ -9,15 +9,22 @@ MAA_CTRL_UNIT_NS_BEGIN
 bool ScreencapRawByNetcat::parse(const json::value& config)
 {
     static const json::array kDefaultScreencapRawByNetcatArgv = {
-        "{ADB}", "-s", "{ADB_SERIAL}", "exec-out", "screencap | nc -w 3 {NETCAT_ADDRESS} {NETCAT_PORT}",
+        "{ADB}",
+        "-s",
+        "{ADB_SERIAL}",
+        "exec-out",
+        "screencap | nc -w 3 {NETCAT_ADDRESS} {NETCAT_PORT}",
     };
     static const json::array kDefaultNetcatAddressArgv = {
         "{ADB}", "-s", "{ADB_SERIAL}", "shell", "cat /proc/net/arp | grep : ",
     };
 
-    return parse_argv("ScreencapRawByNetcat", config, kDefaultScreencapRawByNetcatArgv,
-                      screencap_raw_by_netcat_argv_) &&
-           parse_argv("NetcatAddress", config, kDefaultNetcatAddressArgv, netcat_address_argv_);
+    return parse_argv(
+               "ScreencapRawByNetcat",
+               config,
+               kDefaultScreencapRawByNetcatArgv,
+               screencap_raw_by_netcat_argv_)
+           && parse_argv("NetcatAddress", config, kDefaultNetcatAddressArgv, netcat_address_argv_);
 }
 
 bool ScreencapRawByNetcat::init(int swidth, int sheight)
@@ -56,7 +63,8 @@ std::optional<cv::Mat> ScreencapRawByNetcat::screencap()
     }
 
     auto port = io_factory_->port();
-    merge_replacement({ { "{NETCAT_ADDRESS}", netcat_address_ }, { "{NETCAT_PORT}", std::to_string(port) } });
+    merge_replacement(
+        { { "{NETCAT_ADDRESS}", netcat_address_ }, { "{NETCAT_PORT}", std::to_string(port) } });
 
     auto argv_opt = screencap_raw_by_netcat_argv_.gen(argv_replace_);
     if (!argv_opt) {
@@ -76,7 +84,8 @@ std::optional<cv::Mat> ScreencapRawByNetcat::screencap()
 
     using namespace std::chrono_literals;
     // netcat 能用的时候一般都很快，但连不上的时候会一直卡着，所以超时设短一点
-    std::string output = ios->read(2s);
+    ios->expires_after(1s);
+    std::string output = ios->read(1s);
     ios->release();
 
     auto duration = duration_since(start_time);
@@ -87,7 +96,8 @@ std::optional<cv::Mat> ScreencapRawByNetcat::screencap()
     }
 
     return screencap_helper_.process_data(
-        output, std::bind(&ScreencapHelper::decode_raw, &screencap_helper_, std::placeholders::_1));
+        output,
+        std::bind(&ScreencapHelper::decode_raw, &screencap_helper_, std::placeholders::_1));
 }
 
 std::optional<std::string> ScreencapRawByNetcat::request_netcat_address()

@@ -6,7 +6,8 @@
 
 MAA_VISION_NS_BEGIN
 
-TemplateComparator::ResultsVec TemplateComparator::analyze(const cv::Mat& lhs, const cv::Mat& rhs) const
+TemplateComparator::ResultsVec
+    TemplateComparator::analyze(const cv::Mat& lhs, const cv::Mat& rhs) const
 {
     if (lhs.size() != rhs.size()) {
         LogError << "lhs.size() != rhs.size()" << VAR(lhs) << VAR(rhs);
@@ -28,7 +29,8 @@ TemplateComparator::ResultsVec TemplateComparator::analyze(const cv::Mat& lhs, c
     return results;
 }
 
-TemplateComparator::ResultsVec TemplateComparator::foreach_rois(const cv::Mat& lhs, const cv::Mat& rhs) const
+TemplateComparator::ResultsVec
+    TemplateComparator::foreach_rois(const cv::Mat& lhs, const cv::Mat& rhs) const
 {
     auto method = param_.method;
 

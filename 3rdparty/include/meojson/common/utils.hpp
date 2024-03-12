@@ -61,7 +61,8 @@ constexpr bool is_container<T, std::void_t<typename T::value_type, range_value_t
 template <typename T, typename = void>
 constexpr bool is_map = false;
 template <typename T>
-constexpr bool is_map<T, std::void_t<typename T::key_type, typename T::mapped_type>> = is_container<T>;
+constexpr bool is_map<T, std::void_t<typename T::key_type, typename T::mapped_type>> =
+    is_container<T>;
 
 template <typename T, typename = void>
 constexpr bool is_collection = false;
@@ -85,7 +86,8 @@ template <typename T>
 class has_to_json_in_templ_spec
 {
     template <typename U>
-    static auto test(int) -> decltype(std::declval<ext::jsonization<U>>().to_json(std::declval<U>()), std::true_type());
+    static auto test(int)
+        -> decltype(std::declval<ext::jsonization<U>>().to_json(std::declval<U>()), std::true_type());
 
     template <typename U>
     static std::false_type test(...);
@@ -113,8 +115,7 @@ class has_check_json_in_templ_spec
 {
     template <typename U>
     static auto test(int)
-        -> decltype(std::declval<ext::jsonization<U>>().check_json(std::declval<json::basic_value<string_t>>()),
-                    std::true_type());
+        -> decltype(std::declval<ext::jsonization<U>>().check_json(std::declval<json::basic_value<string_t>>()), std::true_type());
 
     template <typename U>
     static std::false_type test(...);
@@ -142,9 +143,7 @@ class has_from_json_in_templ_spec
 {
     template <typename U>
     static auto test(int)
-        -> decltype(std::declval<ext::jsonization<U>>().from_json(std::declval<json::basic_value<string_t>>(),
-                                                                  std::declval<U&>()),
-                    std::true_type());
+        -> decltype(std::declval<ext::jsonization<U>>().from_json(std::declval<json::basic_value<string_t>>(), std::declval<U&>()), std::true_type());
 
     template <typename U>
     static std::false_type test(...);

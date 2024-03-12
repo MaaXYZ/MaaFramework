@@ -8,7 +8,10 @@
 
 MAA_TASK_NS_BEGIN
 
-Actuator::Actuator(InstanceInternalAPI* inst) : inst_(inst) {}
+Actuator::Actuator(InstanceInternalAPI* inst)
+    : inst_(inst)
+{
+}
 
 bool Actuator::run(const Recognizer::Result& rec_result, const TaskData& task_data)
 {
@@ -42,8 +45,11 @@ bool Actuator::run(const Recognizer::Result& rec_result, const TaskData& task_da
         ret = stop_app(std::get<AppParam>(task_data.action_param));
         break;
     case Type::Custom:
-        ret = custom_action(task_data.name, std::get<CustomParam>(task_data.action_param), rec_result.box,
-                            rec_result.detail);
+        ret = custom_action(
+            task_data.name,
+            std::get<CustomParam>(task_data.action_param),
+            rec_result.box,
+            rec_result.detail);
         break;
     case Type::StopTask:
         LogInfo << "Action: StopTask";
@@ -131,19 +137,11 @@ void Actuator::wait_freezes(const MAA_RES_NS::WaitFreezesParam& param, const cv:
     });
 
     cv::Mat pre_image = controller()->screencap();
-    if (need_to_stop()) {
-        LogInfo << "Task interrupted";
-        return;
-    }
 
     auto pre_time = std::chrono::steady_clock::now();
 
     while (true) {
         cv::Mat cur_image = controller()->screencap();
-        if (need_to_stop()) {
-            LogInfo << "Task interrupted";
-            return;
-        }
 
         auto ret = comp.analyze(pre_image, cur_image);
         if (ret.empty()) {
@@ -186,8 +184,11 @@ bool Actuator::stop_app(const MAA_RES_NS::Action::AppParam& param)
     return controller()->stop_app(param.package);
 }
 
-bool Actuator::custom_action(const std::string& task_name, const MAA_RES_NS::Action::CustomParam& param,
-                             const cv::Rect& cur_box, const json::value& cur_rec_detail)
+bool Actuator::custom_action(
+    const std::string& task_name,
+    const MAA_RES_NS::Action::CustomParam& param,
+    const cv::Rect& cur_box,
+    const json::value& cur_rec_detail)
 {
     if (!inst_) {
         LogError << "Inst is null";
@@ -227,7 +228,9 @@ cv::Rect Actuator::get_target_rect(const MAA_RES_NS::Action::Target target, cons
         return {};
     }
 
-    return cv::Rect { raw.x + target.offset.x, raw.y + target.offset.y, raw.width + target.offset.width,
+    return cv::Rect { raw.x + target.offset.x,
+                      raw.y + target.offset.y,
+                      raw.width + target.offset.width,
                       raw.height + target.offset.height };
 }
 
@@ -238,10 +241,6 @@ void Actuator::sleep(unsigned ms) const
 
 void Actuator::sleep(std::chrono::milliseconds ms) const
 {
-    if (need_to_stop()) {
-        return;
-    }
-
     using namespace std::chrono_literals;
 
     if (ms == 0ms) {
@@ -253,11 +252,8 @@ void Actuator::sleep(std::chrono::milliseconds ms) const
 
     LogTrace << "ready to sleep" << ms << VAR(interval);
 
-    for (auto sleep_time = interval; sleep_time <= ms && !need_to_stop(); sleep_time += interval) {
+    for (auto sleep_time = interval; sleep_time <= ms; sleep_time += interval) {
         std::this_thread::sleep_for(interval);
-    }
-    if (!need_to_stop()) {
-        std::this_thread::sleep_for(ms % interval);
     }
 
     LogTrace << "end of sleep" << ms << VAR(interval);

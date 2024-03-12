@@ -4,9 +4,16 @@
 
 MAA_NS_BEGIN
 
-ChildPipeIOStream::ChildPipeIOStream(const std::filesystem::path& exec, const std::vector<std::string>& args)
-    : child_( //
-          exec, args, boost::process::std_out > pin_, boost::process::std_err > boost::process::null,
+ChildPipeIOStream::ChildPipeIOStream(
+    const std::filesystem::path& exec,
+    const std::vector<std::string>& args)
+    : exec_(exec)
+    , args_(args)
+    , child_(
+          exec_,
+          args_,
+          boost::process::std_out > pin_,
+          boost::process::std_err > boost::process::null,
           boost::process::std_in < pout_
 #ifdef _WIN32
           ,
@@ -14,7 +21,7 @@ ChildPipeIOStream::ChildPipeIOStream(const std::filesystem::path& exec, const st
 #endif
       )
 {
-    LogTrace << VAR(exec) << VAR(args) << VAR(child_.id());
+    LogTrace << VAR(exec_) << VAR(args_) << VAR(child_.id());
 }
 
 ChildPipeIOStream::~ChildPipeIOStream()
@@ -25,7 +32,7 @@ ChildPipeIOStream::~ChildPipeIOStream()
 bool ChildPipeIOStream::write(std::string_view data)
 {
     if (!pout_.good()) {
-        LogError << "pout is not good";
+        LogError << "pout is not good" << VAR(exec_) << VAR(args_) << VAR(child_.id());
         return false;
     }
 
@@ -51,7 +58,7 @@ bool ChildPipeIOStream::release()
     int code = child_.exit_code();
 
     if (code != 0) {
-        LogError << "child exit with" << code << VAR(child_.id());
+        LogWarn << "child exit with" << code << VAR(exec_) << VAR(args_) << VAR(child_.id());
         return false;
     }
 

@@ -8,8 +8,10 @@ MAA_RPC_NS_BEGIN
 
 using namespace ::grpc;
 
-Status ImageImpl::create(ServerContext* context, const ::maarpc::EmptyRequest* request,
-                         ::maarpc::HandleResponse* response)
+Status ImageImpl::create(
+    ServerContext* context,
+    const ::maarpc::EmptyRequest* request,
+    ::maarpc::HandleResponse* response)
 {
     LogFunc;
     std::ignore = context;
@@ -23,8 +25,10 @@ Status ImageImpl::create(ServerContext* context, const ::maarpc::EmptyRequest* r
     return Status::OK;
 }
 
-Status ImageImpl::destroy(ServerContext* context, const ::maarpc::HandleRequest* request,
-                          ::maarpc::EmptyResponse* response)
+Status ImageImpl::destroy(
+    ServerContext* context,
+    const ::maarpc::HandleRequest* request,
+    ::maarpc::EmptyResponse* response)
 {
     LogFunc;
     std::ignore = context;
@@ -39,8 +43,10 @@ Status ImageImpl::destroy(ServerContext* context, const ::maarpc::HandleRequest*
     return Status::OK;
 }
 
-Status ImageImpl::is_empty(ServerContext* context, const ::maarpc::HandleRequest* request,
-                           ::maarpc::BoolResponse* response)
+Status ImageImpl::is_empty(
+    ServerContext* context,
+    const ::maarpc::HandleRequest* request,
+    ::maarpc::BoolResponse* response)
 {
     LogFunc;
     std::ignore = context;
@@ -54,8 +60,10 @@ Status ImageImpl::is_empty(ServerContext* context, const ::maarpc::HandleRequest
     return Status::OK;
 }
 
-Status ImageImpl::clear(ServerContext* context, const ::maarpc::HandleRequest* request,
-                        ::maarpc::EmptyResponse* response)
+Status ImageImpl::clear(
+    ServerContext* context,
+    const ::maarpc::HandleRequest* request,
+    ::maarpc::EmptyResponse* response)
 {
     LogFunc;
     std::ignore = context;
@@ -70,8 +78,10 @@ Status ImageImpl::clear(ServerContext* context, const ::maarpc::HandleRequest* r
     return Status::OK;
 }
 
-Status ImageImpl::info(ServerContext* context, const ::maarpc::HandleRequest* request,
-                       ::maarpc::ImageInfoResponse* response)
+Status ImageImpl::info(
+    ServerContext* context,
+    const ::maarpc::HandleRequest* request,
+    ::maarpc::ImageInfoResponse* response)
 {
     LogFunc;
     std::ignore = context;
@@ -87,8 +97,10 @@ Status ImageImpl::info(ServerContext* context, const ::maarpc::HandleRequest* re
     return Status::OK;
 }
 
-Status ImageImpl::encoded(ServerContext* context, const ::maarpc::HandleRequest* request,
-                          ::maarpc::BufferResponse* response)
+Status ImageImpl::encoded(
+    ServerContext* context,
+    const ::maarpc::HandleRequest* request,
+    ::maarpc::BufferResponse* response)
 {
     LogFunc;
     std::ignore = context;
@@ -107,8 +119,10 @@ Status ImageImpl::encoded(ServerContext* context, const ::maarpc::HandleRequest*
     return Status::OK;
 }
 
-Status ImageImpl::set_encoded(ServerContext* context, const ::maarpc::HandleBufferRequest* request,
-                              ::maarpc::BoolResponse* response)
+Status ImageImpl::set_encoded(
+    ServerContext* context,
+    const ::maarpc::HandleBufferRequest* request,
+    ::maarpc::BoolResponse* response)
 {
     LogFunc;
     std::ignore = context;
@@ -120,8 +134,10 @@ Status ImageImpl::set_encoded(ServerContext* context, const ::maarpc::HandleBuff
     MAA_GRPC_GET_HANDLE
 
     const auto& buf = request->buffer();
-    response->set_bool_(
-        MaaSetImageEncoded(handle, reinterpret_cast<uint8_t*>(const_cast<char*>(buf.data())), buf.size()));
+    response->set_bool_(MaaSetImageEncoded(
+        handle,
+        reinterpret_cast<uint8_t*>(const_cast<char*>(buf.data())),
+        buf.size()));
 
     return Status::OK;
 }

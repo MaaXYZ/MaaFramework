@@ -2,6 +2,7 @@ function(download_and_decompress url filename sha256_checksum decompress_dir)
     if(EXISTS ${filename})
         file(SHA256 ${filename} CHECKSUM_VARIABLE)
     endif()
+
     if(NOT EXISTS ${filename} OR NOT CHECKSUM_VARIABLE STREQUAL sha256_checksum)
         message("Downloading file from ${url} to ${filename} ...")
         file(
@@ -10,9 +11,11 @@ function(download_and_decompress url filename sha256_checksum decompress_dir)
             EXPECTED_HASH SHA256=${sha256_checksum})
         file(RENAME "${filename}.tmp" ${filename})
     endif()
+
     if(NOT EXISTS ${decompress_dir})
         file(MAKE_DIRECTORY ${decompress_dir})
     endif()
+
     message("Decompress file ${filename} ...")
     execute_process(COMMAND ${CMAKE_COMMAND} -E tar -xf ${filename} WORKING_DIRECTORY ${decompress_dir})
 endfunction()
@@ -41,4 +44,15 @@ endif(APPLE)
 if(NOT DEFINED MAADEPS_TRIPLET)
     detect_maadeps_triplet(MAADEPS_TRIPLET)
 endif()
-set(MAADEPS_TOOLS ${MAA_DEPS_DIR}/vcpkg/installed/${MAADEPS_TRIPLET}/tools)
+
+set(MAADEPS_TARGET_TOOLS ${MAADEPS_DIR}/vcpkg/installed/${MAADEPS_TRIPLET}/tools)
+
+if(WIN32)
+    set(MAADEPS_HOST_TRIPLET "x64-windows")
+elseif(APPLE)
+    set(MAADEPS_HOST_TRIPLET "x64-osx")
+else()
+    set(MAADEPS_HOST_TRIPLET "x64-linux")
+endif()
+
+set(MAADEPS_HOST_TOOLS ${MAADEPS_DIR}/vcpkg/installed/${MAADEPS_HOST_TRIPLET}/tools)

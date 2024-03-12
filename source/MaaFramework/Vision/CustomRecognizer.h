@@ -21,7 +21,10 @@ class CustomRecognizer : public VisionBase
     };
 
 public:
-    CustomRecognizer(MaaCustomRecognizerHandle handle, MaaTransparentArg handle_arg, InstanceInternalAPI* inst);
+    CustomRecognizer(
+        MaaCustomRecognizerHandle handle,
+        MaaTransparentArg handle_arg,
+        InstanceInternalAPI* inst);
 
     void set_param(CustomRecognizerParam param) { param_ = std::move(param); }
     std::optional<Result> analyze() const;

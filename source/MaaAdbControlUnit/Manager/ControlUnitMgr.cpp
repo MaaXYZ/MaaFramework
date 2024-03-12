@@ -7,10 +7,16 @@
 
 MAA_CTRL_UNIT_NS_BEGIN
 
-ControlUnitMgr::ControlUnitMgr(std::filesystem::path adb_path, std::string adb_serial, MaaControllerCallback callback,
-                               MaaCallbackTransparentArg callback_arg)
-    : adb_path_(std::move(adb_path)), adb_serial_(std::move(adb_serial)), notifier(callback, callback_arg)
-{}
+ControlUnitMgr::ControlUnitMgr(
+    std::filesystem::path adb_path,
+    std::string adb_serial,
+    MaaControllerCallback callback,
+    MaaCallbackTransparentArg callback_arg)
+    : adb_path_(std::move(adb_path))
+    , adb_serial_(std::move(adb_serial))
+    , notifier(callback, callback_arg)
+{
+}
 
 bool ControlUnitMgr::find_device(std::vector<std::string>& devices)
 {
@@ -34,14 +40,18 @@ bool ControlUnitMgr::connect()
     bool connected = connection_.connect();
     bool is_remote = adb_serial_.find(':') != std::string::npos;
     if (!connected && is_remote) {
-        notifier.notify(MaaMsg_Controller_ConnectFailed, details | json::object { { "why", "ConnectFailed" } });
+        notifier.notify(
+            MaaMsg_Controller_ConnectFailed,
+            details | json::object { { "why", "ConnectFailed" } });
         return false;
     }
 
     auto uuid_opt = device_info_.request_uuid();
     if (!uuid_opt) {
         notifier.notify(MaaMsg_Controller_UUIDGetFailed, details);
-        notifier.notify(MaaMsg_Controller_ConnectFailed, details | json::object { { "why", "UUIDGetFailed" } });
+        notifier.notify(
+            MaaMsg_Controller_ConnectFailed,
+            details | json::object { { "why", "UUIDGetFailed" } });
         return false;
     }
     const auto& uuid = uuid_opt.value();
@@ -52,12 +62,15 @@ bool ControlUnitMgr::connect()
     const auto& resolution_opt = device_info_.request_resolution();
     if (!resolution_opt) {
         notifier.notify(MaaMsg_Controller_ResolutionGetFailed, details);
-        notifier.notify(MaaMsg_Controller_ConnectFailed, details | json::object { { "why", "ResolutionGetFailed" } });
+        notifier.notify(
+            MaaMsg_Controller_ConnectFailed,
+            details | json::object { { "why", "ResolutionGetFailed" } });
         return false;
     }
     auto [width, height] = *resolution_opt;
     int orientation = device_info_.request_orientation().value_or(0);
-    details |= { { "resolution", { { "width", width }, { "height", height } } }, { "orientation", orientation } };
+    details |= { { "resolution", { { "width", width }, { "height", height } } },
+                 { "orientation", orientation } };
 
     notifier.notify(MaaMsg_Controller_ResolutionGot, details);
 

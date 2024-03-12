@@ -10,8 +10,10 @@ MAA_CTRL_NS_BEGIN
 class GeneralControllerAgent : public ControllerAgent
 {
 public:
-    GeneralControllerAgent(std::shared_ptr<MAA_CTRL_UNIT_NS::ControlUnitAPI> control_unit,
-                           MaaControllerCallback callback, MaaCallbackTransparentArg callback_arg);
+    GeneralControllerAgent(
+        std::shared_ptr<MAA_CTRL_UNIT_NS::ControlUnitAPI> control_unit,
+        MaaControllerCallback callback,
+        MaaCallbackTransparentArg callback_arg);
     virtual ~GeneralControllerAgent() override = default;
 
 protected:

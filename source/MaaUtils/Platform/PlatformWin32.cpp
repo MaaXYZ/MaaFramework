@@ -24,10 +24,15 @@ std::string get_ansi_short_path(const std::filesystem::path& path)
     auto osstr = path.native();
     string_replace_all_(osstr, L"\\", L"/");
     auto shortlen = GetShortPathNameW(osstr.c_str(), short_path, MAX_PATH);
-    if (shortlen == 0) return {};
+    if (shortlen == 0) {
+        return {};
+    }
     BOOL failed = FALSE;
-    auto ansilen = WideCharToMultiByte(CP_ACP, 0, short_path, shortlen, nullptr, 0, nullptr, &failed);
-    if (failed) return {};
+    auto ansilen =
+        WideCharToMultiByte(CP_ACP, 0, short_path, shortlen, nullptr, 0, nullptr, &failed);
+    if (failed) {
+        return {};
+    }
     std::string result(ansilen, 0);
     WideCharToMultiByte(CP_ACP, 0, short_path, shortlen, result.data(), ansilen, nullptr, nullptr);
     return result;
@@ -47,7 +52,9 @@ std::string path_to_crt_string(const std::filesystem::path& path)
     }
     std::string result(mbsize, 0);
     err = wcstombs_s(&mbsize, result.data(), mbsize, osstr.c_str(), osstr.size());
-    if (err != 0) return {};
+    if (err != 0) {
+        return {};
+    }
     return result.substr(0, mbsize - 1);
 }
 
@@ -58,13 +65,29 @@ std::string path_to_ansi_string(const std::filesystem::path& path)
     BOOL failed = FALSE;
     auto osstr = path.native();
     string_replace_all_(osstr, L"\\", L"/");
-    auto ansilen = WideCharToMultiByte(CP_ACP, 0, osstr.c_str(), (int)osstr.size(), nullptr, 0, nullptr, &failed);
+    auto ansilen = WideCharToMultiByte(
+        CP_ACP,
+        0,
+        osstr.c_str(),
+        (int)osstr.size(),
+        nullptr,
+        0,
+        nullptr,
+        &failed);
     if (failed) {
         // contains character that cannot be converted, fallback to short path name in ACP
         return get_ansi_short_path(path);
     }
     std::string result(ansilen, 0);
-    WideCharToMultiByte(CP_ACP, 0, osstr.c_str(), (int)osstr.size(), result.data(), ansilen, nullptr, &failed);
+    WideCharToMultiByte(
+        CP_ACP,
+        0,
+        osstr.c_str(),
+        (int)osstr.size(),
+        result.data(),
+        ansilen,
+        nullptr,
+        &failed);
     return result;
 }
 
@@ -78,9 +101,25 @@ os_string to_osstring(std::string_view utf8_str)
 
 std::string from_osstring(os_string_view os_str)
 {
-    int len = WideCharToMultiByte(CP_UTF8, 0, os_str.data(), (int)os_str.size(), nullptr, 0, nullptr, nullptr);
+    int len = WideCharToMultiByte(
+        CP_UTF8,
+        0,
+        os_str.data(),
+        (int)os_str.size(),
+        nullptr,
+        0,
+        nullptr,
+        nullptr);
     std::string result(len, 0);
-    WideCharToMultiByte(CP_UTF8, 0, os_str.data(), (int)os_str.size(), result.data(), len, nullptr, nullptr);
+    WideCharToMultiByte(
+        CP_UTF8,
+        0,
+        os_str.data(),
+        (int)os_str.size(),
+        result.data(),
+        len,
+        nullptr,
+        nullptr);
     return result;
 }
 

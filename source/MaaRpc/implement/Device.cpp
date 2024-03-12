@@ -7,8 +7,10 @@ MAA_RPC_NS_BEGIN
 
 using namespace ::grpc;
 
-Status DeviceImpl::find(ServerContext* context, const ::maarpc::EmptyRequest* request,
-                        ::maarpc::DeviceInfosResponse* response)
+Status DeviceImpl::find(
+    ServerContext* context,
+    const ::maarpc::EmptyRequest* request,
+    ::maarpc::DeviceInfosResponse* response)
 {
     LogFunc;
     std::ignore = context;
@@ -34,8 +36,10 @@ Status DeviceImpl::find(ServerContext* context, const ::maarpc::EmptyRequest* re
     return Status::OK;
 }
 
-Status DeviceImpl::find_with_adb(ServerContext* context, const ::maarpc::StringRequest* request,
-                                 ::maarpc::DeviceInfosResponse* response)
+Status DeviceImpl::find_with_adb(
+    ServerContext* context,
+    const ::maarpc::StringRequest* request,
+    ::maarpc::DeviceInfosResponse* response)
 {
     LogFunc;
     std::ignore = context;

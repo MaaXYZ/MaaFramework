@@ -22,7 +22,7 @@ const std::filesystem::path& library_dir()
 
 void init_library_dir()
 {
-    Dl_info dl_info{};
+    Dl_info dl_info {};
     if (dladdr((void*)init_library_dir, &dl_info) == 0) {
         return;
     }

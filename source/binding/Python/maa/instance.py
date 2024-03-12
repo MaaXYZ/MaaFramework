@@ -79,7 +79,7 @@ class Instance:
         :return: True if the task was successfully run, False otherwise.
         """
 
-        await self.post_task(task_type, param).wait()
+        return await self.post_task(task_type, param).wait()
 
     def post_task(self, task_type: str, param: Any = {}) -> Future:
         """
@@ -100,17 +100,17 @@ class Instance:
         Wait for all tasks to complete.
         """
 
-        while not self.all_finished():
+        while self.running():
             await asyncio.sleep(0)
 
-    def all_finished(self) -> bool:
+    def running(self) -> bool:
         """
-        Check if all tasks are finished.
+        Is running
 
-        :return: True if all tasks are finished, False otherwise.
+        :return: True if running, False otherwise.
         """
 
-        return bool(Library.framework.MaaTaskAllFinished(self._handle))
+        return bool(Library.framework.MaaRunning(self._handle))
 
     async def stop(self) -> bool:
         """
@@ -119,7 +119,7 @@ class Instance:
         :return: True if all tasks were successfully stopped, False otherwise.
         """
 
-        await self.post_stop().wait()
+        return await self.post_stop().wait()
 
     def post_stop(self) -> Future:
         """
@@ -181,7 +181,7 @@ class Instance:
         return Library.framework.MaaTaskStatus(self._handle, id)
 
     def _stop_status(self, id: int) -> ctypes.c_int32:
-        return MaaStatusEnum.success if self.all_finished() else MaaStatusEnum.running
+        return MaaStatusEnum.success if self.running() else MaaStatusEnum.running
 
     def _set_task_param(self, id: int, param: Dict) -> bool:
         return Library.framework.MaaSetTaskParam(
@@ -243,8 +243,8 @@ class Instance:
             MaaTaskId,
         ]
 
-        Library.framework.MaaTaskAllFinished.restype = MaaBool
-        Library.framework.MaaTaskAllFinished.argtypes = [MaaInstanceHandle]
+        Library.framework.MaaRunning.restype = MaaBool
+        Library.framework.MaaRunning.argtypes = [MaaInstanceHandle]
 
         Library.framework.MaaPostStop.restype = MaaBool
         Library.framework.MaaPostStop.argtypes = [MaaInstanceHandle]

@@ -22,7 +22,11 @@ void MaaDestroy(MaaInstanceHandle inst)
     delete inst;
 }
 
-MaaBool MaaSetOption(MaaInstanceHandle inst, MaaInstOption key, MaaOptionValue value, MaaOptionValueSize val_size)
+MaaBool MaaSetOption(
+    MaaInstanceHandle inst,
+    MaaInstOption key,
+    MaaOptionValue value,
+    MaaOptionValueSize val_size)
 {
     LogFunc << VAR_VOIDP(inst) << VAR(key) << VAR_VOIDP(value) << VAR(val_size);
 
@@ -68,8 +72,11 @@ MaaBool MaaInited(MaaInstanceHandle inst)
     return inst->inited();
 }
 
-MaaBool MaaRegisterCustomRecognizer(MaaInstanceHandle inst, MaaStringView name, MaaCustomRecognizerHandle recognizer,
-                                    MaaTransparentArg recognizer_arg)
+MaaBool MaaRegisterCustomRecognizer(
+    MaaInstanceHandle inst,
+    MaaStringView name,
+    MaaCustomRecognizerHandle recognizer,
+    MaaTransparentArg recognizer_arg)
 {
     LogFunc << VAR_VOIDP(inst) << VAR(name) << VAR_VOIDP(recognizer) << VAR_VOIDP(recognizer_arg);
 
@@ -106,8 +113,11 @@ MaaBool MaaClearCustomRecognizer(MaaInstanceHandle inst)
     return true;
 }
 
-MaaBool MaaRegisterCustomAction(MaaInstanceHandle inst, MaaStringView name, MaaCustomActionHandle action,
-                                MaaTransparentArg action_arg)
+MaaBool MaaRegisterCustomAction(
+    MaaInstanceHandle inst,
+    MaaStringView name,
+    MaaCustomActionHandle action,
+    MaaTransparentArg action_arg)
 {
     LogFunc << VAR_VOIDP(inst) << VAR(name) << VAR_VOIDP(action) << VAR_VOIDP(action_arg);
 
@@ -190,12 +200,16 @@ MaaStatus MaaWaitTask(MaaInstanceHandle inst, MaaTaskId id)
 
 MaaBool MaaTaskAllFinished(MaaInstanceHandle inst)
 {
-    // LogFunc << VAR_VOIDP(inst) << VAR(id);
+    return !MaaRunning(inst);
+}
+
+MaaBool MaaRunning(MaaInstanceHandle inst)
+{
     if (!inst) {
         LogError << "handle is null";
         return false;
     }
-    return inst->task_all_finished();
+    return inst->running();
 }
 
 MaaBool MaaPostStop(MaaInstanceHandle inst)
@@ -213,7 +227,7 @@ MaaBool MaaPostStop(MaaInstanceHandle inst)
 
 MaaBool MaaStop(MaaInstanceHandle inst)
 {
-    LogWarn << "Deprecated, please use MaaPostStop instead";
+    LogWarn << __FUNCTION__ << "is deprecated, use MaaPostStop instead.";
     return MaaPostStop(inst);
 }
 
