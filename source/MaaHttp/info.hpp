@@ -1,3 +1,4 @@
+// clang-format off
 #pragma once
 
 #include "function/interface.hpp"
@@ -1077,6 +1078,56 @@ struct is_output<maa::func_type_MaaInited::ret, false> {
 
 namespace lhg::maa {
 
+struct func_type_MaaRegisterCustomRecognizer {
+  struct _0_inst {
+    constexpr static size_t index = 0;
+    constexpr static const char* name = "inst";
+    using type = MaaInstanceAPI *;
+  };
+  struct _1_name {
+    constexpr static size_t index = 1;
+    constexpr static const char* name = "name";
+    using type = const char *;
+  };
+  struct _2_recognizer {
+    constexpr static size_t index = 2;
+    constexpr static const char* name = "recognizer";
+    using type = MaaCustomRecognizerAPI *;
+  };
+  struct _3_recognizer_arg {
+    constexpr static size_t index = 3;
+    constexpr static const char* name = "recognizer_arg";
+    using type = void *;
+  };
+  struct ret {
+    constexpr static size_t index = 4;
+    constexpr static const char* name = "return";
+    using type = unsigned char;
+  };
+  using args = std::tuple<_0_inst, _1_name, _2_recognizer, _3_recognizer_arg, ret>;
+};
+struct function_MaaRegisterCustomRecognizer {
+  constexpr static auto func = MaaRegisterCustomRecognizer;
+  constexpr static const char* name = "MaaRegisterCustomRecognizer";
+  using type = func_type_MaaRegisterCustomRecognizer;
+};
+
+}
+namespace lhg::call {
+
+template<>
+struct is_input<maa::func_type_MaaRegisterCustomRecognizer::ret, false> {
+  constexpr static bool value = false;
+};
+template<>
+struct is_output<maa::func_type_MaaRegisterCustomRecognizer::ret, false> {
+  constexpr static bool value = true;
+};
+
+}
+
+namespace lhg::maa {
+
 struct func_type_MaaUnregisterCustomRecognizer {
   struct _0_inst {
     constexpr static size_t index = 0;
@@ -1145,6 +1196,56 @@ struct is_input<maa::func_type_MaaClearCustomRecognizer::ret, false> {
 };
 template<>
 struct is_output<maa::func_type_MaaClearCustomRecognizer::ret, false> {
+  constexpr static bool value = true;
+};
+
+}
+
+namespace lhg::maa {
+
+struct func_type_MaaRegisterCustomAction {
+  struct _0_inst {
+    constexpr static size_t index = 0;
+    constexpr static const char* name = "inst";
+    using type = MaaInstanceAPI *;
+  };
+  struct _1_name {
+    constexpr static size_t index = 1;
+    constexpr static const char* name = "name";
+    using type = const char *;
+  };
+  struct _2_action {
+    constexpr static size_t index = 2;
+    constexpr static const char* name = "action";
+    using type = MaaCustomActionAPI *;
+  };
+  struct _3_action_arg {
+    constexpr static size_t index = 3;
+    constexpr static const char* name = "action_arg";
+    using type = void *;
+  };
+  struct ret {
+    constexpr static size_t index = 4;
+    constexpr static const char* name = "return";
+    using type = unsigned char;
+  };
+  using args = std::tuple<_0_inst, _1_name, _2_action, _3_action_arg, ret>;
+};
+struct function_MaaRegisterCustomAction {
+  constexpr static auto func = MaaRegisterCustomAction;
+  constexpr static const char* name = "MaaRegisterCustomAction";
+  using type = func_type_MaaRegisterCustomAction;
+};
+
+}
+namespace lhg::call {
+
+template<>
+struct is_input<maa::func_type_MaaRegisterCustomAction::ret, false> {
+  constexpr static bool value = false;
+};
+template<>
+struct is_output<maa::func_type_MaaRegisterCustomAction::ret, false> {
   constexpr static bool value = true;
 };
 
@@ -2956,7 +3057,7 @@ struct func_type_MaaToolkitGetWindow {
   struct ret {
     constexpr static size_t index = 1;
     constexpr static const char* name = "return";
-    using type = unsigned long long;
+    using type = void *;
   };
   using args = std::tuple<_0_index, ret>;
 };
@@ -2986,7 +3087,7 @@ struct func_type_MaaToolkitGetCursorWindow {
   struct ret {
     constexpr static size_t index = 0;
     constexpr static const char* name = "return";
-    using type = unsigned long long;
+    using type = void *;
   };
   using args = std::tuple<ret>;
 };
@@ -3016,7 +3117,7 @@ struct func_type_MaaToolkitGetDesktopWindow {
   struct ret {
     constexpr static size_t index = 0;
     constexpr static const char* name = "return";
-    using type = unsigned long long;
+    using type = void *;
   };
   using args = std::tuple<ret>;
 };
@@ -3046,7 +3147,7 @@ struct func_type_MaaToolkitGetForegroundWindow {
   struct ret {
     constexpr static size_t index = 0;
     constexpr static const char* name = "return";
-    using type = unsigned long long;
+    using type = void *;
   };
   using args = std::tuple<ret>;
 };
@@ -3327,116 +3428,6 @@ struct is_output<maa::func_type_MaaSetGlobalOptionBoolean::ret, false> {
 
 namespace lhg::maa {
 
-struct func_type_MaaRegisterCustomRecognizerImpl {
-  struct _0_inst {
-    constexpr static size_t index = 0;
-    constexpr static const char* name = "inst";
-    using type = MaaInstanceAPI *;
-  };
-  struct _1_name {
-    constexpr static size_t index = 1;
-    constexpr static const char* name = "name";
-    using type = const char *;
-  };
-  struct _2_analyze {
-    constexpr static size_t index = 2;
-    constexpr static const char* name = "analyze";
-    using type = unsigned char (*)(MaaSyncContextAPI *, MaaImageBuffer *, const char *, const char *, void *, MaaRect *, MaaStringBuffer *);
-  };
-  struct _3_analyze_arg {
-    constexpr static size_t index = 3;
-    constexpr static const char* name = "analyze_arg";
-    using type = void *;
-  };
-  struct ret {
-    constexpr static size_t index = 4;
-    constexpr static const char* name = "return";
-    using type = unsigned char;
-  };
-  using args = std::tuple<_0_inst, _1_name, _2_analyze, _3_analyze_arg, ret>;
-};
-struct function_MaaRegisterCustomRecognizerImpl {
-  constexpr static auto func = MaaRegisterCustomRecognizerImpl;
-  constexpr static const char* name = "MaaRegisterCustomRecognizerImpl";
-  using type = func_type_MaaRegisterCustomRecognizerImpl;
-};
-
-}
-namespace lhg::call {
-
-template<>
-struct is_input<maa::func_type_MaaRegisterCustomRecognizerImpl::ret, false> {
-  constexpr static bool value = false;
-};
-template<>
-struct is_output<maa::func_type_MaaRegisterCustomRecognizerImpl::ret, false> {
-  constexpr static bool value = true;
-};
-
-}
-
-namespace lhg::maa {
-
-struct func_type_MaaRegisterCustomActionImpl {
-  struct _0_inst {
-    constexpr static size_t index = 0;
-    constexpr static const char* name = "inst";
-    using type = MaaInstanceAPI *;
-  };
-  struct _1_name {
-    constexpr static size_t index = 1;
-    constexpr static const char* name = "name";
-    using type = const char *;
-  };
-  struct _2_run {
-    constexpr static size_t index = 2;
-    constexpr static const char* name = "run";
-    using type = unsigned char (*)(MaaSyncContextAPI *, const char *, const char *, MaaRect *, const char *, void *);
-  };
-  struct _3_run_arg {
-    constexpr static size_t index = 3;
-    constexpr static const char* name = "run_arg";
-    using type = void *;
-  };
-  struct _4_stop {
-    constexpr static size_t index = 4;
-    constexpr static const char* name = "stop";
-    using type = void (*)(void *);
-  };
-  struct _5_stop_arg {
-    constexpr static size_t index = 5;
-    constexpr static const char* name = "stop_arg";
-    using type = void *;
-  };
-  struct ret {
-    constexpr static size_t index = 6;
-    constexpr static const char* name = "return";
-    using type = unsigned char;
-  };
-  using args = std::tuple<_0_inst, _1_name, _2_run, _3_run_arg, _4_stop, _5_stop_arg, ret>;
-};
-struct function_MaaRegisterCustomActionImpl {
-  constexpr static auto func = MaaRegisterCustomActionImpl;
-  constexpr static const char* name = "MaaRegisterCustomActionImpl";
-  using type = func_type_MaaRegisterCustomActionImpl;
-};
-
-}
-namespace lhg::call {
-
-template<>
-struct is_input<maa::func_type_MaaRegisterCustomActionImpl::ret, false> {
-  constexpr static bool value = false;
-};
-template<>
-struct is_output<maa::func_type_MaaRegisterCustomActionImpl::ret, false> {
-  constexpr static bool value = true;
-};
-
-}
-
-namespace lhg::maa {
-
 using __function_list = std::tuple<
   function_MaaAdbControllerCreate,
   function_MaaAdbControllerCreateV2,
@@ -3462,8 +3453,10 @@ using __function_list = std::tuple<
   function_MaaBindResource,
   function_MaaBindController,
   function_MaaInited,
+  function_MaaRegisterCustomRecognizer,
   function_MaaUnregisterCustomRecognizer,
   function_MaaClearCustomRecognizer,
+  function_MaaRegisterCustomAction,
   function_MaaUnregisterCustomAction,
   function_MaaClearCustomAction,
   function_MaaPostTask,
@@ -3522,9 +3515,7 @@ using __function_list = std::tuple<
   function_MaaControllerSetOptionBoolean,
   function_MaaSetGlobalOptionString,
   function_MaaSetGlobalOptionInteger,
-  function_MaaSetGlobalOptionBoolean,
-  function_MaaRegisterCustomRecognizerImpl,
-  function_MaaRegisterCustomActionImpl
+  function_MaaSetGlobalOptionBoolean
 >;
 
 }

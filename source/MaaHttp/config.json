@@ -69,8 +69,6 @@
         "MaaWin32ControllerCreate",
         "MaaCustomControllerCreate",
         "MaaSetImageRawData",
-        "MaaRegisterCustomRecognizer",
-        "MaaRegisterCustomAction",
         "/MaaSyncContext.+",
         "/Maa.+Rect.*",
         "/Maa.+String.+",

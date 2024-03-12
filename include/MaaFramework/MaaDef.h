@@ -4,7 +4,7 @@
  * @brief The type definitions.
  *
  * @copyright Copyright (c) 2024
- * 
+ *
  */
 
 #pragma once
@@ -106,7 +106,7 @@ typedef MaaOption MaaCtrlOption;
 
 /**
  * @brief Option keys for controller instance options. See MaaControllerSetOption().
- * 
+ *
  */
 enum MaaCtrlOptionEnum
 {
@@ -239,11 +239,7 @@ enum MaaWin32ControllerTypeEnum
     // MaaWin32ControllerType_Screencap_DXGI_BackBuffer = 3 << 16,
     MaaWin32ControllerType_Screencap_DXGI_FramePool = 4 << 16,
 };
-#if defined(LHG_PROCESS) || defined(LHG_BUILD)
-typedef size_t MaaWin32Hwnd;
-#else
 typedef void* MaaWin32Hwnd;
-#endif
 
 typedef void* MaaTransparentArg;
 typedef MaaTransparentArg MaaCallbackTransparentArg;
