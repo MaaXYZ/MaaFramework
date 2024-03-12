@@ -16,24 +16,11 @@ extern "C"
 {
 #endif
 
-    /**
-     * @brief Find ADB devices.
-     *
-     * \deprecated Use MaaToolkitPostFindDevice() instead.
-     *
-     * @return MaaSize
-     */
-    MAA_TOOLKIT_API MaaSize MaaToolkitFindDevice();
+    /// \deprecated Use MaaToolkitPostFindDevice() and MaaToolkitWaitForFindDeviceToComplete() instead.
+    MAA_DEPRECATED MAA_TOOLKIT_API MaaSize MaaToolkitFindDevice();
 
-    /**
-     * @brief Find ADB devices with a given ADB path.
-     *
-     * \deprecated Use MaaToolkitPostFindDeviceWithAdb() instead.
-     *
-     * @param adb_path
-     * @return MaaSize
-     */
-    MAA_TOOLKIT_API MaaSize MaaToolkitFindDeviceWithAdb(MaaStringView adb_path);
+    /// \deprecated Use MaaToolkitPostFindDeviceWithAdb() and MaaToolkitWaitForFindDeviceToComplete() instead.
+    MAA_DEPRECATED MAA_TOOLKIT_API MaaSize MaaToolkitFindDeviceWithAdb(MaaStringView adb_path);
 
     /**
      * @brief Post a request to find all ADB devices.

@@ -227,7 +227,7 @@ MaaBool MaaPostStop(MaaInstanceHandle inst)
 
 MaaBool MaaStop(MaaInstanceHandle inst)
 {
-    LogWarn << "Deprecated, please use MaaPostStop instead";
+    LogWarn << __FUNCTION__ << "is deprecated, use MaaPostStop instead.";
     return MaaPostStop(inst);
 }
 
