@@ -121,6 +121,23 @@ Status ResourceImpl::loaded(
     return Status::OK;
 }
 
+Status ResourceImpl::clear(
+    ServerContext* context,
+    const ::maarpc::HandleRequest* request,
+    ::maarpc::BoolResponse* response)
+{
+    LogFunc;
+    std::ignore = context;
+
+    MAA_GRPC_REQUIRED(handle)
+
+    MAA_GRPC_GET_HANDLE
+
+    response->set_bool_(MaaResourceClear(handle));
+
+    return Status::OK;
+}
+
 Status ResourceImpl::hash(
     ServerContext* context,
     const ::maarpc::HandleRequest* request,
