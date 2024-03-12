@@ -4,7 +4,8 @@
 #include "MaaFramework/MaaDef.h"
 #include "extra.h"
 
-MaaBool MaaControllerSetOptionString(MaaControllerHandle ctrl, MaaCtrlOption key, MaaStringView value)
+MaaBool
+    MaaControllerSetOptionString(MaaControllerHandle ctrl, MaaCtrlOption key, MaaStringView value)
 {
     return MaaControllerSetOption(ctrl, key, const_cast<char*>(value), strlen(value));
 }

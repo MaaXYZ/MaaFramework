@@ -13,12 +13,13 @@ namespace lhg::call
 
 #pragma region hwnd
 
-#define __DECLARE_RETURN_HWND(func_tag)                                                             \
-    __CALL_DECLARE_ARG_TO_JSON_BEGIN(func_tag, ret)                                                 \
-    std::ignore = state;                                                                            \
-    json::value value;                                                                              \
-    value = std::format("{:#018x}", reinterpret_cast<size_t>(std::get<func_tag::ret::index>(arg))); \
-    res[name] = value;                                                                              \
+#define __DECLARE_RETURN_HWND(func_tag)                                                         \
+    __CALL_DECLARE_ARG_TO_JSON_BEGIN(func_tag, ret)                                             \
+    std::ignore = state;                                                                        \
+    json::value value;                                                                          \
+    value =                                                                                     \
+        std::format("{:#018x}", reinterpret_cast<size_t>(std::get<func_tag::ret::index>(arg))); \
+    res[name] = value;                                                                          \
     __CALL_DECLARE_ARG_TO_JSON_END()
 
 __DECLARE_RETURN_HWND(maa::func_type_MaaToolkitGetWindow)
@@ -41,8 +42,11 @@ __DECLARE_JSON_TO_ARG_END()
 __CALL_DECLARE_ARG_TO_JSON_BEGIN(maa::func_type_MaaGetImageEncoded, ret)
 std::ignore = state;
 json::value value;
-auto size = MaaGetImageEncodedSize(std::get<maa::func_type_MaaGetImageEncoded::_0_handle::index>(arg));
-std::string_view data(reinterpret_cast<char*>(std::get<maa::func_type_MaaGetImageEncoded::ret::index>(arg)), size);
+auto size =
+    MaaGetImageEncodedSize(std::get<maa::func_type_MaaGetImageEncoded::_0_handle::index>(arg));
+std::string_view data(
+    reinterpret_cast<char*>(std::get<maa::func_type_MaaGetImageEncoded::ret::index>(arg)),
+    size);
 value = base64::to_base64(data);
 res[name] = value;
 __CALL_DECLARE_ARG_TO_JSON_END()
@@ -91,19 +95,20 @@ __DECLARE_STRING_BUFFER_OUTPUT(maa::func_type_MaaControllerGetUUID, _1_buffer)
 
 #undef __DECLARE_STRING_BUFFER_OUTPUT
 
-#define __DECLARE_APICALLBACK(func_tag, cb_tag, ctx_tag)                                                \
-    __CALL_DECLARE_INPUT(func_tag::ctx_tag, false)                                                      \
-                                                                                                        \
-    __CALL_DECLARE_JSON_TO_ARG_BEGIN(func_tag, cb_tag)                                                  \
-    std::string id = value.as_string();                                                                 \
-    auto manager = provider.get<CallbackManager<maa::callback_MaaAPICallback>, void>();                 \
-    auto ctx = manager->query(id);                                                                      \
-    if (!ctx.get()) {                                                                                   \
-        return false;                                                                                   \
-    }                                                                                                   \
-    std::get<func_tag::cb_tag::index>(arg) = callback::create_callback<maa::callback_MaaAPICallback>(); \
-    std::get<func_tag::ctx_tag::index>(arg) = ctx.get();                                                \
-    return true;                                                                                        \
+#define __DECLARE_APICALLBACK(func_tag, cb_tag, ctx_tag)                                \
+    __CALL_DECLARE_INPUT(func_tag::ctx_tag, false)                                      \
+                                                                                        \
+    __CALL_DECLARE_JSON_TO_ARG_BEGIN(func_tag, cb_tag)                                  \
+    std::string id = value.as_string();                                                 \
+    auto manager = provider.get<CallbackManager<maa::callback_MaaAPICallback>, void>(); \
+    auto ctx = manager->query(id);                                                      \
+    if (!ctx.get()) {                                                                   \
+        return false;                                                                   \
+    }                                                                                   \
+    std::get<func_tag::cb_tag::index>(arg) =                                            \
+        callback::create_callback<maa::callback_MaaAPICallback>();                      \
+    std::get<func_tag::ctx_tag::index>(arg) = ctx.get();                                \
+    return true;                                                                        \
     __DECLARE_JSON_TO_ARG_END()
 
 __DECLARE_APICALLBACK(maa::func_type_MaaAdbControllerCreate, _4_callback, _5_callback_arg)

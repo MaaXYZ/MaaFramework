@@ -8,9 +8,12 @@
 #define FAKE_IMPORT
 #endif
 
-MaaBool FAKE_IMPORT MaaControllerSetOptionString(MaaControllerHandle ctrl, MaaCtrlOption key, MaaStringView value);
-MaaBool FAKE_IMPORT MaaControllerSetOptionInteger(MaaControllerHandle ctrl, MaaCtrlOption key, int value);
-MaaBool FAKE_IMPORT MaaControllerSetOptionBoolean(MaaControllerHandle ctrl, MaaCtrlOption key, bool value);
+MaaBool FAKE_IMPORT
+    MaaControllerSetOptionString(MaaControllerHandle ctrl, MaaCtrlOption key, MaaStringView value);
+MaaBool FAKE_IMPORT
+    MaaControllerSetOptionInteger(MaaControllerHandle ctrl, MaaCtrlOption key, int value);
+MaaBool FAKE_IMPORT
+    MaaControllerSetOptionBoolean(MaaControllerHandle ctrl, MaaCtrlOption key, bool value);
 
 MaaBool FAKE_IMPORT MaaSetGlobalOptionString(MaaCtrlOption key, MaaStringView value);
 MaaBool FAKE_IMPORT MaaSetGlobalOptionInteger(MaaCtrlOption key, int value);

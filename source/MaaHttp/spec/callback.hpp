@@ -54,7 +54,8 @@ struct get_context<maa::callback_CustomActionRun, true>
     using call_arg_tuple = convert_arg_type<arg_tuple>;
     static context_info* get(const call_arg_tuple& arg)
     {
-        auto ptr = reinterpret_cast<pri_maa::custom_action_context*>(std::get<callback_tag::context>(arg));
+        auto ptr =
+            reinterpret_cast<pri_maa::custom_action_context*>(std::get<callback_tag::context>(arg));
         return ptr->run.get();
     }
 };
@@ -68,7 +69,8 @@ struct get_context<maa::callback_CustomActionStop, true>
     using call_arg_tuple = convert_arg_type<arg_tuple>;
     static context_info* get(const call_arg_tuple& arg)
     {
-        auto ptr = reinterpret_cast<pri_maa::custom_action_context*>(std::get<callback_tag::context>(arg));
+        auto ptr =
+            reinterpret_cast<pri_maa::custom_action_context*>(std::get<callback_tag::context>(arg));
         return ptr->stop.get();
     }
 };
