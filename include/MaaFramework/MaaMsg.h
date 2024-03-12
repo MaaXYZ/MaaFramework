@@ -113,7 +113,6 @@
 #define MaaMsg_Controller_Action_Started ("Controller.Action.Started")
 #define MaaMsg_Controller_Action_Completed ("Controller.Action.Completed")
 #define MaaMsg_Controller_Action_Failed ("Controller.Action.Failed")
-// #define MaaMsg_Controller_Actipost_stopped ("Controller.Action.Stopped")
 /// @}
 
 /**
@@ -131,7 +130,6 @@
 #define MaaMsg_Task_Started ("Task.Started")
 #define MaaMsg_Task_Completed ("Task.Completed")
 #define MaaMsg_Task_Failed ("Task.Failed")
-#define MaaMsg_Task_Stopped ("Task.Stopped")
 /// @}
 
 /**
