@@ -264,8 +264,7 @@ bool ControllerAgent::stop_app(const std::string& package)
 
 MaaCtrlId ControllerAgent::post(Action action)
 {
-    if (check_stop()) {
-        LogError << "stopping, ignore new post";
+    if (!check_stop()) {
         return MaaInvalidId;
     }
 
