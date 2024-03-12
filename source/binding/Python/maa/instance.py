@@ -243,8 +243,8 @@ class Instance:
             MaaTaskId,
         ]
 
-        Library.framework.MaaTaskAllFinished.restype = MaaBool
-        Library.framework.MaaTaskAllFinished.argtypes = [MaaInstanceHandle]
+        Library.framework.MaaRunning.restype = MaaBool
+        Library.framework.MaaRunning.argtypes = [MaaInstanceHandle]
 
         Library.framework.MaaPostStop.restype = MaaBool
         Library.framework.MaaPostStop.argtypes = [MaaInstanceHandle]
