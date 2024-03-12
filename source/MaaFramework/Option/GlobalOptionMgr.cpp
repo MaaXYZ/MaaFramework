@@ -23,6 +23,8 @@ bool GlobalOptionMgr::set_option(
         return set_stdout_level(value, val_size);
     case MaaGlobalOption_ShowHitDraw:
         return set_show_hit_draw(value, val_size);
+    case MaaGlobalOption_DebugMessage:
+        return set_debug_message(value, val_size);
     default:
         LogError << "Unknown key" << VAR(key) << VAR(value);
         return false;
@@ -105,6 +107,22 @@ bool GlobalOptionMgr::set_stdout_level(MaaOptionValue value, MaaOptionValueSize 
     LogInfo << "Set log stdout level" << VAR(level);
 
     MAA_LOG_NS::Logger::get_instance().set_stdout_level(level);
+
+    return true;
+}
+
+bool GlobalOptionMgr::set_debug_message(MaaOptionValue value, MaaOptionValueSize val_size)
+{
+    LogFunc;
+
+    if (val_size != sizeof(bool)) {
+        LogError << "Invalid value size" << VAR(val_size);
+        return false;
+    }
+
+    debug_message_ = *reinterpret_cast<const bool*>(value);
+
+    LogInfo << "Set debug message" << VAR(debug_message_);
 
     return true;
 }

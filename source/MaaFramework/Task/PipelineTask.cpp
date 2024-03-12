@@ -5,6 +5,7 @@
 #include "Controller/ControllerAgent.h"
 #include "Instance/InstanceStatus.h"
 #include "MaaFramework/MaaMsg.h"
+#include "Option/GlobalOptionMgr.h"
 #include "Resource/ResourceMgr.h"
 #include "Task/CustomAction.h"
 #include "Utils/ImageIo.h"
@@ -35,8 +36,6 @@ bool PipelineTask::run()
     while (!next_list.empty() && !need_to_stop()) {
         auto timeout = new_hits.timeout;
         ret = find_first_and_run(next_list, timeout, new_hits);
-
-        cur_task_name_ = new_hits.name;
 
         switch (ret) {
         case RunningResult::Success:
@@ -99,11 +98,13 @@ PipelineTask::RunningResult PipelineTask::find_first_and_run(
         }
 
         if (std::chrono::steady_clock::now() - start_time > timeout) {
-            LogInfo << "Task timeout" << VAR(cur_task_name_) << VAR(timeout);
+            LogInfo << "Task timeout" << VAR(latest_hit_) << VAR(timeout);
             return RunningResult::Timeout;
         }
     }
+
     LogInfo << "Task hit:" << hits.task_data.name << hits.rec_result.box;
+    latest_hit_ = hits.task_data.name;
 
     auto run_ret = run_task(hits);
 
@@ -120,18 +121,31 @@ std::optional<PipelineTask::HitResult>
         return std::nullopt;
     }
     if (need_to_stop()) {
-        LogInfo << "Task interrupted" << VAR(cur_task_name_);
+        LogInfo << "Task interrupted" << VAR(latest_hit_);
         return std::nullopt;
     }
 
-    LogFunc << VAR(cur_task_name_) << VAR(list);
+    LogFunc << VAR(latest_hit_) << VAR(list);
 
     cv::Mat image = controller()->screencap();
 
     if (need_to_stop()) {
-        LogInfo << "Task interrupted" << VAR(cur_task_name_);
+        LogInfo << "Task interrupted" << VAR(latest_hit_);
         return std::nullopt;
     }
+
+    if (debug_mode()) {
+        auto screencap_path = dump_image(image);
+        json::value detail = basic_info()
+                             | json::object {
+                                   { "list", json::array(list) },
+                                   { "screencap", path_to_utf8_string(screencap_path) },
+                               };
+        notify(MaaMsg_Task_Debug_ListToRecognize, detail);
+    }
+
+    bool hit = false;
+    HitResult result;
 
     for (const std::string& name : list) {
         LogDebug << "recognize:" << name;
@@ -145,9 +159,27 @@ std::optional<PipelineTask::HitResult>
         if (!rec_opt) {
             continue;
         }
-        return HitResult { .rec_result = *std::move(rec_opt), .task_data = task_data };
+
+        hit = true;
+        result = { .rec_result = *std::move(rec_opt), .task_data = task_data };
+        break;
     }
-    return std::nullopt;
+
+    if (!hit) {
+        return std::nullopt;
+    }
+
+    if (debug_mode()) {
+        json::value detail = basic_info()
+                             | json::object {
+                                   { "name", result.task_data.name },
+                                   { "recognition", result.rec_result.detail },
+                                   { "status", "Hit" },
+                               };
+        notify(MaaMsg_Task_Debug_Hit, detail);
+    }
+
+    return result;
 }
 
 PipelineTask::RunningResult PipelineTask::run_task(const HitResult& hits)
@@ -158,28 +190,27 @@ PipelineTask::RunningResult PipelineTask::run_task(const HitResult& hits)
     }
 
     if (need_to_stop()) {
-        LogInfo << "Task interrupted" << VAR(cur_task_name_);
+        LogInfo << "Task interrupted" << VAR(latest_hit_);
         return RunningResult::Interrupted;
     }
 
     const std::string& name = hits.task_data.name;
     uint64_t run_times = status()->get_run_times(name);
 
-    json::value detail = {
-        { "id", task_id_ },
-        { "entry", entry() },
-        { "name", name },
-        { "hash", resource() ? resource()->get_hash() : std::string() },
-        { "uuid", controller() ? controller()->get_uuid() : std::string() },
-        { "recognition", hits.rec_result.detail },
-        { "run_times", run_times },
-        { "last_time", format_now() },
-        { "status", "Hit" },
-    };
+    json::value detail = basic_info()
+                         | json::object {
+                               { "name", name },
+                               { "recognition", hits.rec_result.detail },
+                               { "run_times", run_times },
+                               { "status", "ReadyToRun" },
+                           };
 
     status()->set_task_result(name, detail);
     if (hits.task_data.focus) {
-        notify(MaaMsg_Task_Focus_Hit, detail);
+        notify(MaaMsg_Task_Focus_ReadyToRun, detail);
+    }
+    if (debug_mode()) {
+        notify(MaaMsg_Task_Debug_ReadyToRun, detail);
     }
 
     if (hits.task_data.times_limit <= run_times) {
@@ -190,6 +221,9 @@ PipelineTask::RunningResult PipelineTask::run_task(const HitResult& hits)
         if (hits.task_data.focus) {
             notify(MaaMsg_Task_Focus_Runout, detail);
         }
+        if (debug_mode()) {
+            notify(MaaMsg_Task_Debug_Runout, detail);
+        }
 
         return RunningResult::Runout;
     }
@@ -198,14 +232,53 @@ PipelineTask::RunningResult PipelineTask::run_task(const HitResult& hits)
     status()->increase_run_times(name);
 
     detail["status"] = "Completed";
-    detail["last_time"] = format_now();
     detail["run_times"] = run_times + 1;
     status()->set_task_result(name, detail);
     if (hits.task_data.focus) {
         notify(MaaMsg_Task_Focus_Completed, detail);
     }
+    if (debug_mode()) {
+        notify(MaaMsg_Task_Debug_Completed, detail);
+    }
 
     return ret ? RunningResult::Success : RunningResult::InternalError;
+}
+
+bool PipelineTask::debug_mode() const
+{
+    return GlobalOptionMgr::get_instance().debug_message();
+}
+
+json::object PipelineTask::basic_info()
+{
+    return {
+        { "id", task_id_ },
+        { "entry", entry() },
+        { "hash", resource() ? resource()->get_hash() : std::string() },
+        { "uuid", controller() ? controller()->get_uuid() : std::string() },
+        { "latest_hit", latest_hit_ },
+    };
+}
+
+std::filesystem::path PipelineTask::dump_image(const cv::Mat& image) const
+{
+    if (image.empty()) {
+        return {};
+    }
+
+    const auto& log_dir = GlobalOptionMgr::get_instance().log_dir();
+    if (log_dir.empty()) {
+        return {};
+    }
+
+    std::string filename = std::format("{}-{}.png", format_now_for_filename(), make_uuid());
+    auto filepath = log_dir / "screencap" / path(filename);
+    bool ret = MAA_NS::imwrite(filepath, image);
+    if (!ret) {
+        return {};
+    }
+
+    return filepath;
 }
 
 MAA_TASK_NS_END

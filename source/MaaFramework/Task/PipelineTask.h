@@ -74,6 +74,9 @@ private:
     }
 
     bool need_to_stop() const { return need_to_stop_; }
+    bool debug_mode() const;
+    json::object basic_info();
+    std::filesystem::path dump_image(const cv::Mat& image) const;
 
 private:
     bool need_to_stop_ = false;
@@ -81,7 +84,7 @@ private:
 
     int64_t task_id_ = 0;
     std::string entry_;
-    std::string cur_task_name_;
+    std::string latest_hit_;
 
     TaskDataMgr data_mgr_;
     Recognizer recognizer_;
