@@ -1,11 +1,8 @@
 #include <iostream>
 
-#include "info.hpp"
-#include "server/dispatcher.hpp"
-#include "server/server.hpp"
 #include "utils/phony.hpp"
 
-#include "specialize.hpp"
+#include "spec/spec.hpp"
 
 int main()
 {

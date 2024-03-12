@@ -68,6 +68,56 @@ struct is_output<maa::func_type_MaaAdbControllerCreate::ret, false> {
 
 namespace lhg::maa {
 
+struct func_type_MaaWin32ControllerCreate {
+  struct _0_hWnd {
+    constexpr static size_t index = 0;
+    constexpr static const char* name = "hWnd";
+    using type = void *;
+  };
+  struct _1_type {
+    constexpr static size_t index = 1;
+    constexpr static const char* name = "type";
+    using type = int;
+  };
+  struct _2_callback {
+    constexpr static size_t index = 2;
+    constexpr static const char* name = "callback";
+    using type = void (*)(const char *, const char *, void *);
+  };
+  struct _3_callback_arg {
+    constexpr static size_t index = 3;
+    constexpr static const char* name = "callback_arg";
+    using type = void *;
+  };
+  struct ret {
+    constexpr static size_t index = 4;
+    constexpr static const char* name = "return";
+    using type = MaaControllerAPI *;
+  };
+  using args = std::tuple<_0_hWnd, _1_type, _2_callback, _3_callback_arg, ret>;
+};
+struct function_MaaWin32ControllerCreate {
+  constexpr static auto func = MaaWin32ControllerCreate;
+  constexpr static const char* name = "MaaWin32ControllerCreate";
+  using type = func_type_MaaWin32ControllerCreate;
+};
+
+}
+namespace lhg::call {
+
+template<>
+struct is_input<maa::func_type_MaaWin32ControllerCreate::ret, false> {
+  constexpr static bool value = false;
+};
+template<>
+struct is_output<maa::func_type_MaaWin32ControllerCreate::ret, false> {
+  constexpr static bool value = true;
+};
+
+}
+
+namespace lhg::maa {
+
 struct func_type_MaaAdbControllerCreateV2 {
   struct _0_adb_path {
     constexpr static size_t index = 0;
@@ -3430,6 +3480,7 @@ namespace lhg::maa {
 
 using __function_list = std::tuple<
   function_MaaAdbControllerCreate,
+  function_MaaWin32ControllerCreate,
   function_MaaAdbControllerCreateV2,
   function_MaaThriftControllerCreate,
   function_MaaDbgControllerCreate,
@@ -3741,22 +3792,83 @@ struct is_output<maa::func_type_CustomRecognizerAnalyze::ret, false> {
 }
 
 namespace lhg::call {
+
 template<>
 struct type_is_handle<MaaControllerAPI *, false> {
   constexpr static bool value = true;
 };
+
+}
+namespace lhg::callback {
+
+template<>
+struct type_is_handle<MaaControllerAPI *, false> {
+  constexpr static bool value = true;
+};
+
+}
+
+namespace lhg::call {
+
 template<>
 struct type_is_handle<MaaResourceAPI *, false> {
   constexpr static bool value = true;
 };
+
+}
+namespace lhg::callback {
+
+template<>
+struct type_is_handle<MaaResourceAPI *, false> {
+  constexpr static bool value = true;
+};
+
+}
+
+namespace lhg::call {
+
 template<>
 struct type_is_handle<MaaInstanceAPI *, false> {
   constexpr static bool value = true;
 };
+
+}
+namespace lhg::callback {
+
+template<>
+struct type_is_handle<MaaInstanceAPI *, false> {
+  constexpr static bool value = true;
+};
+
+}
+
+namespace lhg::call {
+
 template<>
 struct type_is_handle<MaaImageBuffer *, false> {
   constexpr static bool value = true;
 };
+
+}
+namespace lhg::callback {
+
+template<>
+struct type_is_handle<MaaImageBuffer *, false> {
+  constexpr static bool value = true;
+};
+
+}
+
+namespace lhg::call {
+
+template<>
+struct type_is_handle<MaaSyncContextAPI *, false> {
+  constexpr static bool value = true;
+};
+
+}
+namespace lhg::callback {
+
 template<>
 struct type_is_handle<MaaSyncContextAPI *, false> {
   constexpr static bool value = true;
