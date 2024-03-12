@@ -12,37 +12,37 @@ struct func_type_MaaAdbControllerCreate {
   struct _0_adb_path {
     constexpr static size_t index = 0;
     constexpr static const char* name = "adb_path";
-    using type = const char *;
+    using type = MaaStringView;
   };
   struct _1_address {
     constexpr static size_t index = 1;
     constexpr static const char* name = "address";
-    using type = const char *;
+    using type = MaaStringView;
   };
   struct _2_type {
     constexpr static size_t index = 2;
     constexpr static const char* name = "type";
-    using type = int;
+    using type = MaaAdbControllerType;
   };
   struct _3_config {
     constexpr static size_t index = 3;
     constexpr static const char* name = "config";
-    using type = const char *;
+    using type = MaaStringView;
   };
   struct _4_callback {
     constexpr static size_t index = 4;
     constexpr static const char* name = "callback";
-    using type = void (*)(const char *, const char *, void *);
+    using type = MaaControllerCallback;
   };
   struct _5_callback_arg {
     constexpr static size_t index = 5;
     constexpr static const char* name = "callback_arg";
-    using type = void *;
+    using type = MaaCallbackTransparentArg;
   };
   struct ret {
     constexpr static size_t index = 6;
     constexpr static const char* name = "return";
-    using type = MaaControllerAPI *;
+    using type = MaaControllerHandle;
   };
   using args = std::tuple<_0_adb_path, _1_address, _2_type, _3_config, _4_callback, _5_callback_arg, ret>;
 };
@@ -72,27 +72,27 @@ struct func_type_MaaWin32ControllerCreate {
   struct _0_hWnd {
     constexpr static size_t index = 0;
     constexpr static const char* name = "hWnd";
-    using type = void *;
+    using type = MaaWin32Hwnd;
   };
   struct _1_type {
     constexpr static size_t index = 1;
     constexpr static const char* name = "type";
-    using type = int;
+    using type = MaaWin32ControllerType;
   };
   struct _2_callback {
     constexpr static size_t index = 2;
     constexpr static const char* name = "callback";
-    using type = void (*)(const char *, const char *, void *);
+    using type = MaaControllerCallback;
   };
   struct _3_callback_arg {
     constexpr static size_t index = 3;
     constexpr static const char* name = "callback_arg";
-    using type = void *;
+    using type = MaaCallbackTransparentArg;
   };
   struct ret {
     constexpr static size_t index = 4;
     constexpr static const char* name = "return";
-    using type = MaaControllerAPI *;
+    using type = MaaControllerHandle;
   };
   using args = std::tuple<_0_hWnd, _1_type, _2_callback, _3_callback_arg, ret>;
 };
@@ -122,42 +122,42 @@ struct func_type_MaaAdbControllerCreateV2 {
   struct _0_adb_path {
     constexpr static size_t index = 0;
     constexpr static const char* name = "adb_path";
-    using type = const char *;
+    using type = MaaStringView;
   };
   struct _1_address {
     constexpr static size_t index = 1;
     constexpr static const char* name = "address";
-    using type = const char *;
+    using type = MaaStringView;
   };
   struct _2_type {
     constexpr static size_t index = 2;
     constexpr static const char* name = "type";
-    using type = int;
+    using type = MaaAdbControllerType;
   };
   struct _3_config {
     constexpr static size_t index = 3;
     constexpr static const char* name = "config";
-    using type = const char *;
+    using type = MaaStringView;
   };
   struct _4_agent_path {
     constexpr static size_t index = 4;
     constexpr static const char* name = "agent_path";
-    using type = const char *;
+    using type = MaaStringView;
   };
   struct _5_callback {
     constexpr static size_t index = 5;
     constexpr static const char* name = "callback";
-    using type = void (*)(const char *, const char *, void *);
+    using type = MaaControllerCallback;
   };
   struct _6_callback_arg {
     constexpr static size_t index = 6;
     constexpr static const char* name = "callback_arg";
-    using type = void *;
+    using type = MaaCallbackTransparentArg;
   };
   struct ret {
     constexpr static size_t index = 7;
     constexpr static const char* name = "return";
-    using type = MaaControllerAPI *;
+    using type = MaaControllerHandle;
   };
   using args = std::tuple<_0_adb_path, _1_address, _2_type, _3_config, _4_agent_path, _5_callback, _6_callback_arg, ret>;
 };
@@ -187,37 +187,37 @@ struct func_type_MaaThriftControllerCreate {
   struct _0_type {
     constexpr static size_t index = 0;
     constexpr static const char* name = "type";
-    using type = int;
+    using type = MaaThriftControllerType;
   };
   struct _1_host {
     constexpr static size_t index = 1;
     constexpr static const char* name = "host";
-    using type = const char *;
+    using type = MaaStringView;
   };
   struct _2_port {
     constexpr static size_t index = 2;
     constexpr static const char* name = "port";
-    using type = int;
+    using type = int32_t;
   };
   struct _3_config {
     constexpr static size_t index = 3;
     constexpr static const char* name = "config";
-    using type = const char *;
+    using type = MaaStringView;
   };
   struct _4_callback {
     constexpr static size_t index = 4;
     constexpr static const char* name = "callback";
-    using type = void (*)(const char *, const char *, void *);
+    using type = MaaControllerCallback;
   };
   struct _5_callback_arg {
     constexpr static size_t index = 5;
     constexpr static const char* name = "callback_arg";
-    using type = void *;
+    using type = MaaCallbackTransparentArg;
   };
   struct ret {
     constexpr static size_t index = 6;
     constexpr static const char* name = "return";
-    using type = MaaControllerAPI *;
+    using type = MaaControllerHandle;
   };
   using args = std::tuple<_0_type, _1_host, _2_port, _3_config, _4_callback, _5_callback_arg, ret>;
 };
@@ -247,37 +247,37 @@ struct func_type_MaaDbgControllerCreate {
   struct _0_read_path {
     constexpr static size_t index = 0;
     constexpr static const char* name = "read_path";
-    using type = const char *;
+    using type = MaaStringView;
   };
   struct _1_write_path {
     constexpr static size_t index = 1;
     constexpr static const char* name = "write_path";
-    using type = const char *;
+    using type = MaaStringView;
   };
   struct _2_type {
     constexpr static size_t index = 2;
     constexpr static const char* name = "type";
-    using type = int;
+    using type = MaaDbgControllerType;
   };
   struct _3_config {
     constexpr static size_t index = 3;
     constexpr static const char* name = "config";
-    using type = const char *;
+    using type = MaaStringView;
   };
   struct _4_callback {
     constexpr static size_t index = 4;
     constexpr static const char* name = "callback";
-    using type = void (*)(const char *, const char *, void *);
+    using type = MaaControllerCallback;
   };
   struct _5_callback_arg {
     constexpr static size_t index = 5;
     constexpr static const char* name = "callback_arg";
-    using type = void *;
+    using type = MaaCallbackTransparentArg;
   };
   struct ret {
     constexpr static size_t index = 6;
     constexpr static const char* name = "return";
-    using type = MaaControllerAPI *;
+    using type = MaaControllerHandle;
   };
   using args = std::tuple<_0_read_path, _1_write_path, _2_type, _3_config, _4_callback, _5_callback_arg, ret>;
 };
@@ -307,7 +307,7 @@ struct func_type_MaaControllerDestroy {
   struct _0_ctrl {
     constexpr static size_t index = 0;
     constexpr static const char* name = "ctrl";
-    using type = MaaControllerAPI *;
+    using type = MaaControllerHandle;
   };
   struct ret {
     constexpr static size_t index = 1;
@@ -342,12 +342,12 @@ struct func_type_MaaControllerPostConnection {
   struct _0_ctrl {
     constexpr static size_t index = 0;
     constexpr static const char* name = "ctrl";
-    using type = MaaControllerAPI *;
+    using type = MaaControllerHandle;
   };
   struct ret {
     constexpr static size_t index = 1;
     constexpr static const char* name = "return";
-    using type = long long;
+    using type = MaaCtrlId;
   };
   using args = std::tuple<_0_ctrl, ret>;
 };
@@ -377,22 +377,22 @@ struct func_type_MaaControllerPostClick {
   struct _0_ctrl {
     constexpr static size_t index = 0;
     constexpr static const char* name = "ctrl";
-    using type = MaaControllerAPI *;
+    using type = MaaControllerHandle;
   };
   struct _1_x {
     constexpr static size_t index = 1;
     constexpr static const char* name = "x";
-    using type = int;
+    using type = int32_t;
   };
   struct _2_y {
     constexpr static size_t index = 2;
     constexpr static const char* name = "y";
-    using type = int;
+    using type = int32_t;
   };
   struct ret {
     constexpr static size_t index = 3;
     constexpr static const char* name = "return";
-    using type = long long;
+    using type = MaaCtrlId;
   };
   using args = std::tuple<_0_ctrl, _1_x, _2_y, ret>;
 };
@@ -422,37 +422,37 @@ struct func_type_MaaControllerPostSwipe {
   struct _0_ctrl {
     constexpr static size_t index = 0;
     constexpr static const char* name = "ctrl";
-    using type = MaaControllerAPI *;
+    using type = MaaControllerHandle;
   };
   struct _1_x1 {
     constexpr static size_t index = 1;
     constexpr static const char* name = "x1";
-    using type = int;
+    using type = int32_t;
   };
   struct _2_y1 {
     constexpr static size_t index = 2;
     constexpr static const char* name = "y1";
-    using type = int;
+    using type = int32_t;
   };
   struct _3_x2 {
     constexpr static size_t index = 3;
     constexpr static const char* name = "x2";
-    using type = int;
+    using type = int32_t;
   };
   struct _4_y2 {
     constexpr static size_t index = 4;
     constexpr static const char* name = "y2";
-    using type = int;
+    using type = int32_t;
   };
   struct _5_duration {
     constexpr static size_t index = 5;
     constexpr static const char* name = "duration";
-    using type = int;
+    using type = int32_t;
   };
   struct ret {
     constexpr static size_t index = 6;
     constexpr static const char* name = "return";
-    using type = long long;
+    using type = MaaCtrlId;
   };
   using args = std::tuple<_0_ctrl, _1_x1, _2_y1, _3_x2, _4_y2, _5_duration, ret>;
 };
@@ -482,17 +482,17 @@ struct func_type_MaaControllerPostPressKey {
   struct _0_ctrl {
     constexpr static size_t index = 0;
     constexpr static const char* name = "ctrl";
-    using type = MaaControllerAPI *;
+    using type = MaaControllerHandle;
   };
   struct _1_keycode {
     constexpr static size_t index = 1;
     constexpr static const char* name = "keycode";
-    using type = int;
+    using type = int32_t;
   };
   struct ret {
     constexpr static size_t index = 2;
     constexpr static const char* name = "return";
-    using type = long long;
+    using type = MaaCtrlId;
   };
   using args = std::tuple<_0_ctrl, _1_keycode, ret>;
 };
@@ -522,17 +522,17 @@ struct func_type_MaaControllerPostInputText {
   struct _0_ctrl {
     constexpr static size_t index = 0;
     constexpr static const char* name = "ctrl";
-    using type = MaaControllerAPI *;
+    using type = MaaControllerHandle;
   };
   struct _1_text {
     constexpr static size_t index = 1;
     constexpr static const char* name = "text";
-    using type = const char *;
+    using type = MaaStringView;
   };
   struct ret {
     constexpr static size_t index = 2;
     constexpr static const char* name = "return";
-    using type = long long;
+    using type = MaaCtrlId;
   };
   using args = std::tuple<_0_ctrl, _1_text, ret>;
 };
@@ -562,32 +562,32 @@ struct func_type_MaaControllerPostTouchDown {
   struct _0_ctrl {
     constexpr static size_t index = 0;
     constexpr static const char* name = "ctrl";
-    using type = MaaControllerAPI *;
+    using type = MaaControllerHandle;
   };
   struct _1_contact {
     constexpr static size_t index = 1;
     constexpr static const char* name = "contact";
-    using type = int;
+    using type = int32_t;
   };
   struct _2_x {
     constexpr static size_t index = 2;
     constexpr static const char* name = "x";
-    using type = int;
+    using type = int32_t;
   };
   struct _3_y {
     constexpr static size_t index = 3;
     constexpr static const char* name = "y";
-    using type = int;
+    using type = int32_t;
   };
   struct _4_pressure {
     constexpr static size_t index = 4;
     constexpr static const char* name = "pressure";
-    using type = int;
+    using type = int32_t;
   };
   struct ret {
     constexpr static size_t index = 5;
     constexpr static const char* name = "return";
-    using type = long long;
+    using type = MaaCtrlId;
   };
   using args = std::tuple<_0_ctrl, _1_contact, _2_x, _3_y, _4_pressure, ret>;
 };
@@ -617,32 +617,32 @@ struct func_type_MaaControllerPostTouchMove {
   struct _0_ctrl {
     constexpr static size_t index = 0;
     constexpr static const char* name = "ctrl";
-    using type = MaaControllerAPI *;
+    using type = MaaControllerHandle;
   };
   struct _1_contact {
     constexpr static size_t index = 1;
     constexpr static const char* name = "contact";
-    using type = int;
+    using type = int32_t;
   };
   struct _2_x {
     constexpr static size_t index = 2;
     constexpr static const char* name = "x";
-    using type = int;
+    using type = int32_t;
   };
   struct _3_y {
     constexpr static size_t index = 3;
     constexpr static const char* name = "y";
-    using type = int;
+    using type = int32_t;
   };
   struct _4_pressure {
     constexpr static size_t index = 4;
     constexpr static const char* name = "pressure";
-    using type = int;
+    using type = int32_t;
   };
   struct ret {
     constexpr static size_t index = 5;
     constexpr static const char* name = "return";
-    using type = long long;
+    using type = MaaCtrlId;
   };
   using args = std::tuple<_0_ctrl, _1_contact, _2_x, _3_y, _4_pressure, ret>;
 };
@@ -672,17 +672,17 @@ struct func_type_MaaControllerPostTouchUp {
   struct _0_ctrl {
     constexpr static size_t index = 0;
     constexpr static const char* name = "ctrl";
-    using type = MaaControllerAPI *;
+    using type = MaaControllerHandle;
   };
   struct _1_contact {
     constexpr static size_t index = 1;
     constexpr static const char* name = "contact";
-    using type = int;
+    using type = int32_t;
   };
   struct ret {
     constexpr static size_t index = 2;
     constexpr static const char* name = "return";
-    using type = long long;
+    using type = MaaCtrlId;
   };
   using args = std::tuple<_0_ctrl, _1_contact, ret>;
 };
@@ -712,12 +712,12 @@ struct func_type_MaaControllerPostScreencap {
   struct _0_ctrl {
     constexpr static size_t index = 0;
     constexpr static const char* name = "ctrl";
-    using type = MaaControllerAPI *;
+    using type = MaaControllerHandle;
   };
   struct ret {
     constexpr static size_t index = 1;
     constexpr static const char* name = "return";
-    using type = long long;
+    using type = MaaCtrlId;
   };
   using args = std::tuple<_0_ctrl, ret>;
 };
@@ -747,17 +747,17 @@ struct func_type_MaaControllerStatus {
   struct _0_ctrl {
     constexpr static size_t index = 0;
     constexpr static const char* name = "ctrl";
-    using type = MaaControllerAPI *;
+    using type = MaaControllerHandle;
   };
   struct _1_id {
     constexpr static size_t index = 1;
     constexpr static const char* name = "id";
-    using type = long long;
+    using type = MaaCtrlId;
   };
   struct ret {
     constexpr static size_t index = 2;
     constexpr static const char* name = "return";
-    using type = int;
+    using type = MaaStatus;
   };
   using args = std::tuple<_0_ctrl, _1_id, ret>;
 };
@@ -787,17 +787,17 @@ struct func_type_MaaControllerWait {
   struct _0_ctrl {
     constexpr static size_t index = 0;
     constexpr static const char* name = "ctrl";
-    using type = MaaControllerAPI *;
+    using type = MaaControllerHandle;
   };
   struct _1_id {
     constexpr static size_t index = 1;
     constexpr static const char* name = "id";
-    using type = long long;
+    using type = MaaCtrlId;
   };
   struct ret {
     constexpr static size_t index = 2;
     constexpr static const char* name = "return";
-    using type = int;
+    using type = MaaStatus;
   };
   using args = std::tuple<_0_ctrl, _1_id, ret>;
 };
@@ -827,12 +827,12 @@ struct func_type_MaaControllerConnected {
   struct _0_ctrl {
     constexpr static size_t index = 0;
     constexpr static const char* name = "ctrl";
-    using type = MaaControllerAPI *;
+    using type = MaaControllerHandle;
   };
   struct ret {
     constexpr static size_t index = 1;
     constexpr static const char* name = "return";
-    using type = unsigned char;
+    using type = MaaBool;
   };
   using args = std::tuple<_0_ctrl, ret>;
 };
@@ -862,17 +862,17 @@ struct func_type_MaaControllerGetImage {
   struct _0_ctrl {
     constexpr static size_t index = 0;
     constexpr static const char* name = "ctrl";
-    using type = MaaControllerAPI *;
+    using type = MaaControllerHandle;
   };
   struct _1_buffer {
     constexpr static size_t index = 1;
     constexpr static const char* name = "buffer";
-    using type = MaaImageBuffer *;
+    using type = MaaImageBufferHandle;
   };
   struct ret {
     constexpr static size_t index = 2;
     constexpr static const char* name = "return";
-    using type = unsigned char;
+    using type = MaaBool;
   };
   using args = std::tuple<_0_ctrl, _1_buffer, ret>;
 };
@@ -902,17 +902,17 @@ struct func_type_MaaControllerGetUUID {
   struct _0_ctrl {
     constexpr static size_t index = 0;
     constexpr static const char* name = "ctrl";
-    using type = MaaControllerAPI *;
+    using type = MaaControllerHandle;
   };
   struct _1_buffer {
     constexpr static size_t index = 1;
     constexpr static const char* name = "buffer";
-    using type = MaaStringBuffer *;
+    using type = MaaStringBufferHandle;
   };
   struct ret {
     constexpr static size_t index = 2;
     constexpr static const char* name = "return";
-    using type = unsigned char;
+    using type = MaaBool;
   };
   using args = std::tuple<_0_ctrl, _1_buffer, ret>;
 };
@@ -942,17 +942,17 @@ struct func_type_MaaCreate {
   struct _0_callback {
     constexpr static size_t index = 0;
     constexpr static const char* name = "callback";
-    using type = void (*)(const char *, const char *, void *);
+    using type = MaaInstanceCallback;
   };
   struct _1_callback_arg {
     constexpr static size_t index = 1;
     constexpr static const char* name = "callback_arg";
-    using type = void *;
+    using type = MaaCallbackTransparentArg;
   };
   struct ret {
     constexpr static size_t index = 2;
     constexpr static const char* name = "return";
-    using type = MaaInstanceAPI *;
+    using type = MaaInstanceHandle;
   };
   using args = std::tuple<_0_callback, _1_callback_arg, ret>;
 };
@@ -982,7 +982,7 @@ struct func_type_MaaDestroy {
   struct _0_inst {
     constexpr static size_t index = 0;
     constexpr static const char* name = "inst";
-    using type = MaaInstanceAPI *;
+    using type = MaaInstanceHandle;
   };
   struct ret {
     constexpr static size_t index = 1;
@@ -1017,17 +1017,17 @@ struct func_type_MaaBindResource {
   struct _0_inst {
     constexpr static size_t index = 0;
     constexpr static const char* name = "inst";
-    using type = MaaInstanceAPI *;
+    using type = MaaInstanceHandle;
   };
   struct _1_res {
     constexpr static size_t index = 1;
     constexpr static const char* name = "res";
-    using type = MaaResourceAPI *;
+    using type = MaaResourceHandle;
   };
   struct ret {
     constexpr static size_t index = 2;
     constexpr static const char* name = "return";
-    using type = unsigned char;
+    using type = MaaBool;
   };
   using args = std::tuple<_0_inst, _1_res, ret>;
 };
@@ -1057,17 +1057,17 @@ struct func_type_MaaBindController {
   struct _0_inst {
     constexpr static size_t index = 0;
     constexpr static const char* name = "inst";
-    using type = MaaInstanceAPI *;
+    using type = MaaInstanceHandle;
   };
   struct _1_ctrl {
     constexpr static size_t index = 1;
     constexpr static const char* name = "ctrl";
-    using type = MaaControllerAPI *;
+    using type = MaaControllerHandle;
   };
   struct ret {
     constexpr static size_t index = 2;
     constexpr static const char* name = "return";
-    using type = unsigned char;
+    using type = MaaBool;
   };
   using args = std::tuple<_0_inst, _1_ctrl, ret>;
 };
@@ -1097,12 +1097,12 @@ struct func_type_MaaInited {
   struct _0_inst {
     constexpr static size_t index = 0;
     constexpr static const char* name = "inst";
-    using type = MaaInstanceAPI *;
+    using type = MaaInstanceHandle;
   };
   struct ret {
     constexpr static size_t index = 1;
     constexpr static const char* name = "return";
-    using type = unsigned char;
+    using type = MaaBool;
   };
   using args = std::tuple<_0_inst, ret>;
 };
@@ -1132,27 +1132,27 @@ struct func_type_MaaRegisterCustomRecognizer {
   struct _0_inst {
     constexpr static size_t index = 0;
     constexpr static const char* name = "inst";
-    using type = MaaInstanceAPI *;
+    using type = MaaInstanceHandle;
   };
   struct _1_name {
     constexpr static size_t index = 1;
     constexpr static const char* name = "name";
-    using type = const char *;
+    using type = MaaStringView;
   };
   struct _2_recognizer {
     constexpr static size_t index = 2;
     constexpr static const char* name = "recognizer";
-    using type = MaaCustomRecognizerAPI *;
+    using type = MaaCustomRecognizerHandle;
   };
   struct _3_recognizer_arg {
     constexpr static size_t index = 3;
     constexpr static const char* name = "recognizer_arg";
-    using type = void *;
+    using type = MaaTransparentArg;
   };
   struct ret {
     constexpr static size_t index = 4;
     constexpr static const char* name = "return";
-    using type = unsigned char;
+    using type = MaaBool;
   };
   using args = std::tuple<_0_inst, _1_name, _2_recognizer, _3_recognizer_arg, ret>;
 };
@@ -1182,17 +1182,17 @@ struct func_type_MaaUnregisterCustomRecognizer {
   struct _0_inst {
     constexpr static size_t index = 0;
     constexpr static const char* name = "inst";
-    using type = MaaInstanceAPI *;
+    using type = MaaInstanceHandle;
   };
   struct _1_name {
     constexpr static size_t index = 1;
     constexpr static const char* name = "name";
-    using type = const char *;
+    using type = MaaStringView;
   };
   struct ret {
     constexpr static size_t index = 2;
     constexpr static const char* name = "return";
-    using type = unsigned char;
+    using type = MaaBool;
   };
   using args = std::tuple<_0_inst, _1_name, ret>;
 };
@@ -1222,12 +1222,12 @@ struct func_type_MaaClearCustomRecognizer {
   struct _0_inst {
     constexpr static size_t index = 0;
     constexpr static const char* name = "inst";
-    using type = MaaInstanceAPI *;
+    using type = MaaInstanceHandle;
   };
   struct ret {
     constexpr static size_t index = 1;
     constexpr static const char* name = "return";
-    using type = unsigned char;
+    using type = MaaBool;
   };
   using args = std::tuple<_0_inst, ret>;
 };
@@ -1257,27 +1257,27 @@ struct func_type_MaaRegisterCustomAction {
   struct _0_inst {
     constexpr static size_t index = 0;
     constexpr static const char* name = "inst";
-    using type = MaaInstanceAPI *;
+    using type = MaaInstanceHandle;
   };
   struct _1_name {
     constexpr static size_t index = 1;
     constexpr static const char* name = "name";
-    using type = const char *;
+    using type = MaaStringView;
   };
   struct _2_action {
     constexpr static size_t index = 2;
     constexpr static const char* name = "action";
-    using type = MaaCustomActionAPI *;
+    using type = MaaCustomActionHandle;
   };
   struct _3_action_arg {
     constexpr static size_t index = 3;
     constexpr static const char* name = "action_arg";
-    using type = void *;
+    using type = MaaTransparentArg;
   };
   struct ret {
     constexpr static size_t index = 4;
     constexpr static const char* name = "return";
-    using type = unsigned char;
+    using type = MaaBool;
   };
   using args = std::tuple<_0_inst, _1_name, _2_action, _3_action_arg, ret>;
 };
@@ -1307,17 +1307,17 @@ struct func_type_MaaUnregisterCustomAction {
   struct _0_inst {
     constexpr static size_t index = 0;
     constexpr static const char* name = "inst";
-    using type = MaaInstanceAPI *;
+    using type = MaaInstanceHandle;
   };
   struct _1_name {
     constexpr static size_t index = 1;
     constexpr static const char* name = "name";
-    using type = const char *;
+    using type = MaaStringView;
   };
   struct ret {
     constexpr static size_t index = 2;
     constexpr static const char* name = "return";
-    using type = unsigned char;
+    using type = MaaBool;
   };
   using args = std::tuple<_0_inst, _1_name, ret>;
 };
@@ -1347,12 +1347,12 @@ struct func_type_MaaClearCustomAction {
   struct _0_inst {
     constexpr static size_t index = 0;
     constexpr static const char* name = "inst";
-    using type = MaaInstanceAPI *;
+    using type = MaaInstanceHandle;
   };
   struct ret {
     constexpr static size_t index = 1;
     constexpr static const char* name = "return";
-    using type = unsigned char;
+    using type = MaaBool;
   };
   using args = std::tuple<_0_inst, ret>;
 };
@@ -1382,22 +1382,22 @@ struct func_type_MaaPostTask {
   struct _0_inst {
     constexpr static size_t index = 0;
     constexpr static const char* name = "inst";
-    using type = MaaInstanceAPI *;
+    using type = MaaInstanceHandle;
   };
   struct _1_entry {
     constexpr static size_t index = 1;
     constexpr static const char* name = "entry";
-    using type = const char *;
+    using type = MaaStringView;
   };
   struct _2_param {
     constexpr static size_t index = 2;
     constexpr static const char* name = "param";
-    using type = const char *;
+    using type = MaaStringView;
   };
   struct ret {
     constexpr static size_t index = 3;
     constexpr static const char* name = "return";
-    using type = long long;
+    using type = MaaTaskId;
   };
   using args = std::tuple<_0_inst, _1_entry, _2_param, ret>;
 };
@@ -1427,22 +1427,22 @@ struct func_type_MaaSetTaskParam {
   struct _0_inst {
     constexpr static size_t index = 0;
     constexpr static const char* name = "inst";
-    using type = MaaInstanceAPI *;
+    using type = MaaInstanceHandle;
   };
   struct _1_id {
     constexpr static size_t index = 1;
     constexpr static const char* name = "id";
-    using type = long long;
+    using type = MaaTaskId;
   };
   struct _2_param {
     constexpr static size_t index = 2;
     constexpr static const char* name = "param";
-    using type = const char *;
+    using type = MaaStringView;
   };
   struct ret {
     constexpr static size_t index = 3;
     constexpr static const char* name = "return";
-    using type = unsigned char;
+    using type = MaaBool;
   };
   using args = std::tuple<_0_inst, _1_id, _2_param, ret>;
 };
@@ -1472,17 +1472,17 @@ struct func_type_MaaTaskStatus {
   struct _0_inst {
     constexpr static size_t index = 0;
     constexpr static const char* name = "inst";
-    using type = MaaInstanceAPI *;
+    using type = MaaInstanceHandle;
   };
   struct _1_id {
     constexpr static size_t index = 1;
     constexpr static const char* name = "id";
-    using type = long long;
+    using type = MaaTaskId;
   };
   struct ret {
     constexpr static size_t index = 2;
     constexpr static const char* name = "return";
-    using type = int;
+    using type = MaaStatus;
   };
   using args = std::tuple<_0_inst, _1_id, ret>;
 };
@@ -1512,17 +1512,17 @@ struct func_type_MaaWaitTask {
   struct _0_inst {
     constexpr static size_t index = 0;
     constexpr static const char* name = "inst";
-    using type = MaaInstanceAPI *;
+    using type = MaaInstanceHandle;
   };
   struct _1_id {
     constexpr static size_t index = 1;
     constexpr static const char* name = "id";
-    using type = long long;
+    using type = MaaTaskId;
   };
   struct ret {
     constexpr static size_t index = 2;
     constexpr static const char* name = "return";
-    using type = int;
+    using type = MaaStatus;
   };
   using args = std::tuple<_0_inst, _1_id, ret>;
 };
@@ -1552,12 +1552,12 @@ struct func_type_MaaTaskAllFinished {
   struct _0_inst {
     constexpr static size_t index = 0;
     constexpr static const char* name = "inst";
-    using type = MaaInstanceAPI *;
+    using type = MaaInstanceHandle;
   };
   struct ret {
     constexpr static size_t index = 1;
     constexpr static const char* name = "return";
-    using type = unsigned char;
+    using type = MaaBool;
   };
   using args = std::tuple<_0_inst, ret>;
 };
@@ -1587,12 +1587,12 @@ struct func_type_MaaPostStop {
   struct _0_inst {
     constexpr static size_t index = 0;
     constexpr static const char* name = "inst";
-    using type = MaaInstanceAPI *;
+    using type = MaaInstanceHandle;
   };
   struct ret {
     constexpr static size_t index = 1;
     constexpr static const char* name = "return";
-    using type = unsigned char;
+    using type = MaaBool;
   };
   using args = std::tuple<_0_inst, ret>;
 };
@@ -1622,12 +1622,12 @@ struct func_type_MaaStop {
   struct _0_inst {
     constexpr static size_t index = 0;
     constexpr static const char* name = "inst";
-    using type = MaaInstanceAPI *;
+    using type = MaaInstanceHandle;
   };
   struct ret {
     constexpr static size_t index = 1;
     constexpr static const char* name = "return";
-    using type = unsigned char;
+    using type = MaaBool;
   };
   using args = std::tuple<_0_inst, ret>;
 };
@@ -1657,12 +1657,12 @@ struct func_type_MaaGetResource {
   struct _0_inst {
     constexpr static size_t index = 0;
     constexpr static const char* name = "inst";
-    using type = MaaInstanceAPI *;
+    using type = MaaInstanceHandle;
   };
   struct ret {
     constexpr static size_t index = 1;
     constexpr static const char* name = "return";
-    using type = MaaResourceAPI *;
+    using type = MaaResourceHandle;
   };
   using args = std::tuple<_0_inst, ret>;
 };
@@ -1692,12 +1692,12 @@ struct func_type_MaaGetController {
   struct _0_inst {
     constexpr static size_t index = 0;
     constexpr static const char* name = "inst";
-    using type = MaaInstanceAPI *;
+    using type = MaaInstanceHandle;
   };
   struct ret {
     constexpr static size_t index = 1;
     constexpr static const char* name = "return";
-    using type = MaaControllerAPI *;
+    using type = MaaControllerHandle;
   };
   using args = std::tuple<_0_inst, ret>;
 };
@@ -1727,17 +1727,17 @@ struct func_type_MaaResourceCreate {
   struct _0_callback {
     constexpr static size_t index = 0;
     constexpr static const char* name = "callback";
-    using type = void (*)(const char *, const char *, void *);
+    using type = MaaResourceCallback;
   };
   struct _1_callback_arg {
     constexpr static size_t index = 1;
     constexpr static const char* name = "callback_arg";
-    using type = void *;
+    using type = MaaCallbackTransparentArg;
   };
   struct ret {
     constexpr static size_t index = 2;
     constexpr static const char* name = "return";
-    using type = MaaResourceAPI *;
+    using type = MaaResourceHandle;
   };
   using args = std::tuple<_0_callback, _1_callback_arg, ret>;
 };
@@ -1767,7 +1767,7 @@ struct func_type_MaaResourceDestroy {
   struct _0_res {
     constexpr static size_t index = 0;
     constexpr static const char* name = "res";
-    using type = MaaResourceAPI *;
+    using type = MaaResourceHandle;
   };
   struct ret {
     constexpr static size_t index = 1;
@@ -1802,17 +1802,17 @@ struct func_type_MaaResourcePostPath {
   struct _0_res {
     constexpr static size_t index = 0;
     constexpr static const char* name = "res";
-    using type = MaaResourceAPI *;
+    using type = MaaResourceHandle;
   };
   struct _1_path {
     constexpr static size_t index = 1;
     constexpr static const char* name = "path";
-    using type = const char *;
+    using type = MaaStringView;
   };
   struct ret {
     constexpr static size_t index = 2;
     constexpr static const char* name = "return";
-    using type = long long;
+    using type = MaaResId;
   };
   using args = std::tuple<_0_res, _1_path, ret>;
 };
@@ -1842,17 +1842,17 @@ struct func_type_MaaResourceStatus {
   struct _0_res {
     constexpr static size_t index = 0;
     constexpr static const char* name = "res";
-    using type = MaaResourceAPI *;
+    using type = MaaResourceHandle;
   };
   struct _1_id {
     constexpr static size_t index = 1;
     constexpr static const char* name = "id";
-    using type = long long;
+    using type = MaaResId;
   };
   struct ret {
     constexpr static size_t index = 2;
     constexpr static const char* name = "return";
-    using type = int;
+    using type = MaaStatus;
   };
   using args = std::tuple<_0_res, _1_id, ret>;
 };
@@ -1882,17 +1882,17 @@ struct func_type_MaaResourceWait {
   struct _0_res {
     constexpr static size_t index = 0;
     constexpr static const char* name = "res";
-    using type = MaaResourceAPI *;
+    using type = MaaResourceHandle;
   };
   struct _1_id {
     constexpr static size_t index = 1;
     constexpr static const char* name = "id";
-    using type = long long;
+    using type = MaaResId;
   };
   struct ret {
     constexpr static size_t index = 2;
     constexpr static const char* name = "return";
-    using type = int;
+    using type = MaaStatus;
   };
   using args = std::tuple<_0_res, _1_id, ret>;
 };
@@ -1922,12 +1922,12 @@ struct func_type_MaaResourceLoaded {
   struct _0_res {
     constexpr static size_t index = 0;
     constexpr static const char* name = "res";
-    using type = MaaResourceAPI *;
+    using type = MaaResourceHandle;
   };
   struct ret {
     constexpr static size_t index = 1;
     constexpr static const char* name = "return";
-    using type = unsigned char;
+    using type = MaaBool;
   };
   using args = std::tuple<_0_res, ret>;
 };
@@ -1957,17 +1957,17 @@ struct func_type_MaaResourceGetHash {
   struct _0_res {
     constexpr static size_t index = 0;
     constexpr static const char* name = "res";
-    using type = MaaResourceAPI *;
+    using type = MaaResourceHandle;
   };
   struct _1_buffer {
     constexpr static size_t index = 1;
     constexpr static const char* name = "buffer";
-    using type = MaaStringBuffer *;
+    using type = MaaStringBufferHandle;
   };
   struct ret {
     constexpr static size_t index = 2;
     constexpr static const char* name = "return";
-    using type = unsigned char;
+    using type = MaaBool;
   };
   using args = std::tuple<_0_res, _1_buffer, ret>;
 };
@@ -1997,17 +1997,17 @@ struct func_type_MaaResourceGetTaskList {
   struct _0_res {
     constexpr static size_t index = 0;
     constexpr static const char* name = "res";
-    using type = MaaResourceAPI *;
+    using type = MaaResourceHandle;
   };
   struct _1_buffer {
     constexpr static size_t index = 1;
     constexpr static const char* name = "buffer";
-    using type = MaaStringBuffer *;
+    using type = MaaStringBufferHandle;
   };
   struct ret {
     constexpr static size_t index = 2;
     constexpr static const char* name = "return";
-    using type = unsigned char;
+    using type = MaaBool;
   };
   using args = std::tuple<_0_res, _1_buffer, ret>;
 };
@@ -2037,7 +2037,7 @@ struct func_type_MaaCreateImageBuffer {
   struct ret {
     constexpr static size_t index = 0;
     constexpr static const char* name = "return";
-    using type = MaaImageBuffer *;
+    using type = MaaImageBufferHandle;
   };
   using args = std::tuple<ret>;
 };
@@ -2067,7 +2067,7 @@ struct func_type_MaaDestroyImageBuffer {
   struct _0_handle {
     constexpr static size_t index = 0;
     constexpr static const char* name = "handle";
-    using type = MaaImageBuffer *;
+    using type = MaaImageBufferHandle;
   };
   struct ret {
     constexpr static size_t index = 1;
@@ -2102,12 +2102,12 @@ struct func_type_MaaIsImageEmpty {
   struct _0_handle {
     constexpr static size_t index = 0;
     constexpr static const char* name = "handle";
-    using type = MaaImageBuffer *;
+    using type = MaaImageBufferHandle;
   };
   struct ret {
     constexpr static size_t index = 1;
     constexpr static const char* name = "return";
-    using type = unsigned char;
+    using type = MaaBool;
   };
   using args = std::tuple<_0_handle, ret>;
 };
@@ -2137,12 +2137,12 @@ struct func_type_MaaClearImage {
   struct _0_handle {
     constexpr static size_t index = 0;
     constexpr static const char* name = "handle";
-    using type = MaaImageBuffer *;
+    using type = MaaImageBufferHandle;
   };
   struct ret {
     constexpr static size_t index = 1;
     constexpr static const char* name = "return";
-    using type = unsigned char;
+    using type = MaaBool;
   };
   using args = std::tuple<_0_handle, ret>;
 };
@@ -2172,12 +2172,12 @@ struct func_type_MaaGetImageWidth {
   struct _0_handle {
     constexpr static size_t index = 0;
     constexpr static const char* name = "handle";
-    using type = MaaImageBuffer *;
+    using type = MaaImageBufferHandle;
   };
   struct ret {
     constexpr static size_t index = 1;
     constexpr static const char* name = "return";
-    using type = int;
+    using type = int32_t;
   };
   using args = std::tuple<_0_handle, ret>;
 };
@@ -2207,12 +2207,12 @@ struct func_type_MaaGetImageHeight {
   struct _0_handle {
     constexpr static size_t index = 0;
     constexpr static const char* name = "handle";
-    using type = MaaImageBuffer *;
+    using type = MaaImageBufferHandle;
   };
   struct ret {
     constexpr static size_t index = 1;
     constexpr static const char* name = "return";
-    using type = int;
+    using type = int32_t;
   };
   using args = std::tuple<_0_handle, ret>;
 };
@@ -2242,12 +2242,12 @@ struct func_type_MaaGetImageType {
   struct _0_handle {
     constexpr static size_t index = 0;
     constexpr static const char* name = "handle";
-    using type = MaaImageBuffer *;
+    using type = MaaImageBufferHandle;
   };
   struct ret {
     constexpr static size_t index = 1;
     constexpr static const char* name = "return";
-    using type = int;
+    using type = int32_t;
   };
   using args = std::tuple<_0_handle, ret>;
 };
@@ -2277,12 +2277,12 @@ struct func_type_MaaGetImageEncoded {
   struct _0_handle {
     constexpr static size_t index = 0;
     constexpr static const char* name = "handle";
-    using type = MaaImageBuffer *;
+    using type = MaaImageBufferHandle;
   };
   struct ret {
     constexpr static size_t index = 1;
     constexpr static const char* name = "return";
-    using type = unsigned char *;
+    using type = MaaImageEncodedData;
   };
   using args = std::tuple<_0_handle, ret>;
 };
@@ -2312,22 +2312,22 @@ struct func_type_MaaSetImageEncoded {
   struct _0_handle {
     constexpr static size_t index = 0;
     constexpr static const char* name = "handle";
-    using type = MaaImageBuffer *;
+    using type = MaaImageBufferHandle;
   };
   struct _1_data {
     constexpr static size_t index = 1;
     constexpr static const char* name = "data";
-    using type = unsigned char *;
+    using type = MaaImageEncodedData;
   };
   struct _2_size {
     constexpr static size_t index = 2;
     constexpr static const char* name = "size";
-    using type = unsigned long long;
+    using type = MaaSize;
   };
   struct ret {
     constexpr static size_t index = 3;
     constexpr static const char* name = "return";
-    using type = unsigned char;
+    using type = MaaBool;
   };
   using args = std::tuple<_0_handle, _1_data, _2_size, ret>;
 };
@@ -2357,7 +2357,7 @@ struct func_type_MaaVersion {
   struct ret {
     constexpr static size_t index = 0;
     constexpr static const char* name = "return";
-    using type = const char *;
+    using type = MaaStringView;
   };
   using args = std::tuple<ret>;
 };
@@ -2387,7 +2387,7 @@ struct func_type_MaaToolkitInit {
   struct ret {
     constexpr static size_t index = 0;
     constexpr static const char* name = "return";
-    using type = unsigned char;
+    using type = MaaBool;
   };
   using args = std::tuple<ret>;
 };
@@ -2417,7 +2417,7 @@ struct func_type_MaaToolkitUninit {
   struct ret {
     constexpr static size_t index = 0;
     constexpr static const char* name = "return";
-    using type = unsigned char;
+    using type = MaaBool;
   };
   using args = std::tuple<ret>;
 };
@@ -2447,7 +2447,7 @@ struct func_type_MaaToolkitFindDevice {
   struct ret {
     constexpr static size_t index = 0;
     constexpr static const char* name = "return";
-    using type = unsigned long long;
+    using type = MaaSize;
   };
   using args = std::tuple<ret>;
 };
@@ -2477,12 +2477,12 @@ struct func_type_MaaToolkitFindDeviceWithAdb {
   struct _0_adb_path {
     constexpr static size_t index = 0;
     constexpr static const char* name = "adb_path";
-    using type = const char *;
+    using type = MaaStringView;
   };
   struct ret {
     constexpr static size_t index = 1;
     constexpr static const char* name = "return";
-    using type = unsigned long long;
+    using type = MaaSize;
   };
   using args = std::tuple<_0_adb_path, ret>;
 };
@@ -2512,7 +2512,7 @@ struct func_type_MaaToolkitPostFindDevice {
   struct ret {
     constexpr static size_t index = 0;
     constexpr static const char* name = "return";
-    using type = unsigned char;
+    using type = MaaBool;
   };
   using args = std::tuple<ret>;
 };
@@ -2542,12 +2542,12 @@ struct func_type_MaaToolkitPostFindDeviceWithAdb {
   struct _0_adb_path {
     constexpr static size_t index = 0;
     constexpr static const char* name = "adb_path";
-    using type = const char *;
+    using type = MaaStringView;
   };
   struct ret {
     constexpr static size_t index = 1;
     constexpr static const char* name = "return";
-    using type = unsigned char;
+    using type = MaaBool;
   };
   using args = std::tuple<_0_adb_path, ret>;
 };
@@ -2577,7 +2577,7 @@ struct func_type_MaaToolkitIsFindDeviceCompleted {
   struct ret {
     constexpr static size_t index = 0;
     constexpr static const char* name = "return";
-    using type = unsigned char;
+    using type = MaaBool;
   };
   using args = std::tuple<ret>;
 };
@@ -2607,7 +2607,7 @@ struct func_type_MaaToolkitWaitForFindDeviceToComplete {
   struct ret {
     constexpr static size_t index = 0;
     constexpr static const char* name = "return";
-    using type = unsigned long long;
+    using type = MaaSize;
   };
   using args = std::tuple<ret>;
 };
@@ -2637,7 +2637,7 @@ struct func_type_MaaToolkitGetDeviceCount {
   struct ret {
     constexpr static size_t index = 0;
     constexpr static const char* name = "return";
-    using type = unsigned long long;
+    using type = MaaSize;
   };
   using args = std::tuple<ret>;
 };
@@ -2667,12 +2667,12 @@ struct func_type_MaaToolkitGetDeviceName {
   struct _0_index {
     constexpr static size_t index = 0;
     constexpr static const char* name = "index";
-    using type = unsigned long long;
+    using type = MaaSize;
   };
   struct ret {
     constexpr static size_t index = 1;
     constexpr static const char* name = "return";
-    using type = const char *;
+    using type = MaaStringView;
   };
   using args = std::tuple<_0_index, ret>;
 };
@@ -2702,12 +2702,12 @@ struct func_type_MaaToolkitGetDeviceAdbPath {
   struct _0_index {
     constexpr static size_t index = 0;
     constexpr static const char* name = "index";
-    using type = unsigned long long;
+    using type = MaaSize;
   };
   struct ret {
     constexpr static size_t index = 1;
     constexpr static const char* name = "return";
-    using type = const char *;
+    using type = MaaStringView;
   };
   using args = std::tuple<_0_index, ret>;
 };
@@ -2737,12 +2737,12 @@ struct func_type_MaaToolkitGetDeviceAdbSerial {
   struct _0_index {
     constexpr static size_t index = 0;
     constexpr static const char* name = "index";
-    using type = unsigned long long;
+    using type = MaaSize;
   };
   struct ret {
     constexpr static size_t index = 1;
     constexpr static const char* name = "return";
-    using type = const char *;
+    using type = MaaStringView;
   };
   using args = std::tuple<_0_index, ret>;
 };
@@ -2772,12 +2772,12 @@ struct func_type_MaaToolkitGetDeviceAdbControllerType {
   struct _0_index {
     constexpr static size_t index = 0;
     constexpr static const char* name = "index";
-    using type = unsigned long long;
+    using type = MaaSize;
   };
   struct ret {
     constexpr static size_t index = 1;
     constexpr static const char* name = "return";
-    using type = int;
+    using type = MaaAdbControllerType;
   };
   using args = std::tuple<_0_index, ret>;
 };
@@ -2807,12 +2807,12 @@ struct func_type_MaaToolkitGetDeviceAdbConfig {
   struct _0_index {
     constexpr static size_t index = 0;
     constexpr static const char* name = "index";
-    using type = unsigned long long;
+    using type = MaaSize;
   };
   struct ret {
     constexpr static size_t index = 1;
     constexpr static const char* name = "return";
-    using type = const char *;
+    using type = MaaStringView;
   };
   using args = std::tuple<_0_index, ret>;
 };
@@ -2842,27 +2842,27 @@ struct func_type_MaaToolkitRegisterCustomRecognizerExecutor {
   struct _0_handle {
     constexpr static size_t index = 0;
     constexpr static const char* name = "handle";
-    using type = MaaInstanceAPI *;
+    using type = MaaInstanceHandle;
   };
   struct _1_recognizer_name {
     constexpr static size_t index = 1;
     constexpr static const char* name = "recognizer_name";
-    using type = const char *;
+    using type = MaaStringView;
   };
   struct _2_recognizer_exec_path {
     constexpr static size_t index = 2;
     constexpr static const char* name = "recognizer_exec_path";
-    using type = const char *;
+    using type = MaaStringView;
   };
   struct _3_recognizer_exec_param_json {
     constexpr static size_t index = 3;
     constexpr static const char* name = "recognizer_exec_param_json";
-    using type = const char *;
+    using type = MaaStringView;
   };
   struct ret {
     constexpr static size_t index = 4;
     constexpr static const char* name = "return";
-    using type = unsigned char;
+    using type = MaaBool;
   };
   using args = std::tuple<_0_handle, _1_recognizer_name, _2_recognizer_exec_path, _3_recognizer_exec_param_json, ret>;
 };
@@ -2892,17 +2892,17 @@ struct func_type_MaaToolkitUnregisterCustomRecognizerExecutor {
   struct _0_handle {
     constexpr static size_t index = 0;
     constexpr static const char* name = "handle";
-    using type = MaaInstanceAPI *;
+    using type = MaaInstanceHandle;
   };
   struct _1_recognizer_name {
     constexpr static size_t index = 1;
     constexpr static const char* name = "recognizer_name";
-    using type = const char *;
+    using type = MaaStringView;
   };
   struct ret {
     constexpr static size_t index = 2;
     constexpr static const char* name = "return";
-    using type = unsigned char;
+    using type = MaaBool;
   };
   using args = std::tuple<_0_handle, _1_recognizer_name, ret>;
 };
@@ -2932,27 +2932,27 @@ struct func_type_MaaToolkitRegisterCustomActionExecutor {
   struct _0_handle {
     constexpr static size_t index = 0;
     constexpr static const char* name = "handle";
-    using type = MaaInstanceAPI *;
+    using type = MaaInstanceHandle;
   };
   struct _1_action_name {
     constexpr static size_t index = 1;
     constexpr static const char* name = "action_name";
-    using type = const char *;
+    using type = MaaStringView;
   };
   struct _2_action_exec_path {
     constexpr static size_t index = 2;
     constexpr static const char* name = "action_exec_path";
-    using type = const char *;
+    using type = MaaStringView;
   };
   struct _3_action_exec_param_json {
     constexpr static size_t index = 3;
     constexpr static const char* name = "action_exec_param_json";
-    using type = const char *;
+    using type = MaaStringView;
   };
   struct ret {
     constexpr static size_t index = 4;
     constexpr static const char* name = "return";
-    using type = unsigned char;
+    using type = MaaBool;
   };
   using args = std::tuple<_0_handle, _1_action_name, _2_action_exec_path, _3_action_exec_param_json, ret>;
 };
@@ -2982,17 +2982,17 @@ struct func_type_MaaToolkitUnregisterCustomActionExecutor {
   struct _0_handle {
     constexpr static size_t index = 0;
     constexpr static const char* name = "handle";
-    using type = MaaInstanceAPI *;
+    using type = MaaInstanceHandle;
   };
   struct _1_action_name {
     constexpr static size_t index = 1;
     constexpr static const char* name = "action_name";
-    using type = const char *;
+    using type = MaaStringView;
   };
   struct ret {
     constexpr static size_t index = 2;
     constexpr static const char* name = "return";
-    using type = unsigned char;
+    using type = MaaBool;
   };
   using args = std::tuple<_0_handle, _1_action_name, ret>;
 };
@@ -3022,17 +3022,17 @@ struct func_type_MaaToolkitFindWindow {
   struct _0_class_name {
     constexpr static size_t index = 0;
     constexpr static const char* name = "class_name";
-    using type = const char *;
+    using type = MaaStringView;
   };
   struct _1_window_name {
     constexpr static size_t index = 1;
     constexpr static const char* name = "window_name";
-    using type = const char *;
+    using type = MaaStringView;
   };
   struct ret {
     constexpr static size_t index = 2;
     constexpr static const char* name = "return";
-    using type = unsigned long long;
+    using type = MaaSize;
   };
   using args = std::tuple<_0_class_name, _1_window_name, ret>;
 };
@@ -3062,17 +3062,17 @@ struct func_type_MaaToolkitSearchWindow {
   struct _0_class_name {
     constexpr static size_t index = 0;
     constexpr static const char* name = "class_name";
-    using type = const char *;
+    using type = MaaStringView;
   };
   struct _1_window_name {
     constexpr static size_t index = 1;
     constexpr static const char* name = "window_name";
-    using type = const char *;
+    using type = MaaStringView;
   };
   struct ret {
     constexpr static size_t index = 2;
     constexpr static const char* name = "return";
-    using type = unsigned long long;
+    using type = MaaSize;
   };
   using args = std::tuple<_0_class_name, _1_window_name, ret>;
 };
@@ -3102,12 +3102,12 @@ struct func_type_MaaToolkitGetWindow {
   struct _0_index {
     constexpr static size_t index = 0;
     constexpr static const char* name = "index";
-    using type = unsigned long long;
+    using type = MaaSize;
   };
   struct ret {
     constexpr static size_t index = 1;
     constexpr static const char* name = "return";
-    using type = void *;
+    using type = MaaWin32Hwnd;
   };
   using args = std::tuple<_0_index, ret>;
 };
@@ -3137,7 +3137,7 @@ struct func_type_MaaToolkitGetCursorWindow {
   struct ret {
     constexpr static size_t index = 0;
     constexpr static const char* name = "return";
-    using type = void *;
+    using type = MaaWin32Hwnd;
   };
   using args = std::tuple<ret>;
 };
@@ -3167,7 +3167,7 @@ struct func_type_MaaToolkitGetDesktopWindow {
   struct ret {
     constexpr static size_t index = 0;
     constexpr static const char* name = "return";
-    using type = void *;
+    using type = MaaWin32Hwnd;
   };
   using args = std::tuple<ret>;
 };
@@ -3197,7 +3197,7 @@ struct func_type_MaaToolkitGetForegroundWindow {
   struct ret {
     constexpr static size_t index = 0;
     constexpr static const char* name = "return";
-    using type = void *;
+    using type = MaaWin32Hwnd;
   };
   using args = std::tuple<ret>;
 };
@@ -3227,22 +3227,22 @@ struct func_type_MaaControllerSetOptionString {
   struct _0_ctrl {
     constexpr static size_t index = 0;
     constexpr static const char* name = "ctrl";
-    using type = MaaControllerAPI *;
+    using type = MaaControllerHandle;
   };
   struct _1_key {
     constexpr static size_t index = 1;
     constexpr static const char* name = "key";
-    using type = int;
+    using type = MaaCtrlOption;
   };
   struct _2_value {
     constexpr static size_t index = 2;
     constexpr static const char* name = "value";
-    using type = const char *;
+    using type = MaaStringView;
   };
   struct ret {
     constexpr static size_t index = 3;
     constexpr static const char* name = "return";
-    using type = unsigned char;
+    using type = MaaBool;
   };
   using args = std::tuple<_0_ctrl, _1_key, _2_value, ret>;
 };
@@ -3272,12 +3272,12 @@ struct func_type_MaaControllerSetOptionInteger {
   struct _0_ctrl {
     constexpr static size_t index = 0;
     constexpr static const char* name = "ctrl";
-    using type = MaaControllerAPI *;
+    using type = MaaControllerHandle;
   };
   struct _1_key {
     constexpr static size_t index = 1;
     constexpr static const char* name = "key";
-    using type = int;
+    using type = MaaCtrlOption;
   };
   struct _2_value {
     constexpr static size_t index = 2;
@@ -3287,7 +3287,7 @@ struct func_type_MaaControllerSetOptionInteger {
   struct ret {
     constexpr static size_t index = 3;
     constexpr static const char* name = "return";
-    using type = unsigned char;
+    using type = MaaBool;
   };
   using args = std::tuple<_0_ctrl, _1_key, _2_value, ret>;
 };
@@ -3317,12 +3317,12 @@ struct func_type_MaaControllerSetOptionBoolean {
   struct _0_ctrl {
     constexpr static size_t index = 0;
     constexpr static const char* name = "ctrl";
-    using type = MaaControllerAPI *;
+    using type = MaaControllerHandle;
   };
   struct _1_key {
     constexpr static size_t index = 1;
     constexpr static const char* name = "key";
-    using type = int;
+    using type = MaaCtrlOption;
   };
   struct _2_value {
     constexpr static size_t index = 2;
@@ -3332,7 +3332,7 @@ struct func_type_MaaControllerSetOptionBoolean {
   struct ret {
     constexpr static size_t index = 3;
     constexpr static const char* name = "return";
-    using type = unsigned char;
+    using type = MaaBool;
   };
   using args = std::tuple<_0_ctrl, _1_key, _2_value, ret>;
 };
@@ -3362,17 +3362,17 @@ struct func_type_MaaSetGlobalOptionString {
   struct _0_key {
     constexpr static size_t index = 0;
     constexpr static const char* name = "key";
-    using type = int;
+    using type = MaaCtrlOption;
   };
   struct _1_value {
     constexpr static size_t index = 1;
     constexpr static const char* name = "value";
-    using type = const char *;
+    using type = MaaStringView;
   };
   struct ret {
     constexpr static size_t index = 2;
     constexpr static const char* name = "return";
-    using type = unsigned char;
+    using type = MaaBool;
   };
   using args = std::tuple<_0_key, _1_value, ret>;
 };
@@ -3402,7 +3402,7 @@ struct func_type_MaaSetGlobalOptionInteger {
   struct _0_key {
     constexpr static size_t index = 0;
     constexpr static const char* name = "key";
-    using type = int;
+    using type = MaaCtrlOption;
   };
   struct _1_value {
     constexpr static size_t index = 1;
@@ -3412,7 +3412,7 @@ struct func_type_MaaSetGlobalOptionInteger {
   struct ret {
     constexpr static size_t index = 2;
     constexpr static const char* name = "return";
-    using type = unsigned char;
+    using type = MaaBool;
   };
   using args = std::tuple<_0_key, _1_value, ret>;
 };
@@ -3442,7 +3442,7 @@ struct func_type_MaaSetGlobalOptionBoolean {
   struct _0_key {
     constexpr static size_t index = 0;
     constexpr static const char* name = "key";
-    using type = int;
+    using type = MaaCtrlOption;
   };
   struct _1_value {
     constexpr static size_t index = 1;
@@ -3452,7 +3452,7 @@ struct func_type_MaaSetGlobalOptionBoolean {
   struct ret {
     constexpr static size_t index = 2;
     constexpr static const char* name = "return";
-    using type = unsigned char;
+    using type = MaaBool;
   };
   using args = std::tuple<_0_key, _1_value, ret>;
 };
