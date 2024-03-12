@@ -1,12 +1,11 @@
 #pragma once
 
 #include "function/interface.hpp"
+#include "callback/interface.hpp"
 
 #include "include.h"
 
-namespace lhg {
-
-namespace maa {
+namespace lhg::maa {
 
 struct func_type_MaaAdbControllerCreate {
   struct _0_adb_path {
@@ -51,6 +50,22 @@ struct function_MaaAdbControllerCreate {
   constexpr static const char* name = "MaaAdbControllerCreate";
   using type = func_type_MaaAdbControllerCreate;
 };
+
+}
+namespace lhg::call {
+
+template<>
+struct is_input<maa::func_type_MaaAdbControllerCreate::ret, false> {
+  constexpr static bool value = false;
+};
+template<>
+struct is_output<maa::func_type_MaaAdbControllerCreate::ret, false> {
+  constexpr static bool value = true;
+};
+
+}
+
+namespace lhg::maa {
 
 struct func_type_MaaAdbControllerCreateV2 {
   struct _0_adb_path {
@@ -101,6 +116,22 @@ struct function_MaaAdbControllerCreateV2 {
   using type = func_type_MaaAdbControllerCreateV2;
 };
 
+}
+namespace lhg::call {
+
+template<>
+struct is_input<maa::func_type_MaaAdbControllerCreateV2::ret, false> {
+  constexpr static bool value = false;
+};
+template<>
+struct is_output<maa::func_type_MaaAdbControllerCreateV2::ret, false> {
+  constexpr static bool value = true;
+};
+
+}
+
+namespace lhg::maa {
+
 struct func_type_MaaThriftControllerCreate {
   struct _0_type {
     constexpr static size_t index = 0;
@@ -144,6 +175,22 @@ struct function_MaaThriftControllerCreate {
   constexpr static const char* name = "MaaThriftControllerCreate";
   using type = func_type_MaaThriftControllerCreate;
 };
+
+}
+namespace lhg::call {
+
+template<>
+struct is_input<maa::func_type_MaaThriftControllerCreate::ret, false> {
+  constexpr static bool value = false;
+};
+template<>
+struct is_output<maa::func_type_MaaThriftControllerCreate::ret, false> {
+  constexpr static bool value = true;
+};
+
+}
+
+namespace lhg::maa {
 
 struct func_type_MaaDbgControllerCreate {
   struct _0_read_path {
@@ -189,6 +236,22 @@ struct function_MaaDbgControllerCreate {
   using type = func_type_MaaDbgControllerCreate;
 };
 
+}
+namespace lhg::call {
+
+template<>
+struct is_input<maa::func_type_MaaDbgControllerCreate::ret, false> {
+  constexpr static bool value = false;
+};
+template<>
+struct is_output<maa::func_type_MaaDbgControllerCreate::ret, false> {
+  constexpr static bool value = true;
+};
+
+}
+
+namespace lhg::maa {
+
 struct func_type_MaaControllerDestroy {
   struct _0_ctrl {
     constexpr static size_t index = 0;
@@ -208,6 +271,22 @@ struct function_MaaControllerDestroy {
   using type = func_type_MaaControllerDestroy;
 };
 
+}
+namespace lhg::call {
+
+template<>
+struct is_input<maa::func_type_MaaControllerDestroy::ret, false> {
+  constexpr static bool value = false;
+};
+template<>
+struct is_output<maa::func_type_MaaControllerDestroy::ret, false> {
+  constexpr static bool value = true;
+};
+
+}
+
+namespace lhg::maa {
+
 struct func_type_MaaControllerPostConnection {
   struct _0_ctrl {
     constexpr static size_t index = 0;
@@ -226,6 +305,22 @@ struct function_MaaControllerPostConnection {
   constexpr static const char* name = "MaaControllerPostConnection";
   using type = func_type_MaaControllerPostConnection;
 };
+
+}
+namespace lhg::call {
+
+template<>
+struct is_input<maa::func_type_MaaControllerPostConnection::ret, false> {
+  constexpr static bool value = false;
+};
+template<>
+struct is_output<maa::func_type_MaaControllerPostConnection::ret, false> {
+  constexpr static bool value = true;
+};
+
+}
+
+namespace lhg::maa {
 
 struct func_type_MaaControllerPostClick {
   struct _0_ctrl {
@@ -255,6 +350,22 @@ struct function_MaaControllerPostClick {
   constexpr static const char* name = "MaaControllerPostClick";
   using type = func_type_MaaControllerPostClick;
 };
+
+}
+namespace lhg::call {
+
+template<>
+struct is_input<maa::func_type_MaaControllerPostClick::ret, false> {
+  constexpr static bool value = false;
+};
+template<>
+struct is_output<maa::func_type_MaaControllerPostClick::ret, false> {
+  constexpr static bool value = true;
+};
+
+}
+
+namespace lhg::maa {
 
 struct func_type_MaaControllerPostSwipe {
   struct _0_ctrl {
@@ -300,6 +411,22 @@ struct function_MaaControllerPostSwipe {
   using type = func_type_MaaControllerPostSwipe;
 };
 
+}
+namespace lhg::call {
+
+template<>
+struct is_input<maa::func_type_MaaControllerPostSwipe::ret, false> {
+  constexpr static bool value = false;
+};
+template<>
+struct is_output<maa::func_type_MaaControllerPostSwipe::ret, false> {
+  constexpr static bool value = true;
+};
+
+}
+
+namespace lhg::maa {
+
 struct func_type_MaaControllerPostPressKey {
   struct _0_ctrl {
     constexpr static size_t index = 0;
@@ -324,6 +451,22 @@ struct function_MaaControllerPostPressKey {
   using type = func_type_MaaControllerPostPressKey;
 };
 
+}
+namespace lhg::call {
+
+template<>
+struct is_input<maa::func_type_MaaControllerPostPressKey::ret, false> {
+  constexpr static bool value = false;
+};
+template<>
+struct is_output<maa::func_type_MaaControllerPostPressKey::ret, false> {
+  constexpr static bool value = true;
+};
+
+}
+
+namespace lhg::maa {
+
 struct func_type_MaaControllerPostInputText {
   struct _0_ctrl {
     constexpr static size_t index = 0;
@@ -347,6 +490,22 @@ struct function_MaaControllerPostInputText {
   constexpr static const char* name = "MaaControllerPostInputText";
   using type = func_type_MaaControllerPostInputText;
 };
+
+}
+namespace lhg::call {
+
+template<>
+struct is_input<maa::func_type_MaaControllerPostInputText::ret, false> {
+  constexpr static bool value = false;
+};
+template<>
+struct is_output<maa::func_type_MaaControllerPostInputText::ret, false> {
+  constexpr static bool value = true;
+};
+
+}
+
+namespace lhg::maa {
 
 struct func_type_MaaControllerPostTouchDown {
   struct _0_ctrl {
@@ -387,6 +546,22 @@ struct function_MaaControllerPostTouchDown {
   using type = func_type_MaaControllerPostTouchDown;
 };
 
+}
+namespace lhg::call {
+
+template<>
+struct is_input<maa::func_type_MaaControllerPostTouchDown::ret, false> {
+  constexpr static bool value = false;
+};
+template<>
+struct is_output<maa::func_type_MaaControllerPostTouchDown::ret, false> {
+  constexpr static bool value = true;
+};
+
+}
+
+namespace lhg::maa {
+
 struct func_type_MaaControllerPostTouchMove {
   struct _0_ctrl {
     constexpr static size_t index = 0;
@@ -426,6 +601,22 @@ struct function_MaaControllerPostTouchMove {
   using type = func_type_MaaControllerPostTouchMove;
 };
 
+}
+namespace lhg::call {
+
+template<>
+struct is_input<maa::func_type_MaaControllerPostTouchMove::ret, false> {
+  constexpr static bool value = false;
+};
+template<>
+struct is_output<maa::func_type_MaaControllerPostTouchMove::ret, false> {
+  constexpr static bool value = true;
+};
+
+}
+
+namespace lhg::maa {
+
 struct func_type_MaaControllerPostTouchUp {
   struct _0_ctrl {
     constexpr static size_t index = 0;
@@ -450,6 +641,22 @@ struct function_MaaControllerPostTouchUp {
   using type = func_type_MaaControllerPostTouchUp;
 };
 
+}
+namespace lhg::call {
+
+template<>
+struct is_input<maa::func_type_MaaControllerPostTouchUp::ret, false> {
+  constexpr static bool value = false;
+};
+template<>
+struct is_output<maa::func_type_MaaControllerPostTouchUp::ret, false> {
+  constexpr static bool value = true;
+};
+
+}
+
+namespace lhg::maa {
+
 struct func_type_MaaControllerPostScreencap {
   struct _0_ctrl {
     constexpr static size_t index = 0;
@@ -468,6 +675,22 @@ struct function_MaaControllerPostScreencap {
   constexpr static const char* name = "MaaControllerPostScreencap";
   using type = func_type_MaaControllerPostScreencap;
 };
+
+}
+namespace lhg::call {
+
+template<>
+struct is_input<maa::func_type_MaaControllerPostScreencap::ret, false> {
+  constexpr static bool value = false;
+};
+template<>
+struct is_output<maa::func_type_MaaControllerPostScreencap::ret, false> {
+  constexpr static bool value = true;
+};
+
+}
+
+namespace lhg::maa {
 
 struct func_type_MaaControllerStatus {
   struct _0_ctrl {
@@ -493,6 +716,22 @@ struct function_MaaControllerStatus {
   using type = func_type_MaaControllerStatus;
 };
 
+}
+namespace lhg::call {
+
+template<>
+struct is_input<maa::func_type_MaaControllerStatus::ret, false> {
+  constexpr static bool value = false;
+};
+template<>
+struct is_output<maa::func_type_MaaControllerStatus::ret, false> {
+  constexpr static bool value = true;
+};
+
+}
+
+namespace lhg::maa {
+
 struct func_type_MaaControllerWait {
   struct _0_ctrl {
     constexpr static size_t index = 0;
@@ -517,6 +756,22 @@ struct function_MaaControllerWait {
   using type = func_type_MaaControllerWait;
 };
 
+}
+namespace lhg::call {
+
+template<>
+struct is_input<maa::func_type_MaaControllerWait::ret, false> {
+  constexpr static bool value = false;
+};
+template<>
+struct is_output<maa::func_type_MaaControllerWait::ret, false> {
+  constexpr static bool value = true;
+};
+
+}
+
+namespace lhg::maa {
+
 struct func_type_MaaControllerConnected {
   struct _0_ctrl {
     constexpr static size_t index = 0;
@@ -535,6 +790,22 @@ struct function_MaaControllerConnected {
   constexpr static const char* name = "MaaControllerConnected";
   using type = func_type_MaaControllerConnected;
 };
+
+}
+namespace lhg::call {
+
+template<>
+struct is_input<maa::func_type_MaaControllerConnected::ret, false> {
+  constexpr static bool value = false;
+};
+template<>
+struct is_output<maa::func_type_MaaControllerConnected::ret, false> {
+  constexpr static bool value = true;
+};
+
+}
+
+namespace lhg::maa {
 
 struct func_type_MaaControllerGetImage {
   struct _0_ctrl {
@@ -560,6 +831,22 @@ struct function_MaaControllerGetImage {
   using type = func_type_MaaControllerGetImage;
 };
 
+}
+namespace lhg::call {
+
+template<>
+struct is_input<maa::func_type_MaaControllerGetImage::ret, false> {
+  constexpr static bool value = false;
+};
+template<>
+struct is_output<maa::func_type_MaaControllerGetImage::ret, false> {
+  constexpr static bool value = true;
+};
+
+}
+
+namespace lhg::maa {
+
 struct func_type_MaaControllerGetUUID {
   struct _0_ctrl {
     constexpr static size_t index = 0;
@@ -583,6 +870,22 @@ struct function_MaaControllerGetUUID {
   constexpr static const char* name = "MaaControllerGetUUID";
   using type = func_type_MaaControllerGetUUID;
 };
+
+}
+namespace lhg::call {
+
+template<>
+struct is_input<maa::func_type_MaaControllerGetUUID::ret, false> {
+  constexpr static bool value = false;
+};
+template<>
+struct is_output<maa::func_type_MaaControllerGetUUID::ret, false> {
+  constexpr static bool value = true;
+};
+
+}
+
+namespace lhg::maa {
 
 struct func_type_MaaCreate {
   struct _0_callback {
@@ -608,6 +911,22 @@ struct function_MaaCreate {
   using type = func_type_MaaCreate;
 };
 
+}
+namespace lhg::call {
+
+template<>
+struct is_input<maa::func_type_MaaCreate::ret, false> {
+  constexpr static bool value = false;
+};
+template<>
+struct is_output<maa::func_type_MaaCreate::ret, false> {
+  constexpr static bool value = true;
+};
+
+}
+
+namespace lhg::maa {
+
 struct func_type_MaaDestroy {
   struct _0_inst {
     constexpr static size_t index = 0;
@@ -626,6 +945,22 @@ struct function_MaaDestroy {
   constexpr static const char* name = "MaaDestroy";
   using type = func_type_MaaDestroy;
 };
+
+}
+namespace lhg::call {
+
+template<>
+struct is_input<maa::func_type_MaaDestroy::ret, false> {
+  constexpr static bool value = false;
+};
+template<>
+struct is_output<maa::func_type_MaaDestroy::ret, false> {
+  constexpr static bool value = true;
+};
+
+}
+
+namespace lhg::maa {
 
 struct func_type_MaaBindResource {
   struct _0_inst {
@@ -651,6 +986,22 @@ struct function_MaaBindResource {
   using type = func_type_MaaBindResource;
 };
 
+}
+namespace lhg::call {
+
+template<>
+struct is_input<maa::func_type_MaaBindResource::ret, false> {
+  constexpr static bool value = false;
+};
+template<>
+struct is_output<maa::func_type_MaaBindResource::ret, false> {
+  constexpr static bool value = true;
+};
+
+}
+
+namespace lhg::maa {
+
 struct func_type_MaaBindController {
   struct _0_inst {
     constexpr static size_t index = 0;
@@ -675,6 +1026,22 @@ struct function_MaaBindController {
   using type = func_type_MaaBindController;
 };
 
+}
+namespace lhg::call {
+
+template<>
+struct is_input<maa::func_type_MaaBindController::ret, false> {
+  constexpr static bool value = false;
+};
+template<>
+struct is_output<maa::func_type_MaaBindController::ret, false> {
+  constexpr static bool value = true;
+};
+
+}
+
+namespace lhg::maa {
+
 struct func_type_MaaInited {
   struct _0_inst {
     constexpr static size_t index = 0;
@@ -693,6 +1060,22 @@ struct function_MaaInited {
   constexpr static const char* name = "MaaInited";
   using type = func_type_MaaInited;
 };
+
+}
+namespace lhg::call {
+
+template<>
+struct is_input<maa::func_type_MaaInited::ret, false> {
+  constexpr static bool value = false;
+};
+template<>
+struct is_output<maa::func_type_MaaInited::ret, false> {
+  constexpr static bool value = true;
+};
+
+}
+
+namespace lhg::maa {
 
 struct func_type_MaaUnregisterCustomRecognizer {
   struct _0_inst {
@@ -718,6 +1101,22 @@ struct function_MaaUnregisterCustomRecognizer {
   using type = func_type_MaaUnregisterCustomRecognizer;
 };
 
+}
+namespace lhg::call {
+
+template<>
+struct is_input<maa::func_type_MaaUnregisterCustomRecognizer::ret, false> {
+  constexpr static bool value = false;
+};
+template<>
+struct is_output<maa::func_type_MaaUnregisterCustomRecognizer::ret, false> {
+  constexpr static bool value = true;
+};
+
+}
+
+namespace lhg::maa {
+
 struct func_type_MaaClearCustomRecognizer {
   struct _0_inst {
     constexpr static size_t index = 0;
@@ -736,6 +1135,22 @@ struct function_MaaClearCustomRecognizer {
   constexpr static const char* name = "MaaClearCustomRecognizer";
   using type = func_type_MaaClearCustomRecognizer;
 };
+
+}
+namespace lhg::call {
+
+template<>
+struct is_input<maa::func_type_MaaClearCustomRecognizer::ret, false> {
+  constexpr static bool value = false;
+};
+template<>
+struct is_output<maa::func_type_MaaClearCustomRecognizer::ret, false> {
+  constexpr static bool value = true;
+};
+
+}
+
+namespace lhg::maa {
 
 struct func_type_MaaUnregisterCustomAction {
   struct _0_inst {
@@ -761,6 +1176,22 @@ struct function_MaaUnregisterCustomAction {
   using type = func_type_MaaUnregisterCustomAction;
 };
 
+}
+namespace lhg::call {
+
+template<>
+struct is_input<maa::func_type_MaaUnregisterCustomAction::ret, false> {
+  constexpr static bool value = false;
+};
+template<>
+struct is_output<maa::func_type_MaaUnregisterCustomAction::ret, false> {
+  constexpr static bool value = true;
+};
+
+}
+
+namespace lhg::maa {
+
 struct func_type_MaaClearCustomAction {
   struct _0_inst {
     constexpr static size_t index = 0;
@@ -779,6 +1210,22 @@ struct function_MaaClearCustomAction {
   constexpr static const char* name = "MaaClearCustomAction";
   using type = func_type_MaaClearCustomAction;
 };
+
+}
+namespace lhg::call {
+
+template<>
+struct is_input<maa::func_type_MaaClearCustomAction::ret, false> {
+  constexpr static bool value = false;
+};
+template<>
+struct is_output<maa::func_type_MaaClearCustomAction::ret, false> {
+  constexpr static bool value = true;
+};
+
+}
+
+namespace lhg::maa {
 
 struct func_type_MaaPostTask {
   struct _0_inst {
@@ -809,6 +1256,22 @@ struct function_MaaPostTask {
   using type = func_type_MaaPostTask;
 };
 
+}
+namespace lhg::call {
+
+template<>
+struct is_input<maa::func_type_MaaPostTask::ret, false> {
+  constexpr static bool value = false;
+};
+template<>
+struct is_output<maa::func_type_MaaPostTask::ret, false> {
+  constexpr static bool value = true;
+};
+
+}
+
+namespace lhg::maa {
+
 struct func_type_MaaSetTaskParam {
   struct _0_inst {
     constexpr static size_t index = 0;
@@ -838,6 +1301,22 @@ struct function_MaaSetTaskParam {
   using type = func_type_MaaSetTaskParam;
 };
 
+}
+namespace lhg::call {
+
+template<>
+struct is_input<maa::func_type_MaaSetTaskParam::ret, false> {
+  constexpr static bool value = false;
+};
+template<>
+struct is_output<maa::func_type_MaaSetTaskParam::ret, false> {
+  constexpr static bool value = true;
+};
+
+}
+
+namespace lhg::maa {
+
 struct func_type_MaaTaskStatus {
   struct _0_inst {
     constexpr static size_t index = 0;
@@ -861,6 +1340,22 @@ struct function_MaaTaskStatus {
   constexpr static const char* name = "MaaTaskStatus";
   using type = func_type_MaaTaskStatus;
 };
+
+}
+namespace lhg::call {
+
+template<>
+struct is_input<maa::func_type_MaaTaskStatus::ret, false> {
+  constexpr static bool value = false;
+};
+template<>
+struct is_output<maa::func_type_MaaTaskStatus::ret, false> {
+  constexpr static bool value = true;
+};
+
+}
+
+namespace lhg::maa {
 
 struct func_type_MaaWaitTask {
   struct _0_inst {
@@ -886,6 +1381,22 @@ struct function_MaaWaitTask {
   using type = func_type_MaaWaitTask;
 };
 
+}
+namespace lhg::call {
+
+template<>
+struct is_input<maa::func_type_MaaWaitTask::ret, false> {
+  constexpr static bool value = false;
+};
+template<>
+struct is_output<maa::func_type_MaaWaitTask::ret, false> {
+  constexpr static bool value = true;
+};
+
+}
+
+namespace lhg::maa {
+
 struct func_type_MaaTaskAllFinished {
   struct _0_inst {
     constexpr static size_t index = 0;
@@ -904,6 +1415,22 @@ struct function_MaaTaskAllFinished {
   constexpr static const char* name = "MaaTaskAllFinished";
   using type = func_type_MaaTaskAllFinished;
 };
+
+}
+namespace lhg::call {
+
+template<>
+struct is_input<maa::func_type_MaaTaskAllFinished::ret, false> {
+  constexpr static bool value = false;
+};
+template<>
+struct is_output<maa::func_type_MaaTaskAllFinished::ret, false> {
+  constexpr static bool value = true;
+};
+
+}
+
+namespace lhg::maa {
 
 struct func_type_MaaPostStop {
   struct _0_inst {
@@ -924,6 +1451,22 @@ struct function_MaaPostStop {
   using type = func_type_MaaPostStop;
 };
 
+}
+namespace lhg::call {
+
+template<>
+struct is_input<maa::func_type_MaaPostStop::ret, false> {
+  constexpr static bool value = false;
+};
+template<>
+struct is_output<maa::func_type_MaaPostStop::ret, false> {
+  constexpr static bool value = true;
+};
+
+}
+
+namespace lhg::maa {
+
 struct func_type_MaaStop {
   struct _0_inst {
     constexpr static size_t index = 0;
@@ -942,6 +1485,22 @@ struct function_MaaStop {
   constexpr static const char* name = "MaaStop";
   using type = func_type_MaaStop;
 };
+
+}
+namespace lhg::call {
+
+template<>
+struct is_input<maa::func_type_MaaStop::ret, false> {
+  constexpr static bool value = false;
+};
+template<>
+struct is_output<maa::func_type_MaaStop::ret, false> {
+  constexpr static bool value = true;
+};
+
+}
+
+namespace lhg::maa {
 
 struct func_type_MaaGetResource {
   struct _0_inst {
@@ -962,6 +1521,22 @@ struct function_MaaGetResource {
   using type = func_type_MaaGetResource;
 };
 
+}
+namespace lhg::call {
+
+template<>
+struct is_input<maa::func_type_MaaGetResource::ret, false> {
+  constexpr static bool value = false;
+};
+template<>
+struct is_output<maa::func_type_MaaGetResource::ret, false> {
+  constexpr static bool value = true;
+};
+
+}
+
+namespace lhg::maa {
+
 struct func_type_MaaGetController {
   struct _0_inst {
     constexpr static size_t index = 0;
@@ -980,6 +1555,22 @@ struct function_MaaGetController {
   constexpr static const char* name = "MaaGetController";
   using type = func_type_MaaGetController;
 };
+
+}
+namespace lhg::call {
+
+template<>
+struct is_input<maa::func_type_MaaGetController::ret, false> {
+  constexpr static bool value = false;
+};
+template<>
+struct is_output<maa::func_type_MaaGetController::ret, false> {
+  constexpr static bool value = true;
+};
+
+}
+
+namespace lhg::maa {
 
 struct func_type_MaaResourceCreate {
   struct _0_callback {
@@ -1005,6 +1596,22 @@ struct function_MaaResourceCreate {
   using type = func_type_MaaResourceCreate;
 };
 
+}
+namespace lhg::call {
+
+template<>
+struct is_input<maa::func_type_MaaResourceCreate::ret, false> {
+  constexpr static bool value = false;
+};
+template<>
+struct is_output<maa::func_type_MaaResourceCreate::ret, false> {
+  constexpr static bool value = true;
+};
+
+}
+
+namespace lhg::maa {
+
 struct func_type_MaaResourceDestroy {
   struct _0_res {
     constexpr static size_t index = 0;
@@ -1023,6 +1630,22 @@ struct function_MaaResourceDestroy {
   constexpr static const char* name = "MaaResourceDestroy";
   using type = func_type_MaaResourceDestroy;
 };
+
+}
+namespace lhg::call {
+
+template<>
+struct is_input<maa::func_type_MaaResourceDestroy::ret, false> {
+  constexpr static bool value = false;
+};
+template<>
+struct is_output<maa::func_type_MaaResourceDestroy::ret, false> {
+  constexpr static bool value = true;
+};
+
+}
+
+namespace lhg::maa {
 
 struct func_type_MaaResourcePostPath {
   struct _0_res {
@@ -1048,6 +1671,22 @@ struct function_MaaResourcePostPath {
   using type = func_type_MaaResourcePostPath;
 };
 
+}
+namespace lhg::call {
+
+template<>
+struct is_input<maa::func_type_MaaResourcePostPath::ret, false> {
+  constexpr static bool value = false;
+};
+template<>
+struct is_output<maa::func_type_MaaResourcePostPath::ret, false> {
+  constexpr static bool value = true;
+};
+
+}
+
+namespace lhg::maa {
+
 struct func_type_MaaResourceStatus {
   struct _0_res {
     constexpr static size_t index = 0;
@@ -1071,6 +1710,22 @@ struct function_MaaResourceStatus {
   constexpr static const char* name = "MaaResourceStatus";
   using type = func_type_MaaResourceStatus;
 };
+
+}
+namespace lhg::call {
+
+template<>
+struct is_input<maa::func_type_MaaResourceStatus::ret, false> {
+  constexpr static bool value = false;
+};
+template<>
+struct is_output<maa::func_type_MaaResourceStatus::ret, false> {
+  constexpr static bool value = true;
+};
+
+}
+
+namespace lhg::maa {
 
 struct func_type_MaaResourceWait {
   struct _0_res {
@@ -1096,6 +1751,22 @@ struct function_MaaResourceWait {
   using type = func_type_MaaResourceWait;
 };
 
+}
+namespace lhg::call {
+
+template<>
+struct is_input<maa::func_type_MaaResourceWait::ret, false> {
+  constexpr static bool value = false;
+};
+template<>
+struct is_output<maa::func_type_MaaResourceWait::ret, false> {
+  constexpr static bool value = true;
+};
+
+}
+
+namespace lhg::maa {
+
 struct func_type_MaaResourceLoaded {
   struct _0_res {
     constexpr static size_t index = 0;
@@ -1114,6 +1785,22 @@ struct function_MaaResourceLoaded {
   constexpr static const char* name = "MaaResourceLoaded";
   using type = func_type_MaaResourceLoaded;
 };
+
+}
+namespace lhg::call {
+
+template<>
+struct is_input<maa::func_type_MaaResourceLoaded::ret, false> {
+  constexpr static bool value = false;
+};
+template<>
+struct is_output<maa::func_type_MaaResourceLoaded::ret, false> {
+  constexpr static bool value = true;
+};
+
+}
+
+namespace lhg::maa {
 
 struct func_type_MaaResourceGetHash {
   struct _0_res {
@@ -1139,6 +1826,22 @@ struct function_MaaResourceGetHash {
   using type = func_type_MaaResourceGetHash;
 };
 
+}
+namespace lhg::call {
+
+template<>
+struct is_input<maa::func_type_MaaResourceGetHash::ret, false> {
+  constexpr static bool value = false;
+};
+template<>
+struct is_output<maa::func_type_MaaResourceGetHash::ret, false> {
+  constexpr static bool value = true;
+};
+
+}
+
+namespace lhg::maa {
+
 struct func_type_MaaResourceGetTaskList {
   struct _0_res {
     constexpr static size_t index = 0;
@@ -1163,6 +1866,22 @@ struct function_MaaResourceGetTaskList {
   using type = func_type_MaaResourceGetTaskList;
 };
 
+}
+namespace lhg::call {
+
+template<>
+struct is_input<maa::func_type_MaaResourceGetTaskList::ret, false> {
+  constexpr static bool value = false;
+};
+template<>
+struct is_output<maa::func_type_MaaResourceGetTaskList::ret, false> {
+  constexpr static bool value = true;
+};
+
+}
+
+namespace lhg::maa {
+
 struct func_type_MaaCreateImageBuffer {
   struct ret {
     constexpr static size_t index = 0;
@@ -1176,6 +1895,22 @@ struct function_MaaCreateImageBuffer {
   constexpr static const char* name = "MaaCreateImageBuffer";
   using type = func_type_MaaCreateImageBuffer;
 };
+
+}
+namespace lhg::call {
+
+template<>
+struct is_input<maa::func_type_MaaCreateImageBuffer::ret, false> {
+  constexpr static bool value = false;
+};
+template<>
+struct is_output<maa::func_type_MaaCreateImageBuffer::ret, false> {
+  constexpr static bool value = true;
+};
+
+}
+
+namespace lhg::maa {
 
 struct func_type_MaaDestroyImageBuffer {
   struct _0_handle {
@@ -1196,6 +1931,22 @@ struct function_MaaDestroyImageBuffer {
   using type = func_type_MaaDestroyImageBuffer;
 };
 
+}
+namespace lhg::call {
+
+template<>
+struct is_input<maa::func_type_MaaDestroyImageBuffer::ret, false> {
+  constexpr static bool value = false;
+};
+template<>
+struct is_output<maa::func_type_MaaDestroyImageBuffer::ret, false> {
+  constexpr static bool value = true;
+};
+
+}
+
+namespace lhg::maa {
+
 struct func_type_MaaIsImageEmpty {
   struct _0_handle {
     constexpr static size_t index = 0;
@@ -1214,6 +1965,22 @@ struct function_MaaIsImageEmpty {
   constexpr static const char* name = "MaaIsImageEmpty";
   using type = func_type_MaaIsImageEmpty;
 };
+
+}
+namespace lhg::call {
+
+template<>
+struct is_input<maa::func_type_MaaIsImageEmpty::ret, false> {
+  constexpr static bool value = false;
+};
+template<>
+struct is_output<maa::func_type_MaaIsImageEmpty::ret, false> {
+  constexpr static bool value = true;
+};
+
+}
+
+namespace lhg::maa {
 
 struct func_type_MaaClearImage {
   struct _0_handle {
@@ -1234,6 +2001,22 @@ struct function_MaaClearImage {
   using type = func_type_MaaClearImage;
 };
 
+}
+namespace lhg::call {
+
+template<>
+struct is_input<maa::func_type_MaaClearImage::ret, false> {
+  constexpr static bool value = false;
+};
+template<>
+struct is_output<maa::func_type_MaaClearImage::ret, false> {
+  constexpr static bool value = true;
+};
+
+}
+
+namespace lhg::maa {
+
 struct func_type_MaaGetImageWidth {
   struct _0_handle {
     constexpr static size_t index = 0;
@@ -1252,6 +2035,22 @@ struct function_MaaGetImageWidth {
   constexpr static const char* name = "MaaGetImageWidth";
   using type = func_type_MaaGetImageWidth;
 };
+
+}
+namespace lhg::call {
+
+template<>
+struct is_input<maa::func_type_MaaGetImageWidth::ret, false> {
+  constexpr static bool value = false;
+};
+template<>
+struct is_output<maa::func_type_MaaGetImageWidth::ret, false> {
+  constexpr static bool value = true;
+};
+
+}
+
+namespace lhg::maa {
 
 struct func_type_MaaGetImageHeight {
   struct _0_handle {
@@ -1272,6 +2071,22 @@ struct function_MaaGetImageHeight {
   using type = func_type_MaaGetImageHeight;
 };
 
+}
+namespace lhg::call {
+
+template<>
+struct is_input<maa::func_type_MaaGetImageHeight::ret, false> {
+  constexpr static bool value = false;
+};
+template<>
+struct is_output<maa::func_type_MaaGetImageHeight::ret, false> {
+  constexpr static bool value = true;
+};
+
+}
+
+namespace lhg::maa {
+
 struct func_type_MaaGetImageType {
   struct _0_handle {
     constexpr static size_t index = 0;
@@ -1291,6 +2106,22 @@ struct function_MaaGetImageType {
   using type = func_type_MaaGetImageType;
 };
 
+}
+namespace lhg::call {
+
+template<>
+struct is_input<maa::func_type_MaaGetImageType::ret, false> {
+  constexpr static bool value = false;
+};
+template<>
+struct is_output<maa::func_type_MaaGetImageType::ret, false> {
+  constexpr static bool value = true;
+};
+
+}
+
+namespace lhg::maa {
+
 struct func_type_MaaGetImageEncoded {
   struct _0_handle {
     constexpr static size_t index = 0;
@@ -1309,6 +2140,22 @@ struct function_MaaGetImageEncoded {
   constexpr static const char* name = "MaaGetImageEncoded";
   using type = func_type_MaaGetImageEncoded;
 };
+
+}
+namespace lhg::call {
+
+template<>
+struct is_input<maa::func_type_MaaGetImageEncoded::ret, false> {
+  constexpr static bool value = false;
+};
+template<>
+struct is_output<maa::func_type_MaaGetImageEncoded::ret, false> {
+  constexpr static bool value = true;
+};
+
+}
+
+namespace lhg::maa {
 
 struct func_type_MaaSetImageEncoded {
   struct _0_handle {
@@ -1339,6 +2186,22 @@ struct function_MaaSetImageEncoded {
   using type = func_type_MaaSetImageEncoded;
 };
 
+}
+namespace lhg::call {
+
+template<>
+struct is_input<maa::func_type_MaaSetImageEncoded::ret, false> {
+  constexpr static bool value = false;
+};
+template<>
+struct is_output<maa::func_type_MaaSetImageEncoded::ret, false> {
+  constexpr static bool value = true;
+};
+
+}
+
+namespace lhg::maa {
+
 struct func_type_MaaVersion {
   struct ret {
     constexpr static size_t index = 0;
@@ -1352,6 +2215,22 @@ struct function_MaaVersion {
   constexpr static const char* name = "MaaVersion";
   using type = func_type_MaaVersion;
 };
+
+}
+namespace lhg::call {
+
+template<>
+struct is_input<maa::func_type_MaaVersion::ret, false> {
+  constexpr static bool value = false;
+};
+template<>
+struct is_output<maa::func_type_MaaVersion::ret, false> {
+  constexpr static bool value = true;
+};
+
+}
+
+namespace lhg::maa {
 
 struct func_type_MaaToolkitInit {
   struct ret {
@@ -1367,6 +2246,22 @@ struct function_MaaToolkitInit {
   using type = func_type_MaaToolkitInit;
 };
 
+}
+namespace lhg::call {
+
+template<>
+struct is_input<maa::func_type_MaaToolkitInit::ret, false> {
+  constexpr static bool value = false;
+};
+template<>
+struct is_output<maa::func_type_MaaToolkitInit::ret, false> {
+  constexpr static bool value = true;
+};
+
+}
+
+namespace lhg::maa {
+
 struct func_type_MaaToolkitUninit {
   struct ret {
     constexpr static size_t index = 0;
@@ -1381,6 +2276,22 @@ struct function_MaaToolkitUninit {
   using type = func_type_MaaToolkitUninit;
 };
 
+}
+namespace lhg::call {
+
+template<>
+struct is_input<maa::func_type_MaaToolkitUninit::ret, false> {
+  constexpr static bool value = false;
+};
+template<>
+struct is_output<maa::func_type_MaaToolkitUninit::ret, false> {
+  constexpr static bool value = true;
+};
+
+}
+
+namespace lhg::maa {
+
 struct func_type_MaaToolkitFindDevice {
   struct ret {
     constexpr static size_t index = 0;
@@ -1394,6 +2305,22 @@ struct function_MaaToolkitFindDevice {
   constexpr static const char* name = "MaaToolkitFindDevice";
   using type = func_type_MaaToolkitFindDevice;
 };
+
+}
+namespace lhg::call {
+
+template<>
+struct is_input<maa::func_type_MaaToolkitFindDevice::ret, false> {
+  constexpr static bool value = false;
+};
+template<>
+struct is_output<maa::func_type_MaaToolkitFindDevice::ret, false> {
+  constexpr static bool value = true;
+};
+
+}
+
+namespace lhg::maa {
 
 struct func_type_MaaToolkitFindDeviceWithAdb {
   struct _0_adb_path {
@@ -1414,6 +2341,22 @@ struct function_MaaToolkitFindDeviceWithAdb {
   using type = func_type_MaaToolkitFindDeviceWithAdb;
 };
 
+}
+namespace lhg::call {
+
+template<>
+struct is_input<maa::func_type_MaaToolkitFindDeviceWithAdb::ret, false> {
+  constexpr static bool value = false;
+};
+template<>
+struct is_output<maa::func_type_MaaToolkitFindDeviceWithAdb::ret, false> {
+  constexpr static bool value = true;
+};
+
+}
+
+namespace lhg::maa {
+
 struct func_type_MaaToolkitPostFindDevice {
   struct ret {
     constexpr static size_t index = 0;
@@ -1427,6 +2370,22 @@ struct function_MaaToolkitPostFindDevice {
   constexpr static const char* name = "MaaToolkitPostFindDevice";
   using type = func_type_MaaToolkitPostFindDevice;
 };
+
+}
+namespace lhg::call {
+
+template<>
+struct is_input<maa::func_type_MaaToolkitPostFindDevice::ret, false> {
+  constexpr static bool value = false;
+};
+template<>
+struct is_output<maa::func_type_MaaToolkitPostFindDevice::ret, false> {
+  constexpr static bool value = true;
+};
+
+}
+
+namespace lhg::maa {
 
 struct func_type_MaaToolkitPostFindDeviceWithAdb {
   struct _0_adb_path {
@@ -1447,6 +2406,22 @@ struct function_MaaToolkitPostFindDeviceWithAdb {
   using type = func_type_MaaToolkitPostFindDeviceWithAdb;
 };
 
+}
+namespace lhg::call {
+
+template<>
+struct is_input<maa::func_type_MaaToolkitPostFindDeviceWithAdb::ret, false> {
+  constexpr static bool value = false;
+};
+template<>
+struct is_output<maa::func_type_MaaToolkitPostFindDeviceWithAdb::ret, false> {
+  constexpr static bool value = true;
+};
+
+}
+
+namespace lhg::maa {
+
 struct func_type_MaaToolkitIsFindDeviceCompleted {
   struct ret {
     constexpr static size_t index = 0;
@@ -1460,6 +2435,22 @@ struct function_MaaToolkitIsFindDeviceCompleted {
   constexpr static const char* name = "MaaToolkitIsFindDeviceCompleted";
   using type = func_type_MaaToolkitIsFindDeviceCompleted;
 };
+
+}
+namespace lhg::call {
+
+template<>
+struct is_input<maa::func_type_MaaToolkitIsFindDeviceCompleted::ret, false> {
+  constexpr static bool value = false;
+};
+template<>
+struct is_output<maa::func_type_MaaToolkitIsFindDeviceCompleted::ret, false> {
+  constexpr static bool value = true;
+};
+
+}
+
+namespace lhg::maa {
 
 struct func_type_MaaToolkitWaitForFindDeviceToComplete {
   struct ret {
@@ -1475,6 +2466,22 @@ struct function_MaaToolkitWaitForFindDeviceToComplete {
   using type = func_type_MaaToolkitWaitForFindDeviceToComplete;
 };
 
+}
+namespace lhg::call {
+
+template<>
+struct is_input<maa::func_type_MaaToolkitWaitForFindDeviceToComplete::ret, false> {
+  constexpr static bool value = false;
+};
+template<>
+struct is_output<maa::func_type_MaaToolkitWaitForFindDeviceToComplete::ret, false> {
+  constexpr static bool value = true;
+};
+
+}
+
+namespace lhg::maa {
+
 struct func_type_MaaToolkitGetDeviceCount {
   struct ret {
     constexpr static size_t index = 0;
@@ -1488,6 +2495,22 @@ struct function_MaaToolkitGetDeviceCount {
   constexpr static const char* name = "MaaToolkitGetDeviceCount";
   using type = func_type_MaaToolkitGetDeviceCount;
 };
+
+}
+namespace lhg::call {
+
+template<>
+struct is_input<maa::func_type_MaaToolkitGetDeviceCount::ret, false> {
+  constexpr static bool value = false;
+};
+template<>
+struct is_output<maa::func_type_MaaToolkitGetDeviceCount::ret, false> {
+  constexpr static bool value = true;
+};
+
+}
+
+namespace lhg::maa {
 
 struct func_type_MaaToolkitGetDeviceName {
   struct _0_index {
@@ -1508,6 +2531,22 @@ struct function_MaaToolkitGetDeviceName {
   using type = func_type_MaaToolkitGetDeviceName;
 };
 
+}
+namespace lhg::call {
+
+template<>
+struct is_input<maa::func_type_MaaToolkitGetDeviceName::ret, false> {
+  constexpr static bool value = false;
+};
+template<>
+struct is_output<maa::func_type_MaaToolkitGetDeviceName::ret, false> {
+  constexpr static bool value = true;
+};
+
+}
+
+namespace lhg::maa {
+
 struct func_type_MaaToolkitGetDeviceAdbPath {
   struct _0_index {
     constexpr static size_t index = 0;
@@ -1526,6 +2565,22 @@ struct function_MaaToolkitGetDeviceAdbPath {
   constexpr static const char* name = "MaaToolkitGetDeviceAdbPath";
   using type = func_type_MaaToolkitGetDeviceAdbPath;
 };
+
+}
+namespace lhg::call {
+
+template<>
+struct is_input<maa::func_type_MaaToolkitGetDeviceAdbPath::ret, false> {
+  constexpr static bool value = false;
+};
+template<>
+struct is_output<maa::func_type_MaaToolkitGetDeviceAdbPath::ret, false> {
+  constexpr static bool value = true;
+};
+
+}
+
+namespace lhg::maa {
 
 struct func_type_MaaToolkitGetDeviceAdbSerial {
   struct _0_index {
@@ -1546,6 +2601,22 @@ struct function_MaaToolkitGetDeviceAdbSerial {
   using type = func_type_MaaToolkitGetDeviceAdbSerial;
 };
 
+}
+namespace lhg::call {
+
+template<>
+struct is_input<maa::func_type_MaaToolkitGetDeviceAdbSerial::ret, false> {
+  constexpr static bool value = false;
+};
+template<>
+struct is_output<maa::func_type_MaaToolkitGetDeviceAdbSerial::ret, false> {
+  constexpr static bool value = true;
+};
+
+}
+
+namespace lhg::maa {
+
 struct func_type_MaaToolkitGetDeviceAdbControllerType {
   struct _0_index {
     constexpr static size_t index = 0;
@@ -1565,6 +2636,22 @@ struct function_MaaToolkitGetDeviceAdbControllerType {
   using type = func_type_MaaToolkitGetDeviceAdbControllerType;
 };
 
+}
+namespace lhg::call {
+
+template<>
+struct is_input<maa::func_type_MaaToolkitGetDeviceAdbControllerType::ret, false> {
+  constexpr static bool value = false;
+};
+template<>
+struct is_output<maa::func_type_MaaToolkitGetDeviceAdbControllerType::ret, false> {
+  constexpr static bool value = true;
+};
+
+}
+
+namespace lhg::maa {
+
 struct func_type_MaaToolkitGetDeviceAdbConfig {
   struct _0_index {
     constexpr static size_t index = 0;
@@ -1583,6 +2670,22 @@ struct function_MaaToolkitGetDeviceAdbConfig {
   constexpr static const char* name = "MaaToolkitGetDeviceAdbConfig";
   using type = func_type_MaaToolkitGetDeviceAdbConfig;
 };
+
+}
+namespace lhg::call {
+
+template<>
+struct is_input<maa::func_type_MaaToolkitGetDeviceAdbConfig::ret, false> {
+  constexpr static bool value = false;
+};
+template<>
+struct is_output<maa::func_type_MaaToolkitGetDeviceAdbConfig::ret, false> {
+  constexpr static bool value = true;
+};
+
+}
+
+namespace lhg::maa {
 
 struct func_type_MaaToolkitRegisterCustomRecognizerExecutor {
   struct _0_handle {
@@ -1618,6 +2721,22 @@ struct function_MaaToolkitRegisterCustomRecognizerExecutor {
   using type = func_type_MaaToolkitRegisterCustomRecognizerExecutor;
 };
 
+}
+namespace lhg::call {
+
+template<>
+struct is_input<maa::func_type_MaaToolkitRegisterCustomRecognizerExecutor::ret, false> {
+  constexpr static bool value = false;
+};
+template<>
+struct is_output<maa::func_type_MaaToolkitRegisterCustomRecognizerExecutor::ret, false> {
+  constexpr static bool value = true;
+};
+
+}
+
+namespace lhg::maa {
+
 struct func_type_MaaToolkitUnregisterCustomRecognizerExecutor {
   struct _0_handle {
     constexpr static size_t index = 0;
@@ -1641,6 +2760,22 @@ struct function_MaaToolkitUnregisterCustomRecognizerExecutor {
   constexpr static const char* name = "MaaToolkitUnregisterCustomRecognizerExecutor";
   using type = func_type_MaaToolkitUnregisterCustomRecognizerExecutor;
 };
+
+}
+namespace lhg::call {
+
+template<>
+struct is_input<maa::func_type_MaaToolkitUnregisterCustomRecognizerExecutor::ret, false> {
+  constexpr static bool value = false;
+};
+template<>
+struct is_output<maa::func_type_MaaToolkitUnregisterCustomRecognizerExecutor::ret, false> {
+  constexpr static bool value = true;
+};
+
+}
+
+namespace lhg::maa {
 
 struct func_type_MaaToolkitRegisterCustomActionExecutor {
   struct _0_handle {
@@ -1676,6 +2811,22 @@ struct function_MaaToolkitRegisterCustomActionExecutor {
   using type = func_type_MaaToolkitRegisterCustomActionExecutor;
 };
 
+}
+namespace lhg::call {
+
+template<>
+struct is_input<maa::func_type_MaaToolkitRegisterCustomActionExecutor::ret, false> {
+  constexpr static bool value = false;
+};
+template<>
+struct is_output<maa::func_type_MaaToolkitRegisterCustomActionExecutor::ret, false> {
+  constexpr static bool value = true;
+};
+
+}
+
+namespace lhg::maa {
+
 struct func_type_MaaToolkitUnregisterCustomActionExecutor {
   struct _0_handle {
     constexpr static size_t index = 0;
@@ -1699,6 +2850,22 @@ struct function_MaaToolkitUnregisterCustomActionExecutor {
   constexpr static const char* name = "MaaToolkitUnregisterCustomActionExecutor";
   using type = func_type_MaaToolkitUnregisterCustomActionExecutor;
 };
+
+}
+namespace lhg::call {
+
+template<>
+struct is_input<maa::func_type_MaaToolkitUnregisterCustomActionExecutor::ret, false> {
+  constexpr static bool value = false;
+};
+template<>
+struct is_output<maa::func_type_MaaToolkitUnregisterCustomActionExecutor::ret, false> {
+  constexpr static bool value = true;
+};
+
+}
+
+namespace lhg::maa {
 
 struct func_type_MaaToolkitFindWindow {
   struct _0_class_name {
@@ -1724,6 +2891,22 @@ struct function_MaaToolkitFindWindow {
   using type = func_type_MaaToolkitFindWindow;
 };
 
+}
+namespace lhg::call {
+
+template<>
+struct is_input<maa::func_type_MaaToolkitFindWindow::ret, false> {
+  constexpr static bool value = false;
+};
+template<>
+struct is_output<maa::func_type_MaaToolkitFindWindow::ret, false> {
+  constexpr static bool value = true;
+};
+
+}
+
+namespace lhg::maa {
+
 struct func_type_MaaToolkitSearchWindow {
   struct _0_class_name {
     constexpr static size_t index = 0;
@@ -1748,6 +2931,22 @@ struct function_MaaToolkitSearchWindow {
   using type = func_type_MaaToolkitSearchWindow;
 };
 
+}
+namespace lhg::call {
+
+template<>
+struct is_input<maa::func_type_MaaToolkitSearchWindow::ret, false> {
+  constexpr static bool value = false;
+};
+template<>
+struct is_output<maa::func_type_MaaToolkitSearchWindow::ret, false> {
+  constexpr static bool value = true;
+};
+
+}
+
+namespace lhg::maa {
+
 struct func_type_MaaToolkitGetWindow {
   struct _0_index {
     constexpr static size_t index = 0;
@@ -1767,6 +2966,22 @@ struct function_MaaToolkitGetWindow {
   using type = func_type_MaaToolkitGetWindow;
 };
 
+}
+namespace lhg::call {
+
+template<>
+struct is_input<maa::func_type_MaaToolkitGetWindow::ret, false> {
+  constexpr static bool value = false;
+};
+template<>
+struct is_output<maa::func_type_MaaToolkitGetWindow::ret, false> {
+  constexpr static bool value = true;
+};
+
+}
+
+namespace lhg::maa {
+
 struct func_type_MaaToolkitGetCursorWindow {
   struct ret {
     constexpr static size_t index = 0;
@@ -1780,6 +2995,22 @@ struct function_MaaToolkitGetCursorWindow {
   constexpr static const char* name = "MaaToolkitGetCursorWindow";
   using type = func_type_MaaToolkitGetCursorWindow;
 };
+
+}
+namespace lhg::call {
+
+template<>
+struct is_input<maa::func_type_MaaToolkitGetCursorWindow::ret, false> {
+  constexpr static bool value = false;
+};
+template<>
+struct is_output<maa::func_type_MaaToolkitGetCursorWindow::ret, false> {
+  constexpr static bool value = true;
+};
+
+}
+
+namespace lhg::maa {
 
 struct func_type_MaaToolkitGetDesktopWindow {
   struct ret {
@@ -1795,6 +3026,22 @@ struct function_MaaToolkitGetDesktopWindow {
   using type = func_type_MaaToolkitGetDesktopWindow;
 };
 
+}
+namespace lhg::call {
+
+template<>
+struct is_input<maa::func_type_MaaToolkitGetDesktopWindow::ret, false> {
+  constexpr static bool value = false;
+};
+template<>
+struct is_output<maa::func_type_MaaToolkitGetDesktopWindow::ret, false> {
+  constexpr static bool value = true;
+};
+
+}
+
+namespace lhg::maa {
+
 struct func_type_MaaToolkitGetForegroundWindow {
   struct ret {
     constexpr static size_t index = 0;
@@ -1808,6 +3055,22 @@ struct function_MaaToolkitGetForegroundWindow {
   constexpr static const char* name = "MaaToolkitGetForegroundWindow";
   using type = func_type_MaaToolkitGetForegroundWindow;
 };
+
+}
+namespace lhg::call {
+
+template<>
+struct is_input<maa::func_type_MaaToolkitGetForegroundWindow::ret, false> {
+  constexpr static bool value = false;
+};
+template<>
+struct is_output<maa::func_type_MaaToolkitGetForegroundWindow::ret, false> {
+  constexpr static bool value = true;
+};
+
+}
+
+namespace lhg::maa {
 
 struct func_type_MaaControllerSetOptionString {
   struct _0_ctrl {
@@ -1838,6 +3101,22 @@ struct function_MaaControllerSetOptionString {
   using type = func_type_MaaControllerSetOptionString;
 };
 
+}
+namespace lhg::call {
+
+template<>
+struct is_input<maa::func_type_MaaControllerSetOptionString::ret, false> {
+  constexpr static bool value = false;
+};
+template<>
+struct is_output<maa::func_type_MaaControllerSetOptionString::ret, false> {
+  constexpr static bool value = true;
+};
+
+}
+
+namespace lhg::maa {
+
 struct func_type_MaaControllerSetOptionInteger {
   struct _0_ctrl {
     constexpr static size_t index = 0;
@@ -1866,6 +3145,22 @@ struct function_MaaControllerSetOptionInteger {
   constexpr static const char* name = "MaaControllerSetOptionInteger";
   using type = func_type_MaaControllerSetOptionInteger;
 };
+
+}
+namespace lhg::call {
+
+template<>
+struct is_input<maa::func_type_MaaControllerSetOptionInteger::ret, false> {
+  constexpr static bool value = false;
+};
+template<>
+struct is_output<maa::func_type_MaaControllerSetOptionInteger::ret, false> {
+  constexpr static bool value = true;
+};
+
+}
+
+namespace lhg::maa {
 
 struct func_type_MaaControllerSetOptionBoolean {
   struct _0_ctrl {
@@ -1896,6 +3191,22 @@ struct function_MaaControllerSetOptionBoolean {
   using type = func_type_MaaControllerSetOptionBoolean;
 };
 
+}
+namespace lhg::call {
+
+template<>
+struct is_input<maa::func_type_MaaControllerSetOptionBoolean::ret, false> {
+  constexpr static bool value = false;
+};
+template<>
+struct is_output<maa::func_type_MaaControllerSetOptionBoolean::ret, false> {
+  constexpr static bool value = true;
+};
+
+}
+
+namespace lhg::maa {
+
 struct func_type_MaaSetGlobalOptionString {
   struct _0_key {
     constexpr static size_t index = 0;
@@ -1919,6 +3230,22 @@ struct function_MaaSetGlobalOptionString {
   constexpr static const char* name = "MaaSetGlobalOptionString";
   using type = func_type_MaaSetGlobalOptionString;
 };
+
+}
+namespace lhg::call {
+
+template<>
+struct is_input<maa::func_type_MaaSetGlobalOptionString::ret, false> {
+  constexpr static bool value = false;
+};
+template<>
+struct is_output<maa::func_type_MaaSetGlobalOptionString::ret, false> {
+  constexpr static bool value = true;
+};
+
+}
+
+namespace lhg::maa {
 
 struct func_type_MaaSetGlobalOptionInteger {
   struct _0_key {
@@ -1944,6 +3271,22 @@ struct function_MaaSetGlobalOptionInteger {
   using type = func_type_MaaSetGlobalOptionInteger;
 };
 
+}
+namespace lhg::call {
+
+template<>
+struct is_input<maa::func_type_MaaSetGlobalOptionInteger::ret, false> {
+  constexpr static bool value = false;
+};
+template<>
+struct is_output<maa::func_type_MaaSetGlobalOptionInteger::ret, false> {
+  constexpr static bool value = true;
+};
+
+}
+
+namespace lhg::maa {
+
 struct func_type_MaaSetGlobalOptionBoolean {
   struct _0_key {
     constexpr static size_t index = 0;
@@ -1967,6 +3310,22 @@ struct function_MaaSetGlobalOptionBoolean {
   constexpr static const char* name = "MaaSetGlobalOptionBoolean";
   using type = func_type_MaaSetGlobalOptionBoolean;
 };
+
+}
+namespace lhg::call {
+
+template<>
+struct is_input<maa::func_type_MaaSetGlobalOptionBoolean::ret, false> {
+  constexpr static bool value = false;
+};
+template<>
+struct is_output<maa::func_type_MaaSetGlobalOptionBoolean::ret, false> {
+  constexpr static bool value = true;
+};
+
+}
+
+namespace lhg::maa {
 
 struct func_type_MaaRegisterCustomRecognizerImpl {
   struct _0_inst {
@@ -2001,6 +3360,22 @@ struct function_MaaRegisterCustomRecognizerImpl {
   constexpr static const char* name = "MaaRegisterCustomRecognizerImpl";
   using type = func_type_MaaRegisterCustomRecognizerImpl;
 };
+
+}
+namespace lhg::call {
+
+template<>
+struct is_input<maa::func_type_MaaRegisterCustomRecognizerImpl::ret, false> {
+  constexpr static bool value = false;
+};
+template<>
+struct is_output<maa::func_type_MaaRegisterCustomRecognizerImpl::ret, false> {
+  constexpr static bool value = true;
+};
+
+}
+
+namespace lhg::maa {
 
 struct func_type_MaaRegisterCustomActionImpl {
   struct _0_inst {
@@ -2045,6 +3420,22 @@ struct function_MaaRegisterCustomActionImpl {
   constexpr static const char* name = "MaaRegisterCustomActionImpl";
   using type = func_type_MaaRegisterCustomActionImpl;
 };
+
+}
+namespace lhg::call {
+
+template<>
+struct is_input<maa::func_type_MaaRegisterCustomActionImpl::ret, false> {
+  constexpr static bool value = false;
+};
+template<>
+struct is_output<maa::func_type_MaaRegisterCustomActionImpl::ret, false> {
+  constexpr static bool value = true;
+};
+
+}
+
+namespace lhg::maa {
 
 using __function_list = std::tuple<
   function_MaaAdbControllerCreate,
@@ -2137,964 +3528,228 @@ using __function_list = std::tuple<
 >;
 
 }
-
-template<>
-struct is_input<maa::func_type_MaaAdbControllerCreate::ret, false> {
-  constexpr static bool value = false;
-  using type = std::monostate;
-};
-template<>
-struct is_output<maa::func_type_MaaAdbControllerCreate::ret, false> {
-  constexpr static bool value = true;
-  using type = maa::func_type_MaaAdbControllerCreate::ret::type;
-};
-
-template<>
-struct is_input<maa::func_type_MaaAdbControllerCreateV2::ret, false> {
-  constexpr static bool value = false;
-  using type = std::monostate;
-};
-template<>
-struct is_output<maa::func_type_MaaAdbControllerCreateV2::ret, false> {
-  constexpr static bool value = true;
-  using type = maa::func_type_MaaAdbControllerCreateV2::ret::type;
-};
-
-template<>
-struct is_input<maa::func_type_MaaThriftControllerCreate::ret, false> {
-  constexpr static bool value = false;
-  using type = std::monostate;
-};
-template<>
-struct is_output<maa::func_type_MaaThriftControllerCreate::ret, false> {
-  constexpr static bool value = true;
-  using type = maa::func_type_MaaThriftControllerCreate::ret::type;
-};
-
-template<>
-struct is_input<maa::func_type_MaaDbgControllerCreate::ret, false> {
-  constexpr static bool value = false;
-  using type = std::monostate;
-};
-template<>
-struct is_output<maa::func_type_MaaDbgControllerCreate::ret, false> {
-  constexpr static bool value = true;
-  using type = maa::func_type_MaaDbgControllerCreate::ret::type;
-};
-
-template<>
-struct is_input<maa::func_type_MaaControllerDestroy::ret, false> {
-  constexpr static bool value = false;
-  using type = std::monostate;
-};
-template<>
-struct is_output<maa::func_type_MaaControllerDestroy::ret, false> {
-  constexpr static bool value = true;
-  using type = maa::func_type_MaaControllerDestroy::ret::type;
-};
-
-template<>
-struct is_input<maa::func_type_MaaControllerPostConnection::ret, false> {
-  constexpr static bool value = false;
-  using type = std::monostate;
-};
-template<>
-struct is_output<maa::func_type_MaaControllerPostConnection::ret, false> {
-  constexpr static bool value = true;
-  using type = maa::func_type_MaaControllerPostConnection::ret::type;
-};
-
-template<>
-struct is_input<maa::func_type_MaaControllerPostClick::ret, false> {
-  constexpr static bool value = false;
-  using type = std::monostate;
-};
-template<>
-struct is_output<maa::func_type_MaaControllerPostClick::ret, false> {
-  constexpr static bool value = true;
-  using type = maa::func_type_MaaControllerPostClick::ret::type;
-};
-
-template<>
-struct is_input<maa::func_type_MaaControllerPostSwipe::ret, false> {
-  constexpr static bool value = false;
-  using type = std::monostate;
-};
-template<>
-struct is_output<maa::func_type_MaaControllerPostSwipe::ret, false> {
-  constexpr static bool value = true;
-  using type = maa::func_type_MaaControllerPostSwipe::ret::type;
-};
-
-template<>
-struct is_input<maa::func_type_MaaControllerPostPressKey::ret, false> {
-  constexpr static bool value = false;
-  using type = std::monostate;
-};
-template<>
-struct is_output<maa::func_type_MaaControllerPostPressKey::ret, false> {
-  constexpr static bool value = true;
-  using type = maa::func_type_MaaControllerPostPressKey::ret::type;
-};
-
-template<>
-struct is_input<maa::func_type_MaaControllerPostInputText::ret, false> {
-  constexpr static bool value = false;
-  using type = std::monostate;
-};
-template<>
-struct is_output<maa::func_type_MaaControllerPostInputText::ret, false> {
-  constexpr static bool value = true;
-  using type = maa::func_type_MaaControllerPostInputText::ret::type;
-};
-
-template<>
-struct is_input<maa::func_type_MaaControllerPostTouchDown::ret, false> {
-  constexpr static bool value = false;
-  using type = std::monostate;
-};
-template<>
-struct is_output<maa::func_type_MaaControllerPostTouchDown::ret, false> {
-  constexpr static bool value = true;
-  using type = maa::func_type_MaaControllerPostTouchDown::ret::type;
-};
-
-template<>
-struct is_input<maa::func_type_MaaControllerPostTouchMove::ret, false> {
-  constexpr static bool value = false;
-  using type = std::monostate;
-};
-template<>
-struct is_output<maa::func_type_MaaControllerPostTouchMove::ret, false> {
-  constexpr static bool value = true;
-  using type = maa::func_type_MaaControllerPostTouchMove::ret::type;
-};
-
-template<>
-struct is_input<maa::func_type_MaaControllerPostTouchUp::ret, false> {
-  constexpr static bool value = false;
-  using type = std::monostate;
-};
-template<>
-struct is_output<maa::func_type_MaaControllerPostTouchUp::ret, false> {
-  constexpr static bool value = true;
-  using type = maa::func_type_MaaControllerPostTouchUp::ret::type;
-};
-
-template<>
-struct is_input<maa::func_type_MaaControllerPostScreencap::ret, false> {
-  constexpr static bool value = false;
-  using type = std::monostate;
-};
-template<>
-struct is_output<maa::func_type_MaaControllerPostScreencap::ret, false> {
-  constexpr static bool value = true;
-  using type = maa::func_type_MaaControllerPostScreencap::ret::type;
-};
-
-template<>
-struct is_input<maa::func_type_MaaControllerStatus::ret, false> {
-  constexpr static bool value = false;
-  using type = std::monostate;
-};
-template<>
-struct is_output<maa::func_type_MaaControllerStatus::ret, false> {
-  constexpr static bool value = true;
-  using type = maa::func_type_MaaControllerStatus::ret::type;
-};
-
-template<>
-struct is_input<maa::func_type_MaaControllerWait::ret, false> {
-  constexpr static bool value = false;
-  using type = std::monostate;
-};
-template<>
-struct is_output<maa::func_type_MaaControllerWait::ret, false> {
-  constexpr static bool value = true;
-  using type = maa::func_type_MaaControllerWait::ret::type;
-};
-
-template<>
-struct is_input<maa::func_type_MaaControllerConnected::ret, false> {
-  constexpr static bool value = false;
-  using type = std::monostate;
-};
-template<>
-struct is_output<maa::func_type_MaaControllerConnected::ret, false> {
-  constexpr static bool value = true;
-  using type = maa::func_type_MaaControllerConnected::ret::type;
-};
-
-template<>
-struct is_input<maa::func_type_MaaControllerGetImage::ret, false> {
-  constexpr static bool value = false;
-  using type = std::monostate;
-};
-template<>
-struct is_output<maa::func_type_MaaControllerGetImage::ret, false> {
-  constexpr static bool value = true;
-  using type = maa::func_type_MaaControllerGetImage::ret::type;
-};
-
-template<>
-struct is_input<maa::func_type_MaaControllerGetUUID::ret, false> {
-  constexpr static bool value = false;
-  using type = std::monostate;
-};
-template<>
-struct is_output<maa::func_type_MaaControllerGetUUID::ret, false> {
-  constexpr static bool value = true;
-  using type = maa::func_type_MaaControllerGetUUID::ret::type;
-};
-
-template<>
-struct is_input<maa::func_type_MaaCreate::ret, false> {
-  constexpr static bool value = false;
-  using type = std::monostate;
-};
-template<>
-struct is_output<maa::func_type_MaaCreate::ret, false> {
-  constexpr static bool value = true;
-  using type = maa::func_type_MaaCreate::ret::type;
-};
-
-template<>
-struct is_input<maa::func_type_MaaDestroy::ret, false> {
-  constexpr static bool value = false;
-  using type = std::monostate;
-};
-template<>
-struct is_output<maa::func_type_MaaDestroy::ret, false> {
-  constexpr static bool value = true;
-  using type = maa::func_type_MaaDestroy::ret::type;
-};
-
-template<>
-struct is_input<maa::func_type_MaaBindResource::ret, false> {
-  constexpr static bool value = false;
-  using type = std::monostate;
-};
-template<>
-struct is_output<maa::func_type_MaaBindResource::ret, false> {
-  constexpr static bool value = true;
-  using type = maa::func_type_MaaBindResource::ret::type;
-};
-
-template<>
-struct is_input<maa::func_type_MaaBindController::ret, false> {
-  constexpr static bool value = false;
-  using type = std::monostate;
-};
-template<>
-struct is_output<maa::func_type_MaaBindController::ret, false> {
-  constexpr static bool value = true;
-  using type = maa::func_type_MaaBindController::ret::type;
-};
-
-template<>
-struct is_input<maa::func_type_MaaInited::ret, false> {
-  constexpr static bool value = false;
-  using type = std::monostate;
-};
-template<>
-struct is_output<maa::func_type_MaaInited::ret, false> {
-  constexpr static bool value = true;
-  using type = maa::func_type_MaaInited::ret::type;
-};
-
-template<>
-struct is_input<maa::func_type_MaaUnregisterCustomRecognizer::ret, false> {
-  constexpr static bool value = false;
-  using type = std::monostate;
-};
-template<>
-struct is_output<maa::func_type_MaaUnregisterCustomRecognizer::ret, false> {
-  constexpr static bool value = true;
-  using type = maa::func_type_MaaUnregisterCustomRecognizer::ret::type;
-};
-
-template<>
-struct is_input<maa::func_type_MaaClearCustomRecognizer::ret, false> {
-  constexpr static bool value = false;
-  using type = std::monostate;
-};
-template<>
-struct is_output<maa::func_type_MaaClearCustomRecognizer::ret, false> {
-  constexpr static bool value = true;
-  using type = maa::func_type_MaaClearCustomRecognizer::ret::type;
-};
-
-template<>
-struct is_input<maa::func_type_MaaUnregisterCustomAction::ret, false> {
-  constexpr static bool value = false;
-  using type = std::monostate;
-};
-template<>
-struct is_output<maa::func_type_MaaUnregisterCustomAction::ret, false> {
-  constexpr static bool value = true;
-  using type = maa::func_type_MaaUnregisterCustomAction::ret::type;
-};
-
-template<>
-struct is_input<maa::func_type_MaaClearCustomAction::ret, false> {
-  constexpr static bool value = false;
-  using type = std::monostate;
-};
-template<>
-struct is_output<maa::func_type_MaaClearCustomAction::ret, false> {
-  constexpr static bool value = true;
-  using type = maa::func_type_MaaClearCustomAction::ret::type;
-};
-
-template<>
-struct is_input<maa::func_type_MaaPostTask::ret, false> {
-  constexpr static bool value = false;
-  using type = std::monostate;
-};
-template<>
-struct is_output<maa::func_type_MaaPostTask::ret, false> {
-  constexpr static bool value = true;
-  using type = maa::func_type_MaaPostTask::ret::type;
-};
-
-template<>
-struct is_input<maa::func_type_MaaSetTaskParam::ret, false> {
-  constexpr static bool value = false;
-  using type = std::monostate;
-};
-template<>
-struct is_output<maa::func_type_MaaSetTaskParam::ret, false> {
-  constexpr static bool value = true;
-  using type = maa::func_type_MaaSetTaskParam::ret::type;
-};
-
-template<>
-struct is_input<maa::func_type_MaaTaskStatus::ret, false> {
-  constexpr static bool value = false;
-  using type = std::monostate;
-};
-template<>
-struct is_output<maa::func_type_MaaTaskStatus::ret, false> {
-  constexpr static bool value = true;
-  using type = maa::func_type_MaaTaskStatus::ret::type;
-};
-
-template<>
-struct is_input<maa::func_type_MaaWaitTask::ret, false> {
-  constexpr static bool value = false;
-  using type = std::monostate;
-};
-template<>
-struct is_output<maa::func_type_MaaWaitTask::ret, false> {
-  constexpr static bool value = true;
-  using type = maa::func_type_MaaWaitTask::ret::type;
-};
-
-template<>
-struct is_input<maa::func_type_MaaTaskAllFinished::ret, false> {
-  constexpr static bool value = false;
-  using type = std::monostate;
-};
-template<>
-struct is_output<maa::func_type_MaaTaskAllFinished::ret, false> {
-  constexpr static bool value = true;
-  using type = maa::func_type_MaaTaskAllFinished::ret::type;
-};
-
-template<>
-struct is_input<maa::func_type_MaaPostStop::ret, false> {
-  constexpr static bool value = false;
-  using type = std::monostate;
-};
-template<>
-struct is_output<maa::func_type_MaaPostStop::ret, false> {
-  constexpr static bool value = true;
-  using type = maa::func_type_MaaPostStop::ret::type;
-};
-
-template<>
-struct is_input<maa::func_type_MaaStop::ret, false> {
-  constexpr static bool value = false;
-  using type = std::monostate;
-};
-template<>
-struct is_output<maa::func_type_MaaStop::ret, false> {
-  constexpr static bool value = true;
-  using type = maa::func_type_MaaStop::ret::type;
-};
-
-template<>
-struct is_input<maa::func_type_MaaGetResource::ret, false> {
-  constexpr static bool value = false;
-  using type = std::monostate;
-};
-template<>
-struct is_output<maa::func_type_MaaGetResource::ret, false> {
-  constexpr static bool value = true;
-  using type = maa::func_type_MaaGetResource::ret::type;
-};
-
-template<>
-struct is_input<maa::func_type_MaaGetController::ret, false> {
-  constexpr static bool value = false;
-  using type = std::monostate;
-};
-template<>
-struct is_output<maa::func_type_MaaGetController::ret, false> {
-  constexpr static bool value = true;
-  using type = maa::func_type_MaaGetController::ret::type;
-};
-
-template<>
-struct is_input<maa::func_type_MaaResourceCreate::ret, false> {
-  constexpr static bool value = false;
-  using type = std::monostate;
-};
-template<>
-struct is_output<maa::func_type_MaaResourceCreate::ret, false> {
-  constexpr static bool value = true;
-  using type = maa::func_type_MaaResourceCreate::ret::type;
-};
-
-template<>
-struct is_input<maa::func_type_MaaResourceDestroy::ret, false> {
-  constexpr static bool value = false;
-  using type = std::monostate;
-};
-template<>
-struct is_output<maa::func_type_MaaResourceDestroy::ret, false> {
-  constexpr static bool value = true;
-  using type = maa::func_type_MaaResourceDestroy::ret::type;
-};
-
-template<>
-struct is_input<maa::func_type_MaaResourcePostPath::ret, false> {
-  constexpr static bool value = false;
-  using type = std::monostate;
-};
-template<>
-struct is_output<maa::func_type_MaaResourcePostPath::ret, false> {
-  constexpr static bool value = true;
-  using type = maa::func_type_MaaResourcePostPath::ret::type;
-};
-
-template<>
-struct is_input<maa::func_type_MaaResourceStatus::ret, false> {
-  constexpr static bool value = false;
-  using type = std::monostate;
-};
-template<>
-struct is_output<maa::func_type_MaaResourceStatus::ret, false> {
-  constexpr static bool value = true;
-  using type = maa::func_type_MaaResourceStatus::ret::type;
-};
-
-template<>
-struct is_input<maa::func_type_MaaResourceWait::ret, false> {
-  constexpr static bool value = false;
-  using type = std::monostate;
+namespace lhg::maa {
+
+struct func_type_MaaAPICallback {
+  struct _0_msg {
+    constexpr static size_t index = 0;
+    constexpr static const char* name = "msg";
+    using type = const char *;
+  };
+  struct _1_details_json {
+    constexpr static size_t index = 1;
+    constexpr static const char* name = "details_json";
+    using type =  const char *;
+  };
+  struct _2_ {
+    constexpr static size_t index = 2;
+    constexpr static const char* name = "";
+    using type =  void *;
+  };
+  struct ret {
+    constexpr static size_t index = 3;
+    constexpr static const char* name = "return";
+    using type = void;
+  };
+  using args = std::tuple<_0_msg, _1_details_json, _2_, ret>;
 };
-template<>
-struct is_output<maa::func_type_MaaResourceWait::ret, false> {
-  constexpr static bool value = true;
-  using type = maa::func_type_MaaResourceWait::ret::type;
-};
-
-template<>
-struct is_input<maa::func_type_MaaResourceLoaded::ret, false> {
-  constexpr static bool value = false;
-  using type = std::monostate;
-};
-template<>
-struct is_output<maa::func_type_MaaResourceLoaded::ret, false> {
-  constexpr static bool value = true;
-  using type = maa::func_type_MaaResourceLoaded::ret::type;
-};
-
-template<>
-struct is_input<maa::func_type_MaaResourceGetHash::ret, false> {
-  constexpr static bool value = false;
-  using type = std::monostate;
-};
-template<>
-struct is_output<maa::func_type_MaaResourceGetHash::ret, false> {
-  constexpr static bool value = true;
-  using type = maa::func_type_MaaResourceGetHash::ret::type;
-};
-
-template<>
-struct is_input<maa::func_type_MaaResourceGetTaskList::ret, false> {
-  constexpr static bool value = false;
-  using type = std::monostate;
-};
-template<>
-struct is_output<maa::func_type_MaaResourceGetTaskList::ret, false> {
-  constexpr static bool value = true;
-  using type = maa::func_type_MaaResourceGetTaskList::ret::type;
-};
-
-template<>
-struct is_input<maa::func_type_MaaCreateImageBuffer::ret, false> {
-  constexpr static bool value = false;
-  using type = std::monostate;
-};
-template<>
-struct is_output<maa::func_type_MaaCreateImageBuffer::ret, false> {
-  constexpr static bool value = true;
-  using type = maa::func_type_MaaCreateImageBuffer::ret::type;
-};
-
-template<>
-struct is_input<maa::func_type_MaaDestroyImageBuffer::ret, false> {
-  constexpr static bool value = false;
-  using type = std::monostate;
-};
-template<>
-struct is_output<maa::func_type_MaaDestroyImageBuffer::ret, false> {
-  constexpr static bool value = true;
-  using type = maa::func_type_MaaDestroyImageBuffer::ret::type;
-};
-
-template<>
-struct is_input<maa::func_type_MaaIsImageEmpty::ret, false> {
-  constexpr static bool value = false;
-  using type = std::monostate;
-};
-template<>
-struct is_output<maa::func_type_MaaIsImageEmpty::ret, false> {
-  constexpr static bool value = true;
-  using type = maa::func_type_MaaIsImageEmpty::ret::type;
-};
-
-template<>
-struct is_input<maa::func_type_MaaClearImage::ret, false> {
-  constexpr static bool value = false;
-  using type = std::monostate;
-};
-template<>
-struct is_output<maa::func_type_MaaClearImage::ret, false> {
-  constexpr static bool value = true;
-  using type = maa::func_type_MaaClearImage::ret::type;
-};
-
-template<>
-struct is_input<maa::func_type_MaaGetImageWidth::ret, false> {
-  constexpr static bool value = false;
-  using type = std::monostate;
-};
-template<>
-struct is_output<maa::func_type_MaaGetImageWidth::ret, false> {
-  constexpr static bool value = true;
-  using type = maa::func_type_MaaGetImageWidth::ret::type;
-};
-
-template<>
-struct is_input<maa::func_type_MaaGetImageHeight::ret, false> {
-  constexpr static bool value = false;
-  using type = std::monostate;
-};
-template<>
-struct is_output<maa::func_type_MaaGetImageHeight::ret, false> {
-  constexpr static bool value = true;
-  using type = maa::func_type_MaaGetImageHeight::ret::type;
-};
-
-template<>
-struct is_input<maa::func_type_MaaGetImageType::ret, false> {
-  constexpr static bool value = false;
-  using type = std::monostate;
-};
-template<>
-struct is_output<maa::func_type_MaaGetImageType::ret, false> {
-  constexpr static bool value = true;
-  using type = maa::func_type_MaaGetImageType::ret::type;
-};
-
-template<>
-struct is_input<maa::func_type_MaaGetImageEncoded::ret, false> {
-  constexpr static bool value = false;
-  using type = std::monostate;
-};
-template<>
-struct is_output<maa::func_type_MaaGetImageEncoded::ret, false> {
-  constexpr static bool value = true;
-  using type = maa::func_type_MaaGetImageEncoded::ret::type;
-};
-
-template<>
-struct is_input<maa::func_type_MaaSetImageEncoded::ret, false> {
-  constexpr static bool value = false;
-  using type = std::monostate;
-};
-template<>
-struct is_output<maa::func_type_MaaSetImageEncoded::ret, false> {
-  constexpr static bool value = true;
-  using type = maa::func_type_MaaSetImageEncoded::ret::type;
-};
-
-template<>
-struct is_input<maa::func_type_MaaVersion::ret, false> {
-  constexpr static bool value = false;
-  using type = std::monostate;
-};
-template<>
-struct is_output<maa::func_type_MaaVersion::ret, false> {
-  constexpr static bool value = true;
-  using type = maa::func_type_MaaVersion::ret::type;
-};
-
-template<>
-struct is_input<maa::func_type_MaaToolkitInit::ret, false> {
-  constexpr static bool value = false;
-  using type = std::monostate;
-};
-template<>
-struct is_output<maa::func_type_MaaToolkitInit::ret, false> {
-  constexpr static bool value = true;
-  using type = maa::func_type_MaaToolkitInit::ret::type;
-};
-
-template<>
-struct is_input<maa::func_type_MaaToolkitUninit::ret, false> {
-  constexpr static bool value = false;
-  using type = std::monostate;
-};
-template<>
-struct is_output<maa::func_type_MaaToolkitUninit::ret, false> {
-  constexpr static bool value = true;
-  using type = maa::func_type_MaaToolkitUninit::ret::type;
-};
-
-template<>
-struct is_input<maa::func_type_MaaToolkitFindDevice::ret, false> {
-  constexpr static bool value = false;
-  using type = std::monostate;
-};
-template<>
-struct is_output<maa::func_type_MaaToolkitFindDevice::ret, false> {
-  constexpr static bool value = true;
-  using type = maa::func_type_MaaToolkitFindDevice::ret::type;
-};
-
-template<>
-struct is_input<maa::func_type_MaaToolkitFindDeviceWithAdb::ret, false> {
-  constexpr static bool value = false;
-  using type = std::monostate;
-};
-template<>
-struct is_output<maa::func_type_MaaToolkitFindDeviceWithAdb::ret, false> {
-  constexpr static bool value = true;
-  using type = maa::func_type_MaaToolkitFindDeviceWithAdb::ret::type;
-};
-
-template<>
-struct is_input<maa::func_type_MaaToolkitPostFindDevice::ret, false> {
-  constexpr static bool value = false;
-  using type = std::monostate;
-};
-template<>
-struct is_output<maa::func_type_MaaToolkitPostFindDevice::ret, false> {
-  constexpr static bool value = true;
-  using type = maa::func_type_MaaToolkitPostFindDevice::ret::type;
+struct callback_MaaAPICallback {
+  using type = func_type_MaaAPICallback;
+  using func_type = void (*)(const char *, const char *, void *);
+  constexpr static size_t context = 2;
 };
 
-template<>
-struct is_input<maa::func_type_MaaToolkitPostFindDeviceWithAdb::ret, false> {
-  constexpr static bool value = false;
-  using type = std::monostate;
-};
-template<>
-struct is_output<maa::func_type_MaaToolkitPostFindDeviceWithAdb::ret, false> {
-  constexpr static bool value = true;
-  using type = maa::func_type_MaaToolkitPostFindDeviceWithAdb::ret::type;
-};
-
-template<>
-struct is_input<maa::func_type_MaaToolkitIsFindDeviceCompleted::ret, false> {
-  constexpr static bool value = false;
-  using type = std::monostate;
-};
-template<>
-struct is_output<maa::func_type_MaaToolkitIsFindDeviceCompleted::ret, false> {
-  constexpr static bool value = true;
-  using type = maa::func_type_MaaToolkitIsFindDeviceCompleted::ret::type;
-};
-
-template<>
-struct is_input<maa::func_type_MaaToolkitWaitForFindDeviceToComplete::ret, false> {
-  constexpr static bool value = false;
-  using type = std::monostate;
-};
-template<>
-struct is_output<maa::func_type_MaaToolkitWaitForFindDeviceToComplete::ret, false> {
-  constexpr static bool value = true;
-  using type = maa::func_type_MaaToolkitWaitForFindDeviceToComplete::ret::type;
-};
-
-template<>
-struct is_input<maa::func_type_MaaToolkitGetDeviceCount::ret, false> {
-  constexpr static bool value = false;
-  using type = std::monostate;
-};
-template<>
-struct is_output<maa::func_type_MaaToolkitGetDeviceCount::ret, false> {
-  constexpr static bool value = true;
-  using type = maa::func_type_MaaToolkitGetDeviceCount::ret::type;
-};
-
-template<>
-struct is_input<maa::func_type_MaaToolkitGetDeviceName::ret, false> {
-  constexpr static bool value = false;
-  using type = std::monostate;
-};
-template<>
-struct is_output<maa::func_type_MaaToolkitGetDeviceName::ret, false> {
-  constexpr static bool value = true;
-  using type = maa::func_type_MaaToolkitGetDeviceName::ret::type;
-};
-
-template<>
-struct is_input<maa::func_type_MaaToolkitGetDeviceAdbPath::ret, false> {
-  constexpr static bool value = false;
-  using type = std::monostate;
-};
-template<>
-struct is_output<maa::func_type_MaaToolkitGetDeviceAdbPath::ret, false> {
-  constexpr static bool value = true;
-  using type = maa::func_type_MaaToolkitGetDeviceAdbPath::ret::type;
-};
+}
+namespace lhg::callback {
 
 template<>
-struct is_input<maa::func_type_MaaToolkitGetDeviceAdbSerial::ret, false> {
+struct is_input<maa::func_type_MaaAPICallback::_2_, false> {
   constexpr static bool value = false;
-  using type = std::monostate;
-};
-template<>
-struct is_output<maa::func_type_MaaToolkitGetDeviceAdbSerial::ret, false> {
-  constexpr static bool value = true;
-  using type = maa::func_type_MaaToolkitGetDeviceAdbSerial::ret::type;
 };
-
 template<>
-struct is_input<maa::func_type_MaaToolkitGetDeviceAdbControllerType::ret, false> {
+struct is_input<maa::func_type_MaaAPICallback::ret, false> {
   constexpr static bool value = false;
-  using type = std::monostate;
 };
 template<>
-struct is_output<maa::func_type_MaaToolkitGetDeviceAdbControllerType::ret, false> {
+struct is_output<maa::func_type_MaaAPICallback::ret, false> {
   constexpr static bool value = true;
-  using type = maa::func_type_MaaToolkitGetDeviceAdbControllerType::ret::type;
 };
 
-template<>
-struct is_input<maa::func_type_MaaToolkitGetDeviceAdbConfig::ret, false> {
-  constexpr static bool value = false;
-  using type = std::monostate;
-};
-template<>
-struct is_output<maa::func_type_MaaToolkitGetDeviceAdbConfig::ret, false> {
-  constexpr static bool value = true;
-  using type = maa::func_type_MaaToolkitGetDeviceAdbConfig::ret::type;
-};
+}
 
-template<>
-struct is_input<maa::func_type_MaaToolkitRegisterCustomRecognizerExecutor::ret, false> {
-  constexpr static bool value = false;
-  using type = std::monostate;
-};
-template<>
-struct is_output<maa::func_type_MaaToolkitRegisterCustomRecognizerExecutor::ret, false> {
-  constexpr static bool value = true;
-  using type = maa::func_type_MaaToolkitRegisterCustomRecognizerExecutor::ret::type;
-};
+namespace lhg::maa {
 
-template<>
-struct is_input<maa::func_type_MaaToolkitUnregisterCustomRecognizerExecutor::ret, false> {
-  constexpr static bool value = false;
-  using type = std::monostate;
+struct func_type_CustomActionRun {
+  struct _0_sync_context {
+    constexpr static size_t index = 0;
+    constexpr static const char* name = "sync_context";
+    using type = MaaSyncContextAPI *;
+  };
+  struct _1_task_name {
+    constexpr static size_t index = 1;
+    constexpr static const char* name = "task_name";
+    using type =  const char *;
+  };
+  struct _2_custom_action_param {
+    constexpr static size_t index = 2;
+    constexpr static const char* name = "custom_action_param";
+    using type =  const char *;
+  };
+  struct _3_cur_box {
+    constexpr static size_t index = 3;
+    constexpr static const char* name = "cur_box";
+    using type =  MaaRect *;
+  };
+  struct _4_cur_rec_detail {
+    constexpr static size_t index = 4;
+    constexpr static const char* name = "cur_rec_detail";
+    using type =  const char *;
+  };
+  struct _5_ {
+    constexpr static size_t index = 5;
+    constexpr static const char* name = "";
+    using type =  void *;
+  };
+  struct ret {
+    constexpr static size_t index = 6;
+    constexpr static const char* name = "return";
+    using type = unsigned char;
+  };
+  using args = std::tuple<_0_sync_context, _1_task_name, _2_custom_action_param, _3_cur_box, _4_cur_rec_detail, _5_, ret>;
 };
-template<>
-struct is_output<maa::func_type_MaaToolkitUnregisterCustomRecognizerExecutor::ret, false> {
-  constexpr static bool value = true;
-  using type = maa::func_type_MaaToolkitUnregisterCustomRecognizerExecutor::ret::type;
+struct callback_CustomActionRun {
+  using type = func_type_CustomActionRun;
+  using func_type = unsigned char (*)(MaaSyncContextAPI *, const char *, const char *, MaaRect *, const char *, void *);
+  constexpr static size_t context = 5;
 };
 
-template<>
-struct is_input<maa::func_type_MaaToolkitRegisterCustomActionExecutor::ret, false> {
-  constexpr static bool value = false;
-  using type = std::monostate;
-};
-template<>
-struct is_output<maa::func_type_MaaToolkitRegisterCustomActionExecutor::ret, false> {
-  constexpr static bool value = true;
-  using type = maa::func_type_MaaToolkitRegisterCustomActionExecutor::ret::type;
-};
+}
+namespace lhg::callback {
 
 template<>
-struct is_input<maa::func_type_MaaToolkitUnregisterCustomActionExecutor::ret, false> {
+struct is_input<maa::func_type_CustomActionRun::_5_, false> {
   constexpr static bool value = false;
-  using type = std::monostate;
-};
-template<>
-struct is_output<maa::func_type_MaaToolkitUnregisterCustomActionExecutor::ret, false> {
-  constexpr static bool value = true;
-  using type = maa::func_type_MaaToolkitUnregisterCustomActionExecutor::ret::type;
 };
-
 template<>
-struct is_input<maa::func_type_MaaToolkitFindWindow::ret, false> {
+struct is_input<maa::func_type_CustomActionRun::ret, false> {
   constexpr static bool value = false;
-  using type = std::monostate;
 };
 template<>
-struct is_output<maa::func_type_MaaToolkitFindWindow::ret, false> {
+struct is_output<maa::func_type_CustomActionRun::ret, false> {
   constexpr static bool value = true;
-  using type = maa::func_type_MaaToolkitFindWindow::ret::type;
 };
 
-template<>
-struct is_input<maa::func_type_MaaToolkitSearchWindow::ret, false> {
-  constexpr static bool value = false;
-  using type = std::monostate;
-};
-template<>
-struct is_output<maa::func_type_MaaToolkitSearchWindow::ret, false> {
-  constexpr static bool value = true;
-  using type = maa::func_type_MaaToolkitSearchWindow::ret::type;
-};
+}
 
-template<>
-struct is_input<maa::func_type_MaaToolkitGetWindow::ret, false> {
-  constexpr static bool value = false;
-  using type = std::monostate;
-};
-template<>
-struct is_output<maa::func_type_MaaToolkitGetWindow::ret, false> {
-  constexpr static bool value = true;
-  using type = maa::func_type_MaaToolkitGetWindow::ret::type;
-};
+namespace lhg::maa {
 
-template<>
-struct is_input<maa::func_type_MaaToolkitGetCursorWindow::ret, false> {
-  constexpr static bool value = false;
-  using type = std::monostate;
+struct func_type_CustomActionStop {
+  struct _0_ {
+    constexpr static size_t index = 0;
+    constexpr static const char* name = "";
+    using type = void *;
+  };
+  struct ret {
+    constexpr static size_t index = 1;
+    constexpr static const char* name = "return";
+    using type = void;
+  };
+  using args = std::tuple<_0_, ret>;
 };
-template<>
-struct is_output<maa::func_type_MaaToolkitGetCursorWindow::ret, false> {
-  constexpr static bool value = true;
-  using type = maa::func_type_MaaToolkitGetCursorWindow::ret::type;
+struct callback_CustomActionStop {
+  using type = func_type_CustomActionStop;
+  using func_type = void (*)(void *);
+  constexpr static size_t context = 0;
 };
 
-template<>
-struct is_input<maa::func_type_MaaToolkitGetDesktopWindow::ret, false> {
-  constexpr static bool value = false;
-  using type = std::monostate;
-};
-template<>
-struct is_output<maa::func_type_MaaToolkitGetDesktopWindow::ret, false> {
-  constexpr static bool value = true;
-  using type = maa::func_type_MaaToolkitGetDesktopWindow::ret::type;
-};
+}
+namespace lhg::callback {
 
 template<>
-struct is_input<maa::func_type_MaaToolkitGetForegroundWindow::ret, false> {
+struct is_input<maa::func_type_CustomActionStop::_0_, false> {
   constexpr static bool value = false;
-  using type = std::monostate;
-};
-template<>
-struct is_output<maa::func_type_MaaToolkitGetForegroundWindow::ret, false> {
-  constexpr static bool value = true;
-  using type = maa::func_type_MaaToolkitGetForegroundWindow::ret::type;
 };
-
 template<>
-struct is_input<maa::func_type_MaaControllerSetOptionString::ret, false> {
+struct is_input<maa::func_type_CustomActionStop::ret, false> {
   constexpr static bool value = false;
-  using type = std::monostate;
 };
 template<>
-struct is_output<maa::func_type_MaaControllerSetOptionString::ret, false> {
+struct is_output<maa::func_type_CustomActionStop::ret, false> {
   constexpr static bool value = true;
-  using type = maa::func_type_MaaControllerSetOptionString::ret::type;
 };
 
-template<>
-struct is_input<maa::func_type_MaaControllerSetOptionInteger::ret, false> {
-  constexpr static bool value = false;
-  using type = std::monostate;
-};
-template<>
-struct is_output<maa::func_type_MaaControllerSetOptionInteger::ret, false> {
-  constexpr static bool value = true;
-  using type = maa::func_type_MaaControllerSetOptionInteger::ret::type;
-};
+}
 
-template<>
-struct is_input<maa::func_type_MaaControllerSetOptionBoolean::ret, false> {
-  constexpr static bool value = false;
-  using type = std::monostate;
-};
-template<>
-struct is_output<maa::func_type_MaaControllerSetOptionBoolean::ret, false> {
-  constexpr static bool value = true;
-  using type = maa::func_type_MaaControllerSetOptionBoolean::ret::type;
-};
+namespace lhg::maa {
 
-template<>
-struct is_input<maa::func_type_MaaSetGlobalOptionString::ret, false> {
-  constexpr static bool value = false;
-  using type = std::monostate;
+struct func_type_CustomRecognizerAnalyze {
+  struct _0_sync_context {
+    constexpr static size_t index = 0;
+    constexpr static const char* name = "sync_context";
+    using type = MaaSyncContextAPI *;
+  };
+  struct _1_image {
+    constexpr static size_t index = 1;
+    constexpr static const char* name = "image";
+    using type =  MaaImageBuffer *;
+  };
+  struct _2_task_name {
+    constexpr static size_t index = 2;
+    constexpr static const char* name = "task_name";
+    using type =  const char *;
+  };
+  struct _3_custom_recognition_param {
+    constexpr static size_t index = 3;
+    constexpr static const char* name = "custom_recognition_param";
+    using type =  const char *;
+  };
+  struct _4_ {
+    constexpr static size_t index = 4;
+    constexpr static const char* name = "";
+    using type =  void *;
+  };
+  struct _5_out_box {
+    constexpr static size_t index = 5;
+    constexpr static const char* name = "out_box";
+    using type =  MaaRect *;
+  };
+  struct _6_out_detail {
+    constexpr static size_t index = 6;
+    constexpr static const char* name = "out_detail";
+    using type =  MaaStringBuffer *;
+  };
+  struct ret {
+    constexpr static size_t index = 7;
+    constexpr static const char* name = "return";
+    using type = unsigned char;
+  };
+  using args = std::tuple<_0_sync_context, _1_image, _2_task_name, _3_custom_recognition_param, _4_, _5_out_box, _6_out_detail, ret>;
 };
-template<>
-struct is_output<maa::func_type_MaaSetGlobalOptionString::ret, false> {
-  constexpr static bool value = true;
-  using type = maa::func_type_MaaSetGlobalOptionString::ret::type;
+struct callback_CustomRecognizerAnalyze {
+  using type = func_type_CustomRecognizerAnalyze;
+  using func_type = unsigned char (*)(MaaSyncContextAPI *, MaaImageBuffer *, const char *, const char *, void *, MaaRect *, MaaStringBuffer *);
+  constexpr static size_t context = 4;
 };
 
-template<>
-struct is_input<maa::func_type_MaaSetGlobalOptionInteger::ret, false> {
-  constexpr static bool value = false;
-  using type = std::monostate;
-};
-template<>
-struct is_output<maa::func_type_MaaSetGlobalOptionInteger::ret, false> {
-  constexpr static bool value = true;
-  using type = maa::func_type_MaaSetGlobalOptionInteger::ret::type;
-};
+}
+namespace lhg::callback {
 
 template<>
-struct is_input<maa::func_type_MaaSetGlobalOptionBoolean::ret, false> {
+struct is_input<maa::func_type_CustomRecognizerAnalyze::_4_, false> {
   constexpr static bool value = false;
-  using type = std::monostate;
-};
-template<>
-struct is_output<maa::func_type_MaaSetGlobalOptionBoolean::ret, false> {
-  constexpr static bool value = true;
-  using type = maa::func_type_MaaSetGlobalOptionBoolean::ret::type;
 };
-
 template<>
-struct is_input<maa::func_type_MaaRegisterCustomRecognizerImpl::ret, false> {
+struct is_input<maa::func_type_CustomRecognizerAnalyze::ret, false> {
   constexpr static bool value = false;
-  using type = std::monostate;
 };
 template<>
-struct is_output<maa::func_type_MaaRegisterCustomRecognizerImpl::ret, false> {
+struct is_output<maa::func_type_CustomRecognizerAnalyze::ret, false> {
   constexpr static bool value = true;
-  using type = maa::func_type_MaaRegisterCustomRecognizerImpl::ret::type;
 };
 
-template<>
-struct is_input<maa::func_type_MaaRegisterCustomActionImpl::ret, false> {
-  constexpr static bool value = false;
-  using type = std::monostate;
-};
-template<>
-struct is_output<maa::func_type_MaaRegisterCustomActionImpl::ret, false> {
-  constexpr static bool value = true;
-  using type = maa::func_type_MaaRegisterCustomActionImpl::ret::type;
-};
+}
 
+namespace lhg::call {
 template<>
 struct type_is_handle<MaaControllerAPI *, false> {
   constexpr static bool value = true;
