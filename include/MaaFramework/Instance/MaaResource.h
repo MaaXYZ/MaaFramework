@@ -44,6 +44,14 @@ extern "C"
     MAA_FRAMEWORK_API MaaResId MaaResourcePostPath(MaaResourceHandle res, MaaStringView path);
 
     /**
+     * @brief Clear the resource loading paths
+     *
+     * @param res
+     * @return MaaBool Whether the resource is cleared successfully.
+     */
+    MAA_FRAMEWORK_API MaaBool MaaResourceClear(MaaResourceHandle res);
+
+    /**
      * @brief Get the loading status of a resource identified by id.
      *
      * @param res

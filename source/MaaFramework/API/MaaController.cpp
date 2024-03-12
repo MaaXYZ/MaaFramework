@@ -16,9 +16,7 @@ MaaControllerHandle MaaAdbControllerCreate(
     MaaControllerCallback callback,
     MaaCallbackTransparentArg callback_arg)
 {
-    LogWarn
-        << "This API" << __FUNCTION__
-        << "is about to be deprecated, and we recommend using MaaAdbControllerCreateV2 instead.";
+    LogWarn << __FUNCTION__ << "is deprecated, use MaaAdbControllerCreateV2 instead.";
 
     constexpr std::string_view kDefaultAgentPath = "./MaaAgentBinary";
     return MaaAdbControllerCreateV2(
@@ -169,7 +167,7 @@ void MaaControllerDestroy(MaaControllerHandle ctrl)
         return;
     }
 
-    ctrl->on_stop();
+    ctrl->post_stop();
     delete ctrl;
 }
 

@@ -45,8 +45,8 @@ public: // from MaaInstanceAPI
 
     virtual MaaStatus task_status(MaaTaskId task_id) const override;
     virtual MaaStatus task_wait(MaaTaskId task_id) const override;
-    virtual MaaBool task_all_finished() const override;
 
+    virtual MaaBool running() const override;
     virtual void post_stop() override;
 
     virtual MaaResourceHandle resource() override;
@@ -65,11 +65,13 @@ private:
     using TaskId = AsyncRunner<TaskPtr>::Id;
 
     bool run_task(TaskId id, TaskPtr task_ptr);
+    bool check_stop();
 
 private:
     MaaResourceAPI* resource_ = nullptr;
     MaaControllerAPI* controller_ = nullptr;
     InstanceStatus status_;
+    bool need_to_stop_ = false;
 
     std::unordered_map<std::string, MAA_VISION_NS::CustomRecognizerPtr> custom_recognizers_;
     std::unordered_map<std::string, MAA_TASK_NS::CustomActionPtr> custom_actions_;

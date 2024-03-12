@@ -197,13 +197,16 @@ extern "C"
      */
     MAA_FRAMEWORK_API MaaStatus MaaWaitTask(MaaInstanceHandle inst, MaaTaskId id);
 
+    /// \deprecated Use MaaRunning() instead.
+    MAA_DEPRECATED MAA_FRAMEWORK_API MaaBool MaaTaskAllFinished(MaaInstanceHandle inst);
+
     /**
-     * @brief Wait for all tasks to finish.
+     * @brief Is maa running?
      *
      * @param inst
      * @return MaaBool
      */
-    MAA_FRAMEWORK_API MaaBool MaaTaskAllFinished(MaaInstanceHandle inst);
+    MAA_FRAMEWORK_API MaaBool MaaRunning(MaaInstanceHandle inst);
 
     /**
      * @brief Post a stop signal to the instance.
@@ -216,7 +219,7 @@ extern "C"
     MAA_FRAMEWORK_API MaaBool MaaPostStop(MaaInstanceHandle inst);
 
     /// \deprecated Use MaaPostStop() instead.
-    MAA_FRAMEWORK_API MaaBool MaaStop(MaaInstanceHandle inst);
+    MAA_DEPRECATED MAA_FRAMEWORK_API MaaBool MaaStop(MaaInstanceHandle inst);
 
     /**
      * @brief Get the resource handle of the instance.

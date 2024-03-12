@@ -39,6 +39,10 @@ public:
         ::grpc::ServerContext* context,
         const ::maarpc::HandleRequest* request,
         ::maarpc::BoolResponse* response) override;
+    ::grpc::Status clear(
+        ::grpc::ServerContext* context,
+        const ::maarpc::HandleRequest* request,
+        ::maarpc::BoolResponse* response) override;
     ::grpc::Status hash(
         ::grpc::ServerContext* context,
         const ::maarpc::HandleRequest* request,

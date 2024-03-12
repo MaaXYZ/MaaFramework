@@ -39,6 +39,18 @@ MaaResId MaaResourcePostPath(MaaResourceHandle res, MaaStringView path)
     return res->post_path(MAA_NS::path(path));
 }
 
+MaaBool MaaResourceClear(MaaResourceHandle res)
+{
+    LogFunc << VAR_VOIDP(res);
+
+    if (!res) {
+        LogError << "handle is null";
+        return false;
+    }
+
+    return res->clear();
+}
+
 MaaStatus MaaResourceStatus(MaaResourceHandle res, MaaResId id)
 {
     // LogFunc << VAR_VOIDP(res) << VAR(id);

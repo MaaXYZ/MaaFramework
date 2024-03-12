@@ -487,7 +487,7 @@ Status InstanceImpl::wait(
     return Status::OK;
 }
 
-Status InstanceImpl::all_finished(
+Status InstanceImpl::running(
     ServerContext* context,
     const ::maarpc::HandleRequest* request,
     ::maarpc::BoolResponse* response)
@@ -499,7 +499,7 @@ Status InstanceImpl::all_finished(
 
     MAA_GRPC_GET_HANDLE
 
-    response->set_bool_(MaaTaskAllFinished(handle));
+    response->set_bool_(MaaRunning(handle));
 
     return Status::OK;
 }

@@ -107,12 +107,14 @@ public:
     virtual MaaStatus status(MaaCtrlId ctrl_id) const override;
     virtual MaaStatus wait(MaaCtrlId ctrl_id) const override;
     virtual MaaBool connected() const override;
+    virtual MaaBool running() const override;
 
     virtual cv::Mat get_image() override;
     virtual std::string get_uuid() override;
     virtual std::pair<int, int> get_resolution() override;
 
-    virtual void on_stop() override;
+public:
+    virtual void post_stop() override;
 
 public:
     bool click(const cv::Rect& r);
@@ -147,6 +149,17 @@ protected:
     MessageNotifier<MaaControllerCallback> notifier;
 
 private:
+    MaaCtrlId post_connection_impl();
+    MaaCtrlId post_click_impl(int x, int y);
+    MaaCtrlId post_swipe_impl(int x1, int y1, int x2, int y2, int duration);
+    MaaCtrlId post_press_key_impl(int keycode);
+    MaaCtrlId post_input_text_impl(std::string_view text);
+    MaaCtrlId post_screencap_impl();
+
+    MaaCtrlId post_touch_down_impl(int contact, int x, int y, int pressure);
+    MaaCtrlId post_touch_move_impl(int contact, int x, int y, int pressure);
+    MaaCtrlId post_touch_up_impl(int contact);
+
     bool handle_connect();
     bool handle_click(const ClickParam& param);
     bool handle_swipe(const SwipeParam& param);
@@ -165,6 +178,10 @@ private:
         json::value info,
         const std::chrono::steady_clock::time_point& start_time,
         bool success);
+
+    MaaCtrlId post(Action action);
+    void focus_id(MaaCtrlId id);
+    bool check_stop();
 
 private:
     static cv::Point rand_point(const cv::Rect& r);
@@ -185,7 +202,7 @@ private: // options
     bool set_recording(MaaOptionValue value, MaaOptionValueSize val_size);
 
 private:
-    // InstanceInternalAPI* inst_ = nullptr;
+    bool need_to_stop_ = false;
 
 private:
     static std::minstd_rand rand_engine_;
@@ -208,8 +225,8 @@ private:
     bool recording_ = false;
     std::filesystem::path recording_path_;
 
-    std::set<AsyncRunner<Action>::Id> post_ids_;
-    std::mutex post_ids_mutex_;
+    std::set<AsyncRunner<Action>::Id> focus_ids_;
+    std::mutex focus_ids_mutex_;
     std::unique_ptr<AsyncRunner<Action>> action_runner_ = nullptr;
 };
 

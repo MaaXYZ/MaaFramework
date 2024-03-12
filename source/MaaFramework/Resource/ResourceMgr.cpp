@@ -39,6 +39,10 @@ MaaResId ResourceMgr::post_path(std::filesystem::path path)
 {
     LogInfo << VAR(path);
 
+    if (!check_stop()) {
+        return MaaInvalidId;
+    }
+
     valid_ = false;
     hash_cache_.clear();
 
@@ -122,6 +126,43 @@ std::vector<std::string> ResourceMgr::get_task_list() const
     return pipeline_res_.get_task_list();
 }
 
+void ResourceMgr::post_stop()
+{
+    LogFunc;
+
+    need_to_stop_ = true;
+
+    if (res_loader_ && res_loader_->running()) {
+        res_loader_->clear();
+    }
+}
+
+MaaBool ResourceMgr::running() const
+{
+    return res_loader_ && res_loader_->running();
+}
+
+MaaBool ResourceMgr::clear()
+{
+    LogFunc;
+
+    if (running()) {
+        LogError << "running, ignore clear";
+        return false;
+    }
+
+    pipeline_res_.clear();
+    ocr_res_.clear();
+    onnx_res_.clear();
+    template_res_.clear();
+    paths_.clear();
+    hash_cache_.clear();
+
+    valid_ = true;
+
+    return true;
+}
+
 bool ResourceMgr::run_load(
     typename AsyncRunner<std::filesystem::path>::Id id,
     std::filesystem::path path)
@@ -168,6 +209,21 @@ bool ResourceMgr::load(const std::filesystem::path& path)
     LogInfo << VAR(path) << VAR(ret);
 
     return ret;
+}
+
+bool ResourceMgr::check_stop()
+{
+    if (!need_to_stop_) {
+        return true;
+    }
+
+    if (running()) {
+        LogError << "stopping, ignore new post";
+        return false;
+    }
+
+    need_to_stop_ = false;
+    return true;
 }
 
 MAA_RES_NS_END

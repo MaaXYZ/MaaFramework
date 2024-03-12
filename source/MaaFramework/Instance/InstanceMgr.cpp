@@ -79,6 +79,10 @@ MaaTaskId InstanceMgr::post_task(std::string entry, std::string_view param)
     }
 #endif
 
+    if (!check_stop()) {
+        return MaaInvalidId;
+    }
+
     TaskPtr task_ptr = std::make_shared<TaskNS::PipelineTask>(std::move(entry), this);
 
     auto param_opt = json::parse(param);
@@ -198,33 +202,35 @@ MaaStatus InstanceMgr::task_wait(MaaTaskId task_id) const
     return task_runner_->status(task_id);
 }
 
-MaaBool InstanceMgr::task_all_finished() const
+MaaBool InstanceMgr::running() const
 {
-    if (!task_runner_) {
-        LogError << "task_runner is nullptr";
-        return false;
-    }
-    return !task_runner_->running();
+    return resource_ && resource_->running() && controller_ && controller_->running()
+           && task_runner_ && task_runner_->running();
 }
 
 void InstanceMgr::post_stop()
 {
     LogFunc;
 
+    need_to_stop_ = true;
+
     if (resource_) {
-        resource_->on_stop();
+        resource_->post_stop();
     }
     if (controller_) {
-        controller_->on_stop();
+        controller_->post_stop();
     }
 
-    task_runner_->for_each([](TaskId id, TaskPtr task_ptr) {
-        std::ignore = id;
-        if (task_ptr) {
-            task_ptr->on_stop();
-        }
-    });
-    task_runner_->clear();
+    if (task_runner_ && task_runner_->running()) {
+        task_runner_->for_each([](TaskId id, TaskPtr task_ptr) {
+            std::ignore = id;
+            if (!task_ptr) {
+                return;
+            }
+            task_ptr->post_stop();
+        });
+        task_runner_->clear();
+    }
 }
 
 MaaResourceHandle InstanceMgr::resource()
@@ -310,6 +316,21 @@ bool InstanceMgr::run_task(TaskId id, TaskPtr task_ptr)
     MAA_LOG_NS::Logger::get_instance().flush();
 
     return ret;
+}
+
+bool InstanceMgr::check_stop()
+{
+    if (!need_to_stop_) {
+        return true;
+    }
+
+    if (running()) {
+        LogError << "stopping, ignore new post";
+        return false;
+    }
+
+    need_to_stop_ = false;
+    return true;
 }
 
 MAA_NS_END

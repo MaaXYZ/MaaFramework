@@ -16,7 +16,6 @@ MAA_TASK_NS_BEGIN
 
 class SyncContext
     : public MaaSyncContextAPI
-    , public MaaInstanceSink
 {
 public:
     explicit SyncContext(InstanceInternalAPI* inst);
@@ -57,13 +56,9 @@ public: // from MaaSyncContextAPI
         return instance() ? instance()->controller() : nullptr;
     }
 
-public: // from MaaInstanceSink
-    virtual void on_stop() override { need_to_stop_ = true; }
-
 private:
     InstanceStatus* status() const { return inst_ ? inst_->inter_status() : nullptr; }
 
-    bool need_to_stop_ = false;
     InstanceInternalAPI* inst_ = nullptr;
 };
 

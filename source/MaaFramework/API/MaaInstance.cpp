@@ -200,12 +200,16 @@ MaaStatus MaaWaitTask(MaaInstanceHandle inst, MaaTaskId id)
 
 MaaBool MaaTaskAllFinished(MaaInstanceHandle inst)
 {
-    // LogFunc << VAR_VOIDP(inst) << VAR(id);
+    return !MaaRunning(inst);
+}
+
+MaaBool MaaRunning(MaaInstanceHandle inst)
+{
     if (!inst) {
         LogError << "handle is null";
         return false;
     }
-    return inst->task_all_finished();
+    return inst->running();
 }
 
 MaaBool MaaPostStop(MaaInstanceHandle inst)
@@ -223,7 +227,7 @@ MaaBool MaaPostStop(MaaInstanceHandle inst)
 
 MaaBool MaaStop(MaaInstanceHandle inst)
 {
-    LogWarn << "Deprecated, please use MaaPostStop instead";
+    LogWarn << __FUNCTION__ << "is deprecated, use MaaPostStop instead.";
     return MaaPostStop(inst);
 }
 

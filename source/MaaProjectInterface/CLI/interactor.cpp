@@ -292,7 +292,7 @@ void Interactor::select_adb_auto_detect()
 {
     std::cout << "Finding device...\n\n";
 
-    MaaToolkitFindDevice();
+    MaaToolkitPostFindDevice();
     auto size = MaaToolkitWaitForFindDeviceToComplete();
     if (size == 0) {
         std::cout << "No device found!\n\n";

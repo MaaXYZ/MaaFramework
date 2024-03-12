@@ -18,20 +18,8 @@ extern "C"
 {
 #endif
 
-    /**
-     * @brief Create a ADB controller instance.
-     *
-     * \deprecated Use MaaAdbControllerCreateV2() instead.
-     *
-     * @param adb_path The path of ADB executable.
-     * @param address The ADB serial of the target device.
-     * @param type The type of the ADB controller. See #MaaAdbControllerTypeEnum.
-     * @param config The config of the ADB controller.
-     * @param callback The callback function. See ::MaaAPICallback.
-     * @param callback_arg The callback arg that will be passed to the callback function.
-     * @return MaaControllerHandle The handle of the created controller instance.
-     */
-    MAA_FRAMEWORK_API MaaControllerHandle MaaAdbControllerCreate(
+    /// \deprecated Use MaaAdbControllerCreateV2() instead.
+    MAA_DEPRECATED MAA_FRAMEWORK_API MaaControllerHandle MaaAdbControllerCreate(
         MaaStringView adb_path,
         MaaStringView address,
         MaaAdbControllerType type,
