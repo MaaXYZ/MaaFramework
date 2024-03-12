@@ -42,6 +42,7 @@ private:
     ProcessFunc process_;
 
     std::list<std::pair<Id, Item>> queue_;
+    std::optional<std::pair<Id, Item>> running_item_ = std::nullopt;
     std::mutex mutex_;
     std::condition_variable cond_;
     std::atomic_bool running_ = false;
@@ -114,7 +115,8 @@ inline void AsyncRunner<Item>::working()
 
         running_ = true;
 
-        auto [id, item] = std::move(queue_.front());
+        running_item_ = std::move(queue_.front());
+        auto [id, item] = *running_item_;
         queue_.pop_front();
         lock.unlock();
 
@@ -123,6 +125,7 @@ inline void AsyncRunner<Item>::working()
         status_lock.unlock();
 
         bool ret = process_(id, std::move(item));
+        running_item_ = std::nullopt;
 
         status_lock.lock();
         status_map_[id] = ret ? MaaStatus_Success : MaaStatus_Failed;
@@ -221,6 +224,10 @@ template <typename Item>
 template <typename Pred>
 inline void AsyncRunner<Item>::for_each(Pred pred)
 {
+    if (running_item_) {
+        auto& [id, item] = *running_item_;
+        pred(id, item);
+    }
     for (auto& [id, item] : queue_) {
         pred(id, item);
     }

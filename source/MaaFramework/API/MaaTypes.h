@@ -30,6 +30,7 @@ public:
     virtual MaaStatus wait(MaaResId res_id) const = 0;
     virtual MaaBool valid() const = 0;
     virtual MaaBool running() const = 0;
+    virtual MaaBool clear() = 0;
 
     virtual std::string get_hash() const = 0;
     virtual std::vector<std::string> get_task_list() const = 0;

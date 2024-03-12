@@ -110,7 +110,7 @@ class Instance:
         :return: True if running, False otherwise.
         """
 
-        return bool(Library.framework.Running(self._handle))
+        return bool(Library.framework.MaaRunning(self._handle))
 
     async def stop(self) -> bool:
         """

@@ -75,6 +75,15 @@ class Resource:
 
         return bool(Library.framework.MaaResourceLoaded(self._handle))
 
+    def clear(self) -> bool:
+        """
+        Clear the resource.
+
+        :return: True if the resource was successfully cleared, False otherwise.
+        """
+
+        return bool(Library.framework.MaaResourceClear(self._handle))
+
     def _status(self, id: int) -> ctypes.c_int32:
         return Library.framework.MaaResourceStatus(self._handle, id)
 
@@ -112,3 +121,6 @@ class Resource:
 
         Library.framework.MaaResourceLoaded.restype = MaaBool
         Library.framework.MaaResourceLoaded.argtypes = [MaaResourceHandle]
+
+        Library.framework.MaaResourceClear.restype = MaaBool
+        Library.framework.MaaResourceClear.argtypes = [MaaResourceHandle]

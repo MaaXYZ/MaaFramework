@@ -107,6 +107,7 @@ public:
     virtual MaaStatus status(MaaCtrlId ctrl_id) const override;
     virtual MaaStatus wait(MaaCtrlId ctrl_id) const override;
     virtual MaaBool connected() const override;
+    virtual MaaBool running() const override;
 
     virtual cv::Mat get_image() override;
     virtual std::string get_uuid() override;
@@ -114,7 +115,6 @@ public:
 
 public:
     virtual void post_stop() override;
-    virtual MaaBool running() const override;
 
 public:
     bool click(const cv::Rect& r);

@@ -142,6 +142,27 @@ MaaBool ResourceMgr::running() const
     return res_loader_ && res_loader_->running();
 }
 
+MaaBool ResourceMgr::clear()
+{
+    LogFunc;
+
+    if (running()) {
+        LogError << "running, ignore clear";
+        return false;
+    }
+
+    pipeline_res_.clear();
+    ocr_res_.clear();
+    onnx_res_.clear();
+    template_res_.clear();
+    paths_.clear();
+    hash_cache_.clear();
+
+    valid_ = true;
+
+    return true;
+}
+
 bool ResourceMgr::run_load(
     typename AsyncRunner<std::filesystem::path>::Id id,
     std::filesystem::path path)

@@ -26,13 +26,14 @@ public:
     virtual MaaStatus status(MaaResId res_id) const override;
     virtual MaaStatus wait(MaaResId res_id) const override;
     virtual MaaBool valid() const override;
+    virtual MaaBool running() const override;
+    virtual MaaBool clear() override;
 
     virtual std::string get_hash() const override;
     virtual std::vector<std::string> get_task_list() const override;
 
 public: // from MaaInstanceSink
     virtual void post_stop() override;
-    virtual MaaBool running() const override;
 
 public:
     const auto& pipeline_res() const { return pipeline_res_; }
