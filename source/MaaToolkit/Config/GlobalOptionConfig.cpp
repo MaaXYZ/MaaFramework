@@ -32,10 +32,10 @@ bool GlobalOptionConfig::init(
     }
 
     if (!std::filesystem::exists(config_path_)) {
+        option_ = (Option)default_config;
 #ifdef MAA_DEBUG
         option_.stdout_level = MaaLoggingLevel_All;
 #endif
-        option_ = (Option)default_config;
         save();
     }
 

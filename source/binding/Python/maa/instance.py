@@ -181,7 +181,7 @@ class Instance:
         return Library.framework.MaaTaskStatus(self._handle, id)
 
     def _stop_status(self, id: int) -> ctypes.c_int32:
-        return MaaStatusEnum.success if self.running() else MaaStatusEnum.running
+        return MaaStatusEnum.success if not self.running() else MaaStatusEnum.running
 
     def _set_task_param(self, id: int, param: Dict) -> bool:
         return Library.framework.MaaSetTaskParam(
