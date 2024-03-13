@@ -98,7 +98,8 @@ bool GlobalOptionConfig::apply_option()
         &option_.show_hit_draw,
         sizeof(option_.show_hit_draw));
 
-    return true;
+    LogTrace << VAR(ret);
+    return ret;
 }
 
 bool GlobalOptionConfig::save() const
