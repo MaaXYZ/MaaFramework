@@ -23,7 +23,8 @@ void register_my_action_by_exec_agent(MaaInstanceHandle maa_handle);
 
 int main([[maybe_unused]] int argc, char** argv)
 {
-    MaaToolkitInitOptionConfig("~/.maafw", "{}");
+    std::string user_path = "./";
+    MaaToolkitInitOptionConfig(user_path.c_str(), "{}");
 
     auto controller_handle = create_adb_controller();
     // auto controller_handle = create_win32_controller();
