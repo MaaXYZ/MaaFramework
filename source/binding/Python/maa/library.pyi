@@ -310,9 +310,9 @@ class _Framework:
 class _Toolkit:
     # toolkit.py
     @staticmethod
-    def MaaToolkitInit() -> MaaBool: ...
-    @staticmethod
-    def MaaToolkitUninit() -> MaaBool: ...
+    def MaaToolkitInitOptionConfig(
+        user_path: MaaStringView, default_json: MaaStringView
+    ) -> MaaBool: ...
     @staticmethod
     def MaaToolkitPostFindDevice() -> MaaBool: ...
     @staticmethod
@@ -380,6 +380,7 @@ class Library:
         :return: True if the library was successfully opened, False otherwise.
         """
         pass
+
     @classmethod
     def version(cls) -> str:
         """

@@ -23,7 +23,7 @@ void register_my_action_by_exec_agent(MaaInstanceHandle maa_handle);
 
 int main([[maybe_unused]] int argc, char** argv)
 {
-    MaaToolkitInit();
+    MaaToolkitInitOptionConfig("~/.maafw", "{}");
 
     auto controller_handle = create_adb_controller();
     // auto controller_handle = create_win32_controller();
@@ -44,7 +44,6 @@ int main([[maybe_unused]] int argc, char** argv)
         MaaDestroy(maa_handle);
         MaaResourceDestroy(resource_handle);
         MaaControllerDestroy(controller_handle);
-        MaaToolkitUninit();
     };
 
     if (!MaaInited(maa_handle)) {

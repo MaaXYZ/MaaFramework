@@ -197,7 +197,7 @@ extern "C"
      */
     MAA_FRAMEWORK_API MaaStatus MaaWaitTask(MaaInstanceHandle inst, MaaTaskId id);
 
-    /// \deprecated Use MaaRunning() instead.
+    /// \deprecated Use !MaaRunning() instead.
     MAA_DEPRECATED MAA_FRAMEWORK_API MaaBool MaaTaskAllFinished(MaaInstanceHandle inst);
 
     /**

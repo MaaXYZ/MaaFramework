@@ -16,7 +16,7 @@ async def main():
     version = Library.open("bin")
     print(f"MaaFw Version: {version}")
 
-    Toolkit.init_config()
+    Toolkit.init_option("~/.maafw");
 
     resource = Resource()
     await resource.load("sample/resource")
