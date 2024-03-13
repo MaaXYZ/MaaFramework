@@ -78,7 +78,7 @@ async def main():
     version = Library.open(install_dir / "bin")
     print(f"MaaFw Version: {version}")
 
-    Toolkit.init_config()
+    Toolkit.init_option(install_dir / "bin")
 
     resource = Resource()
     print(f"resource: {hex(resource._handle)}")

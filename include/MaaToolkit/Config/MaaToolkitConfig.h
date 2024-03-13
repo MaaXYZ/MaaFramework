@@ -16,8 +16,13 @@ extern "C"
 {
 #endif
 
-    MAA_TOOLKIT_API MaaBool MaaToolkitInit();
-    MAA_TOOLKIT_API MaaBool MaaToolkitUninit();
+    MAA_TOOLKIT_API MaaBool
+        MaaToolkitInitOptionConfig(MaaStringView user_path, MaaStringView default_json);
+
+    /// \deprecated Use MaaToolkitInitOptionConfig instead.
+    MAA_DEPRECATED MAA_TOOLKIT_API MaaBool MaaToolkitInit();
+    /// \deprecated Don't use it.
+    MAA_DEPRECATED MAA_TOOLKIT_API MaaBool MaaToolkitUninit();
 
 #ifdef __cplusplus
 }
