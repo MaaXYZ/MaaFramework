@@ -29,6 +29,7 @@ target_link_libraries(MaaHttp LHGHeaderonly Boost::system MaaFramework MaaToolki
 
 if(WIN32)
     target_compile_definitions(MaaHttp PRIVATE _WIN32_WINNT=0x0A00)
+    target_compile_options(MaaHttp PRIVATE /bigobj)
 endif()
 
 install(

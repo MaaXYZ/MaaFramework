@@ -8,66 +8,6 @@
 
 namespace lhg::maa {
 
-struct func_type_MaaAdbControllerCreate {
-  struct _0_adb_path {
-    constexpr static size_t index = 0;
-    constexpr static const char* name = "adb_path";
-    using type = MaaStringView;
-  };
-  struct _1_address {
-    constexpr static size_t index = 1;
-    constexpr static const char* name = "address";
-    using type = MaaStringView;
-  };
-  struct _2_type {
-    constexpr static size_t index = 2;
-    constexpr static const char* name = "type";
-    using type = MaaAdbControllerType;
-  };
-  struct _3_config {
-    constexpr static size_t index = 3;
-    constexpr static const char* name = "config";
-    using type = MaaStringView;
-  };
-  struct _4_callback {
-    constexpr static size_t index = 4;
-    constexpr static const char* name = "callback";
-    using type = MaaControllerCallback;
-  };
-  struct _5_callback_arg {
-    constexpr static size_t index = 5;
-    constexpr static const char* name = "callback_arg";
-    using type = MaaCallbackTransparentArg;
-  };
-  struct ret {
-    constexpr static size_t index = 6;
-    constexpr static const char* name = "return";
-    using type = MaaControllerHandle;
-  };
-  using args = std::tuple<_0_adb_path, _1_address, _2_type, _3_config, _4_callback, _5_callback_arg, ret>;
-};
-struct function_MaaAdbControllerCreate {
-  constexpr static auto func = MaaAdbControllerCreate;
-  constexpr static const char* name = "MaaAdbControllerCreate";
-  using type = func_type_MaaAdbControllerCreate;
-};
-
-}
-namespace lhg::call {
-
-template<>
-struct is_input<maa::func_type_MaaAdbControllerCreate::ret, false> {
-  constexpr static bool value = false;
-};
-template<>
-struct is_output<maa::func_type_MaaAdbControllerCreate::ret, false> {
-  constexpr static bool value = true;
-};
-
-}
-
-namespace lhg::maa {
-
 struct func_type_MaaWin32ControllerCreate {
   struct _0_hWnd {
     constexpr static size_t index = 0;
@@ -1548,41 +1488,6 @@ struct is_output<maa::func_type_MaaWaitTask::ret, false> {
 
 namespace lhg::maa {
 
-struct func_type_MaaTaskAllFinished {
-  struct _0_inst {
-    constexpr static size_t index = 0;
-    constexpr static const char* name = "inst";
-    using type = MaaInstanceHandle;
-  };
-  struct ret {
-    constexpr static size_t index = 1;
-    constexpr static const char* name = "return";
-    using type = MaaBool;
-  };
-  using args = std::tuple<_0_inst, ret>;
-};
-struct function_MaaTaskAllFinished {
-  constexpr static auto func = MaaTaskAllFinished;
-  constexpr static const char* name = "MaaTaskAllFinished";
-  using type = func_type_MaaTaskAllFinished;
-};
-
-}
-namespace lhg::call {
-
-template<>
-struct is_input<maa::func_type_MaaTaskAllFinished::ret, false> {
-  constexpr static bool value = false;
-};
-template<>
-struct is_output<maa::func_type_MaaTaskAllFinished::ret, false> {
-  constexpr static bool value = true;
-};
-
-}
-
-namespace lhg::maa {
-
 struct func_type_MaaPostStop {
   struct _0_inst {
     constexpr static size_t index = 0;
@@ -1611,41 +1516,6 @@ struct is_input<maa::func_type_MaaPostStop::ret, false> {
 };
 template<>
 struct is_output<maa::func_type_MaaPostStop::ret, false> {
-  constexpr static bool value = true;
-};
-
-}
-
-namespace lhg::maa {
-
-struct func_type_MaaStop {
-  struct _0_inst {
-    constexpr static size_t index = 0;
-    constexpr static const char* name = "inst";
-    using type = MaaInstanceHandle;
-  };
-  struct ret {
-    constexpr static size_t index = 1;
-    constexpr static const char* name = "return";
-    using type = MaaBool;
-  };
-  using args = std::tuple<_0_inst, ret>;
-};
-struct function_MaaStop {
-  constexpr static auto func = MaaStop;
-  constexpr static const char* name = "MaaStop";
-  using type = func_type_MaaStop;
-};
-
-}
-namespace lhg::call {
-
-template<>
-struct is_input<maa::func_type_MaaStop::ret, false> {
-  constexpr static bool value = false;
-};
-template<>
-struct is_output<maa::func_type_MaaStop::ret, false> {
   constexpr static bool value = true;
 };
 
@@ -2436,71 +2306,6 @@ struct is_input<maa::func_type_MaaToolkitUninit::ret, false> {
 };
 template<>
 struct is_output<maa::func_type_MaaToolkitUninit::ret, false> {
-  constexpr static bool value = true;
-};
-
-}
-
-namespace lhg::maa {
-
-struct func_type_MaaToolkitFindDevice {
-  struct ret {
-    constexpr static size_t index = 0;
-    constexpr static const char* name = "return";
-    using type = MaaSize;
-  };
-  using args = std::tuple<ret>;
-};
-struct function_MaaToolkitFindDevice {
-  constexpr static auto func = MaaToolkitFindDevice;
-  constexpr static const char* name = "MaaToolkitFindDevice";
-  using type = func_type_MaaToolkitFindDevice;
-};
-
-}
-namespace lhg::call {
-
-template<>
-struct is_input<maa::func_type_MaaToolkitFindDevice::ret, false> {
-  constexpr static bool value = false;
-};
-template<>
-struct is_output<maa::func_type_MaaToolkitFindDevice::ret, false> {
-  constexpr static bool value = true;
-};
-
-}
-
-namespace lhg::maa {
-
-struct func_type_MaaToolkitFindDeviceWithAdb {
-  struct _0_adb_path {
-    constexpr static size_t index = 0;
-    constexpr static const char* name = "adb_path";
-    using type = MaaStringView;
-  };
-  struct ret {
-    constexpr static size_t index = 1;
-    constexpr static const char* name = "return";
-    using type = MaaSize;
-  };
-  using args = std::tuple<_0_adb_path, ret>;
-};
-struct function_MaaToolkitFindDeviceWithAdb {
-  constexpr static auto func = MaaToolkitFindDeviceWithAdb;
-  constexpr static const char* name = "MaaToolkitFindDeviceWithAdb";
-  using type = func_type_MaaToolkitFindDeviceWithAdb;
-};
-
-}
-namespace lhg::call {
-
-template<>
-struct is_input<maa::func_type_MaaToolkitFindDeviceWithAdb::ret, false> {
-  constexpr static bool value = false;
-};
-template<>
-struct is_output<maa::func_type_MaaToolkitFindDeviceWithAdb::ret, false> {
   constexpr static bool value = true;
 };
 
@@ -3479,7 +3284,6 @@ struct is_output<maa::func_type_MaaSetGlobalOptionBoolean::ret, false> {
 namespace lhg::maa {
 
 using __function_list = std::tuple<
-  function_MaaAdbControllerCreate,
   function_MaaWin32ControllerCreate,
   function_MaaAdbControllerCreateV2,
   function_MaaThriftControllerCreate,
@@ -3514,9 +3318,7 @@ using __function_list = std::tuple<
   function_MaaSetTaskParam,
   function_MaaTaskStatus,
   function_MaaWaitTask,
-  function_MaaTaskAllFinished,
   function_MaaPostStop,
-  function_MaaStop,
   function_MaaGetResource,
   function_MaaGetController,
   function_MaaResourceCreate,
@@ -3539,8 +3341,6 @@ using __function_list = std::tuple<
   function_MaaVersion,
   function_MaaToolkitInit,
   function_MaaToolkitUninit,
-  function_MaaToolkitFindDevice,
-  function_MaaToolkitFindDeviceWithAdb,
   function_MaaToolkitPostFindDevice,
   function_MaaToolkitPostFindDeviceWithAdb,
   function_MaaToolkitIsFindDeviceCompleted,

@@ -32,6 +32,57 @@
         constexpr static handle_oper oper = handle_oper::o; \
     };
 
+#define __CALL_DECLARE_JSON_TO_ARG_SCHEMA_BEGIN(func_tag, atag)                                   \
+    template <>                                                                                   \
+    struct json_to_arg_schema<typename func_tag::args, func_tag::atag::index, true>               \
+    {                                                                                             \
+        static void get(json::object& req)                                                        \
+        {                                                                                         \
+            using arg_tag = std::tuple_element_t<func_tag::atag::index, typename func_tag::args>; \
+            if constexpr (!is_input<arg_tag, true>::value) {                                      \
+                ;                                                                                 \
+            }                                                                                     \
+            else {                                                                                \
+                auto name = arg_tag::name;                                                        \
+                schema::Builder b;
+#define __CALL_DECLARE_JSON_TO_ARG_SCHEMA_END() \
+    req[name] = b.obj;                          \
+    }                                           \
+    }                                           \
+    }                                           \
+    ;
+
+#define __CALL_DECLARE_JSON_TO_ARG_SCHEMA_TYPE(func_tag, atag, t) \
+    __CALL_DECLARE_JSON_TO_ARG_SCHEMA_BEGIN(func_tag, atag)       \
+    b.type(t);                                                    \
+    __CALL_DECLARE_JSON_TO_ARG_SCHEMA_END()
+
+#define __CALL_DECLARE_ARG_TO_JSON_SCHEMA_BEGIN(func_tag, atag)                                   \
+    template <>                                                                                   \
+    struct arg_to_json_schema<typename func_tag::args, func_tag::atag::index, true>               \
+    {                                                                                             \
+        static void get(json::object& res)                                                        \
+        {                                                                                         \
+            using arg_tag = std::tuple_element_t<func_tag::atag::index, typename func_tag::args>; \
+            if constexpr (                                                                        \
+                !is_output<arg_tag, true>::value || std::is_same_v<arg_tag::type, void>) {        \
+                ;                                                                                 \
+            }                                                                                     \
+            else {                                                                                \
+                auto name = arg_tag::name;                                                        \
+                schema::Builder b;
+#define __CALL_DECLARE_ARG_TO_JSON_SCHEMA_END() \
+    res[name] = b.obj;                          \
+    }                                           \
+    }                                           \
+    }                                           \
+    ;
+
+#define __CALL_DECLARE_ARG_TO_JSON_SCHEMA_TYPE(func_tag, atag, t) \
+    __CALL_DECLARE_ARG_TO_JSON_SCHEMA_BEGIN(func_tag, atag)       \
+    b.type(t);                                                    \
+    __CALL_DECLARE_ARG_TO_JSON_SCHEMA_END()
+
 #define __CALL_DECLARE_PREPARE_STATE_BEGIN(func_tag, atag)                     \
     template <>                                                                \
     struct prepare_state<typename func_tag::args, func_tag::atag::index, true> \

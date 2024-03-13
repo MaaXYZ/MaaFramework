@@ -31,7 +31,7 @@ __DECLARE_RETURN_HWND(maa::func_type_MaaToolkitGetForegroundWindow)
 
 __CALL_DECLARE_JSON_TO_ARG_BEGIN(maa::func_type_MaaWin32ControllerCreate, _0_hWnd)
 std::get<maa::func_type_MaaWin32ControllerCreate::_0_hWnd::index>(arg) =
-    reinterpret_cast<void*>(value.as_unsigned_long_long());
+    reinterpret_cast<void*>(std::stoull(value.as_string()));
 return true;
 __DECLARE_JSON_TO_ARG_END()
 
@@ -111,7 +111,6 @@ __DECLARE_STRING_BUFFER_OUTPUT(maa::func_type_MaaControllerGetUUID, _1_buffer)
     return true;                                                                        \
     __DECLARE_JSON_TO_ARG_END()
 
-__DECLARE_APICALLBACK(maa::func_type_MaaAdbControllerCreate, _4_callback, _5_callback_arg)
 __DECLARE_APICALLBACK(maa::func_type_MaaWin32ControllerCreate, _2_callback, _3_callback_arg)
 __DECLARE_APICALLBACK(maa::func_type_MaaAdbControllerCreateV2, _5_callback, _6_callback_arg)
 __DECLARE_APICALLBACK(maa::func_type_MaaThriftControllerCreate, _4_callback, _5_callback_arg)
@@ -161,7 +160,6 @@ std::get<maa::func_type_MaaRegisterCustomAction::_3_action_arg::index>(arg) = ct
 return true;
 __DECLARE_JSON_TO_ARG_END()
 
-__CALL_DECLARE_HANDLE_OPER(maa::func_type_MaaAdbControllerCreate::ret, alloc)
 __CALL_DECLARE_HANDLE_OPER(maa::func_type_MaaWin32ControllerCreate::ret, alloc)
 __CALL_DECLARE_HANDLE_OPER(maa::func_type_MaaAdbControllerCreateV2::ret, alloc)
 __CALL_DECLARE_HANDLE_OPER(maa::func_type_MaaThriftControllerCreate::ret, alloc)
@@ -176,5 +174,47 @@ __CALL_DECLARE_HANDLE_OPER(maa::func_type_MaaDestroy::_0_inst, free)
 
 __CALL_DECLARE_HANDLE_OPER(maa::func_type_MaaCreateImageBuffer::ret, alloc)
 __CALL_DECLARE_HANDLE_OPER(maa::func_type_MaaDestroyImageBuffer::_0_handle, free)
+
+__CALL_DECLARE_ARG_TO_JSON_SCHEMA_TYPE(maa::func_type_MaaGetImageEncoded, ret, "string")
+__CALL_DECLARE_JSON_TO_ARG_SCHEMA_TYPE(maa::func_type_MaaSetImageEncoded, _1_data, "string")
+
+__CALL_DECLARE_ARG_TO_JSON_SCHEMA_TYPE(maa::func_type_MaaToolkitGetWindow, ret, "string")
+__CALL_DECLARE_ARG_TO_JSON_SCHEMA_TYPE(maa::func_type_MaaToolkitGetCursorWindow, ret, "string")
+__CALL_DECLARE_ARG_TO_JSON_SCHEMA_TYPE(maa::func_type_MaaToolkitGetDesktopWindow, ret, "string")
+__CALL_DECLARE_ARG_TO_JSON_SCHEMA_TYPE(maa::func_type_MaaToolkitGetForegroundWindow, ret, "string")
+
+__CALL_DECLARE_ARG_TO_JSON_SCHEMA_TYPE(maa::func_type_MaaResourceGetTaskList, _1_buffer, "string")
+__CALL_DECLARE_ARG_TO_JSON_SCHEMA_TYPE(maa::func_type_MaaResourceGetHash, _1_buffer, "string")
+__CALL_DECLARE_ARG_TO_JSON_SCHEMA_TYPE(maa::func_type_MaaControllerGetUUID, _1_buffer, "string")
+
+__CALL_DECLARE_JSON_TO_ARG_SCHEMA_TYPE(maa::func_type_MaaWin32ControllerCreate, _0_hWnd, "string")
+
+__CALL_DECLARE_JSON_TO_ARG_SCHEMA_TYPE(
+    maa::func_type_MaaWin32ControllerCreate,
+    _2_callback,
+    "string")
+__CALL_DECLARE_JSON_TO_ARG_SCHEMA_TYPE(
+    maa::func_type_MaaAdbControllerCreateV2,
+    _5_callback,
+    "string")
+__CALL_DECLARE_JSON_TO_ARG_SCHEMA_TYPE(
+    maa::func_type_MaaThriftControllerCreate,
+    _4_callback,
+    "string")
+__CALL_DECLARE_JSON_TO_ARG_SCHEMA_TYPE(maa::func_type_MaaDbgControllerCreate, _4_callback, "string")
+__CALL_DECLARE_JSON_TO_ARG_SCHEMA_TYPE(maa::func_type_MaaResourceCreate, _0_callback, "string")
+__CALL_DECLARE_JSON_TO_ARG_SCHEMA_TYPE(maa::func_type_MaaCreate, _0_callback, "string")
+
+__CALL_DECLARE_JSON_TO_ARG_SCHEMA_TYPE(
+    maa::func_type_MaaRegisterCustomRecognizer,
+    _2_recognizer,
+    "string")
+
+__CALL_DECLARE_JSON_TO_ARG_SCHEMA_BEGIN(maa::func_type_MaaRegisterCustomAction, _2_action)
+b.type("object").prop({
+    { "run", schema::Builder().type("string").obj },
+    { "stop", schema::Builder().type("string").obj },
+});
+__CALL_DECLARE_JSON_TO_ARG_SCHEMA_END()
 
 }; // namespace lhg::call
