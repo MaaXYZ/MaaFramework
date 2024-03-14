@@ -71,6 +71,8 @@
     "MaaStop",
     "MaaToolkitFindDevice",
     "MaaToolkitFindDeviceWithAdb",
+    "MaaToolkitInit",
+    "MaaToolkitUninit",
 
     "MaaCustomControllerCreate",
     "MaaSetImageRawData",
