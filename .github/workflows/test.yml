@@ -12,6 +12,7 @@ on:
       - "source/**"
       - "CMakeLists.txt"
       - "test/**"
+
   pull_request:
     branches:
       - "**"
