@@ -19,7 +19,7 @@ public:
 
 public: // from DeviceMgr
     virtual std::vector<Device> find_device_impl() override;
-    virtual std::vector<Device> find_device_with_adb_impl(std::string_view adb_path) override;
+    virtual std::vector<Device> find_device_with_adb_impl(std::string adb_path) override;
 
 private:
     DeviceMgrMacOS() = default;

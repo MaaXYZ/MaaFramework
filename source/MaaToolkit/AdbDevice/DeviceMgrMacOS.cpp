@@ -87,7 +87,7 @@ std::vector<Device> DeviceMgrMacOS::find_device_impl()
     return result;
 }
 
-std::vector<Device> DeviceMgrMacOS::find_device_with_adb_impl(std::string_view adb_path)
+std::vector<Device> DeviceMgrMacOS::find_device_with_adb_impl(std::string adb_path)
 {
     std::vector<Device> result;
 

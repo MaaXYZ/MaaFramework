@@ -11,7 +11,7 @@ std::vector<Device> DeviceMgrLinux::find_device_impl()
     return {};
 }
 
-std::vector<Device> DeviceMgrLinux::find_device_with_adb_impl(std::string_view adb_path)
+std::vector<Device> DeviceMgrLinux::find_device_with_adb_impl(std::string adb_path)
 {
     std::ignore = adb_path;
     return {};
