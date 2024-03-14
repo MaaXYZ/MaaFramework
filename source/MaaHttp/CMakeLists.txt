@@ -20,7 +20,10 @@ add_subdirectory(LHG)
 
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
-set(maa_http_src main.cpp info.hpp extra.cpp extra.h include.h)
+lhggenerate(${CMAKE_CURRENT_SOURCE_DIR}/interface.json ${CMAKE_CURRENT_SOURCE_DIR}/config.json
+            ${CMAKE_CURRENT_SOURCE_DIR}/info.hpp)
+
+set(maa_http_src main.cpp extra.cpp extra.h include.h info.hpp)
 
 add_executable(MaaHttp ${maa_http_src})
 target_include_directories(MaaHttp PRIVATE ./../include)
