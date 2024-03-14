@@ -3,16 +3,16 @@ name: build
 on:
   push:
     tags:
-      - "v*"
+      - 'v*'
     branches:
-      - "**"
+      - '**'
     paths:
-      - ".github/workflows/build.yml"
-      - "3rdparty/**"
-      - "cmake/**"
-      - "include/**"
-      - "source/**"
-      - "CMakeLists.txt"
+      - '.github/workflows/build.yml'
+      - '3rdparty/**'
+      - 'cmake/**'
+      - 'include/**'
+      - 'source/**'
+      - 'CMakeLists.txt'
   workflow_dispatch:
 
 jobs:
@@ -70,7 +70,12 @@ jobs:
         with:
           minimum-size: 16GB
           maximum-size: 16GB
-          disk-root: "D:"
+          disk-root: 'D:'
+
+      - name: Use Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: 20
 
       - uses: actions/checkout@v3
         with:
@@ -111,7 +116,7 @@ jobs:
         if: always()
         with:
           name: MAA-win-${{ matrix.arch }}
-          path: "install"
+          path: 'install'
 
   ubuntu:
     needs: meta
@@ -132,6 +137,11 @@ jobs:
         run: |
           pacman -Sy
           pacman -S --noconfirm cmake python ccache ninja git
+
+      - name: Use Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: 20
 
       # https://github.com/MaaXYZ/MaaFramework/actions/runs/5643408179/job/15285186255
       - uses: actions/checkout@v3
@@ -183,7 +193,7 @@ jobs:
         if: always()
         with:
           name: MAA-linux-${{ matrix.arch }}
-          path: "install"
+          path: 'install'
 
   macos:
     needs: meta
@@ -198,6 +208,11 @@ jobs:
     runs-on: ${{ matrix.os }}
 
     steps:
+      - name: Use Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: 20
+
       - uses: actions/checkout@v3
         with:
           submodules: true
@@ -221,8 +236,8 @@ jobs:
       - name: Build MAA for x86_64
         if: ${{ matrix.arch == 'x86_64' }}
         env:
-          CC: "/usr/local/opt/llvm/bin/clang"
-          CXX: "/usr/local/opt/llvm/bin/clang++"
+          CC: '/usr/local/opt/llvm/bin/clang'
+          CXX: '/usr/local/opt/llvm/bin/clang++'
         run: |
           cmake --preset 'NinjaMulti' \
             -DMAADEPS_TRIPLET='maa-${{ matrix.arch == 'x86_64' && 'x64' || 'arm64' }}-osx' \
@@ -233,8 +248,8 @@ jobs:
       - name: Build MAA for aarch64
         if: ${{ matrix.arch == 'aarch64' }}
         env:
-          CC: "/opt/homebrew/opt/llvm/bin/clang"
-          CXX: "/opt/homebrew/opt/llvm/bin/clang++"
+          CC: '/opt/homebrew/opt/llvm/bin/clang'
+          CXX: '/opt/homebrew/opt/llvm/bin/clang++'
         run: |
           cmake --preset 'NinjaMulti' \
             -DMAADEPS_TRIPLET='maa-${{ matrix.arch == 'x86_64' && 'x64' || 'arm64' }}-osx' \
@@ -259,7 +274,7 @@ jobs:
         if: always()
         with:
           name: MAA-macos-${{ matrix.arch }}
-          path: "install"
+          path: 'install'
 
   nuget_pack:
     needs: [meta, windows, ubuntu, macos]
@@ -287,7 +302,7 @@ jobs:
         if: always()
         with:
           name: MAA-nupkgs
-          path: "tools/nupkgs/*.nupkg"
+          path: 'tools/nupkgs/*.nupkg'
 
   release:
     if: ${{ needs.meta.outputs.is_release == 'true' }}
