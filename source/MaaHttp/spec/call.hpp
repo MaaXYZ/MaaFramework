@@ -133,7 +133,9 @@ auto ctx = manager->query(id);
 if (!ctx.get()) {
     return false;
 }
-MaaCustomRecognizerAPI api = { callback::create_callback<maa::callback_CustomRecognizerAnalyze>() };
+static MaaCustomRecognizerAPI api = {
+    callback::create_callback<maa::callback_CustomRecognizerAnalyze>()
+};
 std::get<maa::func_type_MaaRegisterCustomRecognizer::_2_recognizer::index>(arg) = &api;
 std::get<maa::func_type_MaaRegisterCustomRecognizer::_3_recognizer_arg::index>(arg) = ctx.get();
 return true;
@@ -157,8 +159,10 @@ if (!stop_ctx.get()) {
 }
 auto ctx = provider.get<DataManager, void>()->alloc<pri_maa::custom_action_context>(
     std::vector<std::string> { run_id, stop_id });
-MaaCustomActionAPI api = { callback::create_callback<maa::callback_CustomActionRun>(),
-                           callback::create_callback<maa::callback_CustomActionStop>() };
+ctx->run = run_ctx;
+ctx->stop = stop_ctx;
+static MaaCustomActionAPI api = { callback::create_callback<maa::callback_CustomActionRun>(),
+                                  callback::create_callback<maa::callback_CustomActionStop>() };
 std::get<maa::func_type_MaaRegisterCustomAction::_2_action::index>(arg) = &api;
 std::get<maa::func_type_MaaRegisterCustomAction::_3_action_arg::index>(arg) = ctx;
 return true;
