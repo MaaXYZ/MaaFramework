@@ -9,10 +9,15 @@
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
+<link href="navtree.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="resize.js"></script>
+<script type="text/javascript" src="navtreedata.js"></script>
+<script type="text/javascript" src="navtree.js"></script>
 <link href="search/search.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="search/searchdata.js"></script>
 <script type="text/javascript" src="search/search.js"></script>
 <link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
 </head>
 <body>
 <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
@@ -21,8 +26,9 @@
  <tbody>
  <tr id="projectrow">
   <td id="projectalign">
-   <div id="projectname">Maa Framework
+   <div id="projectname">Maa Framework<span id="projectnumber">&#160;v1.7.0-alpha.1</span>
    </div>
+   <div id="projectbrief">A automation black-box testing framework based on image recognition.</div>
   </td>
  </tr>
  </tbody>
@@ -46,6 +52,23 @@ $(function() {
 /* @license-end */
 </script>
 <div id="main-nav"></div>
+</div><!-- top -->
+<div id="side-nav" class="ui-resizable side-nav-resizable">
+  <div id="nav-tree">
+    <div id="nav-tree-contents">
+      <div id="nav-sync" class="sync"></div>
+    </div>
+  </div>
+  <div id="splitbar" style="-moz-user-select:none;" 
+       class="ui-resizable-handle">
+  </div>
+</div>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+$(document).ready(function(){initNavTree('MaaController_8h.html',''); initResizable(); });
+/* @license-end */
+</script>
+<div id="doc-content">
 <!-- window showing the filter options -->
 <div id="MSearchSelectWindow"
      onmouseover="return searchBox.OnSearchSelectShow()"
@@ -67,11 +90,6 @@ $(function() {
 </div>
 </div>
 
-<div id="nav-path" class="navpath">
-  <ul>
-<li class="navelem"><a class="el" href="dir_d44c64559bbebec7f509842c48db8b23.html">include</a></li><li class="navelem"><a class="el" href="dir_370cd1367c21b1a87c5c9c6803b8d0b9.html">MaaFramework</a></li><li class="navelem"><a class="el" href="dir_0debf1eee29073ebb629a4e1dfd2a5f6.html">Instance</a></li>  </ul>
-</div>
-</div><!-- top -->
 <div class="header">
   <div class="summary">
 <a href="#func-members">Functions</a>  </div>
@@ -88,75 +106,74 @@ $(function() {
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="func-members" name="func-members"></a>
 Functions</h2></td></tr>
-<tr class="memitem:a5d65ca9155cc516beab774bb0d70772e"><td class="memItemLeft" align="right" valign="top"><a class="el" href="MaaDef_8h.html#a59f0e2bf0a9ce9ff8dd96be800302518">MaaControllerHandle</a> <a class="el" href="MaaPort_8h.html#a67006334d91d228121dbba7a8bf8fe05">MAA_FRAMEWORK_API</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="MaaController_8h.html#a5d65ca9155cc516beab774bb0d70772e">MaaAdbControllerCreate</a> (<a class="el" href="MaaDef_8h.html#a579dacb9b82c4edce80efb25fb79c9f5">MaaStringView</a> adb_path, <a class="el" href="MaaDef_8h.html#a579dacb9b82c4edce80efb25fb79c9f5">MaaStringView</a> address, <a class="el" href="MaaDef_8h.html#a2ba314321c0419e64efe128e94c20776">MaaAdbControllerType</a> type, <a class="el" href="MaaDef_8h.html#a579dacb9b82c4edce80efb25fb79c9f5">MaaStringView</a> config, <a class="el" href="MaaDef_8h.html#a42e88ec9161f3484a20ee8cad7409fe5">MaaControllerCallback</a> callback, <a class="el" href="MaaDef_8h.html#af61e880b2ec14e6ced517f2c7457a1b3">MaaCallbackTransparentArg</a> callback_arg)</td></tr>
-<tr class="memdesc:a5d65ca9155cc516beab774bb0d70772e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Create a ADB controller instance.  <a href="MaaController_8h.html#a5d65ca9155cc516beab774bb0d70772e">More...</a><br /></td></tr>
-<tr class="separator:a5d65ca9155cc516beab774bb0d70772e"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a153efcd84b3ada3c60d7a4e11c99ef77"><td class="memItemLeft" align="right" valign="top"><a class="el" href="MaaDef_8h.html#a59f0e2bf0a9ce9ff8dd96be800302518">MaaControllerHandle</a> <a class="el" href="MaaPort_8h.html#a67006334d91d228121dbba7a8bf8fe05">MAA_FRAMEWORK_API</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="MaaController_8h.html#a153efcd84b3ada3c60d7a4e11c99ef77">MaaWin32ControllerCreate</a> (<a class="el" href="MaaDef_8h.html#a3da139ef5684ba4fab68e47797c0d50c">MaaWin32Hwnd</a> hWnd, <a class="el" href="MaaDef_8h.html#abdbcb048447e802ad2b48e7755b1776c">MaaWin32ControllerType</a> type, <a class="el" href="MaaDef_8h.html#a42e88ec9161f3484a20ee8cad7409fe5">MaaControllerCallback</a> callback, <a class="el" href="MaaDef_8h.html#af61e880b2ec14e6ced517f2c7457a1b3">MaaCallbackTransparentArg</a> callback_arg)</td></tr>
-<tr class="memdesc:a153efcd84b3ada3c60d7a4e11c99ef77"><td class="mdescLeft">&#160;</td><td class="mdescRight">Create a win32 controller instance.  <a href="MaaController_8h.html#a153efcd84b3ada3c60d7a4e11c99ef77">More...</a><br /></td></tr>
-<tr class="separator:a153efcd84b3ada3c60d7a4e11c99ef77"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a4fc910ade4b68ecf3cf1106154a8f8e0"><td class="memItemLeft" align="right" valign="top"><a class="el" href="MaaDef_8h.html#a59f0e2bf0a9ce9ff8dd96be800302518">MaaControllerHandle</a> <a class="el" href="MaaPort_8h.html#a67006334d91d228121dbba7a8bf8fe05">MAA_FRAMEWORK_API</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="MaaController_8h.html#a4fc910ade4b68ecf3cf1106154a8f8e0">MaaAdbControllerCreateV2</a> (<a class="el" href="MaaDef_8h.html#a579dacb9b82c4edce80efb25fb79c9f5">MaaStringView</a> adb_path, <a class="el" href="MaaDef_8h.html#a579dacb9b82c4edce80efb25fb79c9f5">MaaStringView</a> address, <a class="el" href="MaaDef_8h.html#a2ba314321c0419e64efe128e94c20776">MaaAdbControllerType</a> type, <a class="el" href="MaaDef_8h.html#a579dacb9b82c4edce80efb25fb79c9f5">MaaStringView</a> config, <a class="el" href="MaaDef_8h.html#a579dacb9b82c4edce80efb25fb79c9f5">MaaStringView</a> agent_path, <a class="el" href="MaaDef_8h.html#a42e88ec9161f3484a20ee8cad7409fe5">MaaControllerCallback</a> callback, <a class="el" href="MaaDef_8h.html#af61e880b2ec14e6ced517f2c7457a1b3">MaaCallbackTransparentArg</a> callback_arg)</td></tr>
-<tr class="memdesc:a4fc910ade4b68ecf3cf1106154a8f8e0"><td class="mdescLeft">&#160;</td><td class="mdescRight">Create a ADB controller instance.  <a href="MaaController_8h.html#a4fc910ade4b68ecf3cf1106154a8f8e0">More...</a><br /></td></tr>
-<tr class="separator:a4fc910ade4b68ecf3cf1106154a8f8e0"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a82b27a0e9175d0d88e76fb5420ee3ba5"><td class="memItemLeft" align="right" valign="top"><a class="el" href="MaaDef_8h.html#a59f0e2bf0a9ce9ff8dd96be800302518">MaaControllerHandle</a> <a class="el" href="MaaPort_8h.html#a67006334d91d228121dbba7a8bf8fe05">MAA_FRAMEWORK_API</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="MaaController_8h.html#a82b27a0e9175d0d88e76fb5420ee3ba5">MaaCustomControllerCreate</a> (<a class="el" href="MaaDef_8h.html#ad08eb5199c33a7c772aacb62087617a3">MaaCustomControllerHandle</a> handle, <a class="el" href="MaaDef_8h.html#a9138c89a52948abc61b4da64dbafe5a5">MaaTransparentArg</a> handle_arg, <a class="el" href="MaaDef_8h.html#a42e88ec9161f3484a20ee8cad7409fe5">MaaControllerCallback</a> callback, <a class="el" href="MaaDef_8h.html#af61e880b2ec14e6ced517f2c7457a1b3">MaaCallbackTransparentArg</a> callback_arg)</td></tr>
-<tr class="memdesc:a82b27a0e9175d0d88e76fb5420ee3ba5"><td class="mdescLeft">&#160;</td><td class="mdescRight">Create a custom controller instance.  <a href="MaaController_8h.html#a82b27a0e9175d0d88e76fb5420ee3ba5">More...</a><br /></td></tr>
-<tr class="separator:a82b27a0e9175d0d88e76fb5420ee3ba5"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a64d9b11d5cf507f71f137b17a9c4e426"><td class="memItemLeft" align="right" valign="top"><a class="el" href="MaaDef_8h.html#a59f0e2bf0a9ce9ff8dd96be800302518">MaaControllerHandle</a> <a class="el" href="MaaPort_8h.html#a67006334d91d228121dbba7a8bf8fe05">MAA_FRAMEWORK_API</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="MaaController_8h.html#a64d9b11d5cf507f71f137b17a9c4e426">MaaThriftControllerCreate</a> (<a class="el" href="MaaDef_8h.html#a6b455ee07566bef26f05bfce91017ca9">MaaThriftControllerType</a> type, <a class="el" href="MaaDef_8h.html#a579dacb9b82c4edce80efb25fb79c9f5">MaaStringView</a> host, int32_t port, <a class="el" href="MaaDef_8h.html#a579dacb9b82c4edce80efb25fb79c9f5">MaaStringView</a> config, <a class="el" href="MaaDef_8h.html#a42e88ec9161f3484a20ee8cad7409fe5">MaaControllerCallback</a> callback, <a class="el" href="MaaDef_8h.html#af61e880b2ec14e6ced517f2c7457a1b3">MaaCallbackTransparentArg</a> callback_arg)</td></tr>
-<tr class="separator:a64d9b11d5cf507f71f137b17a9c4e426"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a69ece94ee13e62c71939aad321b20ea9"><td class="memItemLeft" align="right" valign="top"><a class="el" href="MaaDef_8h.html#a59f0e2bf0a9ce9ff8dd96be800302518">MaaControllerHandle</a> <a class="el" href="MaaPort_8h.html#a67006334d91d228121dbba7a8bf8fe05">MAA_FRAMEWORK_API</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="MaaController_8h.html#a69ece94ee13e62c71939aad321b20ea9">MaaDbgControllerCreate</a> (<a class="el" href="MaaDef_8h.html#a579dacb9b82c4edce80efb25fb79c9f5">MaaStringView</a> read_path, <a class="el" href="MaaDef_8h.html#a579dacb9b82c4edce80efb25fb79c9f5">MaaStringView</a> write_path, <a class="el" href="MaaDef_8h.html#aff72391259f2cc9a58e94a2dece637e8">MaaDbgControllerType</a> type, <a class="el" href="MaaDef_8h.html#a579dacb9b82c4edce80efb25fb79c9f5">MaaStringView</a> config, <a class="el" href="MaaDef_8h.html#a42e88ec9161f3484a20ee8cad7409fe5">MaaControllerCallback</a> callback, <a class="el" href="MaaDef_8h.html#af61e880b2ec14e6ced517f2c7457a1b3">MaaCallbackTransparentArg</a> callback_arg)</td></tr>
-<tr class="separator:a69ece94ee13e62c71939aad321b20ea9"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ac4fc848e3c59592267da14e0aad604a7"><td class="memItemLeft" align="right" valign="top">void <a class="el" href="MaaPort_8h.html#a67006334d91d228121dbba7a8bf8fe05">MAA_FRAMEWORK_API</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="MaaController_8h.html#ac4fc848e3c59592267da14e0aad604a7">MaaControllerDestroy</a> (<a class="el" href="MaaDef_8h.html#a59f0e2bf0a9ce9ff8dd96be800302518">MaaControllerHandle</a> ctrl)</td></tr>
-<tr class="memdesc:ac4fc848e3c59592267da14e0aad604a7"><td class="mdescLeft">&#160;</td><td class="mdescRight">Free the controller instance.  <a href="MaaController_8h.html#ac4fc848e3c59592267da14e0aad604a7">More...</a><br /></td></tr>
-<tr class="separator:ac4fc848e3c59592267da14e0aad604a7"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a062d5cecd8362015de2041be29b0ee90"><td class="memItemLeft" align="right" valign="top"><a class="el" href="MaaDef_8h.html#a2f7289f2a8e07f48c6261b52a120cdf6">MaaBool</a> <a class="el" href="MaaPort_8h.html#a67006334d91d228121dbba7a8bf8fe05">MAA_FRAMEWORK_API</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="MaaController_8h.html#a062d5cecd8362015de2041be29b0ee90">MaaControllerSetOption</a> (<a class="el" href="MaaDef_8h.html#a59f0e2bf0a9ce9ff8dd96be800302518">MaaControllerHandle</a> ctrl, <a class="el" href="MaaDef_8h.html#af8335ffd5a7df65830402c82a396c94e">MaaCtrlOption</a> key, <a class="el" href="MaaDef_8h.html#abb976599f915b1e04a9ff8bf7055bf81">MaaOptionValue</a> value, <a class="el" href="MaaDef_8h.html#a56ff604006917171af8e4b4974db28ef">MaaOptionValueSize</a> val_size)</td></tr>
-<tr class="memdesc:a062d5cecd8362015de2041be29b0ee90"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set options for a given controller instance.  <a href="MaaController_8h.html#a062d5cecd8362015de2041be29b0ee90">More...</a><br /></td></tr>
-<tr class="separator:a062d5cecd8362015de2041be29b0ee90"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ga9f1d9f69a1ee2388233fb338065d661a"><td class="memItemLeft" align="right" valign="top"><a class="el" href="MaaDef_8h.html#aea6a27f8f45b661fda5c19b6062b656e">MaaCtrlId</a> <a class="el" href="MaaPort_8h.html#a67006334d91d228121dbba7a8bf8fe05">MAA_FRAMEWORK_API</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__MaaControllerPostRequest.html#ga9f1d9f69a1ee2388233fb338065d661a">MaaControllerPostConnection</a> (<a class="el" href="MaaDef_8h.html#a59f0e2bf0a9ce9ff8dd96be800302518">MaaControllerHandle</a> ctrl)</td></tr>
-<tr class="separator:ga9f1d9f69a1ee2388233fb338065d661a"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ga16ff6000b5c9821e8b076c05c43fdc0b"><td class="memItemLeft" align="right" valign="top"><a class="el" href="MaaDef_8h.html#aea6a27f8f45b661fda5c19b6062b656e">MaaCtrlId</a> <a class="el" href="MaaPort_8h.html#a67006334d91d228121dbba7a8bf8fe05">MAA_FRAMEWORK_API</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__MaaControllerPostRequest.html#ga16ff6000b5c9821e8b076c05c43fdc0b">MaaControllerPostClick</a> (<a class="el" href="MaaDef_8h.html#a59f0e2bf0a9ce9ff8dd96be800302518">MaaControllerHandle</a> ctrl, int32_t x, int32_t y)</td></tr>
-<tr class="separator:ga16ff6000b5c9821e8b076c05c43fdc0b"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:gac425d2a0e5cf0fb344b25463d6e4d962"><td class="memItemLeft" align="right" valign="top"><a class="el" href="MaaDef_8h.html#aea6a27f8f45b661fda5c19b6062b656e">MaaCtrlId</a> <a class="el" href="MaaPort_8h.html#a67006334d91d228121dbba7a8bf8fe05">MAA_FRAMEWORK_API</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__MaaControllerPostRequest.html#gac425d2a0e5cf0fb344b25463d6e4d962">MaaControllerPostSwipe</a> (<a class="el" href="MaaDef_8h.html#a59f0e2bf0a9ce9ff8dd96be800302518">MaaControllerHandle</a> ctrl, int32_t x1, int32_t y1, int32_t x2, int32_t y2, int32_t duration)</td></tr>
-<tr class="separator:gac425d2a0e5cf0fb344b25463d6e4d962"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ga61ed09b6f8a2f5d78d94b65bee40242b"><td class="memItemLeft" align="right" valign="top"><a class="el" href="MaaDef_8h.html#aea6a27f8f45b661fda5c19b6062b656e">MaaCtrlId</a> <a class="el" href="MaaPort_8h.html#a67006334d91d228121dbba7a8bf8fe05">MAA_FRAMEWORK_API</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__MaaControllerPostRequest.html#ga61ed09b6f8a2f5d78d94b65bee40242b">MaaControllerPostPressKey</a> (<a class="el" href="MaaDef_8h.html#a59f0e2bf0a9ce9ff8dd96be800302518">MaaControllerHandle</a> ctrl, int32_t keycode)</td></tr>
-<tr class="separator:ga61ed09b6f8a2f5d78d94b65bee40242b"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ga071665a164b75d529fe55f9ef31ad67f"><td class="memItemLeft" align="right" valign="top"><a class="el" href="MaaDef_8h.html#aea6a27f8f45b661fda5c19b6062b656e">MaaCtrlId</a> <a class="el" href="MaaPort_8h.html#a67006334d91d228121dbba7a8bf8fe05">MAA_FRAMEWORK_API</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__MaaControllerPostRequest.html#ga071665a164b75d529fe55f9ef31ad67f">MaaControllerPostInputText</a> (<a class="el" href="MaaDef_8h.html#a59f0e2bf0a9ce9ff8dd96be800302518">MaaControllerHandle</a> ctrl, <a class="el" href="MaaDef_8h.html#a579dacb9b82c4edce80efb25fb79c9f5">MaaStringView</a> text)</td></tr>
-<tr class="separator:ga071665a164b75d529fe55f9ef31ad67f"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ga58a54febf7e26bd13460d58558232866"><td class="memItemLeft" align="right" valign="top"><a class="el" href="MaaDef_8h.html#aea6a27f8f45b661fda5c19b6062b656e">MaaCtrlId</a> <a class="el" href="MaaPort_8h.html#a67006334d91d228121dbba7a8bf8fe05">MAA_FRAMEWORK_API</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__MaaControllerPostRequest.html#ga58a54febf7e26bd13460d58558232866">MaaControllerPostTouchDown</a> (<a class="el" href="MaaDef_8h.html#a59f0e2bf0a9ce9ff8dd96be800302518">MaaControllerHandle</a> ctrl, int32_t contact, int32_t x, int32_t y, int32_t pressure)</td></tr>
-<tr class="separator:ga58a54febf7e26bd13460d58558232866"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:gaac32024c763de836416541a0ec2f953f"><td class="memItemLeft" align="right" valign="top"><a class="el" href="MaaDef_8h.html#aea6a27f8f45b661fda5c19b6062b656e">MaaCtrlId</a> <a class="el" href="MaaPort_8h.html#a67006334d91d228121dbba7a8bf8fe05">MAA_FRAMEWORK_API</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__MaaControllerPostRequest.html#gaac32024c763de836416541a0ec2f953f">MaaControllerPostTouchMove</a> (<a class="el" href="MaaDef_8h.html#a59f0e2bf0a9ce9ff8dd96be800302518">MaaControllerHandle</a> ctrl, int32_t contact, int32_t x, int32_t y, int32_t pressure)</td></tr>
-<tr class="separator:gaac32024c763de836416541a0ec2f953f"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ga2a58b6fdfda4aceef849d64ce3f6c98d"><td class="memItemLeft" align="right" valign="top"><a class="el" href="MaaDef_8h.html#aea6a27f8f45b661fda5c19b6062b656e">MaaCtrlId</a> <a class="el" href="MaaPort_8h.html#a67006334d91d228121dbba7a8bf8fe05">MAA_FRAMEWORK_API</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__MaaControllerPostRequest.html#ga2a58b6fdfda4aceef849d64ce3f6c98d">MaaControllerPostTouchUp</a> (<a class="el" href="MaaDef_8h.html#a59f0e2bf0a9ce9ff8dd96be800302518">MaaControllerHandle</a> ctrl, int32_t contact)</td></tr>
-<tr class="separator:ga2a58b6fdfda4aceef849d64ce3f6c98d"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ga2743ff3095ac79764aaa56fb1395e5aa"><td class="memItemLeft" align="right" valign="top"><a class="el" href="MaaDef_8h.html#aea6a27f8f45b661fda5c19b6062b656e">MaaCtrlId</a> <a class="el" href="MaaPort_8h.html#a67006334d91d228121dbba7a8bf8fe05">MAA_FRAMEWORK_API</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__MaaControllerPostRequest.html#ga2743ff3095ac79764aaa56fb1395e5aa">MaaControllerPostScreencap</a> (<a class="el" href="MaaDef_8h.html#a59f0e2bf0a9ce9ff8dd96be800302518">MaaControllerHandle</a> ctrl)</td></tr>
-<tr class="separator:ga2743ff3095ac79764aaa56fb1395e5aa"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a2d1ef3f70ee7ccadb2b4ab879225f7f6"><td class="memItemLeft" align="right" valign="top"><a class="el" href="MaaDef_8h.html#ada00e4de6b9b4dcae75ed50f4bcaeef5">MaaStatus</a> <a class="el" href="MaaPort_8h.html#a67006334d91d228121dbba7a8bf8fe05">MAA_FRAMEWORK_API</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="MaaController_8h.html#a2d1ef3f70ee7ccadb2b4ab879225f7f6">MaaControllerStatus</a> (<a class="el" href="MaaDef_8h.html#a59f0e2bf0a9ce9ff8dd96be800302518">MaaControllerHandle</a> ctrl, <a class="el" href="MaaDef_8h.html#aea6a27f8f45b661fda5c19b6062b656e">MaaCtrlId</a> id)</td></tr>
-<tr class="memdesc:a2d1ef3f70ee7ccadb2b4ab879225f7f6"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get the status of a request identified by the given id.  <a href="MaaController_8h.html#a2d1ef3f70ee7ccadb2b4ab879225f7f6">More...</a><br /></td></tr>
-<tr class="separator:a2d1ef3f70ee7ccadb2b4ab879225f7f6"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:af231c06766858364ed32d8804719ceda"><td class="memItemLeft" align="right" valign="top"><a class="el" href="MaaDef_8h.html#ada00e4de6b9b4dcae75ed50f4bcaeef5">MaaStatus</a> <a class="el" href="MaaPort_8h.html#a67006334d91d228121dbba7a8bf8fe05">MAA_FRAMEWORK_API</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="MaaController_8h.html#af231c06766858364ed32d8804719ceda">MaaControllerWait</a> (<a class="el" href="MaaDef_8h.html#a59f0e2bf0a9ce9ff8dd96be800302518">MaaControllerHandle</a> ctrl, <a class="el" href="MaaDef_8h.html#aea6a27f8f45b661fda5c19b6062b656e">MaaCtrlId</a> id)</td></tr>
-<tr class="memdesc:af231c06766858364ed32d8804719ceda"><td class="mdescLeft">&#160;</td><td class="mdescRight">Wait for the request identified by the given id to complete.  <a href="MaaController_8h.html#af231c06766858364ed32d8804719ceda">More...</a><br /></td></tr>
-<tr class="separator:af231c06766858364ed32d8804719ceda"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a7916a7af3a765af4d780deb3710c3eef"><td class="memItemLeft" align="right" valign="top"><a class="el" href="MaaDef_8h.html#a2f7289f2a8e07f48c6261b52a120cdf6">MaaBool</a> <a class="el" href="MaaPort_8h.html#a67006334d91d228121dbba7a8bf8fe05">MAA_FRAMEWORK_API</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="MaaController_8h.html#a7916a7af3a765af4d780deb3710c3eef">MaaControllerConnected</a> (<a class="el" href="MaaDef_8h.html#a59f0e2bf0a9ce9ff8dd96be800302518">MaaControllerHandle</a> ctrl)</td></tr>
-<tr class="memdesc:a7916a7af3a765af4d780deb3710c3eef"><td class="mdescLeft">&#160;</td><td class="mdescRight">Check if the controller is connected.  <a href="MaaController_8h.html#a7916a7af3a765af4d780deb3710c3eef">More...</a><br /></td></tr>
-<tr class="separator:a7916a7af3a765af4d780deb3710c3eef"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a28c90c550a2f58cf7f175f5b472ecda1"><td class="memItemLeft" align="right" valign="top"><a class="el" href="MaaDef_8h.html#a2f7289f2a8e07f48c6261b52a120cdf6">MaaBool</a> <a class="el" href="MaaPort_8h.html#a67006334d91d228121dbba7a8bf8fe05">MAA_FRAMEWORK_API</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="MaaController_8h.html#a28c90c550a2f58cf7f175f5b472ecda1">MaaControllerGetImage</a> (<a class="el" href="MaaDef_8h.html#a59f0e2bf0a9ce9ff8dd96be800302518">MaaControllerHandle</a> ctrl, <a class="el" href="MaaDef_8h.html#a30c4754980d5dfa504ce84d86668f031">MaaImageBufferHandle</a> buffer)</td></tr>
-<tr class="memdesc:a28c90c550a2f58cf7f175f5b472ecda1"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get the image buffer of the last screencap request.  <a href="MaaController_8h.html#a28c90c550a2f58cf7f175f5b472ecda1">More...</a><br /></td></tr>
-<tr class="separator:a28c90c550a2f58cf7f175f5b472ecda1"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a37e5e84cc314c3fb29d274f9a55f34a6"><td class="memItemLeft" align="right" valign="top"><a class="el" href="MaaDef_8h.html#a2f7289f2a8e07f48c6261b52a120cdf6">MaaBool</a> <a class="el" href="MaaPort_8h.html#a67006334d91d228121dbba7a8bf8fe05">MAA_FRAMEWORK_API</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="MaaController_8h.html#a37e5e84cc314c3fb29d274f9a55f34a6">MaaControllerGetUUID</a> (<a class="el" href="MaaDef_8h.html#a59f0e2bf0a9ce9ff8dd96be800302518">MaaControllerHandle</a> ctrl, <a class="el" href="MaaDef_8h.html#aed721aa4682b1241bc38d10f8c57a8cb">MaaStringBufferHandle</a> buffer)</td></tr>
-<tr class="memdesc:a37e5e84cc314c3fb29d274f9a55f34a6"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get the UUID of the controller.  <a href="MaaController_8h.html#a37e5e84cc314c3fb29d274f9a55f34a6">More...</a><br /></td></tr>
-<tr class="separator:a37e5e84cc314c3fb29d274f9a55f34a6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1292df5261fcb83a7a6d07f0302fe431"><td class="memItemLeft" align="right" valign="top"><a class="el" href="MaaPort_8h.html#aea94eb63afa29e65c59844ec3f57d691">MAA_DEPRECATED</a> <a class="el" href="MaaPort_8h.html#a67006334d91d228121dbba7a8bf8fe05">MAA_FRAMEWORK_API</a> <a class="el" href="MaaDef_8h.html#a59f0e2bf0a9ce9ff8dd96be800302518">MaaControllerHandle</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="MaaController_8h.html#a1292df5261fcb83a7a6d07f0302fe431">MaaAdbControllerCreate</a> (<a class="el" href="MaaDef_8h.html#a579dacb9b82c4edce80efb25fb79c9f5">MaaStringView</a> adb_path, <a class="el" href="MaaDef_8h.html#a579dacb9b82c4edce80efb25fb79c9f5">MaaStringView</a> address, <a class="el" href="MaaDef_8h.html#a2ba314321c0419e64efe128e94c20776">MaaAdbControllerType</a> type, <a class="el" href="MaaDef_8h.html#a579dacb9b82c4edce80efb25fb79c9f5">MaaStringView</a> config, <a class="el" href="MaaDef_8h.html#a42e88ec9161f3484a20ee8cad7409fe5">MaaControllerCallback</a> callback, <a class="el" href="MaaDef_8h.html#af61e880b2ec14e6ced517f2c7457a1b3">MaaCallbackTransparentArg</a> callback_arg)</td></tr>
+<tr class="separator:a1292df5261fcb83a7a6d07f0302fe431"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9a6a89e475669d0b08f68f300d8c4c96"><td class="memItemLeft" align="right" valign="top"><a class="el" href="MaaPort_8h.html#a67006334d91d228121dbba7a8bf8fe05">MAA_FRAMEWORK_API</a> <a class="el" href="MaaDef_8h.html#a59f0e2bf0a9ce9ff8dd96be800302518">MaaControllerHandle</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="MaaController_8h.html#a9a6a89e475669d0b08f68f300d8c4c96">MaaWin32ControllerCreate</a> (<a class="el" href="MaaDef_8h.html#a3da139ef5684ba4fab68e47797c0d50c">MaaWin32Hwnd</a> hWnd, <a class="el" href="MaaDef_8h.html#abdbcb048447e802ad2b48e7755b1776c">MaaWin32ControllerType</a> type, <a class="el" href="MaaDef_8h.html#a42e88ec9161f3484a20ee8cad7409fe5">MaaControllerCallback</a> callback, <a class="el" href="MaaDef_8h.html#af61e880b2ec14e6ced517f2c7457a1b3">MaaCallbackTransparentArg</a> callback_arg)</td></tr>
+<tr class="memdesc:a9a6a89e475669d0b08f68f300d8c4c96"><td class="mdescLeft">&#160;</td><td class="mdescRight">Create a win32 controller instance.  <a href="MaaController_8h.html#a9a6a89e475669d0b08f68f300d8c4c96">More...</a><br /></td></tr>
+<tr class="separator:a9a6a89e475669d0b08f68f300d8c4c96"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a22142de0dbfc3ed0e64cbcc9e0f1a6e4"><td class="memItemLeft" align="right" valign="top"><a class="el" href="MaaPort_8h.html#a67006334d91d228121dbba7a8bf8fe05">MAA_FRAMEWORK_API</a> <a class="el" href="MaaDef_8h.html#a59f0e2bf0a9ce9ff8dd96be800302518">MaaControllerHandle</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="MaaController_8h.html#a22142de0dbfc3ed0e64cbcc9e0f1a6e4">MaaAdbControllerCreateV2</a> (<a class="el" href="MaaDef_8h.html#a579dacb9b82c4edce80efb25fb79c9f5">MaaStringView</a> adb_path, <a class="el" href="MaaDef_8h.html#a579dacb9b82c4edce80efb25fb79c9f5">MaaStringView</a> address, <a class="el" href="MaaDef_8h.html#a2ba314321c0419e64efe128e94c20776">MaaAdbControllerType</a> type, <a class="el" href="MaaDef_8h.html#a579dacb9b82c4edce80efb25fb79c9f5">MaaStringView</a> config, <a class="el" href="MaaDef_8h.html#a579dacb9b82c4edce80efb25fb79c9f5">MaaStringView</a> agent_path, <a class="el" href="MaaDef_8h.html#a42e88ec9161f3484a20ee8cad7409fe5">MaaControllerCallback</a> callback, <a class="el" href="MaaDef_8h.html#af61e880b2ec14e6ced517f2c7457a1b3">MaaCallbackTransparentArg</a> callback_arg)</td></tr>
+<tr class="memdesc:a22142de0dbfc3ed0e64cbcc9e0f1a6e4"><td class="mdescLeft">&#160;</td><td class="mdescRight">Create a ADB controller instance.  <a href="MaaController_8h.html#a22142de0dbfc3ed0e64cbcc9e0f1a6e4">More...</a><br /></td></tr>
+<tr class="separator:a22142de0dbfc3ed0e64cbcc9e0f1a6e4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2544850abe36deca8099f6d138e9869c"><td class="memItemLeft" align="right" valign="top"><a class="el" href="MaaPort_8h.html#a67006334d91d228121dbba7a8bf8fe05">MAA_FRAMEWORK_API</a> <a class="el" href="MaaDef_8h.html#a59f0e2bf0a9ce9ff8dd96be800302518">MaaControllerHandle</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="MaaController_8h.html#a2544850abe36deca8099f6d138e9869c">MaaCustomControllerCreate</a> (<a class="el" href="MaaDef_8h.html#ad08eb5199c33a7c772aacb62087617a3">MaaCustomControllerHandle</a> handle, <a class="el" href="MaaDef_8h.html#a9138c89a52948abc61b4da64dbafe5a5">MaaTransparentArg</a> handle_arg, <a class="el" href="MaaDef_8h.html#a42e88ec9161f3484a20ee8cad7409fe5">MaaControllerCallback</a> callback, <a class="el" href="MaaDef_8h.html#af61e880b2ec14e6ced517f2c7457a1b3">MaaCallbackTransparentArg</a> callback_arg)</td></tr>
+<tr class="memdesc:a2544850abe36deca8099f6d138e9869c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Create a custom controller instance.  <a href="MaaController_8h.html#a2544850abe36deca8099f6d138e9869c">More...</a><br /></td></tr>
+<tr class="separator:a2544850abe36deca8099f6d138e9869c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aacb34d0315d060d09b7be697c2ef9f43"><td class="memItemLeft" align="right" valign="top"><a class="el" href="MaaPort_8h.html#a67006334d91d228121dbba7a8bf8fe05">MAA_FRAMEWORK_API</a> <a class="el" href="MaaDef_8h.html#a59f0e2bf0a9ce9ff8dd96be800302518">MaaControllerHandle</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="MaaController_8h.html#aacb34d0315d060d09b7be697c2ef9f43">MaaThriftControllerCreate</a> (<a class="el" href="MaaDef_8h.html#a6b455ee07566bef26f05bfce91017ca9">MaaThriftControllerType</a> type, <a class="el" href="MaaDef_8h.html#a579dacb9b82c4edce80efb25fb79c9f5">MaaStringView</a> host, int32_t port, <a class="el" href="MaaDef_8h.html#a579dacb9b82c4edce80efb25fb79c9f5">MaaStringView</a> config, <a class="el" href="MaaDef_8h.html#a42e88ec9161f3484a20ee8cad7409fe5">MaaControllerCallback</a> callback, <a class="el" href="MaaDef_8h.html#af61e880b2ec14e6ced517f2c7457a1b3">MaaCallbackTransparentArg</a> callback_arg)</td></tr>
+<tr class="separator:aacb34d0315d060d09b7be697c2ef9f43"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:afa2503aa43823a84d9dc61baef09985c"><td class="memItemLeft" align="right" valign="top"><a class="el" href="MaaPort_8h.html#a67006334d91d228121dbba7a8bf8fe05">MAA_FRAMEWORK_API</a> <a class="el" href="MaaDef_8h.html#a59f0e2bf0a9ce9ff8dd96be800302518">MaaControllerHandle</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="MaaController_8h.html#afa2503aa43823a84d9dc61baef09985c">MaaDbgControllerCreate</a> (<a class="el" href="MaaDef_8h.html#a579dacb9b82c4edce80efb25fb79c9f5">MaaStringView</a> read_path, <a class="el" href="MaaDef_8h.html#a579dacb9b82c4edce80efb25fb79c9f5">MaaStringView</a> write_path, <a class="el" href="MaaDef_8h.html#aff72391259f2cc9a58e94a2dece637e8">MaaDbgControllerType</a> type, <a class="el" href="MaaDef_8h.html#a579dacb9b82c4edce80efb25fb79c9f5">MaaStringView</a> config, <a class="el" href="MaaDef_8h.html#a42e88ec9161f3484a20ee8cad7409fe5">MaaControllerCallback</a> callback, <a class="el" href="MaaDef_8h.html#af61e880b2ec14e6ced517f2c7457a1b3">MaaCallbackTransparentArg</a> callback_arg)</td></tr>
+<tr class="separator:afa2503aa43823a84d9dc61baef09985c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a91ab08a83b3c05c87015346e69de97b1"><td class="memItemLeft" align="right" valign="top"><a class="el" href="MaaPort_8h.html#a67006334d91d228121dbba7a8bf8fe05">MAA_FRAMEWORK_API</a> void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="MaaController_8h.html#a91ab08a83b3c05c87015346e69de97b1">MaaControllerDestroy</a> (<a class="el" href="MaaDef_8h.html#a59f0e2bf0a9ce9ff8dd96be800302518">MaaControllerHandle</a> ctrl)</td></tr>
+<tr class="memdesc:a91ab08a83b3c05c87015346e69de97b1"><td class="mdescLeft">&#160;</td><td class="mdescRight">Free the controller instance.  <a href="MaaController_8h.html#a91ab08a83b3c05c87015346e69de97b1">More...</a><br /></td></tr>
+<tr class="separator:a91ab08a83b3c05c87015346e69de97b1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae19d88d45fa1b45212debcecb9950f55"><td class="memItemLeft" align="right" valign="top"><a class="el" href="MaaPort_8h.html#a67006334d91d228121dbba7a8bf8fe05">MAA_FRAMEWORK_API</a> <a class="el" href="MaaDef_8h.html#a2f7289f2a8e07f48c6261b52a120cdf6">MaaBool</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="MaaController_8h.html#ae19d88d45fa1b45212debcecb9950f55">MaaControllerSetOption</a> (<a class="el" href="MaaDef_8h.html#a59f0e2bf0a9ce9ff8dd96be800302518">MaaControllerHandle</a> ctrl, <a class="el" href="MaaDef_8h.html#af8335ffd5a7df65830402c82a396c94e">MaaCtrlOption</a> key, <a class="el" href="MaaDef_8h.html#abb976599f915b1e04a9ff8bf7055bf81">MaaOptionValue</a> value, <a class="el" href="MaaDef_8h.html#a56ff604006917171af8e4b4974db28ef">MaaOptionValueSize</a> val_size)</td></tr>
+<tr class="memdesc:ae19d88d45fa1b45212debcecb9950f55"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set options for a given controller instance.  <a href="MaaController_8h.html#ae19d88d45fa1b45212debcecb9950f55">More...</a><br /></td></tr>
+<tr class="separator:ae19d88d45fa1b45212debcecb9950f55"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga76de3faeb3a1225181c9f0c2fa69182c"><td class="memItemLeft" align="right" valign="top"><a class="el" href="MaaPort_8h.html#a67006334d91d228121dbba7a8bf8fe05">MAA_FRAMEWORK_API</a> <a class="el" href="MaaDef_8h.html#aea6a27f8f45b661fda5c19b6062b656e">MaaCtrlId</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__MaaControllerPostRequest.html#ga76de3faeb3a1225181c9f0c2fa69182c">MaaControllerPostConnection</a> (<a class="el" href="MaaDef_8h.html#a59f0e2bf0a9ce9ff8dd96be800302518">MaaControllerHandle</a> ctrl)</td></tr>
+<tr class="separator:ga76de3faeb3a1225181c9f0c2fa69182c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga9f0e5794d891682c03e40af5405b5669"><td class="memItemLeft" align="right" valign="top"><a class="el" href="MaaPort_8h.html#a67006334d91d228121dbba7a8bf8fe05">MAA_FRAMEWORK_API</a> <a class="el" href="MaaDef_8h.html#aea6a27f8f45b661fda5c19b6062b656e">MaaCtrlId</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__MaaControllerPostRequest.html#ga9f0e5794d891682c03e40af5405b5669">MaaControllerPostClick</a> (<a class="el" href="MaaDef_8h.html#a59f0e2bf0a9ce9ff8dd96be800302518">MaaControllerHandle</a> ctrl, int32_t x, int32_t y)</td></tr>
+<tr class="separator:ga9f0e5794d891682c03e40af5405b5669"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:gaba6f10967118e3b8b7e31a19eda910b4"><td class="memItemLeft" align="right" valign="top"><a class="el" href="MaaPort_8h.html#a67006334d91d228121dbba7a8bf8fe05">MAA_FRAMEWORK_API</a> <a class="el" href="MaaDef_8h.html#aea6a27f8f45b661fda5c19b6062b656e">MaaCtrlId</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__MaaControllerPostRequest.html#gaba6f10967118e3b8b7e31a19eda910b4">MaaControllerPostSwipe</a> (<a class="el" href="MaaDef_8h.html#a59f0e2bf0a9ce9ff8dd96be800302518">MaaControllerHandle</a> ctrl, int32_t x1, int32_t y1, int32_t x2, int32_t y2, int32_t duration)</td></tr>
+<tr class="separator:gaba6f10967118e3b8b7e31a19eda910b4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga010076a6743d469c82e6fa13c0468823"><td class="memItemLeft" align="right" valign="top"><a class="el" href="MaaPort_8h.html#a67006334d91d228121dbba7a8bf8fe05">MAA_FRAMEWORK_API</a> <a class="el" href="MaaDef_8h.html#aea6a27f8f45b661fda5c19b6062b656e">MaaCtrlId</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__MaaControllerPostRequest.html#ga010076a6743d469c82e6fa13c0468823">MaaControllerPostPressKey</a> (<a class="el" href="MaaDef_8h.html#a59f0e2bf0a9ce9ff8dd96be800302518">MaaControllerHandle</a> ctrl, int32_t keycode)</td></tr>
+<tr class="separator:ga010076a6743d469c82e6fa13c0468823"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:gafe85778045c6bd504edb6dc7e255520b"><td class="memItemLeft" align="right" valign="top"><a class="el" href="MaaPort_8h.html#a67006334d91d228121dbba7a8bf8fe05">MAA_FRAMEWORK_API</a> <a class="el" href="MaaDef_8h.html#aea6a27f8f45b661fda5c19b6062b656e">MaaCtrlId</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__MaaControllerPostRequest.html#gafe85778045c6bd504edb6dc7e255520b">MaaControllerPostInputText</a> (<a class="el" href="MaaDef_8h.html#a59f0e2bf0a9ce9ff8dd96be800302518">MaaControllerHandle</a> ctrl, <a class="el" href="MaaDef_8h.html#a579dacb9b82c4edce80efb25fb79c9f5">MaaStringView</a> text)</td></tr>
+<tr class="separator:gafe85778045c6bd504edb6dc7e255520b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga5d6c78c44e837f25dda1aa78ea5732a5"><td class="memItemLeft" align="right" valign="top"><a class="el" href="MaaPort_8h.html#a67006334d91d228121dbba7a8bf8fe05">MAA_FRAMEWORK_API</a> <a class="el" href="MaaDef_8h.html#aea6a27f8f45b661fda5c19b6062b656e">MaaCtrlId</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__MaaControllerPostRequest.html#ga5d6c78c44e837f25dda1aa78ea5732a5">MaaControllerPostTouchDown</a> (<a class="el" href="MaaDef_8h.html#a59f0e2bf0a9ce9ff8dd96be800302518">MaaControllerHandle</a> ctrl, int32_t contact, int32_t x, int32_t y, int32_t pressure)</td></tr>
+<tr class="separator:ga5d6c78c44e837f25dda1aa78ea5732a5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga1336e4744d7c998543dbdba569d102de"><td class="memItemLeft" align="right" valign="top"><a class="el" href="MaaPort_8h.html#a67006334d91d228121dbba7a8bf8fe05">MAA_FRAMEWORK_API</a> <a class="el" href="MaaDef_8h.html#aea6a27f8f45b661fda5c19b6062b656e">MaaCtrlId</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__MaaControllerPostRequest.html#ga1336e4744d7c998543dbdba569d102de">MaaControllerPostTouchMove</a> (<a class="el" href="MaaDef_8h.html#a59f0e2bf0a9ce9ff8dd96be800302518">MaaControllerHandle</a> ctrl, int32_t contact, int32_t x, int32_t y, int32_t pressure)</td></tr>
+<tr class="separator:ga1336e4744d7c998543dbdba569d102de"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:gaee055ca7345c558b1ec4dcdd39c5bf77"><td class="memItemLeft" align="right" valign="top"><a class="el" href="MaaPort_8h.html#a67006334d91d228121dbba7a8bf8fe05">MAA_FRAMEWORK_API</a> <a class="el" href="MaaDef_8h.html#aea6a27f8f45b661fda5c19b6062b656e">MaaCtrlId</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__MaaControllerPostRequest.html#gaee055ca7345c558b1ec4dcdd39c5bf77">MaaControllerPostTouchUp</a> (<a class="el" href="MaaDef_8h.html#a59f0e2bf0a9ce9ff8dd96be800302518">MaaControllerHandle</a> ctrl, int32_t contact)</td></tr>
+<tr class="separator:gaee055ca7345c558b1ec4dcdd39c5bf77"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga8b960a76d1a18d2c6cbcd698a748505a"><td class="memItemLeft" align="right" valign="top"><a class="el" href="MaaPort_8h.html#a67006334d91d228121dbba7a8bf8fe05">MAA_FRAMEWORK_API</a> <a class="el" href="MaaDef_8h.html#aea6a27f8f45b661fda5c19b6062b656e">MaaCtrlId</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__MaaControllerPostRequest.html#ga8b960a76d1a18d2c6cbcd698a748505a">MaaControllerPostScreencap</a> (<a class="el" href="MaaDef_8h.html#a59f0e2bf0a9ce9ff8dd96be800302518">MaaControllerHandle</a> ctrl)</td></tr>
+<tr class="separator:ga8b960a76d1a18d2c6cbcd698a748505a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8bb4fde2cdfc769f35a8a787df9a8df9"><td class="memItemLeft" align="right" valign="top"><a class="el" href="MaaPort_8h.html#a67006334d91d228121dbba7a8bf8fe05">MAA_FRAMEWORK_API</a> <a class="el" href="MaaDef_8h.html#ada00e4de6b9b4dcae75ed50f4bcaeef5">MaaStatus</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="MaaController_8h.html#a8bb4fde2cdfc769f35a8a787df9a8df9">MaaControllerStatus</a> (<a class="el" href="MaaDef_8h.html#a59f0e2bf0a9ce9ff8dd96be800302518">MaaControllerHandle</a> ctrl, <a class="el" href="MaaDef_8h.html#aea6a27f8f45b661fda5c19b6062b656e">MaaCtrlId</a> id)</td></tr>
+<tr class="memdesc:a8bb4fde2cdfc769f35a8a787df9a8df9"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get the status of a request identified by the given id.  <a href="MaaController_8h.html#a8bb4fde2cdfc769f35a8a787df9a8df9">More...</a><br /></td></tr>
+<tr class="separator:a8bb4fde2cdfc769f35a8a787df9a8df9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:acc67cf9739cfef6f427ecd3be8b90cc6"><td class="memItemLeft" align="right" valign="top"><a class="el" href="MaaPort_8h.html#a67006334d91d228121dbba7a8bf8fe05">MAA_FRAMEWORK_API</a> <a class="el" href="MaaDef_8h.html#ada00e4de6b9b4dcae75ed50f4bcaeef5">MaaStatus</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="MaaController_8h.html#acc67cf9739cfef6f427ecd3be8b90cc6">MaaControllerWait</a> (<a class="el" href="MaaDef_8h.html#a59f0e2bf0a9ce9ff8dd96be800302518">MaaControllerHandle</a> ctrl, <a class="el" href="MaaDef_8h.html#aea6a27f8f45b661fda5c19b6062b656e">MaaCtrlId</a> id)</td></tr>
+<tr class="memdesc:acc67cf9739cfef6f427ecd3be8b90cc6"><td class="mdescLeft">&#160;</td><td class="mdescRight">Wait for the request identified by the given id to complete.  <a href="MaaController_8h.html#acc67cf9739cfef6f427ecd3be8b90cc6">More...</a><br /></td></tr>
+<tr class="separator:acc67cf9739cfef6f427ecd3be8b90cc6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac0b2db921e02733b453e87a7f5837ac0"><td class="memItemLeft" align="right" valign="top"><a class="el" href="MaaPort_8h.html#a67006334d91d228121dbba7a8bf8fe05">MAA_FRAMEWORK_API</a> <a class="el" href="MaaDef_8h.html#a2f7289f2a8e07f48c6261b52a120cdf6">MaaBool</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="MaaController_8h.html#ac0b2db921e02733b453e87a7f5837ac0">MaaControllerConnected</a> (<a class="el" href="MaaDef_8h.html#a59f0e2bf0a9ce9ff8dd96be800302518">MaaControllerHandle</a> ctrl)</td></tr>
+<tr class="memdesc:ac0b2db921e02733b453e87a7f5837ac0"><td class="mdescLeft">&#160;</td><td class="mdescRight">Check if the controller is connected.  <a href="MaaController_8h.html#ac0b2db921e02733b453e87a7f5837ac0">More...</a><br /></td></tr>
+<tr class="separator:ac0b2db921e02733b453e87a7f5837ac0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a83ab8043759a99d9bf6950fb88f93706"><td class="memItemLeft" align="right" valign="top"><a class="el" href="MaaPort_8h.html#a67006334d91d228121dbba7a8bf8fe05">MAA_FRAMEWORK_API</a> <a class="el" href="MaaDef_8h.html#a2f7289f2a8e07f48c6261b52a120cdf6">MaaBool</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="MaaController_8h.html#a83ab8043759a99d9bf6950fb88f93706">MaaControllerGetImage</a> (<a class="el" href="MaaDef_8h.html#a59f0e2bf0a9ce9ff8dd96be800302518">MaaControllerHandle</a> ctrl, <a class="el" href="MaaDef_8h.html#a30c4754980d5dfa504ce84d86668f031">MaaImageBufferHandle</a> buffer)</td></tr>
+<tr class="memdesc:a83ab8043759a99d9bf6950fb88f93706"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get the image buffer of the last screencap request.  <a href="MaaController_8h.html#a83ab8043759a99d9bf6950fb88f93706">More...</a><br /></td></tr>
+<tr class="separator:a83ab8043759a99d9bf6950fb88f93706"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8a8eab6ea267c22241dbf0308d8c00e4"><td class="memItemLeft" align="right" valign="top"><a class="el" href="MaaPort_8h.html#a67006334d91d228121dbba7a8bf8fe05">MAA_FRAMEWORK_API</a> <a class="el" href="MaaDef_8h.html#a2f7289f2a8e07f48c6261b52a120cdf6">MaaBool</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="MaaController_8h.html#a8a8eab6ea267c22241dbf0308d8c00e4">MaaControllerGetUUID</a> (<a class="el" href="MaaDef_8h.html#a59f0e2bf0a9ce9ff8dd96be800302518">MaaControllerHandle</a> ctrl, <a class="el" href="MaaDef_8h.html#aed721aa4682b1241bc38d10f8c57a8cb">MaaStringBufferHandle</a> buffer)</td></tr>
+<tr class="memdesc:a8a8eab6ea267c22241dbf0308d8c00e4"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get the UUID of the controller.  <a href="MaaController_8h.html#a8a8eab6ea267c22241dbf0308d8c00e4">More...</a><br /></td></tr>
+<tr class="separator:a8a8eab6ea267c22241dbf0308d8c00e4"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p >The controller interface. See <a class="el" href="group__MaaControllerPostRequest.html">Controller Requests</a> for details on how to post requests to the controller. </p>
 <dl class="section author"><dt>Author</dt><dd></dd></dl>
 <dl class="section copyright"><dt>Copyright</dt><dd>Copyright (c) 2024 </dd></dl>
 </div><h2 class="groupheader">Function Documentation</h2>
-<a id="a5d65ca9155cc516beab774bb0d70772e" name="a5d65ca9155cc516beab774bb0d70772e"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a5d65ca9155cc516beab774bb0d70772e">&#9670;&#160;</a></span>MaaAdbControllerCreate()</h2>
+<a id="a1292df5261fcb83a7a6d07f0302fe431" name="a1292df5261fcb83a7a6d07f0302fe431"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1292df5261fcb83a7a6d07f0302fe431">&#9670;&#160;</a></span>MaaAdbControllerCreate()</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="MaaDef_8h.html#a59f0e2bf0a9ce9ff8dd96be800302518">MaaControllerHandle</a> <a class="el" href="MaaPort_8h.html#a67006334d91d228121dbba7a8bf8fe05">MAA_FRAMEWORK_API</a> MaaAdbControllerCreate </td>
+          <td class="memname"><a class="el" href="MaaPort_8h.html#aea94eb63afa29e65c59844ec3f57d691">MAA_DEPRECATED</a> <a class="el" href="MaaPort_8h.html#a67006334d91d228121dbba7a8bf8fe05">MAA_FRAMEWORK_API</a> <a class="el" href="MaaDef_8h.html#a59f0e2bf0a9ce9ff8dd96be800302518">MaaControllerHandle</a> MaaAdbControllerCreate </td>
           <td>(</td>
           <td class="paramtype"><a class="el" href="MaaDef_8h.html#a579dacb9b82c4edce80efb25fb79c9f5">MaaStringView</a>&#160;</td>
           <td class="paramname"><em>adb_path</em>, </td>
@@ -198,32 +215,18 @@ Functions</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-
-<p>Create a ADB controller instance. </p>
-<dl class="deprecated"><dt><b><a class="el" href="deprecated.html#_deprecated000001">Deprecated:</a></b></dt><dd>Use <a class="el" href="MaaController_8h.html#a4fc910ade4b68ecf3cf1106154a8f8e0" title="Create a ADB controller instance.">MaaAdbControllerCreateV2()</a> instead.</dd></dl>
-<dl class="params"><dt>Parameters</dt><dd>
-  <table class="params">
-    <tr><td class="paramname">adb_path</td><td>The path of ADB executable. </td></tr>
-    <tr><td class="paramname">address</td><td>The ADB serial of the target device. </td></tr>
-    <tr><td class="paramname">type</td><td>The type of the ADB controller. See <a class="el" href="MaaDef_8h.html#a21de9ae05eae97a700f9f834fe506f47" title="ADB controller type.">MaaAdbControllerTypeEnum</a>. </td></tr>
-    <tr><td class="paramname">config</td><td>The config of the ADB controller. </td></tr>
-    <tr><td class="paramname">callback</td><td>The callback function. See <a class="el" href="MaaDef_8h.html#a48aaee8a77c75875288cf3206d992958" title="The callback function type.">MaaAPICallback</a>. </td></tr>
-    <tr><td class="paramname">callback_arg</td><td>The callback arg that will be passed to the callback function. </td></tr>
-  </table>
-  </dd>
-</dl>
-<dl class="section return"><dt>Returns</dt><dd>MaaControllerHandle The handle of the created controller instance. </dd></dl>
+<dl class="deprecated"><dt><b><a class="el" href="deprecated.html#_deprecated000001">Deprecated:</a></b></dt><dd>Use <a class="el" href="MaaController_8h.html#a22142de0dbfc3ed0e64cbcc9e0f1a6e4" title="Create a ADB controller instance.">MaaAdbControllerCreateV2()</a> instead. </dd></dl>
 
 </div>
 </div>
-<a id="a153efcd84b3ada3c60d7a4e11c99ef77" name="a153efcd84b3ada3c60d7a4e11c99ef77"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a153efcd84b3ada3c60d7a4e11c99ef77">&#9670;&#160;</a></span>MaaWin32ControllerCreate()</h2>
+<a id="a9a6a89e475669d0b08f68f300d8c4c96" name="a9a6a89e475669d0b08f68f300d8c4c96"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9a6a89e475669d0b08f68f300d8c4c96">&#9670;&#160;</a></span>MaaWin32ControllerCreate()</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="MaaDef_8h.html#a59f0e2bf0a9ce9ff8dd96be800302518">MaaControllerHandle</a> <a class="el" href="MaaPort_8h.html#a67006334d91d228121dbba7a8bf8fe05">MAA_FRAMEWORK_API</a> MaaWin32ControllerCreate </td>
+          <td class="memname"><a class="el" href="MaaPort_8h.html#a67006334d91d228121dbba7a8bf8fe05">MAA_FRAMEWORK_API</a> <a class="el" href="MaaDef_8h.html#a59f0e2bf0a9ce9ff8dd96be800302518">MaaControllerHandle</a> MaaWin32ControllerCreate </td>
           <td>(</td>
           <td class="paramtype"><a class="el" href="MaaDef_8h.html#a3da139ef5684ba4fab68e47797c0d50c">MaaWin32Hwnd</a>&#160;</td>
           <td class="paramname"><em>hWnd</em>, </td>
@@ -259,7 +262,7 @@ Functions</h2></td></tr>
   <table class="params">
     <tr><td class="paramname">hWnd</td><td>The win32 window handle to control. This can be retrieved by helpers provided in <a class="el" href="MaaToolkitWin32Window_8h.html">MaaToolkitWin32Window.h</a>. </td></tr>
     <tr><td class="paramname">type</td><td>The type of the win32 controller. See <a class="el" href="MaaDef_8h.html#aee6a3149d7be4c6d9e2190d14f203fa2" title="Win32 controller type.">MaaWin32ControllerTypeEnum</a>. </td></tr>
-    <tr><td class="paramname">callback</td><td>The callback function. See <a class="el" href="MaaDef_8h.html#a48aaee8a77c75875288cf3206d992958" title="The callback function type.">MaaAPICallback</a>. </td></tr>
+    <tr><td class="paramname">callback</td><td>The callback function. See <a class="el" href="MaaDef_8h.html#a147654dcdaa3e645e387e6e3a4338766" title="The callback function type.">MaaAPICallback</a>. </td></tr>
     <tr><td class="paramname">callback_arg</td><td>The callback arg that will be passed to the callback function. </td></tr>
   </table>
   </dd>
@@ -268,14 +271,14 @@ Functions</h2></td></tr>
 
 </div>
 </div>
-<a id="a4fc910ade4b68ecf3cf1106154a8f8e0" name="a4fc910ade4b68ecf3cf1106154a8f8e0"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a4fc910ade4b68ecf3cf1106154a8f8e0">&#9670;&#160;</a></span>MaaAdbControllerCreateV2()</h2>
+<a id="a22142de0dbfc3ed0e64cbcc9e0f1a6e4" name="a22142de0dbfc3ed0e64cbcc9e0f1a6e4"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a22142de0dbfc3ed0e64cbcc9e0f1a6e4">&#9670;&#160;</a></span>MaaAdbControllerCreateV2()</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="MaaDef_8h.html#a59f0e2bf0a9ce9ff8dd96be800302518">MaaControllerHandle</a> <a class="el" href="MaaPort_8h.html#a67006334d91d228121dbba7a8bf8fe05">MAA_FRAMEWORK_API</a> MaaAdbControllerCreateV2 </td>
+          <td class="memname"><a class="el" href="MaaPort_8h.html#a67006334d91d228121dbba7a8bf8fe05">MAA_FRAMEWORK_API</a> <a class="el" href="MaaDef_8h.html#a59f0e2bf0a9ce9ff8dd96be800302518">MaaControllerHandle</a> MaaAdbControllerCreateV2 </td>
           <td>(</td>
           <td class="paramtype"><a class="el" href="MaaDef_8h.html#a579dacb9b82c4edce80efb25fb79c9f5">MaaStringView</a>&#160;</td>
           <td class="paramname"><em>adb_path</em>, </td>
@@ -332,7 +335,7 @@ Functions</h2></td></tr>
     <tr><td class="paramname">type</td><td>The type of the ADB controller. See <a class="el" href="MaaDef_8h.html#a21de9ae05eae97a700f9f834fe506f47" title="ADB controller type.">MaaAdbControllerTypeEnum</a>. </td></tr>
     <tr><td class="paramname">config</td><td>The config of the ADB controller. </td></tr>
     <tr><td class="paramname">agent_path</td><td>The path of the agent executable. </td></tr>
-    <tr><td class="paramname">callback</td><td>The callback function. See <a class="el" href="MaaDef_8h.html#a48aaee8a77c75875288cf3206d992958" title="The callback function type.">MaaAPICallback</a>. </td></tr>
+    <tr><td class="paramname">callback</td><td>The callback function. See <a class="el" href="MaaDef_8h.html#a147654dcdaa3e645e387e6e3a4338766" title="The callback function type.">MaaAPICallback</a>. </td></tr>
     <tr><td class="paramname">callback_arg</td><td>The callback arg that will be passed to the callback function. </td></tr>
   </table>
   </dd>
@@ -341,14 +344,14 @@ Functions</h2></td></tr>
 
 </div>
 </div>
-<a id="a82b27a0e9175d0d88e76fb5420ee3ba5" name="a82b27a0e9175d0d88e76fb5420ee3ba5"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a82b27a0e9175d0d88e76fb5420ee3ba5">&#9670;&#160;</a></span>MaaCustomControllerCreate()</h2>
+<a id="a2544850abe36deca8099f6d138e9869c" name="a2544850abe36deca8099f6d138e9869c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2544850abe36deca8099f6d138e9869c">&#9670;&#160;</a></span>MaaCustomControllerCreate()</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="MaaDef_8h.html#a59f0e2bf0a9ce9ff8dd96be800302518">MaaControllerHandle</a> <a class="el" href="MaaPort_8h.html#a67006334d91d228121dbba7a8bf8fe05">MAA_FRAMEWORK_API</a> MaaCustomControllerCreate </td>
+          <td class="memname"><a class="el" href="MaaPort_8h.html#a67006334d91d228121dbba7a8bf8fe05">MAA_FRAMEWORK_API</a> <a class="el" href="MaaDef_8h.html#a59f0e2bf0a9ce9ff8dd96be800302518">MaaControllerHandle</a> MaaCustomControllerCreate </td>
           <td>(</td>
           <td class="paramtype"><a class="el" href="MaaDef_8h.html#ad08eb5199c33a7c772aacb62087617a3">MaaCustomControllerHandle</a>&#160;</td>
           <td class="paramname"><em>handle</em>, </td>
@@ -384,7 +387,7 @@ Functions</h2></td></tr>
   <table class="params">
     <tr><td class="paramname">handle</td><td>The handle to your instance of custom controller. See <a class="el" href="structMaaCustomControllerAPI.html" title="The custom controller API.">MaaCustomControllerAPI</a>. </td></tr>
     <tr><td class="paramname">handle_arg</td><td>The arg that will be passed to the custom controller API. </td></tr>
-    <tr><td class="paramname">callback</td><td>The callback function. See <a class="el" href="MaaDef_8h.html#a48aaee8a77c75875288cf3206d992958" title="The callback function type.">MaaAPICallback</a>. </td></tr>
+    <tr><td class="paramname">callback</td><td>The callback function. See <a class="el" href="MaaDef_8h.html#a147654dcdaa3e645e387e6e3a4338766" title="The callback function type.">MaaAPICallback</a>. </td></tr>
     <tr><td class="paramname">callback_arg</td><td>The callback arg that will be passed to the callback function. </td></tr>
   </table>
   </dd>
@@ -393,14 +396,14 @@ Functions</h2></td></tr>
 
 </div>
 </div>
-<a id="a64d9b11d5cf507f71f137b17a9c4e426" name="a64d9b11d5cf507f71f137b17a9c4e426"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a64d9b11d5cf507f71f137b17a9c4e426">&#9670;&#160;</a></span>MaaThriftControllerCreate()</h2>
+<a id="aacb34d0315d060d09b7be697c2ef9f43" name="aacb34d0315d060d09b7be697c2ef9f43"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aacb34d0315d060d09b7be697c2ef9f43">&#9670;&#160;</a></span>MaaThriftControllerCreate()</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="MaaDef_8h.html#a59f0e2bf0a9ce9ff8dd96be800302518">MaaControllerHandle</a> <a class="el" href="MaaPort_8h.html#a67006334d91d228121dbba7a8bf8fe05">MAA_FRAMEWORK_API</a> MaaThriftControllerCreate </td>
+          <td class="memname"><a class="el" href="MaaPort_8h.html#a67006334d91d228121dbba7a8bf8fe05">MAA_FRAMEWORK_API</a> <a class="el" href="MaaDef_8h.html#a59f0e2bf0a9ce9ff8dd96be800302518">MaaControllerHandle</a> MaaThriftControllerCreate </td>
           <td>(</td>
           <td class="paramtype"><a class="el" href="MaaDef_8h.html#a6b455ee07566bef26f05bfce91017ca9">MaaThriftControllerType</a>&#160;</td>
           <td class="paramname"><em>type</em>, </td>
@@ -445,14 +448,14 @@ Functions</h2></td></tr>
 
 </div>
 </div>
-<a id="a69ece94ee13e62c71939aad321b20ea9" name="a69ece94ee13e62c71939aad321b20ea9"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a69ece94ee13e62c71939aad321b20ea9">&#9670;&#160;</a></span>MaaDbgControllerCreate()</h2>
+<a id="afa2503aa43823a84d9dc61baef09985c" name="afa2503aa43823a84d9dc61baef09985c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#afa2503aa43823a84d9dc61baef09985c">&#9670;&#160;</a></span>MaaDbgControllerCreate()</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="MaaDef_8h.html#a59f0e2bf0a9ce9ff8dd96be800302518">MaaControllerHandle</a> <a class="el" href="MaaPort_8h.html#a67006334d91d228121dbba7a8bf8fe05">MAA_FRAMEWORK_API</a> MaaDbgControllerCreate </td>
+          <td class="memname"><a class="el" href="MaaPort_8h.html#a67006334d91d228121dbba7a8bf8fe05">MAA_FRAMEWORK_API</a> <a class="el" href="MaaDef_8h.html#a59f0e2bf0a9ce9ff8dd96be800302518">MaaControllerHandle</a> MaaDbgControllerCreate </td>
           <td>(</td>
           <td class="paramtype"><a class="el" href="MaaDef_8h.html#a579dacb9b82c4edce80efb25fb79c9f5">MaaStringView</a>&#160;</td>
           <td class="paramname"><em>read_path</em>, </td>
@@ -497,14 +500,14 @@ Functions</h2></td></tr>
 
 </div>
 </div>
-<a id="ac4fc848e3c59592267da14e0aad604a7" name="ac4fc848e3c59592267da14e0aad604a7"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ac4fc848e3c59592267da14e0aad604a7">&#9670;&#160;</a></span>MaaControllerDestroy()</h2>
+<a id="a91ab08a83b3c05c87015346e69de97b1" name="a91ab08a83b3c05c87015346e69de97b1"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a91ab08a83b3c05c87015346e69de97b1">&#9670;&#160;</a></span>MaaControllerDestroy()</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">void <a class="el" href="MaaPort_8h.html#a67006334d91d228121dbba7a8bf8fe05">MAA_FRAMEWORK_API</a> MaaControllerDestroy </td>
+          <td class="memname"><a class="el" href="MaaPort_8h.html#a67006334d91d228121dbba7a8bf8fe05">MAA_FRAMEWORK_API</a> void MaaControllerDestroy </td>
           <td>(</td>
           <td class="paramtype"><a class="el" href="MaaDef_8h.html#a59f0e2bf0a9ce9ff8dd96be800302518">MaaControllerHandle</a>&#160;</td>
           <td class="paramname"><em>ctrl</em></td><td>)</td>
@@ -523,14 +526,14 @@ Functions</h2></td></tr>
 
 </div>
 </div>
-<a id="a062d5cecd8362015de2041be29b0ee90" name="a062d5cecd8362015de2041be29b0ee90"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a062d5cecd8362015de2041be29b0ee90">&#9670;&#160;</a></span>MaaControllerSetOption()</h2>
+<a id="ae19d88d45fa1b45212debcecb9950f55" name="ae19d88d45fa1b45212debcecb9950f55"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae19d88d45fa1b45212debcecb9950f55">&#9670;&#160;</a></span>MaaControllerSetOption()</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="MaaDef_8h.html#a2f7289f2a8e07f48c6261b52a120cdf6">MaaBool</a> <a class="el" href="MaaPort_8h.html#a67006334d91d228121dbba7a8bf8fe05">MAA_FRAMEWORK_API</a> MaaControllerSetOption </td>
+          <td class="memname"><a class="el" href="MaaPort_8h.html#a67006334d91d228121dbba7a8bf8fe05">MAA_FRAMEWORK_API</a> <a class="el" href="MaaDef_8h.html#a2f7289f2a8e07f48c6261b52a120cdf6">MaaBool</a> MaaControllerSetOption </td>
           <td>(</td>
           <td class="paramtype"><a class="el" href="MaaDef_8h.html#a59f0e2bf0a9ce9ff8dd96be800302518">MaaControllerHandle</a>&#160;</td>
           <td class="paramname"><em>ctrl</em>, </td>
@@ -576,14 +579,14 @@ Functions</h2></td></tr>
 
 </div>
 </div>
-<a id="a2d1ef3f70ee7ccadb2b4ab879225f7f6" name="a2d1ef3f70ee7ccadb2b4ab879225f7f6"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a2d1ef3f70ee7ccadb2b4ab879225f7f6">&#9670;&#160;</a></span>MaaControllerStatus()</h2>
+<a id="a8bb4fde2cdfc769f35a8a787df9a8df9" name="a8bb4fde2cdfc769f35a8a787df9a8df9"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8bb4fde2cdfc769f35a8a787df9a8df9">&#9670;&#160;</a></span>MaaControllerStatus()</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="MaaDef_8h.html#ada00e4de6b9b4dcae75ed50f4bcaeef5">MaaStatus</a> <a class="el" href="MaaPort_8h.html#a67006334d91d228121dbba7a8bf8fe05">MAA_FRAMEWORK_API</a> MaaControllerStatus </td>
+          <td class="memname"><a class="el" href="MaaPort_8h.html#a67006334d91d228121dbba7a8bf8fe05">MAA_FRAMEWORK_API</a> <a class="el" href="MaaDef_8h.html#ada00e4de6b9b4dcae75ed50f4bcaeef5">MaaStatus</a> MaaControllerStatus </td>
           <td>(</td>
           <td class="paramtype"><a class="el" href="MaaDef_8h.html#a59f0e2bf0a9ce9ff8dd96be800302518">MaaControllerHandle</a>&#160;</td>
           <td class="paramname"><em>ctrl</em>, </td>
@@ -614,14 +617,14 @@ Functions</h2></td></tr>
 
 </div>
 </div>
-<a id="af231c06766858364ed32d8804719ceda" name="af231c06766858364ed32d8804719ceda"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#af231c06766858364ed32d8804719ceda">&#9670;&#160;</a></span>MaaControllerWait()</h2>
+<a id="acc67cf9739cfef6f427ecd3be8b90cc6" name="acc67cf9739cfef6f427ecd3be8b90cc6"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#acc67cf9739cfef6f427ecd3be8b90cc6">&#9670;&#160;</a></span>MaaControllerWait()</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="MaaDef_8h.html#ada00e4de6b9b4dcae75ed50f4bcaeef5">MaaStatus</a> <a class="el" href="MaaPort_8h.html#a67006334d91d228121dbba7a8bf8fe05">MAA_FRAMEWORK_API</a> MaaControllerWait </td>
+          <td class="memname"><a class="el" href="MaaPort_8h.html#a67006334d91d228121dbba7a8bf8fe05">MAA_FRAMEWORK_API</a> <a class="el" href="MaaDef_8h.html#ada00e4de6b9b4dcae75ed50f4bcaeef5">MaaStatus</a> MaaControllerWait </td>
           <td>(</td>
           <td class="paramtype"><a class="el" href="MaaDef_8h.html#a59f0e2bf0a9ce9ff8dd96be800302518">MaaControllerHandle</a>&#160;</td>
           <td class="paramname"><em>ctrl</em>, </td>
@@ -652,14 +655,14 @@ Functions</h2></td></tr>
 
 </div>
 </div>
-<a id="a7916a7af3a765af4d780deb3710c3eef" name="a7916a7af3a765af4d780deb3710c3eef"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a7916a7af3a765af4d780deb3710c3eef">&#9670;&#160;</a></span>MaaControllerConnected()</h2>
+<a id="ac0b2db921e02733b453e87a7f5837ac0" name="ac0b2db921e02733b453e87a7f5837ac0"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac0b2db921e02733b453e87a7f5837ac0">&#9670;&#160;</a></span>MaaControllerConnected()</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="MaaDef_8h.html#a2f7289f2a8e07f48c6261b52a120cdf6">MaaBool</a> <a class="el" href="MaaPort_8h.html#a67006334d91d228121dbba7a8bf8fe05">MAA_FRAMEWORK_API</a> MaaControllerConnected </td>
+          <td class="memname"><a class="el" href="MaaPort_8h.html#a67006334d91d228121dbba7a8bf8fe05">MAA_FRAMEWORK_API</a> <a class="el" href="MaaDef_8h.html#a2f7289f2a8e07f48c6261b52a120cdf6">MaaBool</a> MaaControllerConnected </td>
           <td>(</td>
           <td class="paramtype"><a class="el" href="MaaDef_8h.html#a59f0e2bf0a9ce9ff8dd96be800302518">MaaControllerHandle</a>&#160;</td>
           <td class="paramname"><em>ctrl</em></td><td>)</td>
@@ -679,14 +682,14 @@ Functions</h2></td></tr>
 
 </div>
 </div>
-<a id="a28c90c550a2f58cf7f175f5b472ecda1" name="a28c90c550a2f58cf7f175f5b472ecda1"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a28c90c550a2f58cf7f175f5b472ecda1">&#9670;&#160;</a></span>MaaControllerGetImage()</h2>
+<a id="a83ab8043759a99d9bf6950fb88f93706" name="a83ab8043759a99d9bf6950fb88f93706"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a83ab8043759a99d9bf6950fb88f93706">&#9670;&#160;</a></span>MaaControllerGetImage()</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="MaaDef_8h.html#a2f7289f2a8e07f48c6261b52a120cdf6">MaaBool</a> <a class="el" href="MaaPort_8h.html#a67006334d91d228121dbba7a8bf8fe05">MAA_FRAMEWORK_API</a> MaaControllerGetImage </td>
+          <td class="memname"><a class="el" href="MaaPort_8h.html#a67006334d91d228121dbba7a8bf8fe05">MAA_FRAMEWORK_API</a> <a class="el" href="MaaDef_8h.html#a2f7289f2a8e07f48c6261b52a120cdf6">MaaBool</a> MaaControllerGetImage </td>
           <td>(</td>
           <td class="paramtype"><a class="el" href="MaaDef_8h.html#a59f0e2bf0a9ce9ff8dd96be800302518">MaaControllerHandle</a>&#160;</td>
           <td class="paramname"><em>ctrl</em>, </td>
@@ -717,14 +720,14 @@ Functions</h2></td></tr>
 
 </div>
 </div>
-<a id="a37e5e84cc314c3fb29d274f9a55f34a6" name="a37e5e84cc314c3fb29d274f9a55f34a6"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a37e5e84cc314c3fb29d274f9a55f34a6">&#9670;&#160;</a></span>MaaControllerGetUUID()</h2>
+<a id="a8a8eab6ea267c22241dbf0308d8c00e4" name="a8a8eab6ea267c22241dbf0308d8c00e4"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8a8eab6ea267c22241dbf0308d8c00e4">&#9670;&#160;</a></span>MaaControllerGetUUID()</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="MaaDef_8h.html#a2f7289f2a8e07f48c6261b52a120cdf6">MaaBool</a> <a class="el" href="MaaPort_8h.html#a67006334d91d228121dbba7a8bf8fe05">MAA_FRAMEWORK_API</a> MaaControllerGetUUID </td>
+          <td class="memname"><a class="el" href="MaaPort_8h.html#a67006334d91d228121dbba7a8bf8fe05">MAA_FRAMEWORK_API</a> <a class="el" href="MaaDef_8h.html#a2f7289f2a8e07f48c6261b52a120cdf6">MaaBool</a> MaaControllerGetUUID </td>
           <td>(</td>
           <td class="paramtype"><a class="el" href="MaaDef_8h.html#a59f0e2bf0a9ce9ff8dd96be800302518">MaaControllerHandle</a>&#160;</td>
           <td class="paramname"><em>ctrl</em>, </td>
@@ -756,9 +759,13 @@ Functions</h2></td></tr>
 </div>
 </div>
 </div><!-- contents -->
+</div><!-- doc-content -->
 <!-- start footer part -->
-<hr class="footer"/><address class="footer"><small>
-Generated by&#160;<a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.5
-</small></address>
+<div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
+  <ul>
+    <li class="navelem"><a class="el" href="dir_d44c64559bbebec7f509842c48db8b23.html">include</a></li><li class="navelem"><a class="el" href="dir_370cd1367c21b1a87c5c9c6803b8d0b9.html">MaaFramework</a></li><li class="navelem"><a class="el" href="dir_0debf1eee29073ebb629a4e1dfd2a5f6.html">Instance</a></li><li class="navelem"><a class="el" href="MaaController_8h.html">MaaController.h</a></li>
+    <li class="footer">Generated by <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.5 </li>
+  </ul>
+</div>
 </body>
 </html>

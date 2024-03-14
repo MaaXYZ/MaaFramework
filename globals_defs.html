@@ -9,10 +9,15 @@
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
+<link href="navtree.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="resize.js"></script>
+<script type="text/javascript" src="navtreedata.js"></script>
+<script type="text/javascript" src="navtree.js"></script>
 <link href="search/search.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="search/searchdata.js"></script>
 <script type="text/javascript" src="search/search.js"></script>
 <link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
 </head>
 <body>
 <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
@@ -21,8 +26,9 @@
  <tbody>
  <tr id="projectrow">
   <td id="projectalign">
-   <div id="projectname">Maa Framework
+   <div id="projectname">Maa Framework<span id="projectnumber">&#160;v1.7.0-alpha.1</span>
    </div>
+   <div id="projectbrief">A automation black-box testing framework based on image recognition.</div>
   </td>
  </tr>
  </tbody>
@@ -47,6 +53,22 @@ $(function() {
 </script>
 <div id="main-nav"></div>
 </div><!-- top -->
+<div id="side-nav" class="ui-resizable side-nav-resizable">
+  <div id="nav-tree">
+    <div id="nav-tree-contents">
+      <div id="nav-sync" class="sync"></div>
+    </div>
+  </div>
+  <div id="splitbar" style="-moz-user-select:none;" 
+       class="ui-resizable-handle">
+  </div>
+</div>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+$(document).ready(function(){initNavTree('globals_defs.html',''); initResizable(); });
+/* @license-end */
+</script>
+<div id="doc-content">
 <!-- window showing the filter options -->
 <div id="MSearchSelectWindow"
      onmouseover="return searchBox.OnSearchSelectShow()"
@@ -73,6 +95,7 @@ $(function() {
 
 <h3><a id="index_m" name="index_m"></a>- m -</h3><ul>
 <li>MAA_CONTROL_UNIT_API&#160;:&#160;<a class="el" href="MaaPort_8h.html#a826aa33333d0528e8a238f2717265249">MaaPort.h</a></li>
+<li>MAA_DEPRECATED&#160;:&#160;<a class="el" href="MaaPort_8h.html#aea94eb63afa29e65c59844ec3f57d691">MaaPort.h</a></li>
 <li>MAA_DLL_EXPORT&#160;:&#160;<a class="el" href="MaaPort_8h.html#a20cf214e76a3bf5d041786154513c892">MaaPort.h</a></li>
 <li>MAA_DLL_IMPORT&#160;:&#160;<a class="el" href="MaaPort_8h.html#aed0af92192d8a7f6278afec3adfee80c">MaaPort.h</a></li>
 <li>MAA_DLL_LOCAL&#160;:&#160;<a class="el" href="MaaPort_8h.html#a4be2819e9ef99d9befeefb94fa2afada">MaaPort.h</a></li>
@@ -104,12 +127,16 @@ $(function() {
 <li>MaaMsg_Resource_LoadingFailed&#160;:&#160;<a class="el" href="group__MaaMsg.html#ga1140626bc678a6a5fc91f3b6ba706579">MaaMsg.h</a></li>
 <li>MaaMsg_Resource_StartLoading&#160;:&#160;<a class="el" href="group__MaaMsg.html#gaa3024bb9d66c5a503e159d2643c5c239">MaaMsg.h</a></li>
 <li>MaaMsg_Task_Completed&#160;:&#160;<a class="el" href="group__MaaMsg.html#gafd58ee3c4b8b8da9ac6ad5498bef0f88">MaaMsg.h</a></li>
+<li>MaaMsg_Task_Debug_Completed&#160;:&#160;<a class="el" href="group__MaaMsg.html#ga8ac3f166c3470926524cd491a1986e4d">MaaMsg.h</a></li>
+<li>MaaMsg_Task_Debug_Hit&#160;:&#160;<a class="el" href="group__MaaMsg.html#ga6524978f0790bfb73c7d8ed4490f8c87">MaaMsg.h</a></li>
+<li>MaaMsg_Task_Debug_ListToRecognize&#160;:&#160;<a class="el" href="group__MaaMsg.html#ga03f726d7fbc29adee70c1e201d203767">MaaMsg.h</a></li>
+<li>MaaMsg_Task_Debug_ReadyToRun&#160;:&#160;<a class="el" href="group__MaaMsg.html#gaa0762d87ae7d2c3a96b618554e0f71ad">MaaMsg.h</a></li>
+<li>MaaMsg_Task_Debug_Runout&#160;:&#160;<a class="el" href="group__MaaMsg.html#ga5470d34ff8324a0d4ed2eb6420794e1c">MaaMsg.h</a></li>
 <li>MaaMsg_Task_Failed&#160;:&#160;<a class="el" href="group__MaaMsg.html#ga0791559f07816fb5ba5ae1eb3dd4882c">MaaMsg.h</a></li>
 <li>MaaMsg_Task_Focus_Completed&#160;:&#160;<a class="el" href="group__MaaMsg.html#ga23a6ec2e8b32bff7931851e99d43a5d1">MaaMsg.h</a></li>
-<li>MaaMsg_Task_Focus_Hit&#160;:&#160;<a class="el" href="group__MaaMsg.html#gaed12e4f78d00d98fa77452d971e1ee3d">MaaMsg.h</a></li>
+<li>MaaMsg_Task_Focus_ReadyToRun&#160;:&#160;<a class="el" href="group__MaaMsg.html#ga5fae13764cd64d02e50e2ea21c08db05">MaaMsg.h</a></li>
 <li>MaaMsg_Task_Focus_Runout&#160;:&#160;<a class="el" href="group__MaaMsg.html#gad180c69ed0a23324c79e3d49ed37b9e0">MaaMsg.h</a></li>
 <li>MaaMsg_Task_Started&#160;:&#160;<a class="el" href="group__MaaMsg.html#gaac37aa21e6550be0254aca029b7cee82">MaaMsg.h</a></li>
-<li>MaaMsg_Task_Stopped&#160;:&#160;<a class="el" href="group__MaaMsg.html#gad3cbc769e054024d247c70861a203b83">MaaMsg.h</a></li>
 <li>MaaNullSize&#160;:&#160;<a class="el" href="MaaDef_8h.html#a9eddd2fb954b055dd2ea4d9cdd267188">MaaDef.h</a></li>
 <li>MaaTaskParam_Empty&#160;:&#160;<a class="el" href="MaaDef_8h.html#ae77fe3e2413b89e08d7cae72f4c6320d">MaaDef.h</a></li>
 <li>MaaWin32ControllerType_Key_Mask&#160;:&#160;<a class="el" href="MaaDef_8h.html#a0dcb911c9b2938e37cce89f794cf9edf">MaaDef.h</a></li>
@@ -117,9 +144,12 @@ $(function() {
 <li>MaaWin32ControllerType_Touch_Mask&#160;:&#160;<a class="el" href="MaaDef_8h.html#af7ef816067f31da570d95a87a0a06506">MaaDef.h</a></li>
 </ul>
 </div><!-- contents -->
+</div><!-- doc-content -->
 <!-- start footer part -->
-<hr class="footer"/><address class="footer"><small>
-Generated by&#160;<a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.5
-</small></address>
+<div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
+  <ul>
+    <li class="footer">Generated by <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.5 </li>
+  </ul>
+</div>
 </body>
 </html>

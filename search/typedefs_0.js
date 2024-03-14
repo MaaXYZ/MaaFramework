@@ -1,7 +1,7 @@
 var searchData=
 [
   ['maaadbcontrollertype_0',['MaaAdbControllerType',['../MaaDef_8h.html#a2ba314321c0419e64efe128e94c20776',1,'MaaDef.h']]],
-  ['maaapicallback_1',['MaaAPICallback',['../MaaDef_8h.html#a48aaee8a77c75875288cf3206d992958',1,'MaaDef.h']]],
+  ['maaapicallback_1',['MaaAPICallback',['../MaaDef_8h.html#a147654dcdaa3e645e387e6e3a4338766',1,'MaaDef.h']]],
   ['maabool_2',['MaaBool',['../MaaDef_8h.html#a2f7289f2a8e07f48c6261b52a120cdf6',1,'MaaDef.h']]],
   ['maacallbacktransparentarg_3',['MaaCallbackTransparentArg',['../MaaDef_8h.html#af61e880b2ec14e6ced517f2c7457a1b3',1,'MaaDef.h']]],
   ['maacontrollercallback_4',['MaaControllerCallback',['../MaaDef_8h.html#a42e88ec9161f3484a20ee8cad7409fe5',1,'MaaDef.h']]],
