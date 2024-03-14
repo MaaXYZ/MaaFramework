@@ -200,6 +200,8 @@ MaaStatus MaaWaitTask(MaaInstanceHandle inst, MaaTaskId id)
 
 MaaBool MaaTaskAllFinished(MaaInstanceHandle inst)
 {
+    LogWarn << __FUNCTION__ << "is deprecated, use !MaaRunning instead.";
+
     return !MaaRunning(inst);
 }
 

@@ -129,6 +129,11 @@ std::optional<PipelineTask::HitResult>
 
     cv::Mat image = controller()->screencap();
 
+    if (image.empty()) {
+        LogError << "Image is empty";
+        return std::nullopt;
+    }
+
     if (need_to_stop()) {
         LogInfo << "Task interrupted" << VAR(latest_hit_);
         return std::nullopt;
@@ -149,6 +154,7 @@ std::optional<PipelineTask::HitResult>
 
     for (const std::string& name : list) {
         LogDebug << "recognize:" << name;
+
         const auto& task_data = data_mgr_.get_task_data(name);
         if (!task_data.enabled) {
             LogDebug << "Task disabled:" << name;

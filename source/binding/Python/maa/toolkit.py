@@ -2,7 +2,7 @@ import ctypes
 import json
 import asyncio
 from dataclasses import dataclass
-from typing import List, Union
+from typing import List, Union, Dict
 from pathlib import Path
 
 from .library import Library
@@ -21,13 +21,17 @@ class AdbDevice:
 
 class Toolkit:
     @classmethod
-    def init_config(cls) -> bool:
+    def init_option(
+        cls, user_path: Union[str, Path], default_config: Dict = {}
+    ) -> bool:
         """
-        Init the toolkit config.
+        Init the toolkit option config.
         """
         cls._set_api_properties()
 
-        return Library.toolkit.MaaToolkitInit()
+        return Library.toolkit.MaaToolkitInitOptionConfig(
+            str(user_path).encode("utf-8"), json.dumps(default_config).encode("utf-8")
+        )
 
     @classmethod
     async def adb_devices(cls) -> List[AdbDevice]:
@@ -159,11 +163,11 @@ class Toolkit:
                 "Toolkit not initialized, please call `library.open()` with `toolkit=True`."
             )
 
-        Library.toolkit.MaaToolkitInit.restype = MaaBool
-        Library.toolkit.MaaToolkitInit.argtypes = None
-
-        Library.toolkit.MaaToolkitUninit.restype = MaaBool
-        Library.toolkit.MaaToolkitUninit.argtypes = None
+        Library.toolkit.MaaToolkitInitOptionConfig.restype = MaaBool
+        Library.toolkit.MaaToolkitInitOptionConfig.argtypes = [
+            MaaStringView,
+            MaaStringView,
+        ]
 
         Library.toolkit.MaaToolkitPostFindDevice.restype = MaaBool
         Library.toolkit.MaaToolkitPostFindDevice.argtypes = None

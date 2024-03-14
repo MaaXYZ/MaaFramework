@@ -143,6 +143,11 @@ void Actuator::wait_freezes(const MAA_RES_NS::WaitFreezesParam& param, const cv:
     while (true) {
         cv::Mat cur_image = controller()->screencap();
 
+        if (pre_image.empty() || cur_image.empty()) {
+            LogError << "Image is empty" << VAR(pre_image.empty()) << VAR(cur_image.empty());
+            break;
+        }
+
         auto ret = comp.analyze(pre_image, cur_image);
         if (ret.empty()) {
             pre_image = cur_image;
