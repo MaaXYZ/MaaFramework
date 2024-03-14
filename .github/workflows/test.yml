@@ -12,6 +12,17 @@ on:
       - "source/**"
       - "CMakeLists.txt"
       - "test/**"
+  pull_request:
+    branches:
+      - "**"
+    paths:
+      - ".github/workflows/test.yml"
+      - "3rdparty/**"
+      - "cmake/**"
+      - "include/**"
+      - "source/**"
+      - "CMakeLists.txt"
+      - "test/**"
   workflow_dispatch:
 
 jobs:
