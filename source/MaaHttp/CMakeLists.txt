@@ -21,11 +21,10 @@ add_subdirectory(LHG)
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
 set(maa_http_src main.cpp info.hpp extra.cpp extra.h include.h)
-file(GLOB_RECURSE maa_http_support_src LHG/projects/support/*.hpp LHG/projects/support/*.h)
 
-add_executable(MaaHttp ${maa_http_src} ${maa_http_support_src})
-target_include_directories(MaaHttp PRIVATE ./../include LHG/projects/support)
-target_link_libraries(MaaHttp LHGHeaderonly Boost::system MaaFramework MaaToolkit)
+add_executable(MaaHttp ${maa_http_src})
+target_include_directories(MaaHttp PRIVATE ./../include)
+target_link_libraries(MaaHttp LHGHeaderonly LHGSupport Boost::system MaaFramework MaaToolkit)
 
 if(WIN32)
     target_compile_definitions(MaaHttp PRIVATE _WIN32_WINNT=0x0A00)
