@@ -47,5 +47,6 @@
     ],
     "python.analysis.extraPaths": [
         "./source/binding/Python"
-    ]
+    ],
+    "editor.formatOnSave": true
 }

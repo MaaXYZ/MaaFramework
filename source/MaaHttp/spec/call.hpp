@@ -3,7 +3,7 @@
 #include "./type.hpp"
 #include "./utils.hpp"
 
-#include "../base64.hpp"
+#include "utils/base64.hpp"
 #include "utils/phony.hpp"
 
 #include "../info.hpp"
@@ -47,7 +47,7 @@ auto size =
 std::string_view data(
     reinterpret_cast<char*>(std::get<maa::func_type_MaaGetImageEncoded::ret::index>(arg)),
     size);
-value = base64::to_base64(data);
+value = lhg::to_base64(data);
 res[name] = value;
 __CALL_DECLARE_ARG_TO_JSON_END()
 
@@ -59,7 +59,11 @@ __CALL_DECLARE_INPUT(maa::func_type_MaaSetImageEncoded::_2_size, true)
 
 __CALL_DECLARE_JSON_TO_ARG_BEGIN(maa::func_type_MaaSetImageEncoded, _1_data)
 std::string& data = std::get<maa::func_type_MaaSetImageEncoded::_1_data::index>(state);
-data = base64::from_base64(value.as_string());
+auto opt = lhg::from_base64(value.as_string());
+if (!opt.has_value()) {
+    return false;
+}
+data = opt.value();
 std::get<maa::func_type_MaaSetImageEncoded::_1_data::index>(arg) =
     reinterpret_cast<unsigned char*>(const_cast<char*>(data.c_str()));
 std::get<maa::func_type_MaaSetImageEncoded::_2_size::index>(arg) = data.size();

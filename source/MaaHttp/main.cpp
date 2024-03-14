@@ -1,5 +1,6 @@
 #include <iostream>
 
+#include "utils/base64.hpp"
 #include "utils/phony.hpp"
 
 #include "spec/spec.hpp"
