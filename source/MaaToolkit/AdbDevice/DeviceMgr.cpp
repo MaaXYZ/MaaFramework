@@ -23,11 +23,12 @@ bool DeviceMgr::post_find_device()
     }
 
     devices_ = std::nullopt;
-    find_device_future_ = std::async(std::launch::async, [=]() { return find_device_impl(); });
+    find_device_future_ =
+        std::async(std::launch::async, [=, this]() { return find_device_impl(); });
     return true;
 }
 
-bool DeviceMgr::post_find_device_with_adb(std::string adb_path)
+bool DeviceMgr::post_find_device_with_adb(std::filesystem::path adb_path)
 {
     LogFunc;
 
@@ -38,7 +39,7 @@ bool DeviceMgr::post_find_device_with_adb(std::string adb_path)
 
     devices_ = std::nullopt;
     find_device_future_ =
-        std::async(std::launch::async, [=]() { return find_device_with_adb_impl(adb_path); });
+        std::async(std::launch::async, [=, this]() { return find_device_with_adb_impl(adb_path); });
     return true;
 }
 

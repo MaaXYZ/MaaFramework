@@ -118,20 +118,20 @@ std::vector<Device> DeviceMgrWin32::find_device_impl()
     return result;
 }
 
-std::vector<Device> DeviceMgrWin32::find_device_with_adb_impl(std::string adb_path)
+std::vector<Device> DeviceMgrWin32::find_device_with_adb_impl(std::filesystem::path adb_path)
 {
     std::vector<Device> result;
 
-    auto serials = request_adb_serials(path(adb_path), json::object());
+    auto serials = request_adb_serials(adb_path, json::object());
 
     for (const std::string& ser : serials) {
         Device device;
-        device.name = adb_path;
-        device.adb_path = adb_path;
+        device.adb_path = path_to_utf8_string(adb_path);
+        device.name = device.adb_path;
         device.adb_serial = ser;
         device.adb_config = json::object().to_string();
         device.adb_controller_type =
-            check_adb_controller_type(device.adb_path, device.adb_serial, device.adb_config);
+            check_adb_controller_type(adb_path, device.adb_serial, device.adb_config);
         result.emplace_back(std::move(device));
     }
     return result;

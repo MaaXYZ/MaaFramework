@@ -44,7 +44,7 @@ MaaBool MaaToolkitPostFindDeviceWithAdb(MaaStringView adb_path)
 {
     LogFunc;
 
-    return device_mgr.post_find_device_with_adb(adb_path);
+    return device_mgr.post_find_device_with_adb(MAA_NS::path(adb_path));
 }
 
 MaaBool MaaToolkitIsFindDeviceCompleted()

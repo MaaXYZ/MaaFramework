@@ -2,7 +2,7 @@
 
 #include <ostream>
 #include <string>
-#include <string_view>
+#include <filesystem>
 #include <vector>
 
 #include "Conf/Conf.h"
@@ -57,7 +57,7 @@ struct MaaToolkitDeviceMgrAPI
     virtual ~MaaToolkitDeviceMgrAPI() = default;
 
     virtual bool post_find_device() = 0;
-    virtual bool post_find_device_with_adb(std::string adb_path) = 0;
+    virtual bool post_find_device_with_adb(std::filesystem::path adb_path) = 0;
     virtual bool is_find_completed() const = 0;
     virtual const std::optional<std::vector<Device>>& get_devices() = 0;
 };
