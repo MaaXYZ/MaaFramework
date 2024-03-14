@@ -75,4 +75,22 @@ struct get_context<maa::callback_CustomActionStop, true>
     }
 };
 
+__CALLBACK_DECLARE_JSON_TO_ARG_SCHEMA_BEGIN(maa::func_type_CustomRecognizerAnalyze, _5_out_box)
+b.type("object").prop({ { "x", schema::Builder().type("number").obj },
+                        { "y", schema::Builder().type("number").obj },
+                        { "width", schema::Builder().type("number").obj },
+                        { "height", schema::Builder().type("number").obj } });
+__CALLBACK_DECLARE_JSON_TO_ARG_SCHEMA_END()
+__CALLBACK_DECLARE_JSON_TO_ARG_SCHEMA_TYPE(
+    maa::func_type_CustomRecognizerAnalyze,
+    _6_out_detail,
+    "string")
+
+__CALLBACK_DECLARE_ARG_TO_JSON_SCHEMA_BEGIN(maa::func_type_CustomActionRun, _3_cur_box)
+b.type("object").prop({ { "x", schema::Builder().type("number").obj },
+                        { "y", schema::Builder().type("number").obj },
+                        { "width", schema::Builder().type("number").obj },
+                        { "height", schema::Builder().type("number").obj } });
+__CALLBACK_DECLARE_ARG_TO_JSON_SCHEMA_END()
+
 }; // namespace lhg::callback
