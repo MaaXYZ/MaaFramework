@@ -9,7 +9,7 @@
 
 <!-- prettier-ignore-start -->
 <!-- markdownlint-disable-next-line MD036 -->
-_✨ A automation black-box testing framework based on image recognition ✨_
+_✨ An automation black-box testing framework based on image recognition ✨_
 <!-- prettier-ignore-end -->
 
 </div>
