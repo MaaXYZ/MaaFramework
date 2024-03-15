@@ -5,14 +5,15 @@ add_subdirectory(LHG)
 
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
-lhggenerate(${CMAKE_CURRENT_SOURCE_DIR}/interface.json ${CMAKE_CURRENT_SOURCE_DIR}/config.json
-            ${CMAKE_CURRENT_SOURCE_DIR}/info.hpp)
+lhggenerate(LHGInfo ${CMAKE_CURRENT_SOURCE_DIR}/interface.json ${CMAKE_CURRENT_SOURCE_DIR}/config.json
+            ${CMAKE_CURRENT_SOURCE_DIR}/source/info.hpp)
 
-set(maa_http_src main.cpp extra.cpp extra.h include.h info.hpp)
+file(GLOB_RECURSE maa_http_src source/*.cpp source/*.h source/*.hpp)
 
 add_executable(MaaHttp ${maa_http_src})
 target_include_directories(MaaHttp PRIVATE ./../include)
 target_link_libraries(MaaHttp LHGHeaderonly LHGSupport Boost::system MaaFramework MaaToolkit)
+add_dependencies(MaaHttp LHGInfo)
 
 if(WIN32)
     target_compile_definitions(MaaHttp PRIVATE _WIN32_WINNT=0x0A00)
