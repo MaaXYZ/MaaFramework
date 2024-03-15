@@ -24,5 +24,8 @@ add_subdirectory(MaaProjectInterface)
 if(WITH_GRPC)
     add_subdirectory(MaaRpc)
 endif()
+if(WITH_HTTP)
+    add_subdirectory(MaaHttp)
+endif()
 
 add_subdirectory(binding)

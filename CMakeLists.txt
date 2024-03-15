@@ -20,6 +20,8 @@ option(WITH_GRPC "build with protobuf and grpc" OFF)
 
 option(BUILD_GRPC_CLI "build grpc CLI exec" OFF)
 
+option(WITH_HTTP "build with http" ON)
+
 option(BUILD_SAMPLE "build a demo" OFF)
 
 option(BUILD_PIPELINE_TESTING "build pipeline testing" OFF)

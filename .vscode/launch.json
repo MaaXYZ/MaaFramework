@@ -5,6 +5,29 @@
     "version": "0.2.0",
     "configurations": [
         {
+            "name": "MaaHttp - Debug",
+            "type": "cppdbg",
+            "request": "launch",
+            "program": "${workspaceFolder}/build/bin/Debug/MaaHttp",
+            "args": [],
+            "stopAtEntry": false,
+            "cwd": "${fileDirname}",
+            "environment": [],
+            "externalConsole": false,
+            "MIMode": "lldb"
+        },
+        {
+            "name": "MaaHttp - Debug Win",
+            "type": "cppvsdbg",
+            "request": "launch",
+            "program": "${workspaceFolder}/build/bin/Debug/MaaHttp.exe",
+            "args": [],
+            "stopAtEntry": false,
+            "cwd": "${fileDirname}",
+            "environment": [],
+            "console": "externalTerminal"
+        },
+        {
             "type": "lldb",
             "request": "launch",
             "name": "MaaPiCli - Debug",
@@ -12,6 +35,7 @@
             "args": [],
             "cwd": "${workspaceFolder}",
             "preLaunchTask": "build_picli"
-        }
+        },
+        
     ]
 }
