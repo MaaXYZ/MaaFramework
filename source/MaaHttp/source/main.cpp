@@ -18,7 +18,7 @@ int main(int argc, char* argv[])
 
     lhg::server::Dispatcher* dispatcher;
     lhg::server::Server* server;
-    setup_server(port, server, dispatcher);
+    setup_server(static_cast<unsigned short>(port), server, dispatcher);
 
     server->run();
 
