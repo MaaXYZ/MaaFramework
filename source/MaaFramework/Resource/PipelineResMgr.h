@@ -25,7 +25,9 @@ public:
     const TaskData& get_task_data(const std::string& task_name);
 
     const std::vector<std::filesystem::path>& get_paths() const { return paths_; }
+
     const TaskDataMap& get_task_data_map() const { return task_data_map_; }
+
     std::vector<std::string> get_task_list() const;
 
 public:

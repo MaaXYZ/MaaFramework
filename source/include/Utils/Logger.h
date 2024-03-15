@@ -17,6 +17,7 @@ public:
 
 public:
     static Logger& get_instance();
+
     ~Logger() { close(); }
 
     Logger(const Logger&) = delete;
@@ -29,26 +30,31 @@ public:
     {
         return stream(level::fatal, std::forward<args_t>(args)...);
     }
+
     template <typename... args_t>
     auto error(args_t&&... args)
     {
         return stream(level::error, std::forward<args_t>(args)...);
     }
+
     template <typename... args_t>
     auto warn(args_t&&... args)
     {
         return stream(level::warn, std::forward<args_t>(args)...);
     }
+
     template <typename... args_t>
     auto info(args_t&&... args)
     {
         return stream(level::info, std::forward<args_t>(args)...);
     }
+
     template <typename... args_t>
     auto debug(args_t&&... args)
     {
         return stream(level::debug, std::forward<args_t>(args)...);
     }
+
     template <typename... args_t>
     auto trace(args_t&&... args)
     {
@@ -106,6 +112,7 @@ public:
         : stream_(Logger::get_instance().debug(std::forward<args_t>(args)...))
     {
     }
+
     ~LogScopeEnterHelper() { stream_ << "| enter"; }
 
     LogStream& operator()() { return stream_; }
@@ -122,6 +129,7 @@ public:
         : args_(std::forward<args_t>(args)...)
     {
     }
+
     ~LogScopeLeaveHelper()
     {
         std::apply(

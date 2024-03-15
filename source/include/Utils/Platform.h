@@ -31,6 +31,7 @@ inline std::filesystem::path path(std::string_view utf8_str)
 {
     return std::filesystem::path(to_osstring(utf8_str)).make_preferred();
 }
+
 MAA_UTILS_API std::string path_to_utf8_string(const std::filesystem::path& path);
 MAA_UTILS_API std::string path_to_ansi_string(const std::filesystem::path& path);
 MAA_UTILS_API std::string path_to_crt_string(const std::filesystem::path& path);
@@ -57,6 +58,7 @@ struct ProcessInfo
     std::string name;
 
     bool operator<(const ProcessInfo& rhs) const { return pid < rhs.pid; }
+
     bool operator==(const ProcessInfo& rhs) const { return pid == rhs.pid; }
 };
 

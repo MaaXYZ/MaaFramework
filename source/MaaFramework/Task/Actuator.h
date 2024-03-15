@@ -47,7 +47,9 @@ private:
     {
         return inst_ ? inst_->inter_controller() : nullptr;
     }
+
     InstanceStatus* status() { return inst_ ? inst_->inter_status() : nullptr; }
+
     void sleep(unsigned ms) const;
     void sleep(std::chrono::milliseconds ms) const;
 

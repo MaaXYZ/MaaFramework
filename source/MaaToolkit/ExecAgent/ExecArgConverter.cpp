@@ -20,6 +20,7 @@ std::string ExecArgConverter::sync_context_to_arg(MaaSyncContextHandle sync_cont
     sync_contexts_.insert_or_assign(uuid, sync_context);
     return uuid;
 }
+
 MaaSyncContextHandle ExecArgConverter::arg_to_sync_context(const std::string& arg) const
 {
     auto it = sync_contexts_.find(arg);

@@ -15,6 +15,7 @@ enum class ExecutorType
     Recognizer,
     Action,
 };
+
 std::ostream& operator<<(std::ostream& os, ExecutorType type)
 {
     switch (type) {

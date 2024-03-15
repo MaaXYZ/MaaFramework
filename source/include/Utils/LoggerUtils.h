@@ -83,7 +83,9 @@ public:
     {
         return path_to_utf8_string(path);
     }
+
     std::string operator()(const std::wstring& wstr) const { return from_u16(wstr); }
+
     std::string operator()(const cv::Mat& image) const
     {
         if (dumps_dir_.empty()) {
@@ -156,8 +158,10 @@ public:
     {
         stream_props(std::forward<args_t>(args)...);
     }
+
     LogStream(const LogStream&) = delete;
     LogStream(LogStream&&) noexcept = default;
+
     ~LogStream()
     {
         std::unique_lock<std::mutex> lock(mutex_);
@@ -179,6 +183,7 @@ public:
         }
         return *this;
     }
+
     template <typename T>
     LogStream& operator,(T&& value)
     {

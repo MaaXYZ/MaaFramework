@@ -17,6 +17,7 @@ public:
         children_.emplace_back(binary_);
         children_.emplace_back(library_);
     }
+
     virtual ~MinicapBase() override = default;
 
 public: // from UnitBase

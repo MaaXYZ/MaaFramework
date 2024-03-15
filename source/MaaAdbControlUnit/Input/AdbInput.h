@@ -14,7 +14,9 @@ public: // from UnitBase
 
 public: // from TouchInputAPI
     virtual bool init(int swidth, int sheight, int orientation) override;
+
     virtual void deinit() override {}
+
     virtual bool set_wh(int swidth, int sheight, int orientation) override;
 
     virtual bool click(int x, int y) override;
@@ -39,6 +41,7 @@ public: // from UnitBase
 
 public: // from KeyInputAPI
     virtual bool init() override { return true; }
+
     virtual void deinit() override {}
 
     virtual bool press_key(int key) override;

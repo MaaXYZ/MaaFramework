@@ -16,10 +16,12 @@ extern "C"
 {
 #endif
 
-    /// \deprecated Use MaaToolkitPostFindDevice() and MaaToolkitWaitForFindDeviceToComplete() instead.
+    /// \deprecated Use MaaToolkitPostFindDevice() and MaaToolkitWaitForFindDeviceToComplete()
+    /// instead.
     MAA_DEPRECATED MAA_TOOLKIT_API MaaSize MaaToolkitFindDevice();
 
-    /// \deprecated Use MaaToolkitPostFindDeviceWithAdb() and MaaToolkitWaitForFindDeviceToComplete() instead.
+    /// \deprecated Use MaaToolkitPostFindDeviceWithAdb() and
+    /// MaaToolkitWaitForFindDeviceToComplete() instead.
     MAA_DEPRECATED MAA_TOOLKIT_API MaaSize MaaToolkitFindDeviceWithAdb(MaaStringView adb_path);
 
     /**

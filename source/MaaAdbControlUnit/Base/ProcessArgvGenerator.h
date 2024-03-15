@@ -25,6 +25,7 @@ public:
     static std::optional<ProcessArgvGenerator> create(const json::array& arr);
 
     ProcessArgvGenerator() = default;
+
     explicit ProcessArgvGenerator(std::vector<std::string> raw)
         : raw_(std::move(raw))
     {

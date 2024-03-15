@@ -32,6 +32,7 @@ private:
         cv::Rect box {};
         std::string detail;
     };
+
     std::optional<AnalyzeResult> analyze(
         ExecData& data,
         MaaSyncContextHandle sync_context,

@@ -47,6 +47,7 @@ public:
         : _array_data(std::make_move_iterator(arr.begin()), std::make_move_iterator(arr.end()))
     {
     }
+
     template <
         typename jsonization_t,
         std::enable_if_t<_utils::has_to_json_in_member<jsonization_t>::value, bool> = true>
@@ -54,6 +55,7 @@ public:
         : basic_array(value.to_json())
     {
     }
+
     template <
         typename jsonization_t,
         std::enable_if_t<_utils::has_to_json_in_templ_spec<jsonization_t>::value, bool> = true>
@@ -65,17 +67,24 @@ public:
     ~basic_array() noexcept = default;
 
     bool empty() const noexcept { return _array_data.empty(); }
+
     size_t size() const noexcept { return _array_data.size(); }
+
     bool contains(size_t pos) const { return pos < _array_data.size(); }
+
     bool exists(size_t pos) const { return contains(pos); }
+
     const basic_value<string_t>& at(size_t pos) const;
 
     string_t dumps(std::optional<size_t> indent = std::nullopt) const
     {
         return indent ? format(*indent) : to_string();
     }
+
     string_t to_string() const;
+
     string_t format(size_t indent = 4) const { return format(indent, 0); }
+
     template <typename value_t>
     bool all() const;
     template <typename value_t, template <typename...> typename collection_t = std::vector>
@@ -124,6 +133,7 @@ public:
 
     basic_array<string_t>& operator=(const basic_array<string_t>&) = default;
     basic_array<string_t>& operator=(basic_array<string_t>&&) noexcept = default;
+
     template <
         typename value_t,
         std::enable_if_t<std::is_convertible_v<value_t, basic_array<string_t>>, bool> = true>
@@ -133,6 +143,7 @@ public:
     }
 
     bool operator==(const basic_array<string_t>& rhs) const;
+
     bool operator!=(const basic_array<string_t>& rhs) const { return !(*this == rhs); }
 
     template <
@@ -143,6 +154,7 @@ public:
     {
         return as_collection<value_t, collection_t>();
     }
+
     template <
         typename jsonization_t,
         std::enable_if_t<_utils::has_from_json_in_member<jsonization_t, string_t>::value, bool> =
@@ -155,6 +167,7 @@ public:
         }
         return dst;
     }
+
     template <
         typename jsonization_t,
         std::enable_if_t<

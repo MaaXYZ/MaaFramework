@@ -15,6 +15,7 @@ public:
         : path_(std::move(path))
     {
     }
+
     virtual ~CarouselImage() = default;
 
 public: // from ControlUnitAPI

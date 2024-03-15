@@ -27,6 +27,7 @@ public:
         InstanceInternalAPI* inst);
 
     void set_param(CustomRecognizerParam param) { param_ = std::move(param); }
+
     std::optional<Result> analyze() const;
 
 private:

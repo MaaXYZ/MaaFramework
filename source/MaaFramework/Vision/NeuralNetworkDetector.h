@@ -23,11 +23,14 @@ public:
 
         MEO_JSONIZATION(cls_index, label, box, score);
     };
+
     using ResultsVec = std::vector<Result>;
 
 public:
     void set_session(std::shared_ptr<Ort::Session> session) { session_ = std::move(session); }
+
     void set_param(NeuralNetworkDetectorParam param) { param_ = std::move(param); }
+
     std::pair<ResultsVec, size_t> analyze() const;
 
 private:

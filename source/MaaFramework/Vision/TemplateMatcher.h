@@ -19,6 +19,7 @@ public:
 
         MEO_JSONIZATION(box, score);
     };
+
     using ResultsVec = std::vector<Result>;
 
 public:
@@ -26,7 +27,9 @@ public:
     {
         templates_ = std::move(templates);
     }
+
     void set_param(TemplateMatcherParam param) { param_ = std::move(param); }
+
     std::pair<ResultsVec, size_t> analyze() const;
 
 private:

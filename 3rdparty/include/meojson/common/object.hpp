@@ -46,6 +46,7 @@ public:
         : _object_data(std::make_move_iterator(map.begin()), std::make_move_iterator(map.end()))
     {
     }
+
     template <
         typename jsonization_t,
         std::enable_if_t<_utils::has_to_json_in_member<jsonization_t>::value, bool> = true>
@@ -53,6 +54,7 @@ public:
         : basic_object(value.to_json())
     {
     }
+
     template <
         typename jsonization_t,
         std::enable_if_t<_utils::has_to_json_in_templ_spec<jsonization_t>::value, bool> = true>
@@ -64,17 +66,24 @@ public:
     ~basic_object() = default;
 
     bool empty() const noexcept { return _object_data.empty(); }
+
     size_t size() const noexcept { return _object_data.size(); }
+
     bool contains(const string_t& key) const;
+
     bool exists(const string_t& key) const { return contains(key); }
+
     const basic_value<string_t>& at(const string_t& key) const;
 
     string_t dumps(std::optional<size_t> indent = std::nullopt) const
     {
         return indent ? format(*indent) : to_string();
     }
+
     string_t to_string() const;
+
     string_t format(size_t indent = 4) const { return format(indent, 0); }
+
     template <typename value_t>
     bool all() const;
     template <typename value_t, template <typename...> typename map_t = std::map>
@@ -116,6 +125,7 @@ public:
 
     basic_object<string_t>& operator=(const basic_object<string_t>&) = default;
     basic_object<string_t>& operator=(basic_object<string_t>&&) = default;
+
     template <
         typename value_t,
         std::enable_if_t<std::is_convertible_v<value_t, basic_object<string_t>>, bool> = true>
@@ -125,6 +135,7 @@ public:
     }
 
     bool operator==(const basic_object<string_t>& rhs) const;
+
     bool operator!=(const basic_object<string_t>& rhs) const { return !(*this == rhs); }
 
     template <
@@ -135,6 +146,7 @@ public:
     {
         return as_map<value_t, map_t>();
     }
+
     template <
         typename jsonization_t,
         std::enable_if_t<_utils::has_from_json_in_member<jsonization_t, string_t>::value, bool> =
@@ -147,6 +159,7 @@ public:
         }
         return dst;
     }
+
     template <
         typename jsonization_t,
         std::enable_if_t<

@@ -16,6 +16,7 @@ public:
         : recording_(std::move(recording))
     {
     }
+
     virtual ~ReplayRecording() = default;
 
 public: // from ControlUnitAPI

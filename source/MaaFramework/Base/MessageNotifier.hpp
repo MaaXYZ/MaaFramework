@@ -17,6 +17,7 @@ public:
         , callback_arg_(callback_arg)
     {
     }
+
     void notify(std::string_view msg, const json::value& details = json::value())
     {
         LogFunc << VAR_VOIDP(callback_) << VAR_VOIDP(callback_arg_) << VAR(msg) << VAR(details);

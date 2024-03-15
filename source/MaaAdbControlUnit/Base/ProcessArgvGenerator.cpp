@@ -21,6 +21,7 @@ std::optional<ProcessArgvGenerator> ProcessArgvGenerator::create(const json::arr
 
     return ProcessArgvGenerator(std::move(raw));
 }
+
 std::optional<ProcessArgvGenerator::ProcessArgv>
     ProcessArgvGenerator::gen(const Replacement& replacement) const
 {

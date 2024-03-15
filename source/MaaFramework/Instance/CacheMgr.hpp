@@ -16,6 +16,7 @@ class CacheMgr : public NonCopyable
 public:
     CacheMgr() = default;
     CacheMgr(CacheMgr&&) = default;
+
     CacheMgr(Equal equal)
         : equal_(std::move(equal))
     {

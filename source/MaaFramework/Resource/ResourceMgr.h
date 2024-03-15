@@ -37,12 +37,19 @@ public: // from MaaInstanceSink
 
 public:
     const auto& pipeline_res() const { return pipeline_res_; }
+
     auto& pipeline_res() { return pipeline_res_; }
+
     const auto& ocr_res() const { return ocr_res_; }
+
     auto& ocr_res() { return ocr_res_; }
+
     const auto& onnx_res() const { return onnx_res_; }
+
     auto& onnx_res() { return onnx_res_; }
+
     const auto& template_res() const { return template_res_; }
+
     auto& template_res() { return template_res_; }
 
 private:

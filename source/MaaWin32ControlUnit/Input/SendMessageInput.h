@@ -16,6 +16,7 @@ public:
         : hwnd_(hwnd)
     {
     }
+
     virtual ~SendMessageInput() override = default;
 
 public: // from TouchInputBase

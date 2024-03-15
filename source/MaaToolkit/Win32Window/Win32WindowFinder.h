@@ -25,6 +25,7 @@ public:
     virtual size_t find_window(std::string_view class_name, std::string_view window_name) override;
     virtual size_t
         search_window(std::string_view class_name, std::string_view window_name) override;
+
     virtual std::vector<MaaWin32Hwnd> found_window() const override { return windows_; }
 
     virtual MaaWin32Hwnd get_cursor_window() const override;

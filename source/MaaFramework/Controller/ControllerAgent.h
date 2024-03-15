@@ -23,6 +23,7 @@ struct ClickParam
     int x = 0;
     int y = 0;
 };
+
 struct SwipeParam
 {
     int x1 = 0;
@@ -31,6 +32,7 @@ struct SwipeParam
     int y2 = 0;
     int duration = 0;
 };
+
 struct TouchParam
 {
     int contact = 0;
@@ -38,14 +40,17 @@ struct TouchParam
     int y = 0;
     int pressure = 0;
 };
+
 struct PressKeyParam
 {
     int keycode = 0;
 };
+
 struct InputTextParam
 {
     std::string text;
 };
+
 struct AppParam
 {
     std::string package;

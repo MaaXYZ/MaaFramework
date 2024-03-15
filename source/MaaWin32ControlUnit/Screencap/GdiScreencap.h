@@ -12,6 +12,7 @@ public:
         : hwnd_(hwnd)
     {
     }
+
     virtual ~GdiScreencap() override = default;
 
 public: // from ScreencapBase

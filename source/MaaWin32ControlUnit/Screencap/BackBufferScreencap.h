@@ -13,6 +13,7 @@ public:
         : hwnd_(hwnd)
     {
     }
+
     virtual ~BackBufferScreencap() override;
 
 public: // from ScreencapBase

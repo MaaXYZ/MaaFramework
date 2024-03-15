@@ -13,6 +13,7 @@ public:
 
 public: // from ScreencapAPI
     virtual void deinit() override {}
+
     virtual std::optional<cv::Mat> screencap() override;
 };
 

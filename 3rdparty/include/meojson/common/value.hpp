@@ -76,6 +76,7 @@ public:
         : basic_value(basic_array<string_t>(std::forward<collection_t>(collection)))
     {
     }
+
     template <
         typename map_t,
         std::enable_if_t<
@@ -96,6 +97,7 @@ public:
         : basic_value(value.to_json())
     {
     }
+
     template <
         typename jsonization_t,
         std::enable_if_t<_utils::has_to_json_in_templ_spec<jsonization_t>::value, bool> = true>
@@ -118,13 +120,21 @@ public:
     ~basic_value();
 
     bool valid() const noexcept { return _type != value_type::invalid; }
+
     bool empty() const noexcept { return is_null(); }
+
     bool is_null() const noexcept { return _type == value_type::null; }
+
     bool is_number() const noexcept { return _type == value_type::number; }
+
     bool is_boolean() const noexcept { return _type == value_type::boolean; }
+
     bool is_string() const noexcept { return _type == value_type::string; }
+
     bool is_array() const noexcept { return _type == value_type::array; }
+
     bool is_object() const noexcept { return _type == value_type::object; }
+
     template <typename value_t>
     bool is() const noexcept;
 
@@ -133,9 +143,13 @@ public:
 
     bool contains(const string_t& key) const;
     bool contains(size_t pos) const;
+
     bool exists(const string_t& key) const { return contains(key); }
+
     bool exists(size_t pos) const { return contains(pos); }
+
     value_type type() const noexcept { return _type; }
+
     const basic_value<string_t>& at(size_t pos) const;
     const basic_value<string_t>& at(const string_t& key) const;
 
@@ -185,12 +199,15 @@ public:
     {
         return indent ? format(*indent) : to_string();
     }
+
     // return raw string
     string_t to_string() const;
+
     string_t format(size_t indent = 4) const { return format(indent, 0); }
 
     basic_value<string_t>& operator=(const basic_value<string_t>& rhs);
     basic_value<string_t>& operator=(basic_value<string_t>&&) noexcept;
+
     template <
         typename value_t,
         std::enable_if_t<std::is_convertible_v<value_t, basic_value<string_t>>, bool> = true>
@@ -200,6 +217,7 @@ public:
     }
 
     bool operator==(const basic_value<string_t>& rhs) const;
+
     bool operator!=(const basic_value<string_t>& rhs) const { return !(*this == rhs); }
 
     const basic_value<string_t>& operator[](size_t pos) const;
@@ -224,18 +242,29 @@ public:
     basic_value<string_t>& operator+=(basic_array<string_t>&& rhs);
 
     explicit operator bool() const { return as_boolean(); }
+
     explicit operator int() const { return as_integer(); }
+
     explicit operator unsigned() const { return as_unsigned(); }
+
     explicit operator long() const { return as_long(); }
+
     explicit operator unsigned long() const { return as_unsigned_long(); }
+
     explicit operator long long() const { return as_long_long(); }
+
     explicit operator unsigned long long() const { return as_unsigned_long_long(); }
+
     explicit operator float() const { return as_float(); }
+
     explicit operator double() const { return as_double(); }
+
     explicit operator long double() const { return as_long_double(); }
+
     explicit operator string_t() const { return as_string(); }
 
     explicit operator basic_array<string_t>() const { return as_array(); }
+
     explicit operator basic_object<string_t>() const { return as_object(); }
 
     template <
@@ -246,6 +275,7 @@ public:
     {
         return as_collection<value_t, collection_t>();
     }
+
     template <
         typename value_t,
         template <typename...> typename map_t = std::map,
@@ -254,6 +284,7 @@ public:
     {
         return as_map<value_t, map_t>();
     }
+
     template <
         typename jsonization_t,
         std::enable_if_t<_utils::has_from_json_in_member<jsonization_t, string_t>::value, bool> =
@@ -266,6 +297,7 @@ public:
         }
         return dst;
     }
+
     template <
         typename jsonization_t,
         std::enable_if_t<

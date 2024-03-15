@@ -14,6 +14,7 @@ struct MaaInstanceSink
 {
 public:
     virtual ~MaaInstanceSink() = default;
+
     virtual void post_stop() {}
 };
 

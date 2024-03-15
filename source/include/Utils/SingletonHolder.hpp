@@ -16,6 +16,7 @@ public:
         static T unique_instance;
         return unique_instance;
     }
+
     virtual ~SingletonHolder() = default;
 
 protected:

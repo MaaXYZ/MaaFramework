@@ -48,6 +48,7 @@ public:
 public:
     virtual bool init(int swidth, int sheight) = 0;
     virtual void deinit() = 0;
+
     virtual bool set_wh(int swidth, int sheight)
     {
         return screencap_helper_.set_wh(swidth, sheight);

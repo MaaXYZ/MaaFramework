@@ -19,6 +19,7 @@ public:
         TouchInputBase::children_.emplace_back(invoke_app_);
         KeyInputBase::children_.emplace_back(invoke_app_);
     }
+
     virtual ~MaatouchInput() override = default;
 
 public: // from UnitBase
@@ -29,6 +30,7 @@ public: // from UnitBase
         TouchInputBase::set_replacement(argv_replace);
         KeyInputBase::set_replacement(argv_replace);
     }
+
     virtual void
         merge_replacement(UnitBase::Replacement argv_replace, bool _override = true) override
     {
@@ -38,7 +40,9 @@ public: // from UnitBase
 
 public: // from TouchInputAPI
     virtual bool init(int swidth, int sheight, int orientation) override;
+
     virtual void deinit() override {}
+
     virtual bool set_wh(int swidth, int sheight, int orientation) override;
 
 public: // from KeyInputAPI
@@ -51,6 +55,7 @@ protected: // from MtouchHelper
     {
         return _screen_to_touch(x, y);
     }
+
     virtual std::pair<int, int> screen_to_touch(double x, double y) override
     {
         return _screen_to_touch(x, y);

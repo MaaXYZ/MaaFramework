@@ -30,6 +30,7 @@ public:
 
 public:
     void set_template(std::shared_ptr<cv::Mat> templ) { template_ = std::move(templ); }
+
     void set_param(FeatureMatcherParam param) { param_ = std::move(param); }
 
     std::pair<ResultsVec, size_t> analyze() const;

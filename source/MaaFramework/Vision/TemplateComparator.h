@@ -15,12 +15,14 @@ public:
 
         MEO_JSONIZATION(box, score);
     };
+
     using ResultsVec = std::vector<Result>;
 
 public:
     TemplateComparator() = default;
 
     void set_param(TemplateComparatorParam param) { param_ = std::move(param); }
+
     ResultsVec analyze(const cv::Mat& lhs, const cv::Mat& rhs) const;
 
 private:

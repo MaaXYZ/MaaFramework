@@ -16,6 +16,7 @@ public:
     {
         children_.emplace_back(invoke_app_);
     }
+
     virtual ~MinitouchInput() override = default;
 
 public: // from UnitBase
@@ -23,7 +24,9 @@ public: // from UnitBase
 
 public: // from TouchInputAPI
     virtual bool init(int swidth, int sheight, int orientation) override;
+
     virtual void deinit() override {}
+
     virtual bool set_wh(int swidth, int sheight, int orientation) override;
 
 protected: // from MtouchHelper
@@ -31,6 +34,7 @@ protected: // from MtouchHelper
     {
         return _screen_to_touch(x, y);
     }
+
     virtual std::pair<int, int> screen_to_touch(double x, double y) override
     {
         return _screen_to_touch(x, y);

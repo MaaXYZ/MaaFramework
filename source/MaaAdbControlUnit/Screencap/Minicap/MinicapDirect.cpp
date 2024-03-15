@@ -23,4 +23,5 @@ std::optional<cv::Mat> MinicapDirect::screencap()
         *res,
         std::bind(&ScreencapHelper::trunc_decode_jpg, &screencap_helper_, std::placeholders::_1));
 }
+
 MAA_CTRL_UNIT_NS_END

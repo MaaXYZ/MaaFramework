@@ -10,6 +10,7 @@ namespace json::_jsonization_helper
 struct next_is_optional_t
 {
 };
+
 struct va_arg_end
 {
 };
@@ -23,11 +24,13 @@ struct dumper
         result.emplace(key, var);
         return result;
     }
+
     template <typename... rest_t>
     json::value _to_json(const char*, next_is_optional_t, rest_t&&... rest) const
     {
         return _to_json(std::forward<rest_t>(rest)...);
     }
+
     json::value _to_json(va_arg_end) const { return {}; }
 };
 
@@ -48,6 +51,7 @@ struct checker
         }
         return _check_json(in, error_key, std::forward<rest_t>(rest)...);
     }
+
     template <typename var_t, typename... rest_t>
     bool _check_json(
         const json::value& in,
@@ -68,6 +72,7 @@ struct checker
 
         return _check_json(in, error_key, std::forward<rest_t>(rest)...);
     }
+
     bool _check_json(const json::value&, std::string&, va_arg_end) const { return true; }
 };
 
@@ -90,6 +95,7 @@ struct loader
 
         return _from_json(in, error_key, std::forward<rest_t>(rest)...);
     }
+
     template <typename var_t, typename... rest_t>
     bool _from_json(
         const json::value& in,
@@ -111,6 +117,7 @@ struct loader
 
         return _from_json(in, error_key, std::forward<rest_t>(rest)...);
     }
+
     bool _from_json(const json::value&, std::string&, va_arg_end) const { return true; }
 };
 } // namespace json::_jsonization_helper

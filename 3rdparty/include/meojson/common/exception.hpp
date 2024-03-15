@@ -9,6 +9,7 @@ class exception : public std::exception
 {
 public:
     exception() = default;
+
     exception(const std::string& msg)
         : _what(msg)
     {

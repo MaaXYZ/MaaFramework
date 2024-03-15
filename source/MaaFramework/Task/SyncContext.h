@@ -14,8 +14,7 @@
 
 MAA_TASK_NS_BEGIN
 
-class SyncContext
-    : public MaaSyncContextAPI
+class SyncContext : public MaaSyncContextAPI
 {
 public:
     explicit SyncContext(InstanceInternalAPI* inst);
@@ -47,10 +46,12 @@ public: // from MaaSyncContextAPI
     virtual json::value task_result(const std::string& task_name) const override;
 
     virtual MaaInstanceHandle instance() override { return dynamic_cast<MaaInstanceHandle>(inst_); }
+
     virtual MaaResourceHandle resource() override
     {
         return instance() ? instance()->resource() : nullptr;
     }
+
     virtual MaaControllerHandle controller() override
     {
         return instance() ? instance()->controller() : nullptr;

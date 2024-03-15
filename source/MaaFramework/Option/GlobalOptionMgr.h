@@ -20,9 +20,13 @@ public:
 
 public:
     const std::filesystem::path& log_dir() const { return log_dir_; }
+
     bool save_draw() const { return save_draw_; }
+
     bool show_hit_draw() const { return show_hit_draw_; }
+
     bool recording() const { return recording_; }
+
     bool debug_message() const { return debug_message_; }
 
 private:

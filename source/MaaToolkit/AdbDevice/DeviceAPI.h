@@ -1,8 +1,8 @@
 #pragma once
 
+#include <filesystem>
 #include <ostream>
 #include <string>
-#include <filesystem>
 #include <vector>
 
 #include "Conf/Conf.h"
@@ -34,6 +34,7 @@ struct Device
             return adb_config < rhs.adb_config;
         }
     }
+
     bool operator==(const Device& rhs) const
     {
         return name == rhs.name && adb_path == rhs.adb_path && adb_serial == rhs.adb_serial

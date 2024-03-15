@@ -13,7 +13,9 @@ class ScreencapHelper
 {
 public:
     bool set_wh(int w, int h);
+
     int get_w() const { return width_; }
+
     int get_h() const { return height_; }
 
     std::optional<cv::Mat> process_data(

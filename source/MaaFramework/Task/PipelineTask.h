@@ -32,7 +32,9 @@ public:
     const std::string& entry() const { return entry_; }
 
     bool run();
+
     void set_taskid(int64_t id) { task_id_ = id; }
+
     bool set_param(const json::value& param);
 
 private:
@@ -61,11 +63,14 @@ private:
 
 private:
     MAA_RES_NS::ResourceMgr* resource() { return inst_ ? inst_->inter_resource() : nullptr; }
+
     MAA_CTRL_NS::ControllerAgent* controller()
     {
         return inst_ ? inst_->inter_controller() : nullptr;
     }
+
     InstanceStatus* status() { return inst_ ? inst_->inter_status() : nullptr; }
+
     void notify(std::string_view msg, json::value detail = json::value())
     {
         if (inst_) {
@@ -74,6 +79,7 @@ private:
     }
 
     bool need_to_stop() const { return need_to_stop_; }
+
     bool debug_mode() const;
     json::object basic_info();
     std::filesystem::path dump_image(const cv::Mat& image) const;

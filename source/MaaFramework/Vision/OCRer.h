@@ -30,6 +30,7 @@ public:
 
         MEO_JSONIZATION(text, box, score);
     };
+
     using ResultsVec = std::vector<Result>;
 
 public:
@@ -42,8 +43,11 @@ public:
         recer_ = std::move(recer);
         ocrer_ = std::move(ocrer);
     }
+
     void set_status(InstanceStatus* status) { status_ = status; }
+
     void set_param(OCRerParam param) { param_ = std::move(param); }
+
     std::pair<ResultsVec, size_t> analyze() const;
 
 private:

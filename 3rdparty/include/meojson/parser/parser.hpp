@@ -596,6 +596,7 @@ inline value operator""_json(const char* str, size_t len)
 {
     return operator""_jvalue(str, len);
 }
+
 inline wvalue operator""_json(const wchar_t* str, size_t len)
 {
     return operator""_jvalue(str, len);
@@ -605,6 +606,7 @@ inline value operator""_jvalue(const char* str, size_t len)
 {
     return parse(std::string_view(str, len)).value_or(value());
 }
+
 inline wvalue operator""_jvalue(const wchar_t* str, size_t len)
 {
     return parse(std::wstring_view(str, len)).value_or(wvalue());
@@ -615,6 +617,7 @@ inline array operator""_jarray(const char* str, size_t len)
     auto val = parse(std::string_view(str, len)).value_or(value());
     return val.is_array() ? val.as_array() : array();
 }
+
 inline warray operator""_jarray(const wchar_t* str, size_t len)
 {
     auto val = parse(std::wstring_view(str, len)).value_or(wvalue());
@@ -626,6 +629,7 @@ inline object operator""_jobject(const char* str, size_t len)
     auto val = parse(std::string_view(str, len)).value_or(value());
     return val.is_object() ? val.as_object() : object();
 }
+
 inline wobject operator""_jobject(const wchar_t* str, size_t len)
 {
     auto val = parse(std::wstring_view(str, len)).value_or(wvalue());

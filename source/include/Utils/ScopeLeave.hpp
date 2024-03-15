@@ -12,6 +12,7 @@ public:
         : func_(func)
     {
     }
+
     ~ScopeLeaveHelper() { func_(); }
 
 private:

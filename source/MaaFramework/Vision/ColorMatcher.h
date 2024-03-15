@@ -16,10 +16,12 @@ public:
 
         MEO_JSONIZATION(box, count);
     };
+
     using ResultsVec = std::vector<Result>;
 
 public:
     void set_param(ColorMatcherParam param) { param_ = std::move(param); }
+
     std::pair<ResultsVec, size_t> analyze() const;
 
 private:

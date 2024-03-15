@@ -31,6 +31,7 @@ typedef uint64_t MaaSize;
 typedef const char* MaaStringView;
 
 typedef int32_t MaaStatus;
+
 enum MaaStatusEnum
 {
     MaaStatus_Invalid = 0,
@@ -40,7 +41,9 @@ enum MaaStatusEnum
     MaaStatus_Failed = 4000,
     // MaaStatus_Timeout = 5000,
 };
+
 typedef int32_t MaaLoggingLevel;
+
 enum MaaLoggingLevelEunm
 {
     MaaLoggingLevel_Off = 0,
@@ -64,6 +67,7 @@ typedef void* MaaOptionValue;
 typedef uint64_t MaaOptionValueSize;
 
 typedef MaaOption MaaGlobalOption;
+
 enum MaaGlobalOptionEnum
 {
     MaaGlobalOption_Invalid = 0,
@@ -102,6 +106,7 @@ enum MaaGlobalOptionEnum
 };
 
 typedef MaaOption MaaResOption;
+
 enum MaaResOptionEnum
 {
     MaaResOption_Invalid = 0,
@@ -150,6 +155,7 @@ enum MaaCtrlOptionEnum
 };
 
 typedef MaaOption MaaInstOption;
+
 enum MaaInstOptionEnum
 {
     MaaInstOption_Invalid = 0,
@@ -210,6 +216,7 @@ enum MaaAdbControllerTypeEnum
 };
 
 typedef int32_t MaaDbgControllerType;
+
 enum MaaDbgControllerTypeEnum
 {
     MaaDbgController_Invalid = 0,
@@ -219,6 +226,7 @@ enum MaaDbgControllerTypeEnum
 };
 
 typedef int32_t MaaThriftControllerType;
+
 enum MaaThriftControllerTypeEnum
 {
     MaaThriftController_Invalid = 0,
@@ -251,6 +259,7 @@ enum MaaWin32ControllerTypeEnum
     // MaaWin32ControllerType_Screencap_DXGI_BackBuffer = 3 << 16,
     MaaWin32ControllerType_Screencap_DXGI_FramePool = 4 << 16,
 };
+
 typedef void* MaaWin32Hwnd;
 
 typedef void* MaaTransparentArg;

@@ -29,6 +29,7 @@ public:
         : hwnd_(hwnd)
     {
     }
+
     virtual ~FramePoolScreencap() override;
 
 public: // from ScreencapBase

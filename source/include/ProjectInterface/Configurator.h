@@ -22,6 +22,7 @@ public:
     const auto& interface_data() const { return data_; }
 
     const auto& configuration() const { return config_; }
+
     auto& configuration() { return config_; }
 
     bool is_first_time_use() const { return first_time_use_; }
