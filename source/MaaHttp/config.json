@@ -76,7 +76,6 @@
 
     "MaaCustomControllerCreate",
     "MaaSetImageRawData",
-    "/MaaSyncContext.+",
     "/Maa.+Rect.*",
     "/Maa.+String.+",
     "MaaClearString",

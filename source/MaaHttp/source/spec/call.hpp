@@ -33,7 +33,7 @@ __CALL_DECLARE_JSON_TO_ARG_BEGIN(maa::func_type_MaaWin32ControllerCreate, _0_hWn
 std::get<maa::func_type_MaaWin32ControllerCreate::_0_hWnd::index>(arg) =
     reinterpret_cast<void*>(std::stoull(value.as_string()));
 return true;
-__DECLARE_JSON_TO_ARG_END()
+__CALL_DECLARE_JSON_TO_ARG_END()
 
 #pragma endregion hwnd
 
@@ -68,7 +68,7 @@ std::get<maa::func_type_MaaSetImageEncoded::_1_data::index>(arg) =
     reinterpret_cast<unsigned char*>(const_cast<char*>(data.c_str()));
 std::get<maa::func_type_MaaSetImageEncoded::_2_size::index>(arg) = data.size();
 return true;
-__DECLARE_JSON_TO_ARG_END()
+__CALL_DECLARE_JSON_TO_ARG_END()
 
 #pragma endregion MaaSetImageEncoded
 
@@ -90,12 +90,15 @@ __DECLARE_JSON_TO_ARG_END()
     auto handle = std::get<func_tag::arg_tag::index>(state);             \
     auto size = MaaGetStringSize(handle);                                \
     std::string data(MaaGetString(handle), size);                        \
+    MaaDestroyStringBuffer(handle);                                      \
     res[name] = value;                                                   \
     __CALL_DECLARE_ARG_TO_JSON_END()
 
 __DECLARE_STRING_BUFFER_OUTPUT(maa::func_type_MaaResourceGetTaskList, _1_buffer)
 __DECLARE_STRING_BUFFER_OUTPUT(maa::func_type_MaaResourceGetHash, _1_buffer)
 __DECLARE_STRING_BUFFER_OUTPUT(maa::func_type_MaaControllerGetUUID, _1_buffer)
+__DECLARE_STRING_BUFFER_OUTPUT(maa::func_type_MaaSyncContextGetTaskResult, _2_out_task_result)
+__DECLARE_STRING_BUFFER_OUTPUT(maa::func_type_MaaSyncContextRunRecognizer, _5_out_detail)
 
 #undef __DECLARE_STRING_BUFFER_OUTPUT
 
@@ -113,7 +116,7 @@ __DECLARE_STRING_BUFFER_OUTPUT(maa::func_type_MaaControllerGetUUID, _1_buffer)
         callback::create_callback<maa::callback_MaaAPICallback>();                      \
     std::get<func_tag::ctx_tag::index>(arg) = ctx.get();                                \
     return true;                                                                        \
-    __DECLARE_JSON_TO_ARG_END()
+    __CALL_DECLARE_JSON_TO_ARG_END()
 
 __DECLARE_APICALLBACK(maa::func_type_MaaWin32ControllerCreate, _2_callback, _3_callback_arg)
 __DECLARE_APICALLBACK(maa::func_type_MaaAdbControllerCreateV2, _5_callback, _6_callback_arg)
@@ -139,7 +142,7 @@ static MaaCustomRecognizerAPI api = {
 std::get<maa::func_type_MaaRegisterCustomRecognizer::_2_recognizer::index>(arg) = &api;
 std::get<maa::func_type_MaaRegisterCustomRecognizer::_3_recognizer_arg::index>(arg) = ctx.get();
 return true;
-__DECLARE_JSON_TO_ARG_END()
+__CALL_DECLARE_JSON_TO_ARG_END()
 
 __CALL_DECLARE_INPUT(maa::func_type_MaaRegisterCustomAction::_3_action_arg, false)
 
@@ -166,7 +169,37 @@ static MaaCustomActionAPI api = { callback::create_callback<maa::callback_Custom
 std::get<maa::func_type_MaaRegisterCustomAction::_2_action::index>(arg) = &api;
 std::get<maa::func_type_MaaRegisterCustomAction::_3_action_arg::index>(arg) = ctx;
 return true;
-__DECLARE_JSON_TO_ARG_END()
+__CALL_DECLARE_JSON_TO_ARG_END()
+
+__CALL_DECLARE_JSON_TO_ARG_BEGIN(maa::func_type_MaaSyncContextRunAction, _3_cur_box)
+auto rec = &std::get<maa::func_type_MaaSyncContextRunAction::_3_cur_box::index>(state);
+rec->x = value.at("x").as_integer();
+rec->y = value.at("y").as_integer();
+rec->width = value.at("width").as_integer();
+rec->height = value.at("height").as_integer();
+return true;
+__CALL_DECLARE_JSON_TO_ARG_END()
+
+__CALL_DECLARE_INPUT(maa::func_type_MaaSyncContextRunRecognizer::_4_out_box, false)
+__CALL_DECLARE_OUTPUT(maa::func_type_MaaSyncContextRunRecognizer::_4_out_box, true)
+
+__CALL_DECLARE_PREPARE_STATE_BEGIN(maa::func_type_MaaSyncContextRunRecognizer, _4_out_box)
+std::ignore = provider;
+std::ignore = req;
+std::ignore = arg;
+std::ignore = state;
+return true;
+__CALL_DECLARE_PREPARE_STATE_END()
+
+__CALL_DECLARE_ARG_TO_JSON_BEGIN(maa::func_type_MaaSyncContextRunRecognizer, _4_out_box)
+auto rec = std::get<maa::func_type_MaaSyncContextRunRecognizer::_4_out_box::index>(state);
+res[name] = {
+    { "x", rec.x },
+    { "y", rec.y },
+    { "width", rec.width },
+    { "height", rec.height },
+};
+__CALL_DECLARE_ARG_TO_JSON_END()
 
 __CALL_DECLARE_HANDLE_OPER(maa::func_type_MaaWin32ControllerCreate::ret, alloc)
 __CALL_DECLARE_HANDLE_OPER(maa::func_type_MaaAdbControllerCreateV2::ret, alloc)
@@ -194,6 +227,14 @@ __CALL_DECLARE_ARG_TO_JSON_SCHEMA_TYPE(maa::func_type_MaaToolkitGetForegroundWin
 __CALL_DECLARE_ARG_TO_JSON_SCHEMA_TYPE(maa::func_type_MaaResourceGetTaskList, _1_buffer, "string")
 __CALL_DECLARE_ARG_TO_JSON_SCHEMA_TYPE(maa::func_type_MaaResourceGetHash, _1_buffer, "string")
 __CALL_DECLARE_ARG_TO_JSON_SCHEMA_TYPE(maa::func_type_MaaControllerGetUUID, _1_buffer, "string")
+__CALL_DECLARE_ARG_TO_JSON_SCHEMA_TYPE(
+    maa::func_type_MaaSyncContextGetTaskResult,
+    _2_out_task_result,
+    "string")
+__CALL_DECLARE_ARG_TO_JSON_SCHEMA_TYPE(
+    maa::func_type_MaaSyncContextRunRecognizer,
+    _5_out_detail,
+    "string")
 
 __CALL_DECLARE_JSON_TO_ARG_SCHEMA_TYPE(maa::func_type_MaaWin32ControllerCreate, _0_hWnd, "string")
 
@@ -224,5 +265,19 @@ b.type("object").prop({
     { "stop", schema::Builder().type("string").obj },
 });
 __CALL_DECLARE_JSON_TO_ARG_SCHEMA_END()
+
+__CALL_DECLARE_JSON_TO_ARG_SCHEMA_BEGIN(maa::func_type_MaaSyncContextRunAction, _3_cur_box)
+b.type("object").prop({ { "x", schema::Builder().type("number").obj },
+                        { "y", schema::Builder().type("number").obj },
+                        { "width", schema::Builder().type("number").obj },
+                        { "height", schema::Builder().type("number").obj } });
+__CALL_DECLARE_JSON_TO_ARG_SCHEMA_END()
+
+__CALL_DECLARE_ARG_TO_JSON_SCHEMA_BEGIN(maa::func_type_MaaSyncContextRunRecognizer, _4_out_box)
+b.type("object").prop({ { "x", schema::Builder().type("number").obj },
+                        { "y", schema::Builder().type("number").obj },
+                        { "width", schema::Builder().type("number").obj },
+                        { "height", schema::Builder().type("number").obj } });
+__CALL_DECLARE_ARG_TO_JSON_SCHEMA_END()
 
 }; // namespace lhg::call

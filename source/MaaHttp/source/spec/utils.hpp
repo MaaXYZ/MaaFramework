@@ -127,10 +127,10 @@
                     return false;                                                         \
                 }                                                                         \
                 const json::value& value = req.at(name);
-#define __DECLARE_JSON_TO_ARG_END() \
-    }                               \
-    }                               \
-    }                               \
+#define __CALL_DECLARE_JSON_TO_ARG_END() \
+    }                                    \
+    }                                    \
+    }                                    \
     ;
 
 #define __CALL_DECLARE_ARG_TO_JSON_BEGIN(func_tag, atag)                                   \
