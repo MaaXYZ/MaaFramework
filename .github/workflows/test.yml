@@ -161,11 +161,6 @@ jobs:
           pacman -Sy
           pacman -S --noconfirm cmake python python-pip ccache ninja git
 
-      - name: Use Node.js
-        uses: actions/setup-node@v3
-        with:
-          node-version: 20
-  
       # https://github.com/MaaXYZ/MaaFramework/actions/runs/5643408179/job/15285186255
       - uses: actions/checkout@v3
         with:

@@ -184,7 +184,7 @@ static std::string sys_info()
 #else
     utsname uts {};
     uname(&uts);
-    return uts.version;
+    return std::format("{} {} {}", uts.sysname, uts.machine);
 #endif
 }
 
