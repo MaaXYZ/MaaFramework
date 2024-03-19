@@ -196,7 +196,7 @@ jobs:
           cmake --preset 'NinjaMulti' \
             -DMAADEPS_TRIPLET='maa-${{ matrix.arch == 'x86_64' && 'x64' || 'arm64' }}-linux' \
             -DMAA_HASH_VERSION='${{ needs.meta.outputs.tag }}' \
-            -DWITH_GRPC=OFF -DBUILD_PIPELINE_TESTING=ON -DBUILD_DLOPEN_TESTING=ON
+            -DWITH_GRPC=OFF -DBUILD_HTTP_CLI=OFF -DBUILD_PIPELINE_TESTING=ON -DBUILD_DLOPEN_TESTING=ON
 
           cmake --build build --preset 'NinjaMulti - Release' -j 16
 
@@ -281,7 +281,7 @@ jobs:
           cmake --preset 'NinjaMulti' \
             -DMAADEPS_TRIPLET='maa-${{ matrix.arch == 'x86_64' && 'x64' || 'arm64' }}-osx' \
             -DMAA_HASH_VERSION='${{ needs.meta.outputs.tag }}' \
-            -DWITH_GRPC=OFF -DBUILD_PIPELINE_TESTING=ON -DBUILD_DLOPEN_TESTING=ON
+            -DWITH_GRPC=OFF -DBUILD_HTTP_CLI=OFF -DBUILD_PIPELINE_TESTING=ON -DBUILD_DLOPEN_TESTING=ON
 
           cmake --build build --preset 'NinjaMulti - Release' -j 16
 
@@ -294,7 +294,7 @@ jobs:
           cmake --preset 'NinjaMulti' \
             -DMAADEPS_TRIPLET='maa-${{ matrix.arch == 'x86_64' && 'x64' || 'arm64' }}-osx' \
             -DMAA_HASH_VERSION='${{ needs.meta.outputs.tag }}' \
-            -DWITH_GRPC=OFF -DBUILD_PIPELINE_TESTING=ON -DBUILD_DLOPEN_TESTING=ON
+            -DWITH_GRPC=OFF -DBUILD_HTTP_CLI=OFF -DBUILD_PIPELINE_TESTING=ON -DBUILD_DLOPEN_TESTING=ON
 
           cmake --build build --preset 'NinjaMulti - Release' -j 16
 
