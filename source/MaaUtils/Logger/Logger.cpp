@@ -197,7 +197,7 @@ static std::string sys_info()
         arch = "arch" + std::to_string(sys.wProcessorArchitecture);
         break;
     }
-    return "Windows " + arch;
+    return std::format("{} {}", "Windows", arch);
 #else
     utsname uts {};
     uname(&uts);
@@ -209,9 +209,9 @@ void Logger::log_proc_info()
 {
     internal_dbg() << kSplitLine;
     internal_dbg() << "MAA Process Start";
-    internal_dbg() << "System" << sys_info();
     internal_dbg() << "Version" << MAA_VERSION;
     internal_dbg() << "Built at" << __DATE__ << __TIME__;
+    internal_dbg() << sys_info();
     internal_dbg() << "Working" << std::filesystem::current_path();
     internal_dbg() << "Logging" << log_path_;
     internal_dbg() << kSplitLine;
