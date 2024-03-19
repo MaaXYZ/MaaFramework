@@ -10,10 +10,13 @@
 #include "MaaFramework/MaaAPI.h"
 #include "MaaToolkit/MaaToolkitAPI.h"
 
-#ifdef _WIN32
 // for demo, we disable some warnings
+#ifdef _MSC_VER
 #pragma warning(disable: 4100) // unreferenced formal parameter
 #pragma warning(disable: 4189) // local variable is initialized but not referenced
+#elif defined(__clang__)
+#pragma clang diagnostic ignored "-Wunused-parameter"
+#pragma clang diagnostic ignored "-Wunused-variable"
 #endif
 
 MaaControllerHandle create_adb_controller();

@@ -6,6 +6,8 @@
 
 #ifdef _WIN32
 #include <io.h>
+#else
+#include <sys/utsname.h>
 #endif
 
 #pragma message("MaaUtils MAA_VERSION: " MAA_VERSION)
@@ -175,13 +177,26 @@ void Logger::close()
     }
 }
 
+static std::string sys_info()
+{
+#ifdef _WIN32
+
+#else
+    utsname uts {};
+    uname(&uts);
+    return uts.version;
+#endif
+}
+
 void Logger::log_proc_info()
 {
     internal_dbg() << kSplitLine;
     internal_dbg() << "MAA Process Start";
+    internal_dbg() << "System" << sys_info();
     internal_dbg() << "Version" << MAA_VERSION;
     internal_dbg() << "Built at" << __DATE__ << __TIME__;
-    internal_dbg() << "Log Path" << log_path_;
+    internal_dbg() << "Working" << std::filesystem::current_path();
+    internal_dbg() << "Logging" << log_path_;
     internal_dbg() << kSplitLine;
 }
 
