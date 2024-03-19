@@ -6,6 +6,7 @@
 
 #ifdef _WIN32
 #include <io.h>
+#include <sysinfoapi.h>
 #else
 #include <sys/utsname.h>
 #endif
@@ -180,11 +181,27 @@ void Logger::close()
 static std::string sys_info()
 {
 #ifdef _WIN32
+    SYSTEM_INFO sys {};
+    GetNativeSystemInfo(&sys);
 
+    // https://learn.microsoft.com/en-us/windows/win32/api/sysinfoapi/ns-sysinfoapi-system_info
+    std::string arch;
+    switch (sys.wProcessorArchitecture) {
+    case PROCESSOR_ARCHITECTURE_AMD64:
+        arch = "x64";
+        break;
+    case PROCESSOR_ARCHITECTURE_ARM64:
+        arch = "ARM64";
+        break;
+    default:
+        arch = "arch" + std::to_string(sys.wProcessorArchitecture);
+        break;
+    }
+    return "Windows " + arch;
 #else
     utsname uts {};
     uname(&uts);
-    return std::format("{} {} {}", uts.sysname, uts.machine);
+    return std::format("{} {}", uts.sysname, uts.machine);
 #endif
 }
 
