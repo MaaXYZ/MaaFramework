@@ -72,26 +72,26 @@ __CALL_DECLARE_JSON_TO_ARG_END()
 
 #pragma endregion MaaSetImageEncoded
 
-#define __DECLARE_STRING_BUFFER_OUTPUT(func_tag, arg_tag)                \
-    __CALL_DECLARE_INPUT(func_tag::arg_tag, false)                       \
-    __CALL_DECLARE_OUTPUT(func_tag::arg_tag, true)                       \
-                                                                         \
-    __CALL_DECLARE_PREPARE_STATE_BEGIN(func_tag, arg_tag)                \
-    std::ignore = provider;                                              \
-    std::ignore = req;                                                   \
-    std::ignore = arg;                                                   \
-    std::get<func_tag::arg_tag::index>(state) = MaaCreateStringBuffer(); \
-    return true;                                                         \
-    __CALL_DECLARE_PREPARE_STATE_END()                                   \
-                                                                         \
-    __CALL_DECLARE_ARG_TO_JSON_BEGIN(func_tag, arg_tag)                  \
-    std::ignore = state;                                                 \
-    json::value value;                                                   \
-    auto handle = std::get<func_tag::arg_tag::index>(state);             \
-    auto size = MaaGetStringSize(handle);                                \
-    std::string data(MaaGetString(handle), size);                        \
-    MaaDestroyStringBuffer(handle);                                      \
-    res[name] = value;                                                   \
+#define __DECLARE_STRING_BUFFER_OUTPUT(func_tag, arg_tag)                                \
+    __CALL_DECLARE_INPUT(func_tag::arg_tag, false)                                       \
+    __CALL_DECLARE_OUTPUT(func_tag::arg_tag, true)                                       \
+                                                                                         \
+    __CALL_DECLARE_PREPARE_STATE_BEGIN(func_tag, arg_tag)                                \
+    std::ignore = provider;                                                              \
+    std::ignore = req;                                                                   \
+    std::ignore = arg;                                                                   \
+    std::get<func_tag::arg_tag::index>(state) = MaaCreateStringBuffer();                 \
+    std::get<func_tag::arg_tag::index>(arg) = std::get<func_tag::arg_tag::index>(state); \
+    return true;                                                                         \
+    __CALL_DECLARE_PREPARE_STATE_END()                                                   \
+                                                                                         \
+    __CALL_DECLARE_ARG_TO_JSON_BEGIN(func_tag, arg_tag)                                  \
+    std::ignore = state;                                                                 \
+    auto handle = std::get<func_tag::arg_tag::index>(state);                             \
+    auto size = MaaGetStringSize(handle);                                                \
+    std::string data(MaaGetString(handle), size);                                        \
+    MaaDestroyStringBuffer(handle);                                                      \
+    res[name] = data;                                                                    \
     __CALL_DECLARE_ARG_TO_JSON_END()
 
 __DECLARE_STRING_BUFFER_OUTPUT(maa::func_type_MaaResourceGetTaskList, _1_buffer)

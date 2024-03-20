@@ -12,7 +12,7 @@ file(GLOB_RECURSE maa_http_src source/*.cpp source/*.h source/*.hpp)
 
 add_executable(MaaHttp ${maa_http_src})
 target_include_directories(MaaHttp PRIVATE ./../include)
-target_link_libraries(MaaHttp LHGHeaderonly LHGSupport Boost::system MaaFramework MaaToolkit)
+target_link_libraries(MaaHttp LHGSupport HeaderOnlyLibraries Boost::system MaaFramework MaaToolkit)
 add_dependencies(MaaHttp LHGInfo)
 
 if(WIN32)
