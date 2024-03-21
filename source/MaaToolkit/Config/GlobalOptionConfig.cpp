@@ -65,6 +65,7 @@ bool GlobalOptionConfig::load()
         return false;
     }
 
+    option_ = (Option)json;
     return true;
 }
 
