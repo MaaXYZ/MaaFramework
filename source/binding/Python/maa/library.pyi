@@ -180,6 +180,34 @@ class _Framework:
     ) -> MaaStatus: ...
     @staticmethod
     def MaaControllerConnected(ctrl: MaaControllerHandle) -> MaaBool: ...
+    @staticmethod
+    def MaaControllerPostClick(
+        ctrl: MaaControllerHandle, x: c_int32, y: c_int32
+    ) -> MaaCtrlId: ...
+    @staticmethod
+    def MaaControllerPostSwipe(
+        ctrl: MaaControllerHandle,
+        x1: c_int32,
+        y1: c_int32,
+        x2: c_int32,
+        y2: c_int32,
+        duration: c_int32,
+    ) -> MaaCtrlId: ...
+    @staticmethod
+    def MaaControllerPostPressKey(
+        ctrl: MaaControllerHandle, keycode: c_int32
+    ) -> MaaCtrlId: ...
+    @staticmethod
+    def MaaControllerPostInputText(
+        ctrl: MaaControllerHandle, text: MaaStringView
+    ) -> MaaCtrlId: ...
+    @staticmethod
+    def MaaControllerPostScreencap(ctrl: MaaControllerHandle) -> MaaCtrlId: ...
+    @staticmethod
+    def MaaControllerGetImage(
+        ctrl: MaaControllerHandle,
+        out_image: MaaImageBufferHandle,
+    ) -> MaaBool: ...
     # AdbController
     @staticmethod
     def MaaAdbControllerCreateV2(

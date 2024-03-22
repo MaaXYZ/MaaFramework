@@ -9,6 +9,7 @@ from .callback_agent import Callback, CallbackAgent
 from .define import *
 from .future import Future
 from .library import Library
+from .buffer import ImageBuffer
 
 __all__ = [
     "AdbController",
@@ -73,6 +74,34 @@ class Controller(ABC):
 
         return bool(Library.framework.MaaControllerConnected(self._handle))
 
+    async def screencap(self) -> Optional[numpy.ndarray]:
+        """
+        screencap.
+
+        :return: image
+        """
+        if not await self.post_screencap().wait():
+            return None
+
+        image_buffer = ImageBuffer()
+        ret = Library.framework.MaaControllerGetImage(
+            self._handle, image_buffer.c_handle
+        )
+        if not ret:
+            return None
+        return image_buffer.get()
+
+    def post_screencap(self) -> Future:
+        maaid = Library.framework.MaaControllerPostScreencap(self._handle)
+        return Future(maaid, self._status)
+
+    async def click(self, x: int, y: int) -> bool:
+        return await self.post_click(x, y).wait()
+
+    def post_click(self, x: int, y: int) -> Future:
+        maaid = Library.framework.MaaControllerPostClick(self._handle, x, y)
+        return Future(maaid, self._status)
+
     def _status(self, maaid: int) -> MaaStatus:
         return Library.framework.MaaControllerStatus(self._handle, maaid)
 
@@ -109,6 +138,46 @@ class Controller(ABC):
 
         Library.framework.MaaControllerConnected.restype = MaaBool
         Library.framework.MaaControllerConnected.argtypes = [MaaControllerHandle]
+
+        Library.framework.MaaControllerPostClick.restype = MaaCtrlId
+        Library.framework.MaaControllerPostClick.argtypes = [
+            MaaControllerHandle,
+            c_int32,
+            c_int32,
+        ]
+
+        Library.framework.MaaControllerPostSwipe.restype = MaaCtrlId
+        Library.framework.MaaControllerPostSwipe.argtypes = [
+            MaaControllerHandle,
+            c_int32,
+            c_int32,
+            c_int32,
+            c_int32,
+            c_int32,
+        ]
+
+        Library.framework.MaaControllerPostPressKey.restype = MaaCtrlId
+        Library.framework.MaaControllerPostPressKey.argtypes = [
+            MaaControllerHandle,
+            c_int32,
+        ]
+
+        Library.framework.MaaControllerPostInputText.restype = MaaCtrlId
+        Library.framework.MaaControllerPostInputText.argtypes = [
+            MaaControllerHandle,
+            MaaStringView,
+        ]
+
+        Library.framework.MaaControllerPostScreencap.restype = MaaCtrlId
+        Library.framework.MaaControllerPostScreencap.argtypes = [
+            MaaControllerHandle,
+        ]
+
+        Library.framework.MaaControllerGetImage.restype = MaaBool
+        Library.framework.MaaControllerGetImage.argtypes = [
+            MaaControllerHandle,
+            MaaImageBufferHandle,
+        ]
 
 
 class AdbController(Controller):
