@@ -7,7 +7,7 @@ void setup_server(
     lhg::server::Dispatcher*& dispatcher)
 {
     dispatcher = new lhg::server::Dispatcher();
-    server = new lhg::server::Server(dispatcher, 13126);
+    server = new lhg::server::Server(dispatcher, port);
 
     lhg::server::apply_function<lhg::maa::__function_list>(dispatcher);
     lhg::server::apply_callback<lhg::maa::__callback_list>(dispatcher);
