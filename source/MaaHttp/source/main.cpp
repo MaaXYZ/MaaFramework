@@ -57,7 +57,9 @@ int main(int argc, char* argv[])
 
         port = server->port();
 
-        std::cout << port << std::endl;
+        std::cout << port << std::flush;
+
+        fclose(stdout);
 
         server->sync_run();
 
