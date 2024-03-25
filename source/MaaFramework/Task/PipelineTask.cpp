@@ -97,6 +97,11 @@ PipelineTask::RunningResult PipelineTask::find_first_and_run(
             break;
         }
 
+        if (need_to_stop()) {
+            LogInfo << "Task interrupted" << VAR(latest_hit_);
+            return RunningResult::Interrupted;
+        }
+
         if (std::chrono::steady_clock::now() - start_time > timeout) {
             LogInfo << "Task timeout" << VAR(latest_hit_) << VAR(timeout);
             return RunningResult::Timeout;
