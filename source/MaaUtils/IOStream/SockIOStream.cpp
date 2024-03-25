@@ -34,7 +34,7 @@ uint16_t ServerSockIOFactory::port() const
 
 std::shared_ptr<SockIOStream> ServerSockIOFactory::accept()
 {
-    LogFunc;
+    // LogFunc;
 
     boost::asio::ip::tcp::iostream ios;
     auto accept_future =
