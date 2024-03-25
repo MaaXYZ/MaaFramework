@@ -76,7 +76,7 @@ class Controller(ABC):
 
     async def screencap(self) -> Optional[numpy.ndarray]:
         """
-        screencap.
+        Async get the screencap of the controller.
 
         :return: image
         """
@@ -92,15 +92,67 @@ class Controller(ABC):
         return image_buffer.get()
 
     def post_screencap(self) -> Future:
+        """
+        Post a screencap to the controller. (get screencap in backgroud)
+
+        :return: The screencap ID.
+        """
+
         maaid = Library.framework.MaaControllerPostScreencap(self._handle)
         return Future(maaid, self._status)
 
     async def click(self, x: int, y: int) -> bool:
+        """
+        Async click on the controller.
+
+        :param x: The x coordinate.
+        :param y: The y coordinate.
+        :return: True if the click was successful, False otherwise.
+        """
+
         return await self.post_click(x, y).wait()
 
     def post_click(self, x: int, y: int) -> Future:
+        """
+        Post a click to the controller. (click in backgroud)
+
+        :param x: The x coordinate.
+        :param y: The y coordinate.
+        :return: The click ID.
+        """
         maaid = Library.framework.MaaControllerPostClick(self._handle, x, y)
         return Future(maaid, self._status)
+
+    def set_screenshot_target_long_side(self, long_side: int) -> "Controller":
+        """
+        Set the screenshot target long side.
+
+        :param long_side: The long side of the screenshot.
+        """
+
+        cint = ctypes.c_int32(long_side)
+        Library.framework.MaaControllerSetOption(
+            self._handle,
+            MaaCtrlOptionEnum.ScreenshotTargetLongSide,
+            ctypes.pointer(cint),
+            ctypes.sizeof(ctypes.c_int32),
+        )
+        return self
+
+    def set_screenshot_target_short_side(self, short_side: int) -> "Controller":
+        """
+        Set the screenshot target short side.
+
+        :param short_side: The short side of the screenshot.
+        """
+        cint = ctypes.c_int32(short_side)
+        Library.framework.MaaControllerSetOption(
+            self._handle,
+            MaaCtrlOptionEnum.ScreenshotTargetShortSide,
+            ctypes.pointer(cint),
+            ctypes.sizeof(ctypes.c_int32),
+        )
+        return self
 
     def _status(self, maaid: int) -> MaaStatus:
         return Library.framework.MaaControllerStatus(self._handle, maaid)

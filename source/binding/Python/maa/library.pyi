@@ -8,6 +8,12 @@ class _Framework:
     # library.py
     @staticmethod
     def MaaVersion() -> MaaStringView: ...
+    @staticmethod
+    def MaaSetGlobalOption(
+        key: MaaGlobalOption,
+        value: MaaOptionValue,
+        val_size: MaaOptionValueSize,
+    ) -> MaaBool: ...
 
     # buffer.py
     # StringBuffer
