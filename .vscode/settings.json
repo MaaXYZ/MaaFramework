@@ -5,6 +5,12 @@
                 "/sample/resource/pipeline/*.json"
             ],
             "url": "/tools/pipeline.schema.json"
+        },
+        {
+            "fileMatch": [
+                "/sample/interface.json"
+            ],
+            "url": "/tools/interface.schema.json"
         }
     ],
     "[json]": {
