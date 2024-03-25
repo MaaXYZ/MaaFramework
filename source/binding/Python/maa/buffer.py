@@ -1,5 +1,6 @@
 import ctypes
 import numpy
+import copy
 from typing import List, Tuple, Union, Optional
 from PIL import Image
 
@@ -125,8 +126,10 @@ class ImageBuffer:
         w = Library.framework.MaaGetImageWidth(self._handle)
         h = Library.framework.MaaGetImageHeight(self._handle)
         # t = Library.framework.MaaGetImageType(self._handle)
-        return numpy.ctypeslib.as_array(
-            ctypes.cast(buff, ctypes.POINTER(ctypes.c_uint8)), shape=(h, w, 3)
+        return copy.deepcopy(
+            numpy.ctypeslib.as_array(
+                ctypes.cast(buff, ctypes.POINTER(ctypes.c_uint8)), shape=(h, w, 3)
+            )
         )
 
     def set(self, value: Union[numpy.ndarray, Image.Image]) -> bool:
