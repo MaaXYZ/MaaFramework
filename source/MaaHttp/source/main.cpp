@@ -65,7 +65,7 @@ int main(int argc, char* argv[])
     }
     else {
         auto disp = new lhg::server::Dispatcher();
-        auto server = new lhg::server::Server(disp, port);
+        auto server = new lhg::server::Server(disp, static_cast<unsigned short>(port));
 
         auto self = boost::dll::program_location();
 
