@@ -145,11 +145,7 @@
                         "exec_path"
                     ]
                 }
-            },
-            "additionalProperties": false,
-            "required": [
-                "StageDropsRecognizer"
-            ]
+            }
         },
         "action": {
             "type": "object",
@@ -172,11 +168,7 @@
                         "exec_path"
                     ]
                 }
-            },
-            "additionalProperties": false,
-            "required": [
-                "StageDropsUploador"
-            ]
+            }
         },
         "option": {
             "type": "object",
