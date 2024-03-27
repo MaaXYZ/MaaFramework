@@ -14,6 +14,7 @@
 struct SlaveInfo
 {
     std::shared_ptr<boost::process::child> child;
+    std::shared_ptr<std::thread> stdout_processer;
     std::chrono::steady_clock::time_point heart;
     std::mutex mtx;
 
@@ -57,9 +58,7 @@ int main(int argc, char* argv[])
 
         port = server->port();
 
-        std::cout << port << std::flush;
-
-        fclose(stdout);
+        std::cout << port << std::endl;
 
         server->sync_run();
 
@@ -83,6 +82,7 @@ int main(int argc, char* argv[])
                     if (it->second.isTimeout()) {
                         std::cerr << "kill slave at " << it->first << std::endl;
                         it->second.child->terminate();
+                        it->second.stdout_processer->join();
                         it = childs.erase(it);
                     }
                     else {
@@ -103,14 +103,25 @@ int main(int argc, char* argv[])
                     self,
                     std::vector<std::string> { "-s" },
                     boost::process::std_out > out_stream);
-                unsigned short slave_port;
-                out_stream >> slave_port;
+
+                std::string slave_port_row;
+                std::getline(out_stream, slave_port_row);
+                unsigned short slave_port = static_cast<unsigned short>(std::stoul(slave_port_row));
                 if (slave_port > 0) {
+                    auto stdout_processer =
+                        std::make_shared<std::thread>([os = std::move(out_stream), port]() mutable {
+                            std::string row;
+                            while (std::getline(os, row)) {
+                                std::cout << std::format("[{}] {}", port, row) << std::endl;
+                            }
+                        });
+
                     std::unique_lock<std::mutex> lock(mtx);
 
                     std::cerr << "start slave at " << slave_port << std::endl;
                     auto& slave = childs[slave_port];
                     slave.child = child;
+                    slave.stdout_processer = stdout_processer;
                     slave.update();
                     res = { { "port", slave_port } };
                 }
@@ -154,6 +165,7 @@ int main(int argc, char* argv[])
                 }
                 std::cerr << "kill slave at " << port << std::endl;
                 childs[port].child->terminate();
+                childs[port].stdout_processer->join();
                 childs.erase(port);
                 res = { { "success", true } };
             },
