@@ -126,10 +126,15 @@ int main(int argc, char* argv[])
             [&](auto&, auto& res, const auto& req) {
                 std::unique_lock<std::mutex> lock(mtx);
 
+                if (!req.contains("port")) {
+                    res = { { "success", false }, { "error", "port not provided" } };
+                    return;
+                }
                 unsigned short slave_port =
                     static_cast<unsigned short>(req.at("port").as_unsigned());
                 if (!childs.contains(slave_port)) {
-                    res = { { "success", false }, { "error", std::format("{} not exists", port) } };
+                    res = { { "success", false },
+                            { "error", std::format("{} not exists", slave_port) } };
                     return;
                 }
                 childs[slave_port].update();
