@@ -10,6 +10,7 @@
 #include "Task/CustomAction.h"
 #include "Utils/ImageIo.h"
 #include "Utils/Logger.h"
+#include "Utils/Uuid.h"
 
 MAA_TASK_NS_BEGIN
 

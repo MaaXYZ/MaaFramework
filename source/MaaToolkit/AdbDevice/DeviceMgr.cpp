@@ -2,6 +2,7 @@
 
 #include <future>
 
+#include "ControlUnit/ControlUnitAPI.h"
 #include "LibraryHolder/ControlUnit.h"
 #include "Utils/Logger.h"
 

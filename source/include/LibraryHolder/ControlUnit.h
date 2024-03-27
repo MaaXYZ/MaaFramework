@@ -1,11 +1,13 @@
 #pragma once
 
-#include "LibraryHolder.h"
-
 #include <memory>
 
-#include "ControlUnit/ControlUnitAPI.h"
+#include "LibraryHolder.h"
 #include "Utils/Platform.h"
+
+MAA_CTRL_UNIT_NS_BEGIN
+class ControlUnitAPI;
+MAA_CTRL_UNIT_NS_END
 
 MAA_NS_BEGIN
 

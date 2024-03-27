@@ -1,5 +1,9 @@
 #pragma once
 
+#if defined(__APPLE__) || defined(__linux__)
+#include <unistd.h>
+#endif
+
 #include <filesystem>
 #include <format>
 #include <fstream>
@@ -10,22 +14,13 @@
 #include <tuple>
 #include <type_traits>
 
-#if defined(__APPLE__) || defined(__linux__)
-#include <unistd.h>
-#endif
-
 #include <meojson/json.hpp>
 
-#include "Conf/Conf.h"
 #include "MaaFramework/MaaDef.h"
 #include "MaaFramework/MaaPort.h"
 
-#include "Codec.h"
-#include "ImageIo.h"
-#include "Locale.hpp"
-#include "Platform.h"
+#include "Conf/Conf.h"
 #include "Time.hpp"
-#include "Uuid.h"
 
 namespace cv
 {
@@ -40,6 +35,8 @@ inline std::ostream& operator<<(std::ostream& os, const std::chrono::millisecond
     return os << ms.count() << "ms";
 }
 #endif
+
+MAA_UTILS_API std::string utf8_to_crt(std::string_view utf8_str);
 
 enum class level
 {
@@ -70,7 +67,7 @@ struct MAA_UTILS_API separator
 template <typename T>
 concept has_output_operator = requires { std::declval<std::ostream&>() << std::declval<T>(); };
 
-class StringConverter
+class MAA_UTILS_API StringConverter
 {
 public:
     StringConverter(std::filesystem::path dumps_dir)
@@ -79,30 +76,9 @@ public:
     }
 
 public:
-    std::string operator()(const std::filesystem::path& path) const
-    {
-        return path_to_utf8_string(path);
-    }
-
-    std::string operator()(const std::wstring& wstr) const { return from_u16(wstr); }
-
-    std::string operator()(const cv::Mat& image) const
-    {
-        if (dumps_dir_.empty()) {
-            return "Not logging";
-        }
-        if (image.empty()) {
-            return "Empty image";
-        }
-
-        std::string filename = std::format("{}-{}.png", format_now_for_filename(), make_uuid());
-        auto filepath = dumps_dir_ / path(filename);
-        bool ret = MAA_NS::imwrite(filepath, image);
-        if (!ret) {
-            return "Failed to write image";
-        }
-        return this->operator()(filepath);
-    }
+    std::string operator()(const std::filesystem::path& path) const;
+    std::string operator()(const std::wstring& wstr) const;
+    std::string operator()(const cv::Mat& image) const;
 
     template <typename T>
     std::string operator()(const std::optional<T>& value) const

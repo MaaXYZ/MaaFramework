@@ -15,6 +15,7 @@
 #include "Screencap/RawByNetcat.h"
 #include "Screencap/RawWithGzip.h"
 #include "Utils/Logger.h"
+#include "Utils/Platform.h"
 
 using MAA_NS::path;
 

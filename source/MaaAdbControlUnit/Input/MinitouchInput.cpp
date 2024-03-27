@@ -6,6 +6,7 @@
 #include <ranges>
 
 #include "Utils/Logger.h"
+#include "Utils/Platform.h"
 
 MAA_CTRL_UNIT_NS_BEGIN
 

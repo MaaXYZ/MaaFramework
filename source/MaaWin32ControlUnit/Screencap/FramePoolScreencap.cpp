@@ -7,6 +7,7 @@
 
 #include "HwndUtils.hpp"
 #include "Utils/Logger.h"
+#include "Utils/NoWarningCV.hpp"
 
 MAA_CTRL_UNIT_NS_BEGIN
 

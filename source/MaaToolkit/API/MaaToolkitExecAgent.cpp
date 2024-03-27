@@ -7,6 +7,7 @@
 #include "ExecAgent/ActionExecAgent.h"
 #include "ExecAgent/RecognizerExecAgent.h"
 #include "Utils/Logger.h"
+#include "Utils/Platform.h"
 
 using namespace MAA_TOOLKIT_NS;
 

@@ -1,6 +1,7 @@
 #include "InstanceStatus.h"
 
 #include "Utils/Logger.h"
+#include "Utils/NoWarningCV.hpp"
 
 MAA_NS_BEGIN
 
