@@ -48,7 +48,7 @@ class Controller(ABC):
 
     async def connect(self) -> bool:
         """
-        Async connect to the controller.
+        Async connect.
 
         :return: True if the connection was successful, False otherwise.
         """
@@ -56,7 +56,7 @@ class Controller(ABC):
 
     def post_connection(self) -> Future:
         """
-        Post a connection to the controller. (connect in backgroud)
+        Post a connection. (connect in backgroud)
 
         :return: The connection ID.
         """
@@ -76,13 +76,21 @@ class Controller(ABC):
 
     async def screencap(self) -> Optional[numpy.ndarray]:
         """
-        Async get the screencap of the controller.
+        Async capture the screenshot.
 
         :return: image
         """
         if not await self.post_screencap().wait():
             return None
 
+        return self.get_image()
+
+    def get_image(self) -> Optional[numpy.ndarray]:
+        """
+        Get latest screenshot. (without capture)
+
+        :return: image
+        """
         image_buffer = ImageBuffer()
         ret = Library.framework.MaaControllerGetImage(
             self._handle, image_buffer.c_handle
@@ -93,7 +101,7 @@ class Controller(ABC):
 
     def post_screencap(self) -> Future:
         """
-        Post a screencap to the controller. (get screencap in backgroud)
+        Post a screencap. (get screencap in backgroud)
 
         :return: The screencap ID.
         """
@@ -114,7 +122,7 @@ class Controller(ABC):
 
     def post_click(self, x: int, y: int) -> Future:
         """
-        Post a click to the controller. (click in backgroud)
+        Post a click. (click in backgroud)
 
         :param x: The x coordinate.
         :param y: The y coordinate.
@@ -251,8 +259,8 @@ class AdbController(Controller):
 
         :param adb_path: The path to the ADB executable.
         :param address: The address of the device.
-        :param type: The type of the controller.
-        :param config: The configuration of the controller.
+        :param type: The type.
+        :param config: The configuration.
         :param callback: The callback function.
         :param callback_arg: The callback argument.
         """
