@@ -5,6 +5,7 @@
 #include "CarouselImage/CarouselImage.h"
 #include "ReplayRecording/ReplayRecordingMgr.h"
 #include "Utils/Logger.h"
+#include "Utils/Platform.h"
 
 MaaStringView MaaDbgControlUnitGetVersion()
 {

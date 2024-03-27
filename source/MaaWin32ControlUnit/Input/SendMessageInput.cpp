@@ -2,6 +2,7 @@
 
 #include "Utils/Logger.h"
 #include "Utils/SafeWindows.hpp"
+#include "Utils/Platform.h"
 
 MAA_CTRL_UNIT_NS_BEGIN
 

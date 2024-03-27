@@ -5,6 +5,7 @@
 #include "Base/UnitBase.h"
 #include "ControlUnit/ControlUnitAPI.h"
 #include "Utils/MessageNotifier.hpp"
+#include "Utils/SafeWindows.hpp"
 
 MAA_CTRL_UNIT_NS_BEGIN
 

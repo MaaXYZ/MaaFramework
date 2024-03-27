@@ -2,14 +2,20 @@
 
 #include "Utils/Logger.h"
 
-#include "Utils/Platform.h"
-
 #ifdef _WIN32
+#include "Utils/SafeWindows.hpp"
+
 #include <io.h>
 #include <sysinfoapi.h>
 #else
 #include <sys/utsname.h>
 #endif
+
+#include "Utils/Codec.h"
+#include "Utils/ImageIo.h"
+#include "Utils/Locale.hpp"
+#include "Utils/Platform.h"
+#include "Utils/Uuid.h"
 
 #pragma message("MaaUtils MAA_VERSION: " MAA_VERSION)
 
@@ -220,6 +226,34 @@ void Logger::log_proc_info()
 LogStream Logger::internal_dbg()
 {
     return debug("Logger");
+}
+
+std::string StringConverter::operator()(const std::filesystem::path& path) const
+{
+    return path_to_utf8_string(path);
+}
+
+std::string StringConverter::operator()(const std::wstring& wstr) const
+{
+    return from_u16(wstr);
+}
+
+std::string StringConverter::operator()(const cv::Mat& image) const
+{
+    if (dumps_dir_.empty()) {
+        return "Not logging";
+    }
+    if (image.empty()) {
+        return "Empty image";
+    }
+
+    std::string filename = std::format("{}-{}.png", format_now_for_filename(), make_uuid());
+    auto filepath = dumps_dir_ / path(filename);
+    bool ret = MAA_NS::imwrite(filepath, image);
+    if (!ret) {
+        return "Failed to write image";
+    }
+    return this->operator()(filepath);
 }
 
 MAA_LOG_NS_END
