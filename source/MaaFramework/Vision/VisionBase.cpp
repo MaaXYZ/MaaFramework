@@ -11,15 +11,11 @@
 
 MAA_VISION_NS_BEGIN
 
-void VisionBase::set_image(const cv::Mat& image)
+VisionBase::VisionBase(cv::Mat image, std::string name)
+    : image_(std::move(image))
+    , name_(std::move(name))
 {
-    image_ = image;
     init_debug_draw();
-}
-
-void VisionBase::set_name(std::string name)
-{
-    name_ = std::move(name);
 }
 
 cv::Mat VisionBase::image_with_roi(const cv::Rect& roi) const
@@ -56,19 +52,33 @@ cv::Mat VisionBase::draw_roi(const cv::Rect& roi, const cv::Mat& base) const
     return image_draw;
 }
 
-void VisionBase::handle_draw(const cv::Mat& draw) const
+void VisionBase::handle_draw(const cv::Mat& draw)
 {
+    draws_.emplace_back(draw);
+
     if (save_draw_) {
-        save_image(draw);
+        draw_paths_.emplace_back(save_image(draw));
     }
 }
 
-void VisionBase::save_image(const cv::Mat& image) const
+void VisionBase::handle_index(size_t total, int index)
+{
+    auto index_opt = pythonic_index(total, index);
+    if (!index_opt) {
+        preferred_index_ = SIZE_MAX;
+        return;
+    }
+
+    preferred_index_ = *index_opt;
+}
+
+std::filesystem::path VisionBase::save_image(const cv::Mat& image) const
 {
     std::string filename = std::format("{}_{}.png", name_, format_now_for_filename());
     auto filepath = GlobalOptionMgr::get_instance().log_dir() / "vision" / path(filename);
     MAA_NS::imwrite(filepath, image);
     LogDebug << "save image to" << filepath;
+    return filepath;
 }
 
 void VisionBase::init_debug_draw()

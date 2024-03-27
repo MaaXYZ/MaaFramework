@@ -20,29 +20,41 @@ public:
     using ResultsVec = std::vector<Result>;
 
 public:
-    void set_param(ColorMatcherParam param) { param_ = std::move(param); }
+    ColorMatcher(cv::Mat image, ColorMatcherParam param, std::string name = "");
 
-    std::pair<ResultsVec, size_t> analyze() const;
+    const ResultsVec& all_results() const& { return all_results_; }
+
+    ResultsVec&& all_results() && { return std::move(all_results_); }
+
+    const ResultsVec& filtered_results() const& { return filtered_results_; }
+
+    ResultsVec filtered_results() && { return std::move(filtered_results_); }
 
 private:
-    ResultsVec foreach_rois(const ColorMatcherParam::Range& range, bool connected) const;
-    ResultsVec color_match(
-        const cv::Rect& roi,
-        const ColorMatcherParam::Range& range,
-        bool connected) const;
+    void analyze();
+    ResultsVec match_all_rois(const ColorMatcherParam::Range& range);
+    ResultsVec color_match(const cv::Rect& roi, const ColorMatcherParam::Range& range);
+
+    void add_results(ResultsVec results, int count);
+    void sort();
+
+private:
     ResultsVec count_non_zero(const cv::Mat& bin, const cv::Point& tl) const;
     ResultsVec count_non_zero_with_connected(const cv::Mat& bin, const cv::Point& tl) const;
-    void draw_result(
+    cv::Mat draw_result(
         const cv::Rect& roi,
         const cv::Mat& color,
         const cv::Mat& bin,
         const ResultsVec& results) const;
 
-    void filter(ResultsVec& results, int count) const;
-    void sort(ResultsVec& results) const;
-    size_t preferred_index(const ResultsVec& results) const;
+    void sort_(ResultsVec& results) const;
 
-    ColorMatcherParam param_;
+private:
+    const ColorMatcherParam param_;
+
+private:
+    ResultsVec all_results_;
+    ResultsVec filtered_results_;
 };
 
 MAA_VISION_NS_END

@@ -8,13 +8,8 @@
 
 MAA_TASK_NS_BEGIN
 
-CustomAction::CustomAction(
-    MaaCustomActionHandle handle,
-    MaaTransparentArg handle_arg_,
-    InstanceInternalAPI* inst)
-    : action_(handle)
-    , action_arg_(handle_arg_)
-    , inst_(inst)
+CustomAction::CustomAction(CustomActionSession session, InstanceInternalAPI* inst)
+    : session_(std::move(session)), inst_(inst)
 {
 }
 
@@ -24,10 +19,11 @@ bool CustomAction::run(
     const cv::Rect& cur_box,
     const json::value& cur_rec_detail)
 {
-    LogFunc << VAR(task_name) << VAR_VOIDP(action_) << VAR(param.custom_param) << VAR(cur_box);
+    LogFunc << VAR(task_name) << VAR_VOIDP(session_.action) << VAR(param.custom_param)
+            << VAR(cur_box);
 
-    if (!action_ || !action_->run) {
-        LogError << "Action is null" << VAR_VOIDP(action_) << VAR_VOIDP(action_->run);
+    if (!session_.action || !session_.action->run) {
+        LogError << "Action is null" << VAR(task_name);
         return false;
     }
 
@@ -39,14 +35,14 @@ bool CustomAction::run(
                   .height = cur_box.height };
     std::string cur_rec_detail_string = cur_rec_detail.to_string();
 
-    bool ret = action_->run(
+    bool ret = session_.action->run(
         &sync_ctx,
         task_name.c_str(),
         custom_param_string.c_str(),
         &box,
         cur_rec_detail_string.c_str(),
-        action_arg_);
-    LogTrace << VAR_VOIDP(action_) << VAR_VOIDP(action_->run) << VAR(ret);
+        session_.action_arg);
+    LogTrace << VAR_VOIDP(session_.action) << VAR_VOIDP(session_.action->run) << VAR(ret);
 
     return ret;
 }

@@ -9,59 +9,63 @@
 
 MAA_VISION_NS_BEGIN
 
-std::pair<NeuralNetworkDetector::ResultsVec, size_t> NeuralNetworkDetector::analyze() const
+NeuralNetworkDetector::NeuralNetworkDetector(
+    cv::Mat image,
+    NeuralNetworkDetectorParam param,
+    std::shared_ptr<Ort::Session> session,
+    std::string name)
+    : VisionBase(std::move(image), std::move(name))
+    , param_(std::move(param))
+    , session_(std::move(session))
+{
+    analyze();
+}
+
+void NeuralNetworkDetector::analyze()
 {
     LogFunc << name_;
 
     if (!session_) {
         LogError << "OrtSession not loaded";
-        return {};
+        return;
     }
     if (param_.cls_size == 0) {
         LogError << "cls_size == 0";
-        return {};
+        return;
     }
     if (param_.cls_size != param_.labels.size()) {
         LogError << "cls_size != labels.size()" << VAR(param_.cls_size)
                  << VAR(param_.labels.size());
-        return {};
+        return;
     }
 
     auto start_time = std::chrono::steady_clock::now();
-    ResultsVec results = foreach_rois();
+
+    auto results = detect_all_rois();
+    add_results(std::move(results), param_.expected);
+
+    sort();
+
     auto cost = duration_since(start_time);
-    LogTrace << name_ << "Raw:" << VAR(results) << VAR(cost);
-
-    const auto& expected = param_.expected;
-    filter(results, expected);
-
-    cost = duration_since(start_time);
-    LogTrace << name_ << "Filter:" << VAR(results) << VAR(expected) << VAR(cost);
-
-    sort(results);
-    size_t index = preferred_index(results);
-    return { results, index };
+    LogTrace << name_ << VAR(all_results_) << VAR(filtered_results_) << VAR(cost);
 }
 
-NeuralNetworkDetector::ResultsVec NeuralNetworkDetector::foreach_rois() const
+NeuralNetworkDetector::ResultsVec NeuralNetworkDetector::detect_all_rois()
 {
     if (param_.roi.empty()) {
         return detect(cv::Rect(0, 0, image_.cols, image_.rows));
     }
-
-    ResultsVec results;
-    for (const cv::Rect& roi : param_.roi) {
-        ResultsVec res = detect(roi);
-        results.insert(
-            results.end(),
-            std::make_move_iterator(res.begin()),
-            std::make_move_iterator(res.end()));
+    else {
+        ResultsVec results;
+        for (const cv::Rect& roi : param_.roi) {
+            auto res = detect(roi);
+            merge_vector_(results, std::move(res));
+        }
+        return results;
     }
-
-    return results;
 }
 
-NeuralNetworkDetector::ResultsVec NeuralNetworkDetector::detect(const cv::Rect& roi) const
+NeuralNetworkDetector::ResultsVec NeuralNetworkDetector::detect(const cv::Rect& roi)
 {
     if (!session_) {
         LogError << "OrtSession not loaded";
@@ -157,28 +161,33 @@ NeuralNetworkDetector::ResultsVec NeuralNetworkDetector::detect(const cv::Rect& 
             std::make_move_iterator(nms_results.end()));
     }
 
-    draw_result(roi, all_nms_results);
+    if (debug_draw_) {
+        auto draw = draw_result(roi, all_nms_results);
+        handle_draw(draw);
+    }
 
     return all_nms_results;
 }
 
-void NeuralNetworkDetector::filter(ResultsVec& results, const std::vector<size_t>& expected) const
+void NeuralNetworkDetector::add_results(ResultsVec results, const std::vector<size_t>& expected)
 {
-    if (expected.empty()) {
-        return;
-    }
-
-    std::erase_if(results, [&](const Result& res) {
-        return std::find(expected.begin(), expected.end(), res.cls_index) == expected.end();
+    std::ranges::copy_if(results, std::back_inserter(filtered_results_), [&](const auto& res) {
+        return std::ranges::find(expected, res.cls_index) != expected.end();
     });
+
+    merge_vector_(all_results_, std::move(results));
 }
 
-void NeuralNetworkDetector::draw_result(const cv::Rect& roi, const ResultsVec& results) const
+void NeuralNetworkDetector::sort()
 {
-    if (!debug_draw_) {
-        return;
-    }
+    sort_(all_results_);
+    sort_(filtered_results_);
 
+    handle_index(filtered_results_.size(), param_.result_index);
+}
+
+cv::Mat NeuralNetworkDetector::draw_result(const cv::Rect& roi, const ResultsVec& results) const
+{
     cv::Mat image_draw = draw_roi(roi);
 
     for (const Result& res : results) {
@@ -205,10 +214,10 @@ void NeuralNetworkDetector::draw_result(const cv::Rect& roi, const ResultsVec& r
             1);
     }
 
-    handle_draw(image_draw);
+    return image_draw;
 }
 
-void NeuralNetworkDetector::sort(ResultsVec& results) const
+void NeuralNetworkDetector::sort_(ResultsVec& results) const
 {
     switch (param_.order_by) {
     case ResultOrderBy::Horizontal:
@@ -230,16 +239,6 @@ void NeuralNetworkDetector::sort(ResultsVec& results) const
         LogError << "Not supported order by" << VAR(param_.order_by);
         break;
     }
-}
-
-size_t NeuralNetworkDetector::preferred_index(const ResultsVec& results) const
-{
-    auto index_opt = pythonic_index(results.size(), param_.result_index);
-    if (!index_opt) {
-        return SIZE_MAX;
-    }
-
-    return *index_opt;
 }
 
 MAA_VISION_NS_END
