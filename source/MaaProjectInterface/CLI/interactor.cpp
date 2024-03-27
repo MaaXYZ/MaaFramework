@@ -1,5 +1,6 @@
 #include "interactor.h"
 
+#include <algorithm>
 #include <format>
 #include <ranges>
 #include <unordered_set>
