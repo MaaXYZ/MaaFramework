@@ -74,23 +74,18 @@ class Controller(ABC):
 
         return bool(Library.framework.MaaControllerConnected(self._handle))
 
-    async def screencap(self) -> Optional[numpy.ndarray]:
+    async def screencap(self, capture: bool = True) -> Optional[numpy.ndarray]:
         """
         Async capture the screenshot.
 
+        :param capture: Whether to capture the screen, if False, the last screenshot will be returned.
         :return: image
         """
-        if not await self.post_screencap().wait():
-            return None
+        if capture:
+            captured = await self.post_screencap().wait()
+            if not captured:
+                return None
 
-        return self.get_image()
-
-    def get_image(self) -> Optional[numpy.ndarray]:
-        """
-        Get latest screenshot. (without capture)
-
-        :return: image
-        """
         image_buffer = ImageBuffer()
         ret = Library.framework.MaaControllerGetImage(
             self._handle, image_buffer.c_handle
