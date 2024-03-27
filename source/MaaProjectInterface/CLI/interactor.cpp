@@ -1,6 +1,7 @@
 #include "interactor.h"
 
 #include <format>
+#include <ranges>
 #include <unordered_set>
 
 #include "MaaToolkit/Device/MaaToolkitDevice.h"
@@ -376,7 +377,8 @@ void Interactor::add_task()
 
     std::cout << "### Add task ###\n\n";
     for (size_t i = 0; i < all_data_tasks.size(); ++i) {
-        std::cout << MAA_LOG_NS::utf8_to_crt(std::format("\t{}. {}\n", i + 1, all_data_tasks[i].name));
+        std::cout << MAA_LOG_NS::utf8_to_crt(
+            std::format("\t{}. {}\n", i + 1, all_data_tasks[i].name));
     }
     std::cout << "\n";
     auto input_indexes = input_multi(all_data_tasks.size());
@@ -484,8 +486,8 @@ void Interactor::print_config_tasks(bool with_index) const
         }
 
         for (const auto& [key, value] : task.option) {
-            std::cout << "\t\t- " << MAA_LOG_NS::utf8_to_crt(key) << ": " << MAA_LOG_NS::utf8_to_crt(value)
-                      << "\n";
+            std::cout << "\t\t- " << MAA_LOG_NS::utf8_to_crt(key) << ": "
+                      << MAA_LOG_NS::utf8_to_crt(value) << "\n";
         }
     }
     std::cout << "\n";
@@ -507,5 +509,6 @@ void Interactor::on_maafw_notify(
     std::ignore = pthis;
 
     std::string entry = json::parse(details_json).value_or(json::value())["entry"].as_string();
-    std::cout << MAA_LOG_NS::utf8_to_crt(std::format("on_maafw_notify: {} {}", msg, entry)) << std::endl;
+    std::cout << MAA_LOG_NS::utf8_to_crt(std::format("on_maafw_notify: {} {}", msg, entry))
+              << std::endl;
 }
