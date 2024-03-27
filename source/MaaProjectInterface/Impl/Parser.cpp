@@ -1,5 +1,8 @@
 #include "ProjectInterface/Parser.h"
 
+#include <ranges>
+#include <functional>
+
 #include "Utils/Logger.h"
 
 MAA_PROJECT_INTERFACE_NS_BEGIN

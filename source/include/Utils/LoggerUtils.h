@@ -36,6 +36,8 @@ inline std::ostream& operator<<(std::ostream& os, const std::chrono::millisecond
 }
 #endif
 
+MAA_UTILS_API std::string utf8_to_crt(std::string_view utf8_str);
+
 enum class level
 {
     fatal = MaaLoggingLevel_Fatal,

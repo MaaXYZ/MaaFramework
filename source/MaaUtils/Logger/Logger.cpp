@@ -13,13 +13,41 @@
 
 #include "Utils/Codec.h"
 #include "Utils/ImageIo.h"
-#include "Utils/Locale.hpp"
 #include "Utils/Platform.h"
 #include "Utils/Uuid.h"
 
 #pragma message("MaaUtils MAA_VERSION: " MAA_VERSION)
 
 MAA_LOG_NS_BEGIN
+
+std::string utf8_to_crt(std::string_view utf8_str)
+{
+#ifdef _WIN32
+    const char* src_str = utf8_str.data();
+    const int byte_len = static_cast<int>(utf8_str.length() * sizeof(char));
+    int len = MultiByteToWideChar(CP_UTF8, 0, src_str, byte_len, nullptr, 0);
+    const std::size_t wsz_ansi_length = static_cast<std::size_t>(len) + 1U;
+    auto wsz_ansi = new wchar_t[wsz_ansi_length];
+    memset(wsz_ansi, 0, sizeof(wsz_ansi[0]) * wsz_ansi_length);
+    MultiByteToWideChar(CP_UTF8, 0, src_str, byte_len, wsz_ansi, len);
+
+    len = WideCharToMultiByte(CP_ACP, 0, wsz_ansi, -1, nullptr, 0, nullptr, nullptr);
+    const std::size_t sz_ansi_length = static_cast<std::size_t>(len) + 1;
+    auto sz_ansi = new char[sz_ansi_length];
+    memset(sz_ansi, 0, sizeof(sz_ansi[0]) * sz_ansi_length);
+    WideCharToMultiByte(CP_ACP, 0, wsz_ansi, -1, sz_ansi, len, nullptr, nullptr);
+    std::string strTemp(sz_ansi);
+
+    delete[] wsz_ansi;
+    wsz_ansi = nullptr;
+    delete[] sz_ansi;
+    sz_ansi = nullptr;
+
+    return strTemp;
+#else
+    return std::string(utf8_str);
+#endif
+}
 
 constexpr separator separator::none("");
 constexpr separator separator::space(" ");
