@@ -150,7 +150,6 @@ bool Interactor::run()
         std::cout << "### All tasks have been completed ###\n\n";
     }
 
-    mpause();
     return ret;
 }
 
@@ -222,6 +221,7 @@ bool Interactor::interact_once()
         break;
     case 6:
         run();
+        mpause();
         break;
     case 7:
         return false;
