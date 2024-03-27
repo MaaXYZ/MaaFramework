@@ -6,6 +6,7 @@
 #include <mutex>
 #include <string_view>
 #include <thread>
+#include <filesystem>
 
 #include <meojson/json.hpp>
 

@@ -2,6 +2,7 @@
 
 #include "Utils/Codec.h"
 #include "Utils/Logger.h"
+#include "Utils/Platform.h"
 #include "Utils/StringMisc.hpp"
 #include "Vision/VisionTypes.h"
 

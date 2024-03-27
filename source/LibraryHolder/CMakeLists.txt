@@ -7,7 +7,7 @@ set_target_properties(LibraryHolder PROPERTIES POSITION_INDEPENDENT_CODE ON)
 target_include_directories(LibraryHolder
     PRIVATE ${CMAKE_CURRENT_SOURCE_DIR} ${MAA_PRIVATE_INC} ${MAA_PUBLIC_INC})
 
-target_link_libraries(LibraryHolder MaaUtils HeaderOnlyLibraries Boost::system)
+target_link_libraries(LibraryHolder MaaUtils HeaderOnlyLibraries Boost::system ${OpenCV_LIBS})
 
 add_dependencies(LibraryHolder MaaUtils)
 

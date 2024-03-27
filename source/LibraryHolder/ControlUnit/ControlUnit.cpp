@@ -23,8 +23,8 @@ bool check_version(const std::string& func_name)
     LogInfo << typeid(ControlUnitT).name() << "Library version:" << version;
 
     if (std::strcmp(version, MAA_VERSION) != 0) {
-        LogWarn << "ControlUnit and MaaFramework are not same version,"
-                << "ControlUnit:" << version << "MaaFramework:" << MAA_VERSION;
+        LogWarn << "ControlUnit and MaaFramework are not same version," << "ControlUnit:" << version
+                << "MaaFramework:" << MAA_VERSION;
     }
     return true;
 }

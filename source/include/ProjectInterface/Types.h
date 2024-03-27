@@ -4,9 +4,10 @@
 #include <unordered_map>
 #include <vector>
 
+#include <meojson/json.hpp>
+
 #include "Conf/Conf.h"
 #include "MaaFramework/MaaDef.h"
-#include "Utils/JsonExt.hpp"
 
 MAA_PROJECT_INTERFACE_NS_BEGIN
 
