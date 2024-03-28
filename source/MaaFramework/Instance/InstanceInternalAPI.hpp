@@ -22,16 +22,16 @@ class InstanceStatus;
 
 struct CustomRecognizerSession
 {
-    MaaCustomRecognizerHandle recognizer_ = nullptr;
-    MaaTransparentArg recognizer_arg_ = nullptr;
-    InstanceInternalAPI* inst_ = nullptr;
+    MaaCustomRecognizerHandle recognizer = nullptr;
+    MaaTransparentArg recognizer_arg = nullptr;
+    InstanceInternalAPI* inst = nullptr;
 };
 
 struct CustomActionSession
 {
-    MaaCustomActionHandle action_ = nullptr;
-    MaaTransparentArg action_arg_ = nullptr;
-    InstanceInternalAPI* inst_ = nullptr;
+    MaaCustomActionHandle action = nullptr;
+    MaaTransparentArg action_arg = nullptr;
+    InstanceInternalAPI* inst = nullptr;
 };
 
 struct InstanceInternalAPI : public NonCopyable
