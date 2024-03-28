@@ -20,18 +20,20 @@ public:
     using ResultsVec = std::vector<Result>;
 
 public:
-    ColorMatcher(ColorMatcherParam param, cv::Mat image, std::string name);
+    ColorMatcher(cv::Mat image, ColorMatcherParam param, std::string name = "");
 
-    void analyze();
-
-    const ResultsVec& raw_results() const { return raw_results_; }
+    const ResultsVec& all_results() const { return all_results_; }
 
     const ResultsVec& filtered_results() const { return filtered_results_; }
 
 private:
-    ResultsVec foreach_rois(const ColorMatcherParam::Range& range, bool connected);
-    ResultsVec
-        color_match(const cv::Rect& roi, const ColorMatcherParam::Range& range, bool connected);
+    void analyze();
+    void foreach_rois(const ColorMatcherParam::Range& range);
+    void color_match(const cv::Rect& roi, const ColorMatcherParam::Range& range);
+
+    void filter();
+
+private:
     ResultsVec count_non_zero(const cv::Mat& bin, const cv::Point& tl) const;
     ResultsVec count_non_zero_with_connected(const cv::Mat& bin, const cv::Point& tl) const;
     cv::Mat draw_result(
@@ -40,14 +42,13 @@ private:
         const cv::Mat& bin,
         const ResultsVec& results) const;
 
-    void filter(ResultsVec& results, int count) const;
-    void sort(ResultsVec& results) const;
+    void sort_(ResultsVec& results) const;
 
 private:
     const ColorMatcherParam param_;
 
-    bool analyzed_ = false;
-    ResultsVec raw_results_;
+private:
+    ResultsVec all_results_;
     ResultsVec filtered_results_;
 };
 
