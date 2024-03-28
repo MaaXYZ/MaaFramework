@@ -21,10 +21,13 @@ void parseArgs(int argc, char* argv[], LaunchInfo& info)
 {
     for (int i = 1; i < argc; i++) {
         if (i + 1 < argc && !strcmp(argv[i], "-p")) {
-            info.port = static_cast<unsigned short>(atoi(argv[i + 1]));
-            if (info.port > 65535) {
+            auto port = atoi(argv[i + 1]);
+            if (port > 65535) {
                 std::cerr << "invalid port " << argv[i] << std::endl;
                 info.port = 0;
+            }
+            else {
+                info.port = static_cast<unsigned short>(port);
             }
         }
         else if (!strcmp(argv[i], "-s")) {
