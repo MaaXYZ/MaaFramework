@@ -28,42 +28,55 @@ FeatureMatcher::FeatureMatcher(
 
 void FeatureMatcher::analyze()
 {
+    if (templates_.empty()) {
+        LogError << name_ << "templates is empty" << VAR(param_.template_paths);
+        return;
+    }
+
     auto start_time = std::chrono::steady_clock::now();
 
     for (const auto& templ : templates_) {
         if (!templ) {
-            LogWarn << name_ << "template is nullptr" << VAR(param_.template_paths);
             continue;
         }
-        foreach_rois(*templ);
+
+        auto results = match_all_rois(*templ);
+        add_results(std::move(results), param_.count);
     }
 
-    filter();
+    sort();
 
     auto cost = duration_since(start_time);
     LogTrace << name_ << VAR(all_results_) << VAR(filtered_results_) << VAR(cost);
 }
 
-void FeatureMatcher::foreach_rois(const cv::Mat& templ)
+FeatureMatcher::ResultsVec FeatureMatcher::match_all_rois(const cv::Mat& templ)
 {
     if (templ.empty()) {
         LogWarn << name_ << "template is empty" << VAR(param_.template_paths);
-        return;
+        return {};
     }
 
     auto [keypoints_1, descriptors_1] = detect(templ, create_mask(templ, param_.green_mask));
 
     if (param_.roi.empty()) {
-        feature_match(templ, keypoints_1, descriptors_1, cv::Rect(0, 0, image_.cols, image_.rows));
+        return feature_match(
+            templ,
+            keypoints_1,
+            descriptors_1,
+            cv::Rect(0, 0, image_.cols, image_.rows));
     }
     else {
+        ResultsVec results;
         for (const cv::Rect& roi : param_.roi) {
-            feature_match(templ, keypoints_1, descriptors_1, roi);
+            auto res = feature_match(templ, keypoints_1, descriptors_1, roi);
+            merge_vector_(results, std::move(res));
         }
+        return results;
     }
 }
 
-void FeatureMatcher::feature_match(
+FeatureMatcher::ResultsVec FeatureMatcher::feature_match(
     const cv::Mat& templ,
     const std::vector<cv::KeyPoint>& keypoints_1,
     const cv::Mat& descriptors_1,
@@ -92,10 +105,7 @@ void FeatureMatcher::feature_match(
         handle_draw(draw);
     }
 
-    all_results_.insert(
-        all_results_.end(),
-        std::make_move_iterator(results.begin()),
-        std::make_move_iterator(results.end()));
+    return results;
 }
 
 cv::Ptr<cv::Feature2D> FeatureMatcher::create_detector() const
@@ -282,13 +292,19 @@ cv::Mat FeatureMatcher::draw_result(
     return image_draw;
 }
 
-void FeatureMatcher::filter()
+void FeatureMatcher::add_results(ResultsVec results, int count)
+{
+    std::ranges::copy_if(results, std::back_inserter(filtered_results_), [&](const auto& res) {
+        return res.count >= count;
+    });
+
+    merge_vector_(all_results_, std::move(results));
+}
+
+void FeatureMatcher::sort()
 {
     sort_(all_results_);
-
-    std::ranges::copy_if(all_results_, std::back_inserter(filtered_results_), [&](const auto& res) {
-        return res.count >= param_.count;
-    });
+    sort_(filtered_results_);
 
     handle_index(filtered_results_.size(), param_.result_index);
 }

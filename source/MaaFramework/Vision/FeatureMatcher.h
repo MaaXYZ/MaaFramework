@@ -41,14 +41,15 @@ public:
 
 private:
     void analyze();
-    void foreach_rois(const cv::Mat& templ);
-    void feature_match(
+    ResultsVec match_all_rois(const cv::Mat& templ);
+    ResultsVec feature_match(
         const cv::Mat& templ,
         const std::vector<cv::KeyPoint>& keypoints_1,
         const cv::Mat& descriptors_1,
         const cv::Rect& roi_2);
 
-    void filter();
+    void add_results(ResultsVec results, int count);
+    void sort();
 
 private:
     cv::Ptr<cv::Feature2D> create_detector() const;

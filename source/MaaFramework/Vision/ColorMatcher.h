@@ -28,10 +28,11 @@ public:
 
 private:
     void analyze();
-    void foreach_rois(const ColorMatcherParam::Range& range);
-    void color_match(const cv::Rect& roi, const ColorMatcherParam::Range& range);
+    ResultsVec match_all_rois(const ColorMatcherParam::Range& range);
+    ResultsVec color_match(const cv::Rect& roi, const ColorMatcherParam::Range& range);
 
-    void filter();
+    void add_results(ResultsVec results, int count);
+    void sort();
 
 private:
     ResultsVec count_non_zero(const cv::Mat& bin, const cv::Point& tl) const;

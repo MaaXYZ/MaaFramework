@@ -20,28 +20,33 @@ void ColorMatcher::analyze()
     auto start_time = std::chrono::steady_clock::now();
 
     for (const auto& range : param_.range) {
-        foreach_rois(range);
+        auto results = match_all_rois(range);
+        add_results(std::move(results), param_.count);
     }
 
-    filter();
+    sort();
 
     auto cost = duration_since(start_time);
     LogTrace << name_ << VAR(all_results_) << VAR(filtered_results_) << VAR(cost);
 }
 
-void ColorMatcher::foreach_rois(const ColorMatcherParam::Range& range)
+ColorMatcher::ResultsVec ColorMatcher::match_all_rois(const ColorMatcherParam::Range& range)
 {
     if (param_.roi.empty()) {
-        color_match(cv::Rect(0, 0, image_.cols, image_.rows), range);
+        return color_match(cv::Rect(0, 0, image_.cols, image_.rows), range);
     }
     else {
+        ResultsVec results;
         for (const cv::Rect& roi : param_.roi) {
-            color_match(roi, range);
+            auto res = color_match(roi, range);
+            merge_vector_(results, std::move(res));
         }
+        return results;
     }
 }
 
-void ColorMatcher::color_match(const cv::Rect& roi, const ColorMatcherParam::Range& range)
+ColorMatcher::ResultsVec
+    ColorMatcher::color_match(const cv::Rect& roi, const ColorMatcherParam::Range& range)
 {
     cv::Mat image = image_with_roi(roi);
     cv::Mat color;
@@ -57,10 +62,24 @@ void ColorMatcher::color_match(const cv::Rect& roi, const ColorMatcherParam::Ran
         handle_draw(draw);
     }
 
-    all_results_.insert(
-        all_results_.end(),
-        std::make_move_iterator(results.begin()),
-        std::make_move_iterator(results.end()));
+    return results;
+}
+
+void ColorMatcher::add_results(ResultsVec results, int count)
+{
+    std::ranges::copy_if(results, std::back_inserter(filtered_results_), [&](const auto& res) {
+        return res.count >= count;
+    });
+
+    merge_vector_(all_results_, std::move(results));
+}
+
+void ColorMatcher::sort()
+{
+    sort_(all_results_);
+    sort_(filtered_results_);
+
+    handle_index(filtered_results_.size(), param_.result_index);
 }
 
 ColorMatcher::ResultsVec ColorMatcher::count_non_zero(const cv::Mat& bin, const cv::Point& tl) const
@@ -160,17 +179,6 @@ cv::Mat ColorMatcher::draw_result(
     // cv::line(image_draw, cv::Point(raw_width + color.cols, 0), res.box.tl(), color_draw, 1);
 
     return image_draw;
-}
-
-void ColorMatcher::filter()
-{
-    sort_(all_results_);
-
-    std::ranges::copy_if(all_results_, std::back_inserter(filtered_results_), [&](const auto& res) {
-        return res.count >= param_.count;
-    });
-
-    handle_index(filtered_results_.size(), param_.result_index);
 }
 
 void ColorMatcher::sort_(ResultsVec& results) const
