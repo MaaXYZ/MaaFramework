@@ -6,55 +6,62 @@
 
 MAA_VISION_NS_BEGIN
 
-TemplateComparator::ResultsVec
-    TemplateComparator::analyze(const cv::Mat& lhs, const cv::Mat& rhs) const
+TemplateComparator::TemplateComparator(
+    cv::Mat lhs,
+    cv::Mat rhs,
+    TemplateComparatorParam param,
+    std::string name)
+    : VisionBase(std::move(lhs), std::move(name))
+    , rhs_image_(std::move(rhs))
+    , param_(std::move(param))
 {
-    if (lhs.size() != rhs.size()) {
-        LogError << "lhs.size() != rhs.size()" << VAR(lhs) << VAR(rhs);
-        return {};
+    analyze();
+}
+
+void TemplateComparator::analyze()
+{
+    if (image_.size() != rhs_image_.size()) {
+        LogError << "lhs_image_.size() != rhs_image_.size()" << VAR(image_) << VAR(rhs_image_);
+        return;
     }
 
     auto start_time = std::chrono::steady_clock::now();
 
-    ResultsVec results = foreach_rois(lhs, rhs);
+    auto results = compare_all_rois();
+    add_results(std::move(results), param_.threshold);
 
     auto cost = duration_since(start_time);
-    LogTrace << "Raw:" << VAR(results) << VAR(cost);
-
-    double threshold = param_.threshold;
-    filter(results, threshold);
-
-    cost = duration_since(start_time);
-    LogTrace << "Proc:" << VAR(results) << VAR(threshold) << VAR(cost);
-    return results;
+    LogTrace << name_ << VAR(all_results_) << VAR(filtered_results_) << VAR(cost);
 }
 
-TemplateComparator::ResultsVec
-    TemplateComparator::foreach_rois(const cv::Mat& lhs, const cv::Mat& rhs) const
+TemplateComparator::ResultsVec TemplateComparator::compare_all_rois()
 {
     auto method = param_.method;
 
     if (param_.roi.empty()) {
-        double score = comp(lhs, rhs, method);
-        return { Result { .box = cv::Rect(0, 0, lhs.cols, lhs.rows), .score = score } };
+        double score = comp(image_, rhs_image_, method);
+        return { Result { .box = cv::Rect(0, 0, image_.cols, image_.rows), .score = score } };
     }
+    else {
+        ResultsVec results;
+        for (const cv::Rect& roi : param_.roi) {
+            cv::Mat lhs_roi = image_(correct_roi(roi, image_));
+            cv::Mat rhs_roi = rhs_image_(correct_roi(roi, rhs_image_));
 
-    ResultsVec results;
-    for (const cv::Rect& roi : param_.roi) {
-        cv::Mat lhs_roi = lhs(correct_roi(roi, lhs));
-        cv::Mat rhs_roi = rhs(correct_roi(roi, rhs));
-
-        double score = comp(lhs_roi, rhs_roi, method);
-        Result res { .box = roi, .score = score };
-        results.emplace_back(std::move(res));
+            double score = comp(lhs_roi, rhs_roi, method);
+            results.emplace_back(Result { .box = roi, .score = score });
+        }
+        return results;
     }
-
-    return results;
 }
 
-void TemplateComparator::filter(ResultsVec& results, double threshold) const
+void TemplateComparator::add_results(ResultsVec results, double threshold)
 {
-    std::erase_if(results, [threshold](const auto& res) { return res.score < threshold; });
+    std::ranges::copy_if(results, std::back_inserter(filtered_results_), [&](const auto& res) {
+        return res.score > threshold;
+    });
+
+    merge_vector_(all_results_, std::move(results));
 }
 
 double TemplateComparator::comp(const cv::Mat& lhs, const cv::Mat& rhs, int method)

@@ -10,63 +10,73 @@
 
 MAA_VISION_NS_BEGIN
 
-std::pair<OCRer::ResultsVec, size_t> OCRer::analyze() const
+OCRer::OCRer(
+    cv::Mat image,
+    OCRerParam param,
+    std::shared_ptr<fastdeploy::vision::ocr::DBDetector> deter,
+    std::shared_ptr<fastdeploy::vision::ocr::Recognizer> recer,
+    std::shared_ptr<fastdeploy::pipeline::PPOCRv3> ocrer,
+    InstanceStatus* status,
+    std::string name)
+    : VisionBase(std::move(image), std::move(name))
+    , param_(std::move(param))
+    , deter_(std::move(deter))
+    , recer_(std::move(recer))
+    , ocrer_(std::move(ocrer))
+    , status_(status)
+{
+    analyze();
+}
+
+void OCRer::analyze()
 {
     auto start_time = std::chrono::steady_clock::now();
 
-    ResultsVec results = foreach_rois();
+    auto results = predict_all_rois();
+    add_results(std::move(results), param_.text);
+
+    sort();
 
     auto cost = duration_since(start_time);
-    LogTrace << name_ << "Raw:" << VAR(results) << VAR(param_.model) << VAR(cost);
-
-    const auto& expected = param_.text;
-    postproc_and_filter(results, expected);
-
-    cost = duration_since(start_time);
-    LogTrace << name_ << "Proc:" << VAR(results) << VAR(expected) << VAR(param_.model) << VAR(cost);
-
-    sort(results);
-    size_t index = preferred_index(results);
-
-    return { results, index };
+    LogTrace << name_ << VAR(all_results_) << VAR(filtered_results_) << VAR(cost);
 }
 
-OCRer::ResultsVec OCRer::foreach_rois() const
+OCRer::ResultsVec OCRer::predict_all_rois()
 {
     if (param_.roi.empty()) {
-        cv::Rect roi(0, 0, image_.cols, image_.rows);
-        return predict(roi);
+        return predict(cv::Rect(0, 0, image_.cols, image_.rows));
     }
-
-    ResultsVec results;
-    for (const cv::Rect& roi : param_.roi) {
-        ResultsVec res = predict(roi);
-        results.insert(
-            results.end(),
-            std::make_move_iterator(res.begin()),
-            std::make_move_iterator(res.end()));
+    else {
+        ResultsVec results;
+        for (const cv::Rect& roi : param_.roi) {
+            auto res = predict(roi);
+            merge_vector_(results, std::move(res));
+        }
+        return results;
     }
-    return results;
 }
 
-OCRer::ResultsVec OCRer::predict(const cv::Rect& roi) const
+OCRer::ResultsVec OCRer::predict(const cv::Rect& roi)
 {
     auto image_roi = image_with_roi(roi);
 
-    if (!status_) {
-        LogError << "status_ is null";
-        return {};
+    ResultsVec results;
+    bool hit_cache = false;
+
+    if (status_) {
+        if (auto results_opt = status_->get_ocr_cache(image_roi)) {
+            LogTrace << "Hit OCR cache" << VAR(roi);
+            hit_cache = true;
+            results = std::any_cast<ResultsVec>(*std::move(results_opt));
+        }
     }
 
-    ResultsVec results;
-    if (auto results_opt = status_->get_ocr_cache(image_roi)) {
-        LogTrace << "Hit OCR cache" << VAR(roi);
-        results = std::any_cast<ResultsVec>(*std::move(results_opt));
-    }
-    else {
+    if (!hit_cache) {
         results = param_.only_rec ? ResultsVec { predict_only_rec(image_roi) }
                                   : predict_det_and_rec(image_roi);
-        status_->set_ocr_cache(image_roi, results);
+        if (status_) {
+            status_->set_ocr_cache(image_roi, results);
+        }
     }
 
     std::ranges::for_each(results, [&](auto& res) {
@@ -74,7 +84,11 @@ OCRer::ResultsVec OCRer::predict(const cv::Rect& roi) const
         res.box.y += roi.y;
     });
 
-    draw_result(roi, results);
+    if (debug_draw_) {
+        auto draw = draw_result(roi, results);
+        handle_draw(draw);
+    }
+
     return results;
 }
 
@@ -158,12 +172,8 @@ OCRer::Result OCRer::predict_only_rec(const cv::Mat& image_roi) const
     return result;
 }
 
-void OCRer::draw_result(const cv::Rect& roi, const ResultsVec& results) const
+cv::Mat OCRer::draw_result(const cv::Rect& roi, const ResultsVec& results) const
 {
-    if (!debug_draw_) {
-        return;
-    }
-
     cv::Mat image_draw = draw_roi(roi);
 
     for (size_t i = 0; i != results.size(); ++i) {
@@ -183,25 +193,32 @@ void OCRer::draw_result(const cv::Rect& roi, const ResultsVec& results) const
             1);
     }
 
-    handle_draw(image_draw);
+    return image_draw;
 }
 
-void OCRer::postproc_and_filter(ResultsVec& results, const std::vector<std::wstring>& expected)
-    const
+void OCRer::add_results(ResultsVec results, const std::vector<std::wstring>& expected)
 {
-    for (auto iter = results.begin(); iter != results.end();) {
-        auto& res = *iter;
-
+    auto copied = results;
+    for (auto& res : copied) {
         postproc_trim_(res);
         postproc_replace_(res);
 
         if (!filter_by_required(res, expected)) {
-            iter = results.erase(iter);
             continue;
         }
 
-        ++iter;
+        filtered_results_.emplace_back(std::move(res));
     }
+
+    merge_vector_(all_results_, std::move(results));
+}
+
+void OCRer::sort()
+{
+    sort_(all_results_);
+    sort_(filtered_results_);
+
+    handle_index(filtered_results_.size(), param_.result_index);
 }
 
 void OCRer::postproc_trim_(Result& res) const
@@ -231,7 +248,7 @@ bool OCRer::filter_by_required(const Result& res, const std::vector<std::wstring
     return false;
 }
 
-void OCRer::sort(ResultsVec& results) const
+void OCRer::sort_(ResultsVec& results) const
 {
     switch (param_.order_by) {
     case ResultOrderBy::Horizontal:
@@ -259,16 +276,6 @@ void OCRer::sort(ResultsVec& results) const
         LogError << "Not supported order by" << VAR(param_.order_by);
         break;
     }
-}
-
-size_t OCRer::preferred_index(const ResultsVec& results) const
-{
-    auto index_opt = pythonic_index(results.size(), param_.result_index);
-    if (!index_opt) {
-        return SIZE_MAX;
-    }
-
-    return *index_opt;
 }
 
 MAA_VISION_NS_END

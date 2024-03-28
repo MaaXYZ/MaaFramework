@@ -162,6 +162,15 @@ inline static T softmax(const T& input)
     return output;
 }
 
+template <typename ResultsVec>
+inline static void merge_vector_(ResultsVec& left, ResultsVec right)
+{
+    left.insert(
+        left.end(),
+        std::make_move_iterator(right.begin()),
+        std::make_move_iterator(right.end()));
+}
+
 inline static cv::Mat hwc_to_chw(const cv::Mat& src)
 {
     std::vector<cv::Mat> rgb_images;

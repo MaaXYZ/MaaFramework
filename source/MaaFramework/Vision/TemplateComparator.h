@@ -1,11 +1,12 @@
 #pragma once
 
 #include "Utils/JsonExt.hpp"
+#include "VisionBase.h"
 #include "VisionTypes.h"
 
 MAA_VISION_NS_BEGIN
 
-class TemplateComparator
+class TemplateComparator : public VisionBase
 {
 public:
     struct Result
@@ -19,19 +20,27 @@ public:
     using ResultsVec = std::vector<Result>;
 
 public:
-    TemplateComparator() = default;
-
-    void set_param(TemplateComparatorParam param) { param_ = std::move(param); }
-
-    ResultsVec analyze(const cv::Mat& lhs, const cv::Mat& rhs) const;
+    TemplateComparator(
+        cv::Mat lhs,
+        cv::Mat rhs,
+        TemplateComparatorParam param,
+        std::string name = "");
 
 private:
-    ResultsVec foreach_rois(const cv::Mat& lhs, const cv::Mat& rhs) const;
-    void filter(ResultsVec& results, double threshold) const;
+    void analyze();
+    ResultsVec compare_all_rois();
+
+    void add_results(ResultsVec results, double threshold);
 
     static double comp(const cv::Mat& lhs, const cv::Mat& rhs, int method);
 
-    TemplateComparatorParam param_;
+private:
+    const cv::Mat rhs_image_ = {};
+    const TemplateComparatorParam param_;
+
+private:
+    ResultsVec all_results_;
+    ResultsVec filtered_results_;
 };
 
 MAA_VISION_NS_END

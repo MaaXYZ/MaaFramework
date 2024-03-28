@@ -162,8 +162,16 @@ std::optional<Recognizer::Result> Recognizer::feature_match(
     matcher.set_name(name);
     matcher.set_param(param);
 
-    std::shared_ptr<cv::Mat> templ = resource()->template_res().image(param.template_path);
-    matcher.set_template(std::move(templ));
+    std::vector<std::shared_ptr<cv::Mat>> templates;
+    for (const auto& path : param.template_paths) {
+        auto templ = resource()->template_res().image(path);
+        if (!templ) {
+            LogWarn << "Template not found:" << path;
+            continue;
+        }
+        templates.emplace_back(std::move(templ));
+    }
+    matcher.set_templates(std::move(templates));
 
     auto [results, index] = matcher.analyze();
     if (index >= results.size()) {

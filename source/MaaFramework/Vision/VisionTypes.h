@@ -152,7 +152,7 @@ struct FeatureMatcherParam
     inline static constexpr int kDefaultCount = 4;
 
     std::vector<cv::Rect> roi;
-    std::string template_path;
+    std::vector<std::string> template_paths;
     bool green_mask = false;
 
     Detector detector = kDefaultDetector;
