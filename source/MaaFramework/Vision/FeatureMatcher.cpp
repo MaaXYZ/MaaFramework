@@ -3,6 +3,7 @@
 MAA_SUPPRESS_CV_WARNINGS_BEGIN
 #include <opencv2/features2d.hpp>
 #include <opencv2/opencv.hpp>
+
 #ifdef MAA_VISION_HAS_XFEATURES2D
 #include <opencv2/xfeatures2d.hpp>
 #endif
