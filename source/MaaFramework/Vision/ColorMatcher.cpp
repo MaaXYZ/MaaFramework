@@ -8,62 +8,45 @@
 
 MAA_VISION_NS_BEGIN
 
-std::pair<ColorMatcher::ResultsVec, size_t> ColorMatcher::analyze() const
+ColorMatcher::ColorMatcher(cv::Mat image, ColorMatcherParam param, std::string name)
+    : VisionBase(std::move(image), std::move(name))
+    , param_(std::move(param))
 {
-    ResultsVec all_results;
+    analyze();
+}
+
+void ColorMatcher::analyze()
+{
+    auto start_time = std::chrono::steady_clock::now();
 
     for (const auto& range : param_.range) {
-        auto start_time = std::chrono::steady_clock::now();
-
-        bool connected = param_.connected;
-        ResultsVec results = foreach_rois(range, connected);
-
-        auto cost = duration_since(start_time);
-        LogTrace << name_ << "Raw:" << VAR(results) << VAR(range.first) << VAR(range.second)
-                 << VAR(connected) << VAR(cost);
-
-        int count = param_.count;
-        filter(results, count);
-
-        cost = duration_since(start_time);
-        LogTrace << name_ << "Filter:" << VAR(results) << VAR(range.first) << VAR(range.second)
-                 << VAR(count) << VAR(connected) << VAR(cost);
-
-        all_results.insert(
-            all_results.end(),
-            std::make_move_iterator(results.begin()),
-            std::make_move_iterator(results.end()));
+        auto results = match_all_rois(range);
+        add_results(std::move(results), param_.count);
     }
 
-    sort(all_results);
-    size_t index = preferred_index(all_results);
+    sort();
 
-    return { all_results, index };
+    auto cost = duration_since(start_time);
+    LogTrace << name_ << VAR(all_results_) << VAR(filtered_results_) << VAR(cost);
+}
+
+ColorMatcher::ResultsVec ColorMatcher::match_all_rois(const ColorMatcherParam::Range& range)
+{
+    if (param_.roi.empty()) {
+        return color_match(cv::Rect(0, 0, image_.cols, image_.rows), range);
+    }
+    else {
+        ResultsVec results;
+        for (const cv::Rect& roi : param_.roi) {
+            auto res = color_match(roi, range);
+            merge_vector_(results, std::move(res));
+        }
+        return results;
+    }
 }
 
 ColorMatcher::ResultsVec
-    ColorMatcher::foreach_rois(const ColorMatcherParam::Range& range, bool connected) const
-{
-    if (param_.roi.empty()) {
-        return { color_match(cv::Rect(0, 0, image_.cols, image_.rows), range, connected) };
-    }
-
-    ResultsVec results;
-    for (const cv::Rect& roi : param_.roi) {
-        ResultsVec res = color_match(roi, range, connected);
-        results.insert(
-            results.end(),
-            std::make_move_iterator(res.begin()),
-            std::make_move_iterator(res.end()));
-    }
-
-    return results;
-}
-
-ColorMatcher::ResultsVec ColorMatcher::color_match(
-    const cv::Rect& roi,
-    const ColorMatcherParam::Range& range,
-    bool connected) const
+    ColorMatcher::color_match(const cv::Rect& roi, const ColorMatcherParam::Range& range)
 {
     cv::Mat image = image_with_roi(roi);
     cv::Mat color;
@@ -71,11 +54,32 @@ ColorMatcher::ResultsVec ColorMatcher::color_match(
     cv::Mat bin;
     cv::inRange(color, range.first, range.second, bin);
 
-    ResultsVec results =
-        connected ? count_non_zero_with_connected(bin, roi.tl()) : count_non_zero(bin, roi.tl());
+    ResultsVec results = param_.connected ? count_non_zero_with_connected(bin, roi.tl())
+                                          : count_non_zero(bin, roi.tl());
 
-    draw_result(roi, color, bin, results);
+    if (debug_draw_) {
+        auto draw = draw_result(roi, color, bin, results);
+        handle_draw(draw);
+    }
+
     return results;
+}
+
+void ColorMatcher::add_results(ResultsVec results, int count)
+{
+    std::ranges::copy_if(results, std::back_inserter(filtered_results_), [&](const auto& res) {
+        return res.count >= count;
+    });
+
+    merge_vector_(all_results_, std::move(results));
+}
+
+void ColorMatcher::sort()
+{
+    sort_(all_results_);
+    sort_(filtered_results_);
+
+    handle_index(filtered_results_.size(), param_.result_index);
 }
 
 ColorMatcher::ResultsVec ColorMatcher::count_non_zero(const cv::Mat& bin, const cv::Point& tl) const
@@ -114,16 +118,12 @@ ColorMatcher::ResultsVec
     return NMS_for_count(std::move(results), 0.7);
 }
 
-void ColorMatcher::draw_result(
+cv::Mat ColorMatcher::draw_result(
     const cv::Rect& roi,
     const cv::Mat& color,
     const cv::Mat& bin,
     const ResultsVec& results) const
 {
-    if (!debug_draw_) {
-        return;
-    }
-
     cv::Mat image_draw = draw_roi(roi);
     const auto color_draw = cv::Scalar(0, 0, 255);
 
@@ -174,15 +174,10 @@ void ColorMatcher::draw_result(
 
     // cv::line(image_draw, cv::Point(raw_width + color.cols, 0), res.box.tl(), color_draw, 1);
 
-    handle_draw(image_draw);
+    return image_draw;
 }
 
-void ColorMatcher::filter(ResultsVec& results, int count) const
-{
-    std::erase_if(results, [count](const auto& res) { return res.count < count; });
-}
-
-void ColorMatcher::sort(ResultsVec& results) const
+void ColorMatcher::sort_(ResultsVec& results) const
 {
     switch (param_.order_by) {
     case ResultOrderBy::Horizontal:
@@ -204,16 +199,6 @@ void ColorMatcher::sort(ResultsVec& results) const
         LogError << "Not supported order by" << VAR(param_.order_by);
         break;
     }
-}
-
-size_t ColorMatcher::preferred_index(const ResultsVec& results) const
-{
-    auto index_opt = pythonic_index(results.size(), param_.result_index);
-    if (!index_opt) {
-        return SIZE_MAX;
-    }
-
-    return *index_opt;
 }
 
 MAA_VISION_NS_END

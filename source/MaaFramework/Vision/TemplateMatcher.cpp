@@ -7,56 +7,50 @@
 
 MAA_VISION_NS_BEGIN
 
-std::pair<TemplateMatcher::ResultsVec, size_t> TemplateMatcher::analyze() const
+TemplateMatcher::TemplateMatcher(
+    cv::Mat image,
+    TemplateMatcherParam param,
+    std::vector<std::shared_ptr<cv::Mat>> templates,
+    std::string name)
+    : VisionBase(std::move(image), std::move(name))
+    , param_(std::move(param))
+    , templates_(std::move(templates))
+{
+    analyze();
+}
+
+void TemplateMatcher::analyze()
 {
     if (templates_.empty()) {
         LogError << name_ << "templates is empty" << VAR(param_.template_paths);
-        return {};
+        return;
     }
 
     if (templates_.size() != param_.thresholds.size()) {
         LogError << name_ << "templates.size() != thresholds.size()" << VAR(templates_.size())
                  << VAR(param_.thresholds.size());
-        return {};
+        return;
     }
 
-    ResultsVec all_results;
+    auto start_time = std::chrono::steady_clock::now();
+
     for (size_t i = 0; i != templates_.size(); ++i) {
-        const auto& image_ptr = templates_.at(i);
-        if (!image_ptr) {
-            LogWarn << name_ << "template is empty" << VAR(param_.template_paths.at(i))
-                    << VAR(image_ptr);
+        const auto& templ = templates_.at(i);
+        if (!templ) {
             continue;
         }
 
-        const cv::Mat& templ = *image_ptr;
-
-        auto start_time = std::chrono::steady_clock::now();
-        ResultsVec results = foreach_rois(templ);
-
-        auto cost = duration_since(start_time);
-        const std::string& path = param_.template_paths.at(i);
-        LogTrace << name_ << "Raw:" << VAR(results) << VAR(path) << VAR(cost);
-
-        double threshold = param_.thresholds.at(i);
-        filter(results, threshold);
-
-        cost = duration_since(start_time);
-        LogTrace << name_ << "Filter:" << VAR(results) << VAR(path) << VAR(threshold) << VAR(cost);
-
-        all_results.insert(
-            all_results.end(),
-            std::make_move_iterator(results.begin()),
-            std::make_move_iterator(results.end()));
+        auto results = match_all_rois(*templ);
+        add_results(std::move(results), param_.thresholds.at(i));
     }
 
-    sort(all_results);
-    size_t index = preferred_index(all_results);
+    sort();
 
-    return { all_results, index };
+    auto cost = duration_since(start_time);
+    LogTrace << name_ << VAR(all_results_) << VAR(filtered_results_) << VAR(cost);
 }
 
-TemplateMatcher::ResultsVec TemplateMatcher::foreach_rois(const cv::Mat& templ) const
+TemplateMatcher::ResultsVec TemplateMatcher::match_all_rois(const cv::Mat& templ)
 {
     if (templ.empty()) {
         LogWarn << name_ << "template is empty" << VAR(param_.template_paths) << VAR(templ.size());
@@ -64,22 +58,20 @@ TemplateMatcher::ResultsVec TemplateMatcher::foreach_rois(const cv::Mat& templ) 
     }
 
     if (param_.roi.empty()) {
-        return match(cv::Rect(0, 0, image_.cols, image_.rows), templ);
+        return template_match(cv::Rect(0, 0, image_.cols, image_.rows), templ);
     }
-
-    ResultsVec results;
-    for (const cv::Rect& roi : param_.roi) {
-        ResultsVec res = match(roi, templ);
-        results.insert(
-            results.end(),
-            std::make_move_iterator(res.begin()),
-            std::make_move_iterator(res.end()));
+    else {
+        ResultsVec results;
+        for (const cv::Rect& roi : param_.roi) {
+            auto res = template_match(roi, templ);
+            merge_vector_(results, std::move(res));
+        }
+        return results;
     }
-
-    return results;
 }
 
-TemplateMatcher::ResultsVec TemplateMatcher::match(const cv::Rect& roi, const cv::Mat& templ) const
+TemplateMatcher::ResultsVec
+    TemplateMatcher::template_match(const cv::Rect& roi, const cv::Mat& templ)
 {
     cv::Mat image = image_with_roi(roi);
 
@@ -121,20 +113,20 @@ TemplateMatcher::ResultsVec TemplateMatcher::match(const cv::Rect& roi, const cv
     }
 
     auto nms_results = NMS(std::move(raw_results));
-    draw_result(roi, templ, nms_results);
+
+    if (debug_draw_) {
+        auto draw = draw_result(roi, templ, nms_results);
+        handle_draw(draw);
+    }
 
     return nms_results;
 }
 
-void TemplateMatcher::draw_result(
+cv::Mat TemplateMatcher::draw_result(
     const cv::Rect& roi,
     const cv::Mat& templ,
     const ResultsVec& results) const
 {
-    if (!debug_draw_) {
-        return;
-    }
-
     cv::Mat image_draw = draw_roi(roi);
     const auto color = cv::Scalar(0, 0, 255);
 
@@ -177,15 +169,27 @@ void TemplateMatcher::draw_result(
         cv::line(image_draw, cv::Point(raw_width, 0), results.front().box.tl(), color, 1);
     }
 
-    handle_draw(image_draw);
+    return image_draw;
 }
 
-void TemplateMatcher::filter(ResultsVec& results, double threshold) const
+void TemplateMatcher::add_results(ResultsVec results, double threshold)
 {
-    std::erase_if(results, [threshold](const auto& res) { return res.score < threshold; });
+    std::ranges::copy_if(results, std::back_inserter(filtered_results_), [&](const auto& res) {
+        return res.score > threshold;
+    });
+
+    merge_vector_(all_results_, std::move(results));
 }
 
-void TemplateMatcher::sort(ResultsVec& results) const
+void TemplateMatcher::sort()
+{
+    sort_(all_results_);
+    sort_(filtered_results_);
+
+    handle_index(filtered_results_.size(), param_.result_index);
+}
+
+void TemplateMatcher::sort_(ResultsVec& results) const
 {
     switch (param_.order_by) {
     case ResultOrderBy::Horizontal:
@@ -207,16 +211,6 @@ void TemplateMatcher::sort(ResultsVec& results) const
         LogError << "Not supported order by" << VAR(param_.order_by);
         break;
     }
-}
-
-size_t TemplateMatcher::preferred_index(const ResultsVec& results) const
-{
-    auto index_opt = pythonic_index(results.size(), param_.result_index);
-    if (!index_opt) {
-        return SIZE_MAX;
-    }
-
-    return *index_opt;
 }
 
 MAA_VISION_NS_END

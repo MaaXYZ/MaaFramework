@@ -599,12 +599,16 @@ bool PipelineResMgr::parse_feature_matcher_param(
         return false;
     }
 
-    if (!get_and_check_value(
+    if (!get_and_check_value_or_array(
             input,
             "template",
-            output.template_path,
-            default_value.template_path)) {
-        LogError << "failed to get_and_check_value template_path" << VAR(input);
+            output.template_paths,
+            default_value.template_paths)) {
+        LogError << "failed to get_and_check_value_or_array templates" << VAR(input);
+        return false;
+    }
+    if (output.template_paths.empty()) {
+        LogError << "templates is empty" << VAR(input);
         return false;
     }
 

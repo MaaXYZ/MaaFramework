@@ -22,6 +22,7 @@ public:
     {
         cv::Rect box {};
         json::value detail;
+        std::vector<cv::Mat> draws;
     };
 
 public:
@@ -46,11 +47,11 @@ private:
         const std::string& name);
     std::optional<Result>
         ocr(const cv::Mat& image, const MAA_VISION_NS::OCRerParam& param, const std::string& name);
-    std::optional<Result> classify(
+    std::optional<Result> nn_classify(
         const cv::Mat& image,
         const MAA_VISION_NS::NeuralNetworkClassifierParam& param,
         const std::string& name);
-    std::optional<Result> detect(
+    std::optional<Result> nn_detect(
         const cv::Mat& image,
         const MAA_VISION_NS::NeuralNetworkDetectorParam& param,
         const std::string& name);

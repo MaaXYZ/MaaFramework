@@ -61,14 +61,14 @@ std::optional<Recognizer::Result>
         break;
 
     case Type::NeuralNetworkClassify:
-        result = classify(
+        result = nn_classify(
             image,
             std::get<NeuralNetworkClassifierParam>(task_data.rec_param),
             task_data.name);
         break;
 
     case Type::NeuralNetworkDetect:
-        result = detect(
+        result = nn_detect(
             image,
             std::get<NeuralNetworkDetectorParam>(task_data.rec_param),
             task_data.name);
@@ -120,11 +120,6 @@ std::optional<Recognizer::Result> Recognizer::template_match(
         return std::nullopt;
     }
 
-    TemplateMatcher matcher;
-    matcher.set_image(image);
-    matcher.set_name(name);
-    matcher.set_param(param);
-
     std::vector<std::shared_ptr<cv::Mat>> templates;
     for (const auto& path : param.template_paths) {
         auto templ = resource()->template_res().image(path);
@@ -134,15 +129,19 @@ std::optional<Recognizer::Result> Recognizer::template_match(
         }
         templates.emplace_back(std::move(templ));
     }
-    matcher.set_templates(std::move(templates));
 
-    auto [results, index] = matcher.analyze();
+    TemplateMatcher matcher(image, param, templates, name);
+
+    auto results = std::move(matcher).filtered_results();
+    size_t index = matcher.preferred_index();
+    auto draws = std::move(matcher).draws();
+
     if (index >= results.size()) {
         return std::nullopt;
     }
-
     const cv::Rect& box = results[index].box;
-    return Result { .box = box, .detail = std::move(results) };
+
+    return Result { .box = box, .detail = std::move(results), .draws = std::move(draws) };
 }
 
 std::optional<Recognizer::Result> Recognizer::feature_match(
@@ -157,21 +156,28 @@ std::optional<Recognizer::Result> Recognizer::feature_match(
         return std::nullopt;
     }
 
-    FeatureMatcher matcher;
-    matcher.set_image(image);
-    matcher.set_name(name);
-    matcher.set_param(param);
+    std::vector<std::shared_ptr<cv::Mat>> templates;
+    for (const auto& path : param.template_paths) {
+        auto templ = resource()->template_res().image(path);
+        if (!templ) {
+            LogWarn << "Template not found:" << path;
+            continue;
+        }
+        templates.emplace_back(std::move(templ));
+    }
 
-    std::shared_ptr<cv::Mat> templ = resource()->template_res().image(param.template_path);
-    matcher.set_template(std::move(templ));
+    FeatureMatcher matcher(image, param, templates, name);
 
-    auto [results, index] = matcher.analyze();
+    auto results = std::move(matcher).filtered_results();
+    size_t index = matcher.preferred_index();
+    auto draws = std::move(matcher).draws();
+
     if (index >= results.size()) {
         return std::nullopt;
     }
-
     const cv::Rect& box = results[index].box;
-    return Result { .box = box, .detail = std::move(results) };
+
+    return Result { .box = box, .detail = std::move(results), .draws = std::move(draws) };
 }
 
 std::optional<Recognizer::Result> Recognizer::color_match(
@@ -186,18 +192,18 @@ std::optional<Recognizer::Result> Recognizer::color_match(
         return std::nullopt;
     }
 
-    ColorMatcher matcher;
-    matcher.set_image(image);
-    matcher.set_name(name);
-    matcher.set_param(param);
+    ColorMatcher matcher(image, param, name);
 
-    auto [results, index] = matcher.analyze();
+    auto results = std::move(matcher).filtered_results();
+    size_t index = matcher.preferred_index();
+    auto draws = std::move(matcher).draws();
+
     if (index >= results.size()) {
         return std::nullopt;
     }
-
     const cv::Rect& box = results[index].box;
-    return Result { .box = box, .detail = std::move(results) };
+
+    return Result { .box = box, .detail = std::move(results), .draws = std::move(draws) };
 }
 
 std::optional<Recognizer::Result> Recognizer::ocr(
@@ -212,28 +218,25 @@ std::optional<Recognizer::Result> Recognizer::ocr(
         return std::nullopt;
     }
 
-    OCRer ocrer;
-    ocrer.set_image(image);
-    ocrer.set_name(name);
-    ocrer.set_param(param);
-
     auto det_session = resource()->ocr_res().deter(param.model);
     auto rec_session = resource()->ocr_res().recer(param.model);
     auto ocr_session = resource()->ocr_res().ocrer(param.model);
-    ocrer.set_session(std::move(det_session), std::move(rec_session), std::move(ocr_session));
 
-    ocrer.set_status(status());
+    OCRer ocrer(image, param, det_session, rec_session, ocr_session, status(), name);
 
-    auto [results, index] = ocrer.analyze();
+    auto results = std::move(ocrer).filtered_results();
+    size_t index = ocrer.preferred_index();
+    auto draws = std::move(ocrer).draws();
+
     if (index >= results.size()) {
         return std::nullopt;
     }
-
     const cv::Rect& box = results[index].box;
-    return Result { .box = box, .detail = std::move(results) };
+
+    return Result { .box = box, .detail = std::move(results), .draws = std::move(draws) };
 }
 
-std::optional<Recognizer::Result> Recognizer::classify(
+std::optional<Recognizer::Result> Recognizer::nn_classify(
     const cv::Mat& image,
     const MAA_VISION_NS::NeuralNetworkClassifierParam& param,
     const std::string& name)
@@ -245,24 +248,23 @@ std::optional<Recognizer::Result> Recognizer::classify(
         return std::nullopt;
     }
 
-    NeuralNetworkClassifier classifier;
-    classifier.set_image(image);
-    classifier.set_name(name);
-    classifier.set_param(param);
-
     auto session = resource()->onnx_res().classifier(param.model);
-    classifier.set_session(std::move(session));
 
-    auto [results, index] = classifier.analyze();
+    NeuralNetworkClassifier classifier(image, param, session, name);
+
+    auto results = std::move(classifier).filtered_results();
+    size_t index = classifier.preferred_index();
+    auto draws = std::move(classifier).draws();
+
     if (index >= results.size()) {
         return std::nullopt;
     }
-
     const cv::Rect& box = results[index].box;
-    return Result { .box = box, .detail = std::move(results) };
+
+    return Result { .box = box, .detail = std::move(results), .draws = std::move(draws) };
 }
 
-std::optional<Recognizer::Result> Recognizer::detect(
+std::optional<Recognizer::Result> Recognizer::nn_detect(
     const cv::Mat& image,
     const MAA_VISION_NS::NeuralNetworkDetectorParam& param,
     const std::string& name)
@@ -274,21 +276,20 @@ std::optional<Recognizer::Result> Recognizer::detect(
         return std::nullopt;
     }
 
-    NeuralNetworkDetector detector;
-    detector.set_image(image);
-    detector.set_name(name);
-    detector.set_param(param);
-
     auto session = resource()->onnx_res().detector(param.model);
-    detector.set_session(std::move(session));
 
-    auto [results, index] = detector.analyze();
+    NeuralNetworkDetector detector(image, param, session, name);
+
+    auto results = std::move(detector).filtered_results();
+    size_t index = detector.preferred_index();
+    auto draws = std::move(detector).draws();
+
     if (index >= results.size()) {
         return std::nullopt;
     }
-
     const cv::Rect& box = results[index].box;
-    return Result { .box = box, .detail = std::move(results) };
+
+    return Result { .box = box, .detail = std::move(results), .draws = std::move(draws) };
 }
 
 std::optional<Recognizer::Result> Recognizer::custom_recognize(
@@ -303,22 +304,22 @@ std::optional<Recognizer::Result> Recognizer::custom_recognize(
         return std::nullopt;
     }
 
-    auto recognizer = inst_->custom_recognizer(param.name);
-    if (!recognizer) {
+    auto* session = inst_->custom_recognizer_session(param.name);
+    if (!session) {
         LogError << "Custom recognizer not found:" << param.name;
         return std::nullopt;
     }
-    recognizer->set_image(image);
-    recognizer->set_param(param);
-    recognizer->set_name(name);
 
-    auto result_opt = recognizer->analyze();
-    if (!result_opt) {
+    CustomRecognizer recognizer(image, param, *session, inst_, name);
+    auto results = std::move(recognizer).result();
+    bool ret = recognizer.ret();
+
+    if (!ret) {
         return std::nullopt;
     }
 
-    const cv::Rect& box = result_opt->box;
-    return Result { .box = box, .detail = std::move(*result_opt) };
+    const cv::Rect& box = results.box;
+    return Result { .box = box, .detail = std::move(results) };
 }
 
 void Recognizer::show_hit_draw(

@@ -22,20 +22,29 @@ class CustomRecognizer : public VisionBase
 
 public:
     CustomRecognizer(
-        MaaCustomRecognizerHandle handle,
-        MaaTransparentArg handle_arg,
-        InstanceInternalAPI* inst);
+        cv::Mat image,
+        CustomRecognizerParam param,
+        CustomRecognizerSession session,
+        InstanceInternalAPI* inst,
+        std::string name = "");
 
-    void set_param(CustomRecognizerParam param) { param_ = std::move(param); }
+    bool ret() const { return ret_; }
 
-    std::optional<Result> analyze() const;
+    const Result& result() const& { return result_; }
+
+    Result result() && { return std::move(result_); }
 
 private:
-    MaaCustomRecognizerHandle recognizer_ = nullptr;
-    MaaTransparentArg recognizer_arg_ = nullptr;
+    void analyze();
+
+private:
+    const CustomRecognizerParam param_;
+    CustomRecognizerSession session_;
     InstanceInternalAPI* inst_ = nullptr;
 
-    CustomRecognizerParam param_;
+private:
+    bool ret_ = false;
+    Result result_;
 };
 
 MAA_VISION_NS_END

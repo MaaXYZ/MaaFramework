@@ -27,23 +27,40 @@ public:
     using ResultsVec = std::vector<Result>;
 
 public:
-    void set_session(std::shared_ptr<Ort::Session> session) { session_ = std::move(session); }
+    NeuralNetworkDetector(
+        cv::Mat image,
+        NeuralNetworkDetectorParam param,
+        std::shared_ptr<Ort::Session> session,
+        std::string name = "");
 
-    void set_param(NeuralNetworkDetectorParam param) { param_ = std::move(param); }
+    const ResultsVec& all_results() const& { return all_results_; }
 
-    std::pair<ResultsVec, size_t> analyze() const;
+    ResultsVec&& all_results() && { return std::move(all_results_); }
+
+    const ResultsVec& filtered_results() const& { return filtered_results_; }
+
+    ResultsVec filtered_results() && { return std::move(filtered_results_); }
 
 private:
-    ResultsVec foreach_rois() const;
-    ResultsVec detect(const cv::Rect& roi) const;
-    void draw_result(const cv::Rect& roi, const ResultsVec& results) const;
+    void analyze();
 
-    void filter(ResultsVec& results, const std::vector<size_t>& expected) const;
-    void sort(ResultsVec& results) const;
-    size_t preferred_index(const ResultsVec& results) const;
+    ResultsVec detect_all_rois();
+    ResultsVec detect(const cv::Rect& roi);
 
-    NeuralNetworkDetectorParam param_;
+    void add_results(ResultsVec results, const std::vector<size_t>& expected);
+    void sort();
+
+private:
+    cv::Mat draw_result(const cv::Rect& roi, const ResultsVec& results) const;
+    void sort_(ResultsVec& results) const;
+
+private:
+    const NeuralNetworkDetectorParam param_;
     std::shared_ptr<Ort::Session> session_ = nullptr;
+
+private:
+    ResultsVec all_results_;
+    ResultsVec filtered_results_;
 };
 
 MAA_VISION_NS_END

@@ -128,15 +128,13 @@ void Actuator::wait_freezes(const MAA_RES_NS::WaitFreezesParam& param, const cv:
     LogFunc << "Wait freezes:" << VAR(param.time) << VAR(param.threshold) << VAR(param.method);
 
     cv::Rect target = get_target_rect(param.target, cur_box);
+    cv::Mat pre_image = controller()->screencap();
 
-    TemplateComparator comp;
-    comp.set_param({
+    TemplateComparatorParam comp_param {
         .roi = { target },
         .threshold = param.threshold,
         .method = param.method,
-    });
-
-    cv::Mat pre_image = controller()->screencap();
+    };
 
     auto pre_time = std::chrono::steady_clock::now();
 
@@ -148,7 +146,9 @@ void Actuator::wait_freezes(const MAA_RES_NS::WaitFreezesParam& param, const cv:
             break;
         }
 
-        auto ret = comp.analyze(pre_image, cur_image);
+        TemplateComparator comparator(pre_image, cur_image, comp_param);
+
+        auto ret = comparator.filtered_results();
         if (ret.empty()) {
             pre_image = cur_image;
             pre_time = std::chrono::steady_clock::now();
@@ -199,13 +199,13 @@ bool Actuator::custom_action(
         LogError << "Inst is null";
         return false;
     }
-    auto action = inst_->custom_action(param.name);
-    if (!action) {
+    auto* session = inst_->custom_action_session(param.name);
+    if (!session) {
         LogError << "Custom task not found" << VAR(param.name);
         return false;
     }
 
-    return action->run(task_name, param, cur_box, cur_rec_detail);
+    return CustomAction(*session, inst_).run(task_name, param, cur_box, cur_rec_detail);
 }
 
 cv::Rect Actuator::get_target_rect(const MAA_RES_NS::Action::Target target, const cv::Rect& cur_box)

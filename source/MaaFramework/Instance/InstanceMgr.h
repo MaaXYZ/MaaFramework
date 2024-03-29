@@ -57,8 +57,8 @@ public: // from InstanceInternalAPI
     virtual MAA_CTRL_NS::ControllerAgent* inter_controller() override;
     virtual InstanceStatus* inter_status() override;
     virtual void notify(std::string_view msg, const json::value& details = json::value()) override;
-    virtual MAA_VISION_NS::CustomRecognizerPtr custom_recognizer(const std::string& name) override;
-    virtual MAA_TASK_NS::CustomActionPtr custom_action(const std::string& name) override;
+    virtual CustomRecognizerSession* custom_recognizer_session(const std::string& name) override;
+    virtual CustomActionSession* custom_action_session(const std::string& name) override;
 
 private:
     using TaskPtr = std::shared_ptr<TaskNS::PipelineTask>;
@@ -73,8 +73,8 @@ private:
     InstanceStatus status_;
     bool need_to_stop_ = false;
 
-    std::unordered_map<std::string, MAA_VISION_NS::CustomRecognizerPtr> custom_recognizers_;
-    std::unordered_map<std::string, MAA_TASK_NS::CustomActionPtr> custom_actions_;
+    std::unordered_map<std::string, CustomRecognizerSession> custom_recognizer_sessions_;
+    std::unordered_map<std::string, CustomActionSession> custom_action_sessions_;
 
     std::unique_ptr<AsyncRunner<TaskPtr>> task_runner_ = nullptr;
     MessageNotifier<MaaInstanceCallback> notifier;

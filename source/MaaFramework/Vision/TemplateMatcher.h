@@ -23,26 +23,40 @@ public:
     using ResultsVec = std::vector<Result>;
 
 public:
-    void set_templates(std::vector<std::shared_ptr<cv::Mat>> templates)
-    {
-        templates_ = std::move(templates);
-    }
+    TemplateMatcher(
+        cv::Mat image,
+        TemplateMatcherParam param,
+        std::vector<std::shared_ptr<cv::Mat>> templates,
+        std::string name = "");
 
-    void set_param(TemplateMatcherParam param) { param_ = std::move(param); }
+    const ResultsVec& all_results() const& { return all_results_; }
 
-    std::pair<ResultsVec, size_t> analyze() const;
+    ResultsVec&& all_results() && { return std::move(all_results_); }
+
+    const ResultsVec& filtered_results() const& { return filtered_results_; }
+
+    ResultsVec filtered_results() && { return std::move(filtered_results_); }
 
 private:
-    ResultsVec foreach_rois(const cv::Mat& templ) const;
-    ResultsVec match(const cv::Rect& roi, const cv::Mat& templ) const;
-    void draw_result(const cv::Rect& roi, const cv::Mat& templ, const ResultsVec& results) const;
+    void analyze();
+    ResultsVec match_all_rois(const cv::Mat& templ);
+    ResultsVec template_match(const cv::Rect& roi, const cv::Mat& templ);
 
-    void filter(ResultsVec& results, double threshold) const;
-    void sort(ResultsVec& results) const;
-    size_t preferred_index(const ResultsVec& results) const;
+    void add_results(ResultsVec results, double threshold);
+    void sort();
 
-    TemplateMatcherParam param_;
-    std::vector<std::shared_ptr<cv::Mat>> templates_;
+private:
+    cv::Mat draw_result(const cv::Rect& roi, const cv::Mat& templ, const ResultsVec& results) const;
+
+    void sort_(ResultsVec& results) const;
+
+private:
+    const TemplateMatcherParam param_;
+    const std::vector<std::shared_ptr<cv::Mat>> templates_;
+
+private:
+    ResultsVec all_results_;
+    ResultsVec filtered_results_;
 };
 
 MAA_VISION_NS_END
