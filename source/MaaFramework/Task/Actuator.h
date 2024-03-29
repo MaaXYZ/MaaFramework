@@ -22,7 +22,7 @@ public:
 public:
     explicit Actuator(InstanceInternalAPI* inst);
 
-    bool run(const Recognizer::Hit& rec_result, const TaskData& task_data);
+    bool run(const Recognizer::Hit& reco_hit, const TaskData& task_data);
 
 private:
     bool click(const MAA_RES_NS::Action::ClickParam& param, const cv::Rect& cur_box);

@@ -109,7 +109,7 @@ PipelineTask::RunningResult PipelineTask::find_first_and_run(
         }
     }
 
-    LogInfo << "Task hit:" << hits.task_data.name << hits.rec_result.box;
+    LogInfo << "Task hit:" << hits.task_data.name << hits.reco_hit.box;
     latest_hit_ = hits.task_data.name;
 
     auto run_ret = run_task(hits);
@@ -173,7 +173,7 @@ std::optional<PipelineTask::HitResult>
         }
 
         hit = true;
-        result = { .rec_result = *std::move(reco.hit), .task_data = task_data };
+        result = { .reco_hit = *std::move(reco.hit), .task_data = task_data };
         break;
     }
 
@@ -185,7 +185,7 @@ std::optional<PipelineTask::HitResult>
         json::value detail = basic_info()
                              | json::object {
                                    { "name", result.task_data.name },
-                                   { "recognition", result.rec_result.detail },
+                                   { "recognition", result.reco_hit.detail },
                                    { "status", "Hit" },
                                };
         notify(MaaMsg_Task_Debug_Hit, detail);
@@ -212,7 +212,7 @@ PipelineTask::RunningResult PipelineTask::run_task(const HitResult& hits)
     json::value detail = basic_info()
                          | json::object {
                                { "name", name },
-                               { "recognition", hits.rec_result.detail },
+                               { "recognition", hits.reco_hit.detail },
                                { "run_times", run_times },
                                { "status", "ReadyToRun" },
                            };
@@ -240,7 +240,7 @@ PipelineTask::RunningResult PipelineTask::run_task(const HitResult& hits)
         return RunningResult::Runout;
     }
 
-    auto ret = actuator_.run(hits.rec_result, hits.task_data);
+    auto ret = actuator_.run(hits.reco_hit, hits.task_data);
     status()->increase_run_times(name);
 
     detail["status"] = "Completed";

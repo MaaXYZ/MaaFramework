@@ -49,7 +49,7 @@ private:
 
     struct HitResult
     {
-        Recognizer::Hit rec_result;
+        Recognizer::Hit reco_hit;
         MAA_RES_NS::TaskData task_data;
     };
 

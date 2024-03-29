@@ -13,12 +13,12 @@ Actuator::Actuator(InstanceInternalAPI* inst)
 {
 }
 
-bool Actuator::run(const Recognizer::Hit& rec_result, const TaskData& task_data)
+bool Actuator::run(const Recognizer::Hit& reco_hit, const TaskData& task_data)
 {
     using namespace MAA_RES_NS::Action;
     LogFunc << VAR(task_data.name);
 
-    wait_freezes(task_data.pre_wait_freezes, rec_result.box);
+    wait_freezes(task_data.pre_wait_freezes, reco_hit.box);
     sleep(task_data.pre_delay);
 
     bool ret = false;
@@ -27,10 +27,10 @@ bool Actuator::run(const Recognizer::Hit& rec_result, const TaskData& task_data)
         ret = true;
         break;
     case Type::Click:
-        ret = click(std::get<ClickParam>(task_data.action_param), rec_result.box);
+        ret = click(std::get<ClickParam>(task_data.action_param), reco_hit.box);
         break;
     case Type::Swipe:
-        ret = swipe(std::get<SwipeParam>(task_data.action_param), rec_result.box);
+        ret = swipe(std::get<SwipeParam>(task_data.action_param), reco_hit.box);
         break;
     case Type::Key:
         ret = press_key(std::get<KeyParam>(task_data.action_param));
@@ -48,8 +48,8 @@ bool Actuator::run(const Recognizer::Hit& rec_result, const TaskData& task_data)
         ret = custom_action(
             task_data.name,
             std::get<CustomParam>(task_data.action_param),
-            rec_result.box,
-            rec_result.detail);
+            reco_hit.box,
+            reco_hit.detail);
         break;
     case Type::StopTask:
         LogInfo << "Action: StopTask";
@@ -60,7 +60,7 @@ bool Actuator::run(const Recognizer::Hit& rec_result, const TaskData& task_data)
         break;
     }
 
-    wait_freezes(task_data.post_wait_freezes, rec_result.box);
+    wait_freezes(task_data.post_wait_freezes, reco_hit.box);
     sleep(task_data.post_delay);
 
     return ret;

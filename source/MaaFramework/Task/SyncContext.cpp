@@ -99,13 +99,13 @@ bool SyncContext::run_action(
 
     Actuator actuator(inst_);
 
-    Recognizer::Hit rec_result { .box = cur_box, .detail = std::move(cur_detail) };
+    Recognizer::Hit reco_hit { .box = cur_box, .detail = std::move(cur_detail) };
 
     TaskDataMgr data_mgr(inst_);
     data_mgr.set_param(*json_opt);
     const auto& task_data = data_mgr.get_task_data(task);
 
-    auto ret = actuator.run(rec_result, task_data);
+    auto ret = actuator.run(reco_hit, task_data);
     return ret;
 }
 
