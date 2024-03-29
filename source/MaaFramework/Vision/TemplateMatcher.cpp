@@ -22,13 +22,13 @@ TemplateMatcher::TemplateMatcher(
 void TemplateMatcher::analyze()
 {
     if (templates_.empty()) {
-        LogError << name_ << "templates is empty" << VAR(param_.template_paths);
+        LogError << name_ << VAR(uid_) << "templates is empty" << VAR(param_.template_paths);
         return;
     }
 
     if (templates_.size() != param_.thresholds.size()) {
-        LogError << name_ << "templates.size() != thresholds.size()" << VAR(templates_.size())
-                 << VAR(param_.thresholds.size());
+        LogError << name_ << VAR(uid_) << "templates.size() != thresholds.size()"
+                 << VAR(templates_.size()) << VAR(param_.thresholds.size());
         return;
     }
 
@@ -47,13 +47,14 @@ void TemplateMatcher::analyze()
     sort();
 
     auto cost = duration_since(start_time);
-    LogTrace << name_ << VAR(all_results_) << VAR(filtered_results_) << VAR(cost);
+    LogTrace << name_ << VAR(uid_) << VAR(all_results_) << VAR(filtered_results_) << VAR(cost);
 }
 
 TemplateMatcher::ResultsVec TemplateMatcher::match_all_rois(const cv::Mat& templ)
 {
     if (templ.empty()) {
-        LogWarn << name_ << "template is empty" << VAR(param_.template_paths) << VAR(templ.size());
+        LogWarn << name_ << VAR(uid_) << "template is empty" << VAR(param_.template_paths)
+                << VAR(templ.size());
         return {};
     }
 
@@ -76,7 +77,7 @@ TemplateMatcher::ResultsVec
     cv::Mat image = image_with_roi(roi);
 
     if (templ.cols > image.cols || templ.rows > image.rows) {
-        LogError << name_ << "templ size is too large" << VAR(image) << VAR(templ);
+        LogError << name_ << VAR(uid_) << "templ size is too large" << VAR(image) << VAR(templ);
         return {};
     }
 

@@ -61,7 +61,7 @@ void CustomRecognizer::analyze()
     result_ = Result { .box = box, .detail = std::move(jdetail) };
 
     auto cost = duration_since(start_time);
-    LogTrace << name_ << VAR(ret_) << VAR(result_) << VAR(cost);
+    LogTrace << name_ << VAR(uid_) << VAR(ret_) << VAR(result_) << VAR(cost);
 }
 
 MAA_VISION_NS_END

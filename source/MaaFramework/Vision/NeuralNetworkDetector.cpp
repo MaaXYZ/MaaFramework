@@ -23,7 +23,7 @@ NeuralNetworkDetector::NeuralNetworkDetector(
 
 void NeuralNetworkDetector::analyze()
 {
-    LogFunc << name_;
+    LogFunc << name_ << VAR(uid_);
 
     if (!session_) {
         LogError << "OrtSession not loaded";
@@ -47,7 +47,7 @@ void NeuralNetworkDetector::analyze()
     sort();
 
     auto cost = duration_since(start_time);
-    LogTrace << name_ << VAR(all_results_) << VAR(filtered_results_) << VAR(cost);
+    LogTrace << name_ << VAR(uid_) << VAR(all_results_) << VAR(filtered_results_) << VAR(cost);
 }
 
 NeuralNetworkDetector::ResultsVec NeuralNetworkDetector::detect_all_rois()

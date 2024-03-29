@@ -27,7 +27,7 @@ void ColorMatcher::analyze()
     sort();
 
     auto cost = duration_since(start_time);
-    LogTrace << name_ << VAR(all_results_) << VAR(filtered_results_) << VAR(cost);
+    LogTrace << name_ << VAR(uid_) << VAR(all_results_) << VAR(filtered_results_) << VAR(cost);
 }
 
 ColorMatcher::ResultsVec ColorMatcher::match_all_rois(const ColorMatcherParam::Range& range)

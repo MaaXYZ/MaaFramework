@@ -38,7 +38,7 @@ void OCRer::analyze()
     sort();
 
     auto cost = duration_since(start_time);
-    LogTrace << name_ << VAR(all_results_) << VAR(filtered_results_) << VAR(cost);
+    LogTrace << name_ << VAR(uid_) << VAR(all_results_) << VAR(filtered_results_) << VAR(cost);
 }
 
 OCRer::ResultsVec OCRer::predict_all_rois()

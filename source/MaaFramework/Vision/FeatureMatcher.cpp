@@ -29,7 +29,7 @@ FeatureMatcher::FeatureMatcher(
 void FeatureMatcher::analyze()
 {
     if (templates_.empty()) {
-        LogError << name_ << "templates is empty" << VAR(param_.template_paths);
+        LogError << name_ << VAR(uid_) << "templates is empty" << VAR(param_.template_paths);
         return;
     }
 
@@ -47,13 +47,13 @@ void FeatureMatcher::analyze()
     sort();
 
     auto cost = duration_since(start_time);
-    LogTrace << name_ << VAR(all_results_) << VAR(filtered_results_) << VAR(cost);
+    LogTrace << name_ << VAR(uid_) << VAR(all_results_) << VAR(filtered_results_) << VAR(cost);
 }
 
 FeatureMatcher::ResultsVec FeatureMatcher::match_all_rois(const cv::Mat& templ)
 {
     if (templ.empty()) {
-        LogWarn << name_ << "template is empty" << VAR(param_.template_paths);
+        LogWarn << name_ << VAR(uid_) << "template is empty" << VAR(param_.template_paths);
         return {};
     }
 
@@ -83,7 +83,7 @@ FeatureMatcher::ResultsVec FeatureMatcher::feature_match(
     const cv::Rect& roi_2)
 {
     if (roi_2.empty()) {
-        LogError << name_ << "roi_2 is empty";
+        LogError << name_ << VAR(uid_) << "roi_2 is empty";
         return {};
     }
 
@@ -125,12 +125,12 @@ cv::Ptr<cv::Feature2D> FeatureMatcher::create_detector() const
 #ifdef MAA_VISION_HAS_XFEATURES2D
         return cv::xfeatures2d::SURF::create();
 #else
-        LogError << name_ << "SURF not enabled";
+        LogError << name_ << VAR(uid_) << "SURF not enabled";
         return nullptr;
 #endif
     }
 
-    LogError << name_ << "Unknown detector" << VAR(static_cast<int>(param_.detector));
+    LogError << name_ << VAR(uid_) << "Unknown detector" << VAR(static_cast<int>(param_.detector));
     return nullptr;
 }
 
@@ -139,7 +139,7 @@ std::pair<std::vector<cv::KeyPoint>, cv::Mat>
 {
     auto detector = create_detector();
     if (!detector) {
-        LogError << name_ << "detector is empty";
+        LogError << name_ << VAR(uid_) << "detector is empty";
         return {};
     }
 
@@ -164,7 +164,7 @@ cv::Ptr<cv::DescriptorMatcher> FeatureMatcher::create_matcher() const
         return cv::BFMatcher::create(cv::NORM_HAMMING);
     }
 
-    LogError << name_ << "Unknown detector" << VAR(static_cast<int>(param_.detector));
+    LogError << name_ << VAR(uid_) << "Unknown detector" << VAR(static_cast<int>(param_.detector));
     return nullptr;
 }
 
@@ -178,7 +178,7 @@ std::vector<std::vector<cv::DMatch>>
 
     auto matcher = create_matcher();
     if (!matcher) {
-        LogError << name_ << "matcher is empty";
+        LogError << name_ << VAR(uid_) << "matcher is empty";
         return {};
     }
 
@@ -216,8 +216,8 @@ FeatureMatcher::ResultsVec FeatureMatcher::feature_postproc(
         scene.emplace_back(keypoints_2[point[0].queryIdx].pt);
     }
 
-    LogTrace << name_ << "Match:" << VAR(good_matches.size()) << VAR(match_points.size())
-             << VAR(param_.distance_ratio);
+    LogTrace << name_ << VAR(uid_) << "Match:" << VAR(good_matches.size())
+             << VAR(match_points.size()) << VAR(param_.distance_ratio);
 
     if (good_matches.size() < 4) {
         return {};

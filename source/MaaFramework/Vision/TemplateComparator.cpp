@@ -31,7 +31,7 @@ void TemplateComparator::analyze()
     add_results(std::move(results), param_.threshold);
 
     auto cost = duration_since(start_time);
-    LogTrace << name_ << VAR(all_results_) << VAR(filtered_results_) << VAR(cost);
+    LogTrace << name_ << VAR(uid_) << VAR(all_results_) << VAR(filtered_results_) << VAR(cost);
 }
 
 TemplateComparator::ResultsVec TemplateComparator::compare_all_rois()
