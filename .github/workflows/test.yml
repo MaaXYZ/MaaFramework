@@ -126,8 +126,6 @@ jobs:
       - name: Run Python testing
         shell: bash
         run: |
-          python3 -m venv .venv
-          source .venv/bin/activate
           python3 -m pip install -r ./install/binding/Python/requirements.txt
           python3 ./test/python/binding_test.py ./install
 
