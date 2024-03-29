@@ -167,13 +167,13 @@ std::optional<PipelineTask::HitResult>
             continue;
         }
 
-        auto rec_opt = recognizer_.recognize(image, task_data);
-        if (!rec_opt) {
+        auto reco = recognizer_.recognize(image, task_data);
+        if (!reco.hit) {
             continue;
         }
 
         hit = true;
-        result = { .rec_result = *std::move(rec_opt), .task_data = task_data };
+        result = { .rec_result = *std::move(reco.hit), .task_data = task_data };
         break;
     }
 

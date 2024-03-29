@@ -13,7 +13,7 @@ Actuator::Actuator(InstanceInternalAPI* inst)
 {
 }
 
-bool Actuator::run(const Recognizer::Result& rec_result, const TaskData& task_data)
+bool Actuator::run(const Recognizer::Hit& rec_result, const TaskData& task_data)
 {
     using namespace MAA_RES_NS::Action;
     LogFunc << VAR(task_data.name);

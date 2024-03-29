@@ -68,13 +68,13 @@ bool SyncContext::run_recognizer(
     data_mgr.set_param(*json_opt);
     const auto& task_data = data_mgr.get_task_data(task);
 
-    auto opt = recognizer.recognize(image, task_data);
-    if (!opt) {
+    auto reco = recognizer.recognize(image, task_data);
+    if (!reco.hit) {
         return false;
     }
 
-    box = opt->box;
-    detail = opt->detail.to_string();
+    box = reco.hit->box;
+    detail = reco.hit->detail.to_string();
     return true;
 }
 
@@ -99,7 +99,7 @@ bool SyncContext::run_action(
 
     Actuator actuator(inst_);
 
-    Recognizer::Result rec_result { .box = cur_box, .detail = std::move(cur_detail) };
+    Recognizer::Hit rec_result { .box = cur_box, .detail = std::move(cur_detail) };
 
     TaskDataMgr data_mgr(inst_);
     data_mgr.set_param(*json_opt);
