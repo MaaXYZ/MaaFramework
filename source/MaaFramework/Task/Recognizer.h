@@ -22,7 +22,6 @@ public:
     {
         cv::Rect box {};
         json::value detail;
-        std::vector<cv::Mat> draws;
     };
 
 public:
@@ -32,34 +31,41 @@ public:
     std::optional<Result> recognize(const cv::Mat& image, const TaskData& task_data);
 
 private:
-    std::optional<Result> direct_hit(const std::string& name);
-    std::optional<Result> template_match(
+    struct ResultAndDraws
+    {
+        std::optional<Result> result = std::nullopt;
+        std::vector<cv::Mat> draws;
+    };
+
+    ResultAndDraws direct_hit(const std::string& name);
+    ResultAndDraws template_match(
         const cv::Mat& image,
         const MAA_VISION_NS::TemplateMatcherParam& param,
         const std::string& name);
-    std::optional<Result> feature_match(
+    ResultAndDraws feature_match(
         const cv::Mat& image,
         const MAA_VISION_NS::FeatureMatcherParam& param,
         const std::string& name);
-    std::optional<Result> color_match(
+    ResultAndDraws color_match(
         const cv::Mat& image,
         const MAA_VISION_NS::ColorMatcherParam& param,
         const std::string& name);
-    std::optional<Result>
+    ResultAndDraws
         ocr(const cv::Mat& image, const MAA_VISION_NS::OCRerParam& param, const std::string& name);
-    std::optional<Result> nn_classify(
+    ResultAndDraws nn_classify(
         const cv::Mat& image,
         const MAA_VISION_NS::NeuralNetworkClassifierParam& param,
         const std::string& name);
-    std::optional<Result> nn_detect(
+    ResultAndDraws nn_detect(
         const cv::Mat& image,
         const MAA_VISION_NS::NeuralNetworkDetectorParam& param,
         const std::string& name);
-    std::optional<Result> custom_recognize(
+    ResultAndDraws custom_recognize(
         const cv::Mat& image,
         const MAA_VISION_NS::CustomRecognizerParam& param,
         const std::string& name);
 
+    void save_draws(const std::vector<cv::Mat>& draws, const std::string& task_name) const;
     void show_hit_draw(const cv::Mat& image, const Result& res, const std::string& task_name) const;
 
 private:
