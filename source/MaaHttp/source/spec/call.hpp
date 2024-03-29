@@ -36,7 +36,7 @@ ReturnHwnd(maa::func_type_MaaToolkitGetForegroundWindow);
 #undef ReturnHwnd
 
 LHGArgFromJsonBegin(maa::func_type_MaaWin32ControllerCreate, _0_hWnd, true)
-    std::get<index>(arg) = reinterpret_cast<void*>(std::stoull(value.as_string()));
+    std::get<index>(arg) = reinterpret_cast<void*>(std::stoull(value.as_string(), nullptr, 0));
     LHGArgFromJsonMiddle()
     b.type("string");
 LHGArgFromJsonEnd()
