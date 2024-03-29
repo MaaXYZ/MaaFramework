@@ -4,8 +4,8 @@
 
 #include "Config/GlobalOptionConfig.h"
 #include "Utils/Logger.h"
-#include "Utils/Runtime.h"
 #include "Utils/Platform.h"
+#include "Utils/Runtime.h"
 
 MaaBool MaaToolkitInitOptionConfig(MaaStringView user_path, MaaStringView default_json)
 {
@@ -23,7 +23,7 @@ MaaBool MaaToolkitInitOptionConfig(MaaStringView user_path, MaaStringView defaul
 
 MaaBool MaaToolkitInit()
 {
-    LogWarn << __FUNCTION__ << "is deprecated, use MaaToolkitInitPolicy instead.";
+    LogWarn << __FUNCTION__ << "is deprecated, use MaaToolkitInitOptionConfig instead.";
 
     std::string user_path = MAA_NS::path_to_utf8_string(MAA_NS::library_dir());
 

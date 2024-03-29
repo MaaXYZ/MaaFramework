@@ -34,6 +34,9 @@ void parseArgs(int argc, char* argv[], LaunchInfo& info)
             info.slave = true;
         }
     }
+    if (!info.slave && info.port == 0) {
+        info.port = 13126;
+    }
 }
 
 void slaveMode(unsigned short port)
