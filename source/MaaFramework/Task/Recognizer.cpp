@@ -335,7 +335,13 @@ Recognizer::Result Recognizer::custom_recognize(
 
 void Recognizer::save_draws(const Result& result, const std::string& task_name) const
 {
-    auto dir = GlobalOptionMgr::get_instance().log_dir() / "vision";
+    const auto& option = GlobalOptionMgr::get_instance();
+
+    if (!option.save_draw()) {
+        return;
+    }
+
+    auto dir = option.log_dir() / "vision";
 
     for (const auto& draw : result.draws) {
         std::string filename =
