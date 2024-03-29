@@ -27,13 +27,9 @@ public:
 
     struct Result
     {
-    public:
-        int64_t uid = ++s_global_uid;
+        int64_t uid = 0;
         std::optional<Hit> hit = std::nullopt;
         std::vector<cv::Mat> draws;
-
-    private:
-        inline static std::atomic_int64_t s_global_uid = 0;
     };
 
 public:
@@ -72,7 +68,7 @@ private:
         const std::string& name);
 
     void save_draws(const Result& result, const std::string& task_name) const;
-    void show_hit_draw(const cv::Mat& image, const Hit& res, const std::string& task_name) const;
+    void show_hit_draw(const cv::Mat& image, const Hit& res, const std::string& task_name, int64_t uid) const;
 
 private:
     InstanceStatus* status() { return inst_ ? inst_->inter_status() : nullptr; }

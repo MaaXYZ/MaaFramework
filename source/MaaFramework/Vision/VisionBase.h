@@ -19,6 +19,8 @@ public:
 
     size_t preferred_index() const { return preferred_index_; }
 
+    int64_t uid() const { return uid_; }
+
 protected:
     cv::Mat image_with_roi(const cv::Rect& roi) const;
 
@@ -32,11 +34,14 @@ protected:
     const std::string name_;
 
     bool debug_draw_ = false;
+    const int64_t uid_ = ++s_global_uid;
 
 private:
     void init_draw();
 
 private:
+    inline static std::atomic_int64_t s_global_uid = 0;
+
     std::vector<cv::Mat> draws_;
     size_t preferred_index_ = SIZE_MAX;
 };

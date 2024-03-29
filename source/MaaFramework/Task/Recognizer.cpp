@@ -93,7 +93,7 @@ Recognizer::Result Recognizer::recognize(const cv::Mat& image, const TaskData& t
         status()->set_rec_box(task_data.name, result.hit->box);
         status()->set_rec_detail(task_data.name, result.hit->detail);
 
-        show_hit_draw(image, *result.hit, task_data.name);
+        show_hit_draw(image, *result.hit, task_data.name, result.uid);
     }
 
     if (task_data.inverse) {
@@ -143,9 +143,8 @@ Recognizer::Result Recognizer::template_match(
 
     auto results = std::move(matcher).filtered_results();
     size_t index = matcher.preferred_index();
-    auto draws = std::move(matcher).draws();
 
-    Result res { .draws = std::move(draws) };
+    Result res { .uid = matcher.uid(), .draws = std::move(matcher).draws() };
     if (index >= results.size()) {
         return res;
     }
@@ -180,9 +179,8 @@ Recognizer::Result Recognizer::feature_match(
 
     auto results = std::move(matcher).filtered_results();
     size_t index = matcher.preferred_index();
-    auto draws = std::move(matcher).draws();
 
-    Result res { .draws = std::move(draws) };
+    Result res { .uid = matcher.uid(), .draws = std::move(matcher).draws() };
     if (index >= results.size()) {
         return res;
     }
@@ -209,7 +207,7 @@ Recognizer::Result Recognizer::color_match(
     size_t index = matcher.preferred_index();
     auto draws = std::move(matcher).draws();
 
-    Result res { .draws = std::move(draws) };
+    Result res { .uid = matcher.uid(), .draws = std::move(matcher).draws() };
     if (index >= results.size()) {
         return res;
     }
@@ -238,9 +236,8 @@ Recognizer::Result Recognizer::ocr(
 
     auto results = std::move(ocrer).filtered_results();
     size_t index = ocrer.preferred_index();
-    auto draws = std::move(ocrer).draws();
 
-    Result res { .draws = std::move(draws) };
+    Result res { .uid = ocrer.uid(), .draws = std::move(ocrer).draws() };
     if (index >= results.size()) {
         return res;
     }
@@ -267,9 +264,8 @@ Recognizer::Result Recognizer::nn_classify(
 
     auto results = std::move(classifier).filtered_results();
     size_t index = classifier.preferred_index();
-    auto draws = std::move(classifier).draws();
 
-    Result res { .draws = std::move(draws) };
+    Result res { .uid = classifier.uid(), .draws = std::move(classifier).draws() };
     if (index >= results.size()) {
         return res;
     }
@@ -296,9 +292,8 @@ Recognizer::Result Recognizer::nn_detect(
 
     auto results = std::move(detector).filtered_results();
     size_t index = detector.preferred_index();
-    auto draws = std::move(detector).draws();
 
-    Result res { .draws = std::move(draws) };
+    Result res { .uid = detector.uid(), .draws = std::move(detector).draws() };
     if (index >= results.size()) {
         return res;
     }
@@ -329,11 +324,11 @@ Recognizer::Result Recognizer::custom_recognize(
     auto result = std::move(recognizer).result();
     bool ret = recognizer.ret();
 
+    Result res { .uid = recognizer.uid() };
     if (!ret) {
-        return {};
+        return res;
     }
 
-    Result res;
     res.hit = Hit { .box = result.box, .detail = std::move(result) };
     return res;
 }
@@ -343,21 +338,25 @@ void Recognizer::save_draws(const Result& result, const std::string& task_name) 
     auto dir = GlobalOptionMgr::get_instance().log_dir() / "vision";
 
     for (const auto& draw : result.draws) {
-        std::string filename = std::format("{}_{}_{}.png", task_name, result.uid, format_now_for_filename());
+        std::string filename =
+            std::format("{}_{}_{}.png", task_name, result.uid, format_now_for_filename());
         auto filepath = dir / path(filename);
         imwrite(filepath, draw);
         LogDebug << "save draw to" << filepath;
     }
 }
 
-void Recognizer::show_hit_draw(const cv::Mat& image, const Hit& res, const std::string& task_name)
-    const
+void Recognizer::show_hit_draw(
+    const cv::Mat& image,
+    const Hit& res,
+    const std::string& task_name,
+    int64_t uid) const
 {
     if (!GlobalOptionMgr::get_instance().show_hit_draw()) {
         return;
     }
 
-    const std::string kWinName = std::format("Hit: {}", task_name);
+    const std::string kWinName = std::format("Hit: {} {}", task_name, uid);
 
     cv::Mat draw = image.clone();
 
