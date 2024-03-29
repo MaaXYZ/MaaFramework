@@ -1,9 +1,5 @@
 #pragma once
 
-#include <atomic>
-#include <stack>
-#include <string_view>
-
 #include <meojson/json.hpp>
 
 #include "API/MaaTypes.h"
@@ -27,7 +23,7 @@ public:
 
     struct Result
     {
-        int64_t uid = 0;
+        uint64_t uid = 0;
         std::optional<Hit> hit = std::nullopt;
         std::vector<cv::Mat> draws;
     };
@@ -68,7 +64,11 @@ private:
         const std::string& name);
 
     void save_draws(const Result& result, const std::string& task_name) const;
-    void show_hit_draw(const cv::Mat& image, const Hit& res, const std::string& task_name, int64_t uid) const;
+    void show_hit_draw(
+        const cv::Mat& image,
+        const Hit& res,
+        const std::string& task_name,
+        uint64_t uid) const;
 
 private:
     InstanceStatus* status() { return inst_ ? inst_->inter_status() : nullptr; }

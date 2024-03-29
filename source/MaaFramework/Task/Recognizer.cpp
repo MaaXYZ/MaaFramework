@@ -356,7 +356,7 @@ void Recognizer::show_hit_draw(
     const cv::Mat& image,
     const Hit& res,
     const std::string& task_name,
-    int64_t uid) const
+    uint64_t uid) const
 {
     if (!GlobalOptionMgr::get_instance().show_hit_draw()) {
         return;
