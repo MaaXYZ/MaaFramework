@@ -1,6 +1,7 @@
 #include "ControlUnit/Win32ControlUnitAPI.h"
 
 #include "Base/UnitBase.h"
+#include "Input/SeizeInput.h"
 #include "Input/SendMessageInput.h"
 #include "Manager/ControlUnitMgr.h"
 // #include "Screencap/BackBufferScreencap.h"
@@ -45,6 +46,10 @@ MaaControlUnitHandle MaaWin32ControlUnitCreate(
     case MaaWin32ControllerType_Touch_SendMessage:
         LogInfo << "touch_type: SendMessage";
         touch_unit = std::make_shared<SendMessageInput>(h_wnd);
+        break;
+    case MaaWin32ControllerType_Touch_Seize:
+        LogInfo << "touch_type: Seize";
+        touch_unit = std::make_shared<SeizeInput>(h_wnd);
         break;
 
     default:
