@@ -119,8 +119,6 @@ MaaRectHandle = ctypes.c_void_p
 
 MaaSyncContextHandle = ctypes.c_void_p
 
-MaaControllerHandle = ctypes.c_void_p
-
 MaaStatus = ctypes.c_int32
 MaaCtrlId = MaaId
 MaaAdbControllerType = ctypes.c_int32
