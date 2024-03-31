@@ -33,6 +33,7 @@ public: // from KeyInputBase
 
 private:
     HWND hwnd_ = nullptr;
+    void ensure_foreground();
 };
 
 MAA_CTRL_UNIT_NS_END

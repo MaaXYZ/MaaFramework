@@ -6,6 +6,15 @@
 
 MAA_CTRL_UNIT_NS_BEGIN
 
+void SeizeInput::ensure_foreground()
+{
+    if (hwnd_ != GetForegroundWindow()) {
+        ShowWindow(hwnd_, SW_MINIMIZE);
+        ShowWindow(hwnd_, SW_RESTORE);
+        SetForegroundWindow(hwnd_);
+    }
+}
+
 bool SeizeInput::click(int x, int y)
 {
     LogInfo << VAR(x) << VAR(y);
@@ -15,24 +24,23 @@ bool SeizeInput::click(int x, int y)
         return false;
     }
 
-    // SendMessage(hwnd_, WM_LBUTTONDOWN, MK_LBUTTON, MAKELPARAM(x, y));
-    // SendMessage(hwnd_, WM_LBUTTONUP, MK_LBUTTON, MAKELPARAM(x, y));
+    this->ensure_foreground();
 
     POINT point = { x, y };
     ClientToScreen(hwnd_, &point);
+
+    LogInfo << VAR(point.x) << VAR(point.y);
+
+    SetCursorPos(point.x, point.y);
 
     INPUT inputs[2] = {};
     ZeroMemory(inputs, sizeof(inputs));
 
     inputs[0].type = INPUT_MOUSE;
     inputs[0].mi.dwFlags = MOUSEEVENTF_LEFTDOWN;
-    inputs[0].mi.dx = point.x;
-    inputs[0].mi.dy = point.y;
 
     inputs[1].type = INPUT_MOUSE;
     inputs[1].mi.dwFlags = MOUSEEVENTF_LEFTUP;
-    inputs[1].mi.dx = point.x;
-    inputs[1].mi.dy = point.y;
 
     SendInput(ARRAYSIZE(inputs), inputs, sizeof(INPUT));
 
@@ -48,6 +56,8 @@ bool SeizeInput::swipe(int x1, int y1, int x2, int y2, int duration)
         return false;
     }
 
+    this->ensure_foreground();
+
     if (duration <= 0) {
         LogWarn << "duration out of range" << VAR(duration);
         duration = 500;
@@ -56,9 +66,18 @@ bool SeizeInput::swipe(int x1, int y1, int x2, int y2, int duration)
     auto start = std::chrono::steady_clock::now();
     auto now = start;
 
-    // TODO
-    LogWarn << "TODO!!!";
-    // SendMessage(hwnd_, WM_LBUTTONDOWN, MK_LBUTTON, MAKELPARAM(x1, y1));
+    POINT points[] = { { x1, y1 }, {}, { x2, y2 } };
+    ClientToScreen(hwnd_, &points[0]);
+
+    INPUT input = {};
+    ZeroMemory(&input, sizeof(input));
+
+    SetCursorPos(points[0].x, points[0].y);
+
+    input.type = INPUT_MOUSE;
+    input.mi.dwFlags = MOUSEEVENTF_LEFTDOWN;
+
+    SendInput(1, &input, sizeof(INPUT));
 
     constexpr double kInterval = 10; // ms
     const double steps = duration / kInterval;
@@ -72,22 +91,26 @@ bool SeizeInput::swipe(int x1, int y1, int x2, int y2, int duration)
         std::this_thread::sleep_until(now + delay);
         now = std::chrono::steady_clock::now();
 
-        // SendMessage(hwnd_, WM_MOUSEMOVE, MK_LBUTTON, MAKELPARAM(tx, ty));
-        std::ignore = tx;
-        std::ignore = ty;
-        // TODO
+        points[1].x = tx;
+        points[1].y = ty;
+
+        ClientToScreen(hwnd_, &points[1]);
+
+        SetCursorPos(points[1].x, points[1].y);
     }
 
     std::this_thread::sleep_until(now + delay);
     now = std::chrono::steady_clock::now();
 
-    // SendMessage(hwnd_, WM_MOUSEMOVE, MK_LBUTTON, MAKELPARAM(x2, y2));
-    // TODO
+    ClientToScreen(hwnd_, &points[1]);
+
+    SetCursorPos(points[1].x, points[1].y);
 
     std::this_thread::sleep_until(now + delay);
     now = std::chrono::steady_clock::now();
-    // SendMessage(hwnd_, WM_LBUTTONUP, MK_LBUTTON, MAKELPARAM(x2, y2));
-    // TODO
+
+    input.mi.dwFlags = MOUSEEVENTF_LEFTUP;
+    SendInput(1, &input, sizeof(INPUT));
 
     return true;
 }
@@ -104,20 +127,19 @@ bool SeizeInput::touch_down(int contact, int x, int y, int pressure)
         return false;
     }
 
-    // SendMessage(hwnd_, WM_LBUTTONDOWN, MK_LBUTTON, MAKELPARAM(x, y));
+    this->ensure_foreground();
 
     POINT point = { x, y };
     ClientToScreen(hwnd_, &point);
+    SetCursorPos(point.x, point.y);
 
-    INPUT inputs = {};
-    ZeroMemory(&inputs, sizeof(inputs));
+    INPUT input = {};
+    ZeroMemory(&input, sizeof(input));
 
-    inputs.type = INPUT_MOUSE;
-    inputs.mi.dwFlags = MOUSEEVENTF_LEFTDOWN;
-    inputs.mi.dx = point.x;
-    inputs.mi.dy = point.y;
+    input.type = INPUT_MOUSE;
+    input.mi.dwFlags = MOUSEEVENTF_LEFTDOWN;
 
-    SendInput(1, &inputs, sizeof(INPUT));
+    SendInput(1, &input, sizeof(INPUT));
 
     return true;
 }
@@ -134,9 +156,12 @@ bool SeizeInput::touch_move(int contact, int x, int y, int pressure)
         return false;
     }
 
-    // TODO
-    LogWarn << "TODO!!!";
-    // SendMessage(hwnd_, WM_MOUSEMOVE, MK_LBUTTON, MAKELPARAM(x, y));
+    this->ensure_foreground();
+
+    POINT point = { x, y };
+    ClientToScreen(hwnd_, &point);
+
+    SetCursorPos(point.x, point.y);
 
     return true;
 }
@@ -152,15 +177,13 @@ bool SeizeInput::touch_up(int contact)
         return false;
     }
 
-    // SendMessage(hwnd_, WM_LBUTTONUP, MK_LBUTTON, 0);
+    INPUT input = {};
+    ZeroMemory(&input, sizeof(input));
 
-    INPUT inputs = {};
-    ZeroMemory(&inputs, sizeof(inputs));
+    input.type = INPUT_MOUSE;
+    input.mi.dwFlags = MOUSEEVENTF_LEFTUP;
 
-    inputs.type = INPUT_MOUSE;
-    inputs.mi.dwFlags = MOUSEEVENTF_LEFTUP;
-
-    SendInput(1, &inputs, sizeof(INPUT));
+    SendInput(1, &input, sizeof(INPUT));
 
     return true;
 }
@@ -173,9 +196,6 @@ bool SeizeInput::press_key(int key)
         LogError << "hwnd_ is nullptr";
         return false;
     }
-
-    // SendMessage(hwnd_, WM_KEYDOWN, key, 0);
-    // SendMessage(hwnd_, WM_KEYUP, key, 0);
 
     INPUT inputs[2] = {};
     ZeroMemory(inputs, sizeof(inputs));
@@ -204,7 +224,7 @@ bool SeizeInput::input_text(const std::string& text)
     auto osstr = to_osstring(text);
     // TODO
     LogWarn << "TODO!!!";
-    // SendMessage(hwnd_, WM_SETTEXT, NULL, (LPARAM)(osstr.c_str()));
+    SendMessage(hwnd_, WM_SETTEXT, NULL, (LPARAM)(osstr.c_str()));
 
     return true;
 }
