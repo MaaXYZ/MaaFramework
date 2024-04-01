@@ -66,13 +66,13 @@ bool SeizeInput::swipe(int x1, int y1, int x2, int y2, int duration)
     auto start = std::chrono::steady_clock::now();
     auto now = start;
 
-    POINT points[] = { { x1, y1 }, {}, { x2, y2 } };
-    ClientToScreen(hwnd_, &points[0]);
+    POINT point = { x1, y1 };
+    ClientToScreen(hwnd_, &point);
 
     INPUT input = {};
     ZeroMemory(&input, sizeof(input));
 
-    SetCursorPos(points[0].x, points[0].y);
+    SetCursorPos(point.x, point.y);
 
     input.type = INPUT_MOUSE;
     input.mi.dwFlags = MOUSEEVENTF_LEFTDOWN;
@@ -91,20 +91,19 @@ bool SeizeInput::swipe(int x1, int y1, int x2, int y2, int duration)
         std::this_thread::sleep_until(now + delay);
         now = std::chrono::steady_clock::now();
 
-        points[1].x = tx;
-        points[1].y = ty;
-
-        ClientToScreen(hwnd_, &points[1]);
-
-        SetCursorPos(points[1].x, points[1].y);
+        point.x = tx;
+        point.y = ty;
+        ClientToScreen(hwnd_, &point);
+        SetCursorPos(point.x, point.y);
     }
 
     std::this_thread::sleep_until(now + delay);
     now = std::chrono::steady_clock::now();
 
-    ClientToScreen(hwnd_, &points[1]);
-
-    SetCursorPos(points[1].x, points[1].y);
+    point.x = x2;
+    point.y = y2;
+    ClientToScreen(hwnd_, &point);
+    SetCursorPos(point.x, point.y);
 
     std::this_thread::sleep_until(now + delay);
     now = std::chrono::steady_clock::now();
@@ -201,10 +200,10 @@ bool SeizeInput::press_key(int key)
     ZeroMemory(inputs, sizeof(inputs));
 
     inputs[0].type = INPUT_KEYBOARD;
-    inputs[0].ki.wVk = (WORD)key;
+    inputs[0].ki.wVk = static_cast<WORD>(key);
 
     inputs[1].type = INPUT_KEYBOARD;
-    inputs[1].ki.wVk = (WORD)key;
+    inputs[1].ki.wVk = static_cast<WORD>(key);
     inputs[1].ki.dwFlags = KEYEVENTF_KEYUP;
 
     SendInput(ARRAYSIZE(inputs), inputs, sizeof(INPUT));
@@ -221,10 +220,26 @@ bool SeizeInput::input_text(const std::string& text)
         return false;
     }
 
-    auto osstr = to_osstring(text);
-    // TODO
-    LogWarn << "TODO!!!";
-    SendMessage(hwnd_, WM_SETTEXT, NULL, (LPARAM)(osstr.c_str()));
+    if (std::ranges::any_of(text, [](const char& c) { //
+            return static_cast<unsigned>(c) > 127;
+        })) {
+        LogError << "text contains non-ascii characters";
+        return false;
+    }
+
+    INPUT inputs[2] = {};
+    ZeroMemory(inputs, sizeof(inputs));
+
+    inputs[0].type = INPUT_KEYBOARD;
+    inputs[1].type = INPUT_KEYBOARD;
+    inputs[1].ki.dwFlags = KEYEVENTF_KEYUP;
+
+    for (auto& c : text) {
+        inputs[0].ki.wVk = static_cast<WORD>(c);
+        inputs[1].ki.wVk = static_cast<WORD>(c);
+
+        SendInput(ARRAYSIZE(inputs), inputs, sizeof(INPUT));
+    }
 
     return true;
 }
