@@ -176,6 +176,8 @@ bool SeizeInput::touch_up(int contact)
         return false;
     }
 
+    this->ensure_foreground();
+
     INPUT input = {};
     ZeroMemory(&input, sizeof(input));
 
@@ -195,6 +197,8 @@ bool SeizeInput::press_key(int key)
         LogError << "hwnd_ is nullptr";
         return false;
     }
+
+    this->ensure_foreground();
 
     INPUT inputs[2] = {};
     ZeroMemory(inputs, sizeof(inputs));
@@ -219,6 +223,8 @@ bool SeizeInput::input_text(const std::string& text)
         LogError << "hwnd_ is nullptr";
         return false;
     }
+
+    this->ensure_foreground();
 
     if (std::ranges::any_of(text, [](const char& c) { //
             return static_cast<unsigned>(c) > 127;
