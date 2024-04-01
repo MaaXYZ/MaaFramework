@@ -223,7 +223,7 @@ bool SeizeInput::input_text(const std::string& text)
     if (std::ranges::any_of(text, [](const char& c) { //
             return static_cast<unsigned>(c) > 127;
         })) {
-        LogError << "text contains non-ascii characters";
+        LogError << "text contains non-ascii characters" << VAR(text);
         return false;
     }
 
