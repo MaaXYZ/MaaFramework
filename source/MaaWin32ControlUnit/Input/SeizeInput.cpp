@@ -8,11 +8,12 @@ MAA_CTRL_UNIT_NS_BEGIN
 
 void SeizeInput::ensure_foreground()
 {
-    if (hwnd_ != GetForegroundWindow()) {
-        ShowWindow(hwnd_, SW_MINIMIZE);
-        ShowWindow(hwnd_, SW_RESTORE);
-        SetForegroundWindow(hwnd_);
+    if (hwnd_ == GetForegroundWindow()) {
+        return;
     }
+    ShowWindow(hwnd_, SW_MINIMIZE);
+    ShowWindow(hwnd_, SW_RESTORE);
+    SetForegroundWindow(hwnd_);
 }
 
 bool SeizeInput::click(int x, int y)
@@ -24,7 +25,7 @@ bool SeizeInput::click(int x, int y)
         return false;
     }
 
-    this->ensure_foreground();
+    ensure_foreground();
 
     POINT point = { x, y };
     ClientToScreen(hwnd_, &point);
@@ -34,7 +35,6 @@ bool SeizeInput::click(int x, int y)
     SetCursorPos(point.x, point.y);
 
     INPUT inputs[2] = {};
-    ZeroMemory(inputs, sizeof(inputs));
 
     inputs[0].type = INPUT_MOUSE;
     inputs[0].mi.dwFlags = MOUSEEVENTF_LEFTDOWN;
@@ -56,7 +56,7 @@ bool SeizeInput::swipe(int x1, int y1, int x2, int y2, int duration)
         return false;
     }
 
-    this->ensure_foreground();
+    ensure_foreground();
 
     if (duration <= 0) {
         LogWarn << "duration out of range" << VAR(duration);
@@ -70,7 +70,6 @@ bool SeizeInput::swipe(int x1, int y1, int x2, int y2, int duration)
     ClientToScreen(hwnd_, &point);
 
     INPUT input = {};
-    ZeroMemory(&input, sizeof(input));
 
     SetCursorPos(point.x, point.y);
 
@@ -126,14 +125,13 @@ bool SeizeInput::touch_down(int contact, int x, int y, int pressure)
         return false;
     }
 
-    this->ensure_foreground();
+    ensure_foreground();
 
     POINT point = { x, y };
     ClientToScreen(hwnd_, &point);
     SetCursorPos(point.x, point.y);
 
     INPUT input = {};
-    ZeroMemory(&input, sizeof(input));
 
     input.type = INPUT_MOUSE;
     input.mi.dwFlags = MOUSEEVENTF_LEFTDOWN;
@@ -155,7 +153,7 @@ bool SeizeInput::touch_move(int contact, int x, int y, int pressure)
         return false;
     }
 
-    this->ensure_foreground();
+    ensure_foreground();
 
     POINT point = { x, y };
     ClientToScreen(hwnd_, &point);
@@ -176,10 +174,9 @@ bool SeizeInput::touch_up(int contact)
         return false;
     }
 
-    this->ensure_foreground();
+    ensure_foreground();
 
     INPUT input = {};
-    ZeroMemory(&input, sizeof(input));
 
     input.type = INPUT_MOUSE;
     input.mi.dwFlags = MOUSEEVENTF_LEFTUP;
@@ -198,10 +195,9 @@ bool SeizeInput::press_key(int key)
         return false;
     }
 
-    this->ensure_foreground();
+    ensure_foreground();
 
     INPUT inputs[2] = {};
-    ZeroMemory(inputs, sizeof(inputs));
 
     inputs[0].type = INPUT_KEYBOARD;
     inputs[0].ki.wVk = static_cast<WORD>(key);
@@ -224,7 +220,7 @@ bool SeizeInput::input_text(const std::string& text)
         return false;
     }
 
-    this->ensure_foreground();
+    ensure_foreground();
 
     if (std::ranges::any_of(text, [](const char& c) { //
             return static_cast<unsigned>(c) > 127;
@@ -234,7 +230,6 @@ bool SeizeInput::input_text(const std::string& text)
     }
 
     INPUT inputs[2] = {};
-    ZeroMemory(inputs, sizeof(inputs));
 
     inputs[0].type = INPUT_KEYBOARD;
     inputs[1].type = INPUT_KEYBOARD;
