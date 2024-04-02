@@ -68,6 +68,11 @@ extern "C"
         MaaSyncContextHandle sync_context,
         MaaImageBufferHandle out_image /**< [out] */);
 
+    MAA_FRAMEWORK_API MaaBool MaaSyncContextGetTaskResult(
+        MaaSyncContextHandle sync_context,
+        MaaStringView task_name,
+        MaaStringBufferHandle out_task_result /**< [out] */);
+
 #ifdef __cplusplus
 }
 #endif

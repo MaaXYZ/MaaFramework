@@ -198,3 +198,25 @@ MaaBool MaaSyncContextScreencap(MaaSyncContextHandle sync_context, MaaImageBuffe
     out_image->set(std::move(img));
     return true;
 }
+
+MaaBool MaaSyncContextGetTaskResult(
+    MaaSyncContextHandle sync_context,
+    MaaStringView task_name,
+    MaaStringBufferHandle out_task_result)
+{
+    LogFunc << VAR_VOIDP(sync_context) << VAR(task_name) << VAR(out_task_result);
+
+    if (!sync_context || !out_task_result) {
+        LogError << "handle is null";
+        return false;
+    }
+
+    json::value res = sync_context->task_result(task_name);
+    if (res.empty()) {
+        LogError << "res is empty";
+        return false;
+    }
+
+    out_task_result->set(res.to_string());
+    return true;
+}
