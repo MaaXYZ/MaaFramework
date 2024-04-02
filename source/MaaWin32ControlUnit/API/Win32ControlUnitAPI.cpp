@@ -39,7 +39,7 @@ MaaControlUnitHandle MaaWin32ControlUnitCreate(
     std::shared_ptr<ScreencapBase> screencap_unit = nullptr;
 
     auto touch_type = type & MaaWin32ControllerType_Touch_Mask;
-    // auto key_type = type & MaaWin32ControllerType_Key_Mask;
+    auto key_type = type & MaaWin32ControllerType_Key_Mask;
     auto screencap_type = type & MaaWin32ControllerType_Screencap_Mask;
 
     switch (touch_type) {
@@ -54,6 +54,19 @@ MaaControlUnitHandle MaaWin32ControlUnitCreate(
 
     default:
         LogWarn << "Unknown touch input type" << VAR(touch_type);
+        break;
+    }
+
+    switch (key_type) {
+    case MaaWin32ControllerType_Key_SendMessage:
+        key_unit = std::make_shared<SendMessageInput>(h_wnd);
+        break;
+    case MaaWin32ControllerType_Key_Seize:
+        key_unit = std::make_shared<SeizeInput>(h_wnd);
+        break;
+
+    default:
+        LogWarn << "Unknown key input type" << VAR(key_type);
         break;
     }
 
