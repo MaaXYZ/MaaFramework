@@ -271,7 +271,7 @@ MaaBool MaaGetRecognitionResult(
     }
 
     bool mhit;
-    cv::Rect mbox;
+    cv::Rect mbox {};
     std::string mdetail;
     cv::Mat mdraw;
     bool mret = inst->recoginition_result(reco_id, mhit, mbox, mdetail, mdraw);
