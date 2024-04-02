@@ -1,9 +1,10 @@
 #pragma once
 
-#include "Conf/Conf.h"
-#include "Utils/SafeWindows.hpp"
-
 #include <utility>
+
+#include "Conf/Conf.h"
+#include "Utils/NoWarningCV.hpp"
+#include "Utils/SafeWindows.hpp"
 
 MAA_CTRL_UNIT_NS_BEGIN
 
@@ -50,6 +51,13 @@ inline std::pair<int, int> window_size(HWND hwnd)
 inline bool is_fullscreen(HWND hwnd)
 {
     return GetWindowLongPtr(hwnd, GWL_STYLE) & WS_POPUP;
+}
+
+inline cv::Mat bgra_to_bgr(const cv::Mat& src)
+{
+    cv::Mat dst;
+    cv::cvtColor(src, dst, cv::COLOR_BGRA2BGR);
+    return dst;
 }
 
 MAA_CTRL_UNIT_NS_END

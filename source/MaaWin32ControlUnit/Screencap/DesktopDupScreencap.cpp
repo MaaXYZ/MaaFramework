@@ -1,5 +1,6 @@
 #include "DesktopDupScreencap.h"
 
+#include "HwndUtils.hpp"
 #include "Utils/ImageIo.h"
 #include "Utils/Logger.h"
 
@@ -29,7 +30,11 @@ std::optional<cv::Mat> DesktopDupScreencap::screencap()
         }
     }
 
-    return screencap_impl();
+    auto img = screencap_impl();
+    if (!img) {
+        return std::nullopt;
+    }
+    return bgra_to_bgr(*img);
 }
 
 bool DesktopDupScreencap::init()
@@ -198,7 +203,7 @@ std::optional<cv::Mat> DesktopDupScreencap::screencap_impl()
     OnScopeLeave([&]() { d3d_context_->Unmap(readable_texture_, 0); });
 
     cv::Mat mat(texture_desc_.Height, texture_desc_.Width, CV_8UC4, mapped.pData, mapped.RowPitch);
-    return mat.clone();
+    return mat;
 }
 
 MAA_CTRL_UNIT_NS_END
