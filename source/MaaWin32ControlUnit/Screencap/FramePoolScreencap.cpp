@@ -72,7 +72,8 @@ std::optional<cv::Mat> FramePoolScreencap::screencap()
 
     cv::Rect boundary = cv::boundingRect(alpha_bin);
     cv::Mat image = raw(boundary);
-    return image.clone();
+
+    return bgra_to_bgr(image);
 }
 
 bool FramePoolScreencap::init()

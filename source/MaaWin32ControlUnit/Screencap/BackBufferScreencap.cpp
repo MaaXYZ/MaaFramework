@@ -54,7 +54,7 @@ std::optional<cv::Mat> BackBufferScreencap::screencap()
     OnScopeLeave([&]() { d3d_context_->Unmap(readable_texture_, 0); });
 
     cv::Mat mat(texture_desc_.Height, texture_desc_.Width, CV_8UC4, mapped.pData, mapped.RowPitch);
-    return mat.clone();
+    return bgra_to_bgr(mat);
 }
 
 bool BackBufferScreencap::init()

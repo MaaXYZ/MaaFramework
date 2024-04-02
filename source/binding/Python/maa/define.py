@@ -119,8 +119,6 @@ MaaRectHandle = ctypes.c_void_p
 
 MaaSyncContextHandle = ctypes.c_void_p
 
-MaaControllerHandle = ctypes.c_void_p
-
 MaaStatus = ctypes.c_int32
 MaaCtrlId = MaaId
 MaaAdbControllerType = ctypes.c_int32
@@ -237,8 +235,10 @@ class MaaWin32ControllerTypeEnum:
     Invalid = 0
 
     Touch_SendMessage: MaaWin32ControllerType = 1
+    Touch_Seize: MaaWin32ControllerType = 2
 
     Key_SendMessage: MaaWin32ControllerType = 1 << 8
+    Key_Seize: MaaWin32ControllerType = 2 << 8
 
     Screencap_GDI: MaaWin32ControllerType = 1 << 16
     Screencap_DXGI_DesktopDup: MaaWin32ControllerType = 2 << 16

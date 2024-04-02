@@ -69,7 +69,7 @@ std::optional<cv::Mat> GdiScreencap::screencap()
         return std::nullopt;
     }
 
-    return mat;
+    return bgra_to_bgr(mat);
 }
 
 MAA_CTRL_UNIT_NS_END

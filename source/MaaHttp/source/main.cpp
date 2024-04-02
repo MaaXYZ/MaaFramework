@@ -209,7 +209,13 @@ int main(int argc, char* argv[])
                     res = { { "port", json::value() } };
                 }
             },
-            [](auto&, auto&) {});
+            [](auto& req, auto& res) {
+                req = {};
+                res = lhg::schema::Builder()
+                          .properties(json::object {
+                              { "port", lhg::schema::Builder().type("number").obj } })
+                          .obj;
+            });
 
         disp->handle(
             "/heart",
@@ -228,7 +234,15 @@ int main(int argc, char* argv[])
                             { "error", std::format("{} not exists", slave_port) } };
                 }
             },
-            [](auto&, auto&) {});
+            [](auto& req, auto& res) {
+                req = lhg::schema::Builder()
+                          .prop({ { "port", lhg::schema::Builder().type("number").obj } })
+                          .obj;
+                res = lhg::schema::Builder()
+                          .prop({ { "success", lhg::schema::Builder().type("boolean").obj } })
+                          .properties({ { "error", lhg::schema::Builder().type("string").obj } })
+                          .obj;
+            });
 
         disp->handle(
             "/stop",
@@ -246,7 +260,17 @@ int main(int argc, char* argv[])
                     res = { { "success", false }, { "error", std::format("{} not exists", port) } };
                 }
             },
-            [](auto&, auto&) {});
+            [](auto& req, auto& res) {
+                req = lhg::schema::Builder()
+                          .prop({ { "port", lhg::schema::Builder().type("number").obj } })
+                          .obj;
+                res = lhg::schema::Builder()
+                          .prop({ { "success", lhg::schema::Builder().type("boolean").obj } })
+                          .properties({ { "error", lhg::schema::Builder().type("string").obj } })
+                          .obj;
+            });
+
+        disp->setup_help("/help", "maa http monitor", "1.0.0");
 
         auto port = server->port();
 

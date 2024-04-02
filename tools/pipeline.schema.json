@@ -136,10 +136,23 @@
                 },
                 "threshold": {
                     "description": "模板匹配阈值。可选，默认 0.7 。",
-                    "type": "number",
-                    "default": 0.7,
-                    "minimum": 0,
-                    "maximum": 1
+                    "anyOf": [
+                        {
+                            "type": "number",
+                            "default": 0.7,
+                            "minimum": 0,
+                            "maximum": 1
+                        },
+                        {
+                            "type": "array",
+                            "items": {
+                                "type": "number",
+                                "default": 0.7,
+                                "minimum": 0,
+                                "maximum": 1
+                            }
+                        }
+                    ]
                 },
                 "method": {
                     "description": "模板匹配算法，即 cv::TemplateMatchModes。可选，默认 5 ",
