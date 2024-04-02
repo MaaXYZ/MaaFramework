@@ -5,49 +5,40 @@
 
 MAA_NS_BEGIN
 
-const cv::Rect& InstanceStatus::get_rec_box(const std::string& task) const
+std::any InstanceStatus::get_reco_hit(const std::string& name) const
 {
-    auto it = rec_box_map_.find(task);
-    if (it == rec_box_map_.end()) {
-        static cv::Rect empty {};
-        return empty;
+    auto it = reco_hit_map_.find(name);
+    if (it == reco_hit_map_.end()) {
+        return {};
     }
     return it->second;
 }
 
-void InstanceStatus::set_rec_box(std::string task, cv::Rect rec)
+void InstanceStatus::set_reco_hit(std::string task, std::any res)
 {
-    rec_box_map_.insert_or_assign(std::move(task), std::move(rec));
+    reco_hit_map_.insert_or_assign(std::move(task), std::move(res));
 }
 
-void InstanceStatus::clear_rec_box()
+std::any InstanceStatus::get_reco_result(uint64_t uid) const
 {
-    LogTrace;
-
-    rec_box_map_.clear();
-}
-
-const json::value& InstanceStatus::get_rec_detail(const std::string& task) const
-{
-    auto it = rec_detail_map_.find(task);
-    if (it == rec_detail_map_.end()) {
-        static json::value empty;
-        return empty;
+    auto it = reco_result_map_.find(uid);
+    if (it == reco_result_map_.end()) {
+        return {};
     }
     return it->second;
 }
 
-void InstanceStatus::set_rec_detail(std::string task, json::value detail)
+void InstanceStatus::set_reco_result(uint64_t uid, std::any res)
 {
-    rec_detail_map_.insert_or_assign(std::move(task), std::move(detail));
+    reco_result_map_.insert_or_assign(uid, std::move(res));
 }
 
-void InstanceStatus::clear_rec_detail()
+void InstanceStatus::clear_reco()
 {
-    LogTrace;
-
-    rec_detail_map_.clear();
+    reco_result_map_.clear();
+    reco_hit_map_.clear();
 }
+
 
 const json::value& InstanceStatus::get_task_result(const std::string& task) const
 {
@@ -90,43 +81,6 @@ void InstanceStatus::clear_run_times()
     LogTrace;
 
     run_times_map_.clear();
-}
-
-std::optional<std::any> InstanceStatus::get_ocr_cache(const cv::Mat& image) const
-{
-    return ocr_cache_.get_cache(image);
-}
-
-void InstanceStatus::set_ocr_cache(cv::Mat image, std::any result)
-{
-    ocr_cache_.set_cache(std::move(image), std::move(result));
-}
-
-void InstanceStatus::clear_ocr_cache()
-{
-    LogTrace;
-
-    ocr_cache_.clear();
-}
-
-bool InstanceStatus::cv_mat_equal(const cv::Mat& lhs, const cv::Mat& rhs)
-{
-    // treat two empty mat as identical as well
-    if (lhs.empty() && rhs.empty()) {
-        return true;
-    }
-    // if dimensionality of two mat is not identical, these two mat is not identical
-    if (lhs.cols != rhs.cols || lhs.rows != rhs.rows || lhs.dims != rhs.dims) {
-        return false;
-    }
-
-    // Get a matrix with non-zero values at points where the
-    // two matrices have different values
-    cv::Mat diff = lhs != rhs;
-    // diff is boolean matrix so all elements are non-negative. Equal if all elements in diff are
-    // zero.
-    bool eq2 = cv::sum(diff) == cv::Scalar(0, 0, 0, 0);
-    return eq2;
 }
 
 MAA_NS_END

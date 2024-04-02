@@ -43,8 +43,6 @@ public: // from MaaSyncContextAPI
     virtual bool touch_up(int contact) override;
     virtual cv::Mat screencap() override;
 
-    virtual json::value task_result(const std::string& task_name) const override;
-
     virtual MaaInstanceHandle instance() override { return dynamic_cast<MaaInstanceHandle>(inst_); }
 
     virtual MaaResourceHandle resource() override

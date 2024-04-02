@@ -223,7 +223,9 @@ cv::Rect Actuator::get_target_rect(const MAA_RES_NS::Action::Target target, cons
         raw = cur_box;
         break;
     case Target::Type::PreTask:
-        raw = status()->get_rec_box(std::get<std::string>(target.param));
+        raw = std::any_cast<Recognizer::Hit>(
+                  status()->get_reco_hit(std::get<std::string>(target.param)))
+                  .box;
         break;
     case Target::Type::Region:
         raw = std::get<cv::Rect>(target.param);

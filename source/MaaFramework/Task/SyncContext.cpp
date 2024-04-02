@@ -5,6 +5,8 @@
 #include "Controller/ControllerAgent.h"
 #include "Instance/InstanceStatus.h"
 #include "PipelineTask.h"
+#include "Task/Actuator.h"
+#include "Task/Recognizer.h"
 #include "Utils/Logger.h"
 
 MAA_TASK_NS_BEGIN
@@ -219,16 +221,6 @@ cv::Mat SyncContext::screencap()
     ctrl->wait(id);
 
     return ctrl->get_image();
-}
-
-json::value SyncContext::task_result(const std::string& task_name) const
-{
-    if (!status()) {
-        LogError << "Instance status is null";
-        return {};
-    }
-
-    return status()->get_task_result(task_name);
 }
 
 MAA_TASK_NS_END

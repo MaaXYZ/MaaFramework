@@ -7,6 +7,7 @@
 #include "Instance/InstanceInternalAPI.hpp"
 #include "Resource/PipelineResMgr.h"
 #include "Resource/PipelineTypes.h"
+#include "Vision/OCRer.h"
 
 MAA_TASK_NS_BEGIN
 
@@ -63,7 +64,7 @@ private:
         const MAA_VISION_NS::CustomRecognizerParam& param,
         const std::string& name);
 
-    void save_draws(const Result& result, const std::string& task_name) const;
+    void save_draws(const std::string& task_name, const Result& result) const;
     void show_hit_draw(
         const cv::Mat& image,
         const Hit& res,
@@ -77,6 +78,7 @@ private:
 
 private:
     InstanceInternalAPI* inst_ = nullptr;
+    MAA_VISION_NS::OCRer::Cache ocr_cache_;
 };
 
 MAA_TASK_NS_END

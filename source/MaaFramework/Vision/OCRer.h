@@ -32,6 +32,7 @@ public:
     };
 
     using ResultsVec = std::vector<Result>;
+    using Cache = std::map<cv::Rect, ResultsVec, RectComparer>;
 
 public:
     OCRer(
@@ -40,8 +41,9 @@ public:
         std::shared_ptr<fastdeploy::vision::ocr::DBDetector> deter,
         std::shared_ptr<fastdeploy::vision::ocr::Recognizer> recer,
         std::shared_ptr<fastdeploy::pipeline::PPOCRv3> ocrer,
-        InstanceStatus* status = nullptr,
+        Cache& cache,
         std::string name = "");
+
 
     const ResultsVec& all_results() const& { return all_results_; }
 
@@ -78,7 +80,7 @@ private:
     std::shared_ptr<fastdeploy::vision::ocr::Recognizer> recer_ = nullptr;
     std::shared_ptr<fastdeploy::pipeline::PPOCRv3> ocrer_ = nullptr;
 
-    InstanceStatus* status_ = nullptr;
+    Cache& cache_;
 
 private:
     ResultsVec all_results_;

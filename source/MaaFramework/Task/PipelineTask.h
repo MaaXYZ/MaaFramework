@@ -10,7 +10,6 @@
 #include "Instance/InstanceInternalAPI.hpp"
 #include "Resource/PipelineResMgr.h"
 #include "Resource/PipelineTypes.h"
-#include "Task/Actuator.h"
 #include "Task/Recognizer.h"
 #include "Task/TaskDataMgr.h"
 
@@ -93,8 +92,6 @@ private:
     std::string latest_hit_;
 
     TaskDataMgr data_mgr_;
-    Recognizer recognizer_;
-    Actuator actuator_;
 };
 
 MAA_TASK_NS_END

@@ -132,8 +132,6 @@ public:
     virtual bool touch_move(int contact, int x, int y, int pressure) = 0;
     virtual bool touch_up(int contact) = 0;
 
-    virtual json::value task_result(const std::string& task_name) const = 0;
-
     virtual MaaInstanceHandle instance() = 0;
     virtual MaaResourceHandle resource() = 0;
     virtual MaaControllerHandle controller() = 0;

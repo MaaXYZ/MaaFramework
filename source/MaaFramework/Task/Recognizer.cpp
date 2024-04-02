@@ -87,13 +87,13 @@ Recognizer::Result Recognizer::recognize(const cv::Mat& image, const TaskData& t
         return {};
     }
 
-    save_draws(result, task_data.name);
+    save_draws(task_data.name, result);
+    status()->set_reco_result(result.uid, result);
 
     if (result.hit) {
-        status()->set_rec_box(task_data.name, result.hit->box);
-        status()->set_rec_detail(task_data.name, result.hit->detail);
-
-        show_hit_draw(image, *result.hit, task_data.name, result.uid);
+        const auto& hit = *result.hit;
+        status()->set_reco_hit(task_data.name, hit);
+        show_hit_draw(image, hit, task_data.name, result.uid);
     }
 
     if (task_data.inverse) {
@@ -223,8 +223,8 @@ Recognizer::Result Recognizer::ocr(
 {
     using namespace MAA_VISION_NS;
 
-    if (!resource() || !status()) {
-        LogError << "Resource not binded or status is null" << VAR(resource()) << VAR(status());
+    if (!resource()) {
+        LogError << "Resource not binded or status is null" << VAR(resource());
         return {};
     }
 
@@ -232,7 +232,7 @@ Recognizer::Result Recognizer::ocr(
     auto rec_session = resource()->ocr_res().recer(param.model);
     auto ocr_session = resource()->ocr_res().ocrer(param.model);
 
-    OCRer ocrer(image, param, det_session, rec_session, ocr_session, status(), name);
+    OCRer ocrer(image, param, det_session, rec_session, ocr_session, ocr_cache_, name);
 
     auto results = std::move(ocrer).filtered_results();
     size_t index = ocrer.preferred_index();
@@ -333,7 +333,7 @@ Recognizer::Result Recognizer::custom_recognize(
     return res;
 }
 
-void Recognizer::save_draws(const Result& result, const std::string& task_name) const
+void Recognizer::save_draws(const std::string& task_name, const Result& result) const
 {
     const auto& option = GlobalOptionMgr::get_instance();
 

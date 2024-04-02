@@ -34,6 +34,7 @@ extern "C"
         MaaStringView task_param,
         MaaRectHandle cur_box,
         MaaStringView cur_rec_detail);
+
     MAA_FRAMEWORK_API MaaBool
         MaaSyncContextClick(MaaSyncContextHandle sync_context, int32_t x, int32_t y);
     MAA_FRAMEWORK_API MaaBool MaaSyncContextSwipe(
@@ -66,10 +67,6 @@ extern "C"
     MAA_FRAMEWORK_API MaaBool MaaSyncContextScreencap(
         MaaSyncContextHandle sync_context,
         MaaImageBufferHandle out_image /**< [out] */);
-    MAA_FRAMEWORK_API MaaBool MaaSyncContextGetTaskResult(
-        MaaSyncContextHandle sync_context,
-        MaaStringView task_name,
-        MaaStringBufferHandle out_task_result /**< [out] */);
 
 #ifdef __cplusplus
 }

@@ -7,7 +7,8 @@
 #include "MaaFramework/MaaMsg.h"
 #include "Option/GlobalOptionMgr.h"
 #include "Resource/ResourceMgr.h"
-#include "Task/CustomAction.h"
+#include "Task/Actuator.h"
+#include "Task/Recognizer.h"
 #include "Utils/ImageIo.h"
 #include "Utils/Logger.h"
 #include "Utils/Uuid.h"
@@ -18,8 +19,6 @@ PipelineTask::PipelineTask(std::string entry, InstanceInternalAPI* inst)
     : inst_(inst)
     , entry_(std::move(entry))
     , data_mgr_(inst)
-    , recognizer_(inst)
-    , actuator_(inst)
 {
 }
 
@@ -156,6 +155,8 @@ std::optional<PipelineTask::HitResult>
     }
 
     bool hit = false;
+
+    Recognizer recognizer(inst_);
     HitResult result;
 
     for (const std::string& name : list) {
@@ -167,7 +168,7 @@ std::optional<PipelineTask::HitResult>
             continue;
         }
 
-        auto reco = recognizer_.recognize(image, task_data);
+        auto reco = recognizer.recognize(image, task_data);
         if (!reco.hit) {
             continue;
         }
@@ -240,7 +241,8 @@ PipelineTask::RunningResult PipelineTask::run_task(const HitResult& hits)
         return RunningResult::Runout;
     }
 
-    auto ret = actuator_.run(hits.reco_hit, hits.task_data);
+    Actuator actuator(inst_);
+    auto ret = actuator.run(hits.reco_hit, hits.task_data);
     status()->increase_run_times(name);
 
     detail["status"] = "Completed";
