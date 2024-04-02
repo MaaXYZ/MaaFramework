@@ -174,6 +174,7 @@
 /// @}
 
 #define MaaMsg_Task_Debug_ListToRecognize ("Task.Debug.ListToRecognize")
+#define MaaMsg_Task_Debug_RecognitionResult ("Task.Debug.RecognitionResult")
 #define MaaMsg_Task_Debug_Hit ("Task.Debug.Hit")
 
 /** @} */

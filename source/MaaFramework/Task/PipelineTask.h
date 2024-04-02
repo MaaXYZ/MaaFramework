@@ -48,6 +48,7 @@ private:
 
     struct HitResult
     {
+        uint64_t reco_uid = 0;
         Recognizer::Hit reco_hit;
         MAA_RES_NS::TaskData task_data;
     };

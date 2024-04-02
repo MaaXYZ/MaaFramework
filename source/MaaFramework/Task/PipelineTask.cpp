@@ -108,7 +108,7 @@ PipelineTask::RunningResult PipelineTask::find_first_and_run(
         }
     }
 
-    LogInfo << "Task hit:" << hits.task_data.name << hits.reco_hit.box;
+    LogInfo << "Task hit:" << hits.task_data.name << hits.reco_uid << hits.reco_hit.box;
     latest_hit_ = hits.task_data.name;
 
     auto run_ret = run_task(hits);
@@ -145,11 +145,9 @@ std::optional<PipelineTask::HitResult>
     }
 
     if (debug_mode()) {
-        auto screencap_path = dump_image(image);
         json::value detail = basic_info()
                              | json::object {
                                    { "list", json::array(list) },
-                                   { "screencap", path_to_utf8_string(screencap_path) },
                                };
         notify(MaaMsg_Task_Debug_ListToRecognize, detail);
     }
@@ -169,12 +167,26 @@ std::optional<PipelineTask::HitResult>
         }
 
         auto reco = recognizer.recognize(image, task_data);
+
+        if (debug_mode()) {
+            json::value detail = basic_info()
+                                 | json::object {
+                                       { "name", name },
+                                       { "recognition",
+                                         {
+                                             { "id", reco.uid },
+                                         } },
+                                       { "hit", reco.hit.has_value() },
+                                   };
+            notify(MaaMsg_Task_Debug_RecognitionResult, detail);
+        }
+
         if (!reco.hit) {
             continue;
         }
 
         hit = true;
-        result = { .reco_hit = *std::move(reco.hit), .task_data = task_data };
+        result = { .reco_uid = reco.uid, .reco_hit = *std::move(reco.hit), .task_data = task_data };
         break;
     }
 
@@ -186,7 +198,12 @@ std::optional<PipelineTask::HitResult>
         json::value detail = basic_info()
                              | json::object {
                                    { "name", result.task_data.name },
-                                   { "recognition", result.reco_hit.detail },
+                                   { "recognition",
+                                     {
+                                         { "id", result.reco_uid },
+                                         { "box", result.reco_hit.box },
+                                         { "detail", result.reco_hit.detail },
+                                     } },
                                    { "status", "Hit" },
                                };
         notify(MaaMsg_Task_Debug_Hit, detail);
@@ -213,7 +230,12 @@ PipelineTask::RunningResult PipelineTask::run_task(const HitResult& hits)
     json::value detail = basic_info()
                          | json::object {
                                { "name", name },
-                               { "recognition", hits.reco_hit.detail },
+                               { "recognition",
+                                 {
+                                     { "id", hits.reco_uid },
+                                     { "box", hits.reco_hit.box },
+                                     { "detail", hits.reco_hit.detail },
+                                 } },
                                { "run_times", run_times },
                                { "status", "ReadyToRun" },
                            };

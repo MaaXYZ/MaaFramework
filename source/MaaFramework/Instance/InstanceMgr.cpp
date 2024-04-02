@@ -3,10 +3,9 @@
 #include "Controller/ControllerAgent.h"
 #include "MaaFramework/MaaMsg.h"
 #include "Resource/ResourceMgr.h"
-#include "Task/CustomAction.h"
 #include "Task/PipelineTask.h"
+#include "Task/Recognizer.h"
 #include "Utils/Logger.h"
-#include "Vision/CustomRecognizer.h"
 
 MAA_NS_BEGIN
 
@@ -240,6 +239,32 @@ MaaResourceHandle InstanceMgr::resource()
 MaaControllerHandle InstanceMgr::controller()
 {
     return controller_;
+}
+
+bool InstanceMgr::recoginition_result(
+    uint64_t reco_id,
+    bool& hit,
+    cv::Rect& box,
+    std::string& detail,
+    cv::Mat& draw) const
+{
+    std::any res_any = status_.get_reco_result(reco_id);
+
+    if (!res_any.has_value()) {
+        return false;
+    }
+
+    auto res = std::any_cast<MAA_TASK_NS::Recognizer::Result>(res_any);
+    hit = res.hit.has_value();
+
+    if (hit) {
+        box = res.hit->box;
+        detail = res.hit->detail.as_string();
+    }
+    if (!res.draws.empty()) {
+        draw = res.draws.front();
+    }
+    return true;
 }
 
 MAA_RES_NS::ResourceMgr* InstanceMgr::inter_resource()

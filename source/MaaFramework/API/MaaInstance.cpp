@@ -2,6 +2,7 @@
 
 #include "Instance/InstanceMgr.h"
 #include "Utils/Logger.h"
+#include "Utils/NoWarningCVMat.hpp"
 
 MaaInstanceHandle MaaCreate(MaaInstanceCallback callback, MaaCallbackTransparentArg callback_arg)
 {
@@ -254,4 +255,45 @@ MaaControllerHandle MaaGetController(MaaInstanceHandle inst)
         return nullptr;
     }
     return inst->controller();
+}
+
+MaaBool MaaGetRecognitionResult(
+    MaaInstanceHandle inst,
+    uint64_t reco_id,
+    MaaBool* hit,
+    MaaRectHandle hit_box,
+    MaaStringBufferHandle hit_detail,
+    MaaImageBufferHandle draw)
+{
+    if (!inst) {
+        LogError << "handle is null";
+        return false;
+    }
+
+    bool mhit;
+    cv::Rect mbox;
+    std::string mdetail;
+    cv::Mat mdraw;
+    bool mret = inst->recoginition_result(reco_id, mhit, mbox, mdetail, mdraw);
+
+    if (!mret) {
+        return false;
+    }
+
+    if (hit) {
+        *hit = mhit;
+    }
+    if (hit_box) {
+        hit_box->x = mbox.x;
+        hit_box->y = mbox.y;
+        hit_box->width = mbox.width;
+        hit_box->height = mbox.height;
+    }
+    if (hit_detail) {
+        hit_detail->set(std::move(mdetail));
+    }
+    if (draw) {
+        draw->set(std::move(mdraw));
+    }
+    return true;
 }

@@ -52,6 +52,9 @@ public: // from MaaInstanceAPI
     virtual MaaResourceHandle resource() override;
     virtual MaaControllerHandle controller() override;
 
+    virtual bool recoginition_result(uint64_t reco_id, bool& hit, cv::Rect& box, std::string& detail, cv::Mat& draw)
+        const override;
+
 public: // from InstanceInternalAPI
     virtual MAA_RES_NS::ResourceMgr* inter_resource() override;
     virtual MAA_CTRL_NS::ControllerAgent* inter_controller() override;
