@@ -251,8 +251,10 @@ enum MaaWin32ControllerTypeEnum
     MaaWin32Controller_Invalid = 0,
 
     MaaWin32ControllerType_Touch_SendMessage = 1,
+    MaaWin32ControllerType_Touch_Seize = 2,
 
     MaaWin32ControllerType_Key_SendMessage = 1 << 8,
+    MaaWin32ControllerType_Key_Seize = 2 << 8,
 
     MaaWin32ControllerType_Screencap_GDI = 1 << 16,
     MaaWin32ControllerType_Screencap_DXGI_DesktopDup = 2 << 16,
