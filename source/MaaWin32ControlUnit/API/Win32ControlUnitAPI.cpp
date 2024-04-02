@@ -38,6 +38,9 @@ MaaControlUnitHandle MaaWin32ControlUnitCreate(
     std::shared_ptr<KeyInputBase> key_unit = nullptr;
     std::shared_ptr<ScreencapBase> screencap_unit = nullptr;
 
+    std::shared_ptr<SendMessageInput> send_message_unit = nullptr;
+    std::shared_ptr<SeizeInput> seize_unit = nullptr;
+
     auto touch_type = type & MaaWin32ControllerType_Touch_Mask;
     auto key_type = type & MaaWin32ControllerType_Key_Mask;
     auto screencap_type = type & MaaWin32ControllerType_Screencap_Mask;
@@ -45,11 +48,17 @@ MaaControlUnitHandle MaaWin32ControlUnitCreate(
     switch (touch_type) {
     case MaaWin32ControllerType_Touch_SendMessage:
         LogInfo << "touch_type: SendMessage";
-        touch_unit = std::make_shared<SendMessageInput>(h_wnd);
+        if (!send_message_unit) {
+            send_message_unit = std::make_shared<SendMessageInput>(h_wnd);
+        }
+        touch_unit = send_message_unit;
         break;
     case MaaWin32ControllerType_Touch_Seize:
         LogInfo << "touch_type: Seize";
-        touch_unit = std::make_shared<SeizeInput>(h_wnd);
+        if (!seize_unit) {
+            seize_unit = std::make_shared<SeizeInput>(h_wnd);
+        }
+        touch_unit = seize_unit;
         break;
 
     default:
@@ -59,10 +68,18 @@ MaaControlUnitHandle MaaWin32ControlUnitCreate(
 
     switch (key_type) {
     case MaaWin32ControllerType_Key_SendMessage:
-        key_unit = std::make_shared<SendMessageInput>(h_wnd);
+        LogInfo << "key_type: SendMessage";
+        if (!send_message_unit) {
+            send_message_unit = std::make_shared<SendMessageInput>(h_wnd);
+        }
+        key_unit = send_message_unit;
         break;
     case MaaWin32ControllerType_Key_Seize:
-        key_unit = std::make_shared<SeizeInput>(h_wnd);
+        LogInfo << "key_type: Seize";
+        if (!seize_unit) {
+            seize_unit = std::make_shared<SeizeInput>(h_wnd);
+        }
+        key_unit = seize_unit;
         break;
 
     default:
