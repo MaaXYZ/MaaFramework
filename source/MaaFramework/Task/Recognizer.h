@@ -16,16 +16,13 @@ class Recognizer
 public:
     using TaskData = MAA_RES_NS::TaskData;
 
-    struct Hit
-    {
-        cv::Rect box {};
-        json::value detail;
-    };
+    using Hit = cv::Rect;
 
     struct Result
     {
         uint64_t uid = 0;
         std::optional<Hit> hit = std::nullopt;
+        json::value detail;
         std::vector<cv::Mat> draws;
     };
 

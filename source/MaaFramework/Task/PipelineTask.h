@@ -50,6 +50,7 @@ private:
     {
         uint64_t reco_uid = 0;
         Recognizer::Hit reco_hit;
+        json::value reco_detail;
         MAA_RES_NS::TaskData task_data;
     };
 

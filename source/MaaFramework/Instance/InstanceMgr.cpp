@@ -256,13 +256,13 @@ bool InstanceMgr::recoginition_result(
     }
 
     auto res = std::any_cast<MAA_TASK_NS::Recognizer::Result>(res_any);
-    hit = res.hit.has_value();
-    draws = res.draws;
 
+    hit = res.hit.has_value();
     if (hit) {
-        box = res.hit->box;
-        detail = res.hit->detail.as_string();
+        box = *res.hit;
     }
+    detail = res.detail.to_string();
+    draws = res.draws;
 
     return true;
 }

@@ -39,7 +39,6 @@ void InstanceStatus::clear_reco()
     reco_hit_map_.clear();
 }
 
-
 const json::value& InstanceStatus::get_task_result(const std::string& task) const
 {
     auto it = task_result_map_.find(task);

@@ -111,10 +111,25 @@ Recognizer::Result Recognizer::recognize(const cv::Mat& image, const TaskData& t
     return result;
 }
 
+template <typename Res>
+json::value gen_detail(
+    const std::vector<Res>& all,
+    const std::vector<Res>& filtered,
+    const std::optional<Res>& best)
+{
+    std::ignore = best;
+
+    return {
+        { "all", json::array(all) },
+        { "filtered", json::array(filtered) },
+        { "best", best ? json::value(*best) : json::value(nullptr) },
+    };
+}
+
 Recognizer::Result Recognizer::direct_hit(const std::string& name)
 {
     LogTrace << name;
-    return Result { .hit = Hit { .box = cv::Rect() } };
+    return Result { .hit = cv::Rect {} };
 }
 
 Recognizer::Result Recognizer::template_match(
@@ -139,18 +154,20 @@ Recognizer::Result Recognizer::template_match(
         templates.emplace_back(std::move(templ));
     }
 
-    TemplateMatcher matcher(image, param, templates, name);
+    TemplateMatcher analyzer(image, param, templates, name);
 
-    auto results = std::move(matcher).filtered_results();
-    size_t index = matcher.preferred_index();
-
-    Result res { .uid = matcher.uid(), .draws = std::move(matcher).draws() };
-    if (index >= results.size()) {
-        return res;
+    std::optional<Hit> hit = std::nullopt;
+    if (analyzer.best_result()) {
+        hit = analyzer.best_result()->box;
     }
 
-    res.hit = { .box = results[index].box, .detail = std::move(results) };
-    return res;
+    return Result {
+        .uid = analyzer.uid(),
+        .hit = std::move(hit),
+        .detail =
+            gen_detail(analyzer.all_results(), analyzer.filtered_results(), analyzer.best_result()),
+        .draws = std::move(analyzer).draws()
+    };
 }
 
 Recognizer::Result Recognizer::feature_match(
@@ -175,18 +192,20 @@ Recognizer::Result Recognizer::feature_match(
         templates.emplace_back(std::move(templ));
     }
 
-    FeatureMatcher matcher(image, param, templates, name);
+    FeatureMatcher analyzer(image, param, templates, name);
 
-    auto results = std::move(matcher).filtered_results();
-    size_t index = matcher.preferred_index();
-
-    Result res { .uid = matcher.uid(), .draws = std::move(matcher).draws() };
-    if (index >= results.size()) {
-        return res;
+    std::optional<Hit> hit = std::nullopt;
+    if (analyzer.best_result()) {
+        hit = analyzer.best_result()->box;
     }
 
-    res.hit = { .box = results[index].box, .detail = std::move(results) };
-    return res;
+    return Result {
+        .uid = analyzer.uid(),
+        .hit = std::move(hit),
+        .detail =
+            gen_detail(analyzer.all_results(), analyzer.filtered_results(), analyzer.best_result()),
+        .draws = std::move(analyzer).draws()
+    };
 }
 
 Recognizer::Result Recognizer::color_match(
@@ -201,19 +220,20 @@ Recognizer::Result Recognizer::color_match(
         return {};
     }
 
-    ColorMatcher matcher(image, param, name);
+    ColorMatcher analyzer(image, param, name);
 
-    auto results = std::move(matcher).filtered_results();
-    size_t index = matcher.preferred_index();
-    auto draws = std::move(matcher).draws();
-
-    Result res { .uid = matcher.uid(), .draws = std::move(matcher).draws() };
-    if (index >= results.size()) {
-        return res;
+    std::optional<Hit> hit = std::nullopt;
+    if (analyzer.best_result()) {
+        hit = analyzer.best_result()->box;
     }
 
-    res.hit = { .box = results[index].box, .detail = std::move(results) };
-    return res;
+    return Result {
+        .uid = analyzer.uid(),
+        .hit = std::move(hit),
+        .detail =
+            gen_detail(analyzer.all_results(), analyzer.filtered_results(), analyzer.best_result()),
+        .draws = std::move(analyzer).draws()
+    };
 }
 
 Recognizer::Result Recognizer::ocr(
@@ -232,18 +252,20 @@ Recognizer::Result Recognizer::ocr(
     auto rec_session = resource()->ocr_res().recer(param.model);
     auto ocr_session = resource()->ocr_res().ocrer(param.model);
 
-    OCRer ocrer(image, param, det_session, rec_session, ocr_session, ocr_cache_, name);
+    OCRer analyzer(image, param, det_session, rec_session, ocr_session, ocr_cache_, name);
 
-    auto results = std::move(ocrer).filtered_results();
-    size_t index = ocrer.preferred_index();
-
-    Result res { .uid = ocrer.uid(), .draws = std::move(ocrer).draws() };
-    if (index >= results.size()) {
-        return res;
+    std::optional<Hit> hit = std::nullopt;
+    if (analyzer.best_result()) {
+        hit = analyzer.best_result()->box;
     }
 
-    res.hit = { .box = results[index].box, .detail = std::move(results) };
-    return res;
+    return Result {
+        .uid = analyzer.uid(),
+        .hit = std::move(hit),
+        .detail =
+            gen_detail(analyzer.all_results(), analyzer.filtered_results(), analyzer.best_result()),
+        .draws = std::move(analyzer).draws()
+    };
 }
 
 Recognizer::Result Recognizer::nn_classify(
@@ -260,18 +282,20 @@ Recognizer::Result Recognizer::nn_classify(
 
     auto session = resource()->onnx_res().classifier(param.model);
 
-    NeuralNetworkClassifier classifier(image, param, session, name);
+    NeuralNetworkClassifier analyzer(image, param, session, name);
 
-    auto results = std::move(classifier).filtered_results();
-    size_t index = classifier.preferred_index();
-
-    Result res { .uid = classifier.uid(), .draws = std::move(classifier).draws() };
-    if (index >= results.size()) {
-        return res;
+    std::optional<Hit> hit = std::nullopt;
+    if (analyzer.best_result()) {
+        hit = analyzer.best_result()->box;
     }
 
-    res.hit = { .box = results[index].box, .detail = std::move(results) };
-    return res;
+    return Result {
+        .uid = analyzer.uid(),
+        .hit = std::move(hit),
+        .detail =
+            gen_detail(analyzer.all_results(), analyzer.filtered_results(), analyzer.best_result()),
+        .draws = std::move(analyzer).draws()
+    };
 }
 
 Recognizer::Result Recognizer::nn_detect(
@@ -288,18 +312,20 @@ Recognizer::Result Recognizer::nn_detect(
 
     auto session = resource()->onnx_res().detector(param.model);
 
-    NeuralNetworkDetector detector(image, param, session, name);
+    NeuralNetworkDetector analyzer(image, param, session, name);
 
-    auto results = std::move(detector).filtered_results();
-    size_t index = detector.preferred_index();
-
-    Result res { .uid = detector.uid(), .draws = std::move(detector).draws() };
-    if (index >= results.size()) {
-        return res;
+    std::optional<Hit> hit = std::nullopt;
+    if (analyzer.best_result()) {
+        hit = analyzer.best_result()->box;
     }
 
-    res.hit = { .box = results[index].box, .detail = std::move(results) };
-    return res;
+    return Result {
+        .uid = analyzer.uid(),
+        .hit = std::move(hit),
+        .detail =
+            gen_detail(analyzer.all_results(), analyzer.filtered_results(), analyzer.best_result()),
+        .draws = std::move(analyzer).draws()
+    };
 }
 
 Recognizer::Result Recognizer::custom_recognize(
@@ -320,17 +346,20 @@ Recognizer::Result Recognizer::custom_recognize(
         return {};
     }
 
-    CustomRecognizer recognizer(image, param, *session, inst_, name);
-    auto result = std::move(recognizer).result();
-    bool ret = recognizer.ret();
+    CustomRecognizer analyzer(image, param, *session, inst_, name);
 
-    Result res { .uid = recognizer.uid() };
-    if (!ret) {
-        return res;
+    std::optional<Hit> hit = std::nullopt;
+    if (analyzer.best_result()) {
+        hit = analyzer.best_result()->box;
     }
 
-    res.hit = Hit { .box = result.box, .detail = std::move(result) };
-    return res;
+    return Result {
+        .uid = analyzer.uid(),
+        .hit = std::move(hit),
+        .detail =
+            gen_detail(analyzer.all_results(), analyzer.filtered_results(), analyzer.best_result()),
+        .draws = std::move(analyzer).draws()
+    };
 }
 
 void Recognizer::save_draws(const std::string& task_name, const Result& result) const
@@ -367,7 +396,7 @@ void Recognizer::show_hit_draw(
     cv::Mat draw = image.clone();
 
     const cv::Scalar color(0, 255, 0);
-    cv::rectangle(draw, res.box, color, 2);
+    cv::rectangle(draw, res, color, 2);
 
     cv::imshow(kWinName, draw);
     cv::waitKey(0);

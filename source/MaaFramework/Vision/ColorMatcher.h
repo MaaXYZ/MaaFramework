@@ -30,13 +30,17 @@ public:
 
     ResultsVec filtered_results() && { return std::move(filtered_results_); }
 
+    const std::optional<Result>& best_result() const& { return best_result_; }
+
+    std::optional<Result> best_result() && { return std::move(best_result_); }
+
 private:
     void analyze();
     ResultsVec match_all_rois(const ColorMatcherParam::Range& range);
     ResultsVec color_match(const cv::Rect& roi, const ColorMatcherParam::Range& range);
 
     void add_results(ResultsVec results, int count);
-    void sort();
+    void cherry_pick();
 
 private:
     ResultsVec count_non_zero(const cv::Mat& bin, const cv::Point& tl) const;
@@ -55,6 +59,7 @@ private:
 private:
     ResultsVec all_results_;
     ResultsVec filtered_results_;
+    std::optional<Result> best_result_ = std::nullopt;
 };
 
 MAA_VISION_NS_END

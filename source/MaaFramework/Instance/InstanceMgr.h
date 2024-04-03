@@ -57,8 +57,7 @@ public: // from MaaInstanceAPI
         bool& hit,
         cv::Rect& box,
         std::string& detail,
-        std::vector<cv::Mat>& draws)
-        const override;
+        std::vector<cv::Mat>& draws) const override;
 
 public: // from InstanceInternalAPI
     virtual MAA_RES_NS::ResourceMgr* inter_resource() override;

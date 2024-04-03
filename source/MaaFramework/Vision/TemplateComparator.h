@@ -34,11 +34,16 @@ public:
 
     ResultsVec filtered_results() && { return std::move(filtered_results_); }
 
+    const std::optional<Result>& best_result() const& { return best_result_; }
+
+    std::optional<Result> best_result() && { return std::move(best_result_); }
+
 private:
     void analyze();
     ResultsVec compare_all_rois();
 
     void add_results(ResultsVec results, double threshold);
+    void cherry_pick();
 
     static double comp(const cv::Mat& lhs, const cv::Mat& rhs, int method);
 
@@ -49,6 +54,7 @@ private:
 private:
     ResultsVec all_results_;
     ResultsVec filtered_results_;
+    std::optional<Result> best_result_ = std::nullopt;
 };
 
 MAA_VISION_NS_END

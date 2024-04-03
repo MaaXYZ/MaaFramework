@@ -20,6 +20,8 @@ class CustomRecognizer : public VisionBase
         MEO_JSONIZATION(box, detail);
     };
 
+    using ResultsVec = std::vector<Result>;
+
 public:
     CustomRecognizer(
         cv::Mat image,
@@ -28,11 +30,17 @@ public:
         InstanceInternalAPI* inst,
         std::string name = "");
 
-    bool ret() const { return ret_; }
+    const ResultsVec& all_results() const& { return all_results_; }
 
-    const Result& result() const& { return result_; }
+    ResultsVec&& all_results() && { return std::move(all_results_); }
 
-    Result result() && { return std::move(result_); }
+    const ResultsVec& filtered_results() const& { return filtered_results_; }
+
+    ResultsVec filtered_results() && { return std::move(filtered_results_); }
+
+    const std::optional<Result>& best_result() const& { return best_result_; }
+
+    std::optional<Result> best_result() && { return std::move(best_result_); }
 
 private:
     void analyze();
@@ -43,8 +51,9 @@ private:
     InstanceInternalAPI* inst_ = nullptr;
 
 private:
-    bool ret_ = false;
-    Result result_;
+    ResultsVec all_results_;
+    ResultsVec filtered_results_;
+    std::optional<Result> best_result_ = std::nullopt;
 };
 
 MAA_VISION_NS_END

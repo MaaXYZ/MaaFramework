@@ -71,13 +71,11 @@ bool SyncContext::run_recognizer(
     const auto& task_data = data_mgr.get_task_data(task);
 
     auto reco = recognizer.recognize(image, task_data);
-    if (!reco.hit) {
-        return false;
-    }
 
-    box = reco.hit->box;
-    detail = reco.hit->detail.to_string();
-    return true;
+    box = *reco.hit;
+    detail = reco.detail.to_string();
+
+    return reco.hit.has_value();
 }
 
 bool SyncContext::run_action(
@@ -101,13 +99,13 @@ bool SyncContext::run_action(
 
     Actuator actuator(inst_);
 
-    Recognizer::Hit reco_hit { .box = cur_box, .detail = std::move(cur_detail) };
+    Recognizer::Hit reco_hit = cur_box;
 
     TaskDataMgr data_mgr(inst_);
     data_mgr.set_param(*json_opt);
     const auto& task_data = data_mgr.get_task_data(task);
 
-    auto ret = actuator.run(reco_hit, task_data);
+    auto ret = actuator.run(reco_hit, json::parse(cur_detail).value_or(cur_detail), task_data);
     return ret;
 }
 

@@ -44,7 +44,6 @@ public:
         Cache& cache,
         std::string name = "");
 
-
     const ResultsVec& all_results() const& { return all_results_; }
 
     ResultsVec&& all_results() && { return std::move(all_results_); }
@@ -53,6 +52,10 @@ public:
 
     ResultsVec filtered_results() && { return std::move(filtered_results_); }
 
+    const std::optional<Result>& best_result() const& { return best_result_; }
+
+    std::optional<Result> best_result() && { return std::move(best_result_); }
+
 private:
     void analyze();
 
@@ -60,7 +63,7 @@ private:
     ResultsVec predict(const cv::Rect& roi);
 
     void add_results(ResultsVec results, const std::vector<std::wstring>& expected);
-    void sort();
+    void cherry_pick();
 
 private:
     ResultsVec predict_det_and_rec(const cv::Mat& image_roi) const;
@@ -85,6 +88,7 @@ private:
 private:
     ResultsVec all_results_;
     ResultsVec filtered_results_;
+    std::optional<Result> best_result_ = std::nullopt;
 };
 
 MAA_VISION_NS_END

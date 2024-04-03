@@ -108,7 +108,8 @@ PipelineTask::RunningResult PipelineTask::find_first_and_run(
         }
     }
 
-    LogInfo << "Task hit:" << hits.task_data.name << hits.reco_uid << hits.reco_hit.box;
+    LogInfo << "Task hit:" << hits.task_data.name << VAR(hits.reco_uid) << VAR(hits.reco_hit)
+            << VAR(hits.reco_detail);
     latest_hit_ = hits.task_data.name;
 
     auto run_ret = run_task(hits);
@@ -175,6 +176,7 @@ std::optional<PipelineTask::HitResult>
                                        { "recognition",
                                          {
                                              { "id", reco.uid },
+                                             { "detail", reco.detail },
                                              { "draws_size", reco.draws.size() },
                                          } },
                                        { "hit", reco.hit.has_value() },
@@ -187,7 +189,10 @@ std::optional<PipelineTask::HitResult>
         }
 
         hit = true;
-        result = { .reco_uid = reco.uid, .reco_hit = *std::move(reco.hit), .task_data = task_data };
+        result = { .reco_uid = reco.uid,
+                   .reco_hit = *std::move(reco.hit),
+                   .reco_detail = std::move(reco.detail),
+                   .task_data = task_data };
         break;
     }
 
@@ -202,8 +207,8 @@ std::optional<PipelineTask::HitResult>
                                    { "recognition",
                                      {
                                          { "id", result.reco_uid },
-                                         { "box", result.reco_hit.box },
-                                         { "detail", result.reco_hit.detail },
+                                         { "box", result.reco_hit },
+                                         { "detail", result.reco_detail },
                                      } },
                                    { "status", "Hit" },
                                };
@@ -233,8 +238,8 @@ PipelineTask::RunningResult PipelineTask::run_task(const HitResult& hits)
                                           { "recognition",
                                             {
                                                 { "id", hits.reco_uid },
-                                                { "box", hits.reco_hit.box },
-                                                { "detail", hits.reco_hit.detail },
+                                                { "box", hits.reco_hit },
+                                                { "detail", hits.reco_detail },
                                             } },
                                           { "run_times", run_times },
                                           { "status", "ReadyToRun" },
@@ -264,7 +269,7 @@ PipelineTask::RunningResult PipelineTask::run_task(const HitResult& hits)
     }
 
     Actuator actuator(inst_);
-    auto ret = actuator.run(hits.reco_hit, hits.task_data);
+    auto ret = actuator.run(hits.reco_hit, hits.reco_detail, hits.task_data);
     status()->increase_run_times(name);
 
     detail["status"] = "Completed";

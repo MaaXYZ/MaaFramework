@@ -84,7 +84,7 @@ public:
     std::string operator()(const std::optional<T>& value) const
     {
         if (!value) {
-            return nullptr;
+            return "nullopt";
         }
         return this->operator()(*value);
     }
@@ -99,6 +99,13 @@ public:
         }
         ss << value;
         return std::move(ss).str();
+    }
+
+    template <typename T>
+    requires std::is_constructible_v<json::value, T>
+    std::string operator()(const T& value) const
+    {
+        return json::value(value).to_string();
     }
 
     template <typename T>

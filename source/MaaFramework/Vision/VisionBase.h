@@ -18,8 +18,6 @@ public:
 
     std::vector<cv::Mat> draws() && { return std::move(draws_); }
 
-    size_t preferred_index() const { return preferred_index_; }
-
     uint64_t uid() const { return uid_; }
 
 protected:
@@ -28,7 +26,6 @@ protected:
 protected:
     cv::Mat draw_roi(const cv::Rect& roi, const cv::Mat& base = cv::Mat()) const;
     void handle_draw(const cv::Mat& draw);
-    void handle_index(size_t total, int index);
 
 protected:
     const cv::Mat image_;
@@ -44,7 +41,6 @@ private:
     inline static std::atomic_uint64_t s_global_uid = 0;
 
     std::vector<cv::Mat> draws_;
-    size_t preferred_index_ = SIZE_MAX;
 };
 
 MAA_VISION_NS_END

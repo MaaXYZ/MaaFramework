@@ -43,6 +43,10 @@ public:
 
     ResultsVec filtered_results() && { return std::move(filtered_results_); }
 
+    const std::optional<Result>& best_result() const& { return best_result_; }
+
+    std::optional<Result> best_result() && { return std::move(best_result_); }
+
 private:
     void analyze();
     ResultsVec match_all_rois(const cv::Mat& templ);
@@ -53,7 +57,7 @@ private:
         const cv::Rect& roi_2);
 
     void add_results(ResultsVec results, int count);
-    void sort();
+    void cherry_pick();
 
 private:
     cv::Ptr<cv::Feature2D> create_detector() const;
@@ -89,6 +93,7 @@ private:
 private:
     ResultsVec all_results_;
     ResultsVec filtered_results_;
+    std::optional<Result> best_result_ = std::nullopt;
 };
 
 MAA_VISION_NS_END

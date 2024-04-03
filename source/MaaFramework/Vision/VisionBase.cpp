@@ -54,17 +54,6 @@ void VisionBase::handle_draw(const cv::Mat& draw)
     draws_.emplace_back(draw);
 }
 
-void VisionBase::handle_index(size_t total, int index)
-{
-    auto index_opt = pythonic_index(total, index);
-    if (!index_opt) {
-        preferred_index_ = SIZE_MAX;
-        return;
-    }
-
-    preferred_index_ = *index_opt;
-}
-
 void VisionBase::init_draw()
 {
 #ifdef MAA_DEBUG

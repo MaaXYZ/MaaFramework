@@ -35,10 +35,11 @@ void OCRer::analyze()
     auto results = predict_all_rois();
     add_results(std::move(results), param_.text);
 
-    sort();
+    cherry_pick();
 
     auto cost = duration_since(start_time);
-    LogTrace << name_ << VAR(uid_) << VAR(all_results_) << VAR(filtered_results_) << VAR(cost);
+    LogTrace << name_ << VAR(uid_) << VAR(all_results_) << VAR(filtered_results_)
+             << VAR(best_result_) << VAR(cost);
 }
 
 OCRer::ResultsVec OCRer::predict_all_rois()
@@ -58,7 +59,6 @@ OCRer::ResultsVec OCRer::predict_all_rois()
 
 OCRer::ResultsVec OCRer::predict(const cv::Rect& roi)
 {
-
     ResultsVec results;
 
     if (auto cache_it = cache_.find(roi); cache_it != cache_.end()) {
@@ -206,12 +206,14 @@ void OCRer::add_results(ResultsVec results, const std::vector<std::wstring>& exp
     merge_vector_(all_results_, std::move(results));
 }
 
-void OCRer::sort()
+void OCRer::cherry_pick()
 {
     sort_(all_results_);
     sort_(filtered_results_);
 
-    handle_index(filtered_results_.size(), param_.result_index);
+    if (auto index_opt = pythonic_index(filtered_results_.size(), param_.result_index)) {
+        best_result_ = filtered_results_.at(*index_opt);
+    }
 }
 
 void OCRer::postproc_trim_(Result& res) const

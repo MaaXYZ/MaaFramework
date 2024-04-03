@@ -44,10 +44,11 @@ void FeatureMatcher::analyze()
         add_results(std::move(results), param_.count);
     }
 
-    sort();
+    cherry_pick();
 
     auto cost = duration_since(start_time);
-    LogTrace << name_ << VAR(uid_) << VAR(all_results_) << VAR(filtered_results_) << VAR(cost);
+    LogTrace << name_ << VAR(uid_) << VAR(all_results_) << VAR(filtered_results_)
+             << VAR(best_result_) << VAR(cost);
 }
 
 FeatureMatcher::ResultsVec FeatureMatcher::match_all_rois(const cv::Mat& templ)
@@ -301,12 +302,14 @@ void FeatureMatcher::add_results(ResultsVec results, int count)
     merge_vector_(all_results_, std::move(results));
 }
 
-void FeatureMatcher::sort()
+void FeatureMatcher::cherry_pick()
 {
     sort_(all_results_);
     sort_(filtered_results_);
 
-    handle_index(filtered_results_.size(), param_.result_index);
+    if (auto index_opt = pythonic_index(filtered_results_.size(), param_.result_index)) {
+        best_result_ = filtered_results_.at(*index_opt);
+    }
 }
 
 void FeatureMatcher::sort_(ResultsVec& results) const

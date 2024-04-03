@@ -44,10 +44,11 @@ void TemplateMatcher::analyze()
         add_results(std::move(results), param_.thresholds.at(i));
     }
 
-    sort();
+    cherry_pick();
 
     auto cost = duration_since(start_time);
-    LogTrace << name_ << VAR(uid_) << VAR(all_results_) << VAR(filtered_results_) << VAR(cost);
+    LogTrace << name_ << VAR(uid_) << VAR(all_results_) << VAR(filtered_results_)
+             << VAR(best_result_) << VAR(cost);
 }
 
 TemplateMatcher::ResultsVec TemplateMatcher::match_all_rois(const cv::Mat& templ)
@@ -182,12 +183,14 @@ void TemplateMatcher::add_results(ResultsVec results, double threshold)
     merge_vector_(all_results_, std::move(results));
 }
 
-void TemplateMatcher::sort()
+void TemplateMatcher::cherry_pick()
 {
     sort_(all_results_);
     sort_(filtered_results_);
 
-    handle_index(filtered_results_.size(), param_.result_index);
+    if (auto index_opt = pythonic_index(filtered_results_.size(), param_.result_index)) {
+        best_result_ = filtered_results_.at(*index_opt);
+    }
 }
 
 void TemplateMatcher::sort_(ResultsVec& results) const

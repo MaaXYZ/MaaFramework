@@ -44,6 +44,10 @@ public:
 
     ResultsVec filtered_results() && { return std::move(filtered_results_); }
 
+    const std::optional<Result>& best_result() const& { return best_result_; }
+
+    std::optional<Result> best_result() && { return std::move(best_result_); }
+
 private:
     void analyze();
 
@@ -51,7 +55,7 @@ private:
     Result classify(const cv::Rect& roi);
 
     void add_results(ResultsVec results, const std::vector<size_t>& expected);
-    void sort();
+    void cherry_pick();
 
 private:
     cv::Mat draw_result(const Result& res) const;
@@ -64,6 +68,7 @@ private:
 private:
     ResultsVec all_results_;
     ResultsVec filtered_results_;
+    std::optional<Result> best_result_ = std::nullopt;
 };
 
 MAA_VISION_NS_END
