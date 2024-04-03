@@ -277,11 +277,6 @@ MAA_CTRL_NS::ControllerAgent* InstanceMgr::inter_controller()
     return dynamic_cast<MAA_CTRL_NS::ControllerAgent*>(controller());
 }
 
-InstanceStatus* InstanceMgr::inter_status()
-{
-    return &status_;
-}
-
 void InstanceMgr::notify(std::string_view msg, const json::value& details)
 {
     notifier.notify(msg, details);

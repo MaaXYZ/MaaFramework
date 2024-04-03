@@ -69,8 +69,6 @@ private:
         uint64_t uid) const;
 
 private:
-    InstanceStatus* status() { return inst_ ? inst_->inter_status() : nullptr; }
-
     MAA_RES_NS::ResourceMgr* resource() { return inst_ ? inst_->inter_resource() : nullptr; }
 
 private:

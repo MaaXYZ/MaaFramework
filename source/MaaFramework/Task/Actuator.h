@@ -27,6 +27,8 @@ public:
             const json::value& reco_detail,
             const TaskData& task_data);
 
+    uint64_t uid() const { return uid_; }
+
 private:
     bool click(const MAA_RES_NS::Action::ClickParam& param, const cv::Rect& cur_box);
     bool swipe(const MAA_RES_NS::Action::SwipeParam& param, const cv::Rect& cur_box);
@@ -50,14 +52,15 @@ private:
     {
         return inst_ ? inst_->inter_controller() : nullptr;
     }
-
-    InstanceStatus* status() { return inst_ ? inst_->inter_status() : nullptr; }
-
     void sleep(unsigned ms) const;
     void sleep(std::chrono::milliseconds ms) const;
 
 private:
     InstanceInternalAPI* inst_ = nullptr;
+
+    const uint64_t uid_ = ++s_global_uid;
+
+    inline static std::atomic_uint64_t s_global_uid = 0;
 };
 
 MAA_TASK_NS_END

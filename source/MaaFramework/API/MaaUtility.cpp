@@ -1,6 +1,6 @@
 #include "MaaFramework/MaaAPI.h"
 
-#include "Option/GlobalOptionMgr.h"
+#include "Global/GlobalOptionMgr.h"
 #include "Utils/Logger.h"
 
 MaaStringView MaaVersion()

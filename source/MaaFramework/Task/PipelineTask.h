@@ -70,8 +70,6 @@ private:
         return inst_ ? inst_->inter_controller() : nullptr;
     }
 
-    InstanceStatus* status() { return inst_ ? inst_->inter_status() : nullptr; }
-
     void notify(std::string_view msg, json::value detail = json::value())
     {
         if (inst_) {
@@ -92,6 +90,9 @@ private:
     int64_t task_id_ = 0;
     std::string entry_;
     std::string latest_hit_;
+
+    std::map<std::string, uint64_t> run_times_map_;
+    std::map<std::string, cv::Rect> latest_box_;
 
     TaskDataMgr data_mgr_;
 };

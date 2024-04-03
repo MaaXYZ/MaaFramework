@@ -1,7 +1,7 @@
 #include "Actuator.h"
 
 #include "Controller/ControllerAgent.h"
-#include "Instance/InstanceStatus.h"
+#include "Global/UniqueResultBank.h"
 #include "Task/CustomAction.h"
 #include "Utils/Logger.h"
 #include "Vision/TemplateComparator.h"
@@ -214,11 +214,6 @@ cv::Rect Actuator::get_target_rect(const MAA_RES_NS::Action::Target target, cons
 {
     using namespace MAA_RES_NS::Action;
 
-    if (!status()) {
-        LogError << "Status is null";
-        return {};
-    }
-
     cv::Rect raw {};
     switch (target.type) {
     case Target::Type::Self:
@@ -226,7 +221,7 @@ cv::Rect Actuator::get_target_rect(const MAA_RES_NS::Action::Target target, cons
         break;
     case Target::Type::PreTask:
         raw = std::any_cast<Recognizer::Hit>(
-            status()->get_reco_hit(std::get<std::string>(target.param)));
+            UniqueResultBank::get_instance().get_reco_hit(std::get<std::string>(target.param)));
         break;
     case Target::Type::Region:
         raw = std::get<cv::Rect>(target.param);

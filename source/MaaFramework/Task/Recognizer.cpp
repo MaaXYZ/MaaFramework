@@ -1,7 +1,6 @@
 #include "Recognizer.h"
 
-#include "Instance/InstanceStatus.h"
-#include "Option/GlobalOptionMgr.h"
+#include "Global/GlobalOptionMgr.h"
 #include "Resource/ResourceMgr.h"
 #include "Utils/ImageIo.h"
 #include "Utils/Logger.h"
@@ -25,11 +24,6 @@ Recognizer::Result Recognizer::recognize(const cv::Mat& image, const TaskData& t
 {
     using namespace MAA_RES_NS::Recognition;
     using namespace MAA_VISION_NS;
-
-    if (!status()) {
-        LogError << "Status is null";
-        return {};
-    }
 
     Result result;
     switch (task_data.rec_type) {
@@ -88,11 +82,9 @@ Recognizer::Result Recognizer::recognize(const cv::Mat& image, const TaskData& t
     }
 
     save_draws(task_data.name, result);
-    status()->set_reco_result(result.uid, result);
 
     if (result.hit) {
         const auto& hit = *result.hit;
-        status()->set_reco_hit(task_data.name, hit);
         show_hit_draw(image, hit, task_data.name, result.uid);
     }
 

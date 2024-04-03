@@ -3,9 +3,8 @@
 #include <sstream>
 
 #include "Controller/ControllerAgent.h"
-#include "Instance/InstanceStatus.h"
+#include "Global/GlobalOptionMgr.h"
 #include "MaaFramework/MaaMsg.h"
-#include "Option/GlobalOptionMgr.h"
 #include "Resource/ResourceMgr.h"
 #include "Task/Actuator.h"
 #include "Task/Recognizer.h"
@@ -220,21 +219,19 @@ std::optional<PipelineTask::HitResult>
 
 PipelineTask::RunningResult PipelineTask::run_task(const HitResult& hits)
 {
-    if (!status()) {
-        LogError << "Status not binded";
-        return RunningResult::InternalError;
-    }
-
     if (need_to_stop()) {
         LogInfo << "Task interrupted" << VAR(latest_hit_);
         return RunningResult::Interrupted;
     }
 
+    Actuator actuator(inst_);
+
     const std::string& name = hits.task_data.name;
-    uint64_t run_times = status()->get_run_times(name);
+    uint64_t& run_times = run_times_map_[name];
 
     json::value detail = basic_info()
-                         | json::object { { "name", name },
+                         | json::object { { "id", actuator.uid() },
+                                          { "name", name },
                                           { "recognition",
                                             {
                                                 { "id", hits.reco_uid },
@@ -245,7 +242,6 @@ PipelineTask::RunningResult PipelineTask::run_task(const HitResult& hits)
                                           { "status", "ReadyToRun" },
                                           { "is_sub", hits.task_data.is_sub } };
 
-    status()->set_task_result(name, detail);
     if (hits.task_data.focus) {
         notify(MaaMsg_Task_Focus_ReadyToRun, detail);
     }
@@ -257,7 +253,6 @@ PipelineTask::RunningResult PipelineTask::run_task(const HitResult& hits)
         LogInfo << "Task runout:" << name;
 
         detail["status"] = "Runout";
-        status()->set_task_result(name, detail);
         if (hits.task_data.focus) {
             notify(MaaMsg_Task_Focus_Runout, detail);
         }
@@ -268,13 +263,13 @@ PipelineTask::RunningResult PipelineTask::run_task(const HitResult& hits)
         return RunningResult::Runout;
     }
 
-    Actuator actuator(inst_);
     auto ret = actuator.run(hits.reco_hit, hits.reco_detail, hits.task_data);
-    status()->increase_run_times(name);
+
+    ++run_times;
 
     detail["status"] = "Completed";
-    detail["run_times"] = run_times + 1;
-    status()->set_task_result(name, detail);
+    detail["run_times"] = run_times;
+
     if (hits.task_data.focus) {
         notify(MaaMsg_Task_Focus_Completed, detail);
     }

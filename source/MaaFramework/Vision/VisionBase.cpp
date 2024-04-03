@@ -2,7 +2,7 @@
 
 #include "Utils/NoWarningCV.hpp"
 
-#include "Option/GlobalOptionMgr.h"
+#include "Global/GlobalOptionMgr.h"
 #include "Utils/Logger.h"
 #include "VisionUtils.hpp"
 
