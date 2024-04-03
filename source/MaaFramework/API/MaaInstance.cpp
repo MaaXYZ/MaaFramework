@@ -297,7 +297,7 @@ MaaBool MaaGetRecognitionResult(
         hit_detail->set(std::move(mdetail));
     }
     if (draws && draws_size) {
-        size_t size = std::min(*draws_size, mdraws.size());
+        size_t size = std::min(static_cast<size_t>(*draws_size), mdraws.size());
         for (size_t i = 0; i < size; ++i) {
             (*(draws + i))->set(std::move(mdraws.at(i)));
         }
