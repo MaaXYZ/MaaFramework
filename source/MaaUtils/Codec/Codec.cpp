@@ -16,8 +16,8 @@ std::wstring to_u16(const std::string& u8str)
 #endif
     std::mbstate_t mb {};
     std::wstring t(u8str.length(), L'\0');
-    const char* from_next;
-    wchar_t* to_next;
+    const char* from_next = nullptr;
+    wchar_t* to_next = nullptr;
     std::codecvt_base::result result =
         cvt.in(mb, &u8str[0], &u8str[u8str.length()], from_next, &t[0], &t[t.length()], to_next);
     if (result != std::codecvt_base::ok) {
@@ -40,8 +40,8 @@ std::string from_u16(const std::wstring& u16str)
 #endif
     std::mbstate_t mb {};
     std::string t(u16str.length() * cvt.max_length(), L'\0');
-    const wchar_t* from_next;
-    char* to_next;
+    const wchar_t* from_next = nullptr;
+    char* to_next = nullptr;
     std::codecvt_base::result result =
         cvt.out(mb, &u16str[0], &u16str[u16str.length()], from_next, &t[0], &t[t.length()], to_next);
     if (result != std::codecvt_base::ok) {
