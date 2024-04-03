@@ -64,6 +64,9 @@ bool PipelineTask::run()
         }
 
         if (next_list.empty() && !breakpoints_stack.empty()) {
+            if (debug_mode()) {
+                notify(MaaMsg_Task_Debug_EndSub, {});
+            }
             std::string top_bp = std::move(breakpoints_stack.top());
             breakpoints_stack.pop();
             pre_breakpoint = top_bp;
