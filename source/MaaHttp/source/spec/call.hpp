@@ -84,6 +84,7 @@ OutputString(maa::func_type_MaaResourceGetHash, _1_buffer);
 OutputString(maa::func_type_MaaControllerGetUUID, _1_buffer);
 OutputString(maa::func_type_MaaSyncContextGetTaskResult, _2_out_task_result);
 OutputString(maa::func_type_MaaSyncContextRunRecognizer, _5_out_detail);
+OutputString(maa::func_type_MaaGetRecognitionResult, _4_hit_detail);
 
 #undef OutputString
 
@@ -164,7 +165,31 @@ LHGArgFromJsonBegin(maa::func_type_MaaSyncContextRunAction, _3_cur_box, true)
 LHGArgFromJsonEnd()
 
 LHGArgOutput(maa::func_type_MaaSyncContextRunRecognizer::_4_out_box);
+LHGArgPrepareStateBegin(maa::func_type_MaaSyncContextRunRecognizer, _4_out_box)
+    std::get<index>(arg) = &std::get<index>(state);
+LHGArgPrepareStateEnd()
 LHGArgToJsonBegin(maa::func_type_MaaSyncContextRunRecognizer, _4_out_box, true)
+    auto rec = &std::get<index>(state);
+    value = pri_maa::from_rect(rec);
+    LHGArgToJsonMiddle()
+    pri_maa::schema_rect(b);
+LHGArgToJsonEnd()
+
+LHGArgOutput(maa::func_type_MaaGetRecognitionResult::_2_hit);
+LHGArgPrepareStateBegin(maa::func_type_MaaGetRecognitionResult, _2_hit)
+    std::get<index>(arg) = &std::get<index>(state);
+LHGArgPrepareStateEnd()
+LHGArgToJsonBegin(maa::func_type_MaaGetRecognitionResult, _2_hit, true)
+    value = *std::get<index>(arg);
+    LHGArgToJsonMiddle()
+    b.type("boolean");
+LHGArgToJsonEnd()
+
+LHGArgOutput(maa::func_type_MaaGetRecognitionResult::_3_hit_box);
+LHGArgPrepareStateBegin(maa::func_type_MaaGetRecognitionResult, _3_hit_box)
+    std::get<index>(arg) = &std::get<index>(state);
+LHGArgPrepareStateEnd()
+LHGArgToJsonBegin(maa::func_type_MaaGetRecognitionResult, _3_hit_box, true)
     auto rec = &std::get<index>(state);
     value = pri_maa::from_rect(rec);
     LHGArgToJsonMiddle()

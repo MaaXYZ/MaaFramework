@@ -731,6 +731,36 @@
     {
       "argument": [
         {
+          "name": "inst",
+          "type": "MaaInstanceHandle"
+        },
+        {
+          "name": "reco_id",
+          "type": "uint64_t"
+        },
+        {
+          "name": "hit",
+          "type": "MaaBool *"
+        },
+        {
+          "name": "hit_box",
+          "type": "MaaRectHandle"
+        },
+        {
+          "name": "hit_detail",
+          "type": "MaaStringBufferHandle"
+        },
+        {
+          "name": "draw",
+          "type": "MaaImageBufferHandle"
+        }
+      ],
+      "name": "MaaGetRecognitionResult",
+      "return": "MaaBool"
+    },
+    {
+      "argument": [
+        {
           "name": "callback",
           "type": "MaaResourceCallback"
         },
