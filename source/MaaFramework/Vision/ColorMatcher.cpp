@@ -31,7 +31,7 @@ void ColorMatcher::analyze()
              << VAR(best_result_) << VAR(cost);
 }
 
-ColorMatcher::ResultsVec ColorMatcher::match_all_rois(const ColorMatcherParam::Range& range)
+ColorMatcher::ResultsVec ColorMatcher::match_all_rois(const ColorMatcherParam::Range& range) const
 {
     if (param_.roi.empty()) {
         return color_match(cv::Rect(0, 0, image_.cols, image_.rows), range);
@@ -47,7 +47,7 @@ ColorMatcher::ResultsVec ColorMatcher::match_all_rois(const ColorMatcherParam::R
 }
 
 ColorMatcher::ResultsVec
-    ColorMatcher::color_match(const cv::Rect& roi, const ColorMatcherParam::Range& range)
+    ColorMatcher::color_match(const cv::Rect& roi, const ColorMatcherParam::Range& range) const
 {
     cv::Mat image = image_with_roi(roi);
     cv::Mat color;

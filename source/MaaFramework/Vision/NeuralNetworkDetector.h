@@ -35,8 +35,8 @@ public:
 private:
     void analyze();
 
-    ResultsVec detect_all_rois();
-    ResultsVec detect(const cv::Rect& roi);
+    ResultsVec detect_all_rois() const;
+    ResultsVec detect(const cv::Rect& roi) const;
 
     void add_results(ResultsVec results, const std::vector<size_t>& expected);
     void cherry_pick();

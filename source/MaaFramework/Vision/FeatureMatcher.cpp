@@ -51,7 +51,7 @@ void FeatureMatcher::analyze()
              << VAR(best_result_) << VAR(cost);
 }
 
-FeatureMatcher::ResultsVec FeatureMatcher::match_all_rois(const cv::Mat& templ)
+FeatureMatcher::ResultsVec FeatureMatcher::match_all_rois(const cv::Mat& templ) const
 {
     if (templ.empty()) {
         LogWarn << name_ << VAR(uid_) << "template is empty" << VAR(param_.template_paths);
@@ -81,7 +81,7 @@ FeatureMatcher::ResultsVec FeatureMatcher::feature_match(
     const cv::Mat& templ,
     const std::vector<cv::KeyPoint>& keypoints_1,
     const cv::Mat& descriptors_1,
-    const cv::Rect& roi_2)
+    const cv::Rect& roi_2) const
 {
     if (roi_2.empty()) {
         LogError << name_ << VAR(uid_) << "roi_2 is empty";

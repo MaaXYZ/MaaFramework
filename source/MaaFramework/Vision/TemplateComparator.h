@@ -27,7 +27,7 @@ public:
 
 private:
     void analyze();
-    ResultsVec compare_all_rois();
+    ResultsVec compare_all_rois() const;
 
     void add_results(ResultsVec results, double threshold);
     void cherry_pick();

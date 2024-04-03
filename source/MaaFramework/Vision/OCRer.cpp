@@ -42,7 +42,7 @@ void OCRer::analyze()
              << VAR(best_result_) << VAR(cost);
 }
 
-OCRer::ResultsVec OCRer::predict_all_rois()
+OCRer::ResultsVec OCRer::predict_all_rois() const
 {
     if (param_.roi.empty()) {
         return predict(cv::Rect(0, 0, image_.cols, image_.rows));
@@ -57,7 +57,7 @@ OCRer::ResultsVec OCRer::predict_all_rois()
     }
 }
 
-OCRer::ResultsVec OCRer::predict(const cv::Rect& roi)
+OCRer::ResultsVec OCRer::predict(const cv::Rect& roi) const
 {
     ResultsVec results;
 

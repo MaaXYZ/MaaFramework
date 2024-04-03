@@ -50,7 +50,7 @@ void NeuralNetworkClassifier::analyze()
              << VAR(best_result_) << VAR(cost);
 }
 
-NeuralNetworkClassifier::ResultsVec NeuralNetworkClassifier::classify_all_rois()
+NeuralNetworkClassifier::ResultsVec NeuralNetworkClassifier::classify_all_rois() const
 {
     if (param_.roi.empty()) {
         return { classify(cv::Rect(0, 0, image_.cols, image_.rows)) };
@@ -65,7 +65,7 @@ NeuralNetworkClassifier::ResultsVec NeuralNetworkClassifier::classify_all_rois()
     }
 }
 
-NeuralNetworkClassifier::Result NeuralNetworkClassifier::classify(const cv::Rect& roi)
+NeuralNetworkClassifier::Result NeuralNetworkClassifier::classify(const cv::Rect& roi) const
 {
     if (!session_) {
         LogError << "OrtSession not loaded";

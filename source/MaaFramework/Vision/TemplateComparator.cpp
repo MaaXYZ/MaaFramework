@@ -37,7 +37,7 @@ void TemplateComparator::analyze()
              << VAR(best_result_) << VAR(cost);
 }
 
-TemplateComparator::ResultsVec TemplateComparator::compare_all_rois()
+TemplateComparator::ResultsVec TemplateComparator::compare_all_rois() const
 {
     auto method = param_.method;
 

@@ -30,8 +30,8 @@ public:
 
 private:
     void analyze();
-    ResultsVec match_all_rois(const cv::Mat& templ);
-    ResultsVec template_match(const cv::Rect& roi, const cv::Mat& templ);
+    ResultsVec match_all_rois(const cv::Mat& templ) const;
+    ResultsVec template_match(const cv::Rect& roi, const cv::Mat& templ) const;
 
     void add_results(ResultsVec results, double threshold);
     void cherry_pick();

@@ -51,7 +51,7 @@ void NeuralNetworkDetector::analyze()
              << VAR(best_result_) << VAR(cost);
 }
 
-NeuralNetworkDetector::ResultsVec NeuralNetworkDetector::detect_all_rois()
+NeuralNetworkDetector::ResultsVec NeuralNetworkDetector::detect_all_rois() const
 {
     if (param_.roi.empty()) {
         return detect(cv::Rect(0, 0, image_.cols, image_.rows));
@@ -66,7 +66,7 @@ NeuralNetworkDetector::ResultsVec NeuralNetworkDetector::detect_all_rois()
     }
 }
 
-NeuralNetworkDetector::ResultsVec NeuralNetworkDetector::detect(const cv::Rect& roi)
+NeuralNetworkDetector::ResultsVec NeuralNetworkDetector::detect(const cv::Rect& roi) const
 {
     if (!session_) {
         LogError << "OrtSession not loaded";

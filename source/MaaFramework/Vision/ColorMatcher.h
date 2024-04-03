@@ -21,8 +21,8 @@ public:
 
 private:
     void analyze();
-    ResultsVec match_all_rois(const ColorMatcherParam::Range& range);
-    ResultsVec color_match(const cv::Rect& roi, const ColorMatcherParam::Range& range);
+    ResultsVec match_all_rois(const ColorMatcherParam::Range& range) const;
+    ResultsVec color_match(const cv::Rect& roi, const ColorMatcherParam::Range& range) const;
 
     void add_results(ResultsVec results, int count);
     void cherry_pick();

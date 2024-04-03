@@ -36,12 +36,12 @@ public:
 
 private:
     void analyze();
-    ResultsVec match_all_rois(const cv::Mat& templ);
+    ResultsVec match_all_rois(const cv::Mat& templ) const;
     ResultsVec feature_match(
         const cv::Mat& templ,
         const std::vector<cv::KeyPoint>& keypoints_1,
         const cv::Mat& descriptors_1,
-        const cv::Rect& roi_2);
+        const cv::Rect& roi_2) const;
 
     void add_results(ResultsVec results, int count);
     void cherry_pick();

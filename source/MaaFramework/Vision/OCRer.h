@@ -48,8 +48,8 @@ public:
 private:
     void analyze();
 
-    ResultsVec predict_all_rois();
-    ResultsVec predict(const cv::Rect& roi);
+    ResultsVec predict_all_rois() const;
+    ResultsVec predict(const cv::Rect& roi) const;
 
     void add_results(ResultsVec results, const std::vector<std::wstring>& expected);
     void cherry_pick();

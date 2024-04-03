@@ -51,7 +51,7 @@ void TemplateMatcher::analyze()
              << VAR(best_result_) << VAR(cost);
 }
 
-TemplateMatcher::ResultsVec TemplateMatcher::match_all_rois(const cv::Mat& templ)
+TemplateMatcher::ResultsVec TemplateMatcher::match_all_rois(const cv::Mat& templ) const
 {
     if (templ.empty()) {
         LogWarn << name_ << VAR(uid_) << "template is empty" << VAR(param_.template_paths)
@@ -73,7 +73,7 @@ TemplateMatcher::ResultsVec TemplateMatcher::match_all_rois(const cv::Mat& templ
 }
 
 TemplateMatcher::ResultsVec
-    TemplateMatcher::template_match(const cv::Rect& roi, const cv::Mat& templ)
+    TemplateMatcher::template_match(const cv::Rect& roi, const cv::Mat& templ) const
 {
     cv::Mat image = image_with_roi(roi);
 
