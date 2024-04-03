@@ -144,7 +144,8 @@
  *     name: string,
  *     recognition: object,
  *     run_times: number,
- *     status: string
+ *     status: string,
+ *     sub: boolean
  * }
  */
 #define MaaMsg_Task_Focus_ReadyToRun ("Task.Focus.ReadyToRun")
@@ -165,7 +166,8 @@
  *     latest_hit: string,
  *     recognition: object,
  *     run_times: number,
- *     status: string
+ *     status: string,
+ *     sub: boolean
  * }
  */
 #define MaaMsg_Task_Debug_ReadyToRun ("Task.Debug.ReadyToRun")

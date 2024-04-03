@@ -228,17 +228,16 @@ PipelineTask::RunningResult PipelineTask::run_task(const HitResult& hits)
     uint64_t run_times = status()->get_run_times(name);
 
     json::value detail = basic_info()
-                         | json::object {
-                               { "name", name },
-                               { "recognition",
-                                 {
-                                     { "id", hits.reco_uid },
-                                     { "box", hits.reco_hit.box },
-                                     { "detail", hits.reco_hit.detail },
-                                 } },
-                               { "run_times", run_times },
-                               { "status", "ReadyToRun" },
-                           };
+                         | json::object { { "name", name },
+                                          { "recognition",
+                                            {
+                                                { "id", hits.reco_uid },
+                                                { "box", hits.reco_hit.box },
+                                                { "detail", hits.reco_hit.detail },
+                                            } },
+                                          { "run_times", run_times },
+                                          { "status", "ReadyToRun" },
+                                          { "sub", hits.task_data.is_sub } };
 
     status()->set_task_result(name, detail);
     if (hits.task_data.focus) {
