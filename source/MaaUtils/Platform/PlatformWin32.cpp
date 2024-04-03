@@ -7,23 +7,32 @@
 
 #include "Utils/Logger.h"
 #include "Utils/Platform.h"
+#include "Utils/StringMisc.hpp"
 
 MAA_NS_BEGIN
 
 std::string path_to_utf8_string(const std::filesystem::path& path)
 {
-    return from_osstring(path.native());
+    auto osstr = path.native();
+    string_replace_all_(osstr, L"\\", L"/");
+    return from_osstring(osstr);
 }
 
 std::string get_ansi_short_path(const std::filesystem::path& path)
 {
     wchar_t short_path[MAX_PATH] = { 0 };
-    auto& osstr = path.native();
+    auto osstr = path.native();
+    string_replace_all_(osstr, L"\\", L"/");
     auto shortlen = GetShortPathNameW(osstr.c_str(), short_path, MAX_PATH);
-    if (shortlen == 0) return {};
+    if (shortlen == 0) {
+        return {};
+    }
     BOOL failed = FALSE;
-    auto ansilen = WideCharToMultiByte(CP_ACP, 0, short_path, shortlen, nullptr, 0, nullptr, &failed);
-    if (failed) return {};
+    auto ansilen =
+        WideCharToMultiByte(CP_ACP, 0, short_path, shortlen, nullptr, 0, nullptr, &failed);
+    if (failed) {
+        return {};
+    }
     std::string result(ansilen, 0);
     WideCharToMultiByte(CP_ACP, 0, short_path, shortlen, result.data(), ansilen, nullptr, nullptr);
     return result;
@@ -34,18 +43,19 @@ std::string path_to_crt_string(const std::filesystem::path& path)
     // UCRT may use UTF-8 encoding while ANSI code page is still some other MBCS encoding
     // so we use CRT wcstombs instead of WideCharToMultiByte
     size_t mbsize = 0;
-    auto& osstr = path.native();
+    auto osstr = path.native();
+    string_replace_all_(osstr, L"\\", L"/");
     auto err = wcstombs_s(&mbsize, nullptr, 0, osstr.c_str(), osstr.size());
-    if (err == 0) {
-        std::string result(mbsize, 0);
-        err = wcstombs_s(&mbsize, result.data(), mbsize, osstr.c_str(), osstr.size());
-        if (err != 0) return {};
-        return result.substr(0, mbsize - 1);
-    }
-    else {
+    if (err != 0) {
         // cannot convert (CRT is not using UTF-8), fallback to short path name in ACP
         return get_ansi_short_path(path);
     }
+    std::string result(mbsize, 0);
+    err = wcstombs_s(&mbsize, result.data(), mbsize, osstr.c_str(), osstr.size());
+    if (err != 0) {
+        return {};
+    }
+    return result.substr(0, mbsize - 1);
 }
 
 std::string path_to_ansi_string(const std::filesystem::path& path)
@@ -53,17 +63,32 @@ std::string path_to_ansi_string(const std::filesystem::path& path)
     // UCRT may use UTF-8 encoding while ANSI code page is still some other MBCS encoding
     // so we use CRT wcstombs instead of WideCharToMultiByte
     BOOL failed = FALSE;
-    auto& osstr = path.native();
-    auto ansilen = WideCharToMultiByte(CP_ACP, 0, osstr.c_str(), (int)osstr.size(), nullptr, 0, nullptr, &failed);
-    if (!failed) {
-        std::string result(ansilen, 0);
-        WideCharToMultiByte(CP_ACP, 0, osstr.c_str(), (int)osstr.size(), result.data(), ansilen, nullptr, &failed);
-        return result;
-    }
-    else {
+    auto osstr = path.native();
+    string_replace_all_(osstr, L"\\", L"/");
+    auto ansilen = WideCharToMultiByte(
+        CP_ACP,
+        0,
+        osstr.c_str(),
+        (int)osstr.size(),
+        nullptr,
+        0,
+        nullptr,
+        &failed);
+    if (failed) {
         // contains character that cannot be converted, fallback to short path name in ACP
         return get_ansi_short_path(path);
     }
+    std::string result(ansilen, 0);
+    WideCharToMultiByte(
+        CP_ACP,
+        0,
+        osstr.c_str(),
+        (int)osstr.size(),
+        result.data(),
+        ansilen,
+        nullptr,
+        &failed);
+    return result;
 }
 
 os_string to_osstring(std::string_view utf8_str)
@@ -76,9 +101,25 @@ os_string to_osstring(std::string_view utf8_str)
 
 std::string from_osstring(os_string_view os_str)
 {
-    int len = WideCharToMultiByte(CP_UTF8, 0, os_str.data(), (int)os_str.size(), nullptr, 0, nullptr, nullptr);
+    int len = WideCharToMultiByte(
+        CP_UTF8,
+        0,
+        os_str.data(),
+        (int)os_str.size(),
+        nullptr,
+        0,
+        nullptr,
+        nullptr);
     std::string result(len, 0);
-    WideCharToMultiByte(CP_UTF8, 0, os_str.data(), (int)os_str.size(), result.data(), len, nullptr, nullptr);
+    WideCharToMultiByte(
+        CP_UTF8,
+        0,
+        os_str.data(),
+        (int)os_str.size(),
+        result.data(),
+        len,
+        nullptr,
+        nullptr);
     return result;
 }
 
@@ -177,7 +218,7 @@ os_string args_to_cmd(const std::vector<os_string_view>& args)
 
 std::vector<os_string> cmd_to_args(const os_string& cmd)
 {
-    int argc;
+    int argc = 0;
     std::vector<os_string> res;
 
     auto result = CommandLineToArgvW(cmd.c_str(), &argc);
@@ -221,7 +262,7 @@ std::set<ProcessInfo> list_processes()
         HANDLE process = OpenProcess(PROCESS_QUERY_INFORMATION | PROCESS_VM_READ, FALSE, pid);
         if (process == nullptr) {
             auto error = GetLastError();
-            LogError << "Failed to OpenProcess" << VAR(error) << VAR(pid);
+            LogWarn << "Failed to OpenProcess" << VAR(error) << VAR(pid);
             continue;
         }
 
@@ -229,7 +270,7 @@ std::set<ProcessInfo> list_processes()
         DWORD mod_read = 0;
         if (!EnumProcessModules(process, &mod, sizeof(mod), &mod_read)) {
             auto error = GetLastError();
-            LogError << "Failed to EnumProcessModules" << VAR(error) << VAR(pid);
+            LogWarn << "Failed to EnumProcessModules" << VAR(error) << VAR(pid);
             CloseHandle(process);
             continue;
         }

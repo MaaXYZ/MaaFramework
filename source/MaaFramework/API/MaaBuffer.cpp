@@ -97,7 +97,7 @@ void MaaDestroyImageBuffer(MaaImageBufferHandle handle)
     delete handle;
 }
 
-void* MaaGetImageRawData(MaaImageBufferHandle handle)
+MaaImageRawData MaaGetImageRawData(MaaImageBufferHandle handle)
 {
     if (!handle) {
         LogError << "handle is null";
@@ -158,8 +158,12 @@ MaaBool MaaClearImage(MaaImageBufferHandle handle)
     return true;
 }
 
-MaaBool MaaSetImageRawData(MaaImageBufferHandle handle, MaaImageRawData data, int32_t width, int32_t height,
-                           int32_t type)
+MaaBool MaaSetImageRawData(
+    MaaImageBufferHandle handle,
+    MaaImageRawData data,
+    int32_t width,
+    int32_t height,
+    int32_t type)
 {
     if (!handle || !data) {
         LogError << "handle is null";
@@ -176,7 +180,7 @@ MaaBool MaaSetImageRawData(MaaImageBufferHandle handle, MaaImageRawData data, in
     return true;
 }
 
-uint8_t* MaaGetImageEncoded(MaaImageBufferHandle handle)
+MaaImageEncodedData MaaGetImageEncoded(MaaImageBufferHandle handle)
 {
     if (!handle) {
         LogError << "handle is null";
@@ -268,11 +272,25 @@ int32_t MaaGetRectH(MaaRectHandle handle)
     return handle->height;
 }
 
+MaaBool MaaSetRect(MaaRectHandle handle, int32_t x, int32_t y, int32_t w, int32_t h)
+{
+    if (!handle) {
+        LogError << "handle is null";
+        return false;
+    }
+
+    handle->x = x;
+    handle->y = y;
+    handle->width = w;
+    handle->height = h;
+    return true;
+}
+
 MaaBool MaaSetRectX(MaaRectHandle handle, int32_t value)
 {
     if (!handle) {
         LogError << "handle is null";
-        return 0;
+        return false;
     }
 
     handle->x = value;
@@ -283,7 +301,7 @@ MaaBool MaaSetRectY(MaaRectHandle handle, int32_t value)
 {
     if (!handle) {
         LogError << "handle is null";
-        return 0;
+        return false;
     }
 
     handle->y = value;
@@ -294,7 +312,7 @@ MaaBool MaaSetRectW(MaaRectHandle handle, int32_t value)
 {
     if (!handle) {
         LogError << "handle is null";
-        return 0;
+        return false;
     }
 
     handle->width = value;
@@ -305,7 +323,7 @@ MaaBool MaaSetRectH(MaaRectHandle handle, int32_t value)
 {
     if (!handle) {
         LogError << "handle is null";
-        return 0;
+        return false;
     }
 
     handle->height = value;

@@ -5,6 +5,8 @@
 
 MaaStringView MaaVersion()
 {
+#pragma message("MaaFramework MAA_VERSION: " MAA_VERSION)
+
     return MAA_VERSION;
 }
 

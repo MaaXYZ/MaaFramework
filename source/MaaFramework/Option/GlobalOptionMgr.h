@@ -19,19 +19,33 @@ public:
     bool set_option(MaaGlobalOption key, MaaOptionValue value, MaaOptionValueSize val_size);
 
 public:
-    bool debug_mode() const { return debug_mode_; }
-    const std::filesystem::path& logging_path() const { return logging_path_; }
+    const std::filesystem::path& log_dir() const { return log_dir_; }
+
+    bool save_draw() const { return save_draw_; }
+
+    bool show_hit_draw() const { return show_hit_draw_; }
+
+    bool recording() const { return recording_; }
+
+    bool debug_message() const { return debug_message_; }
 
 private:
     GlobalOptionMgr() = default;
 
 private:
-    bool set_logging(MaaOptionValue value, MaaOptionValueSize val_size);
-    bool set_debug_mode(MaaOptionValue value, MaaOptionValueSize val_size);
+    bool set_log_dir(MaaOptionValue value, MaaOptionValueSize val_size);
+    bool set_save_draw(MaaOptionValue value, MaaOptionValueSize val_size);
+    bool set_show_hit_draw(MaaOptionValue value, MaaOptionValueSize val_size);
+    bool set_recording(MaaOptionValue value, MaaOptionValueSize val_size);
+    bool set_stdout_level(MaaOptionValue value, MaaOptionValueSize val_size);
+    bool set_debug_message(MaaOptionValue value, MaaOptionValueSize val_size);
 
 private:
-    std::filesystem::path logging_path_;
-    bool debug_mode_ = false;
+    std::filesystem::path log_dir_;
+    bool save_draw_ = false;
+    bool show_hit_draw_ = false;
+    bool recording_ = false;
+    bool debug_message_ = false;
 };
 
 MAA_NS_END

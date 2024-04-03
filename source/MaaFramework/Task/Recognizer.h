@@ -1,5 +1,6 @@
 #pragma once
 
+#include <stack>
 #include <string_view>
 
 #include <meojson/json.hpp>
@@ -9,8 +10,6 @@
 #include "Instance/InstanceInternalAPI.hpp"
 #include "Resource/PipelineResMgr.h"
 #include "Resource/PipelineTypes.h"
-
-#include <stack>
 
 MAA_TASK_NS_BEGIN
 
@@ -23,32 +22,49 @@ public:
     {
         cv::Rect box {};
         json::value detail;
+        std::vector<cv::Mat> draws;
     };
 
 public:
-    Recognizer(InstanceInternalAPI* inst);
+    explicit Recognizer(InstanceInternalAPI* inst);
 
 public:
     std::optional<Result> recognize(const cv::Mat& image, const TaskData& task_data);
 
 private:
-    std::optional<Result> direct_hit();
-    std::optional<Result> template_match(const cv::Mat& image, const MAA_VISION_NS::TemplateMatcherParam& param,
-                                         const std::string& name);
-    std::optional<Result> feature_match(const cv::Mat& image, const MAA_VISION_NS::FeatureMatcherParam& param,
-                                        const std::string& name);
-    std::optional<Result> color_match(const cv::Mat& image, const MAA_VISION_NS::ColorMatcherParam& param,
-                                      const std::string& name);
-    std::optional<Result> ocr(const cv::Mat& image, const MAA_VISION_NS::OCRerParam& param, const std::string& name);
-    std::optional<Result> classify(const cv::Mat& image, const MAA_VISION_NS::NeuralNetworkClassifierParam& param,
-                                   const std::string& name);
-    std::optional<Result> detect(const cv::Mat& image, const MAA_VISION_NS::NeuralNetworkDetectorParam& param,
-                                 const std::string& name);
-    std::optional<Result> custom_recognize(const cv::Mat& image, const MAA_VISION_NS::CustomRecognizerParam& param,
-                                           const std::string& name);
+    std::optional<Result> direct_hit(const std::string& name);
+    std::optional<Result> template_match(
+        const cv::Mat& image,
+        const MAA_VISION_NS::TemplateMatcherParam& param,
+        const std::string& name);
+    std::optional<Result> feature_match(
+        const cv::Mat& image,
+        const MAA_VISION_NS::FeatureMatcherParam& param,
+        const std::string& name);
+    std::optional<Result> color_match(
+        const cv::Mat& image,
+        const MAA_VISION_NS::ColorMatcherParam& param,
+        const std::string& name);
+    std::optional<Result>
+        ocr(const cv::Mat& image, const MAA_VISION_NS::OCRerParam& param, const std::string& name);
+    std::optional<Result> nn_classify(
+        const cv::Mat& image,
+        const MAA_VISION_NS::NeuralNetworkClassifierParam& param,
+        const std::string& name);
+    std::optional<Result> nn_detect(
+        const cv::Mat& image,
+        const MAA_VISION_NS::NeuralNetworkDetectorParam& param,
+        const std::string& name);
+    std::optional<Result> custom_recognize(
+        const cv::Mat& image,
+        const MAA_VISION_NS::CustomRecognizerParam& param,
+        const std::string& name);
+
+    void show_hit_draw(const cv::Mat& image, const Result& res, const std::string& task_name) const;
 
 private:
     InstanceStatus* status() { return inst_ ? inst_->inter_status() : nullptr; }
+
     MAA_RES_NS::ResourceMgr* resource() { return inst_ ? inst_->inter_resource() : nullptr; }
 
 private:

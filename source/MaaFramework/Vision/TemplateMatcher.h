@@ -3,6 +3,7 @@
 #include <ostream>
 #include <vector>
 
+#include "Utils/JsonExt.hpp"
 #include "VisionBase.h"
 #include "VisionTypes.h"
 
@@ -16,50 +17,46 @@ public:
         cv::Rect box {};
         double score = 0.0;
 
-        json::value to_json() const
-        {
-            json::value root;
-            root["box"] = json::array({ box.x, box.y, box.width, box.height });
-            root["score"] = score;
-            return root;
-        }
+        MEO_JSONIZATION(box, score);
     };
+
     using ResultsVec = std::vector<Result>;
 
 public:
-    void set_templates(std::vector<std::shared_ptr<cv::Mat>> templates) { templates_ = std::move(templates); }
-    void set_param(TemplateMatcherParam param) { param_ = std::move(param); }
-    ResultsVec analyze() const;
+    TemplateMatcher(
+        cv::Mat image,
+        TemplateMatcherParam param,
+        std::vector<std::shared_ptr<cv::Mat>> templates,
+        std::string name = "");
+
+    const ResultsVec& all_results() const& { return all_results_; }
+
+    ResultsVec&& all_results() && { return std::move(all_results_); }
+
+    const ResultsVec& filtered_results() const& { return filtered_results_; }
+
+    ResultsVec filtered_results() && { return std::move(filtered_results_); }
 
 private:
-    ResultsVec foreach_rois(const cv::Mat& templ) const;
-    ResultsVec match(const cv::Rect& roi, const cv::Mat& templ) const;
-    void draw_result(const cv::Rect& roi, const cv::Mat& templ, const ResultsVec& results) const;
+    void analyze();
+    ResultsVec match_all_rois(const cv::Mat& templ);
+    ResultsVec template_match(const cv::Rect& roi, const cv::Mat& templ);
 
-    void filter(ResultsVec& results, double threshold) const;
+    void add_results(ResultsVec results, double threshold);
+    void sort();
 
-    TemplateMatcherParam param_;
-    std::vector<std::shared_ptr<cv::Mat>> templates_;
+private:
+    cv::Mat draw_result(const cv::Rect& roi, const cv::Mat& templ, const ResultsVec& results) const;
+
+    void sort_(ResultsVec& results) const;
+
+private:
+    const TemplateMatcherParam param_;
+    const std::vector<std::shared_ptr<cv::Mat>> templates_;
+
+private:
+    ResultsVec all_results_;
+    ResultsVec filtered_results_;
 };
 
 MAA_VISION_NS_END
-
-MAA_NS_BEGIN
-
-inline std::ostream& operator<<(std::ostream& os, const MAA_VISION_NS::TemplateMatcher::Result& res)
-{
-    os << res.to_json().to_string();
-    return os;
-}
-
-inline std::ostream& operator<<(std::ostream& os, const MAA_VISION_NS::TemplateMatcher::ResultsVec& resutls)
-{
-    json::array root;
-    for (const auto& res : resutls) {
-        root.emplace_back(res.to_json());
-    }
-    os << root.to_string();
-    return os;
-}
-
-MAA_NS_END

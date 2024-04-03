@@ -1,0 +1,328 @@
+syntax = "proto3";
+
+package maarpc;
+
+message Point {
+  optional int32 x = 1;
+  optional int32 y = 2;
+}
+message Size {
+  optional int32 width = 1;
+  optional int32 height = 2;
+}
+message Rect {
+  optional Point xy = 1;
+  optional Size wh = 2;
+}
+message Callback {
+  optional string msg = 1;
+  optional string detail = 2;
+}
+
+message ClickParam { optional Point point = 1; }
+message SwipeParam {
+  optional Point from = 1;
+  optional Point to = 2;
+  optional int32 duration = 3;
+}
+message KeyParam { 
+  optional int32 key = 1;
+}
+message InputTextParam {
+  optional string text = 1;
+}
+message TouchParam {
+  optional int32 contact = 1;
+  optional Point pos = 2;
+  optional int32 pressure = 3;
+}
+
+message EmptyRequest { optional bool unused = 1; }
+message IdRequest { optional string id = 1; }
+message HandleRequest { optional string handle = 1; }
+message BufferRequest { optional bytes buffer = 1; }
+message StringRequest { optional string str = 1; }
+message HandleBufferRequest {
+  optional string handle = 1;
+  optional bytes buffer = 2;
+}
+message HandleHandleRequest {
+  optional string handle = 1;
+  optional string another_handle = 2;
+}
+message HandleStringRequest {
+  optional string handle = 1;
+  optional string str = 2;
+}
+message HandleIdRequest {
+  optional string handle = 1;
+  optional string id = 2;
+}
+message HandleIIdRequest {
+  optional string handle = 1;
+  optional uint64 id = 2;
+}
+message KeyValueRequest {
+  optional string key = 1;
+  optional string value = 2;
+}
+
+message EmptyResponse { optional bool void = 1; }
+message IdResponse { optional string id = 1; }
+message IIdResponse { optional uint64 id = 1; }
+message SizeResponse { optional uint64 size = 1; }
+message BoolResponse { optional bool bool = 1; }
+message StringResponse { optional string str = 1; }
+message HandleResponse { optional string handle = 1; }
+message BufferResponse { optional bytes buf = 1; }
+message StatusResponse { optional int32 status = 1; }
+
+// buffer
+
+message ImageInfoResponse {
+  optional int32 type = 1;
+  optional Size size = 2;
+}
+
+// controller
+
+message AdbControllerRequest {
+  optional string id = 1;
+  optional string adb_path = 2;
+  optional string adb_serial = 3;
+  optional uint32 adb_type = 4;
+  optional string adb_config = 5;
+  optional string agent_path = 6;
+}
+
+message ControllerSetOptionRequest {
+  optional string handle = 1;
+  oneof option {
+    int32 long_side = 101;
+    int32 short_side = 102;
+    string def_package_entry = 103;
+    string def_package = 104;
+    bool recording = 105;
+  }
+}
+
+message ControllerPostClickRequest {
+  optional string handle = 1;
+  optional ClickParam param = 2;
+}
+
+message ControllerPostSwipeRequest {
+  optional string handle = 1;
+  optional SwipeParam param = 2;
+}
+
+message ControllerPostKeyRequest {
+  optional string handle = 1;
+  optional KeyParam param = 2;
+}
+message ControllerInputTextRequest {
+  optional string handle = 1;
+  optional InputTextParam param = 2;
+}
+
+message ControllerPostTouchRequest {
+  optional string handle = 1;
+  optional TouchParam param = 2;
+}
+
+// custom controller
+
+message CustomControllerSetOptionParam {
+  optional int32 key = 1;
+  optional string value = 2;
+}
+
+message CustomControllerRequest {
+  optional bool ok = 1;
+  oneof result {
+    string init = 101;
+
+    string uuid = 201;
+    Size resolution = 202;
+  }
+}
+
+message CustomControllerResponse {
+  oneof command {
+    string init = 101; // handle
+
+    bool connect = 201; // void
+    bool request_uuid = 202; // void
+    bool request_resolution = 203; // void
+    string start_app = 301;
+    string stop_app = 302;
+    string screencap = 401;
+    ClickParam click = 501;
+    SwipeParam swipe = 502;
+    TouchParam touch_down = 601;
+    TouchParam touch_move = 602;
+    TouchParam touch_up = 603;
+    KeyParam press_key = 701;
+    InputTextParam input_text = 702;
+  }
+}
+
+// custom recognizer
+
+message CustomRecognizerInit {
+  optional string handle = 1;
+  optional string name = 2;
+}
+
+message CustomRecognizerAnalyzeResult {
+  optional bool match = 1;
+  optional Rect box = 2;
+  optional string detail = 3;
+}
+
+message CustomRecognizerRequest {
+  optional bool ok = 1;
+  oneof result {
+    CustomRecognizerInit init = 101;
+    CustomRecognizerAnalyzeResult analyze = 201;
+  }
+}
+
+message CustomRecognizerAnalyzeParam {
+  optional string context = 1;
+  optional string image_handle = 2;
+  optional string task = 3;
+  optional string param = 4;
+}
+
+message CustomRecognizerResponse {
+  oneof command { CustomRecognizerAnalyzeParam analyze = 101; }
+}
+
+// custom action
+
+message CustomActionInit {
+  optional string handle = 1;
+  optional string name = 2;
+}
+
+message CustomActionRequest {
+  optional bool ok = 1;
+  oneof result { CustomActionInit init = 101; }
+}
+
+message CustomActionRunParam {
+  optional string context = 1;
+  optional string task = 2;
+  optional string param = 3;
+  optional Rect box = 4;
+  optional string detail = 5;
+}
+
+message CustomActionResponse {
+  oneof command {
+    CustomActionRunParam run = 101;
+    bool stop = 102; // void
+  }
+}
+
+// device
+
+message DeviceInfo {
+  optional string name = 1;
+  optional string adb_path = 2;
+  optional string adb_serial = 3;
+  optional int32 adb_type = 4;
+  optional string adb_config = 5;
+}
+
+message DeviceInfosResponse { repeated DeviceInfo info = 1; }
+
+// instance
+
+message InstancePostTaskRequest {
+  optional string handle = 1;
+  optional string task = 2;
+  optional string param = 3;
+}
+
+message InstanceSetTaskParamRequest {
+  optional string handle = 1;
+  optional uint64 id = 2;
+  optional string param = 3;
+}
+
+// sync context
+
+message SyncContextRunTaskRequest {
+  optional string handle = 1;
+  optional string task = 2;
+  optional string param = 3;
+}
+
+message SyncContextRunRecognizerRequest {
+  optional string handle = 1;
+  optional string task = 2;
+  optional string param = 3;
+  optional string image_handle = 4;
+}
+
+message SyncContextRunRecognizerResponse {
+  optional bool match = 1;
+  optional Rect box = 2;
+  optional string detail = 3;
+}
+
+message SyncContextRunActionRequest {
+  optional string handle = 1;
+  optional string task = 2;
+  optional string param = 3;
+  optional Rect box = 4;
+  optional string detail = 5;
+}
+
+message SyncContextClickRequest {
+  optional string handle = 1;
+  optional ClickParam param = 2;
+}
+
+message SyncContextSwipeRequest {
+  optional string handle = 1;
+  optional SwipeParam param = 2;
+}
+
+message SyncContextKeyRequest {
+  optional string handle = 1;
+  optional KeyParam param = 2;
+}
+message SyncContextInputTextRequest {
+  optional string handle = 1;
+  optional InputTextParam param = 2;
+}
+
+message SyncContextTouchRequest {
+  optional string handle = 1;
+  optional TouchParam param = 2;
+}
+
+message SyncContextScreencapRequest {
+  optional string handle = 1;
+  optional string image_handle = 2;
+}
+
+// utility
+
+message SetGlobalOptionRequest {
+  oneof option {
+    string log_dir = 1;
+    bool save_draw = 2;
+    bool recording = 3;
+    int32 stdout_level = 4;
+    bool show_hit_draw = 5;
+  }
+}
+
+message CallbackRequest {
+  optional bool ok = 1;
+  oneof result { IdRequest init = 101; }
+}

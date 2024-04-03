@@ -1,7 +1,5 @@
 #ifdef __linux__
 
-#include "Utils/Platform.h"
-
 #include <cstdlib>
 #include <cstring>
 #include <dirent.h>
@@ -12,6 +10,7 @@
 #include <unistd.h>
 
 #include "Utils/Logger.h"
+#include "Utils/Platform.h"
 
 MAA_NS_BEGIN
 

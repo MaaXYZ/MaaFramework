@@ -1,12 +1,18 @@
 #include "Instance.h"
 #include "MaaFramework/MaaAPI.h"
 #include "Macro.h"
+#include "Utils/Logger.h"
+
+MAA_RPC_NS_BEGIN
 
 using namespace ::grpc;
 
-Status InstanceImpl::create(ServerContext* context, const ::maarpc::IdRequest* request,
-                            ::maarpc::HandleResponse* response)
+Status InstanceImpl::create(
+    ServerContext* context,
+    const ::maarpc::IdRequest* request,
+    ::maarpc::HandleResponse* response)
 {
+    LogFunc;
     std::ignore = context;
 
     MAA_GRPC_REQUIRED(id)
@@ -26,9 +32,12 @@ Status InstanceImpl::create(ServerContext* context, const ::maarpc::IdRequest* r
     return Status::OK;
 }
 
-Status InstanceImpl::destroy(ServerContext* context, const ::maarpc::HandleRequest* request,
-                             ::maarpc::EmptyResponse* response)
+Status InstanceImpl::destroy(
+    ServerContext* context,
+    const ::maarpc::HandleRequest* request,
+    ::maarpc::EmptyResponse* response)
 {
+    LogFunc;
     std::ignore = context;
     std::ignore = response;
 
@@ -41,9 +50,14 @@ Status InstanceImpl::destroy(ServerContext* context, const ::maarpc::HandleReque
     return Status::OK;
 }
 
-static MaaBool _analyze(MaaSyncContextHandle sync_context, const MaaImageBufferHandle image, MaaStringView task_name,
-                        MaaStringView custom_recognition_param, MaaTransparentArg recognizer_arg, MaaRectHandle out_box,
-                        MaaStringBufferHandle detail_buff)
+static MaaBool _analyze(
+    MaaSyncContextHandle sync_context,
+    const MaaImageBufferHandle image,
+    MaaStringView task_name,
+    MaaStringView custom_recognition_param,
+    MaaTransparentArg recognizer_arg,
+    MaaRectHandle out_box,
+    MaaStringBufferHandle detail_buff)
 {
     auto info = reinterpret_cast<InstanceImpl::CustomRecognizerInfo*>(recognizer_arg);
     auto stream = info->stream;
@@ -85,12 +99,14 @@ static MaaBool _analyze(MaaSyncContextHandle sync_context, const MaaImageBufferH
     return request.ok() && request.analyze().match();
 }
 
-static MaaCustomRecognizerAPI custom_recognizer_api = { _analyze };
+static MaaCustomRecognizerAPI custom_recognizer_api = { .analyze = _analyze };
 
 Status InstanceImpl::register_custom_recognizer(
     ServerContext* context,
-    ServerReaderWriter<::maarpc::CustomRecognizerResponse, ::maarpc::CustomRecognizerRequest>* stream)
+    ServerReaderWriter<::maarpc::CustomRecognizerResponse, ::maarpc::CustomRecognizerRequest>*
+        stream)
 {
+    LogFunc;
     std::ignore = context;
 
     ::maarpc::CustomRecognizerRequest request_data;
@@ -105,16 +121,25 @@ Status InstanceImpl::register_custom_recognizer(
     MAA_GRPC_GET_HANDLE_FROM(this, handle, init().handle)
 
 #if defined(__APPLE__) && defined(__clang__) && __clang_major__ < 16
-    std::shared_ptr<CustomRecognizerInfo> info(new CustomRecognizerInfo{ request->init().name(), stream, image_impl_, syncctx_impl_ });
+    std::shared_ptr<CustomRecognizerInfo> info(
+        new CustomRecognizerInfo { request->init().name(), stream, image_impl_, syncctx_impl_ });
 #else
-    // build error of Apple clang version 15.0.0 (clang-1500.0.40.1) on macOS 
-    auto info = std::make_shared<CustomRecognizerInfo>(request->init().name(), stream, image_impl_, syncctx_impl_);
+    // build error of Apple clang version 15.0.0 (clang-1500.0.40.1) on macOS
+    auto info = std::make_shared<CustomRecognizerInfo>(
+        request->init().name(),
+        stream,
+        image_impl_,
+        syncctx_impl_);
 #endif
 
     ::maarpc::CustomRecognizerResponse response;
     stream->Write(response);
 
-    MaaRegisterCustomRecognizer(handle, request->init().name().c_str(), &custom_recognizer_api, info.get());
+    MaaRegisterCustomRecognizer(
+        handle,
+        request->init().name().c_str(),
+        &custom_recognizer_api,
+        info.get());
 
     recos_.add(request->init().name(), info);
     reco_idx_.add(info, handle);
@@ -124,9 +149,12 @@ Status InstanceImpl::register_custom_recognizer(
     return Status::OK;
 }
 
-Status InstanceImpl::unregister_custom_recognizer(ServerContext* context, const ::maarpc::HandleStringRequest* request,
-                                                  ::maarpc::EmptyResponse* response)
+Status InstanceImpl::unregister_custom_recognizer(
+    ServerContext* context,
+    const ::maarpc::HandleStringRequest* request,
+    ::maarpc::EmptyResponse* response)
 {
+    LogFunc;
     std::ignore = context;
     std::ignore = response;
 
@@ -146,9 +174,12 @@ Status InstanceImpl::unregister_custom_recognizer(ServerContext* context, const 
     return Status::OK;
 }
 
-Status InstanceImpl::clear_custom_recognizer(ServerContext* context, const ::maarpc::HandleRequest* request,
-                                             ::maarpc::EmptyResponse* response)
+Status InstanceImpl::clear_custom_recognizer(
+    ServerContext* context,
+    const ::maarpc::HandleRequest* request,
+    ::maarpc::EmptyResponse* response)
 {
+    LogFunc;
     std::ignore = context;
     std::ignore = response;
 
@@ -170,8 +201,13 @@ Status InstanceImpl::clear_custom_recognizer(ServerContext* context, const ::maa
     return Status::OK;
 }
 
-static MaaBool _run(MaaSyncContextHandle sync_context, MaaStringView task_name, MaaStringView custom_action_param,
-                    MaaRectHandle cur_box, MaaStringView cur_rec_detail, MaaTransparentArg action_arg)
+static MaaBool _run(
+    MaaSyncContextHandle sync_context,
+    MaaStringView task_name,
+    MaaStringView custom_action_param,
+    MaaRectHandle cur_box,
+    MaaStringView cur_rec_detail,
+    MaaTransparentArg action_arg)
 {
     auto info = reinterpret_cast<InstanceImpl::CustomActionInfo*>(action_arg);
     auto stream = info->stream;
@@ -217,11 +253,13 @@ static void _stop(MaaTransparentArg arg)
     stream->Read(&request);
 }
 
-static MaaCustomActionAPI custom_action_api = { _run, _stop };
+static MaaCustomActionAPI custom_action_api = { .run = _run, .stop = _stop };
 
 Status InstanceImpl::register_custom_action(
-    ServerContext* context, ServerReaderWriter<::maarpc::CustomActionResponse, ::maarpc::CustomActionRequest>* stream)
+    ServerContext* context,
+    ServerReaderWriter<::maarpc::CustomActionResponse, ::maarpc::CustomActionRequest>* stream)
 {
+    LogFunc;
     std::ignore = context;
 
     ::maarpc::CustomActionRequest requestData;
@@ -236,12 +274,13 @@ Status InstanceImpl::register_custom_action(
     MAA_GRPC_GET_HANDLE_FROM(this, handle, init().handle)
 
 #if defined(__APPLE__) && defined(__clang__) && __clang_major__ < 16
-    std::shared_ptr<CustomActionInfo> info(new CustomActionInfo{ request->init().name(), stream, syncctx_impl_ });
+    std::shared_ptr<CustomActionInfo> info(
+        new CustomActionInfo { request->init().name(), stream, syncctx_impl_ });
 #else
-    // build error of Apple clang version 15.0.0 (clang-1500.0.40.1) on macOS 
+    // build error of Apple clang version 15.0.0 (clang-1500.0.40.1) on macOS
     auto info = std::make_shared<CustomActionInfo>(request->init().name(), stream, syncctx_impl_);
 #endif
-    
+
     ::maarpc::CustomActionResponse response;
     stream->Write(response);
 
@@ -255,9 +294,12 @@ Status InstanceImpl::register_custom_action(
     return Status::OK;
 }
 
-Status InstanceImpl::unregister_custom_action(ServerContext* context, const ::maarpc::HandleStringRequest* request,
-                                              ::maarpc::EmptyResponse* response)
+Status InstanceImpl::unregister_custom_action(
+    ServerContext* context,
+    const ::maarpc::HandleStringRequest* request,
+    ::maarpc::EmptyResponse* response)
 {
+    LogFunc;
     std::ignore = context;
     std::ignore = response;
 
@@ -277,9 +319,12 @@ Status InstanceImpl::unregister_custom_action(ServerContext* context, const ::ma
     return Status::OK;
 }
 
-Status InstanceImpl::clear_custom_action(ServerContext* context, const ::maarpc::HandleRequest* request,
-                                         ::maarpc::EmptyResponse* response)
+Status InstanceImpl::clear_custom_action(
+    ServerContext* context,
+    const ::maarpc::HandleRequest* request,
+    ::maarpc::EmptyResponse* response)
 {
+    LogFunc;
     std::ignore = context;
     std::ignore = response;
 
@@ -301,9 +346,12 @@ Status InstanceImpl::clear_custom_action(ServerContext* context, const ::maarpc:
     return Status::OK;
 }
 
-Status InstanceImpl::bind_resource(ServerContext* context, const ::maarpc::HandleHandleRequest* request,
-                                   ::maarpc::EmptyResponse* response)
+Status InstanceImpl::bind_resource(
+    ServerContext* context,
+    const ::maarpc::HandleHandleRequest* request,
+    ::maarpc::EmptyResponse* response)
 {
+    LogFunc;
     std::ignore = context;
     std::ignore = response;
 
@@ -321,9 +369,12 @@ Status InstanceImpl::bind_resource(ServerContext* context, const ::maarpc::Handl
     }
 }
 
-Status InstanceImpl::bind_controller(ServerContext* context, const ::maarpc::HandleHandleRequest* request,
-                                     ::maarpc::EmptyResponse* response)
+Status InstanceImpl::bind_controller(
+    ServerContext* context,
+    const ::maarpc::HandleHandleRequest* request,
+    ::maarpc::EmptyResponse* response)
 {
+    LogFunc;
     std::ignore = context;
     std::ignore = response;
 
@@ -341,9 +392,12 @@ Status InstanceImpl::bind_controller(ServerContext* context, const ::maarpc::Han
     }
 }
 
-Status InstanceImpl::inited(ServerContext* context, const ::maarpc::HandleRequest* request,
-                            ::maarpc::BoolResponse* response)
+Status InstanceImpl::inited(
+    ServerContext* context,
+    const ::maarpc::HandleRequest* request,
+    ::maarpc::BoolResponse* response)
 {
+    LogFunc;
     std::ignore = context;
 
     MAA_GRPC_REQUIRED(handle)
@@ -355,9 +409,12 @@ Status InstanceImpl::inited(ServerContext* context, const ::maarpc::HandleReques
     return Status::OK;
 }
 
-Status InstanceImpl::post_task(ServerContext* context, const ::maarpc::InstancePostTaskRequest* request,
-                               ::maarpc::IIdResponse* response)
+Status InstanceImpl::post_task(
+    ServerContext* context,
+    const ::maarpc::InstancePostTaskRequest* request,
+    ::maarpc::IIdResponse* response)
 {
+    LogFunc;
     std::ignore = context;
 
     MAA_GRPC_REQUIRED(handle)
@@ -371,9 +428,12 @@ Status InstanceImpl::post_task(ServerContext* context, const ::maarpc::InstanceP
     return Status::OK;
 }
 
-Status InstanceImpl::set_task_param(ServerContext* context, const ::maarpc::InstanceSetTaskParamRequest* request,
-                                    ::maarpc::EmptyResponse* response)
+Status InstanceImpl::set_task_param(
+    ServerContext* context,
+    const ::maarpc::InstanceSetTaskParamRequest* request,
+    ::maarpc::EmptyResponse* response)
 {
+    LogFunc;
     std::ignore = context;
     std::ignore = response;
 
@@ -391,9 +451,12 @@ Status InstanceImpl::set_task_param(ServerContext* context, const ::maarpc::Inst
     }
 }
 
-Status InstanceImpl::status(ServerContext* context, const ::maarpc::HandleIIdRequest* request,
-                            ::maarpc::StatusResponse* response)
+Status InstanceImpl::status(
+    ServerContext* context,
+    const ::maarpc::HandleIIdRequest* request,
+    ::maarpc::StatusResponse* response)
 {
+    LogFunc;
     std::ignore = context;
 
     MAA_GRPC_REQUIRED(handle)
@@ -406,9 +469,12 @@ Status InstanceImpl::status(ServerContext* context, const ::maarpc::HandleIIdReq
     return Status::OK;
 }
 
-Status InstanceImpl::wait(ServerContext* context, const ::maarpc::HandleIIdRequest* request,
-                          ::maarpc::StatusResponse* response)
+Status InstanceImpl::wait(
+    ServerContext* context,
+    const ::maarpc::HandleIIdRequest* request,
+    ::maarpc::StatusResponse* response)
 {
+    LogFunc;
     std::ignore = context;
 
     MAA_GRPC_REQUIRED(handle)
@@ -421,23 +487,29 @@ Status InstanceImpl::wait(ServerContext* context, const ::maarpc::HandleIIdReque
     return Status::OK;
 }
 
-Status InstanceImpl::all_finished(ServerContext* context, const ::maarpc::HandleRequest* request,
-                                  ::maarpc::BoolResponse* response)
+Status InstanceImpl::running(
+    ServerContext* context,
+    const ::maarpc::HandleRequest* request,
+    ::maarpc::BoolResponse* response)
 {
+    LogFunc;
     std::ignore = context;
 
     MAA_GRPC_REQUIRED(handle)
 
     MAA_GRPC_GET_HANDLE
 
-    response->set_bool_(MaaTaskAllFinished(handle));
+    response->set_bool_(MaaRunning(handle));
 
     return Status::OK;
 }
 
-Status InstanceImpl::stop(ServerContext* context, const ::maarpc::HandleRequest* request,
-                          ::maarpc::EmptyResponse* response)
+Status InstanceImpl::post_stop(
+    ServerContext* context,
+    const ::maarpc::HandleRequest* request,
+    ::maarpc::EmptyResponse* response)
 {
+    LogFunc;
     std::ignore = context;
     std::ignore = response;
 
@@ -445,17 +517,20 @@ Status InstanceImpl::stop(ServerContext* context, const ::maarpc::HandleRequest*
 
     MAA_GRPC_GET_HANDLE
 
-    if (MaaStop(handle)) {
+    if (MaaPostStop(handle)) {
         return Status::OK;
     }
     else {
-        return Status(UNKNOWN, "MaaStop failed");
+        return Status(UNKNOWN, "MaaPostStop failed");
     }
 }
 
-Status InstanceImpl::resource(ServerContext* context, const ::maarpc::HandleRequest* request,
-                              ::maarpc::HandleRequest* response)
+Status InstanceImpl::resource(
+    ServerContext* context,
+    const ::maarpc::HandleRequest* request,
+    ::maarpc::HandleRequest* response)
 {
+    LogFunc;
     std::ignore = context;
 
     MAA_GRPC_REQUIRED(handle)
@@ -472,9 +547,12 @@ Status InstanceImpl::resource(ServerContext* context, const ::maarpc::HandleRequ
     }
 }
 
-Status InstanceImpl::controller(ServerContext* context, const ::maarpc::HandleRequest* request,
-                                ::maarpc::HandleRequest* response)
+Status InstanceImpl::controller(
+    ServerContext* context,
+    const ::maarpc::HandleRequest* request,
+    ::maarpc::HandleRequest* response)
 {
+    LogFunc;
     std::ignore = context;
 
     MAA_GRPC_REQUIRED(handle)
@@ -490,3 +568,5 @@ Status InstanceImpl::controller(ServerContext* context, const ::maarpc::HandleRe
         return Status(NOT_FOUND, "cannot locate controller handle");
     }
 }
+
+MAA_RPC_NS_END

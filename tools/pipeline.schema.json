@@ -1,0 +1,778 @@
+{
+    "$schema": "https://json-schema.org/draft-07/schema",
+    "type": "object",
+    "patternProperties": {
+        "^(?!.*?\\$schema).*$": {
+            "type": "object",
+            "patternProperties": {
+                ".*_doc$": {
+                    "type": "string"
+                }
+            },
+            "properties": {
+                "recognition": {
+                    "description": "识别算法类型。可选，默认 DirectHit。",
+                    "enum": [
+                        "DirectHit",
+                        "TemplateMatch",
+                        "FeatureMatch",
+                        "ColorMatch",
+                        "OCR",
+                        "NeuralNetworkClassify",
+                        "NeuralNetworkDetect",
+                        "Custom"
+                    ],
+                    "default": "DirectHit"
+                },
+                "action": {
+                    "description": "执行的动作。可选，默认 DoNothing。",
+                    "enum": [
+                        "DoNothing",
+                        "Click",
+                        "Swipe",
+                        "Key",
+                        "StartApp",
+                        "StopApp",
+                        "Custom"
+                    ],
+                    "default": "DoNothing"
+                },
+                "next": {
+                    "description": "接下来要执行的任务列表。可选，默认空。\n按序识别每个任务，只执行第一个识别到的。",
+                    "$ref": "#/definitions/tasklist"
+                },
+                "is_sub": {
+                    "description": "是否是子任务。可选，默认否。\n如果是子任务，执行完本任务（及后续 next 等）后，会返回来再次识别本任务 **所在的** next 列表。",
+                    "type": "boolean",
+                    "default": false
+                },
+                "inverse": {
+                    "description": "反转识别结果，识别到了当做没识别到，没识别到的当做识别到了。可选，默认否。",
+                    "type": "boolean",
+                    "default": false
+                },
+                "enabled": {
+                    "description": "是否启用该 task。可选，默认 true",
+                    "type": "boolean",
+                    "default": true
+                },
+                "timeout": {
+                    "description": "next list 识别超时时间，毫秒。默认 20 * 1000。",
+                    "type": "integer",
+                    "minimum": 0,
+                    "default": 20000
+                },
+                "timeout_next": {
+                    "description": "超时后执行的任务列表。可选，默认空。",
+                    "$ref": "#/definitions/tasklist"
+                },
+                "times_limit": {
+                    "description": "任务执行次数。可选，默认 UINT_MAX。",
+                    "type": "integer",
+                    "minimum": 0,
+                    "default": 4294967295
+                },
+                "runout_next": {
+                    "description": "任务执行次数达到了后执行的任务列表，可选，默认空。",
+                    "$ref": "#/definitions/tasklist"
+                },
+                "pre_delay": {
+                    "description": "识别到 到 执行动作前 的延迟，毫秒。可选，默认 200。\n推荐尽可能增加中间过程任务，少用延迟，不然既慢还不稳定。",
+                    "type": "integer",
+                    "minimum": 0,
+                    "default": 200
+                },
+                "post_delay": {
+                    "description": "执行动作后 到 下一个步骤 的延迟，毫秒。可选，默认 500。\n推荐尽可能增加中间过程任务，少用延迟，不然既慢还不稳定。",
+                    "type": "integer",
+                    "minimum": 0,
+                    "default": 500
+                },
+                "pre_wait_freezes": {
+                    "description": "识别到 到 执行动作前，等待画面不动了的时间，毫秒。可选，默认 0，即不等待。",
+                    "$ref": "#/definitions/wait_freezes_type"
+                },
+                "post_wait_freezes": {
+                    "description": "行动动作后 到 识别 next，等待画面不动了的时间，毫秒。可选，默认 0，即不等待。",
+                    "$ref": "#/definitions/wait_freezes_type"
+                },
+                "focus": {
+                    "description": "产生同步回调消息。可选，默认空，即不产生。",
+                    "type": "boolean",
+                    "default": false
+                },
+                "roi": {
+                    "description": "识别区域坐标。可选，默认 [0, 0, 0, 0]，即全屏。",
+                    "$ref": "#/definitions/rectlist",
+                    "default": [
+                        0,
+                        0,
+                        0,
+                        0
+                    ]
+                },
+                "order_by": {
+                    "description": "识别结果排序方式。可选，默认 `Horizontal`",
+                    "enum": [
+                        "Horizontal",
+                        "Vertical",
+                        "Score",
+                        "Area",
+                        "Length",
+                        "Random",
+                        "Excepted"
+                    ],
+                    "default": "Horizontal"
+                },
+                "index": {
+                    "description": "命中第几个识别结果。可选，默认 0。\n假设共有 N 个结果，则 `index` 的取值范围为 [-N, N - 1]，其中负数使用类 Python 的规则转换为 N - index。若超出范围，则视为当前识别无结果。",
+                    "type": "integer",
+                    "default": 0
+                },
+                "template": {
+                    "description": "模板图片路径，需要 image 文件夹的相对路径。必选。",
+                    "$ref": "#/definitions/tasklist",
+                    "default": ""
+                },
+                "threshold": {
+                    "description": "模板匹配阈值。可选，默认 0.7 。",
+                    "anyOf": [
+                        {
+                            "type": "number",
+                            "default": 0.7,
+                            "minimum": 0,
+                            "maximum": 1
+                        },
+                        {
+                            "type": "array",
+                            "items": {
+                                "type": "number",
+                                "default": 0.7,
+                                "minimum": 0,
+                                "maximum": 1
+                            }
+                        }
+                    ]
+                },
+                "method": {
+                    "description": "模板匹配算法，即 cv::TemplateMatchModes。可选，默认 5 ",
+                    "enum": [
+                        1,
+                        3,
+                        5
+                    ],
+                    "default": 5
+                },
+                "green_mask": {
+                    "description": "是否进行绿色掩码。可选，默认 false。",
+                    "type": "boolean",
+                    "default": false
+                },
+                "lower": {
+                    "description": "颜色下限值。必选。最内层 list 长度需和 method 的通道数一致。",
+                    "$ref": "#/definitions/colorlist"
+                },
+                "upper": {
+                    "description": "颜色上限值。必选。最内层 list 长度需和 method 的通道数一致。",
+                    "$ref": "#/definitions/colorlist"
+                },
+                "count": {
+                    "description": "符合的点的数量要求。可选，默认 1。",
+                    "type": "integer",
+                    "default": 1
+                },
+                "connected": {
+                    "description": "是否是相连的点才会被计数。可选，默认否。",
+                    "type": "boolean",
+                    "default": false
+                },
+                "text": {
+                    "description": "要匹配的文字，支持正则。必选（除非通过接口单独设置）。",
+                    "$ref": "#/definitions/tasklist",
+                    "default": ""
+                },
+                "replace": {
+                    "description": "部分文字识别结果不准确，进行替换。可选。",
+                    "$ref": "#/definitions/replace_type",
+                    "default": []
+                },
+                "only_rec": {
+                    "description": "是否仅识别（不进行检测，需要精确设置 roi）。可选，默认 false。",
+                    "type": "boolean",
+                    "default": false
+                },
+                "model": {
+                    "description": "模型 文件夹 路径。使用 model/ocr 文件夹的相对路径。可选，默认为空。",
+                    "type": "string",
+                    "default": ""
+                },
+                "cls_size": {
+                    "description": "总分类数，必选。",
+                    "type": "integer",
+                    "default": 2
+                },
+                "labels": {
+                    "description": "标注，即每个分类的名字。可选。",
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "expected": {
+                    "description": "期望的分类下标。必选",
+                    "$ref": "#/definitions/expected_type"
+                },
+                "custom_recognition": {
+                    "description": "识别器名，同 MaaRegisterCustomRecognizer 接口传入的识别器名。必选。",
+                    "type": "string",
+                    "default": ""
+                },
+                "custom_recognition_param": {
+                    "description": "识别器参数，任意类型，会在执行时透传。可选，默认空 json，即 {}",
+                    "default": {}
+                },
+                "target": {
+                    "description": "等待的目标。可选，默认 true。",
+                    "$ref": "#/definitions/target_type",
+                    "default": true
+                },
+                "target_offset": {
+                    "description": "在 target 的基础上额外移动再作为等待目标，四个值分别相加。可选，默认 [0, 0, 0, 0]。",
+                    "$ref": "#/definitions/rect",
+                    "default": [
+                        0,
+                        0,
+                        0,
+                        0
+                    ]
+                },
+                "begin": {
+                    "description": "滑动起点。可选，默认 true。",
+                    "$ref": "#/definitions/target_type",
+                    "default": true
+                },
+                "begin_offset": {
+                    "description": "在 begin 的基础上额外移动再作为起点，四个值分别相加。可选，默认 [0, 0, 0, 0]。",
+                    "$ref": "#/definitions/rect",
+                    "default": [
+                        0,
+                        0,
+                        0,
+                        0
+                    ]
+                },
+                "end": {
+                    "description": "滑动终点。必选，默认 true。",
+                    "$ref": "#/definitions/target_type",
+                    "default": true
+                },
+                "end_offset": {
+                    "description": "在 end 的基础上额外移动再作为终点，四个值分别相加。可选，默认 [0, 0, 0, 0]。",
+                    "$ref": "#/definitions/rect",
+                    "default": [
+                        0,
+                        0,
+                        0,
+                        0
+                    ]
+                },
+                "duration": {
+                    "description": "滑动持续时间，单位毫秒。可选，默认 200",
+                    "type": "integer",
+                    "default": 200
+                },
+                "key": {
+                    "description": "要按的键，仅支持 ascii。",
+                    "$ref": "#/definitions/keylist",
+                    "default": 0
+                },
+                "package": {
+                    "description": "启动入口。可选，默认空。",
+                    "type": "string",
+                    "default": ""
+                },
+                "custom_action": {
+                    "description": "动作名，同 MaaRegisterCustomAction 接口传入的动作名。必选。",
+                    "type": "string",
+                    "default": ""
+                },
+                "custom_action_param": {
+                    "description": "动作参数，任意类型，会在执行时透传。可选，默认空 json，即 {}",
+                    "default": {}
+                }
+            },
+            "additionalProperties": false,
+            "dependenciesSchemas": {
+                "recognition": {
+                    "oneOf": [
+                        {
+                            "$comment": "TemplateMatch",
+                            "if": {
+                                "required": [
+                                    "recognition"
+                                ],
+                                "properties": {
+                                    "recognition": {
+                                        "enum": [
+                                            "TemplateMatch"
+                                        ]
+                                    }
+                                }
+                            },
+                            "then": {
+                                "required": [
+                                    "template"
+                                ]
+                            }
+                        },
+                        {
+                            "$comment": "FeatureMatch",
+                            "if": {
+                                "required": [
+                                    "recognition"
+                                ],
+                                "properties": {
+                                    "recognition": {
+                                        "enum": [
+                                            "FeatureMatch"
+                                        ]
+                                    }
+                                }
+                            },
+                            "then": {
+                                "required": [
+                                    "template"
+                                ]
+                            }
+                        },
+                        {
+                            "$comment": "ColorMatch",
+                            "if": {
+                                "required": [
+                                    "recognition"
+                                ],
+                                "properties": {
+                                    "recognition": {
+                                        "enum": [
+                                            "ColorMatch"
+                                        ]
+                                    }
+                                }
+                            },
+                            "then": {
+                                "required": [
+                                    "lower",
+                                    "upper"
+                                ],
+                                "properties": {
+                                    "method": {
+                                        "description": "颜色匹配方式。即 cv::ColorConversionCodes。可选，默认 4 (RGB)。\n常用值：4 (RGB, 3 通道), 40 (HSV, 3 通道), 6 (GRAY, 1 通道)。",
+                                        "type": "integer",
+                                        "default": 4
+                                    }
+                                }
+                            }
+                        },
+                        {
+                            "$comment": "OCR",
+                            "if": {
+                                "required": [
+                                    "recognition"
+                                ],
+                                "properties": {
+                                    "recognition": {
+                                        "enum": [
+                                            "OCR"
+                                        ]
+                                    }
+                                },
+                                "not": {
+                                    "required": [
+                                        "text_doc"
+                                    ]
+                                }
+                            },
+                            "then": {
+                                "required": [
+                                    "text"
+                                ]
+                            }
+                        },
+                        {
+                            "$comment": "NeuralNetworkClassify",
+                            "if": {
+                                "required": [
+                                    "recognition"
+                                ],
+                                "properties": {
+                                    "recognition": {
+                                        "enum": [
+                                            "NeuralNetworkClassify"
+                                        ]
+                                    }
+                                }
+                            },
+                            "then": {
+                                "required": [
+                                    "cls_size",
+                                    "model",
+                                    "expected"
+                                ],
+                                "properties": {
+                                    "model": {
+                                        "description": "模型文件路径。使用 model/classify 文件夹的相对路径。必选。",
+                                        "type": "string",
+                                        "default": ""
+                                    }
+                                }
+                            }
+                        },
+                        {
+                            "$comment": "NeuralNetworkDetect",
+                            "if": {
+                                "required": [
+                                    "recognition"
+                                ],
+                                "properties": {
+                                    "recognition": {
+                                        "enum": [
+                                            "NeuralNetworkDetect"
+                                        ]
+                                    }
+                                }
+                            },
+                            "then": {
+                                "required": [
+                                    "cls_size",
+                                    "model",
+                                    "expected"
+                                ],
+                                "properties": {
+                                    "model": {
+                                        "description": "模型文件路径。使用 model/detect 文件夹的相对路径。必选。",
+                                        "type": "string",
+                                        "default": ""
+                                    },
+                                    "threshold": {
+                                        "description": "模型置信度阈值。可选，默认 0.3 。",
+                                        "anyOf": [
+                                            {
+                                                "type": "number"
+                                            },
+                                            {
+                                                "type": "array",
+                                                "items": {
+                                                    "type": "number"
+                                                },
+                                                "minItems": 1
+                                            }
+                                        ],
+                                        "default": 0.3
+                                    }
+                                }
+                            }
+                        },
+                        {
+                            "$comment": "Custom",
+                            "if": {
+                                "required": [
+                                    "recognition"
+                                ],
+                                "properties": {
+                                    "recognition": {
+                                        "enum": [
+                                            "Custom"
+                                        ]
+                                    }
+                                }
+                            },
+                            "then": {
+                                "required": [
+                                    "custom_recognition"
+                                ]
+                            }
+                        }
+                    ]
+                },
+                "action": {
+                    "oneOf": [
+                        {
+                            "$comment": "Swipe",
+                            "if": {
+                                "required": [
+                                    "action"
+                                ],
+                                "properties": {
+                                    "action": {
+                                        "enum": [
+                                            "Swipe"
+                                        ]
+                                    }
+                                }
+                            },
+                            "then": {
+                                "required": [
+                                    "end"
+                                ]
+                            }
+                        },
+                        {
+                            "$comment": "Key",
+                            "if": {
+                                "required": [
+                                    "action"
+                                ],
+                                "properties": {
+                                    "action": {
+                                        "enum": [
+                                            "Key"
+                                        ]
+                                    }
+                                }
+                            },
+                            "then": {
+                                "required": [
+                                    "key"
+                                ]
+                            }
+                        },
+                        {
+                            "$comment": "StopApp",
+                            "if": {
+                                "required": [
+                                    "action"
+                                ],
+                                "properties": {
+                                    "action": {
+                                        "enum": [
+                                            "StopApp"
+                                        ]
+                                    }
+                                }
+                            },
+                            "then": {
+                                "properties": {
+                                    "package": {
+                                        "description": "关闭要关闭的程序。可选，默认空。",
+                                        "type": "string",
+                                        "default": ""
+                                    }
+                                }
+                            }
+                        },
+                        {
+                            "$comment": "Custom",
+                            "if": {
+                                "required": [
+                                    "action"
+                                ],
+                                "properties": {
+                                    "action": {
+                                        "enum": [
+                                            "Custom"
+                                        ]
+                                    }
+                                }
+                            },
+                            "then": {
+                                "required": [
+                                    "custom_action"
+                                ]
+                            }
+                        }
+                    ]
+                }
+            }
+        }
+    },
+    "definitions": {
+        "rect": {
+            "type": "array",
+            "items": {
+                "type": "number"
+            },
+            "minItems": 4,
+            "maxItems": 4
+        },
+        "rectlist": {
+            "anyOf": [
+                {
+                    "type": "array",
+                    "items": {
+                        "type": "number"
+                    },
+                    "minItems": 4,
+                    "maxItems": 4
+                },
+                {
+                    "type": "array",
+                    "items": {
+                        "type": "array",
+                        "items": {
+                            "type": "number"
+                        },
+                        "minItems": 4,
+                        "maxItems": 4
+                    },
+                    "minItems": 1
+                }
+            ]
+        },
+        "tasklist": {
+            "anyOf": [
+                {
+                    "type": "string"
+                },
+                {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                }
+            ]
+        },
+        "colorlist": {
+            "anyOf": [
+                {
+                    "type": "array",
+                    "items": {
+                        "type": "integer"
+                    },
+                    "minItems": 1
+                },
+                {
+                    "type": "array",
+                    "items": {
+                        "type": "array",
+                        "items": {
+                            "type": "integer"
+                        },
+                        "minItems": 1
+                    },
+                    "minItems": 1
+                }
+            ]
+        },
+        "replace_type": {
+            "anyOf": [
+                {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    },
+                    "minItems": 2,
+                    "maxItems": 2
+                },
+                {
+                    "type": "array",
+                    "items": {
+                        "type": "array",
+                        "items": {
+                            "type": "string"
+                        },
+                        "minItems": 2,
+                        "maxItems": 2
+                    },
+                    "minItems": 1
+                }
+            ]
+        },
+        "expected_type": {
+            "anyOf": [
+                {
+                    "type": "integer"
+                },
+                {
+                    "type": "array",
+                    "items": {
+                        "type": "integer"
+                    },
+                    "minItems": 1
+                }
+            ]
+        },
+        "keylist": {
+            "anyOf": [
+                {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 127
+                },
+                {
+                    "type": "array",
+                    "items": {
+                        "type": "integer",
+                        "minimum": 0,
+                        "maximum": 127
+                    },
+                    "minItems": 1
+                }
+            ]
+        },
+        "target_type": {
+            "anyOf": [
+                {
+                    "type": "boolean"
+                },
+                {
+                    "type": "string"
+                },
+                {
+                    "$ref": "#/definitions/rect"
+                }
+            ]
+        },
+        "wait_freezes_type": {
+            "anyOf": [
+                {
+                    "type": "integer",
+                    "minimum": 0,
+                    "default": 1
+                },
+                {
+                    "type": "object",
+                    "properties": {
+                        "time": {
+                            "description": "连续 time 毫秒 画面 没有较大变化 才会退出动作。可选，默认 1。",
+                            "type": "integer",
+                            "minimum": 0,
+                            "default": 1
+                        },
+                        "target": {
+                            "description": "等待的目标。可选，默认 true。",
+                            "$ref": "#/definitions/target_type",
+                            "default": true
+                        },
+                        "target_offset": {
+                            "description": "在 target 的基础上额外移动再作为等待目标，四个值分别相加。可选，默认 [0, 0, 0, 0]。",
+                            "$ref": "#/definitions/rect",
+                            "default": [
+                                0,
+                                0,
+                                0,
+                                0
+                            ]
+                        },
+                        "threshold": {
+                            "description": "判断“没有较大变化”的模板匹配阈值。可选，默认 0.95 。",
+                            "type": "number",
+                            "minimum": 0,
+                            "maximum": 1,
+                            "default": 0.95
+                        },
+                        "method": {
+                            "description": "判断“没有较大变化”的模板匹配算法，即 cv::TemplateMatchModes。可选，默认 5 。",
+                            "type": "integer",
+                            "enum": [
+                                1,
+                                3,
+                                5
+                            ],
+                            "default": 5
+                        }
+                    }
+                }
+            ]
+        }
+    }
+}

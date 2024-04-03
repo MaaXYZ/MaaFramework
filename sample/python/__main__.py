@@ -1,26 +1,71 @@
+from typing import List, Tuple, Union
+from maa.define import RectType
 from maa.library import Library
 from maa.resource import Resource
 from maa.controller import AdbController
-from maa.maa import Maa
+from maa.instance import Instance
+from maa.toolkit import Toolkit
+
+from maa.custom_recognizer import CustomRecognizer
+from maa.custom_action import CustomAction
+
+import asyncio
 
 
-if __name__ == "__main__":
-    Library.open("../../x64/Debug")
+async def main():
+    version = Library.open("bin")
+    print(f"MaaFw Version: {version}")
+
+    user_path = "./"
+    Toolkit.init_option(user_path)
 
     resource = Resource()
-    res_id = resource.post_path("../../x64/Debug/resource")
-    resource.wait(res_id)
+    await resource.load("sample/resource")
 
-    controller = AdbController("adb", "127.0.0.1:16416")
-    ctrl_id = controller.post_connection()
-    controller.wait(ctrl_id)
+    device_list = await Toolkit.adb_devices()
+    if not device_list:
+        print("No ADB device found.")
+        exit()
 
-    maa_inst = Maa()
+    # for demo, we just use the first device
+    device = device_list[0]
+    controller = AdbController(
+        adb_path=device.adb_path,
+        address=device.address,
+    )
+    await controller.connect()
+
+    maa_inst = Instance()
     maa_inst.bind(resource, controller)
 
-    if not maa_inst.inited():
+    if not maa_inst.inited:
         print("Failed to init MAA.")
         exit()
 
-    task_id = maa_inst.post_task("MyTask", {})
-    maa_inst.wait(task_id)
+    maa_inst.register_recognizer("MyRec", my_rec)
+    maa_inst.register_action("MyAct", my_act)
+
+    await maa_inst.run_task("StartUpAndClickButton")
+
+
+class MyRecognizer(CustomRecognizer):
+    def analyze(
+        self, context, image, task_name, custom_param
+    ) -> Tuple[bool, RectType, str]:
+        return True, (0, 0, 100, 100), "Hello World!"
+
+
+class MyAction(CustomAction):
+    def run(self, context, task_name, custom_param, box, rec_detail) -> bool:
+        return True
+
+    def stop(self) -> None:
+        pass
+
+
+my_rec = MyRecognizer()
+my_act = MyAction()
+
+
+if __name__ == "__main__":
+    asyncio.run(main())

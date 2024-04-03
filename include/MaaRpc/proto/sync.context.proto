@@ -1,0 +1,22 @@
+syntax = "proto3";
+
+package maarpc;
+
+import "types.proto";
+
+service SyncContext {
+  rpc run_task(SyncContextRunTaskRequest) returns (EmptyResponse);
+  rpc run_recognizer(SyncContextRunRecognizerRequest)
+      returns (SyncContextRunRecognizerResponse);
+  rpc run_action(SyncContextRunActionRequest) returns (EmptyResponse);
+
+  rpc click(SyncContextClickRequest) returns (EmptyRequest);
+  rpc swipe(SyncContextSwipeRequest) returns (EmptyRequest);
+  rpc key(SyncContextKeyRequest) returns (EmptyRequest);
+  rpc touch_down(SyncContextTouchRequest) returns (EmptyRequest);
+  rpc touch_move(SyncContextTouchRequest) returns (EmptyRequest);
+  rpc touch_up(SyncContextTouchRequest) returns (EmptyRequest);
+
+  rpc screencap(SyncContextScreencapRequest) returns (EmptyResponse);
+  rpc task_result(HandleStringRequest) returns (StringResponse);
+}

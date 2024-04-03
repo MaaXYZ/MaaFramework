@@ -1,0 +1,19 @@
+{
+    "MyTask": {
+        "next": [
+            "MyCustomRecTask"
+        ]
+    },
+    "MyCustomRecTask": {
+        "recognition": "Custom",
+        "custom_recognition": "MyRec",
+        "custom_recognition_param": {
+            "my_rec_key": "my_rec_value"
+        },
+        "action": "Custom",
+        "custom_action": "MyAct",
+        "custom_action_param": {
+            "my_act_key": "my_act_value"
+        }
+    }
+}

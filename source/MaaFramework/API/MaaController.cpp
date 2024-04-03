@@ -2,30 +2,103 @@
 
 #include "Buffer/ImageBuffer.hpp"
 #include "Buffer/StringBuffer.hpp"
-#include "ControlUnit/ControlUnitAPI.h"
-#include "Controller/AdbController.h"
-#include "Controller/CustomController.h"
-#include "Controller/CustomThriftController.h"
+#include "Controller/CustomControllerAgent.h"
+#include "Controller/GeneralControllerAgent.h"
+#include "LibraryHolder/ControlUnit.h"
 #include "Utils/Logger.h"
 #include "Utils/Platform.h"
 
-MaaControllerHandle MaaAdbControllerCreate(MaaStringView adb_path, MaaStringView address, MaaAdbControllerType type,
-                                           MaaStringView config, MaaControllerCallback callback,
-                                           MaaCallbackTransparentArg callback_arg)
+MaaControllerHandle MaaAdbControllerCreate(
+    MaaStringView adb_path,
+    MaaStringView address,
+    MaaAdbControllerType type,
+    MaaStringView config,
+    MaaControllerCallback callback,
+    MaaCallbackTransparentArg callback_arg)
 {
-    LogFunc << VAR(adb_path) << VAR(address) << VAR_VOIDP(callback) << VAR_VOIDP(callback_arg);
+    LogWarn << __FUNCTION__ << "is deprecated, use MaaAdbControllerCreateV2 instead.";
 
-    auto unit_mgr = MAA_CTRL_UNIT_NS::create_adb_controller_unit(adb_path, address, type, config);
-    if (!unit_mgr) {
-        LogError << "Failed to create controller unit";
+    constexpr std::string_view kDefaultAgentPath = "./MaaAgentBinary";
+    return MaaAdbControllerCreateV2(
+        adb_path,
+        address,
+        type,
+        config,
+        kDefaultAgentPath.data(),
+        callback,
+        callback_arg);
+}
+
+MaaControllerHandle MaaAdbControllerCreateV2(
+    MaaStringView adb_path,
+    MaaStringView address,
+    MaaAdbControllerType type,
+    MaaStringView config,
+    MaaStringView agent_path,
+    MaaControllerCallback callback,
+    MaaCallbackTransparentArg callback_arg)
+{
+    LogFunc << VAR(adb_path) << VAR(address) << VAR(type) << VAR(agent_path) << VAR_VOIDP(callback)
+            << VAR_VOIDP(callback_arg);
+
+    auto control_unit = MAA_NS::AdbControlUnitLibraryHolder::create_control_unit(
+        adb_path,
+        address,
+        type,
+        config,
+        agent_path,
+        callback,
+        callback_arg);
+
+    if (!control_unit) {
+        LogError << "Failed to create control unit";
         return nullptr;
     }
 
-    return new MAA_CTRL_NS::AdbController(adb_path, address, std::move(unit_mgr), callback, callback_arg);
+    return new MAA_CTRL_NS::GeneralControllerAgent(std::move(control_unit), callback, callback_arg);
 }
 
-MaaControllerHandle MaaCustomControllerCreate(MaaCustomControllerHandle handle, MaaTransparentArg handle_arg,
-                                              MaaControllerCallback callback, MaaCallbackTransparentArg callback_arg)
+MaaControllerHandle MaaWin32ControllerCreate(
+    MaaWin32Hwnd hWnd,
+    MaaWin32ControllerType type,
+    MaaControllerCallback callback,
+    MaaCallbackTransparentArg callback_arg)
+{
+    LogFunc << VAR_VOIDP(hWnd) << VAR(type) << VAR_VOIDP(callback) << VAR_VOIDP(callback_arg);
+
+#ifndef _WIN32
+
+    LogError << "This API" << __FUNCTION__ << "is only available on Windows";
+    return nullptr;
+
+#else
+
+    if (!hWnd) {
+        LogError << "hWnd is nullptr";
+        return nullptr;
+    }
+
+    auto control_unit = MAA_NS::Win32ControlUnitLibraryHolder::create_control_unit(
+        hWnd,
+        type,
+        callback,
+        callback_arg);
+
+    if (!control_unit) {
+        LogError << "Failed to create control unit";
+        return nullptr;
+    }
+
+    return new MAA_CTRL_NS::GeneralControllerAgent(std::move(control_unit), callback, callback_arg);
+
+#endif
+}
+
+MaaControllerHandle MaaCustomControllerCreate(
+    MaaCustomControllerHandle handle,
+    MaaTransparentArg handle_arg,
+    MaaControllerCallback callback,
+    MaaCallbackTransparentArg callback_arg)
 {
     LogFunc << VAR(handle) << VAR(handle_arg) << VAR_VOIDP(callback) << VAR_VOIDP(callback_arg);
 
@@ -34,32 +107,55 @@ MaaControllerHandle MaaCustomControllerCreate(MaaCustomControllerHandle handle, 
         return nullptr;
     }
 
-    return new MAA_CTRL_NS::CustomController(handle, handle_arg, callback, callback_arg);
+    return new MAA_CTRL_NS::CustomControllerAgent(handle, handle_arg, callback, callback_arg);
 }
 
-MaaControllerHandle MaaThriftControllerCreate(MaaStringView param, MaaControllerCallback callback,
-                                              MaaCallbackTransparentArg callback_arg)
+MaaControllerHandle MaaThriftControllerCreate(
+    MaaThriftControllerType type,
+    MaaStringView host,
+    int32_t port,
+    MaaStringView config,
+    MaaControllerCallback callback,
+    MaaCallbackTransparentArg callback_arg)
 {
-    LogFunc << VAR(param) << VAR_VOIDP(callback) << VAR_VOIDP(callback_arg);
+    LogFunc << VAR(type) << VAR(host) << VAR(type) << VAR(port) << VAR_VOIDP(callback)
+            << VAR_VOIDP(callback_arg);
 
-#ifdef WITH_THRIFT
+    std::ignore = config;
 
-    try {
-        return new MAA_CTRL_NS::CustomThriftController(param, callback, callback_arg);
-    }
-    catch (const std::exception& e) {
-        LogError << "Failed to create thrift controller: " << e.what();
+    auto control_unit =
+        MAA_NS::ThriftControlUnitLibraryHolder::create_control_unit(type, host, port, config);
+
+    if (!control_unit) {
+        LogError << "Failed to create control unit";
         return nullptr;
     }
 
-#else
+    return new MAA_CTRL_NS::GeneralControllerAgent(std::move(control_unit), callback, callback_arg);
+}
 
-#pragma message("The build without thrift")
+MaaControllerHandle MaaDbgControllerCreate(
+    MaaStringView read_path,
+    MaaStringView write_path,
+    MaaDbgControllerType type,
+    MaaStringView config,
+    MaaControllerCallback callback,
+    MaaCallbackTransparentArg callback_arg)
+{
+    LogFunc << VAR(read_path) << VAR(write_path) << VAR(type) << VAR_VOIDP(callback)
+            << VAR_VOIDP(callback_arg);
 
-    LogError << "The build without thrift";
-    return nullptr;
+    std::ignore = write_path;
+    std::ignore = config;
 
-#endif // WITH_THRIFT
+    auto control_unit = MAA_NS::DbgControlUnitLibraryHolder::create_control_unit(type, read_path);
+
+    if (!control_unit) {
+        LogError << "Failed to create control unit";
+        return nullptr;
+    }
+
+    return new MAA_CTRL_NS::GeneralControllerAgent(std::move(control_unit), callback, callback_arg);
 }
 
 void MaaControllerDestroy(MaaControllerHandle ctrl)
@@ -71,12 +167,15 @@ void MaaControllerDestroy(MaaControllerHandle ctrl)
         return;
     }
 
-    ctrl->on_stop();
+    ctrl->post_stop();
     delete ctrl;
 }
 
-MaaBool MaaControllerSetOption(MaaControllerHandle ctrl, MaaCtrlOption key, MaaOptionValue value,
-                               MaaOptionValueSize val_size)
+MaaBool MaaControllerSetOption(
+    MaaControllerHandle ctrl,
+    MaaCtrlOption key,
+    MaaOptionValue value,
+    MaaOptionValueSize val_size)
 {
     LogFunc << VAR_VOIDP(ctrl) << VAR(key) << VAR_VOIDP(value) << VAR(val_size);
 
@@ -112,8 +211,13 @@ MaaCtrlId MaaControllerPostClick(MaaControllerHandle ctrl, int32_t x, int32_t y)
     return ctrl->post_click(x, y);
 }
 
-MaaCtrlId MaaControllerPostSwipe(MaaControllerHandle ctrl, int32_t x1, int32_t y1, int32_t x2, int32_t y2,
-                                 int32_t duration)
+MaaCtrlId MaaControllerPostSwipe(
+    MaaControllerHandle ctrl,
+    int32_t x1,
+    int32_t y1,
+    int32_t x2,
+    int32_t y2,
+    int32_t duration)
 {
     LogFunc << VAR_VOIDP(ctrl) << VAR(x1) << VAR(y1) << VAR(x2) << VAR(y2) << VAR(duration);
 
@@ -137,7 +241,24 @@ MaaCtrlId MaaControllerPostPressKey(MaaControllerHandle ctrl, int32_t keycode)
     return ctrl->post_press_key(keycode);
 }
 
-MaaCtrlId MaaControllerPostTouchDown(MaaControllerHandle ctrl, int32_t contact, int32_t x, int32_t y, int32_t pressure)
+MaaCtrlId MaaControllerPostInputText(MaaControllerHandle ctrl, MaaStringView text)
+{
+    LogFunc << VAR_VOIDP(ctrl) << VAR(text);
+
+    if (!ctrl) {
+        LogError << "handle is null";
+        return MaaInvalidId;
+    }
+
+    return ctrl->post_input_text(text);
+}
+
+MaaCtrlId MaaControllerPostTouchDown(
+    MaaControllerHandle ctrl,
+    int32_t contact,
+    int32_t x,
+    int32_t y,
+    int32_t pressure)
 {
     LogFunc << VAR_VOIDP(ctrl) << VAR(contact) << VAR(x) << VAR(y) << VAR(pressure);
 
@@ -149,7 +270,12 @@ MaaCtrlId MaaControllerPostTouchDown(MaaControllerHandle ctrl, int32_t contact, 
     return ctrl->post_touch_down(contact, x, y, pressure);
 }
 
-MaaCtrlId MaaControllerPostTouchMove(MaaControllerHandle ctrl, int32_t contact, int32_t x, int32_t y, int32_t pressure)
+MaaCtrlId MaaControllerPostTouchMove(
+    MaaControllerHandle ctrl,
+    int32_t contact,
+    int32_t x,
+    int32_t y,
+    int32_t pressure)
 {
     LogFunc << VAR_VOIDP(ctrl) << VAR(contact) << VAR(x) << VAR(y) << VAR(pressure);
 

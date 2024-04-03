@@ -1,9 +1,13 @@
 #pragma once
 
+#include "Conf/Conf.h"
+
 #include <map>
 #include <mutex>
 #include <string>
 #include <vector>
+
+MAA_RPC_NS_BEGIN
 
 template <typename Handle, typename Key = std::string>
 class AtomicMap
@@ -91,3 +95,5 @@ private:
     std::map<Key, Handle> handlers_;
     mutable std::mutex mtx_;
 };
+
+MAA_RPC_NS_END

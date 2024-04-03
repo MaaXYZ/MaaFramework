@@ -1,12 +1,18 @@
 #include "Resource.h"
 #include "MaaFramework/MaaAPI.h"
 #include "Macro.h"
+#include "Utils/Logger.h"
+
+MAA_RPC_NS_BEGIN
 
 using namespace ::grpc;
 
-Status ResourceImpl::create(ServerContext* context, const ::maarpc::IdRequest* request,
-                            ::maarpc::HandleResponse* response)
+Status ResourceImpl::create(
+    ServerContext* context,
+    const ::maarpc::IdRequest* request,
+    ::maarpc::HandleResponse* response)
 {
+    LogFunc;
     std::ignore = context;
 
     MAA_GRPC_REQUIRED(id)
@@ -26,9 +32,12 @@ Status ResourceImpl::create(ServerContext* context, const ::maarpc::IdRequest* r
     return Status::OK;
 }
 
-Status ResourceImpl::destroy(ServerContext* context, const ::maarpc::HandleRequest* request,
-                             ::maarpc::EmptyResponse* response)
+Status ResourceImpl::destroy(
+    ServerContext* context,
+    const ::maarpc::HandleRequest* request,
+    ::maarpc::EmptyResponse* response)
 {
+    LogFunc;
     std::ignore = context;
     std::ignore = response;
 
@@ -41,9 +50,12 @@ Status ResourceImpl::destroy(ServerContext* context, const ::maarpc::HandleReque
     return Status::OK;
 }
 
-Status ResourceImpl::post_path(ServerContext* context, const ::maarpc::HandleStringRequest* request,
-                               ::maarpc::IIdResponse* response)
+Status ResourceImpl::post_path(
+    ServerContext* context,
+    const ::maarpc::HandleStringRequest* request,
+    ::maarpc::IIdResponse* response)
 {
+    LogFunc;
     std::ignore = context;
 
     MAA_GRPC_REQUIRED(handle)
@@ -56,9 +68,12 @@ Status ResourceImpl::post_path(ServerContext* context, const ::maarpc::HandleStr
     return Status::OK;
 }
 
-Status ResourceImpl::status(ServerContext* context, const ::maarpc::HandleIIdRequest* request,
-                            ::maarpc::StatusResponse* response)
+Status ResourceImpl::status(
+    ServerContext* context,
+    const ::maarpc::HandleIIdRequest* request,
+    ::maarpc::StatusResponse* response)
 {
+    LogFunc;
     std::ignore = context;
 
     MAA_GRPC_REQUIRED(handle)
@@ -71,9 +86,12 @@ Status ResourceImpl::status(ServerContext* context, const ::maarpc::HandleIIdReq
     return Status::OK;
 }
 
-Status ResourceImpl::wait(ServerContext* context, const ::maarpc::HandleIIdRequest* request,
-                          ::maarpc::StatusResponse* response)
+Status ResourceImpl::wait(
+    ServerContext* context,
+    const ::maarpc::HandleIIdRequest* request,
+    ::maarpc::StatusResponse* response)
 {
+    LogFunc;
     std::ignore = context;
 
     MAA_GRPC_REQUIRED(handle)
@@ -86,9 +104,12 @@ Status ResourceImpl::wait(ServerContext* context, const ::maarpc::HandleIIdReque
     return Status::OK;
 }
 
-Status ResourceImpl::loaded(ServerContext* context, const ::maarpc::HandleRequest* request,
-                            ::maarpc::BoolResponse* response)
+Status ResourceImpl::loaded(
+    ServerContext* context,
+    const ::maarpc::HandleRequest* request,
+    ::maarpc::BoolResponse* response)
 {
+    LogFunc;
     std::ignore = context;
 
     MAA_GRPC_REQUIRED(handle)
@@ -100,9 +121,29 @@ Status ResourceImpl::loaded(ServerContext* context, const ::maarpc::HandleReques
     return Status::OK;
 }
 
-Status ResourceImpl::hash(ServerContext* context, const ::maarpc::HandleRequest* request,
-                          ::maarpc::StringResponse* response)
+Status ResourceImpl::clear(
+    ServerContext* context,
+    const ::maarpc::HandleRequest* request,
+    ::maarpc::BoolResponse* response)
 {
+    LogFunc;
+    std::ignore = context;
+
+    MAA_GRPC_REQUIRED(handle)
+
+    MAA_GRPC_GET_HANDLE
+
+    response->set_bool_(MaaResourceClear(handle));
+
+    return Status::OK;
+}
+
+Status ResourceImpl::hash(
+    ServerContext* context,
+    const ::maarpc::HandleRequest* request,
+    ::maarpc::StringResponse* response)
+{
+    LogFunc;
     std::ignore = context;
 
     MAA_GRPC_REQUIRED(handle)
@@ -121,3 +162,30 @@ Status ResourceImpl::hash(ServerContext* context, const ::maarpc::HandleRequest*
         return Status(UNKNOWN, "MaaResourceGetHash failed");
     }
 }
+
+Status ResourceImpl::task_list(
+    ServerContext* context,
+    const ::maarpc::HandleRequest* request,
+    ::maarpc::StringResponse* response)
+{
+    LogFunc;
+    std::ignore = context;
+
+    MAA_GRPC_REQUIRED(handle)
+
+    MAA_GRPC_GET_HANDLE
+
+    auto sb = MaaCreateStringBuffer();
+    if (MaaResourceGetTaskList(handle, sb)) {
+        std::string list(MaaGetString(sb), MaaGetStringSize(sb));
+        MaaDestroyStringBuffer(sb);
+        response->set_str(list);
+        return Status::OK;
+    }
+    else {
+        MaaDestroyStringBuffer(sb);
+        return Status(UNKNOWN, "MaaResourceGetTaskList failed");
+    }
+}
+
+MAA_RPC_NS_END

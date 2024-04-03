@@ -1,12 +1,11 @@
 #include "OCRResMgr.h"
 
 #include <filesystem>
+#include <ranges>
 
-#include "Utils/Demangle.hpp"
 #include "Utils/File.hpp"
 #include "Utils/Logger.h"
 #include "Utils/Platform.h"
-#include "Utils/Ranges.hpp"
 #include "Utils/StringMisc.hpp"
 
 MAA_RES_NS_BEGIN
@@ -81,30 +80,36 @@ std::shared_ptr<fastdeploy::pipeline::PPOCRv3> OCRResMgr::ocrer(const std::strin
     return ocrer;
 }
 
-std::shared_ptr<fastdeploy::vision::ocr::DBDetector> OCRResMgr::load_deter(const std::string& name) const
+std::shared_ptr<fastdeploy::vision::ocr::DBDetector>
+    OCRResMgr::load_deter(const std::string& name) const
 {
     using namespace path_literals;
 
     LogFunc << VAR(name) << VAR(roots_);
 
-    for (const auto& root : roots_ | MAA_RNS::views::reverse) {
+    for (const auto& root : roots_ | std::views::reverse) {
         const auto dir = root / MAA_NS::path(name);
         const auto model_path = dir / "det.onnx"_path;
         if (!std::filesystem::exists(model_path)) {
             continue;
         }
 
-        LogDebug << VAR(model_path);
+        LogTrace << VAR(model_path);
 
         auto model = read_file<std::string>(model_path);
 
         auto option = option_;
-        option.SetModelBuffer(model.data(), model.size(), nullptr, 0, fastdeploy::ModelFormat::ONNX);
+        option
+            .SetModelBuffer(model.data(), model.size(), nullptr, 0, fastdeploy::ModelFormat::ONNX);
 
-        auto det = std::make_shared<fastdeploy::vision::ocr::DBDetector>("dummy.onnx", std::string(), option,
-                                                                         fastdeploy::ModelFormat::ONNX);
+        auto det = std::make_shared<fastdeploy::vision::ocr::DBDetector>(
+            "dummy.onnx",
+            std::string(),
+            option,
+            fastdeploy::ModelFormat::ONNX);
         if (!det || !det->Initialized()) {
-            LogError << "Failed to load DBDetector:" << VAR(name) << VAR(det) << VAR(det->Initialized());
+            LogError << "Failed to load DBDetector:" << VAR(name) << VAR(det)
+                     << VAR(det->Initialized());
             return nullptr;
         }
         return det;
@@ -113,13 +118,14 @@ std::shared_ptr<fastdeploy::vision::ocr::DBDetector> OCRResMgr::load_deter(const
     return nullptr;
 }
 
-std::shared_ptr<fastdeploy::vision::ocr::Recognizer> OCRResMgr::load_recer(const std::string& name) const
+std::shared_ptr<fastdeploy::vision::ocr::Recognizer>
+    OCRResMgr::load_recer(const std::string& name) const
 {
     using namespace path_literals;
 
     LogFunc << VAR(name) << VAR(roots_);
 
-    for (const auto& root : roots_ | MAA_RNS::views::reverse) {
+    for (const auto& root : roots_ | std::views::reverse) {
         const auto dir = root / MAA_NS::path(name);
         const auto model_path = dir / "rec.onnx"_path;
         const auto label_path = dir / "keys.txt"_path;
@@ -127,18 +133,24 @@ std::shared_ptr<fastdeploy::vision::ocr::Recognizer> OCRResMgr::load_recer(const
             continue;
         }
 
-        LogDebug << VAR(model_path);
+        LogTrace << VAR(model_path);
 
         auto model = read_file<std::string>(model_path);
         auto label = read_file<std::string>(label_path);
 
         auto option = option_;
-        option.SetModelBuffer(model.data(), model.size(), nullptr, 0, fastdeploy::ModelFormat::ONNX);
+        option
+            .SetModelBuffer(model.data(), model.size(), nullptr, 0, fastdeploy::ModelFormat::ONNX);
 
-        auto rec = std::make_shared<fastdeploy::vision::ocr::Recognizer>("dummy.onnx", std::string(), label, option,
-                                                                         fastdeploy::ModelFormat::ONNX);
+        auto rec = std::make_shared<fastdeploy::vision::ocr::Recognizer>(
+            "dummy.onnx",
+            std::string(),
+            label,
+            option,
+            fastdeploy::ModelFormat::ONNX);
         if (!rec || !rec->Initialized()) {
-            LogError << "Failed to load Recognizer:" << VAR(name) << VAR(rec) << VAR(rec->Initialized());
+            LogError << "Failed to load Recognizer:" << VAR(name) << VAR(rec)
+                     << VAR(rec->Initialized());
             return nullptr;
         }
         return rec;

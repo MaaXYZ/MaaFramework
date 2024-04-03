@@ -1,9 +1,9 @@
 #pragma once
 
+#include <memory>
+
 #include "Utils/Logger.h"
 #include "Utils/NonCopyable.hpp"
-
-#include <memory>
 
 MAA_NS_BEGIN
 
@@ -12,7 +12,12 @@ requires std::is_constructible_v<MaaAPICallback, Callback>
 class MessageNotifier : public NonCopyable
 {
 public:
-    MessageNotifier(Callback callback, CallbackArg callback_arg) : callback_(callback), callback_arg_(callback_arg) {}
+    MessageNotifier(Callback callback, CallbackArg callback_arg)
+        : callback_(callback)
+        , callback_arg_(callback_arg)
+    {
+    }
+
     void notify(std::string_view msg, const json::value& details = json::value())
     {
         LogFunc << VAR_VOIDP(callback_) << VAR_VOIDP(callback_arg_) << VAR(msg) << VAR(details);

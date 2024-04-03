@@ -1,10 +1,31 @@
 add_subdirectory(MaaUtils)
-add_subdirectory(MaaControlUnit)
-if(WITH_THRIFT AND NOT MAA_CROSSCOMPILE)
-    add_subdirectory(MaaThriftController)
-endif(WITH_THRIFT AND NOT MAA_CROSSCOMPILE)
+
+if(WITH_ADB_CONTROLLER)
+    add_subdirectory(MaaAdbControlUnit)
+endif()
+
+if(WITH_WIN32_CONTROLLER)
+    add_subdirectory(MaaWin32ControlUnit)
+endif()
+
+if(WITH_THRIFT_CONTROLLER)
+    add_subdirectory(MaaThriftControlUnit)
+endif()
+
+if(WITH_DBG_CONTROLLER)
+    add_subdirectory(MaaDbgControlUnit)
+endif()
+
+add_subdirectory(LibraryHolder)
+add_subdirectory(MaaFramework)
+add_subdirectory(MaaToolkit)
+add_subdirectory(MaaProjectInterface)
+
 if(WITH_GRPC)
     add_subdirectory(MaaRpc)
-endif(WITH_GRPC)
-add_subdirectory(MaaFramework)
-add_subdirectory(MaaToolKit)
+endif()
+if(BUILD_HTTP_CLI)
+    add_subdirectory(MaaHttp)
+endif()
+
+add_subdirectory(binding)

@@ -1,0 +1,94 @@
+{
+  "name": "maa",
+  "header": ["include.h"],
+  "callback": {
+    "void (*)(const char *, const char *, void *)": {
+      "name": "MaaAPICallback",
+      "pass": 1,
+      "self": 2,
+      "all": 3,
+      "arg_name": ["msg", "details_json", ""]
+    },
+    "unsigned char (*)(MaaSyncContextAPI *, const char *, const char *, MaaRect *, const char *, void *)": {
+      "name": "CustomActionRun",
+      "pass": 1,
+      "self": 5,
+      "all": 6,
+      "arg_name": [
+        "sync_context",
+        "task_name",
+        "custom_action_param",
+        "cur_box",
+        "cur_rec_detail",
+        ""
+      ]
+    },
+    "void (*)(void *)": {
+      "name": "CustomActionStop",
+      "pass": 1,
+      "self": 0,
+      "all": 1,
+      "arg_name": [""]
+    },
+    "unsigned char (*)(MaaSyncContextAPI *, MaaImageBuffer *, const char *, const char *, void *, MaaRect *, MaaStringBuffer *)": {
+      "name": "CustomRecognizerAnalyze",
+      "pass": 1,
+      "self": 4,
+      "all": 7,
+      "arg_name": [
+        "sync_context",
+        "image",
+        "task_name",
+        "custom_recognition_param",
+        "",
+        "out_box",
+        "out_detail"
+      ],
+      "out": [5, 6]
+    }
+  },
+  "opaque": {
+    "MaaControllerAPI": {
+      "non-alloc": ["MaaGetController"],
+      "free": ["MaaControllerDestroy"]
+    },
+    "MaaResourceAPI": {
+      "non-alloc": ["MaaGetResource"],
+      "free": ["MaaResourceDestroy"]
+    },
+    "MaaInstanceAPI": {
+      "free": ["MaaDestroy"]
+    },
+    "MaaImageBuffer": {
+      "free": ["MaaDestroyImageBuffer"]
+    },
+    "MaaSyncContextAPI": {}
+  },
+  "output": ["MaaStringBuffer"],
+  "remove": [
+    "MaaAdbControllerCreate",
+    "MaaTaskAllFinished",
+    "MaaStop",
+    "MaaToolkitFindDevice",
+    "MaaToolkitFindDeviceWithAdb",
+    "MaaToolkitInit",
+    "MaaToolkitUninit",
+
+    "MaaCustomControllerCreate",
+    "MaaSetImageRawData",
+    "/Maa.+Rect.*",
+    "/Maa.+String.+",
+    "MaaClearString",
+    "MaaGetString",
+    "MaaSetString",
+    "MaaGetImageEncodedSize",
+    "MaaGetImageRawData",
+    "MaaControllerSetOption",
+    "MaaResourceSetOption",
+    "MaaSetOption",
+    "MaaSetGlobalOption"
+  ],
+  "check": {
+    "const char *": "string"
+  }
+}

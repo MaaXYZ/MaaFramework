@@ -1,8 +1,5 @@
 #pragma once
 
-#include "Conf/Conf.h"
-#include "Utils/NoWarningCVMat.hpp"
-
 #include <chrono>
 #include <memory>
 #include <string>
@@ -12,6 +9,8 @@
 
 #include <meojson/json.hpp>
 
+#include "Conf/Conf.h"
+#include "Utils/NoWarningCVMat.hpp"
 #include "Vision/VisionTypes.h"
 
 MAA_RES_NS_BEGIN
@@ -31,10 +30,16 @@ enum class Type
     Custom,
 };
 
-using Param = std::variant<std::monostate, MAA_VISION_NS::DirectHitParam, MAA_VISION_NS::TemplateMatcherParam,
-                           MAA_VISION_NS::FeatureMatcherParam, MAA_VISION_NS::OCRerParam,
-                           MAA_VISION_NS::NeuralNetworkClassifierParam, MAA_VISION_NS::NeuralNetworkDetectorParam,
-                           MAA_VISION_NS::ColorMatcherParam, MAA_VISION_NS::CustomRecognizerParam>;
+using Param = std::variant<
+    std::monostate,
+    MAA_VISION_NS::DirectHitParam,
+    MAA_VISION_NS::TemplateMatcherParam,
+    MAA_VISION_NS::FeatureMatcherParam,
+    MAA_VISION_NS::OCRerParam,
+    MAA_VISION_NS::NeuralNetworkClassifierParam,
+    MAA_VISION_NS::NeuralNetworkDetectorParam,
+    MAA_VISION_NS::ColorMatcherParam,
+    MAA_VISION_NS::CustomRecognizerParam>;
 } // namespace Recognition
 
 namespace Action
@@ -46,11 +51,11 @@ enum class Type
     Click,
     Swipe,
     Key,
+    Text,
     StartApp,
     StopApp,
     Custom,
     StopTask,
-    // InputText, // TODO
 };
 
 struct Target
@@ -88,6 +93,11 @@ struct KeyParam
     std::vector<int> keys;
 };
 
+struct TextParam
+{
+    std::string text;
+};
+
 struct AppParam
 {
     std::string package;
@@ -99,7 +109,8 @@ struct CustomParam
     json::value custom_param;
 };
 
-using Param = std::variant<std::monostate, ClickParam, SwipeParam, KeyParam, AppParam, CustomParam>;
+using Param = std::
+    variant<std::monostate, ClickParam, SwipeParam, KeyParam, TextParam, AppParam, CustomParam>;
 } // namespace Action
 
 struct WaitFreezesParam

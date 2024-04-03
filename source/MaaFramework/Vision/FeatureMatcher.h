@@ -9,6 +9,7 @@ MAA_SUPPRESS_CV_WARNINGS_BEGIN
 #include <opencv2/features2d.hpp>
 MAA_SUPPRESS_CV_WARNINGS_END
 
+#include "Utils/JsonExt.hpp"
 #include "VisionBase.h"
 #include "VisionTypes.h"
 
@@ -22,65 +23,72 @@ public:
         cv::Rect box {};
         int count = 0;
 
-        json::value to_json() const
-        {
-            json::value root;
-            root["box"] = json::array({ box.x, box.y, box.width, box.height });
-            root["count"] = count;
-            return root;
-        }
+        MEO_JSONIZATION(box, count);
     };
 
     using ResultsVec = std::vector<Result>;
 
 public:
-    void set_template(std::shared_ptr<cv::Mat> templ) { template_ = std::move(templ); }
-    void set_param(FeatureMatcherParam param) { param_ = std::move(param); }
+    FeatureMatcher(
+        cv::Mat image,
+        FeatureMatcherParam param,
+        std::vector<std::shared_ptr<cv::Mat>> templates,
+        std::string name = "");
 
-    ResultsVec analyze() const;
+    const ResultsVec& all_results() const& { return all_results_; }
+
+    ResultsVec&& all_results() && { return std::move(all_results_); }
+
+    const ResultsVec& filtered_results() const& { return filtered_results_; }
+
+    ResultsVec filtered_results() && { return std::move(filtered_results_); }
 
 private:
-    ResultsVec foreach_rois(const cv::Mat& templ) const;
-    ResultsVec match_roi(const std::vector<cv::KeyPoint>& keypoints_1, const cv::Mat& descriptors_1,
-                         const cv::Rect& roi_2) const;
+    void analyze();
+    ResultsVec match_all_rois(const cv::Mat& templ);
+    ResultsVec feature_match(
+        const cv::Mat& templ,
+        const std::vector<cv::KeyPoint>& keypoints_1,
+        const cv::Mat& descriptors_1,
+        const cv::Rect& roi_2);
 
+    void add_results(ResultsVec results, int count);
+    void sort();
+
+private:
     cv::Ptr<cv::Feature2D> create_detector() const;
-    std::pair<std::vector<cv::KeyPoint>, cv::Mat> detect(const cv::Mat& image, const cv::Mat& mask) const;
+    std::pair<std::vector<cv::KeyPoint>, cv::Mat>
+        detect(const cv::Mat& image, const cv::Mat& mask) const;
 
     cv::Ptr<cv::DescriptorMatcher> create_matcher() const;
-    std::vector<std::vector<cv::DMatch>> match(const cv::Mat& descriptors_1, const cv::Mat& descriptors_2) const;
+    std::vector<std::vector<cv::DMatch>>
+        match(const cv::Mat& descriptors_1, const cv::Mat& descriptors_2) const;
 
-    ResultsVec postproc(const std::vector<std::vector<cv::DMatch>>& match_points,
-                        const std::vector<cv::KeyPoint>& keypoints_1, const std::vector<cv::KeyPoint>& keypoints_2,
-                        const cv::Rect& roi_2) const;
+    ResultsVec feature_postproc(
+        const std::vector<std::vector<cv::DMatch>>& match_points,
+        const std::vector<cv::KeyPoint>& keypoints_1,
+        const std::vector<cv::KeyPoint>& keypoints_2,
+        int templ_cols,
+        int templ_rows,
+        std::vector<cv::DMatch>& good_matches) const;
 
-    void draw_result(const cv::Mat& templ, const std::vector<cv::KeyPoint>& keypoints_1, const cv::Rect& roi,
-                     const std::vector<cv::KeyPoint>& keypoints_2, const std::vector<cv::DMatch>& good_matches,
-                     ResultsVec& results) const;
-    void filter(ResultsVec& results, int count) const;
+    cv::Mat draw_result(
+        const cv::Mat& templ,
+        const std::vector<cv::KeyPoint>& keypoints_1,
+        const cv::Rect& roi,
+        const std::vector<cv::KeyPoint>& keypoints_2,
+        const std::vector<cv::DMatch>& good_matches,
+        const ResultsVec& results) const;
 
-    FeatureMatcherParam param_;
-    std::shared_ptr<cv::Mat> template_;
+    void sort_(ResultsVec& results) const;
+
+private:
+    const FeatureMatcherParam param_;
+    const std::vector<std::shared_ptr<cv::Mat>> templates_;
+
+private:
+    ResultsVec all_results_;
+    ResultsVec filtered_results_;
 };
 
 MAA_VISION_NS_END
-
-MAA_NS_BEGIN
-
-inline std::ostream& operator<<(std::ostream& os, const MAA_VISION_NS::FeatureMatcher::Result& res)
-{
-    os << res.to_json().to_string();
-    return os;
-}
-
-inline std::ostream& operator<<(std::ostream& os, const MAA_VISION_NS::FeatureMatcher::ResultsVec& resutls)
-{
-    json::array root;
-    for (const auto& res : resutls) {
-        root.emplace_back(res.to_json());
-    }
-    os << root.to_string();
-    return os;
-}
-
-MAA_NS_END

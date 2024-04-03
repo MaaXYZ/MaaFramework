@@ -1,10 +1,10 @@
 #include "ONNXResMgr.h"
 
 #include <filesystem>
+#include <ranges>
 
 #include "Utils/Logger.h"
 #include "Utils/Platform.h"
-#include "Utils/Ranges.hpp"
 
 MAA_RES_NS_BEGIN
 
@@ -60,18 +60,18 @@ std::shared_ptr<Ort::Session> ONNXResMgr::detector(const std::string& name) cons
     return session;
 }
 
-std::shared_ptr<Ort::Session> ONNXResMgr::load(const std::string& name,
-                                               const std::vector<std::filesystem::path>& roots) const
+std::shared_ptr<Ort::Session>
+    ONNXResMgr::load(const std::string& name, const std::vector<std::filesystem::path>& roots) const
 {
     LogFunc << VAR(name) << VAR(roots);
 
-    for (const auto& root : roots | MAA_RNS::views::reverse) {
+    for (const auto& root : roots | std::views::reverse) {
         auto path = root / MAA_NS::path(name);
         if (!std::filesystem::exists(path)) {
             continue;
         }
 
-        LogDebug << VAR(path);
+        LogTrace << VAR(path);
         Ort::Session session(m_env, path.c_str(), m_options);
         return std::make_shared<Ort::Session>(std::move(session));
     }

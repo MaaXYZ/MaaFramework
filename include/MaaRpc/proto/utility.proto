@@ -1,0 +1,15 @@
+syntax = "proto3";
+
+package maarpc;
+
+import "types.proto";
+
+service Utility {
+  rpc version(EmptyRequest) returns (StringResponse);
+  rpc set_global_option(SetGlobalOptionRequest) returns (EmptyResponse);
+
+  rpc acquire_id(EmptyRequest) returns (IdResponse);
+
+  rpc register_callback(stream CallbackRequest) returns (stream Callback);
+  rpc unregister_callback(IdRequest) returns (EmptyResponse);
+}

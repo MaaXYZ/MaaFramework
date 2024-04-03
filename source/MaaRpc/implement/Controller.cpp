@@ -1,12 +1,18 @@
 #include "Controller.h"
 #include "MaaFramework/MaaAPI.h"
 #include "Macro.h"
+#include "Utils/Logger.h"
+
+MAA_RPC_NS_BEGIN
 
 using namespace ::grpc;
 
-Status ControllerImpl::create_adb(::grpc::ServerContext* context, const ::maarpc::AdbControllerRequest* request,
-                                  ::maarpc::HandleResponse* response)
+Status ControllerImpl::create_adb(
+    ::grpc::ServerContext* context,
+    const ::maarpc::AdbControllerRequest* request,
+    ::maarpc::HandleResponse* response)
 {
+    LogFunc;
     std::ignore = context;
 
     MAA_GRPC_REQUIRED(id)
@@ -22,18 +28,42 @@ Status ControllerImpl::create_adb(::grpc::ServerContext* context, const ::maarpc
     }
 
     auto id = make_uuid();
-    handles_.add(id,
-                 MaaAdbControllerCreate(request->adb_path().c_str(), request->adb_serial().c_str(), request->adb_type(),
-                                        request->adb_config().c_str(), callback_impl, cb_state.get()));
+
+    if (request->has_agent_path()) {
+        handles_.add(
+            id,
+            MaaAdbControllerCreateV2(
+                request->adb_path().c_str(),
+                request->adb_serial().c_str(),
+                request->adb_type(),
+                request->adb_config().c_str(),
+                request->agent_path().c_str(),
+                callback_impl,
+                cb_state.get()));
+    }
+    else {
+        handles_.add(
+            id,
+            MaaAdbControllerCreate(
+                request->adb_path().c_str(),
+                request->adb_serial().c_str(),
+                request->adb_type(),
+                request->adb_config().c_str(),
+                callback_impl,
+                cb_state.get()));
+    }
 
     response->set_handle(id);
 
     return Status::OK;
 }
 
-Status ControllerImpl::destroy(::grpc::ServerContext* context, const ::maarpc::HandleRequest* request,
-                               ::maarpc::EmptyResponse* response)
+Status ControllerImpl::destroy(
+    ::grpc::ServerContext* context,
+    const ::maarpc::HandleRequest* request,
+    ::maarpc::EmptyResponse* response)
 {
+    LogFunc;
     std::ignore = context;
     std::ignore = response;
 
@@ -49,22 +79,6 @@ Status ControllerImpl::destroy(::grpc::ServerContext* context, const ::maarpc::H
     }
 
     return Status::OK;
-}
-
-static MaaBool _set_option(MaaCtrlOption key, MaaStringView value, MaaTransparentArg arg)
-{
-    auto info = reinterpret_cast<ControllerImpl::CustomControllerInfo*>(arg);
-    auto stream = info->stream;
-
-    ::maarpc::CustomControllerResponse response;
-    response.mutable_set_option()->set_key(key);
-    response.mutable_set_option()->set_value(value);
-    stream->Write(response);
-
-    ::maarpc::CustomControllerRequest request;
-    stream->Read(&request);
-
-    return request.ok();
 }
 
 static MaaBool _connect(MaaTransparentArg arg)
@@ -98,7 +112,8 @@ static MaaBool _click(int32_t x, int32_t y, MaaTransparentArg arg)
     return request.ok();
 }
 
-static MaaBool _swipe(int32_t x1, int32_t y1, int32_t x2, int32_t y2, int32_t duration, MaaTransparentArg arg)
+static MaaBool
+    _swipe(int32_t x1, int32_t y1, int32_t x2, int32_t y2, int32_t duration, MaaTransparentArg arg)
 {
     auto info = reinterpret_cast<ControllerImpl::CustomControllerInfo*>(arg);
     auto stream = info->stream;
@@ -123,7 +138,7 @@ static MaaBool _press_key(int32_t key, MaaTransparentArg arg)
     auto stream = info->stream;
 
     ::maarpc::CustomControllerResponse response;
-    response.mutable_key()->set_key(key);
+    response.mutable_press_key()->set_key(key);
     stream->Write(response);
 
     ::maarpc::CustomControllerRequest request;
@@ -132,7 +147,8 @@ static MaaBool _press_key(int32_t key, MaaTransparentArg arg)
     return request.ok();
 }
 
-static MaaBool _touch_down(int32_t contact, int32_t x, int32_t y, int32_t pressure, MaaTransparentArg arg)
+static MaaBool
+    _touch_down(int32_t contact, int32_t x, int32_t y, int32_t pressure, MaaTransparentArg arg)
 {
     auto info = reinterpret_cast<ControllerImpl::CustomControllerInfo*>(arg);
     auto stream = info->stream;
@@ -150,7 +166,8 @@ static MaaBool _touch_down(int32_t contact, int32_t x, int32_t y, int32_t pressu
     return request.ok();
 }
 
-static MaaBool _touch_move(int32_t contact, int32_t x, int32_t y, int32_t pressure, MaaTransparentArg arg)
+static MaaBool
+    _touch_move(int32_t contact, int32_t x, int32_t y, int32_t pressure, MaaTransparentArg arg)
 {
     auto info = reinterpret_cast<ControllerImpl::CustomControllerInfo*>(arg);
     auto stream = info->stream;
@@ -189,7 +206,7 @@ static MaaBool _start_app(MaaStringView entry, MaaTransparentArg arg)
     auto stream = info->stream;
 
     ::maarpc::CustomControllerResponse response;
-    response.set_start(entry);
+    response.set_start_app(entry);
     stream->Write(response);
 
     ::maarpc::CustomControllerRequest request;
@@ -204,7 +221,7 @@ static MaaBool _stop_app(MaaStringView entry, MaaTransparentArg arg)
     auto stream = info->stream;
 
     ::maarpc::CustomControllerResponse response;
-    response.set_stop(entry);
+    response.set_stop_app(entry);
     stream->Write(response);
 
     ::maarpc::CustomControllerRequest request;
@@ -213,13 +230,13 @@ static MaaBool _stop_app(MaaStringView entry, MaaTransparentArg arg)
     return request.ok();
 }
 
-static MaaBool _get_resolution(MaaTransparentArg arg, int32_t* width, int32_t* height)
+static MaaBool _request_resolution(MaaTransparentArg arg, int32_t* width, int32_t* height)
 {
     auto info = reinterpret_cast<ControllerImpl::CustomControllerInfo*>(arg);
     auto stream = info->stream;
 
     ::maarpc::CustomControllerResponse response;
-    response.set_resolution(true);
+    response.set_request_resolution(true);
     stream->Write(response);
 
     ::maarpc::CustomControllerRequest request;
@@ -235,7 +252,7 @@ static MaaBool _get_resolution(MaaTransparentArg arg, int32_t* width, int32_t* h
     return request.ok();
 }
 
-static MaaBool _get_image(MaaTransparentArg arg, MaaImageBufferHandle buffer)
+static MaaBool _screencap(MaaTransparentArg arg, MaaImageBufferHandle buffer)
 {
     auto info = reinterpret_cast<ControllerImpl::CustomControllerInfo*>(arg);
     auto stream = info->stream;
@@ -244,7 +261,7 @@ static MaaBool _get_image(MaaTransparentArg arg, MaaImageBufferHandle buffer)
 
     auto id = make_uuid();
     info->image_impl->handles().add(id, buffer);
-    response.set_image(id);
+    response.set_screencap(id);
 
     stream->Write(response);
 
@@ -256,13 +273,13 @@ static MaaBool _get_image(MaaTransparentArg arg, MaaImageBufferHandle buffer)
     return request.ok();
 }
 
-static MaaBool _get_uuid(MaaTransparentArg arg, MaaStringBufferHandle buffer)
+static MaaBool _request_uuid(MaaTransparentArg arg, MaaStringBufferHandle buffer)
 {
     auto info = reinterpret_cast<ControllerImpl::CustomControllerInfo*>(arg);
     auto stream = info->stream;
 
     ::maarpc::CustomControllerResponse response;
-    response.set_uuid(true);
+    response.set_request_uuid(true);
     stream->Write(response);
 
     ::maarpc::CustomControllerRequest request;
@@ -278,14 +295,27 @@ static MaaBool _get_uuid(MaaTransparentArg arg, MaaStringBufferHandle buffer)
     return request.ok();
 }
 
-static MaaCustomControllerAPI custom_controller_api = { _set_option,     _connect,    _click,    _swipe,     _press_key,
-                                                        _touch_down,     _touch_move, _touch_up, _start_app, _stop_app,
-                                                        _get_resolution, _get_image,  _get_uuid };
+static MaaCustomControllerAPI custom_controller_api = {
+    .connect = _connect,
+    .request_uuid = _request_uuid,
+    .request_resolution = _request_resolution,
+    .start_app = _start_app,
+    .stop_app = _stop_app,
+    .screencap = _screencap,
+    .click = _click,
+    .swipe = _swipe,
+    .touch_down = _touch_down,
+    .touch_move = _touch_move,
+    .touch_up = _touch_up,
+    .press_key = _press_key,
+};
 
 Status ControllerImpl::create_custom(
     ServerContext* context,
-    ServerReaderWriter<::maarpc::CustomControllerResponse, ::maarpc::CustomControllerRequest>* stream)
+    ServerReaderWriter<::maarpc::CustomControllerResponse, ::maarpc::CustomControllerRequest>*
+        stream)
 {
+    LogFunc;
     std::ignore = context;
 
     ::maarpc::CustomControllerRequest request_data;
@@ -304,19 +334,21 @@ Status ControllerImpl::create_custom(
     }
 
 #if defined(__APPLE__) && defined(__clang__) && __clang_major__ < 16
-    std::shared_ptr<CustomControllerInfo> info(new CustomControllerInfo{ stream, image_impl_ });
+    std::shared_ptr<CustomControllerInfo> info(new CustomControllerInfo { stream, image_impl_ });
 #else
-    // build error of Apple clang version 15.0.0 (clang-1500.0.40.1) on macOS 
+    // build error of Apple clang version 15.0.0 (clang-1500.0.40.1) on macOS
     auto info = std::make_shared<CustomControllerInfo>(stream, image_impl_);
 #endif
-    
+
     auto id = make_uuid();
 
     ::maarpc::CustomControllerResponse response;
     response.set_init(id);
     stream->Write(response);
 
-    handles_.add(id, MaaCustomControllerCreate(&custom_controller_api, &info, callback_impl, cb_state.get()));
+    handles_.add(
+        id,
+        MaaCustomControllerCreate(&custom_controller_api, &info, callback_impl, cb_state.get()));
     infos_.add(id, info);
 
     info->finish.acquire();
@@ -324,9 +356,12 @@ Status ControllerImpl::create_custom(
     return Status::OK;
 }
 
-Status ControllerImpl::set_option(::grpc::ServerContext* context, const ::maarpc::ControllerSetOptionRequest* request,
-                                  ::maarpc::EmptyResponse* response)
+Status ControllerImpl::set_option(
+    ::grpc::ServerContext* context,
+    const ::maarpc::ControllerSetOptionRequest* request,
+    ::maarpc::EmptyResponse* response)
 {
+    LogFunc;
     std::ignore = context;
     std::ignore = response;
 
@@ -361,7 +396,11 @@ Status ControllerImpl::set_option(::grpc::ServerContext* context, const ::maarpc
     case ::maarpc::ControllerSetOptionRequest::kDefPackageEntry:
         if (request->has_def_package_entry()) {
             auto entry = request->def_package_entry();
-            if (MaaControllerSetOption(handle, MaaCtrlOption_DefaultAppPackageEntry, entry.data(), entry.size())) {
+            if (MaaControllerSetOption(
+                    handle,
+                    MaaCtrlOption_DefaultAppPackageEntry,
+                    entry.data(),
+                    entry.size())) {
                 return Status::OK;
             }
             else {
@@ -372,7 +411,22 @@ Status ControllerImpl::set_option(::grpc::ServerContext* context, const ::maarpc
     case ::maarpc::ControllerSetOptionRequest::kDefPackage:
         if (request->has_def_package()) {
             auto entry = request->def_package();
-            if (MaaControllerSetOption(handle, MaaCtrlOption_DefaultAppPackage, entry.data(), entry.size())) {
+            if (MaaControllerSetOption(
+                    handle,
+                    MaaCtrlOption_DefaultAppPackage,
+                    entry.data(),
+                    entry.size())) {
+                return Status::OK;
+            }
+            else {
+                return Status(UNKNOWN, "MaaControllerSetOption failed");
+            }
+        }
+        break;
+    case ::maarpc::ControllerSetOptionRequest::kRecording:
+        if (request->has_recording()) {
+            auto rec = request->recording();
+            if (MaaControllerSetOption(handle, MaaCtrlOption_Recording, &rec, sizeof(rec))) {
                 return Status::OK;
             }
             else {
@@ -387,9 +441,12 @@ Status ControllerImpl::set_option(::grpc::ServerContext* context, const ::maarpc
     return Status(ABORTED, "protobuf `oneof` state invalid");
 }
 
-Status ControllerImpl::post_connection(::grpc::ServerContext* context, const ::maarpc::HandleRequest* request,
-                                       ::maarpc::IIdResponse* response)
+Status ControllerImpl::post_connection(
+    ::grpc::ServerContext* context,
+    const ::maarpc::HandleRequest* request,
+    ::maarpc::IIdResponse* response)
 {
+    LogFunc;
     std::ignore = context;
 
     MAA_GRPC_REQUIRED(handle)
@@ -401,9 +458,12 @@ Status ControllerImpl::post_connection(::grpc::ServerContext* context, const ::m
     return Status::OK;
 }
 
-Status ControllerImpl::post_click(::grpc::ServerContext* context, const ::maarpc::ControllerPostClickRequest* request,
-                                  ::maarpc::IIdResponse* response)
+Status ControllerImpl::post_click(
+    ::grpc::ServerContext* context,
+    const ::maarpc::ControllerPostClickRequest* request,
+    ::maarpc::IIdResponse* response)
 {
+    LogFunc;
     std::ignore = context;
 
     MAA_GRPC_REQUIRED(handle)
@@ -418,9 +478,12 @@ Status ControllerImpl::post_click(::grpc::ServerContext* context, const ::maarpc
     return Status::OK;
 }
 
-Status ControllerImpl::post_swipe(::grpc::ServerContext* context, const ::maarpc::ControllerPostSwipeRequest* request,
-                                  ::maarpc::IIdResponse* response)
+Status ControllerImpl::post_swipe(
+    ::grpc::ServerContext* context,
+    const ::maarpc::ControllerPostSwipeRequest* request,
+    ::maarpc::IIdResponse* response)
 {
+    LogFunc;
     std::ignore = context;
 
     MAA_GRPC_REQUIRED(handle)
@@ -430,15 +493,23 @@ Status ControllerImpl::post_swipe(::grpc::ServerContext* context, const ::maarpc
 
     MAA_GRPC_GET_HANDLE
 
-    response->set_id(MaaControllerPostSwipe(handle, param.from().x(), param.from().y(), param.to().x(), param.to().y(),
-                                            param.duration()));
+    response->set_id(MaaControllerPostSwipe(
+        handle,
+        param.from().x(),
+        param.from().y(),
+        param.to().x(),
+        param.to().y(),
+        param.duration()));
 
     return Status::OK;
 }
 
-Status ControllerImpl::post_press_key(::grpc::ServerContext* context, const ::maarpc::ControllerPostKeyRequest* request,
-                                      ::maarpc::IIdResponse* response)
+Status ControllerImpl::post_press_key(
+    ::grpc::ServerContext* context,
+    const ::maarpc::ControllerPostKeyRequest* request,
+    ::maarpc::IIdResponse* response)
 {
+    LogFunc;
     std::ignore = context;
 
     MAA_GRPC_REQUIRED(handle)
@@ -453,10 +524,12 @@ Status ControllerImpl::post_press_key(::grpc::ServerContext* context, const ::ma
     return Status::OK;
 }
 
-Status ControllerImpl::post_touch_down(::grpc::ServerContext* context,
-                                       const ::maarpc::ControllerPostTouchRequest* request,
-                                       ::maarpc::IIdResponse* response)
+::grpc::Status ControllerImpl::post_input_text(
+    ::grpc::ServerContext* context,
+    const ::maarpc::ControllerInputTextRequest* request,
+    ::maarpc::IIdResponse* response)
 {
+    LogFunc;
     std::ignore = context;
 
     MAA_GRPC_REQUIRED(handle)
@@ -466,16 +539,17 @@ Status ControllerImpl::post_touch_down(::grpc::ServerContext* context,
 
     MAA_GRPC_GET_HANDLE
 
-    response->set_id(
-        MaaControllerPostTouchDown(handle, param.contact(), param.pos().x(), param.pos().y(), param.pressure()));
+    response->set_id(MaaControllerPostInputText(handle, param.text().c_str()));
 
     return Status::OK;
 }
 
-Status ControllerImpl::post_touch_move(::grpc::ServerContext* context,
-                                       const ::maarpc::ControllerPostTouchRequest* request,
-                                       ::maarpc::IIdResponse* response)
+Status ControllerImpl::post_touch_down(
+    ::grpc::ServerContext* context,
+    const ::maarpc::ControllerPostTouchRequest* request,
+    ::maarpc::IIdResponse* response)
 {
+    LogFunc;
     std::ignore = context;
 
     MAA_GRPC_REQUIRED(handle)
@@ -485,16 +559,47 @@ Status ControllerImpl::post_touch_move(::grpc::ServerContext* context,
 
     MAA_GRPC_GET_HANDLE
 
-    response->set_id(
-        MaaControllerPostTouchMove(handle, param.contact(), param.pos().x(), param.pos().y(), param.pressure()));
+    response->set_id(MaaControllerPostTouchDown(
+        handle,
+        param.contact(),
+        param.pos().x(),
+        param.pos().y(),
+        param.pressure()));
 
     return Status::OK;
 }
 
-Status ControllerImpl::post_touch_up(::grpc::ServerContext* context,
-                                     const ::maarpc::ControllerPostTouchRequest* request,
-                                     ::maarpc::IIdResponse* response)
+Status ControllerImpl::post_touch_move(
+    ::grpc::ServerContext* context,
+    const ::maarpc::ControllerPostTouchRequest* request,
+    ::maarpc::IIdResponse* response)
 {
+    LogFunc;
+    std::ignore = context;
+
+    MAA_GRPC_REQUIRED(handle)
+    MAA_GRPC_REQUIRED(param)
+
+    const auto& param = request->param();
+
+    MAA_GRPC_GET_HANDLE
+
+    response->set_id(MaaControllerPostTouchMove(
+        handle,
+        param.contact(),
+        param.pos().x(),
+        param.pos().y(),
+        param.pressure()));
+
+    return Status::OK;
+}
+
+Status ControllerImpl::post_touch_up(
+    ::grpc::ServerContext* context,
+    const ::maarpc::ControllerPostTouchRequest* request,
+    ::maarpc::IIdResponse* response)
+{
+    LogFunc;
     std::ignore = context;
 
     MAA_GRPC_REQUIRED(handle)
@@ -509,9 +614,12 @@ Status ControllerImpl::post_touch_up(::grpc::ServerContext* context,
     return Status::OK;
 }
 
-Status ControllerImpl::post_screencap(::grpc::ServerContext* context, const ::maarpc::HandleRequest* request,
-                                      ::maarpc::IIdResponse* response)
+Status ControllerImpl::post_screencap(
+    ::grpc::ServerContext* context,
+    const ::maarpc::HandleRequest* request,
+    ::maarpc::IIdResponse* response)
 {
+    LogFunc;
     std::ignore = context;
 
     MAA_GRPC_REQUIRED(handle)
@@ -523,9 +631,12 @@ Status ControllerImpl::post_screencap(::grpc::ServerContext* context, const ::ma
     return Status::OK;
 }
 
-Status ControllerImpl::status(::grpc::ServerContext* context, const ::maarpc::HandleIIdRequest* request,
-                              ::maarpc::StatusResponse* response)
+Status ControllerImpl::status(
+    ::grpc::ServerContext* context,
+    const ::maarpc::HandleIIdRequest* request,
+    ::maarpc::StatusResponse* response)
 {
+    LogFunc;
     std::ignore = context;
 
     MAA_GRPC_REQUIRED(handle)
@@ -538,9 +649,12 @@ Status ControllerImpl::status(::grpc::ServerContext* context, const ::maarpc::Ha
     return Status::OK;
 }
 
-Status ControllerImpl::wait(::grpc::ServerContext* context, const ::maarpc::HandleIIdRequest* request,
-                            ::maarpc::StatusResponse* response)
+Status ControllerImpl::wait(
+    ::grpc::ServerContext* context,
+    const ::maarpc::HandleIIdRequest* request,
+    ::maarpc::StatusResponse* response)
 {
+    LogFunc;
     std::ignore = context;
 
     MAA_GRPC_REQUIRED(handle)
@@ -553,9 +667,12 @@ Status ControllerImpl::wait(::grpc::ServerContext* context, const ::maarpc::Hand
     return Status::OK;
 }
 
-Status ControllerImpl::connected(::grpc::ServerContext* context, const ::maarpc::HandleRequest* request,
-                                 ::maarpc::BoolResponse* response)
+Status ControllerImpl::connected(
+    ::grpc::ServerContext* context,
+    const ::maarpc::HandleRequest* request,
+    ::maarpc::BoolResponse* response)
 {
+    LogFunc;
     std::ignore = context;
 
     MAA_GRPC_REQUIRED(handle)
@@ -567,9 +684,12 @@ Status ControllerImpl::connected(::grpc::ServerContext* context, const ::maarpc:
     return Status::OK;
 }
 
-Status ControllerImpl::image(::grpc::ServerContext* context, const ::maarpc::HandleHandleRequest* request,
-                             ::maarpc::EmptyResponse* response)
+Status ControllerImpl::image(
+    ::grpc::ServerContext* context,
+    const ::maarpc::HandleHandleRequest* request,
+    ::maarpc::EmptyResponse* response)
 {
+    LogFunc;
     std::ignore = context;
     std::ignore = response;
 
@@ -587,9 +707,12 @@ Status ControllerImpl::image(::grpc::ServerContext* context, const ::maarpc::Han
     }
 }
 
-Status ControllerImpl::uuid(::grpc::ServerContext* context, const ::maarpc::HandleRequest* request,
-                            ::maarpc::StringResponse* response)
+Status ControllerImpl::uuid(
+    ::grpc::ServerContext* context,
+    const ::maarpc::HandleRequest* request,
+    ::maarpc::StringResponse* response)
 {
+    LogFunc;
     std::ignore = context;
 
     MAA_GRPC_REQUIRED(handle)
@@ -608,3 +731,5 @@ Status ControllerImpl::uuid(::grpc::ServerContext* context, const ::maarpc::Hand
         return Status(UNKNOWN, "MaaControllerGetUUID failed");
     }
 }
+
+MAA_RPC_NS_END

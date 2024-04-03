@@ -7,7 +7,8 @@
 #include "Utils/Logger.h"
 #include "Utils/Platform.h"
 
-MaaResourceHandle MaaResourceCreate(MaaResourceCallback callback, MaaCallbackTransparentArg callback_arg)
+MaaResourceHandle
+    MaaResourceCreate(MaaResourceCallback callback, MaaCallbackTransparentArg callback_arg)
 {
     LogFunc << VAR_VOIDP(callback) << VAR_VOIDP(callback_arg);
 
@@ -36,6 +37,18 @@ MaaResId MaaResourcePostPath(MaaResourceHandle res, MaaStringView path)
     }
 
     return res->post_path(MAA_NS::path(path));
+}
+
+MaaBool MaaResourceClear(MaaResourceHandle res)
+{
+    LogFunc << VAR_VOIDP(res);
+
+    if (!res) {
+        LogError << "handle is null";
+        return false;
+    }
+
+    return res->clear();
 }
 
 MaaStatus MaaResourceStatus(MaaResourceHandle res, MaaResId id)
@@ -71,10 +84,14 @@ MaaBool MaaResourceLoaded(MaaResourceHandle res)
         return false;
     }
 
-    return res->loaded();
+    return res->valid();
 }
 
-MaaBool MaaResourceSetOption(MaaResourceHandle res, MaaResOption key, MaaOptionValue value, MaaOptionValueSize val_size)
+MaaBool MaaResourceSetOption(
+    MaaResourceHandle res,
+    MaaResOption key,
+    MaaOptionValue value,
+    MaaOptionValueSize val_size)
 {
     LogFunc << VAR_VOIDP(res) << VAR(key) << VAR_VOIDP(value) << VAR(val_size);
 
@@ -100,5 +117,22 @@ MaaBool MaaResourceGetHash(MaaResourceHandle res, MaaStringBufferHandle buffer)
     }
 
     buffer->set(std::move(hash));
+    return true;
+}
+
+MaaBool MaaResourceGetTaskList(MaaResourceHandle res, /* out */ MaaStringBufferHandle buffer)
+{
+    if (!res || !buffer) {
+        LogError << "handle is null";
+        return false;
+    }
+
+    auto list = res->get_task_list();
+    if (list.empty()) {
+        LogError << "list is empty";
+        return false;
+    }
+
+    buffer->set(json::array(list).to_string());
     return true;
 }

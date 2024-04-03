@@ -1,6 +1,7 @@
 #include "InstanceStatus.h"
 
 #include "Utils/Logger.h"
+#include "Utils/NoWarningCV.hpp"
 
 MAA_NS_BEGIN
 
@@ -21,7 +22,7 @@ void InstanceStatus::set_rec_box(std::string task, cv::Rect rec)
 
 void InstanceStatus::clear_rec_box()
 {
-    LogInfo;
+    LogTrace;
 
     rec_box_map_.clear();
 }
@@ -43,7 +44,7 @@ void InstanceStatus::set_rec_detail(std::string task, json::value detail)
 
 void InstanceStatus::clear_rec_detail()
 {
-    LogInfo;
+    LogTrace;
 
     rec_detail_map_.clear();
 }
@@ -65,7 +66,7 @@ void InstanceStatus::set_task_result(std::string task, json::value result)
 
 void InstanceStatus::clear_task_result()
 {
-    LogInfo;
+    LogTrace;
 
     task_result_map_.clear();
 }
@@ -79,16 +80,53 @@ uint64_t InstanceStatus::get_run_times(const std::string& task) const
     return it->second;
 }
 
-void InstanceStatus::increase_pipeline_run_times(const std::string& task, int times)
+void InstanceStatus::increase_run_times(const std::string& task, int times)
 {
     run_times_map_[task] += times;
 }
 
 void InstanceStatus::clear_run_times()
 {
-    LogInfo;
+    LogTrace;
 
     run_times_map_.clear();
+}
+
+std::optional<std::any> InstanceStatus::get_ocr_cache(const cv::Mat& image) const
+{
+    return ocr_cache_.get_cache(image);
+}
+
+void InstanceStatus::set_ocr_cache(cv::Mat image, std::any result)
+{
+    ocr_cache_.set_cache(std::move(image), std::move(result));
+}
+
+void InstanceStatus::clear_ocr_cache()
+{
+    LogTrace;
+
+    ocr_cache_.clear();
+}
+
+bool InstanceStatus::cv_mat_equal(const cv::Mat& lhs, const cv::Mat& rhs)
+{
+    // treat two empty mat as identical as well
+    if (lhs.empty() && rhs.empty()) {
+        return true;
+    }
+    // if dimensionality of two mat is not identical, these two mat is not identical
+    if (lhs.cols != rhs.cols || lhs.rows != rhs.rows || lhs.dims != rhs.dims) {
+        return false;
+    }
+
+    // Get a matrix with non-zero values at points where the
+    // two matrices have different values
+    cv::Mat diff = lhs != rhs;
+    // diff is boolean matrix so all elements are non-negative. Equal if all elements in diff are
+    // zero.
+    bool eq2 = cv::sum(diff) == cv::Scalar(0, 0, 0, 0);
+    return eq2;
 }
 
 MAA_NS_END

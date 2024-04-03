@@ -5,6 +5,7 @@
 
 #include <onnxruntime/onnxruntime_cxx_api.h>
 
+#include "Utils/JsonExt.hpp"
 #include "VisionBase.h"
 #include "VisionTypes.h"
 
@@ -20,42 +21,46 @@ public:
         cv::Rect box {};
         double score = 0.0;
 
-        json::value to_json() const
-        {
-            json::value root;
-            root["cls_index"] = cls_index;
-            root["label"] = label;
-            root["box"] = json::array({ box.x, box.y, box.width, box.height });
-            root["score"] = score;
-            return root;
-        }
+        MEO_JSONIZATION(cls_index, label, box, score);
     };
+
     using ResultsVec = std::vector<Result>;
 
 public:
-    void set_session(std::shared_ptr<Ort::Session> session) { session_ = std::move(session); }
-    void set_param(NeuralNetworkDetectorParam param) { param_ = std::move(param); }
-    ResultsVec analyze() const;
+    NeuralNetworkDetector(
+        cv::Mat image,
+        NeuralNetworkDetectorParam param,
+        std::shared_ptr<Ort::Session> session,
+        std::string name = "");
+
+    const ResultsVec& all_results() const& { return all_results_; }
+
+    ResultsVec&& all_results() && { return std::move(all_results_); }
+
+    const ResultsVec& filtered_results() const& { return filtered_results_; }
+
+    ResultsVec filtered_results() && { return std::move(filtered_results_); }
 
 private:
-    ResultsVec foreach_rois() const;
-    ResultsVec detect(const cv::Rect& roi) const;
-    void draw_result(const cv::Rect& roi, const ResultsVec& results) const;
+    void analyze();
 
-    void filter(ResultsVec& results, const std::vector<size_t>& expected) const;
+    ResultsVec detect_all_rois();
+    ResultsVec detect(const cv::Rect& roi);
 
-    NeuralNetworkDetectorParam param_;
+    void add_results(ResultsVec results, const std::vector<size_t>& expected);
+    void sort();
+
+private:
+    cv::Mat draw_result(const cv::Rect& roi, const ResultsVec& results) const;
+    void sort_(ResultsVec& results) const;
+
+private:
+    const NeuralNetworkDetectorParam param_;
     std::shared_ptr<Ort::Session> session_ = nullptr;
+
+private:
+    ResultsVec all_results_;
+    ResultsVec filtered_results_;
 };
 
 MAA_VISION_NS_END
-
-MAA_NS_BEGIN
-
-inline std::ostream& operator<<(std::ostream& os, const MAA_VISION_NS::NeuralNetworkDetector::Result& res)
-{
-    os << res.to_json().to_string();
-    return os;
-}
-
-MAA_NS_END

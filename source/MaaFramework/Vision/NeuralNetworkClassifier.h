@@ -1,10 +1,12 @@
 #pragma once
+#pragma once
 
 #include <ostream>
 #include <vector>
 
 #include <onnxruntime/onnxruntime_cxx_api.h>
 
+#include "Utils/JsonExt.hpp"
 #include "VisionBase.h"
 #include "VisionTypes.h"
 
@@ -22,54 +24,46 @@ public:
         std::vector<float> raw;
         std::vector<float> probs;
 
-        json::value to_json() const
-        {
-            json::value root;
-            root["cls_index"] = cls_index;
-            root["label"] = label;
-            root["box"] = json::array({ box.x, box.y, box.width, box.height });
-            root["score"] = score;
-            root["raw"] = json::array(raw);
-            root["probs"] = json::array(probs);
-            return root;
-        }
+        MEO_JSONIZATION(cls_index, label, box, score, raw, probs);
     };
+
     using ResultsVec = std::vector<Result>;
 
 public:
-    void set_param(NeuralNetworkClassifierParam param) { param_ = std::move(param); }
-    void set_session(std::shared_ptr<Ort::Session> session) { session_ = std::move(session); }
-    ResultsVec analyze() const;
+    NeuralNetworkClassifier(
+        cv::Mat image,
+        NeuralNetworkClassifierParam param,
+        std::shared_ptr<Ort::Session> session,
+        std::string name = "");
+
+    const ResultsVec& all_results() const& { return all_results_; }
+
+    ResultsVec&& all_results() && { return std::move(all_results_); }
+
+    const ResultsVec& filtered_results() const& { return filtered_results_; }
+
+    ResultsVec filtered_results() && { return std::move(filtered_results_); }
 
 private:
-    ResultsVec foreach_rois() const;
-    Result classify(const cv::Rect& roi) const;
-    void draw_result(const Result& res) const;
+    void analyze();
 
-    void filter(ResultsVec& results, const std::vector<size_t>& expected) const;
+    ResultsVec classify_all_rois();
+    Result classify(const cv::Rect& roi);
 
-    NeuralNetworkClassifierParam param_;
+    void add_results(ResultsVec results, const std::vector<size_t>& expected);
+    void sort();
+
+private:
+    cv::Mat draw_result(const Result& res) const;
+    void sort_(ResultsVec& results) const;
+
+private:
+    const NeuralNetworkClassifierParam param_;
     std::shared_ptr<Ort::Session> session_ = nullptr;
+
+private:
+    ResultsVec all_results_;
+    ResultsVec filtered_results_;
 };
 
 MAA_VISION_NS_END
-
-MAA_NS_BEGIN
-
-inline std::ostream& operator<<(std::ostream& os, const MAA_VISION_NS::NeuralNetworkClassifier::Result& res)
-{
-    os << res.to_json().to_string();
-    return os;
-}
-
-inline std::ostream& operator<<(std::ostream& os, const MAA_VISION_NS::NeuralNetworkClassifier::ResultsVec& resutls)
-{
-    json::array root;
-    for (const auto& res : resutls) {
-        root.emplace_back(res.to_json());
-    }
-    os << root.to_string();
-    return os;
-}
-
-MAA_NS_END

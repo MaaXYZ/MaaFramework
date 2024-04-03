@@ -6,7 +6,10 @@
 
 MAA_TASK_NS_BEGIN
 
-TaskDataMgr::TaskDataMgr(InstanceInternalAPI* inst) : inst_(inst) {}
+TaskDataMgr::TaskDataMgr(InstanceInternalAPI* inst)
+    : inst_(inst)
+{
+}
 
 const MAA_RES_NS::TaskData& TaskDataMgr::get_task_data(const std::string& task_name)
 {
@@ -31,9 +34,13 @@ bool TaskDataMgr::set_param(const json::value& param)
 
     bool ret = true;
 
-    auto diff_opt = param.find<json::object>("diff_task");
-    if (diff_opt) {
+    // 老版本是把 diff_task 单独作为一个 json field
+    // 但除了 diff_task 也没啥其他功能可以做的了，不如直接铺到 root 上
+    if (auto diff_opt = param.find<json::object>("diff_task"); diff_opt) {
         ret &= set_diff_task(*diff_opt);
+    }
+    else {
+        ret &= set_diff_task(param);
     }
 
     return ret;
@@ -51,7 +58,8 @@ bool TaskDataMgr::set_diff_task(const json::value& input)
     MAA_RES_NS::PipelineResMgr::TaskDataMap task_data_map;
     auto& raw_data_map = resource()->pipeline_res().get_task_data_map();
     std::set<std::string> existing_keys;
-    bool parsed = MAA_RES_NS::PipelineResMgr::parse_config(input, task_data_map, existing_keys, raw_data_map);
+    bool parsed =
+        MAA_RES_NS::PipelineResMgr::parse_config(input, task_data_map, existing_keys, raw_data_map);
     if (!parsed) {
         LogError << "Parse json failed";
         return false;

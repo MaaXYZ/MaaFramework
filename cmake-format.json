@@ -6,7 +6,10 @@
         ],
         "additional_commands": {
             "foo": {
-                "flags": ["BAR", "BAZ"],
+                "flags": [
+                    "BAR",
+                    "BAZ"
+                ],
                 "kwargs": {
                     "HEADERS": "*",
                     "SOURCES": "*",
@@ -18,9 +21,13 @@
             "Override configurations per-command where available"
         ],
         "override_spec": {},
-        "_help_vartags": ["Specify variable tags."],
+        "_help_vartags": [
+            "Specify variable tags."
+        ],
         "vartags": [],
-        "_help_proptags": ["Specify property tags."],
+        "_help_proptags": [
+            "Specify property tags."
+        ],
         "proptags": []
     },
     "_help_format": "Options affecting formatting.",
@@ -29,9 +36,13 @@
             "Disable formatting entirely, making cmake-format a no-op"
         ],
         "disable": false,
-        "_help_line_width": ["How wide to allow formatted cmake files"],
+        "_help_line_width": [
+            "How wide to allow formatted cmake files"
+        ],
         "line_width": 120,
-        "_help_tab_size": ["How many spaces to tab for indent"],
+        "_help_tab_size": [
+            "How many spaces to tab for indent"
+        ],
         "tab_size": 4,
         "_help_use_tabchars": [
             "If true, lines are indented using tab characters (utf-8",
@@ -106,7 +117,9 @@
             "this many lines, then reject the layout."
         ],
         "max_lines_hwrap": 2,
-        "_help_line_ending": ["What style line endings to use in the output."],
+        "_help_line_ending": [
+            "What style line endings to use in the output."
+        ],
         "line_ending": "unix",
         "_help_command_case": [
             "Format command names consistently as 'lower' or 'upper' case"
@@ -146,7 +159,9 @@
     },
     "_help_markup": "Options affecting comment reflow and formatting.",
     "markup": {
-        "_help_bullet_char": ["What character to use for bulleted lists"],
+        "_help_bullet_char": [
+            "What character to use for bulleted lists"
+        ],
         "bullet_char": "*",
         "_help_enum_char": [
             "What character to use as punctuation after numerals in an",
@@ -194,12 +209,16 @@
             "length to fill the column"
         ],
         "canonicalize_hashrulers": true,
-        "_help_enable_markup": ["enable comment markup parsing and reflow"],
+        "_help_enable_markup": [
+            "enable comment markup parsing and reflow"
+        ],
         "enable_markup": true
     },
     "_help_lint": "Options affecting the linter",
     "lint": {
-        "_help_disabled_codes": ["a list of lint codes to disable"],
+        "_help_disabled_codes": [
+            "a list of lint codes to disable"
+        ],
         "disabled_codes": [],
         "_help_function_pattern": [
             "regular expression pattern describing valid function names"

@@ -1,6 +1,18 @@
-[submodule "MaaDeps"]
-	path = MaaDeps
-	url = https://github.com/MaaAssistantArknights/MaaDeps.git
-[submodule "assets/config/MaaAgentBinary"]
-	path = assets/config/MaaAgentBinary
-	url = https://github.com/MaaAssistantArknights/MaaAgentBinary.git
+[submodule "3rdparty/MaaDeps"]
+	path = 3rdparty/MaaDeps
+	url = https://github.com/MaaXYZ/MaaDeps
+[submodule "3rdparty/MaaAgentBinary"]
+	path = 3rdparty/MaaAgentBinary
+	url = https://github.com/MaaXYZ/MaaAgentBinary
+[submodule "test/TestingDataSet"]
+	path = test/TestingDataSet
+	url = https://github.com/MaaXYZ/MaaFrameworkTesting.git
+[submodule "source/binding/Rust"]
+	path = source/binding/Rust
+	url = https://github.com/MaaXYZ/maa-framework-rs.git
+[submodule "source/MaaHttp/LHG"]
+	path = source/MaaHttp/LHG
+	url = https://github.com/neko-para/LibHttpGen
+[submodule "tools/MaaDebugger"]
+	path = tools/MaaDebugger
+	url = https://github.com/MaaXYZ/MaaDebugger.git

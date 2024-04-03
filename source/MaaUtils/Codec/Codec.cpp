@@ -1,15 +1,9 @@
-#ifdef _WIN32
-#define _SILENCE_CXX17_CODECVT_HEADER_DEPRECATION_WARNING
-#endif
-
 #include "Utils/Codec.h"
 
 #include <locale>
 
 MAA_NS_BEGIN
 
-// NOTE: 这不是真的 u16，只是命名问题而已
-// 换用了跨平台的转换方法
 std::wstring to_u16(const std::string& u8str)
 {
 #ifdef _WIN32
@@ -32,6 +26,7 @@ std::wstring to_u16(const std::string& u8str)
     t.resize(to_next - &t[0]);
     return t;
 }
+
 // 这个是真的 utf-8
 std::string from_u16(const std::wstring& u16str)
 {

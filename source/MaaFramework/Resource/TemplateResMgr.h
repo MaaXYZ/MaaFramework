@@ -1,12 +1,11 @@
 #pragma once
 
-#include "Conf/Conf.h"
-#include "Utils/NonCopyable.hpp"
-
 #include <filesystem>
 #include <map>
 
+#include "Conf/Conf.h"
 #include "Utils/NoWarningCVMat.hpp"
+#include "Utils/NonCopyable.hpp"
 
 MAA_RES_NS_BEGIN
 

@@ -1,0 +1,10 @@
+syntax = "proto3";
+
+package maarpc;
+
+import "types.proto";
+
+service Device {
+  rpc find(EmptyRequest) returns (DeviceInfosResponse);
+  rpc find_with_adb(StringRequest) returns (DeviceInfosResponse);
+}

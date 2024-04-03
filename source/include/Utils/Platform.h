@@ -1,7 +1,5 @@
 #pragma once
 
-#include "Conf/Conf.h"
-
 #include <filesystem>
 #include <optional>
 #include <ostream>
@@ -16,6 +14,7 @@
 #include <sys/types.h>
 #endif
 
+#include "Conf/Conf.h"
 #include "MaaFramework/MaaPort.h"
 
 MAA_NS_BEGIN
@@ -25,16 +24,17 @@ MAA_NS_BEGIN
 using os_string = std::filesystem::path::string_type;
 using os_string_view = std::basic_string_view<os_string::value_type>;
 
-os_string MAA_UTILS_API to_osstring(std::string_view utf8_str);
-std::string MAA_UTILS_API from_osstring(os_string_view os_str);
+MAA_UTILS_API os_string to_osstring(std::string_view utf8_str);
+MAA_UTILS_API std::string from_osstring(os_string_view os_str);
 
 inline std::filesystem::path path(std::string_view utf8_str)
 {
-    return std::filesystem::path(to_osstring(utf8_str));
+    return std::filesystem::path(to_osstring(utf8_str)).make_preferred();
 }
-std::string MAA_UTILS_API path_to_utf8_string(const std::filesystem::path& path);
-std::string MAA_UTILS_API path_to_ansi_string(const std::filesystem::path& path);
-std::string MAA_UTILS_API path_to_crt_string(const std::filesystem::path& path);
+
+MAA_UTILS_API std::string path_to_utf8_string(const std::filesystem::path& path);
+MAA_UTILS_API std::string path_to_ansi_string(const std::filesystem::path& path);
+MAA_UTILS_API std::string path_to_crt_string(const std::filesystem::path& path);
 
 namespace path_literals
 {
@@ -58,6 +58,7 @@ struct ProcessInfo
     std::string name;
 
     bool operator<(const ProcessInfo& rhs) const { return pid < rhs.pid; }
+
     bool operator==(const ProcessInfo& rhs) const { return pid == rhs.pid; }
 };
 
@@ -66,7 +67,7 @@ inline std::ostream& operator<<(std::ostream& os, const ProcessInfo& info)
     return os << info.pid << " " << info.name;
 }
 
-std::set<ProcessInfo> MAA_UTILS_API list_processes();
-std::optional<std::filesystem::path> MAA_UTILS_API get_process_path(os_pid pid);
+MAA_UTILS_API std::set<ProcessInfo> list_processes();
+MAA_UTILS_API std::optional<std::filesystem::path> get_process_path(os_pid pid);
 
 MAA_NS_END

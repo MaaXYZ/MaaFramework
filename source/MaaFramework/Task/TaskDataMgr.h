@@ -1,5 +1,6 @@
 #pragma once
 
+#include <stack>
 #include <string_view>
 
 #include <meojson/json.hpp>
@@ -9,8 +10,6 @@
 #include "Resource/PipelineResMgr.h"
 #include "Resource/PipelineTypes.h"
 
-#include <stack>
-
 MAA_TASK_NS_BEGIN
 
 class TaskDataMgr
@@ -19,7 +18,7 @@ public:
     using TaskData = MAA_RES_NS::TaskData;
 
 public:
-    TaskDataMgr(InstanceInternalAPI* inst);
+    explicit TaskDataMgr(InstanceInternalAPI* inst);
 
     const TaskData& get_task_data(const std::string& task_name);
     bool set_param(const json::value& param);

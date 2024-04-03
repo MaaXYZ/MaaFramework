@@ -1,10 +1,12 @@
 #pragma once
 
+#include "Utils/JsonExt.hpp"
+#include "VisionBase.h"
 #include "VisionTypes.h"
 
 MAA_VISION_NS_BEGIN
 
-class TemplateComparator
+class TemplateComparator : public VisionBase
 {
 public:
     struct Result
@@ -12,49 +14,41 @@ public:
         cv::Rect box {};
         double score = 0.0;
 
-        json::value to_json() const
-        {
-            json::value root;
-            root["box"] = json::array({ box.x, box.y, box.width, box.height });
-            root["score"] = score;
-            return root;
-        }
+        MEO_JSONIZATION(box, score);
     };
+
     using ResultsVec = std::vector<Result>;
 
 public:
-    TemplateComparator() = default;
+    TemplateComparator(
+        cv::Mat lhs,
+        cv::Mat rhs,
+        TemplateComparatorParam param,
+        std::string name = "");
 
-    void set_param(TemplateComparatorParam param) { param_ = std::move(param); }
-    ResultsVec analyze(const cv::Mat& lhs, const cv::Mat& rhs) const;
+    const ResultsVec& all_results() const& { return all_results_; }
+
+    ResultsVec&& all_results() && { return std::move(all_results_); }
+
+    const ResultsVec& filtered_results() const& { return filtered_results_; }
+
+    ResultsVec filtered_results() && { return std::move(filtered_results_); }
 
 private:
-    ResultsVec foreach_rois(const cv::Mat& lhs, const cv::Mat& rhs) const;
-    void filter(ResultsVec& results, double threshold) const;
+    void analyze();
+    ResultsVec compare_all_rois();
+
+    void add_results(ResultsVec results, double threshold);
 
     static double comp(const cv::Mat& lhs, const cv::Mat& rhs, int method);
 
-    TemplateComparatorParam param_;
+private:
+    const cv::Mat rhs_image_ = {};
+    const TemplateComparatorParam param_;
+
+private:
+    ResultsVec all_results_;
+    ResultsVec filtered_results_;
 };
 
 MAA_VISION_NS_END
-
-MAA_NS_BEGIN
-
-inline std::ostream& operator<<(std::ostream& os, const MAA_VISION_NS::TemplateComparator::Result& res)
-{
-    os << res.to_json().to_string();
-    return os;
-}
-
-inline std::ostream& operator<<(std::ostream& os, const MAA_VISION_NS::TemplateComparator::ResultsVec& resutls)
-{
-    json::array root;
-    for (const auto& res : resutls) {
-        root.emplace_back(res.to_json());
-    }
-    os << root.to_string();
-    return os;
-}
-
-MAA_NS_END

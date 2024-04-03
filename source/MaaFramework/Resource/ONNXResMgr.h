@@ -1,12 +1,12 @@
 #pragma once
 
-#include "Conf/Conf.h"
-#include "Utils/NonCopyable.hpp"
-
 #include <filesystem>
 #include <memory>
 
 #include <onnxruntime/onnxruntime_cxx_api.h>
+
+#include "Conf/Conf.h"
+#include "Utils/NonCopyable.hpp"
 
 MAA_RES_NS_BEGIN
 
@@ -26,7 +26,8 @@ public:
     std::shared_ptr<Ort::Session> detector(const std::string& name) const;
 
 private:
-    std::shared_ptr<Ort::Session> load(const std::string& name, const std::vector<std::filesystem::path>& roots) const;
+    std::shared_ptr<Ort::Session>
+        load(const std::string& name, const std::vector<std::filesystem::path>& roots) const;
 
     std::vector<std::filesystem::path> classifier_roots_;
     std::vector<std::filesystem::path> detector_roots_;

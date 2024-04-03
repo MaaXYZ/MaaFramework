@@ -1,0 +1,31 @@
+syntax = "proto3";
+
+package maarpc;
+
+import "types.proto";
+
+service Controller {
+  rpc create_adb(AdbControllerRequest) returns (HandleResponse);
+  rpc destroy(HandleRequest) returns (EmptyResponse);
+
+  rpc create_custom(stream CustomControllerRequest)
+      returns (stream CustomControllerResponse);
+
+  rpc set_option(ControllerSetOptionRequest) returns (EmptyResponse);
+  rpc post_connection(HandleRequest) returns (IIdResponse);
+  rpc post_click(ControllerPostClickRequest) returns (IIdResponse);
+  rpc post_swipe(ControllerPostSwipeRequest) returns (IIdResponse);
+  rpc post_press_key(ControllerPostKeyRequest) returns (IIdResponse);
+  rpc post_input_text(ControllerInputTextRequest) returns (IIdResponse);
+  rpc post_touch_down(ControllerPostTouchRequest) returns (IIdResponse);
+  rpc post_touch_move(ControllerPostTouchRequest) returns (IIdResponse);
+  rpc post_touch_up(ControllerPostTouchRequest) returns (IIdResponse);
+  rpc post_screencap(HandleRequest) returns (IIdResponse);
+
+  rpc status(HandleIIdRequest) returns (StatusResponse);
+  rpc wait(HandleIIdRequest) returns (StatusResponse);
+  rpc connected(HandleRequest) returns (BoolResponse);
+
+  rpc image(HandleHandleRequest) returns (EmptyResponse);
+  rpc uuid(HandleRequest) returns (StringResponse);
+}

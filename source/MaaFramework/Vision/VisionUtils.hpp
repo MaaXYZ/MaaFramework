@@ -1,38 +1,59 @@
 #pragma once
 
+#include <random>
+#include <ranges>
+
 #include "Conf/Conf.h"
 #include "Utils/Logger.h"
 #include "Utils/NoWarningCV.hpp"
-#include "Utils/Ranges.hpp"
 
 MAA_VISION_NS_BEGIN
-
-// | 1 2 3 4 |
-// | 5 6 7 8 |
-template <typename ResultsVec>
-inline static void sort_by_horizontal_(ResultsVec& results)
-{
-    MAA_RNS::ranges::sort(results, [](const auto& lhs, const auto& rhs) -> bool {
-        // y 差距较小则理解为是同一排的，按x排序
-        return std::abs(lhs.box.y - rhs.box.y) < 5 ? lhs.box.x < rhs.box.x : lhs.box.y < rhs.box.y;
-    });
-}
 
 // | 1 3 5 7 |
 // | 2 4 6 8 |
 template <typename ResultsVec>
+inline static void sort_by_horizontal_(ResultsVec& results)
+{
+    std::ranges::sort(results, [](const auto& lhs, const auto& rhs) -> bool {
+        return lhs.box.x == rhs.box.x ? lhs.box.y < rhs.box.y : lhs.box.x < rhs.box.x;
+    });
+}
+
+// | 1 2 3 4 |
+// | 5 6 7 8 |
+template <typename ResultsVec>
 inline static void sort_by_vertical_(ResultsVec& results)
 {
-    MAA_RNS::ranges::sort(results, [](const auto& lhs, const auto& rhs) -> bool {
-        // x 差距较小则理解为是同一排的，按y排序
-        return std::abs(lhs.box.x - rhs.box.x) < 5 ? lhs.box.y < rhs.box.y : lhs.box.x < rhs.box.x;
+    std::ranges::sort(results, [](const auto& lhs, const auto& rhs) -> bool {
+        return lhs.box.y == rhs.box.y ? lhs.box.x < rhs.box.x : lhs.box.y < rhs.box.y;
     });
 }
 
 template <typename ResultsVec>
 inline static void sort_by_score_(ResultsVec& results)
 {
-    MAA_RNS::ranges::sort(results, std::greater {}, std::mem_fn(&ResultsVec::value_type::score));
+    std::ranges::sort(results, std::greater {}, std::mem_fn(&ResultsVec::value_type::score));
+}
+
+template <typename ResultsVec>
+inline static void sort_by_count_(ResultsVec& results)
+{
+    std::ranges::sort(results, std::greater {}, std::mem_fn(&ResultsVec::value_type::count));
+}
+
+template <typename ResultsVec>
+inline static void sort_by_area_(ResultsVec& results)
+{
+    std::ranges::sort(results, [](const auto& lhs, const auto& rhs) -> bool {
+        return lhs.box.area() > rhs.box.area();
+    });
+}
+
+template <typename ResultsVec>
+inline static void sort_by_random_(ResultsVec& results)
+{
+    static std::default_random_engine rand_engine(std::random_device {}());
+    std::ranges::shuffle(results, rand_engine);
 }
 
 template <typename ResultsVec>
@@ -44,7 +65,7 @@ inline static void sort_by_required_(ResultsVec& results, const std::vector<std:
     }
 
     // 不在 required 中的将被排在最后
-    MAA_RNS::ranges::sort(results, [&req_cache](const auto& lhs, const auto& rhs) -> bool {
+    std::ranges::sort(results, [&req_cache](const auto& lhs, const auto& rhs) -> bool {
         size_t lvalue = req_cache[lhs.text];
         size_t rvalue = req_cache[rhs.text];
         if (lvalue == 0) {
@@ -57,11 +78,22 @@ inline static void sort_by_required_(ResultsVec& results, const std::vector<std:
     });
 }
 
+inline static std::optional<size_t> pythonic_index(size_t total, int index)
+{
+    if (index >= 0 && static_cast<uint32_t>(index) < total) {
+        return index;
+    }
+    if (index < 0 && static_cast<uint32_t>(-index) <= total) {
+        return total + index;
+    }
+    return std::nullopt;
+}
+
 // Non-Maximum Suppression
 template <typename ResultsVec>
 inline static ResultsVec NMS(ResultsVec results, double threshold = 0.7)
 {
-    MAA_RNS::ranges::sort(results, [](const auto& a, const auto& b) { return a.score > b.score; });
+    std::ranges::sort(results, [](const auto& a, const auto& b) { return a.score > b.score; });
 
     ResultsVec nms_results;
     for (size_t i = 0; i < results.size(); ++i) {
@@ -86,11 +118,39 @@ inline static ResultsVec NMS(ResultsVec results, double threshold = 0.7)
     return nms_results;
 }
 
+template <typename ResultsVec>
+inline static ResultsVec NMS_for_count(ResultsVec results, double threshold = 0.7)
+{
+    std::ranges::sort(results, [](const auto& a, const auto& b) { return a.count > b.count; });
+
+    ResultsVec nms_results;
+    for (size_t i = 0; i < results.size(); ++i) {
+        const auto& res1 = results[i];
+        if (res1.count == 0) {
+            continue;
+        }
+        auto res1_box = res1.box;
+        nms_results.emplace_back(std::move(res1));
+
+        for (size_t j = i + 1; j < results.size(); ++j) {
+            auto& res2 = results[j];
+            if (res2.count == 0) {
+                continue;
+            }
+            int iou_area = (res1_box & res2.box).area();
+            if (iou_area >= threshold * res2.box.area()) {
+                res2.count = 0;
+            }
+        }
+    }
+    return nms_results;
+}
+
 template <typename T>
 inline static T softmax(const T& input)
 {
     T output = input;
-    float rowmax = *MAA_RNS::ranges::max_element(output);
+    float rowmax = *std::ranges::max_element(output);
     std::vector<float> y(output.size());
     float sum = 0.0f;
     for (size_t i = 0; i != output.size(); ++i) {
@@ -100,6 +160,15 @@ inline static T softmax(const T& input)
         output[i] = y[i] / sum;
     }
     return output;
+}
+
+template <typename ResultsVec>
+inline static void merge_vector_(ResultsVec& left, ResultsVec right)
+{
+    left.insert(
+        left.end(),
+        std::make_move_iterator(right.begin()),
+        std::make_move_iterator(right.end()));
 }
 
 inline static cv::Mat hwc_to_chw(const cv::Mat& src)
@@ -139,7 +208,7 @@ inline static std::vector<float> image_to_tensor(const cv::Mat& image)
 inline cv::Rect correct_roi(const cv::Rect& roi, const cv::Mat& image)
 {
     if (image.empty()) {
-        LogError << "image is empty" << VAR(image);
+        LogError << "image is empty" << VAR(image.size());
         return roi;
     }
     if (roi.empty()) {
@@ -192,14 +261,10 @@ inline cv::Mat create_mask(const cv::Mat& image, const cv::Rect& roi)
     return mask;
 }
 
-MAA_VISION_NS_END
-
-MAA_NS_BEGIN
-
 inline std::ostream& operator<<(std::ostream& os, const cv::Rect& rect)
 {
     os << "Rect(" << rect.x << ", " << rect.y << ", " << rect.width << ", " << rect.height << ")";
     return os;
 }
 
-MAA_NS_END
+MAA_VISION_NS_END

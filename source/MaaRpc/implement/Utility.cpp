@@ -1,17 +1,12 @@
 #include "Utility.h"
 #include "MaaFramework/MaaAPI.h"
 #include "Macro.h"
+#include "Utils/Logger.h"
+#include "Utils/Time.hpp"
 
-#include <boost/uuid/uuid_generators.hpp>
-#include <boost/uuid/uuid_io.hpp>
+MAA_RPC_NS_BEGIN
 
 using namespace ::grpc;
-
-auto uuid_generator = boost::uuids::random_generator();
-std::string make_uuid()
-{
-    return boost::uuids::to_string(uuid_generator());
-}
 
 void callback_impl(MaaStringView msg, MaaStringView detail, MaaCallbackTransparentArg arg)
 {
@@ -21,13 +16,19 @@ void callback_impl(MaaStringView msg, MaaStringView detail, MaaCallbackTranspare
 
     auto* state = reinterpret_cast<UtilityImpl::CallbackState*>(arg);
     state->write.acquire();
-    state->writer->Write(cb);
+    state->stream->Write(cb);
+
+    ::maarpc::CallbackRequest br;
+    state->stream->Read(&br);
     state->write.release();
 }
 
-Status UtilityImpl::version(ServerContext* context, const ::maarpc::EmptyRequest* request,
-                            ::maarpc::StringResponse* response)
+Status UtilityImpl::version(
+    ServerContext* context,
+    const ::maarpc::EmptyRequest* request,
+    ::maarpc::StringResponse* response)
 {
+    LogFunc;
     std::ignore = context;
     std::ignore = request;
 
@@ -36,19 +37,22 @@ Status UtilityImpl::version(ServerContext* context, const ::maarpc::EmptyRequest
     return Status::OK;
 }
 
-Status UtilityImpl::set_global_option(ServerContext* context, const ::maarpc::SetGlobalOptionRequest* request,
-                                      ::maarpc::EmptyResponse* response)
+Status UtilityImpl::set_global_option(
+    ServerContext* context,
+    const ::maarpc::SetGlobalOptionRequest* request,
+    ::maarpc::EmptyResponse* response)
 {
+    LogFunc;
     std::ignore = context;
     std::ignore = response;
 
     MAA_GRPC_REQUIRED_CASE(option, OPTION)
 
     switch (request->option_case()) {
-    case ::maarpc::SetGlobalOptionRequest::OptionCase::kLogging:
-        if (request->has_logging()) {
-            auto logging = request->logging();
-            if (MaaSetGlobalOption(MaaGlobalOption_Logging, logging.data(), logging.size())) {
+    case ::maarpc::SetGlobalOptionRequest::OptionCase::kLogDir:
+        if (request->has_log_dir()) {
+            std::string log_dir = request->log_dir();
+            if (MaaSetGlobalOption(MaaGlobalOption_LogDir, log_dir.data(), log_dir.size())) {
                 return Status::OK;
             }
             else {
@@ -56,10 +60,43 @@ Status UtilityImpl::set_global_option(ServerContext* context, const ::maarpc::Se
             }
         }
         break;
-    case ::maarpc::SetGlobalOptionRequest::OptionCase::kDebugMode:
-        if (request->has_debug_mode()) {
-            MaaBool mode = request->debug_mode() ? 1 : 0;
-            if (MaaSetGlobalOption(MaaGlobalOption_DebugMode, &mode, 1)) {
+    case ::maarpc::SetGlobalOptionRequest::OptionCase::kSaveDraw:
+        if (request->has_save_draw()) {
+            bool mode = request->save_draw();
+            if (MaaSetGlobalOption(MaaGlobalOption_SaveDraw, &mode, sizeof(mode))) {
+                return Status::OK;
+            }
+            else {
+                return Status(UNKNOWN, "MaaSetGlobalOption failed");
+            }
+        }
+        break;
+    case ::maarpc::SetGlobalOptionRequest::OptionCase::kRecording:
+        if (request->has_recording()) {
+            bool mode = request->recording();
+            if (MaaSetGlobalOption(MaaGlobalOption_Recording, &mode, sizeof(mode))) {
+                return Status::OK;
+            }
+            else {
+                return Status(UNKNOWN, "MaaSetGlobalOption failed");
+            }
+        }
+        break;
+    case ::maarpc::SetGlobalOptionRequest::OptionCase::kStdoutLevel:
+        if (request->has_stdout_level()) {
+            int32_t level = request->stdout_level();
+            if (MaaSetGlobalOption(MaaGlobalOption_StdoutLevel, &level, sizeof(level))) {
+                return Status::OK;
+            }
+            else {
+                return Status(UNKNOWN, "MaaSetGlobalOption failed");
+            }
+        }
+        break;
+    case ::maarpc::SetGlobalOptionRequest::OptionCase::kShowHitDraw:
+        if (request->has_show_hit_draw()) {
+            bool mode = request->show_hit_draw();
+            if (MaaSetGlobalOption(MaaGlobalOption_ShowHitDraw, &mode, sizeof(mode))) {
                 return Status::OK;
             }
             else {
@@ -73,9 +110,12 @@ Status UtilityImpl::set_global_option(ServerContext* context, const ::maarpc::Se
     return Status(ABORTED, "protobuf `oneof` state invalid");
 }
 
-Status UtilityImpl::acquire_id(ServerContext* context, const ::maarpc::EmptyRequest* request,
-                               ::maarpc::IdResponse* response)
+Status UtilityImpl::acquire_id(
+    ServerContext* context,
+    const ::maarpc::EmptyRequest* request,
+    ::maarpc::IdResponse* response)
 {
+    LogFunc;
     std::ignore = context;
     std::ignore = request;
 
@@ -84,33 +124,61 @@ Status UtilityImpl::acquire_id(ServerContext* context, const ::maarpc::EmptyRequ
     return Status::OK;
 }
 
-Status UtilityImpl::register_callback(ServerContext* context, const ::maarpc::IdRequest* request,
-                                      ServerWriter<::maarpc::Callback>* writer)
+Status UtilityImpl::register_callback(
+    ServerContext* context,
+    ServerReaderWriter<::maarpc::Callback, ::maarpc::CallbackRequest>* stream)
 {
-    std::ignore = context;
+    LogFunc;
 
-    MAA_GRPC_REQUIRED(id)
+    ::maarpc::CallbackRequest request_data;
+    auto request = &request_data;
 
-    auto id = request->id();
+    if (!stream->Read(request)) {
+        return Status(FAILED_PRECONDITION, "register callback cannot read init");
+    }
+
+    MAA_GRPC_REQUIRED_CASE_AS(result, Init)
+
+    MAA_GRPC_REQUIRED_OF(id, (&request->init()))
+
+    auto id = request->init().id();
 
     if (states_.has(id)) {
         return Status(ALREADY_EXISTS, "id already registered");
     }
 
     auto state = std::make_shared<CallbackState>();
-    state->writer = writer;
+    state->stream = stream;
 
     states_.add(id, state);
 
-    state->finish.acquire();
-    state->write.acquire(); // 等待callback完成
+    {
+        ::maarpc::Callback cb;
+        cb.set_msg("Rpc.Inited");
+        state->stream->Write(cb);
+    }
+
+    while (true) {
+        using namespace std::chrono_literals;
+        if (state->finish.try_acquire_for(2s)) {
+            break;
+        }
+        if (context->IsCancelled()) {
+            return Status::CANCELLED;
+        }
+    }
+    // 等待callback完成
+    state->write.acquire();
 
     return Status::OK;
 }
 
-Status UtilityImpl::unregister_callback(ServerContext* context, const ::maarpc::IdRequest* request,
-                                        ::maarpc::EmptyResponse* response)
+Status UtilityImpl::unregister_callback(
+    ServerContext* context,
+    const ::maarpc::IdRequest* request,
+    ::maarpc::EmptyResponse* response)
 {
+    LogFunc;
     std::ignore = context;
     std::ignore = response;
 
@@ -127,3 +195,5 @@ Status UtilityImpl::unregister_callback(ServerContext* context, const ::maarpc::
 
     return Status::OK;
 }
+
+MAA_RPC_NS_END

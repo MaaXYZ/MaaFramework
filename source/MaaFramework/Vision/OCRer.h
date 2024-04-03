@@ -1,9 +1,9 @@
 #pragma once
 
-#include "Conf/Conf.h"
-
 #include <ostream>
 #include <vector>
+
+#include "Conf/Conf.h"
 
 MAA_SUPPRESS_CV_WARNINGS_BEGIN
 #include "fastdeploy/vision/ocr/ppocr/dbdetector.h"
@@ -11,6 +11,9 @@ MAA_SUPPRESS_CV_WARNINGS_BEGIN
 #include "fastdeploy/vision/ocr/ppocr/recognizer.h"
 MAA_SUPPRESS_CV_WARNINGS_END
 
+#include "Instance/InstanceStatus.h"
+#include "Utils/Codec.h"
+#include "Utils/JsonExt.hpp"
 #include "VisionBase.h"
 #include "VisionTypes.h"
 
@@ -25,58 +28,61 @@ public:
         cv::Rect box {};
         double score = 0.0;
 
-        json::value to_json() const;
+        MEO_JSONIZATION(text, box, score);
     };
+
     using ResultsVec = std::vector<Result>;
 
 public:
-    void set_session(std::shared_ptr<fastdeploy::vision::ocr::DBDetector> deter,
-                     std::shared_ptr<fastdeploy::vision::ocr::Recognizer> recer,
-                     std::shared_ptr<fastdeploy::pipeline::PPOCRv3> ocrer)
-    {
-        deter_ = std::move(deter);
-        recer_ = std::move(recer);
-        ocrer_ = std::move(ocrer);
-    }
-    void set_param(OCRerParam param) { param_ = std::move(param); }
-    ResultsVec analyze() const;
+    OCRer(
+        cv::Mat image,
+        OCRerParam param,
+        std::shared_ptr<fastdeploy::vision::ocr::DBDetector> deter,
+        std::shared_ptr<fastdeploy::vision::ocr::Recognizer> recer,
+        std::shared_ptr<fastdeploy::pipeline::PPOCRv3> ocrer,
+        InstanceStatus* status = nullptr,
+        std::string name = "");
+
+    const ResultsVec& all_results() const& { return all_results_; }
+
+    ResultsVec&& all_results() && { return std::move(all_results_); }
+
+    const ResultsVec& filtered_results() const& { return filtered_results_; }
+
+    ResultsVec filtered_results() && { return std::move(filtered_results_); }
 
 private:
-    ResultsVec foreach_rois() const;
-    ResultsVec predict(const cv::Rect& roi) const;
-    ResultsVec predict_det_and_rec(const cv::Rect& roi) const;
-    Result predict_only_rec(const cv::Rect& roi) const;
-    void draw_result(const cv::Rect& roi, const ResultsVec& results) const;
+    void analyze();
 
-    void postproc_and_filter(ResultsVec& results, const std::vector<std::wstring>& expected) const;
+    ResultsVec predict_all_rois();
+    ResultsVec predict(const cv::Rect& roi);
+
+    void add_results(ResultsVec results, const std::vector<std::wstring>& expected);
+    void sort();
+
+private:
+    ResultsVec predict_det_and_rec(const cv::Mat& image_roi) const;
+    Result predict_only_rec(const cv::Mat& image_roi) const;
+
+    cv::Mat draw_result(const cv::Rect& roi, const ResultsVec& results) const;
+
     void postproc_trim_(Result& res) const;
     void postproc_replace_(Result& res) const;
     bool filter_by_required(const Result& res, const std::vector<std::wstring>& expected) const;
+    void sort_(ResultsVec& results) const;
 
-    OCRerParam param_;
+private:
+    const OCRerParam param_;
+
     std::shared_ptr<fastdeploy::vision::ocr::DBDetector> deter_ = nullptr;
     std::shared_ptr<fastdeploy::vision::ocr::Recognizer> recer_ = nullptr;
     std::shared_ptr<fastdeploy::pipeline::PPOCRv3> ocrer_ = nullptr;
+
+    InstanceStatus* status_ = nullptr;
+
+private:
+    ResultsVec all_results_;
+    ResultsVec filtered_results_;
 };
 
 MAA_VISION_NS_END
-
-MAA_NS_BEGIN
-
-inline std::ostream& operator<<(std::ostream& os, const MAA_VISION_NS::OCRer::Result& res)
-{
-    os << res.to_json().to_string();
-    return os;
-}
-
-inline std::ostream& operator<<(std::ostream& os, const MAA_VISION_NS::OCRer::ResultsVec& resutls)
-{
-    json::array root;
-    for (const auto& res : resutls) {
-        root.emplace_back(res.to_json());
-    }
-    os << root.to_string();
-    return os;
-}
-
-MAA_NS_END

@@ -22,24 +22,32 @@ inline cv::Mat imread(const std::string& utf8_path, int flags = cv::IMREAD_COLOR
     return imread(path(utf8_path), flags);
 }
 
-inline bool imwrite(const std::filesystem::path& path, cv::InputArray img,
-                    const std::vector<int>& param = std::vector<int>())
+inline bool imwrite(const std::filesystem::path& path, cv::InputArray img)
 {
-    std::filesystem::create_directories(path.parent_path());
-    std::ofstream of(path, std::ios::out | std::ios::binary);
-    std::vector<uint8_t> encoded;
-    auto ext = path_to_utf8_string(path.extension());
-    if (cv::imencode(ext, img, encoded, param)) {
-        of.write(reinterpret_cast<char*>(encoded.data()), encoded.size());
-        return true;
+    if (path.has_parent_path() && !std::filesystem::exists(path.parent_path())
+        && !std::filesystem::create_directories(path.parent_path())) {
+        return false;
     }
-    return false;
+
+    auto ext = path_to_utf8_string(path.extension());
+    std::vector<uint8_t> encoded;
+    if (!cv::imencode(ext, img, encoded)) {
+        return false;
+    }
+
+    std::ofstream of(path, std::ios::out | std::ios::binary);
+    of.write(reinterpret_cast<char*>(encoded.data()), encoded.size());
+    return true;
 }
 
-inline bool imwrite(const std::string& utf8_path, cv::InputArray img,
-                    const std::vector<int>& param = std::vector<int>())
+inline bool imwrite(const std::string& utf8_path, cv::InputArray img)
 {
-    return imwrite(path(utf8_path), img, param);
+    return imwrite(path(utf8_path), img);
+}
+
+inline bool imwrite(const char* utf8_path, cv::InputArray img)
+{
+    return imwrite(path(utf8_path), img);
 }
 
 MAA_NS_END
