@@ -9,37 +9,24 @@
 
 MAA_VISION_NS_BEGIN
 
-class TemplateMatcher : public VisionBase
+struct TemplateMatcherResult
 {
-public:
-    struct Result
-    {
-        cv::Rect box {};
-        double score = 0.0;
+    cv::Rect box {};
+    double score = 0.0;
 
-        MEO_JSONIZATION(box, score);
-    };
+    MEO_JSONIZATION(box, score);
+};
 
-    using ResultsVec = std::vector<Result>;
-
+class TemplateMatcher
+    : public VisionBase
+    , public RecoResultAPI<TemplateMatcherResult>
+{
 public:
     TemplateMatcher(
         cv::Mat image,
         TemplateMatcherParam param,
         std::vector<std::shared_ptr<cv::Mat>> templates,
         std::string name = "");
-
-    const ResultsVec& all_results() const& { return all_results_; }
-
-    ResultsVec&& all_results() && { return std::move(all_results_); }
-
-    const ResultsVec& filtered_results() const& { return filtered_results_; }
-
-    ResultsVec filtered_results() && { return std::move(filtered_results_); }
-
-    const std::optional<Result>& best_result() const& { return best_result_; }
-
-    std::optional<Result> best_result() && { return std::move(best_result_); }
 
 private:
     void analyze();
@@ -57,11 +44,6 @@ private:
 private:
     const TemplateMatcherParam param_;
     const std::vector<std::shared_ptr<cv::Mat>> templates_;
-
-private:
-    ResultsVec all_results_;
-    ResultsVec filtered_results_;
-    std::optional<Result> best_result_ = std::nullopt;
 };
 
 MAA_VISION_NS_END

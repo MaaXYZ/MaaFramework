@@ -15,37 +15,24 @@ MAA_SUPPRESS_CV_WARNINGS_END
 
 MAA_VISION_NS_BEGIN
 
-class FeatureMatcher : public VisionBase
+struct FeatureMatcherResult
 {
-public:
-    struct Result
-    {
-        cv::Rect box {};
-        int count = 0;
+    cv::Rect box {};
+    int count = 0;
 
-        MEO_JSONIZATION(box, count);
-    };
+    MEO_JSONIZATION(box, count);
+};
 
-    using ResultsVec = std::vector<Result>;
-
+class FeatureMatcher
+    : public VisionBase
+    , public RecoResultAPI<FeatureMatcherResult>
+{
 public:
     FeatureMatcher(
         cv::Mat image,
         FeatureMatcherParam param,
         std::vector<std::shared_ptr<cv::Mat>> templates,
         std::string name = "");
-
-    const ResultsVec& all_results() const& { return all_results_; }
-
-    ResultsVec&& all_results() && { return std::move(all_results_); }
-
-    const ResultsVec& filtered_results() const& { return filtered_results_; }
-
-    ResultsVec filtered_results() && { return std::move(filtered_results_); }
-
-    const std::optional<Result>& best_result() const& { return best_result_; }
-
-    std::optional<Result> best_result() && { return std::move(best_result_); }
 
 private:
     void analyze();
@@ -89,11 +76,6 @@ private:
 private:
     const FeatureMatcherParam param_;
     const std::vector<std::shared_ptr<cv::Mat>> templates_;
-
-private:
-    ResultsVec all_results_;
-    ResultsVec filtered_results_;
-    std::optional<Result> best_result_ = std::nullopt;
 };
 
 MAA_VISION_NS_END

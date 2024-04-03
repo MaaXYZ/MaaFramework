@@ -49,7 +49,7 @@ cv::Mat VisionBase::draw_roi(const cv::Rect& roi, const cv::Mat& base) const
     return image_draw;
 }
 
-void VisionBase::handle_draw(const cv::Mat& draw)
+void VisionBase::handle_draw(const cv::Mat& draw) const
 {
     draws_.emplace_back(draw);
 }

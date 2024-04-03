@@ -6,33 +6,18 @@
 
 MAA_VISION_NS_BEGIN
 
-class ColorMatcher : public VisionBase
+struct ColorMatcherResult
+{
+    cv::Rect box {};
+    int count = 0;
+
+    MEO_JSONIZATION(box, count);
+};
+
+class ColorMatcher : public VisionBase, public RecoResultAPI<ColorMatcherResult>
 {
 public:
-    struct Result
-    {
-        cv::Rect box {};
-        int count = 0;
-
-        MEO_JSONIZATION(box, count);
-    };
-
-    using ResultsVec = std::vector<Result>;
-
-public:
     ColorMatcher(cv::Mat image, ColorMatcherParam param, std::string name = "");
-
-    const ResultsVec& all_results() const& { return all_results_; }
-
-    ResultsVec&& all_results() && { return std::move(all_results_); }
-
-    const ResultsVec& filtered_results() const& { return filtered_results_; }
-
-    ResultsVec filtered_results() && { return std::move(filtered_results_); }
-
-    const std::optional<Result>& best_result() const& { return best_result_; }
-
-    std::optional<Result> best_result() && { return std::move(best_result_); }
 
 private:
     void analyze();
@@ -55,11 +40,6 @@ private:
 
 private:
     const ColorMatcherParam param_;
-
-private:
-    ResultsVec all_results_;
-    ResultsVec filtered_results_;
-    std::optional<Result> best_result_ = std::nullopt;
 };
 
 MAA_VISION_NS_END

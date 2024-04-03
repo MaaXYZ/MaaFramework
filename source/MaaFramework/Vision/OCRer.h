@@ -19,19 +19,20 @@ MAA_SUPPRESS_CV_WARNINGS_END
 
 MAA_VISION_NS_BEGIN
 
-class OCRer : public VisionBase
+struct OCRerResult
+{
+    std::wstring text;
+    cv::Rect box {};
+    double score = 0.0;
+
+    MEO_JSONIZATION(text, box, score);
+};
+
+class OCRer
+    : public VisionBase
+    , public RecoResultAPI<OCRerResult>
 {
 public:
-    struct Result
-    {
-        std::wstring text;
-        cv::Rect box {};
-        double score = 0.0;
-
-        MEO_JSONIZATION(text, box, score);
-    };
-
-    using ResultsVec = std::vector<Result>;
     using Cache = std::map<cv::Rect, ResultsVec, RectComparer>;
 
 public:
@@ -43,18 +44,6 @@ public:
         std::shared_ptr<fastdeploy::pipeline::PPOCRv3> ocrer,
         Cache& cache,
         std::string name = "");
-
-    const ResultsVec& all_results() const& { return all_results_; }
-
-    ResultsVec&& all_results() && { return std::move(all_results_); }
-
-    const ResultsVec& filtered_results() const& { return filtered_results_; }
-
-    ResultsVec filtered_results() && { return std::move(filtered_results_); }
-
-    const std::optional<Result>& best_result() const& { return best_result_; }
-
-    std::optional<Result> best_result() && { return std::move(best_result_); }
 
 private:
     void analyze();
@@ -84,11 +73,6 @@ private:
     std::shared_ptr<fastdeploy::pipeline::PPOCRv3> ocrer_ = nullptr;
 
     Cache& cache_;
-
-private:
-    ResultsVec all_results_;
-    ResultsVec filtered_results_;
-    std::optional<Result> best_result_ = std::nullopt;
 };
 
 MAA_VISION_NS_END
