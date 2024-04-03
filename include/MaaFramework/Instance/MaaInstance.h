@@ -240,10 +240,11 @@ extern "C"
     MAA_FRAMEWORK_API MaaBool MaaGetRecognitionResult(
         MaaInstanceHandle inst,
         uint64_t reco_id,
-        MaaBool* hit,
-        MaaRectHandle hit_box,
-        MaaStringBufferHandle hit_detail,
-        MaaImageBufferHandle draw);
+        /* out */ MaaBool* hit,
+        /* out */ MaaRectHandle hit_box,
+        /* out */ MaaStringBufferHandle hit_detail,
+        /* out */ MaaImageBufferHandle* draws,
+        /* in & out */ MaaSize* draws_size);
 
 #ifdef __cplusplus
 }

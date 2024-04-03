@@ -52,7 +52,12 @@ public: // from MaaInstanceAPI
     virtual MaaResourceHandle resource() override;
     virtual MaaControllerHandle controller() override;
 
-    virtual bool recoginition_result(uint64_t reco_id, bool& hit, cv::Rect& box, std::string& detail, cv::Mat& draw)
+    virtual bool recoginition_result(
+        uint64_t reco_id,
+        bool& hit,
+        cv::Rect& box,
+        std::string& detail,
+        std::vector<cv::Mat>& draws)
         const override;
 
 public: // from InstanceInternalAPI

@@ -175,6 +175,7 @@ std::optional<PipelineTask::HitResult>
                                        { "recognition",
                                          {
                                              { "id", reco.uid },
+                                             { "draws_size", reco.draws.size() },
                                          } },
                                        { "hit", reco.hit.has_value() },
                                    };
@@ -237,7 +238,7 @@ PipelineTask::RunningResult PipelineTask::run_task(const HitResult& hits)
                                             } },
                                           { "run_times", run_times },
                                           { "status", "ReadyToRun" },
-                                          { "sub", hits.task_data.is_sub } };
+                                          { "is_sub", hits.task_data.is_sub } };
 
     status()->set_task_result(name, detail);
     if (hits.task_data.focus) {

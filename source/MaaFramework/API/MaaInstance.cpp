@@ -260,10 +260,11 @@ MaaControllerHandle MaaGetController(MaaInstanceHandle inst)
 MaaBool MaaGetRecognitionResult(
     MaaInstanceHandle inst,
     uint64_t reco_id,
-    MaaBool* hit,
-    MaaRectHandle hit_box,
-    MaaStringBufferHandle hit_detail,
-    MaaImageBufferHandle draw)
+    /* out */ MaaBool* hit,
+    /* out */ MaaRectHandle hit_box,
+    /* out */ MaaStringBufferHandle hit_detail,
+    /* out */ MaaImageBufferHandle* draws,
+    /* in & out */ MaaSize* draws_size)
 {
     if (!inst) {
         LogError << "handle is null";
@@ -273,10 +274,11 @@ MaaBool MaaGetRecognitionResult(
     bool mhit;
     cv::Rect mbox {};
     std::string mdetail;
-    cv::Mat mdraw;
-    bool mret = inst->recoginition_result(reco_id, mhit, mbox, mdetail, mdraw);
+    std::vector<cv::Mat> mdraws;
+    bool mret = inst->recoginition_result(reco_id, mhit, mbox, mdetail, mdraws);
 
     if (!mret) {
+        LogError << "failed to query reco result" << VAR(reco_id);
         return false;
     }
 
@@ -292,8 +294,16 @@ MaaBool MaaGetRecognitionResult(
     if (hit_detail) {
         hit_detail->set(std::move(mdetail));
     }
-    if (draw) {
-        draw->set(std::move(mdraw));
+    if (draws && draws_size) {
+        size_t size = std::min(*draws_size, mdraws.size());
+        for (size_t i = 0; i < size; ++i) {
+            (*(draws + i))->set(std::move(mdraws.at(i)));
+        }
+        *draws_size = size;
     }
+    else if (draws_size) {
+        *draws_size = mdraws.size();
+    }
+
     return true;
 }

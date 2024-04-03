@@ -246,24 +246,24 @@ bool InstanceMgr::recoginition_result(
     bool& hit,
     cv::Rect& box,
     std::string& detail,
-    cv::Mat& draw) const
+    std::vector<cv::Mat>& draws) const
 {
     std::any res_any = status_.get_reco_result(reco_id);
 
     if (!res_any.has_value()) {
+        LogError << "reco_id has no value (not found)" << VAR(reco_id);
         return false;
     }
 
     auto res = std::any_cast<MAA_TASK_NS::Recognizer::Result>(res_any);
     hit = res.hit.has_value();
+    draws = res.draws;
 
     if (hit) {
         box = res.hit->box;
         detail = res.hit->detail.as_string();
     }
-    if (!res.draws.empty()) {
-        draw = res.draws.front();
-    }
+
     return true;
 }
 

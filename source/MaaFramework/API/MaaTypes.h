@@ -108,7 +108,7 @@ public:
         bool& hit,
         cv::Rect& box,
         std::string& detail,
-        cv::Mat& draw) const = 0;
+        std::vector<cv::Mat>& draws) const = 0;
 };
 
 struct MaaSyncContextAPI
