@@ -159,12 +159,6 @@ class _Framework:
         sync_context: MaaSyncContextHandle,
         out_image: MaaImageBufferHandle,
     ) -> MaaBool: ...
-    @staticmethod
-    def MaaSyncContextGetTaskResult(
-        sync_context: MaaSyncContextHandle,
-        task_name: MaaStringView,
-        out_task_result: MaaStringBufferHandle,
-    ) -> MaaBool: ...
 
     # controller.py
     # Contorller

@@ -1126,24 +1126,6 @@
     },
     {
       "argument": [
-        {
-          "name": "sync_context",
-          "type": "MaaSyncContextHandle"
-        },
-        {
-          "name": "task_name",
-          "type": "MaaStringView"
-        },
-        {
-          "name": "out_task_result",
-          "type": "MaaStringBufferHandle"
-        }
-      ],
-      "name": "MaaSyncContextGetTaskResult",
-      "return": "MaaBool"
-    },
-    {
-      "argument": [
       ],
       "name": "MaaCreateStringBuffer",
       "return": "MaaStringBufferHandle"

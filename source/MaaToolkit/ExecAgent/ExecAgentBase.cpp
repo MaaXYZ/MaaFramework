@@ -144,8 +144,6 @@ std::string ExecAgentBase::handle_command(const json::value& cmd)
         { "TouchMove", std::bind(&ExecAgentBase::ctx_touch_move, this, std::placeholders::_1) },
         { "TouchUp", std::bind(&ExecAgentBase::ctx_touch_up, this, std::placeholders::_1) },
         { "Screencap", std::bind(&ExecAgentBase::ctx_screencap, this, std::placeholders::_1) },
-        { "GetTaskResult",
-          std::bind(&ExecAgentBase::ctx_get_task_result, this, std::placeholders::_1) },
     };
 
     auto func_opt = cmd.find<std::string>("function");
@@ -524,40 +522,6 @@ json::value ExecAgentBase::ctx_screencap(const json::value& cmd)
 
     std::string image_arg = arg_cvt_.image_to_arg(image);
     ret_obj |= { { "image", image_arg } };
-    return ret_obj;
-}
-
-json::value ExecAgentBase::ctx_get_task_result(const json::value& cmd)
-{
-    auto ctx = get_sync_context(cmd);
-    if (!ctx) {
-        LogError << "sync context not found";
-        return invalid_json();
-    }
-
-    auto task_name_opt = cmd.find<std::string>("task_name");
-    if (!task_name_opt || task_name_opt->empty()) {
-        LogError << "no task name or not string or empty" << VAR(cmd);
-        return invalid_json();
-    }
-    const std::string& task_name = *task_name_opt;
-
-    auto out_task_result_buff = MaaCreateStringBuffer();
-    OnScopeLeave([&]() { MaaDestroyStringBuffer(out_task_result_buff); });
-
-    bool ret = MaaSyncContextGetTaskResult(ctx, task_name.c_str(), out_task_result_buff);
-
-    auto ret_obj = gen_result(ret);
-    if (!ret) {
-        return ret_obj;
-    }
-
-    auto out_result_opt = json::parse(MaaGetString(out_task_result_buff));
-    if (!out_result_opt) {
-        LogError << "parse json failed" << VAR(MaaGetString(out_task_result_buff));
-        return ret_obj;
-    }
-    ret_obj |= { { "task_result", *out_result_opt } };
     return ret_obj;
 }
 
