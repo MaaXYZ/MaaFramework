@@ -164,6 +164,9 @@ LHGArgFromJsonBegin(maa::func_type_MaaSyncContextRunAction, _3_cur_box, true)
 LHGArgFromJsonEnd()
 
 LHGArgOutput(maa::func_type_MaaSyncContextRunRecognizer::_4_out_box);
+LHGArgPrepareStateBegin(maa::func_type_MaaSyncContextRunRecognizer, _4_out_box)
+    std::get<index>(arg) = &std::get<index>(state);
+LHGArgPrepareStateEnd()
 LHGArgToJsonBegin(maa::func_type_MaaSyncContextRunRecognizer, _4_out_box, true)
     auto rec = &std::get<index>(state);
     value = pri_maa::from_rect(rec);
