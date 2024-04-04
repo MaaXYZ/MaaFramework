@@ -3,6 +3,8 @@
 #include <algorithm>
 
 #include "Instance/InstanceMgr.h"
+#include "Task/PipelineTask.h"
+#include "Task/Recognizer.h"
 #include "Utils/Logger.h"
 #include "Utils/NoWarningCVMat.hpp"
 
@@ -259,9 +261,9 @@ MaaControllerHandle MaaGetController(MaaInstanceHandle inst)
     return inst->controller();
 }
 
-MaaBool MaaGetRecognitionResult(
+MaaBool MaaGetRecognitionDetail(
     MaaInstanceHandle inst,
-    uint64_t reco_id,
+    MaaRecoId reco_id,
     /* out */ MaaBool* hit,
     /* out */ MaaRectHandle hit_box,
     /* out */ MaaStringBufferHandle hit_detail,
@@ -277,7 +279,8 @@ MaaBool MaaGetRecognitionResult(
     cv::Rect mbox {};
     std::string mdetail;
     std::vector<cv::Mat> mdraws;
-    bool mret = inst->recoginition_result(reco_id, mhit, mbox, mdetail, mdraws);
+
+    bool mret = MAA_TASK_NS::Recognizer::query_detail(reco_id, mhit, mbox, mdetail, mdraws);
 
     if (!mret) {
         LogError << "failed to query reco result" << VAR(reco_id);
@@ -307,5 +310,34 @@ MaaBool MaaGetRecognitionResult(
         *draws_size = mdraws.size();
     }
 
+    return true;
+}
+
+MaaBool MaaGetRunningDetail(
+    MaaInstanceHandle inst,
+    MaaRunningId run_id,
+    /*out*/ MaaRecoId* reco_id,
+    /*out*/ MaaBool* successful)
+{
+    if (!inst) {
+        LogError << "handle is null";
+        return false;
+    }
+
+    MaaRecoId mreco_id;
+    bool msuccessful;
+
+    bool mret = MAA_TASK_NS::PipelineTask::query_detail(run_id, mreco_id, msuccessful);
+    if (!mret) {
+        LogError << "failed to query running detail" << VAR(run_id);
+        return false;
+    }
+
+    if (reco_id) {
+        *reco_id = mreco_id;
+    }
+    if (successful) {
+        *successful = msuccessful;
+    }
     return true;
 }

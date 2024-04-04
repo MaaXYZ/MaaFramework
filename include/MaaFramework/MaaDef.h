@@ -26,7 +26,7 @@ typedef struct MaaInstanceAPI* MaaInstanceHandle;
 
 typedef uint8_t MaaBool;
 typedef uint64_t MaaSize;
-#define MaaNullSize ((MaaSize)-1)
+#define MaaNullSize ((MaaSize) - 1)
 
 typedef const char* MaaStringView;
 
@@ -60,6 +60,8 @@ typedef int64_t MaaId;
 typedef MaaId MaaCtrlId;
 typedef MaaId MaaResId;
 typedef MaaId MaaTaskId;
+typedef MaaId MaaRecoId;
+typedef MaaId MaaRunningId;
 #define MaaInvalidId ((MaaId)0)
 
 typedef int32_t MaaOption;

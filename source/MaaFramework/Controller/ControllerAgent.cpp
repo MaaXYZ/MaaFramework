@@ -1,7 +1,7 @@
 #include "ControllerAgent.h"
 
 #include "MaaFramework/MaaMsg.h"
-#include "Option/GlobalOptionMgr.h"
+#include "Global/GlobalOptionMgr.h"
 #include "Resource/ResourceMgr.h"
 #include "Utils/ImageIo.h"
 #include "Utils/NoWarningCV.hpp"

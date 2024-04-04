@@ -1,7 +1,7 @@
 #include "Recognizer.h"
 
-#include "Instance/InstanceStatus.h"
-#include "Option/GlobalOptionMgr.h"
+#include "Global/GlobalOptionMgr.h"
+#include "Global/UniqueResultBank.h"
 #include "Resource/ResourceMgr.h"
 #include "Utils/ImageIo.h"
 #include "Utils/Logger.h"
@@ -25,11 +25,6 @@ Recognizer::Result Recognizer::recognize(const cv::Mat& image, const TaskData& t
 {
     using namespace MAA_RES_NS::Recognition;
     using namespace MAA_VISION_NS;
-
-    if (!status()) {
-        LogError << "Status is null";
-        return {};
-    }
 
     Result result;
     switch (task_data.rec_type) {
@@ -88,11 +83,10 @@ Recognizer::Result Recognizer::recognize(const cv::Mat& image, const TaskData& t
     }
 
     save_draws(task_data.name, result);
-    status()->set_reco_result(result.uid, result);
+    UniqueResultBank::get_instance().add_reco_detail(result.uid, result);
 
     if (result.hit) {
         const auto& hit = *result.hit;
-        status()->set_reco_hit(task_data.name, hit);
         show_hit_draw(image, hit, task_data.name, result.uid);
     }
 
@@ -109,6 +103,32 @@ Recognizer::Result Recognizer::recognize(const cv::Mat& image, const TaskData& t
     }
 
     return result;
+}
+
+bool Recognizer::query_detail(
+    MaaRecoId reco_id,
+    bool& hit,
+    cv::Rect& box,
+    std::string& detail,
+    std::vector<cv::Mat>& draws)
+{
+    std::any res_any = UniqueResultBank::get_instance().get_reco_detail(reco_id);
+
+    if (!res_any.has_value()) {
+        LogError << "reco_id has no value (not found)" << VAR(reco_id);
+        return false;
+    }
+
+    auto res = std::any_cast<MAA_TASK_NS::Recognizer::Result>(res_any);
+
+    hit = res.hit.has_value();
+    if (hit) {
+        box = *res.hit;
+    }
+    detail = res.detail.to_string();
+    draws = res.draws;
+
+    return true;
 }
 
 template <typename Res>
@@ -385,7 +405,7 @@ void Recognizer::show_hit_draw(
     const cv::Mat& image,
     const Hit& res,
     const std::string& task_name,
-    uint64_t uid) const
+    MaaRecoId uid) const
 {
     if (!GlobalOptionMgr::get_instance().show_hit_draw()) {
         return;

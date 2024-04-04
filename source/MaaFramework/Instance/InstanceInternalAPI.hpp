@@ -39,7 +39,6 @@ struct InstanceInternalAPI : public NonCopyable
 public:
     virtual MAA_RES_NS::ResourceMgr* inter_resource() = 0;
     virtual MAA_CTRL_NS::ControllerAgent* inter_controller() = 0;
-    virtual InstanceStatus* inter_status() = 0;
     virtual void notify(std::string_view msg, const json::value& details = json::value()) = 0;
     virtual CustomRecognizerSession* custom_recognizer_session(const std::string& name) = 0;
     virtual CustomActionSession* custom_action_session(const std::string& name) = 0;

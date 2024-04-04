@@ -102,13 +102,6 @@ public:
 
     virtual MaaResourceHandle resource() = 0;
     virtual MaaControllerHandle controller() = 0;
-
-    virtual bool recoginition_result(
-        uint64_t reco_id,
-        bool& hit,
-        cv::Rect& box,
-        std::string& detail,
-        std::vector<cv::Mat>& draws) const = 0;
 };
 
 struct MaaSyncContextAPI

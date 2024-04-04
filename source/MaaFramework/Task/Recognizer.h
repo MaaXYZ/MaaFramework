@@ -20,7 +20,7 @@ public:
 
     struct Result
     {
-        uint64_t uid = 0;
+        MaaRecoId uid = 0;
         std::optional<Hit> hit = std::nullopt;
         json::value detail;
         std::vector<cv::Mat> draws;
@@ -31,6 +31,13 @@ public:
 
 public:
     Result recognize(const cv::Mat& image, const TaskData& task_data);
+
+    static bool query_detail(
+        MaaRecoId reco_id,
+        bool& hit,
+        cv::Rect& box,
+        std::string& detail,
+        std::vector<cv::Mat>& draws);
 
 private:
     Result direct_hit(const std::string& name);
@@ -66,11 +73,9 @@ private:
         const cv::Mat& image,
         const Hit& res,
         const std::string& task_name,
-        uint64_t uid) const;
+        MaaRecoId uid) const;
 
 private:
-    InstanceStatus* status() { return inst_ ? inst_->inter_status() : nullptr; }
-
     MAA_RES_NS::ResourceMgr* resource() { return inst_ ? inst_->inter_resource() : nullptr; }
 
 private:

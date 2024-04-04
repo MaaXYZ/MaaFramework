@@ -1,17 +1,12 @@
 #include "PipelineTask.h"
 
-#include <sstream>
-
 #include "Controller/ControllerAgent.h"
-#include "Instance/InstanceStatus.h"
+#include "Global/GlobalOptionMgr.h"
+#include "Global/UniqueResultBank.h"
 #include "MaaFramework/MaaMsg.h"
-#include "Option/GlobalOptionMgr.h"
 #include "Resource/ResourceMgr.h"
-#include "Task/Actuator.h"
-#include "Task/Recognizer.h"
-#include "Utils/ImageIo.h"
+#include "Utils/JsonExt.hpp"
 #include "Utils/Logger.h"
-#include "Utils/Uuid.h"
 
 MAA_TASK_NS_BEGIN
 
@@ -30,7 +25,7 @@ bool PipelineTask::run()
     std::stack<std::string> breakpoints_stack;
     std::string pre_breakpoint;
 
-    RunningResult ret = RunningResult::Success;
+    RunningStatus ret = RunningStatus::Success;
 
     TaskData new_hits = data_mgr_.get_task_data(entry_);
     while (!next_list.empty() && !need_to_stop()) {
@@ -38,19 +33,19 @@ bool PipelineTask::run()
         ret = find_first_and_run(next_list, timeout, new_hits);
 
         switch (ret) {
-        case RunningResult::Success:
+        case RunningStatus::Success:
             next_list = new_hits.next;
             break;
-        case RunningResult::Timeout:
+        case RunningStatus::Timeout:
             next_list = new_hits.timeout_next;
             break;
-        case RunningResult::Runout:
+        case RunningStatus::Runout:
             next_list = new_hits.runout_next;
             break;
-        case RunningResult::Interrupted:
+        case RunningStatus::Interrupted:
             LogInfo << "Task interrupted:" << new_hits.name;
             return true;
-        case RunningResult::InternalError:
+        case RunningStatus::InternalError:
             LogError << "Task InternalError:" << new_hits.name;
             return false;
         default:
@@ -74,7 +69,7 @@ bool PipelineTask::run()
         }
     }
 
-    return ret == RunningResult::Success;
+    return ret == RunningStatus::Success;
 }
 
 bool PipelineTask::set_param(const json::value& param)
@@ -82,12 +77,28 @@ bool PipelineTask::set_param(const json::value& param)
     return data_mgr_.set_param(param);
 }
 
-PipelineTask::RunningResult PipelineTask::find_first_and_run(
+bool PipelineTask::query_detail(MaaRunningId run_id, MaaRecoId& reco_id, bool& completed)
+{
+    auto& result_bank = UniqueResultBank::get_instance();
+    auto detail_any = result_bank.get_running_detail(run_id);
+    if (!detail_any.has_value()) {
+        return false;
+    }
+
+    auto detail = std::any_cast<RunningDetail>(detail_any);
+
+    reco_id = detail.hits.reco_uid;
+    completed = detail.status == RunningStatus::Success;
+
+    return true;
+}
+
+PipelineTask::RunningStatus PipelineTask::find_first_and_run(
     const std::vector<std::string>& list,
     std::chrono::milliseconds timeout,
     /*out*/ MAA_RES_NS::TaskData& found_data)
 {
-    HitResult hits;
+    HitDetail hits;
 
     auto start_time = std::chrono::steady_clock::now();
     while (true) {
@@ -99,18 +110,20 @@ PipelineTask::RunningResult PipelineTask::find_first_and_run(
 
         if (need_to_stop()) {
             LogInfo << "Task interrupted" << VAR(latest_hit_);
-            return RunningResult::Interrupted;
+            return RunningStatus::Interrupted;
         }
 
         if (std::chrono::steady_clock::now() - start_time > timeout) {
             LogInfo << "Task timeout" << VAR(latest_hit_) << VAR(timeout);
-            return RunningResult::Timeout;
+            return RunningStatus::Timeout;
         }
     }
 
     LogInfo << "Task hit:" << hits.task_data.name << VAR(hits.reco_uid) << VAR(hits.reco_hit)
             << VAR(hits.reco_detail);
+
     latest_hit_ = hits.task_data.name;
+    hit_cache_.insert_or_assign(hits.task_data.name, hits.reco_hit);
 
     auto run_ret = run_task(hits);
 
@@ -119,7 +132,7 @@ PipelineTask::RunningResult PipelineTask::find_first_and_run(
     return run_ret;
 }
 
-std::optional<PipelineTask::HitResult>
+std::optional<PipelineTask::HitDetail>
     PipelineTask::find_first(const std::vector<std::string>& list)
 {
     if (!controller()) {
@@ -156,7 +169,7 @@ std::optional<PipelineTask::HitResult>
     bool hit = false;
 
     Recognizer recognizer(inst_);
-    HitResult result;
+    HitDetail result;
 
     for (const std::string& name : list) {
         LogDebug << "recognize:" << name;
@@ -170,18 +183,11 @@ std::optional<PipelineTask::HitResult>
         auto reco = recognizer.recognize(image, task_data);
 
         if (debug_mode()) {
-            json::value detail = basic_info()
-                                 | json::object {
-                                       { "name", name },
-                                       { "recognition",
-                                         {
-                                             { "id", reco.uid },
-                                             { "detail", reco.detail },
-                                             { "draws_size", reco.draws.size() },
-                                         } },
-                                       { "hit", reco.hit.has_value() },
-                                   };
-            notify(MaaMsg_Task_Debug_RecognitionResult, detail);
+            json::value cb_detail = basic_info() | reco_result_to_json(reco)
+                                    | json::object {
+                                          { "name", name },
+                                      };
+            notify(MaaMsg_Task_Debug_RecognitionResult, cb_detail);
         }
 
         if (!reco.hit) {
@@ -201,88 +207,78 @@ std::optional<PipelineTask::HitResult>
     }
 
     if (debug_mode()) {
-        json::value detail = basic_info()
-                             | json::object {
-                                   { "name", result.task_data.name },
-                                   { "recognition",
-                                     {
-                                         { "id", result.reco_uid },
-                                         { "box", result.reco_hit },
-                                         { "detail", result.reco_detail },
-                                     } },
-                                   { "status", "Hit" },
-                               };
-        notify(MaaMsg_Task_Debug_Hit, detail);
+        json::value cb_detail = basic_info() | hit_detail_to_json(result);
+        notify(MaaMsg_Task_Debug_Hit, cb_detail);
     }
 
     return result;
 }
 
-PipelineTask::RunningResult PipelineTask::run_task(const HitResult& hits)
+PipelineTask::RunningStatus PipelineTask::run_task(const HitDetail& hits)
 {
-    if (!status()) {
-        LogError << "Status not binded";
-        return RunningResult::InternalError;
-    }
-
     if (need_to_stop()) {
         LogInfo << "Task interrupted" << VAR(latest_hit_);
-        return RunningResult::Interrupted;
+        return RunningStatus::Interrupted;
     }
+
+    Actuator actuator(inst_, hit_cache_);
 
     const std::string& name = hits.task_data.name;
-    uint64_t run_times = status()->get_run_times(name);
+    uint64_t& run_times = run_times_map_[name];
 
-    json::value detail = basic_info()
-                         | json::object { { "name", name },
-                                          { "recognition",
-                                            {
-                                                { "id", hits.reco_uid },
-                                                { "box", hits.reco_hit },
-                                                { "detail", hits.reco_detail },
-                                            } },
-                                          { "run_times", run_times },
-                                          { "status", "ReadyToRun" },
-                                          { "is_sub", hits.task_data.is_sub } };
+    MaaRunningId actuator_uid = actuator.uid();
+    RunningDetail running_detail = { .run_id = actuator_uid, .hits = hits };
 
-    status()->set_task_result(name, detail);
-    if (hits.task_data.focus) {
-        notify(MaaMsg_Task_Focus_ReadyToRun, detail);
-    }
-    if (debug_mode()) {
-        notify(MaaMsg_Task_Debug_ReadyToRun, detail);
+    if (debug_mode() || hits.task_data.focus) {
+        json::value cb_detail = basic_info() | running_detail_to_json(running_detail);
+        if (debug_mode()) {
+            notify(MaaMsg_Task_Debug_ReadyToRun, cb_detail);
+        }
+        if (hits.task_data.focus) {
+            notify(MaaMsg_Task_Focus_ReadyToRun, cb_detail);
+        }
     }
 
+    auto& result_bank = UniqueResultBank::get_instance();
     if (hits.task_data.times_limit <= run_times) {
         LogInfo << "Task runout:" << name;
 
-        detail["status"] = "Runout";
-        status()->set_task_result(name, detail);
-        if (hits.task_data.focus) {
-            notify(MaaMsg_Task_Focus_Runout, detail);
-        }
-        if (debug_mode()) {
-            notify(MaaMsg_Task_Debug_Runout, detail);
+        running_detail.status = RunningStatus::Runout;
+
+        result_bank.add_running_detail(actuator_uid, running_detail);
+
+        if (debug_mode() || hits.task_data.focus) {
+            json::value cb_detail = basic_info() | running_detail_to_json(running_detail);
+            if (debug_mode()) {
+                notify(MaaMsg_Task_Debug_ReadyToRun, cb_detail);
+            }
+            if (hits.task_data.focus) {
+                notify(MaaMsg_Task_Focus_ReadyToRun, cb_detail);
+            }
         }
 
-        return RunningResult::Runout;
+        return RunningStatus::Runout;
     }
 
-    Actuator actuator(inst_);
     auto ret = actuator.run(hits.reco_hit, hits.reco_detail, hits.task_data);
-    status()->increase_run_times(name);
 
-    detail["status"] = "Completed";
-    detail["run_times"] = run_times + 1;
-    status()->set_task_result(name, detail);
-    if (hits.task_data.focus) {
-        notify(MaaMsg_Task_Focus_Completed, detail);
-    }
-    if (debug_mode()) {
-        notify(MaaMsg_Task_Debug_Completed, detail);
+    ++run_times;
+
+    running_detail.status = RunningStatus::Success;
+
+    result_bank.add_running_detail(actuator_uid, running_detail);
+
+    if (debug_mode() || hits.task_data.focus) {
+        json::value cb_detail = basic_info() | running_detail_to_json(running_detail);
+        if (debug_mode()) {
+            notify(MaaMsg_Task_Debug_Completed, cb_detail);
+        }
+        if (hits.task_data.focus) {
+            notify(MaaMsg_Task_Focus_Completed, cb_detail);
+        }
     }
 
-    return ret ? RunningResult::Success : RunningResult::InternalError;
+    return ret ? RunningStatus::Success : RunningStatus::InternalError;
 }
 
 bool PipelineTask::debug_mode() const
@@ -301,25 +297,41 @@ json::object PipelineTask::basic_info()
     };
 }
 
-std::filesystem::path PipelineTask::dump_image(const cv::Mat& image) const
+json::object PipelineTask::reco_result_to_json(const Recognizer::Result& res)
 {
-    if (image.empty()) {
-        return {};
-    }
+    return {
+        { "recognition",
+          {
+              { "id", res.uid },
+              { "box", res.hit ? json::value(*res.hit) : json::value(nullptr) },
+              { "detail", res.detail },
+              { "draws_size", res.draws.size() },
+              { "hit", res.hit.has_value() },
+          } },
+    };
+}
 
-    const auto& log_dir = GlobalOptionMgr::get_instance().log_dir();
-    if (log_dir.empty()) {
-        return {};
-    }
+json::object PipelineTask::hit_detail_to_json(const HitDetail& detail)
+{
+    return {
+        { "name", detail.task_data.name },
+        { "recognition",
+          {
+              { "id", detail.reco_uid },
+              { "box", detail.reco_hit },
+              { "detail", detail.reco_detail },
+              { "hit", true },
+          } },
+    };
+}
 
-    std::string filename = std::format("{}-{}.png", format_now_for_filename(), make_uuid());
-    auto filepath = log_dir / "screencap" / path(filename);
-    bool ret = MAA_NS::imwrite(filepath, image);
-    if (!ret) {
-        return {};
-    }
-
-    return filepath;
+json::object PipelineTask::running_detail_to_json(const RunningDetail& detail)
+{
+    return hit_detail_to_json(detail.hits)
+           | json::object {
+                 { "actuator_id", detail.run_id },
+                 { "status", static_cast<int>(detail.status) },
+             };
 }
 
 MAA_TASK_NS_END

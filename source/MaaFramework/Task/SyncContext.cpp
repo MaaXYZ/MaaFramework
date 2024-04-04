@@ -3,7 +3,6 @@
 #include <meojson/json.hpp>
 
 #include "Controller/ControllerAgent.h"
-#include "Instance/InstanceStatus.h"
 #include "PipelineTask.h"
 #include "Task/Actuator.h"
 #include "Task/Recognizer.h"

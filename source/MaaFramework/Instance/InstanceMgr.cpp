@@ -241,32 +241,6 @@ MaaControllerHandle InstanceMgr::controller()
     return controller_;
 }
 
-bool InstanceMgr::recoginition_result(
-    uint64_t reco_id,
-    bool& hit,
-    cv::Rect& box,
-    std::string& detail,
-    std::vector<cv::Mat>& draws) const
-{
-    std::any res_any = status_.get_reco_result(reco_id);
-
-    if (!res_any.has_value()) {
-        LogError << "reco_id has no value (not found)" << VAR(reco_id);
-        return false;
-    }
-
-    auto res = std::any_cast<MAA_TASK_NS::Recognizer::Result>(res_any);
-
-    hit = res.hit.has_value();
-    if (hit) {
-        box = *res.hit;
-    }
-    detail = res.detail.to_string();
-    draws = res.draws;
-
-    return true;
-}
-
 MAA_RES_NS::ResourceMgr* InstanceMgr::inter_resource()
 {
     return dynamic_cast<MAA_RES_NS::ResourceMgr*>(resource());
@@ -275,11 +249,6 @@ MAA_RES_NS::ResourceMgr* InstanceMgr::inter_resource()
 MAA_CTRL_NS::ControllerAgent* InstanceMgr::inter_controller()
 {
     return dynamic_cast<MAA_CTRL_NS::ControllerAgent*>(controller());
-}
-
-InstanceStatus* InstanceMgr::inter_status()
-{
-    return &status_;
 }
 
 void InstanceMgr::notify(std::string_view msg, const json::value& details)
@@ -334,8 +303,6 @@ bool InstanceMgr::run_task(TaskId id, TaskPtr task_ptr)
     LogInfo << "task end:" << VAR(details) << VAR(ret);
 
     notifier.notify(ret ? MaaMsg_Task_Completed : MaaMsg_Task_Failed, details);
-
-    status_.clear();
 
     MAA_LOG_NS::Logger::get_instance().flush();
 

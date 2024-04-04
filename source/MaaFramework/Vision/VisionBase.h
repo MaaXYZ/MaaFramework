@@ -4,6 +4,7 @@
 #include <filesystem>
 
 #include "Conf/Conf.h"
+#include "MaaFramework/MaaDef.h"
 #include "Utils/JsonExt.hpp"
 #include "Utils/NoWarningCVMat.hpp"
 
@@ -44,7 +45,7 @@ public:
 
     std::vector<cv::Mat> draws() && { return std::move(draws_); }
 
-    uint64_t uid() const { return uid_; }
+    MaaRecoId uid() const { return uid_; }
 
 protected:
     cv::Mat image_with_roi(const cv::Rect& roi) const;
@@ -58,7 +59,7 @@ protected:
     const std::string name_;
 
     bool debug_draw_ = false;
-    const uint64_t uid_ = ++s_global_uid;
+    const MaaRecoId uid_ = ++s_global_uid;
 
 private:
     void init_draw();
@@ -66,7 +67,7 @@ private:
     mutable std::vector<cv::Mat> draws_;
 
 private:
-    inline static std::atomic_uint64_t s_global_uid = 0;
+    inline static std::atomic<MaaRecoId> s_global_uid = 0;
 };
 
 MAA_VISION_NS_END

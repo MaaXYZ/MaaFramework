@@ -56,8 +56,6 @@ public: // from MaaSyncContextAPI
     }
 
 private:
-    InstanceStatus* status() const { return inst_ ? inst_->inter_status() : nullptr; }
-
     InstanceInternalAPI* inst_ = nullptr;
 };
 

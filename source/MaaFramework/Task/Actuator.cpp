@@ -1,15 +1,16 @@
 #include "Actuator.h"
 
 #include "Controller/ControllerAgent.h"
-#include "Instance/InstanceStatus.h"
+#include "Global/UniqueResultBank.h"
 #include "Task/CustomAction.h"
 #include "Utils/Logger.h"
 #include "Vision/TemplateComparator.h"
 
 MAA_TASK_NS_BEGIN
 
-Actuator::Actuator(InstanceInternalAPI* inst)
+Actuator::Actuator(InstanceInternalAPI* inst, const PreTaskBoxes& boxes)
     : inst_(inst)
+    , pre_task_boxes_(boxes)
 {
 }
 
@@ -214,20 +215,20 @@ cv::Rect Actuator::get_target_rect(const MAA_RES_NS::Action::Target target, cons
 {
     using namespace MAA_RES_NS::Action;
 
-    if (!status()) {
-        LogError << "Status is null";
-        return {};
-    }
-
     cv::Rect raw {};
     switch (target.type) {
     case Target::Type::Self:
         raw = cur_box;
         break;
-    case Target::Type::PreTask:
-        raw = std::any_cast<Recognizer::Hit>(
-            status()->get_reco_hit(std::get<std::string>(target.param)));
-        break;
+    case Target::Type::PreTask: {
+        const std::string& pre_task_name = std::get<std::string>(target.param);
+        if (auto it = pre_task_boxes_.find(pre_task_name); it == pre_task_boxes_.end()) {
+            LogError << "Pre task not found" << VAR(pre_task_name);
+        }
+        else {
+            raw = it->second;
+        }
+    } break;
     case Target::Type::Region:
         raw = std::get<cv::Rect>(target.param);
         break;
