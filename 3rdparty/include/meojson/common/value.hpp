@@ -78,6 +78,14 @@ public:
     }
 
     template <
+        typename fixed_array_t,
+        std::enable_if_t<_utils::is_fixed_array<fixed_array_t>, bool> = true>
+    basic_value(const fixed_array_t& arr)
+        : basic_value(basic_array<string_t>(arr))
+    {
+    }
+
+    template <
         typename map_t,
         std::enable_if_t<
             _utils::is_map<map_t>
@@ -181,6 +189,11 @@ public:
 
     template <typename value_t, template <typename...> typename collection_t = std::vector>
     collection_t<value_t> as_collection() const;
+    template <
+        typename value_t,
+        size_t Size,
+        template <typename, size_t> typename fixed_array_t = std::array>
+    fixed_array_t<value_t, Size> as_fixed_array() const;
     template <typename value_t, template <typename...> typename map_t = std::map>
     map_t<string_t, value_t> as_map() const;
 
@@ -274,6 +287,16 @@ public:
     explicit operator collection_t<value_t>() const
     {
         return as_collection<value_t, collection_t>();
+    }
+
+    template <
+        typename value_t,
+        size_t Size,
+        template <typename, size_t> typename fixed_array_t = std::array,
+        std::enable_if_t<_utils::is_fixed_array<fixed_array_t<value_t, Size>>, bool> = true>
+    explicit operator fixed_array_t<value_t, Size>() const
+    {
+        return as_fixed_array<value_t, Size, fixed_array_t>();
     }
 
     template <
@@ -493,6 +516,10 @@ inline bool basic_value<string_t>::is() const noexcept
     }
     else if constexpr (_utils::is_collection<value_t>) {
         return is_array() && all<typename value_t::value_type>();
+    }
+    else if constexpr (_utils::is_fixed_array<value_t>) {
+        return is_array() && all<typename value_t::value_type>()
+               && as_array().size() == _utils::fixed_array_size<value_t>;
     }
     else if constexpr (std::is_same_v<basic_object<string_t>, value_t>) {
         return is_object();
@@ -920,6 +947,13 @@ template <typename value_t, template <typename...> typename collection_t>
 inline collection_t<value_t> basic_value<string_t>::as_collection() const
 {
     return as_array().template as_collection<value_t, collection_t>();
+}
+
+template <typename string_t>
+template <typename value_t, size_t Size, template <typename, size_t> typename fixed_array_t>
+inline fixed_array_t<value_t, Size> basic_value<string_t>::as_fixed_array() const
+{
+    return as_array().template as_fixed_array<value_t, Size>();
 }
 
 template <typename string_t>
