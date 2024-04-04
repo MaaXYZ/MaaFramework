@@ -211,21 +211,6 @@ class SyncContext:
             return None
         return image_buffer.get()
 
-    def get_task_result(self, task_name: str) -> Optional[dict]:
-        """
-        Sync context get task result.
-
-        :param task_name: task name
-
-        :return: task result
-        """
-        string_buffer = StringBuffer()
-        ret = Library.framework.MaaSyncContextGetTaskResult(
-            self._handle, task_name.encode("utf-8"), string_buffer.c_handle
-        )
-        if not ret:
-            return None
-        return json.loads(string_buffer.get())
 
     _api_properties_initialized: bool = False
 
@@ -319,11 +304,4 @@ class SyncContext:
         Library.framework.MaaSyncContextScreencap.argtypes = [
             MaaSyncContextHandle,
             MaaImageBufferHandle,
-        ]
-
-        Library.framework.MaaSyncContextGetTaskResult.restype = MaaBool
-        Library.framework.MaaSyncContextGetTaskResult.argtypes = [
-            MaaSyncContextHandle,
-            MaaStringView,
-            MaaStringBufferHandle,
         ]

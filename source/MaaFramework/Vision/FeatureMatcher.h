@@ -15,19 +15,18 @@ MAA_SUPPRESS_CV_WARNINGS_END
 
 MAA_VISION_NS_BEGIN
 
-class FeatureMatcher : public VisionBase
+struct FeatureMatcherResult
 {
-public:
-    struct Result
-    {
-        cv::Rect box {};
-        int count = 0;
+    cv::Rect box {};
+    int count = 0;
 
-        MEO_JSONIZATION(box, count);
-    };
+    MEO_JSONIZATION(box, count);
+};
 
-    using ResultsVec = std::vector<Result>;
-
+class FeatureMatcher
+    : public VisionBase
+    , public RecoResultAPI<FeatureMatcherResult>
+{
 public:
     FeatureMatcher(
         cv::Mat image,
@@ -35,25 +34,17 @@ public:
         std::vector<std::shared_ptr<cv::Mat>> templates,
         std::string name = "");
 
-    const ResultsVec& all_results() const& { return all_results_; }
-
-    ResultsVec&& all_results() && { return std::move(all_results_); }
-
-    const ResultsVec& filtered_results() const& { return filtered_results_; }
-
-    ResultsVec filtered_results() && { return std::move(filtered_results_); }
-
 private:
     void analyze();
-    ResultsVec match_all_rois(const cv::Mat& templ);
+    ResultsVec match_all_rois(const cv::Mat& templ) const;
     ResultsVec feature_match(
         const cv::Mat& templ,
         const std::vector<cv::KeyPoint>& keypoints_1,
         const cv::Mat& descriptors_1,
-        const cv::Rect& roi_2);
+        const cv::Rect& roi_2) const;
 
     void add_results(ResultsVec results, int count);
-    void sort();
+    void cherry_pick();
 
 private:
     cv::Ptr<cv::Feature2D> create_detector() const;
@@ -85,10 +76,6 @@ private:
 private:
     const FeatureMatcherParam param_;
     const std::vector<std::shared_ptr<cv::Mat>> templates_;
-
-private:
-    ResultsVec all_results_;
-    ResultsVec filtered_results_;
 };
 
 MAA_VISION_NS_END

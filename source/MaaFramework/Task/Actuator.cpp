@@ -1,24 +1,28 @@
 #include "Actuator.h"
 
 #include "Controller/ControllerAgent.h"
-#include "Instance/InstanceStatus.h"
+#include "Global/UniqueResultBank.h"
 #include "Task/CustomAction.h"
 #include "Utils/Logger.h"
 #include "Vision/TemplateComparator.h"
 
 MAA_TASK_NS_BEGIN
 
-Actuator::Actuator(InstanceInternalAPI* inst)
+Actuator::Actuator(InstanceInternalAPI* inst, const PreTaskBoxes& boxes)
     : inst_(inst)
+    , pre_task_boxes_(boxes)
 {
 }
 
-bool Actuator::run(const Recognizer::Result& rec_result, const TaskData& task_data)
+bool Actuator::run(
+    const Recognizer::Hit& reco_hit,
+    const json::value& reco_detail,
+    const TaskData& task_data)
 {
     using namespace MAA_RES_NS::Action;
     LogFunc << VAR(task_data.name);
 
-    wait_freezes(task_data.pre_wait_freezes, rec_result.box);
+    wait_freezes(task_data.pre_wait_freezes, reco_hit);
     sleep(task_data.pre_delay);
 
     bool ret = false;
@@ -27,10 +31,10 @@ bool Actuator::run(const Recognizer::Result& rec_result, const TaskData& task_da
         ret = true;
         break;
     case Type::Click:
-        ret = click(std::get<ClickParam>(task_data.action_param), rec_result.box);
+        ret = click(std::get<ClickParam>(task_data.action_param), reco_hit);
         break;
     case Type::Swipe:
-        ret = swipe(std::get<SwipeParam>(task_data.action_param), rec_result.box);
+        ret = swipe(std::get<SwipeParam>(task_data.action_param), reco_hit);
         break;
     case Type::Key:
         ret = press_key(std::get<KeyParam>(task_data.action_param));
@@ -48,8 +52,8 @@ bool Actuator::run(const Recognizer::Result& rec_result, const TaskData& task_da
         ret = custom_action(
             task_data.name,
             std::get<CustomParam>(task_data.action_param),
-            rec_result.box,
-            rec_result.detail);
+            reco_hit,
+            reco_detail);
         break;
     case Type::StopTask:
         LogInfo << "Action: StopTask";
@@ -60,7 +64,7 @@ bool Actuator::run(const Recognizer::Result& rec_result, const TaskData& task_da
         break;
     }
 
-    wait_freezes(task_data.post_wait_freezes, rec_result.box);
+    wait_freezes(task_data.post_wait_freezes, reco_hit);
     sleep(task_data.post_delay);
 
     return ret;
@@ -148,8 +152,7 @@ void Actuator::wait_freezes(const MAA_RES_NS::WaitFreezesParam& param, const cv:
 
         TemplateComparator comparator(pre_image, cur_image, comp_param);
 
-        auto ret = comparator.filtered_results();
-        if (ret.empty()) {
+        if (!comparator.best_result()) {
             pre_image = cur_image;
             pre_time = std::chrono::steady_clock::now();
             continue;
@@ -212,19 +215,20 @@ cv::Rect Actuator::get_target_rect(const MAA_RES_NS::Action::Target target, cons
 {
     using namespace MAA_RES_NS::Action;
 
-    if (!status()) {
-        LogError << "Status is null";
-        return {};
-    }
-
     cv::Rect raw {};
     switch (target.type) {
     case Target::Type::Self:
         raw = cur_box;
         break;
-    case Target::Type::PreTask:
-        raw = status()->get_rec_box(std::get<std::string>(target.param));
-        break;
+    case Target::Type::PreTask: {
+        const std::string& pre_task_name = std::get<std::string>(target.param);
+        if (auto it = pre_task_boxes_.find(pre_task_name); it == pre_task_boxes_.end()) {
+            LogError << "Pre task not found" << VAR(pre_task_name);
+        }
+        else {
+            raw = it->second;
+        }
+    } break;
     case Target::Type::Region:
         raw = std::get<cv::Rect>(target.param);
         break;

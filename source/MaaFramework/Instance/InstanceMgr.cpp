@@ -3,10 +3,9 @@
 #include "Controller/ControllerAgent.h"
 #include "MaaFramework/MaaMsg.h"
 #include "Resource/ResourceMgr.h"
-#include "Task/CustomAction.h"
 #include "Task/PipelineTask.h"
+#include "Task/Recognizer.h"
 #include "Utils/Logger.h"
-#include "Vision/CustomRecognizer.h"
 
 MAA_NS_BEGIN
 
@@ -252,11 +251,6 @@ MAA_CTRL_NS::ControllerAgent* InstanceMgr::inter_controller()
     return dynamic_cast<MAA_CTRL_NS::ControllerAgent*>(controller());
 }
 
-InstanceStatus* InstanceMgr::inter_status()
-{
-    return &status_;
-}
-
 void InstanceMgr::notify(std::string_view msg, const json::value& details)
 {
     notifier.notify(msg, details);
@@ -309,8 +303,6 @@ bool InstanceMgr::run_task(TaskId id, TaskPtr task_ptr)
     LogInfo << "task end:" << VAR(details) << VAR(ret);
 
     notifier.notify(ret ? MaaMsg_Task_Completed : MaaMsg_Task_Failed, details);
-
-    status_.clear();
 
     MAA_LOG_NS::Logger::get_instance().flush();
 

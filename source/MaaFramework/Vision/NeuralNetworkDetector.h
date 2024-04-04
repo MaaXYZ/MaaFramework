@@ -11,21 +11,20 @@
 
 MAA_VISION_NS_BEGIN
 
-class NeuralNetworkDetector : public VisionBase
+struct NeuralNetworkDetectorResult
 {
-public:
-    struct Result
-    {
-        size_t cls_index = SIZE_MAX;
-        std::string label;
-        cv::Rect box {};
-        double score = 0.0;
+    size_t cls_index = SIZE_MAX;
+    std::string label;
+    cv::Rect box {};
+    double score = 0.0;
 
-        MEO_JSONIZATION(cls_index, label, box, score);
-    };
+    MEO_JSONIZATION(cls_index, label, box, score);
+};
 
-    using ResultsVec = std::vector<Result>;
-
+class NeuralNetworkDetector
+    : public VisionBase
+    , public RecoResultAPI<NeuralNetworkDetectorResult>
+{
 public:
     NeuralNetworkDetector(
         cv::Mat image,
@@ -33,22 +32,14 @@ public:
         std::shared_ptr<Ort::Session> session,
         std::string name = "");
 
-    const ResultsVec& all_results() const& { return all_results_; }
-
-    ResultsVec&& all_results() && { return std::move(all_results_); }
-
-    const ResultsVec& filtered_results() const& { return filtered_results_; }
-
-    ResultsVec filtered_results() && { return std::move(filtered_results_); }
-
 private:
     void analyze();
 
-    ResultsVec detect_all_rois();
-    ResultsVec detect(const cv::Rect& roi);
+    ResultsVec detect_all_rois() const;
+    ResultsVec detect(const cv::Rect& roi) const;
 
     void add_results(ResultsVec results, const std::vector<size_t>& expected);
-    void sort();
+    void cherry_pick();
 
 private:
     cv::Mat draw_result(const cv::Rect& roi, const ResultsVec& results) const;
@@ -57,10 +48,6 @@ private:
 private:
     const NeuralNetworkDetectorParam param_;
     std::shared_ptr<Ort::Session> session_ = nullptr;
-
-private:
-    ResultsVec all_results_;
-    ResultsVec filtered_results_;
 };
 
 MAA_VISION_NS_END

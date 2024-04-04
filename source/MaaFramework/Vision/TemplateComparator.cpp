@@ -30,11 +30,14 @@ void TemplateComparator::analyze()
     auto results = compare_all_rois();
     add_results(std::move(results), param_.threshold);
 
+    cherry_pick();
     auto cost = duration_since(start_time);
-    LogTrace << name_ << VAR(all_results_) << VAR(filtered_results_) << VAR(cost);
+
+    LogTrace << name_ << VAR(uid_) << VAR(all_results_) << VAR(filtered_results_)
+             << VAR(best_result_) << VAR(cost);
 }
 
-TemplateComparator::ResultsVec TemplateComparator::compare_all_rois()
+TemplateComparator::ResultsVec TemplateComparator::compare_all_rois() const
 {
     auto method = param_.method;
 
@@ -62,6 +65,16 @@ void TemplateComparator::add_results(ResultsVec results, double threshold)
     });
 
     merge_vector_(all_results_, std::move(results));
+}
+
+void TemplateComparator::cherry_pick()
+{
+    sort_by_score_(all_results_);
+    sort_by_score_(filtered_results_);
+
+    if (!filtered_results_.empty()) {
+        best_result_ = filtered_results_.front();
+    }
 }
 
 double TemplateComparator::comp(const cv::Mat& lhs, const cv::Mat& rhs, int method)

@@ -9,19 +9,18 @@
 
 MAA_VISION_NS_BEGIN
 
-class TemplateMatcher : public VisionBase
+struct TemplateMatcherResult
 {
-public:
-    struct Result
-    {
-        cv::Rect box {};
-        double score = 0.0;
+    cv::Rect box {};
+    double score = 0.0;
 
-        MEO_JSONIZATION(box, score);
-    };
+    MEO_JSONIZATION(box, score);
+};
 
-    using ResultsVec = std::vector<Result>;
-
+class TemplateMatcher
+    : public VisionBase
+    , public RecoResultAPI<TemplateMatcherResult>
+{
 public:
     TemplateMatcher(
         cv::Mat image,
@@ -29,21 +28,13 @@ public:
         std::vector<std::shared_ptr<cv::Mat>> templates,
         std::string name = "");
 
-    const ResultsVec& all_results() const& { return all_results_; }
-
-    ResultsVec&& all_results() && { return std::move(all_results_); }
-
-    const ResultsVec& filtered_results() const& { return filtered_results_; }
-
-    ResultsVec filtered_results() && { return std::move(filtered_results_); }
-
 private:
     void analyze();
-    ResultsVec match_all_rois(const cv::Mat& templ);
-    ResultsVec template_match(const cv::Rect& roi, const cv::Mat& templ);
+    ResultsVec match_all_rois(const cv::Mat& templ) const;
+    ResultsVec template_match(const cv::Rect& roi, const cv::Mat& templ) const;
 
     void add_results(ResultsVec results, double threshold);
-    void sort();
+    void cherry_pick();
 
 private:
     cv::Mat draw_result(const cv::Rect& roi, const cv::Mat& templ, const ResultsVec& results) const;
@@ -53,10 +44,6 @@ private:
 private:
     const TemplateMatcherParam param_;
     const std::vector<std::shared_ptr<cv::Mat>> templates_;
-
-private:
-    ResultsVec all_results_;
-    ResultsVec filtered_results_;
 };
 
 MAA_VISION_NS_END

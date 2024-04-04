@@ -290,31 +290,4 @@ Status SyncContextImpl::screencap(
     }
 }
 
-Status SyncContextImpl::task_result(
-    ServerContext* context,
-    const ::maarpc::HandleStringRequest* request,
-    ::maarpc::StringResponse* response)
-{
-    LogFunc;
-    std::ignore = context;
-
-    MAA_GRPC_REQUIRED(handle)
-    MAA_GRPC_REQUIRED(str)
-
-    MAA_GRPC_GET_HANDLE
-
-    auto dt_handle = MaaCreateStringBuffer();
-
-    if (MaaSyncContextGetTaskResult(handle, request->str().c_str(), dt_handle)) {
-        std::string detail(MaaGetString(dt_handle), MaaGetStringSize(dt_handle));
-        MaaDestroyStringBuffer(dt_handle);
-        response->set_str(detail);
-        return Status::OK;
-    }
-    else {
-        MaaDestroyStringBuffer(dt_handle);
-        return Status(UNKNOWN, "MaaSyncContextGetTaskResult failed");
-    }
-}
-
 MAA_RPC_NS_END

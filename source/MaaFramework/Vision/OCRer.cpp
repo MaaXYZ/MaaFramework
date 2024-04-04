@@ -16,14 +16,14 @@ OCRer::OCRer(
     std::shared_ptr<fastdeploy::vision::ocr::DBDetector> deter,
     std::shared_ptr<fastdeploy::vision::ocr::Recognizer> recer,
     std::shared_ptr<fastdeploy::pipeline::PPOCRv3> ocrer,
-    InstanceStatus* status,
+    Cache& cache,
     std::string name)
     : VisionBase(std::move(image), std::move(name))
     , param_(std::move(param))
     , deter_(std::move(deter))
     , recer_(std::move(recer))
     , ocrer_(std::move(ocrer))
-    , status_(status)
+    , cache_(cache)
 {
     analyze();
 }
@@ -35,13 +35,14 @@ void OCRer::analyze()
     auto results = predict_all_rois();
     add_results(std::move(results), param_.text);
 
-    sort();
+    cherry_pick();
 
     auto cost = duration_since(start_time);
-    LogTrace << name_ << VAR(all_results_) << VAR(filtered_results_) << VAR(cost);
+    LogTrace << name_ << VAR(uid_) << VAR(all_results_) << VAR(filtered_results_)
+             << VAR(best_result_) << VAR(cost);
 }
 
-OCRer::ResultsVec OCRer::predict_all_rois()
+OCRer::ResultsVec OCRer::predict_all_rois() const
 {
     if (param_.roi.empty()) {
         return predict(cv::Rect(0, 0, image_.cols, image_.rows));
@@ -56,27 +57,19 @@ OCRer::ResultsVec OCRer::predict_all_rois()
     }
 }
 
-OCRer::ResultsVec OCRer::predict(const cv::Rect& roi)
+OCRer::ResultsVec OCRer::predict(const cv::Rect& roi) const
 {
-    auto image_roi = image_with_roi(roi);
-
     ResultsVec results;
-    bool hit_cache = false;
 
-    if (status_) {
-        if (auto results_opt = status_->get_ocr_cache(image_roi)) {
-            LogTrace << "Hit OCR cache" << VAR(roi);
-            hit_cache = true;
-            results = std::any_cast<ResultsVec>(*std::move(results_opt));
-        }
+    if (auto cache_it = cache_.find(roi); cache_it != cache_.end()) {
+        LogTrace << "Hit OCR cache" << VAR(roi);
+        results = cache_it->second;
     }
-
-    if (!hit_cache) {
+    else {
+        auto image_roi = image_with_roi(roi);
         results = param_.only_rec ? ResultsVec { predict_only_rec(image_roi) }
                                   : predict_det_and_rec(image_roi);
-        if (status_) {
-            status_->set_ocr_cache(image_roi, results);
-        }
+        cache_.emplace(roi, results);
     }
 
     std::ranges::for_each(results, [&](auto& res) {
@@ -213,12 +206,14 @@ void OCRer::add_results(ResultsVec results, const std::vector<std::wstring>& exp
     merge_vector_(all_results_, std::move(results));
 }
 
-void OCRer::sort()
+void OCRer::cherry_pick()
 {
     sort_(all_results_);
     sort_(filtered_results_);
 
-    handle_index(filtered_results_.size(), param_.result_index);
+    if (auto index_opt = pythonic_index(filtered_results_.size(), param_.result_index)) {
+        best_result_ = filtered_results_.at(*index_opt);
+    }
 }
 
 void OCRer::postproc_trim_(Result& res) const

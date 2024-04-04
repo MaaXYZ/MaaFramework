@@ -5,7 +5,6 @@
 #include "API/MaaTypes.h"
 #include "Base/AsyncRunner.hpp"
 #include "Base/MessageNotifier.hpp"
-#include "Instance/InstanceStatus.h"
 #include "InstanceInternalAPI.hpp"
 #include "Task/PipelineTask.h"
 
@@ -55,7 +54,6 @@ public: // from MaaInstanceAPI
 public: // from InstanceInternalAPI
     virtual MAA_RES_NS::ResourceMgr* inter_resource() override;
     virtual MAA_CTRL_NS::ControllerAgent* inter_controller() override;
-    virtual InstanceStatus* inter_status() override;
     virtual void notify(std::string_view msg, const json::value& details = json::value()) override;
     virtual CustomRecognizerSession* custom_recognizer_session(const std::string& name) override;
     virtual CustomActionSession* custom_action_session(const std::string& name) override;
@@ -70,7 +68,6 @@ private:
 private:
     MaaResourceAPI* resource_ = nullptr;
     MaaControllerAPI* controller_ = nullptr;
-    InstanceStatus status_;
     bool need_to_stop_ = false;
 
     std::unordered_map<std::string, CustomRecognizerSession> custom_recognizer_sessions_;

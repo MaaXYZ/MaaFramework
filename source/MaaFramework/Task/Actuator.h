@@ -18,11 +18,17 @@ class Actuator
 {
 public:
     using TaskData = MAA_RES_NS::TaskData;
+    using PreTaskBoxes = std::map<std::string, cv::Rect>;
 
 public:
-    explicit Actuator(InstanceInternalAPI* inst);
+    Actuator(InstanceInternalAPI* inst, const PreTaskBoxes& boxes = {});
 
-    bool run(const Recognizer::Result& rec_result, const TaskData& task_data);
+    bool
+        run(const Recognizer::Hit& reco_hit,
+            const json::value& reco_detail,
+            const TaskData& task_data);
+
+    MaaRunningId uid() const { return uid_; }
 
 private:
     bool click(const MAA_RES_NS::Action::ClickParam& param, const cv::Rect& cur_box);
@@ -48,13 +54,16 @@ private:
         return inst_ ? inst_->inter_controller() : nullptr;
     }
 
-    InstanceStatus* status() { return inst_ ? inst_->inter_status() : nullptr; }
-
     void sleep(unsigned ms) const;
     void sleep(std::chrono::milliseconds ms) const;
 
 private:
     InstanceInternalAPI* inst_ = nullptr;
+    const PreTaskBoxes& pre_task_boxes_;
+
+    const MaaRunningId uid_ = ++s_global_uid;
+
+    inline static std::atomic<MaaRunningId> s_global_uid = 0;
 };
 
 MAA_TASK_NS_END

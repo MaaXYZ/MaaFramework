@@ -193,4 +193,12 @@ inline std::ostream& operator<<(std::ostream& os, const ResultOrderBy& order_by)
     return os;
 }
 
+struct RectComparer
+{
+    bool operator()(const cv::Rect& lhs, const cv::Rect& rhs) const
+    {
+        return lhs.x < rhs.x || lhs.y < rhs.y || lhs.width < rhs.width || lhs.height < rhs.height;
+    }
+};
+
 MAA_VISION_NS_END

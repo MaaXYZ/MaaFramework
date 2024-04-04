@@ -6,37 +6,26 @@
 
 MAA_VISION_NS_BEGIN
 
-class ColorMatcher : public VisionBase
+struct ColorMatcherResult
 {
-public:
-    struct Result
-    {
-        cv::Rect box {};
-        int count = 0;
+    cv::Rect box {};
+    int count = 0;
 
-        MEO_JSONIZATION(box, count);
-    };
+    MEO_JSONIZATION(box, count);
+};
 
-    using ResultsVec = std::vector<Result>;
-
+class ColorMatcher : public VisionBase, public RecoResultAPI<ColorMatcherResult>
+{
 public:
     ColorMatcher(cv::Mat image, ColorMatcherParam param, std::string name = "");
 
-    const ResultsVec& all_results() const& { return all_results_; }
-
-    ResultsVec&& all_results() && { return std::move(all_results_); }
-
-    const ResultsVec& filtered_results() const& { return filtered_results_; }
-
-    ResultsVec filtered_results() && { return std::move(filtered_results_); }
-
 private:
     void analyze();
-    ResultsVec match_all_rois(const ColorMatcherParam::Range& range);
-    ResultsVec color_match(const cv::Rect& roi, const ColorMatcherParam::Range& range);
+    ResultsVec match_all_rois(const ColorMatcherParam::Range& range) const;
+    ResultsVec color_match(const cv::Rect& roi, const ColorMatcherParam::Range& range) const;
 
     void add_results(ResultsVec results, int count);
-    void sort();
+    void cherry_pick();
 
 private:
     ResultsVec count_non_zero(const cv::Mat& bin, const cv::Point& tl) const;
@@ -51,10 +40,6 @@ private:
 
 private:
     const ColorMatcherParam param_;
-
-private:
-    ResultsVec all_results_;
-    ResultsVec filtered_results_;
 };
 
 MAA_VISION_NS_END

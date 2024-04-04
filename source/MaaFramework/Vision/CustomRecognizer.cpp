@@ -45,7 +45,7 @@ void CustomRecognizer::analyze()
     MaaRect maa_box { 0 };
     StringBuffer detail_buffer;
 
-    ret_ = session_.recognizer->analyze(
+    bool ret = session_.recognizer->analyze(
         &sync_ctx,
         &image_buffer,
         name_.c_str(),
@@ -58,10 +58,17 @@ void CustomRecognizer::analyze()
     std::string detail(detail_buffer.data(), detail_buffer.size());
 
     auto jdetail = json::parse(detail).value_or(detail);
-    result_ = Result { .box = box, .detail = std::move(jdetail) };
+    Result res { .box = box, .detail = std::move(jdetail) };
+
+    all_results_ = { res };
+    if (ret) {
+        filtered_results_ = { res };
+        best_result_ = res;
+    }
 
     auto cost = duration_since(start_time);
-    LogTrace << name_ << VAR(ret_) << VAR(result_) << VAR(cost);
+    LogTrace << name_ << VAR(uid_) << VAR(all_results_) << VAR(filtered_results_)
+             << VAR(best_result_) << VAR(cost);
 }
 
 MAA_VISION_NS_END

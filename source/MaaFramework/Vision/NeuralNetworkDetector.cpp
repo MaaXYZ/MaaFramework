@@ -23,7 +23,7 @@ NeuralNetworkDetector::NeuralNetworkDetector(
 
 void NeuralNetworkDetector::analyze()
 {
-    LogFunc << name_;
+    LogFunc << name_ << VAR(uid_);
 
     if (!session_) {
         LogError << "OrtSession not loaded";
@@ -44,13 +44,14 @@ void NeuralNetworkDetector::analyze()
     auto results = detect_all_rois();
     add_results(std::move(results), param_.expected);
 
-    sort();
+    cherry_pick();
 
     auto cost = duration_since(start_time);
-    LogTrace << name_ << VAR(all_results_) << VAR(filtered_results_) << VAR(cost);
+    LogTrace << name_ << VAR(uid_) << VAR(all_results_) << VAR(filtered_results_)
+             << VAR(best_result_) << VAR(cost);
 }
 
-NeuralNetworkDetector::ResultsVec NeuralNetworkDetector::detect_all_rois()
+NeuralNetworkDetector::ResultsVec NeuralNetworkDetector::detect_all_rois() const
 {
     if (param_.roi.empty()) {
         return detect(cv::Rect(0, 0, image_.cols, image_.rows));
@@ -65,7 +66,7 @@ NeuralNetworkDetector::ResultsVec NeuralNetworkDetector::detect_all_rois()
     }
 }
 
-NeuralNetworkDetector::ResultsVec NeuralNetworkDetector::detect(const cv::Rect& roi)
+NeuralNetworkDetector::ResultsVec NeuralNetworkDetector::detect(const cv::Rect& roi) const
 {
     if (!session_) {
         LogError << "OrtSession not loaded";
@@ -178,12 +179,14 @@ void NeuralNetworkDetector::add_results(ResultsVec results, const std::vector<si
     merge_vector_(all_results_, std::move(results));
 }
 
-void NeuralNetworkDetector::sort()
+void NeuralNetworkDetector::cherry_pick()
 {
     sort_(all_results_);
     sort_(filtered_results_);
 
-    handle_index(filtered_results_.size(), param_.result_index);
+    if (auto index_opt = pythonic_index(filtered_results_.size(), param_.result_index)) {
+        best_result_ = filtered_results_.at(*index_opt);
+    }
 }
 
 cv::Mat NeuralNetworkDetector::draw_result(const cv::Rect& roi, const ResultsVec& results) const

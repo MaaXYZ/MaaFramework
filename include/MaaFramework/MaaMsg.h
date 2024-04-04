@@ -142,9 +142,14 @@
  *     uuid: string,
  *     hash: string,
  *     name: string,
- *     recognition: object,
- *     run_times: number,
- *     status: string
+ *     recognition: {
+ *         id: number,
+ *         box: [number, number, number, number],
+ *         detail: string,
+ *         hit: boolean,
+ *     },
+ *     actuator_id: number,
+ *     status: number,
  * }
  */
 #define MaaMsg_Task_Focus_ReadyToRun ("Task.Focus.ReadyToRun")
@@ -162,10 +167,14 @@
  *     uuid: string,
  *     hash: string,
  *     name: string,
- *     latest_hit: string,
- *     recognition: object,
- *     run_times: number,
- *     status: string
+ *     recognition: {
+ *         id: number,
+ *         box: [number, number, number, number],
+ *         detail: string,
+ *         hit: boolean,
+ *     },
+ *     actuator_id: number,
+ *     status: number,
  * }
  */
 #define MaaMsg_Task_Debug_ReadyToRun ("Task.Debug.ReadyToRun")
@@ -174,8 +183,7 @@
 /// @}
 
 #define MaaMsg_Task_Debug_ListToRecognize ("Task.Debug.ListToRecognize")
+#define MaaMsg_Task_Debug_RecognitionResult ("Task.Debug.RecognitionResult")
 #define MaaMsg_Task_Debug_Hit ("Task.Debug.Hit")
-
-#define MaaMsg_Task_Debug_EndSub ("Task.Debug.EndSub")
 
 /** @} */

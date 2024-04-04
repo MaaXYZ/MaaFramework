@@ -9,7 +9,8 @@
 MAA_TASK_NS_BEGIN
 
 CustomAction::CustomAction(CustomActionSession session, InstanceInternalAPI* inst)
-    : session_(std::move(session)), inst_(inst)
+    : session_(std::move(session))
+    , inst_(inst)
 {
 }
 

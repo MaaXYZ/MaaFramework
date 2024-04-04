@@ -24,13 +24,14 @@ void ColorMatcher::analyze()
         add_results(std::move(results), param_.count);
     }
 
-    sort();
+    cherry_pick();
 
     auto cost = duration_since(start_time);
-    LogTrace << name_ << VAR(all_results_) << VAR(filtered_results_) << VAR(cost);
+    LogTrace << name_ << VAR(uid_) << VAR(all_results_) << VAR(filtered_results_)
+             << VAR(best_result_) << VAR(cost);
 }
 
-ColorMatcher::ResultsVec ColorMatcher::match_all_rois(const ColorMatcherParam::Range& range)
+ColorMatcher::ResultsVec ColorMatcher::match_all_rois(const ColorMatcherParam::Range& range) const
 {
     if (param_.roi.empty()) {
         return color_match(cv::Rect(0, 0, image_.cols, image_.rows), range);
@@ -46,7 +47,7 @@ ColorMatcher::ResultsVec ColorMatcher::match_all_rois(const ColorMatcherParam::R
 }
 
 ColorMatcher::ResultsVec
-    ColorMatcher::color_match(const cv::Rect& roi, const ColorMatcherParam::Range& range)
+    ColorMatcher::color_match(const cv::Rect& roi, const ColorMatcherParam::Range& range) const
 {
     cv::Mat image = image_with_roi(roi);
     cv::Mat color;
@@ -74,12 +75,14 @@ void ColorMatcher::add_results(ResultsVec results, int count)
     merge_vector_(all_results_, std::move(results));
 }
 
-void ColorMatcher::sort()
+void ColorMatcher::cherry_pick()
 {
     sort_(all_results_);
     sort_(filtered_results_);
 
-    handle_index(filtered_results_.size(), param_.result_index);
+    if (auto index_opt = pythonic_index(filtered_results_.size(), param_.result_index)) {
+        best_result_ = filtered_results_.at(*index_opt);
+    }
 }
 
 ColorMatcher::ResultsVec ColorMatcher::count_non_zero(const cv::Mat& bin, const cv::Point& tl) const

@@ -11,7 +11,6 @@ MAA_SUPPRESS_CV_WARNINGS_BEGIN
 #include "fastdeploy/vision/ocr/ppocr/recognizer.h"
 MAA_SUPPRESS_CV_WARNINGS_END
 
-#include "Instance/InstanceStatus.h"
 #include "Utils/Codec.h"
 #include "Utils/JsonExt.hpp"
 #include "VisionBase.h"
@@ -19,19 +18,21 @@ MAA_SUPPRESS_CV_WARNINGS_END
 
 MAA_VISION_NS_BEGIN
 
-class OCRer : public VisionBase
+struct OCRerResult
+{
+    std::wstring text;
+    cv::Rect box {};
+    double score = 0.0;
+
+    MEO_JSONIZATION(text, box, score);
+};
+
+class OCRer
+    : public VisionBase
+    , public RecoResultAPI<OCRerResult>
 {
 public:
-    struct Result
-    {
-        std::wstring text;
-        cv::Rect box {};
-        double score = 0.0;
-
-        MEO_JSONIZATION(text, box, score);
-    };
-
-    using ResultsVec = std::vector<Result>;
+    using Cache = std::map<cv::Rect, ResultsVec, RectComparer>;
 
 public:
     OCRer(
@@ -40,25 +41,17 @@ public:
         std::shared_ptr<fastdeploy::vision::ocr::DBDetector> deter,
         std::shared_ptr<fastdeploy::vision::ocr::Recognizer> recer,
         std::shared_ptr<fastdeploy::pipeline::PPOCRv3> ocrer,
-        InstanceStatus* status = nullptr,
+        Cache& cache,
         std::string name = "");
-
-    const ResultsVec& all_results() const& { return all_results_; }
-
-    ResultsVec&& all_results() && { return std::move(all_results_); }
-
-    const ResultsVec& filtered_results() const& { return filtered_results_; }
-
-    ResultsVec filtered_results() && { return std::move(filtered_results_); }
 
 private:
     void analyze();
 
-    ResultsVec predict_all_rois();
-    ResultsVec predict(const cv::Rect& roi);
+    ResultsVec predict_all_rois() const;
+    ResultsVec predict(const cv::Rect& roi) const;
 
     void add_results(ResultsVec results, const std::vector<std::wstring>& expected);
-    void sort();
+    void cherry_pick();
 
 private:
     ResultsVec predict_det_and_rec(const cv::Mat& image_roi) const;
@@ -78,11 +71,7 @@ private:
     std::shared_ptr<fastdeploy::vision::ocr::Recognizer> recer_ = nullptr;
     std::shared_ptr<fastdeploy::pipeline::PPOCRv3> ocrer_ = nullptr;
 
-    InstanceStatus* status_ = nullptr;
-
-private:
-    ResultsVec all_results_;
-    ResultsVec filtered_results_;
+    Cache& cache_;
 };
 
 MAA_VISION_NS_END

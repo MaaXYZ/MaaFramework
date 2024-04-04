@@ -22,7 +22,7 @@ NeuralNetworkClassifier::NeuralNetworkClassifier(
 
 void NeuralNetworkClassifier::analyze()
 {
-    LogFunc << name_;
+    LogFunc << name_ << VAR(uid_);
 
     if (!session_) {
         LogError << "OrtSession not loaded";
@@ -43,13 +43,14 @@ void NeuralNetworkClassifier::analyze()
     auto results = classify_all_rois();
     add_results(std::move(results), param_.expected);
 
-    sort();
+    cherry_pick();
 
     auto cost = duration_since(start_time);
-    LogTrace << name_ << VAR(all_results_) << VAR(filtered_results_) << VAR(cost);
+    LogTrace << name_ << VAR(uid_) << VAR(all_results_) << VAR(filtered_results_)
+             << VAR(best_result_) << VAR(cost);
 }
 
-NeuralNetworkClassifier::ResultsVec NeuralNetworkClassifier::classify_all_rois()
+NeuralNetworkClassifier::ResultsVec NeuralNetworkClassifier::classify_all_rois() const
 {
     if (param_.roi.empty()) {
         return { classify(cv::Rect(0, 0, image_.cols, image_.rows)) };
@@ -64,7 +65,7 @@ NeuralNetworkClassifier::ResultsVec NeuralNetworkClassifier::classify_all_rois()
     }
 }
 
-NeuralNetworkClassifier::Result NeuralNetworkClassifier::classify(const cv::Rect& roi)
+NeuralNetworkClassifier::Result NeuralNetworkClassifier::classify(const cv::Rect& roi) const
 {
     if (!session_) {
         LogError << "OrtSession not loaded";
@@ -138,12 +139,14 @@ void NeuralNetworkClassifier::add_results(ResultsVec results, const std::vector<
     merge_vector_(all_results_, std::move(results));
 }
 
-void NeuralNetworkClassifier::sort()
+void NeuralNetworkClassifier::cherry_pick()
 {
     sort_(all_results_);
     sort_(filtered_results_);
 
-    handle_index(filtered_results_.size(), param_.result_index);
+    if (auto index_opt = pythonic_index(filtered_results_.size(), param_.result_index)) {
+        best_result_ = filtered_results_.at(*index_opt);
+    }
 }
 
 cv::Mat NeuralNetworkClassifier::draw_result(const Result& res) const

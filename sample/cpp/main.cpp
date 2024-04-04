@@ -136,7 +136,7 @@ MaaBool my_analyze(
     // Step 2: output anything you want
     MaaSetString(
         out_detail,
-        "Balabala, this string will be used by MaaCustomActionAPI and MaaSyncContextGetTaskResult. "
+        "Balabala, this string will be used by MaaCustomActionAPI and MaaQueryRecognitionDetail. "
         "And for compatibility, I recommend you use json.");
 
     // Finally, if this task is hit and you want to execute the action and next of this task,

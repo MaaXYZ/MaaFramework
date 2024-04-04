@@ -22,13 +22,13 @@ TemplateMatcher::TemplateMatcher(
 void TemplateMatcher::analyze()
 {
     if (templates_.empty()) {
-        LogError << name_ << "templates is empty" << VAR(param_.template_paths);
+        LogError << name_ << VAR(uid_) << "templates is empty" << VAR(param_.template_paths);
         return;
     }
 
     if (templates_.size() != param_.thresholds.size()) {
-        LogError << name_ << "templates.size() != thresholds.size()" << VAR(templates_.size())
-                 << VAR(param_.thresholds.size());
+        LogError << name_ << VAR(uid_) << "templates.size() != thresholds.size()"
+                 << VAR(templates_.size()) << VAR(param_.thresholds.size());
         return;
     }
 
@@ -44,16 +44,18 @@ void TemplateMatcher::analyze()
         add_results(std::move(results), param_.thresholds.at(i));
     }
 
-    sort();
+    cherry_pick();
 
     auto cost = duration_since(start_time);
-    LogTrace << name_ << VAR(all_results_) << VAR(filtered_results_) << VAR(cost);
+    LogTrace << name_ << VAR(uid_) << VAR(all_results_) << VAR(filtered_results_)
+             << VAR(best_result_) << VAR(cost);
 }
 
-TemplateMatcher::ResultsVec TemplateMatcher::match_all_rois(const cv::Mat& templ)
+TemplateMatcher::ResultsVec TemplateMatcher::match_all_rois(const cv::Mat& templ) const
 {
     if (templ.empty()) {
-        LogWarn << name_ << "template is empty" << VAR(param_.template_paths) << VAR(templ.size());
+        LogWarn << name_ << VAR(uid_) << "template is empty" << VAR(param_.template_paths)
+                << VAR(templ.size());
         return {};
     }
 
@@ -71,12 +73,12 @@ TemplateMatcher::ResultsVec TemplateMatcher::match_all_rois(const cv::Mat& templ
 }
 
 TemplateMatcher::ResultsVec
-    TemplateMatcher::template_match(const cv::Rect& roi, const cv::Mat& templ)
+    TemplateMatcher::template_match(const cv::Rect& roi, const cv::Mat& templ) const
 {
     cv::Mat image = image_with_roi(roi);
 
     if (templ.cols > image.cols || templ.rows > image.rows) {
-        LogError << name_ << "templ size is too large" << VAR(image) << VAR(templ);
+        LogError << name_ << VAR(uid_) << "templ size is too large" << VAR(image) << VAR(templ);
         return {};
     }
 
@@ -181,12 +183,14 @@ void TemplateMatcher::add_results(ResultsVec results, double threshold)
     merge_vector_(all_results_, std::move(results));
 }
 
-void TemplateMatcher::sort()
+void TemplateMatcher::cherry_pick()
 {
     sort_(all_results_);
     sort_(filtered_results_);
 
-    handle_index(filtered_results_.size(), param_.result_index);
+    if (auto index_opt = pythonic_index(filtered_results_.size(), param_.result_index)) {
+        best_result_ = filtered_results_.at(*index_opt);
+    }
 }
 
 void TemplateMatcher::sort_(ResultsVec& results) const
