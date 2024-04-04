@@ -13,8 +13,8 @@ template <typename in_t, typename serializer_t>
 class is_serializable
 {
     template <typename U>
-    static auto test(int)
-        -> decltype(std::declval<serializer_t>()(std::declval<U>()), std::true_type());
+    static auto
+        test(int) -> decltype(std::declval<serializer_t>()(std::declval<U>()), std::true_type());
 
     template <typename U>
     static std::false_type test(...);
@@ -96,10 +96,8 @@ basic_value<string_t> serialize(in_t&& in, const serializer_t& serializer = {})
     if constexpr (_serialization_helper::is_serializable<in_t, serializer_t>::value) {
         return serializer(std::forward<in_t>(in));
     }
-    else if constexpr (std::is_constructible_v<basic_value<string_t>, in_t>) {
-        return basic_value<string_t>(std::forward<in_t>(in));
-    }
-    else if constexpr (_utils::is_collection<std::decay_t<in_t>>) {
+    else if constexpr (
+        _utils::is_collection<std::decay_t<in_t>> || _utils::is_fixed_array<std::decay_t<in_t>>) {
         basic_array<string_t> arr;
         for (auto&& elem : in) {
             using elem_t = decltype(elem);
@@ -122,6 +120,9 @@ basic_value<string_t> serialize(in_t&& in, const serializer_t& serializer = {})
         }
         return obj;
     }
+    else if constexpr (std::is_constructible_v<basic_value<string_t>, in_t>) {
+        return basic_value<string_t>(std::forward<in_t>(in));
+    }
     else {
         _serialization_helper::unable_to_serialize<in_t>();
     }
@@ -138,10 +139,6 @@ bool deserialize(
 {
     if constexpr (_serialization_helper::is_deserializable<out_t, deserializer_t>::value) {
         return deserializer(in, out);
-    }
-    else if constexpr (std::is_constructible_v<out_t, basic_value<string_t>>) {
-        out = out_t(in);
-        return true;
     }
     else if constexpr (_utils::is_collection<std::decay_t<out_t>>) {
         if (!in.is_array()) {
@@ -162,18 +159,43 @@ bool deserialize(
         }
         return true;
     }
-    else if constexpr (_utils::is_map<std::decay_t<out_t>>) {
-        if (!in.is_object()) {
+    else if constexpr (_utils::is_fixed_array<std::decay_t<out_t>>) {
+        if (!in.is_array()) {
             return false;
         }
-        for (auto&& [key, j_elem] : in.as_object()) {
+        auto&& in_as_arr = in.as_array();
+        constexpr size_t out_size = _utils::fixed_array_size<out_t>;
+        if (in_as_arr.size() != out_size) {
+            return false;
+        }
+
+        for (size_t i = 0; i < out_size; ++i) {
+            auto&& j_elem = in_as_arr.at(i);
             using elem_t = typename out_t::value_type;
             elem_t elem {};
             if (!deserialize<elem_t, deserializer_t, string_t>(j_elem, elem, deserializer)) {
                 return false;
             }
-            out.emplace(std::move(elem));
+            out.at(i) = std::move(elem);
         }
+        return true;
+    }
+    else if constexpr (_utils::is_map<std::decay_t<out_t>>) {
+        if (!in.is_object()) {
+            return false;
+        }
+        for (auto&& [key, j_elem] : in.as_object()) {
+            using elem_t = typename out_t::mapped_type;
+            elem_t elem {};
+            if (!deserialize<elem_t, deserializer_t, string_t>(j_elem, elem, deserializer)) {
+                return false;
+            }
+            out.emplace(std::forward<decltype(key)>(key), std::move(elem));
+        }
+        return true;
+    }
+    else if constexpr (std::is_constructible_v<out_t, basic_value<string_t>>) {
+        out = out_t(in);
         return true;
     }
     else {

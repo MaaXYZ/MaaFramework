@@ -49,6 +49,14 @@ public:
     }
 
     template <
+        typename fixed_array_t,
+        std::enable_if_t<_utils::is_fixed_array<fixed_array_t>, bool> = true>
+    basic_array(const fixed_array_t& arr)
+        : _array_data(arr.begin(), arr.end())
+    {
+    }
+
+    template <
         typename jsonization_t,
         std::enable_if_t<_utils::has_to_json_in_member<jsonization_t>::value, bool> = true>
     basic_array(const jsonization_t& value)
@@ -89,6 +97,11 @@ public:
     bool all() const;
     template <typename value_t, template <typename...> typename collection_t = std::vector>
     collection_t<value_t> as_collection() const;
+    template <
+        typename value_t,
+        size_t Size,
+        template <typename, size_t> typename fixed_array_t = std::array>
+    fixed_array_t<value_t, Size> as_fixed_array() const;
 
     // Usage: get(key_1, key_2, ..., default_value);
     template <typename... key_then_default_value_t>
@@ -153,6 +166,16 @@ public:
     explicit operator collection_t<value_t>() const
     {
         return as_collection<value_t, collection_t>();
+    }
+
+    template <
+        typename value_t,
+        size_t Size,
+        template <typename, size_t> typename fixed_array_t = std::array,
+        std::enable_if_t<_utils::is_fixed_array<fixed_array_t<value_t, Size>>, bool> = true>
+    explicit operator fixed_array_t<value_t, Size>() const
+    {
+        return as_fixed_array<value_t, Size, fixed_array_t>();
     }
 
     template <
@@ -335,6 +358,21 @@ inline collection_t<value_t> basic_array<string_t>::as_collection() const
         for (const auto& elem : _array_data) {
             result.emplace(elem.template as<value_t>());
         }
+    }
+    return result;
+}
+
+template <typename string_t>
+template <typename value_t, size_t Size, template <typename, size_t> typename fixed_array_t>
+inline fixed_array_t<value_t, Size> basic_array<string_t>::as_fixed_array() const
+{
+    if (size() != Size) {
+        throw exception("Wrong array size");
+    }
+
+    fixed_array_t<value_t, Size> result;
+    for (size_t i = 0; i < Size; ++i) {
+        result.at(i) = _array_data.at(i).template as<value_t>();
     }
     return result;
 }
