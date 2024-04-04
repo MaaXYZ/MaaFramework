@@ -62,7 +62,7 @@ It offers low-code simplicity while maintaining high extensibility. The framewor
 - [MAS](https://github.com/MaaXYZ/MaaAssistantSkland) Skland Assistant ![cpp](https://img.shields.io/badge/C%2B%2B-00599C?logo=c%2B%2B&logoColor=white)  
   Based on a brand new architecture. Image technology + simulation control, freeing your hands! Powered by MaaFramework.
 
-- [MRA](https://github.com/NaNExist/ResonanceAssistant) Resonance Assistant  
+- [MRA](https://github.com/MaaXYZ/MaaResonance) Maa Resonance  
   A Conductor Assistant based on MAA's new architecture. Image technology + simulation control, no more clicking! Powered by MaaFramework.
 
 ## Eco-Building

@@ -62,7 +62,7 @@ _✨ 基于图像识别的自动化黑盒测试框架 ✨_
 - [MAS](https://github.com/MaaXYZ/MaaAssistantSkland) 森空岛 小助手 ![cpp](https://img.shields.io/badge/C%2B%2B-00599C?logo=c%2B%2B&logoColor=white)  
   基于全新架构的 森空岛 小助手。图像技术 + 模拟控制，解放双手！由 MaaFramework 强力驱动！
 
-- [MRA](https://github.com/NaNExist/ResonanceAssistant) 列车长 小助手  
+- [MRA](https://github.com/MaaXYZ/MaaResonance) 雷索纳斯 列车长 小助手  
   基于全新架构的 列车长 小助手。图像技术 + 模拟控制，解放双手！由 MaaFramework 强力驱动！
 
 ## 生态共建
