@@ -11,7 +11,6 @@ MAA_SUPPRESS_CV_WARNINGS_BEGIN
 #include "fastdeploy/vision/ocr/ppocr/recognizer.h"
 MAA_SUPPRESS_CV_WARNINGS_END
 
-#include "Instance/InstanceStatus.h"
 #include "Utils/Codec.h"
 #include "Utils/JsonExt.hpp"
 #include "VisionBase.h"

@@ -10,6 +10,7 @@
 #include "Instance/InstanceInternalAPI.hpp"
 #include "Resource/PipelineResMgr.h"
 #include "Resource/PipelineTypes.h"
+#include "Task/Actuator.h"
 #include "Task/Recognizer.h"
 #include "Task/TaskDataMgr.h"
 
@@ -36,8 +37,10 @@ public:
 
     bool set_param(const json::value& param);
 
+    static bool query_detail(MaaRunningId run_id, MaaRecoId& reco_id, bool& completed);
+
 private:
-    enum class RunningResult
+    enum class RunningStatus
     {
         Success,
         Timeout,
@@ -46,21 +49,28 @@ private:
         InternalError,
     };
 
-    struct HitResult
+    struct HitDetail
     {
-        uint64_t reco_uid = 0;
+        MaaRecoId reco_uid = 0;
         Recognizer::Hit reco_hit;
         json::value reco_detail;
         MAA_RES_NS::TaskData task_data;
     };
 
+    struct RunningDetail
+    {
+        MaaRunningId run_id = 0;
+        HitDetail hits;
+        RunningStatus status = RunningStatus::InternalError;
+    };
+
 private:
-    RunningResult find_first_and_run(
+    RunningStatus find_first_and_run(
         const std::vector<std::string>& list,
         std::chrono::milliseconds timeout,
         /*out*/ MAA_RES_NS::TaskData& found_data);
-    std::optional<HitResult> find_first(const std::vector<std::string>& list);
-    RunningResult run_task(const HitResult& hits);
+    std::optional<HitDetail> find_first(const std::vector<std::string>& list);
+    RunningStatus run_task(const HitDetail& hits);
 
 private:
     MAA_RES_NS::ResourceMgr* resource() { return inst_ ? inst_->inter_resource() : nullptr; }
@@ -81,7 +91,9 @@ private:
 
     bool debug_mode() const;
     json::object basic_info();
-    std::filesystem::path dump_image(const cv::Mat& image) const;
+    json::object reco_result_to_json(const Recognizer::Result& res);
+    json::object hit_detail_to_json(const HitDetail& detail);
+    json::object running_detail_to_json(const RunningDetail& detail);
 
 private:
     bool need_to_stop_ = false;
@@ -92,7 +104,7 @@ private:
     std::string latest_hit_;
 
     std::map<std::string, uint64_t> run_times_map_;
-    std::map<std::string, cv::Rect> latest_box_;
+    Actuator::PreTaskBoxes hit_cache_;
 
     TaskDataMgr data_mgr_;
 };

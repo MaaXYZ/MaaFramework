@@ -237,14 +237,20 @@ extern "C"
      */
     MAA_FRAMEWORK_API MaaControllerHandle MaaGetController(MaaInstanceHandle inst);
 
-    MAA_FRAMEWORK_API MaaBool MaaGetRecognitionResult(
+    MAA_FRAMEWORK_API MaaBool MaaGetRecognitionDetail(
         MaaInstanceHandle inst,
-        uint64_t reco_id,
+        MaaRecoId reco_id,
         /* out */ MaaBool* hit,
         /* out */ MaaRectHandle hit_box,
         /* out */ MaaStringBufferHandle hit_detail,
         /* out */ MaaImageBufferHandle* draws,
         /* in & out */ MaaSize* draws_size);
+
+    MAA_FRAMEWORK_API MaaBool MaaGetRunningDetail(
+        MaaInstanceHandle inst,
+        MaaRunningId run_id,
+        /*out*/ MaaRecoId* reco_id,
+        /*out*/ MaaBool* successful);
 
 #ifdef __cplusplus
 }

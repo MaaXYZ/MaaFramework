@@ -5,38 +5,38 @@
 
 MAA_NS_BEGIN
 
-std::any UniqueResultBank::get_reco_result(uint64_t uid) const
+std::any UniqueResultBank::get_reco_detail(int64_t uid) const
 {
-    auto it = reco_result_map_.find(uid);
-    if (it == reco_result_map_.end()) {
+    auto it = reco_detail_map_.find(uid);
+    if (it == reco_detail_map_.end()) {
         return {};
     }
     return it->second;
 }
 
-void UniqueResultBank::set_reco_result(uint64_t uid, std::any res)
+void UniqueResultBank::add_reco_detail(int64_t uid, std::any detail)
 {
-    reco_result_map_.insert_or_assign(uid, std::move(res));
+    reco_detail_map_.insert_or_assign(uid, std::move(detail));
 }
 
-json::value UniqueResultBank::get_task_result(uint64_t uid) const
+std::any UniqueResultBank::get_running_detail(int64_t uid) const
 {
-    auto it = task_result_map_.find(uid);
-    if (it == task_result_map_.end()) {
+    auto it = task_detail_map_.find(uid);
+    if (it == task_detail_map_.end()) {
         return {};
     }
     return it->second;
 }
 
-void UniqueResultBank::set_task_result(uint64_t uid, json::value result)
+void UniqueResultBank::add_running_detail(int64_t uid, std::any detail)
 {
-    task_result_map_.insert_or_assign(uid, std::move(result));
+    task_detail_map_.insert_or_assign(uid, std::move(detail));
 }
 
 void UniqueResultBank::clear()
 {
-    reco_result_map_.clear();
-    task_result_map_.clear();
+    reco_detail_map_.clear();
+    task_detail_map_.clear();
 }
 
 MAA_NS_END

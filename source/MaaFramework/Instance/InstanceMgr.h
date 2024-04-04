@@ -5,7 +5,6 @@
 #include "API/MaaTypes.h"
 #include "Base/AsyncRunner.hpp"
 #include "Base/MessageNotifier.hpp"
-#include "Instance/InstanceStatus.h"
 #include "InstanceInternalAPI.hpp"
 #include "Task/PipelineTask.h"
 
@@ -52,13 +51,6 @@ public: // from MaaInstanceAPI
     virtual MaaResourceHandle resource() override;
     virtual MaaControllerHandle controller() override;
 
-    virtual bool recoginition_result(
-        uint64_t reco_id,
-        bool& hit,
-        cv::Rect& box,
-        std::string& detail,
-        std::vector<cv::Mat>& draws) const override;
-
 public: // from InstanceInternalAPI
     virtual MAA_RES_NS::ResourceMgr* inter_resource() override;
     virtual MAA_CTRL_NS::ControllerAgent* inter_controller() override;
@@ -76,7 +68,6 @@ private:
 private:
     MaaResourceAPI* resource_ = nullptr;
     MaaControllerAPI* controller_ = nullptr;
-    InstanceStatus status_;
     bool need_to_stop_ = false;
 
     std::unordered_map<std::string, CustomRecognizerSession> custom_recognizer_sessions_;

@@ -17,18 +17,18 @@ class UniqueResultBank : public SingletonHolder<UniqueResultBank>
     friend class SingletonHolder<UniqueResultBank>;
 
 public:
-    std::any get_reco_result(uint64_t uid) const;
-    void set_reco_result(uint64_t uid, std::any res);
+    std::any get_reco_detail(int64_t uid) const;
+    void add_reco_detail(int64_t uid, std::any detail);
 
-    json::value get_task_result(uint64_t uid) const;
-    void set_task_result(uint64_t uid, json::value result);
+    std::any get_running_detail(int64_t uid) const;
+    void add_running_detail(int64_t uid, std::any detail);
 
 public:
     void clear();
 
 private:
-    std::map<uint64_t, std::any> reco_result_map_;
-    std::map<uint64_t, json::value> task_result_map_;
+    std::map<int64_t, std::any> reco_detail_map_;
+    std::map<int64_t, std::any> task_detail_map_;
 };
 
 MAA_NS_END
