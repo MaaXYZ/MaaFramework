@@ -38,7 +38,7 @@ extern "C"
     MAA_FRAMEWORK_API MaaBool
         MaaSetGlobalOption(MaaGlobalOption key, MaaOptionValue value, MaaOptionValueSize val_size);
 
-    MAA_FRAMEWORK_API MaaBool MaaGetRecognitionDetail(
+    MAA_FRAMEWORK_API MaaBool MaaQueryRecognitionDetail(
         MaaRecoId reco_id,
         /* out */ MaaBool* hit,
         /* out */ MaaRectHandle hit_box,
@@ -46,8 +46,7 @@ extern "C"
         /* out */ MaaImageBufferHandle* draws,
         /* in & out */ MaaSize* draws_size);
 
-    MAA_FRAMEWORK_API MaaBool MaaGetRunningDetail(
-        MaaInstanceHandle inst,
+    MAA_FRAMEWORK_API MaaBool MaaQueryRunningDetail(
         MaaRunningId run_id,
         /*out*/ MaaRecoId* reco_id,
         /*out*/ MaaBool* successful);

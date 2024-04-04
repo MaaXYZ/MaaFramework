@@ -1,7 +1,5 @@
 #include "MaaFramework/Instance/MaaInstance.h"
 
-#include <algorithm>
-
 #include "Instance/InstanceMgr.h"
 #include "Utils/Logger.h"
 

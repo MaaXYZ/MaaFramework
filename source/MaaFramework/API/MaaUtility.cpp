@@ -1,5 +1,7 @@
 #include "MaaFramework/MaaAPI.h"
 
+#include <algorithm>
+
 #include "Global/GlobalOptionMgr.h"
 #include "Task/PipelineTask.h"
 #include "Task/Recognizer.h"
@@ -20,7 +22,7 @@ MaaBool MaaSetGlobalOption(MaaGlobalOption key, MaaOptionValue value, MaaOptionV
     return MAA_NS::GlobalOptionMgr::get_instance().set_option(key, value, val_size);
 }
 
-MaaBool MaaGetRecognitionDetail(
+MaaBool MaaQueryRecognitionDetail(
     MaaRecoId reco_id,
     /* out */ MaaBool* hit,
     /* out */ MaaRectHandle hit_box,
@@ -66,7 +68,7 @@ MaaBool MaaGetRecognitionDetail(
     return true;
 }
 
-MaaBool MaaGetRunningDetail(
+MaaBool MaaQueryRunningDetail(
     MaaRunningId run_id,
     /*out*/ MaaRecoId* reco_id,
     /*out*/ MaaBool* successful)
