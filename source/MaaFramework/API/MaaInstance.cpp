@@ -275,7 +275,7 @@ MaaBool MaaGetRecognitionDetail(
         return false;
     }
 
-    bool mhit;
+    bool mhit = false;
     cv::Rect mbox {};
     std::string mdetail;
     std::vector<cv::Mat> mdraws;
@@ -324,8 +324,8 @@ MaaBool MaaGetRunningDetail(
         return false;
     }
 
-    MaaRecoId mreco_id;
-    bool msuccessful;
+    MaaRecoId mreco_id = 0;
+    bool msuccessful = false;
 
     bool mret = MAA_TASK_NS::PipelineTask::query_detail(run_id, mreco_id, msuccessful);
     if (!mret) {
