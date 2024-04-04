@@ -37,8 +37,7 @@ void CustomRecognizer::analyze()
 
     /*in*/
     MAA_TASK_NS::SyncContext sync_ctx(inst_);
-    ImageBuffer image_buffer;
-    image_buffer.set(image_);
+    ImageBuffer image_buffer(image_);
     std::string custom_param_str = param_.custom_param.to_string();
 
     /*out*/

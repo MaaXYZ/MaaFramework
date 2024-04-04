@@ -1,6 +1,7 @@
 #include "MaaFramework/Utility/MaaBuffer.h"
 
 #include "Buffer/ImageBuffer.hpp"
+#include "Buffer/ListBuffer.hpp"
 #include "Buffer/StringBuffer.hpp"
 #include "Utils/Logger.h"
 
@@ -79,6 +80,84 @@ MaaBool MaaSetStringEx(MaaStringBufferHandle handle, MaaStringView str, MaaSize 
     }
 
     handle->set(std::string(str, size));
+    return true;
+}
+
+MaaStringListBufferHandle MaaCreateStringListBuffer()
+{
+    return new MaaStringListBuffer;
+}
+
+void MaaDestroyStringListBuffer(MaaStringListBufferHandle handle)
+{
+    if (!handle) {
+        LogError << "handle is null";
+        return;
+    }
+
+    delete handle;
+}
+
+MaaBool MaaIsStringListEmpty(MaaStringListBufferHandle handle)
+{
+    if (!handle) {
+        LogError << "handle is null";
+        return true; // means empty
+    }
+
+    return handle->empty();
+}
+
+MaaBool MaaClearStringList(MaaStringListBufferHandle handle)
+{
+    if (!handle) {
+        LogError << "handle is null";
+        return false;
+    }
+
+    handle->clear();
+    return true;
+}
+
+MaaSize MaaGetStringListSize(MaaStringListBufferHandle handle)
+{
+    if (!handle) {
+        LogError << "handle is null";
+        return 0;
+    }
+
+    return handle->size();
+}
+
+MaaStringBufferHandle MaaGetStringListAt(MaaStringListBufferHandle handle, MaaSize index)
+{
+    if (!handle) {
+        LogError << "handle is null";
+        return nullptr;
+    }
+
+    return const_cast<MaaNS::StringBuffer*>(&(handle->at(index)));
+}
+
+MaaBool MaaStringListAppend(MaaStringListBufferHandle handle, MaaStringBufferHandle value)
+{
+    if (!handle || !value) {
+        LogError << "handle is null";
+        return false;
+    }
+
+    handle->append(dynamic_cast<const MaaNS::StringBuffer&>(*value));
+    return true;
+}
+
+MaaBool MaaStringListRemove(MaaStringListBufferHandle handle, MaaSize index)
+{
+    if (!handle) {
+        LogError << "handle is null";
+        return false;
+    }
+
+    handle->remove(index);
     return true;
 }
 
@@ -214,6 +293,84 @@ MaaBool MaaSetImageEncoded(MaaImageBufferHandle handle, MaaImageEncodedData data
     }
 
     handle->set(img);
+    return true;
+}
+
+MaaImageListBufferHandle MaaCreateImageListBuffer()
+{
+    return new MaaImageListBuffer;
+}
+
+void MaaDestroyImageListBuffer(MaaImageListBufferHandle handle)
+{
+    if (!handle) {
+        LogError << "handle is null";
+        return;
+    }
+
+    delete handle;
+}
+
+MaaBool MaaIsImageListEmpty(MaaImageListBufferHandle handle)
+{
+    if (!handle) {
+        LogError << "handle is null";
+        return true; // means empty
+    }
+
+    return handle->empty();
+}
+
+MaaBool MaaClearImageList(MaaImageListBufferHandle handle)
+{
+    if (!handle) {
+        LogError << "handle is null";
+        return false;
+    }
+
+    handle->clear();
+    return true;
+}
+
+MaaSize MaaGetImageListSize(MaaImageListBufferHandle handle)
+{
+    if (!handle) {
+        LogError << "handle is null";
+        return 0;
+    }
+
+    return handle->size();
+}
+
+MaaImageBufferHandle MaaGetImageListAt(MaaImageListBufferHandle handle, MaaSize index)
+{
+    if (!handle) {
+        LogError << "handle is null";
+        return nullptr;
+    }
+
+    return const_cast<MaaNS::ImageBuffer*>(&(handle->at(index)));
+}
+
+MaaBool MaaImageListAppend(MaaImageListBufferHandle handle, MaaImageBufferHandle value)
+{
+    if (!handle || !value) {
+        LogError << "handle is null";
+        return false;
+    }
+
+    handle->append(dynamic_cast<const MaaNS::ImageBuffer&>(*value));
+    return true;
+}
+
+MaaBool MaaImageListRemove(MaaImageListBufferHandle handle, MaaSize index)
+{
+    if (!handle) {
+        LogError << "handle is null";
+        return false;
+    }
+
+    handle->remove(index);
     return true;
 }
 

@@ -1,7 +1,6 @@
 #include "MaaFramework/MaaAPI.h"
 
-#include <algorithm>
-
+#include "Buffer/ImageBuffer.hpp"
 #include "Global/GlobalOptionMgr.h"
 #include "Task/PipelineTask.h"
 #include "Task/Recognizer.h"
@@ -27,8 +26,7 @@ MaaBool MaaQueryRecognitionDetail(
     /* out */ MaaBool* hit,
     /* out */ MaaRectHandle hit_box,
     /* out */ MaaStringBufferHandle hit_detail,
-    /* out */ MaaImageBufferHandle* draws,
-    /* in & out */ MaaSize* draws_size)
+    /* out */ MaaImageListBufferHandle draws)
 {
     bool mhit = false;
     cv::Rect mbox {};
@@ -54,17 +52,11 @@ MaaBool MaaQueryRecognitionDetail(
     if (hit_detail) {
         hit_detail->set(std::move(mdetail));
     }
-    if (draws && draws_size) {
-        size_t size = std::min(static_cast<size_t>(*draws_size), mdraws.size());
-        for (size_t i = 0; i < size; ++i) {
-            (*(draws + i))->set(std::move(mdraws.at(i)));
+    if (draws) {
+        for (auto& d : mdraws) {
+            draws->append(MAA_NS::ImageBuffer(std::move(d)));
         }
-        *draws_size = size;
     }
-    else if (draws_size) {
-        *draws_size = mdraws.size();
-    }
-
     return true;
 }
 

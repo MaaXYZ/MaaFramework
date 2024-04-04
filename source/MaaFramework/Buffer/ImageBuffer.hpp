@@ -2,6 +2,7 @@
 
 #include "API/MaaTypes.h"
 #include "Conf/Conf.h"
+#include "ListBuffer.hpp"
 
 MAA_SUPPRESS_CV_WARNINGS_BEGIN
 #include <opencv2/core/mat.hpp>
@@ -13,6 +14,13 @@ MAA_NS_BEGIN
 class ImageBuffer : public MaaImageBuffer
 {
 public:
+    ImageBuffer() = default;
+
+    ImageBuffer(cv::Mat image)
+        : image_(std::move(image))
+    {
+    }
+
     virtual ~ImageBuffer() override = default;
 
     virtual bool empty() const override { return image_.empty(); }
@@ -73,3 +81,7 @@ private:
 };
 
 MAA_NS_END
+
+struct MaaImageListBuffer : public MAA_NS::ListBuffer<MAA_NS::ImageBuffer>
+{
+};

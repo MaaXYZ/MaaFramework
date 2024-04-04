@@ -2,12 +2,20 @@
 
 #include "API/MaaTypes.h"
 #include "Conf/Conf.h"
+#include "ListBuffer.hpp"
 
 MAA_NS_BEGIN
 
 class StringBuffer : public MaaStringBuffer
 {
 public:
+    StringBuffer() = default;
+
+    StringBuffer(std::string str)
+        : str_(std::move(str))
+    {
+    }
+
     virtual ~StringBuffer() override = default;
 
     virtual bool empty() const override { return str_.empty(); }
@@ -27,3 +35,7 @@ private:
 };
 
 MAA_NS_END
+
+struct MaaStringListBuffer : public MAA_NS::ListBuffer<MAA_NS::StringBuffer>
+{
+};
