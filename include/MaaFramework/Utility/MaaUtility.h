@@ -38,6 +38,20 @@ extern "C"
     MAA_FRAMEWORK_API MaaBool
         MaaSetGlobalOption(MaaGlobalOption key, MaaOptionValue value, MaaOptionValueSize val_size);
 
+    MAA_FRAMEWORK_API MaaBool MaaGetRecognitionDetail(
+        MaaRecoId reco_id,
+        /* out */ MaaBool* hit,
+        /* out */ MaaRectHandle hit_box,
+        /* out */ MaaStringBufferHandle hit_detail,
+        /* out */ MaaImageBufferHandle* draws,
+        /* in & out */ MaaSize* draws_size);
+
+    MAA_FRAMEWORK_API MaaBool MaaGetRunningDetail(
+        MaaInstanceHandle inst,
+        MaaRunningId run_id,
+        /*out*/ MaaRecoId* reco_id,
+        /*out*/ MaaBool* successful);
+
 #ifdef __cplusplus
 }
 #endif
