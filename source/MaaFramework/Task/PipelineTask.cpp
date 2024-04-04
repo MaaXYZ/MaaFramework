@@ -250,10 +250,10 @@ PipelineTask::RunningStatus PipelineTask::run_task(const HitDetail& hits)
         if (debug_mode() || hits.task_data.focus) {
             json::value cb_detail = basic_info() | running_detail_to_json(running_detail);
             if (debug_mode()) {
-                notify(MaaMsg_Task_Debug_ReadyToRun, cb_detail);
+                notify(MaaMsg_Task_Debug_Runout, cb_detail);
             }
             if (hits.task_data.focus) {
-                notify(MaaMsg_Task_Focus_ReadyToRun, cb_detail);
+                notify(MaaMsg_Task_Focus_Runout, cb_detail);
             }
         }
 
