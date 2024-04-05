@@ -16,6 +16,10 @@ struct MaaStringBuffer;
 typedef struct MaaStringBuffer* MaaStringBufferHandle;
 struct MaaImageBuffer;
 typedef struct MaaImageBuffer* MaaImageBufferHandle;
+struct MaaStringListBuffer;
+typedef struct MaaStringListBuffer* MaaStringListBufferHandle;
+struct MaaImageListBuffer;
+typedef struct MaaImageListBuffer* MaaImageListBufferHandle;
 
 struct MaaResourceAPI;
 typedef struct MaaResourceAPI* MaaResourceHandle;

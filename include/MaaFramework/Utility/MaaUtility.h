@@ -43,8 +43,7 @@ extern "C"
         /* out */ MaaBool* hit,
         /* out */ MaaRectHandle hit_box,
         /* out */ MaaStringBufferHandle hit_detail,
-        /* out */ MaaImageBufferHandle* draws,
-        /* in & out */ MaaSize* draws_size);
+        /* out */ MaaImageListBufferHandle draws);
 
     MAA_FRAMEWORK_API MaaBool MaaQueryRunningDetail(
         MaaRunningId run_id,
