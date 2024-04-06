@@ -164,7 +164,7 @@ MaaAdbControllerType DeviceMgr::check_adb_controller_type(
     std::ignore = adb_config;
 
     constexpr MaaAdbControllerType kInputType = MaaAdbControllerType_Input_Preset_AutoDetect;
-    constexpr MaaAdbControllerType kScreencapType = MaaAdbControllerType_Screencap_FastestWay;
+    constexpr MaaAdbControllerType kScreencapType = MaaAdbControllerType_Screencap_EmulatorExtras;
 
     return kInputType | kScreencapType;
 }

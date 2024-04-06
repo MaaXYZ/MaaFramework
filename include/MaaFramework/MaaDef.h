@@ -193,10 +193,12 @@ enum MaaAdbControllerTypeEnum
     MaaAdbControllerType_Touch_Adb = 1,
     MaaAdbControllerType_Touch_MiniTouch = 2,
     MaaAdbControllerType_Touch_MaaTouch = 3,
+    MaaAdbControllerType_Touch_EmulatorExtras = 4,
     MaaAdbControllerType_Touch_AutoDetect = MaaAdbControllerType_Touch_Mask - 1,
 
     MaaAdbControllerType_Key_Adb = 1 << 8,
     MaaAdbControllerType_Key_MaaTouch = 2 << 8,
+    MaaAdbControllerType_Key_EmulatorExtras = 3 << 8,
     MaaAdbControllerType_Key_AutoDetect = MaaAdbControllerType_Key_Mask - (1 << 8),
 
     MaaAdbControllerType_Input_Preset_Adb =
@@ -207,6 +209,8 @@ enum MaaAdbControllerTypeEnum
         MaaAdbControllerType_Touch_MaaTouch | MaaAdbControllerType_Key_MaaTouch,
     MaaAdbControllerType_Input_Preset_AutoDetect =
         MaaAdbControllerType_Touch_AutoDetect | MaaAdbControllerType_Key_AutoDetect,
+    MaaAdbControllerType_Input_Preset_EmulatorExtras =
+        MaaAdbControllerType_Touch_EmulatorExtras | MaaAdbControllerType_Key_EmulatorExtras,
 
     /// \deprecated
     MaaAdbControllerType_Screencap_FastestWay_Compatible = 1 << 16,
@@ -216,6 +220,7 @@ enum MaaAdbControllerTypeEnum
     MaaAdbControllerType_Screencap_EncodeToFile = 5 << 16,
     MaaAdbControllerType_Screencap_MinicapDirect = 6 << 16,
     MaaAdbControllerType_Screencap_MinicapStream = 7 << 16,
+    MaaAdbControllerType_Screencap_EmulatorExtras = 8 << 16,
     MaaAdbControllerType_Screencap_FastestLosslessWay =
         MaaAdbControllerType_Screencap_Mask - (2 << 16),
     MaaAdbControllerType_Screencap_FastestWay = MaaAdbControllerType_Screencap_Mask - (1 << 16),

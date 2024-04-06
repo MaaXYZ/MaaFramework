@@ -18,16 +18,7 @@ MAA_TOOLKIT_NS_BEGIN
 
 using namespace path_literals;
 
-struct EmulatorConstantData
-{
-    std::string keyword;
-    std::vector<std::filesystem::path> adb_candidate_paths;
-    std::vector<std::string> adb_common_serials;
-};
-
-std::filesystem::path get_adb_path(const EmulatorConstantData& emulator, os_pid pid);
-
-static const std::map<std::string, EmulatorConstantData> kEmulators = {
+const std::map<std::string, DeviceMgrWin32::EmulatorConstantData> DeviceMgrWin32::kEmulators = {
     { "BlueStacks",
       { .keyword = "HD-Player",
         .adb_candidate_paths = { "HD-Adb.exe"_path, "Engine\\ProgramFiles\\HD-Adb.exe"_path },
@@ -94,7 +85,7 @@ std::vector<Device> DeviceMgrWin32::find_device_impl()
             device.adb_path = path_to_utf8_string(adb_path);
             device.adb_serial = ser;
             // TODO: 根据设备情况使用不同的配置
-            device.adb_config = json::object().to_string();
+            device.adb_config = get_adb_config(e, ser).to_string();
             device.adb_controller_type =
                 check_adb_controller_type(device.adb_path, device.adb_serial, device.adb_config);
             result.emplace_back(std::move(device));
@@ -162,7 +153,7 @@ std::vector<DeviceMgrWin32::Emulator> DeviceMgrWin32::find_emulators() const
     return result;
 }
 
-std::filesystem::path get_adb_path(const EmulatorConstantData& emulator, os_pid pid)
+std::filesystem::path DeviceMgrWin32::get_adb_path(const EmulatorConstantData& emulator, os_pid pid)
 {
     auto path_opt = get_process_path(pid);
     if (!path_opt) {
@@ -177,6 +168,26 @@ std::filesystem::path get_adb_path(const EmulatorConstantData& emulator, os_pid 
         }
         return adb_path;
     }
+    return {};
+}
+
+json::object DeviceMgrWin32::get_adb_config(const Emulator& emulator, const std::string& adb_serial)
+{
+    std::ignore = adb_serial;
+
+    if (emulator.name == "MuMuPlayer12") {
+        // C:\Program Files\Netease\MuMuPlayer-12.0\shell\MuMuPlayer.exe
+        auto path_opt = get_process_path(emulator.process.pid);
+        if (!path_opt) {
+            return {};
+        }
+        auto dir = path_opt->parent_path().parent_path();
+
+        json::object cfg;
+        cfg["extras"]["mumu"]["path"] = path_to_utf8_string(dir);
+        return cfg;
+    }
+
     return {};
 }
 
