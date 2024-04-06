@@ -14,6 +14,9 @@ MAA_NS_BEGIN
 inline cv::Mat imread(const std::filesystem::path& path, int flags = cv::IMREAD_COLOR)
 {
     auto content = read_file<std::vector<uint8_t>>(path);
+    if (content.empty()) {
+        return {};
+    }
     return cv::imdecode(content, flags);
 }
 

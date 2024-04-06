@@ -27,6 +27,10 @@ ContainerType read_file(const std::filesystem::path& path)
 {
     ContainerType result;
     std::ifstream file(path, std::ios::binary | std::ios::ate);
+    if (!file.is_open()) {
+        return result;
+    }
+
     auto fileSize = file.tellg();
     if (fileSize != -1) {
         result.resize(fileSize);

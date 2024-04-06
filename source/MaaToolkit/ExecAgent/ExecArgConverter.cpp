@@ -36,7 +36,7 @@ std::string ExecArgConverter::image_to_arg(const cv::Mat& image)
     auto path = std::filesystem::temp_directory_path() / (format_now_for_filename() + ".png");
     imwrite(path, image);
     images_.push_back(path);
-    return path_to_crt_string(path);
+    return path_to_utf8_string(path);
 }
 
 MAA_TOOLKIT_NS_END
