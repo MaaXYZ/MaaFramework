@@ -2,6 +2,7 @@
 
 #include "Utils/Codec.h"
 #include "Utils/Logger.h"
+#include "Utils/NoWarningCV.hpp"
 #include "Utils/Platform.h"
 
 MAA_CTRL_UNIT_NS_BEGIN
@@ -72,8 +73,13 @@ std::optional<cv::Mat> MumuExternalRendererIpc::screencap()
         return std::nullopt;
     }
 
-    cv::Mat img(height, width, CV_8UC4, buffer.data());
-    return img;
+    cv::Mat raw(height, width, CV_8UC4, buffer.data());
+    cv::Mat bgr;
+    cv::cvtColor(raw, bgr, cv::COLOR_RGBA2BGR);
+    cv::Mat dst;
+    cv::flip(bgr, dst, 0);
+
+    return dst;
 }
 
 bool MumuExternalRendererIpc::_init()

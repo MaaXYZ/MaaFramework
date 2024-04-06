@@ -84,7 +84,6 @@ std::vector<Device> DeviceMgrWin32::find_device_impl()
             device.name = e.name;
             device.adb_path = path_to_utf8_string(adb_path);
             device.adb_serial = ser;
-            // TODO: 根据设备情况使用不同的配置
             device.adb_config = get_adb_config(e, ser).to_string();
             device.adb_controller_type =
                 check_adb_controller_type(device.adb_path, device.adb_serial, device.adb_config);
