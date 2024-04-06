@@ -35,7 +35,7 @@ std::optional<cv::Mat> ScreencapEncodeToFileAndPull::screencap()
     auto dst_path = std::filesystem::temp_directory_path() / format_now_for_filename();
 
     merge_replacement(
-        { { "{TEMP_FILE}", tempname_ }, { "{DST_PATH}", path_to_crt_string(dst_path) } });
+        { { "{TEMP_FILE}", tempname_ }, { "{DST_PATH}", path_to_utf8_string(dst_path) } });
 
     {
         auto argv_opt = screencap_encode_to_file_argv_.gen(argv_replace_);
