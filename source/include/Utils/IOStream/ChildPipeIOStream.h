@@ -11,6 +11,7 @@ class MAA_UTILS_API ChildPipeIOStream : public IOStream
 {
 public:
     ChildPipeIOStream(const std::filesystem::path& exec, const std::vector<std::string>& args);
+    ChildPipeIOStream(const std::filesystem::path& exec, const std::vector<std::wstring>& wargs);
 
     // NonCopyButMovable
     // https://stackoverflow.com/questions/29289956/c11-virtual-destructors-and-auto-generation-of-move-special-functions
@@ -31,8 +32,10 @@ protected:
     virtual std::string read_once(size_t max_count) override;
 
 private:
+    static std::vector<std::wstring> to_wargs(const std::vector<std::string>& args);
+
     std::filesystem::path exec_;
-    std::vector<std::string> args_;
+    std::vector<std::wstring> wargs_;
 
     boost::process::ipstream pin_;
     boost::process::opstream pout_;

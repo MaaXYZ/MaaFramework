@@ -1,5 +1,6 @@
 #include "Utils/IOStream/ChildPipeIOStream.h"
 
+#include "Utils/Codec.h"
 #include "Utils/Logger.h"
 
 MAA_NS_BEGIN
@@ -7,11 +8,18 @@ MAA_NS_BEGIN
 ChildPipeIOStream::ChildPipeIOStream(
     const std::filesystem::path& exec,
     const std::vector<std::string>& args)
+    : ChildPipeIOStream(exec, to_wargs(args))
+{
+}
+
+ChildPipeIOStream::ChildPipeIOStream(
+    const std::filesystem::path& exec,
+    const std::vector<std::wstring>& wargs)
     : exec_(exec)
-    , args_(args)
+    , wargs_(wargs)
     , child_(
           exec_,
-          args_,
+          wargs_,
           boost::process::std_out > pin_,
           boost::process::std_err > boost::process::null,
           boost::process::std_in < pout_
@@ -21,7 +29,7 @@ ChildPipeIOStream::ChildPipeIOStream(
 #endif
       )
 {
-    LogTrace << VAR(exec_) << VAR(args_) << VAR(child_.id());
+    LogTrace << VAR(exec_) << VAR(wargs_) << VAR(child_.id());
 }
 
 ChildPipeIOStream::~ChildPipeIOStream()
@@ -32,7 +40,7 @@ ChildPipeIOStream::~ChildPipeIOStream()
 bool ChildPipeIOStream::write(std::string_view data)
 {
     if (!pout_.good()) {
-        LogError << "pout is not good" << VAR(exec_) << VAR(args_) << VAR(child_.id());
+        LogError << "pout is not good" << VAR(exec_) << VAR(wargs_) << VAR(child_.id());
         return false;
     }
 
@@ -58,7 +66,7 @@ bool ChildPipeIOStream::release()
     int code = child_.exit_code();
 
     if (code != 0) {
-        LogWarn << "child exit with" << code << VAR(exec_) << VAR(args_) << VAR(child_.id());
+        LogWarn << "child exit with" << code << VAR(exec_) << VAR(wargs_) << VAR(child_.id());
         return false;
     }
 
@@ -81,6 +89,15 @@ std::string ChildPipeIOStream::read_once(size_t max_count)
     size_t count = std::min(kBufferSize, max_count);
     auto read = pin_.read(buffer_.get(), count).gcount();
     return std::string(buffer_.get(), read);
+}
+
+std::vector<std::wstring> ChildPipeIOStream::to_wargs(const std::vector<std::string>& args)
+{
+    std::vector<std::wstring> wargs;
+    for (const auto& arg : args) {
+        wargs.emplace_back(to_u16(arg));
+    }
+    return wargs;
 }
 
 MAA_NS_END
