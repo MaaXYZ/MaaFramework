@@ -21,8 +21,13 @@ bool MumuExternalRendererIpc::parse(const json::value& config)
     }
     mumu_path_ = MAA_NS::path(p);
 
-    static const std::string kDefaultLibPath = "shell/sdk/external_renderer_ipc";
-    lib_path_ = mumu_path_ / MAA_NS::path(config.get("extras", "mumu", "lib", kDefaultLibPath));
+    std::string lib = config.get("extras", "mumu", "lib", "");
+    if (lib.empty()) {
+        lib_path_ = mumu_path_ / MAA_NS::path("shell/sdk/external_renderer_ipc");
+    }
+    else {
+        lib_path_ = MAA_NS::path(lib);
+    }
 
     mumu_index_ = config.get("extras", "mumu", "index", 0);
     mumu_display_id_ = config.get("extras", "mumu", "display_id", 0U);
@@ -84,11 +89,11 @@ std::optional<cv::Mat> MumuExternalRendererIpc::screencap()
 
 bool MumuExternalRendererIpc::_init()
 {
-    if (!mumu_handle_) {
-        return load_mumu_library() && connect_mumu();
+    if (mumu_handle_) {
+        return true;
     }
 
-    return true;
+    return load_mumu_library() && connect_mumu();
 }
 
 bool MumuExternalRendererIpc::load_mumu_library()
