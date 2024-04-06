@@ -28,12 +28,14 @@ ChildPipeIOStream::ChildPipeIOStream(
 {
 }
 
+#ifdef _WIN32
 ChildPipeIOStream::ChildPipeIOStream(
     const std::filesystem::path& exec,
     const std::vector<std::wstring>& wargs)
     : ChildPipeIOStream(exec, wargs, false)
 {
 }
+#endif
 
 ChildPipeIOStream::ChildPipeIOStream(
     const std::filesystem::path& exec,
