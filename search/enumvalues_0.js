@@ -56,9 +56,11 @@ var searchData=
   ['maathriftcontrollertype_5fsocket_53',['MaaThriftControllerType_Socket',['../MaaDef_8h.html#a6035315f50c908ee7e23633ce53ac9daa9c4f24dd98c6e1c84339d44ba880795c',1,'MaaDef.h']]],
   ['maathriftcontrollertype_5funixdomainsocket_54',['MaaThriftControllerType_UnixDomainSocket',['../MaaDef_8h.html#a6035315f50c908ee7e23633ce53ac9daaf2861db948140dfd2b9b377c0d9534ab',1,'MaaDef.h']]],
   ['maawin32controller_5finvalid_55',['MaaWin32Controller_Invalid',['../MaaDef_8h.html#aee6a3149d7be4c6d9e2190d14f203fa2a9c3233de7b124d4ada69d5e6f8270921',1,'MaaDef.h']]],
-  ['maawin32controllertype_5fkey_5fsendmessage_56',['MaaWin32ControllerType_Key_SendMessage',['../MaaDef_8h.html#aee6a3149d7be4c6d9e2190d14f203fa2a88f9fc7384298de423f1df17ff471417',1,'MaaDef.h']]],
-  ['maawin32controllertype_5fscreencap_5fdxgi_5fdesktopdup_57',['MaaWin32ControllerType_Screencap_DXGI_DesktopDup',['../MaaDef_8h.html#aee6a3149d7be4c6d9e2190d14f203fa2a2cef83ab99d6116b517741e9e1724f2a',1,'MaaDef.h']]],
-  ['maawin32controllertype_5fscreencap_5fdxgi_5fframepool_58',['MaaWin32ControllerType_Screencap_DXGI_FramePool',['../MaaDef_8h.html#aee6a3149d7be4c6d9e2190d14f203fa2a8af6e4ac88c03d92e0376f67ee4a62b6',1,'MaaDef.h']]],
-  ['maawin32controllertype_5fscreencap_5fgdi_59',['MaaWin32ControllerType_Screencap_GDI',['../MaaDef_8h.html#aee6a3149d7be4c6d9e2190d14f203fa2aed723981d356c9f6ad3beff4b96a9d3c',1,'MaaDef.h']]],
-  ['maawin32controllertype_5ftouch_5fsendmessage_60',['MaaWin32ControllerType_Touch_SendMessage',['../MaaDef_8h.html#aee6a3149d7be4c6d9e2190d14f203fa2a647d9761d06e8fb49d78ac49bb05afbd',1,'MaaDef.h']]]
+  ['maawin32controllertype_5fkey_5fseize_56',['MaaWin32ControllerType_Key_Seize',['../MaaDef_8h.html#aee6a3149d7be4c6d9e2190d14f203fa2a7ede293226bc401b56011c2e6c47d9cd',1,'MaaDef.h']]],
+  ['maawin32controllertype_5fkey_5fsendmessage_57',['MaaWin32ControllerType_Key_SendMessage',['../MaaDef_8h.html#aee6a3149d7be4c6d9e2190d14f203fa2a88f9fc7384298de423f1df17ff471417',1,'MaaDef.h']]],
+  ['maawin32controllertype_5fscreencap_5fdxgi_5fdesktopdup_58',['MaaWin32ControllerType_Screencap_DXGI_DesktopDup',['../MaaDef_8h.html#aee6a3149d7be4c6d9e2190d14f203fa2a2cef83ab99d6116b517741e9e1724f2a',1,'MaaDef.h']]],
+  ['maawin32controllertype_5fscreencap_5fdxgi_5fframepool_59',['MaaWin32ControllerType_Screencap_DXGI_FramePool',['../MaaDef_8h.html#aee6a3149d7be4c6d9e2190d14f203fa2a8af6e4ac88c03d92e0376f67ee4a62b6',1,'MaaDef.h']]],
+  ['maawin32controllertype_5fscreencap_5fgdi_60',['MaaWin32ControllerType_Screencap_GDI',['../MaaDef_8h.html#aee6a3149d7be4c6d9e2190d14f203fa2aed723981d356c9f6ad3beff4b96a9d3c',1,'MaaDef.h']]],
+  ['maawin32controllertype_5ftouch_5fseize_61',['MaaWin32ControllerType_Touch_Seize',['../MaaDef_8h.html#aee6a3149d7be4c6d9e2190d14f203fa2aca30d36323c4447f67fe6db15b4eb61f',1,'MaaDef.h']]],
+  ['maawin32controllertype_5ftouch_5fsendmessage_62',['MaaWin32ControllerType_Touch_SendMessage',['../MaaDef_8h.html#aee6a3149d7be4c6d9e2190d14f203fa2a647d9761d06e8fb49d78ac49bb05afbd',1,'MaaDef.h']]]
 ];

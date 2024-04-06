@@ -29,5 +29,6 @@ var MaaMsg_8h =
     [ "MaaMsg_Task_Debug_Runout", "group__MaaMsg.html#ga5470d34ff8324a0d4ed2eb6420794e1c", null ],
     [ "MaaMsg_Task_Debug_Completed", "group__MaaMsg.html#ga8ac3f166c3470926524cd491a1986e4d", null ],
     [ "MaaMsg_Task_Debug_ListToRecognize", "group__MaaMsg.html#ga03f726d7fbc29adee70c1e201d203767", null ],
+    [ "MaaMsg_Task_Debug_RecognitionResult", "group__MaaMsg.html#gaf15fc35715ddc0b94fe62ece5b1d8094", null ],
     [ "MaaMsg_Task_Debug_Hit", "group__MaaMsg.html#ga6524978f0790bfb73c7d8ed4490f8c87", null ]
 ];

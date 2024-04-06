@@ -10,6 +10,5 @@ var MaaSyncContext_8h =
     [ "MaaSyncContextTouchDown", "MaaSyncContext_8h.html#addf20b051709f18fa2929e6b13198052", null ],
     [ "MaaSyncContextTouchMove", "MaaSyncContext_8h.html#a31a603615fce15df15b346aad68707ef", null ],
     [ "MaaSyncContextTouchUp", "MaaSyncContext_8h.html#ab511a312c6462694e58c4a7221a9b254", null ],
-    [ "MaaSyncContextScreencap", "MaaSyncContext_8h.html#a5c85142ccbfe9b5c88f3c6d14b33f32f", null ],
-    [ "MaaSyncContextGetTaskResult", "MaaSyncContext_8h.html#a9d66536f3aee7facd6fb318c3463277b", null ]
+    [ "MaaSyncContextScreencap", "MaaSyncContext_8h.html#a5c85142ccbfe9b5c88f3c6d14b33f32f", null ]
 ];

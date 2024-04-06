@@ -26,7 +26,7 @@
  <tbody>
  <tr id="projectrow">
   <td id="projectalign">
-   <div id="projectname">Maa Framework<span id="projectnumber">&#160;v1.7.0-alpha.2</span>
+   <div id="projectname">Maa Framework<span id="projectnumber">&#160;v1.7.0-alpha.3</span>
    </div>
    <div id="projectbrief">A automation black-box testing framework based on image recognition.</div>
   </td>
@@ -112,6 +112,10 @@ Functions</h2></td></tr>
 <tr class="memitem:a1dba15d9cc61cf339c434085738f873c"><td class="memItemLeft" align="right" valign="top"><a class="el" href="MaaPort_8h.html#a67006334d91d228121dbba7a8bf8fe05">MAA_FRAMEWORK_API</a> <a class="el" href="MaaDef_8h.html#a2f7289f2a8e07f48c6261b52a120cdf6">MaaBool</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="MaaUtility_8h.html#a1dba15d9cc61cf339c434085738f873c">MaaSetGlobalOption</a> (<a class="el" href="MaaDef_8h.html#a78a454cf5bf3e18aab3aef29cfc7b91c">MaaGlobalOption</a> key, <a class="el" href="MaaDef_8h.html#abb976599f915b1e04a9ff8bf7055bf81">MaaOptionValue</a> value, <a class="el" href="MaaDef_8h.html#a56ff604006917171af8e4b4974db28ef">MaaOptionValueSize</a> val_size)</td></tr>
 <tr class="memdesc:a1dba15d9cc61cf339c434085738f873c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set options globally.  <a href="MaaUtility_8h.html#a1dba15d9cc61cf339c434085738f873c">More...</a><br /></td></tr>
 <tr class="separator:a1dba15d9cc61cf339c434085738f873c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:abff636b314d25f970afea1e57c327838"><td class="memItemLeft" align="right" valign="top"><a class="el" href="MaaPort_8h.html#a67006334d91d228121dbba7a8bf8fe05">MAA_FRAMEWORK_API</a> <a class="el" href="MaaDef_8h.html#a2f7289f2a8e07f48c6261b52a120cdf6">MaaBool</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="MaaUtility_8h.html#abff636b314d25f970afea1e57c327838">MaaQueryRecognitionDetail</a> (<a class="el" href="MaaDef_8h.html#a7519e6a8329a32c8e3058c20ec74cda8">MaaRecoId</a> reco_id, <a class="el" href="MaaDef_8h.html#a2f7289f2a8e07f48c6261b52a120cdf6">MaaBool</a> *hit, <a class="el" href="MaaDef_8h.html#a00152c7eaccf612e460ea6872455f9cd">MaaRectHandle</a> hit_box, <a class="el" href="MaaDef_8h.html#aed721aa4682b1241bc38d10f8c57a8cb">MaaStringBufferHandle</a> hit_detail, <a class="el" href="MaaDef_8h.html#afbce60b00dcf945dddefe5eeeaceb4b1">MaaImageListBufferHandle</a> draws)</td></tr>
+<tr class="separator:abff636b314d25f970afea1e57c327838"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af1390a6ee2db35fef0f17138ea11a890"><td class="memItemLeft" align="right" valign="top"><a class="el" href="MaaPort_8h.html#a67006334d91d228121dbba7a8bf8fe05">MAA_FRAMEWORK_API</a> <a class="el" href="MaaDef_8h.html#a2f7289f2a8e07f48c6261b52a120cdf6">MaaBool</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="MaaUtility_8h.html#af1390a6ee2db35fef0f17138ea11a890">MaaQueryRunningDetail</a> (<a class="el" href="MaaDef_8h.html#a400baeab5717ecb69afa4a32db4d8a36">MaaRunningId</a> run_id, <a class="el" href="MaaDef_8h.html#a7519e6a8329a32c8e3058c20ec74cda8">MaaRecoId</a> *reco_id, <a class="el" href="MaaDef_8h.html#a2f7289f2a8e07f48c6261b52a120cdf6">MaaBool</a> *successful)</td></tr>
+<tr class="separator:af1390a6ee2db35fef0f17138ea11a890"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p >Provide global functions for the framework. </p>
@@ -181,6 +185,86 @@ Functions</h2></td></tr>
   </dd>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>MaaBool Whether the option is set successfully. </dd></dl>
+
+</div>
+</div>
+<a id="abff636b314d25f970afea1e57c327838" name="abff636b314d25f970afea1e57c327838"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#abff636b314d25f970afea1e57c327838">&#9670;&#160;</a></span>MaaQueryRecognitionDetail()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="MaaPort_8h.html#a67006334d91d228121dbba7a8bf8fe05">MAA_FRAMEWORK_API</a> <a class="el" href="MaaDef_8h.html#a2f7289f2a8e07f48c6261b52a120cdf6">MaaBool</a> MaaQueryRecognitionDetail </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="MaaDef_8h.html#a7519e6a8329a32c8e3058c20ec74cda8">MaaRecoId</a>&#160;</td>
+          <td class="paramname"><em>reco_id</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="MaaDef_8h.html#a2f7289f2a8e07f48c6261b52a120cdf6">MaaBool</a> *&#160;</td>
+          <td class="paramname"><em>hit</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="MaaDef_8h.html#a00152c7eaccf612e460ea6872455f9cd">MaaRectHandle</a>&#160;</td>
+          <td class="paramname"><em>hit_box</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="MaaDef_8h.html#aed721aa4682b1241bc38d10f8c57a8cb">MaaStringBufferHandle</a>&#160;</td>
+          <td class="paramname"><em>hit_detail</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="MaaDef_8h.html#afbce60b00dcf945dddefe5eeeaceb4b1">MaaImageListBufferHandle</a>&#160;</td>
+          <td class="paramname"><em>draws</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="af1390a6ee2db35fef0f17138ea11a890" name="af1390a6ee2db35fef0f17138ea11a890"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af1390a6ee2db35fef0f17138ea11a890">&#9670;&#160;</a></span>MaaQueryRunningDetail()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="MaaPort_8h.html#a67006334d91d228121dbba7a8bf8fe05">MAA_FRAMEWORK_API</a> <a class="el" href="MaaDef_8h.html#a2f7289f2a8e07f48c6261b52a120cdf6">MaaBool</a> MaaQueryRunningDetail </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="MaaDef_8h.html#a400baeab5717ecb69afa4a32db4d8a36">MaaRunningId</a>&#160;</td>
+          <td class="paramname"><em>run_id</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="MaaDef_8h.html#a7519e6a8329a32c8e3058c20ec74cda8">MaaRecoId</a> *&#160;</td>
+          <td class="paramname"><em>reco_id</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="MaaDef_8h.html#a2f7289f2a8e07f48c6261b52a120cdf6">MaaBool</a> *&#160;</td>
+          <td class="paramname"><em>successful</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
 
 </div>
 </div>

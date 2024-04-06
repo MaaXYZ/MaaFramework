@@ -12,6 +12,8 @@ var MaaDef_8h =
     [ "MaaWin32ControllerType_Screencap_Mask", "MaaDef_8h.html#ae3c5ed765271da72f92ca79b20b7842c", null ],
     [ "MaaStringBufferHandle", "MaaDef_8h.html#aed721aa4682b1241bc38d10f8c57a8cb", null ],
     [ "MaaImageBufferHandle", "MaaDef_8h.html#a30c4754980d5dfa504ce84d86668f031", null ],
+    [ "MaaStringListBufferHandle", "MaaDef_8h.html#a08ee9b819881abe0b2723266aed531d3", null ],
+    [ "MaaImageListBufferHandle", "MaaDef_8h.html#afbce60b00dcf945dddefe5eeeaceb4b1", null ],
     [ "MaaResourceHandle", "MaaDef_8h.html#adaf57d636373ece07f2b2f651c49dfef", null ],
     [ "MaaControllerHandle", "MaaDef_8h.html#a59f0e2bf0a9ce9ff8dd96be800302518", null ],
     [ "MaaInstanceHandle", "MaaDef_8h.html#ab43696565db752309c61e462c22d3d93", null ],
@@ -24,6 +26,8 @@ var MaaDef_8h =
     [ "MaaCtrlId", "MaaDef_8h.html#aea6a27f8f45b661fda5c19b6062b656e", null ],
     [ "MaaResId", "MaaDef_8h.html#ac1f7514a514f2b5af32cabc02eedca85", null ],
     [ "MaaTaskId", "MaaDef_8h.html#a711b3db9be6db60ae4cb09e3629e42f0", null ],
+    [ "MaaRecoId", "MaaDef_8h.html#a7519e6a8329a32c8e3058c20ec74cda8", null ],
+    [ "MaaRunningId", "MaaDef_8h.html#a400baeab5717ecb69afa4a32db4d8a36", null ],
     [ "MaaOption", "MaaDef_8h.html#abfd624a6cf1959968525f8088abdd772", null ],
     [ "MaaOptionValue", "MaaDef_8h.html#abb976599f915b1e04a9ff8bf7055bf81", null ],
     [ "MaaOptionValueSize", "MaaDef_8h.html#a56ff604006917171af8e4b4974db28ef", null ],
@@ -123,7 +127,9 @@ var MaaDef_8h =
     [ "MaaWin32ControllerTypeEnum", "MaaDef_8h.html#aee6a3149d7be4c6d9e2190d14f203fa2", [
       [ "MaaWin32Controller_Invalid", "MaaDef_8h.html#aee6a3149d7be4c6d9e2190d14f203fa2a9c3233de7b124d4ada69d5e6f8270921", null ],
       [ "MaaWin32ControllerType_Touch_SendMessage", "MaaDef_8h.html#aee6a3149d7be4c6d9e2190d14f203fa2a647d9761d06e8fb49d78ac49bb05afbd", null ],
+      [ "MaaWin32ControllerType_Touch_Seize", "MaaDef_8h.html#aee6a3149d7be4c6d9e2190d14f203fa2aca30d36323c4447f67fe6db15b4eb61f", null ],
       [ "MaaWin32ControllerType_Key_SendMessage", "MaaDef_8h.html#aee6a3149d7be4c6d9e2190d14f203fa2a88f9fc7384298de423f1df17ff471417", null ],
+      [ "MaaWin32ControllerType_Key_Seize", "MaaDef_8h.html#aee6a3149d7be4c6d9e2190d14f203fa2a7ede293226bc401b56011c2e6c47d9cd", null ],
       [ "MaaWin32ControllerType_Screencap_GDI", "MaaDef_8h.html#aee6a3149d7be4c6d9e2190d14f203fa2aed723981d356c9f6ad3beff4b96a9d3c", null ],
       [ "MaaWin32ControllerType_Screencap_DXGI_DesktopDup", "MaaDef_8h.html#aee6a3149d7be4c6d9e2190d14f203fa2a2cef83ab99d6116b517741e9e1724f2a", null ],
       [ "MaaWin32ControllerType_Screencap_DXGI_FramePool", "MaaDef_8h.html#aee6a3149d7be4c6d9e2190d14f203fa2a8af6e4ac88c03d92e0376f67ee4a62b6", null ]

@@ -26,7 +26,7 @@
  <tbody>
  <tr id="projectrow">
   <td id="projectalign">
-   <div id="projectname">Maa Framework<span id="projectnumber">&#160;v1.7.0-alpha.2</span>
+   <div id="projectname">Maa Framework<span id="projectnumber">&#160;v1.7.0-alpha.3</span>
    </div>
    <div id="projectbrief">A automation black-box testing framework based on image recognition.</div>
   </td>
@@ -134,6 +134,8 @@ Macros</h2></td></tr>
 <tr class="separator:gafb3e44dd89a9d772083767296f9039ae"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ga03f726d7fbc29adee70c1e201d203767"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__MaaMsg.html#ga03f726d7fbc29adee70c1e201d203767">MaaMsg_Task_Debug_ListToRecognize</a>&#160;&#160;&#160;(&quot;Task.Debug.ListToRecognize&quot;)</td></tr>
 <tr class="separator:ga03f726d7fbc29adee70c1e201d203767"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:gaf15fc35715ddc0b94fe62ece5b1d8094"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__MaaMsg.html#gaf15fc35715ddc0b94fe62ece5b1d8094">MaaMsg_Task_Debug_RecognitionResult</a>&#160;&#160;&#160;(&quot;Task.Debug.RecognitionResult&quot;)</td></tr>
+<tr class="separator:gaf15fc35715ddc0b94fe62ece5b1d8094"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ga6524978f0790bfb73c7d8ed4490f8c87"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__MaaMsg.html#ga6524978f0790bfb73c7d8ed4490f8c87">MaaMsg_Task_Debug_Hit</a>&#160;&#160;&#160;(&quot;Task.Debug.Hit&quot;)</td></tr>
 <tr class="separator:ga6524978f0790bfb73c7d8ed4490f8c87"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:gaa3024bb9d66c5a503e159d2643c5c239"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__MaaMsg.html#gaa3024bb9d66c5a503e159d2643c5c239">MaaMsg_Resource_StartLoading</a>&#160;&#160;&#160;(&quot;Resource.StartLoading&quot;)</td></tr>
@@ -545,7 +547,7 @@ Macros</h2></td></tr>
 </div><div class="memdoc">
 
 <p>Message for the task focus. </p>
-<p >payload: { id: number, entry: string, uuid: string, hash: string, name: string, recognition: object, run_times: number, status: string } </p>
+<p >payload: { id: number, entry: string, uuid: string, hash: string, name: string, recognition: { id: number, box: [number, number, number, number], detail: string, hit: boolean, }, actuator_id: number, status: number, } </p>
 
 </div>
 </div>
@@ -562,7 +564,7 @@ Macros</h2></td></tr>
 </div><div class="memdoc">
 
 <p>Message for the task focus. </p>
-<p >payload: { id: number, entry: string, uuid: string, hash: string, name: string, recognition: object, run_times: number, status: string } </p>
+<p >payload: { id: number, entry: string, uuid: string, hash: string, name: string, recognition: { id: number, box: [number, number, number, number], detail: string, hit: boolean, }, actuator_id: number, status: number, } </p>
 
 </div>
 </div>
@@ -579,7 +581,7 @@ Macros</h2></td></tr>
 </div><div class="memdoc">
 
 <p>Message for the task focus. </p>
-<p >payload: { id: number, entry: string, uuid: string, hash: string, name: string, recognition: object, run_times: number, status: string } </p>
+<p >payload: { id: number, entry: string, uuid: string, hash: string, name: string, recognition: { id: number, box: [number, number, number, number], detail: string, hit: boolean, }, actuator_id: number, status: number, } </p>
 
 </div>
 </div>
@@ -596,7 +598,7 @@ Macros</h2></td></tr>
 </div><div class="memdoc">
 
 <p>Message for debug. </p>
-<p >payload: { id: number, entry: string, uuid: string, hash: string, name: string, latest_hit: string, recognition: object, run_times: number, status: string } </p>
+<p >payload: { id: number, entry: string, uuid: string, hash: string, name: string, recognition: { id: number, box: [number, number, number, number], detail: string, hit: boolean, }, actuator_id: number, status: number, } </p>
 
 </div>
 </div>
@@ -613,7 +615,7 @@ Macros</h2></td></tr>
 </div><div class="memdoc">
 
 <p>Message for debug. </p>
-<p >payload: { id: number, entry: string, uuid: string, hash: string, name: string, latest_hit: string, recognition: object, run_times: number, status: string } </p>
+<p >payload: { id: number, entry: string, uuid: string, hash: string, name: string, recognition: { id: number, box: [number, number, number, number], detail: string, hit: boolean, }, actuator_id: number, status: number, } </p>
 
 </div>
 </div>
@@ -630,7 +632,7 @@ Macros</h2></td></tr>
 </div><div class="memdoc">
 
 <p>Message for debug. </p>
-<p >payload: { id: number, entry: string, uuid: string, hash: string, name: string, latest_hit: string, recognition: object, run_times: number, status: string } </p>
+<p >payload: { id: number, entry: string, uuid: string, hash: string, name: string, recognition: { id: number, box: [number, number, number, number], detail: string, hit: boolean, }, actuator_id: number, status: number, } </p>
 
 </div>
 </div>
@@ -642,6 +644,20 @@ Macros</h2></td></tr>
       <table class="memname">
         <tr>
           <td class="memname">#define MaaMsg_Task_Debug_ListToRecognize&#160;&#160;&#160;(&quot;Task.Debug.ListToRecognize&quot;)</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="gaf15fc35715ddc0b94fe62ece5b1d8094" name="gaf15fc35715ddc0b94fe62ece5b1d8094"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#gaf15fc35715ddc0b94fe62ece5b1d8094">&#9670;&#160;</a></span>MaaMsg_Task_Debug_RecognitionResult</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">#define MaaMsg_Task_Debug_RecognitionResult&#160;&#160;&#160;(&quot;Task.Debug.RecognitionResult&quot;)</td>
         </tr>
       </table>
 </div><div class="memdoc">
