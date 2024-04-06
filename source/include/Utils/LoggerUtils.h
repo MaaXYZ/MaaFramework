@@ -102,7 +102,7 @@ public:
     }
 
     template <typename T>
-    requires std::is_constructible_v<json::value, T>
+    requires(std::is_constructible_v<json::value, T> && !has_output_operator<T>)
     std::string operator()(const T& value) const
     {
         return json::value(value).to_string();
