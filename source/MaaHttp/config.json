@@ -48,20 +48,11 @@
     }
   },
   "opaque": {
-    "MaaControllerAPI": {
-      "non-alloc": ["MaaGetController"],
-      "free": ["MaaControllerDestroy"]
-    },
-    "MaaResourceAPI": {
-      "non-alloc": ["MaaGetResource"],
-      "free": ["MaaResourceDestroy"]
-    },
-    "MaaInstanceAPI": {
-      "free": ["MaaDestroy"]
-    },
-    "MaaImageBuffer": {
-      "free": ["MaaDestroyImageBuffer"]
-    },
+    "MaaControllerAPI": {},
+    "MaaResourceAPI": {},
+    "MaaInstanceAPI": {},
+    "MaaImageBuffer": {},
+    "MaaImageListBuffer": {},
     "MaaSyncContextAPI": {}
   },
   "output": ["MaaStringBuffer"],
@@ -81,14 +72,12 @@
     "MaaClearString",
     "MaaGetString",
     "MaaSetString",
+    "/.*StringList.*",
     "MaaGetImageEncodedSize",
     "MaaGetImageRawData",
     "MaaControllerSetOption",
     "MaaResourceSetOption",
     "MaaSetOption",
     "MaaSetGlobalOption"
-  ],
-  "check": {
-    "const char *": "string"
-  }
+  ]
 }

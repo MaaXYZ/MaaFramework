@@ -1183,6 +1183,93 @@
         },
         {
             "argument": [],
+            "name": "MaaCreateStringListBuffer",
+            "return": "MaaStringListBufferHandle"
+        },
+        {
+            "argument": [
+                {
+                    "name": "handle",
+                    "type": "MaaStringListBufferHandle"
+                }
+            ],
+            "name": "MaaDestroyStringListBuffer",
+            "return": "void"
+        },
+        {
+            "argument": [
+                {
+                    "name": "handle",
+                    "type": "MaaStringListBufferHandle"
+                }
+            ],
+            "name": "MaaIsStringListEmpty",
+            "return": "MaaBool"
+        },
+        {
+            "argument": [
+                {
+                    "name": "handle",
+                    "type": "MaaStringListBufferHandle"
+                }
+            ],
+            "name": "MaaClearStringList",
+            "return": "MaaBool"
+        },
+        {
+            "argument": [
+                {
+                    "name": "handle",
+                    "type": "MaaStringListBufferHandle"
+                }
+            ],
+            "name": "MaaGetStringListSize",
+            "return": "MaaSize"
+        },
+        {
+            "argument": [
+                {
+                    "name": "handle",
+                    "type": "MaaStringListBufferHandle"
+                },
+                {
+                    "name": "index",
+                    "type": "MaaSize"
+                }
+            ],
+            "name": "MaaGetStringListAt",
+            "return": "MaaStringBufferHandle"
+        },
+        {
+            "argument": [
+                {
+                    "name": "handle",
+                    "type": "MaaStringListBufferHandle"
+                },
+                {
+                    "name": "value",
+                    "type": "MaaStringBufferHandle"
+                }
+            ],
+            "name": "MaaStringListAppend",
+            "return": "MaaBool"
+        },
+        {
+            "argument": [
+                {
+                    "name": "handle",
+                    "type": "MaaStringListBufferHandle"
+                },
+                {
+                    "name": "index",
+                    "type": "MaaSize"
+                }
+            ],
+            "name": "MaaStringListRemove",
+            "return": "MaaBool"
+        },
+        {
+            "argument": [],
             "name": "MaaCreateImageBuffer",
             "return": "MaaImageBufferHandle"
         },
@@ -1318,6 +1405,93 @@
                 }
             ],
             "name": "MaaSetImageEncoded",
+            "return": "MaaBool"
+        },
+        {
+            "argument": [],
+            "name": "MaaCreateImageListBuffer",
+            "return": "MaaImageListBufferHandle"
+        },
+        {
+            "argument": [
+                {
+                    "name": "handle",
+                    "type": "MaaImageListBufferHandle"
+                }
+            ],
+            "name": "MaaDestroyImageListBuffer",
+            "return": "void"
+        },
+        {
+            "argument": [
+                {
+                    "name": "handle",
+                    "type": "MaaImageListBufferHandle"
+                }
+            ],
+            "name": "MaaIsImageListEmpty",
+            "return": "MaaBool"
+        },
+        {
+            "argument": [
+                {
+                    "name": "handle",
+                    "type": "MaaImageListBufferHandle"
+                }
+            ],
+            "name": "MaaClearImageList",
+            "return": "MaaBool"
+        },
+        {
+            "argument": [
+                {
+                    "name": "handle",
+                    "type": "MaaImageListBufferHandle"
+                }
+            ],
+            "name": "MaaGetImageListSize",
+            "return": "MaaSize"
+        },
+        {
+            "argument": [
+                {
+                    "name": "handle",
+                    "type": "MaaImageListBufferHandle"
+                },
+                {
+                    "name": "index",
+                    "type": "MaaSize"
+                }
+            ],
+            "name": "MaaGetImageListAt",
+            "return": "MaaImageBufferHandle"
+        },
+        {
+            "argument": [
+                {
+                    "name": "handle",
+                    "type": "MaaImageListBufferHandle"
+                },
+                {
+                    "name": "value",
+                    "type": "MaaImageBufferHandle"
+                }
+            ],
+            "name": "MaaImageListAppend",
+            "return": "MaaBool"
+        },
+        {
+            "argument": [
+                {
+                    "name": "handle",
+                    "type": "MaaImageListBufferHandle"
+                },
+                {
+                    "name": "index",
+                    "type": "MaaSize"
+                }
+            ],
+            "name": "MaaImageListRemove",
             "return": "MaaBool"
         },
         {
@@ -1478,6 +1652,50 @@
                 }
             ],
             "name": "MaaSetGlobalOption",
+            "return": "MaaBool"
+        },
+        {
+            "argument": [
+                {
+                    "name": "reco_id",
+                    "type": "MaaRecoId"
+                },
+                {
+                    "name": "hit",
+                    "type": "MaaBool *"
+                },
+                {
+                    "name": "hit_box",
+                    "type": "MaaRectHandle"
+                },
+                {
+                    "name": "hit_detail",
+                    "type": "MaaStringBufferHandle"
+                },
+                {
+                    "name": "draws",
+                    "type": "MaaImageListBufferHandle"
+                }
+            ],
+            "name": "MaaQueryRecognitionDetail",
+            "return": "MaaBool"
+        },
+        {
+            "argument": [
+                {
+                    "name": "run_id",
+                    "type": "MaaRunningId"
+                },
+                {
+                    "name": "reco_id",
+                    "type": "MaaRecoId *"
+                },
+                {
+                    "name": "successful",
+                    "type": "MaaBool *"
+                }
+            ],
+            "name": "MaaQueryRunningDetail",
             "return": "MaaBool"
         },
         {

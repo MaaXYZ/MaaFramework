@@ -21,6 +21,10 @@ LHGArgHandle(maa::func_type_MaaDestroy::_0_inst, free);
 LHGArgHandle(maa::func_type_MaaCreateImageBuffer::ret, alloc);
 LHGArgHandle(maa::func_type_MaaDestroyImageBuffer::_0_handle, free);
 
+LHGArgHandle(maa::func_type_MaaCreateImageListBuffer::ret, alloc);
+LHGArgHandle(maa::func_type_MaaDestroyImageListBuffer::_0_handle, free);
+LHGArgHandle(maa::func_type_MaaGetImageListAt::ret, temp);
+
 #define ReturnHwnd(func_tag)                                                             \
     LHGArgToJsonBegin(func_tag, ret, true)                                               \
         value = std::format("{:#018x}", reinterpret_cast<size_t>(std::get<index>(arg))); \
@@ -82,6 +86,7 @@ LHGArgFromJsonEnd()
 OutputString(maa::func_type_MaaResourceGetTaskList, _1_buffer);
 OutputString(maa::func_type_MaaResourceGetHash, _1_buffer);
 OutputString(maa::func_type_MaaControllerGetUUID, _1_buffer);
+OutputString(maa::func_type_MaaQueryRecognitionDetail, _3_hit_detail);
 OutputString(maa::func_type_MaaSyncContextRunRecognizer, _5_out_detail);
 
 #undef OutputString
@@ -155,6 +160,27 @@ LHGArgFromJsonBegin(maa::func_type_MaaRegisterCustomAction, _2_action, true)
                             { "stop", schema::Builder().type("string").obj } });
 LHGArgFromJsonEnd()
 
+LHGArgOutput(maa::func_type_MaaQueryRecognitionDetail::_1_hit);
+LHGArgPrepareStateBegin(maa::func_type_MaaQueryRecognitionDetail, _1_hit)
+    std::get<arg_tag::index>(arg) = &std::get<arg_tag::index>(state);
+LHGArgPrepareStateEnd()
+LHGArgToJsonBegin(maa::func_type_MaaQueryRecognitionDetail, _1_hit, true)
+    value = std::get<index>(state);
+    LHGArgToJsonMiddle()
+    b.type("boolean");
+LHGArgToJsonEnd()
+
+LHGArgOutput(maa::func_type_MaaQueryRecognitionDetail::_2_hit_box);
+LHGArgPrepareStateBegin(maa::func_type_MaaQueryRecognitionDetail, _2_hit_box)
+    std::get<arg_tag::index>(arg) = &std::get<arg_tag::index>(state);
+LHGArgPrepareStateEnd()
+LHGArgToJsonBegin(maa::func_type_MaaQueryRecognitionDetail, _2_hit_box, true)
+    auto rec = &std::get<index>(state);
+    value = pri_maa::from_rect(rec);
+    LHGArgToJsonMiddle()
+    pri_maa::schema_rect(b);
+LHGArgToJsonEnd()
+
 LHGArgFromJsonBegin(maa::func_type_MaaSyncContextRunAction, _3_cur_box, true)
     auto rec = &std::get<index>(state);
     pri_maa::to_rect(value, rec);
@@ -162,7 +188,30 @@ LHGArgFromJsonBegin(maa::func_type_MaaSyncContextRunAction, _3_cur_box, true)
     pri_maa::schema_rect(b);
 LHGArgFromJsonEnd()
 
+LHGArgOutput(maa::func_type_MaaQueryRunningDetail::_1_reco_id);
+LHGArgPrepareStateBegin(maa::func_type_MaaQueryRunningDetail, _1_reco_id)
+    std::get<arg_tag::index>(arg) = &std::get<arg_tag::index>(state);
+LHGArgPrepareStateEnd()
+LHGArgToJsonBegin(maa::func_type_MaaQueryRunningDetail, _1_reco_id, true)
+    value = std::get<index>(state);
+    LHGArgToJsonMiddle()
+    b.type("number");
+LHGArgToJsonEnd()
+
+LHGArgOutput(maa::func_type_MaaQueryRunningDetail::_2_successful);
+LHGArgPrepareStateBegin(maa::func_type_MaaQueryRunningDetail, _2_successful)
+    std::get<arg_tag::index>(arg) = &std::get<arg_tag::index>(state);
+LHGArgPrepareStateEnd()
+LHGArgToJsonBegin(maa::func_type_MaaQueryRunningDetail, _2_successful, true)
+    value = std::get<index>(state);
+    LHGArgToJsonMiddle()
+    b.type("boolean");
+LHGArgToJsonEnd()
+
 LHGArgOutput(maa::func_type_MaaSyncContextRunRecognizer::_4_out_box);
+LHGArgPrepareStateBegin(maa::func_type_MaaSyncContextRunRecognizer, _4_out_box)
+    std::get<arg_tag::index>(arg) = &std::get<arg_tag::index>(state);
+LHGArgPrepareStateEnd()
 LHGArgToJsonBegin(maa::func_type_MaaSyncContextRunRecognizer, _4_out_box, true)
     auto rec = &std::get<index>(state);
     value = pri_maa::from_rect(rec);
