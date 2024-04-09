@@ -289,11 +289,10 @@ bool PipelineTask::debug_mode() const
 json::object PipelineTask::basic_info()
 {
     return {
-        { "id", task_id_ },
+        { "task_id", task_id_ },
         { "entry", entry() },
         { "hash", resource() ? resource()->get_hash() : std::string() },
         { "uuid", controller() ? controller()->get_uuid() : std::string() },
-        { "latest_hit", latest_hit_ },
     };
 }
 
@@ -329,7 +328,7 @@ json::object PipelineTask::running_detail_to_json(const RunningDetail& detail)
 {
     return hit_detail_to_json(detail.hits)
            | json::object {
-                 { "actuator_id", detail.run_id },
+                 { "running_id", detail.run_id },
                  { "status", static_cast<int>(detail.status) },
              };
 }
