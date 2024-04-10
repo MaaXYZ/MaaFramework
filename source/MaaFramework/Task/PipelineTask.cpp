@@ -182,10 +182,7 @@ std::optional<PipelineTask::HitDetail>
         auto reco = recognizer.recognize(image, task_data);
 
         if (debug_mode()) {
-            json::value cb_detail = basic_info() | reco_result_to_json(reco)
-                                    | json::object {
-                                          { "name", name },
-                                      };
+            json::value cb_detail = basic_info() | reco_result_to_json(name, reco);
             notify(MaaMsg_Task_Debug_RecognitionResult, cb_detail);
         }
 
@@ -296,9 +293,11 @@ json::object PipelineTask::basic_info()
     };
 }
 
-json::object PipelineTask::reco_result_to_json(const Recognizer::Result& res)
+json::object
+    PipelineTask::reco_result_to_json(const std::string& name, const Recognizer::Result& res)
 {
     return {
+        { "name", name },
         { "recognition",
           {
               { "id", res.uid },

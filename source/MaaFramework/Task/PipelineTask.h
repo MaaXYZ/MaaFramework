@@ -91,7 +91,7 @@ private:
 
     bool debug_mode() const;
     json::object basic_info();
-    json::object reco_result_to_json(const Recognizer::Result& res);
+    json::object reco_result_to_json(const std::string& name, const Recognizer::Result& res);
     json::object hit_detail_to_json(const HitDetail& detail);
     json::object running_detail_to_json(const RunningDetail& detail);
 
