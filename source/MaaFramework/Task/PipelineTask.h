@@ -101,7 +101,7 @@ private:
 
     int64_t task_id_ = 0;
     std::string entry_;
-    std::string latest_hit_;
+    std::string pre_hit_task_;
 
     std::map<std::string, uint64_t> run_times_map_;
     Actuator::PreTaskBoxes hit_cache_;

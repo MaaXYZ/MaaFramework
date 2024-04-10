@@ -270,6 +270,35 @@ int main(int argc, char* argv[])
                           .obj;
             });
 
+        auto config_opt = json::open("MaaHttp.json");
+        if (config_opt.has_value()) {
+            const auto& config = config_opt.value();
+            if (config.is_object()) {
+                const auto& serve = config.at("serve");
+                const auto& redir = config.at("redirect");
+                if (serve.is_object()) {
+                    for (const auto& [route, base] : serve.as_object()) {
+                        if (!base.is_string()) {
+                            continue;
+                        }
+                        std::cout << "serve " << base.as_string() << " at " << route << std::endl;
+                        disp->static_serve(
+                            route,
+                            std::filesystem::current_path() / base.as_string());
+                    }
+                }
+                if (redir.is_object()) {
+                    for (const auto& [route, to] : redir.as_object()) {
+                        if (!to.is_string()) {
+                            continue;
+                        }
+                        std::cout << "redirect " << route << " to " << to.as_string() << std::endl;
+                        disp->redirect(route, to.as_string());
+                    }
+                }
+            }
+        }
+
         disp->setup_help("/help", "maa http monitor", "1.0.0");
 
         auto port = server->port();
