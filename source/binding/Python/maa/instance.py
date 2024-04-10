@@ -367,6 +367,8 @@ class Instance:
             recognition=recognition,
             successful=bool(successful),
         )
+    
+    _api_properties_initialized: bool = False
 
     @staticmethod
     def _set_api_properties():
