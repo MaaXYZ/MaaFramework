@@ -19,7 +19,7 @@ from .buffer import RectBuffer, ImageListBuffer, StringBuffer
 class RecognitionDetail:
     reco_id: int
     hit_box: Optional[Rect]
-    hit_detail: Dict
+    detail: Dict
     draws: List[numpy.ndarray]
 
 
@@ -314,14 +314,14 @@ class Instance:
 
         hit = MaaBool()
         hit_box = RectBuffer()
-        hit_detail = StringBuffer()
+        detail_json = StringBuffer()
         draws = ImageListBuffer()
         ret = bool(
             Library.framework.MaaQueryRecognitionDetail(
                 reco_id,
                 ctypes.pointer(hit),
                 hit_box.c_handle,
-                hit_detail.c_handle,
+                detail_json.c_handle,
                 draws.c_handle,
             )
         )
@@ -331,7 +331,7 @@ class Instance:
         return RecognitionDetail(
             reco_id=reco_id,
             hit_box=bool(hit) and hit_box.get() or None,
-            hit_detail=json.loads(hit_detail.get()),
+            detail=json.loads(detail_json.get()),
             draws=draws.get(),
         )
 

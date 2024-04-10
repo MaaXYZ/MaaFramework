@@ -19,7 +19,7 @@ class _Framework:
         reco_id: MaaRecoId,
         hit: ctypes.POINTER(MaaBool),
         hit_box: MaaRectHandle,
-        hit_detail: MaaStringBufferHandle,
+        detail_json: MaaStringBufferHandle,
         draws: MaaImageListBufferHandle,
     ) -> MaaBool: ...
     @staticmethod

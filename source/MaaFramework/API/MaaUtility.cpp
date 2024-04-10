@@ -25,7 +25,7 @@ MaaBool MaaQueryRecognitionDetail(
     MaaRecoId reco_id,
     /* out */ MaaBool* hit,
     /* out */ MaaRectHandle hit_box,
-    /* out */ MaaStringBufferHandle hit_detail,
+    /* out */ MaaStringBufferHandle detail_json,
     /* out */ MaaImageListBufferHandle draws)
 {
     bool mhit = false;
@@ -49,8 +49,8 @@ MaaBool MaaQueryRecognitionDetail(
         hit_box->width = mbox.width;
         hit_box->height = mbox.height;
     }
-    if (hit_detail) {
-        hit_detail->set(std::move(mdetail));
+    if (detail_json) {
+        detail_json->set(std::move(mdetail));
     }
     if (draws) {
         for (auto& d : mdraws) {
