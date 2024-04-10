@@ -317,8 +317,10 @@ class ImageListBuffer:
 
         if c_handle:
             self._handle = c_handle
+            self._own = False
         else:
-            self._handle = None
+            self._handle = Library.framework.MaaCreateImageListBuffer()
+            self._own = True
 
         if not self._handle:
             raise RuntimeError("Failed to create image list buffer.")

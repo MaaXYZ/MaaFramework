@@ -193,7 +193,7 @@ inline std::ostream& operator<<(std::ostream& os, const ResultOrderBy& order_by)
     return os;
 }
 
-struct RectComparer
+struct RectComparator
 {
     bool operator()(const cv::Rect& lhs, const cv::Rect& rhs) const
     {

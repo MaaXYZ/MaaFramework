@@ -32,7 +32,7 @@ class OCRer
     , public RecoResultAPI<OCRerResult>
 {
 public:
-    using Cache = std::map<cv::Rect, ResultsVec, RectComparer>;
+    using Cache = std::map<cv::Rect, ResultsVec, RectComparator>;
 
 public:
     OCRer(

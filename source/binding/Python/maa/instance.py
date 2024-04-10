@@ -329,8 +329,8 @@ class Instance:
             return None
 
         return RecognitionDetail(
-            hit=bool(hit),
-            hit_box=hit and hit_box.get() or None,
+            reco_id=reco_id,
+            hit_box=bool(hit) and hit_box.get() or None,
             hit_detail=json.loads(hit_detail.get()),
             draws=draws.get(),
         )
@@ -367,7 +367,7 @@ class Instance:
             recognition=recognition,
             successful=bool(successful),
         )
-    
+
     _api_properties_initialized: bool = False
 
     @staticmethod
@@ -454,10 +454,18 @@ class Instance:
 
         Library.framework.MaaQueryRecognitionDetail.restype = MaaBool
         Library.framework.MaaQueryRecognitionDetail.argtypes = [
-            MaaInstanceHandle,
-            MaaTaskId,
-            MaaStringView,
-            MaaStringView,
+            MaaRecoId,
+            ctypes.POINTER(MaaBool),
+            MaaRectHandle,
+            MaaStringBufferHandle,
+            MaaImageListBufferHandle,
+        ]
+
+        Library.framework.MaaQueryRunningDetail.restype = MaaBool
+        Library.framework.MaaQueryRunningDetail.argtypes = [
+            MaaRunningId,
+            ctypes.POINTER(MaaRecoId),
+            ctypes.POINTER(MaaBool),
         ]
 
 
