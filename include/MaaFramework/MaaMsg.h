@@ -141,7 +141,7 @@
  *     entry: string,
  *     uuid: string,
  *     hash: string,
- *     latest_hit: string,
+ *     pre_hit_task: string,
  *     name: string,
  *     recognition: {
  *         id: number,
@@ -167,7 +167,7 @@
  *     entry: string,
  *     uuid: string,
  *     hash: string,
- *     latest_hit: string,
+ *     pre_hit_task: string,
  *     name: string,
  *     recognition: {
  *         id: number,

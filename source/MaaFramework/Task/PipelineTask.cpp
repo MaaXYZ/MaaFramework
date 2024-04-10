@@ -29,8 +29,8 @@ bool PipelineTask::run()
 
     TaskData new_hits = data_mgr_.get_task_data(entry_);
     while (!next_list.empty() && !need_to_stop()) {
-        auto timeout = new_hits.timeout;
-        ret = find_first_and_run(next_list, timeout, new_hits);
+        pre_hit_task_ = new_hits.name;
+        ret = find_first_and_run(next_list, new_hits.timeout, new_hits);
 
         switch (ret) {
         case RunningStatus::Success:
@@ -109,12 +109,12 @@ PipelineTask::RunningStatus PipelineTask::find_first_and_run(
         }
 
         if (need_to_stop()) {
-            LogInfo << "Task interrupted" << VAR(latest_hit_);
+            LogInfo << "Task interrupted" << VAR(pre_hit_task_);
             return RunningStatus::Interrupted;
         }
 
         if (std::chrono::steady_clock::now() - start_time > timeout) {
-            LogInfo << "Task timeout" << VAR(latest_hit_) << VAR(timeout);
+            LogInfo << "Task timeout" << VAR(pre_hit_task_) << VAR(timeout);
             return RunningStatus::Timeout;
         }
     }
@@ -122,7 +122,6 @@ PipelineTask::RunningStatus PipelineTask::find_first_and_run(
     LogInfo << "Task hit:" << hits.task_data.name << VAR(hits.reco_uid) << VAR(hits.reco_hit)
             << VAR(hits.reco_detail);
 
-    latest_hit_ = hits.task_data.name;
     hit_cache_.insert_or_assign(hits.task_data.name, hits.reco_hit);
 
     auto run_ret = run_task(hits);
@@ -140,11 +139,11 @@ std::optional<PipelineTask::HitDetail>
         return std::nullopt;
     }
     if (need_to_stop()) {
-        LogInfo << "Task interrupted" << VAR(latest_hit_);
+        LogInfo << "Task interrupted" << VAR(pre_hit_task_);
         return std::nullopt;
     }
 
-    LogFunc << VAR(latest_hit_) << VAR(list);
+    LogFunc << VAR(pre_hit_task_) << VAR(list);
 
     cv::Mat image = controller()->screencap();
 
@@ -154,7 +153,7 @@ std::optional<PipelineTask::HitDetail>
     }
 
     if (need_to_stop()) {
-        LogInfo << "Task interrupted" << VAR(latest_hit_);
+        LogInfo << "Task interrupted" << VAR(pre_hit_task_);
         return std::nullopt;
     }
 
@@ -217,7 +216,7 @@ std::optional<PipelineTask::HitDetail>
 PipelineTask::RunningStatus PipelineTask::run_task(const HitDetail& hits)
 {
     if (need_to_stop()) {
-        LogInfo << "Task interrupted" << VAR(latest_hit_);
+        LogInfo << "Task interrupted" << VAR(pre_hit_task_);
         return RunningStatus::Interrupted;
     }
 
@@ -293,6 +292,7 @@ json::object PipelineTask::basic_info()
         { "entry", entry() },
         { "hash", resource() ? resource()->get_hash() : std::string() },
         { "uuid", controller() ? controller()->get_uuid() : std::string() },
+        { "pre_hit_task", pre_hit_task_ },
     };
 }
 
