@@ -199,6 +199,14 @@ std::optional<PipelineTask::HitDetail>
     }
 
     if (!hit) {
+        if (debug_mode()) {
+            json::value detail = basic_info()
+                                 | json::object {
+                                       { "list", json::array(list) },
+                                   };
+            notify(MaaMsg_Task_Debug_MissAll, detail);
+        }
+
         return std::nullopt;
     }
 
@@ -303,7 +311,6 @@ json::object
               { "id", res.uid },
               { "box", res.hit ? json::value(*res.hit) : json::value(nullptr) },
               { "detail", res.detail },
-              { "draws_size", res.draws.size() },
               { "hit", res.hit.has_value() },
           } },
     };

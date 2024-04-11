@@ -110,10 +110,14 @@ MaaControllerHandle = ctypes.c_void_p
 MaaStringView = ctypes.c_char_p
 MaaStringBufferHandle = ctypes.c_void_p
 
+MaaStringListBufferHandle = ctypes.c_void_p
+
 MaaSize = ctypes.c_size_t
 
 MaaImageBufferHandle = ctypes.c_void_p
 MaaImageRawData = ctypes.c_void_p
+
+MaaImageListBufferHandle = ctypes.c_void_p
 
 MaaRectHandle = ctypes.c_void_p
 
@@ -165,6 +169,9 @@ MaaCustomActionHandle = ctypes.c_void_p
 
 MaaResourceCallback = MaaApiCallback
 MaaResId = MaaId
+
+MaaRecoId = MaaId
+MaaRunningId = MaaId
 
 
 @dataclass

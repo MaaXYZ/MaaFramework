@@ -14,6 +14,20 @@ class _Framework:
         value: MaaOptionValue,
         val_size: MaaOptionValueSize,
     ) -> MaaBool: ...
+    @staticmethod
+    def MaaQueryRecognitionDetail(
+        reco_id: MaaRecoId,
+        hit: ctypes.POINTER(MaaBool),
+        hit_box: MaaRectHandle,
+        detail_json: MaaStringBufferHandle,
+        draws: MaaImageListBufferHandle,
+    ) -> MaaBool: ...
+    @staticmethod
+    def MaaQueryRunningDetail(
+        run_id: MaaRunningId,
+        reco_id: ctypes.POINTER(MaaRecoId),
+        successful: ctypes.POINTER(MaaBool),
+    ) -> MaaBool: ...
 
     # buffer.py
     # StringBuffer
@@ -37,6 +51,30 @@ class _Framework:
         str: MaaStringView,
         size: MaaSize,
     ) -> MaaBool: ...
+    # StringListBuffer
+    @staticmethod
+    def MaaCreateStringListBuffer() -> MaaStringListBufferHandle: ...
+    @staticmethod
+    def MaaDestroyStringListBuffer(handle: MaaStringListBufferHandle) -> None: ...
+    @staticmethod
+    def MaaIsStringListEmpty(handle: MaaStringListBufferHandle) -> MaaBool: ...
+    @staticmethod
+    def MaaClearStringList(handle: MaaStringListBufferHandle) -> MaaBool: ...
+    @staticmethod
+    def MaaGetStringListSize(handle: MaaStringListBufferHandle) -> MaaSize: ...
+    @staticmethod
+    def MaaGetStringListAt(
+        handle: MaaStringListBufferHandle, index: MaaSize
+    ) -> MaaStringView: ...
+    @staticmethod
+    def MaaStringListAppend(
+        handle: MaaStringListBufferHandle, value: MaaStringBufferHandle
+    ) -> MaaBool: ...
+    @staticmethod
+    def MaaStringListRemove(
+        handle: MaaStringListBufferHandle, index: MaaSize
+    ) -> MaaBool: ...
+
     # ImageBuffer
     @staticmethod
     def MaaCreateImageBuffer() -> MaaCreateImageBuffer: ...
@@ -82,6 +120,29 @@ class _Framework:
         y: c_int32,
         w: c_int32,
         h: c_int32,
+    ) -> MaaBool: ...
+    # ImageListBuffer
+    @staticmethod
+    def MaaCreateImageListBuffer() -> MaaImageListBufferHandle: ...
+    @staticmethod
+    def MaaDestroyImageListBuffer(handle: MaaImageListBufferHandle) -> None: ...
+    @staticmethod
+    def MaaIsImageListEmpty(handle: MaaImageListBufferHandle) -> MaaBool: ...
+    @staticmethod
+    def MaaClearImageList(handle: MaaImageListBufferHandle) -> MaaBool: ...
+    @staticmethod
+    def MaaGetImageListSize(handle: MaaImageListBufferHandle) -> MaaSize: ...
+    @staticmethod
+    def MaaGetImageListAt(
+        handle: MaaImageListBufferHandle, index: MaaSize
+    ) -> MaaImageBufferHandle: ...
+    @staticmethod
+    def MaaImageListAppend(
+        handle: MaaImageListBufferHandle, value: MaaImageBufferHandle
+    ) -> MaaBool: ...
+    @staticmethod
+    def MaaImageListRemove(
+        handle: MaaImageListBufferHandle, index: MaaSize
     ) -> MaaBool: ...
 
     # context.py

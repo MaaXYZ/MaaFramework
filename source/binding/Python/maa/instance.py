@@ -1,6 +1,7 @@
 import ctypes
 import json
 import asyncio
+from pathlib import Path
 from typing import Dict, Union, Optional, Any
 
 from .define import *
@@ -11,6 +12,21 @@ from .controller import Controller
 from .resource import Resource
 from .custom_recognizer import CustomRecognizer
 from .custom_action import CustomAction
+from .buffer import RectBuffer, ImageListBuffer, StringBuffer
+
+
+@dataclass
+class RecognitionDetail:
+    reco_id: int
+    hit_box: Optional[Rect]
+    detail: Dict
+    draws: List[numpy.ndarray]
+
+
+class RunningDetail:
+    run_id: int
+    recognition: RecognitionDetail
+    successful: bool
 
 
 class Instance:
@@ -188,6 +204,170 @@ class Instance:
             self._handle, id, json.dumps(param).encode("utf-8")
         )
 
+    @staticmethod
+    def set_log_dir(path: Union[Path, str]) -> bool:
+        """
+        Set the log directory.
+
+        :param path: The path to the log directory.
+        """
+        return bool(
+            Library.framework.MaaSetGlobalOption(
+                MaaGlobalOptionEnum.LogDir,
+                str(path).encode("utf-8"),
+                len(path),
+            )
+        )
+
+    @staticmethod
+    def set_save_draw(save_draw: bool) -> bool:
+        """
+        Set whether to save draw.
+
+        :param save_draw: Whether to save draw.
+        """
+        cbool = ctypes.c_bool(save_draw)
+        return bool(
+            Library.framework.MaaSetGlobalOption(
+                MaaGlobalOptionEnum.SaveDraw,
+                ctypes.pointer(cbool),
+                ctypes.sizeof(ctypes.c_bool),
+            )
+        )
+
+    @staticmethod
+    def set_recording(recording: bool) -> bool:
+        """
+        Set whether to dump all screenshots and actions.
+
+        :param recording: Whether to dump all screenshots and actions.
+        """
+
+        cbool = ctypes.c_bool(recording)
+        return bool(
+            Library.framework.MaaSetGlobalOption(
+                MaaGlobalOptionEnum.Recording,
+                ctypes.pointer(cbool),
+                ctypes.sizeof(ctypes.c_bool),
+            )
+        )
+
+    @staticmethod
+    def set_stdout_level(level: MaaLoggingLevelEunm) -> bool:
+        """
+        Set the level of log output to stdout.
+
+        :param level: The level of log output to stdout.
+        """
+
+        cbool = ctypes.c_bool(level)
+        return bool(
+            Library.framework.MaaSetGlobalOption(
+                MaaGlobalOptionEnum.StdoutLevel,
+                ctypes.pointer(cbool),
+                ctypes.sizeof(MaaLoggingLevel),
+            )
+        )
+
+    @staticmethod
+    def set_show_hit_draw(show_hit_draw: bool) -> bool:
+        """
+        Set whether to show hit draw.
+
+        :param show_hit_draw: Whether to show hit draw.
+        """
+
+        cbool = ctypes.c_bool(show_hit_draw)
+        return bool(
+            Library.framework.MaaSetGlobalOption(
+                MaaGlobalOptionEnum.ShowHitDraw,
+                ctypes.pointer(cbool),
+                ctypes.sizeof(ctypes.c_bool),
+            )
+        )
+
+    @staticmethod
+    def set_debug_message(debug_message: bool) -> bool:
+        """
+        Set whether to callback debug message.
+
+        :param debug_message: Whether to callback debug message.
+        """
+
+        cbool = ctypes.c_bool(debug_message)
+        return bool(
+            Library.framework.MaaSetGlobalOption(
+                MaaGlobalOptionEnum.DebugMessage,
+                ctypes.pointer(cbool),
+                ctypes.sizeof(ctypes.c_bool),
+            )
+        )
+
+    @staticmethod
+    def query_recognition_detail(reco_id: int) -> Optional[RecognitionDetail]:
+        """
+        Query recognition detail.
+
+        :param reco_id: The recognition id.
+        :return: The recognition detail.
+        """
+
+        hit = MaaBool()
+        hit_box = RectBuffer()
+        detail_json = StringBuffer()
+        draws = ImageListBuffer()
+        ret = bool(
+            Library.framework.MaaQueryRecognitionDetail(
+                reco_id,
+                ctypes.pointer(hit),
+                hit_box.c_handle,
+                detail_json.c_handle,
+                draws.c_handle,
+            )
+        )
+        if not ret:
+            return None
+
+        return RecognitionDetail(
+            reco_id=reco_id,
+            hit_box=bool(hit) and hit_box.get() or None,
+            detail=json.loads(detail_json.get()),
+            draws=draws.get(),
+        )
+
+    @staticmethod
+    def query_running_detail(run_id: int) -> Optional[RunningDetail]:
+        """
+        Query running detail.
+
+        :param run_id: The running id.
+        :return: The running detail.
+        """
+
+        reco_id = MaaRecoId()
+        successful = MaaBool()
+
+        ret = bool(
+            Library.framework.MaaQueryRunningDetail(
+                run_id,
+                ctypes.pointer(reco_id),
+                ctypes.pointer(successful),
+            )
+        )
+
+        if not ret:
+            return None
+
+        recognition = Instance.query_recognition_detail(reco_id)
+        if not recognition:
+            return None
+
+        return RunningDetail(
+            run_id=run_id,
+            recognition=recognition,
+            successful=bool(successful),
+        )
+
     _api_properties_initialized: bool = False
 
     @staticmethod
@@ -263,6 +443,29 @@ class Instance:
             MaaStringView,
             MaaCustomActionHandle,
             MaaTransparentArg,
+        ]
+
+        Library.framework.MaaSetGlobalOption.restype = MaaBool
+        Library.framework.MaaSetGlobalOption.argtypes = [
+            MaaGlobalOption,
+            MaaOptionValue,
+            MaaOptionValueSize,
+        ]
+
+        Library.framework.MaaQueryRecognitionDetail.restype = MaaBool
+        Library.framework.MaaQueryRecognitionDetail.argtypes = [
+            MaaRecoId,
+            ctypes.POINTER(MaaBool),
+            MaaRectHandle,
+            MaaStringBufferHandle,
+            MaaImageListBufferHandle,
+        ]
+
+        Library.framework.MaaQueryRunningDetail.restype = MaaBool
+        Library.framework.MaaQueryRunningDetail.argtypes = [
+            MaaRunningId,
+            ctypes.POINTER(MaaRecoId),
+            ctypes.POINTER(MaaBool),
         ]
 
 

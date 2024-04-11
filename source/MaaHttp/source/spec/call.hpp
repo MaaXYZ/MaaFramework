@@ -86,7 +86,7 @@ LHGArgFromJsonEnd()
 OutputString(maa::func_type_MaaResourceGetTaskList, _1_buffer);
 OutputString(maa::func_type_MaaResourceGetHash, _1_buffer);
 OutputString(maa::func_type_MaaControllerGetUUID, _1_buffer);
-OutputString(maa::func_type_MaaQueryRecognitionDetail, _3_hit_detail);
+OutputString(maa::func_type_MaaQueryRecognitionDetail, _3_detail_json);
 OutputString(maa::func_type_MaaSyncContextRunRecognizer, _5_out_detail);
 
 #undef OutputString

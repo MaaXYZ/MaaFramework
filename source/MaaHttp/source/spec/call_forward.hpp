@@ -13,7 +13,7 @@ LHGArgOuterState(maa::func_type_MaaSyncContextRunRecognizer::_5_out_detail, MaaS
 
 LHGArgOuterState(maa::func_type_MaaQueryRecognitionDetail::_1_hit, MaaBool);
 LHGArgOuterState(maa::func_type_MaaQueryRecognitionDetail::_2_hit_box, MaaRect);
-LHGArgOuterState(maa::func_type_MaaQueryRecognitionDetail::_3_hit_detail, MaaStringBufferHandle);
+LHGArgOuterState(maa::func_type_MaaQueryRecognitionDetail::_3_detail_json, MaaStringBufferHandle);
 LHGArgOuterState(maa::func_type_MaaQueryRunningDetail::_1_reco_id, MaaRecoId);
 LHGArgOuterState(maa::func_type_MaaQueryRunningDetail::_2_successful, MaaBool)
 

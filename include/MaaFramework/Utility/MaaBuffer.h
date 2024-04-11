@@ -33,8 +33,10 @@ extern "C"
     MAA_FRAMEWORK_API MaaBool MaaIsStringListEmpty(MaaStringListBufferHandle handle);
     MAA_FRAMEWORK_API MaaBool MaaClearStringList(MaaStringListBufferHandle handle);
     MAA_FRAMEWORK_API MaaSize MaaGetStringListSize(MaaStringListBufferHandle handle);
+    // return a string view, don't destory it
     MAA_FRAMEWORK_API MaaStringBufferHandle
         MaaGetStringListAt(MaaStringListBufferHandle handle, MaaSize index);
+    // append a deep copy of value, you still need to destory it.
     MAA_FRAMEWORK_API MaaBool
         MaaStringListAppend(MaaStringListBufferHandle handle, MaaStringBufferHandle value);
     MAA_FRAMEWORK_API MaaBool MaaStringListRemove(MaaStringListBufferHandle handle, MaaSize index);
@@ -67,8 +69,10 @@ extern "C"
     MAA_FRAMEWORK_API MaaBool MaaIsImageListEmpty(MaaImageListBufferHandle handle);
     MAA_FRAMEWORK_API MaaBool MaaClearImageList(MaaImageListBufferHandle handle);
     MAA_FRAMEWORK_API MaaSize MaaGetImageListSize(MaaImageListBufferHandle handle);
+    // return an image view, don't destory it
     MAA_FRAMEWORK_API MaaImageBufferHandle
         MaaGetImageListAt(MaaImageListBufferHandle handle, MaaSize index);
+    // append a deep copy of value, you still need to destory it.
     MAA_FRAMEWORK_API MaaBool
         MaaImageListAppend(MaaImageListBufferHandle handle, MaaImageBufferHandle value);
     MAA_FRAMEWORK_API MaaBool MaaImageListRemove(MaaImageListBufferHandle handle, MaaSize index);

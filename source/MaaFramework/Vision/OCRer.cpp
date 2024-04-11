@@ -3,6 +3,12 @@
 #include <ranges>
 #include <regex>
 
+MAA_SUPPRESS_CV_WARNINGS_BEGIN
+#include "fastdeploy/vision/ocr/ppocr/dbdetector.h"
+#include "fastdeploy/vision/ocr/ppocr/ppocr_v3.h"
+#include "fastdeploy/vision/ocr/ppocr/recognizer.h"
+MAA_SUPPRESS_CV_WARNINGS_END
+
 #include "Utils/ImageIo.h"
 #include "Utils/Logger.h"
 #include "Utils/StringMisc.hpp"
