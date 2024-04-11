@@ -5,16 +5,24 @@
 
 #include "Conf/Conf.h"
 
-MAA_SUPPRESS_CV_WARNINGS_BEGIN
-#include "fastdeploy/vision/ocr/ppocr/dbdetector.h"
-#include "fastdeploy/vision/ocr/ppocr/ppocr_v3.h"
-#include "fastdeploy/vision/ocr/ppocr/recognizer.h"
-MAA_SUPPRESS_CV_WARNINGS_END
-
 #include "Utils/Codec.h"
 #include "Utils/JsonExt.hpp"
 #include "VisionBase.h"
 #include "VisionTypes.h"
+
+namespace fastdeploy
+{
+namespace vision::ocr
+{
+class DBDetector;
+class Recognizer;
+}
+
+namespace pipeline
+{
+class PPOCRv3;
+}
+}
 
 MAA_VISION_NS_BEGIN
 

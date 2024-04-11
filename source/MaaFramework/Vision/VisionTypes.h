@@ -15,11 +15,6 @@
 #define MAA_VISION_HAS_XFEATURES2D
 #endif
 
-namespace Ort
-{
-struct Session;
-}
-
 MAA_VISION_NS_BEGIN
 
 enum class ResultOrderBy
