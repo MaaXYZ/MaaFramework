@@ -708,13 +708,22 @@ bool PipelineResMgr::parse_ocrer_param(
 
     std::vector<std::string> u8_text;
     std::vector<std::string> u8_default_text;
-    std::ranges::transform(default_value.text, std::back_inserter(u8_default_text), from_u16);
+    std::ranges::transform(default_value.expected, std::back_inserter(u8_default_text), from_u16);
 
-    if (!get_and_check_value_or_array(input, "text", u8_text, u8_default_text)) {
-        LogError << "failed to get_and_check_value_or_array text" << VAR(input);
-        return false;
+    if (input.exists("expected")) {
+        if (!get_and_check_value_or_array(input, "expected", u8_text, u8_default_text)) {
+            LogError << "failed to get_and_check_value_or_array expected" << VAR(input);
+            return false;
+        }
     }
-    std::ranges::transform(u8_text, std::back_inserter(output.text), to_u16);
+    // 已废弃字段，兼容一下
+    else if (input.exists("text")) {
+        if (!get_and_check_value_or_array(input, "text", u8_text, u8_default_text)) {
+            LogError << "failed to get_and_check_value_or_array text" << VAR(input);
+            return false;
+        }
+    }
+    std::ranges::transform(u8_text, std::back_inserter(output.expected), to_u16);
 
     if (auto replace_opt = input.find("replace")) {
         if (!replace_opt->is_array()) {
@@ -1129,6 +1138,7 @@ bool PipelineResMgr::parse_action(
         { "Click", Type::Click },
         { "Swipe", Type::Swipe },
         { "Key", Type::Key },
+        { "InputText", Type::Text },
         { "Text", Type::Text },
         { "StartApp", Type::StartApp },
         { "StopApp", Type::StopApp },
@@ -1259,7 +1269,7 @@ bool PipelineResMgr::parse_input_text(
     Action::TextParam& output,
     const Action::TextParam& default_value)
 {
-    if (!get_and_check_value(input, "text", output.text, default_value.text)) {
+    if (!get_and_check_value(input, "input_text", output.text, default_value.text)) {
         LogError << "failed to get_and_check_value text" << VAR(input);
         return false;
     }

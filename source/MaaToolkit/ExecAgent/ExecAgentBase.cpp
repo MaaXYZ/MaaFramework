@@ -390,7 +390,7 @@ json::value ExecAgentBase::ctx_input_text(const json::value& cmd)
         return invalid_json();
     }
 
-    auto text_opt = cmd.find<std::string>("text");
+    auto text_opt = cmd.find<std::string>("input_text");
     if (!text_opt) {
         LogError << "no text" << VAR(cmd);
         return invalid_json();

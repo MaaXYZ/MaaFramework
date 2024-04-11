@@ -23,11 +23,11 @@
     },
     "Flag_NoButton": {
         "recognition": "OCR",
-        "text": "NoButton"
+        "expected": "NoButton"
     },
     "Click_Button": {
         "recognition": "OCR",
-        "text": "Button",
+        "expected": "Button",
         "action": "Click"
     }
 }
