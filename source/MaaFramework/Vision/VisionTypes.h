@@ -197,7 +197,19 @@ struct RectComparator
 {
     bool operator()(const cv::Rect& lhs, const cv::Rect& rhs) const
     {
-        return lhs.x < rhs.x || lhs.y < rhs.y || lhs.width < rhs.width || lhs.height < rhs.height;
+        if (lhs.x != rhs.x) {
+            return lhs.x < rhs.x;
+        }
+        if (lhs.y != rhs.y) {
+            return lhs.y < rhs.y;
+        }
+        if (lhs.width != rhs.width) {
+            return lhs.width < rhs.width;
+        }
+        if (lhs.height != rhs.height) {
+            return lhs.height < rhs.height;
+        }
+        return false;
     }
 };
 
