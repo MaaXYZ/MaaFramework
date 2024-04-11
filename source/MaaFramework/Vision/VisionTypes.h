@@ -57,7 +57,7 @@ struct OCRerParam
     std::string model;
     bool only_rec = false;
     std::vector<cv::Rect> roi;
-    std::vector<std::wstring> text;
+    std::vector<std::wstring> expected;
     std::vector<std::pair<std::wstring, std::wstring>> replace;
 
     ResultOrderBy order_by = ResultOrderBy::Horizontal;

@@ -503,7 +503,7 @@ bool ControllerAgent::handle_input_text(const InputTextParam& param)
     if (recording()) {
         json::value info = {
             { "type", "input_text" },
-            { "text", param.text },
+            { "input_text", param.text },
         };
         append_recording(std::move(info), start_time, ret);
     }

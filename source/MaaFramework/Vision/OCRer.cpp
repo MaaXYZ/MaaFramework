@@ -33,7 +33,7 @@ void OCRer::analyze()
     auto start_time = std::chrono::steady_clock::now();
 
     auto results = predict_all_rois();
-    add_results(std::move(results), param_.text);
+    add_results(std::move(results), param_.expected);
 
     cherry_pick();
 

@@ -59,7 +59,7 @@
                     "next": "ANightmareAtGreenLake"
                 },
                 "TargetStageName": {
-                    "text": "17"
+                    "expected": "17"
                 },
                 "StageDifficulty": {
                     "next": "ActivityStageDifficulty"
@@ -100,7 +100,7 @@
                             "next": "MainChapter_3"
                         },
                         "TargetStageName": {
-                            "text": "09"
+                            "expected": "09"
                         },
                         "StageDifficulty": {
                             "next": "StageDifficulty_Hard"
@@ -114,7 +114,7 @@
                             "next": "MainChapter_4"
                         },
                         "TargetStageName": {
-                            "text": "20"
+                            "expected": "20"
                         },
                         "StageDifficulty": {
                             "next": "StageDifficulty_Hard"
@@ -129,7 +129,7 @@
                     "name": "x1",
                     "param": {
                         "SetReplaysTimes": {
-                            "text": "1"
+                            "expected": "1"
                         }
                     }
                 },
@@ -137,7 +137,7 @@
                     "name": "x2",
                     "param": {
                         "SetReplaysTimes": {
-                            "text": "2"
+                            "expected": "2"
                         }
                     }
                 },
@@ -145,7 +145,7 @@
                     "name": "x3",
                     "param": {
                         "SetReplaysTimes": {
-                            "text": "3"
+                            "expected": "3"
                         }
                     }
                 },
@@ -153,7 +153,7 @@
                     "name": "x4",
                     "param": {
                         "SetReplaysTimes": {
-                            "text": "4"
+                            "expected": "4"
                         }
                     }
                 }
