@@ -52,6 +52,7 @@ private:
     bool _init();
     bool load_mumu_library();
     bool connect_mumu();
+    bool init_screencap();
     void disconnect_mumu();
 
 private:
@@ -60,6 +61,12 @@ private:
     int mumu_index_ = 0;
     unsigned int mumu_display_id_ = 0;
     int mumu_handle_ = 0;
+
+    int display_width_ = 0;
+    int display_height_ = 0;
+    std::vector<unsigned char> display_buffer_;
+
+    bool inited_ = false;
 
 private:
     inline static const std::string kConnectFuncName = "nemu_connect";

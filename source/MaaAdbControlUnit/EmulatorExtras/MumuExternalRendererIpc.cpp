@@ -52,33 +52,22 @@ std::optional<cv::Mat> MumuExternalRendererIpc::screencap()
         return std::nullopt;
     }
 
-    int width = 0, height = 0;
-    int ret = capture_display_func_(mumu_handle_, mumu_display_id_, 0, &width, &height, nullptr);
-    // mumu 的文档给错了，这里 0 才是成功
-    if (ret) {
-        LogError << "Failed to capture display" << VAR(ret) << VAR(mumu_handle_)
-                 << VAR(mumu_display_id_) << VAR(capture_display_func_);
-        return std::nullopt;
-    }
-
-    std::vector<unsigned char> buffer(width * height * 4);
-
-    ret = capture_display_func_(
+    int ret = capture_display_func_(
         mumu_handle_,
         mumu_display_id_,
-        static_cast<int>(buffer.size()),
-        &width,
-        &height,
-        buffer.data());
+        static_cast<int>(display_buffer_.size()),
+        &display_width_,
+        &display_height_,
+        display_buffer_.data());
 
     if (ret) {
         LogError << "Failed to capture display" << VAR(ret) << VAR(mumu_handle_)
-                 << VAR(mumu_display_id_) << VAR(buffer.size()) << VAR(width) << VAR(height)
-                 << VAR(capture_display_func_);
+                 << VAR(mumu_display_id_) << VAR(display_buffer_.size()) << VAR(display_width_)
+                 << VAR(display_height_) << VAR(capture_display_func_);
         return std::nullopt;
     }
 
-    cv::Mat raw(height, width, CV_8UC4, buffer.data());
+    cv::Mat raw(display_height_, display_width_, CV_8UC4, display_buffer_.data());
     cv::Mat bgr;
     cv::cvtColor(raw, bgr, cv::COLOR_RGBA2BGR);
     cv::Mat dst;
@@ -89,11 +78,12 @@ std::optional<cv::Mat> MumuExternalRendererIpc::screencap()
 
 bool MumuExternalRendererIpc::_init()
 {
-    if (mumu_handle_) {
+    if (inited_) {
         return true;
     }
 
-    return load_mumu_library() && connect_mumu();
+    inited_ = load_mumu_library() && connect_mumu() && init_screencap();
+    return inited_;
 }
 
 bool MumuExternalRendererIpc::load_mumu_library()
@@ -180,6 +170,34 @@ bool MumuExternalRendererIpc::connect_mumu()
         return false;
     }
 
+    return true;
+}
+
+bool MumuExternalRendererIpc::init_screencap()
+{
+    if (!capture_display_func_) {
+        LogError << "capture_display_func_ is null";
+        return false;
+    }
+
+    int ret = capture_display_func_(
+        mumu_handle_,
+        mumu_display_id_,
+        0,
+        &display_width_,
+        &display_height_,
+        nullptr);
+
+    // mumu 的文档给错了，这里 0 才是成功
+    if (ret) {
+        LogError << "Failed to capture display" << VAR(ret) << VAR(mumu_handle_)
+                 << VAR(mumu_display_id_) << VAR(capture_display_func_);
+        return false;
+    }
+
+    display_buffer_.resize(display_width_ * display_height_ * 4);
+
+    LogDebug << VAR(display_width_) << VAR(display_height_) << VAR(display_buffer_.size());
     return true;
 }
 
