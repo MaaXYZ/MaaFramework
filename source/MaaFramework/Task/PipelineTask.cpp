@@ -311,7 +311,6 @@ json::object
               { "id", res.uid },
               { "box", res.hit ? json::value(*res.hit) : json::value(nullptr) },
               { "detail", res.detail },
-              { "draws_size", res.draws.size() },
               { "hit", res.hit.has_value() },
           } },
     };
