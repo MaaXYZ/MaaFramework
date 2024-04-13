@@ -1,12 +1,12 @@
 import ctypes
-import numpy
 import json
-
 from typing import Dict, Optional, Tuple
 
-from .library import Library
-from .define import MaaBool
+import numpy
+
 from .buffer import *
+from .define import MaaBool
+from .library import Library
 
 
 class SyncContext:
@@ -210,7 +210,6 @@ class SyncContext:
         if not ret:
             return None
         return image_buffer.get()
-
 
     _api_properties_initialized: bool = False
 

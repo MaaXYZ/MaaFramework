@@ -1,15 +1,16 @@
-from ctypes import c_int32
-from abc import ABC
-from typing import Any, Dict, Optional, Union
-from pathlib import Path
 import json
+from abc import ABC
+from ctypes import c_int32
+import os
+from pathlib import Path
+from typing import Any, Dict, Optional, Union
 
-from .custom_controller import CustomControllerAgent
+from .buffer import ImageBuffer
 from .callback_agent import Callback, CallbackAgent
+from .custom_controller import CustomControllerAgent
 from .define import *
 from .future import Future
 from .library import Library
-from .buffer import ImageBuffer
 
 __all__ = [
     "AdbController",
@@ -236,6 +237,11 @@ class Controller(ABC):
 
 
 class AdbController(Controller):
+    AGENT_BINARY_PATH = os.path.join(
+        os.path.dirname(__file__),
+        "../MaaAgentBinary",
+    )
+
     def __init__(
         self,
         adb_path: Union[str, Path],
@@ -245,7 +251,7 @@ class AdbController(Controller):
             | MaaAdbControllerTypeEnum.Screencap_FastestWay
         ),
         config: Dict[str, Any] = {},
-        agent_path: Union[str, Path] = "share/MaaAgentBinary",
+        agent_path: Union[str, Path] = AGENT_BINARY_PATH,
         callback: Optional[Callback] = None,
         callback_arg: Any = None,
     ):

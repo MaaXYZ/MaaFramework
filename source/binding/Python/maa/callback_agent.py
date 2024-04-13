@@ -1,9 +1,8 @@
 import ctypes
 import json
-from typing import Callable, Any, Optional
+from typing import Any, Callable, Optional
 
 from .define import MaaApiCallback
-
 
 Callback = Callable[[str, Any, Any], None]
 
