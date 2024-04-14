@@ -32,5 +32,5 @@ if(NODE_EXE AND EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/LHG/README.md)
     source_group(TREE ${CMAKE_CURRENT_SOURCE_DIR} FILES ${maa_http_src})
 
 else()
-    message(STATUS "NodeJS not found, or LHG submodule not exists, disable BUILD_HTTP_CLI")
+    message(STATUS "NodeJS not found or LHG submodule not exists, Ignoring BUILD_HTTP_CLI")
 endif()

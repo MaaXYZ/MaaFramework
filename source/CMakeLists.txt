@@ -20,9 +20,6 @@ add_subdirectory(LibraryHolder)
 add_subdirectory(MaaFramework)
 add_subdirectory(MaaToolkit)
 add_subdirectory(MaaProjectInterface)
-
-if(BUILD_HTTP_CLI)
-    add_subdirectory(MaaHttp)
-endif()
+add_subdirectory(MaaHttp)
 
 add_subdirectory(binding)
