@@ -1,0 +1,12 @@
+[build-system]
+requires = ["setuptools"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "MaaFw"
+version = "0"
+authors = [{ name = "MaaXYZ" }]
+description = "An automation black-box testing framework based on image recognition"
+readme = "README.md"
+urls = { Homepage = "https://github.com/MaaXYZ/MaaFramework" }
+dependencies = ["numpy", "Pillow", "MaaAgentBinary"]
