@@ -1,3 +1,4 @@
+find_program(NODE_EXE NAMES node nodejs)
 if(NODE_EXE AND EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/LHG/README.md)
     set(LHG_EMBEDDED
         ON
@@ -8,7 +9,7 @@ if(NODE_EXE AND EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/LHG/README.md)
     set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
     lhggenerate(LHGInfo ${CMAKE_CURRENT_SOURCE_DIR}/interface.json ${CMAKE_CURRENT_SOURCE_DIR}/config.json
-        ${CMAKE_CURRENT_SOURCE_DIR}/source/info.hpp)
+                ${CMAKE_CURRENT_SOURCE_DIR}/source/info.hpp)
 
     file(GLOB_RECURSE maa_http_src source/*.cpp source/*.h source/*.hpp)
 
