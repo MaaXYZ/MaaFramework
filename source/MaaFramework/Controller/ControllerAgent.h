@@ -8,8 +8,8 @@
 
 #include "API/MaaTypes.h"
 #include "Base/AsyncRunner.hpp"
-#include "Base/MessageNotifier.hpp"
 #include "Instance/InstanceInternalAPI.hpp"
+#include "Utils/MessageNotifier.hpp"
 #include "Utils/NoWarningCVMat.hpp"
 
 MAA_RES_NS_BEGIN
