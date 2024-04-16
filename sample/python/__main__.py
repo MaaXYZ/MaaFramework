@@ -1,6 +1,7 @@
-from typing import List, Tuple, Union
+from typing import Tuple
+
+# python -m pip install maafw
 from maa.define import RectType
-from maa.library import Library
 from maa.resource import Resource
 from maa.controller import AdbController
 from maa.instance import Instance
@@ -13,9 +14,6 @@ import asyncio
 
 
 async def main():
-    version = Library.open("bin")
-    print(f"MaaFw Version: {version}")
-
     user_path = "./"
     Toolkit.init_option(user_path)
 

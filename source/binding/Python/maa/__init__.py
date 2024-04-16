@@ -7,4 +7,4 @@ __PATH = os.path.join(os.path.dirname(__file__), "bin")
 if os.path.exists(__PATH):
     ver = Library.open(__PATH)
     if ver:
-        print("MaaFw version: ", ver)
+        print(f"MaaFw version: {ver}")
