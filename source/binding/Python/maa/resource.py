@@ -1,12 +1,12 @@
+import asyncio
 import ctypes
 import pathlib
-import asyncio
-from typing import Union, Optional, Any
+from typing import Any, Optional, Union
 
+from .callback_agent import Callback, CallbackAgent
 from .define import *
 from .future import Future
 from .library import Library
-from .callback_agent import CallbackAgent, Callback
 
 
 class Resource:

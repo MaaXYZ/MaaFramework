@@ -1,13 +1,13 @@
+import asyncio
 import ctypes
 import json
-import asyncio
 from dataclasses import dataclass
-from typing import List, Union, Dict
 from pathlib import Path
+from typing import Dict, List, Union
 
-from .library import Library
 from .define import *
 from .instance import Instance
+from .library import Library
 
 
 @dataclass

@@ -3,7 +3,7 @@ import asyncio
 import ctypes
 from typing import Union
 
-from .define import MaaStatus, MaaStatusEnum, MaaId
+from .define import MaaId, MaaStatus, MaaStatusEnum
 
 
 class Status:

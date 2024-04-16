@@ -1,9 +1,9 @@
 import ctypes
 from abc import ABC, abstractmethod
 
-from .define import *
 from .buffer import RectBuffer
 from .context import SyncContext
+from .define import *
 
 
 class CustomAction(ABC):

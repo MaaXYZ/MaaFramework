@@ -1,5 +1,5 @@
-from ctypes import c_int32
 import pathlib
+from ctypes import c_int32
 from typing import Optional, Union
 
 from .define import *

@@ -1,9 +1,9 @@
 import ctypes
 import ctypes.util
-import pathlib
 import os
+import pathlib
 import platform
-from typing import Union, Optional
+from typing import Optional, Union
 
 from .define import *
 

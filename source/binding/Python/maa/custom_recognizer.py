@@ -1,11 +1,12 @@
-from typing import Tuple
-import numpy
 import ctypes
 from abc import ABC, abstractmethod
+from typing import Tuple
 
-from .define import *
-from .buffer import RectBuffer, StringBuffer, ImageBuffer
+import numpy
+
+from .buffer import ImageBuffer, RectBuffer, StringBuffer
 from .context import SyncContext
+from .define import *
 
 
 class CustomRecognizer(ABC):

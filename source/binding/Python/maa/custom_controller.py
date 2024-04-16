@@ -2,9 +2,8 @@ import ctypes
 from abc import ABC, abstractmethod
 from typing import Optional
 
-
-from .define import *
 from .buffer import ImageBuffer, StringBuffer
+from .define import *
 
 
 class CustomControllerAgent(ABC):

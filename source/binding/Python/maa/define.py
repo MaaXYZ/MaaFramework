@@ -6,7 +6,6 @@ from typing import List, Tuple, Union
 
 import numpy
 
-
 MaaApiCallback = ctypes.CFUNCTYPE(
     None, ctypes.c_char_p, ctypes.c_char_p, ctypes.c_void_p
 )
