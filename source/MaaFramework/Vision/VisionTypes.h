@@ -11,10 +11,6 @@
 #include "Conf/Conf.h"
 #include "Utils/NoWarningCVMat.hpp"
 
-#if __has_include(<opencv2/xfeatures2d.hpp>)
-#define MAA_VISION_HAS_XFEATURES2D
-#endif
-
 MAA_VISION_NS_BEGIN
 
 enum class ResultOrderBy
