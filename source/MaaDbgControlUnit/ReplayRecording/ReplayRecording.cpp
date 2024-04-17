@@ -351,6 +351,16 @@ bool ReplayRecording::input_text(const std::string& text)
     return record.success;
 }
 
+bool ReplayRecording::is_feature_supported(Feature feat)
+{
+    switch (feat) {
+    case Feature::MicroControl:
+        return false;
+    default:
+        return false;
+    }
+}
+
 void ReplayRecording::sleep(int ms)
 {
     LogTrace << VAR(ms);

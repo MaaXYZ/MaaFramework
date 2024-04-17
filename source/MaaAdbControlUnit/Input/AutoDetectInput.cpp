@@ -142,6 +142,11 @@ bool AutoDetectInput::touch_up(int contact)
     return available_touch_->touch_up(contact);
 }
 
+bool AutoDetectInput::is_micro_control_supported()
+{
+    return available_touch_ && available_touch_->is_micro_control_supported();
+}
+
 bool AutoDetectInput::init()
 {
     for (auto& unit : key_units_ | std::views::values) {

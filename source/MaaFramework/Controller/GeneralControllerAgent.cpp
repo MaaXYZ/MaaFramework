@@ -126,8 +126,20 @@ bool GeneralControllerAgent::_click(ClickParam param)
         return false;
     }
 
-    if (!control_unit_->click(param.x, param.y)) {
-        LogError << "controller click failed" << VAR(param.x) << VAR(param.y);
+    bool micro = control_unit_->is_feature_supported(
+        MAA_CTRL_UNIT_NS::ControlUnitAPI::Feature::MicroControl);
+
+    bool ret = false;
+
+    if (micro) {
+        ret = micro_click(param.x, param.y);
+    }
+    else {
+        ret = control_unit_->click(param.x, param.y);
+    }
+
+    if (!ret) {
+        LogError << "controller click failed" << VAR(param.x) << VAR(param.y) << VAR(micro);
         return false;
     }
 
@@ -141,9 +153,21 @@ bool GeneralControllerAgent::_swipe(SwipeParam param)
         return false;
     }
 
-    if (!control_unit_->swipe(param.x1, param.y1, param.x2, param.y2, param.duration)) {
+    bool micro = control_unit_->is_feature_supported(
+        MAA_CTRL_UNIT_NS::ControlUnitAPI::Feature::MicroControl);
+
+    bool ret = false;
+
+    if (micro) {
+        ret = micro_swipe(param.x1, param.y1, param.x2, param.y2, param.duration);
+    }
+    else {
+        ret = control_unit_->swipe(param.x1, param.y1, param.x2, param.y2, param.duration);
+    }
+
+    if (!ret) {
         LogError << "controller swipe failed" << VAR(param.x1) << VAR(param.y1) << VAR(param.x2)
-                 << VAR(param.y2) << VAR(param.duration);
+                 << VAR(param.y2) << VAR(param.duration) << VAR(micro);
         return false;
     }
 
@@ -225,6 +249,74 @@ bool GeneralControllerAgent::_input_text(InputTextParam param)
     }
 
     return true;
+}
+
+bool GeneralControllerAgent::micro_click(int x, int y)
+{
+    if (!control_unit_) {
+        return false;
+    }
+
+    constexpr int kContact = 0;
+    constexpr int kPressure = 1;
+
+    auto start = std::chrono::steady_clock::now();
+
+    bool ret = control_unit_->touch_down(kContact, x, y, kPressure);
+
+    std::this_thread::sleep_until(start + std::chrono::milliseconds(50));
+
+    ret &= control_unit_->touch_up(kContact);
+
+    return ret;
+}
+
+bool GeneralControllerAgent::micro_swipe(int x1, int y1, int x2, int y2, int duration)
+{
+    if (!control_unit_) {
+        return false;
+    }
+
+    if (duration <= 0) {
+        LogWarn << "duration out of range" << VAR(duration);
+        duration = 500;
+    }
+
+    constexpr int kContact = 0;
+    constexpr int kPressure = 1;
+
+    auto start = std::chrono::steady_clock::now();
+    auto now = start;
+
+    bool ret = control_unit_->touch_down(kContact, x1, y1, kPressure);
+
+    constexpr double kInterval = 10; // ms
+    const double steps = duration / kInterval;
+    const double x_step_len = (x2 - x1) / steps;
+    const double y_step_len = (y2 - y1) / steps;
+    const std::chrono::milliseconds delay(static_cast<int>(kInterval));
+
+    for (int i = 0; i < steps; ++i) {
+        int x = static_cast<int>(x1 + i * x_step_len);
+        int y = static_cast<int>(y1 + i * y_step_len);
+
+        std::this_thread::sleep_until(now + delay);
+
+        now = std::chrono::steady_clock::now();
+        ret &= control_unit_->touch_move(kContact, x, y, kPressure);
+    }
+
+    std::this_thread::sleep_until(now + delay);
+
+    now = std::chrono::steady_clock::now();
+    ret &= control_unit_->touch_move(kContact, x2, y2, kPressure);
+
+    std::this_thread::sleep_until(now + delay);
+
+    now = std::chrono::steady_clock::now();
+    ret &= control_unit_->touch_up(kContact);
+
+    return ret;
 }
 
 MAA_CTRL_NS_END

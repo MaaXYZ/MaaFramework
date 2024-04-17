@@ -20,6 +20,8 @@ public: // from TouchInputAPI
     virtual bool touch_move(int contact, int x, int y, int pressure) override;
     virtual bool touch_up(int contact) override;
 
+    virtual bool is_micro_control_supported() override { return true; }
+
 protected:
     bool read_info(int swidth, int sheight, int orientation);
     virtual std::pair<int, int> screen_to_touch(int x, int y) = 0;

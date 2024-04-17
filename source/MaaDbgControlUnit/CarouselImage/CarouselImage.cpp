@@ -154,4 +154,14 @@ bool CarouselImage::input_text(const std::string& text)
     return true;
 }
 
+bool CarouselImage::is_feature_supported(Feature feat)
+{
+    switch (feat) {
+    case Feature::MicroControl:
+        return false;
+    default:
+        return false;
+    }
+}
+
 MAA_CTRL_UNIT_NS_END

@@ -11,6 +11,12 @@ MAA_CTRL_UNIT_NS_BEGIN
 class ControlUnitAPI
 {
 public:
+    enum class Feature
+    {
+        MicroControl, // touch down, move, up
+    };
+
+public:
     virtual ~ControlUnitAPI() = default;
 
     virtual bool find_device(/*out*/ std::vector<std::string>& devices) = 0;
@@ -34,6 +40,8 @@ public:
 
     virtual bool press_key(int key) = 0;
     virtual bool input_text(const std::string& text) = 0;
+
+    virtual bool is_feature_supported(Feature feat) = 0;
 };
 
 MAA_CTRL_UNIT_NS_END

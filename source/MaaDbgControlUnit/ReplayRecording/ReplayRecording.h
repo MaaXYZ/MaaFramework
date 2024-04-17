@@ -42,6 +42,8 @@ public: // from ControlUnitAPI
     virtual bool press_key(int key) override;
     virtual bool input_text(const std::string& text) override;
 
+    virtual bool is_feature_supported(Feature feat) override;
+
 private:
     void sleep(int ms);
 

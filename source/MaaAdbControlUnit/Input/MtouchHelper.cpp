@@ -55,98 +55,21 @@ bool MtouchHelper::read_info(int swidth, int sheight, int orientation)
 
 bool MtouchHelper::click(int x, int y)
 {
-    if (!pipe_ios_) {
-        LogError << "pipe_ios_ is nullptr";
-        return false;
-    }
+    std::ignore = x;
+    std::ignore = y;
 
-    if (x < 0 || x >= screen_width_ || y < 0 || y >= screen_height_) {
-        LogWarn << "click point out of range" << VAR(x) << VAR(y);
-        x = std::clamp(x, 0, screen_width_ - 1);
-        y = std::clamp(y, 0, screen_height_ - 1);
-    }
-
-    auto [touch_x, touch_y] = screen_to_touch(x, y);
-
-    LogInfo << VAR(x) << VAR(y) << VAR(touch_x) << VAR(touch_y);
-
-    bool ret = pipe_ios_->write(std::format(kDownFormat, 0, touch_x, touch_y, press_))
-               && pipe_ios_->write(std::format(kUpFormat, 0));
-
-    if (!ret) {
-        LogError << "failed to write";
-        return false;
-    }
-
-    return true;
+    return false;
 }
 
 bool MtouchHelper::swipe(int x1, int y1, int x2, int y2, int duration)
 {
-    if (!pipe_ios_) {
-        LogError << "pipe_ios_ is nullptr";
-        return false;
-    }
+  std::ignore = x1;
+  std::ignore = y1;
+  std::ignore = x2;
+  std::ignore = y2;
+  std::ignore = duration;
 
-    if (x1 < 0 || x1 >= screen_width_ || y1 < 0 || y1 >= screen_height_ || x2 < 0
-        || x2 >= screen_width_ || y2 < 0 || y2 >= screen_height_) {
-        LogWarn << "swipe point out of range" << VAR(x1) << VAR(y1) << VAR(x2) << VAR(y2);
-        x1 = std::clamp(x1, 0, screen_width_ - 1);
-        y1 = std::clamp(y1, 0, screen_height_ - 1);
-        x2 = std::clamp(x2, 0, screen_width_ - 1);
-        y2 = std::clamp(y2, 0, screen_height_ - 1);
-    }
-    if (duration <= 0) {
-        LogWarn << "duration out of range" << VAR(duration);
-        duration = 500;
-    }
-
-    auto [touch_x1, touch_y1] = screen_to_touch(x1, y1);
-    auto [touch_x2, touch_y2] = screen_to_touch(x2, y2);
-
-    LogInfo << VAR(x1) << VAR(y1) << VAR(touch_x1) << VAR(touch_y1) << VAR(x2) << VAR(y2)
-            << VAR(touch_x2) << VAR(touch_y2) << VAR(duration);
-
-    auto start = std::chrono::steady_clock::now();
-    auto now = start;
-    bool ret = true;
-    ret &= pipe_ios_->write(std::format(kDownFormat, 0, touch_x1, touch_y1, press_));
-    if (!ret) {
-        LogError << "write error";
-        return false;
-    }
-
-    constexpr double kInterval = 10; // ms
-    const double steps = duration / kInterval;
-    const double x_step_len = (x2 - x1) / steps;
-    const double y_step_len = (y2 - y1) / steps;
-    const std::chrono::milliseconds delay(static_cast<int>(kInterval));
-
-    for (int i = 0; i < steps; ++i) {
-        auto [tx, ty] = screen_to_touch(x1 + i * x_step_len, y1 + i * y_step_len);
-        std::this_thread::sleep_until(now + delay);
-        now = std::chrono::steady_clock::now();
-
-        ret &= pipe_ios_->write(std::format(kMoveFormat, 0, tx, ty, press_));
-        if (!ret) {
-            LogWarn << "write error";
-        }
-    }
-
-    std::this_thread::sleep_until(now + delay);
-    now = std::chrono::steady_clock::now();
-    ret &= pipe_ios_->write(std::format(kMoveFormat, 0, touch_x2, touch_y2, press_));
-
-    std::this_thread::sleep_until(now + delay);
-    now = std::chrono::steady_clock::now();
-    ret &= pipe_ios_->write(std::format(kUpFormat, 0));
-
-    if (!ret) {
-        LogError << "failed to write";
-        return false;
-    }
-
-    return true;
+    return false;
 }
 
 bool MtouchHelper::touch_down(int contact, int x, int y, int pressure)

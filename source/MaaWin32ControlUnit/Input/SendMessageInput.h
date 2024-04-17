@@ -27,6 +27,8 @@ public: // from TouchInputBase
     virtual bool touch_move(int contact, int x, int y, int pressure) override;
     virtual bool touch_up(int contact) override;
 
+    virtual bool is_micro_control_supported() { return true; }
+
 public: // from KeyInputBase
     virtual bool press_key(int key) override;
     virtual bool input_text(const std::string& text) override;

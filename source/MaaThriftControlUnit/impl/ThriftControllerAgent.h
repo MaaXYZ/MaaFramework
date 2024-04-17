@@ -34,8 +34,11 @@ public: // from ControllerAPI
     virtual bool press_key(int key) override;
     virtual bool input_text(const std::string& text) override;
 
+    virtual bool is_feature_supported(Feature feat);
+
 protected:
     std::shared_ptr<ThriftController::ThriftControllerClient> client_ = nullptr;
     std::shared_ptr<apache::thrift::transport::TTransport> transport_ = nullptr;
 };
+
 MAA_CTRL_UNIT_NS_END

@@ -248,6 +248,16 @@ bool ControlUnitMgr::input_text(const std::string& text)
     return key_input_->input_text(text);
 }
 
+bool ControlUnitMgr::is_feature_supported(Feature feat)
+{
+    switch (feat) {
+    case Feature::MicroControl:
+        return touch_input_ && touch_input_->is_micro_control_supported();
+    default:
+        return false;
+    }
+}
+
 bool ControlUnitMgr::parse(const json::value& config)
 {
     bool ret = true;

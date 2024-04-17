@@ -230,4 +230,14 @@ bool ThriftControllerAgent::input_text(const std::string& text)
     return client_->input_text(thrift_param);
 }
 
+bool ThriftControllerAgent::is_feature_supported(Feature feat)
+{
+    switch (feat) {
+    case Feature::MicroControl:
+        return false;
+    default:
+        return false;
+    }
+}
+
 MAA_CTRL_UNIT_NS_END

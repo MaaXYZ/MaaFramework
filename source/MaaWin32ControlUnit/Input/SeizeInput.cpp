@@ -18,99 +18,21 @@ void SeizeInput::ensure_foreground()
 
 bool SeizeInput::click(int x, int y)
 {
-    LogInfo << VAR(x) << VAR(y);
+    std::ignore = x;
+    std::ignore = y;
 
-    if (!hwnd_) {
-        LogError << "hwnd_ is nullptr";
-        return false;
-    }
-
-    ensure_foreground();
-
-    POINT point = { x, y };
-    ClientToScreen(hwnd_, &point);
-
-    LogInfo << VAR(point.x) << VAR(point.y);
-
-    SetCursorPos(point.x, point.y);
-
-    INPUT inputs[2] = {};
-
-    inputs[0].type = INPUT_MOUSE;
-    inputs[0].mi.dwFlags = MOUSEEVENTF_LEFTDOWN;
-
-    inputs[1].type = INPUT_MOUSE;
-    inputs[1].mi.dwFlags = MOUSEEVENTF_LEFTUP;
-
-    SendInput(ARRAYSIZE(inputs), inputs, sizeof(INPUT));
-
-    return true;
+    return false;
 }
 
 bool SeizeInput::swipe(int x1, int y1, int x2, int y2, int duration)
 {
-    LogInfo << VAR(x1) << VAR(y1) << VAR(x2) << VAR(y2) << VAR(duration);
+    std::ignore = x1;
+    std::ignore = y1;
+    std::ignore = x2;
+    std::ignore = y2;
+    std::ignore = duration;
 
-    if (!hwnd_) {
-        LogError << "hwnd_ is nullptr";
-        return false;
-    }
-
-    ensure_foreground();
-
-    if (duration <= 0) {
-        LogWarn << "duration out of range" << VAR(duration);
-        duration = 500;
-    }
-
-    auto start = std::chrono::steady_clock::now();
-    auto now = start;
-
-    POINT point = { x1, y1 };
-    ClientToScreen(hwnd_, &point);
-
-    INPUT input = {};
-
-    SetCursorPos(point.x, point.y);
-
-    input.type = INPUT_MOUSE;
-    input.mi.dwFlags = MOUSEEVENTF_LEFTDOWN;
-
-    SendInput(1, &input, sizeof(INPUT));
-
-    constexpr double kInterval = 10; // ms
-    const double steps = duration / kInterval;
-    const double x_step_len = (x2 - x1) / steps;
-    const double y_step_len = (y2 - y1) / steps;
-    const std::chrono::milliseconds delay(static_cast<int>(kInterval));
-
-    for (int i = 0; i < steps; ++i) {
-        int tx = static_cast<int>(x1 + i * x_step_len);
-        int ty = static_cast<int>(y1 + i * y_step_len);
-        std::this_thread::sleep_until(now + delay);
-        now = std::chrono::steady_clock::now();
-
-        point.x = tx;
-        point.y = ty;
-        ClientToScreen(hwnd_, &point);
-        SetCursorPos(point.x, point.y);
-    }
-
-    std::this_thread::sleep_until(now + delay);
-    now = std::chrono::steady_clock::now();
-
-    point.x = x2;
-    point.y = y2;
-    ClientToScreen(hwnd_, &point);
-    SetCursorPos(point.x, point.y);
-
-    std::this_thread::sleep_until(now + delay);
-    now = std::chrono::steady_clock::now();
-
-    input.mi.dwFlags = MOUSEEVENTF_LEFTUP;
-    SendInput(1, &input, sizeof(INPUT));
-
-    return true;
+    return false;
 }
 
 bool SeizeInput::touch_down(int contact, int x, int y, int pressure)

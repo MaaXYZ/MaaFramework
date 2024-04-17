@@ -32,6 +32,10 @@ protected:
     virtual bool _input_text(InputTextParam param) override;
 
 private:
+    bool micro_click(int x, int y);
+    bool micro_swipe(int x1, int y1, int x2, int y2, int duration);
+
+private:
     std::shared_ptr<MAA_CTRL_UNIT_NS::ControlUnitAPI> control_unit_ = nullptr;
 };
 

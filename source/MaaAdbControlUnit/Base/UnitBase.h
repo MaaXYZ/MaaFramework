@@ -76,6 +76,8 @@ public:
     virtual bool touch_down(int contact, int x, int y, int pressure) = 0;
     virtual bool touch_move(int contact, int x, int y, int pressure) = 0;
     virtual bool touch_up(int contact) = 0;
+
+    virtual bool is_micro_control_supported() = 0;
 };
 
 class KeyInputBase : virtual public UnitBase

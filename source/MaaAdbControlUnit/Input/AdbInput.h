@@ -26,6 +26,8 @@ public: // from TouchInputAPI
     virtual bool touch_move(int contact, int x, int y, int pressure) override;
     virtual bool touch_up(int contact) override;
 
+    virtual bool is_micro_control_supported() override { return false; }
+
 private:
     ProcessArgvGenerator click_argv_;
     ProcessArgvGenerator swipe_argv_;

@@ -45,6 +45,8 @@ public: // from TouchInputAPI
     virtual bool touch_move(int contact, int x, int y, int pressure) override;
     virtual bool touch_up(int contact) override;
 
+    virtual bool is_micro_control_supported() override;
+
 public: // from KeyInputAPI
     virtual bool init() override;
     virtual bool press_key(int key) override;

@@ -174,4 +174,14 @@ bool ControlUnitMgr::input_text(const std::string& text)
     return key_input_->input_text(text);
 }
 
+bool ControlUnitMgr::is_feature_supported(Feature feat)
+{
+    switch (feat) {
+    case Feature::MicroControl:
+        return touch_input_ && touch_input_->is_micro_control_supported();
+    default:
+        return false;
+    }
+}
+
 MAA_CTRL_UNIT_NS_END
