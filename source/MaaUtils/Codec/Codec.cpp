@@ -14,16 +14,16 @@ MAA_NS_BEGIN
 #pragma clang diagnostic ignored "-Wdeprecated-declarations"
 #endif
 
-std::wstring to_u16(const std::string& u8str)
+std::wstring to_u16(std::string_view u8str)
 {
-    std::wstring_convert<std::codecvt_utf8_utf16<wchar_t>> code_converter;
-    return code_converter.from_bytes(u8str);
+    static std::wstring_convert<std::codecvt_utf8_utf16<wchar_t>> code_converter;
+    return code_converter.from_bytes(u8str.data());
 }
 
-std::string from_u16(const std::wstring& u16str)
+std::string from_u16(std::wstring_view u16str)
 {
-    std::wstring_convert<std::codecvt_utf8_utf16<wchar_t>> code_converter;
-    return code_converter.to_bytes(u16str);
+    static std::wstring_convert<std::codecvt_utf8_utf16<wchar_t>> code_converter;
+    return code_converter.to_bytes(u16str.data());
 }
 
 #if defined(__clang__)

@@ -23,13 +23,13 @@ extern "C"
         MaaToolkitFindWindow(MaaStringView class_name, MaaStringView window_name);
 
     /**
-     * @brief Search a win32 window by class name and window name.
+     * @brief Regex search a win32 window by class name and window name.
      *
-     * This function searches the function by substring match. See also MaaToolkitFindWindow().
+     * This function searches the function by regex search. See also MaaToolkitFindWindow().
      *
-     * @param class_name The class name of the window. If passed an empty string, class name will
+     * @param class_name The class name regex of the window. If passed an empty string, class name will
      * not be filtered.
-     * @param window_name The window name of the window. If passed an empty string, window name will
+     * @param window_name The window name regex of the window. If passed an empty string, window name will
      * not be filtered.
      * @return MaaSize The number of windows found that match the criteria. To get the corresponding
      * window handle, use MaaToolkitGetWindow().
@@ -45,6 +45,24 @@ extern "C"
      * @return MaaWin32Hwnd The window handle.
      */
     MAA_TOOLKIT_API MaaWin32Hwnd MaaToolkitGetWindow(MaaSize index);
+
+    /**
+     * @brief Get the window class name by index.
+     *
+     * @param index The 0-based index of the window. The index should not exceed the number of
+     * windows found otherwise out_of_range exception will be thrown.
+     * @return MaaWin32Hwnd The window class name.
+     */
+    MAA_TOOLKIT_API MaaStringView MaaToolkitGetWindowClassName(MaaSize index);
+
+    /**
+     * @brief Get the window window name by index.
+     *
+     * @param index The 0-based index of the window. The index should not exceed the number of
+     * windows found otherwise out_of_range exception will be thrown.
+     * @return MaaWin32Hwnd The window window name.
+     */
+    MAA_TOOLKIT_API MaaStringView MaaToolkitGetWindowWindowName(MaaSize index);
 
     /**
      * @brief Get the window handle of the window under the cursor. This uses the WindowFromPoint()

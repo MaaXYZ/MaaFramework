@@ -23,7 +23,17 @@ MaaSize MaaToolkitSearchWindow(MaaStringView class_name, MaaStringView window_na
 
 MaaWin32Hwnd MaaToolkitGetWindow(MaaSize index)
 {
-    return win32_mgr.found_window().at(index);
+    return win32_mgr.found_windows().at(index).hwnd;
+}
+
+MaaStringView MaaToolkitGetWindowClassName(MaaSize index)
+{
+    return win32_mgr.found_windows().at(index).class_name.c_str();
+}
+
+MaaStringView MaaToolkitGetWindowWindowName(MaaSize index)
+{
+    return win32_mgr.found_windows().at(index).window_name.c_str();
 }
 
 MaaWin32Hwnd MaaToolkitGetCursorWindow()

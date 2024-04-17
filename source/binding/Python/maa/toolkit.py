@@ -19,6 +19,13 @@ class AdbDevice:
     config: str
 
 
+@dataclass
+class Win32Window:
+    hwnd: MaaWin32Hwnd
+    class_name: str
+    window_name: str
+
+
 class Toolkit:
     @classmethod
     def init_option(
@@ -99,7 +106,7 @@ class Toolkit:
     _api_properties_initialized: bool = False
 
     @classmethod
-    def find_window(cls, class_name: str, window_name: str) -> List[MaaWin32Hwnd]:
+    def find_window(cls, class_name: str, window_name: str) -> List[Win32Window]:
         cls._set_api_properties()
 
         count = Library.toolkit.MaaToolkitFindWindow(
@@ -108,21 +115,33 @@ class Toolkit:
 
         windows = []
         for i in range(count):
-            windows.append(Library.toolkit.MaaToolkitGetWindow(i))
+            hwnd = Library.toolkit.MaaToolkitGetWindow(i)
+            found_class = Library.toolkit.MaaToolkitGetWindowClassName(i).decode(
+                "utf-8"
+            )
+            found_window = Library.toolkit.MaaToolkitGetWindowName(i).decode("utf-8")
+
+            windows.append(Win32Window(hwnd, found_class, found_window))
 
         return windows
 
     @classmethod
-    def search_window(cls, class_name: str, window_name: str) -> List[MaaWin32Hwnd]:
+    def search_window(cls, class_regex: str, window_regex: str) -> List[Win32Window]:
         cls._set_api_properties()
 
         count = Library.toolkit.MaaToolkitSearchWindow(
-            class_name.encode("utf-8"), window_name.encode("utf-8")
+            class_regex.encode("utf-8"), window_regex.encode("utf-8")
         )
 
         windows = []
         for i in range(count):
-            windows.append(Library.toolkit.MaaToolkitGetWindow(i))
+            hwnd = Library.toolkit.MaaToolkitGetWindow(i)
+            found_class = Library.toolkit.MaaToolkitGetWindowClassName(i).decode(
+                "utf-8"
+            )
+            found_window = Library.toolkit.MaaToolkitGetWindowName(i).decode("utf-8")
+
+            windows.append(Win32Window(hwnd, found_class, found_window))
 
         return windows
 
@@ -226,6 +245,12 @@ class Toolkit:
 
         Library.toolkit.MaaToolkitGetWindow.restype = MaaWin32Hwnd
         Library.toolkit.MaaToolkitGetWindow.argtypes = [MaaSize]
+
+        Library.toolkit.MaaToolkitGetWindowClassName.restype = MaaStringView
+        Library.toolkit.MaaToolkitGetWindowClassName.argtypes = [MaaSize]
+
+        Library.toolkit.MaaToolkitGetWindowName.restype = MaaStringView
+        Library.toolkit.MaaToolkitGetWindowName.argtypes = [MaaSize]
 
         Library.toolkit.MaaToolkitGetCursorWindow.restype = MaaWin32Hwnd
         Library.toolkit.MaaToolkitGetCursorWindow.argtypes = []
