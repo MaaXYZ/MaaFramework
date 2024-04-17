@@ -39,7 +39,7 @@ size_t Win32WindowFinder::search_window(std::string_view class_name, std::string
     std::wregex window_regex(to_u16(window_name));
 
     auto windows = list_windows();
-    for (const auto& w : windows) {
+    for (auto& w : windows) {
         std::wstring w_class = to_u16(w.class_name);
         std::wsmatch class_matches;
         bool class_matched = std::regex_search(w_class, class_matches, class_regex);
@@ -105,6 +105,36 @@ std::vector<Win32WindowFinder::Window> Win32WindowFinder::list_windows() const
 #endif
 
     return windows;
+}
+
+std::optional<std::string> Win32WindowFinder::get_class_name(MaaWin32Hwnd hwnd) const
+{
+    constexpr int kMaxLength = 256;
+
+    std::string result(kMaxLength + 1, '0');
+
+    int ret = GetClassName(reinterpret_cast<HWND>(hwnd), result.data(), kMaxLength);
+    if (ret != 0) {
+        LogError << "failed to GetClassName" << VAR_VOIDP(hwnd) << VAR(GetLastError());
+        return std::nullopt;
+    }
+
+    return result;
+}
+
+std::optional<std::string> Win32WindowFinder::get_window_name(MaaWin32Hwnd hwnd) const
+{
+    constexpr int kMaxLength = 256;
+
+    std::string result(kMaxLength + 1, '0');
+
+    int ret = GetWindowText(reinterpret_cast<HWND>(hwnd), result.data(), kMaxLength);
+    if (ret != 0) {
+        LogError << "failed to GetWindowText" << VAR_VOIDP(hwnd) << VAR(GetLastError());
+        return std::nullopt;
+    }
+
+    return result;
 }
 
 MAA_TOOLKIT_NS_END

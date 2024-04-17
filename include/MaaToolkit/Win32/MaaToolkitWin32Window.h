@@ -47,24 +47,6 @@ extern "C"
     MAA_TOOLKIT_API MaaWin32Hwnd MaaToolkitGetWindow(MaaSize index);
 
     /**
-     * @brief Get the window class name by index.
-     *
-     * @param index The 0-based index of the window. The index should not exceed the number of
-     * windows found otherwise out_of_range exception will be thrown.
-     * @return MaaWin32Hwnd The window class name.
-     */
-    MAA_TOOLKIT_API MaaStringView MaaToolkitGetWindowClassName(MaaSize index);
-
-    /**
-     * @brief Get the window window name by index.
-     *
-     * @param index The 0-based index of the window. The index should not exceed the number of
-     * windows found otherwise out_of_range exception will be thrown.
-     * @return MaaWin32Hwnd The window window name.
-     */
-    MAA_TOOLKIT_API MaaStringView MaaToolkitGetWindowWindowName(MaaSize index);
-
-    /**
      * @brief Get the window handle of the window under the cursor. This uses the WindowFromPoint()
      * system API.
      *
@@ -85,6 +67,25 @@ extern "C"
      * @return MaaWin32Hwnd The window handle.
      */
     MAA_TOOLKIT_API MaaWin32Hwnd MaaToolkitGetForegroundWindow();
+
+    /**
+     * @brief Get the window class name by hwnd.
+     *
+     * @param hwnd The window hwnd.
+     * @param buffer The output buffer.
+     * @return MaaBool.
+     */
+    MAA_TOOLKIT_API MaaBool MaaToolkitGetWindowClassName(MaaWin32Hwnd hwnd, MaaStringBufferHandle buffer);
+
+    /**
+     * @brief Get the window window name by hwnd.
+     *
+     * @param hwnd The window hwnd.
+     * @param buffer The output buffer.
+     * @return MaaBool.
+     */
+    MAA_TOOLKIT_API MaaBool
+        MaaToolkitGetWindowWindowName(MaaWin32Hwnd hwnd, MaaStringBufferHandle buffer);
 
 #ifdef __cplusplus
 }

@@ -2,7 +2,7 @@
 
 #include <vector>
 
-#include "API/MaaTypes.h"
+#include "BufferTypes.hpp"
 #include "Conf/Conf.h"
 
 MAA_NS_BEGIN

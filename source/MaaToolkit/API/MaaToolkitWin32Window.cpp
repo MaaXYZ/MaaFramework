@@ -2,6 +2,7 @@
 
 #include <string_view>
 
+#include "Buffer/StringBuffer.hpp"
 #include "Utils/Logger.h"
 #include "Win32Window/Win32WindowFinder.h"
 
@@ -26,16 +27,6 @@ MaaWin32Hwnd MaaToolkitGetWindow(MaaSize index)
     return win32_mgr.found_windows().at(index).hwnd;
 }
 
-MaaStringView MaaToolkitGetWindowClassName(MaaSize index)
-{
-    return win32_mgr.found_windows().at(index).class_name.c_str();
-}
-
-MaaStringView MaaToolkitGetWindowWindowName(MaaSize index)
-{
-    return win32_mgr.found_windows().at(index).window_name.c_str();
-}
-
 MaaWin32Hwnd MaaToolkitGetCursorWindow()
 {
     LogInfo;
@@ -55,4 +46,26 @@ MaaWin32Hwnd MaaToolkitGetForegroundWindow()
     LogInfo;
 
     return win32_mgr.get_foreground_window();
+}
+
+MaaBool MaaToolkitGetWindowClassName(MaaWin32Hwnd hwnd, MaaStringBufferHandle buffer)
+{
+    auto opt = win32_mgr.get_class_name(hwnd);
+    if (!opt) {
+        return false;
+    }
+
+    buffer->set(std::move(*opt));
+    return true;
+}
+
+MaaBool MaaToolkitGetWindowWindowName(MaaWin32Hwnd hwnd, MaaStringBufferHandle buffer)
+{
+    auto opt = win32_mgr.get_window_name(hwnd);
+    if (!opt) {
+        return false;
+    }
+
+    buffer->set(std::move(*opt));
+    return true;
 }

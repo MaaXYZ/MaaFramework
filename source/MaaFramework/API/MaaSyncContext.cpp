@@ -1,5 +1,6 @@
 #include "MaaFramework/Task/MaaSyncContext.h"
 
+#include "API/MaaTypes.h"
 #include "Buffer/ImageBuffer.hpp"
 #include "Buffer/StringBuffer.hpp"
 #include "Utils/Logger.h"

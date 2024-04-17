@@ -8,6 +8,7 @@ from typing import Dict, List, Union
 from .define import *
 from .instance import Instance
 from .library import Library
+from .buffer import StringBuffer
 
 
 @dataclass
@@ -17,13 +18,6 @@ class AdbDevice:
     address: str
     controller_type: int
     config: str
-
-
-@dataclass
-class Win32Window:
-    hwnd: MaaWin32Hwnd
-    class_name: str
-    window_name: str
 
 
 class Toolkit:
@@ -106,7 +100,7 @@ class Toolkit:
     _api_properties_initialized: bool = False
 
     @classmethod
-    def find_window(cls, class_name: str, window_name: str) -> List[Win32Window]:
+    def find_window(cls, class_name: str, window_name: str) -> List[MaaWin32Hwnd]:
         cls._set_api_properties()
 
         count = Library.toolkit.MaaToolkitFindWindow(
@@ -115,18 +109,12 @@ class Toolkit:
 
         windows = []
         for i in range(count):
-            hwnd = Library.toolkit.MaaToolkitGetWindow(i)
-            found_class = Library.toolkit.MaaToolkitGetWindowClassName(i).decode(
-                "utf-8"
-            )
-            found_window = Library.toolkit.MaaToolkitGetWindowName(i).decode("utf-8")
-
-            windows.append(Win32Window(hwnd, found_class, found_window))
+            windows.append(Library.toolkit.MaaToolkitGetWindow(i))
 
         return windows
 
     @classmethod
-    def search_window(cls, class_regex: str, window_regex: str) -> List[Win32Window]:
+    def search_window(cls, class_regex: str, window_regex: str) -> List[MaaWin32Hwnd]:
         cls._set_api_properties()
 
         count = Library.toolkit.MaaToolkitSearchWindow(
@@ -135,13 +123,7 @@ class Toolkit:
 
         windows = []
         for i in range(count):
-            hwnd = Library.toolkit.MaaToolkitGetWindow(i)
-            found_class = Library.toolkit.MaaToolkitGetWindowClassName(i).decode(
-                "utf-8"
-            )
-            found_window = Library.toolkit.MaaToolkitGetWindowName(i).decode("utf-8")
-
-            windows.append(Win32Window(hwnd, found_class, found_window))
+            windows.append(Library.toolkit.MaaToolkitGetWindow(i))
 
         return windows
 
@@ -162,6 +144,22 @@ class Toolkit:
         cls._set_api_properties()
 
         return Library.toolkit.MaaToolkitGetForegroundWindow()
+
+    @classmethod
+    def get_class_name(cls, hwnd: MaaWin32Hwnd) -> str:
+        cls._set_api_properties()
+
+        buffer = StringBuffer()
+        Library.toolkit.MaaToolkitGetWindowClassName(hwnd, buffer.c_handle)
+        return buffer.get()
+
+    @classmethod
+    def get_window_name(cls, hwnd: MaaWin32Hwnd) -> str:
+        cls._set_api_properties()
+
+        buffer = StringBuffer()
+        Library.toolkit.MaaToolkitGetWindowWindowName(hwnd, buffer.c_handle)
+        return buffer.get()
 
     @staticmethod
     def _set_api_properties():
@@ -246,12 +244,6 @@ class Toolkit:
         Library.toolkit.MaaToolkitGetWindow.restype = MaaWin32Hwnd
         Library.toolkit.MaaToolkitGetWindow.argtypes = [MaaSize]
 
-        Library.toolkit.MaaToolkitGetWindowClassName.restype = MaaStringView
-        Library.toolkit.MaaToolkitGetWindowClassName.argtypes = [MaaSize]
-
-        Library.toolkit.MaaToolkitGetWindowName.restype = MaaStringView
-        Library.toolkit.MaaToolkitGetWindowName.argtypes = [MaaSize]
-
         Library.toolkit.MaaToolkitGetCursorWindow.restype = MaaWin32Hwnd
         Library.toolkit.MaaToolkitGetCursorWindow.argtypes = []
 
@@ -260,3 +252,15 @@ class Toolkit:
 
         Library.toolkit.MaaToolkitGetForegroundWindow.restype = MaaWin32Hwnd
         Library.toolkit.MaaToolkitGetForegroundWindow.argtypes = []
+
+        Library.toolkit.MaaToolkitGetWindowClassName.restype = MaaBool
+        Library.toolkit.MaaToolkitGetWindowClassName.argtypes = [
+            MaaWin32Hwnd,
+            MaaStringBufferHandle,
+        ]
+
+        Library.toolkit.MaaToolkitGetWindowWindowName.restype = MaaBool
+        Library.toolkit.MaaToolkitGetWindowWindowName.argtypes = [
+            MaaWin32Hwnd,
+            MaaStringBufferHandle,
+        ]

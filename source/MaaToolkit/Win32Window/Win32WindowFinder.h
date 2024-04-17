@@ -25,6 +25,9 @@ public:
     virtual MaaWin32Hwnd get_desktop_window() const override;
     virtual MaaWin32Hwnd get_foreground_window() const override;
 
+    virtual std::optional<std::string> get_class_name(MaaWin32Hwnd hwnd) const override;
+    virtual std::optional<std::string> get_window_name(MaaWin32Hwnd hwnd) const override;
+
 private:
     std::vector<Window> list_windows() const;
 

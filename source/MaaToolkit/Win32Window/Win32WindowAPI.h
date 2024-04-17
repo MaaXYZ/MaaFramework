@@ -1,5 +1,6 @@
 #pragma once
 
+#include <optional>
 #include <string_view>
 #include <vector>
 
@@ -26,4 +27,7 @@ public:
     virtual MaaWin32Hwnd get_cursor_window() const = 0;
     virtual MaaWin32Hwnd get_desktop_window() const = 0;
     virtual MaaWin32Hwnd get_foreground_window() const = 0;
+
+    virtual std::optional<std::string> get_class_name(MaaWin32Hwnd hwnd) const = 0;
+    virtual std::optional<std::string> get_window_name(MaaWin32Hwnd hwnd) const = 0;
 };

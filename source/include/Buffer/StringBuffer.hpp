@@ -1,6 +1,6 @@
 #pragma once
 
-#include "API/MaaTypes.h"
+#include "BufferTypes.hpp"
 #include "Conf/Conf.h"
 #include "ListBuffer.hpp"
 
