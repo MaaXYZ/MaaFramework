@@ -186,11 +186,6 @@
                     "type": "boolean",
                     "default": false
                 },
-                "text": {
-                    "description": "要匹配的文字，支持正则。必选（除非通过接口单独设置）。",
-                    "$ref": "#/definitions/tasklist",
-                    "default": ""
-                },
                 "replace": {
                     "description": "部分文字识别结果不准确，进行替换。可选。",
                     "$ref": "#/definitions/replace_type",
@@ -388,14 +383,31 @@
                                 },
                                 "not": {
                                     "required": [
-                                        "text_doc"
+                                        "expected_doc"
                                     ]
                                 }
                             },
                             "then": {
                                 "required": [
-                                    "text"
-                                ]
+                                    "expected"
+                                ],
+                                "properties": {
+                                    "expected": {
+                                        "description": "期望的结果，支持正则。必选（除非通过接口单独设置）。",
+                                        "anyOf": [
+                                            {
+                                                "type": "string"
+                                            },
+                                            {
+                                                "type": "array",
+                                                "items": {
+                                                    "type": "string"
+                                                },
+                                                "minItems": 1
+                                            }
+                                        ]
+                                    }
+                                }
                             }
                         },
                         {
