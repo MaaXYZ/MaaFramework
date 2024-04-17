@@ -1,6 +1,7 @@
 #pragma once
 
 #include <optional>
+#include <string>
 #include <string_view>
 #include <vector>
 
@@ -12,7 +13,7 @@ class MaaWin32WindowAPI
 public:
     struct Window
     {
-        MaaWin32Hwnd hwnd;
+        MaaWin32Hwnd hwnd = nullptr;
         std::string class_name;
         std::string window_name;
     };
