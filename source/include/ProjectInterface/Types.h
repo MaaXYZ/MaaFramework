@@ -23,14 +23,44 @@ struct InterfaceData
 {
     struct Controller
     {
+        struct AdbConfig
+        {
+            json::object config;
+
+            MEO_JSONIZATION(MEO_OPT config);
+        };
+
+        struct Win32Config
+        {
+            std::string method;      // "Find", "Search", "Cursor", "Desktop", "Foreground"
+
+            std::string class_name;  // required by "Find" and "Search"
+            std::string window_name; // required by "Find" and "Search"
+
+            MEO_JSONIZATION(method, MEO_OPT class_name, MEO_OPT window_name);
+        };
+
+        inline static std::string kTypeAdb = "Adb";
+        inline static std::string kTypeWin32 = "Win32";
+
         std::string name;
         std::string type; // "Adb", "Win32"
-        int32_t touch = MaaAdbControllerType_Touch_AutoDetect;
-        int32_t key = MaaAdbControllerType_Key_AutoDetect;
-        int32_t screencap = MaaAdbControllerType_Screencap_FastestWay;
-        json::object config;
 
-        MEO_JSONIZATION(name, type, MEO_OPT touch, MEO_OPT key, MEO_OPT screencap, MEO_OPT config);
+        AdbConfig adb;
+        Win32Config win32;
+
+        int32_t touch = 0;
+        int32_t key = 0;
+        int32_t screencap = 0;
+
+        MEO_JSONIZATION(
+            name,
+            type,
+            MEO_OPT adb,
+            MEO_OPT win32,
+            MEO_OPT touch,
+            MEO_OPT key,
+            MEO_OPT screencap);
     };
 
     struct Resource
@@ -92,10 +122,24 @@ struct Configuration
     struct Controller
     {
         std::string name;
+        std::string type;
+
+        MEO_JSONIZATION(name, type);
+    };
+
+    struct Win32Config
+    {
+        int _placeholder = 0;
+
+        MEO_JSONIZATION(MEO_OPT _placeholder);
+    };
+
+    struct AdbConfig
+    {
         std::string adb_path;
         std::string address;
 
-        MEO_JSONIZATION(name, adb_path, address);
+        MEO_JSONIZATION(adb_path, address);
     };
 
     struct Option
@@ -115,10 +159,12 @@ struct Configuration
     };
 
     Controller controller;
+    AdbConfig adb;
+    Win32Config win32;
     std::string resource;
     std::vector<Task> task;
 
-    MEO_JSONIZATION(controller, resource, task);
+    MEO_JSONIZATION(controller, MEO_OPT adb, MEO_OPT win32, resource, task);
 };
 
 struct RuntimeParam

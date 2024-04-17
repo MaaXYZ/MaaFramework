@@ -157,19 +157,24 @@ bool Interactor::run()
 
 void Interactor::print_config() const
 {
+    using namespace MAA_PROJECT_INTERFACE_NS;
+
     clear_screen();
 
     welcome();
     std::cout << "### Current configuration ###\n\n";
 
     std::cout << "Controller:\n\n";
-    std::cout << "\t"
-              << MAA_LOG_NS::utf8_to_crt(std::format(
-                     "{}\n\t\t{}\n\t\t{}",
-                     config_.configuration().controller.name,
-                     MaaNS::path_to_utf8_string(config_.configuration().controller.adb_path),
-                     config_.configuration().controller.address))
-              << "\n\n";
+    std::cout << "\t" << MAA_LOG_NS::utf8_to_crt(config_.configuration().controller.name) << "\n";
+
+    if (config_.configuration().controller.type
+        == InterfaceData::Controller::kTypeAdb) {
+        std::cout << MAA_LOG_NS::utf8_to_crt(std::format(
+            "\t\t{}\n\t\t{}\n",
+            MaaNS::path_to_utf8_string(config_.configuration().adb.adb_path),
+            config_.configuration().adb.address));
+    }
+    std::cout << "\n";
 
     std::cout << "Resource:\n\n";
     std::cout << "\t" << MAA_LOG_NS::utf8_to_crt(config_.configuration().resource) << "\n\n";
@@ -257,10 +262,10 @@ void Interactor::select_controller()
     }
     const auto& controller = all_controllers[index];
 
-    if (controller.type == "Adb") {
+    if (controller.type == InterfaceData::Controller::kTypeAdb) {
         select_adb();
     }
-    else if (controller.type == "Win32") {
+    else if (controller.type == InterfaceData::Controller::kTypeWin32) {
         // TODO: Win32
     }
     else {
