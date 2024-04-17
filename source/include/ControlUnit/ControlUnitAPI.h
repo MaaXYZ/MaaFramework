@@ -13,7 +13,7 @@ class ControlUnitAPI
 public:
     enum class Feature
     {
-        MicroControl, // touch down, move, up
+        MicroControl, // split click and swipe into touch down, move and up
     };
 
 public:

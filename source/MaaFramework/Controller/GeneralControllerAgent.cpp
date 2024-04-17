@@ -260,11 +260,11 @@ bool GeneralControllerAgent::micro_click(int x, int y)
     constexpr int kContact = 0;
     constexpr int kPressure = 1;
 
-    auto start = std::chrono::steady_clock::now();
+    // auto start = std::chrono::steady_clock::now();
 
     bool ret = control_unit_->touch_down(kContact, x, y, kPressure);
 
-    std::this_thread::sleep_until(start + std::chrono::milliseconds(50));
+    // std::this_thread::sleep_until(start + std::chrono::milliseconds(50));
 
     ret &= control_unit_->touch_up(kContact);
 
