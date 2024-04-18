@@ -6,6 +6,7 @@
 #include <unordered_set>
 
 #include "MaaToolkit/Device/MaaToolkitDevice.h"
+#include "MaaToolkit/Win32/MaaToolkitWin32Window.h"
 #include "ProjectInterface/Runner.h"
 #include "Utils/Logger.h"
 #include "Utils/Platform.h"
@@ -167,8 +168,7 @@ void Interactor::print_config() const
     std::cout << "Controller:\n\n";
     std::cout << "\t" << MAA_LOG_NS::utf8_to_crt(config_.configuration().controller.name) << "\n";
 
-    if (config_.configuration().controller.type
-        == InterfaceData::Controller::kTypeAdb) {
+    if (config_.configuration().controller.type == InterfaceData::Controller::kTypeAdb) {
         std::cout << MAA_LOG_NS::utf8_to_crt(std::format(
             "\t\t{}\n\t\t{}\n",
             MaaNS::path_to_utf8_string(config_.configuration().adb.adb_path),
@@ -266,7 +266,7 @@ void Interactor::select_controller()
         select_adb();
     }
     else if (controller.type == InterfaceData::Controller::kTypeWin32) {
-        // TODO: Win32
+        // do nothing
     }
     else {
         LogError << "Unknown controller type" << VAR(controller.type);
@@ -320,10 +320,10 @@ void Interactor::select_adb_auto_detect()
     std::cout << "\n";
 
     int index = input(size) - 1;
-    auto& adb_param = config_.configuration().controller;
+    auto& adb_config = config_.configuration().adb;
 
-    adb_param.adb_path = MaaToolkitGetDeviceAdbPath(index);
-    adb_param.address = MaaToolkitGetDeviceAdbSerial(index);
+    adb_config.adb_path = MaaToolkitGetDeviceAdbPath(index);
+    adb_config.address = MaaToolkitGetDeviceAdbSerial(index);
 }
 
 void Interactor::select_adb_manual_input()
@@ -332,14 +332,14 @@ void Interactor::select_adb_manual_input()
     std::cin.sync();
     std::string adb_path;
     std::getline(std::cin, adb_path);
-    config_.configuration().controller.adb_path = adb_path;
+    config_.configuration().adb.adb_path = adb_path;
     std::cout << "\n";
 
     std::cout << "Please input ADB address: ";
     std::cin.sync();
     std::string adb_address;
     std::getline(std::cin, adb_address);
-    config_.configuration().controller.address = adb_address;
+    config_.configuration().adb.address = adb_address;
     std::cout << "\n";
 }
 
@@ -401,24 +401,18 @@ void Interactor::add_task()
 
             const auto& opt = config_.interface_data().option.at(option_name);
 
-            if (!opt.default_case.empty()) {
-                config_options.emplace_back(
-                    Configuration::Option { option_name, opt.default_case });
-                continue;
-            }
             std::cout << MAA_LOG_NS::utf8_to_crt(std::format(
                 "\n\n## Input option of \"{}\" for \"{}\" ##\n\n",
                 option_name,
                 data_task.name));
-            for (size_t i = 0; i < opt.cases.size(); ++i) {
-                std::cout << MAA_LOG_NS::utf8_to_crt(
-                    std::format("\t{}. {}\n", i + 1, opt.cases[i].name));
+            for (size_t i = 0; i < opt.size(); ++i) {
+                std::cout << MAA_LOG_NS::utf8_to_crt(std::format("\t{}. {}\n", i + 1, opt[i].name));
             }
             std::cout << "\n";
 
-            int case_index = input(opt.cases.size()) - 1;
+            int case_index = input(opt.size()) - 1;
             config_options.emplace_back(
-                Configuration::Option { option_name, opt.cases[case_index].name });
+                Configuration::Option { option_name, opt[case_index].name });
         }
 
         config_.configuration().task.emplace_back(

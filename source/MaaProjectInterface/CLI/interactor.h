@@ -22,8 +22,6 @@ private:
     void select_adb_auto_detect();
     void select_adb_manual_input();
 
-    void select_win32_hwnd();
-
     void select_resource();
     void add_task();
     void edit_task();
