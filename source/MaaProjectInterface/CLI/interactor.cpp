@@ -114,8 +114,8 @@ bool Interactor::load(const std::filesystem::path& project_dir)
     }
 
     if (!config_.check_configuration()) {
-        LogWarn << "### The interface has changed and incompatible configurations have been "
-                   "deleted. ###\n\n";
+        std::cout << "### The interface has changed and incompatible configurations have been "
+                     "deleted. ###\n\n";
         mpause();
     }
 
