@@ -203,7 +203,7 @@ struct RuntimeParam
         json::object param;
     };
 
-    std::variant<AdbParam, Win32Param> controller_param;
+    std::variant<std::monostate, AdbParam, Win32Param> controller_param;
     std::vector<std::string> resource_path;
 
     std::vector<Task> task;
