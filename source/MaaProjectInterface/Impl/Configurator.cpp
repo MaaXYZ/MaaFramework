@@ -7,7 +7,7 @@
 #include "Utils/Platform.h"
 #include "Utils/StringMisc.hpp"
 
-using namespace MAA_PROJECT_INTERFACE_NS;
+MAA_PROJECT_INTERFACE_NS_BEGIN
 
 bool Configurator::load(const std::filesystem::path& project_dir)
 {
@@ -185,3 +185,5 @@ std::optional<RuntimeParam::Task>
 
     return runtime_task;
 }
+
+MAA_PROJECT_INTERFACE_NS_END
