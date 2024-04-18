@@ -505,18 +505,24 @@ void Interactor::add_task()
 
             const auto& opt = config_.interface_data().option.at(option_name);
 
+            if (!opt.default_case.empty()) {
+                config_options.emplace_back(
+                    Configuration::Option { option_name, opt.default_case });
+                continue;
+            }
             std::cout << MAA_LOG_NS::utf8_to_crt(std::format(
                 "\n\n## Input option of \"{}\" for \"{}\" ##\n\n",
                 option_name,
                 data_task.name));
-            for (size_t i = 0; i < opt.size(); ++i) {
-                std::cout << MAA_LOG_NS::utf8_to_crt(std::format("\t{}. {}\n", i + 1, opt[i].name));
+            for (size_t i = 0; i < opt.cases.size(); ++i) {
+                std::cout << MAA_LOG_NS::utf8_to_crt(
+                    std::format("\t{}. {}\n", i + 1, opt.cases[i].name));
             }
             std::cout << "\n";
 
-            int case_index = input(opt.size()) - 1;
+            int case_index = input(opt.cases.size()) - 1;
             config_options.emplace_back(
-                Configuration::Option { option_name, opt[case_index].name });
+                Configuration::Option { option_name, opt.cases[case_index].name });
         }
 
         config_.configuration().task.emplace_back(

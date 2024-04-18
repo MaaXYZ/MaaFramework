@@ -91,18 +91,26 @@ struct InterfaceData
         MEO_JSONIZATION(name, entry, MEO_OPT param, MEO_OPT option);
     };
 
-    struct Case
+    struct Option
     {
-        std::string name;
-        json::object param;
+        struct Case
+        {
+            std::string name;
+            json::object param;
 
-        MEO_JSONIZATION(name, param);
+            MEO_JSONIZATION(name, param);
+        };
+
+        std::vector<Case> cases;
+        std::string default_case; // case.name
+
+        MEO_JSONIZATION(cases, MEO_OPT default_case);
     };
 
     std::vector<Controller> controller;
     std::vector<Resource> resource;
     std::vector<Task> task;
-    std::unordered_map<std::string, std::vector<Case>> option;
+    std::unordered_map<std::string, Option> option;
     std::unordered_map<std::string, Executor> recognizer;
     std::unordered_map<std::string, Executor> action;
     std::string version;

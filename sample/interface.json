@@ -31,10 +31,6 @@
     ],
     "task": [
         {
-            "name": "启动游戏",
-            "entry": "StartUp"
-        },
-        {
             "name": "收取荒原",
             "entry": "Wilderness"
         },
@@ -48,8 +44,7 @@
             "option": [
                 "作战关卡",
                 "复现次数",
-                "刷完全部体力",
-                "吃全部临期糖"
+                "刷完全部体力"
             ]
         },
         {
@@ -57,8 +52,7 @@
             "entry": "ANightmareAtGreenLake",
             "option": [
                 "复现次数",
-                "刷完全部体力",
-                "吃全部临期糖"
+                "刷完全部体力"
             ],
             "param": {
                 "EnterTheShow": {
@@ -75,10 +69,6 @@
         {
             "name": "领取奖励",
             "entry": "Awards"
-        },
-        {
-            "name": "关闭游戏",
-            "entry": "Close1999"
         }
     ],
     "recognizer": {
@@ -97,105 +87,93 @@
         }
     },
     "option": {
-        "作战关卡": [
-            {
-                "name": "3-9 厄险（百灵百验鸟）",
-                "param": {
-                    "EnterTheShow": {
-                        "next": "MainChapter_3"
-                    },
-                    "TargetStageName": {
-                        "expected": "09"
-                    },
-                    "StageDifficulty": {
-                        "next": "StageDifficulty_Hard"
+        "作战关卡": {
+            "cases": [
+                {
+                    "name": "3-9 厄险（百灵百验鸟）",
+                    "param": {
+                        "EnterTheShow": {
+                            "next": "MainChapter_3"
+                        },
+                        "TargetStageName": {
+                            "expected": "09"
+                        },
+                        "StageDifficulty": {
+                            "next": "StageDifficulty_Hard"
+                        }
+                    }
+                },
+                {
+                    "name": "4-20 厄险（双头形骨架）",
+                    "param": {
+                        "EnterTheShow": {
+                            "next": "MainChapter_4"
+                        },
+                        "TargetStageName": {
+                            "expected": "20"
+                        },
+                        "StageDifficulty": {
+                            "next": "StageDifficulty_Hard"
+                        }
                     }
                 }
-            },
-            {
-                "name": "4-20 厄险（双头形骨架）",
-                "param": {
-                    "EnterTheShow": {
-                        "next": "MainChapter_4"
-                    },
-                    "TargetStageName": {
-                        "expected": "20"
-                    },
-                    "StageDifficulty": {
-                        "next": "StageDifficulty_Hard"
+            ]
+        },
+        "复现次数": {
+            "cases": [
+                {
+                    "name": "x1",
+                    "param": {
+                        "SetReplaysTimes": {
+                            "expected": "1"
+                        }
+                    }
+                },
+                {
+                    "name": "x2",
+                    "param": {
+                        "SetReplaysTimes": {
+                            "expected": "2"
+                        }
+                    }
+                },
+                {
+                    "name": "x3",
+                    "param": {
+                        "SetReplaysTimes": {
+                            "expected": "3"
+                        }
+                    }
+                },
+                {
+                    "name": "x4",
+                    "param": {
+                        "SetReplaysTimes": {
+                            "expected": "4"
+                        }
                     }
                 }
-            }
-        ],
-        "复现次数": [
-            {
-                "name": "x1",
-                "param": {
-                    "SetReplaysTimes": {
-                        "expected": "1"
+            ]
+        },
+        "刷完全部体力": {
+            "cases": [
+                {
+                    "name": "Yes",
+                    "param": {
+                        "AllIn": {
+                            "enabled": true
+                        }
+                    }
+                },
+                {
+                    "name": "No",
+                    "param": {
+                        "AllIn": {
+                            "enabled": false
+                        }
                     }
                 }
-            },
-            {
-                "name": "x2",
-                "param": {
-                    "SetReplaysTimes": {
-                        "expected": "2"
-                    }
-                }
-            },
-            {
-                "name": "x3",
-                "param": {
-                    "SetReplaysTimes": {
-                        "expected": "3"
-                    }
-                }
-            },
-            {
-                "name": "x4",
-                "param": {
-                    "SetReplaysTimes": {
-                        "expected": "4"
-                    }
-                }
-            }
-        ],
-        "刷完全部体力": [
-            {
-                "name": "Yes",
-                "param": {
-                    "AllIn": {
-                        "enabled": true
-                    }
-                }
-            },
-            {
-                "name": "No",
-                "param": {
-                    "AllIn": {
-                        "enabled": false
-                    }
-                }
-            }
-        ],
-        "吃全部临期糖": [
-            {
-                "name": "Yes",
-                "param": {
-                    "EatCandyWithin24H": {
-                        "enabled": true
-                    }
-                }
-            },
-            {
-                "name": "No",
-                "param": {
-                    "EatCandyWithin24H": {
-                        "enabled": false
-                    }
-                }
-            }
-        ]
+            ]
+        }
     }
 }

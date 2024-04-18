@@ -125,13 +125,13 @@ bool Parser::check_task(const InterfaceData& data, Configuration::Task& config_t
             return false;
         }
 
-        const auto& data_option = option_iter->second;
+        const InterfaceData::Option& data_option = option_iter->second;
 
         auto case_iter = std::ranges::find(
-            data_option,
+            data_option.cases,
             config_option.value,
-            std::mem_fn(&InterfaceData::Case::name));
-        if (case_iter == data_option.end()) {
+            std::mem_fn(&InterfaceData::Option::Case::name));
+        if (case_iter == data_option.cases.end()) {
             LogWarn << "Case not found" << VAR(config_task.name) << VAR(config_option.name)
                     << VAR(config_option.value);
             return false;

@@ -170,10 +170,10 @@ std::optional<RuntimeParam::Task>
         }
         const auto& data_option = data_option_iter->second;
 
-        auto data_case_iter = std::ranges::find_if(data_option, [&](const auto& data_case) {
+        auto data_case_iter = std::ranges::find_if(data_option.cases, [&](const auto& data_case) {
             return data_case.name == config_option_value;
         });
-        if (data_case_iter == data_option.end()) {
+        if (data_case_iter == data_option.cases.end()) {
             LogWarn << "case not found" << VAR(config_option_value);
             continue;
         }
