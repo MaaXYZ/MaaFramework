@@ -1,11 +1,17 @@
 {
     "controller": [
         {
-            "name": "ADB 默认方式",
-            "type": "Adb",
-            "touch": 254,
-            "key": 65024,
-            "screencap": 16646144
+            "name": "安卓端",
+            "type": "Adb"
+        },
+        {
+            "name": "桌面端",
+            "type": "Win32",
+            "win32": {
+                "method": "Search",
+                "class_name": ".*",
+                "window_name": "Visual Studio"
+            }
         }
     ],
     "resource": [
@@ -91,113 +97,105 @@
         }
     },
     "option": {
-        "作战关卡": {
-            "cases": [
-                {
-                    "name": "3-9 厄险（百灵百验鸟）",
-                    "param": {
-                        "EnterTheShow": {
-                            "next": "MainChapter_3"
-                        },
-                        "TargetStageName": {
-                            "expected": "09"
-                        },
-                        "StageDifficulty": {
-                            "next": "StageDifficulty_Hard"
-                        }
-                    }
-                },
-                {
-                    "name": "4-20 厄险（双头形骨架）",
-                    "param": {
-                        "EnterTheShow": {
-                            "next": "MainChapter_4"
-                        },
-                        "TargetStageName": {
-                            "expected": "20"
-                        },
-                        "StageDifficulty": {
-                            "next": "StageDifficulty_Hard"
-                        }
+        "作战关卡": [
+            {
+                "name": "3-9 厄险（百灵百验鸟）",
+                "param": {
+                    "EnterTheShow": {
+                        "next": "MainChapter_3"
+                    },
+                    "TargetStageName": {
+                        "expected": "09"
+                    },
+                    "StageDifficulty": {
+                        "next": "StageDifficulty_Hard"
                     }
                 }
-            ]
-        },
-        "复现次数": {
-            "cases": [
-                {
-                    "name": "x1",
-                    "param": {
-                        "SetReplaysTimes": {
-                            "expected": "1"
-                        }
-                    }
-                },
-                {
-                    "name": "x2",
-                    "param": {
-                        "SetReplaysTimes": {
-                            "expected": "2"
-                        }
-                    }
-                },
-                {
-                    "name": "x3",
-                    "param": {
-                        "SetReplaysTimes": {
-                            "expected": "3"
-                        }
-                    }
-                },
-                {
-                    "name": "x4",
-                    "param": {
-                        "SetReplaysTimes": {
-                            "expected": "4"
-                        }
+            },
+            {
+                "name": "4-20 厄险（双头形骨架）",
+                "param": {
+                    "EnterTheShow": {
+                        "next": "MainChapter_4"
+                    },
+                    "TargetStageName": {
+                        "expected": "20"
+                    },
+                    "StageDifficulty": {
+                        "next": "StageDifficulty_Hard"
                     }
                 }
-            ]
-        },
-        "刷完全部体力": {
-            "cases": [
-                {
-                    "name": "Yes",
-                    "param": {
-                        "AllIn": {
-                            "enabled": true
-                        }
-                    }
-                },
-                {
-                    "name": "No",
-                    "param": {
-                        "AllIn": {
-                            "enabled": false
-                        }
+            }
+        ],
+        "复现次数": [
+            {
+                "name": "x1",
+                "param": {
+                    "SetReplaysTimes": {
+                        "expected": "1"
                     }
                 }
-            ]
-        },
-        "吃全部临期糖": {
-            "cases": [
-                {
-                    "name": "Yes",
-                    "param": {
-                        "EatCandyWithin24H": {
-                            "enabled": true
-                        }
-                    }
-                },
-                {
-                    "name": "No",
-                    "param": {
-                        "EatCandyWithin24H": {
-                            "enabled": false
-                        }
+            },
+            {
+                "name": "x2",
+                "param": {
+                    "SetReplaysTimes": {
+                        "expected": "2"
                     }
                 }
-            ]
-        }
+            },
+            {
+                "name": "x3",
+                "param": {
+                    "SetReplaysTimes": {
+                        "expected": "3"
+                    }
+                }
+            },
+            {
+                "name": "x4",
+                "param": {
+                    "SetReplaysTimes": {
+                        "expected": "4"
+                    }
+                }
+            }
+        ],
+        "刷完全部体力": [
+            {
+                "name": "Yes",
+                "param": {
+                    "AllIn": {
+                        "enabled": true
+                    }
+                }
+            },
+            {
+                "name": "No",
+                "param": {
+                    "AllIn": {
+                        "enabled": false
+                    }
+                }
+            }
+        ],
+        "吃全部临期糖": [
+            {
+                "name": "Yes",
+                "param": {
+                    "EatCandyWithin24H": {
+                        "enabled": true
+                    }
+                }
+            },
+            {
+                "name": "No",
+                "param": {
+                    "EatCandyWithin24H": {
+                        "enabled": false
+                    }
+                }
+            }
+        ]
     }
 }

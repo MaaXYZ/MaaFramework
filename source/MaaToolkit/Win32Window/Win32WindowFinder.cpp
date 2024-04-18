@@ -111,30 +111,30 @@ std::optional<std::string> Win32WindowFinder::get_class_name(MaaWin32Hwnd hwnd) 
 {
     constexpr int kMaxLength = 256;
 
-    std::string result(kMaxLength + 1, '0');
+    std::wstring result(kMaxLength + 1, '0');
 
-    int ret = GetClassName(reinterpret_cast<HWND>(hwnd), result.data(), kMaxLength);
-    if (ret != 0) {
+    int ret = GetClassNameW(reinterpret_cast<HWND>(hwnd), result.data(), kMaxLength);
+    if (ret == 0) {
         LogError << "failed to GetClassName" << VAR_VOIDP(hwnd) << VAR(GetLastError());
         return std::nullopt;
     }
 
-    return result;
+    return from_u16(result);
 }
 
 std::optional<std::string> Win32WindowFinder::get_window_name(MaaWin32Hwnd hwnd) const
 {
     constexpr int kMaxLength = 256;
 
-    std::string result(kMaxLength + 1, '0');
+    std::wstring result(kMaxLength + 1, '0');
 
-    int ret = GetWindowText(reinterpret_cast<HWND>(hwnd), result.data(), kMaxLength);
-    if (ret != 0) {
+    int ret = GetWindowTextW(reinterpret_cast<HWND>(hwnd), result.data(), kMaxLength);
+    if (ret == 0) {
         LogError << "failed to GetWindowText" << VAR_VOIDP(hwnd) << VAR(GetLastError());
         return std::nullopt;
     }
 
-    return result;
+    return from_u16(result);
 }
 
 MAA_TOOLKIT_NS_END

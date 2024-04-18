@@ -183,8 +183,7 @@ void Interactor::print_config() const
     }
     else if (config_.configuration().controller.type == InterfaceData::Controller::kTypeWin32) {
         if (auto hwnd = config_.configuration().win32.hwnd) {
-            std::cout << MAA_LOG_NS::utf8_to_crt(
-                std::format("\t\t{}\n\t\t{}\n", hwnd, get_hwnd_info(hwnd)));
+            std::cout << MAA_LOG_NS::utf8_to_crt(std::format("\t\t{}\n", get_hwnd_info(hwnd)));
         }
     }
 
@@ -278,9 +277,11 @@ void Interactor::select_controller()
 
     if (controller.type == InterfaceData::Controller::kTypeAdb) {
         select_adb();
+        config_.configuration().controller.type = InterfaceData::Controller::kTypeAdb;
     }
     else if (controller.type == InterfaceData::Controller::kTypeWin32) {
         select_win32_hwnd(controller.win32);
+        config_.configuration().controller.type = InterfaceData::Controller::kTypeWin32;
     }
     else {
         LogError << "Unknown controller type" << VAR(controller.type);
@@ -439,7 +440,7 @@ std::string Interactor::get_hwnd_info(MaaWin32Hwnd hwnd)
     MaaDestroyStringBuffer(class_buffer);
 
     auto window_buffer = MaaCreateStringBuffer();
-    MaaToolkitGetWindowClassName(hwnd, window_buffer);
+    MaaToolkitGetWindowWindowName(hwnd, window_buffer);
     std::string window_name = MaaGetString(window_buffer);
     MaaDestroyStringBuffer(window_buffer);
 
