@@ -2,9 +2,11 @@
 
 #include <algorithm>
 #include <format>
+#include <functional>
 #include <ranges>
 #include <unordered_set>
 
+#include "MaaFramework/Utility/MaaBuffer.h"
 #include "MaaToolkit/Device/MaaToolkitDevice.h"
 #include "MaaToolkit/Win32/MaaToolkitWin32Window.h"
 #include "ProjectInterface/Runner.h"
@@ -112,8 +114,8 @@ bool Interactor::load(const std::filesystem::path& project_dir)
     }
 
     if (!config_.check_configuration()) {
-        std::cout << "### The interface has changed and incompatible configurations have been "
-                     "deleted. ###\n\n";
+        LogWarn << "### The interface has changed and incompatible configurations have been "
+                   "deleted. ###\n\n";
         mpause();
     }
 
@@ -138,6 +140,11 @@ void Interactor::interact()
 
 bool Interactor::run()
 {
+    if (!check_validity()) {
+        LogError << "Config is invalid";
+        return false;
+    }
+
     auto runtime = config_.generate_runtime();
     if (!runtime) {
         LogError << "Failed to generate runtime";
@@ -174,6 +181,13 @@ void Interactor::print_config() const
             MaaNS::path_to_utf8_string(config_.configuration().adb.adb_path),
             config_.configuration().adb.address));
     }
+    else if (config_.configuration().controller.type == InterfaceData::Controller::kTypeWin32) {
+        if (auto hwnd = config_.configuration().win32.hwnd) {
+            std::cout << MAA_LOG_NS::utf8_to_crt(
+                std::format("\t\t{}\n\t\t{}\n", hwnd, get_hwnd_info(hwnd)));
+        }
+    }
+
     std::cout << "\n";
 
     std::cout << "Resource:\n\n";
@@ -266,7 +280,7 @@ void Interactor::select_controller()
         select_adb();
     }
     else if (controller.type == InterfaceData::Controller::kTypeWin32) {
-        // do nothing
+        select_win32_hwnd(controller.win32);
     }
     else {
         LogError << "Unknown controller type" << VAR(controller.type);
@@ -341,6 +355,95 @@ void Interactor::select_adb_manual_input()
     std::getline(std::cin, adb_address);
     config_.configuration().adb.address = adb_address;
     std::cout << "\n";
+}
+
+bool Interactor::select_win32_hwnd(
+    const MAA_PROJECT_INTERFACE_NS::InterfaceData::Controller::Win32Config& win32_config)
+{
+    using namespace MAA_PROJECT_INTERFACE_NS;
+
+    MaaWin32Hwnd hwnd = nullptr;
+
+    if (win32_config.method == InterfaceData::Controller::Win32Config::kMethodFind
+        || win32_config.method == InterfaceData::Controller::Win32Config::kMethodSearch) {
+        hwnd = select_win32_multiple_hwnd(win32_config);
+    }
+    else if (win32_config.method == InterfaceData::Controller::Win32Config::kMethodCursor) {
+        hwnd = MaaToolkitGetCursorWindow();
+    }
+    else if (win32_config.method == InterfaceData::Controller::Win32Config::kMethodDesktop) {
+        hwnd = MaaToolkitGetDesktopWindow();
+    }
+    else if (win32_config.method == InterfaceData::Controller::Win32Config::kMethodForeground) {
+        hwnd = MaaToolkitGetForegroundWindow();
+    }
+
+    if (!hwnd) {
+        LogError << "Window Not Found" << VAR(win32_config.method);
+
+        mpause();
+        return false;
+    }
+
+    config_.configuration().win32.hwnd = hwnd;
+
+    return true;
+}
+
+MaaWin32Hwnd Interactor::select_win32_multiple_hwnd(
+    const MAA_PROJECT_INTERFACE_NS::InterfaceData::Controller::Win32Config& win32_config)
+{
+    using namespace MAA_PROJECT_INTERFACE_NS;
+
+    size_t size = 0;
+
+    if (win32_config.method == InterfaceData::Controller::Win32Config::kMethodFind) {
+        size =
+            MaaToolkitFindWindow(win32_config.class_name.c_str(), win32_config.window_name.c_str());
+    }
+    else if (win32_config.method == InterfaceData::Controller::Win32Config::kMethodSearch) {
+        size = MaaToolkitSearchWindow(
+            win32_config.class_name.c_str(),
+            win32_config.window_name.c_str());
+    }
+
+    if (size == 0) {
+        LogError << "Window Not Found" << VAR(win32_config.class_name)
+                 << VAR(win32_config.window_name);
+        return nullptr;
+    }
+
+    if (size == 1) {
+        return MaaToolkitGetWindow(0);
+    }
+
+    std::cout << "### Select HWND ###\n\n";
+
+    for (size_t i = 0; i < size; ++i) {
+        auto hwnd = MaaToolkitGetWindow(i);
+
+        std::cout << MAA_LOG_NS::utf8_to_crt(std::format("\t{}. {}\n", i + 1, get_hwnd_info(hwnd)));
+    }
+    std::cout << "\n";
+
+    int index = input(size) - 1;
+
+    return MaaToolkitGetWindow(index);
+}
+
+std::string Interactor::get_hwnd_info(MaaWin32Hwnd hwnd)
+{
+    auto class_buffer = MaaCreateStringBuffer();
+    MaaToolkitGetWindowClassName(hwnd, class_buffer);
+    std::string class_name = MaaGetString(class_buffer);
+    MaaDestroyStringBuffer(class_buffer);
+
+    auto window_buffer = MaaCreateStringBuffer();
+    MaaToolkitGetWindowClassName(hwnd, window_buffer);
+    std::string window_name = MaaGetString(window_buffer);
+    MaaDestroyStringBuffer(window_buffer);
+
+    return std::format("{}\n\t\t{}\n\t\t{}", hwnd, class_name, window_name);
 }
 
 void Interactor::select_resource()
@@ -491,6 +594,29 @@ void Interactor::print_config_tasks(bool with_index) const
         }
     }
     std::cout << "\n";
+}
+
+bool Interactor::check_validity()
+{
+    using namespace MAA_PROJECT_INTERFACE_NS;
+
+    if (config_.configuration().controller.type == InterfaceData::Controller::kTypeWin32
+        && config_.configuration().win32.hwnd == nullptr) {
+        auto& name = config_.configuration().controller.name;
+        auto controller_iter = std::ranges::find(
+            config_.interface_data().controller,
+            name,
+            std::mem_fn(&InterfaceData::Controller::name));
+
+        if (controller_iter == config_.interface_data().controller.end()) {
+            LogError << "Contorller not found" << VAR(name);
+            return false;
+        }
+
+        return select_win32_hwnd(controller_iter->win32);
+    }
+
+    return true;
 }
 
 void Interactor::mpause() const

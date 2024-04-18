@@ -22,6 +22,12 @@ private:
     void select_adb_auto_detect();
     void select_adb_manual_input();
 
+    bool select_win32_hwnd(
+        const MAA_PROJECT_INTERFACE_NS::InterfaceData::Controller::Win32Config& win32_config);
+    MaaWin32Hwnd select_win32_multiple_hwnd(
+        const MAA_PROJECT_INTERFACE_NS::InterfaceData::Controller::Win32Config& win32_config);
+    static std::string get_hwnd_info(MaaWin32Hwnd hwnd);
+
     void select_resource();
     void add_task();
     void edit_task();
@@ -29,6 +35,8 @@ private:
     void move_task();
 
     void print_config_tasks(bool with_index = true) const;
+
+    bool check_validity();
 
     void mpause() const;
 
