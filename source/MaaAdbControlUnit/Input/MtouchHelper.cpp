@@ -5,6 +5,7 @@
 #include <format>
 #include <ranges>
 
+#include "ControlUnit/MicroControl.hpp"
 #include "Utils/Logger.h"
 
 MAA_CTRL_UNIT_NS_BEGIN
@@ -107,46 +108,21 @@ bool MtouchHelper::swipe(int x1, int y1, int x2, int y2, int duration)
     LogInfo << VAR(x1) << VAR(y1) << VAR(touch_x1) << VAR(touch_y1) << VAR(x2) << VAR(y2)
             << VAR(touch_x2) << VAR(touch_y2) << VAR(duration);
 
-    auto start = std::chrono::steady_clock::now();
-    auto now = start;
     bool ret = true;
-    ret &= pipe_ios_->write(std::format(kDownFormat, 0, touch_x1, touch_y1, press_));
-    if (!ret) {
-        LogError << "write error";
-        return false;
-    }
 
-    constexpr double kInterval = 10; // ms
-    const double steps = duration / kInterval;
-    const double x_step_len = (x2 - x1) / steps;
-    const double y_step_len = (y2 - y1) / steps;
-    const std::chrono::milliseconds delay(static_cast<int>(kInterval));
+    micro_swipe(
+        touch_x1,
+        touch_y1,
+        touch_x2,
+        touch_y2,
+        duration,
+        [&](int x, int y) { ret &= pipe_ios_->write(std::format(kDownFormat, 0, x, y, press_)); },
+        [&](int x, int y) { ret &= pipe_ios_->write(std::format(kMoveFormat, 0, x, y, press_)); },
+        [&]([[maybe_unused]] int x, [[maybe_unused]] int y) {
+            ret &= pipe_ios_->write(std::format(kUpFormat, 0));
+        });
 
-    for (int i = 0; i < steps; ++i) {
-        auto [tx, ty] = screen_to_touch(x1 + i * x_step_len, y1 + i * y_step_len);
-        std::this_thread::sleep_until(now + delay);
-        now = std::chrono::steady_clock::now();
-
-        ret &= pipe_ios_->write(std::format(kMoveFormat, 0, tx, ty, press_));
-        if (!ret) {
-            LogWarn << "write error";
-        }
-    }
-
-    std::this_thread::sleep_until(now + delay);
-    now = std::chrono::steady_clock::now();
-    ret &= pipe_ios_->write(std::format(kMoveFormat, 0, touch_x2, touch_y2, press_));
-
-    std::this_thread::sleep_until(now + delay);
-    now = std::chrono::steady_clock::now();
-    ret &= pipe_ios_->write(std::format(kUpFormat, 0));
-
-    if (!ret) {
-        LogError << "failed to write";
-        return false;
-    }
-
-    return true;
+    return ret;
 }
 
 bool MtouchHelper::touch_down(int contact, int x, int y, int pressure)
