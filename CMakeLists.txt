@@ -78,6 +78,8 @@ if(BUILD_DLOPEN_TESTING)
     add_subdirectory(test/dlopen)
 endif()
 
+add_subdirectory(test/maapp)
+
 if(USE_MAADEPS)
     maadeps_install(bin)
 endif()
