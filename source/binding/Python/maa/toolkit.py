@@ -8,6 +8,7 @@ from typing import Dict, List, Union
 from .define import *
 from .instance import Instance
 from .library import Library
+from .buffer import StringBuffer
 
 
 @dataclass
@@ -113,11 +114,11 @@ class Toolkit:
         return windows
 
     @classmethod
-    def search_window(cls, class_name: str, window_name: str) -> List[MaaWin32Hwnd]:
+    def search_window(cls, class_regex: str, window_regex: str) -> List[MaaWin32Hwnd]:
         cls._set_api_properties()
 
         count = Library.toolkit.MaaToolkitSearchWindow(
-            class_name.encode("utf-8"), window_name.encode("utf-8")
+            class_regex.encode("utf-8"), window_regex.encode("utf-8")
         )
 
         windows = []
@@ -143,6 +144,22 @@ class Toolkit:
         cls._set_api_properties()
 
         return Library.toolkit.MaaToolkitGetForegroundWindow()
+
+    @classmethod
+    def get_class_name(cls, hwnd: MaaWin32Hwnd) -> str:
+        cls._set_api_properties()
+
+        buffer = StringBuffer()
+        Library.toolkit.MaaToolkitGetWindowClassName(hwnd, buffer.c_handle)
+        return buffer.get()
+
+    @classmethod
+    def get_window_name(cls, hwnd: MaaWin32Hwnd) -> str:
+        cls._set_api_properties()
+
+        buffer = StringBuffer()
+        Library.toolkit.MaaToolkitGetWindowWindowName(hwnd, buffer.c_handle)
+        return buffer.get()
 
     @staticmethod
     def _set_api_properties():
@@ -235,3 +252,15 @@ class Toolkit:
 
         Library.toolkit.MaaToolkitGetForegroundWindow.restype = MaaWin32Hwnd
         Library.toolkit.MaaToolkitGetForegroundWindow.argtypes = []
+
+        Library.toolkit.MaaToolkitGetWindowClassName.restype = MaaBool
+        Library.toolkit.MaaToolkitGetWindowClassName.argtypes = [
+            MaaWin32Hwnd,
+            MaaStringBufferHandle,
+        ]
+
+        Library.toolkit.MaaToolkitGetWindowWindowName.restype = MaaBool
+        Library.toolkit.MaaToolkitGetWindowWindowName.argtypes = [
+            MaaWin32Hwnd,
+            MaaStringBufferHandle,
+        ]

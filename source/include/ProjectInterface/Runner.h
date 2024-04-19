@@ -10,7 +10,7 @@ class Runner
 {
 public:
     static bool
-        run(const MAA_PROJECT_INTERFACE_NS::RuntimeParam& param, //
+        run(const RuntimeParam& param,
             MaaInstanceCallback callback = nullptr,
             MaaCallbackTransparentArg callback_arg = nullptr,
             MaaResourceCallback resource_callback = nullptr,

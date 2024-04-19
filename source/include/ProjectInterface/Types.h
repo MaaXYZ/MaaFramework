@@ -2,6 +2,7 @@
 
 #include <string>
 #include <unordered_map>
+#include <variant>
 #include <vector>
 
 #include <meojson/json.hpp>
@@ -23,14 +24,53 @@ struct InterfaceData
 {
     struct Controller
     {
+        struct AdbConfig
+        {
+            int32_t touch = MaaAdbControllerType_Touch_AutoDetect;
+            int32_t key = MaaAdbControllerType_Key_AutoDetect;
+            int32_t screencap = MaaAdbControllerType_Screencap_FastestWay;
+
+            json::object config;
+
+            MEO_JSONIZATION(MEO_OPT touch, MEO_OPT key, MEO_OPT screencap, MEO_OPT config);
+        };
+
+        struct Win32Config
+        {
+            inline static std::string kMethodFind = "Find";
+            inline static std::string kMethodSearch = "Search";
+            inline static std::string kMethodCursor = "Cursor";
+            inline static std::string kMethodDesktop = "Desktop";
+            inline static std::string kMethodForeground = "Foreground";
+
+            std::string method;
+
+            std::string class_name;  // required by "Find" and "Search"
+            std::string window_name; // required by "Find" and "Search"
+
+            int32_t touch = MaaWin32ControllerType_Touch_Seize;
+            int32_t key = MaaWin32ControllerType_Key_Seize;
+            int32_t screencap = MaaWin32ControllerType_Screencap_GDI;
+
+            MEO_JSONIZATION(
+                method,
+                MEO_OPT class_name,
+                MEO_OPT window_name,
+                MEO_OPT touch,
+                MEO_OPT key,
+                MEO_OPT screencap);
+        };
+
+        inline static std::string kTypeAdb = "Adb";
+        inline static std::string kTypeWin32 = "Win32";
+
         std::string name;
         std::string type; // "Adb", "Win32"
-        int32_t touch = MaaAdbControllerType_Touch_AutoDetect;
-        int32_t key = MaaAdbControllerType_Key_AutoDetect;
-        int32_t screencap = MaaAdbControllerType_Screencap_FastestWay;
-        json::object config;
 
-        MEO_JSONIZATION(name, type, MEO_OPT touch, MEO_OPT key, MEO_OPT screencap, MEO_OPT config);
+        AdbConfig adb;
+        Win32Config win32;
+
+        MEO_JSONIZATION(name, type, MEO_OPT adb, MEO_OPT win32);
     };
 
     struct Resource
@@ -77,7 +117,7 @@ struct InterfaceData
     std::string message;
 
     MEO_JSONIZATION(
-        MEO_OPT controller,
+        controller,
         resource,
         task,
         MEO_OPT option,
@@ -92,10 +132,26 @@ struct Configuration
     struct Controller
     {
         std::string name;
+        std::string type;
+
+        MEO_JSONIZATION(name, type);
+    };
+
+    struct Win32Config
+    {
+        MaaWin32Hwnd hwnd = nullptr;
+
+        int _placeholder = 0;
+
+        MEO_JSONIZATION(MEO_OPT _placeholder);
+    };
+
+    struct AdbConfig
+    {
         std::string adb_path;
         std::string address;
 
-        MEO_JSONIZATION(name, adb_path, address);
+        MEO_JSONIZATION(adb_path, address);
     };
 
     struct Option
@@ -115,26 +171,29 @@ struct Configuration
     };
 
     Controller controller;
+    AdbConfig adb;
+    Win32Config win32;
     std::string resource;
     std::vector<Task> task;
 
-    MEO_JSONIZATION(controller, resource, task);
+    MEO_JSONIZATION(controller, MEO_OPT adb, MEO_OPT win32, resource, task);
 };
 
 struct RuntimeParam
 {
     struct AdbParam
     {
-        std::string name;
         std::string adb_path;
         std::string address;
-        int32_t controller_type = MaaAdbControllerType_Touch_AutoDetect
-                                  | MaaAdbControllerType_Key_AutoDetect
-                                  | MaaAdbControllerType_Screencap_FastestWay;
-        std::string config = json::object().dumps();
+        int32_t controller_type = 0;
+        std::string config;
         std::string agent_path;
+    };
 
-        MEO_JSONIZATION(name, adb_path, address, controller_type, config, agent_path);
+    struct Win32Param
+    {
+        MaaWin32Hwnd hwnd = nullptr;
+        int32_t controller_type = 0;
     };
 
     struct Task
@@ -142,18 +201,14 @@ struct RuntimeParam
         std::string name;
         std::string entry;
         json::object param;
-
-        MEO_JSONIZATION(name, entry, param);
     };
 
-    AdbParam adb_param;
+    std::variant<std::monostate, AdbParam, Win32Param> controller_param;
     std::vector<std::string> resource_path;
 
     std::vector<Task> task;
     std::unordered_map<std::string, Executor> recognizer;
     std::unordered_map<std::string, Executor> action;
-
-    MEO_JSONIZATION(adb_param, resource_path, task, recognizer, action);
 };
 
 MAA_PROJECT_INTERFACE_NS_END
