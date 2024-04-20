@@ -5,12 +5,19 @@
 #include <mutex>
 #include <vector>
 
-namespace maa::utils
+namespace maa::coro
 {
 
 class EventLoop
 {
 public:
+    EventLoop() { current_ = this; }
+
+    ~EventLoop() { current_ = nullptr; }
+
+    EventLoop(const EventLoop&) = delete;
+    EventLoop& operator=(const EventLoop&) = delete;
+
     void defer(std::function<void()> func)
     {
         std::lock_guard<std::mutex> lock(mtx_);
@@ -18,7 +25,10 @@ public:
         cond_.notify_all();
     }
 
-    void bind() { current_.push_back(this); }
+    void defer_stop()
+    {
+        defer([this]() { this->stop(); });
+    }
 
     void exec()
     {
@@ -34,15 +44,14 @@ public:
                 func();
             }
         }
-        current_.pop_back();
     }
 
     void stop() { running_ = false; }
 
-    static auto current() { return current_.back(); }
+    static EventLoop* current() { return current_; }
 
 private:
-    static inline std::vector<EventLoop*> current_;
+    static inline EventLoop* current_ = nullptr;
 
     std::mutex mtx_;
     std::condition_variable cond_;

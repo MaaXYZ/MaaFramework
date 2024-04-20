@@ -4,50 +4,21 @@
 
 #include "MaaPP/MaaPP.hpp"
 
-struct GlobalChunk
+maa::coro::Promise<void> async_main()
 {
-    std::shared_ptr<maa::Resource> res;
-};
-
-maa::utils::Task<void> test()
-{
+    auto res = std::make_shared<maa::Resource>();
+    auto action = res->post_path(R"(E:\Projects\MAA\MaaAssistantSkland\assets\resource)");
+    std::cout << "load posted, status " << action->status() << std::endl;
+    auto status = co_await action->wait();
+    std::cout << "load finish, status " << status << std::endl;
     co_return;
-}
-
-maa::utils::Task<void> async_main(maa::utils::EventLoop& loop, GlobalChunk& chunk)
-{
-    co_await test();
-    // chunk.res = std::make_shared<maa::Resource>();
-
-    // std::cout << "resource created" << std::endl;
-
-    // auto action = chunk.res->post_path(
-    //     "/Users/nekosu/Documents/Projects/MAA/MaaAssistantSkland/assets/resource");
-
-    // std::cout << "got action" << std::endl;
-
-    // auto status = co_await action->wait();
-
-    // std::cout << status << std::endl;
-
-    // loop.stop();
 }
 
 int main()
 {
-    auto val = MaaLoggingLevel_Error;
-    MaaSetGlobalOption(MaaGlobalOption_StdoutLevel, &val, sizeof(val));
+    maa::coro::EventLoop ev;
 
-    maa::utils::EventLoop loop;
+    async_main().then([&ev]() { ev.defer_stop(); });
 
-    loop.bind();
-
-    GlobalChunk chunk;
-    auto h = async_main(loop, chunk);
-
-    std::cout << "enter loop" << std::endl;
-
-    loop.exec();
-
-    return 0;
+    ev.exec();
 }
