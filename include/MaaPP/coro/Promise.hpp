@@ -49,10 +49,10 @@ struct Promise
     using result_t = typename __promise_traits<T>::result_t;
 
     template <typename F>
-    using then_ret_t = typename __promise_traits<T>::then_ret_t<F>;
+    using then_ret_t = typename __promise_traits<T>::template then_ret_t<F>;
 
     template <typename R>
-    using then_holder_t = typename __promise_traits<T>::then_holder_t<R>;
+    using then_holder_t = typename __promise_traits<T>::template then_holder_t<R>;
 
     struct State
     {
