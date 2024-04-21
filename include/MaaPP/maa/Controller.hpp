@@ -9,16 +9,17 @@
 
 #include "MaaPP/coro/EventLoop.hpp"
 #include "MaaPP/coro/Promise.hpp"
+#include "MaaPP/maa/AdbDevice.hpp"
 #include "MaaPP/maa/details/ActionHelper.hpp"
 
 namespace maa
 {
 
-class Resource;
+class Controller;
 
-class ResourceAction : public ActionBase<ResourceAction, Resource, MaaResId>
+class ControllerAction : public ActionBase<ControllerAction, Controller, MaaCtrlId>
 {
-    friend class Resource;
+    friend class Controller;
 
 public:
     using ActionBase::ActionBase;
@@ -31,21 +32,46 @@ private:
     coro::Promise<MaaStatus> status_;
 };
 
-class Resource : public ActionHelper<Resource, ResourceAction, MaaResId, MaaResourceHandle>
+class Controller : public ActionHelper<Controller, ControllerAction, MaaCtrlId, MaaControllerHandle>
 {
-    friend class ResourceAction;
+    friend class ControllerAction;
 
 public:
-    Resource()
-        : ActionHelper(MaaResourceCreate(&Resource::_callback, this))
+    struct adb_controller_tag
+    {
+    };
+
+    Controller(
+        [[maybe_unused]] adb_controller_tag tag,
+        const std::string& adb_path,
+        const std::string& address,
+        MaaAdbControllerType type,
+        const std::string& config,
+        const std::string& agent_path)
+        : ActionHelper(MaaAdbControllerCreateV2(
+            adb_path.c_str(),
+            address.c_str(),
+            type,
+            config.c_str(),
+            agent_path.c_str(),
+            &Controller::_callback,
+            this))
     {
     }
 
-    ~Resource() { MaaResourceDestroy(inst_); }
-
-    std::shared_ptr<ResourceAction> post_path(const std::string& path)
+    Controller(
+        [[maybe_unused]] adb_controller_tag tag,
+        const AdbDevice& device,
+        const std::string& agent_path)
+        : Controller(tag, device.adb_path, device.address, device.type, device.config, agent_path)
     {
-        return put_action(MaaResourcePostPath(inst_, path.c_str()));
+    }
+
+    ~Controller() { MaaControllerDestroy(inst_); }
+
+    std::shared_ptr<ControllerAction> post_connect()
+    {
+        return put_action(MaaControllerPostConnection(inst_));
     }
 
 private:
@@ -56,7 +82,7 @@ private:
             return;
         }
         // prevent destroy
-        auto self = reinterpret_cast<Resource*>(arg)->shared_from_this();
+        auto self = reinterpret_cast<Controller*>(arg)->shared_from_this();
 
         coro::EventLoop::current()->defer(
             [self, msg_str = std::string(msg), detail_val = std::move(detail_opt.value())]() {
@@ -64,7 +90,7 @@ private:
                 if (!detail_obj.contains("id")) {
                     return;
                 }
-                MaaResId id = detail_obj.at("id").as_unsigned_long_long();
+                MaaCtrlId id = detail_obj.at("id").as_unsigned_long_long();
                 if (!self->actions_.contains(id)) {
                     std::cout << "cannot find id " << id << std::endl;
                     return;
@@ -74,19 +100,19 @@ private:
                     std::cout << "action id " << id << " expired" << std::endl;
                     return;
                 }
-                if (msg_str == MaaMsg_Resource_LoadingCompleted) {
+                if (msg_str == MaaMsg_Controller_Action_Completed) {
                     ptr->status_.resolve(MaaStatus_Success);
                 }
-                else if (msg_str == MaaMsg_Resource_LoadingFailed) {
+                else if (msg_str == MaaMsg_Controller_Action_Failed) {
                     ptr->status_.resolve(MaaStatus_Failed);
                 }
             });
     }
 };
 
-inline MaaStatus ResourceAction::status()
+inline MaaStatus ControllerAction::status()
 {
-    return MaaResourceStatus(inst_->inst_, id_);
+    return MaaControllerStatus(inst_->inst_, id_);
 }
 
 }

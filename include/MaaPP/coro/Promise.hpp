@@ -3,6 +3,7 @@
 #include <coroutine>
 #include <functional>
 #include <optional>
+#include <tuple>
 #include <utility>
 #include <vector>
 
@@ -90,8 +91,8 @@ struct Promise
     }
 
     template <typename t = T>
-    requires !std::is_same_v<void, t>
-             static Promise<t> resolve_now(t value)
+    requires(!std::is_same_v<void, t>)
+    static Promise<t> resolve_now(t value)
     {
         Promise<T> pro;
         pro.resolve(std::move(value));
@@ -168,8 +169,8 @@ struct Promise
     }
 
     template <typename t = T>
-    requires !std::is_same_v<void, t>
-             void resolve(t value) const
+    requires(!std::is_same_v<void, t>)
+    void resolve(t value) const
     {
         if (resolved()) {
             return;
