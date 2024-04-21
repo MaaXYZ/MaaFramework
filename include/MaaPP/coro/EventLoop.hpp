@@ -5,6 +5,8 @@
 #include <mutex>
 #include <vector>
 
+#include "MaaPP/coro/Promise.hpp"
+
 namespace maa::coro
 {
 
@@ -28,6 +30,22 @@ public:
     void defer_stop()
     {
         defer([this]() { this->stop(); });
+    }
+
+    template <typename F>
+    auto eval_other_thread(F f) -> maa::coro::Promise<std::invoke_result_t<F>>
+    {
+        using R = std::invoke_result_t<F>;
+        std::function<R()> func(f);
+        auto result_pro = maa::coro::Promise<R>();
+
+        std::thread([result_pro, func]() {
+            auto result = func();
+            maa::coro::EventLoop::current()->defer(
+                [result_pro, result = std::move(result)]() { result_pro.resolve(result); });
+        }).detach();
+
+        return result_pro;
     }
 
     void exec()
