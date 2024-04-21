@@ -15,20 +15,23 @@ maa::coro::Promise<void> async_main()
 
     auto devices = co_await maa::AdbDeviceFinder::find();
 
-    for (const auto& dev : devices.value()) {
-        std::cout
-            << std::format("{}\n{}\n{}\n{}\n", dev.adb_path, dev.address, dev.type, dev.config)
-            << std::endl;
+    if (devices) {
+        for (const auto& dev : *devices) {
+            std::cout
+                << std::format("{}\n{}\n{}\n{}\n", dev.adb_path, dev.address, dev.type, dev.config)
+                << std::endl;
+        }
+
+        if (devices->size() > 0) {
+            auto ctrl = std::make_shared<maa::Controller>(
+                maa::Controller::adb_controller_tag {},
+                (*devices)[0],
+                R"(E:\Projects\MAA\MaaFramework\3rdparty\MaaAgentBinary)");
+
+            status = co_await ctrl->post_connect()->wait();
+            std::cout << "connect finished, status " << status << std::endl;
+        }
     }
-
-    auto ctrl = std::make_shared<maa::Controller>(
-        maa::Controller::adb_controller_tag {},
-        devices.value()[0],
-        R"(E:\Projects\MAA\MaaFramework\3rdparty\MaaAgentBinary)");
-
-    status = co_await ctrl->post_connect()->wait();
-    std::cout << "connect finished, status " << status << std::endl;
-
     co_return;
 }
 

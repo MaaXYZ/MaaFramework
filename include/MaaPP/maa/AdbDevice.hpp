@@ -25,10 +25,10 @@ struct AdbDevice
 namespace AdbDeviceFinder
 {
 
-inline maa::coro::Promise<std::optional<std::vector<AdbDevice>>> find()
+inline maa::coro::Promise<std::shared_ptr<std::vector<AdbDevice>>> find()
 {
     if (!MaaToolkitPostFindDevice()) {
-        co_return std::nullopt;
+        co_return nullptr;
     }
     auto waiter = maa::coro::Promise<MaaSize>();
     std::thread([waiter]() {
@@ -46,7 +46,7 @@ inline maa::coro::Promise<std::optional<std::vector<AdbDevice>>> find()
             MaaToolkitGetDeviceAdbConfig(i),
         });
     }
-    co_return result;
+    co_return std::make_shared<std::vector<AdbDevice>>(std::move(result));
 }
 
 }
