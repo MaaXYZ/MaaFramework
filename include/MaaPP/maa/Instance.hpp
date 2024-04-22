@@ -7,19 +7,23 @@
 #include <MaaFramework/MaaMsg.h>
 #include <meojson/json.hpp>
 
+#include "MaaFramework/Instance/MaaInstance.h"
+#include "MaaFramework/MaaDef.h"
 #include "MaaPP/coro/EventLoop.hpp"
 #include "MaaPP/coro/Promise.hpp"
-#include "MaaPP/maa/AdbDevice.hpp"
+#include "MaaPP/maa/Controller.hpp"
+#include "MaaPP/maa/Resource.hpp"
 #include "MaaPP/maa/details/ActionHelper.hpp"
+#include "meojson/common/utils.hpp"
 
 namespace maa
 {
 
-class Controller;
+class Instance;
 
-class ControllerAction : public ActionBase<ControllerAction, Controller, MaaCtrlId>
+class InstanceAction : public ActionBase<InstanceAction, Instance, MaaTaskId>
 {
-    friend class Controller;
+    friend class Instance;
 
 public:
     using ActionBase::ActionBase;
@@ -32,48 +36,43 @@ private:
     coro::Promise<MaaStatus> status_;
 };
 
-class Controller : public ActionHelper<Controller, ControllerAction, MaaCtrlId, MaaControllerHandle>
+class Instance : public ActionHelper<Instance, InstanceAction, MaaTaskId, MaaInstanceHandle>
 {
-    friend class ControllerAction;
-    friend class Instance;
+    friend class InstanceAction;
 
 public:
-    struct adb_controller_tag
-    {
-    };
-
-    Controller(
-        [[maybe_unused]] adb_controller_tag tag,
-        const std::string& adb_path,
-        const std::string& address,
-        MaaAdbControllerType type,
-        const std::string& config,
-        const std::string& agent_path)
-        : ActionHelper(MaaAdbControllerCreateV2(
-            adb_path.c_str(),
-            address.c_str(),
-            type,
-            config.c_str(),
-            agent_path.c_str(),
-            &Controller::_callback,
-            this))
+    Instance()
+        : ActionHelper(MaaCreate(&Instance::_callback, this))
     {
     }
 
-    Controller(
-        [[maybe_unused]] adb_controller_tag tag,
-        const AdbDevice& device,
-        const std::string& agent_path)
-        : Controller(tag, device.adb_path, device.address, device.type, device.config, agent_path)
+    ~Instance() { MaaDestroy(inst_); }
+
+    std::shared_ptr<InstanceAction>
+        post_task(const std::string& task, const json::object& param = json::object {})
     {
+        return put_action(MaaPostTask(inst_, task.c_str(), param.to_string().c_str()));
     }
 
-    ~Controller() { MaaControllerDestroy(inst_); }
-
-    std::shared_ptr<ControllerAction> post_connect()
+    bool bind(std::shared_ptr<Controller> ctrl)
     {
-        return put_action(MaaControllerPostConnection(inst_));
+        if (!MaaBindController(inst_, ctrl ? ctrl->inst_ : nullptr)) {
+            return false;
+        }
+        controller_ = ctrl;
+        return true;
     }
+
+    bool bind(std::shared_ptr<Resource> res)
+    {
+        if (!MaaBindResource(inst_, res ? res->inst_ : nullptr)) {
+            return false;
+        }
+        resource_ = res;
+        return true;
+    }
+
+    bool inited() { return MaaInited(inst_); }
 
 private:
     static void _callback(MaaStringView msg, MaaStringView details, MaaTransparentArg arg)
@@ -83,7 +82,7 @@ private:
             return;
         }
         // prevent destroy
-        auto self = reinterpret_cast<Controller*>(arg)->shared_from_this();
+        auto self = reinterpret_cast<Instance*>(arg)->shared_from_this();
 
         coro::EventLoop::current()->defer(
             [self, msg_str = std::string(msg), detail_val = std::move(detail_opt.value())]() {
@@ -91,7 +90,7 @@ private:
                 if (!detail_obj.contains("id")) {
                     return;
                 }
-                MaaCtrlId id = detail_obj.at("id").as_unsigned_long_long();
+                MaaTaskId id = detail_obj.at("id").as_unsigned_long_long();
                 if (!self->actions_.contains(id)) {
                     std::cout << "cannot find id " << id << std::endl;
                     return;
@@ -101,19 +100,22 @@ private:
                     std::cout << "action id " << id << " expired" << std::endl;
                     return;
                 }
-                if (msg_str == MaaMsg_Controller_Action_Completed) {
+                if (msg_str == MaaMsg_Task_Completed) {
                     ptr->status_.resolve(MaaStatus_Success);
                 }
-                else if (msg_str == MaaMsg_Controller_Action_Failed) {
+                else if (msg_str == MaaMsg_Task_Failed) {
                     ptr->status_.resolve(MaaStatus_Failed);
                 }
             });
     }
+
+    std::shared_ptr<Controller> controller_;
+    std::shared_ptr<Resource> resource_;
 };
 
-inline MaaStatus ControllerAction::status()
+inline MaaStatus InstanceAction::status()
 {
-    return MaaControllerStatus(inst_->inst_, id_);
+    return MaaTaskStatus(inst_->inst_, id_);
 }
 
 }

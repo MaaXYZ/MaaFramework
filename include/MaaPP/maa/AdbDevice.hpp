@@ -30,7 +30,7 @@ inline maa::coro::Promise<std::shared_ptr<std::vector<AdbDevice>>> find()
     if (!MaaToolkitPostFindDevice()) {
         co_return nullptr;
     }
-    auto size = co_await maa::coro::EventLoop::current()->eval_other_thread(
+    auto size = co_await maa::coro::EventLoop::current()->eval(
         []() { return MaaToolkitWaitForFindDeviceToComplete(); });
     std::vector<AdbDevice> result;
     result.reserve(size);

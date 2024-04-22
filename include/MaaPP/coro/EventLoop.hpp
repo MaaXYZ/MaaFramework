@@ -1,12 +1,9 @@
 #pragma once
 
-#include <condition_variable>
 #include <functional>
-#include <mutex>
-#include <thread>
-#include <vector>
 
 #include "MaaPP/coro/Promise.hpp"
+#include "MaaPP/coro/ThreadPool.hpp"
 
 namespace maa::coro
 {
@@ -14,18 +11,21 @@ namespace maa::coro
 class EventLoop
 {
 public:
-    EventLoop() { current_ = this; }
+    EventLoop(size_t count = 8)
+        : pool(count)
+    {
+        current_ = this;
+    }
 
     ~EventLoop() { current_ = nullptr; }
 
     EventLoop(const EventLoop&) = delete;
     EventLoop& operator=(const EventLoop&) = delete;
 
-    void defer(std::function<void()> func)
+    template <typename F>
+    void defer(F f)
     {
-        std::lock_guard<std::mutex> lock(mtx_);
-        task_.push_back(std::move(func));
-        cond_.notify_all();
+        pool.defer(f);
     }
 
     void defer_stop()
@@ -34,48 +34,31 @@ public:
     }
 
     template <typename F>
-    auto eval_other_thread(F f) -> maa::coro::Promise<std::invoke_result_t<F>>
+    auto eval(F f) -> maa::coro::Promise<std::invoke_result_t<F>>
     {
         using R = std::invoke_result_t<F>;
         std::function<R()> func(f);
         auto result_pro = maa::coro::Promise<R>();
 
-        std::thread([result_pro, func]() {
+        defer([result_pro, func]() {
             auto result = func();
             maa::coro::EventLoop::current()->defer(
                 [result_pro, result = std::move(result)]() { result_pro.resolve(result); });
-        }).detach();
+        });
 
         return result_pro;
     }
 
-    void exec()
-    {
-        running_ = true;
-        while (running_) {
-            std::vector<std::function<void()>> tasks;
-            {
-                std::unique_lock<std::mutex> lock(mtx_);
-                cond_.wait(lock, [this]() { return task_.size() > 0; });
-                tasks.swap(task_);
-            }
-            for (const auto& func : tasks) {
-                func();
-            }
-        }
-    }
+    void exec() { pool.exec(); }
 
-    void stop() { running_ = false; }
+    void stop() { pool.stop(); }
 
     static EventLoop* current() { return current_; }
 
 private:
     static inline EventLoop* current_ = nullptr;
 
-    std::mutex mtx_;
-    std::condition_variable cond_;
-    std::vector<std::function<void()>> task_;
-    bool running_ = false;
+    ThreadPool pool;
 };
 
 }

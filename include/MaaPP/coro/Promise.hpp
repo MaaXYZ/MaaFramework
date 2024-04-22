@@ -2,6 +2,7 @@
 
 #include <coroutine>
 #include <functional>
+#include <mutex>
 #include <optional>
 #include <tuple>
 #include <utility>
@@ -58,6 +59,7 @@ struct Promise
     {
         std::optional<result_t> result_;
         std::vector<std::function<then_t>> then_;
+        std::mutex mtx_;
 
         std::optional<std::coroutine_handle<>> task_;
 
@@ -99,14 +101,22 @@ struct Promise
         return pro;
     }
 
-    bool resolved() const { return state_->result_.has_value(); }
+    bool resolved_noguard() const { return state_->result_.has_value(); }
+
+    bool resolved() const
+    {
+        std::lock_guard<std::mutex> lock(state_->mtx_);
+        return resolved_noguard();
+    }
 
     template <typename F>
     auto then(F f) const -> Promise<then_ret_t<F>>
     {
         using R = then_ret_t<F>;
         std::function<then_holder_t<R>> func(f);
-        if (resolved()) {
+        std::unique_lock<std::mutex> lock(state_->mtx_);
+        if (resolved_noguard()) {
+            lock.unlock();
             if constexpr (std::is_same_v<void, R>) {
                 if constexpr (std::is_same_v<void, T>) {
                     func();
@@ -160,7 +170,10 @@ struct Promise
         if (resolved()) {
             return;
         }
-        state_->result_ = std::monostate {};
+        {
+            std::lock_guard<std::mutex> lock(state_->mtx_);
+            state_->result_ = std::monostate {};
+        }
         std::vector<std::function<then_t>> thens;
         thens.swap(state_->then_);
         for (const auto& f : thens) {
@@ -175,7 +188,10 @@ struct Promise
         if (resolved()) {
             return;
         }
-        state_->result_ = std::move(value);
+        {
+            std::lock_guard<std::mutex> lock(state_->mtx_);
+            state_->result_ = std::move(value);
+        }
         std::vector<std::function<then_t>> thens;
         thens.swap(state_->then_);
         for (const auto& f : thens) {

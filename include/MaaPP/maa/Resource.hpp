@@ -34,6 +34,7 @@ private:
 class Resource : public ActionHelper<Resource, ResourceAction, MaaResId, MaaResourceHandle>
 {
     friend class ResourceAction;
+    friend class Instance;
 
 public:
     Resource()

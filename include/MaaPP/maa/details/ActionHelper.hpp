@@ -51,6 +51,15 @@ protected:
         return action;
     }
 
+    template <typename... Args>
+    std::shared_ptr<IAction> put_action(ID id, Args&&... args)
+    {
+        auto action =
+            std::make_shared<IAction>(this->shared_from_this(), id, std::forward<Args>(args)...);
+        actions_[id] = action->weak_from_this();
+        return action;
+    }
+
 public:
     ActionHelper(const ActionHelper&) = delete;
     ActionHelper& operator=(const ActionHelper&) = delete;
