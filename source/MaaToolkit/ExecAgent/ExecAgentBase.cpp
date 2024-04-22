@@ -55,7 +55,7 @@ bool ExecAgentBase::unregister_executor(MaaInstanceHandle handle, std::string_vi
 {
     LogFunc << VAR_VOIDP(handle) << VAR(name);
 
-    bool ret;
+    bool ret = true;
     if (name.empty()) {
         for (const auto& exist_name : std::views::keys(exec_data_)) {
             ret &= unregister_for_maa_inst(handle, exist_name);
