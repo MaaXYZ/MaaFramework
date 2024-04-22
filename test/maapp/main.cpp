@@ -61,7 +61,8 @@ maa::coro::Promise<void> async_main()
                     std::cout << "Hello world!" << std::endl;
                     co_return;
                 };
-                auto success = co_await maa::coro::Promise<void>::any({ task(), stop });
+                std::initializer_list<Promise<void>> list = { task(), stop };
+                auto success = co_await maa::coro::Promise<void>::any(list);
                 if (success == 1) {
                     std::cout << "Task cancelled!" << std::endl;
                     co_return false;
