@@ -3,6 +3,7 @@
 #include <condition_variable>
 #include <functional>
 #include <mutex>
+#include <thread>
 #include <vector>
 
 #include "MaaPP/coro/Promise.hpp"
