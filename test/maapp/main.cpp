@@ -50,29 +50,18 @@ maa::coro::Promise<void> async_main()
             inst->bind(ctrl);
             std::cout << "instance inited " << inst->inited() << std::endl;
 
-            auto custom_action = []([[maybe_unused]] MaaSyncContextHandle sync_context,
-                                    [[maybe_unused]] MaaStringView task_name,
-                                    [[maybe_unused]] MaaStringView custom_action_param,
-                                    [[maybe_unused]] const MaaRect& cur_box,
-                                    [[maybe_unused]] MaaStringView cur_rec_detail,
-                                    maa::coro::Promise<void> stop) -> maa::coro::Promise<bool> {
-                auto task = []() -> maa::coro::Promise<void> {
-                    co_await maa::coro::EventLoop::current()->sleep(std::chrono::seconds(5));
-                    std::cout << "Hello world!" << std::endl;
-                    co_return;
-                };
-                std::initializer_list<maa::coro::Promise<void>> list = { task(), stop };
-                auto success = co_await maa::coro::Promise<void>::any(list);
-                if (success == 1) {
-                    std::cout << "Task cancelled!" << std::endl;
-                    co_return false;
-                }
-                else {
-                    co_return true;
-                }
-            };
-
-            inst->bind("TestAct", std::make_shared<maa::CustomAction>(custom_action));
+            inst->bind(
+                "TestAct",
+                std::make_shared<maa::CustomAction>(
+                    []([[maybe_unused]] MaaSyncContextHandle sync_context,
+                       [[maybe_unused]] MaaStringView task_name,
+                       [[maybe_unused]] MaaStringView custom_action_param,
+                       [[maybe_unused]] const MaaRect& cur_box,
+                       [[maybe_unused]] MaaStringView cur_rec_detail) -> maa::coro::Promise<bool> {
+                        co_await maa::coro::EventLoop::current()->sleep(std::chrono::seconds(5));
+                        std::cout << "Hello world!" << std::endl;
+                        co_return true;
+                    }));
 
             // maa::set_stdout_level(MaaLoggingLevel_All);
 

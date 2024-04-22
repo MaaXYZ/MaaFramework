@@ -66,13 +66,8 @@ class CustomAction : public std::enable_shared_from_this<CustomAction>
     friend class Instance;
 
 public:
-    using run_func = std::function<coro::Promise<bool>(
-        MaaSyncContextHandle,
-        MaaStringView,
-        MaaStringView,
-        const MaaRect&,
-        MaaStringView,
-        coro::Promise<void>)>;
+    using run_func = std::function<coro::Promise<
+        bool>(MaaSyncContextHandle, MaaStringView, MaaStringView, const MaaRect&, MaaStringView)>;
 
     CustomAction(run_func run)
         : run_(run)
@@ -89,28 +84,12 @@ private:
         MaaTransparentArg action_arg)
     {
         auto self = reinterpret_cast<CustomAction*>(action_arg)->shared_from_this();
-        self->stop_ = coro::Promise<void>();
-        return self
-            ->run_(
-                sync_context,
-                task_name,
-                custom_action_param,
-                *cur_box,
-                cur_rec_detail,
-                self->stop_)
+        return self->run_(sync_context, task_name, custom_action_param, *cur_box, cur_rec_detail)
             .sync_wait();
     }
 
-    static void run_stop(MaaTransparentArg action_arg)
-    {
-        std::cout << "stop required!" << std::endl;
-        auto self = reinterpret_cast<CustomAction*>(action_arg)->shared_from_this();
-        self->stop_.resolve();
-    }
-
-    constexpr static MaaCustomActionAPI api_ = { &CustomAction::run_run, &CustomAction::run_stop };
+    constexpr static MaaCustomActionAPI api_ = { &CustomAction::run_run, nullptr };
     run_func run_;
-    coro::Promise<void> stop_;
 };
 
 class Instance;
