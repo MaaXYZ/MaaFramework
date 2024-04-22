@@ -308,10 +308,10 @@ jobs:
       - name: Nuget Pack
         working-directory: tools/nupkgs
         run: |
-          tag=${{ needs.meta.outputs.tag }}
+          version=${{ needs.meta.outputs.version }}
           nuget pack Maa.Framework.Runtimes.nuspec \
             -Verbosity detailed \
-            -Properties "id=$NUGET_PACKAGE_ID;version=${tag#v};year=$(date +%Y);branch=$(git rev-parse --abbrev-ref HEAD);commit=$(git rev-parse HEAD);docs_path=../../docs;assets_path=../../assets"
+            -Properties "id=$NUGET_PACKAGE_ID;version=${version//-post/};year=$(date +%Y);branch=$(git rev-parse --abbrev-ref HEAD);commit=$(git rev-parse HEAD);root_path=../.."
 
       - uses: actions/upload-artifact@v3
         if: always()
