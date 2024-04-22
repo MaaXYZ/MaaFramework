@@ -1,7 +1,10 @@
 #pragma once
 
+#include <condition_variable>
 #include <coroutine>
 #include <functional>
+#include <future>
+#include <initializer_list>
 #include <mutex>
 #include <optional>
 #include <tuple>
@@ -101,6 +104,16 @@ struct Promise
         return pro;
     }
 
+    static Promise<size_t> any(std::initializer_list<Promise<void>> pros_list)
+    {
+        std::vector<Promise<void>> pros(pros_list);
+        Promise<size_t> ret;
+        for (size_t i = 0; i < pros.size(); i++) {
+            pros[i].then([i, ret]() { ret.resolve(i); });
+        }
+        return ret;
+    }
+
     bool resolved_noguard() const { return state_->result_.has_value(); }
 
     bool resolved() const
@@ -196,6 +209,22 @@ struct Promise
         thens.swap(state_->then_);
         for (const auto& f : thens) {
             f(state_->result_.value());
+        }
+    }
+
+    T sync_wait()
+    {
+        std::promise<T> result;
+        if constexpr (std::is_same_v<void, T>) {
+            then([&result]() { result.set_value(); });
+        }
+        else {
+            then([&result](T t) { result.set_value(std::move(t)); });
+        }
+        auto future = result.get_future();
+        future.wait();
+        if constexpr (!std::is_same_v<void, T>) {
+            return future.get();
         }
     }
 

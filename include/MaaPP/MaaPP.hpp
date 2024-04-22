@@ -6,5 +6,6 @@
 
 #include "MaaPP/maa/AdbDevice.hpp"
 #include "MaaPP/maa/Controller.hpp"
+#include "MaaPP/maa/Global.hpp"
 #include "MaaPP/maa/Instance.hpp"
 #include "MaaPP/maa/Resource.hpp"

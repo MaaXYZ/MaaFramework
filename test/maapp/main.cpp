@@ -6,8 +6,8 @@
 #include <thread>
 
 #include "MaaPP/MaaPP.hpp"
-#include "MaaPP/coro/ThreadPool.hpp"
-#include "MaaPP/maa/Instance.hpp"
+#include "MaaPP/coro/EventLoop.hpp"
+#include "MaaPP/coro/Promise.hpp"
 
 #ifdef _WIN32
 std::string res_path = R"(E:\Projects\MAA\MaaAssistantSkland\assets\resource)";
@@ -43,11 +43,50 @@ maa::coro::Promise<void> async_main()
 
             status = co_await ctrl->post_connect()->wait();
             std::cout << "connect finished, status " << status << std::endl;
+            std::cout << "controller uuid: " << ctrl->uuid().value() << std::endl;
 
             auto inst = std::make_shared<maa::Instance>();
             inst->bind(res);
             inst->bind(ctrl);
             std::cout << "instance inited " << inst->inited() << std::endl;
+
+            inst->bind(
+                "TestAct",
+                std::make_shared<maa::CustomAction>(
+                    []([[maybe_unused]] MaaSyncContextHandle sync_context,
+                       [[maybe_unused]] MaaStringView task_name,
+                       [[maybe_unused]] MaaStringView custom_action_param,
+                       [[maybe_unused]] const MaaRect& cur_box,
+                       [[maybe_unused]] MaaStringView cur_rec_detail,
+                       maa::coro::Promise<void> stop) -> maa::coro::Promise<bool> {
+                        auto task = []() -> maa::coro::Promise<void> {
+                            co_await maa::coro::EventLoop::current()->sleep(
+                                std::chrono::seconds(5));
+                            std::cout << "Hello world!" << std::endl;
+                            co_return;
+                        };
+                        auto success = co_await maa::coro::Promise<void>::any({ task(), stop });
+                        if (success == 1) {
+                            std::cout << "Task cancelled!" << std::endl;
+                            co_return false;
+                        }
+                        else {
+                            co_return true;
+                        }
+                    }));
+
+            // maa::set_stdout_level(MaaLoggingLevel_All);
+
+            auto task = inst->post_task("test");
+            std::cout << "post task" << std::endl;
+            auto success = co_await maa::coro::Promise<void>::any(
+                { task->wait().then([](auto) {}),
+                  maa::coro::EventLoop::current()->sleep(std::chrono::seconds(2)) });
+            if (success == 1) {
+                std::cout << "post stop" << std::endl;
+                inst->stop();
+                co_await task->wait();
+            }
         }
     }
     co_return;
@@ -55,6 +94,8 @@ maa::coro::Promise<void> async_main()
 
 int main()
 {
+    maa::set_stdout_level(MaaLoggingLevel_Fatal);
+
     maa::coro::EventLoop ev;
 
     async_main().then([&ev]() { ev.defer_stop(); });

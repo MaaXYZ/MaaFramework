@@ -1,6 +1,8 @@
 #pragma once
 
+#include <chrono>
 #include <functional>
+#include <thread>
 
 #include "MaaPP/coro/Promise.hpp"
 #include "MaaPP/coro/ThreadPool.hpp"
@@ -31,6 +33,16 @@ public:
     void defer_stop()
     {
         defer([this]() { this->stop(); });
+    }
+
+    Promise<void> sleep(std::chrono::seconds times)
+    {
+        Promise<void> pro;
+        defer([pro, times]() {
+            std::this_thread::sleep_for(times);
+            pro.resolve();
+        });
+        return pro;
     }
 
     template <typename F>

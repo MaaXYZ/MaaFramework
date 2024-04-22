@@ -1,6 +1,7 @@
 #pragma once
 
 #include <iostream>
+#include <memory>
 #include <utility>
 
 #include <MaaFramework/MaaAPI.h>
@@ -14,14 +15,109 @@
 #include "MaaPP/maa/Controller.hpp"
 #include "MaaPP/maa/Resource.hpp"
 #include "MaaPP/maa/details/ActionHelper.hpp"
+#include "MaaPP/maa/details/String.hpp"
 #include "meojson/common/utils.hpp"
 
 namespace maa
 {
 
+class CustomRecognizer : public std::enable_shared_from_this<CustomRecognizer>
+{
+    friend class Instance;
+
+public:
+    struct AnalyzeResult
+    {
+        bool result;
+        MaaRect rec_box;
+        std::string rec_detail;
+    };
+
+    using analyze_func = std::function<coro::Promise<
+        AnalyzeResult>(MaaSyncContextHandle, MaaImageBufferHandle, MaaStringView, MaaStringView)>;
+
+    CustomRecognizer(analyze_func analyze)
+        : analyze_(analyze)
+    {
+    }
+
+private:
+    static MaaBool run_analyze(
+        MaaSyncContextHandle sync_context,
+        const MaaImageBufferHandle image,
+        MaaStringView task_name,
+        MaaStringView custom_recognition_param,
+        MaaTransparentArg recognizer_arg,
+        /*out*/ MaaRectHandle out_box,
+        /*out*/ MaaStringBufferHandle out_detail)
+    {
+        auto self = reinterpret_cast<CustomRecognizer*>(recognizer_arg)->shared_from_this();
+        auto result =
+            self->analyze_(sync_context, image, task_name, custom_recognition_param).sync_wait();
+        *out_box = result.rec_box;
+        (details::String(out_detail)) = result.rec_detail;
+        return result.result;
+    }
+
+    constexpr static MaaCustomRecognizerAPI api_ = { &CustomRecognizer::run_analyze };
+    analyze_func analyze_;
+};
+
+class CustomAction : public std::enable_shared_from_this<CustomAction>
+{
+    friend class Instance;
+
+public:
+    using run_func = std::function<coro::Promise<bool>(
+        MaaSyncContextHandle,
+        MaaStringView,
+        MaaStringView,
+        const MaaRect&,
+        MaaStringView,
+        coro::Promise<void>)>;
+
+    CustomAction(run_func run)
+        : run_(run)
+    {
+    }
+
+private:
+    static MaaBool run_run(
+        MaaSyncContextHandle sync_context,
+        MaaStringView task_name,
+        MaaStringView custom_action_param,
+        MaaRectHandle cur_box,
+        MaaStringView cur_rec_detail,
+        MaaTransparentArg action_arg)
+    {
+        auto self = reinterpret_cast<CustomAction*>(action_arg)->shared_from_this();
+        self->stop_ = coro::Promise<void>();
+        return self
+            ->run_(
+                sync_context,
+                task_name,
+                custom_action_param,
+                *cur_box,
+                cur_rec_detail,
+                self->stop_)
+            .sync_wait();
+    }
+
+    static void run_stop(MaaTransparentArg action_arg)
+    {
+        std::cout << "stop required!" << std::endl;
+        auto self = reinterpret_cast<CustomAction*>(action_arg)->shared_from_this();
+        self->stop_.resolve();
+    }
+
+    constexpr static MaaCustomActionAPI api_ = { &CustomAction::run_run, &CustomAction::run_stop };
+    run_func run_;
+    coro::Promise<void> stop_;
+};
+
 class Instance;
 
-class InstanceAction : public ActionBase<InstanceAction, Instance, MaaTaskId>
+class InstanceAction : public details::ActionBase<InstanceAction, Instance>
 {
     friend class Instance;
 
@@ -36,7 +132,7 @@ private:
     coro::Promise<MaaStatus> status_;
 };
 
-class Instance : public ActionHelper<Instance, InstanceAction, MaaTaskId, MaaInstanceHandle>
+class Instance : public details::ActionHelper<Instance, InstanceAction, MaaInstanceHandle>
 {
     friend class InstanceAction;
 
@@ -72,7 +168,19 @@ public:
         return true;
     }
 
+    bool bind(const std::string& name, std::shared_ptr<CustomAction> act)
+    {
+        custom_actions_[name] = act;
+        return MaaRegisterCustomAction(
+            inst_,
+            name.c_str(),
+            const_cast<MaaCustomActionAPI*>(&CustomAction::api_),
+            act.get());
+    }
+
     bool inited() { return MaaInited(inst_); }
+
+    bool stop() { return MaaPostStop(inst_); }
 
 private:
     static void _callback(MaaStringView msg, MaaStringView details, MaaTransparentArg arg)
@@ -111,6 +219,8 @@ private:
 
     std::shared_ptr<Controller> controller_;
     std::shared_ptr<Resource> resource_;
+    std::map<std::string, std::shared_ptr<CustomRecognizer>> custom_recognizers_;
+    std::map<std::string, std::shared_ptr<CustomAction>> custom_actions_;
 };
 
 inline MaaStatus InstanceAction::status()

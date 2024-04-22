@@ -1,6 +1,7 @@
 #pragma once
 
 #include <iostream>
+#include <string_view>
 #include <utility>
 
 #include <MaaFramework/MaaAPI.h>
@@ -11,13 +12,14 @@
 #include "MaaPP/coro/Promise.hpp"
 #include "MaaPP/maa/AdbDevice.hpp"
 #include "MaaPP/maa/details/ActionHelper.hpp"
+#include "MaaPP/maa/details/String.hpp"
 
 namespace maa
 {
 
 class Controller;
 
-class ControllerAction : public ActionBase<ControllerAction, Controller, MaaCtrlId>
+class ControllerAction : public details::ActionBase<ControllerAction, Controller>
 {
     friend class Controller;
 
@@ -32,7 +34,7 @@ private:
     coro::Promise<MaaStatus> status_;
 };
 
-class Controller : public ActionHelper<Controller, ControllerAction, MaaCtrlId, MaaControllerHandle>
+class Controller : public details::ActionHelper<Controller, ControllerAction, MaaControllerHandle>
 {
     friend class ControllerAction;
     friend class Instance;
@@ -70,9 +72,63 @@ public:
 
     ~Controller() { MaaControllerDestroy(inst_); }
 
+    bool set_long_side(int width)
+    {
+        return MaaControllerSetOption(
+            inst_,
+            MaaCtrlOption_ScreenshotTargetLongSide,
+            &width,
+            sizeof(width));
+    }
+
+    bool set_short_side(int width)
+    {
+        return MaaControllerSetOption(
+            inst_,
+            MaaCtrlOption_ScreenshotTargetShortSide,
+            &width,
+            sizeof(width));
+    }
+
+    bool set_start_entry(std::string_view entry)
+    {
+        return MaaControllerSetOption(
+            inst_,
+            MaaCtrlOption_DefaultAppPackageEntry,
+            const_cast<char*>(entry.data()),
+            entry.size());
+    }
+
+    bool set_stop_entry(std::string_view entry)
+    {
+        return MaaControllerSetOption(
+            inst_,
+            MaaCtrlOption_DefaultAppPackage,
+            const_cast<char*>(entry.data()),
+            entry.size());
+    }
+
+    bool set_recording(bool enable)
+    {
+        return MaaControllerSetOption(inst_, MaaCtrlOption_Recording, &enable, sizeof(enable));
+    }
+
     std::shared_ptr<ControllerAction> post_connect()
     {
         return put_action(MaaControllerPostConnection(inst_));
+    }
+
+    bool connected() { return MaaControllerConnected(inst_); }
+
+    std::optional<std::string> uuid()
+    {
+        details::String buf;
+        if (MaaControllerGetUUID(inst_, buf.handle())) {
+            return buf;
+        }
+        else {
+            return std::nullopt;
+        }
     }
 
 private:

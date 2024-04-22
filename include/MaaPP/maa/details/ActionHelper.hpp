@@ -10,13 +10,13 @@
 #include "MaaPP/coro/EventLoop.hpp"
 #include "MaaPP/coro/Promise.hpp"
 
-namespace maa
+namespace maa::details
 {
 
-template <typename IAction, typename IActionHelper, typename ID>
+template <typename IAction, typename IActionHelper>
 struct ActionBase : public std::enable_shared_from_this<IAction>
 {
-    ActionBase(std::shared_ptr<IActionHelper> inst, ID id)
+    ActionBase(std::shared_ptr<IActionHelper> inst, MaaId id)
         : inst_(inst)
         , id_(id)
     {
@@ -28,13 +28,13 @@ struct ActionBase : public std::enable_shared_from_this<IAction>
     ActionBase& operator=(const ActionBase&) = delete;
 
     std::shared_ptr<IActionHelper> inst_;
-    ID id_;
+    MaaId id_;
 };
 
-template <typename IActionHelper, typename IAction, typename ID, typename Handle>
+template <typename IActionHelper, typename IAction, typename Handle>
 class ActionHelper : public std::enable_shared_from_this<IActionHelper>
 {
-    friend struct ActionBase<IAction, IActionHelper, ID>;
+    friend struct ActionBase<IAction, IActionHelper>;
 
 protected:
     ActionHelper(Handle inst)
@@ -44,15 +44,18 @@ protected:
 
     ~ActionHelper() {}
 
-    std::shared_ptr<IAction> put_action(ID id)
+    std::shared_ptr<IAction> put_action(MaaId id)
     {
+        if (id == MaaInvalidId) {
+            return nullptr;
+        }
         auto action = std::make_shared<IAction>(this->shared_from_this(), id);
         actions_[id] = action->weak_from_this();
         return action;
     }
 
     template <typename... Args>
-    std::shared_ptr<IAction> put_action(ID id, Args&&... args)
+    std::shared_ptr<IAction> put_action(MaaId id, Args&&... args)
     {
         auto action =
             std::make_shared<IAction>(this->shared_from_this(), id, std::forward<Args>(args)...);
@@ -66,7 +69,7 @@ public:
 
 protected:
     Handle inst_;
-    std::map<ID, std::weak_ptr<IAction>> actions_;
+    std::map<MaaId, std::weak_ptr<IAction>> actions_;
 };
 
 }

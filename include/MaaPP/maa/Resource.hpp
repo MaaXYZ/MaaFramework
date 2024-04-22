@@ -16,7 +16,7 @@ namespace maa
 
 class Resource;
 
-class ResourceAction : public ActionBase<ResourceAction, Resource, MaaResId>
+class ResourceAction : public details::ActionBase<ResourceAction, Resource>
 {
     friend class Resource;
 
@@ -31,7 +31,7 @@ private:
     coro::Promise<MaaStatus> status_;
 };
 
-class Resource : public ActionHelper<Resource, ResourceAction, MaaResId, MaaResourceHandle>
+class Resource : public details::ActionHelper<Resource, ResourceAction, MaaResourceHandle>
 {
     friend class ResourceAction;
     friend class Instance;
