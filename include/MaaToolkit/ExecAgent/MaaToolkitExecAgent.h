@@ -15,6 +15,7 @@ extern "C"
     MAA_TOOLKIT_API MaaBool MaaToolkitUnregisterCustomRecognizerExecutor(
         MaaInstanceHandle handle,
         MaaStringView recognizer_name);
+    MAA_TOOLKIT_API MaaBool MaaToolkitClearCustomRecognizerExecutor(MaaInstanceHandle handle);
 
     MAA_TOOLKIT_API MaaBool MaaToolkitRegisterCustomActionExecutor(
         MaaInstanceHandle handle,
@@ -24,6 +25,7 @@ extern "C"
     MAA_TOOLKIT_API MaaBool MaaToolkitUnregisterCustomActionExecutor(
         MaaInstanceHandle handle,
         MaaStringView action_name);
+    MAA_TOOLKIT_API MaaBool MaaToolkitClearCustomActionExecutor(MaaInstanceHandle handle);
 
 #ifdef __cplusplus
 }
