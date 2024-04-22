@@ -8,7 +8,6 @@
 #include <MaaFramework/MaaMsg.h>
 #include <meojson/json.hpp>
 
-#include "MaaFramework/Instance/MaaInstance.h"
 #include "MaaFramework/MaaDef.h"
 #include "MaaPP/coro/EventLoop.hpp"
 #include "MaaPP/coro/Promise.hpp"
@@ -16,7 +15,6 @@
 #include "MaaPP/maa/Resource.hpp"
 #include "MaaPP/maa/details/ActionHelper.hpp"
 #include "MaaPP/maa/details/String.hpp"
-#include "meojson/common/utils.hpp"
 
 namespace maa
 {
@@ -168,6 +166,16 @@ public:
         return true;
     }
 
+    bool bind(const std::string& name, std::shared_ptr<CustomRecognizer> reco)
+    {
+        custom_recognizers_[name] = reco;
+        return MaaRegisterCustomRecognizer(
+            inst_,
+            name.c_str(),
+            const_cast<MaaCustomRecognizerAPI*>(&CustomRecognizer::api_),
+            reco.get());
+    }
+
     bool bind(const std::string& name, std::shared_ptr<CustomAction> act)
     {
         custom_actions_[name] = act;
@@ -176,6 +184,30 @@ public:
             name.c_str(),
             const_cast<MaaCustomActionAPI*>(&CustomAction::api_),
             act.get());
+    }
+
+    bool unbind_recognizer(const std::string& name)
+    {
+        custom_recognizers_.erase(name);
+        return MaaUnregisterCustomRecognizer(inst_, name.c_str());
+    }
+
+    bool unbind_action(const std::string& name)
+    {
+        custom_actions_.erase(name);
+        return MaaUnregisterCustomAction(inst_, name.c_str());
+    }
+
+    bool unbind_recognizer()
+    {
+        custom_recognizers_.clear();
+        return MaaClearCustomRecognizer(inst_);
+    }
+
+    bool unbind_action()
+    {
+        custom_actions_.clear();
+        return MaaClearCustomAction(inst_);
     }
 
     bool inited() { return MaaInited(inst_); }
