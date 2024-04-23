@@ -16,7 +16,7 @@ std::string agent_path =
     R"(/Users/nekosu/Documents/Projects/MAA/MaaFramework/3rdparty/MaaAgentBinary)";
 #endif
 
-maa::coro::Promise<void> async_main()
+maa::coro::Promise<> async_main()
 {
     auto res = maa::Resource::make();
     auto action = res->post_path(res_path);
@@ -54,7 +54,7 @@ maa::coro::Promise<void> async_main()
 
             inst->bind(
                 "TestAct",
-                std::make_shared<maa::CustomAction>(
+                maa::CustomAction::make(
                     []([[maybe_unused]] auto sync_context,
                        [[maybe_unused]] MaaStringView task_name,
                        [[maybe_unused]] MaaStringView custom_action_param,
@@ -69,7 +69,7 @@ maa::coro::Promise<void> async_main()
 
             auto task = inst->post_task("test");
             std::cout << "post task" << std::endl;
-            auto success = co_await maa::coro::Promise<void>::any(
+            auto success = co_await maa::coro::Promise<>::any(
                 { task->wait().then([](auto) {}),
                   maa::coro::EventLoop::current()->sleep(std::chrono::seconds(2)) });
             if (success == 1) {

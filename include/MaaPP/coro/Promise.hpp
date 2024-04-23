@@ -44,7 +44,7 @@ struct __promise_traits<void>
 template <typename T>
 struct __promise_type;
 
-template <typename T>
+template <typename T = void>
 struct Promise
 {
     using then_t = typename __promise_traits<T>::then_t;

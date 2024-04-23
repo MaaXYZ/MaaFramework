@@ -26,6 +26,12 @@ class CustomRecognizer : public std::enable_shared_from_this<CustomRecognizer>
     friend class Instance;
 
 public:
+    template <typename... Args>
+    static auto make(Args&&... args)
+    {
+        return std::make_shared<CustomRecognizer>(std::forward<Args>(args)...);
+    }
+
     struct AnalyzeResult
     {
         bool result;
@@ -72,6 +78,12 @@ class CustomAction : public std::enable_shared_from_this<CustomAction>
     friend class Instance;
 
 public:
+    template <typename... Args>
+    static auto make(Args&&... args)
+    {
+        return std::make_shared<CustomAction>(std::forward<Args>(args)...);
+    }
+
     using run_func = std::function<coro::Promise<bool>(
         std::shared_ptr<SyncContext>,
         MaaStringView,
