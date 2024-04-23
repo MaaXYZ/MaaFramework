@@ -52,6 +52,8 @@ maa::coro::Promise<> async_main()
             inst->bind(ctrl);
             std::cout << "instance inited " << inst->inited() << std::endl;
 
+#if !defined(__GNUC__) || defined(__clang__)
+            // 目前gcc有bug, 无法编译下面这个代码, 会触发ICE
             inst->bind(
                 "TestAct",
                 maa::CustomAction::make(
@@ -64,6 +66,7 @@ maa::coro::Promise<> async_main()
                         std::cout << "Hello world!" << std::endl;
                         co_return true;
                     }));
+#endif
 
             // maa::set_stdout_level(MaaLoggingLevel_All);
 
