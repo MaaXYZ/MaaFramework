@@ -9,3 +9,5 @@
 #include "MaaPP/maa/Global.hpp"
 #include "MaaPP/maa/Instance.hpp"
 #include "MaaPP/maa/Resource.hpp"
+#include "MaaPP/maa/SyncContext.hpp"
+#include "MaaPP/maa/Win32Device.hpp"

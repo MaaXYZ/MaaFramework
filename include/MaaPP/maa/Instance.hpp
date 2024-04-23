@@ -13,6 +13,7 @@
 #include "MaaPP/coro/Promise.hpp"
 #include "MaaPP/maa/Controller.hpp"
 #include "MaaPP/maa/Resource.hpp"
+#include "MaaPP/maa/SyncContext.hpp"
 #include "MaaPP/maa/details/ActionHelper.hpp"
 #include "MaaPP/maa/details/String.hpp"
 
@@ -31,8 +32,11 @@ public:
         std::string rec_detail;
     };
 
-    using analyze_func = std::function<coro::Promise<
-        AnalyzeResult>(MaaSyncContextHandle, MaaImageBufferHandle, MaaStringView, MaaStringView)>;
+    using analyze_func = std::function<coro::Promise<AnalyzeResult>(
+        std::shared_ptr<SyncContext>,
+        MaaImageBufferHandle,
+        MaaStringView,
+        MaaStringView)>;
 
     CustomRecognizer(analyze_func analyze)
         : analyze_(analyze)
@@ -50,8 +54,12 @@ private:
         /*out*/ MaaStringBufferHandle out_detail)
     {
         auto self = reinterpret_cast<CustomRecognizer*>(recognizer_arg)->shared_from_this();
-        auto result =
-            self->analyze_(sync_context, image, task_name, custom_recognition_param).sync_wait();
+        auto result = self->analyze_(
+                              SyncContext::make(sync_context),
+                              image,
+                              task_name,
+                              custom_recognition_param)
+                          .sync_wait();
         *out_box = result.rec_box;
         (details::String(out_detail)) = result.rec_detail;
         return result.result;
@@ -66,8 +74,12 @@ class CustomAction : public std::enable_shared_from_this<CustomAction>
     friend class Instance;
 
 public:
-    using run_func = std::function<coro::Promise<
-        bool>(MaaSyncContextHandle, MaaStringView, MaaStringView, const MaaRect&, MaaStringView)>;
+    using run_func = std::function<coro::Promise<bool>(
+        std::shared_ptr<SyncContext>,
+        MaaStringView,
+        MaaStringView,
+        const MaaRect&,
+        MaaStringView)>;
 
     CustomAction(run_func run)
         : run_(run)
@@ -84,7 +96,13 @@ private:
         MaaTransparentArg action_arg)
     {
         auto self = reinterpret_cast<CustomAction*>(action_arg)->shared_from_this();
-        return self->run_(sync_context, task_name, custom_action_param, *cur_box, cur_rec_detail)
+        return self
+            ->run_(
+                SyncContext::make(sync_context),
+                task_name,
+                custom_action_param,
+                *cur_box,
+                cur_rec_detail)
             .sync_wait();
     }
 
@@ -102,6 +120,7 @@ public:
     using ActionBase::ActionBase;
 
     MaaStatus status();
+    bool set_param(const json::object& param);
 
     coro::Promise<MaaStatus> wait() { return status_; }
 
@@ -199,7 +218,13 @@ public:
 
     bool inited() { return MaaInited(inst_); }
 
+    bool running() { return MaaRunning(inst_); }
+
     bool stop() { return MaaPostStop(inst_); }
+
+    auto controller() { return controller_; }
+
+    auto resource() { return resource_; }
 
 private:
     static void _callback(MaaStringView msg, MaaStringView details, MaaTransparentArg arg)
@@ -252,6 +277,11 @@ private:
 inline MaaStatus InstanceAction::status()
 {
     return MaaTaskStatus(inst_->inst_, id_);
+}
+
+inline bool InstanceAction::set_param(const json::object& param)
+{
+    return MaaSetTaskParam(inst_->inst_, id_, param.to_string().c_str());
 }
 
 }

@@ -55,7 +55,7 @@ maa::coro::Promise<void> async_main()
             inst->bind(
                 "TestAct",
                 std::make_shared<maa::CustomAction>(
-                    []([[maybe_unused]] MaaSyncContextHandle sync_context,
+                    []([[maybe_unused]] auto sync_context,
                        [[maybe_unused]] MaaStringView task_name,
                        [[maybe_unused]] MaaStringView custom_action_param,
                        [[maybe_unused]] const MaaRect& cur_box,
