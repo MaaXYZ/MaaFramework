@@ -18,6 +18,8 @@ std::string agent_path =
 
 maa::coro::Promise<> async_main()
 {
+#if !defined(__GNUC__) || defined(__clang__)
+    // 目前gcc有bug, 无法编译下面这个代码, 会触发ICE
     auto res = maa::Resource::make();
     auto action = res->post_path(res_path);
     std::cout << "load posted, status " << action->status() << std::endl;
@@ -52,8 +54,6 @@ maa::coro::Promise<> async_main()
             inst->bind(ctrl);
             std::cout << "instance inited " << inst->inited() << std::endl;
 
-#if !defined(__GNUC__) || defined(__clang__)
-            // 目前gcc有bug, 无法编译下面这个代码, 会触发ICE
             inst->bind(
                 "TestAct",
                 maa::CustomAction::make(
@@ -66,8 +66,6 @@ maa::coro::Promise<> async_main()
                         std::cout << "Hello world!" << std::endl;
                         co_return true;
                     }));
-#endif
-
             // maa::set_stdout_level(MaaLoggingLevel_All);
 
             auto task = inst->post_task("test");
@@ -83,6 +81,7 @@ maa::coro::Promise<> async_main()
         }
     }
     co_return;
+#endif
 }
 
 int main()
