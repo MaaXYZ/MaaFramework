@@ -80,8 +80,8 @@ maa::coro::Promise<> async_main()
             }
         }
     }
-    co_return;
 #endif
+    co_return;
 }
 
 int main()
