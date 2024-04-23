@@ -7,7 +7,7 @@
 #include "Utils/Platform.h"
 #include "Utils/StringMisc.hpp"
 
-using namespace MAA_PROJECT_INTERFACE_NS;
+MAA_PROJECT_INTERFACE_NS_BEGIN
 
 bool Configurator::load(const std::filesystem::path& project_dir)
 {
@@ -113,16 +113,33 @@ std::optional<RuntimeParam> Configurator::generate_runtime() const
         LogWarn << "Controller not found" << VAR(config_.controller.name);
         return std::nullopt;
     }
-    runtime.adb_param.controller_type =
-        controller_iter->touch | controller_iter->key | controller_iter->screencap;
-    runtime.adb_param.config = controller_iter->config.to_string();
+    auto& controller = *controller_iter;
 
-    runtime.adb_param.name = config_.controller.name;
-    runtime.adb_param.adb_path = config_.controller.adb_path;
-    runtime.adb_param.address = config_.controller.address;
-    runtime.adb_param.agent_path = MaaNS::path_to_utf8_string(project_dir_ / "MaaAgentBinary");
+    if (controller.type == InterfaceData::Controller::kTypeAdb) {
+        RuntimeParam::AdbParam adb;
 
-    LogTrace << VAR(runtime);
+        adb.adb_path = config_.adb.adb_path;
+        adb.address = config_.adb.address;
+        adb.controller_type = controller.adb.touch | controller.adb.key | controller.adb.screencap;
+        adb.config = controller.adb.config.dumps();
+        adb.agent_path = MaaNS::path_to_utf8_string(project_dir_ / "MaaAgentBinary");
+
+        runtime.controller_param = std::move(adb);
+    }
+    else if (controller.type == InterfaceData::Controller::kTypeWin32) {
+        RuntimeParam::Win32Param win32;
+
+        win32.hwnd = config_.win32.hwnd;
+        win32.controller_type =
+            controller.win32.touch | controller.win32.key | controller.win32.screencap;
+
+        runtime.controller_param = std::move(win32);
+    }
+    else {
+        LogError << "Unknown controller type" << controller.type;
+        return std::nullopt;
+    }
+
     return runtime;
 }
 
@@ -168,3 +185,5 @@ std::optional<RuntimeParam::Task>
 
     return runtime_task;
 }
+
+MAA_PROJECT_INTERFACE_NS_END

@@ -17,7 +17,7 @@ public:
     bool check_configuration();
     void save();
 
-    std::optional<MAA_PROJECT_INTERFACE_NS::RuntimeParam> generate_runtime() const;
+    std::optional<RuntimeParam> generate_runtime() const;
 
     const auto& interface_data() const { return data_; }
 
@@ -28,14 +28,14 @@ public:
     bool is_first_time_use() const { return first_time_use_; }
 
 private:
-    std::optional<MAA_PROJECT_INTERFACE_NS::RuntimeParam::Task> generate_runtime_task(
-        const MAA_PROJECT_INTERFACE_NS::Configuration::Task& config_task) const;
+    std::optional<RuntimeParam::Task>
+        generate_runtime_task(const Configuration::Task& config_task) const;
 
     std::filesystem::path project_dir_;
 
-    MAA_PROJECT_INTERFACE_NS::InterfaceData data_;
+    InterfaceData data_;
     bool first_time_use_ = false;
-    MAA_PROJECT_INTERFACE_NS::Configuration config_;
+    Configuration config_;
 };
 
 MAA_PROJECT_INTERFACE_NS_END

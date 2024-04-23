@@ -98,6 +98,26 @@ MaaBool UnregisterExecutor(ExecutorType type, MaaInstanceHandle handle, MaaStrin
     return false;
 }
 
+MaaBool ClearExecutor(ExecutorType type, MaaInstanceHandle handle)
+{
+    LogFunc << VAR(type) << VAR_VOIDP(handle);
+
+    if (!handle) {
+        LogError << "handle is null";
+        return false;
+    }
+
+    switch (type) {
+    case ExecutorType::Recognizer:
+        return RecognizerExecAgent::get_instance().unregister_executor(handle, "");
+
+    case ExecutorType::Action:
+        return ActionExecAgent::get_instance().unregister_executor(handle, "");
+    }
+
+    return false;
+}
+
 MaaBool MaaToolkitRegisterCustomRecognizerExecutor(
     MaaInstanceHandle handle,
     MaaStringView recognizer_name,
@@ -119,6 +139,11 @@ MaaBool MaaToolkitUnregisterCustomRecognizerExecutor(
     return UnregisterExecutor(ExecutorType::Recognizer, handle, recognizer_name);
 }
 
+MaaBool MaaToolkitClearCustomRecognizerExecutor(MaaInstanceHandle handle)
+{
+    return ClearExecutor(ExecutorType::Recognizer, handle);
+}
+
 MaaBool MaaToolkitRegisterCustomActionExecutor(
     MaaInstanceHandle handle,
     MaaStringView action_name,
@@ -137,4 +162,9 @@ MaaBool
     MaaToolkitUnregisterCustomActionExecutor(MaaInstanceHandle handle, MaaStringView action_name)
 {
     return UnregisterExecutor(ExecutorType::Action, handle, action_name);
+}
+
+MaaBool MaaToolkitClearCustomActionExecutor(MaaInstanceHandle handle)
+{
+    return ClearExecutor(ExecutorType::Action, handle);
 }

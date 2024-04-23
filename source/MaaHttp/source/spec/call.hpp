@@ -45,6 +45,18 @@ LHGArgFromJsonBegin(maa::func_type_MaaWin32ControllerCreate, _0_hWnd, true)
     b.type("string");
 LHGArgFromJsonEnd()
 
+LHGArgFromJsonBegin(maa::func_type_MaaToolkitGetWindowClassName, _0_hwnd, true)
+    std::get<index>(arg) = reinterpret_cast<void*>(std::stoull(value.as_string(), nullptr, 0));
+    LHGArgFromJsonMiddle()
+    b.type("string");
+LHGArgFromJsonEnd()
+
+LHGArgFromJsonBegin(maa::func_type_MaaToolkitGetWindowWindowName, _0_hwnd, true)
+    std::get<index>(arg) = reinterpret_cast<void*>(std::stoull(value.as_string(), nullptr, 0));
+    LHGArgFromJsonMiddle()
+    b.type("string");
+LHGArgFromJsonEnd()
+
 LHGArgToJsonBegin(maa::func_type_MaaGetImageEncoded, ret, true)
     auto size =
         MaaGetImageEncodedSize(std::get<maa::func_type_MaaGetImageEncoded::_0_handle::index>(arg));
@@ -88,6 +100,8 @@ OutputString(maa::func_type_MaaResourceGetHash, _1_buffer);
 OutputString(maa::func_type_MaaControllerGetUUID, _1_buffer);
 OutputString(maa::func_type_MaaQueryRecognitionDetail, _3_detail_json);
 OutputString(maa::func_type_MaaSyncContextRunRecognizer, _5_out_detail);
+OutputString(maa::func_type_MaaToolkitGetWindowClassName, _1_buffer);
+OutputString(maa::func_type_MaaToolkitGetWindowWindowName, _1_buffer);
 
 #undef OutputString
 
