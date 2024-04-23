@@ -10,15 +10,25 @@
 
 #include "MaaPP/coro/EventLoop.hpp"
 #include "MaaPP/coro/Promise.hpp"
+#include "MaaPP/maa/details/ControllerType.hpp"
 
 namespace maa
 {
+
+struct AdbType
+    : public details::ControllerType<
+          MaaAdbControllerType,
+          MaaAdbControllerType_Touch_Mask,
+          MaaAdbControllerType_Key_Mask,
+          MaaAdbControllerType_Screencap_Mask>
+{
+};
 
 struct AdbDevice
 {
     std::string adb_path;
     std::string address;
-    MaaAdbControllerType type;
+    AdbType type;
     std::string config;
 };
 
@@ -38,7 +48,7 @@ inline maa::coro::Promise<std::shared_ptr<std::vector<AdbDevice>>> find()
         result.push_back({
             MaaToolkitGetDeviceAdbPath(i),
             MaaToolkitGetDeviceAdbSerial(i),
-            MaaToolkitGetDeviceAdbControllerType(i),
+            { MaaToolkitGetDeviceAdbControllerType(i) },
             MaaToolkitGetDeviceAdbConfig(i),
         });
     }

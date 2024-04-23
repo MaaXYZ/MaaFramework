@@ -37,8 +37,16 @@ class Resource : public details::ActionHelper<Resource, ResourceAction, MaaResou
     friend class Instance;
 
 public:
-    Resource()
+    template <typename... Args>
+    static auto make(Args&&... args)
+    {
+        return std::make_shared<Resource>(std::forward<Args>(args)...);
+    }
+
+    Resource(
+        std::function<void(std::string_view msg, const json::object& details)> callback = nullptr)
         : ActionHelper(MaaResourceCreate(&Resource::_callback, this))
+        , user_callback_(callback)
     {
     }
 
@@ -61,7 +69,13 @@ private:
 
         coro::EventLoop::current()->defer(
             [self, msg_str = std::string(msg), detail_val = std::move(detail_opt.value())]() {
+                if (!detail_val.is_object()) {
+                    return;
+                }
                 const auto& detail_obj = detail_val.as_object();
+                if (self->user_callback_) {
+                    self->user_callback_(msg_str, detail_obj);
+                }
                 if (!detail_obj.contains("id")) {
                     return;
                 }
@@ -83,6 +97,8 @@ private:
                 }
             });
     }
+
+    std::function<void(std::string_view msg, const json::object& details)> user_callback_;
 };
 
 inline MaaStatus ResourceAction::status()

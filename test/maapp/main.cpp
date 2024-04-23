@@ -6,8 +6,6 @@
 #include <thread>
 
 #include "MaaPP/MaaPP.hpp"
-#include "MaaPP/coro/EventLoop.hpp"
-#include "MaaPP/coro/Promise.hpp"
 
 #ifdef _WIN32
 std::string res_path = R"(E:\Projects\MAA\MaaAssistantSkland\assets\resource)";
@@ -20,7 +18,7 @@ std::string agent_path =
 
 maa::coro::Promise<void> async_main()
 {
-    auto res = std::make_shared<maa::Resource>();
+    auto res = maa::Resource::make();
     auto action = res->post_path(res_path);
     std::cout << "load posted, status " << action->status() << std::endl;
     auto status = co_await action->wait();
@@ -30,22 +28,26 @@ maa::coro::Promise<void> async_main()
 
     if (devices) {
         for (const auto& dev : *devices) {
-            std::cout
-                << std::format("{}\n{}\n{}\n{}\n", dev.adb_path, dev.address, dev.type, dev.config)
-                << std::endl;
+            std::cout << std::format(
+                "{}\n{}\n{}\n{}\n",
+                dev.adb_path,
+                dev.address,
+                dev.type.type_,
+                dev.config)
+                      << std::endl;
         }
 
         if (devices->size() > 0) {
-            auto ctrl = std::make_shared<maa::Controller>(
-                maa::Controller::adb_controller_tag {},
-                (*devices)[0],
-                agent_path);
+            auto cfg = (*devices)[0];
+            cfg.type.set_screencap(MaaAdbControllerType_Screencap_Encode);
+            auto ctrl =
+                maa::Controller::make(maa::Controller::adb_controller_tag {}, cfg, agent_path);
 
             status = co_await ctrl->post_connect()->wait();
             std::cout << "connect finished, status " << status << std::endl;
             std::cout << "controller uuid: " << ctrl->uuid().value() << std::endl;
 
-            auto inst = std::make_shared<maa::Instance>();
+            auto inst = maa::Instance::make();
             inst->bind(res);
             inst->bind(ctrl);
             std::cout << "instance inited " << inst->inited() << std::endl;
