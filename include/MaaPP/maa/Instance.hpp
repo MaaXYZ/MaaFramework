@@ -214,6 +214,44 @@ public:
         return MaaClearCustomAction(inst_);
     }
 
+    bool bind_recognizer_executor(
+        const std::string& name,
+        const std::string& path,
+        const json::object& param = {})
+    {
+        return MaaToolkitRegisterCustomRecognizerExecutor(
+            inst_,
+            name.c_str(),
+            path.c_str(),
+            param.to_string().c_str());
+    }
+
+    bool bind_action_executor(
+        const std::string& name,
+        const std::string& path,
+        const json::object& param = {})
+    {
+        return MaaToolkitRegisterCustomActionExecutor(
+            inst_,
+            name.c_str(),
+            path.c_str(),
+            param.to_string().c_str());
+    }
+
+    bool unbind_recognizer_executor(const std::string& name)
+    {
+        return MaaToolkitUnregisterCustomRecognizerExecutor(inst_, name.c_str());
+    }
+
+    bool unbind_action_executor(const std::string& name)
+    {
+        return MaaToolkitUnregisterCustomActionExecutor(inst_, name.c_str());
+    }
+
+    bool unbind_recognizer_executor() { return MaaToolkitClearCustomRecognizerExecutor(inst_); }
+
+    bool unbind_action_executor() { return MaaToolkitClearCustomActionExecutor(inst_); }
+
     bool inited() { return MaaInited(inst_); }
 
     bool running() { return MaaRunning(inst_); }
