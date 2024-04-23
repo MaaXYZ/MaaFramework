@@ -1,14 +1,13 @@
 #pragma once
 
-#include <condition_variable>
 #include <coroutine>
 #include <functional>
 #include <future>
 #include <initializer_list>
 #include <mutex>
 #include <optional>
-#include <tuple>
 #include <utility>
+#include <variant>
 #include <vector>
 
 namespace maa::coro

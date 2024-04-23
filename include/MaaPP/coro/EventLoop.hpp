@@ -1,8 +1,6 @@
 #pragma once
 
 #include <chrono>
-#include <functional>
-#include <thread>
 
 #include "MaaPP/coro/Promise.hpp"
 #include "MaaPP/coro/ThreadPool.hpp"
