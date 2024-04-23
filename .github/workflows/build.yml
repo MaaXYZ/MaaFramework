@@ -225,7 +225,7 @@ jobs:
 
       - name: Install compiler
         run: |
-          brew install llvm
+          brew install llvm@17
         # 17
 
       - name: Bootstrap MaaDeps
