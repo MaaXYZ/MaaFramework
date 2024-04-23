@@ -12,6 +12,7 @@
 #include "MaaPP/coro/EventLoop.hpp"
 #include "MaaPP/coro/Promise.hpp"
 #include "MaaPP/maa/Controller.hpp"
+#include "MaaPP/maa/Image.hpp"
 #include "MaaPP/maa/Resource.hpp"
 #include "MaaPP/maa/SyncContext.hpp"
 #include "MaaPP/maa/details/ActionHelper.hpp"
@@ -32,11 +33,8 @@ public:
         std::string rec_detail;
     };
 
-    using analyze_func = std::function<coro::Promise<AnalyzeResult>(
-        std::shared_ptr<SyncContext>,
-        MaaImageBufferHandle,
-        MaaStringView,
-        MaaStringView)>;
+    using analyze_func = std::function<coro::Promise<
+        AnalyzeResult>(std::shared_ptr<SyncContext>, details::Image, MaaStringView, MaaStringView)>;
 
     CustomRecognizer(analyze_func analyze)
         : analyze_(analyze)
