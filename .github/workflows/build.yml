@@ -226,7 +226,7 @@ jobs:
       - name: Install compiler
         run: |
           brew install llvm@17
-          echo 'export PATH="/usr/local/opt/llvm@17/bin:$PATH"' >> ~/.bash_profile
+          echo "PATH=/usr/local/opt/llvm@17/bin:$PATH" >> $GITHUB_ENV
         # 17
 
       - name: Bootstrap MaaDeps
