@@ -12,6 +12,7 @@
 #include "MaaPP/coro/EventLoop.hpp"
 #include "MaaPP/coro/Promise.hpp"
 #include "MaaPP/maa/AdbDevice.hpp"
+#include "MaaPP/maa/Message.hpp"
 #include "MaaPP/maa/Win32Device.hpp"
 #include "MaaPP/maa/details/ActionHelper.hpp"
 #include "MaaPP/maa/details/String.hpp"
@@ -175,26 +176,13 @@ public:
 private:
     static void _callback(MaaStringView msg, MaaStringView details, MaaTransparentArg arg)
     {
-        auto detail_opt = json::parse(details);
-        if (!detail_opt.has_value() || !detail_opt.value().is_object()) {
-            return;
-        }
-        // prevent destroy
+        auto msg_ptr = message::parse(msg, details);
+
         auto self = reinterpret_cast<Controller*>(arg)->shared_from_this();
 
-        coro::EventLoop::current()->defer(
-            [self, msg_str = std::string(msg), detail_val = std::move(detail_opt.value())]() {
-                if (!detail_val.is_object()) {
-                    return;
-                }
-                const auto& detail_obj = detail_val.as_object();
-                if (self->user_callback_) {
-                    self->user_callback_(msg_str, detail_obj);
-                }
-                if (!detail_obj.contains("id")) {
-                    return;
-                }
-                MaaCtrlId id = detail_obj.at("id").as_unsigned_long_long();
+        coro::EventLoop::current()->defer([self, msg_ptr]() {
+            if (auto msg = msg_ptr->is<message::ControllerActionMessage>()) {
+                auto id = msg->id;
                 if (!self->actions_.contains(id)) {
                     std::cout << "cannot find id " << id << std::endl;
                     return;
@@ -204,13 +192,14 @@ private:
                     std::cout << "action id " << id << " expired" << std::endl;
                     return;
                 }
-                if (msg_str == MaaMsg_Controller_Action_Completed) {
+                if (msg->type == message::ControllerActionMessage::Completed) {
                     ptr->status_.resolve(MaaStatus_Success);
                 }
-                else if (msg_str == MaaMsg_Controller_Action_Failed) {
+                else if (msg->type == message::ControllerActionMessage::Failed) {
                     ptr->status_.resolve(MaaStatus_Failed);
                 }
-            });
+            }
+        });
     }
 
     std::function<void(std::string_view msg, const json::object& details)> user_callback_;

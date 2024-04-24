@@ -45,6 +45,10 @@ maa::coro::Promise<> async_main()
             auto ctrl =
                 maa::Controller::make(maa::Controller::adb_controller_tag {}, cfg, agent_path);
 
+            ctrl->set_short_side(720);
+            ctrl->set_start_entry("com.hypergryph.skland/com.hypergryph.skland.SplashActivity");
+            ctrl->set_stop_entry("com.hypergryph.skland");
+
             status = co_await ctrl->post_connect()->wait();
             std::cout << "connect finished, status " << status << std::endl;
             std::cout << "controller uuid: " << ctrl->uuid().value() << std::endl;
@@ -66,13 +70,16 @@ maa::coro::Promise<> async_main()
                         std::cout << "Hello world!" << std::endl;
                         co_return true;
                     }));
-            // maa::set_stdout_level(MaaLoggingLevel_All);
+            maa::set_stdout_level(MaaLoggingLevel_All);
 
-            auto task = inst->post_task("test");
+            auto task = inst->post_task("Skland");
             std::cout << "post task" << std::endl;
             auto success = co_await maa::coro::any(
-                task->wait().then([](auto) {}),
-                maa::coro::EventLoop::current()->sleep(std::chrono::seconds(2)));
+                task->wait().then([](auto) { std::cout << "task finished" << std::endl; }),
+                maa::coro::EventLoop::current()->sleep(std::chrono::seconds(30)).then([]() {
+                    std::cout << "sleep finished" << std::endl;
+                }));
+            std::cout << "promise any finished, index " << success.index() << std::endl;
             if (success.index() == 1) {
                 std::cout << "post stop" << std::endl;
                 inst->stop();

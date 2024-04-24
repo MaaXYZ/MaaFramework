@@ -329,13 +329,13 @@ inline void merge_helper(std::shared_ptr<Fulfill> fulfill, std::shared_ptr<State
     using element_type =
         promise_value<std::tuple_element_t<Index, typename State::promise_tuple>>::type;
     if constexpr (std::is_same_v<void, element_type>) {
-        std::get<Index>(state->promises).then([&]() {
+        std::get<Index>(state->promises).then([=]() {
             std::get<Index>(state->result) = std::monostate {};
             fulfill->template hit<Index>(state);
         });
     }
     else {
-        std::get<Index>(state->promises).then([&](element_type value) {
+        std::get<Index>(state->promises).then([=](element_type value) {
             std::get<Index>(state->result) = std::move(value);
             fulfill->template hit<Index>(state);
         });
@@ -349,7 +349,7 @@ inline void merge(std::shared_ptr<Fulfill> fulfill, Pros... pros)
     auto state = std::make_shared<State>();
     state->promises = std::make_tuple(pros...);
 
-    [&]<std::size_t... I>(std::index_sequence<I...>) {
+    [=]<std::size_t... I>(std::index_sequence<I...>) {
         (merge_helper<Fulfill, State, I>(fulfill, state), ...);
     }(std::make_index_sequence<std::tuple_size_v<typename MergeState<Pros...>::promise_tuple>> {});
 }
@@ -378,7 +378,7 @@ struct merge_any_fulfill
     {
         if (++state->counter == 1) {
             typename State::result_variant result;
-            std::get<Index>(result) = std::move(std::get<Index>(state->result));
+            result.emplace<Index>(std::move(std::get<Index>(state->result)));
             promise.resolve(std::move(result));
         }
     }
