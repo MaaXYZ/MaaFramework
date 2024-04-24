@@ -10,7 +10,7 @@ template <
     typename Tuple,
     template <typename>
     class Transformer,
-    template <typename>
+    template <typename...>
     class Container,
     typename Seq>
 struct transform_tuple_impl;
@@ -19,7 +19,7 @@ template <
     typename... Types,
     template <typename>
     class Transformer,
-    template <typename>
+    template <typename...>
     class Container,
     std::size_t... I>
 struct transform_tuple_impl<std::tuple<Types...>, Transformer, Container, std::index_sequence<I...>>
@@ -31,7 +31,7 @@ template <
     typename Tuple,
     template <typename>
     class Transformer,
-    template <typename>
+    template <typename...>
     class Container>
 using transform_tuple = typename transform_tuple_impl<
     Tuple,
