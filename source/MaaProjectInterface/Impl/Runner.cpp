@@ -55,24 +55,29 @@ bool Runner::run(
         auto resource_handle = maa::Resource::make();
 
         auto do_conn = [&]() -> maa::coro::Promise<bool> {
-            if (co_await controller_handle->post_connect()->wait() == MaaStatus_Failed) {
-                LogError << "Failed to connect controller";
-                co_return false;
-            }
-            co_return true;
+            co_return co_await controller_handle->post_connect()->wait() == MaaStatus_Failed;
         };
 
         auto do_res = [&]() -> maa::coro::Promise<bool> {
             for (const auto& path : param.resource_path) {
                 if (co_await resource_handle->post_path(path)->wait() == MaaStatus_Failed) {
-                    LogError << "Failed to load resource";
                     co_return false;
                 }
             }
             co_return true;
         };
 
-        auto res = co_await maa::coro::Promise<>::all(do_conn(), do_res());
+        auto [ctrl_success, res_success] = co_await maa::coro::all(do_conn(), do_res());
+
+        if (!ctrl_success) {
+            LogError << "Failed to connect controller";
+            co_return false;
+        }
+
+        if (!res_success) {
+            LogError << "Failed to load resource";
+            co_return false;
+        }
 
         co_return true;
     };

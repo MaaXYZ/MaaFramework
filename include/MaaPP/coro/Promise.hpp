@@ -12,37 +12,18 @@
 #include <variant>
 #include <vector>
 
+#include "MaaPP/coro/details/utils.hpp"
+
 namespace maa::coro
 {
 
-namespace _pri
-{
+template <typename T>
+struct Promise;
 
-template <typename Tuple, template <typename> class Transformer, typename Seq>
-struct transform_tuple_impl;
+template <typename T>
+inline Promise<T> resolve_now(T&& value);
 
-template <typename... Types, template <typename> class Transformer, std::size_t... I>
-struct transform_tuple_impl<std::tuple<Types...>, Transformer, std::index_sequence<I...>>
-{
-    using type = std::tuple<typename Transformer<Types>::type...>;
-};
-
-template <typename Tuple, template <typename> class Transformer>
-using transform_tuple = typename transform_tuple_impl<
-    Tuple,
-    Transformer,
-    std::make_index_sequence<std::tuple_size_v<Tuple>>>::type;
-
-template <typename P>
-struct promise_value
-{
-    using type = typename P::value_t;
-};
-
-template <typename TP>
-using unpack_promise_tuple = transform_tuple<TP, promise_value>;
-
-}
+inline Promise<void> resolve_now();
 
 template <typename T>
 struct __promise_traits
@@ -118,67 +99,6 @@ struct Promise
     {
     }
 
-    template <typename t = T>
-    requires std::is_same_v<void, t>
-    static Promise<t> resolve_now()
-    {
-        Promise<T> pro;
-        pro.resolve();
-        return pro;
-    }
-
-    template <typename t = T>
-    requires(!std::is_same_v<void, t>)
-    static Promise<t> resolve_now(t value)
-    {
-        Promise<T> pro;
-        pro.resolve(std::move(value));
-        return pro;
-    }
-
-    template <typename ProTuple, size_t Index, typename F>
-    static void
-        __bind_then(ProTuple& tuple, _pri::unpack_promise_tuple<ProTuple>& result, F fulfill)
-    {
-        std::get<Index>(tuple).then(
-            [&](auto value) { std::get<Index>(result) = std::move(value); });
-        fulfill();
-    }
-
-    template <typename... Pros>
-    static Promise<_pri::unpack_promise_tuple<std::tuple<Pros...>>> all(Pros... pros)
-    {
-        using ProTuple = std::tuple<Pros...>;
-        using ResultTuple = _pri::unpack_promise_tuple<ProTuple>;
-
-        ProTuple pro_tuple = std::make_tuple(pros...);
-        ResultTuple result;
-        Promise<ResultTuple> result_pro;
-        std::atomic<size_t> counter = 0;
-
-        auto fulfill = [&]() {
-            if (++counter == std::tuple_size_v<ProTuple>) {
-                result_pro.resolve(std::move(result));
-            }
-        };
-
-        [&]<std::size_t... I>(std::index_sequence<I...>) {
-            (__bind_then<ProTuple, I>(pro_tuple, result, fulfill), ...);
-        }(std::make_index_sequence<std::tuple_size_v<ProTuple>> {});
-
-        return result_pro;
-    }
-
-    static Promise<size_t> any(std::initializer_list<Promise<void>> pros_list)
-    {
-        std::vector<Promise<void>> pros(pros_list);
-        Promise<size_t> ret;
-        for (size_t i = 0; i < pros.size(); i++) {
-            pros[i].then([i, ret]() { ret.resolve(i); });
-        }
-        return ret;
-    }
-
     bool resolved_noguard() const { return state_->result_.has_value(); }
 
     bool resolved() const
@@ -202,14 +122,14 @@ struct Promise
                 else {
                     func(state_->result_.value());
                 }
-                return Promise<R>::resolve_now();
+                return resolve_now();
             }
             else {
                 if constexpr (std::is_same_v<void, T>) {
-                    return Promise<R>::resolve_now(func());
+                    return resolve_now<R>(func());
                 }
                 else {
-                    return Promise<R>::resolve_now(func(state_->result_.value()));
+                    return resolve_now<R>(func(state_->result_.value()));
                 }
             }
         }
@@ -354,5 +274,120 @@ struct __promise_type<void> : public __promise_type_base
 
     void return_void() { promise_.resolve(); }
 };
+
+template <typename T>
+inline Promise<T> resolve_now(T&& value)
+{
+    Promise<T> pro;
+    pro.resolve(std::forward<T>(value));
+    return pro;
+}
+
+inline Promise<> resolve_now()
+{
+    Promise<> pro;
+    pro.resolve();
+    return pro;
+}
+
+namespace details
+{
+
+template <typename ProTuple>
+using pro_value_tuple =
+    transform_tuple<transform_tuple<ProTuple, promise_value, std::tuple>, wrap_void, std::tuple>;
+
+template <typename ProTuple>
+using pro_value_variant =
+    transform_tuple<transform_tuple<ProTuple, promise_value, std::tuple>, wrap_void, std::variant>;
+
+template <typename... Pros>
+struct MergeState
+{
+    using promise_tuple = std::tuple<Pros...>;
+    using result_tuple = pro_value_tuple<promise_tuple>;
+    using result_variant = pro_value_variant<promise_tuple>;
+
+    promise_tuple promises = {};
+    result_tuple result = {};
+    std::atomic<size_t> counter = 0;
+};
+
+template <typename Fulfill, typename State, size_t Index>
+inline void merge_helper(std::shared_ptr<Fulfill> fulfill, std::shared_ptr<State> state)
+{
+    if constexpr (std::is_same_v<void, std::tuple_element_t<State::promise_tuple, Index>>) {
+        std::get<Index>(state->promises).then([&]() {
+            std::get<Index>(state->result) = std::monostate {};
+            fulfill->hit<Index>(state);
+        });
+    }
+    else {
+        std::get<Index>(state->promises).then([&](auto value) {
+            std::get<Index>(state->result) = std::move(value);
+            fulfill->hit<Index>(state);
+        });
+    }
+}
+
+template <typename Fulfill, typename... Pros>
+inline void merge(std::shared_ptr<Fulfill> fulfill, Pros... pros)
+{
+    using State = MergeState<Pros...>;
+    auto state = std::make_shared<State>();
+    state->promises = std::make_tuple(pros...);
+
+    [&]<std::size_t... I>(std::index_sequence<I...>) {
+        (__bind_then<Fulfill, State, I>(fulfill, state), ...);
+    }(std::make_index_sequence<std::tuple_size_v<typename MergeState<Pros...>::promise_tuple>> {});
+}
+
+template <typename State>
+struct merge_all_fulfill
+{
+    Promise<typename State::result_tuple> promise;
+
+    template <size_t Index>
+    void hit(std::shared_ptr<State> state)
+    {
+        if (++state->counter == std::tuple_size_v<State::promise_tuple>) {
+            promise.resolve(std::move(state->result));
+        }
+    }
+};
+
+template <typename State>
+struct merge_any_fulfill
+{
+    Promise<typename State::result_variant> promise;
+
+    template <size_t Index>
+    void hit(std::shared_ptr<State> state)
+    {
+        if (++state->counter == 1) {
+            typename State::result_variant result;
+            std::get<Index>(result) = std::move(std::get<Index>(state->result));
+            promise.resolve(std::move(result));
+        }
+    }
+};
+
+}
+
+template <typename... Pros>
+inline auto all(Pros... pros)
+{
+    auto fulfill = std::make_shared<details::merge_all_fulfill<details::MergeState<Pros...>>>();
+    details::merge(fulfill, pros...);
+    return fulfill->promise;
+}
+
+template <typename... Pros>
+inline auto any(Pros... pros)
+{
+    auto fulfill = std::make_shared<details::merge_any_fulfill<details::MergeState<Pros...>>>();
+    details::merge(fulfill, pros...);
+    return fulfill->promise;
+}
 
 }

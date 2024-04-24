@@ -70,10 +70,10 @@ maa::coro::Promise<> async_main()
 
             auto task = inst->post_task("test");
             std::cout << "post task" << std::endl;
-            auto success = co_await maa::coro::Promise<>::any(
-                { task->wait().then([](auto) {}),
-                  maa::coro::EventLoop::current()->sleep(std::chrono::seconds(2)) });
-            if (success == 1) {
+            auto success = co_await maa::coro::any(
+                task->wait().then([](auto) {}),
+                maa::coro::EventLoop::current()->sleep(std::chrono::seconds(2)));
+            if (success.index() == 1) {
                 std::cout << "post stop" << std::endl;
                 inst->stop();
                 co_await task->wait();
