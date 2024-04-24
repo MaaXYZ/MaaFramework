@@ -12,7 +12,7 @@ class EventLoop
 {
 public:
     EventLoop(size_t count = 8)
-        : pool(count)
+        : pool_(count)
     {
         current_ = this;
     }
@@ -25,7 +25,7 @@ public:
     template <typename F>
     void defer(F f)
     {
-        pool.defer(f);
+        pool_.defer(f);
     }
 
     void defer_stop()
@@ -44,31 +44,40 @@ public:
     }
 
     template <typename F>
-    auto eval(F f) -> maa::coro::Promise<std::invoke_result_t<F>>
+    auto eval(F f) -> Promise<std::invoke_result_t<F>>
     {
         using R = std::invoke_result_t<F>;
         std::function<R()> func(f);
-        auto result_pro = maa::coro::Promise<R>();
+        auto result_pro = Promise<R>();
 
         defer([result_pro, func]() {
             auto result = func();
-            maa::coro::EventLoop::current()->defer(
+            EventLoop::current()->defer(
                 [result_pro, result = std::move(result)]() { result_pro.resolve(result); });
         });
 
         return result_pro;
     }
 
-    void exec() { pool.exec(); }
+    int exec()
+    {
+        pool_.exec();
+        return code_;
+    }
 
-    void stop() { pool.stop(); }
+    void stop(int code = 0)
+    {
+        pool_.stop();
+        code_ = code;
+    }
 
     static EventLoop* current() { return current_; }
 
 private:
     static inline EventLoop* current_ = nullptr;
 
-    ThreadPool pool;
+    ThreadPool pool_;
+    int code_ = 0;
 };
 
 }

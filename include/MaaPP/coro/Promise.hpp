@@ -25,8 +25,11 @@ inline Promise<T> resolve_now(T&& value);
 
 inline Promise<void> resolve_now();
 
+namespace details
+{
+
 template <typename T>
-struct __promise_traits
+struct promise_traits
 {
     using then_t = void(const T&);
 
@@ -40,7 +43,7 @@ struct __promise_traits
 };
 
 template <>
-struct __promise_traits<void>
+struct promise_traits<void>
 {
     using then_t = void();
 
@@ -54,22 +57,24 @@ struct __promise_traits<void>
 };
 
 template <typename T>
-struct __promise_type;
+struct promise_type;
+
+}
 
 template <typename T = void>
 struct Promise
 {
     using value_t = T;
 
-    using then_t = typename __promise_traits<T>::then_t;
+    using then_t = typename details::promise_traits<T>::then_t;
 
-    using result_t = typename __promise_traits<T>::result_t;
+    using result_t = typename details::promise_traits<T>::result_t;
 
     template <typename F>
-    using then_ret_t = typename __promise_traits<T>::template then_ret_t<F>;
+    using then_ret_t = typename details::promise_traits<T>::template then_ret_t<F>;
 
     template <typename R>
-    using then_holder_t = typename __promise_traits<T>::template then_holder_t<R>;
+    using then_holder_t = typename details::promise_traits<T>::template then_holder_t<R>;
 
     struct State
     {
@@ -213,7 +218,7 @@ struct Promise
         }
     }
 
-    using promise_type = __promise_type<T>;
+    using promise_type = details::promise_type<T>;
 
     bool await_ready() const { return resolved(); }
 
@@ -238,6 +243,9 @@ struct Promise
     }
 };
 
+namespace details
+{
+
 struct __promise_type_base
 {
     std::suspend_never initial_suspend() noexcept { return {}; }
@@ -248,13 +256,13 @@ struct __promise_type_base
 };
 
 template <typename T>
-struct __promise_type : public __promise_type_base
+struct promise_type : public __promise_type_base
 {
     Promise<T> promise_;
 
     Promise<T> get_return_object()
     {
-        promise_.state_->task_ = std::coroutine_handle<__promise_type>::from_promise(*this);
+        promise_.state_->task_ = std::coroutine_handle<promise_type>::from_promise(*this);
         return promise_;
     }
 
@@ -262,18 +270,20 @@ struct __promise_type : public __promise_type_base
 };
 
 template <>
-struct __promise_type<void> : public __promise_type_base
+struct promise_type<void> : public __promise_type_base
 {
     Promise<void> promise_;
 
     Promise<void> get_return_object()
     {
-        promise_.state_->task_ = std::coroutine_handle<__promise_type>::from_promise(*this);
+        promise_.state_->task_ = std::coroutine_handle<promise_type>::from_promise(*this);
         return promise_;
     }
 
     void return_void() { promise_.resolve(); }
 };
+
+}
 
 template <typename T>
 inline Promise<T> resolve_now(T&& value)
