@@ -10,6 +10,11 @@ struct ControllerType
 {
     Type type_;
 
+    ControllerType(Type type = 0)
+        : type_(type)
+    {
+    }
+
     void set_touch(uint32_t touch) { type_ = (type_ & ~(TouchMask)) | (touch & TouchMask); }
 
     uint32_t touch() const { return type_ & TouchMask; }

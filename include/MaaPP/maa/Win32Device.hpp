@@ -25,11 +25,17 @@ struct Win32Type
           MaaWin32ControllerType_Key_Mask,
           MaaWin32ControllerType_Screencap_Mask>
 {
+    using ControllerType::ControllerType;
 };
 
 struct Win32Hwnd
 {
     MaaWin32Hwnd hwnd_;
+
+    Win32Hwnd(MaaWin32Hwnd hwnd = nullptr)
+        : hwnd_(hwnd)
+    {
+    }
 
     std::string class_name() const
     {

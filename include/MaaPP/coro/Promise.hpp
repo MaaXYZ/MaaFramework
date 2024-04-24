@@ -1,17 +1,48 @@
 #pragma once
 
+#include <atomic>
 #include <coroutine>
 #include <functional>
 #include <future>
 #include <initializer_list>
 #include <mutex>
 #include <optional>
+#include <tuple>
 #include <utility>
 #include <variant>
 #include <vector>
 
 namespace maa::coro
 {
+
+namespace _pri
+{
+
+template <typename Tuple, template <typename> class Transformer, typename Seq>
+struct transform_tuple_impl;
+
+template <typename... Types, template <typename> class Transformer, std::size_t... I>
+struct transform_tuple_impl<std::tuple<Types...>, Transformer, std::index_sequence<I...>>
+{
+    using type = std::tuple<typename Transformer<Types>::type...>;
+};
+
+template <typename Tuple, template <typename> class Transformer>
+using transform_tuple = typename transform_tuple_impl<
+    Tuple,
+    Transformer,
+    std::make_index_sequence<std::tuple_size_v<Tuple>>>::type;
+
+template <typename P>
+struct promise_value
+{
+    using type = typename P::value_t;
+};
+
+template <typename TP>
+using unpack_promise_tuple = transform_tuple<TP, promise_value>;
+
+}
 
 template <typename T>
 struct __promise_traits
@@ -47,6 +78,8 @@ struct __promise_type;
 template <typename T = void>
 struct Promise
 {
+    using value_t = T;
+
     using then_t = typename __promise_traits<T>::then_t;
 
     using result_t = typename __promise_traits<T>::result_t;
@@ -101,6 +134,39 @@ struct Promise
         Promise<T> pro;
         pro.resolve(std::move(value));
         return pro;
+    }
+
+    template <typename ProTuple, size_t Index, typename F>
+    static void
+        __bind_then(ProTuple& tuple, _pri::unpack_promise_tuple<ProTuple>& result, F fulfill)
+    {
+        std::get<Index>(tuple).then(
+            [&](auto value) { std::get<Index>(result) = std::move(value); });
+        fulfill();
+    }
+
+    template <typename... Pros>
+    static Promise<_pri::unpack_promise_tuple<std::tuple<Pros...>>> all(Pros... pros)
+    {
+        using ProTuple = std::tuple<Pros...>;
+        using ResultTuple = _pri::unpack_promise_tuple<ProTuple>;
+
+        ProTuple pro_tuple = std::make_tuple(pros...);
+        ResultTuple result;
+        Promise<ResultTuple> result_pro;
+        std::atomic<size_t> counter = 0;
+
+        auto fulfill = [&]() {
+            if (++counter == std::tuple_size_v<ProTuple>) {
+                result_pro.resolve(std::move(result));
+            }
+        };
+
+        [&]<std::size_t... I>(std::index_sequence<I...>) {
+            (__bind_then<ProTuple, I>(pro_tuple, result, fulfill), ...);
+        }(std::make_index_sequence<std::tuple_size_v<ProTuple>> {});
+
+        return result_pro;
     }
 
     static Promise<size_t> any(std::initializer_list<Promise<void>> pros_list)

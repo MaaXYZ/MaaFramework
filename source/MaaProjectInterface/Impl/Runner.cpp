@@ -6,6 +6,7 @@
 #include <meojson/json.hpp>
 
 #include "MaaFramework/MaaAPI.h"
+#include "MaaPP/MaaPP.hpp"
 #include "MaaToolkit/MaaToolkitAPI.h"
 
 #include "Utils/Logger.h"
@@ -22,6 +23,60 @@ bool Runner::run(
     MaaControllerCallback controller_callback,
     MaaCallbackTransparentArg controller_callback_arg)
 {
+    auto run = [&]() -> maa::coro::Promise<bool> {
+        auto maa_handle = maa::Instance::make([&](auto msg, auto detail) {
+            return callback(msg.data(), detail.to_string().c_str(), callback_arg);
+        });
+
+        std::shared_ptr<maa::Controller> controller_handle;
+        if (const auto* p_adb_param =
+                std::get_if<RuntimeParam::AdbParam>(&param.controller_param)) {
+            controller_handle = maa::Controller::make(
+                maa::Controller::adb_controller_tag {},
+                p_adb_param->adb_path,
+                p_adb_param->address,
+                p_adb_param->controller_type,
+                p_adb_param->config,
+                p_adb_param->agent_path);
+        }
+        else if (
+            const auto* p_win32_param =
+                std::get_if<RuntimeParam::Win32Param>(&param.controller_param)) {
+            controller_handle = maa::Controller::make(
+                maa::Controller::win32_controller_tag {},
+                p_win32_param->hwnd,
+                p_win32_param->controller_type);
+        }
+        else {
+            LogError << "Unknown controller type";
+            co_return false;
+        }
+
+        auto resource_handle = maa::Resource::make();
+
+        auto do_conn = [&]() -> maa::coro::Promise<bool> {
+            if (co_await controller_handle->post_connect()->wait() == MaaStatus_Failed) {
+                LogError << "Failed to connect controller";
+                co_return false;
+            }
+            co_return true;
+        };
+
+        auto do_res = [&]() -> maa::coro::Promise<bool> {
+            for (const auto& path : param.resource_path) {
+                if (co_await resource_handle->post_path(path)->wait() == MaaStatus_Failed) {
+                    LogError << "Failed to load resource";
+                    co_return false;
+                }
+            }
+            co_return true;
+        };
+
+        auto res = co_await maa::coro::Promise<>::all(do_conn(), do_res());
+
+        co_return true;
+    };
+
     auto maa_handle = MaaCreate(callback, callback_arg);
 
     MaaControllerHandle controller_handle = nullptr;

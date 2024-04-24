@@ -22,6 +22,7 @@ struct AdbType
           MaaAdbControllerType_Key_Mask,
           MaaAdbControllerType_Screencap_Mask>
 {
+    using ControllerType::ControllerType;
 };
 
 struct AdbDevice
