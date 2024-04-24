@@ -82,6 +82,8 @@ bool Runner::run(
         co_return true;
     };
 
+    std::ignore = run;
+
     auto maa_handle = MaaCreate(callback, callback_arg);
 
     MaaControllerHandle controller_handle = nullptr;

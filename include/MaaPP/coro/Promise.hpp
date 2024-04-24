@@ -321,13 +321,13 @@ inline void merge_helper(std::shared_ptr<Fulfill> fulfill, std::shared_ptr<State
     if constexpr (std::is_same_v<void, element_type>) {
         std::get<Index>(state->promises).then([&]() {
             std::get<Index>(state->result) = std::monostate {};
-            fulfill->hit<Index>(state);
+            fulfill->template hit<Index>(state);
         });
     }
     else {
         std::get<Index>(state->promises).then([&](element_type value) {
             std::get<Index>(state->result) = std::move(value);
-            fulfill->hit<Index>(state);
+            fulfill->template hit<Index>(state);
         });
     }
 }
