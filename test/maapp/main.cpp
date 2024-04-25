@@ -42,8 +42,7 @@ maa::coro::Promise<> async_main()
         if (devices->size() > 0) {
             auto cfg = (*devices)[0];
             cfg.type.set_screencap(MaaAdbControllerType_Screencap_Encode);
-            auto ctrl =
-                maa::Controller::make(maa::Controller::adb_controller_tag {}, cfg, agent_path);
+            auto ctrl = maa::Controller::make(cfg, agent_path);
 
             ctrl->set_short_side(720);
             ctrl->set_start_entry("com.hypergryph.skland/com.hypergryph.skland.SplashActivity");

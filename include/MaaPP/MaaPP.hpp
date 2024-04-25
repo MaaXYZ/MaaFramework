@@ -4,7 +4,11 @@
 #include "MaaPP/coro/Promise.hpp"
 #include "MaaPP/coro/ThreadPool.hpp"
 
+#include "MaaPP/coro/details/DynamicMerge.hpp"
+#include "MaaPP/coro/details/TypedMerge.hpp"
+
 #include "MaaPP/maa/AdbDevice.hpp"
+#include "MaaPP/maa/Alias.hpp"
 #include "MaaPP/maa/Controller.hpp"
 #include "MaaPP/maa/Global.hpp"
 #include "MaaPP/maa/Instance.hpp"

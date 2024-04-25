@@ -228,25 +228,25 @@ public:
     bool bind_recognizer_executor(
         const std::string& name,
         const std::string& path,
-        const json::object& param = {})
+        const std::vector<std::string>& argv)
     {
         return MaaToolkitRegisterCustomRecognizerExecutor(
             inst_,
             name.c_str(),
             path.c_str(),
-            param.to_string().c_str());
+            json::array(argv).to_string().c_str());
     }
 
     bool bind_action_executor(
         const std::string& name,
         const std::string& path,
-        const json::object& param = {})
+        const std::vector<std::string>& argv)
     {
         return MaaToolkitRegisterCustomActionExecutor(
             inst_,
             name.c_str(),
             path.c_str(),
-            param.to_string().c_str());
+            json::array(argv).to_string().c_str());
     }
 
     bool unbind_recognizer_executor(const std::string& name)

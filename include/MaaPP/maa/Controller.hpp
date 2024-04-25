@@ -75,12 +75,11 @@ public:
     }
 
     Controller(
-        [[maybe_unused]] adb_controller_tag tag,
         const AdbDevice& device,
         const std::string& agent_path,
         std::function<void(std::shared_ptr<message::MessageBase>)> callback = nullptr)
         : Controller(
-            tag,
+            {},
             device.adb_path,
             device.address,
             device.type,
@@ -106,10 +105,9 @@ public:
     }
 
     Controller(
-        [[maybe_unused]] win32_controller_tag tag,
         const Win32Device& device,
         std::function<void(std::shared_ptr<message::MessageBase>)> callback = nullptr)
-        : Controller(tag, device.hwnd, device.type, callback)
+        : Controller({}, device.hwnd, device.type, callback)
     {
     }
 
