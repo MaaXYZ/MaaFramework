@@ -3,6 +3,8 @@
 #include <string_view>
 
 #include <MaaFramework/MaaAPI.h>
+#include <MaaToolkit/MaaToolkitAPI.h>
+#include <meojson/json.hpp>
 
 namespace maa
 {
@@ -10,6 +12,11 @@ namespace maa
 inline auto version()
 {
     return MaaVersion();
+}
+
+inline bool init(const std::string& user_path, const json::object& default_json = {})
+{
+    return MaaToolkitInitOptionConfig(user_path.c_str(), default_json.to_string().c_str());
 }
 
 inline bool set_log_dir(std::string_view dir)

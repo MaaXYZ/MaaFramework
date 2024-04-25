@@ -28,9 +28,9 @@ public:
         pool_.defer(f);
     }
 
-    void defer_stop()
+    void defer_stop(int code = 0)
     {
-        defer([this]() { this->stop(); });
+        defer([this, code]() { this->stop(code); });
     }
 
     Promise<void> sleep(std::chrono::seconds times)

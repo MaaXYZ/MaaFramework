@@ -34,9 +34,9 @@ public:
 
     struct AnalyzeResult
     {
-        bool result;
-        MaaRect rec_box;
-        std::string rec_detail;
+        bool result = false;
+        MaaRect rec_box = { 0, 0, 0, 0 };
+        std::string rec_detail = "";
     };
 
     using analyze_func = std::function<coro::Promise<
