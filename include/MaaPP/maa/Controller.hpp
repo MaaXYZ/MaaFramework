@@ -15,6 +15,7 @@
 #include "MaaPP/maa/Message.hpp"
 #include "MaaPP/maa/Win32Device.hpp"
 #include "MaaPP/maa/details/ActionHelper.hpp"
+#include "MaaPP/maa/details/Message.hpp"
 #include "MaaPP/maa/details/String.hpp"
 
 namespace maa
@@ -60,7 +61,7 @@ public:
         AdbType type,
         const std::string& config,
         const std::string& agent_path,
-        std::function<void(std::string_view msg, const json::object& details)> callback = nullptr)
+        std::function<void(std::shared_ptr<message::MessageBase>)> callback = nullptr)
         : ActionHelper(MaaAdbControllerCreateV2(
             adb_path.c_str(),
             address.c_str(),
@@ -77,7 +78,7 @@ public:
         [[maybe_unused]] adb_controller_tag tag,
         const AdbDevice& device,
         const std::string& agent_path,
-        std::function<void(std::string_view msg, const json::object& details)> callback = nullptr)
+        std::function<void(std::shared_ptr<message::MessageBase>)> callback = nullptr)
         : Controller(
             tag,
             device.adb_path,
@@ -97,7 +98,7 @@ public:
         [[maybe_unused]] win32_controller_tag tag,
         Win32Hwnd hwnd,
         Win32Type type,
-        std::function<void(std::string_view msg, const json::object& details)> callback = nullptr)
+        std::function<void(std::shared_ptr<message::MessageBase>)> callback = nullptr)
         : ActionHelper(
             MaaWin32ControllerCreate(hwnd.hwnd_, type.type_, &Controller::_callback, this))
         , user_callback_(callback)
@@ -107,7 +108,7 @@ public:
     Controller(
         [[maybe_unused]] win32_controller_tag tag,
         const Win32Device& device,
-        std::function<void(std::string_view msg, const json::object& details)> callback = nullptr)
+        std::function<void(std::shared_ptr<message::MessageBase>)> callback = nullptr)
         : Controller(tag, device.hwnd, device.type, callback)
     {
     }
@@ -200,9 +201,13 @@ private:
                 }
             }
         });
+
+        if (self->user_callback_) {
+            coro::EventLoop::current()->defer([self, msg_ptr]() { self->user_callback_(msg_ptr); });
+        }
     }
 
-    std::function<void(std::string_view msg, const json::object& details)> user_callback_;
+    std::function<void(std::shared_ptr<message::MessageBase>)> user_callback_;
 };
 
 inline MaaStatus ControllerAction::status()

@@ -1,7 +1,5 @@
 #pragma once
 
-#include <functional>
-#include <map>
 #include <memory>
 
 #include <MaaFramework/MaaMsg.h>
@@ -109,5 +107,9 @@ inline std::shared_ptr<MessageBase> parse(MaaStringView msg, MaaStringView detai
     }
     return pmsg;
 }
+
+#undef __EMPTY_MSG
+#undef __SERIAL_MSG
+#undef __SERIAL_MSG_TYPE
 
 }

@@ -4,7 +4,6 @@
 #include <coroutine>
 #include <functional>
 #include <future>
-#include <initializer_list>
 #include <mutex>
 #include <optional>
 #include <tuple>
@@ -32,12 +31,9 @@ template <typename T>
 struct promise_traits
 {
     using then_t = void(const T&);
-
     using result_t = T;
-
     template <typename F>
     using then_ret_t = std::invoke_result_t<F, const T&>;
-
     template <typename R>
     using then_holder_t = R(const T&);
 };
@@ -46,12 +42,9 @@ template <>
 struct promise_traits<void>
 {
     using then_t = void();
-
     using result_t = std::monostate;
-
     template <typename F>
     using then_ret_t = std::invoke_result_t<F>;
-
     template <typename R>
     using then_holder_t = R();
 };
@@ -65,14 +58,10 @@ template <typename T = void>
 struct Promise
 {
     using value_t = T;
-
     using then_t = typename details::promise_traits<T>::then_t;
-
     using result_t = typename details::promise_traits<T>::result_t;
-
     template <typename F>
     using then_ret_t = typename details::promise_traits<T>::template then_ret_t<F>;
-
     template <typename R>
     using then_holder_t = typename details::promise_traits<T>::template then_holder_t<R>;
 

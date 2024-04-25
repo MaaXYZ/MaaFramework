@@ -9,7 +9,9 @@
 
 #include "MaaPP/coro/EventLoop.hpp"
 #include "MaaPP/coro/Promise.hpp"
+#include "MaaPP/maa/Message.hpp"
 #include "MaaPP/maa/details/ActionHelper.hpp"
+#include "MaaPP/maa/details/Message.hpp"
 
 namespace maa
 {
@@ -43,8 +45,7 @@ public:
         return std::make_shared<Resource>(std::forward<Args>(args)...);
     }
 
-    Resource(
-        std::function<void(std::string_view msg, const json::object& details)> callback = nullptr)
+    Resource(std::function<void(std::shared_ptr<message::MessageBase>)> callback = nullptr)
         : ActionHelper(MaaResourceCreate(&Resource::_callback, this))
         , user_callback_(callback)
     {
@@ -60,26 +61,13 @@ public:
 private:
     static void _callback(MaaStringView msg, MaaStringView details, MaaTransparentArg arg)
     {
-        auto detail_opt = json::parse(details);
-        if (!detail_opt.has_value() || !detail_opt.value().is_object()) {
-            return;
-        }
-        // prevent destroy
+        auto msg_ptr = message::parse(msg, details);
+
         auto self = reinterpret_cast<Resource*>(arg)->shared_from_this();
 
-        coro::EventLoop::current()->defer(
-            [self, msg_str = std::string(msg), detail_val = std::move(detail_opt.value())]() {
-                if (!detail_val.is_object()) {
-                    return;
-                }
-                const auto& detail_obj = detail_val.as_object();
-                if (self->user_callback_) {
-                    self->user_callback_(msg_str, detail_obj);
-                }
-                if (!detail_obj.contains("id")) {
-                    return;
-                }
-                MaaResId id = detail_obj.at("id").as_unsigned_long_long();
+        coro::EventLoop::current()->defer([self, msg_ptr]() {
+            if (auto msg = msg_ptr->is<message::ResourceLoadingMessage>()) {
+                auto id = msg->id;
                 if (!self->actions_.contains(id)) {
                     std::cout << "cannot find id " << id << std::endl;
                     return;
@@ -89,16 +77,21 @@ private:
                     std::cout << "action id " << id << " expired" << std::endl;
                     return;
                 }
-                if (msg_str == MaaMsg_Resource_LoadingCompleted) {
+                if (msg->type == message::ResourceLoadingMessage::Completed) {
                     ptr->status_.resolve(MaaStatus_Success);
                 }
-                else if (msg_str == MaaMsg_Resource_LoadingFailed) {
+                else if (msg->type == message::ResourceLoadingMessage::Failed) {
                     ptr->status_.resolve(MaaStatus_Failed);
                 }
-            });
+            }
+        });
+
+        if (self->user_callback_) {
+            coro::EventLoop::current()->defer([self, msg_ptr]() { self->user_callback_(msg_ptr); });
+        }
     }
 
-    std::function<void(std::string_view msg, const json::object& details)> user_callback_;
+    std::function<void(std::shared_ptr<message::MessageBase>)> user_callback_;
 };
 
 inline MaaStatus ResourceAction::status()

@@ -1,5 +1,6 @@
 #pragma once
 
+#include "MaaFramework/MaaDef.h"
 #include <memory>
 #include <string>
 #include <vector>
@@ -22,14 +23,17 @@ struct MessageBase
 
     virtual ~MessageBase() = default;
 
+    void forward(MaaAPICallback callback, MaaTransparentArg arg)
+    {
+        callback(raw_msg.c_str(), raw_details.c_str(), arg);
+    }
+
     template <typename Msg>
     Msg* is()
     {
         return dynamic_cast<Msg*>(this);
     }
 };
-
-inline std::shared_ptr<MessageBase> parse(MaaStringView msg, MaaStringView details);
 
 struct UnknownMessage : public MessageBase
 {

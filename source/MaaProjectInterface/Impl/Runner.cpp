@@ -24,9 +24,8 @@ bool Runner::run(
     MaaCallbackTransparentArg controller_callback_arg)
 {
     auto run = [&]() -> maa::coro::Promise<bool> {
-        auto maa_handle = maa::Instance::make([&](auto msg, auto detail) {
-            return callback(msg.data(), detail.to_string().c_str(), callback_arg);
-        });
+        auto maa_handle =
+            maa::Instance::make([&](auto msg) { msg->forward(callback, callback_arg); });
 
         std::shared_ptr<maa::Controller> controller_handle;
         if (const auto* p_adb_param =

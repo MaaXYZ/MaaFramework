@@ -149,8 +149,7 @@ public:
         return std::make_shared<Instance>(std::forward<Args>(args)...);
     }
 
-    Instance(
-        std::function<void(std::string_view msg, const json::object& details)> callback = nullptr)
+    Instance(std::function<void(std::shared_ptr<message::MessageBase>)> callback = nullptr)
         : ActionHelper(MaaCreate(&Instance::_callback, this))
         , user_callback_(callback)
     {
@@ -277,26 +276,13 @@ public:
 private:
     static void _callback(MaaStringView msg, MaaStringView details, MaaTransparentArg arg)
     {
-        auto detail_opt = json::parse(details);
-        if (!detail_opt.has_value() || !detail_opt.value().is_object()) {
-            return;
-        }
-        // prevent destroy
+        auto msg_ptr = message::parse(msg, details);
+
         auto self = reinterpret_cast<Instance*>(arg)->shared_from_this();
 
-        coro::EventLoop::current()->defer(
-            [self, msg_str = std::string(msg), detail_val = std::move(detail_opt.value())]() {
-                if (!detail_val.is_object()) {
-                    return;
-                }
-                const auto& detail_obj = detail_val.as_object();
-                if (self->user_callback_) {
-                    self->user_callback_(msg_str, detail_obj);
-                }
-                if (!detail_obj.contains("id")) {
-                    return;
-                }
-                MaaTaskId id = detail_obj.at("id").as_unsigned_long_long();
+        coro::EventLoop::current()->defer([self, msg_ptr]() {
+            if (auto msg = msg_ptr->is<message::InstanceTaskMessage>()) {
+                auto id = msg->id;
                 if (!self->actions_.contains(id)) {
                     std::cout << "cannot find id " << id << std::endl;
                     return;
@@ -306,16 +292,21 @@ private:
                     std::cout << "action id " << id << " expired" << std::endl;
                     return;
                 }
-                if (msg_str == MaaMsg_Task_Completed) {
+                if (msg->type == message::InstanceTaskMessage::Completed) {
                     ptr->status_.resolve(MaaStatus_Success);
                 }
-                else if (msg_str == MaaMsg_Task_Failed) {
+                else if (msg->type == message::InstanceTaskMessage::Failed) {
                     ptr->status_.resolve(MaaStatus_Failed);
                 }
-            });
+            }
+        });
+
+        if (self->user_callback_) {
+            coro::EventLoop::current()->defer([self, msg_ptr]() { self->user_callback_(msg_ptr); });
+        }
     }
 
-    std::function<void(std::string_view msg, const json::object& details)> user_callback_;
+    std::function<void(std::shared_ptr<message::MessageBase>)> user_callback_;
     std::shared_ptr<Controller> controller_;
     std::shared_ptr<Resource> resource_;
     std::map<std::string, std::shared_ptr<CustomRecognizer>> custom_recognizers_;
