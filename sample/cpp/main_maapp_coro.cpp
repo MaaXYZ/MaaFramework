@@ -1,6 +1,3 @@
-#include "MaaFramework/MaaDef.h"
-#include "MaaPP/maa/Alias.hpp"
-#include "MaaPP/maa/Instance.hpp"
 #include <iostream>
 #include <string>
 
