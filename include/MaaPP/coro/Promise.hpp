@@ -1,6 +1,9 @@
 #pragma once
 
+#ifndef MAA_DISABLE_CORO
 #include <coroutine>
+#endif
+
 #include <functional>
 #include <future>
 #include <mutex>
@@ -44,8 +47,10 @@ struct promise_traits<void>
     using then_holder_t = R();
 };
 
+#ifndef MAA_DISABLE_CORO
 template <typename T>
 struct promise_type;
+#endif
 
 }
 
@@ -66,7 +71,9 @@ struct Promise
         std::vector<std::function<then_t>> then_;
         std::mutex mtx_;
 
+#ifndef MAA_DISABLE_CORO
         std::optional<std::coroutine_handle<>> task_;
+#endif
 
         State() {}
 
@@ -75,9 +82,11 @@ struct Promise
 
         ~State()
         {
+#ifndef MAA_DISABLE_CORO
             if (task_.has_value()) {
                 task_.value().destroy();
             }
+#endif
         }
     };
 
@@ -202,6 +211,7 @@ struct Promise
         }
     }
 
+#ifndef MAA_DISABLE_CORO
     using promise_type = details::promise_type<T>;
 
     bool await_ready() const { return resolved(); }
@@ -225,8 +235,10 @@ struct Promise
             return state_->result_.value();
         }
     }
+#endif
 };
 
+#ifndef MAA_DISABLE_CORO
 namespace details
 {
 
@@ -268,6 +280,7 @@ struct promise_type<void> : public __promise_type_base
 };
 
 }
+#endif
 
 template <typename T>
 inline Promise<T> resolve_now(T&& value)
