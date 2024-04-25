@@ -378,7 +378,7 @@ struct merge_any_fulfill
     {
         if (++state->counter == 1) {
             typename State::result_variant result;
-            result.emplace<Index>(std::move(std::get<Index>(state->result)));
+            result.template emplace<Index>(std::move(std::get<Index>(state->result)));
             promise.resolve(std::move(result));
         }
     }
