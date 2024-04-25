@@ -69,7 +69,7 @@ int main([[maybe_unused]] int argc, char** argv)
 {
     coro::EventLoop ev;
 
-    async_main().then([&ev](int code) { ev.defer_stop(code); });
+    ev.stop_after(async_main());
 
     return ev.exec();
 }

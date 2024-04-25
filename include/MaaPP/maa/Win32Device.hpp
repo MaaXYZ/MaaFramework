@@ -23,7 +23,8 @@ struct Win32Type
           MaaWin32ControllerType,
           MaaWin32ControllerType_Touch_Mask,
           MaaWin32ControllerType_Key_Mask,
-          MaaWin32ControllerType_Screencap_Mask>
+          MaaWin32ControllerType_Screencap_Mask,
+          Win32Type>
 {
     using ControllerType::ControllerType;
 };

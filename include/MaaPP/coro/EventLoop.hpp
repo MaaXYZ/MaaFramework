@@ -28,11 +28,6 @@ public:
         pool_.defer(f);
     }
 
-    void defer_stop(int code = 0)
-    {
-        defer([this, code]() { this->stop(code); });
-    }
-
     Promise<void> sleep(std::chrono::seconds times)
     {
         Promise<void> pro;
@@ -69,6 +64,16 @@ public:
     {
         pool_.stop();
         code_ = code;
+    }
+
+    void stop_after(Promise<int> pro)
+    {
+        pro.then([this](int code) { stop(code); });
+    }
+
+    void stop_after(Promise<> pro)
+    {
+        pro.then([this]() { stop(0); });
     }
 
     static EventLoop* current() { return current_; }

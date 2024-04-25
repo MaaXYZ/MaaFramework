@@ -96,7 +96,7 @@ int main()
 
     maa::coro::EventLoop ev;
 
-    async_main().then([&ev]() { ev.defer_stop(); });
+    ev.stop_after(async_main());
 
     ev.exec();
 }

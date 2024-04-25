@@ -20,7 +20,8 @@ struct AdbType
           MaaAdbControllerType,
           MaaAdbControllerType_Touch_Mask,
           MaaAdbControllerType_Key_Mask,
-          MaaAdbControllerType_Screencap_Mask>
+          MaaAdbControllerType_Screencap_Mask,
+          AdbType>
 {
     using ControllerType::ControllerType;
 };
