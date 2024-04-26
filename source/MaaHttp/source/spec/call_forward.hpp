@@ -1,5 +1,9 @@
 #pragma once
 
+#include <string>
+#include <tuple>
+#include <vector>
+
 #include "utils/phony.hpp"
 
 #include "../info.hpp"
@@ -22,3 +26,11 @@ LHGArgOuterState(maa::func_type_MaaSyncContextRunRecognition::_4_out_box, MaaRec
 
 LHGArgOuterState(maa::func_type_MaaToolkitGetWindowClassName::_1_buffer, MaaStringBufferHandle);
 LHGArgOuterState(maa::func_type_MaaToolkitGetWindowWindowName::_1_buffer, MaaStringBufferHandle);
+
+using vec_str_helper_state = std::tuple<std::vector<std::string>, std::vector<MaaStringView>>;
+LHGArgOuterState(
+    maa::func_type_MaaToolkitRegisterCustomRecognizerExecutor::_3_exec_params,
+    vec_str_helper_state);
+LHGArgOuterState(
+    maa::func_type_MaaToolkitRegisterCustomActionExecutor::_3_exec_params,
+    vec_str_helper_state);

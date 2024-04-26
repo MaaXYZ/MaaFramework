@@ -2,6 +2,7 @@
 #include <filesystem>
 #include <iostream>
 #include <string>
+#include <vector>
 
 #ifdef _WIN32
 #include <Windows.h>
@@ -155,5 +156,10 @@ void register_my_recognizer_by_ffi(MaaInstanceHandle maa_handle)
 void register_my_action_by_exec_agent(MaaInstanceHandle maa_handle)
 {
     std::vector<const char*> params = { "sample/python/exec_agent/my_action.py" };
-    MaaToolkitRegisterCustomActionExecutor(maa_handle, "MyAct", "Python.exe", params.data(), params.size());
+    MaaToolkitRegisterCustomActionExecutor(
+        maa_handle,
+        "MyAct",
+        "Python.exe",
+        params.data(),
+        params.size());
 }

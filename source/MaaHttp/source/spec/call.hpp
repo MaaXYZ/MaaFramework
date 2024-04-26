@@ -232,3 +232,31 @@ LHGArgToJsonBegin(maa::func_type_MaaSyncContextRunRecognition, _4_out_box, true)
     LHGArgToJsonMiddle()
     pri_maa::schema_rect(b);
 LHGArgToJsonEnd()
+
+LHGArgHide(maa::func_type_MaaToolkitRegisterCustomRecognizerExecutor::_4_exec_param_size);
+LHGArgFromJsonBegin(maa::func_type_MaaToolkitRegisterCustomRecognizerExecutor, _3_exec_params, true)
+    auto& [vecstr, vecptr] = std::get<index>(state);
+    for (const auto& str : value.as_array()) {
+        vecstr.push_back(str.as_string());
+        vecptr.push_back(const_cast<MaaStringView>(vecstr.back().c_str()));
+    }
+    std::get<index>(arg) = vecptr.data();
+    std::get<maa::func_type_MaaToolkitRegisterCustomRecognizerExecutor::_4_exec_param_size::index>(
+        arg) = vecptr.size();
+    LHGArgFromJsonMiddle()
+    b.type("array").items(schema::Builder().type("string").obj);
+LHGArgFromJsonEnd()
+
+LHGArgHide(maa::func_type_MaaToolkitRegisterCustomActionExecutor::_4_exec_param_size);
+LHGArgFromJsonBegin(maa::func_type_MaaToolkitRegisterCustomActionExecutor, _3_exec_params, true)
+    auto& [vecstr, vecptr] = std::get<index>(state);
+    for (const auto& str : value.as_array()) {
+        vecstr.push_back(str.as_string());
+        vecptr.push_back(const_cast<MaaStringView>(vecstr.back().c_str()));
+    }
+    std::get<index>(arg) = vecptr.data();
+    std::get<maa::func_type_MaaToolkitRegisterCustomActionExecutor::_4_exec_param_size::index>(
+        arg) = vecptr.size();
+    LHGArgFromJsonMiddle()
+    b.type("array").items(schema::Builder().type("string").obj);
+LHGArgFromJsonEnd()
