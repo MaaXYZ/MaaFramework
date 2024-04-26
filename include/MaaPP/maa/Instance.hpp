@@ -9,13 +9,13 @@
 #include <MaaFramework/MaaMsg.h>
 #include <meojson/json.hpp>
 
-#include "MaaFramework/MaaDef.h"
 #include "MaaPP/coro/EventLoop.hpp"
 #include "MaaPP/coro/Promise.hpp"
 #include "MaaPP/maa/Controller.hpp"
 #include "MaaPP/maa/Image.hpp"
 #include "MaaPP/maa/Resource.hpp"
 #include "MaaPP/maa/SyncContext.hpp"
+#include "MaaPP/maa/Type.hpp"
 #include "MaaPP/maa/details/ActionHelper.hpp"
 #include "MaaPP/maa/details/String.hpp"
 
@@ -33,15 +33,11 @@ public:
         return std::make_shared<CustomRecognizer>(std::forward<Args>(args)...);
     }
 
-    struct AnalyzeResult
-    {
-        bool result = false;
-        MaaRect rec_box = { 0, 0, 0, 0 };
-        std::string rec_detail = "";
-    };
-
-    using analyze_func = std::function<coro::Promise<
-        AnalyzeResult>(std::shared_ptr<SyncContext>, details::Image, MaaStringView, MaaStringView)>;
+    using analyze_func = std::function<coro::Promise<AnalyzeResult>(
+        std::shared_ptr<SyncContext>,
+        std::shared_ptr<details::Image>,
+        MaaStringView,
+        MaaStringView)>;
 
     CustomRecognizer(analyze_func analyze)
         : analyze_(analyze)
@@ -59,9 +55,10 @@ private:
         /*out*/ MaaStringBufferHandle out_detail)
     {
         auto self = reinterpret_cast<CustomRecognizer*>(recognizer_arg)->shared_from_this();
+        auto image_handle = details::Image::make(image);
         auto result = self->analyze_(
                               SyncContext::make(sync_context),
-                              image,
+                              image_handle,
                               task_name,
                               custom_recognition_param)
                           .sync_wait();

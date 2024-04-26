@@ -42,10 +42,10 @@ public:
     auto eval(F f) -> Promise<std::invoke_result_t<F>>
     {
         using R = std::invoke_result_t<F>;
-        std::function<R()> func(f);
+        std::function<R()> func(std::move(f));
         auto result_pro = Promise<R>();
 
-        defer([result_pro, func]() {
+        defer([result_pro, func = std::move(func)]() {
             auto result = func();
             EventLoop::current()->defer(
                 [result_pro, result = std::move(result)]() { result_pro.resolve(result); });

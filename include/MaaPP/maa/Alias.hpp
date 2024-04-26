@@ -14,5 +14,6 @@ using ControllerHandle = std::shared_ptr<Controller>;
 using ResourceHandle = std::shared_ptr<Resource>;
 using InstanceHandle = std::shared_ptr<Instance>;
 using SyncContextHandle = std::shared_ptr<SyncContext>;
+using ImageHandle = std::shared_ptr<details::Image>;
 
 }

@@ -11,6 +11,12 @@ namespace maa::details
 class Image
 {
 public:
+    template <typename... Args>
+    static auto make(Args&&... args)
+    {
+        return std::make_shared<Image>(std::forward<Args>(args)...);
+    }
+
     Image()
         : handle_(MaaCreateImageBuffer())
         , own_(true)
@@ -25,29 +31,6 @@ public:
 
     Image(const Image&) = delete;
     Image& operator=(const Image&) = delete;
-
-    Image(Image&& img)
-    {
-        handle_ = img.handle_;
-        own_ = img.own_;
-        img.handle_ = nullptr;
-        img.own_ = false;
-    }
-
-    Image& operator=(Image&& img)
-    {
-        if (this == &img) {
-            return *this;
-        }
-        if (own_) {
-            MaaDestroyImageBuffer(handle_);
-        }
-        handle_ = img.handle_;
-        own_ = img.own_;
-        img.handle_ = nullptr;
-        img.own_ = false;
-        return *this;
-    }
 
     ~Image()
     {

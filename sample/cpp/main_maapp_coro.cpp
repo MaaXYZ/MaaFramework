@@ -96,16 +96,16 @@ coro::Promise<ControllerHandle> create_win32_controller()
     co_return Controller::make(Controller::win32_controller_tag {}, hwnd, type);
 }
 
-coro::Promise<CustomRecognizer::AnalyzeResult> my_analyze(
+coro::Promise<AnalyzeResult> my_analyze(
     SyncContextHandle sync_context,
-    details::Image image,
+    ImageHandle image,
     MaaStringView task_name,
     MaaStringView custom_recognition_param)
 {
     /* Get image */
 
     // Approach 1
-    auto png_data = image.encoded();
+    auto png_data = image->encoded();
     // cv::Mat im = cv::imdecode({ png_data.data(), png_data.size() }, cv::IMREAD_COLOR);
 
     // Approach 2 not supported yet
@@ -114,7 +114,7 @@ coro::Promise<CustomRecognizer::AnalyzeResult> my_analyze(
 
     /* Output recognition result */
 
-    CustomRecognizer::AnalyzeResult result;
+    AnalyzeResult result;
 
     // Step 1: output box
     result.rec_box = { 0, 0, 0, 0 }; // your result
