@@ -84,7 +84,10 @@ struct ProxyController : public CustomControllerAPI
         co_return co_await target_->post_press_key(keycode)->wait() == MaaStatus_Success;
     }
 
-    virtual coro::Promise<bool> input_text(std::string text) override { co_return false; }
+    virtual coro::Promise<bool> input_text([[maybe_unused]] std::string text) override
+    {
+        co_return false;
+    }
 };
 
 }
