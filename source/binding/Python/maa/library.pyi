@@ -153,7 +153,7 @@ class _Framework:
         param: MaaStringView,
     ) -> MaaBool: ...
     @staticmethod
-    def MaaSyncContextRunRecognizer(
+    def MaaSyncContextRunRecognition(
         sync_context: MaaSyncContextHandle,
         image: MaaStringBufferHandle,
         task_name: MaaStringView,
@@ -424,15 +424,17 @@ class _Toolkit:
     def MaaToolkitRegisterCustomRecognizerExecutor(
         handle: MaaInstanceHandle,
         recognizer_name: MaaStringView,
-        recognizer_exec_path: MaaStringView,
-        recognizer_exec_param_json: MaaStringView,
+        exec_path: MaaStringView,
+        exec_params: ctypes.POINTER(MaaStringView),
+        exec_param_size: MaaSize,
     ) -> MaaBool: ...
     @staticmethod
     def MaaToolkitRegisterCustomActionExecutor(
         handle: MaaInstanceHandle,
         action_name: MaaStringView,
-        action_exec_path: MaaStringView,
-        action_ex: MaaStringView,
+        exec_path: MaaStringView,
+        exec_params: ctypes.POINTER(MaaStringView),
+        exec_param_size: MaaSize,
     ) -> MaaBool: ...
     @staticmethod
     def MaaToolkitFindWindow(

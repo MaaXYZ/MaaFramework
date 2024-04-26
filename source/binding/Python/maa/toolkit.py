@@ -65,36 +65,39 @@ class Toolkit:
 
     @classmethod
     def register_recognizer_exec_agent(
-        cls, inst: Instance, name: str, exec_path: Union[str, Path], argv: list
+        cls, inst: Instance, name: str, exec_path: Union[str, Path], argv: List[str]
     ) -> bool:
         """
         Register a recognizer exec agent.
         """
         cls._set_api_properties()
 
-        json_argv = json.dumps(argv)
+        argv_list = [str(arg).encode("utf-8") for arg in argv]
+
         return Library.toolkit.MaaToolkitRegisterCustomRecognizerExecutor(
             inst.c_handle,
             name.encode("utf-8"),
             str(exec_path).encode("utf-8"),
-            json_argv.encode("utf-8"),
+            (MaaStringView * len(argv_list))(*argv_list),
+            len(argv_list),
         )
 
     @classmethod
     def register_action_exec_agent(
-        cls, inst: Instance, name: str, exec_path: Union[str, Path], argv: list
+        cls, inst: Instance, name: str, exec_path: Union[str, Path], argv: List[str]
     ) -> bool:
         """
         Register a action exec agent.
         """
         cls._set_api_properties()
 
-        json_argv = json.dumps(argv)
+        argv_list = [str(arg).encode("utf-8") for arg in argv]
+
         return Library.toolkit.MaaToolkitRegisterCustomActionExecutor(
             inst.c_handle(),
             name.encode("utf-8"),
             str(exec_path).encode("utf-8"),
-            json_argv.encode("utf-8"),
+            (MaaStringView * len(argv_list))(*argv_list),
         )
 
     _api_properties_initialized: bool = False
@@ -218,7 +221,8 @@ class Toolkit:
             MaaInstanceHandle,
             MaaStringView,
             MaaStringView,
-            MaaStringView,
+            ctypes.POINTER(MaaStringView),
+            MaaSize,
         ]
 
         Library.toolkit.MaaToolkitRegisterCustomActionExecutor.restype = MaaBool
@@ -226,7 +230,8 @@ class Toolkit:
             MaaInstanceHandle,
             MaaStringView,
             MaaStringView,
-            MaaStringView,
+            ctypes.POINTER(MaaStringView),
+            MaaSize,
         ]
 
         Library.toolkit.MaaToolkitFindWindow.restype = MaaSize

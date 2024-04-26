@@ -43,7 +43,7 @@ class MyRecognizer(CustomRecognizer):
         }
         context.run_task(entry, param)
         context.run_action(entry, param, [114, 514, 191, 810], "RunAction Detail")
-        rec_res = context.run_recognizer(image, entry, param)
+        rec_res = context.run_recognition(image, entry, param)
         print(f"rec_res: {rec_res}")
         return True, (11, 4, 5, 14), "Hello World!"
 

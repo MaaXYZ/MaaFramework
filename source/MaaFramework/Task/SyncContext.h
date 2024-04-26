@@ -22,7 +22,7 @@ public:
 
 public: // from MaaSyncContextAPI
     virtual bool run_task(std::string task, std::string_view param) override;
-    virtual bool run_recognizer(
+    virtual bool run_recognition(
         cv::Mat image,
         std::string task,
         std::string_view param,

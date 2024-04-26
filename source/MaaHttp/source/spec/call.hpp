@@ -99,7 +99,7 @@ OutputString(maa::func_type_MaaResourceGetTaskList, _1_buffer);
 OutputString(maa::func_type_MaaResourceGetHash, _1_buffer);
 OutputString(maa::func_type_MaaControllerGetUUID, _1_buffer);
 OutputString(maa::func_type_MaaQueryRecognitionDetail, _3_detail_json);
-OutputString(maa::func_type_MaaSyncContextRunRecognizer, _5_out_detail);
+OutputString(maa::func_type_MaaSyncContextRunRecognition, _5_out_detail);
 OutputString(maa::func_type_MaaToolkitGetWindowClassName, _1_buffer);
 OutputString(maa::func_type_MaaToolkitGetWindowWindowName, _1_buffer);
 
@@ -222,11 +222,11 @@ LHGArgToJsonBegin(maa::func_type_MaaQueryRunningDetail, _2_successful, true)
     b.type("boolean");
 LHGArgToJsonEnd()
 
-LHGArgOutput(maa::func_type_MaaSyncContextRunRecognizer::_4_out_box);
-LHGArgPrepareStateBegin(maa::func_type_MaaSyncContextRunRecognizer, _4_out_box)
+LHGArgOutput(maa::func_type_MaaSyncContextRunRecognition::_4_out_box);
+LHGArgPrepareStateBegin(maa::func_type_MaaSyncContextRunRecognition, _4_out_box)
     std::get<arg_tag::index>(arg) = &std::get<arg_tag::index>(state);
 LHGArgPrepareStateEnd()
-LHGArgToJsonBegin(maa::func_type_MaaSyncContextRunRecognizer, _4_out_box, true)
+LHGArgToJsonBegin(maa::func_type_MaaSyncContextRunRecognition, _4_out_box, true)
     auto rec = &std::get<index>(state);
     value = pri_maa::from_rect(rec);
     LHGArgToJsonMiddle()

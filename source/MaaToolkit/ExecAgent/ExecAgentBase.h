@@ -52,7 +52,7 @@ private:
     std::string handle_command(const json::value& cmd);
 
     json::value ctx_run_task(const json::value& cmd);
-    json::value ctx_run_recognizer(const json::value& cmd);
+    json::value ctx_run_recognition(const json::value& cmd);
     json::value ctx_run_action(const json::value& cmd);
     json::value ctx_click(const json::value& cmd);
     json::value ctx_swipe(const json::value& cmd);
