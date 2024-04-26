@@ -78,8 +78,8 @@ bool Runner::run(
 
     for (const auto& [name, executor] : param.recognizer) {
         std::vector<const char*> exec_params;
-        for (const auto& param : executor.exec_param) {
-            exec_params.push_back(param.c_str());
+        for (const auto& p : executor.exec_param) {
+            exec_params.push_back(p.c_str());
         }
         MaaToolkitRegisterCustomRecognizerExecutor(
             maa_handle,
@@ -90,8 +90,8 @@ bool Runner::run(
     }
     for (const auto& [name, executor] : param.action) {
         std::vector<const char*> exec_params;
-        for (const auto& param : executor.exec_param) {
-            exec_params.push_back(param.c_str());
+        for (const auto& p : executor.exec_param) {
+            exec_params.push_back(p.c_str());
         }
         MaaToolkitRegisterCustomActionExecutor(
             maa_handle,
