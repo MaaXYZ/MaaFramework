@@ -142,8 +142,8 @@ std::string ExecAgentBase::handle_command(const json::value& cmd)
 {
     static const std::map<std::string, std::function<json::value(const json::value&)>> cmd_map = {
         { "RunTask", std::bind(&ExecAgentBase::ctx_run_task, this, std::placeholders::_1) },
-        { "RunRecognizer",
-          std::bind(&ExecAgentBase::ctx_run_recognizer, this, std::placeholders::_1) },
+        { "RunRecognition",
+          std::bind(&ExecAgentBase::ctx_run_recognition, this, std::placeholders::_1) },
         { "RunAction", std::bind(&ExecAgentBase::ctx_run_action, this, std::placeholders::_1) },
         { "Click", std::bind(&ExecAgentBase::ctx_click, this, std::placeholders::_1) },
         { "Swipe", std::bind(&ExecAgentBase::ctx_swipe, this, std::placeholders::_1) },
@@ -192,7 +192,7 @@ json::value ExecAgentBase::ctx_run_task(const json::value& cmd)
     return gen_result(ret);
 }
 
-json::value ExecAgentBase::ctx_run_recognizer(const json::value& cmd)
+json::value ExecAgentBase::ctx_run_recognition(const json::value& cmd)
 {
     auto ctx = get_sync_context(cmd);
     if (!ctx) {
@@ -234,7 +234,7 @@ json::value ExecAgentBase::ctx_run_recognizer(const json::value& cmd)
         MaaDestroyStringBuffer(out_detail_buff);
     });
 
-    bool ret = MaaSyncContextRunRecognizer(
+    bool ret = MaaSyncContextRunRecognition(
         ctx,
         image_buff,
         task_name.c_str(),

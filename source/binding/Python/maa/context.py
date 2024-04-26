@@ -36,7 +36,7 @@ class SyncContext:
             )
         )
 
-    def run_recognizer(
+    def run_recognition(
         self,
         image: numpy.ndarray,
         task_name: str,
@@ -58,7 +58,7 @@ class SyncContext:
         rect_buffer = RectBuffer()
         detail_buffer = StringBuffer()
 
-        ret = Library.framework.MaaSyncContextRunRecognizer(
+        ret = Library.framework.MaaSyncContextRunRecognition(
             self._handle,
             image_buffer.c_handle,
             task_name.encode("utf-8"),
@@ -227,8 +227,8 @@ class SyncContext:
             MaaStringView,
         ]
 
-        Library.framework.MaaSyncContextRunRecognizer.restype = MaaBool
-        Library.framework.MaaSyncContextRunRecognizer.argtypes = [
+        Library.framework.MaaSyncContextRunRecognition.restype = MaaBool
+        Library.framework.MaaSyncContextRunRecognition.argtypes = [
             MaaSyncContextHandle,
             MaaStringBufferHandle,
             MaaStringView,

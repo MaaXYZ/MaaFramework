@@ -20,7 +20,7 @@ MaaBool MaaSyncContextRunTask(
     return sync_context->run_task(task_name, param);
 }
 
-MaaBool MaaSyncContextRunRecognizer(
+MaaBool MaaSyncContextRunRecognition(
     MaaSyncContextHandle sync_context,
     MaaImageBufferHandle image,
     MaaStringView task_name,
@@ -39,7 +39,7 @@ MaaBool MaaSyncContextRunRecognizer(
     cv::Rect cvbox {};
     std::string detail;
 
-    bool ret = sync_context->run_recognizer(image->get(), task_name, task_param, cvbox, detail);
+    bool ret = sync_context->run_recognition(image->get(), task_name, task_param, cvbox, detail);
 
     if (out_box) {
         out_box->x = cvbox.x;

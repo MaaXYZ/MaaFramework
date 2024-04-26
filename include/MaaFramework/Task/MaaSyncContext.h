@@ -21,7 +21,7 @@ extern "C"
         MaaSyncContextHandle sync_context,
         MaaStringView task_name,
         MaaStringView param);
-    MAA_FRAMEWORK_API MaaBool MaaSyncContextRunRecognizer(
+    MAA_FRAMEWORK_API MaaBool MaaSyncContextRunRecognition(
         MaaSyncContextHandle sync_context,
         MaaImageBufferHandle image,
         MaaStringView task_name,

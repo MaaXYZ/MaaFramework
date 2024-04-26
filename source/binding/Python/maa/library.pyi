@@ -153,7 +153,7 @@ class _Framework:
         param: MaaStringView,
     ) -> MaaBool: ...
     @staticmethod
-    def MaaSyncContextRunRecognizer(
+    def MaaSyncContextRunRecognition(
         sync_context: MaaSyncContextHandle,
         image: MaaStringBufferHandle,
         task_name: MaaStringView,

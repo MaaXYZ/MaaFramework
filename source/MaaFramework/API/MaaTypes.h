@@ -110,7 +110,7 @@ public:
     virtual ~MaaSyncContextAPI() = default;
 
     virtual bool run_task(std::string task, std::string_view param) = 0;
-    virtual bool run_recognizer(
+    virtual bool run_recognition(
         cv::Mat image,
         std::string task,
         std::string_view param,

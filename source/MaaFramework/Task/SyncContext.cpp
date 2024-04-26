@@ -36,7 +36,7 @@ bool SyncContext::run_task(std::string task, std::string_view param)
     return pipeline.run();
 }
 
-bool SyncContext::run_recognizer(
+bool SyncContext::run_recognition(
     cv::Mat image,
     std::string task,
     std::string_view param,
