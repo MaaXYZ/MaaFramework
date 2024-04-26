@@ -2,7 +2,6 @@
 
 #include <optional>
 #include <string>
-#include <thread>
 #include <vector>
 
 #include <MaaFramework/MaaAPI.h>
@@ -37,10 +36,12 @@ struct AdbDevice
 namespace AdbDeviceFinder
 {
 
-inline coro::Promise<std::shared_ptr<std::vector<AdbDevice>>> find()
+inline coro::Promise<std::shared_ptr<std::vector<AdbDevice>>>
+    find(std::optional<std::string> adb = std::nullopt)
 {
     using return_type = std::shared_ptr<std::vector<AdbDevice>>;
-    if (!MaaToolkitPostFindDevice()) {
+    if (!(adb.has_value() ? MaaToolkitPostFindDeviceWithAdb(adb.value().c_str())
+                          : MaaToolkitPostFindDevice())) {
         return coro::resolve_now<return_type>(nullptr);
     }
     return coro::EventLoop::current()

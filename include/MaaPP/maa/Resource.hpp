@@ -2,16 +2,19 @@
 
 #include <iostream>
 #include <utility>
+#include <vector>
 
 #include <MaaFramework/MaaAPI.h>
 #include <MaaFramework/MaaMsg.h>
 #include <meojson/json.hpp>
 
+#include "MaaFramework/Instance/MaaResource.h"
 #include "MaaPP/coro/EventLoop.hpp"
 #include "MaaPP/coro/Promise.hpp"
 #include "MaaPP/maa/Message.hpp"
 #include "MaaPP/maa/details/ActionHelper.hpp"
 #include "MaaPP/maa/details/Message.hpp"
+#include "MaaPP/maa/details/String.hpp"
 
 namespace maa
 {
@@ -56,6 +59,33 @@ public:
     std::shared_ptr<ResourceAction> post_path(const std::string& path)
     {
         return put_action(MaaResourcePostPath(inst_, path.c_str()));
+    }
+
+    bool clear() { return MaaResourceClear(inst_); }
+
+    bool loaded() { return MaaResourceLoaded(inst_); }
+
+    std::optional<std::string> hash()
+    {
+        details::String buf;
+        if (MaaResourceGetHash(inst_, buf.handle())) {
+            return buf;
+        }
+        else {
+            return std::nullopt;
+        }
+    }
+
+    std::shared_ptr<std::vector<std::string>> task_list()
+    {
+        details::String buf;
+        if (MaaResourceGetTaskList(inst_, buf.handle())) {
+            return std::make_shared<std::vector<std::string>>(
+                json::parse(buf.str()).value().as<std::vector<std::string>>());
+        }
+        else {
+            return nullptr;
+        }
     }
 
 private:
