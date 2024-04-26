@@ -196,7 +196,7 @@ struct InstanceTaskFocusMessage : public InstanceMessage
 
     struct
     {
-        MaaId id;
+        MaaRecoId id;
         RectRefl box;
         std::string detail;
         bool hit;
@@ -204,7 +204,7 @@ struct InstanceTaskFocusMessage : public InstanceMessage
         MEO_JSONIZATION(id, box, detail, hit);
     } recognition;
 
-    MaaId running_id;
+    MaaRunningId running_id;
     MaaStatus status;
 
     MEO_JSONIZATION(
@@ -241,7 +241,7 @@ struct InstanceDebugTaskMessage : public InstanceDebugMessage
 
     struct
     {
-        MaaId id;
+        MaaRecoId id;
         RectRefl box;
         std::string detail;
         bool hit;
@@ -249,7 +249,7 @@ struct InstanceDebugTaskMessage : public InstanceDebugMessage
         MEO_JSONIZATION(id, box, detail, hit);
     } recognition;
 
-    MaaId running_id;
+    MaaRunningId running_id;
     MaaStatus status;
 
     MEO_JSONIZATION(
@@ -277,7 +277,7 @@ struct InstanceDebugRecognitionResultMessage : public InstanceDebugMessage
 
     struct
     {
-        MaaId id;
+        MaaRecoId id;
         RectRefl box;
         std::string detail;
         bool hit;

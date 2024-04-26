@@ -34,10 +34,12 @@ public:
 
     MaaStringBufferHandle handle() const { return handle_; }
 
-    operator std::string() const
+    std::string str() const
     {
         return std::string(MaaGetString(handle_), MaaGetStringSize(handle_));
     }
+
+    operator std::string() const { return str(); }
 
     String& operator=(const std::string& str)
     {

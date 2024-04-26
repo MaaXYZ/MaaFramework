@@ -233,7 +233,7 @@ public:
             argv.begin(),
             argv.end(),
             std::back_insert_iterator<std::vector<MaaStringView>>(argv_view),
-            [](const std::string& str) { return const_cast<MaaStringView>(str.c_str()); });
+            [](const std::string& str) { return str.c_str(); });
         return MaaToolkitRegisterCustomRecognizerExecutor(
             inst_,
             name.c_str(),
@@ -252,7 +252,7 @@ public:
             argv.begin(),
             argv.end(),
             std::back_insert_iterator<std::vector<MaaStringView>>(argv_view),
-            [](const std::string& str) { return const_cast<MaaStringView>(str.c_str()); });
+            [](const std::string& str) { return str.c_str(); });
         return MaaToolkitRegisterCustomActionExecutor(
             inst_,
             name.c_str(),
