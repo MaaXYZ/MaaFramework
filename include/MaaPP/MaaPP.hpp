@@ -10,6 +10,7 @@
 #include "MaaPP/maa/AdbDevice.hpp"
 #include "MaaPP/maa/Alias.hpp"
 #include "MaaPP/maa/Controller.hpp"
+#include "MaaPP/maa/CustomController.hpp"
 #include "MaaPP/maa/Global.hpp"
 #include "MaaPP/maa/Instance.hpp"
 #include "MaaPP/maa/Message.hpp"
@@ -19,3 +20,4 @@
 #include "MaaPP/maa/Win32Device.hpp"
 
 #include "MaaPP/maa/details/Message.hpp"
+#include "MaaPP/maa/details/ProxyController.hpp"

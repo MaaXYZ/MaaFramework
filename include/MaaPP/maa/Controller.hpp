@@ -180,39 +180,39 @@ public:
     }
 
     std::shared_ptr<ControllerAction>
-        swipe(int32_t x1, int32_t y1, int32_t x2, int32_t y2, int32_t duration)
+        post_swipe(int32_t x1, int32_t y1, int32_t x2, int32_t y2, int32_t duration)
     {
         return put_action(MaaControllerPostSwipe(inst_, x1, y1, x2, y2, duration));
     }
 
-    std::shared_ptr<ControllerAction> press_key(int32_t key)
+    std::shared_ptr<ControllerAction> post_press_key(int32_t key)
     {
         return put_action(MaaControllerPostPressKey(inst_, key));
     }
 
-    std::shared_ptr<ControllerAction> press_key(std::string text)
+    std::shared_ptr<ControllerAction> post_press_key(std::string text)
     {
         return put_action(MaaControllerPostInputText(inst_, text.c_str()));
     }
 
     std::shared_ptr<ControllerAction>
-        touch_down(int32_t contact, int32_t x, int32_t y, int32_t pressure)
+        post_touch_down(int32_t contact, int32_t x, int32_t y, int32_t pressure)
     {
         return put_action(MaaControllerPostTouchDown(inst_, contact, x, y, pressure));
     }
 
     std::shared_ptr<ControllerAction>
-        touch_move(int32_t contact, int32_t x, int32_t y, int32_t pressure)
+        post_touch_move(int32_t contact, int32_t x, int32_t y, int32_t pressure)
     {
         return put_action(MaaControllerPostTouchMove(inst_, contact, x, y, pressure));
     }
 
-    std::shared_ptr<ControllerAction> touch_up(int32_t contact)
+    std::shared_ptr<ControllerAction> post_touch_up(int32_t contact)
     {
         return put_action(MaaControllerPostTouchUp(inst_, contact));
     }
 
-    std::shared_ptr<ControllerAction> screencap()
+    std::shared_ptr<ControllerAction> post_screencap()
     {
         return put_action(MaaControllerPostScreencap(inst_));
     }
@@ -222,11 +222,21 @@ public:
     std::shared_ptr<details::Image> image()
     {
         auto img = details::Image::make();
-        if (MaaControllerGetImage(inst_, img->handle())) {
+        if (image(img)) {
             return img;
         }
         else {
             return nullptr;
+        }
+    }
+
+    bool image(std::shared_ptr<details::Image> img)
+    {
+        if (MaaControllerGetImage(inst_, img->handle())) {
+            return true;
+        }
+        else {
+            return false;
         }
     }
 
@@ -323,7 +333,7 @@ private:
     /// Write result to buffer.
     static MaaBool _screencap(MaaTransparentArg handle_arg, /* out */ MaaImageBufferHandle buffer)
     {
-        details::Image buf(buffer);
+        auto buf = details::Image::make(buffer);
         auto self = reinterpret_cast<Controller*>(handle_arg)->shared_from_this();
         return self->custom_ctrl_->screencap(buf).sync_wait();
     }

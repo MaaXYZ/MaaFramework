@@ -1,5 +1,7 @@
 #pragma once
 
+#include <memory>
+
 #include <MaaFramework/MaaAPI.h>
 
 #include "MaaPP/coro/Promise.hpp"
@@ -25,7 +27,7 @@ struct CustomControllerAPI
 
     virtual coro::Promise<bool> stop_app([[maybe_unused]] std::string intent) { co_return false; }
 
-    virtual coro::Promise<bool> screencap([[maybe_unused]] details::Image& image)
+    virtual coro::Promise<bool> screencap([[maybe_unused]] std::shared_ptr<details::Image> image)
     {
         co_return false;
     }

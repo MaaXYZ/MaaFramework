@@ -16,6 +16,17 @@ std::string agent_path =
     R"(/Users/nekosu/Documents/Projects/MAA/MaaFramework/3rdparty/MaaAgentBinary)";
 #endif
 
+struct MyProxy : public maa::details::ProxyController
+{
+    using ProxyController::ProxyController;
+
+    virtual maa::coro::Promise<bool> connect() override
+    {
+        std::cout << "connect called!" << std::endl;
+        co_return co_await ProxyController::connect();
+    }
+};
+
 maa::coro::Promise<> async_main()
 {
 #if !defined(__GNUC__) || defined(__clang__)
@@ -48,13 +59,18 @@ maa::coro::Promise<> async_main()
             ctrl->set_start_entry("com.hypergryph.skland/com.hypergryph.skland.SplashActivity");
             ctrl->set_stop_entry("com.hypergryph.skland");
 
-            status = co_await ctrl->post_connect()->wait();
+            auto proxy_handler = std::make_shared<MyProxy>(ctrl);
+            proxy_handler->width_ = 720;
+            proxy_handler->height_ = 1080;
+            auto proxy_ctrl = maa::Controller::make(proxy_handler);
+
+            status = co_await proxy_ctrl->post_connect()->wait();
             std::cout << "connect finished, status " << status << std::endl;
-            std::cout << "controller uuid: " << ctrl->uuid().value() << std::endl;
+            std::cout << "controller uuid: " << proxy_ctrl->uuid().value() << std::endl;
 
             auto inst = maa::Instance::make();
             inst->bind(res);
-            inst->bind(ctrl);
+            inst->bind(proxy_ctrl);
             std::cout << "instance inited " << inst->inited() << std::endl;
 
             inst->bind(
