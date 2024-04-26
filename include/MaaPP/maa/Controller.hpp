@@ -12,6 +12,7 @@
 #include "MaaPP/coro/EventLoop.hpp"
 #include "MaaPP/coro/Promise.hpp"
 #include "MaaPP/maa/AdbDevice.hpp"
+#include "MaaPP/maa/CustomController.hpp"
 #include "MaaPP/maa/Image.hpp"
 #include "MaaPP/maa/Message.hpp"
 #include "MaaPP/maa/Win32Device.hpp"
@@ -109,6 +110,19 @@ public:
         const Win32Device& device,
         std::function<void(std::shared_ptr<message::MessageBase>)> callback = nullptr)
         : Controller({}, device.hwnd, device.type, callback)
+    {
+    }
+
+    Controller(
+        std::shared_ptr<CustomControllerAPI> api,
+        std::function<void(std::shared_ptr<message::MessageBase>)> callback = nullptr)
+        : ActionHelper(MaaCustomControllerCreate(
+            const_cast<MaaCustomControllerAPI*>(&api_),
+            this,
+            &Controller::_callback,
+            this))
+        , user_callback_(callback)
+        , custom_ctrl_(api)
     {
     }
 
@@ -260,7 +274,128 @@ private:
         }
     }
 
+    static MaaBool _connect(MaaTransparentArg handle_arg)
+    {
+        auto self = reinterpret_cast<Controller*>(handle_arg)->shared_from_this();
+        return self->custom_ctrl_->connect().sync_wait();
+    }
+
+    static MaaBool _request_uuid(MaaTransparentArg handle_arg, MaaStringBufferHandle buffer)
+    {
+        details::String buf(buffer);
+        auto self = reinterpret_cast<Controller*>(handle_arg)->shared_from_this();
+        auto res = self->custom_ctrl_->request_uuid().sync_wait();
+        if (res.has_value()) {
+            buf = res.value();
+            return true;
+        }
+        else {
+            return false;
+        }
+    }
+
+    static MaaBool
+        _request_resolution(MaaTransparentArg handle_arg, int32_t* width, int32_t* height)
+    {
+        auto self = reinterpret_cast<Controller*>(handle_arg)->shared_from_this();
+        auto res = self->custom_ctrl_->request_resolution().sync_wait();
+        if (res.has_value()) {
+            std::tie(*width, *height) = res.value();
+            return true;
+        }
+        else {
+            return false;
+        }
+    }
+
+    static MaaBool _start_app(MaaStringView intent, MaaTransparentArg handle_arg)
+    {
+        auto self = reinterpret_cast<Controller*>(handle_arg)->shared_from_this();
+        return self->custom_ctrl_->start_app(intent).sync_wait();
+    }
+
+    static MaaBool _stop_app(MaaStringView intent, MaaTransparentArg handle_arg)
+    {
+        auto self = reinterpret_cast<Controller*>(handle_arg)->shared_from_this();
+        return self->custom_ctrl_->stop_app(intent).sync_wait();
+    }
+
+    /// Write result to buffer.
+    static MaaBool _screencap(MaaTransparentArg handle_arg, /* out */ MaaImageBufferHandle buffer)
+    {
+        details::Image buf(buffer);
+        auto self = reinterpret_cast<Controller*>(handle_arg)->shared_from_this();
+        return self->custom_ctrl_->screencap(buf).sync_wait();
+    }
+
+    static MaaBool _click(int32_t x, int32_t y, MaaTransparentArg handle_arg)
+    {
+        auto self = reinterpret_cast<Controller*>(handle_arg)->shared_from_this();
+        return self->custom_ctrl_->click(x, y).sync_wait();
+    }
+
+    static MaaBool _swipe(
+        int32_t x1,
+        int32_t y1,
+        int32_t x2,
+        int32_t y2,
+        int32_t duration,
+        MaaTransparentArg handle_arg)
+    {
+        auto self = reinterpret_cast<Controller*>(handle_arg)->shared_from_this();
+        return self->custom_ctrl_->swipe(x1, y1, x2, y2, duration).sync_wait();
+    }
+
+    static MaaBool _touch_down(
+        int32_t contact,
+        int32_t x,
+        int32_t y,
+        int32_t pressure,
+        MaaTransparentArg handle_arg)
+    {
+        auto self = reinterpret_cast<Controller*>(handle_arg)->shared_from_this();
+        return self->custom_ctrl_->touch_down(contact, x, y, pressure).sync_wait();
+    }
+
+    static MaaBool _touch_move(
+        int32_t contact,
+        int32_t x,
+        int32_t y,
+        int32_t pressure,
+        MaaTransparentArg handle_arg)
+    {
+        auto self = reinterpret_cast<Controller*>(handle_arg)->shared_from_this();
+        return self->custom_ctrl_->touch_move(contact, x, y, pressure).sync_wait();
+    }
+
+    static MaaBool _touch_up(int32_t contact, MaaTransparentArg handle_arg)
+    {
+        auto self = reinterpret_cast<Controller*>(handle_arg)->shared_from_this();
+        return self->custom_ctrl_->touch_up(contact).sync_wait();
+    }
+
+    static MaaBool _press_key(int32_t keycode, MaaTransparentArg handle_arg)
+    {
+        auto self = reinterpret_cast<Controller*>(handle_arg)->shared_from_this();
+        return self->custom_ctrl_->press_key(keycode).sync_wait();
+    }
+
+    static MaaBool _input_text(MaaStringView text, MaaTransparentArg handle_arg)
+    {
+        auto self = reinterpret_cast<Controller*>(handle_arg)->shared_from_this();
+        return self->custom_ctrl_->input_text(text).sync_wait();
+    }
+
+    constexpr static MaaCustomControllerAPI api_ = {
+        &Controller::_connect,    &Controller::_request_uuid, &Controller::_request_resolution,
+        &Controller::_start_app,  &Controller::_stop_app,     &Controller::_screencap,
+        &Controller::_click,      &Controller::_swipe,        &Controller::_touch_down,
+        &Controller::_touch_move, &Controller::_touch_up,     &Controller::_press_key,
+        &Controller::_input_text,
+    };
+
     std::function<void(std::shared_ptr<message::MessageBase>)> user_callback_;
+    std::shared_ptr<CustomControllerAPI> custom_ctrl_;
 };
 
 inline MaaStatus ControllerAction::status()
