@@ -11,7 +11,7 @@ extern "C"
         MaaInstanceHandle handle,
         MaaStringView recognizer_name,
         MaaStringView exec_path,
-        MaaStringView* exec_params,
+        const MaaStringView* exec_params,
         MaaSize exec_param_size);
     MAA_TOOLKIT_API MaaBool MaaToolkitUnregisterCustomRecognizerExecutor(
         MaaInstanceHandle handle,
@@ -22,7 +22,7 @@ extern "C"
         MaaInstanceHandle handle,
         MaaStringView action_name,
         MaaStringView exec_path,
-        MaaStringView* exec_params,
+        const MaaStringView* exec_params,
         MaaSize exec_param_size);
     MAA_TOOLKIT_API MaaBool MaaToolkitUnregisterCustomActionExecutor(
         MaaInstanceHandle handle,
