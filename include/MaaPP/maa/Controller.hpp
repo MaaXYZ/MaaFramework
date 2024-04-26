@@ -12,6 +12,7 @@
 #include "MaaPP/coro/EventLoop.hpp"
 #include "MaaPP/coro/Promise.hpp"
 #include "MaaPP/maa/AdbDevice.hpp"
+#include "MaaPP/maa/Image.hpp"
 #include "MaaPP/maa/Message.hpp"
 #include "MaaPP/maa/Win32Device.hpp"
 #include "MaaPP/maa/details/ActionHelper.hpp"
@@ -159,7 +160,61 @@ public:
         return put_action(MaaControllerPostConnection(inst_));
     }
 
+    std::shared_ptr<ControllerAction> post_click(int32_t x, int32_t y)
+    {
+        return put_action(MaaControllerPostClick(inst_, x, y));
+    }
+
+    std::shared_ptr<ControllerAction>
+        swipe(int32_t x1, int32_t y1, int32_t x2, int32_t y2, int32_t duration)
+    {
+        return put_action(MaaControllerPostSwipe(inst_, x1, y1, x2, y2, duration));
+    }
+
+    std::shared_ptr<ControllerAction> press_key(int32_t key)
+    {
+        return put_action(MaaControllerPostPressKey(inst_, key));
+    }
+
+    std::shared_ptr<ControllerAction> press_key(std::string text)
+    {
+        return put_action(MaaControllerPostInputText(inst_, text.c_str()));
+    }
+
+    std::shared_ptr<ControllerAction>
+        touch_down(int32_t contact, int32_t x, int32_t y, int32_t pressure)
+    {
+        return put_action(MaaControllerPostTouchDown(inst_, contact, x, y, pressure));
+    }
+
+    std::shared_ptr<ControllerAction>
+        touch_move(int32_t contact, int32_t x, int32_t y, int32_t pressure)
+    {
+        return put_action(MaaControllerPostTouchMove(inst_, contact, x, y, pressure));
+    }
+
+    std::shared_ptr<ControllerAction> touch_up(int32_t contact)
+    {
+        return put_action(MaaControllerPostTouchUp(inst_, contact));
+    }
+
+    std::shared_ptr<ControllerAction> screencap()
+    {
+        return put_action(MaaControllerPostScreencap(inst_));
+    }
+
     bool connected() { return MaaControllerConnected(inst_); }
+
+    std::shared_ptr<details::Image> image()
+    {
+        auto img = details::Image::make();
+        if (MaaControllerGetImage(inst_, img->handle())) {
+            return img;
+        }
+        else {
+            return nullptr;
+        }
+    }
 
     std::optional<std::string> uuid()
     {
