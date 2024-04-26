@@ -1,6 +1,7 @@
 #pragma once
 
 #include <iostream>
+#include <iterator>
 #include <memory>
 #include <utility>
 
@@ -230,11 +231,18 @@ public:
         const std::string& path,
         const std::vector<std::string>& argv)
     {
+        std::vector<MaaStringView> argv_view;
+        std::transform(
+            argv.begin(),
+            argv.end(),
+            std::back_insert_iterator<std::vector<MaaStringView>>(argv_view),
+            [](const std::string& str) { return const_cast<MaaStringView>(str.c_str()); });
         return MaaToolkitRegisterCustomRecognizerExecutor(
             inst_,
             name.c_str(),
             path.c_str(),
-            json::array(argv).to_string().c_str());
+            argv_view.data(),
+            argv_view.size());
     }
 
     bool bind_action_executor(
@@ -242,11 +250,18 @@ public:
         const std::string& path,
         const std::vector<std::string>& argv)
     {
+        std::vector<MaaStringView> argv_view;
+        std::transform(
+            argv.begin(),
+            argv.end(),
+            std::back_insert_iterator<std::vector<MaaStringView>>(argv_view),
+            [](const std::string& str) { return const_cast<MaaStringView>(str.c_str()); });
         return MaaToolkitRegisterCustomActionExecutor(
             inst_,
             name.c_str(),
             path.c_str(),
-            json::array(argv).to_string().c_str());
+            argv_view.data(),
+            argv_view.size());
     }
 
     bool unbind_recognizer_executor(const std::string& name)
