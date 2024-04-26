@@ -1095,7 +1095,8 @@
       "return": "MaaBool"
     },
     {
-      "argument": [],
+      "argument": [
+      ],
       "name": "MaaCreateStringBuffer",
       "return": "MaaStringBufferHandle"
     },
@@ -1182,7 +1183,8 @@
       "return": "MaaBool"
     },
     {
-      "argument": [],
+      "argument": [
+      ],
       "name": "MaaCreateStringListBuffer",
       "return": "MaaStringListBufferHandle"
     },
@@ -1269,7 +1271,8 @@
       "return": "MaaBool"
     },
     {
-      "argument": [],
+      "argument": [
+      ],
       "name": "MaaCreateImageBuffer",
       "return": "MaaImageBufferHandle"
     },
@@ -1408,7 +1411,8 @@
       "return": "MaaBool"
     },
     {
-      "argument": [],
+      "argument": [
+      ],
       "name": "MaaCreateImageListBuffer",
       "return": "MaaImageListBufferHandle"
     },
@@ -1495,7 +1499,8 @@
       "return": "MaaBool"
     },
     {
-      "argument": [],
+      "argument": [
+      ],
       "name": "MaaCreateRectBuffer",
       "return": "MaaRectHandle"
     },
@@ -1632,7 +1637,8 @@
       "return": "MaaBool"
     },
     {
-      "argument": [],
+      "argument": [
+      ],
       "name": "MaaVersion",
       "return": "MaaStringView"
     },
@@ -1713,17 +1719,20 @@
       "return": "MaaBool"
     },
     {
-      "argument": [],
+      "argument": [
+      ],
       "name": "MaaToolkitInit",
       "return": "MaaBool"
     },
     {
-      "argument": [],
+      "argument": [
+      ],
       "name": "MaaToolkitUninit",
       "return": "MaaBool"
     },
     {
-      "argument": [],
+      "argument": [
+      ],
       "name": "MaaToolkitFindDevice",
       "return": "MaaSize"
     },
@@ -1738,7 +1747,8 @@
       "return": "MaaSize"
     },
     {
-      "argument": [],
+      "argument": [
+      ],
       "name": "MaaToolkitPostFindDevice",
       "return": "MaaBool"
     },
@@ -1753,17 +1763,20 @@
       "return": "MaaBool"
     },
     {
-      "argument": [],
+      "argument": [
+      ],
       "name": "MaaToolkitIsFindDeviceCompleted",
       "return": "MaaBool"
     },
     {
-      "argument": [],
+      "argument": [
+      ],
       "name": "MaaToolkitWaitForFindDeviceToComplete",
       "return": "MaaSize"
     },
     {
-      "argument": [],
+      "argument": [
+      ],
       "name": "MaaToolkitGetDeviceCount",
       "return": "MaaSize"
     },
@@ -1956,17 +1969,20 @@
       "return": "MaaWin32Hwnd"
     },
     {
-      "argument": [],
+      "argument": [
+      ],
       "name": "MaaToolkitGetCursorWindow",
       "return": "MaaWin32Hwnd"
     },
     {
-      "argument": [],
+      "argument": [
+      ],
       "name": "MaaToolkitGetDesktopWindow",
       "return": "MaaWin32Hwnd"
     },
     {
-      "argument": [],
+      "argument": [
+      ],
       "name": "MaaToolkitGetForegroundWindow",
       "return": "MaaWin32Hwnd"
     },
