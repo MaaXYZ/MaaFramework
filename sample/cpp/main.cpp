@@ -154,9 +154,6 @@ void register_my_recognizer_by_ffi(MaaInstanceHandle maa_handle)
 
 void register_my_action_by_exec_agent(MaaInstanceHandle maa_handle)
 {
-    MaaToolkitRegisterCustomActionExecutor(
-        maa_handle,
-        "MyAct",
-        "Python.exe",
-        R"(["sample\\python\\exec_agent\\my_action.py"])");
+    std::vector<const char*> params = { "sample/python/exec_agent/my_action.py" };
+    MaaToolkitRegisterCustomActionExecutor(maa_handle, "MyAct", "Python.exe", params.data(), params.size());
 }

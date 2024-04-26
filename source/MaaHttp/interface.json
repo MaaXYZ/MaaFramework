@@ -1828,12 +1828,16 @@
           "type": "MaaStringView"
         },
         {
-          "name": "recognizer_exec_path",
+          "name": "exec_path",
           "type": "MaaStringView"
         },
         {
-          "name": "recognizer_exec_param_json",
-          "type": "MaaStringView"
+          "name": "exec_params",
+          "type": "MaaStringView *"
+        },
+        {
+          "name": "exec_param_size",
+          "type": "MaaSize"
         }
       ],
       "name": "MaaToolkitRegisterCustomRecognizerExecutor",
@@ -1874,12 +1878,16 @@
           "type": "MaaStringView"
         },
         {
-          "name": "action_exec_path",
+          "name": "exec_path",
           "type": "MaaStringView"
         },
         {
-          "name": "action_exec_param_json",
-          "type": "MaaStringView"
+          "name": "exec_params",
+          "type": "MaaStringView *"
+        },
+        {
+          "name": "exec_param_size",
+          "type": "MaaSize"
         }
       ],
       "name": "MaaToolkitRegisterCustomActionExecutor",

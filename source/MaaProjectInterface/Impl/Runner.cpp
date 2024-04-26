@@ -77,20 +77,28 @@ bool Runner::run(
     });
 
     for (const auto& [name, executor] : param.recognizer) {
-        std::string exec_param = json::array(executor.exec_param).to_string();
+        std::vector<const char*> exec_params;
+        for (const auto& param : executor.exec_param) {
+            exec_params.push_back(param.c_str());
+        }
         MaaToolkitRegisterCustomRecognizerExecutor(
             maa_handle,
             name.c_str(),
             executor.exec_path.c_str(),
-            exec_param.c_str());
+            exec_params.data(),
+            exec_params.size());
     }
     for (const auto& [name, executor] : param.action) {
-        std::string exec_param = json::array(executor.exec_param).to_string();
+        std::vector<const char*> exec_params;
+        for (const auto& param : executor.exec_param) {
+            exec_params.push_back(param.c_str());
+        }
         MaaToolkitRegisterCustomActionExecutor(
             maa_handle,
             name.c_str(),
             executor.exec_path.c_str(),
-            exec_param.c_str());
+            exec_params.data(),
+            exec_params.size());
     }
 
     int64_t tid = 0;
