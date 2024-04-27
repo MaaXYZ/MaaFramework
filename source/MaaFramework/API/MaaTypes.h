@@ -50,6 +50,8 @@ public:
     virtual MaaCtrlId post_swipe(int x1, int y1, int x2, int y2, int duration) = 0;
     virtual MaaCtrlId post_press_key(int keycode) = 0;
     virtual MaaCtrlId post_input_text(std::string_view text) = 0;
+    virtual MaaCtrlId post_start_app(std::string_view intent) = 0;
+    virtual MaaCtrlId post_stop_app(std::string_view intent) = 0;
     virtual MaaCtrlId post_screencap() = 0;
 
     virtual MaaCtrlId post_touch_down(int contact, int x, int y, int pressure) = 0;
