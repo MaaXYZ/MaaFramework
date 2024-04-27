@@ -153,7 +153,13 @@ public:
     {
     }
 
-    ~Instance() { MaaDestroy(inst_); }
+    ~Instance()
+    {
+        MaaDestroy(inst_);
+        for (auto action : actions_ | std::views::values) {
+            action.lock()->wait().sync_wait();
+        }
+    }
 
     std::shared_ptr<InstanceAction>
         post_task(const std::string& task, const json::object& param = json::object {})

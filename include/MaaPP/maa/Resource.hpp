@@ -54,7 +54,13 @@ public:
     {
     }
 
-    ~Resource() { MaaResourceDestroy(inst_); }
+    ~Resource()
+    {
+        MaaResourceDestroy(inst_);
+        for (auto action : actions_ | std::views::values) {
+            action.lock()->wait().sync_wait();
+        }
+    }
 
     std::shared_ptr<ResourceAction> post_path(const std::string& path)
     {

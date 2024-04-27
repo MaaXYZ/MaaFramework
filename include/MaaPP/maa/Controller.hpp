@@ -2,6 +2,7 @@
 
 #include <iostream>
 #include <memory>
+#include <ranges>
 #include <string_view>
 #include <utility>
 
@@ -126,7 +127,13 @@ public:
     {
     }
 
-    ~Controller() { MaaControllerDestroy(inst_); }
+    ~Controller()
+    {
+        MaaControllerDestroy(inst_);
+        for (auto action : actions_ | std::views::values) {
+            action.lock()->wait().sync_wait();
+        }
+    }
 
     bool set_long_side(int width)
     {
