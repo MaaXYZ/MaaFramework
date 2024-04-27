@@ -220,4 +220,16 @@ cv::Mat SyncContext::screencap()
     return ctrl->get_image();
 }
 
+cv::Mat SyncContext::cached_image()
+{
+    LogFunc;
+    auto* ctrl = controller();
+    if (!ctrl) {
+        LogError << "Controller is null";
+        return {};
+    }
+
+    return ctrl->get_image().clone();
+}
+
 MAA_TASK_NS_END
