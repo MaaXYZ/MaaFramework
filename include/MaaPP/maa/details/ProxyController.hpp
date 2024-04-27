@@ -34,12 +34,12 @@ struct ProxyController : public CustomControllerAPI
 
     virtual coro::Promise<bool> start_app([[maybe_unused]] std::string intent) override
     {
-        co_return false;
+        co_return co_await target_->post_start_app(intent)->wait() == MaaStatus_Success;
     }
 
-    virtual coro::Promise<bool> stop_app([[maybe_unused]] std::string intent) override
+    virtual coro::Promise<bool> stop_app(std::string intent) override
     {
-        co_return false;
+        co_return co_await target_->post_stop_app(intent)->wait() == MaaStatus_Success;
     }
 
     virtual coro::Promise<bool> screencap(std::shared_ptr<details::Image> image) override
@@ -84,9 +84,9 @@ struct ProxyController : public CustomControllerAPI
         co_return co_await target_->post_press_key(keycode)->wait() == MaaStatus_Success;
     }
 
-    virtual coro::Promise<bool> input_text([[maybe_unused]] std::string text) override
+    virtual coro::Promise<bool> input_text(std::string text) override
     {
-        co_return false;
+        co_return co_await target_->post_input_text(text)->wait() == MaaStatus_Success;
     }
 };
 

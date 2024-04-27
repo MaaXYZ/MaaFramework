@@ -116,6 +116,12 @@ public:
             [this, image]() { return !!MaaSyncContextScreencap(handle_, image->handle()); });
     }
 
+    maa::coro::Promise<bool> cached_image(std::shared_ptr<details::Image> image)
+    {
+        return maa::coro::EventLoop::current()->eval(
+            [this, image]() { return !!MaaSyncContextCachedImage(handle_, image->handle()); });
+    }
+
 private:
     static auto make(MaaSyncContextHandle handle)
     {

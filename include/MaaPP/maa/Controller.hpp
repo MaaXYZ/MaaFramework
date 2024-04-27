@@ -190,9 +190,19 @@ public:
         return put_action(MaaControllerPostPressKey(inst_, key));
     }
 
-    std::shared_ptr<ControllerAction> post_press_key(std::string text)
+    std::shared_ptr<ControllerAction> post_input_text(std::string text)
     {
         return put_action(MaaControllerPostInputText(inst_, text.c_str()));
+    }
+
+    std::shared_ptr<ControllerAction> post_start_app(std::string intent)
+    {
+        return put_action(MaaControllerPostStartApp(inst_, intent.c_str()));
+    }
+
+    std::shared_ptr<ControllerAction> post_stop_app(std::string intent)
+    {
+        return put_action(MaaControllerPostStopApp(inst_, intent.c_str()));
     }
 
     std::shared_ptr<ControllerAction>
