@@ -35,7 +35,7 @@ MaaBool RegisterExecutor(
     MaaInstanceHandle handle,
     MaaStringView name,
     MaaStringView exec_path,
-    MaaStringView* exec_params,
+    const MaaStringView* exec_params,
     MaaSize exec_param_size)
 {
     LogFunc << VAR(type) << VAR_VOIDP(handle) << VAR(name) << VAR(exec_path) << VAR(exec_params)
@@ -59,7 +59,7 @@ MaaBool RegisterExecutor(
 
     std::vector<std::string> params;
     for (size_t i = 0; i < exec_param_size; ++i) {
-        const char* p = *(exec_params + i);
+        MaaStringView p = *(exec_params + i);
         params.emplace_back(p);
     }
 
@@ -123,7 +123,7 @@ MaaBool MaaToolkitRegisterCustomRecognizerExecutor(
     MaaInstanceHandle handle,
     MaaStringView recognizer_name,
     MaaStringView exec_path,
-    MaaStringView* exec_params,
+    const MaaStringView* exec_params,
     MaaSize exec_param_size)
 {
     return RegisterExecutor(
@@ -151,7 +151,7 @@ MaaBool MaaToolkitRegisterCustomActionExecutor(
     MaaInstanceHandle handle,
     MaaStringView action_name,
     MaaStringView exec_path,
-    MaaStringView* exec_params,
+    const MaaStringView* exec_params,
     MaaSize exec_param_size)
 {
     return RegisterExecutor(

@@ -199,3 +199,22 @@ MaaBool MaaSyncContextScreencap(MaaSyncContextHandle sync_context, MaaImageBuffe
     out_image->set(std::move(img));
     return true;
 }
+
+MaaBool MaaSyncContextCachedImage(MaaSyncContextHandle sync_context, MaaImageBufferHandle out_image)
+{
+    LogFunc << VAR_VOIDP(sync_context) << VAR(out_image);
+
+    if (!sync_context || !out_image) {
+        LogError << "handle is null";
+        return false;
+    }
+
+    auto img = sync_context->cached_image();
+    if (img.empty()) {
+        LogError << "image is empty";
+        return false;
+    }
+
+    out_image->set(std::move(img));
+    return true;
+}

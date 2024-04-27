@@ -42,6 +42,7 @@ public: // from MaaSyncContextAPI
     virtual bool touch_move(int contact, int x, int y, int pressure) override;
     virtual bool touch_up(int contact) override;
     virtual cv::Mat screencap() override;
+    virtual cv::Mat cached_image() override;
 
     virtual MaaInstanceHandle instance() override { return dynamic_cast<MaaInstanceHandle>(inst_); }
 

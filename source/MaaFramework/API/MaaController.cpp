@@ -253,6 +253,30 @@ MaaCtrlId MaaControllerPostInputText(MaaControllerHandle ctrl, MaaStringView tex
     return ctrl->post_input_text(text);
 }
 
+MaaCtrlId MaaControllerPostStartApp(MaaControllerHandle ctrl, MaaStringView intent)
+{
+    LogFunc << VAR_VOIDP(ctrl) << VAR(intent);
+
+    if (!ctrl) {
+        LogError << "handle is null";
+        return MaaInvalidId;
+    }
+
+    return ctrl->post_start_app(intent);
+}
+
+MaaCtrlId MaaControllerPostStopApp(MaaControllerHandle ctrl, MaaStringView intent)
+{
+    LogFunc << VAR_VOIDP(ctrl) << VAR(intent);
+
+    if (!ctrl) {
+        LogError << "handle is null";
+        return MaaInvalidId;
+    }
+
+    return ctrl->post_stop_app(intent);
+}
+
 MaaCtrlId MaaControllerPostTouchDown(
     MaaControllerHandle ctrl,
     int32_t contact,

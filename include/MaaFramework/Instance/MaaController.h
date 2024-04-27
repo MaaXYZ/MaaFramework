@@ -147,6 +147,12 @@ extern "C"
     MAA_FRAMEWORK_API MaaCtrlId
         MaaControllerPostInputText(MaaControllerHandle ctrl, MaaStringView text);
 
+    MAA_FRAMEWORK_API MaaCtrlId
+        MaaControllerPostStartApp(MaaControllerHandle ctrl, MaaStringView intent);
+
+    MAA_FRAMEWORK_API MaaCtrlId
+        MaaControllerPostStopApp(MaaControllerHandle ctrl, MaaStringView intent);
+
     MAA_FRAMEWORK_API MaaCtrlId MaaControllerPostTouchDown(
         MaaControllerHandle ctrl,
         int32_t contact,
