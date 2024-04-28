@@ -7,6 +7,8 @@
  *
  */
 
+// IWYU pragma: private, include <MaaFramework/MaaAPI.h>
+
 #pragma once
 
 #include "../MaaDef.h"
