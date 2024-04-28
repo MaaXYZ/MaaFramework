@@ -154,12 +154,6 @@ jobs:
         with:
           submodules: true
 
-      - name: Install gcc-git
-        if: ${{ matrix.arch == 'x86_64' }}
-        run: |
-          pacman -Sy
-          pacman -S --noconfirm gcc-git
-  
       - name: Install cross compile toolchains
         if: ${{ matrix.arch != 'x86_64' }}
         run: |

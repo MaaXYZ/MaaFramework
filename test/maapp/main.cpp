@@ -29,7 +29,7 @@ struct MyProxy : public maa::details::ProxyController
 
 maa::coro::Promise<> async_main()
 {
-    // #if !defined(__GNUC__) || defined(__clang__)
+#if !defined(__GNUC__) || defined(__clang__)
     // 目前gcc有bug, 无法编译下面这个代码, 会触发ICE
     auto res = maa::Resource::make();
     auto action = res->post_path(res_path);
@@ -102,7 +102,7 @@ maa::coro::Promise<> async_main()
             }
         }
     }
-    // #endif
+#endif
     co_return;
 }
 
