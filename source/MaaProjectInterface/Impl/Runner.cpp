@@ -6,7 +6,6 @@
 #include <meojson/json.hpp>
 
 #include "MaaFramework/MaaAPI.h"
-#include "MaaPP/MaaPP.hpp"
 #include "MaaToolkit/MaaToolkitAPI.h"
 
 #include "Utils/Logger.h"
@@ -23,84 +22,94 @@ bool Runner::run(
     MaaControllerCallback controller_callback,
     MaaCallbackTransparentArg controller_callback_arg)
 {
-    auto run = [&]() -> maa::coro::Promise<bool> {
-        auto maa_handle =
-            maa::Instance::make([&](auto msg) { msg->forward(callback, callback_arg); });
+    auto maa_handle = MaaCreate(callback, callback_arg);
 
-        maa::ControllerHandle controller_handle;
-        if (const auto* p_adb_param =
-                std::get_if<RuntimeParam::AdbParam>(&param.controller_param)) {
-            controller_handle = maa::Controller::make(
-                maa::Controller::adb_controller_tag {},
-                p_adb_param->adb_path,
-                p_adb_param->address,
-                p_adb_param->controller_type,
-                p_adb_param->config,
-                p_adb_param->agent_path,
-                [&](auto msg) { msg->forward(controller_callback, controller_callback_arg); });
+    MaaControllerHandle controller_handle = nullptr;
+    if (const auto* p_adb_param = std::get_if<RuntimeParam::AdbParam>(&param.controller_param)) {
+        controller_handle = MaaAdbControllerCreateV2(
+            p_adb_param->adb_path.c_str(),
+            p_adb_param->address.c_str(),
+            p_adb_param->controller_type,
+            p_adb_param->config.c_str(),
+            p_adb_param->agent_path.c_str(),
+            controller_callback,
+            controller_callback_arg);
+    }
+    else if (
+        const auto* p_win32_param =
+            std::get_if<RuntimeParam::Win32Param>(&param.controller_param)) {
+        controller_handle = MaaWin32ControllerCreate(
+            p_win32_param->hwnd,
+            p_win32_param->controller_type,
+            controller_callback,
+            controller_callback_arg);
+    }
+    else {
+        LogError << "Unknown controller type";
+        return false;
+    }
+
+    auto resource_handle = MaaResourceCreate(resource_callback, resource_callback_arg);
+
+    int64_t cid = MaaControllerPostConnection(controller_handle);
+    int64_t rid = 0;
+    for (const auto& path : param.resource_path) {
+        rid = MaaResourcePostPath(resource_handle, path.c_str());
+    }
+
+    MaaBindResource(maa_handle, resource_handle);
+    MaaBindController(maa_handle, controller_handle);
+
+    if (MaaStatus_Failed == MaaControllerWait(controller_handle, cid)) {
+        LogError << "Failed to connect controller";
+        return false;
+    }
+
+    if (MaaStatus_Failed == MaaResourceWait(resource_handle, rid)) {
+        LogError << "Failed to load resource";
+        return false;
+    }
+
+    OnScopeLeave([&]() {
+        MaaDestroy(maa_handle);
+        MaaResourceDestroy(resource_handle);
+        MaaControllerDestroy(controller_handle);
+    });
+
+    for (const auto& [name, executor] : param.recognizer) {
+        std::vector<const char*> exec_params;
+        for (const auto& p : executor.exec_param) {
+            exec_params.push_back(p.c_str());
         }
-        else if (
-            const auto* p_win32_param =
-                std::get_if<RuntimeParam::Win32Param>(&param.controller_param)) {
-            controller_handle = maa::Controller::make(
-                maa::Controller::win32_controller_tag {},
-                p_win32_param->hwnd,
-                p_win32_param->controller_type,
-                [&](auto msg) { msg->forward(controller_callback, controller_callback_arg); });
+        MaaToolkitRegisterCustomRecognizerExecutor(
+            maa_handle,
+            name.c_str(),
+            executor.exec_path.c_str(),
+            exec_params.data(),
+            exec_params.size());
+    }
+    for (const auto& [name, executor] : param.action) {
+        std::vector<const char*> exec_params;
+        for (const auto& p : executor.exec_param) {
+            exec_params.push_back(p.c_str());
         }
-        else {
-            LogError << "Unknown controller type";
-            co_return false;
-        }
+        MaaToolkitRegisterCustomActionExecutor(
+            maa_handle,
+            name.c_str(),
+            executor.exec_path.c_str(),
+            exec_params.data(),
+            exec_params.size());
+    }
 
-        auto resource_handle = maa::Resource::make(
-            [&](auto msg) { msg->forward(resource_callback, resource_callback_arg); });
+    int64_t tid = 0;
+    for (const auto& task : param.task) {
+        std::string task_param = task.param.to_string();
+        tid = MaaPostTask(maa_handle, task.entry.c_str(), task_param.c_str());
+    }
 
-        auto do_conn = [&]() -> maa::coro::Promise<bool> {
-            co_return co_await controller_handle->post_connect()->wait() == MaaStatus_Failed;
-        };
+    MaaWaitTask(maa_handle, tid);
 
-        auto do_res = [&]() -> maa::coro::Promise<bool> {
-            for (const auto& path : param.resource_path) {
-                if (co_await resource_handle->post_path(path)->wait() == MaaStatus_Failed) {
-                    co_return false;
-                }
-            }
-            co_return true;
-        };
-
-        auto [ctrl_success, res_success] = co_await maa::coro::all(do_conn(), do_res());
-
-        if (!ctrl_success) {
-            LogError << "Failed to connect controller";
-            co_return false;
-        }
-
-        if (!res_success) {
-            LogError << "Failed to load resource";
-            co_return false;
-        }
-
-        for (const auto& [name, executor] : param.recognizer) {
-            maa_handle->bind_recognizer_executor(name, executor.exec_path, executor.exec_param);
-        }
-        for (const auto& [name, executor] : param.action) {
-            maa_handle->bind_action_executor(name, executor.exec_path, executor.exec_param);
-        }
-
-        std::vector<maa::coro::Promise<MaaStatus>> task_results;
-
-        for (const auto& task : param.task) {
-            std::string task_param = task.param.to_string();
-            task_results.push_back(maa_handle->post_task(task.entry, task.param)->wait());
-        }
-
-        co_await maa::coro::all(task_results);
-
-        co_return true;
-    };
-
-    return run().sync_wait();
+    return true;
 }
 
 MAA_PROJECT_INTERFACE_NS_END
