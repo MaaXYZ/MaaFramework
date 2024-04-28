@@ -220,6 +220,11 @@ class _Framework:
         sync_context: MaaSyncContextHandle,
         out_image: MaaImageBufferHandle,
     ) -> MaaBool: ...
+    @staticmethod
+    def MaaSyncContextCachedImage(
+        sync_context: MaaSyncContextHandle,
+        out_image: MaaImageBufferHandle,
+    ) -> MaaBool: ...
 
     # controller.py
     # Contorller

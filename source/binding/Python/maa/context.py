@@ -210,6 +210,20 @@ class SyncContext:
         if not ret:
             return None
         return image_buffer.get()
+    
+    def cached_image(self) -> Optional[numpy.ndarray]:
+        """
+        Sync context cached image.
+
+        :return: image
+        """
+        image_buffer = ImageBuffer()
+        ret = Library.framework.MaaSyncContextCachedImage(
+            self._handle, image_buffer.c_handle
+        )
+        if not ret:
+            return None
+        return image_buffer.get()
 
     _api_properties_initialized: bool = False
 
@@ -301,6 +315,12 @@ class SyncContext:
 
         Library.framework.MaaSyncContextScreencap.restype = MaaBool
         Library.framework.MaaSyncContextScreencap.argtypes = [
+            MaaSyncContextHandle,
+            MaaImageBufferHandle,
+        ]
+
+        Library.framework.MaaSyncContextCachedImage.restype = MaaBool
+        Library.framework.MaaSyncContextCachedImage.argtypes = [
             MaaSyncContextHandle,
             MaaImageBufferHandle,
         ]

@@ -1,6 +1,6 @@
 #pragma once
 
-#include "MaaDef.h"
+#include "MaaDef.h" // IWYU pragma: export
 
 #include "Instance/MaaController.h"
 #include "Instance/MaaCustomController.h"

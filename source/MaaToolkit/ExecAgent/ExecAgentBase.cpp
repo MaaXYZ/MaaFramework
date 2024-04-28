@@ -153,6 +153,7 @@ std::string ExecAgentBase::handle_command(const json::value& cmd)
         { "TouchMove", std::bind(&ExecAgentBase::ctx_touch_move, this, std::placeholders::_1) },
         { "TouchUp", std::bind(&ExecAgentBase::ctx_touch_up, this, std::placeholders::_1) },
         { "Screencap", std::bind(&ExecAgentBase::ctx_screencap, this, std::placeholders::_1) },
+        { "CachedImage", std::bind(&ExecAgentBase::ctx_cached_image, this, std::placeholders::_1) },
     };
 
     auto func_opt = cmd.find<std::string>("function");
@@ -513,6 +514,39 @@ json::value ExecAgentBase::ctx_screencap(const json::value& cmd)
     OnScopeLeave([&]() { MaaDestroyImageBuffer(image_buff); });
 
     bool ret = MaaSyncContextScreencap(ctx, image_buff);
+
+    auto ret_obj = gen_result(ret);
+    if (!ret) {
+        return ret_obj;
+    }
+
+    void* raw_data = MaaGetImageRawData(image_buff);
+    int32_t width = MaaGetImageWidth(image_buff);
+    int32_t height = MaaGetImageHeight(image_buff);
+    int32_t type = MaaGetImageType(image_buff);
+    cv::Mat image(height, width, type, raw_data);
+    if (image.empty()) {
+        LogError << "image empty";
+        return invalid_json();
+    }
+
+    std::string image_arg = arg_cvt_.image_to_arg(image);
+    ret_obj |= { { "image", image_arg } };
+    return ret_obj;
+}
+
+json::value ExecAgentBase::ctx_cached_image(const json::value& cmd)
+{
+    auto ctx = get_sync_context(cmd);
+    if (!ctx) {
+        LogError << "sync context not found";
+        return invalid_json();
+    }
+
+    auto image_buff = MaaCreateImageBuffer();
+    OnScopeLeave([&]() { MaaDestroyImageBuffer(image_buff); });
+
+    bool ret = MaaSyncContextCachedImage(ctx, image_buff);
 
     auto ret_obj = gen_result(ret);
     if (!ret) {
