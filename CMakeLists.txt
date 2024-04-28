@@ -83,6 +83,8 @@ if(BUILD_MAAPP_TESTING)
     add_subdirectory(test/maapp)
 endif()
 
+add_subdirectory(cli)
+
 if(USE_MAADEPS)
     maadeps_install(bin)
 endif()
