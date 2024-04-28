@@ -8,7 +8,6 @@
 #include <MaaFramework/MaaAPI.h>
 #include <MaaToolkit/MaaToolkitAPI.h>
 
-#include "MaaFramework/MaaDef.h"
 #include "MaaPP/coro/EventLoop.hpp"
 #include "MaaPP/coro/Promise.hpp"
 #include "MaaPP/maa/details/ControllerType.hpp"
@@ -27,6 +26,23 @@ struct Win32Type
           Win32Type>
 {
     using ControllerType::ControllerType;
+
+    constexpr static std::tuple<std::string_view, MaaAdbControllerType> touch_index[] = {
+        { "send message", MaaWin32ControllerType_Touch_SendMessage },
+        { "seize", MaaWin32ControllerType_Touch_Seize },
+    };
+
+    constexpr static std::tuple<std::string_view, MaaAdbControllerType> key_index[] = {
+        { "send message", MaaWin32ControllerType_Key_SendMessage },
+        { "seize", MaaWin32ControllerType_Key_Seize },
+    };
+
+    constexpr static std::tuple<std::string_view, MaaAdbControllerType> screencap_index[] = {
+        { "gdi", MaaWin32ControllerType_Screencap_GDI },
+        { "dxgi desktop dup", MaaWin32ControllerType_Screencap_DXGI_DesktopDup },
+        // { "dxgi back buffer", MaaWin32ControllerType_Screencap_DXGI_BackBuffer },
+        { "dxgi frame popl", MaaWin32ControllerType_Screencap_DXGI_FramePool },
+    };
 };
 
 struct Win32Hwnd

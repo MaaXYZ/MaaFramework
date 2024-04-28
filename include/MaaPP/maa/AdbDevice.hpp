@@ -2,6 +2,7 @@
 
 #include <optional>
 #include <string>
+#include <string_view>
 #include <vector>
 
 #include <MaaFramework/MaaAPI.h>
@@ -23,6 +24,30 @@ struct AdbType
           AdbType>
 {
     using ControllerType::ControllerType;
+
+    constexpr static std::tuple<std::string_view, MaaAdbControllerType> touch_index[] = {
+        { "adb", MaaAdbControllerType_Touch_Adb },
+        { "minitouch", MaaAdbControllerType_Touch_MiniTouch },
+        { "maatouch", MaaAdbControllerType_Touch_MaaTouch },
+        { "auto", MaaAdbControllerType_Touch_AutoDetect },
+    };
+
+    constexpr static std::tuple<std::string_view, MaaAdbControllerType> key_index[] = {
+        { "adb", MaaAdbControllerType_Key_Adb },
+        { "maatouch", MaaAdbControllerType_Key_MaaTouch },
+        { "auto", MaaAdbControllerType_Key_AutoDetect },
+    };
+
+    constexpr static std::tuple<std::string_view, MaaAdbControllerType> screencap_index[] = {
+        { "raw by netcat", MaaAdbControllerType_Screencap_RawByNetcat },
+        { "raw with gzip", MaaAdbControllerType_Screencap_RawWithGzip },
+        { "encode", MaaAdbControllerType_Screencap_Encode },
+        { "encode to file", MaaAdbControllerType_Screencap_EncodeToFile },
+        { "minicap direct", MaaAdbControllerType_Screencap_MinicapDirect },
+        { "minicap stream", MaaAdbControllerType_Screencap_MinicapStream },
+        { "fastest lossless", MaaAdbControllerType_Screencap_FastestLosslessWay },
+        { "fastest", MaaAdbControllerType_Screencap_FastestWay },
+    };
 };
 
 struct AdbDevice
