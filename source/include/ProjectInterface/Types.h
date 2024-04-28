@@ -117,9 +117,9 @@ struct InterfaceData
     std::string message;
 
     MEO_JSONIZATION(
-        MEO_OPT controller,
-        MEO_OPT resource,
-        MEO_OPT task,
+        controller,
+        resource,
+        task,
         MEO_OPT option,
         MEO_OPT recognizer,
         MEO_OPT action,
