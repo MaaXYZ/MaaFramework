@@ -62,6 +62,7 @@ private:
     json::value ctx_touch_move(const json::value& cmd);
     json::value ctx_touch_up(const json::value& cmd);
     json::value ctx_screencap(const json::value& cmd);
+    json::value ctx_cached_image(const json::value& cmd);
 
     MaaSyncContextHandle get_sync_context(const json::value& cmd);
     json::value invalid_json();
