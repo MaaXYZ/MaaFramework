@@ -96,21 +96,19 @@ inline auto get_result(MaaSize size)
 inline coro::Promise<std::shared_ptr<std::vector<Win32Hwnd>>>
     find(std::string class_name, std::string window_name)
 {
-    return coro::EventLoop::current()
-        ->eval([class_name, window_name]() {
-            return MaaToolkitFindWindow(class_name.c_str(), window_name.c_str());
-        })
-        .then([](auto size) { return details::get_result(size); });
+    auto size = co_await coro::EventLoop::current()->eval([class_name, window_name]() {
+        return MaaToolkitFindWindow(class_name.c_str(), window_name.c_str());
+    });
+    co_return details::get_result(size);
 }
 
 inline coro::Promise<std::shared_ptr<std::vector<Win32Hwnd>>>
     search(std::string class_name, std::string window_name)
 {
-    return coro::EventLoop::current()
-        ->eval([class_name, window_name]() {
-            return MaaToolkitSearchWindow(class_name.c_str(), window_name.c_str());
-        })
-        .then([](auto size) { return details::get_result(size); });
+    auto size = co_await coro::EventLoop::current()->eval([class_name, window_name]() {
+        return MaaToolkitSearchWindow(class_name.c_str(), window_name.c_str());
+    });
+    co_return details::get_result(size);
 }
 
 inline Win32Hwnd cursor()

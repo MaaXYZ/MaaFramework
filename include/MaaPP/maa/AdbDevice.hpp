@@ -64,26 +64,23 @@ namespace AdbDeviceFinder
 inline coro::Promise<std::shared_ptr<std::vector<AdbDevice>>>
     find(std::optional<std::string> adb = std::nullopt)
 {
-    using return_type = std::shared_ptr<std::vector<AdbDevice>>;
     if (!(adb.has_value() ? MaaToolkitPostFindDeviceWithAdb(adb.value().c_str())
                           : MaaToolkitPostFindDevice())) {
-        return coro::resolve_now<return_type>(nullptr);
+        co_return nullptr;
     }
-    return coro::EventLoop::current()
-        ->eval([]() { return MaaToolkitWaitForFindDeviceToComplete(); })
-        .then([](auto size) {
-            std::vector<AdbDevice> result;
-            result.reserve(size);
-            for (size_t i = 0; i < size; i++) {
-                result.push_back({
-                    MaaToolkitGetDeviceAdbPath(i),
-                    MaaToolkitGetDeviceAdbSerial(i),
-                    MaaToolkitGetDeviceAdbControllerType(i),
-                    MaaToolkitGetDeviceAdbConfig(i),
-                });
-            }
-            return std::make_shared<std::vector<AdbDevice>>(std::move(result));
+    auto size = co_await coro::EventLoop::current()->eval(
+        []() { return MaaToolkitWaitForFindDeviceToComplete(); });
+    std::vector<AdbDevice> result;
+    result.reserve(size);
+    for (size_t i = 0; i < size; i++) {
+        result.push_back({
+            MaaToolkitGetDeviceAdbPath(i),
+            MaaToolkitGetDeviceAdbSerial(i),
+            MaaToolkitGetDeviceAdbControllerType(i),
+            MaaToolkitGetDeviceAdbConfig(i),
         });
+    }
+    co_return std::make_shared<std::vector<AdbDevice>>(std::move(result));
 }
 
 }
