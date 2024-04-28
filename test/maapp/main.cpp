@@ -29,8 +29,6 @@ struct MyProxy : public maa::details::ProxyController
 
 maa::coro::Promise<> async_main()
 {
-#if !defined(__GNUC__) || defined(__clang__)
-    // 目前gcc有bug, 无法编译下面这个代码, 会触发ICE
     auto res = maa::Resource::make();
     auto action = res->post_path(res_path);
     std::cout << "load posted, status " << action->status() << std::endl;
@@ -90,7 +88,11 @@ maa::coro::Promise<> async_main()
             auto task = inst->post_task("Skland");
             std::cout << "post task" << std::endl;
             auto success = co_await maa::coro::any(
-                task->wait().then([](auto) { std::cout << "task finished" << std::endl; }),
+                task->wait()
+#if !defined(__GNUC__) || defined(__clang__)
+                    // 目前gcc有bug, 无法编译下面这个代码, 会触发ICE
+                    .then([](auto) { std::cout << "task finished" << std::endl; }),
+#endif
                 maa::coro::EventLoop::current()->sleep(std::chrono::seconds(30)).then([]() {
                     std::cout << "sleep finished" << std::endl;
                 }));
@@ -102,7 +104,6 @@ maa::coro::Promise<> async_main()
             }
         }
     }
-#endif
     co_return;
 }
 
