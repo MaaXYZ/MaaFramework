@@ -124,54 +124,6 @@ jobs:
           name: MAA-win-${{ matrix.arch }}
           path: "install"
 
-  windows-ninja:
-    needs: meta
-    runs-on: windows-latest
-    strategy:
-      fail-fast: false
-
-    steps:
-      - name: Windows runner hack
-        shell: cmd
-        run: |
-          dir d:\a
-          cd ..
-          mkdir C:\MaaFramework
-          rmdir MaaFramework
-          mklink /j MaaFramework C:\MaaFramework
-          dism /Online /Disable-Feature /FeatureName:Windows-Defender /Remove /NoRestart /Quiet
-          cd .
-
-      - name: Windows runner hack (2)
-        uses: al-cheb/configure-pagefile-action@v1.3
-        with:
-          minimum-size: 16GB
-          maximum-size: 16GB
-          disk-root: "D:"
-
-      - uses: actions/checkout@v3
-        with:
-          submodules: true
-
-      - name: Setup Windows 10 SDK
-        uses: GuillaumeFalourd/setup-windows10-sdk-action@v1.12
-        with:
-          sdk-version: 22621
-
-      - uses: seanmiddleditch/gha-setup-ninja@master
-
-      - name: Bootstrap MaaDeps
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: |
-          python3 tools/maadeps-download.py x64-windows
-
-      - name: Build MAA
-        run: |
-          cmake --preset "NinjaMulti Win32" -DCMAKE_MAKE_PROGRAM="ninja" -DCMAKE_SYSTEM_VERSION="10.0.22621.0" -DMAADEPS_TRIPLET="maa-x86_64-windows" -DMAA_HASH_VERSION='${{ needs.meta.outputs.tag }}'
-
-          cmake --build build --preset "NinjaMulti Win32 - Release" -j 16
-
   ubuntu:
     needs: meta
     runs-on: ubuntu-latest
