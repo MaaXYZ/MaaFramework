@@ -1,8 +1,8 @@
+// IWYU pragma: private, include "MaaPP/MaaPP.hpp"
+
 #pragma once
 
-#include <optional>
 #include <string>
-#include <thread>
 #include <vector>
 
 #include <MaaFramework/MaaAPI.h>
@@ -12,7 +12,6 @@
 #include "MaaPP/coro/Promise.hpp"
 #include "MaaPP/maa/details/ControllerType.hpp"
 #include "MaaPP/maa/details/String.hpp"
-#include "MaaToolkit/Win32/MaaToolkitWin32Window.h"
 
 namespace maa
 {

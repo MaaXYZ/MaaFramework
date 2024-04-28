@@ -1,3 +1,5 @@
+// IWYU pragma: private, include "MaaPP/MaaPP.h"
+
 #pragma once
 
 #include <tuple>

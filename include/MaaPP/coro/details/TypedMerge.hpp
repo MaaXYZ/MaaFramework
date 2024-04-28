@@ -1,3 +1,5 @@
+// IWYU pragma: private, include "MaaPP/MaaPP.hpp"
+
 #pragma once
 
 #include <atomic>

@@ -1,6 +1,9 @@
+// IWYU pragma: private, include "MaaPP/MaaPP.hpp"
+
 #pragma once
 
 #include <iostream>
+#include <ranges>
 #include <utility>
 #include <vector>
 
@@ -8,7 +11,6 @@
 #include <MaaFramework/MaaMsg.h>
 #include <meojson/json.hpp>
 
-#include "MaaFramework/Instance/MaaResource.h"
 #include "MaaPP/coro/EventLoop.hpp"
 #include "MaaPP/coro/Promise.hpp"
 #include "MaaPP/maa/Message.hpp"

@@ -1,6 +1,7 @@
+// IWYU pragma: private, include "MaaPP/MaaPP.hpp"
+
 #pragma once
 
-#include "MaaFramework/Utility/MaaBuffer.h"
 #include <string>
 
 #include <MaaFramework/MaaAPI.h>
