@@ -1,6 +1,6 @@
 #pragma once
 
-#include "MaaToolkitDef.h"
+#include "MaaToolkitDef.h" // IWYU pragma: export
 
 #include "Config/MaaToolkitConfig.h"
 #include "Device/MaaToolkitDevice.h"

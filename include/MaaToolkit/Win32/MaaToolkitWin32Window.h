@@ -1,3 +1,5 @@
+// IWYU pragma: private, include <MaaToolkit/MaaToolkitAPI.h>
+
 #pragma once
 
 #include "../MaaToolkitDef.h"
@@ -27,10 +29,10 @@ extern "C"
      *
      * This function searches the function by regex search. See also MaaToolkitFindWindow().
      *
-     * @param class_name The class name regex of the window. If passed an empty string, class name will
-     * not be filtered.
-     * @param window_name The window name regex of the window. If passed an empty string, window name will
-     * not be filtered.
+     * @param class_name The class name regex of the window. If passed an empty string, class name
+     * will not be filtered.
+     * @param window_name The window name regex of the window. If passed an empty string, window
+     * name will not be filtered.
      * @return MaaSize The number of windows found that match the criteria. To get the corresponding
      * window handle, use MaaToolkitGetWindow().
      */
@@ -75,7 +77,8 @@ extern "C"
      * @param buffer The output buffer.
      * @return MaaBool.
      */
-    MAA_TOOLKIT_API MaaBool MaaToolkitGetWindowClassName(MaaWin32Hwnd hwnd, MaaStringBufferHandle buffer);
+    MAA_TOOLKIT_API MaaBool
+        MaaToolkitGetWindowClassName(MaaWin32Hwnd hwnd, MaaStringBufferHandle buffer);
 
     /**
      * @brief Get the window window name by hwnd.

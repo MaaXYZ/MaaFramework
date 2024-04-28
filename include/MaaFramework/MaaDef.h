@@ -7,9 +7,11 @@
  *
  */
 
+// IWYU pragma: private, include <MaaFramework/MaaAPI.h>
+
 #pragma once
 
-#include "MaaPort.h"
+#include "MaaPort.h" // IWYU pragma: export
 #include <stdint.h>
 
 struct MaaStringBuffer;
@@ -30,7 +32,7 @@ typedef struct MaaInstanceAPI* MaaInstanceHandle;
 
 typedef uint8_t MaaBool;
 typedef uint64_t MaaSize;
-#define MaaNullSize ((MaaSize) - 1)
+#define MaaNullSize ((MaaSize)-1)
 
 typedef const char* MaaStringView;
 

@@ -1,3 +1,5 @@
+// IWYU pragma: private, include <MaaToolkit/MaaToolkitAPI.h>
+
 #pragma once
 
 #include "../MaaToolkitDef.h"
