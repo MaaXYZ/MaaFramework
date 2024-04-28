@@ -158,6 +158,8 @@ jobs:
         with:
           sdk-version: 22621
 
+      - uses: seanmiddleditch/gha-setup-ninja@master
+
       - name: Bootstrap MaaDeps
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -166,7 +168,7 @@ jobs:
 
       - name: Build MAA
         run: |
-          cmake --preset "NinjaMulti Win32" -DCMAKE_SYSTEM_VERSION="10.0.22621.0" -DMAADEPS_TRIPLET="maa-x86_64-windows" -DMAA_HASH_VERSION='${{ needs.meta.outputs.tag }}'
+          cmake --preset "NinjaMulti Win32" -DCMAKE_MAKE_PROGRAM="ninja" -DCMAKE_SYSTEM_VERSION="10.0.22621.0" -DMAADEPS_TRIPLET="maa-x86_64-windows" -DMAA_HASH_VERSION='${{ needs.meta.outputs.tag }}'
 
           cmake --build build --preset "NinjaMulti Win32 - Release" -j 16
 
