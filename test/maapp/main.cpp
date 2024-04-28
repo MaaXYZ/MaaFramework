@@ -89,10 +89,11 @@ maa::coro::Promise<> async_main()
             std::cout << "post task" << std::endl;
             auto success = co_await maa::coro::any(
                 task->wait()
-#if !defined(__GNUC__) || defined(__clang__)
+                    // #if !defined(__GNUC__) || defined(__clang__)
                     // 目前gcc有bug, 无法编译下面这个代码, 会触发ICE
-                    .then([](auto) { std::cout << "task finished" << std::endl; }),
-#endif
+                    .then([](auto) { std::cout << "task finished" << std::endl; })
+                // #endif
+                ,
                 maa::coro::EventLoop::current()->sleep(std::chrono::seconds(30)).then([]() {
                     std::cout << "sleep finished" << std::endl;
                 }));
