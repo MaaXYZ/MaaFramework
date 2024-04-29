@@ -4,6 +4,7 @@
 #include <ranges>
 #include <unordered_set>
 
+#include "EmulatorExtras/MumuExternalRendererIpc.h"
 #include "Encode.h"
 #include "EncodeToFile.h"
 #include "Minicap/MinicapDirect.h"
@@ -24,6 +25,7 @@ ScreencapFastestWay::ScreencapFastestWay(const std::filesystem::path& minicap_pa
         { Method::RawWithGzip, std::make_shared<ScreencapRawWithGzip>() },
         { Method::Encode, std::make_shared<ScreencapEncode>() },
         { Method::EncodeToFileAndPull, std::make_shared<ScreencapEncodeToFileAndPull>() },
+        { Method::MumuExternalRendererIpc, std::make_shared<MumuExternalRendererIpc>() },
     };
 
     if (!lossless) {
@@ -46,10 +48,17 @@ ScreencapFastestWay::ScreencapFastestWay(const std::filesystem::path& minicap_pa
 bool ScreencapFastestWay::parse(const json::value& config)
 {
     bool ret = false;
-    for (auto& unit : units_ | std::views::values) {
-        // TODO: 也许可以考虑删除无法初始化的unit
-        ret |= unit->parse(config);
+
+    for (auto it = units_.begin(); it != units_.end(); ++it) {
+        if (it->second->parse(config)) {
+            ret = true; // 任一成功就行
+            ++it;
+        }
+        else {
+            it = units_.erase(it);
+        }
     }
+
     return ret;
 }
 
@@ -57,8 +66,13 @@ bool ScreencapFastestWay::init(int swidth, int sheight)
 {
     LogFunc;
 
-    for (auto& unit : units_ | std::views::values) {
-        unit->init(swidth, sheight);
+    for (auto it = units_.begin(); it != units_.end(); ++it) {
+        if (it->second->init(swidth, sheight)) {
+            ++it;
+        }
+        else {
+            it = units_.erase(it);
+        }
     }
 
     return speed_test();
@@ -98,6 +112,7 @@ std::optional<cv::Mat> ScreencapFastestWay::screencap()
     case Method::EncodeToFileAndPull:
     case Method::MinicapDirect:
     case Method::MinicapStream:
+    case Method::MumuExternalRendererIpc:
         return units_[method_]->screencap();
     default:
         LogInfo << "Not support:" << method_;
@@ -130,15 +145,18 @@ bool ScreencapFastestWay::speed_test()
         if (kDropFirst.contains(method)) {
             LogDebug << "Testing" << method << "drop first";
             if (!unit->screencap()) {
+                LogDebug << "failed to test";
                 continue;
             }
         }
 
         LogDebug << "Testing" << method;
         auto now = std::chrono::steady_clock::now();
-        if (unit->screencap()) {
-            check(method, now);
+        if (!unit->screencap()) {
+            LogDebug << "failed to test";
+            continue;
         }
+        check(method, now);
     }
 
     if (method_ == Method::UnknownYet) {
@@ -180,6 +198,9 @@ std::ostream& operator<<(std::ostream& os, ScreencapFastestWay::Method m)
         break;
     case ScreencapFastestWay::Method::MinicapStream:
         os << "MinicapStream";
+        break;
+    case ScreencapFastestWay::Method::MumuExternalRendererIpc:
+        os << "MumuExternalRendererIpc";
         break;
     }
     return os;

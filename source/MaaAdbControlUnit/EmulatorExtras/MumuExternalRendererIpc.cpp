@@ -14,6 +14,12 @@ MumuExternalRendererIpc::~MumuExternalRendererIpc()
 
 bool MumuExternalRendererIpc::parse(const json::value& config)
 {
+    bool enable = config.get("extras", "mumu", "enable", false);
+    if (!enable) {
+        LogInfo << "extras.mumu.enable is false, ignore";
+        return false;
+    }
+
     std::string p = config.get("extras", "mumu", "path", "");
     if (p.empty()) {
         LogError << "falied to get mumu path from config: extras.mumu.path";

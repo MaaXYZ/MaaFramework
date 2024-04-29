@@ -183,7 +183,9 @@ json::object DeviceMgrWin32::get_adb_config(const Emulator& emulator, const std:
         auto dir = path_opt->parent_path().parent_path();
 
         json::object cfg;
-        cfg["extras"]["mumu"]["path"] = path_to_utf8_string(dir);
+        auto& mumu_cfg = cfg["extras"]["mumu"];
+        mumu_cfg["enable"] = true;
+        mumu_cfg["path"] = path_to_utf8_string(dir);
         return cfg;
     }
 
