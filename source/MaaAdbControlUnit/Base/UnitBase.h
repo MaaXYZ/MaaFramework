@@ -25,7 +25,7 @@ public:
     virtual void merge_replacement(Replacement argv_replace, bool _override = true);
 
 protected:
-    static bool parse_argv(
+    static bool parse_command(
         const std::string& key,
         const json::value& config,
         const json::array& default_argv,

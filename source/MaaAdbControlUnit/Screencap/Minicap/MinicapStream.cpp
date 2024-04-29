@@ -28,7 +28,7 @@ bool MinicapStream::parse(const json::value& config)
     port_ = config.get("prebuilt", "minicap", "stream", "port", kDefaultPort);
 
     return MinicapBase::parse(config)
-           && parse_argv("ForwardSocket", config, kDefaultForwardArgv, forward_argv_);
+           && parse_command("ForwardSocket", config, kDefaultForwardArgv, forward_argv_);
 }
 
 bool MinicapStream::init(int swidth, int sheight)

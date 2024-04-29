@@ -19,12 +19,12 @@ bool ScreencapRawByNetcat::parse(const json::value& config)
         "{ADB}", "-s", "{ADB_SERIAL}", "shell", "cat /proc/net/arp | grep : ",
     };
 
-    return parse_argv(
+    return parse_command(
                "ScreencapRawByNetcat",
                config,
                kDefaultScreencapRawByNetcatArgv,
                screencap_raw_by_netcat_argv_)
-           && parse_argv("NetcatAddress", config, kDefaultNetcatAddressArgv, netcat_address_argv_);
+           && parse_command("NetcatAddress", config, kDefaultNetcatAddressArgv, netcat_address_argv_);
 }
 
 bool ScreencapRawByNetcat::init(int swidth, int sheight)

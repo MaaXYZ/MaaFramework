@@ -10,7 +10,7 @@ bool ScreencapRawWithGzip::parse(const json::value& config)
         "{ADB}", "-s", "{ADB_SERIAL}", "exec-out", "screencap | gzip -1",
     };
 
-    return parse_argv(
+    return parse_command(
         "ScreencapRawWithGzip",
         config,
         kDefaultScreencapRawWithGzipArgv,
