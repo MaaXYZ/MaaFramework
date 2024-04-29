@@ -36,6 +36,7 @@ private:
 
     static std::filesystem::path get_adb_path(const EmulatorConstantData& emulator, os_pid pid);
     static json::object get_adb_config(const Emulator& emulator, const std::string& adb_serial);
+    static int get_mumu_index(const std::string& adb_serial);
 
     std::vector<Emulator> find_emulators() const;
 

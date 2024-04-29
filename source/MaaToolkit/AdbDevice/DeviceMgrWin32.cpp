@@ -13,6 +13,7 @@
 #include "Utils/IOStream/BoostIO.hpp"
 #include "Utils/Logger.h"
 #include "Utils/Platform.h"
+#include "Utils/StringMisc.hpp"
 
 MAA_TOOLKIT_NS_BEGIN
 
@@ -52,7 +53,7 @@ const std::map<std::string, DeviceMgrWin32::EmulatorConstantData> DeviceMgrWin32
         .adb_candidate_paths = { "vmonitor\\bin\\adb_server.exe"_path,
                                  "MuMu\\emulator\\nemu\\vmonitor\\bin\\adb_server.exe"_path,
                                  "adb.exe"_path },
-        .adb_common_serials = { "127.0.0.1:16384", "127.0.0.1:16416" } } },
+        .adb_common_serials = { "127.0.0.1:16384", "127.0.0.1:16416", "127.0.0.1:16480" } } },
 
     { "MEmuPlayer",
       { .keyword = "MEmu",
@@ -172,8 +173,6 @@ std::filesystem::path DeviceMgrWin32::get_adb_path(const EmulatorConstantData& e
 
 json::object DeviceMgrWin32::get_adb_config(const Emulator& emulator, const std::string& adb_serial)
 {
-    std::ignore = adb_serial;
-
     if (emulator.name == "MuMuPlayer12") {
         // C:\Program Files\Netease\MuMuPlayer-12.0\shell\MuMuPlayer.exe
         auto path_opt = get_process_path(emulator.process.pid);
@@ -184,12 +183,35 @@ json::object DeviceMgrWin32::get_adb_config(const Emulator& emulator, const std:
 
         json::object cfg;
         auto& mumu_cfg = cfg["extras"]["mumu"];
+
         mumu_cfg["enable"] = true;
         mumu_cfg["path"] = path_to_utf8_string(dir);
+        mumu_cfg["index"] = get_mumu_index(adb_serial);
+
+        LogInfo << "Mumu cfg" << VAR(adb_serial) << cfg;
         return cfg;
     }
 
     return {};
+}
+
+int DeviceMgrWin32::get_mumu_index(const std::string& adb_serial)
+{
+    auto sp = string_split(adb_serial, ':');
+    if (sp.size() != 2) {
+        return 0;
+    }
+
+    auto& str_port = sp.at(1);
+    if (str_port.empty()
+        || !std::ranges::all_of(str_port, [](auto c) { return std::isdigit(c); })) {
+        return 0;
+    }
+
+    int port = std::stoi(str_port);
+    int index = (port - 16384) / 32;
+
+    return index;
 }
 
 MAA_TOOLKIT_NS_END
