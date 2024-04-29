@@ -67,7 +67,7 @@ MaaBool my_action_run(
                                } } };
     std::string task_param_str = task_param.to_string();
 
-    MaaSyncContextRunRecognizer(
+    MaaSyncContextRunRecognition(
         sync_context,
         image,
         "MyColorMatching",

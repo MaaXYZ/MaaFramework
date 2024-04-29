@@ -1,12 +1,12 @@
 import ctypes
-import numpy
 import json
-
 from typing import Dict, Optional, Tuple
 
-from .library import Library
-from .define import MaaBool
+import numpy
+
 from .buffer import *
+from .define import MaaBool
+from .library import Library
 
 
 class SyncContext:
@@ -36,7 +36,7 @@ class SyncContext:
             )
         )
 
-    def run_recognizer(
+    def run_recognition(
         self,
         image: numpy.ndarray,
         task_name: str,
@@ -58,7 +58,7 @@ class SyncContext:
         rect_buffer = RectBuffer()
         detail_buffer = StringBuffer()
 
-        ret = Library.framework.MaaSyncContextRunRecognizer(
+        ret = Library.framework.MaaSyncContextRunRecognition(
             self._handle,
             image_buffer.c_handle,
             task_name.encode("utf-8"),
@@ -210,7 +210,20 @@ class SyncContext:
         if not ret:
             return None
         return image_buffer.get()
+    
+    def cached_image(self) -> Optional[numpy.ndarray]:
+        """
+        Sync context cached image.
 
+        :return: image
+        """
+        image_buffer = ImageBuffer()
+        ret = Library.framework.MaaSyncContextCachedImage(
+            self._handle, image_buffer.c_handle
+        )
+        if not ret:
+            return None
+        return image_buffer.get()
 
     _api_properties_initialized: bool = False
 
@@ -228,8 +241,8 @@ class SyncContext:
             MaaStringView,
         ]
 
-        Library.framework.MaaSyncContextRunRecognizer.restype = MaaBool
-        Library.framework.MaaSyncContextRunRecognizer.argtypes = [
+        Library.framework.MaaSyncContextRunRecognition.restype = MaaBool
+        Library.framework.MaaSyncContextRunRecognition.argtypes = [
             MaaSyncContextHandle,
             MaaStringBufferHandle,
             MaaStringView,
@@ -302,6 +315,12 @@ class SyncContext:
 
         Library.framework.MaaSyncContextScreencap.restype = MaaBool
         Library.framework.MaaSyncContextScreencap.argtypes = [
+            MaaSyncContextHandle,
+            MaaImageBufferHandle,
+        ]
+
+        Library.framework.MaaSyncContextCachedImage.restype = MaaBool
+        Library.framework.MaaSyncContextCachedImage.argtypes = [
             MaaSyncContextHandle,
             MaaImageBufferHandle,
         ]

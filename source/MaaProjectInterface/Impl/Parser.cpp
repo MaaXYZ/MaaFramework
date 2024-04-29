@@ -1,7 +1,7 @@
 #include "ProjectInterface/Parser.h"
 
-#include <ranges>
 #include <functional>
+#include <ranges>
 
 #include "Utils/Logger.h"
 

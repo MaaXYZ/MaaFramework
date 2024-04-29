@@ -107,10 +107,10 @@ _请留意，仅当您准备开发 MaaFramework 本身时，才需要阅读本�
   A massively spiffy yet delicately unobtrusive compression library.
 - [gzip-hpp](https://github.com/mapbox/gzip-hpp)  
   Gzip header-only C++ library
-- [protobuf](https://github.com/protocolbuffers/protobuf)  
-  Protocol Buffers - Google's data interchange format
-- [grpc](https://github.com/grpc/grpc)  
-  The C based gRPC (C++, Python, Ruby, Objective-C, PHP, C#)
+- ~~[protobuf](https://github.com/protocolbuffers/protobuf)~~  
+  ~~Protocol Buffers - Google's data interchange format~~
+- ~~[grpc](https://github.com/grpc/grpc)~~  
+  ~~The C based gRPC (C++, Python, Ruby, Objective-C, PHP, C#)~~
 - [thrift](https://github.com/apache/thrift)  
   Apache Thrift
 

@@ -1,5 +1,5 @@
-from ctypes import c_int32
 import pathlib
+from ctypes import c_int32
 from typing import Optional, Union
 
 from .define import *
@@ -13,6 +13,20 @@ class _Framework:
         key: MaaGlobalOption,
         value: MaaOptionValue,
         val_size: MaaOptionValueSize,
+    ) -> MaaBool: ...
+    @staticmethod
+    def MaaQueryRecognitionDetail(
+        reco_id: MaaRecoId,
+        hit: ctypes.POINTER(MaaBool),
+        hit_box: MaaRectHandle,
+        detail_json: MaaStringBufferHandle,
+        draws: MaaImageListBufferHandle,
+    ) -> MaaBool: ...
+    @staticmethod
+    def MaaQueryRunningDetail(
+        run_id: MaaRunningId,
+        reco_id: ctypes.POINTER(MaaRecoId),
+        successful: ctypes.POINTER(MaaBool),
     ) -> MaaBool: ...
 
     # buffer.py
@@ -37,6 +51,30 @@ class _Framework:
         str: MaaStringView,
         size: MaaSize,
     ) -> MaaBool: ...
+    # StringListBuffer
+    @staticmethod
+    def MaaCreateStringListBuffer() -> MaaStringListBufferHandle: ...
+    @staticmethod
+    def MaaDestroyStringListBuffer(handle: MaaStringListBufferHandle) -> None: ...
+    @staticmethod
+    def MaaIsStringListEmpty(handle: MaaStringListBufferHandle) -> MaaBool: ...
+    @staticmethod
+    def MaaClearStringList(handle: MaaStringListBufferHandle) -> MaaBool: ...
+    @staticmethod
+    def MaaGetStringListSize(handle: MaaStringListBufferHandle) -> MaaSize: ...
+    @staticmethod
+    def MaaGetStringListAt(
+        handle: MaaStringListBufferHandle, index: MaaSize
+    ) -> MaaStringView: ...
+    @staticmethod
+    def MaaStringListAppend(
+        handle: MaaStringListBufferHandle, value: MaaStringBufferHandle
+    ) -> MaaBool: ...
+    @staticmethod
+    def MaaStringListRemove(
+        handle: MaaStringListBufferHandle, index: MaaSize
+    ) -> MaaBool: ...
+
     # ImageBuffer
     @staticmethod
     def MaaCreateImageBuffer() -> MaaCreateImageBuffer: ...
@@ -83,6 +121,29 @@ class _Framework:
         w: c_int32,
         h: c_int32,
     ) -> MaaBool: ...
+    # ImageListBuffer
+    @staticmethod
+    def MaaCreateImageListBuffer() -> MaaImageListBufferHandle: ...
+    @staticmethod
+    def MaaDestroyImageListBuffer(handle: MaaImageListBufferHandle) -> None: ...
+    @staticmethod
+    def MaaIsImageListEmpty(handle: MaaImageListBufferHandle) -> MaaBool: ...
+    @staticmethod
+    def MaaClearImageList(handle: MaaImageListBufferHandle) -> MaaBool: ...
+    @staticmethod
+    def MaaGetImageListSize(handle: MaaImageListBufferHandle) -> MaaSize: ...
+    @staticmethod
+    def MaaGetImageListAt(
+        handle: MaaImageListBufferHandle, index: MaaSize
+    ) -> MaaImageBufferHandle: ...
+    @staticmethod
+    def MaaImageListAppend(
+        handle: MaaImageListBufferHandle, value: MaaImageBufferHandle
+    ) -> MaaBool: ...
+    @staticmethod
+    def MaaImageListRemove(
+        handle: MaaImageListBufferHandle, index: MaaSize
+    ) -> MaaBool: ...
 
     # context.py
     @staticmethod
@@ -92,7 +153,7 @@ class _Framework:
         param: MaaStringView,
     ) -> MaaBool: ...
     @staticmethod
-    def MaaSyncContextRunRecognizer(
+    def MaaSyncContextRunRecognition(
         sync_context: MaaSyncContextHandle,
         image: MaaStringBufferHandle,
         task_name: MaaStringView,
@@ -156,6 +217,11 @@ class _Framework:
     ) -> MaaBool: ...
     @staticmethod
     def MaaSyncContextScreencap(
+        sync_context: MaaSyncContextHandle,
+        out_image: MaaImageBufferHandle,
+    ) -> MaaBool: ...
+    @staticmethod
+    def MaaSyncContextCachedImage(
         sync_context: MaaSyncContextHandle,
         out_image: MaaImageBufferHandle,
     ) -> MaaBool: ...
@@ -363,15 +429,17 @@ class _Toolkit:
     def MaaToolkitRegisterCustomRecognizerExecutor(
         handle: MaaInstanceHandle,
         recognizer_name: MaaStringView,
-        recognizer_exec_path: MaaStringView,
-        recognizer_exec_param_json: MaaStringView,
+        exec_path: MaaStringView,
+        exec_params: ctypes.POINTER(MaaStringView),
+        exec_param_size: MaaSize,
     ) -> MaaBool: ...
     @staticmethod
     def MaaToolkitRegisterCustomActionExecutor(
         handle: MaaInstanceHandle,
         action_name: MaaStringView,
-        action_exec_path: MaaStringView,
-        action_ex: MaaStringView,
+        exec_path: MaaStringView,
+        exec_params: ctypes.POINTER(MaaStringView),
+        exec_param_size: MaaSize,
     ) -> MaaBool: ...
     @staticmethod
     def MaaToolkitFindWindow(
@@ -383,6 +451,14 @@ class _Toolkit:
     ) -> MaaSize: ...
     @staticmethod
     def MaaToolkitGetWindow(index: MaaSize) -> MaaWin32Hwnd: ...
+    @staticmethod
+    def MaaToolkitGetWindowClassName(
+        hwnd: MaaWin32Hwnd, buffer: MaaStringBufferHandle
+    ) -> MaaBool: ...
+    @staticmethod
+    def MaaToolkitGetWindowWindowName(
+        hwnd: MaaWin32Hwnd, buffer: MaaStringBufferHandle
+    ) -> MaaBool: ...
     @staticmethod
     def MaaToolkitGetCursorWindow() -> MaaWin32Hwnd: ...
     @staticmethod

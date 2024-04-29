@@ -4,11 +4,14 @@
 #include <ostream>
 #include <vector>
 
-#include <onnxruntime/onnxruntime_cxx_api.h>
-
 #include "Utils/JsonExt.hpp"
 #include "VisionBase.h"
 #include "VisionTypes.h"
+
+namespace Ort
+{
+struct Session;
+}
 
 MAA_VISION_NS_BEGIN
 
@@ -34,6 +37,7 @@ public:
         NeuralNetworkClassifierParam param,
         std::shared_ptr<Ort::Session> session,
         std::string name = "");
+
 private:
     void analyze();
 

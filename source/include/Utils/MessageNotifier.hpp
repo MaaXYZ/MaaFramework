@@ -2,8 +2,8 @@
 
 #include <memory>
 
-#include "Logger.h"
-#include "NonCopyable.hpp"
+#include "Utils/Logger.h"
+#include "Utils/NonCopyable.hpp"
 
 MAA_NS_BEGIN
 
@@ -25,7 +25,9 @@ public:
         if (!callback_) {
             return;
         }
-        callback_(msg.data(), details.to_string().c_str(), callback_arg_);
+
+        const std::string str_detail = details.to_string();
+        callback_(msg.data(), str_detail.c_str(), callback_arg_);
     }
 
 private:

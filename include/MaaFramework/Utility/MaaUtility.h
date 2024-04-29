@@ -7,6 +7,8 @@
  *
  */
 
+// IWYU pragma: private, include <MaaFramework/MaaAPI.h>
+
 #pragma once
 
 #include "../MaaDef.h"
@@ -42,7 +44,7 @@ extern "C"
         MaaRecoId reco_id,
         /* out */ MaaBool* hit,
         /* out */ MaaRectHandle hit_box,
-        /* out */ MaaStringBufferHandle hit_detail,
+        /* out */ MaaStringBufferHandle detail_json,
         /* out */ MaaImageListBufferHandle draws);
 
     MAA_FRAMEWORK_API MaaBool MaaQueryRunningDetail(

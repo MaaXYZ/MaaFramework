@@ -35,15 +35,21 @@ MaaBool RegisterExecutor(
     MaaInstanceHandle handle,
     MaaStringView name,
     MaaStringView exec_path,
-    MaaStringView exec_param_json)
+    const MaaStringView* exec_params,
+    MaaSize exec_param_size)
 {
-    LogFunc << VAR(type) << VAR_VOIDP(handle) << VAR(name) << VAR(exec_path)
-            << VAR(exec_param_json);
+    LogFunc << VAR(type) << VAR_VOIDP(handle) << VAR(name) << VAR(exec_path) << VAR(exec_params)
+            << VAR(exec_param_size);
 
     if (!handle) {
         LogError << "handle is null";
         return false;
     }
+    if (!exec_params && exec_param_size != 0) {
+        LogError << "invalid exec params";
+        return false;
+    }
+
     if (std::string_view(name).empty()) {
         LogError << "name is empty";
         return false;
@@ -51,16 +57,11 @@ MaaBool RegisterExecutor(
 
     auto path = MAA_NS::path(exec_path);
 
-    auto params_opt = json::parse(exec_param_json);
-    if (!params_opt) {
-        LogError << "exec param json parse failed:" << exec_param_json;
-        return false;
+    std::vector<std::string> params;
+    for (size_t i = 0; i < exec_param_size; ++i) {
+        MaaStringView p = *(exec_params + i);
+        params.emplace_back(p);
     }
-    if (!params_opt->is<std::vector<std::string>>()) {
-        LogError << "exec param json is not array of string:" << exec_param_json;
-        return false;
-    }
-    auto params = params_opt->as<std::vector<std::string>>();
 
     switch (type) {
     case ExecutorType::Recognizer:
@@ -98,18 +99,40 @@ MaaBool UnregisterExecutor(ExecutorType type, MaaInstanceHandle handle, MaaStrin
     return false;
 }
 
+MaaBool ClearExecutor(ExecutorType type, MaaInstanceHandle handle)
+{
+    LogFunc << VAR(type) << VAR_VOIDP(handle);
+
+    if (!handle) {
+        LogError << "handle is null";
+        return false;
+    }
+
+    switch (type) {
+    case ExecutorType::Recognizer:
+        return RecognizerExecAgent::get_instance().unregister_executor(handle, "");
+
+    case ExecutorType::Action:
+        return ActionExecAgent::get_instance().unregister_executor(handle, "");
+    }
+
+    return false;
+}
+
 MaaBool MaaToolkitRegisterCustomRecognizerExecutor(
     MaaInstanceHandle handle,
     MaaStringView recognizer_name,
-    MaaStringView recognizer_exec_path,
-    MaaStringView recognizer_exec_param_json)
+    MaaStringView exec_path,
+    const MaaStringView* exec_params,
+    MaaSize exec_param_size)
 {
     return RegisterExecutor(
         ExecutorType::Recognizer,
         handle,
         recognizer_name,
-        recognizer_exec_path,
-        recognizer_exec_param_json);
+        exec_path,
+        exec_params,
+        exec_param_size);
 }
 
 MaaBool MaaToolkitUnregisterCustomRecognizerExecutor(
@@ -119,22 +142,34 @@ MaaBool MaaToolkitUnregisterCustomRecognizerExecutor(
     return UnregisterExecutor(ExecutorType::Recognizer, handle, recognizer_name);
 }
 
+MaaBool MaaToolkitClearCustomRecognizerExecutor(MaaInstanceHandle handle)
+{
+    return ClearExecutor(ExecutorType::Recognizer, handle);
+}
+
 MaaBool MaaToolkitRegisterCustomActionExecutor(
     MaaInstanceHandle handle,
     MaaStringView action_name,
-    MaaStringView action_exec_path,
-    MaaStringView action_exec_param_json)
+    MaaStringView exec_path,
+    const MaaStringView* exec_params,
+    MaaSize exec_param_size)
 {
     return RegisterExecutor(
         ExecutorType::Action,
         handle,
         action_name,
-        action_exec_path,
-        action_exec_param_json);
+        exec_path,
+        exec_params,
+        exec_param_size);
 }
 
 MaaBool
     MaaToolkitUnregisterCustomActionExecutor(MaaInstanceHandle handle, MaaStringView action_name)
 {
     return UnregisterExecutor(ExecutorType::Action, handle, action_name);
+}
+
+MaaBool MaaToolkitClearCustomActionExecutor(MaaInstanceHandle handle)
+{
+    return ClearExecutor(ExecutorType::Action, handle);
 }

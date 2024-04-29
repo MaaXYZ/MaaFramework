@@ -1,5 +1,6 @@
 #include "MaaFramework/Task/MaaSyncContext.h"
 
+#include "API/MaaTypes.h"
 #include "Buffer/ImageBuffer.hpp"
 #include "Buffer/StringBuffer.hpp"
 #include "Utils/Logger.h"
@@ -19,7 +20,7 @@ MaaBool MaaSyncContextRunTask(
     return sync_context->run_task(task_name, param);
 }
 
-MaaBool MaaSyncContextRunRecognizer(
+MaaBool MaaSyncContextRunRecognition(
     MaaSyncContextHandle sync_context,
     MaaImageBufferHandle image,
     MaaStringView task_name,
@@ -38,7 +39,7 @@ MaaBool MaaSyncContextRunRecognizer(
     cv::Rect cvbox {};
     std::string detail;
 
-    bool ret = sync_context->run_recognizer(image->get(), task_name, task_param, cvbox, detail);
+    bool ret = sync_context->run_recognition(image->get(), task_name, task_param, cvbox, detail);
 
     if (out_box) {
         out_box->x = cvbox.x;
@@ -190,6 +191,25 @@ MaaBool MaaSyncContextScreencap(MaaSyncContextHandle sync_context, MaaImageBuffe
     }
 
     auto img = sync_context->screencap();
+    if (img.empty()) {
+        LogError << "image is empty";
+        return false;
+    }
+
+    out_image->set(std::move(img));
+    return true;
+}
+
+MaaBool MaaSyncContextCachedImage(MaaSyncContextHandle sync_context, MaaImageBufferHandle out_image)
+{
+    LogFunc << VAR_VOIDP(sync_context) << VAR(out_image);
+
+    if (!sync_context || !out_image) {
+        LogError << "handle is null";
+        return false;
+    }
+
+    auto img = sync_context->cached_image();
     if (img.empty()) {
         LogError << "image is empty";
         return false;

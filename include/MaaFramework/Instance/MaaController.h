@@ -8,6 +8,8 @@
  *
  */
 
+// IWYU pragma: private, include <MaaFramework/MaaAPI.h>
+
 #pragma once
 
 #include "../MaaDef.h"
@@ -24,22 +26,6 @@ extern "C"
         MaaStringView address,
         MaaAdbControllerType type,
         MaaStringView config,
-        MaaControllerCallback callback,
-        MaaCallbackTransparentArg callback_arg);
-
-    /**
-     * @brief Create a win32 controller instance.
-     *
-     * @param hWnd The win32 window handle to control. This can be retrieved by helpers provided in
-     * MaaToolkitWin32Window.h.
-     * @param type The type of the win32 controller. See #MaaWin32ControllerTypeEnum.
-     * @param callback The callback function. See ::MaaAPICallback.
-     * @param callback_arg The callback arg that will be passed to the callback function.
-     * @return MaaControllerHandle The handle of the created controller instance.
-     */
-    MAA_FRAMEWORK_API MaaControllerHandle MaaWin32ControllerCreate(
-        MaaWin32Hwnd hWnd,
-        MaaWin32ControllerType type,
         MaaControllerCallback callback,
         MaaCallbackTransparentArg callback_arg);
 
@@ -61,6 +47,22 @@ extern "C"
         MaaAdbControllerType type,
         MaaStringView config,
         MaaStringView agent_path,
+        MaaControllerCallback callback,
+        MaaCallbackTransparentArg callback_arg);
+
+    /**
+     * @brief Create a win32 controller instance.
+     *
+     * @param hWnd The win32 window handle to control. This can be retrieved by helpers provided in
+     * MaaToolkitWin32Window.h.
+     * @param type The type of the win32 controller. See #MaaWin32ControllerTypeEnum.
+     * @param callback The callback function. See ::MaaAPICallback.
+     * @param callback_arg The callback arg that will be passed to the callback function.
+     * @return MaaControllerHandle The handle of the created controller instance.
+     */
+    MAA_FRAMEWORK_API MaaControllerHandle MaaWin32ControllerCreate(
+        MaaWin32Hwnd hWnd,
+        MaaWin32ControllerType type,
         MaaControllerCallback callback,
         MaaCallbackTransparentArg callback_arg);
 
@@ -146,6 +148,12 @@ extern "C"
 
     MAA_FRAMEWORK_API MaaCtrlId
         MaaControllerPostInputText(MaaControllerHandle ctrl, MaaStringView text);
+
+    MAA_FRAMEWORK_API MaaCtrlId
+        MaaControllerPostStartApp(MaaControllerHandle ctrl, MaaStringView intent);
+
+    MAA_FRAMEWORK_API MaaCtrlId
+        MaaControllerPostStopApp(MaaControllerHandle ctrl, MaaStringView intent);
 
     MAA_FRAMEWORK_API MaaCtrlId MaaControllerPostTouchDown(
         MaaControllerHandle ctrl,

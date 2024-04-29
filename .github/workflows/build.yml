@@ -225,7 +225,7 @@ jobs:
 
       - name: Install compiler
         run: |
-          brew install llvm
+          brew install llvm@17
         # 17
 
       - name: Bootstrap MaaDeps
@@ -237,8 +237,8 @@ jobs:
       - name: Build MAA for x86_64
         if: ${{ matrix.arch == 'x86_64' }}
         env:
-          CC: "/usr/local/opt/llvm/bin/clang"
-          CXX: "/usr/local/opt/llvm/bin/clang++"
+          CC: "/usr/local/opt/llvm@17/bin/clang"
+          CXX: "/usr/local/opt/llvm@17/bin/clang++"
         run: |
           cmake --preset 'NinjaMulti' \
             -DMAADEPS_TRIPLET='maa-${{ matrix.arch == 'x86_64' && 'x64' || 'arm64' }}-osx' \
@@ -249,8 +249,8 @@ jobs:
       - name: Build MAA for aarch64
         if: ${{ matrix.arch == 'aarch64' }}
         env:
-          CC: "/opt/homebrew/opt/llvm/bin/clang"
-          CXX: "/opt/homebrew/opt/llvm/bin/clang++"
+          CC: "/opt/homebrew/opt/llvm@17/bin/clang"
+          CXX: "/opt/homebrew/opt/llvm@17/bin/clang++"
         run: |
           cmake --preset 'NinjaMulti' \
             -DMAADEPS_TRIPLET='maa-${{ matrix.arch == 'x86_64' && 'x64' || 'arm64' }}-osx' \
@@ -305,9 +305,31 @@ jobs:
           name: MAA-nupkgs
           path: "tools/nupkgs/*.nupkg"
 
+  pip_pack:
+    needs: [meta, windows, ubuntu, macos]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/download-artifact@v3
+        with:
+          path: assets
+
+      - name: Pip Pack
+        working-directory: tools/pip_pack
+        run: |
+          tag=${{ needs.meta.outputs.tag }}
+          pip install --upgrade wheel build tomlkit
+          python pip_pack.py $tag
+
+      - uses: actions/upload-artifact@v3
+        if: always()
+        with:
+          name: MAA-pip-pkgs
+          path: "tools/pip_pack/wheel/*.whl"
+
   release:
     if: ${{ needs.meta.outputs.is_release == 'true' }}
-    needs: [meta, windows, ubuntu, macos, nuget_pack]
+    needs: [meta, windows, ubuntu, macos, nuget_pack, pip_pack]
     runs-on: ubuntu-latest
     env:
       NUGET_PACKAGE_SOURCE: https://api.nuget.org/v3/index.json # https://apiint.nugettest.org/v3/index.json
@@ -324,6 +346,15 @@ jobs:
             -Source $NUGET_PACKAGE_SOURCE \
             -SkipDuplicate
           rm -r assets/MAA-nupkgs
+
+      - name: Publish Pip Packages
+        run: |
+          pip install --upgrade twine
+          python -m twine upload \
+            assets/MAA-pip-pkgs/*.whl \
+            --username __token__\
+            --password ${{ secrets.PYPI_TOKEN }}
+          rm -r assets/MAA-pip-pkgs
 
       - run: |
           cd assets

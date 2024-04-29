@@ -1,13 +1,14 @@
+import asyncio
 import ctypes
 import json
-import asyncio
 from dataclasses import dataclass
-from typing import List, Union, Dict
 from pathlib import Path
+from typing import Dict, List, Union
 
-from .library import Library
 from .define import *
 from .instance import Instance
+from .library import Library
+from .buffer import StringBuffer
 
 
 @dataclass
@@ -64,36 +65,39 @@ class Toolkit:
 
     @classmethod
     def register_recognizer_exec_agent(
-        cls, inst: Instance, name: str, exec_path: Union[str, Path], argv: list
+        cls, inst: Instance, name: str, exec_path: Union[str, Path], argv: List[str]
     ) -> bool:
         """
         Register a recognizer exec agent.
         """
         cls._set_api_properties()
 
-        json_argv = json.dumps(argv)
+        argv_list = [str(arg).encode("utf-8") for arg in argv]
+
         return Library.toolkit.MaaToolkitRegisterCustomRecognizerExecutor(
             inst.c_handle,
             name.encode("utf-8"),
             str(exec_path).encode("utf-8"),
-            json_argv.encode("utf-8"),
+            (MaaStringView * len(argv_list))(*argv_list),
+            len(argv_list),
         )
 
     @classmethod
     def register_action_exec_agent(
-        cls, inst: Instance, name: str, exec_path: Union[str, Path], argv: list
+        cls, inst: Instance, name: str, exec_path: Union[str, Path], argv: List[str]
     ) -> bool:
         """
         Register a action exec agent.
         """
         cls._set_api_properties()
 
-        json_argv = json.dumps(argv)
+        argv_list = [str(arg).encode("utf-8") for arg in argv]
+
         return Library.toolkit.MaaToolkitRegisterCustomActionExecutor(
             inst.c_handle(),
             name.encode("utf-8"),
             str(exec_path).encode("utf-8"),
-            json_argv.encode("utf-8"),
+            (MaaStringView * len(argv_list))(*argv_list),
         )
 
     _api_properties_initialized: bool = False
@@ -113,11 +117,11 @@ class Toolkit:
         return windows
 
     @classmethod
-    def search_window(cls, class_name: str, window_name: str) -> List[MaaWin32Hwnd]:
+    def search_window(cls, class_regex: str, window_regex: str) -> List[MaaWin32Hwnd]:
         cls._set_api_properties()
 
         count = Library.toolkit.MaaToolkitSearchWindow(
-            class_name.encode("utf-8"), window_name.encode("utf-8")
+            class_regex.encode("utf-8"), window_regex.encode("utf-8")
         )
 
         windows = []
@@ -143,6 +147,22 @@ class Toolkit:
         cls._set_api_properties()
 
         return Library.toolkit.MaaToolkitGetForegroundWindow()
+
+    @classmethod
+    def get_class_name(cls, hwnd: MaaWin32Hwnd) -> str:
+        cls._set_api_properties()
+
+        buffer = StringBuffer()
+        Library.toolkit.MaaToolkitGetWindowClassName(hwnd, buffer.c_handle)
+        return buffer.get()
+
+    @classmethod
+    def get_window_name(cls, hwnd: MaaWin32Hwnd) -> str:
+        cls._set_api_properties()
+
+        buffer = StringBuffer()
+        Library.toolkit.MaaToolkitGetWindowWindowName(hwnd, buffer.c_handle)
+        return buffer.get()
 
     @staticmethod
     def _set_api_properties():
@@ -201,7 +221,8 @@ class Toolkit:
             MaaInstanceHandle,
             MaaStringView,
             MaaStringView,
-            MaaStringView,
+            ctypes.POINTER(MaaStringView),
+            MaaSize,
         ]
 
         Library.toolkit.MaaToolkitRegisterCustomActionExecutor.restype = MaaBool
@@ -209,7 +230,8 @@ class Toolkit:
             MaaInstanceHandle,
             MaaStringView,
             MaaStringView,
-            MaaStringView,
+            ctypes.POINTER(MaaStringView),
+            MaaSize,
         ]
 
         Library.toolkit.MaaToolkitFindWindow.restype = MaaSize
@@ -235,3 +257,15 @@ class Toolkit:
 
         Library.toolkit.MaaToolkitGetForegroundWindow.restype = MaaWin32Hwnd
         Library.toolkit.MaaToolkitGetForegroundWindow.argtypes = []
+
+        Library.toolkit.MaaToolkitGetWindowClassName.restype = MaaBool
+        Library.toolkit.MaaToolkitGetWindowClassName.argtypes = [
+            MaaWin32Hwnd,
+            MaaStringBufferHandle,
+        ]
+
+        Library.toolkit.MaaToolkitGetWindowWindowName.restype = MaaBool
+        Library.toolkit.MaaToolkitGetWindowWindowName.argtypes = [
+            MaaWin32Hwnd,
+            MaaStringBufferHandle,
+        ]

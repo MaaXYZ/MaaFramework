@@ -52,7 +52,7 @@ private:
     std::string handle_command(const json::value& cmd);
 
     json::value ctx_run_task(const json::value& cmd);
-    json::value ctx_run_recognizer(const json::value& cmd);
+    json::value ctx_run_recognition(const json::value& cmd);
     json::value ctx_run_action(const json::value& cmd);
     json::value ctx_click(const json::value& cmd);
     json::value ctx_swipe(const json::value& cmd);
@@ -62,6 +62,7 @@ private:
     json::value ctx_touch_move(const json::value& cmd);
     json::value ctx_touch_up(const json::value& cmd);
     json::value ctx_screencap(const json::value& cmd);
+    json::value ctx_cached_image(const json::value& cmd);
 
     MaaSyncContextHandle get_sync_context(const json::value& cmd);
     json::value invalid_json();

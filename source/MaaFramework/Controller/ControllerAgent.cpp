@@ -1,7 +1,7 @@
 #include "ControllerAgent.h"
 
-#include "MaaFramework/MaaMsg.h"
 #include "Global/GlobalOptionMgr.h"
+#include "MaaFramework/MaaMsg.h"
 #include "Resource/ResourceMgr.h"
 #include "Utils/ImageIo.h"
 #include "Utils/NoWarningCV.hpp"
@@ -91,6 +91,20 @@ MaaCtrlId ControllerAgent::post_press_key(int keycode)
 MaaCtrlId ControllerAgent::post_input_text(std::string_view text)
 {
     auto id = post_input_text_impl(text);
+    focus_id(id);
+    return id;
+}
+
+MaaCtrlId ControllerAgent::post_start_app(std::string_view intent)
+{
+    auto id = post_start_app_impl(intent);
+    focus_id(id);
+    return id;
+}
+
+MaaCtrlId ControllerAgent::post_stop_app(std::string_view intent)
+{
+    auto id = post_stop_app_impl(intent);
     focus_id(id);
     return id;
 }
@@ -316,6 +330,18 @@ MaaCtrlId ControllerAgent::post_input_text_impl(std::string_view text)
     return post({ .type = Action::Type::input_text, .param = std::move(param) });
 }
 
+MaaCtrlId ControllerAgent::post_start_app_impl(std::string_view intent)
+{
+    AppParam param { .package = std::string(intent) };
+    return post({ .type = Action::Type::start_app, .param = std::move(param) });
+}
+
+MaaCtrlId ControllerAgent::post_stop_app_impl(std::string_view intent)
+{
+    AppParam param { .package = std::string(intent) };
+    return post({ .type = Action::Type::stop_app, .param = std::move(param) });
+}
+
 MaaCtrlId ControllerAgent::post_screencap_impl()
 {
     return post({ .type = Action::Type::screencap });
@@ -503,7 +529,7 @@ bool ControllerAgent::handle_input_text(const InputTextParam& param)
     if (recording()) {
         json::value info = {
             { "type", "input_text" },
-            { "text", param.text },
+            { "input_text", param.text },
         };
         append_recording(std::move(info), start_time, ret);
     }

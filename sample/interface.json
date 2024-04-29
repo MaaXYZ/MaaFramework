@@ -1,11 +1,17 @@
 {
     "controller": [
         {
-            "name": "ADB 默认方式",
-            "type": "Adb",
-            "touch": 254,
-            "key": 65024,
-            "screencap": 16646144
+            "name": "安卓端",
+            "type": "Adb"
+        },
+        {
+            "name": "桌面端",
+            "type": "Win32",
+            "win32": {
+                "method": "Search",
+                "class_name": ".*",
+                "window_name": "Visual Studio"
+            }
         }
     ],
     "resource": [
@@ -25,10 +31,6 @@
     ],
     "task": [
         {
-            "name": "启动游戏",
-            "entry": "StartUp"
-        },
-        {
             "name": "收取荒原",
             "entry": "Wilderness"
         },
@@ -42,8 +44,7 @@
             "option": [
                 "作战关卡",
                 "复现次数",
-                "刷完全部体力",
-                "吃全部临期糖"
+                "刷完全部体力"
             ]
         },
         {
@@ -51,15 +52,14 @@
             "entry": "ANightmareAtGreenLake",
             "option": [
                 "复现次数",
-                "刷完全部体力",
-                "吃全部临期糖"
+                "刷完全部体力"
             ],
             "param": {
                 "EnterTheShow": {
                     "next": "ANightmareAtGreenLake"
                 },
                 "TargetStageName": {
-                    "text": "17"
+                    "expected": "17"
                 },
                 "StageDifficulty": {
                     "next": "ActivityStageDifficulty"
@@ -69,10 +69,6 @@
         {
             "name": "领取奖励",
             "entry": "Awards"
-        },
-        {
-            "name": "关闭游戏",
-            "entry": "Close1999"
         }
     ],
     "recognizer": {
@@ -100,7 +96,7 @@
                             "next": "MainChapter_3"
                         },
                         "TargetStageName": {
-                            "text": "09"
+                            "expected": "09"
                         },
                         "StageDifficulty": {
                             "next": "StageDifficulty_Hard"
@@ -114,7 +110,7 @@
                             "next": "MainChapter_4"
                         },
                         "TargetStageName": {
-                            "text": "20"
+                            "expected": "20"
                         },
                         "StageDifficulty": {
                             "next": "StageDifficulty_Hard"
@@ -129,7 +125,7 @@
                     "name": "x1",
                     "param": {
                         "SetReplaysTimes": {
-                            "text": "1"
+                            "expected": "1"
                         }
                     }
                 },
@@ -137,7 +133,7 @@
                     "name": "x2",
                     "param": {
                         "SetReplaysTimes": {
-                            "text": "2"
+                            "expected": "2"
                         }
                     }
                 },
@@ -145,7 +141,7 @@
                     "name": "x3",
                     "param": {
                         "SetReplaysTimes": {
-                            "text": "3"
+                            "expected": "3"
                         }
                     }
                 },
@@ -153,7 +149,7 @@
                     "name": "x4",
                     "param": {
                         "SetReplaysTimes": {
-                            "text": "4"
+                            "expected": "4"
                         }
                     }
                 }
@@ -173,26 +169,6 @@
                     "name": "No",
                     "param": {
                         "AllIn": {
-                            "enabled": false
-                        }
-                    }
-                }
-            ]
-        },
-        "吃全部临期糖": {
-            "cases": [
-                {
-                    "name": "Yes",
-                    "param": {
-                        "EatCandyWithin24H": {
-                            "enabled": true
-                        }
-                    }
-                },
-                {
-                    "name": "No",
-                    "param": {
-                        "EatCandyWithin24H": {
                             "enabled": false
                         }
                     }

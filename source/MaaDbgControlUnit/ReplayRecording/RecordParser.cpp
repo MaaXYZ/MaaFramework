@@ -308,7 +308,7 @@ std::optional<Record::Param> RecordParser::parse_input_text(const json::value& r
 {
     Record::InputTextParam result;
 
-    if (auto text_opt = record_json.find<std::string>("text")) {
+    if (auto text_opt = record_json.find<std::string>("input_text")) {
         result.text = *text_opt;
     }
     else {

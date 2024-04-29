@@ -91,7 +91,7 @@ private:
 
     bool debug_mode() const;
     json::object basic_info();
-    json::object reco_result_to_json(const Recognizer::Result& res);
+    json::object reco_result_to_json(const std::string& name, const Recognizer::Result& res);
     json::object hit_detail_to_json(const HitDetail& detail);
     json::object running_detail_to_json(const RunningDetail& detail);
 
@@ -101,7 +101,7 @@ private:
 
     int64_t task_id_ = 0;
     std::string entry_;
-    std::string latest_hit_;
+    std::string pre_hit_task_;
 
     std::map<std::string, uint64_t> run_times_map_;
     Actuator::PreTaskBoxes hit_cache_;

@@ -2,8 +2,8 @@
 #include <iostream>
 
 #include "MaaToolkit/MaaToolkitAPI.h"
-#include "Utils/Runtime.h"
 #include "Utils/Platform.h"
+#include "Utils/Runtime.h"
 
 #include "interactor.h"
 

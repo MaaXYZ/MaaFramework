@@ -11,15 +11,6 @@
 #include "Conf/Conf.h"
 #include "Utils/NoWarningCVMat.hpp"
 
-#if __has_include(<opencv2/xfeatures2d.hpp>)
-#define MAA_VISION_HAS_XFEATURES2D
-#endif
-
-namespace Ort
-{
-struct Session;
-}
-
 MAA_VISION_NS_BEGIN
 
 enum class ResultOrderBy
@@ -57,7 +48,7 @@ struct OCRerParam
     std::string model;
     bool only_rec = false;
     std::vector<cv::Rect> roi;
-    std::vector<std::wstring> text;
+    std::vector<std::wstring> expected;
     std::vector<std::pair<std::wstring, std::wstring>> replace;
 
     ResultOrderBy order_by = ResultOrderBy::Horizontal;
@@ -193,11 +184,23 @@ inline std::ostream& operator<<(std::ostream& os, const ResultOrderBy& order_by)
     return os;
 }
 
-struct RectComparer
+struct RectComparator
 {
     bool operator()(const cv::Rect& lhs, const cv::Rect& rhs) const
     {
-        return lhs.x < rhs.x || lhs.y < rhs.y || lhs.width < rhs.width || lhs.height < rhs.height;
+        if (lhs.x != rhs.x) {
+            return lhs.x < rhs.x;
+        }
+        if (lhs.y != rhs.y) {
+            return lhs.y < rhs.y;
+        }
+        if (lhs.width != rhs.width) {
+            return lhs.width < rhs.width;
+        }
+        if (lhs.height != rhs.height) {
+            return lhs.height < rhs.height;
+        }
+        return false;
     }
 };
 

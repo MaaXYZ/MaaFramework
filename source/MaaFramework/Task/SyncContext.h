@@ -22,7 +22,7 @@ public:
 
 public: // from MaaSyncContextAPI
     virtual bool run_task(std::string task, std::string_view param) override;
-    virtual bool run_recognizer(
+    virtual bool run_recognition(
         cv::Mat image,
         std::string task,
         std::string_view param,
@@ -42,6 +42,7 @@ public: // from MaaSyncContextAPI
     virtual bool touch_move(int contact, int x, int y, int pressure) override;
     virtual bool touch_up(int contact) override;
     virtual cv::Mat screencap() override;
+    virtual cv::Mat cached_image() override;
 
     virtual MaaInstanceHandle instance() override { return dynamic_cast<MaaInstanceHandle>(inst_); }
 

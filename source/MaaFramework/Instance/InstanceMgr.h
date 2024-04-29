@@ -4,9 +4,9 @@
 
 #include "API/MaaTypes.h"
 #include "Base/AsyncRunner.hpp"
-#include "Base/MessageNotifier.hpp"
 #include "InstanceInternalAPI.hpp"
 #include "Task/PipelineTask.h"
+#include "Utils/MessageNotifier.hpp"
 
 MAA_NS_BEGIN
 

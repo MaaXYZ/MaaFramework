@@ -1,8 +1,9 @@
 #include "SendMessageInput.h"
 
+#include "ControlUnit/MicroControl.hpp"
 #include "Utils/Logger.h"
-#include "Utils/SafeWindows.hpp"
 #include "Utils/Platform.h"
+#include "Utils/SafeWindows.hpp"
 
 MAA_CTRL_UNIT_NS_BEGIN
 
@@ -35,33 +36,15 @@ bool SendMessageInput::swipe(int x1, int y1, int x2, int y2, int duration)
         duration = 500;
     }
 
-    auto start = std::chrono::steady_clock::now();
-    auto now = start;
-    SendMessage(hwnd_, WM_LBUTTONDOWN, MK_LBUTTON, MAKELPARAM(x1, y1));
-
-    constexpr double kInterval = 10; // ms
-    const double steps = duration / kInterval;
-    const double x_step_len = (x2 - x1) / steps;
-    const double y_step_len = (y2 - y1) / steps;
-    const std::chrono::milliseconds delay(static_cast<int>(kInterval));
-
-    for (int i = 0; i < steps; ++i) {
-        int tx = static_cast<int>(x1 + i * x_step_len);
-        int ty = static_cast<int>(y1 + i * y_step_len);
-        std::this_thread::sleep_until(now + delay);
-        now = std::chrono::steady_clock::now();
-
-        SendMessage(hwnd_, WM_MOUSEMOVE, MK_LBUTTON, MAKELPARAM(tx, ty));
-    }
-
-    std::this_thread::sleep_until(now + delay);
-    now = std::chrono::steady_clock::now();
-
-    SendMessage(hwnd_, WM_MOUSEMOVE, MK_LBUTTON, MAKELPARAM(x2, y2));
-
-    std::this_thread::sleep_until(now + delay);
-    now = std::chrono::steady_clock::now();
-    SendMessage(hwnd_, WM_LBUTTONUP, MK_LBUTTON, MAKELPARAM(x2, y2));
+    micro_swipe(
+        x1,
+        y2,
+        x2,
+        y2,
+        duration,
+        [&](int x, int y) { SendMessage(hwnd_, WM_LBUTTONDOWN, MK_LBUTTON, MAKELPARAM(x, y)); },
+        [&](int x, int y) { SendMessage(hwnd_, WM_MOUSEMOVE, MK_LBUTTON, MAKELPARAM(x, y)); },
+        [&](int x, int y) { SendMessage(hwnd_, WM_LBUTTONUP, MK_LBUTTON, MAKELPARAM(x, y)); });
 
     return true;
 }

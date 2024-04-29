@@ -1,5 +1,6 @@
 #include "SeizeInput.h"
 
+#include "ControlUnit/MicroControl.hpp"
 #include "Utils/Logger.h"
 #include "Utils/Platform.h"
 #include "Utils/SafeWindows.hpp"
@@ -63,52 +64,33 @@ bool SeizeInput::swipe(int x1, int y1, int x2, int y2, int duration)
         duration = 500;
     }
 
-    auto start = std::chrono::steady_clock::now();
-    auto now = start;
+    micro_swipe(
+        x1,
+        y2,
+        x2,
+        y2,
+        duration,
+        [&](int x, int y) {
+            POINT point = { x, y };
+            ClientToScreen(hwnd_, &point);
+            SetCursorPos(point.x, point.y);
 
-    POINT point = { x1, y1 };
-    ClientToScreen(hwnd_, &point);
-
-    INPUT input = {};
-
-    SetCursorPos(point.x, point.y);
-
-    input.type = INPUT_MOUSE;
-    input.mi.dwFlags = MOUSEEVENTF_LEFTDOWN;
-
-    SendInput(1, &input, sizeof(INPUT));
-
-    constexpr double kInterval = 10; // ms
-    const double steps = duration / kInterval;
-    const double x_step_len = (x2 - x1) / steps;
-    const double y_step_len = (y2 - y1) / steps;
-    const std::chrono::milliseconds delay(static_cast<int>(kInterval));
-
-    for (int i = 0; i < steps; ++i) {
-        int tx = static_cast<int>(x1 + i * x_step_len);
-        int ty = static_cast<int>(y1 + i * y_step_len);
-        std::this_thread::sleep_until(now + delay);
-        now = std::chrono::steady_clock::now();
-
-        point.x = tx;
-        point.y = ty;
-        ClientToScreen(hwnd_, &point);
-        SetCursorPos(point.x, point.y);
-    }
-
-    std::this_thread::sleep_until(now + delay);
-    now = std::chrono::steady_clock::now();
-
-    point.x = x2;
-    point.y = y2;
-    ClientToScreen(hwnd_, &point);
-    SetCursorPos(point.x, point.y);
-
-    std::this_thread::sleep_until(now + delay);
-    now = std::chrono::steady_clock::now();
-
-    input.mi.dwFlags = MOUSEEVENTF_LEFTUP;
-    SendInput(1, &input, sizeof(INPUT));
+            INPUT input = {};
+            input.type = INPUT_MOUSE;
+            input.mi.dwFlags = MOUSEEVENTF_LEFTDOWN;
+            SendInput(1, &input, sizeof(INPUT));
+        },
+        [&](int x, int y) {
+            POINT point = { x, y };
+            ClientToScreen(hwnd_, &point);
+            SetCursorPos(point.x, point.y);
+        },
+        [&]([[maybe_unused]] int x, [[maybe_unused]] int y) {
+            INPUT input = {};
+            input.type = INPUT_MOUSE;
+            input.mi.dwFlags = MOUSEEVENTF_LEFTUP;
+            SendInput(1, &input, sizeof(INPUT));
+        });
 
     return true;
 }

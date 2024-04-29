@@ -7,6 +7,8 @@
  *
  */
 
+// IWYU pragma: private, include <MaaFramework/MaaAPI.h>
+
 #pragma once
 
 #include "../MaaDef.h"
@@ -21,7 +23,7 @@ extern "C"
         MaaSyncContextHandle sync_context,
         MaaStringView task_name,
         MaaStringView param);
-    MAA_FRAMEWORK_API MaaBool MaaSyncContextRunRecognizer(
+    MAA_FRAMEWORK_API MaaBool MaaSyncContextRunRecognition(
         MaaSyncContextHandle sync_context,
         MaaImageBufferHandle image,
         MaaStringView task_name,
@@ -65,6 +67,10 @@ extern "C"
         MaaSyncContextTouchUp(MaaSyncContextHandle sync_context, int32_t contact);
 
     MAA_FRAMEWORK_API MaaBool MaaSyncContextScreencap(
+        MaaSyncContextHandle sync_context,
+        MaaImageBufferHandle out_image /**< [out] */);
+
+    MAA_FRAMEWORK_API MaaBool MaaSyncContextCachedImage(
         MaaSyncContextHandle sync_context,
         MaaImageBufferHandle out_image /**< [out] */);
 

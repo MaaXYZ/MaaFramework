@@ -55,8 +55,17 @@ bool ExecAgentBase::unregister_executor(MaaInstanceHandle handle, std::string_vi
 {
     LogFunc << VAR_VOIDP(handle) << VAR(name);
 
-    bool ret = unregister_for_maa_inst(handle, name);
-    ret &= exec_data_.erase(std::string(name)) > 0;
+    bool ret = true;
+    if (name.empty()) {
+        for (const auto& exist_name : std::views::keys(exec_data_)) {
+            ret &= unregister_for_maa_inst(handle, exist_name);
+        }
+        exec_data_.clear();
+    }
+    else {
+        ret = unregister_for_maa_inst(handle, name);
+        ret &= exec_data_.erase(std::string(name)) > 0;
+    }
 
     return ret;
 }
@@ -133,8 +142,8 @@ std::string ExecAgentBase::handle_command(const json::value& cmd)
 {
     static const std::map<std::string, std::function<json::value(const json::value&)>> cmd_map = {
         { "RunTask", std::bind(&ExecAgentBase::ctx_run_task, this, std::placeholders::_1) },
-        { "RunRecognizer",
-          std::bind(&ExecAgentBase::ctx_run_recognizer, this, std::placeholders::_1) },
+        { "RunRecognition",
+          std::bind(&ExecAgentBase::ctx_run_recognition, this, std::placeholders::_1) },
         { "RunAction", std::bind(&ExecAgentBase::ctx_run_action, this, std::placeholders::_1) },
         { "Click", std::bind(&ExecAgentBase::ctx_click, this, std::placeholders::_1) },
         { "Swipe", std::bind(&ExecAgentBase::ctx_swipe, this, std::placeholders::_1) },
@@ -144,6 +153,7 @@ std::string ExecAgentBase::handle_command(const json::value& cmd)
         { "TouchMove", std::bind(&ExecAgentBase::ctx_touch_move, this, std::placeholders::_1) },
         { "TouchUp", std::bind(&ExecAgentBase::ctx_touch_up, this, std::placeholders::_1) },
         { "Screencap", std::bind(&ExecAgentBase::ctx_screencap, this, std::placeholders::_1) },
+        { "CachedImage", std::bind(&ExecAgentBase::ctx_cached_image, this, std::placeholders::_1) },
     };
 
     auto func_opt = cmd.find<std::string>("function");
@@ -183,7 +193,7 @@ json::value ExecAgentBase::ctx_run_task(const json::value& cmd)
     return gen_result(ret);
 }
 
-json::value ExecAgentBase::ctx_run_recognizer(const json::value& cmd)
+json::value ExecAgentBase::ctx_run_recognition(const json::value& cmd)
 {
     auto ctx = get_sync_context(cmd);
     if (!ctx) {
@@ -225,7 +235,7 @@ json::value ExecAgentBase::ctx_run_recognizer(const json::value& cmd)
         MaaDestroyStringBuffer(out_detail_buff);
     });
 
-    bool ret = MaaSyncContextRunRecognizer(
+    bool ret = MaaSyncContextRunRecognition(
         ctx,
         image_buff,
         task_name.c_str(),
@@ -390,7 +400,7 @@ json::value ExecAgentBase::ctx_input_text(const json::value& cmd)
         return invalid_json();
     }
 
-    auto text_opt = cmd.find<std::string>("text");
+    auto text_opt = cmd.find<std::string>("input_text");
     if (!text_opt) {
         LogError << "no text" << VAR(cmd);
         return invalid_json();
@@ -504,6 +514,39 @@ json::value ExecAgentBase::ctx_screencap(const json::value& cmd)
     OnScopeLeave([&]() { MaaDestroyImageBuffer(image_buff); });
 
     bool ret = MaaSyncContextScreencap(ctx, image_buff);
+
+    auto ret_obj = gen_result(ret);
+    if (!ret) {
+        return ret_obj;
+    }
+
+    void* raw_data = MaaGetImageRawData(image_buff);
+    int32_t width = MaaGetImageWidth(image_buff);
+    int32_t height = MaaGetImageHeight(image_buff);
+    int32_t type = MaaGetImageType(image_buff);
+    cv::Mat image(height, width, type, raw_data);
+    if (image.empty()) {
+        LogError << "image empty";
+        return invalid_json();
+    }
+
+    std::string image_arg = arg_cvt_.image_to_arg(image);
+    ret_obj |= { { "image", image_arg } };
+    return ret_obj;
+}
+
+json::value ExecAgentBase::ctx_cached_image(const json::value& cmd)
+{
+    auto ctx = get_sync_context(cmd);
+    if (!ctx) {
+        LogError << "sync context not found";
+        return invalid_json();
+    }
+
+    auto image_buff = MaaCreateImageBuffer();
+    OnScopeLeave([&]() { MaaDestroyImageBuffer(image_buff); });
+
+    bool ret = MaaSyncContextCachedImage(ctx, image_buff);
 
     auto ret_obj = gen_result(ret);
     if (!ret) {

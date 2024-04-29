@@ -100,7 +100,7 @@ jobs:
 
       - name: Build MAA
         run: |
-          cmake --preset "${{ matrix.arch == 'x86_64' && 'MSVC 2022' || 'MSVC 2022 ARM' }}" -DMAADEPS_TRIPLET="maa-${{ matrix.arch == 'x86_64' && 'x64' || 'arm64' }}-windows" -DCMAKE_SYSTEM_VERSION="10.0.22621.0" -DMAA_HASH_VERSION='${{ needs.meta.outputs.tag }}' -DWITH_GRPC=OFF -DBUILD_PIPELINE_TESTING=ON -DBUILD_DLOPEN_TESTING=ON
+          cmake --preset "${{ matrix.arch == 'x86_64' && 'MSVC 2022' || 'MSVC 2022 ARM' }}" -DMAADEPS_TRIPLET="maa-${{ matrix.arch == 'x86_64' && 'x64' || 'arm64' }}-windows" -DCMAKE_SYSTEM_VERSION="10.0.22621.0" -DMAA_HASH_VERSION='${{ needs.meta.outputs.tag }}' -DBUILD_PIPELINE_TESTING=ON -DBUILD_DLOPEN_TESTING=ON
 
           cmake --build build --preset "${{ matrix.arch == 'x86_64' && 'MSVC 2022' || 'MSVC 2022 ARM' }} - Release" -j 16
 
@@ -191,7 +191,7 @@ jobs:
           cmake --preset 'NinjaMulti' \
             -DMAADEPS_TRIPLET='maa-${{ matrix.arch == 'x86_64' && 'x64' || 'arm64' }}-linux' \
             -DMAA_HASH_VERSION='${{ needs.meta.outputs.tag }}' \
-            -DWITH_GRPC=OFF -DBUILD_HTTP_CLI=OFF -DBUILD_PIPELINE_TESTING=ON -DBUILD_DLOPEN_TESTING=ON
+            -DBUILD_HTTP_CLI=OFF -DBUILD_PIPELINE_TESTING=ON -DBUILD_DLOPEN_TESTING=ON
 
           cmake --build build --preset 'NinjaMulti - Release' -j 16
 
@@ -258,7 +258,7 @@ jobs:
 
       - name: Install compiler
         run: |
-          brew install llvm
+          brew install llvm@17
         # 17
 
       - name: Bootstrap MaaDeps
@@ -270,26 +270,26 @@ jobs:
       - name: Build MAA for x86_64
         if: ${{ matrix.arch == 'x86_64' }}
         env:
-          CC: "/usr/local/opt/llvm/bin/clang"
-          CXX: "/usr/local/opt/llvm/bin/clang++"
+          CC: "/usr/local/opt/llvm@17/bin/clang"
+          CXX: "/usr/local/opt/llvm@17/bin/clang++"
         run: |
           cmake --preset 'NinjaMulti' \
             -DMAADEPS_TRIPLET='maa-${{ matrix.arch == 'x86_64' && 'x64' || 'arm64' }}-osx' \
             -DMAA_HASH_VERSION='${{ needs.meta.outputs.tag }}' \
-            -DWITH_GRPC=OFF -DBUILD_HTTP_CLI=OFF -DBUILD_PIPELINE_TESTING=ON -DBUILD_DLOPEN_TESTING=ON
+            -DBUILD_HTTP_CLI=OFF -DBUILD_PIPELINE_TESTING=ON -DBUILD_DLOPEN_TESTING=ON
 
           cmake --build build --preset 'NinjaMulti - Release' -j 16
 
       - name: Build MAA for aarch64
         if: ${{ matrix.arch == 'aarch64' }}
         env:
-          CC: "/opt/homebrew/opt/llvm/bin/clang"
-          CXX: "/opt/homebrew/opt/llvm/bin/clang++"
+          CC: "/opt/homebrew/opt/llvm@17/bin/clang"
+          CXX: "/opt/homebrew/opt/llvm@17/bin/clang++"
         run: |
           cmake --preset 'NinjaMulti' \
             -DMAADEPS_TRIPLET='maa-${{ matrix.arch == 'x86_64' && 'x64' || 'arm64' }}-osx' \
             -DMAA_HASH_VERSION='${{ needs.meta.outputs.tag }}' \
-            -DWITH_GRPC=OFF -DBUILD_HTTP_CLI=OFF -DBUILD_PIPELINE_TESTING=ON -DBUILD_DLOPEN_TESTING=ON
+            -DBUILD_HTTP_CLI=OFF -DBUILD_PIPELINE_TESTING=ON -DBUILD_DLOPEN_TESTING=ON
 
           cmake --build build --preset 'NinjaMulti - Release' -j 16
 

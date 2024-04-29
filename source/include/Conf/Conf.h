@@ -124,9 +124,3 @@
     namespace MAA_PROJECT_INTERFACE_NS \
     {
 #define MAA_PROJECT_INTERFACE_NS_END }
-
-#define MAA_RPC_NS MAA_NS::RpcNS
-#define MAA_RPC_NS_BEGIN \
-    namespace MAA_RPC_NS \
-    {
-#define MAA_RPC_NS_END }

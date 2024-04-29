@@ -137,10 +137,11 @@
  * @brief Message for the task focus.
  *
  * payload: {
- *     id: number,
+ *     task_id: number,
  *     entry: string,
  *     uuid: string,
  *     hash: string,
+ *     pre_hit_task: string,
  *     name: string,
  *     recognition: {
  *         id: number,
@@ -148,7 +149,7 @@
  *         detail: string,
  *         hit: boolean,
  *     },
- *     actuator_id: number,
+ *     running_id: number,
  *     status: number,
  * }
  */
@@ -162,10 +163,11 @@
  * @brief Message for debug.
  *
  * payload: {
- *     id: number,
+ *     task_id: number,
  *     entry: string,
  *     uuid: string,
  *     hash: string,
+ *     pre_hit_task: string,
  *     name: string,
  *     recognition: {
  *         id: number,
@@ -173,7 +175,7 @@
  *         detail: string,
  *         hit: boolean,
  *     },
- *     actuator_id: number,
+ *     running_id: number,
  *     status: number,
  * }
  */
@@ -185,5 +187,6 @@
 #define MaaMsg_Task_Debug_ListToRecognize ("Task.Debug.ListToRecognize")
 #define MaaMsg_Task_Debug_RecognitionResult ("Task.Debug.RecognitionResult")
 #define MaaMsg_Task_Debug_Hit ("Task.Debug.Hit")
+#define MaaMsg_Task_Debug_MissAll ("Task.Debug.MissAll")
 
 /** @} */

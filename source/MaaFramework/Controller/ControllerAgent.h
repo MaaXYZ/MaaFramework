@@ -8,8 +8,8 @@
 
 #include "API/MaaTypes.h"
 #include "Base/AsyncRunner.hpp"
-#include "Base/MessageNotifier.hpp"
 #include "Instance/InstanceInternalAPI.hpp"
+#include "Utils/MessageNotifier.hpp"
 #include "Utils/NoWarningCVMat.hpp"
 
 MAA_RES_NS_BEGIN
@@ -103,6 +103,8 @@ public:
     virtual MaaCtrlId post_swipe(int x1, int y1, int x2, int y2, int duration) override;
     virtual MaaCtrlId post_press_key(int keycode) override;
     virtual MaaCtrlId post_input_text(std::string_view text) override;
+    virtual MaaCtrlId post_start_app(std::string_view intent) override;
+    virtual MaaCtrlId post_stop_app(std::string_view intent) override;
     virtual MaaCtrlId post_screencap() override;
 
     virtual MaaCtrlId post_touch_down(int contact, int x, int y, int pressure) override;
@@ -159,6 +161,8 @@ private:
     MaaCtrlId post_swipe_impl(int x1, int y1, int x2, int y2, int duration);
     MaaCtrlId post_press_key_impl(int keycode);
     MaaCtrlId post_input_text_impl(std::string_view text);
+    MaaCtrlId post_start_app_impl(std::string_view text);
+    MaaCtrlId post_stop_app_impl(std::string_view text);
     MaaCtrlId post_screencap_impl();
 
     MaaCtrlId post_touch_down_impl(int contact, int x, int y, int pressure);

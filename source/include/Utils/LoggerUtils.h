@@ -10,6 +10,7 @@
 #include <iostream>
 #include <mutex>
 #include <ranges>
+#include <sstream>
 #include <thread>
 #include <tuple>
 #include <type_traits>

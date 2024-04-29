@@ -36,7 +36,7 @@ bool SyncContext::run_task(std::string task, std::string_view param)
     return pipeline.run();
 }
 
-bool SyncContext::run_recognizer(
+bool SyncContext::run_recognition(
     cv::Mat image,
     std::string task,
     std::string_view param,
@@ -216,6 +216,18 @@ cv::Mat SyncContext::screencap()
     }
     auto id = ctrl->post_screencap();
     ctrl->wait(id);
+
+    return ctrl->get_image();
+}
+
+cv::Mat SyncContext::cached_image()
+{
+    // LogFunc;
+    auto* ctrl = controller();
+    if (!ctrl) {
+        LogError << "Controller is null";
+        return {};
+    }
 
     return ctrl->get_image();
 }
