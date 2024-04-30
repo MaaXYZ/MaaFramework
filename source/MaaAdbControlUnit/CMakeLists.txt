@@ -6,7 +6,7 @@ add_library(MaaAdbControlUnit SHARED ${maa_adb_control_unit_src} ${maa_adb_contr
 target_include_directories(MaaAdbControlUnit
     PRIVATE ${CMAKE_CURRENT_SOURCE_DIR} ${MAA_PRIVATE_INC} ${MAA_PUBLIC_INC})
 
-target_link_libraries(MaaAdbControlUnit MaaUtils HeaderOnlyLibraries ${OpenCV_LIBS} ZLIB::ZLIB)
+target_link_libraries(MaaAdbControlUnit MaaUtils HeaderOnlyLibraries ${OpenCV_LIBS} ZLIB::ZLIB EmulatorExtras)
 
 if(WIN32)
     target_link_libraries(MaaAdbControlUnit ws2_32)

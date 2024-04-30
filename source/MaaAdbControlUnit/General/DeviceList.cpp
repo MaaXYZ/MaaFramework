@@ -14,7 +14,7 @@ bool DeviceList::parse(const json::value& config)
         "devices",
     };
 
-    return parse_argv("Devices", config, kDefaultDevicesArgv, devices_argv_);
+    return parse_command("Devices", config, kDefaultDevicesArgv, devices_argv_);
 }
 
 std::optional<std::vector<std::string>> DeviceList::request_devices()

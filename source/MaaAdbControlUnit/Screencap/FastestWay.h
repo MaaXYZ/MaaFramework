@@ -16,6 +16,7 @@ public:
         EncodeToFileAndPull,
         MinicapDirect,
         MinicapStream,
+        MumuExternalRendererIpc,
     };
 
 public:

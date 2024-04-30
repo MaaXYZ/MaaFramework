@@ -121,7 +121,7 @@ std::optional<RuntimeParam> Configurator::generate_runtime() const
         adb.adb_path = config_.adb.adb_path;
         adb.address = config_.adb.address;
         adb.controller_type = controller.adb.touch | controller.adb.key | controller.adb.screencap;
-        adb.config = controller.adb.config.dumps();
+        adb.config = (controller.adb.config | config_.adb.config).dumps();
         adb.agent_path = MaaNS::path_to_utf8_string(project_dir_ / "MaaAgentBinary");
 
         runtime.controller_param = std::move(adb);
