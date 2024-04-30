@@ -49,7 +49,7 @@ bool ScreencapFastestWay::parse(const json::value& config)
 {
     bool ret = false;
 
-    for (auto it = units_.begin(); it != units_.end(); ++it) {
+    for (auto it = units_.begin(); it != units_.end();) {
         if (it->second->parse(config)) {
             ret = true; // 任一成功就行
             ++it;
@@ -66,7 +66,7 @@ bool ScreencapFastestWay::init(int swidth, int sheight)
 {
     LogFunc;
 
-    for (auto it = units_.begin(); it != units_.end(); ++it) {
+    for (auto it = units_.begin(); it != units_.end();) {
         if (it->second->init(swidth, sheight)) {
             ++it;
         }
@@ -143,17 +143,17 @@ bool ScreencapFastestWay::speed_test()
 
     for (auto& [method, unit] : units_) {
         if (kDropFirst.contains(method)) {
-            LogDebug << "Testing" << method << "drop first";
+            LogInfo << "Testing" << method << "drop first";
             if (!unit->screencap()) {
-                LogDebug << "failed to test";
+                LogWarn << "failed to test";
                 continue;
             }
         }
 
-        LogDebug << "Testing" << method;
+        LogInfo << "Testing" << method;
         auto now = std::chrono::steady_clock::now();
         if (!unit->screencap()) {
-            LogDebug << "failed to test";
+            LogWarn << "failed to test";
             continue;
         }
         check(method, now);

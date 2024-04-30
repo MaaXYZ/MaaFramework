@@ -150,8 +150,9 @@ struct Configuration
     {
         std::string adb_path;
         std::string address;
+        json::object config;
 
-        MEO_JSONIZATION(adb_path, address);
+        MEO_JSONIZATION(adb_path, address, config);
     };
 
     struct Option

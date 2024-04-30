@@ -134,6 +134,8 @@ void MinicapStream::deinit()
 
 std::optional<cv::Mat> MinicapStream::screencap()
 {
+    LogDebug;
+
     std::unique_lock<std::mutex> locker(mutex_);
 
     using namespace std::chrono_literals;

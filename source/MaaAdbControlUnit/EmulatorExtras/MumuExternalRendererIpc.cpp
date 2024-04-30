@@ -53,6 +53,8 @@ bool MumuExternalRendererIpc::init(int swidth, int sheight)
 
 std::optional<cv::Mat> MumuExternalRendererIpc::screencap()
 {
+    LogDebug;
+
     if (!capture_display_func_) {
         LogError << "capture_display_func_ is null";
         return std::nullopt;
