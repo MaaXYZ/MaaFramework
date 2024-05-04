@@ -22,6 +22,13 @@ MaaSize MaaToolkitSearchWindow(MaaStringView class_name, MaaStringView window_na
     return win32_mgr.search_window(class_name, window_name);
 }
 
+MaaSize MaaToolkitListWindows()
+{
+    LogInfo;
+
+    return win32_mgr.list_windows();
+}
+
 MaaWin32Hwnd MaaToolkitGetWindow(MaaSize index)
 {
     return win32_mgr.found_windows().at(index).hwnd;

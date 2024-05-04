@@ -20,7 +20,7 @@ size_t Win32WindowFinder::find_window(std::string_view class_name, std::string_v
 {
     windows_.clear();
 
-    auto windows = list_windows();
+    auto windows = _list_windows();
     for (auto& w : windows) {
         bool same_class = class_name.empty() || w.class_name == class_name;
         bool same_window = window_name.empty() || w.window_name == window_name;
@@ -38,7 +38,7 @@ size_t Win32WindowFinder::search_window(std::string_view class_name, std::string
     std::wregex class_regex(to_u16(class_name));
     std::wregex window_regex(to_u16(window_name));
 
-    auto windows = list_windows();
+    auto windows = _list_windows();
     for (auto& w : windows) {
         std::wstring w_class = to_u16(w.class_name);
         std::wsmatch class_matches;
@@ -52,6 +52,12 @@ size_t Win32WindowFinder::search_window(std::string_view class_name, std::string
             windows_.emplace_back(std::move(w));
         }
     }
+    return windows_.size();
+}
+
+size_t Win32WindowFinder::list_windows()
+{
+    windows_ = _list_windows();
     return windows_.size();
 }
 
@@ -80,7 +86,7 @@ MaaWin32Hwnd Win32WindowFinder::get_foreground_window() const
     return GetForegroundWindow();
 }
 
-std::vector<Win32WindowFinder::Window> Win32WindowFinder::list_windows() const
+std::vector<Win32WindowFinder::Window> Win32WindowFinder::_list_windows() const
 {
     std::vector<Window> windows;
 

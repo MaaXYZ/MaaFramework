@@ -23,6 +23,7 @@ public:
 
     virtual size_t find_window(std::string_view class_name, std::string_view window_name) = 0;
     virtual size_t search_window(std::string_view class_name, std::string_view window_name) = 0;
+    virtual size_t list_windows() = 0;
     virtual std::vector<Window> found_windows() const = 0;
 
     virtual MaaWin32Hwnd get_cursor_window() const = 0;

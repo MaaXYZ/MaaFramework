@@ -24,6 +24,12 @@ size_t Win32WindowFinder::search_window(std::string_view class_name, std::string
     return 0;
 }
 
+size_t Win32WindowFinder::list_windows()
+{
+    LogError << "Not implemented";
+    return 0;
+}
+
 MaaWin32Hwnd Win32WindowFinder::get_cursor_window() const
 {
     LogError << "Not implemented";
@@ -42,7 +48,7 @@ MaaWin32Hwnd Win32WindowFinder::get_foreground_window() const
     return nullptr;
 }
 
-std::vector<Win32WindowFinder::Window> Win32WindowFinder::list_windows() const
+std::vector<Win32WindowFinder::Window> Win32WindowFinder::_list_windows() const
 {
     LogError << "Not implemented";
     return {};
