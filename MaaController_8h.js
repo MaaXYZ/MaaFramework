@@ -1,8 +1,8 @@
 var MaaController_8h =
 [
     [ "MaaAdbControllerCreate", "MaaController_8h.html#a1292df5261fcb83a7a6d07f0302fe431", null ],
-    [ "MaaWin32ControllerCreate", "MaaController_8h.html#a9a6a89e475669d0b08f68f300d8c4c96", null ],
     [ "MaaAdbControllerCreateV2", "MaaController_8h.html#a22142de0dbfc3ed0e64cbcc9e0f1a6e4", null ],
+    [ "MaaWin32ControllerCreate", "MaaController_8h.html#a9a6a89e475669d0b08f68f300d8c4c96", null ],
     [ "MaaCustomControllerCreate", "MaaController_8h.html#a2544850abe36deca8099f6d138e9869c", null ],
     [ "MaaThriftControllerCreate", "MaaController_8h.html#aacb34d0315d060d09b7be697c2ef9f43", null ],
     [ "MaaDbgControllerCreate", "MaaController_8h.html#afa2503aa43823a84d9dc61baef09985c", null ],
@@ -13,6 +13,8 @@ var MaaController_8h =
     [ "MaaControllerPostSwipe", "group__MaaControllerPostRequest.html#gaba6f10967118e3b8b7e31a19eda910b4", null ],
     [ "MaaControllerPostPressKey", "group__MaaControllerPostRequest.html#ga010076a6743d469c82e6fa13c0468823", null ],
     [ "MaaControllerPostInputText", "group__MaaControllerPostRequest.html#gafe85778045c6bd504edb6dc7e255520b", null ],
+    [ "MaaControllerPostStartApp", "group__MaaControllerPostRequest.html#gac87949c378aa1e844339af52104618a7", null ],
+    [ "MaaControllerPostStopApp", "group__MaaControllerPostRequest.html#gad68fb17094ed3da0f7a44c47b609b5fe", null ],
     [ "MaaControllerPostTouchDown", "group__MaaControllerPostRequest.html#ga5d6c78c44e837f25dda1aa78ea5732a5", null ],
     [ "MaaControllerPostTouchMove", "group__MaaControllerPostRequest.html#ga1336e4744d7c998543dbdba569d102de", null ],
     [ "MaaControllerPostTouchUp", "group__MaaControllerPostRequest.html#gaee055ca7345c558b1ec4dcdd39c5bf77", null ],

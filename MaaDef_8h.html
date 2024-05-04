@@ -26,7 +26,7 @@
  <tbody>
  <tr id="projectrow">
   <td id="projectalign">
-   <div id="projectname">Maa Framework<span id="projectnumber">&#160;v1.7.0-beta.2</span>
+   <div id="projectname">Maa Framework<span id="projectnumber">&#160;v1.7.0</span>
    </div>
    <div id="projectbrief">A automation black-box testing framework based on image recognition.</div>
   </td>
@@ -114,7 +114,7 @@ Classes</h2></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="define-members" name="define-members"></a>
 Macros</h2></td></tr>
-<tr class="memitem:a9eddd2fb954b055dd2ea4d9cdd267188"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="MaaDef_8h.html#a9eddd2fb954b055dd2ea4d9cdd267188">MaaNullSize</a>&#160;&#160;&#160;((<a class="el" href="MaaDef_8h.html#a72a89077c419a0fe586d68bde004d856">MaaSize</a>) - 1)</td></tr>
+<tr class="memitem:a9eddd2fb954b055dd2ea4d9cdd267188"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="MaaDef_8h.html#a9eddd2fb954b055dd2ea4d9cdd267188">MaaNullSize</a>&#160;&#160;&#160;((<a class="el" href="MaaDef_8h.html#a72a89077c419a0fe586d68bde004d856">MaaSize</a>)-1)</td></tr>
 <tr class="separator:a9eddd2fb954b055dd2ea4d9cdd267188"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a1b93c853d770a6723301f135d9e9e3bc"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="MaaDef_8h.html#a1b93c853d770a6723301f135d9e9e3bc">MaaInvalidId</a>&#160;&#160;&#160;((<a class="el" href="MaaDef_8h.html#a9a764a8b46c0c97cbfe2d8e295d90e03">MaaId</a>)0)</td></tr>
 <tr class="separator:a1b93c853d770a6723301f135d9e9e3bc"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -301,11 +301,15 @@ Enumerations</h2></td></tr>
 , <br />
 &#160;&#160;<a class="el" href="MaaDef_8h.html#a21de9ae05eae97a700f9f834fe506f47adf8d2f14e385b73ca79ff57c81ca390f">MaaAdbControllerType_Touch_MaaTouch</a> = 3
 , <br />
+&#160;&#160;<a class="el" href="MaaDef_8h.html#a21de9ae05eae97a700f9f834fe506f47a771502caa9b46813ee83240a82e3ccf3">MaaAdbControllerType_Touch_EmulatorExtras</a> = 4
+, <br />
 &#160;&#160;<a class="el" href="MaaDef_8h.html#a21de9ae05eae97a700f9f834fe506f47ad05d0ac644b94fc434991d24f5e47c24">MaaAdbControllerType_Touch_AutoDetect</a> = MaaAdbControllerType_Touch_Mask - 1
 , <br />
 &#160;&#160;<a class="el" href="MaaDef_8h.html#a21de9ae05eae97a700f9f834fe506f47a2d60b8a3560c086a6fd3ffe7be112411">MaaAdbControllerType_Key_Adb</a> = 1 &lt;&lt; 8
 , <br />
 &#160;&#160;<a class="el" href="MaaDef_8h.html#a21de9ae05eae97a700f9f834fe506f47a7f4048cdd05b342e1ab5691b9d367722">MaaAdbControllerType_Key_MaaTouch</a> = 2 &lt;&lt; 8
+, <br />
+&#160;&#160;<a class="el" href="MaaDef_8h.html#a21de9ae05eae97a700f9f834fe506f47aa7f7ca11e8cd76a9f95c6dc95103d28d">MaaAdbControllerType_Key_EmulatorExtras</a> = 3 &lt;&lt; 8
 , <br />
 &#160;&#160;<a class="el" href="MaaDef_8h.html#a21de9ae05eae97a700f9f834fe506f47a1deafc6cc3d4e512b0cd5158efa72c7a">MaaAdbControllerType_Key_AutoDetect</a> = MaaAdbControllerType_Key_Mask - (1 &lt;&lt; 8)
 , <br />
@@ -316,6 +320,8 @@ Enumerations</h2></td></tr>
 &#160;&#160;<a class="el" href="MaaDef_8h.html#a21de9ae05eae97a700f9f834fe506f47a876960f4dd9057a9c49a8347a4a206a5">MaaAdbControllerType_Input_Preset_Maatouch</a>
 , <br />
 &#160;&#160;<a class="el" href="MaaDef_8h.html#a21de9ae05eae97a700f9f834fe506f47a5f73e768699d6dcb9c1d5a77059af606">MaaAdbControllerType_Input_Preset_AutoDetect</a>
+, <br />
+&#160;&#160;<a class="el" href="MaaDef_8h.html#a21de9ae05eae97a700f9f834fe506f47a29b921e670fa202b4ec3731c31f48079">MaaAdbControllerType_Input_Preset_EmulatorExtras</a>
 , <br />
 &#160;&#160;<a class="el" href="MaaDef_8h.html#a21de9ae05eae97a700f9f834fe506f47ac0c833f535e3c58d6efaba3ec0da41a9">MaaAdbControllerType_Screencap_FastestWay_Compatible</a> = 1 &lt;&lt; 16
 , <br />
@@ -330,6 +336,8 @@ Enumerations</h2></td></tr>
 &#160;&#160;<a class="el" href="MaaDef_8h.html#a21de9ae05eae97a700f9f834fe506f47a11c059d2505bcc10bf44804afec2679b">MaaAdbControllerType_Screencap_MinicapDirect</a> = 6 &lt;&lt; 16
 , <br />
 &#160;&#160;<a class="el" href="MaaDef_8h.html#a21de9ae05eae97a700f9f834fe506f47a015a23fecc81d30ecb4d1fa9d0b01643">MaaAdbControllerType_Screencap_MinicapStream</a> = 7 &lt;&lt; 16
+, <br />
+&#160;&#160;<a class="el" href="MaaDef_8h.html#a21de9ae05eae97a700f9f834fe506f47a74f9942416a0b997c80427f476d902ee">MaaAdbControllerType_Screencap_EmulatorExtras</a> = 8 &lt;&lt; 16
 , <br />
 &#160;&#160;<a class="el" href="MaaDef_8h.html#a21de9ae05eae97a700f9f834fe506f47a16ae77e49c0b8a191186e299b63cc3f4">MaaAdbControllerType_Screencap_FastestLosslessWay</a>
 , <br />
@@ -389,7 +397,7 @@ Enumerations</h2></td></tr>
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">#define MaaNullSize&#160;&#160;&#160;((<a class="el" href="MaaDef_8h.html#a72a89077c419a0fe586d68bde004d856">MaaSize</a>) - 1)</td>
+          <td class="memname">#define MaaNullSize&#160;&#160;&#160;((<a class="el" href="MaaDef_8h.html#a72a89077c419a0fe586d68bde004d856">MaaSize</a>)-1)</td>
         </tr>
       </table>
 </div><div class="memdoc">
@@ -1258,14 +1266,17 @@ value: bool, eg: true; val_size: sizeof(bool)
 <tr><td class="fieldname"><a id="a21de9ae05eae97a700f9f834fe506f47a2108c7bcf252bb64b6462aa5f09f7ae0" name="a21de9ae05eae97a700f9f834fe506f47a2108c7bcf252bb64b6462aa5f09f7ae0"></a>MaaAdbControllerType_Touch_Adb&#160;</td><td class="fielddoc"></td></tr>
 <tr><td class="fieldname"><a id="a21de9ae05eae97a700f9f834fe506f47a38213a5995142a9ca8f057e1ed985bd1" name="a21de9ae05eae97a700f9f834fe506f47a38213a5995142a9ca8f057e1ed985bd1"></a>MaaAdbControllerType_Touch_MiniTouch&#160;</td><td class="fielddoc"></td></tr>
 <tr><td class="fieldname"><a id="a21de9ae05eae97a700f9f834fe506f47adf8d2f14e385b73ca79ff57c81ca390f" name="a21de9ae05eae97a700f9f834fe506f47adf8d2f14e385b73ca79ff57c81ca390f"></a>MaaAdbControllerType_Touch_MaaTouch&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="a21de9ae05eae97a700f9f834fe506f47a771502caa9b46813ee83240a82e3ccf3" name="a21de9ae05eae97a700f9f834fe506f47a771502caa9b46813ee83240a82e3ccf3"></a>MaaAdbControllerType_Touch_EmulatorExtras&#160;</td><td class="fielddoc"></td></tr>
 <tr><td class="fieldname"><a id="a21de9ae05eae97a700f9f834fe506f47ad05d0ac644b94fc434991d24f5e47c24" name="a21de9ae05eae97a700f9f834fe506f47ad05d0ac644b94fc434991d24f5e47c24"></a>MaaAdbControllerType_Touch_AutoDetect&#160;</td><td class="fielddoc"></td></tr>
 <tr><td class="fieldname"><a id="a21de9ae05eae97a700f9f834fe506f47a2d60b8a3560c086a6fd3ffe7be112411" name="a21de9ae05eae97a700f9f834fe506f47a2d60b8a3560c086a6fd3ffe7be112411"></a>MaaAdbControllerType_Key_Adb&#160;</td><td class="fielddoc"></td></tr>
 <tr><td class="fieldname"><a id="a21de9ae05eae97a700f9f834fe506f47a7f4048cdd05b342e1ab5691b9d367722" name="a21de9ae05eae97a700f9f834fe506f47a7f4048cdd05b342e1ab5691b9d367722"></a>MaaAdbControllerType_Key_MaaTouch&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="a21de9ae05eae97a700f9f834fe506f47aa7f7ca11e8cd76a9f95c6dc95103d28d" name="a21de9ae05eae97a700f9f834fe506f47aa7f7ca11e8cd76a9f95c6dc95103d28d"></a>MaaAdbControllerType_Key_EmulatorExtras&#160;</td><td class="fielddoc"></td></tr>
 <tr><td class="fieldname"><a id="a21de9ae05eae97a700f9f834fe506f47a1deafc6cc3d4e512b0cd5158efa72c7a" name="a21de9ae05eae97a700f9f834fe506f47a1deafc6cc3d4e512b0cd5158efa72c7a"></a>MaaAdbControllerType_Key_AutoDetect&#160;</td><td class="fielddoc"></td></tr>
 <tr><td class="fieldname"><a id="a21de9ae05eae97a700f9f834fe506f47a59924f7760f923f7c3c0b32f328be842" name="a21de9ae05eae97a700f9f834fe506f47a59924f7760f923f7c3c0b32f328be842"></a>MaaAdbControllerType_Input_Preset_Adb&#160;</td><td class="fielddoc"></td></tr>
 <tr><td class="fieldname"><a id="a21de9ae05eae97a700f9f834fe506f47a29acac3c28459b54743e7b20f577cafa" name="a21de9ae05eae97a700f9f834fe506f47a29acac3c28459b54743e7b20f577cafa"></a>MaaAdbControllerType_Input_Preset_Minitouch&#160;</td><td class="fielddoc"></td></tr>
 <tr><td class="fieldname"><a id="a21de9ae05eae97a700f9f834fe506f47a876960f4dd9057a9c49a8347a4a206a5" name="a21de9ae05eae97a700f9f834fe506f47a876960f4dd9057a9c49a8347a4a206a5"></a>MaaAdbControllerType_Input_Preset_Maatouch&#160;</td><td class="fielddoc"></td></tr>
 <tr><td class="fieldname"><a id="a21de9ae05eae97a700f9f834fe506f47a5f73e768699d6dcb9c1d5a77059af606" name="a21de9ae05eae97a700f9f834fe506f47a5f73e768699d6dcb9c1d5a77059af606"></a>MaaAdbControllerType_Input_Preset_AutoDetect&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="a21de9ae05eae97a700f9f834fe506f47a29b921e670fa202b4ec3731c31f48079" name="a21de9ae05eae97a700f9f834fe506f47a29b921e670fa202b4ec3731c31f48079"></a>MaaAdbControllerType_Input_Preset_EmulatorExtras&#160;</td><td class="fielddoc"></td></tr>
 <tr><td class="fieldname"><a id="a21de9ae05eae97a700f9f834fe506f47ac0c833f535e3c58d6efaba3ec0da41a9" name="a21de9ae05eae97a700f9f834fe506f47ac0c833f535e3c58d6efaba3ec0da41a9"></a>MaaAdbControllerType_Screencap_FastestWay_Compatible&#160;</td><td class="fielddoc"><dl class="deprecated"><dt><b><a class="el" href="deprecated.html#_deprecated000004">Deprecated:</a></b></dt><dd></dd></dl>
 </td></tr>
 <tr><td class="fieldname"><a id="a21de9ae05eae97a700f9f834fe506f47ac8462950eca0594fc60c982c8734e876" name="a21de9ae05eae97a700f9f834fe506f47ac8462950eca0594fc60c982c8734e876"></a>MaaAdbControllerType_Screencap_RawByNetcat&#160;</td><td class="fielddoc"></td></tr>
@@ -1274,6 +1285,7 @@ value: bool, eg: true; val_size: sizeof(bool)
 <tr><td class="fieldname"><a id="a21de9ae05eae97a700f9f834fe506f47a08444c4d9943abf244b4ce90fc25b2a3" name="a21de9ae05eae97a700f9f834fe506f47a08444c4d9943abf244b4ce90fc25b2a3"></a>MaaAdbControllerType_Screencap_EncodeToFile&#160;</td><td class="fielddoc"></td></tr>
 <tr><td class="fieldname"><a id="a21de9ae05eae97a700f9f834fe506f47a11c059d2505bcc10bf44804afec2679b" name="a21de9ae05eae97a700f9f834fe506f47a11c059d2505bcc10bf44804afec2679b"></a>MaaAdbControllerType_Screencap_MinicapDirect&#160;</td><td class="fielddoc"></td></tr>
 <tr><td class="fieldname"><a id="a21de9ae05eae97a700f9f834fe506f47a015a23fecc81d30ecb4d1fa9d0b01643" name="a21de9ae05eae97a700f9f834fe506f47a015a23fecc81d30ecb4d1fa9d0b01643"></a>MaaAdbControllerType_Screencap_MinicapStream&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="a21de9ae05eae97a700f9f834fe506f47a74f9942416a0b997c80427f476d902ee" name="a21de9ae05eae97a700f9f834fe506f47a74f9942416a0b997c80427f476d902ee"></a>MaaAdbControllerType_Screencap_EmulatorExtras&#160;</td><td class="fielddoc"></td></tr>
 <tr><td class="fieldname"><a id="a21de9ae05eae97a700f9f834fe506f47a16ae77e49c0b8a191186e299b63cc3f4" name="a21de9ae05eae97a700f9f834fe506f47a16ae77e49c0b8a191186e299b63cc3f4"></a>MaaAdbControllerType_Screencap_FastestLosslessWay&#160;</td><td class="fielddoc"></td></tr>
 <tr><td class="fieldname"><a id="a21de9ae05eae97a700f9f834fe506f47ae30111ce0fc2dc34a4d911928c1848fd" name="a21de9ae05eae97a700f9f834fe506f47ae30111ce0fc2dc34a4d911928c1848fd"></a>MaaAdbControllerType_Screencap_FastestWay&#160;</td><td class="fielddoc"></td></tr>
 </table>
