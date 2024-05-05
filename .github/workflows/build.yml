@@ -33,28 +33,42 @@ jobs:
       - uses: actions/checkout@v3
         with:
           fetch-depth: 0
-      - id: set_tag
+      - id: set_meta
         run: |
           is_release=${{ startsWith(github.ref, 'refs/tags/v') }}
-          tag=$(git describe --tags --match "v*" ${{ github.ref }} || true)
+
+          tag=$(git describe --tags --long --match "v*" --exclude "*-post*" || true)
+          commit_hash=$(git rev-parse --short HEAD)
           if [[ $tag != v* ]]; then
-            tag=$(curl -sX GET "https://api.github.com/repos/MaaXYZ/MaaFramework/releases/latest" --header 'authorization: Bearer ${{ secrets.GITHUB_TOKEN }}' | awk '/tag_name/{print $4}' FS='["]')
+            if $is_release; then echo "::error::Failed to get tag on releasing" && exit 1; fi
+            ver_core=$(curl -sX GET "https://api.github.com/repos/MaaXYZ/MaaFramework/releases/latest" --header 'authorization: Bearer ${{ secrets.GITHUB_TOKEN }}' | awk '/tag_name/{print $4}' FS='["]' || true)
+            tag=$(date "+$ver_core-1%m%d-${commit_hash}")
             if [[ $tag != v* ]]; then
-              tag="v0.0.0"
+              tag=$(date "+v%Y.%-m.%-d-2%H%M-${commit_hash}")
             fi
-            tag=$(date "+$tag-%y%m%d-$(git rev-parse --short HEAD)")
-          fi
-          if ! $($is_release) ; then
-            prefix=${tag%-*-*}
-            suffix=${tag#$prefix-}
-            tag="$prefix-ci.$suffix"
           fi
 
-          echo tag=$tag | tee -a $GITHUB_OUTPUT
-          echo is_release=$is_release | tee -a $GITHUB_OUTPUT
+          if $is_release; then
+            version=${tag#v}
+          else
+            ver_core=${tag%-*-*}
+            suffixs=(${tag//-/ })
+            tag=${ver_core}-post.${suffixs[-2]}-ci.${{ github.run_id }}
+            version=${tag#v}+${commit_hash}.$(date +%Y%m%d)
+          fi
+
+          echo "tag=$tag
+          version=$version
+          is_release=$is_release" | tee -a "$GITHUB_OUTPUT"
     outputs:
-      tag: ${{ steps.set_tag.outputs.tag }}
-      is_release: ${{ steps.set_tag.outputs.is_release }}
+      is_release: ${{ steps.set_meta.outputs.is_release }}
+      tag: ${{ steps.set_meta.outputs.tag }}         # v<version>
+      version: ${{ steps.set_meta.outputs.version }} # <release version> | <ci version>+<build> e.g ↓
+    # 主版本号.次版本号.修订号[-(alpha|beta|rc).预发布号]
+    #   [-post.发布后号[-ci.${{ github.run_id }}]+${commit_hash}.${dateY%m%d}]
+    #     1.7.0
+    #     1.7.0-beta.1
+    #     1.7.0-post.6-ci.8678478007+gf5e12a1c.20240413
 
   windows:
     needs: meta
@@ -294,10 +308,10 @@ jobs:
       - name: Nuget Pack
         working-directory: tools/nupkgs
         run: |
-          tag=${{ needs.meta.outputs.tag }}
+          version=${{ needs.meta.outputs.version }}
           nuget pack Maa.Framework.Runtimes.nuspec \
             -Verbosity detailed \
-            -Properties "id=$NUGET_PACKAGE_ID;version=${tag#v};year=$(date +%Y);branch=$(git rev-parse --abbrev-ref HEAD);commit=$(git rev-parse HEAD);docs_path=../../docs;assets_path=../../assets"
+            -Properties "id=$NUGET_PACKAGE_ID;version=${version//-post/};year=$(date +%Y);branch=$(git rev-parse --abbrev-ref HEAD);commit=$(git rev-parse HEAD);root_path=../.."
 
       - uses: actions/upload-artifact@v3
         if: always()
