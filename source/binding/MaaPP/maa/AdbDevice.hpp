@@ -31,12 +31,14 @@ struct AdbType
         { "adb", MaaAdbControllerType_Touch_Adb },
         { "minitouch", MaaAdbControllerType_Touch_MiniTouch },
         { "maatouch", MaaAdbControllerType_Touch_MaaTouch },
+        { "emulator extras", MaaAdbControllerType_Touch_EmulatorExtras },
         { "auto", MaaAdbControllerType_Touch_AutoDetect },
     };
 
     constexpr static std::tuple<std::string_view, MaaAdbControllerType> key_index[] = {
         { "adb", MaaAdbControllerType_Key_Adb },
         { "maatouch", MaaAdbControllerType_Key_MaaTouch },
+        { "emulator extras", MaaAdbControllerType_Key_EmulatorExtras },
         { "auto", MaaAdbControllerType_Key_AutoDetect },
     };
 
@@ -47,6 +49,7 @@ struct AdbType
         { "encode to file", MaaAdbControllerType_Screencap_EncodeToFile },
         { "minicap direct", MaaAdbControllerType_Screencap_MinicapDirect },
         { "minicap stream", MaaAdbControllerType_Screencap_MinicapStream },
+        { "emulator extras", MaaAdbControllerType_Screencap_EmulatorExtras },
         { "fastest lossless", MaaAdbControllerType_Screencap_FastestLosslessWay },
         { "fastest", MaaAdbControllerType_Screencap_FastestWay },
     };

@@ -110,6 +110,13 @@ inline coro::Promise<std::shared_ptr<std::vector<Win32Hwnd>>>
     co_return details::get_result(size);
 }
 
+inline coro::Promise<std::shared_ptr<std::vector<Win32Hwnd>>> list()
+{
+    auto size = co_await coro::EventLoop::current()->eval(
+        [class_name, window_name]() { return MaaToolkitListWindows(); });
+    co_return details::get_result(size);
+}
+
 inline Win32Hwnd cursor()
 {
     return { MaaToolkitGetCursorWindow() };
