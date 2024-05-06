@@ -16,8 +16,8 @@ bool Connection::parse(const json::value& config)
         "kill-server",
     };
 
-    return parse_argv("Connect", config, kDefaultConnectArgv, connect_argv_)
-           && parse_argv("KillServer", config, kDefaultKillServerArgv, kill_server_argv_);
+    return parse_command("Connect", config, kDefaultConnectArgv, connect_argv_)
+           && parse_command("KillServer", config, kDefaultKillServerArgv, kill_server_argv_);
 }
 
 bool Connection::connect()

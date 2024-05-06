@@ -2,6 +2,7 @@
 
 #include <meojson/json.hpp>
 
+#include "EmulatorExtras/MumuExternalRendererIpc.h"
 #include "Input/AdbInput.h"
 #include "Input/AutoDetectInput.h"
 #include "Input/MaatouchInput.h"
@@ -164,6 +165,11 @@ MaaControlUnitHandle MaaAdbControlUnitCreate(
             return nullptr;
         }
         screencap_unit = std::make_shared<MinicapStream>(minicap_path);
+        break;
+
+    case MaaAdbControllerType_Screencap_EmulatorExtras:
+        LogInfo << "screencap_type: EmulatorExtras";
+        screencap_unit = std::make_shared<MumuExternalRendererIpc>();
         break;
 
     case MaaAdbControllerType_Screencap_FastestWay_Compatible:

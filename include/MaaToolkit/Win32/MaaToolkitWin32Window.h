@@ -40,6 +40,12 @@ extern "C"
         MaaToolkitSearchWindow(MaaStringView class_name, MaaStringView window_name);
 
     /**
+     * @brief List all windows.
+     * @return MaaSize The number of windows found. To get the corresponding window handle, use
+     */
+    MAA_TOOLKIT_API MaaSize MaaToolkitListWindows();
+
+    /**
      * @brief Get the window handle by index.
      *
      * @param index The 0-based index of the window. The index should not exceed the number of

@@ -74,14 +74,9 @@ std::shared_ptr<MAA_CTRL_UNIT_NS::ControlUnitAPI> AdbControlUnitLibraryHolder::c
         return nullptr;
     }
 
-    auto destroy_control_unit = [destroy_control_unit_func](MaaControlUnitHandle handle) {
-        destroy_control_unit_func(handle);
-        unload_library();
-    };
-
     return std::shared_ptr<MAA_CTRL_UNIT_NS::ControlUnitAPI>(
         control_unit_handle,
-        destroy_control_unit);
+        destroy_control_unit_func);
 }
 
 std::shared_ptr<MAA_CTRL_UNIT_NS::ControlUnitAPI>
@@ -120,14 +115,9 @@ std::shared_ptr<MAA_CTRL_UNIT_NS::ControlUnitAPI>
         return nullptr;
     }
 
-    auto destroy_control_unit = [destroy_control_unit_func](MaaControlUnitHandle handle) {
-        destroy_control_unit_func(handle);
-        unload_library();
-    };
-
     return std::shared_ptr<MAA_CTRL_UNIT_NS::ControlUnitAPI>(
         control_unit_handle,
-        destroy_control_unit);
+        destroy_control_unit_func);
 }
 
 std::shared_ptr<MAA_CTRL_UNIT_NS::ControlUnitAPI> DbgControlUnitLibraryHolder::create_control_unit(
@@ -163,14 +153,9 @@ std::shared_ptr<MAA_CTRL_UNIT_NS::ControlUnitAPI> DbgControlUnitLibraryHolder::c
         return nullptr;
     }
 
-    auto destroy_control_unit = [destroy_control_unit_func](MaaControlUnitHandle handle) {
-        destroy_control_unit_func(handle);
-        unload_library();
-    };
-
     return std::shared_ptr<MAA_CTRL_UNIT_NS::ControlUnitAPI>(
         control_unit_handle,
-        destroy_control_unit);
+        destroy_control_unit_func);
 }
 
 std::shared_ptr<MAA_CTRL_UNIT_NS::ControlUnitAPI>
@@ -209,14 +194,9 @@ std::shared_ptr<MAA_CTRL_UNIT_NS::ControlUnitAPI>
         return nullptr;
     }
 
-    auto destroy_control_unit = [destroy_control_unit_func](MaaControlUnitHandle handle) {
-        destroy_control_unit_func(handle);
-        unload_library();
-    };
-
     return std::shared_ptr<MAA_CTRL_UNIT_NS::ControlUnitAPI>(
         control_unit_handle,
-        destroy_control_unit);
+        destroy_control_unit_func);
 }
 
 MAA_NS_END

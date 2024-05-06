@@ -339,6 +339,8 @@ void Interactor::select_adb_auto_detect()
 
     adb_config.adb_path = MaaToolkitGetDeviceAdbPath(index);
     adb_config.address = MaaToolkitGetDeviceAdbSerial(index);
+    adb_config.config =
+        json::parse(MaaToolkitGetDeviceAdbConfig(index)).value_or(json::object()).as_object();
 }
 
 void Interactor::select_adb_manual_input()

@@ -16,3 +16,6 @@
 [submodule "tools/MaaDebugger"]
 	path = tools/MaaDebugger
 	url = https://github.com/MaaXYZ/MaaDebugger.git
+[submodule "3rdparty/EmulatorExtras"]
+	path = 3rdparty/EmulatorExtras
+	url = https://github.com/MaaXYZ/EmulatorExtras.git

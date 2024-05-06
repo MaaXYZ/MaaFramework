@@ -450,6 +450,10 @@ class _Toolkit:
         class_name: MaaStringView, window_name: MaaStringView
     ) -> MaaSize: ...
     @staticmethod
+    def MaaToolkitListWindows(
+        class_name: MaaStringView, window_name: MaaStringView
+    ) -> MaaSize: ...
+    @staticmethod
     def MaaToolkitGetWindow(index: MaaSize) -> MaaWin32Hwnd: ...
     @staticmethod
     def MaaToolkitGetWindowClassName(

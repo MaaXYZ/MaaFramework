@@ -9,21 +9,25 @@
     <license type="expression">LGPL-3.0-only</license>
     <!--iconUrl is deprecated. Use icon instead.-->
     <iconUrl>https://cdn.jsdelivr.net/gh/MaaXYZ/design@main/logo/maa-logo_128x128.png</iconUrl>
-    <!--readme-->
-    <description>MaaFramework is a software automation testing framework based on image recognition.</description>
+    <readme>README.md</readme>
+    <description>An automation black-box testing framework based on image recognition.</description>
     <releaseNotes>Release notes are at https://github.com/MaaXYZ/MaaFramework/releases.</releaseNotes>
     <copyright>Copyright © 2021-$year$ MAA Team and Contributers. All rights reserved.</copyright>
-    <tags>MAA native runtimes C++ computer-vision</tags>
+    <tags>MAA native runtimes C++ computer-vision black-box-testing</tags>
     <repository type="git" url="https://github.com/MaaXYZ/MaaFramework/"  branch="$branch$" commit="$commit$" />
+    <dependencies>
+      <group targetFramework="netstandard1.0" />
+    </dependencies>
   </metadata>
   <files>
-    <file src="$docs_path$\**\*.*" target="docs" />
-    <file src="$assets_path$\MAA-linux-aarch64\bin\**"  target="runtimes\linux-arm64\native" />
-    <file src="$assets_path$\MAA-linux-x86_64\bin\**"   target="runtimes\linux-x64\native" />
-    <file src="$assets_path$\MAA-macos-aarch64\bin\**"  target="runtimes\osx-arm64\native" />
-    <file src="$assets_path$\MAA-macos-x86_64\bin\**"   target="runtimes\osx-x64\native" />
-    <file src="$assets_path$\MAA-win-aarch64\bin\**"    target="runtimes\win-arm64\native" />
-    <file src="$assets_path$\MAA-win-x86_64\bin\**"     target="runtimes\win-x64\native" />
+    <file src="$root_path$\README.md" target="" />
+    <file src="$root_path$\docs\**\*.*" target="docs" />
+    <file src="$root_path$\assets\MAA-linux-aarch64\bin\**"  target="runtimes\linux-arm64\native" />
+    <file src="$root_path$\assets\MAA-linux-x86_64\bin\**"   target="runtimes\linux-x64\native" />
+    <file src="$root_path$\assets\MAA-macos-aarch64\bin\**"  target="runtimes\osx-arm64\native" />
+    <file src="$root_path$\assets\MAA-macos-x86_64\bin\**"   target="runtimes\osx-x64\native" />
+    <file src="$root_path$\assets\MAA-win-aarch64\bin\**"    target="runtimes\win-arm64\native" />
+    <file src="$root_path$\assets\MAA-win-x86_64\bin\**"     target="runtimes\win-x64\native" />
 
     <!--empty directory in lib to avoid nuget adding a reference-->
     <file src="_._" target="lib/netstandard1.0/_._" />

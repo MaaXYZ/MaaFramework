@@ -27,7 +27,7 @@ void UnitBase::merge_replacement(Replacement argv_replace, bool _override)
     }
 }
 
-bool UnitBase::parse_argv(
+bool UnitBase::parse_command(
     const std::string& key,
     const json::value& config,
     const json::array& default_argv,

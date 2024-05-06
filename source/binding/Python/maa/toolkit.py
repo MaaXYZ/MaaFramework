@@ -131,6 +131,18 @@ class Toolkit:
         return windows
 
     @classmethod
+    def list_windows(cls) -> List[MaaWin32Hwnd]:
+        cls._set_api_properties()
+
+        count = Library.toolkit.MaaToolkitListWindows()
+
+        windows = []
+        for i in range(count):
+            windows.append(Library.toolkit.MaaToolkitGetWindow(i))
+
+        return windows
+
+    @classmethod
     def get_cursor_window(cls) -> MaaWin32Hwnd:
         cls._set_api_properties()
 
@@ -245,6 +257,9 @@ class Toolkit:
             MaaStringView,
             MaaStringView,
         ]
+
+        Library.toolkit.MaaToolkitListWindows.restype = MaaSize
+        Library.toolkit.MaaToolkitListWindows.argtypes = None
 
         Library.toolkit.MaaToolkitGetWindow.restype = MaaWin32Hwnd
         Library.toolkit.MaaToolkitGetWindow.argtypes = [MaaSize]
