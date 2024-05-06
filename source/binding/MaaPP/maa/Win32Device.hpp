@@ -112,8 +112,7 @@ inline coro::Promise<std::shared_ptr<std::vector<Win32Hwnd>>>
 
 inline coro::Promise<std::shared_ptr<std::vector<Win32Hwnd>>> list()
 {
-    auto size = co_await coro::EventLoop::current()->eval(
-        [class_name, window_name]() { return MaaToolkitListWindows(); });
+    auto size = co_await coro::EventLoop::current()->eval([]() { return MaaToolkitListWindows(); });
     co_return details::get_result(size);
 }
 
