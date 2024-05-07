@@ -15,7 +15,7 @@ template <
     typename IType>
 struct ControllerType
 {
-    Type type_;
+    Type type_ = 0;
 
     ControllerType(Type type = 0)
         : type_(type)

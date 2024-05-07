@@ -22,8 +22,8 @@ struct AnalyzeResult
 
 struct RecognitionDetail
 {
-    bool hit;
-    MaaRect hit_box;
+    bool hit = false;
+    MaaRect hit_box = { 0, 0, 0, 0 };
     json::value detail;
     details::ImageList draws;
 
@@ -45,8 +45,8 @@ struct RecognitionDetail
 
 struct RunningDetail
 {
-    MaaRecoId reco_id;
-    bool success;
+    MaaRecoId reco_id = MaaInvalidId;
+    bool success = false;
 
     bool query(MaaRunningId running_id)
     {

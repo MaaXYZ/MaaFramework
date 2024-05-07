@@ -46,7 +46,7 @@ struct Win32Type
 
 struct Win32Hwnd
 {
-    MaaWin32Hwnd hwnd_;
+    MaaWin32Hwnd hwnd_ = nullptr;
 
     Win32Hwnd(MaaWin32Hwnd hwnd = nullptr)
         : hwnd_(hwnd)
