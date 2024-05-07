@@ -30,8 +30,11 @@ class Toolkit:
         """
         cls._set_api_properties()
 
-        return Library.toolkit.MaaToolkitInitOptionConfig(
-            str(user_path).encode("utf-8"), json.dumps(default_config).encode("utf-8")
+        return bool(
+            Library.toolkit.MaaToolkitInitOptionConfig(
+                str(user_path).encode("utf-8"),
+                json.dumps(default_config).encode("utf-8"),
+            )
         )
 
     @classmethod
@@ -74,12 +77,14 @@ class Toolkit:
 
         argv_list = [str(arg).encode("utf-8") for arg in argv]
 
-        return Library.toolkit.MaaToolkitRegisterCustomRecognizerExecutor(
-            inst.c_handle,
-            name.encode("utf-8"),
-            str(exec_path).encode("utf-8"),
-            (MaaStringView * len(argv_list))(*argv_list),
-            len(argv_list),
+        return bool(
+            Library.toolkit.MaaToolkitRegisterCustomRecognizerExecutor(
+                inst.c_handle,
+                name.encode("utf-8"),
+                str(exec_path).encode("utf-8"),
+                (MaaStringView * len(argv_list))(*argv_list),
+                len(argv_list),
+            )
         )
 
     @classmethod
@@ -93,11 +98,13 @@ class Toolkit:
 
         argv_list = [str(arg).encode("utf-8") for arg in argv]
 
-        return Library.toolkit.MaaToolkitRegisterCustomActionExecutor(
-            inst.c_handle(),
-            name.encode("utf-8"),
-            str(exec_path).encode("utf-8"),
-            (MaaStringView * len(argv_list))(*argv_list),
+        return bool(
+            Library.toolkit.MaaToolkitRegisterCustomActionExecutor(
+                inst.c_handle(),
+                name.encode("utf-8"),
+                str(exec_path).encode("utf-8"),
+                (MaaStringView * len(argv_list))(*argv_list),
+            )
         )
 
     _api_properties_initialized: bool = False

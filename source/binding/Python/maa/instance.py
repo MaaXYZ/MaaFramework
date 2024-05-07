@@ -72,9 +72,11 @@ class Instance:
         :return: True if the resource and controller were successfully bound, False otherwise.
         """
 
-        return Library.framework.MaaBindResource(
-            self._handle, resource._handle
-        ) and Library.framework.MaaBindController(self._handle, controller._handle)
+        return bool(
+            Library.framework.MaaBindResource(self._handle, resource._handle)
+        ) and bool(
+            Library.framework.MaaBindController(self._handle, controller._handle)
+        )
 
     @property
     def inited(self) -> bool:
@@ -84,7 +86,7 @@ class Instance:
         :return: True if the instance is inited, False otherwise.
         """
 
-        return Library.framework.MaaInited(self._handle)
+        return bool(Library.framework.MaaInited(self._handle))
 
     async def run_task(self, task_type: str, param: Dict = {}) -> bool:
         """
