@@ -248,7 +248,7 @@ class AdbController(Controller):
         address: str,
         type: MaaAdbControllerType = (
             MaaAdbControllerTypeEnum.Input_Preset_AutoDetect
-            | MaaAdbControllerTypeEnum.Screencap_FastestWay
+            | MaaAdbControllerTypeEnum.Screencap_FastestLosslessWay
         ),
         config: Dict[str, Any] = {},
         agent_path: Union[str, Path] = AGENT_BINARY_PATH,

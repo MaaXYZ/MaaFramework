@@ -28,7 +28,7 @@ struct InterfaceData
         {
             int32_t touch = MaaAdbControllerType_Touch_AutoDetect;
             int32_t key = MaaAdbControllerType_Key_AutoDetect;
-            int32_t screencap = MaaAdbControllerType_Screencap_FastestWay;
+            int32_t screencap = MaaAdbControllerType_Screencap_FastestLosslessWay;
 
             json::object config;
 
