@@ -37,7 +37,7 @@ jobs:
         run: |
           is_release=${{ startsWith(github.ref, 'refs/tags/v') }}
 
-          tag=$(git describe --tags --long --match "v*" --exclude "*-post*" || true)
+          tag=$(git describe --tags --match "v*" --exclude "*-post*" || true)
           commit_hash=$(git rev-parse --short HEAD)
           if [[ $tag != v* ]]; then
             if $is_release; then echo "::error::Failed to get tag on releasing" && exit 1; fi
