@@ -246,10 +246,9 @@ class AdbController(Controller):
         self,
         adb_path: Union[str, Path],
         address: str,
-        type: MaaAdbControllerType = (
-            MaaAdbControllerTypeEnum.Input_Preset_AutoDetect
-            | MaaAdbControllerTypeEnum.Screencap_FastestLosslessWay
-        ),
+        touch_type: MaaAdbControllerType = MaaAdbControllerTypeEnum.Touch_AutoDetect,
+        key_type: MaaAdbControllerType = MaaAdbControllerTypeEnum.Key_AutoDetect,
+        screencap_type: MaaAdbControllerType = MaaAdbControllerTypeEnum.Screencap_FastestLosslessWay,
         config: Dict[str, Any] = {},
         agent_path: Union[str, Path] = AGENT_BINARY_PATH,
         callback: Optional[Callback] = None,
@@ -260,7 +259,9 @@ class AdbController(Controller):
 
         :param adb_path: The path to the ADB executable.
         :param address: The address of the device.
-        :param type: The type.
+        :param touch_type: The touch type.
+        :param key_type: The key type.
+        :param screencap_type: The screencap type.
         :param config: The configuration.
         :param callback: The callback function.
         :param callback_arg: The callback argument.
@@ -273,7 +274,7 @@ class AdbController(Controller):
         self._handle = Library.framework.MaaAdbControllerCreateV2(
             str(adb_path).encode("utf-8"),
             address.encode("utf-8"),
-            type,
+            touch_type | key_type | screencap_type,
             json.dumps(config).encode("utf-8"),
             str(agent_path).encode("utf-8"),
             self._callback_agent.c_callback,
@@ -305,7 +306,9 @@ class DbgController(Controller):
         self,
         read_path: Union[str, Path],
         write_path: Union[str, Path] = "",
-        type: MaaDbgControllerType = MaaDbgControllerTypeEnum.CarouselImage,
+        touch_type: MaaDbgControllerType = MaaDbgControllerTypeEnum.Invalid,
+        key_type: MaaDbgControllerType = MaaDbgControllerTypeEnum.Invalid,
+        screencap_type: MaaDbgControllerType = MaaDbgControllerTypeEnum.CarouselImage,
         config: Dict[str, Any] = {},
         callback: Optional[Callback] = None,
         callback_arg: Any = None,
@@ -317,7 +320,7 @@ class DbgController(Controller):
         self._handle = Library.framework.MaaDbgControllerCreate(
             str(read_path).encode("utf-8"),
             str(write_path).encode("utf-8"),
-            type,
+            touch_type | key_type | screencap_type,
             json.dumps(config).encode("utf-8"),
             self._callback_agent.c_callback,
             self._callback_agent.c_callback_arg,
@@ -346,11 +349,9 @@ class Win32Controller(Controller):
     def __init__(
         self,
         hWnd: MaaWin32Hwnd,
-        type: MaaWin32ControllerType = (
-            MaaWin32ControllerTypeEnum.Key_SendMessage
-            | MaaWin32ControllerTypeEnum.Touch_SendMessage
-            | MaaWin32ControllerTypeEnum.Screencap_DXGI_DesktopDup
-        ),
+        touch_type: MaaWin32ControllerType = MaaWin32ControllerTypeEnum.Touch_Seize,
+        key_type: MaaWin32ControllerType = MaaWin32ControllerTypeEnum.Key_Seize,
+        screencap_type: MaaWin32ControllerType = MaaWin32ControllerTypeEnum.Screencap_DXGI_DesktopDup,
         callback: Optional[Callback] = None,
         callback_arg: Any = None,
     ):
@@ -360,7 +361,7 @@ class Win32Controller(Controller):
         self._callback_agent = CallbackAgent(callback, callback_arg)
         self._handle = Library.framework.MaaWin32ControllerCreate(
             hWnd,
-            type,
+            touch_type | key_type | screencap_type,
             self._callback_agent.c_callback,
             self._callback_agent.c_callback_arg,
         )
