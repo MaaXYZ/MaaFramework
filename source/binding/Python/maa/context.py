@@ -32,7 +32,7 @@ class SyncContext:
             Library.framework.MaaSyncContextRunTask(
                 self._handle,
                 task_name.encode("utf-8"),
-                json.dumps(task_param).encode("utf-8"),
+                json.dumps(task_param, ensure_ascii=False).encode("utf-8"),
             )
         )
 
@@ -62,7 +62,7 @@ class SyncContext:
             self._handle,
             image_buffer.c_handle,
             task_name.encode("utf-8"),
-            json.dumps(task_param).encode("utf-8"),
+            json.dumps(task_param, ensure_ascii=False).encode("utf-8"),
             rect_buffer.c_handle,
             detail_buffer.c_handle,
         )
@@ -94,7 +94,7 @@ class SyncContext:
             Library.framework.MaaSyncContextRunAction(
                 self._handle,
                 task_name.encode("utf-8"),
-                json.dumps(task_param).encode("utf-8"),
+                json.dumps(task_param, ensure_ascii=False).encode("utf-8"),
                 rect_buffer.c_handle,
                 cur_rec_detail.encode("utf-8"),
             )

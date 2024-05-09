@@ -33,7 +33,7 @@ class Toolkit:
         return bool(
             Library.toolkit.MaaToolkitInitOptionConfig(
                 str(user_path).encode("utf-8"),
-                json.dumps(default_config).encode("utf-8"),
+                json.dumps(default_config, ensure_ascii=False).encode("utf-8"),
             )
         )
 

@@ -10,7 +10,7 @@ output = {
     "x": 200,
     "y": 100,
 }
-print(json.dumps(output))
+print(json.dumps(output, ensure_ascii=False))
 
 res = input()
 print("maafw return:", res)

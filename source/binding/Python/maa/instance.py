@@ -109,7 +109,9 @@ class Instance:
         """
 
         maaid = Library.framework.MaaPostTask(
-            self._handle, task_type.encode("utf-8"), json.dumps(param).encode("utf-8")
+            self._handle,
+            task_type.encode("utf-8"),
+            json.dumps(param, ensure_ascii=False).encode("utf-8"),
         )
         return TaskFuture(maaid, self._status, self._set_task_param)
 
@@ -203,7 +205,7 @@ class Instance:
 
     def _set_task_param(self, id: int, param: Dict) -> bool:
         return Library.framework.MaaSetTaskParam(
-            self._handle, id, json.dumps(param).encode("utf-8")
+            self._handle, id, json.dumps(param, ensure_ascii=False).encode("utf-8")
         )
 
     @staticmethod

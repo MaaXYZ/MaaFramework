@@ -275,7 +275,7 @@ class AdbController(Controller):
             str(adb_path).encode("utf-8"),
             address.encode("utf-8"),
             touch_type | key_type | screencap_type,
-            json.dumps(config).encode("utf-8"),
+            json.dumps(config, ensure_ascii=False).encode("utf-8"),
             str(agent_path).encode("utf-8"),
             self._callback_agent.c_callback,
             self._callback_agent.c_callback_arg,
@@ -321,7 +321,7 @@ class DbgController(Controller):
             str(read_path).encode("utf-8"),
             str(write_path).encode("utf-8"),
             touch_type | key_type | screencap_type,
-            json.dumps(config).encode("utf-8"),
+            json.dumps(config, ensure_ascii=False).encode("utf-8"),
             self._callback_agent.c_callback,
             self._callback_agent.c_callback_arg,
         )
@@ -401,7 +401,7 @@ class ThriftController(Controller):
             type,
             host.encode("utf-8"),
             port,
-            json.dumps(config).encode("utf-8"),
+            json.dumps(config, ensure_ascii=False).encode("utf-8"),
             self._callback_agent.c_callback,
             self._callback_agent.c_callback_arg,
         )
