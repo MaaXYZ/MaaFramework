@@ -444,3 +444,5 @@ FodyWeavers.xsd
 .nuke/temp/*
 
 !include/MaaToolkit/Win32
+
+export_targets.cmake

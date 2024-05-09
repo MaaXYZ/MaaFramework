@@ -7,7 +7,7 @@ set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 set(CMAKE_MAP_IMPORTED_CONFIG_DebWithRelDeps "DebWithRelDeps;Release;")
 
 set(Boost_NO_WARN_NEW_VERSIONS ON)
-set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
+# set(CMAKE_EXPORT_COMPILE_COMMANDS ON) see below
 
 option(USE_MAADEPS "use third-party libraries built by MaaDeps" ON)
 
@@ -88,3 +88,17 @@ install(
     FILE MaaFramework.cmake
     NAMESPACE MaaFramework::
     DESTINATION "share/cmake/MaaFramework")
+
+if(EXISTS ${CMAKE_CURRENT_LIST_DIR}/export_targets.cmake)
+    message("Load export_targets.cmake")
+    include(${CMAKE_CURRENT_LIST_DIR}/export_targets.cmake)
+    # cmake-format: off
+    # 
+    # specify export compile commands for target like this
+    # 
+    # if(TARGET sample_maapp_coro)
+    #   set_target_properties(sample_maapp_coro PROPERTIES EXPORT_COMPILE_COMMANDS ON)
+    # endif()
+    # 
+    # cmake-format: on
+endif()

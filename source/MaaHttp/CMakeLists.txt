@@ -6,8 +6,6 @@ if(NODE_EXE AND EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/LHG/README.md)
 
     add_subdirectory(LHG)
 
-    set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
-
     lhggenerate(LHGInfo ${CMAKE_CURRENT_SOURCE_DIR}/interface.json ${CMAKE_CURRENT_SOURCE_DIR}/config.json
                 ${CMAKE_CURRENT_SOURCE_DIR}/source/info.hpp)
 
