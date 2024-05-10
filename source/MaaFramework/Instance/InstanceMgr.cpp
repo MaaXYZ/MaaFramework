@@ -67,40 +67,61 @@ bool InstanceMgr::set_option(MaaInstOption key, MaaOptionValue value, MaaOptionV
     return false;
 }
 
-MaaTaskId InstanceMgr::post_task(std::string entry, std::string_view param)
+MaaTaskId InstanceMgr::post_pipeline(std::string entry, std::string_view param)
 {
-    LogInfo << VAR(entry) << VAR(param);
-
-#ifndef MAA_DEBUG
-    if (!inited()) {
-        LogError << "Instance not inited";
+    auto task = make_task(entry, param);
+    if (!task) {
+        LogError << "failed to make task" << VAR(entry) << VAR(param);
         return MaaInvalidId;
     }
-#endif
-
-    if (!check_stop()) {
-        return MaaInvalidId;
-    }
-
-    TaskPtr task_ptr = std::make_shared<TaskNS::PipelineTask>(std::move(entry), this);
-
-    auto param_opt = json::parse(param);
-    if (!param_opt) {
-        LogError << "Invalid param:" << param;
-        return MaaInvalidId;
-    }
-
-    bool param_ret = task_ptr->set_param(*param_opt);
-    if (!param_ret) {
-        LogError << "Set task param failed:" << param;
-        return MaaInvalidId;
-    }
+    task->set_type(MAA_TASK_NS::PipelineTask::RunType::Pipeline);
 
     if (!task_runner_) {
         LogError << "task_runner is nullptr";
         return MaaInvalidId;
     }
-    auto id = task_runner_->post(task_ptr);
+
+    auto id = task_runner_->post(std::move(task));
+    LogTrace << VAR(id);
+
+    return id;
+}
+
+MaaTaskId InstanceMgr::post_recognition(std::string entry, std::string_view param)
+{
+    auto task = make_task(entry, param);
+    if (!task) {
+        LogError << "failed to make task" << VAR(entry) << VAR(param);
+        return MaaInvalidId;
+    }
+    task->set_type(MAA_TASK_NS::PipelineTask::RunType::Recognition);
+
+    if (!task_runner_) {
+        LogError << "task_runner is nullptr";
+        return MaaInvalidId;
+    }
+
+    auto id = task_runner_->post(std::move(task));
+    LogTrace << VAR(id);
+
+    return id;
+}
+
+MaaTaskId InstanceMgr::post_action(std::string entry, std::string_view param)
+{
+    auto task = make_task(entry, param);
+    if (!task) {
+        LogError << "failed to make task" << VAR(entry) << VAR(param);
+        return MaaInvalidId;
+    }
+    task->set_type(MAA_TASK_NS::PipelineTask::RunType::Action);
+
+    if (!task_runner_) {
+        LogError << "task_runner is nullptr";
+        return MaaInvalidId;
+    }
+
+    auto id = task_runner_->post(std::move(task));
     LogTrace << VAR(id);
 
     return id;
@@ -274,6 +295,38 @@ CustomActionSession* InstanceMgr::custom_action_session(const std::string& name)
         return nullptr;
     }
     return &it->second;
+}
+
+InstanceMgr::TaskPtr InstanceMgr::make_task(std::string entry, std::string_view param)
+{
+    LogInfo << VAR(entry) << VAR(param);
+
+#ifndef MAA_DEBUG
+    if (!inited()) {
+        LogError << "Instance not inited";
+        return nullptr;
+    }
+#endif
+
+    if (!check_stop()) {
+        return nullptr;
+    }
+
+    TaskPtr task_ptr = std::make_shared<TaskNS::PipelineTask>(std::move(entry), this);
+
+    auto param_opt = json::parse(param);
+    if (!param_opt) {
+        LogError << "Invalid param:" << param;
+        return nullptr;
+    }
+
+    bool param_ret = task_ptr->set_param(*param_opt);
+    if (!param_ret) {
+        LogError << "Set task param failed:" << param;
+        return nullptr;
+    }
+
+    return task_ptr;
 }
 
 bool InstanceMgr::run_task(TaskId id, TaskPtr task_ptr)

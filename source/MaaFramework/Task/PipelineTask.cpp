@@ -19,6 +19,21 @@ PipelineTask::PipelineTask(std::string entry, InstanceInternalAPI* inst)
 
 bool PipelineTask::run()
 {
+    switch (run_type_) {
+    case RunType::Pipeline:
+        return run_pipeline();
+    case RunType::Recognition:
+        return run_recognition_only();
+    case RunType::Action:
+        return run_action_only();
+    default:
+        LogError << "Unknown run type";
+        return false;
+    }
+}
+
+bool PipelineTask::run_pipeline()
+{
     LogFunc << VAR(entry_);
 
     std::vector<std::string> next_list = { entry_ };
@@ -70,6 +85,21 @@ bool PipelineTask::run()
     }
 
     return ret == NodeStatus::Success;
+}
+
+bool PipelineTask::run_recognition_only()
+{
+    LogFunc << VAR(entry_);
+
+    return find_first({ entry_ }).has_value();
+}
+
+bool PipelineTask::run_action_only()
+{
+    LogFunc << VAR(entry_);
+
+    HitDetail fake_hit { .task_data = data_mgr_.get_task_data(entry_) };
+    return run_task(fake_hit) == NodeStatus::Success;
 }
 
 bool PipelineTask::set_param(const json::value& param)

@@ -26,7 +26,9 @@ public: // from MaaInstanceAPI
     virtual bool
         set_option(MaaInstOption key, MaaOptionValue value, MaaOptionValueSize val_size) override;
 
-    virtual MaaTaskId post_task(std::string entry, std::string_view param) override;
+    virtual MaaTaskId post_pipeline(std::string entry, std::string_view param) override;
+    virtual MaaTaskId post_recognition(std::string entry, std::string_view param) override;
+    virtual MaaTaskId post_action(std::string entry, std::string_view param) override;
     virtual bool set_task_param(MaaTaskId task_id, std::string_view param) override;
 
     virtual bool register_custom_recognizer(
@@ -62,6 +64,7 @@ private:
     using TaskPtr = std::shared_ptr<TaskNS::PipelineTask>;
     using TaskId = AsyncRunner<TaskPtr>::Id;
 
+    TaskPtr make_task(std::string entry, std::string_view param);
     bool run_task(TaskId id, TaskPtr task_ptr);
     bool check_stop();
 

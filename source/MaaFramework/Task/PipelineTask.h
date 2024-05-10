@@ -35,6 +35,16 @@ public:
 
     void set_taskid(int64_t id) { task_id_ = id; }
 
+    // TODO: 重构，拆分成三个单独的类
+    enum RunType
+    {
+        Pipeline,
+        Recognition,
+        Action,
+    };
+
+    void set_type(RunType type) { run_type_ = type; }
+
     bool set_param(const json::value& param);
 
     static bool query_node_detail(MaaNodeId node_id, MaaRecoId& reco_id, bool& completed);
@@ -53,7 +63,7 @@ private:
     struct HitDetail
     {
         MaaRecoId reco_uid = 0;
-        Recognizer::Hit reco_hit;
+        Recognizer::Hit reco_hit {};
         json::value reco_detail;
         MAA_RES_NS::TaskData task_data;
     };
@@ -71,6 +81,11 @@ private:
     };
 
 private:
+    // TODO: 重构，拆分成三个单独的类
+    bool run_pipeline();
+    bool run_recognition_only();
+    bool run_action_only();
+
     NodeStatus find_first_and_run(
         const std::vector<std::string>& list,
         std::chrono::milliseconds timeout,
@@ -104,6 +119,7 @@ private:
     json::object node_detail_to_json(const NodeDetail& detail);
 
 private:
+    RunType run_type_ = RunType::Pipeline;
     bool need_to_stop_ = false;
     InstanceInternalAPI* inst_ = nullptr;
 

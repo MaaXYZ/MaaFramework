@@ -169,6 +169,36 @@ extern "C"
         MaaPostTask(MaaInstanceHandle inst, MaaStringView entry, MaaStringView param);
 
     /**
+     * @brief Post a recognition to the instance.
+     *
+     * The entry should be a task specified in the instance's resources.
+     * The param takes the same form as the pipeline json and will override the set parameters in
+     * the json file.
+     *
+     * @param inst
+     * @param entry The entry of the recognition.
+     * @param param The parameter of the recognition.
+     * @return MaaTaskId The id of the recognition.
+     */
+    MAA_FRAMEWORK_API MaaTaskId
+        MaaPostRecognition(MaaInstanceHandle inst, MaaStringView entry, MaaStringView param);
+
+    /**
+     * @brief Post a action to the instance.
+     *
+     * The entry should be a task specified in the instance's resources.
+     * The param takes the same form as the pipeline json and will override the set parameters in
+     * the json file.
+     *
+     * @param inst
+     * @param entry The entry of the action.
+     * @param param The parameter of the action.
+     * @return MaaTaskId The id of the action.
+     */
+    MAA_FRAMEWORK_API MaaTaskId
+        MaaPostAction(MaaInstanceHandle inst, MaaStringView entry, MaaStringView param);
+
+    /**
      * @brief Set the parameter of a task.
      *
      * See MaaPostTask() for details about the parameter.
