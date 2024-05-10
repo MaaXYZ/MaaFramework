@@ -37,7 +37,8 @@ public:
 
     bool set_param(const json::value& param);
 
-    static bool query_detail(MaaRunningId run_id, MaaRecoId& reco_id, bool& completed);
+    static bool query_running_detail(MaaRunningId run_id, MaaRecoId& reco_id, bool& completed);
+    static bool query_task_detail(MaaTaskId task_id, std::vector<MaaRunningId>& run_id_list);
 
 private:
     enum class RunningStatus
@@ -64,6 +65,11 @@ private:
         RunningStatus status = RunningStatus::InternalError;
     };
 
+    struct TaskDetail
+    {
+        std::vector<MaaRunningId> run_ids;
+    };
+
 private:
     RunningStatus find_first_and_run(
         const std::vector<std::string>& list,
@@ -71,6 +77,8 @@ private:
         /*out*/ MAA_RES_NS::TaskData& found_data);
     std::optional<HitDetail> find_first(const std::vector<std::string>& list);
     RunningStatus run_task(const HitDetail& hits);
+
+    void add_running_detail(int64_t act_id, RunningDetail detail);
 
 private:
     MAA_RES_NS::ResourceMgr* resource() { return inst_ ? inst_->inter_resource() : nullptr; }

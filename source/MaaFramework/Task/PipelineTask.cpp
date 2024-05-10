@@ -77,11 +77,12 @@ bool PipelineTask::set_param(const json::value& param)
     return data_mgr_.set_param(param);
 }
 
-bool PipelineTask::query_detail(MaaRunningId run_id, MaaRecoId& reco_id, bool& completed)
+bool PipelineTask::query_running_detail(MaaRunningId run_id, MaaRecoId& reco_id, bool& completed)
 {
-    auto& result_bank = UniqueResultBank::get_instance();
-    auto detail_any = result_bank.get_running_detail(run_id);
+    auto& bank = UniqueResultBank::get_instance();
+    auto detail_any = bank.get_running_detail(run_id);
     if (!detail_any.has_value()) {
+        LogError << "failed to query" << VAR(run_id);
         return false;
     }
 
@@ -89,6 +90,21 @@ bool PipelineTask::query_detail(MaaRunningId run_id, MaaRecoId& reco_id, bool& c
 
     reco_id = detail.hits.reco_uid;
     completed = detail.status == RunningStatus::Success;
+
+    return true;
+}
+
+bool PipelineTask::query_task_detail(MaaTaskId task_id, std::vector<MaaRunningId>& run_id_list)
+{
+    auto& bank = UniqueResultBank::get_instance();
+    auto detail_any = bank.get_task_detail(task_id);
+    if (!detail_any.has_value()) {
+        LogError << "failed to query" << VAR(task_id);
+        return false;
+    }
+
+    auto detail = std::any_cast<TaskDetail>(detail_any);
+    run_id_list = detail.run_ids;
 
     return true;
 }
@@ -243,13 +259,12 @@ PipelineTask::RunningStatus PipelineTask::run_task(const HitDetail& hits)
         }
     }
 
-    auto& result_bank = UniqueResultBank::get_instance();
     if (hits.task_data.times_limit <= run_times) {
         LogInfo << "Task runout:" << name;
 
         running_detail.status = RunningStatus::Runout;
 
-        result_bank.add_running_detail(actuator_uid, running_detail);
+        add_running_detail(actuator_uid, running_detail);
 
         if (debug_mode() || hits.task_data.focus) {
             json::value cb_detail = basic_info() | running_detail_to_json(running_detail);
@@ -270,7 +285,7 @@ PipelineTask::RunningStatus PipelineTask::run_task(const HitDetail& hits)
 
     running_detail.status = RunningStatus::Success;
 
-    result_bank.add_running_detail(actuator_uid, running_detail);
+    add_running_detail(actuator_uid, running_detail);
 
     if (debug_mode() || hits.task_data.focus) {
         json::value cb_detail = basic_info() | running_detail_to_json(running_detail);
@@ -283,6 +298,20 @@ PipelineTask::RunningStatus PipelineTask::run_task(const HitDetail& hits)
     }
 
     return ret ? RunningStatus::Success : RunningStatus::InternalError;
+}
+
+void PipelineTask::add_running_detail(int64_t act_id, RunningDetail detail)
+{
+    auto& bank = UniqueResultBank::get_instance();
+    bank.add_running_detail(act_id, detail);
+
+    TaskDetail task_detail;
+    std::any task_detail_any = bank.get_task_detail(task_id_);
+    if (task_detail_any.has_value()) {
+        task_detail = std::any_cast<TaskDetail>(task_detail_any);
+    }
+    task_detail.run_ids.emplace_back(act_id);
+    bank.add_task_detail(task_id_, task_detail);
 }
 
 bool PipelineTask::debug_mode() const
