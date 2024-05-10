@@ -171,7 +171,7 @@ jobs:
       - name: Install Clang
         run: |
           pacman -Sy
-          pacman -S --noconfirm clang libc++
+          pacman -S --noconfirm clang
   
       - name: Install cross compile toolchains
         if: ${{ matrix.arch != 'x86_64' }}
@@ -195,7 +195,7 @@ jobs:
           CC: 'clang'
           CXX: 'clang++'
           CFLAGS: ${{ matrix.arch == 'x86_64' && '' || '-target aarch64-linux-gnu' }}
-          CXXFLAGS: ${{ matrix.arch == 'x86_64' && '-stdlib=libc++' || '-target aarch64-linux-gnu -stdlib=libc++' }}
+          CXXFLAGS: ${{ matrix.arch == 'x86_64' && '' || '-target aarch64-linux-gnu' }}
         run: |
           cmake --preset 'NinjaMulti' \
             -DMAADEPS_TRIPLET='maa-${{ matrix.arch == 'x86_64' && 'x64' || 'arm64' }}-linux' \
