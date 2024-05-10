@@ -2,12 +2,18 @@
 
 #pragma once
 
+#include "MaaPP/module/Module.h"
+
+#ifndef MAAPP_USE_MODULE
+
 #include <memory>
 
 #include <MaaFramework/MaaMsg.h>
 #include <meojson/json.hpp>
 
 #include "MaaPP/maa/Message.hpp"
+
+#endif
 
 namespace maa::message
 {
@@ -52,7 +58,7 @@ inline Msg* make(MaaStringView msg, MaaStringView details)
         }                                          \
     }
 
-inline std::shared_ptr<MessageBase> parse(MaaStringView msg, MaaStringView details)
+MAAPP_EXPORT inline std::shared_ptr<MessageBase> parse(MaaStringView msg, MaaStringView details)
 {
     auto fail = [&]() {
         return std::shared_ptr<MessageBase>(details::make<UnknownMessage>(msg, details));

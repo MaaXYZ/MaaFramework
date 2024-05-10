@@ -2,22 +2,27 @@
 
 #pragma once
 
-#include <memory>
+#include "MaaPP/module/Module.h"
+
+#ifndef MAAPP_USE_MODULE
+
 #include <string>
 #include <vector>
 
 #include <MaaFramework/MaaAPI.h>
 #include <meojson/json.hpp>
 
+#endif
+
 namespace maa::message
 {
 
-struct RectRefl : public MaaRect
+MAAPP_EXPORT struct RectRefl : public MaaRect
 {
     MEO_JSONIZATION(x, y, width, height);
 };
 
-struct MessageBase
+MAAPP_EXPORT struct MessageBase
 {
     std::string raw_msg;
     std::string raw_details;
@@ -36,19 +41,19 @@ struct MessageBase
     }
 };
 
-struct UnknownMessage : public MessageBase
+MAAPP_EXPORT struct UnknownMessage : public MessageBase
 {
 };
 
-struct InvalidMessage : public MessageBase
+MAAPP_EXPORT struct InvalidMessage : public MessageBase
 {
 };
 
-struct ResourceMessage : public MessageBase
+MAAPP_EXPORT struct ResourceMessage : public MessageBase
 {
 };
 
-struct ResourceLoadingMessage : public ResourceMessage
+MAAPP_EXPORT struct ResourceLoadingMessage : public ResourceMessage
 {
     enum
     {
@@ -63,26 +68,26 @@ struct ResourceLoadingMessage : public ResourceMessage
     MEO_JSONIZATION(id, path);
 };
 
-struct ControllerMessage : public MessageBase
+MAAPP_EXPORT struct ControllerMessage : public MessageBase
 {
 };
 
-struct ControllerConnectMessage : public ControllerMessage
+MAAPP_EXPORT struct ControllerConnectMessage : public ControllerMessage
 {
 };
 
-struct ControllerUUIDGotMessage : public ControllerConnectMessage
+MAAPP_EXPORT struct ControllerUUIDGotMessage : public ControllerConnectMessage
 {
     std::string uuid;
 
     MEO_JSONIZATION(uuid);
 };
 
-struct ControllerUUIDGetFailedMessage : public ControllerConnectMessage
+MAAPP_EXPORT struct ControllerUUIDGetFailedMessage : public ControllerConnectMessage
 {
 };
 
-struct ControllerResolutionGotMessage : public ControllerConnectMessage
+MAAPP_EXPORT struct ControllerResolutionGotMessage : public ControllerConnectMessage
 {
     struct
     {
@@ -96,35 +101,35 @@ struct ControllerResolutionGotMessage : public ControllerConnectMessage
     MEO_JSONIZATION(resolution);
 };
 
-struct ControllerResolutionGetFailedMessage : public ControllerConnectMessage
+MAAPP_EXPORT struct ControllerResolutionGetFailedMessage : public ControllerConnectMessage
 {
 };
 
-struct ControllerScreencapInitedMessage : public ControllerConnectMessage
+MAAPP_EXPORT struct ControllerScreencapInitedMessage : public ControllerConnectMessage
 {
 };
 
-struct ControllerScreencapInitFailedMessage : public ControllerConnectMessage
+MAAPP_EXPORT struct ControllerScreencapInitFailedMessage : public ControllerConnectMessage
 {
 };
 
-struct ControllerTouchInputInitedMessage : public ControllerConnectMessage
+MAAPP_EXPORT struct ControllerTouchInputInitedMessage : public ControllerConnectMessage
 {
 };
 
-struct ControllerTouchInputInitFailedMessage : public ControllerConnectMessage
+MAAPP_EXPORT struct ControllerTouchInputInitFailedMessage : public ControllerConnectMessage
 {
 };
 
-struct ControllerKeyInputInitedMessage : public ControllerConnectMessage
+MAAPP_EXPORT struct ControllerKeyInputInitedMessage : public ControllerConnectMessage
 {
 };
 
-struct ControllerKeyInputInitFailedMessage : public ControllerConnectMessage
+MAAPP_EXPORT struct ControllerKeyInputInitFailedMessage : public ControllerConnectMessage
 {
 };
 
-struct ControllerConnectSuccessMessage : public ControllerConnectMessage
+MAAPP_EXPORT struct ControllerConnectSuccessMessage : public ControllerConnectMessage
 {
     std::string uuid;
 
@@ -140,14 +145,14 @@ struct ControllerConnectSuccessMessage : public ControllerConnectMessage
     MEO_JSONIZATION(uuid, resolution);
 };
 
-struct ControllerConnectFailedMessage : public ControllerConnectMessage
+MAAPP_EXPORT struct ControllerConnectFailedMessage : public ControllerConnectMessage
 {
     std::string why;
 
     MEO_JSONIZATION(why);
 };
 
-struct ControllerActionMessage : public ControllerMessage
+MAAPP_EXPORT struct ControllerActionMessage : public ControllerMessage
 {
     enum
     {
@@ -161,11 +166,11 @@ struct ControllerActionMessage : public ControllerMessage
     MEO_JSONIZATION(id);
 };
 
-struct InstanceMessage : public MessageBase
+MAAPP_EXPORT struct InstanceMessage : public MessageBase
 {
 };
 
-struct InstanceTaskMessage : public InstanceMessage
+MAAPP_EXPORT struct InstanceTaskMessage : public InstanceMessage
 {
     enum
     {
@@ -179,7 +184,7 @@ struct InstanceTaskMessage : public InstanceMessage
     MEO_JSONIZATION(id);
 };
 
-struct InstanceTaskFocusMessage : public InstanceMessage
+MAAPP_EXPORT struct InstanceTaskFocusMessage : public InstanceMessage
 {
     enum
     {
@@ -220,7 +225,7 @@ struct InstanceTaskFocusMessage : public InstanceMessage
         status);
 };
 
-struct InstanceDebugMessage : public InstanceMessage
+MAAPP_EXPORT struct InstanceDebugMessage : public InstanceMessage
 {
     MaaId task_id;
     std::string entry;
@@ -229,7 +234,7 @@ struct InstanceDebugMessage : public InstanceMessage
     std::string pre_hit_task;
 };
 
-struct InstanceDebugTaskMessage : public InstanceDebugMessage
+MAAPP_EXPORT struct InstanceDebugTaskMessage : public InstanceDebugMessage
 {
     enum
     {
@@ -265,14 +270,14 @@ struct InstanceDebugTaskMessage : public InstanceDebugMessage
         status);
 };
 
-struct InstanceDebugListToRecognizeMessage : public InstanceDebugMessage
+MAAPP_EXPORT struct InstanceDebugListToRecognizeMessage : public InstanceDebugMessage
 {
     std::vector<std::string> list;
 
     MEO_JSONIZATION(task_id, entry, uuid, hash, pre_hit_task, list);
 };
 
-struct InstanceDebugRecognitionResultMessage : public InstanceDebugMessage
+MAAPP_EXPORT struct InstanceDebugRecognitionResultMessage : public InstanceDebugMessage
 {
     std::string name;
 
@@ -289,7 +294,7 @@ struct InstanceDebugRecognitionResultMessage : public InstanceDebugMessage
     MEO_JSONIZATION(task_id, entry, uuid, hash, pre_hit_task, name, recognition);
 };
 
-struct InstanceDebugHitMessage : public InstanceDebugMessage
+MAAPP_EXPORT struct InstanceDebugHitMessage : public InstanceDebugMessage
 {
     std::string name;
 
@@ -306,7 +311,7 @@ struct InstanceDebugHitMessage : public InstanceDebugMessage
     MEO_JSONIZATION(task_id, entry, uuid, hash, pre_hit_task, name, recognition);
 };
 
-struct InstanceDebugMissAllMessage : public InstanceDebugMessage
+MAAPP_EXPORT struct InstanceDebugMissAllMessage : public InstanceDebugMessage
 {
     std::vector<std::string> list;
 

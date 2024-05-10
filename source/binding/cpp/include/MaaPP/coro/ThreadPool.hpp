@@ -7,6 +7,7 @@
 #ifndef MAAPP_USE_MODULE
 
 #include <condition_variable>
+#include <functional>
 #include <mutex>
 #include <queue>
 #include <thread>

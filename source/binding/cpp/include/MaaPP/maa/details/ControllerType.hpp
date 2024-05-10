@@ -2,12 +2,17 @@
 
 #pragma once
 
+#include "MaaPP/module/Module.h"
+
+#ifndef MAAPP_USE_MODULE
+
 #include <cstdint>
 
+#endif
 namespace maa::details
 {
 
-template <
+MAAPP_EXPORT template <
     typename Type,
     uint32_t TouchMask,
     uint32_t KeyMask,

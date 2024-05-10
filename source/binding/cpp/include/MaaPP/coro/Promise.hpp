@@ -12,6 +12,7 @@
 #include <mutex>
 #include <optional>
 #include <utility>
+#include <variant>
 #include <vector>
 
 #endif

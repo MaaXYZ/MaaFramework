@@ -6,6 +6,7 @@ module;
 #include <mutex>
 #include <optional>
 #include <utility>
+#include <variant>
 #include <vector>
 
 export module MaaPP:Promise;
