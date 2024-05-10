@@ -97,7 +97,9 @@ MaaBool MaaQueryTaskDetail(MaaTaskId task_id, MaaNodeId* node_id_list, MaaSize* 
         return true;
     }
     else if (node_id_list && node_id_list_size) {
-        memcpy(node_id_list, node_id_vec.data(), std::min(node_id_vec.size(), *node_id_list_size));
+        size_t size = std::min(node_id_vec.size(), static_cast<size_t>(*node_id_list_size));
+        memcpy(node_id_list, node_id_vec.data(), size);
+        *node_id_list_size = size;
         return true;
     }
     else {
