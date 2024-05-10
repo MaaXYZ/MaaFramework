@@ -657,6 +657,42 @@
           "type": "MaaInstanceHandle"
         },
         {
+          "name": "entry",
+          "type": "MaaStringView"
+        },
+        {
+          "name": "param",
+          "type": "MaaStringView"
+        }
+      ],
+      "name": "MaaPostRecognition",
+      "return": "MaaTaskId"
+    },
+    {
+      "argument": [
+        {
+          "name": "inst",
+          "type": "MaaInstanceHandle"
+        },
+        {
+          "name": "entry",
+          "type": "MaaStringView"
+        },
+        {
+          "name": "param",
+          "type": "MaaStringView"
+        }
+      ],
+      "name": "MaaPostAction",
+      "return": "MaaTaskId"
+    },
+    {
+      "argument": [
+        {
+          "name": "inst",
+          "type": "MaaInstanceHandle"
+        },
+        {
           "name": "id",
           "type": "MaaTaskId"
         },
@@ -1137,7 +1173,8 @@
       "return": "MaaBool"
     },
     {
-      "argument": [],
+      "argument": [
+      ],
       "name": "MaaCreateStringBuffer",
       "return": "MaaStringBufferHandle"
     },
@@ -1224,7 +1261,8 @@
       "return": "MaaBool"
     },
     {
-      "argument": [],
+      "argument": [
+      ],
       "name": "MaaCreateStringListBuffer",
       "return": "MaaStringListBufferHandle"
     },
@@ -1311,7 +1349,8 @@
       "return": "MaaBool"
     },
     {
-      "argument": [],
+      "argument": [
+      ],
       "name": "MaaCreateImageBuffer",
       "return": "MaaImageBufferHandle"
     },
@@ -1450,7 +1489,8 @@
       "return": "MaaBool"
     },
     {
-      "argument": [],
+      "argument": [
+      ],
       "name": "MaaCreateImageListBuffer",
       "return": "MaaImageListBufferHandle"
     },
@@ -1537,7 +1577,8 @@
       "return": "MaaBool"
     },
     {
-      "argument": [],
+      "argument": [
+      ],
       "name": "MaaCreateRectBuffer",
       "return": "MaaRectHandle"
     },
@@ -1674,7 +1715,8 @@
       "return": "MaaBool"
     },
     {
-      "argument": [],
+      "argument": [
+      ],
       "name": "MaaVersion",
       "return": "MaaStringView"
     },
@@ -1743,6 +1785,24 @@
     {
       "argument": [
         {
+          "name": "task_id",
+          "type": "MaaTaskId"
+        },
+        {
+          "name": "node_id_list",
+          "type": "MaaNodeId *"
+        },
+        {
+          "name": "node_id_list_size",
+          "type": "MaaSize *"
+        }
+      ],
+      "name": "MaaQueryTaskDetail",
+      "return": "MaaBool"
+    },
+    {
+      "argument": [
+        {
           "name": "user_path",
           "type": "MaaStringView"
         },
@@ -1755,17 +1815,20 @@
       "return": "MaaBool"
     },
     {
-      "argument": [],
+      "argument": [
+      ],
       "name": "MaaToolkitInit",
       "return": "MaaBool"
     },
     {
-      "argument": [],
+      "argument": [
+      ],
       "name": "MaaToolkitUninit",
       "return": "MaaBool"
     },
     {
-      "argument": [],
+      "argument": [
+      ],
       "name": "MaaToolkitFindDevice",
       "return": "MaaSize"
     },
@@ -1780,7 +1843,8 @@
       "return": "MaaSize"
     },
     {
-      "argument": [],
+      "argument": [
+      ],
       "name": "MaaToolkitPostFindDevice",
       "return": "MaaBool"
     },
@@ -1795,17 +1859,20 @@
       "return": "MaaBool"
     },
     {
-      "argument": [],
+      "argument": [
+      ],
       "name": "MaaToolkitIsFindDeviceCompleted",
       "return": "MaaBool"
     },
     {
-      "argument": [],
+      "argument": [
+      ],
       "name": "MaaToolkitWaitForFindDeviceToComplete",
       "return": "MaaSize"
     },
     {
-      "argument": [],
+      "argument": [
+      ],
       "name": "MaaToolkitGetDeviceCount",
       "return": "MaaSize"
     },
@@ -1989,6 +2056,12 @@
     },
     {
       "argument": [
+      ],
+      "name": "MaaToolkitListWindows",
+      "return": "MaaSize"
+    },
+    {
+      "argument": [
         {
           "name": "index",
           "type": "MaaSize"
@@ -1998,17 +2071,20 @@
       "return": "MaaWin32Hwnd"
     },
     {
-      "argument": [],
+      "argument": [
+      ],
       "name": "MaaToolkitGetCursorWindow",
       "return": "MaaWin32Hwnd"
     },
     {
-      "argument": [],
+      "argument": [
+      ],
       "name": "MaaToolkitGetDesktopWindow",
       "return": "MaaWin32Hwnd"
     },
     {
-      "argument": [],
+      "argument": [
+      ],
       "name": "MaaToolkitGetForegroundWindow",
       "return": "MaaWin32Hwnd"
     },

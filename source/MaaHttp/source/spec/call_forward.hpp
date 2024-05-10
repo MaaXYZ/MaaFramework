@@ -34,3 +34,6 @@ LHGArgOuterState(
 LHGArgOuterState(
     maa::func_type_MaaToolkitRegisterCustomActionExecutor::_3_exec_params,
     vec_str_helper_state);
+
+LHGArgOuterState(maa::func_type_MaaQueryTaskDetail::_1_node_id_list, std::vector<MaaNodeId>);
+LHGArgOuterState(maa::func_type_MaaQueryTaskDetail::_2_node_id_list_size, MaaSize);
