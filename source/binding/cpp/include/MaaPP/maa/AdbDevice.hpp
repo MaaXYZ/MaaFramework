@@ -7,6 +7,7 @@
 #ifndef MAAPP_USE_MODULE
 
 #include <coroutine>
+#include <memory>
 #include <optional>
 #include <string>
 #include <string_view>
