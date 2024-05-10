@@ -50,7 +50,7 @@ struct InterfaceData
 
             int32_t touch = MaaWin32ControllerType_Touch_Seize;
             int32_t key = MaaWin32ControllerType_Key_Seize;
-            int32_t screencap = MaaWin32ControllerType_Screencap_GDI;
+            int32_t screencap = MaaWin32ControllerType_Screencap_DXGI_DesktopDup;
 
             MEO_JSONIZATION(
                 method,
