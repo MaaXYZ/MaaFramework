@@ -2,12 +2,18 @@
 
 #pragma once
 
+#include "MaaPP/module/Module.h"
+
+#ifndef MAAPP_USE_MODULE
+
 #include <atomic>
 #include <memory>
 #include <variant>
 
 #include "MaaPP/coro/Promise.hpp"
 #include "MaaPP/coro/details/Utils.hpp"
+
+#endif
 
 namespace maa::coro
 {
@@ -98,7 +104,7 @@ struct merge_any_fulfill
 
 }
 
-template <typename... Pros>
+MAAPP_EXPORT template <typename... Pros>
 inline auto all(Pros... pros)
 {
     auto fulfill = std::make_shared<details::merge_all_fulfill<details::MergeState<Pros...>>>();
@@ -106,7 +112,7 @@ inline auto all(Pros... pros)
     return fulfill->promise;
 }
 
-template <typename... Pros>
+MAAPP_EXPORT template <typename... Pros>
 inline auto any(Pros... pros)
 {
     auto fulfill = std::make_shared<details::merge_any_fulfill<details::MergeState<Pros...>>>();

@@ -2,6 +2,10 @@
 
 #pragma once
 
+#include "MaaPP/module/Module.h"
+
+#ifndef MAAPP_USE_MODULE
+
 #include <utility>
 
 #include <MaaFramework/MaaAPI.h>
@@ -11,10 +15,12 @@
 #include "MaaPP/coro/EventLoop.hpp"
 #include "MaaPP/coro/Promise.hpp"
 
+#endif
+
 namespace maa::details
 {
 
-template <typename IAction, typename IActionHelper>
+MAAPP_EXPORT template <typename IAction, typename IActionHelper>
 struct ActionBase : public std::enable_shared_from_this<IAction>
 {
     ActionBase(std::shared_ptr<IActionHelper> inst, MaaId id)
@@ -32,7 +38,7 @@ struct ActionBase : public std::enable_shared_from_this<IAction>
     MaaId id_;
 };
 
-template <typename IActionHelper, typename IAction, typename Handle>
+MAAPP_EXPORT template <typename IActionHelper, typename IAction, typename Handle>
 class ActionHelper : public std::enable_shared_from_this<IActionHelper>
 {
     friend struct ActionBase<IAction, IActionHelper>;

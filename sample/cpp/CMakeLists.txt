@@ -1,9 +1,10 @@
 add_executable(sample main.cpp)
 target_link_libraries(sample MaaFramework MaaToolkit)
 
-set(MaaPP_INC_REL ${CMAKE_CURRENT_LIST_DIR}/../../source/binding/cpp/include)
-cmake_path(ABSOLUTE_PATH MaaPP_INC_REL NORMALIZE OUTPUT_VARIABLE MaaPP_INC)
-
 add_executable(sample_maapp_coro maapp.cpp)
-target_include_directories(sample_maapp_coro PRIVATE ${MaaPP_INC})
-target_link_libraries(sample_maapp_coro MaaFramework MaaToolkit HeaderOnlyLibraries)
+target_link_libraries(sample_maapp_coro MaaPP MaaFramework MaaToolkit HeaderOnlyLibraries)
+
+set(CMAKE_CXX_SCAN_FOR_MODULES ON)
+
+add_executable(sample_maapp_coro_module maapp_module.cpp)
+target_link_libraries(sample_maapp_coro_module MaaPPModule MaaFramework MaaToolkit HeaderOnlyLibraries)

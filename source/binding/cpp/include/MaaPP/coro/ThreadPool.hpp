@@ -2,16 +2,22 @@
 
 #pragma once
 
+#include "MaaPP/module/Module.h"
+
+#ifndef MAAPP_USE_MODULE
+
 #include <condition_variable>
 #include <mutex>
 #include <queue>
 #include <thread>
 #include <vector>
 
+#endif
+
 namespace maa::coro
 {
 
-class ThreadPool
+MAAPP_EXPORT class ThreadPool
 {
 public:
     ThreadPool(size_t count = 8)

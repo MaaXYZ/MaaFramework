@@ -29,6 +29,13 @@ else()
     add_compile_options("$<$<CONFIG:DebWithRelDeps>:${rel_debug_comp_options}>")
 endif()
 
+if(CMAKE_CXX_COMPILER_ID MATCHES "Clang")
+    # cmake-format: off
+    # add_compile_options("-fno-delayed-template-parsing")
+    # add_compile_options("-fskip-odr-check-in-gmf")
+    # cmake-format: on
+endif()
+
 if(APPLE)
     set(CMAKE_INSTALL_RPATH "@loader_path;@executable_path")
 elseif(UNIX)

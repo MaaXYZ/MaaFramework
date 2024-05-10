@@ -2,6 +2,10 @@
 
 #pragma once
 
+#include "MaaPP/module/Module.h"
+
+#ifndef MAAPP_USE_MODULE
+
 #include <coroutine>
 #include <functional>
 #include <future>
@@ -10,16 +14,18 @@
 #include <utility>
 #include <vector>
 
+#endif
+
 namespace maa::coro
 {
 
-template <typename T>
+MAAPP_EXPORT template <typename T>
 struct Promise;
 
-template <typename T>
+MAAPP_EXPORT template <typename T>
 inline Promise<T> resolve_now(T&& value);
 
-inline Promise<void> resolve_now();
+MAAPP_EXPORT inline Promise<void> resolve_now();
 
 namespace details
 {
@@ -51,7 +57,7 @@ struct promise_type;
 
 }
 
-template <typename T = void>
+MAAPP_EXPORT template <typename T = void>
 struct Promise
 {
     using value_t = T;
@@ -271,7 +277,7 @@ struct promise_type<void> : public __promise_type_base
 
 }
 
-template <typename T>
+MAAPP_EXPORT template <typename T>
 inline Promise<T> resolve_now(T&& value)
 {
     Promise<T> pro;
@@ -279,7 +285,7 @@ inline Promise<T> resolve_now(T&& value)
     return pro;
 }
 
-inline Promise<> resolve_now()
+MAAPP_EXPORT inline Promise<> resolve_now()
 {
     Promise<> pro;
     pro.resolve();

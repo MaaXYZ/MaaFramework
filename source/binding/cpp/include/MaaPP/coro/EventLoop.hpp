@@ -2,15 +2,22 @@
 
 #pragma once
 
+#include "MaaPP/module/Module.h"
+
+#ifndef MAAPP_USE_MODULE
+
 #include <chrono>
+#include <thread>
 
 #include "MaaPP/coro/Promise.hpp"
 #include "MaaPP/coro/ThreadPool.hpp"
 
+#endif
+
 namespace maa::coro
 {
 
-class EventLoop
+MAAPP_EXPORT class EventLoop
 {
 public:
     EventLoop(size_t count = 8)

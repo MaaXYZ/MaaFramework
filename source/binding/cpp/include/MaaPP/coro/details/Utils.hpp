@@ -2,8 +2,14 @@
 
 #pragma once
 
+#include "MaaPP/module/Module.h"
+
+#ifndef MAAPP_USE_MODULE
+
 #include <tuple>
 #include <variant>
+
+#endif
 
 namespace maa::coro::details
 {
@@ -29,7 +35,7 @@ struct transform_tuple_impl<std::tuple<Types...>, Transformer, Container, std::i
     using type = Container<typename Transformer<Types>::type...>;
 };
 
-template <
+MAAPP_EXPORT template <
     typename Tuple,
     template <typename>
     class Transformer,
@@ -41,19 +47,19 @@ using transform_tuple = typename transform_tuple_impl<
     Container,
     std::make_index_sequence<std::tuple_size_v<Tuple>>>::type;
 
-template <typename P>
+MAAPP_EXPORT template <typename P>
 struct promise_value
 {
     using type = typename P::value_t;
 };
 
-template <typename T>
+MAAPP_EXPORT template <typename T>
 struct wrap_void
 {
     using type = T;
 };
 
-template <>
+MAAPP_EXPORT template <>
 struct wrap_void<void>
 {
     using type = std::monostate;

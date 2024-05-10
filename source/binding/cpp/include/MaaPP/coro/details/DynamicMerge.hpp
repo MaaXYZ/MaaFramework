@@ -2,6 +2,10 @@
 
 #pragma once
 
+#include "MaaPP/module/Module.h"
+
+#ifndef MAAPP_USE_MODULE
+
 #include <atomic>
 #include <memory>
 #include <variant>
@@ -9,6 +13,8 @@
 
 #include "MaaPP/coro/Promise.hpp"
 #include "MaaPP/coro/details/Utils.hpp"
+
+#endif
 
 namespace maa::coro
 {
@@ -90,7 +96,7 @@ struct dynamic_merge_any_fulfill
 
 }
 
-template <typename Pro>
+MAAPP_EXPORT template <typename Pro>
 inline auto all(std::vector<Pro> pros)
 {
     auto fulfill =
@@ -99,7 +105,7 @@ inline auto all(std::vector<Pro> pros)
     return fulfill->promise;
 }
 
-template <typename Pro>
+MAAPP_EXPORT template <typename Pro>
 inline auto any(Pro pros)
 {
     auto fulfill =
