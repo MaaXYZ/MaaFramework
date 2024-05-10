@@ -18,7 +18,7 @@ option(WITH_THRIFT_CONTROLLER "build with thrift controller" OFF)
 
 option(BUILD_HTTP_CLI "build http CLI exec" ON)
 
-option(BUILD_SAMPLE "build a demo" OFF)
+option(BUILD_SAMPLE "build a demo" ON)
 
 option(BUILD_PIPELINE_TESTING "build pipeline testing" OFF)
 option(BUILD_DLOPEN_TESTING "build dlopen testing" OFF)
