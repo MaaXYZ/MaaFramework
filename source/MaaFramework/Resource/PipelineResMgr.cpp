@@ -253,7 +253,7 @@ bool get_and_check_value_or_array(
         return false;
     }
 
-    return !output.empty();
+    return true;
 }
 
 bool PipelineResMgr::parse_task(
