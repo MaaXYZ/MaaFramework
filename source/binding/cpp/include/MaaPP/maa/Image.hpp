@@ -2,14 +2,20 @@
 
 #pragma once
 
+#include "MaaPP/module/Module.h"
+
+#ifndef MAAPP_USE_MODULE
+
 #include <string>
 
 #include <MaaFramework/MaaAPI.h>
 
+#endif
+
 namespace maa::details
 {
 
-class Image
+MAAPP_EXPORT class Image
 {
 public:
     template <typename... Args>
@@ -72,7 +78,7 @@ private:
     bool own_ = true;
 };
 
-class ImageList
+MAAPP_EXPORT class ImageList
 {
 public:
     ImageList()

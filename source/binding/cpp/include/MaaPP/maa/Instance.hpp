@@ -2,13 +2,20 @@
 
 #pragma once
 
+#include "MaaPP/module/Module.h"
+
+#ifndef MAAPP_USE_MODULE
+
+#include <functional>
 #include <iostream>
 #include <iterator>
 #include <memory>
+#include <ranges>
 #include <utility>
 
 #include <MaaFramework/MaaAPI.h>
 #include <MaaFramework/MaaMsg.h>
+#include <MaaToolkit/MaaToolkitAPI.h>
 #include <meojson/json.hpp>
 
 #include "MaaPP/coro/EventLoop.hpp"
@@ -21,10 +28,12 @@
 #include "MaaPP/maa/details/ActionHelper.hpp"
 #include "MaaPP/maa/details/String.hpp"
 
+#endif
+
 namespace maa
 {
 
-class CustomRecognizer : public std::enable_shared_from_this<CustomRecognizer>
+MAAPP_EXPORT class CustomRecognizer : public std::enable_shared_from_this<CustomRecognizer>
 {
     friend class Instance;
 
@@ -73,7 +82,7 @@ private:
     analyze_func analyze_;
 };
 
-class CustomAction : public std::enable_shared_from_this<CustomAction>
+MAAPP_EXPORT class CustomAction : public std::enable_shared_from_this<CustomAction>
 {
     friend class Instance;
 
@@ -120,9 +129,9 @@ private:
     run_func run_;
 };
 
-class Instance;
+MAAPP_EXPORT class Instance;
 
-class InstanceAction : public details::ActionBase<InstanceAction, Instance>
+MAAPP_EXPORT class InstanceAction : public details::ActionBase<InstanceAction, Instance>
 {
     friend class Instance;
 
@@ -138,7 +147,8 @@ private:
     coro::Promise<MaaStatus> status_;
 };
 
-class Instance : public details::ActionHelper<Instance, InstanceAction, MaaInstanceHandle>
+MAAPP_EXPORT class Instance
+    : public details::ActionHelper<Instance, InstanceAction, MaaInstanceHandle>
 {
     friend class InstanceAction;
 

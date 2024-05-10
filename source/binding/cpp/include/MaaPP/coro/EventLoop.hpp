@@ -7,6 +7,7 @@
 #ifndef MAAPP_USE_MODULE
 
 #include <chrono>
+#include <functional>
 #include <thread>
 
 #include "MaaPP/coro/Promise.hpp"

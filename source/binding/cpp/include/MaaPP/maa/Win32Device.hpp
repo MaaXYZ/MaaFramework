@@ -2,6 +2,11 @@
 
 #pragma once
 
+#include "MaaPP/module/Module.h"
+
+#ifndef MAAPP_USE_MODULE
+
+#include <coroutine>
 #include <string>
 #include <vector>
 
@@ -13,10 +18,12 @@
 #include "MaaPP/maa/details/ControllerType.hpp"
 #include "MaaPP/maa/details/String.hpp"
 
+#endif
+
 namespace maa
 {
 
-struct Win32Type
+MAAPP_EXPORT struct Win32Type
     : public details::ControllerType<
           MaaWin32ControllerType,
           MaaWin32ControllerType_Touch_Mask,
@@ -44,7 +51,7 @@ struct Win32Type
     };
 };
 
-struct Win32Hwnd
+MAAPP_EXPORT struct Win32Hwnd
 {
     MaaWin32Hwnd hwnd_ = nullptr;
 
@@ -68,7 +75,7 @@ struct Win32Hwnd
     }
 };
 
-struct Win32Device
+MAAPP_EXPORT struct Win32Device
 {
     Win32Hwnd hwnd;
     Win32Type type;
@@ -92,7 +99,7 @@ inline auto get_result(MaaSize size)
 
 }
 
-inline coro::Promise<std::shared_ptr<std::vector<Win32Hwnd>>>
+MAAPP_EXPORT inline coro::Promise<std::shared_ptr<std::vector<Win32Hwnd>>>
     find(std::string class_name, std::string window_name)
 {
     auto size = co_await coro::EventLoop::current()->eval([class_name, window_name]() {
@@ -101,7 +108,7 @@ inline coro::Promise<std::shared_ptr<std::vector<Win32Hwnd>>>
     co_return details::get_result(size);
 }
 
-inline coro::Promise<std::shared_ptr<std::vector<Win32Hwnd>>>
+MAAPP_EXPORT inline coro::Promise<std::shared_ptr<std::vector<Win32Hwnd>>>
     search(std::string class_name, std::string window_name)
 {
     auto size = co_await coro::EventLoop::current()->eval([class_name, window_name]() {
@@ -110,23 +117,23 @@ inline coro::Promise<std::shared_ptr<std::vector<Win32Hwnd>>>
     co_return details::get_result(size);
 }
 
-inline coro::Promise<std::shared_ptr<std::vector<Win32Hwnd>>> list()
+MAAPP_EXPORT inline coro::Promise<std::shared_ptr<std::vector<Win32Hwnd>>> list()
 {
     auto size = co_await coro::EventLoop::current()->eval([]() { return MaaToolkitListWindows(); });
     co_return details::get_result(size);
 }
 
-inline Win32Hwnd cursor()
+MAAPP_EXPORT inline Win32Hwnd cursor()
 {
     return { MaaToolkitGetCursorWindow() };
 }
 
-inline Win32Hwnd desktop()
+MAAPP_EXPORT inline Win32Hwnd desktop()
 {
     return { MaaToolkitGetDesktopWindow() };
 }
 
-inline Win32Hwnd foreground()
+MAAPP_EXPORT inline Win32Hwnd foreground()
 {
     return { MaaToolkitGetForegroundWindow() };
 }

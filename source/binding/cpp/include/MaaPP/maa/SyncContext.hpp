@@ -2,6 +2,10 @@
 
 #pragma once
 
+#include "MaaPP/module/Module.h"
+
+#ifndef MAAPP_USE_MODULE
+
 #include <memory>
 #include <string>
 
@@ -14,10 +18,12 @@
 #include "MaaPP/maa/Type.hpp"
 #include "MaaPP/maa/details/String.hpp"
 
+#endif
+
 namespace maa
 {
 
-class SyncContext
+MAAPP_EXPORT class SyncContext
 {
     friend class CustomRecognizer;
     friend class CustomAction;

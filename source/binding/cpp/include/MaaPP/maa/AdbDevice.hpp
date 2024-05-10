@@ -2,6 +2,11 @@
 
 #pragma once
 
+#include "MaaPP/module/Module.h"
+
+#ifndef MAAPP_USE_MODULE
+
+#include <coroutine>
 #include <optional>
 #include <string>
 #include <string_view>
@@ -14,10 +19,12 @@
 #include "MaaPP/coro/Promise.hpp"
 #include "MaaPP/maa/details/ControllerType.hpp"
 
+#endif
+
 namespace maa
 {
 
-struct AdbType
+MAAPP_EXPORT struct AdbType
     : public details::ControllerType<
           MaaAdbControllerType,
           MaaAdbControllerType_Touch_Mask,
@@ -55,7 +62,7 @@ struct AdbType
     };
 };
 
-struct AdbDevice
+MAAPP_EXPORT struct AdbDevice
 {
     std::string adb_path;
     std::string address;
@@ -66,7 +73,7 @@ struct AdbDevice
 namespace AdbDeviceFinder
 {
 
-inline coro::Promise<std::shared_ptr<std::vector<AdbDevice>>>
+MAAPP_EXPORT inline coro::Promise<std::shared_ptr<std::vector<AdbDevice>>>
     find(std::optional<std::string> adb = std::nullopt)
 {
     if (!(adb.has_value() ? MaaToolkitPostFindDeviceWithAdb(adb.value().c_str())

@@ -2,6 +2,11 @@
 
 #pragma once
 
+#include "MaaPP/module/Module.h"
+
+#ifndef MAAPP_USE_MODULE
+
+#include <functional>
 #include <iostream>
 #include <ranges>
 #include <utility>
@@ -18,12 +23,14 @@
 #include "MaaPP/maa/details/Message.hpp"
 #include "MaaPP/maa/details/String.hpp"
 
+#endif
+
 namespace maa
 {
 
-class Resource;
+MAAPP_EXPORT class Resource;
 
-class ResourceAction : public details::ActionBase<ResourceAction, Resource>
+MAAPP_EXPORT class ResourceAction : public details::ActionBase<ResourceAction, Resource>
 {
     friend class Resource;
 
@@ -38,7 +45,8 @@ private:
     coro::Promise<MaaStatus> status_;
 };
 
-class Resource : public details::ActionHelper<Resource, ResourceAction, MaaResourceHandle>
+MAAPP_EXPORT class Resource
+    : public details::ActionHelper<Resource, ResourceAction, MaaResourceHandle>
 {
     friend class ResourceAction;
     friend class Instance;

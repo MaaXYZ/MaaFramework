@@ -1,6 +1,7 @@
 module;
 
 #include <chrono>
+#include <functional>
 #include <thread>
 
 export module MaaPP:EventLoop;

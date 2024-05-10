@@ -2,14 +2,20 @@
 
 #pragma once
 
+#include "MaaPP/module/Module.h"
+
+#ifndef MAAPP_USE_MODULE
+
 #include <string>
 
 #include <MaaFramework/MaaAPI.h>
 
+#endif
+
 namespace maa::details
 {
 
-class String
+MAAPP_EXPORT class String
 {
 public:
     String()

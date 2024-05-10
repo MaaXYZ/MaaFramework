@@ -2,14 +2,20 @@
 
 #pragma once
 
+#include "MaaPP/module/Module.h"
+
+#ifndef MAAPP_USE_MODULE
+
 #include "MaaFramework/MaaDef.h"
 #include "MaaPP/coro/Promise.hpp"
 #include "MaaPP/maa/Controller.hpp"
 
+#endif
+
 namespace maa::details
 {
 
-struct ProxyController : public CustomControllerAPI
+MAAPP_EXPORT struct ProxyController : public CustomControllerAPI
 {
     std::shared_ptr<Controller> target_;
     int32_t width_ = 1080, height_ = 720;

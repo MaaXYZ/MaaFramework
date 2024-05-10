@@ -163,7 +163,7 @@ public:
 };
 
 template <typename string_t>
-static constexpr string_t unescape_string(const string_t& str)
+inline constexpr string_t unescape_string(const string_t& str)
 {
     using char_t = typename string_t::value_type;
 
@@ -211,19 +211,19 @@ static constexpr string_t unescape_string(const string_t& str)
 }
 
 template <typename string_t>
-static constexpr string_t true_string()
+inline constexpr string_t true_string()
 {
     return { 't', 'r', 'u', 'e' };
 }
 
 template <typename string_t>
-static constexpr string_t false_string()
+inline constexpr string_t false_string()
 {
     return { 'f', 'a', 'l', 's', 'e' };
 }
 
 template <typename string_t>
-static constexpr string_t null_string()
+inline constexpr string_t null_string()
 {
     return { 'n', 'u', 'l', 'l' };
 }

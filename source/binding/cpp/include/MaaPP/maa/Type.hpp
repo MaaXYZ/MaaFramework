@@ -2,6 +2,10 @@
 
 #pragma once
 
+#include "MaaPP/module/Module.h"
+
+#ifndef MAAPP_USE_MODULE
+
 #include <string>
 
 #include <MaaFramework/MaaAPI.h>
@@ -10,17 +14,19 @@
 #include "MaaPP/maa/Image.hpp"
 #include "MaaPP/maa/details/String.hpp"
 
+#endif
+
 namespace maa
 {
 
-struct AnalyzeResult
+MAAPP_EXPORT struct AnalyzeResult
 {
     bool result = false;
     MaaRect rec_box = { 0, 0, 0, 0 };
     std::string rec_detail = "";
 };
 
-struct RecognitionDetail
+MAAPP_EXPORT struct RecognitionDetail
 {
     bool hit = false;
     MaaRect hit_box = { 0, 0, 0, 0 };
@@ -43,7 +49,7 @@ struct RecognitionDetail
     }
 };
 
-struct RunningDetail
+MAAPP_EXPORT struct RunningDetail
 {
     MaaRecoId reco_id = MaaInvalidId;
     bool success = false;

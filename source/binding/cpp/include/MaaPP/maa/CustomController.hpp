@@ -2,17 +2,25 @@
 
 #pragma once
 
+#include "MaaPP/module/Module.h"
+
+#ifndef MAAPP_USE_MODULE
+
+#include <coroutine>
 #include <memory>
+#include <optional>
 
 #include <MaaFramework/MaaAPI.h>
 
 #include "MaaPP/coro/Promise.hpp"
 #include "MaaPP/maa/Image.hpp"
 
+#endif
+
 namespace maa
 {
 
-struct CustomControllerAPI
+MAAPP_EXPORT struct CustomControllerAPI
 {
     virtual ~CustomControllerAPI() = default;
 
