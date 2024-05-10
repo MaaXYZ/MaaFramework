@@ -71,7 +71,9 @@ bool SyncContext::run_recognition(
 
     auto reco = recognizer.recognize(image, task_data);
 
-    box = *reco.hit;
+    if (reco.hit) {
+        box = *reco.hit;
+    }
     detail = reco.detail.to_string();
 
     return reco.hit.has_value();
