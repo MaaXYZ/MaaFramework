@@ -37,11 +37,11 @@ public:
 
     bool set_param(const json::value& param);
 
-    static bool query_running_detail(MaaRunningId run_id, MaaRecoId& reco_id, bool& completed);
-    static bool query_task_detail(MaaTaskId task_id, std::vector<MaaRunningId>& run_id_list);
+    static bool query_node_detail(MaaNodeId node_id, MaaRecoId& reco_id, bool& completed);
+    static bool query_task_detail(MaaTaskId task_id, std::vector<MaaNodeId>& node_id_list);
 
 private:
-    enum class RunningStatus
+    enum class NodeStatus
     {
         Success,
         Timeout,
@@ -58,27 +58,27 @@ private:
         MAA_RES_NS::TaskData task_data;
     };
 
-    struct RunningDetail
+    struct NodeDetail
     {
-        MaaRunningId run_id = 0;
+        MaaNodeId node_id = 0;
         HitDetail hits;
-        RunningStatus status = RunningStatus::InternalError;
+        NodeStatus status = NodeStatus::InternalError;
     };
 
     struct TaskDetail
     {
-        std::vector<MaaRunningId> run_ids;
+        std::vector<MaaNodeId> node_ids;
     };
 
 private:
-    RunningStatus find_first_and_run(
+    NodeStatus find_first_and_run(
         const std::vector<std::string>& list,
         std::chrono::milliseconds timeout,
         /*out*/ MAA_RES_NS::TaskData& found_data);
     std::optional<HitDetail> find_first(const std::vector<std::string>& list);
-    RunningStatus run_task(const HitDetail& hits);
+    NodeStatus run_task(const HitDetail& hits);
 
-    void add_running_detail(int64_t act_id, RunningDetail detail);
+    void add_node_detail(int64_t act_id, NodeDetail detail);
 
 private:
     MAA_RES_NS::ResourceMgr* resource() { return inst_ ? inst_->inter_resource() : nullptr; }
@@ -101,7 +101,7 @@ private:
     json::object basic_info();
     json::object reco_result_to_json(const std::string& name, const Recognizer::Result& res);
     json::object hit_detail_to_json(const HitDetail& detail);
-    json::object running_detail_to_json(const RunningDetail& detail);
+    json::object node_detail_to_json(const NodeDetail& detail);
 
 private:
     bool need_to_stop_ = false;

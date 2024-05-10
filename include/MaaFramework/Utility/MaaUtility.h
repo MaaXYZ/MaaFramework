@@ -47,15 +47,15 @@ extern "C"
         /* out */ MaaStringBufferHandle detail_json,
         /* out */ MaaImageListBufferHandle draws);
 
-    MAA_FRAMEWORK_API MaaBool MaaQueryRunningDetail(
-        MaaRunningId run_id,
+    MAA_FRAMEWORK_API MaaBool MaaQueryNodeDetail(
+        MaaNodeId node_id,
         /*out*/ MaaRecoId* reco_id,
         /*out*/ MaaBool* successful);
 
     MAA_FRAMEWORK_API MaaBool MaaQueryTaskDetail(
         MaaTaskId task_id,
-        /*out*/ MaaRunningId* run_id_list,
-        /* in & out */ MaaSize* run_id_list_size);
+        /*out*/ MaaNodeId* node_id_list,
+        /* in & out */ MaaSize* node_id_list_size);
 
 #ifdef __cplusplus
 }

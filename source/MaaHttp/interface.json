@@ -1725,8 +1725,8 @@
     {
       "argument": [
         {
-          "name": "run_id",
-          "type": "MaaRunningId"
+          "name": "node_id",
+          "type": "MaaNodeId"
         },
         {
           "name": "reco_id",
@@ -1737,7 +1737,7 @@
           "type": "MaaBool *"
         }
       ],
-      "name": "MaaQueryRunningDetail",
+      "name": "MaaQueryNodeDetail",
       "return": "MaaBool"
     },
     {

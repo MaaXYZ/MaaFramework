@@ -202,21 +202,21 @@ LHGArgFromJsonBegin(maa::func_type_MaaSyncContextRunAction, _3_cur_box, true)
     pri_maa::schema_rect(b);
 LHGArgFromJsonEnd()
 
-LHGArgOutput(maa::func_type_MaaQueryRunningDetail::_1_reco_id);
-LHGArgPrepareStateBegin(maa::func_type_MaaQueryRunningDetail, _1_reco_id)
+LHGArgOutput(maa::func_type_MaaQueryNodeDetail::_1_reco_id);
+LHGArgPrepareStateBegin(maa::func_type_MaaQueryNodeDetail, _1_reco_id)
     std::get<arg_tag::index>(arg) = &std::get<arg_tag::index>(state);
 LHGArgPrepareStateEnd()
-LHGArgToJsonBegin(maa::func_type_MaaQueryRunningDetail, _1_reco_id, true)
+LHGArgToJsonBegin(maa::func_type_MaaQueryNodeDetail, _1_reco_id, true)
     value = std::get<index>(state);
     LHGArgToJsonMiddle()
     b.type("number");
 LHGArgToJsonEnd()
 
-LHGArgOutput(maa::func_type_MaaQueryRunningDetail::_2_successful);
-LHGArgPrepareStateBegin(maa::func_type_MaaQueryRunningDetail, _2_successful)
+LHGArgOutput(maa::func_type_MaaQueryNodeDetail::_2_successful);
+LHGArgPrepareStateBegin(maa::func_type_MaaQueryNodeDetail, _2_successful)
     std::get<arg_tag::index>(arg) = &std::get<arg_tag::index>(state);
 LHGArgPrepareStateEnd()
-LHGArgToJsonBegin(maa::func_type_MaaQueryRunningDetail, _2_successful, true)
+LHGArgToJsonBegin(maa::func_type_MaaQueryNodeDetail, _2_successful, true)
     value = std::get<index>(state);
     LHGArgToJsonMiddle()
     b.type("boolean");

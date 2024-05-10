@@ -23,8 +23,8 @@ class _Framework:
         draws: MaaImageListBufferHandle,
     ) -> MaaBool: ...
     @staticmethod
-    def MaaQueryRunningDetail(
-        run_id: MaaRunningId,
+    def MaaQueryNodeDetail(
+        node_id: MaaNodeId,
         reco_id: ctypes.POINTER(MaaRecoId),
         successful: ctypes.POINTER(MaaBool),
     ) -> MaaBool: ...

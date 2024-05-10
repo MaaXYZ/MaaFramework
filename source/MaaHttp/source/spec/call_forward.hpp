@@ -18,8 +18,8 @@ LHGArgOuterState(maa::func_type_MaaSyncContextRunRecognition::_5_out_detail, Maa
 LHGArgOuterState(maa::func_type_MaaQueryRecognitionDetail::_1_hit, MaaBool);
 LHGArgOuterState(maa::func_type_MaaQueryRecognitionDetail::_2_hit_box, MaaRect);
 LHGArgOuterState(maa::func_type_MaaQueryRecognitionDetail::_3_detail_json, MaaStringBufferHandle);
-LHGArgOuterState(maa::func_type_MaaQueryRunningDetail::_1_reco_id, MaaRecoId);
-LHGArgOuterState(maa::func_type_MaaQueryRunningDetail::_2_successful, MaaBool);
+LHGArgOuterState(maa::func_type_MaaQueryNodeDetail::_1_reco_id, MaaRecoId);
+LHGArgOuterState(maa::func_type_MaaQueryNodeDetail::_2_successful, MaaBool);
 
 LHGArgOuterState(maa::func_type_MaaSyncContextRunAction::_3_cur_box, MaaRect);
 LHGArgOuterState(maa::func_type_MaaSyncContextRunRecognition::_4_out_box, MaaRect);

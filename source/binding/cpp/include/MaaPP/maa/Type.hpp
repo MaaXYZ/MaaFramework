@@ -43,15 +43,15 @@ struct RecognitionDetail
     }
 };
 
-struct RunningDetail
+struct NodeDetail
 {
     MaaRecoId reco_id = MaaInvalidId;
     bool success = false;
 
-    bool query(MaaRunningId running_id)
+    bool query(MaaNodeId node_id)
     {
         MaaBool ss;
-        auto res = MaaQueryRunningDetail(running_id, &reco_id, &ss);
+        auto res = MaaQueryNodeDetail(node_id, &reco_id, &ss);
         if (res) {
             success = !!ss;
             return true;

@@ -60,17 +60,17 @@ MaaBool MaaQueryRecognitionDetail(
     return true;
 }
 
-MaaBool MaaQueryRunningDetail(
-    MaaRunningId run_id,
+MaaBool MaaQueryNodeDetail(
+    MaaNodeId node_id,
     /*out*/ MaaRecoId* reco_id,
     /*out*/ MaaBool* successful)
 {
     MaaRecoId mreco_id = 0;
     bool msuccessful = false;
 
-    bool mret = MAA_TASK_NS::PipelineTask::query_running_detail(run_id, mreco_id, msuccessful);
+    bool mret = MAA_TASK_NS::PipelineTask::query_node_detail(node_id, mreco_id, msuccessful);
     if (!mret) {
-        LogError << "failed to query running detail" << VAR(run_id);
+        LogError << "failed to query running detail" << VAR(node_id);
         return false;
     }
 
@@ -83,26 +83,26 @@ MaaBool MaaQueryRunningDetail(
     return true;
 }
 
-MaaBool MaaQueryTaskDetail(MaaTaskId task_id, MaaRunningId* run_id_list, MaaSize* run_id_list_size)
+MaaBool MaaQueryTaskDetail(MaaTaskId task_id, MaaNodeId* node_id_list, MaaSize* node_id_list_size)
 {
-    std::vector<MaaRunningId> run_id_vec;
-    bool ret = MAA_TASK_NS::PipelineTask::query_task_detail(task_id, run_id_vec);
+    std::vector<MaaNodeId> node_id_vec;
+    bool ret = MAA_TASK_NS::PipelineTask::query_task_detail(task_id, node_id_vec);
     if (!ret) {
         LogError << "failed to query task detail" << VAR(task_id);
         return false;
     }
 
-    if (run_id_list_size && *run_id_list_size == 0) {
-        *run_id_list_size = run_id_vec.size();
+    if (node_id_list_size && *node_id_list_size == 0) {
+        *node_id_list_size = node_id_vec.size();
         return true;
     }
-    else if (run_id_list && run_id_list_size) {
-        memcpy(run_id_list, run_id_vec.data(), std::min(run_id_vec.size(), *run_id_list_size));
+    else if (node_id_list && node_id_list_size) {
+        memcpy(node_id_list, node_id_vec.data(), std::min(node_id_vec.size(), *node_id_list_size));
         return true;
     }
     else {
-        LogError << "failed to query task detail" << VAR(task_id) << VAR(run_id_list)
-                 << VAR(run_id_list_size);
+        LogError << "failed to query task detail" << VAR(task_id) << VAR(node_id_list)
+                 << VAR(node_id_list_size);
         return false;
     }
 }

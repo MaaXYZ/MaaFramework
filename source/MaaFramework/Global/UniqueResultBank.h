@@ -20,8 +20,8 @@ public:
     std::any get_reco_detail(int64_t uid) const;
     void add_reco_detail(int64_t uid, std::any detail);
 
-    std::any get_running_detail(int64_t uid) const;
-    void add_running_detail(int64_t uid, std::any detail);
+    std::any get_node_detail(int64_t uid) const;
+    void add_node_detail(int64_t uid, std::any detail);
 
     std::any get_task_detail(int64_t uid) const;
     void add_task_detail(int64_t uid, std::any detail);
@@ -31,7 +31,7 @@ public:
 
 private:
     std::map<int64_t, std::any> reco_detail_map_;
-    std::map<int64_t, std::any> running_detail_map_;
+    std::map<int64_t, std::any> node_detail_map_;
     std::map<int64_t, std::any> task_detail_map_;
 };
 

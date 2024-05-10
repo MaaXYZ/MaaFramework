@@ -67,7 +67,7 @@ typedef MaaId MaaCtrlId;
 typedef MaaId MaaResId;
 typedef MaaId MaaTaskId;
 typedef MaaId MaaRecoId;
-typedef MaaId MaaRunningId;
+typedef MaaId MaaNodeId;
 #define MaaInvalidId ((MaaId)0)
 
 typedef int32_t MaaOption;

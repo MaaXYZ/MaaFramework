@@ -205,19 +205,10 @@ struct InstanceTaskFocusMessage : public InstanceMessage
         MEO_JSONIZATION(id, box, detail, hit);
     } recognition;
 
-    MaaRunningId running_id;
+    MaaNodeId node_id;
     MaaStatus status;
 
-    MEO_JSONIZATION(
-        task_id,
-        entry,
-        uuid,
-        hash,
-        pre_hit_task,
-        name,
-        recognition,
-        running_id,
-        status);
+    MEO_JSONIZATION(task_id, entry, uuid, hash, pre_hit_task, name, recognition, node_id, status);
 };
 
 struct InstanceDebugMessage : public InstanceMessage
@@ -250,19 +241,10 @@ struct InstanceDebugTaskMessage : public InstanceDebugMessage
         MEO_JSONIZATION(id, box, detail, hit);
     } recognition;
 
-    MaaRunningId running_id;
+    MaaNodeId node_id;
     MaaStatus status;
 
-    MEO_JSONIZATION(
-        task_id,
-        entry,
-        uuid,
-        hash,
-        pre_hit_task,
-        name,
-        recognition,
-        running_id,
-        status);
+    MEO_JSONIZATION(task_id, entry, uuid, hash, pre_hit_task, name, recognition, node_id, status);
 };
 
 struct InstanceDebugListToRecognizeMessage : public InstanceDebugMessage

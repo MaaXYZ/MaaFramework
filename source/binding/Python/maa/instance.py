@@ -23,8 +23,8 @@ class RecognitionDetail:
     draws: List[numpy.ndarray]
 
 
-class RunningDetail:
-    run_id: int
+class NodeDetail:
+    node_id: int
     recognition: RecognitionDetail
     successful: bool
 
@@ -340,11 +340,11 @@ class Instance:
         )
 
     @staticmethod
-    def query_running_detail(run_id: int) -> Optional[RunningDetail]:
+    def query_node_detail(node_id: int) -> Optional[NodeDetail]:
         """
         Query running detail.
 
-        :param run_id: The running id.
+        :param node_id: The running id.
         :return: The running detail.
         """
 
@@ -352,8 +352,8 @@ class Instance:
         successful = MaaBool()
 
         ret = bool(
-            Library.framework.MaaQueryRunningDetail(
-                run_id,
+            Library.framework.MaaQueryNodeDetail(
+                node_id,
                 ctypes.pointer(reco_id),
                 ctypes.pointer(successful),
             )
@@ -366,8 +366,8 @@ class Instance:
         if not recognition:
             return None
 
-        return RunningDetail(
-            run_id=run_id,
+        return NodeDetail(
+            node_id=node_id,
             recognition=recognition,
             successful=bool(successful),
         )
@@ -465,9 +465,9 @@ class Instance:
             MaaImageListBufferHandle,
         ]
 
-        Library.framework.MaaQueryRunningDetail.restype = MaaBool
-        Library.framework.MaaQueryRunningDetail.argtypes = [
-            MaaRunningId,
+        Library.framework.MaaQueryNodeDetail.restype = MaaBool
+        Library.framework.MaaQueryNodeDetail.argtypes = [
+            MaaNodeId,
             ctypes.POINTER(MaaRecoId),
             ctypes.POINTER(MaaBool),
         ]

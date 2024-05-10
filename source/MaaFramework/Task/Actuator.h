@@ -28,7 +28,7 @@ public:
             const json::value& reco_detail,
             const TaskData& task_data);
 
-    MaaRunningId uid() const { return uid_; }
+    MaaNodeId uid() const { return uid_; }
 
 private:
     bool click(const MAA_RES_NS::Action::ClickParam& param, const cv::Rect& cur_box);
@@ -61,9 +61,9 @@ private:
     InstanceInternalAPI* inst_ = nullptr;
     const PreTaskBoxes& pre_task_boxes_;
 
-    const MaaRunningId uid_ = ++s_global_uid;
+    const MaaNodeId uid_ = ++s_global_uid;
 
-    inline static std::atomic<MaaRunningId> s_global_uid = 0;
+    inline static std::atomic<MaaNodeId> s_global_uid = 0;
 };
 
 MAA_TASK_NS_END
