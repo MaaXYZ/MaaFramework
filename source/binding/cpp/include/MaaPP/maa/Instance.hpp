@@ -6,6 +6,7 @@
 
 #ifndef MAAPP_USE_MODULE
 
+#include <algorithm>
 #include <functional>
 #include <iostream>
 #include <iterator>

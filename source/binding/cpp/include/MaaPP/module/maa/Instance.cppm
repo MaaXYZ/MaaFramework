@@ -1,5 +1,6 @@
 module;
 
+#include <algorithm>
 #include <functional>
 #include <iostream>
 #include <iterator>
