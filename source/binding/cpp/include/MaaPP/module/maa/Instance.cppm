@@ -5,6 +5,7 @@ module;
 #include <iterator>
 #include <memory>
 #include <ranges>
+#include <string_view>
 #include <utility>
 
 #include <MaaFramework/MaaAPI.h>

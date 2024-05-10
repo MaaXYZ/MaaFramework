@@ -6,6 +6,7 @@
 
 #ifndef MAAPP_USE_MODULE
 
+#include <memory>
 #include <string>
 
 #include <MaaFramework/MaaAPI.h>

@@ -1,8 +1,7 @@
 #include <coroutine>
 #include <iostream>
 #include <string>
-
-#include "MaaFramework/MaaAPI.h"
+#include <string_view>
 
 import MaaPP;
 
@@ -102,8 +101,8 @@ coro::Promise<ControllerHandle> create_win32_controller()
 coro::Promise<AnalyzeResult> my_analyze(
     SyncContextHandle sync_context,
     ImageHandle image,
-    MaaStringView task_name,
-    MaaStringView custom_recognition_param)
+    std::string_view task_name,
+    std::string_view custom_recognition_param)
 {
     /* Get image */
 

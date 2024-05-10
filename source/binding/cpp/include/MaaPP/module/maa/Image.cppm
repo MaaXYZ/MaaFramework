@@ -1,5 +1,6 @@
 module;
 
+#include <memory>
 #include <string>
 
 #include <MaaFramework/MaaAPI.h>

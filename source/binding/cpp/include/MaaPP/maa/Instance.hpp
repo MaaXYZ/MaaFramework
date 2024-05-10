@@ -11,6 +11,7 @@
 #include <iterator>
 #include <memory>
 #include <ranges>
+#include <string_view>
 #include <utility>
 
 #include <MaaFramework/MaaAPI.h>
@@ -47,8 +48,8 @@ public:
     using analyze_func = std::function<coro::Promise<AnalyzeResult>(
         std::shared_ptr<SyncContext>,
         std::shared_ptr<details::Image>,
-        MaaStringView,
-        MaaStringView)>;
+        std::string_view,
+        std::string_view)>;
 
     CustomRecognizer(analyze_func analyze)
         : analyze_(analyze)
