@@ -9,6 +9,7 @@
 #include <coroutine>
 #include <memory>
 #include <optional>
+#include <string>
 
 #include <MaaFramework/MaaAPI.h>
 
