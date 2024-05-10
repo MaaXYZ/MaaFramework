@@ -59,10 +59,10 @@ class Status:
 
 
 class Future(abc.ABC):
-    _mid: MaaId
+    _maaid: MaaId
 
     def __init__(self, mid: MaaId, status_func):
-        self._mid = mid
+        self._maaid = mid
         self._status_func = status_func
 
     async def wait(self) -> bool:
@@ -72,7 +72,7 @@ class Future(abc.ABC):
         return self.success()
 
     def status(self) -> Status:
-        return Status(self._status_func(self._mid))
+        return Status(self._status_func(self._maaid))
 
     def done(self) -> bool:
         return self.status().done()

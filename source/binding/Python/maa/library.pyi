@@ -28,6 +28,12 @@ class _Framework:
         reco_id: ctypes.POINTER(MaaRecoId),
         successful: ctypes.POINTER(MaaBool),
     ) -> MaaBool: ...
+    @staticmethod
+    def MaaQueryTaskDetail(
+        task_id: MaaTaskId,
+        node_id_list: ctypes.POINTER(MaaRecoId),
+        node_id_list_size: ctypes.POINTER(MaaSize),
+    ) -> MaaBool: ...
 
     # buffer.py
     # StringBuffer
@@ -344,6 +350,18 @@ class _Framework:
     def MaaInited(inst: MaaInstanceHandle) -> MaaBool: ...
     @staticmethod
     def MaaPostTask(
+        inst: MaaInstanceHandle,
+        entry: MaaStringView,
+        param: MaaStringView,
+    ) -> MaaTaskId: ...
+    @staticmethod
+    def MaaPostRecognition(
+        inst: MaaInstanceHandle,
+        entry: MaaStringView,
+        param: MaaStringView,
+    ) -> MaaTaskId: ...
+    @staticmethod
+    def MaaPostAction(
         inst: MaaInstanceHandle,
         entry: MaaStringView,
         param: MaaStringView,

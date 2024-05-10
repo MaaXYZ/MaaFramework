@@ -58,13 +58,15 @@ class SyncContext:
         rect_buffer = RectBuffer()
         detail_buffer = StringBuffer()
 
-        ret = Library.framework.MaaSyncContextRunRecognition(
-            self._handle,
-            image_buffer.c_handle,
-            task_name.encode("utf-8"),
-            json.dumps(task_param, ensure_ascii=False).encode("utf-8"),
-            rect_buffer.c_handle,
-            detail_buffer.c_handle,
+        ret = bool(
+            Library.framework.MaaSyncContextRunRecognition(
+                self._handle,
+                image_buffer.c_handle,
+                task_name.encode("utf-8"),
+                json.dumps(task_param, ensure_ascii=False).encode("utf-8"),
+                rect_buffer.c_handle,
+                detail_buffer.c_handle,
+            )
         )
 
         return (ret, rect_buffer.get(), detail_buffer.get())
@@ -210,7 +212,7 @@ class SyncContext:
         if not ret:
             return None
         return image_buffer.get()
-    
+
     def cached_image(self) -> Optional[numpy.ndarray]:
         """
         Sync context cached image.
