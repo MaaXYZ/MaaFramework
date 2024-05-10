@@ -192,7 +192,7 @@ class Instance:
             task_type.encode("utf-8"),
             json.dumps(param, ensure_ascii=False).encode("utf-8"),
         )
-        return TaskFuture(maaid, self._status, self._set_task_param, self.query_recognition_detail)
+        return TaskFuture(maaid, self._status, self._set_task_param, self.query_task_detail)
 
     def post_action(self, task_type: str, param: Any = {}) -> TaskFuture:
         """
