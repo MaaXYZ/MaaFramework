@@ -3,6 +3,8 @@
 #include <string>
 #include <string_view>
 
+#include "MaaFramework/MaaDef.h"
+
 import MaaPP;
 
 #ifdef _WIN32

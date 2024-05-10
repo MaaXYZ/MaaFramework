@@ -168,6 +168,11 @@ jobs:
         with:
           submodules: true
 
+      - name: Install Clang
+        run: |
+          pacman -Sy
+          pacman -S --noconfirm clang
+  
       - name: Install cross compile toolchains
         if: ${{ matrix.arch != 'x86_64' }}
         run: |
@@ -187,8 +192,8 @@ jobs:
 
       - name: Build MAA
         env:
-          CC: ${{ matrix.arch == 'x86_64' && 'ccache gcc' || 'ccache aarch64-linux-gnu-gcc' }}
-          CXX: ${{ matrix.arch == 'x86_64' && 'ccache g++' || 'ccache aarch64-linux-gnu-g++' }}
+          CC: ${{ matrix.arch == 'x86_64' && 'ccache clang' || 'ccache aarch64-linux-gnu-gcc' }}
+          CXX: ${{ matrix.arch == 'x86_64' && 'ccache clang++' || 'ccache aarch64-linux-gnu-g++' }}
         run: |
           cmake --preset 'NinjaMulti' \
             -DMAADEPS_TRIPLET='maa-${{ matrix.arch == 'x86_64' && 'x64' || 'arm64' }}-linux' \
