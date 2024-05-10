@@ -1,5 +1,8 @@
 module;
 
+// https://github.com/scylladb/seastar/commit/131f637ac25583e79366ef716bf6812fd02bec6f
+#include <compare>
+
 #include <atomic>
 #include <memory>
 #include <variant>
