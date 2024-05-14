@@ -108,6 +108,8 @@ coro::Promise<AnalyzeResult> my_analyze(
     auto png_data = image->encoded();
     // cv::Mat im = cv::imdecode({ png_data.data(), png_data.size() }, cv::IMREAD_COLOR);
 
+    std::ignore = png_data;
+
     // Approach 2 not supported yet
 
     // And do your computer vision...
@@ -142,4 +144,25 @@ void register_my_action_by_exec_agent(InstanceHandle maa_handle)
         "MyAct",
         "Python.exe",
         { "sample\\python\\exec_agent\\my_action.py" });
+}
+
+void test_pipeline()
+{
+    using namespace maa::pipeline;
+
+    auto task = Task {
+        Name { "Hello" },
+        Click {
+            Roi { 0, 0, 100, 100 } //
+        }                          //
+    };
+
+    auto task2 = Task {
+        Name { "Hello2" },
+        Click {
+            "Hello1",
+            Roi { 0, 0, 50, 50 } //
+        },
+        Next { "Hello" }         //
+    };
 }
