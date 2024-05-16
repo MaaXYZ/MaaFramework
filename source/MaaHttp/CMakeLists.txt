@@ -25,7 +25,7 @@ if(NODE_EXE AND EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/LHG/README.md)
         TARGETS MaaHttp
         EXPORT MaaFrameworkTargets
         RUNTIME DESTINATION bin
-        LIBRARY DESTINATION bin
+        LIBRARY DESTINATION lib
         ARCHIVE DESTINATION lib)
 
     source_group(TREE ${CMAKE_CURRENT_SOURCE_DIR} FILES ${maa_http_src})

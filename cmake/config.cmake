@@ -30,9 +30,9 @@ else()
 endif()
 
 if(APPLE)
-    set(CMAKE_INSTALL_RPATH "@loader_path;@executable_path")
+    set(CMAKE_INSTALL_RPATH "@loader_path;@executable_path;@loader_path/../lib;@executable_path/../lib")
 elseif(UNIX)
-    set(CMAKE_INSTALL_RPATH "$ORIGIN")
+    set(CMAKE_INSTALL_RPATH "$ORIGIN;$ORIGIN/../lib")
 endif()
 
 set(CMAKE_CXX_STANDARD 20)
