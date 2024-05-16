@@ -26,7 +26,7 @@ class _Framework:
     def MaaQueryNodeDetail(
         node_id: MaaNodeId,
         reco_id: ctypes.POINTER(MaaRecoId),
-        successful: ctypes.POINTER(MaaBool),
+        run_completed: ctypes.POINTER(MaaBool),
     ) -> MaaBool: ...
     @staticmethod
     def MaaQueryTaskDetail(

@@ -63,12 +63,12 @@ MaaBool MaaQueryRecognitionDetail(
 MaaBool MaaQueryNodeDetail(
     MaaNodeId node_id,
     /*out*/ MaaRecoId* reco_id,
-    /*out*/ MaaBool* successful)
+    /*out*/ MaaBool* run_completed)
 {
     MaaRecoId mreco_id = 0;
-    bool msuccessful = false;
+    bool mcompleted = false;
 
-    bool mret = MAA_TASK_NS::PipelineTask::query_node_detail(node_id, mreco_id, msuccessful);
+    bool mret = MAA_TASK_NS::PipelineTask::query_node_detail(node_id, mreco_id, mcompleted);
     if (!mret) {
         LogError << "failed to query running detail" << VAR(node_id);
         return false;
@@ -77,8 +77,8 @@ MaaBool MaaQueryNodeDetail(
     if (reco_id) {
         *reco_id = mreco_id;
     }
-    if (successful) {
-        *successful = msuccessful;
+    if (run_completed) {
+        *run_completed = mcompleted;
     }
     return true;
 }

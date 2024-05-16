@@ -50,7 +50,7 @@ extern "C"
     MAA_FRAMEWORK_API MaaBool MaaQueryNodeDetail(
         MaaNodeId node_id,
         /*out*/ MaaRecoId* reco_id,
-        /*out*/ MaaBool* successful);
+        /*out*/ MaaBool* run_completed);
 
     MAA_FRAMEWORK_API MaaBool MaaQueryTaskDetail(
         MaaTaskId task_id,

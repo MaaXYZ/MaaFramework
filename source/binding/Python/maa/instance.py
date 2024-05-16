@@ -27,7 +27,7 @@ class RecognitionDetail:
 class NodeDetail:
     node_id: int
     recognition: RecognitionDetail
-    successful: bool
+    run_completed: bool
 
 
 @dataclass
@@ -192,7 +192,9 @@ class Instance:
             task_type.encode("utf-8"),
             json.dumps(param, ensure_ascii=False).encode("utf-8"),
         )
-        return TaskFuture(maaid, self._status, self._set_task_param, self.query_task_detail)
+        return TaskFuture(
+            maaid, self._status, self._set_task_param, self.query_task_detail
+        )
 
     def post_action(self, task_type: str, param: Any = {}) -> TaskFuture:
         """
@@ -208,7 +210,9 @@ class Instance:
             task_type.encode("utf-8"),
             json.dumps(param, ensure_ascii=False).encode("utf-8"),
         )
-        return TaskFuture(maaid, self._status, self._set_task_param, self.query_task_detail)
+        return TaskFuture(
+            maaid, self._status, self._set_task_param, self.query_task_detail
+        )
 
     async def wait_all(self):
         """
@@ -446,13 +450,13 @@ class Instance:
         """
 
         reco_id = MaaRecoId()
-        successful = MaaBool()
+        run_completed = MaaBool()
 
         ret = bool(
             Library.framework.MaaQueryNodeDetail(
                 node_id,
                 ctypes.pointer(reco_id),
-                ctypes.pointer(successful),
+                ctypes.pointer(run_completed),
             )
         )
 
@@ -466,7 +470,7 @@ class Instance:
         return NodeDetail(
             node_id=node_id,
             recognition=recognition,
-            successful=bool(successful),
+            run_completed=bool(run_completed),
         )
 
     @staticmethod
@@ -498,7 +502,7 @@ class Instance:
         for i in range(size.value):
             detail = Instance.query_node_detail(node_id_list[i])
             node_details.append(detail)
-        
+
         return TaskDetail(task_id=task_id, node_details=node_details)
 
     _api_properties_initialized: bool = False
