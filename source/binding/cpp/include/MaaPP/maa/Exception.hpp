@@ -17,7 +17,7 @@ struct ActionInvalidId : public Exception
 {
     std::string msg = std::format("{}: MaaInvalidID got in put_action", typeid(Target).name());
 
-    virtual const char* what() const override { return msg.c_str(); }
+    virtual const char* what() const noexcept override { return msg.c_str(); }
 };
 
 struct FunctionFailed : public Exception
@@ -29,7 +29,7 @@ struct FunctionFailed : public Exception
     {
     }
 
-    virtual const char* what() const override { return msg.c_str(); }
+    virtual const char* what() const noexcept override { return msg.c_str(); }
 };
 
 }
