@@ -93,7 +93,7 @@ private:
     std::optional<HitDetail> find_first(const std::vector<std::string>& list);
     NodeStatus run_task(const HitDetail& hits);
 
-    void add_node_detail(int64_t act_id, NodeDetail detail);
+    void add_node_detail(int64_t node_id, NodeDetail detail);
 
 private:
     MAA_RES_NS::ResourceMgr* resource() { return inst_ ? inst_->inter_resource() : nullptr; }

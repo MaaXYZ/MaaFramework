@@ -21,6 +21,7 @@ public:
     using PreTaskBoxes = std::map<std::string, cv::Rect>;
 
 public:
+    Actuator() = default;
     Actuator(InstanceInternalAPI* inst, const PreTaskBoxes& boxes = {});
 
     bool
@@ -59,7 +60,7 @@ private:
 
 private:
     InstanceInternalAPI* inst_ = nullptr;
-    const PreTaskBoxes& pre_task_boxes_;
+    const PreTaskBoxes& pre_task_boxes_ = {};
 
     const MaaNodeId uid_ = ++s_global_uid;
 

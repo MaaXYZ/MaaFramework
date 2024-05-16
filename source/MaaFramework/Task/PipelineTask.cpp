@@ -91,7 +91,14 @@ bool PipelineTask::run_recognition_only()
 {
     LogFunc << VAR(entry_);
 
-    return find_first({ entry_ }).has_value();
+    auto hit_opt = find_first({ entry_ });
+    if (hit_opt) {
+        MaaNodeId node_id = Actuator().uid();
+        NodeDetail detail { .node_id = node_id, .hits = std::move(*hit_opt), .status = NodeStatus::Runout };
+        add_node_detail(node_id, std::move(detail));
+    }
+
+    return hit_opt.has_value();
 }
 
 bool PipelineTask::run_action_only()
@@ -330,17 +337,17 @@ PipelineTask::NodeStatus PipelineTask::run_task(const HitDetail& hits)
     return ret ? NodeStatus::Success : NodeStatus::InternalError;
 }
 
-void PipelineTask::add_node_detail(int64_t act_id, NodeDetail detail)
+void PipelineTask::add_node_detail(int64_t node_id, NodeDetail detail)
 {
     auto& bank = UniqueResultBank::get_instance();
-    bank.add_node_detail(act_id, detail);
+    bank.add_node_detail(node_id, detail);
 
     TaskDetail task_detail;
     std::any task_detail_any = bank.get_task_detail(task_id_);
     if (task_detail_any.has_value()) {
         task_detail = std::any_cast<TaskDetail>(task_detail_any);
     }
-    task_detail.node_ids.emplace_back(act_id);
+    task_detail.node_ids.emplace_back(node_id);
     bank.add_task_detail(task_id_, task_detail);
 }
 
