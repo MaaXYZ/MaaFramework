@@ -20,6 +20,17 @@ struct ActionInvalidId : public Exception
     virtual const char* what() const noexcept override { return msg.c_str(); }
 };
 
+template <typename Target, typename Handle>
+struct NullHandle : public Exception
+{
+    std::string msg = std::format(
+        "{}: nullptr({}) got in ActionHelper",
+        typeid(Target).name(),
+        typeid(Handle).name());
+
+    virtual const char* what() const noexcept override { return msg.c_str(); }
+};
+
 struct FunctionFailed : public Exception
 {
     std::string msg;

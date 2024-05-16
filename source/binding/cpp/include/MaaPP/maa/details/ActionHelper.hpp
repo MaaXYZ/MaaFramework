@@ -40,6 +40,9 @@ protected:
     ActionHelper(Handle inst)
         : inst_(inst)
     {
+        if (!inst_) {
+            throw NullHandle<IActionHelper, Handle>();
+        }
     }
 
     ~ActionHelper() {}

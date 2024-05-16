@@ -2,11 +2,12 @@
 
 #pragma once
 
-#include "MaaPP/maa/Exception.hpp"
 #include <memory>
 #include <string_view>
 
 #include <MaaFramework/MaaAPI.h>
+
+#include "MaaPP/maa/Exception.hpp"
 
 namespace maa::details
 {
@@ -21,15 +22,17 @@ public:
     }
 
     Image()
-        : handle_(MaaCreateImageBuffer())
-        , own_(true)
+        : Image(MaaCreateImageBuffer(), true)
     {
     }
 
-    Image(MaaImageBufferHandle handle)
+    Image(MaaImageBufferHandle handle, bool own = false)
         : handle_(handle)
-        , own_(false)
+        , own_(own)
     {
+        if (!handle_) {
+            throw NullHandle<Image, MaaImageBufferHandle>();
+        }
     }
 
     Image(const Image&) = delete;
