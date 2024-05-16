@@ -2,9 +2,12 @@
 
 #pragma once
 
-#include <string>
+#include <memory>
+#include <string_view>
 
 #include <MaaFramework/MaaAPI.h>
+
+#include "MaaPP/maa/Exception.hpp"
 
 namespace maa::details
 {
@@ -19,15 +22,17 @@ public:
     }
 
     Image()
-        : handle_(MaaCreateImageBuffer())
-        , own_(true)
+        : Image(MaaCreateImageBuffer(), true)
     {
     }
 
-    Image(MaaImageBufferHandle handle)
+    Image(MaaImageBufferHandle handle, bool own = false)
         : handle_(handle)
-        , own_(false)
+        , own_(own)
     {
+        if (!handle_) {
+            throw NullHandle<Image, MaaImageBufferHandle>();
+        }
     }
 
     Image(const Image&) = delete;
@@ -59,12 +64,14 @@ public:
             MaaGetImageEncodedSize(handle_));
     }
 
-    bool set_encoded(std::string_view data)
+    void set_encoded(std::string_view data)
     {
-        return MaaSetImageEncoded(
-            handle_,
-            const_cast<uint8_t*>(reinterpret_cast<const uint8_t*>(data.data())),
-            data.size());
+        if (!MaaSetImageEncoded(
+                handle_,
+                const_cast<uint8_t*>(reinterpret_cast<const uint8_t*>(data.data())),
+                data.size())) {
+            throw FunctionFailed("MaaSetImageEncoded");
+        }
     }
 
 private:

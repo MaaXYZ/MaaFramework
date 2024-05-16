@@ -47,7 +47,8 @@ struct ProxyController : public CustomControllerAPI
     virtual coro::Promise<bool> screencap(std::shared_ptr<details::Image> image) override
     {
         co_await target_->post_screencap()->wait();
-        co_return target_->image(image);
+        target_->image(image);
+        co_return true;
     }
 
     virtual coro::Promise<bool> click(int32_t x, int32_t y) override

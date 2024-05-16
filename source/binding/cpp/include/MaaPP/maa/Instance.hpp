@@ -14,6 +14,7 @@
 #include "MaaPP/coro/EventLoop.hpp"
 #include "MaaPP/coro/Promise.hpp"
 #include "MaaPP/maa/Controller.hpp"
+#include "MaaPP/maa/Exception.hpp"
 #include "MaaPP/maa/Image.hpp"
 #include "MaaPP/maa/Resource.hpp"
 #include "MaaPP/maa/SyncContext.hpp"
@@ -38,8 +39,8 @@ public:
     using analyze_func = std::function<coro::Promise<AnalyzeResult>(
         std::shared_ptr<SyncContext>,
         std::shared_ptr<details::Image>,
-        MaaStringView,
-        MaaStringView)>;
+        std::string_view,
+        std::string_view)>;
 
     CustomRecognizer(analyze_func analyze)
         : analyze_(analyze)
@@ -130,8 +131,8 @@ public:
     using ActionBase::ActionBase;
 
     MaaStatus status();
-    bool set_param(const json::object& param);
-    std::vector<MaaNodeId> query_detail();
+    std::shared_ptr<InstanceAction> set_param(const json::object& param);
+    std::shared_ptr<std::vector<MaaNodeId>> query_detail();
 
     coro::Promise<MaaStatus> wait() { return status_; }
 
@@ -182,69 +183,87 @@ public:
         return put_action(MaaPostAction(inst_, task.c_str(), param.to_string().c_str()));
     }
 
-    bool bind(std::shared_ptr<Controller> ctrl)
+    std::shared_ptr<Instance> bind(std::shared_ptr<Controller> ctrl)
     {
         if (!MaaBindController(inst_, ctrl ? ctrl->inst_ : nullptr)) {
-            return false;
+            throw FunctionFailed("MaaBindController");
         }
         controller_ = ctrl;
-        return true;
+        return shared_from_this();
     }
 
-    bool bind(std::shared_ptr<Resource> res)
+    std::shared_ptr<Instance> bind(std::shared_ptr<Resource> res)
     {
         if (!MaaBindResource(inst_, res ? res->inst_ : nullptr)) {
-            return false;
+            throw FunctionFailed("MaaBindResource");
         }
         resource_ = res;
-        return true;
+        return shared_from_this();
     }
 
-    bool bind(const std::string& name, std::shared_ptr<CustomRecognizer> reco)
+    std::shared_ptr<Instance> bind(const std::string& name, std::shared_ptr<CustomRecognizer> reco)
     {
         custom_recognizers_[name] = reco;
-        return MaaRegisterCustomRecognizer(
-            inst_,
-            name.c_str(),
-            const_cast<MaaCustomRecognizerAPI*>(&CustomRecognizer::api_),
-            reco.get());
+        if (!MaaRegisterCustomRecognizer(
+                inst_,
+                name.c_str(),
+                const_cast<MaaCustomRecognizerAPI*>(&CustomRecognizer::api_),
+                reco.get())) {
+            throw FunctionFailed("MaaRegisterCustomRecognizer");
+        }
+        return shared_from_this();
     }
 
-    bool bind(const std::string& name, std::shared_ptr<CustomAction> act)
+    std::shared_ptr<Instance> bind(const std::string& name, std::shared_ptr<CustomAction> act)
     {
         custom_actions_[name] = act;
-        return MaaRegisterCustomAction(
-            inst_,
-            name.c_str(),
-            const_cast<MaaCustomActionAPI*>(&CustomAction::api_),
-            act.get());
+        if (!MaaRegisterCustomAction(
+                inst_,
+                name.c_str(),
+                const_cast<MaaCustomActionAPI*>(&CustomAction::api_),
+                act.get())) {
+            throw FunctionFailed("MaaRegisterCustomAction");
+        }
+        return shared_from_this();
     }
 
-    bool unbind_recognizer(const std::string& name)
+    std::shared_ptr<Instance> unbind_recognizer(const std::string& name)
     {
         custom_recognizers_.erase(name);
-        return MaaUnregisterCustomRecognizer(inst_, name.c_str());
+        if (!MaaUnregisterCustomRecognizer(inst_, name.c_str())) {
+            throw FunctionFailed("MaaUnregisterCustomRecognizer");
+        }
+        return shared_from_this();
     }
 
-    bool unbind_action(const std::string& name)
+    std::shared_ptr<Instance> unbind_action(const std::string& name)
     {
         custom_actions_.erase(name);
-        return MaaUnregisterCustomAction(inst_, name.c_str());
+        if (!MaaUnregisterCustomAction(inst_, name.c_str())) {
+            throw FunctionFailed("MaaUnregisterCustomAction");
+        }
+        return shared_from_this();
     }
 
-    bool unbind_recognizer()
+    std::shared_ptr<Instance> unbind_recognizer()
     {
         custom_recognizers_.clear();
-        return MaaClearCustomRecognizer(inst_);
+        if (!MaaClearCustomRecognizer(inst_)) {
+            throw FunctionFailed("MaaClearCustomRecognizer");
+        }
+        return shared_from_this();
     }
 
-    bool unbind_action()
+    std::shared_ptr<Instance> unbind_action()
     {
         custom_actions_.clear();
-        return MaaClearCustomAction(inst_);
+        if (!MaaClearCustomAction(inst_)) {
+            throw FunctionFailed("MaaClearCustomAction");
+        }
+        return shared_from_this();
     }
 
-    bool bind_recognizer_executor(
+    std::shared_ptr<Instance> bind_recognizer_executor(
         const std::string& name,
         const std::string& path,
         const std::vector<std::string>& argv)
@@ -255,15 +274,18 @@ public:
             argv.end(),
             std::back_insert_iterator<std::vector<MaaStringView>>(argv_view),
             [](const std::string& str) { return str.c_str(); });
-        return MaaToolkitRegisterCustomRecognizerExecutor(
-            inst_,
-            name.c_str(),
-            path.c_str(),
-            argv_view.data(),
-            argv_view.size());
+        if (!MaaToolkitRegisterCustomRecognizerExecutor(
+                inst_,
+                name.c_str(),
+                path.c_str(),
+                argv_view.data(),
+                argv_view.size())) {
+            throw FunctionFailed("MaaToolkitRegisterCustomRecognizerExecutor");
+        }
+        return shared_from_this();
     }
 
-    bool bind_action_executor(
+    std::shared_ptr<Instance> bind_action_executor(
         const std::string& name,
         const std::string& path,
         const std::vector<std::string>& argv)
@@ -274,27 +296,48 @@ public:
             argv.end(),
             std::back_insert_iterator<std::vector<MaaStringView>>(argv_view),
             [](const std::string& str) { return str.c_str(); });
-        return MaaToolkitRegisterCustomActionExecutor(
-            inst_,
-            name.c_str(),
-            path.c_str(),
-            argv_view.data(),
-            argv_view.size());
+        if (!MaaToolkitRegisterCustomActionExecutor(
+                inst_,
+                name.c_str(),
+                path.c_str(),
+                argv_view.data(),
+                argv_view.size())) {
+            throw FunctionFailed("MaaToolkitRegisterCustomActionExecutor");
+        }
+        return shared_from_this();
     }
 
-    bool unbind_recognizer_executor(const std::string& name)
+    std::shared_ptr<Instance> unbind_recognizer_executor(const std::string& name)
     {
-        return MaaToolkitUnregisterCustomRecognizerExecutor(inst_, name.c_str());
+        if (!MaaToolkitUnregisterCustomRecognizerExecutor(inst_, name.c_str())) {
+            throw FunctionFailed("MaaToolkitUnregisterCustomRecognizerExecutor");
+        }
+        return shared_from_this();
     }
 
-    bool unbind_action_executor(const std::string& name)
+    std::shared_ptr<Instance> unbind_action_executor(const std::string& name)
     {
-        return MaaToolkitUnregisterCustomActionExecutor(inst_, name.c_str());
+        if (!MaaToolkitUnregisterCustomActionExecutor(inst_, name.c_str())) {
+            throw FunctionFailed("MaaToolkitUnregisterCustomActionExecutor");
+        }
+        return shared_from_this();
     }
 
-    bool unbind_recognizer_executor() { return MaaToolkitClearCustomRecognizerExecutor(inst_); }
+    std::shared_ptr<Instance> unbind_recognizer_executor()
+    {
+        if (!MaaToolkitClearCustomRecognizerExecutor(inst_)) {
+            throw FunctionFailed("MaaToolkitClearCustomRecognizerExecutor");
+        }
+        return shared_from_this();
+    }
 
-    bool unbind_action_executor() { return MaaToolkitClearCustomActionExecutor(inst_); }
+    std::shared_ptr<Instance> unbind_action_executor()
+    {
+        if (!MaaToolkitClearCustomActionExecutor(inst_)) {
+            throw FunctionFailed("MaaToolkitClearCustomActionExecutor");
+        }
+        return shared_from_this();
+    }
 
     bool inited() { return MaaInited(inst_); }
 
@@ -351,18 +394,25 @@ inline MaaStatus InstanceAction::status()
     return MaaTaskStatus(inst_->inst_, id_);
 }
 
-inline bool InstanceAction::set_param(const json::object& param)
+inline std::shared_ptr<InstanceAction> InstanceAction::set_param(const json::object& param)
 {
-    return MaaSetTaskParam(inst_->inst_, id_, param.to_string().c_str());
+    if (!MaaSetTaskParam(inst_->inst_, id_, param.to_string().c_str())) {
+        throw FunctionFailed("MaaSetTaskParam");
+    }
+    return shared_from_this();
 }
 
-inline std::vector<MaaNodeId> InstanceAction::query_detail()
+inline std::shared_ptr<std::vector<MaaNodeId>> InstanceAction::query_detail()
 {
     MaaSize size;
-    MaaQueryTaskDetail(id_, nullptr, &size);
+    if (!MaaQueryTaskDetail(id_, nullptr, &size)) {
+        throw FunctionFailed("MaaQueryTaskDetail");
+    }
     std::vector<MaaNodeId> result(size);
-    MaaQueryTaskDetail(id_, result.data(), &size);
-    return result;
+    if (!MaaQueryTaskDetail(id_, result.data(), &size)) {
+        throw FunctionFailed("MaaQueryTaskDetail");
+    }
+    return std::make_shared<std::vector<MaaNodeId>>(std::move(result));
 }
 
 }

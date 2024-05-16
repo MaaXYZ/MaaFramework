@@ -6,6 +6,8 @@
 
 #include <MaaFramework/MaaAPI.h>
 
+#include "MaaPP/maa/Exception.hpp"
+
 namespace maa::details
 {
 
@@ -13,15 +15,17 @@ class String
 {
 public:
     String()
-        : handle_(MaaCreateStringBuffer())
-        , own_(true)
+        : String(MaaCreateStringBuffer(), true)
     {
     }
 
-    String(MaaStringBufferHandle handle)
+    String(MaaStringBufferHandle handle, bool own = false)
         : handle_(handle)
-        , own_(false)
+        , own_(own)
     {
+        if (!handle_) {
+            throw NullHandle<String, MaaStringBufferHandle>();
+        }
     }
 
     String(const String&) = delete;

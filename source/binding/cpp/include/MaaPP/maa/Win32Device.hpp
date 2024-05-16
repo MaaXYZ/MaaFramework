@@ -10,6 +10,7 @@
 
 #include "MaaPP/coro/EventLoop.hpp"
 #include "MaaPP/coro/Promise.hpp"
+#include "MaaPP/maa/Exception.hpp"
 #include "MaaPP/maa/details/ControllerType.hpp"
 #include "MaaPP/maa/details/String.hpp"
 
@@ -56,14 +57,18 @@ struct Win32Hwnd
     std::string class_name() const
     {
         details::String buffer;
-        MaaToolkitGetWindowClassName(hwnd_, buffer.handle());
+        if (!MaaToolkitGetWindowClassName(hwnd_, buffer.handle())) {
+            throw FunctionFailed("MaaToolkitGetWindowClassName");
+        }
         return buffer;
     }
 
     std::string window_name() const
     {
         details::String buffer;
-        MaaToolkitGetWindowWindowName(hwnd_, buffer.handle());
+        if (!MaaToolkitGetWindowWindowName(hwnd_, buffer.handle())) {
+            throw FunctionFailed("MaaToolkitGetWindowWindowName");
+        }
         return buffer;
     }
 };

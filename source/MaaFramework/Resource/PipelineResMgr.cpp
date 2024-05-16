@@ -253,7 +253,7 @@ bool get_and_check_value_or_array(
         return false;
     }
 
-    return !output.empty();
+    return true;
 }
 
 bool PipelineResMgr::parse_task(
@@ -1236,11 +1236,11 @@ bool PipelineResMgr::parse_swipe(
         LogError << "failed to parse_action_target end" << VAR(input);
         return false;
     }
-    if (output.begin.type == Action::Target::Type::Self
-        && output.end.type == Action::Target::Type::Self) {
-        LogError << "not set swipe begin or end";
-        return false;
-    }
+    // if (output.begin.type == Action::Target::Type::Self
+    //     && output.end.type == Action::Target::Type::Self) {
+    //     LogError << "not set swipe begin or end";
+    //     return false;
+    // }
 
     if (!get_and_check_value(input, "duration", output.duration, default_value.duration)) {
         LogError << "failed to get_and_check_value duration" << VAR(input);

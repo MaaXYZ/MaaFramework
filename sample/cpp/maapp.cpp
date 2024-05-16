@@ -1,3 +1,4 @@
+#include <exception>
 #include <iostream>
 #include <string>
 
@@ -99,14 +100,16 @@ coro::Promise<ControllerHandle> create_win32_controller()
 coro::Promise<AnalyzeResult> my_analyze(
     SyncContextHandle sync_context,
     ImageHandle image,
-    MaaStringView task_name,
-    MaaStringView custom_recognition_param)
+    std::string_view task_name,
+    std::string_view custom_recognition_param)
 {
     /* Get image */
 
     // Approach 1
     auto png_data = image->encoded();
     // cv::Mat im = cv::imdecode({ png_data.data(), png_data.size() }, cv::IMREAD_COLOR);
+
+    std::ignore = png_data;
 
     // Approach 2 not supported yet
 

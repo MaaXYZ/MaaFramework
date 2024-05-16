@@ -16,6 +16,7 @@
 #include "MaaPP/coro/Promise.hpp"
 #include "MaaPP/maa/AdbDevice.hpp"
 #include "MaaPP/maa/CustomController.hpp"
+#include "MaaPP/maa/Exception.hpp"
 #include "MaaPP/maa/Image.hpp"
 #include "MaaPP/maa/Message.hpp"
 #include "MaaPP/maa/Win32Device.hpp"
@@ -137,45 +138,60 @@ public:
         }
     }
 
-    bool set_long_side(int width)
+    std::shared_ptr<Controller> set_long_side(int width)
     {
-        return MaaControllerSetOption(
-            inst_,
-            MaaCtrlOption_ScreenshotTargetLongSide,
-            &width,
-            sizeof(width));
+        if (!MaaControllerSetOption(
+                inst_,
+                MaaCtrlOption_ScreenshotTargetLongSide,
+                &width,
+                sizeof(width))) {
+            throw FunctionFailed("MaaControllerSetOption");
+        }
+        return shared_from_this();
     }
 
-    bool set_short_side(int width)
+    std::shared_ptr<Controller> set_short_side(int width)
     {
-        return MaaControllerSetOption(
-            inst_,
-            MaaCtrlOption_ScreenshotTargetShortSide,
-            &width,
-            sizeof(width));
+        if (!MaaControllerSetOption(
+                inst_,
+                MaaCtrlOption_ScreenshotTargetShortSide,
+                &width,
+                sizeof(width))) {
+            throw FunctionFailed("MaaControllerSetOption");
+        }
+        return shared_from_this();
     }
 
-    bool set_start_entry(std::string_view entry)
+    std::shared_ptr<Controller> set_start_entry(std::string_view entry)
     {
-        return MaaControllerSetOption(
-            inst_,
-            MaaCtrlOption_DefaultAppPackageEntry,
-            const_cast<char*>(entry.data()),
-            entry.size());
+        if (!MaaControllerSetOption(
+                inst_,
+                MaaCtrlOption_DefaultAppPackageEntry,
+                const_cast<char*>(entry.data()),
+                entry.size())) {
+            throw FunctionFailed("MaaControllerSetOption");
+        }
+        return shared_from_this();
     }
 
-    bool set_stop_entry(std::string_view entry)
+    std::shared_ptr<Controller> set_stop_entry(std::string_view entry)
     {
-        return MaaControllerSetOption(
-            inst_,
-            MaaCtrlOption_DefaultAppPackage,
-            const_cast<char*>(entry.data()),
-            entry.size());
+        if (!MaaControllerSetOption(
+                inst_,
+                MaaCtrlOption_DefaultAppPackage,
+                const_cast<char*>(entry.data()),
+                entry.size())) {
+            throw FunctionFailed("MaaControllerSetOption");
+        }
+        return shared_from_this();
     }
 
-    bool set_recording(bool enable)
+    std::shared_ptr<Controller> set_recording(bool enable)
     {
-        return MaaControllerSetOption(inst_, MaaCtrlOption_Recording, &enable, sizeof(enable));
+        if (!MaaControllerSetOption(inst_, MaaCtrlOption_Recording, &enable, sizeof(enable))) {
+            throw FunctionFailed("MaaControllerSetOption");
+        }
+        return shared_from_this();
     }
 
     std::shared_ptr<ControllerAction> post_connect()
@@ -241,33 +257,24 @@ public:
     std::shared_ptr<details::Image> image()
     {
         auto img = details::Image::make();
-        if (image(img)) {
-            return img;
-        }
-        else {
-            return nullptr;
-        }
+        image(img);
+        return img;
     }
 
-    bool image(std::shared_ptr<details::Image> img)
+    void image(std::shared_ptr<details::Image> img)
     {
-        if (MaaControllerGetImage(inst_, img->handle())) {
-            return true;
-        }
-        else {
-            return false;
+        if (!MaaControllerGetImage(inst_, img->handle())) {
+            throw FunctionFailed("MaaControllerGetImage");
         }
     }
 
-    std::optional<std::string> uuid()
+    std::string uuid()
     {
         details::String buf;
-        if (MaaControllerGetUUID(inst_, buf.handle())) {
-            return buf;
+        if (!MaaControllerGetUUID(inst_, buf.handle())) {
+            throw FunctionFailed("MaaControllerGetUUID");
         }
-        else {
-            return std::nullopt;
-        }
+        return buf;
     }
 
 private:
