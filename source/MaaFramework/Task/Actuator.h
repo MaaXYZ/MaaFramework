@@ -21,15 +21,12 @@ public:
     using PreTaskBoxes = std::map<std::string, cv::Rect>;
 
 public:
-    Actuator() = default;
     Actuator(InstanceInternalAPI* inst, const PreTaskBoxes& boxes = {});
 
     bool
         run(const Recognizer::Hit& reco_hit,
             const json::value& reco_detail,
             const TaskData& task_data);
-
-    MaaNodeId uid() const { return uid_; }
 
 private:
     bool click(const MAA_RES_NS::Action::ClickParam& param, const cv::Rect& cur_box);
@@ -60,11 +57,8 @@ private:
 
 private:
     InstanceInternalAPI* inst_ = nullptr;
-    const PreTaskBoxes& pre_task_boxes_ = {};
+    const PreTaskBoxes& pre_task_boxes_;
 
-    const MaaNodeId uid_ = ++s_global_uid;
-
-    inline static std::atomic<MaaNodeId> s_global_uid = 0;
 };
 
 MAA_TASK_NS_END

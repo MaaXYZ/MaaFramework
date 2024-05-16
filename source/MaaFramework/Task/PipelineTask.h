@@ -1,5 +1,6 @@
 #pragma once
 
+#include <atomic>
 #include <stack>
 #include <string_view>
 
@@ -70,7 +71,7 @@ private:
 
     struct NodeDetail
     {
-        MaaNodeId node_id = 0;
+        const MaaNodeId node_id = ++s_global_node_id;
         HitDetail hits;
         NodeStatus status = NodeStatus::InternalError;
     };
@@ -131,6 +132,8 @@ private:
     Actuator::PreTaskBoxes hit_cache_;
 
     TaskDataMgr data_mgr_;
+
+    inline static std::atomic<MaaNodeId> s_global_node_id = 0;
 };
 
 MAA_TASK_NS_END

@@ -93,9 +93,9 @@ bool PipelineTask::run_recognition_only()
 
     auto hit_opt = find_first({ entry_ });
     if (hit_opt) {
-        MaaNodeId node_id = Actuator().uid();
-        NodeDetail detail { .node_id = node_id, .hits = std::move(*hit_opt), .status = NodeStatus::Runout };
-        add_node_detail(node_id, std::move(detail));
+        NodeDetail node { .hits = std::move(*hit_opt), .status = NodeStatus::Runout };
+        auto nid = node.node_id;
+        add_node_detail(nid, std::move(node));
     }
 
     return hit_opt.has_value();
@@ -283,8 +283,7 @@ PipelineTask::NodeStatus PipelineTask::run_task(const HitDetail& hits)
     const std::string& name = hits.task_data.name;
     uint64_t& run_times = run_times_map_[name];
 
-    MaaNodeId actuator_uid = actuator.uid();
-    NodeDetail node_detail = { .node_id = actuator_uid, .hits = hits };
+    NodeDetail node_detail { .hits = hits };
 
     if (debug_mode() || hits.task_data.focus) {
         json::value cb_detail = basic_info() | node_detail_to_json(node_detail);
@@ -301,7 +300,7 @@ PipelineTask::NodeStatus PipelineTask::run_task(const HitDetail& hits)
 
         node_detail.status = NodeStatus::Runout;
 
-        add_node_detail(actuator_uid, node_detail);
+        add_node_detail(node_detail.node_id, node_detail);
 
         if (debug_mode() || hits.task_data.focus) {
             json::value cb_detail = basic_info() | node_detail_to_json(node_detail);
@@ -322,7 +321,7 @@ PipelineTask::NodeStatus PipelineTask::run_task(const HitDetail& hits)
 
     node_detail.status = NodeStatus::Success;
 
-    add_node_detail(actuator_uid, node_detail);
+    add_node_detail(node_detail.node_id, node_detail);
 
     if (debug_mode() || hits.task_data.focus) {
         json::value cb_detail = basic_info() | node_detail_to_json(node_detail);
