@@ -2,7 +2,9 @@
 
 #pragma once
 
-#include <string>
+#include "MaaPP/maa/Exception.hpp"
+#include <memory>
+#include <string_view>
 
 #include <MaaFramework/MaaAPI.h>
 
@@ -59,12 +61,14 @@ public:
             MaaGetImageEncodedSize(handle_));
     }
 
-    bool set_encoded(std::string_view data)
+    void set_encoded(std::string_view data)
     {
-        return MaaSetImageEncoded(
-            handle_,
-            const_cast<uint8_t*>(reinterpret_cast<const uint8_t*>(data.data())),
-            data.size());
+        if (!MaaSetImageEncoded(
+                handle_,
+                const_cast<uint8_t*>(reinterpret_cast<const uint8_t*>(data.data())),
+                data.size())) {
+            throw FunctionFailed("MaaSetImageEncoded");
+        }
     }
 
 private:

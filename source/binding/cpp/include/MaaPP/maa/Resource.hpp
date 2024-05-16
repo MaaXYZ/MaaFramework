@@ -13,6 +13,7 @@
 
 #include "MaaPP/coro/EventLoop.hpp"
 #include "MaaPP/coro/Promise.hpp"
+#include "MaaPP/maa/Exception.hpp"
 #include "MaaPP/maa/Message.hpp"
 #include "MaaPP/maa/details/ActionHelper.hpp"
 #include "MaaPP/maa/details/Message.hpp"
@@ -69,31 +70,33 @@ public:
         return put_action(MaaResourcePostPath(inst_, path.c_str()));
     }
 
-    bool clear() { return MaaResourceClear(inst_); }
+    std::shared_ptr<Resource> clear()
+    {
+        if (!MaaResourceClear(inst_)) {
+            throw FunctionFailed("MaaResourceClear");
+        }
+        return shared_from_this();
+    }
 
     bool loaded() { return MaaResourceLoaded(inst_); }
 
-    std::optional<std::string> hash()
+    std::string hash()
     {
         details::String buf;
-        if (MaaResourceGetHash(inst_, buf.handle())) {
-            return buf;
+        if (!MaaResourceGetHash(inst_, buf.handle())) {
+            throw FunctionFailed("MaaResourceGetHash");
         }
-        else {
-            return std::nullopt;
-        }
+        return buf;
     }
 
     std::shared_ptr<std::vector<std::string>> task_list()
     {
         details::String buf;
-        if (MaaResourceGetTaskList(inst_, buf.handle())) {
-            return std::make_shared<std::vector<std::string>>(
-                json::parse(buf.str()).value().as<std::vector<std::string>>());
+        if (!MaaResourceGetTaskList(inst_, buf.handle())) {
+            throw FunctionFailed("MaaResourceGetTaskList");
         }
-        else {
-            return nullptr;
-        }
+        return std::make_shared<std::vector<std::string>>(
+            json::parse(buf.str()).value().as<std::vector<std::string>>());
     }
 
 private:

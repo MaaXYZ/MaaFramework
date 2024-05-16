@@ -8,8 +8,7 @@
 #include <MaaFramework/MaaMsg.h>
 #include <meojson/json.hpp>
 
-#include "MaaPP/coro/EventLoop.hpp"
-#include "MaaPP/coro/Promise.hpp"
+#include "MaaPP/maa/Exception.hpp"
 
 namespace maa::details
 {
@@ -48,7 +47,7 @@ protected:
     std::shared_ptr<IAction> put_action(MaaId id)
     {
         if (id == MaaInvalidId) {
-            return nullptr;
+            throw ActionInvalidId<IActionHelper>();
         }
         auto action = std::make_shared<IAction>(this->shared_from_this(), id);
         actions_[id] = action->weak_from_this();

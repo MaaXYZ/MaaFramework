@@ -8,6 +8,8 @@
 #include <MaaToolkit/MaaToolkitAPI.h>
 #include <meojson/json.hpp>
 
+#include "MaaPP/maa/Exception.hpp"
+
 namespace maa
 {
 
@@ -16,39 +18,53 @@ inline auto version()
     return MaaVersion();
 }
 
-inline bool init(const std::string& user_path, const json::object& default_json = {})
+inline void init(const std::string& user_path, const json::object& default_json = {})
 {
-    return MaaToolkitInitOptionConfig(user_path.c_str(), default_json.to_string().c_str());
+    if (!MaaToolkitInitOptionConfig(user_path.c_str(), default_json.to_string().c_str())) {
+        throw FunctionFailed("MaaToolkitInitOptionConfig");
+    }
 }
 
-inline bool set_log_dir(std::string_view dir)
+inline void set_log_dir(std::string_view dir)
 {
-    return MaaSetGlobalOption(MaaGlobalOption_LogDir, const_cast<char*>(dir.data()), dir.size());
+    if (!MaaSetGlobalOption(MaaGlobalOption_LogDir, const_cast<char*>(dir.data()), dir.size())) {
+        throw FunctionFailed("MaaSetGlobalOption");
+    }
 }
 
-inline bool set_save_draw(bool enable)
+inline void set_save_draw(bool enable)
 {
-    return MaaSetGlobalOption(MaaGlobalOption_SaveDraw, &enable, sizeof(enable));
+    if (!MaaSetGlobalOption(MaaGlobalOption_SaveDraw, &enable, sizeof(enable))) {
+        throw FunctionFailed("MaaToolkitInitOptionConfig");
+    }
 }
 
-inline bool set_recording(bool enable)
+inline void set_recording(bool enable)
 {
-    return MaaSetGlobalOption(MaaGlobalOption_Recording, &enable, sizeof(enable));
+    if (!MaaSetGlobalOption(MaaGlobalOption_Recording, &enable, sizeof(enable))) {
+        throw FunctionFailed("MaaToolkitInitOptionConfig");
+    }
 }
 
-inline bool set_stdout_level(MaaLoggingLevelEunm level)
+inline void set_stdout_level(MaaLoggingLevelEunm level)
 {
-    return MaaSetGlobalOption(MaaGlobalOption_StdoutLevel, &level, sizeof(level));
+    if (!MaaSetGlobalOption(MaaGlobalOption_StdoutLevel, &level, sizeof(level))) {
+        throw FunctionFailed("MaaToolkitInitOptionConfig");
+    }
 }
 
-inline bool set_show_hit_draw(bool enable)
+inline void set_show_hit_draw(bool enable)
 {
-    return MaaSetGlobalOption(MaaGlobalOption_ShowHitDraw, &enable, sizeof(enable));
+    if (!MaaSetGlobalOption(MaaGlobalOption_ShowHitDraw, &enable, sizeof(enable))) {
+        throw FunctionFailed("MaaToolkitInitOptionConfig");
+    }
 }
 
-inline bool set_debug_message(bool enable)
+inline void set_debug_message(bool enable)
 {
-    return MaaSetGlobalOption(MaaGlobalOption_DebugMessage, &enable, sizeof(enable));
+    if (!MaaSetGlobalOption(MaaGlobalOption_DebugMessage, &enable, sizeof(enable))) {
+        throw FunctionFailed("MaaToolkitInitOptionConfig");
+    }
 }
 
 }

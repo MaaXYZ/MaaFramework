@@ -12,6 +12,7 @@
 
 #include "MaaPP/coro/EventLoop.hpp"
 #include "MaaPP/coro/Promise.hpp"
+#include "MaaPP/maa/Exception.hpp"
 #include "MaaPP/maa/details/ControllerType.hpp"
 
 namespace maa
@@ -69,9 +70,15 @@ namespace AdbDeviceFinder
 inline coro::Promise<std::shared_ptr<std::vector<AdbDevice>>>
     find(std::optional<std::string> adb = std::nullopt)
 {
-    if (!(adb.has_value() ? MaaToolkitPostFindDeviceWithAdb(adb.value().c_str())
-                          : MaaToolkitPostFindDevice())) {
-        co_return nullptr;
+    if (adb.has_value()) {
+        if (!MaaToolkitPostFindDeviceWithAdb(adb.value().c_str())) {
+            throw FunctionFailed("MaaToolkitPostFindDeviceWithAdb");
+        }
+    }
+    else {
+        if (!MaaToolkitPostFindDevice()) {
+            throw FunctionFailed("MaaToolkitPostFindDevice");
+        }
     }
     auto size = co_await coro::EventLoop::current()->eval(
         []() { return MaaToolkitWaitForFindDeviceToComplete(); });
