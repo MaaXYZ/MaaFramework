@@ -213,11 +213,11 @@ LHGArgToJsonBegin(maa::func_type_MaaQueryNodeDetail, _1_reco_id, true)
     b.type("number");
 LHGArgToJsonEnd()
 
-LHGArgOutput(maa::func_type_MaaQueryNodeDetail::_2_successful);
-LHGArgPrepareStateBegin(maa::func_type_MaaQueryNodeDetail, _2_successful)
+LHGArgOutput(maa::func_type_MaaQueryNodeDetail::_2_run_completed);
+LHGArgPrepareStateBegin(maa::func_type_MaaQueryNodeDetail, _2_run_completed)
     std::get<arg_tag::index>(arg) = &std::get<arg_tag::index>(state);
 LHGArgPrepareStateEnd()
-LHGArgToJsonBegin(maa::func_type_MaaQueryNodeDetail, _2_successful, true)
+LHGArgToJsonBegin(maa::func_type_MaaQueryNodeDetail, _2_run_completed, true)
     value = std::get<index>(state);
     LHGArgToJsonMiddle()
     b.type("boolean");
