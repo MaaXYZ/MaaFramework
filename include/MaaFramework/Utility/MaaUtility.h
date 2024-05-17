@@ -42,19 +42,23 @@ extern "C"
 
     MAA_FRAMEWORK_API MaaBool MaaQueryRecognitionDetail(
         MaaRecoId reco_id,
+        /* out */ MaaStringBufferHandle name,
         /* out */ MaaBool* hit,
         /* out */ MaaRectHandle hit_box,
         /* out */ MaaStringBufferHandle detail_json,
+        /* out */ MaaImageBufferHandle raw,
         /* out */ MaaImageListBufferHandle draws);
 
     MAA_FRAMEWORK_API MaaBool MaaQueryNodeDetail(
         MaaNodeId node_id,
-        /*out*/ MaaRecoId* reco_id,
-        /*out*/ MaaBool* run_completed);
+        /* out */ MaaStringBufferHandle name,
+        /* out */ MaaRecoId* reco_id,
+        /* out */ MaaBool* run_completed);
 
     MAA_FRAMEWORK_API MaaBool MaaQueryTaskDetail(
         MaaTaskId task_id,
-        /*out*/ MaaNodeId* node_id_list,
+        /* out */ MaaStringBufferHandle entry,
+        /* out */ MaaNodeId* node_id_list,
         /* in & out */ MaaSize* node_id_list_size);
 
 #ifdef __cplusplus

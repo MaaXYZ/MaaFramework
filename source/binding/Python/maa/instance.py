@@ -4,7 +4,7 @@ import json
 from pathlib import Path
 from typing import Any, Dict, Optional, Union
 
-from .buffer import ImageListBuffer, RectBuffer, StringBuffer
+from .buffer import ImageListBuffer, RectBuffer, StringBuffer, ImageBuffer
 from .callback_agent import Callback, CallbackAgent
 from .controller import Controller
 from .custom_action import CustomAction
@@ -18,14 +18,17 @@ from .resource import Resource
 @dataclass
 class RecognitionDetail:
     reco_id: int
+    name: str
     hit_box: Optional[Rect]
     detail: Dict
+    raw: numpy.ndarray
     draws: List[numpy.ndarray]
 
 
 @dataclass
 class NodeDetail:
     node_id: int
+    name: str
     recognition: RecognitionDetail
     run_completed: bool
 
@@ -33,6 +36,7 @@ class NodeDetail:
 @dataclass
 class TaskDetail:
     task_id: int
+    entry: str
     node_details: List[NodeDetail]
 
 
@@ -134,7 +138,9 @@ class Instance:
         await future.wait()
         return future.get()
 
-    async def run_recogintion(self, task_type: str, param: Dict = {}) -> Optional[TaskDetail]:
+    async def run_recogintion(
+        self, task_type: str, param: Dict = {}
+    ) -> Optional[TaskDetail]:
         """
         Async run a recognition.
 
@@ -147,7 +153,9 @@ class Instance:
         await future.wait()
         return future.get()
 
-    async def run_action(self, task_type: str, param: Dict = {}) -> Optional[TaskDetail]:
+    async def run_action(
+        self, task_type: str, param: Dict = {}
+    ) -> Optional[TaskDetail]:
         """
         Async run a action.
 
@@ -418,15 +426,19 @@ class Instance:
         """
 
         hit = MaaBool()
+        name = StringBuffer()
         hit_box = RectBuffer()
         detail_json = StringBuffer()
+        raw = ImageBuffer()
         draws = ImageListBuffer()
         ret = bool(
             Library.framework.MaaQueryRecognitionDetail(
                 reco_id,
+                name.c_handle,
                 ctypes.pointer(hit),
                 hit_box.c_handle,
                 detail_json.c_handle,
+                raw.c_handle,
                 draws.c_handle,
             )
         )
@@ -435,8 +447,10 @@ class Instance:
 
         return RecognitionDetail(
             reco_id=reco_id,
+            name=name.get(),
             hit_box=bool(hit) and hit_box.get() or None,
             detail=json.loads(detail_json.get()),
+            raw=raw.get(),
             draws=draws.get(),
         )
 
@@ -450,11 +464,13 @@ class Instance:
         """
 
         reco_id = MaaRecoId()
+        name = StringBuffer()
         run_completed = MaaBool()
 
         ret = bool(
             Library.framework.MaaQueryNodeDetail(
                 node_id,
+                name.c_handle,
                 ctypes.pointer(reco_id),
                 ctypes.pointer(run_completed),
             )
@@ -469,6 +485,7 @@ class Instance:
 
         return NodeDetail(
             node_id=node_id,
+            name=name.get(),
             recognition=recognition,
             run_completed=bool(run_completed),
         )
@@ -484,15 +501,18 @@ class Instance:
 
         size = MaaSize()
         ret = bool(
-            Library.framework.MaaQueryTaskDetail(task_id, None, ctypes.pointer(size))
+            Library.framework.MaaQueryTaskDetail(
+                task_id, None, None, ctypes.pointer(size)
+            )
         )
         if not ret:
             return None
 
+        entry = StringBuffer()
         node_id_list = (MaaNodeId * size.value)()
         ret = bool(
             Library.framework.MaaQueryTaskDetail(
-                task_id, node_id_list, ctypes.pointer(size)
+                task_id, entry.c_handle, node_id_list, ctypes.pointer(size)
             )
         )
         if not ret:
@@ -503,7 +523,7 @@ class Instance:
             detail = Instance.query_node_detail(node_id_list[i])
             node_details.append(detail)
 
-        return TaskDetail(task_id=task_id, node_details=node_details)
+        return TaskDetail(task_id=task_id, entry=entry.get(), node_details=node_details)
 
     _api_properties_initialized: bool = False
 
@@ -606,15 +626,18 @@ class Instance:
         Library.framework.MaaQueryRecognitionDetail.restype = MaaBool
         Library.framework.MaaQueryRecognitionDetail.argtypes = [
             MaaRecoId,
+            MaaStringBufferHandle,
             ctypes.POINTER(MaaBool),
             MaaRectHandle,
             MaaStringBufferHandle,
+            MaaImageBufferHandle,
             MaaImageListBufferHandle,
         ]
 
         Library.framework.MaaQueryNodeDetail.restype = MaaBool
         Library.framework.MaaQueryNodeDetail.argtypes = [
             MaaNodeId,
+            MaaStringBufferHandle,
             ctypes.POINTER(MaaRecoId),
             ctypes.POINTER(MaaBool),
         ]
@@ -622,6 +645,7 @@ class Instance:
         Library.framework.MaaQueryTaskDetail.restype = MaaBool
         Library.framework.MaaQueryTaskDetail.argtypes = [
             MaaTaskId,
+            MaaStringBufferHandle,
             ctypes.POINTER(MaaRecoId),
             ctypes.POINTER(MaaSize),
         ]

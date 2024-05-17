@@ -82,8 +82,17 @@ Recognizer::Result Recognizer::recognize(const cv::Mat& image, const TaskData& t
         return {};
     }
 
+    result.name = task_data.name;
+
+    if (debug_mode()) {
+        // 图太大了，不能无条件存
+        result.raw = image;
+    }
+
     save_draws(task_data.name, result);
-    UniqueResultBank::get_instance().add_reco_detail(result.uid, result);
+
+    auto& bank = UniqueResultBank::get_instance();
+    bank.add_reco_detail(result.uid, result);
 
     if (result.hit) {
         const auto& hit = *result.hit;
@@ -107,25 +116,29 @@ Recognizer::Result Recognizer::recognize(const cv::Mat& image, const TaskData& t
 
 bool Recognizer::query_detail(
     MaaRecoId reco_id,
+    std::string name,
     bool& hit,
     cv::Rect& box,
     std::string& detail,
+    cv::Mat& raw,
     std::vector<cv::Mat>& draws)
 {
-    std::any res_any = UniqueResultBank::get_instance().get_reco_detail(reco_id);
+    const auto& bank = UniqueResultBank::get_instance();
 
+    std::any res_any = bank.get_reco_detail(reco_id);
     if (!res_any.has_value()) {
         LogError << "reco_id has no value (not found)" << VAR(reco_id);
         return false;
     }
-
     auto res = std::any_cast<MAA_TASK_NS::Recognizer::Result>(res_any);
 
+    name = res.name;
     hit = res.hit.has_value();
     if (hit) {
         box = *res.hit;
     }
     detail = res.detail.to_string();
+    raw = res.raw;
     draws = res.draws;
 
     return true;
@@ -421,6 +434,11 @@ void Recognizer::show_hit_draw(
     cv::imshow(kWinName, draw);
     cv::waitKey(0);
     cv::destroyWindow(kWinName);
+}
+
+bool Recognizer::debug_mode() const
+{
+    return GlobalOptionMgr::get_instance().debug_message();
 }
 
 MAA_TASK_NS_END

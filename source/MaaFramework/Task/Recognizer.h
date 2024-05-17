@@ -21,8 +21,10 @@ public:
     struct Result
     {
         MaaRecoId uid = 0;
+        std::string name;
         std::optional<Hit> hit = std::nullopt;
         json::value detail;
+        cv::Mat raw;
         std::vector<cv::Mat> draws;
     };
 
@@ -34,9 +36,11 @@ public:
 
     static bool query_detail(
         MaaRecoId reco_id,
+        std::string name,
         bool& hit,
         cv::Rect& box,
         std::string& detail,
+        cv::Mat& raw,
         std::vector<cv::Mat>& draws);
 
 private:
@@ -76,6 +80,7 @@ private:
         MaaRecoId uid) const;
 
 private:
+    bool debug_mode() const;
     MAA_RES_NS::ResourceMgr* resource() { return inst_ ? inst_->inter_resource() : nullptr; }
 
 private:
