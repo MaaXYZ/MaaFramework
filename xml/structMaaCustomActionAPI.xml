@@ -1,0 +1,49 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.5" xml:lang="en-US">
+  <compounddef id="structMaaCustomActionAPI" kind="struct" language="C++" prot="public">
+    <compoundname>MaaCustomActionAPI</compoundname>
+    <includes refid="MaaCustomAction_8h" local="no">MaaCustomAction.h</includes>
+      <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="structMaaCustomActionAPI_1aae3055467fed30ecf0ef43b7bd40656b" prot="public" static="no" mutable="no">
+        <type><ref refid="MaaDef_8h_1a2f7289f2a8e07f48c6261b52a120cdf6" kindref="member">MaaBool</ref>(*</type>
+        <definition>MaaBool(* MaaCustomActionAPI::run) (MaaSyncContextHandle sync_context, MaaStringView task_name, MaaStringView custom_action_param, MaaRectHandle cur_box, MaaStringView cur_rec_detail, MaaTransparentArg action_arg)</definition>
+        <argsstring>)(MaaSyncContextHandle sync_context, MaaStringView task_name, MaaStringView custom_action_param, MaaRectHandle cur_box, MaaStringView cur_rec_detail, MaaTransparentArg action_arg)</argsstring>
+        <name>run</name>
+        <qualifiedname>MaaCustomActionAPI::run</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="include/MaaFramework/Task/MaaCustomAction.h" line="33" column="9" bodyfile="include/MaaFramework/Task/MaaCustomAction.h" bodystart="33" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structMaaCustomActionAPI_1a23caa239daf2319a3e67298972b6fc18" prot="public" static="no" mutable="no">
+        <type>void(*</type>
+        <definition>void(* MaaCustomActionAPI::stop) (MaaTransparentArg action_arg)</definition>
+        <argsstring>)(MaaTransparentArg action_arg)</argsstring>
+        <name>stop</name>
+        <qualifiedname>MaaCustomActionAPI::stop</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="include/MaaFramework/Task/MaaCustomAction.h" line="41" column="9" bodyfile="include/MaaFramework/Task/MaaCustomAction.h" bodystart="41" bodyend="-1"/>
+      </memberdef>
+      </sectiondef>
+    <briefdescription>
+<para>The custom action API. </para>
+    </briefdescription>
+    <detaileddescription>
+<para>To create a custom action, you need to implement this API.</para>
+<para>You do not have to implement all the functions in this API. Instead, just implement the functions you need. Do note that if an unimplemented function is called, the framework will likely crash. </para>
+    </detaileddescription>
+    <location file="include/MaaFramework/Task/MaaCustomAction.h" line="31" column="5" bodyfile="include/MaaFramework/Task/MaaCustomAction.h" bodystart="32" bodyend="42"/>
+    <listofallmembers>
+      <member refid="structMaaCustomActionAPI_1aae3055467fed30ecf0ef43b7bd40656b" prot="public" virt="non-virtual"><scope>MaaCustomActionAPI</scope><name>run</name></member>
+      <member refid="structMaaCustomActionAPI_1a23caa239daf2319a3e67298972b6fc18" prot="public" virt="non-virtual"><scope>MaaCustomActionAPI</scope><name>stop</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

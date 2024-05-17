@@ -1,0 +1,214 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.5" xml:lang="en-US">
+  <compounddef id="MaaUtility_8h" kind="file" language="C++">
+    <compoundname>MaaUtility.h</compoundname>
+    <includes refid="MaaDef_8h" local="yes">../MaaDef.h</includes>
+    <includes refid="MaaPort_8h" local="yes">../MaaPort.h</includes>
+    <includedby refid="MaaAPI_8h" local="yes">include/MaaFramework/MaaAPI.h</includedby>
+    <incdepgraph>
+      <node id="2">
+        <label>../MaaDef.h</label>
+        <link refid="MaaDef_8h"/>
+        <childnode refid="3" relation="include">
+        </childnode>
+        <childnode refid="4" relation="include">
+        </childnode>
+      </node>
+      <node id="3">
+        <label>MaaPort.h</label>
+        <link refid="MaaPort_8h"/>
+      </node>
+      <node id="1">
+        <label>include/MaaFramework/Utility/MaaUtility.h</label>
+        <link refid="MaaUtility_8h"/>
+        <childnode refid="2" relation="include">
+        </childnode>
+        <childnode refid="3" relation="include">
+        </childnode>
+      </node>
+      <node id="4">
+        <label>stdint.h</label>
+      </node>
+    </incdepgraph>
+    <invincdepgraph>
+      <node id="2">
+        <label>include/MaaFramework/MaaAPI.h</label>
+        <link refid="MaaAPI_8h"/>
+      </node>
+      <node id="1">
+        <label>include/MaaFramework/Utility/MaaUtility.h</label>
+        <link refid="MaaUtility_8h"/>
+        <childnode refid="2" relation="include">
+        </childnode>
+      </node>
+    </invincdepgraph>
+      <sectiondef kind="func">
+      <memberdef kind="function" id="MaaUtility_8h_1a62ca053991307446cb195865497a40f1" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="MaaPort_8h_1a67006334d91d228121dbba7a8bf8fe05" kindref="member">MAA_FRAMEWORK_API</ref> <ref refid="MaaDef_8h_1a579dacb9b82c4edce80efb25fb79c9f5" kindref="member">MaaStringView</ref></type>
+        <definition>MAA_FRAMEWORK_API MaaStringView MaaVersion</definition>
+        <argsstring>()</argsstring>
+        <name>MaaVersion</name>
+        <briefdescription>
+<para>Get the version of the framework. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><simplesect kind="return"><para>MaaStringView </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="include/MaaFramework/Utility/MaaUtility.h" line="27" column="37" declfile="include/MaaFramework/Utility/MaaUtility.h" declline="27" declcolumn="37"/>
+      </memberdef>
+      <memberdef kind="function" id="MaaUtility_8h_1a1dba15d9cc61cf339c434085738f873c" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="MaaPort_8h_1a67006334d91d228121dbba7a8bf8fe05" kindref="member">MAA_FRAMEWORK_API</ref> <ref refid="MaaDef_8h_1a2f7289f2a8e07f48c6261b52a120cdf6" kindref="member">MaaBool</ref></type>
+        <definition>MAA_FRAMEWORK_API MaaBool MaaSetGlobalOption</definition>
+        <argsstring>(MaaGlobalOption key, MaaOptionValue value, MaaOptionValueSize val_size)</argsstring>
+        <name>MaaSetGlobalOption</name>
+        <param>
+          <type><ref refid="MaaDef_8h_1a78a454cf5bf3e18aab3aef29cfc7b91c" kindref="member">MaaGlobalOption</ref></type>
+          <declname>key</declname>
+        </param>
+        <param>
+          <type><ref refid="MaaDef_8h_1abb976599f915b1e04a9ff8bf7055bf81" kindref="member">MaaOptionValue</ref></type>
+          <declname>value</declname>
+        </param>
+        <param>
+          <type><ref refid="MaaDef_8h_1a56ff604006917171af8e4b4974db28ef" kindref="member">MaaOptionValueSize</ref></type>
+          <declname>val_size</declname>
+        </param>
+        <briefdescription>
+<para>Set options globally. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>This function requires a given set of option keys and value types, otherwise this will fail. See <ref refid="MaaDef_8h_1ad09e62ec1fd03dadaf5fb009026c38ee" kindref="member">MaaGlobalOptionEnum</ref> for details.</para>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>key</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The option key. </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>value</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The option value. </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>val_size</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The size of the option value. </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>MaaBool Whether the option is set successfully. </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="include/MaaFramework/Utility/MaaUtility.h" line="41" column="9" declfile="include/MaaFramework/Utility/MaaUtility.h" declline="41" declcolumn="9"/>
+      </memberdef>
+      <memberdef kind="function" id="MaaUtility_8h_1a2c2351a9b0a6c2ea9ec828154cb0b4db" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="MaaPort_8h_1a67006334d91d228121dbba7a8bf8fe05" kindref="member">MAA_FRAMEWORK_API</ref> <ref refid="MaaDef_8h_1a2f7289f2a8e07f48c6261b52a120cdf6" kindref="member">MaaBool</ref></type>
+        <definition>MAA_FRAMEWORK_API MaaBool MaaQueryRecognitionDetail</definition>
+        <argsstring>(MaaRecoId reco_id, MaaBool *hit, MaaRectHandle hit_box, MaaStringBufferHandle detail_json, MaaImageListBufferHandle draws)</argsstring>
+        <name>MaaQueryRecognitionDetail</name>
+        <param>
+          <type><ref refid="MaaDef_8h_1a7519e6a8329a32c8e3058c20ec74cda8" kindref="member">MaaRecoId</ref></type>
+          <declname>reco_id</declname>
+        </param>
+        <param>
+          <type><ref refid="MaaDef_8h_1a2f7289f2a8e07f48c6261b52a120cdf6" kindref="member">MaaBool</ref> *</type>
+          <declname>hit</declname>
+        </param>
+        <param>
+          <type><ref refid="MaaDef_8h_1a00152c7eaccf612e460ea6872455f9cd" kindref="member">MaaRectHandle</ref></type>
+          <declname>hit_box</declname>
+        </param>
+        <param>
+          <type><ref refid="MaaDef_8h_1aed721aa4682b1241bc38d10f8c57a8cb" kindref="member">MaaStringBufferHandle</ref></type>
+          <declname>detail_json</declname>
+        </param>
+        <param>
+          <type><ref refid="MaaDef_8h_1afbce60b00dcf945dddefe5eeeaceb4b1" kindref="member">MaaImageListBufferHandle</ref></type>
+          <declname>draws</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="include/MaaFramework/Utility/MaaUtility.h" line="43" column="31" declfile="include/MaaFramework/Utility/MaaUtility.h" declline="43" declcolumn="31"/>
+      </memberdef>
+      <memberdef kind="function" id="MaaUtility_8h_1afc9cc1ea9d9af7b9518b4aab0ba6012f" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="MaaPort_8h_1a67006334d91d228121dbba7a8bf8fe05" kindref="member">MAA_FRAMEWORK_API</ref> <ref refid="MaaDef_8h_1a2f7289f2a8e07f48c6261b52a120cdf6" kindref="member">MaaBool</ref></type>
+        <definition>MAA_FRAMEWORK_API MaaBool MaaQueryNodeDetail</definition>
+        <argsstring>(MaaNodeId node_id, MaaRecoId *reco_id, MaaBool *run_completed)</argsstring>
+        <name>MaaQueryNodeDetail</name>
+        <param>
+          <type><ref refid="MaaDef_8h_1aeedbbed1bc17d1ffd80ff719a71cfed5" kindref="member">MaaNodeId</ref></type>
+          <declname>node_id</declname>
+        </param>
+        <param>
+          <type><ref refid="MaaDef_8h_1a7519e6a8329a32c8e3058c20ec74cda8" kindref="member">MaaRecoId</ref> *</type>
+          <declname>reco_id</declname>
+        </param>
+        <param>
+          <type><ref refid="MaaDef_8h_1a2f7289f2a8e07f48c6261b52a120cdf6" kindref="member">MaaBool</ref> *</type>
+          <declname>run_completed</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="include/MaaFramework/Utility/MaaUtility.h" line="50" column="31" declfile="include/MaaFramework/Utility/MaaUtility.h" declline="50" declcolumn="31"/>
+      </memberdef>
+      <memberdef kind="function" id="MaaUtility_8h_1a502b61dd7a7f977c84ee65070a40fafa" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="MaaPort_8h_1a67006334d91d228121dbba7a8bf8fe05" kindref="member">MAA_FRAMEWORK_API</ref> <ref refid="MaaDef_8h_1a2f7289f2a8e07f48c6261b52a120cdf6" kindref="member">MaaBool</ref></type>
+        <definition>MAA_FRAMEWORK_API MaaBool MaaQueryTaskDetail</definition>
+        <argsstring>(MaaTaskId task_id, MaaNodeId *node_id_list, MaaSize *node_id_list_size)</argsstring>
+        <name>MaaQueryTaskDetail</name>
+        <param>
+          <type><ref refid="MaaDef_8h_1a711b3db9be6db60ae4cb09e3629e42f0" kindref="member">MaaTaskId</ref></type>
+          <declname>task_id</declname>
+        </param>
+        <param>
+          <type><ref refid="MaaDef_8h_1aeedbbed1bc17d1ffd80ff719a71cfed5" kindref="member">MaaNodeId</ref> *</type>
+          <declname>node_id_list</declname>
+        </param>
+        <param>
+          <type><ref refid="MaaDef_8h_1a72a89077c419a0fe586d68bde004d856" kindref="member">MaaSize</ref> *</type>
+          <declname>node_id_list_size</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="include/MaaFramework/Utility/MaaUtility.h" line="55" column="31" declfile="include/MaaFramework/Utility/MaaUtility.h" declline="55" declcolumn="31"/>
+      </memberdef>
+      </sectiondef>
+    <briefdescription>
+<para>Provide global functions for the framework. </para>
+    </briefdescription>
+    <detaileddescription>
+<para><simplesect kind="author"><para></para>
+</simplesect>
+<simplesect kind="copyright"><para>Copyright (c) 2024 </para>
+</simplesect>
+</para>
+    </detaileddescription>
+    <location file="include/MaaFramework/Utility/MaaUtility.h"/>
+  </compounddef>
+</doxygen>

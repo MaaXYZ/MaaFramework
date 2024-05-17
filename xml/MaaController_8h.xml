@@ -1,0 +1,966 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.5" xml:lang="en-US">
+  <compounddef id="MaaController_8h" kind="file" language="C++">
+    <compoundname>MaaController.h</compoundname>
+    <includes refid="MaaDef_8h" local="yes">../MaaDef.h</includes>
+    <includes refid="MaaPort_8h" local="yes">../MaaPort.h</includes>
+    <includedby refid="MaaAPI_8h" local="yes">include/MaaFramework/MaaAPI.h</includedby>
+    <incdepgraph>
+      <node id="1">
+        <label>include/MaaFramework/Instance/MaaController.h</label>
+        <link refid="MaaController_8h"/>
+        <childnode refid="2" relation="include">
+        </childnode>
+        <childnode refid="3" relation="include">
+        </childnode>
+      </node>
+      <node id="2">
+        <label>../MaaDef.h</label>
+        <link refid="MaaDef_8h"/>
+        <childnode refid="3" relation="include">
+        </childnode>
+        <childnode refid="4" relation="include">
+        </childnode>
+      </node>
+      <node id="3">
+        <label>MaaPort.h</label>
+        <link refid="MaaPort_8h"/>
+      </node>
+      <node id="4">
+        <label>stdint.h</label>
+      </node>
+    </incdepgraph>
+    <invincdepgraph>
+      <node id="1">
+        <label>include/MaaFramework/Instance/MaaController.h</label>
+        <link refid="MaaController_8h"/>
+        <childnode refid="2" relation="include">
+        </childnode>
+      </node>
+      <node id="2">
+        <label>include/MaaFramework/MaaAPI.h</label>
+        <link refid="MaaAPI_8h"/>
+      </node>
+    </invincdepgraph>
+      <sectiondef kind="func">
+      <memberdef kind="function" id="MaaController_8h_1a1292df5261fcb83a7a6d07f0302fe431" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="MaaPort_8h_1aea94eb63afa29e65c59844ec3f57d691" kindref="member">MAA_DEPRECATED</ref> <ref refid="MaaPort_8h_1a67006334d91d228121dbba7a8bf8fe05" kindref="member">MAA_FRAMEWORK_API</ref> <ref refid="MaaDef_8h_1a59f0e2bf0a9ce9ff8dd96be800302518" kindref="member">MaaControllerHandle</ref></type>
+        <definition>MAA_DEPRECATED MAA_FRAMEWORK_API MaaControllerHandle MaaAdbControllerCreate</definition>
+        <argsstring>(MaaStringView adb_path, MaaStringView address, MaaAdbControllerType type, MaaStringView config, MaaControllerCallback callback, MaaCallbackTransparentArg callback_arg)</argsstring>
+        <name>MaaAdbControllerCreate</name>
+        <param>
+          <type><ref refid="MaaDef_8h_1a579dacb9b82c4edce80efb25fb79c9f5" kindref="member">MaaStringView</ref></type>
+          <declname>adb_path</declname>
+        </param>
+        <param>
+          <type><ref refid="MaaDef_8h_1a579dacb9b82c4edce80efb25fb79c9f5" kindref="member">MaaStringView</ref></type>
+          <declname>address</declname>
+        </param>
+        <param>
+          <type><ref refid="MaaDef_8h_1a2ba314321c0419e64efe128e94c20776" kindref="member">MaaAdbControllerType</ref></type>
+          <declname>type</declname>
+        </param>
+        <param>
+          <type><ref refid="MaaDef_8h_1a579dacb9b82c4edce80efb25fb79c9f5" kindref="member">MaaStringView</ref></type>
+          <declname>config</declname>
+        </param>
+        <param>
+          <type><ref refid="MaaDef_8h_1a42e88ec9161f3484a20ee8cad7409fe5" kindref="member">MaaControllerCallback</ref></type>
+          <declname>callback</declname>
+        </param>
+        <param>
+          <type><ref refid="MaaDef_8h_1af61e880b2ec14e6ced517f2c7457a1b3" kindref="member">MaaCallbackTransparentArg</ref></type>
+          <declname>callback_arg</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para><xrefsect id="deprecated_1_deprecated000001"><xreftitle>Deprecated</xreftitle><xrefdescription><para>Use <ref refid="MaaController_8h_1a22142de0dbfc3ed0e64cbcc9e0f1a6e4" kindref="member">MaaAdbControllerCreateV2()</ref> instead. </para>
+</xrefdescription></xrefsect></para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="include/MaaFramework/Instance/MaaController.h" line="24" column="58" declfile="include/MaaFramework/Instance/MaaController.h" declline="24" declcolumn="58"/>
+      </memberdef>
+      <memberdef kind="function" id="MaaController_8h_1a22142de0dbfc3ed0e64cbcc9e0f1a6e4" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="MaaPort_8h_1a67006334d91d228121dbba7a8bf8fe05" kindref="member">MAA_FRAMEWORK_API</ref> <ref refid="MaaDef_8h_1a59f0e2bf0a9ce9ff8dd96be800302518" kindref="member">MaaControllerHandle</ref></type>
+        <definition>MAA_FRAMEWORK_API MaaControllerHandle MaaAdbControllerCreateV2</definition>
+        <argsstring>(MaaStringView adb_path, MaaStringView address, MaaAdbControllerType type, MaaStringView config, MaaStringView agent_path, MaaControllerCallback callback, MaaCallbackTransparentArg callback_arg)</argsstring>
+        <name>MaaAdbControllerCreateV2</name>
+        <param>
+          <type><ref refid="MaaDef_8h_1a579dacb9b82c4edce80efb25fb79c9f5" kindref="member">MaaStringView</ref></type>
+          <declname>adb_path</declname>
+        </param>
+        <param>
+          <type><ref refid="MaaDef_8h_1a579dacb9b82c4edce80efb25fb79c9f5" kindref="member">MaaStringView</ref></type>
+          <declname>address</declname>
+        </param>
+        <param>
+          <type><ref refid="MaaDef_8h_1a2ba314321c0419e64efe128e94c20776" kindref="member">MaaAdbControllerType</ref></type>
+          <declname>type</declname>
+        </param>
+        <param>
+          <type><ref refid="MaaDef_8h_1a579dacb9b82c4edce80efb25fb79c9f5" kindref="member">MaaStringView</ref></type>
+          <declname>config</declname>
+        </param>
+        <param>
+          <type><ref refid="MaaDef_8h_1a579dacb9b82c4edce80efb25fb79c9f5" kindref="member">MaaStringView</ref></type>
+          <declname>agent_path</declname>
+        </param>
+        <param>
+          <type><ref refid="MaaDef_8h_1a42e88ec9161f3484a20ee8cad7409fe5" kindref="member">MaaControllerCallback</ref></type>
+          <declname>callback</declname>
+        </param>
+        <param>
+          <type><ref refid="MaaDef_8h_1af61e880b2ec14e6ced517f2c7457a1b3" kindref="member">MaaCallbackTransparentArg</ref></type>
+          <declname>callback_arg</declname>
+        </param>
+        <briefdescription>
+<para>Create a ADB controller instance. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>adb_path</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The path of ADB executable. </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>address</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The ADB serial of the target device. </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>type</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The type of the ADB controller. See <ref refid="MaaDef_8h_1a21de9ae05eae97a700f9f834fe506f47" kindref="member">MaaAdbControllerTypeEnum</ref>. </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>config</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The config of the ADB controller. </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>agent_path</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The path of the agent executable. </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>callback</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The callback function. See <ref refid="MaaDef_8h_1a147654dcdaa3e645e387e6e3a4338766" kindref="member">MaaAPICallback</ref>. </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>callback_arg</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The callback arg that will be passed to the callback function. </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>MaaControllerHandle The handle of the created controller instance. </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="include/MaaFramework/Instance/MaaController.h" line="44" column="43" declfile="include/MaaFramework/Instance/MaaController.h" declline="44" declcolumn="43"/>
+      </memberdef>
+      <memberdef kind="function" id="MaaController_8h_1a9a6a89e475669d0b08f68f300d8c4c96" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="MaaPort_8h_1a67006334d91d228121dbba7a8bf8fe05" kindref="member">MAA_FRAMEWORK_API</ref> <ref refid="MaaDef_8h_1a59f0e2bf0a9ce9ff8dd96be800302518" kindref="member">MaaControllerHandle</ref></type>
+        <definition>MAA_FRAMEWORK_API MaaControllerHandle MaaWin32ControllerCreate</definition>
+        <argsstring>(MaaWin32Hwnd hWnd, MaaWin32ControllerType type, MaaControllerCallback callback, MaaCallbackTransparentArg callback_arg)</argsstring>
+        <name>MaaWin32ControllerCreate</name>
+        <param>
+          <type><ref refid="MaaDef_8h_1a3da139ef5684ba4fab68e47797c0d50c" kindref="member">MaaWin32Hwnd</ref></type>
+          <declname>hWnd</declname>
+        </param>
+        <param>
+          <type><ref refid="MaaDef_8h_1abdbcb048447e802ad2b48e7755b1776c" kindref="member">MaaWin32ControllerType</ref></type>
+          <declname>type</declname>
+        </param>
+        <param>
+          <type><ref refid="MaaDef_8h_1a42e88ec9161f3484a20ee8cad7409fe5" kindref="member">MaaControllerCallback</ref></type>
+          <declname>callback</declname>
+        </param>
+        <param>
+          <type><ref refid="MaaDef_8h_1af61e880b2ec14e6ced517f2c7457a1b3" kindref="member">MaaCallbackTransparentArg</ref></type>
+          <declname>callback_arg</declname>
+        </param>
+        <briefdescription>
+<para>Create a win32 controller instance. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>hWnd</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The win32 window handle to control. This can be retrieved by helpers provided in <ref refid="MaaToolkitWin32Window_8h" kindref="compound">MaaToolkitWin32Window.h</ref>. </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>type</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The type of the win32 controller. See <ref refid="MaaDef_8h_1aee6a3149d7be4c6d9e2190d14f203fa2" kindref="member">MaaWin32ControllerTypeEnum</ref>. </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>callback</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The callback function. See <ref refid="MaaDef_8h_1a147654dcdaa3e645e387e6e3a4338766" kindref="member">MaaAPICallback</ref>. </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>callback_arg</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The callback arg that will be passed to the callback function. </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>MaaControllerHandle The handle of the created controller instance. </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="include/MaaFramework/Instance/MaaController.h" line="63" column="43" declfile="include/MaaFramework/Instance/MaaController.h" declline="63" declcolumn="43"/>
+      </memberdef>
+      <memberdef kind="function" id="MaaController_8h_1a2544850abe36deca8099f6d138e9869c" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="MaaPort_8h_1a67006334d91d228121dbba7a8bf8fe05" kindref="member">MAA_FRAMEWORK_API</ref> <ref refid="MaaDef_8h_1a59f0e2bf0a9ce9ff8dd96be800302518" kindref="member">MaaControllerHandle</ref></type>
+        <definition>MAA_FRAMEWORK_API MaaControllerHandle MaaCustomControllerCreate</definition>
+        <argsstring>(MaaCustomControllerHandle handle, MaaTransparentArg handle_arg, MaaControllerCallback callback, MaaCallbackTransparentArg callback_arg)</argsstring>
+        <name>MaaCustomControllerCreate</name>
+        <param>
+          <type><ref refid="MaaDef_8h_1ad08eb5199c33a7c772aacb62087617a3" kindref="member">MaaCustomControllerHandle</ref></type>
+          <declname>handle</declname>
+        </param>
+        <param>
+          <type><ref refid="MaaDef_8h_1a9138c89a52948abc61b4da64dbafe5a5" kindref="member">MaaTransparentArg</ref></type>
+          <declname>handle_arg</declname>
+        </param>
+        <param>
+          <type><ref refid="MaaDef_8h_1a42e88ec9161f3484a20ee8cad7409fe5" kindref="member">MaaControllerCallback</ref></type>
+          <declname>callback</declname>
+        </param>
+        <param>
+          <type><ref refid="MaaDef_8h_1af61e880b2ec14e6ced517f2c7457a1b3" kindref="member">MaaCallbackTransparentArg</ref></type>
+          <declname>callback_arg</declname>
+        </param>
+        <briefdescription>
+<para>Create a custom controller instance. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>handle</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The handle to your instance of custom controller. See <ref refid="structMaaCustomControllerAPI" kindref="compound">MaaCustomControllerAPI</ref>. </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>handle_arg</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The arg that will be passed to the custom controller API. </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>callback</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The callback function. See <ref refid="MaaDef_8h_1a147654dcdaa3e645e387e6e3a4338766" kindref="member">MaaAPICallback</ref>. </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>callback_arg</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The callback arg that will be passed to the callback function. </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>MaaControllerHandle The handle of the created controller instance. </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="include/MaaFramework/Instance/MaaController.h" line="78" column="43" declfile="include/MaaFramework/Instance/MaaController.h" declline="78" declcolumn="43"/>
+      </memberdef>
+      <memberdef kind="function" id="MaaController_8h_1aacb34d0315d060d09b7be697c2ef9f43" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="MaaPort_8h_1a67006334d91d228121dbba7a8bf8fe05" kindref="member">MAA_FRAMEWORK_API</ref> <ref refid="MaaDef_8h_1a59f0e2bf0a9ce9ff8dd96be800302518" kindref="member">MaaControllerHandle</ref></type>
+        <definition>MAA_FRAMEWORK_API MaaControllerHandle MaaThriftControllerCreate</definition>
+        <argsstring>(MaaThriftControllerType type, MaaStringView host, int32_t port, MaaStringView config, MaaControllerCallback callback, MaaCallbackTransparentArg callback_arg)</argsstring>
+        <name>MaaThriftControllerCreate</name>
+        <param>
+          <type><ref refid="MaaDef_8h_1a6b455ee07566bef26f05bfce91017ca9" kindref="member">MaaThriftControllerType</ref></type>
+          <declname>type</declname>
+        </param>
+        <param>
+          <type><ref refid="MaaDef_8h_1a579dacb9b82c4edce80efb25fb79c9f5" kindref="member">MaaStringView</ref></type>
+          <declname>host</declname>
+        </param>
+        <param>
+          <type>int32_t</type>
+          <declname>port</declname>
+        </param>
+        <param>
+          <type><ref refid="MaaDef_8h_1a579dacb9b82c4edce80efb25fb79c9f5" kindref="member">MaaStringView</ref></type>
+          <declname>config</declname>
+        </param>
+        <param>
+          <type><ref refid="MaaDef_8h_1a42e88ec9161f3484a20ee8cad7409fe5" kindref="member">MaaControllerCallback</ref></type>
+          <declname>callback</declname>
+        </param>
+        <param>
+          <type><ref refid="MaaDef_8h_1af61e880b2ec14e6ced517f2c7457a1b3" kindref="member">MaaCallbackTransparentArg</ref></type>
+          <declname>callback_arg</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="include/MaaFramework/Instance/MaaController.h" line="84" column="43" declfile="include/MaaFramework/Instance/MaaController.h" declline="84" declcolumn="43"/>
+      </memberdef>
+      <memberdef kind="function" id="MaaController_8h_1afa2503aa43823a84d9dc61baef09985c" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="MaaPort_8h_1a67006334d91d228121dbba7a8bf8fe05" kindref="member">MAA_FRAMEWORK_API</ref> <ref refid="MaaDef_8h_1a59f0e2bf0a9ce9ff8dd96be800302518" kindref="member">MaaControllerHandle</ref></type>
+        <definition>MAA_FRAMEWORK_API MaaControllerHandle MaaDbgControllerCreate</definition>
+        <argsstring>(MaaStringView read_path, MaaStringView write_path, MaaDbgControllerType type, MaaStringView config, MaaControllerCallback callback, MaaCallbackTransparentArg callback_arg)</argsstring>
+        <name>MaaDbgControllerCreate</name>
+        <param>
+          <type><ref refid="MaaDef_8h_1a579dacb9b82c4edce80efb25fb79c9f5" kindref="member">MaaStringView</ref></type>
+          <declname>read_path</declname>
+        </param>
+        <param>
+          <type><ref refid="MaaDef_8h_1a579dacb9b82c4edce80efb25fb79c9f5" kindref="member">MaaStringView</ref></type>
+          <declname>write_path</declname>
+        </param>
+        <param>
+          <type><ref refid="MaaDef_8h_1aff72391259f2cc9a58e94a2dece637e8" kindref="member">MaaDbgControllerType</ref></type>
+          <declname>type</declname>
+        </param>
+        <param>
+          <type><ref refid="MaaDef_8h_1a579dacb9b82c4edce80efb25fb79c9f5" kindref="member">MaaStringView</ref></type>
+          <declname>config</declname>
+        </param>
+        <param>
+          <type><ref refid="MaaDef_8h_1a42e88ec9161f3484a20ee8cad7409fe5" kindref="member">MaaControllerCallback</ref></type>
+          <declname>callback</declname>
+        </param>
+        <param>
+          <type><ref refid="MaaDef_8h_1af61e880b2ec14e6ced517f2c7457a1b3" kindref="member">MaaCallbackTransparentArg</ref></type>
+          <declname>callback_arg</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="include/MaaFramework/Instance/MaaController.h" line="92" column="43" declfile="include/MaaFramework/Instance/MaaController.h" declline="92" declcolumn="43"/>
+      </memberdef>
+      <memberdef kind="function" id="MaaController_8h_1a91ab08a83b3c05c87015346e69de97b1" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="MaaPort_8h_1a67006334d91d228121dbba7a8bf8fe05" kindref="member">MAA_FRAMEWORK_API</ref> void</type>
+        <definition>MAA_FRAMEWORK_API void MaaControllerDestroy</definition>
+        <argsstring>(MaaControllerHandle ctrl)</argsstring>
+        <name>MaaControllerDestroy</name>
+        <param>
+          <type><ref refid="MaaDef_8h_1a59f0e2bf0a9ce9ff8dd96be800302518" kindref="member">MaaControllerHandle</ref></type>
+          <declname>ctrl</declname>
+        </param>
+        <briefdescription>
+<para>Free the controller instance. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>ctrl</parametername>
+</parameternamelist>
+<parameterdescription>
+<para></para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="include/MaaFramework/Instance/MaaController.h" line="105" column="28" declfile="include/MaaFramework/Instance/MaaController.h" declline="105" declcolumn="28"/>
+      </memberdef>
+      <memberdef kind="function" id="MaaController_8h_1ae19d88d45fa1b45212debcecb9950f55" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="MaaPort_8h_1a67006334d91d228121dbba7a8bf8fe05" kindref="member">MAA_FRAMEWORK_API</ref> <ref refid="MaaDef_8h_1a2f7289f2a8e07f48c6261b52a120cdf6" kindref="member">MaaBool</ref></type>
+        <definition>MAA_FRAMEWORK_API MaaBool MaaControllerSetOption</definition>
+        <argsstring>(MaaControllerHandle ctrl, MaaCtrlOption key, MaaOptionValue value, MaaOptionValueSize val_size)</argsstring>
+        <name>MaaControllerSetOption</name>
+        <param>
+          <type><ref refid="MaaDef_8h_1a59f0e2bf0a9ce9ff8dd96be800302518" kindref="member">MaaControllerHandle</ref></type>
+          <declname>ctrl</declname>
+        </param>
+        <param>
+          <type><ref refid="MaaDef_8h_1af8335ffd5a7df65830402c82a396c94e" kindref="member">MaaCtrlOption</ref></type>
+          <declname>key</declname>
+        </param>
+        <param>
+          <type><ref refid="MaaDef_8h_1abb976599f915b1e04a9ff8bf7055bf81" kindref="member">MaaOptionValue</ref></type>
+          <declname>value</declname>
+        </param>
+        <param>
+          <type><ref refid="MaaDef_8h_1a56ff604006917171af8e4b4974db28ef" kindref="member">MaaOptionValueSize</ref></type>
+          <declname>val_size</declname>
+        </param>
+        <briefdescription>
+<para>Set options for a given controller instance. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>This function requires a given set of option keys and value types, otherwise this will fail. See <ref refid="MaaDef_8h_1ac9daa36008267a26662244d2f5570003" kindref="member">MaaCtrlOptionEnum</ref> for details.</para>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>ctrl</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The handle of the controller instance to set options for. </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>key</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The option key. </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>value</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The option value. </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>val_size</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The size of the option value. </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>MaaBool Whether the option is set successfully. </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="include/MaaFramework/Instance/MaaController.h" line="119" column="31" declfile="include/MaaFramework/Instance/MaaController.h" declline="119" declcolumn="31"/>
+      </memberdef>
+      <memberdef kind="function" id="group__MaaControllerPostRequest_1ga76de3faeb3a1225181c9f0c2fa69182c" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="MaaPort_8h_1a67006334d91d228121dbba7a8bf8fe05" kindref="member">MAA_FRAMEWORK_API</ref> <ref refid="MaaDef_8h_1aea6a27f8f45b661fda5c19b6062b656e" kindref="member">MaaCtrlId</ref></type>
+        <definition>MAA_FRAMEWORK_API MaaCtrlId MaaControllerPostConnection</definition>
+        <argsstring>(MaaControllerHandle ctrl)</argsstring>
+        <name>MaaControllerPostConnection</name>
+        <param>
+          <type><ref refid="MaaDef_8h_1a59f0e2bf0a9ce9ff8dd96be800302518" kindref="member">MaaControllerHandle</ref></type>
+          <declname>ctrl</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="include/MaaFramework/Instance/MaaController.h" line="133" column="33" declfile="include/MaaFramework/Instance/MaaController.h" declline="133" declcolumn="33"/>
+      </memberdef>
+      <memberdef kind="function" id="group__MaaControllerPostRequest_1ga9f0e5794d891682c03e40af5405b5669" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="MaaPort_8h_1a67006334d91d228121dbba7a8bf8fe05" kindref="member">MAA_FRAMEWORK_API</ref> <ref refid="MaaDef_8h_1aea6a27f8f45b661fda5c19b6062b656e" kindref="member">MaaCtrlId</ref></type>
+        <definition>MAA_FRAMEWORK_API MaaCtrlId MaaControllerPostClick</definition>
+        <argsstring>(MaaControllerHandle ctrl, int32_t x, int32_t y)</argsstring>
+        <name>MaaControllerPostClick</name>
+        <param>
+          <type><ref refid="MaaDef_8h_1a59f0e2bf0a9ce9ff8dd96be800302518" kindref="member">MaaControllerHandle</ref></type>
+          <declname>ctrl</declname>
+        </param>
+        <param>
+          <type>int32_t</type>
+          <declname>x</declname>
+        </param>
+        <param>
+          <type>int32_t</type>
+          <declname>y</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="include/MaaFramework/Instance/MaaController.h" line="136" column="9" declfile="include/MaaFramework/Instance/MaaController.h" declline="136" declcolumn="9"/>
+      </memberdef>
+      <memberdef kind="function" id="group__MaaControllerPostRequest_1gaba6f10967118e3b8b7e31a19eda910b4" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="MaaPort_8h_1a67006334d91d228121dbba7a8bf8fe05" kindref="member">MAA_FRAMEWORK_API</ref> <ref refid="MaaDef_8h_1aea6a27f8f45b661fda5c19b6062b656e" kindref="member">MaaCtrlId</ref></type>
+        <definition>MAA_FRAMEWORK_API MaaCtrlId MaaControllerPostSwipe</definition>
+        <argsstring>(MaaControllerHandle ctrl, int32_t x1, int32_t y1, int32_t x2, int32_t y2, int32_t duration)</argsstring>
+        <name>MaaControllerPostSwipe</name>
+        <param>
+          <type><ref refid="MaaDef_8h_1a59f0e2bf0a9ce9ff8dd96be800302518" kindref="member">MaaControllerHandle</ref></type>
+          <declname>ctrl</declname>
+        </param>
+        <param>
+          <type>int32_t</type>
+          <declname>x1</declname>
+        </param>
+        <param>
+          <type>int32_t</type>
+          <declname>y1</declname>
+        </param>
+        <param>
+          <type>int32_t</type>
+          <declname>x2</declname>
+        </param>
+        <param>
+          <type>int32_t</type>
+          <declname>y2</declname>
+        </param>
+        <param>
+          <type>int32_t</type>
+          <declname>duration</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="include/MaaFramework/Instance/MaaController.h" line="138" column="33" declfile="include/MaaFramework/Instance/MaaController.h" declline="138" declcolumn="33"/>
+      </memberdef>
+      <memberdef kind="function" id="group__MaaControllerPostRequest_1ga010076a6743d469c82e6fa13c0468823" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="MaaPort_8h_1a67006334d91d228121dbba7a8bf8fe05" kindref="member">MAA_FRAMEWORK_API</ref> <ref refid="MaaDef_8h_1aea6a27f8f45b661fda5c19b6062b656e" kindref="member">MaaCtrlId</ref></type>
+        <definition>MAA_FRAMEWORK_API MaaCtrlId MaaControllerPostPressKey</definition>
+        <argsstring>(MaaControllerHandle ctrl, int32_t keycode)</argsstring>
+        <name>MaaControllerPostPressKey</name>
+        <param>
+          <type><ref refid="MaaDef_8h_1a59f0e2bf0a9ce9ff8dd96be800302518" kindref="member">MaaControllerHandle</ref></type>
+          <declname>ctrl</declname>
+        </param>
+        <param>
+          <type>int32_t</type>
+          <declname>keycode</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="include/MaaFramework/Instance/MaaController.h" line="147" column="9" declfile="include/MaaFramework/Instance/MaaController.h" declline="147" declcolumn="9"/>
+      </memberdef>
+      <memberdef kind="function" id="group__MaaControllerPostRequest_1gafe85778045c6bd504edb6dc7e255520b" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="MaaPort_8h_1a67006334d91d228121dbba7a8bf8fe05" kindref="member">MAA_FRAMEWORK_API</ref> <ref refid="MaaDef_8h_1aea6a27f8f45b661fda5c19b6062b656e" kindref="member">MaaCtrlId</ref></type>
+        <definition>MAA_FRAMEWORK_API MaaCtrlId MaaControllerPostInputText</definition>
+        <argsstring>(MaaControllerHandle ctrl, MaaStringView text)</argsstring>
+        <name>MaaControllerPostInputText</name>
+        <param>
+          <type><ref refid="MaaDef_8h_1a59f0e2bf0a9ce9ff8dd96be800302518" kindref="member">MaaControllerHandle</ref></type>
+          <declname>ctrl</declname>
+        </param>
+        <param>
+          <type><ref refid="MaaDef_8h_1a579dacb9b82c4edce80efb25fb79c9f5" kindref="member">MaaStringView</ref></type>
+          <declname>text</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="include/MaaFramework/Instance/MaaController.h" line="150" column="9" declfile="include/MaaFramework/Instance/MaaController.h" declline="150" declcolumn="9"/>
+      </memberdef>
+      <memberdef kind="function" id="group__MaaControllerPostRequest_1gac87949c378aa1e844339af52104618a7" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="MaaPort_8h_1a67006334d91d228121dbba7a8bf8fe05" kindref="member">MAA_FRAMEWORK_API</ref> <ref refid="MaaDef_8h_1aea6a27f8f45b661fda5c19b6062b656e" kindref="member">MaaCtrlId</ref></type>
+        <definition>MAA_FRAMEWORK_API MaaCtrlId MaaControllerPostStartApp</definition>
+        <argsstring>(MaaControllerHandle ctrl, MaaStringView intent)</argsstring>
+        <name>MaaControllerPostStartApp</name>
+        <param>
+          <type><ref refid="MaaDef_8h_1a59f0e2bf0a9ce9ff8dd96be800302518" kindref="member">MaaControllerHandle</ref></type>
+          <declname>ctrl</declname>
+        </param>
+        <param>
+          <type><ref refid="MaaDef_8h_1a579dacb9b82c4edce80efb25fb79c9f5" kindref="member">MaaStringView</ref></type>
+          <declname>intent</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="include/MaaFramework/Instance/MaaController.h" line="153" column="9" declfile="include/MaaFramework/Instance/MaaController.h" declline="153" declcolumn="9"/>
+      </memberdef>
+      <memberdef kind="function" id="group__MaaControllerPostRequest_1gad68fb17094ed3da0f7a44c47b609b5fe" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="MaaPort_8h_1a67006334d91d228121dbba7a8bf8fe05" kindref="member">MAA_FRAMEWORK_API</ref> <ref refid="MaaDef_8h_1aea6a27f8f45b661fda5c19b6062b656e" kindref="member">MaaCtrlId</ref></type>
+        <definition>MAA_FRAMEWORK_API MaaCtrlId MaaControllerPostStopApp</definition>
+        <argsstring>(MaaControllerHandle ctrl, MaaStringView intent)</argsstring>
+        <name>MaaControllerPostStopApp</name>
+        <param>
+          <type><ref refid="MaaDef_8h_1a59f0e2bf0a9ce9ff8dd96be800302518" kindref="member">MaaControllerHandle</ref></type>
+          <declname>ctrl</declname>
+        </param>
+        <param>
+          <type><ref refid="MaaDef_8h_1a579dacb9b82c4edce80efb25fb79c9f5" kindref="member">MaaStringView</ref></type>
+          <declname>intent</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="include/MaaFramework/Instance/MaaController.h" line="156" column="9" declfile="include/MaaFramework/Instance/MaaController.h" declline="156" declcolumn="9"/>
+      </memberdef>
+      <memberdef kind="function" id="group__MaaControllerPostRequest_1ga5d6c78c44e837f25dda1aa78ea5732a5" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="MaaPort_8h_1a67006334d91d228121dbba7a8bf8fe05" kindref="member">MAA_FRAMEWORK_API</ref> <ref refid="MaaDef_8h_1aea6a27f8f45b661fda5c19b6062b656e" kindref="member">MaaCtrlId</ref></type>
+        <definition>MAA_FRAMEWORK_API MaaCtrlId MaaControllerPostTouchDown</definition>
+        <argsstring>(MaaControllerHandle ctrl, int32_t contact, int32_t x, int32_t y, int32_t pressure)</argsstring>
+        <name>MaaControllerPostTouchDown</name>
+        <param>
+          <type><ref refid="MaaDef_8h_1a59f0e2bf0a9ce9ff8dd96be800302518" kindref="member">MaaControllerHandle</ref></type>
+          <declname>ctrl</declname>
+        </param>
+        <param>
+          <type>int32_t</type>
+          <declname>contact</declname>
+        </param>
+        <param>
+          <type>int32_t</type>
+          <declname>x</declname>
+        </param>
+        <param>
+          <type>int32_t</type>
+          <declname>y</declname>
+        </param>
+        <param>
+          <type>int32_t</type>
+          <declname>pressure</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="include/MaaFramework/Instance/MaaController.h" line="158" column="33" declfile="include/MaaFramework/Instance/MaaController.h" declline="158" declcolumn="33"/>
+      </memberdef>
+      <memberdef kind="function" id="group__MaaControllerPostRequest_1ga1336e4744d7c998543dbdba569d102de" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="MaaPort_8h_1a67006334d91d228121dbba7a8bf8fe05" kindref="member">MAA_FRAMEWORK_API</ref> <ref refid="MaaDef_8h_1aea6a27f8f45b661fda5c19b6062b656e" kindref="member">MaaCtrlId</ref></type>
+        <definition>MAA_FRAMEWORK_API MaaCtrlId MaaControllerPostTouchMove</definition>
+        <argsstring>(MaaControllerHandle ctrl, int32_t contact, int32_t x, int32_t y, int32_t pressure)</argsstring>
+        <name>MaaControllerPostTouchMove</name>
+        <param>
+          <type><ref refid="MaaDef_8h_1a59f0e2bf0a9ce9ff8dd96be800302518" kindref="member">MaaControllerHandle</ref></type>
+          <declname>ctrl</declname>
+        </param>
+        <param>
+          <type>int32_t</type>
+          <declname>contact</declname>
+        </param>
+        <param>
+          <type>int32_t</type>
+          <declname>x</declname>
+        </param>
+        <param>
+          <type>int32_t</type>
+          <declname>y</declname>
+        </param>
+        <param>
+          <type>int32_t</type>
+          <declname>pressure</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="include/MaaFramework/Instance/MaaController.h" line="164" column="33" declfile="include/MaaFramework/Instance/MaaController.h" declline="164" declcolumn="33"/>
+      </memberdef>
+      <memberdef kind="function" id="group__MaaControllerPostRequest_1gaee055ca7345c558b1ec4dcdd39c5bf77" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="MaaPort_8h_1a67006334d91d228121dbba7a8bf8fe05" kindref="member">MAA_FRAMEWORK_API</ref> <ref refid="MaaDef_8h_1aea6a27f8f45b661fda5c19b6062b656e" kindref="member">MaaCtrlId</ref></type>
+        <definition>MAA_FRAMEWORK_API MaaCtrlId MaaControllerPostTouchUp</definition>
+        <argsstring>(MaaControllerHandle ctrl, int32_t contact)</argsstring>
+        <name>MaaControllerPostTouchUp</name>
+        <param>
+          <type><ref refid="MaaDef_8h_1a59f0e2bf0a9ce9ff8dd96be800302518" kindref="member">MaaControllerHandle</ref></type>
+          <declname>ctrl</declname>
+        </param>
+        <param>
+          <type>int32_t</type>
+          <declname>contact</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="include/MaaFramework/Instance/MaaController.h" line="171" column="33" declfile="include/MaaFramework/Instance/MaaController.h" declline="171" declcolumn="33"/>
+      </memberdef>
+      <memberdef kind="function" id="group__MaaControllerPostRequest_1ga8b960a76d1a18d2c6cbcd698a748505a" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="MaaPort_8h_1a67006334d91d228121dbba7a8bf8fe05" kindref="member">MAA_FRAMEWORK_API</ref> <ref refid="MaaDef_8h_1aea6a27f8f45b661fda5c19b6062b656e" kindref="member">MaaCtrlId</ref></type>
+        <definition>MAA_FRAMEWORK_API MaaCtrlId MaaControllerPostScreencap</definition>
+        <argsstring>(MaaControllerHandle ctrl)</argsstring>
+        <name>MaaControllerPostScreencap</name>
+        <param>
+          <type><ref refid="MaaDef_8h_1a59f0e2bf0a9ce9ff8dd96be800302518" kindref="member">MaaControllerHandle</ref></type>
+          <declname>ctrl</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="include/MaaFramework/Instance/MaaController.h" line="173" column="33" declfile="include/MaaFramework/Instance/MaaController.h" declline="173" declcolumn="33"/>
+      </memberdef>
+      <memberdef kind="function" id="MaaController_8h_1a8bb4fde2cdfc769f35a8a787df9a8df9" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="MaaPort_8h_1a67006334d91d228121dbba7a8bf8fe05" kindref="member">MAA_FRAMEWORK_API</ref> <ref refid="MaaDef_8h_1ada00e4de6b9b4dcae75ed50f4bcaeef5" kindref="member">MaaStatus</ref></type>
+        <definition>MAA_FRAMEWORK_API MaaStatus MaaControllerStatus</definition>
+        <argsstring>(MaaControllerHandle ctrl, MaaCtrlId id)</argsstring>
+        <name>MaaControllerStatus</name>
+        <param>
+          <type><ref refid="MaaDef_8h_1a59f0e2bf0a9ce9ff8dd96be800302518" kindref="member">MaaControllerHandle</ref></type>
+          <declname>ctrl</declname>
+        </param>
+        <param>
+          <type><ref refid="MaaDef_8h_1aea6a27f8f45b661fda5c19b6062b656e" kindref="member">MaaCtrlId</ref></type>
+          <declname>id</declname>
+        </param>
+        <briefdescription>
+<para>Get the status of a request identified by the given id. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>ctrl</parametername>
+</parameternamelist>
+<parameterdescription>
+<para></para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>id</parametername>
+</parameternamelist>
+<parameterdescription>
+<para></para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>MaaStatus The status of the request. </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="include/MaaFramework/Instance/MaaController.h" line="184" column="33" declfile="include/MaaFramework/Instance/MaaController.h" declline="184" declcolumn="33"/>
+      </memberdef>
+      <memberdef kind="function" id="MaaController_8h_1acc67cf9739cfef6f427ecd3be8b90cc6" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="MaaPort_8h_1a67006334d91d228121dbba7a8bf8fe05" kindref="member">MAA_FRAMEWORK_API</ref> <ref refid="MaaDef_8h_1ada00e4de6b9b4dcae75ed50f4bcaeef5" kindref="member">MaaStatus</ref></type>
+        <definition>MAA_FRAMEWORK_API MaaStatus MaaControllerWait</definition>
+        <argsstring>(MaaControllerHandle ctrl, MaaCtrlId id)</argsstring>
+        <name>MaaControllerWait</name>
+        <param>
+          <type><ref refid="MaaDef_8h_1a59f0e2bf0a9ce9ff8dd96be800302518" kindref="member">MaaControllerHandle</ref></type>
+          <declname>ctrl</declname>
+        </param>
+        <param>
+          <type><ref refid="MaaDef_8h_1aea6a27f8f45b661fda5c19b6062b656e" kindref="member">MaaCtrlId</ref></type>
+          <declname>id</declname>
+        </param>
+        <briefdescription>
+<para>Wait for the request identified by the given id to complete. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>ctrl</parametername>
+</parameternamelist>
+<parameterdescription>
+<para></para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>id</parametername>
+</parameternamelist>
+<parameterdescription>
+<para></para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>MaaStatus The status of the request. </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="include/MaaFramework/Instance/MaaController.h" line="193" column="33" declfile="include/MaaFramework/Instance/MaaController.h" declline="193" declcolumn="33"/>
+      </memberdef>
+      <memberdef kind="function" id="MaaController_8h_1ac0b2db921e02733b453e87a7f5837ac0" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="MaaPort_8h_1a67006334d91d228121dbba7a8bf8fe05" kindref="member">MAA_FRAMEWORK_API</ref> <ref refid="MaaDef_8h_1a2f7289f2a8e07f48c6261b52a120cdf6" kindref="member">MaaBool</ref></type>
+        <definition>MAA_FRAMEWORK_API MaaBool MaaControllerConnected</definition>
+        <argsstring>(MaaControllerHandle ctrl)</argsstring>
+        <name>MaaControllerConnected</name>
+        <param>
+          <type><ref refid="MaaDef_8h_1a59f0e2bf0a9ce9ff8dd96be800302518" kindref="member">MaaControllerHandle</ref></type>
+          <declname>ctrl</declname>
+        </param>
+        <briefdescription>
+<para>Check if the controller is connected. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>ctrl</parametername>
+</parameternamelist>
+<parameterdescription>
+<para></para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>MaaBool </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="include/MaaFramework/Instance/MaaController.h" line="201" column="31" declfile="include/MaaFramework/Instance/MaaController.h" declline="201" declcolumn="31"/>
+      </memberdef>
+      <memberdef kind="function" id="MaaController_8h_1a83ab8043759a99d9bf6950fb88f93706" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="MaaPort_8h_1a67006334d91d228121dbba7a8bf8fe05" kindref="member">MAA_FRAMEWORK_API</ref> <ref refid="MaaDef_8h_1a2f7289f2a8e07f48c6261b52a120cdf6" kindref="member">MaaBool</ref></type>
+        <definition>MAA_FRAMEWORK_API MaaBool MaaControllerGetImage</definition>
+        <argsstring>(MaaControllerHandle ctrl, MaaImageBufferHandle buffer)</argsstring>
+        <name>MaaControllerGetImage</name>
+        <param>
+          <type><ref refid="MaaDef_8h_1a59f0e2bf0a9ce9ff8dd96be800302518" kindref="member">MaaControllerHandle</ref></type>
+          <declname>ctrl</declname>
+        </param>
+        <param>
+          <type><ref refid="MaaDef_8h_1a30c4754980d5dfa504ce84d86668f031" kindref="member">MaaImageBufferHandle</ref></type>
+          <declname>buffer</declname>
+        </param>
+        <briefdescription>
+<para>Get the image buffer of the last screencap request. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>ctrl</parametername>
+</parameternamelist>
+<parameterdescription>
+<para></para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername direction="out">buffer</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The buffer that the image data will be stored in.</para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>MaaBool Whether the image buffer is retrieved successfully. </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="include/MaaFramework/Instance/MaaController.h" line="212" column="9" declfile="include/MaaFramework/Instance/MaaController.h" declline="212" declcolumn="9"/>
+      </memberdef>
+      <memberdef kind="function" id="MaaController_8h_1a8a8eab6ea267c22241dbf0308d8c00e4" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="MaaPort_8h_1a67006334d91d228121dbba7a8bf8fe05" kindref="member">MAA_FRAMEWORK_API</ref> <ref refid="MaaDef_8h_1a2f7289f2a8e07f48c6261b52a120cdf6" kindref="member">MaaBool</ref></type>
+        <definition>MAA_FRAMEWORK_API MaaBool MaaControllerGetUUID</definition>
+        <argsstring>(MaaControllerHandle ctrl, MaaStringBufferHandle buffer)</argsstring>
+        <name>MaaControllerGetUUID</name>
+        <param>
+          <type><ref refid="MaaDef_8h_1a59f0e2bf0a9ce9ff8dd96be800302518" kindref="member">MaaControllerHandle</ref></type>
+          <declname>ctrl</declname>
+        </param>
+        <param>
+          <type><ref refid="MaaDef_8h_1aed721aa4682b1241bc38d10f8c57a8cb" kindref="member">MaaStringBufferHandle</ref></type>
+          <declname>buffer</declname>
+        </param>
+        <briefdescription>
+<para>Get the UUID of the controller. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>ctrl</parametername>
+</parameternamelist>
+<parameterdescription>
+<para></para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername direction="out">buffer</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The buffer that the UUID will be stored in.</para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>MaaBool Whether the resolution is retrieved successfully. </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="include/MaaFramework/Instance/MaaController.h" line="223" column="9" declfile="include/MaaFramework/Instance/MaaController.h" declline="223" declcolumn="9"/>
+      </memberdef>
+      </sectiondef>
+    <briefdescription>
+<para>The controller interface. See <ref refid="group__MaaControllerPostRequest" kindref="compound">Controller Requests</ref> for details on how to post requests to the controller. </para>
+    </briefdescription>
+    <detaileddescription>
+<para><simplesect kind="author"><para></para>
+</simplesect>
+<simplesect kind="copyright"><para>Copyright (c) 2024 </para>
+</simplesect>
+</para>
+    </detaileddescription>
+    <location file="include/MaaFramework/Instance/MaaController.h"/>
+  </compounddef>
+</doxygen>

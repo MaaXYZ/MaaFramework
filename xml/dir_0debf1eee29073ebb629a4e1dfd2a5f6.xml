@@ -1,0 +1,15 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.5" xml:lang="en-US">
+  <compounddef id="dir_0debf1eee29073ebb629a4e1dfd2a5f6" kind="dir">
+    <compoundname>include/MaaFramework/Instance</compoundname>
+    <innerfile refid="MaaController_8h">MaaController.h</innerfile>
+    <innerfile refid="MaaCustomController_8h">MaaCustomController.h</innerfile>
+    <innerfile refid="MaaInstance_8h">MaaInstance.h</innerfile>
+    <innerfile refid="MaaResource_8h">MaaResource.h</innerfile>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="include/MaaFramework/Instance/"/>
+  </compounddef>
+</doxygen>

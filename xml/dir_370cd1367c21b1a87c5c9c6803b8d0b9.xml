@@ -1,0 +1,18 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.5" xml:lang="en-US">
+  <compounddef id="dir_370cd1367c21b1a87c5c9c6803b8d0b9" kind="dir">
+    <compoundname>include/MaaFramework</compoundname>
+    <innerdir refid="dir_0debf1eee29073ebb629a4e1dfd2a5f6">include/MaaFramework/Instance</innerdir>
+    <innerdir refid="dir_b792a36a8a5b77bf1e6a4d2a3115a97a">include/MaaFramework/Task</innerdir>
+    <innerdir refid="dir_d3f066ca4d2612436eb7c36c3816b59b">include/MaaFramework/Utility</innerdir>
+    <innerfile refid="MaaAPI_8h">MaaAPI.h</innerfile>
+    <innerfile refid="MaaDef_8h">MaaDef.h</innerfile>
+    <innerfile refid="MaaMsg_8h">MaaMsg.h</innerfile>
+    <innerfile refid="MaaPort_8h">MaaPort.h</innerfile>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="include/MaaFramework/"/>
+  </compounddef>
+</doxygen>

@@ -1,0 +1,1053 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.5" xml:lang="en-US">
+  <compounddef id="MaaInstance_8h" kind="file" language="C++">
+    <compoundname>MaaInstance.h</compoundname>
+    <includes refid="MaaDef_8h" local="yes">../MaaDef.h</includes>
+    <includes refid="MaaPort_8h" local="yes">../MaaPort.h</includes>
+    <includedby refid="MaaAPI_8h" local="yes">include/MaaFramework/MaaAPI.h</includedby>
+    <incdepgraph>
+      <node id="1">
+        <label>include/MaaFramework/Instance/MaaInstance.h</label>
+        <link refid="MaaInstance_8h"/>
+        <childnode refid="2" relation="include">
+        </childnode>
+        <childnode refid="3" relation="include">
+        </childnode>
+      </node>
+      <node id="2">
+        <label>../MaaDef.h</label>
+        <link refid="MaaDef_8h"/>
+        <childnode refid="3" relation="include">
+        </childnode>
+        <childnode refid="4" relation="include">
+        </childnode>
+      </node>
+      <node id="3">
+        <label>MaaPort.h</label>
+        <link refid="MaaPort_8h"/>
+      </node>
+      <node id="4">
+        <label>stdint.h</label>
+      </node>
+    </incdepgraph>
+    <invincdepgraph>
+      <node id="1">
+        <label>include/MaaFramework/Instance/MaaInstance.h</label>
+        <link refid="MaaInstance_8h"/>
+        <childnode refid="2" relation="include">
+        </childnode>
+      </node>
+      <node id="2">
+        <label>include/MaaFramework/MaaAPI.h</label>
+        <link refid="MaaAPI_8h"/>
+      </node>
+    </invincdepgraph>
+      <sectiondef kind="func">
+      <memberdef kind="function" id="MaaInstance_8h_1a98c16fd43ec9ca22d79be109f82528bf" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="MaaPort_8h_1a67006334d91d228121dbba7a8bf8fe05" kindref="member">MAA_FRAMEWORK_API</ref> <ref refid="MaaDef_8h_1ab43696565db752309c61e462c22d3d93" kindref="member">MaaInstanceHandle</ref></type>
+        <definition>MAA_FRAMEWORK_API MaaInstanceHandle MaaCreate</definition>
+        <argsstring>(MaaInstanceCallback callback, MaaCallbackTransparentArg callback_arg)</argsstring>
+        <name>MaaCreate</name>
+        <param>
+          <type><ref refid="MaaDef_8h_1ab45bd56ec96933eb8737d6b9c0479656" kindref="member">MaaInstanceCallback</ref></type>
+          <declname>callback</declname>
+        </param>
+        <param>
+          <type><ref refid="MaaDef_8h_1af61e880b2ec14e6ced517f2c7457a1b3" kindref="member">MaaCallbackTransparentArg</ref></type>
+          <declname>callback_arg</declname>
+        </param>
+        <briefdescription>
+<para>Create an instance. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>callback</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The callback function. See MaaAPICallback </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>callback_arg</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The callback arg that will be passed to the callback function. </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>MaaInstanceHandle </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="include/MaaFramework/Instance/MaaInstance.h" line="30" column="9" declfile="include/MaaFramework/Instance/MaaInstance.h" declline="30" declcolumn="9"/>
+      </memberdef>
+      <memberdef kind="function" id="MaaInstance_8h_1af35c004d13238c8073193d4dd9d0a647" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="MaaPort_8h_1a67006334d91d228121dbba7a8bf8fe05" kindref="member">MAA_FRAMEWORK_API</ref> void</type>
+        <definition>MAA_FRAMEWORK_API void MaaDestroy</definition>
+        <argsstring>(MaaInstanceHandle inst)</argsstring>
+        <name>MaaDestroy</name>
+        <param>
+          <type><ref refid="MaaDef_8h_1ab43696565db752309c61e462c22d3d93" kindref="member">MaaInstanceHandle</ref></type>
+          <declname>inst</declname>
+        </param>
+        <briefdescription>
+<para>Free the instance. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>inst</parametername>
+</parameternamelist>
+<parameterdescription>
+<para></para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="include/MaaFramework/Instance/MaaInstance.h" line="37" column="28" declfile="include/MaaFramework/Instance/MaaInstance.h" declline="37" declcolumn="28"/>
+      </memberdef>
+      <memberdef kind="function" id="MaaInstance_8h_1a77959e6980f0849507ece5e6419dbdf3" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="MaaPort_8h_1a67006334d91d228121dbba7a8bf8fe05" kindref="member">MAA_FRAMEWORK_API</ref> <ref refid="MaaDef_8h_1a2f7289f2a8e07f48c6261b52a120cdf6" kindref="member">MaaBool</ref></type>
+        <definition>MAA_FRAMEWORK_API MaaBool MaaSetOption</definition>
+        <argsstring>(MaaInstanceHandle inst, MaaInstOption key, MaaOptionValue value, MaaOptionValueSize val_size)</argsstring>
+        <name>MaaSetOption</name>
+        <param>
+          <type><ref refid="MaaDef_8h_1ab43696565db752309c61e462c22d3d93" kindref="member">MaaInstanceHandle</ref></type>
+          <declname>inst</declname>
+        </param>
+        <param>
+          <type><ref refid="MaaDef_8h_1abb0751f599cf40a8b1477865fef28165" kindref="member">MaaInstOption</ref></type>
+          <declname>key</declname>
+        </param>
+        <param>
+          <type><ref refid="MaaDef_8h_1abb976599f915b1e04a9ff8bf7055bf81" kindref="member">MaaOptionValue</ref></type>
+          <declname>value</declname>
+        </param>
+        <param>
+          <type><ref refid="MaaDef_8h_1a56ff604006917171af8e4b4974db28ef" kindref="member">MaaOptionValueSize</ref></type>
+          <declname>val_size</declname>
+        </param>
+        <briefdescription>
+<para>Set options for a given instance. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>This function requires a given set of option keys and value types, otherwise this will fail. See <ref refid="MaaDef_8h_1ab952a7ded035c3f362c35f11752504c8" kindref="member">MaaInstOptionEnum</ref> for details.</para>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>inst</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The handle of the instance to set options for. </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>key</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The option key. </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>value</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The option value. </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>val_size</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The size of the option value. </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>MaaBool Whether the option is set successfully. </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="include/MaaFramework/Instance/MaaInstance.h" line="51" column="31" declfile="include/MaaFramework/Instance/MaaInstance.h" declline="51" declcolumn="31"/>
+      </memberdef>
+      <memberdef kind="function" id="MaaInstance_8h_1ae58b0b097d677e5c7a37460473b46971" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="MaaPort_8h_1a67006334d91d228121dbba7a8bf8fe05" kindref="member">MAA_FRAMEWORK_API</ref> <ref refid="MaaDef_8h_1a2f7289f2a8e07f48c6261b52a120cdf6" kindref="member">MaaBool</ref></type>
+        <definition>MAA_FRAMEWORK_API MaaBool MaaBindResource</definition>
+        <argsstring>(MaaInstanceHandle inst, MaaResourceHandle res)</argsstring>
+        <name>MaaBindResource</name>
+        <param>
+          <type><ref refid="MaaDef_8h_1ab43696565db752309c61e462c22d3d93" kindref="member">MaaInstanceHandle</ref></type>
+          <declname>inst</declname>
+        </param>
+        <param>
+          <type><ref refid="MaaDef_8h_1adaf57d636373ece07f2b2f651c49dfef" kindref="member">MaaResourceHandle</ref></type>
+          <declname>res</declname>
+        </param>
+        <briefdescription>
+<para>Bind the instance to an initialized resource. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>See functions in <ref refid="MaaResource_8h" kindref="compound">MaaResource.h</ref> about how to create a resource.</para>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>inst</parametername>
+</parameternamelist>
+<parameterdescription>
+<para></para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>res</parametername>
+</parameternamelist>
+<parameterdescription>
+<para></para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>MaaBool </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="include/MaaFramework/Instance/MaaInstance.h" line="66" column="31" declfile="include/MaaFramework/Instance/MaaInstance.h" declline="66" declcolumn="31"/>
+      </memberdef>
+      <memberdef kind="function" id="MaaInstance_8h_1a3bf20c3e6745fd28bfdf70f3e71e0e9f" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="MaaPort_8h_1a67006334d91d228121dbba7a8bf8fe05" kindref="member">MAA_FRAMEWORK_API</ref> <ref refid="MaaDef_8h_1a2f7289f2a8e07f48c6261b52a120cdf6" kindref="member">MaaBool</ref></type>
+        <definition>MAA_FRAMEWORK_API MaaBool MaaBindController</definition>
+        <argsstring>(MaaInstanceHandle inst, MaaControllerHandle ctrl)</argsstring>
+        <name>MaaBindController</name>
+        <param>
+          <type><ref refid="MaaDef_8h_1ab43696565db752309c61e462c22d3d93" kindref="member">MaaInstanceHandle</ref></type>
+          <declname>inst</declname>
+        </param>
+        <param>
+          <type><ref refid="MaaDef_8h_1a59f0e2bf0a9ce9ff8dd96be800302518" kindref="member">MaaControllerHandle</ref></type>
+          <declname>ctrl</declname>
+        </param>
+        <briefdescription>
+<para>Bind the instance to an initialized controller. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>See functions in <ref refid="MaaController_8h" kindref="compound">MaaController.h</ref> about how to create a controller.</para>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>inst</parametername>
+</parameternamelist>
+<parameterdescription>
+<para></para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>ctrl</parametername>
+</parameternamelist>
+<parameterdescription>
+<para></para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>MaaBool </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="include/MaaFramework/Instance/MaaInstance.h" line="77" column="31" declfile="include/MaaFramework/Instance/MaaInstance.h" declline="77" declcolumn="31"/>
+      </memberdef>
+      <memberdef kind="function" id="MaaInstance_8h_1a3b218b02d9c7e3c038524c8f92fc537a" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="MaaPort_8h_1a67006334d91d228121dbba7a8bf8fe05" kindref="member">MAA_FRAMEWORK_API</ref> <ref refid="MaaDef_8h_1a2f7289f2a8e07f48c6261b52a120cdf6" kindref="member">MaaBool</ref></type>
+        <definition>MAA_FRAMEWORK_API MaaBool MaaInited</definition>
+        <argsstring>(MaaInstanceHandle inst)</argsstring>
+        <name>MaaInited</name>
+        <param>
+          <type><ref refid="MaaDef_8h_1ab43696565db752309c61e462c22d3d93" kindref="member">MaaInstanceHandle</ref></type>
+          <declname>inst</declname>
+        </param>
+        <briefdescription>
+<para>Check if the instance is initialized. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>inst</parametername>
+</parameternamelist>
+<parameterdescription>
+<para></para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>MaaBool </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="include/MaaFramework/Instance/MaaInstance.h" line="85" column="31" declfile="include/MaaFramework/Instance/MaaInstance.h" declline="85" declcolumn="31"/>
+      </memberdef>
+      <memberdef kind="function" id="MaaInstance_8h_1a3af83a07b04fe2543ed65488d5d34e56" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="MaaPort_8h_1a67006334d91d228121dbba7a8bf8fe05" kindref="member">MAA_FRAMEWORK_API</ref> <ref refid="MaaDef_8h_1a2f7289f2a8e07f48c6261b52a120cdf6" kindref="member">MaaBool</ref></type>
+        <definition>MAA_FRAMEWORK_API MaaBool MaaRegisterCustomRecognizer</definition>
+        <argsstring>(MaaInstanceHandle inst, MaaStringView name, MaaCustomRecognizerHandle recognizer, MaaTransparentArg recognizer_arg)</argsstring>
+        <name>MaaRegisterCustomRecognizer</name>
+        <param>
+          <type><ref refid="MaaDef_8h_1ab43696565db752309c61e462c22d3d93" kindref="member">MaaInstanceHandle</ref></type>
+          <declname>inst</declname>
+        </param>
+        <param>
+          <type><ref refid="MaaDef_8h_1a579dacb9b82c4edce80efb25fb79c9f5" kindref="member">MaaStringView</ref></type>
+          <declname>name</declname>
+        </param>
+        <param>
+          <type><ref refid="MaaDef_8h_1a3d04340b02063d25ea61500853fca1a0" kindref="member">MaaCustomRecognizerHandle</ref></type>
+          <declname>recognizer</declname>
+        </param>
+        <param>
+          <type><ref refid="MaaDef_8h_1a9138c89a52948abc61b4da64dbafe5a5" kindref="member">MaaTransparentArg</ref></type>
+          <declname>recognizer_arg</declname>
+        </param>
+        <briefdescription>
+<para>Register a custom recognizer to the instance. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>See <ref refid="MaaCustomRecognizer_8h" kindref="compound">MaaCustomRecognizer.h</ref> for details about how to create a custom recognizer.</para>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>inst</parametername>
+</parameternamelist>
+<parameterdescription>
+<para></para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>name</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The name of the recognizer that will be used to reference it. </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>recognizer</parametername>
+</parameternamelist>
+<parameterdescription>
+<para></para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>recognizer_arg</parametername>
+</parameternamelist>
+<parameterdescription>
+<para></para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>MaaBool </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="include/MaaFramework/Instance/MaaInstance.h" line="98" column="31" declfile="include/MaaFramework/Instance/MaaInstance.h" declline="98" declcolumn="31"/>
+      </memberdef>
+      <memberdef kind="function" id="MaaInstance_8h_1ad12e9f76c06d14c6dc11860305fc3f08" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="MaaPort_8h_1a67006334d91d228121dbba7a8bf8fe05" kindref="member">MAA_FRAMEWORK_API</ref> <ref refid="MaaDef_8h_1a2f7289f2a8e07f48c6261b52a120cdf6" kindref="member">MaaBool</ref></type>
+        <definition>MAA_FRAMEWORK_API MaaBool MaaUnregisterCustomRecognizer</definition>
+        <argsstring>(MaaInstanceHandle inst, MaaStringView name)</argsstring>
+        <name>MaaUnregisterCustomRecognizer</name>
+        <param>
+          <type><ref refid="MaaDef_8h_1ab43696565db752309c61e462c22d3d93" kindref="member">MaaInstanceHandle</ref></type>
+          <declname>inst</declname>
+        </param>
+        <param>
+          <type><ref refid="MaaDef_8h_1a579dacb9b82c4edce80efb25fb79c9f5" kindref="member">MaaStringView</ref></type>
+          <declname>name</declname>
+        </param>
+        <briefdescription>
+<para>Unregister a custom recognizer from the instance. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>inst</parametername>
+</parameternamelist>
+<parameterdescription>
+<para></para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>name</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The name of the recognizer when it was registered. </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>MaaBool </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="include/MaaFramework/Instance/MaaInstance.h" line="112" column="9" declfile="include/MaaFramework/Instance/MaaInstance.h" declline="112" declcolumn="9"/>
+      </memberdef>
+      <memberdef kind="function" id="MaaInstance_8h_1ae2c1d8427b3602e1b9a1c14e07710bb1" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="MaaPort_8h_1a67006334d91d228121dbba7a8bf8fe05" kindref="member">MAA_FRAMEWORK_API</ref> <ref refid="MaaDef_8h_1a2f7289f2a8e07f48c6261b52a120cdf6" kindref="member">MaaBool</ref></type>
+        <definition>MAA_FRAMEWORK_API MaaBool MaaClearCustomRecognizer</definition>
+        <argsstring>(MaaInstanceHandle inst)</argsstring>
+        <name>MaaClearCustomRecognizer</name>
+        <param>
+          <type><ref refid="MaaDef_8h_1ab43696565db752309c61e462c22d3d93" kindref="member">MaaInstanceHandle</ref></type>
+          <declname>inst</declname>
+        </param>
+        <briefdescription>
+<para>Clear all custom recognizers registered to the instance. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>inst</parametername>
+</parameternamelist>
+<parameterdescription>
+<para></para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>MaaBool </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="include/MaaFramework/Instance/MaaInstance.h" line="120" column="31" declfile="include/MaaFramework/Instance/MaaInstance.h" declline="120" declcolumn="31"/>
+      </memberdef>
+      <memberdef kind="function" id="MaaInstance_8h_1a7bd1d9d6f6be525d7c85969add041f35" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="MaaPort_8h_1a67006334d91d228121dbba7a8bf8fe05" kindref="member">MAA_FRAMEWORK_API</ref> <ref refid="MaaDef_8h_1a2f7289f2a8e07f48c6261b52a120cdf6" kindref="member">MaaBool</ref></type>
+        <definition>MAA_FRAMEWORK_API MaaBool MaaRegisterCustomAction</definition>
+        <argsstring>(MaaInstanceHandle inst, MaaStringView name, MaaCustomActionHandle action, MaaTransparentArg action_arg)</argsstring>
+        <name>MaaRegisterCustomAction</name>
+        <param>
+          <type><ref refid="MaaDef_8h_1ab43696565db752309c61e462c22d3d93" kindref="member">MaaInstanceHandle</ref></type>
+          <declname>inst</declname>
+        </param>
+        <param>
+          <type><ref refid="MaaDef_8h_1a579dacb9b82c4edce80efb25fb79c9f5" kindref="member">MaaStringView</ref></type>
+          <declname>name</declname>
+        </param>
+        <param>
+          <type><ref refid="MaaDef_8h_1a4889d004e298d4fb969a7988dc65a55e" kindref="member">MaaCustomActionHandle</ref></type>
+          <declname>action</declname>
+        </param>
+        <param>
+          <type><ref refid="MaaDef_8h_1a9138c89a52948abc61b4da64dbafe5a5" kindref="member">MaaTransparentArg</ref></type>
+          <declname>action_arg</declname>
+        </param>
+        <briefdescription>
+<para>Register a custom action to the instance. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>See <ref refid="MaaCustomAction_8h" kindref="compound">MaaCustomAction.h</ref> for details about how to create a custom action.</para>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>inst</parametername>
+</parameternamelist>
+<parameterdescription>
+<para></para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>name</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The name of the action that will be used to reference it. </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>action</parametername>
+</parameternamelist>
+<parameterdescription>
+<para></para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>action_arg</parametername>
+</parameternamelist>
+<parameterdescription>
+<para></para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>MaaBool </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="include/MaaFramework/Instance/MaaInstance.h" line="133" column="31" declfile="include/MaaFramework/Instance/MaaInstance.h" declline="133" declcolumn="31"/>
+      </memberdef>
+      <memberdef kind="function" id="MaaInstance_8h_1a767e5aa47e8b174433190441f23641d9" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="MaaPort_8h_1a67006334d91d228121dbba7a8bf8fe05" kindref="member">MAA_FRAMEWORK_API</ref> <ref refid="MaaDef_8h_1a2f7289f2a8e07f48c6261b52a120cdf6" kindref="member">MaaBool</ref></type>
+        <definition>MAA_FRAMEWORK_API MaaBool MaaUnregisterCustomAction</definition>
+        <argsstring>(MaaInstanceHandle inst, MaaStringView name)</argsstring>
+        <name>MaaUnregisterCustomAction</name>
+        <param>
+          <type><ref refid="MaaDef_8h_1ab43696565db752309c61e462c22d3d93" kindref="member">MaaInstanceHandle</ref></type>
+          <declname>inst</declname>
+        </param>
+        <param>
+          <type><ref refid="MaaDef_8h_1a579dacb9b82c4edce80efb25fb79c9f5" kindref="member">MaaStringView</ref></type>
+          <declname>name</declname>
+        </param>
+        <briefdescription>
+<para>Unregister a custom action from the instance. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>inst</parametername>
+</parameternamelist>
+<parameterdescription>
+<para></para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>name</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The name of the action when it was registered. </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>MaaBool </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="include/MaaFramework/Instance/MaaInstance.h" line="146" column="31" declfile="include/MaaFramework/Instance/MaaInstance.h" declline="146" declcolumn="31"/>
+      </memberdef>
+      <memberdef kind="function" id="MaaInstance_8h_1a1826f96904896199b4b5c5429b89b309" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="MaaPort_8h_1a67006334d91d228121dbba7a8bf8fe05" kindref="member">MAA_FRAMEWORK_API</ref> <ref refid="MaaDef_8h_1a2f7289f2a8e07f48c6261b52a120cdf6" kindref="member">MaaBool</ref></type>
+        <definition>MAA_FRAMEWORK_API MaaBool MaaClearCustomAction</definition>
+        <argsstring>(MaaInstanceHandle inst)</argsstring>
+        <name>MaaClearCustomAction</name>
+        <param>
+          <type><ref refid="MaaDef_8h_1ab43696565db752309c61e462c22d3d93" kindref="member">MaaInstanceHandle</ref></type>
+          <declname>inst</declname>
+        </param>
+        <briefdescription>
+<para>Clear all custom actions registered to the instance. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>inst</parametername>
+</parameternamelist>
+<parameterdescription>
+<para></para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>MaaBool </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="include/MaaFramework/Instance/MaaInstance.h" line="154" column="31" declfile="include/MaaFramework/Instance/MaaInstance.h" declline="154" declcolumn="31"/>
+      </memberdef>
+      <memberdef kind="function" id="MaaInstance_8h_1aa07660f2debe49dca31593dd85785190" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="MaaPort_8h_1a67006334d91d228121dbba7a8bf8fe05" kindref="member">MAA_FRAMEWORK_API</ref> <ref refid="MaaDef_8h_1a711b3db9be6db60ae4cb09e3629e42f0" kindref="member">MaaTaskId</ref></type>
+        <definition>MAA_FRAMEWORK_API MaaTaskId MaaPostTask</definition>
+        <argsstring>(MaaInstanceHandle inst, MaaStringView entry, MaaStringView param)</argsstring>
+        <name>MaaPostTask</name>
+        <param>
+          <type><ref refid="MaaDef_8h_1ab43696565db752309c61e462c22d3d93" kindref="member">MaaInstanceHandle</ref></type>
+          <declname>inst</declname>
+        </param>
+        <param>
+          <type><ref refid="MaaDef_8h_1a579dacb9b82c4edce80efb25fb79c9f5" kindref="member">MaaStringView</ref></type>
+          <declname>entry</declname>
+        </param>
+        <param>
+          <type><ref refid="MaaDef_8h_1a579dacb9b82c4edce80efb25fb79c9f5" kindref="member">MaaStringView</ref></type>
+          <declname>param</declname>
+        </param>
+        <briefdescription>
+<para>Post a task to the instance. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>The entry should be a task specified in the instance&apos;s resources. The param takes the same form as the pipeline json and will override the set parameters in the json file.</para>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>inst</parametername>
+</parameternamelist>
+<parameterdescription>
+<para></para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>entry</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The entry of the task. </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>param</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The parameter of the task. </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>MaaTaskId The id of the task. </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="include/MaaFramework/Instance/MaaInstance.h" line="169" column="9" declfile="include/MaaFramework/Instance/MaaInstance.h" declline="169" declcolumn="9"/>
+      </memberdef>
+      <memberdef kind="function" id="MaaInstance_8h_1aaa36903f81efd25d109b1f755792f756" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="MaaPort_8h_1a67006334d91d228121dbba7a8bf8fe05" kindref="member">MAA_FRAMEWORK_API</ref> <ref refid="MaaDef_8h_1a711b3db9be6db60ae4cb09e3629e42f0" kindref="member">MaaTaskId</ref></type>
+        <definition>MAA_FRAMEWORK_API MaaTaskId MaaPostRecognition</definition>
+        <argsstring>(MaaInstanceHandle inst, MaaStringView entry, MaaStringView param)</argsstring>
+        <name>MaaPostRecognition</name>
+        <param>
+          <type><ref refid="MaaDef_8h_1ab43696565db752309c61e462c22d3d93" kindref="member">MaaInstanceHandle</ref></type>
+          <declname>inst</declname>
+        </param>
+        <param>
+          <type><ref refid="MaaDef_8h_1a579dacb9b82c4edce80efb25fb79c9f5" kindref="member">MaaStringView</ref></type>
+          <declname>entry</declname>
+        </param>
+        <param>
+          <type><ref refid="MaaDef_8h_1a579dacb9b82c4edce80efb25fb79c9f5" kindref="member">MaaStringView</ref></type>
+          <declname>param</declname>
+        </param>
+        <briefdescription>
+<para>Post a recognition to the instance. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>The entry should be a task specified in the instance&apos;s resources. The param takes the same form as the pipeline json and will override the set parameters in the json file.</para>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>inst</parametername>
+</parameternamelist>
+<parameterdescription>
+<para></para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>entry</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The entry of the recognition. </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>param</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The parameter of the recognition. </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>MaaTaskId The id of the recognition. </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="include/MaaFramework/Instance/MaaInstance.h" line="184" column="9" declfile="include/MaaFramework/Instance/MaaInstance.h" declline="184" declcolumn="9"/>
+      </memberdef>
+      <memberdef kind="function" id="MaaInstance_8h_1a96ccea583f609fc57e38c964d80a0ebf" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="MaaPort_8h_1a67006334d91d228121dbba7a8bf8fe05" kindref="member">MAA_FRAMEWORK_API</ref> <ref refid="MaaDef_8h_1a711b3db9be6db60ae4cb09e3629e42f0" kindref="member">MaaTaskId</ref></type>
+        <definition>MAA_FRAMEWORK_API MaaTaskId MaaPostAction</definition>
+        <argsstring>(MaaInstanceHandle inst, MaaStringView entry, MaaStringView param)</argsstring>
+        <name>MaaPostAction</name>
+        <param>
+          <type><ref refid="MaaDef_8h_1ab43696565db752309c61e462c22d3d93" kindref="member">MaaInstanceHandle</ref></type>
+          <declname>inst</declname>
+        </param>
+        <param>
+          <type><ref refid="MaaDef_8h_1a579dacb9b82c4edce80efb25fb79c9f5" kindref="member">MaaStringView</ref></type>
+          <declname>entry</declname>
+        </param>
+        <param>
+          <type><ref refid="MaaDef_8h_1a579dacb9b82c4edce80efb25fb79c9f5" kindref="member">MaaStringView</ref></type>
+          <declname>param</declname>
+        </param>
+        <briefdescription>
+<para>Post a action to the instance. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>The entry should be a task specified in the instance&apos;s resources. The param takes the same form as the pipeline json and will override the set parameters in the json file.</para>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>inst</parametername>
+</parameternamelist>
+<parameterdescription>
+<para></para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>entry</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The entry of the action. </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>param</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The parameter of the action. </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>MaaTaskId The id of the action. </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="include/MaaFramework/Instance/MaaInstance.h" line="199" column="9" declfile="include/MaaFramework/Instance/MaaInstance.h" declline="199" declcolumn="9"/>
+      </memberdef>
+      <memberdef kind="function" id="MaaInstance_8h_1a2a9bdbede1f2c8d0fdc84ce49e8cd209" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="MaaPort_8h_1a67006334d91d228121dbba7a8bf8fe05" kindref="member">MAA_FRAMEWORK_API</ref> <ref refid="MaaDef_8h_1a2f7289f2a8e07f48c6261b52a120cdf6" kindref="member">MaaBool</ref></type>
+        <definition>MAA_FRAMEWORK_API MaaBool MaaSetTaskParam</definition>
+        <argsstring>(MaaInstanceHandle inst, MaaTaskId id, MaaStringView param)</argsstring>
+        <name>MaaSetTaskParam</name>
+        <param>
+          <type><ref refid="MaaDef_8h_1ab43696565db752309c61e462c22d3d93" kindref="member">MaaInstanceHandle</ref></type>
+          <declname>inst</declname>
+        </param>
+        <param>
+          <type><ref refid="MaaDef_8h_1a711b3db9be6db60ae4cb09e3629e42f0" kindref="member">MaaTaskId</ref></type>
+          <declname>id</declname>
+        </param>
+        <param>
+          <type><ref refid="MaaDef_8h_1a579dacb9b82c4edce80efb25fb79c9f5" kindref="member">MaaStringView</ref></type>
+          <declname>param</declname>
+        </param>
+        <briefdescription>
+<para>Set the parameter of a task. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>See <ref refid="MaaInstance_8h_1aa07660f2debe49dca31593dd85785190" kindref="member">MaaPostTask()</ref> for details about the parameter.</para>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>inst</parametername>
+</parameternamelist>
+<parameterdescription>
+<para></para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>id</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The id of the task. </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>param</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The parameter of the task. </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>MaaBool </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="include/MaaFramework/Instance/MaaInstance.h" line="212" column="9" declfile="include/MaaFramework/Instance/MaaInstance.h" declline="212" declcolumn="9"/>
+      </memberdef>
+      <memberdef kind="function" id="MaaInstance_8h_1aad268103214d54fa205efd6b99e0d43d" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="MaaPort_8h_1a67006334d91d228121dbba7a8bf8fe05" kindref="member">MAA_FRAMEWORK_API</ref> <ref refid="MaaDef_8h_1ada00e4de6b9b4dcae75ed50f4bcaeef5" kindref="member">MaaStatus</ref></type>
+        <definition>MAA_FRAMEWORK_API MaaStatus MaaTaskStatus</definition>
+        <argsstring>(MaaInstanceHandle inst, MaaTaskId id)</argsstring>
+        <name>MaaTaskStatus</name>
+        <param>
+          <type><ref refid="MaaDef_8h_1ab43696565db752309c61e462c22d3d93" kindref="member">MaaInstanceHandle</ref></type>
+          <declname>inst</declname>
+        </param>
+        <param>
+          <type><ref refid="MaaDef_8h_1a711b3db9be6db60ae4cb09e3629e42f0" kindref="member">MaaTaskId</ref></type>
+          <declname>id</declname>
+        </param>
+        <briefdescription>
+<para>Get the status of a task identified by the id. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>inst</parametername>
+</parameternamelist>
+<parameterdescription>
+<para></para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>id</parametername>
+</parameternamelist>
+<parameterdescription>
+<para></para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>MaaStatus </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="include/MaaFramework/Instance/MaaInstance.h" line="221" column="33" declfile="include/MaaFramework/Instance/MaaInstance.h" declline="221" declcolumn="33"/>
+      </memberdef>
+      <memberdef kind="function" id="MaaInstance_8h_1ab2119663dd1b7cf678a7cb3adf6918ae" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="MaaPort_8h_1a67006334d91d228121dbba7a8bf8fe05" kindref="member">MAA_FRAMEWORK_API</ref> <ref refid="MaaDef_8h_1ada00e4de6b9b4dcae75ed50f4bcaeef5" kindref="member">MaaStatus</ref></type>
+        <definition>MAA_FRAMEWORK_API MaaStatus MaaWaitTask</definition>
+        <argsstring>(MaaInstanceHandle inst, MaaTaskId id)</argsstring>
+        <name>MaaWaitTask</name>
+        <param>
+          <type><ref refid="MaaDef_8h_1ab43696565db752309c61e462c22d3d93" kindref="member">MaaInstanceHandle</ref></type>
+          <declname>inst</declname>
+        </param>
+        <param>
+          <type><ref refid="MaaDef_8h_1a711b3db9be6db60ae4cb09e3629e42f0" kindref="member">MaaTaskId</ref></type>
+          <declname>id</declname>
+        </param>
+        <briefdescription>
+<para>Wait for a task to finish. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>inst</parametername>
+</parameternamelist>
+<parameterdescription>
+<para></para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>id</parametername>
+</parameternamelist>
+<parameterdescription>
+<para></para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>MaaStatus </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="include/MaaFramework/Instance/MaaInstance.h" line="230" column="33" declfile="include/MaaFramework/Instance/MaaInstance.h" declline="230" declcolumn="33"/>
+      </memberdef>
+      <memberdef kind="function" id="MaaInstance_8h_1a3853221220d0301748332af653d54487" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="MaaPort_8h_1aea94eb63afa29e65c59844ec3f57d691" kindref="member">MAA_DEPRECATED</ref> <ref refid="MaaPort_8h_1a67006334d91d228121dbba7a8bf8fe05" kindref="member">MAA_FRAMEWORK_API</ref> <ref refid="MaaDef_8h_1a2f7289f2a8e07f48c6261b52a120cdf6" kindref="member">MaaBool</ref></type>
+        <definition>MAA_DEPRECATED MAA_FRAMEWORK_API MaaBool MaaTaskAllFinished</definition>
+        <argsstring>(MaaInstanceHandle inst)</argsstring>
+        <name>MaaTaskAllFinished</name>
+        <param>
+          <type><ref refid="MaaDef_8h_1ab43696565db752309c61e462c22d3d93" kindref="member">MaaInstanceHandle</ref></type>
+          <declname>inst</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para><xrefsect id="deprecated_1_deprecated000002"><xreftitle>Deprecated</xreftitle><xrefdescription><para>Use !MaaRunning() instead. </para>
+</xrefdescription></xrefsect></para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="include/MaaFramework/Instance/MaaInstance.h" line="233" column="46" declfile="include/MaaFramework/Instance/MaaInstance.h" declline="233" declcolumn="46"/>
+      </memberdef>
+      <memberdef kind="function" id="MaaInstance_8h_1a101e00c290a6b0529c43aaeca46d24c5" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="MaaPort_8h_1a67006334d91d228121dbba7a8bf8fe05" kindref="member">MAA_FRAMEWORK_API</ref> <ref refid="MaaDef_8h_1a2f7289f2a8e07f48c6261b52a120cdf6" kindref="member">MaaBool</ref></type>
+        <definition>MAA_FRAMEWORK_API MaaBool MaaRunning</definition>
+        <argsstring>(MaaInstanceHandle inst)</argsstring>
+        <name>MaaRunning</name>
+        <param>
+          <type><ref refid="MaaDef_8h_1ab43696565db752309c61e462c22d3d93" kindref="member">MaaInstanceHandle</ref></type>
+          <declname>inst</declname>
+        </param>
+        <briefdescription>
+<para>Is maa running? </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>inst</parametername>
+</parameternamelist>
+<parameterdescription>
+<para></para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>MaaBool </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="include/MaaFramework/Instance/MaaInstance.h" line="241" column="31" declfile="include/MaaFramework/Instance/MaaInstance.h" declline="241" declcolumn="31"/>
+      </memberdef>
+      <memberdef kind="function" id="MaaInstance_8h_1a93150310620d3b136c4698e236ed7621" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="MaaPort_8h_1a67006334d91d228121dbba7a8bf8fe05" kindref="member">MAA_FRAMEWORK_API</ref> <ref refid="MaaDef_8h_1a2f7289f2a8e07f48c6261b52a120cdf6" kindref="member">MaaBool</ref></type>
+        <definition>MAA_FRAMEWORK_API MaaBool MaaPostStop</definition>
+        <argsstring>(MaaInstanceHandle inst)</argsstring>
+        <name>MaaPostStop</name>
+        <param>
+          <type><ref refid="MaaDef_8h_1ab43696565db752309c61e462c22d3d93" kindref="member">MaaInstanceHandle</ref></type>
+          <declname>inst</declname>
+        </param>
+        <briefdescription>
+<para>Post a stop signal to the instance. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>This immediately stops the instance and all its tasks.</para>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>inst</parametername>
+</parameternamelist>
+<parameterdescription>
+<para></para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>MaaBool </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="include/MaaFramework/Instance/MaaInstance.h" line="251" column="31" declfile="include/MaaFramework/Instance/MaaInstance.h" declline="251" declcolumn="31"/>
+      </memberdef>
+      <memberdef kind="function" id="MaaInstance_8h_1aff98c945e98bf6b1bd926ab6c6a2e2ee" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="MaaPort_8h_1aea94eb63afa29e65c59844ec3f57d691" kindref="member">MAA_DEPRECATED</ref> <ref refid="MaaPort_8h_1a67006334d91d228121dbba7a8bf8fe05" kindref="member">MAA_FRAMEWORK_API</ref> <ref refid="MaaDef_8h_1a2f7289f2a8e07f48c6261b52a120cdf6" kindref="member">MaaBool</ref></type>
+        <definition>MAA_DEPRECATED MAA_FRAMEWORK_API MaaBool MaaStop</definition>
+        <argsstring>(MaaInstanceHandle inst)</argsstring>
+        <name>MaaStop</name>
+        <param>
+          <type><ref refid="MaaDef_8h_1ab43696565db752309c61e462c22d3d93" kindref="member">MaaInstanceHandle</ref></type>
+          <declname>inst</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para><xrefsect id="deprecated_1_deprecated000003"><xreftitle>Deprecated</xreftitle><xrefdescription><para>Use <ref refid="MaaInstance_8h_1a93150310620d3b136c4698e236ed7621" kindref="member">MaaPostStop()</ref> instead. </para>
+</xrefdescription></xrefsect></para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="include/MaaFramework/Instance/MaaInstance.h" line="254" column="46" declfile="include/MaaFramework/Instance/MaaInstance.h" declline="254" declcolumn="46"/>
+      </memberdef>
+      <memberdef kind="function" id="MaaInstance_8h_1a01218233c8f6049c3226be8515ea858f" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="MaaPort_8h_1a67006334d91d228121dbba7a8bf8fe05" kindref="member">MAA_FRAMEWORK_API</ref> <ref refid="MaaDef_8h_1adaf57d636373ece07f2b2f651c49dfef" kindref="member">MaaResourceHandle</ref></type>
+        <definition>MAA_FRAMEWORK_API MaaResourceHandle MaaGetResource</definition>
+        <argsstring>(MaaInstanceHandle inst)</argsstring>
+        <name>MaaGetResource</name>
+        <param>
+          <type><ref refid="MaaDef_8h_1ab43696565db752309c61e462c22d3d93" kindref="member">MaaInstanceHandle</ref></type>
+          <declname>inst</declname>
+        </param>
+        <briefdescription>
+<para>Get the resource handle of the instance. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>inst</parametername>
+</parameternamelist>
+<parameterdescription>
+<para></para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>MaaResourceHandle </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="include/MaaFramework/Instance/MaaInstance.h" line="262" column="41" declfile="include/MaaFramework/Instance/MaaInstance.h" declline="262" declcolumn="41"/>
+      </memberdef>
+      <memberdef kind="function" id="MaaInstance_8h_1a25f80636946cbe34cffd544ec29ab4b3" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="MaaPort_8h_1a67006334d91d228121dbba7a8bf8fe05" kindref="member">MAA_FRAMEWORK_API</ref> <ref refid="MaaDef_8h_1a59f0e2bf0a9ce9ff8dd96be800302518" kindref="member">MaaControllerHandle</ref></type>
+        <definition>MAA_FRAMEWORK_API MaaControllerHandle MaaGetController</definition>
+        <argsstring>(MaaInstanceHandle inst)</argsstring>
+        <name>MaaGetController</name>
+        <param>
+          <type><ref refid="MaaDef_8h_1ab43696565db752309c61e462c22d3d93" kindref="member">MaaInstanceHandle</ref></type>
+          <declname>inst</declname>
+        </param>
+        <briefdescription>
+<para>Get the controller handle of the instance. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>inst</parametername>
+</parameternamelist>
+<parameterdescription>
+<para></para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>MaaControllerHandle </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="include/MaaFramework/Instance/MaaInstance.h" line="270" column="43" declfile="include/MaaFramework/Instance/MaaInstance.h" declline="270" declcolumn="43"/>
+      </memberdef>
+      </sectiondef>
+    <briefdescription>
+<para>The instance API. </para>
+    </briefdescription>
+    <detaileddescription>
+<para><simplesect kind="author"><para></para>
+</simplesect>
+<simplesect kind="copyright"><para>Copyright (c) 2024 </para>
+</simplesect>
+</para>
+    </detaileddescription>
+    <location file="include/MaaFramework/Instance/MaaInstance.h"/>
+  </compounddef>
+</doxygen>

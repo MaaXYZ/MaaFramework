@@ -1,0 +1,17 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.5" xml:lang="en-US">
+  <compounddef id="dir_229d1428d76e394aeaec36b75a5d5699" kind="dir">
+    <compoundname>include/MaaToolkit</compoundname>
+    <innerdir refid="dir_6eb8a3b80c08358342d8d19b4780874f">include/MaaToolkit/Config</innerdir>
+    <innerdir refid="dir_9fd72edf7a519d313969149a525660e5">include/MaaToolkit/Device</innerdir>
+    <innerdir refid="dir_8ab09efa8505fcda27757a738df8d945">include/MaaToolkit/ExecAgent</innerdir>
+    <innerdir refid="dir_6c25cc8dd169a5d653db2ac0d1d57d87">include/MaaToolkit/Win32</innerdir>
+    <innerfile refid="MaaToolkitAPI_8h">MaaToolkitAPI.h</innerfile>
+    <innerfile refid="MaaToolkitDef_8h">MaaToolkitDef.h</innerfile>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="include/MaaToolkit/"/>
+  </compounddef>
+</doxygen>

@@ -1,0 +1,12 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.5" xml:lang="en-US">
+  <compounddef id="dir_6c25cc8dd169a5d653db2ac0d1d57d87" kind="dir">
+    <compoundname>include/MaaToolkit/Win32</compoundname>
+    <innerfile refid="MaaToolkitWin32Window_8h">MaaToolkitWin32Window.h</innerfile>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="include/MaaToolkit/Win32/"/>
+  </compounddef>
+</doxygen>

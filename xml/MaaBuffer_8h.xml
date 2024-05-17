@@ -1,0 +1,958 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.5" xml:lang="en-US">
+  <compounddef id="MaaBuffer_8h" kind="file" language="C++">
+    <compoundname>MaaBuffer.h</compoundname>
+    <includes refid="MaaDef_8h" local="yes">../MaaDef.h</includes>
+    <includes refid="MaaPort_8h" local="yes">../MaaPort.h</includes>
+    <includedby refid="MaaAPI_8h" local="yes">include/MaaFramework/MaaAPI.h</includedby>
+    <incdepgraph>
+      <node id="2">
+        <label>../MaaDef.h</label>
+        <link refid="MaaDef_8h"/>
+        <childnode refid="3" relation="include">
+        </childnode>
+        <childnode refid="4" relation="include">
+        </childnode>
+      </node>
+      <node id="3">
+        <label>MaaPort.h</label>
+        <link refid="MaaPort_8h"/>
+      </node>
+      <node id="1">
+        <label>include/MaaFramework/Utility/MaaBuffer.h</label>
+        <link refid="MaaBuffer_8h"/>
+        <childnode refid="2" relation="include">
+        </childnode>
+        <childnode refid="3" relation="include">
+        </childnode>
+      </node>
+      <node id="4">
+        <label>stdint.h</label>
+      </node>
+    </incdepgraph>
+    <invincdepgraph>
+      <node id="2">
+        <label>include/MaaFramework/MaaAPI.h</label>
+        <link refid="MaaAPI_8h"/>
+      </node>
+      <node id="1">
+        <label>include/MaaFramework/Utility/MaaBuffer.h</label>
+        <link refid="MaaBuffer_8h"/>
+        <childnode refid="2" relation="include">
+        </childnode>
+      </node>
+    </invincdepgraph>
+      <sectiondef kind="typedef">
+      <memberdef kind="typedef" id="MaaBuffer_8h_1a56cc9baf46b22a99679aef7fbddd0676" prot="public" static="no">
+        <type>void *</type>
+        <definition>typedef void* MaaImageRawData</definition>
+        <argsstring></argsstring>
+        <name>MaaImageRawData</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="include/MaaFramework/Utility/MaaBuffer.h" line="51" column="18" bodyfile="include/MaaFramework/Utility/MaaBuffer.h" bodystart="51" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="typedef" id="MaaBuffer_8h_1a968e001e4bea16b169d95e3e398250c2" prot="public" static="no">
+        <type>uint8_t *</type>
+        <definition>typedef uint8_t* MaaImageEncodedData</definition>
+        <argsstring></argsstring>
+        <name>MaaImageEncodedData</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="include/MaaFramework/Utility/MaaBuffer.h" line="63" column="21" bodyfile="include/MaaFramework/Utility/MaaBuffer.h" bodystart="63" bodyend="-1"/>
+      </memberdef>
+      </sectiondef>
+      <sectiondef kind="func">
+      <memberdef kind="function" id="MaaBuffer_8h_1a805d7ca45fde85e5ea89de0883947a13" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="MaaPort_8h_1a67006334d91d228121dbba7a8bf8fe05" kindref="member">MAA_FRAMEWORK_API</ref> <ref refid="MaaDef_8h_1aed721aa4682b1241bc38d10f8c57a8cb" kindref="member">MaaStringBufferHandle</ref></type>
+        <definition>MAA_FRAMEWORK_API MaaStringBufferHandle MaaCreateStringBuffer</definition>
+        <argsstring>()</argsstring>
+        <name>MaaCreateStringBuffer</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="include/MaaFramework/Utility/MaaBuffer.h" line="22" column="45" declfile="include/MaaFramework/Utility/MaaBuffer.h" declline="22" declcolumn="45"/>
+      </memberdef>
+      <memberdef kind="function" id="MaaBuffer_8h_1a2bb010f07ba8cfb31e8bb87e77058695" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="MaaPort_8h_1a67006334d91d228121dbba7a8bf8fe05" kindref="member">MAA_FRAMEWORK_API</ref> void</type>
+        <definition>MAA_FRAMEWORK_API void MaaDestroyStringBuffer</definition>
+        <argsstring>(MaaStringBufferHandle handle)</argsstring>
+        <name>MaaDestroyStringBuffer</name>
+        <param>
+          <type><ref refid="MaaDef_8h_1aed721aa4682b1241bc38d10f8c57a8cb" kindref="member">MaaStringBufferHandle</ref></type>
+          <declname>handle</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="include/MaaFramework/Utility/MaaBuffer.h" line="23" column="28" declfile="include/MaaFramework/Utility/MaaBuffer.h" declline="23" declcolumn="28"/>
+      </memberdef>
+      <memberdef kind="function" id="MaaBuffer_8h_1a5d9d744f4202f234bf608402a73d64c7" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="MaaPort_8h_1a67006334d91d228121dbba7a8bf8fe05" kindref="member">MAA_FRAMEWORK_API</ref> <ref refid="MaaDef_8h_1a2f7289f2a8e07f48c6261b52a120cdf6" kindref="member">MaaBool</ref></type>
+        <definition>MAA_FRAMEWORK_API MaaBool MaaIsStringEmpty</definition>
+        <argsstring>(MaaStringBufferHandle handle)</argsstring>
+        <name>MaaIsStringEmpty</name>
+        <param>
+          <type><ref refid="MaaDef_8h_1aed721aa4682b1241bc38d10f8c57a8cb" kindref="member">MaaStringBufferHandle</ref></type>
+          <declname>handle</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="include/MaaFramework/Utility/MaaBuffer.h" line="24" column="31" declfile="include/MaaFramework/Utility/MaaBuffer.h" declline="24" declcolumn="31"/>
+      </memberdef>
+      <memberdef kind="function" id="MaaBuffer_8h_1af78eb0068bd66d760882e58451654ae7" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="MaaPort_8h_1a67006334d91d228121dbba7a8bf8fe05" kindref="member">MAA_FRAMEWORK_API</ref> <ref refid="MaaDef_8h_1a2f7289f2a8e07f48c6261b52a120cdf6" kindref="member">MaaBool</ref></type>
+        <definition>MAA_FRAMEWORK_API MaaBool MaaClearString</definition>
+        <argsstring>(MaaStringBufferHandle handle)</argsstring>
+        <name>MaaClearString</name>
+        <param>
+          <type><ref refid="MaaDef_8h_1aed721aa4682b1241bc38d10f8c57a8cb" kindref="member">MaaStringBufferHandle</ref></type>
+          <declname>handle</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="include/MaaFramework/Utility/MaaBuffer.h" line="25" column="31" declfile="include/MaaFramework/Utility/MaaBuffer.h" declline="25" declcolumn="31"/>
+      </memberdef>
+      <memberdef kind="function" id="MaaBuffer_8h_1ad0fc81ea23b22307190312c386636a79" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="MaaPort_8h_1a67006334d91d228121dbba7a8bf8fe05" kindref="member">MAA_FRAMEWORK_API</ref> <ref refid="MaaDef_8h_1a579dacb9b82c4edce80efb25fb79c9f5" kindref="member">MaaStringView</ref></type>
+        <definition>MAA_FRAMEWORK_API MaaStringView MaaGetString</definition>
+        <argsstring>(MaaStringBufferHandle handle)</argsstring>
+        <name>MaaGetString</name>
+        <param>
+          <type><ref refid="MaaDef_8h_1aed721aa4682b1241bc38d10f8c57a8cb" kindref="member">MaaStringBufferHandle</ref></type>
+          <declname>handle</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="include/MaaFramework/Utility/MaaBuffer.h" line="27" column="37" declfile="include/MaaFramework/Utility/MaaBuffer.h" declline="27" declcolumn="37"/>
+      </memberdef>
+      <memberdef kind="function" id="MaaBuffer_8h_1abe2e685b7dc7aaf5cf5fef5aeabc99c0" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="MaaPort_8h_1a67006334d91d228121dbba7a8bf8fe05" kindref="member">MAA_FRAMEWORK_API</ref> <ref refid="MaaDef_8h_1a72a89077c419a0fe586d68bde004d856" kindref="member">MaaSize</ref></type>
+        <definition>MAA_FRAMEWORK_API MaaSize MaaGetStringSize</definition>
+        <argsstring>(MaaStringBufferHandle handle)</argsstring>
+        <name>MaaGetStringSize</name>
+        <param>
+          <type><ref refid="MaaDef_8h_1aed721aa4682b1241bc38d10f8c57a8cb" kindref="member">MaaStringBufferHandle</ref></type>
+          <declname>handle</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="include/MaaFramework/Utility/MaaBuffer.h" line="28" column="31" declfile="include/MaaFramework/Utility/MaaBuffer.h" declline="28" declcolumn="31"/>
+      </memberdef>
+      <memberdef kind="function" id="MaaBuffer_8h_1ad9f15efdc2b1309d1c3f51125b99e00f" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="MaaPort_8h_1a67006334d91d228121dbba7a8bf8fe05" kindref="member">MAA_FRAMEWORK_API</ref> <ref refid="MaaDef_8h_1a2f7289f2a8e07f48c6261b52a120cdf6" kindref="member">MaaBool</ref></type>
+        <definition>MAA_FRAMEWORK_API MaaBool MaaSetString</definition>
+        <argsstring>(MaaStringBufferHandle handle, MaaStringView str)</argsstring>
+        <name>MaaSetString</name>
+        <param>
+          <type><ref refid="MaaDef_8h_1aed721aa4682b1241bc38d10f8c57a8cb" kindref="member">MaaStringBufferHandle</ref></type>
+          <declname>handle</declname>
+        </param>
+        <param>
+          <type><ref refid="MaaDef_8h_1a579dacb9b82c4edce80efb25fb79c9f5" kindref="member">MaaStringView</ref></type>
+          <declname>str</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="include/MaaFramework/Utility/MaaBuffer.h" line="29" column="31" declfile="include/MaaFramework/Utility/MaaBuffer.h" declline="29" declcolumn="31"/>
+      </memberdef>
+      <memberdef kind="function" id="MaaBuffer_8h_1acd560bb0621cd2d389f8f5c48aea678a" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="MaaPort_8h_1a67006334d91d228121dbba7a8bf8fe05" kindref="member">MAA_FRAMEWORK_API</ref> <ref refid="MaaDef_8h_1a2f7289f2a8e07f48c6261b52a120cdf6" kindref="member">MaaBool</ref></type>
+        <definition>MAA_FRAMEWORK_API MaaBool MaaSetStringEx</definition>
+        <argsstring>(MaaStringBufferHandle handle, MaaStringView str, MaaSize size)</argsstring>
+        <name>MaaSetStringEx</name>
+        <param>
+          <type><ref refid="MaaDef_8h_1aed721aa4682b1241bc38d10f8c57a8cb" kindref="member">MaaStringBufferHandle</ref></type>
+          <declname>handle</declname>
+        </param>
+        <param>
+          <type><ref refid="MaaDef_8h_1a579dacb9b82c4edce80efb25fb79c9f5" kindref="member">MaaStringView</ref></type>
+          <declname>str</declname>
+        </param>
+        <param>
+          <type><ref refid="MaaDef_8h_1a72a89077c419a0fe586d68bde004d856" kindref="member">MaaSize</ref></type>
+          <declname>size</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="include/MaaFramework/Utility/MaaBuffer.h" line="31" column="9" declfile="include/MaaFramework/Utility/MaaBuffer.h" declline="31" declcolumn="9"/>
+      </memberdef>
+      <memberdef kind="function" id="MaaBuffer_8h_1ae39e2042edda5b6c153b6347106adb4f" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="MaaPort_8h_1a67006334d91d228121dbba7a8bf8fe05" kindref="member">MAA_FRAMEWORK_API</ref> <ref refid="MaaDef_8h_1a08ee9b819881abe0b2723266aed531d3" kindref="member">MaaStringListBufferHandle</ref></type>
+        <definition>MAA_FRAMEWORK_API MaaStringListBufferHandle MaaCreateStringListBuffer</definition>
+        <argsstring>()</argsstring>
+        <name>MaaCreateStringListBuffer</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="include/MaaFramework/Utility/MaaBuffer.h" line="33" column="49" declfile="include/MaaFramework/Utility/MaaBuffer.h" declline="33" declcolumn="49"/>
+      </memberdef>
+      <memberdef kind="function" id="MaaBuffer_8h_1ac2e2f917002ac3c6efa88b2c9c4719d3" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="MaaPort_8h_1a67006334d91d228121dbba7a8bf8fe05" kindref="member">MAA_FRAMEWORK_API</ref> void</type>
+        <definition>MAA_FRAMEWORK_API void MaaDestroyStringListBuffer</definition>
+        <argsstring>(MaaStringListBufferHandle handle)</argsstring>
+        <name>MaaDestroyStringListBuffer</name>
+        <param>
+          <type><ref refid="MaaDef_8h_1a08ee9b819881abe0b2723266aed531d3" kindref="member">MaaStringListBufferHandle</ref></type>
+          <declname>handle</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="include/MaaFramework/Utility/MaaBuffer.h" line="34" column="28" declfile="include/MaaFramework/Utility/MaaBuffer.h" declline="34" declcolumn="28"/>
+      </memberdef>
+      <memberdef kind="function" id="MaaBuffer_8h_1ae96bf51cf49164e7f5de60e19a79b9ae" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="MaaPort_8h_1a67006334d91d228121dbba7a8bf8fe05" kindref="member">MAA_FRAMEWORK_API</ref> <ref refid="MaaDef_8h_1a2f7289f2a8e07f48c6261b52a120cdf6" kindref="member">MaaBool</ref></type>
+        <definition>MAA_FRAMEWORK_API MaaBool MaaIsStringListEmpty</definition>
+        <argsstring>(MaaStringListBufferHandle handle)</argsstring>
+        <name>MaaIsStringListEmpty</name>
+        <param>
+          <type><ref refid="MaaDef_8h_1a08ee9b819881abe0b2723266aed531d3" kindref="member">MaaStringListBufferHandle</ref></type>
+          <declname>handle</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="include/MaaFramework/Utility/MaaBuffer.h" line="35" column="31" declfile="include/MaaFramework/Utility/MaaBuffer.h" declline="35" declcolumn="31"/>
+      </memberdef>
+      <memberdef kind="function" id="MaaBuffer_8h_1a9d3571391bb81f98ad803cf738861cd0" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="MaaPort_8h_1a67006334d91d228121dbba7a8bf8fe05" kindref="member">MAA_FRAMEWORK_API</ref> <ref refid="MaaDef_8h_1a2f7289f2a8e07f48c6261b52a120cdf6" kindref="member">MaaBool</ref></type>
+        <definition>MAA_FRAMEWORK_API MaaBool MaaClearStringList</definition>
+        <argsstring>(MaaStringListBufferHandle handle)</argsstring>
+        <name>MaaClearStringList</name>
+        <param>
+          <type><ref refid="MaaDef_8h_1a08ee9b819881abe0b2723266aed531d3" kindref="member">MaaStringListBufferHandle</ref></type>
+          <declname>handle</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="include/MaaFramework/Utility/MaaBuffer.h" line="36" column="31" declfile="include/MaaFramework/Utility/MaaBuffer.h" declline="36" declcolumn="31"/>
+      </memberdef>
+      <memberdef kind="function" id="MaaBuffer_8h_1a70f2d87e530b0866e01752459e638393" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="MaaPort_8h_1a67006334d91d228121dbba7a8bf8fe05" kindref="member">MAA_FRAMEWORK_API</ref> <ref refid="MaaDef_8h_1a72a89077c419a0fe586d68bde004d856" kindref="member">MaaSize</ref></type>
+        <definition>MAA_FRAMEWORK_API MaaSize MaaGetStringListSize</definition>
+        <argsstring>(MaaStringListBufferHandle handle)</argsstring>
+        <name>MaaGetStringListSize</name>
+        <param>
+          <type><ref refid="MaaDef_8h_1a08ee9b819881abe0b2723266aed531d3" kindref="member">MaaStringListBufferHandle</ref></type>
+          <declname>handle</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="include/MaaFramework/Utility/MaaBuffer.h" line="37" column="31" declfile="include/MaaFramework/Utility/MaaBuffer.h" declline="37" declcolumn="31"/>
+      </memberdef>
+      <memberdef kind="function" id="MaaBuffer_8h_1afc3f4cc27ef901d0e4bcec45566a40da" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="MaaPort_8h_1a67006334d91d228121dbba7a8bf8fe05" kindref="member">MAA_FRAMEWORK_API</ref> <ref refid="MaaDef_8h_1aed721aa4682b1241bc38d10f8c57a8cb" kindref="member">MaaStringBufferHandle</ref></type>
+        <definition>MAA_FRAMEWORK_API MaaStringBufferHandle MaaGetStringListAt</definition>
+        <argsstring>(MaaStringListBufferHandle handle, MaaSize index)</argsstring>
+        <name>MaaGetStringListAt</name>
+        <param>
+          <type><ref refid="MaaDef_8h_1a08ee9b819881abe0b2723266aed531d3" kindref="member">MaaStringListBufferHandle</ref></type>
+          <declname>handle</declname>
+        </param>
+        <param>
+          <type><ref refid="MaaDef_8h_1a72a89077c419a0fe586d68bde004d856" kindref="member">MaaSize</ref></type>
+          <declname>index</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="include/MaaFramework/Utility/MaaBuffer.h" line="40" column="9" declfile="include/MaaFramework/Utility/MaaBuffer.h" declline="40" declcolumn="9"/>
+      </memberdef>
+      <memberdef kind="function" id="MaaBuffer_8h_1ae33a8d507e126e49b192ba6b903a38f8" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="MaaPort_8h_1a67006334d91d228121dbba7a8bf8fe05" kindref="member">MAA_FRAMEWORK_API</ref> <ref refid="MaaDef_8h_1a2f7289f2a8e07f48c6261b52a120cdf6" kindref="member">MaaBool</ref></type>
+        <definition>MAA_FRAMEWORK_API MaaBool MaaStringListAppend</definition>
+        <argsstring>(MaaStringListBufferHandle handle, MaaStringBufferHandle value)</argsstring>
+        <name>MaaStringListAppend</name>
+        <param>
+          <type><ref refid="MaaDef_8h_1a08ee9b819881abe0b2723266aed531d3" kindref="member">MaaStringListBufferHandle</ref></type>
+          <declname>handle</declname>
+        </param>
+        <param>
+          <type><ref refid="MaaDef_8h_1aed721aa4682b1241bc38d10f8c57a8cb" kindref="member">MaaStringBufferHandle</ref></type>
+          <declname>value</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="include/MaaFramework/Utility/MaaBuffer.h" line="43" column="9" declfile="include/MaaFramework/Utility/MaaBuffer.h" declline="43" declcolumn="9"/>
+      </memberdef>
+      <memberdef kind="function" id="MaaBuffer_8h_1ac88e895d40d10a4c96a7241208c3f8f9" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="MaaPort_8h_1a67006334d91d228121dbba7a8bf8fe05" kindref="member">MAA_FRAMEWORK_API</ref> <ref refid="MaaDef_8h_1a2f7289f2a8e07f48c6261b52a120cdf6" kindref="member">MaaBool</ref></type>
+        <definition>MAA_FRAMEWORK_API MaaBool MaaStringListRemove</definition>
+        <argsstring>(MaaStringListBufferHandle handle, MaaSize index)</argsstring>
+        <name>MaaStringListRemove</name>
+        <param>
+          <type><ref refid="MaaDef_8h_1a08ee9b819881abe0b2723266aed531d3" kindref="member">MaaStringListBufferHandle</ref></type>
+          <declname>handle</declname>
+        </param>
+        <param>
+          <type><ref refid="MaaDef_8h_1a72a89077c419a0fe586d68bde004d856" kindref="member">MaaSize</ref></type>
+          <declname>index</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="include/MaaFramework/Utility/MaaBuffer.h" line="44" column="31" declfile="include/MaaFramework/Utility/MaaBuffer.h" declline="44" declcolumn="31"/>
+      </memberdef>
+      <memberdef kind="function" id="MaaBuffer_8h_1aca508f3881d1e722be1482c989100a83" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="MaaPort_8h_1a67006334d91d228121dbba7a8bf8fe05" kindref="member">MAA_FRAMEWORK_API</ref> <ref refid="MaaDef_8h_1a30c4754980d5dfa504ce84d86668f031" kindref="member">MaaImageBufferHandle</ref></type>
+        <definition>MAA_FRAMEWORK_API MaaImageBufferHandle MaaCreateImageBuffer</definition>
+        <argsstring>()</argsstring>
+        <name>MaaCreateImageBuffer</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="include/MaaFramework/Utility/MaaBuffer.h" line="46" column="44" declfile="include/MaaFramework/Utility/MaaBuffer.h" declline="46" declcolumn="44"/>
+      </memberdef>
+      <memberdef kind="function" id="MaaBuffer_8h_1aec71c168f8b856d7c11df9a7ae95276d" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="MaaPort_8h_1a67006334d91d228121dbba7a8bf8fe05" kindref="member">MAA_FRAMEWORK_API</ref> void</type>
+        <definition>MAA_FRAMEWORK_API void MaaDestroyImageBuffer</definition>
+        <argsstring>(MaaImageBufferHandle handle)</argsstring>
+        <name>MaaDestroyImageBuffer</name>
+        <param>
+          <type><ref refid="MaaDef_8h_1a30c4754980d5dfa504ce84d86668f031" kindref="member">MaaImageBufferHandle</ref></type>
+          <declname>handle</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="include/MaaFramework/Utility/MaaBuffer.h" line="47" column="28" declfile="include/MaaFramework/Utility/MaaBuffer.h" declline="47" declcolumn="28"/>
+      </memberdef>
+      <memberdef kind="function" id="MaaBuffer_8h_1ab65fcd755496ed89f36483fe0ff6071c" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="MaaPort_8h_1a67006334d91d228121dbba7a8bf8fe05" kindref="member">MAA_FRAMEWORK_API</ref> <ref refid="MaaDef_8h_1a2f7289f2a8e07f48c6261b52a120cdf6" kindref="member">MaaBool</ref></type>
+        <definition>MAA_FRAMEWORK_API MaaBool MaaIsImageEmpty</definition>
+        <argsstring>(MaaImageBufferHandle handle)</argsstring>
+        <name>MaaIsImageEmpty</name>
+        <param>
+          <type><ref refid="MaaDef_8h_1a30c4754980d5dfa504ce84d86668f031" kindref="member">MaaImageBufferHandle</ref></type>
+          <declname>handle</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="include/MaaFramework/Utility/MaaBuffer.h" line="48" column="31" declfile="include/MaaFramework/Utility/MaaBuffer.h" declline="48" declcolumn="31"/>
+      </memberdef>
+      <memberdef kind="function" id="MaaBuffer_8h_1acc45ca4d5b173a26f84fdab5447cd2ed" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="MaaPort_8h_1a67006334d91d228121dbba7a8bf8fe05" kindref="member">MAA_FRAMEWORK_API</ref> <ref refid="MaaDef_8h_1a2f7289f2a8e07f48c6261b52a120cdf6" kindref="member">MaaBool</ref></type>
+        <definition>MAA_FRAMEWORK_API MaaBool MaaClearImage</definition>
+        <argsstring>(MaaImageBufferHandle handle)</argsstring>
+        <name>MaaClearImage</name>
+        <param>
+          <type><ref refid="MaaDef_8h_1a30c4754980d5dfa504ce84d86668f031" kindref="member">MaaImageBufferHandle</ref></type>
+          <declname>handle</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="include/MaaFramework/Utility/MaaBuffer.h" line="49" column="31" declfile="include/MaaFramework/Utility/MaaBuffer.h" declline="49" declcolumn="31"/>
+      </memberdef>
+      <memberdef kind="function" id="MaaBuffer_8h_1afc7019628866cc3ab935166c9d95312b" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="MaaPort_8h_1a67006334d91d228121dbba7a8bf8fe05" kindref="member">MAA_FRAMEWORK_API</ref> <ref refid="MaaBuffer_8h_1a56cc9baf46b22a99679aef7fbddd0676" kindref="member">MaaImageRawData</ref></type>
+        <definition>MAA_FRAMEWORK_API MaaImageRawData MaaGetImageRawData</definition>
+        <argsstring>(MaaImageBufferHandle handle)</argsstring>
+        <name>MaaGetImageRawData</name>
+        <param>
+          <type><ref refid="MaaDef_8h_1a30c4754980d5dfa504ce84d86668f031" kindref="member">MaaImageBufferHandle</ref></type>
+          <declname>handle</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="include/MaaFramework/Utility/MaaBuffer.h" line="52" column="39" declfile="include/MaaFramework/Utility/MaaBuffer.h" declline="52" declcolumn="39"/>
+      </memberdef>
+      <memberdef kind="function" id="MaaBuffer_8h_1a6985a681c97ff9ececfedc86363d6a8d" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="MaaPort_8h_1a67006334d91d228121dbba7a8bf8fe05" kindref="member">MAA_FRAMEWORK_API</ref> int32_t</type>
+        <definition>MAA_FRAMEWORK_API int32_t MaaGetImageWidth</definition>
+        <argsstring>(MaaImageBufferHandle handle)</argsstring>
+        <name>MaaGetImageWidth</name>
+        <param>
+          <type><ref refid="MaaDef_8h_1a30c4754980d5dfa504ce84d86668f031" kindref="member">MaaImageBufferHandle</ref></type>
+          <declname>handle</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="include/MaaFramework/Utility/MaaBuffer.h" line="53" column="31" declfile="include/MaaFramework/Utility/MaaBuffer.h" declline="53" declcolumn="31"/>
+      </memberdef>
+      <memberdef kind="function" id="MaaBuffer_8h_1ab38401bc01e620881f44f47011131168" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="MaaPort_8h_1a67006334d91d228121dbba7a8bf8fe05" kindref="member">MAA_FRAMEWORK_API</ref> int32_t</type>
+        <definition>MAA_FRAMEWORK_API int32_t MaaGetImageHeight</definition>
+        <argsstring>(MaaImageBufferHandle handle)</argsstring>
+        <name>MaaGetImageHeight</name>
+        <param>
+          <type><ref refid="MaaDef_8h_1a30c4754980d5dfa504ce84d86668f031" kindref="member">MaaImageBufferHandle</ref></type>
+          <declname>handle</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="include/MaaFramework/Utility/MaaBuffer.h" line="54" column="31" declfile="include/MaaFramework/Utility/MaaBuffer.h" declline="54" declcolumn="31"/>
+      </memberdef>
+      <memberdef kind="function" id="MaaBuffer_8h_1ab12c238832734d16e1f6b681aaf6988e" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="MaaPort_8h_1a67006334d91d228121dbba7a8bf8fe05" kindref="member">MAA_FRAMEWORK_API</ref> int32_t</type>
+        <definition>MAA_FRAMEWORK_API int32_t MaaGetImageType</definition>
+        <argsstring>(MaaImageBufferHandle handle)</argsstring>
+        <name>MaaGetImageType</name>
+        <param>
+          <type><ref refid="MaaDef_8h_1a30c4754980d5dfa504ce84d86668f031" kindref="member">MaaImageBufferHandle</ref></type>
+          <declname>handle</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="include/MaaFramework/Utility/MaaBuffer.h" line="55" column="31" declfile="include/MaaFramework/Utility/MaaBuffer.h" declline="55" declcolumn="31"/>
+      </memberdef>
+      <memberdef kind="function" id="MaaBuffer_8h_1ab8ce21d84ad3d927a339de4f032f11c9" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="MaaPort_8h_1a67006334d91d228121dbba7a8bf8fe05" kindref="member">MAA_FRAMEWORK_API</ref> <ref refid="MaaDef_8h_1a2f7289f2a8e07f48c6261b52a120cdf6" kindref="member">MaaBool</ref></type>
+        <definition>MAA_FRAMEWORK_API MaaBool MaaSetImageRawData</definition>
+        <argsstring>(MaaImageBufferHandle handle, MaaImageRawData data, int32_t width, int32_t height, int32_t type)</argsstring>
+        <name>MaaSetImageRawData</name>
+        <param>
+          <type><ref refid="MaaDef_8h_1a30c4754980d5dfa504ce84d86668f031" kindref="member">MaaImageBufferHandle</ref></type>
+          <declname>handle</declname>
+        </param>
+        <param>
+          <type><ref refid="MaaBuffer_8h_1a56cc9baf46b22a99679aef7fbddd0676" kindref="member">MaaImageRawData</ref></type>
+          <declname>data</declname>
+        </param>
+        <param>
+          <type>int32_t</type>
+          <declname>width</declname>
+        </param>
+        <param>
+          <type>int32_t</type>
+          <declname>height</declname>
+        </param>
+        <param>
+          <type>int32_t</type>
+          <declname>type</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="include/MaaFramework/Utility/MaaBuffer.h" line="56" column="31" declfile="include/MaaFramework/Utility/MaaBuffer.h" declline="56" declcolumn="31"/>
+      </memberdef>
+      <memberdef kind="function" id="MaaBuffer_8h_1a4f842ee3467c2eebca3f8e29cc8d375d" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="MaaPort_8h_1a67006334d91d228121dbba7a8bf8fe05" kindref="member">MAA_FRAMEWORK_API</ref> <ref refid="MaaBuffer_8h_1a968e001e4bea16b169d95e3e398250c2" kindref="member">MaaImageEncodedData</ref></type>
+        <definition>MAA_FRAMEWORK_API MaaImageEncodedData MaaGetImageEncoded</definition>
+        <argsstring>(MaaImageBufferHandle handle)</argsstring>
+        <name>MaaGetImageEncoded</name>
+        <param>
+          <type><ref refid="MaaDef_8h_1a30c4754980d5dfa504ce84d86668f031" kindref="member">MaaImageBufferHandle</ref></type>
+          <declname>handle</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="include/MaaFramework/Utility/MaaBuffer.h" line="64" column="43" declfile="include/MaaFramework/Utility/MaaBuffer.h" declline="64" declcolumn="43"/>
+      </memberdef>
+      <memberdef kind="function" id="MaaBuffer_8h_1a7294cdb8c666a4ff51ce6dc94fa4eb9e" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="MaaPort_8h_1a67006334d91d228121dbba7a8bf8fe05" kindref="member">MAA_FRAMEWORK_API</ref> <ref refid="MaaDef_8h_1a72a89077c419a0fe586d68bde004d856" kindref="member">MaaSize</ref></type>
+        <definition>MAA_FRAMEWORK_API MaaSize MaaGetImageEncodedSize</definition>
+        <argsstring>(MaaImageBufferHandle handle)</argsstring>
+        <name>MaaGetImageEncodedSize</name>
+        <param>
+          <type><ref refid="MaaDef_8h_1a30c4754980d5dfa504ce84d86668f031" kindref="member">MaaImageBufferHandle</ref></type>
+          <declname>handle</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="include/MaaFramework/Utility/MaaBuffer.h" line="65" column="31" declfile="include/MaaFramework/Utility/MaaBuffer.h" declline="65" declcolumn="31"/>
+      </memberdef>
+      <memberdef kind="function" id="MaaBuffer_8h_1a571d9597c48410cc7b54a8134192dccc" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="MaaPort_8h_1a67006334d91d228121dbba7a8bf8fe05" kindref="member">MAA_FRAMEWORK_API</ref> <ref refid="MaaDef_8h_1a2f7289f2a8e07f48c6261b52a120cdf6" kindref="member">MaaBool</ref></type>
+        <definition>MAA_FRAMEWORK_API MaaBool MaaSetImageEncoded</definition>
+        <argsstring>(MaaImageBufferHandle handle, MaaImageEncodedData data, MaaSize size)</argsstring>
+        <name>MaaSetImageEncoded</name>
+        <param>
+          <type><ref refid="MaaDef_8h_1a30c4754980d5dfa504ce84d86668f031" kindref="member">MaaImageBufferHandle</ref></type>
+          <declname>handle</declname>
+        </param>
+        <param>
+          <type><ref refid="MaaBuffer_8h_1a968e001e4bea16b169d95e3e398250c2" kindref="member">MaaImageEncodedData</ref></type>
+          <declname>data</declname>
+        </param>
+        <param>
+          <type><ref refid="MaaDef_8h_1a72a89077c419a0fe586d68bde004d856" kindref="member">MaaSize</ref></type>
+          <declname>size</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="include/MaaFramework/Utility/MaaBuffer.h" line="67" column="9" declfile="include/MaaFramework/Utility/MaaBuffer.h" declline="67" declcolumn="9"/>
+      </memberdef>
+      <memberdef kind="function" id="MaaBuffer_8h_1a8dd6c1ede18e3d0553d88c8f053a14f2" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="MaaPort_8h_1a67006334d91d228121dbba7a8bf8fe05" kindref="member">MAA_FRAMEWORK_API</ref> <ref refid="MaaDef_8h_1afbce60b00dcf945dddefe5eeeaceb4b1" kindref="member">MaaImageListBufferHandle</ref></type>
+        <definition>MAA_FRAMEWORK_API MaaImageListBufferHandle MaaCreateImageListBuffer</definition>
+        <argsstring>()</argsstring>
+        <name>MaaCreateImageListBuffer</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="include/MaaFramework/Utility/MaaBuffer.h" line="69" column="48" declfile="include/MaaFramework/Utility/MaaBuffer.h" declline="69" declcolumn="48"/>
+      </memberdef>
+      <memberdef kind="function" id="MaaBuffer_8h_1aaf0dbfa4cc1b6014d9de903806aa29b9" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="MaaPort_8h_1a67006334d91d228121dbba7a8bf8fe05" kindref="member">MAA_FRAMEWORK_API</ref> void</type>
+        <definition>MAA_FRAMEWORK_API void MaaDestroyImageListBuffer</definition>
+        <argsstring>(MaaImageListBufferHandle handle)</argsstring>
+        <name>MaaDestroyImageListBuffer</name>
+        <param>
+          <type><ref refid="MaaDef_8h_1afbce60b00dcf945dddefe5eeeaceb4b1" kindref="member">MaaImageListBufferHandle</ref></type>
+          <declname>handle</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="include/MaaFramework/Utility/MaaBuffer.h" line="70" column="28" declfile="include/MaaFramework/Utility/MaaBuffer.h" declline="70" declcolumn="28"/>
+      </memberdef>
+      <memberdef kind="function" id="MaaBuffer_8h_1a042962adaf2c4d55a3a73b44e9da5540" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="MaaPort_8h_1a67006334d91d228121dbba7a8bf8fe05" kindref="member">MAA_FRAMEWORK_API</ref> <ref refid="MaaDef_8h_1a2f7289f2a8e07f48c6261b52a120cdf6" kindref="member">MaaBool</ref></type>
+        <definition>MAA_FRAMEWORK_API MaaBool MaaIsImageListEmpty</definition>
+        <argsstring>(MaaImageListBufferHandle handle)</argsstring>
+        <name>MaaIsImageListEmpty</name>
+        <param>
+          <type><ref refid="MaaDef_8h_1afbce60b00dcf945dddefe5eeeaceb4b1" kindref="member">MaaImageListBufferHandle</ref></type>
+          <declname>handle</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="include/MaaFramework/Utility/MaaBuffer.h" line="71" column="31" declfile="include/MaaFramework/Utility/MaaBuffer.h" declline="71" declcolumn="31"/>
+      </memberdef>
+      <memberdef kind="function" id="MaaBuffer_8h_1a948cfb59dabecb658053ae6addb5b282" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="MaaPort_8h_1a67006334d91d228121dbba7a8bf8fe05" kindref="member">MAA_FRAMEWORK_API</ref> <ref refid="MaaDef_8h_1a2f7289f2a8e07f48c6261b52a120cdf6" kindref="member">MaaBool</ref></type>
+        <definition>MAA_FRAMEWORK_API MaaBool MaaClearImageList</definition>
+        <argsstring>(MaaImageListBufferHandle handle)</argsstring>
+        <name>MaaClearImageList</name>
+        <param>
+          <type><ref refid="MaaDef_8h_1afbce60b00dcf945dddefe5eeeaceb4b1" kindref="member">MaaImageListBufferHandle</ref></type>
+          <declname>handle</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="include/MaaFramework/Utility/MaaBuffer.h" line="72" column="31" declfile="include/MaaFramework/Utility/MaaBuffer.h" declline="72" declcolumn="31"/>
+      </memberdef>
+      <memberdef kind="function" id="MaaBuffer_8h_1a38aacaa6ec79c26dccb9a8492ffcafa4" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="MaaPort_8h_1a67006334d91d228121dbba7a8bf8fe05" kindref="member">MAA_FRAMEWORK_API</ref> <ref refid="MaaDef_8h_1a72a89077c419a0fe586d68bde004d856" kindref="member">MaaSize</ref></type>
+        <definition>MAA_FRAMEWORK_API MaaSize MaaGetImageListSize</definition>
+        <argsstring>(MaaImageListBufferHandle handle)</argsstring>
+        <name>MaaGetImageListSize</name>
+        <param>
+          <type><ref refid="MaaDef_8h_1afbce60b00dcf945dddefe5eeeaceb4b1" kindref="member">MaaImageListBufferHandle</ref></type>
+          <declname>handle</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="include/MaaFramework/Utility/MaaBuffer.h" line="73" column="31" declfile="include/MaaFramework/Utility/MaaBuffer.h" declline="73" declcolumn="31"/>
+      </memberdef>
+      <memberdef kind="function" id="MaaBuffer_8h_1a65f8ebf3bb78d08a7d8517e13ef6ae84" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="MaaPort_8h_1a67006334d91d228121dbba7a8bf8fe05" kindref="member">MAA_FRAMEWORK_API</ref> <ref refid="MaaDef_8h_1a30c4754980d5dfa504ce84d86668f031" kindref="member">MaaImageBufferHandle</ref></type>
+        <definition>MAA_FRAMEWORK_API MaaImageBufferHandle MaaGetImageListAt</definition>
+        <argsstring>(MaaImageListBufferHandle handle, MaaSize index)</argsstring>
+        <name>MaaGetImageListAt</name>
+        <param>
+          <type><ref refid="MaaDef_8h_1afbce60b00dcf945dddefe5eeeaceb4b1" kindref="member">MaaImageListBufferHandle</ref></type>
+          <declname>handle</declname>
+        </param>
+        <param>
+          <type><ref refid="MaaDef_8h_1a72a89077c419a0fe586d68bde004d856" kindref="member">MaaSize</ref></type>
+          <declname>index</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="include/MaaFramework/Utility/MaaBuffer.h" line="76" column="9" declfile="include/MaaFramework/Utility/MaaBuffer.h" declline="76" declcolumn="9"/>
+      </memberdef>
+      <memberdef kind="function" id="MaaBuffer_8h_1af53380153bcc0f38e00a2900f6357a25" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="MaaPort_8h_1a67006334d91d228121dbba7a8bf8fe05" kindref="member">MAA_FRAMEWORK_API</ref> <ref refid="MaaDef_8h_1a2f7289f2a8e07f48c6261b52a120cdf6" kindref="member">MaaBool</ref></type>
+        <definition>MAA_FRAMEWORK_API MaaBool MaaImageListAppend</definition>
+        <argsstring>(MaaImageListBufferHandle handle, MaaImageBufferHandle value)</argsstring>
+        <name>MaaImageListAppend</name>
+        <param>
+          <type><ref refid="MaaDef_8h_1afbce60b00dcf945dddefe5eeeaceb4b1" kindref="member">MaaImageListBufferHandle</ref></type>
+          <declname>handle</declname>
+        </param>
+        <param>
+          <type><ref refid="MaaDef_8h_1a30c4754980d5dfa504ce84d86668f031" kindref="member">MaaImageBufferHandle</ref></type>
+          <declname>value</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="include/MaaFramework/Utility/MaaBuffer.h" line="79" column="9" declfile="include/MaaFramework/Utility/MaaBuffer.h" declline="79" declcolumn="9"/>
+      </memberdef>
+      <memberdef kind="function" id="MaaBuffer_8h_1ab6baa3ecfbd0ca97f0b34b117630290e" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="MaaPort_8h_1a67006334d91d228121dbba7a8bf8fe05" kindref="member">MAA_FRAMEWORK_API</ref> <ref refid="MaaDef_8h_1a2f7289f2a8e07f48c6261b52a120cdf6" kindref="member">MaaBool</ref></type>
+        <definition>MAA_FRAMEWORK_API MaaBool MaaImageListRemove</definition>
+        <argsstring>(MaaImageListBufferHandle handle, MaaSize index)</argsstring>
+        <name>MaaImageListRemove</name>
+        <param>
+          <type><ref refid="MaaDef_8h_1afbce60b00dcf945dddefe5eeeaceb4b1" kindref="member">MaaImageListBufferHandle</ref></type>
+          <declname>handle</declname>
+        </param>
+        <param>
+          <type><ref refid="MaaDef_8h_1a72a89077c419a0fe586d68bde004d856" kindref="member">MaaSize</ref></type>
+          <declname>index</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="include/MaaFramework/Utility/MaaBuffer.h" line="80" column="31" declfile="include/MaaFramework/Utility/MaaBuffer.h" declline="80" declcolumn="31"/>
+      </memberdef>
+      <memberdef kind="function" id="MaaBuffer_8h_1afd97cd9fd12b6b65292bc687d53725ef" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="MaaPort_8h_1a67006334d91d228121dbba7a8bf8fe05" kindref="member">MAA_FRAMEWORK_API</ref> <ref refid="MaaDef_8h_1a00152c7eaccf612e460ea6872455f9cd" kindref="member">MaaRectHandle</ref></type>
+        <definition>MAA_FRAMEWORK_API MaaRectHandle MaaCreateRectBuffer</definition>
+        <argsstring>()</argsstring>
+        <name>MaaCreateRectBuffer</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="include/MaaFramework/Utility/MaaBuffer.h" line="82" column="37" declfile="include/MaaFramework/Utility/MaaBuffer.h" declline="82" declcolumn="37"/>
+      </memberdef>
+      <memberdef kind="function" id="MaaBuffer_8h_1aa1a83c71a30afd56deeeaf79bfe1b9e9" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="MaaPort_8h_1a67006334d91d228121dbba7a8bf8fe05" kindref="member">MAA_FRAMEWORK_API</ref> void</type>
+        <definition>MAA_FRAMEWORK_API void MaaDestroyRectBuffer</definition>
+        <argsstring>(MaaRectHandle handle)</argsstring>
+        <name>MaaDestroyRectBuffer</name>
+        <param>
+          <type><ref refid="MaaDef_8h_1a00152c7eaccf612e460ea6872455f9cd" kindref="member">MaaRectHandle</ref></type>
+          <declname>handle</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="include/MaaFramework/Utility/MaaBuffer.h" line="83" column="28" declfile="include/MaaFramework/Utility/MaaBuffer.h" declline="83" declcolumn="28"/>
+      </memberdef>
+      <memberdef kind="function" id="MaaBuffer_8h_1a47513e0ab2bc7fb19c8373ecae77b3cf" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="MaaPort_8h_1a67006334d91d228121dbba7a8bf8fe05" kindref="member">MAA_FRAMEWORK_API</ref> int32_t</type>
+        <definition>MAA_FRAMEWORK_API int32_t MaaGetRectX</definition>
+        <argsstring>(MaaRectHandle handle)</argsstring>
+        <name>MaaGetRectX</name>
+        <param>
+          <type><ref refid="MaaDef_8h_1a00152c7eaccf612e460ea6872455f9cd" kindref="member">MaaRectHandle</ref></type>
+          <declname>handle</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="include/MaaFramework/Utility/MaaBuffer.h" line="84" column="31" declfile="include/MaaFramework/Utility/MaaBuffer.h" declline="84" declcolumn="31"/>
+      </memberdef>
+      <memberdef kind="function" id="MaaBuffer_8h_1a1cbdf8861641f9c7d02388c893945bba" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="MaaPort_8h_1a67006334d91d228121dbba7a8bf8fe05" kindref="member">MAA_FRAMEWORK_API</ref> int32_t</type>
+        <definition>MAA_FRAMEWORK_API int32_t MaaGetRectY</definition>
+        <argsstring>(MaaRectHandle handle)</argsstring>
+        <name>MaaGetRectY</name>
+        <param>
+          <type><ref refid="MaaDef_8h_1a00152c7eaccf612e460ea6872455f9cd" kindref="member">MaaRectHandle</ref></type>
+          <declname>handle</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="include/MaaFramework/Utility/MaaBuffer.h" line="85" column="31" declfile="include/MaaFramework/Utility/MaaBuffer.h" declline="85" declcolumn="31"/>
+      </memberdef>
+      <memberdef kind="function" id="MaaBuffer_8h_1a369030e42c2950f0d681b81b372d9237" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="MaaPort_8h_1a67006334d91d228121dbba7a8bf8fe05" kindref="member">MAA_FRAMEWORK_API</ref> int32_t</type>
+        <definition>MAA_FRAMEWORK_API int32_t MaaGetRectW</definition>
+        <argsstring>(MaaRectHandle handle)</argsstring>
+        <name>MaaGetRectW</name>
+        <param>
+          <type><ref refid="MaaDef_8h_1a00152c7eaccf612e460ea6872455f9cd" kindref="member">MaaRectHandle</ref></type>
+          <declname>handle</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="include/MaaFramework/Utility/MaaBuffer.h" line="86" column="31" declfile="include/MaaFramework/Utility/MaaBuffer.h" declline="86" declcolumn="31"/>
+      </memberdef>
+      <memberdef kind="function" id="MaaBuffer_8h_1ab9f4e832452bd1fd0509a9e707658954" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="MaaPort_8h_1a67006334d91d228121dbba7a8bf8fe05" kindref="member">MAA_FRAMEWORK_API</ref> int32_t</type>
+        <definition>MAA_FRAMEWORK_API int32_t MaaGetRectH</definition>
+        <argsstring>(MaaRectHandle handle)</argsstring>
+        <name>MaaGetRectH</name>
+        <param>
+          <type><ref refid="MaaDef_8h_1a00152c7eaccf612e460ea6872455f9cd" kindref="member">MaaRectHandle</ref></type>
+          <declname>handle</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="include/MaaFramework/Utility/MaaBuffer.h" line="87" column="31" declfile="include/MaaFramework/Utility/MaaBuffer.h" declline="87" declcolumn="31"/>
+      </memberdef>
+      <memberdef kind="function" id="MaaBuffer_8h_1a3cf133bf90ce54004460548eddea36b9" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="MaaPort_8h_1a67006334d91d228121dbba7a8bf8fe05" kindref="member">MAA_FRAMEWORK_API</ref> <ref refid="MaaDef_8h_1a2f7289f2a8e07f48c6261b52a120cdf6" kindref="member">MaaBool</ref></type>
+        <definition>MAA_FRAMEWORK_API MaaBool MaaSetRect</definition>
+        <argsstring>(MaaRectHandle handle, int32_t x, int32_t y, int32_t w, int32_t h)</argsstring>
+        <name>MaaSetRect</name>
+        <param>
+          <type><ref refid="MaaDef_8h_1a00152c7eaccf612e460ea6872455f9cd" kindref="member">MaaRectHandle</ref></type>
+          <declname>handle</declname>
+        </param>
+        <param>
+          <type>int32_t</type>
+          <declname>x</declname>
+        </param>
+        <param>
+          <type>int32_t</type>
+          <declname>y</declname>
+        </param>
+        <param>
+          <type>int32_t</type>
+          <declname>w</declname>
+        </param>
+        <param>
+          <type>int32_t</type>
+          <declname>h</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="include/MaaFramework/Utility/MaaBuffer.h" line="90" column="9" declfile="include/MaaFramework/Utility/MaaBuffer.h" declline="90" declcolumn="9"/>
+      </memberdef>
+      <memberdef kind="function" id="MaaBuffer_8h_1ad42b779e81d2c9b779e23cdc629bf248" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="MaaPort_8h_1a67006334d91d228121dbba7a8bf8fe05" kindref="member">MAA_FRAMEWORK_API</ref> <ref refid="MaaDef_8h_1a2f7289f2a8e07f48c6261b52a120cdf6" kindref="member">MaaBool</ref></type>
+        <definition>MAA_FRAMEWORK_API MaaBool MaaSetRectX</definition>
+        <argsstring>(MaaRectHandle handle, int32_t value)</argsstring>
+        <name>MaaSetRectX</name>
+        <param>
+          <type><ref refid="MaaDef_8h_1a00152c7eaccf612e460ea6872455f9cd" kindref="member">MaaRectHandle</ref></type>
+          <declname>handle</declname>
+        </param>
+        <param>
+          <type>int32_t</type>
+          <declname>value</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="include/MaaFramework/Utility/MaaBuffer.h" line="91" column="31" declfile="include/MaaFramework/Utility/MaaBuffer.h" declline="91" declcolumn="31"/>
+      </memberdef>
+      <memberdef kind="function" id="MaaBuffer_8h_1a85272fa79de3abbebc9fd17070bde81c" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="MaaPort_8h_1a67006334d91d228121dbba7a8bf8fe05" kindref="member">MAA_FRAMEWORK_API</ref> <ref refid="MaaDef_8h_1a2f7289f2a8e07f48c6261b52a120cdf6" kindref="member">MaaBool</ref></type>
+        <definition>MAA_FRAMEWORK_API MaaBool MaaSetRectY</definition>
+        <argsstring>(MaaRectHandle handle, int32_t value)</argsstring>
+        <name>MaaSetRectY</name>
+        <param>
+          <type><ref refid="MaaDef_8h_1a00152c7eaccf612e460ea6872455f9cd" kindref="member">MaaRectHandle</ref></type>
+          <declname>handle</declname>
+        </param>
+        <param>
+          <type>int32_t</type>
+          <declname>value</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="include/MaaFramework/Utility/MaaBuffer.h" line="92" column="31" declfile="include/MaaFramework/Utility/MaaBuffer.h" declline="92" declcolumn="31"/>
+      </memberdef>
+      <memberdef kind="function" id="MaaBuffer_8h_1a3d88d27404306464da6b3111f3cd1a08" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="MaaPort_8h_1a67006334d91d228121dbba7a8bf8fe05" kindref="member">MAA_FRAMEWORK_API</ref> <ref refid="MaaDef_8h_1a2f7289f2a8e07f48c6261b52a120cdf6" kindref="member">MaaBool</ref></type>
+        <definition>MAA_FRAMEWORK_API MaaBool MaaSetRectW</definition>
+        <argsstring>(MaaRectHandle handle, int32_t value)</argsstring>
+        <name>MaaSetRectW</name>
+        <param>
+          <type><ref refid="MaaDef_8h_1a00152c7eaccf612e460ea6872455f9cd" kindref="member">MaaRectHandle</ref></type>
+          <declname>handle</declname>
+        </param>
+        <param>
+          <type>int32_t</type>
+          <declname>value</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="include/MaaFramework/Utility/MaaBuffer.h" line="93" column="31" declfile="include/MaaFramework/Utility/MaaBuffer.h" declline="93" declcolumn="31"/>
+      </memberdef>
+      <memberdef kind="function" id="MaaBuffer_8h_1a3f5ebedcd98bcff2f7853f669c25bc76" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="MaaPort_8h_1a67006334d91d228121dbba7a8bf8fe05" kindref="member">MAA_FRAMEWORK_API</ref> <ref refid="MaaDef_8h_1a2f7289f2a8e07f48c6261b52a120cdf6" kindref="member">MaaBool</ref></type>
+        <definition>MAA_FRAMEWORK_API MaaBool MaaSetRectH</definition>
+        <argsstring>(MaaRectHandle handle, int32_t value)</argsstring>
+        <name>MaaSetRectH</name>
+        <param>
+          <type><ref refid="MaaDef_8h_1a00152c7eaccf612e460ea6872455f9cd" kindref="member">MaaRectHandle</ref></type>
+          <declname>handle</declname>
+        </param>
+        <param>
+          <type>int32_t</type>
+          <declname>value</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="include/MaaFramework/Utility/MaaBuffer.h" line="94" column="31" declfile="include/MaaFramework/Utility/MaaBuffer.h" declline="94" declcolumn="31"/>
+      </memberdef>
+      </sectiondef>
+    <briefdescription>
+<para>Provide helpers funtions to manage, read and edit buffers. </para>
+    </briefdescription>
+    <detaileddescription>
+<para><simplesect kind="author"><para></para>
+</simplesect>
+<simplesect kind="copyright"><para>Copyright (c) 2024 </para>
+</simplesect>
+</para>
+    </detaileddescription>
+    <location file="include/MaaFramework/Utility/MaaBuffer.h"/>
+  </compounddef>
+</doxygen>
