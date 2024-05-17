@@ -2,7 +2,6 @@ from pathlib import Path
 from typing import Tuple
 import sys
 import asyncio
-import platform
 
 if len(sys.argv) < 2:
     print("Usage: python binding_test.py <install_dir>")
@@ -74,7 +73,7 @@ my_act = MyAction()
 
 
 async def main():
-    version = Library.open(install_dir / ("bin" if platform.system() == "Windows" else "lib"))
+    version = Library.open(install_dir / "bin")
     print(f"MaaFw Version: {version}")
 
     Toolkit.init_option(install_dir / "bin")

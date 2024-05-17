@@ -80,11 +80,7 @@ if(BUILD_DLOPEN_TESTING)
 endif()
 
 if(USE_MAADEPS)
-    if(WIN32)
-        maadeps_install(bin)
-    else()
-        maadeps_install(lib)
-    endif()
+    maadeps_install(bin)
 endif()
 
 install(

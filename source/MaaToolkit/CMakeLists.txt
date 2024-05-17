@@ -21,7 +21,7 @@ install(
     TARGETS MaaToolkit
     EXPORT MaaFrameworkTargets
     RUNTIME DESTINATION bin
-    LIBRARY DESTINATION lib
+    LIBRARY DESTINATION bin
     ARCHIVE DESTINATION lib)
 install(DIRECTORY "${MAA_PUBLIC_INC}/MaaToolkit" DESTINATION "include")
 

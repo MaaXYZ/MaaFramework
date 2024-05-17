@@ -11,7 +11,7 @@ target_include_directories(
 target_compile_definitions(MaaFramework PRIVATE MAA_FRAMEWORK_EXPORTS)
 
 target_link_libraries(MaaFramework PRIVATE MaaUtils LibraryHolder ${OpenCV_LIBS} fastdeploy_ppocr
-                                           ONNXRuntime::ONNXRuntime HeaderOnlyLibraries)
+    ONNXRuntime::ONNXRuntime HeaderOnlyLibraries)
 
 # clang 15之后有ranges if (CMAKE_CXX_COMPILER_ID MATCHES ".*Clang") find_package(range-v3 REQUIRED)
 # target_link_libraries(MaaFramework range-v3::range-v3) endif ()
@@ -37,7 +37,7 @@ install(
     TARGETS MaaFramework
     EXPORT MaaFrameworkTargets
     RUNTIME DESTINATION bin
-    LIBRARY DESTINATION lib
+    LIBRARY DESTINATION bin
     ARCHIVE DESTINATION lib)
 install(DIRECTORY "${MAA_PUBLIC_INC}/MaaFramework" DESTINATION "include")
 
