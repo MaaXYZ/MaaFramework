@@ -17,7 +17,8 @@ void init_library_dir(HINSTANCE hinstDLL)
 {
     char buffer[MAX_PATH + 1] = { 0 };
     GetModuleFileName(hinstDLL, buffer, MAX_PATH);
-    s_library_dir_cache = MAA_NS::path(buffer).parent_path();
+    // it's crt string
+    s_library_dir_cache = std::filesystem::path(buffer).parent_path();
 }
 
 MAA_NS_END
