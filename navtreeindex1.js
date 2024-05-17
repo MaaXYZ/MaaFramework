@@ -1,5 +1,7 @@
 var NAVTREEINDEX1 =
 {
+"MaaResource_8h.html#adfdabceac47b76b04bdb44228a94b4ce":[4,0,0,0,0,3,4],
+"MaaResource_8h.html#ae217f694965a014df11bddd82c4df086":[4,0,0,0,0,3,8],
 "MaaResource_8h_source.html":[4,0,0,0,0,3],
 "MaaSyncContext_8h.html":[4,0,0,0,1,2],
 "MaaSyncContext_8h.html#a0b074209181dd6d745c1495cbd58d9b5":[4,0,0,0,1,2,3],
@@ -60,8 +62,9 @@ var NAVTREEINDEX1 =
 "MaaUtility_8h.html":[4,0,0,0,2,1],
 "MaaUtility_8h.html#a1dba15d9cc61cf339c434085738f873c":[4,0,0,0,2,1,1],
 "MaaUtility_8h.html#a2c2351a9b0a6c2ea9ec828154cb0b4db":[4,0,0,0,2,1,2],
+"MaaUtility_8h.html#a502b61dd7a7f977c84ee65070a40fafa":[4,0,0,0,2,1,4],
 "MaaUtility_8h.html#a62ca053991307446cb195865497a40f1":[4,0,0,0,2,1,0],
-"MaaUtility_8h.html#af1390a6ee2db35fef0f17138ea11a890":[4,0,0,0,2,1,3],
+"MaaUtility_8h.html#afc9cc1ea9d9af7b9518b4aab0ba6012f":[4,0,0,0,2,1,3],
 "MaaUtility_8h_source.html":[4,0,0,0,2,1],
 "annotated.html":[3,0],
 "deprecated.html":[1],
@@ -78,8 +81,8 @@ var NAVTREEINDEX1 =
 "files.html":[4,0],
 "functions.html":[3,1,0],
 "functions_vars.html":[3,1,1],
-"globals.html":[4,1,0,0],
 "globals.html":[4,1,0],
+"globals.html":[4,1,0,0],
 "globals_defs.html":[4,1,5],
 "globals_enum.html":[4,1,3],
 "globals_eval.html":[4,1,4],

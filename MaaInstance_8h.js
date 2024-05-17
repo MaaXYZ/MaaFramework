@@ -13,6 +13,8 @@ var MaaInstance_8h =
     [ "MaaUnregisterCustomAction", "MaaInstance_8h.html#a767e5aa47e8b174433190441f23641d9", null ],
     [ "MaaClearCustomAction", "MaaInstance_8h.html#a1826f96904896199b4b5c5429b89b309", null ],
     [ "MaaPostTask", "MaaInstance_8h.html#aa07660f2debe49dca31593dd85785190", null ],
+    [ "MaaPostRecognition", "MaaInstance_8h.html#aaa36903f81efd25d109b1f755792f756", null ],
+    [ "MaaPostAction", "MaaInstance_8h.html#a96ccea583f609fc57e38c964d80a0ebf", null ],
     [ "MaaSetTaskParam", "MaaInstance_8h.html#a2a9bdbede1f2c8d0fdc84ce49e8cd209", null ],
     [ "MaaTaskStatus", "MaaInstance_8h.html#aad268103214d54fa205efd6b99e0d43d", null ],
     [ "MaaWaitTask", "MaaInstance_8h.html#ab2119663dd1b7cf678a7cb3adf6918ae", null ],
