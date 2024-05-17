@@ -173,24 +173,24 @@ void Interactor::print_config() const
     std::cout << "### Current configuration ###\n\n";
 
     std::cout << "Controller:\n\n";
-    std::cout << "\t" << MAA_LOG_NS::utf8_to_crt(config_.configuration().controller.name) << "\n";
+    std::cout << "\t" << MAA_NS::utf8_to_crt(config_.configuration().controller.name) << "\n";
 
     if (config_.configuration().controller.type == InterfaceData::Controller::kTypeAdb) {
-        std::cout << MAA_LOG_NS::utf8_to_crt(std::format(
+        std::cout << MAA_NS::utf8_to_crt(std::format(
             "\t\t{}\n\t\t{}\n",
             MaaNS::path_to_utf8_string(config_.configuration().adb.adb_path),
             config_.configuration().adb.address));
     }
     else if (config_.configuration().controller.type == InterfaceData::Controller::kTypeWin32) {
         if (auto hwnd = config_.configuration().win32.hwnd) {
-            std::cout << MAA_LOG_NS::utf8_to_crt(std::format("\t\t{}\n", get_hwnd_info(hwnd)));
+            std::cout << MAA_NS::utf8_to_crt(std::format("\t\t{}\n", get_hwnd_info(hwnd)));
         }
     }
 
     std::cout << "\n";
 
     std::cout << "Resource:\n\n";
-    std::cout << "\t" << MAA_LOG_NS::utf8_to_crt(config_.configuration().resource) << "\n\n";
+    std::cout << "\t" << MAA_NS::utf8_to_crt(config_.configuration().resource) << "\n\n";
 
     std::cout << "Tasks:\n\n";
     print_config_tasks(false);
@@ -202,11 +202,11 @@ void Interactor::welcome() const
         std::cout << "Welcome to use Maa Project Interface CLI!\n";
     }
     else {
-        std::cout << MAA_LOG_NS::utf8_to_crt(config_.interface_data().message) << "\n";
+        std::cout << MAA_NS::utf8_to_crt(config_.interface_data().message) << "\n";
     }
     std::cout << "MaaFramework: " << MAA_VERSION << "\n\n";
 
-    std::cout << "Version: " << MAA_LOG_NS::utf8_to_crt(config_.interface_data().version) << "\n\n";
+    std::cout << "Version: " << MAA_NS::utf8_to_crt(config_.interface_data().version) << "\n\n";
 }
 
 bool Interactor::interact_once()
@@ -264,7 +264,7 @@ void Interactor::select_controller()
     if (all_controllers.size() != 1) {
         std::cout << "### Select controller ###\n\n";
         for (size_t i = 0; i < all_controllers.size(); ++i) {
-            std::cout << MAA_LOG_NS::utf8_to_crt(
+            std::cout << MAA_NS::utf8_to_crt(
                 std::format("\t{}. {}\n", i + 1, all_controllers[i].name));
         }
         std::cout << "\n";
@@ -329,7 +329,7 @@ void Interactor::select_adb_auto_detect()
         std::string path = MaaToolkitGetDeviceAdbPath(i);
         std::string address = MaaToolkitGetDeviceAdbSerial(i);
 
-        std::cout << MAA_LOG_NS::utf8_to_crt(
+        std::cout << MAA_NS::utf8_to_crt(
             std::format("\t{}. {}\n\t\t{}\n\t\t{}\n", i + 1, name, path, address));
     }
     std::cout << "\n";
@@ -425,7 +425,7 @@ MaaWin32Hwnd Interactor::select_win32_multiple_hwnd(
     for (size_t i = 0; i < size; ++i) {
         auto hwnd = MaaToolkitGetWindow(i);
 
-        std::cout << MAA_LOG_NS::utf8_to_crt(std::format("\t{}. {}\n", i + 1, get_hwnd_info(hwnd)));
+        std::cout << MAA_NS::utf8_to_crt(std::format("\t{}. {}\n", i + 1, get_hwnd_info(hwnd)));
     }
     std::cout << "\n";
 
@@ -463,7 +463,7 @@ void Interactor::select_resource()
     if (all_resources.size() != 1) {
         std::cout << "### Select resource ###\n\n";
         for (size_t i = 0; i < all_resources.size(); ++i) {
-            std::cout << MAA_LOG_NS::utf8_to_crt(
+            std::cout << MAA_NS::utf8_to_crt(
                 std::format("\t{}. {}\n", i + 1, all_resources[i].name));
         }
         std::cout << "\n";
@@ -489,8 +489,7 @@ void Interactor::add_task()
 
     std::cout << "### Add task ###\n\n";
     for (size_t i = 0; i < all_data_tasks.size(); ++i) {
-        std::cout << MAA_LOG_NS::utf8_to_crt(
-            std::format("\t{}. {}\n", i + 1, all_data_tasks[i].name));
+        std::cout << MAA_NS::utf8_to_crt(std::format("\t{}. {}\n", i + 1, all_data_tasks[i].name));
     }
     std::cout << "\n";
     auto input_indexes = input_multi(all_data_tasks.size());
@@ -512,12 +511,12 @@ void Interactor::add_task()
                     Configuration::Option { option_name, opt.default_case });
                 continue;
             }
-            std::cout << MAA_LOG_NS::utf8_to_crt(std::format(
+            std::cout << MAA_NS::utf8_to_crt(std::format(
                 "\n\n## Input option of \"{}\" for \"{}\" ##\n\n",
                 option_name,
                 data_task.name));
             for (size_t i = 0; i < opt.cases.size(); ++i) {
-                std::cout << MAA_LOG_NS::utf8_to_crt(
+                std::cout << MAA_NS::utf8_to_crt(
                     std::format("\t{}. {}\n", i + 1, opt.cases[i].name));
             }
             std::cout << "\n";
@@ -591,15 +590,15 @@ void Interactor::print_config_tasks(bool with_index) const
     for (size_t i = 0; i < all_config_tasks.size(); ++i) {
         const auto& task = all_config_tasks[i];
         if (with_index) {
-            std::cout << MAA_LOG_NS::utf8_to_crt(std::format("\t{}. {}\n", i + 1, task.name));
+            std::cout << MAA_NS::utf8_to_crt(std::format("\t{}. {}\n", i + 1, task.name));
         }
         else {
-            std::cout << MAA_LOG_NS::utf8_to_crt(std::format("\t- {}\n", task.name));
+            std::cout << MAA_NS::utf8_to_crt(std::format("\t- {}\n", task.name));
         }
 
         for (const auto& [key, value] : task.option) {
-            std::cout << "\t\t- " << MAA_LOG_NS::utf8_to_crt(key) << ": "
-                      << MAA_LOG_NS::utf8_to_crt(value) << "\n";
+            std::cout << "\t\t- " << MAA_NS::utf8_to_crt(key) << ": " << MAA_NS::utf8_to_crt(value)
+                      << "\n";
         }
     }
     std::cout << "\n";
@@ -644,6 +643,6 @@ void Interactor::on_maafw_notify(
     std::ignore = pthis;
 
     std::string entry = json::parse(details_json).value_or(json::value())["entry"].as_string();
-    std::cout << MAA_LOG_NS::utf8_to_crt(std::format("on_maafw_notify: {} {}", msg, entry))
+    std::cout << MAA_NS::utf8_to_crt(std::format("on_maafw_notify: {} {}", msg, entry))
               << std::endl;
 }

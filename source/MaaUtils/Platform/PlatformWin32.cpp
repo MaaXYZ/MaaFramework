@@ -26,10 +26,10 @@ os_string to_osstring(std::string_view utf8_str)
     return result;
 }
 
-std::string from_osstring(os_string_view os_str)
+std::string wide_to_multi(os_string_view os_str, UINT code)
 {
     int len = WideCharToMultiByte(
-        CP_UTF8,
+        code,
         0,
         os_str.data(),
         (int)os_str.size(),
@@ -37,9 +37,11 @@ std::string from_osstring(os_string_view os_str)
         0,
         nullptr,
         nullptr);
+
     std::string result(len, 0);
+
     WideCharToMultiByte(
-        CP_UTF8,
+        code,
         0,
         os_str.data(),
         (int)os_str.size(),
@@ -47,7 +49,18 @@ std::string from_osstring(os_string_view os_str)
         len,
         nullptr,
         nullptr);
+
     return result;
+}
+
+std::string from_osstring(os_string_view os_str)
+{
+    return wide_to_multi(os_str, CP_UTF8);
+}
+
+std::string utf8_to_crt(std::string_view utf8_str)
+{
+    return wide_to_multi(to_osstring(utf8_str), CP_ACP);
 }
 
 // 转义参考:
