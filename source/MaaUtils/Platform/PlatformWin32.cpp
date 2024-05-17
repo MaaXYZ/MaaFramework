@@ -18,79 +18,6 @@ std::string path_to_utf8_string(const std::filesystem::path& path)
     return from_osstring(osstr);
 }
 
-std::string get_ansi_short_path(const std::filesystem::path& path)
-{
-    wchar_t short_path[MAX_PATH] = { 0 };
-    auto osstr = path.native();
-    string_replace_all_(osstr, L"\\", L"/");
-    auto shortlen = GetShortPathNameW(osstr.c_str(), short_path, MAX_PATH);
-    if (shortlen == 0) {
-        return {};
-    }
-    BOOL failed = FALSE;
-    auto ansilen =
-        WideCharToMultiByte(CP_ACP, 0, short_path, shortlen, nullptr, 0, nullptr, &failed);
-    if (failed) {
-        return {};
-    }
-    std::string result(ansilen, 0);
-    WideCharToMultiByte(CP_ACP, 0, short_path, shortlen, result.data(), ansilen, nullptr, nullptr);
-    return result;
-}
-
-std::string path_to_crt_string(const std::filesystem::path& path)
-{
-    // UCRT may use UTF-8 encoding while ANSI code page is still some other MBCS encoding
-    // so we use CRT wcstombs instead of WideCharToMultiByte
-    size_t mbsize = 0;
-    auto osstr = path.native();
-    string_replace_all_(osstr, L"\\", L"/");
-    auto err = wcstombs_s(&mbsize, nullptr, 0, osstr.c_str(), osstr.size());
-    if (err != 0) {
-        // cannot convert (CRT is not using UTF-8), fallback to short path name in ACP
-        return get_ansi_short_path(path);
-    }
-    std::string result(mbsize, 0);
-    err = wcstombs_s(&mbsize, result.data(), mbsize, osstr.c_str(), osstr.size());
-    if (err != 0) {
-        return {};
-    }
-    return result.substr(0, mbsize - 1);
-}
-
-std::string path_to_ansi_string(const std::filesystem::path& path)
-{
-    // UCRT may use UTF-8 encoding while ANSI code page is still some other MBCS encoding
-    // so we use CRT wcstombs instead of WideCharToMultiByte
-    BOOL failed = FALSE;
-    auto osstr = path.native();
-    string_replace_all_(osstr, L"\\", L"/");
-    auto ansilen = WideCharToMultiByte(
-        CP_ACP,
-        0,
-        osstr.c_str(),
-        (int)osstr.size(),
-        nullptr,
-        0,
-        nullptr,
-        &failed);
-    if (failed) {
-        // contains character that cannot be converted, fallback to short path name in ACP
-        return get_ansi_short_path(path);
-    }
-    std::string result(ansilen, 0);
-    WideCharToMultiByte(
-        CP_ACP,
-        0,
-        osstr.c_str(),
-        (int)osstr.size(),
-        result.data(),
-        ansilen,
-        nullptr,
-        &failed);
-    return result;
-}
-
 os_string to_osstring(std::string_view utf8_str)
 {
     int len = MultiByteToWideChar(CP_UTF8, 0, utf8_str.data(), (int)utf8_str.size(), nullptr, 0);
@@ -260,6 +187,8 @@ std::set<ProcessInfo> list_processes()
         }
 
         HANDLE process = OpenProcess(PROCESS_QUERY_INFORMATION | PROCESS_VM_READ, FALSE, pid);
+        OnScopeLeave([&]() { CloseHandle(process); });
+
         if (process == nullptr) {
             auto error = GetLastError();
             LogWarn << "Failed to OpenProcess" << VAR(error) << VAR(pid);
@@ -271,14 +200,12 @@ std::set<ProcessInfo> list_processes()
         if (!EnumProcessModules(process, &mod, sizeof(mod), &mod_read)) {
             auto error = GetLastError();
             LogWarn << "Failed to EnumProcessModules" << VAR(error) << VAR(pid);
-            CloseHandle(process);
             continue;
         }
 
         memset(name_buff, 0, sizeof(name_buff));
 
         GetModuleBaseNameW(process, mod, name_buff, sizeof(name_buff) / sizeof(WCHAR));
-        CloseHandle(process);
 
         result.emplace(pid, from_osstring(name_buff));
     }
@@ -293,6 +220,8 @@ std::set<ProcessInfo> list_processes()
 std::optional<std::filesystem::path> get_process_path(os_pid pid)
 {
     HANDLE process = OpenProcess(PROCESS_QUERY_INFORMATION | PROCESS_VM_READ, FALSE, pid);
+    OnScopeLeave([&]() { CloseHandle(process); });
+
     if (process == nullptr) {
         auto error = GetLastError();
         LogError << "Failed to OpenProcess" << VAR(error) << VAR(pid);
@@ -306,7 +235,6 @@ std::optional<std::filesystem::path> get_process_path(os_pid pid)
         return std::nullopt;
     }
 
-    CloseHandle(process);
     return filename;
 }
 

@@ -33,8 +33,6 @@ inline std::filesystem::path path(std::string_view utf8_str)
 }
 
 MAA_UTILS_API std::string path_to_utf8_string(const std::filesystem::path& path);
-MAA_UTILS_API std::string path_to_ansi_string(const std::filesystem::path& path);
-MAA_UTILS_API std::string path_to_crt_string(const std::filesystem::path& path);
 
 namespace path_literals
 {

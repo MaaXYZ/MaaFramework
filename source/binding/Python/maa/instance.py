@@ -121,7 +121,7 @@ class Instance:
 
         return bool(Library.framework.MaaInited(self._handle))
 
-    async def run_task(self, task_type: str, param: Dict = {}) -> bool:
+    async def run_task(self, task_type: str, param: Dict = {}) -> Optional[TaskDetail]:
         """
         Async run a task.
 
@@ -134,7 +134,7 @@ class Instance:
         await future.wait()
         return future.get()
 
-    async def run_recogintion(self, task_type: str, param: Dict = {}) -> bool:
+    async def run_recogintion(self, task_type: str, param: Dict = {}) -> Optional[TaskDetail]:
         """
         Async run a recognition.
 
@@ -147,7 +147,7 @@ class Instance:
         await future.wait()
         return future.get()
 
-    async def run_action(self, task_type: str, param: Dict = {}) -> bool:
+    async def run_action(self, task_type: str, param: Dict = {}) -> Optional[TaskDetail]:
         """
         Async run a action.
 

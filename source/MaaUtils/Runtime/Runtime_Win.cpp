@@ -15,9 +15,8 @@ const std::filesystem::path& library_dir()
 
 void init_library_dir(HINSTANCE hinstDLL)
 {
-    char buffer[MAX_PATH + 1] = { 0 };
-    GetModuleFileName(hinstDLL, buffer, MAX_PATH);
-    // it's crt string
+    WCHAR buffer[MAX_PATH] = { 0 };
+    GetModuleFileNameW(hinstDLL, buffer, MAX_PATH);
     s_library_dir_cache = std::filesystem::path(buffer).parent_path();
 }
 

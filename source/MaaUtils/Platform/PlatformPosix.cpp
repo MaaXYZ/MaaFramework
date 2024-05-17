@@ -21,16 +21,6 @@ std::string path_to_utf8_string(const std::filesystem::path& path)
     return path.native();
 }
 
-std::string path_to_ansi_string(const std::filesystem::path& path)
-{
-    return path.native();
-}
-
-std::string path_to_crt_string(const std::filesystem::path& path)
-{
-    return path.native();
-}
-
 MAA_NS_END
 
 #endif
