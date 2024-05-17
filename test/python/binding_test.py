@@ -99,19 +99,37 @@ async def main():
     maa_inst.register_action("MyAct", my_act)
     maa_inst.register_recognizer("MyRec", my_rec)
 
-    await maa_inst.run_task(
-        "Entry",
-        {
-            "Entry": {"next": "Rec"},
-            "Rec": {
-                "recognition": "Custom",
-                "custom_recognition": "MyRec",
-                "action": "Custom",
-                "custom_action": "MyAct",
-                "custom_action_param": "👋哈哈哈(*´▽｀)ノノ😀",
-            },
+    diff = {
+        "Entry": {"next": "Rec"},
+        "Rec": {
+            "recognition": "Custom",
+            "custom_recognition": "MyRec",
+            "action": "Custom",
+            "custom_action": "MyAct",
+            "custom_action_param": "👋哈哈哈(*´▽｀)ノノ😀",
         },
-    )
+    }
+
+    detail = await maa_inst.run_task("Entry", diff)
+    if detail:
+        print(f"pipeline detail: {detail}")
+    else:
+        print("pipeline failed")
+        raise RuntimeError("pipeline failed")
+
+    detail = await maa_inst.run_recogintion("Rec", diff)
+    if detail:
+        print(f"reco detail: {detail}")
+    else:
+        print("reco failed")
+        raise RuntimeError("reco failed")
+
+    detail = await maa_inst.run_action("Rec", diff)
+    if detail:
+        print(f"action detail: {detail}")
+    else:
+        print("action failed")
+        raise RuntimeError("action failed")
 
     print("Done.")
 

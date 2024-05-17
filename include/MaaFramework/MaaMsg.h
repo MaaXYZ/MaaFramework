@@ -149,7 +149,7 @@
  *         detail: string,
  *         hit: boolean,
  *     },
- *     running_id: number,
+ *     node_id: number,
  *     status: number,
  * }
  */
@@ -175,7 +175,7 @@
  *         detail: string,
  *         hit: boolean,
  *     },
- *     running_id: number,
+ *     node_id: number,
  *     status: number,
  * }
  */

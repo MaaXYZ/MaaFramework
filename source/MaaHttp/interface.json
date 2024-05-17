@@ -657,6 +657,42 @@
           "type": "MaaInstanceHandle"
         },
         {
+          "name": "entry",
+          "type": "MaaStringView"
+        },
+        {
+          "name": "param",
+          "type": "MaaStringView"
+        }
+      ],
+      "name": "MaaPostRecognition",
+      "return": "MaaTaskId"
+    },
+    {
+      "argument": [
+        {
+          "name": "inst",
+          "type": "MaaInstanceHandle"
+        },
+        {
+          "name": "entry",
+          "type": "MaaStringView"
+        },
+        {
+          "name": "param",
+          "type": "MaaStringView"
+        }
+      ],
+      "name": "MaaPostAction",
+      "return": "MaaTaskId"
+    },
+    {
+      "argument": [
+        {
+          "name": "inst",
+          "type": "MaaInstanceHandle"
+        },
+        {
           "name": "id",
           "type": "MaaTaskId"
         },
@@ -1725,19 +1761,37 @@
     {
       "argument": [
         {
-          "name": "run_id",
-          "type": "MaaRunningId"
+          "name": "node_id",
+          "type": "MaaNodeId"
         },
         {
           "name": "reco_id",
           "type": "MaaRecoId *"
         },
         {
-          "name": "successful",
+          "name": "run_completed",
           "type": "MaaBool *"
         }
       ],
-      "name": "MaaQueryRunningDetail",
+      "name": "MaaQueryNodeDetail",
+      "return": "MaaBool"
+    },
+    {
+      "argument": [
+        {
+          "name": "task_id",
+          "type": "MaaTaskId"
+        },
+        {
+          "name": "node_id_list",
+          "type": "MaaNodeId *"
+        },
+        {
+          "name": "node_id_list_size",
+          "type": "MaaSize *"
+        }
+      ],
+      "name": "MaaQueryTaskDetail",
       "return": "MaaBool"
     },
     {
@@ -1985,6 +2039,11 @@
         }
       ],
       "name": "MaaToolkitSearchWindow",
+      "return": "MaaSize"
+    },
+    {
+      "argument": [],
+      "name": "MaaToolkitListWindows",
       "return": "MaaSize"
     },
     {

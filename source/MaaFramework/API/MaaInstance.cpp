@@ -162,7 +162,29 @@ MaaTaskId MaaPostTask(MaaInstanceHandle inst, MaaStringView entry, MaaStringView
         LogError << "handle is null";
         return MaaInvalidId;
     }
-    return inst->post_task(entry, param);
+    return inst->post_pipeline(entry, param);
+}
+
+MaaTaskId MaaPostRecognition(MaaInstanceHandle inst, MaaStringView entry, MaaStringView param)
+{
+    LogFunc << VAR_VOIDP(inst) << VAR(entry) << VAR(param);
+
+    if (!inst) {
+        LogError << "handle is null";
+        return MaaInvalidId;
+    }
+    return inst->post_recognition(entry, param);
+}
+
+MaaTaskId MaaPostAction(MaaInstanceHandle inst, MaaStringView entry, MaaStringView param)
+{
+    LogFunc << VAR_VOIDP(inst) << VAR(entry) << VAR(param);
+
+    if (!inst) {
+        LogError << "handle is null";
+        return MaaInvalidId;
+    }
+    return inst->post_action(entry, param);
 }
 
 MaaBool MaaSetTaskParam(MaaInstanceHandle inst, MaaTaskId id, MaaStringView param)

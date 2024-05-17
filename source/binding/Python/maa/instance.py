@@ -23,10 +23,43 @@ class RecognitionDetail:
     draws: List[numpy.ndarray]
 
 
-class RunningDetail:
-    run_id: int
+@dataclass
+class NodeDetail:
+    node_id: int
     recognition: RecognitionDetail
-    successful: bool
+    run_completed: bool
+
+
+@dataclass
+class TaskDetail:
+    task_id: int
+    node_details: List[NodeDetail]
+
+
+class TaskFuture(Future):
+    def __init__(self, maaid: MaaId, status_func, set_param_func, query_detail_func):
+        super().__init__(maaid, status_func)
+        self._set_param_func = set_param_func
+        self._query_detail_func = query_detail_func
+
+    def set_param(self, param: Any) -> bool:
+        """
+        Set the param of the task.
+
+        :param param: The param of the task.
+        :return: True if the param was successfully set, False otherwise.
+        """
+
+        return self._set_param_func(self._maaid, param)
+
+    def get(self) -> Optional[TaskDetail]:
+        """
+        get the detail of the task.
+
+        :return: The detail of the task.
+        """
+
+        return self._query_detail_func(self._maaid)
 
 
 class Instance:
@@ -94,12 +127,40 @@ class Instance:
 
         :param task_type: The name of the task.
         :param param: The param of the task.
-        :return: True if the task was successfully run, False otherwise.
+        :return: details of the task.
         """
 
-        return await self.post_task(task_type, param).wait()
+        future = self.post_task(task_type, param)
+        await future.wait()
+        return future.get()
 
-    def post_task(self, task_type: str, param: Any = {}) -> Future:
+    async def run_recogintion(self, task_type: str, param: Dict = {}) -> bool:
+        """
+        Async run a recognition.
+
+        :param task_type: The name of the recognition.
+        :param param: The param of the recognition.
+        :return: details of the recognition.
+        """
+
+        future = self.post_recognition(task_type, param)
+        await future.wait()
+        return future.get()
+
+    async def run_action(self, task_type: str, param: Dict = {}) -> bool:
+        """
+        Async run a action.
+
+        :param task_type: The name of the action.
+        :param param: The param of the action.
+        :return: details of the action.
+        """
+
+        future = self.post_action(task_type, param)
+        await future.wait()
+        return future.get()
+
+    def post_task(self, task_type: str, param: Any = {}) -> TaskFuture:
         """
         Post a task to the instance. (run in background)
 
@@ -113,7 +174,45 @@ class Instance:
             task_type.encode("utf-8"),
             json.dumps(param, ensure_ascii=False).encode("utf-8"),
         )
-        return TaskFuture(maaid, self._status, self._set_task_param)
+        return TaskFuture(
+            maaid, self._status, self._set_task_param, self.query_task_detail
+        )
+
+    def post_recognition(self, task_type: str, param: Any = {}) -> TaskFuture:
+        """
+        Post a recognition to the instance. (run in background)
+
+        :param task_type: The name of the recognition.
+        :param param: The param of the recognition.
+        :return: The id of the posted recognition.
+        """
+
+        maaid = Library.framework.MaaPostRecognition(
+            self._handle,
+            task_type.encode("utf-8"),
+            json.dumps(param, ensure_ascii=False).encode("utf-8"),
+        )
+        return TaskFuture(
+            maaid, self._status, self._set_task_param, self.query_task_detail
+        )
+
+    def post_action(self, task_type: str, param: Any = {}) -> TaskFuture:
+        """
+        Post a action to the instance. (run in background)
+
+        :param task_type: The name of the action.
+        :param param: The param of the action.
+        :return: The id of the posted action.
+        """
+
+        maaid = Library.framework.MaaPostAction(
+            self._handle,
+            task_type.encode("utf-8"),
+            json.dumps(param, ensure_ascii=False).encode("utf-8"),
+        )
+        return TaskFuture(
+            maaid, self._status, self._set_task_param, self.query_task_detail
+        )
 
     async def wait_all(self):
         """
@@ -204,8 +303,10 @@ class Instance:
         return MaaStatusEnum.success if not self.running() else MaaStatusEnum.running
 
     def _set_task_param(self, id: int, param: Dict) -> bool:
-        return Library.framework.MaaSetTaskParam(
-            self._handle, id, json.dumps(param, ensure_ascii=False).encode("utf-8")
+        return bool(
+            Library.framework.MaaSetTaskParam(
+                self._handle, id, json.dumps(param, ensure_ascii=False).encode("utf-8")
+            )
         )
 
     @staticmethod
@@ -340,37 +441,69 @@ class Instance:
         )
 
     @staticmethod
-    def query_running_detail(run_id: int) -> Optional[RunningDetail]:
+    def query_node_detail(node_id: int) -> Optional[NodeDetail]:
         """
         Query running detail.
 
-        :param run_id: The running id.
+        :param node_id: The running id.
         :return: The running detail.
         """
 
         reco_id = MaaRecoId()
-        successful = MaaBool()
+        run_completed = MaaBool()
 
         ret = bool(
-            Library.framework.MaaQueryRunningDetail(
-                run_id,
+            Library.framework.MaaQueryNodeDetail(
+                node_id,
                 ctypes.pointer(reco_id),
-                ctypes.pointer(successful),
+                ctypes.pointer(run_completed),
             )
         )
 
         if not ret:
             return None
 
-        recognition = Instance.query_recognition_detail(reco_id)
+        recognition = Instance.query_recognition_detail(reco_id.value)
         if not recognition:
             return None
 
-        return RunningDetail(
-            run_id=run_id,
+        return NodeDetail(
+            node_id=node_id,
             recognition=recognition,
-            successful=bool(successful),
+            run_completed=bool(run_completed),
         )
+
+    @staticmethod
+    def query_task_detail(task_id: int) -> Optional[TaskDetail]:
+        """
+        Query task detail.
+
+        :param task_id: The task id.
+        :return: The task detail.
+        """
+
+        size = MaaSize()
+        ret = bool(
+            Library.framework.MaaQueryTaskDetail(task_id, None, ctypes.pointer(size))
+        )
+        if not ret:
+            return None
+
+        node_id_list = (MaaNodeId * size.value)()
+        ret = bool(
+            Library.framework.MaaQueryTaskDetail(
+                task_id, node_id_list, ctypes.pointer(size)
+            )
+        )
+        if not ret:
+            return None
+
+        node_details = []
+        for i in range(size.value):
+            detail = Instance.query_node_detail(node_id_list[i])
+            node_details.append(detail)
+
+        return TaskDetail(task_id=task_id, node_details=node_details)
 
     _api_properties_initialized: bool = False
 
@@ -409,6 +542,20 @@ class Instance:
 
         Library.framework.MaaPostTask.restype = MaaId
         Library.framework.MaaPostTask.argtypes = [
+            MaaInstanceHandle,
+            MaaStringView,
+            MaaStringView,
+        ]
+
+        Library.framework.MaaPostRecognition.restype = MaaId
+        Library.framework.MaaPostRecognition.argtypes = [
+            MaaInstanceHandle,
+            MaaStringView,
+            MaaStringView,
+        ]
+
+        Library.framework.MaaPostAction.restype = MaaId
+        Library.framework.MaaPostAction.argtypes = [
             MaaInstanceHandle,
             MaaStringView,
             MaaStringView,
@@ -465,25 +612,16 @@ class Instance:
             MaaImageListBufferHandle,
         ]
 
-        Library.framework.MaaQueryRunningDetail.restype = MaaBool
-        Library.framework.MaaQueryRunningDetail.argtypes = [
-            MaaRunningId,
+        Library.framework.MaaQueryNodeDetail.restype = MaaBool
+        Library.framework.MaaQueryNodeDetail.argtypes = [
+            MaaNodeId,
             ctypes.POINTER(MaaRecoId),
             ctypes.POINTER(MaaBool),
         ]
 
-
-class TaskFuture(Future):
-    def __init__(self, maaid: MaaId, status_func, set_param_func):
-        super().__init__(maaid, status_func)
-        self._set_param_func = set_param_func
-
-    def set_param(self, param: Any) -> bool:
-        """
-        Set the param of the task.
-
-        :param param: The param of the task.
-        :return: True if the param was successfully set, False otherwise.
-        """
-
-        return self._set_param_func(self._mid, param)
+        Library.framework.MaaQueryTaskDetail.restype = MaaBool
+        Library.framework.MaaQueryTaskDetail.argtypes = [
+            MaaTaskId,
+            ctypes.POINTER(MaaRecoId),
+            ctypes.POINTER(MaaSize),
+        ]

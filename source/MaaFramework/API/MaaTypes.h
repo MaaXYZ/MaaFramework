@@ -80,7 +80,9 @@ public:
     virtual bool
         set_option(MaaInstOption key, MaaOptionValue value, MaaOptionValueSize val_size) = 0;
 
-    virtual MaaTaskId post_task(std::string entry, std::string_view param) = 0;
+    virtual MaaTaskId post_pipeline(std::string entry, std::string_view param) = 0;
+    virtual MaaTaskId post_recognition(std::string entry, std::string_view param) = 0;
+    virtual MaaTaskId post_action(std::string entry, std::string_view param) = 0;
     virtual bool set_task_param(MaaTaskId task_id, std::string_view param) = 0;
 
     virtual bool register_custom_recognizer(

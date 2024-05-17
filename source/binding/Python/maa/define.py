@@ -170,7 +170,7 @@ MaaResourceCallback = MaaApiCallback
 MaaResId = MaaId
 
 MaaRecoId = MaaId
-MaaRunningId = MaaId
+MaaNodeId = MaaId
 
 
 @dataclass

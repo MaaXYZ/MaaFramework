@@ -28,8 +28,6 @@ public:
             const json::value& reco_detail,
             const TaskData& task_data);
 
-    MaaRunningId uid() const { return uid_; }
-
 private:
     bool click(const MAA_RES_NS::Action::ClickParam& param, const cv::Rect& cur_box);
     bool swipe(const MAA_RES_NS::Action::SwipeParam& param, const cv::Rect& cur_box);
@@ -61,9 +59,6 @@ private:
     InstanceInternalAPI* inst_ = nullptr;
     const PreTaskBoxes& pre_task_boxes_;
 
-    const MaaRunningId uid_ = ++s_global_uid;
-
-    inline static std::atomic<MaaRunningId> s_global_uid = 0;
 };
 
 MAA_TASK_NS_END

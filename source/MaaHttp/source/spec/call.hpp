@@ -2,6 +2,7 @@
 
 #include "./type.hpp"
 
+#include "utils/macro.hpp"
 #include "utils/phony.hpp"
 
 #include "../info.hpp"
@@ -202,21 +203,21 @@ LHGArgFromJsonBegin(maa::func_type_MaaSyncContextRunAction, _3_cur_box, true)
     pri_maa::schema_rect(b);
 LHGArgFromJsonEnd()
 
-LHGArgOutput(maa::func_type_MaaQueryRunningDetail::_1_reco_id);
-LHGArgPrepareStateBegin(maa::func_type_MaaQueryRunningDetail, _1_reco_id)
+LHGArgOutput(maa::func_type_MaaQueryNodeDetail::_1_reco_id);
+LHGArgPrepareStateBegin(maa::func_type_MaaQueryNodeDetail, _1_reco_id)
     std::get<arg_tag::index>(arg) = &std::get<arg_tag::index>(state);
 LHGArgPrepareStateEnd()
-LHGArgToJsonBegin(maa::func_type_MaaQueryRunningDetail, _1_reco_id, true)
+LHGArgToJsonBegin(maa::func_type_MaaQueryNodeDetail, _1_reco_id, true)
     value = std::get<index>(state);
     LHGArgToJsonMiddle()
     b.type("number");
 LHGArgToJsonEnd()
 
-LHGArgOutput(maa::func_type_MaaQueryRunningDetail::_2_successful);
-LHGArgPrepareStateBegin(maa::func_type_MaaQueryRunningDetail, _2_successful)
+LHGArgOutput(maa::func_type_MaaQueryNodeDetail::_2_run_completed);
+LHGArgPrepareStateBegin(maa::func_type_MaaQueryNodeDetail, _2_run_completed)
     std::get<arg_tag::index>(arg) = &std::get<arg_tag::index>(state);
 LHGArgPrepareStateEnd()
-LHGArgToJsonBegin(maa::func_type_MaaQueryRunningDetail, _2_successful, true)
+LHGArgToJsonBegin(maa::func_type_MaaQueryNodeDetail, _2_run_completed, true)
     value = std::get<index>(state);
     LHGArgToJsonMiddle()
     b.type("boolean");
@@ -260,3 +261,23 @@ LHGArgFromJsonBegin(maa::func_type_MaaToolkitRegisterCustomActionExecutor, _3_ex
     LHGArgFromJsonMiddle()
     b.type("array").items(schema::Builder().type("string").obj);
 LHGArgFromJsonEnd()
+
+LHGArgOutput(maa::func_type_MaaQueryTaskDetail::_1_node_id_list);
+LHGArgHide(maa::func_type_MaaQueryTaskDetail::_2_node_id_list_size);
+LHGArgPrepareStateBegin(maa::func_type_MaaQueryTaskDetail, _1_node_id_list)
+    MaaSize sz;
+    MaaQueryTaskDetail(
+        std::get<maa::func_type_MaaQueryTaskDetail::_0_task_id::index>(arg),
+        nullptr,
+        &sz);
+    std::get<index>(state).resize(sz);
+    std::get<index>(arg) = std::get<index>(state).data();
+    std::get<maa::func_type_MaaQueryTaskDetail::_2_node_id_list_size::index>(state) = sz;
+    std::get<maa::func_type_MaaQueryTaskDetail::_2_node_id_list_size::index>(arg) =
+        &std::get<maa::func_type_MaaQueryTaskDetail::_2_node_id_list_size::index>(state);
+LHGArgPrepareStateEnd()
+LHGArgToJsonBegin(maa::func_type_MaaQueryTaskDetail, _1_node_id_list, true)
+    value = std::get<index>(state);
+    LHGArgToJsonMiddle()
+    b.type("array").items(schema::Builder().type("number").obj);
+LHGArgToJsonEnd()

@@ -40,16 +40,16 @@ struct RecognitionDetail
     }
 };
 
-struct RunningDetail
+struct NodeDetail
 {
     MaaRecoId reco_id = MaaInvalidId;
     bool success = false;
 
-    void query(MaaRunningId running_id)
+    void query(MaaNodeId node_id)
     {
         MaaBool ss;
-        if (!MaaQueryRunningDetail(running_id, &reco_id, &ss)) {
-            throw FunctionFailed("MaaQueryRunningDetail");
+        if (!MaaQueryNodeDetail(node_id, &reco_id, &ss)) {
+            throw FunctionFailed("MaaQueryNodeDetail");
         }
         success = !!ss;
     }

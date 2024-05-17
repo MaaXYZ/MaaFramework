@@ -1,5 +1,6 @@
 #pragma once
 
+#include <atomic>
 #include <stack>
 #include <string_view>
 
@@ -35,12 +36,23 @@ public:
 
     void set_taskid(int64_t id) { task_id_ = id; }
 
+    // TODO: 重构，拆分成三个单独的类
+    enum RunType
+    {
+        Pipeline,
+        Recognition,
+        Action,
+    };
+
+    void set_type(RunType type) { run_type_ = type; }
+
     bool set_param(const json::value& param);
 
-    static bool query_detail(MaaRunningId run_id, MaaRecoId& reco_id, bool& completed);
+    static bool query_node_detail(MaaNodeId node_id, MaaRecoId& reco_id, bool& completed);
+    static bool query_task_detail(MaaTaskId task_id, std::vector<MaaNodeId>& node_id_list);
 
 private:
-    enum class RunningStatus
+    enum class NodeStatus
     {
         Success,
         Timeout,
@@ -52,25 +64,37 @@ private:
     struct HitDetail
     {
         MaaRecoId reco_uid = 0;
-        Recognizer::Hit reco_hit;
+        Recognizer::Hit reco_hit {};
         json::value reco_detail;
         MAA_RES_NS::TaskData task_data;
     };
 
-    struct RunningDetail
+    struct NodeDetail
     {
-        MaaRunningId run_id = 0;
+        const MaaNodeId node_id = ++s_global_node_id;
         HitDetail hits;
-        RunningStatus status = RunningStatus::InternalError;
+        NodeStatus status = NodeStatus::InternalError;
+    };
+
+    struct TaskDetail
+    {
+        std::vector<MaaNodeId> node_ids;
     };
 
 private:
-    RunningStatus find_first_and_run(
+    // TODO: 重构，拆分成三个单独的类
+    bool run_pipeline();
+    bool run_recognition_only();
+    bool run_action_only();
+
+    NodeStatus find_first_and_run(
         const std::vector<std::string>& list,
         std::chrono::milliseconds timeout,
         /*out*/ MAA_RES_NS::TaskData& found_data);
     std::optional<HitDetail> find_first(const std::vector<std::string>& list);
-    RunningStatus run_task(const HitDetail& hits);
+    NodeStatus run_task(const HitDetail& hits);
+
+    void add_node_detail(int64_t node_id, NodeDetail detail);
 
 private:
     MAA_RES_NS::ResourceMgr* resource() { return inst_ ? inst_->inter_resource() : nullptr; }
@@ -93,9 +117,10 @@ private:
     json::object basic_info();
     json::object reco_result_to_json(const std::string& name, const Recognizer::Result& res);
     json::object hit_detail_to_json(const HitDetail& detail);
-    json::object running_detail_to_json(const RunningDetail& detail);
+    json::object node_detail_to_json(const NodeDetail& detail);
 
 private:
+    RunType run_type_ = RunType::Pipeline;
     bool need_to_stop_ = false;
     InstanceInternalAPI* inst_ = nullptr;
 
@@ -107,6 +132,8 @@ private:
     Actuator::PreTaskBoxes hit_cache_;
 
     TaskDataMgr data_mgr_;
+
+    inline static std::atomic<MaaNodeId> s_global_node_id = 0;
 };
 
 MAA_TASK_NS_END
