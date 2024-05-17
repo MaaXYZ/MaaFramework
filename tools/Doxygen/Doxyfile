@@ -307,3 +307,12 @@ GENERATE_TREEVIEW      = YES
 ENUM_VALUES_PER_LINE   = 1
 
 SEARCHENGINE           = YES
+
+#---------------------------------------------------------------------------
+# Configuration options related to the XML output
+#---------------------------------------------------------------------------
+
+GENERATE_XML           = YES
+XML_OUTPUT             = html/xml
+XML_PROGRAMLISTING     = NO
+XML_NS_MEMB_FILE_SCOPE = NO
