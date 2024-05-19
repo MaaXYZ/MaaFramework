@@ -79,5 +79,12 @@
     "MaaResourceSetOption",
     "MaaSetOption",
     "MaaSetGlobalOption"
+  ],
+  "chunk": [
+    ["controller", "Maa.*Controller.+"],
+    ["resource", "Maa.*Resource.+"],
+    ["syncctx", "MaaSyncContext.+"],
+    ["buffer", "Maa.*Image.*"],
+    ["toolkit", "MaaToolkit.*"]
   ]
 }
