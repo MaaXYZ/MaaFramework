@@ -1173,7 +1173,8 @@
       "return": "MaaBool"
     },
     {
-      "argument": [],
+      "argument": [
+      ],
       "name": "MaaCreateStringBuffer",
       "return": "MaaStringBufferHandle"
     },
@@ -1260,7 +1261,8 @@
       "return": "MaaBool"
     },
     {
-      "argument": [],
+      "argument": [
+      ],
       "name": "MaaCreateStringListBuffer",
       "return": "MaaStringListBufferHandle"
     },
@@ -1347,7 +1349,8 @@
       "return": "MaaBool"
     },
     {
-      "argument": [],
+      "argument": [
+      ],
       "name": "MaaCreateImageBuffer",
       "return": "MaaImageBufferHandle"
     },
@@ -1486,7 +1489,8 @@
       "return": "MaaBool"
     },
     {
-      "argument": [],
+      "argument": [
+      ],
       "name": "MaaCreateImageListBuffer",
       "return": "MaaImageListBufferHandle"
     },
@@ -1573,7 +1577,8 @@
       "return": "MaaBool"
     },
     {
-      "argument": [],
+      "argument": [
+      ],
       "name": "MaaCreateRectBuffer",
       "return": "MaaRectHandle"
     },
@@ -1710,7 +1715,8 @@
       "return": "MaaBool"
     },
     {
-      "argument": [],
+      "argument": [
+      ],
       "name": "MaaVersion",
       "return": "MaaStringView"
     },
@@ -1739,6 +1745,10 @@
           "type": "MaaRecoId"
         },
         {
+          "name": "name",
+          "type": "MaaStringBufferHandle"
+        },
+        {
           "name": "hit",
           "type": "MaaBool *"
         },
@@ -1749,6 +1759,10 @@
         {
           "name": "detail_json",
           "type": "MaaStringBufferHandle"
+        },
+        {
+          "name": "raw",
+          "type": "MaaImageBufferHandle"
         },
         {
           "name": "draws",
@@ -1763,6 +1777,10 @@
         {
           "name": "node_id",
           "type": "MaaNodeId"
+        },
+        {
+          "name": "name",
+          "type": "MaaStringBufferHandle"
         },
         {
           "name": "reco_id",
@@ -1781,6 +1799,10 @@
         {
           "name": "task_id",
           "type": "MaaTaskId"
+        },
+        {
+          "name": "entry",
+          "type": "MaaStringBufferHandle"
         },
         {
           "name": "node_id_list",
@@ -1809,17 +1831,20 @@
       "return": "MaaBool"
     },
     {
-      "argument": [],
+      "argument": [
+      ],
       "name": "MaaToolkitInit",
       "return": "MaaBool"
     },
     {
-      "argument": [],
+      "argument": [
+      ],
       "name": "MaaToolkitUninit",
       "return": "MaaBool"
     },
     {
-      "argument": [],
+      "argument": [
+      ],
       "name": "MaaToolkitFindDevice",
       "return": "MaaSize"
     },
@@ -1834,7 +1859,8 @@
       "return": "MaaSize"
     },
     {
-      "argument": [],
+      "argument": [
+      ],
       "name": "MaaToolkitPostFindDevice",
       "return": "MaaBool"
     },
@@ -1849,17 +1875,20 @@
       "return": "MaaBool"
     },
     {
-      "argument": [],
+      "argument": [
+      ],
       "name": "MaaToolkitIsFindDeviceCompleted",
       "return": "MaaBool"
     },
     {
-      "argument": [],
+      "argument": [
+      ],
       "name": "MaaToolkitWaitForFindDeviceToComplete",
       "return": "MaaSize"
     },
     {
-      "argument": [],
+      "argument": [
+      ],
       "name": "MaaToolkitGetDeviceCount",
       "return": "MaaSize"
     },
@@ -2042,7 +2071,8 @@
       "return": "MaaSize"
     },
     {
-      "argument": [],
+      "argument": [
+      ],
       "name": "MaaToolkitListWindows",
       "return": "MaaSize"
     },
@@ -2057,17 +2087,20 @@
       "return": "MaaWin32Hwnd"
     },
     {
-      "argument": [],
+      "argument": [
+      ],
       "name": "MaaToolkitGetCursorWindow",
       "return": "MaaWin32Hwnd"
     },
     {
-      "argument": [],
+      "argument": [
+      ],
       "name": "MaaToolkitGetDesktopWindow",
       "return": "MaaWin32Hwnd"
     },
     {
-      "argument": [],
+      "argument": [
+      ],
       "name": "MaaToolkitGetForegroundWindow",
       "return": "MaaWin32Hwnd"
     },

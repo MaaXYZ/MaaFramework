@@ -172,32 +172,35 @@ LHGInherit (json_to_arg_schema, CURF::_2_action, true) {
 
 #define CURF maa::func_type_MaaQueryRecognitionDetail
 
-LHGOuterState(CURF::_1_hit, MaaBool);
-LHGOuterState(CURF::_2_hit_box, MaaRect);
-LHGOuterState(CURF::_3_detail_json, MaaStringBufferHandle);
+LHGOuterState(CURF::_1_name, MaaStringBufferHandle);
+LHGOuterState(CURF::_2_hit, MaaBool);
+LHGOuterState(CURF::_3_hit_box, MaaRect);
+LHGOuterState(CURF::_4_detail_json, MaaStringBufferHandle);
 
-LHGOutput(CURF::_1_hit);
-LHGOutput(CURF::_2_hit_box);
+LHGOutput(CURF::_2_hit);
+LHGOutput(CURF::_3_hit_box);
 
-LHGInherit (pre_process, CURF::_1_hit) {
+MaaDeclStringBuffer(_1_name, true);
+
+LHGInherit (pre_process, CURF::_2_hit) {
     void process()
     {
         std::get<index>(arg) = &std::get<index>(state);
     }
 };
 
-LHGInherit (arg_to_json, CURF::_1_hit, true) {
+LHGInherit (arg_to_json, CURF::_2_hit, true) {
     void convert()
     {
         res[name] = !!std::get<index>(state);
     }
 };
 
-LHGSchema(arg_to_json_schema, CURF::_1_hit, true, "boolean");
+LHGSchema(arg_to_json_schema, CURF::_2_hit, true, "boolean");
 
-MaaDeclRectOut(_2_hit_box, true);
+MaaDeclRectOut(_3_hit_box, true);
 
-MaaDeclStringBuffer(_3_detail_json, true);
+MaaDeclStringBuffer(_4_detail_json, true);
 
 #undef CURF
 
@@ -205,44 +208,47 @@ MaaDeclStringBuffer(_3_detail_json, true);
 
 #define CURF maa::func_type_MaaQueryNodeDetail
 
-LHGOuterState(CURF::_1_reco_id, MaaRecoId);
-LHGOuterState(CURF::_2_run_completed, MaaBool);
+LHGOuterState(CURF::_1_name, MaaStringBufferHandle);
+LHGOuterState(CURF::_2_reco_id, MaaRecoId);
+LHGOuterState(CURF::_3_run_completed, MaaBool);
 
-LHGOutput(CURF::_1_reco_id);
+LHGOutput(CURF::_2_reco_id);
 
-LHGInherit (pre_process, CURF::_1_reco_id) {
+MaaDeclStringBuffer(_1_name, true);
+
+LHGInherit (pre_process, CURF::_2_reco_id) {
     void process()
     {
         std::get<index>(arg) = &std::get<index>(state);
     }
 };
 
-LHGInherit (arg_to_json, CURF::_1_reco_id, true) {
+LHGInherit (arg_to_json, CURF::_2_reco_id, true) {
     void convert()
     {
         res[name] = std::get<index>(state);
     }
 };
 
-LHGSchema(arg_to_json_schema, CURF::_1_reco_id, true, "number");
+LHGSchema(arg_to_json_schema, CURF::_2_reco_id, true, "number");
 
-LHGOutput(CURF::_2_run_completed);
+LHGOutput(CURF::_3_run_completed);
 
-LHGInherit (pre_process, CURF::_2_run_completed) {
+LHGInherit (pre_process, CURF::_3_run_completed) {
     void process()
     {
         std::get<index>(arg) = &std::get<index>(state);
     }
 };
 
-LHGInherit (arg_to_json, CURF::_2_run_completed, true) {
+LHGInherit (arg_to_json, CURF::_3_run_completed, true) {
     void convert()
     {
         res[name] = !!std::get<index>(state);
     }
 };
 
-LHGSchema(arg_to_json_schema, CURF::_2_run_completed, true, "boolean");
+LHGSchema(arg_to_json_schema, CURF::_3_run_completed, true, "boolean");
 
 #undef CURF
 
@@ -250,39 +256,43 @@ LHGSchema(arg_to_json_schema, CURF::_2_run_completed, true, "boolean");
 
 #define CURF maa::func_type_MaaQueryTaskDetail
 
-LHGOuterState(CURF::_1_node_id_list, std::vector<MaaNodeId>);
-LHGOuterState(CURF::_2_node_id_list_size, MaaSize);
+LHGOuterState(CURF::_1_entry, MaaStringBufferHandle);
+LHGOuterState(CURF::_2_node_id_list, std::vector<MaaNodeId>);
+LHGOuterState(CURF::_3_node_id_list_size, MaaSize);
 
-LHGOutput(CURF::_1_node_id_list);
-LHGHide(CURF::_2_node_id_list_size);
+LHGOutput(CURF::_2_node_id_list);
+LHGHide(CURF::_3_node_id_list_size);
 
-LHGInherit (pre_process, CURF::_1_node_id_list) {
+MaaDeclStringBuffer(_1_entry, true);
+
+LHGInherit (pre_process, CURF::_2_node_id_list) {
     void process()
     {
         if (!req.contains(_0_task_id::name)) {
             return;
         }
+
         // 不能直接使用arg, 此时还没json_to_arg
         auto v = req.at(_0_task_id::name).as<MaaTaskId>();
-        MaaSize& sz = std::get<_2_node_id_list_size::index>(state);
-        if (!MaaQueryTaskDetail(v, nullptr, &sz)) {
+        MaaSize& sz = std::get<_3_node_id_list_size::index>(state);
+        if (!MaaQueryTaskDetail(v, nullptr, nullptr, &sz)) {
             return;
         }
         auto& lst = std::get<index>(state);
         lst.resize(sz);
         std::get<index>(arg) = lst.data();
-        std::get<_2_node_id_list_size::index>(arg) = &std::get<_2_node_id_list_size::index>(state);
+        std::get<_3_node_id_list_size::index>(arg) = &std::get<_3_node_id_list_size::index>(state);
     }
 };
 
-LHGInherit (arg_to_json, CURF::_1_node_id_list, true) {
+LHGInherit (arg_to_json, CURF::_2_node_id_list, true) {
     void convert()
     {
         res[name] = std::get<index>(state);
     }
 };
 
-LHGInherit (arg_to_json_schema, CURF::_1_node_id_list, true) {
+LHGInherit (arg_to_json_schema, CURF::_2_node_id_list, true) {
     void schema()
     {
         b.type("array").items(lhg::schema::Builder().type("number").obj);
@@ -291,5 +301,4 @@ LHGInherit (arg_to_json_schema, CURF::_1_node_id_list, true) {
 };
 
 #undef CURF
-
 }
