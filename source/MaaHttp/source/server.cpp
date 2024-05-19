@@ -1,5 +1,4 @@
 #include "server.h"
-#include "spec/spec.hpp"
 
 void setup_server(
     unsigned short port,
@@ -9,9 +8,13 @@ void setup_server(
     dispatcher = new lhg::server::Dispatcher();
     server = new lhg::server::Server(dispatcher, port);
 
-    lhg::server::apply_function<lhg::maa::__function_list>(dispatcher);
-    lhg::server::apply_callback<lhg::maa::__callback_list>(dispatcher);
-    lhg::server::apply_handle<lhg::maa::__handle_list>(dispatcher);
+    bind_server_controller(dispatcher);
+    bind_server_resource(dispatcher);
+    bind_server_syncctx(dispatcher);
+    bind_server_buffer(dispatcher);
+    bind_server_toolkit(dispatcher);
+    bind_server_rest(dispatcher);
+    bind_server_misc(dispatcher);
 
     dispatcher->setup_help("/help", "maa http", "1.0.0");
 }
