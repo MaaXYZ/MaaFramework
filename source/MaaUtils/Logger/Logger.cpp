@@ -193,7 +193,7 @@ static std::string sys_info()
 #else
     utsname uts {};
     uname(&uts);
-    return std::format("{} {}", uts.sysname, uts.machine);
+    return std::format("{} {}", (const char*)uts.sysname, (const char*)uts.machine);
 #endif
 }
 
