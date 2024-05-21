@@ -43,7 +43,7 @@ jobs:
       - name: Install clang boost
         run: |
           pacman -Sy
-          pacman -S --noconfirm clang boost
+          pacman -S --noconfirm clang llvm boost
 
       - name: Build LHG
         env:
@@ -54,6 +54,8 @@ jobs:
 
           cmake --preset 'NinjaMultiSystem' \
             -DLHG_SYS_LLVM=ON \
+            -DLHG_SYS_LLVM_INC='/usr/lib/llvm/17/include' \
+            -DLHG_SYS_LLVM_LIB='/usr/lib/llvm/17/lib' \
             -DCMAKE_MAKE_PROGRAM='ninja' \
             -DCMAKE_C_COMPILER='gcc' \
             -DCMAKE_CXX_COMPILER='g++'
