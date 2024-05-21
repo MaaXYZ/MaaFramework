@@ -8,7 +8,6 @@ jobs:
     runs-on: ubuntu-latest
     container:
       image: archlinux:base-devel
-      options: --user 1001
     strategy:
       fail-fast: false
 
@@ -30,6 +29,7 @@ jobs:
 
       - name: Check git status
         run: |
+          git config --global --add safe.directory `pwd`
           git status
 
       - name: Init LHG
@@ -73,7 +73,6 @@ jobs:
           ../dump-include.sh
           ./build/bin/Release/LHGInterfaceExtractor ../source/include.h `../dump-include.sh` -I../../../include
           cd ../../..
-          git diff -p
 
       - name: Check for changes
         shell: bash
