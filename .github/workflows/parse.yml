@@ -39,6 +39,9 @@ jobs:
         run: |
           cd source/MaaHttp/LHG
           git submodule update --init --recursive
+          cd 3rdparty/include
+          ln -s ../../../../../3rdparty/include/meojson meojson
+          cd ../..
 
       - name: Use Node.js
         uses: actions/setup-node@v3
