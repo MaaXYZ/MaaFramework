@@ -97,4 +97,5 @@ jobs:
           branch: chore/update-interface
           title: 'update interface.json'
           body: 'Update `source/MaaHttp/interface.json`.'
+          base: ${{ github.ref }}
           labels: 'bot'
