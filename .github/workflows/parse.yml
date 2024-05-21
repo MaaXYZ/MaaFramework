@@ -21,7 +21,6 @@ jobs:
           pacman -Sy
           pacman -S --noconfirm cmake ninja git
 
-      # https://github.com/MaaXYZ/MaaFramework/actions/runs/5643408179/job/15285186255
       - uses: actions/checkout@v3
         with:
           submodules: true
@@ -67,6 +66,8 @@ jobs:
           ../dump-include.sh
           ./build/bin/Release/LHGInterfaceExtractor ../source/include.h `../dump-include.sh` -I../../../include
           cd ../../..
+          pwd
+          ls -a
           git diff -p
 
       - name: Check for changes
