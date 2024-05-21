@@ -58,7 +58,7 @@ jobs:
             -DLHG_SYS_LLVM_LIB='/usr/lib/llvm/17/lib' \
             -DCMAKE_MAKE_PROGRAM='ninja' \
             -DCMAKE_C_COMPILER='gcc' \
-            -DCMAKE_CXX_COMPILER='g=='
+            -DCMAKE_CXX_COMPILER='g++'
 
           cmake --build build --preset 'NinjaRelease' -j 16
           cd ../../..
