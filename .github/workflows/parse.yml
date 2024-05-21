@@ -51,6 +51,10 @@ jobs:
           CXX: 'g++'
         run: |
           cd source/MaaHttp/LHG
+          
+          cmake --version
+          ninja --version
+
           cmake --preset 'NinjaMultiSystem' \
             -DLHG_SYS_LLVM=ON \
             -DLHG_SYS_LLVM_INC='/usr/lib/llvm/17/include' \
