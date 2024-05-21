@@ -8,6 +8,7 @@
 
 #include <boost/dll.hpp>
 #include <boost/process.hpp>
+#include <meojson/json.hpp>
 
 #include "server.h"
 
@@ -270,6 +271,44 @@ int main(int argc, char* argv[])
                           .obj;
             });
 
+        std::mutex config_mtx;
+
+        disp->handle(
+            "/cfgread",
+            [&](auto&, auto& res, const auto&) {
+                std::lock_guard<std::mutex> lock(config_mtx);
+                auto opt = json::open("MaaHttpConfig.json");
+                if (opt.has_value()) {
+                    res = { { "config", opt.value() } };
+                }
+                else {
+                    res = {};
+                }
+            },
+            [](auto& req, auto& res) {
+                req = {};
+                res = lhg::schema::Builder()
+                          .prop({ { "config", lhg::schema::Builder().type("object").obj } })
+                          .obj;
+            });
+
+        disp->handle(
+            "/cfgwrite",
+            [&](auto&, auto& res, const auto& req) {
+                std::lock_guard<std::mutex> lock(config_mtx);
+                if (!req.contains("config")) {
+                    return;
+                }
+                std::ofstream file("MaaHttpConfig.json");
+                file << req.at("config").format(2) << std::endl;
+                res = {};
+            },
+            [](auto& req, auto& res) {
+                req = lhg::schema::Builder()
+                          .prop({ { "config", lhg::schema::Builder().type("object").obj } })
+                          .obj;
+                res = {};
+            });
         auto config_opt = json::open("MaaHttp.json");
         if (config_opt.has_value()) {
             const auto& config = config_opt.value();

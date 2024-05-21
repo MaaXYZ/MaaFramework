@@ -39,7 +39,7 @@ std::optional<ProcessArgvGenerator::ProcessArgv>
     auto searched_path = boost::process::search_path(stdpath);
 
     if (!std::filesystem::exists(searched_path)) {
-        LogError << "exec path not exits" << VAR(searched_path);
+        LogError << "exec path not exists" << VAR(searched_path);
         return std::nullopt;
     }
 
