@@ -21,9 +21,14 @@ jobs:
           pacman -Sy
           pacman -S --noconfirm cmake ninja git
 
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
         with:
+          fetch-depth: 1
           submodules: true
+
+      - name: Check git status
+        run: |
+          git status
 
       - name: Init LHG
         run: |
@@ -66,8 +71,6 @@ jobs:
           ../dump-include.sh
           ./build/bin/Release/LHGInterfaceExtractor ../source/include.h `../dump-include.sh` -I../../../include
           cd ../../..
-          pwd
-          ls -a
           git diff -p
 
       - name: Check for changes
