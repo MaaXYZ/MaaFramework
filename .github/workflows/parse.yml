@@ -43,9 +43,14 @@ jobs:
       - name: Build LHG
         run: |
           cd source/MaaHttp/LHG
+          ls /__w/MaaFramework/MaaFramework/source/MaaHttp/LHG/vcpkg/scripts/buildsystems/vcpkg.cmake
+          ls /__w/MaaFramework/MaaFramework/source/MaaHttp/LHG/vcpkg/scripts/buildsystems/
+          ls /__w/MaaFramework/MaaFramework/source/MaaHttp/LHG/vcpkg/scripts/
+          ls /__w/MaaFramework/MaaFramework/source/MaaHttp/LHG/vcpkg/
+          ls /__w/MaaFramework/MaaFramework/source/MaaHttp/LHG/
           cmake --preset 'NinjaMultiSystemLLVM' \
             -DLHG_SYS_LLVM=ON \
-            -DLHG_SYS_LLVM_INC='/usr/lib/llvm/17/include'
+            -DLHG_SYS_LLVM_INC='/usr/lib/llvm/17/include' \
             -DLHG_SYS_LLVM_LIB='/usr/lib/llvm/17/lib'
 
           cmake --build build --preset 'NinjaRelease' -j 16
