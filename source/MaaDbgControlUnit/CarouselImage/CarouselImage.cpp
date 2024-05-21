@@ -20,7 +20,7 @@ bool CarouselImage::connect()
     image_index_ = 0;
 
     if (!std::filesystem::exists(path_)) {
-        LogError << VAR(path_) << "not exits";
+        LogError << VAR(path_) << "not exists";
         return false;
     }
 
