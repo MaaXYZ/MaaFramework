@@ -66,21 +66,26 @@ jobs:
           cd source/MaaHttp/LHG
           ../dump-include.sh
           ./build/bin/Release/LHGInterfaceExtractor ../source/include.h `../dump-include.sh` -I../../../include
+          cd ../../..
           git diff -p
 
       - name: Check for changes
+        shell: bash
         run: |
+          pwd
           git config --global user.name 'github-actions[bot]'
           git config --global user.email 'github-actions[bot]@users.noreply.github.com'
-          if git diff --exit-code; then
+          if git diff --exit-code source/MaaHttp/interface.json; then
             echo "file_changed=false" >> $GITHUB_ENV
           else
             echo "file_changed=true" >> $GITHUB_ENV
           fi
 
       - name: Commit and push changes
+        shell: bash
         if: env.file_changed == 'true'
         run: |
+          pwd
           git checkout -b chore/update-interface
           git add source/MaaHttp/interface.json
           git commit -m 'chore(bot): update interface.json'
