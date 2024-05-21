@@ -6,7 +6,9 @@ on:
 jobs:
   ubuntu:
     runs-on: ubuntu-latest
-    container: archlinux:base-devel
+    container:
+      image: archlinux:base-devel
+      options: --user 1001
     strategy:
       fail-fast: false
 
