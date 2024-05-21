@@ -1,0 +1,60 @@
+name: build
+
+on:
+  push:
+    tags:
+      - "v*"
+    branches:
+      - "**"
+    paths:
+      - ".github/workflows/parse.yml"
+      - "source/MaaHttp/**"
+      - "include/**"
+  workflow_dispatch:
+
+jobs:
+  ubuntu:
+    runs-on: ubuntu-latest
+    container: archlinux:base-devel
+    strategy:
+      fail-fast: false
+
+    steps:
+      # maybe should explicitly update some pkg instead of all?
+      - name: Update system
+        run: |
+          pacman -Syu --noconfirm
+
+      - name: Install dep
+        run: |
+          pacman -Sy
+          pacman -S --noconfirm cmake ninja git
+
+      # https://github.com/MaaXYZ/MaaFramework/actions/runs/5643408179/job/15285186255
+      - uses: actions/checkout@v3
+        with:
+          submodules: true
+
+      - name: Install clang
+        run: |
+          pacman -Sy
+          pacman -S --noconfirm clang
+
+      - name: Build LHG
+        run: |
+          cd source/MaaHttp/LHG
+          cmake --preset 'NinjaMultiSystemLLVM' \
+            -DLHG_SYS_LLVM=ON \
+            -DLHG_SYS_LLVM_INC='/usr/lib/llvm/17/include'
+            -DLHG_SYS_LLVM_LIB='/usr/lib/llvm/17/lib'
+
+          cmake --build build --preset 'NinjaRelease' -j 16
+          cd ../../..
+
+      - name: Launch
+        shell: bash
+        run: |
+          cd source/MaaHttp/LHG
+          ../dump-include.sh
+          ./build/bin/Release/LHGInterfaceExtractor ../source/include.h `../dump-include.sh` -I../../../include
+          git diff -p
