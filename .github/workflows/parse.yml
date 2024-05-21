@@ -40,12 +40,15 @@ jobs:
           cd source/MaaHttp/LHG
           git submodule update --init --recursive
 
-      - name: Install clang
+      - name: Install clang boost
         run: |
           pacman -Sy
-          pacman -S --noconfirm clang
+          pacman -S --noconfirm clang boost
 
       - name: Build LHG
+        env:
+          CC: 'gcc'
+          CXX: 'g++'
         run: |
           cd source/MaaHttp/LHG
           cmake --preset 'NinjaMultiSystemLLVM' \
