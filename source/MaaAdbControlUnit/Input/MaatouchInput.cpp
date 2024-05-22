@@ -83,16 +83,22 @@ bool MaatouchInput::input_text(const std::string& text)
 {
     LogInfo << VAR(text);
 
-    if (std::ranges::any_of(text, [](char ch) { return static_cast<unsigned char>(ch) > 127; })) {
-        LogError << "maatouch key input does not support non-ascii text, skip" << VAR(text);
+    if (!pipe_ios_) {
+        LogError << "pipe_ios_ is nullptr";
         return false;
     }
 
-    bool ret = true;
-    for (char ch : text) {
-        ret &= press_key(ch);
+    // https://github.com/MaaAssistantArknights/MaaTouch
+    static constexpr std::string_view kTextFormat = "t {}\nc\n";
+
+    bool ret = pipe_ios_->write(std::format(kTextFormat, text));
+
+    if (!ret) {
+        LogError << "failed to write";
+        return false;
     }
-    return ret;
+
+    return true;
 }
 
 MAA_CTRL_UNIT_NS_END
