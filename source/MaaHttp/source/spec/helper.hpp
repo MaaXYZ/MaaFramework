@@ -1,28 +1,29 @@
 #pragma once
 
-#define MaaDeclStringBuffer(tag, is_call)                     \
-    LHGOutput(CURF::tag);                                     \
-    LHGInherit (pre_process, CURF::tag) {                     \
-        void process()                                        \
-        {                                                     \
-            std::get<index>(state) = MaaCreateStringBuffer(); \
-        }                                                     \
-    };                                                        \
-    LHGInherit (post_process, CURF::tag) {                    \
-        void process()                                        \
-        {                                                     \
-            MaaDestroyStringBuffer(std::get<index>(state));   \
-        }                                                     \
-    };                                                        \
-    LHGInherit (arg_to_json, CURF::tag, is_call) {            \
-        void convert()                                        \
-        {                                                     \
-            auto handle = std::get<index>(state);             \
-            auto size = MaaGetStringSize(handle);             \
-            std::string data(MaaGetString(handle), size);     \
-            res[name] = data;                                 \
-        }                                                     \
-    };                                                        \
+#define MaaDeclStringBuffer(tag, is_call)                                            \
+    LHGOutput(CURF::tag);                                                            \
+    LHGInherit (pre_process, CURF::tag) {                                            \
+        void process()                                                               \
+        {                                                                            \
+            std::get<index>(arg) = std::get<index>(state) = MaaCreateStringBuffer(); \
+        }                                                                            \
+    };                                                                               \
+    LHGInherit (post_process, CURF::tag) {                                           \
+        void process()                                                               \
+        {                                                                            \
+            MaaDestroyStringBuffer(std::get<index>(state));                          \
+        }                                                                            \
+    };                                                                               \
+    LHGInherit (arg_to_json, CURF::tag, is_call) {                                   \
+        void convert()                                                               \
+        {                                                                            \
+            auto handle = std::get<index>(state);                                    \
+            auto size = MaaGetStringSize(handle);                                    \
+            std::string data(MaaGetString(handle), size);                            \
+            std::cout << name << ' ' << data << std::endl;                           \
+            res[name] = data;                                                        \
+        }                                                                            \
+    };                                                                               \
     LHGSchema(arg_to_json_schema, CURF::tag, is_call, "string");
 
 #define MaaDeclRectOut(tag, is_call)                                 \
