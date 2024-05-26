@@ -343,9 +343,9 @@
   <compound refid="MaaUtility_8h" kind="file"><name>MaaUtility.h</name>
     <member refid="MaaUtility_8h_1a62ca053991307446cb195865497a40f1" kind="function"><name>MaaVersion</name></member>
     <member refid="MaaUtility_8h_1a1dba15d9cc61cf339c434085738f873c" kind="function"><name>MaaSetGlobalOption</name></member>
-    <member refid="MaaUtility_8h_1a2c2351a9b0a6c2ea9ec828154cb0b4db" kind="function"><name>MaaQueryRecognitionDetail</name></member>
-    <member refid="MaaUtility_8h_1afc9cc1ea9d9af7b9518b4aab0ba6012f" kind="function"><name>MaaQueryNodeDetail</name></member>
-    <member refid="MaaUtility_8h_1a502b61dd7a7f977c84ee65070a40fafa" kind="function"><name>MaaQueryTaskDetail</name></member>
+    <member refid="MaaUtility_8h_1a6b547a92ca6d54841f593b8c6518e3b7" kind="function"><name>MaaQueryRecognitionDetail</name></member>
+    <member refid="MaaUtility_8h_1a1c0038e0b38b1558e54a7f43a0d4aa3e" kind="function"><name>MaaQueryNodeDetail</name></member>
+    <member refid="MaaUtility_8h_1ac93f377005950486ac1b4f8c1562c056" kind="function"><name>MaaQueryTaskDetail</name></member>
   </compound>
   <compound refid="MaaToolkitConfig_8h" kind="file"><name>MaaToolkitConfig.h</name>
     <member refid="MaaToolkitConfig_8h_1aeca3644485baa0f1edcc0a80f744dc9b" kind="function"><name>MaaToolkitInitOptionConfig</name></member>

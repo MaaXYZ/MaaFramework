@@ -115,14 +115,18 @@
         </inbodydescription>
         <location file="include/MaaFramework/Utility/MaaUtility.h" line="41" column="9" declfile="include/MaaFramework/Utility/MaaUtility.h" declline="41" declcolumn="9"/>
       </memberdef>
-      <memberdef kind="function" id="MaaUtility_8h_1a2c2351a9b0a6c2ea9ec828154cb0b4db" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+      <memberdef kind="function" id="MaaUtility_8h_1a6b547a92ca6d54841f593b8c6518e3b7" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type><ref refid="MaaPort_8h_1a67006334d91d228121dbba7a8bf8fe05" kindref="member">MAA_FRAMEWORK_API</ref> <ref refid="MaaDef_8h_1a2f7289f2a8e07f48c6261b52a120cdf6" kindref="member">MaaBool</ref></type>
         <definition>MAA_FRAMEWORK_API MaaBool MaaQueryRecognitionDetail</definition>
-        <argsstring>(MaaRecoId reco_id, MaaBool *hit, MaaRectHandle hit_box, MaaStringBufferHandle detail_json, MaaImageListBufferHandle draws)</argsstring>
+        <argsstring>(MaaRecoId reco_id, MaaStringBufferHandle name, MaaBool *hit, MaaRectHandle hit_box, MaaStringBufferHandle detail_json, MaaImageBufferHandle raw, MaaImageListBufferHandle draws)</argsstring>
         <name>MaaQueryRecognitionDetail</name>
         <param>
           <type><ref refid="MaaDef_8h_1a7519e6a8329a32c8e3058c20ec74cda8" kindref="member">MaaRecoId</ref></type>
           <declname>reco_id</declname>
+        </param>
+        <param>
+          <type><ref refid="MaaDef_8h_1aed721aa4682b1241bc38d10f8c57a8cb" kindref="member">MaaStringBufferHandle</ref></type>
+          <declname>name</declname>
         </param>
         <param>
           <type><ref refid="MaaDef_8h_1a2f7289f2a8e07f48c6261b52a120cdf6" kindref="member">MaaBool</ref> *</type>
@@ -137,6 +141,10 @@
           <declname>detail_json</declname>
         </param>
         <param>
+          <type><ref refid="MaaDef_8h_1a30c4754980d5dfa504ce84d86668f031" kindref="member">MaaImageBufferHandle</ref></type>
+          <declname>raw</declname>
+        </param>
+        <param>
           <type><ref refid="MaaDef_8h_1afbce60b00dcf945dddefe5eeeaceb4b1" kindref="member">MaaImageListBufferHandle</ref></type>
           <declname>draws</declname>
         </param>
@@ -148,14 +156,18 @@
         </inbodydescription>
         <location file="include/MaaFramework/Utility/MaaUtility.h" line="43" column="31" declfile="include/MaaFramework/Utility/MaaUtility.h" declline="43" declcolumn="31"/>
       </memberdef>
-      <memberdef kind="function" id="MaaUtility_8h_1afc9cc1ea9d9af7b9518b4aab0ba6012f" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+      <memberdef kind="function" id="MaaUtility_8h_1a1c0038e0b38b1558e54a7f43a0d4aa3e" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type><ref refid="MaaPort_8h_1a67006334d91d228121dbba7a8bf8fe05" kindref="member">MAA_FRAMEWORK_API</ref> <ref refid="MaaDef_8h_1a2f7289f2a8e07f48c6261b52a120cdf6" kindref="member">MaaBool</ref></type>
         <definition>MAA_FRAMEWORK_API MaaBool MaaQueryNodeDetail</definition>
-        <argsstring>(MaaNodeId node_id, MaaRecoId *reco_id, MaaBool *run_completed)</argsstring>
+        <argsstring>(MaaNodeId node_id, MaaStringBufferHandle name, MaaRecoId *reco_id, MaaBool *run_completed)</argsstring>
         <name>MaaQueryNodeDetail</name>
         <param>
           <type><ref refid="MaaDef_8h_1aeedbbed1bc17d1ffd80ff719a71cfed5" kindref="member">MaaNodeId</ref></type>
           <declname>node_id</declname>
+        </param>
+        <param>
+          <type><ref refid="MaaDef_8h_1aed721aa4682b1241bc38d10f8c57a8cb" kindref="member">MaaStringBufferHandle</ref></type>
+          <declname>name</declname>
         </param>
         <param>
           <type><ref refid="MaaDef_8h_1a7519e6a8329a32c8e3058c20ec74cda8" kindref="member">MaaRecoId</ref> *</type>
@@ -171,16 +183,20 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="include/MaaFramework/Utility/MaaUtility.h" line="50" column="31" declfile="include/MaaFramework/Utility/MaaUtility.h" declline="50" declcolumn="31"/>
+        <location file="include/MaaFramework/Utility/MaaUtility.h" line="52" column="31" declfile="include/MaaFramework/Utility/MaaUtility.h" declline="52" declcolumn="31"/>
       </memberdef>
-      <memberdef kind="function" id="MaaUtility_8h_1a502b61dd7a7f977c84ee65070a40fafa" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+      <memberdef kind="function" id="MaaUtility_8h_1ac93f377005950486ac1b4f8c1562c056" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type><ref refid="MaaPort_8h_1a67006334d91d228121dbba7a8bf8fe05" kindref="member">MAA_FRAMEWORK_API</ref> <ref refid="MaaDef_8h_1a2f7289f2a8e07f48c6261b52a120cdf6" kindref="member">MaaBool</ref></type>
         <definition>MAA_FRAMEWORK_API MaaBool MaaQueryTaskDetail</definition>
-        <argsstring>(MaaTaskId task_id, MaaNodeId *node_id_list, MaaSize *node_id_list_size)</argsstring>
+        <argsstring>(MaaTaskId task_id, MaaStringBufferHandle entry, MaaNodeId *node_id_list, MaaSize *node_id_list_size)</argsstring>
         <name>MaaQueryTaskDetail</name>
         <param>
           <type><ref refid="MaaDef_8h_1a711b3db9be6db60ae4cb09e3629e42f0" kindref="member">MaaTaskId</ref></type>
           <declname>task_id</declname>
+        </param>
+        <param>
+          <type><ref refid="MaaDef_8h_1aed721aa4682b1241bc38d10f8c57a8cb" kindref="member">MaaStringBufferHandle</ref></type>
+          <declname>entry</declname>
         </param>
         <param>
           <type><ref refid="MaaDef_8h_1aeedbbed1bc17d1ffd80ff719a71cfed5" kindref="member">MaaNodeId</ref> *</type>
@@ -196,7 +212,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="include/MaaFramework/Utility/MaaUtility.h" line="55" column="31" declfile="include/MaaFramework/Utility/MaaUtility.h" declline="55" declcolumn="31"/>
+        <location file="include/MaaFramework/Utility/MaaUtility.h" line="58" column="31" declfile="include/MaaFramework/Utility/MaaUtility.h" declline="58" declcolumn="31"/>
       </memberdef>
       </sectiondef>
     <briefdescription>
