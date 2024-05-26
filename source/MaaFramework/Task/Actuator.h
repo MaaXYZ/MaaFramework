@@ -21,7 +21,7 @@ public:
     using PreTaskBoxes = std::map<std::string, cv::Rect>;
 
 public:
-    Actuator(InstanceInternalAPI* inst, const PreTaskBoxes& boxes = {});
+    Actuator(InstanceInternalAPI* inst);
 
     bool
         run(const Recognizer::Hit& reco_hit,
@@ -57,8 +57,6 @@ private:
 
 private:
     InstanceInternalAPI* inst_ = nullptr;
-    const PreTaskBoxes& pre_task_boxes_;
-
 };
 
 MAA_TASK_NS_END

@@ -297,6 +297,11 @@ CustomActionSession* InstanceMgr::custom_action_session(const std::string& name)
     return &it->second;
 }
 
+InstanceCache* InstanceMgr::cache()
+{
+    return &cache_;
+}
+
 InstanceMgr::TaskPtr InstanceMgr::make_task(std::string entry, std::string_view param)
 {
     LogInfo << VAR(entry) << VAR(param);

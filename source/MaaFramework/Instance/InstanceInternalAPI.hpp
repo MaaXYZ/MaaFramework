@@ -20,7 +20,7 @@ MAA_CTRL_NS_END
 
 MAA_NS_BEGIN
 
-class InstanceStatus;
+class InstanceCache;
 
 struct CustomRecognizerSession
 {
@@ -42,6 +42,7 @@ public:
     virtual void notify(std::string_view msg, const json::value& details = json::value()) = 0;
     virtual CustomRecognizerSession* custom_recognizer_session(const std::string& name) = 0;
     virtual CustomActionSession* custom_action_session(const std::string& name) = 0;
+    virtual InstanceCache* cache() = 0;
 };
 
 MAA_NS_END

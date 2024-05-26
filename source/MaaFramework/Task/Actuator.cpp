@@ -2,15 +2,15 @@
 
 #include "Controller/ControllerAgent.h"
 #include "Global/UniqueResultBank.h"
+#include "Instance/InstanceCache.h"
 #include "Task/CustomAction.h"
 #include "Utils/Logger.h"
 #include "Vision/TemplateComparator.h"
 
 MAA_TASK_NS_BEGIN
 
-Actuator::Actuator(InstanceInternalAPI* inst, const PreTaskBoxes& boxes)
+Actuator::Actuator(InstanceInternalAPI* inst)
     : inst_(inst)
-    , pre_task_boxes_(boxes)
 {
 }
 
@@ -213,6 +213,11 @@ bool Actuator::custom_action(
 
 cv::Rect Actuator::get_target_rect(const MAA_RES_NS::Action::Target target, const cv::Rect& cur_box)
 {
+    if (!inst_ || !inst_->cache()) {
+        LogError << "Inst or cache is null";
+        return {};
+    }
+
     using namespace MAA_RES_NS::Action;
 
     cv::Rect raw {};
@@ -221,13 +226,7 @@ cv::Rect Actuator::get_target_rect(const MAA_RES_NS::Action::Target target, cons
         raw = cur_box;
         break;
     case Target::Type::PreTask: {
-        const std::string& pre_task_name = std::get<std::string>(target.param);
-        if (auto it = pre_task_boxes_.find(pre_task_name); it == pre_task_boxes_.end()) {
-            LogError << "Pre task not found" << VAR(pre_task_name);
-        }
-        else {
-            raw = it->second;
-        }
+        raw = inst_->cache()->get_pre_task_box(std::get<std::string>(target.param));
     } break;
     case Target::Type::Region:
         raw = std::get<cv::Rect>(target.param);

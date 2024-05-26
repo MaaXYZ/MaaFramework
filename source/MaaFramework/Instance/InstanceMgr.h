@@ -4,6 +4,7 @@
 
 #include "API/MaaTypes.h"
 #include "Base/AsyncRunner.hpp"
+#include "InstanceCache.h"
 #include "InstanceInternalAPI.hpp"
 #include "Task/PipelineTask.h"
 #include "Utils/MessageNotifier.hpp"
@@ -59,6 +60,7 @@ public: // from InstanceInternalAPI
     virtual void notify(std::string_view msg, const json::value& details = json::value()) override;
     virtual CustomRecognizerSession* custom_recognizer_session(const std::string& name) override;
     virtual CustomActionSession* custom_action_session(const std::string& name) override;
+    virtual InstanceCache* cache() override;
 
 private:
     using TaskPtr = std::shared_ptr<TaskNS::PipelineTask>;
@@ -75,6 +77,7 @@ private:
 
     std::unordered_map<std::string, CustomRecognizerSession> custom_recognizer_sessions_;
     std::unordered_map<std::string, CustomActionSession> custom_action_sessions_;
+    InstanceCache cache_;
 
     std::unique_ptr<AsyncRunner<TaskPtr>> task_runner_ = nullptr;
     MessageNotifier<MaaInstanceCallback> notifier;

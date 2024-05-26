@@ -3,6 +3,7 @@
 #include "Controller/ControllerAgent.h"
 #include "Global/GlobalOptionMgr.h"
 #include "Global/UniqueResultBank.h"
+#include "Instance/InstanceCache.h"
 #include "MaaFramework/MaaMsg.h"
 #include "Resource/ResourceMgr.h"
 #include "Utils/JsonExt.hpp"
@@ -151,6 +152,11 @@ PipelineTask::NodeStatus PipelineTask::find_first_and_run(
     std::chrono::milliseconds timeout,
     /*out*/ MAA_RES_NS::TaskData& found_data)
 {
+    if (!inst_ || !inst_->cache()) {
+        LogError << "Inst or cache is null";
+        return NodeStatus::InternalError;
+    }
+
     HitDetail hits;
 
     auto start_time = std::chrono::steady_clock::now();
@@ -175,7 +181,7 @@ PipelineTask::NodeStatus PipelineTask::find_first_and_run(
     LogInfo << "Task hit:" << hits.task_data.name << VAR(hits.reco_uid) << VAR(hits.reco_hit)
             << VAR(hits.reco_detail);
 
-    hit_cache_.insert_or_assign(hits.task_data.name, hits.reco_hit);
+    inst_->cache()->set_pre_task_box(hits.task_data.name, hits.reco_hit);
 
     auto run_ret = run_task(hits);
 
@@ -278,7 +284,7 @@ PipelineTask::NodeStatus PipelineTask::run_task(const HitDetail& hits)
         return NodeStatus::Interrupted;
     }
 
-    Actuator actuator(inst_, hit_cache_);
+    Actuator actuator(inst_);
 
     const std::string& name = hits.task_data.name;
     uint64_t& run_times = run_times_map_[name];

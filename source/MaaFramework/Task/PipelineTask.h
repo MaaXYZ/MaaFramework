@@ -129,7 +129,6 @@ private:
     std::string pre_hit_task_;
 
     std::map<std::string, uint64_t> run_times_map_;
-    Actuator::PreTaskBoxes hit_cache_;
 
     TaskDataMgr data_mgr_;
 
