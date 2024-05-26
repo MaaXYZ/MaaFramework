@@ -1745,6 +1745,10 @@
           "type": "MaaRecoId"
         },
         {
+          "name": "name",
+          "type": "MaaStringBufferHandle"
+        },
+        {
           "name": "hit",
           "type": "MaaBool *"
         },
@@ -1755,6 +1759,10 @@
         {
           "name": "detail_json",
           "type": "MaaStringBufferHandle"
+        },
+        {
+          "name": "raw",
+          "type": "MaaImageBufferHandle"
         },
         {
           "name": "draws",
@@ -1769,6 +1777,10 @@
         {
           "name": "node_id",
           "type": "MaaNodeId"
+        },
+        {
+          "name": "name",
+          "type": "MaaStringBufferHandle"
         },
         {
           "name": "reco_id",
@@ -1787,6 +1799,10 @@
         {
           "name": "task_id",
           "type": "MaaTaskId"
+        },
+        {
+          "name": "entry",
+          "type": "MaaStringBufferHandle"
         },
         {
           "name": "node_id_list",

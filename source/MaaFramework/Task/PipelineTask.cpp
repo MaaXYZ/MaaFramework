@@ -115,33 +115,43 @@ bool PipelineTask::set_param(const json::value& param)
     return data_mgr_.set_param(param);
 }
 
-bool PipelineTask::query_node_detail(MaaNodeId node_id, MaaRecoId& reco_id, bool& completed)
+bool PipelineTask::query_node_detail(
+    MaaNodeId node_id,
+    std::string& name,
+    MaaRecoId& reco_id,
+    bool& completed)
 {
-    auto& bank = UniqueResultBank::get_instance();
+    const auto& bank = UniqueResultBank::get_instance();
+
     auto detail_any = bank.get_node_detail(node_id);
     if (!detail_any.has_value()) {
         LogError << "failed to query" << VAR(node_id);
         return false;
     }
-
     auto detail = std::any_cast<NodeDetail>(detail_any);
 
+    name = detail.name;
     reco_id = detail.hits.reco_uid;
     completed = detail.status == NodeStatus::Success;
 
     return true;
 }
 
-bool PipelineTask::query_task_detail(MaaTaskId task_id, std::vector<MaaNodeId>& node_id_list)
+bool PipelineTask::query_task_detail(
+    MaaTaskId task_id,
+    std::string& entry,
+    std::vector<MaaNodeId>& node_id_list)
 {
-    auto& bank = UniqueResultBank::get_instance();
+    const auto& bank = UniqueResultBank::get_instance();
+
     auto detail_any = bank.get_task_detail(task_id);
     if (!detail_any.has_value()) {
         LogError << "failed to query" << VAR(task_id);
         return false;
     }
-
     auto detail = std::any_cast<TaskDetail>(detail_any);
+
+    entry = detail.entry;
     node_id_list = detail.node_ids;
 
     return true;
@@ -289,7 +299,7 @@ PipelineTask::NodeStatus PipelineTask::run_task(const HitDetail& hits)
     const std::string& name = hits.task_data.name;
     uint64_t& run_times = run_times_map_[name];
 
-    NodeDetail node_detail { .hits = hits };
+    NodeDetail node_detail { .name = name, .hits = hits };
 
     if (debug_mode() || hits.task_data.focus) {
         json::value cb_detail = basic_info() | node_detail_to_json(node_detail);
@@ -347,7 +357,7 @@ void PipelineTask::add_node_detail(int64_t node_id, NodeDetail detail)
     auto& bank = UniqueResultBank::get_instance();
     bank.add_node_detail(node_id, detail);
 
-    TaskDetail task_detail;
+    TaskDetail task_detail { .entry = entry_ };
     std::any task_detail_any = bank.get_task_detail(task_id_);
     if (task_detail_any.has_value()) {
         task_detail = std::any_cast<TaskDetail>(task_detail_any);

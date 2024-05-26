@@ -132,7 +132,7 @@ public:
 
     MaaStatus status();
     std::shared_ptr<InstanceAction> set_param(const json::object& param);
-    std::shared_ptr<std::vector<MaaNodeId>> query_detail();
+    std::shared_ptr<TaskDetail> query_detail();
 
     coro::Promise<MaaStatus> wait() { return status_; }
 
@@ -402,17 +402,11 @@ inline std::shared_ptr<InstanceAction> InstanceAction::set_param(const json::obj
     return shared_from_this();
 }
 
-inline std::shared_ptr<std::vector<MaaNodeId>> InstanceAction::query_detail()
+inline std::shared_ptr<TaskDetail> InstanceAction::query_detail()
 {
-    MaaSize size;
-    if (!MaaQueryTaskDetail(id_, nullptr, &size)) {
-        throw FunctionFailed("MaaQueryTaskDetail");
-    }
-    std::vector<MaaNodeId> result(size);
-    if (!MaaQueryTaskDetail(id_, result.data(), &size)) {
-        throw FunctionFailed("MaaQueryTaskDetail");
-    }
-    return std::make_shared<std::vector<MaaNodeId>>(std::move(result));
+    auto detail = std::make_shared<TaskDetail>();
+    detail->query(id_);
+    return detail;
 }
 
 }

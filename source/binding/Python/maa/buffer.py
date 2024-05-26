@@ -226,6 +226,9 @@ class ImageBuffer:
 
     def get(self) -> numpy.ndarray:
         buff = Library.framework.MaaGetImageRawData(self._handle)
+        if not buff:
+            return numpy.ndarray((0, 0, 3), dtype=numpy.uint8)
+
         w = Library.framework.MaaGetImageWidth(self._handle)
         h = Library.framework.MaaGetImageHeight(self._handle)
         # t = Library.framework.MaaGetImageType(self._handle)

@@ -48,8 +48,16 @@ public:
 
     bool set_param(const json::value& param);
 
-    static bool query_node_detail(MaaNodeId node_id, MaaRecoId& reco_id, bool& completed);
-    static bool query_task_detail(MaaTaskId task_id, std::vector<MaaNodeId>& node_id_list);
+    static bool query_node_detail(
+        MaaNodeId node_id,
+        std::string& name,
+        MaaRecoId& reco_id,
+        bool& completed);
+
+    static bool query_task_detail(
+        MaaTaskId task_id,
+        std::string& entry,
+        std::vector<MaaNodeId>& node_id_list);
 
 private:
     enum class NodeStatus
@@ -72,12 +80,15 @@ private:
     struct NodeDetail
     {
         const MaaNodeId node_id = ++s_global_node_id;
+
+        std::string name;
         HitDetail hits;
         NodeStatus status = NodeStatus::InternalError;
     };
 
     struct TaskDetail
     {
+        std::string entry;
         std::vector<MaaNodeId> node_ids;
     };
 

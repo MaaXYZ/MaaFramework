@@ -17,20 +17,24 @@ class _Framework:
     @staticmethod
     def MaaQueryRecognitionDetail(
         reco_id: MaaRecoId,
+        name: MaaStringBufferHandle,
         hit: ctypes.POINTER(MaaBool),
         hit_box: MaaRectHandle,
         detail_json: MaaStringBufferHandle,
+        raw: MaaImageBufferHandle,
         draws: MaaImageListBufferHandle,
     ) -> MaaBool: ...
     @staticmethod
     def MaaQueryNodeDetail(
         node_id: MaaNodeId,
+        name: MaaStringBufferHandle,
         reco_id: ctypes.POINTER(MaaRecoId),
         run_completed: ctypes.POINTER(MaaBool),
     ) -> MaaBool: ...
     @staticmethod
     def MaaQueryTaskDetail(
         task_id: MaaTaskId,
+        entry: MaaStringBufferHandle,
         node_id_list: ctypes.POINTER(MaaRecoId),
         node_id_list_size: ctypes.POINTER(MaaSize),
     ) -> MaaBool: ...
