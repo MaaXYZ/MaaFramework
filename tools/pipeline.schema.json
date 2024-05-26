@@ -31,8 +31,11 @@
                         "Click",
                         "Swipe",
                         "Key",
+                        "InputText",
+                        "Text",
                         "StartApp",
                         "StopApp",
+                        "StopTask",
                         "Custom"
                     ],
                     "default": "DoNothing"
@@ -134,26 +137,7 @@
                     "$ref": "#/definitions/tasklist",
                     "default": ""
                 },
-                "threshold": {
-                    "description": "模板匹配阈值。可选，默认 0.7 。",
-                    "anyOf": [
-                        {
-                            "type": "number",
-                            "default": 0.7,
-                            "minimum": 0,
-                            "maximum": 1
-                        },
-                        {
-                            "type": "array",
-                            "items": {
-                                "type": "number",
-                                "default": 0.7,
-                                "minimum": 0,
-                                "maximum": 1
-                            }
-                        }
-                    ]
-                },
+                "threshold": {},
                 "method": {
                     "description": "模板匹配算法，即 cv::TemplateMatchModes。可选，默认 5 ",
                     "enum": [
@@ -176,11 +160,7 @@
                     "description": "颜色上限值。必选。最内层 list 长度需和 method 的通道数一致。",
                     "$ref": "#/definitions/colorlist"
                 },
-                "count": {
-                    "description": "符合的点的数量要求。可选，默认 1。",
-                    "type": "integer",
-                    "default": 1
-                },
+                "count": {},
                 "connected": {
                     "description": "是否是相连的点才会被计数。可选，默认否。",
                     "type": "boolean",
@@ -196,11 +176,7 @@
                     "type": "boolean",
                     "default": false
                 },
-                "model": {
-                    "description": "模型 文件夹 路径。使用 model/ocr 文件夹的相对路径。可选，默认为空。",
-                    "type": "string",
-                    "default": ""
-                },
+                "model": {},
                 "cls_size": {
                     "description": "总分类数，必选。",
                     "type": "integer",
@@ -213,9 +189,24 @@
                         "type": "string"
                     }
                 },
-                "expected": {
-                    "description": "期望的分类下标。必选",
-                    "$ref": "#/definitions/expected_type"
+                "expected": {},
+                "detector": {
+                    "description": "特征检测器。可选，默认 SIFT。",
+                    "enum": [
+                        "SIFT",
+                        "KAZE",
+                        "AKAZE",
+                        "BRISK",
+                        "ORB"
+                    ],
+                    "default": "SIFT"
+                },
+                "ratio": {
+                    "description": "KNN 匹配算法的距离比值，[0 - 1.0], 越大则匹配越宽松（更容易连线）。可选，默认 0.6。",
+                    "type": "number",
+                    "default": 0.6,
+                    "minimum": 0,
+                    "maximum": 1
                 },
                 "custom_recognition": {
                     "description": "识别器名，同 MaaRegisterCustomRecognizer 接口传入的识别器名。必选。",
@@ -226,21 +217,8 @@
                     "description": "识别器参数，任意类型，会在执行时透传。可选，默认空 json，即 {}",
                     "default": {}
                 },
-                "target": {
-                    "description": "等待的目标。可选，默认 true。",
-                    "$ref": "#/definitions/target_type",
-                    "default": true
-                },
-                "target_offset": {
-                    "description": "在 target 的基础上额外移动再作为等待目标，四个值分别相加。可选，默认 [0, 0, 0, 0]。",
-                    "$ref": "#/definitions/rect",
-                    "default": [
-                        0,
-                        0,
-                        0,
-                        0
-                    ]
-                },
+                "target": {},
+                "target_offset": {},
                 "begin": {
                     "description": "滑动起点。可选，默认 true。",
                     "$ref": "#/definitions/target_type",
@@ -281,11 +259,12 @@
                     "$ref": "#/definitions/keylist",
                     "default": 0
                 },
-                "package": {
-                    "description": "启动入口。可选，默认空。",
+                "input_text": {
+                    "description": "要输入的文本，部分控制器仅支持 ascii。",
                     "type": "string",
                     "default": ""
                 },
+                "package": {},
                 "custom_action": {
                     "description": "动作名，同 MaaRegisterCustomAction 接口传入的动作名。必选。",
                     "type": "string",
@@ -297,300 +276,308 @@
                 }
             },
             "additionalProperties": false,
-            "dependenciesSchemas": {
+            "dependencies": {
                 "recognition": {
                     "oneOf": [
                         {
+                            "$comment": "DirectHit",
+                            "properties": {
+                                "recognition": {
+                                    "const": "DirectHit"
+                                }
+                            }
+                        },
+                        {
                             "$comment": "TemplateMatch",
-                            "if": {
-                                "required": [
-                                    "recognition"
-                                ],
-                                "properties": {
-                                    "recognition": {
-                                        "enum": [
-                                            "TemplateMatch"
-                                        ]
-                                    }
-                                }
-                            },
-                            "then": {
-                                "required": [
-                                    "template"
-                                ]
-                            }
-                        },
-                        {
-                            "$comment": "FeatureMatch",
-                            "if": {
-                                "required": [
-                                    "recognition"
-                                ],
-                                "properties": {
-                                    "recognition": {
-                                        "enum": [
-                                            "FeatureMatch"
-                                        ]
-                                    }
-                                }
-                            },
-                            "then": {
-                                "required": [
-                                    "template"
-                                ]
-                            }
-                        },
-                        {
-                            "$comment": "ColorMatch",
-                            "if": {
-                                "required": [
-                                    "recognition"
-                                ],
-                                "properties": {
-                                    "recognition": {
-                                        "enum": [
-                                            "ColorMatch"
-                                        ]
-                                    }
-                                }
-                            },
-                            "then": {
-                                "required": [
-                                    "lower",
-                                    "upper"
-                                ],
-                                "properties": {
-                                    "method": {
-                                        "description": "颜色匹配方式。即 cv::ColorConversionCodes。可选，默认 4 (RGB)。\n常用值：4 (RGB, 3 通道), 40 (HSV, 3 通道), 6 (GRAY, 1 通道)。",
-                                        "type": "integer",
-                                        "default": 4
-                                    }
-                                }
-                            }
-                        },
-                        {
-                            "$comment": "OCR",
-                            "if": {
-                                "required": [
-                                    "recognition"
-                                ],
-                                "properties": {
-                                    "recognition": {
-                                        "enum": [
-                                            "OCR"
-                                        ]
-                                    }
+                            "properties": {
+                                "recognition": {
+                                    "const": "TemplateMatch"
                                 },
-                                "not": {
-                                    "required": [
-                                        "expected_doc"
+                                "threshold": {
+                                    "description": "模板匹配阈值。可选，默认 0.7 。",
+                                    "anyOf": [
+                                        {
+                                            "type": "number",
+                                            "default": 0.7,
+                                            "minimum": 0,
+                                            "maximum": 1
+                                        },
+                                        {
+                                            "type": "array",
+                                            "items": {
+                                                "type": "number",
+                                                "default": 0.7,
+                                                "minimum": 0,
+                                                "maximum": 1
+                                            }
+                                        }
                                     ]
                                 }
                             },
-                            "then": {
-                                "required": [
-                                    "expected"
-                                ],
-                                "properties": {
-                                    "expected": {
-                                        "description": "期望的结果，支持正则。必选（除非通过接口单独设置）。",
-                                        "anyOf": [
-                                            {
+                            "required": [
+                                "template"
+                            ]
+                        },
+                        {
+                            "$comment": "FeatureMatch",
+                            "properties": {
+                                "recognition": {
+                                    "const": "FeatureMatch"
+                                },
+                                "count": {
+                                    "description": "匹配的特征点的数量要求（阈值），默认 4。",
+                                    "type": "integer",
+                                    "default": 4
+                                }
+                            },
+                            "required": [
+                                "template"
+                            ]
+                        },
+                        {
+                            "$comment": "ColorMatch",
+                            "properties": {
+                                "recognition": {
+                                    "const": "ColorMatch"
+                                },
+                                "method": {
+                                    "description": "颜色匹配方式。即 cv::ColorConversionCodes。可选，默认 4 (RGB)。\n常用值：4 (RGB, 3 通道), 40 (HSV, 3 通道), 6 (GRAY, 1 通道)。",
+                                    "type": "integer",
+                                    "default": 4
+                                },
+                                "count": {
+                                    "description": "符合的点的数量要求。可选，默认 1。",
+                                    "type": "integer",
+                                    "default": 1
+                                }
+                            },
+                            "required": [
+                                "lower",
+                                "upper"
+                            ]
+                        },
+                        {
+                            "$comment": "OCR",
+                            "properties": {
+                                "recognition": {
+                                    "const": "OCR"
+                                },
+                                "model": {
+                                    "description": "模型 文件夹 路径。使用 model/ocr 文件夹的相对路径。可选，默认为空。",
+                                    "type": "string",
+                                    "default": ""
+                                },
+                                "expected": {
+                                    "description": "期望的结果，支持正则。必选（除非通过接口单独设置）。",
+                                    "anyOf": [
+                                        {
+                                            "type": "string"
+                                        },
+                                        {
+                                            "type": "array",
+                                            "items": {
                                                 "type": "string"
                                             },
-                                            {
-                                                "type": "array",
-                                                "items": {
-                                                    "type": "string"
-                                                },
-                                                "minItems": 1
-                                            }
-                                        ]
-                                    }
+                                            "minItems": 1
+                                        }
+                                    ]
                                 }
-                            }
+                            },
+                            "not": {
+                                "required": [
+                                    "expected_doc"
+                                ]
+                            },
+                            "required": [
+                                "expected"
+                            ]
                         },
                         {
                             "$comment": "NeuralNetworkClassify",
-                            "if": {
-                                "required": [
-                                    "recognition"
-                                ],
-                                "properties": {
-                                    "recognition": {
-                                        "enum": [
-                                            "NeuralNetworkClassify"
-                                        ]
-                                    }
+                            "properties": {
+                                "recognition": {
+                                    "const": "NeuralNetworkClassify"
+                                },
+                                "model": {
+                                    "description": "模型文件路径。使用 model/classify 文件夹的相对路径。必选。",
+                                    "type": "string",
+                                    "default": ""
+                                },
+                                "expected": {
+                                    "description": "期望的分类下标。必选",
+                                    "$ref": "#/definitions/expected_type"
                                 }
                             },
-                            "then": {
-                                "required": [
-                                    "cls_size",
-                                    "model",
-                                    "expected"
-                                ],
-                                "properties": {
-                                    "model": {
-                                        "description": "模型文件路径。使用 model/classify 文件夹的相对路径。必选。",
-                                        "type": "string",
-                                        "default": ""
-                                    }
-                                }
-                            }
+                            "required": [
+                                "cls_size",
+                                "model",
+                                "expected"
+                            ]
                         },
                         {
                             "$comment": "NeuralNetworkDetect",
-                            "if": {
-                                "required": [
-                                    "recognition"
-                                ],
-                                "properties": {
-                                    "recognition": {
-                                        "enum": [
-                                            "NeuralNetworkDetect"
-                                        ]
-                                    }
-                                }
-                            },
-                            "then": {
-                                "required": [
-                                    "cls_size",
-                                    "model",
-                                    "expected"
-                                ],
-                                "properties": {
-                                    "model": {
-                                        "description": "模型文件路径。使用 model/detect 文件夹的相对路径。必选。",
-                                        "type": "string",
-                                        "default": ""
-                                    },
-                                    "threshold": {
-                                        "description": "模型置信度阈值。可选，默认 0.3 。",
-                                        "anyOf": [
-                                            {
+                            "properties": {
+                                "recognition": {
+                                    "const": "NeuralNetworkDetect"
+                                },
+                                "model": {
+                                    "description": "模型文件路径。使用 model/detect 文件夹的相对路径。必选。",
+                                    "type": "string",
+                                    "default": ""
+                                },
+                                "threshold": {
+                                    "description": "模型置信度阈值。可选，默认 0.3 。",
+                                    "anyOf": [
+                                        {
+                                            "type": "number"
+                                        },
+                                        {
+                                            "type": "array",
+                                            "items": {
                                                 "type": "number"
                                             },
-                                            {
-                                                "type": "array",
-                                                "items": {
-                                                    "type": "number"
-                                                },
-                                                "minItems": 1
-                                            }
-                                        ],
-                                        "default": 0.3
-                                    }
+                                            "minItems": 1
+                                        }
+                                    ],
+                                    "default": 0.3
+                                },
+                                "expected": {
+                                    "description": "期望的分类下标。必选",
+                                    "$ref": "#/definitions/expected_type"
                                 }
-                            }
+                            },
+                            "required": [
+                                "cls_size",
+                                "model",
+                                "expected"
+                            ]
                         },
                         {
                             "$comment": "Custom",
-                            "if": {
-                                "required": [
-                                    "recognition"
-                                ],
-                                "properties": {
-                                    "recognition": {
-                                        "enum": [
-                                            "Custom"
-                                        ]
-                                    }
+                            "properties": {
+                                "recognition": {
+                                    "const": "Custom"
                                 }
                             },
-                            "then": {
-                                "required": [
-                                    "custom_recognition"
-                                ]
-                            }
+                            "required": [
+                                "custom_recognition"
+                            ]
                         }
                     ]
                 },
                 "action": {
                     "oneOf": [
                         {
-                            "$comment": "Swipe",
-                            "if": {
-                                "required": [
-                                    "action"
-                                ],
-                                "properties": {
-                                    "action": {
-                                        "enum": [
-                                            "Swipe"
-                                        ]
-                                    }
+                            "$comment": "DoNothing",
+                            "properties": {
+                                "action": {
+                                    "const": "DoNothing"
                                 }
-                            },
-                            "then": {
-                                "required": [
-                                    "end"
-                                ]
                             }
                         },
                         {
-                            "$comment": "Key",
-                            "if": {
-                                "required": [
-                                    "action"
-                                ],
-                                "properties": {
-                                    "action": {
-                                        "enum": [
-                                            "Key"
-                                        ]
-                                    }
+                            "$comment": "Click",
+                            "properties": {
+                                "action": {
+                                    "const": "Click"
+                                },
+                                "target": {
+                                    "description": "点击的位置。可选，默认 true。",
+                                    "$ref": "#/definitions/target_type",
+                                    "default": true
+                                },
+                                "target_offset": {
+                                    "description": "在 target 的基础上额外移动再点击，四个值分别相加。可选，默认 [0, 0, 0, 0]。",
+                                    "$ref": "#/definitions/rect",
+                                    "default": [
+                                        0,
+                                        0,
+                                        0,
+                                        0
+                                    ]
+                                }
+                            }
+                        },
+                        {
+                            "$comment": "Swipe",
+                            "properties": {
+                                "action": {
+                                    "const": "Swipe"
                                 }
                             },
-                            "then": {
-                                "required": [
-                                    "key"
-                                ]
+                            "required": [
+                                "end"
+                            ]
+                        },
+                        {
+                            "$comment": "Key",
+                            "properties": {
+                                "action": {
+                                    "const": "Key"
+                                }
+                            },
+                            "required": [
+                                "key"
+                            ]
+                        },
+                        {
+                            "$comment": "InputText/Text",
+                            "properties": {
+                                "action": {
+                                    "enum": [
+                                        "InputText",
+                                        "Text"
+                                    ]
+                                }
+                            },
+                            "required": [
+                                "input_text"
+                            ]
+                        },
+                        {
+                            "$comment": "StartApp",
+                            "properties": {
+                                "action": {
+                                    "const": "StartApp"
+                                },
+                                "package": {
+                                    "description": "启动入口。可选，默认空。",
+                                    "type": "string",
+                                    "default": ""
+                                }
                             }
                         },
                         {
                             "$comment": "StopApp",
-                            "if": {
-                                "required": [
-                                    "action"
-                                ],
-                                "properties": {
-                                    "action": {
-                                        "enum": [
-                                            "StopApp"
-                                        ]
-                                    }
+                            "properties": {
+                                "action": {
+                                    "const": "StopApp"
+                                },
+                                "package": {
+                                    "description": "关闭要关闭的程序。可选，默认空。",
+                                    "type": "string",
+                                    "default": ""
                                 }
-                            },
-                            "then": {
-                                "properties": {
-                                    "package": {
-                                        "description": "关闭要关闭的程序。可选，默认空。",
-                                        "type": "string",
-                                        "default": ""
-                                    }
+                            }
+                        },
+                        {
+                            "$comment": "StopTask",
+                            "properties": {
+                                "action": {
+                                    "const": "StopTask"
                                 }
                             }
                         },
                         {
                             "$comment": "Custom",
-                            "if": {
-                                "required": [
-                                    "action"
-                                ],
-                                "properties": {
-                                    "action": {
-                                        "enum": [
-                                            "Custom"
-                                        ]
-                                    }
+                            "properties": {
+                                "action": {
+                                    "const": "Custom"
                                 }
                             },
-                            "then": {
-                                "required": [
-                                    "custom_action"
-                                ]
-                            }
+                            "required": [
+                                "custom_action"
+                            ]
                         }
                     ]
                 }
