@@ -21,8 +21,8 @@ class RecognitionDetail:
     name: str
     hit_box: Optional[Rect]
     detail: Dict
-    raw: numpy.ndarray
-    draws: List[numpy.ndarray]
+    raw: numpy.ndarray          # Instance.set_debug_message(true) to get this
+    draws: List[numpy.ndarray]  # Instance.set_debug_message(true) to get this
 
 
 @dataclass
@@ -140,7 +140,7 @@ class Instance:
 
     async def run_recognition(
         self, task_type: str, param: Dict = {}
-    ) -> Optional[NodeDetail]:
+    ) -> Optional[RecognitionDetail]:
         """
         Async run a recognition.
 
@@ -157,7 +157,7 @@ class Instance:
         if not detail or not detail.node_details:
             return None
         
-        return detail.node_details[0]
+        return detail.node_details[0].recognition
 
     async def run_action(
         self, task_type: str, param: Dict = {}
@@ -167,7 +167,7 @@ class Instance:
 
         :param task_type: The name of the action.
         :param param: The param of the action.
-        :return: details of the action.
+        :return: details of the node.
         """
 
         future = self.post_action(task_type, param)
