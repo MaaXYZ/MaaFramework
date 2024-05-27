@@ -116,7 +116,7 @@ async def main():
         print("pipeline failed")
         raise RuntimeError("pipeline failed")
 
-    detail = await maa_inst.run_recogintion("Rec", diff)
+    detail = await maa_inst.run_recognition("Rec", diff)
     if detail:
         print(f"reco detail: {detail}")
     else:

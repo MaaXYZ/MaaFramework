@@ -138,9 +138,9 @@ class Instance:
         await future.wait()
         return future.get()
 
-    async def run_recogintion(
+    async def run_recognition(
         self, task_type: str, param: Dict = {}
-    ) -> Optional[TaskDetail]:
+    ) -> Optional[NodeDetail]:
         """
         Async run a recognition.
 
@@ -151,11 +151,17 @@ class Instance:
 
         future = self.post_recognition(task_type, param)
         await future.wait()
-        return future.get()
+
+        detail = future.get()
+        
+        if not detail or not detail.node_details:
+            return None
+        
+        return detail.node_details[0]
 
     async def run_action(
         self, task_type: str, param: Dict = {}
-    ) -> Optional[TaskDetail]:
+    ) -> Optional[NodeDetail]:
         """
         Async run a action.
 
@@ -166,7 +172,13 @@ class Instance:
 
         future = self.post_action(task_type, param)
         await future.wait()
-        return future.get()
+
+        detail = future.get()
+        
+        if not detail or not detail.node_details:
+            return None
+        
+        return detail.node_details[0]
 
     def post_task(self, task_type: str, param: Any = {}) -> TaskFuture:
         """
