@@ -65,6 +65,9 @@ It offers low-code simplicity while maintaining high extensibility. The framewor
 - [MRA](https://github.com/MaaXYZ/MaaResonance) Maa Resonance  
   A Conductor Assistant based on MAA's new architecture. Image technology + simulation control, no more clicking! Powered by MaaFramework.
 
+- [MaaHatsuboshiTA](https://github.com/Carpenter-MK1/MaaHatsuboshiTA) Hatsuboshi Teaching Assistant   
+  A Tool For Producers PLaying Gakuen-Idolmaster. Powered by MaaFramework.
+
 ## Eco-Building
 
 MAA is planned to be a category of projects rather than just a single piece of software.
