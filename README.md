@@ -66,7 +66,7 @@ _✨ 基于图像识别的自动化黑盒测试框架 ✨_
   基于全新架构的 列车长 小助手。图像技术 + 模拟控制，解放双手！由 MaaFramework 强力驱动！
 
  - [MaaHatsuboshiTA](https://github.com/Carpenter-MK1/MaaHatsuboshiTA) 学院偶像大师 初星助教  
-   基于全新架构的制作人代肝工具，后面忘了！总之由 MaaFramework 强力驱动！ 
+   基于全新架构的制作人代肝工具，养肝护眼 + 节省时间，~~出轨美铃！~~ 由 MaaFramework 强力驱动！ 
 
 ## 生态共建
 
