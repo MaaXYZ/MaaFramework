@@ -169,6 +169,7 @@ std::string ExecAgentBase::handle_command(const json::value& cmd)
         { "text", std::bind(&ExecAgentBase::ctx_input_text, this, std::placeholders::_1) },
         { "TouchDown", std::bind(&ExecAgentBase::ctx_touch_down, this, std::placeholders::_1) },
         { "touch_down", std::bind(&ExecAgentBase::ctx_touch_down, this, std::placeholders::_1) },
+        { "touchdown", std::bind(&ExecAgentBase::ctx_touch_down, this, std::placeholders::_1) },
         { "TouchMove", std::bind(&ExecAgentBase::ctx_touch_move, this, std::placeholders::_1) },
         { "touch_move", std::bind(&ExecAgentBase::ctx_touch_move, this, std::placeholders::_1) },
         { "touchmove", std::bind(&ExecAgentBase::ctx_touch_move, this, std::placeholders::_1) },
