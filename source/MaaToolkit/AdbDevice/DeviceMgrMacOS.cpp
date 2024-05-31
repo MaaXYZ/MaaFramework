@@ -3,7 +3,7 @@
 #include "DeviceMgrMacOS.h"
 
 #include <filesystem>
-#include <map>
+#include <unordered_map>
 #include <ranges>
 
 #include "Utils/IOStream/BoostIO.hpp"
@@ -23,7 +23,7 @@ struct EmulatorConstantData
 
 std::filesystem::path get_adb_path(const EmulatorConstantData& emulator, os_pid pid);
 
-static const std::map<std::string, EmulatorConstantData> kEmulators = {
+static const std::unordered_map<std::string, EmulatorConstantData> kEmulators = {
     { "Nox",
       { .keyword = "Nox",
         .adb_candidate_paths = { "adb"_path },

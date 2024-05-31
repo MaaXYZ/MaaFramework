@@ -40,7 +40,7 @@ private:
 
     std::vector<Emulator> find_emulators() const;
 
-    static const std::map<std::string, EmulatorConstantData> kEmulators;
+    static const std::unordered_map<std::string, EmulatorConstantData> kEmulators;
 };
 
 MAA_TOOLKIT_NS_END

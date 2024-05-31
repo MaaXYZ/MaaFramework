@@ -5,7 +5,7 @@
 #include "DeviceMgrWin32.h"
 
 #include <filesystem>
-#include <map>
+#include <unordered_map>
 #include <ranges>
 
 #include <Psapi.h>
@@ -19,7 +19,7 @@ MAA_TOOLKIT_NS_BEGIN
 
 using namespace path_literals;
 
-const std::map<std::string, DeviceMgrWin32::EmulatorConstantData> DeviceMgrWin32::kEmulators = {
+const std::unordered_map<std::string, DeviceMgrWin32::EmulatorConstantData> DeviceMgrWin32::kEmulators = {
     { "BlueStacks",
       { .keyword = "HD-Player",
         .adb_candidate_paths = { "HD-Adb.exe"_path, "Engine\\ProgramFiles\\HD-Adb.exe"_path },
