@@ -404,13 +404,25 @@ bool PipelineResMgr::parse_recognition(
     const std::unordered_map<std::string, Type> kRecTypeMap = {
         { kDefaultRecognitionFlag, default_type },
         { "DirectHit", Type::DirectHit },
+        { "directhit", Type::DirectHit },
         { "TemplateMatch", Type::TemplateMatch },
+        { "templatematch", Type::TemplateMatch },
         { "FeatureMatch", Type::FeatureMatch },
+        { "featurematch", Type::FeatureMatch },
         { "OCR", Type::OCR },
+        { "ocr", Type::OCR },
         { "NeuralNetworkClassify", Type::NeuralNetworkClassify },
+        { "neuralnetworkclassify", Type::NeuralNetworkClassify },
+        { "nnclassify", Type::NeuralNetworkClassify },
+        { "NNClassify", Type::NeuralNetworkClassify },
         { "NeuralNetworkDetect", Type::NeuralNetworkDetect },
+        { "neuralnetworkdetect", Type::NeuralNetworkDetect },
+        { "NNDetect", Type::NeuralNetworkDetect },
+        { "nnDetect", Type::NeuralNetworkDetect },
         { "ColorMatch", Type::ColorMatch },
+        { "colormatch", Type::ColorMatch },
         { "Custom", Type::Custom },
+        { "custom", Type::Custom },
     };
     auto rec_type_iter = kRecTypeMap.find(rec_type_name);
     if (rec_type_iter == kRecTypeMap.end()) {
@@ -551,10 +563,18 @@ bool PipelineResMgr::parse_template_matcher_param(
             output.template_paths.size(),
             MAA_VISION_NS::TemplateMatcherParam::kDefaultThreshold);
     }
-    else if (output.template_paths.size() != output.thresholds.size()) {
-        LogError << "templates.size() != thresholds.size()" << VAR(output.template_paths.size())
-                 << VAR(output.thresholds.size());
-        return false;
+    else if (output.thresholds.size() != output.template_paths.size()) {
+        if (output.thresholds.size() == 1) {
+            double threshold = output.thresholds.front();
+            output.thresholds.resize(output.template_paths.size(), threshold);
+            LogDebug << "thresholds.size() != template_paths.size(), auto fill" << threshold
+                     << VAR(output.template_paths.size());
+        }
+        else {
+            LogError << "thresholds.size() != templates.size()" << VAR(output.thresholds.size())
+                     << VAR(output.template_paths.size());
+            return false;
+        }
     }
 
     if (!get_and_check_value(input, "method", output.method, default_value.method)) {
@@ -626,11 +646,17 @@ bool PipelineResMgr::parse_feature_matcher_param(
     const std::unordered_map<std::string, FeatureMatcherParam::Detector> kDetectorMap = {
         { kDefaultDetectorFlag, default_value.detector },
         { "SIFT", FeatureMatcherParam::Detector::SIFT },
+        { "sift", FeatureMatcherParam::Detector::SIFT },
         { "SURF", FeatureMatcherParam::Detector::SURF },
+        { "surf", FeatureMatcherParam::Detector::SURF },
         { "ORB", FeatureMatcherParam::Detector::ORB },
+        { "orb", FeatureMatcherParam::Detector::ORB },
         { "BRISK", FeatureMatcherParam::Detector::BRISK },
+        { "brisk", FeatureMatcherParam::Detector::BRISK },
         { "KAZE", FeatureMatcherParam::Detector::KAZE },
+        { "kaze", FeatureMatcherParam::Detector::KAZE },
         { "AKAZE", FeatureMatcherParam::Detector::AKAZE },
+        { "akaze", FeatureMatcherParam::Detector::AKAZE },
     };
     auto detector_iter = kDetectorMap.find(detector);
     if (detector_iter == kDetectorMap.end()) {
@@ -898,10 +924,18 @@ bool PipelineResMgr::parse_nn_detector_param(
             output.expected.size(),
             MAA_VISION_NS::NeuralNetworkDetectorParam::kDefaultThreshold);
     }
-    else if (output.expected.size() != output.thresholds.size()) {
-        LogError << "templates.size() != thresholds.size()" << VAR(output.expected.size())
-                 << VAR(output.thresholds.size());
-        return false;
+    else if (output.thresholds.size() != output.expected.size()) {
+        if (output.thresholds.size() == 1) {
+            double threshold = output.thresholds.front();
+            output.thresholds.resize(output.expected.size(), threshold);
+            LogDebug << "thresholds.size() != expected.size(), auto fill" << threshold
+                     << VAR(output.expected.size());
+        }
+        else {
+            LogError << "thresholds.size() != expected.size()" << VAR(output.thresholds.size())
+                     << VAR(output.expected.size());
+            return false;
+        }
     }
 
     return true;
@@ -1090,12 +1124,19 @@ bool PipelineResMgr::parse_order_of_result(
     const std::unordered_map<std::string, MAA_VISION_NS::ResultOrderBy> kOrderMap = {
         { kDefaultOrderFlag, default_value },
         { "Horizontal", MAA_VISION_NS::ResultOrderBy::Horizontal },
+        { "horizontal", MAA_VISION_NS::ResultOrderBy::Horizontal },
         { "Vertical", MAA_VISION_NS::ResultOrderBy::Vertical },
+        { "vertical", MAA_VISION_NS::ResultOrderBy::Vertical },
         { "Score", MAA_VISION_NS::ResultOrderBy::Score },
+        { "score", MAA_VISION_NS::ResultOrderBy::Score },
         { "Area", MAA_VISION_NS::ResultOrderBy::Area },
+        { "area", MAA_VISION_NS::ResultOrderBy::Area },
         { "Length", MAA_VISION_NS::ResultOrderBy::Length },
+        { "length", MAA_VISION_NS::ResultOrderBy::Length },
         { "Random", MAA_VISION_NS::ResultOrderBy::Random },
+        { "random", MAA_VISION_NS::ResultOrderBy::Random },
         { "Expected", MAA_VISION_NS::ResultOrderBy::Expected },
+        { "expected", MAA_VISION_NS::ResultOrderBy::Expected },
     };
     auto order_iter = kOrderMap.find(order);
     if (order_iter == kOrderMap.end()) {
@@ -1135,15 +1176,29 @@ bool PipelineResMgr::parse_action(
     const std::unordered_map<std::string, Type> kActTypeMap = {
         { kDefaultActionFlag, default_type },
         { "DoNothing", Type::DoNothing },
+        { "donothing", Type::DoNothing },
         { "Click", Type::Click },
+        { "click", Type::Click },
         { "Swipe", Type::Swipe },
+        { "swipe", Type::Swipe },
+        { "PressKey", Type::Key },
+        { "presskey", Type::Key },
         { "Key", Type::Key },
+        { "key", Type::Key },
         { "InputText", Type::Text },
+        { "inputtext", Type::Text },
         { "Text", Type::Text },
+        { "text", Type::Text },
         { "StartApp", Type::StartApp },
+        { "startapp", Type::StartApp },
         { "StopApp", Type::StopApp },
+        { "stopapp", Type::StopApp },
         { "Custom", Type::Custom },
+        { "custom", Type::Custom },
         { "StopTask", Type::StopTask },
+        { "stoptask", Type::StopTask },
+        { "Stop", Type::StopTask },
+        { "stop", Type::StopTask },
     };
     auto act_type_iter = kActTypeMap.find(act_type_name);
     if (act_type_iter == kActTypeMap.cend()) {
