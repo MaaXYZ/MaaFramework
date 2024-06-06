@@ -1115,9 +1115,9 @@ bool PipelineResMgr::parse_order_of_result(
     const std::unordered_set<MAA_VISION_NS::ResultOrderBy>& valid_values)
 {
     static const std::string kDefaultOrderFlag = "Default";
-    std::string order;
-    if (!get_and_check_value(input, "order", order, kDefaultOrderFlag)) {
-        LogError << "failed to get_and_check_value order" << VAR(input);
+    std::string order_by;
+    if (!get_and_check_value(input, "order_by", order_by, kDefaultOrderFlag)) {
+        LogError << "failed to get_and_check_value order_by" << VAR(input);
         return false;
     }
 
@@ -1138,13 +1138,13 @@ bool PipelineResMgr::parse_order_of_result(
         { "Expected", MAA_VISION_NS::ResultOrderBy::Expected },
         { "expected", MAA_VISION_NS::ResultOrderBy::Expected },
     };
-    auto order_iter = kOrderMap.find(order);
+    auto order_iter = kOrderMap.find(order_by);
     if (order_iter == kOrderMap.end()) {
-        LogError << "order not found" << VAR(order);
+        LogError << "order_by not found" << VAR(order_by);
         return false;
     }
     if (!valid_values.contains(order_iter->second)) {
-        LogError << "current recognition not support order" << VAR(order);
+        LogError << "current recognition not support order_by" << VAR(order_by);
         return false;
     }
     output = order_iter->second;
