@@ -123,27 +123,35 @@ struct WaitFreezesParam
     int method = MAA_VISION_NS::TemplateMatcherParam::kDefaultMethod;
 };
 
-struct TaskData
+struct NextTaskData
 {
-    using NextList = std::vector<std::string>;
+    enum ComeBackMode
+    {
+        None,
+        Head,
+        Before,
+        After,
+    };
 
     std::string name;
-    bool is_sub = false;
-    bool inverse = false;
+    ComeBackMode come_back = ComeBackMode::None;
+};
+
+struct TaskData
+{
+    using NextList = std::vector<NextTaskData>;
+
+    std::string name;
     bool enabled = true;
+    uint times_limit = UINT_MAX;
 
     Recognition::Type rec_type = Recognition::Type::DirectHit;
     Recognition::Param rec_param = MAA_VISION_NS::DirectHitParam {};
+    bool inverse = false;
 
     Action::Type action_type = Action::Type::DoNothing;
     Action::Param action_param;
     NextList next;
-
-    std::chrono::milliseconds timeout = std::chrono::milliseconds(20 * 1000);
-    NextList timeout_next;
-
-    uint times_limit = UINT_MAX;
-    NextList runout_next;
 
     std::chrono::milliseconds pre_delay = std::chrono::milliseconds(200);
     std::chrono::milliseconds post_delay = std::chrono::milliseconds(500);
