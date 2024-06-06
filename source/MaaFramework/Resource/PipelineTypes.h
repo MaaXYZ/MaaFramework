@@ -123,27 +123,27 @@ struct WaitFreezesParam
     int method = MAA_VISION_NS::TemplateMatcherParam::kDefaultMethod;
 };
 
-struct NextTaskData
-{
-    enum ComeBackMode
-    {
-        None,
-        Head,
-        Before,
-        After,
-    };
-
-    std::string name;
-    ComeBackMode come_back = ComeBackMode::None;
-};
-
 struct TaskData
 {
-    using NextList = std::vector<NextTaskData>;
+    struct NextObject
+    {
+        enum class ComeBackMode
+        {
+            None,
+            Head,
+            Previous,
+            Following,
+        };
+
+        std::string name;
+        ComeBackMode come_back = ComeBackMode::None;
+    };
+
+    using NextList = std::vector<NextObject>;
 
     std::string name;
     bool enabled = true;
-    uint times_limit = UINT_MAX;
+    uint hit_limit = UINT_MAX;
 
     Recognition::Type rec_type = Recognition::Type::DirectHit;
     Recognition::Param rec_param = MAA_VISION_NS::DirectHitParam {};
