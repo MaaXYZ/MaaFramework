@@ -222,6 +222,32 @@ bool get_and_check_value(
     return true;
 }
 
+// for compatibility
+template <typename OutT>
+bool get_multi_keys_and_check_value(
+    const json::value& input,
+    const std::vector<std::string>& keys,
+    OutT& output,
+    const OutT& default_val)
+{
+    for (const auto& k : keys) {
+        auto opt = input.find<OutT>(k);
+        if (!opt) {
+            if (input.exists(k)) {
+                LogError << "type error" << VAR(k) << VAR(input);
+                return false;
+            }
+        }
+        else {
+            output = *opt;
+            return true;
+        }
+    }
+
+    output = default_val;
+    return true;
+}
+
 template <typename OutT>
 bool get_and_check_value_or_array(
     const json::value& input,
@@ -391,12 +417,11 @@ bool PipelineResMgr::parse_recognition(
 
     static const std::string kDefaultRecognitionFlag = "Default";
     std::string rec_type_name;
-    if (!get_and_check_value(input, "recognition", rec_type_name, kDefaultRecognitionFlag)
-        && !get_and_check_value(
+    if (!get_multi_keys_and_check_value(
             input,
-            "recognizer",
+            { "recognition", "recognizer" },
             rec_type_name,
-            kDefaultRecognitionFlag)) { // for compatibility
+            kDefaultRecognitionFlag)) {
         LogError << "failed to get_and_check_value recognition" << VAR(input);
         return false;
     }
@@ -788,8 +813,11 @@ bool PipelineResMgr::parse_custom_recognition_param(
     MAA_VISION_NS::CustomRecognizerParam& output,
     const MAA_VISION_NS::CustomRecognizerParam& default_value)
 {
-    if (!get_and_check_value(input, "custom_recognition", output.name, default_value.name)
-        && !get_and_check_value(input, "custom_recognizer", output.name, default_value.name)) {
+    if (!get_multi_keys_and_check_value(
+            input,
+            { "custom_recognition", "custom_recognizer" },
+            output.name,
+            default_value.name)) {
         LogError << "failed to get_and_check_value custom_recognition" << VAR(input);
         return false;
     }
@@ -1116,7 +1144,11 @@ bool PipelineResMgr::parse_order_of_result(
 {
     static const std::string kDefaultOrderFlag = "Default";
     std::string order_by;
-    if (!get_and_check_value(input, "order_by", order_by, kDefaultOrderFlag)) {
+    if (!get_multi_keys_and_check_value(
+            input,
+            { "order_by", "order" },
+            order_by,
+            kDefaultOrderFlag)) {
         LogError << "failed to get_and_check_value order_by" << VAR(input);
         return false;
     }
