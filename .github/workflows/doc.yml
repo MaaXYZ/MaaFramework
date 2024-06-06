@@ -15,7 +15,7 @@ jobs:
     needs: meta
     runs-on: ubuntu-latest
     env:
-      VERSION: ${{ format('({0}) {1}', needs.meta.outputs.tag == github.ref_name && 'main' || github.ref_name, needs.meta.outputs.tag) }}
+      DOC_VERSION: ${{ format('({0}) {1}', needs.meta.outputs.tag == github.ref_name && 'main' || github.ref_name, needs.meta.outputs.tag) }}
     permissions:
       contents: write
     steps:
@@ -28,10 +28,17 @@ jobs:
         with:
           doxyfile-path: tools/Doxygen/Doxyfile
 
+      - name: Build index.json
+        uses: MaaXYZ/MaaApiConverter@v1
+        with:
+          version: ${{ env.DOC_VERSION }}
+          xml: ./docs-gen/html/xml
+          output: ./docs-gen/html
+
       - name: Deploy to GitHub Pages
         uses: peaceiris/actions-gh-pages@v3
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_dir: ./docs-gen/html
           publish_branch: gh-pages
-          commit_message: ${{ env.VERSION }}
+          commit_message: ${{ env.DOC_VERSION }}

@@ -16,7 +16,7 @@ PROJECT_NAME           = "Maa Framework"
 # could be handy for archiving the generated documentation or if some version
 # control system is used.
 
-PROJECT_NUMBER         = $(VERSION)
+PROJECT_NUMBER         = $(DOC_VERSION)
 
 PROJECT_BRIEF          = "A automation black-box testing framework based on image recognition."
 
