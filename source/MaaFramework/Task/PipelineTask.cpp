@@ -37,69 +37,58 @@ bool PipelineTask::run_pipeline()
 {
     LogFunc << VAR(entry_);
 
-    std::vector<std::string> next_list = { entry_ };
-    std::stack<std::string> breakpoints_stack;
-    std::string pre_breakpoint;
+    std::stack<TaskData::NextList> comeback_stack;
+    TaskData::NextList next_list = { TaskData::NextObject { .name = entry_ } };
 
-    NodeStatus ret = NodeStatus::Success;
-
-    TaskData new_hits = data_mgr_.get_task_data(entry_);
     while (!next_list.empty() && !need_to_stop()) {
-        pre_hit_task_ = new_hits.name;
-        ret = find_first_and_run(next_list, new_hits.timeout, new_hits);
+        auto iter = find_first_and_run(next_list);
 
-        switch (ret) {
-        case NodeStatus::Success:
-            next_list = new_hits.next;
-            break;
-        case NodeStatus::Timeout:
-            next_list = new_hits.timeout_next;
-            break;
-        case NodeStatus::Runout:
-            next_list = new_hits.runout_next;
-            break;
-        case NodeStatus::Interrupted:
-            LogInfo << "Task interrupted:" << new_hits.name;
-            return true;
-        case NodeStatus::InternalError:
-            LogError << "Task InternalError:" << new_hits.name;
+        if (iter == next_list.cend()) {
+            LogError << "Run task failed:" << next_list;
             return false;
-        default:
+        }
+        const TaskData::NextObject& hit_object = *iter;
+        TaskData hit_task = data_mgr_.get_task_data(hit_object.name);
+
+        switch (hit_object.come_back) {
+        case TaskData::NextObject::ComeBackMode::None:
+            break;
+        case TaskData::NextObject::ComeBackMode::Head:
+            comeback_stack.emplace(next_list);
+            break;
+        case TaskData::NextObject::ComeBackMode::Current:
+            comeback_stack.emplace(iter, next_list.cend());
+            break;
+        case TaskData::NextObject::ComeBackMode::Following:
+            comeback_stack.emplace(iter + 1, next_list.cend());
             break;
         }
 
-        if (new_hits.is_sub) {
-            breakpoints_stack.emplace(pre_breakpoint);
-            LogInfo << "breakpoints add" << pre_breakpoint;
+        if (next_list.empty() && !comeback_stack.empty()) {
+            next_list = std::move(comeback_stack.top());
+            comeback_stack.pop();
         }
 
-        if (next_list.empty() && !breakpoints_stack.empty()) {
-            std::string top_bp = std::move(breakpoints_stack.top());
-            breakpoints_stack.pop();
-            pre_breakpoint = top_bp;
-            next_list = data_mgr_.get_task_data(top_bp).next;
-            LogInfo << "breakpoints pop" << VAR(top_bp) << VAR(next_list);
-        }
-        else {
-            pre_breakpoint = new_hits.name;
-        }
+        pre_hit_task_ = hit_task.name;
     }
-
-    return ret == NodeStatus::Success;
+    return true;
 }
 
 bool PipelineTask::run_recognition_only()
 {
     LogFunc << VAR(entry_);
 
-    auto hit_opt = find_first({ entry_ });
-    if (hit_opt) {
-        NodeDetail node { .hits = std::move(*hit_opt), .status = NodeStatus::Runout };
+    TaskData::NextList next_list = { TaskData::NextObject { .name = entry_ } };
+    HitDetail hit_detail;
+    auto iter = find_first(next_list, hit_detail);
+    bool hit = iter != next_list.cend();
+    if (hit) {
+        NodeDetail node { .hit = std::move(hit_detail), .status = NodeStatus::OnlyRecognized };
         auto nid = node.node_id;
         add_node_detail(nid, std::move(node));
     }
 
-    return hit_opt.has_value();
+    return hit;
 }
 
 bool PipelineTask::run_action_only()
@@ -107,7 +96,7 @@ bool PipelineTask::run_action_only()
     LogFunc << VAR(entry_);
 
     HitDetail fake_hit { .task_data = data_mgr_.get_task_data(entry_) };
-    return run_task(fake_hit) == NodeStatus::Success;
+    return run_task(fake_hit);
 }
 
 bool PipelineTask::set_param(const json::value& param)
@@ -131,8 +120,8 @@ bool PipelineTask::query_node_detail(
     auto detail = std::any_cast<NodeDetail>(detail_any);
 
     name = detail.name;
-    reco_id = detail.hits.reco_uid;
-    completed = detail.status == NodeStatus::Success;
+    reco_id = detail.hit.reco_uid;
+    completed = detail.status == NodeStatus::RunCompleted;
 
     return true;
 }
@@ -157,59 +146,61 @@ bool PipelineTask::query_task_detail(
     return true;
 }
 
-PipelineTask::NodeStatus PipelineTask::find_first_and_run(
-    const std::vector<std::string>& list,
-    std::chrono::milliseconds timeout,
-    /*out*/ MAA_RES_NS::TaskData& found_data)
+MAA_RES_NS::TaskData::NextList::const_iterator
+    PipelineTask::find_first_and_run(const TaskData::NextList& list)
 {
+    const auto NotFound = list.cend();
+
     if (!inst_ || !inst_->cache()) {
         LogError << "Inst or cache is null";
-        return NodeStatus::InternalError;
+        return NotFound;
     }
 
-    HitDetail hits;
+    const auto timeout = GlobalOptionMgr::get_instance().pipeline_timeout();
+
+    MAA_RES_NS::TaskData::NextList::const_iterator iter = list.cend();
+    HitDetail hit_detail;
 
     auto start_time = std::chrono::steady_clock::now();
     while (true) {
-        auto find_opt = find_first(list);
-        if (find_opt) {
-            hits = *std::move(find_opt);
+        iter = find_first(list, hit_detail);
+        if (iter != list.cend()) {
+            // found
             break;
         }
 
         if (need_to_stop()) {
-            LogInfo << "Task interrupted" << VAR(pre_hit_task_);
-            return NodeStatus::Interrupted;
+            LogError << "Task interrupted" << VAR(pre_hit_task_);
+            return NotFound;
         }
 
         if (std::chrono::steady_clock::now() - start_time > timeout) {
-            LogInfo << "Task timeout" << VAR(pre_hit_task_) << VAR(timeout);
-            return NodeStatus::Timeout;
+            LogError << "Task timeout" << VAR(pre_hit_task_) << VAR(timeout);
+            return NotFound;
         }
     }
 
-    LogInfo << "Task hit:" << hits.task_data.name << VAR(hits.reco_uid) << VAR(hits.reco_hit)
-            << VAR(hits.reco_detail);
+    LogInfo << "Task hit_task:" << hit_detail.task_data.name << VAR(hit_detail.reco_uid)
+            << VAR(hit_detail.reco_hit) << VAR(hit_detail.reco_detail);
 
-    inst_->cache()->set_pre_task_box(hits.task_data.name, hits.reco_hit);
+    inst_->cache()->set_pre_task_box(hit_detail.task_data.name, hit_detail.reco_hit);
 
-    auto run_ret = run_task(hits);
-
-    found_data = std::move(hits.task_data);
-
-    return run_ret;
+    bool run_ret = run_task(hit_detail);
+    return run_ret ? iter : NotFound;
 }
 
-std::optional<PipelineTask::HitDetail>
-    PipelineTask::find_first(const std::vector<std::string>& list)
+MAA_RES_NS::TaskData::NextList::const_iterator
+    PipelineTask::find_first(const TaskData::NextList& list, HitDetail& hit_detail)
 {
+    const auto NotFound = list.cend();
+
     if (!controller()) {
         LogError << "Controller not binded";
-        return std::nullopt;
+        return NotFound;
     }
     if (need_to_stop()) {
         LogInfo << "Task interrupted" << VAR(pre_hit_task_);
-        return std::nullopt;
+        return NotFound;
     }
 
     LogFunc << VAR(pre_hit_task_) << VAR(list);
@@ -218,12 +209,12 @@ std::optional<PipelineTask::HitDetail>
 
     if (image.empty()) {
         LogError << "Image is empty";
-        return std::nullopt;
+        return NotFound;
     }
 
     if (need_to_stop()) {
         LogInfo << "Task interrupted" << VAR(pre_hit_task_);
-        return std::nullopt;
+        return NotFound;
     }
 
     if (debug_mode()) {
@@ -237,14 +228,17 @@ std::optional<PipelineTask::HitDetail>
     bool hit = false;
 
     Recognizer recognizer(inst_);
-    HitDetail result;
 
-    for (const std::string& name : list) {
-        LogDebug << "recognize:" << name;
+    auto iter = list.cbegin();
+
+    for (; iter != list.cend(); ++iter) {
+        const std::string& name = iter->name;
+        uint64_t& hit_times = hit_times_map_[name];
 
         const auto& task_data = data_mgr_.get_task_data(name);
-        if (!task_data.enabled) {
-            LogDebug << "Task disabled:" << name;
+        if (!task_data.enabled || task_data.hit_limit >= hit_times) {
+            LogDebug << "Task disabled or hit over limit" << name << VAR(task_data.enabled)
+                     << VAR(hit_times) << VAR(task_data.hit_limit);
             continue;
         }
 
@@ -260,10 +254,11 @@ std::optional<PipelineTask::HitDetail>
         }
 
         hit = true;
-        result = { .reco_uid = reco.uid,
-                   .reco_hit = *std::move(reco.hit),
-                   .reco_detail = std::move(reco.detail),
-                   .task_data = task_data };
+        ++hit_times;
+        hit_detail = { .reco_uid = reco.uid,
+                       .reco_hit = *std::move(reco.hit),
+                       .reco_detail = std::move(reco.detail),
+                       .task_data = task_data };
         break;
     }
 
@@ -276,80 +271,56 @@ std::optional<PipelineTask::HitDetail>
             notify(MaaMsg_Task_Debug_MissAll, detail);
         }
 
-        return std::nullopt;
+        return NotFound;
     }
 
     if (debug_mode()) {
-        json::value cb_detail = basic_info() | hit_detail_to_json(result);
+        json::value cb_detail = basic_info() | hit_detail_to_json(hit_detail);
         notify(MaaMsg_Task_Debug_Hit, cb_detail);
     }
 
-    return result;
+    return iter;
 }
 
-PipelineTask::NodeStatus PipelineTask::run_task(const HitDetail& hits)
+bool PipelineTask::run_task(const HitDetail& hit)
 {
     if (need_to_stop()) {
         LogInfo << "Task interrupted" << VAR(pre_hit_task_);
-        return NodeStatus::Interrupted;
+        return false;
     }
 
     Actuator actuator(inst_);
 
-    const std::string& name = hits.task_data.name;
-    uint64_t& run_times = run_times_map_[name];
+    const std::string& name = hit.task_data.name;
 
-    NodeDetail node_detail { .name = name, .hits = hits };
+    NodeDetail node_detail { .name = name, .hit = hit };
 
-    if (debug_mode() || hits.task_data.focus) {
+    if (debug_mode() || hit.task_data.focus) {
         json::value cb_detail = basic_info() | node_detail_to_json(node_detail);
         if (debug_mode()) {
             notify(MaaMsg_Task_Debug_ReadyToRun, cb_detail);
         }
-        if (hits.task_data.focus) {
+        if (hit.task_data.focus) {
             notify(MaaMsg_Task_Focus_ReadyToRun, cb_detail);
         }
     }
 
-    if (hits.task_data.times_limit <= run_times) {
-        LogInfo << "Task runout:" << name;
+    bool ret = actuator.run(hit.reco_hit, hit.reco_detail, hit.task_data);
 
-        node_detail.status = NodeStatus::Runout;
-
-        add_node_detail(node_detail.node_id, node_detail);
-
-        if (debug_mode() || hits.task_data.focus) {
-            json::value cb_detail = basic_info() | node_detail_to_json(node_detail);
-            if (debug_mode()) {
-                notify(MaaMsg_Task_Debug_Runout, cb_detail);
-            }
-            if (hits.task_data.focus) {
-                notify(MaaMsg_Task_Focus_Runout, cb_detail);
-            }
-        }
-
-        return NodeStatus::Runout;
-    }
-
-    auto ret = actuator.run(hits.reco_hit, hits.reco_detail, hits.task_data);
-
-    ++run_times;
-
-    node_detail.status = NodeStatus::Success;
-
+    node_detail.status = ret ? NodeStatus::RunCompleted : NodeStatus::None;
     add_node_detail(node_detail.node_id, node_detail);
 
-    if (debug_mode() || hits.task_data.focus) {
+    if (debug_mode() || hit.task_data.focus) {
         json::value cb_detail = basic_info() | node_detail_to_json(node_detail);
         if (debug_mode()) {
             notify(MaaMsg_Task_Debug_Completed, cb_detail);
         }
-        if (hits.task_data.focus) {
+        if (hit.task_data.focus) {
             notify(MaaMsg_Task_Focus_Completed, cb_detail);
         }
     }
 
-    return ret ? NodeStatus::Success : NodeStatus::InternalError;
+    return ret;
 }
 
 void PipelineTask::add_node_detail(int64_t node_id, NodeDetail detail)
@@ -392,7 +363,7 @@ json::object
               { "id", res.uid },
               { "box", res.hit ? json::value(*res.hit) : json::value(nullptr) },
               { "detail", res.detail },
-              { "hit", res.hit.has_value() },
+              { "hit_task", res.hit.has_value() },
           } },
     };
 }
@@ -406,14 +377,14 @@ json::object PipelineTask::hit_detail_to_json(const HitDetail& detail)
               { "id", detail.reco_uid },
               { "box", detail.reco_hit },
               { "detail", detail.reco_detail },
-              { "hit", true },
+              { "hit_task", true },
           } },
     };
 }
 
 json::object PipelineTask::node_detail_to_json(const NodeDetail& detail)
 {
-    return hit_detail_to_json(detail.hits)
+    return hit_detail_to_json(detail.hit)
            | json::object {
                  { "node_id", detail.node_id },
                  { "status", static_cast<int>(detail.status) },

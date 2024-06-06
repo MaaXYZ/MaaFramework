@@ -131,12 +131,14 @@ struct TaskData
         {
             None,
             Head,
-            Previous,
+            Current,
             Following,
         };
 
         std::string name;
         ComeBackMode come_back = ComeBackMode::None;
+
+        MEO_TOJSON(name); // for output
     };
 
     using NextList = std::vector<NextObject>;

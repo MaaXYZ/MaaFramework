@@ -424,8 +424,8 @@ bool PipelineResMgr::parse_next_object(const json::value& input, TaskData::NextO
             { "none", TaskData::NextObject::ComeBackMode::None },
             { "Head", TaskData::NextObject::ComeBackMode::Head },
             { "head", TaskData::NextObject::ComeBackMode::Head },
-            { "Previous", TaskData::NextObject::ComeBackMode::Previous },
-            { "previous", TaskData::NextObject::ComeBackMode::Previous },
+            { "Current", TaskData::NextObject::ComeBackMode::Current },
+            { "current", TaskData::NextObject::ComeBackMode::Current },
             { "Following", TaskData::NextObject::ComeBackMode::Following },
             { "following", TaskData::NextObject::ComeBackMode::Following },
         };
