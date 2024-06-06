@@ -67,6 +67,29 @@ std::optional<std::pair<int, int>> DeviceInfo::request_resolution()
 
     std::istringstream iss(output_opt.value());
     iss >> width >> height;
+
+    auto orientation_opt = request_orientation();
+    if (!orientation_opt) {
+        LogWarn << "failed to request_orientation" << VAR(width) << VAR(height);
+        return std::make_pair(width, height);
+    }
+
+    int orientation = *orientation_opt;
+    switch (orientation) {
+    case 0:
+    case 2:
+        std::tie(width, height) = std::minmax(width, height);
+        LogInfo << "portrait" << VAR(orientation) << VAR(width) << VAR(height);
+    case 1:
+    case 3:
+        std::tie(height, width) = std::minmax(width, height);
+        LogInfo << "landscape" << VAR(orientation) << VAR(width) << VAR(height);
+        break;
+    default:
+        LogWarn << "unknown" << VAR(orientation) << VAR(width) << VAR(height);
+        break;
+    }
+
     return std::make_pair(width, height);
 }
 

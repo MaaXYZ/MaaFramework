@@ -69,9 +69,7 @@ bool ControlUnitMgr::connect()
         return false;
     }
     auto [width, height] = *resolution_opt;
-    int orientation = device_info_.request_orientation().value_or(0);
-    details |= { { "resolution", { { "width", width }, { "height", height } } },
-                 { "orientation", orientation } };
+    details |= { { "resolution", { { "width", width }, { "height", height } } } };
 
     notifier.notify(MaaMsg_Controller_ResolutionGot, details);
 
@@ -91,6 +89,7 @@ bool ControlUnitMgr::connect()
     }
 
     if (touch_input_) {
+        int orientation = device_info_.request_orientation().value_or(0);
         if (!touch_input_->init(width, height, orientation)) {
             LogError << "failed to init touch_input";
             notifier.notify(MaaMsg_Controller_TouchInputInitFailed, details);
