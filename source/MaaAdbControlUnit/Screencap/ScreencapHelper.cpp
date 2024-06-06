@@ -108,15 +108,9 @@ std::optional<cv::Mat> ScreencapHelper::decode_raw(const std::string& buffer)
     memcpy(&im_height, data + 4, 4);
 
     if (static_cast<int>(im_width) != width_ || static_cast<int>(im_height) != height_) {
-        if (static_cast<int>(im_width) == height_ && static_cast<int>(im_height) == width_) {
-            LogWarn << "screencap rotate detected!";
-            set_wh(static_cast<int>(im_width), static_cast<int>(im_height));
-        }
-        else {
-            LogError << "screencap size image" << VAR(im_width) << VAR(im_height) << "don't match"
-                     << VAR(width_) << VAR(height_);
-            return std::nullopt;
-        }
+        LogError << "screencap size image" << VAR(im_width) << VAR(im_height) << "don't match"
+                 << VAR(width_) << VAR(height_);
+        return std::nullopt;
     }
 
     size_t size = 4ull * im_width * im_height;

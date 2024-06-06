@@ -5,7 +5,6 @@
 #include "Resource/ResourceMgr.h"
 #include "Utils/ImageIo.h"
 #include "Utils/NoWarningCV.hpp"
-#include <utility>
 
 MAA_CTRL_NS_BEGIN
 
@@ -783,17 +782,8 @@ bool ControllerAgent::postproc_screenshot(const cv::Mat& raw)
 
     auto [res_w, res_h] = get_resolution();
     if (raw.cols != res_w || raw.rows != res_h) {
-        if (raw.cols == res_h && raw.rows == res_w) {
-            LogWarn << "Rotate detected! preset resolution:" << VAR(res_w) << VAR(res_h)
-                    << "screencap resolution:" << VAR(raw.cols) << VAR(raw.rows);
-            resolution_cache_ = std::make_pair(raw.cols, raw.rows);
-            image_target_width_ = 0;
-            image_target_height_ = 0;
-        }
-        else {
-            LogWarn << "Invalid resolution" << VAR(raw.cols) << VAR(raw.rows) << VAR(res_w)
-                    << VAR(res_h);
-        }
+        LogWarn << "Invalid resolution" << VAR(raw.cols) << VAR(raw.rows) << VAR(res_w)
+                << VAR(res_h);
     }
 
     if (!check_and_calc_target_image_size(raw)) {
