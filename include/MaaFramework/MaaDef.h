@@ -32,7 +32,7 @@ typedef struct MaaInstanceAPI* MaaInstanceHandle;
 
 typedef uint8_t MaaBool;
 typedef uint64_t MaaSize;
-#define MaaNullSize ((MaaSize) - 1)
+#define MaaNullSize ((MaaSize)-1)
 
 typedef const char* MaaStringView;
 
