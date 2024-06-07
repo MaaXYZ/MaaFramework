@@ -53,18 +53,22 @@ bool PipelineTask::run_pipeline()
         switch (hit_object.come_back) {
         case TaskData::NextObject::ComeBackMode::None:
             if (hit_task.is_sub) { // for compatibility with v1.x
-                comeback_stack.emplace(next_list);
+                const auto& ref = comeback_stack.emplace(next_list);
+                LogDebug << "push come_back is_sub:" << hit_object.name << ref;
             }
             break;
-        case TaskData::NextObject::ComeBackMode::Head:
-            comeback_stack.emplace(next_list);
-            break;
-        case TaskData::NextObject::ComeBackMode::Current:
-            comeback_stack.emplace(iter, next_list.cend());
-            break;
-        case TaskData::NextObject::ComeBackMode::Following:
-            comeback_stack.emplace(iter + 1, next_list.cend());
-            break;
+        case TaskData::NextObject::ComeBackMode::Head: {
+            const auto& ref = comeback_stack.emplace(next_list);
+            LogDebug << "push come_back head:" << hit_object.name << ref;
+        } break;
+        case TaskData::NextObject::ComeBackMode::Current: {
+            const auto& ref = comeback_stack.emplace(iter, next_list.cend());
+            LogDebug << "push come_back current:" << hit_object.name << ref;
+        } break;
+        case TaskData::NextObject::ComeBackMode::Following: {
+            const auto& ref = comeback_stack.emplace(iter + 1, next_list.cend());
+            LogDebug << "push come_back following:" << hit_object.name << ref;
+        } break;
         }
 
         next_list = hit_task.next;
@@ -72,6 +76,7 @@ bool PipelineTask::run_pipeline()
         if (next_list.empty() && !comeback_stack.empty()) {
             next_list = std::move(comeback_stack.top());
             comeback_stack.pop();
+            LogDebug << "pop come_back:" << next_list;
         }
 
         pre_hit_task_ = hit_task.name;
