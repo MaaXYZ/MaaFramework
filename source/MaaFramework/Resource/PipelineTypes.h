@@ -144,6 +144,7 @@ struct TaskData
     using NextList = std::vector<NextObject>;
 
     std::string name;
+    bool is_sub = false;    // for compatibility
     bool enabled = true;
     uint hit_limit = UINT_MAX;
 

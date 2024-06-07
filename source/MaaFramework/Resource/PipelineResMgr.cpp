@@ -292,6 +292,11 @@ bool PipelineResMgr::parse_task(
     TaskData data;
     data.name = name;
 
+    if (!get_and_check_value(input, "is_sub", data.is_sub, default_value.is_sub)) {
+        LogError << "failed to get_and_check_value is_sub" << VAR(input);
+        return false;
+    }
+
     if (!get_and_check_value(input, "inverse", data.inverse, default_value.inverse)) {
         LogError << "failed to get_and_check_value inverse" << VAR(input);
         return false;

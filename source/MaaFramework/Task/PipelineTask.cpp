@@ -52,6 +52,9 @@ bool PipelineTask::run_pipeline()
 
         switch (hit_object.come_back) {
         case TaskData::NextObject::ComeBackMode::None:
+            if (hit_task.is_sub) {  // for compatibility with v1.x
+                comeback_stack.emplace(next_list);
+            }
             break;
         case TaskData::NextObject::ComeBackMode::Head:
             comeback_stack.emplace(next_list);
