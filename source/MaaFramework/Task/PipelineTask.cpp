@@ -67,6 +67,8 @@ bool PipelineTask::run_pipeline()
             break;
         }
 
+        next_list = hit_task.next;
+
         if (next_list.empty() && !comeback_stack.empty()) {
             next_list = std::move(comeback_stack.top());
             comeback_stack.pop();
@@ -238,7 +240,7 @@ PipelineTask::NextIter
         uint64_t& hit_times = hit_times_map_[name];
 
         const auto& task_data = data_mgr_.get_task_data(name);
-        if (!task_data.enabled || task_data.hit_limit >= hit_times) {
+        if (!task_data.enabled || task_data.hit_limit <= hit_times) {
             LogDebug << "Task disabled or hit over limit" << name << VAR(task_data.enabled)
                      << VAR(hit_times) << VAR(task_data.hit_limit);
             continue;
