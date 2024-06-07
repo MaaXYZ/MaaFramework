@@ -4,6 +4,15 @@
 
 MAA_CTRL_UNIT_NS_BEGIN
 
+ReplayRecording::~ReplayRecording()
+{
+    if (record_index_ != recording_.records.size()) {
+        LogError << "Failed to reproduce, the task ended early!" << VAR(record_index_)
+                 << VAR(recording_.records.size());
+        std::abort();
+    }
+}
+
 bool ReplayRecording::find_device(std::vector<std::string>& devices)
 {
     std::ignore = devices;
