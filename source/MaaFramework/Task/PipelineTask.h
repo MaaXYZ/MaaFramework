@@ -21,6 +21,7 @@ class PipelineTask : public MaaInstanceSink
 {
 public:
     using TaskData = MAA_RES_NS::TaskData;
+    using NextIter = MAA_RES_NS::TaskData::NextList::const_iterator;
 
 public:
     PipelineTask(std::string entry, InstanceInternalAPI* inst);
@@ -96,9 +97,8 @@ private:
     bool run_recognition_only();
     bool run_action_only();
 
-    TaskData::NextList::const_iterator find_first_and_run(const TaskData::NextList& list);
-    TaskData::NextList::const_iterator
-        find_first(const TaskData::NextList& list, HitDetail& hit_detail);
+    NextIter find_first_and_run(const TaskData::NextList& list);
+    NextIter find_first(const TaskData::NextList& list, HitDetail& hit_detail);
     bool run_task(const HitDetail& hit);
 
     void add_node_detail(int64_t node_id, NodeDetail detail);

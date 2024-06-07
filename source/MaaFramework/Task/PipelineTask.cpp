@@ -52,7 +52,7 @@ bool PipelineTask::run_pipeline()
 
         switch (hit_object.come_back) {
         case TaskData::NextObject::ComeBackMode::None:
-            if (hit_task.is_sub) {  // for compatibility with v1.x
+            if (hit_task.is_sub) { // for compatibility with v1.x
                 comeback_stack.emplace(next_list);
             }
             break;
@@ -149,10 +149,9 @@ bool PipelineTask::query_task_detail(
     return true;
 }
 
-MAA_RES_NS::TaskData::NextList::const_iterator
-    PipelineTask::find_first_and_run(const TaskData::NextList& list)
+PipelineTask::NextIter PipelineTask::find_first_and_run(const TaskData::NextList& list)
 {
-    const auto NotFound = list.cend();
+    const NextIter NotFound = list.cend();
 
     if (!inst_ || !inst_->cache()) {
         LogError << "Inst or cache is null";
@@ -161,7 +160,7 @@ MAA_RES_NS::TaskData::NextList::const_iterator
 
     const auto timeout = GlobalOptionMgr::get_instance().pipeline_timeout();
 
-    MAA_RES_NS::TaskData::NextList::const_iterator iter = list.cend();
+    auto iter = list.cend();
     HitDetail hit_detail;
 
     auto start_time = std::chrono::steady_clock::now();
@@ -192,10 +191,10 @@ MAA_RES_NS::TaskData::NextList::const_iterator
     return run_ret ? iter : NotFound;
 }
 
-MAA_RES_NS::TaskData::NextList::const_iterator
+PipelineTask::NextIter
     PipelineTask::find_first(const TaskData::NextList& list, HitDetail& hit_detail)
 {
-    const auto NotFound = list.cend();
+    const NextIter NotFound = list.cend();
 
     if (!controller()) {
         LogError << "Controller not binded";
