@@ -10,6 +10,9 @@ if(MSVC)
     add_compile_options("/W4;/WX;/Gy;/permissive-;/sdl")
     add_compile_options("/wd4127") # conditional expression is constant
     add_compile_options("/wd4251") # export dll with templates
+
+    # https://github.com/actions/runner-images/issues/10004
+    # https://github.com/microsoft/STL/releases/tag/vs-2022-17.10
     add_compile_definitions("_DISABLE_CONSTEXPR_MUTEX_CONSTRUCTOR")
 
     set(rel_debug_comp_options "/Od")
