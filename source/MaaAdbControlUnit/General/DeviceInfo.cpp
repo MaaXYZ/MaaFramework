@@ -78,12 +78,12 @@ std::optional<std::pair<int, int>> DeviceInfo::request_resolution()
     switch (orientation) {
     case 0:
     case 2:
-        std::tie(width, height) = std::minmax(width, height);
+        std::tie(width, height) = std::minmax({ width, height });
         LogInfo << "portrait" << VAR(orientation) << VAR(width) << VAR(height);
         break;
     case 1:
     case 3:
-        std::tie(height, width) = std::minmax(width, height);
+        std::tie(height, width) = std::minmax({ width, height });
         LogInfo << "landscape" << VAR(orientation) << VAR(width) << VAR(height);
         break;
     default:
