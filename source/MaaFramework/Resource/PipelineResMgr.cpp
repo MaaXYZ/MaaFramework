@@ -426,7 +426,7 @@ bool PipelineResMgr::parse_recognition(
         return false;
     }
 
-    static const std::unordered_map<std::string, Type> kRecTypeMap = {
+    const std::unordered_map<std::string, Type> kRecTypeMap = {
         { kDefaultRecognitionFlag, default_type },
         { "DirectHit", Type::DirectHit },
         { "directhit", Type::DirectHit },
@@ -668,7 +668,7 @@ bool PipelineResMgr::parse_feature_matcher_param(
         LogError << "failed to get_and_check_value detector" << VAR(input);
         return false;
     }
-    static const std::unordered_map<std::string, FeatureMatcherParam::Detector> kDetectorMap = {
+    const std::unordered_map<std::string, FeatureMatcherParam::Detector> kDetectorMap = {
         { kDefaultDetectorFlag, default_value.detector },
         { "SIFT", FeatureMatcherParam::Detector::SIFT },
         { "sift", FeatureMatcherParam::Detector::SIFT },
@@ -1153,7 +1153,7 @@ bool PipelineResMgr::parse_order_of_result(
         return false;
     }
 
-    static const std::unordered_map<std::string, MAA_VISION_NS::ResultOrderBy> kOrderMap = {
+    const std::unordered_map<std::string, MAA_VISION_NS::ResultOrderBy> kOrderMap = {
         { kDefaultOrderFlag, default_value },
         { "Horizontal", MAA_VISION_NS::ResultOrderBy::Horizontal },
         { "horizontal", MAA_VISION_NS::ResultOrderBy::Horizontal },
@@ -1205,7 +1205,7 @@ bool PipelineResMgr::parse_action(
         return false;
     }
 
-    static const std::unordered_map<std::string, Type> kActTypeMap = {
+    const std::unordered_map<std::string, Type> kActTypeMap = {
         { kDefaultActionFlag, default_type },
         { "DoNothing", Type::DoNothing },
         { "donothing", Type::DoNothing },
