@@ -422,24 +422,24 @@ bool PipelineResMgr::parse_next_object(const json::value& input, TaskData::NextO
     else if (input.is_object()) {
         obj.name = input.get("name", std::string());
 
-        std::string come_back = input.get("come_back", std::string());
-        static const std::unordered_map<std::string, TaskData::NextObject::ComeBackMode> map {
-            { "", TaskData::NextObject::ComeBackMode::None },
-            { "None", TaskData::NextObject::ComeBackMode::None },
-            { "none", TaskData::NextObject::ComeBackMode::None },
-            { "Head", TaskData::NextObject::ComeBackMode::Head },
-            { "head", TaskData::NextObject::ComeBackMode::Head },
-            { "Current", TaskData::NextObject::ComeBackMode::Current },
-            { "current", TaskData::NextObject::ComeBackMode::Current },
-            { "Following", TaskData::NextObject::ComeBackMode::Following },
-            { "following", TaskData::NextObject::ComeBackMode::Following },
+        std::string then_goto = input.get("then_goto", std::string());
+        static const std::unordered_map<std::string, TaskData::NextObject::ThenGotoLabel> kThenGotoMap {
+            { "", TaskData::NextObject::ThenGotoLabel::None },
+            { "None", TaskData::NextObject::ThenGotoLabel::None },
+            { "none", TaskData::NextObject::ThenGotoLabel::None },
+            { "Head", TaskData::NextObject::ThenGotoLabel::Head },
+            { "head", TaskData::NextObject::ThenGotoLabel::Head },
+            { "Current", TaskData::NextObject::ThenGotoLabel::Current },
+            { "current", TaskData::NextObject::ThenGotoLabel::Current },
+            { "Following", TaskData::NextObject::ThenGotoLabel::Following },
+            { "following", TaskData::NextObject::ThenGotoLabel::Following },
         };
-        auto it = map.find(come_back);
-        if (it == map.end()) {
-            LogError << "failed to parse come_back" << VAR(come_back) << VAR(input);
+        auto it = kThenGotoMap.find(then_goto);
+        if (it == kThenGotoMap.end()) {
+            LogError << "failed to parse then_goto" << VAR(then_goto) << VAR(input);
             return false;
         }
-        obj.come_back = it->second;
+        obj.then_goto = it->second;
     }
     else {
         LogError << "failed to parse_next_object" << VAR(input);

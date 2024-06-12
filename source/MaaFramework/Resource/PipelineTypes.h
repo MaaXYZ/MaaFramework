@@ -127,7 +127,7 @@ struct TaskData
 {
     struct NextObject
     {
-        enum class ComeBackMode
+        enum class ThenGotoLabel
         {
             None,
             Head,
@@ -136,7 +136,7 @@ struct TaskData
         };
 
         std::string name;
-        ComeBackMode come_back = ComeBackMode::None;
+        ThenGotoLabel then_goto = ThenGotoLabel::None;
 
         MEO_TOJSON(name); // for output
     };

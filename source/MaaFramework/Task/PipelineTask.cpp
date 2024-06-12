@@ -37,7 +37,7 @@ bool PipelineTask::run_pipeline()
 {
     LogFunc << VAR(entry_);
 
-    std::stack<TaskData::NextList> comeback_stack;
+    std::stack<TaskData::NextList> goto_stack;
     TaskData::NextList next_list = { TaskData::NextObject { .name = entry_ } };
 
     while (!next_list.empty() && !need_to_stop()) {
@@ -50,33 +50,33 @@ bool PipelineTask::run_pipeline()
         const TaskData::NextObject& hit_object = *iter;
         TaskData hit_task = data_mgr_.get_task_data(hit_object.name);
 
-        switch (hit_object.come_back) {
-        case TaskData::NextObject::ComeBackMode::None:
+        switch (hit_object.then_goto) {
+        case TaskData::NextObject::ThenGotoLabel::None:
             if (hit_task.is_sub) { // for compatibility with v1.x
-                const auto& ref = comeback_stack.emplace(next_list);
-                LogDebug << "push come_back is_sub:" << hit_object.name << ref;
+                const auto& ref = goto_stack.emplace(next_list);
+                LogDebug << "push then_goto is_sub:" << hit_object.name << ref;
             }
             break;
-        case TaskData::NextObject::ComeBackMode::Head: {
-            const auto& ref = comeback_stack.emplace(next_list);
-            LogDebug << "push come_back head:" << hit_object.name << ref;
+        case TaskData::NextObject::ThenGotoLabel::Head: {
+            const auto& ref = goto_stack.emplace(next_list);
+            LogDebug << "push then_goto head:" << hit_object.name << ref;
         } break;
-        case TaskData::NextObject::ComeBackMode::Current: {
-            const auto& ref = comeback_stack.emplace(iter, next_list.cend());
-            LogDebug << "push come_back current:" << hit_object.name << ref;
+        case TaskData::NextObject::ThenGotoLabel::Current: {
+            const auto& ref = goto_stack.emplace(iter, next_list.cend());
+            LogDebug << "push then_goto current:" << hit_object.name << ref;
         } break;
-        case TaskData::NextObject::ComeBackMode::Following: {
-            const auto& ref = comeback_stack.emplace(iter + 1, next_list.cend());
-            LogDebug << "push come_back following:" << hit_object.name << ref;
+        case TaskData::NextObject::ThenGotoLabel::Following: {
+            const auto& ref = goto_stack.emplace(iter + 1, next_list.cend());
+            LogDebug << "push then_goto following:" << hit_object.name << ref;
         } break;
         }
 
         next_list = hit_task.next;
 
-        if (next_list.empty() && !comeback_stack.empty()) {
-            next_list = std::move(comeback_stack.top());
-            comeback_stack.pop();
-            LogDebug << "pop come_back:" << next_list;
+        if (next_list.empty() && !goto_stack.empty()) {
+            next_list = std::move(goto_stack.top());
+            goto_stack.pop();
+            LogDebug << "pop then_goto:" << next_list;
         }
 
         pre_hit_task_ = hit_task.name;
