@@ -15,16 +15,10 @@ class DeviceMgrMacOS
     friend class SingletonHolder<DeviceMgrMacOS>;
 
 public:
-    virtual ~DeviceMgrMacOS() noexcept override = default;
-
-public: // from DeviceMgr
-    virtual std::vector<Device> find_device_impl() override;
-    virtual std::vector<Device> find_device_with_adb_impl(std::filesystem::path adb_path) override;
+    virtual ~DeviceMgrMacOS() override = default;
 
 private:
-    DeviceMgrMacOS() = default;
-
-    std::vector<Emulator> find_emulators() const;
+    DeviceMgrMacOS();
 };
 
 MAA_TOOLKIT_NS_END
