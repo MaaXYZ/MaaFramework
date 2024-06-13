@@ -10,51 +10,49 @@ MAA_TOOLKIT_NS_BEGIN
 
 using namespace path_literals;
 
-static const std::unordered_map<std::string, DeviceMgr::EmulatorConstantData> kEmulators = {
-    { "BlueStacks",
-      { .keyword = "HD-Player",
-        .adb_candidate_paths = { "HD-Adb.exe"_path, "Engine\\ProgramFiles\\HD-Adb.exe"_path },
-        .adb_common_serials = { "127.0.0.1:5555",
-                                "127.0.0.1:5556",
-                                "127.0.0.1:5565",
-                                "127.0.0.1:5575" } } },
-
-    { "LDPlayer",
-      { .keyword = "dnplayer",
-        .adb_candidate_paths = { "adb.exe"_path },
-        .adb_common_serials = { "emulator-5554",
-                                "emulator-5556",
-                                "127.0.0.1:5555",
-                                "127.0.0.1:5556" } } },
-
-    { "Nox",
-      { .keyword = "Nox",
-        .adb_candidate_paths = { "nox_adb.exe"_path },
-        .adb_common_serials = { "127.0.0.1:62001", "127.0.0.1:59865" } } },
-
-    { "MuMuPlayer6",
-      { .keyword = "NemuPlayer",
-        .adb_candidate_paths = { "vmonitor\\bin\\adb_server.exe"_path,
-                                 "MuMu\\emulator\\nemu\\vmonitor\\bin\\adb_server.exe"_path,
-                                 "adb.exe"_path },
-        .adb_common_serials = { "127.0.0.1:7555" } } },
-
-    { "MuMuPlayer12",
-      { .keyword = "MuMuPlayer",
-        .adb_candidate_paths = { "vmonitor\\bin\\adb_server.exe"_path,
-                                 "MuMu\\emulator\\nemu\\vmonitor\\bin\\adb_server.exe"_path,
-                                 "adb.exe"_path },
-        .adb_common_serials = { "127.0.0.1:16384", "127.0.0.1:16416", "127.0.0.1:16448" } } },
-
-    { "MEmuPlayer",
-      { .keyword = "MEmu",
-        .adb_candidate_paths = { "adb.exe"_path },
-        .adb_common_serials = { "127.0.0.1:21503" } } },
-};
-
 DeviceMgrWin32::DeviceMgrWin32()
 {
-    set_emulator_const_data(kEmulators);
+    std::unordered_map<std::string, EmulatorConstantData> emulators = {
+        { "BlueStacks",
+          { .keyword = "HD-Player",
+            .adb_candidate_paths = { "HD-Adb.exe"_path, "Engine\\ProgramFiles\\HD-Adb.exe"_path },
+            .adb_common_serials = { "127.0.0.1:5555",
+                                    "127.0.0.1:5556",
+                                    "127.0.0.1:5565",
+                                    "127.0.0.1:5575" } } },
+        { "LDPlayer",
+          { .keyword = "dnplayer",
+            .adb_candidate_paths = { "adb.exe"_path },
+            .adb_common_serials = { "emulator-5554",
+                                    "emulator-5556",
+                                    "127.0.0.1:5555",
+                                    "127.0.0.1:5556" } } },
+        { "Nox",
+          { .keyword = "Nox",
+            .adb_candidate_paths = { "nox_adb.exe"_path },
+            .adb_common_serials = { "127.0.0.1:62001", "127.0.0.1:59865" } } },
+
+        { "MuMuPlayer6",
+          { .keyword = "NemuPlayer",
+            .adb_candidate_paths = { "vmonitor\\bin\\adb_server.exe"_path,
+                                     "MuMu\\emulator\\nemu\\vmonitor\\bin\\adb_server.exe"_path,
+                                     "adb.exe"_path },
+            .adb_common_serials = { "127.0.0.1:7555" } } },
+
+        { "MuMuPlayer12",
+          { .keyword = "MuMuPlayer",
+            .adb_candidate_paths = { "vmonitor\\bin\\adb_server.exe"_path,
+                                     "MuMu\\emulator\\nemu\\vmonitor\\bin\\adb_server.exe"_path,
+                                     "adb.exe"_path },
+            .adb_common_serials = { "127.0.0.1:16384", "127.0.0.1:16416", "127.0.0.1:16448" } } },
+
+        { "MEmuPlayer",
+          { .keyword = "MEmu",
+            .adb_candidate_paths = { "adb.exe"_path },
+            .adb_common_serials = { "127.0.0.1:21503" } } },
+    };
+
+    set_emulator_const_data(std::move(emulators));
 }
 
 json::object
