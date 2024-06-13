@@ -15,11 +15,7 @@ class DeviceMgrLinux
     friend class SingletonHolder<DeviceMgrLinux>;
 
 public:
-    virtual ~DeviceMgrLinux() noexcept override = default;
-
-public: // from DeviceMgr
-    virtual std::vector<Device> find_device_impl() override;
-    virtual std::vector<Device> find_device_with_adb_impl(std::filesystem::path adb_path) override;
+    virtual ~DeviceMgrLinux() override = default;
 
 private:
     DeviceMgrLinux() = default;

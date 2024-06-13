@@ -5,6 +5,7 @@
 #include <ostream>
 #include <string>
 #include <string_view>
+#include <unordered_map>
 #include <vector>
 
 #include <meojson/json.hpp>
@@ -18,25 +19,41 @@ MAA_TOOLKIT_NS_BEGIN
 class DeviceMgr : public MaaToolkitDeviceMgrAPI
 {
 public:
-    virtual ~DeviceMgr() noexcept override = default;
+    struct EmulatorConstantData
+    {
+        std::string keyword;
+        std::vector<std::filesystem::path> adb_candidate_paths;
+        std::vector<std::string> adb_common_serials;
+    };
 
-public: // from MaaToolkitDeviceMgrAPI
     struct Emulator
     {
         std::string name;
         ProcessInfo process;
+        const EmulatorConstantData const_data;
     };
 
+public:
+    virtual ~DeviceMgr() override = default;
+
+public: // from MaaToolkitDeviceMgrAPI
     virtual bool post_find_device() override final;
     virtual bool post_find_device_with_adb(std::filesystem::path adb_path) override final;
     virtual bool is_find_completed() const override final;
     virtual const std::optional<std::vector<Device>>& get_devices() override final;
 
 protected:
-    virtual std::vector<Device> find_device_impl() = 0;
-    virtual std::vector<Device> find_device_with_adb_impl(std::filesystem::path adb_path) = 0;
+    virtual json::object
+        get_adb_config(const Emulator& emulator, const std::string& adb_serial) const;
 
 protected:
+    void set_emulator_const_data(std::unordered_map<std::string, EmulatorConstantData> data);
+    std::vector<Device> find_device_impl();
+    std::vector<Device> find_device_with_adb_impl(std::filesystem::path adb_path);
+
+    std::vector<Emulator> find_emulators() const;
+    std::filesystem::path get_adb_path(const EmulatorConstantData& emulator, os_pid pid) const;
+
     std::vector<std::string> request_adb_serials(
         const std::filesystem::path& adb_path,
         const json::value& adb_config) const;
@@ -56,6 +73,7 @@ protected:
 private:
     std::optional<std::vector<Device>> devices_;
     std::future<std::vector<Device>> find_device_future_;
+    std::unordered_map<std::string, EmulatorConstantData> const_data_;
 };
 
 std::ostream& operator<<(std::ostream& os, const DeviceMgr::Emulator& emulator);
