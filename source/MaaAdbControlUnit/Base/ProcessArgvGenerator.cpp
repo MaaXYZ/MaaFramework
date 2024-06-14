@@ -35,13 +35,12 @@ std::optional<ProcessArgvGenerator::ProcessArgv>
         string_replace_all_(s, replacement);
     }
 
-    auto stdpath = MAA_NS::path(res.front());
     std::filesystem::path abs_path;
-    if (stdpath.is_absolute()) {
-        abs_path = stdpath;
+    if (auto raw_path = MAA_NS::path(res.front()); raw_path.is_absolute()) {
+        abs_path = raw_path;
     }
     else {
-        abs_path = boost::process::search_path(stdpath);
+        abs_path = boost::process::search_path(raw_path);
     }
 
     if (!std::filesystem::exists(abs_path)) {

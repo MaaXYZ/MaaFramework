@@ -230,6 +230,8 @@ std::vector<std::string> DeviceMgr::request_adb_serials(
     std::vector<std::string> devices;
     auto found = control_unit->find_device(devices);
 
+    LogDebug << VAR(devices);
+
     if (!found) {
         LogError << "Failed to find_device";
         return {};
