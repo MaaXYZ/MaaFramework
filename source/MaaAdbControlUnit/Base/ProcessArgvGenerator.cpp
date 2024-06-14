@@ -36,17 +36,23 @@ std::optional<ProcessArgvGenerator::ProcessArgv>
     }
 
     auto stdpath = MAA_NS::path(res.front());
-    auto searched_path = boost::process::search_path(stdpath);
+    std::filesystem::path abs_path;
+    if (stdpath.is_absolute()) {
+        abs_path = stdpath;
+    }
+    else {
+        abs_path = boost::process::search_path(stdpath);
+    }
 
-    if (!std::filesystem::exists(searched_path)) {
-        LogError << "exec path not exists" << VAR(searched_path);
+    if (!std::filesystem::exists(abs_path)) {
+        LogError << "exec path not exists" << VAR(abs_path);
         return std::nullopt;
     }
 
     auto args =
         std::vector(std::make_move_iterator(res.begin() + 1), std::make_move_iterator(res.end()));
 
-    return ProcessArgv { .exec = std::move(searched_path), .args = std::move(args) };
+    return ProcessArgv { .exec = std::move(abs_path), .args = std::move(args) };
 }
 
 MAA_CTRL_UNIT_NS_END

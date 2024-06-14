@@ -52,9 +52,9 @@ DeviceMgrWin32::DeviceMgrWin32()
             .adb_common_serials = { "127.0.0.1:21503" } } },
 
         { "AVD",
-          { .keyword = "qemu",
+          { .keyword = "qemu-system",
             .adb_candidate_paths = { "..\\..\\..\\platform-tools\\adb.exe"_path },
-            .adb_common_serials = { "127.0.0.1:5555" } } },
+            .adb_common_serials = { "emulator-5554", "127.0.0.1:5555" } } },
     };
 
     set_emulator_const_data(std::move(emulators));
