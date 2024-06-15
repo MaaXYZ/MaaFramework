@@ -774,6 +774,9 @@ bool PipelineResMgr::parse_ocrer_param(
             return false;
         }
     }
+    else {
+        u8_text = u8_default_text;
+    }
     std::ranges::transform(u8_text, std::back_inserter(output.expected), to_u16);
 
     if (auto replace_opt = input.find("replace")) {
