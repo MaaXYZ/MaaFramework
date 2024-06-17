@@ -780,28 +780,24 @@ bool PipelineResMgr::parse_ocrer_param(
     std::ranges::transform(u8_text, std::back_inserter(output.expected), to_u16);
 
     if (auto replace_opt = input.find("replace")) {
-        if (!replace_opt->is_array()) {
-            LogError << "replace is not array" << VAR(input);
-            return false;
+        auto append_repalce = [&](const json::value& in) {
+            auto pair = in.as<std::array<std::string, 2>>();
+            output.replace.emplace_back(to_u16(pair[0]), to_u16(pair[1]));
+        };
+
+        json::value& replace = *replace_opt;
+
+        if (replace.is<std::array<std::string, 2>>()) {
+            append_repalce(replace);
         }
-        auto& replace_array = replace_opt->as_array();
-        for (const auto& pair : replace_array) {
-            if (!pair.is_array()) {
-                LogError << "replace pair is not array" << VAR(input);
-                return false;
+        else if (replace.is<std::vector<std::array<std::string, 2>>>()) {
+            for (const json::value& pair : replace.as_array()) {
+                append_repalce(pair);
             }
-            auto& pair_array = pair.as_array();
-            if (pair_array.size() != 2) {
-                LogError << "replace pair size != 2" << VAR(input);
-                return false;
-            }
-            auto& first = pair_array[0];
-            auto& second = pair_array[1];
-            if (!first.is_string() || !second.is_string()) {
-                LogError << "replace pair is not string" << VAR(input);
-                return false;
-            }
-            output.replace.emplace_back(to_u16(first.as_string()), to_u16(second.as_string()));
+        }
+        else {
+            LogError << "failed to parse replace" << VAR(replace);
+            return false;
         }
     }
     else {
