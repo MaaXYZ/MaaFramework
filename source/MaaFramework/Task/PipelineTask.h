@@ -21,6 +21,7 @@ class PipelineTask : public MaaInstanceSink
 {
 public:
     using TaskData = MAA_RES_NS::TaskData;
+    using NextIter = MAA_RES_NS::TaskData::NextList::const_iterator;
 
 public:
     PipelineTask(std::string entry, InstanceInternalAPI* inst);
@@ -62,11 +63,9 @@ public:
 private:
     enum class NodeStatus
     {
-        Success,
-        Timeout,
-        Runout,
-        Interrupted,
-        InternalError,
+        None,
+        RunCompleted,
+        OnlyRecognized,
     };
 
     struct HitDetail
@@ -82,8 +81,8 @@ private:
         const MaaNodeId node_id = ++s_global_node_id;
 
         std::string name;
-        HitDetail hits;
-        NodeStatus status = NodeStatus::InternalError;
+        HitDetail hit;
+        NodeStatus status = NodeStatus::None;
     };
 
     struct TaskDetail
@@ -98,12 +97,9 @@ private:
     bool run_recognition_only();
     bool run_action_only();
 
-    NodeStatus find_first_and_run(
-        const std::vector<std::string>& list,
-        std::chrono::milliseconds timeout,
-        /*out*/ MAA_RES_NS::TaskData& found_data);
-    std::optional<HitDetail> find_first(const std::vector<std::string>& list);
-    NodeStatus run_task(const HitDetail& hits);
+    NextIter find_first_and_run(const TaskData::NextList& list);
+    NextIter find_first(const TaskData::NextList& list, HitDetail& hit_detail);
+    bool run_task(const HitDetail& hit);
 
     void add_node_detail(int64_t node_id, NodeDetail detail);
 
@@ -139,7 +135,7 @@ private:
     std::string entry_;
     std::string pre_hit_task_;
 
-    std::map<std::string, uint64_t> run_times_map_;
+    std::map<std::string, uint64_t> hit_times_map_;
 
     TaskDataMgr data_mgr_;
 

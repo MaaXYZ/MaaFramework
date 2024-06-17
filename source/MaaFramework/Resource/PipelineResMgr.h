@@ -42,6 +42,8 @@ public:
         TaskData& output,
         const TaskData& default_value);
 
+    static bool parse_next(const json::value& input, const std::string& key, TaskData::NextList& out, const TaskData::NextList& default_next);
+    static bool parse_next_object(const json::value& input, TaskData::NextObject& obj);
     static bool parse_recognition(
         const json::value& input,
         Recognition::Type& out_type,

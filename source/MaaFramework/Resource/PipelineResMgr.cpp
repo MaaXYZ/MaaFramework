@@ -126,8 +126,7 @@ bool PipelineResMgr::check_all_next_list() const
     LogFunc;
 
     for (const auto& [name, task_data] : task_data_map_) {
-        bool ret = check_next_list(task_data.next) && check_next_list(task_data.timeout_next)
-                   && check_next_list(task_data.runout_next);
+        bool ret = check_next_list(task_data.next);
         if (!ret) {
             LogError << "check_next_list failed" << VAR(name);
             return false;
@@ -138,9 +137,9 @@ bool PipelineResMgr::check_all_next_list() const
 
 bool PipelineResMgr::check_next_list(const TaskData::NextList& next_list) const
 {
-    for (const std::string& name : next_list) {
-        if (!task_data_map_.contains(name)) {
-            LogError << "Invalid next task name" << VAR(name);
+    for (const auto& next : next_list) {
+        if (!task_data_map_.contains(next.name)) {
+            LogError << "Invalid next task name" << VAR(next.name);
             return false;
         }
     }
@@ -328,38 +327,13 @@ bool PipelineResMgr::parse_task(
         return false;
     }
 
-    if (!get_and_check_value_or_array(input, "next", data.next, default_value.next)) {
-        LogError << "failed to parse_next next" << VAR(input);
+    if (!parse_next(input, "next", data.next, default_value.next)) {
+        LogError << "failed to parse_next" << VAR(input);
         return false;
     }
 
-    auto timeout = default_value.timeout.count();
-    if (!get_and_check_value(input, "timeout", timeout, timeout)) {
-        LogError << "failed to get_and_check_value timeout" << VAR(input);
-        return false;
-    }
-    data.timeout = std::chrono::milliseconds(timeout);
-
-    if (!get_and_check_value_or_array(
-            input,
-            "timeout_next",
-            data.timeout_next,
-            default_value.timeout_next)) {
-        LogError << "failed to parse_next timeout_next" << VAR(input);
-        return false;
-    }
-
-    if (!get_and_check_value(input, "times_limit", data.times_limit, default_value.times_limit)) {
-        LogError << "failed to get_and_check_value times_limit" << VAR(input);
-        return false;
-    }
-
-    if (!get_and_check_value_or_array(
-            input,
-            "runout_next",
-            data.runout_next,
-            default_value.runout_next)) {
-        LogError << "failed to parse_next runout_next" << VAR(input);
+    if (!get_and_check_value(input, "hit_limit", data.hit_limit, default_value.hit_limit)) {
+        LogError << "failed to get_and_check_value hit_limit" << VAR(input);
         return false;
     }
 
@@ -401,6 +375,81 @@ bool PipelineResMgr::parse_task(
     }
 
     output = std::move(data);
+
+    return true;
+}
+
+bool PipelineResMgr::parse_next(
+    const json::value& input,
+    const std::string& key,
+    TaskData::NextList& out,
+    const TaskData::NextList& default_next)
+{
+    auto next_opt = input.find(key);
+    if (!next_opt) {
+        out = default_next;
+        return true;
+    }
+
+    json::value& next = *next_opt;
+    if (next.is_array()) {
+        for (const auto& n : next.as_array()) {
+            TaskData::NextObject obj;
+            if (!parse_next_object(n, obj)) {
+                LogError << "failed to parse_next_object" << VAR(input) << VAR(key) << VAR(next);
+                return false;
+            }
+            out.emplace_back(std::move(obj));
+        }
+    }
+    else {
+        TaskData::NextObject obj;
+        if (!parse_next_object(next, obj)) {
+            LogError << "failed to parse_next_object" << VAR(input) << VAR(key) << VAR(next);
+            return false;
+        }
+        out.emplace_back(std::move(obj));
+    }
+
+    return true;
+}
+
+bool PipelineResMgr::parse_next_object(const json::value& input, TaskData::NextObject& obj)
+{
+    if (input.is_string()) {
+        obj = TaskData::NextObject { .name = input.as_string() };
+    }
+    else if (input.is_object()) {
+        obj.name = input.get("name", std::string());
+
+        std::string then_goto = input.get("then_goto", std::string());
+        static const std::unordered_map<std::string, TaskData::NextObject::ThenGotoLabel> kThenGotoMap {
+            { "", TaskData::NextObject::ThenGotoLabel::None },
+            { "None", TaskData::NextObject::ThenGotoLabel::None },
+            { "none", TaskData::NextObject::ThenGotoLabel::None },
+            { "Head", TaskData::NextObject::ThenGotoLabel::Head },
+            { "head", TaskData::NextObject::ThenGotoLabel::Head },
+            { "Current", TaskData::NextObject::ThenGotoLabel::Current },
+            { "current", TaskData::NextObject::ThenGotoLabel::Current },
+            { "Following", TaskData::NextObject::ThenGotoLabel::Following },
+            { "following", TaskData::NextObject::ThenGotoLabel::Following },
+        };
+        auto it = kThenGotoMap.find(then_goto);
+        if (it == kThenGotoMap.end()) {
+            LogError << "failed to parse then_goto" << VAR(then_goto) << VAR(input);
+            return false;
+        }
+        obj.then_goto = it->second;
+    }
+    else {
+        LogError << "failed to parse_next_object" << VAR(input);
+        return false;
+    }
+
+    if (obj.name.empty()) {
+        LogError << "empty name" << VAR(input);
+        return false;
+    }
 
     return true;
 }
