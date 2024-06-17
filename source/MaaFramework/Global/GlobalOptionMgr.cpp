@@ -25,6 +25,8 @@ bool GlobalOptionMgr::set_option(
         return set_show_hit_draw(value, val_size);
     case MaaGlobalOption_DebugMessage:
         return set_debug_message(value, val_size);
+    case MaaGlobalOption_PipelineTimeout:
+        return set_pipeline_timeout(value, val_size);
     default:
         LogError << "Unknown key" << VAR(key) << VAR(value);
         return false;
@@ -123,6 +125,24 @@ bool GlobalOptionMgr::set_debug_message(MaaOptionValue value, MaaOptionValueSize
     debug_message_ = *reinterpret_cast<const bool*>(value);
 
     LogInfo << "Set debug message" << VAR(debug_message_);
+
+    return true;
+}
+
+bool GlobalOptionMgr::set_pipeline_timeout(MaaOptionValue value, MaaOptionValueSize val_size)
+{
+    LogFunc;
+
+    if (val_size != sizeof(uint64_t)) {
+        LogError << "Invalid value size" << VAR(val_size);
+        return false;
+    }
+
+    uint64_t timeout = *reinterpret_cast<const uint64_t*>(value);
+
+    pipeline_timeout_ = std::chrono::milliseconds(timeout);
+
+    LogInfo << "Set pipeline timeout" << VAR(pipeline_timeout_);
 
     return true;
 }

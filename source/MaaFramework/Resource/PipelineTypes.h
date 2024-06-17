@@ -125,25 +125,36 @@ struct WaitFreezesParam
 
 struct TaskData
 {
-    using NextList = std::vector<std::string>;
+    struct NextObject
+    {
+        enum class ThenGotoLabel
+        {
+            None,
+            Head,
+            Current,
+            Following,
+        };
+
+        std::string name;
+        ThenGotoLabel then_goto = ThenGotoLabel::None;
+
+        MEO_TOJSON(name); // for output
+    };
+
+    using NextList = std::vector<NextObject>;
 
     std::string name;
-    bool is_sub = false;
-    bool inverse = false;
+    bool is_sub = false;    // for compatibility
     bool enabled = true;
+    uint hit_limit = UINT_MAX;
 
     Recognition::Type rec_type = Recognition::Type::DirectHit;
     Recognition::Param rec_param = MAA_VISION_NS::DirectHitParam {};
+    bool inverse = false;
 
     Action::Type action_type = Action::Type::DoNothing;
     Action::Param action_param;
     NextList next;
-
-    std::chrono::milliseconds timeout = std::chrono::milliseconds(20 * 1000);
-    NextList timeout_next;
-
-    uint times_limit = UINT_MAX;
-    NextList runout_next;
 
     std::chrono::milliseconds pre_delay = std::chrono::milliseconds(200);
     std::chrono::milliseconds post_delay = std::chrono::milliseconds(500);

@@ -131,7 +131,6 @@
  * }
  */
 #define MaaMsg_Task_Focus_ReadyToRun ("Task.Focus.ReadyToRun")
-#define MaaMsg_Task_Focus_Runout ("Task.Focus.Runout")
 #define MaaMsg_Task_Focus_Completed ("Task.Focus.Completed")
 /// @}
 
@@ -157,7 +156,6 @@
  * }
  */
 #define MaaMsg_Task_Debug_ReadyToRun ("Task.Debug.ReadyToRun")
-#define MaaMsg_Task_Debug_Runout ("Task.Debug.Runout")
 #define MaaMsg_Task_Debug_Completed ("Task.Debug.Completed")
 /// @}
 

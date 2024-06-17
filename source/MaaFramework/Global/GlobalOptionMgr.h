@@ -1,5 +1,6 @@
 #pragma once
 
+#include <chrono>
 #include <filesystem>
 #include <string_view>
 
@@ -29,6 +30,8 @@ public:
 
     bool debug_message() const { return debug_message_; }
 
+    std::chrono::milliseconds pipeline_timeout() const { return pipeline_timeout_; }
+
 private:
     GlobalOptionMgr() = default;
 
@@ -39,6 +42,7 @@ private:
     bool set_recording(MaaOptionValue value, MaaOptionValueSize val_size);
     bool set_stdout_level(MaaOptionValue value, MaaOptionValueSize val_size);
     bool set_debug_message(MaaOptionValue value, MaaOptionValueSize val_size);
+    bool set_pipeline_timeout(MaaOptionValue value, MaaOptionValueSize val_size);
 
 private:
     std::filesystem::path log_dir_;
@@ -46,6 +50,7 @@ private:
     bool show_hit_draw_ = false;
     bool recording_ = false;
     bool debug_message_ = false;
+    std::chrono::milliseconds pipeline_timeout_ = std::chrono::milliseconds(20 * 1000);
 };
 
 MAA_NS_END

@@ -111,6 +111,11 @@ enum MaaGlobalOptionEnum
     ///
     /// value: bool, eg: true; val_size: sizeof(bool)
     MaaGlobalOption_DebugMessage = 6,
+
+    /// Pipeline timeout
+    ///
+    /// value: int, eg: 20000; val_size: sizeof(uint64_t)
+    MaaGlobalOption_PipelineTimeout = 7,
 };
 
 typedef MaaOption MaaResOption;
