@@ -15,7 +15,7 @@ public: // from UnitBase
     virtual bool parse(const json::value& config) override;
 
 public: // from ScreencapAPI
-    virtual bool init(int swidth, int sheight) override;
+    virtual bool init() override;
 
     virtual void deinit() override {}
 

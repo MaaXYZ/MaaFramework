@@ -18,9 +18,9 @@ bool MaatouchInput::parse(const json::value& config)
     return invoke_app_->parse(config);
 }
 
-bool MaatouchInput::init(int swidth, int sheight, int orientation)
+bool MaatouchInput::init()
 {
-    LogFunc << VAR(swidth) << VAR(sheight) << VAR(orientation);
+    LogFunc;
 
     if (!invoke_app_->init()) {
         return false;
@@ -34,8 +34,6 @@ bool MaatouchInput::init(int swidth, int sheight, int orientation)
     if (!invoke_app_->chmod()) {
         return false;
     }
-
-    return set_wh(swidth, sheight, orientation);
 }
 
 bool MaatouchInput::set_wh(int swidth, int sheight, int orientation)

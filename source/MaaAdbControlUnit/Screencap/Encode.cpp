@@ -17,11 +17,6 @@ bool ScreencapEncode::parse(const json::value& config)
         screencap_encode_argv_);
 }
 
-bool ScreencapEncode::init(int swidth, int sheight)
-{
-    return set_wh(swidth, sheight);
-}
-
 std::optional<cv::Mat> ScreencapEncode::screencap()
 {
     auto argv_opt = screencap_encode_argv_.gen(argv_replace_);
@@ -34,9 +29,7 @@ std::optional<cv::Mat> ScreencapEncode::screencap()
         return std::nullopt;
     }
 
-    return screencap_helper_.process_data(
-        *output_opt,
-        std::bind(&ScreencapHelper::decode_png, &screencap_helper_, std::placeholders::_1));
+    return screencap_helper_.process_data(*output_opt, ScreencapHelper::decode_png);
 }
 
 MAA_CTRL_UNIT_NS_END

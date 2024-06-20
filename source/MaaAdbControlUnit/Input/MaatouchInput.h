@@ -39,11 +39,9 @@ public: // from UnitBase
     }
 
 public: // from TouchInputAPI
-    virtual bool init(int swidth, int sheight, int orientation) override;
+    virtual bool init() override;
 
     virtual void deinit() override {}
-
-    virtual bool set_wh(int swidth, int sheight, int orientation) override;
 
 public: // from KeyInputAPI
     virtual bool init() override;

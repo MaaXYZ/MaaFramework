@@ -31,16 +31,81 @@ bool MinicapStream::parse(const json::value& config)
            && parse_command("ForwardSocket", config, kDefaultForwardArgv, forward_argv_);
 }
 
-bool MinicapStream::init(int swidth, int sheight)
+bool MinicapStream::init()
 {
     LogFunc;
 
-    release_thread();
-
-    if (!MinicapBase::init(swidth, sheight)) {
+    if (!init_binary()) {
         return false;
     }
 
+    if (!connect_and_check()) {
+        return false;
+    }
+
+    create_thread();
+
+    return true;
+}
+
+void MinicapStream::deinit()
+{
+    release_thread();
+
+    sock_ios_ = nullptr;
+    pipe_ios_ = nullptr;
+}
+
+std::optional<cv::Mat> MinicapStream::screencap()
+{
+    LogDebug;
+
+    std::unique_lock<std::mutex> locker(mutex_);
+
+    using namespace std::chrono_literals;
+    cond_.wait_for(locker, 2s); // 等下一帧
+
+    return image_.empty() ? std::nullopt : std::make_optional(image_.clone());
+}
+
+void MinicapStream::on_display_changed(int width, int height)
+{
+    LogDebug << VAR(width) << VAR(height);
+
+    display_width_ = width;
+    display_height_ = height;
+
+    deinit();
+    init();
+}
+
+std::optional<std::string> MinicapStream::read(size_t count)
+{
+    if (!sock_ios_) {
+        LogError << "sock_ios_ is nullptr";
+        return std::nullopt;
+    }
+
+    using namespace std::chrono_literals;
+    return sock_ios_->read_some(count, 1s);
+}
+
+void MinicapStream::create_thread()
+{
+    quit_ = false;
+    pull_thread_ = std::thread(std::bind(&MinicapStream::pulling, this));
+}
+
+void MinicapStream::release_thread()
+{
+    quit_ = true;
+    if (pull_thread_.joinable()) {
+        pull_thread_.join();
+    }
+}
+
+bool MinicapStream::connect_and_check()
+{
     merge_replacement(
         { { "{FOWARD_PORT}", std::to_string(port_) }, { "{LOCAL_SOCKET}", "minicap" } });
 
@@ -54,11 +119,13 @@ bool MinicapStream::init(int swidth, int sheight)
         return false;
     }
 
-    uint32_t width = screencap_helper_.get_w();
-    uint32_t height = screencap_helper_.get_h();
-
-    pipe_ios_ =
-        binary_->invoke_bin(std::format("-P {}x{}@{}x{}/{}", width, height, width, height, 0));
+    pipe_ios_ = binary_->invoke_bin(std::format(
+        "-P {}x{}@{}x{}/{}",
+        display_width_,
+        display_height_,
+        display_width_,
+        display_height_,
+        0));
 
     if (!pipe_ios_) {
         LogError << "pipe_ios_ is nullptr";
@@ -108,59 +175,12 @@ bool MinicapStream::init(int swidth, int sheight)
         return false;
     }
 
-    if (header.real_width != width || header.real_height != height || header.virt_width != width
-        || header.virt_height != height) {
-        return false;
-    }
-
     if (!read(header.size - sizeof(header))) {
         LogError << "read header failed";
         return false;
     }
 
-    quit_ = false;
-    pull_thread_ = std::thread(std::bind(&MinicapStream::pulling, this));
-
     return true;
-}
-
-void MinicapStream::deinit()
-{
-    release_thread();
-
-    sock_ios_ = nullptr;
-    pipe_ios_ = nullptr;
-}
-
-std::optional<cv::Mat> MinicapStream::screencap()
-{
-    LogDebug;
-
-    std::unique_lock<std::mutex> locker(mutex_);
-
-    using namespace std::chrono_literals;
-    cond_.wait_for(locker, 2s); // 等下一帧
-
-    return image_.empty() ? std::nullopt : std::make_optional(image_.clone());
-}
-
-std::optional<std::string> MinicapStream::read(size_t count)
-{
-    if (!sock_ios_) {
-        LogError << "sock_ios_ is nullptr";
-        return std::nullopt;
-    }
-
-    using namespace std::chrono_literals;
-    return sock_ios_->read_some(count, 1s);
-}
-
-void MinicapStream::release_thread()
-{
-    quit_ = true;
-    if (pull_thread_.joinable()) {
-        pull_thread_.join();
-    }
 }
 
 void MinicapStream::pulling()

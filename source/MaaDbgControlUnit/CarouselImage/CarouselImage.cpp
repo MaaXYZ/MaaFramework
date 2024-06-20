@@ -64,13 +64,6 @@ bool CarouselImage::request_uuid(std::string& uuid)
     return true;
 }
 
-bool CarouselImage::request_resolution(int& width, int& height)
-{
-    width = resolution_.width;
-    height = resolution_.height;
-    return true;
-}
-
 bool CarouselImage::start_app(const std::string& intent)
 {
     std::ignore = intent;

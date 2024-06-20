@@ -60,23 +60,10 @@ bool ControlUnitMgr::connect()
 
     notifier.notify(MaaMsg_Controller_UUIDGot, details | json::object { { "uuid", uuid } });
 
-    const auto& resolution_opt = device_info_.request_resolution();
-    if (!resolution_opt) {
-        notifier.notify(MaaMsg_Controller_ResolutionGetFailed, details);
-        notifier.notify(
-            MaaMsg_Controller_ConnectFailed,
-            details | json::object { { "why", "ResolutionGetFailed" } });
-        return false;
-    }
-    auto [width, height] = *resolution_opt;
-    details |= { { "resolution", { { "width", width }, { "height", height } } } };
-
-    notifier.notify(MaaMsg_Controller_ResolutionGot, details);
-
     notifier.notify(MaaMsg_Controller_ConnectSuccess, details);
 
     if (screencap_) {
-        if (!screencap_->init(width, height)) {
+        if (!screencap_->init()) {
             LogError << "failed to init screencap";
             notifier.notify(MaaMsg_Controller_ScreencapInitFailed, details);
             return false;
@@ -126,18 +113,6 @@ bool ControlUnitMgr::request_uuid(std::string& uuid)
         return false;
     }
     uuid = std::move(opt).value();
-    return true;
-}
-
-bool ControlUnitMgr::request_resolution(int& width, int& height)
-{
-    auto opt = device_info_.request_resolution();
-    if (!opt) {
-        LogError << "failed to request_uuid";
-        return false;
-    }
-    width = opt->first;
-    height = opt->second;
     return true;
 }
 

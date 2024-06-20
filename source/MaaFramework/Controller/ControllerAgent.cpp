@@ -180,10 +180,7 @@ std::string ControllerAgent::get_uuid()
 
 std::pair<int, int> ControllerAgent::get_resolution()
 {
-    if (resolution_cache_.first == 0 || resolution_cache_.second == 0) {
-        request_resolution();
-    }
-    return resolution_cache_;
+    return std::make_pair(image_.cols, image_.rows);
 }
 
 void ControllerAgent::post_stop()
@@ -379,15 +376,12 @@ bool ControllerAgent::handle_connect()
     connected_ = _connect();
 
     request_uuid();
-    request_resolution();
 
     if (recording()) {
         json::value info {
             { "type", "connect" },
             { "success", connected_ },
             { "uuid", get_uuid() },
-            { "resolution",
-              { { "width", get_resolution().first }, { "height", get_resolution().second } } },
             { "version", MAA_VERSION },
         };
         append_recording(std::move(info), start_time, connected_);
@@ -576,7 +570,6 @@ bool ControllerAgent::handle_start_app(const AppParam& param)
     }
 
     bool ret = _start_app(param);
-    request_resolution();
 
     if (recording()) {
         json::value info = {
@@ -596,7 +589,6 @@ bool ControllerAgent::handle_stop_app(const AppParam& param)
     }
 
     bool ret = _stop_app(param);
-    request_resolution();
 
     if (recording()) {
         json::value info = {
@@ -856,22 +848,6 @@ bool ControllerAgent::request_uuid()
         return false;
     }
     uuid_cache_ = *uuid_opt;
-    return true;
-}
-
-bool ControllerAgent::request_resolution()
-{
-    clear_target_image_size();
-
-    resolution_cache_ = { 0, 0 };
-
-    auto resolution_opt = _request_resolution();
-    if (!resolution_opt) {
-        LogError << "controller request resolution failed";
-        return false;
-    }
-    resolution_cache_ = *resolution_opt;
-
     return true;
 }
 

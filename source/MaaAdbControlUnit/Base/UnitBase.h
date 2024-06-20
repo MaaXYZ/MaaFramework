@@ -46,13 +46,9 @@ public:
     virtual ~ScreencapBase() override = default;
 
 public:
-    virtual bool init(int swidth, int sheight) = 0;
+    virtual bool init() = 0;
     virtual void deinit() = 0;
-
-    virtual bool set_wh(int swidth, int sheight)
-    {
-        return screencap_helper_.set_wh(swidth, sheight);
-    }
+    virtual std::pair<int, int> get_resolution() = 0;
 
     virtual std::optional<cv::Mat> screencap() = 0;
 
@@ -66,9 +62,8 @@ public:
     virtual ~TouchInputBase() override = default;
 
 public:
-    virtual bool init(int swidth, int sheight, int orientation) = 0;
+    virtual bool init() = 0;
     virtual void deinit() = 0;
-    virtual bool set_wh(int swidth, int sheight, int orientation) = 0;
 
     virtual bool click(int x, int y) = 0;
     virtual bool swipe(int x1, int y1, int x2, int y2, int duration) = 0;
@@ -89,6 +84,14 @@ public:
 public:
     virtual bool press_key(int key) = 0;
     virtual bool input_text(const std::string& text) = 0;
+};
+
+class DeviceInfoSink
+{
+public:
+    virtual ~DeviceInfoSink() = default;
+
+    virtual void on_display_changed(int width, int height) {}
 };
 
 MAA_CTRL_UNIT_NS_END

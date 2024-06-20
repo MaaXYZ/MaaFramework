@@ -28,7 +28,6 @@ public: // from ControlUnitAPI
     virtual bool connect() override;
 
     virtual bool request_uuid(/*out*/ std::string& uuid) override;
-    virtual bool request_resolution(/*out*/ int& width, /*out*/ int& height) override;
 
     virtual bool start_app(const std::string& intent) override;
     virtual bool stop_app(const std::string& intent) override;

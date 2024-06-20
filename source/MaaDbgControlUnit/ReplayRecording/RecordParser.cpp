@@ -141,26 +141,6 @@ std::optional<Record::Param> RecordParser::parse_connect(const json::value& reco
 {
     Record::ConnectParam result;
 
-    auto resolution_opt = record_json.find("resolution");
-    if (!resolution_opt) {
-        LogError << "Failed to find resolution:" << VAR(record_json);
-        return std::nullopt;
-    }
-    if (auto width_opt = resolution_opt->find<int>("width")) {
-        result.resolution.width = *width_opt;
-    }
-    else {
-        LogError << "Failed to find resolution.width:" << VAR(record_json);
-        return std::nullopt;
-    }
-    if (auto height_opt = resolution_opt->find<int>("height")) {
-        result.resolution.height = *height_opt;
-    }
-    else {
-        LogError << "Failed to find resolution.height:" << VAR(record_json);
-        return std::nullopt;
-    }
-
     if (auto version_opt = record_json.find<std::string>("version")) {
         result.version = *version_opt;
     }

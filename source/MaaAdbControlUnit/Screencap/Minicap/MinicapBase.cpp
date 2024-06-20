@@ -34,7 +34,7 @@ bool MinicapBase::parse(const json::value& config)
 
 // x86_64的prebuilt里面的library是32位的, 用不了
 // arm64-v8会卡住, 不知道原因
-bool MinicapBase::init(int swidth, int sheight)
+bool MinicapBase::init_binary()
 {
     LogFunc;
 
@@ -74,7 +74,7 @@ bool MinicapBase::init(int swidth, int sheight)
         return false;
     }
 
-    return set_wh(swidth, sheight);
+    return true;
 }
 
 MAA_CTRL_UNIT_NS_END

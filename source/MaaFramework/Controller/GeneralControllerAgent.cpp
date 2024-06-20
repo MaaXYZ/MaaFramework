@@ -50,24 +50,6 @@ std::optional<std::string> GeneralControllerAgent::_request_uuid()
     return uuid;
 }
 
-std::optional<std::pair<int, int>> GeneralControllerAgent::_request_resolution()
-{
-    if (!control_unit_) {
-        LogError << "controller is nullptr" << VAR(control_unit_);
-        return std::nullopt;
-    }
-
-    int width = 0;
-    int height = 0;
-
-    if (!control_unit_->request_resolution(width, height)) {
-        LogError << "controller request_resolution failed";
-        return std::nullopt;
-    }
-
-    return std::make_pair(width, height);
-}
-
 bool GeneralControllerAgent::_start_app(AppParam param)
 {
     if (!control_unit_) {

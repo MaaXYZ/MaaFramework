@@ -140,7 +140,6 @@ public:
 protected:
     virtual bool _connect() = 0;
     virtual std::optional<std::string> _request_uuid() = 0;
-    virtual std::optional<std::pair<int, int>> _request_resolution() = 0;
     virtual bool _start_app(AppParam param) = 0;
     virtual bool _stop_app(AppParam param) = 0;
     virtual std::optional<cv::Mat> _screencap() = 0;
@@ -201,7 +200,6 @@ private:
     bool check_and_calc_target_image_size(const cv::Mat& raw);
     void clear_target_image_size();
     bool request_uuid();
-    bool request_resolution();
 
 private: // options
     bool set_image_target_long_side(MaaOptionValue value, MaaOptionValueSize val_size);

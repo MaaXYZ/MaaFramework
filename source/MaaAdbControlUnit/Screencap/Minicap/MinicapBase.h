@@ -8,7 +8,8 @@
 
 MAA_CTRL_UNIT_NS_BEGIN
 
-class MinicapBase : public ScreencapBase
+class MinicapBase
+    : public ScreencapBase
 {
 public:
     explicit MinicapBase(std::filesystem::path agent_path)
@@ -24,10 +25,11 @@ public: // from UnitBase
     virtual bool parse(const json::value& config) override;
 
 public: // from ScreencapAPI
-    virtual bool init(int swidth, int sheight) override;
     virtual std::optional<cv::Mat> screencap() override = 0;
 
 protected:
+    bool init_binary();
+
     std::shared_ptr<InvokeApp> binary_ = std::make_shared<InvokeApp>();
     std::shared_ptr<InvokeApp> library_ = std::make_shared<InvokeApp>();
 

@@ -68,10 +68,6 @@
  * }
  *
  */
-#define MaaMsg_Controller_ResolutionGot ("Controller.ResolutionGot")
-
-#define MaaMsg_Controller_ResolutionGetFailed ("Controller.ResolutionGetFailed")
-
 #define MaaMsg_Controller_ScreencapInited ("Controller.ScreencapInited")
 #define MaaMsg_Controller_ScreencapInitFailed ("Controller.ScreencapInitFailed")
 #define MaaMsg_Controller_TouchInputInited ("Controller.TouchinputInited")

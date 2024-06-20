@@ -59,17 +59,6 @@ bool ControlUnitMgr::request_uuid(std::string& uuid)
     return true;
 }
 
-bool ControlUnitMgr::request_resolution(int& width, int& height)
-{
-    if (!hwnd_) {
-        LogError << "hwnd_ is nullptr";
-        return false;
-    }
-
-    std::tie(width, height) = window_size(hwnd_);
-    return true;
-}
-
 bool ControlUnitMgr::start_app(const std::string& intent)
 {
     // TODO
