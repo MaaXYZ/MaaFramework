@@ -10,7 +10,7 @@
 
 MAA_CTRL_UNIT_NS_BEGIN
 
-bool MtouchHelper::read_info(int swidth, int sheight, int orientation)
+bool MtouchHelper::read_info()
 {
     if (!pipe_ios_) {
         LogError << "pipe_ios_ is nullptr";
@@ -38,18 +38,39 @@ bool MtouchHelper::read_info(int swidth, int sheight, int orientation)
         return false;
     }
 
-    screen_width_ = swidth;
-    screen_height_ = sheight;
-    bool landscape = screen_width_ > screen_height_;
+    request_display_info();
+
+    bool landscape = display_width_ > display_height_;
     touch_width_ = landscape ? std::max(x, y) : std::min(x, y);
     touch_height_ = landscape ? std::min(x, y) : std::max(x, y);
-    xscale_ = static_cast<double>(touch_width_) / swidth;
-    yscale_ = static_cast<double>(touch_height_) / sheight;
+    xscale_ = static_cast<double>(touch_width_) / display_width_;
+    yscale_ = static_cast<double>(touch_height_) / display_height_;
     press_ = pressure;
-    orientation_ = orientation;
 
-    LogInfo << VAR(screen_width_) << VAR(screen_height_) << VAR(touch_width_) << VAR(touch_height_)
-            << VAR(xscale_) << VAR(yscale_) << VAR(press_) << VAR(orientation_);
+    LogInfo << VAR(display_width_) << VAR(display_height_) << VAR(touch_width_)
+            << VAR(touch_height_) << VAR(xscale_) << VAR(yscale_) << VAR(press_)
+            << VAR(orientation_);
+
+    return true;
+}
+
+bool MtouchHelper::request_display_info()
+{
+    auto resolution_opt = device_info_->request_resolution();
+    if (!resolution_opt) {
+        LogError << "failed to request resolution";
+        return false;
+    }
+
+    std::tie(display_width_, display_height_) = *resolution_opt;
+
+    auto orientation_opt = device_info_->request_orientation();
+    if (!orientation_opt) {
+        LogError << "failed to request orientation";
+        return false;
+    }
+
+    orientation_ = *orientation_opt;
 
     return true;
 }
@@ -61,10 +82,10 @@ bool MtouchHelper::click(int x, int y)
         return false;
     }
 
-    if (x < 0 || x >= screen_width_ || y < 0 || y >= screen_height_) {
+    if (x < 0 || x >= display_width_ || y < 0 || y >= display_height_) {
         LogWarn << "click point out of range" << VAR(x) << VAR(y);
-        x = std::clamp(x, 0, screen_width_ - 1);
-        y = std::clamp(y, 0, screen_height_ - 1);
+        x = std::clamp(x, 0, display_width_ - 1);
+        y = std::clamp(y, 0, display_height_ - 1);
     }
 
     auto [touch_x, touch_y] = screen_to_touch(x, y);
@@ -89,13 +110,13 @@ bool MtouchHelper::swipe(int x1, int y1, int x2, int y2, int duration)
         return false;
     }
 
-    if (x1 < 0 || x1 >= screen_width_ || y1 < 0 || y1 >= screen_height_ || x2 < 0
-        || x2 >= screen_width_ || y2 < 0 || y2 >= screen_height_) {
+    if (x1 < 0 || x1 >= display_width_ || y1 < 0 || y1 >= display_height_ || x2 < 0
+        || x2 >= display_width_ || y2 < 0 || y2 >= display_height_) {
         LogWarn << "swipe point out of range" << VAR(x1) << VAR(y1) << VAR(x2) << VAR(y2);
-        x1 = std::clamp(x1, 0, screen_width_ - 1);
-        y1 = std::clamp(y1, 0, screen_height_ - 1);
-        x2 = std::clamp(x2, 0, screen_width_ - 1);
-        y2 = std::clamp(y2, 0, screen_height_ - 1);
+        x1 = std::clamp(x1, 0, display_width_ - 1);
+        y1 = std::clamp(y1, 0, display_height_ - 1);
+        x2 = std::clamp(x2, 0, display_width_ - 1);
+        y2 = std::clamp(y2, 0, display_height_ - 1);
     }
     if (duration <= 0) {
         LogWarn << "duration out of range" << VAR(duration);
@@ -184,6 +205,11 @@ bool MtouchHelper::touch_up(int contact)
     }
 
     return true;
+}
+
+bool MtouchHelper::parse(const json::value& config)
+{
+    return device_info_->parse(config);
 }
 
 MAA_CTRL_UNIT_NS_END

@@ -2,6 +2,7 @@
 
 #include "Base/UnitBase.h"
 
+#include "General/DeviceInfo.h"
 #include "Invoke/InvokeApp.h"
 #include "Utils/IOStream/ChildPipeIOStream.h"
 
@@ -10,6 +11,8 @@ MAA_CTRL_UNIT_NS_BEGIN
 class MtouchHelper : public TouchInputBase
 {
 public:
+    MtouchHelper() { children_.emplace_back(device_info_); }
+
     virtual ~MtouchHelper() override = default;
 
 public: // from TouchInputAPI
@@ -20,8 +23,11 @@ public: // from TouchInputAPI
     virtual bool touch_move(int contact, int x, int y, int pressure) override;
     virtual bool touch_up(int contact) override;
 
+    virtual bool parse(const json::value& config) override;
+
 protected:
-    bool read_info(int swidth, int sheight, int orientation);
+    bool read_info();
+
     virtual std::pair<int, int> screen_to_touch(int x, int y) = 0;
     virtual std::pair<int, int> screen_to_touch(double x, double y) = 0;
 
@@ -32,14 +38,18 @@ protected:
 
     std::shared_ptr<ChildPipeIOStream> pipe_ios_ = nullptr;
 
-    int screen_width_ = 0;
-    int screen_height_ = 0;
+    int display_width_ = 0;
+    int display_height_ = 0;
     int touch_width_ = 0;
     int touch_height_ = 0;
     double xscale_ = 0;
     double yscale_ = 0;
     int press_ = 0;
     int orientation_ = 0;
+
+private:
+    bool request_display_info();
+    std::shared_ptr<DeviceInfo> device_info_ = std::make_shared<DeviceInfo>();
 };
 
 MAA_CTRL_UNIT_NS_END

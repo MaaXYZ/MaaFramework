@@ -76,8 +76,7 @@ bool ControlUnitMgr::connect()
     }
 
     if (touch_input_) {
-        int orientation = device_info_.request_orientation().value_or(0);
-        if (!touch_input_->init(width, height, orientation)) {
+        if (!touch_input_->init()) {
             LogError << "failed to init touch_input";
             notifier.notify(MaaMsg_Controller_TouchInputInitFailed, details);
             return false;
@@ -244,6 +243,16 @@ bool ControlUnitMgr::parse(const json::value& config)
     }
 
     return ret;
+}
+
+void ControlUnitMgr::init(
+    std::shared_ptr<TouchInputBase> touch,
+    std::shared_ptr<KeyInputBase> key,
+    std::shared_ptr<ScreencapBase> screencap)
+{
+    touch_input_ = std::move(touch);
+    key_input_ = std::move(key);
+    screencap_ = std::move(screencap);
 }
 
 void ControlUnitMgr::set_replacement(const UnitBase::Replacement& replacement)

@@ -118,9 +118,7 @@ MaaControlUnitHandle MaaWin32ControlUnitCreate(
 
     auto unit_mgr = std::make_unique<ControlUnitMgr>(h_wnd, callback, callback_arg);
 
-    unit_mgr->set_touch_input_obj(touch_unit);
-    unit_mgr->set_key_input_obj(key_unit);
-    unit_mgr->set_screencap_obj(screencap_unit);
+    unit_mgr->init(touch_unit, key_unit, screencap_unit);
 
     return unit_mgr.release();
 }

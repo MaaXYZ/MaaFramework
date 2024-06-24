@@ -68,17 +68,6 @@ std::optional<cv::Mat> MinicapStream::screencap()
     return image_.empty() ? std::nullopt : std::make_optional(image_.clone());
 }
 
-void MinicapStream::on_display_changed(int width, int height)
-{
-    LogDebug << VAR(width) << VAR(height);
-
-    display_width_ = width;
-    display_height_ = height;
-
-    deinit();
-    init();
-}
-
 std::optional<std::string> MinicapStream::read(size_t count)
 {
     if (!sock_ios_) {

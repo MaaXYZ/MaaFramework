@@ -42,13 +42,9 @@ bool MumuExternalRendererIpc::parse(const json::value& config)
     return true;
 }
 
-bool MumuExternalRendererIpc::init(int swidth, int sheight)
+bool MumuExternalRendererIpc::init()
 {
-    if (!_init()) {
-        return false;
-    }
-
-    return ScreencapBase::set_wh(swidth, sheight);
+    return load_mumu_library() && connect_mumu() && init_screencap();
 }
 
 std::optional<cv::Mat> MumuExternalRendererIpc::screencap()
@@ -82,16 +78,6 @@ std::optional<cv::Mat> MumuExternalRendererIpc::screencap()
     cv::flip(bgr, dst, 0);
 
     return dst;
-}
-
-bool MumuExternalRendererIpc::_init()
-{
-    if (inited_) {
-        return true;
-    }
-
-    inited_ = load_mumu_library() && connect_mumu() && init_screencap();
-    return inited_;
 }
 
 bool MumuExternalRendererIpc::load_mumu_library()

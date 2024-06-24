@@ -48,11 +48,10 @@ public:
     bool parse(const json::value& config);
     void set_replacement(const UnitBase::Replacement& replacement);
 
-    void set_touch_input_obj(std::shared_ptr<TouchInputBase> obj) { touch_input_ = std::move(obj); }
-
-    void set_key_input_obj(std::shared_ptr<KeyInputBase> obj) { key_input_ = std::move(obj); }
-
-    void set_screencap_obj(std::shared_ptr<ScreencapBase> obj) { screencap_ = std::move(obj); }
+    void init(
+        std::shared_ptr<TouchInputBase> touch,
+        std::shared_ptr<KeyInputBase> key,
+        std::shared_ptr<ScreencapBase> screencap);
 
 private:
     bool _screencap(/*out*/ cv::Mat& image);

@@ -190,7 +190,7 @@ PipelineTask::NextIter PipelineTask::find_first_and_run(const TaskData::NextList
     }
 
     LogInfo << "Task hit_task:" << hit_detail.task_data.name << VAR(hit_detail.reco_uid)
-            << VAR(hit_detail.reco_hit) << VAR(hit_detail.reco_detail);
+            << VAR(hit_detail.reco_hit) << VAR(hit_detail.reco_detail.to_string());
 
     inst_->cache()->set_pre_task_box(hit_detail.task_data.name, hit_detail.reco_hit);
 

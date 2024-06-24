@@ -12,14 +12,6 @@ bool MinicapDirect::init()
     return init_binary();
 }
 
-void MinicapDirect::on_display_changed(int width, int height)
-{
-    LogDebug << VAR(width) << VAR(height);
-
-    display_width_ = width;
-    display_height_ = height;
-}
-
 std::optional<cv::Mat> MinicapDirect::screencap()
 {
     auto res = binary_->invoke_bin_and_read_pipe(std::format(

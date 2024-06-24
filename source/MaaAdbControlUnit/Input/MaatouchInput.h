@@ -44,7 +44,6 @@ public: // from TouchInputAPI
     virtual void deinit() override {}
 
 public: // from KeyInputAPI
-    virtual bool init() override;
     virtual bool press_key(int key) override;
     virtual bool input_text(const std::string& text) override;
 

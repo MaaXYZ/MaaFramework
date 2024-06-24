@@ -25,6 +25,16 @@ bool ControlUnitMgr::find_device(std::vector<std::string>& devices)
     return true;
 }
 
+void ControlUnitMgr::init(
+    std::shared_ptr<TouchInputBase> touch,
+    std::shared_ptr<KeyInputBase> key,
+    std::shared_ptr<ScreencapBase> screencap)
+{
+    touch_input_ = std::move(touch);
+    key_input_ = std::move(key);
+    screencap_ = std::move(screencap);
+}
+
 bool ControlUnitMgr::connect()
 {
     if (!hwnd_) {

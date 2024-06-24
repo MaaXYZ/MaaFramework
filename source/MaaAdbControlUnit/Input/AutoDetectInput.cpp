@@ -70,7 +70,15 @@ bool AutoDetectInput::init()
         break;
     }
 
-    return available_touch_ != nullptr;
+    for (auto& unit : key_units_ | std::views::values) {
+        if (!unit->init()) {
+            continue;
+        }
+        available_key_ = unit;
+        break;
+    }
+
+    return available_touch_ != nullptr && available_key_ != nullptr;
 }
 
 void AutoDetectInput::deinit()
@@ -131,19 +139,6 @@ bool AutoDetectInput::touch_up(int contact)
     }
 
     return available_touch_->touch_up(contact);
-}
-
-bool AutoDetectInput::init()
-{
-    for (auto& unit : key_units_ | std::views::values) {
-        if (!unit->init()) {
-            continue;
-        }
-        available_key_ = unit;
-        break;
-    }
-
-    return available_key_ != nullptr;
 }
 
 bool AutoDetectInput::press_key(int key)

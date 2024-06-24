@@ -135,7 +135,7 @@ bool ScreencapFastestWay::speed_test()
         if (kDropFirst.contains(method)) {
             LogInfo << "Testing" << method << "drop first";
             if (!unit->screencap()) {
-                LogWarn << "failed to test";
+                LogWarn << "failed to test" << method;
                 continue;
             }
         }
@@ -143,7 +143,7 @@ bool ScreencapFastestWay::speed_test()
         LogInfo << "Testing" << method;
         auto now = std::chrono::steady_clock::now();
         if (!unit->screencap()) {
-            LogWarn << "failed to test";
+            LogWarn << "failed to test" << method;
             continue;
         }
         check(method, now);
