@@ -178,11 +178,6 @@ std::string ControllerAgent::get_uuid()
     return uuid_cache_;
 }
 
-std::pair<int, int> ControllerAgent::get_resolution()
-{
-    return std::make_pair(image_.cols, image_.rows);
-}
-
 void ControllerAgent::post_stop()
 {
     LogFunc;
@@ -745,18 +740,17 @@ bool ControllerAgent::run_action(typename AsyncRunner<Action>::Id id, Action act
 
 std::pair<int, int> ControllerAgent::preproc_touch_point(int x, int y)
 {
-    auto [res_w, res_h] = get_resolution();
-
     if (image_target_width_ == 0 || image_target_height_ == 0) {
-        // 正常来说连接完后都会截个图测试，那时候就会走到
-        // check_and_calc_target_image_size，这里不应该是 0
-        LogError << "Invalid image target size" << VAR(image_target_width_)
-                 << VAR(image_target_height_);
-        return {};
+        LogWarn << "Invalid image target size" << VAR(image_target_width_)
+                << VAR(image_target_height_);
+
+        if (!init_scale_info()) {
+            return {};
+        }
     }
 
-    double scale_width = static_cast<double>(res_w) / image_target_width_;
-    double scale_height = static_cast<double>(res_h) / image_target_height_;
+    double scale_width = static_cast<double>(image_raw_width_) / image_target_width_;
+    double scale_height = static_cast<double>(image_raw_height_) / image_target_height_;
 
     int proced_x = static_cast<int>(std::round(x * scale_width));
     int proced_y = static_cast<int>(std::round(y * scale_height));
@@ -772,43 +766,38 @@ bool ControllerAgent::postproc_screenshot(const cv::Mat& raw)
         return false;
     }
 
-    auto [res_w, res_h] = get_resolution();
-    if (raw.cols != res_w || raw.rows != res_h) {
-        LogWarn << "Invalid resolution" << VAR(raw.cols) << VAR(raw.rows) << VAR(res_w)
-                << VAR(res_h);
-    }
+    if (raw.cols != image_raw_width_ || raw.rows != image_raw_height_) {
+        LogInfo << "Resolution changed" << VAR(raw.cols) << VAR(raw.rows) << VAR(image_raw_width_)
+                << VAR(image_raw_height_);
 
-    if (!check_and_calc_target_image_size(raw)) {
-        image_ = cv::Mat();
-        LogError << "Invalid target image size";
-        return false;
+        image_raw_width_ = raw.cols;
+        image_raw_height_ = raw.rows;
+
+        if (!calc_target_image_size()) {
+            image_ = cv::Mat();
+            LogError << "Invalid target image size";
+            return false;
+        }
     }
 
     cv::resize(raw, image_, { image_target_width_, image_target_height_ });
     return !image_.empty();
 }
 
-bool ControllerAgent::check_and_calc_target_image_size(const cv::Mat& raw)
+bool ControllerAgent::calc_target_image_size()
 {
-    if (image_target_width_ != 0 && image_target_height_ != 0) {
-        return true;
-    }
-
     if (image_target_long_side_ == 0 && image_target_short_side_ == 0) {
         LogError << "Invalid image target size";
         return false;
     }
 
-    int cur_width = raw.cols;
-    int cur_height = raw.rows;
-
     LogDebug << "Re-calc image target size:" << VAR(image_target_long_side_)
-             << VAR(image_target_short_side_) << VAR(cur_width) << VAR(cur_height);
+             << VAR(image_target_short_side_) << VAR(image_raw_width_) << VAR(image_raw_height_);
 
-    double scale = static_cast<double>(cur_width) / cur_height;
+    double scale = static_cast<double>(image_raw_width_) / image_raw_height_;
 
     if (image_target_short_side_ != 0) {
-        if (cur_width > cur_height) {
+        if (image_raw_width_ > image_raw_height_) {
             image_target_width_ = static_cast<int>(std::round(image_target_short_side_ * scale));
             image_target_height_ = image_target_short_side_;
         }
@@ -818,7 +807,7 @@ bool ControllerAgent::check_and_calc_target_image_size(const cv::Mat& raw)
         }
     }
     else { // image_target_long_side_ != 0
-        if (cur_width > cur_height) {
+        if (image_raw_width_ > image_raw_height_) {
             image_target_width_ = image_target_long_side_;
             image_target_height_ = static_cast<int>(std::round(image_target_long_side_ / scale));
         }
@@ -849,6 +838,12 @@ bool ControllerAgent::request_uuid()
     }
     uuid_cache_ = *uuid_opt;
     return true;
+}
+
+bool ControllerAgent::init_scale_info()
+{
+    // 实际是通过 postproc_screenshot 初始化的
+    return !screencap().empty();
 }
 
 bool ControllerAgent::set_image_target_long_side(MaaOptionValue value, MaaOptionValueSize val_size)

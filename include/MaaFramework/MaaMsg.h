@@ -48,23 +48,8 @@
 
 #define MaaMsg_Controller_UUIDGetFailed ("Controller.UUIDGetFailed")
 
-/*
-    {
-        resolution: {
-            width: number,
-            height: number
-        }
-    }
-*/
-
 /**
- * @brief The message for the resolution got.
- *
  * payload: {
- *      resolution: {
- *         width: number,
- *         height: number
- *     }
  * }
  *
  */
@@ -79,11 +64,7 @@
  * @brief Message for the controller connected.
  *
  * payload: {
- *     uuid: string,
- *     resolution: {
- *         width: number,
- *         height: number
- *     }
+ *     uuid: string
  * }
  */
 #define MaaMsg_Controller_ConnectSuccess ("Controller.ConnectSuccess")

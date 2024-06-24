@@ -118,7 +118,6 @@ public:
 
     virtual cv::Mat get_image() override;
     virtual std::string get_uuid() override;
-    virtual std::pair<int, int> get_resolution() override;
 
 public:
     virtual void post_stop() override;
@@ -197,9 +196,10 @@ private:
     bool run_action(typename AsyncRunner<Action>::Id id, Action action);
     std::pair<int, int> preproc_touch_point(int x, int y);
     bool postproc_screenshot(const cv::Mat& raw);
-    bool check_and_calc_target_image_size(const cv::Mat& raw);
+    bool calc_target_image_size();
     void clear_target_image_size();
     bool request_uuid();
+    bool init_scale_info();
 
 private: // options
     bool set_image_target_long_side(MaaOptionValue value, MaaOptionValueSize val_size);
@@ -222,6 +222,8 @@ private:
     int image_target_short_side_ = 720;
     int image_target_width_ = 0;
     int image_target_height_ = 0;
+    int image_raw_width_ = 0;
+    int image_raw_height_ = 0;
 
     std::string uuid_cache_;
     std::pair<int, int> resolution_cache_ = { 0, 0 };
