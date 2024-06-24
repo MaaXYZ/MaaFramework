@@ -226,7 +226,6 @@ private:
     int image_raw_height_ = 0;
 
     std::string uuid_cache_;
-    std::pair<int, int> resolution_cache_ = { 0, 0 };
 
     std::string default_app_package_entry_;
     std::string default_app_package_;

@@ -288,6 +288,22 @@ bool ControlUnitMgr::_screencap(cv::Mat& image)
     }
 
     image = std::move(opt).value();
+
+    if (image_width_ == 0 || image_height_ == 0) {
+        image_width_ = image.cols;
+        image_height_ = image.rows;
+    }
+    else if (image_width_ != image.cols || image_height_ != image.rows) {
+        LogInfo << "Image size changed" << VAR(image_width_) << VAR(image_height_)
+                << VAR(image.cols) << VAR(image.rows);
+        image_width_ = image.cols;
+        image_height_ = image.rows;
+
+        if (touch_input_) {
+            touch_input_->init();
+        }
+    }
+
     return true;
 }
 

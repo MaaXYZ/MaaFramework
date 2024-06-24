@@ -72,6 +72,8 @@ private:
     std::shared_ptr<ScreencapBase> screencap_ = nullptr;
 
     bool screencap_available_ = false;
+    int image_width_ = 0;
+    int image_height_ = 0;
 };
 
 MAA_CTRL_UNIT_NS_END
