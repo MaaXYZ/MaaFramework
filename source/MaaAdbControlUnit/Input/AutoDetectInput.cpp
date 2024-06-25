@@ -58,19 +58,27 @@ bool AutoDetectInput::parse(const json::value& config)
     return ret;
 }
 
-bool AutoDetectInput::init(int swidth, int sheight, int orientation)
+bool AutoDetectInput::init()
 {
     LogFunc;
 
     for (auto& unit : touch_units_ | std::views::values) {
-        if (!unit->init(swidth, sheight, orientation)) {
+        if (!unit->init()) {
             continue;
         }
         available_touch_ = unit;
         break;
     }
 
-    return available_touch_ != nullptr;
+    for (auto& unit : key_units_ | std::views::values) {
+        if (!unit->init()) {
+            continue;
+        }
+        available_key_ = unit;
+        break;
+    }
+
+    return available_touch_ != nullptr && available_key_ != nullptr;
 }
 
 void AutoDetectInput::deinit()
@@ -81,15 +89,6 @@ void AutoDetectInput::deinit()
     for (auto& unit : key_units_ | std::views::values) {
         unit->deinit();
     }
-}
-
-bool AutoDetectInput::set_wh(int swidth, int sheight, int orientation)
-{
-    bool ret = false;
-    for (auto& unit : touch_units_ | std::views::values) {
-        ret |= unit->set_wh(swidth, sheight, orientation);
-    }
-    return ret;
 }
 
 bool AutoDetectInput::click(int x, int y)
@@ -140,19 +139,6 @@ bool AutoDetectInput::touch_up(int contact)
     }
 
     return available_touch_->touch_up(contact);
-}
-
-bool AutoDetectInput::init()
-{
-    for (auto& unit : key_units_ | std::views::values) {
-        if (!unit->init()) {
-            continue;
-        }
-        available_key_ = unit;
-        break;
-    }
-
-    return available_key_ != nullptr;
 }
 
 bool AutoDetectInput::press_key(int key)

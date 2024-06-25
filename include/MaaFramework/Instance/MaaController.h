@@ -217,7 +217,7 @@ extern "C"
      * @param ctrl
      * @param[out] buffer The buffer that the UUID will be stored in.
      *
-     * @return MaaBool Whether the resolution is retrieved successfully.
+     * @return MaaBool Whether the UUID is retrieved successfully.
      */
     MAA_FRAMEWORK_API MaaBool
         MaaControllerGetUUID(MaaControllerHandle ctrl, MaaStringBufferHandle buffer);

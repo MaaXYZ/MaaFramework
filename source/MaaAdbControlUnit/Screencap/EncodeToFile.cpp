@@ -24,10 +24,10 @@ bool ScreencapEncodeToFileAndPull::parse(const json::value& config)
            && parse_command("PullFile", config, kDefaultPullFileArgv, pull_file_argv_);
 }
 
-bool ScreencapEncodeToFileAndPull::init(int swidth, int sheight)
+bool ScreencapEncodeToFileAndPull::init()
 {
     tempname_ = format_now_for_filename();
-    return set_wh(swidth, sheight);
+    return true;
 }
 
 std::optional<cv::Mat> ScreencapEncodeToFileAndPull::screencap()

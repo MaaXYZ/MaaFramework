@@ -49,18 +49,6 @@ std::optional<std::string> CustomControllerAgent::_request_uuid()
     return buffer.get();
 }
 
-std::optional<std::pair<int, int>> CustomControllerAgent::_request_resolution()
-{
-    LogFunc << VAR_VOIDP(handle_) << VAR_VOIDP(handle_->request_resolution);
-    if (!handle_ || !handle_->request_resolution) {
-        LogError << "handle_ or handle_->request_resolution is nullptr";
-        return {};
-    }
-    int width = 0, height = 0;
-    handle_->request_resolution(handle_arg_, &width, &height);
-    return std::make_pair(width, height);
-}
-
 bool CustomControllerAgent::_start_app(AppParam param)
 {
     LogFunc << VAR_VOIDP(handle_) << VAR_VOIDP(handle_->start_app) << VAR(param.package);

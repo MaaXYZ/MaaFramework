@@ -62,12 +62,12 @@ bool ScreencapFastestWay::parse(const json::value& config)
     return ret;
 }
 
-bool ScreencapFastestWay::init(int swidth, int sheight)
+bool ScreencapFastestWay::init()
 {
     LogFunc;
 
     for (auto it = units_.begin(); it != units_.end();) {
-        if (it->second->init(swidth, sheight)) {
+        if (it->second->init()) {
             ++it;
         }
         else {
@@ -87,17 +87,6 @@ void ScreencapFastestWay::deinit()
     }
 
     method_ = Method::UnknownYet;
-}
-
-bool ScreencapFastestWay::set_wh(int swidth, int sheight)
-{
-    LogFunc << VAR(swidth) << VAR(sheight);
-
-    for (auto& unit : units_ | std::views::values) {
-        unit->set_wh(swidth, sheight);
-    }
-
-    return true;
 }
 
 std::optional<cv::Mat> ScreencapFastestWay::screencap()
@@ -138,14 +127,15 @@ bool ScreencapFastestWay::speed_test()
     };
 
     // RawByNetcat 第一次速度很慢，但后面快
-    // MinicapStream 是直接取数据，只取一次不准
-    const std::unordered_set<Method> kDropFirst = { Method::RawByNetcat, Method::MinicapStream };
+    // MinicapStream 是从缓存拉数据，只取一次不准
+    static const std::unordered_set<Method> kDropFirst = { Method::RawByNetcat,
+                                                           Method::MinicapStream };
 
     for (auto& [method, unit] : units_) {
         if (kDropFirst.contains(method)) {
             LogInfo << "Testing" << method << "drop first";
             if (!unit->screencap()) {
-                LogWarn << "failed to test";
+                LogWarn << "failed to test" << method;
                 continue;
             }
         }
@@ -153,7 +143,7 @@ bool ScreencapFastestWay::speed_test()
         LogInfo << "Testing" << method;
         auto now = std::chrono::steady_clock::now();
         if (!unit->screencap()) {
-            LogWarn << "failed to test";
+            LogWarn << "failed to test" << method;
             continue;
         }
         check(method, now);

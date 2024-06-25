@@ -48,30 +48,11 @@
 
 #define MaaMsg_Controller_UUIDGetFailed ("Controller.UUIDGetFailed")
 
-/*
-    {
-        resolution: {
-            width: number,
-            height: number
-        }
-    }
-*/
-
 /**
- * @brief The message for the resolution got.
- *
  * payload: {
- *      resolution: {
- *         width: number,
- *         height: number
- *     }
  * }
  *
  */
-#define MaaMsg_Controller_ResolutionGot ("Controller.ResolutionGot")
-
-#define MaaMsg_Controller_ResolutionGetFailed ("Controller.ResolutionGetFailed")
-
 #define MaaMsg_Controller_ScreencapInited ("Controller.ScreencapInited")
 #define MaaMsg_Controller_ScreencapInitFailed ("Controller.ScreencapInitFailed")
 #define MaaMsg_Controller_TouchInputInited ("Controller.TouchinputInited")
@@ -83,11 +64,7 @@
  * @brief Message for the controller connected.
  *
  * payload: {
- *     uuid: string,
- *     resolution: {
- *         width: number,
- *         height: number
- *     }
+ *     uuid: string
  * }
  */
 #define MaaMsg_Controller_ConnectSuccess ("Controller.ConnectSuccess")

@@ -42,7 +42,7 @@ public: // from UnitBase
     //     virtual bool input_text(const std::string& text) override;
 
 public: // from ScreencapAPI
-    virtual bool init(int swidth, int sheight) override;
+    virtual bool init() override;
 
     virtual void deinit() override {}
 
@@ -65,8 +65,6 @@ private:
     int display_width_ = 0;
     int display_height_ = 0;
     std::vector<unsigned char> display_buffer_;
-
-    bool inited_ = false;
 
 private:
     inline static const std::string kConnectFuncName = "nemu_connect";

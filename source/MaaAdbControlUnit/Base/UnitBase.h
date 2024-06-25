@@ -46,13 +46,8 @@ public:
     virtual ~ScreencapBase() override = default;
 
 public:
-    virtual bool init(int swidth, int sheight) = 0;
+    virtual bool init() = 0;
     virtual void deinit() = 0;
-
-    virtual bool set_wh(int swidth, int sheight)
-    {
-        return screencap_helper_.set_wh(swidth, sheight);
-    }
 
     virtual std::optional<cv::Mat> screencap() = 0;
 
@@ -66,9 +61,8 @@ public:
     virtual ~TouchInputBase() override = default;
 
 public:
-    virtual bool init(int swidth, int sheight, int orientation) = 0;
+    virtual bool init() = 0;
     virtual void deinit() = 0;
-    virtual bool set_wh(int swidth, int sheight, int orientation) = 0;
 
     virtual bool click(int x, int y) = 0;
     virtual bool swipe(int x1, int y1, int x2, int y2, int duration) = 0;

@@ -21,13 +21,15 @@ public: // from UnitBase
     virtual bool parse(const json::value& config) override;
 
 public: // from ScreencapAPI
-    virtual bool init(int swidth, int sheight) override;
+    virtual bool init() override;
     virtual void deinit() override;
     virtual std::optional<cv::Mat> screencap() override;
 
 private:
     std::optional<std::string> read(size_t count);
+    void create_thread();
     void release_thread();
+    bool connect_and_check();
 
     void pulling();
 

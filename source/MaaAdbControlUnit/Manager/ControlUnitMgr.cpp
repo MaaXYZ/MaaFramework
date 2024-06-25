@@ -60,23 +60,10 @@ bool ControlUnitMgr::connect()
 
     notifier.notify(MaaMsg_Controller_UUIDGot, details | json::object { { "uuid", uuid } });
 
-    const auto& resolution_opt = device_info_.request_resolution();
-    if (!resolution_opt) {
-        notifier.notify(MaaMsg_Controller_ResolutionGetFailed, details);
-        notifier.notify(
-            MaaMsg_Controller_ConnectFailed,
-            details | json::object { { "why", "ResolutionGetFailed" } });
-        return false;
-    }
-    auto [width, height] = *resolution_opt;
-    details |= { { "resolution", { { "width", width }, { "height", height } } } };
-
-    notifier.notify(MaaMsg_Controller_ResolutionGot, details);
-
     notifier.notify(MaaMsg_Controller_ConnectSuccess, details);
 
     if (screencap_) {
-        if (!screencap_->init(width, height)) {
+        if (!screencap_->init()) {
             LogError << "failed to init screencap";
             notifier.notify(MaaMsg_Controller_ScreencapInitFailed, details);
             return false;
@@ -89,8 +76,7 @@ bool ControlUnitMgr::connect()
     }
 
     if (touch_input_) {
-        int orientation = device_info_.request_orientation().value_or(0);
-        if (!touch_input_->init(width, height, orientation)) {
+        if (!touch_input_->init()) {
             LogError << "failed to init touch_input";
             notifier.notify(MaaMsg_Controller_TouchInputInitFailed, details);
             return false;
@@ -126,18 +112,6 @@ bool ControlUnitMgr::request_uuid(std::string& uuid)
         return false;
     }
     uuid = std::move(opt).value();
-    return true;
-}
-
-bool ControlUnitMgr::request_resolution(int& width, int& height)
-{
-    auto opt = device_info_.request_resolution();
-    if (!opt) {
-        LogError << "failed to request_uuid";
-        return false;
-    }
-    width = opt->first;
-    height = opt->second;
     return true;
 }
 
@@ -271,6 +245,16 @@ bool ControlUnitMgr::parse(const json::value& config)
     return ret;
 }
 
+void ControlUnitMgr::init(
+    std::shared_ptr<TouchInputBase> touch,
+    std::shared_ptr<KeyInputBase> key,
+    std::shared_ptr<ScreencapBase> screencap)
+{
+    touch_input_ = std::move(touch);
+    key_input_ = std::move(key);
+    screencap_ = std::move(screencap);
+}
+
 void ControlUnitMgr::set_replacement(const UnitBase::Replacement& replacement)
 {
     device_list_.set_replacement(replacement);
@@ -304,6 +288,22 @@ bool ControlUnitMgr::_screencap(cv::Mat& image)
     }
 
     image = std::move(opt).value();
+
+    if (image_width_ == 0 || image_height_ == 0) {
+        image_width_ = image.cols;
+        image_height_ = image.rows;
+    }
+    else if (image_width_ != image.cols || image_height_ != image.rows) {
+        LogInfo << "Image size changed" << VAR(image_width_) << VAR(image_height_)
+                << VAR(image.cols) << VAR(image.rows);
+        image_width_ = image.cols;
+        image_height_ = image.rows;
+
+        if (touch_input_) {
+            touch_input_->init();
+        }
+    }
+
     return true;
 }
 

@@ -17,7 +17,6 @@ public:
 protected:
     virtual bool _connect() override;
     virtual std::optional<std::string> _request_uuid() override;
-    virtual std::optional<std::pair<int, int>> _request_resolution() override;
     virtual bool _start_app(AppParam param) override;
     virtual bool _stop_app(AppParam param) override;
     virtual std::optional<cv::Mat> _screencap() override;

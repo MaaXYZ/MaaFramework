@@ -17,20 +17,6 @@ bool AdbTapInput::parse(const json::value& config)
            && parse_command("Swipe", config, kDefaultSwipeArgv, swipe_argv_);
 }
 
-bool AdbTapInput::init(int swidth, int sheight, int orientation)
-{
-    return set_wh(swidth, sheight, orientation);
-}
-
-bool AdbTapInput::set_wh(int swidth, int sheight, int orientation)
-{
-    std::ignore = swidth;
-    std::ignore = sheight;
-    std::ignore = orientation;
-
-    return true;
-}
-
 bool AdbTapInput::click(int x, int y)
 {
     LogInfo << VAR(x) << VAR(y);

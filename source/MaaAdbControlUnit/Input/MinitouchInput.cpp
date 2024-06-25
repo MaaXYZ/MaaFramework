@@ -23,12 +23,12 @@ bool MinitouchInput::parse(const json::value& config)
 
     arch_list_ = jarch.as_collection<std::string>();
 
-    return invoke_app_->parse(config);
+    return invoke_app_->parse(config) && MtouchHelper::parse(config);
 }
 
-bool MinitouchInput::init(int swidth, int sheight, int orientation)
+bool MinitouchInput::init()
 {
-    LogFunc << VAR(swidth) << VAR(sheight) << VAR(orientation);
+    LogFunc;
 
     if (!invoke_app_->init()) {
         return false;
@@ -55,13 +55,6 @@ bool MinitouchInput::init(int swidth, int sheight, int orientation)
         return false;
     }
 
-    return set_wh(swidth, sheight, orientation);
-}
-
-bool MinitouchInput::set_wh(int swidth, int sheight, int orientation)
-{
-    LogFunc << VAR(swidth) << VAR(sheight) << VAR(orientation);
-
     // https://github.com/openstf/minitouch#running
     static const std::string kMinitouchUseStdin = "-i";
     pipe_ios_ = invoke_app_->invoke_bin(kMinitouchUseStdin);
@@ -69,7 +62,7 @@ bool MinitouchInput::set_wh(int swidth, int sheight, int orientation)
         return false;
     }
 
-    return read_info(swidth, sheight, orientation);
+    return read_info();
 }
 
 MAA_CTRL_UNIT_NS_END

@@ -25,6 +25,16 @@ bool ControlUnitMgr::find_device(std::vector<std::string>& devices)
     return true;
 }
 
+void ControlUnitMgr::init(
+    std::shared_ptr<TouchInputBase> touch,
+    std::shared_ptr<KeyInputBase> key,
+    std::shared_ptr<ScreencapBase> screencap)
+{
+    touch_input_ = std::move(touch);
+    key_input_ = std::move(key);
+    screencap_ = std::move(screencap);
+}
+
 bool ControlUnitMgr::connect()
 {
     if (!hwnd_) {
@@ -56,17 +66,6 @@ bool ControlUnitMgr::request_uuid(std::string& uuid)
     ss << hwnd_;
     uuid = std::move(ss).str();
 
-    return true;
-}
-
-bool ControlUnitMgr::request_resolution(int& width, int& height)
-{
-    if (!hwnd_) {
-        LogError << "hwnd_ is nullptr";
-        return false;
-    }
-
-    std::tie(width, height) = window_size(hwnd_);
     return true;
 }
 

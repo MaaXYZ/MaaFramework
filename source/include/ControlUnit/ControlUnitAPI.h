@@ -18,7 +18,6 @@ public:
     virtual bool connect() = 0;
 
     virtual bool request_uuid(/*out*/ std::string& uuid) = 0;
-    virtual bool request_resolution(/*out*/ int& width, /*out*/ int& height) = 0;
 
     virtual bool start_app(const std::string& intent) = 0;
     virtual bool stop_app(const std::string& intent) = 0;

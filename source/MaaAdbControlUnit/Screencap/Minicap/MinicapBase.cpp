@@ -29,12 +29,12 @@ bool MinicapBase::parse(const json::value& config)
     json::array jsdk = config.get("prebuilt", "minicap", "sdk", kDefaultSdk);
     sdk_list_ = jsdk.as_collection<int>();
 
-    return binary_->parse(config) && library_->parse(config);
+    return binary_->parse(config) && library_->parse(config) && device_info_->parse(config);
 }
 
 // x86_64的prebuilt里面的library是32位的, 用不了
 // arm64-v8会卡住, 不知道原因
-bool MinicapBase::init(int swidth, int sheight)
+bool MinicapBase::init_binary()
 {
     LogFunc;
 
@@ -74,7 +74,15 @@ bool MinicapBase::init(int swidth, int sheight)
         return false;
     }
 
-    return set_wh(swidth, sheight);
+    auto resolution_opt = device_info_->request_resolution();
+    if (!resolution_opt) {
+        LogError << "Failed to get display resolution";
+        return false;
+    }
+    std::tie(display_width_, display_height_) = *resolution_opt;
+    LogInfo << "Display resolution: " << display_width_ << "x" << display_height_;
+
+    return true;
 }
 
 MAA_CTRL_UNIT_NS_END

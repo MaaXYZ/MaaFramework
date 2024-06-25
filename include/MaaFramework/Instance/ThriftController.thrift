@@ -46,7 +46,6 @@ service ThriftController {
   bool connect(),
 
   string request_uuid(),
-  Size request_resolution(),
 
   bool start_app(1: AppParam param),
   bool stop_app(1: AppParam param),

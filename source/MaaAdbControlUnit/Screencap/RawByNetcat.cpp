@@ -24,10 +24,14 @@ bool ScreencapRawByNetcat::parse(const json::value& config)
                config,
                kDefaultScreencapRawByNetcatArgv,
                screencap_raw_by_netcat_argv_)
-           && parse_command("NetcatAddress", config, kDefaultNetcatAddressArgv, netcat_address_argv_);
+           && parse_command(
+               "NetcatAddress",
+               config,
+               kDefaultNetcatAddressArgv,
+               netcat_address_argv_);
 }
 
-bool ScreencapRawByNetcat::init(int swidth, int sheight)
+bool ScreencapRawByNetcat::init()
 {
     LogFunc;
 
@@ -46,7 +50,7 @@ bool ScreencapRawByNetcat::init(int swidth, int sheight)
 
     io_factory_ = std::make_shared<ServerSockIOFactory>(local, 0);
 
-    return set_wh(swidth, sheight);
+    return true;
 }
 
 void ScreencapRawByNetcat::deinit()
@@ -95,9 +99,7 @@ std::optional<cv::Mat> ScreencapRawByNetcat::screencap()
         LogWarn << "child return error" << VAR(argv.exec) << VAR(argv.args);
     }
 
-    return screencap_helper_.process_data(
-        output,
-        std::bind(&ScreencapHelper::decode_raw, &screencap_helper_, std::placeholders::_1));
+    return screencap_helper_.process_data(output, ScreencapHelper::decode_raw);
 }
 
 std::optional<std::string> ScreencapRawByNetcat::request_netcat_address()
