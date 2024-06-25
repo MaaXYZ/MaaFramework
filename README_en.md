@@ -68,6 +68,9 @@ It offers low-code simplicity while maintaining high extensibility. The framewor
 - [MaaHatsuboshiTA](https://github.com/Carpenter-MK1/MaaHatsuboshiTA) Hatsuboshi Teaching Assistant   
   A Tool For Producers PLaying Gakuen-Idolmaster. Powered by MaaFramework.
 
+- [MCCA](https://github.com/MaaXYZ/MCCA) CrossCore Assistant ![python](https://img.shields.io/badge/Python-3776AB?logo=python&logoColor=white)  
+  The CrossCore Assistant, based on a brand new architecture. Image technology + simulation control, freeing your hands! Powered by MaaFramework.
+
 ## Eco-Building
 
 MAA is planned to be a category of projects rather than just a single piece of software.
