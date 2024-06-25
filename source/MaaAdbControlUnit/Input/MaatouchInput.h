@@ -20,7 +20,7 @@ public:
         KeyInputBase::children_.emplace_back(invoke_app_);
     }
 
-    virtual ~MaatouchInput() override = default;
+    virtual ~MaatouchInput() override;
 
 public: // from UnitBase
     virtual bool parse(const json::value& config) override;
@@ -40,8 +40,7 @@ public: // from UnitBase
 
 public: // from TouchInputAPI
     virtual bool init() override;
-
-    virtual void deinit() override {}
+    virtual void deinit() override;
 
 public: // from KeyInputAPI
     virtual bool press_key(int key) override;
@@ -66,6 +65,8 @@ private:
             static_cast<int>(round(x * xscale_)),
             static_cast<int>(round(y * yscale_)));
     }
+
+    void remove_binary();
 
     std::filesystem::path agent_path_;
     std::string package_name_;

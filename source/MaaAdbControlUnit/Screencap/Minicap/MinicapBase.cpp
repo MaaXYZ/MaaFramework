@@ -85,4 +85,12 @@ bool MinicapBase::init_binary()
     return true;
 }
 
+void MinicapBase::deinit_binary()
+{
+    LogFunc;
+
+    binary_->remove();
+    library_->remove();
+}
+
 MAA_CTRL_UNIT_NS_END

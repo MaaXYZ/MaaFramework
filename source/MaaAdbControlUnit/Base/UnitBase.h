@@ -45,10 +45,10 @@ class ScreencapBase : public UnitBase
 public:
     virtual ~ScreencapBase() override = default;
 
-public:
     virtual bool init() = 0;
     virtual void deinit() = 0;
 
+public:
     virtual std::optional<cv::Mat> screencap() = 0;
 
 protected:
@@ -60,10 +60,10 @@ class TouchInputBase : virtual public UnitBase
 public:
     virtual ~TouchInputBase() override = default;
 
-public:
     virtual bool init() = 0;
     virtual void deinit() = 0;
 
+public:
     virtual bool click(int x, int y) = 0;
     virtual bool swipe(int x1, int y1, int x2, int y2, int duration) = 0;
 

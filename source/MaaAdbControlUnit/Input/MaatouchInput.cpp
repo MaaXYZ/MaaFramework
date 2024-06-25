@@ -10,6 +10,11 @@
 
 MAA_CTRL_UNIT_NS_BEGIN
 
+MaatouchInput::~MaatouchInput()
+{
+    remove_binary();
+}
+
 bool MaatouchInput::parse(const json::value& config)
 {
     static const std::string kDefaultPackage = "com.shxyke.MaaTouch.App";
@@ -41,6 +46,13 @@ bool MaatouchInput::init()
     }
 
     return read_info();
+}
+
+void MaatouchInput::deinit()
+{
+    LogTrace;
+
+    remove_binary();
 }
 
 bool MaatouchInput::press_key(int key)
@@ -87,6 +99,13 @@ bool MaatouchInput::input_text(const std::string& text)
     }
 
     return true;
+}
+
+void MaatouchInput::remove_binary()
+{
+    LogTrace;
+
+    invoke_app_->remove();
 }
 
 MAA_CTRL_UNIT_NS_END

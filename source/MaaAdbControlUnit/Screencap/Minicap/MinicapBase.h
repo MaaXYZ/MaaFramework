@@ -30,6 +30,7 @@ public: // from ScreencapAPI
 
 protected:
     bool init_binary();
+    void deinit_binary();
 
     std::shared_ptr<InvokeApp> binary_ = std::make_shared<InvokeApp>();
     std::shared_ptr<InvokeApp> library_ = std::make_shared<InvokeApp>();

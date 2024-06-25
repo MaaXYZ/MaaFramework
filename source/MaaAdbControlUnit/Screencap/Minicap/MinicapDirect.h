@@ -9,12 +9,11 @@ class MinicapDirect : public MinicapBase
 public:
     using MinicapBase::MinicapBase;
 
-    virtual ~MinicapDirect() override = default;
+    virtual ~MinicapDirect() override;
 
 public: // from ScreencapAPI
     virtual bool init() override;
-
-    virtual void deinit() override {}
+    virtual void deinit() override;
 
     virtual std::optional<cv::Mat> screencap() override;
 };

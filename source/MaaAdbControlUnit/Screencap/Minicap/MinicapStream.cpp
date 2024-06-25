@@ -11,6 +11,8 @@ MAA_CTRL_UNIT_NS_BEGIN
 MinicapStream::~MinicapStream()
 {
     release_thread();
+
+    deinit_binary();
 }
 
 bool MinicapStream::parse(const json::value& config)
@@ -54,6 +56,8 @@ void MinicapStream::deinit()
 
     sock_ios_ = nullptr;
     pipe_ios_ = nullptr;
+
+    deinit_binary();
 }
 
 std::optional<cv::Mat> MinicapStream::screencap()
