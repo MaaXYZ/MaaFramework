@@ -12,6 +12,7 @@ public:
     enum class TouchMethod
     {
         UnknownYet,
+        EmulatorExtras,
         Maatouch,
         Minitouch,
         AdbTap,
@@ -20,6 +21,7 @@ public:
     enum class KeyMethod
     {
         UnknownYet,
+        EmulatorExtras,
         Maatouch,
         AdbKey,
     };

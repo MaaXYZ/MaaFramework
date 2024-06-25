@@ -1,5 +1,6 @@
 #include "MumuExternalRendererIpc.h"
 
+#include "ControlUnit/MicroControl.hpp"
 #include "Utils/Codec.h"
 #include "Utils/Logger.h"
 #include "Utils/NoWarningCV.hpp"
@@ -47,6 +48,11 @@ bool MumuExternalRendererIpc::init()
     return load_mumu_library() && connect_mumu() && init_screencap();
 }
 
+void MumuExternalRendererIpc::deinit()
+{
+    disconnect_mumu();
+}
+
 std::optional<cv::Mat> MumuExternalRendererIpc::screencap()
 {
     LogDebug;
@@ -78,6 +84,164 @@ std::optional<cv::Mat> MumuExternalRendererIpc::screencap()
     cv::flip(bgr, dst, 0);
 
     return dst;
+}
+
+bool MumuExternalRendererIpc::click(int x, int y)
+{
+    if (!input_event_touch_down_func_ || !input_event_touch_up_func_) {
+        LogError << "input_event_touch_down_func_ or input_event_touch_up_func_ is null";
+        return false;
+    }
+
+    LogInfo << VAR(x) << VAR(y);
+
+    int down_ret = input_event_touch_down_func_(mumu_handle_, mumu_display_id_, x, y);
+    int up_ret = input_event_touch_up_func_(mumu_handle_, mumu_display_id_);
+
+    if (down_ret != 0 || up_ret != 0) {
+        LogError << "Failed to click" << VAR(down_ret) << VAR(up_ret);
+        return false;
+    }
+
+    return true;
+}
+
+bool MumuExternalRendererIpc::swipe(int x1, int y1, int x2, int y2, int duration)
+{
+    if (!input_event_touch_down_func_ || !input_event_touch_up_func_) {
+        LogError << "input_event_touch_down_func_ or input_event_touch_up_func_ is null";
+        return false;
+    }
+
+    if (duration <= 0) {
+        LogWarn << "duration out of range" << VAR(duration);
+        duration = 500;
+    }
+
+    LogInfo << VAR(x1) << VAR(y1) << VAR(x2) << VAR(y2) << VAR(duration);
+
+    int ret = 0;
+
+    micro_swipe(
+        x1,
+        y1,
+        x2,
+        y2,
+        duration,
+        [&](int x, int y) {
+            ret |= input_event_touch_down_func_(mumu_handle_, mumu_display_id_, x, y);
+        },
+        [&](int x, int y) {
+            ret |= input_event_touch_down_func_(mumu_handle_, mumu_display_id_, x, y);
+        },
+        [&]([[maybe_unused]] int x, [[maybe_unused]] int y) {
+            ret |= input_event_touch_up_func_(mumu_handle_, mumu_display_id_);
+        });
+
+    if (ret != 0) {
+        LogError << "Failed to swipe" << VAR(ret);
+        return false;
+    }
+
+    return true;
+}
+
+bool MumuExternalRendererIpc::touch_down(int contact, int x, int y, int pressure)
+{
+    if (!input_event_touch_down_func_) {
+        LogError << "input_event_touch_down_func_ is null";
+        return false;
+    }
+
+    LogInfo << VAR(contact) << VAR(x) << VAR(y) << VAR(pressure);
+
+    int ret = input_event_touch_down_func_(mumu_handle_, mumu_display_id_, x, y);
+
+    if (ret != 0) {
+        LogError << "Failed to touch_down" << VAR(ret);
+        return false;
+    }
+
+    return true;
+}
+
+bool MumuExternalRendererIpc::touch_move(int contact, int x, int y, int pressure)
+{
+    // mumu: touch_down == touch_move
+
+    if (!input_event_touch_down_func_) {
+        LogError << "input_event_touch_down_func_ is null";
+        return false;
+    }
+
+    LogInfo << VAR(contact) << VAR(x) << VAR(y) << VAR(pressure);
+
+    int ret = input_event_touch_down_func_(mumu_handle_, mumu_display_id_, x, y);
+
+    if (ret != 0) {
+        LogError << "Failed to touch_down" << VAR(ret);
+        return false;
+    }
+
+    return true;
+}
+
+bool MumuExternalRendererIpc::touch_up(int contact)
+{
+    if (!input_event_touch_up_func_) {
+        LogError << "input_event_touch_up_func_ is null";
+        return false;
+    }
+
+    LogInfo << VAR(contact);
+
+    int ret = input_event_touch_up_func_(mumu_handle_, mumu_display_id_);
+
+    if (ret != 0) {
+        LogError << "Failed to touch_up" << VAR(ret);
+        return false;
+    }
+
+    return true;
+}
+
+bool MumuExternalRendererIpc::press_key(int key)
+{
+    if (!input_event_key_down_func_ || !input_event_key_up_func_) {
+        LogError << "input_event_key_down_func_ or input_event_key_up_func_ is null";
+        return false;
+    }
+
+    LogInfo << VAR(key);
+
+    int down_ret = input_event_key_down_func_(mumu_handle_, mumu_display_id_, key);
+    int up_ret = input_event_key_up_func_(mumu_handle_, mumu_display_id_, key);
+
+    if (down_ret != 0 || up_ret != 0) {
+        LogError << "Failed to press_key" << VAR(down_ret) << VAR(up_ret);
+        return false;
+    }
+
+    return true;
+}
+
+bool MumuExternalRendererIpc::input_text(const std::string& text)
+{
+    if (!input_text_func_) {
+        LogError << "input_text_func_ is null";
+        return false;
+    }
+
+    LogInfo << VAR(text);
+
+    int ret = input_text_func_(mumu_handle_, mumu_display_id_, text.c_str());
+
+    if (ret != 0) {
+        LogError << "Failed to input_text" << VAR(ret);
+        return false;
+    }
+
+    return true;
 }
 
 bool MumuExternalRendererIpc::load_mumu_library()

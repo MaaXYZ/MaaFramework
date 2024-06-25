@@ -40,7 +40,7 @@ protected:
     Replacement argv_replace_;
 };
 
-class ScreencapBase : public UnitBase
+class ScreencapBase : virtual public UnitBase
 {
 public:
     virtual ~ScreencapBase() override = default;
