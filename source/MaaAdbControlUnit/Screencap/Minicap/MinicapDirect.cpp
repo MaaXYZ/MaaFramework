@@ -7,9 +7,19 @@
 
 MAA_CTRL_UNIT_NS_BEGIN
 
+MinicapDirect::~MinicapDirect()
+{
+    deinit_binary();
+}
+
 bool MinicapDirect::init()
 {
     return init_binary();
+}
+
+void MinicapDirect::deinit()
+{
+    deinit_binary();
 }
 
 std::optional<cv::Mat> MinicapDirect::screencap()

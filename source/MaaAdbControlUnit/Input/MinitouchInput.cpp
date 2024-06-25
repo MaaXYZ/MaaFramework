@@ -10,6 +10,11 @@
 
 MAA_CTRL_UNIT_NS_BEGIN
 
+MinitouchInput::~MinitouchInput()
+{
+    remove_binary();
+}
+
 bool MinitouchInput::parse(const json::value& config)
 {
     static const json::array kDefaultArch = {
@@ -63,6 +68,20 @@ bool MinitouchInput::init()
     }
 
     return read_info();
+}
+
+void MinitouchInput::deinit()
+{
+    LogTrace;
+
+    remove_binary();
+}
+
+void MinitouchInput::remove_binary()
+{
+    LogTrace;
+
+    invoke_app_->remove();
 }
 
 MAA_CTRL_UNIT_NS_END

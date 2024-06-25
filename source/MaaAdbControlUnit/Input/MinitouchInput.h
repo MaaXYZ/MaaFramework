@@ -17,15 +17,14 @@ public:
         children_.emplace_back(invoke_app_);
     }
 
-    virtual ~MinitouchInput() override = default;
+    virtual ~MinitouchInput() override;
 
 public: // from UnitBase
     virtual bool parse(const json::value& config) override;
 
 public: // from TouchInputAPI
     virtual bool init() override;
-
-    virtual void deinit() override {}
+    virtual void deinit() override;
 
 protected: // from MtouchHelper
     virtual std::pair<int, int> screen_to_touch(int x, int y) override
@@ -58,6 +57,8 @@ private:
             return make_pair(x * xscale_, y * yscale_);
         }
     }
+
+    void remove_binary();
 
     std::filesystem::path agent_path_;
     std::vector<std::string> arch_list_;
