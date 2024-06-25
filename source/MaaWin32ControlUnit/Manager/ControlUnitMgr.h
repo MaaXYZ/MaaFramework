@@ -24,7 +24,6 @@ public: // from ControlUnitAPI
     virtual bool connect() override;
 
     virtual bool request_uuid(/*out*/ std::string& uuid) override;
-    virtual bool request_resolution(/*out*/ int& width, /*out*/ int& height) override;
 
     virtual bool start_app(const std::string& intent) override;
     virtual bool stop_app(const std::string& intent) override;
@@ -44,11 +43,10 @@ public: // from ControlUnitAPI
 public:
     bool parse(const json::value& config);
 
-    void set_touch_input_obj(std::shared_ptr<TouchInputBase> obj) { touch_input_ = std::move(obj); }
-
-    void set_key_input_obj(std::shared_ptr<KeyInputBase> obj) { key_input_ = std::move(obj); }
-
-    void set_screencap_obj(std::shared_ptr<ScreencapBase> obj) { screencap_ = std::move(obj); }
+    void init(
+        std::shared_ptr<TouchInputBase> touch,
+        std::shared_ptr<KeyInputBase> key,
+        std::shared_ptr<ScreencapBase> screencap);
 
 private:
     HWND hwnd_ = nullptr;

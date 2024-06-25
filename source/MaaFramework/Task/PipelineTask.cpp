@@ -189,7 +189,7 @@ PipelineTask::NodeStatus PipelineTask::find_first_and_run(
     }
 
     LogInfo << "Task hit:" << hits.task_data.name << VAR(hits.reco_uid) << VAR(hits.reco_hit)
-            << VAR(hits.reco_detail);
+            << VAR(hits.reco_detail.to_string());
 
     inst_->cache()->set_pre_task_box(hits.task_data.name, hits.reco_hit);
 

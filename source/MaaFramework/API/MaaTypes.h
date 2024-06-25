@@ -65,7 +65,6 @@ public:
 
     virtual cv::Mat get_image() = 0;
     virtual std::string get_uuid() = 0;
-    virtual std::pair<int, int> get_resolution() = 0;
 };
 
 struct MaaInstanceAPI

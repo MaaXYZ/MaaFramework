@@ -194,9 +194,7 @@ MaaControlUnitHandle MaaAdbControlUnitCreate(
         callback,
         callback_arg);
 
-    unit_mgr->set_touch_input_obj(touch_unit);
-    unit_mgr->set_key_input_obj(key_unit);
-    unit_mgr->set_screencap_obj(screencap_unit);
+    unit_mgr->init(touch_unit, key_unit, screencap_unit);
 
     auto json_opt = json::parse(config);
     if (!json_opt) {

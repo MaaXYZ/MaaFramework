@@ -23,11 +23,9 @@ public: // from UnitBase
     virtual bool parse(const json::value& config) override;
 
 public: // from TouchInputAPI
-    virtual bool init(int swidth, int sheight, int orientation) override;
+    virtual bool init() override;
 
     virtual void deinit() override {}
-
-    virtual bool set_wh(int swidth, int sheight, int orientation) override;
 
 protected: // from MtouchHelper
     virtual std::pair<int, int> screen_to_touch(int x, int y) override

@@ -28,7 +28,6 @@ public: // from ControlUnitAPI
     virtual bool connect() override;
 
     virtual bool request_uuid(/*out*/ std::string& uuid) override;
-    virtual bool request_resolution(/*out*/ int& width, /*out*/ int& height) override;
 
     virtual bool start_app(const std::string& intent) override;
     virtual bool stop_app(const std::string& intent) override;
@@ -49,11 +48,10 @@ public:
     bool parse(const json::value& config);
     void set_replacement(const UnitBase::Replacement& replacement);
 
-    void set_touch_input_obj(std::shared_ptr<TouchInputBase> obj) { touch_input_ = std::move(obj); }
-
-    void set_key_input_obj(std::shared_ptr<KeyInputBase> obj) { key_input_ = std::move(obj); }
-
-    void set_screencap_obj(std::shared_ptr<ScreencapBase> obj) { screencap_ = std::move(obj); }
+    void init(
+        std::shared_ptr<TouchInputBase> touch,
+        std::shared_ptr<KeyInputBase> key,
+        std::shared_ptr<ScreencapBase> screencap);
 
 private:
     bool _screencap(/*out*/ cv::Mat& image);
@@ -74,6 +72,8 @@ private:
     std::shared_ptr<ScreencapBase> screencap_ = nullptr;
 
     bool screencap_available_ = false;
+    int image_width_ = 0;
+    int image_height_ = 0;
 };
 
 MAA_CTRL_UNIT_NS_END

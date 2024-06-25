@@ -37,13 +37,6 @@ bool ReplayRecording::request_uuid(std::string& uuid)
     return true;
 }
 
-bool ReplayRecording::request_resolution(int& width, int& height)
-{
-    width = recording_.device_info.resolution.width;
-    height = recording_.device_info.resolution.height;
-    return true;
-}
-
 bool ReplayRecording::start_app(const std::string& intent)
 {
     LogInfo << VAR(intent);

@@ -14,16 +14,6 @@
 
 MAA_CTRL_UNIT_NS_BEGIN
 
-bool ScreencapHelper::set_wh(int w, int h)
-{
-    LogFunc << VAR(w) << VAR(h);
-
-    width_ = w;
-    height_ = h;
-
-    return true;
-}
-
 std::optional<cv::Mat> ScreencapHelper::process_data(
     std::string& buffer,
     std::function<std::optional<cv::Mat>(const std::string& buffer)> decoder)
@@ -107,12 +97,6 @@ std::optional<cv::Mat> ScreencapHelper::decode_raw(const std::string& buffer)
     memcpy(&im_width, data, 4);
     memcpy(&im_height, data + 4, 4);
 
-    if (static_cast<int>(im_width) != width_ || static_cast<int>(im_height) != height_) {
-        LogError << "screencap size image" << VAR(im_width) << VAR(im_height) << "don't match"
-                 << VAR(width_) << VAR(height_);
-        return std::nullopt;
-    }
-
     size_t size = 4ull * im_width * im_height;
 
     if (buffer.size() < size) {
@@ -122,7 +106,7 @@ std::optional<cv::Mat> ScreencapHelper::decode_raw(const std::string& buffer)
     size_t header_size = buffer.size() - size;
     const uint8_t* im_data = data + header_size;
 
-    cv::Mat temp(height_, width_, CV_8UC4, const_cast<uint8_t*>(im_data));
+    cv::Mat temp(im_height, im_width, CV_8UC4, const_cast<uint8_t*>(im_data));
     if (temp.empty()) {
         return std::nullopt;
     }
