@@ -5,6 +5,7 @@
 #include <unordered_set>
 
 #include "AdbInput.h"
+#include "EmulatorExtras/MumuExternalRendererIpc.h"
 #include "MaatouchInput.h"
 #include "MinitouchInput.h"
 #include "Utils/Logger.h"
@@ -15,11 +16,15 @@ AutoDetectInput::AutoDetectInput(
     const std::filesystem::path& maatouch_path,
     const std::filesystem::path& minitouch_path)
 {
+    auto emu_extras = std::make_shared<MumuExternalRendererIpc>();
+
+    touch_units_.emplace_back(std::make_pair(TouchMethod::EmulatorExtras, emu_extras));
+    key_units_.emplace_back(std::make_pair(KeyMethod::EmulatorExtras, emu_extras));
+
     if (std::filesystem::exists(maatouch_path)) {
         auto maatouch = std::make_shared<MaatouchInput>(maatouch_path);
 
         touch_units_.emplace_back(std::make_pair(TouchMethod::Maatouch, maatouch));
-
         key_units_.emplace_back(std::make_pair(KeyMethod::Maatouch, maatouch));
     }
     else {

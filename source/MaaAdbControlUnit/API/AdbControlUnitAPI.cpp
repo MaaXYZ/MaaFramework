@@ -51,6 +51,7 @@ MaaControlUnitHandle MaaAdbControlUnitCreate(
 
     std::shared_ptr<MaatouchInput> maatouch_unit = nullptr;
     std::shared_ptr<AutoDetectInput> auto_detect_unit = nullptr;
+    std::shared_ptr<MumuExternalRendererIpc> emulator_extras_unit = nullptr;
 
     auto agent_stdpath = std::filesystem::absolute(path(agent_path));
     auto minitouch_path = agent_stdpath / path("minitouch");
@@ -92,6 +93,14 @@ MaaControlUnitHandle MaaAdbControlUnitCreate(
         touch_unit = auto_detect_unit;
         break;
 
+    case MaaAdbControllerType_Touch_EmulatorExtras:
+        LogInfo << "touch_type: EmulatorExtras";
+        if (!emulator_extras_unit) {
+            emulator_extras_unit = std::make_shared<MumuExternalRendererIpc>();
+        }
+        touch_unit = emulator_extras_unit;
+        break;
+
     default:
         LogWarn << "Unknown touch input type" << VAR(touch_type);
         break;
@@ -113,6 +122,16 @@ MaaControlUnitHandle MaaAdbControlUnitCreate(
             maatouch_unit = std::make_shared<MaatouchInput>(maatouch_path);
         }
         key_unit = maatouch_unit;
+        break;
+
+    case MaaAdbControllerType_Key_EmulatorExtras:
+        LogInfo << "key_type: EmulatorExtras";
+        if (!emulator_extras_unit) {
+            emulator_extras_unit = std::make_shared<MumuExternalRendererIpc>();
+        }
+        key_unit = emulator_extras_unit;
+        break;
+
         break;
 
     case MaaAdbControllerType_Key_AutoDetect:
@@ -169,7 +188,10 @@ MaaControlUnitHandle MaaAdbControlUnitCreate(
 
     case MaaAdbControllerType_Screencap_EmulatorExtras:
         LogInfo << "screencap_type: EmulatorExtras";
-        screencap_unit = std::make_shared<MumuExternalRendererIpc>();
+        if (!emulator_extras_unit) {
+            emulator_extras_unit = std::make_shared<MumuExternalRendererIpc>();
+        }
+        screencap_unit = emulator_extras_unit;
         break;
 
     case MaaAdbControllerType_Screencap_FastestWay_Compatible:
