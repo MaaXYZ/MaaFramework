@@ -112,14 +112,14 @@ extern "C"
      *
      * @param ctrl The handle of the controller instance to set options for.
      * @param key The option key.
-     * @param value The option value.
+     * @param[in] value The option value.
      * @param val_size The size of the option value.
      * @return MaaBool Whether the option is set successfully.
      */
     MAA_FRAMEWORK_API MaaBool MaaControllerSetOption(
         MaaControllerHandle ctrl,
         MaaCtrlOption key,
-        MaaOptionValue value,
+        MaaOptionValue value /**< Maybe a byte array */,
         MaaOptionValueSize val_size);
 
     /**
@@ -204,23 +204,23 @@ extern "C"
      * @brief Get the image buffer of the last screencap request.
      *
      * @param ctrl
-     * @param[out] buffer The buffer that the image data will be stored in.
+     * @param buffer The buffer that the image data will be stored in.
      *
      * @return MaaBool Whether the image buffer is retrieved successfully.
      */
     MAA_FRAMEWORK_API MaaBool
-        MaaControllerGetImage(MaaControllerHandle ctrl, MaaImageBufferHandle buffer);
+        MaaControllerGetImage(MaaControllerHandle ctrl, /* out */ MaaImageBufferHandle buffer);
 
     /**
      * @brief Get the UUID of the controller.
      *
      * @param ctrl
-     * @param[out] buffer The buffer that the UUID will be stored in.
+     * @param buffer The buffer that the UUID will be stored in.
      *
      * @return MaaBool Whether the resolution is retrieved successfully.
      */
     MAA_FRAMEWORK_API MaaBool
-        MaaControllerGetUUID(MaaControllerHandle ctrl, MaaStringBufferHandle buffer);
+        MaaControllerGetUUID(MaaControllerHandle ctrl, /* out */ MaaStringBufferHandle buffer);
 
 #ifdef __cplusplus
 }

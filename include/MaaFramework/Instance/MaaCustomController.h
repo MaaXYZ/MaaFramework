@@ -36,7 +36,11 @@ extern "C"
         MaaBool (
             *request_uuid)(MaaTransparentArg handle_arg, /* out */ MaaStringBufferHandle buffer);
 
-        /// Write result to width and height.
+        /**
+         * @brief Write result to width and height.
+         * @param[out] width
+         * @param[out] height
+         */
         MaaBool (*request_resolution)(
             MaaTransparentArg handle_arg,
             /* out */ int32_t* width,

@@ -44,14 +44,14 @@ extern "C"
      *
      * @param inst The handle of the instance to set options for.
      * @param key The option key.
-     * @param value The option value.
+     * @param[in] value The option value.
      * @param val_size The size of the option value.
      * @return MaaBool Whether the option is set successfully.
      */
     MAA_FRAMEWORK_API MaaBool MaaSetOption(
         MaaInstanceHandle inst,
         MaaInstOption key,
-        MaaOptionValue value,
+        MaaOptionValue value /**< Maybe a byte array */,
         MaaOptionValueSize val_size);
 
     /**

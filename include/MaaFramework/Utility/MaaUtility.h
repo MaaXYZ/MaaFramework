@@ -33,13 +33,16 @@ extern "C"
      * See #MaaGlobalOptionEnum for details.
      *
      * @param key The option key.
-     * @param value The option value.
+     * @param[in] value The option value.
      * @param val_size The size of the option value.
      * @return MaaBool Whether the option is set successfully.
      */
     MAA_FRAMEWORK_API MaaBool
-        MaaSetGlobalOption(MaaGlobalOption key, MaaOptionValue value, MaaOptionValueSize val_size);
+        MaaSetGlobalOption(MaaGlobalOption key, MaaOptionValue value /**< Maybe a byte array */, MaaOptionValueSize val_size);
 
+    /**
+     * @param[out] hit
+     */
     MAA_FRAMEWORK_API MaaBool MaaQueryRecognitionDetail(
         MaaRecoId reco_id,
         /* out */ MaaStringBufferHandle name,
@@ -49,16 +52,24 @@ extern "C"
         /* out */ MaaImageBufferHandle raw,
         /* out */ MaaImageListBufferHandle draws);
 
+    /**
+     * @param[out] reco_id
+     * @param[out] run_completed
+     */
     MAA_FRAMEWORK_API MaaBool MaaQueryNodeDetail(
         MaaNodeId node_id,
         /* out */ MaaStringBufferHandle name,
         /* out */ MaaRecoId* reco_id,
         /* out */ MaaBool* run_completed);
 
+    /**
+     * @param[out] node_id_list
+     * @param[in, out] node_id_list_size
+     */
     MAA_FRAMEWORK_API MaaBool MaaQueryTaskDetail(
         MaaTaskId task_id,
         /* out */ MaaStringBufferHandle entry,
-        /* out */ MaaNodeId* node_id_list,
+        /* out */ MaaNodeId* node_id_list /**< array */,
         /* in & out */ MaaSize* node_id_list_size);
 
 #ifdef __cplusplus

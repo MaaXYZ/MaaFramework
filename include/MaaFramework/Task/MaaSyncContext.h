@@ -28,8 +28,8 @@ extern "C"
         MaaImageBufferHandle image,
         MaaStringView task_name,
         MaaStringView task_param,
-        MaaRectHandle out_box /**< [out] */,
-        MaaStringBufferHandle out_detail /**< [out] */);
+        MaaRectHandle out_box /* out */,
+        MaaStringBufferHandle out_detail /* out */);
     MAA_FRAMEWORK_API MaaBool MaaSyncContextRunAction(
         MaaSyncContextHandle sync_context,
         MaaStringView task_name,
@@ -68,11 +68,11 @@ extern "C"
 
     MAA_FRAMEWORK_API MaaBool MaaSyncContextScreencap(
         MaaSyncContextHandle sync_context,
-        MaaImageBufferHandle out_image /**< [out] */);
+        MaaImageBufferHandle out_image /* out */);
 
     MAA_FRAMEWORK_API MaaBool MaaSyncContextCachedImage(
         MaaSyncContextHandle sync_context,
-        MaaImageBufferHandle out_image /**< [out] */);
+        MaaImageBufferHandle out_image /* out */);
 
 #ifdef __cplusplus
 }

@@ -87,37 +87,37 @@ extern "C"
      *
      * @param res The handle of the resource to set options for.
      * @param key The option key.
-     * @param value The option value.
+     * @param[in] value The option value.
      * @param val_size The size of the option value.
      * @return MaaBool Whether the option is set successfully.
      */
     MAA_FRAMEWORK_API MaaBool MaaResourceSetOption(
         MaaResourceHandle res,
         MaaResOption key,
-        MaaOptionValue value,
+        MaaOptionValue value /**< Maybe a byte array */,
         MaaOptionValueSize val_size);
 
     /**
      * @brief Get the hash of the resource.
      *
      * @param res
-     * @param[out] buffer The buffer where the hash will be written to.
+     * @param buffer The buffer where the hash will be written to.
      *
      * @return MaaBool
      */
     MAA_FRAMEWORK_API MaaBool
-        MaaResourceGetHash(MaaResourceHandle res, MaaStringBufferHandle buffer);
+        MaaResourceGetHash(MaaResourceHandle res, /* out */ MaaStringBufferHandle buffer);
 
     /**
      * @brief Get the task list of the resource.
      *
      * @param res
-     * @param[out] buffer The buffer where the task list will be written to.
+     * @param buffer The buffer where the task list will be written to.
      *
      * @return MaaBool
      */
     MAA_FRAMEWORK_API MaaBool
-        MaaResourceGetTaskList(MaaResourceHandle res, MaaStringBufferHandle buffer);
+        MaaResourceGetTaskList(MaaResourceHandle res, /* out */ MaaStringBufferHandle buffer);
 
 #ifdef __cplusplus
 }
