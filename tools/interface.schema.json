@@ -207,6 +207,14 @@
                     ]
                 }
             }
+        },
+        "message": {
+            "title": "信息",
+            "type": "string"
+        },
+        "version": {
+            "title": "版本",
+            "type": "string"
         }
     },
     "additionalProperties": false,
