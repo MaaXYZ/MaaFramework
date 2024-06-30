@@ -73,6 +73,7 @@ It offers low-code simplicity while maintaining high extensibility. The framewor
 
 - [MSBA](https://github.com/overflow65537/MAA_SnowBreak) Snow break Assistant !  
   The Snow break Assistant, based on a brand new architecture. Image technology + simulation control, freeing your hands! Powered by MaaFramework.
+  
 ## Eco-Building
 
 MAA is planned to be a category of projects rather than just a single piece of software.
