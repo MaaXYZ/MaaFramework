@@ -70,6 +70,8 @@ _✨ 基于图像识别的自动化黑盒测试框架 ✨_
 
 - [MCCA](https://github.com/MaaXYZ/MCCA) 交错战线 小助手 ![python](https://img.shields.io/badge/Python-3776AB?logo=python&logoColor=white)  
   基于全新架构的 交错战线 小助手。图像技术 + 模拟控制，解放双手！由 MaaFramework 强力驱动！
+- [MSBA](https://github.com/overflow65537/MAA_SnowBreak) 分析员 小助手  
+  基于全新架构的 尘白禁区 小助手。图像技术 + 模拟控制，解放双手！由 MaaFramework 强力驱动！
 
 ## 生态共建
 
