@@ -9,10 +9,7 @@
                 "type": "object",
                 "default": {
                     "name": "ADB 默认方式",
-                    "type": "Adb",
-                    "touch": 254,
-                    "key": 65024,
-                    "screencap": 16646144
+                    "type": "Adb"
                 },
                 "properties": {
                     "name": {
@@ -25,51 +22,103 @@
                         "type": "string",
                         "default": "Adb"
                     },
-                    "touch": {
-                        "title": "点击参数",
-                        "type": "integer",
-                        "default": 254
+                    "adb": {
+                        "title": "ADB配置",
+                        "type": "object",
+                        "properties": {
+                            "touch": {
+                                "title": "点击参数",
+                                "type": "integer",
+                                "default": 254
+                            },
+                            "key": {
+                                "title": "按键参数",
+                                "type": "integer",
+                                "default": 65024
+                            },
+                            "screencap": {
+                                "title": "截图参数",
+                                "type": "integer",
+                                "default": 16646144
+                            },
+                            "config": {
+                                "title": "额外配置参数",
+                                "type": "object",
+                                "default": {}
+                            }
+                        },
+                        "additionalProperties": false
                     },
-                    "key": {
-                        "title": "按键参数",
-                        "type": "integer",
-                        "default": 65024
-                    },
-                    "screencap": {
-                        "title": "截图参数",
-                        "type": "integer",
-                        "default": 16646144
+                    "win32": {
+                        "title": "Win32配置",
+                        "type": "object",
+                        "default": {
+                            "method": "Find"
+                        },
+                        "properties": {
+                            "method": {
+                                "title": "搜索方式",
+                                "type": "string",
+                                "default": "Find",
+                                "enum": [
+                                    "Find",
+                                    "Search",
+                                    "Cursor",
+                                    "Desktop",
+                                    "Foreground"
+                                ]
+                            },
+                            "class_name": {
+                                "title": "搜索类名参数",
+                                "type": "string",
+                                "default": ""
+                            },
+                            "window_name": {
+                                "title": "搜索窗口名参数",
+                                "type": "string",
+                                "default": ""
+                            },
+                            "touch": {
+                                "title": "点击参数",
+                                "type": "integer",
+                                "default": 2
+                            },
+                            "key": {
+                                "title": "按键参数",
+                                "type": "integer",
+                                "default": 512
+                            },
+                            "screencap": {
+                                "title": "截图参数",
+                                "type": "integer",
+                                "default": 131072
+                            }
+                        },
+                        "additionalProperties": false,
+                        "required": ["method"]
                     }
                 },
                 "additionalProperties": false,
-                "required": [
-                    "name",
-                    "type",
-                    "touch",
-                    "key",
-                    "screencap"
-                ]
+                "required": ["name", "type"]
             }
         },
         "resource": {
-            "type": "array",
             "title": "资源配置",
+            "type": "array",
             "items": {
                 "type": "object",
                 "default": {
                     "name": "Official",
-                    "path": [
-                        "{PROJECT_DIR}/resource/base"
-                    ]
+                    "path": ["{PROJECT_DIR}/resource/base"]
                 },
                 "properties": {
                     "name": {
-                        "type": "string",
-                        "title": "资源名"
+                        "title": "资源名",
+                        "type": "string"
                     },
                     "path": {
-                        "type": "array",
                         "title": "资源路径",
+                        "type": "array",
                         "items": {
                             "type": "string",
                             "default": "{PROJECT_DIR}/resource/"
@@ -77,53 +126,82 @@
                     }
                 },
                 "additionalProperties": false,
-                "required": [
-                    "name",
-                    "path"
-                ]
+                "required": ["name", "path"]
             }
         },
         "task": {
-            "type": "array",
             "title": "任务列表",
+            "type": "array",
             "items": {
+                "type": "object",
                 "default": {
                     "name": "启动游戏",
                     "entry": "StartUp"
                 },
-                "type": "object",
                 "properties": {
                     "name": {
-                        "type": "string",
-                        "title": "任务名"
+                        "title": "任务名",
+                        "type": "string"
                     },
                     "entry": {
-                        "type": "string",
-                        "title": "任务入口"
+                        "title": "任务入口",
+                        "type": "string"
+                    },
+                    "param": {
+                        "title": "任务参数",
+                        "$ref": "./pipeline.schema.json"
                     },
                     "option": {
-                        "type": "array",
                         "title": "任务选项",
+                        "type": "array",
                         "items": {
                             "type": "string"
                         }
-                    },
-                    "param": {
-                        "$comment": "TODO",
-                        "type": "object",
-                        "title": "任务参数"
                     }
                 },
                 "additionalProperties": false,
-                "required": [
-                    "name",
-                    "entry"
-                ]
+                "required": ["name", "entry"]
+            }
+        },
+        "option": {
+            "title": "选项定义",
+            "type": "object",
+            "patternProperties": {
+                ".*": {
+                    "type": "object",
+                    "properties": {
+                        "cases": {
+                            "title": "可选项",
+                            "type": "array",
+                            "items": {
+                                "type": "object",
+                                "properties": {
+                                    "name": {
+                                        "title": "选项名",
+                                        "type": "string"
+                                    },
+                                    "param": {
+                                        "title": "选项参数",
+                                        "$ref": "./pipeline.schema.json"
+                                    }
+                                },
+                                "additionalProperties": false,
+                                "required": ["name", "param"]
+                            }
+                        },
+                        "default_case": {
+                            "title": "默认选项",
+                            "type": "string"
+                        }
+                    },
+                    "additionalProperties": false,
+                    "required": ["cases"]
+                }
             }
         },
         "recognizer": {
-            "type": "object",
             "title": "自定义识别器",
+            "type": "object",
             "patternProperties": {
                 ".*": {
                     "type": "object",
@@ -133,23 +211,21 @@
                             "type": "string"
                         },
                         "exec_param": {
-                            "type": "array",
                             "title": "执行参数",
+                            "type": "array",
                             "items": {
                                 "type": "string"
                             }
                         }
                     },
                     "additionalProperties": false,
-                    "required": [
-                        "exec_path"
-                    ]
+                    "required": ["exec_path"]
                 }
             }
         },
         "action": {
-            "type": "object",
             "title": "自定义动作",
+            "type": "object",
             "patternProperties": {
                 ".*": {
                     "type": "object",
@@ -164,47 +240,7 @@
                         }
                     },
                     "additionalProperties": false,
-                    "required": [
-                        "exec_path"
-                    ]
-                }
-            }
-        },
-        "option": {
-            "type": "object",
-            "title": "选项定义",
-            "patternProperties": {
-                ".*": {
-                    "type": "object",
-                    "properties": {
-                        "cases": {
-                            "type": "array",
-                            "title": "可选项",
-                            "items": {
-                                "type": "object",
-                                "properties": {
-                                    "name": {
-                                        "title": "选项名",
-                                        "type": "string"
-                                    },
-                                    "param": {
-                                        "$comment": "TODO",
-                                        "title": "选项参数",
-                                        "type": "object"
-                                    }
-                                },
-                                "additionalProperties": false,
-                                "required": [
-                                    "name",
-                                    "param"
-                                ]
-                            }
-                        }
-                    },
-                    "additionalProperties": false,
-                    "required": [
-                        "cases"
-                    ]
+                    "required": ["exec_path"]
                 }
             }
         },
@@ -218,12 +254,5 @@
         }
     },
     "additionalProperties": false,
-    "required": [
-        "controller",
-        "resource",
-        "task",
-        "recognizer",
-        "action",
-        "option"
-    ]
+    "required": ["controller", "resource", "task"]
 }
