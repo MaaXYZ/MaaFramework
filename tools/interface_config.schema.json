@@ -1,0 +1,66 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "type": "object",
+    "properties": {
+        "controller": {
+            "type": "object",
+            "properties": {
+                "name": {
+                    "type": "string"
+                },
+                "type": {
+                    "type": "string",
+                    "enum": ["Adb", "Win32"]
+                }
+            }
+        },
+        "adb": {
+            "type": "object",
+            "properties": {
+                "adb_path": {
+                    "type": "string"
+                },
+                "address": {
+                    "type": "string"
+                },
+                "config": {
+                    "type": "object"
+                }
+            }
+        },
+        "win32": {
+            "type": "object"
+        },
+        "resource": {
+            "type": "string"
+        },
+        "task": {
+            "type": "array",
+            "items": {
+                "type": "object",
+                "properties": {
+                    "name": {
+                        "type": "string"
+                    },
+                    "option": {
+                        "type": "array",
+                        "items": {
+                            "type": "object",
+                            "properties": {
+                                "name": {
+                                    "type": "string"
+                                },
+                                "value": {
+                                    "type": "string"
+                                }
+                            },
+                            "required": ["name", "value"]
+                        }
+                    }
+                },
+                "required": ["name"]
+            }
+        }
+    },
+    "required": ["controller", "resource", "task"]
+}
