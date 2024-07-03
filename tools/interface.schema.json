@@ -4,7 +4,7 @@
     "properties": {
         "controller": {
             "type": "array",
-            "title": "控制器",
+            "title": "控制器配置",
             "items": {
                 "type": "object",
                 "default": {
@@ -60,13 +60,7 @@
                                 "title": "搜索方式",
                                 "type": "string",
                                 "default": "Find",
-                                "enum": [
-                                    "Find",
-                                    "Search",
-                                    "Cursor",
-                                    "Desktop",
-                                    "Foreground"
-                                ]
+                                "enum": ["Find", "Search", "Cursor", "Desktop", "Foreground"]
                             },
                             "class_name": {
                                 "title": "搜索类名参数",

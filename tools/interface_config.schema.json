@@ -3,54 +3,68 @@
     "type": "object",
     "properties": {
         "controller": {
+            "title": "激活的控制器",
             "type": "object",
             "properties": {
                 "name": {
+                    "title": "控制器名",
                     "type": "string"
                 },
                 "type": {
+                    "title": "控制器类型",
                     "type": "string",
                     "enum": ["Adb", "Win32"]
                 }
             }
         },
         "adb": {
+            "title": "ADB配置",
             "type": "object",
             "properties": {
                 "adb_path": {
+                    "title": "ADB路径参数",
                     "type": "string"
                 },
                 "address": {
+                    "title": "ADB连接参数",
                     "type": "string"
                 },
                 "config": {
+                    "title": "额外配置参数",
                     "type": "object"
                 }
             }
         },
         "win32": {
+            "title": "Win32配置",
             "type": "object"
         },
         "resource": {
+            "title": "激活的资源",
             "type": "string"
         },
         "task": {
+            "title": "激活的任务",
             "type": "array",
             "items": {
                 "type": "object",
                 "properties": {
                     "name": {
+                        "title": "任务名",
                         "type": "string"
                     },
                     "option": {
+                        "title": "任务选项",
                         "type": "array",
                         "items": {
                             "type": "object",
                             "properties": {
                                 "name": {
+                                    "title": "选项名",
                                     "type": "string"
                                 },
                                 "value": {
+                                    "title": "选项值",
                                     "type": "string"
                                 }
                             },
