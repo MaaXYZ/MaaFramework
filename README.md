@@ -74,6 +74,9 @@ _✨ 基于图像识别的自动化黑盒测试框架 ✨_
 - [MSBA](https://github.com/overflow65537/MAA_SnowBreak) 分析员 小助手  
   基于全新架构的 尘白禁区 小助手。图像技术 + 模拟控制，解放双手！由 MaaFramework 强力驱动！
 
+- [MaaAeonFantasy](https://github.com/Andl-Liu/MaaAeonFantasy)  星神少女 预言之子 小助手  
+  基于全新架构的 星神少女 小助手。图像技术 + 模拟控制，让手去做它该做的事！由 MaaFramework 强力驱动！
+
 ## 生态共建
 
 MAA 正计划建设为一类项目，而非舟的单一软件。  
