@@ -76,6 +76,9 @@ It offers low-code simplicity while maintaining high extensibility. The framewor
 
 - [MaaAeonFantasy](https://github.com/Andl-Liu/MaaAeonFantasy) Aeon Fantasy Assistant !  
   The Aeon Fantasy Assistant, based on a brand new architecture. Image technology + simulation control, let your hands do what they should do! Powered by MaaFramework.
+
+- [MWA](https://github.com/MAWHA/MWA) WHMX Assistant !  
+  The WHMX Assistant, based on a brand new architecture. Image technology + simulation control, freeing your hands! Powered by MaaFramework.
   
 ## Eco-Building
 
