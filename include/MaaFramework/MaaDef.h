@@ -50,7 +50,7 @@ enum MaaStatusEnum
 
 typedef int32_t MaaLoggingLevel;
 
-enum MaaLoggingLevelEunm
+enum MaaLoggingLevelEnum
 {
     MaaLoggingLevel_Off = 0,
     MaaLoggingLevel_Fatal = 1,
@@ -232,7 +232,7 @@ typedef int32_t MaaDbgControllerType;
 
 enum MaaDbgControllerTypeEnum
 {
-    MaaDbgController_Invalid = 0,
+    MaaDbgControllerType_Invalid = 0,
 
     MaaDbgControllerType_CarouselImage = 1,
     MaaDbgControllerType_ReplayRecording = 2,
@@ -242,7 +242,7 @@ typedef int32_t MaaThriftControllerType;
 
 enum MaaThriftControllerTypeEnum
 {
-    MaaThriftController_Invalid = 0,
+    MaaThriftControllerType_Invalid = 0,
 
     MaaThriftControllerType_Socket = 1,
     MaaThriftControllerType_UnixDomainSocket = 2,
@@ -261,7 +261,7 @@ typedef int32_t MaaWin32ControllerType;
  */
 enum MaaWin32ControllerTypeEnum
 {
-    MaaWin32Controller_Invalid = 0,
+    MaaWin32ControllerType_Invalid = 0,
 
     MaaWin32ControllerType_Touch_SendMessage = 1,
     MaaWin32ControllerType_Touch_Seize = 2,
