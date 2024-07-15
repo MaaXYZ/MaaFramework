@@ -321,7 +321,7 @@ void ControlUnitMgr::on_image_resolution_changed(
         if (!sink) {
             return;
         }
-        sink->on_display_resolution_changed(pre, cur);
+        sink->on_image_resolution_changed(pre, cur);
     });
 }
 

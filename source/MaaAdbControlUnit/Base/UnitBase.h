@@ -46,7 +46,7 @@ public:
     virtual ~ControlUnitSink() = default;
 
 public:
-    void on_display_resolution_changed(
+    void on_image_resolution_changed(
         [[maybe_unused]] const std::pair<int, int>& pre,
         [[maybe_unused]] const std::pair<int, int>& cur)
     {
@@ -87,7 +87,7 @@ public:
     virtual bool touch_up(int contact) = 0;
 
 public:
-    void on_display_resolution_changed(
+    void on_image_resolution_changed(
         [[maybe_unused]] const std::pair<int, int>& pre,
         [[maybe_unused]] const std::pair<int, int>& cur)
     {
