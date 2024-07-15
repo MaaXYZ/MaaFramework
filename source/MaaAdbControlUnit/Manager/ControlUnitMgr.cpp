@@ -250,9 +250,13 @@ void ControlUnitMgr::init(
     std::shared_ptr<KeyInputBase> key,
     std::shared_ptr<ScreencapBase> screencap)
 {
+    unregister_observer(touch_input_);
+
     touch_input_ = std::move(touch);
     key_input_ = std::move(key);
     screencap_ = std::move(screencap);
+
+    register_observer(touch_input_);
 }
 
 void ControlUnitMgr::set_replacement(const UnitBase::Replacement& replacement)
@@ -289,22 +293,36 @@ bool ControlUnitMgr::_screencap(cv::Mat& image)
 
     image = std::move(opt).value();
 
-    if (image_width_ == 0 || image_height_ == 0) {
-        image_width_ = image.cols;
-        image_height_ = image.rows;
-    }
-    else if (image_width_ != image.cols || image_height_ != image.rows) {
-        LogInfo << "Image size changed" << VAR(image_width_) << VAR(image_height_)
-                << VAR(image.cols) << VAR(image.rows);
-        image_width_ = image.cols;
-        image_height_ = image.rows;
+    auto& [width, height] = image_resolution_;
 
-        if (touch_input_) {
-            touch_input_->init();
-        }
+    if (width == 0 || height == 0) {
+        width = image.cols;
+        height = image.rows;
+    }
+    else if (width != image.cols || height != image.rows) {
+        LogInfo << "Image size changed" << VAR(width) << VAR(height) << VAR(image.cols)
+                << VAR(image.rows);
+        auto pre = image_resolution_;
+
+        width = image.cols;
+        height = image.rows;
+
+        on_image_resolution_changed(pre, image_resolution_);
     }
 
     return true;
+}
+
+void ControlUnitMgr::on_image_resolution_changed(
+    const std::pair<int, int>& pre,
+    const std::pair<int, int>& cur)
+{
+    dispatch([&](const std::shared_ptr<ControlUnitSink>& sink) {
+        if (!sink) {
+            return;
+        }
+        sink->on_image_resolution_changed(pre, cur);
+    });
 }
 
 MAA_CTRL_UNIT_NS_END
