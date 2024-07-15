@@ -28,16 +28,6 @@ void NeuralNetworkClassifier::analyze()
         LogError << "OrtSession not loaded";
         return;
     }
-    if (param_.cls_size == 0) {
-        LogError << "cls_size == 0";
-        return;
-    }
-    if (param_.cls_size != param_.labels.size()) {
-        LogError << "cls_size != labels.size()" << VAR(param_.cls_size)
-                 << VAR(param_.labels.size());
-        return;
-    }
-
     auto start_time = std::chrono::steady_clock::now();
 
     auto results = classify_all_rois();
@@ -71,14 +61,22 @@ NeuralNetworkClassifier::Result NeuralNetworkClassifier::classify(const cv::Rect
         LogError << "OrtSession not loaded";
         return {};
     }
+    // batch_size, channel, height, width
+    // for yolov8, input_shape is { 1, 3, 640, 640 }
+    const auto input_shape = session_->GetInputTypeInfo(0).GetTensorTypeAndShapeInfo().GetShape();
+    if (input_shape.size() != 4) {
+        LogError << "Input shape is not 4" << VAR(input_shape);
+        return {};
+    }
 
     cv::Mat image = image_with_roi(roi);
+    cv::Size raw_roi_size(image.cols, image.rows);
+    cv::Size input_image_size(static_cast<int>(input_shape[3]), static_cast<int>(input_shape[2]));
+    cv::resize(image, image, input_image_size, 0, 0, cv::INTER_AREA);
     std::vector<float> input = image_to_tensor(image);
 
     // TODO: GPU
     auto memory_info = Ort::MemoryInfo::CreateCpu(OrtDeviceAllocator, OrtMemTypeCPU);
-    constexpr int64_t kBatchSize = 1;
-    std::array<int64_t, 4> input_shape { kBatchSize, image.channels(), image.cols, image.rows };
 
     Ort::Value input_tensor = Ort::Value::CreateTensor<float>(
         memory_info,
@@ -87,16 +85,6 @@ NeuralNetworkClassifier::Result NeuralNetworkClassifier::classify(const cv::Rect
         input_shape.data(),
         input_shape.size());
 
-    std::vector<float> output;
-    output.resize(param_.cls_size);
-    std::array<int64_t, 2> output_shape { kBatchSize, static_cast<int64_t>(param_.cls_size) };
-    Ort::Value output_tensor = Ort::Value::CreateTensor<float>(
-        memory_info,
-        output.data(),
-        output.size(),
-        output_shape.data(),
-        output_shape.size());
-
     Ort::AllocatorWithDefaultOptions allocator;
     const std::string in_0 = session_->GetInputNameAllocated(0, allocator).get();
     const std::string out_0 = session_->GetOutputNameAllocated(0, allocator).get();
@@ -104,30 +92,34 @@ NeuralNetworkClassifier::Result NeuralNetworkClassifier::classify(const cv::Rect
     const std::vector output_names { out_0.c_str() };
 
     Ort::RunOptions run_options;
-    session_->Run(
+    auto output_tensor = session_->Run(
         run_options,
         input_names.data(),
         &input_tensor,
-        1,
+        input_names.size(),
         output_names.data(),
-        &output_tensor,
-        1);
+        output_names.size());
 
-    Result result;
-    result.raw = std::move(output);
-    result.probs = softmax(result.raw);
-    result.cls_index =
-        std::max_element(result.probs.begin(), result.probs.end()) - result.probs.begin();
-    result.score = result.probs[result.cls_index];
-    result.label = param_.labels[result.cls_index];
-    result.box = roi;
+    const float* raw_output = output_tensor[0].GetTensorData<float>();
+    std::vector<float> output(
+        raw_output,
+        raw_output + output_tensor[0].GetTensorTypeAndShapeInfo().GetElementCount());
+
+    Result res;
+    res.raw = std::move(output);
+    res.probs = softmax(res.raw);
+    res.cls_index = std::max_element(res.probs.begin(), res.probs.end()) - res.probs.begin();
+    res.score = res.probs[res.cls_index];
+    res.label = res.cls_index < param_.labels.size() ? param_.labels[res.cls_index]
+                                                     : std::format("Unkonwn_{}", res.cls_index);
+    res.box = roi;
 
     if (debug_draw_) {
-        auto draw = draw_result(result);
+        auto draw = draw_result(res);
         handle_draw(draw);
     }
 
-    return result;
+    return res;
 }
 
 void NeuralNetworkClassifier::add_results(ResultsVec results, const std::vector<size_t>& expected)
@@ -154,7 +146,7 @@ cv::Mat NeuralNetworkClassifier::draw_result(const Result& res) const
     cv::Mat image_draw = draw_roi(res.box);
     cv::Point pt(res.box.x + res.box.width + 5, res.box.y + 20);
 
-    for (size_t i = 0; i != param_.cls_size; ++i) {
+    for (size_t i = 0; i != res.raw.size(); ++i) {
         const auto color = i == res.cls_index ? cv::Scalar(0, 0, 255) : cv::Scalar(255, 0, 0);
         std::string text = std::format(
             "{} {}: prob {:.3f}, raw {:.3f}",

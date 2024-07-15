@@ -70,7 +70,6 @@ struct CustomRecognizerParam
 
 struct NeuralNetworkClassifierParam
 {
-    size_t cls_size = 0;
     std::vector<std::string> labels; // only for output and debug
     std::string model;
 
@@ -90,7 +89,6 @@ struct NeuralNetworkDetectorParam
     inline static constexpr Net kDefaultNet = Net::YoloV8;
     inline static constexpr double kDefaultThreshold = 0.3;
 
-    size_t cls_size = 0;
     std::vector<std::string> labels; // only for output and debug
     std::string model;
     Net net = kDefaultNet;

@@ -858,21 +858,10 @@ bool PipelineResMgr::parse_nn_classifier_param(
         return false;
     }
 
-    if (!get_and_check_value(input, "cls_size", output.cls_size, default_value.cls_size)) {
-        LogError << "failed to get_and_check_value cls_size" << VAR(input);
-        return false;
-    }
-
     if (!get_and_check_value_or_array(input, "labels", output.labels, default_value.labels)) {
         LogError << "failed to get_and_check_value_or_array labels" << VAR(input);
         return false;
     }
-    if (output.labels.size() < output.cls_size) {
-        LogDebug << "labels.size() < cls_size, fill 'Unknown'" << VAR(output.labels.size())
-                 << VAR(output.cls_size);
-        output.labels.resize(output.cls_size, "Unknown");
-    }
-
     if (!get_and_check_value(input, "model", output.model, default_value.model)) {
         LogError << "failed to get_and_check_value model" << VAR(input);
         return false;
@@ -913,21 +902,10 @@ bool PipelineResMgr::parse_nn_detector_param(
         return false;
     }
 
-    if (!get_and_check_value(input, "cls_size", output.cls_size, default_value.cls_size)) {
-        LogError << "failed to get_and_check_value cls_size" << VAR(input);
-        return false;
-    }
-
     if (!get_and_check_value_or_array(input, "labels", output.labels, default_value.labels)) {
         LogError << "failed to get_and_check_value_or_array labels" << VAR(input);
         return false;
     }
-    if (output.labels.size() < output.cls_size) {
-        LogDebug << "labels.size() < cls_size, fill 'Unknown'" << VAR(output.labels.size())
-                 << VAR(output.cls_size);
-        output.labels.resize(output.cls_size, "Unknown");
-    }
-
     if (!get_and_check_value(input, "model", output.model, default_value.model)) {
         LogError << "failed to get_and_check_value model" << VAR(input);
         return false;

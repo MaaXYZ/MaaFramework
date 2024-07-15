@@ -177,11 +177,6 @@
                     "default": false
                 },
                 "model": {},
-                "cls_size": {
-                    "description": "总分类数，必选。",
-                    "type": "integer",
-                    "default": 2
-                },
                 "labels": {
                     "description": "标注，即每个分类的名字。可选。",
                     "type": "array",
@@ -409,7 +404,6 @@
                                 }
                             },
                             "required": [
-                                "cls_size",
                                 "model",
                                 "expected"
                             ]
@@ -447,7 +441,6 @@
                                 }
                             },
                             "required": [
-                                "cls_size",
                                 "model",
                                 "expected"
                             ]

@@ -29,15 +29,6 @@ void NeuralNetworkDetector::analyze()
         LogError << "OrtSession not loaded";
         return;
     }
-    if (param_.cls_size == 0) {
-        LogError << "cls_size == 0";
-        return;
-    }
-    if (param_.cls_size != param_.labels.size()) {
-        LogError << "cls_size != labels.size()" << VAR(param_.cls_size)
-                 << VAR(param_.labels.size());
-        return;
-    }
 
     auto start_time = std::chrono::steady_clock::now();
 
@@ -73,13 +64,22 @@ NeuralNetworkDetector::ResultsVec NeuralNetworkDetector::detect(const cv::Rect& 
         return {};
     }
 
+    // batch_size, channel, height, width
+    // for yolov8, input_shape is { 1, 3, 640, 640 }
+    const auto input_shape = session_->GetInputTypeInfo(0).GetTensorTypeAndShapeInfo().GetShape();
+    if (input_shape.size() != 4) {
+        LogError << "Input shape is not 4" << VAR(input_shape);
+        return {};
+    }
+
     cv::Mat image = image_with_roi(roi);
+    cv::Size raw_roi_size(image.cols, image.rows);
+    cv::Size input_image_size(static_cast<int>(input_shape[3]), static_cast<int>(input_shape[2]));
+    cv::resize(image, image, input_image_size, 0, 0, cv::INTER_AREA);
     std::vector<float> input = image_to_tensor(image);
 
     // TODO: GPU
-    auto memory_info = Ort::MemoryInfo::CreateCpu(OrtDeviceAllocator, OrtMemTypeCPU);
-    constexpr int64_t kBatchSize = 1;
-    std::array<int64_t, 4> input_shape { kBatchSize, image.channels(), image.cols, image.rows };
+    auto memory_info = Ort::MemoryInfo::CreateCpu(OrtDeviceAllocator, OrtMemTypeDefault);
 
     Ort::Value input_tensor = Ort::Value::CreateTensor<float>(
         memory_info,
@@ -124,12 +124,9 @@ NeuralNetworkDetector::ResultsVec NeuralNetworkDetector::detect(const cv::Rect& 
             raw_output + (i + 1) * output_shape[2]);
     }
 
-    ResultsVec all_nms_results;
-
     const size_t output_size = output.back().size();
+    ResultsVec raw_results;
     for (size_t i = 0; i < output_size; ++i) {
-        ResultsVec raw_results;
-
         constexpr size_t kConfidenceIndex = 4;
         for (size_t j = kConfidenceIndex; j < output.size(); ++j) {
             float score = output[j][i];
@@ -149,25 +146,32 @@ NeuralNetworkDetector::ResultsVec NeuralNetworkDetector::detect(const cv::Rect& 
 
             Result res;
             res.cls_index = j - kConfidenceIndex;
-            res.label = param_.labels[res.cls_index];
+            res.label = res.cls_index < param_.labels.size()
+                            ? param_.labels[res.cls_index]
+                            : std::format("Unkonwn_{}", res.cls_index);
             res.box = box;
             res.score = score;
 
             raw_results.emplace_back(std::move(res));
         }
-        auto nms_results = NMS(std::move(raw_results));
-        all_nms_results.insert(
-            all_nms_results.end(),
-            std::make_move_iterator(nms_results.begin()),
-            std::make_move_iterator(nms_results.end()));
+    }
+
+    auto nms_results = NMS(std::move(raw_results));
+
+    // post process
+    for (Result& res : nms_results) {
+        res.box.x = res.box.x * raw_roi_size.width / input_image_size.width + roi.x;
+        res.box.y = res.box.y * raw_roi_size.height / input_image_size.height + roi.y;
+        res.box.width = res.box.width * raw_roi_size.width / input_image_size.width;
+        res.box.height = res.box.height * raw_roi_size.height / input_image_size.height;
     }
 
     if (debug_draw_) {
-        auto draw = draw_result(roi, all_nms_results);
+        auto draw = draw_result(roi, nms_results);
         handle_draw(draw);
     }
 
-    return all_nms_results;
+    return nms_results;
 }
 
 void NeuralNetworkDetector::add_results(ResultsVec results, const std::vector<size_t>& expected)
