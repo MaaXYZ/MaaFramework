@@ -2,7 +2,6 @@ var structMaaCustomControllerAPI =
 [
     [ "connect", "structMaaCustomControllerAPI.html#a545404acee64c7ed5536c82afb659efd", null ],
     [ "request_uuid", "structMaaCustomControllerAPI.html#a08960dcfcbc2d8e3e1964b734b46378a", null ],
-    [ "request_resolution", "structMaaCustomControllerAPI.html#a77b50dfb4cd13864a05aef0e340e11e6", null ],
     [ "start_app", "structMaaCustomControllerAPI.html#a528ac7b645ad44fdf1ba3fa3cb635403", null ],
     [ "stop_app", "structMaaCustomControllerAPI.html#a92139f1c208e49679a1feb9aa9faa469", null ],
     [ "screencap", "structMaaCustomControllerAPI.html#af0b668a66d18b0a3cf308a31b10bd6c4", null ],

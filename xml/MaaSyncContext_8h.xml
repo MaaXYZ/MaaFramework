@@ -92,14 +92,10 @@
         <param>
           <type><ref refid="MaaDef_8h_1a00152c7eaccf612e460ea6872455f9cd" kindref="member">MaaRectHandle</ref></type>
           <declname>out_box</declname>
-          <briefdescription><para>[out] </para>
-</briefdescription>
         </param>
         <param>
           <type><ref refid="MaaDef_8h_1aed721aa4682b1241bc38d10f8c57a8cb" kindref="member">MaaStringBufferHandle</ref></type>
           <declname>out_detail</declname>
-          <briefdescription><para>[out] </para>
-</briefdescription>
         </param>
         <briefdescription>
         </briefdescription>
@@ -345,8 +341,6 @@
         <param>
           <type><ref refid="MaaDef_8h_1a30c4754980d5dfa504ce84d86668f031" kindref="member">MaaImageBufferHandle</ref></type>
           <declname>out_image</declname>
-          <briefdescription><para>[out] </para>
-</briefdescription>
         </param>
         <briefdescription>
         </briefdescription>
@@ -368,8 +362,6 @@
         <param>
           <type><ref refid="MaaDef_8h_1a30c4754980d5dfa504ce84d86668f031" kindref="member">MaaImageBufferHandle</ref></type>
           <declname>out_image</declname>
-          <briefdescription><para>[out] </para>
-</briefdescription>
         </param>
         <briefdescription>
         </briefdescription>

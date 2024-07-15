@@ -58,15 +58,15 @@ var MaaDef_8h =
       [ "MaaStatus_Success", "MaaDef_8h.html#a92a321c9e89a79ab64dc5176057d76a6a26dc49974c883868a557aa9d7a5d23ee", null ],
       [ "MaaStatus_Failed", "MaaDef_8h.html#a92a321c9e89a79ab64dc5176057d76a6a341c204f14050eb7dc068032ee9eaf63", null ]
     ] ],
-    [ "MaaLoggingLevelEunm", "MaaDef_8h.html#a56bc675130f000a275d4004f6b356ab9", [
-      [ "MaaLoggingLevel_Off", "MaaDef_8h.html#a56bc675130f000a275d4004f6b356ab9a886d0c4c0b743640330ce103ef377f96", null ],
-      [ "MaaLoggingLevel_Fatal", "MaaDef_8h.html#a56bc675130f000a275d4004f6b356ab9aa3fa463a8d3ae69d4e6cd55e468a9b0e", null ],
-      [ "MaaLoggingLevel_Error", "MaaDef_8h.html#a56bc675130f000a275d4004f6b356ab9a92f97dd39fafb12283ce88b4b2b1d191", null ],
-      [ "MaaLoggingLevel_Warn", "MaaDef_8h.html#a56bc675130f000a275d4004f6b356ab9ab8ab1b9f82635c2f5ff28c7a9a1978cb", null ],
-      [ "MaaLoggingLevel_Info", "MaaDef_8h.html#a56bc675130f000a275d4004f6b356ab9a58564e8e730e7bb829c2c177abed4c03", null ],
-      [ "MaaLoggingLevel_Debug", "MaaDef_8h.html#a56bc675130f000a275d4004f6b356ab9a0de032c18e2fa9d3bc0ed24f534b3e84", null ],
-      [ "MaaLoggingLevel_Trace", "MaaDef_8h.html#a56bc675130f000a275d4004f6b356ab9a3d13be5b9e5135ffff14f59cc3d7a827", null ],
-      [ "MaaLoggingLevel_All", "MaaDef_8h.html#a56bc675130f000a275d4004f6b356ab9a14f8e972156685897fa8fc5b2195a214", null ]
+    [ "MaaLoggingLevelEnum", "MaaDef_8h.html#a81060ab7b5fa44bfe6861f3882dec9a9", [
+      [ "MaaLoggingLevel_Off", "MaaDef_8h.html#a81060ab7b5fa44bfe6861f3882dec9a9a886d0c4c0b743640330ce103ef377f96", null ],
+      [ "MaaLoggingLevel_Fatal", "MaaDef_8h.html#a81060ab7b5fa44bfe6861f3882dec9a9aa3fa463a8d3ae69d4e6cd55e468a9b0e", null ],
+      [ "MaaLoggingLevel_Error", "MaaDef_8h.html#a81060ab7b5fa44bfe6861f3882dec9a9a92f97dd39fafb12283ce88b4b2b1d191", null ],
+      [ "MaaLoggingLevel_Warn", "MaaDef_8h.html#a81060ab7b5fa44bfe6861f3882dec9a9ab8ab1b9f82635c2f5ff28c7a9a1978cb", null ],
+      [ "MaaLoggingLevel_Info", "MaaDef_8h.html#a81060ab7b5fa44bfe6861f3882dec9a9a58564e8e730e7bb829c2c177abed4c03", null ],
+      [ "MaaLoggingLevel_Debug", "MaaDef_8h.html#a81060ab7b5fa44bfe6861f3882dec9a9a0de032c18e2fa9d3bc0ed24f534b3e84", null ],
+      [ "MaaLoggingLevel_Trace", "MaaDef_8h.html#a81060ab7b5fa44bfe6861f3882dec9a9a3d13be5b9e5135ffff14f59cc3d7a827", null ],
+      [ "MaaLoggingLevel_All", "MaaDef_8h.html#a81060ab7b5fa44bfe6861f3882dec9a9a14f8e972156685897fa8fc5b2195a214", null ]
     ] ],
     [ "MaaGlobalOptionEnum", "MaaDef_8h.html#ad09e62ec1fd03dadaf5fb009026c38ee", [
       [ "MaaGlobalOption_Invalid", "MaaDef_8h.html#ad09e62ec1fd03dadaf5fb009026c38eeaf81992513d077ca4fe38f7ae787695cd", null ],
@@ -119,17 +119,17 @@ var MaaDef_8h =
       [ "MaaAdbControllerType_Screencap_FastestWay", "MaaDef_8h.html#a21de9ae05eae97a700f9f834fe506f47ae30111ce0fc2dc34a4d911928c1848fd", null ]
     ] ],
     [ "MaaDbgControllerTypeEnum", "MaaDef_8h.html#ac482d3b538b47fcc9d3f4a8608958fc6", [
-      [ "MaaDbgController_Invalid", "MaaDef_8h.html#ac482d3b538b47fcc9d3f4a8608958fc6a5e57e27bb1c791123d2728c3328c864d", null ],
+      [ "MaaDbgControllerType_Invalid", "MaaDef_8h.html#ac482d3b538b47fcc9d3f4a8608958fc6a40a0aebb4e53e6b1cf952fd748dbc797", null ],
       [ "MaaDbgControllerType_CarouselImage", "MaaDef_8h.html#ac482d3b538b47fcc9d3f4a8608958fc6a8ae80556a7d8543a24f45147e691788b", null ],
       [ "MaaDbgControllerType_ReplayRecording", "MaaDef_8h.html#ac482d3b538b47fcc9d3f4a8608958fc6a35f420f73bc344a6a42a781dcfcceea6", null ]
     ] ],
     [ "MaaThriftControllerTypeEnum", "MaaDef_8h.html#a6035315f50c908ee7e23633ce53ac9da", [
-      [ "MaaThriftController_Invalid", "MaaDef_8h.html#a6035315f50c908ee7e23633ce53ac9daa54c432b0c83e92461c4acb80e8045e05", null ],
+      [ "MaaThriftControllerType_Invalid", "MaaDef_8h.html#a6035315f50c908ee7e23633ce53ac9daa238d4fbad1cfc2c8ff4ad35725f6fcf1", null ],
       [ "MaaThriftControllerType_Socket", "MaaDef_8h.html#a6035315f50c908ee7e23633ce53ac9daa9c4f24dd98c6e1c84339d44ba880795c", null ],
       [ "MaaThriftControllerType_UnixDomainSocket", "MaaDef_8h.html#a6035315f50c908ee7e23633ce53ac9daaf2861db948140dfd2b9b377c0d9534ab", null ]
     ] ],
     [ "MaaWin32ControllerTypeEnum", "MaaDef_8h.html#aee6a3149d7be4c6d9e2190d14f203fa2", [
-      [ "MaaWin32Controller_Invalid", "MaaDef_8h.html#aee6a3149d7be4c6d9e2190d14f203fa2a9c3233de7b124d4ada69d5e6f8270921", null ],
+      [ "MaaWin32ControllerType_Invalid", "MaaDef_8h.html#aee6a3149d7be4c6d9e2190d14f203fa2a64d23ea734609f94ff1dba9d09f5d8c5", null ],
       [ "MaaWin32ControllerType_Touch_SendMessage", "MaaDef_8h.html#aee6a3149d7be4c6d9e2190d14f203fa2a647d9761d06e8fb49d78ac49bb05afbd", null ],
       [ "MaaWin32ControllerType_Touch_Seize", "MaaDef_8h.html#aee6a3149d7be4c6d9e2190d14f203fa2aca30d36323c4447f67fe6db15b4eb61f", null ],
       [ "MaaWin32ControllerType_Key_SendMessage", "MaaDef_8h.html#aee6a3149d7be4c6d9e2190d14f203fa2a88f9fc7384298de423f1df17ff471417", null ],

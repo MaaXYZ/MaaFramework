@@ -314,10 +314,10 @@
         </inbodydescription>
         <location file="include/MaaFramework/MaaDef.h" line="41" column="1" bodyfile="include/MaaFramework/MaaDef.h" bodystart="42" bodyend="49"/>
       </memberdef>
-      <memberdef kind="enum" id="MaaDef_8h_1a56bc675130f000a275d4004f6b356ab9" prot="public" static="no" strong="no">
+      <memberdef kind="enum" id="MaaDef_8h_1a81060ab7b5fa44bfe6861f3882dec9a9" prot="public" static="no" strong="no">
         <type></type>
-        <name>MaaLoggingLevelEunm</name>
-        <enumvalue id="MaaDef_8h_1a56bc675130f000a275d4004f6b356ab9a886d0c4c0b743640330ce103ef377f96" prot="public">
+        <name>MaaLoggingLevelEnum</name>
+        <enumvalue id="MaaDef_8h_1a81060ab7b5fa44bfe6861f3882dec9a9a886d0c4c0b743640330ce103ef377f96" prot="public">
           <name>MaaLoggingLevel_Off</name>
           <initializer>= 0</initializer>
           <briefdescription>
@@ -325,7 +325,7 @@
           <detaileddescription>
           </detaileddescription>
         </enumvalue>
-        <enumvalue id="MaaDef_8h_1a56bc675130f000a275d4004f6b356ab9aa3fa463a8d3ae69d4e6cd55e468a9b0e" prot="public">
+        <enumvalue id="MaaDef_8h_1a81060ab7b5fa44bfe6861f3882dec9a9aa3fa463a8d3ae69d4e6cd55e468a9b0e" prot="public">
           <name>MaaLoggingLevel_Fatal</name>
           <initializer>= 1</initializer>
           <briefdescription>
@@ -333,7 +333,7 @@
           <detaileddescription>
           </detaileddescription>
         </enumvalue>
-        <enumvalue id="MaaDef_8h_1a56bc675130f000a275d4004f6b356ab9a92f97dd39fafb12283ce88b4b2b1d191" prot="public">
+        <enumvalue id="MaaDef_8h_1a81060ab7b5fa44bfe6861f3882dec9a9a92f97dd39fafb12283ce88b4b2b1d191" prot="public">
           <name>MaaLoggingLevel_Error</name>
           <initializer>= 2</initializer>
           <briefdescription>
@@ -341,7 +341,7 @@
           <detaileddescription>
           </detaileddescription>
         </enumvalue>
-        <enumvalue id="MaaDef_8h_1a56bc675130f000a275d4004f6b356ab9ab8ab1b9f82635c2f5ff28c7a9a1978cb" prot="public">
+        <enumvalue id="MaaDef_8h_1a81060ab7b5fa44bfe6861f3882dec9a9ab8ab1b9f82635c2f5ff28c7a9a1978cb" prot="public">
           <name>MaaLoggingLevel_Warn</name>
           <initializer>= 3</initializer>
           <briefdescription>
@@ -349,7 +349,7 @@
           <detaileddescription>
           </detaileddescription>
         </enumvalue>
-        <enumvalue id="MaaDef_8h_1a56bc675130f000a275d4004f6b356ab9a58564e8e730e7bb829c2c177abed4c03" prot="public">
+        <enumvalue id="MaaDef_8h_1a81060ab7b5fa44bfe6861f3882dec9a9a58564e8e730e7bb829c2c177abed4c03" prot="public">
           <name>MaaLoggingLevel_Info</name>
           <initializer>= 4</initializer>
           <briefdescription>
@@ -357,7 +357,7 @@
           <detaileddescription>
           </detaileddescription>
         </enumvalue>
-        <enumvalue id="MaaDef_8h_1a56bc675130f000a275d4004f6b356ab9a0de032c18e2fa9d3bc0ed24f534b3e84" prot="public">
+        <enumvalue id="MaaDef_8h_1a81060ab7b5fa44bfe6861f3882dec9a9a0de032c18e2fa9d3bc0ed24f534b3e84" prot="public">
           <name>MaaLoggingLevel_Debug</name>
           <initializer>= 5</initializer>
           <briefdescription>
@@ -365,7 +365,7 @@
           <detaileddescription>
           </detaileddescription>
         </enumvalue>
-        <enumvalue id="MaaDef_8h_1a56bc675130f000a275d4004f6b356ab9a3d13be5b9e5135ffff14f59cc3d7a827" prot="public">
+        <enumvalue id="MaaDef_8h_1a81060ab7b5fa44bfe6861f3882dec9a9a3d13be5b9e5135ffff14f59cc3d7a827" prot="public">
           <name>MaaLoggingLevel_Trace</name>
           <initializer>= 6</initializer>
           <briefdescription>
@@ -373,7 +373,7 @@
           <detaileddescription>
           </detaileddescription>
         </enumvalue>
-        <enumvalue id="MaaDef_8h_1a56bc675130f000a275d4004f6b356ab9a14f8e972156685897fa8fc5b2195a214" prot="public">
+        <enumvalue id="MaaDef_8h_1a81060ab7b5fa44bfe6861f3882dec9a9a14f8e972156685897fa8fc5b2195a214" prot="public">
           <name>MaaLoggingLevel_All</name>
           <initializer>= 7</initializer>
           <briefdescription>
@@ -806,8 +806,8 @@ value: bool, eg: true; val_size: sizeof(bool)
       <memberdef kind="enum" id="MaaDef_8h_1ac482d3b538b47fcc9d3f4a8608958fc6" prot="public" static="no" strong="no">
         <type></type>
         <name>MaaDbgControllerTypeEnum</name>
-        <enumvalue id="MaaDef_8h_1ac482d3b538b47fcc9d3f4a8608958fc6a5e57e27bb1c791123d2728c3328c864d" prot="public">
-          <name>MaaDbgController_Invalid</name>
+        <enumvalue id="MaaDef_8h_1ac482d3b538b47fcc9d3f4a8608958fc6a40a0aebb4e53e6b1cf952fd748dbc797" prot="public">
+          <name>MaaDbgControllerType_Invalid</name>
           <initializer>= 0</initializer>
           <briefdescription>
           </briefdescription>
@@ -841,8 +841,8 @@ value: bool, eg: true; val_size: sizeof(bool)
       <memberdef kind="enum" id="MaaDef_8h_1a6035315f50c908ee7e23633ce53ac9da" prot="public" static="no" strong="no">
         <type></type>
         <name>MaaThriftControllerTypeEnum</name>
-        <enumvalue id="MaaDef_8h_1a6035315f50c908ee7e23633ce53ac9daa54c432b0c83e92461c4acb80e8045e05" prot="public">
-          <name>MaaThriftController_Invalid</name>
+        <enumvalue id="MaaDef_8h_1a6035315f50c908ee7e23633ce53ac9daa238d4fbad1cfc2c8ff4ad35725f6fcf1" prot="public">
+          <name>MaaThriftControllerType_Invalid</name>
           <initializer>= 0</initializer>
           <briefdescription>
           </briefdescription>
@@ -876,8 +876,8 @@ value: bool, eg: true; val_size: sizeof(bool)
       <memberdef kind="enum" id="MaaDef_8h_1aee6a3149d7be4c6d9e2190d14f203fa2" prot="public" static="no" strong="no">
         <type></type>
         <name>MaaWin32ControllerTypeEnum</name>
-        <enumvalue id="MaaDef_8h_1aee6a3149d7be4c6d9e2190d14f203fa2a9c3233de7b124d4ada69d5e6f8270921" prot="public">
-          <name>MaaWin32Controller_Invalid</name>
+        <enumvalue id="MaaDef_8h_1aee6a3149d7be4c6d9e2190d14f203fa2a64d23ea734609f94ff1dba9d09f5d8c5" prot="public">
+          <name>MaaWin32ControllerType_Invalid</name>
           <initializer>= 0</initializer>
           <briefdescription>
           </briefdescription>

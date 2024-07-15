@@ -26,7 +26,7 @@
  <tbody>
  <tr id="projectrow">
   <td id="projectalign">
-   <div id="projectname">Maa Framework<span id="projectnumber">&#160;(main) v1.8.7</span>
+   <div id="projectname">Maa Framework<span id="projectnumber">&#160;(main) v1.8.8</span>
    </div>
    <div id="projectbrief">A automation black-box testing framework based on image recognition.</div>
   </td>
@@ -109,11 +109,6 @@ Macros</h2></td></tr>
 <tr class="separator:ga816b5be7864e915f14d52e5730ce3901"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:gaa6e6c84ca8a10f010b3bc00685b9f65a"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__MaaMsg.html#gaa6e6c84ca8a10f010b3bc00685b9f65a">MaaMsg_Controller_UUIDGetFailed</a>&#160;&#160;&#160;(&quot;Controller.UUIDGetFailed&quot;)</td></tr>
 <tr class="separator:gaa6e6c84ca8a10f010b3bc00685b9f65a"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ga50acbd1c0e0d4551ca25380d831ae66a"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__MaaMsg.html#ga50acbd1c0e0d4551ca25380d831ae66a">MaaMsg_Controller_ResolutionGot</a>&#160;&#160;&#160;(&quot;Controller.ResolutionGot&quot;)</td></tr>
-<tr class="memdesc:ga50acbd1c0e0d4551ca25380d831ae66a"><td class="mdescLeft">&#160;</td><td class="mdescRight">The message for the resolution got.  <a href="group__MaaMsg.html#ga50acbd1c0e0d4551ca25380d831ae66a">More...</a><br /></td></tr>
-<tr class="separator:ga50acbd1c0e0d4551ca25380d831ae66a"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ga58df8aed0b2395be457206d665981a1e"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__MaaMsg.html#ga58df8aed0b2395be457206d665981a1e">MaaMsg_Controller_ResolutionGetFailed</a>&#160;&#160;&#160;(&quot;Controller.ResolutionGetFailed&quot;)</td></tr>
-<tr class="separator:ga58df8aed0b2395be457206d665981a1e"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ga13f35537edab8c7cdfbd30f89100fd72"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__MaaMsg.html#ga13f35537edab8c7cdfbd30f89100fd72">MaaMsg_Controller_ScreencapInited</a>&#160;&#160;&#160;(&quot;Controller.ScreencapInited&quot;)</td></tr>
 <tr class="separator:ga13f35537edab8c7cdfbd30f89100fd72"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:gaff77df77108f9288a3613cd9bc27df80"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__MaaMsg.html#gaff77df77108f9288a3613cd9bc27df80">MaaMsg_Controller_ScreencapInitFailed</a>&#160;&#160;&#160;(&quot;Controller.ScreencapInitFailed&quot;)</td></tr>
@@ -285,37 +280,6 @@ Macros</h2></td></tr>
 
 </div>
 </div>
-<a id="ga50acbd1c0e0d4551ca25380d831ae66a" name="ga50acbd1c0e0d4551ca25380d831ae66a"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ga50acbd1c0e0d4551ca25380d831ae66a">&#9670;&#160;</a></span>MaaMsg_Controller_ResolutionGot</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">#define MaaMsg_Controller_ResolutionGot&#160;&#160;&#160;(&quot;Controller.ResolutionGot&quot;)</td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-<p>The message for the resolution got. </p>
-<p >payload: { resolution: { width: number, height: number } } </p>
-
-</div>
-</div>
-<a id="ga58df8aed0b2395be457206d665981a1e" name="ga58df8aed0b2395be457206d665981a1e"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ga58df8aed0b2395be457206d665981a1e">&#9670;&#160;</a></span>MaaMsg_Controller_ResolutionGetFailed</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">#define MaaMsg_Controller_ResolutionGetFailed&#160;&#160;&#160;(&quot;Controller.ResolutionGetFailed&quot;)</td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-</div>
-</div>
 <a id="ga13f35537edab8c7cdfbd30f89100fd72" name="ga13f35537edab8c7cdfbd30f89100fd72"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#ga13f35537edab8c7cdfbd30f89100fd72">&#9670;&#160;</a></span>MaaMsg_Controller_ScreencapInited</h2>
 
@@ -327,6 +291,7 @@ Macros</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
+<p >payload: { } </p>
 
 </div>
 </div>
@@ -413,7 +378,7 @@ Macros</h2></td></tr>
 </div><div class="memdoc">
 
 <p>Message for the controller connected. </p>
-<p >payload: { uuid: string, resolution: { width: number, height: number } } </p>
+<p >payload: { uuid: string } </p>
 
 </div>
 </div>

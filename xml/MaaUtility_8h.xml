@@ -72,6 +72,8 @@
         <param>
           <type><ref refid="MaaDef_8h_1abb976599f915b1e04a9ff8bf7055bf81" kindref="member">MaaOptionValue</ref></type>
           <declname>value</declname>
+          <briefdescription><para>Maybe a byte array </para>
+</briefdescription>
         </param>
         <param>
           <type><ref refid="MaaDef_8h_1a56ff604006917171af8e4b4974db28ef" kindref="member">MaaOptionValueSize</ref></type>
@@ -92,7 +94,7 @@
 </parameteritem>
 <parameteritem>
 <parameternamelist>
-<parametername>value</parametername>
+<parametername direction="in">value</parametername>
 </parameternamelist>
 <parameterdescription>
 <para>The option value. </para>
@@ -151,10 +153,20 @@
         <briefdescription>
         </briefdescription>
         <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername direction="out">hit</parametername>
+</parameternamelist>
+<parameterdescription>
+<para></para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="include/MaaFramework/Utility/MaaUtility.h" line="43" column="31" declfile="include/MaaFramework/Utility/MaaUtility.h" declline="43" declcolumn="31"/>
+        <location file="include/MaaFramework/Utility/MaaUtility.h" line="46" column="31" declfile="include/MaaFramework/Utility/MaaUtility.h" declline="46" declcolumn="31"/>
       </memberdef>
       <memberdef kind="function" id="MaaUtility_8h_1a1c0038e0b38b1558e54a7f43a0d4aa3e" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type><ref refid="MaaPort_8h_1a67006334d91d228121dbba7a8bf8fe05" kindref="member">MAA_FRAMEWORK_API</ref> <ref refid="MaaDef_8h_1a2f7289f2a8e07f48c6261b52a120cdf6" kindref="member">MaaBool</ref></type>
@@ -180,10 +192,28 @@
         <briefdescription>
         </briefdescription>
         <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername direction="out">reco_id</parametername>
+</parameternamelist>
+<parameterdescription>
+<para></para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername direction="out">run_completed</parametername>
+</parameternamelist>
+<parameterdescription>
+<para></para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="include/MaaFramework/Utility/MaaUtility.h" line="52" column="31" declfile="include/MaaFramework/Utility/MaaUtility.h" declline="52" declcolumn="31"/>
+        <location file="include/MaaFramework/Utility/MaaUtility.h" line="59" column="31" declfile="include/MaaFramework/Utility/MaaUtility.h" declline="59" declcolumn="31"/>
       </memberdef>
       <memberdef kind="function" id="MaaUtility_8h_1ac93f377005950486ac1b4f8c1562c056" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type><ref refid="MaaPort_8h_1a67006334d91d228121dbba7a8bf8fe05" kindref="member">MAA_FRAMEWORK_API</ref> <ref refid="MaaDef_8h_1a2f7289f2a8e07f48c6261b52a120cdf6" kindref="member">MaaBool</ref></type>
@@ -201,6 +231,8 @@
         <param>
           <type><ref refid="MaaDef_8h_1aeedbbed1bc17d1ffd80ff719a71cfed5" kindref="member">MaaNodeId</ref> *</type>
           <declname>node_id_list</declname>
+          <briefdescription><para>array </para>
+</briefdescription>
         </param>
         <param>
           <type><ref refid="MaaDef_8h_1a72a89077c419a0fe586d68bde004d856" kindref="member">MaaSize</ref> *</type>
@@ -209,10 +241,28 @@
         <briefdescription>
         </briefdescription>
         <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername direction="out">node_id_list</parametername>
+</parameternamelist>
+<parameterdescription>
+<para></para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername direction="inout">node_id_list_size</parametername>
+</parameternamelist>
+<parameterdescription>
+<para></para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="include/MaaFramework/Utility/MaaUtility.h" line="58" column="31" declfile="include/MaaFramework/Utility/MaaUtility.h" declline="58" declcolumn="31"/>
+        <location file="include/MaaFramework/Utility/MaaUtility.h" line="69" column="31" declfile="include/MaaFramework/Utility/MaaUtility.h" declline="69" declcolumn="31"/>
       </memberdef>
       </sectiondef>
     <briefdescription>

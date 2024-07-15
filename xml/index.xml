@@ -7,7 +7,6 @@
   <compound refid="structMaaCustomControllerAPI" kind="struct"><name>MaaCustomControllerAPI</name>
     <member refid="structMaaCustomControllerAPI_1a545404acee64c7ed5536c82afb659efd" kind="variable"><name>connect</name></member>
     <member refid="structMaaCustomControllerAPI_1a08960dcfcbc2d8e3e1964b734b46378a" kind="variable"><name>request_uuid</name></member>
-    <member refid="structMaaCustomControllerAPI_1a77b50dfb4cd13864a05aef0e340e11e6" kind="variable"><name>request_resolution</name></member>
     <member refid="structMaaCustomControllerAPI_1a528ac7b645ad44fdf1ba3fa3cb635403" kind="variable"><name>start_app</name></member>
     <member refid="structMaaCustomControllerAPI_1a92139f1c208e49679a1feb9aa9faa469" kind="variable"><name>stop_app</name></member>
     <member refid="structMaaCustomControllerAPI_1af0b668a66d18b0a3cf308a31b10bd6c4" kind="variable"><name>screencap</name></member>
@@ -114,15 +113,15 @@
     <member refid="MaaDef_8h_1a92a321c9e89a79ab64dc5176057d76a6a05c689d4235e1214eab9abaf7cd6809b" kind="enumvalue"><name>MaaStatus_Running</name></member>
     <member refid="MaaDef_8h_1a92a321c9e89a79ab64dc5176057d76a6a26dc49974c883868a557aa9d7a5d23ee" kind="enumvalue"><name>MaaStatus_Success</name></member>
     <member refid="MaaDef_8h_1a92a321c9e89a79ab64dc5176057d76a6a341c204f14050eb7dc068032ee9eaf63" kind="enumvalue"><name>MaaStatus_Failed</name></member>
-    <member refid="MaaDef_8h_1a56bc675130f000a275d4004f6b356ab9" kind="enum"><name>MaaLoggingLevelEunm</name></member>
-    <member refid="MaaDef_8h_1a56bc675130f000a275d4004f6b356ab9a886d0c4c0b743640330ce103ef377f96" kind="enumvalue"><name>MaaLoggingLevel_Off</name></member>
-    <member refid="MaaDef_8h_1a56bc675130f000a275d4004f6b356ab9aa3fa463a8d3ae69d4e6cd55e468a9b0e" kind="enumvalue"><name>MaaLoggingLevel_Fatal</name></member>
-    <member refid="MaaDef_8h_1a56bc675130f000a275d4004f6b356ab9a92f97dd39fafb12283ce88b4b2b1d191" kind="enumvalue"><name>MaaLoggingLevel_Error</name></member>
-    <member refid="MaaDef_8h_1a56bc675130f000a275d4004f6b356ab9ab8ab1b9f82635c2f5ff28c7a9a1978cb" kind="enumvalue"><name>MaaLoggingLevel_Warn</name></member>
-    <member refid="MaaDef_8h_1a56bc675130f000a275d4004f6b356ab9a58564e8e730e7bb829c2c177abed4c03" kind="enumvalue"><name>MaaLoggingLevel_Info</name></member>
-    <member refid="MaaDef_8h_1a56bc675130f000a275d4004f6b356ab9a0de032c18e2fa9d3bc0ed24f534b3e84" kind="enumvalue"><name>MaaLoggingLevel_Debug</name></member>
-    <member refid="MaaDef_8h_1a56bc675130f000a275d4004f6b356ab9a3d13be5b9e5135ffff14f59cc3d7a827" kind="enumvalue"><name>MaaLoggingLevel_Trace</name></member>
-    <member refid="MaaDef_8h_1a56bc675130f000a275d4004f6b356ab9a14f8e972156685897fa8fc5b2195a214" kind="enumvalue"><name>MaaLoggingLevel_All</name></member>
+    <member refid="MaaDef_8h_1a81060ab7b5fa44bfe6861f3882dec9a9" kind="enum"><name>MaaLoggingLevelEnum</name></member>
+    <member refid="MaaDef_8h_1a81060ab7b5fa44bfe6861f3882dec9a9a886d0c4c0b743640330ce103ef377f96" kind="enumvalue"><name>MaaLoggingLevel_Off</name></member>
+    <member refid="MaaDef_8h_1a81060ab7b5fa44bfe6861f3882dec9a9aa3fa463a8d3ae69d4e6cd55e468a9b0e" kind="enumvalue"><name>MaaLoggingLevel_Fatal</name></member>
+    <member refid="MaaDef_8h_1a81060ab7b5fa44bfe6861f3882dec9a9a92f97dd39fafb12283ce88b4b2b1d191" kind="enumvalue"><name>MaaLoggingLevel_Error</name></member>
+    <member refid="MaaDef_8h_1a81060ab7b5fa44bfe6861f3882dec9a9ab8ab1b9f82635c2f5ff28c7a9a1978cb" kind="enumvalue"><name>MaaLoggingLevel_Warn</name></member>
+    <member refid="MaaDef_8h_1a81060ab7b5fa44bfe6861f3882dec9a9a58564e8e730e7bb829c2c177abed4c03" kind="enumvalue"><name>MaaLoggingLevel_Info</name></member>
+    <member refid="MaaDef_8h_1a81060ab7b5fa44bfe6861f3882dec9a9a0de032c18e2fa9d3bc0ed24f534b3e84" kind="enumvalue"><name>MaaLoggingLevel_Debug</name></member>
+    <member refid="MaaDef_8h_1a81060ab7b5fa44bfe6861f3882dec9a9a3d13be5b9e5135ffff14f59cc3d7a827" kind="enumvalue"><name>MaaLoggingLevel_Trace</name></member>
+    <member refid="MaaDef_8h_1a81060ab7b5fa44bfe6861f3882dec9a9a14f8e972156685897fa8fc5b2195a214" kind="enumvalue"><name>MaaLoggingLevel_All</name></member>
     <member refid="MaaDef_8h_1ad09e62ec1fd03dadaf5fb009026c38ee" kind="enum"><name>MaaGlobalOptionEnum</name></member>
     <member refid="MaaDef_8h_1ad09e62ec1fd03dadaf5fb009026c38eeaf81992513d077ca4fe38f7ae787695cd" kind="enumvalue"><name>MaaGlobalOption_Invalid</name></member>
     <member refid="MaaDef_8h_1ad09e62ec1fd03dadaf5fb009026c38eea8669cc4382b1f28ea428aff511029b5c" kind="enumvalue"><name>MaaGlobalOption_LogDir</name></member>
@@ -169,15 +168,15 @@
     <member refid="MaaDef_8h_1a21de9ae05eae97a700f9f834fe506f47a16ae77e49c0b8a191186e299b63cc3f4" kind="enumvalue"><name>MaaAdbControllerType_Screencap_FastestLosslessWay</name></member>
     <member refid="MaaDef_8h_1a21de9ae05eae97a700f9f834fe506f47ae30111ce0fc2dc34a4d911928c1848fd" kind="enumvalue"><name>MaaAdbControllerType_Screencap_FastestWay</name></member>
     <member refid="MaaDef_8h_1ac482d3b538b47fcc9d3f4a8608958fc6" kind="enum"><name>MaaDbgControllerTypeEnum</name></member>
-    <member refid="MaaDef_8h_1ac482d3b538b47fcc9d3f4a8608958fc6a5e57e27bb1c791123d2728c3328c864d" kind="enumvalue"><name>MaaDbgController_Invalid</name></member>
+    <member refid="MaaDef_8h_1ac482d3b538b47fcc9d3f4a8608958fc6a40a0aebb4e53e6b1cf952fd748dbc797" kind="enumvalue"><name>MaaDbgControllerType_Invalid</name></member>
     <member refid="MaaDef_8h_1ac482d3b538b47fcc9d3f4a8608958fc6a8ae80556a7d8543a24f45147e691788b" kind="enumvalue"><name>MaaDbgControllerType_CarouselImage</name></member>
     <member refid="MaaDef_8h_1ac482d3b538b47fcc9d3f4a8608958fc6a35f420f73bc344a6a42a781dcfcceea6" kind="enumvalue"><name>MaaDbgControllerType_ReplayRecording</name></member>
     <member refid="MaaDef_8h_1a6035315f50c908ee7e23633ce53ac9da" kind="enum"><name>MaaThriftControllerTypeEnum</name></member>
-    <member refid="MaaDef_8h_1a6035315f50c908ee7e23633ce53ac9daa54c432b0c83e92461c4acb80e8045e05" kind="enumvalue"><name>MaaThriftController_Invalid</name></member>
+    <member refid="MaaDef_8h_1a6035315f50c908ee7e23633ce53ac9daa238d4fbad1cfc2c8ff4ad35725f6fcf1" kind="enumvalue"><name>MaaThriftControllerType_Invalid</name></member>
     <member refid="MaaDef_8h_1a6035315f50c908ee7e23633ce53ac9daa9c4f24dd98c6e1c84339d44ba880795c" kind="enumvalue"><name>MaaThriftControllerType_Socket</name></member>
     <member refid="MaaDef_8h_1a6035315f50c908ee7e23633ce53ac9daaf2861db948140dfd2b9b377c0d9534ab" kind="enumvalue"><name>MaaThriftControllerType_UnixDomainSocket</name></member>
     <member refid="MaaDef_8h_1aee6a3149d7be4c6d9e2190d14f203fa2" kind="enum"><name>MaaWin32ControllerTypeEnum</name></member>
-    <member refid="MaaDef_8h_1aee6a3149d7be4c6d9e2190d14f203fa2a9c3233de7b124d4ada69d5e6f8270921" kind="enumvalue"><name>MaaWin32Controller_Invalid</name></member>
+    <member refid="MaaDef_8h_1aee6a3149d7be4c6d9e2190d14f203fa2a64d23ea734609f94ff1dba9d09f5d8c5" kind="enumvalue"><name>MaaWin32ControllerType_Invalid</name></member>
     <member refid="MaaDef_8h_1aee6a3149d7be4c6d9e2190d14f203fa2a647d9761d06e8fb49d78ac49bb05afbd" kind="enumvalue"><name>MaaWin32ControllerType_Touch_SendMessage</name></member>
     <member refid="MaaDef_8h_1aee6a3149d7be4c6d9e2190d14f203fa2aca30d36323c4447f67fe6db15b4eb61f" kind="enumvalue"><name>MaaWin32ControllerType_Touch_Seize</name></member>
     <member refid="MaaDef_8h_1aee6a3149d7be4c6d9e2190d14f203fa2a88f9fc7384298de423f1df17ff471417" kind="enumvalue"><name>MaaWin32ControllerType_Key_SendMessage</name></member>
@@ -246,8 +245,6 @@
     <member refid="group__MaaMsg_1gaed3d012e9cc31b8d7f450f8175cdad43" kind="define"><name>MaaMsg_Invalid</name></member>
     <member refid="group__MaaMsg_1ga816b5be7864e915f14d52e5730ce3901" kind="define"><name>MaaMsg_Controller_UUIDGot</name></member>
     <member refid="group__MaaMsg_1gaa6e6c84ca8a10f010b3bc00685b9f65a" kind="define"><name>MaaMsg_Controller_UUIDGetFailed</name></member>
-    <member refid="group__MaaMsg_1ga50acbd1c0e0d4551ca25380d831ae66a" kind="define"><name>MaaMsg_Controller_ResolutionGot</name></member>
-    <member refid="group__MaaMsg_1ga58df8aed0b2395be457206d665981a1e" kind="define"><name>MaaMsg_Controller_ResolutionGetFailed</name></member>
     <member refid="group__MaaMsg_1ga13f35537edab8c7cdfbd30f89100fd72" kind="define"><name>MaaMsg_Controller_ScreencapInited</name></member>
     <member refid="group__MaaMsg_1gaff77df77108f9288a3613cd9bc27df80" kind="define"><name>MaaMsg_Controller_ScreencapInitFailed</name></member>
     <member refid="group__MaaMsg_1gac20f155bf2a1fbc63440b2d80e11853f" kind="define"><name>MaaMsg_Controller_TouchInputInited</name></member>
@@ -421,8 +418,6 @@
     <member refid="group__MaaMsg_1gaed3d012e9cc31b8d7f450f8175cdad43" kind="define"><name>MaaMsg_Invalid</name></member>
     <member refid="group__MaaMsg_1ga816b5be7864e915f14d52e5730ce3901" kind="define"><name>MaaMsg_Controller_UUIDGot</name></member>
     <member refid="group__MaaMsg_1gaa6e6c84ca8a10f010b3bc00685b9f65a" kind="define"><name>MaaMsg_Controller_UUIDGetFailed</name></member>
-    <member refid="group__MaaMsg_1ga50acbd1c0e0d4551ca25380d831ae66a" kind="define"><name>MaaMsg_Controller_ResolutionGot</name></member>
-    <member refid="group__MaaMsg_1ga58df8aed0b2395be457206d665981a1e" kind="define"><name>MaaMsg_Controller_ResolutionGetFailed</name></member>
     <member refid="group__MaaMsg_1ga13f35537edab8c7cdfbd30f89100fd72" kind="define"><name>MaaMsg_Controller_ScreencapInited</name></member>
     <member refid="group__MaaMsg_1gaff77df77108f9288a3613cd9bc27df80" kind="define"><name>MaaMsg_Controller_ScreencapInitFailed</name></member>
     <member refid="group__MaaMsg_1gac20f155bf2a1fbc63440b2d80e11853f" kind="define"><name>MaaMsg_Controller_TouchInputInited</name></member>

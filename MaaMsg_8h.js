@@ -6,8 +6,6 @@ var MaaMsg_8h =
     [ "MaaMsg_Resource_LoadingFailed", "group__MaaMsg.html#ga1140626bc678a6a5fc91f3b6ba706579", null ],
     [ "MaaMsg_Controller_UUIDGot", "group__MaaMsg.html#ga816b5be7864e915f14d52e5730ce3901", null ],
     [ "MaaMsg_Controller_UUIDGetFailed", "group__MaaMsg.html#gaa6e6c84ca8a10f010b3bc00685b9f65a", null ],
-    [ "MaaMsg_Controller_ResolutionGot", "group__MaaMsg.html#ga50acbd1c0e0d4551ca25380d831ae66a", null ],
-    [ "MaaMsg_Controller_ResolutionGetFailed", "group__MaaMsg.html#ga58df8aed0b2395be457206d665981a1e", null ],
     [ "MaaMsg_Controller_ScreencapInited", "group__MaaMsg.html#ga13f35537edab8c7cdfbd30f89100fd72", null ],
     [ "MaaMsg_Controller_ScreencapInitFailed", "group__MaaMsg.html#gaff77df77108f9288a3613cd9bc27df80", null ],
     [ "MaaMsg_Controller_TouchInputInited", "group__MaaMsg.html#gac20f155bf2a1fbc63440b2d80e11853f", null ],

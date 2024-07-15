@@ -315,6 +315,8 @@
         <param>
           <type><ref refid="MaaDef_8h_1abb976599f915b1e04a9ff8bf7055bf81" kindref="member">MaaOptionValue</ref></type>
           <declname>value</declname>
+          <briefdescription><para>Maybe a byte array </para>
+</briefdescription>
         </param>
         <param>
           <type><ref refid="MaaDef_8h_1a56ff604006917171af8e4b4974db28ef" kindref="member">MaaOptionValueSize</ref></type>
@@ -343,7 +345,7 @@
 </parameteritem>
 <parameteritem>
 <parameternamelist>
-<parametername>value</parametername>
+<parametername direction="in">value</parametername>
 </parameternamelist>
 <parameterdescription>
 <para>The option value. </para>
@@ -393,7 +395,7 @@
 </parameteritem>
 <parameteritem>
 <parameternamelist>
-<parametername direction="out">buffer</parametername>
+<parametername>buffer</parametername>
 </parameternamelist>
 <parameterdescription>
 <para>The buffer where the hash will be written to.</para>
@@ -435,7 +437,7 @@
 </parameteritem>
 <parameteritem>
 <parameternamelist>
-<parametername direction="out">buffer</parametername>
+<parametername>buffer</parametername>
 </parameternamelist>
 <parameterdescription>
 <para>The buffer where the task list will be written to.</para>
