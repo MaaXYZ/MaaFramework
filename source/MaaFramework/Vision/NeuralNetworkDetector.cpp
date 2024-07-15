@@ -124,8 +124,11 @@ NeuralNetworkDetector::ResultsVec NeuralNetworkDetector::detect(const cv::Rect& 
             raw_output + (i + 1) * output_shape[2]);
     }
 
-    const size_t output_size = output.back().size();
     ResultsVec raw_results;
+    const size_t output_size = output.back().size();
+    double width_ratio = 1.0 * raw_roi_size.width / input_image_size.width;
+    double height_ratio = 1.0 * raw_roi_size.height / input_image_size.height;
+
     for (size_t i = 0; i < output_size; ++i) {
         constexpr size_t kConfidenceIndex = 4;
         for (size_t j = kConfidenceIndex; j < output.size(); ++j) {
@@ -142,7 +145,12 @@ NeuralNetworkDetector::ResultsVec NeuralNetworkDetector::detect(const cv::Rect& 
 
             int x = center_x - w / 2;
             int y = center_y - h / 2;
-            cv::Rect box { x, y, w, h };
+            cv::Rect box {
+                static_cast<int>(x * width_ratio) + roi.x,
+                static_cast<int>(y * height_ratio) + roi.y,
+                static_cast<int>(w * width_ratio),
+                static_cast<int>(h * height_ratio),
+            };
 
             Result res;
             res.cls_index = j - kConfidenceIndex;
@@ -157,14 +165,6 @@ NeuralNetworkDetector::ResultsVec NeuralNetworkDetector::detect(const cv::Rect& 
     }
 
     auto nms_results = NMS(std::move(raw_results));
-
-    // post process
-    for (Result& res : nms_results) {
-        res.box.x = res.box.x * raw_roi_size.width / input_image_size.width + roi.x;
-        res.box.y = res.box.y * raw_roi_size.height / input_image_size.height + roi.y;
-        res.box.width = res.box.width * raw_roi_size.width / input_image_size.width;
-        res.box.height = res.box.height * raw_roi_size.height / input_image_size.height;
-    }
 
     if (debug_draw_) {
         auto draw = draw_result(roi, nms_results);
