@@ -317,6 +317,8 @@ void ControlUnitMgr::on_image_resolution_changed(
     const std::pair<int, int>& pre,
     const std::pair<int, int>& cur)
 {
+    LogFunc;
+
     dispatch([&](const std::shared_ptr<ControlUnitSink>& sink) {
         if (!sink) {
             return;

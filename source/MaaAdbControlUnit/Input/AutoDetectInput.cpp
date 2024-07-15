@@ -16,10 +16,10 @@ AutoDetectInput::AutoDetectInput(
     const std::filesystem::path& maatouch_path,
     const std::filesystem::path& minitouch_path)
 {
-    auto emu_extras = std::make_shared<MumuExternalRendererIpc>();
+    // auto emu_extras = std::make_shared<MumuExternalRendererIpc>();
 
-    touch_units_.emplace_back(std::make_pair(TouchMethod::EmulatorExtras, emu_extras));
-    key_units_.emplace_back(std::make_pair(KeyMethod::EmulatorExtras, emu_extras));
+    // touch_units_.emplace_back(std::make_pair(TouchMethod::EmulatorExtras, emu_extras));
+    // key_units_.emplace_back(std::make_pair(KeyMethod::EmulatorExtras, emu_extras));
 
     if (std::filesystem::exists(maatouch_path)) {
         auto maatouch = std::make_shared<MaatouchInput>(maatouch_path);
