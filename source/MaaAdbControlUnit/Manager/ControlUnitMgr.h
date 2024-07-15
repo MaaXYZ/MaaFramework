@@ -8,11 +8,14 @@
 #include "General/Connection.h"
 #include "General/DeviceInfo.h"
 #include "General/DeviceList.h"
+#include "Utils/Dispatcher.hpp"
 #include "Utils/MessageNotifier.hpp"
 
 MAA_CTRL_UNIT_NS_BEGIN
 
-class ControlUnitMgr : public ControlUnitAPI
+class ControlUnitMgr
+    : public ControlUnitAPI
+    , public Dispatcher<ControlUnitSink>
 {
 public:
     ControlUnitMgr(
@@ -55,6 +58,8 @@ public:
 
 private:
     bool _screencap(/*out*/ cv::Mat& image);
+    void
+        on_image_resolution_changed(const std::pair<int, int>& pre, const std::pair<int, int>& cur);
 
 private:
     std::filesystem::path adb_path_;
@@ -72,8 +77,7 @@ private:
     std::shared_ptr<ScreencapBase> screencap_ = nullptr;
 
     bool screencap_available_ = false;
-    int image_width_ = 0;
-    int image_height_ = 0;
+    std::pair<int, int> image_resolution_;
 };
 
 MAA_CTRL_UNIT_NS_END

@@ -40,6 +40,19 @@ protected:
     Replacement argv_replace_;
 };
 
+class ControlUnitSink
+{
+public:
+    virtual ~ControlUnitSink() = default;
+
+public:
+    void on_display_resolution_changed(
+        [[maybe_unused]] const std::pair<int, int>& pre,
+        [[maybe_unused]] const std::pair<int, int>& cur)
+    {
+    }
+};
+
 class ScreencapBase : virtual public UnitBase
 {
 public:
@@ -55,7 +68,9 @@ protected:
     ScreencapHelper screencap_helper_;
 };
 
-class TouchInputBase : virtual public UnitBase
+class TouchInputBase
+    : virtual public UnitBase
+    , public ControlUnitSink
 {
 public:
     virtual ~TouchInputBase() override = default;
@@ -70,6 +85,14 @@ public:
     virtual bool touch_down(int contact, int x, int y, int pressure) = 0;
     virtual bool touch_move(int contact, int x, int y, int pressure) = 0;
     virtual bool touch_up(int contact) = 0;
+
+public:
+    void on_display_resolution_changed(
+        [[maybe_unused]] const std::pair<int, int>& pre,
+        [[maybe_unused]] const std::pair<int, int>& cur)
+    {
+        init();
+    }
 };
 
 class KeyInputBase : virtual public UnitBase
