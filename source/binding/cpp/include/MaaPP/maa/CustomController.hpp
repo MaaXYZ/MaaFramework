@@ -20,11 +20,6 @@ struct CustomControllerAPI
 
     virtual coro::Promise<std::optional<std::string>> request_uuid() { co_return std::nullopt; }
 
-    virtual coro::Promise<std::optional<std::tuple<int32_t, int32_t>>> request_resolution()
-    {
-        co_return std::nullopt;
-    }
-
     virtual coro::Promise<bool> start_app([[maybe_unused]] std::string intent) { co_return false; }
 
     virtual coro::Promise<bool> stop_app([[maybe_unused]] std::string intent) { co_return false; }

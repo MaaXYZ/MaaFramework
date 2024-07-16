@@ -82,24 +82,6 @@ struct ControllerUUIDGetFailedMessage : public ControllerConnectMessage
 {
 };
 
-struct ControllerResolutionGotMessage : public ControllerConnectMessage
-{
-    struct
-    {
-        int width;
-        int height;
-        int orientation;
-
-        MEO_JSONIZATION(width, height, orientation);
-    } resolution;
-
-    MEO_JSONIZATION(resolution);
-};
-
-struct ControllerResolutionGetFailedMessage : public ControllerConnectMessage
-{
-};
-
 struct ControllerScreencapInitedMessage : public ControllerConnectMessage
 {
 };
@@ -128,16 +110,7 @@ struct ControllerConnectSuccessMessage : public ControllerConnectMessage
 {
     std::string uuid;
 
-    struct
-    {
-        int width;
-        int height;
-        int orientation;
-
-        MEO_JSONIZATION(width, height, orientation);
-    } resolution;
-
-    MEO_JSONIZATION(uuid, resolution);
+    MEO_JSONIZATION(uuid);
 };
 
 struct ControllerConnectFailedMessage : public ControllerConnectMessage

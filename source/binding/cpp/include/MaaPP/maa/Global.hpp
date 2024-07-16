@@ -46,7 +46,7 @@ inline void set_recording(bool enable)
     }
 }
 
-inline void set_stdout_level(MaaLoggingLevelEunm level)
+inline void set_stdout_level(MaaLoggingLevelEnum level)
 {
     if (!MaaSetGlobalOption(MaaGlobalOption_StdoutLevel, &level, sizeof(level))) {
         throw FunctionFailed("MaaToolkitInitOptionConfig");

@@ -330,20 +330,6 @@ private:
         }
     }
 
-    static MaaBool
-        _request_resolution(MaaTransparentArg handle_arg, int32_t* width, int32_t* height)
-    {
-        auto self = reinterpret_cast<Controller*>(handle_arg)->shared_from_this();
-        auto res = self->custom_ctrl_->request_resolution().sync_wait();
-        if (res.has_value()) {
-            std::tie(*width, *height) = res.value();
-            return true;
-        }
-        else {
-            return false;
-        }
-    }
-
     static MaaBool _start_app(MaaStringView intent, MaaTransparentArg handle_arg)
     {
         auto self = reinterpret_cast<Controller*>(handle_arg)->shared_from_this();
@@ -423,11 +409,10 @@ private:
     }
 
     constexpr static MaaCustomControllerAPI api_ = {
-        &Controller::_connect,    &Controller::_request_uuid, &Controller::_request_resolution,
-        &Controller::_start_app,  &Controller::_stop_app,     &Controller::_screencap,
-        &Controller::_click,      &Controller::_swipe,        &Controller::_touch_down,
-        &Controller::_touch_move, &Controller::_touch_up,     &Controller::_press_key,
-        &Controller::_input_text,
+        &Controller::_connect,  &Controller::_request_uuid, &Controller::_start_app,
+        &Controller::_stop_app, &Controller::_screencap,    &Controller::_click,
+        &Controller::_swipe,    &Controller::_touch_down,   &Controller::_touch_move,
+        &Controller::_touch_up, &Controller::_press_key,    &Controller::_input_text,
     };
 
     std::function<void(std::shared_ptr<message::MessageBase>)> user_callback_;

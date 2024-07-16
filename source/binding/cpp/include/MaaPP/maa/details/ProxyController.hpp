@@ -12,7 +12,6 @@ namespace maa::details
 struct ProxyController : public CustomControllerAPI
 {
     std::shared_ptr<Controller> target_;
-    int32_t width_ = 1080, height_ = 720;
 
     ProxyController(std::shared_ptr<Controller> target)
         : target_(target)
@@ -27,11 +26,6 @@ struct ProxyController : public CustomControllerAPI
     virtual coro::Promise<std::optional<std::string>> request_uuid() override
     {
         co_return target_->uuid();
-    }
-
-    virtual coro::Promise<std::optional<std::tuple<int32_t, int32_t>>> request_resolution() override
-    {
-        co_return std::make_tuple(width_, height_);
     }
 
     virtual coro::Promise<bool> start_app([[maybe_unused]] std::string intent) override

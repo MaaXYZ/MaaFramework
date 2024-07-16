@@ -77,8 +77,6 @@ inline std::shared_ptr<MessageBase> parse(MaaStringView msg, MaaStringView detai
     __SERIAL_MSG_TYPE(MaaMsg_Resource_LoadingFailed, ResourceLoadingMessage, Failed)
     __SERIAL_MSG(MaaMsg_Controller_UUIDGot, ControllerUUIDGotMessage)
     __EMPTY_MSG(MaaMsg_Controller_UUIDGetFailed, ControllerUUIDGetFailedMessage)
-    __SERIAL_MSG(MaaMsg_Controller_ResolutionGot, ControllerResolutionGotMessage)
-    __EMPTY_MSG(MaaMsg_Controller_ResolutionGetFailed, ControllerResolutionGetFailedMessage)
     __EMPTY_MSG(MaaMsg_Controller_ScreencapInited, ControllerScreencapInitedMessage)
     __EMPTY_MSG(MaaMsg_Controller_ScreencapInitFailed, ControllerScreencapInitFailedMessage)
     __EMPTY_MSG(MaaMsg_Controller_TouchInputInited, ControllerTouchInputInitedMessage)
