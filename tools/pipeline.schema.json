@@ -138,15 +138,7 @@
                     "default": ""
                 },
                 "threshold": {},
-                "method": {
-                    "description": "模板匹配算法，即 cv::TemplateMatchModes。可选，默认 5 ",
-                    "enum": [
-                        1,
-                        3,
-                        5
-                    ],
-                    "default": 5
-                },
+                "method": {},
                 "green_mask": {
                     "description": "是否进行绿色掩码。可选，默认 false。",
                     "type": "boolean",
@@ -287,6 +279,15 @@
                             "properties": {
                                 "recognition": {
                                     "const": "TemplateMatch"
+                                },
+                                "method": {
+                                    "description": "模板匹配算法，即 cv::TemplateMatchModes。可选，默认 5 ",
+                                    "enum": [
+                                        1,
+                                        3,
+                                        5
+                                    ],
+                                    "default": 5
                                 },
                                 "threshold": {
                                     "description": "模板匹配阈值。可选，默认 0.7 。",
