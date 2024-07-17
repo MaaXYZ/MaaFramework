@@ -20,6 +20,5 @@ add_subdirectory(LibraryHolder)
 add_subdirectory(MaaFramework)
 add_subdirectory(MaaToolkit)
 add_subdirectory(MaaProjectInterface)
-add_subdirectory(MaaHttp)
 
 add_subdirectory(binding)

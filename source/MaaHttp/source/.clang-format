@@ -1,8 +1,0 @@
-BasedOnStyle: InheritParentConfig
-MacroBlockBegin: "^LHG.*Begin"
-MacroBlockEnd: "^LHG.*End"
-StatementMacros:
-    - "LHGArgToJsonMiddle"
-    - "LHGArgFromJsonMiddle"
-ForEachMacros:
-    - "LHGInherit"
