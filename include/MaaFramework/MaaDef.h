@@ -174,114 +174,63 @@ enum MaaInstOptionEnum
     MaaInstOption_Invalid = 0,
 };
 
-#define MaaTaskParam_Empty "{}"
+// MaaAdbScreencapMethod:
+// Use bitwise OR to set the method you need, MaaFramework will test their speed and use the fastest one.
+typedef uint64_t MaaAdbScreencapMethod;
+const MaaAdbScreencapMethod MaaAdbScreencapMethod_None = 0ULL;
+const MaaAdbScreencapMethod MaaAdbScreencapMethod_EncodeToFile = 1ULL;
+const MaaAdbScreencapMethod MaaAdbScreencapMethod_Encode = 1ULL << 1;
+const MaaAdbScreencapMethod MaaAdbScreencapMethod_RawWithGzip = 1ULL << 2;
+const MaaAdbScreencapMethod MaaAdbScreencapMethod_RawByNetcat = 1ULL << 3;
+const MaaAdbScreencapMethod MaaAdbScreencapMethod_MinicapDirect = 1ULL << 4;
+const MaaAdbScreencapMethod MaaAdbScreencapMethod_MinicapStream = 1ULL << 5;
+const MaaAdbScreencapMethod MaaAdbScreencapMethod_EmulatorExtras = 1ULL << 6;
+const MaaAdbScreencapMethod MaaAdbScreencapMethod_All = UINT64_MAX;
 
-typedef int32_t MaaAdbControllerType;
-#define MaaAdbControllerType_Touch_Mask 0xFF
-#define MaaAdbControllerType_Key_Mask 0xFF00
-#define MaaAdbControllerType_Screencap_Mask 0xFF0000
+// MaaAdbInputMethod:
+// Use bitwise OR to set the method you need, MaaFramework will select the available ones according to priority.
+// The priority is: EmulatorExtras > Maatouch > MinitouchAndAdbKey > AdbShell
+typedef uint64_t MaaAdbInputMethod;
+const MaaAdbInputMethod MaaAdbInputMethod_None = 0ULL;
+const MaaAdbInputMethod MaaAdbInputMethod_AdbShell = 1ULL;
+const MaaAdbInputMethod MaaAdbInputMethod_MinitouchAndAdbKey = 1ULL << 1;
+const MaaAdbInputMethod MaaAdbInputMethod_Maatouch = 1ULL << 2;
+const MaaAdbInputMethod MaaAdbInputMethod_EmulatorExtras = 1ULL << 3;
+const MaaAdbInputMethod MaaAdbInputMethod_All = UINT64_MAX;
 
-/**
- * @brief ADB controller type
- *
- * The ADB controller type consists of three parts: touch, key, and screencap.
- * The touch part is used to control the touch events on the device.
- * The key part is used to control the key events on the device.
- * The screencap part is used to capture the screen of the device.
- * The final value is the combination of the three parts as follows:
- *
- * touch_type | key_type | screencap_type
- *
- */
-enum MaaAdbControllerTypeEnum
-{
-    MaaAdbControllerType_Invalid = 0,
+// MaaWin32ScreencapMethod:
+// Use bitwise OR to set the method you need, MaaFramework will test their speed and use the fastest one.
+typedef uint64_t MaaWin32ScreencapMethod;
+const MaaWin32ScreencapMethod MaaWin32ScreencapMethod_None = 0ULL;
+const MaaWin32ScreencapMethod MaaWin32ScreencapMethod_GDI = 1ULL;
+const MaaWin32ScreencapMethod MaaWin32ScreencapMethod_FramePool = 1ULL << 1;
+const MaaWin32ScreencapMethod MaaWin32ScreencapMethod_DXGI_DesktopDup = 1ULL << 2;
+const MaaWin32ScreencapMethod MaaWin32ScreencapMethod_All = UINT64_MAX;
 
-    MaaAdbControllerType_Touch_Adb = 1,
-    MaaAdbControllerType_Touch_MiniTouch = 2,
-    MaaAdbControllerType_Touch_MaaTouch = 3,
-    MaaAdbControllerType_Touch_EmulatorExtras = 4,
-    MaaAdbControllerType_Touch_AutoDetect = MaaAdbControllerType_Touch_Mask - 1,
+// MaaWin32InputMethod:
+// Use bitwise OR to set the method you need, MaaFramework will select the available ones according to priority.
+// The priority is: SendMessage > Seize
+typedef uint64_t MaaWin32InputMethod;
+const MaaWin32InputMethod MaaWin32InputMethod_None = 0ULL;
+const MaaWin32InputMethod MaaWin32InputMethod_Seize = 1ULL;
+const MaaWin32InputMethod MaaWin32InputMethod_SendMessage = 1ULL << 1;
+const MaaWin32InputMethod MaaWin32InputMethod_All = UINT64_MAX;
 
-    MaaAdbControllerType_Key_Adb = 1 << 8,
-    MaaAdbControllerType_Key_MaaTouch = 2 << 8,
-    MaaAdbControllerType_Key_EmulatorExtras = 3 << 8,
-    MaaAdbControllerType_Key_AutoDetect = MaaAdbControllerType_Key_Mask - (1 << 8),
-
-    MaaAdbControllerType_Input_Preset_Adb =
-        MaaAdbControllerType_Touch_Adb | MaaAdbControllerType_Key_Adb,
-    MaaAdbControllerType_Input_Preset_Minitouch =
-        MaaAdbControllerType_Touch_MiniTouch | MaaAdbControllerType_Key_Adb,
-    MaaAdbControllerType_Input_Preset_Maatouch =
-        MaaAdbControllerType_Touch_MaaTouch | MaaAdbControllerType_Key_MaaTouch,
-    MaaAdbControllerType_Input_Preset_AutoDetect =
-        MaaAdbControllerType_Touch_AutoDetect | MaaAdbControllerType_Key_AutoDetect,
-    MaaAdbControllerType_Input_Preset_EmulatorExtras =
-        MaaAdbControllerType_Touch_EmulatorExtras | MaaAdbControllerType_Key_EmulatorExtras,
-
-    /// \deprecated
-    MaaAdbControllerType_Screencap_FastestWay_Compatible = 1 << 16,
-    MaaAdbControllerType_Screencap_RawByNetcat = 2 << 16,
-    MaaAdbControllerType_Screencap_RawWithGzip = 3 << 16,
-    MaaAdbControllerType_Screencap_Encode = 4 << 16,
-    MaaAdbControllerType_Screencap_EncodeToFile = 5 << 16,
-    MaaAdbControllerType_Screencap_MinicapDirect = 6 << 16,
-    MaaAdbControllerType_Screencap_MinicapStream = 7 << 16,
-    MaaAdbControllerType_Screencap_EmulatorExtras = 8 << 16,
-    MaaAdbControllerType_Screencap_FastestLosslessWay =
-        MaaAdbControllerType_Screencap_Mask - (2 << 16),
-    MaaAdbControllerType_Screencap_FastestWay = MaaAdbControllerType_Screencap_Mask - (1 << 16),
-};
-
+// MaaDbgControllerType:
+// No bitwise OR, just set it
 typedef int32_t MaaDbgControllerType;
+const MaaDbgControllerType MaaDbgControllerType_Invalid = 0;
+const MaaDbgControllerType MaaDbgControllerType_CarouselImage = 1;
+const MaaDbgControllerType MaaDbgControllerType_ReplayRecording = 2;
 
-enum MaaDbgControllerTypeEnum
-{
-    MaaDbgControllerType_Invalid = 0,
-
-    MaaDbgControllerType_CarouselImage = 1,
-    MaaDbgControllerType_ReplayRecording = 2,
-};
-
+// MaaThriftControllerType:
+// No bitwise OR, just set it
 typedef int32_t MaaThriftControllerType;
-
-enum MaaThriftControllerTypeEnum
-{
-    MaaThriftControllerType_Invalid = 0,
-
-    MaaThriftControllerType_Socket = 1,
-    MaaThriftControllerType_UnixDomainSocket = 2,
-};
-
-typedef int32_t MaaWin32ControllerType;
-#define MaaWin32ControllerType_Touch_Mask 0xFF
-#define MaaWin32ControllerType_Key_Mask 0xFF00
-#define MaaWin32ControllerType_Screencap_Mask 0xFF0000
-
-/**
- * @brief Win32 controller type
- *
- * See AdbControllerTypeEnum to know how the value is composed.
- *
- */
-enum MaaWin32ControllerTypeEnum
-{
-    MaaWin32ControllerType_Invalid = 0,
-
-    MaaWin32ControllerType_Touch_SendMessage = 1,
-    MaaWin32ControllerType_Touch_Seize = 2,
-
-    MaaWin32ControllerType_Key_SendMessage = 1 << 8,
-    MaaWin32ControllerType_Key_Seize = 2 << 8,
-
-    MaaWin32ControllerType_Screencap_GDI = 1 << 16,
-    MaaWin32ControllerType_Screencap_DXGI_DesktopDup = 2 << 16,
-    // MaaWin32ControllerType_Screencap_DXGI_BackBuffer = 3 << 16,
-    MaaWin32ControllerType_Screencap_DXGI_FramePool = 4 << 16,
-};
+const MaaThriftControllerType MaaThriftControllerType_Invalid = 0;
+const MaaThriftControllerType MaaThriftControllerType_Socket = 1;
+const MaaThriftControllerType MaaThriftControllerType_UnixDomainSocket = 2;
 
 typedef void* MaaWin32Hwnd;
-
 typedef void* MaaTransparentArg;
 typedef MaaTransparentArg MaaCallbackTransparentArg;
 

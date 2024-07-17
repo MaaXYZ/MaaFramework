@@ -24,7 +24,8 @@ extern "C"
      *
      * @param adb_path The path of ADB executable.
      * @param address The ADB serial of the target device.
-     * @param type The type of the ADB controller. See #MaaAdbControllerTypeEnum.
+     * @param screencap_methods Use bitwise OR to set the method you need, MaaFramework will test their speed and use the fastest one.
+     * @param input_methods Use bitwise OR to set the method you need, MaaFramework will select the available ones according to priority.
      * @param config The config of the ADB controller.
      * @param agent_path The path of the agent executable.
      * @param callback The callback function. See ::MaaAPICallback.
@@ -34,7 +35,8 @@ extern "C"
     MAA_FRAMEWORK_API MaaControllerHandle MaaAdbControllerCreate(
         MaaStringView adb_path,
         MaaStringView address,
-        MaaAdbControllerType type,
+        MaaAdbScreencapMethod screencap_methods,
+        MaaAdbInputMethod input_methods,
         MaaStringView config,
         MaaStringView agent_path,
         MaaControllerCallback callback,
@@ -45,14 +47,16 @@ extern "C"
      *
      * @param hWnd The win32 window handle to control. This can be retrieved by helpers provided in
      * MaaToolkitWin32Window.h.
-     * @param type The type of the win32 controller. See #MaaWin32ControllerTypeEnum.
+     * @param screencap_methods Use bitwise OR to set the method you need, MaaFramework will test their speed and use the fastest one.
+     * @param input_methods Use bitwise OR to set the method you need, MaaFramework will select the available ones according to priority.
      * @param callback The callback function. See ::MaaAPICallback.
      * @param callback_arg The callback arg that will be passed to the callback function.
      * @return MaaControllerHandle The handle of the created controller instance.
      */
     MAA_FRAMEWORK_API MaaControllerHandle MaaWin32ControllerCreate(
         MaaWin32Hwnd hWnd,
-        MaaWin32ControllerType type,
+        MaaWin32ScreencapMethod screencap_methods,
+        MaaWin32InputMethod input_methods,
         MaaControllerCallback callback,
         MaaCallbackTransparentArg callback_arg);
 
