@@ -37,6 +37,75 @@ extern "C"
     MAA_FRAMEWORK_API void MaaResourceDestroy(MaaResourceHandle res);
 
     /**
+     * @brief Register a custom recognizer to the instance.
+     *
+     * See MaaCustomRecognizer.h for details about how to create a custom recognizer.
+     *
+     * @param res
+     * @param name The name of the recognizer that will be used to reference it.
+     * @param recognizer
+     * @param recognizer_arg
+     * @return MaaBool
+     */
+    MAA_FRAMEWORK_API MaaBool MaaRegisterCustomRecognizer(
+        MaaResourceHandle inst,
+        MaaStringView name,
+        MaaCustomRecognizerHandle recognizer,
+        MaaTransparentArg recognizer_arg);
+
+    /**
+     * @brief Unregister a custom recognizer from the instance.
+     *
+     * @param res
+     * @param name The name of the recognizer when it was registered.
+     * @return MaaBool
+     */
+    MAA_FRAMEWORK_API MaaBool
+        MaaUnregisterCustomRecognizer(MaaResourceHandle inst, MaaStringView name);
+
+    /**
+     * @brief Clear all custom recognizers registered to the instance.
+     *
+     * @param res
+     * @return MaaBool
+     */
+    MAA_FRAMEWORK_API MaaBool MaaClearCustomRecognizer(MaaResourceHandle inst);
+
+    /**
+     * @brief Register a custom action to the instance.
+     *
+     * See MaaCustomAction.h for details about how to create a custom action.
+     *
+     * @param res
+     * @param name The name of the action that will be used to reference it.
+     * @param action
+     * @param action_arg
+     * @return MaaBool
+     */
+    MAA_FRAMEWORK_API MaaBool MaaRegisterCustomAction(
+        MaaResourceHandle inst,
+        MaaStringView name,
+        MaaCustomActionHandle action,
+        MaaTransparentArg action_arg);
+
+    /**
+     * @brief Unregister a custom action from the instance.
+     *
+     * @param res
+     * @param name The name of the action when it was registered.
+     * @return MaaBool
+     */
+    MAA_FRAMEWORK_API MaaBool MaaUnregisterCustomAction(MaaResourceHandle inst, MaaStringView name);
+
+    /**
+     * @brief Clear all custom actions registered to the instance.
+     *
+     * @param res
+     * @return MaaBool
+     */
+    MAA_FRAMEWORK_API MaaBool MaaClearCustomAction(MaaResourceHandle inst);
+
+    /**
      * @brief Add a path to the resource loading paths
      *
      * @param res
@@ -61,15 +130,6 @@ extern "C"
      * @return MaaStatus
      */
     MAA_FRAMEWORK_API MaaStatus MaaResourceStatus(MaaResourceHandle res, MaaResId id);
-
-    /**
-     * @brief Wait for a resource to be loaded.
-     *
-     * @param res
-     * @param id
-     * @return MaaStatus
-     */
-    MAA_FRAMEWORK_API MaaStatus MaaResourceWait(MaaResourceHandle res, MaaResId id);
 
     /**
      * @brief Check if resources are loaded.

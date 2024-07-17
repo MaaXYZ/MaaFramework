@@ -85,75 +85,6 @@ extern "C"
     MAA_FRAMEWORK_API MaaBool MaaInited(MaaInstanceHandle inst);
 
     /**
-     * @brief Register a custom recognizer to the instance.
-     *
-     * See MaaCustomRecognizer.h for details about how to create a custom recognizer.
-     *
-     * @param inst
-     * @param name The name of the recognizer that will be used to reference it.
-     * @param recognizer
-     * @param recognizer_arg
-     * @return MaaBool
-     */
-    MAA_FRAMEWORK_API MaaBool MaaRegisterCustomRecognizer(
-        MaaInstanceHandle inst,
-        MaaStringView name,
-        MaaCustomRecognizerHandle recognizer,
-        MaaTransparentArg recognizer_arg);
-
-    /**
-     * @brief Unregister a custom recognizer from the instance.
-     *
-     * @param inst
-     * @param name The name of the recognizer when it was registered.
-     * @return MaaBool
-     */
-    MAA_FRAMEWORK_API MaaBool
-        MaaUnregisterCustomRecognizer(MaaInstanceHandle inst, MaaStringView name);
-
-    /**
-     * @brief Clear all custom recognizers registered to the instance.
-     *
-     * @param inst
-     * @return MaaBool
-     */
-    MAA_FRAMEWORK_API MaaBool MaaClearCustomRecognizer(MaaInstanceHandle inst);
-
-    /**
-     * @brief Register a custom action to the instance.
-     *
-     * See MaaCustomAction.h for details about how to create a custom action.
-     *
-     * @param inst
-     * @param name The name of the action that will be used to reference it.
-     * @param action
-     * @param action_arg
-     * @return MaaBool
-     */
-    MAA_FRAMEWORK_API MaaBool MaaRegisterCustomAction(
-        MaaInstanceHandle inst,
-        MaaStringView name,
-        MaaCustomActionHandle action,
-        MaaTransparentArg action_arg);
-
-    /**
-     * @brief Unregister a custom action from the instance.
-     *
-     * @param inst
-     * @param name The name of the action when it was registered.
-     * @return MaaBool
-     */
-    MAA_FRAMEWORK_API MaaBool MaaUnregisterCustomAction(MaaInstanceHandle inst, MaaStringView name);
-
-    /**
-     * @brief Clear all custom actions registered to the instance.
-     *
-     * @param inst
-     * @return MaaBool
-     */
-    MAA_FRAMEWORK_API MaaBool MaaClearCustomAction(MaaInstanceHandle inst);
-
-    /**
      * @brief Post a task to the instance.
      *
      * The entry should be a task specified in the instance's resources.
@@ -221,18 +152,6 @@ extern "C"
     MAA_FRAMEWORK_API MaaStatus MaaTaskStatus(MaaInstanceHandle inst, MaaTaskId id);
 
     /**
-     * @brief Wait for a task to finish.
-     *
-     * @param inst
-     * @param id
-     * @return MaaStatus
-     */
-    MAA_FRAMEWORK_API MaaStatus MaaWaitTask(MaaInstanceHandle inst, MaaTaskId id);
-
-    /// \deprecated Use !MaaRunning() instead.
-    MAA_DEPRECATED MAA_FRAMEWORK_API MaaBool MaaTaskAllFinished(MaaInstanceHandle inst);
-
-    /**
      * @brief Is maa running?
      *
      * @param inst
@@ -249,9 +168,6 @@ extern "C"
      * @return MaaBool
      */
     MAA_FRAMEWORK_API MaaBool MaaPostStop(MaaInstanceHandle inst);
-
-    /// \deprecated Use MaaPostStop() instead.
-    MAA_DEPRECATED MAA_FRAMEWORK_API MaaBool MaaStop(MaaInstanceHandle inst);
 
     /**
      * @brief Get the resource handle of the instance.

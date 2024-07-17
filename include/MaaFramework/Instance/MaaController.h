@@ -19,16 +19,6 @@
 extern "C"
 {
 #endif
-
-    /// \deprecated Use MaaAdbControllerCreateV2() instead.
-    MAA_DEPRECATED MAA_FRAMEWORK_API MaaControllerHandle MaaAdbControllerCreate(
-        MaaStringView adb_path,
-        MaaStringView address,
-        MaaAdbControllerType type,
-        MaaStringView config,
-        MaaControllerCallback callback,
-        MaaCallbackTransparentArg callback_arg);
-
     /**
      * @brief Create a ADB controller instance.
      *
@@ -41,7 +31,7 @@ extern "C"
      * @param callback_arg The callback arg that will be passed to the callback function.
      * @return MaaControllerHandle The handle of the created controller instance.
      */
-    MAA_FRAMEWORK_API MaaControllerHandle MaaAdbControllerCreateV2(
+    MAA_FRAMEWORK_API MaaControllerHandle MaaAdbControllerCreate(
         MaaStringView adb_path,
         MaaStringView address,
         MaaAdbControllerType type,
@@ -182,15 +172,6 @@ extern "C"
      * @return MaaStatus The status of the request.
      */
     MAA_FRAMEWORK_API MaaStatus MaaControllerStatus(MaaControllerHandle ctrl, MaaCtrlId id);
-
-    /**
-     * @brief Wait for the request identified by the given id to complete.
-     *
-     * @param ctrl
-     * @param id
-     * @return MaaStatus The status of the request.
-     */
-    MAA_FRAMEWORK_API MaaStatus MaaControllerWait(MaaControllerHandle ctrl, MaaCtrlId id);
 
     /**
      * @brief Check if the controller is connected.
