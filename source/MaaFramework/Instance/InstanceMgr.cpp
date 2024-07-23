@@ -161,7 +161,7 @@ bool InstanceMgr::register_custom_recognizer(
     }
 
     CustomRecognizerSession session { handle, handle_arg };
-    return custom_recognizer_sessions_.insert_or_assign(std::move(name), std::move(session)).second;
+    return custom_recognizer_sessions_.emplace(std::move(name), std::move(session)).second;
 }
 
 bool InstanceMgr::unregister_custom_recognizer(std::string name)
@@ -187,7 +187,7 @@ bool InstanceMgr::register_custom_action(
         return false;
     }
     CustomActionSession session { handle, handle_arg };
-    return custom_action_sessions_.insert_or_assign(std::move(name), std::move(session)).second;
+    return custom_action_sessions_.emplace(std::move(name), std::move(session)).second;
 }
 
 bool InstanceMgr::unregister_custom_action(std::string name)
