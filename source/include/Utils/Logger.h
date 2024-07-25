@@ -25,40 +25,34 @@ public:
     Logger& operator=(const Logger&) = delete;
     Logger& operator=(Logger&&) = delete;
 
-    template <typename... args_t>
-    auto fatal(args_t&&... args)
+    auto fatal(const std::source_location& loc = std::source_location::current())
     {
-        return stream(level::fatal, std::forward<args_t>(args)...);
+        return stream(level::fatal, loc);
     }
 
-    template <typename... args_t>
-    auto error(args_t&&... args)
+    auto error(const std::source_location& loc = std::source_location::current())
     {
-        return stream(level::error, std::forward<args_t>(args)...);
+        return stream(level::error, loc);
     }
 
-    template <typename... args_t>
-    auto warn(args_t&&... args)
+    auto warn(const std::source_location& loc = std::source_location::current())
     {
-        return stream(level::warn, std::forward<args_t>(args)...);
+        return stream(level::warn, loc);
     }
 
-    template <typename... args_t>
-    auto info(args_t&&... args)
+    auto info(const std::source_location& loc = std::source_location::current())
     {
-        return stream(level::info, std::forward<args_t>(args)...);
+        return stream(level::info, loc);
     }
 
-    template <typename... args_t>
-    auto debug(args_t&&... args)
+    auto debug(const std::source_location& loc = std::source_location::current())
     {
-        return stream(level::debug, std::forward<args_t>(args)...);
+        return stream(level::debug, loc);
     }
 
-    template <typename... args_t>
-    auto trace(args_t&&... args)
+    auto trace(const std::source_location& loc = std::source_location::current())
     {
-        return stream(level::trace, std::forward<args_t>(args)...);
+        return stream(level::trace, loc);
     }
 
     void start_logging(std::filesystem::path dir);
@@ -107,9 +101,8 @@ private:
 class LogScopeEnterHelper
 {
 public:
-    template <typename... args_t>
-    explicit LogScopeEnterHelper(args_t&&... args)
-        : stream_(Logger::get_instance().debug(std::forward<args_t>(args)...))
+    explicit LogScopeEnterHelper(const std::source_location& loc = std::source_location::current())
+        : stream_(Logger::get_instance().debug(loc))
     {
     }
 
@@ -121,61 +114,36 @@ private:
     LogStream stream_;
 };
 
-template <typename... args_t>
 class LogScopeLeaveHelper
 {
 public:
-    explicit LogScopeLeaveHelper(args_t&&... args)
-        : args_(std::forward<args_t>(args)...)
+    explicit LogScopeLeaveHelper(std::source_location&& loc = std::source_location::current())
+        : loc_(loc)
     {
     }
 
     ~LogScopeLeaveHelper()
     {
-        std::apply(
-            [](auto&&... args) {
-                return Logger::get_instance().trace(std::forward<decltype(args)>(args)...);
-            },
-            std::move(args_))
-            << "| leave," << duration_since(start_);
+        Logger::get_instance().trace(loc_) << "| leave," << duration_since(start_);
     }
 
 private:
-    std::tuple<args_t...> args_;
+    std::source_location loc_;
     std::chrono::time_point<std::chrono::steady_clock> start_ = std::chrono::steady_clock::now();
 };
 
-inline constexpr std::string_view pertty_file(std::string_view file)
-{
-    size_t pos = file.find_last_of(std::filesystem::path::preferred_separator);
-    return file.substr(pos + 1, file.size());
-}
-
 MAA_LOG_NS_END
 
-#define STRINGIZE(x) STRINGIZE2(x)
-#define STRINGIZE2(x) #x
-#define LINE_STRING STRINGIZE(__LINE__)
+#define LogFatal MAA_LOG_NS::Logger::get_instance().fatal()
+#define LogError MAA_LOG_NS::Logger::get_instance().error()
+#define LogWarn MAA_LOG_NS::Logger::get_instance().warn()
+#define LogInfo MAA_LOG_NS::Logger::get_instance().info()
+#define LogDebug MAA_LOG_NS::Logger::get_instance().debug()
+#define LogTrace MAA_LOG_NS::Logger::get_instance().trace()
 
-#define MAA_FILE MAA_LOG_NS::pertty_file(__FILE__)
-#define MAA_LINE std::string_view("L" LINE_STRING)
-#ifdef _MSC_VER
-#define MAA_FUNCTION std::string_view(__FUNCTION__)
-#else
-#define MAA_FUNCTION std::string_view(__PRETTY_FUNCTION__)
-#endif
-#define LOG_ARGS MAA_FILE, MAA_LINE, MAA_FUNCTION
-
-#define LogFatal MAA_LOG_NS::Logger::get_instance().fatal(LOG_ARGS)
-#define LogError MAA_LOG_NS::Logger::get_instance().error(LOG_ARGS)
-#define LogWarn MAA_LOG_NS::Logger::get_instance().warn(LOG_ARGS)
-#define LogInfo MAA_LOG_NS::Logger::get_instance().info(LOG_ARGS)
-#define LogDebug MAA_LOG_NS::Logger::get_instance().debug(LOG_ARGS)
-#define LogTrace MAA_LOG_NS::Logger::get_instance().trace(LOG_ARGS)
-
-#define LogFunc                                                   \
-    MAA_LOG_NS::LogScopeLeaveHelper ScopeHelperVarName(LOG_ARGS); \
-    MAA_LOG_NS::LogScopeEnterHelper(LOG_ARGS)()
+#define LogFunc                                         \
+    MAA_LOG_NS::LogScopeLeaveHelper ScopeHelperVarName; \
+    MAA_LOG_NS::LogScopeEnterHelper()()
 
 #define VAR_RAW(x) "[" << #x << "=" << (x) << "] "
 #define VAR(x) MAA_LOG_NS::separator::none << VAR_RAW(x) << MAA_LOG_NS::separator::space
