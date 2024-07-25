@@ -48,7 +48,7 @@ extern "C"
      * @return MaaBool
      */
     MAA_FRAMEWORK_API MaaBool MaaRegisterCustomRecognizer(
-        MaaResourceHandle inst,
+        MaaResourceHandle res,
         MaaStringView name,
         MaaCustomRecognizerHandle recognizer,
         MaaTransparentArg recognizer_arg);
@@ -61,7 +61,7 @@ extern "C"
      * @return MaaBool
      */
     MAA_FRAMEWORK_API MaaBool
-        MaaUnregisterCustomRecognizer(MaaResourceHandle inst, MaaStringView name);
+        MaaUnregisterCustomRecognizer(MaaResourceHandle res, MaaStringView name);
 
     /**
      * @brief Clear all custom recognizers registered to the instance.
@@ -69,7 +69,7 @@ extern "C"
      * @param res
      * @return MaaBool
      */
-    MAA_FRAMEWORK_API MaaBool MaaClearCustomRecognizer(MaaResourceHandle inst);
+    MAA_FRAMEWORK_API MaaBool MaaClearCustomRecognizer(MaaResourceHandle res);
 
     /**
      * @brief Register a custom action to the instance.
@@ -83,7 +83,7 @@ extern "C"
      * @return MaaBool
      */
     MAA_FRAMEWORK_API MaaBool MaaRegisterCustomAction(
-        MaaResourceHandle inst,
+        MaaResourceHandle res,
         MaaStringView name,
         MaaCustomActionHandle action,
         MaaTransparentArg action_arg);
@@ -95,7 +95,7 @@ extern "C"
      * @param name The name of the action when it was registered.
      * @return MaaBool
      */
-    MAA_FRAMEWORK_API MaaBool MaaUnregisterCustomAction(MaaResourceHandle inst, MaaStringView name);
+    MAA_FRAMEWORK_API MaaBool MaaUnregisterCustomAction(MaaResourceHandle res, MaaStringView name);
 
     /**
      * @brief Clear all custom actions registered to the instance.
@@ -103,7 +103,7 @@ extern "C"
      * @param res
      * @return MaaBool
      */
-    MAA_FRAMEWORK_API MaaBool MaaClearCustomAction(MaaResourceHandle inst);
+    MAA_FRAMEWORK_API MaaBool MaaClearCustomAction(MaaResourceHandle res);
 
     /**
      * @brief Add a path to the resource loading paths
