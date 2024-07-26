@@ -3,6 +3,7 @@
 #pragma once
 
 #include <memory>
+#include <mutex>
 #include <string>
 
 #include <MaaFramework/MaaAPI.h>
@@ -13,6 +14,8 @@
 #include "MaaPP/maa/Image.hpp"
 #include "MaaPP/maa/Type.hpp"
 #include "MaaPP/maa/details/String.hpp"
+
+// TODO: yield instead of block
 
 namespace maa
 {
@@ -26,6 +29,7 @@ public:
     maa::coro::Promise<bool> run_task(std::string task_name, json::object param = {})
     {
         return maa::coro::EventLoop::current()->eval([this, task_name, param]() {
+            std::unique_lock<std::mutex> lock(mtx_);
             return !!MaaSyncContextRunTask(handle_, task_name.c_str(), param.to_string().c_str());
         });
     }
@@ -36,6 +40,7 @@ public:
         json::object param = {})
     {
         return maa::coro::EventLoop::current()->eval([this, img, task_name, param] {
+            std::unique_lock<std::mutex> lock(mtx_);
             AnalyzeResult result;
             details::String buffer;
             result.result = MaaSyncContextRunRecognition(
@@ -56,8 +61,10 @@ public:
         std::string task_name,
         json::object param = {})
     {
+        std::unique_lock<std::mutex> lock(mtx_);
         return maa::coro::EventLoop::current()->eval(
             [this, rec_box, rec_details, task_name, param] {
+                std::unique_lock<std::mutex> lock(mtx_);
                 return !!MaaSyncContextRunAction(
                     handle_,
                     task_name.c_str(),
@@ -69,32 +76,40 @@ public:
 
     maa::coro::Promise<bool> click(int32_t x, int32_t y)
     {
-        return maa::coro::EventLoop::current()->eval(
-            [this, x, y]() { return !!MaaSyncContextClick(handle_, x, y); });
+        return maa::coro::EventLoop::current()->eval([this, x, y]() {
+            std::unique_lock<std::mutex> lock(mtx_);
+            return !!MaaSyncContextClick(handle_, x, y);
+        });
     }
 
     maa::coro::Promise<bool> swipe(int32_t x1, int32_t y1, int32_t x2, int32_t y2, int32_t duration)
     {
         return maa::coro::EventLoop::current()->eval([this, x1, y1, x2, y2, duration]() {
+            std::unique_lock<std::mutex> lock(mtx_);
             return !!MaaSyncContextSwipe(handle_, x1, y1, x2, y2, duration);
         });
     }
 
     maa::coro::Promise<bool> press_key(int32_t key)
     {
-        return maa::coro::EventLoop::current()->eval(
-            [this, key]() { return !!MaaSyncContextPressKey(handle_, key); });
+        return maa::coro::EventLoop::current()->eval([this, key]() {
+            std::unique_lock<std::mutex> lock(mtx_);
+            return !!MaaSyncContextPressKey(handle_, key);
+        });
     }
 
     maa::coro::Promise<bool> press_key(std::string text)
     {
-        return maa::coro::EventLoop::current()->eval(
-            [this, text]() { return !!MaaSyncContextInputText(handle_, text.c_str()); });
+        return maa::coro::EventLoop::current()->eval([this, text]() {
+            std::unique_lock<std::mutex> lock(mtx_);
+            return !!MaaSyncContextInputText(handle_, text.c_str());
+        });
     }
 
     maa::coro::Promise<bool> touch_down(int32_t contact, int32_t x, int32_t y, int32_t pressure)
     {
         return maa::coro::EventLoop::current()->eval([this, contact, x, y, pressure]() {
+            std::unique_lock<std::mutex> lock(mtx_);
             return !!MaaSyncContextTouchDown(handle_, contact, x, y, pressure);
         });
     }
@@ -102,26 +117,33 @@ public:
     maa::coro::Promise<bool> touch_move(int32_t contact, int32_t x, int32_t y, int32_t pressure)
     {
         return maa::coro::EventLoop::current()->eval([this, contact, x, y, pressure]() {
+            std::unique_lock<std::mutex> lock(mtx_);
             return !!MaaSyncContextTouchMove(handle_, contact, x, y, pressure);
         });
     }
 
     maa::coro::Promise<bool> touch_up(int32_t contact)
     {
-        return maa::coro::EventLoop::current()->eval(
-            [this, contact]() { return !!MaaSyncContextTouchUp(handle_, contact); });
+        return maa::coro::EventLoop::current()->eval([this, contact]() {
+            std::unique_lock<std::mutex> lock(mtx_);
+            return !!MaaSyncContextTouchUp(handle_, contact);
+        });
     }
 
     maa::coro::Promise<bool> screencap(std::shared_ptr<details::Image> image)
     {
-        return maa::coro::EventLoop::current()->eval(
-            [this, image]() { return !!MaaSyncContextScreencap(handle_, image->handle()); });
+        return maa::coro::EventLoop::current()->eval([this, image]() {
+            std::unique_lock<std::mutex> lock(mtx_);
+            return !!MaaSyncContextScreencap(handle_, image->handle());
+        });
     }
 
     maa::coro::Promise<bool> cached_image(std::shared_ptr<details::Image> image)
     {
-        return maa::coro::EventLoop::current()->eval(
-            [this, image]() { return !!MaaSyncContextCachedImage(handle_, image->handle()); });
+        return maa::coro::EventLoop::current()->eval([this, image]() {
+            std::unique_lock<std::mutex> lock(mtx_);
+            return !!MaaSyncContextCachedImage(handle_, image->handle());
+        });
     }
 
 private:
@@ -133,6 +155,7 @@ private:
     }
 
     MaaSyncContextHandle handle_;
+    std::mutex mtx_;
 };
 
 }
