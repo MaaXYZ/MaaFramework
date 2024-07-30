@@ -144,7 +144,7 @@ _请留意，仅当您准备开发 MaaFramework 本身时，才需要阅读本�
 
 ## 赞助
 
-<a href="https://afdian.net/a/misteo">
+<a href="https://afdian.com/a/misteo">
   <img width="200" src="https://pic1.afdiancdn.com/static/img/welcome/button-sponsorme.png">
 </a>
 
