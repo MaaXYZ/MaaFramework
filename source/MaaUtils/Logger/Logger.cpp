@@ -155,7 +155,20 @@ void Logger::open()
     if (ofs_.is_open()) {
         ofs_.close();
     }
+
+#ifdef _WIN32
+
+    // https://stackoverflow.com/questions/55513974/controlling-inheritability-of-file-handles-created-by-c-stdfstream-in-window
+    std::string str_log_path = log_path_.string();
+    FILE* file_ptr = fopen(str_log_path.c_str(), "a");
+    SetHandleInformation((HANDLE)_get_osfhandle(_fileno(file_ptr)), HANDLE_FLAG_INHERIT, 0);
+    ofs_ = std::ofstream(file_ptr);
+
+#else
+
     ofs_ = std::ofstream(log_path_, std::ios::out | std::ios::app);
+
+#endif
 }
 
 void Logger::close()
