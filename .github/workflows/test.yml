@@ -258,8 +258,7 @@ jobs:
 
       - name: Install compiler
         run: |
-          brew install llvm@17
-        # 17
+          brew install llvm
 
       - name: Bootstrap MaaDeps
         env:
@@ -270,8 +269,9 @@ jobs:
       - name: Build MAA for x86_64
         if: ${{ matrix.arch == 'x86_64' }}
         env:
-          CC: "/usr/local/opt/llvm@17/bin/clang"
-          CXX: "/usr/local/opt/llvm@17/bin/clang++"
+          CC: "/usr/local/opt/llvm/bin/clang"
+          CXX: "/usr/local/opt/llvm/bin/clang++"
+          LDFLAGS: "/opt/homebrew/opt/llvm/lib/c++"
         run: |
           cmake --preset 'NinjaMulti' \
             -DMAADEPS_TRIPLET='maa-${{ matrix.arch == 'x86_64' && 'x64' || 'arm64' }}-osx' \
@@ -283,8 +283,9 @@ jobs:
       - name: Build MAA for aarch64
         if: ${{ matrix.arch == 'aarch64' }}
         env:
-          CC: "/opt/homebrew/opt/llvm@17/bin/clang"
-          CXX: "/opt/homebrew/opt/llvm@17/bin/clang++"
+          CC: "/opt/homebrew/opt/llvm/bin/clang"
+          CXX: "/opt/homebrew/opt/llvm/bin/clang++"
+          LDFLAGS: "/opt/homebrew/opt/llvm/lib/c++"
         run: |
           cmake --preset 'NinjaMulti' \
             -DMAADEPS_TRIPLET='maa-${{ matrix.arch == 'x86_64' && 'x64' || 'arm64' }}-osx' \
