@@ -1,5 +1,6 @@
 #include "Utils/Codec.h"
 
+#include <cstdint>
 #include <string>
 
 MAA_NS_BEGIN
@@ -103,6 +104,7 @@ static constexpr inline bool
         else {
             ch = static_cast<wchar_t>(leading & 0b1111'1111'1111'1111);
         }
+        return true;
     }
     else {
         ch = static_cast<char32_t>(*cur++);
