@@ -29,6 +29,20 @@ else()
         add_compile_options("-Wno-restrict")
     endif()
 
+    if(CMAKE_CXX_COMPILER_ID MATCHES "Clang" AND CMAKE_CXX_COMPILER_VERSION VERSION_GREATER_EQUAL 18)
+        set(MAC_CLANG_FIX_LINK
+            "/opt/local/libexec/llvm-18/lib/libc++" # mac port
+            "/usr/local/opt/llvm/lib/c++" # brew mac 13.*
+            "/opt/homebrew/opt/llvm/lib/c++" # brew mac 14.*
+        )
+
+        foreach(DIR ${MAC_CLANG_FIX_LINK})
+            if(IS_DIRECTORY ${DIR})
+                add_link_options("-L${DIR}")
+            endif()
+        endforeach()
+    endif()
+
     set(rel_debug_comp_options "-O0")
     add_compile_options("$<$<CONFIG:DebWithRelDeps>:${rel_debug_comp_options}>")
 endif()
