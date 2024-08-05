@@ -1,0 +1,6 @@
+    <id>Maa.Framework.Runtime.osx-x64</id>
+    <title>MAA Framework Runtime for osx-x64</title>
+    <description>Native binaries of MAA Framework Embedded for osx-x64.</description>
+  </metadata>
+  <files>
+    <file src="$root_path$\assets\MAA-macos-x86_64\bin\**" target="runtimes\osx-x64\native" />

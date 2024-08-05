@@ -254,9 +254,6 @@ jobs:
   nuget_pack:
     needs: [meta, windows, ubuntu, macos]
     runs-on: ubuntu-latest
-    env:
-      NUGET_PACKAGE_ID: Maa.Framework.Runtimes # need ${{ secrets.NuGetAPIKey }}
-
     steps:
       - uses: nuget/setup-nuget@v1
 
@@ -268,10 +265,15 @@ jobs:
       - name: Nuget Pack
         working-directory: tools/nupkgs
         run: |
+          wget https://raw.githubusercontent.com/MaaAssistantArknights/design/main/logo/maa-logo_128x128.png
           version=${{ needs.meta.outputs.version }}
-          nuget pack Maa.Framework.Runtimes.nuspec \
-            -Verbosity detailed \
-            -Properties "id=$NUGET_PACKAGE_ID;version=${version//-post/};year=$(date +%Y);branch=$(git rev-parse --abbrev-ref HEAD);commit=$(git rev-parse HEAD);root_path=../.."
+          for NUSPEC in Maa.Framework.Runtime*.nuspec; do
+            cat Head.nuspec $NUSPEC Tail.nuspec > temp && mv temp $NUSPEC
+
+            nuget pack $NUSPEC \
+              -Verbosity detailed \
+              -Properties "version=${version//-post/};year=$(date +%Y);branch=$(git rev-parse --abbrev-ref HEAD);commit=$(git rev-parse HEAD);root_path=../.."
+          done
 
       - uses: actions/upload-artifact@v3
         if: always()

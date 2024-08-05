@@ -1,0 +1,6 @@
+    <id>Maa.Framework.Runtime.linux-x64</id>
+    <title>MAA Framework Runtime for linux-x64</title>
+    <description>Native binaries of MAA Framework Embedded for linux-x64.</description>
+  </metadata>
+  <files>
+    <file src="$root_path$\assets\MAA-linux-x86_64\bin\**" target="runtimes\linux-x64\native" />
