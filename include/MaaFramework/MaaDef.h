@@ -225,13 +225,6 @@ const MaaDbgControllerType MaaDbgControllerType_Invalid = 0;
 const MaaDbgControllerType MaaDbgControllerType_CarouselImage = 1;
 const MaaDbgControllerType MaaDbgControllerType_ReplayRecording = 2;
 
-// MaaThriftControllerType:
-// No bitwise OR, just set it
-typedef int32_t MaaThriftControllerType;
-const MaaThriftControllerType MaaThriftControllerType_Invalid = 0;
-const MaaThriftControllerType MaaThriftControllerType_Socket = 1;
-const MaaThriftControllerType MaaThriftControllerType_UnixDomainSocket = 2;
-
 typedef void* MaaWin32Hwnd;
 typedef void* MaaTransparentArg;
 typedef MaaTransparentArg MaaCallbackTransparentArg;

@@ -75,14 +75,6 @@ extern "C"
         MaaControllerCallback callback,
         MaaCallbackTransparentArg callback_arg);
 
-    MAA_FRAMEWORK_API MaaControllerHandle MaaThriftControllerCreate(
-        MaaThriftControllerType type,
-        MaaStringView host,
-        int32_t port,
-        MaaStringView config,
-        MaaControllerCallback callback,
-        MaaCallbackTransparentArg callback_arg);
-
     MAA_FRAMEWORK_API MaaControllerHandle MaaDbgControllerCreate(
         MaaStringView read_path,
         MaaStringView write_path,

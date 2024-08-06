@@ -313,16 +313,6 @@ class _Framework:
         callback: MaaControllerCallback,
         callback_arg: MaaCallbackTransparentArg,
     ) -> MaaControllerHandle: ...
-    # ThriftController
-    @staticmethod
-    def MaaThriftControllerCreate(
-        type: MaaThriftControllerType,
-        host: MaaStringView,
-        port: c_int32,
-        config: MaaStringView,
-        callback: MaaControllerCallback,
-        callback_arg: MaaCallbackTransparentArg,
-    ) -> MaaControllerHandle: ...
     # CustomContorller
     @staticmethod
     def MaaCustomControllerCreate(

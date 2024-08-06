@@ -126,8 +126,8 @@ _Please note that you only need to read this chapter if you are ready to develop
   ~~Protocol Buffers - Google's data interchange format~~
 - ~~[grpc](https://github.com/grpc/grpc)~~  
   ~~The C based gRPC (C++, Python, Ruby, Objective-C, PHP, C#)~~
-- [thrift](https://github.com/apache/thrift)  
-  Apache Thrift
+- ~~[thrift](https://github.com/apache/thrift)~~  
+  ~~Apache Thrift~~
 
 ### Developers
 

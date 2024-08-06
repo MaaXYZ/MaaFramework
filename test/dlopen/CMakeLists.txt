@@ -20,10 +20,6 @@ if(WITH_WIN32_CONTROLLER)
     target_compile_definitions(DlopenTesting PRIVATE WITH_WIN32_CONTROLLER)
 endif()
 
-if(WITH_THRIFT_CONTROLLER)
-    target_compile_definitions(DlopenTesting PRIVATE WITH_THRIFT_CONTROLLER)
-endif()
-
 if(WITH_DBG_CONTROLLER)
     target_compile_definitions(DlopenTesting PRIVATE WITH_DBG_CONTROLLER)
 endif()

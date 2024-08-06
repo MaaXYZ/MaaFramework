@@ -110,30 +110,6 @@ MaaControllerHandle MaaCustomControllerCreate(
     return new MAA_CTRL_NS::CustomControllerAgent(handle, handle_arg, callback, callback_arg);
 }
 
-MaaControllerHandle MaaThriftControllerCreate(
-    MaaThriftControllerType type,
-    MaaStringView host,
-    int32_t port,
-    MaaStringView config,
-    MaaControllerCallback callback,
-    MaaCallbackTransparentArg callback_arg)
-{
-    LogFunc << VAR(type) << VAR(host) << VAR(type) << VAR(port) << VAR_VOIDP(callback)
-            << VAR_VOIDP(callback_arg);
-
-    std::ignore = config;
-
-    auto control_unit =
-        MAA_NS::ThriftControlUnitLibraryHolder::create_control_unit(type, host, port, config);
-
-    if (!control_unit) {
-        LogError << "Failed to create control unit";
-        return nullptr;
-    }
-
-    return new MAA_CTRL_NS::GeneralControllerAgent(std::move(control_unit), callback, callback_arg);
-}
-
 MaaControllerHandle MaaDbgControllerCreate(
     MaaStringView read_path,
     MaaStringView write_path,

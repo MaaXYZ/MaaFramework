@@ -127,8 +127,8 @@ _请留意，仅当您准备开发 MaaFramework 本身时，才需要阅读本�
   ~~Protocol Buffers - Google's data interchange format~~
 - ~~[grpc](https://github.com/grpc/grpc)~~  
   ~~The C based gRPC (C++, Python, Ruby, Objective-C, PHP, C#)~~
-- [thrift](https://github.com/apache/thrift)  
-  Apache Thrift
+- ~~[thrift](https://github.com/apache/thrift)~~  
+  ~~Apache Thrift~~
 
 ### 开发者
 

@@ -40,20 +40,6 @@ int main()
     }
 #endif
 
-#ifdef WITH_THRIFT_CONTROLLER
-    std::cout << "********** ThriftControlUnitLibraryHolder::create_control_unit **********"
-              << std::endl;
-    auto thrift_handle = MAA_NS::ThriftControlUnitLibraryHolder::create_control_unit(
-        MaaThriftControllerType_Socket,
-        "127.0.0.1",
-        8080,
-        "{}");
-    if (!thrift_handle) {
-        std::cerr << "Failed to create thrift control unit" << std::endl;
-        return -1;
-    }
-#endif
-
 #ifdef WITH_DBG_CONTROLLER
     std::cout << "********** DbgControlUnitLibraryHolder::create_control_unit **********"
               << std::endl;
