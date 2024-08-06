@@ -11,7 +11,7 @@ public:
 
     virtual ~MinicapDirect() override;
 
-public: // from ScreencapAPI
+public: // from ScreencapBase
     virtual bool init() override;
     virtual void deinit() override;
 

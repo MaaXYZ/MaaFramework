@@ -13,8 +13,8 @@ AlignConsecutiveMacros: None
 AlignEscapedNewlines: Left
 AlignOperands: Align
 AlignTrailingComments:
-  Kind: Always
-  OverEmptyLines: 1
+    Kind: Always
+    OverEmptyLines: 1
 AllowAllArgumentsOnNextLine: false
 AllowAllParametersOfDeclarationOnNextLine: false
 AllowShortBlocksOnASingleLine: Never
@@ -38,24 +38,24 @@ BinPackArguments: false
 BinPackParameters: false
 BitFieldColonSpacing: After
 BraceWrapping:
-  AfterCaseLabel: false
-  AfterClass: true
-  AfterControlStatement: Never
-  AfterEnum: true
-  AfterFunction: true
-  AfterNamespace: true
-  # AfterObjCDeclaration: true
-  AfterStruct: true
-  AfterUnion: true
-  AfterExternBlock: true
-  BeforeCatch: true
-  BeforeElse: true
-  BeforeLambdaBody: false
-  BeforeWhile: false
-  IndentBraces: false
-  SplitEmptyFunction: true
-  SplitEmptyRecord: true
-  SplitEmptyNamespace: true
+    AfterCaseLabel: false
+    AfterClass: true
+    AfterControlStatement: Never
+    AfterEnum: true
+    AfterFunction: true
+    AfterNamespace: true
+    # AfterObjCDeclaration: true
+    AfterStruct: true
+    AfterUnion: true
+    AfterExternBlock: true
+    BeforeCatch: true
+    BeforeElse: true
+    BeforeLambdaBody: false
+    BeforeWhile: false
+    IndentBraces: false
+    SplitEmptyFunction: true
+    SplitEmptyRecord: true
+    SplitEmptyNamespace: true
 # BracedInitializerIndentWidth: 4
 BreakAfterAttributes: Never
 BreakAfterJavaFieldAnnotations: true
@@ -68,7 +68,7 @@ BreakBeforeTernaryOperators: true
 BreakConstructorInitializers: BeforeComma
 BreakInheritanceList: BeforeComma
 BreakStringLiterals: true
-ColumnLimit: 100
+ColumnLimit: 140
 # CommentPragmas: '^ MEO pragma:'
 CompactNamespaces: false
 ConstructorInitializerIndentWidth: 4
@@ -103,11 +103,11 @@ InsertBraces: true
 InsertNewlineAtEOF: true
 InsertTrailingCommas: Wrapped
 IntegerLiteralSeparator:
-  Binary: 4
-  BinaryMinDigits: 9
-  Decimal: 3
-  DecimalMinDigits: 7
-  Hex: -1
+    Binary: 4
+    BinaryMinDigits: 9
+    Decimal: 3
+    DecimalMinDigits: 7
+    Hex: -1
 # JavaImportGroups:
 # JavaScriptQuotes:
 # JavaScriptWrapImports:
@@ -175,8 +175,8 @@ SpacesBeforeTrailingComments: 1
 SpacesInAngles: Never
 SpacesInContainerLiterals: true
 SpacesInLineCommentPrefix:
-  Minimum: 1
-  Maximum: -1
+    Minimum: 1
+    Maximum: -1
 SpacesInParens: Never
 SpacesInSquareBrackets: false
 Standard: c++20

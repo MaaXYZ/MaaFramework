@@ -1,32 +1,35 @@
 #pragma once
 
+#include <unordered_set>
+
 #include "Base/UnitBase.h"
 
 MAA_CTRL_UNIT_NS_BEGIN
 
-class ScreencapFastestWay : public ScreencapBase
+class ScreencapManager : public ScreencapBase
 {
 public:
     enum class Method
     {
         UnknownYet,
-        RawByNetcat,
-        RawWithGzip,
-        Encode,
         EncodeToFileAndPull,
+        Encode,
+        RawWithGzip,
+        RawByNetcat,
         MinicapDirect,
         MinicapStream,
         MumuExternalRendererIpc,
     };
+    using MethodSet = std::unordered_set<Method>;
 
 public:
-    ScreencapFastestWay(const std::filesystem::path& minicap_path, bool lossless);
-    virtual ~ScreencapFastestWay() override = default;
+    ScreencapManager(const MethodSet& screencap_methods, const std::filesystem::path& agent_path);
+    virtual ~ScreencapManager() override = default;
 
 public: // from UnitBase
     virtual bool parse(const json::value& config) override;
 
-public: // from ScreencapAPI
+public: // from ScreencapBase
     virtual bool init() override;
     virtual void deinit() override;
 
@@ -39,6 +42,6 @@ private:
     Method method_ = Method::UnknownYet;
 };
 
-std::ostream& operator<<(std::ostream& os, ScreencapFastestWay::Method m);
+std::ostream& operator<<(std::ostream& os, ScreencapManager::Method m);
 
 MAA_CTRL_UNIT_NS_END

@@ -17,10 +17,10 @@ public:
 protected:
 };
 
-class TouchInputBase
+class InputBase
 {
 public:
-    virtual ~TouchInputBase() = default;
+    virtual ~InputBase() = default;
 
 public:
     virtual bool click(int x, int y) = 0;

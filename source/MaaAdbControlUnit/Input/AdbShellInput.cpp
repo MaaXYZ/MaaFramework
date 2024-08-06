@@ -1,10 +1,10 @@
-#include "AdbInput.h"
+#include "AdbShellInput.h"
 
 #include "Utils/Logger.h"
 
 MAA_CTRL_UNIT_NS_BEGIN
 
-bool AdbTapInput::parse(const json::value& config)
+bool AdbShellInput::parse(const json::value& config)
 {
     static const json::array kDefaultClickArgv = {
         "{ADB}", "-s", "{ADB_SERIAL}", "shell", "input tap {X} {Y}",
@@ -12,12 +12,19 @@ bool AdbTapInput::parse(const json::value& config)
     static const json::array kDefaultSwipeArgv = {
         "{ADB}", "-s", "{ADB_SERIAL}", "shell", "input swipe {X1} {Y1} {X2} {Y2} {DURATION}",
     };
+    static const json::array kDefaultPressKeyArgv = {
+        "{ADB}", "-s", "{ADB_SERIAL}", "shell", "input keyevent {KEY}",
+    };
+    static const json::array kDefaultInputTextArgv = {
+        "{ADB}", "-s", "{ADB_SERIAL}", "shell", "input text '{TEXT}'",
+    };
 
-    return parse_command("Click", config, kDefaultClickArgv, click_argv_)
-           && parse_command("Swipe", config, kDefaultSwipeArgv, swipe_argv_);
+    return parse_command("Click", config, kDefaultClickArgv, click_argv_) && parse_command("Swipe", config, kDefaultSwipeArgv, swipe_argv_)
+           && parse_command("PressKey", config, kDefaultPressKeyArgv, press_key_argv_)
+           && parse_command("InputText", config, kDefaultInputTextArgv, input_text_argv_);
 }
 
-bool AdbTapInput::click(int x, int y)
+bool AdbShellInput::click(int x, int y)
 {
     LogInfo << VAR(x) << VAR(y);
 
@@ -32,7 +39,7 @@ bool AdbTapInput::click(int x, int y)
     return output_opt && output_opt->empty();
 }
 
-bool AdbTapInput::swipe(int x1, int y1, int x2, int y2, int duration)
+bool AdbShellInput::swipe(int x1, int y1, int x2, int y2, int duration)
 {
     LogInfo << VAR(x1) << VAR(y1) << VAR(x2) << VAR(y2) << VAR(duration);
 
@@ -52,38 +59,25 @@ bool AdbTapInput::swipe(int x1, int y1, int x2, int y2, int duration)
     return output_opt && output_opt->empty();
 }
 
-bool AdbTapInput::touch_down(int contact, int x, int y, int pressure)
+bool AdbShellInput::touch_down(int contact, int x, int y, int pressure)
 {
-    LogError << "AdbTapInput not supports" << VAR(contact) << VAR(x) << VAR(y) << VAR(pressure);
+    LogError << "AdbShellInput not supports" << VAR(contact) << VAR(x) << VAR(y) << VAR(pressure);
     return false;
 }
 
-bool AdbTapInput::touch_move(int contact, int x, int y, int pressure)
+bool AdbShellInput::touch_move(int contact, int x, int y, int pressure)
 {
-    LogError << "AdbTapInput not supports" << VAR(contact) << VAR(x) << VAR(y) << VAR(pressure);
+    LogError << "AdbShellInput not supports" << VAR(contact) << VAR(x) << VAR(y) << VAR(pressure);
     return false;
 }
 
-bool AdbTapInput::touch_up(int contact)
+bool AdbShellInput::touch_up(int contact)
 {
-    LogError << "AdbTapInput not supports" << VAR(contact);
+    LogError << "AdbShellInput not supports" << VAR(contact);
     return false;
 }
 
-bool AdbKeyInput::parse(const json::value& config)
-{
-    static const json::array kDefaultPressKeyArgv = {
-        "{ADB}", "-s", "{ADB_SERIAL}", "shell", "input keyevent {KEY}",
-    };
-    static const json::array kDefaultInputTextArgv = {
-        "{ADB}", "-s", "{ADB_SERIAL}", "shell", "input text '{TEXT}'",
-    };
-
-    return parse_command("PressKey", config, kDefaultPressKeyArgv, press_key_argv_)
-           && parse_command("InputText", config, kDefaultInputTextArgv, input_text_argv_);
-}
-
-bool AdbKeyInput::press_key(int key)
+bool AdbShellInput::press_key(int key)
 {
     LogInfo << VAR(key);
 
@@ -98,7 +92,7 @@ bool AdbKeyInput::press_key(int key)
     return output_opt && output_opt->empty();
 }
 
-bool AdbKeyInput::input_text(const std::string& text)
+bool AdbShellInput::input_text(const std::string& text)
 {
     LogInfo << VAR(text);
 

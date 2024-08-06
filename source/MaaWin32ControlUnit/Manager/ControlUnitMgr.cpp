@@ -8,10 +8,7 @@
 
 MAA_CTRL_UNIT_NS_BEGIN
 
-ControlUnitMgr::ControlUnitMgr(
-    HWND hWnd,
-    MaaControllerCallback callback,
-    MaaCallbackTransparentArg callback_arg)
+ControlUnitMgr::ControlUnitMgr(HWND hWnd, MaaControllerCallback callback, MaaCallbackTransparentArg callback_arg)
     : hwnd_(hWnd)
     , notifier(callback, callback_arg)
 {
@@ -25,12 +22,9 @@ bool ControlUnitMgr::find_device(std::vector<std::string>& devices)
     return true;
 }
 
-void ControlUnitMgr::init(
-    std::shared_ptr<TouchInputBase> touch,
-    std::shared_ptr<KeyInputBase> key,
-    std::shared_ptr<ScreencapBase> screencap)
+void ControlUnitMgr::init(std::shared_ptr<InputBase> touch, std::shared_ptr<KeyInputBase> key, std::shared_ptr<ScreencapBase> screencap)
 {
-    touch_input_ = std::move(touch);
+    input_ = std::move(touch);
     key_input_ = std::move(key);
     screencap_ = std::move(screencap);
 }
@@ -105,52 +99,52 @@ bool ControlUnitMgr::screencap(cv::Mat& image)
 
 bool ControlUnitMgr::click(int x, int y)
 {
-    if (!touch_input_) {
-        LogError << "touch_input_ is null";
+    if (!input_) {
+        LogError << "input_ is null";
         return false;
     }
 
-    return touch_input_->click(x, y);
+    return input_->click(x, y);
 }
 
 bool ControlUnitMgr::swipe(int x1, int y1, int x2, int y2, int duration)
 {
-    if (!touch_input_) {
-        LogError << "touch_input_ is null";
+    if (!input_) {
+        LogError << "input_ is null";
         return false;
     }
 
-    return touch_input_->swipe(x1, y1, x2, y2, duration);
+    return input_->swipe(x1, y1, x2, y2, duration);
 }
 
 bool ControlUnitMgr::touch_down(int contact, int x, int y, int pressure)
 {
-    if (!touch_input_) {
-        LogError << "touch_input_ is null";
+    if (!input_) {
+        LogError << "input_ is null";
         return false;
     }
 
-    return touch_input_->touch_down(contact, x, y, pressure);
+    return input_->touch_down(contact, x, y, pressure);
 }
 
 bool ControlUnitMgr::touch_move(int contact, int x, int y, int pressure)
 {
-    if (!touch_input_) {
-        LogError << "touch_input_ is null";
+    if (!input_) {
+        LogError << "input_ is null";
         return false;
     }
 
-    return touch_input_->touch_move(contact, x, y, pressure);
+    return input_->touch_move(contact, x, y, pressure);
 }
 
 bool ControlUnitMgr::touch_up(int contact)
 {
-    if (!touch_input_) {
-        LogError << "touch_input_ is null";
+    if (!input_) {
+        LogError << "input_ is null";
         return false;
     }
 
-    return touch_input_->touch_up(contact);
+    return input_->touch_up(contact);
 }
 
 bool ControlUnitMgr::press_key(int key)

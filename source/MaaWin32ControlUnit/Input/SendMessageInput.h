@@ -8,7 +8,7 @@
 MAA_CTRL_UNIT_NS_BEGIN
 
 class SendMessageInput
-    : public TouchInputBase
+    : public InputBase
     , public KeyInputBase
 {
 public:
@@ -19,7 +19,7 @@ public:
 
     virtual ~SendMessageInput() override = default;
 
-public: // from TouchInputBase
+public: // from InputBase
     virtual bool click(int x, int y) override;
     virtual bool swipe(int x1, int y1, int x2, int y2, int duration) override;
 

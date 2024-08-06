@@ -4,15 +4,15 @@
 
 MAA_CTRL_UNIT_NS_BEGIN
 
-class AdbTapInput : public TouchInputBase
+class AdbShellInput : public InputBase
 {
 public:
-    virtual ~AdbTapInput() override = default;
+    virtual ~AdbShellInput() override = default;
 
 public: // from UnitBase
     virtual bool parse(const json::value& config) override;
 
-public: // from TouchInputAPI
+public: // from InputBase
     virtual bool init() override { return true; }
 
     virtual void deinit() override {}
@@ -24,28 +24,13 @@ public: // from TouchInputAPI
     virtual bool touch_move(int contact, int x, int y, int pressure) override;
     virtual bool touch_up(int contact) override;
 
-private:
-    ProcessArgvGenerator click_argv_;
-    ProcessArgvGenerator swipe_argv_;
-};
-
-class AdbKeyInput : public KeyInputBase
-{
-public:
-    virtual ~AdbKeyInput() override = default;
-
-public: // from UnitBase
-    virtual bool parse(const json::value& config) override;
-
-public: // from KeyInputAPI
-    virtual bool init() override { return true; }
-
-    virtual void deinit() override {}
-
     virtual bool press_key(int key) override;
     virtual bool input_text(const std::string& text) override;
 
 private:
+    ProcessArgvGenerator click_argv_;
+    ProcessArgvGenerator swipe_argv_;
+
     ProcessArgvGenerator press_key_argv_;
     ProcessArgvGenerator input_text_argv_;
 };

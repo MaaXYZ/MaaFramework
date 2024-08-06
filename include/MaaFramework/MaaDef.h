@@ -179,7 +179,7 @@ enum MaaInstOptionEnum
 // one.
 typedef uint64_t MaaAdbScreencapMethod;
 const MaaAdbScreencapMethod MaaAdbScreencapMethod_None = 0ULL;
-const MaaAdbScreencapMethod MaaAdbScreencapMethod_EncodeToFile = 1ULL;
+const MaaAdbScreencapMethod MaaAdbScreencapMethod_EncodeToFileAndPull = 1ULL;
 const MaaAdbScreencapMethod MaaAdbScreencapMethod_Encode = 1ULL << 1;
 const MaaAdbScreencapMethod MaaAdbScreencapMethod_RawWithGzip = 1ULL << 2;
 const MaaAdbScreencapMethod MaaAdbScreencapMethod_RawByNetcat = 1ULL << 3;
@@ -229,10 +229,27 @@ typedef void* MaaWin32Hwnd;
 typedef void* MaaTransparentArg;
 typedef MaaTransparentArg MaaCallbackTransparentArg;
 
-typedef void (*MaaNotificationCallback)(
-    MaaStringView message,
-    MaaStringView details_json,
-    MaaTransparentArg callback_arg);
+struct MaaSyncContextAPI;
+typedef struct MaaSyncContextAPI* MaaSyncContextHandle;
+
+#ifdef __cplusplus
+extern "C"
+{
+#endif
+
+    typedef struct MaaRect
+    {
+        int32_t x;
+        int32_t y;
+        int32_t width;
+        int32_t height;
+    }* MaaRectHandle;
+
+#ifdef __cplusplus
+}
+#endif
+
+typedef void (*MaaNotificationCallback)(MaaStringView message, MaaStringView details_json, MaaTransparentArg callback_arg);
 
 typedef MaaBool (*MaaCustomRecognizerCallback)(
     MaaSyncContextHandle sync_context,
@@ -256,23 +273,3 @@ typedef MaaBool (*MaaCustomActionCallback)(
 
 struct MaaCustomControllerCallbacks;
 typedef struct MaaCustomControllerCallbacks* MaaCustomControllerCallbacksHandle;
-
-struct MaaSyncContextAPI;
-typedef struct MaaSyncContextAPI* MaaSyncContextHandle;
-
-#ifdef __cplusplus
-extern "C"
-{
-#endif
-
-    typedef struct MaaRect
-    {
-        int32_t x;
-        int32_t y;
-        int32_t width;
-        int32_t height;
-    }* MaaRectHandle;
-
-#ifdef __cplusplus
-}
-#endif

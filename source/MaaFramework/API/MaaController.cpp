@@ -11,35 +11,15 @@
 MaaControllerHandle MaaAdbControllerCreate(
     MaaStringView adb_path,
     MaaStringView address,
-    MaaAdbControllerType type,
-    MaaStringView config,
-    MaaControllerCallback callback,
-    MaaCallbackTransparentArg callback_arg)
-{
-    LogWarn << __FUNCTION__ << "is deprecated, use MaaAdbControllerCreateV2 instead.";
-
-    constexpr std::string_view kDefaultAgentPath = "./MaaAgentBinary";
-    return MaaAdbControllerCreateV2(
-        adb_path,
-        address,
-        type,
-        config,
-        kDefaultAgentPath.data(),
-        callback,
-        callback_arg);
-}
-
-MaaControllerHandle MaaAdbControllerCreateV2(
-    MaaStringView adb_path,
-    MaaStringView address,
-    MaaAdbControllerType type,
+    MaaAdbScreencapMethod screencap_methods,
+    MaaAdbInputMethod input_methods,
     MaaStringView config,
     MaaStringView agent_path,
-    MaaControllerCallback callback,
+    MaaNotificationCallback callback,
     MaaCallbackTransparentArg callback_arg)
 {
-    LogFunc << VAR(adb_path) << VAR(address) << VAR(type) << VAR(agent_path) << VAR_VOIDP(callback)
-            << VAR_VOIDP(callback_arg);
+    LogFunc << VAR(adb_path) << VAR(address) << VAR(screencap_methods) << VAR(input_methods)
+            << VAR(config) << VAR(agent_path) << VAR_VOIDP(callback) << VAR_VOIDP(callback_arg);
 
     auto control_unit = MAA_NS::AdbControlUnitLibraryHolder::create_control_unit(
         adb_path,

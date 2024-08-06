@@ -31,10 +31,11 @@ bool check_version(const std::string& func_name)
 std::shared_ptr<MAA_CTRL_UNIT_NS::ControlUnitAPI> AdbControlUnitLibraryHolder::create_control_unit(
     MaaStringView adb_path,
     MaaStringView adb_serial,
-    MaaAdbControllerType type,
+    MaaAdbScreencapMethod screencap_methods,
+    MaaAdbInputMethod input_methods,
     MaaStringView config,
     MaaStringView agent_path,
-    MaaControllerCallback callback,
+    MaaNotificationCallback callback,
     MaaCallbackTransparentArg callback_arg)
 {
     if (!load_library(library_dir() / libname_)) {

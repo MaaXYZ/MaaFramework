@@ -1,51 +1,70 @@
-#include "FastestWay.h"
+#include "ScreencapManager.h"
 
 #include <format>
 #include <ranges>
 #include <unordered_set>
 
 #include "EmulatorExtras/MumuExternalRendererIpc.h"
-#include "Encode.h"
-#include "EncodeToFile.h"
-#include "Minicap/MinicapDirect.h"
-#include "Minicap/MinicapStream.h"
-#include "RawByNetcat.h"
-#include "RawWithGzip.h"
+#include "Screencap/Encode.h"
+#include "Screencap/EncodeToFile.h"
+#include "Screencap/Minicap/MinicapDirect.h"
+#include "Screencap/Minicap/MinicapStream.h"
+#include "Screencap/RawByNetcat.h"
+#include "Screencap/RawWithGzip.h"
 #include "Utils/Logger.h"
 #include "Utils/NoWarningCV.hpp"
 
 MAA_CTRL_UNIT_NS_BEGIN
 
-ScreencapFastestWay::ScreencapFastestWay(const std::filesystem::path& minicap_path, bool lossless)
+ScreencapManager::ScreencapManager(const MethodSet& screencap_methods, const std::filesystem::path& agent_path)
 {
-    units_ = {
-#ifdef _WIN32
-        { Method::RawByNetcat, std::make_shared<ScreencapRawByNetcat>() },
-#endif
-        { Method::RawWithGzip, std::make_shared<ScreencapRawWithGzip>() },
-        { Method::Encode, std::make_shared<ScreencapEncode>() },
-        { Method::EncodeToFileAndPull, std::make_shared<ScreencapEncodeToFileAndPull>() },
-        { Method::MumuExternalRendererIpc, std::make_shared<MumuExternalRendererIpc>() },
-    };
+    LogInfo << VAR(screencap_methods) << VAR(agent_path);
 
-    if (!lossless) {
-        if (std::filesystem::exists(minicap_path)) {
-            units_.merge(decltype(units_) {
-                { Method::MinicapDirect, std::make_shared<MinicapDirect>(minicap_path) },
-                { Method::MinicapStream, std::make_shared<MinicapStream>(minicap_path) },
-            });
+    for (Method method : screencap_methods) {
+        std::shared_ptr<ScreencapBase> unit = nullptr;
+        switch (method) {
+        case Method::RawByNetcat:
+            unit = std::make_shared<ScreencapRawByNetcat>();
+            break;
+        case Method::RawWithGzip:
+            unit = std::make_shared<ScreencapRawWithGzip>();
+            break;
+        case Method::Encode:
+            unit = std::make_shared<ScreencapEncode>();
+            break;
+        case Method::EncodeToFileAndPull:
+            unit = std::make_shared<ScreencapEncodeToFileAndPull>();
+            break;
+        case Method::MinicapDirect: {
+            auto minicap_path = agent_path / "minicap";
+            if (!std::filesystem::exists(minicap_path)) {
+                LogWarn << "minicap path not exists" << VAR(minicap_path);
+                break;
+            }
+            unit = std::make_shared<MinicapDirect>(minicap_path);
+        } break;
+        case Method::MinicapStream: {
+            auto minicap_path = agent_path / "minicap";
+            if (!std::filesystem::exists(minicap_path)) {
+                LogWarn << "minicap path not exists" << VAR(minicap_path);
+                break;
+            }
+            unit = std::make_shared<MinicapStream>(minicap_path);
+        } break;
+        case Method::MumuExternalRendererIpc:
+            unit = std::make_shared<MumuExternalRendererIpc>();
+            break;
+        default:
+            LogWarn << "Not support:" << method;
+            break;
         }
-        else {
-            LogWarn << "minicap path not exists" << VAR(minicap_path);
-        }
-    }
 
-    for (auto& unit : units_ | std::views::values) {
         children_.emplace_back(unit);
+        units_.emplace(method, unit);
     }
 }
 
-bool ScreencapFastestWay::parse(const json::value& config)
+bool ScreencapManager::parse(const json::value& config)
 {
     bool ret = false;
 
@@ -55,6 +74,7 @@ bool ScreencapFastestWay::parse(const json::value& config)
             ++it;
         }
         else {
+            LogWarn << "failed to parse" << it->first;
             it = units_.erase(it);
         }
     }
@@ -62,7 +82,7 @@ bool ScreencapFastestWay::parse(const json::value& config)
     return ret;
 }
 
-bool ScreencapFastestWay::init()
+bool ScreencapManager::init()
 {
     LogFunc;
 
@@ -78,7 +98,7 @@ bool ScreencapFastestWay::init()
     return speed_test();
 }
 
-void ScreencapFastestWay::deinit()
+void ScreencapManager::deinit()
 {
     LogFunc;
 
@@ -89,7 +109,7 @@ void ScreencapFastestWay::deinit()
     method_ = Method::UnknownYet;
 }
 
-std::optional<cv::Mat> ScreencapFastestWay::screencap()
+std::optional<cv::Mat> ScreencapManager::screencap()
 {
     switch (method_) {
     case Method::UnknownYet:
@@ -110,7 +130,7 @@ std::optional<cv::Mat> ScreencapFastestWay::screencap()
     return std::nullopt;
 }
 
-bool ScreencapFastestWay::speed_test()
+bool ScreencapManager::speed_test()
 {
     LogFunc;
 
@@ -128,8 +148,7 @@ bool ScreencapFastestWay::speed_test()
 
     // RawByNetcat 第一次速度很慢，但后面快
     // MinicapStream 是从缓存拉数据，只取一次不准
-    static const std::unordered_set<Method> kDropFirst = { Method::RawByNetcat,
-                                                           Method::MinicapStream };
+    static const std::unordered_set<Method> kDropFirst = { Method::RawByNetcat, Method::MinicapStream };
 
     for (auto& [method, unit] : units_) {
         if (kDropFirst.contains(method)) {
@@ -165,31 +184,31 @@ bool ScreencapFastestWay::speed_test()
     return true;
 }
 
-std::ostream& operator<<(std::ostream& os, ScreencapFastestWay::Method m)
+std::ostream& operator<<(std::ostream& os, ScreencapManager::Method m)
 {
     switch (m) {
-    case ScreencapFastestWay::Method::UnknownYet:
+    case ScreencapManager::Method::UnknownYet:
         os << "UnknownYet";
         break;
-    case ScreencapFastestWay::Method::RawByNetcat:
+    case ScreencapManager::Method::RawByNetcat:
         os << "RawByNetcat";
         break;
-    case ScreencapFastestWay::Method::RawWithGzip:
+    case ScreencapManager::Method::RawWithGzip:
         os << "RawWithGzip";
         break;
-    case ScreencapFastestWay::Method::Encode:
+    case ScreencapManager::Method::Encode:
         os << "Encode";
         break;
-    case ScreencapFastestWay::Method::EncodeToFileAndPull:
+    case ScreencapManager::Method::EncodeToFileAndPull:
         os << "EncodeToFileAndPull";
         break;
-    case ScreencapFastestWay::Method::MinicapDirect:
+    case ScreencapManager::Method::MinicapDirect:
         os << "MinicapDirect";
         break;
-    case ScreencapFastestWay::Method::MinicapStream:
+    case ScreencapManager::Method::MinicapStream:
         os << "MinicapStream";
         break;
-    case ScreencapFastestWay::Method::MumuExternalRendererIpc:
+    case ScreencapManager::Method::MumuExternalRendererIpc:
         os << "MumuExternalRendererIpc";
         break;
     }

@@ -16,10 +16,11 @@ extern "C"
     MAA_CONTROL_UNIT_API MaaControlUnitHandle MaaAdbControlUnitCreate(
         MaaStringView adb_path,
         MaaStringView adb_serial,
-        MaaAdbControllerType type,
+        MaaAdbScreencapMethod screencap_methods,
+        MaaAdbInputMethod input_methods,
         MaaStringView config,
         MaaStringView agent_path,
-        MaaControllerCallback callback,
+        MaaNotificationCallback callback,
         MaaCallbackTransparentArg callback_arg);
 
     MAA_CONTROL_UNIT_API void MaaAdbControlUnitDestroy(MaaControlUnitHandle handle);

@@ -34,7 +34,7 @@ MaaControlUnitHandle MaaWin32ControlUnitCreate(
     }
     HWND h_wnd = reinterpret_cast<HWND>(hWnd);
 
-    std::shared_ptr<TouchInputBase> touch_unit = nullptr;
+    std::shared_ptr<InputBase> touch_unit = nullptr;
     std::shared_ptr<KeyInputBase> key_unit = nullptr;
     std::shared_ptr<ScreencapBase> screencap_unit = nullptr;
 
