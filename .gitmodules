@@ -7,9 +7,6 @@
 [submodule "test/TestingDataSet"]
 	path = test/TestingDataSet
 	url = https://github.com/MaaXYZ/MaaFrameworkTesting.git
-[submodule "source/MaaHttp/LHG"]
-	path = source/MaaHttp/LHG
-	url = https://github.com/neko-para/LibHttpGen
 [submodule "3rdparty/EmulatorExtras"]
 	path = 3rdparty/EmulatorExtras
 	url = https://github.com/MaaXYZ/EmulatorExtras.git

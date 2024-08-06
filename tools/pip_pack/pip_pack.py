@@ -5,7 +5,7 @@ import sys
 
 import tomlkit
 
-IGNORES = ["MaaHttp*", "MaaPiCli*"]
+IGNORES = ["MaaPiCli*"]
 
 
 def set_toml_ver():
