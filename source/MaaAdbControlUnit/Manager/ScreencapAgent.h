@@ -6,7 +6,7 @@
 
 MAA_CTRL_UNIT_NS_BEGIN
 
-class ScreencapManager : public ScreencapBase
+class ScreencapAgent : public ScreencapBase
 {
 public:
     enum class Method
@@ -20,11 +20,10 @@ public:
         MinicapStream,
         MumuExternalRendererIpc,
     };
-    using MethodSet = std::unordered_set<Method>;
 
 public:
-    ScreencapManager(const MethodSet& screencap_methods, const std::filesystem::path& agent_path);
-    virtual ~ScreencapManager() override = default;
+    ScreencapAgent(MaaAdbScreencapMethod methods, const std::filesystem::path& agent_path);
+    virtual ~ScreencapAgent() override = default;
 
 public: // from UnitBase
     virtual bool parse(const json::value& config) override;
@@ -42,6 +41,6 @@ private:
     Method method_ = Method::UnknownYet;
 };
 
-std::ostream& operator<<(std::ostream& os, ScreencapManager::Method m);
+std::ostream& operator<<(std::ostream& os, ScreencapAgent::Method m);
 
 MAA_CTRL_UNIT_NS_END

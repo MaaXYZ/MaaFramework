@@ -1,4 +1,4 @@
-#include "ScreencapManager.h"
+#include "ScreencapAgent.h"
 
 #include <format>
 #include <ranges>
@@ -16,11 +16,35 @@
 
 MAA_CTRL_UNIT_NS_BEGIN
 
-ScreencapManager::ScreencapManager(const MethodSet& screencap_methods, const std::filesystem::path& agent_path)
+ScreencapAgent::ScreencapAgent(MaaAdbScreencapMethod methods, const std::filesystem::path& agent_path)
 {
-    LogInfo << VAR(screencap_methods) << VAR(agent_path);
+    std::unordered_set<Method> method_set;
+    if (methods & MaaAdbScreencapMethod_EncodeToFileAndPull) {
+        method_set.emplace(ScreencapAgent::Method::EncodeToFileAndPull);
+    }
+    if (methods & MaaAdbScreencapMethod_Encode) {
+        method_set.emplace(ScreencapAgent::Method::Encode);
+    }
+    if (methods & MaaAdbScreencapMethod_RawWithGzip) {
+        method_set.emplace(ScreencapAgent::Method::RawWithGzip);
+    }
+    if (methods & MaaAdbScreencapMethod_RawByNetcat) {
+        method_set.emplace(ScreencapAgent::Method::RawByNetcat);
+    }
+    if (methods & MaaAdbScreencapMethod_MinicapDirect) {
+        method_set.emplace(ScreencapAgent::Method::MinicapDirect);
+    }
+    if (methods & MaaAdbScreencapMethod_MinicapStream) {
+        method_set.emplace(ScreencapAgent::Method::MinicapStream);
+    }
+    if (methods & MaaAdbScreencapMethod_EmulatorExtras) {
+        method_set.emplace(ScreencapAgent::Method::MumuExternalRendererIpc);
+        // TODO: add LDPlayer and more...
+    }
 
-    for (Method method : screencap_methods) {
+    LogInfo << VAR(methods) << VAR(method_set) << VAR(agent_path);
+
+    for (Method method : method_set) {
         std::shared_ptr<ScreencapBase> unit = nullptr;
         switch (method) {
         case Method::RawByNetcat:
@@ -64,7 +88,7 @@ ScreencapManager::ScreencapManager(const MethodSet& screencap_methods, const std
     }
 }
 
-bool ScreencapManager::parse(const json::value& config)
+bool ScreencapAgent::parse(const json::value& config)
 {
     bool ret = false;
 
@@ -82,7 +106,7 @@ bool ScreencapManager::parse(const json::value& config)
     return ret;
 }
 
-bool ScreencapManager::init()
+bool ScreencapAgent::init()
 {
     LogFunc;
 
@@ -98,7 +122,7 @@ bool ScreencapManager::init()
     return speed_test();
 }
 
-void ScreencapManager::deinit()
+void ScreencapAgent::deinit()
 {
     LogFunc;
 
@@ -109,7 +133,7 @@ void ScreencapManager::deinit()
     method_ = Method::UnknownYet;
 }
 
-std::optional<cv::Mat> ScreencapManager::screencap()
+std::optional<cv::Mat> ScreencapAgent::screencap()
 {
     switch (method_) {
     case Method::UnknownYet:
@@ -130,7 +154,7 @@ std::optional<cv::Mat> ScreencapManager::screencap()
     return std::nullopt;
 }
 
-bool ScreencapManager::speed_test()
+bool ScreencapAgent::speed_test()
 {
     LogFunc;
 
@@ -184,31 +208,31 @@ bool ScreencapManager::speed_test()
     return true;
 }
 
-std::ostream& operator<<(std::ostream& os, ScreencapManager::Method m)
+std::ostream& operator<<(std::ostream& os, ScreencapAgent::Method m)
 {
     switch (m) {
-    case ScreencapManager::Method::UnknownYet:
+    case ScreencapAgent::Method::UnknownYet:
         os << "UnknownYet";
         break;
-    case ScreencapManager::Method::RawByNetcat:
+    case ScreencapAgent::Method::RawByNetcat:
         os << "RawByNetcat";
         break;
-    case ScreencapManager::Method::RawWithGzip:
+    case ScreencapAgent::Method::RawWithGzip:
         os << "RawWithGzip";
         break;
-    case ScreencapManager::Method::Encode:
+    case ScreencapAgent::Method::Encode:
         os << "Encode";
         break;
-    case ScreencapManager::Method::EncodeToFileAndPull:
+    case ScreencapAgent::Method::EncodeToFileAndPull:
         os << "EncodeToFileAndPull";
         break;
-    case ScreencapManager::Method::MinicapDirect:
+    case ScreencapAgent::Method::MinicapDirect:
         os << "MinicapDirect";
         break;
-    case ScreencapManager::Method::MinicapStream:
+    case ScreencapAgent::Method::MinicapStream:
         os << "MinicapStream";
         break;
-    case ScreencapManager::Method::MumuExternalRendererIpc:
+    case ScreencapAgent::Method::MumuExternalRendererIpc:
         os << "MumuExternalRendererIpc";
         break;
     }

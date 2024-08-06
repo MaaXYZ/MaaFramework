@@ -1,8 +1,7 @@
 /**
  * @file MaaController.h
  * @author
- * @brief The controller interface. See \ref MaaControllerPostRequest for details on how to post
- * requests to the controller.
+ * @brief The controller interface. See \ref MaaControllerPostRequest for details on how to post requests to the controller.
  *
  * @copyright Copyright (c) 2024
  *
@@ -24,10 +23,8 @@ extern "C"
      *
      * @param adb_path The path of ADB executable.
      * @param address The ADB serial of the target device.
-     * @param screencap_methods Use bitwise OR to set the method you need, MaaFramework will test
-     * their speed and use the fastest one.
-     * @param input_methods Use bitwise OR to set the method you need, MaaFramework will select the
-     * available ones according to priority.
+     * @param Use bitwise OR to set the method you need, MaaFramework will test their speed and use the fastest one.
+     * @param input_methods Use bitwise OR to set the method you need, MaaFramework will select the available ones according to priority.
      * @param config The config of the ADB controller.
      * @param agent_path The path of the agent executable.
      * @param callback The callback function. See ::MaaAPICallback.
@@ -49,18 +46,16 @@ extern "C"
      *
      * @param hWnd The win32 window handle to control. This can be retrieved by helpers provided in
      * MaaToolkitWin32Window.h.
-     * @param screencap_methods Use bitwise OR to set the method you need, MaaFramework will test
-     * their speed and use the fastest one.
-     * @param input_methods Use bitwise OR to set the method you need, MaaFramework will select the
-     * available ones according to priority.
+     * @param screencap_method No bitwise OR, just set it
+     * @param input_method Use No bitwise OR, just set it
      * @param callback The callback function. See ::MaaAPICallback.
      * @param callback_arg The callback arg that will be passed to the callback function.
      * @return MaaControllerHandle The handle of the created controller instance.
      */
     MAA_FRAMEWORK_API MaaControllerHandle MaaWin32ControllerCreate(
         MaaWin32Hwnd hWnd,
-        MaaWin32ScreencapMethod screencap_methods,
-        MaaWin32InputMethod input_methods,
+        MaaWin32ScreencapMethod screencap_method,
+        MaaWin32InputMethod input_method,
         MaaNotificationCallback callback,
         MaaCallbackTransparentArg callback_arg);
 
@@ -122,41 +117,23 @@ extern "C"
 
     MAA_FRAMEWORK_API MaaCtrlId MaaControllerPostConnection(MaaControllerHandle ctrl);
 
-    MAA_FRAMEWORK_API MaaCtrlId
-        MaaControllerPostClick(MaaControllerHandle ctrl, int32_t x, int32_t y);
-
-    MAA_FRAMEWORK_API MaaCtrlId MaaControllerPostSwipe(
-        MaaControllerHandle ctrl,
-        int32_t x1,
-        int32_t y1,
-        int32_t x2,
-        int32_t y2,
-        int32_t duration);
+    MAA_FRAMEWORK_API MaaCtrlId MaaControllerPostClick(MaaControllerHandle ctrl, int32_t x, int32_t y);
 
     MAA_FRAMEWORK_API MaaCtrlId
-        MaaControllerPostPressKey(MaaControllerHandle ctrl, int32_t keycode);
+        MaaControllerPostSwipe(MaaControllerHandle ctrl, int32_t x1, int32_t y1, int32_t x2, int32_t y2, int32_t duration);
+
+    MAA_FRAMEWORK_API MaaCtrlId MaaControllerPostPressKey(MaaControllerHandle ctrl, int32_t keycode);
+
+    MAA_FRAMEWORK_API MaaCtrlId MaaControllerPostInputText(MaaControllerHandle ctrl, MaaStringView text);
+
+    MAA_FRAMEWORK_API MaaCtrlId MaaControllerPostStartApp(MaaControllerHandle ctrl, MaaStringView intent);
+
+    MAA_FRAMEWORK_API MaaCtrlId MaaControllerPostStopApp(MaaControllerHandle ctrl, MaaStringView intent);
 
     MAA_FRAMEWORK_API MaaCtrlId
-        MaaControllerPostInputText(MaaControllerHandle ctrl, MaaStringView text);
-
+        MaaControllerPostTouchDown(MaaControllerHandle ctrl, int32_t contact, int32_t x, int32_t y, int32_t pressure);
     MAA_FRAMEWORK_API MaaCtrlId
-        MaaControllerPostStartApp(MaaControllerHandle ctrl, MaaStringView intent);
-
-    MAA_FRAMEWORK_API MaaCtrlId
-        MaaControllerPostStopApp(MaaControllerHandle ctrl, MaaStringView intent);
-
-    MAA_FRAMEWORK_API MaaCtrlId MaaControllerPostTouchDown(
-        MaaControllerHandle ctrl,
-        int32_t contact,
-        int32_t x,
-        int32_t y,
-        int32_t pressure);
-    MAA_FRAMEWORK_API MaaCtrlId MaaControllerPostTouchMove(
-        MaaControllerHandle ctrl,
-        int32_t contact,
-        int32_t x,
-        int32_t y,
-        int32_t pressure);
+        MaaControllerPostTouchMove(MaaControllerHandle ctrl, int32_t contact, int32_t x, int32_t y, int32_t pressure);
 
     MAA_FRAMEWORK_API MaaCtrlId MaaControllerPostTouchUp(MaaControllerHandle ctrl, int32_t contact);
 
@@ -189,8 +166,7 @@ extern "C"
      *
      * @return MaaBool Whether the image buffer is retrieved successfully.
      */
-    MAA_FRAMEWORK_API MaaBool
-        MaaControllerGetImage(MaaControllerHandle ctrl, /* out */ MaaImageBufferHandle buffer);
+    MAA_FRAMEWORK_API MaaBool MaaControllerGetImage(MaaControllerHandle ctrl, /* out */ MaaImageBufferHandle buffer);
 
     /**
      * @brief Get the UUID of the controller.
@@ -200,8 +176,7 @@ extern "C"
      *
      * @return MaaBool Whether the UUID is retrieved successfully.
      */
-    MAA_FRAMEWORK_API MaaBool
-        MaaControllerGetUUID(MaaControllerHandle ctrl, /* out */ MaaStringBufferHandle buffer);
+    MAA_FRAMEWORK_API MaaBool MaaControllerGetUUID(MaaControllerHandle ctrl, /* out */ MaaStringBufferHandle buffer);
 
 #ifdef __cplusplus
 }

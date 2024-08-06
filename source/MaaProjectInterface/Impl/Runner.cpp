@@ -19,7 +19,7 @@ bool Runner::run(
     MaaCallbackTransparentArg callback_arg,
     MaaResourceCallback resource_callback,
     MaaCallbackTransparentArg resource_callback_arg,
-    MaaControllerCallback controller_callback,
+    MaaNotificationCallback controller_callback,
     MaaCallbackTransparentArg controller_callback_arg)
 {
     auto maa_handle = MaaCreate(callback, callback_arg);

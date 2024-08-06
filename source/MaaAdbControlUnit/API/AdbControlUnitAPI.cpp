@@ -3,8 +3,8 @@
 #include <meojson/json.hpp>
 
 #include "Manager/ControlUnitMgr.h"
-#include "Manager/InputManager.h"
-#include "Manager/ScreencapManager.h"
+#include "Manager/InputAgent.h"
+#include "Manager/ScreencapAgent.h"
 #include "Utils/Logger.h"
 #include "Utils/Platform.h"
 
@@ -32,47 +32,8 @@ MaaControlUnitHandle MaaAdbControlUnitCreate(
     LogFunc << VAR(adb_path) << VAR(adb_serial) << VAR(screencap_methods) << VAR(input_methods) << VAR(config) << VAR(agent_path)
             << VAR_VOIDP(callback) << VAR_VOIDP(callback_arg);
 
-    ScreencapManager::MethodSet screencap_method_set;
-    if (screencap_methods & MaaAdbScreencapMethod_EncodeToFileAndPull) {
-        screencap_method_set.emplace(ScreencapManager::Method::EncodeToFileAndPull);
-    }
-    if (screencap_methods & MaaAdbScreencapMethod_Encode) {
-        screencap_method_set.emplace(ScreencapManager::Method::Encode);
-    }
-    if (screencap_methods & MaaAdbScreencapMethod_RawWithGzip) {
-        screencap_method_set.emplace(ScreencapManager::Method::RawWithGzip);
-    }
-    if (screencap_methods & MaaAdbScreencapMethod_RawByNetcat) {
-        screencap_method_set.emplace(ScreencapManager::Method::RawByNetcat);
-    }
-    if (screencap_methods & MaaAdbScreencapMethod_MinicapDirect) {
-        screencap_method_set.emplace(ScreencapManager::Method::MinicapDirect);
-    }
-    if (screencap_methods & MaaAdbScreencapMethod_MinicapStream) {
-        screencap_method_set.emplace(ScreencapManager::Method::MinicapStream);
-    }
-    if (screencap_methods & MaaAdbScreencapMethod_EmulatorExtras) {
-        screencap_method_set.emplace(ScreencapManager::Method::MumuExternalRendererIpc);
-        // TODO: add LDPlayer and more...
-    }
-
-    InputManager::MethodVec input_method_vec;
-    if (input_methods & MaaAdbInputMethod_AdbShell) {
-        input_method_vec.emplace_back(InputManager::Method::AdbShell);
-    }
-    if (input_methods & MaaAdbInputMethod_MinitouchAndAdbKey) {
-        input_method_vec.emplace_back(InputManager::Method::MinitouchAndAdbKey);
-    }
-    if (input_methods & MaaAdbInputMethod_Maatouch) {
-        input_method_vec.emplace_back(InputManager::Method::Maatouch);
-    }
-    if (input_methods & MaaAdbInputMethod_EmulatorExtras) {
-        input_method_vec.emplace_back(InputManager::Method::MumuExternalRendererIpc);
-        // TODO: add LDPlayer and more...
-    }
-
-    auto screencap_unit = std::make_shared<ScreencapManager>(screencap_method_set, agent_path);
-    auto input_unit = std::make_shared<InputManager>(input_method_vec, agent_path);
+    auto screencap_unit = std::make_shared<ScreencapAgent>(screencap_methods, agent_path);
+    auto input_unit = std::make_shared<InputAgent>(input_methods, agent_path);
 
     auto unit_mgr = std::make_unique<ControlUnitMgr>(path(adb_path), adb_serial, screencap_unit, input_unit, callback, callback_arg);
 

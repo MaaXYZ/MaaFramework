@@ -15,7 +15,7 @@ public:
             MaaCallbackTransparentArg callback_arg = nullptr,
             MaaResourceCallback resource_callback = nullptr,
             MaaCallbackTransparentArg resource_callback_arg = nullptr,
-            MaaControllerCallback controller_callback = nullptr,
+            MaaNotificationCallback controller_callback = nullptr,
             MaaCallbackTransparentArg controller_callback_arg = nullptr);
 };
 

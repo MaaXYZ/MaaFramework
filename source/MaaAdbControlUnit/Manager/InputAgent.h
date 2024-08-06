@@ -1,12 +1,10 @@
 #pragma once
 
-#include <vector>
-
 #include "Base/UnitBase.h"
 
 MAA_CTRL_UNIT_NS_BEGIN
 
-class InputManager : public InputBase
+class InputAgent : public InputBase
 {
 public:
     enum class Method
@@ -17,11 +15,10 @@ public:
         Maatouch,
         MumuExternalRendererIpc,
     };
-    using MethodVec = std::vector<Method>;
 
 public:
-    InputManager(const MethodVec& input_methods, const std::filesystem::path& agent_path);
-    virtual ~InputManager() override = default;
+    InputAgent(MaaAdbInputMethod methods, const std::filesystem::path& agent_path);
+    virtual ~InputAgent() override = default;
 
 public: // from UnitBase
     virtual bool parse(const json::value& config) override;
@@ -45,6 +42,6 @@ private:
     std::shared_ptr<InputBase> active_unit_;
 };
 
-std::ostream& operator<<(std::ostream& os, InputManager::Method m);
+std::ostream& operator<<(std::ostream& os, InputAgent::Method m);
 
 MAA_CTRL_UNIT_NS_END

@@ -10,7 +10,7 @@ public:
     CustomControllerAgent(
         MaaCustomControllerCallbacksHandle handle,
         MaaTransparentArg handle_arg,
-        MaaControllerCallback callback,
+        MaaNotificationCallback callback,
         MaaCallbackTransparentArg callback_arg);
     virtual ~CustomControllerAgent() override = default;
 

@@ -11,7 +11,7 @@ MAA_CTRL_NS_BEGIN
 CustomControllerAgent::CustomControllerAgent(
     MaaCustomControllerCallbacksHandle handle,
     MaaTransparentArg handle_arg,
-    MaaControllerCallback callback,
+    MaaNotificationCallback callback,
     MaaCallbackTransparentArg callback_arg)
     : ControllerAgent(callback, callback_arg)
     , handle_(handle)
@@ -106,8 +106,8 @@ bool CustomControllerAgent::_click(ClickParam param)
 
 bool CustomControllerAgent::_swipe(SwipeParam param)
 {
-    LogFunc << VAR_VOIDP(handle_) << VAR_VOIDP(handle_->swipe) << VAR(param.x1) << VAR(param.x2)
-            << VAR(param.y1) << VAR(param.y2) << VAR(param.duration);
+    LogFunc << VAR_VOIDP(handle_) << VAR_VOIDP(handle_->swipe) << VAR(param.x1) << VAR(param.x2) << VAR(param.y1) << VAR(param.y2)
+            << VAR(param.duration);
 
     if (!handle_ || !handle_->swipe) {
         LogError << "handle_ or handle_->swipe is nullptr";
@@ -118,8 +118,8 @@ bool CustomControllerAgent::_swipe(SwipeParam param)
 
 bool CustomControllerAgent::_touch_down(TouchParam param)
 {
-    LogFunc << VAR_VOIDP(handle_) << VAR_VOIDP(handle_->touch_down) << VAR(param.contact)
-            << VAR(param.x) << VAR(param.y) << VAR(param.pressure);
+    LogFunc << VAR_VOIDP(handle_) << VAR_VOIDP(handle_->touch_down) << VAR(param.contact) << VAR(param.x) << VAR(param.y)
+            << VAR(param.pressure);
 
     if (!handle_ || !handle_->touch_down) {
         LogError << "handle_ or handle_->touch_down is nullptr";
@@ -131,8 +131,8 @@ bool CustomControllerAgent::_touch_down(TouchParam param)
 
 bool CustomControllerAgent::_touch_move(TouchParam param)
 {
-    LogFunc << VAR_VOIDP(handle_) << VAR_VOIDP(handle_->touch_move) << VAR(param.contact)
-            << VAR(param.x) << VAR(param.y) << VAR(param.pressure);
+    LogFunc << VAR_VOIDP(handle_) << VAR_VOIDP(handle_->touch_move) << VAR(param.contact) << VAR(param.x) << VAR(param.y)
+            << VAR(param.pressure);
 
     if (!handle_ || !handle_->touch_move) {
         LogError << "handle_ or handle_->touch_move is nullptr";

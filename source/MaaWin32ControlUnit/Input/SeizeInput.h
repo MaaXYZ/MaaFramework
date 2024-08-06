@@ -7,9 +7,7 @@
 
 MAA_CTRL_UNIT_NS_BEGIN
 
-class SeizeInput
-    : public InputBase
-    , public KeyInputBase
+class SeizeInput : public InputBase
 {
 public:
     SeizeInput(HWND hwnd)
@@ -27,7 +25,6 @@ public: // from InputBase
     virtual bool touch_move(int contact, int x, int y, int pressure) override;
     virtual bool touch_up(int contact) override;
 
-public: // from KeyInputBase
     virtual bool press_key(int key) override;
     virtual bool input_text(const std::string& text) override;
 

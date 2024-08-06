@@ -175,8 +175,7 @@ enum MaaInstOptionEnum
 };
 
 // MaaAdbScreencapMethod:
-// Use bitwise OR to set the method you need, MaaFramework will test their speed and use the fastest
-// one.
+// Use bitwise OR to set the method you need, MaaFramework will test their speed and use the fastest one.
 typedef uint64_t MaaAdbScreencapMethod;
 const MaaAdbScreencapMethod MaaAdbScreencapMethod_None = 0ULL;
 const MaaAdbScreencapMethod MaaAdbScreencapMethod_EncodeToFileAndPull = 1ULL;
@@ -189,8 +188,8 @@ const MaaAdbScreencapMethod MaaAdbScreencapMethod_EmulatorExtras = 1ULL << 6;
 const MaaAdbScreencapMethod MaaAdbScreencapMethod_All = UINT64_MAX;
 
 // MaaAdbInputMethod:
-// Use bitwise OR to set the method you need, MaaFramework will select the available ones according
-// to priority. The priority is: EmulatorExtras > Maatouch > MinitouchAndAdbKey > AdbShell
+// Use bitwise OR to set the method you need, MaaFramework will select the available ones according to priority.
+// The priority is: EmulatorExtras > Maatouch > MinitouchAndAdbKey > AdbShell
 typedef uint64_t MaaAdbInputMethod;
 const MaaAdbInputMethod MaaAdbInputMethod_None = 0ULL;
 const MaaAdbInputMethod MaaAdbInputMethod_AdbShell = 1ULL;
@@ -200,8 +199,7 @@ const MaaAdbInputMethod MaaAdbInputMethod_EmulatorExtras = 1ULL << 3;
 const MaaAdbInputMethod MaaAdbInputMethod_All = UINT64_MAX;
 
 // MaaWin32ScreencapMethod:
-// Use bitwise OR to set the method you need, MaaFramework will test their speed and use the fastest
-// one.
+// No bitwise OR, just set it
 typedef uint64_t MaaWin32ScreencapMethod;
 const MaaWin32ScreencapMethod MaaWin32ScreencapMethod_None = 0ULL;
 const MaaWin32ScreencapMethod MaaWin32ScreencapMethod_GDI = 1ULL;
@@ -210,8 +208,7 @@ const MaaWin32ScreencapMethod MaaWin32ScreencapMethod_DXGI_DesktopDup = 1ULL << 
 const MaaWin32ScreencapMethod MaaWin32ScreencapMethod_All = UINT64_MAX;
 
 // MaaWin32InputMethod:
-// Use bitwise OR to set the method you need, MaaFramework will select the available ones according
-// to priority. The priority is: SendMessage > Seize
+// No bitwise OR, just set it
 typedef uint64_t MaaWin32InputMethod;
 const MaaWin32InputMethod MaaWin32InputMethod_None = 0ULL;
 const MaaWin32InputMethod MaaWin32InputMethod_Seize = 1ULL;

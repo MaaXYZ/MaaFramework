@@ -36,8 +36,9 @@ class Win32ControlUnitLibraryHolder : public LibraryHolder<Win32ControlUnitLibra
 public:
     static std::shared_ptr<MAA_CTRL_UNIT_NS::ControlUnitAPI> create_control_unit(
         MaaWin32Hwnd hWnd,
-        MaaWin32ControllerType type,
-        MaaControllerCallback callback,
+        MaaWin32ScreencapMethod screencap_method,
+        MaaWin32InputMethod input_method,
+        MaaNotificationCallback callback,
         MaaCallbackTransparentArg callback_arg);
 
 private:
@@ -50,8 +51,7 @@ private:
 class DbgControlUnitLibraryHolder : public LibraryHolder<DbgControlUnitLibraryHolder>
 {
 public:
-    static std::shared_ptr<MAA_CTRL_UNIT_NS::ControlUnitAPI>
-        create_control_unit(MaaDbgControllerType type, MaaStringView read_path);
+    static std::shared_ptr<MAA_CTRL_UNIT_NS::ControlUnitAPI> create_control_unit(MaaDbgControllerType type, MaaStringView read_path);
 
 private:
     inline static const std::filesystem::path libname_ = MAA_NS::path("MaaDbgControlUnit");

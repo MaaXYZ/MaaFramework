@@ -18,13 +18,14 @@ MaaControllerHandle MaaAdbControllerCreate(
     MaaNotificationCallback callback,
     MaaCallbackTransparentArg callback_arg)
 {
-    LogFunc << VAR(adb_path) << VAR(address) << VAR(screencap_methods) << VAR(input_methods)
-            << VAR(config) << VAR(agent_path) << VAR_VOIDP(callback) << VAR_VOIDP(callback_arg);
+    LogFunc << VAR(adb_path) << VAR(address) << VAR(screencap_methods) << VAR(input_methods) << VAR(config) << VAR(agent_path)
+            << VAR_VOIDP(callback) << VAR_VOIDP(callback_arg);
 
     auto control_unit = MAA_NS::AdbControlUnitLibraryHolder::create_control_unit(
         adb_path,
         address,
-        type,
+        screencap_methods,
+        input_methods,
         config,
         agent_path,
         callback,
@@ -40,11 +41,12 @@ MaaControllerHandle MaaAdbControllerCreate(
 
 MaaControllerHandle MaaWin32ControllerCreate(
     MaaWin32Hwnd hWnd,
-    MaaWin32ControllerType type,
-    MaaControllerCallback callback,
+    MaaWin32ScreencapMethod screencap_method,
+    MaaWin32InputMethod input_method,
+    MaaNotificationCallback callback,
     MaaCallbackTransparentArg callback_arg)
 {
-    LogFunc << VAR_VOIDP(hWnd) << VAR(type) << VAR_VOIDP(callback) << VAR_VOIDP(callback_arg);
+    LogFunc << VAR_VOIDP(hWnd) << VAR(screencap_method) << VAR(input_method) << VAR_VOIDP(callback) << VAR_VOIDP(callback_arg);
 
 #ifndef _WIN32
 
@@ -58,11 +60,8 @@ MaaControllerHandle MaaWin32ControllerCreate(
         return nullptr;
     }
 
-    auto control_unit = MAA_NS::Win32ControlUnitLibraryHolder::create_control_unit(
-        hWnd,
-        type,
-        callback,
-        callback_arg);
+    auto control_unit =
+        MAA_NS::Win32ControlUnitLibraryHolder::create_control_unit(hWnd, screencap_method, input_method, callback, callback_arg);
 
     if (!control_unit) {
         LogError << "Failed to create control unit";
@@ -77,7 +76,7 @@ MaaControllerHandle MaaWin32ControllerCreate(
 MaaControllerHandle MaaCustomControllerCreate(
     MaaCustomControllerCallbacksHandle handle,
     MaaTransparentArg handle_arg,
-    MaaControllerCallback callback,
+    MaaNotificationCallback callback,
     MaaCallbackTransparentArg callback_arg)
 {
     LogFunc << VAR(handle) << VAR(handle_arg) << VAR_VOIDP(callback) << VAR_VOIDP(callback_arg);
@@ -95,11 +94,10 @@ MaaControllerHandle MaaDbgControllerCreate(
     MaaStringView write_path,
     MaaDbgControllerType type,
     MaaStringView config,
-    MaaControllerCallback callback,
+    MaaNotificationCallback callback,
     MaaCallbackTransparentArg callback_arg)
 {
-    LogFunc << VAR(read_path) << VAR(write_path) << VAR(type) << VAR_VOIDP(callback)
-            << VAR_VOIDP(callback_arg);
+    LogFunc << VAR(read_path) << VAR(write_path) << VAR(type) << VAR_VOIDP(callback) << VAR_VOIDP(callback_arg);
 
     std::ignore = write_path;
     std::ignore = config;
@@ -127,11 +125,7 @@ void MaaControllerDestroy(MaaControllerHandle ctrl)
     delete ctrl;
 }
 
-MaaBool MaaControllerSetOption(
-    MaaControllerHandle ctrl,
-    MaaCtrlOption key,
-    MaaOptionValue value,
-    MaaOptionValueSize val_size)
+MaaBool MaaControllerSetOption(MaaControllerHandle ctrl, MaaCtrlOption key, MaaOptionValue value, MaaOptionValueSize val_size)
 {
     LogFunc << VAR_VOIDP(ctrl) << VAR(key) << VAR_VOIDP(value) << VAR(val_size);
 
@@ -167,13 +161,7 @@ MaaCtrlId MaaControllerPostClick(MaaControllerHandle ctrl, int32_t x, int32_t y)
     return ctrl->post_click(x, y);
 }
 
-MaaCtrlId MaaControllerPostSwipe(
-    MaaControllerHandle ctrl,
-    int32_t x1,
-    int32_t y1,
-    int32_t x2,
-    int32_t y2,
-    int32_t duration)
+MaaCtrlId MaaControllerPostSwipe(MaaControllerHandle ctrl, int32_t x1, int32_t y1, int32_t x2, int32_t y2, int32_t duration)
 {
     LogFunc << VAR_VOIDP(ctrl) << VAR(x1) << VAR(y1) << VAR(x2) << VAR(y2) << VAR(duration);
 
@@ -233,12 +221,7 @@ MaaCtrlId MaaControllerPostStopApp(MaaControllerHandle ctrl, MaaStringView inten
     return ctrl->post_stop_app(intent);
 }
 
-MaaCtrlId MaaControllerPostTouchDown(
-    MaaControllerHandle ctrl,
-    int32_t contact,
-    int32_t x,
-    int32_t y,
-    int32_t pressure)
+MaaCtrlId MaaControllerPostTouchDown(MaaControllerHandle ctrl, int32_t contact, int32_t x, int32_t y, int32_t pressure)
 {
     LogFunc << VAR_VOIDP(ctrl) << VAR(contact) << VAR(x) << VAR(y) << VAR(pressure);
 
@@ -250,12 +233,7 @@ MaaCtrlId MaaControllerPostTouchDown(
     return ctrl->post_touch_down(contact, x, y, pressure);
 }
 
-MaaCtrlId MaaControllerPostTouchMove(
-    MaaControllerHandle ctrl,
-    int32_t contact,
-    int32_t x,
-    int32_t y,
-    int32_t pressure)
+MaaCtrlId MaaControllerPostTouchMove(MaaControllerHandle ctrl, int32_t contact, int32_t x, int32_t y, int32_t pressure)
 {
     LogFunc << VAR_VOIDP(ctrl) << VAR(contact) << VAR(x) << VAR(y) << VAR(pressure);
 

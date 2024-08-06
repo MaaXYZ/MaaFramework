@@ -29,14 +29,7 @@ public:
     virtual bool touch_down(int contact, int x, int y, int pressure) = 0;
     virtual bool touch_move(int contact, int x, int y, int pressure) = 0;
     virtual bool touch_up(int contact) = 0;
-};
 
-class KeyInputBase
-{
-public:
-    virtual ~KeyInputBase() = default;
-
-public:
     virtual bool press_key(int key) = 0;
     virtual bool input_text(const std::string& text) = 0;
 };

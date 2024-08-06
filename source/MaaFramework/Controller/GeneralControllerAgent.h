@@ -12,7 +12,7 @@ class GeneralControllerAgent : public ControllerAgent
 public:
     GeneralControllerAgent(
         std::shared_ptr<MAA_CTRL_UNIT_NS::ControlUnitAPI> control_unit,
-        MaaControllerCallback callback,
+        MaaNotificationCallback callback,
         MaaCallbackTransparentArg callback_arg);
     virtual ~GeneralControllerAgent() override = default;
 

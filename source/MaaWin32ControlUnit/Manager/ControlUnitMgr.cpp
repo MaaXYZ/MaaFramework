@@ -1,15 +1,20 @@
 #include "ControlUnitMgr.h"
 
-#include <meojson/json.hpp>
-
 #include "MaaFramework/MaaMsg.h"
 #include "Screencap/HwndUtils.hpp"
 #include "Utils/Logger.h"
 
 MAA_CTRL_UNIT_NS_BEGIN
 
-ControlUnitMgr::ControlUnitMgr(HWND hWnd, MaaControllerCallback callback, MaaCallbackTransparentArg callback_arg)
+ControlUnitMgr::ControlUnitMgr(
+    HWND hWnd,
+    std::shared_ptr<ScreencapBase> screencap_unit,
+    std::shared_ptr<InputBase> input_unit,
+    MaaNotificationCallback callback,
+    MaaCallbackTransparentArg callback_arg)
     : hwnd_(hWnd)
+    , screencap_(std::move(screencap_unit))
+    , input_(std::move(input_unit))
     , notifier(callback, callback_arg)
 {
 }
@@ -20,13 +25,6 @@ bool ControlUnitMgr::find_device(std::vector<std::string>& devices)
 
     // TODO
     return true;
-}
-
-void ControlUnitMgr::init(std::shared_ptr<InputBase> touch, std::shared_ptr<KeyInputBase> key, std::shared_ptr<ScreencapBase> screencap)
-{
-    input_ = std::move(touch);
-    key_input_ = std::move(key);
-    screencap_ = std::move(screencap);
 }
 
 bool ControlUnitMgr::connect()
@@ -149,22 +147,22 @@ bool ControlUnitMgr::touch_up(int contact)
 
 bool ControlUnitMgr::press_key(int key)
 {
-    if (!key_input_) {
-        LogError << "key_input_ is null";
+    if (!input_) {
+        LogError << "input_ is null";
         return false;
     }
 
-    return key_input_->press_key(key);
+    return input_->press_key(key);
 }
 
 bool ControlUnitMgr::input_text(const std::string& text)
 {
-    if (!key_input_) {
-        LogError << "key_input_ is null";
+    if (!input_) {
+        LogError << "input_ is null";
         return false;
     }
 
-    return key_input_->input_text(text);
+    return input_->input_text(text);
 }
 
 MAA_CTRL_UNIT_NS_END

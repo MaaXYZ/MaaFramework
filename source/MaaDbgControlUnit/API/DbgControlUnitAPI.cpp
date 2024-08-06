@@ -1,7 +1,5 @@
 #include "ControlUnit/DbgControlUnitAPI.h"
 
-#include <meojson/json.hpp>
-
 #include "CarouselImage/CarouselImage.h"
 #include "ReplayRecording/ReplayRecordingMgr.h"
 #include "Utils/Logger.h"

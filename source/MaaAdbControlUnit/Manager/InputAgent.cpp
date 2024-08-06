@@ -1,4 +1,4 @@
-#include "InputManager.h"
+#include "InputAgent.h"
 
 #include <format>
 #include <ranges>
@@ -12,11 +12,26 @@
 
 MAA_CTRL_UNIT_NS_BEGIN
 
-InputManager::InputManager(const MethodVec& input_methods, const std::filesystem::path& agent_path)
+InputAgent::InputAgent(MaaAdbInputMethod methods, const std::filesystem::path& agent_path)
 {
-    LogInfo << VAR(input_methods) << VAR(agent_path);
+    std::vector<Method> method_vector;
+    if (methods & MaaAdbInputMethod_EmulatorExtras) {
+        method_vector.emplace_back(InputAgent::Method::MumuExternalRendererIpc);
+        // TODO: add LDPlayer and more...
+    }
+    if (methods & MaaAdbInputMethod_Maatouch) {
+        method_vector.emplace_back(InputAgent::Method::Maatouch);
+    }
+    if (methods & MaaAdbInputMethod_MinitouchAndAdbKey) {
+        method_vector.emplace_back(InputAgent::Method::MinitouchAndAdbKey);
+    }
+    if (methods & MaaAdbInputMethod_AdbShell) {
+        method_vector.emplace_back(InputAgent::Method::AdbShell);
+    }
 
-    for (Method method : input_methods) {
+    LogInfo << VAR(methods) << VAR(method_vector) << VAR(agent_path);
+
+    for (Method method : method_vector) {
         std::shared_ptr<InputBase> unit = nullptr;
         switch (method) {
         case Method::AdbShell:
@@ -51,7 +66,7 @@ InputManager::InputManager(const MethodVec& input_methods, const std::filesystem
     }
 }
 
-bool InputManager::parse(const json::value& config)
+bool InputAgent::parse(const json::value& config)
 {
     bool ret = false;
     for (auto& unit : units_ | std::views::values) {
@@ -60,7 +75,7 @@ bool InputManager::parse(const json::value& config)
     return ret;
 }
 
-bool InputManager::init()
+bool InputAgent::init()
 {
     LogFunc;
 
@@ -75,14 +90,14 @@ bool InputManager::init()
     return active_unit_ != nullptr;
 }
 
-void InputManager::deinit()
+void InputAgent::deinit()
 {
     for (auto& unit : units_ | std::views::values) {
         unit->deinit();
     }
 }
 
-bool InputManager::click(int x, int y)
+bool InputAgent::click(int x, int y)
 {
     if (!active_unit_) {
         LogError << "No available input method" << VAR(active_unit_);
@@ -92,7 +107,7 @@ bool InputManager::click(int x, int y)
     return active_unit_->click(x, y);
 }
 
-bool InputManager::swipe(int x1, int y1, int x2, int y2, int duration)
+bool InputAgent::swipe(int x1, int y1, int x2, int y2, int duration)
 {
     if (!active_unit_) {
         LogError << "No available input method" << VAR(active_unit_);
@@ -102,7 +117,7 @@ bool InputManager::swipe(int x1, int y1, int x2, int y2, int duration)
     return active_unit_->swipe(x1, y1, x2, y2, duration);
 }
 
-bool InputManager::touch_down(int contact, int x, int y, int pressure)
+bool InputAgent::touch_down(int contact, int x, int y, int pressure)
 {
     if (!active_unit_) {
         LogError << "No available input method" << VAR(active_unit_);
@@ -112,7 +127,7 @@ bool InputManager::touch_down(int contact, int x, int y, int pressure)
     return active_unit_->touch_down(contact, x, y, pressure);
 }
 
-bool InputManager::touch_move(int contact, int x, int y, int pressure)
+bool InputAgent::touch_move(int contact, int x, int y, int pressure)
 {
     if (!active_unit_) {
         LogError << "No available input method" << VAR(active_unit_);
@@ -122,7 +137,7 @@ bool InputManager::touch_move(int contact, int x, int y, int pressure)
     return active_unit_->touch_move(contact, x, y, pressure);
 }
 
-bool InputManager::touch_up(int contact)
+bool InputAgent::touch_up(int contact)
 {
     if (!active_unit_) {
         LogError << "No available input method" << VAR(active_unit_);
@@ -132,7 +147,7 @@ bool InputManager::touch_up(int contact)
     return active_unit_->touch_up(contact);
 }
 
-bool InputManager::press_key(int key)
+bool InputAgent::press_key(int key)
 {
     if (!active_unit_) {
         LogError << "No available input method" << VAR(active_unit_);
@@ -142,7 +157,7 @@ bool InputManager::press_key(int key)
     return active_unit_->press_key(key);
 }
 
-bool InputManager::input_text(const std::string& text)
+bool InputAgent::input_text(const std::string& text)
 {
     if (!active_unit_) {
         LogError << "No available input method" << VAR(active_unit_);
@@ -152,22 +167,22 @@ bool InputManager::input_text(const std::string& text)
     return active_unit_->input_text(text);
 }
 
-std::ostream& operator<<(std::ostream& os, InputManager::Method m)
+std::ostream& operator<<(std::ostream& os, InputAgent::Method m)
 {
     switch (m) {
-    case InputManager::Method::UnknownYet:
+    case InputAgent::Method::UnknownYet:
         os << "UnknownYet";
         break;
-    case InputManager::Method::AdbShell:
+    case InputAgent::Method::AdbShell:
         os << "AdbShell";
         break;
-    case InputManager::Method::MinitouchAndAdbKey:
+    case InputAgent::Method::MinitouchAndAdbKey:
         os << "MinitouchAndAdbKey";
         break;
-    case InputManager::Method::Maatouch:
+    case InputAgent::Method::Maatouch:
         os << "Maatouch";
         break;
-    case InputManager::Method::MumuExternalRendererIpc:
+    case InputAgent::Method::MumuExternalRendererIpc:
         os << "MumuExternalRendererIpc";
         break;
     default:

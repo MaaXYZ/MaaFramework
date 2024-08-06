@@ -1,21 +1,16 @@
 #pragma once
 
-#include "ControlUnit/ControlUnitAPI.h"
-
 #include "Base/UnitBase.h"
+#include "MaaFramework/MaaDef.h"
 #include "Utils/SafeWindows.hpp"
 
 MAA_CTRL_UNIT_NS_BEGIN
 
-class SendMessageInput : public InputBase
+class InputAgent : public InputBase
 {
 public:
-    SendMessageInput(HWND hwnd)
-        : hwnd_(hwnd)
-    {
-    }
-
-    virtual ~SendMessageInput() override = default;
+    InputAgent(MaaWin32InputMethod method, HWND hWnd);
+    virtual ~InputAgent() override = default;
 
 public: // from InputBase
     virtual bool click(int x, int y) override;
@@ -30,6 +25,8 @@ public: // from InputBase
 
 private:
     HWND hwnd_ = nullptr;
+
+    std::shared_ptr<InputBase> input_ = nullptr;
 };
 
 MAA_CTRL_UNIT_NS_END

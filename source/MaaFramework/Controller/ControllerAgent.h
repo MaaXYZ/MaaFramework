@@ -56,14 +56,7 @@ struct AppParam
     std::string package;
 };
 
-using Param = std::variant<
-    std::monostate,
-    ClickParam,
-    SwipeParam,
-    TouchParam,
-    PressKeyParam,
-    InputTextParam,
-    AppParam>;
+using Param = std::variant<std::monostate, ClickParam, SwipeParam, TouchParam, PressKeyParam, InputTextParam, AppParam>;
 
 struct Action
 {
@@ -91,12 +84,11 @@ std::ostream& operator<<(std::ostream& os, const Action& action);
 class ControllerAgent : public MaaControllerAPI
 {
 public:
-    ControllerAgent(MaaControllerCallback callback, MaaCallbackTransparentArg callback_arg);
+    ControllerAgent(MaaNotificationCallback callback, MaaCallbackTransparentArg callback_arg);
 
     virtual ~ControllerAgent() override;
 
-    virtual bool
-        set_option(MaaCtrlOption key, MaaOptionValue value, MaaOptionValueSize val_size) override;
+    virtual bool set_option(MaaCtrlOption key, MaaOptionValue value, MaaOptionValueSize val_size) override;
 
     virtual MaaCtrlId post_connection() override;
     virtual MaaCtrlId post_click(int x, int y) override;
@@ -151,7 +143,7 @@ protected:
     virtual bool _input_text(InputTextParam param) = 0;
 
 protected:
-    MessageNotifier<MaaControllerCallback> notifier;
+    MessageNotifier<MaaNotificationCallback> notifier;
 
 private:
     MaaCtrlId post_connection_impl();
@@ -181,10 +173,7 @@ private:
 
     bool recording() const;
     void init_recording();
-    void append_recording(
-        json::value info,
-        const std::chrono::steady_clock::time_point& start_time,
-        bool success);
+    void append_recording(json::value info, const std::chrono::steady_clock::time_point& start_time, bool success);
 
     MaaCtrlId post(Action action);
     void focus_id(MaaCtrlId id);

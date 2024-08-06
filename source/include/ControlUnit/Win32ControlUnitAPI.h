@@ -15,8 +15,9 @@ extern "C"
 
     MAA_CONTROL_UNIT_API MaaControlUnitHandle MaaWin32ControlUnitCreate(
         MaaWin32Hwnd hWnd,
-        MaaWin32ControllerType type,
-        MaaControllerCallback callback,
+        MaaWin32ScreencapMethod screencap_method,
+        MaaWin32InputMethod input_method,
+        MaaNotificationCallback callback,
         MaaCallbackTransparentArg callback_arg);
 
     MAA_CONTROL_UNIT_API void MaaWin32ControlUnitDestroy(MaaControlUnitHandle handle);
