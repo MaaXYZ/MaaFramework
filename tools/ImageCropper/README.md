@@ -4,6 +4,8 @@
 
 ## 环境
 
+> 如果虚拟环境路径 venv/ 存在，start.bat 优先使用虚拟环境。
+
 需要 `python` 环境，推荐版本为 `3.11` ，最低版本为 `3.9` 以上。
 
 ## 依赖
@@ -12,9 +14,13 @@
 python -m pip install -r requirements.txt
 ```
 
+### 安装
+
+如果你不清楚如何执行上述命令，请运行 `install.bat`。
+
 ## 使用
 
-0. 根据 `MaaControllerSetOption` 的使用情况，调整脚本中的 `截图参数` 和 `初始窗口大小`
+0. (非必要) 根据 `set_screenshot_target_long/short_side` 的使用情况，调整脚本中的 `截图参数` 和 `初始窗口大小`
 1. 如果有预先准备好的截图，需保存到 `./src/` 路径下
 2. 运行 `start.bat` 或 `python main.py [device serial]` ，设备地址为可选
     - 根据提示 `Please select the device (ENTER to pass):` ，选择 adb 已连接设备（按 ENTER 跳过选择）

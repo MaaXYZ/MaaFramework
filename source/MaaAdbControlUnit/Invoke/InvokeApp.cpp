@@ -8,9 +8,7 @@ MAA_CTRL_UNIT_NS_BEGIN
 
 InvokeApp::~InvokeApp()
 {
-    if (pushed_) {
-        remove();
-    }
+    remove();
 }
 
 bool InvokeApp::parse(const json::value& config)
@@ -147,6 +145,11 @@ bool InvokeApp::chmod()
 bool InvokeApp::remove()
 {
     LogFunc;
+
+    if (!pushed_) {
+        LogTrace << "Not pushed, skip remove";
+        return true;
+    }
 
     merge_replacement({ { "{TO_REMOVED_FILE}", tempname_ } });
 

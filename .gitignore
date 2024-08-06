@@ -446,3 +446,4 @@ FodyWeavers.xsd
 !include/MaaToolkit/Win32
 
 export_targets.cmake
+maa_pi_config.json

@@ -1,2 +1,2 @@
-adbutils~=1.2.15
-opencv_python~=4.8.1.78
+MaaFw~=1.8
+opencv_python~=4.10

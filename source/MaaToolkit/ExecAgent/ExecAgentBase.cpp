@@ -74,13 +74,20 @@ std::optional<json::value> ExecAgentBase::run_executor(
     const std::filesystem::path& exec_path,
     const std::vector<std::string>& exec_args)
 {
-    auto searched_path = boost::process::search_path(exec_path);
-    if (!std::filesystem::exists(searched_path)) {
-        LogError << "path not exists" << VAR(searched_path);
+    std::filesystem::path abs_path;
+    if (exec_path.is_absolute()) {
+        abs_path = exec_path;
+    }
+    else {
+        abs_path = boost::process::search_path(exec_path);
+    }
+
+    if (!std::filesystem::exists(abs_path)) {
+        LogError << "path not exists" << VAR(abs_path);
         return std::nullopt;
     }
 
-    ChildPipeIOStream child(searched_path, exec_args);
+    ChildPipeIOStream child(abs_path, exec_args);
 
     auto result_opt = handle_ipc(child);
     if (!result_opt) {
@@ -140,50 +147,58 @@ std::optional<json::value> ExecAgentBase::handle_ipc(IOStream& ios)
 
 std::string ExecAgentBase::handle_command(const json::value& cmd)
 {
-    static const std::unordered_map<std::string, std::function<json::value(const json::value&)>> cmd_map = {
-        { "RunTask", std::bind(&ExecAgentBase::ctx_run_task, this, std::placeholders::_1) },
-        { "run_task", std::bind(&ExecAgentBase::ctx_run_task, this, std::placeholders::_1) },
-        { "runtask", std::bind(&ExecAgentBase::ctx_run_task, this, std::placeholders::_1) },
-        { "RunRecognition",
-          std::bind(&ExecAgentBase::ctx_run_recognition, this, std::placeholders::_1) },
-        { "run_recognition",
-          std::bind(&ExecAgentBase::ctx_run_recognition, this, std::placeholders::_1) },
-        { "runrecognition",
-          std::bind(&ExecAgentBase::ctx_run_recognition, this, std::placeholders::_1) },
-        { "RunAction", std::bind(&ExecAgentBase::ctx_run_action, this, std::placeholders::_1) },
-        { "run_action", std::bind(&ExecAgentBase::ctx_run_action, this, std::placeholders::_1) },
-        { "runaction", std::bind(&ExecAgentBase::ctx_run_action, this, std::placeholders::_1) },
-        { "Click", std::bind(&ExecAgentBase::ctx_click, this, std::placeholders::_1) },
-        { "click", std::bind(&ExecAgentBase::ctx_click, this, std::placeholders::_1) },
-        { "Swipe", std::bind(&ExecAgentBase::ctx_swipe, this, std::placeholders::_1) },
-        { "swipe", std::bind(&ExecAgentBase::ctx_swipe, this, std::placeholders::_1) },
-        { "PressKey", std::bind(&ExecAgentBase::ctx_press_key, this, std::placeholders::_1) },
-        { "press_key", std::bind(&ExecAgentBase::ctx_press_key, this, std::placeholders::_1) },
-        { "presskey", std::bind(&ExecAgentBase::ctx_press_key, this, std::placeholders::_1) },
-        { "Key", std::bind(&ExecAgentBase::ctx_press_key, this, std::placeholders::_1) },
-        { "key", std::bind(&ExecAgentBase::ctx_press_key, this, std::placeholders::_1) },
-        { "InputText", std::bind(&ExecAgentBase::ctx_input_text, this, std::placeholders::_1) },
-        { "input_text", std::bind(&ExecAgentBase::ctx_input_text, this, std::placeholders::_1) },
-        { "inputtext", std::bind(&ExecAgentBase::ctx_input_text, this, std::placeholders::_1) },
-        { "Text", std::bind(&ExecAgentBase::ctx_input_text, this, std::placeholders::_1) },
-        { "text", std::bind(&ExecAgentBase::ctx_input_text, this, std::placeholders::_1) },
-        { "TouchDown", std::bind(&ExecAgentBase::ctx_touch_down, this, std::placeholders::_1) },
-        { "touch_down", std::bind(&ExecAgentBase::ctx_touch_down, this, std::placeholders::_1) },
-        { "touchdown", std::bind(&ExecAgentBase::ctx_touch_down, this, std::placeholders::_1) },
-        { "TouchMove", std::bind(&ExecAgentBase::ctx_touch_move, this, std::placeholders::_1) },
-        { "touch_move", std::bind(&ExecAgentBase::ctx_touch_move, this, std::placeholders::_1) },
-        { "touchmove", std::bind(&ExecAgentBase::ctx_touch_move, this, std::placeholders::_1) },
-        { "TouchUp", std::bind(&ExecAgentBase::ctx_touch_up, this, std::placeholders::_1) },
-        { "touch_up", std::bind(&ExecAgentBase::ctx_touch_up, this, std::placeholders::_1) },
-        { "touchup", std::bind(&ExecAgentBase::ctx_touch_up, this, std::placeholders::_1) },
-        { "Screencap", std::bind(&ExecAgentBase::ctx_screencap, this, std::placeholders::_1) },
-        { "screencap", std::bind(&ExecAgentBase::ctx_screencap, this, std::placeholders::_1) },
-        { "Screenshot", std::bind(&ExecAgentBase::ctx_screencap, this, std::placeholders::_1) },
-        { "screenshot", std::bind(&ExecAgentBase::ctx_screencap, this, std::placeholders::_1) },
-        { "CachedImage", std::bind(&ExecAgentBase::ctx_cached_image, this, std::placeholders::_1) },
-        { "cached_image", std::bind(&ExecAgentBase::ctx_cached_image, this, std::placeholders::_1) },
-        { "cachedimage", std::bind(&ExecAgentBase::ctx_cached_image, this, std::placeholders::_1) },
-    };
+    static const std::unordered_map<std::string, std::function<json::value(const json::value&)>>
+        cmd_map = {
+            { "RunTask", std::bind(&ExecAgentBase::ctx_run_task, this, std::placeholders::_1) },
+            { "run_task", std::bind(&ExecAgentBase::ctx_run_task, this, std::placeholders::_1) },
+            { "runtask", std::bind(&ExecAgentBase::ctx_run_task, this, std::placeholders::_1) },
+            { "RunRecognition",
+              std::bind(&ExecAgentBase::ctx_run_recognition, this, std::placeholders::_1) },
+            { "run_recognition",
+              std::bind(&ExecAgentBase::ctx_run_recognition, this, std::placeholders::_1) },
+            { "runrecognition",
+              std::bind(&ExecAgentBase::ctx_run_recognition, this, std::placeholders::_1) },
+            { "RunAction", std::bind(&ExecAgentBase::ctx_run_action, this, std::placeholders::_1) },
+            { "run_action",
+              std::bind(&ExecAgentBase::ctx_run_action, this, std::placeholders::_1) },
+            { "runaction", std::bind(&ExecAgentBase::ctx_run_action, this, std::placeholders::_1) },
+            { "Click", std::bind(&ExecAgentBase::ctx_click, this, std::placeholders::_1) },
+            { "click", std::bind(&ExecAgentBase::ctx_click, this, std::placeholders::_1) },
+            { "Swipe", std::bind(&ExecAgentBase::ctx_swipe, this, std::placeholders::_1) },
+            { "swipe", std::bind(&ExecAgentBase::ctx_swipe, this, std::placeholders::_1) },
+            { "PressKey", std::bind(&ExecAgentBase::ctx_press_key, this, std::placeholders::_1) },
+            { "press_key", std::bind(&ExecAgentBase::ctx_press_key, this, std::placeholders::_1) },
+            { "presskey", std::bind(&ExecAgentBase::ctx_press_key, this, std::placeholders::_1) },
+            { "Key", std::bind(&ExecAgentBase::ctx_press_key, this, std::placeholders::_1) },
+            { "key", std::bind(&ExecAgentBase::ctx_press_key, this, std::placeholders::_1) },
+            { "InputText", std::bind(&ExecAgentBase::ctx_input_text, this, std::placeholders::_1) },
+            { "input_text",
+              std::bind(&ExecAgentBase::ctx_input_text, this, std::placeholders::_1) },
+            { "inputtext", std::bind(&ExecAgentBase::ctx_input_text, this, std::placeholders::_1) },
+            { "Text", std::bind(&ExecAgentBase::ctx_input_text, this, std::placeholders::_1) },
+            { "text", std::bind(&ExecAgentBase::ctx_input_text, this, std::placeholders::_1) },
+            { "TouchDown", std::bind(&ExecAgentBase::ctx_touch_down, this, std::placeholders::_1) },
+            { "touch_down",
+              std::bind(&ExecAgentBase::ctx_touch_down, this, std::placeholders::_1) },
+            { "touchdown", std::bind(&ExecAgentBase::ctx_touch_down, this, std::placeholders::_1) },
+            { "TouchMove", std::bind(&ExecAgentBase::ctx_touch_move, this, std::placeholders::_1) },
+            { "touch_move",
+              std::bind(&ExecAgentBase::ctx_touch_move, this, std::placeholders::_1) },
+            { "touchmove", std::bind(&ExecAgentBase::ctx_touch_move, this, std::placeholders::_1) },
+            { "TouchUp", std::bind(&ExecAgentBase::ctx_touch_up, this, std::placeholders::_1) },
+            { "touch_up", std::bind(&ExecAgentBase::ctx_touch_up, this, std::placeholders::_1) },
+            { "touchup", std::bind(&ExecAgentBase::ctx_touch_up, this, std::placeholders::_1) },
+            { "Screencap", std::bind(&ExecAgentBase::ctx_screencap, this, std::placeholders::_1) },
+            { "screencap", std::bind(&ExecAgentBase::ctx_screencap, this, std::placeholders::_1) },
+            { "Screenshot", std::bind(&ExecAgentBase::ctx_screencap, this, std::placeholders::_1) },
+            { "screenshot", std::bind(&ExecAgentBase::ctx_screencap, this, std::placeholders::_1) },
+            { "CachedImage",
+              std::bind(&ExecAgentBase::ctx_cached_image, this, std::placeholders::_1) },
+            { "cached_image",
+              std::bind(&ExecAgentBase::ctx_cached_image, this, std::placeholders::_1) },
+            { "cachedimage",
+              std::bind(&ExecAgentBase::ctx_cached_image, this, std::placeholders::_1) },
+        };
 
     auto func_opt = cmd.find<std::string>("function");
     if (!func_opt) {

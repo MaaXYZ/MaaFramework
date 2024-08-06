@@ -224,14 +224,19 @@ FeatureMatcher::ResultsVec FeatureMatcher::feature_postproc(
         return {};
     }
 
-    cv::Mat H = cv::findHomography(obj, scene, cv::RANSAC);
+    cv::Mat homography = cv::findHomography(obj, scene, cv::RHO);
+
+    if (homography.empty()) {
+        LogTrace << name_ << VAR(uid_) << "Homography is empty";
+        return {};
+    }
 
     std::array<cv::Point2d, 4> obj_corners = { cv::Point2d(0, 0),
                                                cv::Point2d(templ_cols, 0),
                                                cv::Point2d(templ_cols, templ_rows),
                                                cv::Point2d(0, templ_rows) };
     std::array<cv::Point2d, 4> scene_corners;
-    cv::perspectiveTransform(obj_corners, scene_corners, H);
+    cv::perspectiveTransform(obj_corners, scene_corners, homography);
 
     double x = std::min(
         { scene_corners[0].x, scene_corners[1].x, scene_corners[2].x, scene_corners[3].x });
