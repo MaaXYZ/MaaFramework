@@ -1,4 +1,4 @@
-#include "MaaFramework/Task/MaaSyncContext.h"
+#include "MaaFramework/Instance/MaaSyncContext.h"
 
 #include "API/MaaTypes.h"
 #include "Buffer/ImageBuffer.hpp"

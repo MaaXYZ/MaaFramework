@@ -32,7 +32,7 @@ typedef struct MaaInstanceAPI* MaaInstanceHandle;
 
 typedef uint8_t MaaBool;
 typedef uint64_t MaaSize;
-#define MaaNullSize ((MaaSize)-1)
+#define MaaNullSize ((MaaSize) - 1)
 
 typedef const char* MaaStringView;
 
@@ -175,7 +175,8 @@ enum MaaInstOptionEnum
 };
 
 // MaaAdbScreencapMethod:
-// Use bitwise OR to set the method you need, MaaFramework will test their speed and use the fastest one.
+// Use bitwise OR to set the method you need, MaaFramework will test their speed and use the fastest
+// one.
 typedef uint64_t MaaAdbScreencapMethod;
 const MaaAdbScreencapMethod MaaAdbScreencapMethod_None = 0ULL;
 const MaaAdbScreencapMethod MaaAdbScreencapMethod_EncodeToFile = 1ULL;
@@ -188,8 +189,8 @@ const MaaAdbScreencapMethod MaaAdbScreencapMethod_EmulatorExtras = 1ULL << 6;
 const MaaAdbScreencapMethod MaaAdbScreencapMethod_All = UINT64_MAX;
 
 // MaaAdbInputMethod:
-// Use bitwise OR to set the method you need, MaaFramework will select the available ones according to priority.
-// The priority is: EmulatorExtras > Maatouch > MinitouchAndAdbKey > AdbShell
+// Use bitwise OR to set the method you need, MaaFramework will select the available ones according
+// to priority. The priority is: EmulatorExtras > Maatouch > MinitouchAndAdbKey > AdbShell
 typedef uint64_t MaaAdbInputMethod;
 const MaaAdbInputMethod MaaAdbInputMethod_None = 0ULL;
 const MaaAdbInputMethod MaaAdbInputMethod_AdbShell = 1ULL;
@@ -199,7 +200,8 @@ const MaaAdbInputMethod MaaAdbInputMethod_EmulatorExtras = 1ULL << 3;
 const MaaAdbInputMethod MaaAdbInputMethod_All = UINT64_MAX;
 
 // MaaWin32ScreencapMethod:
-// Use bitwise OR to set the method you need, MaaFramework will test their speed and use the fastest one.
+// Use bitwise OR to set the method you need, MaaFramework will test their speed and use the fastest
+// one.
 typedef uint64_t MaaWin32ScreencapMethod;
 const MaaWin32ScreencapMethod MaaWin32ScreencapMethod_None = 0ULL;
 const MaaWin32ScreencapMethod MaaWin32ScreencapMethod_GDI = 1ULL;
@@ -208,8 +210,8 @@ const MaaWin32ScreencapMethod MaaWin32ScreencapMethod_DXGI_DesktopDup = 1ULL << 
 const MaaWin32ScreencapMethod MaaWin32ScreencapMethod_All = UINT64_MAX;
 
 // MaaWin32InputMethod:
-// Use bitwise OR to set the method you need, MaaFramework will select the available ones according to priority.
-// The priority is: SendMessage > Seize
+// Use bitwise OR to set the method you need, MaaFramework will select the available ones according
+// to priority. The priority is: SendMessage > Seize
 typedef uint64_t MaaWin32InputMethod;
 const MaaWin32InputMethod MaaWin32InputMethod_None = 0ULL;
 const MaaWin32InputMethod MaaWin32InputMethod_Seize = 1ULL;
@@ -249,14 +251,28 @@ typedef MaaAPICallback MaaInstanceCallback;
 struct MaaCustomControllerAPI;
 typedef struct MaaCustomControllerAPI* MaaCustomControllerHandle;
 
-struct MaaCustomRecognizerAPI;
-typedef struct MaaCustomRecognizerAPI* MaaCustomRecognizerHandle;
-
-struct MaaCustomActionAPI;
-typedef struct MaaCustomActionAPI* MaaCustomActionHandle;
-
 struct MaaSyncContextAPI;
 typedef struct MaaSyncContextAPI* MaaSyncContextHandle;
+
+typedef MaaBool (*MaaCustomRecognizerAPI)(
+    MaaSyncContextHandle sync_context,
+    const MaaImageBufferHandle image,
+    MaaStringView task_name,
+    MaaStringView recognizer_name,
+    MaaStringView custom_recognition_param,
+    MaaTransparentArg recognizer_arg,
+    /* out */ MaaRectHandle out_box,
+    /* out */ MaaStringBufferHandle out_detail);
+
+typedef MaaBool (*MaaCustomActionAPI)(
+    MaaSyncContextHandle sync_context,
+    const MaaImageBufferHandle image,
+    MaaStringView task_name,
+    MaaStringView action_name,
+    MaaStringView custom_action_param,
+    MaaRectHandle cur_box,
+    MaaStringView cur_rec_detail,
+    MaaTransparentArg action_arg);
 
 #ifdef __cplusplus
 extern "C"
