@@ -50,7 +50,7 @@ extern "C"
     MAA_FRAMEWORK_API MaaBool MaaRegisterCustomRecognizer(
         MaaResourceHandle res,
         MaaStringView name,
-        MaaCustomRecognizerHandle recognizer,
+        MaaCustomRecognizerCallback recognizer,
         MaaTransparentArg recognizer_arg);
 
     /**
@@ -85,7 +85,7 @@ extern "C"
     MAA_FRAMEWORK_API MaaBool MaaRegisterCustomAction(
         MaaResourceHandle res,
         MaaStringView name,
-        MaaCustomActionHandle action,
+        MaaCustomActionCallback action,
         MaaTransparentArg action_arg);
 
     /**

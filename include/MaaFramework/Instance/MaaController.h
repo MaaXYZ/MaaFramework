@@ -24,8 +24,10 @@ extern "C"
      *
      * @param adb_path The path of ADB executable.
      * @param address The ADB serial of the target device.
-     * @param screencap_methods Use bitwise OR to set the method you need, MaaFramework will test their speed and use the fastest one.
-     * @param input_methods Use bitwise OR to set the method you need, MaaFramework will select the available ones according to priority.
+     * @param screencap_methods Use bitwise OR to set the method you need, MaaFramework will test
+     * their speed and use the fastest one.
+     * @param input_methods Use bitwise OR to set the method you need, MaaFramework will select the
+     * available ones according to priority.
      * @param config The config of the ADB controller.
      * @param agent_path The path of the agent executable.
      * @param callback The callback function. See ::MaaAPICallback.
@@ -39,7 +41,7 @@ extern "C"
         MaaAdbInputMethod input_methods,
         MaaStringView config,
         MaaStringView agent_path,
-        MaaControllerCallback callback,
+        MaaNotificationCallback callback,
         MaaCallbackTransparentArg callback_arg);
 
     /**
@@ -47,8 +49,10 @@ extern "C"
      *
      * @param hWnd The win32 window handle to control. This can be retrieved by helpers provided in
      * MaaToolkitWin32Window.h.
-     * @param screencap_methods Use bitwise OR to set the method you need, MaaFramework will test their speed and use the fastest one.
-     * @param input_methods Use bitwise OR to set the method you need, MaaFramework will select the available ones according to priority.
+     * @param screencap_methods Use bitwise OR to set the method you need, MaaFramework will test
+     * their speed and use the fastest one.
+     * @param input_methods Use bitwise OR to set the method you need, MaaFramework will select the
+     * available ones according to priority.
      * @param callback The callback function. See ::MaaAPICallback.
      * @param callback_arg The callback arg that will be passed to the callback function.
      * @return MaaControllerHandle The handle of the created controller instance.
@@ -57,7 +61,7 @@ extern "C"
         MaaWin32Hwnd hWnd,
         MaaWin32ScreencapMethod screencap_methods,
         MaaWin32InputMethod input_methods,
-        MaaControllerCallback callback,
+        MaaNotificationCallback callback,
         MaaCallbackTransparentArg callback_arg);
 
     /**
@@ -70,9 +74,9 @@ extern "C"
      * @return MaaControllerHandle The handle of the created controller instance.
      */
     MAA_FRAMEWORK_API MaaControllerHandle MaaCustomControllerCreate(
-        MaaCustomControllerHandle handle,
+        MaaCustomControllerCallbacksHandle handle,
         MaaTransparentArg handle_arg,
-        MaaControllerCallback callback,
+        MaaNotificationCallback callback,
         MaaCallbackTransparentArg callback_arg);
 
     MAA_FRAMEWORK_API MaaControllerHandle MaaDbgControllerCreate(
@@ -80,7 +84,7 @@ extern "C"
         MaaStringView write_path,
         MaaDbgControllerType type,
         MaaStringView config,
-        MaaControllerCallback callback,
+        MaaNotificationCallback callback,
         MaaCallbackTransparentArg callback_arg);
 
     /**

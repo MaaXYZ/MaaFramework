@@ -229,25 +229,12 @@ typedef void* MaaWin32Hwnd;
 typedef void* MaaTransparentArg;
 typedef MaaTransparentArg MaaCallbackTransparentArg;
 
-/**
- * @brief The callback function type.
- *
- * @param msg The message. See MaaMsg.h
- * @param details_json The details in JSON format. See doc in MaaMsg.h
- */
-typedef void (
-    *MaaAPICallback)(MaaStringView msg, MaaStringView details_json, MaaTransparentArg callback_arg);
-typedef MaaAPICallback MaaResourceCallback;
-typedef MaaAPICallback MaaControllerCallback;
-typedef MaaAPICallback MaaInstanceCallback;
+typedef void (*MaaNotificationCallback)(
+    MaaStringView message,
+    MaaStringView details_json,
+    MaaTransparentArg callback_arg);
 
-struct MaaCustomControllerAPI;
-typedef struct MaaCustomControllerAPI* MaaCustomControllerHandle;
-
-struct MaaSyncContextAPI;
-typedef struct MaaSyncContextAPI* MaaSyncContextHandle;
-
-typedef MaaBool (*MaaCustomRecognizerAPI)(
+typedef MaaBool (*MaaCustomRecognizerCallback)(
     MaaSyncContextHandle sync_context,
     const MaaImageBufferHandle image,
     MaaStringView task_name,
@@ -257,7 +244,7 @@ typedef MaaBool (*MaaCustomRecognizerAPI)(
     /* out */ MaaRectHandle out_box,
     /* out */ MaaStringBufferHandle out_detail);
 
-typedef MaaBool (*MaaCustomActionAPI)(
+typedef MaaBool (*MaaCustomActionCallback)(
     MaaSyncContextHandle sync_context,
     const MaaImageBufferHandle image,
     MaaStringView task_name,
@@ -266,6 +253,12 @@ typedef MaaBool (*MaaCustomActionAPI)(
     MaaRectHandle cur_box,
     MaaStringView cur_rec_detail,
     MaaTransparentArg action_arg);
+
+struct MaaCustomControllerCallbacks;
+typedef struct MaaCustomControllerCallbacks* MaaCustomControllerCallbacksHandle;
+
+struct MaaSyncContextAPI;
+typedef struct MaaSyncContextAPI* MaaSyncContextHandle;
 
 #ifdef __cplusplus
 extern "C"

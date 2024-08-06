@@ -124,7 +124,8 @@ coro::Promise<AnalyzeResult> my_analyze(
 
     // Step 2: output anything you want
     result.rec_detail =
-        "Balabala, this string will be used by MaaCustomActionAPI and MaaQueryRecognitionDetail. "
+        "Balabala, this string will be used by MaaCustomActionCallback and "
+        "MaaQueryRecognitionDetail. "
         "And for compatibility, I recommend you use json.";
 
     // Finally, if this task is hit and you want to execute the action and next of this task,

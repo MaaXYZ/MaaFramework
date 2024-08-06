@@ -95,7 +95,7 @@ MaaControllerHandle MaaWin32ControllerCreate(
 }
 
 MaaControllerHandle MaaCustomControllerCreate(
-    MaaCustomControllerHandle handle,
+    MaaCustomControllerCallbacksHandle handle,
     MaaTransparentArg handle_arg,
     MaaControllerCallback callback,
     MaaCallbackTransparentArg callback_arg)

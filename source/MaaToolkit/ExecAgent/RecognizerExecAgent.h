@@ -52,7 +52,7 @@ private:
         /*out*/ MaaStringBufferHandle out_detail);
 
 private:
-    MaaCustomRecognizerAPI custom_recognizer_ {};
+    MaaCustomRecognizerCallback custom_recognizer_ {};
 };
 
 MAA_TOOLKIT_NS_END

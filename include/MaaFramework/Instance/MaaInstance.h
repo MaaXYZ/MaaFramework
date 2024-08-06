@@ -27,7 +27,7 @@ extern "C"
      * @return MaaInstanceHandle
      */
     MAA_FRAMEWORK_API MaaInstanceHandle
-        MaaCreate(MaaInstanceCallback callback, MaaCallbackTransparentArg callback_arg);
+        MaaCreate(MaaNotificationCallback callback, MaaCallbackTransparentArg callback_arg);
 
     /**
      * @brief Free the instance.

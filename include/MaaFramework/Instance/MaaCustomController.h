@@ -28,7 +28,7 @@ extern "C"
      * functions you need. Do note that if an unimplemented function is called, the framework will
      * likely crash.
      */
-    struct MaaCustomControllerAPI
+    struct MaaCustomControllerCallbacks
     {
         MaaBool (*connect)(MaaTransparentArg handle_arg);
 
@@ -43,6 +43,7 @@ extern "C"
         MaaBool (*screencap)(MaaTransparentArg handle_arg, /* out */ MaaImageBufferHandle buffer);
 
         MaaBool (*click)(int32_t x, int32_t y, MaaTransparentArg handle_arg);
+
         MaaBool (*swipe)(
             int32_t x1,
             int32_t y1,
@@ -50,21 +51,25 @@ extern "C"
             int32_t y2,
             int32_t duration,
             MaaTransparentArg handle_arg);
+
         MaaBool (*touch_down)(
             int32_t contact,
             int32_t x,
             int32_t y,
             int32_t pressure,
             MaaTransparentArg handle_arg);
+
         MaaBool (*touch_move)(
             int32_t contact,
             int32_t x,
             int32_t y,
             int32_t pressure,
             MaaTransparentArg handle_arg);
+
         MaaBool (*touch_up)(int32_t contact, MaaTransparentArg handle_arg);
 
         MaaBool (*press_key)(int32_t keycode, MaaTransparentArg handle_arg);
+
         MaaBool (*input_text)(MaaStringView text, MaaTransparentArg handle_arg);
     };
 

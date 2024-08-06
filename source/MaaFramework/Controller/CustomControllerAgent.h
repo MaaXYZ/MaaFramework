@@ -8,7 +8,7 @@ class CustomControllerAgent : public ControllerAgent
 {
 public:
     CustomControllerAgent(
-        MaaCustomControllerHandle handle,
+        MaaCustomControllerCallbacksHandle handle,
         MaaTransparentArg handle_arg,
         MaaControllerCallback callback,
         MaaCallbackTransparentArg callback_arg);
@@ -29,7 +29,7 @@ protected:
     virtual bool _input_text(InputTextParam param) override;
 
 private:
-    MaaCustomControllerHandle handle_ = nullptr;
+    MaaCustomControllerCallbacksHandle handle_ = nullptr;
     MaaTransparentArg handle_arg_ = nullptr;
 };
 
