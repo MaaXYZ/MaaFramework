@@ -77,9 +77,8 @@ _✨ 基于图像识别的自动化黑盒测试框架 ✨_
 - [MaaAeonFantasy](https://github.com/Andl-Liu/MaaAeonFantasy)  星神少女 预言之子 小助手  
   基于全新架构的 星神少女 小助手。图像技术 + 模拟控制，让手去做它该做的事！由 MaaFramework 强力驱动！
 
-- [MWA](https://github.com/MAWHA/MWA) 物华弥新 小助手。（~~我们玩家都是这么累的啦，不像小助手，只需要识别图像和模拟控制，我们玩家还要起早贪黑的打开电脑和小助手~~）     
+- [maa-whmx](https://github.com/MAWHA/maa-whmx) 物华弥新 小助手 ![cpp](https://img.shields.io/badge/C%2B%2B-00599C?logo=c%2B%2B&logoColor=white) ![qt](https://img.shields.io/badge/Qt6-41CD52?logo=Qt&logoColor=white)  
   基于全新架构的 物华弥新 小助手。图像技术 + 模拟控制，解放双手！由 MaaFramework 强力驱动！
-
 
 ## 生态共建
 
@@ -147,4 +146,3 @@ _请留意，仅当您准备开发 MaaFramework 本身时，才需要阅读本�
 <a href="https://afdian.com/a/misteo">
   <img width="200" src="https://pic1.afdiancdn.com/static/img/welcome/button-sponsorme.png">
 </a>
-
