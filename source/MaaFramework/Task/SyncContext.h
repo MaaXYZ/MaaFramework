@@ -21,40 +21,16 @@ public:
     virtual ~SyncContext() override = default;
 
 public: // from MaaSyncContextAPI
-    virtual bool run_task(std::string task, std::string_view param) override;
-    virtual bool run_recognition(
+    virtual MaaTaskId run_task(std::string task, std::string_view param) override;
+    virtual MaaTaskId run_recognition(
         cv::Mat image,
         std::string task,
         std::string_view param,
         /*out*/ cv::Rect& box,
         /*out*/ std::string& detail) override;
-    virtual bool run_action(
-        std::string task,
-        std::string_view param,
-        cv::Rect cur_box,
-        std::string cur_detail) override;
-
-    virtual bool click(int x, int y) override;
-    virtual bool swipe(int x1, int y1, int x2, int y2, int duration) override;
-    virtual bool press_key(int keycode) override;
-    virtual bool input_text(std::string_view text) override;
-    virtual bool touch_down(int contact, int x, int y, int pressure) override;
-    virtual bool touch_move(int contact, int x, int y, int pressure) override;
-    virtual bool touch_up(int contact) override;
-    virtual cv::Mat screencap() override;
-    virtual cv::Mat cached_image() override;
+    virtual MaaTaskId run_action(std::string task, std::string_view param, cv::Rect cur_box, std::string cur_detail) override;
 
     virtual MaaInstanceHandle instance() override { return dynamic_cast<MaaInstanceHandle>(inst_); }
-
-    virtual MaaResourceHandle resource() override
-    {
-        return instance() ? instance()->resource() : nullptr;
-    }
-
-    virtual MaaControllerHandle controller() override
-    {
-        return instance() ? instance()->controller() : nullptr;
-    }
 
 private:
     InstanceInternalAPI* inst_ = nullptr;

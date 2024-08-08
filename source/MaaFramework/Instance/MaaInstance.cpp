@@ -1,4 +1,4 @@
-#include "InstanceMgr.h"
+#include "MaaInstance.h"
 
 #include "Controller/ControllerAgent.h"
 #include "MaaFramework/MaaMsg.h"
@@ -9,16 +9,16 @@
 
 MAA_NS_BEGIN
 
-InstanceMgr::InstanceMgr(MaaInstanceCallback callback, MaaCallbackTransparentArg callback_arg)
+MaaInstance::MaaInstance(MaaInstanceCallback callback, MaaCallbackTransparentArg callback_arg)
     : notifier(callback, callback_arg)
 {
     LogFunc << VAR_VOIDP(callback) << VAR_VOIDP(callback_arg);
 
-    task_runner_ = std::make_unique<AsyncRunner<TaskPtr>>(
-        std::bind(&InstanceMgr::run_task, this, std::placeholders::_1, std::placeholders::_2));
+    task_runner_ =
+        std::make_unique<AsyncRunner<TaskPtr>>(std::bind(&MaaInstance::run_task, this, std::placeholders::_1, std::placeholders::_2));
 }
 
-InstanceMgr::~InstanceMgr()
+MaaInstance::~MaaInstance()
 {
     LogFunc;
 
@@ -27,7 +27,7 @@ InstanceMgr::~InstanceMgr()
     }
 }
 
-bool InstanceMgr::bind_resource(MaaResourceAPI* resource)
+bool MaaInstance::bind_resource(MaaResourceAPI* resource)
 {
     LogInfo << VAR_VOIDP(this) << VAR_VOIDP(resource);
 
@@ -40,7 +40,7 @@ bool InstanceMgr::bind_resource(MaaResourceAPI* resource)
     return true;
 }
 
-bool InstanceMgr::bind_controller(MaaControllerAPI* controller)
+bool MaaInstance::bind_controller(MaaControllerAPI* controller)
 {
     LogInfo << VAR_VOIDP(this) << VAR_VOIDP(controller);
 
@@ -53,12 +53,12 @@ bool InstanceMgr::bind_controller(MaaControllerAPI* controller)
     return true;
 }
 
-bool InstanceMgr::inited() const
+bool MaaInstance::inited() const
 {
     return resource_ && controller_ && resource_->valid() && controller_->connected();
 }
 
-bool InstanceMgr::set_option(MaaInstOption key, MaaOptionValue value, MaaOptionValueSize val_size)
+bool MaaInstance::set_option(MaaInstOption key, MaaOptionValue value, MaaOptionValueSize val_size)
 {
     std::ignore = key;
     std::ignore = value;
@@ -67,7 +67,7 @@ bool InstanceMgr::set_option(MaaInstOption key, MaaOptionValue value, MaaOptionV
     return false;
 }
 
-MaaTaskId InstanceMgr::post_pipeline(std::string entry, std::string_view param)
+MaaTaskId MaaInstance::post_pipeline(std::string entry, std::string_view param)
 {
     auto task = make_task(entry, param);
     if (!task) {
@@ -87,7 +87,7 @@ MaaTaskId InstanceMgr::post_pipeline(std::string entry, std::string_view param)
     return id;
 }
 
-MaaTaskId InstanceMgr::post_recognition(std::string entry, std::string_view param)
+MaaTaskId MaaInstance::post_recognition(std::string entry, std::string_view param)
 {
     auto task = make_task(entry, param);
     if (!task) {
@@ -107,7 +107,7 @@ MaaTaskId InstanceMgr::post_recognition(std::string entry, std::string_view para
     return id;
 }
 
-MaaTaskId InstanceMgr::post_action(std::string entry, std::string_view param)
+MaaTaskId MaaInstance::post_action(std::string entry, std::string_view param)
 {
     auto task = make_task(entry, param);
     if (!task) {
@@ -127,7 +127,7 @@ MaaTaskId InstanceMgr::post_action(std::string entry, std::string_view param)
     return id;
 }
 
-bool InstanceMgr::set_task_param(MaaTaskId task_id, std::string_view param)
+bool MaaInstance::set_task_param(MaaTaskId task_id, std::string_view param)
 {
     LogInfo << VAR(task_id) << VAR(param);
 
@@ -149,10 +149,7 @@ bool InstanceMgr::set_task_param(MaaTaskId task_id, std::string_view param)
     return ret;
 }
 
-bool InstanceMgr::register_custom_recognizer(
-    std::string name,
-    MaaCustomRecognizerHandle handle,
-    MaaTransparentArg handle_arg)
+bool MaaInstance::register_custom_recognizer(std::string name, MaaCustomRecognizerHandle handle, MaaTransparentArg handle_arg)
 {
     LogInfo << VAR(name) << VAR_VOIDP(handle) << VAR_VOIDP(handle_arg);
     if (!handle) {
@@ -165,22 +162,19 @@ bool InstanceMgr::register_custom_recognizer(
     return true;
 }
 
-bool InstanceMgr::unregister_custom_recognizer(std::string name)
+bool MaaInstance::unregister_custom_recognizer(std::string name)
 {
     LogInfo << VAR(name);
     return custom_recognizer_sessions_.erase(name) > 0;
 }
 
-void InstanceMgr::clear_custom_recognizer()
+void MaaInstance::clear_custom_recognizer()
 {
     LogInfo;
     custom_recognizer_sessions_.clear();
 }
 
-bool InstanceMgr::register_custom_action(
-    std::string name,
-    MaaCustomActionHandle handle,
-    MaaTransparentArg handle_arg)
+bool MaaInstance::register_custom_action(std::string name, MaaCustomActionHandle handle, MaaTransparentArg handle_arg)
 {
     LogInfo << VAR(name) << VAR_VOIDP(handle) << VAR_VOIDP(handle_arg);
     if (!handle) {
@@ -192,19 +186,19 @@ bool InstanceMgr::register_custom_action(
     return true;
 }
 
-bool InstanceMgr::unregister_custom_action(std::string name)
+bool MaaInstance::unregister_custom_action(std::string name)
 {
     LogInfo << VAR(name);
     return custom_action_sessions_.erase(name) > 0;
 }
 
-void InstanceMgr::clear_custom_action()
+void MaaInstance::clear_custom_action()
 {
     LogInfo;
     custom_action_sessions_.clear();
 }
 
-MaaStatus InstanceMgr::task_status(MaaTaskId task_id) const
+MaaStatus MaaInstance::task_status(MaaTaskId task_id) const
 {
     if (!task_runner_) {
         LogError << "task_runner is nullptr";
@@ -213,7 +207,7 @@ MaaStatus InstanceMgr::task_status(MaaTaskId task_id) const
     return task_runner_->status(task_id);
 }
 
-MaaStatus InstanceMgr::task_wait(MaaTaskId task_id) const
+MaaStatus MaaInstance::task_wait(MaaTaskId task_id) const
 {
     if (!task_runner_) {
         LogError << "task_runner is nullptr";
@@ -223,13 +217,12 @@ MaaStatus InstanceMgr::task_wait(MaaTaskId task_id) const
     return task_runner_->status(task_id);
 }
 
-MaaBool InstanceMgr::running() const
+MaaBool MaaInstance::running() const
 {
-    return resource_ && resource_->running() && controller_ && controller_->running()
-           && task_runner_ && task_runner_->running();
+    return resource_ && resource_->running() && controller_ && controller_->running() && task_runner_ && task_runner_->running();
 }
 
-void InstanceMgr::post_stop()
+void MaaInstance::post_stop()
 {
     LogFunc;
 
@@ -254,32 +247,32 @@ void InstanceMgr::post_stop()
     }
 }
 
-MaaResourceHandle InstanceMgr::resource()
+MaaResourceHandle MaaInstance::resource()
 {
     return resource_;
 }
 
-MaaControllerHandle InstanceMgr::controller()
+MaaControllerHandle MaaInstance::controller()
 {
     return controller_;
 }
 
-MAA_RES_NS::ResourceMgr* InstanceMgr::inter_resource()
+MAA_RES_NS::ResourceMgr* MaaInstance::inter_resource()
 {
     return dynamic_cast<MAA_RES_NS::ResourceMgr*>(resource());
 }
 
-MAA_CTRL_NS::ControllerAgent* InstanceMgr::inter_controller()
+MAA_CTRL_NS::ControllerAgent* MaaInstance::inter_controller()
 {
     return dynamic_cast<MAA_CTRL_NS::ControllerAgent*>(controller());
 }
 
-void InstanceMgr::notify(std::string_view msg, const json::value& details)
+void MaaInstance::notify(std::string_view msg, const json::value& details)
 {
     notifier.notify(msg, details);
 }
 
-CustomRecognizerSession* InstanceMgr::custom_recognizer_session(const std::string& name)
+CustomRecognizerSession* MaaInstance::custom_recognizer_session(const std::string& name)
 {
     auto it = custom_recognizer_sessions_.find(name);
     if (it == custom_recognizer_sessions_.end()) {
@@ -289,7 +282,7 @@ CustomRecognizerSession* InstanceMgr::custom_recognizer_session(const std::strin
     return &it->second;
 }
 
-CustomActionSession* InstanceMgr::custom_action_session(const std::string& name)
+CustomActionSession* MaaInstance::custom_action_session(const std::string& name)
 {
     auto it = custom_action_sessions_.find(name);
     if (it == custom_action_sessions_.end()) {
@@ -299,12 +292,12 @@ CustomActionSession* InstanceMgr::custom_action_session(const std::string& name)
     return &it->second;
 }
 
-InstanceCache* InstanceMgr::cache()
+InstanceCache* MaaInstance::cache()
 {
     return &cache_;
 }
 
-InstanceMgr::TaskPtr InstanceMgr::make_task(std::string entry, std::string_view param)
+MaaInstance::TaskPtr MaaInstance::make_task(std::string entry, std::string_view param)
 {
     LogInfo << VAR(entry) << VAR(param);
 
@@ -336,7 +329,7 @@ InstanceMgr::TaskPtr InstanceMgr::make_task(std::string entry, std::string_view 
     return task_ptr;
 }
 
-bool InstanceMgr::run_task(TaskId id, TaskPtr task_ptr)
+bool MaaInstance::run_task(TaskId id, TaskPtr task_ptr)
 {
     LogFunc << VAR(id) << VAR(task_ptr);
 
@@ -369,7 +362,7 @@ bool InstanceMgr::run_task(TaskId id, TaskPtr task_ptr)
     return ret;
 }
 
-bool InstanceMgr::check_stop()
+bool MaaInstance::check_stop()
 {
     if (!need_to_stop_) {
         return true;
