@@ -79,8 +79,14 @@ Logger& Logger::get_instance()
 void Logger::start_logging(std::filesystem::path dir)
 {
     log_dir_ = std::move(dir);
-    log_path_ = log_dir_ / kLogFilename;
-    dumps_dir_ = log_dir_ / kDumpsDirname;
+    if (log_dir_.empty()) {
+        log_path_.clear();
+        dumps_dir_.clear();
+    }
+    else {
+        log_path_ = log_dir_ / kLogFilename;
+        dumps_dir_ = log_dir_ / kDumpsDirname;
+    }
     reinit();
 }
 
