@@ -303,6 +303,15 @@ def getAmplifiedRoiRectangle(roi: Roimage) -> list[int]:
     return Roimage(w, h, x, y, roi.parent).rectangle
 
 
+def isWindowVisible(winName: str, destroyed: bool = False) -> bool:
+    if destroyed:
+        return False
+    try:
+        return cv2.getWindowProperty(winName, cv2.WND_PROP_VISIBLE) > 0
+    except cv2.error:
+        return False
+
+
 # 初始化 cv2 窗口
 cv2.namedWindow(win_name, cv2.WINDOW_NORMAL)
 cv2.setWindowProperty(win_name, cv2.WND_PROP_TOPMOST, 1)
@@ -313,6 +322,7 @@ cv2.setWindowProperty(trackbars_name, cv2.WND_PROP_TOPMOST, 1)
 cv2.createTrackbar('Scale', trackbars_name, 100, 200, trackbar_change)
 
 cropping = False
+destroyedMainColors = True
 while True:
     if not cropping:
         std_roimage = getStdRoimage()
@@ -406,12 +416,14 @@ while True:
             mains.append(cv2.hconcat(mainColors))
             cv2.namedWindow('MainColors', cv2.WINDOW_NORMAL)
             cv2.imshow('MainColors', cv2.vconcat(mains))
+            destroyedMainColors = False
             print(f"ColorMatch: {ret}"
                   .replace("'", '"')
                   .replace("False", "false")
                   .replace("True", "true"))
-        elif cv2.getWindowProperty('MainColors', cv2.WND_PROP_VISIBLE) > 0:
+        elif isWindowVisible('MainColors', destroyedMainColors):
             cv2.destroyWindow('MainColors')
+            destroyedMainColors = True
 
         print("")
 
