@@ -308,6 +308,7 @@ jobs:
     needs: [meta, windows, ubuntu, macos, nuget_pack, pip_pack]
     runs-on: ubuntu-latest
     env:
+      OUTPUT_PUBLISH_FAILED: 'echo "failed=true" >> $GITHUB_OUTPUT && echo "::error::Failed to publish packages"'
       NUGET_PACKAGE_SOURCE: https://api.nuget.org/v3/index.json # https://apiint.nugettest.org/v3/index.json
 
     steps:
@@ -316,20 +317,23 @@ jobs:
           path: assets
 
       - name: Publish Nupkgs
+        id: nuget
         run: |
           nuget push assets/MAA-nupkgs/*.nupkg \
             -ApiKey ${{ secrets.NuGetAPIKey }} \
             -Source $NUGET_PACKAGE_SOURCE \
-            -SkipDuplicate
+            || eval $OUTPUT_PUBLISH_FAILED
           rm -r assets/MAA-nupkgs
 
       - name: Publish Pip Packages
+        id: pip
         run: |
           pip install --upgrade twine
           python -m twine upload \
             assets/MAA-pip-pkgs/*.whl \
             --username __token__\
-            --password ${{ secrets.PYPI_TOKEN }}
+            --password ${{ secrets.PYPI_TOKEN }} \
+            || eval $OUTPUT_PUBLISH_FAILED
           rm -r assets/MAA-pip-pkgs
 
       - run: |
@@ -342,3 +346,14 @@ jobs:
         with:
           files: assets/*.zip
           tag_name: ${{ needs.meta.outputs.tag }}
+
+      - name: Create issue if failed to publish packages
+        if: steps.nuget.outputs.failed || steps.pip.outputs.failed
+        uses: actions-cool/issues-helper@v3
+        with:
+          actions: 'create-issue'
+          title: '${{ needs.meta.outputs.tag }} failed to publish packages'
+          body: |
+            Please manually publish the following packages:
+            ${{ steps.nuget.outputs.failed && '- nuget @moomiji' || '' }}
+            ${{ steps.pip.outputs.failed && '- pip @QiE2035' || '' }}
