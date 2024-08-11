@@ -23,10 +23,10 @@
 #pragma GCC diagnostic ignored "-Wunused-variable"
 #endif
 
-MaaControllerHandle create_adb_controller();
-MaaControllerHandle create_win32_controller();
-void register_my_recognizer_by_ffi(MaaInstanceHandle maa_handle);
-void register_my_action_by_exec_agent(MaaInstanceHandle maa_handle);
+MaaController* create_adb_controller();
+MaaController* create_win32_controller();
+void register_my_recognizer_by_ffi(MaaScheduler* maa_handle);
+void register_my_action_by_exec_agent(MaaScheduler* maa_handle);
 
 int main([[maybe_unused]] int argc, char** argv)
 {
@@ -72,7 +72,7 @@ int main([[maybe_unused]] int argc, char** argv)
     return 0;
 }
 
-MaaControllerHandle create_adb_controller()
+MaaController* create_adb_controller()
 {
     MaaToolkitPostFindDevice();
     auto device_size = MaaToolkitWaitForFindDeviceToComplete();
@@ -94,7 +94,7 @@ MaaControllerHandle create_adb_controller()
     return controller_handle;
 }
 
-MaaControllerHandle create_win32_controller()
+MaaController* create_win32_controller()
 {
     auto hwnd = MaaToolkitGetCursorWindow();
     auto type = MaaWin32ControllerType_Touch_SendMessage | MaaWin32ControllerType_Screencap_GDI;
@@ -102,13 +102,13 @@ MaaControllerHandle create_win32_controller()
 }
 
 MaaBool my_analyze(
-    MaaSyncContextHandle sync_context,
-    const MaaImageBufferHandle image,
-    MaaStringView task_name,
-    MaaStringView custom_recognition_param,
+    MaaContext* context,
+    const MaaImageBuffer* image,
+    const char* task_name,
+    const char* custom_recognition_param,
     MaaTransparentArg arg,
-    /*out*/ MaaRectHandle out_box,
-    /*out*/ MaaStringBufferHandle out_detail)
+    /*out*/ MaaRect* out_box,
+    /*out*/ MaaStringBuffer* out_detail)
 {
     /* Get image */
 
@@ -148,13 +148,13 @@ MaaBool my_analyze(
 
 MaaCustomRecognizerCallback my_recognizer {};
 
-void register_my_recognizer_by_ffi(MaaInstanceHandle maa_handle)
+void register_my_recognizer_by_ffi(MaaScheduler* maa_handle)
 {
     my_recognizer.analyze = my_analyze;
     MaaRegisterCustomRecognizer(maa_handle, "MyRec", &my_recognizer, nullptr);
 }
 
-void register_my_action_by_exec_agent(MaaInstanceHandle maa_handle)
+void register_my_action_by_exec_agent(MaaScheduler* maa_handle)
 {
     std::vector<const char*> params = { "sample/python/exec_agent/my_action.py" };
     MaaToolkitRegisterCustomActionExecutor(

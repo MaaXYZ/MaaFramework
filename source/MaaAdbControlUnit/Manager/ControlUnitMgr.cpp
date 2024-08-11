@@ -14,7 +14,7 @@ ControlUnitMgr::ControlUnitMgr(
     std::shared_ptr<ScreencapBase> screencap_unit,
     std::shared_ptr<InputBase> touch_unit,
     MaaNotificationCallback callback,
-    MaaCallbackTransparentArg callback_arg)
+    MaaTransparentArg callback_arg)
     : adb_path_(std::move(adb_path))
     , adb_serial_(std::move(adb_serial))
     , screencap_(std::move(screencap_unit))
@@ -301,7 +301,7 @@ void ControlUnitMgr::on_image_resolution_changed(const std::pair<int, int>& pre,
 {
     LogFunc;
 
-    dispatch([&](const std::shared_ptr<ControlUnitSink>& sink) {
+    Dispatcher<ControlUnitSink>::dispatch([&](const std::shared_ptr<ControlUnitSink>& sink) {
         if (!sink) {
             return;
         }

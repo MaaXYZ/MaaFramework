@@ -7,15 +7,15 @@
 #include "Utils/Logger.h"
 #include "Utils/Platform.h"
 
-MaaResourceHandle
-    MaaResourceCreate(MaaResourceCallback callback, MaaCallbackTransparentArg callback_arg)
+MaaResource*
+    MaaResourceCreate(MaaResourceCallback callback, MaaTransparentArg callback_arg)
 {
     LogFunc << VAR_VOIDP(callback) << VAR_VOIDP(callback_arg);
 
     return new MAA_RES_NS::ResourceMgr(callback, callback_arg);
 }
 
-void MaaResourceDestroy(MaaResourceHandle res)
+void MaaResourceDestroy(MaaResource* res)
 {
     LogFunc << VAR_VOIDP(res);
 
@@ -27,7 +27,7 @@ void MaaResourceDestroy(MaaResourceHandle res)
     delete res;
 }
 
-MaaResId MaaResourcePostPath(MaaResourceHandle res, MaaStringView path)
+MaaResId MaaResourcePostPath(MaaResource* res, const char* path)
 {
     LogFunc << VAR_VOIDP(res) << VAR(path);
 
@@ -39,7 +39,7 @@ MaaResId MaaResourcePostPath(MaaResourceHandle res, MaaStringView path)
     return res->post_path(MAA_NS::path(path));
 }
 
-MaaBool MaaResourceClear(MaaResourceHandle res)
+MaaBool MaaResourceClear(MaaResource* res)
 {
     LogFunc << VAR_VOIDP(res);
 
@@ -51,7 +51,7 @@ MaaBool MaaResourceClear(MaaResourceHandle res)
     return res->clear();
 }
 
-MaaStatus MaaResourceStatus(MaaResourceHandle res, MaaResId id)
+MaaStatus MaaResourceStatus(MaaResource* res, MaaResId id)
 {
     // LogFunc << VAR_VOIDP(res) << VAR(id);
 
@@ -63,7 +63,7 @@ MaaStatus MaaResourceStatus(MaaResourceHandle res, MaaResId id)
     return res->status(id);
 }
 
-MaaStatus MaaResourceWait(MaaResourceHandle res, MaaResId id)
+MaaStatus MaaResourceWait(MaaResource* res, MaaResId id)
 {
     // LogFunc << VAR_VOIDP(res) << VAR(id);
 
@@ -75,7 +75,7 @@ MaaStatus MaaResourceWait(MaaResourceHandle res, MaaResId id)
     return res->wait(id);
 }
 
-MaaBool MaaResourceLoaded(MaaResourceHandle res)
+MaaBool MaaResourceLoaded(MaaResource* res)
 {
     // LogFunc << VAR_VOIDP(res);
 
@@ -88,7 +88,7 @@ MaaBool MaaResourceLoaded(MaaResourceHandle res)
 }
 
 MaaBool MaaResourceSetOption(
-    MaaResourceHandle res,
+    MaaResource* res,
     MaaResOption key,
     MaaOptionValue value,
     MaaOptionValueSize val_size)
@@ -103,7 +103,7 @@ MaaBool MaaResourceSetOption(
     return res->set_option(key, value, val_size);
 }
 
-MaaBool MaaResourceGetHash(MaaResourceHandle res, MaaStringBufferHandle buffer)
+MaaBool MaaResourceGetHash(MaaResource* res, MaaStringBuffer* buffer)
 {
     if (!res || !buffer) {
         LogError << "handle is null";
@@ -120,7 +120,7 @@ MaaBool MaaResourceGetHash(MaaResourceHandle res, MaaStringBufferHandle buffer)
     return true;
 }
 
-MaaBool MaaResourceGetTaskList(MaaResourceHandle res, /* out */ MaaStringBufferHandle buffer)
+MaaBool MaaResourceGetTaskList(MaaResource* res, /* out */ MaaStringBuffer* buffer)
 {
     if (!res || !buffer) {
         LogError << "handle is null";

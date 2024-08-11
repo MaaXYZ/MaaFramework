@@ -7,7 +7,7 @@
 #include "Utils/Logger.h"
 #include "Utils/NoWarningCVMat.hpp"
 
-MaaStringView MaaVersion()
+const char* MaaVersion()
 {
 #pragma message("MaaFramework MAA_VERSION: " MAA_VERSION)
 
@@ -23,12 +23,12 @@ MaaBool MaaSetGlobalOption(MaaGlobalOption key, MaaOptionValue value, MaaOptionV
 
 MaaBool MaaQueryRecognitionDetail(
     MaaRecoId reco_id,
-    /* out */ MaaStringBufferHandle name,
+    /* out */ MaaStringBuffer* name,
     /* out */ MaaBool* hit,
-    /* out */ MaaRectHandle hit_box,
-    /* out */ MaaStringBufferHandle detail_json,
-    /* out */ MaaImageBufferHandle raw,
-    /* out */ MaaImageListBufferHandle draws)
+    /* out */ MaaRect* hit_box,
+    /* out */ MaaStringBuffer* detail_json,
+    /* out */ MaaImageBuffer* raw,
+    /* out */ MaaImageListBuffer* draws)
 {
     bool mhit = false;
     std::string mname;
@@ -73,7 +73,7 @@ MaaBool MaaQueryRecognitionDetail(
 
 MaaBool MaaQueryNodeDetail(
     MaaNodeId node_id,
-    /* out */ MaaStringBufferHandle name,
+    /* out */ MaaStringBuffer* name,
     /* out */ MaaRecoId* reco_id,
     /* out */ MaaBool* run_completed)
 {
@@ -101,7 +101,7 @@ MaaBool MaaQueryNodeDetail(
 
 MaaBool MaaQueryTaskDetail(
     MaaTaskId task_id,
-    /* out */ MaaStringBufferHandle entry,
+    /* out */ MaaStringBuffer* entry,
     /* out */ MaaNodeId* node_id_list,
     /* in & out */ MaaSize* node_id_list_size)
 {

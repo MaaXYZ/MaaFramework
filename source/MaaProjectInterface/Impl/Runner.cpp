@@ -16,15 +16,15 @@ MAA_PROJECT_INTERFACE_NS_BEGIN
 bool Runner::run(
     const RuntimeParam& param,
     MaaInstanceCallback callback,
-    MaaCallbackTransparentArg callback_arg,
+    MaaTransparentArg callback_arg,
     MaaResourceCallback resource_callback,
-    MaaCallbackTransparentArg resource_callback_arg,
+    MaaTransparentArg resource_callback_arg,
     MaaNotificationCallback controller_callback,
-    MaaCallbackTransparentArg controller_callback_arg)
+    MaaTransparentArg controller_callback_arg)
 {
     auto maa_handle = MaaCreate(callback, callback_arg);
 
-    MaaControllerHandle controller_handle = nullptr;
+    MaaController* controller_handle = nullptr;
     if (const auto* p_adb_param = std::get_if<RuntimeParam::AdbParam>(&param.controller_param)) {
         controller_handle = MaaAdbControllerCreateV2(
             p_adb_param->adb_path.c_str(),

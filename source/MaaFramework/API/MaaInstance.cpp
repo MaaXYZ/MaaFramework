@@ -1,16 +1,16 @@
-#include "MaaFramework/Instance/MaaInstance.h"
+#include "MaaFramework/Instance/MaaScheduler.h"
 
 #include "Instance/InstanceMgr.h"
 #include "Utils/Logger.h"
 
-MaaInstanceHandle MaaCreate(MaaInstanceCallback callback, MaaCallbackTransparentArg callback_arg)
+MaaScheduler* MaaCreate(MaaInstanceCallback callback, MaaTransparentArg callback_arg)
 {
     LogFunc << VAR_VOIDP(callback) << VAR_VOIDP(callback_arg);
 
     return new MAA_NS::InstanceMgr(callback, callback_arg);
 }
 
-void MaaDestroy(MaaInstanceHandle inst)
+void MaaDestroy(MaaScheduler* inst)
 {
     LogFunc << VAR_VOIDP(inst);
 
@@ -22,11 +22,7 @@ void MaaDestroy(MaaInstanceHandle inst)
     delete inst;
 }
 
-MaaBool MaaSetOption(
-    MaaInstanceHandle inst,
-    MaaInstOption key,
-    MaaOptionValue value,
-    MaaOptionValueSize val_size)
+MaaBool MaaSetOption(MaaScheduler* inst, MaaSchedOption key, MaaOptionValue value, MaaOptionValueSize val_size)
 {
     LogFunc << VAR_VOIDP(inst) << VAR(key) << VAR_VOIDP(value) << VAR(val_size);
 
@@ -38,7 +34,7 @@ MaaBool MaaSetOption(
     return inst->set_option(key, value, val_size);
 }
 
-MaaBool MaaBindResource(MaaInstanceHandle inst, MaaResourceHandle res)
+MaaBool MaaBindResource(MaaScheduler* inst, MaaResource* res)
 {
     LogFunc << VAR_VOIDP(inst) << VAR_VOIDP(res);
 
@@ -50,7 +46,7 @@ MaaBool MaaBindResource(MaaInstanceHandle inst, MaaResourceHandle res)
     return inst->bind_resource(res);
 }
 
-MaaBool MaaBindController(MaaInstanceHandle inst, MaaControllerHandle ctrl)
+MaaBool MaaBindController(MaaScheduler* inst, MaaController* ctrl)
 {
     LogFunc << VAR_VOIDP(inst) << VAR_VOIDP(ctrl);
 
@@ -62,7 +58,7 @@ MaaBool MaaBindController(MaaInstanceHandle inst, MaaControllerHandle ctrl)
     return inst->bind_controller(ctrl);
 }
 
-MaaBool MaaInited(MaaInstanceHandle inst)
+MaaBool MaaInited(MaaScheduler* inst)
 {
     if (!inst) {
         LogError << "handle is null";
@@ -73,8 +69,8 @@ MaaBool MaaInited(MaaInstanceHandle inst)
 }
 
 MaaBool MaaRegisterCustomRecognizer(
-    MaaInstanceHandle inst,
-    MaaStringView name,
+    MaaScheduler* inst,
+    const char* name,
     MaaCustomRecognizerHandle recognizer,
     MaaTransparentArg recognizer_arg)
 {
@@ -88,7 +84,7 @@ MaaBool MaaRegisterCustomRecognizer(
     return inst->register_custom_recognizer(name, recognizer, recognizer_arg);
 }
 
-MaaBool MaaUnregisterCustomRecognizer(MaaInstanceHandle inst, MaaStringView name)
+MaaBool MaaUnregisterCustomRecognizer(MaaScheduler* inst, const char* name)
 {
     LogFunc << VAR_VOIDP(inst) << VAR(name);
 
@@ -100,7 +96,7 @@ MaaBool MaaUnregisterCustomRecognizer(MaaInstanceHandle inst, MaaStringView name
     return inst->unregister_custom_recognizer(name);
 }
 
-MaaBool MaaClearCustomRecognizer(MaaInstanceHandle inst)
+MaaBool MaaClearCustomRecognizer(MaaScheduler* inst)
 {
     LogFunc << VAR_VOIDP(inst);
 
@@ -113,11 +109,7 @@ MaaBool MaaClearCustomRecognizer(MaaInstanceHandle inst)
     return true;
 }
 
-MaaBool MaaRegisterCustomAction(
-    MaaInstanceHandle inst,
-    MaaStringView name,
-    MaaCustomActionHandle action,
-    MaaTransparentArg action_arg)
+MaaBool MaaRegisterCustomAction(MaaScheduler* inst, const char* name, MaaCustomActionHandle action, MaaTransparentArg action_arg)
 {
     LogFunc << VAR_VOIDP(inst) << VAR(name) << VAR_VOIDP(action) << VAR_VOIDP(action_arg);
 
@@ -129,7 +121,7 @@ MaaBool MaaRegisterCustomAction(
     return inst->register_custom_action(name, action, action_arg);
 }
 
-MaaBool MaaUnregisterCustomAction(MaaInstanceHandle inst, MaaStringView name)
+MaaBool MaaUnregisterCustomAction(MaaScheduler* inst, const char* name)
 {
     LogFunc << VAR_VOIDP(inst) << VAR(name);
 
@@ -141,7 +133,7 @@ MaaBool MaaUnregisterCustomAction(MaaInstanceHandle inst, MaaStringView name)
     return inst->unregister_custom_action(name);
 }
 
-MaaBool MaaClearCustomAction(MaaInstanceHandle inst)
+MaaBool MaaClearCustomAction(MaaScheduler* inst)
 {
     LogFunc << VAR_VOIDP(inst);
 
@@ -154,7 +146,7 @@ MaaBool MaaClearCustomAction(MaaInstanceHandle inst)
     return true;
 }
 
-MaaTaskId MaaPostTask(MaaInstanceHandle inst, MaaStringView entry, MaaStringView param)
+MaaTaskId MaaPostTask(MaaScheduler* inst, const char* entry, const char* param)
 {
     LogFunc << VAR_VOIDP(inst) << VAR(entry) << VAR(param);
 
@@ -165,7 +157,7 @@ MaaTaskId MaaPostTask(MaaInstanceHandle inst, MaaStringView entry, MaaStringView
     return inst->post_pipeline(entry, param);
 }
 
-MaaTaskId MaaPostRecognition(MaaInstanceHandle inst, MaaStringView entry, MaaStringView param)
+MaaTaskId MaaPostRecognition(MaaScheduler* inst, const char* entry, const char* param)
 {
     LogFunc << VAR_VOIDP(inst) << VAR(entry) << VAR(param);
 
@@ -176,7 +168,7 @@ MaaTaskId MaaPostRecognition(MaaInstanceHandle inst, MaaStringView entry, MaaStr
     return inst->post_recognition(entry, param);
 }
 
-MaaTaskId MaaPostAction(MaaInstanceHandle inst, MaaStringView entry, MaaStringView param)
+MaaTaskId MaaPostAction(MaaScheduler* inst, const char* entry, const char* param)
 {
     LogFunc << VAR_VOIDP(inst) << VAR(entry) << VAR(param);
 
@@ -187,7 +179,7 @@ MaaTaskId MaaPostAction(MaaInstanceHandle inst, MaaStringView entry, MaaStringVi
     return inst->post_action(entry, param);
 }
 
-MaaBool MaaSetTaskParam(MaaInstanceHandle inst, MaaTaskId id, MaaStringView param)
+MaaBool MaaSetTaskParam(MaaScheduler* inst, MaaTaskId id, const char* param)
 {
     LogFunc << VAR_VOIDP(inst) << VAR(id) << VAR(param);
 
@@ -198,7 +190,7 @@ MaaBool MaaSetTaskParam(MaaInstanceHandle inst, MaaTaskId id, MaaStringView para
     return inst->set_task_param(id, param);
 }
 
-MaaStatus MaaTaskStatus(MaaInstanceHandle inst, MaaTaskId id)
+MaaStatus MaaTaskStatus(MaaScheduler* inst, MaaTaskId id)
 {
     // LogFunc << VAR_VOIDP(inst) << VAR(id);
 
@@ -209,7 +201,7 @@ MaaStatus MaaTaskStatus(MaaInstanceHandle inst, MaaTaskId id)
     return inst->task_status(id);
 }
 
-MaaStatus MaaWaitTask(MaaInstanceHandle inst, MaaTaskId id)
+MaaStatus MaaWaitTask(MaaScheduler* inst, MaaTaskId id)
 {
     // LogFunc << VAR_VOIDP(inst) << VAR(id);
 
@@ -220,14 +212,14 @@ MaaStatus MaaWaitTask(MaaInstanceHandle inst, MaaTaskId id)
     return inst->task_wait(id);
 }
 
-MaaBool MaaTaskAllFinished(MaaInstanceHandle inst)
+MaaBool MaaTaskAllFinished(MaaScheduler* inst)
 {
     LogWarn << __FUNCTION__ << "is deprecated, use !MaaRunning instead.";
 
     return !MaaRunning(inst);
 }
 
-MaaBool MaaRunning(MaaInstanceHandle inst)
+MaaBool MaaRunning(MaaScheduler* inst)
 {
     if (!inst) {
         LogError << "handle is null";
@@ -236,7 +228,7 @@ MaaBool MaaRunning(MaaInstanceHandle inst)
     return inst->running();
 }
 
-MaaBool MaaPostStop(MaaInstanceHandle inst)
+MaaBool MaaPostStop(MaaScheduler* inst)
 {
     LogFunc << VAR_VOIDP(inst);
 
@@ -249,13 +241,13 @@ MaaBool MaaPostStop(MaaInstanceHandle inst)
     return true;
 }
 
-MaaBool MaaStop(MaaInstanceHandle inst)
+MaaBool MaaStop(MaaScheduler* inst)
 {
     LogWarn << __FUNCTION__ << "is deprecated, use MaaPostStop instead.";
     return MaaPostStop(inst);
 }
 
-MaaResourceHandle MaaGetResource(MaaInstanceHandle inst)
+MaaResource* MaaGetResource(MaaScheduler* inst)
 {
     LogFunc << VAR_VOIDP(inst);
 
@@ -267,7 +259,7 @@ MaaResourceHandle MaaGetResource(MaaInstanceHandle inst)
     return inst->resource();
 }
 
-MaaControllerHandle MaaGetController(MaaInstanceHandle inst)
+MaaController* MaaGetController(MaaScheduler* inst)
 {
     LogFunc << VAR_VOIDP(inst);
 

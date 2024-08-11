@@ -12,7 +12,7 @@ CustomControllerAgent::CustomControllerAgent(
     MaaCustomControllerCallbacksHandle handle,
     MaaTransparentArg handle_arg,
     MaaNotificationCallback callback,
-    MaaCallbackTransparentArg callback_arg)
+    MaaTransparentArg callback_arg)
     : ControllerAgent(callback, callback_arg)
     , handle_(handle)
     , handle_arg_(handle_arg)
@@ -85,7 +85,7 @@ std::optional<cv::Mat> CustomControllerAgent::_screencap()
     ImageBuffer buffer;
     MaaBool ret = handle_->screencap(handle_arg_, &buffer);
     if (!ret) {
-        LogError << "failed to get_image" << VAR(ret);
+        LogError << "failed to cached_image" << VAR(ret);
         return std::nullopt;
     }
 

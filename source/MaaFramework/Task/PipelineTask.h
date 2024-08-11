@@ -17,7 +17,17 @@
 
 MAA_TASK_NS_BEGIN
 
-class PipelineTask : public MaaInstanceSink
+class PipelineSink
+{
+public:
+    virtual ~PipelineSink() = default;
+
+    virtual bool on_set_param(int64_t task_id, const json::value& param) = 0;
+};
+
+class PipelineTask
+    : public MaaSink
+    , public PipelineSink
 {
 public:
     using TaskData = MAA_RES_NS::TaskData;
@@ -27,8 +37,10 @@ public:
     PipelineTask(std::string entry, InstanceInternalAPI* inst);
     virtual ~PipelineTask() override = default;
 
-public: // from MaaInstanceSink
-    virtual void post_stop() override { need_to_stop_ = true; }
+public: // from MaaSink
+    virtual void post_stop() override;
+
+    virtual bool on_set_param(int64_t task_id, const json::value& param) override;
 
 public:
     const std::string& entry() const { return entry_; }
@@ -49,16 +61,8 @@ public:
 
     bool set_param(const json::value& param);
 
-    static bool query_node_detail(
-        MaaNodeId node_id,
-        std::string& name,
-        MaaRecoId& reco_id,
-        bool& completed);
-
-    static bool query_task_detail(
-        MaaTaskId task_id,
-        std::string& entry,
-        std::vector<MaaNodeId>& node_id_list);
+    static bool query_node_detail(MaaNodeId node_id, std::string& name, MaaRecoId& reco_id, bool& completed);
+    static bool query_task_detail(MaaTaskId task_id, std::string& entry, std::vector<MaaNodeId>& node_id_list);
 
 private:
     enum class NodeStatus
@@ -106,10 +110,7 @@ private:
 private:
     MAA_RES_NS::ResourceMgr* resource() { return inst_ ? inst_->inter_resource() : nullptr; }
 
-    MAA_CTRL_NS::ControllerAgent* controller()
-    {
-        return inst_ ? inst_->inter_controller() : nullptr;
-    }
+    MAA_CTRL_NS::ControllerAgent* controller() { return inst_ ? inst_->inter_controller() : nullptr; }
 
     void notify(std::string_view msg, json::value detail = json::value())
     {

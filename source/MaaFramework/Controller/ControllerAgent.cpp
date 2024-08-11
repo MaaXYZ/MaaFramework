@@ -10,7 +10,7 @@ MAA_CTRL_NS_BEGIN
 
 std::minstd_rand ControllerAgent::rand_engine_(std::random_device {}());
 
-ControllerAgent::ControllerAgent(MaaNotificationCallback callback, MaaCallbackTransparentArg callback_arg)
+ControllerAgent::ControllerAgent(MaaNotificationCallback callback, MaaTransparentArg callback_arg)
     : notifier(callback, callback_arg)
 {
     LogFunc << VAR_VOIDP(callback) << VAR_VOIDP(callback_arg);
@@ -157,7 +157,7 @@ MaaBool ControllerAgent::connected() const
     return connected_;
 }
 
-cv::Mat ControllerAgent::get_image()
+cv::Mat ControllerAgent::cached_image()
 {
     return image_;
 }

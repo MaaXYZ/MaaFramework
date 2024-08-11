@@ -5,12 +5,12 @@
 #include "Buffer/StringBuffer.hpp"
 #include "Utils/Logger.h"
 
-MaaStringBufferHandle MaaCreateStringBuffer()
+MaaStringBuffer* MaaStringBufferCreate()
 {
     return new MAA_NS::StringBuffer;
 }
 
-void MaaDestroyStringBuffer(MaaStringBufferHandle handle)
+void MaaStringBufferDestroy(MaaStringBuffer* handle)
 {
     if (!handle) {
         LogError << "handle is null";
@@ -20,7 +20,7 @@ void MaaDestroyStringBuffer(MaaStringBufferHandle handle)
     delete handle;
 }
 
-MaaBool MaaIsStringEmpty(MaaStringBufferHandle handle)
+MaaBool MaaStringBufferIsEmpty(MaaStringBuffer* handle)
 {
     if (!handle) {
         LogError << "handle is null";
@@ -30,7 +30,7 @@ MaaBool MaaIsStringEmpty(MaaStringBufferHandle handle)
     return handle->empty();
 }
 
-MaaBool MaaClearString(MaaStringBufferHandle handle)
+MaaBool MaaStringBufferClear(MaaStringBuffer* handle)
 {
     if (!handle) {
         LogError << "handle is null";
@@ -41,7 +41,7 @@ MaaBool MaaClearString(MaaStringBufferHandle handle)
     return true;
 }
 
-MaaStringView MaaGetString(MaaStringBufferHandle handle)
+const char* MaaStringBufferGet(MaaStringBuffer* handle)
 {
     if (!handle) {
         LogError << "handle is null";
@@ -51,7 +51,7 @@ MaaStringView MaaGetString(MaaStringBufferHandle handle)
     return handle->data();
 }
 
-MaaSize MaaGetStringSize(MaaStringBufferHandle handle)
+MaaSize MaaStringBufferSize(MaaStringBuffer* handle)
 {
     if (!handle) {
         LogError << "handle is null";
@@ -61,7 +61,7 @@ MaaSize MaaGetStringSize(MaaStringBufferHandle handle)
     return handle->size();
 }
 
-MaaBool MaaSetString(MaaStringBufferHandle handle, MaaStringView str)
+MaaBool MaaStringBufferSet(MaaStringBuffer* handle, const char* str)
 {
     if (!handle || !str) {
         LogError << "handle is null";
@@ -72,7 +72,7 @@ MaaBool MaaSetString(MaaStringBufferHandle handle, MaaStringView str)
     return true;
 }
 
-MaaBool MaaSetStringEx(MaaStringBufferHandle handle, MaaStringView str, MaaSize size)
+MaaBool MaaStringBufferSetEx(MaaStringBuffer* handle, const char* str, MaaSize size)
 {
     if (!handle || !str) {
         LogError << "handle is null";
@@ -83,12 +83,12 @@ MaaBool MaaSetStringEx(MaaStringBufferHandle handle, MaaStringView str, MaaSize 
     return true;
 }
 
-MaaStringListBufferHandle MaaCreateStringListBuffer()
+MaaStringListBuffer* MaaStringListBufferCreate()
 {
     return new MaaStringListBuffer;
 }
 
-void MaaDestroyStringListBuffer(MaaStringListBufferHandle handle)
+void MaaStringListBufferDestroy(MaaStringListBuffer* handle)
 {
     if (!handle) {
         LogError << "handle is null";
@@ -98,7 +98,7 @@ void MaaDestroyStringListBuffer(MaaStringListBufferHandle handle)
     delete handle;
 }
 
-MaaBool MaaIsStringListEmpty(MaaStringListBufferHandle handle)
+MaaBool MaaStringListBufferIsEmpty(MaaStringListBuffer* handle)
 {
     if (!handle) {
         LogError << "handle is null";
@@ -108,7 +108,7 @@ MaaBool MaaIsStringListEmpty(MaaStringListBufferHandle handle)
     return handle->empty();
 }
 
-MaaBool MaaClearStringList(MaaStringListBufferHandle handle)
+MaaBool MaaStringListBufferClear(MaaStringListBuffer* handle)
 {
     if (!handle) {
         LogError << "handle is null";
@@ -119,7 +119,7 @@ MaaBool MaaClearStringList(MaaStringListBufferHandle handle)
     return true;
 }
 
-MaaSize MaaGetStringListSize(MaaStringListBufferHandle handle)
+MaaSize MaaStringListBufferSize(MaaStringListBuffer* handle)
 {
     if (!handle) {
         LogError << "handle is null";
@@ -129,17 +129,17 @@ MaaSize MaaGetStringListSize(MaaStringListBufferHandle handle)
     return handle->size();
 }
 
-MaaStringBufferHandle MaaGetStringListAt(MaaStringListBufferHandle handle, MaaSize index)
+MaaStringBuffer* MaaStringListBufferAt(MaaStringListBuffer* handle, MaaSize index)
 {
     if (!handle) {
         LogError << "handle is null";
         return nullptr;
     }
 
-    return const_cast<MaaNS::StringBuffer*>(&(handle->at(index)));
+    return &(handle->at(index));
 }
 
-MaaBool MaaStringListAppend(MaaStringListBufferHandle handle, MaaStringBufferHandle value)
+MaaBool MaaStringListBufferAppend(MaaStringListBuffer* handle, MaaStringBuffer* value)
 {
     if (!handle || !value) {
         LogError << "handle is null";
@@ -150,7 +150,7 @@ MaaBool MaaStringListAppend(MaaStringListBufferHandle handle, MaaStringBufferHan
     return true;
 }
 
-MaaBool MaaStringListRemove(MaaStringListBufferHandle handle, MaaSize index)
+MaaBool MaaStringListBufferRemove(MaaStringListBuffer* handle, MaaSize index)
 {
     if (!handle) {
         LogError << "handle is null";
@@ -161,12 +161,12 @@ MaaBool MaaStringListRemove(MaaStringListBufferHandle handle, MaaSize index)
     return true;
 }
 
-MaaImageBufferHandle MaaCreateImageBuffer()
+MaaImageBuffer* MaaImageBufferCreate()
 {
     return new MAA_NS::ImageBuffer;
 }
 
-void MaaDestroyImageBuffer(MaaImageBufferHandle handle)
+void MaaImageBufferDestroy(MaaImageBuffer* handle)
 {
     if (!handle) {
         LogError << "handle is null";
@@ -176,47 +176,7 @@ void MaaDestroyImageBuffer(MaaImageBufferHandle handle)
     delete handle;
 }
 
-MaaImageRawData MaaGetImageRawData(MaaImageBufferHandle handle)
-{
-    if (!handle) {
-        LogError << "handle is null";
-        return nullptr;
-    }
-
-    return handle->raw_data();
-}
-
-int32_t MaaGetImageWidth(MaaImageBufferHandle handle)
-{
-    if (!handle) {
-        LogError << "handle is null";
-        return 0;
-    }
-
-    return handle->width();
-}
-
-int32_t MaaGetImageHeight(MaaImageBufferHandle handle)
-{
-    if (!handle) {
-        LogError << "handle is null";
-        return 0;
-    }
-
-    return handle->height();
-}
-
-int32_t MaaGetImageType(MaaImageBufferHandle handle)
-{
-    if (!handle) {
-        LogError << "handle is null";
-        return 0;
-    }
-
-    return handle->type();
-}
-
-MaaBool MaaIsImageEmpty(MaaImageBufferHandle handle)
+MaaBool MaaImageBufferIsEmpty(MaaImageBuffer* handle)
 {
     if (!handle) {
         LogError << "handle is null";
@@ -226,7 +186,7 @@ MaaBool MaaIsImageEmpty(MaaImageBufferHandle handle)
     return handle->empty();
 }
 
-MaaBool MaaClearImage(MaaImageBufferHandle handle)
+MaaBool MaaImageBufferClear(MaaImageBuffer* handle)
 {
     if (!handle) {
         LogError << "handle is null";
@@ -237,12 +197,47 @@ MaaBool MaaClearImage(MaaImageBufferHandle handle)
     return true;
 }
 
-MaaBool MaaSetImageRawData(
-    MaaImageBufferHandle handle,
-    MaaImageRawData data,
-    int32_t width,
-    int32_t height,
-    int32_t type)
+MaaImageRawData MaaImageBufferGetRawData(MaaImageBuffer* handle)
+{
+    if (!handle) {
+        LogError << "handle is null";
+        return nullptr;
+    }
+
+    return handle->raw_data();
+}
+
+int32_t MaaImageBufferWidth(MaaImageBuffer* handle)
+{
+    if (!handle) {
+        LogError << "handle is null";
+        return 0;
+    }
+
+    return handle->width();
+}
+
+int32_t MaaImageBufferHeight(MaaImageBuffer* handle)
+{
+    if (!handle) {
+        LogError << "handle is null";
+        return 0;
+    }
+
+    return handle->height();
+}
+
+int32_t MaaImageBufferType(MaaImageBuffer* handle)
+{
+    if (!handle) {
+        LogError << "handle is null";
+        return 0;
+    }
+
+    return handle->type();
+}
+
+MaaBool MaaImageBufferSetRawData(MaaImageBuffer* handle, MaaImageRawData data, int32_t width, int32_t height, int32_t type)
 {
     if (!handle || !data) {
         LogError << "handle is null";
@@ -259,7 +254,7 @@ MaaBool MaaSetImageRawData(
     return true;
 }
 
-MaaImageEncodedData MaaGetImageEncoded(MaaImageBufferHandle handle)
+MaaImageEncodedData MaaImageBufferGetEncoded(MaaImageBuffer* handle)
 {
     if (!handle) {
         LogError << "handle is null";
@@ -269,7 +264,7 @@ MaaImageEncodedData MaaGetImageEncoded(MaaImageBufferHandle handle)
     return handle->encoded();
 }
 
-MaaSize MaaGetImageEncodedSize(MaaImageBufferHandle handle)
+MaaSize MaaImageBufferGetEncodedSize(MaaImageBuffer* handle)
 {
     if (!handle) {
         LogError << "handle is null";
@@ -279,7 +274,7 @@ MaaSize MaaGetImageEncodedSize(MaaImageBufferHandle handle)
     return handle->encoded_size();
 }
 
-MaaBool MaaSetImageEncoded(MaaImageBufferHandle handle, MaaImageEncodedData data, MaaSize size)
+MaaBool MaaImageBufferSetEncoded(MaaImageBuffer* handle, MaaImageEncodedData data, MaaSize size)
 {
     if (!handle || !data) {
         LogError << "handle is null";
@@ -296,12 +291,12 @@ MaaBool MaaSetImageEncoded(MaaImageBufferHandle handle, MaaImageEncodedData data
     return true;
 }
 
-MaaImageListBufferHandle MaaCreateImageListBuffer()
+MaaImageListBuffer* MaaImageListBufferCreate()
 {
     return new MaaImageListBuffer;
 }
 
-void MaaDestroyImageListBuffer(MaaImageListBufferHandle handle)
+void MaaImageListBufferDestroy(MaaImageListBuffer* handle)
 {
     if (!handle) {
         LogError << "handle is null";
@@ -311,7 +306,7 @@ void MaaDestroyImageListBuffer(MaaImageListBufferHandle handle)
     delete handle;
 }
 
-MaaBool MaaIsImageListEmpty(MaaImageListBufferHandle handle)
+MaaBool MaaImageListBufferIsEmpty(MaaImageListBuffer* handle)
 {
     if (!handle) {
         LogError << "handle is null";
@@ -321,7 +316,7 @@ MaaBool MaaIsImageListEmpty(MaaImageListBufferHandle handle)
     return handle->empty();
 }
 
-MaaBool MaaClearImageList(MaaImageListBufferHandle handle)
+MaaBool MaaImageListBufferClear(MaaImageListBuffer* handle)
 {
     if (!handle) {
         LogError << "handle is null";
@@ -332,7 +327,7 @@ MaaBool MaaClearImageList(MaaImageListBufferHandle handle)
     return true;
 }
 
-MaaSize MaaGetImageListSize(MaaImageListBufferHandle handle)
+MaaSize MaaImageListBufferSize(MaaImageListBuffer* handle)
 {
     if (!handle) {
         LogError << "handle is null";
@@ -342,17 +337,17 @@ MaaSize MaaGetImageListSize(MaaImageListBufferHandle handle)
     return handle->size();
 }
 
-MaaImageBufferHandle MaaGetImageListAt(MaaImageListBufferHandle handle, MaaSize index)
+MaaImageBuffer* MaaImageListBufferAt(MaaImageListBuffer* handle, MaaSize index)
 {
     if (!handle) {
         LogError << "handle is null";
         return nullptr;
     }
 
-    return const_cast<MaaNS::ImageBuffer*>(&(handle->at(index)));
+    return &(handle->at(index));
 }
 
-MaaBool MaaImageListAppend(MaaImageListBufferHandle handle, MaaImageBufferHandle value)
+MaaBool MaaImageListBufferAppend(MaaImageListBuffer* handle, MaaImageBuffer* value)
 {
     if (!handle || !value) {
         LogError << "handle is null";
@@ -363,7 +358,7 @@ MaaBool MaaImageListAppend(MaaImageListBufferHandle handle, MaaImageBufferHandle
     return true;
 }
 
-MaaBool MaaImageListRemove(MaaImageListBufferHandle handle, MaaSize index)
+MaaBool MaaImageListBufferRemove(MaaImageListBuffer* handle, MaaSize index)
 {
     if (!handle) {
         LogError << "handle is null";
@@ -374,12 +369,12 @@ MaaBool MaaImageListRemove(MaaImageListBufferHandle handle, MaaSize index)
     return true;
 }
 
-MaaRectHandle MaaCreateRectBuffer()
+MaaRect* MaaRectBufferCreate()
 {
     return new MaaRect {};
 }
 
-void MaaDestroyRectBuffer(MaaRectHandle handle)
+void MaaRectBufferDestroy(MaaRect* handle)
 {
     if (!handle) {
         LogError << "handle is null";
@@ -389,7 +384,7 @@ void MaaDestroyRectBuffer(MaaRectHandle handle)
     delete handle;
 }
 
-int32_t MaaGetRectX(MaaRectHandle handle)
+int32_t MaaRectGetX(MaaRect* handle)
 {
     if (!handle) {
         LogError << "handle is null";
@@ -399,7 +394,7 @@ int32_t MaaGetRectX(MaaRectHandle handle)
     return handle->x;
 }
 
-int32_t MaaGetRectY(MaaRectHandle handle)
+int32_t MaaRectGetY(MaaRect* handle)
 {
     if (!handle) {
         LogError << "handle is null";
@@ -409,7 +404,7 @@ int32_t MaaGetRectY(MaaRectHandle handle)
     return handle->y;
 }
 
-int32_t MaaGetRectW(MaaRectHandle handle)
+int32_t MaaRectGetW(MaaRect* handle)
 {
     if (!handle) {
         LogError << "handle is null";
@@ -419,7 +414,7 @@ int32_t MaaGetRectW(MaaRectHandle handle)
     return handle->width;
 }
 
-int32_t MaaGetRectH(MaaRectHandle handle)
+int32_t MaaRectGetH(MaaRect* handle)
 {
     if (!handle) {
         LogError << "handle is null";
@@ -429,7 +424,7 @@ int32_t MaaGetRectH(MaaRectHandle handle)
     return handle->height;
 }
 
-MaaBool MaaSetRect(MaaRectHandle handle, int32_t x, int32_t y, int32_t w, int32_t h)
+MaaBool MaaRectSet(MaaRect* handle, int32_t x, int32_t y, int32_t w, int32_t h)
 {
     if (!handle) {
         LogError << "handle is null";
@@ -440,49 +435,5 @@ MaaBool MaaSetRect(MaaRectHandle handle, int32_t x, int32_t y, int32_t w, int32_
     handle->y = y;
     handle->width = w;
     handle->height = h;
-    return true;
-}
-
-MaaBool MaaSetRectX(MaaRectHandle handle, int32_t value)
-{
-    if (!handle) {
-        LogError << "handle is null";
-        return false;
-    }
-
-    handle->x = value;
-    return true;
-}
-
-MaaBool MaaSetRectY(MaaRectHandle handle, int32_t value)
-{
-    if (!handle) {
-        LogError << "handle is null";
-        return false;
-    }
-
-    handle->y = value;
-    return true;
-}
-
-MaaBool MaaSetRectW(MaaRectHandle handle, int32_t value)
-{
-    if (!handle) {
-        LogError << "handle is null";
-        return false;
-    }
-
-    handle->width = value;
-    return true;
-}
-
-MaaBool MaaSetRectH(MaaRectHandle handle, int32_t value)
-{
-    if (!handle) {
-        LogError << "handle is null";
-        return false;
-    }
-
-    handle->height = value;
     return true;
 }

@@ -33,9 +33,6 @@ public:
     void clear();
     bool running() const;
 
-    template <typename Pred>
-    void for_each(Pred pred);
-
 private:
     void working();
 
@@ -218,19 +215,6 @@ template <typename Item>
 inline bool AsyncRunner<Item>::running() const
 {
     return running_;
-}
-
-template <typename Item>
-template <typename Pred>
-inline void AsyncRunner<Item>::for_each(Pred pred)
-{
-    if (running_item_) {
-        auto& [id, item] = *running_item_;
-        pred(id, item);
-    }
-    for (auto& [id, item] : queue_) {
-        pred(id, item);
-    }
 }
 
 MAA_NS_END

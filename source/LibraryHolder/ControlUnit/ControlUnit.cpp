@@ -28,14 +28,14 @@ bool check_version(const std::string& func_name)
 }
 
 std::shared_ptr<MAA_CTRL_UNIT_NS::ControlUnitAPI> AdbControlUnitLibraryHolder::create_control_unit(
-    MaaStringView adb_path,
-    MaaStringView adb_serial,
+    const char* adb_path,
+    const char* adb_serial,
     MaaAdbScreencapMethod screencap_methods,
     MaaAdbInputMethod input_methods,
-    MaaStringView config,
-    MaaStringView agent_path,
+    const char* config,
+    const char* agent_path,
     MaaNotificationCallback callback,
-    MaaCallbackTransparentArg callback_arg)
+    MaaTransparentArg callback_arg)
 {
     if (!load_library(library_dir() / libname_)) {
         LogError << "Failed to load library" << VAR(library_dir()) << VAR(libname_);
@@ -72,7 +72,7 @@ std::shared_ptr<MAA_CTRL_UNIT_NS::ControlUnitAPI> Win32ControlUnitLibraryHolder:
     MaaWin32ScreencapMethod screencap_method,
     MaaWin32InputMethod input_method,
     MaaNotificationCallback callback,
-    MaaCallbackTransparentArg callback_arg)
+    MaaTransparentArg callback_arg)
 {
     if (!load_library(library_dir() / libname_)) {
         LogError << "Failed to load library" << VAR(library_dir()) << VAR(libname_);
@@ -104,7 +104,7 @@ std::shared_ptr<MAA_CTRL_UNIT_NS::ControlUnitAPI> Win32ControlUnitLibraryHolder:
 }
 
 std::shared_ptr<MAA_CTRL_UNIT_NS::ControlUnitAPI>
-    DbgControlUnitLibraryHolder::create_control_unit(MaaDbgControllerType type, MaaStringView read_path)
+    DbgControlUnitLibraryHolder::create_control_unit(MaaDbgControllerType type, const char* read_path)
 {
     if (!load_library(library_dir() / libname_)) {
         LogError << "Failed to load library" << VAR(library_dir()) << VAR(libname_);

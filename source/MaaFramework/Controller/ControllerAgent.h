@@ -8,7 +8,6 @@
 
 #include "API/MaaTypes.h"
 #include "Base/AsyncRunner.hpp"
-#include "Instance/InstanceInternalAPI.hpp"
 #include "Utils/MessageNotifier.hpp"
 #include "Utils/NoWarningCVMat.hpp"
 
@@ -81,13 +80,15 @@ struct Action
 
 std::ostream& operator<<(std::ostream& os, const Action& action);
 
-class ControllerAgent : public MaaControllerAPI
+class ControllerAgent
+    : public MaaController
+    , public MaaSink
 {
 public:
-    ControllerAgent(MaaNotificationCallback callback, MaaCallbackTransparentArg callback_arg);
-
+    ControllerAgent(MaaNotificationCallback callback, MaaTransparentArg callback_arg);
     virtual ~ControllerAgent() override;
 
+public: // MaaController
     virtual bool set_option(MaaCtrlOption key, MaaOptionValue value, MaaOptionValueSize val_size) override;
 
     virtual MaaCtrlId post_connection() override;
@@ -108,10 +109,10 @@ public:
     virtual MaaBool connected() const override;
     virtual MaaBool running() const override;
 
-    virtual cv::Mat get_image() override;
+    virtual cv::Mat cached_image() override;
     virtual std::string get_uuid() override;
 
-public:
+public: // MaaSink
     virtual void post_stop() override;
 
 public:

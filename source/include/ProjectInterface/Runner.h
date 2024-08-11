@@ -12,11 +12,11 @@ public:
     static bool
         run(const RuntimeParam& param,
             MaaInstanceCallback callback = nullptr,
-            MaaCallbackTransparentArg callback_arg = nullptr,
+            MaaTransparentArg callback_arg = nullptr,
             MaaResourceCallback resource_callback = nullptr,
-            MaaCallbackTransparentArg resource_callback_arg = nullptr,
+            MaaTransparentArg resource_callback_arg = nullptr,
             MaaNotificationCallback controller_callback = nullptr,
-            MaaCallbackTransparentArg controller_callback_arg = nullptr);
+            MaaTransparentArg controller_callback_arg = nullptr);
 };
 
 MAA_PROJECT_INTERFACE_NS_END

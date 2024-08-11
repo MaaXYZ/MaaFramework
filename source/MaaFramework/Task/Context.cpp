@@ -1,4 +1,4 @@
-#include "SyncContext.h"
+#include "Context.h"
 
 #include <meojson/json.hpp>
 
@@ -10,12 +10,12 @@
 
 MAA_TASK_NS_BEGIN
 
-SyncContext::SyncContext(InstanceInternalAPI* inst)
+Context::Context(InstanceInternalAPI* inst)
     : inst_(inst)
 {
 }
 
-bool SyncContext::run_task(std::string task, std::string_view param)
+bool Context::run_task(std::string task, std::string_view param)
 {
     LogFunc << VAR(task) << VAR(param);
 
@@ -36,7 +36,7 @@ bool SyncContext::run_task(std::string task, std::string_view param)
     return pipeline.run();
 }
 
-bool SyncContext::run_recognition(
+bool Context::run_recognition(
     cv::Mat image,
     std::string task,
     std::string_view param,
@@ -79,7 +79,7 @@ bool SyncContext::run_recognition(
     return reco.hit.has_value();
 }
 
-bool SyncContext::run_action(
+bool Context::run_action(
     std::string task,
     std::string_view param,
     cv::Rect cur_box,
@@ -110,7 +110,7 @@ bool SyncContext::run_action(
     return ret;
 }
 
-bool SyncContext::click(int x, int y)
+bool Context::click(int x, int y)
 {
     LogFunc << VAR(x) << VAR(y);
 
@@ -124,7 +124,7 @@ bool SyncContext::click(int x, int y)
     return ctrl->wait(id) == MaaStatus_Success;
 }
 
-bool SyncContext::swipe(int x1, int y1, int x2, int y2, int duration)
+bool Context::swipe(int x1, int y1, int x2, int y2, int duration)
 {
     LogFunc << VAR(x1) << VAR(x2) << VAR(y1) << VAR(y2) << VAR(duration);
 
@@ -138,7 +138,7 @@ bool SyncContext::swipe(int x1, int y1, int x2, int y2, int duration)
     return ctrl->wait(id) == MaaStatus_Success;
 }
 
-bool SyncContext::press_key(int keycode)
+bool Context::press_key(int keycode)
 {
     LogFunc << VAR(keycode);
 
@@ -152,7 +152,7 @@ bool SyncContext::press_key(int keycode)
     return ctrl->wait(id) == MaaStatus_Success;
 }
 
-bool SyncContext::input_text(std::string_view text)
+bool Context::input_text(std::string_view text)
 {
     LogFunc << VAR(text);
 
@@ -166,7 +166,7 @@ bool SyncContext::input_text(std::string_view text)
     return ctrl->wait(id) == MaaStatus_Success;
 }
 
-bool SyncContext::touch_down(int contact, int x, int y, int pressure)
+bool Context::touch_down(int contact, int x, int y, int pressure)
 {
     LogFunc << VAR(contact) << VAR(x) << VAR(y) << VAR(pressure);
 
@@ -180,7 +180,7 @@ bool SyncContext::touch_down(int contact, int x, int y, int pressure)
     return ctrl->wait(id) == MaaStatus_Success;
 }
 
-bool SyncContext::touch_move(int contact, int x, int y, int pressure)
+bool Context::touch_move(int contact, int x, int y, int pressure)
 {
     LogFunc << VAR(contact) << VAR(x) << VAR(y) << VAR(pressure);
 
@@ -194,7 +194,7 @@ bool SyncContext::touch_move(int contact, int x, int y, int pressure)
     return ctrl->wait(id) == MaaStatus_Success;
 }
 
-bool SyncContext::touch_up(int contact)
+bool Context::touch_up(int contact)
 {
     LogFunc << VAR(contact);
 
@@ -208,7 +208,7 @@ bool SyncContext::touch_up(int contact)
     return ctrl->wait(id) == MaaStatus_Success;
 }
 
-cv::Mat SyncContext::screencap()
+cv::Mat Context::screencap()
 {
     LogFunc;
     auto* ctrl = controller();
@@ -219,10 +219,10 @@ cv::Mat SyncContext::screencap()
     auto id = ctrl->post_screencap();
     ctrl->wait(id);
 
-    return ctrl->get_image();
+    return ctrl->cached_image();
 }
 
-cv::Mat SyncContext::cached_image()
+cv::Mat Context::cached_image()
 {
     // LogFunc;
     auto* ctrl = controller();
@@ -231,7 +231,7 @@ cv::Mat SyncContext::cached_image()
         return {};
     }
 
-    return ctrl->get_image();
+    return ctrl->cached_image();
 }
 
 MAA_TASK_NS_END

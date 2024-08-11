@@ -21,10 +21,10 @@ public:
 
 protected: // from ExecAgentBase
     virtual bool register_for_maa_inst(
-        MaaInstanceHandle handle,
+        MaaScheduler* handle,
         std::string_view name,
         ExecData& executor) override;
-    virtual bool unregister_for_maa_inst(MaaInstanceHandle handle, std::string_view name) override;
+    virtual bool unregister_for_maa_inst(MaaScheduler* handle, std::string_view name) override;
 
 private:
     struct AnalyzeResult
@@ -35,7 +35,7 @@ private:
 
     std::optional<AnalyzeResult> analyze(
         ExecData& data,
-        MaaSyncContextHandle sync_context,
+        MaaContext* context,
         const cv::Mat& image,
         std::string_view task_name,
         std::string_view custom_recognition_param);
@@ -43,13 +43,13 @@ private:
 private:
     // for MaaCustomRecognizerAPI
     static MaaBool maa_api_analyze(
-        MaaSyncContextHandle sync_context,
-        const MaaImageBufferHandle image,
-        MaaStringView task_name,
-        MaaStringView custom_recognition_param,
+        MaaContext* context,
+        const MaaImageBuffer* image,
+        const char* task_name,
+        const char* custom_recognition_param,
         MaaTransparentArg recognizer_arg,
-        /*out*/ MaaRectHandle out_box,
-        /*out*/ MaaStringBufferHandle out_detail);
+        /*out*/ MaaRect* out_box,
+        /*out*/ MaaStringBuffer* out_detail);
 
 private:
     MaaCustomRecognizerCallback custom_recognizer_ {};

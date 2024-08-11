@@ -18,6 +18,20 @@ PipelineTask::PipelineTask(std::string entry, InstanceInternalAPI* inst)
 {
 }
 
+void PipelineTask::post_stop()
+{
+    need_to_stop_ = true;
+}
+
+bool PipelineTask::on_set_param(int64_t task_id, const json::value& param)
+{
+    if (task_id != task_id_) {
+        return true;
+    }
+
+    return set_param(param);
+}
+
 bool PipelineTask::run()
 {
     switch (run_type_) {
@@ -114,11 +128,7 @@ bool PipelineTask::set_param(const json::value& param)
     return data_mgr_.set_param(param);
 }
 
-bool PipelineTask::query_node_detail(
-    MaaNodeId node_id,
-    std::string& name,
-    MaaRecoId& reco_id,
-    bool& completed)
+bool PipelineTask::query_node_detail(MaaNodeId node_id, std::string& name, MaaRecoId& reco_id, bool& completed)
 {
     const auto& bank = UniqueResultBank::get_instance();
 
@@ -136,10 +146,7 @@ bool PipelineTask::query_node_detail(
     return true;
 }
 
-bool PipelineTask::query_task_detail(
-    MaaTaskId task_id,
-    std::string& entry,
-    std::vector<MaaNodeId>& node_id_list)
+bool PipelineTask::query_task_detail(MaaTaskId task_id, std::string& entry, std::vector<MaaNodeId>& node_id_list)
 {
     const auto& bank = UniqueResultBank::get_instance();
 
@@ -189,17 +196,16 @@ PipelineTask::NextIter PipelineTask::find_first_and_run(const TaskData::NextList
         }
     }
 
-    LogInfo << "Task hit:" << hit_detail.task_data.name << VAR(hit_detail.reco_uid)
-            << VAR(hit_detail.reco_hit) << VAR(hit_detail.reco_detail.to_string());
+    LogInfo << "Task hit:" << hit_detail.task_data.name << VAR(hit_detail.reco_uid) << VAR(hit_detail.reco_hit)
+            << VAR(hit_detail.reco_detail.to_string());
 
-    inst_->cache()->set_pre_task_box(hit_detail.task_data.name, hit_detail.reco_hit);
+    inst_->cache()->set_pre_box(hit_detail.task_data.name, hit_detail.reco_hit);
 
     bool run_ret = run_task(hit_detail);
     return run_ret ? iter : NotFound;
 }
 
-PipelineTask::NextIter
-    PipelineTask::find_first(const TaskData::NextList& list, HitDetail& hit_detail)
+PipelineTask::NextIter PipelineTask::find_first(const TaskData::NextList& list, HitDetail& hit_detail)
 {
     const NextIter NotFound = list.cend();
 
@@ -246,8 +252,7 @@ PipelineTask::NextIter
 
         const auto& task_data = data_mgr_.get_task_data(name);
         if (!task_data.enabled || task_data.hit_limit <= hit_times) {
-            LogDebug << "Task disabled or hit over limit" << name << VAR(task_data.enabled)
-                     << VAR(hit_times) << VAR(task_data.hit_limit);
+            LogDebug << "Task disabled or hit over limit" << name << VAR(task_data.enabled) << VAR(hit_times) << VAR(task_data.hit_limit);
             continue;
         }
 
@@ -362,8 +367,7 @@ json::object PipelineTask::basic_info()
     };
 }
 
-json::object
-    PipelineTask::reco_result_to_json(const std::string& name, const Recognizer::Result& res)
+json::object PipelineTask::reco_result_to_json(const std::string& name, const Recognizer::Result& res)
 {
     return {
         { "name", name },

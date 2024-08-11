@@ -5,7 +5,7 @@
 #include "Buffer/ImageBuffer.hpp"
 #include "Buffer/StringBuffer.hpp"
 #include "MaaFramework/Task/MaaCustomRecognizer.h"
-#include "Task/SyncContext.h"
+#include "Task/Context.h"
 #include "Utils/Logger.h"
 
 MAA_VISION_NS_BEGIN
@@ -36,7 +36,7 @@ void CustomRecognizer::analyze()
     auto start_time = std::chrono::steady_clock::now();
 
     /*in*/
-    MAA_TASK_NS::SyncContext sync_ctx(inst_);
+    MAA_TASK_NS::Context sync_ctx(inst_);
     ImageBuffer image_buffer(image_);
     std::string custom_param_str = param_.custom_param.to_string();
 

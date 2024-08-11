@@ -19,7 +19,7 @@ extern "C"
 #endif
 
     MAA_TOOLKIT_API MaaBool
-        MaaToolkitInitOptionConfig(MaaStringView user_path, MaaStringView default_json);
+        MaaToolkitInitOptionConfig(const char* user_path, const char* default_json);
 
     /// \deprecated Use MaaToolkitInitOptionConfig instead.
     MAA_DEPRECATED MAA_TOOLKIT_API MaaBool MaaToolkitInit();

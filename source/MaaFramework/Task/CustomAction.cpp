@@ -3,7 +3,7 @@
 #include "Utils/NoWarningCV.hpp"
 
 #include "MaaFramework/Task/MaaCustomAction.h"
-#include "SyncContext.h"
+#include "Context.h"
 #include "Utils/Logger.h"
 
 MAA_TASK_NS_BEGIN
@@ -28,7 +28,7 @@ bool CustomAction::run(
         return false;
     }
 
-    SyncContext sync_ctx(inst_);
+    Context sync_ctx(inst_);
     std::string custom_param_string = param.custom_param.to_string();
     MaaRect box { .x = cur_box.x,
                   .y = cur_box.y,

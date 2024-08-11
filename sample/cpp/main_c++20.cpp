@@ -98,7 +98,7 @@ coro::Promise<ControllerHandle> create_win32_controller()
 }
 
 coro::Promise<AnalyzeResult> my_analyze(
-    SyncContextHandle sync_context,
+    ContextHandle context,
     ImageHandle image,
     std::string_view task_name,
     std::string_view custom_recognition_param)

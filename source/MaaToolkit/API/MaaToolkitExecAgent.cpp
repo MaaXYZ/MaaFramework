@@ -32,10 +32,10 @@ std::ostream& operator<<(std::ostream& os, ExecutorType type)
 
 MaaBool RegisterExecutor(
     ExecutorType type,
-    MaaInstanceHandle handle,
-    MaaStringView name,
-    MaaStringView exec_path,
-    const MaaStringView* exec_params,
+    MaaScheduler* handle,
+    const char* name,
+    const char* exec_path,
+    const const char** exec_params,
     MaaSize exec_param_size)
 {
     LogFunc << VAR(type) << VAR_VOIDP(handle) << VAR(name) << VAR(exec_path) << VAR(exec_params)
@@ -59,7 +59,7 @@ MaaBool RegisterExecutor(
 
     std::vector<std::string> params;
     for (size_t i = 0; i < exec_param_size; ++i) {
-        MaaStringView p = *(exec_params + i);
+        const char* p = *(exec_params + i);
         params.emplace_back(p);
     }
 
@@ -75,7 +75,7 @@ MaaBool RegisterExecutor(
     return false;
 }
 
-MaaBool UnregisterExecutor(ExecutorType type, MaaInstanceHandle handle, MaaStringView name)
+MaaBool UnregisterExecutor(ExecutorType type, MaaScheduler* handle, const char* name)
 {
     LogFunc << VAR(type) << VAR_VOIDP(handle) << VAR(name);
 
@@ -99,7 +99,7 @@ MaaBool UnregisterExecutor(ExecutorType type, MaaInstanceHandle handle, MaaStrin
     return false;
 }
 
-MaaBool ClearExecutor(ExecutorType type, MaaInstanceHandle handle)
+MaaBool ClearExecutor(ExecutorType type, MaaScheduler* handle)
 {
     LogFunc << VAR(type) << VAR_VOIDP(handle);
 
@@ -120,10 +120,10 @@ MaaBool ClearExecutor(ExecutorType type, MaaInstanceHandle handle)
 }
 
 MaaBool MaaToolkitRegisterCustomRecognizerExecutor(
-    MaaInstanceHandle handle,
-    MaaStringView recognizer_name,
-    MaaStringView exec_path,
-    const MaaStringView* exec_params,
+    MaaScheduler* handle,
+    const char* recognizer_name,
+    const char* exec_path,
+    const const char** exec_params,
     MaaSize exec_param_size)
 {
     return RegisterExecutor(
@@ -136,22 +136,22 @@ MaaBool MaaToolkitRegisterCustomRecognizerExecutor(
 }
 
 MaaBool MaaToolkitUnregisterCustomRecognizerExecutor(
-    MaaInstanceHandle handle,
-    MaaStringView recognizer_name)
+    MaaScheduler* handle,
+    const char* recognizer_name)
 {
     return UnregisterExecutor(ExecutorType::Recognizer, handle, recognizer_name);
 }
 
-MaaBool MaaToolkitClearCustomRecognizerExecutor(MaaInstanceHandle handle)
+MaaBool MaaToolkitClearCustomRecognizerExecutor(MaaScheduler* handle)
 {
     return ClearExecutor(ExecutorType::Recognizer, handle);
 }
 
 MaaBool MaaToolkitRegisterCustomActionExecutor(
-    MaaInstanceHandle handle,
-    MaaStringView action_name,
-    MaaStringView exec_path,
-    const MaaStringView* exec_params,
+    MaaScheduler* handle,
+    const char* action_name,
+    const char* exec_path,
+    const const char** exec_params,
     MaaSize exec_param_size)
 {
     return RegisterExecutor(
@@ -164,12 +164,12 @@ MaaBool MaaToolkitRegisterCustomActionExecutor(
 }
 
 MaaBool
-    MaaToolkitUnregisterCustomActionExecutor(MaaInstanceHandle handle, MaaStringView action_name)
+    MaaToolkitUnregisterCustomActionExecutor(MaaScheduler* handle, const char* action_name)
 {
     return UnregisterExecutor(ExecutorType::Action, handle, action_name);
 }
 
-MaaBool MaaToolkitClearCustomActionExecutor(MaaInstanceHandle handle)
+MaaBool MaaToolkitClearCustomActionExecutor(MaaScheduler* handle)
 {
     return ClearExecutor(ExecutorType::Action, handle);
 }

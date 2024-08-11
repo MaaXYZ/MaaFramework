@@ -14,7 +14,7 @@ ActionExecAgent::ActionExecAgent()
 }
 
 bool ActionExecAgent::register_for_maa_inst(
-    MaaInstanceHandle handle,
+    MaaScheduler* handle,
     std::string_view name,
     ExecData& executor)
 {
@@ -25,23 +25,23 @@ bool ActionExecAgent::register_for_maa_inst(
         reinterpret_cast<void*>(&executor));
 }
 
-bool ActionExecAgent::unregister_for_maa_inst(MaaInstanceHandle handle, std::string_view name)
+bool ActionExecAgent::unregister_for_maa_inst(MaaScheduler* handle, std::string_view name)
 {
     return MaaUnregisterCustomAction(handle, name.data());
 }
 
 bool ActionExecAgent::run(
     ExecData& data,
-    MaaSyncContextHandle sync_context,
+    MaaContext* context,
     std::string_view task_name,
     std::string_view custom_action_param,
-    MaaRectHandle cur_box,
+    MaaRect* cur_box,
     std::string_view cur_rec_detail)
 {
-    LogFunc << VAR(data.name) << VAR_VOIDP(sync_context) << VAR(task_name)
+    LogFunc << VAR(data.name) << VAR_VOIDP(context) << VAR(task_name)
             << VAR(custom_action_param) << VAR_VOIDP(cur_box) << VAR(cur_rec_detail);
 
-    std::string handle_arg = arg_cvt_.sync_context_to_arg(sync_context);
+    std::string handle_arg = arg_cvt_.context_to_arg(context);
     std::string box_arg =
         json::array({ cur_box->x, cur_box->y, cur_box->width, cur_box->height }).to_string();
 
@@ -73,11 +73,11 @@ void ActionExecAgent::stop(ExecData& data)
 }
 
 MaaBool ActionExecAgent::maa_api_run(
-    MaaSyncContextHandle sync_context,
-    MaaStringView task_name,
-    MaaStringView custom_action_param,
-    MaaRectHandle cur_box,
-    MaaStringView cur_rec_detail,
+    MaaContext* context,
+    const char* task_name,
+    const char* custom_action_param,
+    MaaRect* cur_box,
+    const char* cur_rec_detail,
     MaaTransparentArg action_arg)
 {
     auto* data = static_cast<ExecData*>(action_arg);
@@ -87,7 +87,7 @@ MaaBool ActionExecAgent::maa_api_run(
     }
 
     return get_instance()
-        .run(*data, sync_context, task_name, custom_action_param, cur_box, cur_rec_detail);
+        .run(*data, context, task_name, custom_action_param, cur_box, cur_rec_detail);
 }
 
 void ActionExecAgent::maa_api_stop(MaaTransparentArg action_arg)

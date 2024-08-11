@@ -16,13 +16,13 @@ public:
     ~ExecArgConverter();
 
 public:
-    std::string sync_context_to_arg(MaaSyncContextHandle sync_context);
-    MaaSyncContextHandle arg_to_sync_context(const std::string& arg) const;
+    std::string context_to_arg(MaaContext* context);
+    MaaContext* arg_to_context(const std::string& arg) const;
 
     std::string image_to_arg(const cv::Mat& image);
 
 private:
-    std::map<std::string, MaaSyncContextHandle> sync_contexts_;
+    std::map<std::string, MaaContext*> contexts_;
     std::vector<std::filesystem::path> images_;
 };
 

@@ -22,9 +22,9 @@ extern "C"
     /**
      * @brief Get the version of the framework.
      *
-     * @return MaaStringView
+     * @return const char*
      */
-    MAA_FRAMEWORK_API MaaStringView MaaVersion();
+    MAA_FRAMEWORK_API const char* MaaVersion();
 
     /**
      * @brief Set options globally.
@@ -45,12 +45,12 @@ extern "C"
      */
     MAA_FRAMEWORK_API MaaBool MaaQueryRecognitionDetail(
         MaaRecoId reco_id,
-        /* out */ MaaStringBufferHandle name,
+        /* out */ MaaStringBuffer* name,
         /* out */ MaaBool* hit,
-        /* out */ MaaRectHandle hit_box,
-        /* out */ MaaStringBufferHandle detail_json,
-        /* out */ MaaImageBufferHandle raw,
-        /* out */ MaaImageListBufferHandle draws);
+        /* out */ MaaRect* hit_box,
+        /* out */ MaaStringBuffer* detail_json,
+        /* out */ MaaImageBuffer* raw,
+        /* out */ MaaImageListBuffer* draws);
 
     /**
      * @param[out] reco_id
@@ -58,7 +58,7 @@ extern "C"
      */
     MAA_FRAMEWORK_API MaaBool MaaQueryNodeDetail(
         MaaNodeId node_id,
-        /* out */ MaaStringBufferHandle name,
+        /* out */ MaaStringBuffer* name,
         /* out */ MaaRecoId* reco_id,
         /* out */ MaaBool* run_completed);
 
@@ -68,7 +68,7 @@ extern "C"
      */
     MAA_FRAMEWORK_API MaaBool MaaQueryTaskDetail(
         MaaTaskId task_id,
-        /* out */ MaaStringBufferHandle entry,
+        /* out */ MaaStringBuffer* entry,
         /* out */ MaaNodeId* node_id_list /**< array */,
         /* in & out */ MaaSize* node_id_list_size);
 

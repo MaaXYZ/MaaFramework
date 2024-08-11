@@ -24,7 +24,7 @@ extern "C"
 
     /// \deprecated Use MaaToolkitPostFindDeviceWithAdb() and
     /// MaaToolkitWaitForFindDeviceToComplete() instead.
-    MAA_DEPRECATED MAA_TOOLKIT_API MaaSize MaaToolkitFindDeviceWithAdb(MaaStringView adb_path);
+    MAA_DEPRECATED MAA_TOOLKIT_API MaaSize MaaToolkitFindDeviceWithAdb(const char* adb_path);
 
     /**
      * @brief Post a request to find all ADB devices.
@@ -39,7 +39,7 @@ extern "C"
      * @param adb_path
      * @return MaaBool
      */
-    MAA_TOOLKIT_API MaaBool MaaToolkitPostFindDeviceWithAdb(MaaStringView adb_path);
+    MAA_TOOLKIT_API MaaBool MaaToolkitPostFindDeviceWithAdb(const char* adb_path);
 
     /**
      * @brief Check if the find device request is completed.
@@ -67,27 +67,27 @@ extern "C"
      *
      * @param index The 0-based index of the device. The index should not exceed the number of
      * devices found otherwise out_of_range exception will be thrown.
-     * @return MaaStringView
+     * @return const char*
      */
-    MAA_TOOLKIT_API MaaStringView MaaToolkitGetDeviceName(MaaSize index);
+    MAA_TOOLKIT_API const char* MaaToolkitGetDeviceName(MaaSize index);
 
     /**
      * @brief Get the device ADB path by index.
      *
      * @param index The 0-based index of the device. The index should not exceed the number of
      * devices found otherwise out_of_range exception will be thrown.
-     * @return MaaStringView
+     * @return const char*
      */
-    MAA_TOOLKIT_API MaaStringView MaaToolkitGetDeviceAdbPath(MaaSize index);
+    MAA_TOOLKIT_API const char* MaaToolkitGetDeviceAdbPath(MaaSize index);
 
     /**
      * @brief Get the device ADB serial by index.
      *
      * @param index The 0-based index of the device. The index should not exceed the number of
      * devices found otherwise out_of_range exception will be thrown.
-     * @return MaaStringView
+     * @return const char*
      */
-    MAA_TOOLKIT_API MaaStringView MaaToolkitGetDeviceAdbSerial(MaaSize index);
+    MAA_TOOLKIT_API const char* MaaToolkitGetDeviceAdbSerial(MaaSize index);
 
     /**
      * @brief Get the device ADB controller type by index.
@@ -103,9 +103,9 @@ extern "C"
      *
      * @param index The 0-based index of the device. The index should not exceed the number of
      * devices found otherwise out_of_range exception will be thrown.
-     * @return MaaStringView
+     * @return const char*
      */
-    MAA_TOOLKIT_API MaaStringView MaaToolkitGetDeviceAdbConfig(MaaSize index);
+    MAA_TOOLKIT_API const char* MaaToolkitGetDeviceAdbConfig(MaaSize index);
 
 #ifdef __cplusplus
 }

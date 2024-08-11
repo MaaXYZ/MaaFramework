@@ -22,7 +22,7 @@ extern "C"
      * window handle, use MaaToolkitGetWindow().
      */
     MAA_TOOLKIT_API MaaSize
-        MaaToolkitFindWindow(MaaStringView class_name, MaaStringView window_name);
+        MaaToolkitFindWindow(const char* class_name, const char* window_name);
 
     /**
      * @brief Regex search a win32 window by class name and window name.
@@ -37,7 +37,7 @@ extern "C"
      * window handle, use MaaToolkitGetWindow().
      */
     MAA_TOOLKIT_API MaaSize
-        MaaToolkitSearchWindow(MaaStringView class_name, MaaStringView window_name);
+        MaaToolkitSearchWindow(const char* class_name, const char* window_name);
 
     /**
      * @brief List all windows.
@@ -84,7 +84,7 @@ extern "C"
      * @return MaaBool.
      */
     MAA_TOOLKIT_API MaaBool
-        MaaToolkitGetWindowClassName(MaaWin32Hwnd hwnd, MaaStringBufferHandle buffer);
+        MaaToolkitGetWindowClassName(MaaWin32Hwnd hwnd, MaaStringBuffer* buffer);
 
     /**
      * @brief Get the window window name by hwnd.
@@ -94,7 +94,7 @@ extern "C"
      * @return MaaBool.
      */
     MAA_TOOLKIT_API MaaBool
-        MaaToolkitGetWindowWindowName(MaaWin32Hwnd hwnd, MaaStringBufferHandle buffer);
+        MaaToolkitGetWindowWindowName(MaaWin32Hwnd hwnd, MaaStringBuffer* buffer);
 
 #ifdef __cplusplus
 }

@@ -7,7 +7,7 @@
 
 MAA_NS_BEGIN
 
-template <typename Callback, typename CallbackArg = MaaCallbackTransparentArg>
+template <typename Callback, typename CallbackArg = MaaTransparentArg>
 requires std::is_constructible_v<MaaNotificationCallback, Callback>
 class MessageNotifier : public NonCopyable
 {

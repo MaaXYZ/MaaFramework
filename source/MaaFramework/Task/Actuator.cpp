@@ -14,10 +14,7 @@ Actuator::Actuator(InstanceInternalAPI* inst)
 {
 }
 
-bool Actuator::run(
-    const Recognizer::Hit& reco_hit,
-    const json::value& reco_detail,
-    const TaskData& task_data)
+bool Actuator::run(const Recognizer::Hit& reco_hit, const json::value& reco_detail, const TaskData& task_data)
 {
     using namespace MAA_RES_NS::Action;
     LogFunc << VAR(task_data.name);
@@ -49,11 +46,7 @@ bool Actuator::run(
         ret = stop_app(std::get<AppParam>(task_data.action_param));
         break;
     case Type::Custom:
-        ret = custom_action(
-            task_data.name,
-            std::get<CustomParam>(task_data.action_param),
-            reco_hit,
-            reco_detail);
+        ret = custom_action(task_data.name, std::get<CustomParam>(task_data.action_param), reco_hit, reco_detail);
         break;
     case Type::StopTask:
         LogInfo << "Action: StopTask";
@@ -226,7 +219,7 @@ cv::Rect Actuator::get_target_rect(const MAA_RES_NS::Action::Target target, cons
         raw = cur_box;
         break;
     case Target::Type::PreTask: {
-        raw = inst_->cache()->get_pre_task_box(std::get<std::string>(target.param));
+        raw = inst_->cache()->get_pre_box(std::get<std::string>(target.param));
     } break;
     case Target::Type::Region:
         raw = std::get<cv::Rect>(target.param);

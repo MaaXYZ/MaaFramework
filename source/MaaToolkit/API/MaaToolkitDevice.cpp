@@ -23,7 +23,7 @@ MaaSize MaaToolkitFindDevice()
     return MaaToolkitWaitForFindDeviceToComplete();
 }
 
-MaaSize MaaToolkitFindDeviceWithAdb(MaaStringView adb_path)
+MaaSize MaaToolkitFindDeviceWithAdb(const char* adb_path)
 {
     LogWarn << __FUNCTION__
             << "is deprecated, use MaaToolkitPostFindDeviceWithAdb "
@@ -40,7 +40,7 @@ MaaBool MaaToolkitPostFindDevice()
     return device_mgr.post_find_device();
 }
 
-MaaBool MaaToolkitPostFindDeviceWithAdb(MaaStringView adb_path)
+MaaBool MaaToolkitPostFindDeviceWithAdb(const char* adb_path)
 {
     LogFunc;
 
@@ -70,17 +70,17 @@ MaaSize MaaToolkitGetDeviceCount()
     return devices->size();
 }
 
-MaaStringView MaaToolkitGetDeviceName(MaaSize index)
+const char* MaaToolkitGetDeviceName(MaaSize index)
 {
     return device_mgr.get_devices()->at(index).name.c_str();
 }
 
-MaaStringView MaaToolkitGetDeviceAdbPath(MaaSize index)
+const char* MaaToolkitGetDeviceAdbPath(MaaSize index)
 {
     return device_mgr.get_devices()->at(index).adb_path.c_str();
 }
 
-MaaStringView MaaToolkitGetDeviceAdbSerial(MaaSize index)
+const char* MaaToolkitGetDeviceAdbSerial(MaaSize index)
 {
     return device_mgr.get_devices()->at(index).adb_serial.c_str();
 }
@@ -90,7 +90,7 @@ MaaAdbControllerType MaaToolkitGetDeviceAdbControllerType(MaaSize index)
     return device_mgr.get_devices()->at(index).adb_controller_type;
 }
 
-MaaStringView MaaToolkitGetDeviceAdbConfig(MaaSize index)
+const char* MaaToolkitGetDeviceAdbConfig(MaaSize index)
 {
     return device_mgr.get_devices()->at(index).adb_config.c_str();
 }

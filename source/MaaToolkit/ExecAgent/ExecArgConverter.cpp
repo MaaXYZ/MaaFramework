@@ -14,17 +14,17 @@ ExecArgConverter::~ExecArgConverter()
     }
 }
 
-std::string ExecArgConverter::sync_context_to_arg(MaaSyncContextHandle sync_context)
+std::string ExecArgConverter::context_to_arg(MaaContext* context)
 {
-    std::string uuid = std::to_string(reinterpret_cast<uintptr_t>(sync_context));
-    sync_contexts_.insert_or_assign(uuid, sync_context);
+    std::string uuid = std::to_string(reinterpret_cast<uintptr_t>(context));
+    contexts_.insert_or_assign(uuid, context);
     return uuid;
 }
 
-MaaSyncContextHandle ExecArgConverter::arg_to_sync_context(const std::string& arg) const
+MaaContext* ExecArgConverter::arg_to_context(const std::string& arg) const
 {
-    auto it = sync_contexts_.find(arg);
-    if (it == sync_contexts_.end()) {
+    auto it = contexts_.find(arg);
+    if (it == contexts_.end()) {
         LogError << "sync context not found";
         return nullptr;
     }

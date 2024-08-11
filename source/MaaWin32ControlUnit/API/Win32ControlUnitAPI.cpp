@@ -7,7 +7,7 @@
 #include "Utils/Logger.h"
 #include "Utils/SafeWindows.hpp"
 
-MaaStringView MaaWin32ControlUnitGetVersion()
+const char* MaaWin32ControlUnitGetVersion()
 {
 #pragma message("MaaWin32ControlUnit MAA_VERSION: " MAA_VERSION)
 
@@ -19,7 +19,7 @@ MaaControlUnitHandle MaaWin32ControlUnitCreate(
     MaaWin32ScreencapMethod screencap_method,
     MaaWin32InputMethod input_method,
     MaaNotificationCallback callback,
-    MaaCallbackTransparentArg callback_arg)
+    MaaTransparentArg callback_arg)
 {
     using namespace MAA_CTRL_UNIT_NS;
 

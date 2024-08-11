@@ -18,29 +18,29 @@ public:
 
 private: // from ExecAgentBase
     virtual bool register_for_maa_inst(
-        MaaInstanceHandle handle,
+        MaaScheduler* handle,
         std::string_view name,
         ExecData& executor) override;
-    virtual bool unregister_for_maa_inst(MaaInstanceHandle handle, std::string_view name) override;
+    virtual bool unregister_for_maa_inst(MaaScheduler* handle, std::string_view name) override;
 
 private:
     bool
         run(ExecData& data,
-            MaaSyncContextHandle sync_context,
+            MaaContext* context,
             std::string_view task_name,
             std::string_view custom_action_param,
-            MaaRectHandle cur_box,
+            MaaRect* cur_box,
             std::string_view cur_rec_detail);
     void stop(ExecData& data);
 
 private:
     // for MaaCustomActionAPI
     static MaaBool maa_api_run(
-        MaaSyncContextHandle sync_context,
-        MaaStringView task_name,
-        MaaStringView custom_action_param,
-        MaaRectHandle cur_box,
-        MaaStringView cur_rec_detail,
+        MaaContext* context,
+        const char* task_name,
+        const char* custom_action_param,
+        MaaRect* cur_box,
+        const char* cur_rec_detail,
         MaaTransparentArg action_arg);
     static void maa_api_stop(MaaTransparentArg action_arg);
 

@@ -8,14 +8,14 @@
 
 auto& win32_mgr = MAA_TOOLKIT_NS::Win32WindowFinder::get_instance();
 
-MaaSize MaaToolkitFindWindow(MaaStringView class_name, MaaStringView window_name)
+MaaSize MaaToolkitFindWindow(const char* class_name, const char* window_name)
 {
     LogInfo << VAR(class_name) << VAR(window_name);
 
     return win32_mgr.find_window(class_name, window_name);
 }
 
-MaaSize MaaToolkitSearchWindow(MaaStringView class_name, MaaStringView window_name)
+MaaSize MaaToolkitSearchWindow(const char* class_name, const char* window_name)
 {
     LogInfo << VAR(class_name) << VAR(window_name);
 
@@ -55,7 +55,7 @@ MaaWin32Hwnd MaaToolkitGetForegroundWindow()
     return win32_mgr.get_foreground_window();
 }
 
-MaaBool MaaToolkitGetWindowClassName(MaaWin32Hwnd hwnd, MaaStringBufferHandle buffer)
+MaaBool MaaToolkitGetWindowClassName(MaaWin32Hwnd hwnd, MaaStringBuffer* buffer)
 {
     auto opt = win32_mgr.get_class_name(hwnd);
     if (!opt) {
@@ -66,7 +66,7 @@ MaaBool MaaToolkitGetWindowClassName(MaaWin32Hwnd hwnd, MaaStringBufferHandle bu
     return true;
 }
 
-MaaBool MaaToolkitGetWindowWindowName(MaaWin32Hwnd hwnd, MaaStringBufferHandle buffer)
+MaaBool MaaToolkitGetWindowWindowName(MaaWin32Hwnd hwnd, MaaStringBuffer* buffer)
 {
     auto opt = win32_mgr.get_window_name(hwnd);
     if (!opt) {

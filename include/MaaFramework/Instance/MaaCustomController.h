@@ -34,13 +34,13 @@ extern "C"
 
         /// Write result to buffer.
         MaaBool (
-            *request_uuid)(MaaTransparentArg handle_arg, /* out */ MaaStringBufferHandle buffer);
+            *request_uuid)(MaaTransparentArg handle_arg, /* out */ MaaStringBuffer* buffer);
 
-        MaaBool (*start_app)(MaaStringView intent, MaaTransparentArg handle_arg);
-        MaaBool (*stop_app)(MaaStringView intent, MaaTransparentArg handle_arg);
+        MaaBool (*start_app)(const char* intent, MaaTransparentArg handle_arg);
+        MaaBool (*stop_app)(const char* intent, MaaTransparentArg handle_arg);
 
         /// Write result to buffer.
-        MaaBool (*screencap)(MaaTransparentArg handle_arg, /* out */ MaaImageBufferHandle buffer);
+        MaaBool (*screencap)(MaaTransparentArg handle_arg, /* out */ MaaImageBuffer* buffer);
 
         MaaBool (*click)(int32_t x, int32_t y, MaaTransparentArg handle_arg);
 
@@ -70,7 +70,7 @@ extern "C"
 
         MaaBool (*press_key)(int32_t keycode, MaaTransparentArg handle_arg);
 
-        MaaBool (*input_text)(MaaStringView text, MaaTransparentArg handle_arg);
+        MaaBool (*input_text)(const char* text, MaaTransparentArg handle_arg);
     };
 
 #ifdef __cplusplus

@@ -22,7 +22,7 @@ ExecAgentBase::~ExecAgentBase()
 }
 
 bool ExecAgentBase::register_executor(
-    MaaInstanceHandle handle,
+    MaaScheduler* handle,
     std::string_view name,
     std::filesystem::path exec_path,
     std::vector<std::string> exec_args)
@@ -51,7 +51,7 @@ bool ExecAgentBase::register_executor(
     return true;
 }
 
-bool ExecAgentBase::unregister_executor(MaaInstanceHandle handle, std::string_view name)
+bool ExecAgentBase::unregister_executor(MaaScheduler* handle, std::string_view name)
 {
     LogFunc << VAR_VOIDP(handle) << VAR(name);
 
@@ -217,7 +217,7 @@ std::string ExecAgentBase::handle_command(const json::value& cmd)
 
 json::value ExecAgentBase::ctx_run_task(const json::value& cmd)
 {
-    auto ctx = get_sync_context(cmd);
+    auto ctx = get_context(cmd);
     if (!ctx) {
         LogError << "sync context not found" << VAR(cmd);
         return invalid_json();
@@ -232,14 +232,14 @@ json::value ExecAgentBase::ctx_run_task(const json::value& cmd)
 
     std::string task_param = cmd.get("task_param", MaaTaskParam_Empty);
 
-    bool ret = MaaSyncContextRunTask(ctx, task_name.c_str(), task_param.c_str());
+    bool ret = MaaContextRunTask(ctx, task_name.c_str(), task_param.c_str());
 
     return gen_result(ret);
 }
 
 json::value ExecAgentBase::ctx_run_recognition(const json::value& cmd)
 {
-    auto ctx = get_sync_context(cmd);
+    auto ctx = get_context(cmd);
     if (!ctx) {
         LogError << "sync context not found" << VAR(cmd);
         return invalid_json();
@@ -279,7 +279,7 @@ json::value ExecAgentBase::ctx_run_recognition(const json::value& cmd)
         MaaDestroyStringBuffer(out_detail_buff);
     });
 
-    bool ret = MaaSyncContextRunRecognition(
+    bool ret = MaaContextRunRecognition(
         ctx,
         image_buff,
         task_name.c_str(),
@@ -305,7 +305,7 @@ json::value ExecAgentBase::ctx_run_recognition(const json::value& cmd)
 
 json::value ExecAgentBase::ctx_run_action(const json::value& cmd)
 {
-    auto ctx = get_sync_context(cmd);
+    auto ctx = get_context(cmd);
     if (!ctx) {
         LogError << "sync context not found" << VAR(cmd);
         return invalid_json();
@@ -339,7 +339,7 @@ json::value ExecAgentBase::ctx_run_action(const json::value& cmd)
     std::string str_cur_rec_detail =
         j_cur_rec_detail.is_string() ? j_cur_rec_detail.as_string() : j_cur_rec_detail.to_string();
 
-    bool ret = MaaSyncContextRunAction(
+    bool ret = MaaContextRunAction(
         ctx,
         task_name.c_str(),
         task_param.c_str(),
@@ -351,7 +351,7 @@ json::value ExecAgentBase::ctx_run_action(const json::value& cmd)
 
 json::value ExecAgentBase::ctx_click(const json::value& cmd)
 {
-    auto ctx = get_sync_context(cmd);
+    auto ctx = get_context(cmd);
     if (!ctx) {
         LogError << "sync context not found" << VAR(cmd);
         return invalid_json();
@@ -369,14 +369,14 @@ json::value ExecAgentBase::ctx_click(const json::value& cmd)
         return invalid_json();
     }
 
-    bool ret = MaaSyncContextClick(ctx, *x_opt, *y_opt);
+    bool ret = MaaContextClick(ctx, *x_opt, *y_opt);
 
     return gen_result(ret);
 }
 
 json::value ExecAgentBase::ctx_swipe(const json::value& cmd)
 {
-    auto ctx = get_sync_context(cmd);
+    auto ctx = get_context(cmd);
     if (!ctx) {
         LogError << "sync context not found" << VAR(cmd);
         return invalid_json();
@@ -412,14 +412,14 @@ json::value ExecAgentBase::ctx_swipe(const json::value& cmd)
         return invalid_json();
     }
 
-    bool ret = MaaSyncContextSwipe(ctx, *x1_opt, *y1_opt, *x2_opt, *y2_opt, *duration_opt);
+    bool ret = MaaContextSwipe(ctx, *x1_opt, *y1_opt, *x2_opt, *y2_opt, *duration_opt);
 
     return gen_result(ret);
 }
 
 json::value ExecAgentBase::ctx_press_key(const json::value& cmd)
 {
-    auto ctx = get_sync_context(cmd);
+    auto ctx = get_context(cmd);
     if (!ctx) {
         LogError << "sync context not found" << VAR(cmd);
         return invalid_json();
@@ -431,14 +431,14 @@ json::value ExecAgentBase::ctx_press_key(const json::value& cmd)
         return invalid_json();
     }
 
-    bool ret = MaaSyncContextPressKey(ctx, *keycode_opt);
+    bool ret = MaaContextPressKey(ctx, *keycode_opt);
 
     return gen_result(ret);
 }
 
 json::value ExecAgentBase::ctx_input_text(const json::value& cmd)
 {
-    auto ctx = get_sync_context(cmd);
+    auto ctx = get_context(cmd);
     if (!ctx) {
         LogError << "sync context not found" << VAR(cmd);
         return invalid_json();
@@ -450,14 +450,14 @@ json::value ExecAgentBase::ctx_input_text(const json::value& cmd)
         return invalid_json();
     }
 
-    bool ret = MaaSyncContextInputText(ctx, text_opt->c_str());
+    bool ret = MaaContextInputText(ctx, text_opt->c_str());
 
     return gen_result(ret);
 }
 
 json::value ExecAgentBase::ctx_touch_down(const json::value& cmd)
 {
-    auto ctx = get_sync_context(cmd);
+    auto ctx = get_context(cmd);
     if (!ctx) {
         LogError << "sync context not found" << VAR(cmd);
         return invalid_json();
@@ -487,14 +487,14 @@ json::value ExecAgentBase::ctx_touch_down(const json::value& cmd)
         return invalid_json();
     }
 
-    bool ret = MaaSyncContextTouchDown(ctx, *contact_opt, *x_opt, *y_opt, *pressure_opt);
+    bool ret = MaaContextTouchDown(ctx, *contact_opt, *x_opt, *y_opt, *pressure_opt);
 
     return gen_result(ret);
 }
 
 json::value ExecAgentBase::ctx_touch_move(const json::value& cmd)
 {
-    auto ctx = get_sync_context(cmd);
+    auto ctx = get_context(cmd);
     if (!ctx) {
         LogError << "sync context not found" << VAR(cmd);
         return invalid_json();
@@ -523,14 +523,14 @@ json::value ExecAgentBase::ctx_touch_move(const json::value& cmd)
         return invalid_json();
     }
 
-    bool ret = MaaSyncContextTouchMove(ctx, *contact_opt, *x_opt, *y_opt, *pressure_opt);
+    bool ret = MaaContextTouchMove(ctx, *contact_opt, *x_opt, *y_opt, *pressure_opt);
 
     return gen_result(ret);
 }
 
 json::value ExecAgentBase::ctx_touch_up(const json::value& cmd)
 {
-    auto ctx = get_sync_context(cmd);
+    auto ctx = get_context(cmd);
     if (!ctx) {
         LogError << "sync context not found" << VAR(cmd);
         return invalid_json();
@@ -541,14 +541,14 @@ json::value ExecAgentBase::ctx_touch_up(const json::value& cmd)
         return invalid_json();
     }
 
-    bool ret = MaaSyncContextTouchUp(ctx, *contact_opt);
+    bool ret = MaaContextTouchUp(ctx, *contact_opt);
 
     return gen_result(ret);
 }
 
 json::value ExecAgentBase::ctx_screencap(const json::value& cmd)
 {
-    auto ctx = get_sync_context(cmd);
+    auto ctx = get_context(cmd);
     if (!ctx) {
         LogError << "sync context not found";
         return invalid_json();
@@ -557,7 +557,7 @@ json::value ExecAgentBase::ctx_screencap(const json::value& cmd)
     auto image_buff = MaaCreateImageBuffer();
     OnScopeLeave([&]() { MaaDestroyImageBuffer(image_buff); });
 
-    bool ret = MaaSyncContextScreencap(ctx, image_buff);
+    bool ret = MaaContextScreencap(ctx, image_buff);
 
     auto ret_obj = gen_result(ret);
     if (!ret) {
@@ -581,7 +581,7 @@ json::value ExecAgentBase::ctx_screencap(const json::value& cmd)
 
 json::value ExecAgentBase::ctx_cached_image(const json::value& cmd)
 {
-    auto ctx = get_sync_context(cmd);
+    auto ctx = get_context(cmd);
     if (!ctx) {
         LogError << "sync context not found";
         return invalid_json();
@@ -590,7 +590,7 @@ json::value ExecAgentBase::ctx_cached_image(const json::value& cmd)
     auto image_buff = MaaCreateImageBuffer();
     OnScopeLeave([&]() { MaaDestroyImageBuffer(image_buff); });
 
-    bool ret = MaaSyncContextCachedImage(ctx, image_buff);
+    bool ret = MaaContextCachedImage(ctx, image_buff);
 
     auto ret_obj = gen_result(ret);
     if (!ret) {
@@ -612,15 +612,15 @@ json::value ExecAgentBase::ctx_cached_image(const json::value& cmd)
     return ret_obj;
 }
 
-MaaSyncContextHandle ExecAgentBase::get_sync_context(const json::value& cmd)
+MaaContext* ExecAgentBase::get_context(const json::value& cmd)
 {
-    auto str_opt = cmd.find<std::string>("sync_context");
+    auto str_opt = cmd.find<std::string>("context");
     if (!str_opt) {
         LogError << "no sync context" << VAR(cmd);
         return nullptr;
     }
 
-    auto ctx = arg_cvt_.arg_to_sync_context(*str_opt);
+    auto ctx = arg_cvt_.arg_to_context(*str_opt);
     if (!ctx) {
         LogError << "sync context not found" << VAR(*str_opt) << VAR(cmd);
         return nullptr;

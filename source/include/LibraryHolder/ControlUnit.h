@@ -15,14 +15,14 @@ class AdbControlUnitLibraryHolder : public LibraryHolder<AdbControlUnitLibraryHo
 {
 public:
     static std::shared_ptr<MAA_CTRL_UNIT_NS::ControlUnitAPI> create_control_unit(
-        MaaStringView adb_path,
-        MaaStringView adb_serial,
+        const char* adb_path,
+        const char* adb_serial,
         MaaAdbScreencapMethod screencap_methods,
         MaaAdbInputMethod input_methods,
-        MaaStringView config,
-        MaaStringView agent_path,
+        const char* config,
+        const char* agent_path,
         MaaNotificationCallback callback,
-        MaaCallbackTransparentArg callback_arg);
+        MaaTransparentArg callback_arg);
 
 private:
     inline static const std::filesystem::path libname_ = MAA_NS::path("MaaAdbControlUnit");
@@ -39,7 +39,7 @@ public:
         MaaWin32ScreencapMethod screencap_method,
         MaaWin32InputMethod input_method,
         MaaNotificationCallback callback,
-        MaaCallbackTransparentArg callback_arg);
+        MaaTransparentArg callback_arg);
 
 private:
     inline static const std::filesystem::path libname_ = MAA_NS::path("MaaWin32ControlUnit");
@@ -51,7 +51,7 @@ private:
 class DbgControlUnitLibraryHolder : public LibraryHolder<DbgControlUnitLibraryHolder>
 {
 public:
-    static std::shared_ptr<MAA_CTRL_UNIT_NS::ControlUnitAPI> create_control_unit(MaaDbgControllerType type, MaaStringView read_path);
+    static std::shared_ptr<MAA_CTRL_UNIT_NS::ControlUnitAPI> create_control_unit(MaaDbgControllerType type, const char* read_path);
 
 private:
     inline static const std::filesystem::path libname_ = MAA_NS::path("MaaDbgControlUnit");

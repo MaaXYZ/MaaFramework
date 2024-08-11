@@ -635,8 +635,8 @@ void Interactor::mpause() const
 }
 
 void Interactor::on_maafw_notify(
-    MaaStringView msg,
-    MaaStringView details_json,
+    const char* msg,
+    const char* details_json,
     MaaTransparentArg callback_arg)
 {
     Interactor* pthis = static_cast<Interactor*>(callback_arg);

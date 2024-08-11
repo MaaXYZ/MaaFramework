@@ -19,22 +19,41 @@ extern "C"
 {
 #endif
 
+    typedef MaaBool (*MaaCustomRecognizerCallback)(
+        MaaContext* context,
+        const MaaImageBuffer* image,
+        const char* task_name,
+        const char* recognizer_name,
+        const char* custom_recognition_param,
+        MaaTransparentArg recognizer_arg,
+        /* out */ MaaRect* out_box,
+        /* out */ MaaStringBuffer* out_detail);
+
+    typedef MaaBool (*MaaCustomActionCallback)(
+        MaaContext* context,
+        const MaaImageBuffer* image,
+        const char* task_name,
+        const char* action_name,
+        const char* custom_action_param,
+        const MaaRect* cur_box,
+        const char* cur_rec_detail,
+        MaaTransparentArg action_arg);
+
     /**
      * @brief Create a resource.
      *
-     * @param callback The callback function. See MaaAPICallback
+     * @param callback The callback function. See MaaNotificationCallback
      * @param callback_arg
-     * @return MaaResourceHandle
+     * @return MaaResource*
      */
-    MAA_FRAMEWORK_API MaaResourceHandle
-        MaaResourceCreate(MaaResourceCallback callback, MaaCallbackTransparentArg callback_arg);
+    MAA_FRAMEWORK_API MaaResource* MaaResourceCreate(MaaNotificationCallback callback, MaaTransparentArg callback_arg);
 
     /**
      * @brief Free the resource.
      *
      * @param res
      */
-    MAA_FRAMEWORK_API void MaaResourceDestroy(MaaResourceHandle res);
+    MAA_FRAMEWORK_API void MaaResourceDestroy(MaaResource* res);
 
     /**
      * @brief Register a custom recognizer to the instance.
@@ -47,9 +66,9 @@ extern "C"
      * @param recognizer_arg
      * @return MaaBool
      */
-    MAA_FRAMEWORK_API MaaBool MaaRegisterCustomRecognizer(
-        MaaResourceHandle res,
-        MaaStringView name,
+    MAA_FRAMEWORK_API MaaBool MaaResourceRegisterCustomRecognizer(
+        MaaResource* res,
+        const char* name,
         MaaCustomRecognizerCallback recognizer,
         MaaTransparentArg recognizer_arg);
 
@@ -60,8 +79,7 @@ extern "C"
      * @param name The name of the recognizer when it was registered.
      * @return MaaBool
      */
-    MAA_FRAMEWORK_API MaaBool
-        MaaUnregisterCustomRecognizer(MaaResourceHandle res, MaaStringView name);
+    MAA_FRAMEWORK_API MaaBool MaaResourceUnregisterCustomRecognizer(MaaResource* res, const char* name);
 
     /**
      * @brief Clear all custom recognizers registered to the instance.
@@ -69,7 +87,7 @@ extern "C"
      * @param res
      * @return MaaBool
      */
-    MAA_FRAMEWORK_API MaaBool MaaClearCustomRecognizer(MaaResourceHandle res);
+    MAA_FRAMEWORK_API MaaBool MaaResourceClearCustomRecognizer(MaaResource* res);
 
     /**
      * @brief Register a custom action to the instance.
@@ -82,11 +100,8 @@ extern "C"
      * @param action_arg
      * @return MaaBool
      */
-    MAA_FRAMEWORK_API MaaBool MaaRegisterCustomAction(
-        MaaResourceHandle res,
-        MaaStringView name,
-        MaaCustomActionCallback action,
-        MaaTransparentArg action_arg);
+    MAA_FRAMEWORK_API MaaBool
+        MaaResourceRegisterCustomAction(MaaResource* res, const char* name, MaaCustomActionCallback action, MaaTransparentArg action_arg);
 
     /**
      * @brief Unregister a custom action from the instance.
@@ -95,7 +110,7 @@ extern "C"
      * @param name The name of the action when it was registered.
      * @return MaaBool
      */
-    MAA_FRAMEWORK_API MaaBool MaaUnregisterCustomAction(MaaResourceHandle res, MaaStringView name);
+    MAA_FRAMEWORK_API MaaBool MaaResourceUnregisterCustomAction(MaaResource* res, const char* name);
 
     /**
      * @brief Clear all custom actions registered to the instance.
@@ -103,7 +118,7 @@ extern "C"
      * @param res
      * @return MaaBool
      */
-    MAA_FRAMEWORK_API MaaBool MaaClearCustomAction(MaaResourceHandle res);
+    MAA_FRAMEWORK_API MaaBool MaaResourceClearCustomAction(MaaResource* res);
 
     /**
      * @brief Add a path to the resource loading paths
@@ -112,7 +127,7 @@ extern "C"
      * @param path
      * @return MaaResId The id of the resource
      */
-    MAA_FRAMEWORK_API MaaResId MaaResourcePostPath(MaaResourceHandle res, MaaStringView path);
+    MAA_FRAMEWORK_API MaaResId MaaResourcePostPath(MaaResource* res, const char* path);
 
     /**
      * @brief Clear the resource loading paths
@@ -120,7 +135,7 @@ extern "C"
      * @param res
      * @return MaaBool Whether the resource is cleared successfully.
      */
-    MAA_FRAMEWORK_API MaaBool MaaResourceClear(MaaResourceHandle res);
+    MAA_FRAMEWORK_API MaaBool MaaResourceClear(MaaResource* res);
 
     /**
      * @brief Get the loading status of a resource identified by id.
@@ -129,7 +144,7 @@ extern "C"
      * @param id
      * @return MaaStatus
      */
-    MAA_FRAMEWORK_API MaaStatus MaaResourceStatus(MaaResourceHandle res, MaaResId id);
+    MAA_FRAMEWORK_API MaaStatus MaaResourceStatus(MaaResource* res, MaaResId id);
 
     /**
      * @brief Check if resources are loaded.
@@ -137,7 +152,7 @@ extern "C"
      * @param res
      * @return MaaBool
      */
-    MAA_FRAMEWORK_API MaaBool MaaResourceLoaded(MaaResourceHandle res);
+    MAA_FRAMEWORK_API MaaBool MaaResourceLoaded(MaaResource* res);
 
     /**
      * @brief Set options for a given resource.
@@ -152,7 +167,7 @@ extern "C"
      * @return MaaBool Whether the option is set successfully.
      */
     MAA_FRAMEWORK_API MaaBool MaaResourceSetOption(
-        MaaResourceHandle res,
+        MaaResource* res,
         MaaResOption key,
         MaaOptionValue value /**< Maybe a byte array */,
         MaaOptionValueSize val_size);
@@ -165,8 +180,7 @@ extern "C"
      *
      * @return MaaBool
      */
-    MAA_FRAMEWORK_API MaaBool
-        MaaResourceGetHash(MaaResourceHandle res, /* out */ MaaStringBufferHandle buffer);
+    MAA_FRAMEWORK_API MaaBool MaaResourceGetHash(MaaResource* res, /* out */ MaaStringBuffer* buffer);
 
     /**
      * @brief Get the task list of the resource.
@@ -176,8 +190,7 @@ extern "C"
      *
      * @return MaaBool
      */
-    MAA_FRAMEWORK_API MaaBool
-        MaaResourceGetTaskList(MaaResourceHandle res, /* out */ MaaStringBufferHandle buffer);
+    MAA_FRAMEWORK_API MaaBool MaaResourceGetTaskList(MaaResource* res, /* out */ MaaStringBuffer* buffer);
 
 #ifdef __cplusplus
 }

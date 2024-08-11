@@ -12,14 +12,16 @@
 
 MAA_RES_NS_BEGIN
 
-class ResourceMgr : public MaaResourceAPI
+class ResourceMgr
+    : public MaaResource
+    , public MaaSink
 {
 public:
-    ResourceMgr(MaaResourceCallback callback, MaaCallbackTransparentArg callback_arg);
+    ResourceMgr(MaaNotificationCallback callback, MaaTransparentArg callback_arg);
     virtual ~ResourceMgr() override;
 
-    virtual bool
-        set_option(MaaResOption key, MaaOptionValue value, MaaOptionValueSize val_size) override;
+public: // MaaResource
+    virtual bool set_option(MaaResOption key, MaaOptionValue value, MaaOptionValueSize val_size) override;
 
     virtual MaaResId post_path(std::filesystem::path path) override;
 
@@ -32,7 +34,7 @@ public:
     virtual std::string get_hash() const override;
     virtual std::vector<std::string> get_task_list() const override;
 
-public: // from MaaInstanceSink
+public: // MaaSink
     virtual void post_stop() override;
 
 public:
@@ -72,7 +74,7 @@ private:
     std::atomic_bool valid_ = true;
 
     std::unique_ptr<AsyncRunner<std::filesystem::path>> res_loader_ = nullptr;
-    MessageNotifier<MaaResourceCallback> notifier;
+    MessageNotifier<MaaNotificationCallback> notifier;
 };
 
 MAA_RES_NS_END

@@ -14,13 +14,13 @@
 
 MAA_TASK_NS_BEGIN
 
-class SyncContext : public MaaSyncContextAPI
+class Context : public MaaContextAPI
 {
 public:
-    explicit SyncContext(InstanceInternalAPI* inst);
-    virtual ~SyncContext() override = default;
+    explicit Context(InstanceInternalAPI* inst);
+    virtual ~Context() override = default;
 
-public: // from MaaSyncContextAPI
+public: // from MaaContextAPI
     virtual MaaTaskId run_task(std::string task, std::string_view param) override;
     virtual MaaTaskId run_recognition(
         cv::Mat image,
@@ -30,7 +30,7 @@ public: // from MaaSyncContextAPI
         /*out*/ std::string& detail) override;
     virtual MaaTaskId run_action(std::string task, std::string_view param, cv::Rect cur_box, std::string cur_detail) override;
 
-    virtual MaaInstanceHandle instance() override { return dynamic_cast<MaaInstanceHandle>(inst_); }
+    virtual MaaScheduler* instance() override { return dynamic_cast<MaaScheduler*>(inst_); }
 
 private:
     InstanceInternalAPI* inst_ = nullptr;

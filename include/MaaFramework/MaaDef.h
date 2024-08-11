@@ -15,26 +15,18 @@
 #include <stdint.h>
 
 struct MaaStringBuffer;
-typedef struct MaaStringBuffer* MaaStringBufferHandle;
 struct MaaImageBuffer;
-typedef struct MaaImageBuffer* MaaImageBufferHandle;
 struct MaaStringListBuffer;
-typedef struct MaaStringListBuffer* MaaStringListBufferHandle;
 struct MaaImageListBuffer;
-typedef struct MaaImageListBuffer* MaaImageListBufferHandle;
 
-struct MaaResourceAPI;
-typedef struct MaaResourceAPI* MaaResourceHandle;
-struct MaaControllerAPI;
-typedef struct MaaControllerAPI* MaaControllerHandle;
-struct MaaInstanceAPI;
-typedef struct MaaInstanceAPI* MaaInstanceHandle;
+struct MaaResource;
+struct MaaController;
+struct MaaScheduler;
+struct MaaContext;
 
 typedef uint8_t MaaBool;
 typedef uint64_t MaaSize;
 #define MaaNullSize ((MaaSize) - 1)
-
-typedef const char* MaaStringView;
 
 typedef int32_t MaaStatus;
 
@@ -167,11 +159,11 @@ enum MaaCtrlOptionEnum
     MaaCtrlOption_Recording = 5,
 };
 
-typedef MaaOption MaaInstOption;
+typedef MaaOption MaaSchedOption;
 
-enum MaaInstOptionEnum
+enum MaaSchedOptionEnum
 {
-    MaaInstOption_Invalid = 0,
+    MaaSchedOption_Invalid = 0,
 };
 
 // MaaAdbScreencapMethod:
@@ -224,49 +216,13 @@ const MaaDbgControllerType MaaDbgControllerType_ReplayRecording = 2;
 
 typedef void* MaaWin32Hwnd;
 typedef void* MaaTransparentArg;
-typedef MaaTransparentArg MaaCallbackTransparentArg;
 
-struct MaaSyncContextAPI;
-typedef struct MaaSyncContextAPI* MaaSyncContextHandle;
+typedef void (*MaaNotificationCallback)(const char* message, const char* details_json, MaaTransparentArg callback_arg);
 
-#ifdef __cplusplus
-extern "C"
+struct MaaRect
 {
-#endif
-
-    typedef struct MaaRect
-    {
-        int32_t x;
-        int32_t y;
-        int32_t width;
-        int32_t height;
-    }* MaaRectHandle;
-
-#ifdef __cplusplus
-}
-#endif
-
-typedef void (*MaaNotificationCallback)(MaaStringView message, MaaStringView details_json, MaaTransparentArg callback_arg);
-
-typedef MaaBool (*MaaCustomRecognizerCallback)(
-    MaaSyncContextHandle sync_context,
-    const MaaImageBufferHandle image,
-    MaaStringView task_name,
-    MaaStringView recognizer_name,
-    MaaStringView custom_recognition_param,
-    MaaTransparentArg recognizer_arg,
-    /* out */ MaaRectHandle out_box,
-    /* out */ MaaStringBufferHandle out_detail);
-
-typedef MaaBool (*MaaCustomActionCallback)(
-    MaaSyncContextHandle sync_context,
-    const MaaImageBufferHandle image,
-    MaaStringView task_name,
-    MaaStringView action_name,
-    MaaStringView custom_action_param,
-    MaaRectHandle cur_box,
-    MaaStringView cur_rec_detail,
-    MaaTransparentArg action_arg);
-
-struct MaaCustomControllerCallbacks;
-typedef struct MaaCustomControllerCallbacks* MaaCustomControllerCallbacksHandle;
+    int32_t x;
+    int32_t y;
+    int32_t width;
+    int32_t height;
+};

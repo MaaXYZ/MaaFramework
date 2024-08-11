@@ -24,18 +24,18 @@ public:
     virtual ~ExecAgentBase();
 
     bool register_executor(
-        MaaInstanceHandle handle,
+        MaaScheduler* handle,
         std::string_view name,
         std::filesystem::path exec_path,
         std::vector<std::string> exec_args);
-    bool unregister_executor(MaaInstanceHandle handle, std::string_view name);
+    bool unregister_executor(MaaScheduler* handle, std::string_view name);
 
 protected:
     virtual bool register_for_maa_inst(
-        MaaInstanceHandle handle,
+        MaaScheduler* handle,
         std::string_view name,
         ExecData& executor) = 0;
-    virtual bool unregister_for_maa_inst(MaaInstanceHandle handle, std::string_view name) = 0;
+    virtual bool unregister_for_maa_inst(MaaScheduler* handle, std::string_view name) = 0;
 
     std::optional<json::value> run_executor(
         const std::filesystem::path& exec_path,
@@ -64,7 +64,7 @@ private:
     json::value ctx_screencap(const json::value& cmd);
     json::value ctx_cached_image(const json::value& cmd);
 
-    MaaSyncContextHandle get_sync_context(const json::value& cmd);
+    MaaContext* get_context(const json::value& cmd);
     json::value invalid_json();
     json::value gen_result(bool success);
 

@@ -10,7 +10,7 @@
 
 using MAA_NS::path;
 
-MaaStringView MaaAdbControlUnitGetVersion()
+const char* MaaAdbControlUnitGetVersion()
 {
 #pragma message("MaaAdbControlUnit MAA_VERSION: " MAA_VERSION)
 
@@ -18,14 +18,14 @@ MaaStringView MaaAdbControlUnitGetVersion()
 }
 
 MaaControlUnitHandle MaaAdbControlUnitCreate(
-    MaaStringView adb_path,
-    MaaStringView adb_serial,
+    const char* adb_path,
+    const char* adb_serial,
     MaaAdbScreencapMethod screencap_methods,
     MaaAdbInputMethod input_methods,
-    MaaStringView config,
-    MaaStringView agent_path,
+    const char* config,
+    const char* agent_path,
     MaaNotificationCallback callback,
-    MaaCallbackTransparentArg callback_arg)
+    MaaTransparentArg callback_arg)
 {
     using namespace MAA_CTRL_UNIT_NS;
 

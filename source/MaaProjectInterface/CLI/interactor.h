@@ -41,8 +41,8 @@ private:
     void mpause() const;
 
     static void on_maafw_notify(
-        MaaStringView msg,
-        MaaStringView details_json,
+        const char* msg,
+        const char* details_json,
         MaaTransparentArg callback_arg);
 
 private:
