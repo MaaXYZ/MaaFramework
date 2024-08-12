@@ -31,7 +31,7 @@ extern "C"
         MaaRect* cur_box,
         const char* cur_rec_detail);
 
-    MAA_FRAMEWORK_API MaaScheduler* MaaContextGetInstance(MaaContext* context);
+    MAA_FRAMEWORK_API MaaScheduler* MaaContextGetScheduler(MaaContext* context);
 
 #ifdef __cplusplus
 }

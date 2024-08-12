@@ -23,15 +23,6 @@ void PipelineTask::post_stop()
     need_to_stop_ = true;
 }
 
-bool PipelineTask::on_set_param(int64_t task_id, const json::value& param)
-{
-    if (task_id != task_id_) {
-        return true;
-    }
-
-    return set_param(param);
-}
-
 bool PipelineTask::run()
 {
     switch (run_type_) {

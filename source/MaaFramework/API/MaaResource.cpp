@@ -7,8 +7,7 @@
 #include "Utils/Logger.h"
 #include "Utils/Platform.h"
 
-MaaResource*
-    MaaResourceCreate(MaaResourceCallback callback, MaaTransparentArg callback_arg)
+MaaResource* MaaResourceCreate(MaaNotificationCallback callback, MaaTransparentArg callback_arg)
 {
     LogFunc << VAR_VOIDP(callback) << VAR_VOIDP(callback_arg);
 
@@ -87,11 +86,7 @@ MaaBool MaaResourceLoaded(MaaResource* res)
     return res->valid();
 }
 
-MaaBool MaaResourceSetOption(
-    MaaResource* res,
-    MaaResOption key,
-    MaaOptionValue value,
-    MaaOptionValueSize val_size)
+MaaBool MaaResourceSetOption(MaaResource* res, MaaResOption key, MaaOptionValue value, MaaOptionValueSize val_size)
 {
     LogFunc << VAR_VOIDP(res) << VAR(key) << VAR_VOIDP(value) << VAR(val_size);
 

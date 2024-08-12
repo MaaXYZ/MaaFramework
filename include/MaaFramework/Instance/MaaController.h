@@ -104,11 +104,8 @@ extern "C"
      * @param val_size The size of the option value.
      * @return MaaBool Whether the option is set successfully.
      */
-    MAA_FRAMEWORK_API MaaBool MaaControllerSetOption(
-        MaaController* ctrl,
-        MaaCtrlOption key,
-        MaaOptionValue value /**< Maybe a byte array */,
-        MaaOptionValueSize val_size);
+    MAA_FRAMEWORK_API MaaBool
+        MaaControllerSetOption(MaaController* ctrl, MaaCtrlOption key, MaaOptionValue value, MaaOptionValueSize val_size);
 
     /**
      * @defgroup MaaControllerPostRequest Controller Requests
@@ -150,6 +147,15 @@ extern "C"
      * @return MaaStatus The status of the request.
      */
     MAA_FRAMEWORK_API MaaStatus MaaControllerStatus(MaaController* ctrl, MaaCtrlId id);
+
+    /**
+     * @brief Wait for the request identified by the given id to finish.
+     *
+     * @param ctrl
+     * @param id
+     * @return MaaStatus The status of the request.
+     */
+    MAA_FRAMEWORK_API MaaStatus MaaControllerWait(MaaController* ctrl, MaaCtrlId id);
 
     /**
      * @brief Check if the controller is connected.

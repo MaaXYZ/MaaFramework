@@ -17,17 +17,7 @@
 
 MAA_TASK_NS_BEGIN
 
-class PipelineSink
-{
-public:
-    virtual ~PipelineSink() = default;
-
-    virtual bool on_set_param(int64_t task_id, const json::value& param) = 0;
-};
-
 class PipelineTask
-    : public MaaSink
-    , public PipelineSink
 {
 public:
     using TaskData = MAA_RES_NS::TaskData;
@@ -37,10 +27,8 @@ public:
     PipelineTask(std::string entry, InstanceInternalAPI* inst);
     virtual ~PipelineTask() override = default;
 
-public: // from MaaSink
-    virtual void post_stop() override;
-
-    virtual bool on_set_param(int64_t task_id, const json::value& param) override;
+public:
+    void post_stop();
 
 public:
     const std::string& entry() const { return entry_; }

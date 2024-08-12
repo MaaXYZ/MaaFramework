@@ -80,9 +80,7 @@ struct Action
 
 std::ostream& operator<<(std::ostream& os, const Action& action);
 
-class ControllerAgent
-    : public MaaController
-    , public MaaSink
+class ControllerAgent : public MaaController
 {
 public:
     ControllerAgent(MaaNotificationCallback callback, MaaTransparentArg callback_arg);
@@ -112,10 +110,9 @@ public: // MaaController
     virtual cv::Mat cached_image() override;
     virtual std::string get_uuid() override;
 
-public: // MaaSink
-    virtual void post_stop() override;
-
 public:
+    void post_stop();
+
     bool click(const cv::Rect& r);
     bool click(const cv::Point& p);
     bool swipe(const cv::Rect& r1, const cv::Rect& r2, int duration);

@@ -64,22 +64,14 @@ public:
     virtual MaaTaskId post_pipeline(std::string entry, std::string_view param) = 0;
     virtual MaaTaskId post_recognition(std::string entry, std::string_view param) = 0;
     virtual MaaTaskId post_action(std::string entry, std::string_view param) = 0;
-    virtual bool set_task_param(MaaTaskId task_id, std::string_view param) = 0;
+    virtual bool set_param(MaaTaskId task_id, std::string_view param) = 0;
 
-    virtual MaaStatus task_status(MaaTaskId task_id) const = 0;
-    virtual MaaStatus task_wait(MaaTaskId task_id) const = 0;
+    virtual MaaStatus status(MaaTaskId task_id) const = 0;
+    virtual MaaStatus wait(MaaTaskId task_id) const = 0;
 
     virtual MaaBool running() const = 0;
     virtual void post_stop() = 0;
 
     virtual MaaResource* resource() = 0;
     virtual MaaController* controller() = 0;
-};
-
-struct MaaSink
-{
-public:
-    virtual ~MaaSink() = default;
-
-    virtual void post_stop() {}
 };

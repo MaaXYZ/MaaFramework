@@ -47,11 +47,8 @@ extern "C"
      * @param val_size The size of the option value.
      * @return MaaBool Whether the option is set successfully.
      */
-    MAA_FRAMEWORK_API MaaBool MaaSchedulerSetOption(
-        MaaScheduler* scheduler,
-        MaaSchedOption key,
-        MaaOptionValue value /**< Maybe a byte array */,
-        MaaOptionValueSize val_size);
+    MAA_FRAMEWORK_API MaaBool
+        MaaSchedulerSetOption(MaaScheduler* scheduler, MaaSchedOption key, MaaOptionValue value, MaaOptionValueSize val_size);
 
     /**
      * @brief Bind the scheduler to an initialized resource.
@@ -135,7 +132,7 @@ extern "C"
      * @param param The parameter of the task.
      * @return MaaBool
      */
-    MAA_FRAMEWORK_API MaaBool MaaSchedulerSetTaskParam(MaaScheduler* scheduler, MaaTaskId id, const char* param);
+    MAA_FRAMEWORK_API MaaBool MaaSchedulerSetParam(MaaScheduler* scheduler, MaaTaskId id, const char* param);
 
     /**
      * @brief Get the status of a task identified by the id.
@@ -144,7 +141,16 @@ extern "C"
      * @param id
      * @return MaaStatus
      */
-    MAA_FRAMEWORK_API MaaStatus MaaSchedulerTaskStatus(MaaScheduler* scheduler, MaaTaskId id);
+    MAA_FRAMEWORK_API MaaStatus MaaSchedulerStatus(MaaScheduler* scheduler, MaaTaskId id);
+
+    /**
+     * @brief Wait for a task to complete.
+     *
+     * @param scheduler
+     * @param id
+     * @return MaaStatus
+     */
+    MAA_FRAMEWORK_API MaaStatus MaaSchedulerWait(MaaScheduler* scheduler, MaaTaskId id);
 
     /**
      * @brief Is maa running?

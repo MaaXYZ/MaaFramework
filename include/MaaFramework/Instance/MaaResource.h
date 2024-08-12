@@ -147,6 +147,15 @@ extern "C"
     MAA_FRAMEWORK_API MaaStatus MaaResourceStatus(MaaResource* res, MaaResId id);
 
     /**
+     * @brief Wait for the resource identified by id to finish loading.
+     *
+     * @param res
+     * @param id
+     * @return MaaStatus
+     */
+    MAA_FRAMEWORK_API MaaStatus MaaResourceWait(MaaResource* res, MaaResId id);
+
+    /**
      * @brief Check if resources are loaded.
      *
      * @param res
@@ -166,11 +175,7 @@ extern "C"
      * @param val_size The size of the option value.
      * @return MaaBool Whether the option is set successfully.
      */
-    MAA_FRAMEWORK_API MaaBool MaaResourceSetOption(
-        MaaResource* res,
-        MaaResOption key,
-        MaaOptionValue value /**< Maybe a byte array */,
-        MaaOptionValueSize val_size);
+    MAA_FRAMEWORK_API MaaBool MaaResourceSetOption(MaaResource* res, MaaResOption key, MaaOptionValue value, MaaOptionValueSize val_size);
 
     /**
      * @brief Get the hash of the resource.

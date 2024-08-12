@@ -12,9 +12,7 @@
 
 MAA_RES_NS_BEGIN
 
-class ResourceMgr
-    : public MaaResource
-    , public MaaSink
+class ResourceMgr : public MaaResource
 {
 public:
     ResourceMgr(MaaNotificationCallback callback, MaaTransparentArg callback_arg);
@@ -34,10 +32,9 @@ public: // MaaResource
     virtual std::string get_hash() const override;
     virtual std::vector<std::string> get_task_list() const override;
 
-public: // MaaSink
-    virtual void post_stop() override;
-
 public:
+    void post_stop();
+
     const auto& pipeline_res() const { return pipeline_res_; }
 
     auto& pipeline_res() { return pipeline_res_; }

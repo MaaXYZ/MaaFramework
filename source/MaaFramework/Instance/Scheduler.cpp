@@ -77,7 +77,7 @@ MaaTaskId Scheduler::post_pipeline(std::string entry, std::string_view param)
     }
     task->set_type(MAA_TASK_NS::PipelineTask::RunType::Pipeline);
 
-    return post_task(std::move(task));
+    return post_task(task);
 }
 
 MaaTaskId Scheduler::post_recognition(std::string entry, std::string_view param)
@@ -89,7 +89,7 @@ MaaTaskId Scheduler::post_recognition(std::string entry, std::string_view param)
     }
     task->set_type(MAA_TASK_NS::PipelineTask::RunType::Recognition);
 
-    return post_task(std::move(task));
+    return post_task(task);
 }
 
 MaaTaskId Scheduler::post_action(std::string entry, std::string_view param)
@@ -101,10 +101,10 @@ MaaTaskId Scheduler::post_action(std::string entry, std::string_view param)
     }
     task->set_type(MAA_TASK_NS::PipelineTask::RunType::Action);
 
-    return post_task(std::move(task));
+    return post_task(task);
 }
 
-bool Scheduler::set_task_param(MaaTaskId task_id, std::string_view param)
+bool Scheduler::set_param(MaaTaskId task_id, std::string_view param)
 {
     LogInfo << VAR(task_id) << VAR(param);
 
@@ -114,19 +114,28 @@ bool Scheduler::set_task_param(MaaTaskId task_id, std::string_view param)
         return false;
     }
 
-    bool ret = false;
+    TaskPtr task_ptr;
+    {
+        std::unique_lock lock(task_cache_mutex_);
 
-    Dispatcher<MAA_TASK_NS::PipelineSink>::dispatch([&](const std::shared_ptr<MAA_TASK_NS::PipelineSink>& sink) {
-        if (!sink) {
-            return;
+        auto it = task_cache_.find(task_id);
+        if (it == task_cache_.end()) {
+            LogError << "task_id not found:" << task_id;
+            return false;
         }
-        ret = sink->on_set_param(task_id, *param_opt);
-    });
 
-    return ret;
+        task_ptr = it->second;
+    }
+
+    if (!task_ptr) {
+        LogError << "task_ptr is nullptr";
+        return false;
+    }
+
+    return task_ptr->set_param(*param_opt);
 }
 
-MaaStatus Scheduler::task_status(MaaTaskId task_id) const
+MaaStatus Scheduler::status(MaaTaskId task_id) const
 {
     if (!task_runner_) {
         LogError << "task_runner is nullptr";
@@ -135,7 +144,7 @@ MaaStatus Scheduler::task_status(MaaTaskId task_id) const
     return task_runner_->status(task_id);
 }
 
-MaaStatus Scheduler::task_wait(MaaTaskId task_id) const
+MaaStatus Scheduler::wait(MaaTaskId task_id) const
 {
     if (!task_runner_) {
         LogError << "task_runner is nullptr";
@@ -156,21 +165,29 @@ void Scheduler::post_stop()
 
     need_to_stop_ = true;
 
-    Dispatcher<MaaSink>::dispatch([&](const std::shared_ptr<MaaSink>& sink) {
-        if (!sink) {
-            return;
+    if (task_runner_ && task_runner_->running()) {
+        task_runner_->clear();
+    }
+
+    decltype(task_cache_) tmp_cache;
+    {
+        std::unique_lock lock(task_cache_mutex_);
+        tmp_cache = std::move(task_cache_);
+        task_cache_.clear();
+    }
+
+    for (auto& task_ptr : tmp_cache | std::views::values) {
+        if (!task_ptr) {
+            continue;
         }
-        sink->post_stop();
-    });
+        task_ptr->post_stop();
+    }
 
     if (resource_) {
         resource_->post_stop();
     }
     if (controller_) {
         controller_->post_stop();
-    }
-    if (task_runner_) {
-        task_runner_->clear();
     }
 }
 
@@ -226,12 +243,14 @@ Scheduler::TaskPtr Scheduler::make_task(std::string entry, std::string_view para
     return task_ptr;
 }
 
-Scheduler::TaskId Scheduler::post_task(TaskPtr task_ptr)
+Scheduler::TaskId Scheduler::post_task(const TaskPtr& task_ptr)
 {
-    Dispatcher<MaaSink>::register_observer(task_ptr);
-    Dispatcher<MAA_TASK_NS::PipelineSink>::register_observer(task_ptr);
+    auto id = task_runner_->post(task_ptr);
 
-    auto id = task_runner_->post(std::move(task_ptr));
+    {
+        std::unique_lock lock(task_cache_mutex_);
+        task_cache_.emplace(id, task_ptr);
+    }
 
     LogTrace << VAR(id);
     return id;
@@ -264,6 +283,11 @@ bool Scheduler::run_task(TaskId id, TaskPtr task_ptr)
     LogInfo << "task end:" << VAR(details) << VAR(ret);
 
     notifier.notify(ret ? MaaMsg_Scheduler_Task_Completed : MaaMsg_Scheduler_Task_Failed, details);
+
+    {
+        std::unique_lock lock(task_cache_mutex_);
+        task_cache_.erase(id);
+    }
 
     MAA_LOG_NS::Logger::get_instance().flush();
 
