@@ -5,8 +5,8 @@
 
 #include <meojson/json.hpp>
 
-#include "Conf/Conf.h"
 #include "API/MaaTypes.h"
+#include "Conf/Conf.h"
 #include "Resource/PipelineResMgr.h"
 #include "Resource/PipelineTypes.h"
 
@@ -16,24 +16,20 @@ class TaskDataMgr
 {
 public:
     using TaskData = MAA_RES_NS::TaskData;
+    using TaskDataMap = MAA_RES_NS::PipelineResMgr::TaskDataMap;
 
 public:
     explicit TaskDataMgr(Tasker* tasker);
 
     const TaskData& get_task_data(const std::string& task_name);
-    bool set_param(const json::value& param);
+    bool override_pipeline(const json::value& pipeline_override);
 
 private:
-    using TaskDataMap = MAA_RES_NS::PipelineResMgr::TaskDataMap;
-
-    bool set_diff_task(const json::value& input);
-
-private:
-    MAA_RES_NS::ResourceMgr* resource() { return inst_ ? inst_->inter_resource() : nullptr; }
+    MAA_RES_NS::ResourceMgr* resource() { return tasker_ ? tasker_->resource() : nullptr; }
 
 private:
     Tasker* tasker_ = nullptr;
-    TaskDataMap diff_tasks_;
+    TaskDataMap pipeline_override_;
 };
 
 MAA_TASK_NS_END

@@ -25,7 +25,7 @@ extern "C"
         const char* recognizer_name,
         const char* custom_recognition_param,
         const MaaImageBuffer* image,
-        MaaTransparentArg trans_arg,
+        void* trans_arg,
         /* out */ MaaRect* out_box,
         /* out */ MaaStringBuffer* out_detail);
 
@@ -36,7 +36,7 @@ extern "C"
         const char* custom_action_param,
         const MaaRect* cur_box,
         const char* cur_rec_detail,
-        MaaTransparentArg trans_arg);
+        void* trans_arg);
 
     /**
      * @brief Create a resource.
@@ -45,7 +45,7 @@ extern "C"
      * @param callback_arg
      * @return MaaResource*
      */
-    MAA_FRAMEWORK_API MaaResource* MaaResourceCreate(MaaNotificationCallback callback, MaaTransparentArg callback_arg);
+    MAA_FRAMEWORK_API MaaResource* MaaResourceCreate(MaaNotificationCallback callback, void* callback_arg);
 
     /**
      * @brief Free the resource.
@@ -69,7 +69,7 @@ extern "C"
         MaaResource* res,
         const char* name,
         MaaCustomRecognizerCallback recognizer,
-        MaaTransparentArg trans_arg);
+        void* trans_arg);
 
     /**
      * @brief Unregister a custom recognizer from the instance.
@@ -100,7 +100,7 @@ extern "C"
      * @return MaaBool
      */
     MAA_FRAMEWORK_API MaaBool
-        MaaResourceRegisterCustomAction(MaaResource* res, const char* name, MaaCustomActionCallback action, MaaTransparentArg trans_arg);
+        MaaResourceRegisterCustomAction(MaaResource* res, const char* name, MaaCustomActionCallback action, void* trans_arg);
 
     /**
      * @brief Unregister a custom action from the instance.

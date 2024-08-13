@@ -139,7 +139,7 @@ struct Configuration
 
     struct Win32Config
     {
-        MaaWin32Hwnd hwnd = nullptr;
+        void* hwnd = nullptr;
 
         int _placeholder = 0;
 
@@ -193,7 +193,7 @@ struct RuntimeParam
 
     struct Win32Param
     {
-        MaaWin32Hwnd hwnd = nullptr;
+        void* hwnd = nullptr;
         int32_t controller_type = 0;
     };
 

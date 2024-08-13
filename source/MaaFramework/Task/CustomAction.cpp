@@ -7,7 +7,7 @@
 
 MAA_TASK_NS_BEGIN
 
-CustomAction::CustomAction(std::string name, MaaCustomActionCallback action, MaaTransparentArg trans_arg)
+CustomAction::CustomAction(std::string name, MaaCustomActionCallback action, void* trans_arg)
     : name_(std::move(name))
     , action_callback_(action)
     , trans_arg_(trans_arg)

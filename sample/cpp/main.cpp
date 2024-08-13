@@ -106,7 +106,7 @@ MaaBool my_analyze(
     const MaaImageBuffer* image,
     const char* task_name,
     const char* custom_recognition_param,
-    MaaTransparentArg arg,
+    void* arg,
     /*out*/ MaaRect* out_box,
     /*out*/ MaaStringBuffer* out_detail)
 {

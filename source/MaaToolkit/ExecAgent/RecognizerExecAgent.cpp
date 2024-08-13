@@ -79,7 +79,7 @@ MaaBool RecognizerExecAgent::maa_api_analyze(
     const MaaImageBuffer* image,
     const char* task_name,
     const char* custom_recognition_param,
-    MaaTransparentArg trans_arg,
+    void* trans_arg,
     MaaRect* out_box,
     MaaStringBuffer* out_detail)
 {

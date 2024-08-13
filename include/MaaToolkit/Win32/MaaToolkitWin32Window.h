@@ -50,31 +50,31 @@ extern "C"
      *
      * @param index The 0-based index of the window. The index should not exceed the number of
      * windows found otherwise out_of_range exception will be thrown.
-     * @return MaaWin32Hwnd The window handle.
+     * @return void* The window handle.
      */
-    MAA_TOOLKIT_API MaaWin32Hwnd MaaToolkitGetWindow(MaaSize index);
+    MAA_TOOLKIT_API void* MaaToolkitGetWindow(MaaSize index);
 
     /**
      * @brief Get the window handle of the window under the cursor. This uses the WindowFromPoint()
      * system API.
      *
-     * @return MaaWin32Hwnd The window handle.
+     * @return void* The window handle.
      */
-    MAA_TOOLKIT_API MaaWin32Hwnd MaaToolkitGetCursorWindow();
+    MAA_TOOLKIT_API void* MaaToolkitGetCursorWindow();
 
     /**
      * @brief Get the desktop window handle. This uses the GetDesktopWindow() system API.
      *
-     * @return MaaWin32Hwnd The window handle.
+     * @return void* The window handle.
      */
-    MAA_TOOLKIT_API MaaWin32Hwnd MaaToolkitGetDesktopWindow();
+    MAA_TOOLKIT_API void* MaaToolkitGetDesktopWindow();
 
     /**
      * @brief Get the foreground window handle. This uses the GetForegroundWindow() system API.
      *
-     * @return MaaWin32Hwnd The window handle.
+     * @return void* The window handle.
      */
-    MAA_TOOLKIT_API MaaWin32Hwnd MaaToolkitGetForegroundWindow();
+    MAA_TOOLKIT_API void* MaaToolkitGetForegroundWindow();
 
     /**
      * @brief Get the window class name by hwnd.
@@ -84,7 +84,7 @@ extern "C"
      * @return MaaBool.
      */
     MAA_TOOLKIT_API MaaBool
-        MaaToolkitGetWindowClassName(MaaWin32Hwnd hwnd, MaaStringBuffer* buffer);
+        MaaToolkitGetWindowClassName(void* hwnd, MaaStringBuffer* buffer);
 
     /**
      * @brief Get the window window name by hwnd.
@@ -94,7 +94,7 @@ extern "C"
      * @return MaaBool.
      */
     MAA_TOOLKIT_API MaaBool
-        MaaToolkitGetWindowWindowName(MaaWin32Hwnd hwnd, MaaStringBuffer* buffer);
+        MaaToolkitGetWindowWindowName(void* hwnd, MaaStringBuffer* buffer);
 
 #ifdef __cplusplus
 }

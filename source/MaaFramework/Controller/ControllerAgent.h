@@ -83,7 +83,7 @@ std::ostream& operator<<(std::ostream& os, const Action& action);
 class ControllerAgent : public MaaController
 {
 public:
-    ControllerAgent(MaaNotificationCallback callback, MaaTransparentArg callback_arg);
+    ControllerAgent(MaaNotificationCallback callback, void* callback_arg);
     virtual ~ControllerAgent() override;
 
 public: // MaaController

@@ -365,7 +365,7 @@ bool Interactor::select_win32_hwnd(
 {
     using namespace MAA_PROJECT_INTERFACE_NS;
 
-    MaaWin32Hwnd hwnd = nullptr;
+    void* hwnd = nullptr;
 
     if (win32_config.method == InterfaceData::Controller::Win32Config::kMethodFind
         || win32_config.method == InterfaceData::Controller::Win32Config::kMethodSearch) {
@@ -393,7 +393,7 @@ bool Interactor::select_win32_hwnd(
     return true;
 }
 
-MaaWin32Hwnd Interactor::select_win32_multiple_hwnd(
+void* Interactor::select_win32_multiple_hwnd(
     const MAA_PROJECT_INTERFACE_NS::InterfaceData::Controller::Win32Config& win32_config)
 {
     using namespace MAA_PROJECT_INTERFACE_NS;
@@ -434,7 +434,7 @@ MaaWin32Hwnd Interactor::select_win32_multiple_hwnd(
     return MaaToolkitGetWindow(index);
 }
 
-std::string Interactor::get_hwnd_info(MaaWin32Hwnd hwnd)
+std::string Interactor::get_hwnd_info(void* hwnd)
 {
     auto class_buffer = MaaCreateStringBuffer();
     MaaToolkitGetWindowClassName(hwnd, class_buffer);
@@ -637,7 +637,7 @@ void Interactor::mpause() const
 void Interactor::on_maafw_notify(
     const char* msg,
     const char* details_json,
-    MaaTransparentArg callback_arg)
+    void* callback_arg)
 {
     Interactor* pthis = static_cast<Interactor*>(callback_arg);
     std::ignore = pthis;

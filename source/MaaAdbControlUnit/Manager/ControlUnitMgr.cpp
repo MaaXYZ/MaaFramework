@@ -14,7 +14,7 @@ ControlUnitMgr::ControlUnitMgr(
     std::shared_ptr<ScreencapBase> screencap_unit,
     std::shared_ptr<InputBase> touch_unit,
     MaaNotificationCallback callback,
-    MaaTransparentArg callback_arg)
+    void* callback_arg)
     : adb_path_(std::move(adb_path))
     , adb_serial_(std::move(adb_serial))
     , screencap_(std::move(screencap_unit))

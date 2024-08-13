@@ -42,7 +42,7 @@ extern "C"
         const char* config,
         const char* agent_path,
         MaaNotificationCallback callback,
-        MaaTransparentArg callback_arg);
+        void* callback_arg);
 
     /**
      * @brief Create a win32 controller instance.
@@ -56,11 +56,11 @@ extern "C"
      * @return MaaController* The handle of the created controller instance.
      */
     MAA_FRAMEWORK_API MaaController* MaaWin32ControllerCreate(
-        MaaWin32Hwnd hWnd,
+        void* hWnd,
         MaaWin32ScreencapMethod screencap_method,
         MaaWin32InputMethod input_method,
         MaaNotificationCallback callback,
-        MaaTransparentArg callback_arg);
+        void* callback_arg);
 
     /**
      * @brief Create a custom controller instance.
@@ -73,9 +73,9 @@ extern "C"
      */
     MAA_FRAMEWORK_API MaaController* MaaCustomControllerCreate(
         MaaCustomControllerCallbacks* handle,
-        MaaTransparentArg handle_arg,
+        void* handle_arg,
         MaaNotificationCallback callback,
-        MaaTransparentArg callback_arg);
+        void* callback_arg);
 
     MAA_FRAMEWORK_API MaaController* MaaDbgControllerCreate(
         const char* read_path,
@@ -83,7 +83,7 @@ extern "C"
         MaaDbgControllerType type,
         const char* config,
         MaaNotificationCallback callback,
-        MaaTransparentArg callback_arg);
+        void* callback_arg);
 
     /**
      * @brief Free the controller instance.

@@ -29,33 +29,33 @@ MaaSize MaaToolkitListWindows()
     return win32_mgr.list_windows();
 }
 
-MaaWin32Hwnd MaaToolkitGetWindow(MaaSize index)
+void* MaaToolkitGetWindow(MaaSize index)
 {
     return win32_mgr.found_windows().at(index).hwnd;
 }
 
-MaaWin32Hwnd MaaToolkitGetCursorWindow()
+void* MaaToolkitGetCursorWindow()
 {
     LogInfo;
 
     return win32_mgr.get_cursor_window();
 }
 
-MaaWin32Hwnd MaaToolkitGetDesktopWindow()
+void* MaaToolkitGetDesktopWindow()
 {
     LogInfo;
 
     return win32_mgr.get_desktop_window();
 }
 
-MaaWin32Hwnd MaaToolkitGetForegroundWindow()
+void* MaaToolkitGetForegroundWindow()
 {
     LogInfo;
 
     return win32_mgr.get_foreground_window();
 }
 
-MaaBool MaaToolkitGetWindowClassName(MaaWin32Hwnd hwnd, MaaStringBuffer* buffer)
+MaaBool MaaToolkitGetWindowClassName(void* hwnd, MaaStringBuffer* buffer)
 {
     auto opt = win32_mgr.get_class_name(hwnd);
     if (!opt) {
@@ -66,7 +66,7 @@ MaaBool MaaToolkitGetWindowClassName(MaaWin32Hwnd hwnd, MaaStringBuffer* buffer)
     return true;
 }
 
-MaaBool MaaToolkitGetWindowWindowName(MaaWin32Hwnd hwnd, MaaStringBuffer* buffer)
+MaaBool MaaToolkitGetWindowWindowName(void* hwnd, MaaStringBuffer* buffer)
 {
     auto opt = win32_mgr.get_window_name(hwnd);
     if (!opt) {

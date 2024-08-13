@@ -22,12 +22,12 @@ public:
 
     virtual std::vector<Window> found_windows() const override { return windows_; }
 
-    virtual MaaWin32Hwnd get_cursor_window() const override;
-    virtual MaaWin32Hwnd get_desktop_window() const override;
-    virtual MaaWin32Hwnd get_foreground_window() const override;
+    virtual void* get_cursor_window() const override;
+    virtual void* get_desktop_window() const override;
+    virtual void* get_foreground_window() const override;
 
-    virtual std::optional<std::string> get_class_name(MaaWin32Hwnd hwnd) const override;
-    virtual std::optional<std::string> get_window_name(MaaWin32Hwnd hwnd) const override;
+    virtual std::optional<std::string> get_class_name(void* hwnd) const override;
+    virtual std::optional<std::string> get_window_name(void* hwnd) const override;
 
 private:
     std::vector<Window> _list_windows() const;

@@ -25,7 +25,7 @@ MaaControlUnitHandle MaaAdbControlUnitCreate(
     const char* config,
     const char* agent_path,
     MaaNotificationCallback callback,
-    MaaTransparentArg callback_arg)
+    void* callback_arg)
 {
     using namespace MAA_CTRL_UNIT_NS;
 

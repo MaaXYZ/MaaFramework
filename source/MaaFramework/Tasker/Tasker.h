@@ -16,7 +16,7 @@ MAA_NS_BEGIN
 class Tasker : public MaaTasker
 {
 public:
-    Tasker(MaaNotificationCallback callback, MaaTransparentArg callback_arg);
+    Tasker(MaaNotificationCallback callback, void* callback_arg);
     virtual ~Tasker() override;
 
     virtual bool bind_resource(MaaResource* resource) override;
@@ -25,10 +25,10 @@ public:
 
     virtual bool set_option(MaaTaskerOption key, MaaOptionValue value, MaaOptionValueSize val_size) override;
 
-    virtual MaaTaskId post_pipeline(std::string entry, std::string_view param) override;
-    virtual MaaTaskId post_recognition(std::string entry, std::string_view param) override;
-    virtual MaaTaskId post_action(std::string entry, std::string_view param) override;
-    virtual bool pipeline_override(MaaTaskId task_id, std::string_view param) override;
+    virtual MaaTaskId post_pipeline(std::string entry, const json::value& pipeline_override) override;
+    virtual MaaTaskId post_recognition(std::string entry, const json::value& pipeline_override) override;
+    virtual MaaTaskId post_action(std::string entry, const json::value& pipeline_override) override;
+    virtual bool override_pipeline(MaaTaskId task_id, const json::value& pipeline_override) override;
 
     virtual MaaStatus status(MaaTaskId task_id) const override;
     virtual MaaStatus wait(MaaTaskId task_id) const override;
@@ -48,7 +48,7 @@ private:
     using TaskPtr = std::shared_ptr<TaskNS::PipelineTask>;
     using TaskId = AsyncRunner<TaskPtr>::Id;
 
-    TaskPtr make_task(std::string entry, std::string_view param);
+    TaskPtr make_task(std::string entry, const json::value& pipeline_override);
     TaskId post_task(const TaskPtr& task_ptr);
     bool run_task(TaskId id, TaskPtr task_ptr);
     bool check_stop();

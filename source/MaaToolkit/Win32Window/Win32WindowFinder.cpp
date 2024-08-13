@@ -61,7 +61,7 @@ size_t Win32WindowFinder::list_windows()
     return windows_.size();
 }
 
-MaaWin32Hwnd Win32WindowFinder::get_cursor_window() const
+void* Win32WindowFinder::get_cursor_window() const
 {
     POINT pt {};
     if (!GetCursorPos(&pt)) {
@@ -73,15 +73,15 @@ MaaWin32Hwnd Win32WindowFinder::get_cursor_window() const
         return nullptr;
     }
 
-    return reinterpret_cast<MaaWin32Hwnd>(hwnd);
+    return reinterpret_cast<void*>(hwnd);
 }
 
-MaaWin32Hwnd Win32WindowFinder::get_desktop_window() const
+void* Win32WindowFinder::get_desktop_window() const
 {
     return GetDesktopWindow();
 }
 
-MaaWin32Hwnd Win32WindowFinder::get_foreground_window() const
+void* Win32WindowFinder::get_foreground_window() const
 {
     return GetForegroundWindow();
 }
@@ -101,7 +101,7 @@ std::vector<Win32WindowFinder::Window> Win32WindowFinder::_list_windows() const
         std::wstring window_name(256, '\0');
         GetWindowTextW(hwnd, window_name.data(), static_cast<int>(window_name.size()));
 
-        windows.emplace_back(Window { .hwnd = reinterpret_cast<MaaWin32Hwnd>(hwnd),
+        windows.emplace_back(Window { .hwnd = reinterpret_cast<void*>(hwnd),
                                       .class_name = from_u16(class_name),
                                       .window_name = from_u16(window_name) });
     }
@@ -113,7 +113,7 @@ std::vector<Win32WindowFinder::Window> Win32WindowFinder::_list_windows() const
     return windows;
 }
 
-std::optional<std::string> Win32WindowFinder::get_class_name(MaaWin32Hwnd hwnd) const
+std::optional<std::string> Win32WindowFinder::get_class_name(void* hwnd) const
 {
     constexpr int kMaxLength = 256;
 
@@ -128,7 +128,7 @@ std::optional<std::string> Win32WindowFinder::get_class_name(MaaWin32Hwnd hwnd) 
     return from_u16(result);
 }
 
-std::optional<std::string> Win32WindowFinder::get_window_name(MaaWin32Hwnd hwnd) const
+std::optional<std::string> Win32WindowFinder::get_window_name(void* hwnd) const
 {
     constexpr int kMaxLength = 256;
 

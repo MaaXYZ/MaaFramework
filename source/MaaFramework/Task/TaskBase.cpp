@@ -23,6 +23,21 @@ void TaskBase::post_stop()
     need_to_stop_ = true;
 }
 
+bool TaskBase::override_pipeline(const json::value& pipeline_override)
+{
+    return data_mgr_.pipeline_override(pipeline_override);
+}
+
+Tasker* TaskBase::tasker() const
+{
+    return tasker_;
+}
+
+MaaTaskId TaskBase::task_id() const
+{
+    return task_id_;
+}
+
 bool TaskBase::run()
 {
     switch (run_type_) {
@@ -129,11 +144,6 @@ bool TaskBase::run_action_only()
 
     HitDetail fake_hit { .task_data = data_mgr_.get_task_data(entry_) };
     return run_task(fake_hit);
-}
-
-bool TaskBase::set_param(const json::value& param)
-{
-    return data_mgr_.set_param(param);
 }
 
 bool TaskBase::query_node_detail(MaaNodeId node_id, std::string& name, MaaRecoId& reco_id, bool& completed)

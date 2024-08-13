@@ -16,7 +16,7 @@ MaaController* MaaAdbControllerCreate(
     const char* config,
     const char* agent_path,
     MaaNotificationCallback callback,
-    MaaTransparentArg callback_arg)
+    void* callback_arg)
 {
     LogFunc << VAR(adb_path) << VAR(address) << VAR(screencap_methods) << VAR(input_methods) << VAR(config) << VAR(agent_path)
             << VAR_VOIDP(callback) << VAR_VOIDP(callback_arg);
@@ -40,11 +40,11 @@ MaaController* MaaAdbControllerCreate(
 }
 
 MaaController* MaaWin32ControllerCreate(
-    MaaWin32Hwnd hWnd,
+    void* hWnd,
     MaaWin32ScreencapMethod screencap_method,
     MaaWin32InputMethod input_method,
     MaaNotificationCallback callback,
-    MaaTransparentArg callback_arg)
+    void* callback_arg)
 {
     LogFunc << VAR_VOIDP(hWnd) << VAR(screencap_method) << VAR(input_method) << VAR_VOIDP(callback) << VAR_VOIDP(callback_arg);
 
@@ -75,9 +75,9 @@ MaaController* MaaWin32ControllerCreate(
 
 MaaController* MaaCustomControllerCreate(
     MaaCustomControllerCallbacks* handle,
-    MaaTransparentArg handle_arg,
+    void* handle_arg,
     MaaNotificationCallback callback,
-    MaaTransparentArg callback_arg)
+    void* callback_arg)
 {
     LogFunc << VAR(handle) << VAR(handle_arg) << VAR_VOIDP(callback) << VAR_VOIDP(callback_arg);
 
@@ -95,7 +95,7 @@ MaaController* MaaDbgControllerCreate(
     MaaDbgControllerType type,
     const char* config,
     MaaNotificationCallback callback,
-    MaaTransparentArg callback_arg)
+    void* callback_arg)
 {
     LogFunc << VAR(read_path) << VAR(write_path) << VAR(type) << VAR_VOIDP(callback) << VAR_VOIDP(callback_arg);
 

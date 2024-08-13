@@ -214,10 +214,7 @@ const MaaDbgControllerType MaaDbgControllerType_Invalid = 0;
 const MaaDbgControllerType MaaDbgControllerType_CarouselImage = 1;
 const MaaDbgControllerType MaaDbgControllerType_ReplayRecording = 2;
 
-typedef void* MaaWin32Hwnd;
-typedef void* MaaTransparentArg;
-
-typedef void (*MaaNotificationCallback)(const char* message, const char* details_json, MaaTransparentArg callback_arg);
+typedef void (*MaaNotificationCallback)(const char* message, const char* details_json, void* callback_arg);
 
 struct MaaRect
 {

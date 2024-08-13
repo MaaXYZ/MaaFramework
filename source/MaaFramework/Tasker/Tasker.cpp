@@ -9,7 +9,7 @@
 
 MAA_NS_BEGIN
 
-Tasker::Tasker(MaaNotificationCallback callback, MaaTransparentArg callback_arg)
+Tasker::Tasker(MaaNotificationCallback callback, void* callback_arg)
     : notifier(callback, callback_arg)
 {
     LogFunc << VAR_VOIDP(callback) << VAR_VOIDP(callback_arg);
@@ -67,7 +67,7 @@ bool Tasker::set_option(MaaTaskerOption key, MaaOptionValue value, MaaOptionValu
     return false;
 }
 
-MaaTaskId Tasker::post_pipeline(std::string entry, std::string_view pipeline_override)
+MaaTaskId Tasker::post_pipeline(std::string entry, const json::value& pipeline_override)
 {
     auto task = make_task(entry, pipeline_override);
     if (!task) {
@@ -79,7 +79,7 @@ MaaTaskId Tasker::post_pipeline(std::string entry, std::string_view pipeline_ove
     return post_task(task);
 }
 
-MaaTaskId Tasker::post_recognition(std::string entry, std::string_view pipeline_override)
+MaaTaskId Tasker::post_recognition(std::string entry, const json::value& pipeline_override)
 {
     auto task = make_task(entry, pipeline_override);
     if (!task) {
@@ -91,7 +91,7 @@ MaaTaskId Tasker::post_recognition(std::string entry, std::string_view pipeline_
     return post_task(task);
 }
 
-MaaTaskId Tasker::post_action(std::string entry, std::string_view pipeline_override)
+MaaTaskId Tasker::post_action(std::string entry, const json::value& pipeline_override)
 {
     auto task = make_task(entry, pipeline_override);
     if (!task) {
@@ -103,7 +103,7 @@ MaaTaskId Tasker::post_action(std::string entry, std::string_view pipeline_overr
     return post_task(task);
 }
 
-bool Tasker::pipeline_override(MaaTaskId task_id, std::string_view pipeline_override)
+bool Tasker::override_pipeline(MaaTaskId task_id, const json::value& pipeline_override)
 {
     LogInfo << VAR(task_id) << VAR(pipeline_override);
 
@@ -131,7 +131,7 @@ bool Tasker::pipeline_override(MaaTaskId task_id, std::string_view pipeline_over
         return false;
     }
 
-    return task_ptr->set_pipeline_override(*pipeline_override_opt);
+    return task_ptr->override_pipeline(pipeline_override);
 }
 
 MaaStatus Tasker::status(MaaTaskId task_id) const
@@ -215,7 +215,7 @@ void Tasker::notify(std::string_view msg, json::value detail)
     notifier.notify(msg, detail);
 }
 
-Tasker::TaskPtr Tasker::make_task(std::string entry, std::string_view pipeline_override)
+Tasker::TaskPtr Tasker::make_task(std::string entry, const json::value& pipeline_override)
 {
     LogInfo << VAR(entry) << VAR(pipeline_override);
 
@@ -238,7 +238,7 @@ Tasker::TaskPtr Tasker::make_task(std::string entry, std::string_view pipeline_o
         return nullptr;
     }
 
-    bool pipeline_override_ret = task_ptr->set_pipeline_override(*pipeline_override_opt);
+    bool pipeline_override_ret = task_ptr->pipeline_override(*pipeline_override_opt);
     if (!pipeline_override_ret) {
         LogError << "Set task pipeline_override failed:" << pipeline_override;
         return nullptr;

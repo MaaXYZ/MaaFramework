@@ -41,8 +41,8 @@ private:
         const char* custom_action_param,
         MaaRect* cur_box,
         const char* cur_rec_detail,
-        MaaTransparentArg trans_arg);
-    static void maa_api_stop(MaaTransparentArg trans_arg);
+        void* trans_arg);
+    static void maa_api_stop(void* trans_arg);
 
 private:
     MaaCustomActionCallback custom_action_ {};

@@ -24,7 +24,7 @@ public:
         std::shared_ptr<ScreencapBase> screencap_unit,
         std::shared_ptr<InputBase> touch_unit,
         MaaNotificationCallback callback,
-        MaaTransparentArg callback_arg);
+        void* callback_arg);
     virtual ~ControlUnitMgr() override = default;
 
 public: // from ControlUnitAPI

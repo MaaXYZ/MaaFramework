@@ -7,7 +7,7 @@
 #include "Utils/Logger.h"
 #include "Utils/Platform.h"
 
-MaaResource* MaaResourceCreate(MaaNotificationCallback callback, MaaTransparentArg callback_arg)
+MaaResource* MaaResourceCreate(MaaNotificationCallback callback, void* callback_arg)
 {
     LogFunc << VAR_VOIDP(callback) << VAR_VOIDP(callback_arg);
 
@@ -30,7 +30,7 @@ MaaBool MaaResourceRegisterCustomRecognizer(
     MaaResource* res,
     const char* name,
     MaaCustomRecognizerCallback recognizer,
-    MaaTransparentArg trans_arg)
+    void* trans_arg)
 {
     LogFunc << VAR_VOIDP(res) << VAR(name) << VAR_VOIDP(recognizer) << VAR_VOIDP(trans_arg);
 
@@ -69,7 +69,7 @@ MaaBool MaaResourceClearCustomRecognizer(MaaResource* res)
     return true;
 }
 
-MaaBool MaaResourceRegisterCustomAction(MaaResource* res, const char* name, MaaCustomActionCallback action, MaaTransparentArg trans_arg)
+MaaBool MaaResourceRegisterCustomAction(MaaResource* res, const char* name, MaaCustomActionCallback action, void* trans_arg)
 {
     LogFunc << VAR_VOIDP(res) << VAR(name) << VAR_VOIDP(action) << VAR_VOIDP(trans_arg);
 

@@ -17,20 +17,20 @@ struct CustomRecognizerSession
 {
     std::string name;
     MaaCustomRecognizerCallback recoginzer = nullptr;
-    MaaTransparentArg trans_arg = nullptr;
+    void* trans_arg = nullptr;
 };
 
 struct CustomActionSession
 {
     std::string name;
     MaaCustomActionCallback action = nullptr;
-    MaaTransparentArg trans_arg = nullptr;
+    void* trans_arg = nullptr;
 };
 
 class ResourceMgr : public MaaResource
 {
 public:
-    ResourceMgr(MaaNotificationCallback callback, MaaTransparentArg callback_arg);
+    ResourceMgr(MaaNotificationCallback callback, void* callback_arg);
     virtual ~ResourceMgr() override;
 
 public: // MaaResource
@@ -45,10 +45,10 @@ public: // MaaResource
     virtual MaaBool clear() override;
 
     virtual void
-        register_custom_recognizer(const std::string& name, MaaCustomRecognizerCallback recognizer, MaaTransparentArg trans_arg) override;
+        register_custom_recognizer(const std::string& name, MaaCustomRecognizerCallback recognizer, void* trans_arg) override;
     virtual void unregister_custom_recognizer(const std::string& name) override;
     virtual void clear_custom_recognizer() override;
-    virtual void register_custom_action(const std::string& name, MaaCustomActionCallback action, MaaTransparentArg trans_arg) override;
+    virtual void register_custom_action(const std::string& name, MaaCustomActionCallback action, void* trans_arg) override;
     virtual void unregister_custom_action(const std::string& name) override;
     virtual void clear_custom_action() override;
 

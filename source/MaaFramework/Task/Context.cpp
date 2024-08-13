@@ -2,13 +2,13 @@
 
 #include <meojson/json.hpp>
 
-#include "Utils/Logger.h"
 #include "Tasker/Tasker.h"
+#include "Utils/Logger.h"
 
 MAA_TASK_NS_BEGIN
 
-Context::Context(Tasker* tasker)
-    : tasker_(tasker)
+Context::Context(TaskBase& task)
+    : task_(task)
 {
 }
 
@@ -27,9 +27,14 @@ MaaTaskId Context::run_action(std::string task, std::string_view param, cv::Rect
     return MaaTaskId();
 }
 
+MaaTaskId Context::task_id() const
+{
+    return task_.task_id();
+}
+
 Tasker* Context::tasker()
 {
-    return tasker_;
+    return task_.tasker();
 }
 
 MAA_TASK_NS_END

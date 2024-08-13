@@ -35,7 +35,7 @@ std::shared_ptr<MAA_CTRL_UNIT_NS::ControlUnitAPI> AdbControlUnitLibraryHolder::c
     const char* config,
     const char* agent_path,
     MaaNotificationCallback callback,
-    MaaTransparentArg callback_arg)
+    void* callback_arg)
 {
     if (!load_library(library_dir() / libname_)) {
         LogError << "Failed to load library" << VAR(library_dir()) << VAR(libname_);
@@ -68,11 +68,11 @@ std::shared_ptr<MAA_CTRL_UNIT_NS::ControlUnitAPI> AdbControlUnitLibraryHolder::c
 }
 
 std::shared_ptr<MAA_CTRL_UNIT_NS::ControlUnitAPI> Win32ControlUnitLibraryHolder::create_control_unit(
-    MaaWin32Hwnd hWnd,
+    void* hWnd,
     MaaWin32ScreencapMethod screencap_method,
     MaaWin32InputMethod input_method,
     MaaNotificationCallback callback,
-    MaaTransparentArg callback_arg)
+    void* callback_arg)
 {
     if (!load_library(library_dir() / libname_)) {
         LogError << "Failed to load library" << VAR(library_dir()) << VAR(libname_);

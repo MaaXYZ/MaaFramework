@@ -9,9 +9,9 @@ class CustomControllerAgent : public ControllerAgent
 public:
     CustomControllerAgent(
         MaaCustomControllerCallbacks* handle,
-        MaaTransparentArg handle_arg,
+        void* handle_arg,
         MaaNotificationCallback callback,
-        MaaTransparentArg callback_arg);
+        void* callback_arg);
     virtual ~CustomControllerAgent() override = default;
 
 protected:
@@ -30,7 +30,7 @@ protected:
 
 private:
     MaaCustomControllerCallbacks* handle_ = nullptr;
-    MaaTransparentArg handle_arg_ = nullptr;
+    void* handle_arg_ = nullptr;
 };
 
 MAA_CTRL_NS_END

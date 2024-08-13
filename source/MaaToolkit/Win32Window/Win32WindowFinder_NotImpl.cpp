@@ -30,19 +30,19 @@ size_t Win32WindowFinder::list_windows()
     return 0;
 }
 
-MaaWin32Hwnd Win32WindowFinder::get_cursor_window() const
+void* Win32WindowFinder::get_cursor_window() const
 {
     LogError << "Not implemented";
     return nullptr;
 }
 
-MaaWin32Hwnd Win32WindowFinder::get_desktop_window() const
+void* Win32WindowFinder::get_desktop_window() const
 {
     LogError << "Not implemented";
     return nullptr;
 }
 
-MaaWin32Hwnd Win32WindowFinder::get_foreground_window() const
+void* Win32WindowFinder::get_foreground_window() const
 {
     LogError << "Not implemented";
     return nullptr;
@@ -54,13 +54,13 @@ std::vector<Win32WindowFinder::Window> Win32WindowFinder::_list_windows() const
     return {};
 }
 
-std::optional<std::string> Win32WindowFinder::get_class_name(MaaWin32Hwnd hwnd) const
+std::optional<std::string> Win32WindowFinder::get_class_name(void* hwnd) const
 {
     LogError << "Not implemented" << VAR_VOIDP(hwnd);
     return std::nullopt;
 }
 
-std::optional<std::string> Win32WindowFinder::get_window_name(MaaWin32Hwnd hwnd) const
+std::optional<std::string> Win32WindowFinder::get_window_name(void* hwnd) const
 {
     LogError << "Not implemented" << VAR_VOIDP(hwnd);
     return std::nullopt;

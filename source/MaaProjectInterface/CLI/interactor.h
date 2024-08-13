@@ -24,9 +24,9 @@ private:
 
     bool select_win32_hwnd(
         const MAA_PROJECT_INTERFACE_NS::InterfaceData::Controller::Win32Config& win32_config);
-    MaaWin32Hwnd select_win32_multiple_hwnd(
+    void* select_win32_multiple_hwnd(
         const MAA_PROJECT_INTERFACE_NS::InterfaceData::Controller::Win32Config& win32_config);
-    static std::string get_hwnd_info(MaaWin32Hwnd hwnd);
+    static std::string get_hwnd_info(void* hwnd);
 
     void select_resource();
     void add_task();
@@ -43,7 +43,7 @@ private:
     static void on_maafw_notify(
         const char* msg,
         const char* details_json,
-        MaaTransparentArg callback_arg);
+        void* callback_arg);
 
 private:
     MAA_PROJECT_INTERFACE_NS::Configurator config_;

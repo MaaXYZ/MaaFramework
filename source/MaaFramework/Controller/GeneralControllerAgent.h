@@ -13,7 +13,7 @@ public:
     GeneralControllerAgent(
         std::shared_ptr<MAA_CTRL_UNIT_NS::ControlUnitAPI> control_unit,
         MaaNotificationCallback callback,
-        MaaTransparentArg callback_arg);
+        void* callback_arg);
     virtual ~GeneralControllerAgent() override = default;
 
 protected:

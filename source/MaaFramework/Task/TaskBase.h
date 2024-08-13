@@ -25,29 +25,17 @@ public:
 
 public:
     TaskBase(std::string entry, Tasker* tasker);
-    ~TaskBase() = default;
+    virtual ~TaskBase() = default;
+
+    virtual bool run() = 0;
 
 public:
     void post_stop();
+    bool override_pipeline(const json::value& pipeline_override);
 
 public:
-    const std::string& entry() const { return entry_; }
-
-    bool run();
-
-    void set_taskid(int64_t id) { task_id_ = id; }
-
-    // TODO: 重构，拆分成三个单独的类
-    enum RunType
-    {
-        Pipeline,
-        Recognition,
-        Action,
-    };
-
-    void set_type(RunType type) { run_type_ = type; }
-
-    bool set_param(const json::value& param);
+    Tasker* tasker() const;
+    MaaTaskId task_id() const;
 
     static bool query_node_detail(MaaNodeId node_id, std::string& name, MaaRecoId& reco_id, bool& completed);
     static bool query_task_detail(MaaTaskId task_id, std::string& entry, std::vector<MaaNodeId>& node_id_list);
@@ -82,7 +70,7 @@ private:
         std::string entry;
         std::vector<MaaNodeId> node_ids;
     };
-    
+
 private:
     MAA_RES_NS::ResourceMgr* resource();
     MAA_CTRL_NS::ControllerAgent* controller();
@@ -107,13 +95,13 @@ private:
     json::object hit_detail_to_json(const HitDetail& detail);
     json::object node_detail_to_json(const NodeDetail& detail);
 
-private:
+protected:
     Tasker* tasker_ = nullptr;
 
-    RunType run_type_ = RunType::Pipeline;
     bool need_to_stop_ = false;
 
-    int64_t task_id_ = 0;
+    const int64_t task_id_ = ++s_global_task_id;
+
     std::string entry_;
     std::string pre_hit_task_;
 
@@ -121,6 +109,7 @@ private:
 
     TaskDataMgr data_mgr_;
 
+    inline static std::atomic<MaaNodeId> s_global_task_id = 0;
     inline static std::atomic<MaaNodeId> s_global_node_id = 0;
 };
 

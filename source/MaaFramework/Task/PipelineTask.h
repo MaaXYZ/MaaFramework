@@ -47,7 +47,7 @@ public:
 
     void set_type(RunType type) { run_type_ = type; }
 
-    bool set_param(const json::value& param);
+    bool pipeline_override(const json::value& param);
 
     static bool query_node_detail(MaaNodeId node_id, std::string& name, MaaRecoId& reco_id, bool& completed);
     static bool query_task_detail(MaaTaskId task_id, std::string& entry, std::vector<MaaNodeId>& node_id_list);
@@ -82,7 +82,7 @@ private:
         std::string entry;
         std::vector<MaaNodeId> node_ids;
     };
-    
+
 private:
     MAA_RES_NS::ResourceMgr* resource();
     MAA_CTRL_NS::ControllerAgent* controller();

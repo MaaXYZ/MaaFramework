@@ -16,11 +16,11 @@ MAA_PROJECT_INTERFACE_NS_BEGIN
 bool Runner::run(
     const RuntimeParam& param,
     MaaInstanceCallback callback,
-    MaaTransparentArg callback_arg,
+    void* callback_arg,
     MaaResourceCallback resource_callback,
-    MaaTransparentArg resource_callback_arg,
+    void* resource_callback_arg,
     MaaNotificationCallback controller_callback,
-    MaaTransparentArg controller_callback_arg)
+    void* controller_callback_arg)
 {
     auto maa_handle = MaaCreate(callback, callback_arg);
 

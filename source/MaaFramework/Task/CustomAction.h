@@ -13,7 +13,7 @@ MAA_TASK_NS_BEGIN
 class CustomAction
 {
 public:
-    CustomAction(std::string name, MaaCustomActionCallback action, MaaTransparentArg trans_arg);
+    CustomAction(std::string name, MaaCustomActionCallback action, void* trans_arg);
     ~CustomAction() = default;
 
 public:
@@ -22,7 +22,7 @@ public:
 private:
     std::string name_;
     MaaCustomActionCallback action_callback_ = nullptr;
-    MaaTransparentArg trans_arg_ = nullptr;
+    void* trans_arg_ = nullptr;
 };
 
 MAA_TASK_NS_END

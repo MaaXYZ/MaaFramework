@@ -2,11 +2,11 @@
 
 MAA_NS_BEGIN
 
-std::optional<cv::Rect> RuntimeCache::get_pre_box(const std::string& task_name) const
+cv::Rect RuntimeCache::get_pre_box(const std::string& task_name) const
 {
     auto it = pre_boxes_.find(task_name);
     if (it == pre_boxes_.end()) {
-        return std::nullopt;
+        return {};
     }
     return it->second;
 }
@@ -14,6 +14,56 @@ std::optional<cv::Rect> RuntimeCache::get_pre_box(const std::string& task_name) 
 void RuntimeCache::set_pre_box(std::string task_name, cv::Rect box)
 {
     pre_boxes_.insert_or_assign(std::move(task_name), std::move(box));
+}
+
+std::any RuntimeCache::get_reco_detail(int64_t uid) const
+{
+    auto it = reco_details_.find(uid);
+    if (it == reco_details_.end()) {
+        return {};
+    }
+    return it->second;
+}
+
+void RuntimeCache::add_reco_detail(int64_t uid, std::any detail)
+{
+    reco_details_.insert_or_assign(uid, std::move(detail));
+}
+
+std::any RuntimeCache::get_node_detail(int64_t uid) const
+{
+    auto it = node_details_.find(uid);
+    if (it == node_details_.end()) {
+        return {};
+    }
+    return it->second;
+}
+
+void RuntimeCache::add_node_detail(int64_t uid, std::any detail)
+{
+    node_details_.insert_or_assign(uid, std::move(detail));
+}
+
+std::any RuntimeCache::get_task_detail(int64_t uid) const
+{
+    auto it = task_details_.find(uid);
+    if (it == task_details_.end()) {
+        return {};
+    }
+    return it->second;
+}
+
+void RuntimeCache::add_task_detail(int64_t uid, std::any detail)
+{
+    task_details_.insert_or_assign(uid, std::move(detail));
+}
+
+void RuntimeCache::clear()
+{
+    pre_boxes_.clear();
+    reco_details_.clear();
+    node_details_.clear();
+    task_details_.clear();
 }
 
 MAA_NS_END

@@ -21,7 +21,7 @@ extern "C"
         const char* config,
         const char* agent_path,
         MaaNotificationCallback callback,
-        MaaTransparentArg callback_arg);
+        void* callback_arg);
 
     MAA_CONTROL_UNIT_API void MaaAdbControlUnitDestroy(MaaControlUnitHandle handle);
 

@@ -3,7 +3,7 @@
 #include "Tasker/Tasker.h"
 #include "Utils/Logger.h"
 
-MaaTasker* MaaTaskerCreate(MaaNotificationCallback callback, MaaTransparentArg callback_arg)
+MaaTasker* MaaTaskerCreate(MaaNotificationCallback callback, void* callback_arg)
 {
     LogFunc << VAR_VOIDP(callback) << VAR_VOIDP(callback_arg);
 
@@ -101,7 +101,7 @@ MaaTaskId MaaTaskerPostAction(MaaTasker* tasker, const char* entry, const char* 
     return tasker->post_action(entry, pipeline_override);
 }
 
-MaaBool MaaTaskerOverride(MaaTasker* tasker, MaaTaskId id, const char* pipeline_override)
+MaaBool MaaTaskerOverridePipeline(MaaTasker* tasker, MaaTaskId id, const char* pipeline_override)
 {
     LogFunc << VAR_VOIDP(tasker) << VAR(id) << VAR(pipeline_override);
 
@@ -109,7 +109,7 @@ MaaBool MaaTaskerOverride(MaaTasker* tasker, MaaTaskId id, const char* pipeline_
         LogError << "handle is null";
         return false;
     }
-    return tasker->pipeline_override(id, pipeline_override);
+    return tasker->override_pipeline(id, pipeline_override);
 }
 
 MaaStatus MaaTaskerStatus(MaaTasker* tasker, MaaTaskId id)

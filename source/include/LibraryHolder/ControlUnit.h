@@ -22,7 +22,7 @@ public:
         const char* config,
         const char* agent_path,
         MaaNotificationCallback callback,
-        MaaTransparentArg callback_arg);
+        void* callback_arg);
 
 private:
     inline static const std::filesystem::path libname_ = MAA_NS::path("MaaAdbControlUnit");
@@ -35,11 +35,11 @@ class Win32ControlUnitLibraryHolder : public LibraryHolder<Win32ControlUnitLibra
 {
 public:
     static std::shared_ptr<MAA_CTRL_UNIT_NS::ControlUnitAPI> create_control_unit(
-        MaaWin32Hwnd hWnd,
+        void* hWnd,
         MaaWin32ScreencapMethod screencap_method,
         MaaWin32InputMethod input_method,
         MaaNotificationCallback callback,
-        MaaTransparentArg callback_arg);
+        void* callback_arg);
 
 private:
     inline static const std::filesystem::path libname_ = MAA_NS::path("MaaWin32ControlUnit");

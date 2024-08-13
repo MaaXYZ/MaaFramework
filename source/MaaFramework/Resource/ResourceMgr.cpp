@@ -8,7 +8,7 @@
 
 MAA_RES_NS_BEGIN
 
-ResourceMgr::ResourceMgr(MaaNotificationCallback callback, MaaTransparentArg callback_arg)
+ResourceMgr::ResourceMgr(MaaNotificationCallback callback, void* callback_arg)
     : notifier(callback, callback_arg)
 {
     LogFunc << VAR_VOIDP(callback) << VAR_VOIDP(callback_arg);
@@ -165,7 +165,7 @@ MaaBool ResourceMgr::clear()
     return true;
 }
 
-void ResourceMgr::register_custom_recognizer(const std::string& name, MaaCustomRecognizerCallback recognizer, MaaTransparentArg trans_arg)
+void ResourceMgr::register_custom_recognizer(const std::string& name, MaaCustomRecognizerCallback recognizer, void* trans_arg)
 {
     LogTrace << VAR(name) << VAR_VOIDP(recognizer) << VAR_VOIDP(trans_arg);
 
@@ -196,7 +196,7 @@ void ResourceMgr::clear_custom_recognizer()
     custom_recoginzer_sessions_.clear();
 }
 
-void ResourceMgr::register_custom_action(const std::string& name, MaaCustomActionCallback action, MaaTransparentArg trans_arg)
+void ResourceMgr::register_custom_action(const std::string& name, MaaCustomActionCallback action, void* trans_arg)
 {
     LogTrace << VAR(name) << VAR_VOIDP(action) << VAR_VOIDP(trans_arg);
 

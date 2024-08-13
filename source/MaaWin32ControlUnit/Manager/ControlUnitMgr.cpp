@@ -11,7 +11,7 @@ ControlUnitMgr::ControlUnitMgr(
     std::shared_ptr<ScreencapBase> screencap_unit,
     std::shared_ptr<InputBase> input_unit,
     MaaNotificationCallback callback,
-    MaaTransparentArg callback_arg)
+    void* callback_arg)
     : hwnd_(hWnd)
     , screencap_(std::move(screencap_unit))
     , input_(std::move(input_unit))

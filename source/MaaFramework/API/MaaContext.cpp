@@ -49,6 +49,16 @@ MaaTaskId
     return context->run_action(task_name, task_param, cvbox, cur_rec_detail);
 }
 
+MaaTaskId MaaContextGetTaskId(MaaContext* context)
+{
+    if (!context) {
+        LogError << "handle is null";
+        return false;
+    }
+
+    return context->task_id();
+}
+
 MaaTasker* MaaContextGetTasker(MaaContext* context)
 {
     if (!context) {

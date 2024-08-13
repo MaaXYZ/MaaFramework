@@ -15,11 +15,11 @@ const char* MaaWin32ControlUnitGetVersion()
 }
 
 MaaControlUnitHandle MaaWin32ControlUnitCreate(
-    MaaWin32Hwnd hWnd,
+    void* hWnd,
     MaaWin32ScreencapMethod screencap_method,
     MaaWin32InputMethod input_method,
     MaaNotificationCallback callback,
-    MaaTransparentArg callback_arg)
+    void* callback_arg)
 {
     using namespace MAA_CTRL_UNIT_NS;
 

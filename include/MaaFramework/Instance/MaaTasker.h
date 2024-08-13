@@ -26,7 +26,7 @@ extern "C"
      * @param callback_arg The callback arg that will be passed to the callback function.
      * @return MaaTasker*
      */
-    MAA_FRAMEWORK_API MaaTasker* MaaTaskerCreate(MaaNotificationCallback callback, MaaTransparentArg callback_arg);
+    MAA_FRAMEWORK_API MaaTasker* MaaTaskerCreate(MaaNotificationCallback callback, void* callback_arg);
 
     /**
      * @brief Free the tasker.
@@ -131,7 +131,7 @@ extern "C"
      * @param pipeline_override The override of the pipeline.
      * @return MaaBool
      */
-    MAA_FRAMEWORK_API MaaBool MaaTaskerOverride(MaaTasker* tasker, MaaTaskId id, const char* pipeline_override);
+    MAA_FRAMEWORK_API MaaBool MaaTaskerOverridePipeline(MaaTasker* tasker, MaaTaskId id, const char* pipeline_override);
 
     /**
      * @brief Get the status of a task identified by the id.

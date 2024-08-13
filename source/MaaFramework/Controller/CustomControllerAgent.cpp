@@ -10,9 +10,9 @@ MAA_CTRL_NS_BEGIN
 
 CustomControllerAgent::CustomControllerAgent(
     MaaCustomControllerCallbacksHandle handle,
-    MaaTransparentArg handle_arg,
+    void* handle_arg,
     MaaNotificationCallback callback,
-    MaaTransparentArg callback_arg)
+    void* callback_arg)
     : ControllerAgent(callback, callback_arg)
     , handle_(handle)
     , handle_arg_(handle_arg)

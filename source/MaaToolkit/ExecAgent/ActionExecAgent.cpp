@@ -78,7 +78,7 @@ MaaBool ActionExecAgent::maa_api_run(
     const char* custom_action_param,
     MaaRect* cur_box,
     const char* cur_rec_detail,
-    MaaTransparentArg trans_arg)
+    void* trans_arg)
 {
     auto* data = static_cast<ExecData*>(trans_arg);
     if (!data) {
@@ -90,7 +90,7 @@ MaaBool ActionExecAgent::maa_api_run(
         .run(*data, context, task_name, custom_action_param, cur_box, cur_rec_detail);
 }
 
-void ActionExecAgent::maa_api_stop(MaaTransparentArg trans_arg)
+void ActionExecAgent::maa_api_stop(void* trans_arg)
 {
     auto* data = static_cast<ExecData*>(trans_arg);
     if (!data) {

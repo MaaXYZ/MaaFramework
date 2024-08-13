@@ -131,9 +131,9 @@ bool PipelineTask::run_action_only()
     return run_task(fake_hit);
 }
 
-bool PipelineTask::set_param(const json::value& param)
+bool PipelineTask::pipeline_override(const json::value& param)
 {
-    return data_mgr_.set_param(param);
+    return data_mgr_.pipeline_override(param);
 }
 
 bool PipelineTask::query_node_detail(MaaNodeId node_id, std::string& name, MaaRecoId& reco_id, bool& completed)

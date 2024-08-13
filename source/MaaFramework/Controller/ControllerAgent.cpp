@@ -10,7 +10,7 @@ MAA_CTRL_NS_BEGIN
 
 std::minstd_rand ControllerAgent::rand_engine_(std::random_device {}());
 
-ControllerAgent::ControllerAgent(MaaNotificationCallback callback, MaaTransparentArg callback_arg)
+ControllerAgent::ControllerAgent(MaaNotificationCallback callback, void* callback_arg)
     : notifier(callback, callback_arg)
 {
     LogFunc << VAR_VOIDP(callback) << VAR_VOIDP(callback_arg);
