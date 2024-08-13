@@ -1,4 +1,4 @@
-#include "Scheduler.h"
+#include "RuntimeCache.h"
 
 #include "Controller/ControllerAgent.h"
 #include "MaaFramework/MaaMsg.h"
@@ -9,16 +9,16 @@
 
 MAA_NS_BEGIN
 
-Scheduler::Scheduler(MaaNotificationCallback callback, MaaTransparentArg callback_arg)
+Tasker::Tasker(MaaNotificationCallback callback, MaaTransparentArg callback_arg)
     : notifier(callback, callback_arg)
 {
     LogFunc << VAR_VOIDP(callback) << VAR_VOIDP(callback_arg);
 
     task_runner_ =
-        std::make_unique<AsyncRunner<TaskPtr>>(std::bind(&Scheduler::run_task, this, std::placeholders::_1, std::placeholders::_2));
+        std::make_unique<AsyncRunner<TaskPtr>>(std::bind(&Tasker::run_task, this, std::placeholders::_1, std::placeholders::_2));
 }
 
-Scheduler::~Scheduler()
+Tasker::~Tasker()
 {
     LogFunc;
 
@@ -27,7 +27,7 @@ Scheduler::~Scheduler()
     }
 }
 
-bool Scheduler::bind_resource(MaaResource* resource)
+bool Tasker::bind_resource(MaaResource* resource)
 {
     LogInfo << VAR_VOIDP(this) << VAR_VOIDP(resource);
 
@@ -41,7 +41,7 @@ bool Scheduler::bind_resource(MaaResource* resource)
     return true;
 }
 
-bool Scheduler::bind_controller(MaaController* controller)
+bool Tasker::bind_controller(MaaController* controller)
 {
     LogInfo << VAR_VOIDP(this) << VAR_VOIDP(controller);
 
@@ -54,12 +54,12 @@ bool Scheduler::bind_controller(MaaController* controller)
     return true;
 }
 
-bool Scheduler::inited() const
+bool Tasker::inited() const
 {
     return resource_ && controller_ && resource_->valid() && controller_->connected();
 }
 
-bool Scheduler::set_option(MaaSchedOption key, MaaOptionValue value, MaaOptionValueSize val_size)
+bool Tasker::set_option(MaaTaskerOption key, MaaOptionValue value, MaaOptionValueSize val_size)
 {
     std::ignore = key;
     std::ignore = value;
@@ -68,7 +68,7 @@ bool Scheduler::set_option(MaaSchedOption key, MaaOptionValue value, MaaOptionVa
     return false;
 }
 
-MaaTaskId Scheduler::post_pipeline(std::string entry, std::string_view param)
+MaaTaskId Tasker::post_pipeline(std::string entry, std::string_view param)
 {
     auto task = make_task(entry, param);
     if (!task) {
@@ -80,7 +80,7 @@ MaaTaskId Scheduler::post_pipeline(std::string entry, std::string_view param)
     return post_task(task);
 }
 
-MaaTaskId Scheduler::post_recognition(std::string entry, std::string_view param)
+MaaTaskId Tasker::post_recognition(std::string entry, std::string_view param)
 {
     auto task = make_task(entry, param);
     if (!task) {
@@ -92,7 +92,7 @@ MaaTaskId Scheduler::post_recognition(std::string entry, std::string_view param)
     return post_task(task);
 }
 
-MaaTaskId Scheduler::post_action(std::string entry, std::string_view param)
+MaaTaskId Tasker::post_action(std::string entry, std::string_view param)
 {
     auto task = make_task(entry, param);
     if (!task) {
@@ -104,7 +104,7 @@ MaaTaskId Scheduler::post_action(std::string entry, std::string_view param)
     return post_task(task);
 }
 
-bool Scheduler::set_param(MaaTaskId task_id, std::string_view param)
+bool Tasker::set_param(MaaTaskId task_id, std::string_view param)
 {
     LogInfo << VAR(task_id) << VAR(param);
 
@@ -135,7 +135,7 @@ bool Scheduler::set_param(MaaTaskId task_id, std::string_view param)
     return task_ptr->set_param(*param_opt);
 }
 
-MaaStatus Scheduler::status(MaaTaskId task_id) const
+MaaStatus Tasker::status(MaaTaskId task_id) const
 {
     if (!task_runner_) {
         LogError << "task_runner is nullptr";
@@ -144,7 +144,7 @@ MaaStatus Scheduler::status(MaaTaskId task_id) const
     return task_runner_->status(task_id);
 }
 
-MaaStatus Scheduler::wait(MaaTaskId task_id) const
+MaaStatus Tasker::wait(MaaTaskId task_id) const
 {
     if (!task_runner_) {
         LogError << "task_runner is nullptr";
@@ -154,12 +154,12 @@ MaaStatus Scheduler::wait(MaaTaskId task_id) const
     return task_runner_->status(task_id);
 }
 
-MaaBool Scheduler::running() const
+MaaBool Tasker::running() const
 {
     return resource_ && resource_->running() && controller_ && controller_->running() && task_runner_ && task_runner_->running();
 }
 
-void Scheduler::post_stop()
+void Tasker::post_stop()
 {
     LogFunc;
 
@@ -191,33 +191,33 @@ void Scheduler::post_stop()
     }
 }
 
-MaaResource* Scheduler::resource()
+MaaResource* Tasker::resource()
 {
     return resource_;
 }
 
-MaaController* Scheduler::controller()
+MaaController* Tasker::controller()
 {
     return controller_;
 }
 
-TaskCache& Scheduler::cache()
+RuntimeCache& Tasker::runtime_cache()
 {
-    return cache_;
+    return runtime_cache_;
 }
 
-const TaskCache& Scheduler::cache() const
+const RuntimeCache& Tasker::runtime_cache() const
 {
-    return cache_;
+    return runtime_cache_;
 }
 
-Scheduler::TaskPtr Scheduler::make_task(std::string entry, std::string_view param)
+Tasker::TaskPtr Tasker::make_task(std::string entry, std::string_view param)
 {
     LogInfo << VAR(entry) << VAR(param);
 
 #ifndef MAA_DEBUG
     if (!inited()) {
-        LogError << "Scheduler not inited";
+        LogError << "Tasker not inited";
         return nullptr;
     }
 #endif
@@ -243,7 +243,7 @@ Scheduler::TaskPtr Scheduler::make_task(std::string entry, std::string_view para
     return task_ptr;
 }
 
-Scheduler::TaskId Scheduler::post_task(const TaskPtr& task_ptr)
+Tasker::TaskId Tasker::post_task(const TaskPtr& task_ptr)
 {
     auto id = task_runner_->post(task_ptr);
 
@@ -256,7 +256,7 @@ Scheduler::TaskId Scheduler::post_task(const TaskPtr& task_ptr)
     return id;
 }
 
-bool Scheduler::run_task(TaskId id, TaskPtr task_ptr)
+bool Tasker::run_task(TaskId id, TaskPtr task_ptr)
 {
     LogFunc << VAR(id) << VAR(task_ptr);
 
@@ -273,7 +273,7 @@ bool Scheduler::run_task(TaskId id, TaskPtr task_ptr)
         { "uuid", controller_ ? controller_->get_uuid() : std::string() },
     };
 
-    notifier.notify(MaaMsg_Scheduler_Task_Started, details);
+    notifier.notify(MaaMsg_Tasker_Task_Started, details);
 
     LogInfo << "task start:" << VAR(details);
 
@@ -282,7 +282,7 @@ bool Scheduler::run_task(TaskId id, TaskPtr task_ptr)
 
     LogInfo << "task end:" << VAR(details) << VAR(ret);
 
-    notifier.notify(ret ? MaaMsg_Scheduler_Task_Completed : MaaMsg_Scheduler_Task_Failed, details);
+    notifier.notify(ret ? MaaMsg_Tasker_Task_Completed : MaaMsg_Tasker_Task_Failed, details);
 
     {
         std::unique_lock lock(task_cache_mutex_);
@@ -294,7 +294,7 @@ bool Scheduler::run_task(TaskId id, TaskPtr task_ptr)
     return ret;
 }
 
-bool Scheduler::check_stop()
+bool Tasker::check_stop()
 {
     if (!need_to_stop_) {
         return true;

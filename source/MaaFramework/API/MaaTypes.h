@@ -50,16 +50,16 @@ public:
     virtual std::string get_uuid() = 0;
 };
 
-struct MaaScheduler
+struct MaaTasker
 {
 public:
-    virtual ~MaaScheduler() = default;
+    virtual ~MaaTasker() = default;
 
     virtual bool bind_resource(MaaResource* resource) = 0;
     virtual bool bind_controller(MaaController* controller) = 0;
     virtual bool inited() const = 0;
 
-    virtual bool set_option(MaaSchedOption key, MaaOptionValue value, MaaOptionValueSize val_size) = 0;
+    virtual bool set_option(MaaTaskerOption key, MaaOptionValue value, MaaOptionValueSize val_size) = 0;
 
     virtual MaaTaskId post_pipeline(std::string entry, std::string_view param) = 0;
     virtual MaaTaskId post_recognition(std::string entry, std::string_view param) = 0;

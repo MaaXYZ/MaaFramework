@@ -25,8 +25,8 @@
 
 MaaController* create_adb_controller();
 MaaController* create_win32_controller();
-void register_my_recognizer_by_ffi(MaaScheduler* maa_handle);
-void register_my_action_by_exec_agent(MaaScheduler* maa_handle);
+void register_my_recognizer_by_ffi(MaaTasker* maa_handle);
+void register_my_action_by_exec_agent(MaaTasker* maa_handle);
 
 int main([[maybe_unused]] int argc, char** argv)
 {
@@ -148,13 +148,13 @@ MaaBool my_analyze(
 
 MaaCustomRecognizerCallback my_recognizer {};
 
-void register_my_recognizer_by_ffi(MaaScheduler* maa_handle)
+void register_my_recognizer_by_ffi(MaaTasker* maa_handle)
 {
     my_recognizer.analyze = my_analyze;
     MaaRegisterCustomRecognizer(maa_handle, "MyRec", &my_recognizer, nullptr);
 }
 
-void register_my_action_by_exec_agent(MaaScheduler* maa_handle)
+void register_my_action_by_exec_agent(MaaTasker* maa_handle)
 {
     std::vector<const char*> params = { "sample/python/exec_agent/my_action.py" };
     MaaToolkitRegisterCustomActionExecutor(

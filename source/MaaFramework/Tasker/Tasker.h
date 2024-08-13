@@ -6,24 +6,24 @@
 #include "Base/AsyncRunner.hpp"
 #include "Controller/ControllerAgent.h"
 #include "Resource/ResourceMgr.h"
+#include "RuntimeCache.h"
 #include "Task/PipelineTask.h"
-#include "TaskCache.h"
 #include "Utils/Dispatcher.hpp"
 #include "Utils/MessageNotifier.hpp"
 
 MAA_NS_BEGIN
 
-class Scheduler : public MaaScheduler
+class Tasker : public MaaTasker
 {
 public:
-    Scheduler(MaaNotificationCallback callback, MaaTransparentArg callback_arg);
-    virtual ~Scheduler() override;
+    Tasker(MaaNotificationCallback callback, MaaTransparentArg callback_arg);
+    virtual ~Tasker() override;
 
     virtual bool bind_resource(MaaResource* resource) override;
     virtual bool bind_controller(MaaController* controller) override;
     virtual bool inited() const override;
 
-    virtual bool set_option(MaaSchedOption key, MaaOptionValue value, MaaOptionValueSize val_size) override;
+    virtual bool set_option(MaaTaskerOption key, MaaOptionValue value, MaaOptionValueSize val_size) override;
 
     virtual MaaTaskId post_pipeline(std::string entry, std::string_view param) override;
     virtual MaaTaskId post_recognition(std::string entry, std::string_view param) override;
@@ -40,8 +40,8 @@ public:
     virtual MAA_CTRL_NS::ControllerAgent* controller() override;
 
 public:
-    TaskCache& cache();
-    const TaskCache& cache() const;
+    RuntimeCache& runtime_cache();
+    const RuntimeCache& runtime_cache() const;
 
 private:
     using TaskPtr = std::shared_ptr<TaskNS::PipelineTask>;
@@ -62,7 +62,7 @@ private:
     std::map<TaskId, TaskPtr> task_cache_;
     std::mutex task_cache_mutex_;
 
-    TaskCache cache_;
+    RuntimeCache runtime_cache_;
 
     MessageNotifier<MaaNotificationCallback> notifier;
 };

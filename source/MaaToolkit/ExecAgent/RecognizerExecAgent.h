@@ -21,10 +21,10 @@ public:
 
 protected: // from ExecAgentBase
     virtual bool register_for_maa_inst(
-        MaaScheduler* handle,
+        MaaTasker* handle,
         std::string_view name,
         ExecData& executor) override;
-    virtual bool unregister_for_maa_inst(MaaScheduler* handle, std::string_view name) override;
+    virtual bool unregister_for_maa_inst(MaaTasker* handle, std::string_view name) override;
 
 private:
     struct AnalyzeResult

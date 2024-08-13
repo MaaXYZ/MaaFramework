@@ -1,180 +1,180 @@
-#include "MaaFramework/Instance/MaaScheduler.h"
+#include "MaaFramework/Instance/MaaTasker.h"
 
-#include "Instance/Scheduler.h"
+#include "Instance/Tasker.h"
 #include "Utils/Logger.h"
 
-MaaScheduler* MaaSchedulerCreate(MaaNotificationCallback callback, MaaTransparentArg callback_arg)
+MaaTasker* MaaTaskerCreate(MaaNotificationCallback callback, MaaTransparentArg callback_arg)
 {
     LogFunc << VAR_VOIDP(callback) << VAR_VOIDP(callback_arg);
 
-    return new MAA_NS::Scheduler(callback, callback_arg);
+    return new MAA_NS::Tasker(callback, callback_arg);
 }
 
-void MaaSchedulerDestroy(MaaScheduler* sched)
+void MaaTaskerDestroy(MaaTasker* tasker)
 {
-    LogFunc << VAR_VOIDP(sched);
+    LogFunc << VAR_VOIDP(tasker);
 
-    if (sched == nullptr) {
+    if (tasker == nullptr) {
         LogError << "handle is null";
         return;
     }
 
-    delete sched;
+    delete tasker;
 }
 
-MaaBool MaaSchedulerSetOption(MaaScheduler* sched, MaaSchedOption key, MaaOptionValue value, MaaOptionValueSize val_size)
+MaaBool MaaTaskerSetOption(MaaTasker* tasker, MaaTaskerOption key, MaaOptionValue value, MaaOptionValueSize val_size)
 {
-    LogFunc << VAR_VOIDP(sched) << VAR(key) << VAR_VOIDP(value) << VAR(val_size);
+    LogFunc << VAR_VOIDP(tasker) << VAR(key) << VAR_VOIDP(value) << VAR(val_size);
 
-    if (!sched) {
+    if (!tasker) {
         LogError << "handle is null";
         return false;
     }
 
-    return sched->set_option(key, value, val_size);
+    return tasker->set_option(key, value, val_size);
 }
 
-MaaBool MaaSchedulerBindResource(MaaScheduler* sched, MaaResource* res)
+MaaBool MaaTaskerBindResource(MaaTasker* tasker, MaaResource* res)
 {
-    LogFunc << VAR_VOIDP(sched) << VAR_VOIDP(res);
+    LogFunc << VAR_VOIDP(tasker) << VAR_VOIDP(res);
 
-    if (!sched || !res) {
+    if (!tasker || !res) {
         LogError << "handle is null";
         return false;
     }
 
-    return sched->bind_resource(res);
+    return tasker->bind_resource(res);
 }
 
-MaaBool MaaSchedulerBindController(MaaScheduler* sched, MaaController* ctrl)
+MaaBool MaaTaskerBindController(MaaTasker* tasker, MaaController* ctrl)
 {
-    LogFunc << VAR_VOIDP(sched) << VAR_VOIDP(ctrl);
+    LogFunc << VAR_VOIDP(tasker) << VAR_VOIDP(ctrl);
 
-    if (!sched || !ctrl) {
+    if (!tasker || !ctrl) {
         LogError << "handle is null";
         return false;
     }
 
-    return sched->bind_controller(ctrl);
+    return tasker->bind_controller(ctrl);
 }
 
-MaaBool MaaSchedulerInited(MaaScheduler* sched)
+MaaBool MaaTaskerInited(MaaTasker* tasker)
 {
-    if (!sched) {
+    if (!tasker) {
         LogError << "handle is null";
         return false;
     }
 
-    return sched->inited();
+    return tasker->inited();
 }
 
-MaaTaskId MaaSchedulerPostTask(MaaScheduler* sched, const char* entry, const char* param)
+MaaTaskId MaaTaskerPostTask(MaaTasker* tasker, const char* entry, const char* param)
 {
-    LogFunc << VAR_VOIDP(sched) << VAR(entry) << VAR(param);
+    LogFunc << VAR_VOIDP(tasker) << VAR(entry) << VAR(param);
 
-    if (!sched) {
+    if (!tasker) {
         LogError << "handle is null";
         return MaaInvalidId;
     }
-    return sched->post_pipeline(entry, param);
+    return tasker->post_pipeline(entry, param);
 }
 
-MaaTaskId MaaSchedulerPostRecognition(MaaScheduler* sched, const char* entry, const char* param)
+MaaTaskId MaaTaskerPostRecognition(MaaTasker* tasker, const char* entry, const char* param)
 {
-    LogFunc << VAR_VOIDP(sched) << VAR(entry) << VAR(param);
+    LogFunc << VAR_VOIDP(tasker) << VAR(entry) << VAR(param);
 
-    if (!sched) {
+    if (!tasker) {
         LogError << "handle is null";
         return MaaInvalidId;
     }
-    return sched->post_recognition(entry, param);
+    return tasker->post_recognition(entry, param);
 }
 
-MaaTaskId MaaSchedulerPostAction(MaaScheduler* sched, const char* entry, const char* param)
+MaaTaskId MaaTaskerPostAction(MaaTasker* tasker, const char* entry, const char* param)
 {
-    LogFunc << VAR_VOIDP(sched) << VAR(entry) << VAR(param);
+    LogFunc << VAR_VOIDP(tasker) << VAR(entry) << VAR(param);
 
-    if (!sched) {
+    if (!tasker) {
         LogError << "handle is null";
         return MaaInvalidId;
     }
-    return sched->post_action(entry, param);
+    return tasker->post_action(entry, param);
 }
 
-MaaBool MaaSchedulerSetParam(MaaScheduler* sched, MaaTaskId id, const char* param)
+MaaBool MaaTaskerSetParam(MaaTasker* tasker, MaaTaskId id, const char* param)
 {
-    LogFunc << VAR_VOIDP(sched) << VAR(id) << VAR(param);
+    LogFunc << VAR_VOIDP(tasker) << VAR(id) << VAR(param);
 
-    if (!sched) {
+    if (!tasker) {
         LogError << "handle is null";
         return false;
     }
-    return sched->set_param(id, param);
+    return tasker->set_param(id, param);
 }
 
-MaaStatus MaaSchedulerStatus(MaaScheduler* sched, MaaTaskId id)
+MaaStatus MaaTaskerStatus(MaaTasker* tasker, MaaTaskId id)
 {
-    // LogFunc << VAR_VOIDP(sched) << VAR(id);
+    // LogFunc << VAR_VOIDP(tasker) << VAR(id);
 
-    if (!sched) {
+    if (!tasker) {
         LogError << "handle is null";
         return MaaStatus_Invalid;
     }
-    return sched->status(id);
+    return tasker->status(id);
 }
 
-MaaStatus MaaSchedulerWait(MaaScheduler* sched, MaaTaskId id)
+MaaStatus MaaTaskerWait(MaaTasker* tasker, MaaTaskId id)
 {
-    // LogFunc << VAR_VOIDP(sched) << VAR(id);
+    // LogFunc << VAR_VOIDP(tasker) << VAR(id);
 
-    if (!sched) {
+    if (!tasker) {
         LogError << "handle is null";
         return MaaStatus_Invalid;
     }
-    return sched->wait(id);
+    return tasker->wait(id);
 }
 
-MaaBool MaaSchedulerRunning(MaaScheduler* sched)
+MaaBool MaaTaskerRunning(MaaTasker* tasker)
 {
-    if (!sched) {
+    if (!tasker) {
         LogError << "handle is null";
         return false;
     }
-    return sched->running();
+    return tasker->running();
 }
 
-MaaBool MaaSchedulerPostStop(MaaScheduler* sched)
+MaaBool MaaTaskerPostStop(MaaTasker* tasker)
 {
-    LogFunc << VAR_VOIDP(sched);
+    LogFunc << VAR_VOIDP(tasker);
 
-    if (!sched) {
+    if (!tasker) {
         LogError << "handle is null";
         return false;
     }
 
-    sched->post_stop();
+    tasker->post_stop();
     return true;
 }
 
-MaaResource* MaaSchedulerGetResource(MaaScheduler* sched)
+MaaResource* MaaTaskerGetResource(MaaTasker* tasker)
 {
-    LogFunc << VAR_VOIDP(sched);
+    LogFunc << VAR_VOIDP(tasker);
 
-    if (!sched) {
+    if (!tasker) {
         LogError << "handle is null";
         return nullptr;
     }
 
-    return sched->resource();
+    return tasker->resource();
 }
 
-MaaController* MaaSchedulerGetController(MaaScheduler* sched)
+MaaController* MaaTaskerGetController(MaaTasker* tasker)
 {
-    LogFunc << VAR_VOIDP(sched);
+    LogFunc << VAR_VOIDP(tasker);
 
-    if (!sched) {
+    if (!tasker) {
         LogError << "handle is null";
         return nullptr;
     }
-    return sched->controller();
+    return tasker->controller();
 }

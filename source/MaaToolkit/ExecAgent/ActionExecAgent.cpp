@@ -14,7 +14,7 @@ ActionExecAgent::ActionExecAgent()
 }
 
 bool ActionExecAgent::register_for_maa_inst(
-    MaaScheduler* handle,
+    MaaTasker* handle,
     std::string_view name,
     ExecData& executor)
 {
@@ -25,7 +25,7 @@ bool ActionExecAgent::register_for_maa_inst(
         reinterpret_cast<void*>(&executor));
 }
 
-bool ActionExecAgent::unregister_for_maa_inst(MaaScheduler* handle, std::string_view name)
+bool ActionExecAgent::unregister_for_maa_inst(MaaTasker* handle, std::string_view name)
 {
     return MaaUnregisterCustomAction(handle, name.data());
 }

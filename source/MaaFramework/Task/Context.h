@@ -30,7 +30,7 @@ public: // from MaaContextAPI
         /*out*/ std::string& detail) override;
     virtual MaaTaskId run_action(std::string task, std::string_view param, cv::Rect cur_box, std::string cur_detail) override;
 
-    virtual MaaScheduler* instance() override { return dynamic_cast<MaaScheduler*>(inst_); }
+    virtual MaaTasker* instance() override { return dynamic_cast<MaaTasker*>(inst_); }
 
 private:
     InstanceInternalAPI* inst_ = nullptr;

@@ -21,7 +21,7 @@ struct MaaImageListBuffer;
 
 struct MaaResource;
 struct MaaController;
-struct MaaScheduler;
+struct MaaTasker;
 struct MaaContext;
 
 typedef uint8_t MaaBool;
@@ -159,11 +159,11 @@ enum MaaCtrlOptionEnum
     MaaCtrlOption_Recording = 5,
 };
 
-typedef MaaOption MaaSchedOption;
+typedef MaaOption MaaTaskerOption;
 
-enum MaaSchedOptionEnum
+enum MaaTaskerOptionEnum
 {
-    MaaSchedOption_Invalid = 0,
+    MaaTaskerOption_Invalid = 0,
 };
 
 // MaaAdbScreencapMethod:

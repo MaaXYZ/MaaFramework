@@ -8,7 +8,7 @@
 
 MAA_NS_BEGIN
 
-class TaskCache
+class RuntimeCache
 {
 public:
     std::optional<cv::Rect> get_pre_box(const std::string& task_name) const;

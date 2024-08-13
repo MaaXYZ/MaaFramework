@@ -22,7 +22,7 @@ ExecAgentBase::~ExecAgentBase()
 }
 
 bool ExecAgentBase::register_executor(
-    MaaScheduler* handle,
+    MaaTasker* handle,
     std::string_view name,
     std::filesystem::path exec_path,
     std::vector<std::string> exec_args)
@@ -51,7 +51,7 @@ bool ExecAgentBase::register_executor(
     return true;
 }
 
-bool ExecAgentBase::unregister_executor(MaaScheduler* handle, std::string_view name)
+bool ExecAgentBase::unregister_executor(MaaTasker* handle, std::string_view name)
 {
     LogFunc << VAR_VOIDP(handle) << VAR(name);
 

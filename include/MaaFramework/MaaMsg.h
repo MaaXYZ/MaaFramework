@@ -104,9 +104,9 @@
  *     hash: string
  * }
  */
-#define MaaMsg_Scheduler_Task_Started ("Scheduler.Task.Started")
-#define MaaMsg_Scheduler_Task_Completed ("Scheduler.Task.Completed")
-#define MaaMsg_Scheduler_Task_Failed ("Scheduler.Task.Failed")
+#define MaaMsg_Tasker_Task_Started ("Tasker.Task.Started")
+#define MaaMsg_Tasker_Task_Completed ("Tasker.Task.Completed")
+#define MaaMsg_Tasker_Task_Failed ("Tasker.Task.Failed")
 /// @}
 
 /**

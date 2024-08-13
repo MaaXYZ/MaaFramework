@@ -15,7 +15,7 @@ RecognizerExecAgent::RecognizerExecAgent()
 }
 
 bool RecognizerExecAgent::register_for_maa_inst(
-    MaaScheduler* handle,
+    MaaTasker* handle,
     std::string_view name,
     ExecData& executor)
 {
@@ -26,7 +26,7 @@ bool RecognizerExecAgent::register_for_maa_inst(
         reinterpret_cast<void*>(&executor));
 }
 
-bool RecognizerExecAgent::unregister_for_maa_inst(MaaScheduler* handle, std::string_view name)
+bool RecognizerExecAgent::unregister_for_maa_inst(MaaTasker* handle, std::string_view name)
 {
     return MaaUnregisterCustomRecognizer(handle, name.data());
 }

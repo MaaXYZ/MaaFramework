@@ -6,7 +6,7 @@
 #include "Instance/MaaController.h"
 #include "Instance/MaaCustomController.h"
 #include "Instance/MaaResource.h"
-#include "Instance/MaaScheduler.h"
+#include "Instance/MaaTasker.h"
 
 #include "Utility/MaaBuffer.h"
 #include "Utility/MaaUtility.h"
@@ -21,7 +21,7 @@
  *
  * For starter, take a look at the following pages:
  *
- * - MaaScheduler.h
+ * - MaaTasker.h
  * - MaaController.h
  * - MaaResource.h
  * - MaaContext.h

@@ -32,7 +32,7 @@ std::ostream& operator<<(std::ostream& os, ExecutorType type)
 
 MaaBool RegisterExecutor(
     ExecutorType type,
-    MaaScheduler* handle,
+    MaaTasker* handle,
     const char* name,
     const char* exec_path,
     const const char** exec_params,
@@ -75,7 +75,7 @@ MaaBool RegisterExecutor(
     return false;
 }
 
-MaaBool UnregisterExecutor(ExecutorType type, MaaScheduler* handle, const char* name)
+MaaBool UnregisterExecutor(ExecutorType type, MaaTasker* handle, const char* name)
 {
     LogFunc << VAR(type) << VAR_VOIDP(handle) << VAR(name);
 
@@ -99,7 +99,7 @@ MaaBool UnregisterExecutor(ExecutorType type, MaaScheduler* handle, const char* 
     return false;
 }
 
-MaaBool ClearExecutor(ExecutorType type, MaaScheduler* handle)
+MaaBool ClearExecutor(ExecutorType type, MaaTasker* handle)
 {
     LogFunc << VAR(type) << VAR_VOIDP(handle);
 
@@ -120,7 +120,7 @@ MaaBool ClearExecutor(ExecutorType type, MaaScheduler* handle)
 }
 
 MaaBool MaaToolkitRegisterCustomRecognizerExecutor(
-    MaaScheduler* handle,
+    MaaTasker* handle,
     const char* recognizer_name,
     const char* exec_path,
     const const char** exec_params,
@@ -136,19 +136,19 @@ MaaBool MaaToolkitRegisterCustomRecognizerExecutor(
 }
 
 MaaBool MaaToolkitUnregisterCustomRecognizerExecutor(
-    MaaScheduler* handle,
+    MaaTasker* handle,
     const char* recognizer_name)
 {
     return UnregisterExecutor(ExecutorType::Recognizer, handle, recognizer_name);
 }
 
-MaaBool MaaToolkitClearCustomRecognizerExecutor(MaaScheduler* handle)
+MaaBool MaaToolkitClearCustomRecognizerExecutor(MaaTasker* handle)
 {
     return ClearExecutor(ExecutorType::Recognizer, handle);
 }
 
 MaaBool MaaToolkitRegisterCustomActionExecutor(
-    MaaScheduler* handle,
+    MaaTasker* handle,
     const char* action_name,
     const char* exec_path,
     const const char** exec_params,
@@ -164,12 +164,12 @@ MaaBool MaaToolkitRegisterCustomActionExecutor(
 }
 
 MaaBool
-    MaaToolkitUnregisterCustomActionExecutor(MaaScheduler* handle, const char* action_name)
+    MaaToolkitUnregisterCustomActionExecutor(MaaTasker* handle, const char* action_name)
 {
     return UnregisterExecutor(ExecutorType::Action, handle, action_name);
 }
 
-MaaBool MaaToolkitClearCustomActionExecutor(MaaScheduler* handle)
+MaaBool MaaToolkitClearCustomActionExecutor(MaaTasker* handle)
 {
     return ClearExecutor(ExecutorType::Action, handle);
 }
