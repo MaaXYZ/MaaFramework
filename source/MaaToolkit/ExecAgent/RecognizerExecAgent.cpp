@@ -79,13 +79,13 @@ MaaBool RecognizerExecAgent::maa_api_analyze(
     const MaaImageBuffer* image,
     const char* task_name,
     const char* custom_recognition_param,
-    MaaTransparentArg recognizer_arg,
+    MaaTransparentArg trans_arg,
     MaaRect* out_box,
     MaaStringBuffer* out_detail)
 {
-    auto* data = static_cast<ExecData*>(recognizer_arg);
+    auto* data = static_cast<ExecData*>(trans_arg);
     if (!data) {
-        LogError << "data is nullptr" << VAR(recognizer_arg);
+        LogError << "data is nullptr" << VAR(trans_arg);
         return false;
     }
 

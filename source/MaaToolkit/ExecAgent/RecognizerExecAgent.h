@@ -47,7 +47,7 @@ private:
         const MaaImageBuffer* image,
         const char* task_name,
         const char* custom_recognition_param,
-        MaaTransparentArg recognizer_arg,
+        MaaTransparentArg trans_arg,
         /*out*/ MaaRect* out_box,
         /*out*/ MaaStringBuffer* out_detail);
 

@@ -26,6 +26,88 @@ void MaaResourceDestroy(MaaResource* res)
     delete res;
 }
 
+MaaBool MaaResourceRegisterCustomRecognizer(
+    MaaResource* res,
+    const char* name,
+    MaaCustomRecognizerCallback recognizer,
+    MaaTransparentArg trans_arg)
+{
+    LogFunc << VAR_VOIDP(res) << VAR(name) << VAR_VOIDP(recognizer) << VAR_VOIDP(trans_arg);
+
+    if (!res || !name || !recognizer) {
+        LogError << "handle is null";
+        return false;
+    }
+
+    res->register_custom_recognizer(name, recognizer, trans_arg);
+    return true;
+}
+
+MaaBool MaaResourceUnregisterCustomRecognizer(MaaResource* res, const char* name)
+{
+    LogFunc << VAR_VOIDP(res) << VAR(name);
+
+    if (!res || !name) {
+        LogError << "handle is null";
+        return false;
+    }
+
+    res->unregister_custom_recognizer(name);
+    return true;
+}
+
+MaaBool MaaResourceClearCustomRecognizer(MaaResource* res)
+{
+    LogFunc << VAR_VOIDP(res);
+
+    if (!res) {
+        LogError << "handle is null";
+        return false;
+    }
+
+    res->clear_custom_recognizer();
+    return true;
+}
+
+MaaBool MaaResourceRegisterCustomAction(MaaResource* res, const char* name, MaaCustomActionCallback action, MaaTransparentArg trans_arg)
+{
+    LogFunc << VAR_VOIDP(res) << VAR(name) << VAR_VOIDP(action) << VAR_VOIDP(trans_arg);
+
+    if (!res || !name || !action) {
+        LogError << "handle is null";
+        return false;
+    }
+
+    res->register_custom_action(name, action, trans_arg);
+    return true;
+}
+
+MaaBool MaaResourceUnregisterCustomAction(MaaResource* res, const char* name)
+{
+    LogFunc << VAR_VOIDP(res) << VAR(name);
+
+    if (!res || !name) {
+        LogError << "handle is null";
+        return false;
+    }
+
+    res->unregister_custom_action(name);
+    return true;
+}
+
+MaaBool MaaResourceClearCustomAction(MaaResource* res)
+{
+    LogFunc << VAR_VOIDP(res);
+
+    if (!res) {
+        LogError << "handle is null";
+        return false;
+    }
+
+    res->clear_custom_action();
+    return true;
+}
+
 MaaResId MaaResourcePostPath(MaaResource* res, const char* path)
 {
     LogFunc << VAR_VOIDP(res) << VAR(path);

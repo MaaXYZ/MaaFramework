@@ -6,7 +6,7 @@
 
 MAA_TASK_NS_BEGIN
 
-TaskDataMgr::TaskDataMgr(InstanceInternalAPI* inst)
+TaskDataMgr::TaskDataMgr(Tasker* tasker)
     : inst_(inst)
 {
 }

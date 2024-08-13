@@ -6,34 +6,26 @@
 #include <meojson/json.hpp>
 
 #include "API/MaaTypes.h"
-#include "Conf/Conf.h"
-#include "Instance/InstanceInternalAPI.hpp"
-#include "Resource/PipelineResMgr.h"
-#include "Resource/PipelineTypes.h"
-#include "Task/TaskDataMgr.h"
+#include "TaskBase.h"
+#include "Tasker/Tasker.h"
 
 MAA_TASK_NS_BEGIN
 
-class Context : public MaaContextAPI
+class Context : public MaaContext
 {
 public:
-    explicit Context(InstanceInternalAPI* inst);
+    explicit Context(Tasker* tasker, TaskBase& task);
     virtual ~Context() override = default;
 
 public: // from MaaContextAPI
-    virtual MaaTaskId run_task(std::string task, std::string_view param) override;
-    virtual MaaTaskId run_recognition(
-        cv::Mat image,
-        std::string task,
-        std::string_view param,
-        /*out*/ cv::Rect& box,
-        /*out*/ std::string& detail) override;
+    virtual MaaTaskId run_pipeline(std::string task, std::string_view param) override;
+    virtual MaaTaskId run_recognition(std::string task, std::string_view param, cv::Mat image) override;
     virtual MaaTaskId run_action(std::string task, std::string_view param, cv::Rect cur_box, std::string cur_detail) override;
 
-    virtual MaaTasker* instance() override { return dynamic_cast<MaaTasker*>(inst_); }
+    virtual Tasker* tasker() override;
 
 private:
-    InstanceInternalAPI* inst_ = nullptr;
+    Tasker* tasker_ = nullptr;
 };
 
 MAA_TASK_NS_END

@@ -16,7 +16,7 @@
 
 MAA_TASK_NS_BEGIN
 
-Recognizer::Recognizer(InstanceInternalAPI* inst)
+Recognizer::Recognizer(Tasker* tasker)
     : inst_(inst)
 {
 }

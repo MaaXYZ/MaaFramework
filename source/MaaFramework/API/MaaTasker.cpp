@@ -1,6 +1,6 @@
 #include "MaaFramework/Instance/MaaTasker.h"
 
-#include "Instance/Tasker.h"
+#include "Tasker/Tasker.h"
 #include "Utils/Logger.h"
 
 MaaTasker* MaaTaskerCreate(MaaNotificationCallback callback, MaaTransparentArg callback_arg)
@@ -68,48 +68,48 @@ MaaBool MaaTaskerInited(MaaTasker* tasker)
     return tasker->inited();
 }
 
-MaaTaskId MaaTaskerPostTask(MaaTasker* tasker, const char* entry, const char* param)
+MaaTaskId MaaTaskerPostPipeline(MaaTasker* tasker, const char* entry, const char* pipeline_override)
 {
-    LogFunc << VAR_VOIDP(tasker) << VAR(entry) << VAR(param);
+    LogFunc << VAR_VOIDP(tasker) << VAR(entry) << VAR(pipeline_override);
 
     if (!tasker) {
         LogError << "handle is null";
         return MaaInvalidId;
     }
-    return tasker->post_pipeline(entry, param);
+    return tasker->post_pipeline(entry, pipeline_override);
 }
 
-MaaTaskId MaaTaskerPostRecognition(MaaTasker* tasker, const char* entry, const char* param)
+MaaTaskId MaaTaskerPostRecognition(MaaTasker* tasker, const char* entry, const char* pipeline_override)
 {
-    LogFunc << VAR_VOIDP(tasker) << VAR(entry) << VAR(param);
+    LogFunc << VAR_VOIDP(tasker) << VAR(entry) << VAR(pipeline_override);
 
     if (!tasker) {
         LogError << "handle is null";
         return MaaInvalidId;
     }
-    return tasker->post_recognition(entry, param);
+    return tasker->post_recognition(entry, pipeline_override);
 }
 
-MaaTaskId MaaTaskerPostAction(MaaTasker* tasker, const char* entry, const char* param)
+MaaTaskId MaaTaskerPostAction(MaaTasker* tasker, const char* entry, const char* pipeline_override)
 {
-    LogFunc << VAR_VOIDP(tasker) << VAR(entry) << VAR(param);
+    LogFunc << VAR_VOIDP(tasker) << VAR(entry) << VAR(pipeline_override);
 
     if (!tasker) {
         LogError << "handle is null";
         return MaaInvalidId;
     }
-    return tasker->post_action(entry, param);
+    return tasker->post_action(entry, pipeline_override);
 }
 
-MaaBool MaaTaskerSetParam(MaaTasker* tasker, MaaTaskId id, const char* param)
+MaaBool MaaTaskerOverride(MaaTasker* tasker, MaaTaskId id, const char* pipeline_override)
 {
-    LogFunc << VAR_VOIDP(tasker) << VAR(id) << VAR(param);
+    LogFunc << VAR_VOIDP(tasker) << VAR(id) << VAR(pipeline_override);
 
     if (!tasker) {
         LogError << "handle is null";
         return false;
     }
-    return tasker->set_param(id, param);
+    return tasker->pipeline_override(id, pipeline_override);
 }
 
 MaaStatus MaaTaskerStatus(MaaTasker* tasker, MaaTaskId id)

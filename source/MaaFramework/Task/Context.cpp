@@ -2,236 +2,34 @@
 
 #include <meojson/json.hpp>
 
-#include "Controller/ControllerAgent.h"
-#include "PipelineTask.h"
-#include "Task/Actuator.h"
-#include "Task/Recognizer.h"
 #include "Utils/Logger.h"
+#include "Tasker/Tasker.h"
 
 MAA_TASK_NS_BEGIN
 
-Context::Context(InstanceInternalAPI* inst)
-    : inst_(inst)
+Context::Context(Tasker* tasker)
+    : tasker_(tasker)
 {
 }
 
-bool Context::run_task(std::string task, std::string_view param)
+MaaTaskId Context::run_pipeline(std::string task, std::string_view param)
 {
-    LogFunc << VAR(task) << VAR(param);
-
-    if (!inst_) {
-        LogError << "Instance is null";
-        return false;
-    }
-
-    auto json_opt = json::parse(param);
-    if (!json_opt) {
-        LogError << "Parse param failed" << VAR(param);
-        return false;
-    }
-
-    PipelineTask pipeline(task, inst_);
-    pipeline.set_param(*json_opt);
-
-    return pipeline.run();
+    return MaaTaskId();
 }
 
-bool Context::run_recognition(
-    cv::Mat image,
-    std::string task,
-    std::string_view param,
-    cv::Rect& box,
-    std::string& detail)
+MaaTaskId Context::run_recognition(std::string task, std::string_view param, cv::Mat image)
 {
-    LogFunc << VAR(task) << VAR(param);
-
-    box = cv::Rect();
-    detail.clear();
-
-    if (!inst_) {
-        LogError << "Instance is null";
-        return false;
-    }
-    if (image.empty()) {
-        LogError << "Image is empty";
-        return false;
-    }
-
-    auto json_opt = json::parse(param);
-    if (!json_opt) {
-        LogError << "Parse param failed" << VAR(param);
-        return false;
-    }
-
-    Recognizer recognizer(inst_);
-
-    TaskDataMgr data_mgr(inst_);
-    data_mgr.set_param(*json_opt);
-    const auto& task_data = data_mgr.get_task_data(task);
-
-    auto reco = recognizer.recognize(image, task_data);
-
-    if (reco.hit) {
-        box = *reco.hit;
-    }
-    detail = reco.detail.to_string();
-
-    return reco.hit.has_value();
+    return MaaTaskId();
 }
 
-bool Context::run_action(
-    std::string task,
-    std::string_view param,
-    cv::Rect cur_box,
-    std::string cur_detail)
+MaaTaskId Context::run_action(std::string task, std::string_view param, cv::Rect cur_box, std::string cur_detail)
 {
-    LogFunc << VAR(task) << VAR(param);
-
-    if (!inst_) {
-        LogError << "Instance is null";
-        return false;
-    }
-
-    auto json_opt = json::parse(param);
-    if (!json_opt) {
-        LogError << "Parse param failed" << VAR(param);
-        return false;
-    }
-
-    Actuator actuator(inst_);
-
-    Recognizer::Hit reco_hit = cur_box;
-
-    TaskDataMgr data_mgr(inst_);
-    data_mgr.set_param(*json_opt);
-    const auto& task_data = data_mgr.get_task_data(task);
-
-    auto ret = actuator.run(reco_hit, json::parse(cur_detail).value_or(cur_detail), task_data);
-    return ret;
+    return MaaTaskId();
 }
 
-bool Context::click(int x, int y)
+Tasker* Context::tasker()
 {
-    LogFunc << VAR(x) << VAR(y);
-
-    auto* ctrl = controller();
-    if (!ctrl) {
-        LogError << "Controller is null";
-        return false;
-    }
-
-    auto id = ctrl->post_click(x, y);
-    return ctrl->wait(id) == MaaStatus_Success;
-}
-
-bool Context::swipe(int x1, int y1, int x2, int y2, int duration)
-{
-    LogFunc << VAR(x1) << VAR(x2) << VAR(y1) << VAR(y2) << VAR(duration);
-
-    auto* ctrl = controller();
-    if (!ctrl) {
-        LogError << "Controller is null";
-        return false;
-    }
-
-    auto id = ctrl->post_swipe(x1, x2, y1, y2, duration);
-    return ctrl->wait(id) == MaaStatus_Success;
-}
-
-bool Context::press_key(int keycode)
-{
-    LogFunc << VAR(keycode);
-
-    auto* ctrl = controller();
-    if (!ctrl) {
-        LogError << "Controller is null";
-        return false;
-    }
-
-    auto id = ctrl->post_press_key(keycode);
-    return ctrl->wait(id) == MaaStatus_Success;
-}
-
-bool Context::input_text(std::string_view text)
-{
-    LogFunc << VAR(text);
-
-    auto* ctrl = controller();
-    if (!ctrl) {
-        LogError << "Controller is null";
-        return false;
-    }
-
-    auto id = ctrl->post_input_text(text);
-    return ctrl->wait(id) == MaaStatus_Success;
-}
-
-bool Context::touch_down(int contact, int x, int y, int pressure)
-{
-    LogFunc << VAR(contact) << VAR(x) << VAR(y) << VAR(pressure);
-
-    auto* ctrl = controller();
-    if (!ctrl) {
-        LogError << "Controller is null";
-        return false;
-    }
-
-    auto id = ctrl->post_touch_down(contact, x, y, pressure);
-    return ctrl->wait(id) == MaaStatus_Success;
-}
-
-bool Context::touch_move(int contact, int x, int y, int pressure)
-{
-    LogFunc << VAR(contact) << VAR(x) << VAR(y) << VAR(pressure);
-
-    auto* ctrl = controller();
-    if (!ctrl) {
-        LogError << "Controller is null";
-        return false;
-    }
-
-    auto id = ctrl->post_touch_move(contact, x, y, pressure);
-    return ctrl->wait(id) == MaaStatus_Success;
-}
-
-bool Context::touch_up(int contact)
-{
-    LogFunc << VAR(contact);
-
-    auto* ctrl = controller();
-    if (!ctrl) {
-        LogError << "Controller is null";
-        return false;
-    }
-
-    auto id = ctrl->post_touch_up(contact);
-    return ctrl->wait(id) == MaaStatus_Success;
-}
-
-cv::Mat Context::screencap()
-{
-    LogFunc;
-    auto* ctrl = controller();
-    if (!ctrl) {
-        LogError << "Controller is null";
-        return {};
-    }
-    auto id = ctrl->post_screencap();
-    ctrl->wait(id);
-
-    return ctrl->cached_image();
-}
-
-cv::Mat Context::cached_image()
-{
-    // LogFunc;
-    auto* ctrl = controller();
-    if (!ctrl) {
-        LogError << "Controller is null";
-        return {};
-    }
-
-    return ctrl->cached_image();
+    return tasker_;
 }
 
 MAA_TASK_NS_END

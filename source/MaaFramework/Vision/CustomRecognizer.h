@@ -2,7 +2,7 @@
 
 #include <vector>
 
-#include "Instance/InstanceInternalAPI.hpp"
+#include "API/MaaTypes.h"
 #include "MaaFramework/MaaDef.h"
 #include "Utils/JsonExt.hpp"
 #include "VisionBase.h"
@@ -27,7 +27,7 @@ public:
         cv::Mat image,
         CustomRecognizerParam param,
         CustomRecognizerSession session,
-        InstanceInternalAPI* inst,
+        Tasker* tasker,
         std::string name = "");
 
 private:
@@ -36,7 +36,7 @@ private:
 private:
     const CustomRecognizerParam param_;
     CustomRecognizerSession session_;
-    InstanceInternalAPI* inst_ = nullptr;
+    Tasker* tasker_ = nullptr;
 };
 
 MAA_VISION_NS_END

@@ -2,26 +2,27 @@
 
 #include "Conf/Conf.h"
 
-#include "Instance/InstanceInternalAPI.hpp"
+#include "API/MaaTypes.h"
 #include "MaaFramework/MaaDef.h"
 #include "Resource/PipelineTypes.h"
+#include "Resource/ResourceMgr.h"
+#include "Task/Context.h"
 
 MAA_TASK_NS_BEGIN
 
 class CustomAction
 {
 public:
-    CustomAction(CustomActionSession session, InstanceInternalAPI* inst);
+    CustomAction(std::string name, MaaCustomActionCallback action, MaaTransparentArg trans_arg);
+    ~CustomAction() = default;
 
-    bool
-        run(const std::string& task_name,
-            const MAA_RES_NS::Action::CustomParam& param,
-            const cv::Rect& cur_box,
-            const json::value& cur_rec_detail);
+public:
+    bool run(Context& context, const MAA_RES_NS::Action::CustomParam& param, const cv::Rect& cur_box, const json::value& cur_rec_detail);
 
 private:
-    CustomActionSession session_;
-    InstanceInternalAPI* inst_ = nullptr;
+    std::string name_;
+    MaaCustomActionCallback action_callback_ = nullptr;
+    MaaTransparentArg trans_arg_ = nullptr;
 };
 
 MAA_TASK_NS_END

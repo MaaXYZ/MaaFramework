@@ -69,8 +69,8 @@ extern "C"
     MAA_FRAMEWORK_API MaaBool MaaImageListBufferAppend(MaaImageListBuffer* handle, MaaImageBuffer* value);
     MAA_FRAMEWORK_API MaaBool MaaImageListBufferRemove(MaaImageListBuffer* handle, MaaSize index);
 
-    MAA_FRAMEWORK_API MaaRect* MaaRectBufferCreate();
-    MAA_FRAMEWORK_API void MaaRectBufferDestroy(MaaRect* handle);
+    MAA_FRAMEWORK_API MaaRect* MaaRectCreate();
+    MAA_FRAMEWORK_API void MaaRectDestroy(MaaRect* handle);
     MAA_FRAMEWORK_API int32_t MaaRectGetX(MaaRect* handle);
     MAA_FRAMEWORK_API int32_t MaaRectGetY(MaaRect* handle);
     MAA_FRAMEWORK_API int32_t MaaRectGetW(MaaRect* handle);

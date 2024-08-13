@@ -2,14 +2,14 @@
 
 #include "Controller/ControllerAgent.h"
 #include "Global/UniqueResultBank.h"
-#include "Instance/InstanceCache.h"
+#include "Tasker/InstanceCache.h"
 #include "Task/CustomAction.h"
 #include "Utils/Logger.h"
 #include "Vision/TemplateComparator.h"
 
 MAA_TASK_NS_BEGIN
 
-Actuator::Actuator(InstanceInternalAPI* inst)
+Actuator::Actuator(Tasker* tasker)
     : inst_(inst)
 {
 }

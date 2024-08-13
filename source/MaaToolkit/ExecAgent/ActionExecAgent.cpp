@@ -78,11 +78,11 @@ MaaBool ActionExecAgent::maa_api_run(
     const char* custom_action_param,
     MaaRect* cur_box,
     const char* cur_rec_detail,
-    MaaTransparentArg action_arg)
+    MaaTransparentArg trans_arg)
 {
-    auto* data = static_cast<ExecData*>(action_arg);
+    auto* data = static_cast<ExecData*>(trans_arg);
     if (!data) {
-        LogError << "data is nullptr" << VAR(action_arg);
+        LogError << "data is nullptr" << VAR(trans_arg);
         return false;
     }
 
@@ -90,11 +90,11 @@ MaaBool ActionExecAgent::maa_api_run(
         .run(*data, context, task_name, custom_action_param, cur_box, cur_rec_detail);
 }
 
-void ActionExecAgent::maa_api_stop(MaaTransparentArg action_arg)
+void ActionExecAgent::maa_api_stop(MaaTransparentArg trans_arg)
 {
-    auto* data = static_cast<ExecData*>(action_arg);
+    auto* data = static_cast<ExecData*>(trans_arg);
     if (!data) {
-        LogError << "data is nullptr" << VAR(action_arg);
+        LogError << "data is nullptr" << VAR(trans_arg);
         return;
     }
 

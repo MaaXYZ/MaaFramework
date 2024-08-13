@@ -28,7 +28,7 @@ public:
     virtual MaaTaskId post_pipeline(std::string entry, std::string_view param) override;
     virtual MaaTaskId post_recognition(std::string entry, std::string_view param) override;
     virtual MaaTaskId post_action(std::string entry, std::string_view param) override;
-    virtual bool set_param(MaaTaskId task_id, std::string_view param) override;
+    virtual bool pipeline_override(MaaTaskId task_id, std::string_view param) override;
 
     virtual MaaStatus status(MaaTaskId task_id) const override;
     virtual MaaStatus wait(MaaTaskId task_id) const override;
@@ -42,6 +42,7 @@ public:
 public:
     RuntimeCache& runtime_cache();
     const RuntimeCache& runtime_cache() const;
+    void notify(std::string_view msg, json::value detail = json::value());
 
 private:
     using TaskPtr = std::shared_ptr<TaskNS::PipelineTask>;

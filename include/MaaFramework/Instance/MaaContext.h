@@ -19,10 +19,10 @@ extern "C"
 {
 #endif
 
-    MAA_FRAMEWORK_API MaaTaskId MaaContextRunTask(MaaContext* context, const char* task_name, const char* param);
+    MAA_FRAMEWORK_API MaaTaskId MaaContextRunPipeline(MaaContext* context, const char* task_name, const char* pipeline_override);
 
     MAA_FRAMEWORK_API MaaTaskId
-        MaaContextRunRecognition(MaaContext* context, MaaImageBuffer* image, const char* task_name, const char* task_param);
+        MaaContextRunRecognition(MaaContext* context, const char* task_name, const char* task_param, MaaImageBuffer* image);
 
     MAA_FRAMEWORK_API MaaTaskId MaaContextRunAction(
         MaaContext* context,

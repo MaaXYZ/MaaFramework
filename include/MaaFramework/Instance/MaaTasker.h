@@ -47,8 +47,7 @@ extern "C"
      * @param val_size The size of the option value.
      * @return MaaBool Whether the option is set successfully.
      */
-    MAA_FRAMEWORK_API MaaBool
-        MaaTaskerSetOption(MaaTasker* tasker, MaaTaskerOption key, MaaOptionValue value, MaaOptionValueSize val_size);
+    MAA_FRAMEWORK_API MaaBool MaaTaskerSetOption(MaaTasker* tasker, MaaTaskerOption key, MaaOptionValue value, MaaOptionValueSize val_size);
 
     /**
      * @brief Bind the tasker to an initialized resource.
@@ -89,10 +88,10 @@ extern "C"
      *
      * @param tasker
      * @param entry The entry of the task.
-     * @param param The parameter of the task.
+     * @param pipeline_override The override of the pipeline.
      * @return MaaTaskId The id of the task.
      */
-    MAA_FRAMEWORK_API MaaTaskId MaaTaskerPostTask(MaaTasker* tasker, const char* entry, const char* param);
+    MAA_FRAMEWORK_API MaaTaskId MaaTaskerPostPipeline(MaaTasker* tasker, const char* entry, const char* pipeline_override);
 
     /**
      * @brief Post a recognition to the tasker.
@@ -103,10 +102,10 @@ extern "C"
      *
      * @param tasker
      * @param entry The entry of the recognition.
-     * @param param The parameter of the recognition.
+     * @param pipeline_override The override of the pipeline.
      * @return MaaTaskId The id of the recognition.
      */
-    MAA_FRAMEWORK_API MaaTaskId MaaTaskerPostRecognition(MaaTasker* tasker, const char* entry, const char* param);
+    MAA_FRAMEWORK_API MaaTaskId MaaTaskerPostRecognition(MaaTasker* tasker, const char* entry, const char* pipeline_override);
 
     /**
      * @brief Post a action to the tasker.
@@ -117,10 +116,10 @@ extern "C"
      *
      * @param tasker
      * @param entry The entry of the action.
-     * @param param The parameter of the action.
+     * @param pipeline_override The override of the pipeline.
      * @return MaaTaskId The id of the action.
      */
-    MAA_FRAMEWORK_API MaaTaskId MaaTaskerPostAction(MaaTasker* tasker, const char* entry, const char* param);
+    MAA_FRAMEWORK_API MaaTaskId MaaTaskerPostAction(MaaTasker* tasker, const char* entry, const char* pipeline_override);
 
     /**
      * @brief Set the parameter of a task.
@@ -129,10 +128,10 @@ extern "C"
      *
      * @param tasker
      * @param id The id of the task.
-     * @param param The parameter of the task.
+     * @param pipeline_override The override of the pipeline.
      * @return MaaBool
      */
-    MAA_FRAMEWORK_API MaaBool MaaTaskerSetParam(MaaTasker* tasker, MaaTaskId id, const char* param);
+    MAA_FRAMEWORK_API MaaBool MaaTaskerOverride(MaaTasker* tasker, MaaTaskId id, const char* pipeline_override);
 
     /**
      * @brief Get the status of a task identified by the id.

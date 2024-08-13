@@ -51,7 +51,7 @@ MaaBool my_action_run(
     [[maybe_unused]] MaaStringView custom_action_param,
     [[maybe_unused]] MaaRectHandle cur_box,
     [[maybe_unused]] MaaStringView cur_rec_detail,
-    [[maybe_unused]] MaaTransparentArg action_arg)
+    [[maybe_unused]] MaaTransparentArg trans_arg)
 {
     auto image = MaaCreateImageBuffer();
     MaaSyncContextScreencap(sync_context, image);

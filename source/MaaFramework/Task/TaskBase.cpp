@@ -1,4 +1,4 @@
-#include "PipelineTask.h"
+#include "TaskBase.h"
 
 #include "Controller/ControllerAgent.h"
 #include "Global/GlobalOptionMgr.h"
@@ -11,19 +11,19 @@
 
 MAA_TASK_NS_BEGIN
 
-PipelineTask::PipelineTask(std::string entry, Tasker* tasker)
+TaskBase::TaskBase(std::string entry, Tasker* tasker)
     : tasker_(tasker)
     , entry_(std::move(entry))
     , data_mgr_(tasker)
 {
 }
 
-void PipelineTask::post_stop()
+void TaskBase::post_stop()
 {
     need_to_stop_ = true;
 }
 
-bool PipelineTask::run()
+bool TaskBase::run()
 {
     switch (run_type_) {
     case RunType::Pipeline:
@@ -38,24 +38,24 @@ bool PipelineTask::run()
     }
 }
 
-MAA_RES_NS::ResourceMgr* PipelineTask::resource()
+MAA_RES_NS::ResourceMgr* TaskBase::resource()
 {
     return tasker_ ? tasker_->resource() : nullptr;
 }
 
-MAA_CTRL_NS::ControllerAgent* PipelineTask::controller()
+MAA_CTRL_NS::ControllerAgent* TaskBase::controller()
 {
     return tasker_ ? tasker_->controller() : nullptr;
 }
 
-void PipelineTask::notify(std::string_view msg, json::value detail)
+void TaskBase::notify(std::string_view msg, json::value detail)
 {
     if (tasker_) {
         tasker_->notify(msg, detail);
     }
 }
 
-bool PipelineTask::run_pipeline()
+bool TaskBase::run_pipeline()
 {
     LogFunc << VAR(entry_);
 
@@ -106,7 +106,7 @@ bool PipelineTask::run_pipeline()
     return true;
 }
 
-bool PipelineTask::run_recognition_only()
+bool TaskBase::run_recognition_only()
 {
     LogFunc << VAR(entry_);
 
@@ -123,7 +123,7 @@ bool PipelineTask::run_recognition_only()
     return hit;
 }
 
-bool PipelineTask::run_action_only()
+bool TaskBase::run_action_only()
 {
     LogFunc << VAR(entry_);
 
@@ -131,12 +131,12 @@ bool PipelineTask::run_action_only()
     return run_task(fake_hit);
 }
 
-bool PipelineTask::set_param(const json::value& param)
+bool TaskBase::set_param(const json::value& param)
 {
     return data_mgr_.set_param(param);
 }
 
-bool PipelineTask::query_node_detail(MaaNodeId node_id, std::string& name, MaaRecoId& reco_id, bool& completed)
+bool TaskBase::query_node_detail(MaaNodeId node_id, std::string& name, MaaRecoId& reco_id, bool& completed)
 {
     const auto& bank = UniqueResultBank::get_instance();
 
@@ -154,7 +154,7 @@ bool PipelineTask::query_node_detail(MaaNodeId node_id, std::string& name, MaaRe
     return true;
 }
 
-bool PipelineTask::query_task_detail(MaaTaskId task_id, std::string& entry, std::vector<MaaNodeId>& node_id_list)
+bool TaskBase::query_task_detail(MaaTaskId task_id, std::string& entry, std::vector<MaaNodeId>& node_id_list)
 {
     const auto& bank = UniqueResultBank::get_instance();
 
@@ -171,7 +171,7 @@ bool PipelineTask::query_task_detail(MaaTaskId task_id, std::string& entry, std:
     return true;
 }
 
-PipelineTask::NextIter PipelineTask::find_first_and_run(const TaskData::NextList& list)
+TaskBase::NextIter TaskBase::find_first_and_run(const TaskData::NextList& list)
 {
     const NextIter NotFound = list.cend();
 
@@ -213,7 +213,7 @@ PipelineTask::NextIter PipelineTask::find_first_and_run(const TaskData::NextList
     return run_ret ? iter : NotFound;
 }
 
-PipelineTask::NextIter PipelineTask::find_first(const TaskData::NextList& list, HitDetail& hit_detail)
+TaskBase::NextIter TaskBase::find_first(const TaskData::NextList& list, HitDetail& hit_detail)
 {
     const NextIter NotFound = list.cend();
 
@@ -304,7 +304,7 @@ PipelineTask::NextIter PipelineTask::find_first(const TaskData::NextList& list, 
     return iter;
 }
 
-bool PipelineTask::run_task(const HitDetail& hit)
+bool TaskBase::run_task(const HitDetail& hit)
 {
     if (need_to_stop_) {
         LogInfo << "Task interrupted" << VAR(pre_hit_task_);
@@ -345,7 +345,7 @@ bool PipelineTask::run_task(const HitDetail& hit)
     return ret;
 }
 
-void PipelineTask::add_node_detail(int64_t node_id, NodeDetail detail)
+void TaskBase::add_node_detail(int64_t node_id, NodeDetail detail)
 {
     auto& bank = UniqueResultBank::get_instance();
     bank.add_node_detail(node_id, detail);
@@ -359,12 +359,12 @@ void PipelineTask::add_node_detail(int64_t node_id, NodeDetail detail)
     bank.add_task_detail(task_id_, task_detail);
 }
 
-bool PipelineTask::debug_mode() const
+bool TaskBase::debug_mode() const
 {
     return GlobalOptionMgr::get_instance().debug_message();
 }
 
-json::object PipelineTask::basic_info()
+json::object TaskBase::basic_info()
 {
     return {
         { "task_id", task_id_ },
@@ -375,7 +375,7 @@ json::object PipelineTask::basic_info()
     };
 }
 
-json::object PipelineTask::reco_result_to_json(const std::string& name, const Recognizer::Result& res)
+json::object TaskBase::reco_result_to_json(const std::string& name, const Recognizer::Result& res)
 {
     return {
         { "name", name },
@@ -389,7 +389,7 @@ json::object PipelineTask::reco_result_to_json(const std::string& name, const Re
     };
 }
 
-json::object PipelineTask::hit_detail_to_json(const HitDetail& detail)
+json::object TaskBase::hit_detail_to_json(const HitDetail& detail)
 {
     return {
         { "name", detail.task_data.name },
@@ -403,7 +403,7 @@ json::object PipelineTask::hit_detail_to_json(const HitDetail& detail)
     };
 }
 
-json::object PipelineTask::node_detail_to_json(const NodeDetail& detail)
+json::object TaskBase::node_detail_to_json(const NodeDetail& detail)
 {
     return hit_detail_to_json(detail.hit)
            | json::object {

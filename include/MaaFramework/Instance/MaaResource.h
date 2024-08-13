@@ -21,23 +21,22 @@ extern "C"
 
     typedef MaaBool (*MaaCustomRecognizerCallback)(
         MaaContext* context,
-        const MaaImageBuffer* image,
         const char* task_name,
         const char* recognizer_name,
         const char* custom_recognition_param,
-        MaaTransparentArg recognizer_arg,
+        const MaaImageBuffer* image,
+        MaaTransparentArg trans_arg,
         /* out */ MaaRect* out_box,
         /* out */ MaaStringBuffer* out_detail);
 
     typedef MaaBool (*MaaCustomActionCallback)(
         MaaContext* context,
-        const MaaImageBuffer* image,
         const char* task_name,
         const char* action_name,
         const char* custom_action_param,
         const MaaRect* cur_box,
         const char* cur_rec_detail,
-        MaaTransparentArg action_arg);
+        MaaTransparentArg trans_arg);
 
     /**
      * @brief Create a resource.
@@ -63,14 +62,14 @@ extern "C"
      * @param res
      * @param name The name of the recognizer that will be used to reference it.
      * @param recognizer
-     * @param recognizer_arg
+     * @param trans_arg
      * @return MaaBool
      */
     MAA_FRAMEWORK_API MaaBool MaaResourceRegisterCustomRecognizer(
         MaaResource* res,
         const char* name,
         MaaCustomRecognizerCallback recognizer,
-        MaaTransparentArg recognizer_arg);
+        MaaTransparentArg trans_arg);
 
     /**
      * @brief Unregister a custom recognizer from the instance.
@@ -97,11 +96,11 @@ extern "C"
      * @param res
      * @param name The name of the action that will be used to reference it.
      * @param action
-     * @param action_arg
+     * @param trans_arg
      * @return MaaBool
      */
     MAA_FRAMEWORK_API MaaBool
-        MaaResourceRegisterCustomAction(MaaResource* res, const char* name, MaaCustomActionCallback action, MaaTransparentArg action_arg);
+        MaaResourceRegisterCustomAction(MaaResource* res, const char* name, MaaCustomActionCallback action, MaaTransparentArg trans_arg);
 
     /**
      * @brief Unregister a custom action from the instance.

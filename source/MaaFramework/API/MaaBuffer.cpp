@@ -369,12 +369,12 @@ MaaBool MaaImageListBufferRemove(MaaImageListBuffer* handle, MaaSize index)
     return true;
 }
 
-MaaRect* MaaRectBufferCreate()
+MaaRect* MaaRectCreate()
 {
     return new MaaRect {};
 }
 
-void MaaRectBufferDestroy(MaaRect* handle)
+void MaaRectDestroy(MaaRect* handle)
 {
     if (!handle) {
         LogError << "handle is null";

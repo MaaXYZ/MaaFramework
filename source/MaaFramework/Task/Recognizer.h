@@ -4,7 +4,7 @@
 
 #include "API/MaaTypes.h"
 #include "Conf/Conf.h"
-#include "Instance/InstanceInternalAPI.hpp"
+#include "API/MaaTypes.h"
 #include "Resource/PipelineResMgr.h"
 #include "Resource/PipelineTypes.h"
 #include "Vision/OCRer.h"
@@ -29,7 +29,7 @@ public:
     };
 
 public:
-    explicit Recognizer(InstanceInternalAPI* inst);
+    explicit Recognizer(Tasker* tasker);
 
 public:
     Result recognize(const cv::Mat& image, const TaskData& task_data);
@@ -84,7 +84,7 @@ private:
     MAA_RES_NS::ResourceMgr* resource() { return inst_ ? inst_->inter_resource() : nullptr; }
 
 private:
-    InstanceInternalAPI* inst_ = nullptr;
+    Tasker* tasker_ = nullptr;
     MAA_VISION_NS::OCRer::Cache ocr_cache_;
 };
 

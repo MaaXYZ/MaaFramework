@@ -17,15 +17,15 @@
 
 MAA_TASK_NS_BEGIN
 
-class PipelineTask
+class TaskBase
 {
 public:
     using TaskData = MAA_RES_NS::TaskData;
     using NextIter = MAA_RES_NS::TaskData::NextList::const_iterator;
 
 public:
-    PipelineTask(std::string entry, Tasker* tasker);
-    ~PipelineTask() = default;
+    TaskBase(std::string entry, Tasker* tasker);
+    ~TaskBase() = default;
 
 public:
     void post_stop();

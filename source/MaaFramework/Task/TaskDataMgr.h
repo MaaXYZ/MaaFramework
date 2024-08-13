@@ -6,7 +6,7 @@
 #include <meojson/json.hpp>
 
 #include "Conf/Conf.h"
-#include "Instance/InstanceInternalAPI.hpp"
+#include "API/MaaTypes.h"
 #include "Resource/PipelineResMgr.h"
 #include "Resource/PipelineTypes.h"
 
@@ -18,7 +18,7 @@ public:
     using TaskData = MAA_RES_NS::TaskData;
 
 public:
-    explicit TaskDataMgr(InstanceInternalAPI* inst);
+    explicit TaskDataMgr(Tasker* tasker);
 
     const TaskData& get_task_data(const std::string& task_name);
     bool set_param(const json::value& param);
@@ -32,7 +32,7 @@ private:
     MAA_RES_NS::ResourceMgr* resource() { return inst_ ? inst_->inter_resource() : nullptr; }
 
 private:
-    InstanceInternalAPI* inst_ = nullptr;
+    Tasker* tasker_ = nullptr;
     TaskDataMap diff_tasks_;
 };
 

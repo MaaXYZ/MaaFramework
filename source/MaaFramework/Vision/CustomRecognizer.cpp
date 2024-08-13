@@ -14,7 +14,7 @@ CustomRecognizer::CustomRecognizer(
     cv::Mat image,
     CustomRecognizerParam param,
     CustomRecognizerSession session,
-    InstanceInternalAPI* inst,
+    Tasker* tasker,
     std::string name)
     : VisionBase(std::move(image), std::move(name))
     , param_(std::move(param))
@@ -49,7 +49,7 @@ void CustomRecognizer::analyze()
         &image_buffer,
         name_.c_str(),
         custom_param_str.c_str(),
-        session_.recognizer_arg,
+        session_.trans_arg,
         &maa_box,
         &detail_buffer);
 

@@ -14,8 +14,7 @@ Tasker::Tasker(MaaNotificationCallback callback, MaaTransparentArg callback_arg)
 {
     LogFunc << VAR_VOIDP(callback) << VAR_VOIDP(callback_arg);
 
-    task_runner_ =
-        std::make_unique<AsyncRunner<TaskPtr>>(std::bind(&Tasker::run_task, this, std::placeholders::_1, std::placeholders::_2));
+    task_runner_ = std::make_unique<AsyncRunner<TaskPtr>>(std::bind(&Tasker::run_task, this, std::placeholders::_1, std::placeholders::_2));
 }
 
 Tasker::~Tasker()
@@ -68,11 +67,11 @@ bool Tasker::set_option(MaaTaskerOption key, MaaOptionValue value, MaaOptionValu
     return false;
 }
 
-MaaTaskId Tasker::post_pipeline(std::string entry, std::string_view param)
+MaaTaskId Tasker::post_pipeline(std::string entry, std::string_view pipeline_override)
 {
-    auto task = make_task(entry, param);
+    auto task = make_task(entry, pipeline_override);
     if (!task) {
-        LogError << "failed to make task" << VAR(entry) << VAR(param);
+        LogError << "failed to make task" << VAR(entry) << VAR(pipeline_override);
         return MaaInvalidId;
     }
     task->set_type(MAA_TASK_NS::PipelineTask::RunType::Pipeline);
@@ -80,11 +79,11 @@ MaaTaskId Tasker::post_pipeline(std::string entry, std::string_view param)
     return post_task(task);
 }
 
-MaaTaskId Tasker::post_recognition(std::string entry, std::string_view param)
+MaaTaskId Tasker::post_recognition(std::string entry, std::string_view pipeline_override)
 {
-    auto task = make_task(entry, param);
+    auto task = make_task(entry, pipeline_override);
     if (!task) {
-        LogError << "failed to make task" << VAR(entry) << VAR(param);
+        LogError << "failed to make task" << VAR(entry) << VAR(pipeline_override);
         return MaaInvalidId;
     }
     task->set_type(MAA_TASK_NS::PipelineTask::RunType::Recognition);
@@ -92,11 +91,11 @@ MaaTaskId Tasker::post_recognition(std::string entry, std::string_view param)
     return post_task(task);
 }
 
-MaaTaskId Tasker::post_action(std::string entry, std::string_view param)
+MaaTaskId Tasker::post_action(std::string entry, std::string_view pipeline_override)
 {
-    auto task = make_task(entry, param);
+    auto task = make_task(entry, pipeline_override);
     if (!task) {
-        LogError << "failed to make task" << VAR(entry) << VAR(param);
+        LogError << "failed to make task" << VAR(entry) << VAR(pipeline_override);
         return MaaInvalidId;
     }
     task->set_type(MAA_TASK_NS::PipelineTask::RunType::Action);
@@ -104,13 +103,13 @@ MaaTaskId Tasker::post_action(std::string entry, std::string_view param)
     return post_task(task);
 }
 
-bool Tasker::set_param(MaaTaskId task_id, std::string_view param)
+bool Tasker::pipeline_override(MaaTaskId task_id, std::string_view pipeline_override)
 {
-    LogInfo << VAR(task_id) << VAR(param);
+    LogInfo << VAR(task_id) << VAR(pipeline_override);
 
-    auto param_opt = json::parse(param);
-    if (!param_opt) {
-        LogError << "Invalid param:" << param;
+    auto pipeline_override_opt = json::parse(pipeline_override);
+    if (!pipeline_override_opt) {
+        LogError << "Invalid pipeline_override:" << pipeline_override;
         return false;
     }
 
@@ -132,7 +131,7 @@ bool Tasker::set_param(MaaTaskId task_id, std::string_view param)
         return false;
     }
 
-    return task_ptr->set_param(*param_opt);
+    return task_ptr->set_pipeline_override(*pipeline_override_opt);
 }
 
 MaaStatus Tasker::status(MaaTaskId task_id) const
@@ -211,9 +210,14 @@ const RuntimeCache& Tasker::runtime_cache() const
     return runtime_cache_;
 }
 
-Tasker::TaskPtr Tasker::make_task(std::string entry, std::string_view param)
+void Tasker::notify(std::string_view msg, json::value detail)
 {
-    LogInfo << VAR(entry) << VAR(param);
+    notifier.notify(msg, detail);
+}
+
+Tasker::TaskPtr Tasker::make_task(std::string entry, std::string_view pipeline_override)
+{
+    LogInfo << VAR(entry) << VAR(pipeline_override);
 
 #ifndef MAA_DEBUG
     if (!inited()) {
@@ -228,15 +232,15 @@ Tasker::TaskPtr Tasker::make_task(std::string entry, std::string_view param)
 
     TaskPtr task_ptr = std::make_shared<TaskNS::PipelineTask>(std::move(entry), this);
 
-    auto param_opt = json::parse(param);
-    if (!param_opt) {
-        LogError << "Invalid param:" << param;
+    auto pipeline_override_opt = json::parse(pipeline_override);
+    if (!pipeline_override_opt) {
+        LogError << "Invalid pipeline_override:" << pipeline_override;
         return nullptr;
     }
 
-    bool param_ret = task_ptr->set_param(*param_opt);
-    if (!param_ret) {
-        LogError << "Set task param failed:" << param;
+    bool pipeline_override_ret = task_ptr->set_pipeline_override(*pipeline_override_opt);
+    if (!pipeline_override_ret) {
+        LogError << "Set task pipeline_override failed:" << pipeline_override;
         return nullptr;
     }
 

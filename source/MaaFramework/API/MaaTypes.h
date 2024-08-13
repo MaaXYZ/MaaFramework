@@ -17,6 +17,13 @@ public:
     virtual MaaBool running() const = 0;
     virtual MaaBool clear() = 0;
 
+    virtual void register_custom_recognizer(const std::string& name, MaaCustomRecognizerCallback recognizer, MaaTransparentArg trans_arg) = 0;
+    virtual void unregister_custom_recognizer(const std::string& name) = 0;
+    virtual void clear_custom_recognizer() = 0;
+    virtual void register_custom_action(const std::string& name, MaaCustomActionCallback action, MaaTransparentArg trans_arg) = 0;
+    virtual void unregister_custom_action(const std::string& name) = 0;
+    virtual void clear_custom_action() = 0;
+
     virtual std::string get_hash() const = 0;
     virtual std::vector<std::string> get_task_list() const = 0;
 };
@@ -64,7 +71,8 @@ public:
     virtual MaaTaskId post_pipeline(std::string entry, std::string_view param) = 0;
     virtual MaaTaskId post_recognition(std::string entry, std::string_view param) = 0;
     virtual MaaTaskId post_action(std::string entry, std::string_view param) = 0;
-    virtual bool set_param(MaaTaskId task_id, std::string_view param) = 0;
+
+    virtual bool pipeline_override(MaaTaskId task_id, std::string_view param) = 0;
 
     virtual MaaStatus status(MaaTaskId task_id) const = 0;
     virtual MaaStatus wait(MaaTaskId task_id) const = 0;
@@ -75,3 +83,16 @@ public:
     virtual MaaResource* resource() = 0;
     virtual MaaController* controller() = 0;
 };
+
+struct MaaContext
+{
+public:
+    virtual ~MaaContext() = default;
+
+    virtual MaaTaskId run_pipeline(std::string task, std::string_view param) = 0;
+    virtual MaaTaskId run_recognition(std::string task, std::string_view param, cv::Mat image) = 0;
+    virtual MaaTaskId run_action(std::string task, std::string_view param, cv::Rect cur_box, std::string cur_detail) = 0;
+
+    virtual MaaTasker* tasker() = 0;
+};
+
