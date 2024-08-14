@@ -11,7 +11,7 @@ public:
 
     virtual bool set_option(MaaResOption key, MaaOptionValue value, MaaOptionValueSize val_size) = 0;
 
-    virtual MaaResId post_path(std::filesystem::path path) = 0;
+    virtual MaaResId post_path(const std::filesystem::path& path) = 0;
 
     virtual MaaStatus status(MaaResId res_id) const = 0;
     virtual MaaStatus wait(MaaResId res_id) const = 0;
@@ -41,9 +41,9 @@ public:
     virtual MaaCtrlId post_click(int x, int y) = 0;
     virtual MaaCtrlId post_swipe(int x1, int y1, int x2, int y2, int duration) = 0;
     virtual MaaCtrlId post_press_key(int keycode) = 0;
-    virtual MaaCtrlId post_input_text(std::string_view text) = 0;
-    virtual MaaCtrlId post_start_app(std::string_view intent) = 0;
-    virtual MaaCtrlId post_stop_app(std::string_view intent) = 0;
+    virtual MaaCtrlId post_input_text(const std::string& text) = 0;
+    virtual MaaCtrlId post_start_app(const std::string& intent) = 0;
+    virtual MaaCtrlId post_stop_app(const std::string& intent) = 0;
     virtual MaaCtrlId post_screencap() = 0;
 
     virtual MaaCtrlId post_touch_down(int contact, int x, int y, int pressure) = 0;
@@ -70,9 +70,9 @@ public:
 
     virtual bool set_option(MaaTaskerOption key, MaaOptionValue value, MaaOptionValueSize val_size) = 0;
 
-    virtual MaaTaskId post_pipeline(std::string entry, const json::value& pipeline_override) = 0;
-    virtual MaaTaskId post_recognition(std::string entry, const json::value& pipeline_override) = 0;
-    virtual MaaTaskId post_action(std::string entry, const json::value& pipeline_override) = 0;
+    virtual MaaTaskId post_pipeline(const std::string& entry, const json::value& pipeline_override) = 0;
+    virtual MaaTaskId post_recognition(const std::string& entry, const json::value& pipeline_override) = 0;
+    virtual MaaTaskId post_action(const std::string& entry, const json::value& pipeline_override) = 0;
 
     virtual bool override_pipeline(MaaTaskId task_id, const json::value& pipeline_override) = 0;
 
@@ -91,9 +91,11 @@ struct MaaContext
 public:
     virtual ~MaaContext() = default;
 
-    virtual MaaTaskId run_pipeline(std::string task, const json::value& pipeline_override) = 0;
-    virtual MaaTaskId run_recognition(std::string task, const json::value& pipeline_override, cv::Mat image) = 0;
-    virtual MaaTaskId run_action(std::string task, const json::value& pipeline_override, cv::Rect cur_box, std::string cur_detail) = 0;
+    virtual MaaTaskId run_pipeline(const std::string& entry, const json::value& pipeline_override) = 0;
+    virtual MaaTaskId run_recognition(const std::string& entry, const json::value& pipeline_override, const cv::Mat& image) = 0;
+    virtual MaaTaskId run_action(const std::string& entry, const json::value& pipeline_override, cv::Rect box, const std::string& reco_detail) = 0;
+    virtual bool override_pipeline(const json::value& pipeline_override) = 0;
+
     virtual MaaTaskId task_id() const = 0;
 
     virtual MaaTasker* tasker() = 0;

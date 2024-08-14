@@ -16,34 +16,34 @@ MAA_RES_NS_BEGIN
 class PipelineResMgr : public NonCopyable
 {
 public:
-    using TaskDataMap = std::unordered_map<std::string, TaskData>;
+    using PipelineDataMap = std::unordered_map<std::string, PipelineData>;
 
 public:
     bool load(const std::filesystem::path& path, bool is_base);
     void clear();
 
-    const TaskData& get_task_data(const std::string& task_name);
+    PipelineData get_pipeline_data(const std::string& task_name);
 
     const std::vector<std::filesystem::path>& get_paths() const { return paths_; }
 
-    const TaskDataMap& get_task_data_map() const { return task_data_map_; }
+    const PipelineDataMap& get_pipeline_data_map() const { return pipeline_data_map_; }
 
     std::vector<std::string> get_task_list() const;
 
 public:
     static bool parse_config(
         const json::value& input,
-        TaskDataMap& output,
+        PipelineDataMap& output,
         std::set<std::string>& existing_keys,
-        const TaskDataMap& default_value);
+        const PipelineDataMap& default_value);
     static bool parse_task(
         const std::string& name,
         const json::value& input,
-        TaskData& output,
-        const TaskData& default_value);
+        PipelineData& output,
+        const PipelineData& default_value);
 
-    static bool parse_next(const json::value& input, const std::string& key, TaskData::NextList& out, const TaskData::NextList& default_next);
-    static bool parse_next_object(const json::value& input, TaskData::NextObject& obj);
+    static bool parse_next(const json::value& input, const std::string& key, PipelineData::NextList& out, const PipelineData::NextList& default_next);
+    static bool parse_next_object(const json::value& input, PipelineData::NextObject& obj);
     static bool parse_recognition(
         const json::value& input,
         Recognition::Type& out_type,
@@ -145,11 +145,11 @@ private:
         const std::filesystem::path& path,
         std::set<std::string>& existing_keys);
     bool check_all_next_list() const;
-    bool check_next_list(const TaskData::NextList& next_list) const;
+    bool check_next_list(const PipelineData::NextList& next_list) const;
 
 private:
     std::vector<std::filesystem::path> paths_;
-    TaskDataMap task_data_map_;
+    PipelineDataMap pipeline_data_map_;
 };
 
 MAA_RES_NS_END

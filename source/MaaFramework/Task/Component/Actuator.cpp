@@ -14,51 +14,51 @@ Actuator::Actuator(Tasker* tasker)
 {
 }
 
-bool Actuator::run(const Recognizer::Hit& reco_hit, const json::value& reco_detail, const TaskData& task_data)
+bool Actuator::run(const Recognizer::Hit& reco_hit, const json::value& reco_detail, const PipelineData& pipeline_data)
 {
     using namespace MAA_RES_NS::Action;
-    LogFunc << VAR(task_data.name);
+    LogFunc << VAR(pipeline_data.name);
 
-    wait_freezes(task_data.pre_wait_freezes, reco_hit);
-    sleep(task_data.pre_delay);
+    wait_freezes(pipeline_data.pre_wait_freezes, reco_hit);
+    sleep(pipeline_data.pre_delay);
 
     bool ret = false;
-    switch (task_data.action_type) {
+    switch (pipeline_data.action_type) {
     case Type::DoNothing:
         ret = true;
         break;
     case Type::Click:
-        ret = click(std::get<ClickParam>(task_data.action_param), reco_hit);
+        ret = click(std::get<ClickParam>(pipeline_data.action_param), reco_hit);
         break;
     case Type::Swipe:
-        ret = swipe(std::get<SwipeParam>(task_data.action_param), reco_hit);
+        ret = swipe(std::get<SwipeParam>(pipeline_data.action_param), reco_hit);
         break;
     case Type::Key:
-        ret = press_key(std::get<KeyParam>(task_data.action_param));
+        ret = press_key(std::get<KeyParam>(pipeline_data.action_param));
         break;
     case Type::Text:
-        ret = input_text(std::get<TextParam>(task_data.action_param));
+        ret = input_text(std::get<TextParam>(pipeline_data.action_param));
         break;
     case Type::StartApp:
-        ret = start_app(std::get<AppParam>(task_data.action_param));
+        ret = start_app(std::get<AppParam>(pipeline_data.action_param));
         break;
     case Type::StopApp:
-        ret = stop_app(std::get<AppParam>(task_data.action_param));
+        ret = stop_app(std::get<AppParam>(pipeline_data.action_param));
         break;
     case Type::Custom:
-        ret = custom_action(task_data.name, std::get<CustomParam>(task_data.action_param), reco_hit, reco_detail);
+        ret = custom_action(pipeline_data.name, std::get<CustomParam>(pipeline_data.action_param), reco_hit, reco_detail);
         break;
     case Type::StopTask:
         LogInfo << "Action: StopTask";
         return false;
     default:
         ret = false;
-        LogError << "Unknown action" << VAR(static_cast<int>(task_data.action_type));
+        LogError << "Unknown action" << VAR(static_cast<int>(pipeline_data.action_type));
         break;
     }
 
-    wait_freezes(task_data.post_wait_freezes, reco_hit);
-    sleep(task_data.post_delay);
+    wait_freezes(pipeline_data.post_wait_freezes, reco_hit);
+    sleep(pipeline_data.post_delay);
 
     return ret;
 }

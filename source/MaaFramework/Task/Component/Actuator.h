@@ -17,13 +17,13 @@ MAA_TASK_NS_BEGIN
 class Actuator
 {
 public:
-    using TaskData = MAA_RES_NS::TaskData;
+    using PipelineData = MAA_RES_NS::PipelineData;
     using PreTaskBoxes = std::map<std::string, cv::Rect>;
 
 public:
     Actuator(Tasker* tasker);
 
-    bool run(const Recognizer::Hit& reco_hit, const json::value& reco_detail, const TaskData& task_data);
+    bool run(const Recognizer::Hit& reco_hit, const json::value& reco_detail, const PipelineData& pipeline_data);
 
 private:
     bool click(const MAA_RES_NS::Action::ClickParam& param, const cv::Rect& cur_box);

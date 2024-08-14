@@ -1,18 +1,15 @@
 #pragma once
 
 #include <atomic>
-#include <stack>
-#include <string_view>
 
 #include <meojson/json.hpp>
 
 #include "API/MaaTypes.h"
 #include "Conf/Conf.h"
+#include "Context.h"
 #include "Resource/PipelineResMgr.h"
 #include "Resource/PipelineTypes.h"
-#include "Task/Actuator.h"
-#include "Task/Recognizer.h"
-#include "Task/TaskDataMgr.h"
+#include "Tasker/RuntimeCache.h"
 #include "Tasker/Tasker.h"
 
 MAA_TASK_NS_BEGIN
@@ -20,85 +17,44 @@ MAA_TASK_NS_BEGIN
 class TaskBase
 {
 public:
-    using TaskData = MAA_RES_NS::TaskData;
-    using NextIter = MAA_RES_NS::TaskData::NextList::const_iterator;
+    using PipelineData = Context::PipelineData;
+    using PipelineDataMap = Context::PipelineDataMap;
+    using NextIter = PipelineData::NextList::const_iterator;
 
 public:
-    TaskBase(std::string entry, Tasker* tasker);
+    TaskBase(std::string entry, Tasker* tasker, PipelineDataMap pp_override);
     virtual ~TaskBase() = default;
 
     virtual bool run() = 0;
+    virtual void post_stop() = 0;
 
 public:
-    void post_stop();
     bool override_pipeline(const json::value& pipeline_override);
 
 public:
     Tasker* tasker() const;
     MaaTaskId task_id() const;
 
-    static bool query_node_detail(MaaNodeId node_id, std::string& name, MaaRecoId& reco_id, bool& completed);
-    static bool query_task_detail(MaaTaskId task_id, std::string& entry, std::vector<MaaNodeId>& node_id_list);
-
-private:
-    enum class NodeStatus
-    {
-        None,
-        RunCompleted,
-        OnlyRecognized,
-    };
-
-    struct HitDetail
-    {
-        MaaRecoId reco_uid = 0;
-        Recognizer::Hit reco_hit {};
-        json::value reco_detail;
-        MAA_RES_NS::TaskData task_data;
-    };
-
-    struct NodeDetail
-    {
-        const MaaNodeId node_id = ++s_global_node_id;
-
-        std::string name;
-        HitDetail hit;
-        NodeStatus status = NodeStatus::None;
-    };
-
-    struct TaskDetail
-    {
-        std::string entry;
-        std::vector<MaaNodeId> node_ids;
-    };
-
-private:
+protected:
     MAA_RES_NS::ResourceMgr* resource();
     MAA_CTRL_NS::ControllerAgent* controller();
     void notify(std::string_view msg, json::value detail = json::value());
 
+    NextIter run_recogintion(const cv::Mat& image, const PipelineData::NextList& list, HitDetail& hit_detail);
+    bool run_action(const HitDetail& hit);
+
 private:
-    // TODO: 重构，拆分成三个单独的类
-    bool run_pipeline();
-    bool run_recognition_only();
-    bool run_action_only();
-
-    NextIter find_first_and_run(const TaskData::NextList& list);
-    NextIter find_first(const TaskData::NextList& list, HitDetail& hit_detail);
-    bool run_task(const HitDetail& hit);
-
     void add_node_detail(int64_t node_id, NodeDetail detail);
 
-private:
     bool debug_mode() const;
     json::object basic_info();
-    json::object reco_result_to_json(const std::string& name, const Recognizer::Result& res);
-    json::object hit_detail_to_json(const HitDetail& detail);
-    json::object node_detail_to_json(const NodeDetail& detail);
+    static json::object reco_result_to_json(const std::string& name, const RecoResult& res);
+    static json::object hit_detail_to_json(const HitDetail& detail);
+    static json::object node_detail_to_json(const NodeDetail& detail);
 
 protected:
     Tasker* tasker_ = nullptr;
-
-    bool need_to_stop_ = false;
+    Context context_;
 
     const int64_t task_id_ = ++s_global_task_id;
 
@@ -107,10 +63,7 @@ protected:
 
     std::map<std::string, uint64_t> hit_times_map_;
 
-    TaskDataMgr data_mgr_;
-
     inline static std::atomic<MaaNodeId> s_global_task_id = 0;
-    inline static std::atomic<MaaNodeId> s_global_node_id = 0;
 };
 
 MAA_TASK_NS_END

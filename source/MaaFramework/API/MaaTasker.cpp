@@ -76,7 +76,14 @@ MaaTaskId MaaTaskerPostPipeline(MaaTasker* tasker, const char* entry, const char
         LogError << "handle is null";
         return MaaInvalidId;
     }
-    return tasker->post_pipeline(entry, pipeline_override);
+
+    auto ov_opt = json::parse(pipeline_override);
+    if (!ov_opt) {
+        LogError << "failed to parse" << VAR(pipeline_override);
+        return MaaInvalidId;
+    }
+
+    return tasker->post_pipeline(entry, *ov_opt);
 }
 
 MaaTaskId MaaTaskerPostRecognition(MaaTasker* tasker, const char* entry, const char* pipeline_override)
@@ -87,7 +94,14 @@ MaaTaskId MaaTaskerPostRecognition(MaaTasker* tasker, const char* entry, const c
         LogError << "handle is null";
         return MaaInvalidId;
     }
-    return tasker->post_recognition(entry, pipeline_override);
+
+    auto ov_opt = json::parse(pipeline_override);
+    if (!ov_opt) {
+        LogError << "failed to parse" << VAR(pipeline_override);
+        return MaaInvalidId;
+    }
+
+    return tasker->post_recognition(entry, *ov_opt);
 }
 
 MaaTaskId MaaTaskerPostAction(MaaTasker* tasker, const char* entry, const char* pipeline_override)
@@ -98,7 +112,14 @@ MaaTaskId MaaTaskerPostAction(MaaTasker* tasker, const char* entry, const char* 
         LogError << "handle is null";
         return MaaInvalidId;
     }
-    return tasker->post_action(entry, pipeline_override);
+
+    auto ov_opt = json::parse(pipeline_override);
+    if (!ov_opt) {
+        LogError << "failed to parse" << VAR(pipeline_override);
+        return MaaInvalidId;
+    }
+
+    return tasker->post_action(entry, *ov_opt);
 }
 
 MaaBool MaaTaskerOverridePipeline(MaaTasker* tasker, MaaTaskId id, const char* pipeline_override)
@@ -109,7 +130,14 @@ MaaBool MaaTaskerOverridePipeline(MaaTasker* tasker, MaaTaskId id, const char* p
         LogError << "handle is null";
         return false;
     }
-    return tasker->override_pipeline(id, pipeline_override);
+
+    auto ov_opt = json::parse(pipeline_override);
+    if (!ov_opt) {
+        LogError << "failed to parse" << VAR(pipeline_override);
+        return false;
+    }
+
+    return tasker->override_pipeline(id, *ov_opt);
 }
 
 MaaStatus MaaTaskerStatus(MaaTasker* tasker, MaaTaskId id)

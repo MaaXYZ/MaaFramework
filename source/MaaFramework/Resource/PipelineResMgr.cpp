@@ -35,20 +35,19 @@ void PipelineResMgr::clear()
 {
     LogFunc;
 
-    task_data_map_.clear();
+    pipeline_data_map_.clear();
     paths_.clear();
 }
 
-const TaskData& PipelineResMgr::get_task_data(const std::string& task_name)
+PipelineData PipelineResMgr::get_pipeline_data(const std::string& task_name)
 {
-    auto task_iter = task_data_map_.find(task_name);
-    if (task_iter == task_data_map_.end()) {
+    auto pp_iter = pipeline_data_map_.find(task_name);
+    if (pp_iter == pipeline_data_map_.end()) {
         LogError << "Invalid task name" << VAR(task_name);
-        static TaskData empty;
-        return empty;
+        return {};
     }
 
-    return task_iter->second;
+    return pp_iter->second;
 }
 
 bool PipelineResMgr::load_all_json(const std::filesystem::path& path)
@@ -109,14 +108,14 @@ bool PipelineResMgr::open_and_parse_file(
     }
     const auto& json = *json_opt;
 
-    TaskDataMap cur_data_map;
-    if (!parse_config(json, cur_data_map, existing_keys, task_data_map_)) {
+    PipelineDataMap cur_pp_map;
+    if (!parse_config(json, cur_pp_map, existing_keys, pipeline_data_map_)) {
         LogError << "parse_config failed" << VAR(path) << VAR(json);
         return false;
     }
 
-    cur_data_map.merge(std::move(task_data_map_));
-    task_data_map_ = std::move(cur_data_map);
+    cur_pp_map.merge(std::move(pipeline_data_map_));
+    pipeline_data_map_ = std::move(cur_pp_map);
 
     return true;
 }
@@ -125,8 +124,8 @@ bool PipelineResMgr::check_all_next_list() const
 {
     LogFunc;
 
-    for (const auto& [name, task_data] : task_data_map_) {
-        bool ret = check_next_list(task_data.next);
+    for (const auto& [name, pipeline_data] : pipeline_data_map_) {
+        bool ret = check_next_list(pipeline_data.next);
         if (!ret) {
             LogError << "check_next_list failed" << VAR(name);
             return false;
@@ -135,10 +134,10 @@ bool PipelineResMgr::check_all_next_list() const
     return true;
 }
 
-bool PipelineResMgr::check_next_list(const TaskData::NextList& next_list) const
+bool PipelineResMgr::check_next_list(const PipelineData::NextList& next_list) const
 {
     for (const auto& next : next_list) {
-        if (!task_data_map_.contains(next.name)) {
+        if (!pipeline_data_map_.contains(next.name)) {
             LogError << "Invalid next task name" << VAR(next.name);
             return false;
         }
@@ -148,22 +147,22 @@ bool PipelineResMgr::check_next_list(const TaskData::NextList& next_list) const
 
 std::vector<std::string> PipelineResMgr::get_task_list() const
 {
-    auto k = task_data_map_ | std::views::keys;
+    auto k = pipeline_data_map_ | std::views::keys;
     return std::vector(k.begin(), k.end());
 }
 
 bool PipelineResMgr::parse_config(
     const json::value& input,
-    TaskDataMap& output,
+    PipelineDataMap& output,
     std::set<std::string>& existing_keys,
-    const TaskDataMap& default_value)
+    const PipelineDataMap& default_value)
 {
     if (!input.is_object()) {
         LogError << "json is not object";
         return false;
     }
 
-    TaskDataMap data_map;
+    PipelineDataMap data_map;
 
     for (const auto& [key, value] : input.as_object()) {
         if (key.empty()) {
@@ -183,15 +182,15 @@ bool PipelineResMgr::parse_config(
             return false;
         }
 
-        TaskData task_data;
-        const auto& default_task_data =
-            default_value.contains(key) ? default_value.at(key) : TaskData {};
-        bool ret = parse_task(key, value, task_data, default_task_data);
+        PipelineData pipeline_data;
+        const auto& default_pipeline_data =
+            default_value.contains(key) ? default_value.at(key) : PipelineData {};
+        bool ret = parse_task(key, value, pipeline_data, default_pipeline_data);
         if (!ret) {
             LogError << "parse_task failed" << VAR(key) << VAR(value);
             return false;
         }
-        data_map.insert_or_assign(key, task_data);
+        data_map.insert_or_assign(key, pipeline_data);
         existing_keys.emplace(key);
     }
 
@@ -284,12 +283,12 @@ bool get_and_check_value_or_array(
 bool PipelineResMgr::parse_task(
     const std::string& name,
     const json::value& input,
-    TaskData& output,
-    const TaskData& default_value)
+    PipelineData& output,
+    const PipelineData& default_value)
 {
     LogTrace << VAR(name);
 
-    TaskData data;
+    PipelineData data;
     data.name = name;
 
     if (!get_and_check_value(input, "is_sub", data.is_sub, default_value.is_sub)) {
@@ -382,8 +381,8 @@ bool PipelineResMgr::parse_task(
 bool PipelineResMgr::parse_next(
     const json::value& input,
     const std::string& key,
-    TaskData::NextList& out,
-    const TaskData::NextList& default_next)
+    PipelineData::NextList& out,
+    const PipelineData::NextList& default_next)
 {
     auto next_opt = input.find(key);
     if (!next_opt) {
@@ -394,7 +393,7 @@ bool PipelineResMgr::parse_next(
     json::value& next = *next_opt;
     if (next.is_array()) {
         for (const auto& n : next.as_array()) {
-            TaskData::NextObject obj;
+            PipelineData::NextObject obj;
             if (!parse_next_object(n, obj)) {
                 LogError << "failed to parse_next_object" << VAR(input) << VAR(key) << VAR(next);
                 return false;
@@ -403,7 +402,7 @@ bool PipelineResMgr::parse_next(
         }
     }
     else {
-        TaskData::NextObject obj;
+        PipelineData::NextObject obj;
         if (!parse_next_object(next, obj)) {
             LogError << "failed to parse_next_object" << VAR(input) << VAR(key) << VAR(next);
             return false;
@@ -414,25 +413,25 @@ bool PipelineResMgr::parse_next(
     return true;
 }
 
-bool PipelineResMgr::parse_next_object(const json::value& input, TaskData::NextObject& obj)
+bool PipelineResMgr::parse_next_object(const json::value& input, PipelineData::NextObject& obj)
 {
     if (input.is_string()) {
-        obj = TaskData::NextObject { .name = input.as_string() };
+        obj = PipelineData::NextObject { .name = input.as_string() };
     }
     else if (input.is_object()) {
         obj.name = input.get("name", std::string());
 
         std::string then_goto = input.get("then_goto", std::string());
-        static const std::unordered_map<std::string, TaskData::NextObject::ThenGotoLabel> kThenGotoMap {
-            { "", TaskData::NextObject::ThenGotoLabel::None },
-            { "None", TaskData::NextObject::ThenGotoLabel::None },
-            { "none", TaskData::NextObject::ThenGotoLabel::None },
-            { "Head", TaskData::NextObject::ThenGotoLabel::Head },
-            { "head", TaskData::NextObject::ThenGotoLabel::Head },
-            { "Current", TaskData::NextObject::ThenGotoLabel::Current },
-            { "current", TaskData::NextObject::ThenGotoLabel::Current },
-            { "Following", TaskData::NextObject::ThenGotoLabel::Following },
-            { "following", TaskData::NextObject::ThenGotoLabel::Following },
+        static const std::unordered_map<std::string, PipelineData::NextObject::ThenGotoLabel> kThenGotoMap {
+            { "", PipelineData::NextObject::ThenGotoLabel::None },
+            { "None", PipelineData::NextObject::ThenGotoLabel::None },
+            { "none", PipelineData::NextObject::ThenGotoLabel::None },
+            { "Head", PipelineData::NextObject::ThenGotoLabel::Head },
+            { "head", PipelineData::NextObject::ThenGotoLabel::Head },
+            { "Current", PipelineData::NextObject::ThenGotoLabel::Current },
+            { "current", PipelineData::NextObject::ThenGotoLabel::Current },
+            { "Following", PipelineData::NextObject::ThenGotoLabel::Following },
+            { "following", PipelineData::NextObject::ThenGotoLabel::Following },
         };
         auto it = kThenGotoMap.find(then_goto);
         if (it == kThenGotoMap.end()) {

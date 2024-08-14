@@ -21,86 +21,86 @@ Recognizer::Recognizer(Tasker* tasker)
 {
 }
 
-Recognizer::Result Recognizer::recognize(const cv::Mat& image, const TaskData& task_data)
+Recognizer::Result Recognizer::recognize(const cv::Mat& image, const PipelineData& pipeline_data)
 {
     using namespace MAA_RES_NS::Recognition;
     using namespace MAA_VISION_NS;
 
     Result result;
-    switch (task_data.rec_type) {
+    switch (pipeline_data.rec_type) {
     case Type::DirectHit:
-        result = direct_hit(task_data.name);
+        result = direct_hit(pipeline_data.name);
         break;
 
     case Type::TemplateMatch:
         result = template_match(
             image,
-            std::get<TemplateMatcherParam>(task_data.rec_param),
-            task_data.name);
+            std::get<TemplateMatcherParam>(pipeline_data.rec_param),
+            pipeline_data.name);
         break;
 
     case Type::FeatureMatch:
         result = feature_match(
             image,
-            std::get<FeatureMatcherParam>(task_data.rec_param),
-            task_data.name);
+            std::get<FeatureMatcherParam>(pipeline_data.rec_param),
+            pipeline_data.name);
         break;
 
     case Type::ColorMatch:
         result =
-            color_match(image, std::get<ColorMatcherParam>(task_data.rec_param), task_data.name);
+            color_match(image, std::get<ColorMatcherParam>(pipeline_data.rec_param), pipeline_data.name);
         break;
 
     case Type::OCR:
-        result = ocr(image, std::get<OCRerParam>(task_data.rec_param), task_data.name);
+        result = ocr(image, std::get<OCRerParam>(pipeline_data.rec_param), pipeline_data.name);
         break;
 
     case Type::NeuralNetworkClassify:
         result = nn_classify(
             image,
-            std::get<NeuralNetworkClassifierParam>(task_data.rec_param),
-            task_data.name);
+            std::get<NeuralNetworkClassifierParam>(pipeline_data.rec_param),
+            pipeline_data.name);
         break;
 
     case Type::NeuralNetworkDetect:
         result = nn_detect(
             image,
-            std::get<NeuralNetworkDetectorParam>(task_data.rec_param),
-            task_data.name);
+            std::get<NeuralNetworkDetectorParam>(pipeline_data.rec_param),
+            pipeline_data.name);
         break;
 
     case Type::Custom:
         result = custom_recognize(
             image,
-            std::get<CustomRecognizerParam>(task_data.rec_param),
-            task_data.name);
+            std::get<CustomRecognizerParam>(pipeline_data.rec_param),
+            pipeline_data.name);
         break;
 
     default:
-        LogError << "Unknown type" << VAR(static_cast<int>(task_data.rec_type))
-                 << VAR(task_data.name);
+        LogError << "Unknown type" << VAR(static_cast<int>(pipeline_data.rec_type))
+                 << VAR(pipeline_data.name);
         return {};
     }
 
-    result.name = task_data.name;
+    result.name = pipeline_data.name;
 
     if (debug_mode()) {
         // 图太大了，不能无条件存
         result.raw = image;
     }
 
-    save_draws(task_data.name, result);
+    save_draws(pipeline_data.name, result);
 
     auto& bank = UniqueResultBank::get_instance();
     bank.add_reco_detail(result.uid, result);
 
     if (result.hit) {
         const auto& hit = *result.hit;
-        show_hit_draw(image, hit, task_data.name, result.uid);
+        show_hit_draw(image, hit, pipeline_data.name, result.uid);
     }
 
-    if (task_data.inverse) {
-        LogDebug << "task_data.inverse is true, reverse the result" << VAR(task_data.name)
+    if (pipeline_data.inverse) {
+        LogDebug << "pipeline_data.inverse is true, reverse the result" << VAR(pipeline_data.name)
                  << VAR(result.hit.has_value());
 
         if (result.hit) {

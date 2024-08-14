@@ -14,25 +14,13 @@ MAA_TASK_NS_BEGIN
 class Recognizer
 {
 public:
-    using TaskData = MAA_RES_NS::TaskData;
-
-    using Hit = cv::Rect;
-
-    struct Result
-    {
-        MaaRecoId uid = 0;
-        std::string name;
-        std::optional<Hit> hit = std::nullopt;
-        json::value detail;
-        cv::Mat raw;
-        std::vector<cv::Mat> draws;
-    };
+    using PipelineData = MAA_RES_NS::PipelineData;
 
 public:
     explicit Recognizer(Tasker* tasker);
 
 public:
-    Result recognize(const cv::Mat& image, const TaskData& task_data);
+    Result recognize(const cv::Mat& image, const PipelineData& pipeline_data);
 
     static bool query_detail(
         MaaRecoId reco_id,

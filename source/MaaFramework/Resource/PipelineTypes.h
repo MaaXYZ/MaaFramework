@@ -108,8 +108,7 @@ struct CustomParam
     json::value custom_param;
 };
 
-using Param = std::
-    variant<std::monostate, ClickParam, SwipeParam, KeyParam, TextParam, AppParam, CustomParam>;
+using Param = std::variant<std::monostate, ClickParam, SwipeParam, KeyParam, TextParam, AppParam, CustomParam>;
 } // namespace Action
 
 struct WaitFreezesParam
@@ -122,7 +121,7 @@ struct WaitFreezesParam
     int method = MAA_VISION_NS::TemplateMatcherParam::kDefaultMethod;
 };
 
-struct TaskData
+struct PipelineData
 {
     struct NextObject
     {
@@ -143,7 +142,7 @@ struct TaskData
     using NextList = std::vector<NextObject>;
 
     std::string name;
-    bool is_sub = false;    // for compatibility
+    bool is_sub = false; // for compatibility
     bool enabled = true;
     uint hit_limit = UINT_MAX;
 
@@ -155,8 +154,8 @@ struct TaskData
     Action::Param action_param;
     NextList next;
 
-    std::chrono::milliseconds pre_delay = std::chrono::milliseconds(200);
-    std::chrono::milliseconds post_delay = std::chrono::milliseconds(500);
+    std::chrono::milliseconds pre_delay;
+    std::chrono::milliseconds post_delay;
 
     WaitFreezesParam pre_wait_freezes;
     WaitFreezesParam post_wait_freezes;
