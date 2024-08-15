@@ -93,9 +93,9 @@ public: // MaaController
     virtual MaaCtrlId post_click(int x, int y) override;
     virtual MaaCtrlId post_swipe(int x1, int y1, int x2, int y2, int duration) override;
     virtual MaaCtrlId post_press_key(int keycode) override;
-    virtual MaaCtrlId post_input_text(std::string_view text) override;
-    virtual MaaCtrlId post_start_app(std::string_view intent) override;
-    virtual MaaCtrlId post_stop_app(std::string_view intent) override;
+    virtual MaaCtrlId post_input_text(const std::string& text) override;
+    virtual MaaCtrlId post_start_app(const std::string& intent) override;
+    virtual MaaCtrlId post_stop_app(const std::string& intent) override;
     virtual MaaCtrlId post_screencap() override;
 
     virtual MaaCtrlId post_touch_down(int contact, int x, int y, int pressure) override;
@@ -148,9 +148,9 @@ private:
     MaaCtrlId post_click_impl(int x, int y);
     MaaCtrlId post_swipe_impl(int x1, int y1, int x2, int y2, int duration);
     MaaCtrlId post_press_key_impl(int keycode);
-    MaaCtrlId post_input_text_impl(std::string_view text);
-    MaaCtrlId post_start_app_impl(std::string_view text);
-    MaaCtrlId post_stop_app_impl(std::string_view text);
+    MaaCtrlId post_input_text_impl(const std::string& text);
+    MaaCtrlId post_start_app_impl(const std::string& text);
+    MaaCtrlId post_stop_app_impl(const std::string& text);
     MaaCtrlId post_screencap_impl();
 
     MaaCtrlId post_touch_down_impl(int contact, int x, int y, int pressure);

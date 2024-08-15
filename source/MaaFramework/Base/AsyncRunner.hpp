@@ -17,12 +17,12 @@ template <typename Item>
 class AsyncRunner : public NonCopyable
 {
 public:
-    using Id = int64_t;
+    using Id = MaaId;
     using ProcessFunc = std::function<bool(Id id, Item item)>;
     using NotifyFunc = std::function<void(void)>;
 
 public:
-    explicit AsyncRunner(ProcessFunc run_task);
+    explicit AsyncRunner(ProcessFunc proc);
     virtual ~AsyncRunner();
     void release();
 
@@ -58,8 +58,8 @@ private:
 };
 
 template <typename Item>
-inline AsyncRunner<Item>::AsyncRunner(ProcessFunc run_task)
-    : process_(run_task)
+inline AsyncRunner<Item>::AsyncRunner(ProcessFunc proc)
+    : process_(proc)
 {
     // LogFunc;
 

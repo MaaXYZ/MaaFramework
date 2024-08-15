@@ -19,25 +19,6 @@ extern "C"
 {
 #endif
 
-    typedef MaaBool (*MaaCustomRecognizerCallback)(
-        MaaContext* context,
-        const char* task_name,
-        const char* recognizer_name,
-        const char* custom_recognition_param,
-        const MaaImageBuffer* image,
-        void* trans_arg,
-        /* out */ MaaRect* out_box,
-        /* out */ MaaStringBuffer* out_detail);
-
-    typedef MaaBool (*MaaCustomActionCallback)(
-        MaaContext* context,
-        const char* task_name,
-        const char* action_name,
-        const char* custom_action_param,
-        const MaaRect* cur_box,
-        const char* cur_rec_detail,
-        void* trans_arg);
-
     /**
      * @brief Create a resource.
      *

@@ -81,7 +81,6 @@ PipelineTask::NextIter PipelineTask::run_reco_and_action(const PipelineData::Nex
         LogError << "tasker is null";
         return NotFound;
     }
-
     const auto timeout = GlobalOptionMgr::get_instance().pipeline_timeout();
 
     auto iter = list.cend();
@@ -89,7 +88,7 @@ PipelineTask::NextIter PipelineTask::run_reco_and_action(const PipelineData::Nex
 
     auto start_time = std::chrono::steady_clock::now();
     while (true) {
-        iter = run_recogintion(list, hit_detail);
+        iter = run_recogintion(screencap(), list, hit_detail);
         if (iter != list.cend()) {
             // found
             break;

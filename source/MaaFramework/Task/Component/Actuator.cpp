@@ -1,23 +1,27 @@
 #include "Actuator.h"
 
 #include "Controller/ControllerAgent.h"
-#include "Global/UniqueResultBank.h"
-#include "Tasker/InstanceCache.h"
-#include "Task/CustomAction.h"
+#include "CustomAction.h"
 #include "Utils/Logger.h"
 #include "Vision/TemplateComparator.h"
 
 MAA_TASK_NS_BEGIN
 
-Actuator::Actuator(Tasker* tasker)
-    : inst_(inst)
+Actuator::Actuator(Tasker* tasker, Context& context)
+    : tasker_(tasker)
+    , context_(context)
 {
 }
 
-bool Actuator::run(const Recognizer::Hit& reco_hit, const json::value& reco_detail, const PipelineData& pipeline_data)
+bool Actuator::run(const cv::Rect& reco_hit, const json::value& reco_detail, const PipelineData& pipeline_data)
 {
     using namespace MAA_RES_NS::Action;
     LogFunc << VAR(pipeline_data.name);
+
+    if (pipeline_data.action_type == Type::Invalid) {
+        LogTrace << "invalid action";
+        return false;
+    }
 
     wait_freezes(pipeline_data.pre_wait_freezes, reco_hit);
     sleep(pipeline_data.pre_delay);
@@ -46,7 +50,7 @@ bool Actuator::run(const Recognizer::Hit& reco_hit, const json::value& reco_deta
         ret = stop_app(std::get<AppParam>(pipeline_data.action_param));
         break;
     case Type::Custom:
-        ret = custom_action(pipeline_data.name, std::get<CustomParam>(pipeline_data.action_param), reco_hit, reco_detail);
+        ret = custom_action(std::get<CustomParam>(pipeline_data.action_param), reco_hit, reco_detail);
         break;
     case Type::StopTask:
         LogInfo << "Action: StopTask";
@@ -63,27 +67,27 @@ bool Actuator::run(const Recognizer::Hit& reco_hit, const json::value& reco_deta
     return ret;
 }
 
-bool Actuator::click(const MAA_RES_NS::Action::ClickParam& param, const cv::Rect& cur_box)
+bool Actuator::click(const MAA_RES_NS::Action::ClickParam& param, const cv::Rect& box)
 {
     if (!controller()) {
         LogError << "Controller is null";
         return false;
     }
 
-    cv::Rect rect = get_target_rect(param.target, cur_box);
+    cv::Rect rect = get_target_rect(param.target, box);
 
     return controller()->click(rect);
 }
 
-bool Actuator::swipe(const MAA_RES_NS::Action::SwipeParam& param, const cv::Rect& cur_box)
+bool Actuator::swipe(const MAA_RES_NS::Action::SwipeParam& param, const cv::Rect& box)
 {
     if (!controller()) {
         LogError << "Controller is null";
         return false;
     }
 
-    cv::Rect begin = get_target_rect(param.begin, cur_box);
-    cv::Rect end = get_target_rect(param.end, cur_box);
+    cv::Rect begin = get_target_rect(param.begin, box);
+    cv::Rect end = get_target_rect(param.end, box);
 
     return controller()->swipe(begin, end, param.duration);
 }
@@ -110,7 +114,7 @@ bool Actuator::input_text(const MAA_RES_NS::Action::TextParam& param)
     return controller()->input_text(param.text);
 }
 
-void Actuator::wait_freezes(const MAA_RES_NS::WaitFreezesParam& param, const cv::Rect& cur_box)
+void Actuator::wait_freezes(const MAA_RES_NS::WaitFreezesParam& param, const cv::Rect& box)
 {
     if (param.time <= std::chrono::milliseconds(0)) {
         return;
@@ -124,7 +128,7 @@ void Actuator::wait_freezes(const MAA_RES_NS::WaitFreezesParam& param, const cv:
 
     LogFunc << "Wait freezes:" << VAR(param.time) << VAR(param.threshold) << VAR(param.method);
 
-    cv::Rect target = get_target_rect(param.target, cur_box);
+    cv::Rect target = get_target_rect(param.target, box);
     cv::Mat pre_image = controller()->screencap();
 
     TemplateComparatorParam comp_param {
@@ -186,28 +190,26 @@ bool Actuator::stop_app(const MAA_RES_NS::Action::AppParam& param)
 }
 
 bool Actuator::custom_action(
-    const std::string& task_name,
     const MAA_RES_NS::Action::CustomParam& param,
-    const cv::Rect& cur_box,
-    const json::value& cur_rec_detail)
+    const cv::Rect& box,
+    const json::value& reco_detail)
 {
-    if (!inst_) {
-        LogError << "Inst is null";
+    if (!tasker_) {
+        LogError << "tasker_ is null";
         return false;
     }
-    auto* session = inst_->custom_action_session(param.name);
-    if (!session) {
-        LogError << "Custom task not found" << VAR(param.name);
+    if (!tasker_->resource()) {
+        LogError << "resource is null";
         return false;
     }
-
-    return CustomAction(*session, inst_).run(task_name, param, cur_box, cur_rec_detail);
+    auto session = tasker_->resource()->custom_action(param.name);
+    return CustomAction(param.name, session).run(context_, param, box, reco_detail);
 }
 
-cv::Rect Actuator::get_target_rect(const MAA_RES_NS::Action::Target target, const cv::Rect& cur_box)
+cv::Rect Actuator::get_target_rect(const MAA_RES_NS::Action::Target target, const cv::Rect& box)
 {
-    if (!inst_ || !inst_->cache()) {
-        LogError << "Inst or cache is null";
+    if (!tasker_) {
+        LogError << "tasker is null";
         return {};
     }
 
@@ -216,10 +218,10 @@ cv::Rect Actuator::get_target_rect(const MAA_RES_NS::Action::Target target, cons
     cv::Rect raw {};
     switch (target.type) {
     case Target::Type::Self:
-        raw = cur_box;
+        raw = box;
         break;
     case Target::Type::PreTask: {
-        raw = inst_->cache()->get_pre_box(std::get<std::string>(target.param));
+        raw = tasker_->runtime_cache().get_pre_box(std::get<std::string>(target.param));
     } break;
     case Target::Type::Region:
         raw = std::get<cv::Rect>(target.param);
@@ -233,6 +235,11 @@ cv::Rect Actuator::get_target_rect(const MAA_RES_NS::Action::Target target, cons
                       raw.y + target.offset.y,
                       raw.width + target.offset.width,
                       raw.height + target.offset.height };
+}
+
+MAA_CTRL_NS::ControllerAgent* Actuator::controller()
+{
+    return tasker_ ? tasker_->controller() : nullptr;
 }
 
 void Actuator::sleep(unsigned ms) const

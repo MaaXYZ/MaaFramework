@@ -1,4 +1,4 @@
-#include "PipelineTask.h"
+#include "ActionTask.h"
 
 #include "Controller/ControllerAgent.h"
 #include "Global/GlobalOptionMgr.h"
@@ -10,16 +10,23 @@
 
 MAA_TASK_NS_BEGIN
 
-PipelineTask::PipelineTask(std::string entry, Tasker* tasker, PipelineDataMap pp_override)
+ActionTask::ActionTask(std::string entry, Tasker* tasker, PipelineDataMap pp_override)
     : TaskBase(std::move(entry), tasker, std::move(pp_override))
 {
 }
 
-bool PipelineTask::run()
+bool ActionTask::run()
 {
     LogFunc << VAR(entry_);
 
-    HitDetail fake_hit { .pipeline_data = context_.get_pipeline_data(entry_) };
+    return run_with_param({}, {});
+}
+
+bool ActionTask::run_with_param(const cv::Rect& box, const json::value& reco_detail)
+{
+    LogFunc << VAR(entry_);
+
+    HitDetail fake_hit { .reco_hit = box, .reco_detail = reco_detail, .pipeline_data = context_.get_pipeline_data(entry_) };
     return run_action(fake_hit);
 }
 

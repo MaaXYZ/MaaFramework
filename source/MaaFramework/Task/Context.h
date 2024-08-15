@@ -4,7 +4,7 @@
 
 #include "API/MaaTypes.h"
 #include "Conf/Conf.h"
-#include "Resource/PipelineResMgr.h"
+#include "Resource/PipelineTypes.h"
 #include "Tasker/Tasker.h"
 
 MAA_TASK_NS_BEGIN
@@ -23,7 +23,8 @@ public: // from MaaContextAPI
     virtual MaaTaskId run_pipeline(const std::string& entry, const json::value& pipeline_override) override;
     virtual MaaTaskId run_recognition(const std::string& entry, const json::value& pipeline_override, const cv::Mat& image) override;
     virtual MaaTaskId
-        run_action(const std::string& entry, const json::value& pipeline_override, cv::Rect box, const std::string& reco_detail) override;
+        run_action(const std::string& entry, const json::value& pipeline_override, const cv::Rect& box, const std::string& reco_detail)
+            override;
     virtual bool override_pipeline(const json::value& pipeline_override) override;
 
     virtual MaaTaskId task_id() const override;

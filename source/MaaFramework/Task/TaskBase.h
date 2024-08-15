@@ -7,8 +7,9 @@
 #include "API/MaaTypes.h"
 #include "Conf/Conf.h"
 #include "Context.h"
-#include "Resource/PipelineResMgr.h"
+#include "Controller/ControllerAgent.h"
 #include "Resource/PipelineTypes.h"
+#include "Resource/ResourceMgr.h"
 #include "Tasker/RuntimeCache.h"
 #include "Tasker/Tasker.h"
 
@@ -34,6 +35,7 @@ public:
 public:
     Tasker* tasker() const;
     MaaTaskId task_id() const;
+    const std::string& entry() const;
 
 protected:
     MAA_RES_NS::ResourceMgr* resource();
@@ -42,28 +44,29 @@ protected:
 
     NextIter run_recogintion(const cv::Mat& image, const PipelineData::NextList& list, HitDetail& hit_detail);
     bool run_action(const HitDetail& hit);
-
-private:
+    cv::Mat screencap();
     void add_node_detail(int64_t node_id, NodeDetail detail);
 
+private:
     bool debug_mode() const;
     json::object basic_info();
     static json::object reco_result_to_json(const std::string& name, const RecoResult& res);
     static json::object hit_detail_to_json(const HitDetail& detail);
-    static json::object node_detail_to_json(const NodeDetail& detail);
+    static json::object node_detail_to_json(MaaNodeId node_id, const NodeDetail& detail);
 
 protected:
     Tasker* tasker_ = nullptr;
     Context context_;
 
-    const int64_t task_id_ = ++s_global_task_id;
+    const MaaTaskId task_id_ = ++s_global_task_id;
 
-    std::string entry_;
+    const std::string entry_;
     std::string pre_hit_task_;
 
     std::map<std::string, uint64_t> hit_times_map_;
 
-    inline static std::atomic<MaaNodeId> s_global_task_id = 0;
+    inline static std::atomic<MaaTaskId> s_global_task_id = 0;
+    inline static std::atomic<MaaTaskId> s_global_node_id = 0;
 };
 
 MAA_TASK_NS_END

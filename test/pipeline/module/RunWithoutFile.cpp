@@ -49,8 +49,8 @@ MaaBool my_action_run(
     [[maybe_unused]] MaaSyncContextHandle sync_context,
     [[maybe_unused]] MaaStringView task_name,
     [[maybe_unused]] MaaStringView custom_action_param,
-    [[maybe_unused]] MaaRectHandle cur_box,
-    [[maybe_unused]] MaaStringView cur_rec_detail,
+    [[maybe_unused]] MaaRectHandle box,
+    [[maybe_unused]] MaaStringView reco_detail,
     [[maybe_unused]] MaaTransparentArg trans_arg)
 {
     auto image = MaaCreateImageBuffer();

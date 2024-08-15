@@ -11,7 +11,7 @@
 
 MAA_TASK_NS_BEGIN
 
-TaskBase::TaskBase(std::string entry, Tasker* tasker, PipelineDataMap pp_override = {})
+TaskBase::TaskBase(std::string entry, Tasker* tasker, PipelineDataMap pp_override)
     : tasker_(tasker)
     , entry_(std::move(entry))
     , context_(task_id_, tasker_, std::move(pp_override))
@@ -31,6 +31,11 @@ Tasker* TaskBase::tasker() const
 MaaTaskId TaskBase::task_id() const
 {
     return task_id_;
+}
+
+const std::string& TaskBase::entry() const
+{
+    return entry_;
 }
 
 MAA_RES_NS::ResourceMgr* TaskBase::resource()
@@ -71,7 +76,7 @@ TaskBase::NextIter TaskBase::run_recogintion(const cv::Mat& image, const Pipelin
 
     bool hit = false;
 
-    Recognizer recognizer(tasker_);
+    Recognizer recognizer(tasker_, context_, image);
 
     auto iter = list.cbegin();
 
@@ -86,7 +91,7 @@ TaskBase::NextIter TaskBase::run_recogintion(const cv::Mat& image, const Pipelin
             continue;
         }
 
-        auto reco = recognizer.recognize(image, pipeline_data);
+        auto reco = recognizer.recognize(pipeline_data);
 
         if (debug_mode()) {
             json::value cb_detail = basic_info() | reco_result_to_json(name, reco);
@@ -128,14 +133,15 @@ TaskBase::NextIter TaskBase::run_recogintion(const cv::Mat& image, const Pipelin
 
 bool TaskBase::run_action(const HitDetail& hit)
 {
-    Actuator actuator(tasker_);
+    Actuator actuator(tasker_, context_);
 
     const std::string& name = hit.pipeline_data.name;
 
     NodeDetail node_detail { .name = name, .hit = hit };
+    MaaNodeId node_id = ++s_global_node_id;
 
     if (debug_mode() || hit.pipeline_data.focus) {
-        json::value cb_detail = basic_info() | node_detail_to_json(node_detail);
+        json::value cb_detail = basic_info() | node_detail_to_json(node_id, node_detail);
         if (debug_mode()) {
             notify(MaaMsg_Task_Debug_ReadyToRun, cb_detail);
         }
@@ -146,11 +152,11 @@ bool TaskBase::run_action(const HitDetail& hit)
 
     bool ret = actuator.run(hit.reco_hit, hit.reco_detail, hit.pipeline_data);
 
-    node_detail.status = ret ? NodeStatus::RunCompleted : NodeStatus::None;
-    add_node_detail(node_detail.node_id, node_detail);
+    node_detail.completed = ret;
+    add_node_detail(node_id, node_detail);
 
     if (debug_mode() || hit.pipeline_data.focus) {
-        json::value cb_detail = basic_info() | node_detail_to_json(node_detail);
+        json::value cb_detail = basic_info() | node_detail_to_json(node_id, node_detail);
         if (debug_mode()) {
             notify(MaaMsg_Task_Debug_Completed, cb_detail);
         }
@@ -160,6 +166,15 @@ bool TaskBase::run_action(const HitDetail& hit)
     }
 
     return ret;
+}
+
+cv::Mat TaskBase::screencap()
+{
+    if (!controller()) {
+        return {};
+    }
+
+    return controller()->screencap();
 }
 
 void TaskBase::add_node_detail(int64_t node_id, NodeDetail detail)
@@ -221,12 +236,12 @@ json::object TaskBase::hit_detail_to_json(const HitDetail& detail)
     };
 }
 
-json::object TaskBase::node_detail_to_json(const NodeDetail& detail)
+json::object TaskBase::node_detail_to_json(MaaNodeId node_id, const NodeDetail& detail)
 {
     return hit_detail_to_json(detail.hit)
            | json::object {
-                 { "node_id", detail.node_id },
-                 { "status", static_cast<int>(detail.status) },
+                 { "node_id", node_id },
+                 { "completed", detail.completed },
              };
 }
 

@@ -121,7 +121,6 @@ void MaaControllerDestroy(MaaController* ctrl)
         return;
     }
 
-    ctrl->post_stop();
     delete ctrl;
 }
 

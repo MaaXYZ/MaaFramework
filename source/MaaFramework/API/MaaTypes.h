@@ -1,8 +1,13 @@
 #pragma once
 
-#include "MaaFramework/MaaDef.h"
+#include <filesystem>
+#include <string>
+#include <vector>
 
-#include <meojson/common/value.hpp>
+#include <meojson/json.hpp>
+
+#include "MaaFramework/MaaDef.h"
+#include "Utils/NoWarningCVMat.hpp"
 
 struct MaaResource
 {
@@ -93,7 +98,7 @@ public:
 
     virtual MaaTaskId run_pipeline(const std::string& entry, const json::value& pipeline_override) = 0;
     virtual MaaTaskId run_recognition(const std::string& entry, const json::value& pipeline_override, const cv::Mat& image) = 0;
-    virtual MaaTaskId run_action(const std::string& entry, const json::value& pipeline_override, cv::Rect box, const std::string& reco_detail) = 0;
+    virtual MaaTaskId run_action(const std::string& entry, const json::value& pipeline_override, const cv::Rect& box, const std::string& reco_detail) = 0;
     virtual bool override_pipeline(const json::value& pipeline_override) = 0;
 
     virtual MaaTaskId task_id() const = 0;

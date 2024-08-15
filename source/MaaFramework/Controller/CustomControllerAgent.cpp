@@ -9,7 +9,7 @@
 MAA_CTRL_NS_BEGIN
 
 CustomControllerAgent::CustomControllerAgent(
-    MaaCustomControllerCallbacksHandle handle,
+    MaaCustomControllerCallbacks* handle,
     void* handle_arg,
     MaaNotificationCallback callback,
     void* callback_arg)

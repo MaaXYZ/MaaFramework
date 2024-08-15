@@ -3,8 +3,9 @@
 #include "Controller/ControllerAgent.h"
 #include "MaaFramework/MaaMsg.h"
 #include "Resource/ResourceMgr.h"
+#include "Task/ActionTask.h"
 #include "Task/PipelineTask.h"
-#include "Task/Recognizer.h"
+#include "Task/RecognitionTask.h"
 #include "Utils/Logger.h"
 
 MAA_NS_BEGIN
@@ -20,10 +21,6 @@ Tasker::Tasker(MaaNotificationCallback callback, void* callback_arg)
 Tasker::~Tasker()
 {
     LogFunc;
-
-    if (task_runner_) {
-        task_runner_->release();
-    }
 }
 
 bool Tasker::bind_resource(MaaResource* resource)
@@ -67,51 +64,33 @@ bool Tasker::set_option(MaaTaskerOption key, MaaOptionValue value, MaaOptionValu
     return false;
 }
 
-MaaTaskId Tasker::post_pipeline(std::string entry, const json::value& pipeline_override)
+MaaTaskId Tasker::post_pipeline(const std::string& entry, const json::value& pipeline_override)
 {
-    auto task = make_task(entry, pipeline_override);
-    if (!task) {
-        LogError << "failed to make task" << VAR(entry) << VAR(pipeline_override);
-        return MaaInvalidId;
-    }
-    task->set_type(MAA_TASK_NS::PipelineTask::RunType::Pipeline);
+    LogInfo << VAR(entry) << VAR(pipeline_override);
 
-    return post_task(task);
+    auto task_ptr = std::make_shared<MAA_TASK_NS::PipelineTask>(entry, this, MAA_TASK_NS::TaskBase::PipelineDataMap {});
+    return post_task(std::move(task_ptr), pipeline_override);
 }
 
-MaaTaskId Tasker::post_recognition(std::string entry, const json::value& pipeline_override)
+MaaTaskId Tasker::post_recognition(const std::string& entry, const json::value& pipeline_override)
 {
-    auto task = make_task(entry, pipeline_override);
-    if (!task) {
-        LogError << "failed to make task" << VAR(entry) << VAR(pipeline_override);
-        return MaaInvalidId;
-    }
-    task->set_type(MAA_TASK_NS::PipelineTask::RunType::Recognition);
+    LogInfo << VAR(entry) << VAR(pipeline_override);
 
-    return post_task(task);
+    auto task_ptr = std::make_shared<MAA_TASK_NS::RecognitionTask>(entry, this, MAA_TASK_NS::TaskBase::PipelineDataMap {});
+    return post_task(std::move(task_ptr), pipeline_override);
 }
 
-MaaTaskId Tasker::post_action(std::string entry, const json::value& pipeline_override)
+MaaTaskId Tasker::post_action(const std::string& entry, const json::value& pipeline_override)
 {
-    auto task = make_task(entry, pipeline_override);
-    if (!task) {
-        LogError << "failed to make task" << VAR(entry) << VAR(pipeline_override);
-        return MaaInvalidId;
-    }
-    task->set_type(MAA_TASK_NS::PipelineTask::RunType::Action);
+    LogInfo << VAR(entry) << VAR(pipeline_override);
 
-    return post_task(task);
+    auto task_ptr = std::make_shared<MAA_TASK_NS::ActionTask>(entry, this, MAA_TASK_NS::TaskBase::PipelineDataMap {});
+    return post_task(std::move(task_ptr), pipeline_override);
 }
 
 bool Tasker::override_pipeline(MaaTaskId task_id, const json::value& pipeline_override)
 {
     LogInfo << VAR(task_id) << VAR(pipeline_override);
-
-    auto pipeline_override_opt = json::parse(pipeline_override);
-    if (!pipeline_override_opt) {
-        LogError << "Invalid pipeline_override:" << pipeline_override;
-        return false;
-    }
 
     TaskPtr task_ptr;
     {
@@ -140,7 +119,8 @@ MaaStatus Tasker::status(MaaTaskId task_id) const
         LogError << "task_runner is nullptr";
         return MaaStatus_Invalid;
     }
-    return task_runner_->status(task_id);
+    RunnerId runner_id = task_id_to_runner_id(task_id);
+    return task_runner_->status(runner_id);
 }
 
 MaaStatus Tasker::wait(MaaTaskId task_id) const
@@ -149,8 +129,9 @@ MaaStatus Tasker::wait(MaaTaskId task_id) const
         LogError << "task_runner is nullptr";
         return MaaStatus_Invalid;
     }
-    task_runner_->wait(task_id);
-    return task_runner_->status(task_id);
+    RunnerId runner_id = task_id_to_runner_id(task_id);
+    task_runner_->wait(runner_id);
+    return task_runner_->status(runner_id);
 }
 
 MaaBool Tasker::running() const
@@ -190,12 +171,12 @@ void Tasker::post_stop()
     }
 }
 
-MaaResource* Tasker::resource()
+MAA_RES_NS::ResourceMgr* Tasker::resource()
 {
     return resource_;
 }
 
-MaaController* Tasker::controller()
+MAA_CTRL_NS::ControllerAgent* Tasker::controller()
 {
     return controller_;
 }
@@ -215,62 +196,47 @@ void Tasker::notify(std::string_view msg, json::value detail)
     notifier.notify(msg, detail);
 }
 
-Tasker::TaskPtr Tasker::make_task(std::string entry, const json::value& pipeline_override)
+MaaTaskId Tasker::post_task(TaskPtr task_ptr, const json::value& pipeline_override)
 {
-    LogInfo << VAR(entry) << VAR(pipeline_override);
-
 #ifndef MAA_DEBUG
     if (!inited()) {
         LogError << "Tasker not inited";
-        return nullptr;
+        return MaaInvalidId;
     }
 #endif
 
     if (!check_stop()) {
-        return nullptr;
+        return MaaInvalidId;
     }
 
-    TaskPtr task_ptr = std::make_shared<TaskNS::PipelineTask>(std::move(entry), this);
-
-    auto pipeline_override_opt = json::parse(pipeline_override);
-    if (!pipeline_override_opt) {
-        LogError << "Invalid pipeline_override:" << pipeline_override;
-        return nullptr;
-    }
-
-    bool pipeline_override_ret = task_ptr->pipeline_override(*pipeline_override_opt);
-    if (!pipeline_override_ret) {
-        LogError << "Set task pipeline_override failed:" << pipeline_override;
-        return nullptr;
-    }
-
-    return task_ptr;
-}
-
-Tasker::TaskId Tasker::post_task(const TaskPtr& task_ptr)
-{
-    auto id = task_runner_->post(task_ptr);
+    task_ptr->override_pipeline(pipeline_override);
+    MaaTaskId task_id = task_ptr->task_id();
 
     {
         std::unique_lock lock(task_cache_mutex_);
-        task_cache_.emplace(id, task_ptr);
+
+        RunnerId runner_id = task_runner_->post(task_ptr);
+
+        task_cache_.emplace(task_id, task_ptr);
+        task_id_mapping_.emplace(task_id, runner_id);
+        runner_id_mapping_.emplace(runner_id, task_id);
     }
 
-    LogTrace << VAR(id);
-    return id;
+    return task_id;
 }
 
-bool Tasker::run_task(TaskId id, TaskPtr task_ptr)
+bool Tasker::run_task(RunnerId runner_id, TaskPtr task_ptr)
 {
-    LogFunc << VAR(id) << VAR(task_ptr);
+    LogFunc << VAR(runner_id) << VAR(task_ptr);
 
     if (!task_ptr) {
         LogError << "task_ptr is nullptr";
         return false;
     }
+    MaaTaskId task_id = runner_id_to_task_id(runner_id);
 
     const json::value details = {
-        { "id", id },
+        { "id", task_id },
         { "entry", task_ptr->entry() },
         { "name", task_ptr->entry() },
         { "hash", resource_ ? resource_->get_hash() : std::string() },
@@ -281,7 +247,6 @@ bool Tasker::run_task(TaskId id, TaskPtr task_ptr)
 
     LogInfo << "task start:" << VAR(details);
 
-    task_ptr->set_taskid(id);
     bool ret = task_ptr->run();
 
     LogInfo << "task end:" << VAR(details) << VAR(ret);
@@ -290,7 +255,9 @@ bool Tasker::run_task(TaskId id, TaskPtr task_ptr)
 
     {
         std::unique_lock lock(task_cache_mutex_);
-        task_cache_.erase(id);
+        task_cache_.erase(task_id);
+        task_id_mapping_.erase(task_id);
+        runner_id_mapping_.erase(runner_id);
     }
 
     MAA_LOG_NS::Logger::get_instance().flush();
@@ -311,6 +278,30 @@ bool Tasker::check_stop()
 
     need_to_stop_ = false;
     return true;
+}
+
+Tasker::RunnerId Tasker::task_id_to_runner_id(MaaTaskId task_id) const
+{
+    std::unique_lock lock(task_cache_mutex_);
+
+    auto iter = task_id_mapping_.find(task_id);
+    if (iter == task_id_mapping_.end()) {
+        LogError << "runner id not found" << VAR(task_id);
+        return {};
+    }
+    return iter->second;
+}
+
+MaaTaskId Tasker::runner_id_to_task_id(RunnerId runner_id) const
+{
+    std::unique_lock lock(task_cache_mutex_);
+
+    auto iter = runner_id_mapping_.find(runner_id);
+    if (iter == runner_id_mapping_.end()) {
+        LogError << "task id not found" << VAR(runner_id);
+        return {};
+    }
+    return iter->second;
 }
 
 MAA_NS_END

@@ -15,14 +15,12 @@ MAA_RES_NS_BEGIN
 
 struct CustomRecognizerSession
 {
-    std::string name;
     MaaCustomRecognizerCallback recoginzer = nullptr;
     void* trans_arg = nullptr;
 };
 
 struct CustomActionSession
 {
-    std::string name;
     MaaCustomActionCallback action = nullptr;
     void* trans_arg = nullptr;
 };
@@ -36,7 +34,7 @@ public:
 public: // MaaResource
     virtual bool set_option(MaaResOption key, MaaOptionValue value, MaaOptionValueSize val_size) override;
 
-    virtual MaaResId post_path(std::filesystem::path path) override;
+    virtual MaaResId post_path(const std::filesystem::path& path) override;
 
     virtual MaaStatus status(MaaResId res_id) const override;
     virtual MaaStatus wait(MaaResId res_id) const override;

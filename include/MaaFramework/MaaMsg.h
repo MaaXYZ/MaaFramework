@@ -127,7 +127,7 @@
  *         hit: boolean,
  *     },
  *     node_id: number,
- *     status: number,
+ *     completed: boolean,
  * }
  */
 #define MaaMsg_Task_Focus_ReadyToRun ("Task.Focus.ReadyToRun")
@@ -152,7 +152,7 @@
  *         hit: boolean,
  *     },
  *     node_id: number,
- *     status: number,
+ *     completed: boolean,
  * }
  */
 #define MaaMsg_Task_Debug_ReadyToRun ("Task.Debug.ReadyToRun")

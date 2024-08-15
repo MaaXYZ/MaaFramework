@@ -35,7 +35,7 @@ bool ResourceMgr::set_option(MaaResOption key, MaaOptionValue value, MaaOptionVa
     return false;
 }
 
-MaaResId ResourceMgr::post_path(std::filesystem::path path)
+MaaResId ResourceMgr::post_path(const std::filesystem::path& path)
 {
     LogInfo << VAR(path);
 
@@ -51,7 +51,7 @@ MaaResId ResourceMgr::post_path(std::filesystem::path path)
         return MaaInvalidId;
     }
 
-    return res_loader_->post(std::move(path));
+    return res_loader_->post(path);
 }
 
 MaaStatus ResourceMgr::status(MaaResId res_id) const
@@ -173,9 +173,7 @@ void ResourceMgr::register_custom_recognizer(const std::string& name, MaaCustomR
         LogError << "empty name or handle";
         return;
     }
-    custom_recoginzer_sessions_.insert_or_assign(
-        name,
-        CustomRecognizerSession { .name = name, .recoginzer = recognizer, .trans_arg = trans_arg });
+    custom_recoginzer_sessions_.insert_or_assign(name, CustomRecognizerSession { .recoginzer = recognizer, .trans_arg = trans_arg });
 }
 
 void ResourceMgr::unregister_custom_recognizer(const std::string& name)
@@ -204,7 +202,7 @@ void ResourceMgr::register_custom_action(const std::string& name, MaaCustomActio
         LogError << "empty name or handle";
         return;
     }
-    custom_action_sessions_.insert_or_assign(name, CustomActionSession { .name = name, .action = action, .trans_arg = trans_arg });
+    custom_action_sessions_.insert_or_assign(name, CustomActionSession { .action = action, .trans_arg = trans_arg });
 }
 
 void ResourceMgr::unregister_custom_action(const std::string& name)

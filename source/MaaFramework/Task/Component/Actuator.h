@@ -7,9 +7,9 @@
 
 #include "API/MaaTypes.h"
 #include "Conf/Conf.h"
-#include "Recognizer.h"
-#include "Resource/PipelineResMgr.h"
+#include "Controller/ControllerAgent.h"
 #include "Resource/PipelineTypes.h"
+#include "Task/Context.h"
 #include "Tasker/Tasker.h"
 
 MAA_TASK_NS_BEGIN
@@ -21,36 +21,33 @@ public:
     using PreTaskBoxes = std::map<std::string, cv::Rect>;
 
 public:
-    Actuator(Tasker* tasker);
+    Actuator(Tasker* tasker, Context& context);
 
-    bool run(const Recognizer::Hit& reco_hit, const json::value& reco_detail, const PipelineData& pipeline_data);
+    bool run(const cv::Rect& reco_hit, const json::value& reco_detail, const PipelineData& pipeline_data);
 
 private:
-    bool click(const MAA_RES_NS::Action::ClickParam& param, const cv::Rect& cur_box);
-    bool swipe(const MAA_RES_NS::Action::SwipeParam& param, const cv::Rect& cur_box);
+    bool click(const MAA_RES_NS::Action::ClickParam& param, const cv::Rect& box);
+    bool swipe(const MAA_RES_NS::Action::SwipeParam& param, const cv::Rect& box);
     bool press_key(const MAA_RES_NS::Action::KeyParam& param);
     bool input_text(const MAA_RES_NS::Action::TextParam& param);
 
     bool start_app(const MAA_RES_NS::Action::AppParam& param);
     bool stop_app(const MAA_RES_NS::Action::AppParam& param);
-    bool custom_action(
-        const std::string& task_name,
-        const MAA_RES_NS::Action::CustomParam& param,
-        const cv::Rect& cur_box,
-        const json::value& cur_rec_detail);
+    bool custom_action(const MAA_RES_NS::Action::CustomParam& param, const cv::Rect& box, const json::value& reco_detail);
 
-    void wait_freezes(const MAA_RES_NS::WaitFreezesParam& param, const cv::Rect& cur_box);
+    void wait_freezes(const MAA_RES_NS::WaitFreezesParam& param, const cv::Rect& box);
 
-    cv::Rect get_target_rect(const MAA_RES_NS::Action::Target target, const cv::Rect& cur_box);
+    cv::Rect get_target_rect(const MAA_RES_NS::Action::Target target, const cv::Rect& box);
 
 private:
-    MAA_CTRL_NS::ControllerAgent* controller() { return inst_ ? inst_->inter_controller() : nullptr; }
+    MAA_CTRL_NS::ControllerAgent* controller();
 
     void sleep(unsigned ms) const;
     void sleep(std::chrono::milliseconds ms) const;
 
 private:
     Tasker* tasker_ = nullptr;
+    Context& context_;
 };
 
 MAA_TASK_NS_END

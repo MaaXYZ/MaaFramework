@@ -7,7 +7,10 @@ MAA_TASK_NS_BEGIN
 class PipelineTask : public TaskBase
 {
 public:
-    PipelineTask(std::string entry, Tasker* tasker, PipelineDataMap pp_override = {});
+    using PipelineDataMap = Context::PipelineDataMap;
+
+public:
+    PipelineTask(std::string entry, Tasker* tasker, PipelineDataMap pp_override);
     virtual ~PipelineTask() = default;
 
     virtual bool run() override;

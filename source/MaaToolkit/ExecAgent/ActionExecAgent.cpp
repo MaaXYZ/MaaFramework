@@ -35,21 +35,21 @@ bool ActionExecAgent::run(
     MaaContext* context,
     std::string_view task_name,
     std::string_view custom_action_param,
-    MaaRect* cur_box,
-    std::string_view cur_rec_detail)
+    MaaRect* box,
+    std::string_view reco_detail)
 {
     LogFunc << VAR(data.name) << VAR_VOIDP(context) << VAR(task_name)
-            << VAR(custom_action_param) << VAR_VOIDP(cur_box) << VAR(cur_rec_detail);
+            << VAR(custom_action_param) << VAR_VOIDP(box) << VAR(reco_detail);
 
     std::string handle_arg = arg_cvt_.context_to_arg(context);
     std::string box_arg =
-        json::array({ cur_box->x, cur_box->y, cur_box->width, cur_box->height }).to_string();
+        json::array({ box->x, box->y, box->width, box->height }).to_string();
 
     std::vector<std::string> extra_args = { handle_arg,
                                             std::string(task_name),
                                             std::string(custom_action_param),
                                             box_arg,
-                                            std::string(cur_rec_detail) };
+                                            std::string(reco_detail) };
     std::vector<std::string> args = data.exec_args;
     args.insert(
         args.end(),
@@ -76,8 +76,8 @@ MaaBool ActionExecAgent::maa_api_run(
     MaaContext* context,
     const char* task_name,
     const char* custom_action_param,
-    MaaRect* cur_box,
-    const char* cur_rec_detail,
+    MaaRect* box,
+    const char* reco_detail,
     void* trans_arg)
 {
     auto* data = static_cast<ExecData*>(trans_arg);
@@ -87,7 +87,7 @@ MaaBool ActionExecAgent::maa_api_run(
     }
 
     return get_instance()
-        .run(*data, context, task_name, custom_action_param, cur_box, cur_rec_detail);
+        .run(*data, context, task_name, custom_action_param, box, reco_detail);
 }
 
 void ActionExecAgent::maa_api_stop(void* trans_arg)

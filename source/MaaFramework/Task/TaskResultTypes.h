@@ -2,20 +2,13 @@
 
 #include <optional>
 
-#include <meojson/common/value.hpp>
+#include <meojson/json.hpp>
 
 #include "MaaFramework/MaaDef.h"
 #include "Resource/PipelineTypes.h"
 #include "Utils/NoWarningCVMat.hpp"
 
 MAA_TASK_NS_BEGIN
-
-enum class NodeStatus
-{
-    None,
-    RunCompleted,
-    OnlyRecognized,
-};
 
 struct RecoResult
 {
@@ -30,7 +23,6 @@ struct RecoResult
 struct HitDetail
 {
     MaaRecoId reco_uid = 0;
-
     cv::Rect reco_hit {};
     json::value reco_detail;
     MAA_RES_NS::PipelineData pipeline_data;
@@ -38,11 +30,9 @@ struct HitDetail
 
 struct NodeDetail
 {
-    MaaNodeId node_id = 0;
-
     std::string name;
     HitDetail hit;
-    NodeStatus status = NodeStatus::None;
+    bool completed = false;
 };
 
 struct TaskDetail

@@ -214,8 +214,6 @@ const MaaDbgControllerType MaaDbgControllerType_Invalid = 0;
 const MaaDbgControllerType MaaDbgControllerType_CarouselImage = 1;
 const MaaDbgControllerType MaaDbgControllerType_ReplayRecording = 2;
 
-typedef void (*MaaNotificationCallback)(const char* message, const char* details_json, void* callback_arg);
-
 struct MaaRect
 {
     int32_t x;
@@ -223,3 +221,24 @@ struct MaaRect
     int32_t width;
     int32_t height;
 };
+
+typedef void (*MaaNotificationCallback)(const char* message, const char* details_json, void* callback_arg);
+
+typedef MaaBool (*MaaCustomRecognizerCallback)(
+    MaaContext* context,
+    MaaTaskId task_id,
+    const char* recognizer_name,
+    const char* custom_recognition_param,
+    const MaaImageBuffer* image,
+    void* trans_arg,
+    /* out */ MaaRect* out_box,
+    /* out */ MaaStringBuffer* out_detail);
+
+typedef MaaBool (*MaaCustomActionCallback)(
+    MaaContext* context,
+    MaaTaskId task_id,
+    const char* action_name,
+    const char* custom_action_param,
+    const MaaRect* box,
+    const char* reco_detail,
+    void* trans_arg);

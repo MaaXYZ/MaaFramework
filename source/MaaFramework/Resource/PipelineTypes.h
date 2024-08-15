@@ -105,6 +105,7 @@ struct AppParam
 
 struct CustomParam
 {
+    std::string name;
     json::value custom_param;
 };
 

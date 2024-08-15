@@ -4,56 +4,57 @@
 
 #include "Buffer/ImageBuffer.hpp"
 #include "Buffer/StringBuffer.hpp"
-#include "MaaFramework/Task/MaaCustomRecognizer.h"
 #include "Task/Context.h"
 #include "Utils/Logger.h"
 
-MAA_VISION_NS_BEGIN
+MAA_TASK_NS_BEGIN
 
 CustomRecognizer::CustomRecognizer(
-    cv::Mat image,
-    CustomRecognizerParam param,
-    CustomRecognizerSession session,
-    Tasker* tasker,
-    std::string name)
-    : VisionBase(std::move(image), std::move(name))
-    , param_(std::move(param))
+    std::string name,
+    MAA_RES_NS::CustomRecognizerSession session,
+    Context& context,
+    const MAA_VISION_NS::CustomRecognizerParam& param,
+    const cv::Mat& image)
+    : VisionBase(image, name)
+    , name_(name)
     , session_(std::move(session))
-    , inst_(inst)
+    , context_(context)
+    , param_(std::move(param))
 {
     analyze();
 }
 
 void CustomRecognizer::analyze()
 {
-    LogFunc << VAR_VOIDP(session_.recognizer) << VAR(param_.custom_param);
+    LogFunc << VAR(context_.task_id()) << VAR(name_) << VAR_VOIDP(session_.recoginzer) << VAR_VOIDP(session_.trans_arg)
+            << VAR(param_.custom_param);
 
-    if (!session_.recognizer || !session_.recognizer->analyze) {
-        LogError << "Recognizer is nullptr";
+    if (!session_.recoginzer) {
+        LogError << "recognizer is null" << VAR(name_);
         return;
     }
 
     auto start_time = std::chrono::steady_clock::now();
 
     /*in*/
-    MAA_TASK_NS::Context sync_ctx(inst_);
     ImageBuffer image_buffer(image_);
     std::string custom_param_str = param_.custom_param.to_string();
 
     /*out*/
-    MaaRect maa_box { 0 };
+    MaaRect cbox { 0 };
     StringBuffer detail_buffer;
 
-    bool ret = session_.recognizer->analyze(
-        &sync_ctx,
-        &image_buffer,
+    bool ret = session_.recoginzer(
+        &context_,
+        context_.task_id(),
         name_.c_str(),
         custom_param_str.c_str(),
+        &image_buffer,
         session_.trans_arg,
-        &maa_box,
+        &cbox,
         &detail_buffer);
 
-    cv::Rect box { maa_box.x, maa_box.y, maa_box.width, maa_box.height };
+    cv::Rect box { cbox.x, cbox.y, cbox.width, cbox.height };
     std::string detail(detail_buffer.data(), detail_buffer.size());
 
     auto jdetail = json::parse(detail).value_or(detail);
@@ -66,8 +67,7 @@ void CustomRecognizer::analyze()
     }
 
     auto cost = duration_since(start_time);
-    LogTrace << name_ << VAR(uid_) << VAR(all_results_) << VAR(filtered_results_)
-             << VAR(best_result_) << VAR(cost);
+    LogTrace << name_ << VAR(uid_) << VAR(all_results_) << VAR(filtered_results_) << VAR(best_result_) << VAR(cost);
 }
 
-MAA_VISION_NS_END
+MAA_TASK_NS_END

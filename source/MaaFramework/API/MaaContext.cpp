@@ -103,7 +103,7 @@ MaaTasker* MaaContextGetTasker(MaaContext* context)
 {
     if (!context) {
         LogError << "handle is null";
-        return false;
+        return nullptr;
     }
 
     return context->tasker();

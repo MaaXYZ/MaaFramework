@@ -320,31 +320,31 @@ json::value ExecAgentBase::ctx_run_action(const json::value& cmd)
 
     std::string task_param = cmd.get("task_param", MaaTaskParam_Empty);
 
-    auto cur_box_opt = cmd.find<json::array>("cur_box");
-    if (!cur_box_opt || cur_box_opt->size() != 4 || !cur_box_opt->all<int>()) {
+    auto box_opt = cmd.find<json::array>("box");
+    if (!box_opt || box_opt->size() != 4 || !box_opt->all<int>()) {
         LogError << "no cur box" << VAR(cmd);
         return invalid_json();
     }
-    auto& j_cur_box = *cur_box_opt;
-    auto cur_box_buff = MaaCreateRectBuffer();
-    OnScopeLeave([&]() { MaaDestroyRectBuffer(cur_box_buff); });
+    auto& j_box = *box_opt;
+    auto box_buff = MaaCreateRectBuffer();
+    OnScopeLeave([&]() { MaaDestroyRectBuffer(box_buff); });
     MaaSetRect(
-        cur_box_buff,
-        j_cur_box[0].as<int>(),
-        j_cur_box[1].as<int>(),
-        j_cur_box[2].as<int>(),
-        j_cur_box[3].as<int>());
+        box_buff,
+        j_box[0].as<int>(),
+        j_box[1].as<int>(),
+        j_box[2].as<int>(),
+        j_box[3].as<int>());
 
-    auto j_cur_rec_detail = cmd.get("cur_rec_detail", json::value());
-    std::string str_cur_rec_detail =
-        j_cur_rec_detail.is_string() ? j_cur_rec_detail.as_string() : j_cur_rec_detail.to_string();
+    auto j_reco_detail = cmd.get("reco_detail", json::value());
+    std::string str_reco_detail =
+        j_reco_detail.is_string() ? j_reco_detail.as_string() : j_reco_detail.to_string();
 
     bool ret = MaaContextRunAction(
         ctx,
         task_name.c_str(),
         task_param.c_str(),
-        cur_box_buff,
-        str_cur_rec_detail.c_str());
+        box_buff,
+        str_reco_detail.c_str());
 
     return gen_result(ret);
 }

@@ -27,12 +27,20 @@ MaaTaskId Context::run_pipeline(const std::string& entry, const json::value& pip
 
 MaaTaskId Context::run_recognition(const std::string& entry, const json::value& pipeline_override, const cv::Mat& image)
 {
-    return MaaTaskId();
+    RecognitionTask task(entry, tasker_, pipeline_override_);
+    task.override_pipeline(pipeline_override);
+    task.run_with_param(image);
+    return task.task_id();
 }
 
-MaaTaskId Context::run_action(const std::string& entry, const json::value& pipeline_override, cv::Rect box, const std::string& reco_detail)
+MaaTaskId
+    Context::run_action(const std::string& entry, const json::value& pipeline_override, const cv::Rect& box, const std::string& reco_detail)
 {
-    return MaaTaskId();
+    ActionTask task(entry, tasker_, pipeline_override_);
+    task.override_pipeline(pipeline_override);
+    json::value j_detail = json::parse(reco_detail).value_or(reco_detail);
+    task.run_with_param(box, j_detail);
+    return task.task_id();
 }
 
 bool Context::override_pipeline(const json::value& pipeline_override)

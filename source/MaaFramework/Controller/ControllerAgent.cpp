@@ -80,21 +80,21 @@ MaaCtrlId ControllerAgent::post_press_key(int keycode)
     return id;
 }
 
-MaaCtrlId ControllerAgent::post_input_text(std::string_view text)
+MaaCtrlId ControllerAgent::post_input_text(const std::string& text)
 {
     auto id = post_input_text_impl(text);
     focus_id(id);
     return id;
 }
 
-MaaCtrlId ControllerAgent::post_start_app(std::string_view intent)
+MaaCtrlId ControllerAgent::post_start_app(const std::string& intent)
 {
     auto id = post_start_app_impl(intent);
     focus_id(id);
     return id;
 }
 
-MaaCtrlId ControllerAgent::post_stop_app(std::string_view intent)
+MaaCtrlId ControllerAgent::post_stop_app(const std::string& intent)
 {
     auto id = post_stop_app_impl(intent);
     focus_id(id);
@@ -308,21 +308,21 @@ MaaCtrlId ControllerAgent::post_press_key_impl(int keycode)
     return post({ .type = Action::Type::press_key, .param = std::move(param) });
 }
 
-MaaCtrlId ControllerAgent::post_input_text_impl(std::string_view text)
+MaaCtrlId ControllerAgent::post_input_text_impl(const std::string& text)
 {
-    InputTextParam param { .text = std::string(text) };
+    InputTextParam param { .text = text };
     return post({ .type = Action::Type::input_text, .param = std::move(param) });
 }
 
-MaaCtrlId ControllerAgent::post_start_app_impl(std::string_view intent)
+MaaCtrlId ControllerAgent::post_start_app_impl(const std::string& intent)
 {
-    AppParam param { .package = std::string(intent) };
+    AppParam param { .package =intent };
     return post({ .type = Action::Type::start_app, .param = std::move(param) });
 }
 
-MaaCtrlId ControllerAgent::post_stop_app_impl(std::string_view intent)
+MaaCtrlId ControllerAgent::post_stop_app_impl(const std::string& intent)
 {
-    AppParam param { .package = std::string(intent) };
+    AppParam param { .package = intent };
     return post({ .type = Action::Type::stop_app, .param = std::move(param) });
 }
 
