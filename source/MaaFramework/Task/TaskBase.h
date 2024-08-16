@@ -20,7 +20,6 @@ class TaskBase
 public:
     using PipelineData = Context::PipelineData;
     using PipelineDataMap = Context::PipelineDataMap;
-    using NextIter = PipelineData::NextList::const_iterator;
 
 public:
     TaskBase(std::string entry, Tasker* tasker, PipelineDataMap pp_override);
@@ -42,8 +41,8 @@ protected:
     MAA_CTRL_NS::ControllerAgent* controller();
     void notify(std::string_view msg, json::value detail = json::value());
 
-    NextIter run_recogintion(const cv::Mat& image, const PipelineData::NextList& list, HitDetail& hit_detail);
-    bool run_action(const HitDetail& hit);
+    RecoResult run_recogintion(const cv::Mat& image, const PipelineData::NextList& list);
+    bool run_action(const RecoResult& reco);
     cv::Mat screencap();
     void add_node_detail(int64_t node_id, NodeDetail detail);
 
@@ -51,7 +50,6 @@ private:
     bool debug_mode() const;
     json::object basic_info();
     static json::object reco_result_to_json(const std::string& name, const RecoResult& res);
-    static json::object hit_detail_to_json(const HitDetail& detail);
     static json::object node_detail_to_json(MaaNodeId node_id, const NodeDetail& detail);
 
 protected:

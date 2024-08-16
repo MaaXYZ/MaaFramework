@@ -20,19 +20,11 @@ struct RecoResult
     std::vector<cv::Mat> draws;
 };
 
-struct HitDetail
-{
-    MaaRecoId reco_uid = 0;
-    cv::Rect reco_hit {};
-    json::value reco_detail;
-    MAA_RES_NS::PipelineData pipeline_data;
-};
-
 struct NodeDetail
 {
     std::string name;
-    HitDetail hit;
-    bool completed = false;
+    MaaRecoId reco_uid = 0;
+    bool action_completed = false;
 };
 
 struct TaskDetail

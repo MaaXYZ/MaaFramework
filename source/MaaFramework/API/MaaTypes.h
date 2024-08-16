@@ -89,6 +89,9 @@ public:
 
     virtual MaaResource* resource() = 0;
     virtual MaaController* controller() = 0;
+
+    virtual bool clear_cache() = 0;
+    virtual bool 
 };
 
 struct MaaContext

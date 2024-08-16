@@ -61,7 +61,7 @@ bool Context::override_pipeline(const json::value& pipeline_override)
     std::set<std::string> existing_keys;
     bool parsed = MAA_RES_NS::PipelineResMgr::parse_config(pipeline_override, new_override, existing_keys, raw_data_map);
     if (!parsed) {
-        LogError << "Parse json failed";
+        LogError << "Parse pipeline failed";
         return false;
     }
 
@@ -83,18 +83,18 @@ Tasker* Context::tasker()
 
 Context::PipelineData Context::get_pipeline_data(const std::string& task_name)
 {
-    if (!tasker_) {
-        LogError << "tasker is null";
-        return {};
-    }
-    if (!tasker_->resource()) {
-        LogError << "resource not binded";
-        return {};
-    }
-    auto& raw_data_mgr = tasker_->resource()->pipeline_res();
-
     auto override_it = pipeline_override_.find(task_name);
     if (override_it == pipeline_override_.end()) {
+        if (!tasker_) {
+            LogError << "tasker is null";
+            return {};
+        }
+        if (!tasker_->resource()) {
+            LogError << "resource not binded";
+            return {};
+        }
+        auto& raw_data_mgr = tasker_->resource()->pipeline_res();
+
         return raw_data_mgr.get_pipeline_data(task_name);
     }
 

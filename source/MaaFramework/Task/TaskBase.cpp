@@ -55,33 +55,24 @@ void TaskBase::notify(std::string_view msg, json::value detail)
     }
 }
 
-TaskBase::NextIter TaskBase::run_recogintion(const cv::Mat& image, const PipelineData::NextList& list, HitDetail& hit_detail)
+RecoResult TaskBase::run_recogintion(const cv::Mat& image, const PipelineData::NextList& list)
 {
-    const NextIter NotFound = list.cend();
-
     LogFunc << VAR(pre_hit_task_) << VAR(list);
 
     if (image.empty()) {
         LogError << "Image is empty";
-        return NotFound;
+        return {};
     }
 
     if (debug_mode()) {
-        json::value detail = basic_info()
-                             | json::object {
-                                   { "list", json::array(list) },
-                               };
-        notify(MaaMsg_Task_Debug_ListToRecognize, detail);
+        json::value cb_detail = basic_info() | json::object { { "list", json::array(list) } };
+        notify(MaaMsg_Task_Debug_ListToRecognize, cb_detail);
     }
-
-    bool hit = false;
 
     Recognizer recognizer(tasker_, context_, image);
 
-    auto iter = list.cbegin();
-
-    for (; iter != list.cend(); ++iter) {
-        const std::string& name = iter->name;
+    for (const auto& next_obj : list) {
+        const std::string& name = next_obj.name;
         uint64_t& hit_times = hit_times_map_[name];
 
         const auto& pipeline_data = context_.get_pipeline_data(name);
@@ -91,76 +82,67 @@ TaskBase::NextIter TaskBase::run_recogintion(const cv::Mat& image, const Pipelin
             continue;
         }
 
-        auto reco = recognizer.recognize(pipeline_data);
+        RecoResult result = recognizer.recognize(pipeline_data);
 
         if (debug_mode()) {
-            json::value cb_detail = basic_info() | reco_result_to_json(name, reco);
+            json::value cb_detail = basic_info() | reco_result_to_json(name, result);
             notify(MaaMsg_Task_Debug_RecognitionResult, cb_detail);
         }
 
-        if (!reco.hit) {
+        if (!result.hit) {
             continue;
         }
 
-        hit = true;
         ++hit_times;
-        hit_detail = HitDetail { .reco_uid = reco.uid,
-                                 .reco_hit = *std::move(reco.hit),
-                                 .reco_detail = std::move(reco.detail),
-                                 .pipeline_data = pipeline_data };
-        break;
-    }
 
-    if (!hit) {
         if (debug_mode()) {
-            json::value detail = basic_info()
-                                 | json::object {
-                                       { "list", json::array(list) },
-                                   };
-            notify(MaaMsg_Task_Debug_MissAll, detail);
+            json::value cb_detail = basic_info() | reco_result_to_json(name, result);
+            notify(MaaMsg_Task_Debug_Hit, cb_detail);
         }
-
-        return NotFound;
     }
 
     if (debug_mode()) {
-        json::value cb_detail = basic_info() | hit_detail_to_json(hit_detail);
-        notify(MaaMsg_Task_Debug_Hit, cb_detail);
+        json::value cb_detail = basic_info() | json::object { { "list", json::array(list) } };
+        notify(MaaMsg_Task_Debug_MissAll, cb_detail);
     }
 
-    return iter;
+    return {};
 }
 
-bool TaskBase::run_action(const HitDetail& hit)
+bool TaskBase::run_action(const RecoResult& reco)
 {
-    Actuator actuator(tasker_, context_);
+    if (!reco.hit) {
+        LogError << "reco hit is nullopt, can NOT run";
+        return false;
+    }
 
-    const std::string& name = hit.pipeline_data.name;
+    const auto& pipeline_data = context_.get_pipeline_data(reco.name);
 
-    NodeDetail node_detail { .name = name, .hit = hit };
     MaaNodeId node_id = ++s_global_node_id;
+    NodeDetail node_detail { .name = reco.name, .reco_uid = reco.uid };
 
-    if (debug_mode() || hit.pipeline_data.focus) {
+    if (debug_mode() || pipeline_data.focus) {
         json::value cb_detail = basic_info() | node_detail_to_json(node_id, node_detail);
         if (debug_mode()) {
             notify(MaaMsg_Task_Debug_ReadyToRun, cb_detail);
         }
-        if (hit.pipeline_data.focus) {
+        if (pipeline_data.focus) {
             notify(MaaMsg_Task_Focus_ReadyToRun, cb_detail);
         }
     }
 
-    bool ret = actuator.run(hit.reco_hit, hit.reco_detail, hit.pipeline_data);
+    Actuator actuator(tasker_, context_);
+    bool ret = actuator.run(*reco.hit, reco.detail, pipeline_data);
 
-    node_detail.completed = ret;
+    node_detail.action_completed = ret;
     add_node_detail(node_id, node_detail);
 
-    if (debug_mode() || hit.pipeline_data.focus) {
+    if (debug_mode() || pipeline_data.focus) {
         json::value cb_detail = basic_info() | node_detail_to_json(node_id, node_detail);
         if (debug_mode()) {
             notify(MaaMsg_Task_Debug_Completed, cb_detail);
         }
-        if (hit.pipeline_data.focus) {
+        if (pipeline_data.focus) {
             notify(MaaMsg_Task_Focus_Completed, cb_detail);
         }
     }
@@ -222,27 +204,13 @@ json::object TaskBase::reco_result_to_json(const std::string& name, const RecoRe
     };
 }
 
-json::object TaskBase::hit_detail_to_json(const HitDetail& detail)
-{
-    return {
-        { "name", detail.pipeline_data.name },
-        { "recognition",
-          {
-              { "id", detail.reco_uid },
-              { "box", detail.reco_hit },
-              { "detail", detail.reco_detail },
-              { "hit_task", true },
-          } },
-    };
-}
-
 json::object TaskBase::node_detail_to_json(MaaNodeId node_id, const NodeDetail& detail)
 {
-    return hit_detail_to_json(detail.hit)
-           | json::object {
-                 { "node_id", node_id },
-                 { "completed", detail.completed },
-             };
+    return {
+        { "node_id", node_id },
+        { "reco_id", detail.reco_uid },
+        { "action_completed", detail.action_completed },
+    };
 }
 
 MAA_TASK_NS_END
